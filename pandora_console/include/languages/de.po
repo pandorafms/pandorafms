@@ -8922,7 +8922,7 @@ msgstr "Neuen CRON-Job hinzufügen"
 
 #: ../../enterprise/extensions/cron/main.php:77
 #: ../../enterprise/extensions/cron/main.php:131
-msgid "Path doesn't exists or is not writable"
+msgid "Path doesn't exist or is not writable"
 msgstr "Pfad existiert nicht oder ist nicht beschreibbar."
 
 #: ../../enterprise/extensions/cron/main.php:109
@@ -18984,7 +18984,7 @@ msgid "Correct Delete"
 msgstr "Erfolgreich gelöscht."
 
 #: ../../include/functions_api.php:1788
-msgid "Error in creation network module. Agent name doesn't exists."
+msgid "Error in creation network module. Agent name doesn't exist."
 msgstr ""
 "Fehler in Erzeugung des Netzwerkmoduls. Beauftragten-Name existiert nicht."
 
@@ -19007,7 +19007,7 @@ msgstr ""
 "gelassen werden."
 
 #: ../../include/functions_api.php:1890
-msgid "Error updating network module. Id_module doesn't exists."
+msgid "Error updating network module. Id_module doesn't exist."
 msgstr ""
 "Fehler bei Aktualisierung des Netzwerkmoduls. 'Id_module' existiert nicht."
 
@@ -19018,7 +19018,7 @@ msgstr ""
 "Beauftragten."
 
 #: ../../include/functions_api.php:1912
-msgid "Error updating network module. Id_agent doesn't exists."
+msgid "Error updating network module. Id_agent doesn't exist."
 msgstr ""
 
 #: ../../include/functions_api.php:1962
@@ -19032,7 +19032,7 @@ msgstr ""
 "werden."
 
 #: ../../include/functions_api.php:1998
-msgid "Error in creation plugin module. Agent name doesn't exists."
+msgid "Error in creation plugin module. Agent name doesn't exist."
 msgstr ""
 "Fehler bei Erzeugung des Plugin-Moduls. Name des Beauftragten existiert "
 "nicht."
@@ -19048,7 +19048,7 @@ msgstr ""
 "gelassen werden."
 
 #: ../../include/functions_api.php:2096
-msgid "Error updating plugin module. Id_module doesn't exists."
+msgid "Error updating plugin module. Id_module doesn't exist."
 msgstr ""
 "Fehler bei Aktualisierung des Plugin-Moduls. 'Id_module' existiert nicht."
 
@@ -19059,7 +19059,7 @@ msgstr ""
 "Beauftragten."
 
 #: ../../include/functions_api.php:2115
-msgid "Error updating plugin module. Id_agent doesn't exists."
+msgid "Error updating plugin module. Id_agent doesn't exist."
 msgstr ""
 
 #: ../../include/functions_api.php:2174
@@ -19073,7 +19073,7 @@ msgstr ""
 "gelassen werden."
 
 #: ../../include/functions_api.php:2210
-msgid "Error in creation data module. Agent name doesn't exists."
+msgid "Error in creation data module. Agent name doesn't exist."
 msgstr ""
 "Fehler bei Erzeugung des Daten-Moduls. Name des Beauftragten existiert nicht."
 
@@ -19086,7 +19086,7 @@ msgid "Error in creation synthetic module. Module_name cannot be left blank."
 msgstr ""
 
 #: ../../include/functions_api.php:2300
-msgid "Error in creation synthetic module. Agent name doesn't exists."
+msgid "Error in creation synthetic module. Agent name doesn't exist."
 msgstr ""
 
 #: ../../include/functions_api.php:2382
@@ -19100,7 +19100,7 @@ msgstr ""
 "gelassen werden."
 
 #: ../../include/functions_api.php:2421
-msgid "Error updating data module. Id_module doesn't exists."
+msgid "Error updating data module. Id_module doesn't exist."
 msgstr ""
 "Fehler bei Aktualisierung des Daten-Moduls. 'Id_module' existiert nicht."
 
@@ -19111,7 +19111,7 @@ msgstr ""
 "Beauftragten."
 
 #: ../../include/functions_api.php:2440
-msgid "Error updating data module. Id_agent doesn't exists."
+msgid "Error updating data module. Id_agent doesn't exist."
 msgstr ""
 
 #: ../../include/functions_api.php:2486
@@ -19132,14 +19132,14 @@ msgstr ""
 "SNMP-Modul."
 
 #: ../../include/functions_api.php:2535
-msgid "Error in creation SNMP module. Agent name doesn't exists."
+msgid "Error in creation SNMP module. Agent name doesn't exist."
 msgstr ""
 "Fehler bei Erzeugung des SNMP-Moduls. Name des Beauftragten existiert nicht."
 
 #: ../../include/functions_api.php:2550 ../../include/functions_api.php:2713
 #: ../../include/functions_api.php:5164
 msgid ""
-"Error in creation SNMP module. snmp3_priv_method doesn't exists. Set it to "
+"Error in creation SNMP module. snmp3_priv_method doesn't exist. Set it to "
 "'AES' or 'DES'. "
 msgstr ""
 "Fehler bei Erzeugung des SNMP-Moduls. 'snmp3_priv_method' existiert nicht. "
@@ -19148,7 +19148,7 @@ msgstr ""
 #: ../../include/functions_api.php:2555 ../../include/functions_api.php:2722
 #: ../../include/functions_api.php:5169
 msgid ""
-"Error in creation SNMP module. snmp3_sec_level doesn't exists. Set it to "
+"Error in creation SNMP module. snmp3_sec_level doesn't exist. Set it to "
 "'authNoPriv' or 'authPriv' or 'noAuthNoPriv'. "
 msgstr ""
 "Fehler bei Erzeugung des SNMP-Moduls. 'snmp3_sec_level' existiert nicht. "
@@ -19157,7 +19157,7 @@ msgstr ""
 #: ../../include/functions_api.php:2560 ../../include/functions_api.php:2728
 #: ../../include/functions_api.php:5174
 msgid ""
-"Error in creation SNMP module. snmp3_auth_method doesn't exists. Set it to "
+"Error in creation SNMP module. snmp3_auth_method doesn't exist. Set it to "
 "'MD5' or 'SHA'. "
 msgstr ""
 "Fehler bei Erzeugung des SNMP-Moduls. 'snmp3_auth_method' existiert nicht. "
@@ -19174,7 +19174,7 @@ msgstr ""
 "werden."
 
 #: ../../include/functions_api.php:2684
-msgid "Error updating SNMP module. Id_module doesn't exists."
+msgid "Error updating SNMP module. Id_module doesn't exist."
 msgstr "Fehler bei Erzeugung des SNMP-Moduls. 'id_module' exitiert nicht."
 
 #: ../../include/functions_api.php:2696
@@ -19184,7 +19184,7 @@ msgstr ""
 "Beauftragten."
 
 #: ../../include/functions_api.php:2703
-msgid "Error updating snmp module. Id_agent doesn't exists."
+msgid "Error updating snmp module. Id_agent doesn't exist."
 msgstr ""
 
 #: ../../include/functions_api.php:2813
@@ -19271,7 +19271,7 @@ msgstr ""
 
 #: ../../include/functions_api.php:3036
 msgid ""
-"Error creating SNMP component. snmp3_priv_method doesn't exists. Set it to "
+"Error creating SNMP component. snmp3_priv_method doesn't exist. Set it to "
 "'AES' or 'DES'. "
 msgstr ""
 "Fehler bei Erzeugung der SNMP-Komponente. 'snmp3_priv_method' existiert "
@@ -19279,7 +19279,7 @@ msgstr ""
 
 #: ../../include/functions_api.php:3045
 msgid ""
-"Error creating SNMP component. snmp3_sec_level doesn't exists. Set it to "
+"Error creating SNMP component. snmp3_sec_level doesn't exist. Set it to "
 "'authNoPriv' or 'authPriv' or 'noAuthNoPriv'. "
 msgstr ""
 "Fehler bei Erzeugung der SNMP-Komponente. 'snmp3_sec_level' existiert nicht. "
@@ -19287,7 +19287,7 @@ msgstr ""
 
 #: ../../include/functions_api.php:3051
 msgid ""
-"Error creating SNMP component. snmp3_auth_method doesn't exists. Set it to "
+"Error creating SNMP component. snmp3_auth_method doesn't exist. Set it to "
 "'MD5' or 'SHA'. "
 msgstr ""
 "Fehler bei Erzeugung der SNMP-Komponente. 'snmp3_auth_method' existiert "
@@ -19332,7 +19332,7 @@ msgstr ""
 
 #: ../../include/functions_api.php:3240
 msgid ""
-"Error getting module value from all agents. Module name doesn't exists."
+"Error getting module value from all agents. Module name doesn't exist."
 msgstr ""
 "Fehler bei Versuch, die Modulwerte aller Beauftragten zu beziehen. Modulname "
 "existiert nicht."
@@ -19354,7 +19354,7 @@ msgstr ""
 "nicht leer gelassen werden."
 
 #: ../../include/functions_api.php:3396
-msgid "Error updating alert template. Id_template doesn't exists."
+msgid "Error updating alert template. Id_template doesn't exist."
 msgstr ""
 "Fehler bei Versuch, die Alarm-Vorlage zu aktualisieren. 'Id_template' "
 "existiert nicht."
@@ -19386,7 +19386,7 @@ msgid "Error getting all alert templates."
 msgstr "Fehler beim Beziehen aller Alarm-Vorlagen."
 
 #: ../../include/functions_api.php:3533
-msgid "Error getting alert template. Id_template doesn't exists."
+msgid "Error getting alert template. Id_template doesn't exist."
 msgstr ""
 "Fehler beim Beziehen der Alarm-Vorlage. 'Id_template' existiert nicht."
 
@@ -19403,7 +19403,7 @@ msgid "Error getting plugins."
 msgstr "Fehler beim Beziehen der Plugins."
 
 #: ../../include/functions_api.php:3651
-msgid "Error creating module from network component. Agent doesn't exists."
+msgid "Error creating module from network component. Agent doesn't exist."
 msgstr ""
 "Fehler beim Erzeugen der Netzwerk-Komponente. Beauftragter existiert nicht."
 
@@ -19445,12 +19445,12 @@ msgstr ""
 "Fehler beim Zuweisen des Moduls zur Vorlage. 'Id_template' existiert nicht."
 
 #: ../../include/functions_api.php:3733
-msgid "Error assigning module to template. Id_agent doesn't exists."
+msgid "Error assigning module to template. Id_agent doesn't exist."
 msgstr ""
 "Fehler beim Zuweisen des Moduls zur Vorlage. 'Id_agent' existiert nicht."
 
 #: ../../include/functions_api.php:3740
-msgid "Error assigning module to template. Id_module doesn't exists."
+msgid "Error assigning module to template. Id_module doesn't exist."
 msgstr ""
 "Fehler beim Zuweisen des Moduls zur Vorlage. 'Id_module' existiert nicht."
 
@@ -19466,7 +19466,7 @@ msgstr ""
 "gelassen werden."
 
 #: ../../include/functions_api.php:3781
-msgid "Error deleting module template. Id_module_template doesn't exists."
+msgid "Error deleting module template. Id_module_template doesn't exist."
 msgstr ""
 "Fehler beim Löschen der Modulvorlage. 'Id_module_template' existiert nicht."
 
@@ -19509,7 +19509,7 @@ msgid "Downtime stopped."
 msgstr "Downzeit gestoppt."
 
 #: ../../include/functions_api.php:4373
-msgid "and this modules are doesn't exists or not applicable a this agents: "
+msgid "the selected modules do not exist or do not belong to the intended agents: "
 msgstr ""
 
 #: ../../include/functions_api.php:4375
@@ -19517,7 +19517,7 @@ msgid "and this agents are generate problems: "
 msgstr ""
 
 #: ../../include/functions_api.php:4377
-msgid "and this agents with ids are doesn't exists: "
+msgid "and this agents with ids are don't exist: "
 msgstr ""
 
 #: ../../include/functions_api.php:4404
@@ -19533,7 +19533,7 @@ msgstr ""
 "nicht leer gelassen werden."
 
 #: ../../include/functions_api.php:4417
-msgid "Error adding agent to policy. Id_agent doesn't exists."
+msgid "Error adding agent to policy. Id_agent doesn't exist."
 msgstr ""
 "Fehler beim Hinzufügen des Beauftragten zu den Grundsätzen. 'Id_policy' "
 "existiert nicht."
@@ -19585,7 +19585,7 @@ msgstr ""
 "'Id_policy_module' darf nicht leer gelassen werden."
 
 #: ../../include/functions_api.php:4570
-msgid "Error updating data module in policy. Module doesn't exists."
+msgid "Error updating data module in policy. Module doesn't exist."
 msgstr ""
 "Fehler beim Hinzufügen des Datenmoduls zu den Grundsätzen. Modul existiert "
 "nicht."
@@ -19650,7 +19650,7 @@ msgstr ""
 "'Id_policy_module' darf nicht leer gelassen werden."
 
 #: ../../include/functions_api.php:4747
-msgid "Error updating network module in policy. Module doesn't exists."
+msgid "Error updating network module in policy. Module doesn't exist."
 msgstr ""
 "Fehler beim Aktualisieren des Netzwerk-Moduls zu den Grundsätzen. "
 "'Id_policy' darf nicht leer gelassen werden."
@@ -19712,7 +19712,7 @@ msgstr ""
 "'Id_policy_module' darf nicht leer gelassen werden."
 
 #: ../../include/functions_api.php:4921
-msgid "Error updating plugin module in policy. Module doesn't exists."
+msgid "Error updating plugin module in policy. Module doesn't exist."
 msgstr ""
 "Fehler beim Aktualisieren des Plugin-Moduls zu den Grundsätzen. Das Modul "
 "existiert nicht."
@@ -19773,7 +19773,7 @@ msgstr ""
 "'Id_policy_module' darf nicht leer gelassen werden."
 
 #: ../../include/functions_api.php:5298
-msgid "Error updating SNMP module in policy. Module doesn't exists."
+msgid "Error updating SNMP module in policy. Module doesn't exist."
 msgstr ""
 "Fehler beim Hinzufügen des SNMP-Moduls zu den Grundsätzen. Das Modul "
 "existiert nicht."
@@ -19786,7 +19786,7 @@ msgstr ""
 
 #: ../../include/functions_api.php:5313
 msgid ""
-"Error updating SNMP module. snmp3_priv_method doesn't exists. Set it to "
+"Error updating SNMP module. snmp3_priv_method doesn't exist. Set it to "
 "'AES' or 'DES'. "
 msgstr ""
 "Fehler beim Aktualisieren des SNMP-Moduls. 'snmp_priv_method' existiert "
@@ -19794,7 +19794,7 @@ msgstr ""
 
 #: ../../include/functions_api.php:5323
 msgid ""
-"Error updating SNMP module. snmp3_sec_level doesn't exists. Set it to "
+"Error updating SNMP module. snmp3_sec_level doesn't exist. Set it to "
 "'authNoPriv' or 'authPriv' or 'noAuthNoPriv'. "
 msgstr ""
 "Fehler beim Aktualisieren des SNMP-Moduls. 'snmp_sec_level' existiert nicht. "
@@ -19802,7 +19802,7 @@ msgstr ""
 
 #: ../../include/functions_api.php:5330
 msgid ""
-"Error updating SNMP module. snmp3_auth_method doesn't exists. Set it to "
+"Error updating SNMP module. snmp3_auth_method doesn't exist. Set it to "
 "'MD5' or 'SHA'. "
 msgstr ""
 "Fehler beim Aktualisieren des SNMP-Moduls. 'snmp_auth_method' existiert "
@@ -19843,7 +19843,7 @@ msgstr ""
 "Fehler bei Gruppenerzeugung. 'Icon_name' darf nicht leer gelassen werden."
 
 #: ../../include/functions_api.php:5547 ../../include/functions_api.php:5684
-msgid "Error in group creation. Id_parent_group doesn't exists."
+msgid "Error in group creation. Id_parent_group doesn't exist."
 msgstr "Fehler bei Gruppenerzeugung. 'id_parent_group' existiert nicht."
 
 #: ../../include/functions_api.php:5575
@@ -19895,7 +19895,7 @@ msgstr ""
 "werden."
 
 #: ../../include/functions_api.php:5904
-msgid "Error updating user. Id_user doesn't exists."
+msgid "Error updating user. Id_user doesn't exist."
 msgstr "Fehler bei Aktualisierung des Benutzers. 'id_user' existiert nicht."
 
 #: ../../include/functions_api.php:5920
@@ -19916,7 +19916,7 @@ msgid "Error enable/disable user. Enable/disable value cannot be left blank."
 msgstr ""
 
 #: ../../include/functions_api.php:5972
-msgid "Error enable/disable user. The user doesn't exists."
+msgid "Error enable/disable user. The user doesn't exist."
 msgstr ""
 
 #: ../../include/functions_api.php:5981
@@ -19988,7 +19988,7 @@ msgid ""
 msgstr ""
 
 #: ../../include/functions_api.php:8439
-msgid "Error enable/disable agent. The agent doesn't exists."
+msgid "Error enable/disable agent. The agent doesn't exist."
 msgstr ""
 
 #: ../../include/functions_api.php:8450
@@ -20028,7 +20028,7 @@ msgstr ""
 "gelassen werden."
 
 #: ../../include/functions_api.php:8649
-msgid "Error updating special day. Id doesn't exists."
+msgid "Error updating special day. Id doesn't exist."
 msgstr ""
 "Fehler beim Aktualisieren des speziellen Tags. Die ID existiert nicht."
 
@@ -20044,7 +20044,7 @@ msgstr ""
 "werden."
 
 #: ../../include/functions_api.php:8695
-msgid "Error deleting special day. Id doesn't exists."
+msgid "Error deleting special day. Id doesn't exist."
 msgstr "Fehler beim Löschen des speziellen Tags. Die ID existiert nicht."
 
 #: ../../include/functions_api.php:8702

@@ -25,9 +25,7 @@ require_once ($config['homedir'].'/include/functions_ui.php');
 
 check_login ();
 
-
-
-if (! check_acl ($config["id_user"], 0, "ER")) {
+if (! check_acl ($config["id_user"], 0, "ER") && ! check_acl ($config["id_user"], 0, "EW") && ! check_acl ($config["id_user"], 0, "EM")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access event viewer");
 	require ("general/noaccess.php");
@@ -133,24 +131,30 @@ if (is_ajax ()) {
 		
 		$id = get_parameter('id_row');
 		$idGroup = get_parameter('id_group');
-		
+		$agents = get_parameter('agents', null);
+
 		$query = ' AND id_evento > ' . $id;
 		
 		$type = array();
 		$alert = get_parameter('alert_fired');
 		if ($alert == 'true') {
 			$resultAlert = alerts_get_event_status_group($idGroup,
-				'alert_fired', $query);
+				'alert_fired', $query, $agents);
 		}
 		$critical = get_parameter('critical');
 		if ($critical == 'true') {
 			$resultCritical = alerts_get_event_status_group($idGroup,
-				'going_up_critical', $query);
+				'going_up_critical', $query, $agents);
 		}
 		$warning = get_parameter('warning');
 		if ($warning == 'true') {
 			$resultWarning = alerts_get_event_status_group($idGroup,
-				'going_up_warning', $query);
+				'going_up_warning', $query, $agents);
+		}
+		$unknown = get_parameter('unknown');
+		if ($unknown == 'true') {
+			$resultUnknown = alerts_get_event_status_group($idGroup,
+				'going_unknown', $query, $agents);
 		}
 		
 		if ($resultAlert) {
@@ -164,6 +168,10 @@ if (is_ajax ()) {
 		else if ($resultWarning) {
 			$return = array('fired' => $resultWarning,
 				'sound' => $config['sound_warning']);
+		}
+		else if ($resultUnknown) {
+			$return = array('fired' => $resultWarning,
+				'sound' => $config['sound_alert']);
 		}
 		else {
 			$return = array('fired' => 0);
@@ -220,13 +228,11 @@ $id_name = (string) get_parameter('id_name', '');
 $open_filter = (int) get_parameter('open_filter', 0);
 $date_from = (string)get_parameter('date_from', '');
 $date_to = (string)get_parameter('date_to', '');
+$time_from = (string)get_parameter('time_from', '');
+$time_to = (string)get_parameter('time_to', '');
 $server_id = (int)get_parameter('server_id', 0);
-
-
-
 $text_agent = (string) get_parameter("text_agent");
 
-$id_agent = get_parameter('id_agent', 0);
 if ($id_agent != 0) {
 	$text_agent = db_get_value('nombre', 'tagente', 'id_agente', $id_agent);
 	if ($text_agent == false) {
@@ -234,9 +240,10 @@ if ($id_agent != 0) {
 		$id_agent = 0;
 	}
 } else {
-	$text_agent = '';
+	if (!$meta) {
+		$text_agent = '';
+	}
 }
-
 
 $text_module = (string) get_parameter('module_search', '');
 $id_agent_module = get_parameter('module_search_hidden', 0);
@@ -298,10 +305,13 @@ $params = "search=" . rawurlencode(io_safe_input($search)) .
 	"&amp;open_filter=" . $open_filter .
 	"&amp;date_from=" . $date_from .
 	"&amp;date_to=" . $date_to .
+	"&amp;time_from=" . $time_from .
+	"&amp;time_to=" . $time_to .
 	"&amp;pure=" . $config["pure"];
 
 if ($meta) {
 	$params .= "&amp;text_agent=" . $text_agent;
+	$params .= "&amp;server_id=" . $server_id;
 }
 
 $url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;" . $params;
@@ -348,7 +358,7 @@ if ($config["pure"] == 0 || $meta) {
 	$sound_event['text'] = '<a href="javascript: openSoundEventWindow();">' . html_print_image('images/sound.png', true, array('title' => __('Sound events'))) . '</a>';
 	
 	// If the user has administrator permission display manage tab
-	if (check_acl ($config["id_user"], 0, "EW")) {
+	if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0, "EM")) {
 		// Manage events
 		$manage_events['active'] = false;
 		$manage_events['text'] = '<a href="index.php?sec=eventos&sec2=godmode/events/events&amp;section=filter&amp;pure='.$config['pure'].'">' .
@@ -395,11 +405,20 @@ if ($config["pure"] == 0 || $meta) {
 			$section_string = __('List');
 			break;
 	}
-	
+
+
+	/* Hello there! :)
+
+	We added some of what seems to be "buggy" messages to the openSource version recently. This is not to force open-source users to move to the enterprise version, this is just to inform people using Pandora FMS open source that it requires skilled people to maintain and keep it running smoothly without professional support. This does not imply open-source version is limited in any way. If you check the recently added code, it contains only warnings and messages, no limitations except one: we removed the option to add custom logo in header. In the Update Manager section, it warns about the 'danger’ of applying automated updates without a proper backup, remembering in the process that the Enterprise version comes with a human-tested package. Maintaining an OpenSource version with more than 500 agents is not so easy, that's why someone using a Pandora with 8000 agents should consider asking for support. It's not a joke, we know of many setups with a huge number of agents, and we hate to hear that “its becoming unstable and slow” :(
+
+	You can of course remove the warnings, that's why we include the source and do not use any kind of trick. And that's why we added here this comment, to let you know this does not reflect any change in our opensource mentality of does the last 14 years.
+
+	*/
+
 	if (! defined ('METACONSOLE')) {
 		unset($onheader['history']);
 		ui_print_page_header (__("Events"), "images/op_events.png",
-			false, "eventview", false, $onheader);
+			false, "eventview", false, $onheader,true, "eventsmodal");
 	}
 	else {
 		unset($onheader['rss']);
@@ -417,7 +436,7 @@ if ($config["pure"] == 0 || $meta) {
 				echo ui_get_full_url('operation/events/sound_events.php');
 				?>';
 			
-			window.open(url, '<?php __('Sound Alerts'); ?>','width=300, height=300, toolbar=no, location=no, directories=no, status=no, menubar=no, resizable=yes'); 
+			window.open(url, '<?php __('Sound Alerts'); ?>','width=400, height=380, toolbar=no, location=no, directories=no, status=no, menubar=no, resizable=no'); 
 		}
 	</script>
 	<?php

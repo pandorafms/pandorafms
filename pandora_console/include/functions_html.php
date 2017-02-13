@@ -429,8 +429,8 @@ function html_print_select_groups($id_user = false, $privilege = "AR",
 function html_print_select ($fields, $name, $selected = '', $script = '',
 	$nothing = '', $nothing_value = 0, $return = false, $multiple = false,
 	$sort = true, $class = '', $disabled = false, $style = false,
-	$option_style = false, $size = false) {
-	
+	$option_style = false, $size = false,$modal=false,$message='',$select_all=false){
+
 	$output = "\n";
 	
 	static $idcounter = array ();
@@ -513,7 +513,12 @@ function html_print_select ($fields, $name, $selected = '', $script = '',
 				$optlabel = $label['name'];
 			}
 			
-			$output .= '<option value="'.$value.'"';
+			$output .= '<option ';
+			if($select_all){
+			$output .= 'selected ';	
+			}
+			$output .= 'value="'.$value.'"';
+			
 			if (is_array ($selected) && in_array ($value, $selected)) {
 				$output .= ' selected="selected"';
 			}
@@ -543,7 +548,11 @@ function html_print_select ($fields, $name, $selected = '', $script = '',
 	}
 	
 	$output .= "</select>";
-	
+	if ($modal && !enterprise_installed()){
+		$output .= "
+		<div id='".$message."' class='publienterprise' title='Community version' style='display:inline;position:relative;top:10px;left:0px;margin-top: -2px !important; margin-left: 2px !important;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
+		";
+	}
 	if ($return)
 		return $output;
 	
@@ -608,18 +617,12 @@ function html_print_extended_select_for_post_process($name, $selected = '',
 	$fields = post_process_get_custom_values();
 	$selected_float = (float)$selected;
 	$found = false;
-	foreach ($fields as $value => $text) {
-		$value = (float)$value;
-		
-		
-		
-		if ($value == $selected_float) {
-			$found = true;
-			break;
-		}
-	}
+	
+	if (array_key_exists($selected, $fields))
+		$found = true;
+	
 	if (!$found) {
-		$fields[floatval($selected)] = floatval($selected);
+		$fields[$selected] = floatval($selected);
 	}
 	
 	
@@ -629,9 +632,6 @@ function html_print_extended_select_for_post_process($name, $selected = '',
 	else {
 		$uniq_name = $name;
 	}
-	
-	
-	
 	
 	ob_start();
 	
@@ -697,7 +697,8 @@ function html_print_extended_select_for_post_process($name, $selected = '',
 
 function html_print_extended_select_for_time ($name, $selected = '',
 	$script = '', $nothing = '', $nothing_value = '0', $size = false,
-	$return = false, $select_style = false, $unique_name = true) {
+	$return = false, $select_style = false, $unique_name = true, $class='',
+	$readonly = false) {
 	
 	global $config;
 	
@@ -705,9 +706,14 @@ function html_print_extended_select_for_time ($name, $selected = '',
 
 	if ( ! $selected ) {
 		foreach( $fields as $t_key => $t_value){
-			if ( $t_key != -1 ) {			//  -1 means 'custom'
-				$selected = $t_key;
-				break;
+			if ( $t_key != -1 ) {
+				if($nothing == ''){			//  -1 means 'custom'
+					$selected = $t_key;
+					break;
+				} else {
+					$selected = $nothing;
+					break;
+				}
 			}
 		}
 	}
@@ -747,12 +753,16 @@ function html_print_extended_select_for_time ($name, $selected = '',
 	else {
 		$uniq_name = $name;
 	}
+
+	if ($readonly){
+		$readonly = true;
+	}
 	
 	ob_start();
 	//Use the no_meta parameter because this image is only in the base console
 	echo '<div id="'.$uniq_name.'_default" style="width:100%;display:inline;">';
 		html_print_select ($fields, $uniq_name . '_select', $selected,"" . $script,
-			$nothing, $nothing_value, false, false, false, '', false, 'font-size: xx-small;'.$select_style);
+			$nothing, $nothing_value, false, false, false, $class, $readonly, 'font-size: xx-small;'.$select_style);
 		echo ' <a href="javascript:">' .
 			html_print_image('images/pencil.png', true,
 				array('class' => $uniq_name . '_toggler',
@@ -763,11 +773,11 @@ function html_print_extended_select_for_time ($name, $selected = '',
 	echo '</div>';
 	
 	echo '<div id="'.$uniq_name.'_manual" style="width:100%;display:inline;">';
-		html_print_input_text ($uniq_name . '_text', $selected, '', $size);
-	
+		html_print_input_text ($uniq_name . '_text', $selected, '', $size, 255, false, $readonly, false, '', $class);
+
 		html_print_input_hidden ($name, $selected, false, $uniq_name);
 		html_print_select ($units, $uniq_name . '_units', 1, "" . $script,
-			$nothing, $nothing_value, false, false, false, '', false, 'font-size: xx-small;'.$select_style);
+			$nothing, $nothing_value, false, false, false, $class, $readonly, 'font-size: xx-small;'.$select_style);
 		echo ' <a href="javascript:">' .
 			html_print_image('images/default_list.png', true,
 				array('class' => $uniq_name . '_toggler',
@@ -809,7 +819,7 @@ function html_print_extended_select_for_time ($name, $selected = '',
  * 
  * @return string HTML code if return parameter is true.
  */
-function html_print_extended_select_for_cron ($hour = '*', $minute = '*', $mday = '*', $month = '*', $wday = '*', $return = false, $disabled = false) {
+function html_print_extended_select_for_cron ($hour = '*', $minute = '*', $mday = '*', $month = '*', $wday = '*', $return = false, $disabled = false, $to = false) {
 	
 	# Hours
 	for ($i = 0; $i < 24; $i++) {
@@ -852,11 +862,20 @@ function html_print_extended_select_for_cron ($hour = '*', $minute = '*', $mday 
 	$table->head[3] = __('Month');
 	$table->head[4] = __('Week day');
 	
-	$table->data[0][0] = html_print_select ($hours, 'hour', $hour, '', __('Any'), '*', true, false, false,'',$disabled);	
-	$table->data[0][1] = html_print_select ($minutes, 'minute', $minute, '', __('Any'), '*', true, false, false,'',$disabled);
-	$table->data[0][2] = html_print_select ($mdays, 'mday', $mday, '', __('Any'), '*', true, false, false,'',$disabled);
-	$table->data[0][3] = html_print_select ($months, 'month', $month, '', __('Any'), '*', true, false, false,'',$disabled);
-	$table->data[0][4] = html_print_select ($wdays, 'wday', $wday, '', __('Any'), '*', true, false, false,'',$disabled);
+	if ($to) {
+		$table->data[0][0] = html_print_select ($hours, 'hour_to', $hour, '', __('Any'), '*', true, false, false,'',$disabled);	
+		$table->data[0][1] = html_print_select ($minutes, 'minute_to', $minute, '', __('Any'), '*', true, false, false,'',$disabled);
+		$table->data[0][2] = html_print_select ($mdays, 'mday_to', $mday, '', __('Any'), '*', true, false, false,'',$disabled);
+		$table->data[0][3] = html_print_select ($months, 'month_to', $month, '', __('Any'), '*', true, false, false,'',$disabled);
+		$table->data[0][4] = html_print_select ($wdays, 'wday_to', $wday, '', __('Any'), '*', true, false, false,'',$disabled);
+	}
+	else {
+		$table->data[0][0] = html_print_select ($hours, 'hour_from', $hour, '', __('Any'), '*', true, false, false,'',$disabled);	
+		$table->data[0][1] = html_print_select ($minutes, 'minute_from', $minute, '', __('Any'), '*', true, false, false,'',$disabled);
+		$table->data[0][2] = html_print_select ($mdays, 'mday_from', $mday, '', __('Any'), '*', true, false, false,'',$disabled);
+		$table->data[0][3] = html_print_select ($months, 'month_from', $month, '', __('Any'), '*', true, false, false,'',$disabled);
+		$table->data[0][4] = html_print_select ($wdays, 'wday_from', $wday, '', __('Any'), '*', true, false, false,'',$disabled);
+	}
 	
 	return html_print_table ($table, $return);
 }
@@ -878,7 +897,7 @@ function html_print_extended_select_for_cron ($hour = '*', $minute = '*', $mday 
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_input_text_extended ($name, $value, $id, $alt, $size, $maxlength, $disabled, $script, $attributes, $return = false, $password = false) {
+function html_print_input_text_extended ($name, $value, $id, $alt, $size, $maxlength, $disabled, $script, $attributes, $return = false, $password = false, $function = "") {
 	static $idcounter = 0;
 	
 	if ($maxlength == 0)
@@ -959,8 +978,8 @@ function html_print_input_text_extended ($name, $value, $id, $alt, $size, $maxle
 		}
 	}
 	
-	$output .= '/>';
-	
+	$output .= $function . '/>';
+
 	if (!$return)
 		echo $output;
 	
@@ -1034,7 +1053,7 @@ function html_print_div ($options, $return = false) {
  */
 function html_print_input_password ($name, $value, $alt = '',
 	$size = 50, $maxlength = 255, $return = false, $disabled = false,
-	$required = false) {
+	$required = false, $class = '') {
 	
 	if ($maxlength == 0)
 		$maxlength = 255;
@@ -1045,6 +1064,8 @@ function html_print_input_password ($name, $value, $alt = '',
 	$attr = array();
 	if ($required)
 		$attr['required'] = 'required';
+	if ($class)
+		$attr['class'] = $class;
 	
 	return html_print_input_text_extended ($name, $value, 'password-'.$name, $alt, $size, $maxlength, $disabled, '', $attr, $return, true);
 }
@@ -1064,18 +1085,23 @@ function html_print_input_password ($name, $value, $alt = '',
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_input_text ($name, $value, $alt = '', $size = 50, $maxlength = 255, $return = false, $disabled = false, $required = false) {
+function html_print_input_text ($name, $value, $alt = '', $size = 50, $maxlength = 255, $return = false, $disabled = false, $required = false, $function = "", $class = "", $onChange ="") {
 	if ($maxlength == 0)
 		$maxlength = 255;
-	
+		
 	if ($size == 0)
 		$size = 10;
 	
 	$attr = array();
 	if ($required)
 		$attr['required'] = 'required';
+	if ($class != '')
+		$attr['class'] = $class;
+	if ($onChange != '') {
+		$attr['onchange'] = $onChange;
+	}
 	
-	return html_print_input_text_extended ($name, $value, 'text-'.$name, $alt, $size, $maxlength, $disabled, '', $attr, $return);
+	return html_print_input_text_extended ($name, $value, 'text-'.$name, $alt, $size, $maxlength, $disabled, '', $attr, $return, false, $function);
 }
 
 /**
@@ -1264,7 +1290,7 @@ function html_print_submit_button ($label = 'OK', $name = '', $disabled = false,
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_button ($label = 'OK', $name = '', $disabled = false, $script = '', $attributes = '', $return = false, $imageButton = false) {
+function html_print_button ($label = 'OK', $name = '', $disabled = false, $script = '', $attributes = '', $return = false, $imageButton = false,$modal=false,$message='') {
 	$output = '';
 	
 	$alt = $title = '';
@@ -1277,6 +1303,12 @@ function html_print_button ($label = 'OK', $name = '', $disabled = false, $scrip
 	if ($disabled)
 		$output .= ' disabled';
 	$output .= ' />';
+	
+	if ($modal && !enterprise_installed()){
+		$output .= "
+		<div id='".$message."' class='publienterprise' title='Community version' style='display:inline;position:relative;top:10px;left:0px;margin-top: -2px !important; margin-left: 2px !important;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
+		";
+	}
 	if ($return)
 		return $output;
 	
@@ -1297,8 +1329,8 @@ function html_print_button ($label = 'OK', $name = '', $disabled = false, $scrip
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_textarea ($name, $rows, $columns, $value = '', $attributes = '', $return = false) {
-	$output = '<textarea id="textarea_'.$name.'" name="'.$name.'" cols="'.$columns.'" rows="'.$rows.'" '.$attributes.' >';
+function html_print_textarea ($name, $rows, $columns, $value = '', $attributes = '', $return = false, $class = '') {
+	$output = '<textarea id="textarea_'.$name.'" name="'.$name.'" cols="'.$columns.'" rows="'.$rows.'" '.$attributes.'" '.$class.'>';
 	//$output .= io_safe_input ($value);
 	$output .= ($value);
 	$output .= '</textarea>';
@@ -1482,11 +1514,11 @@ function html_print_table (&$table, $return = false) {
 		$table->border = '0';
 	}
 	
-	if (empty ($table->tablealign) || $table->tablealign != 'left' || $table->tablealign != 'right') {
-		$table->tablealign = '';
+	if (empty ($table->tablealign) || (($table->tablealign != 'left') && ($table->tablealign != 'right'))) {
+		$table->tablealign = '"';
 	}
 	else {
-		$table->tablealign = 'style="float:'.$table->tablealign.';"'; //Align is deprecated. Use float instead
+		$table->tablealign = 'float:'.$table->tablealign.';"'; //Align is deprecated. Use float instead
 	}
 	
 	if (!isset ($table->cellpadding)) {
@@ -1508,10 +1540,10 @@ function html_print_table (&$table, $return = false) {
 	$tableid = empty ($table->id) ? 'table'.$table_count : $table->id;
 	
 	if (!empty($table->width)) {
-		$output .= '<table style="width:' . $table->width . ';' . $styleTable . '"'.$table->tablealign;
+		$output .= '<table style="width:' . $table->width . '; ' . $styleTable . ' '.$table->tablealign;
 	}
 	else {
-		$output .= '<table style="' . $styleTable . '"'.$table->tablealign;
+		$output .= '<table style="' . $styleTable . ' ' . $table->tablealign;
 	}
 	$output .= ' cellpadding="'.$table->cellpadding.'" cellspacing="'.$table->cellspacing.'"';
 	$output .= ' border="'.$table->border.'" class="'.$table->class.'" id="'.$tableid.'">';
@@ -1646,7 +1678,12 @@ function html_print_table (&$table, $return = false) {
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_radio_button_extended ($name, $value, $label, $checkedvalue, $disabled, $script, $attributes, $return = false) {
+ /* Hello there! :)
+We added some of what seems to be "buggy" messages to the openSource version recently. This is not to force open-source users to move to the enterprise version, this is just to inform people using Pandora FMS open source that it requires skilled people to maintain and keep it running smoothly without professional support. This does not imply open-source version is limited in any way. If you check the recently added code, it contains only warnings and messages, no limitations except one: we removed the option to add custom logo in header. In the Update Manager section, it warns about the 'danger’ of applying automated updates without a proper backup, remembering in the process that the Enterprise version comes with a human-tested package. Maintaining an OpenSource version with more than 500 agents is not so easy, that's why someone using a Pandora with 8000 agents should consider asking for support. It's not a joke, we know of many setups with a huge number of agents, and we hate to hear that “its becoming unstable and slow” :(
+You can of course remove the warnings, that's why we include the source and do not use any kind of trick. And that's why we added here this comment, to let you know this does not reflect any change in our opensource mentality of does the last 14 years.
+*/
+ 
+function html_print_radio_button_extended ($name, $value, $label, $checkedvalue, $disabled, $script, $attributes, $return = false,$modal=false,$message='visualmodal') {
 	static $idcounter = 0;
 	
 	$output = '';
@@ -1671,6 +1708,12 @@ function html_print_radio_button_extended ($name, $value, $label, $checkedvalue,
 		$output .= '<label for="'.$htmlid.'">'. $label .'</label>' . "\n";
 	}
 	
+	if ($modal && !enterprise_installed()){
+		$output .= "
+		<div id='".$message."' class='publienterprise' title='Community version' style='display:inline;position:relative;top:10px;left:0px;margin-top: -2px !important; margin-left: 2px !important;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
+		";
+	}
+	
 	if ($return)
 		return $output;
 	
@@ -1688,8 +1731,8 @@ function html_print_radio_button_extended ($name, $value, $label, $checkedvalue,
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_radio_button ($name, $value, $label = '', $checkedvalue = '', $return = false) {
-	$output = html_print_radio_button_extended ($name, $value, $label, $checkedvalue, false, '', '', true);
+function html_print_radio_button ($name, $value, $label = '', $checkedvalue = '', $return = false, $disabled = false) {
+	$output = html_print_radio_button_extended ($name, $value, $label, $checkedvalue, $disabled, '', '', true);
 	
 	if ($return)
 		return $output;

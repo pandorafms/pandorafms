@@ -80,7 +80,7 @@ $vconsole_read = check_acl ($config["id_user"], $id_group, "VR");
 $vconsole_write = check_acl ($config["id_user"], $id_group, "VW");
 $vconsole_manage = check_acl ($config["id_user"], $id_group, "VM");
 
-if (! $vconsole_read) {
+if (! $vconsole_read && !$vconsole_write && !$vconsole_manage) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access visual console without group access");
 	require ("general/noaccess.php");
@@ -126,13 +126,13 @@ if ($vconsole_write || $vconsole_manage) {
 			array ("title" => __('Builder'))) .'</a>';
 }
 
-$options['view']['text'] = '<a href="index.php?sec=reporting&sec2=operation/visual_console/render_view&id=' . $id_layout . '&refr=' . $view_refresh . '">'
+$options['view']['text'] = '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id=' . $id_layout . '&refr=' . $view_refresh . '">'
 	. html_print_image("images/operation.png", true, array ("title" => __('View'))) .'</a>';
 $options['view']['active'] = true;
 
-if (! defined('METACONSOLE')) {
+if (!is_metaconsole()) {
 	if (!$config['pure']) {
-		$options['pure']['text'] = '<a href="index.php?sec=reporting&sec2=operation/visual_console/render_view&id='.$id_layout.'&refr='.$refr.'&pure=1">'
+		$options['pure']['text'] = '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$id_layout.'&refr='.$refr.'&pure=1">'
 			. html_print_image('images/full_screen.png', true, array('title' => __('Full screen mode')))
 			. "</a>";
 		ui_print_page_header($layout_name, 'images/visual_console.png', false, '', false, $options);
@@ -147,7 +147,10 @@ else {
 
 if ($config['pure']) {
 	// Container of the visual map (ajax loaded)
-	echo '<div id="vc-container"></div>';
+	echo '<div id="vc-container">' .
+		visual_map_print_visual_map ($id_layout, true, true, 
+			null, null, '', false, $graph_javascript)
+	. '</div>';
 	
 	// Floating menu - Start
 	echo '<div id="vc-controls">';
@@ -157,7 +160,7 @@ if ($config['pure']) {
 
 	// Quit fullscreen
 	echo '<li class="nomn">';
-	echo '<a href="index.php?sec=reporting&sec2=operation/visual_console/render_view&id='.$id_layout.'&refr='.$refr.'">';
+	echo '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$id_layout.'&refr='.$refr.'">';
 	echo html_print_image('images/normal_screen.png', true, array('title' => __('Back to normal mode')));
 	echo '</a>';
 	echo '</li>';
@@ -201,19 +204,19 @@ if ($config['pure']) {
 	<?php
 }
 else {
-	visual_map_print_visual_map ($id_layout, true, true, null, null, '', false, $graph_javascript);
+	visual_map_print_visual_map ($id_layout, true, true, null, null, '', false, $graph_javascript, true);
 }
 
 ui_require_javascript_file('wz_jsgraphics');
 ui_require_javascript_file('pandora_visual_console');
-
+$ignored_params['refr'] = '';
 ?>
 
 <script language="javascript" type="text/javascript">
 	$(document).ready (function () {
-		var refr = <?php echo $refr; ?>;
+		var refr = <?php echo (int)$refr; ?>;
 		var pure = <?php echo (int) $config['pure']; ?>;
-			
+		var href = "<?php echo ui_get_url_refresh ($ignored_params); ?>";
 		if (pure) {
 			var startCountDown = function (duration, cb) {
 				$('div.vc-countdown').countdown('destroy');
@@ -227,47 +230,148 @@ ui_require_javascript_file('pandora_visual_console');
 					alwaysExpire: true,
 					onExpiry: function () {
 						$('div.vc-countdown').countdown('destroy');
-						cb();
+						//cb();
+						url = js_html_entity_decode( href ) + duration;
+						//$(document).attr ("location", url);
+						$.get(window.location.href.replace("render_view","pure_ajax"), function(respuestaSolicitud){
+							$('#background_<?php echo $id_layout; ?>').html(respuestaSolicitud);	
+							startCountDown(refr, false);
+						});
+						
+					
 					}
 				});
 			}
 			
-			var fetchMap = function () {
-				$.ajax({
-					url: 'ajax.php',
-					type: 'GET',
-					dataType: 'html',
-					data: {
-						page: 'include/ajax/visual_console.ajax',
-						render_map: true,
-						keep_aspect_ratio: true,
-						id_visual_console: <?php echo $id_layout; ?>,
-						graph_javascript: <?php echo (int) $graph_javascript; ?>,
-						width: $(window).width(),
-						height: $(window).height()
-					}
-				})
-				.done(function (data, textStatus, xhr) {
-					$('div#vc-container').html(data);
-					startCountDown(refr, fetchMap);
-				});
-			}
-			
-			// Auto hide controls
+			//~ var fetchMap = function () {
+				//~ $.ajax({
+					//~ url: 'ajax.php',
+					//~ type: 'GET',
+					//~ dataType: 'html',
+					//~ data: {
+						//~ page: 'include/ajax/visual_console.ajax',
+						//~ render_map: true,
+						//~ keep_aspect_ratio: true,
+						//~ id_visual_console: <?php echo $id_layout; ?>,
+						//~ graph_javascript: <?php echo (int) $graph_javascript; ?>,
+						//~ width: $(window).width(),
+						//~ height: $(window).height()
+					//~ }
+				//~ })
+				//~ .done(function (data, textStatus, xhr) {
+					//~ $('div#vc-container').html(data);
+					//~ startCountDown(refr, false);
+				//~ });
+			//~ }
+			startCountDown(refr, false);
+			//~ // Auto hide controls
 			var controls = document.getElementById('vc-controls');
 			autoHideElement(controls, 1000);
+			
 			$('select#refr').change(function (event) {
 				refr = Number.parseInt(event.target.value, 10);
-				startCountDown(refr, fetchMap);
+				startCountDown(refr, false);
 			});
 			
-			// Start the map fetch
-			fetchMap();
+			//~ // Start the map fetch
+			//~ fetchMap();
 		}
 		else {
 			$('#refr').change(function () {
 				$('#hidden-vc_refr').val($('#refr option:selected').val());
 			});
 		}
+		
+		/*
+		$(".module_graph").each(function(){
+		left =	parseInt($(this).css("left")) + 150 + ((parseInt($(this).css("width"))-300)/2);
+				$(this).css('left', left);
+		});
+		
+		$('.item:not([class~="module_graph"])').each(function(){
+			left =	parseInt($(this).css('left')) + ((parseInt($('#' + $(this).attr('id')).css('width')) - parseInt($('#' + $(this).attr('id') + " img").css('width')))*0.5);
+			
+			$(this).css('left', left);
+		});
+		
+		
+		*/
+		
+		$(".module_graph .menu_graph").css('display','none');
+		
+		$(".parent_graph").each(function(){
+			
+		if($(this).css('background-color') != 'rgb(255, 255, 255)'){
+				$(this).css('color', '#999');				
+				}
+		});			
+
+		$(".overlay").removeClass("overlay").addClass("overlaydisabled");
+		
+		$('.item:not(.icon) img').each(function(){
+			
+			
+			if($(this).css('float')=='left' || $(this).css('float')=='right'){
+			
+				
+			$(this).css('margin-top',(parseInt($(this).parent().parent().css('height'))/2-parseInt($(this).css('height'))/2)+'px');
+			$(this).css('margin-left','');
+			
+			}
+			else{
+				$(this).css('margin-left',(parseInt($(this).parent().parent().css('width'))/2-parseInt($(this).css('width'))/2)+'px');
+				$(this).css('margin-top','');
+			}
+			
+		});
+		
+		$('.item > div').each(function(){
+			if($(this).css('float')=='left' || $(this).css('float')=='right'){
+			
+				
+			$(this).css('margin-top',(parseInt($(this).parent().css('height'))/2-parseInt($(this).css('height'))/2-15)+'px');
+			$(this).css('margin-left','');
+			
+			}
+			else{
+				$(this).css('margin-left',(parseInt($(this).parent().css('width'))/2-parseInt($(this).css('width'))/2)+'px');
+				$(this).css('margin-top','');
+			}
+			
+		});
+		
+		$('.item > a > div').each(function(){
+			if($(this).css('float')=='left' || $(this).css('float')=='right'){
+			
+				
+			$(this).css('margin-top',(parseInt($(this).parent().parent().css('height'))/2-parseInt($(this).css('height'))/2-5)+'px');
+			$(this).css('margin-left','');
+			
+			}
+			else{
+				$(this).css('margin-left',(parseInt($(this).parent().parent().css('width'))/2-parseInt($(this).css('width'))/2)+'px');
+				$(this).css('margin-top','');
+			}
+			
+		});
+		
+		/*
+		$('.percentile_item a > img').each(function(){
+			
+			if($(this).css('float')=='left' || $(this).css('float')=='right'){
+				
+				
+			$(this).css('margin-top',(parseInt($(this).parent().parent().css('height'))/2-parseInt($(this).css('height'))/2)+'px');
+			$(this).css('margin-left','');
+			
+			}
+			else{
+				$(this).css('margin-left',(parseInt($(this).parent().parent().css('width'))/2-parseInt($(this).css('width'))/2)+'px');
+				$(this).css('margin-top','');
+			}
+			
+		});
+		*/
+	
 	});
 </script>

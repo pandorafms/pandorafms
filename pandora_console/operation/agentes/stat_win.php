@@ -91,11 +91,11 @@ $id = get_parameter('id');
 			};
 			
 			function show_others() {
-				if (!$("#checkbox-avg_only").attr('checked')) {
-					$("#hidden-show_other").val(0);
+				if ($('#checkbox-avg_only').is(":checked") == true) {
+					$("#hidden-show_other").val(1);
 				}
 				else {
-					$("#hidden-show_other").val(1);
+					$("#hidden-show_other").val(0);
 				}
 			}
 			//-->
@@ -134,11 +134,19 @@ $id = get_parameter('id');
 		}
 		
 		$draw_alerts = get_parameter("draw_alerts", 0);
-		$avg_only = get_parameter ("avg_only", 0);
-		$show_other = (bool)get_parameter('show_other', false);
-		if ($show_other) {
+
+		if(isset($config['only_average'])){
+			$avg_only = 1;
+		} 
+		else {
 			$avg_only = 0;
 		}
+
+		$show_other = get_parameter('show_other');
+		if (isset($show_other)) {
+			$avg_only = $show_other;
+		}
+
 		$period = get_parameter ("period", SECONDS_1DAY);
 		$id = get_parameter ("id", 0);
 		$width = get_parameter ("width", STATWIN_DEFAULT_CHART_WIDTH);
@@ -151,10 +159,13 @@ $id = get_parameter('id');
 		$zoom = get_parameter ("zoom", 1);
 		$baseline = get_parameter ("baseline", 0);
 		$show_events_graph = get_parameter ("show_events_graph", 0);
-		$show_percentil_95 = get_parameter ("show_percentil_95", 0);
+		$show_percentil = get_parameter ("show_percentil", 0);
 		$time_compare_separated = get_parameter ("time_compare_separated", 0);
 		$time_compare_overlapped = get_parameter ("time_compare_overlapped", 0);
 		$unknown_graph = get_parameter_checkbox ("unknown_graph", 1);
+		
+		// To avoid the horizontal overflow
+		$width -= 20;
 		
 		$time_compare = false;
 		
@@ -210,7 +221,7 @@ $id = get_parameter('id');
 					false, $urlImage, 1, false,
 					'adapter_' . $graph_type, $time_compare,
 					$unknown_graph, true, 'white',
-					(($show_percentil_95)? 95 : null));
+					(($show_percentil)? $config['percentil'] : null));
 				echo '<br>';
 				if ($show_events_graph)
 					echo graphic_module_events($id, $width, $height,
@@ -358,8 +369,8 @@ $id = get_parameter('id');
 			case 'boolean':
 			case 'sparse':
 				$data = array();
-				$data[0] = __('Show percentil 95º');
-				$data[1] = html_print_checkbox ("show_percentil_95", 1, (bool) $show_percentil_95, true);
+				$data[0] = __('Show percentil');
+				$data[1] = html_print_checkbox ("show_percentil", 1, (bool) $show_percentil, true);
 				$table->data[] = $data;
 				$table->rowclass[] ='';
 				
@@ -496,8 +507,6 @@ ui_include_time_picker(true);
 	});
 	
 	$.datepicker.setDefaults($.datepicker.regional["<?php echo $custom_user_language; ?>"]);
-	
-	forced_title_callback();
 	
 	$(window).ready(function() {
 		$("#field_list").css('height', ($(window).height() - 160) + 'px');

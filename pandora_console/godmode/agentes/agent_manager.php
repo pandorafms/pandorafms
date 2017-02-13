@@ -230,6 +230,15 @@ else {
 $groups = users_get_groups ($config["id_user"], "AR",false);
 $agents = agents_get_group_agents (array_keys ($groups));
 
+$modules = db_get_all_rows_sql("SELECT id_agente_modulo as id_module, nombre as name FROM tagente_modulo 
+								WHERE id_agente = " . $id_parent);
+
+$modules_values = array();
+$modules_values[0] = __('Any');
+foreach ($modules as $m) {
+	$modules_values[$m['id_module']] = $m['name'];
+}
+
 $table->data[2][0] = __('Parent');
 $params = array();
 $params['return'] = true;
@@ -239,6 +248,8 @@ $params['value'] = agents_get_name ($id_parent);
 $table->data[2][1] = ui_print_agent_autocomplete_input($params);
 
 $table->data[2][1] .= html_print_checkbox ("cascade_protection", 1, $cascade_protection, true).__('Cascade protection'). "&nbsp;" . ui_print_help_icon("cascade_protection", true);
+
+$table->data[2][1] .= "&nbsp;&nbsp;" .  __('Module') . "&nbsp;" . html_print_select ($modules_values, "cascade_protection_module", $cascade_protection_module, "", "", 0, true);
 
 $table->data[3][0] = __('Group');
 $table->data[3][1] = html_print_select_groups(false, "AR", false, 'grupo', $grupo, '', '', 0, true);
@@ -277,7 +288,7 @@ $table->data[6][1] = html_print_select (servers_get_names (),
 // Description
 $table->data[7][0] = __('Description');
 $table->data[7][1] = html_print_input_text ('comentarios', $comentarios,
-	'', 45, 255, true);
+	'', 45, 200, true);
 
 html_print_table ($table);
 unset($table);
@@ -304,6 +315,9 @@ $table->data[1][1] = __('Learning mode') . ' ' .
 		'style="margin-right: 40px;"', true);
 $table->data[1][1] .= __('Normal mode') . ' ' .
 	html_print_radio_button_extended ("modo", 0, '', $modo, false, 'show_modules_not_learning_mode_context_help();',
+		'style="margin-right: 40px;"', true);
+$table->data[1][1] .= __('Autodisable mode') . ' ' .
+	html_print_radio_button_extended ("modo", 2, '', $modo, false, 'show_modules_not_learning_mode_context_help();',
 		'style="margin-right: 40px;"', true);
 
 // Status (Disabled / Enabled)
@@ -414,6 +428,13 @@ if ($fields === false) $fields = array();
 foreach ($fields as $field) {
 	
 	$data[0] = '<b>'.$field['name'].'</b>';
+	$data[0] .= ui_print_help_tip(
+		__('This field allows url insertion using the BBCode\'s url tag')
+		. '.<br />'
+		. __('The format is: [url=\'url to navigate\']\'text to show\'[/url]')
+		. '.<br /><br />'
+		. __('e.g.: [url=pandorafms.org]Pandora FMS Community[/url]')
+		, true);
 	
 	$custom_value = db_get_value_filter('description',
 		'tagent_custom_data',
@@ -449,7 +470,6 @@ echo "</span>";
 
 
 if ($id_agente) {
-	
 	html_print_submit_button (__('Update'), 'updbutton', false,
 		'class="sub upd"');
 	html_print_input_hidden ('update_agent', 1);
@@ -462,17 +482,16 @@ else {
 }
 echo '</div></form>';
 
-ui_require_jquery_file ('pandora.controls');
-ui_require_jquery_file ('ajaxqueue');
-ui_require_jquery_file ('bgiframe');
-ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
+ui_require_jquery_file('pandora.controls');
+ui_require_jquery_file('ajaxqueue');
+ui_require_jquery_file('bgiframe');
+
 ?>
+
 <script type="text/javascript">
-	/* <![CDATA[ */
-	
 	//Use this function for change 3 icons when change the selectbox
 	function changeIcons() {
-		icon = $("#icon_path :selected").val();
+		var icon = $("#icon_path :selected").val();
 		
 		$("#icon_without_status").attr("src", "images/spinner.png");
 		$("#icon_default").attr("src", "images/spinner.png");
@@ -504,21 +523,70 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 			$("#icon_bad").attr("style", "");
 			$("#icon_warning").attr("style", "");
 		}
-		
-		//$("#icon_default").attr("src", "<?php echo $path; ?>" + icon +
 	}
 	
 	function show_modules_not_learning_mode_context_help() {
-		if ($("input[name='modo'][value=1]").is(':checked')) {
-			$("#modules_not_learning_mode_context_help").hide();
+		if ($("input[name='modo'][value=0]").is(':checked')) {
+			$("#modules_not_learning_mode_context_help").show();
 		}
 		else {
-			$("#modules_not_learning_mode_context_help").show();
+			$("#modules_not_learning_mode_context_help").hide();
 		}
 	}
 	
-	$(document).ready (function () {
+	$(document).ready (function() {
 		$("select#id_os").pandoraSelectOS ();
+
+		var checked = $("#checkbox-cascade_protection").is(":checked");
+		if (checked) {
+			$("#cascade_protection_module").removeAttr("disabled");
+		}
+		else {
+			$("#cascade_protection_module").attr("disabled", 'disabled');
+		}
+
+		$("#checkbox-cascade_protection").change(function () {
+			var checked = $("#checkbox-cascade_protection").is(":checked");
+	
+			if (checked) {
+				$("#cascade_protection_module").removeAttr("disabled");
+			}
+			else {
+				$("#cascade_protection_module").val(0);
+				$("#cascade_protection_module").attr("disabled", 'disabled');
+			}
+		});
+
+		$("#text-id_parent").on("autocompletechange", function () {
+			agent_name = $("#text-id_parent").val();
+			
+			var params = {};
+			params["get_agent_modules_json_by_name"] = 1;
+			params["agent_name"] = agent_name;
+			params["page"] = "include/ajax/module";
+			
+			jQuery.ajax ({
+				data: params,
+				dataType: "json",
+				type: "POST",
+				url: "ajax.php",
+				success: function (data) {
+					$('#cascade_protection_module').empty();
+					$('#cascade_protection_module')
+							.append ($('<option></option>')
+							.html("Any")
+							.prop("value", 0)
+							.prop("selected", 'selected'));
+					jQuery.each (data, function (i, val) {
+						$('#cascade_protection_module')
+							.append ($('<option></option>')
+							.html(val['name'])
+							.prop("value", val['id_module'])
+							.prop("selected", 'selected'));
+					});
+				}
+			});
+		});
 		
 		paint_qrcode(
 			"<?php
@@ -526,32 +594,4 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 			?>",
 			"#qr_code_agent_view", 128, 128);
 	});
-	
-	$(document).ready(function() {
-		tinyMCE.init({
-			mode : "exact",
-			elements: <?php
-			
-			$elements = array('comentarios');
-			
-			foreach ($fields as $field) {
-				$elements[] = 'customvalue_' . $field['id_field'];
-			}
-			
-			echo '"' . implode(', ', $elements) . '"';
-			?>,
-			width: '95%',
-			theme : "advanced",
-			theme_advanced_path : false,
-			statusbar : false,
-			plugins: "bbcode",
-			theme_advanced_toolbar_location : "top",
-			theme_advanced_toolbar_align : "left",
-			theme_advanced_buttons1 : "undo, redo, | , link, unlink"
-		});
-	});
-	$(document).ready (function () {
-		$('#grupo').pandoraSelectGroupIcon ();
-	});
-	/* ]]> */
 </script>

@@ -186,15 +186,36 @@ function isInACL($ip) {
 	// If the IP is not in the list, we check one by one, all the wildcard registers
 	foreach($config['list_ACL_IPs_for_API'] as $acl_ip) {
 		if (preg_match('/\*/', $acl_ip)) {
-			
+
+			if($acl_ip[0]=='*' && strlen($acl_ip)>1){
+				//example *.lab.artica.es == 151.80.15.*
+				$acl_ip = str_replace('*.','',$acl_ip);
+				$name = array();
+				$name = gethostbyname($acl_ip);
+				$names = explode('.',$name);
+				$names[3] = "";
+				$names = implode('.',$names);
+				if (preg_match('/'.$names.'/', $ip)) {
+					return true;
+				}
+
+			}else{
+				//example 192.168.70.* or *
+				$acl_ip = str_replace('.','\.',$acl_ip);
+				// Replace wilcard by .* to do efective in regular expression
+				$acl_ip = str_replace('*','.*',$acl_ip);
+				// If the string match with the beginning of the IP give it access
+				if (preg_match('/'.$acl_ip.'/', $ip)) {
+					return true;
+				}
+			}
 			// Scape for protection
-			$acl_ip = str_replace('.','\.',$acl_ip);
-			
-			// Replace wilcard by .* to do efective in regular expression
-			$acl_ip = str_replace('*','.*',$acl_ip);
-			
-			// If the string match with the beginning of the IP give it access
-			if (preg_match('/'.$acl_ip.'/', $ip)) {
+
+		}else{
+			//example lab.artica.es without '*'
+			$name = array();
+			$name = gethostbyname($acl_ip);
+			if (preg_match('/'.$name.'/', $ip)) {
 				return true;
 			}
 		}
@@ -375,7 +396,8 @@ $agent_field_column_mapping = array(
 	'agent_id_parent' => 'id_parent as agent_id_parent',
 	'agent_custom_id' => 'custom_id as agent_custom_id',
 	'agent_server_name' => 'server_name as agent_server_name',
-	'agent_cascade_protection' => 'cascade_protection as agent_cascade_protection');
+	'agent_cascade_protection' => 'cascade_protection as agent_cascade_protection',
+	'agent_cascade_protection_module' => 'cascade_protection_module as agent_cascade_protection_module',);
 
 /* module related field mappings 1/2 (output field => column for 'tagente_modulo') */
 $module_field_column_mampping = array(
@@ -519,6 +541,7 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType) {
 		'agent_custom_id',
 		'agent_server_name',
 		'agent_cascade_protection',
+		'agent_cascade_protection_module',
 		
 		'module_id_agent_modulo',
 		'module_id_agent',
@@ -1039,20 +1062,32 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3) {
 		return;
 	}
 	
-		//html_debug_print($other);
 	$name = $other['data'][0];
 	$ip = $other['data'][1];
 	$idParent = $other['data'][2];
 	$idGroup = $other['data'][3];
 	$cascadeProtection = $other['data'][4];
-	$intervalSeconds = $other['data'][5];
-	$idOS = $other['data'][6];
-	$nameServer = $other['data'][7];
-	$customId = $other['data'][8];
-	$learningMode = $other['data'][9];
-	$disabled = $other['data'][10];
-	$description = $other['data'][11];
+	$cascadeProtectionModule = $other['data'][5];
+	$intervalSeconds = $other['data'][6];
+	$idOS = $other['data'][7];
+	$nameServer = $other['data'][8];
+	$customId = $other['data'][9];
+	$learningMode = $other['data'][10];
+	$disabled = $other['data'][11];
+	$description = $other['data'][12];
 	
+	if ($cascadeProtection == 1) {
+		if (($idParent != 0) && (db_get_value_sql('SELECT id_agente_modulo
+									FROM tagente_modulo
+									WHERE id_agente = ' . $idParent . 
+									' AND id_agente_modulo = ' . $cascadeProtectionModule) === false)) {
+				returnError('parent_agent_not_exist', 'Is not a parent module to do cascade protection.');
+		}
+	}
+	else {
+		$cascadeProtectionModule = 0;
+	}
+
 	$return = db_process_sql_update('tagente', 
 		array('nombre' => $name,
 			'direccion' => $ip,
@@ -1063,11 +1098,17 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3) {
 			'id_os' => $idOS,
 			'disabled' => $disabled,
 			'cascade_protection' => $cascadeProtection,
+			'cascade_protection_module' => $cascadeProtectionModule,
 			'server_name' => $nameServer,
 			'id_parent' => $idParent,
 			'custom_id' => $customId),
 		array('id_agente' => $id_agent));
-	
+
+	if ( $return && !empty($ip)) {
+		// register ip for this agent in 'taddress'
+		agents_add_address ($id_agent, $ip);
+	}
+
 	returnData('string',
 		array('type' => 'string', 'data' => (int)((bool)$return)));
 }
@@ -1098,14 +1139,27 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 	$idParent = $other['data'][2];
 	$idGroup = $other['data'][3];
 	$cascadeProtection = $other['data'][4];
-	$intervalSeconds = $other['data'][5];
-	$idOS = $other['data'][6];
+	$cascadeProtectionModule = $other['data'][5];
+	$intervalSeconds = $other['data'][6];
+	$idOS = $other['data'][7];
 	//$idServer = $other['data'][7];
-	$nameServer = $other['data'][7];
-	$customId = $other['data'][8];
-	$learningMode = $other['data'][9];
-	$disabled = $other['data'][10];
-	$description = $other['data'][11];
+	$nameServer = $other['data'][8];
+	$customId = $other['data'][9];
+	$learningMode = $other['data'][10];
+	$disabled = $other['data'][11];
+	$description = $other['data'][12];
+
+	if ($cascadeProtection == 1) {
+		if (($idParent != 0) && (db_get_value_sql('SELECT id_agente_modulo
+									FROM tagente_modulo
+									WHERE id_agente = ' . $idParent . 
+									' AND id_agente_modulo = ' . $cascadeProtectionModule) === false)) {
+				returnError('parent_agent_not_exist', 'Is not a parent module to do cascade protection.');
+		}
+	}
+	else {
+		$cascadeProtectionModule = 0;
+	}
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
@@ -1157,10 +1211,16 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 				'id_os' => $idOS,
 				'disabled' => $disabled,
 				'cascade_protection' => $cascadeProtection,
+				'cascade_protection_module' => $cascadeProtectionModule,
 				'server_name' => $nameServer,
 				'id_parent' => $idParent,
 				'custom_id' => $customId));
 		
+		if (!empty($idAgente) && !empty($ip)) {
+			// register ip for this agent in 'taddress'
+			agents_add_address ($idAgente, $ip);
+		}
+
 		returnData('string',
 			array('type' => 'string', 'data' => $idAgente));
 	}
@@ -1449,6 +1509,341 @@ function api_get_agent_modules($thrash1, $thrash2, $other, $thrash3) {
 	}
 	else {
 		returnError('error_agent_modules', 'No modules retrieved.');
+	}
+}
+
+function api_get_db_uncompress_module_data ($id_agente_modulo,$tstart,$other){
+	global $config;
+	
+	if (!isset($id_agente_modulo)) {
+		return false;
+	}
+
+	if ((!isset($tstart)) || ($tstart === false)) {
+		// Return data from the begining
+		//$tstart = 0;
+		$tstart = 0;
+	}
+	$tend = $other['data'];
+	if ((!isset($tend)) || ($tend === false)) {
+		// Return data until now
+		$tend = time();
+	}
+
+	if ($tstart > $tend) {
+		return false;
+	}
+	
+	$search_historydb = false;
+	$table = "tagente_datos";
+	
+	$module = modules_get_agentmodule($id_agente_modulo);
+	
+	if ($module === false){
+		// module not exists
+		return false;
+	}
+	$module_type = $module['id_tipo_modulo'];
+	$module_type_str = modules_get_type_name ($module_type);
+	if (strstr ($module_type_str, 'string') !== false) {
+		$table = "tagente_datos_string";
+	}
+	
+	// Get first available utimestamp in active DB
+	$query  = " SELECT utimestamp, datos FROM $table ";
+	$query .= " WHERE id_agente_modulo=$id_agente_modulo AND utimestamp < $tstart";
+	$query .= " ORDER BY utimestamp DESC LIMIT 1";
+
+
+	$ret = db_get_all_rows_sql( $query , $search_historydb);
+
+	
+	if ( ( $ret === false ) || (( isset($ret[0]["utimestamp"]) && ($ret[0]["utimestamp"] > $tstart )))) {
+		// Value older than first retrieved from active DB
+		$search_historydb = true;
+
+		$ret = db_get_all_rows_sql( $query , $search_historydb);
+	}
+	else {
+		$first_data["utimestamp"] = $ret[0]["utimestamp"];
+		$first_data["datos"]      = $ret[0]["datos"];
+	}
+
+	if ( ( $ret === false ) || (( isset($ret[0]["utimestamp"]) && ($ret[0]["utimestamp"] > $tstart )))) {
+		// No previous data. -> not init
+		// Avoid false unknown status
+		$first_data["utimestamp"] = time();
+		$first_data["datos"]      = false;
+	}
+	else {
+		$first_data["utimestamp"] = $ret[0]["utimestamp"];
+		$first_data["datos"]      = $ret[0]["datos"];
+	}
+	
+	$query  = " SELECT utimestamp, datos FROM $table ";
+	$query .= " WHERE id_agente_modulo=$id_agente_modulo AND utimestamp >= $tstart AND utimestamp <= $tend";
+	$query .= " ORDER BY utimestamp ASC";
+
+	// Retrieve all data from module in given range
+	$raw_data = db_get_all_rows_sql($query, $search_historydb);
+	
+	if (($raw_data === false) && ($ret === false)) {
+		// No data
+		return false;
+	}
+
+	// Retrieve going unknown events in range
+	$unknown_events = db_get_module_ranges_unknown($id_agente_modulo, $tstart, $tend);
+	
+	// Retrieve module_interval to build the template
+	$module_interval = modules_get_interval ($id_agente_modulo);
+	$slice_size = $module_interval;
+	
+	
+
+	// We'll return a bidimensional array
+	// Structure returned: schema:
+	// 
+	// uncompressed_data =>
+	//      pool_id (int)
+	//          utimestamp (start of current slice)
+	//          data
+	//              array
+	//                  utimestamp
+	//                  datos
+
+	$return = array();
+	// Point current_timestamp to begin of the set and initialize flags
+	$current_timestamp   = $tstart;
+	$last_inserted_value = $first_data["datos"];
+	$last_timestamp      = $first_data["utimestamp"];
+	$data_found          = 0;
+
+	// Build template
+	$pool_id = 0;
+	$now = time();
+
+	$in_unknown_status = 0;
+	if (is_array($unknown_events)) {
+		$current_unknown = array_shift($unknown_events);
+	}
+	
+	while ( $current_timestamp < $tend ) {
+		$expected_data_generated = 0;
+
+		$return[$pool_id]["data"] = array();
+		$tmp_data   = array();
+		$data_found = 0;
+		
+		if (is_array($unknown_events)) {
+			$i = 0;
+			while ($current_timestamp >= $unknown_events[$i]["time_to"] ) {
+				// Skip unknown events in past
+				array_splice($unknown_events, $i,1);
+				$i++;
+				if (!isset($unknown_events[$i])) {
+					break;
+				}
+			}
+			if (isset($current_unknown)) {
+
+				// check if recovered from unknown status
+				if(is_array($unknown_events) && isset($current_unknown)) {
+					if (   (($current_timestamp+$slice_size) > $current_unknown["time_to"])
+						&& ($current_timestamp < $current_unknown["time_to"])
+						&& ($in_unknown_status == 1) ) {
+						// Recovered from unknown
+
+						if (   ($current_unknown["time_to"] > $current_timestamp)
+							&& ($expected_data_generated == 0) ) {
+							// also add the "expected" data
+							$tmp_data["utimestamp"] = $current_timestamp;
+							if ($in_unknown_status == 1) {
+								$tmp_data["datos"]  = null;
+							}
+							else {
+								$tmp_data["datos"]  = $last_inserted_value;
+							}
+							$return[$pool_id]["utimestamp"] = $current_timestamp;
+							array_push($return[$pool_id]["data"], $tmp_data);
+							$expected_data_generated = 1;
+						}
+
+
+						$tmp_data["utimestamp"] = $current_unknown["time_to"];
+						$tmp_data["datos"]      = $last_inserted_value;
+						// debug purpose
+						$tmp_data["obs"]        = "event recovery data";
+						
+						$return[$pool_id]["utimestamp"] = $current_timestamp;
+						array_push($return[$pool_id]["data"], $tmp_data);
+						$data_found = 1;
+						$in_unknown_status = 0;
+					}
+
+					if (   (($current_timestamp+$slice_size) > $current_unknown["time_from"])
+						&& (($current_timestamp+$slice_size) < $current_unknown["time_to"])
+						&& ($in_unknown_status == 0) ) {
+						// Add unknown state detected
+
+						if ( $current_unknown["time_from"] < ($current_timestamp+$slice_size)) {
+							if (   ($current_unknown["time_from"] > $current_timestamp)
+								&& ($expected_data_generated == 0) ) {
+								// also add the "expected" data
+								$tmp_data["utimestamp"] = $current_timestamp;
+								if ($in_unknown_status == 1) {
+									$tmp_data["datos"]  = null;
+								}
+								else {
+									$tmp_data["datos"]  = $last_inserted_value;
+								}
+								$return[$pool_id]["utimestamp"] = $current_timestamp;
+								array_push($return[$pool_id]["data"], $tmp_data);
+								$expected_data_generated = 1;
+							}
+
+							$tmp_data["utimestamp"] = $current_unknown["time_from"];
+							$tmp_data["datos"]      = null;
+							// debug purpose
+							$tmp_data["obs"] = "event data";
+							$return[$pool_id]["utimestamp"] = $current_timestamp;
+							array_push($return[$pool_id]["data"], $tmp_data);
+							$data_found = 1;
+						}
+						$in_unknown_status = 1;
+					}
+
+					if ( ($in_unknown_status == 0) && ($current_timestamp >= $current_unknown["time_to"]) ) {
+						$current_unknown = array_shift($unknown_events);
+					}
+				}
+			} // unknown events handle
+		}
+
+		// Search for data
+		$i=0;
+		
+		if (is_array($raw_data)) {
+			foreach ($raw_data as $data) {
+				if ( ($data["utimestamp"] >= $current_timestamp)
+				  && ($data["utimestamp"] < ($current_timestamp+$slice_size)) ) {
+					// Data in block, push in, and remove from $raw_data (processed)
+
+					if (   ($data["utimestamp"] > $current_timestamp)
+						&& ($expected_data_generated == 0) ) {
+						// also add the "expected" data
+						$tmp_data["utimestamp"] = $current_timestamp;
+						if ($in_unknown_status == 1) {
+							$tmp_data["datos"]  = null;
+						}
+						else {
+							$tmp_data["datos"]  = $last_inserted_value;
+						}
+						$tmp_data["obs"] = "expected data";
+						$return[$pool_id]["utimestamp"] = $current_timestamp;
+						array_push($return[$pool_id]["data"], $tmp_data);
+						$expected_data_generated = 1;
+					}
+
+					$tmp_data["utimestamp"] = intval($data["utimestamp"]);
+					$tmp_data["datos"]      = $data["datos"];
+					// debug purpose
+					$tmp_data["obs"] = "real data";
+
+					$return[$pool_id]["utimestamp"] = $current_timestamp;
+					array_push($return[$pool_id]["data"], $tmp_data);
+
+					$last_inserted_value = $data["datos"];
+					$last_timestamp      = intval($data["utimestamp"]);
+
+					unset($raw_data[$i]);
+					$data_found = 1;
+					$in_unknown_status = 0;
+				}
+				elseif ($data["utimestamp"] > ($current_timestamp+$slice_size)) {
+					// Data in future, stop searching new ones
+					break;
+				}
+			}
+			$i++;
+		}
+
+		if ($data_found == 0) {
+			// No data found, lug the last_value until SECONDS_1DAY + 2*modules_get_interval
+			// UNKNOWN!
+
+			if (($current_timestamp > $now) || (($current_timestamp - $last_timestamp) > (SECONDS_1DAY + 2*$module_interval))) {
+				if (isset($last_inserted_value)) {
+					// unhandled unknown status control
+					$unhandled_time_unknown = $current_timestamp - (SECONDS_1DAY + 2*$module_interval) - $last_timestamp;
+					if ($unhandled_time_unknown > 0) {
+						// unhandled unknown status detected. Add to previous pool
+						$tmp_data["utimestamp"] = intval($last_timestamp) +  (SECONDS_1DAY + 2*$module_interval);
+						$tmp_data["datos"]      = null;
+						// debug purpose
+						$tmp_data["obs"] = "unknown extra";
+						// add to previous pool if needed
+						if (isset($return[$pool_id-1])) {
+							array_push($return[$pool_id-1]["data"], $tmp_data);
+						}
+					}
+				}
+				$last_inserted_value = null;
+			}
+
+			$tmp_data["utimestamp"] = $current_timestamp;
+
+			if ($in_unknown_status == 1) {
+				$tmp_data["datos"]  = null;
+			}
+			else {
+				$tmp_data["datos"]  = $last_inserted_value;
+			}
+			// debug purpose
+			$tmp_data["obs"] = "virtual data";
+			
+			$return[$pool_id]["utimestamp"] = $current_timestamp;
+			array_push($return[$pool_id]["data"], $tmp_data);
+		}
+
+		$pool_id++;
+		$current_timestamp += $slice_size;
+		
+	}
+	$data = array('type' => 'array', 'data' => $return);
+	returnData('json', $return, ';');
+}
+
+
+/**
+ * Get modules id for an agent, and print the result like a csv.
+ *
+ * @param $id Id of agent.
+ * @param array $name name of module.
+ * @param $thrash1 Don't use.
+ *
+ *  pi.php?op=get&op2=module_id&id=5&other=Host%20Alive&apipass=1234&user=admin&pass=pandora
+ *
+ * @param $thrash3 Don't use.
+ */
+function api_get_module_id($id , $thrash1 , $name, $thrash3) {
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+
+	$sql = sprintf('SELECT id_agente_modulo
+		FROM tagente_modulo WHERE id_agente = %d
+		AND nombre = "%s" AND disabled = 0
+		AND delete_pending = 0', $id , $name['data']);
+
+	$module_id = db_get_all_rows_sql($sql);
+
+	if (count($module_id) > 0 and $module_id !== false) {
+		$data = array('type' => 'array', 'data' => $module_id);
+		returnData('csv', $data, ';');
+	}
+	else {
+		returnError('error_module_id', 'does not exist module or agent');
 	}
 }
 
@@ -1785,7 +2180,7 @@ function api_set_create_network_module($id, $thrash1, $other, $thrash3) {
 	
 	if (!$idAgent) {
 		returnError('error_create_network_module',
-			__('Error in creation network module. Agent name doesn\'t exists.'));
+			__('Error in creation network module. Agent name doesn\'t exist.'));
 		return;
 	}
 	
@@ -1887,7 +2282,7 @@ function api_set_update_network_module($id_module, $thrash1, $other, $thrash3) {
 	
 	if (!$check_id_module) {
 		returnError('error_update_network_module',
-			__('Error updating network module. Id_module doesn\'t exists.'));
+			__('Error updating network module. Id_module doesn\'t exist.'));
 		return;
 	}
 	
@@ -1909,7 +2304,7 @@ function api_set_update_network_module($id_module, $thrash1, $other, $thrash3) {
 		// Check if agent exists
 		$check_id_agent = db_get_value ('id_agente', 'tagente', 'id_agente', $other['data'][0]);
 		if (!$check_id_agent) {
-			returnError('error_update_data_module', __('Error updating network module. Id_agent doesn\'t exists.'));
+			returnError('error_update_data_module', __('Error updating network module. Id_agent doesn\'t exist.'));
 			return;
 		}
 	}
@@ -1942,8 +2337,9 @@ function api_set_update_network_module($id_module, $thrash1, $other, $thrash3) {
 		'min_ff_event_warning',
 		'min_ff_event_critical',
 		'critical_inverse',
-		'warning_inverse');
-	
+		'warning_inverse',
+		'policy_linked');
+
 	$values = array();
 	$cont = 0;
 	foreach ($network_module_fields as $field) {
@@ -1953,7 +2349,9 @@ function api_set_update_network_module($id_module, $thrash1, $other, $thrash3) {
 		
 		$cont++;
 	}
-	
+	$values['policy_linked'] = 0;
+
+
 	$result_update = modules_update_agent_module($id_module, $values);
 	
 	if ($result_update < 0)
@@ -1995,7 +2393,7 @@ function api_set_create_plugin_module($id, $thrash1, $other, $thrash3) {
 	$idAgent = agents_get_agent_id($agentName);
 	
 	if (!$idAgent) {
-		returnError('error_create_plugin_module', __('Error in creation plugin module. Agent name doesn\'t exists.'));
+		returnError('error_create_plugin_module', __('Error in creation plugin module. Agent name doesn\'t exist.'));
 		return;
 	}
 	
@@ -2093,7 +2491,7 @@ function api_set_update_plugin_module($id_module, $thrash1, $other, $thrash3) {
 	$check_id_module = db_get_value ('id_agente_modulo', 'tagente_modulo', 'id_agente_modulo', $id_module);
 	
 	if (!$check_id_module) {
-		returnError('error_update_plugin_module', __('Error updating plugin module. Id_module doesn\'t exists.'));
+		returnError('error_update_plugin_module', __('Error updating plugin module. Id_module doesn\'t exist.'));
 		return;
 	}
 	
@@ -2112,7 +2510,7 @@ function api_set_update_plugin_module($id_module, $thrash1, $other, $thrash3) {
 		// Check if agent exists
 		$check_id_agent = db_get_value ('id_agente', 'tagente', 'id_agente', $other['data'][0]);
 		if (!$check_id_agent) {
-			returnError('error_update_data_module', __('Error updating plugin module. Id_agent doesn\'t exists.'));
+			returnError('error_update_data_module', __('Error updating plugin module. Id_agent doesn\'t exist.'));
 			return;
 		}
 	}
@@ -2150,8 +2548,9 @@ function api_set_update_plugin_module($id_module, $thrash1, $other, $thrash3) {
 		'min_ff_event_warning',
 		'min_ff_event_critical',
 		'critical_inverse',
-		'warning_inverse');
-	
+		'warning_inverse',
+		'policy_linked');
+
 	$values = array();
 	$cont = 0;
 	foreach ($plugin_module_fields as $field) {
@@ -2165,7 +2564,8 @@ function api_set_update_plugin_module($id_module, $thrash1, $other, $thrash3) {
 		
 		$cont++;
 	}
-	
+
+	$values['policy_linked']= 0;
 	$result_update = modules_update_agent_module($id_module, $values);
 	
 	if ($result_update < 0)
@@ -2207,7 +2607,7 @@ function api_set_create_data_module($id, $thrash1, $other, $thrash3) {
 	$idAgent = agents_get_agent_id($agentName);
 	
 	if (!$idAgent) {
-		returnError('error_create_data_module', __('Error in creation data module. Agent name doesn\'t exists.'));
+		returnError('error_create_data_module', __('Error in creation data module. Agent name doesn\'t exist.'));
 		return;
 	}
 	
@@ -2299,7 +2699,7 @@ function api_set_create_synthetic_module($id, $thrash1, $other, $thrash3) {
 	$idAgent = agents_get_agent_id(io_safe_output($agentName),true);
 	
 	if (!$idAgent) {
-		returnError('error_create_data_module', __('Error in creation synthetic module. Agent name doesn\'t exists.'));
+		returnError('error_create_data_module', __('Error in creation synthetic module. Agent name doesn\'t exist.'));
 		return;
 	}
 	
@@ -2474,7 +2874,7 @@ function api_set_update_data_module($id_module, $thrash1, $other, $thrash3) {
 	$check_id_module = db_get_value ('id_agente_modulo', 'tagente_modulo', 'id_agente_modulo', $id_module);
 	
 	if (!$check_id_module) {
-		returnError('error_update_data_module', __('Error updating data module. Id_module doesn\'t exists.'));
+		returnError('error_update_data_module', __('Error updating data module. Id_module doesn\'t exist.'));
 		return;
 	}
 	
@@ -2493,7 +2893,7 @@ function api_set_update_data_module($id_module, $thrash1, $other, $thrash3) {
 		// Check if agent exists
 		$check_id_agent = db_get_value ('id_agente', 'tagente', 'id_agente', $other['data'][0]);
 		if (!$check_id_agent) {
-			returnError('error_update_data_module', __('Error updating data module. Id_agent doesn\'t exists.'));
+			returnError('error_update_data_module', __('Error updating data module. Id_agent doesn\'t exist.'));
 			return;
 		}
 	}
@@ -2522,8 +2922,9 @@ function api_set_update_data_module($id_module, $thrash1, $other, $thrash3) {
 		'min_ff_event_critical',
 		'ff_timeout',
 		'critical_inverse',
-		'warning_inverse');
-	
+		'warning_inverse',
+		'policy_linked');
+
 	$values = array();
 	$cont = 0;
 	foreach ($data_module_fields as $field) {
@@ -2533,7 +2934,8 @@ function api_set_update_data_module($id_module, $thrash1, $other, $thrash3) {
 		
 		$cont++;
 	}
-	
+
+	$values['policy_linked'] = 0;
 	$result_update = modules_update_agent_module($id_module, $values);
 	
 	if ($result_update < 0)
@@ -2580,7 +2982,7 @@ function api_set_create_snmp_module($id, $thrash1, $other, $thrash3) {
 		return;
 	}
 	
-	if ($other['data'][2] < 15 or $other['data'][3] > 17) {
+	if ($other['data'][2] < 15 or $other['data'][2] > 17) {
 		returnError('error_create_snmp_module', __('Error in creation SNMP module. Invalid id_module_type for a SNMP module.'));
 		return;
 	}
@@ -2588,7 +2990,7 @@ function api_set_create_snmp_module($id, $thrash1, $other, $thrash3) {
 	$idAgent = agents_get_agent_id($agentName);
 	
 	if (!$idAgent) {
-		returnError('error_create_snmp_module', __('Error in creation SNMP module. Agent name doesn\'t exists.'));
+		returnError('error_create_snmp_module', __('Error in creation SNMP module. Agent name doesn\'t exist.'));
 		return;
 	}
 	
@@ -2603,17 +3005,17 @@ function api_set_create_snmp_module($id, $thrash1, $other, $thrash3) {
 	if ($other['data'][14] == "3") {
 		
 		if ($other['data'][23] != "AES" and $other['data'][23] != "DES") {
-			returnError('error_create_snmp_module', __('Error in creation SNMP module. snmp3_priv_method doesn\'t exists. Set it to \'AES\' or \'DES\'. '));
+			returnError('error_create_snmp_module', __('Error in creation SNMP module. snmp3_priv_method doesn\'t exist. Set it to \'AES\' or \'DES\'. '));
 			return;
 		}
 		
 		if ($other['data'][25] != "authNoPriv" and $other['data'][25] != "authPriv" and $other['data'][25] != "noAuthNoPriv") {
-			returnError('error_create_snmp_module', __('Error in creation SNMP module. snmp3_sec_level doesn\'t exists. Set it to \'authNoPriv\' or \'authPriv\' or \'noAuthNoPriv\'. '));
+			returnError('error_create_snmp_module', __('Error in creation SNMP module. snmp3_sec_level doesn\'t exist. Set it to \'authNoPriv\' or \'authPriv\' or \'noAuthNoPriv\'. '));
 			return;
 		}
 		
 		if ($other['data'][26] != "MD5" and $other['data'][26] != "SHA") {
-			returnError('error_create_snmp_module', __('Error in creation SNMP module. snmp3_auth_method doesn\'t exists. Set it to \'MD5\' or \'SHA\'. '));
+			returnError('error_create_snmp_module', __('Error in creation SNMP module. snmp3_auth_method doesn\'t exist. Set it to \'MD5\' or \'SHA\'. '));
 			return;
 		}
 		
@@ -2737,7 +3139,7 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3) {
 	$check_id_module = db_get_value ('id_agente_modulo', 'tagente_modulo', 'id_agente_modulo', $id_module);
 	
 	if (!$check_id_module) {
-		returnError('error_update_snmp_module', __('Error updating SNMP module. Id_module doesn\'t exists.'));
+		returnError('error_update_snmp_module', __('Error updating SNMP module. Id_module doesn\'t exist.'));
 		return;
 	}
 	
@@ -2756,7 +3158,7 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3) {
 		// Check if agent exists
 		$check_id_agent = db_get_value ('id_agente', 'tagente', 'id_agente', $other['data'][0]);
 		if (!$check_id_agent) {
-			returnError('error_update_data_module', __('Error updating snmp module. Id_agent doesn\'t exists.'));
+			returnError('error_update_data_module', __('Error updating snmp module. Id_agent doesn\'t exist.'));
 			return;
 		}
 	}
@@ -2766,7 +3168,7 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3) {
 		
 		if ($other['data'][22] != "AES" and $other['data'][22] != "DES") {
 			returnError('error_create_snmp_module',
-				__('Error in creation SNMP module. snmp3_priv_method doesn\'t exists. Set it to \'AES\' or \'DES\'. '));
+				__('Error in creation SNMP module. snmp3_priv_method doesn\'t exist. Set it to \'AES\' or \'DES\'. '));
 			return;
 		}
 		
@@ -2775,13 +3177,13 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3) {
 			and $other['data'][24] != "noAuthNoPriv") {
 			
 			returnError('error_create_snmp_module',
-				__('Error in creation SNMP module. snmp3_sec_level doesn\'t exists. Set it to \'authNoPriv\' or \'authPriv\' or \'noAuthNoPriv\'. '));
+				__('Error in creation SNMP module. snmp3_sec_level doesn\'t exist. Set it to \'authNoPriv\' or \'authPriv\' or \'noAuthNoPriv\'. '));
 			return;
 		}
 		
 		if ($other['data'][25] != "MD5" and $other['data'][25] != "SHA") {
 			returnError('error_create_snmp_module',
-				__('Error in creation SNMP module. snmp3_auth_method doesn\'t exists. Set it to \'MD5\' or \'SHA\'. '));
+				__('Error in creation SNMP module. snmp3_auth_method doesn\'t exist. Set it to \'MD5\' or \'SHA\'. '));
 			return;
 		}
 		
@@ -2818,7 +3220,8 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3) {
 			'each_ff',
 			'min_ff_event_normal',
 			'min_ff_event_warning',
-			'min_ff_event_critical');
+			'min_ff_event_critical',
+			'policy_linked');
 	}
 	else {
 		$snmp_module_fields = array(
@@ -2848,7 +3251,8 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3) {
 			'each_ff',
 			'min_ff_event_normal',
 			'min_ff_event_warning',
-			'min_ff_event_critical');
+			'min_ff_event_critical',
+			'policy_linked');
 	}
 	
 	$values = array();
@@ -2860,7 +3264,8 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3) {
 		
 		$cont++;
 	}
-	
+
+	$values['policy_linked'] = 0;
 	$result_update = modules_update_agent_module($id_module, $values);
 	
 	if ($result_update < 0)
@@ -3089,7 +3494,7 @@ function api_set_new_snmp_component($id, $thrash1, $other, $thrash2) {
 	if ($other['data'][16] == "3") {
 		
 		if ($other['data'][22] != "AES" and $other['data'][22] != "DES") {
-			returnError('error_set_new_snmp_component', __('Error creating SNMP component. snmp3_priv_method doesn\'t exists. Set it to \'AES\' or \'DES\'. '));
+			returnError('error_set_new_snmp_component', __('Error creating SNMP component. snmp3_priv_method doesn\'t exist. Set it to \'AES\' or \'DES\'. '));
 			return;
 		}
 		
@@ -3098,13 +3503,13 @@ function api_set_new_snmp_component($id, $thrash1, $other, $thrash2) {
 			and $other['data'][25] != "noAuthNoPriv") {
 			
 			returnError('error_set_new_snmp_component',
-				__('Error creating SNMP component. snmp3_sec_level doesn\'t exists. Set it to \'authNoPriv\' or \'authPriv\' or \'noAuthNoPriv\'. '));
+				__('Error creating SNMP component. snmp3_sec_level doesn\'t exist. Set it to \'authNoPriv\' or \'authPriv\' or \'noAuthNoPriv\'. '));
 			return;
 		}
 		
 		if ($other['data'][24] != "MD5" and $other['data'][24] != "SHA") {
 			returnError('error_set_new_snmp_component',
-				__('Error creating SNMP component. snmp3_auth_method doesn\'t exists. Set it to \'MD5\' or \'SHA\'. '));
+				__('Error creating SNMP component. snmp3_auth_method doesn\'t exist. Set it to \'MD5\' or \'SHA\'. '));
 			return;
 		}
 		
@@ -3293,7 +3698,7 @@ function api_get_module_value_all_agents($id, $thrash1, $other, $thrash2) {
 	
 	if ($id_module === false) {
 		returnError('error_get_module_value_all_agents',
-			__('Error getting module value from all agents. Module name doesn\'t exists.'));
+			__('Error getting module value from all agents. Module name doesn\'t exist.'));
 		return;
 	}
 	
@@ -3449,7 +3854,7 @@ function api_set_update_alert_template($id_template, $thrash1, $other, $thrash3)
 	
 	if (!$result_template) {
 		returnError('error_update_alert_template',
-			__('Error updating alert template. Id_template doesn\'t exists.'));
+			__('Error updating alert template. Id_template doesn\'t exist.'));
 		return;
 	}
 	
@@ -3586,7 +3991,7 @@ function api_get_alert_template($id_template, $thrash1, $other, $thrash3) {
 		
 		if (!$result_template) {
 			returnError('error_get_alert_template',
-				__('Error getting alert template. Id_template doesn\'t exists.'));
+				__('Error getting alert template. Id_template doesn\'t exist.'));
 			return;
 		}
 		
@@ -3710,14 +4115,14 @@ function api_set_create_network_module_from_component($agent_name, $component_na
 	$agent_id = agents_get_agent_id($agent_name);
 	
 	if (!$agent_id) {
-		returnError('error_network_module_from_component', __('Error creating module from network component. Agent doesn\'t exists.'));
+		returnError('error_network_module_from_component', __('Error creating module from network component. Agent doesn\'t exist.'));
 		return;
 	}
 	
 	$component= db_get_row ('tnetwork_component', 'name', $component_name);
 	
 	if (!$component) {
-		returnError('error_network_module_from_component', __('Error creating module from network component. Network component doesn\'t exists.'));
+		returnError('error_network_module_from_component', __('Error creating module from network component. Network component doesn\'t exist.'));
 		return;
 	}
 	
@@ -3792,14 +4197,14 @@ function api_set_create_module_template($id, $thrash1, $other, $thrash3) {
 	$result_agent = agents_get_name($id_agent);
 	
 	if (!$result_agent) {
-		returnError('error_module_to_template', __('Error assigning module to template. Id_agent doesn\'t exists.'));
+		returnError('error_module_to_template', __('Error assigning module to template. Id_agent doesn\'t exist.'));
 		return;
 	}
 	
 	$result_module = db_get_value ('nombre', 'tagente_modulo', 'id_agente_modulo', (int) $id_module);
 	
 	if (!$result_module) {
-		returnError('error_module_to_template', __('Error assigning module to template. Id_module doesn\'t exists.'));
+		returnError('error_module_to_template', __('Error assigning module to template. Id_module doesn\'t exist.'));
 		return;
 	}
 	
@@ -3840,7 +4245,7 @@ function api_set_delete_module_template($id, $thrash1, $other, $thrash3) {
 	$result_module_template = alerts_get_alert_agent_module($id);
 	
 	if (!$result_module_template) {
-		returnError('error_delete_module_template', __('Error deleting module template. Id_module_template doesn\'t exists.'));
+		returnError('error_delete_module_template', __('Error deleting module template. Id_module_template doesn\'t exist.'));
 		return;
 	}
 	
@@ -4476,7 +4881,7 @@ function api_set_add_agent_policy($id, $thrash1, $other, $thrash2) {
 	$result_agent = db_get_value ('id_agente', 'tagente', 'id_agente', (int) $other['data'][0]);
 	
 	if (!$result_agent) {
-		returnError('error_add_agent_policy', __('Error adding agent to policy. Id_agent doesn\'t exists.'));
+		returnError('error_add_agent_policy', __('Error adding agent to policy. Id_agent doesn\'t exist.'));
 		return;
 	}
 	
@@ -4629,7 +5034,7 @@ function api_set_update_data_module_policy($id, $thrash1, $other, $thrash3) {
 	$module_policy = enterprise_hook('policies_get_modules', array($id, array('id' => $other['data'][0]), 'id_module'));
 	
 	if ($module_policy === false) {
-		returnError('error_update_data_module_policy', __('Error updating data module in policy. Module doesn\'t exists.'));
+		returnError('error_update_data_module_policy', __('Error updating data module in policy. Module doesn\'t exist.'));
 		return;
 	}
 	
@@ -4806,7 +5211,7 @@ function api_set_update_network_module_policy($id, $thrash1, $other, $thrash3) {
 	
 	if ($module_policy === false) {
 		returnError('error_update_network_module_policy',
-			__('Error updating network module in policy. Module doesn\'t exists.'));
+			__('Error updating network module in policy. Module doesn\'t exist.'));
 		return;
 	}
 	
@@ -4980,7 +5385,7 @@ function api_set_update_plugin_module_policy($id, $thrash1, $other, $thrash3) {
 	
 	if ($module_policy === false) {
 		returnError('error_updating_plugin_module_policy',
-			__('Error updating plugin module in policy. Module doesn\'t exists.'));
+			__('Error updating plugin module in policy. Module doesn\'t exist.'));
 		return;
 	}
 	
@@ -5223,17 +5628,17 @@ function api_set_add_snmp_module_policy($id, $thrash1, $other, $thrash3) {
 	if ($other['data'][13] == "3") {
 		
 		if ($other['data'][22] != "AES" and $other['data'][22] != "DES") {
-			returnError('error_add_snmp_module_policy', __('Error in creation SNMP module. snmp3_priv_method doesn\'t exists. Set it to \'AES\' or \'DES\'. '));
+			returnError('error_add_snmp_module_policy', __('Error in creation SNMP module. snmp3_priv_method doesn\'t exist. Set it to \'AES\' or \'DES\'. '));
 			return;
 		}
 		
 		if ($other['data'][24] != "authNoPriv" and $other['data'][24] != "authPriv" and $other['data'][24] != "noAuthNoPriv") {
-			returnError('error_add_snmp_module_policy', __('Error in creation SNMP module. snmp3_sec_level doesn\'t exists. Set it to \'authNoPriv\' or \'authPriv\' or \'noAuthNoPriv\'. '));
+			returnError('error_add_snmp_module_policy', __('Error in creation SNMP module. snmp3_sec_level doesn\'t exist. Set it to \'authNoPriv\' or \'authPriv\' or \'noAuthNoPriv\'. '));
 			return;
 		}
 		
 		if ($other['data'][25] != "MD5" and $other['data'][25] != "SHA") {
-			returnError('error_add_snmp_module_policy', __('Error in creation SNMP module. snmp3_auth_method doesn\'t exists. Set it to \'MD5\' or \'SHA\'. '));
+			returnError('error_add_snmp_module_policy', __('Error in creation SNMP module. snmp3_auth_method doesn\'t exist. Set it to \'MD5\' or \'SHA\'. '));
 			return;
 		}
 		
@@ -5357,7 +5762,7 @@ function api_set_update_snmp_module_policy($id, $thrash1, $other, $thrash3) {
 	$module_policy = enterprise_hook('policies_get_modules', array($id, array('id' => $other['data'][0]), 'id_module'));
 	
 	if ($module_policy === false) {
-		returnError('error_update_snmp_module_policy', __('Error updating SNMP module in policy. Module doesn\'t exists.'));
+		returnError('error_update_snmp_module_policy', __('Error updating SNMP module in policy. Module doesn\'t exist.'));
 		return;
 	}
 	
@@ -5372,8 +5777,8 @@ function api_set_update_snmp_module_policy($id, $thrash1, $other, $thrash3) {
 		
 		if ($other['data'][21] != "AES" and $other['data'][21] != "DES") {
 			returnError('error_update_snmp_module_policy',
-				__('Error updating SNMP module. snmp3_priv_method doesn\'t exists. Set it to \'AES\' or \'DES\'. '));
-			
+				__('Error updating SNMP module. snmp3_priv_method doesn\'t exist. Set it to \'AES\' or \'DES\'. '));
+
 			return;
 		}
 		
@@ -5382,15 +5787,15 @@ function api_set_update_snmp_module_policy($id, $thrash1, $other, $thrash3) {
 			and $other['data'][23] != "noAuthNoPriv") {
 				
 			returnError('error_update_snmp_module_policy',
-				__('Error updating SNMP module. snmp3_sec_level doesn\'t exists. Set it to \'authNoPriv\' or \'authPriv\' or \'noAuthNoPriv\'. '));
-			
+				__('Error updating SNMP module. snmp3_sec_level doesn\'t exist. Set it to \'authNoPriv\' or \'authPriv\' or \'noAuthNoPriv\'. '));
+
 			return;
 		}
 		
 		if ($other['data'][24] != "MD5" and $other['data'][24] != "SHA") {
 			returnError('error_update_snmp_module_policy',
-				__('Error updating SNMP module. snmp3_auth_method doesn\'t exists. Set it to \'MD5\' or \'SHA\'. '));
-			
+				__('Error updating SNMP module. snmp3_auth_method doesn\'t exist. Set it to \'MD5\' or \'SHA\'. '));
+
 			return;
 		}
 		
@@ -5606,7 +6011,7 @@ function api_set_create_group($id, $thrash1, $other, $thrash3) {
 		
 		if ($group == false) {
 			returnError('error_create_group',
-				__('Error in group creation. Id_parent_group doesn\'t exists.'));
+				__('Error in group creation. Id_parent_group doesn\'t exist.'));
 			return;
 		}
 	}
@@ -5709,6 +6114,46 @@ function api_set_update_group($id_group, $thrash2, $other, $thrash3) {
 }
 
 /**
+ * Delete a group 
+ * 
+ * @param integer $id Group ID
+ * @param $thrash1 Don't use.
+ * @param $thrast2 Don't use.
+ * @param $thrash3 Don't use.
+ */
+function api_set_delete_group($id_group, $thrash2, $other, $thrash3) {
+	global $config;
+
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+
+	$group = db_get_row_filter('tgrupo', array('id_grupo' => $id_group));
+	if (!$group) {
+		returnError('error_delete', 'Error in delete operation. Id does not exist.');
+		return;
+	}
+
+	$usedGroup = groups_check_used($id_group);
+	if ($usedGroup['return']) {
+		returnError('error_delete',
+			 'Error in delete operation. The group is not empty (used in ' .
+			 implode(', ', $usedGroup['tables']) . ').' );
+		return;
+	}
+
+	db_process_sql_update('tgrupo', array('parent' => $group['parent']), array('parent' => $id_group));
+	db_process_sql_delete('tgroup_stat', array('id_group' => $id_group));
+
+	$result = db_process_sql_delete('tgrupo', array('id_grupo' => $id_group));
+
+	if (!$result)
+		returnError('error_delete', 'Error in delete operation.');
+	else
+		returnData('string', array('type' => 'string', 'data' => __('Correct Delete')));
+}
+
+/**
  * Create a new netflow filter. And return the id_group of the new group. 
  * 
  * @param $thrash1 Don't use.
@@ -5743,7 +6188,7 @@ function api_set_create_netflow_filter($thrash1, $thrash2, $other, $thrash3) {
 		$group = groups_get_group_by_id($other['data'][1]);
 		
 		if ($group == false) {
-			returnError('error_create_group', __('Error in group creation. Id_parent_group doesn\'t exists.'));
+			returnError('error_create_group', __('Error in group creation. Id_parent_group doesn\'t exist.'));
 			return;
 		}
 	}
@@ -5789,11 +6234,11 @@ function api_set_create_netflow_filter($thrash1, $thrash2, $other, $thrash3) {
  * 
  * @param integer $id The ID of module in DB. 
  * @param $thrash1 Don't use.
- * @param array $other it's array, $other as param is <separator>;<period> in this order
+ * @param array $other it's array, $other as param is <separator>;<period>;<tstart>;<tend> in this order
  *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
  *  example:
  *  
- *  api.php?op=get&op2=module_data&id=17&other=;|604800&other_mode=url_encode_separator_|
+ *  api.php?op=get&op2=module_data&id=17&other=;|604800|20161201T13:40|20161215T13:40&other_mode=url_encode_separator_|
  *  
  * @param $returnType Don't use.
  */
@@ -5802,14 +6247,42 @@ function api_get_module_data($id, $thrash1, $other, $returnType) {
 		return;
 	}
 	
-	$separator = $other['data'][0];
-	$periodSeconds = $other['data'][1];
-	
-	$sql = sprintf ("SELECT utimestamp, datos 
-		FROM tagente_datos 
-		WHERE id_agente_modulo = %d AND utimestamp > %d 
-		ORDER BY utimestamp DESC", $id, get_system_time () - $periodSeconds);
-	
+	$data = explode("|", $other['data']);
+	$separator = $data[0];
+	$periodSeconds = $data[1];
+	$tstart = $data[2];
+	$tend = $data[3];
+
+	$dateStart = explode("T", $tstart);
+	$dateYearStart = substr($dateStart[0], 0, 4);
+	$dateMonthStart = substr($dateStart[0], 4, 2);
+	$dateDayStart = substr($dateStart[0], 6, 2);
+	$date_start = $dateYearStart . "-" . $dateMonthStart . "-" . $dateDayStart . " " . $dateStart[1];
+	$date_start = new DateTime($date_start);
+	$date_start = $date_start->format('U');
+
+	$dateEnd = explode("T", $tend);
+	$dateYearEnd = substr($dateEnd[0], 0, 4);
+	$dateMonthEnd = substr($dateEnd[0], 4, 2);
+	$dateDayEnd = substr($dateEnd[0], 6, 2);
+	$date_end = $dateYearEnd . "-" . $dateMonthEnd . "-" . $dateDayEnd . " " . $dateEnd[1];
+	$date_end = new DateTime($date_end);
+	$date_end = $date_end->format('U');
+
+	if (($tstart != "") && ($tend != "")) {
+		$sql = sprintf ("SELECT utimestamp, datos 
+			FROM tagente_datos 
+			WHERE id_agente_modulo = %d AND utimestamp > %d 
+			AND utimestamp < %d 
+			ORDER BY utimestamp DESC", $id, $date_start, $date_end);
+	}
+	else {
+		$sql = sprintf ("SELECT utimestamp, datos 
+			FROM tagente_datos 
+			WHERE id_agente_modulo = %d AND utimestamp > %d 
+			ORDER BY utimestamp DESC", $id, get_system_time () - $periodSeconds);
+	}
+
 	$data['type'] = 'array';
 	$data['list_index'] = array('utimestamp', 'datos');
 	$data['data'] = db_get_all_rows_sql($sql);
@@ -5963,7 +6436,7 @@ function api_set_update_user($id, $thrash2, $other, $thrash3) {
 	
 	if (!$result_user) {
 		returnError('error_update_user',
-			__('Error updating user. Id_user doesn\'t exists.'));
+			__('Error updating user. Id_user doesn\'t exist.'));
 		return;
 	}
 	
@@ -6031,7 +6504,7 @@ function api_set_enable_disable_user ($id, $thrash2, $other, $thrash3) {
 	
 	if (users_get_user_by_id($id) == false) {
 		returnError('error_enable_disable_user',
-			__('Error enable/disable user. The user doesn\'t exists.'));
+			__('Error enable/disable user. The user doesn\'t exist.'));
 		return;
 	}
 	
@@ -8498,7 +8971,7 @@ function api_set_enable_disable_agent ($id, $thrash2, $other, $thrash3) {
 	
 	if (agents_get_name($id) == false) {
 		returnError('error_enable_disable_agent',
-			__('Error enable/disable agent. The agent doesn\'t exists.'));
+			__('Error enable/disable agent. The agent doesn\'t exist.'));
 		return;
 	}
 		
@@ -8708,7 +9181,7 @@ function api_set_update_special_day($id_special_day, $thrash2, $other, $thrash3)
 	$check_id_special_day = db_get_value ('id', 'talert_special_days', 'id', $id_special_day);
 	
 	if (!$check_id_special_day) {
-		returnError('error_update_special_day', __('Error updating special day. Id doesn\'t exists.'));
+		returnError('error_update_special_day', __('Error updating special day. Id doesn\'t exist.'));
 		return;
 	}
 	
@@ -8754,7 +9227,7 @@ function api_set_delete_special_day($id_special_day, $thrash2, $thrash3, $thrash
 	$check_id_special_day = db_get_value ('id', 'talert_special_days', 'id', $id_special_day);
 	
 	if (!$check_id_special_day) {
-		returnError('error_delete_special_day', __('Error deleting special day. Id doesn\'t exists.'));
+		returnError('error_delete_special_day', __('Error deleting special day. Id doesn\'t exist.'));
 		return;
 	}
 	
@@ -8816,29 +9289,59 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4) {
 		'', false, false, true, time(), '', 0, 0, true, true,
 		ui_get_full_url(false) . '/', 1, false, '', false, true);
 	
-	$graph_image_file_encoded = false;
-	
-	// Get the src of the html item
-	if (preg_match("/<img src='(.+)'>/", $graph_html, $matches)) {
-		if (isset($matches) && isset($matches[1])) {
-			$file_url = $matches[1];
-			// Get the file
-			$graph_image_file = file_get_contents($file_url);
-			
-			if ($graph_image_file !== false) {
-				// Encode the file
-				$graph_image_file_encoded = base64_encode($graph_image_file);
-				unset($graph_image_file);
-			}
-		}
-	}
-	
-	if (empty($graph_image_file_encoded)) {
-		// returnError('error_module_graph', __(''));
-	}
-	else {
-		returnData('string', array('type' => 'string', 'data' => $graph_image_file_encoded));
-	}
+       $graph_image_file_encoded = false;
+        if (preg_match("/<img src='(.+)'./", $graph_html, $matches)) {
+                $file_url = $matches[1];
+
+                if (preg_match("/\?(.+)&(.+)&(.+)&(.+)/", $file_url,$parameters)) {
+                        array_shift ($parameters);
+                        foreach ($parameters as $parameter){
+                                $value = explode ("=",$parameter);
+
+                                if (strcmp($value[0], "static_graph") == 0){
+                                        $static_graph = $value[1];
+                                }
+                                elseif (strcmp($value[0], "graph_type") == 0){
+                                        $graph_type = $value[1];
+                                }
+                                elseif (strcmp($value[0], "ttl") == 0){
+                                        $ttl = $value[1];
+                                }
+                                elseif (strcmp($value[0], "id_graph") == 0){
+                                        $id_graph = $value[1];
+                                }
+                        }
+                }
+        }
+
+        // Check values are OK
+        if ( (isset ($graph_type))
+        && (isset ($ttl))
+        && (isset ($id_graph))) {
+                        $_GET["ttl"] = $ttl;
+                        $_GET["id_graph"] = $id_graph;
+                        $_GET["graph_type"] = $graph_type;
+                        $_GET["static_graph"] = $static_graph;
+        }
+
+        ob_start();
+        include (__DIR__ . "/graphs/functions_pchart.php");
+        $output =  ob_get_clean();
+
+        $graph_image_file_encoded = base64_encode($output);
+        if (empty($graph_image_file_encoded)) {
+                // returnError('error_module_graph', __(''));
+        }
+        else {
+			if($other['data'] < 40000){
+				header('Content-type: text/html');
+            	returnData('string', array('type' => 'string', 'data' => '<img src="data:image/jpeg;base64,' . $graph_image_file_encoded . '">'));
+        	} else {
+        		returnData('string', array('type' => 'string', 'data' => $graph_image_file_encoded));	
+        	}
+		// To show only the base64 code, call returnData as:
+        // returnData('string', array('type' => 'string', 'data' => $graph_image_file_encoded));
+        }
 }
 
 ?>

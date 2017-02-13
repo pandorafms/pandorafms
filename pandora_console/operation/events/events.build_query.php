@@ -13,7 +13,13 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-$groups = users_get_groups($id_user, 'ER');
+if (check_acl ($id_user, 0, "ER"))
+	$groups = users_get_groups($id_user, 'ER');
+elseif (check_acl ($id_user, 0, "EW"))
+	$groups = users_get_groups($id_user, 'EW');
+elseif (check_acl ($id_user, 0, "EM"))
+	$groups = users_get_groups($id_user, 'EM');
+
 
 $propagate = db_get_value('propagate','tgrupo','id_grupo',$id_group);
 
@@ -160,13 +166,22 @@ if (($date_from == '') && ($date_to == '')) {
 }
 else {
 	if ($date_from != '') {
-		$udate_from = strtotime($date_from . " 00:00:00");
-		$sql_post .= " AND (utimestamp >= " . $udate_from . ")";
-		
+		if($time_from != '') {
+			$udate_from = strtotime($date_from . " " . $time_from);
+			$sql_post .= " AND (utimestamp >= " . $udate_from . ")";
+		} else {
+			$udate_from = strtotime($date_from . " 00:00:00");
+			$sql_post .= " AND (utimestamp >= " . $udate_from . ")";
+		}
 	}
 	if ($date_to != '') {
-		$udate_to = strtotime($date_to . " 23:59:59");
-		$sql_post .= " AND (utimestamp <= " . $udate_to . ")";
+		if($time_to != '') {
+			$udate_to = strtotime($date_to . " " . $time_to);
+			$sql_post .= " AND (utimestamp <= " . $udate_to . ")";
+		} else {
+			$udate_to = strtotime($date_to . " 23:59:59");
+			$sql_post .= " AND (utimestamp <= " . $udate_to . ")";
+		}
 	}
 }
 
@@ -176,8 +191,14 @@ if (!empty($tag_with)) {
 	$first = true;
 	foreach ($tag_with as $id_tag) {
 		if ($first) $first = false;
-		else $sql_post .= " OR ";
-		$sql_post .= "tags = '" . tags_get_name($id_tag) . "'";
+		else $sql_post .= " AND ";
+		$sql_post .= "tags LIKE '" . tags_get_name($id_tag) . "'";
+		$sql_post .= " OR ";
+		$sql_post .= "tags LIKE '" . tags_get_name($id_tag) . ",%'";
+		$sql_post .= " OR ";
+		$sql_post .= "tags LIKE '%, " . tags_get_name($id_tag) . "'";
+		$sql_post .= " OR ";
+		$sql_post .= "tags LIKE '%, " . tags_get_name($id_tag) . ",%'";
 	}
 	$sql_post .= ' ) ';
 }
@@ -188,7 +209,7 @@ if (!empty($tag_without)) {
 		if ($first) $first = false;
 		else $sql_post .= " AND ";
 		
-		$sql_post .= "tags <> '" . tags_get_name($id_tag) . "'";
+		$sql_post .= "tags NOT LIKE '%" . tags_get_name($id_tag) . "%'";
 	}
 	$sql_post .= ' ) ';
 }
@@ -208,9 +229,15 @@ if ($id_group > 0 && in_array ($id_group, array_keys ($groups))) {
 else {
 	$group_array = array_keys($groups);
 }
-
-$tags_acls_condition = tags_get_acl_tags($id_user, $group_array, 'ER',
-	'event_condition', 'AND', '', $meta, array(), true); //FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)"
+if (check_acl ($id_user, 0, "ER"))
+	$tags_acls_condition = tags_get_acl_tags($id_user, $group_array, 'ER',
+		'event_condition', 'AND', '', $meta, array(), true); //FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)"
+elseif (check_acl ($id_user, 0, "EW"))
+	$tags_acls_condition = tags_get_acl_tags($id_user, $group_array, 'EW',
+		'event_condition', 'AND', '', $meta, array(), true); //FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)"
+elseif (check_acl ($id_user, 0, "EM"))
+	$tags_acls_condition = tags_get_acl_tags($id_user, $group_array, 'EM',
+		'event_condition', 'AND', '', $meta, array(), true); //FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)"
 
 if (($tags_acls_condition != ERR_WRONG_PARAMETERS) && ($tags_acls_condition != ERR_ACL)&& ($tags_acls_condition != -110000)) {
 	$sql_post .= $tags_acls_condition;

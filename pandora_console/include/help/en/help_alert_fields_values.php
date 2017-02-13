@@ -3,11 +3,11 @@
  * @package Include/help/en
  */
 ?>
-<h1>Fields values</h1>
+<h1>Field values</h1>
 
-To limit the possible values on a field, is possible to define a list of value/tag. If this list is defined, the field will be a selection combo.
+To limit the possible values for a field, its possible to define a value/tag list. If this list is defined, the field will be a selection combo.
 <br><br>
-The format will be the following:
+The format must be the following:
 <br><br>
 value1,tag1;value2,tag2;value3,tag3
 <br><br>
@@ -16,4 +16,4 @@ Example:
 1,Number one;2,Number two;3,Number three;4,Number four
 
 <br><br>
-Also is possible to configure the field as a HTML editor by introducing the value <i>_html_editor_</i>.
+It’s also possible to indicate that the field must be an HTML editor for which we must introduce the value <i>_html_editor_</i>.

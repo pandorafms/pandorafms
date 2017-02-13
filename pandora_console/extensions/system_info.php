@@ -397,6 +397,7 @@ function generate_info($checks, $log_num_lines = 2000) {
 function mainSystemInfo() {
 	global $config;
 	
+
 	if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
 		db_pandora_audit("ACL Violation", "Trying to access Setup Management");
 		require ("general/noaccess.php");

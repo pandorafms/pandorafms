@@ -89,7 +89,7 @@ if (is_ajax ()) {
 		}
 		
 		$fields_rows = array();
-		for ($i = 1; $i <= 10; $i++) {
+		for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
 
 			if (($i == 5) && ($command['id'] == 3)){
 				continue;
@@ -110,7 +110,14 @@ if (is_ajax ()) {
 				}
 				//If the field is the number one, print the help message
 				if ($i == 1) {
-					$fdesc .= ui_print_help_icon ('alert_macros', true);
+					// If our context is snmpconsole, show snmp_alert helps
+					if ((isset ($_SERVER["HTTP_REFERER"])) && ( preg_match ("/snmp_alert/", $_SERVER["HTTP_REFERER"]) > 0 )){
+                        $fdesc .= ui_print_help_icon ('snmp_alert_field1',true);
+                    }
+                    else {
+                        $fdesc .= ui_print_help_icon ('alert_config', true);
+                    }
+
 				}
 			}
 			else {
@@ -253,7 +260,7 @@ if ($create_command) {
 	$fields_values = array();
 	$info_fields = '';
 	$values = array();
-	for ($i=1;$i<=10;$i++) {
+	for ($i=1;$i<=$config['max_macro_fields'];$i++) {
 		$fields_descriptions[] = (string) get_parameter ('field'.$i.'_description');
 		$fields_values[] = (string) get_parameter ('field'.$i.'_values');
 		$info_fields .= ' Field'.$i.': ' . $fields_values[$i - 1];

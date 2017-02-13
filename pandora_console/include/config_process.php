@@ -22,8 +22,8 @@
 /**
  * Pandora build version and version 
  */
-$build_version = 'PC160601';
-$pandora_version = 'v6.1dev';
+$build_version = 'PC170213';
+$pandora_version = 'v7.0dev';
 
 // Do not overwrite default timezone set if defined.
 $script_tz = @date_default_timezone_get();
@@ -112,6 +112,9 @@ require_once ($ownDir. 'functions_config.php');
 // We need a timezone BEFORE calling config_process_config. 
 // If not we will get ugly warnings. Set Europe/Madrid by default
 // Later will be replaced by the good one.
+if (!isset($config["homeurl_static"])) {
+	$config["homeurl_static"] = $config["homeurl"];
+}
 
 date_default_timezone_set("Europe/Madrid");
 
@@ -122,11 +125,6 @@ config_prepare_session();
 require_once ($config["homedir"].'/include/load_session.php');
 if(session_id() == '') {
 	$resultado = session_start();
-}
-
-
-if (!isset($config["homeurl_static"])) {
-	$config["homeurl_static"] = $config["homeurl"];
 }
 
 // Set a the system timezone default 
@@ -163,7 +161,7 @@ if (!isset($config['inventory_changes_blacklist'])) {
 //NEW UPDATE MANAGER URL
 if (!isset($config['url_update_manager'])) {
 	config_update_value('url_update_manager',
-		'https://artica.es/pandoraupdate6/server.php');
+		'https://firefly.artica.es/pandoraupdate6/server.php');
 }
 
 if (defined('METACONSOLE')) {
@@ -201,21 +199,10 @@ if (isset($_POST['vc_refr'])) {
 
 
 //======= Autorefresh code =============================================
-$config['autorefresh_white_list'] = array(
-	'operation/agentes/tactical',
-	'operation/agentes/group_view',
-	'operation/agentes/estado_agente',
-	'operation/agentes/alerts_status',
-	'operation/agentes/status_monitor',
-	'enterprise/operation/services/services',
-	'enterprise/dashboard/main_dashboard',
-	'operation/reporting/graph_viewer',
-	'operation/snmpconsole/snmp_view',
-	'operation/agentes/networkmap',
-	'enterprise/operation/services/services',
-	'operation/visual_console/render_view',
-	'operation/events/events');
-	
+$select = db_process_sql("SELECT value FROM tconfig WHERE token='autorefresh_white_list'");
+$autorefresh_list = json_decode($select[0]['value']);
+$config['autorefresh_white_list'] = array();
+$config['autorefresh_white_list'] = $autorefresh_list;
 // Specific metaconsole autorefresh white list sections
 if (defined('METACONSOLE')) {
 	$config['autorefresh_white_list'][] = 'monitoring/tactical';

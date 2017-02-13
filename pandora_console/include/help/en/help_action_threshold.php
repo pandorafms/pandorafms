@@ -7,15 +7,12 @@
 
 <p>
 An alert action will not be executed more than once every
-action_threshold seconds, regardless of the number of times the alert is
-fired.
+‘action_threshold’ time value, regardless of the number of times the alert is triggered.
 </p>
 <p>
 For example, if you have configured an action that sends you an email
-when the alert fires and you don't want to receive more than one email
-per hour, you can set the action_threshold to 3600.
+when the alert is activated and you don't want to receive more than one email per hour, you can set the ‘action_threshold’ value to 3600.
 </p>
 <p>
-Bear in mind that the individual action_threshold of an action overrides
-the global action_threshold of the alert.  
+Bear in mind that the individual ‘action_threshold’ value of an action overrides the global ‘action_threshold’ value of the alert.  
 </p>

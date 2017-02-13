@@ -511,6 +511,12 @@ function gis_get_map_conf($idMap) {
 	return $mapConfs;
 }
 
+function get_good_con() {
+	$sql = 'SELECT * FROM tgis_map_connection WHERE id_tmap_connection = 2';
+
+	return db_get_all_rows_sql($sql);
+}
+
 function gis_get_map_connection($idMapConnection) {
 	return db_get_row('tgis_map_connection', 'id_tmap_connection', $idMapConnection);
 }
@@ -733,9 +739,13 @@ function gis_delete_map($idMap) {
 			db_process_sql_delete('tgis_map_layer_has_tagente',
 				array('tgis_map_layer_id_tmap_layer' => $idLayer));
 		}
+		
+		$correct = (bool)db_process_sql_delete('tgis_map_layer',
+			array('tgis_map_id_tgis_map' => $idMap));
+	} else {
+		$correct = true;
 	}
-	$correct = (bool)db_process_sql_delete('tgis_map_layer',
-		array('tgis_map_id_tgis_map' => $idMap));
+	
 	if ($correct) {
 		$correct = db_process_sql_delete('tgis_map_has_tgis_map_con',
 			array('tgis_map_id_tgis_map' => $idMap));

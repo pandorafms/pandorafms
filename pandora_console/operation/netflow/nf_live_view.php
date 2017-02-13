@@ -24,7 +24,7 @@ ui_require_javascript_file ('calendar');
 
 // ACL
 check_login ();
-if (! check_acl ($config["id_user"], 0, "AR")) {
+if (! check_acl ($config["id_user"], 0, "AR") && ! check_acl ($config['id_user'], 0, "AW")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access event viewer");
 	require ("general/noaccess.php");
@@ -79,6 +79,7 @@ $filter['ip_src'] = get_parameter('ip_src','');
 $filter['dst_port'] = get_parameter('dst_port','');
 $filter['src_port'] = get_parameter('src_port','');
 $filter['advanced_filter'] = get_parameter('advanced_filter','');
+$filter['router_ip'] = get_parameter('router_ip');
 
 // Read chart configuration
 $chart_type = get_parameter('chart_type', 'netflow_area');
@@ -258,8 +259,13 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 		'15' => '15',
 		'20' => '20',
 		'25' => '25',
-		'50' => '50');
-	echo "<td>" . html_print_select ($max_values, 'max_aggregates', $max_aggregates, '', '', 0, true) . "</td>";
+		'50' => '50',
+		$max_aggregates => $max_aggregates);
+	echo "<td>" . html_print_select ($max_values, 'max_aggregates', $max_aggregates, '', '', 0, true) . 
+		'<a id="max_values" href="#" onclick="javascript: edit_max_value();">' .
+			html_print_image('images/pencil.png', true, array('id' => 'pencil')) . 
+		"</a>";
+	echo "</td>";
 	
 	$onclick = "if (!confirm('".__('Warning').". ".__('IP address resolution can take a lot of time')."')) return false;";
 	$radio_buttons = __('Yes').'&nbsp;&nbsp;'.html_print_radio_button_extended ('address_resolution', 1, '', $address_resolution, false, $onclick, '', true).'&nbsp;&nbsp;&nbsp;';
@@ -381,6 +387,9 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 	$aggregate_list = array ('none' => __('None'), 'proto' => __('Protocol'), 'srcip' =>__('Src Ip Address'), 'dstip' =>__('Dst Ip Address'), 'srcport' =>__('Src Port'), 'dstport' =>__('Dst Port') );
 	echo "<td colspan='2'>" . html_print_select ($aggregate_list, "aggregate", $filter['aggregate'], '', '', 0, true, false, true, '', false) . "</td>";
 	
+	echo "<td>" . '<b>'.__('Router ip').'</b>' . "</td>";
+	echo "<td colspan='2'>" . html_print_input_text ('router_ip', $filter['router_ip'], false, 30, 80, true) . "</td>";
+
 	echo "<td>" . '<b>'.__('Output format').'</b>' . "</td>";
 	$show_output = array ('bytes' => __('Bytes'), 'bytespersecond' => __('Bytes per second'), 'kilobytes' => __('Kilobytes'), 'megabytes' => __('Megabytes'), 'kilobytespersecond' => __('Kilobytes per second'), 'megabytespersecond' => __('Megabytes per second'));
 	echo "<td colspan='2'>" . html_print_select ($show_output, 'output', $filter['output'], '', '', 0, true, false, true, '', false) . "</td>";
@@ -397,8 +406,8 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 	
 	if (!$netflow_disable_custom_lvfilters) {
 		if (check_acl ($config["id_user"], 0, "AW")) {
-			html_print_submit_button (__('Save as new filter'), 'save_button', false, 'class="sub upd" onClick="return defineFilterName();"');
-			html_print_submit_button (__('Update current filter'), 'update_button', false, 'class="sub upd"');
+			html_print_submit_button (__('Save as new filter'), 'save_button', false, 'style="margin-left: 5px;" class="sub upd" onClick="return defineFilterName();"');
+			html_print_submit_button (__('Update current filter'), 'update_button', false, 'style="margin-left: 5px;" class="sub upd"');
 		}
 	}
 	
@@ -428,6 +437,36 @@ ui_include_time_picker();
 ?>
 
 <script type="text/javascript">
+	function edit_max_value () {
+		if ($("#max_values img").attr("id") == "pencil") {
+			$("#max_values img").attr("src", "images/default_list.png");
+			$("#max_values img").attr("id", "select");
+			var value = $("#max_aggregates").val();
+			$("#max_aggregates").replaceWith("<input id='max_aggregates' name='max_aggregates' type='text'>");
+			$("#max_aggregates").val(value);
+		}
+		else {
+			$("#max_values img").attr("src", "images/pencil.png");
+			$("#max_values img").attr("id", "pencil");
+			$("#max_aggregates").replaceWith("<select id='max_aggregates' name='max_aggregates'>");
+			var o = new Option("2", 2);
+			var o1 = new Option("5", 5);
+			var o2 = new Option("10", 10);
+			var o3 = new Option("15", 15);
+			var o4 = new Option("20", 20);
+			var o5 = new Option("25", 25);
+			var o6 = new Option("50", 50);
+			$("#max_aggregates").append(o);
+			$("#max_aggregates").append(o1);
+			$("#max_aggregates").append(o2);
+			$("#max_aggregates").append(o3);
+			$("#max_aggregates").append(o4);
+			$("#max_aggregates").append(o5);
+			$("#max_aggregates").append(o6);
+		}
+		
+	}
+
 	// Hide the normal filter and display the advanced filter
 	function displayAdvancedFilter () {
 		// Erase the normal filter
@@ -493,6 +532,7 @@ ui_include_time_picker();
 			$("#text-ip_src").val('');
 			$("#text-dst_port").val('');
 			$("#text-src_port").val('');
+			$("#text-router_ip").val('');
 			$("#textarea_advanced_filter").val('');
 			$("#aggregate").val('');
 			$("#output").val('');
@@ -560,6 +600,8 @@ ui_include_time_picker();
 							$("#text-dst_port").val(val);
 						if (i == 'src_port')
 							$("#text-src_port").val(val);
+						if (i == 'router_ip')
+							$("#text-router_ip").val(val);
 						if (i == 'advanced_filter')
 							$("#textarea_advanced_filter").val(val);
 						if (i == 'aggregate')

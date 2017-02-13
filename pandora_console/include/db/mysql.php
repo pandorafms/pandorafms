@@ -27,17 +27,36 @@ function mysql_connect_db($host = null, $db = null, $user = null, $pass = null, 
 		$pass = $config["dbpass"];
 	if ($port === null)
 		$port = $config["dbport"];
+
+	if ($config["mysqli"] === null && extension_loaded(mysqli)) {
+		$config["mysqli"] = true;
+	}
+	else {
+		$config["mysqli"] = false;
+	}
 	
 	// Non-persistent connection: This will help to avoid mysql errors like "has gone away" or locking problems
 	// If you want persistent connections change it to mysql_pconnect(). 
-	$connect_id = @mysql_connect($host . ":" . $port, $user, $pass, true);
-	if (! $connect_id) {
-		return false;
+	if ($config["mysqli"] === true) {
+		$connect_id = mysqli_connect($host, $user, $pass, $db, $port);
+		if (mysqli_connect_error() > 0) {
+			return false;
+		}
+		db_change_cache_id ($db, $host);
+
+		mysqli_select_db($connect_id, $db);
 	}
+	else {
+		$connect_id = @mysql_connect($host . ":" . $port, $user, $pass, true);
+		if (! $connect_id) {
+			return false;
+		}
+
+		db_change_cache_id ($db, $host);
+
+		mysql_select_db($db, $connect_id);
+	}	
 	
-	db_change_cache_id ($db, $host);
-	
-	mysql_select_db($db, $connect_id);
 	return $connect_id;
 }
 
@@ -301,44 +320,86 @@ function mysql_db_process_sql($sql, $rettype = "affected_rows", $dbconnection = 
 			$dbconnection = $config['dbconnection'];
 		}
 		
-		$result = mysql_query ($sql, $dbconnection);
+		if ($config["mysqli"] === true) {
+			$result = mysqli_query ($dbconnection, $sql);
+		}
+		else {
+			$result = mysql_query ($sql, $dbconnection);
+		}
 		
 		$time = microtime (true) - $start;
 		if ($result === false) {
 			$backtrace = debug_backtrace ();
-			$error = sprintf ('%s (\'%s\') in <strong>%s</strong> on line %d',
-				mysql_error (), $sql, $backtrace[0]['file'], $backtrace[0]['line']);
-			db_add_database_debug_trace ($sql, mysql_error ($dbconnection));
+			if ($config["mysqli"] === true) {
+				$error = sprintf ('%s (\'%s\') in <strong>%s</strong> on line %d',
+				mysqli_error ($dbconnection), $sql, $backtrace[0]['file'], $backtrace[0]['line']);
+				db_add_database_debug_trace ($sql, mysqli_error ($dbconnection));
+			}
+			else {
+				$error = sprintf ('%s (\'%s\') in <strong>%s</strong> on line %d',
+                                mysql_error (), $sql, $backtrace[0]['file'], $backtrace[0]['line']);
+				db_add_database_debug_trace ($sql, mysql_error ($dbconnection));
+			}
 			set_error_handler ('db_sql_error_handler');
 			trigger_error ($error);
 			restore_error_handler ();
 			return false;
 		}
 		elseif ($result === true) {
-			if ($rettype == "insert_id") {
-				$result = mysql_insert_id ($dbconnection);
-			}
-			elseif ($rettype == "info") {
-				$result = mysql_info ($dbconnection);
+			if ($config["mysqli"] === true) {
+				if ($rettype == "insert_id") {
+					$result = mysqli_insert_id ($dbconnection);
+				}
+				elseif ($rettype == "info") {
+					$result = mysqli_info ($dbconnection);
+				}
+				else {
+					$result = mysqli_affected_rows ($dbconnection);
+				}
+
+				db_add_database_debug_trace ($sql, $result, mysqli_affected_rows ($dbconnection),
+				array ('time' => $time));
 			}
 			else {
-				$result = mysql_affected_rows ($dbconnection);
+				if ($rettype == "insert_id") {
+					$result = mysql_insert_id ($dbconnection);
+				}
+				elseif ($rettype == "info") {
+					$result = mysql_info ($dbconnection);
+                      		}
+                        	else {
+					$result = mysql_affected_rows ($dbconnection);
+				}
+
+				db_add_database_debug_trace ($sql, $result, mysql_affected_rows ($dbconnection),
+				array ('time' => $time));
 			}
 			
-			db_add_database_debug_trace ($sql, $result, mysql_affected_rows ($dbconnection),
-				array ('time' => $time));
 			return $result;
 		}
 		else {
-			db_add_database_debug_trace ($sql, 0, mysql_affected_rows ($dbconnection), 
-				array ('time' => $time));
-			while ($row = mysql_fetch_assoc ($result)) {
-				array_push ($retval, $row);
-			}
+			if ($config["mysqli"] === true) {
+				db_add_database_debug_trace ($sql, 0, mysqli_affected_rows ($dbconnection), 
+					array ('time' => $time));
+				while ($row = mysqli_fetch_assoc ($result)) {
+					array_push ($retval, $row);
+				}
 			
-			if ($cache === true)
-				$sql_cache[$sql_cache ['id']][$sql] = $retval;
-			mysql_free_result ($result);
+				if ($cache === true)
+					$sql_cache[$sql_cache ['id']][$sql] = $retval;
+				mysqli_free_result ($result);
+			}
+			else {
+				db_add_database_debug_trace ($sql, 0, mysql_affected_rows ($dbconnection),
+				array ('time' => $time));
+				while ($row = mysql_fetch_assoc ($result)) {
+					array_push ($retval, $row);
+				}
+
+				if ($cache === true)
+					$sql_cache[$sql_cache ['id']][$sql] = $retval;
+				mysql_free_result ($result);
+			}
 		}
 	}
 	
@@ -357,7 +418,18 @@ function mysql_db_process_sql($sql, $rettype = "affected_rows", $dbconnection = 
  * @return string String cleaned.
  */
 function mysql_escape_string_sql($string) {
-	$str = mysql_real_escape_string($string);
+	global $config;
+
+	$dbconnection = $config['dbconnection'];
+	if ($dbconnection == null) {
+		$dbconnection = mysql_connect_db();
+	}
+	if ($config["mysqli"] === true) {
+		$str = mysqli_real_escape_string($dbconnection, $string);
+	}
+	else {
+		$str = mysql_real_escape_string($string);
+	}
 	
 	return $str;
 }
@@ -756,14 +828,21 @@ function mysql_db_get_all_rows_filter ($table, $filter = array(), $fields = fals
 function mysql_db_get_num_rows ($sql) {
 	global $config;
 	
-	$result = mysql_query($sql, $config['dbconnection']);
+	if ($config["mysqli"] === true) {
+		$result = mysqli_query($config['dbconnection'], $sql);
 	
-	if ($result) {
-		return mysql_num_rows($result);
+		if ($result) {
+			return mysqli_num_rows($result);
+		}
 	}
-	else { 
-		return 0;
+	else {
+		$result = mysql_query($sql, $config['dbconnection']);
+
+		if ($result) {
+			return mysql_num_rows($result);
+		}
 	}
+	return 0;
 }
 
 /**
@@ -974,39 +1053,73 @@ function mysql_db_process_sql_delete($table, $where, $where_join = 'AND') {
  * @return mixed The row or false in error.
  */
 function mysql_db_get_all_row_by_steps_sql($new = true, &$result, $sql = null) {
-	if ($new == true)
-		$result = mysql_query($sql);
+	global $config;
+
+	if ($config["mysqli"] === true) {
+		if ($new == true)
+			$result = mysqli_query($config['dbconnection'], $sql);
 	
-	if ($result) {
-		return mysql_fetch_assoc($result);
+		if ($result) {
+			return mysqli_fetch_assoc($result);
+		}
 	}
 	else {
-		return array();
+		if ($new == true)
+			$result = mysql_query($sql);
+
+		if ($result) {
+			return mysql_fetch_assoc($result);
+		}
 	}
+	return array();
 }
 
 /**
  * Starts a database transaction.
  */
 function mysql_db_process_sql_begin() {
-	mysql_query ('SET AUTOCOMMIT = 0');
-	mysql_query ('START TRANSACTION');
+	global $config;
+
+	if ($config["mysqli"] === true) {
+		mysqli_query ($config['dbconnection'], 'SET AUTOCOMMIT = 0');
+		mysqli_query ($config['dbconnection'], 'START TRANSACTION');
+	}
+	else {
+		mysql_query ('SET AUTOCOMMIT = 0');
+		mysql_query ('START TRANSACTION');
+	}
 }
 
 /**
  * Commits a database transaction.
  */
 function mysql_db_process_sql_commit() {
-	mysql_query ('COMMIT');
-	mysql_query ('SET AUTOCOMMIT = 1');
+	global $config;
+
+	if ($config["mysqli"] === true) {
+		mysqli_query ($config['dbconnection'], 'COMMIT');
+		mysqli_query ($config['dbconnection'], 'SET AUTOCOMMIT = 1');
+	}
+	else {
+		mysql_query ('COMMIT');
+		mysql_query ('SET AUTOCOMMIT = 1');
+	}
 }
 
 /**
  * Rollbacks a database transaction.
  */
 function mysql_db_process_sql_rollback() {
-	mysql_query ('ROLLBACK ');
-	mysql_query ('SET AUTOCOMMIT = 1');
+	global $config;
+
+	if ($config["mysqli"] === true) {
+		mysqli_query ($config['dbconnection'], 'ROLLBACK ');
+		mysqli_query ($config['dbconnection'], 'SET AUTOCOMMIT = 1');
+	}
+	else {
+		mysql_query ('ROLLBACK ');
+		mysql_query ('SET AUTOCOMMIT = 1');
+	}
 }
 
 /**
@@ -1020,7 +1133,7 @@ function mysql_safe_sql_string($string) {
 	
 	global $config;
 	
-	return mysql_real_escape_string($string, $config['dbconnection']);
+	return mysql_real_escape_string($config['dbconnection'], $string);
 }
 
 /**
@@ -1029,7 +1142,14 @@ function mysql_safe_sql_string($string) {
  * @return string Return the string error.
  */
 function mysql_db_get_last_error() {
-	return mysql_error();
+	global $config;
+
+	if ($config["mysqli"] === true) {
+		return mysqli_error();
+	}
+	else {
+		return mysql_error();
+	}
 }
 
 /**
@@ -1066,9 +1186,18 @@ function mysql_get_system_time() {
  * @return mixed Return the type name or False in error case.
  */
 function mysql_db_get_type_field_table($table, $field) {
-	$result = mysql_query('SELECT parameters FROM ' . $table);
+	global $config;
+
+	if ($config["mysqli"] === true) {
+		$result = mysqli_query($config['dbconnection'], 'SELECT parameters FROM ' . $table);
 	
-	return mysql_field_type($result, $field); 
+		return mysqli_fetch_field_direct($result, $field); 
+	}
+	else {
+		$result = mysql_query('SELECT parameters FROM ' . $table);
+
+		return mysql_field_type($result, $field);
+	}
 }
 
 /**
@@ -1092,7 +1221,12 @@ function mysql_db_get_table_count($sql, $search_history_db = false) {
 		
 		// Connect to the history DB
 		if (! isset ($config['history_db_connection']) || $config['history_db_connection'] === false) {
-			$config['history_db_connection'] = mysql_connect_db ($config['history_db_host'], $config['history_db_name'], $config['history_db_user'], io_output_password($config['history_db_pass']), $config['history_db_port'], false);
+			if ($config["mysqli"] === true) {
+				$config['history_db_connection'] = mysqli_connect_db ($config['history_db_host'], $config['history_db_user'], io_output_password($config['history_db_pass']), $config['history_db_name'], $config['history_db_port'], false);
+			}
+			else {
+				$config['history_db_connection'] = mysql_connect_db ($config['history_db_host'], $config['history_db_name'], $config['history_db_user'], io_output_password($config['history_db_pass']), $config['history_db_port'], false);
+			}
 		}
 		if ($config['history_db_connection'] !== false) {
 			$history_count = mysql_db_get_value_sql ($sql, $config['history_db_connection']);
@@ -1118,7 +1252,7 @@ function mysql_get_fields($table) {
  * Based on the function which installs the pandoradb.sql schema.
  * 
  * @param string $path File path.
- * @param bool $handle_error Whether to handle the mysql_query errors or throw an exception.
+ * @param bool $handle_error Whether to handle the mysqli_query/mysql_query errors or throw an exception.
  * 
  * @return bool Return the final status of the operation.
  */
@@ -1138,7 +1272,13 @@ function mysql_db_process_file ($path, $handle_error = true) {
 				$query .= $sql_line;
 				
 				if (preg_match("/;[\040]*\$/", $sql_line)) {
-					if (!$result = mysql_query($query)) {
+					if ($config["mysqli"] === true) {
+						$query_result = mysqli_query($config['dbconnection'], $query); 
+					}
+					else {
+						$query_result = mysql_query($query);
+					}
+					if (!$result = $query_result) {
 						// Error. Rollback the transaction
 						mysql_db_process_sql_rollback();
 						

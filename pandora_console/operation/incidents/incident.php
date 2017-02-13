@@ -18,7 +18,12 @@ require_once ("include/functions_incidents.php");
 
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "IR")) {
+$incident_r = check_acl ($config['id_user'], 0, "IR");
+$incident_w = check_acl ($config['id_user'], 0, "IW");
+$incident_m = check_acl ($config['id_user'], 0, "IM");
+$access = ($incident_r == true) ? 'IR' : (($incident_w == true) ? 'IW' : (($incident_m == true) ? 'IM' : 'IR'));
+
+if (!$incident_r && !$incident_w && !$incident_m) {
 	db_pandora_audit("ACL Violation","Trying to access incident viewer");
 	require ("general/noaccess.php");
 	exit;

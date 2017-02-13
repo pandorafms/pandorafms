@@ -18,7 +18,9 @@ global $config;
 // Login check
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "LW") && ! check_acl ($config['id_user'], 0, "AD")) {
+if (! check_acl ($config['id_user'], 0, "LW") && 
+	! check_acl ($config['id_user'], 0, "AD") && 
+	! check_acl ($config['id_user'], 0, "LM")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access Alert Management");
 	require ("general/noaccess.php");
@@ -42,6 +44,7 @@ else {
 
 $create_alert = (bool) get_parameter ('create_alert');
 $add_action = (bool) get_parameter ('add_action');
+$update_action = (bool) get_parameter ('update_action');
 $delete_action = (bool) get_parameter ('delete_action');
 $delete_alert = (bool) get_parameter ('delete_alert');
 $disable_alert = (bool) get_parameter ('disable_alert');
@@ -167,6 +170,32 @@ if ($add_action) {
 		__('Successfully added'), __('Could not be added'), '', true);
 }
 
+if ($update_action) {
+	$id_action = (int) get_parameter ('action_select_ajax');
+	$id_module_action = (int) get_parameter ('id_module_action_ajax');
+	$fires_min = (int) get_parameter ('fires_min_ajax');
+	$fires_max = (int) get_parameter ('fires_max_ajax');
+	
+	$values = array ();
+	if ($fires_min != -1)
+		$values['fires_min'] = $fires_min;
+	if ($fires_max != -1)
+		$values['fires_max'] = $fires_max;
+	$values['module_action_threshold'] = (int) get_parameter ('module_action_threshold_ajax');
+	$values['id_alert_action'] = $id_module_action;
+	
+	$result = alerts_update_alert_agent_module_action ($id_action, $values);
+	if ($result) {
+		db_pandora_audit("Alert management", 'Update action ' . $id_action . ' in  alert ' . $id_alert_module);
+	}
+	else {
+		db_pandora_audit("Alert management", 'Fail to updated action ' . $id_action . ' in alert ' . $id_alert_module);
+	}
+	
+	$messageAction = ui_print_result_message ($result,
+		__('Successfully updated'), __('Could not be updated'), '', true);
+}
+
 if ($delete_action) {
 	$id_action = (int) get_parameter ('id_action');
 	$id_alert = (int) get_parameter ('id_alert');
@@ -266,7 +295,7 @@ if ($id_agente) {
 	
 	require_once('godmode/alerts/alert_list.list.php');
 	
-	if(check_acl ($config['id_user'], $agent['id_grupo'], "LW")) {
+	if(check_acl ($config['id_user'], $agent['id_grupo'], "LW") || check_acl ($config['id_user'], $agent['id_grupo'], "LM")) {
 		require_once('godmode/alerts/alert_list.builder.php');
 	}
 	
@@ -274,9 +303,9 @@ if ($id_agente) {
 }
 else {
 	$searchFlag = true;
-	if (!defined('METACONSOLE')) {
+	if (!is_metaconsole()) {
 		// The tabs will be shown only with manage alerts permissions
-		if(check_acl ($config['id_user'], 0, "LW")) {
+		if(check_acl ($config['id_user'], 0, "LW") || check_acl ($config['id_user'], 0, "LM")) {
 			$buttons = array(
 				'list' => array(
 					'active' => false,
@@ -315,7 +344,7 @@ else {
 			else {
 				$groups = array(0 => __('All'));
 			}
-			$agents = agents_get_group_agents (array_keys ($groups), false, "none");
+			$agents = agents_get_group_agents (array_keys ($groups), false, "none",true);
 			
 			require_once($config['homedir'] . '/godmode/alerts/alert_list.list.php');
 			

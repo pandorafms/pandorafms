@@ -45,14 +45,13 @@ class User {
 		
 		if ($this->logged) {
 			$system = System::getInstance();
-			$system->setSession('user', $this);
+						
+			//hack to compatibility with pandora
+			global $config;
+			$config['id_user'] = $this->user;
 			
-			if (!$this->needDoubleAuth) {
-				//hack to compatibility with pandora
-				global $config;
-				$config['id_user'] = $this->user;
-			}
 			$system->setSessionBase('id_usuario', $this->user);
+			$system->setSession('user', $this);
 		}
 	}
 	
@@ -203,6 +202,7 @@ class User {
 		global $pandora_version;
 		
 		$ui = Ui::getInstance();
+		$system = System::getInstance();
 		
 		$ui->createPage();
 		if ($this->errorLogin) {
@@ -225,36 +225,42 @@ class User {
 		$ui->createHeader();
 		$ui->showFooter(false);
 		$ui->beginContent();
-			$ui->contentAddHtml('<div style="text-align: center;" class="login_logo">' .
-				html_print_image ("mobile/images/pandora_mobile_console.png",
-					true, array ("alt" => "logo", "border" => 0)) .
-					'</div>');
-			$ui->contentAddHtml('<div id="login_container">');
-			$ui->beginForm();
-			$ui->formAddHtml(html_print_input_hidden('action', 'login', true));
-			$options = array(
-				'name' => 'user',
-				'value' => $this->user,
-				'placeholder' => __('user'),
-				'label' => __('User')
-				);
-			$ui->formAddInputText($options);
-			$options = array(
-				'name' => 'password',
-				'value' => '',
-				'placeholder' => __('password'),
-				'label' => __('Password')
-				);
-			$ui->formAddInputPassword($options);
-			$options = array(
-				'value' => __('Login'),
-				'icon' => 'arrow-r',
-				'icon_pos' => 'right',
-				'name' => 'login_btn'
-				);
-			$ui->formAddSubmitButton($options);
-			$ui->endForm();
-			$ui->contentAddHtml('</div>');
+		
+		if (!$system->getConfig('metaconsole'))
+			$logo_image = html_print_image ("mobile/images/pandora_mobile_console.png",
+						true, array ("alt" => "logo", "border" => 0));
+		else
+			$logo_image = html_print_image ("mobile/images/metaconsole_mobile.png",
+						true, array ("alt" => "logo", "border" => 0),false, false, false, true);
+		
+		$ui->contentAddHtml('<div style="text-align: center;" class="login_logo">' .
+			$logo_image . '</div>');
+		$ui->contentAddHtml('<div id="login_container">');
+		$ui->beginForm();
+		$ui->formAddHtml(html_print_input_hidden('action', 'login', true));
+		$options = array(
+			'name' => 'user',
+			'value' => $this->user,
+			'placeholder' => __('user'),
+			'label' => __('User')
+			);
+		$ui->formAddInputText($options);
+		$options = array(
+			'name' => 'password',
+			'value' => '',
+			'placeholder' => __('password'),
+			'label' => __('Password')
+			);
+		$ui->formAddInputPassword($options);
+		$options = array(
+			'value' => __('Login'),
+			'icon' => 'arrow-r',
+			'icon_pos' => 'right',
+			'name' => 'login_btn'
+			);
+		$ui->formAddSubmitButton($options);
+		$ui->endForm();
+		$ui->contentAddHtml('</div>');
 		$ui->endContent();
 		$ui->showPage();
 		

@@ -53,7 +53,7 @@ function modules_is_disable_type_event($id_agent_module = false, $type_event = f
 	if ($id_agent_module === false) {
 		switch ($type_event) {
 			case EVENTS_GOING_UNKNOWN:
-				return true;
+				return false;
 				break;
 			case EVENTS_UNKNOWN:
 				return false;
@@ -118,7 +118,7 @@ function modules_is_disable_type_event($id_agent_module = false, $type_event = f
 			return false;
 		}
 	}
-	return true;
+	return false;
 }
 
 /**
@@ -231,7 +231,7 @@ function modules_copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent
 	
 	if ($module['id_modulo'] == MODULE_DATA) {
 		if (enterprise_installed()) {
-			if (config_agents_has_remote_configuration($id_agente)) {
+			if (enterprise_hook('config_agents_has_remote_configuration',array($id_agente))) {
 				$result = enterprise_hook(
 					'config_agents_copy_agent_module_to_agent',
 					array($id_agent_module, $id_new_module));
@@ -411,9 +411,19 @@ function modules_update_agent_module ($id, $values,
 			return ERR_EXIST;
 		}
 	}
-	
-	
-	
+
+	if(isset ($values['ip_target'])){
+		if($values['ip_target'] == 'force_pri'){
+			$sql_agent = "SELECT id_agente FROM tagente_modulo WHERE id_agente_modulo=" .  $id;
+			$id_agente = mysql_db_process_sql($sql_agent);
+			$values['ip_target'] = agents_get_address ($id_agente);
+		}
+		elseif($values['ip_target'] == 'custom'){
+			$values['ip_target'] = $values['custom_ip_target'];
+		}
+	}
+	unset($values['custom_ip_target']);
+
 	$where = array();
 	$where['id_agente_modulo'] = $id;
 	if ($onlyNoDeletePending) {
@@ -534,6 +544,7 @@ function modules_create_agent_module ($id_agent, $name, $values = false, $disabl
 					'datos' => 0,
 					'timestamp' => '01-01-1970 00:00:00',
 					'estado' => $status,
+					'known_status' => $status,
 					'id_agente' => (int) $id_agent,
 					'utimestamp' => 0,
 					'status_changes' => 0,
@@ -547,6 +558,7 @@ function modules_create_agent_module ($id_agent, $name, $values = false, $disabl
 					'datos' => 0,
 					'timestamp' => null,
 					'estado' => $status,
+					'known_status' => $status,
 					'id_agente' => (int) $id_agent,
 					'utimestamp' => 0,
 					'status_changes' => 0,
@@ -560,6 +572,7 @@ function modules_create_agent_module ($id_agent, $name, $values = false, $disabl
 					'datos' => 0,
 					'timestamp' => '#to_date(\'1970-01-01 00:00:00\', \'YYYY-MM-DD HH24:MI:SS\')',
 					'estado' => $status,
+					'known_status' => $status,
 					'id_agente' => (int) $id_agent,
 					'utimestamp' => 0,
 					'status_changes' => 0,
@@ -1019,6 +1032,17 @@ function modules_get_agentmodule_agent_name ($id_agentmodule) {
  */
 function modules_get_agentmodule_name ($id_agente_modulo) {
 	return (string) db_get_value ('nombre', 'tagente_modulo', 'id_agente_modulo', (int) $id_agente_modulo);
+}
+
+/**
+ * Get the module descripcion of an agent module.
+ *
+ * @param int $id_agente_modulo Agent module id.
+ *
+ * @return string descripcion of the given agent module.
+ */
+function modules_get_agentmodule_descripcion ($id_agente_modulo) {
+	return (string) db_get_value ('descripcion', 'tagente_modulo', 'id_agente_modulo', (int) $id_agente_modulo);
 }
 
 /**
@@ -1558,7 +1582,7 @@ function modules_get_agentmodule_status($id_agentmodule = 0, $without_alerts = f
 function modules_get_agentmodule_last_status($id_agentmodule = 0) {
 	$status_row = db_get_row ("tagente_estado", "id_agente_modulo", $id_agentmodule);
 	
-	return $status_row['last_known_status'];
+	return $status_row['known_status'];
 }
 
 /**
@@ -1826,6 +1850,7 @@ function modules_get_modulegroup_name ($modulegroup_id) {
 function modules_get_status($id_agent_module, $db_status, $data, &$status, &$title) {
 	$status = STATUS_MODULE_WARNING;
 	$title = "";
+	global $config;
 	
 	// This module is initialized ? (has real data)
 	//$module_init = db_get_value ('utimestamp', 'tagente_estado', 'id_agente_modulo', $id_agent_module);
@@ -1865,7 +1890,7 @@ function modules_get_status($id_agent_module, $db_status, $data, &$status, &$tit
 	}
 	
 	if (is_numeric($data)) {
-		$title .= ": " . format_for_graph($data);
+		$title .= ": " . remove_right_zeros(number_format($data, $config['graph_precision']));
 	}
 	else {
 		$text = io_safe_output($data);
@@ -2371,4 +2396,178 @@ function modules_get_module_group_status($id_agent, $id_module_group) {
 	
 	return $status_return;
 }
+
+function modules_get_modules_name ($sql_from , $sql_conditions = '', $meta = false) {
+	global $config;
+	
+	if (!$meta) {
+		// Query to get name of the modules to module name filter combo
+		switch ($config['dbtype']) {
+			case 'mysql':
+			case 'postgresql':
+				$sql = 'SELECT distinct(tagente_modulo.nombre)
+					'. $sql_from . $sql_conditions;
+				break;
+			case 'oracle':			
+				$sql = 'SELECT DISTINCT(tagente_modulo.nombre)' .
+					$sql_from . $sql_conditions;
+				break;
+		}
+		
+		$return = db_get_all_rows_sql($sql);
+		
+		return $return;
+	}
+	else {
+		switch ($config['dbtype']) {
+			case 'mysql':
+			case 'postgresql':
+				$sql = 'SELECT distinct(tagente_modulo.nombre)
+					'. $sql_from . $sql_conditions;
+				break;
+			case 'oracle':			
+				$sql = 'SELECT DISTINCT(tagente_modulo.nombre)' .
+					$sql_from . $sql_conditions;
+				break;
+		}
+		
+		// For each server defined and not disabled:h
+		$servers = db_get_all_rows_sql ('SELECT *
+			FROM tmetaconsole_setup
+			WHERE disabled = 0');
+		
+		if ($servers === false)
+			$servers = array();
+		
+		$result = array();
+		$modules = array();
+		foreach($servers as $server) {
+			// If connection was good then retrieve all data server
+			if (metaconsole_connect($server) == NOERR) {
+				$connection = true;
+			}
+			else {
+				$connection = false;
+			}
+			// Get all info for filters of all nodes
+			$modules_temp = db_get_all_rows_sql($sql);
+			
+			$rows_temp = db_get_all_rows_sql('SELECT distinct name
+				FROM tmodule_group
+				ORDER BY name');
+			$rows_temp = io_safe_output($rows_temp);
+			
+			if (!empty($rows_temp)) {
+				foreach ($rows_temp as $module_group_key => $modules_group_val)
+					$rows_temp_processed[$modules_group_val['name']] = $modules_group_val['name'];
+				
+				$rows_select = array_unique(array_merge($rows_select, $rows_temp_processed));
+			}
+			
+			$groups_temp = users_get_groups_for_select(false, "AR", true, true, false);									
+			
+			$groups_temp_processed = array();
+			
+			foreach ($groups_temp as $group_temp_key => $group_temp_val) {
+				$new_key = str_replace('&nbsp;','',$group_temp_val);
+				$groups_temp_processed[$new_key] = $group_temp_val;
+			}
+			
+			if (!empty($groups_temp_processed)) {
+				$groups_select = array_unique(array_merge($groups_select, $groups_temp_processed));
+			}
+			
+			if (!empty($modules_temp))
+				$modules = array_merge($modules, $modules_temp);
+			
+			metaconsole_restore_db();
+		}
+		unset($groups_select[__('All')]);
+		$key_group_all = array_search(__('All'), $groups_select);
+		if ($key_group_all !== false)
+			unset($groups_select[$key_group_all]);
+		return $modules;
+	}
+}
+
+function get_same_modules ($agents, $modules) {
+	$modules_to_report = array();
+	if ($modules != "") {
+		foreach ($modules as $m) {
+			$module_name = modules_get_agentmodule_name($m);
+			foreach ($agents as $a) {
+				$module_in_agent = db_get_value_filter('id_agente_modulo',
+					'tagente_modulo', array('id_agente' => $a, 'nombre' => $module_name));
+				if ($module_in_agent) {
+					$modules_to_report[] = $module_in_agent;
+				}
+			}
+		}
+	}
+
+	$modules_to_report = array_merge($modules_to_report, $modules);
+	$modules_to_report = array_unique($modules_to_report);
+	
+	return $modules_to_report;
+}
+
+function get_hierachy_modules_tree ($modules) {
+	$new_modules = array();
+
+	$new_modules_root = array_filter($modules, function ($module) {
+		return (isset($module['parent_module_id']) && ($module['parent_module_id'] == 0));
+	});
+
+	$new_modules_child = array_filter($modules, function ($module) {
+		return (isset($module['parent_module_id']) && ($module['parent_module_id'] != 0));
+	});
+
+	while (!empty($new_modules_child)) {
+		foreach ($new_modules_child as $i => $child) {
+			recursive_modules_tree($new_modules_root, $new_modules_child, $i, $child);
+		}
+	}
+
+	return $new_modules_root;
+}
+
+function recursive_modules_tree (&$new_modules, &$new_modules_child, $i, $child) {
+	foreach ($new_modules as $index => $module) {
+		if ($module['id_agente_modulo'] == $child['parent_module_id']) {
+			$new_modules[$index]['child'][] = $child;
+			$new_modules[$index]['have_childs'] = true;
+			unset($new_modules_child[$i]);
+			break;
+		}
+		else if (isset($new_modules[$index]['child'])) {
+			recursive_modules_tree ($new_modules[$index]['child'], $new_modules_child, $i, $child);
+		}
+	}
+}
+
+function get_dt_from_modules_tree ($modules) {
+	$final_modules = array();
+
+	foreach ($modules as $i => $module) {
+		$final_modules[$module['id_agente_modulo']] = $module;
+		$final_modules[$module['id_agente_modulo']]['deep'] = 0;
+		if (isset($modules[$i]['child'])) {
+			recursive_get_dt_from_modules_tree($final_modules, $modules[$i]['child'], $final_modules[$module['id_agente_modulo']]['deep']);
+		}
+		unset($modules[$i]);
+	}
+	
+	return $final_modules;
+}
+
+function recursive_get_dt_from_modules_tree (&$f_modules, $modules, $deep) {
+	foreach ($modules as $i => $module) {
+		$f_modules[$module['id_agente_modulo']] = $module;
+		$f_modules[$module['id_agente_modulo']]['deep'] = $deep + 1;
+		if (isset($modules[$i]['child'])) {
+			recursive_get_dt_from_modules_tree($f_modules, $modules[$i]['child'], $f_modules[$module['id_agente_modulo']]['deep']);
+		}
+	}
+}
+
 ?>

@@ -19,7 +19,7 @@ require_once ($config['homedir'] . '/include/db/oracle.php');
 // Login check
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "RW")) {
+if (! check_acl ($config['id_user'], 0, "RW") && ! check_acl ($config['id_user'], 0, "RM")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access report builder");
 	require ("general/noaccess.php");
@@ -30,12 +30,6 @@ $meta = false;
 if (($config['metaconsole'] == 1) && (defined('METACONSOLE'))) {
 	$meta = true;
 }
-
-
-
-
-
-
 
 $show_graph_options = Array();
 $show_graph_options[0] = __('Only table');
@@ -57,6 +51,7 @@ $idAgent = null;
 $idAgentModule = null;
 $idCustomGraph = null;
 $text = null;
+$label = null;
 $header = null;
 $idCustom = null;
 $url = null;
@@ -96,18 +91,19 @@ $inventory_modules = array();
 $date = null;
 // Only avg is selected by default for the simple graphs
 $only_avg = true;
+$percentil = false;
 $time_compare_overlapped = false;
 
 //Added for events items
-$filter_event_validated = false;
-$filter_event_no_validated = false;
-$filter_event_critical = false;
-$filter_event_warning = false;
-
+$show_summary_group    = false;
+$filter_event_severity = false;
+$filter_event_type     = false;
+$filter_event_status   = false;
 $event_graph_by_agent = false;
 $event_graph_by_user_validator = false;
 $event_graph_by_criticity = false;
 $event_graph_validated_vs_unvalidated = false;
+
 $netflow_filter = 0;
 $max_values = 0;
 $resolution = 0;
@@ -124,6 +120,7 @@ switch ($action) {
 		$sql = null;
 		$show_in_two_columns = 0;
 		$show_in_landscape = 0;
+		$hide_notinit_agents = 0;
 		$server_name = '';
 		$server_id = 0;
 		break;
@@ -136,6 +133,8 @@ switch ($action) {
 		
 		switch ($type) {
 			case 'SLA_monthly':
+			case 'SLA_weekly':
+			case 'SLA_hourly':
 			case 'SLA_services':
 			case 'SLA':
 			case 'top_n':
@@ -143,6 +142,8 @@ switch ($action) {
 			case 'general':
 			case 'network_interfaces_report':
 			case 'availability':
+			case 'availability_graph':
+			case 'agent_module':
 				$get_data_editor = true;
 				break;
 			
@@ -156,6 +157,7 @@ switch ($action) {
 				$sql = null;
 				$show_in_two_columns = 0;
 				$show_in_landscape = 0;
+				$hide_notinit_agents = 0;
 				$server_name = '';
 				$server_id = 0;
 				$get_data_editor = false;
@@ -177,8 +179,10 @@ switch ($action) {
 			}
 			
 			$style = json_decode(io_safe_output($item['style']), true);
+			
 			$show_in_two_columns = $style['show_in_two_columns'];
 			$show_in_landscape = $style['show_in_landscape'];
+			$hide_notinit_agents = $style['hide_notinit_agents'];
 			$type = $item['type'];
 			$name = $item['name'];
 			
@@ -192,6 +196,7 @@ switch ($action) {
 				
 				case 'simple_graph':
 					$only_avg = isset($style['only_avg']) ? (bool) $style['only_avg'] : true;
+					$percentil = isset($style['percentil']) ? $config['percentil'] : 0;
 					// The break hasn't be forgotten.
 				case 'simple_baseline_graph':
 				case 'projection_graph':
@@ -229,39 +234,36 @@ switch ($action) {
 					$period = $item['period'];
 					$idCustomGraph = $item['id_gs'];
 					break;
+				
 				case 'SLA':
+				case 'SLA_weekly':
+				case 'SLA_monthly':
+				case 'SLA_hourly':
+				case 'availability_graph':
+					$description = $item['description'];
+					$only_display_wrong = $item['only_display_wrong'];
+					$monday = $item['monday'];
+					$tuesday = $item['tuesday'];
+					$wednesday = $item['wednesday'];
+					$thursday = $item['thursday'];
+					$friday = $item['friday'];
+					$saturday = $item['saturday'];
+					$sunday = $item['sunday'];
+					$time_from = $item['time_from'];
+					$time_to = $item['time_to'];
+					$show_graph = $item['show_graph'];
+					// 'top_n' filed will be reused for SLA sort option
+					$sla_sorted_by = $item['top_n'];
+					$period = $item['period'];
+					break;
+
+				case 'module_histogram_graph':
 					$description = $item['description'];
 					$period = $item['period'];
-					$only_display_wrong = $item['only_display_wrong'];
-					$monday = $item['monday'];
-					$tuesday = $item['tuesday'];
-					$wednesday = $item['wednesday'];
-					$thursday = $item['thursday'];
-					$friday = $item['friday'];
-					$saturday = $item['saturday'];
-					$sunday = $item['sunday'];
-					$time_from = $item['time_from'];
-					$time_to = $item['time_to'];
-					$show_graph = $item['show_graph'];
-					// 'top_n' filed will be reused for SLA sort option
-					$sla_sorted_by = $item['top_n'];
+					$idAgentModule = $item['id_agent_module'];
+					$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
 					break;
-				case 'SLA_monthly':
-					$description = $item['description'];
-					$only_display_wrong = $item['only_display_wrong'];
-					$monday = $item['monday'];
-					$tuesday = $item['tuesday'];
-					$wednesday = $item['wednesday'];
-					$thursday = $item['thursday'];
-					$friday = $item['friday'];
-					$saturday = $item['saturday'];
-					$sunday = $item['sunday'];
-					$time_from = $item['time_from'];
-					$time_to = $item['time_to'];
-					$show_graph = $item['show_graph'];
-					// 'top_n' filed will be reused for SLA sort option
-					$sla_sorted_by = $item['top_n'];
-					break;
+
 				case 'SLA_services':
 					$description = $item['description'];
 					$period = $item['period'];
@@ -404,31 +406,19 @@ switch ($action) {
 					$group = $item['id_group'];
 					break;
 				case 'event_report_agent':
-					$description = $item['description'];
-					$idAgent = $item['id_agent'];
-					$period = $item['period'];
-					
-					//Added for events items
-					$filter_event_no_validated = $style['filter_event_no_validated'];
-					$filter_event_validated = $style['filter_event_validated'];
-					$filter_event_critical = $style['filter_event_critical'];
-					$filter_event_warning = $style['filter_event_warning'];
-					
-					$event_graph_by_agent = $style['event_graph_by_agent'];
-					$event_graph_by_user_validator = $style['event_graph_by_user_validator'];
-					$event_graph_by_criticity = $style['event_graph_by_criticity'];
-					$event_graph_validated_vs_unvalidated = $style['event_graph_validated_vs_unvalidated'];
-					break;
 				case 'event_report_group':
+				case 'event_report_module':
 					$description = $item['description'];
 					$period = $item['period'];
 					$group = $item['id_group'];
-					
+					$idAgent = $item['id_agent'];
+					$idAgentModule = $item['id_agent_module'];
+
 					//Added for events items
-					$filter_event_no_validated = $style['filter_event_no_validated'];
-					$filter_event_validated = $style['filter_event_validated'];
-					$filter_event_critical = $style['filter_event_critical'];
-					$filter_event_warning = $style['filter_event_warning'];
+					$show_summary_group    = $style['show_summary_group'];
+					$filter_event_severity = json_decode($style['filter_event_severity'], true);
+					$filter_event_status   = json_decode($style['filter_event_status'], true);
+					$filter_event_type     = json_decode($style['filter_event_type'], true);
 					
 					$event_graph_by_agent = $style['event_graph_by_agent'];
 					$event_graph_by_user_validator = $style['event_graph_by_user_validator'];
@@ -436,14 +426,6 @@ switch ($action) {
 					$event_graph_validated_vs_unvalidated = $style['event_graph_validated_vs_unvalidated'];
 					
 					$filter_search = $style['event_filter_search'];
-					break;
-				case 'event_report_module':
-					$description = $item['description'];
-					$idAgentModule = $item['id_agent_module'];
-					$idAgent = db_get_value_filter('id_agente',
-						'tagente_modulo',
-						array('id_agente_modulo' => $idAgentModule));
-					$period = $item['period'];
 					break;
 				case 'general':
 					$description = $item['description'];
@@ -513,8 +495,19 @@ switch ($action) {
 					break;
 				case 'agent_module':
 					$description = $item['description'];
+					$es = json_decode($item['external_source'], true);
+					$agents_id = get_parameter('id_agents2');
+					$selection_a_m = get_parameter('selection');
+					
+					if ((count($es['module']) == 1) && ($es['module'][0] == 0)) {
+						$module = "";
+					}
+					else {
+						$module = $es['module'];
+					}
 					$group = $item['id_group'];
-					$modulegroup = $item ['id_module_group'];
+					$modulegroup = $item['id_module_group'];
+					$idAgentModule = $module;
 					break;
 				case 'inventory':
 					$description = $item['description'];
@@ -555,7 +548,33 @@ switch ($action) {
 					$max_values = $item ['top_n_value']; // Max values
 					break;
 			}
-			
+			switch ($type) {
+				case 'event_report_agent':
+				case 'simple_graph':
+				case 'agent_configuration':
+				case 'event_report_module':
+				case 'alert_report_agent':
+				case 'alert_report_module':
+				case 'historical_data':
+				case 'sumatory':
+				case 'database_serialized':
+				case 'monitor_report':
+				case 'min_value':
+				case 'max_value':
+				case 'avg_value':
+				case 'projection_graph':
+				case 'prediction_date':
+				case 'TTRT':
+				case 'TTO':
+				case 'MTBF':
+				case 'MTTR':
+				case 'simple_baseline_graph':
+					$label = (isset($style['label'])) ? $style['label'] : '';
+					break;
+				default:
+					$label = '';
+					break;
+			}
 			//Restore db connection
 			if ($meta && $server_name != '') {
 				metaconsole_restore_db();
@@ -594,8 +613,14 @@ $class = 'databox filters';
 			</td>
 			<td style="">
 				<?php
+				
+				/* Hello there! :)
+We added some of what seems to be "buggy" messages to the openSource version recently. This is not to force open-source users to move to the enterprise version, this is just to inform people using Pandora FMS open source that it requires skilled people to maintain and keep it running smoothly without professional support. This does not imply open-source version is limited in any way. If you check the recently added code, it contains only warnings and messages, no limitations except one: we removed the option to add custom logo in header. In the Update Manager section, it warns about the 'danger’ of applying automated updates without a proper backup, remembering in the process that the Enterprise version comes with a human-tested package. Maintaining an OpenSource version with more than 500 agents is not so easy, that's why someone using a Pandora with 8000 agents should consider asking for support. It's not a joke, we know of many setups with a huge number of agents, and we hate to hear that “its becoming unstable and slow” :(
+You can of course remove the warnings, that's why we include the source and do not use any kind of trick. And that's why we added here this comment, to let you know this does not reflect any change in our opensource mentality of does the last 14 years.
+*/
+				
 				if ($action == 'new') {
-					html_print_select(reports_get_report_types(false, true), 'type', $type, 'chooseType();', '', '');
+					html_print_select(reports_get_report_types(false, true), 'type', $type, 'chooseType();', '', '','','','','','','','','',true,'reportingmodal');
 				}
 				else {
 					$report_type = reports_get_report_types();
@@ -612,7 +637,7 @@ $class = 'databox filters';
 		
 		<tr id="row_name" style="" class="datos">
 			<td style="font-weight:bold;">
-				<?php echo __('Name'); ?>
+				<?php echo __('Name') . ui_print_help_icon ('reports_label_field',true); ?>
 			</td>
 			<td style="">
 				<?php
@@ -628,7 +653,10 @@ $class = 'databox filters';
 				$own_info = get_user_info ($config['id_user']);
 				
 				// Get group list that user has access
-				$groups_user = users_get_groups ($config['id_user'], "RW", $own_info['is_admin'], true);
+				if (check_acl ($config['id_user'], 0, "RW"))
+					$groups_user = users_get_groups ($config['id_user'], "RW", $own_info['is_admin'], true);
+				elseif (check_acl ($config['id_user'], 0, "RM"))
+					$groups_user = users_get_groups ($config['id_user'], "RM", $own_info['is_admin'], true);
 				$groups_id = array();
 				foreach ($groups_user as $key => $groups) {
 					$groups_id[] = $groups['id_grupo'];
@@ -639,12 +667,21 @@ $class = 'databox filters';
 				?>
 			</td>
 		</tr>
-		
 		<tr id="row_description" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Description'); ?></td>
 			<td style="">
 				<?php
 				echo html_print_textarea('description', 3, 25, $description);
+				?>
+			</td>
+		</tr>
+		
+		<tr id="row_label" style="" class="datos">
+			<td style="font-weight:bold;"><?php echo __('Label') . 
+				ui_print_help_icon ('reports_label_field',true); ?></td>
+			<td style="">
+				<?php
+				echo html_print_input_text ('label', $label, '', 50, 255, true);				
 				?>
 			</td>
 		</tr>
@@ -817,8 +854,12 @@ $class = 'databox filters';
 			<td style="font-weight:bold;"><?php echo __('Group');?></td>
 			<td style="">
 				<?php
-				html_print_select_groups($config['id_user'],
-					"AR", true, 'combo_group', $group, '');
+				if(check_acl ($config['id_user'], 0, "RW"))
+					html_print_select_groups($config['id_user'],
+						"RW", true, 'combo_group', $group, '');
+				elseif(check_acl ($config['id_user'], 0, "RM"))
+					html_print_select_groups($config['id_user'],
+						"RM", true, 'combo_group', $group, '');
 				?>
 			</td>
 		</tr>
@@ -868,7 +909,7 @@ $class = 'databox filters';
 				
 				$params['javascript_is_function_select'] = true;
 				$params['selectbox_id'] = 'id_agent_module';
-				$params['add_none_module'] = false;
+				$params['add_none_module'] = true;
 				$params['use_hidden_input_idagent'] = true;
 				$params['hidden_input_idagent_id'] = 'hidden-id_agent';
 				if ($meta) {
@@ -929,6 +970,50 @@ $class = 'databox filters';
 					</select>
 					<?php
 				}
+				?>
+			</td>
+		</tr>
+
+		<tr id="agents_row" style="" class="datos">
+			<td style="font-weight:bold;"><?php echo __('Agents'); ?></td>
+			<td>
+				<?php 
+					$agents = agents_get_group_agents($group);
+					if ((empty($agents)) || $agents == -1) $agents = array();
+					
+					$agents_select = array();
+					if (is_array($id_agents) || is_object($id_agents)){
+						foreach ($id_agents as $id) {
+							foreach ($agents as $key => $a) {
+								if ($key == (int)$id) {
+									$agents_select[$key] = $key;
+								}
+							}
+						}
+					}
+					html_print_select($agents, 'id_agents2[]', $agents_id, $script = '', "", 0, false, true, true, '', false, "min-width: 180px");
+				?>
+			</td>
+		</tr>
+
+		<tr id="select_agent_modules" style="" class="datos">
+			<td style="font-weight:bold;"><?php echo __('Show modules'); ?></td>
+			<td>
+				<?php 
+					$selection = array(0 => __('Show common modules'),
+						1=> __('Show all modules'));
+					html_print_select($selection, 'selection_agent_module', $selection_a_m, $script = '', "", 0, false, false, true, '', false, "min-width: 180px");
+				?>
+			</td>
+		</tr>
+		
+		<tr id="modules_row" style="" class="datos">
+			<td style="font-weight:bold;"><?php echo __('Modules'); ?></td>
+			<td>
+				<?php
+					$all_modules = db_get_all_rows_sql("SELECT DISTINCT nombre, id_agente_modulo FROM tagente_modulo WHERE id_agente IN (" . implode(',', array_keys($agents)) . ")");
+					
+					html_print_select($all_modules, 'module[]', "", $script = '', __('None'), 0, false, true, true, '', false, "min-width: 180px");
 				?>
 			</td>
 		</tr>
@@ -1160,6 +1245,10 @@ $class = 'databox filters';
 			<td style="font-weight:bold;"><?php echo __('Only average');?></td>
 			<td><?php html_print_checkbox('only_avg', 1, $only_avg);?></td>
 		</tr>
+		<tr id="row_percentil" style="" class="datos">
+			<td style="font-weight:bold;"><?php echo __('Percentil');?></td>
+			<td><?php html_print_checkbox('percentil', 1, $percentil);?></td>
+		</tr>
 		<tr id="row_exception_condition_value" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Value'); ?></td>
 			<td style="">
@@ -1226,7 +1315,7 @@ $class = 'databox filters';
 		</tr>
 		
 		<tr id="row_show_resume" style="" class="datos">
-			<td style="font-weight:bold;"><?php echo __('Show resume') . ui_print_help_tip(__('Show a resume table with max, min, average of total modules on the report bottom'), true);?></td>
+			<td style="font-weight:bold;"><?php echo __('Show resume') . ui_print_help_tip(__('Show a summary chart with max, min and average number of total modules at the end of the report and Checks.'), true);?></td>
 			<td>
 				<?php
 				html_print_checkbox('checkbox_show_resume', 1,
@@ -1234,22 +1323,52 @@ $class = 'databox filters';
 				?>
 			</td>
 		</tr>
-		<tr id="row_event_filter" style="" class="datos">
-			<td style="font-weight:bold;"><?php echo __('Event filter'); ?></td>
+
+		<tr id="row_show_summary_group" style="" class="datos">
+			<td style="font-weight:bold;"><?php echo __('Show Summary group'); ?></td>
 			<td>
 				<?php
-				echo __('No Validated');
-				html_print_checkbox ('filter_event_no_validated', true, $filter_event_no_validated);
-				echo __('Validated');
-				html_print_checkbox ('filter_event_validated', true, $filter_event_validated);
-				echo __('Critical');
-				html_print_checkbox ('filter_event_critical', true, $filter_event_critical);
-				echo __('Warning');
-				html_print_checkbox ('filter_event_warning', true, $filter_event_warning);
+				html_print_checkbox ('show_summary_group', true, $show_summary_group);
+				?>
+			</td>
+		</tr>
+
+		<tr id="row_event_severity" style="" class="datos">
+			<td style="font-weight:bold;"><?php echo __('Severity'); ?></td>
+			<td>
+				<?php
+					$valuesSeverity = get_priorities ();
+					html_print_select ($valuesSeverity, 'filter_event_severity[]', 
+						$filter_event_severity, '', __('All'), '-1', false, true, 
+						false, '', false, false, false, false, false, '');
+				?>
+			</td>
+		</tr>
+
+		<tr id="row_event_type" style="" class="datos">
+			<td style="font-weight:bold;"><?php echo __('Event type'); ?></td>
+			<td>
+				<?php
+					$event_types_select = get_event_types();
+					html_print_select ($event_types_select, 'filter_event_type[]', 
+						$filter_event_type, '', __('All'), 'all', false, true, 
+						false, '', false, false, false, false, false, '');
 				?>
 			</td>
 		</tr>
 		
+		<tr id="row_event_status" style="" class="datos">
+			<td style="font-weight:bold;"><?php echo __('Event Status'); ?></td>
+			<td>
+				<?php
+					$fields = events_get_all_status(true);
+					html_print_select ($fields, 'filter_event_status[]', 
+						$filter_event_status, '', '', '', false, true, 
+						false, '', false, false, false, false, false, '');
+				?>
+			</td>
+		</tr>
+
 		<tr id="row_event_graphs" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Event graphs'); ?></td>
 			<td>
@@ -1302,8 +1421,16 @@ $class = 'databox filters';
 			</td>
 		</tr>
 		
-		
-		
+		<tr id="row_hide_notinit_agents" style="" class="datos">
+			<td style="font-weight:bold;"><?php echo __('Hide not init agents');?></td>
+			<td>
+				<?php
+				html_print_checkbox('hide_notinit_agents', 1,
+					$hide_notinit_agents, false, false);
+				?>
+			</td>
+		</tr>
+
 		<tr id="row_filter_search" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Free search');?></td>
 			<td>
@@ -1395,6 +1522,7 @@ function print_SLA_list($width, $action, $idItem = null) {
 							'tagente_modulo',
 							array('id_agente_modulo' => $item['id_agent_module']));
 						$nameAgent = agents_get_name ($idAgent);
+						
 						$nameModule = db_get_value_filter('nombre',
 							'tagente_modulo',
 							array('id_agente_modulo' => $item['id_agent_module']));
@@ -1720,11 +1848,112 @@ function print_General_list($width, $action, $idItem = null, $type = 'general') 
 ui_require_javascript_file ('pandora_inventory', ENTERPRISE_DIR.'/include/javascript/');
 
 ?>
+
 <script type="text/javascript">
 $(document).ready (function () {
 	chooseType();
 	chooseSQLquery();
-	
+
+	$("#id_agents").change(agent_changed_by_multiple_agents);
+
+	$("#combo_group").change (
+		function () {
+			jQuery.post ("ajax.php",
+				{"page" : "operation/agentes/ver_agente",
+					"get_agents_group_json" : 1,
+					"id_group" : this.value,
+					"privilege" : "AW",
+					"keys_prefix" : "_"
+				},
+				function (data, status) {
+					$("#id_agents").html('');
+					$("#id_agents2").html('');
+					$("#module").html('');
+					jQuery.each (data, function (id, value) {
+						// Remove keys_prefix from the index
+						id = id.substring(1);
+						
+						option = $("<option></option>")
+							.attr ("value", value["id_agente"])
+							.html (value["nombre"]);
+						$("#id_agents").append (option);
+						$("#id_agents2").append (option);
+					});
+				},
+				"json"
+			);
+		}
+	);
+
+	$("#combo_modulegroup").change (
+		function () {
+			jQuery.post ("ajax.php",
+				{"page" : "operation/agentes/ver_agente",
+					"get_modules_group_json" : 1,
+					"id_module_group" : this.value,
+					"id_agents" : $("#id_agents2").val(),
+					"selection" : $("#selection_agent_module").val()
+				},
+				function (data, status) {
+					$("#module").html('');
+					jQuery.each (data, function (id, value) {
+						option = $("<option></option>")
+							.attr ("value", value["id_agente_modulo"])
+							.html (value["nombre"]);
+						$("#module").append (option);
+					});
+				},
+				"json"
+			);
+		}
+	);
+
+	$("#id_agents2").change (
+		function () {
+			jQuery.post ("ajax.php",
+				{"page" : "operation/agentes/ver_agente",
+					"get_modules_group_json" : 1,
+					"id_module_group" : $("#combo_modulegroup").val(),
+					"id_agents" : $("#id_agents2").val(),
+					"selection" : $("#selection_agent_module").val()
+				},
+				function (data, status) {
+					$("#module").html('');
+					jQuery.each (data, function (id, value) {
+						option = $("<option></option>")
+							.attr ("value", value["id_agente_modulo"])
+							.html (value["nombre"]);
+						$("#module").append (option);
+					});
+				},
+				"json"
+			);
+		}
+	);
+
+	$("#selection_agent_module").change(
+		function() {
+			jQuery.post ("ajax.php",
+				{"page" : "operation/agentes/ver_agente",
+					"get_modules_group_json" : 1,
+					"id_module_group" : $("#combo_modulegroup").val(),
+					"id_agents" : $("#id_agents2").val(),
+					"selection" : $("#selection_agent_module").val()
+				},
+				function (data, status) {
+					$("#module").html('');
+					jQuery.each (data, function (id, value) {
+						option = $("<option></option>")
+							.attr ("value", value["id_agente_modulo"])
+							.html (value["nombre"]);
+						$("#module").append (option);
+					});
+				},
+				"json"
+			);
+		}
+	);
+
 	$("#text-time_to, #text-time_from").timepicker({
 		showSecond: true,
 		timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
@@ -1736,6 +1965,76 @@ $(document).ready (function () {
 		currentText: '<?php echo __('Now');?>',
 		closeText: '<?php echo __('Close');?>'
 	});
+	
+	$('#id_agent_module').change(function(){
+		
+		var idModule = $(this).val();
+		
+		var params = [];
+		params.push("get_type=1");
+		params.push("id_module=" + idModule);
+		params.push("page=include/ajax/module");
+		jQuery.ajax ({
+			data: params.join ("&"),
+			type: 'POST',
+			url: action= <?php echo '"' . ui_get_full_url(false, false, false, false) . '"'; ?> + "/ajax.php",
+			async: false,
+			timeout: 10000,
+			success: function (data) {
+				switch (data) {
+					case 'boolean':
+					case 'sparse':
+						//$("#row_percentil").show();
+						break;
+					default:
+						$("#row_percentil").hide();
+						break;
+				}
+			}
+		});
+		
+	});
+
+	$("#submit-create_item").click(function () {
+		var type = $('#type').val();
+		switch (type){
+			case 'alert_report_module': case 'alert_report_agent': 
+			case 'event_report_agent': case 'event_report_module': 
+			case 'simple_graph': case 'simple_baseline_graph': case 'TTRT': case 'TTO':
+			case 'MTBF': case 'MTTR': case 'prediction_date': case 'projection_graph':
+			case 'avg_value': case 'max_value': case 'min_value': case 'monitor_report':
+			case 'database_serialized': case 'sumatory': case 'historical_data': 
+			case 'agent_configuration': case 'module_histogram_graph':
+				if ($("#hidden-id_agent").val() == 0) {
+					alert( <?php echo "'" . __('Please select Agent'). "'"; ?> );
+					return false;
+				}
+				break;
+			default:
+				break;
+		}
+	});
+
+	$("#submit-edit_item").click(function () {
+		var type = $('#type').val();
+		switch (type){
+			case 'alert_report_module': case 'alert_report_agent': 
+			case 'event_report_agent': case 'event_report_module': 
+			case 'simple_graph': case 'simple_baseline_graph': case 'TTRT': case 'TTO':
+			case 'MTBF': case 'MTTR': case 'prediction_date': case 'projection_graph':
+			case 'avg_value': case 'max_value': case 'min_value': case 'monitor_report':
+			case 'database_serialized': case 'sumatory': case 'historical_data': 
+			case 'agent_configuration': case 'module_histogram_graph':
+				if ($("#hidden-id_agent").val() == 0) {
+					alert( <?php echo "'" . __('Please select Agent'). "'"; ?> );
+					return false;
+				}
+				break;
+			default:
+				break;
+		}
+	});
+	
 });
 
 function create_custom_graph() {
@@ -2139,7 +2438,7 @@ function addGeneralRow() {
 		params.push("id_module=" + idModule);
 		params.push("id_server=" + serverId);
 		params.push("operation=" + operation);
-		
+		params.push("id_agent=" + idAgent);
 		params.push("page=include/ajax/reporting.ajax");
 		jQuery.ajax ({
 			data: params.join ("&"),
@@ -2177,6 +2476,7 @@ function chooseType() {
 	type = $("#type").val();
 	
 	$("#row_description").hide();
+	$("#row_label").hide();
 	$("#row_period").hide();
 	$("#row_agent").hide();
 	$("#row_module").hide();
@@ -2212,13 +2512,13 @@ function chooseType() {
 	$("#row_exception_condition").hide();
 	$("#row_show_in_two_columns").hide();
 	$("#row_show_in_landscape").hide();
+	$('#row_hide_notinit_agents').hide();
 	$("#row_module_group").hide();
 	$("#row_servers").hide();
 	$("#row_sort").hide();
 	$("#row_date").hide();
 	$("#row_agent_multi").hide();
 	$("#row_module_multi").hide();
-	$("#row_event_filter").hide();
 	$("#row_event_graphs").hide();
 	$("#row_event_graph_by_agent").hide();
 	$("#row_event_graph_by_user").hide();
@@ -2229,6 +2529,14 @@ function chooseType() {
 	$("#row_resolution").hide();
 	$("#row_last_value").hide();
 	$("#row_filter_search").hide();
+	$("#row_percentil").hide();
+	$("#agents_row").hide();
+	$("#select_agent_modules").hide();
+	$("#modules_row").hide();
+	$("#row_show_summary_group").hide();
+	$("#row_event_severity").hide();
+	$("#row_event_type").hide();
+	$("#row_event_status").hide();
 	
 	// SLA list default state
 	$("#sla_list").hide();
@@ -2244,26 +2552,11 @@ function chooseType() {
 	$('#agent_autocomplete_events').show();
 	
 	switch (type) {
-		case 'event_report_group':
-			$("#row_description").show();
-			$("#row_period").show();
-			$("#row_servers").show();
-			$("#row_group").show();
-			$("#row_show_in_two_columns").show();
-			$("#row_event_filter").show();
-			$("#row_event_graphs").show();
-			
-			$("#row_event_graph_by_agent").show();
-			$("#row_event_graph_by_user").show();
-			$("#row_event_graph_by_criticity").show();
-			$("#row_event_graph_by_validated").show();
-			
-			$("#row_filter_search").show();
-			break;
-		
 		case 'simple_graph':
 			$("#row_time_compare_overlapped").show();
 			$("#row_only_avg").show();
+			if ($("#checkbox-percentil").prop("checked"))
+				$("#row_percentil").show();
 			// The break hasn't be forgotten, this element
 			// only should be shown on the simple graphs.
 		case 'simple_baseline_graph':
@@ -2311,15 +2604,23 @@ function chooseType() {
 			$("#row_working_time").show();
 			$("#row_only_display_wrong").show();
 			$("#row_show_graph").show();
-			$("#row_show_in_two_columns").show();
 			$("#row_sort").show();
+			$('#row_hide_notinit_agents').show();
+			break;
+
+		case 'availability_graph':
+			$("#row_description").show();
+			$("#row_period").show();
+			$("#sla_list").show();
+			$("#row_working_time").show();
 			break;
 		
 		case 'SLA_monthly':
+		case 'SLA_weekly':
+		case 'SLA_hourly':
 			$("#row_description").show();
 			$("#sla_list").show();
 			$("#row_working_time").show();
-			$("#row_show_in_two_columns").show();
 			$("#row_sort").show();
 			break;
 		
@@ -2505,20 +2806,44 @@ function chooseType() {
 			$("#row_show_in_two_columns").show();
 			break;
 		
+		case 'event_report_group':
+			$("#row_description").show();
+			$("#row_period").show();
+			$("#row_servers").show();
+			$("#row_group").show();
+			$("#row_event_severity").show();
+			$("#row_event_status").show();
+			$("#row_show_summary_group").show();
+			
+			$("#row_event_graph_by_agent").show();
+			$("#row_event_graph_by_user").show();
+			$("#row_event_graph_by_criticity").show();
+			$("#row_event_graph_by_validated").show();
+			$("#row_event_type").show();
+			
+			$("#row_filter_search").show();
+			break;
+
+
 		case 'event_report_agent':
 			$("#row_description").show();
 			$("#row_agent").show();
 			$("#row_period").show();
-			$("#row_show_in_two_columns").show();
-			$("#row_event_filter").show();
+			$("#row_event_severity").show();
+			$("#row_event_status").show();
+			$("#row_show_summary_group").show();
 			$("#row_event_graphs").show();
+			$("#row_event_type").show();
+			
 			
 			$("#row_event_graph_by_user").show();
 			$("#row_event_graph_by_criticity").show();
 			$("#row_event_graph_by_validated").show();
 			
+			
 			$('#agent_autocomplete').hide();
 			$('#agent_autocomplete_events').show();
+			$("#row_filter_search").show();
 			break;
 		
 		case 'event_report_module':
@@ -2526,15 +2851,19 @@ function chooseType() {
 			$("#row_agent").show();
 			$("#row_module").show();
 			$("#row_period").show();
-			$("#row_show_in_two_columns").show();
-			
-			$("#row_event_graph_by_agent").show();
+			$("#row_event_severity").show();
+			$("#row_event_status").show();
+			$("#row_show_summary_group").show();
+			$("#row_event_graphs").show();
+			$("#row_event_type").show();
+
 			$("#row_event_graph_by_user").show();
 			$("#row_event_graph_by_criticity").show();
 			$("#row_event_graph_by_validated").show();
 			
 			$('#agent_autocomplete').hide();
 			$('#agent_autocomplete_events').show();
+			$("#row_filter_search").show();
 			break;
 		
 		case 'general':
@@ -2564,6 +2893,7 @@ function chooseType() {
 			$("#row_show_in_two_columns").show();
 			$("#row_show_resume").show();
 			$("#row_working_time").show();
+			$('#row_hide_notinit_agents').show();
 			break;
 		
 		case 'group_report':
@@ -2614,6 +2944,9 @@ function chooseType() {
 			$("#row_description").show();
 			$("#row_group").show();
 			$("#row_module_group").show();
+			$("#select_agent_modules").show();
+			$("#agents_row").show();
+			$("#modules_row").show();
 			break;
 		
 		case 'inventory_changes':
@@ -2721,7 +3054,32 @@ function chooseType() {
 			$("#row_resolution").show();
 			$("#row_servers").show();
 			break;
-		
+	}
+	switch (type) {
+		case 'event_report_agent':
+		case 'simple_graph':
+		case 'agent_configuration':
+		case 'event_report_module':
+		case 'alert_report_agent':
+		case 'alert_report_module':
+		case 'historical_data':
+		case 'sumatory':
+		case 'database_serialized':
+		case 'monitor_report':
+		case 'min_value':
+		case 'max_value':
+		case 'avg_value':
+		case 'projection_graph':
+		case 'prediction_date':
+		case 'TTRT':
+		case 'TTO':
+		case 'MTBF':
+		case 'MTTR':
+		case 'simple_baseline_graph':
+			$("#row_label").show();
+			break;
+		default:
+			break;
 	}
 }
 

@@ -150,8 +150,9 @@ function d3_bullet_chart($chart_data, $width, $height, $color, $legend,
 	$output .= include_javascript_d3(true);
 	
 	$id_bullet = uniqid();
-	
-	$output .= 
+	$font = array_shift(explode(".",array_pop(explode("/",$font))));
+
+	$output .=
 		'<div id="bullet_graph_' . $id_bullet . '" class="bullet" style="overflow: hidden; width: '.$width.'px; margin-left: auto; margin-right: auto;"></div>
 		<style>
 			
@@ -175,8 +176,8 @@ function d3_bullet_chart($chart_data, $width, $height, $color, $legend,
 			.bullet .measure.s1 { fill: steelblue; }
 			.bullet .title { font-size: 7pt; font-weight: bold; text-align:left; }
 			.bullet .subtitle { fill: #999; font-size: 7pt;}
-			.bullet g text { font-size: 7pt;}
-		
+			.bullet g text { font-size:'.$font_size.'pt;}
+
 		</style>
 		<script src="'. $config['homeurl'] . 'include/graphs/bullet.js"></script>
 		<script language="javascript" type="text/javascript">
@@ -229,7 +230,7 @@ function d3_bullet_chart($chart_data, $width, $height, $color, $legend,
 			.attr("transform", "translate(-10, 15)");
 		
 		title.append("text")
-			.attr("class", "title")
+			.attr("class", "'.$font.'")
 			.text(function(d) { return d.title; });
 		
 		title.append("text")
@@ -272,7 +273,7 @@ function d3_gauges($chart_data, $width, $height, $color, $legend,
 	
 	$output .= "<script language=\"javascript\" type=\"text/javascript\">
 					var data = $data;
-					createGauges(data, '$width', '$height','$font_size','$no_data_image');
+					createGauges(data, '$width', '$height','$font_size','$no_data_image','$font');
 				</script>";
 
 	return $output;

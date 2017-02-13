@@ -53,7 +53,7 @@ if ($is_extra === ENTERPRISE_NOT_HOOK) {
 	$is_extra = false;
 }
 
-if (! check_acl ($config["id_user"], $agent["id_grupo"], "AR") && !$is_extra) {
+if (! check_acl ($config["id_user"], $agent["id_grupo"], "AR") && ! check_acl ($config["id_user"], $agent["id_grupo"], "AW") && !$is_extra) {
 	db_pandora_audit("ACL Violation", 
 		"Trying to access Agent General Information");
 	require_once ("general/noaccess.php");
@@ -173,9 +173,9 @@ $data[2] = html_print_image('images/default_list.png', true,
 $table_agent->cellstyle[count($table_agent->data)][2] =
 	'width: 16px; text-align: right; padding: 0px;';
 $data[3] = '<span style="vertical-align:top; display: inline-block;">';
-$data[3] .= empty($agent["comentarios"]) ?
-	'<em>' . __('N/A') . '</em>' :
-	ui_bbcode_to_html($agent["comentarios"]);
+$data[3] .= empty($agent["comentarios"])
+	? '<em>' . __('N/A') . '</em>'
+	: $agent["comentarios"];
 $data[3] .= '</span>';
 $table_agent->colspan[count($table_agent->data)][3] = 2;
 
@@ -191,7 +191,7 @@ $table_contact->width = '100%';
 $table_contact->cellspacing = 0;
 $table_contact->cellpadding = 0;
 $table_contact->class = 'databox data';
-$table_contact->style[0] = 'width: 30%;';
+$table_contact->style[0] = 'width: 30%;height:30px;';
 $table_contact->style[1] = 'width: 70%;';
 
 $table_contact->head[0] = ' <span>' . __('Agent contact') . '</span>';
@@ -267,7 +267,7 @@ $table_data->data[] = $data;
 if (!empty($addresses)) {
 	$data = array();
 	$data[0] = '<b>' . __('Other IP addresses') . '</b>';
-	$data[1] = '<div style="max-height: 45px; overflow: scroll; height:45px;">' .
+	$data[1] = '<div style="max-height: 45px; overflow-y: scroll; height:45px;">' .
 		implode('<br>',$addresses) .
 		'</div>';
 	//~ $table_data->data[] = '<div style="max-height: 200px; overflow: hidden;>' .
@@ -359,6 +359,9 @@ foreach ($fields as $field) {
 	if ($custom_value === false || $custom_value == '') {
 		$custom_value = '<i>'.__('N/A').'</i>';
 	}
+	else {
+		$custom_value = ui_bbcode_to_html($custom_value);
+	}
 	$data[1] = $custom_value;
 	$table_data->data[] = $data;
 }
@@ -428,7 +431,7 @@ if (!empty($network_interfaces)) {
 	$table_interface->style['interface_graph'] = 'width: 20px;padding-top:0px;padding-bottom:0px;';
 	$table_interface->style['interface_event_graph'] = 'width: 100%;padding-top:0px;padding-bottom:0px;';
 	$table_interface->align['interface_event_graph'] = 'right';
-	$table_interface->style['interface_event_graph'] = 'width: 5%;padding-top:0px;padding-bottom:0px;';
+	//$table_interface->style['interface_event_graph'] = 'width: 5%;padding-top:0px;padding-bottom:0px;';
 	$table_interface->align['interface_event_graph_text'] = 'left';
 	$table_interface->style['interface_name'] = 'width: 10%;padding-top:0px;padding-bottom:0px;';
 	$table_interface->align['interface_name'] = 'left';
@@ -553,6 +556,9 @@ if (!empty($network_interfaces)) {
 			$data['interface_event_graph_text'] = ui_print_help_tip('Module events graph', true);
 			$event_text_cont++;
 		}
+		else {
+			$data['interface_event_graph_text'] = "";
+		}
 		$table_interface->data[] = $data;
 	}
 	// This javascript piece of code is used to make expandible the body of the table
@@ -613,7 +619,8 @@ $table->rowspan[1][0] = 0;
 
 $data[0][2] = '<div style="width:100%; text-align:right">';
 $data[0][2] .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;refr=60">' . html_print_image("images/refresh.png", true, array("border" => '0', "title" => __('Refresh data'), "alt" => "")) . '</a><br>';
-$data[0][2] .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;flag_agent=1&amp;id_agente='.$id_agente.'">' . html_print_image("images/target.png", true, array("border" => '0', "title" => __('Force'), "alt" => "")) . '</a>';
+if (check_acl ($config["id_user"], $agent["id_grupo"], "AW"))
+	$data[0][2] .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;flag_agent=1&amp;id_agente='.$id_agente.'">' . html_print_image("images/target.png", true, array("border" => '0', "title" => __('Force remote checks'), "alt" => "")) . '</a>';
 $data[0][2] .= '</div>';
 
 $table->data = $data;

@@ -42,8 +42,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "6.1dev";
-my $pandora_build = "160601";
+my $pandora_version = "7.0dev";
+my $pandora_build = "170213";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -165,6 +165,12 @@ sub pandora_get_sharedconfig ($$) {
 	
 	#Limit of events replicate in metaconsole
 	$pa_config->{'replication_limit'} = pandora_get_tconfig_token ($dbh, 'replication_limit', 1000);
+	$pa_config->{'include_agents'} = pandora_get_tconfig_token ($dbh, 'include_agents', 0);
+
+	if ($pa_config->{'include_agents'} eq '') {
+		$pa_config->{'include_agents'} = 0;
+	}
+
 }
 
 ##########################################################################
@@ -189,6 +195,9 @@ sub pandora_load_config {
 	$pa_config->{"dbname"} = "pandora";
 	$pa_config->{"basepath"} = $pa_config->{'pandora_path'}; # Compatibility with Pandora 1.1
 	$pa_config->{"incomingdir"} = "/var/spool/pandora/data_in";
+	$pa_config->{"user"}  = "pandora"; # environment settings default user owner for files generated
+	$pa_config->{"group"} = "apache"; # environment settings default group owner for files generated
+	$pa_config->{"umask"} = "0007"; # environment settings umask applied over chmod (A & (not B))
 	$pa_config->{"server_threshold"} = 30;
 	$pa_config->{"alert_threshold"} = 60;
 	$pa_config->{"log_file"} = "/var/log/pandora_server.log";
@@ -208,6 +217,10 @@ sub pandora_load_config {
 	$pa_config->{"exportserver"} = 1; # default
 	$pa_config->{"inventoryserver"} = 1; # default
 	$pa_config->{"webserver"} = 1; # 3.0
+	$pa_config->{"transactionalserver"} = 0; # Default 0, introduced on 6.1
+	$pa_config->{"transactional_threads"} = 1; # Default 1, introduced on 6.1
+	$pa_config->{"transactional_threshold"} = 2; # Default 2, introduced on 6.1
+	$pa_config->{"transactional_pool"} = $pa_config->{"incomingdir"} . "/" . "trans"; # Default, introduced on 6.1
 	$pa_config->{'snmp_logfile'} = "/var/log/pandora_snmptrap.log";
 	$pa_config->{"network_threads"} = 3; # Fixed default
 	$pa_config->{"keepalive"} = 60; # 60 Seconds initially for server keepalive
@@ -254,6 +267,7 @@ sub pandora_load_config {
 	$pa_config->{"snmp_pdu_address"} = 0; # 5.0
 	$pa_config->{"snmp_storm_protection"} = 0; # 5.0
 	$pa_config->{"snmp_storm_timeout"} = 600; # 5.0
+	$pa_config->{"snmp_delay"} = 0; # > 6.0SP3
 	$pa_config->{"snmpconsole_threads"} = 1; # 5.1
 	$pa_config->{"translate_variable_bindings"} = 0; # 5.1
 	$pa_config->{"translate_enterprise_strings"} = 1; # 5.1
@@ -411,6 +425,14 @@ sub pandora_load_config {
 	$pa_config->{"warmup_unknown_interval"} = 300; # 6.1
 	$pa_config->{"warmup_unknown_on"} = 1; # 6.1
 
+	#$pa_config->{'include_agents'} = 0; #6.1
+	#
+	# External .enc files for XML::Parser.
+	$pa_config->{"enc_dir"} = ""; # > 6.0SP4
+
+	# Enable (1) or disable (0) events related to the unknown status.
+	$pa_config->{"unknown_events"} = 1; # > 6.0SP4
+
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
 		if ($> == 0){
@@ -506,7 +528,7 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^mta_from\s(.*)/i) { 
 			$pa_config->{'mta_from'}= clean_blank($1); 
 		}
-		elsif ($parametro =~ m/^mail_in_separate\s([0-9]*)/i) { 
+		elsif ($parametro =~ m/^mail_in_separate\s+([0-9]*)/i) { 
 			$pa_config->{'mail_in_separate'}= clean_blank($1); 
 		}
 		elsif ($parametro =~ m/^snmp_logfile\s(.*)/i) { 
@@ -524,6 +546,9 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^snmp_storm_timeout\s+(\d+)/i) { 
 			$pa_config->{'snmp_storm_timeout'}= clean_blank($1); 
 		}
+		elsif ($parametro =~ m/^snmp_delay\s+(\d+)/i) { 
+			$pa_config->{'snmp_delay'}= clean_blank($1); 
+		}
 		elsif ($parametro =~ m/^snmpconsole_threads\s+(\d+)/i) { 
 			$pa_config->{'snmpconsole_threads'}= clean_blank($1); 
 		}
@@ -532,6 +557,15 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^translate_enterprise_strings\s+([0-1])/i) { 
 			$pa_config->{'translate_enterprise_strings'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^user\s(.*)/i) { 
+			$pa_config->{'user'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^group\s(.*)/i) { 
+			$pa_config->{'group'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^umask\s(.*)/i) { 
+			$pa_config->{'umask'}= clean_blank($1); 
 		}
 		elsif ($parametro =~ m/^dbengine\s(.*)/i) { 
 			$pa_config->{'dbengine'}= clean_blank($1); 
@@ -551,115 +585,132 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^dbport\s(.*)/i) { 
 			$pa_config->{'dbport'}= clean_blank($1); 
 		}
-		elsif ($parametro =~ m/^daemon\s([0-9]*)/i) { 
+		elsif ($parametro =~ m/^daemon\s+([0-9]*)/i) { 
 			$pa_config->{'daemon'}= clean_blank($1);
 		}
-		elsif ($parametro =~ m/^dataserver\s([0-9]*)/i){
+		elsif ($parametro =~ m/^dataserver\s+([0-9]*)/i){
 			$pa_config->{'dataserver'}= clean_blank($1);
 		}
-		elsif ($parametro =~ m/^networkserver\s([0-9]*)/i){
+		elsif ($parametro =~ m/^networkserver\s+([0-9]*)/i){
 			$pa_config->{'networkserver'}= clean_blank($1);
 		}
-		elsif ($parametro =~ m/^pluginserver\s([0-9]*)/i){
+		elsif ($parametro =~ m/^pluginserver\s+([0-9]*)/i){
 			$pa_config->{'pluginserver'}= clean_blank($1);
 		}
-		elsif ($parametro =~ m/^predictionserver\s([0-9]*)/i){
+		elsif ($parametro =~ m/^predictionserver\s+([0-9]*)/i){
 			$pa_config->{'predictionserver'}= clean_blank($1);
 		}
-		elsif ($parametro =~ m/^reconserver\s([0-9]*)/i) {
+		elsif ($parametro =~ m/^reconserver\s+([0-9]*)/i) {
 			$pa_config->{'reconserver'}= clean_blank($1);
 		}
-		elsif ($parametro =~ m/^reconserver\s([0-9]*)/i) {
+		elsif ($parametro =~ m/^reconserver\s+([0-9]*)/i) {
 			$pa_config->{'reconserver'}= clean_blank($1);
 		}
-		elsif ($parametro =~ m/^wmiserver\s([0-9]*)/i) {
+		elsif ($parametro =~ m/^wmiserver\s+([0-9]*)/i) {
 			$pa_config->{'wmiserver'}= clean_blank($1);
 		}
-		elsif ($parametro =~ m/^exportserver\s([0-9]*)/i) {
+		elsif ($parametro =~ m/^exportserver\s+([0-9]*)/i) {
 			$pa_config->{'exportserver'}= clean_blank($1);
 		}
-		elsif ($parametro =~ m/^inventoryserver\s([0-9]*)/i) {
+		elsif ($parametro =~ m/^inventoryserver\s+([0-9]*)/i) {
 			$pa_config->{'inventoryserver'}= clean_blank($1);
 		}
-		elsif ($parametro =~ m/^webserver\s([0-9]*)/i) {
+		elsif ($parametro =~ m/^webserver\s+([0-9]*)/i) {
 			$pa_config->{'webserver'}= clean_blank($1);
 		}
-		elsif ($parametro =~ m/^eventserver\s([0-9]*)/i) {
+		elsif ($parametro =~ m/^transactionalserver\s+([0-9]*)/i) {
+			$pa_config->{'transactionalserver'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^transactional_threads\s+([0-9]*)/i) {
+			$pa_config->{'transactional_threads'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^transactional_threshold\s+([0-9]*\.{0,1}[0-9]*)/i) {
+			$pa_config->{'transactional_threshold'}= clean_blank($1);
+		}
+		if ($parametro =~ m/^transactional_pool\s(.*)/i) {
+			$tbuf= clean_blank($1); 
+			if ($tbuf =~ m/^\.(.*)/){
+				$pa_config->{"transactional_pool"} = $pa_config->{"incomingdir"} . "/" . $1;
+			} else {
+				$pa_config->{"transactional_pool"} = $pa_config->{"incomingdir"} . "/" . $tbuf;
+			}
+		}
+		elsif ($parametro =~ m/^eventserver\s+([0-9]*)/i) {
 			$pa_config->{'eventserver'}= clean_blank($1);
 		}
-		elsif ($parametro =~ m/^icmpserver\s([0-9]*)/i) {
+		elsif ($parametro =~ m/^icmpserver\s+([0-9]*)/i) {
 			$pa_config->{'icmpserver'}= clean_blank($1);
 		}
-		elsif ($parametro =~ m/^icmp_threads\s([0-9]*)/i) {
+		elsif ($parametro =~ m/^icmp_threads\s+([0-9]*)/i) {
 			$pa_config->{'icmp_threads'}= clean_blank($1);
 		}
 		elsif ($parametro =~ m/^servername\s(.*)/i) { 
 			$pa_config->{'servername'}= clean_blank($1);
 		}
-		elsif ($parametro =~ m/^checksum\s([0-9])/i) { 
+		elsif ($parametro =~ m/^checksum\s+([0-9])/i) { 
 			$pa_config->{"pandora_check"} = clean_blank($1); 
 		}
-		elsif ($parametro =~ m/^master\s([0-9])/i) { 
+		elsif ($parametro =~ m/^master\s+([0-9])/i) { 
 			$pa_config->{"pandora_master"} = clean_blank($1); 
 		}
-		elsif ($parametro =~ m/^icmp_checks\s([0-9]*)/i) { 
+		elsif ($parametro =~ m/^icmp_checks\s+([0-9]*)/i) { 
 			$pa_config->{"icmp_checks"} = clean_blank($1); 
 		}
-		elsif ($parametro =~ m/^icmp_packets\s([0-9]*)/i) {
+		elsif ($parametro =~ m/^icmp_packets\s+([0-9]*)/i) {
 			$pa_config->{"icmp_packets"} = clean_blank($1); 
 		}
-		elsif ($parametro =~ m/^snmpconsole\s([0-9]*)/i) {
+		elsif ($parametro =~ m/^snmpconsole\s+([0-9]*)/i) {
 			$pa_config->{"snmpconsole"} = clean_blank($1);
 		}
-		elsif ($parametro =~ m/^snmpserver\s([0-9]*)/i) {
+		elsif ($parametro =~ m/^snmpserver\s+([0-9]*)/i) {
 			$pa_config->{"snmpserver"} = clean_blank($1);
 		}
-		elsif ($parametro =~ m/^alert_recovery\s([0-9]*)/i) {
+		elsif ($parametro =~ m/^alert_recovery\s+([0-9]*)/i) {
 			$pa_config->{"alert_recovery"} = clean_blank($1);
 		}
-		elsif ($parametro =~ m/^snmp_checks\s([0-9]*)/i) {
+		elsif ($parametro =~ m/^snmp_checks\s+([0-9]*)/i) {
 			$pa_config->{"snmp_checks"} = clean_blank($1);
 		}
-		elsif ($parametro =~ m/^snmp_timeout\s([0-9]*)/i) {
+		elsif ($parametro =~ m/^snmp_timeout\s+([0-9]*)/i) {
 			$pa_config->{"snmp_timeout"} = clean_blank($1);
 		}
-		elsif ($parametro =~ m/^tcp_checks\s([0-9]*)/i) {
+		elsif ($parametro =~ m/^tcp_checks\s+([0-9]*)/i) {
 			$pa_config->{"tcp_checks"} = clean_blank($1);
 		}
-		elsif ($parametro =~ m/^tcp_timeout\s([0-9]*)/i) {
+		elsif ($parametro =~ m/^tcp_timeout\s+([0-9]*)/i) {
 			$pa_config->{"tcp_timeout"} = clean_blank($1);
 		}
-		elsif ($parametro =~ m/^snmp_proc_deadresponse\s([0-9]*)/i) { 
+		elsif ($parametro =~ m/^snmp_proc_deadresponse\s+([0-9]*)/i) { 
 			$pa_config->{"snmp_proc_deadresponse"} = clean_blank($1);
 		}
-		elsif ($parametro =~ m/^verbosity\s([0-9]*)/i) {
+		elsif ($parametro =~ m/^verbosity\s+([0-9]*)/i) {
 			$pa_config->{"verbosity"} = clean_blank($1); 
 		} 
-		elsif ($parametro =~ m/^server_threshold\s([0-9]*)/i) { 
+		elsif ($parametro =~ m/^server_threshold\s+([0-9]*)/i) { 
 			$pa_config->{"server_threshold"} = clean_blank($1); 
 		} 
-		elsif ($parametro =~ m/^alert_threshold\s([0-9]*)/i) { 
+		elsif ($parametro =~ m/^alert_threshold\s+([0-9]*)/i) { 
 			$pa_config->{"alert_threshold"} = clean_blank($1); 
 		} 
-		elsif ($parametro =~ m/^network_timeout\s([0-9]*)/i) {
+		elsif ($parametro =~ m/^network_timeout\s+([0-9]*)/i) {
 			$pa_config->{'networktimeout'}= clean_blank($1); 
 		}
-		elsif ($parametro =~ m/^network_threads\s([0-9]*)/i) {
+		elsif ($parametro =~ m/^network_threads\s+([0-9]*)/i) {
 			$pa_config->{'network_threads'}= clean_blank($1); 
 		}
-		elsif ($parametro =~ m/^plugin_threads\s([0-9]*)/i) {
+		elsif ($parametro =~ m/^plugin_threads\s+([0-9]*)/i) {
 			$pa_config->{'plugin_threads'}= clean_blank($1); 
 		}
-		elsif ($parametro =~ m/^prediction_threads\s([0-9]*)/i) {
+		elsif ($parametro =~ m/^prediction_threads\s+([0-9]*)/i) {
 			$pa_config->{'prediction_threads'}= clean_blank($1); 
 		}
-		elsif ($parametro =~ m/^plugin_timeout\s([0-9]*)/i) {
+		elsif ($parametro =~ m/^plugin_timeout\s+([0-9]*)/i) {
 			$pa_config->{'plugin_timeout'}= clean_blank($1); 
 		}
-		elsif ($parametro =~ m/^dataserver_threads\s([0-9]*)/i) {
+		elsif ($parametro =~ m/^dataserver_threads\s+([0-9]*)/i) {
 			$pa_config->{'dataserver_threads'}= clean_blank($1); 
 		}
-		elsif ($parametro =~ m/^server_keepalive\s([0-9]*)/i) {
+		elsif ($parametro =~ m/^server_keepalive\s+([0-9]*)/i) {
 			$pa_config->{"keepalive"} = clean_blank($1);
 			$pa_config->{"keepalive_orig"} = clean_blank($1);
 		}
@@ -669,16 +720,16 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^fping\s(.*)/i) {
 			$pa_config->{'fping'}= clean_blank($1); 
 		}
-		elsif ($parametro =~ m/^nmap_timing_template\s([0-9]*)/i) {
+		elsif ($parametro =~ m/^nmap_timing_template\s+([0-9]*)/i) {
 			$pa_config->{'nmap_timing_template'}= clean_blank($1); 
 		}
-		elsif ($parametro =~ m/^recon_timing_template\s([0-9]*)/i) {
+		elsif ($parametro =~ m/^recon_timing_template\s+([0-9]*)/i) {
 			$pa_config->{'recon_timing_template'}= clean_blank($1); 
 		}
 		elsif ($parametro =~ m/^braa\s(.*)/i) {
 			$pa_config->{'braa'}= clean_blank($1); 
 		}
-		elsif ($parametro =~ m/^braa_retries\s([0-9]*)/i) {
+		elsif ($parametro =~ m/^braa_retries\s+([0-9]*)/i) {
 			$pa_config->{"braa_retries"} = clean_blank($1);
 		}
 		elsif ($parametro =~ m/^xprobe2\s(.*)/i) {
@@ -687,28 +738,28 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^snmpget\s(.*)/i) {
 			$pa_config->{'snmpget'}= clean_blank($1); 
 		}
-		elsif ($parametro =~ m/^autocreate\s([0-9*]*)/i) {
+		elsif ($parametro =~ m/^autocreate\s+([0-9*]*)/i) {
 			$pa_config->{'autocreate'}= clean_blank($1); 
 		}
-		elsif ($parametro =~ m/^autocreate_group\s([0-9*]*)/i) {
+		elsif ($parametro =~ m/^autocreate_group\s+([0-9*]*)/i) {
 			$pa_config->{'autocreate_group'}= clean_blank($1); 
 		}
-		elsif ($parametro =~ m/^recon_threads\s([0-9]*)/i) {
+		elsif ($parametro =~ m/^recon_threads\s+([0-9]*)/i) {
 			$pa_config->{'recon_threads'}= clean_blank($1); 
 		}
-		elsif ($parametro =~ m/^max_log_size\s([0-9]*)/i) {
+		elsif ($parametro =~ m/^max_log_size\s+([0-9]*)/i) {
 			$pa_config->{'max_log_size'}= clean_blank($1); 
 		}
-		elsif ($parametro =~ m/^max_log_generation\s([1-9])/i) {
+		elsif ($parametro =~ m/^max_log_generation\s+([1-9])/i) {
 			$pa_config->{'max_log_generation'}= clean_blank($1);
 		}
-		elsif ($parametro =~ m/^wmi_threads\s([0-9]*)/i) {
+		elsif ($parametro =~ m/^wmi_threads\s+([0-9]*)/i) {
 			$pa_config->{'wmi_threads'}= clean_blank($1); 
 		}
 		elsif ($parametro =~ m/^wmi_client\s(.*)/i) {
 			$pa_config->{'wmi_client'}= clean_blank($1); 
 		}
-		elsif ($parametro =~ m/^web_threads\s([0-9]*)/i) {
+		elsif ($parametro =~ m/^web_threads\s+([0-9]*)/i) {
 			$pa_config->{'web_threads'}= clean_blank($1); 
 		}
 		elsif ($parametro =~ m/^web_engine\s(.*)/i) {
@@ -720,16 +771,16 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^plugin_exec\s(.*)/i) {
 			$pa_config->{'plugin_exec'}= clean_blank($1); 
 		}
-		elsif ($parametro =~ m/^inventory_threads\s([0-9]*)/i) {
+		elsif ($parametro =~ m/^inventory_threads\s+([0-9]*)/i) {
 			$pa_config->{'inventory_threads'}= clean_blank($1); 
 		}
-		elsif ($parametro =~ m/^export_threads\s([0-9]*)/i) {
+		elsif ($parametro =~ m/^export_threads\s+([0-9]*)/i) {
 			$pa_config->{'export_threads'}= clean_blank($1); 
 		}
-		elsif ($parametro =~ m/^max_queue_files\s([0-9]*)/i) {
+		elsif ($parametro =~ m/^max_queue_files\s+([0-9]*)/i) {
 			$pa_config->{'max_queue_files'}= clean_blank($1);
 		}
-		elsif ($parametro =~ m/^use_xml_timestamp\s([0-1])/i) {
+		elsif ($parametro =~ m/^use_xml_timestamp\s+([0-1])/i) {
 			$pa_config->{'use_xml_timestamp'} = clean_blank($1);
 		}
 		elsif ($parametro =~ m/^restart_delay\s+(\d+)/i) {
@@ -817,37 +868,37 @@ sub pandora_load_config {
 			$pa_config->{'event_expiry_window'}= clean_blank($1);
 		}
 		elsif ($parametro =~ m/^snmp_forward_trap\s+([0-1])/i) {
-			$pa_config->{'snmp_forward_trap'}= safe_input($1);
+			$pa_config->{'snmp_forward_trap'}= clean_blank($1);
 		}
 		elsif ($parametro =~ m/^snmp_forward_secName\s(.*)/i) {
-			$pa_config->{'snmp_forward_secName'}= safe_input($1);
+			$pa_config->{'snmp_forward_secName'}= safe_input(clean_blank($1));
 		}
 		elsif ($parametro =~ m/^snmp_forward_engineid\s(.*)/i) {
-                        $pa_config->{'snmp_forward_engineid'}= safe_input($1);
+                        $pa_config->{'snmp_forward_engineid'}= safe_input(clean_blank($1));
                 }	
 		elsif ($parametro =~ m/^snmp_forward_authProtocol\s(.*)/i) {
-                        $pa_config->{'snmp_forward_authProtocol'}= safe_input($1);
+                        $pa_config->{'snmp_forward_authProtocol'}= safe_input(clean_blank($1));
                 }
 		elsif ($parametro =~ m/^snmp_forward_authPassword\s(.*)/i) {
-                        $pa_config->{'snmp_forward_authPassword'}= safe_input($1);
+                        $pa_config->{'snmp_forward_authPassword'}= safe_input(clean_blank($1));
                 }
 		elsif ($parametro =~ m/^snmp_forward_community\s(.*)/i) {
-                        $pa_config->{'snmp_forward_community'}= safe_input($1);
+                        $pa_config->{'snmp_forward_community'}= safe_input(clean_blank($1));
                 }
 		elsif ($parametro =~ m/^snmp_forward_privProtocol\s(.*)/i) {
-                        $pa_config->{'snmp_forward_privProtocol'}= safe_input($1);
+                        $pa_config->{'snmp_forward_privProtocol'}= safe_input(clean_blank($1));
                 }
 		elsif ($parametro =~ m/^snmp_forward_privPassword\s(.*)/i) {
-                        $pa_config->{'snmp_forward_privPassword'}= safe_input($1);
+                        $pa_config->{'snmp_forward_privPassword'}= safe_input(clean_blank($1));
                 }
 		elsif ($parametro =~ m/^snmp_forward_secLevel\s(.*)/i) {
-                        $pa_config->{'snmp_forward_secLevel'}= safe_input($1);
+                        $pa_config->{'snmp_forward_secLevel'}= safe_input(clean_blank($1));
                 }
 		elsif ($parametro =~ m/^snmp_forward_version\s(.*)/i) {
-                        $pa_config->{'snmp_forward_version'}= safe_input($1);
+                        $pa_config->{'snmp_forward_version'}= safe_input(clean_blank($1));
                 }
 		elsif ($parametro =~ m/^snmp_forward_ip\s(.*)/i) {
-			$pa_config->{'snmp_forward_ip'}= safe_input($1);
+			$pa_config->{'snmp_forward_ip'}= safe_input(clean_blank($1));
 			if ($pa_config->{'snmp_forward_trap'}==1 && ($pa_config->{'snmp_forward_ip'} eq '127.0.0.1' || $pa_config->{'snmp_forward_ip'} eq 'localhost')) {
 				printf "\n [ERROR] Cannot set snmp_forward_ip to localhost or 127.0.0.1 \n";
                 		exit 1;
@@ -855,28 +906,28 @@ sub pandora_load_config {
 			}
 		}
 		elsif ($parametro =~ m/^claim_back_snmp_modules\s(.*)/i) {
-			$pa_config->{'claim_back_snmp_modules'}= safe_input($1);
+			$pa_config->{'claim_back_snmp_modules'}= safe_input(clean_blank($1));
 		}
 		elsif ($parametro =~ m/^async_recovery\s+([0-1])/i) {
-			$pa_config->{'async_recovery'}= safe_input($1);
+			$pa_config->{'async_recovery'}= clean_blank($1);
 		}
 		elsif ($parametro =~ m/^console_api_url\s(.*)/i) {
-			$pa_config->{'console_api_url'}= safe_input($1);
+			$pa_config->{'console_api_url'}= safe_input(clean_blank($1));
 		}
 		elsif ($parametro =~ m/^console_api_pass\s(.*)/i) {
-			$pa_config->{'console_api_pass'}= safe_input($1);
+			$pa_config->{'console_api_pass'}= safe_input(clean_blank($1));
 		}
 		elsif ($parametro =~ m/^console_user\s(.*)/i) {
-			$pa_config->{'console_user'}= safe_input($1);
+			$pa_config->{'console_user'}= safe_input(clean_blank($1));
 		}
 		elsif ($parametro =~ m/^console_pass\s(.*)/i) {
-			$pa_config->{'console_pass'}= safe_input($1);
+			$pa_config->{'console_pass'}= safe_input(clean_blank($1));
 		}
 		elsif ($parametro =~ m/^encryption_passphrase\s(.*)/i) { # 6.0
-			$pa_config->{'encryption_passphrase'}= safe_input($1);
+			$pa_config->{'encryption_passphrase'}= safe_input(clean_blank($1));
 		}
-		elsif ($parametro =~ m/^unknown_interval\s([0-9]*)/i) { # > 5.1SP2
-			$pa_config->{'unknown_interval'}= safe_input($1);
+		elsif ($parametro =~ m/^unknown_interval\s+([0-9]*)/i) { # > 5.1SP2
+			$pa_config->{'unknown_interval'}= clean_blank($1);
 		}
 		elsif ($parametro =~ m/^global_alert_timeout\s+([0-9]*)/i) {
 			$pa_config->{'global_alert_timeout'}= clean_blank($1);
@@ -907,6 +958,15 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^warmup_unknown_interval\s+([0-9]*)/i) {
 			$pa_config->{'warmup_unknown_interval'}= clean_blank($1);
 			$pa_config->{'warmup_unknown_on'} = 0 if ($pa_config->{'warmup_unknown_interval'} == 0); # On by default.
+		}
+		#elsif ($parametro =~ m/^include_agents\s+([0-1])/i) {
+		#	$pa_config->{'include_agents'}= clean_blank($1);
+		#}
+		elsif ($parametro =~ m/^enc_dir\s+(.*)/i) {
+			$pa_config->{'enc_dir'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^unknown_events\s+([0-1])/i) {
+			$pa_config->{'unknown_events'} = clean_blank($1);
 		}
 	} # end of loop for parameter #
 

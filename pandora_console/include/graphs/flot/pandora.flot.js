@@ -39,7 +39,7 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 			},
 			background: {
 				opacity: 0.5,
-				color: '#000'
+				color: ''
 			}
 		};
 	}
@@ -103,7 +103,7 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 
 		index = obj.seriesIndex;
 		legends.css('color', '#3F3F3D');
-		legends.eq(index).css('color', '#000000');
+		legends.eq(index).css('color', '');
 	}
 
 	// Reset styles
@@ -117,9 +117,10 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 	}
 }
 
-function pandoraFlotPieCustom(graph_id, values, labels, width, 
-			font_size, water_mark, separator, legend_position, height, 
+function pandoraFlotPieCustom(graph_id, values, labels, width,
+			font_size, font, water_mark, separator, legend_position, height,
 				colors,legend) {
+	font = font.split("/").pop().split(".").shift();
 	var labels = labels.split(separator);
 	var legend = legend.split(separator);
 	var data = values.split(separator);
@@ -152,7 +153,7 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 		},
 		background: {
 			opacity: 0.5,
-			color: '#000'
+			color: ''
 		}
 	};
 	
@@ -189,6 +190,8 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 	legends.each(function () {
 		//$(this).css('width', $(this).width());
 		$(this).css('font-size', font_size+'pt');
+		$(this).removeClass("legendLabel");
+		$(this).addClass(font);
 		$(this).text(legend[j]);
 		j++;
 	});
@@ -222,7 +225,7 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 		
 		index = obj.seriesIndex;
 		legends.css('color', '#3F3F3D');
-		legends.eq(index).css('color', '#000000');
+		legends.eq(index).css('color', '');
 	}
 	
 	function Clickpie(event, pos, obj) {
@@ -259,10 +262,11 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 }
 
 function pandoraFlotHBars(graph_id, values, labels, water_mark,
-	maxvalue, water_mark, separator, separator2) {
+	maxvalue, water_mark, separator, separator2, font, font_size) {
 
 	var colors_data = ['#FC4444','#FFA631','#FAD403','#5BB6E5','#F2919D','#80BA27'];
 	values = values.split(separator2);
+	font = font.split("/").pop().split(".").shift();
 	var datas = new Array();
 	for (i = 0; i < values.length; i++) {
 		var serie = values[i].split(separator);
@@ -309,11 +313,11 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 			yaxis:  {
 					axisLabelUseCanvas: true,
 					axisLabelFontSizePixels: 12,
-					axisLabelFontFamily: 'Verdana, Arial',
+					axisLabelFontFamily: font+'Font',
 					axisLabelPadding: 3,
 					ticks: yFormatter,
 					tickSize: 1,
-					color: '#000',
+					color: '',
 					},
 			legend: {
 				show: false
@@ -324,11 +328,10 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 	// the X axis show negative part instead to
 	// show the axis only the positive part.
 	if (maxvalue == 0) {
-		options['xaxes'][0]['min'] = 0;
-
+		options['yaxis']['min'] = 0;
 		// Fixed the values with a lot of decimals in the situation
 		// with all 0 values.
-		options['xaxes'][0]['tickDecimals'] = 0;
+		options['yaxis']['tickDecimals'] = 0;
 	}
 
 
@@ -337,6 +340,7 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 	$('#' + graph_id).HUseTooltip();
 	$('#' + graph_id).css("margin-left","auto");
 	$('#' + graph_id).css("margin-right","auto");
+	$('#' + graph_id).find('div.legend-tooltip').tooltip({ track: true });
 	// Adjust the top of yaxis tick to set it in the middle of the bars
 	//yAxisHeight = $('#' + graph_id + ' .yAxis .tickLabel')
 		//.css('height').split('px')[0];
@@ -457,7 +461,16 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 	function yFormatter(v, axis) {
 		format = new Array();
 		for (i = 0; i < labels_total.length; i++) {
-			format.push([i,'<div class="legend_'+i+'">'+labels_total[i][1]+'</div>']);
+			var label = labels_total[i][1];
+			var shortLabel = reduceText(label, 30);
+			var title = '';
+			if (label !== shortLabel) {
+				title = label;
+				label = shortLabel;
+			}
+			format.push([i,'<div style=font-size:'+font_size+'pt title="'+title+'" class="'+font+'">'
+				+ label
+				+ '</div>']);
 		}
 		return format;
 	}
@@ -533,27 +546,37 @@ function showTooltip(x, y, color, contents) {
     }).appendTo("body").fadeIn(200);
 }
 
-function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors, water_mark, maxvalue, water_mark, separator, separator2) {
-
+function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors, water_mark, maxvalue, water_mark, separator, separator2, font, font_size , from_ux) {
 	values = values.split(separator2);
 	legend = legend.split(separator);
-	labels_long = labels_long.split(separator);
-	//colors = colors.split(separator);
-	var colors_data = ['#FC4444','#FFA631','#FAD403','#5BB6E5','#F2919D','#80BA27'];
+	font = font.split("/").pop().split(".").shift();
+	labels_long = labels_long.length > 0 ? labels_long.split(separator) : 0;
+	colors = colors.length > 0 ? colors.split(separator) : [];
+	
+	var colors_data = colors.length > 0
+		? colors
+		: ['#FFA631','#FC4444','#FAD403','#5BB6E5','#F2919D','#80BA27'];
 	var datas = new Array();
 	
 	for (i = 0; i < values.length; i++) {
 		var serie = values[i].split(separator);
 		
-		
 		var aux = new Array();
 		for (j = 0; j < serie.length; j++) {
 			var aux2 = parseFloat(serie[j]);
 			aux.push([aux2, j]);
-			datas.push( {
-				data: [[j, aux2]],
-				color: colors_data[j]
-			});
+			if (from_ux) {
+				datas.push( {
+					data: [[j, aux2]],
+					color: colors_data[j]
+				});
+			}
+			else {
+				datas.push( {
+					data: [[j, aux2]],
+					color: colors_data[0]
+				});
+			}
 		};
 	}
 	
@@ -579,7 +602,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 		xaxis: {
 			axisLabelUseCanvas: true,
 			axisLabelFontSizePixels: 7,
-			axisLabelFontFamily: 'Verdana, Arial',
+			axisLabelFontFamily: font+'Font',
 			axisLabelPadding: 0,
 			ticks: xFormatter,
 			labelWidth: 130,
@@ -587,7 +610,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 		yaxis: {
 			axisLabelUseCanvas: true,
 			axisLabelFontSizePixels: 7,
-			axisLabelFontFamily: 'Verdana, Arial',
+			axisLabelFontFamily: font+'Font',
 			axisLabelPadding: 100,
 			autoscaleMargin: 0.02,
 			tickFormatter: function (v, axis) {
@@ -596,7 +619,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 		},
 		legend: {
 			noColumns: 100,
-			labelBoxBorderColor: "#000000",
+			labelBoxBorderColor: "",
 			margin: 100,
 			container: true,
 			sorted: false
@@ -612,6 +635,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 	$('#' + graph_id).VUseTooltip();
 	$('#' + graph_id).css("margin-left","auto");
 	$('#' + graph_id).css("margin-right","auto");
+	$('#' + graph_id).find('div.legend-tooltip').tooltip({ track: true });
 	// Adjust the top of yaxis tick to set it in the middle of the bars
 	//yAxisHeight = $('#'+graph_id+' .yAxis .tickLabel').css('height').split('px')[0];
 	
@@ -664,7 +688,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 	});
 	
 	$('#'+graph_id+' .xAxis .tickLabel')
-		.css('transform', 'rotate(-35deg)')
+		.css('transform', 'rotate(-45deg)')
 		.find('div')
 			.css('position', 'relative')
 			.css('top', '+10px')
@@ -672,9 +696,19 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 	
 	// Format functions
 	function xFormatter(v, axis) {
-		format = new Array();
+		var format = new Array();
 		for (i = 0; i < labels_total.length; i++) {
-			format.push([i,'<div class="legend_'+i+'">'+labels_total[i][1]+'</div>']);
+			var label = labels_total[i][1];
+			var shortLabel = reduceText(label, 35);
+			var title = '';
+			if (label !== shortLabel) {
+				title = label;
+				label = shortLabel;
+			}
+			format.push([i,
+				'<div class="'+font+'" title="'+title+'" style="word-break: break-word; max-width: 110px;font-size:'+font_size+'pt">'
+				+ label
+				+ '</div>']);
 		}
 		return format;
 	}
@@ -684,7 +718,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 	}
 
 	function lFormatter(v, axis) {
-		return '<div style=color:#000>'+v+'</div>';
+		return '<div style=color:>'+v+'</div>';
 	}
 
 	// Events
@@ -701,8 +735,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 	}
 }
 
-function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumulate_data, intervaltick, water_mark, maxvalue, separator, separator2, graph_javascript) {
-
+function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumulate_data, intervaltick, water_mark, maxvalue, separator, separator2, graph_javascript, id_agent) {
 	values = values.split(separator2);
 	labels = labels.split(separator);
 	legend = legend.split(separator);
@@ -737,13 +770,14 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
 			},
 			grid: {
 				hoverable: true,
+				clickable: true,
 				borderWidth:1,
-				borderColor: '#000',
+				borderColor: '',
 				tickColor: '#fff'
 				},
 			xaxes: [ {
 					tickFormatter: xFormatter,
-					color: '#000',
+					color: '',
 					tickSize: intervaltick,
 					tickLength: 0
 					} ],
@@ -777,6 +811,28 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
 		}
 	});
 
+	$('#'+graph_id).bind('plotclick', function(event, pos, item) {
+		if (item) {
+			//from time
+			var from = legend[item.seriesIndex];
+			//to time
+			var to = legend[item.seriesIndex+1];
+			//current date
+			var dateObj = new Date();
+			var month = dateObj.getUTCMonth() + 1; //months from 1-12
+			var day = dateObj.getUTCDate();
+			var year = dateObj.getUTCFullYear();
+				newdate = year + "/" + month + "/" + day;
+
+			if(!to){
+				to= '23:59';
+			}
+			window.location='index.php?sec=eventos&sec2=operation/events/events&id_agent='+id_agent+'&date_from='+newdate+'&time_from='+from+'&date_to='+newdate+'&time_to='+to+'&status=-1';
+		}
+	});
+
+
+
 	$('#'+graph_id).bind('mouseout',resetInteractivity);
 
 	// Reset interactivity styles
@@ -797,14 +853,15 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
 
 function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	colors, type, serie_types, water_mark, width, max_x, homeurl, unit,
-	font_size, menu, events, event_ids, legend_events, alerts,
+	font_size, font, menu, events, event_ids, legend_events, alerts,
 	alert_ids, legend_alerts, yellow_threshold, red_threshold,
 	force_integer, separator, separator2, 
 	yellow_up, red_up, yellow_inverse, red_inverse,
-	series_suffix_str, dashboard, vconsole) {
+	series_suffix_str, dashboard, vconsole, xaxisname,background_color,legend_color) {
 
 	var threshold = true;
 	var thresholded = false;
+	font = font.split("/").pop().split(".").shift();
 
 	values = values.split(separator2);
 	serie_types = serie_types.split(separator);
@@ -895,7 +952,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			serie_color = colors[i];
 		}
 		else {
-			serie_color = null;
+			serie_color = '#8c2';
 		}
 
 		var normalw = '#efe';
@@ -931,7 +988,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				show: line_show,
 				fill: filled,
 				fillColor: {
-					colors: [ { opacity: 0.9 }, { opacity: 0.9 } ]
+					colors: [ { opacity: 0.5 }, { opacity: 1 } ]
 				},
 				lineWidth: lineWidth,
 				steps: steps_chart
@@ -1459,12 +1516,11 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 
 	// The first execution, the graph data is the base data
 	datas = data_base;
-
 	// minTickSize
 	var count_data = datas[0].data.length;
 	var min_tick_pixels = 80;
 	var steps = parseInt( count_data / (width/min_tick_pixels));
-
+	
 	var options = {
 			series: {
 				stack: stacked,
@@ -1472,28 +1528,38 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			},
 			crosshair: { mode: 'xy' },
 			selection: { mode: 'x', color: '#777' },
+			export: {
+				export_data: true,
+				labels_long: labels_long,
+				homeurl: homeurl
+			},
 			grid: {
 				hoverable: true,
 				clickable: true,
 				borderWidth:1,
 				borderColor: '#666',
-				tickColor: '#eee',
-				markings: markings
+				tickColor: background_color,
+				markings: markings,
+				color: legend_color
 				},
 			xaxes: [ {
+					axisLabelFontSizePixels: font_size,
+					axisLabelUseCanvas: false,
+					axisLabel: xaxisname,
 					tickFormatter: xFormatter,
 					minTickSize: steps,
-					color: '#000'
+					color: '',
+					font: font
 				} ],
 			yaxes: [ {
 						tickFormatter: yFormatter,
-						color: '#000'
+						color: ''
 					},
 					{
 						// align if we are to the right
 						alignTicksWithAxis: 1,
-						position: 'right'
-
+						position: 'right',
+						font: font
 						//tickFormatter: dFormatter
 					} ]
 					,
@@ -1517,7 +1583,11 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	// Re-calculate the graph height with the legend height
 	if (dashboard || vconsole) {
 		var hDiff = $('#'+graph_id).height() - $('#legend_'+graph_id).height();
-		$('#'+graph_id).css('height', hDiff);
+		if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ){
+		}
+		else {
+			$('#'+graph_id).css('height', hDiff);
+		}
 	}
 	
 	if (vconsole) {
@@ -1545,7 +1615,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			xaxes: [ {
 				tickFormatter: xFormatter,
 				minTickSize: steps,
-				color: '#000'
+				color: ''
 				} ],
 		yaxis: {ticks: [], autoscaleMargin: 0.1 },
 		selection: {mode: 'x', color: '#777' },
@@ -1573,7 +1643,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				xaxes: [ {
 						tickFormatter: xFormatter,
 						minTickSize: new_steps,
-						color: '#000'
+						color: ''
 						} ],
 				legend: { show: false }
 			}));
@@ -1641,6 +1711,16 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 
 			var y = series.data[j][1];
 
+			var how_bigger = "";
+			if (y > 1000000) {
+				how_bigger = "M";
+				y = y / 1000000;
+			}
+			else if (y > 1000) {
+				how_bigger = "K";
+				y = y / 1000;
+			}
+
 			if (currentRanges == null || (currentRanges.xaxis.from < j && j < currentRanges.xaxis.to)) {
 				$('#timestamp_'+graph_id).show();
 				// If no legend, the timestamp labels are short and with value
@@ -1674,21 +1754,23 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				$('#timestamp_'+graph_id).hide();
 			}
 
-			var label_aux = series.label + ' = ';
+			var label_aux = series.label;
 
 			// The graphs of points type and unknown graphs will dont be updated
 			if (serie_types[i] != 'points' && series.label != $('#hidden-unknown_text').val()) {
-
 				$('#legend_' + graph_id + ' .legendLabel')
-					.eq(i).text(label_aux.replace(/=.*/,
-					'= ' + parseFloat(y).toFixed(2) + ' ' + unit));
+					.eq(i).html(label_aux +	'= ' + parseFloat(y).toFixed(precision_graph) + how_bigger + ' ' + unit);
+				console.log($('#legend_' + graph_id + ' .legendLabel'));
 			}
 
 			$('#legend_' + graph_id + ' .legendLabel')
 				.eq(i).css('font-size',font_size+'pt');
 
 			$('#legend_' + graph_id + ' .legendLabel')
-				.eq(i).css('color','#000');
+				.eq(i).css('color','');
+
+			//~ $('#legend_' + graph_id + ' .legendLabel')
+				//~ .eq(i).css('font-family',font+'Font');
 
 			i++;
 		}
@@ -1781,8 +1863,10 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 		$('#timestamp_'+graph_id).hide();
 		dataset = plot.getData();
 		for (i = 0; i < dataset.length; ++i) {
+			var series = dataset[i];
+			var label_aux = series.label;
 			$('#legend_' + graph_id + ' .legendLabel')
-				.eq(i).text(legends.eq(i).text().replace(/=.*/, ''));
+				.eq(i).html(label_aux);
 		}
 		plot.clearCrosshair();
 		overview.clearCrosshair();
@@ -1793,212 +1877,212 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 		if (labels[v] == undefined) {
 			return '';
 		}
-		return '<div style=font-size:'+font_size+'pt>'+labels[v]+'</div>';
+		return '<div class='+font+' style=font-size:'+font_size+'pt>'+labels[v]+'</div>';
 	}
 
 	function yFormatter(v, axis) {
 		var formatted = number_format(v,force_integer,unit);
 
-		return '<div style=font-size:'+font_size+'pt>'+formatted+'</div>';
+		return '<div class='+font+' style=font-size:'+font_size+'pt>'+formatted+'</div>';
 	}
 
 	function lFormatter(v, item) {
-		return '<div style=color:#000;font-size:'+font_size+'pt>'+v+'</div>';
+		return '<div style=font-size:'+font_size+'pt>'+v+'</div>';
 		// Prepared to turn series with a checkbox
-		//return '<div style=color:#000;font-size:'+font_size+'pt><input type="checkbox" id="' + graph_id + '_' + item.id +'" checked="checked" class="check_serie_'+graph_id+'">'+v+'</div>';
+		//return '<div style=color:;font-size:'+font_size+'pt><input type="checkbox" id="' + graph_id + '_' + item.id +'" checked="checked" class="check_serie_'+graph_id+'">'+v+'</div>';
 	}
 
 	// Used to export the graph data to a file.
 	// Uses plot, labels and labels_long as scope variables.
-	function exportData (options) {
-		options = options || {};
+	//~ function exportData (options) {
+		//~ options = options || {};
 
-		// Options
-		var type = options.type || 'csv';
-		type = type.toLowerCase().trim();
+		//~ // Options
+		//~ var type = options.type || 'csv';
+		//~ type = type.toLowerCase().trim();
 
-		var graphData,
-			dataObject,
-			dataObjects = plot.getData(),
-			result = [];
+		//~ var graphData,
+			//~ dataObject,
+			//~ dataObjects = plot.getData(),
+			//~ result = [];
 
-		// Throw errors
-		var retrieveDataOject = function (dataObjects) {
-			var result;
+		//~ // Throw errors
+		//~ var retrieveDataOject = function (dataObjects) {
+			//~ var result;
 
-			if (typeof dataObjects === 'undefined')
-				throw new Error('Empty parameter');
+			//~ if (typeof dataObjects === 'undefined')
+				//~ throw new Error('Empty parameter');
 
-			// Try to retrieve the avg set (not 100% reliable, I know)
-			if (dataObjects.length == 1) {
-				result = dataObjects.shift();
-			}
-			if (dataObjects.length > 1) {
-				dataObjects.forEach(function (element) {
-					if (/^Avg.:/i.test(element.label))
-						result = element;
-				});
+			//~ // Try to retrieve the avg set (not 100% reliable, I know)
+			//~ if (dataObjects.length == 1) {
+				//~ result = dataObjects.shift();
+			//~ }
+			//~ if (dataObjects.length > 1) {
+				//~ dataObjects.forEach(function (element) {
+					//~ if (/^Avg.:/i.test(element.label))
+						//~ result = element;
+				//~ });
 
-				// If the avg set is missing, retrieve the first set
-				if (typeof result === 'undefined')
-					result = dataObjects.shift();
-			}
+				//~ // If the avg set is missing, retrieve the first set
+				//~ if (typeof result === 'undefined')
+					//~ result = dataObjects.shift();
+			//~ }
 
-			if (typeof result === 'undefined')
-				throw new Error('Empty result');
+			//~ if (typeof result === 'undefined')
+				//~ throw new Error('Empty result');
 
-			return result;
-		}
+			//~ return result;
+		//~ }
 
-		// Throw errors
-		var processDataObject = function (dataObject) {
-			var result;
+		//~ // Throw errors
+		//~ var processDataObject = function (dataObject) {
+			//~ var result;
 
-			if (typeof dataObject === 'undefined')
-				throw new Error('Empty parameter');
+			//~ if (typeof dataObject === 'undefined')
+				//~ throw new Error('Empty parameter');
 
-			if (typeof dataObject.data === 'undefined'
-					|| !(dataObject.data instanceof Array))
-				throw new Error('Object malformed');
+			//~ if (typeof dataObject.data === 'undefined'
+					//~ || !(dataObject.data instanceof Array))
+				//~ throw new Error('Object malformed');
 
-			/* {
-			 *   head: [<column>,<column>,...,<column>],
-			 *   data: [
-			 *     [<data>,<data>,...,<data>],
-			 *     [<data>,<data>,...,<data>],
-			 *     ...,
-			 *     [<data>,<data>,...,<data>],
-			 *   ]
-			 * }
-			 */
-			if (type === 'csv') {
+			//~ /* {
+			 //~ *   head: [<column>,<column>,...,<column>],
+			 //~ *   data: [
+			 //~ *     [<data>,<data>,...,<data>],
+			 //~ *     [<data>,<data>,...,<data>],
+			 //~ *     ...,
+			 //~ *     [<data>,<data>,...,<data>],
+			 //~ *   ]
+			 //~ * }
+			 //~ */
+			//~ if (type === 'csv') {
 
-				result = {
-					head: ['date', 'value','label'],
-					data: []
-				};
+				//~ result = {
+					//~ head: ['date', 'value','label'],
+					//~ data: []
+				//~ };
 
-				dataObject.data.forEach(function (item, index) {
-					var date = '', value = item[1];
+				//~ dataObject.data.forEach(function (item, index) {
+					//~ var date = '', value = item[1];
 
-					// Long labels are preferred
-					if (typeof labels_long[index] !== 'undefined')
-						date = labels_long[index];
-					else if (typeof labels[index] !== 'undefined')
-						date = labels[index];
+					//~ // Long labels are preferred
+					//~ if (typeof labels_long[index] !== 'undefined')
+						//~ date = labels_long[index];
+					//~ else if (typeof labels[index] !== 'undefined')
+						//~ date = labels[index];
 
-					result.data.push([date, value,dataObject.label]);
-				});
-			}
-			/* [
-			 *   {
-			 *     'date': <date>,
-			 *     'value': <value>
-			 *   }
-			 * ],
-			 * [
-			 *   {
-			 *     'date': <date>,
-			 *     'value': <value>
-			 *   }
-			 * ],
-			 * ...,
-			 * [
-			 *   {
-			 *     'date': <date>,
-			 *     'value': <value>
-			 *   }
-			 * ]
-			 */
-			else if (type === 'json') {
-				result = [];
+					//~ result.data.push([date, value,dataObject.label]);
+				//~ });
+			//~ }
+			//~ /* [
+			 //~ *   {
+			 //~ *     'date': <date>,
+			 //~ *     'value': <value>
+			 //~ *   }
+			 //~ * ],
+			 //~ * [
+			 //~ *   {
+			 //~ *     'date': <date>,
+			 //~ *     'value': <value>
+			 //~ *   }
+			 //~ * ],
+			 //~ * ...,
+			 //~ * [
+			 //~ *   {
+			 //~ *     'date': <date>,
+			 //~ *     'value': <value>
+			 //~ *   }
+			 //~ * ]
+			 //~ */
+			//~ else if (type === 'json') {
+				//~ result = [];
 
-				dataObject.data.forEach(function (item, index) {
-					var date = '', value = item[1];
+				//~ dataObject.data.forEach(function (item, index) {
+					//~ var date = '', value = item[1];
 
-					// Long labels are preferred
-					if (typeof labels_long[index] !== 'undefined')
-						date = labels_long[index];
-					else if (typeof labels[index] !== 'undefined')
-						date = labels[index];
+					//~ // Long labels are preferred
+					//~ if (typeof labels_long[index] !== 'undefined')
+						//~ date = labels_long[index];
+					//~ else if (typeof labels[index] !== 'undefined')
+						//~ date = labels[index];
 
-					result.push({
-						'date': date,
-						'value': value,
-						'label': dataObject.label
-					});
-				});
-			}
+					//~ result.push({
+						//~ 'date': date,
+						//~ 'value': value,
+						//~ 'label': dataObject.label
+					//~ });
+				//~ });
+			//~ }
 
-			if (typeof result === 'undefined')
-				throw new Error('Empty result');
+			//~ if (typeof result === 'undefined')
+				//~ throw new Error('Empty result');
 
-			return result;
-		}
+			//~ return result;
+		//~ }
 
-		try {
-			var elements = [];
-			var custom_graph = $('input:hidden[name=custom_graph]').value;
+		//~ try {
+			//~ var elements = [];
+			//~ var custom_graph = $('input:hidden[name=custom_graph]').value;
 
-			if (custom_graph) {
-				dataObject = retrieveDataOject(dataObjects);
-				dataObjects.forEach(function (element) {
-					elements.push(processDataObject(element));
-				});
-				graphData = elements;
-			}
-			else {
-				dataObject = retrieveDataOject(dataObjects);
-				elements.push(processDataObject(dataObject));
-				graphData = elements;
-			}
+			//~ if (custom_graph) {
+				//~ dataObject = retrieveDataOject(dataObjects);
+				//~ dataObjects.forEach(function (element) {
+					//~ elements.push(processDataObject(element));
+				//~ });
+				//~ graphData = elements;
+			//~ }
+			//~ else {
+				//~ dataObject = retrieveDataOject(dataObjects);
+				//~ elements.push(processDataObject(dataObject));
+				//~ graphData = elements;
+			//~ }
 
-			// Transform the object data into a string
-			// cause PHP has limitations in the number
-			// of POST params received.
-			var graphDataStr = JSON.stringify(graphData);
+			//~ // Transform the object data into a string
+			//~ // cause PHP has limitations in the number
+			//~ // of POST params received.
+			//~ var graphDataStr = JSON.stringify(graphData);
 
-			// Build form
-			var $form = $('<form></form>'),
-				$dataInput = $('<input>'),
-				$typeInput = $('<input>'),
-				$separatorInput = $('<input>'),
-				$excelInput = $('<input>');
+			//~ // Build form
+			//~ var $form = $('<form></form>'),
+				//~ $dataInput = $('<input>'),
+				//~ $typeInput = $('<input>'),
+				//~ $separatorInput = $('<input>'),
+				//~ $excelInput = $('<input>');
 
-			$dataInput
-				.prop('name', 'data')
-				.prop('type', 'text')
-				.prop('value', graphDataStr);
+			//~ $dataInput
+				//~ .prop('name', 'data')
+				//~ .prop('type', 'text')
+				//~ .prop('value', graphDataStr);
 
-			$typeInput
-				.prop('name', 'type')
-				.prop('type', 'text')
-				.prop('value', type);
+			//~ $typeInput
+				//~ .prop('name', 'type')
+				//~ .prop('type', 'text')
+				//~ .prop('value', type);
 
-			$separatorInput
-				.prop('name', 'separator')
-				.prop('type', 'text')
-				.prop('value', ';');
+			//~ $separatorInput
+				//~ .prop('name', 'separator')
+				//~ .prop('type', 'text')
+				//~ .prop('value', ';');
 
-			$excelInput
-				.prop('name', 'excel_encoding')
-				.prop('type', 'text')
-				.prop('value', 0);
+			//~ $excelInput
+				//~ .prop('name', 'excel_encoding')
+				//~ .prop('type', 'text')
+				//~ .prop('value', 0);
 
-			$form
-				.prop('method', 'POST')
-				.prop('action', homeurl + '/include/graphs/export_data.php')
-				.append($dataInput, $typeInput, $separatorInput, $excelInput)
-				.hide()
-				// Firefox made me write into the DOM for this :(
-				.appendTo('body')
-				.submit();
-		}
-		catch (e) {
-			alert('There was an error exporting the data');
-			console.log(e);
-		}
-	}
+			//~ $form
+				//~ .prop('method', 'POST')
+				//~ .prop('action', homeurl + '/include/graphs/export_data.php')
+				//~ .append($dataInput, $typeInput, $separatorInput, $excelInput)
+				//~ .hide()
+				//~ // Firefox made me write into the DOM for this :(
+				//~ .appendTo('body')
+				//~ .submit();
+		//~ }
+		//~ catch (e) {
+			//~ alert('There was an error exporting the data');
+			//~ console.log(e);
+		//~ }
+	//~ }
 
 	// Prepared to turn series with a checkbox
 	//~ $('.check_serie_'+graph_id).click(function() {
@@ -2011,19 +2095,30 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	if (menu) {
 		var parent_height;
 		$('#menu_overview_' + graph_id).click(function() {
-			if ( $('#overview_' + graph_id).css('visibility') == 'hidden' )
-				$('#overview_' + graph_id).css('visibility','visible');
-			else
-				$('#overview_' + graph_id).css('visibility','hidden');
+			$('#overview_' + graph_id).toggle();
 		});
 
-		$('#menu_export_csv_' + graph_id).click(function() {
-			exportData({ type: 'csv' });
+		//~ $('#menu_export_csv_' + graph_id).click(function() {
+			//~ exportData({ type: 'csv' });
+		//~ });
+		
+		$("#menu_export_csv_"+graph_id)
+			.click(function (event) {
+				event.preventDefault();
+				plot.exportDataCSV();
 		});
-
-		$('#menu_export_json_' + graph_id).click(function() {
-			exportData({ type: 'json' });
-		});
+		
+		//Not a correct call
+		//~ $('#menu_export_json_' + graph_id).click(function() {
+			//~ exportData({ type: 'json' });
+		//~ });
+		
+		//This is a correct call to export data in json
+		//~ $("#menu_export_json_"+graph_id)
+			//~ .click(function (event) {
+				//~ event.preventDefault();
+				//~ plot.exportDataJSON();
+		//~ });
 
 		$('#menu_threshold_' + graph_id).click(function() {
 			datas = new Array();
@@ -2035,17 +2130,34 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 						datas.push(this);
 					//}
 				});
+				plot = $.plot($('#' + graph_id), data_base,
+					$.extend(true, {}, options, {
+						yaxis: {max: max_draw},
+					}));
 				thresholded = false;
-			} else {
+			}
+			else {
+				
+				var max_draw = plot.getAxes().yaxis.datamax;
+				if (max_draw < red_threshold || max_draw < yellow_threshold) {
+					
+					var maxim_data = (red_threshold < yellow_threshold) ?  yellow_threshold : red_threshold
+					
+					plot = $.plot($('#' + graph_id), data_base,
+					$.extend(true, {}, options, {
+						yaxis: {max: maxim_data + (maxim_data*0.5)},
+					}));
+				}
 				datas = add_threshold (data_base, threshold_data, plot.getAxes().yaxis.min, plot.getAxes().yaxis.max,
 										yellow_threshold, red_threshold, extremes, red_up);
 				thresholded = true;
+				
 			}
-
+			
 			plot.setData(datas);
 			plot.draw();
 
-			plot.setSelection(currentRanges);
+			//~ plot.setSelection(currentRanges);
 		});
 
 		$('#menu_cancelzoom_' + graph_id).click(function() {
@@ -2140,7 +2252,7 @@ function set_watermark(graph_id, plot, watermark_src) {
 			down_ticks_height = $('#'+graph_id+' .yAxis .tickLabel').eq(0).css('height').split('px')[0];
 		}
 		var left_pos = parseInt(context.canvas.width - 3) - $('#watermark_image_'+graph_id)[0].width;
-		var top_pos = parseInt(context.canvas.height - down_ticks_height - 20) - $('#watermark_image_'+graph_id)[0].height;
+		var top_pos = parseInt(context.canvas.height - down_ticks_height - 10) - $('#watermark_image_'+graph_id)[0].height;
 
 		context.drawImage(this, left_pos, top_pos);
 
@@ -2181,14 +2293,12 @@ function get_event_details (event_ids) {
 }
 
 function adjust_left_width_canvas(adapter_id, adapted_id) {
-	adapter_left_margin = $('#'+adapter_id+' .yAxis .tickLabel').css('width');
-
-	adapted_pix = $('#'+adapted_id).css('width').split('px');
-	new_adapted_width = parseInt(adapted_pix[0])-parseInt(adapter_left_margin);
-
-	$('#'+adapted_id).css('width',new_adapted_width);
-
-	$('#'+adapted_id).css('margin-left',adapter_left_margin);
+	var adapter_left_margin = $('#'+adapter_id+' .yAxis .tickLabel').width();
+	var adapted_pix = $('#'+adapted_id).width();
+	var new_adapted_width = adapted_pix - adapter_left_margin;
+	
+	$('#'+adapted_id).width(new_adapted_width);
+	$('#'+adapted_id).css('margin-left', adapter_left_margin);
 }
 
 function check_adaptions(graph_id) {
@@ -2276,4 +2386,10 @@ function add_threshold (data_base, threshold_data, y_min, y_max, yellow_threshol
 	});
 	
 	return datas;
+}
+
+function reduceText (text, maxLength) {
+	if (text.length <= maxLength) return text
+	var firstSlideEnd = parseInt((maxLength - 3) / 2);
+	return text.substr(0, firstSlideEnd) + '...' + text.substr(-firstSlideEnd - 3);
 }

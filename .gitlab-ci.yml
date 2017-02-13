@@ -1,0 +1,6 @@
+variables:
+  GIT_STRATEGY: clone
+
+test:
+  script:
+    - docker run --rm -h pandorafms -t -v "$CI_PROJECT_DIR:/tmp/pandorafms" pandorafms/pandorafms-base /tmp/pandorafms/tests/test.sh

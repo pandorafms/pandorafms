@@ -34,6 +34,7 @@ enterprise_include_once ('meta/include/functions_agents_meta.php');
 $icon = "";
 $name = "";
 $id_parent = 0;
+$group_pass = "";
 $alerts_disabled = 0;
 $custom_id = "";
 $propagate = 0;
@@ -55,6 +56,7 @@ if ($id_group) {
 		else {
 			$icon = $group["icon"].'.png';
 		}
+		$group_pass = io_safe_output($group['password']);
 		$alerts_disabled = $group["disabled"];
 		$id_parent = $group["parent"];
 		$custom_id = $group["custom_id"];
@@ -158,23 +160,36 @@ if ($acl_parent) {
 	$table->data[2][1] .= '</span>';
 }
 
-$table->data[3][0] = __('Alerts');
-$table->data[3][1] = html_print_checkbox ('alerts_enabled', 1, ! $alerts_disabled, true);
+$i = 3;
+if ($config['enterprise_installed']) {
+	$i = 4;
+	$table->data[3][0] = __('Group Password');
+	$table->data[3][1] = html_print_input_password ('group_pass', $group_pass, '', 16, 255, true);
+}
 
-$table->data[4][0] = __('Propagate ACL') . ui_print_help_tip (__("Propagate the same ACL security into the child subgroups."), true);
-$table->data[4][1] = html_print_checkbox('propagate', 1, $propagate, true).ui_print_help_icon ("propagate_acl", true);
+$table->data[$i][0] = __('Alerts');
+$table->data[$i][1] = html_print_checkbox ('alerts_enabled', 1, ! $alerts_disabled, true);
+$i++;
 
-$table->data[5][0] = __('Custom ID');
-$table->data[5][1] = html_print_input_text ('custom_id', $custom_id, '', 16, 255, true);
+$table->data[$i][0] = __('Propagate ACL') . ui_print_help_tip (__("Propagate the same ACL security into the child subgroups."), true);
+$table->data[$i][1] = html_print_checkbox('propagate', 1, $propagate, true).ui_print_help_icon ("propagate_acl", true);
+$i++;
 
-$table->data[6][0] = __('Description');
-$table->data[6][1] = html_print_input_text ('description', $description, '', 60, 255, true);
+$table->data[$i][0] = __('Custom ID');
+$table->data[$i][1] = html_print_input_text ('custom_id', $custom_id, '', 16, 255, true);
+$i++;
 
-$table->data[7][0] = __('Contact') . ui_print_help_tip (__("Contact information accessible through the _groupcontact_ macro"), true);
-$table->data[7][1] = html_print_textarea ('contact', 4, 40, $contact, "style='min-height: 0px;'", true);
+$table->data[$i][0] = __('Description');
+$table->data[$i][1] = html_print_input_text ('description', $description, '', 60, 255, true);
+$i++;
 
-$table->data[8][0] = __('Other') . ui_print_help_tip (__("Information accessible through the _group_other_ macro"), true);
-$table->data[8][1] = html_print_textarea ('other', 4, 40, $other, "style='min-height: 0px;'", true);
+$table->data[$i][0] = __('Contact') . ui_print_help_tip (__("Contact information accessible through the _groupcontact_ macro"), true);
+$table->data[$i][1] = html_print_textarea ('contact', 4, 40, $contact, "style='min-height: 0px;'", true);
+$i++;
+
+$table->data[$i][0] = __('Other') . ui_print_help_tip (__("Information accessible through the _group_other_ macro"), true);
+$table->data[$i][1] = html_print_textarea ('other', 4, 40, $other, "style='min-height: 0px;'", true);
+$i++;
 
 $isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
 if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK && !defined('METACONSOLE')) {

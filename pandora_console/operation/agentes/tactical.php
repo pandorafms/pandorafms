@@ -25,7 +25,7 @@ require_once ($config["homedir"] . '/include/functions_graph.php');
 
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "AR")) {
+if (! check_acl ($config['id_user'], 0, "AR") && ! check_acl ($config['id_user'], 0, "AW")) {
 	db_pandora_audit("ACL Violation", 
 	"Trying to access Agent view (Grouped)");
 	require ("general/noaccess.php");
@@ -47,7 +47,8 @@ if ($config["realtimestats"] == 0) {
 	$updated_time .= "</a>";
 }
 else {
-	$updated_time = __("Updated at realtime");
+//	$updated_info = __("Updated at realtime");
+		$updated_info = "";
 }
 
 // Header
@@ -182,7 +183,7 @@ echo '<td style="vertical-align: top; width: 75%; padding-top: 0px;" id="rightco
 // Last events information
 // ---------------------------------------------------------------------
 
-$acltags = tags_get_user_module_and_tags ($config['id_user'], $access = 'ER', $user_strict);
+$acltags = tags_get_user_module_and_tags ($config['id_user'], 'ER', $user_strict);
 
 if (!empty($acltags)) {
 	$tags_condition = tags_get_acl_tags_event_condition($acltags, false, $user_strict);
@@ -206,13 +207,13 @@ $out = '<table cellpadding=0 cellspacing=0 class="databox pies"  style="margin-t
 			<legend>' . 
 				__('Event graph') . 
 			'</legend>' . 
-			grafico_eventos_total("", 250, 150, false) . '</fieldset>';
+			grafico_eventos_total("", 280, 150, false) . '</fieldset>';
 	$out .="</td><td>";
 	$out .= '<fieldset class="databox tactical_set">
 			<legend>' .
 				__('Event graph by agent') .
 			'</legend>' .
-			grafico_eventos_grupo(250, 170, "", false, false, false) . '</fieldset>';
+			grafico_eventos_grupo(280, 150, "", false, false, false) . '</fieldset>';
 	$out .= '</td></tr></table>';
 echo $out;
 

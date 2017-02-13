@@ -272,8 +272,8 @@ if (!empty($all_data)) {
 				$data[2] = $session['accion'];
 				$data[3] =  ui_print_help_tip($session['fecha'], true) . human_time_comparation($session['utimestamp'], 'tiny');
 				$data[4] = $session_ip_origen;
-				$data[5] = io_safe_output ($session['descripcion']);
-				
+				$data[5] = io_safe_output(io_safe_output($session['descripcion']));
+
 				array_push ($table->data, $data);
 			}
 			echo "<div style='width:100%; overflow-x:auto;'>";

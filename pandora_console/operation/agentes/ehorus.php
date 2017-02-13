@@ -16,20 +16,11 @@
 // Load global vars
 global $config;
 
-check_login ();
-
-if (! check_acl ($config['id_user'], 0, 'AM') && ! is_user_admin ($config['id_user'])) {
-	db_pandora_audit('ACL Violation', 'Trying to access eHorus');
-	require ('general/noaccess.php');
-	return;
-}
-
-require_once($config['homedir'] . '/include/functions_ui.php');
-require_once($config['homedir'] . '/include/functions_agents.php');
-
 if (!$config['ehorus_enabled']) {
 	return;
 }
+
+check_login ();
 
 /* Get the parameters */
 $agent_id = (int) get_parameter('id_agente');
@@ -39,6 +30,17 @@ if (empty($agent_id)) {
 	ui_print_error_message(__('Missing agent id'));
 	return;
 }
+
+$group_id = db_get_value('id_grupo', 'tagente', 'id_agente', $agent_id);
+
+if ($group_id === false || (!check_acl($config['id_user'], $group_id, 'AW') && !is_user_admin($config['id_user']))) {
+	db_pandora_audit('ACL Violation', 'Trying to access eHorus');
+	require ('general/noaccess.php');
+	return;
+}
+
+require_once($config['homedir'] . '/include/functions_ui.php');
+require_once($config['homedir'] . '/include/functions_agents.php');
 
 $ehorus_agent_id = agents_get_agent_custom_field($agent_id, $config['ehorus_custom_field']);
 

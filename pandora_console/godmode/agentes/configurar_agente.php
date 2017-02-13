@@ -19,7 +19,7 @@ global $config;
 
 enterprise_include ('godmode/agentes/configurar_agente.php');
 enterprise_include ('include/functions_policies.php');
-enterprise_include ('include/functions_modules.php');
+enterprise_include_once ('include/functions_modules.php');
 include_once($config['homedir'] . "/include/functions_agents.php");
 include_once($config['homedir'] . "/include/functions_cron.php");
 ui_require_javascript_file('encode_decode_base64');
@@ -132,6 +132,7 @@ $grupo = 0;
 $id_os = 9; // Windows
 $custom_id = "";
 $cascade_protection = 0;
+$cascade_protection_modules = 0;
 $icon_path = '';
 $update_gis_data = 0;
 $unit = "";
@@ -161,6 +162,7 @@ if ($create_agent) {
 	$disabled = (int) get_parameter_post ("disabled");
 	$custom_id = (string) get_parameter_post ("custom_id",'');
 	$cascade_protection = (int) get_parameter_post ("cascade_protection", 0);
+	$cascade_protection_module = (int) get_parameter_post("cascade_protection_module", 0);
 	$icon_path = (string) get_parameter_post ("icon_path",'');
 	$update_gis_data = (int) get_parameter_post("update_gis_data", 0);
 	$url_description = (string) get_parameter("url_description");
@@ -197,6 +199,7 @@ if ($create_agent) {
 				'id_os' => $id_os,
 				'disabled' => $disabled,
 				'cascade_protection' => $cascade_protection,
+				'cascade_protection_module' => $cascade_protection_module,
 				'server_name' => $server_name,
 				'id_parent' => $id_parent,
 				'custom_id' => $custom_id,
@@ -230,7 +233,8 @@ if ($create_agent) {
 				' ID os: ' . $id_os .
 				' Disabled: ' . $disabled .
 				' Custom ID: ' . $custom_id .
-				' Cascade protection: '  . $cascade_protection . 
+				' Cascade protection: '  . $cascade_protection .
+				' Cascade protection module: ' . $cascade_protection_module .
 				' Icon path: ' . $icon_path .
 				' Update GIS data: ' . $update_gis_data . 
 				' Url description: ' . $url_description .
@@ -388,7 +392,7 @@ if ($id_agente) {
 	$total_incidents = agents_get_count_incidents($id_agente);
 	
 	/* Incident tab */
-	if ($config['integria_enabled'] == 0 and $total_incidents > 0) {
+	if ($total_incidents > 0) {
 		$incidenttab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=incident&amp;id_agente='.$id_agente.'">' 
 			. html_print_image ("images/book_edit.png", true, array ("title" =>__('Incidents')))
 			. '</a>';
@@ -658,7 +662,7 @@ if ($update_agent) { // if modified some agent paramenter
 	$grupo = (int) get_parameter_post ("grupo", 0);
 	$intervalo = (int) get_parameter_post ("intervalo", SECONDS_5MINUTES);
 	$comentarios = str_replace('`','&lsquo;',(string) get_parameter_post ("comentarios", ""));
-	$modo = (bool) get_parameter_post ("modo", 0); //Mode: Learning or Normal
+	$modo = (int) get_parameter_post ("modo", 0); //Mode: Learning, Normal or Autodisabled
 	$id_os = (int) get_parameter_post ("id_os");
 	$disabled = (bool) get_parameter_post ("disabled");
 	$server_name = (string) get_parameter_post ("server_name", "");
@@ -666,6 +670,7 @@ if ($update_agent) { // if modified some agent paramenter
 	$id_parent = (int) agents_get_agent_id ($parent_name);
 	$custom_id = (string) get_parameter_post ("custom_id", "");
 	$cascade_protection = (int) get_parameter_post ("cascade_protection", 0);
+	$cascade_protection_module = (int) get_parameter ("cascade_protection_module", 0);
 	$icon_path = (string) get_parameter_post ("icon_path",'');
 	$update_gis_data = (int) get_parameter_post("update_gis_data", 0);
 	$url_description = (string) get_parameter("url_description");
@@ -733,6 +738,7 @@ if ($update_agent) { // if modified some agent paramenter
 				'intervalo' => $intervalo,
 				'comentarios' => $comentarios,
 				'cascade_protection' => $cascade_protection,
+				'cascade_protection_module' => $cascade_protection_module,
 				'server_name' => $server_name,
 				'custom_id' => $custom_id,
 				'icon_path' => $icon_path,
@@ -751,6 +757,9 @@ if ($update_agent) { // if modified some agent paramenter
 				__('There was a problem updating the agent'));
 		}
 		else {
+			// Update the agent from the metaconsole cache
+			enterprise_include_once('include/functions_agents.php');
+			enterprise_hook ('agent_update_from_cache', array($id_agente, $values));
 			
 			if ($old_interval != $intervalo) {
 				enterprise_hook('config_agents_update_config_interval', array($id_agente, $intervalo));
@@ -761,6 +770,7 @@ if ($update_agent) { // if modified some agent paramenter
 				' ID OS: ' . $id_os . ' Disabled: ' . $disabled . 
 				' Server Name: ' . $server_name . ' ID parent: ' . $id_parent .
 				' Custom ID: ' . $custom_id . ' Cascade Protection: ' . $cascade_protection .
+				' Cascade protection module: ' . $cascade_protection_module .
 				' Icon Path: ' . $icon_path . 'Update GIS data: ' .$update_gis_data .
 				' Url description: ' . $url_description .
 				' Quiet: ' . (int)$quiet;
@@ -805,6 +815,7 @@ if ($id_agente) {
 	$id_parent = $agent["id_parent"];
 	$custom_id = $agent["custom_id"];
 	$cascade_protection = $agent["cascade_protection"];
+	$cascade_protection_module = $agent["cascade_protection_module"];
 	$icon_path = $agent["icon_path"];
 	$update_gis_data = $agent["update_gis_data"];
 	$url_description = $agent["url_address"];
@@ -968,10 +979,18 @@ if ($update_module || $create_module) {
 		
 		$plugin_parameter = (string) get_parameter ('plugin_parameter');
 	}
-	
+
+	$parent_module_id = (int) get_parameter('parent_module_id');
 	$ip_target = (string) get_parameter ('ip_target');
+	if($ip_target == ''){
+		$ip_target = 'auto';
+	}
 	$custom_id = (string) get_parameter ('custom_id');
 	$history_data = (int) get_parameter('history_data');
+	$dynamic_interval = (int) get_parameter('dynamic_interval');
+	$dynamic_max = (int) get_parameter('dynamic_max');
+	$dynamic_min = (int) get_parameter('dynamic_min');
+	$dynamic_two_tailed = (int) get_parameter('dynamic_two_tailed');
 	$min_warning = (float) get_parameter ('min_warning');
 	$max_warning = (float) get_parameter ('max_warning');
 	$str_warning = (string) get_parameter ('str_warning');
@@ -995,12 +1014,53 @@ if ($update_module || $create_module) {
 	
 	$id_category = (int) get_parameter('id_category');
 	
-	$hour = get_parameter('hour');
-	$minute = get_parameter('minute');
-	$mday = get_parameter('mday');
-	$month = get_parameter('month');
-	$wday = get_parameter('wday');
-	$cron_interval = "$minute $hour $mday $month $wday";
+	$hour_from = get_parameter('hour_from');
+	$minute_from = get_parameter('minute_from');
+	$mday_from = get_parameter('mday_from');
+	$month_from = get_parameter('month_from');
+	$wday_from = get_parameter('wday_from');
+
+	$hour_to = get_parameter('hour_to');
+	$minute_to = get_parameter('minute_to');
+	$mday_to = get_parameter('mday_to');
+	$month_to = get_parameter('month_to');
+	$wday_to = get_parameter('wday_to');
+
+	if ($hour_to != "*") {
+		$hour_to = "-" . $hour_to;
+	}
+	else {
+		$hour_to = "";
+	}
+	if ($minute_to != "*") {
+		$minute_to = "-" . $minute_to;
+	}
+	else {
+		$minute_to = "";
+	}
+	if ($mday_to != "*") {
+		$mday_to = "-" . $mday_to;
+	}
+	else {
+		$mday_to = "";
+	}
+	if ($month_to != "*") {
+		$month_to = "-" . $month_to;
+	}
+	else {
+		$month_to = "";
+	}
+	if ($wday_to != "*") {
+		$wday_to = "-" . $wday_to;
+	}
+	else {
+		$wday_to = "";
+	}
+
+	$cron_interval = $minute_from . $minute_to . " " . $hour_from . $hour_to . " " . $mday_from . $mday_to . " " . $month_from . $month_to . " " . $wday_from . $wday_to;
+	if (!cron_check_syntax($cron_interval)) {
+		$cron_interval = '';
+	}
 	
 	if ($prediction_module != MODULE_PREDICTION_SYNTHETIC) {
 		unset($serialize_ops);
@@ -1066,6 +1126,11 @@ if ($update_module) {
 		'max_retries' => $max_retries,
 		'custom_id' => $custom_id,
 		'history_data' => $history_data,
+		'dynamic_interval' => $dynamic_interval,
+		'dynamic_max' => $dynamic_max,
+		'dynamic_min' => $dynamic_min,
+		'dynamic_two_tailed' => $dynamic_two_tailed,
+		'parent_module_id' => $parent_module_id,
 		'min_warning' => $min_warning,
 		'max_warning' => $max_warning,
 		'str_warning' => $str_warning,
@@ -1209,6 +1274,11 @@ if ($create_module) {
 		'id_modulo' => $id_module,
 		'custom_id' => $custom_id,
 		'history_data' => $history_data,
+		'dynamic_interval' => $dynamic_interval,
+		'dynamic_max' => $dynamic_max,
+		'dynamic_min' => $dynamic_min,
+		'dynamic_two_tailed' => $dynamic_two_tailed,
+		'parent_module_id' => $parent_module_id,
 		'min_warning' => $min_warning,
 		'max_warning' => $max_warning,
 		'str_warning' => $str_warning,

@@ -192,27 +192,56 @@ li:hover ul { display: block; }
 	background: url(../../images/builder.menu.png) no-repeat 50% 50%;
 }
 #icon_god-links {
-	border-top: 4px solid !important;
+	border-top: 4px solid #777!important;
 	border-color: #777;
 	background: url(../../images/links.menu.png) no-repeat 50% 50%;
+}
+#icon_god-um_messages {
+	border-color: #777;
+	background: url(../../images/um_messages.menu.png) no-repeat 50% 50%;
 }
 
 #subicon_god-setup {
 	top: -140px;
-}
-#subicon_god-extensions {
-	top: -315px;
 }
 #subBulk_operations {
 	top: -210px;
 }
 
 #subicon_god-servers {
-	top: -72px;
+	top: -120px;
+}
+
+#subicon_god-alerts {
+	top: -70px;
 }
 
 #subicon_god-links {
-	top: -130px;
+	top: -140px;
+}
+
+#subicon_god-extensions {
+	top: -180px;
+}
+
+#subicon_god-um_messages {
+	top: -90px;
+}
+
+#subicon_god-configuration {
+	top: -100px;
+}
+
+#subDB_maintenance {
+	top: -120px;
+}
+
+#subExtension_manager {
+	top: -100px;
+}
+
+#subSetup {
+	top: -80px;
 }
 
 #menu_container {
@@ -220,6 +249,22 @@ li:hover ul { display: block; }
 	position: absolute;
 	left: -80px;
 	background-color: #AAA;
+}
+
+.notification_ball {
+	margin-top: 2px;
+	margin-left: 29px;
+	font-size: 6pt;
+	font-weight: 900;
+	background: red;
+	height: 12px;
+	width: 12px;
+	border-radius: 50px;
+	position: absolute;
+	text-align: center;
+	color: white;
+	padding-top: 1px;
+	font-family: sans-serif;
 }
 
 ul {

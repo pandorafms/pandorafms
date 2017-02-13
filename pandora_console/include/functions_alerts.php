@@ -132,7 +132,7 @@ function alerts_get_alerts($id_group = 0, $free_search = "", $status = "all", $s
  * 
  * @return mixed Return id if the group have any alert is fired or false is not.
  */
-function alerts_get_event_status_group($idGroup, $type = "alert_fired", $query = 'AND 1=1') {
+function alerts_get_event_status_group($idGroup, $type = "alert_fired", $query = 'AND 1=1', $agents = null) {
 	global $config;
 	
 	$return = false;
@@ -151,9 +151,19 @@ function alerts_get_event_status_group($idGroup, $type = "alert_fired", $query =
 		$typeWhere = ' AND event_type IN (' . implode(',', $temp) . ')';
 	}
 	
-	$agents = agents_get_group_agents($idGroup, false, "lower", false);
-	
-	$idAgents = array_keys($agents);
+	if ($agents == null) {
+		$agents = agents_get_group_agents($idGroup, false, "lower", false);
+
+		$idAgents = array_keys($agents);
+			
+	}
+	else {
+		$idAgents = array_values($agents);
+		
+		if($type=='alert_fired'){
+				$idAgents = array_keys($agents);
+		}
+	}
 	
 	$result = db_get_all_rows_sql('SELECT id_evento
 		FROM tevento
@@ -1224,6 +1234,39 @@ function alerts_add_alert_agent_module_action ($id_alert_template_module, $id_al
 }
 
 /**
+ * Update an action to an alert associated to a module.
+ * 
+ * @param int Id of register.
+ * @param mixed Options of the action.
+ *
+ * @return mixed Affected rows or false if something goes wrong.
+ */
+function alerts_update_alert_agent_module_action ($id_module_action, $options = false) {
+	global $config;
+	
+	$values = array ();
+	$values['fires_max'] = 0;
+	$values['fires_min'] = 0;
+	$values['module_action_threshold'] = 0;
+	if ($options) {
+		$max = 0;
+		$min = 0;
+		if (isset ($options['fires_max']))
+			$values['fires_max'] = $options['fires_max'];
+		if (isset ($options['fires_min']))
+			$values['fires_min'] = $options['fires_min'];
+		if (isset ($options['module_action_threshold']))
+			$values['module_action_threshold'] = (int) $options['module_action_threshold'];
+		if (isset ($options['id_alert_action']))
+			$values['id_alert_action'] = (int) $options['id_alert_action'];
+	}
+	
+	return (@db_process_sql_update ('talert_template_module_actions',
+		$values,
+		array ('id' => $id_module_action))) !== false;
+}
+
+/**
  * Delete an action to an alert associated to a module.
  * 
  * @param int Id of an alert associated to a module.
@@ -1271,6 +1314,85 @@ function alerts_get_alert_agent_module_actions ($id_alert_agent_module, $fields 
 	}
 	
 	return $retval;
+}
+
+/**
+ *  Returns the actions applied to an alert assigned to a module in a hash.
+ * @param unsigned int id_agent_module
+ * 
+ * @return hash with the actions
+ *
+ *  hash[template1][action1] <- fired
+ *  hash[template1][action2] <- fired
+ *  hash[template1][action3] <- fired
+ *  hash[template2][action1] <- fired
+ */
+function alerts_get_effective_alert_actions($id_agent_module) {
+	if (empty ($id_agent_module))
+		return false;
+
+	$default_sql = 'select tm.id, t.name as template, a.name as action, tm.last_fired as last_execution from talert_templates t, talert_actions a, talert_template_modules tm where tm.id_alert_template=t.id and t.id_alert_action=a.id and tm.id_agent_module=' . $id_agent_module;
+	$actions = db_get_all_rows_sql ($default_sql);
+
+	$custom_sql = 'select tm.id, t.name as template, a.name as action, tma.last_execution from talert_actions a, talert_template_module_actions tma, talert_template_modules tm, talert_templates t where tma.id_alert_template_module=tm.id and tma.id_alert_action=a.id and tm.id_alert_template = t.id and tm.id_agent_module=' . $id_agent_module;
+	$custom_actions = db_get_all_rows_sql($custom_sql);
+
+	$no_actions_sql = 'select tm.id, t.name as template from talert_templates t, talert_template_modules tm where tm.id_alert_template=t.id and tm.id_agent_module=' . $id_agent_module;
+	$no_actions = db_get_all_rows_sql ($no_actions_sql);
+
+	$nactions = 0;
+	$return = array();
+
+	if ($actions !== false) {
+		foreach ($actions as $a) {
+			if (!isset($return[$a["template"]]["id"])){
+				$return[$a["template"]]["id"] = $a["id"];
+			}
+			if (!isset($return[$a["template"]]["default"])){
+				$return[$a["template"]]["default"] = array();
+
+			}
+			$return[$a["template"]]["default"][$nactions]["fired"] = $a["last_execution"];
+			$return[$a["template"]]["default"][$nactions]["name"]  = $a["action"];
+			$nactions++;
+		}
+
+	}
+
+	if ($custom_actions !== false) {
+		foreach ($custom_actions as $a) {
+			if (!isset($return[$a["template"]]["id"])){
+				$return[$a["template"]]["id"] = $a["id"];
+			}
+			if (!isset($return[$a["template"]]["custom"])){
+				$return[$a["template"]]["custom"] = array();
+			}
+			$return[$a["template"]]["custom"][$nactions]["fired"] = $a["last_execution"];
+			$return[$a["template"]]["custom"][$nactions]["name"]  = $a["action"];
+			$nactions++;
+		}
+	}
+
+	if ($no_actions !== false){
+		foreach ($no_actions as $a) {
+			if (!isset($return[$a["template"]]["id"])){
+				$return[$a["template"]]["id"] = $a["id"];
+			}
+			if (!isset($return[$a["template"]]["unavailable"])){
+				$return[$a["template"]]["unavailable"] = array();
+			}
+			$return[$a["template"]]["unavailable"][$nactions]["fired"] = 0;
+			$return[$a["template"]]["unavailable"][$nactions]["name"]  = __("No actions defined");
+			$nactions++;
+		}
+	}
+
+
+	if ($nactions == 0) {
+		return false;
+	}
+
+	return $return;
 }
 
 /**
@@ -1568,7 +1690,7 @@ function get_alert_fires_in_period ($id_alert_module, $period, $date = 0) {
  */
 function get_group_alerts($id_group, $filter = '', $options = false,
 	$where = '', $allModules = false, $orderby = false,
-	$idGroup = false, $count = false, $strict_user = false, $tag = false) {
+	$idGroup = false, $count = false, $strict_user = false, $tag = false, $action_filter = false) {
 
 	global $config;
 	
@@ -1611,6 +1733,10 @@ function get_group_alerts($id_group, $filter = '', $options = false,
 
 	if ($tag) {
 		$filter .= ' AND (id_agent_module IN (SELECT id_agente_modulo FROM ttag_module WHERE id_tag IN ('.$tag.')))';
+	}
+
+	if($action_filter){
+		$filter .= ' AND (talert_template_modules.id IN (SELECT id_alert_template_module FROM talert_template_module_actions where id_alert_action = '.$action_filter.'))';
 	}
 	if (is_array ($options)) {
 		$filter .= db_format_array_where_clause_sql ($options);

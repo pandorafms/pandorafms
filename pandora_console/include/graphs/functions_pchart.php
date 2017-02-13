@@ -62,7 +62,7 @@ $ttl = get_parameter('ttl', 1);
 
 $graph = unserialize_in_temp($id_graph, true, $ttl);
 
-if (!isset($graph)) {
+if (!$graph) {
 	exit;
 }
 
@@ -79,7 +79,7 @@ if (isset($graph['color'])) {
 if (isset($graph['legend'])) {
 	$legend = $graph['legend'];
 }
-if (isset($graph['xaxisname'])) { 
+if (isset($graph['xaxisname'])) {
 	$xaxisname = $graph['xaxisname'];
 }
 if (isset($graph['yaxisname'])) { 
@@ -189,6 +189,29 @@ switch ($graph_type) {
 		$colors = $fine_colors;
 		
 		break;
+	case 'bullet_chart':
+		$anterior = 0;
+		foreach ($data as $i => $values) {
+			foreach ($values as $key => $val) {
+				switch ($key) {
+					case 0:
+						$name = __("Max");
+						break;
+					case 1:
+						$name = __("Actual");
+						break;
+					case 2:
+						$name = __("Min");
+						break;
+				}
+				$data_values[$name][] = ($val - $anterior);
+				$anterior += (($val - $anterior)<0) ? 0 : ($val - $anterior);
+			}
+			$anterior = 0;
+			$data_keys[] = $i;
+			
+		}
+		break;
 	case 'progress':
 	case 'area':
 	case 'stacked_area':
@@ -216,6 +239,8 @@ switch ($graph_type) {
 	case 'radar':
 	case 'pie3d':
 	case 'pie2d':
+	case 'ring3d':
+	
 		break;
 }
 
@@ -225,6 +250,8 @@ switch($graph_type) {
 	case 'radar':
 	case 'pie3d':
 	case 'pie2d':
+	case 'ring3d':
+	case 'bullet_chart':
 		break;
 	default:
 		if (!is_array(reset($data_values))) {
@@ -258,6 +285,18 @@ foreach ($colors as $i => $color) {
 	
 	$rgb_color[$i]['alpha'] = $color['alpha'];
 }
+//add for report with max 15 modules comparation repeat
+$countlegend = count($legend);
+if($countlegend > 15){
+	$i=16;
+	$l=0;
+	while ($countlegend > 15){
+		$rgb_color[$i] = $rgb_color[$l];
+		$l++;
+		$i++;
+		$countlegend--;
+	} 
+}
 
 /*foreach($colors as $i => $color) {
 	if (isset($color['border'])) {
@@ -282,6 +321,14 @@ foreach ($colors as $i => $color) {
 ob_get_clean(); //HACK TO EAT ANYTHING THAT CORRUPS THE IMAGE FILE
 
 switch ($graph_type) {
+	case 'ring3d':
+		pch_ring_graph($graph_type, array_values($data), $legend,
+			$width, $height, $font, $water_mark, $font_size, $legend_position, $colors);
+		break;
+	case 'bullet_chart':
+		pch_bullet_chart($graph_type, $data_values, $legend,
+			$width, $height, $font, $water_mark, $font_size, $legend_position, $colors);
+		break;
 	case 'pie3d':
 	case 'pie2d':
 		pch_pie_graph($graph_type, array_values($data), array_keys($data),
@@ -454,6 +501,74 @@ function pch_pie_graph ($graph_type, $data_values, $legend_values, $width,
 	$myPicture->stroke();
 }
 
+function pch_ring_graph ($graph_type, $data_values, $legend_values, $width,
+	$height, $font, $water_mark, $font_size, $legend_position, $colors) {
+	/* CAT:Ring charts */
+	
+	/* Create and populate the pData object */
+	$MyData = new pData();   
+	$MyData->addPoints($data_values,"ScoreA");  
+	$MyData->setSerieDescription("ScoreA","Application A");
+	
+	/* Define the absissa serie */
+	$MyData->addPoints($legend_values,"Labels");
+	$MyData->setAbscissa("Labels");
+	
+	/* Create the pChart object */
+	$myPicture = new pImage($width,$height,$MyData,TRUE);
+	
+	/* Set the default font properties */ 
+	$myPicture->setFontProperties(array("FontName"=>$font,"FontSize"=>$font_size,"R"=>80,"G"=>80,"B"=>80));
+	
+	$water_mark_height = 0;
+	$water_mark_width = 0;
+	if (!empty($water_mark)) {
+		if (is_array($water_mark)) {
+			if (!empty($water_mark['file'])) {
+				$water_mark = $water_mark['file'];
+			}
+		}
+		
+		$size_water_mark = getimagesize($water_mark);
+		$water_mark_height = $size_water_mark[1];
+		$water_mark_width = $size_water_mark[0];
+		
+		$myPicture->drawFromPNG(($width - $water_mark_width),
+			($height - $water_mark_height) - 50, $water_mark);
+	}
+	
+	
+	/* Create the pPie object */ 
+	$PieChart = new pPie($myPicture,$MyData);
+	foreach ($legend_values as $key => $value) {
+		if (isset($colors[$value])) {
+			$PieChart->setSliceColor($key, hex_2_rgb($colors[$value]));
+		}
+	}
+	
+	/* Draw an AA pie chart */
+	$PieChart->draw3DRing($width/3, $height/2,array("InnerRadius"=>100, "InnerRadius"=>10,"DrawLabels"=>TRUE,"LabelStacked"=>FALSE,"Precision"=>2,"Border"=>FALSE,"WriteValues"=>TRUE,"ValueR"=>0,"ValueG"=>0,"ValueB"=>0,"ValuePadding" => 15));
+			
+	
+	/* Write down the legend next to the 2nd chart*/
+		//Calculate the bottom margin from the size of string in each index
+	$max_chars = graph_get_max_index($legend_values);
+	
+	if ($legend_position != 'hidden') {
+		// This is a hardcore adjustment to match most of the graphs, please don't alter
+		$legend_with_aprox = 150 + (4.5 * $max_chars);
+		
+		$PieChart->drawPieLegend($width - $legend_with_aprox, 10, array("R"=>255,"G"=>255,"B"=>255, "BoxSize"=>10)); 
+	}
+	
+	/* Enable shadow computing */ 
+	$myPicture->setShadow(TRUE,
+		array("X" => 3, "Y" => 3, "R" => 0, "G" => 0, "B" => 0, "Alpha" => 10));
+	
+	/* Render the picture */
+	$myPicture->stroke();
+}
+
 function pch_kiviat_graph ($graph_type, $data_values, $legend_values, $width,
 	$height, $font, $font_size) {
 	/* CAT:Radar/Polar charts */
@@ -576,7 +691,7 @@ function pch_bar_graph ($graph_type, $index, $data, $width, $height, $font,
 				"Mode"=>SCALE_MODE_START0, "LabelRotation" => 60);
 			$margin_left = 40;
 			$margin_top = 10;
-			$margin_bottom = 10 * $max_chars;
+			$margin_bottom = 3 * $max_chars;
 			break;
 		case "hbar":
 			$scaleSettings = array("GridR"=>200,"GridG"=>200,"GridB"=>200,"DrawSubTicks"=>TRUE,
@@ -603,13 +718,13 @@ function pch_bar_graph ($graph_type, $index, $data, $width, $height, $font,
 	$myPicture->setGraphArea($margin_left,$margin_top,$width - $water_mark_width,$height-$margin_bottom);
 	
 	$myPicture->drawScale($scaleSettings);
-	
+	/*
 	if (isset($legend)) {
-		/* Write the chart legend */
+		/* Write the chart legend 
 		$size = $myPicture->getLegendSize(array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_HORIZONTAL));
 		$myPicture->drawLegend($width-$size['Width'],0,array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_HORIZONTAL, "BoxWidth"=>10, "BoxHeight"=>10));
 	}
-	
+	*/
 	/* Turn on shadow computing */ 
 	$myPicture->setShadow(TRUE,array("X"=>0,"Y"=>1,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10));
 	
@@ -703,7 +818,9 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 			$MyData->setPalette($point_id, $palette_color);*/
 		}
 		
-		$MyData->setSerieWeight($point_id, $config['custom_graph_width']);
+		// The weight of the line is not calculated in pixels, so it needs to be transformed
+		$reduction_coefficient = 0.31;
+		$MyData->setSerieWeight($point_id, $config['custom_graph_width'] * $reduction_coefficient);
 	}
 	
 	//$MyData->addPoints($data,"Yaxis");
@@ -724,7 +841,9 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 			break;
 		case 'transparent':
 			$transparent = true;
-			$fontColor = array('R' => 0, 'G' => 0, 'B' => 0);
+			// $fontColor = array('R' => 0, 'G' => 0, 'B' => 0);
+			// Now the color of the text will be grey
+			$fontColor = array('R' => 200, 'G' => 200, 'B' => 200);
 			break;
 		
 	}
@@ -855,23 +974,25 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 		"GridR" => 200,
 		"GridG" => 200,
 		"GridB" => 200,
-		"DrawSubTicks" => TRUE,
-		"CycleBackground" => TRUE, 
+		"GridAlpha" => 30,
+		"DrawSubTicks" => true,
+		"CycleBackground" => true,
+		"BackgroundAlpha1" => 35,
+		"BackgroundAlpha2" => 35,
 		"Mode" => $mode,
 		"ManualScale" => $ManualScale,
 		"LabelRotation" => 40, 
 		"XMargin" => 0, 
-		"MinDivHeight" => 20,
+		"MinDivHeight" => 15,
 		"TicksFontSize" => $font_size - 1);
-		
-	if (true) {
-		$scaleSettings['AxisR'] = '200';
-		$scaleSettings['AxisG'] = '200';
-		$scaleSettings['AxisB'] = '200';
-		$scaleSettings['TickR'] = '200';
-		$scaleSettings['TickG'] = '200';
-		$scaleSettings['TickB'] = '200';
-	}
+	
+	$scaleSettings['AxisR'] = '200';
+	$scaleSettings['AxisG'] = '200';
+	$scaleSettings['AxisB'] = '200';
+	$scaleSettings['TickR'] = '200';
+	$scaleSettings['TickG'] = '200';
+	$scaleSettings['TickB'] = '200';
+	
 	$myPicture->drawScale($scaleSettings);
 	
 	/* Turn on shadow computing */ 
@@ -882,13 +1003,13 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 			$ForceTransparency = "-1";
 			break;
 		default:
-			$ForceTransparency = "50";
+			$ForceTransparency = "100";
 			break;
 	}
 	
 	/* Draw the chart */
 	$settings = array(
-		"ForceTransparency" => $ForceTransparency,
+		"ForceTransparency" => 20,
 		"Gradient" => TRUE,
 		"GradientMode" => GRADIENT_EFFECT_CAN,
 		"DisplayValues" => $show_values,
@@ -990,6 +1111,59 @@ function pch_threshold_graph ($graph_type, $index, $data, $width, $height, $font
 		/* Write the chart legend */ 
 		$myPicture->drawLegend(643,210,array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_HORIZONTAL)); 
 	}
+	
+	/* Render the picture */
+	$myPicture->stroke();
+}
+
+function pch_bullet_chart($graph_type, $data, $legend,
+			$width, $height, $font, $water_mark, $font_size, $legend_position, $colors) {
+	
+	
+	/* Create and populate the pData object */
+	$MyData = new pData();
+	
+	foreach ($data as $key => $dat) {
+		$MyData->addPoints($dat, $key);
+	}
+	$MyData->setPalette(__("Min"),array("R"=>55,"G"=>91,"B"=>127));
+	$MyData->setPalette(__("Actual"),array("R"=>70,"G"=>130,"B"=>180));
+	$MyData->setPalette(__("Max"),array("R"=>221,"G"=>221,"B"=>221));
+	
+	$MyData->addPoints($legend,"Labels");
+	
+	
+	$MyData->setAbscissa("Labels");
+	$MyData->setSerieDescription("Labels", __("Agents/Modules"));
+	
+	$height_t = ($height * count($data) ) + 40;
+	$height_t = $height;
+	$max_chars = graph_get_max_index($legend);
+	$width_t = ($width + ( 100 + $max_chars));
+	
+	/* Create the pChart object */
+	$myPicture = new pImage($width_t, $height_t,$MyData);
+	
+	/* Write the picture title */ 
+	$myPicture->setFontProperties(array("FontName"=>$font,"FontSize"=>$font_size));
+
+	/* Write the chart title */ 
+	$myPicture->setFontProperties(array("FontName"=>$font,"FontSize"=>$font_size));
+	
+	$height_t - 10;
+	/* Draw the scale and chart */
+	$myPicture->setGraphArea(250,20,($width + 100), $height_t);
+	$myPicture->drawScale(array("Pos"=>SCALE_POS_TOPBOTTOM, "Mode"=>SCALE_MODE_ADDALL_START0,
+		  "LabelingMethod"=>LABELING_DIFFERENT, "GridR"=>255, "GridG"=>255,
+		  "GridB"=>255, "GridAlpha"=>50, "TickR"=>0,"TickG"=>0, "TickB"=>0, 
+		  "TickAlpha"=>50, "LabelRotation"=>0, "CycleBackground"=>1, 
+		  "DrawXLines"=>1, "DrawSubTicks"=>1, "SubTickR"=>255, 
+		  "SubTickG"=>0, "SubTickB"=>0, "SubTickAlpha"=>50, 
+		  "DrawYLines"=>ALL));
+	$myPicture->drawStackedBarChart(array("MODE"=>SCALE_MODE_START0));
+	 
+	/* Write the chart legend */
+	//$myPicture->drawLegend(0,205,array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_HORIZONTAL));
 	
 	/* Render the picture */
 	$myPicture->stroke(); 

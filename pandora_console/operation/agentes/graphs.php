@@ -19,7 +19,7 @@ global $config;
 require_once ("include/functions_agents.php");
 require_once ("include/functions_custom_graphs.php");
 
-if (! check_acl ($config['id_user'], $id_grupo, "AR")) {
+if (! check_acl ($config['id_user'], $id_grupo, "AR") && ! check_acl ($config['id_user'], 0, "AW")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access (read) to agent ".agents_get_name($id_agente));
 	include ("general/noaccess.php");
@@ -36,7 +36,6 @@ $height = get_parameter ("height", 245);
 $label = get_parameter ("label", "");
 $start_date = get_parameter ("start_date", date("Y-m-d"));
 $draw_events = get_parameter ("draw_events", 0);
-$zoom = get_parameter ("zoom", 1);
 $modules = get_parameter('modules', array());
 $filter = get_parameter('filter', 0);
 $combined = (bool)get_parameter('combined', 1);
@@ -134,29 +133,20 @@ $table->data[2][1] = __('Begin date');
 $table->data[2][2] = html_print_input_text ("start_date", substr ($start_date, 0, 10),'', 10, 40, true);
 $table->data[2][2] .= html_print_image ("images/calendar_view_day.png", true, array ("onclick" => "scwShow(scwID('text-start_date'),this);"));
 
-$table->data[3][1] = __('Zoom factor');
-$options = array ();
-$options[$zoom] = 'x' . $zoom;
-$options[1] = 'x1';
-$options[2] = 'x2';
-$options[3] = 'x3';
-$options[4] = 'x4';
-$table->data[3][2] = html_print_select ($options, "zoom", $zoom, '', '', 0, true);
+$table->data[3][1] = __('Time range');
 
-$table->data[4][1] = __('Time range');
+$table->data[3][2] = html_print_extended_select_for_time('period', $period, '', '', 0, 7, true);
 
-$table->data[4][2] = html_print_extended_select_for_time('period', $period, '', '', 0, 7, true);
-
-$table->data[5][2] = __('Show events');
-$table->data[5][3] = html_print_checkbox ("draw_events", 1, (bool) $draw_events, true);
-$table->data[6][2] = __('Show alerts') .
+$table->data[4][2] = __('Show events');
+$table->data[4][3] = html_print_checkbox ("draw_events", 1, (bool) $draw_events, true);
+$table->data[5][2] = __('Show alerts') .
 	ui_print_help_tip(__('the combined graph does not show the alerts into this graph'), true);
-$table->data[6][3] = html_print_checkbox ("draw_alerts", 1, (bool) $draw_alerts, true);
-$table->data[7][2] = __('Show as one combined graph');
-$table->data[7][3] = 
+$table->data[5][3] = html_print_checkbox ("draw_alerts", 1, (bool) $draw_alerts, true);
+$table->data[6][2] = __('Show as one combined graph');
+$table->data[6][3] = 
 	html_print_radio_button('combined', 1, __('one combined graph'),
 		$combined, true);
-$table->data[7][3] .= 
+$table->data[6][3] .= 
 	html_print_radio_button('combined', 0, __('several graphs for each module'),
 		$combined, true);
 
@@ -165,7 +155,7 @@ $htmlForm .= html_print_table($table, true);
 $htmlForm .= html_print_input_hidden('filter', 1, true);
 $htmlForm .= '<div class="action-buttons" style="width: '.$table->width.'">';
 $htmlForm .= html_print_button(__('Save as custom graph'), 'save_custom_graph',
-		false, 'save_custom_graph();', 'class="sub add" style=""',true) . '&nbsp;&nbsp;' .
+		false, '', 'class="sub add" style=""',true) . '&nbsp;&nbsp;' .
 		 html_print_submit_button (__('Filter'), 'filter_button', false, 'class="sub upd" style=""', true);
 $htmlForm .= '</div>';
 $htmlForm .= '</form>';
@@ -181,45 +171,44 @@ else
 	$date = $utime;
 
 if ($combined) {
-	
-	echo "<div style='width: 555px;'><strong style='font-size:9pt;'>" . __('Combined graph') . '</strong>';
-	echo "</div>";
-	
-	custom_graphs_print(0,
-		$height,
-		$width,
-		$period,
-		CUSTOM_GRAPH_LINE,
-		false,
-		$date,
-		false,
-		'white',
-		$modules);
+	echo '<div class="combined-graph-container" style="width: 100%; text-align: center;"'
+		. 'data-period="'. $period . '"'
+		. 'data-stacked="'. CUSTOM_GRAPH_LINE . '"'
+		. 'data-date="'. $date . '"'
+		. 'data-height="'. $height . '"'
+		// Pass the $modules before the ajax call
+		. '>'
+		. html_print_image('images/spinner.gif', true)
+		. '</div>';
 }
 else {
 	foreach ($modules as $id_module) {
 		$title = modules_get_agentmodule_name($id_module);
+		$unit = modules_get_unit($id_module);
 		
 		echo "<h4>" . $title . '</h4>';
-		
-		$unit = modules_get_unit ($id_module);
-		
-		echo grafico_modulo_sparse($id_module,
-			$period,
-			$draw_events,
-			$width,
-			$height,
-			$title,
-			null,
-			$draw_alerts,
-			$avg_only,
-			false,
-			$date,
-			$unit);
+		echo '<div class="sparse-graph-container" style="width: 100%; text-align: center;"'
+			. 'data-id_module="'. $id_module . '"'
+			. 'data-period="'. $period . '"'
+			. 'data-draw_events="'. (int)$draw_events . '"'
+			. 'data-title="'. $title . '"'
+			. 'data-draw_alerts="'. (int)$draw_alerts . '"'
+			. 'data-avg_only="'. (int)$avg_only . '"'
+			. 'data-date="'. $date . '"'
+			. 'data-unit="'. $unit . '"'
+			. 'data-date="'. $date . '"'
+			. 'data-height="'. $height . '"'
+			. '>'
+			. html_print_image('images/spinner.gif', true)
+			. '</div>';
 	}
 }
 
 echo "<div style='clear: both;'></div>";
+
+echo '<div id="graph-error-message" style="display: none;">';
+ui_print_error_message(__('There was an error loading the graph'));
+echo '</div>';
 
 //Dialog to save the custom graph
 echo "<div id='dialog_save_custom_graph' style='display: none;'>";
@@ -259,9 +248,9 @@ echo "</div>";
 		});
 	});
 	
-	function save_custom_graph() {
+	$('#button-save_custom_graph').click(function (event) {
 		$("#dialog_save_custom_graph").dialog("open");
-	}
+	});
 	
 	function save_custom_graph_second_step() {
 		$(".button_save").disable();
@@ -298,4 +287,131 @@ echo "</div>";
 			}
 		});
 	}
+	
+	// Load graphs
+	$(document).ready(function() {
+		var getModulesPHP = function () {
+			return <?php echo json_encode($modules); ?>;
+		}
+		
+		var requestGraph = function (type, data) {
+			data = data || {};
+			type = type || 'custom';
+			data.page = 'include/ajax/graph.ajax';
+			data['print_' + type + '_graph'] = 1;
+			
+			return $.ajax({
+				url: 'ajax.php',
+				type: 'POST',
+				dataType: 'html',
+				data: data
+			})
+		}
+		
+		var requestCustomGraph = function (graphId, width, height, period, stacked, date, modules) {
+			return requestGraph('custom', {
+				page: 'include/ajax/graph.ajax',
+				print_custom_graph: 1,
+				id_graph: graphId,
+				height: height,
+				width: width,
+				period: period,
+				stacked: stacked,
+				date: date,
+				modules_param: modules
+			});
+		}
+		
+		var requestSparseGraph = function (moduleId, period, showEvents, width, height, title, showAlerts, avgOnly, date, unit) {
+			return requestGraph('sparse', {
+				page: 'include/ajax/graph.ajax',
+				print_sparse_graph: 1,
+				agent_module_id: moduleId,
+				period: period,
+				show_events: showEvents,
+				width: width,
+				height: height,
+				title: title,
+				show_alerts: showAlerts,
+				avg_only: avgOnly,
+				date: date,
+				unit: unit
+			});
+		}
+		
+		var loadCustomGraphs = function () {
+			$('div.combined-graph-container').each(function (index, el) {
+				loadCustomGraph(el);
+			});
+		}
+		
+		var loadCustomGraph = function (element) {
+			var $container = $(element);
+			var $errorMessage = $('div#graph-error-message');
+			var period = $container.data('period');
+			var conf_stacked = '<?php echo $config['type_module_charts']; ?>';
+			switch (conf_stacked) {
+				case 'area':
+					var stacked = 0;
+					break;
+				case 'line':
+					var stacked = 2;
+					break;
+			}
+			var date = $container.data('date');
+			var height = $container.data('height');
+			
+			var modules = getModulesPHP();
+			var width = $container.width() - 20;
+			
+			var handleSuccess = function (data) {
+				$container.html(data);
+			}
+			var handleError = function (xhr, textStatus, errorThrown) {
+				$container.html($errorMessage.html());
+			}
+			
+			requestCustomGraph(0, width, height, period, stacked, date, modules)
+				.done(handleSuccess)
+				.fail(handleError);
+		}
+		
+		var loadSparseGraphs = function () {
+			$('div.sparse-graph-container').each(function (index, el) {
+				loadSparseGraph(el);
+			});
+		}
+		
+		var loadSparseGraph = function (element) {
+			var $container = $(element);
+			var $errorMessage = $('div#graph-error-message');
+			var moduleId = $container.data('id_module');
+			var period = $container.data('period');
+			var showEvents = $container.data('draw_events');
+			var title = $container.data('title');
+			var showAlerts = $container.data('draw_alerts');
+			var avgOnly = $container.data('avg_only');
+			var date = $container.data('date');
+			var unit = $container.data('unit');
+			var date = $container.data('date');
+			var height = $container.data('height');
+			
+			var width = $container.width() - 20;
+			
+			var handleSuccess = function (data) {
+				$container.html(data);
+			}
+			var handleError = function (xhr, textStatus, errorThrown) {
+				$container.html($errorMessage.html());
+			}
+			
+			requestSparseGraph(moduleId, period, showEvents, width, height, title, showAlerts, avgOnly, date, unit)
+				.done(handleSuccess)
+				.fail(handleError);
+		}
+		
+		// Run
+		loadCustomGraphs();
+		loadSparseGraphs();
+	});
 </script>

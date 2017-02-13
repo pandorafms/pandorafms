@@ -34,8 +34,8 @@ function validateAlert() {
 	}
 }
 
-function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_standby = false, $tag_filter = false, $return = false, $strict_user = false) {
-	
+function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_standby = false, $tag_filter = false,$action_filter = false, $return = false, $strict_user = false, $access = 'AR') {
+
 	global $config;
 	require_once ($config['homedir'] . "/include/functions_tags.php");
 	
@@ -66,7 +66,7 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
 	}
 	
 	$table->data[0][0] = __('Group');
-	$table->data[0][1] = html_print_select_groups($config['id_user'], "AR", true, "ag_group", $id_group, '', '', '', true, false, false, '', false, '', false, false, 'id_grupo', $strict_user);
+	$table->data[0][1] = html_print_select_groups($config['id_user'], $access, true, "ag_group", $id_group, '', '', '', true, false, false, '', false, '', false, false, 'id_grupo', $strict_user);
 	
 	$alert_status_filter = array();
 	$alert_status_filter['all_enabled'] = __('All (Enabled)');
@@ -88,10 +88,10 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
 	$tags = tags_get_user_tags();
 
 	if (empty($tags)) {
-		$table->data[0][4] .= html_print_input_text('tags', __('No tags'), '', 20, 40, true,true);
+		$table->data[0][5] .= html_print_input_text('tags', __('No tags'), '', 20, 40, true,true);
 	}
 	else {
-		$table->data[0][4] .= html_print_select ($tags, "tag_filter", $tag_filter, '', __('All'), '', true, false, true, '', false, 'width: 150px;');
+		$table->data[0][5] .= html_print_select ($tags, "tag_filter", $tag_filter, '', __('All'), '', true, false, true, '', false, 'width: 150px;');
 	}
 
 	$table->data[1][0] = __('Free text for search') .
@@ -99,9 +99,19 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
 			__("Filter by agent name, module name, template name or action name"),
 			true);
 	$table->data[1][1] = html_print_input_text('free_search', $free_search, '', 20, 40, true);
+
 	$table->data[1][2] = __('Standby');
 	$table->data[1][3] = html_print_select ($alert_standby, "filter_standby", $filter_standby, '', '', '', true);
-	
+
+	$table->data[1][4] = __('Action');
+	$alert_action = alerts_get_alert_actions_filter();
+	if(empty($alert_action)){
+		$table->data[1][5] .= html_print_input_text('action', __('No actions'), '', 20, 40, true,true);
+	}else{
+		$table->data[1][5] = html_print_select ($alert_action, "action_filter", $action_filter, '', __('All'), '', true);
+	}
+	$table->data[1][5] = html_print_select ($alert_action, "action_filter", $action_filter, '', __('All'), '', true);
+
 	if (defined('METACONSOLE')) {
 		$table->data[0][7] = html_print_submit_button(__('Filter'), 'filter_button', false, 'class="sub filter"', true);
 		$table->rowspan[0][7] = 2;

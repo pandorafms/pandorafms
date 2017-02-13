@@ -47,6 +47,7 @@ INSERT INTO "tconfig" ("token", "value") VALUES
 ('block_size','20'),
 ('days_purge','60'),
 ('days_delete_unknown','0'),
+('days_autodisable_deletion','30'),
 ('days_compact','15'),
 ('graph_res','5'),
 ('step_compact','1'),
@@ -121,6 +122,8 @@ INSERT INTO "tconfig" ("token", "value") VALUES
 ('custom_report_front_logo', 'images/pandora_logo_white.jpg'),
 ('custom_report_front_header', ''),
 ('custom_report_front_footer', '');
+('identification_reminder', 1);
+('identification_reminder_timestamp', 0);
 
 COMMIT WORK;
 
@@ -201,12 +204,12 @@ COMMIT WORK;
 --
 BEGIN WORK;
 LOCK TABLE "tlink";
-INSERT INTO "tlink" VALUES 
-(1,'Pandora FMS Manual','http://wiki.pandorafms.com/?title=Pandora'),
-(2,'Pandora FMS','http://pandorafms.com'),
-(3,'Report a bug','https://sourceforge.net/tracker/?func=add&amp;group_id=155200&amp;atid=794852'),
-(4,'Suggest new feature','http://sourceforge.net/tracker/?group_id=155200&amp;atid=794855'),
-(5,'Module library','http://pandorafms.com/pandora/repository/en');
+INSERT INTO "tlink" VALUES
+(1,'Documentation','http://wiki.pandorafms.com/'),
+(2,'Enterprise Edition','http://pandorafms.com'),
+(3,'Report a bug','https://github.com/pandorafms/pandorafms/issues'),
+(4,'Suggest new feature','http://forums.pandorafms.com/index.php?board=22.0'),
+(5,'Module library','http://library.pandorafms.com/');
 COMMIT WORK;
 SELECT setval('tlink_id_link_seq', (SELECT (SELECT MAX(id_link) FROM tlink)));
 
@@ -1000,7 +1003,7 @@ SELECT setval('tgis_map_layer_id_tmap_layer_seq', (SELECT (SELECT MAX(id_tmap_la
 INSERT INTO "talert_commands" ("id", "name", "command", "description", "internal", "fields_descriptions", "fields_values") VALUES (12,'Remote&#x20;agent&#x20;control','/usr/share/pandora_server/util/udp_client.pl&#x20;_address_&#x20;41122&#x20;&quot;_field1_&quot;','This&#x20;command&#x20;is&#x20;used&#x20;to&#x20;send&#x20;commands&#x20;to&#x20;the&#x20;Pandora&#x20;FMS&#x20;agents&#x20;with&#x20;the&#x20;UDP&#x20;server&#x20;enabled.&#x20;The&#x20;UDP&#x20;server&#x20;is&#x20;used&#x20;to&#x20;order&#x20;agents&#x20;&#40;Windows&#x20;and&#x20;UNIX&#41;&#x20;to&#x20;&quot;refresh&quot;&#x20;the&#x20;agent&#x20;execution:&#x20;that&#x20;means,&#x20;to&#x20;force&#x20;the&#x20;agent&#x20;to&#x20;execute&#x20;and&#x20;send&#x20;data',0,'[\"Command\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]','[\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]');
 SELECT setval('talert_commands_id_seq', (SELECT (SELECT MAX(id) FROM talert_commands)));
 
-INSERT INTO "talert_actions" ("id", "name", "id_alert_command", "field1", "field2", "field3", "field4", "field5", "field6", "field7", "field8", "field9", "field10", "id_group", "action_threshold", "field1_recovery", "field2_recovery", "field3_recovery", "field4_recovery", "field5_recovery", "field6_recovery", "field7_recovery", "field8_recovery", "field9_recovery", "field10_recovery") VALUES (1,'Mail&#x20;to&#x20;XXX',1,'yourmail@domain.es','[PANDORA] Alert from agent _agent_ on module _module_','','','','','','','','',0,0,'','','','','','','','','','');
+INSERT INTO "talert_actions" ("id", "name", "id_alert_command", "field1", "field2", "field3", "field4", "field5", "field6", "field7", "field8", "field9", "field10", "id_group", "action_threshold", "field1_recovery", "field2_recovery", "field3_recovery", "field4_recovery", "field5_recovery", "field6_recovery", "field7_recovery", "field8_recovery", "field9_recovery", "field10_recovery") VALUES (1,'Mail&#x20;to&#x20;Admin',1,'yourmail@domain.es','[PANDORA] Alert from agent _agent_ on module _module_','','','','','','','','',0,0,'','','','','','','','','','');
 INSERT INTO "talert_actions" ("id", "name", "id_alert_command", "field1", "field2", "field3", "field4", "field5", "field6", "field7", "field8", "field9", "field10", "id_group", "action_threshold", "field1_recovery", "field2_recovery", "field3_recovery", "field4_recovery", "field5_recovery", "field6_recovery", "field7_recovery", "field8_recovery", "field9_recovery", "field10_recovery") VALUES (2,'Restart&#x20;agent',12,'REFRESH AGENT *','','','','','','','','','',0,0,'','','','','','','','','','');
 INSERT INTO "talert_actions" ("id", "name", "id_alert_command", "field1", "field2", "field3", "field4", "field5", "field6", "field7", "field8", "field9", "field10", "id_group", "action_threshold", "field1_recovery", "field2_recovery", "field3_recovery", "field4_recovery", "field5_recovery", "field6_recovery", "field7_recovery", "field8_recovery", "field9_recovery", "field10_recovery") VALUES (3,'Pandora&#x20;FMS&#x20;Event',3,'_agent_&#x20;_module_&#x20;generated&#x20;an&#x20;event&#x20;alert&#x20;&#40;_data_&#41;','alert_fired','pandora','','4','','','','','',0,0,'RECOVERED:&#x20;_agent_&#x20;_module_&#x20;generated&#x20;event&#x20;alert&#x20;&#40;_data_&#41;','alert_ceased','pandora','','4','','','','','');
 INSERT INTO "talert_actions" ("id", "name", "id_alert_command", "field1", "field2", "field3", "field4", "field5", "field6", "field7", "field8", "field9", "field10", "id_group", "action_threshold", "field1_recovery", "field2_recovery", "field3_recovery", "field4_recovery", "field5_recovery", "field6_recovery", "field7_recovery", "field8_recovery", "field9_recovery", "field10_recovery") VALUES (4,'Create&#x20;a&#x20;ticket&#x20;in&#x20;Integria&#x20;IMS',11,'http://localhost/integria/include/api.php','1234','admin','integria','_agent_:&#x20;_alert_name_','1','3','copy@dom.com','admin','_alert_description_',0,0,'','','','','','','','','','');

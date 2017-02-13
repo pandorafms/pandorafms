@@ -244,7 +244,33 @@ function format_for_graph ($number , $decimals = 1, $dec_point = ".", $thousands
 		$number = $number / 1000;
 	}
 	
-	return format_numeric ($number, $decimals). $shorts[$pos]; //This will actually do the rounding and the decimals
+	return remove_right_zeros(format_numeric ($number, $decimals)). $shorts[$pos]; //This will actually do the rounding and the decimals
+}
+
+function human_milliseconds_to_string($seconds) {
+    $ret = "";
+	
+    /*** get the days ***/
+    $days = intval(intval($seconds) / (360000*24));
+    if($days > 0)
+		$ret .= "$days days ";
+	
+    /*** get the hours ***/
+    $hours = (intval($seconds) / 360000) % 24;
+    if($hours > 0)
+		$ret .= "$hours hours ";
+
+    /*** get the minutes ***/
+    $minutes = (intval($seconds) / 6000) % 60;
+    if($minutes > 0)
+		$ret .= "$minutes minutes ";
+	
+    /*** get the seconds ***/
+    $seconds = intval($seconds / 100) % 60;
+    if ($seconds > 0)
+        $ret .= "$seconds seconds";
+	
+    return $ret;
 }
 
 /**
@@ -1196,6 +1222,20 @@ function enterprise_installed() {
 }
 
 /**
+ * Check if the license is PANDORA-FREE.
+ * 
+ * @return boolean.
+ */
+function license_free() {
+	$return = true;
+	
+	$pandora_license = db_get_value ('value', 'tupdate_settings', '`key`', 'customer_key');
+	if ($pandora_license !== 'PANDORA-FREE') $return = false;
+	
+	return $return;
+}
+
+/**
  * TODO: Document enterprise functions
  */
 function enterprise_hook ($function_name, $parameters = false) {
@@ -1556,8 +1596,6 @@ function get_snmpwalk($ip_target, $snmp_version, $snmp_community = '',
 			break;
 	}
 	
-	//html_debug_print($command_str);
-	
 	exec($command_str, $output, $rc);
 	
 	// Parse the output of snmpwalk
@@ -1739,11 +1777,11 @@ function check_login ($output = true) {
  * @param int $id_user User id
  * @param int $id_group Agents group id to check from
  * @param string $access Access privilege
- * @param int $id_agent The agent id.
+ * @param bool $onlyOneGroup Flag to check acl for specified group only (not to roots up, or check acl for 'All' group when $id_group is 0).
  *
  * @return bool 1 if the user has privileges, 0 if not.
  */
-function check_acl($id_user, $id_group, $access, $id_agent = 0) {
+function check_acl($id_user, $id_group, $access, $onlyOneGroup = false) {
 	if (empty ($id_user)) {
 		//User ID needs to be specified
 		trigger_error ("Security error: check_acl got an empty string for user id", E_USER_WARNING);
@@ -1757,7 +1795,7 @@ function check_acl($id_user, $id_group, $access, $id_agent = 0) {
 	}
 	
 	$parents_id = array($id_group);
-	if ($id_group != 0) {
+	if ($id_group != 0 && $onlyOneGroup !== true) {
 		$group = db_get_row_filter('tgrupo', array('id_grupo' => $id_group));
 		$parents = groups_get_parents($group['parent'], true);
 		
@@ -1765,13 +1803,10 @@ function check_acl($id_user, $id_group, $access, $id_agent = 0) {
 			$parents_id[] = $parent['id_grupo'];
 		}
 	}
-	else {
-		$parents_id = array();
-	}
 	
 	// TODO: To reduce this querys in one adding the group condition if necessary (only one line is different)
 	//Joined multiple queries into one. That saves on the query overhead and query cache.
-	if ($id_group == 0) {
+	if ($id_group == 0 && $onlyOneGroup !== true) {
 		$query = sprintf("SELECT tperfil.incident_view, tperfil.incident_edit,
 				tperfil.incident_management, tperfil.agent_view,
 				tperfil.agent_edit, tperfil.alert_edit,
@@ -1786,7 +1821,7 @@ function check_acl($id_user, $id_group, $access, $id_agent = 0) {
 			FROM tusuario_perfil, tperfil
 			WHERE tusuario_perfil.id_perfil = tperfil.id_perfil
 				AND tusuario_perfil.id_usuario = '%s'", $id_user);
-		//GroupID = 0, group id doesnt matter (use with caution!)
+		//GroupID = 0 and onlyOneGroup = false, group id doesnt matter (use with caution!)
 	}
 	else {
 		$query = sprintf("SELECT tperfil.incident_view, tperfil.incident_edit,
@@ -2060,10 +2095,16 @@ function delete_dir($dir) {
 }
 
 /**
+ * Returns 1 if the data contains a codified image (base64)
+ */
+function is_image_data ($data) {
+	return (substr($data,0,10) == "data:image");
+}
+
+/**
 *  Returns 1 if this is Snapshot data, 0 otherwise
 *  Looks for two or more carriage returns.
 */
-
 function is_snapshot_data ($data) {
 	
 	// TODO IDEA: In the future, we can set a variable in setup
@@ -2073,7 +2114,7 @@ function is_snapshot_data ($data) {
 	$temp = array();
 	$count = preg_match_all ("/\n/", $data, $temp);
 	
-	if ($count > 2)
+	if ( ($count > 2) || (is_image_data($data)) )
 		return 1;
 	else
 		return 0;
@@ -2250,6 +2291,11 @@ function print_audit_csv ($data) {
 	global $config;
 	global $graphic_type;
 
+	if (!$data) {
+		echo __('No data found to export');
+		return 0;
+	}
+
 	$config['ignore_callback'] = true;
 	while (@ob_end_clean ());
 	
@@ -2257,20 +2303,20 @@ function print_audit_csv ($data) {
 	header("Content-Disposition: attachment; filename=audit_log".date("Y-m-d_His").".csv");
 	header("Pragma: no-cache");
 	header("Expires: 0");
+
+	// BOM
+	print pack('C*',0xEF,0xBB,0xBF);
 	
-	if ($data) {
-		echo __('User') . ';' .
-			__('Action') . ';' .
-			__('Date') . ';' .
-			__('Source ID') . ';' .
-			__('Comments') ."\n";
-		foreach ($data as $line) {
-			echo io_safe_output($line['id_usuario']) . ';' .  io_safe_output($line['accion']) . ';' .  $line['fecha'] . ';' .  $line['ip_origen'] . ';'.  io_safe_output($line['descripcion']). "\n";
-		}
+	echo __('User') . ';' .
+		__('Action') . ';' .
+		__('Date') . ';' .
+		__('Source ID') . ';' .
+		__('Comments') ."\n";
+	foreach ($data as $line) {
+		echo io_safe_output($line['id_usuario']) . ';' .  io_safe_output($line['accion']) . ';' .  $line['fecha'] . ';' .  $line['ip_origen'] . ';'.  io_safe_output($line['descripcion']). "\n";
 	}
-	else {
-		echo __('No data found to export');
-	}
+
+	exit;
 }
 
 /**
@@ -2570,6 +2616,7 @@ function date2strftime_format($date_format) {
 		'O' => '%z',
 		'T' => '%Z',
 		'%' => '%%',
+		'G' => '%k',
 		);
 	
 	$return = "";
@@ -2610,7 +2657,7 @@ function pandora_setlocale() {
 		'el' => 'el_GR',
 		'ru' => 'ru_RU',
 		'ar' => 'ar_MA',
-		'ja' => 'ja_JP',
+		'ja' => 'ja_JP.UTF-8',
 		'zh_CN' => 'zh_CN',
 		);
 	
@@ -2690,4 +2737,14 @@ function get_number_of_mr($mode) {
 	return $mr_size;
 }
 
+function remove_right_zeros ($value) {
+	$is_decimal = explode(".", $value);
+	if (isset($is_decimal[1])) {
+		$value_to_return = rtrim($value, "0");
+		return rtrim($value_to_return, ".");
+	}
+	else {
+		return $value;
+	}
+}
 ?>

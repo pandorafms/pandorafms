@@ -4,6 +4,6 @@
 */
 ?>
 
-<h1>Action alert</h1>
+<h1>Actions on alerts</h1>
 
-<p>Alert action is the component of the alert that keep relation between command and fields: Field 1, Field 2 and Field 3. These actions will be used in alert templates in order to associate a trigger with a specific action.</p>
+<p>Actions on alerts are an alert component that maintains the relationship between a command and the “Field 1”, “Field 2” and “Field 3” fields. These actions will be used on templates that associate a condition to an entire action</p>

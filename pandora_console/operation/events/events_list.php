@@ -28,13 +28,19 @@ require_once ($config["homedir"] . "/include/functions_tags.php");
 
 check_login ();
 
-if (! check_acl ($config["id_user"], 0, "ER")) {
+$event_a = check_acl ($config['id_user'], 0, "ER");
+$event_w = check_acl ($config['id_user'], 0, "EW");
+$event_m = check_acl ($config['id_user'], 0, "EM");
+$access = ($event_a == true) ? 'ER' : (($event_w == true) ? 'EW' : (($event_m == true) ? 'EM' : 'ER'));
+
+if (!$event_a && !$event_w && !$event_m) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access event viewer");
 	require ("general/noaccess.php");
 	return;
 }
 
+$is_filter = db_get_value('id_filter', 'tusuario', 'id_user', $config['id_user']);
 
 $jump = '&nbsp;&nbsp;';
 
@@ -77,7 +83,9 @@ if (is_ajax()) {
 		$values['tag_without'] = get_parameter('tag_without', io_json_mb_encode(array()));
 		$values['filter_only_alert'] = get_parameter('filter_only_alert');
 		$values['id_group_filter'] = get_parameter('id_group_filter');
-		
+		$values['date_from'] = get_parameter('date_from');
+		$values['date_to'] = get_parameter('date_to');
+
 		$exists = (bool)db_get_value_filter(
 			'id_filter', 'tevent_filter', $values);
 		
@@ -115,7 +123,9 @@ if (is_ajax()) {
 		$values['tag_without'] = get_parameter('tag_without', io_json_mb_encode(array()));
 		$values['filter_only_alert'] = get_parameter('filter_only_alert');
 		$values['id_group_filter'] = get_parameter('id_group_filter');
-		
+		$values['date_from'] = get_parameter('date_from');
+		$values['date_to'] = get_parameter('date_to');
+
 		$result = db_process_sql_update('tevent_filter',
 			$values, array('id_filter' => $id));
 		
@@ -139,7 +149,7 @@ if (is_ajax()) {
 $strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
 
 // Get the tags where the user have permissions in Events reading tasks
-$tags = tags_get_user_tags($config['id_user'], 'ER');
+$tags = tags_get_user_tags($config['id_user'], $access);
 
 
 if ($id_agent == 0 && !empty($text_agent)) {
@@ -191,14 +201,13 @@ if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0,
 	$table->cellspacing = 4;
 	$table->cellpadding = 4;
 	$table->class = 'databox';
-	if (defined('METACONSOLE')) {
-		$table->width = '100%';
+	if (is_metaconsole()) {
 		$table->class = 'databox filters';
 		$table->cellspacing = 0;
 		$table->cellpadding = 0;
 	}
 	$table->styleTable = 'font-weight: bold; text-align:left;';
-	if (!defined("METACONSOLE"))
+	if (!is_metaconsole())
 		$table->style[0] = 'width: 50%; width:50%;';
 	
 	$data = array();
@@ -212,12 +221,12 @@ if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0,
 	$table->rowid[1] = 'save_filter_row1';
 	$data[0] = __('Filter name') . $jump;
 	$data[0] .= html_print_input_text ('id_name', '', '', 15, 255, true);
-	if(defined('METACONSOLE'))
+	if(is_metaconsole())
 		$data[1] = __('Save in Group') . $jump;
 	else
 		$data[1] = __('Filter group') . $jump;
 	# Fix : Only admin users can see group ALL
-	$data[1] .= html_print_select_groups($config['id_user'], "ER", users_can_manage_group_all(), "id_group_filter",
+	$data[1] .= html_print_select_groups($config['id_user'], $access, users_can_manage_group_all(), "id_group_filter",
 				$id_group_filter, '', '', 0, true, false, false, 'w130', false, '', false, false, 'id_grupo', $strict_user);
 	$table->data[] = $data;
 	$table->rowclass[] = '';
@@ -255,15 +264,14 @@ $table->width = '100%';
 $table->cellspacing = 4;
 $table->cellpadding = 4;
 $table->class = 'databox';
-if (defined('METACONSOLE')) {
-	$table->width = '100%';
+if (is_metaconsole()) {
 	$table->cellspacing = 0;
 	$table->cellpadding = 0;
 	$table->class = 'databox filters';
 }
 
 $table->styleTable = 'font-weight: bold; color: #555; text-align:left;';
-if (!defined("METACONSOLE"))
+if (!is_metaconsole())
 	$table->style[0] = 'width: 50%; width:50%;';
 $data = array();
 $table->rowid[3] = 'update_filter_row1';
@@ -311,11 +319,9 @@ $tabletags_with->cellpadding = 4;
 $tabletags_with->class = 'noshadow';
 $tabletags_with->styleTable = 'border: 0px;';
 if (defined('METACONSOLE')) {
-	$tabletags_with->width = '100%';
 	$tabletags_with->class = 'nobady';
 	$tabletags_with->cellspacing = 0;
 	$tabletags_with->cellpadding = 0;
-	$tabletags_with->styleTable = 'border: 0px;';
 }
 
 
@@ -342,7 +348,6 @@ $tabletags_without->cellspacing = 4;
 $tabletags_without->cellpadding = 4;
 $tabletags_without->class = 'noshadow';
 if (defined('METACONSOLE')) {
-	$tabletags_without->width = '100%';
 	$tabletags_without->class = 'nobady';
 	$tabletags_without->cellspacing = 0;
 	$tabletags_without->cellpadding = 0;
@@ -365,7 +370,7 @@ $tabletags_without->rowclass[] = '';
 
 // EVENTS FILTER
 // Table for filter controls
-if (defined('METACONSOLE')) {
+if (is_metaconsole()) {
 	$events_filter = '<form id="form_filter" class="filters_form" method="post" action="index.php?sec=eventos&amp;sec2=operation/events/events&amp;refr='. 
 		(int)get_parameter("refr", 0) .'&amp;pure='.$config["pure"].'&amp;section=' . $section . '&amp;history='.(int)$history.'">';
 }
@@ -426,8 +431,9 @@ $data[0] = __('User ack.') . $jump;
 
 if ($strict_user) {
 	$user_users = array($config['id_user']=>$config['id_user']);
-} else {
-	$user_users = users_get_user_users($config['id_user'], "ER", users_can_manage_group_all(0));
+}
+else {
+	$user_users = users_get_user_users($config['id_user'], $access, users_can_manage_group_all());
 }
 
 $data[0] .= html_print_select($user_users, "id_user_ack", $id_user_ack, '',
@@ -467,12 +473,21 @@ $table_advanced->rowclass[] = '';
 $data = array();
 $data[0] = __('Date from') . $jump;
 
-$user_users = users_get_user_users($config['id_user'], "ER", users_can_manage_group_all(0));
+//~ $user_users = users_get_user_users($config['id_user'], "ER", users_can_manage_group_all());
 
 $data[0] .= html_print_input_text ('date_from', $date_from, '', 15, 10, true);
 
 $data[1] = __('Date to') . $jump;
 $data[1] .= html_print_input_text ('date_to', $date_to, '', 15, 10, true);
+
+$table_advanced->data[] = $data;
+$table_advanced->rowclass[] = '';
+
+$data[0] = __('Timestamp from:') . $jump;
+$data[0] .= html_print_input_text('time_from', $time_from, '', 9, 7, true);
+
+$data[1] = __('Timestamp to:') . $jump;
+$data[1] .= html_print_input_text('time_to', $time_to, '', 9, 7, true);
 
 $table_advanced->data[] = $data;
 $table_advanced->rowclass[] = '';
@@ -528,9 +543,8 @@ $table->data = array();
 $data = array();
 $data[0] = __('Group') . $jump;
 
-$data[0] .= html_print_select_groups($config["id_user"], "ER", true, 
+$data[0] .= html_print_select_groups($config["id_user"], $access, true, 
 	'id_group', $id_group, '', '', 0, true, false, false, 'w130', false, false, false, false, 'id_grupo', $strict_user). $jump;
-	
 //**********************************************************************
 // TODO
 // This code is disabled for to enabled in Pandora 5.1
@@ -582,7 +596,7 @@ $table->rowclass[] = '';
 
 $data = array();
 $data[0] = '<div style="width:100%; text-align:left">';
-if (check_acl ($config["id_user"], 0, "EW")) {
+if ($event_w || $event_m) {
 	$data[0] .= '<a href="javascript:" onclick="show_save_filter_dialog();">' . 
 				html_print_image("images/disk.png", true, array("border" => '0', "title" => __('Save filter'), "alt" => __('Save filter'))) . '</a> &nbsp;';
 }
@@ -624,7 +638,7 @@ $events_filter .= $botom_update;
 
 $events_filter .= "</form>"; //This is the filter div
 
-if (defined('METACONSOLE'))
+if (is_metaconsole())
 	ui_toggle($events_filter, __("Show Options"));
 else
 	ui_toggle($events_filter, __('Event control filter'), '', !$open_filter);
@@ -687,7 +701,10 @@ elseif ($group_rep == 1) {
 		$offset,
 		$pagination,
 		$meta,
-		$history);
+		$history,
+		false,
+		false,
+		'DESC');
 }
 elseif ($group_rep == 2) {
 	$result = events_get_events_grouped_by_agent(
@@ -724,8 +741,7 @@ if (!empty($result)) {
 		}
 	}
 	elseif ($group_rep == 2) {
-	
-	
+		
 	}
 	$limit = (int) db_get_sql ($sql);
 	
@@ -766,8 +782,7 @@ if (!empty($result)) {
 											$history);
 	}
 	elseif ($group_rep == 2) {
-	
-	
+		
 	}
 	
 	if (($group_rep == 1) OR ($group_rep == 0)) {
@@ -784,7 +799,7 @@ if (!empty($result)) {
 if (!empty($result)) {
 	//~ Checking the event tags exactly. The event query filters approximated tags to keep events
 	//~ with several tags
-	$acltags = tags_get_user_module_and_tags ($config['id_user'],'ER', true);
+	$acltags = tags_get_user_module_and_tags ($config['id_user'], $access, true);
 
 	foreach ($result as $key=>$event_data) {
 		$has_tags = events_checks_event_tags($event_data, $acltags);
@@ -807,32 +822,17 @@ if ($group_rep == 0) {
 	$sql = "SELECT COUNT(id_evento)
 			FROM $event_table
 			WHERE 1=1 $sql_post";
+	$total_events = (int) db_get_sql ($sql);
 }
 elseif ($group_rep == 1) {
-	switch ($config["dbtype"]) {
-		case "mysql":
-		case "postgresql":
-			$sql = "SELECT COUNT(1)
-				FROM (SELECT 1
-					FROM $event_table
-					WHERE 1=1 $sql_post
-					GROUP BY evento, id_agentmodule) t";
-			break;
-		case "oracle":
-			$sql = "SELECT COUNT(1)
-					FROM (SELECT 1
-						FROM $event_table
-						WHERE 1=1 $sql_post
-						GROUP BY to_char(evento), id_agentmodule) t";
-			break;
-	}
+	$total_events = events_get_events_grouped($sql_post, false,
+		false, $meta, $history, true, false);
 }
 elseif ($group_rep == 2) {
 	$sql = "SELECT COUNT(*) FROM (select id_agente as total from $event_table WHERE id_agente > 0  
 					$sql_post GROUP BY id_agente ORDER BY id_agente ) AS t";
+	$total_events = (int) db_get_sql ($sql);
 }
-
-$total_events = (int) db_get_sql ($sql);
 
 if (empty ($result)) {
 	$result = array ();
@@ -852,6 +852,7 @@ html_print_input_hidden('ajax_file',
 	ui_get_full_url("ajax.php", false, false, false));
 html_print_input_hidden('meta', (int)$meta);
 html_print_input_hidden('history', (int)$history);
+html_print_input_hidden('filterid', $is_filter);
 
 ui_require_jquery_file('json');
 ui_include_time_picker();
@@ -866,6 +867,7 @@ var origin_select_without_tag_empty = <?php echo (int)$add_without_tag_disabled;
 
 var val_none = 0;
 var text_none = "<?php echo __('None'); ?>";
+var group_agents_id = false;
 
 $(document).ready( function() {
 	
@@ -886,7 +888,65 @@ $(document).ready( function() {
 		$("#row_name").css('visibility', '');
 		$("#submit-update_filter").css('visibility', '');
 	}
-	
+
+	if ($("#hidden-id_name").val() == ''){
+		if($("#hidden-filterid").val() != ''){
+			$('#row_name').css('visibility', '');
+			$("#submit-update_filter").css('visibility', '');
+			jQuery.post ("<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
+				{"page" : "operation/events/events_list",
+				"get_filter_values" : 1,
+				"id" : $('#hidden-filterid').val()
+				},
+				function (data) {
+					jQuery.each (data, function (i, val) {
+						if (i == 'id_name')
+							$("#hidden-id_name").val(val);
+						if (i == 'id_group')
+							$("#id_group").val(val);
+						if (i == 'event_type')
+							$("#event_type").val(val);
+						if (i == 'severity')
+							$("#severity").val(val);
+						if (i == 'status')
+							$("#status").val(val);
+						if (i == 'search')
+							$("#text-search").val(val);
+						if (i == 'text_agent')
+							$("#text_id_agent").val(val);
+						if (i == 'id_agent')
+							$('input:hidden[name=id_agent]').val(val);
+						if (i == 'id_agent_module')
+							$('input:hidden[name=module_search_hidden]').val(val);
+						if (i == 'pagination')
+							$("#pagination").val(val);
+						if (i == 'event_view_hr')
+							$("#text-event_view_hr").val(val);
+						if (i == 'id_user_ack')
+							$("#id_user_ack").val(val);
+						if (i == 'group_rep')
+							$("#group_rep").val(val);
+						if (i == 'tag_with')
+							$("#hidden-tag_with").val(val);
+						if (i == 'tag_without')
+							$("#hidden-tag_without").val(val);
+						if (i == 'filter_only_alert')
+							$("#filter_only_alert").val(val);
+						if (i == 'id_group_filter')
+							$("#id_group_filter").val(val);
+					});
+					reorder_tags_inputs();
+					// Update the info with the loaded filter
+					$('#filter_loaded_span').html($('#filter_loaded_text').html() + ': ' + $("#hidden-id_name").val());
+
+					// Update the view with the loaded filter
+					$('#submit-update').trigger('click');
+				},
+				"json"
+			);
+		}
+	}
+
 	$("#submit-load_filter").click(function () {
 		// If selected 'none' flush filter
 		if ( $("#filter_id").val() == 0 ) {
@@ -958,6 +1018,20 @@ $(document).ready( function() {
 							$("#filter_only_alert").val(val);
 						if (i == 'id_group_filter')
 							$("#id_group_filter").val(val);
+						if (i == 'date_from'){
+							if((val == '0000-00-00') || (val == null)) {
+								$("#text-date_from").val('');
+							} else {
+								$("#text-date_from").val(val.replace(/\-/g,"/"));
+							}
+						}
+						if (i == 'date_to'){
+							if((val == '0000-00-00') || (val == null)) {
+								$("#text-date_to").val('');
+							} else {
+								$("#text-date_to").val(val.replace(/\-/g,"/"));
+							}
+						}
 					});
 					reorder_tags_inputs();
 					// Update the info with the loaded filter
@@ -992,7 +1066,7 @@ $(document).ready( function() {
 	$("#submit-save_filter").click(function () {
 		// If the filter name is blank show error
 		if ($('#text-id_name').val() == '') {
-			$('#show_filter_error').html('<h3 class="error"> <?php echo __('Filter name cannot be left blank'); ?> </h3>');
+			$('#show_filter_error').html("<h3 class='error'><?php echo __("Filter name cannot be left blank"); ?></h3>");
 			
 			// Close dialog
 			$('.ui-dialog-titlebar-close').trigger('click');
@@ -1021,7 +1095,9 @@ $(document).ready( function() {
 				"tag_with": Base64.decode($("#hidden-tag_with").val()),
 				"tag_without": Base64.decode($("#hidden-tag_without").val()),
 				"filter_only_alert" : $("#filter_only_alert").val(),
-				"id_group_filter": $("#id_group_filter").val()
+				"id_group_filter": $("#id_group_filter").val(),
+				"date_from": $("#text-date_from").val(),
+				"date_to": $("#text-date_to").val()
 			},
 			function (data) {
 				$(".info_box").hide();
@@ -1116,7 +1192,9 @@ $(document).ready( function() {
 			"tag_with" : Base64.decode($("#hidden-tag_with").val()),
 			"tag_without" : Base64.decode($("#hidden-tag_without").val()),
 			"filter_only_alert" : $("#filter_only_alert").val(),
-			"id_group_filter": $("#id_group_filter").val()
+			"id_group_filter": $("#id_group_filter").val(),
+			"date_from": $("#text-date_from").val(),
+			"date_to": $("#text-date_to").val()
 			},
 			function (data) {
 				$(".info_box").hide();
@@ -1477,4 +1555,24 @@ function show_events_graph_dialog() {
 			.show ();
 }
 /* ]]> */
+
+//function datetime 
+function datetime_picker_callback() {
+		
+	$("#text-time_from, #text-time_to").timepicker({
+		showSecond: true,
+		timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
+		timeOnlyTitle: '<?php echo __('Choose time');?>',
+		timeText: '<?php echo __('Time');?>',
+		hourText: '<?php echo __('Hour');?>',
+		minuteText: '<?php echo __('Minute');?>',
+		secondText: '<?php echo __('Second');?>',
+		currentText: '<?php echo __('Now');?>',
+		closeText: '<?php echo __('Close');?>'});
+		
+	$("#text-date_from, #text-date_to").datepicker({dateFormat: "<?php echo DATE_FORMAT_JS; ?>"});
+	
+	$.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
+}
+datetime_picker_callback();
 </script>

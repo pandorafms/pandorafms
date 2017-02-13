@@ -66,27 +66,26 @@ if (! $layout) {
 	exit;
 }
 
-$id_group = $layout["id_group"];
-$layout_name = $layout["name"];
-$background = $layout["background"];
-$bwidth = $layout["width"];
-$bheight = $layout["height"];
-
 if (!isset($config['pure']))
 	$config['pure'] = 0;
 
-$xhr = (bool) get_parameter('xhr');
-if ($xhr) {
-	$width = (int) get_parameter('width');
-	if ($width <= 0) $width = null;
-	$height = (int) get_parameter('height');
-	if ($height <= 0) $height = null;
+//~ $xhr = (bool) get_parameter('xhr');
+if ($layout) {
+	$id_group = $layout["id_group"];
+	$layout_name = $layout["name"];
+	$background = $layout["background"];
+	$bwidth = $layout["width"];
+	$bheight = $layout["height"];
+	//~ $width = (int) get_parameter('width');
+	//~ if ($width <= 0) $width = null;
+	//~ $height = (int) get_parameter('height');
+	//~ if ($height <= 0) $height = null;
 	
-	ob_start();
-	// Render map
+	//~ ob_start();
+	//~ // Render map
 	visual_map_print_visual_map($id_layout, true, true, $width, $height,
 		'../../', true, $graph_javascript, true);
-	return;
+	//~ return;
 }
 else {
 	echo '<div id="vc-container"></div>';
@@ -135,11 +134,13 @@ echo '</div>';
 ui_require_jquery_file('countdown');
 ui_require_javascript_file('wz_jsgraphics');
 ui_require_javascript_file('pandora_visual_console');
+$ignored_params['refr'] = '';
 ?>
 
 <script language="javascript" type="text/javascript">
 	$(document).ready(function () {
 		var refr = <?php echo (int) $refr; ?>;
+		var href = "<?php echo ui_get_url_refresh ($ignored_params); ?>";
 		
 		var startCountDown = function (duration, cb) {
 			$('div.vc-countdown').countdown('destroy');
@@ -153,47 +154,44 @@ ui_require_javascript_file('pandora_visual_console');
 				alwaysExpire: true,
 				onExpiry: function () {
 					$('div.vc-countdown').countdown('destroy');
-					cb();
+					//~ cb();
+					url = js_html_entity_decode( href ) + duration;
+					$(document).attr ("location", url);
 				}
 			});
 		}
 		
-		var fetchMap = function () {
-			$.ajax({
-				url: 'public_console.php',
-				type: 'GET',
-				dataType: 'html',
-				data: {
-					hash: '<?php echo $hash; ?>',
-					id_layout: <?php echo $id_layout; ?>,
-					graph_javascript: <?php echo (int) $graph_javascript; ?>,
-					id_user: '<?php echo $config['id_user']; ?>',
-					width: $(window).width(),
-					height: $(window).height(),
-					xhr: true
-				}
-			})
-			.done(function (data, textStatus, xhr) {
-				$('div#vc-container').html(data);
-				startCountDown(refr, fetchMap);
-			});
-		}
-		
+		//~ var fetchMap = function () {
+			//~ $.ajax({
+				//~ url: 'public_console.php',
+				//~ type: 'GET',
+				//~ dataType: 'html',
+				//~ data: {
+					//~ hash: '<?php echo $hash; ?>',
+					//~ id_layout: <?php echo $id_layout; ?>,
+					//~ graph_javascript: <?php echo (int) $graph_javascript; ?>,
+					//~ id_user: '<?php echo $config['id_user']; ?>',
+					//~ width: $(window).width(),
+					//~ height: $(window).height(),
+					//~ xhr: true
+				//~ }
+			//~ })
+			//~ .done(function (data, textStatus, xhr) {
+				//~ $('div#vc-container').html(data);
+				//~ startCountDown(refr, fetchMap);
+			//~ });
+		//~ }
+		startCountDown(refr, false);
 		// Auto hide controls
 		var controls = document.getElementById('vc-controls');
 		autoHideElement(controls, 1000);
 		
-		$('#qrcode_container').dialog({
-			autoOpen: false,
-			modal: true
-		});
-		
 		$('select#refr').change(function (event) {
 			refr = Number.parseInt(event.target.value, 10);
-			startCountDown(refr, fetchMap);
+			startCountDown(refr, false);
 		});
 		
 		// Start the map fetch
-		fetchMap();
+		//~ fetchMap();
 	});
 </script>

@@ -152,6 +152,7 @@ sub data_producer ($) {
 		open INDEXFILE, '>' . $IDX_FILE;
 		print INDEXFILE $LAST_LINE . ' ' . $LAST_SIZE;
 		close INDEXFILE;
+		set_file_permissions($pa_config, $IDX_FILE, "0666");
 
 		# Skip lines other than SNMP Trap logs
 		next unless ($line =~ m/^SNMPv[12]\[\*\*\]/);
@@ -328,6 +329,9 @@ sub pandora_snmptrapd {
 		# Evaluate alerts for this trap
 		pandora_evaluate_snmp_alerts ($pa_config, $trap_id, $source, $oid, $type, $oid, $value, $custom_oid, $dbh);
 	}
+
+	# Delay the consumption of the next task.
+	sleep($pa_config->{'snmp_delay'}) if ($pa_config->{'snmp_delay'} > 0);
 }
 
 ########################################################################################
@@ -383,7 +387,7 @@ sub start_snmptrapd ($) {
 	
 	if ( -e $pid_file && open (PIDFILE, $pid_file)) {
 		my $pid = <PIDFILE> + 0;
-		close PIDFILE;
+		close PIDFILE;		
 
 		# Check if snmptrapd is running
 		if ($snmptrapd_running = kill (0, $pid)) {

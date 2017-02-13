@@ -49,10 +49,16 @@ foreach ($osList as $os) {
 	$data = array();
 	$data[] = ui_print_os_icon($os['id_os'], false, true);
 	$data[] = $os['id_os'];
-	$data[] = '<a href="index.php?sec=gsetup&sec2=godmode/setup/os&action=edit&tab=builder&id_os=' . $os['id_os'] . '">' . io_safe_output($os['name']) . '</a>';
+	if(is_metaconsole())
+		$data[] = '<a href="index.php?sec=advanced&sec2=advanced/component_management&tab=os_manage&action=edit&tab2=builder&id_os=' . $os['id_os'] . '">' . io_safe_output($os['name']) . '</a>';
+	else
+		$data[] = '<a href="index.php?sec=gsetup&sec2=godmode/setup/os&action=edit&tab=builder&id_os=' . $os['id_os'] . '">' . io_safe_output($os['name']) . '</a>';
 	$data[] = ui_print_truncate_text(io_safe_output($os['description']), 'description', true, true);
 	if ($os['id_os'] > 16) {
-		$data[] = '<a href="index.php?sec=gsetup&sec2=godmode/setup/os&action=delete&tab=list&id_os=' . $os['id_os'] . '">' . html_print_image("images/cross.png", true) . '</a>';
+		if(is_metaconsole())
+			$data[] = '<a href="index.php?sec=advanced&sec2=advanced/component_management&tab=os_manage&action=delete&tab2=list&id_os=' . $os['id_os'] . '">' . html_print_image("images/cross.png", true) . '</a>';
+		else
+			$data[] = '<a href="index.php?sec=gsetup&sec2=godmode/setup/os&action=delete&tab=list&id_os=' . $os['id_os'] . '">' . html_print_image("images/cross.png", true) . '</a>';
 	}
 	else {
 		//The original icons of pandora don't delete.
@@ -68,4 +74,13 @@ if (isset($data)) {
 else {
 	ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no defined operating systems') ) );
 }
+
+if (is_metaconsole()) {
+	echo '<form method="post" action="index.php?sec=advanced&sec2=advanced/component_management&tab=os_manage&tab2=builder">';
+		echo "<div style='text-align:right;width:" . $table->width . "'>";	
+			html_print_submit_button (__('Create OS'), '', false, 'class="sub next"');
+		echo "</div>";
+	echo '</form>';
+}
+
 ?>

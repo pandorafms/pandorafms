@@ -44,7 +44,7 @@ function extension_db_status() {
 		"images/extensions.png", false, "", true, "");
 	
 	
-	if (! check_acl ($config['id_user'], 0, "PM")) {
+	if (! check_acl ($config['id_user'], 0, "DM")) {
 		db_pandora_audit("ACL Violation",
 			"Trying to access db status");
 		require ("general/noaccess.php");
@@ -277,7 +277,7 @@ function extension_db_check_tables_differences($connection_test,
 								ui_print_info_message(
 									__('You can execute this SQL query for to fix.') . "<br />" .
 									'<pre>' .
-										"ALTER TABLE " . $table . " MODIFY COLUMN " . $field . " " . $value . ";" .
+										"ALTER TABLE " . $table . " MODIFY COLUMN " . $name_field . " " . $value . ";" .
 									'</pre>'
 								);
 								break;
@@ -289,7 +289,7 @@ function extension_db_check_tables_differences($connection_test,
 									ui_print_info_message(
 										__('You can execute this SQL query for to fix.') . "<br />" .
 										'<pre>' .
-											"ALTER TABLE " . $table . " MODIFY COLUMN " . $field . "INT NULL;" .
+											"ALTER TABLE " . $table . " MODIFY COLUMN " . $name_field . "INT NULL;" .
 										'</pre>'
 									);
 								}
@@ -297,7 +297,7 @@ function extension_db_check_tables_differences($connection_test,
 									ui_print_info_message(
 										__('You can execute this SQL query for to fix.') . "<br />" .
 										'<pre>' .
-											"ALTER TABLE " . $table . " MODIFY COLUMN " . $field . "INT NOT NULL;" .
+											"ALTER TABLE " . $table . " MODIFY COLUMN " . $name_field . "INT NOT NULL;" .
 										'</pre>'
 									);
 								}
@@ -362,5 +362,5 @@ function extension_db_status_execute_sql_file($url, $connection) {
 }
 
 extensions_add_godmode_function('extension_db_status');
-extensions_add_godmode_menu_option(__('DB Status'), 'PM', 'gextensions', null, "v1r1", 'gdbman');
+extensions_add_godmode_menu_option(__('DB Status'), 'DM', 'gextensions', null, "v1r1", 'gdbman');
 ?>

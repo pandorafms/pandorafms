@@ -26,7 +26,10 @@ if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_us
 
 $action = get_parameter('action', 'new');
 $idOS = get_parameter('id_os', 0);
-$tab = get_parameter('tab', 'list');
+if (is_metaconsole())
+	$tab = get_parameter('tab2', 'list');
+else
+	$tab = get_parameter('tab', 'list');
 
 if ($idOS) {
 	$os = db_get_row_filter('tconfig_os', array('id_os' => $idOS));
@@ -135,18 +138,19 @@ $buttons = array(
 
 $buttons[$tab]['active'] = true;
 
-// Header
-ui_print_page_header(__('Edit OS'), "", false, "", true, $buttons);
-
+if (!is_metaconsole()) {
+	// Header
+	ui_print_page_header(__('Edit OS'), "", false, "", true, $buttons);
+}
 echo $message;
 
 switch ($tab) {
 	case 'list':
-		require_once('godmode/setup/os.list.php');
+		require_once($config['homedir'] . '/godmode/setup/os.list.php');
 		return;
 		break;
 	case 'builder':
-		require_once('godmode/setup/os.builder.php');
+		require_once($config['homedir'] . '/godmode/setup/os.builder.php');
 		return;
 		break;
 }

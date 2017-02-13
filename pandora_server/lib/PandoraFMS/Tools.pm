@@ -57,8 +57,12 @@ our @EXPORT = qw(
 	ICMPSERVER
 	SNMPSERVER
 	SATELLITESERVER
+	MFSERVER
+	TRANSACTIONALSERVER
 	METACONSOLE_LICENSE
 	$DEVNULL
+	$OS
+	$OS_VERSION
 	RECOVERED_ALERT
 	FIRED_ALERT
     cron_get_closest_in_range
@@ -95,6 +99,7 @@ our @EXPORT = qw(
 	month_have_days
 	translate_obj
 	valid_regex
+	set_file_permissions
 );
 
 # ID of the different servers
@@ -112,6 +117,8 @@ use constant EVENTSERVER => 10;
 use constant ICMPSERVER => 11;
 use constant SNMPSERVER => 12;
 use constant SATELLITESERVER => 13;
+use constant TRANSACTIONALSERVER => 14;
+use constant MFSERVER => 15;
 
 # Value for a metaconsole license type
 use constant METACONSOLE_LICENSE => 0x01;
@@ -120,8 +127,50 @@ use constant METACONSOLE_LICENSE => 0x01;
 use constant RECOVERED_ALERT => 0;
 use constant FIRED_ALERT => 1;
 
-# /dev/null
-our $DEVNULL = ($^O eq 'MSWin32') ? '/Nul' : '/dev/null';
+# Set OS, OS version and /dev/null
+our $OS = $^O;
+our $OS_VERSION = "unknown";
+our $DEVNULL = '/dev/null';
+if ($OS eq 'linux') {
+	$OS_VERSION = `lsb_release -sd 2>/dev/null`;
+} elsif ($OS eq 'aix') {
+	$OS_VERSION = "$2.$1" if (`uname -rv` =~ /\s*(\d)\s+(\d)\s*/);
+} elsif ($OS =~ /win/i) {
+	$OS = "windows";
+	$OS_VERSION = `ver`;
+	$DEVNULL = '/Nul';
+} elsif ($OS eq 'freebsd') {
+	$OS_VERSION = `uname -r`;
+}
+chomp($OS_VERSION);
+
+
+###############################################################################
+# Sets user:group owner for the given file
+###############################################################################
+sub set_file_permissions($$;$) {
+	my ($pa_config, $file, $grants) = @_;
+	if ($^O !~ /win/i ) { # Only for Linux environments
+		eval {
+			if (defined ($grants)) {
+				$grants = oct($grants);
+			}
+			else {
+				$grants = oct("0777");
+			}
+			my $uid  = getpwnam($pa_config->{'user'});
+			my $gid  = getgrnam($pa_config->{'group'});
+			my $perm = $grants & (~oct($pa_config->{'umask'}));
+
+			chown $uid, $gid, $file;
+			chmod ( $perm, $file );
+		};
+		if ($@) {
+			# Ignore error
+		}
+	}
+}
+
 
 ########################################################################
 ## SUB pandora_trash_ascii 
@@ -318,12 +367,12 @@ sub pandora_daemonize {
 			}
 			logger ($pa_config, '[W] Stale PID file, overwriting.', 1);
 		}
-		umask 022;
+		umask 0022;
 		open (FILE, "> ".$pa_config->{'PID'}) or die "[FATAL] Cannot open PIDfile at ".$pa_config->{'PID'};
 		print FILE "$$";
 		close (FILE);
 	}
-	umask 0;
+	umask 0007;
 }
 
 

@@ -76,6 +76,8 @@ if ($update_agents) {
 		$values['custom_id'] = get_parameter('custom_id');
 	if (get_parameter ('cascade_protection', -1) != -1)
 		$values['cascade_protection'] = get_parameter('cascade_protection');
+	if (get_parameter ('cascade_protection_module', -1) != -1)
+		$values['cascade_protection_module'] = get_parameter('cascade_protection_module');
 	if (get_parameter ('delete_conf', 0) != 0)
 		$values['delete_conf'] = get_parameter('delete_conf');
 	if (get_parameter('quiet_select', -1) != -1)
@@ -220,7 +222,9 @@ $status_list[AGENT_STATUS_NOT_INIT] = __('Not init');
 $table->data[1][0] = __('Status');
 $table->data[1][1] = html_print_select($status_list, 'status_agents', 'selected',
 	'', __('All'), AGENT_STATUS_ALL, true);
-
+$table->data[1][2] = __('Show agents');
+$table->data[1][3] = html_print_select (array(0 => 'Only enabled',1 => 'Only disabled'), 'disabled',2,'',__('All'),
+				2,true,'','','','','width:30%;');
 $table->data[2][0] = __('Agents');
 $table->data[2][0] .= '<span id="agent_loading" class="invisible">';
 $table->data[2][0] .= html_print_image('images/spinner.png', true);
@@ -264,6 +268,15 @@ $table->data = array ();
 $groups = users_get_groups ($config["id_user"], "AW",false);
 $agents = agents_get_group_agents (array_keys ($groups));
 
+$modules = db_get_all_rows_sql("SELECT id_agente_modulo as id_module, nombre as name FROM tagente_modulo 
+								WHERE id_agente = " . $id_parent);
+
+$modules_values = array();
+$modules_values[0] = __('Any');
+foreach ($modules as $m) {
+	$modules_values[$m['id_module']] = $m['name'];
+}
+
 $table->data[0][0] = __('Parent');
 $params = array();
 $params['return'] = true;
@@ -276,6 +289,8 @@ $table->data[0][1] .= "<b>" . __('Cascade protection'). "</b>&nbsp;" .
 			ui_print_help_icon("cascade_protection", true) .
 					html_print_select(array(1 => __('Yes'), 0 => __('No')),
 	"cascade_protection", -1, "", __('No change'), -1, true);
+
+$table->data[0][1] .= "&nbsp;&nbsp;" .  __('Module') . "&nbsp;" . html_print_select ($modules, "cascade_protection_module", $cascade_protection_module, "", "", 0, true);
 
 $table->data[1][0] = __('Group');
 $table->data[1][1] = html_print_select_groups(false, "AR", false, 'group', $group, '', __('No change'), -1, true, false, true, '', false, 'width: 150px;');
@@ -313,6 +328,7 @@ $new_agent = true;
 $icon_path = '';
 $update_gis_data = -1;
 $cascade_protection = -1;
+$cascade_protection_module = -1;
 $quiet_select = -1;
 
 $table = new StdClass();
@@ -423,6 +439,13 @@ if ($fields === false) $fields = array();
 foreach ($fields as $field) {
 	
 	$data[0] = '<b>'.$field['name'].'</b>';
+	$data[0] .= ui_print_help_tip(
+		__('This field allows url insertion using the BBCode\'s url tag')
+		. '.<br />'
+		. __('The format is: [url=\'url to navigate\']\'text to show\'[/url]')
+		. '.<br /><br />'
+		. __('e.g.: [url=pandorafms.org]Pandora FMS Community[/url]')
+		, true);
 	
 	$custom_value = db_get_value_filter('description', 'tagent_custom_data', array('id_field' => $field['id_field'], 'id_agent' => $id_agente));
 	
@@ -467,7 +490,54 @@ var limit_parameters_massive = <?php echo $config['limit_parameters_massive']; ?
 
 //Use this function for change 3 icons when change the selectbox
 $(document).ready (function () {
+	var checked = $("#cascade_protection").val();
 	
+	$("#cascade_protection_module").attr("disabled", 'disabled');
+
+	$("#cascade_protection").change(function () {
+		var checked = $("#cascade_protection").val();
+
+		if (checked == 1) {
+			$("#cascade_protection_module").removeAttr("disabled");
+		}
+		else {
+			$("#cascade_protection_module").val(0);
+			$("#cascade_protection_module").attr("disabled", 'disabled');
+		}
+	});
+
+	$("#text-id_parent").on("autocompletechange", function () {
+		agent_name = $("#text-id_parent").val();
+		
+		var params = {};
+		params["get_agent_modules_json_by_name"] = 1;
+		params["agent_name"] = agent_name;
+		params["page"] = "include/ajax/module";
+		
+		jQuery.ajax ({
+			data: params,
+			dataType: "json",
+			type: "POST",
+			url: "ajax.php",
+			success: function (data) {
+				$('#cascade_protection_module').empty();
+				$('#cascade_protection_module')
+						.append ($('<option></option>')
+						.html("Any")
+						.prop("value", 0)
+						.prop("selected", 'selected'));
+				jQuery.each (data, function (i, val) {
+					$('#cascade_protection_module')
+						.append ($('<option></option>')
+						.html(val['name'])
+						.prop("value", val['id_module'])
+						.prop("selected", 'selected'));
+				});
+			}
+		});
+	});
+
+
 	$("#form_agent").submit(function() {
 		var get_parameters_count = window.location.href.slice(
 			window.location.href.indexOf('?') + 1).split('&').length;
@@ -482,6 +552,14 @@ $(document).ready (function () {
 		}
 	});
 	
+	var disabled;
+	
+	$("#disabled").click(function () {
+	
+			disabled = this.value;
+	
+		 $("#id_group").trigger("change");
+	});
 	
 	$("#id_agents").change (function () {
 		var idAgents = Array();
@@ -523,26 +601,32 @@ $(document).ready (function () {
 	});
 	
 	$("#id_group").pandoraSelectGroupAgent ({
+		status_agents: function () {
+			return $("#status_agents").val();
+		},
 		agentSelect: "select#id_agents",
 		privilege: "AW",
-		status_agents: function () {
-				return $("#status_agents").val();
-			},
-		recursion: function() {return recursion}
+		recursion: function() {
+			return recursion;
+		},
+		disabled: function() {
+			return disabled;
+		}
 	});
 	
 	$("#status_agents").change(function() {
 		$("#id_group").trigger("change");
 	});
 	
-	$("#id_group").pandoraSelectGroupAgentDisabled ({
-		agentSelect: "select#id_agents",
-		recursion: function() {return recursion}
-	});
+	
+	disabled = 2;
+
+ $("#id_group").trigger("change");
+	
 });
 
 function changeIcons() {
-	icon = $("#icon_path :selected").val();
+	var icon = $("#icon_path :selected").val();
 	
 	$("#icon_without_status").attr("src", "images/spinner.png");
 	$("#icon_default").attr("src", "images/spinner.png");
@@ -574,7 +658,5 @@ function changeIcons() {
 		$("#icon_bad").attr("style", "");
 		$("#icon_warning").attr("style", "");
 	}
-	
-	//$("#icon_default").attr("src", "<?php echo $path; ?>" + icon +
 }
 </script>

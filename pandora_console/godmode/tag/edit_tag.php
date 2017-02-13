@@ -45,20 +45,25 @@ if (defined('METACONSOLE'))
 else
 	$sec = 'gmodules';
 
-$buttons = array(
+if (defined('METACONSOLE')) {
+	$buttons = array(
+	'list' => array(
+		'active' => false,
+		'text' => '<a href="index.php?sec='.$sec.'&sec2=advanced/component_management&tab=tags">' . 
+			html_print_image ("images/list.png", true, array ("title" => __('List tags'))) .'</a>'));
+
+	$buttons[$tab]['active'] = true;
+	// Print header
+	ui_meta_print_header(__('Tags'), "", $buttons);
+}
+else {
+	$buttons = array(
 	'list' => array(
 		'active' => false,
 		'text' => '<a href="index.php?sec='.$sec.'&sec2=godmode/tag/tag&tab=list">' . 
 			html_print_image ("images/list.png", true, array ("title" => __('List tags'))) .'</a>'));
 
-$buttons[$tab]['active'] = true;
-
-if (defined('METACONSOLE')) {
-	// Print header
-	ui_meta_print_header(__('Tags'), "", $buttons);
-}
-else {
-	
+	$buttons[$tab]['active'] = true;
 	// Header
 	ui_print_page_header (__('Tags configuration'), "images/tag.png", false, "", true, $buttons);
 

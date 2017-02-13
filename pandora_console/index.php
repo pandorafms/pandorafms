@@ -78,6 +78,7 @@ if(session_id() == '') {
 	session_start ();
 }
 require_once ("include/config.php");
+require_once ("include/functions_config.php");
 
 
 // If metaconsole activated, redirect to it
@@ -143,7 +144,13 @@ ob_start ('ui_process_page_head');
 // Enterprise main 
 enterprise_include ('index.php');
 
-// This tag is included in the buffer passed to ui_process_page_head so 
+echo '<script type="text/javascript">';
+	echo 'var dispositivo = navigator.userAgent.toLowerCase();';
+	echo 'if( dispositivo.search(/iphone|ipod|ipad|android/) > -1 ){';
+    	echo 'document.location = "'. $config["homeurl"] .'mobile";  }';
+echo '</script>';
+
+// This tag is included in the buffer passed to ui_process_page_head so
 // technically it can be stripped
 echo '</head>' . "\n";
 
@@ -289,12 +296,14 @@ if (! isset ($config['id_user'])) {
 			$nick_in_db = $_SESSION["prepared_login_da"]['id_user'];
 			$expired_pass = false;
 		}
-		else if (($config['auth'] == 'saml') && $login_button_saml && !is_user_admin($nick)) {
+		else if (($config['auth'] == 'saml') && ($login_button_saml)) {
 			include_once(ENTERPRISE_DIR . "/include/auth/saml.php");
+			
 			$saml_user_id = saml_process_user_login();
+			
 			$nick_in_db = $saml_user_id;
 			if (!$nick_in_db) {
-				require_once('/opt/simplesamlphp/lib/_autoload.php');
+				require_once($config['saml_path'] . 'simplesamlphp/lib/_autoload.php');
 				$as = new SimpleSAML_Auth_Simple('PandoraFMS');
 				$as->logout();
 			}
@@ -367,7 +376,10 @@ if (! isset ($config['id_user'])) {
 			//login ok and password has not expired
 			$process_login = true;
 			
-			echo "<script type='text/javascript'>var process_login_ok = 1;</script>";
+			if (is_user_admin($nick))
+				echo "<script type='text/javascript'>var process_login_ok = 1;</script>";
+			else
+				echo "<script type='text/javascript'>var process_login_ok = 0;</script>";
 			
 			if (!isset($_GET["sec2"]) && !isset($_GET["sec"])) {
 				// Avoid the show homepage when the user go to
@@ -568,7 +580,41 @@ if (! isset ($config['id_user'])) {
 		exit ("</html>");
 	}
 }
-
+else {
+	$user_in_db = db_get_row_filter('tusuario', 
+		array('id_user' => $config['id_user']), '*');
+	if ($user_in_db == false) {
+		//logout
+		$_REQUEST = array ();
+		$_GET = array ();
+		$_POST = array ();
+		$config["auth_error"] = __("User doesn\'t exist.");
+		$iduser = $_SESSION["id_usuario"];
+		logoff_db ($iduser, $_SERVER["REMOTE_ADDR"]);
+		unset($_SESSION["id_usuario"]);
+		unset($iduser);
+		require_once ('general/login_page.php');
+		while (@ob_end_flush ());
+		exit ("</html>");
+	}
+	else {
+		if (((bool) $user_in_db['is_admin'] === false) && 
+				((bool) $user_in_db['not_login'] === true)) {
+			//logout
+			$_REQUEST = array ();
+			$_GET = array ();
+			$_POST = array ();
+			$config["auth_error"] = __("User only can use the API.");
+			$iduser = $_SESSION["id_usuario"];
+			logoff_db ($iduser, $_SERVER["REMOTE_ADDR"]);
+			unset($_SESSION["id_usuario"]);
+			unset($iduser);
+			require_once ('general/login_page.php');
+			while (@ob_end_flush ());
+			exit ("</html>");
+		}
+	}
+}
 // Log off
 if (isset ($_GET["bye"])) {
 	include ("general/logoff.php");
@@ -578,7 +624,7 @@ if (isset ($_GET["bye"])) {
 	unset($_SESSION['id_usuario']);
 	unset($iduser);
 	if ($config['auth'] == 'saml') {
-		require_once('/opt/simplesamlphp/lib/_autoload.php');
+		require_once($config['saml_path'] . 'simplesamlphp/lib/_autoload.php');
 		$as = new SimpleSAML_Auth_Simple('PandoraFMS');
 		$as->logout();
 	}
@@ -598,6 +644,16 @@ clear_pandora_error_for_header();
 
 $config['logged'] = false;
 extensions_load_extensions ($process_login);
+
+// Check for update manager messages
+if (license_free() && is_user_admin ($config['id_user']) && 
+	(($config['last_um_check'] < time()) || 
+	(!isset($config['last_um_check'])))) {
+		
+	require_once("include/functions_update_manager.php");
+	update_manager_download_messages ();
+}
+
 if ($process_login) {
 	 /* Call all extensions login function */
 	extensions_call_login_function ();
@@ -667,15 +723,32 @@ if ($old_global_counter_chat != $now_global_counter_chat) {
 		$_SESSION['new_chat'] = true;
 }
 
+// Pop-ups display order:
+// 1) login_required (timezone and email)
+// 2) identification (newsletter and register)
+// 3) last_message   (update manager message popup
+// 4) login_help     (online help, enterpirse version, forums, documentation)
+if (is_user_admin ($config['id_user']) && 
+	(!isset($config['initial_wizard']) || $config['initial_wizard'] != 1)) {
+	include_once ("general/login_required.php");
+}
 if (get_parameter ('login', 0) !== 0) {
 	// Display news dialog
 	include_once("general/news_dialog.php");
 	
 	// Display login help info dialog
 	// If it's configured to not skip this
-	if (!isset($config['skip_login_help_dialog']) ||
-		$config['skip_login_help_dialog'] == 0) {
-		
+	$display_previous_popup = false;
+	if (license_free() && is_user_admin ($config['id_user']) && $config['initial_wizard'] == 1) {
+		$display_previous_popup = include_once("general/login_identification_wizard.php");
+		if ($display_previous_popup === false) {
+			$display_previous_popup = include_once("general/last_message.php");
+		}
+	}
+	if ((!isset($config['skip_login_help_dialog']) || $config['skip_login_help_dialog'] == 0) && 
+		$display_previous_popup === false && 
+		$config['initial_wizard'] == 1) {
+			
 		include_once("general/login_help_dialog.php");
 	}
 	
@@ -683,11 +756,21 @@ if (get_parameter ('login', 0) !== 0) {
 
 // Header
 if ($config["pure"] == 0) {
-	echo '<div id="container"><div id="head">';
-	require ("general/header.php");
-	echo '</div><div id="page"><div id="menu">';
-	require ("general/main_menu.php");
-	echo '</div>';
+	if ($config['classic_menu']) {
+		echo '<div id="container"><div id="head">';
+		require ("general/header.php");
+		echo '</div><div id="menu">';
+		require ("general/main_menu.php");
+		echo '</div>';
+		echo '<div style="padding-left:100px;" id="page">';
+	}
+	else {
+		echo '<div id="container"><div id="head">';
+		require ("general/header.php");
+		echo '</div><div id="page"><div id="menu">';
+		require ("general/main_menu.php");
+		echo '</div>';
+	}
 }
 else {
 	echo '<div id="main_pure">';
@@ -721,7 +804,7 @@ else {
 				$main_sec = get_parameter('extension_in_menu');
 			else
 				if ($sec == 'gextensions')
-+					$main_sec = get_parameter('extension_in_menu');
+					$main_sec = get_parameter('extension_in_menu');
 				else
 					$main_sec = $sec;
 			$sec = $sec2;
@@ -829,9 +912,6 @@ else {
 			require("general/logon_ok.php");
 		}
 	}
-	if ($config["pure"] == 0) {
-		require("general/shortcut_bar.php");
-	}
 }
 
 if ($config["pure"] == 0) {
@@ -894,7 +974,7 @@ require('include/php_to_js_values.php');
 			return rv;
 		};
 	})();
-	
+
 	function apply_minor_release (n_mr_o, n_mr_e) {
 		var error = false;
 		$.each(n_mr_o, function(i, open_mr) {
@@ -952,6 +1032,70 @@ require('include/php_to_js_values.php');
 		}
 	}
 	
+	function force_run_register () {
+		run_identification_wizard (1, 0, 0);
+	}
+	function force_run_newsletter () {
+		run_identification_wizard (0, 1, 0);
+	}
+	function first_time_identification () {
+		run_identification_wizard (-1, -1, 1);
+	}
+	var times_fired_register_wizard = 0;
+	function run_identification_wizard (register, newsletter , return_button) {
+		
+		if (times_fired_register_wizard) {
+			
+			$(".ui-dialog-titlebar-close").show();
+			
+			//Reset some values				
+			$("#label-email-newsletter").hide();
+			$("#text-email-newsletter").hide();
+			$("#required-email-newsletter").hide();
+			$("#checkbox-register").removeAttr('checked');
+			$("#checkbox-newsletter").removeAttr('checked');
+			
+			// Hide or show parts
+			if (register == 1) {
+				$("#checkbox-register").show();
+				$("#label-register").show ();
+			}
+			if (register == 0) {
+				$("#checkbox-register").attr ('style', 'display: none !important');
+				$("#label-register").hide ();
+			}
+			if (newsletter == 1) {
+				$("#checkbox-newsletter").show();
+				$("#label-newsletter").show ();
+			}
+			if (newsletter == 0) {
+				$("#checkbox-newsletter").attr ('style', 'display: none !important');
+				$("#label-newsletter").hide ();
+			}
+			$("#login_accept_register").dialog('open');
+		}
+		else {
+			
+			$(".ui-dialog-titlebar-close").show();
+			$("#container").append('<div class="id_wizard"></div>');
+			jQuery.get ("ajax.php",
+				{"page": "general/login_identification_wizard",
+				 "not_return": 1,
+				 "force_register": register,
+				 "force_newsletter": newsletter,
+				 "return_button": return_button},
+				function (data) {
+					$(".id_wizard").hide ()
+						.empty ()
+						.append (data);
+				},
+				"html"
+			);
+		}
+		times_fired_register_wizard++;
+		return false;
+	}
+
 	//Dynamically assign footer position and width.
 	function adjustFooter() {
 		/*

@@ -30,7 +30,7 @@ tentacle_server - Tentacle Server
 
 =head1 VERSION
 
-Version 0.5.0
+Version 0.6.1
 
 =head1 USAGE
 
@@ -65,6 +65,7 @@ use Thread::Semaphore;
 use POSIX ":sys_wait_h";
 use Time::HiRes qw(usleep);
 use Scalar::Util qw(refaddr);
+use POSIX qw(strftime);
 
 # Constants for Win32 services.
 use constant WIN32_SERVICE_STOPPED => 0x01;
@@ -76,13 +77,23 @@ if ($t_libwrap_installed) {
 	Authen::Libwrap->import( qw( hosts_ctl STRING_UNKNOWN ) );
 }
 
-# Log messages, 1 enabled, 0 disabled
+# Log errors, 1 enabled, 0 disabled
 my $t_log = 0;
 
-my $SOCKET_MODULE =
-	eval { require IO::Socket::INET6 } ? 'IO::Socket::INET6'
-      : eval { require IO::Socket::INET }  ? 'IO::Socket::INET'
-      : die $@;
+# Log information, 1 enabled, 0 enabled
+my $t_log_hard = 0;
+
+my $SOCKET_MODULE;
+if ($^O eq 'MSWin32') {
+	# Only support INET on windows
+	require IO::Socket::INET;
+	$SOCKET_MODULE = 'IO::Socket::INET';
+} else {
+	$SOCKET_MODULE =
+		eval { require IO::Socket::INET6 } ? 'IO::Socket::INET6'
+		  : eval { require IO::Socket::INET }  ? 'IO::Socket::INET'
+		  : die $@;
+}
 
 # Service name for Win32.
 my $SERVICE_NAME="Tentacle Server";
@@ -91,7 +102,7 @@ my $SERVICE_NAME="Tentacle Server";
 my $SERVICE_PARAMS=join(' ', @ARGV);
 
 # Program version
-our $VERSION = '0.5.0';
+our $VERSION = '0.6.1';
 
 # IPv4 address to listen on
 my @t_addresses = ('0', '0.0.0.0');
@@ -184,6 +195,9 @@ my $t_use_libwrap = 0;
 my $t_program_name = $0;
 $t_program_name =~ s/.*\///g;
 
+# Log file
+my $log_file = undef;
+
 ################################################################################
 ## SUB print_help
 ## Print help screen.
@@ -203,6 +217,7 @@ sub print_help {
 	print ("\t-h\t\tShow help.\n");
 	print ("\t-i\t\tFilters.\n");
 	print ("\t-k key\t\tOpenSSL private key file.\n");
+	print ("\t-l log_file\t\tFile to write logs.\n");
 	print ("\t-m size\t\tMaximum file size in bytes (default ${t_max_size}b).\n");
 	print ("\t-o\t\tEnable file overwrite.\n");
 	print ("\t-p port\t\tPort to listen on (default $t_port).\n");
@@ -210,7 +225,8 @@ sub print_help {
 	print ("\t-r number\tNumber of retries for network opertions (default $t_retries).\n");
 	print ("\t-S (install|uninstall|run) Manage the win32 service.\n");
 	print ("\t-t time\t\tTime-out for network operations in seconds (default ${t_timeout}s).\n");
-	print ("\t-v\t\tBe verbose.\n");
+	print ("\t-v\t\tBe verbose (display errors).\n");
+	print ("\t-V\t\tBe verbose on hard way (display errors and other info).\n");
 	print ("\t-w\t\tPrompt for OpenSSL private key password.\n");
 	print ("\t-x pwd\t\tServer password.\n");
 	print ("\t-b ip_address\tProxy requests to the given address.\n");
@@ -262,7 +278,7 @@ sub parse_options {
 	my @t_addresses_tmp;
 
 	# Get options
-	if (getopts ('a:b:c:de:f:g:hi:k:m:op:qr:s:S:t:Tvwx:', \%opts) == 0 || defined ($opts{'h'})) {
+	if (getopts ('a:b:c:de:f:g:hi:k:l:m:op:qr:s:S:t:TvVwx:', \%opts) == 0 || defined ($opts{'h'})) {
 		print_help ();
 		exit 1;
 	}
@@ -438,6 +454,12 @@ sub parse_options {
 		$t_log = 1;
 	}
 
+	# Be verbose hard
+	if (defined ($opts{'V'})) {
+		$t_log = 1;
+		$t_log_hard = 1;
+	}
+
 	# SSL private key password
 	if (defined ($opts{'w'})) {
 		$t_ssl_pwd = ask_passwd ("Enter private key file password: ", "Enter private key file password again for confirmation: ");
@@ -497,6 +519,11 @@ sub parse_options {
 				error("Unknown action: $service_action");
 			}
 		}
+	}
+	
+	# Get the config file
+	if (defined ($opts{'l'})) {
+		$log_file = $opts{'l'};
 	}
 }
 
@@ -706,7 +733,7 @@ sub accept_connections {
 				error ("accept: $!.");
 			}
 
-			print_log ("Client connected from " . $t_client_socket->peerhost ());
+			print_info ("Client connected from " . $t_client_socket->peerhost ());
 
 			if ($t_use_libwrap && (! hosts_ctl($t_program_name, $t_client_socket))) {
 				print_log ("Connection from " . $t_client_socket->peerhost() . " is closed by tcpwrappers.");
@@ -810,17 +837,17 @@ sub serve_connection {
 		
 		# Client wants to send a file
 		if ($command =~ /^SEND <(.*)> SIZE (\d+)$/) {
-			print_log ("Request to send file '$1' size ${2}b from " . $t_client_socket->sockhost ());
+			print_info ("Request to send file '$1' size ${2}b from " . $t_client_socket->sockhost ());
 			recv_file ($1, $2);
 		}
 		# Client wants to receive a file
 		elsif ($command =~ /^RECV <(.*)>$/) {
-			print_log ("Request to receive file '$1' from " . $t_client_socket->sockhost ());
+			print_info ("Request to receive file '$1' from " . $t_client_socket->sockhost ());
 			send_file ($1);
 		}
 		# Quit
 		elsif ($command =~ /^QUIT$/) {
-			print_log ("Connection closed from " . $t_client_socket->sockhost ());
+			print_info ("Connection closed from " . $t_client_socket->sockhost ());
 			last;
 		}
 		# Unknown command
@@ -906,7 +933,7 @@ sub recv_file {
 	close (FILE);
 
 	send_data ("SEND OK\n");
-	print_log ("Received file '$base_name' size ${size}b from " . $t_client_socket->sockhost ());
+	print_info ("Received file '$base_name' size ${size}b from " . $t_client_socket->sockhost ());
 }
 
 ################################################################################
@@ -968,11 +995,42 @@ sub send_file {
 ## SUB print_log
 ## Print log messages.
 ################################################################################
-sub print_log {
+sub print_log($) {
 
-	if ($t_log == 1) {
-		print (STDOUT "[log] $_[0]\n");
+	my ($msg) = @_;
+	
+	return unless ($t_log == 1);
+	
+	my $fh = *STDOUT;
+	if (defined($log_file)) {
+		open($fh, ">>", $log_file) || die("Starting log failed: $!.\n");
 	}
+
+	print ($fh strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "[log]$msg.\n");
+
+	close ($fh) if (defined($log_file));
+
+}
+
+################################################################################
+## SUB print_log
+## Print log messages.
+################################################################################
+sub print_info($) {
+
+	my ($msg) = @_;
+	
+	return unless ($t_log_hard == 1);
+	
+	my $fh = *STDOUT;
+	if (defined($log_file)) {
+		open($fh, ">>", $log_file) || die("Starting log failed: $!.\n");
+	}
+
+	print ($fh strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "[info]$msg.\n");
+
+	close ($fh) if (defined($log_file));
+
 }
 
 ################################################################################
@@ -981,9 +1039,18 @@ sub print_log {
 ################################################################################
 sub error {
 
-	if ($t_quiet == 0) {
-		print (STDERR "[err] $_[0]\n");
+	my ($msg) = @_;
+	
+	return unless ($t_quiet == 0);
+
+	my $fh = *STDERR;
+	if (defined($log_file)) {
+		open($fh, ">>", $log_file) || die("$!\n");
 	}
+
+	print ($fh strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "[err]$msg\n");
+
+	close ($fh) if (defined($log_file));
 
 	die("\n");
 }

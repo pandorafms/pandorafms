@@ -42,6 +42,13 @@ $buttons = array(
 		'text' => '<a href="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=online">' . 
 			html_print_image("images/op_gis.png", true, array ("title" => __('Online update manager'))) .'</a>')
 	);
+	
+if (license_free()) {
+	$buttons['messages'] = array(
+		'active' => ($tab == 'messages') ? true : false,
+		'text' => '<a href="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=messages">' . 
+			html_print_image("images/email_mc.png", true, array ("title" => __('Update manager messages'))) .'</a>');
+}
 
 switch ($tab) {
 	case 'setup':
@@ -52,6 +59,9 @@ switch ($tab) {
 		break;
 	case 'online':
 		$title = __('Update manager » Online');
+		break;
+	case 'messages':
+		$title = __('Update manager » Messages');
 		break;
 }
 
@@ -64,6 +74,9 @@ switch ($tab) {
 		break;
 	case 'offline':
 		require($config['homedir'] . "/godmode/update_manager/update_manager.offline.php");
+		break;
+	case 'messages':
+		require($config['homedir'] . "/godmode/update_manager/update_manager.messages.php");
 		break;
 	case 'online':
 	default:

@@ -25,7 +25,9 @@ RUN yum install -y \
 	python-pip \
 	xorg-x11-server-Xvfb; yum clean all;
 RUN pip install pyvirtualdisplay
-RUN pip install selenium
+RUN pip install 'selenium==2.53.0'
+RUN pip install unittest2
+RUN pip install testtools
 
 # Pandora FMS Console dependencies
 RUN yum install -y \ 
@@ -76,6 +78,7 @@ RUN yum install -y \
 	perl-XML-Simple \ 
 	perl-XML-SAX \ 
 	perl-NetAddr-IP \ 
+	perl-Scope-Guard \
 	net-snmp \ 
 	net-tools \ 
 	perl-IO-Socket-INET6 \ 

@@ -60,12 +60,13 @@ INSERT INTO tconfig (token, value) VALUES ('language','en_GB');
 INSERT INTO tconfig (token, value) VALUES ('block_size','20');
 INSERT INTO tconfig (token, value) VALUES ('days_purge','45');
 INSERT INTO tconfig (token, value) VALUES ('days_delete_unknown','0');
+INSERT INTO tconfig (token, value) VALUES ('days_autodisable_deletion','30');
 INSERT INTO tconfig (token, value) VALUES ('days_compact','0');
 INSERT INTO tconfig (token, value) VALUES ('graph_res','5');
 INSERT INTO tconfig (token, value) VALUES ('step_compact','1');
 INSERT INTO tconfig (token, value) VALUES ('db_scheme_first_version','6.0orc');
-INSERT INTO tconfig (token, value) VALUES('db_scheme_version','6.1dev');
-INSERT INTO tconfig (token, value) VALUES('db_scheme_build','PD160601');
+INSERT INTO tconfig (token, value) VALUES('db_scheme_version','7.0dev');
+INSERT INTO tconfig (token, value) VALUES('db_scheme_build','PD170213');
 INSERT INTO tconfig (token, value) VALUES ('show_unknown','0');
 INSERT INTO tconfig (token, value) VALUES ('show_lastalerts','1');
 INSERT INTO tconfig (token, value) VALUES ('style','pandora');
@@ -134,6 +135,8 @@ INSERT INTO tconfig (token, value) VALUES ('custom_report_front_font', 'FreeSans
 INSERT INTO tconfig (token, value) VALUES ('custom_report_front_logo', 'images/pandora_logo_white.jpg');
 INSERT INTO tconfig (token, value) VALUES ('custom_report_front_header', '');
 INSERT INTO tconfig (token, value) VALUES ('custom_report_front_footer', '');
+INSERT INTO tconfig (token, value) VALUES ('identification_reminder', 1);
+INSERT INTO tconfig (token, value) VALUES ('identification_reminder_timestamp', 0);
 INSERT INTO tconfig (token, value) VALUES ('post_process_custom_values', '{"0.00000038580247":"Seconds&#x20;to&#x20;months","0.00000165343915":"Seconds&#x20;to&#x20;weeks","0.00001157407407":"Seconds&#x20;to&#x20;days","0.01666666666667":"Seconds&#x20;to&#x20;minutes","0.00000000093132":"Bytes&#x20;to&#x20;Gigabytes","0.00000095367432":"Bytes&#x20;to&#x20;Megabytes","0.0009765625":"Bytes&#x20;to&#x20;Kilobytes","0.00000001653439":"Timeticks&#x20;to&#x20;weeks","0.00000011574074":"Timeticks&#x20;to&#x20;days"}');
 
 COMMIT;
@@ -234,11 +237,11 @@ LOCK TABLE tlink IN EXCLUSIVE MODE;
 
 EXECUTE IMMEDIATE 'ALTER TRIGGER tlink_inc DISABLE';
 
-INSERT INTO tlink VALUES (1,'Pandora FMS Manual','http://wiki.pandorafms.com/?title=Pandora');
-INSERT INTO tlink VALUES (2,'Pandora FMS','http://pandorafms.com');
-INSERT INTO tlink VALUES (3,'Report a bug','{https://sourceforge.net/tracker/?func=add&amp;group_id=155200&amp;atid=794852}');
-INSERT INTO tlink VALUES (4,'Suggest new feature','http://sourceforge.net/tracker/?group_id=155200&amp;atid=794855');
-INSERT INTO tlink VALUES (5,'Module library','http://pandorafms.com/pandora/repository/en');
+INSERT INTO tlink VALUES (1,'Documentation','http://wiki.pandorafms.com/');
+INSERT INTO tlink VALUES (2,'Enterprise Edition','http://pandorafms.com');
+INSERT INTO tlink VALUES (3,'Report a bug','{https://github.com/pandorafms/pandorafms/issues}');
+INSERT INTO tlink VALUES (4,'Suggest new feature','http://forums.pandorafms.com/index.php?board=22.0');
+INSERT INTO tlink VALUES (5,'Module library','http://library.pandorafms.com/');
 
 -- Update curr val of sequence
 update_currval('tlink', 'id_link');
@@ -1211,7 +1214,7 @@ LOCK TABLE talert_actions IN EXCLUSIVE MODE;
 
 EXECUTE IMMEDIATE 'ALTER TRIGGER talert_actions_inc DISABLE';
 
-INSERT INTO talert_actions (id, name, id_alert_command, field1, field2, field3, field4, field5, field6, field7, field8, field9, field10, id_group, action_threshold, field1_recovery, field2_recovery, field3_recovery, field4_recovery, field5_recovery, field6_recovery, field7_recovery, field8_recovery, field9_recovery, field10_recovery) VALUES (1,'Mail&#x20;to&#x20;XXX',1,'yourmail@domain.es','[PANDORA] Alert from agent _agent_ on module _module_','','','','','','','','',0,0,'','','','','','','','','','');
+INSERT INTO talert_actions (id, name, id_alert_command, field1, field2, field3, field4, field5, field6, field7, field8, field9, field10, id_group, action_threshold, field1_recovery, field2_recovery, field3_recovery, field4_recovery, field5_recovery, field6_recovery, field7_recovery, field8_recovery, field9_recovery, field10_recovery) VALUES (1,'Mail&#x20;to&#x20;Admin',1,'yourmail@domain.es','[PANDORA] Alert from agent _agent_ on module _module_','','','','','','','','',0,0,'','','','','','','','','','');
 INSERT INTO talert_actions (id, name, id_alert_command, field1, field2, field3, field4, field5, field6, field7, field8, field9, field10, id_group, action_threshold, field1_recovery, field2_recovery, field3_recovery, field4_recovery, field5_recovery, field6_recovery, field7_recovery, field8_recovery, field9_recovery, field10_recovery) VALUES (2,'Restart&#x20;agent',12,'REFRESH AGENT *','','','','','','','','','',0,0,'','','','','','','','','','');
 INSERT INTO talert_actions (id, name, id_alert_command, field1, field2, field3, field4, field5, field6, field7, field8, field9, field10, id_group, action_threshold, field1_recovery, field2_recovery, field3_recovery, field4_recovery, field5_recovery, field6_recovery, field7_recovery, field8_recovery, field9_recovery, field10_recovery) VALUES (3,'Pandora&#x20;FMS&#x20;Event',3,'_agent_&#x20;_module_&#x20;generated&#x20;an&#x20;event&#x20;alert&#x20;&#40;_data_&#41;','alert_fired','pandora','','4','','','','','',0,0,'RECOVERED:&#x20;_agent_&#x20;_module_&#x20;generated&#x20;event&#x20;alert&#x20;&#40;_data_&#41;','alert_ceased','pandora','','4','','','','','');
 INSERT INTO talert_actions (id, name, id_alert_command, field1, field2, field3, field4, field5, field6, field7, field8, field9, field10, id_group, action_threshold, field1_recovery, field2_recovery, field3_recovery, field4_recovery, field5_recovery, field6_recovery, field7_recovery, field8_recovery, field9_recovery, field10_recovery) VALUES (4,'Create&#x20;a&#x20;ticket&#x20;in&#x20;Integria&#x20;IMS',11,'http://localhost/integria/include/api.php','1234','admin','integria','_agent_:&#x20;_alert_name_','1','3','copy@dom.com','admin','_alert_description_',0,0,'','','','','','','','','','');
@@ -1368,6 +1371,7 @@ EXECUTE IMMEDIATE 'ALTER TRIGGER tagent_custom_fields_inc DISABLE';
 INSERT INTO tagent_custom_fields VALUES (1,'Serial&#x20;Number',0);
 INSERT INTO tagent_custom_fields VALUES (2,'Department',0);
 INSERT INTO tagent_custom_fields VALUES (3,'Additional&#x20;ID',0);
+INSERT INTO tagent_custom_fields VALUES (4,'eHorusID',0);
 
 -- Update curr val of sequence
 update_currval('tagent_custom_fields', 'id_field');

@@ -18,7 +18,7 @@ if (function_exists ('mb_internal_encoding')) {
 	mb_internal_encoding ("UTF-8");
 }
 
-$develop_bypass = 1;
+$develop_bypass = 0;
 
 require_once("include/ui.class.php");
 require_once("include/system.class.php");
@@ -39,9 +39,40 @@ require_once('operation/networkmap.php');
 require_once('operation/visualmaps.php');
 require_once('operation/visualmap.php');
 $enterpriseHook = enterprise_include('mobile/include/enterprise.class.php');
+$enterpriseHook = enterprise_include('mobile/operation/dashboard.php');
 $enterpriseHook = enterprise_include('mobile/operation/home.php');
 
+if (!empty ($config["https"]) && empty ($_SERVER['HTTPS'])) {
+	$query = '';
+	if (sizeof ($_REQUEST))
+		//Some (old) browsers don't like the ?&key=var
+		$query .= 'mobile/index.php?1=1';
+	
+	//We don't clean these variables up as they're only being passed along
+	foreach ($_GET as $key => $value) {
+		if ($key == 1)
+			continue;
+		$query .= '&'.$key.'='.$value;
+	}
+	foreach ($_POST as $key => $value) {
+		$query .= '&'.$key.'='.$value;
+	}
+	$url = ui_get_full_url($query);
+	
+	// Prevent HTTP response splitting attacks
+	// http://en.wikipedia.org/wiki/HTTP_response_splitting
+	$url = str_replace ("\n", "", $url);
+	header ('Location: '.$url);
+	exit; //Always exit after sending location headers
+}
+
 $system = System::getInstance();
+
+//~ In this moment doesn't work the version mobile when have metaconsole version.
+//~ In the future versions of pandora maybe is added a mobile version of PandoraFMS Metaconsole version.
+//~ if ($system->getConfig('metaconsole'))
+	//~ header ("Location: " . $system->getConfig('homeurl') . "enterprise/meta");
+
 
 require_once($system->getConfig('homedir').'/include/constants.php');
 
@@ -127,6 +158,11 @@ switch ($action) {
 				$tactical = new Tactical();
 				$tactical->ajax($parameter2);
 				break;
+			default:
+				if (class_exists("Enterprise")) {
+					$enterprise->enterpriseAjax($parameter1, $parameter2);
+				}
+			break;
 		}
 		return;
 		break;
@@ -196,7 +232,6 @@ switch ($action) {
 	default:
 		if (class_exists("Enterprise")) {
 			$enterprise = Enterprise::getInstance();
-
 			if ($page != "home") {
 				$permission = $enterprise->checkEnterpriseACL($page);
 
@@ -271,6 +306,32 @@ switch ($action) {
 			case 'visualmap':
 				$visualmap = new Visualmap();
 				$visualmap->show();
+				break;
+			case 'dashboard_list':
+				if (class_exists("Dashboards")) {
+					$dashboard = new Dashboards();
+					$dashboard->showDashboards();
+				}
+				else {
+					if (class_exists("HomeEnterprise"))
+						$home = new HomeEnterprise();
+					else
+						$home = new Home();
+					$home->show();
+				}
+				break;
+			case 'dashboard':
+				if (class_exists("Dashboards")) {
+					$dashboard = new Dashboards();
+					$dashboard->show();
+				}
+				else {
+					if (class_exists("HomeEnterprise"))
+						$home = new HomeEnterprise();
+					else
+						$home = new Home();
+					$home->show();
+				}
 				break;
 		}
 		break;

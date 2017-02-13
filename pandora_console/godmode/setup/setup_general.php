@@ -20,6 +20,7 @@ check_login ();
 
 $table = new StdClass();
 $table->class = 'databox filters';
+$table->id = 'setup_general';
 $table->width = '100%';
 $table->data = array ();
 $table->size = array();
@@ -74,6 +75,14 @@ $table->data[11][0] = __('Enforce https');
 $table->data[11][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended ('https', 1, '', $config["https"], false, "if (! confirm ('" . __('If SSL is not properly configured you will lose access to Pandora FMS Console. Do you want to continue?') . "')) return false", '', true) .'&nbsp;&nbsp;';
 $table->data[11][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('https', 0, '', $config["https"], true);
 
+$table->data[12][0] = __('Use cert of SSL');
+$table->data[12][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended ('use_cert', 1, '', $config["use_cert"], false, '', '', true) .'&nbsp;&nbsp;';
+$table->data[12][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('use_cert', 0, '', $config["use_cert"], true);
+
+$table->rowstyle[13] = 'display: none;';
+$table->data[13][0] = __('Path of SSL Cert.') . ui_print_help_tip (__("Path where you put your cert and name of this cert. Remember your cert only in .pem extension."), true);
+$table->data[13][1] = html_print_input_text ('cert_path', io_safe_output($config["cert_path"]), '', 50, 255, true);
+
 $table->data[14][0] = __('Attachment store') . ui_print_help_tip (__("Directory where temporary data is stored."), true);
 $table->data[14][1] = html_print_input_text ('attachment_store', io_safe_output($config["attachment_store"]), '', 50, 255, true);
 
@@ -93,82 +102,6 @@ $table->data[16][1] = html_print_input_password('api_password', io_output_passwo
 $table->data[17][0] = __('Enable GIS features in Pandora Console');
 $table->data[17][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('activate_gis', 1, '', $config["activate_gis"], true).'&nbsp;&nbsp;';
 $table->data[17][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('activate_gis', 0, '', $config["activate_gis"], true);
-
-$table->data[18][0] = __('Enable Integria incidents in Pandora Console');
-$table->data[18][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('integria_enabled', 1, '', $config["integria_enabled"], true).'&nbsp;&nbsp;';
-$table->data[18][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('integria_enabled', 0, '', $config["integria_enabled"], true);
-
-if ($config["integria_enabled"]) {
-	require_once('include/functions_incidents.php');
-	$invent = incidents_call_api(
-		$config['integria_url'] . "/include/api.php?" .
-		"user=" . $config['id_user'] . "&" .
-		"pass=" . io_output_password($config['integria_api_password']) ."&" .
-		"op=get_inventories");
-	$bad_input = false;
-	// Wrong connection to api, bad password
-	if (empty($invent)) {
-		$bad_input = true;
-	}
-	
-	$inventories = array();
-	// Right connection but theres is no inventories 
-	if ($invent == 'false') {
-		unset($invent);
-		$invent = array();
-	}
-	// Checks if URL is right
-	else {
-		$invent = explode("\n",$invent);
-	}
-	// Wrong URL 
-	if ((strripos($config['integria_url'], '.php') !== false)) {
-		$bad_input = true;
-	}
-	// Check page result and detect errors
-	else {
-		foreach ($invent as $inv) {
-			if ((stristr($inv, 'ERROR 404') !== false)
-				OR (stristr($inv, 'Status 404') !== false)
-				OR (stristr($inv, 'Internal Server Error') !== false)) {
-				$inventories[""] = __('None');
-				$bad_input = true;
-				break;
-			}
-		}
-	}
-	$table->data[20][0] = __('Integria URL') . ui_print_help_icon ("integria_url", true);
-	$table->data[20][1] = html_print_input_text('integria_url',
-		$config["integria_url"], '', 25, 255, true);
-	// If something goes wrong
-	if ($bad_input) {
-		$table->data[20][1] .= html_print_image('images/error.png',
-			true, array('title' => __('URL and/or Integria password are incorrect')));
-	}
-	
-	$table->data[21][0] = __('Integria API password');
-	$table->data[21][1] = html_print_input_text('integria_api_password',
-		io_output_password($config["integria_api_password"]), '', 25, 25, true);
-	
-	if (!$bad_input) {
-		foreach ($invent as $inv) {
-			if ($inv == '') {
-				continue;
-			}
-			$invexp = explode(',',$inv);
-			if (count($invexp) > 2) {
-				if (substr($invexp[1], 0, 1) == '"'
-					&& substr($invexp[1], strlen($invexp[1])-1, 1) == '"') {
-					$invexp[1] = substr($invexp[1], 1, strlen($invexp[1])-2);
-				}
-				
-				$inventories[$invexp[0]] = $invexp[1];
-			}
-		}
-	}
-	$table->data[22][0] = __('Integria inventory');
-	$table->data[22][1] = html_print_select($inventories, 'integria_inventory', $config["integria_inventory"], '', '', '', true);
-}
 
 $table->data[19][0] = __('Enable Netflow');
 $rbt_disabled = false;
@@ -277,6 +210,13 @@ $table->data[34][0] = __('Limit parameters massive') .
 $table->data[34][1] = html_print_input_text('limit_parameters_massive',
 	$config['limit_parameters_massive'], '', 10, 10, true);
 
+$table->data[35][0] = __('Include agents manually disabled');
+$table->data[35][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('include_agents', 1, '', $config["include_agents"], true).'&nbsp;&nbsp;';
+$table->data[35][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('include_agents', 0, '', $config["include_agents"], true);
+
+$table->data[36][0] = __('audit log directory') .
+	ui_print_help_tip (__("Directory where audit log is stored."), true);
+$table->data[36][1] = html_print_input_text ('auditdir', io_safe_output($config["auditdir"]), '', 30, 100, true);
 
 echo '<form id="form_setup" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=general&amp;pure='.$config['pure'].'">';
 
@@ -349,6 +289,16 @@ $(document).ready (function () {
 	$("#change_timezone").click(function () {
 		$("#zone").attr("hidden", false);
 		$("#timezone").attr("hidden", false);
+	});
+	$("input[name=use_cert]").change(function () {
+		if( $(this).is(":checked") ){
+            var val = $(this).val();
+            if (val == 1) {
+				$('#setup_general-13').show();
+			}
+			else
+				$('#setup_general-13').hide();
+        }
 	});
 });
 </script>

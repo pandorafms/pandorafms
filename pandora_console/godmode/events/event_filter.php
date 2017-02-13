@@ -18,7 +18,11 @@ global $config;
 
 check_login ();
 
-if (! check_acl ($config["id_user"], 0, "EW")) {
+$event_w = check_acl ($config['id_user'], 0, "EW");
+$event_m = check_acl ($config['id_user'], 0, "EM");
+$access = ($event_w == true) ? 'EW' : (($event_m == true) ? 'EM' : 'EW');
+
+if (!$event_w && !$event_m) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access events filter editor");
 	require ("general/noaccess.php");
@@ -83,7 +87,7 @@ if ($strict_acl) {
 		users_can_manage_group_all());
 }
 else {
-	$groups_user = users_get_groups ($config['id_user'], "EW",
+	$groups_user = users_get_groups ($config['id_user'], $access,
 		users_can_manage_group_all(), true);
 }
 
@@ -157,7 +161,7 @@ else {
 if (isset($data)) {
 	echo "<form method='post' action='index.php?sec=geventos&sec2=godmode/events/events&amp;pure=".$config['pure']."'>";
 	html_print_input_hidden('multiple_delete', 1);
-	if(!defined("METACONSOLE"))
+	if(!is_metaconsole())
 		echo "<div style='padding-bottom: 20px; text-align: right;'>";
 	else
 		echo "<div style='float:right; '>";

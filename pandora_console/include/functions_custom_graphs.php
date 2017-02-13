@@ -164,15 +164,25 @@ function custom_graphs_print($id_graph, $height, $width, $period,
 	$background_color = 'white', $modules_param = array(), $homeurl = '',
 	$name_list = array(), $unit_list = array(), $show_last = true,
 	$show_max = true, $show_min = true, $show_avg = true, $ttl = 1,
-	$dashboard = false, $vconsole = false) {
+	$dashboard = false, $vconsole = false, $percentil = null, $from_interface = false) {
 	
 	global $config;
-
-	if ($id_graph == 0) {
-		$graph_conf['stacked'] = CUSTOM_GRAPH_LINE;
+	
+	if ($from_interface) {
+		if ($config["type_interface_charts"] == 'line') {
+			$graph_conf['stacked'] = CUSTOM_GRAPH_LINE;
+		}
+		else {
+			$graph_conf['stacked'] = CUSTOM_GRAPH_AREA;
+		}
 	}
 	else {
-		$graph_conf = db_get_row('tgraph', 'id_graph', $id_graph);
+		if ($id_graph == 0) {
+			$graph_conf['stacked'] = CUSTOM_GRAPH_LINE;
+		}
+		else {
+			$graph_conf = db_get_row('tgraph', 'id_graph', $id_graph);
+		}
 	}
 	
 	if ($stacked === null) {
@@ -198,11 +208,11 @@ function custom_graphs_print($id_graph, $height, $width, $period,
 		foreach ($sources as $source) {
 			array_push ($modules, $source['id_agent_module']);
 			array_push ($weights, $source['weight']);
-			$labels[$source['id_agent_module']] = $source['label'];
+			if ($source['label'] != '')
+				$labels[$source['id_agent_module']] = $source['label'];
 		}
 	}
-	
-	
+		
 	
 	if ($sources === false) {
 		if ($return){
@@ -244,7 +254,9 @@ function custom_graphs_print($id_graph, $height, $width, $period,
 		$show_avg,
 		$labels,
 		$dashboard,
-		$vconsole);
+		$vconsole,
+		$percentil,
+		$from_interface);
 	
 	if ($return)
 		return $output;

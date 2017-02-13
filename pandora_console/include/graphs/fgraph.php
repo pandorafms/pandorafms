@@ -162,14 +162,14 @@ function slicesbar_graph($chart_data, $period, $width, $height, $colors,
 	
 	$id_graph = serialize_in_temp($graph, null, $ttl);
 	
-	return "<img src='".$home_url."include/graphs/functions_pchart.php?static_graph=1&graph_type=slicebar&ttl=".$ttl."&id_graph=".$id_graph."'>";
+	return "<img src='".$home_url."include/graphs/functions_pchart.php?static_graph=1&graph_type=slicebar&ttl=".$ttl."&id_graph=".$id_graph."' style='width:100%;'>";
 }
 
 function vbar_graph($flash_chart, $chart_data, $width, $height,
 	$color, $legend, $long_index, $no_data_image, $xaxisname = "",
 	$yaxisname = "", $water_mark = "", $font = '', $font_size = '',
-	$unit = '', $ttl = 1, $homeurl = '', $backgroundColor = 'white') {
-	
+	$unit = '', $ttl = 1, $homeurl = '', $backgroundColor = 'white',
+	$from_ux = false) {
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 	
 	if (empty($chart_data)) {
@@ -179,7 +179,7 @@ function vbar_graph($flash_chart, $chart_data, $width, $height,
 	if ($flash_chart) {
 		return flot_vcolumn_chart ($chart_data, $width, $height, $color,
 			$legend, $long_index, $homeurl, $unit, $water_mark_url,
-			$homedir);
+			$homedir,$font,$font_size, $from_ux);
 	}
 	else {
 		$graph = array();
@@ -219,7 +219,8 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color,
 	$chart_extra_data = array(), $yellow_threshold = 0,
 	$red_threshold = 0, $adapt_key = '', $force_integer = false,
 	$series_suffix_str = '', $menu = true, $backgroundColor = 'white',
-	$dashboard = false, $vconsole = false, $agent_module_id = 0) {
+	$dashboard = false, $vconsole = false, $agent_module_id = 0, $percentil_values = array(), 
+	$threshold_data = array()) {
 	
 	include_once('functions_flot.php');
 	
@@ -239,7 +240,7 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color,
 		return '<img src="' . $no_data_image . '" />';
 	}
 
-	$menu = (!$dashboard && !$vconsole);
+	if ($dashboard || $vconsole) $menu = false;
 	
 	if ($flash_chart) {
 		return flot_area_simple_graph(
@@ -263,7 +264,13 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color,
 			$backgroundColor,
 			$dashboard,
 			$vconsole,
-			$agent_module_id);
+			$agent_module_id,
+			$font,
+			$font_size,
+			$xaxisname,
+			$percentil_values,
+			$threshold_data
+			);
 	}
 	else {
 		$graph = array();
@@ -316,6 +323,8 @@ function stacked_area_graph($flash_chart, $chart_data, $width, $height,
 			$legend,
 			$long_index,
 			$homeurl,
+			$font,
+			$font_size,
 			$unit,
 			$water_mark_url,
 			array(),
@@ -378,6 +387,8 @@ function stacked_line_graph($flash_chart, $chart_data, $width, $height,
 			$legend,
 			$long_index,
 			$homeurl,
+			$font,
+			$font_size,
 			$unit,
 			$water_mark_url,
 			array(),
@@ -427,18 +438,49 @@ function stacked_bullet_chart($flash_chart, $chart_data, $width, $height,
 	if (empty($chart_data)) {
 		return '<img src="' . $no_data_image . '" />';
 	}
+	if ($flash_chart) {
+		return d3_bullet_chart(
+				$chart_data,
+				$width,
+				$height,
+				$color,
+				$legend,
+				$homeurl,
+				$unit,
+				$font,
+				$font_size
+				);
+	}
+	else {
+		$legend = array();
+		$new_data = array();
+		foreach($chart_data as $key => $data) {
+			$temp[] = ($data['min'] != false) ? $data['min'] : 0;
+			$temp[] = ($data['value'] != false) ? $data['value'] : 0;
+			$temp[] = ($data['max'] != false) ? $data['max'] : 0;
+			
+			$legend[] = $data['label'];
+			array_push($new_data, $temp);
+			$temp = array();
+		} 
+		$graph = array();
+		$graph['data'] = $new_data;
+		$graph['width'] = $width;
+		$graph['height'] = $height;
+		$graph['color'] = $color;
+		$graph['legend'] = $legend;
+		$graph['xaxisname'] = $xaxisname;
+		$graph['yaxisname'] = $yaxisname;
+		$graph['water_mark'] = $water_mark_file;
+		$graph['font'] = $font;
+		$graph['font_size'] = $font_size;
+		$graph['backgroundColor'] = $backgroundColor;
+		
+		$id_graph = serialize_in_temp($graph, null, $ttl);
+		
+		return "<img src='" . $homeurl . "include/graphs/functions_pchart.php?static_graph=1&graph_type=bullet_chart&ttl=".$ttl."&id_graph=" . $id_graph . "' />";
+	}
 	
-	return d3_bullet_chart(
-			$chart_data,
-			$width,
-			$height,
-			$color,
-			$legend,
-			$homeurl,
-			$unit,
-			$font,
-			$font_size
-			);
 }
 
 function stacked_gauge($flash_chart, $chart_data, $width, $height,
@@ -472,7 +514,9 @@ function line_graph($flash_chart, $chart_data, $width, $height, $color,
 	$legend, $long_index, $no_data_image, $xaxisname = "",
 	$yaxisname = "", $water_mark = "", $font = '', $font_size = '',
 	$unit = '', $ttl = 1, $homeurl = '', $backgroundColor = 'white',
-	$dashboard = false, $vconsole = false) {
+	$dashboard = false, $vconsole = false, $series_type = array(),
+	$percentil_values = array(), $yellow_threshold = 0, $red_threshold = 0,
+	$threshold_data = array()) {
 	
 	include_once("functions_flot.php");
 	
@@ -493,19 +537,24 @@ function line_graph($flash_chart, $chart_data, $width, $height, $color,
 			$legend,
 			$long_index,
 			$homeurl,
+			$font,
+			$font_size,
 			$unit,
 			$water_mark_url,
+			$series_type,
 			array(),
-			array(),
-			0,
-			0,
+			$yellow_threshold,
+			$red_threshold,
 			'',
 			false,
 			'',
 			$menu,
 			$backgroundColor,
 			$dashboard,
-			$vconsole);
+			$vconsole,
+			false,
+			$percentil_values,
+			$threshold_data);
 	}
 	else {
 		$graph = array();
@@ -572,7 +621,7 @@ function hbar_graph($flash_chart, $chart_data, $width, $height,
 	
 	if ($flash_chart) {
 		return flot_hcolumn_chart(
-			$chart_data, $width, $height, $water_mark_url);
+			$chart_data, $width, $height, $water_mark_url, $font, $font_size);
 	}
 	else {
 		$graph = array();
@@ -682,6 +731,82 @@ function pie_graph($graph_type, $flash_chart, $chart_data, $width,
 				return "<img src='" . $homedir . "include/graphs/functions_pchart.php?static_graph=1&graph_type=pie3d&ttl=".$ttl."&id_graph=".$id_graph."'>";
 				break;
 		}
+	}
+}
+
+function ring_graph($flash_chart, $chart_data, $width,
+	$height, $others_str = "other", $homedir="", $water_mark = "",
+	$font = '', $font_size = '', $ttl = 1, $legend_position = false,
+	$colors = '', $hide_labels = false) {
+	
+	if (empty($chart_data)) {
+		return graph_nodata_image($width, $height, 'pie');
+	}
+	
+	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
+	
+	// This library allows only 8 colors
+	$max_values = 18;
+	
+	
+	if ($flash_chart) {
+		return flot_custom_pie_chart ($flash_chart, $chart_data,
+		$width, $height, $colors, $module_name_list, $long_index,
+		$no_data, false, '', $water_mark, $font, $font_size,
+		$unit, $ttl, $homeurl, $background_color, $legend_position);
+	}
+	else {
+		$total_modules = $chart_data['total_modules'];
+		unset($chart_data['total_modules']);
+		
+		$max_values = 9;
+		//Remove the html_entities
+		$n = 0;
+		$temp = array();
+		$coloretes = array();
+		foreach ($chart_data as $key => $value) {
+			if ($n < $max_values) {
+				$temp[io_safe_output($key)] = $value['value'];
+				$legend[] = io_safe_output($key) .": " . $value['value'] . " " .$value['unit'];
+			}
+			$n++;
+		}
+		$chart_data = $temp;
+		
+		$chart_data_trunc = array();
+		$coloretes = array();
+		$n = 1;
+		//~ foreach ($chart_data as $key => $value) {
+			//~ if ($n < $max_values) {
+				
+				//~ $chart_data_trunc[$key] = $value;
+			//~ }
+			//~ else {
+				//~ if (!isset($chart_data_trunc[$others_str])) {
+					//~ $chart_data_trunc[$others_str] = 0;
+				//~ }
+				//~ $chart_data_trunc[$others_str] += $value;
+			//~ }
+			//~ $n++;
+		//~ }
+		//~ $chart_data = $chart_data_trunc;
+		
+		//TODO SET THE LEGEND POSITION
+		
+		$graph = array();
+		$graph['data'] = $chart_data;
+		$graph['width'] = $width;
+		$graph['height'] = $height;
+		$graph['water_mark'] = $water_mark_file;
+		$graph['font'] = $font;
+		$graph['font_size'] = $font_size;
+		$graph['legend_position'] = $legend_position;
+		$graph['legend'] = $legend;
+		
+		$id_graph = serialize_in_temp($graph, null, $ttl);
+		
+		return "<img src='" . $homedir . "include/graphs/functions_pchart.php?static_graph=1&graph_type=ring3d&ttl=".$ttl."&id_graph=".$id_graph."'>";
+				
 	}
 }
 

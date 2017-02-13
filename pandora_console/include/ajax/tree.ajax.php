@@ -47,11 +47,14 @@ if (is_ajax ()) {
 			);
 		$filter = get_parameter('filter', $default_filters);
 		
+		$agent_a = check_acl ($config['id_user'], 0, "AR");
+		$agent_w = check_acl ($config['id_user'], 0, "AW");
+		$access = ($agent_a == true) ? 'AR' : (($agent_w == true) ? 'AW' : 'AR');
 		if (class_exists('TreeEnterprise')) {
-			$tree = new TreeEnterprise($type, $rootType, $id, $rootID, $serverID, $childrenMethod);
+			$tree = new TreeEnterprise($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
 		}
 		else {
-			$tree = new Tree($type, $rootType, $id, $rootID, $serverID, $childrenMethod);
+			$tree = new Tree($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
 		}
 		
 		$tree->setFilter($filter);
@@ -70,9 +73,6 @@ if (is_ajax ()) {
 		if (is_metaconsole()) {
 			$server_id = (int) get_parameter('serverID');
 			$server = metaconsole_get_servers($server_id);
-			
-			if (metaconsole_connect($server) != NOERR)
-				return;
 		}
 		
 		ob_clean();
@@ -95,11 +95,7 @@ if (is_ajax ()) {
 			}
 		}
 		echo '<br></div>';
-		
-		if (!empty($server) && is_metaconsole()) {
-			metaconsole_restore_db();
-		}
-		
+				
 		return;
 	}
 	

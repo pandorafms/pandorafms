@@ -101,6 +101,11 @@ if ($enable_agent) {
 	$result = db_process_sql_update('tagente', array('disabled' => 0), array('id_agente' => $enable_agent));
 	
 	if ($result) {
+		// Update the agent from the metaconsole cache
+		enterprise_include_once('include/functions_agents.php');
+		$values = array('disabled' => 0);
+		enterprise_hook ('agent_update_from_cache', array($enable_agent, $values));
+		
 		db_pandora_audit("Agent management", 'Enable  ' . $enable_agent);
 	}
 	else {
@@ -115,6 +120,11 @@ if ($disable_agent) {
 	$result = db_process_sql_update('tagente', array('disabled' => 1), array('id_agente' => $disable_agent));
 	
 	if ($result) {
+		// Update the agent from the metaconsole cache
+		enterprise_include_once('include/functions_agents.php');
+		$values = array('disabled' => 1);
+		enterprise_hook ('agent_update_from_cache', array($disable_agent, $values));
+		
 		db_pandora_audit("Agent management", 'Disable  ' . $disable_agent);
 	}
 	else {
@@ -168,7 +178,8 @@ echo "</tr></table>";
 $order_collation = "";
 switch ($config["dbtype"]) {
 	case "mysql":
-		$order_collation = "COLLATE utf8_general_ci";
+		$order_collation = "";
+		//$order_collation = "COLLATE utf8_general_ci";
 		break;
 	case "postgresql":
 	case "oracle":
@@ -184,6 +195,22 @@ $selectOsDown = '';
 $selectGroupUp = '';
 $selectGroupDown = '';
 switch ($sortField) {
+	case 'remote':
+		switch ($sort) {
+			case 'up':
+				$selectRemoteUp = $selected;
+				$order = array('field' => 'remote ' . $order_collation,
+					'field2' => 'nombre ' . $order_collation,
+					'order' => 'ASC');
+				break;
+			case 'down':
+				$selectRemoteDown = $selected;
+				$order = array('field' => 'remote ' . $order_collation,
+					'field2' => 'nombre ' . $order_collation,
+					'order' => 'DESC');
+				break;
+		}
+		break;
 	case 'name':
 		switch ($sort) {
 			case 'up':
@@ -247,8 +274,27 @@ switch ($sortField) {
 
 $search_sql = '';
 if ($search != "") {
-	$search_sql = " AND ( nombre " . $order_collation . "
-		LIKE '%$search%' OR direccion LIKE '%$search%') ";
+	$sql = "SELECT DISTINCT taddress_agent.id_agent FROM taddress
+	INNER JOIN taddress_agent ON
+	taddress.id_a = taddress_agent.id_a
+	WHERE taddress.ip LIKE '%$search%'";
+
+	$id = db_get_all_rows_sql($sql);
+	if($id != ''){
+		$aux = $id[0]['id_agent'];
+		$search_sql = " AND ( LOWER(nombre) " . $order_collation . "
+			LIKE LOWER('%$search%') OR tagente.id_agente = $aux";
+		if(count($id)>=2){
+			for ($i = 1; $i < count($id); $i++){
+				$aux = $id[$i]['id_agent'];
+				$search_sql .= " OR tagente.id_agente = $aux";
+			}
+		}
+		$search_sql .= ")";
+	}else{
+		$search_sql = " AND ( LOWER(nombre) " . $order_collation . "
+			LIKE LOWER('%$search%')) ";
+	}
 }
 
 if ($disabled == 1)
@@ -276,18 +322,18 @@ if ($ag_group > 0) {
 				FROM tagente
 				WHERE id_grupo IN (%s)
 					%s
-				ORDER BY %s, %s %s
+				ORDER BY %s %s, %s %s
 				LIMIT %d, %d',
-				implode (",", $ag_groups), $search_sql, $order['field'], $order['field2'], $order['order'], $offset, $config["block_size"]);
+				implode (",", $ag_groups), $search_sql, $order['field'],$order['order'], $order['field2'], $order['order'], $offset, $config["block_size"]);
 			break;
 		case "postgresql":
 			$sql = sprintf ('SELECT *
 				FROM tagente
 				WHERE id_grupo IN (%s)
 					%s
-				ORDER BY %s, %s %s
+				ORDER BY %s %s, %s %s
 				LIMIT %d OFFSET %d',
-				implode (",", $ag_groups), $search_sql, $order['field'], $order['field2'], $order['order'], $config["block_size"], $offset);
+				implode (",", $ag_groups), $search_sql, $order['field'],$order['order'], $order['field2'], $order['order'], $config["block_size"], $offset);
 			break;
 		case "oracle":
 			$set = array ();
@@ -297,8 +343,8 @@ if ($ag_group > 0) {
 				FROM tagente
 				WHERE id_grupo IN (%s)
 					%s
-				ORDER BY %s, %s %s',
-				implode (",", $ag_groups), $search_sql, $order['field'], $order['field2'], $order['order']);
+				ORDER BY %s %s, %s %s',
+				implode (",", $ag_groups), $search_sql, $order['field'],$order['order'], $order['field2'], $order['order']);
 			$sql = oracle_recode_query ($sql, $set);
 			break;
 	}
@@ -319,11 +365,20 @@ else {
 		$total_agents = db_get_sql ($sql);
 		switch ($config["dbtype"]) {
 			case "mysql":
+				$order['field2'] = "";
+				/*
 				$sql = sprintf ('SELECT *
 					FROM tagente
 					WHERE 1=1
 						%s
-					ORDER BY %s, %s %s LIMIT %d, %d', $search_sql, $order['field'], $order['field2'],
+					ORDER BY %s %s, %s %s LIMIT %d, %d', $search_sql, $order['field'],$order['order'], $order['field2'],
+					$order['order'], $offset, $config["block_size"]);
+				*/
+				$sql = sprintf ('SELECT *
+					FROM tagente
+					WHERE 1=1
+						%s
+					ORDER BY %s %s %s LIMIT %d, %d', $search_sql, $order['field'], $order['field2'],
 					$order['order'], $offset, $config["block_size"]);
 				break;
 			case "postgresql":
@@ -331,7 +386,7 @@ else {
 					FROM tagente
 					WHERE 1=1
 						%s
-					ORDER BY %s, %s %s LIMIT %d OFFSET %d', $search_sql, $order['field'], $order['field2'],
+					ORDER BY %s %s %s LIMIT %d OFFSET %d', $search_sql, $order['field'], $order['field2'],
 					$order['order'], $config["block_size"], $offset);
 				break;
 			case "oracle":
@@ -342,7 +397,7 @@ else {
 					FROM tagente
 					WHERE 1=1
 						%s
-					ORDER BY %s, %s %s', $search_sql, $order['field'], $order['field2'], $order['order']);
+					ORDER BY %s %s %s', $search_sql, $order['field'], $order['field2'], $order['order']);
 				$sql = oracle_recode_query ($sql, $set);
 				break;
 		}
@@ -370,20 +425,20 @@ else {
 					FROM tagente
 					WHERE id_grupo IN (%s)
 						%s
-					ORDER BY %s, %s %s
+					ORDER BY %s %s, %s %s
 					LIMIT %d, %d',
 					implode (',', array_keys ($user_groups)),
-					$search_sql, $order['field'], $order['field2'], $order['order'], $offset, $config["block_size"]);
+					$search_sql, $order['field'],$order['order'], $order['field2'], $order['order'], $offset, $config["block_size"]);
 				break;
 			case "postgresql":
 				$sql = sprintf ('SELECT *
 					FROM tagente
 					WHERE id_grupo IN (%s)
 						%s
-					ORDER BY %s, %s %s
+					ORDER BY %s %s, %s %s
 					LIMIT %d OFFSET %d',
 					implode (',', array_keys ($user_groups)),
-					$search_sql, $order['field'], $order['field2'], $order['order'], $config["block_size"], $offset);
+					$search_sql, $order['field'],$order['order'], $order['field2'], $order['order'], $config["block_size"], $offset);
 				break;
 			case "oracle":
 				$set = array ();
@@ -393,9 +448,9 @@ else {
 					FROM tagente
 					WHERE id_grupo IN (%s)
 						%s
-					ORDER BY %s, %s %s',
+					ORDER BY %s %s, %s %s',
 					implode (',', array_keys ($user_groups)),
-					$search_sql, $order['field'], $order['field2'], $order['order']);
+					$search_sql, $order['field'],$order['order'], $order['field2'], $order['order']);
 				$sql = oracle_recode_query ($sql, $set);
 				break;
 		}
@@ -422,7 +477,10 @@ if ($agents !== false) {
 		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=name&sort=up&disabled=$disabled">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp)) . '</a>' .
 		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=name&sort=down&disabled=$disabled">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown)) . '</a>';
 	echo "</th>";
-	echo "<th title='".__('Remote agent configuration')."'>".__('R')."</th>";
+	echo "<th title='".__('Remote agent configuration')."'>".__('R'). ' ' .
+		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=remote&sort=up&disabled=$disabled">' . html_print_image("images/sort_up.png", true, array("style" => $selectRemoteUp)) . '</a>' .
+		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=remote&sort=down&disabled=$disabled">' . html_print_image("images/sort_down.png", true, array("style" => $selectRemoteDown)) . '</a>';
+	echo "</th>";
 	echo "<th>".__('OS'). ' ' .
 		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=os&sort=up&disabled=$disabled">' . html_print_image("images/sort_up.png", true, array("style" => $selectOsUp)) . '</a>' .
 		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=os&sort=down&disabled=$disabled">' . html_print_image("images/sort_down.png", true, array("style" => $selectOsDown)) . '</a>';
@@ -438,6 +496,18 @@ if ($agents !== false) {
 	$rowPair = true;
 	$iterator = 0;
 	foreach ($agents as $agent) {
+		
+		/* Begin Update tagente.remote 0/1 with remote agent function return */
+		
+			if(enterprise_hook('config_agents_has_remote_configuration',array($agent['id_agente']))){
+				db_process_sql_update('tagente', array('remote' => 1),'id_agente = '.$agent['id_agente'].'');
+			}
+			else{
+				db_process_sql_update('tagente', array('remote' => 0),'id_agente = '.$agent['id_agente'].'');
+			}
+			
+			/* End Update tagente.remote 0/1 with remote agent function return */
+			
 		$id_grupo = $agent["id_grupo"];
 		
 		if (! check_acl ($config["id_user"], $id_grupo, "AW", $agent['id_agente']) && ! check_acl ($config["id_user"], $id_grupo, "AD", $agent['id_agente']))
@@ -514,7 +584,7 @@ if ($agents !== false) {
 		// Has remote configuration ?
 		if (enterprise_installed()) {
 			enterprise_include_once('include/functions_config_agents.php');
-			if (config_agents_has_remote_configuration($agent["id_agente"])) {
+			if (enterprise_hook('config_agents_has_remote_configuration',array($agent["id_agente"]))) {
 				echo "<a href='index.php?" .
 					"sec=gagente&" .
 					"sec2=godmode/agentes/configurar_agente&" .

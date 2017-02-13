@@ -94,19 +94,23 @@ if ($view_graph) {
 	$events = $graph["events"];
 	$description = $graph["description"];
 	$stacked = (int) get_parameter ('stacked', -1);
+	$percentil = (int) get_parameter ('percentil', 0);
+	$check = get_parameter('threshold',false);
+
+	if($check == CUSTOM_GRAPH_BULLET_CHART_THRESHOLD){
+		$check = true;
+		$stacked = CUSTOM_GRAPH_BULLET_CHART_THRESHOLD;
+	}
 	if ($stacked == -1)
 		$stacked = $graph["stacked"];
-	
-	if ($stacked == CUSTOM_GRAPH_BULLET_CHART )
+
+	if ($stacked == CUSTOM_GRAPH_BULLET_CHART || $stacked == CUSTOM_GRAPH_BULLET_CHART_THRESHOLD)
 		$height = 50;
 	
 	if ($stacked == CUSTOM_GRAPH_GAUGE ){
-		if ( $graph["height"] < 150 )
-			$height = 150;
-		elseif( $graph["height"] >= 150 && $graph["height"] < 250 )
-				$height = $graph["height"];
-			elseif( $graph["height"] >= 250 )
-				$height = 200;
+		// Use the defined graph height, that's why
+		// the user can setup graph height.
+		$height = $graph["height"];
 	}
 	
 	$name = $graph["name"];
@@ -161,15 +165,14 @@ if ($view_graph) {
 		__('Custom graphs') . " - " . $graph['name'],
 		"images/chart.png", false, "", false, $options);
 	
-	$graph_return = custom_graphs_print($id_graph, $height, $width, $period, $stacked,
-			true, $unixdate);
-	
+	$graph_return = custom_graphs_print($id_graph, $height, $width, $period, $stacked, true, $unixdate, false, 'white', 
+		array(), '', array(), array(), true, true, true, true, 1, false, false, $percentil, false);
 	if ($graph_return){
 		echo "<table class='databox filters' cellpadding='0' cellspacing='0' width='100%'>";
 		echo "<tr><td>";
 		echo $graph_return;
 		// Add space to the legend transformation
-		if ($stacked === CUSTOM_GRAPH_VBARS) {
+		if ($stacked == CUSTOM_GRAPH_VBARS) {
 			echo '<br /><br /><br /><br />';
 		}
 		echo "</td></tr></table>";
@@ -177,7 +180,9 @@ if ($view_graph) {
 	else {
 		ui_print_info_message ( array ( 'no_close' => true, 'message' =>  __('No data.') ) );
 	}
-	
+	if ($stacked == CUSTOM_GRAPH_BULLET_CHART_THRESHOLD){
+		$stacked = 4;
+	}
 	$period_label = human_time_description_raw ($period);
 	echo "<form method='POST' action='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id=$id_graph'>";
 	echo "<table class='databox filters' cellpadding='4' cellspacing='4' style='width: 100%'>";
@@ -217,7 +222,15 @@ if ($view_graph) {
 	$stackeds[CUSTOM_GRAPH_PIE] = __('Pie');
 	html_print_select ($stackeds, 'stacked', $stacked , '', '', -1, false, false);
 	echo "</td>";
-	
+
+	echo "<td class='datos'>";
+	echo "<div style='float:left' id='thresholdDiv' name='thresholdDiv'>&nbsp;&nbsp;<b>".__('Equalize maximum thresholds')."</b>" .
+		ui_print_help_tip (__("If an option is selected, all graphs will have the highest value from all modules included in the graph as a maximum threshold"), true);
+
+	html_print_checkbox('threshold', CUSTOM_GRAPH_BULLET_CHART_THRESHOLD, $check, false, false, '', false);
+	echo "</div>";
+	echo "</td>";
+
 	echo "<td class='datos'>";
 	$zooms = array();
 	$zooms[0] = __('Graph defined');
@@ -263,6 +276,26 @@ if ($view_graph) {
 			changeMonth: true,
 			changeYear: true,
 			showAnim: "slideDown"});
+
+		if ($("#stacked").val() == '4') {
+			$("#thresholdDiv").show();
+		}else{
+			$("#thresholdDiv").hide();
+		}
+
+
+	});
+
+	$("#stacked").change(function(){
+		if ($(this).val() == '4') {
+			console.log($(this).val());
+			$("#thresholdDiv").show();
+			$(".stacked").show();
+		} else {
+			$("[name=threshold]").prop("checked", false);
+			$(".stacked").show();
+			$("#thresholdDiv").hide();
+		}
 	});
 	</script>
 	

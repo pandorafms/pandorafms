@@ -105,6 +105,7 @@ if ($upload_file) {
 }
 
 if ($install_package) {
+	global $config;
 	ob_clean();
 	
 	$package = (string) get_parameter("package");
@@ -224,6 +225,7 @@ if ($install_package) {
 	}
 	
 	update_manager_enterprise_set_version($version);
+	db_pandora_audit("Update Pandora", "Update version: $version of Pandora FMS by ".$config['id_user']);
 	
 	$return["status"] = "success";
 	echo json_encode($return);
@@ -483,10 +485,8 @@ if ($check_update_free_package) {
 if ($install_free_package) {
 	$version = get_parameter('version', '');
 	
-	update_manager_starting_update();
-	
 	$result = update_manager_starting_update();
-	
+
 	if ($result)
 		update_manager_set_current_package($version);
 	

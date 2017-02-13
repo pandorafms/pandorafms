@@ -18,9 +18,21 @@
 global $config;
 
 check_login ();
+$id = get_parameter('id_networkmap', true);
+$activeTab = get_parameter('activeTab', true);
+
+if (enterprise_installed()) {
+	include_once("enterprise/dashboard/widgets/network_map.php");
+	if ($id_networkmap) {
+		$id = $id_networkmap;
+	}
+	if ($tab) {
+		$activeTab = $tab;
+	}
+}
 
 // Networkmap id required
-if (!isset($id_networkmap)) {
+if (!isset($id)) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access node graph builder");
 	require ("general/noaccess.php");
@@ -29,7 +41,7 @@ if (!isset($id_networkmap)) {
 
 // Get the group for ACL
 if (!isset($store_group)) {
-	$store_group = db_get_value("store_group", "tnetwork_map", "id_networkmap", $id_networkmap);
+	$store_group = db_get_value("id_group", "tmap", "id", $id);
 	if ($store_group === false) {
 		db_pandora_audit("ACL Violation",
 			"Trying to accessnode graph builder");
@@ -72,8 +84,6 @@ if ($activeTab == "radial_dynamic") {
 	
 	echo "<div style='width: auto; text-align: center;'>";
 	
-	
-	
 	$filter = array();
 	if (!empty($group))
 		$filter['group'] = $group;
@@ -86,6 +96,29 @@ if ($activeTab == "radial_dynamic") {
 	return;
 }
 
+$networkmap = db_get_row('tmap', 'id', $id);
+
+switch ($networkmap['generation_method']) {
+	case 0:
+		$layout = "circular";
+		break;
+	case 1:
+		$layout = "flat";
+		break;
+	case 2:
+		$layout = "radial";
+		break;
+	case 3:
+		$layout = "neato";
+		break;
+	case 4:
+		$layout = "spring1";
+		break;
+	case 5:
+		$layout = "spring2";
+		break;
+}
+
 // Set filter
 $filter = networkmap_get_filter ($layout);
 
@@ -96,7 +129,7 @@ if (!isset($text_filter)) {
 // Generate dot file
 $graph = networkmap_generate_hash(__('Pandora FMS'), $group, $simple,
 	$font_size, $layout, $nooverlap, $zoom, $ranksep, $center, $regen,
-	$pure, $id_networkmap, $show_snmp_modules, true, true,
+	$pure, $id, $show_snmp_modules, true, true,
 	$text_filter, $strict_user);
 
 networkmap_print_jsdata($graph);
@@ -110,7 +143,6 @@ $zoom_default = file($config['homedir'] . '/images/zoom_default.svg');
 </div>
 <?php
 
-//html_debug_print($graph);
 echo '<script '.
 	' type="text/javascript" ' .
 	' src="' . $config['homeurl'] . 'include/javascript/d3.3.5.14.js" ' .
@@ -185,7 +217,7 @@ var zoom_obj = d3.behavior.zoom();
 zoom_obj.scaleExtent([0.3, 3]).on("zoom", zoom);
 
 var svg = d3.select("#dinamic_networkmap").append("svg")
-	.attr("id", "dinamic_networkmap_svg")
+	.attr("id", "dinamic_networkmap_svg_" + "<?php echo $id; ?>")
 	.attr("width", width)
 	.attr("height", height)
 	.attr("pointer-events", "all")

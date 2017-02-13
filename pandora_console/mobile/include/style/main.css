@@ -104,7 +104,6 @@ tr.group_view_crit, .group_view_crit {
 }
 
 
-
 .group_view_normal, .group_view_normal *,
 .group_view_norm, .group_view_norm * {
 	background-color: #FFFFFF;
@@ -128,7 +127,6 @@ tr.group_view_crit, .group_view_crit {
 	font-weight: bold;
 	text-shadow: none;
 }
-
 
 .group_view_ok, .group_view_ok * {
 	background-color: #00C000;
@@ -991,8 +989,9 @@ li.ui-btn {
 	}
 	
 	.login_logo img {
-		width: 185px;
+		width: 220px;
 		margin-bottom: 10px;
+		padding-top: 5%;
 	}
 	
 	.untiny {
@@ -1035,6 +1034,7 @@ li.ui-btn {
 	.login_logo img {
 		width: 300px;
 		margin-bottom: 20px;
+		padding-top: 5%;
 	}
 	
 	.tiny {
@@ -1046,6 +1046,7 @@ li.ui-btn {
 	width: 60%;
 	margin: 0 auto;
 	max-width: 300px;
+	padding-top: 5%;
 }
 
 .event_name {
@@ -1091,41 +1092,46 @@ table.tactical_bars {
 /*INIT-----------Icons styles---------------------------------------*/
 
 .ui-icon-tactical_view {
-	background-image: url(../../../images/op_monitoring.png) !important;
+	background-image: url(../../../images/op_monitoring.menu.png) !important;
 }
 
 .ui-icon-events {
-	background-image: url(../../../images/op_events.png) !important;
+	background-image: url(../../../images/op_events.menu.png) !important;
 }
 
 .ui-icon-groups {
-	background-image: url(../../../images/group.png) !important;
+	background-image: url(../../../images/group.menu.png) !important;
 }
 
 .ui-icon-alerts {
-	background-image: url(../../../images/op_alerts.png) !important;
+	background-image: url(../../../images/op_alerts.menu.png) !important;
 }
 
 .ui-icon-agents {
-	background-image: url(../../../images/agent_mc.png) !important;
+	background-image: url(../../../images/agent_mc.menu.png) !important;
 }
 
 .ui-icon-modules {
-	background-image: url(../../../images/brick.png) !important;
+	background-image: url(../../../images/brick.menu.png) !important;
 }
 
 .ui-icon-network_maps {
-	background-image: url(../../../images/op_network.png) !important;
+	background-image: url(../../../images/op_network.menu.png) !important;
 }
 
 .ui-icon-visual_console {
-	background-image: url(../../../images/visual_console.png) !important;
+	background-image: url(../../../images/visual_console.menu.png) !important;
+}
+
+.ui-icon-dashboard {
+	background-image: url(../../../images/dashboard.menu.png) !important;
 }
 
 .ui-icon-tactical_view, .ui-icon-events,
 .ui-icon-groups, .ui-icon-alerts,
 .ui-icon-agents, .ui-icon-modules,
-.ui-icon-network_maps, .ui-icon-visual_console {
+.ui-icon-network_maps, .ui-icon-visual_console,
+.ui-icon-dashboard {
 	background-color: #333 !important;
 	background-position: center;
 	border-radius: 15px !important;
@@ -1144,7 +1150,8 @@ table.tactical_bars {
 	.ui-icon-tactical_view, .ui-icon-events,
 	.ui-icon-groups, .ui-icon-alerts,
 	.ui-icon-agents, .ui-icon-modules,
-	.ui-icon-network_maps, .ui-icon-visual_console {
+	.ui-icon-network_maps, .ui-icon-visual_console,
+	.ui-icon-dashboard {
 		width: 22px !important;
 		height: 22px !important;
 		margin-top: -13px !important;
@@ -1157,7 +1164,8 @@ table.tactical_bars {
 	.ui-icon-tactical_view, .ui-icon-events,
 	.ui-icon-groups, .ui-icon-alerts,
 	.ui-icon-agents, .ui-icon-modules,
-	.ui-icon-network_maps, .ui-icon-visual_console {
+	.ui-icon-network_maps, .ui-icon-visual_console, 
+	.ui-icon-dashboard {
 		width: 32px !important;
 		height: 32px !important;
 		margin-top: -17px !important;

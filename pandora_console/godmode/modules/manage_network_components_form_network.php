@@ -57,7 +57,7 @@ $data = array();
 $data[0] = __('Auth user');
 $data[1] = html_print_input_text ('snmp3_auth_user', $snmp3_auth_user, '', 15, 60, true);
 $data[2] = __('Auth password');
-$data[3] = html_print_input_text ('snmp3_auth_pass', $snmp3_auth_pass, '', 15, 60, true);
+$data[3] = html_print_input_password ('snmp3_auth_pass', $snmp3_auth_pass, '', 15, 60, true);
 $data[3] .= html_print_input_hidden('active_snmp_v3', 0, true);
 push_table_row($data, 'field_snmpv3_row1');
 
@@ -65,7 +65,7 @@ $data = array();
 $data[0] = __('Privacy method');
 $data[1] = html_print_select(array('DES' => __('DES'), 'AES' => __('AES')), 'snmp3_privacy_method', $snmp3_privacy_method, '', '', '', true);
 $data[2] = __('Privacy pass');
-$data[3] = html_print_input_text ('snmp3_privacy_pass', $snmp3_privacy_pass, '', 15, 60, true);
+$data[3] = html_print_input_password ('snmp3_privacy_pass', $snmp3_privacy_pass, '', 15, 60, true);
 push_table_row($data, 'field_snmpv3_row2');
 
 $data = array();
@@ -113,7 +113,9 @@ push_table_row ($data, 'tcp_receive');
 	
 	function validate_post_process() {
 		var post_process = $("#text-post_process").val();
-		var new_post_process = post_process.replace(',','.');
-		$("#text-post_process").val(new_post_process);
+		if (post_process != undefined){
+			var new_post_process = post_process.replace(',','.');
+			$("#text-post_process").val(new_post_process);
+		}
 	}
 </script>

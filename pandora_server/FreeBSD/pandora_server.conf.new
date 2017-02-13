@@ -1,9 +1,9 @@
 #############################################################################
 # Pandora FMS Server Parameters
 # Pandora FMS, the Flexible Monitoring System.
-# Version 5.1SP1
+# Version 7.0dev
 # Licensed under GPL license v2,
-# (c) 2003-2014 Artica Soluciones Tecnologicas
+# (c) 2003-2016 Artica Soluciones Tecnologicas
 # http://www.pandorafms.com
 # Please change it for your setup needs
 #############################################################################
@@ -78,8 +78,9 @@ dbhost 127.0.0.1
 
 verbosity 3
 
-# Master Server, 1 if master server (normal mode), 0 for slave mode (slave in multi-server setup)
-
+# Master Server priority. The running server with the highest master value will
+# be the master. Ties are broken at random.  If set to 0, this server will
+# never become master.
 master 1
 
 # Activate Pandora SNMP console (depending on snmptrapd)
@@ -105,6 +106,10 @@ snmp_ignore_authfailure 1
 # snmptrapd will read the PDU source address instead of the agent-addr field is set to 1.
 
 snmp_pdu_address 0
+
+# Path to the snmp_trapd binary. If set to manual, the server will not attemp to start snmp_trapd.
+
+#snmp_trapd manual
 
 # Activate (1) Pandora Network Server 
 
@@ -171,7 +176,6 @@ icmp_packets 1
 
 tcp_checks 1
 tcp_timeout 10
-
 # snmp specific options :
 # snmp_checks: number of snmp request retries if first attempt fails.
 # snmp_timeout: specific timeout for snmp request.
@@ -251,6 +255,7 @@ xprobe2 /usr/local/bin/xprobe2
 
 nmap /usr/local/bin/nmap
 
+# Default path is /usr/sbin/fping for installation default in distro Centos , if you are installing in other distribution,
 # Path to the fping binary. Used by the Enterprise ICMP Server.
 fping /usr/local/sbin/fping
 
@@ -261,7 +266,6 @@ nmap_timing_template 2
 recon_timing_template 3
 
 # snmpget: Needed to do SNMP checks. By default is on /usr/local/bin/snmpget
-
 snmpget /usr/local/bin/snmpget
 
 # snmp_trapd: Needed by Pandora FMS SNMP console.
@@ -278,6 +282,8 @@ braa_retries 3
 
 # Default group id for new agents created with Pandora FMS Data Server
 # If this token is enabled and Agent is setup with a fixed group, server settings will override agent settings
+# If this token is disabled and group is not provided in the agent, or provided group doesn't exist, agent data
+# will be dropped. We use the Group ID #10 (Unknown) for a "valid" default value, please change as your own decision.
 
 autocreate_group 10
 
@@ -294,13 +300,14 @@ max_log_size 1048576
 # max_log_generation: Specify max generation count (between 1 and 9) of Pandora FMS server log files.
 max_log_generation 1
 
-# max_queue_files (500 by default)
+# max_queue_files (5000 by default)
 # When server have more than max_queue_files in incoming directory, skips the read   
 # the directory to avoid filesystem overhead.
 
-max_queue_files 500
+max_queue_files 5000
 
 # Use the XML file last modification time as timestamp.
+
 # use_xml_timestamp 1
 
 # Pandora FMS will autorestart itself each XXX seconds, use this if you experience problems with 
@@ -346,6 +353,9 @@ restart_delay 60
 # Pandora Server self-monitoring (embedded agent) (by default enabled)
 
 self_monitoring 1
+
+# Self monitoring interval (in seconds).
+self_monitoring_interval 300
 
 # Update parent from the agent xml
 
@@ -408,7 +418,7 @@ icmpserver 1
 
 # Number of threads for the Enterprise ICMP Server (PANDORA FMS ENTERPRISE ONLY).
 
-icmp_threads 1
+icmp_threads 4
 
 # Enable (1) or disable (0) Pandora FMS Enterprise SNMP Server (PANDORA FMS ENTERPRISE ONLY).
 # Check braa tool is running and operative.
@@ -417,7 +427,19 @@ snmpserver 1
 
 # Number of threads for the Enterprise SNMP Server (PANDORA FMS ENTERPRISE ONLY).
 
-snmp_threads 1
+snmp_threads 4
+
+# Pandora FMS TransactionalServer (PANDORA FMS ENTERPRISE ONLY).
+
+transactionalserver 0
+
+# Number of threads for the Transactional Server (PANDORA FMS ENTERPRISE ONLY).
+
+transactional_threads 1
+
+# Threshold for the Transactional Server (PANDORA FMS ENTERPRISE ONLY).
+
+transactional_threshold 2
 
 # Block size for block producer/consumer servers, that is, the number of modules
 # per block (20 by default) (PANDORA FMS ENTERPRISE ONLY).
@@ -481,9 +503,53 @@ claim_back_snmp_modules 1
 # interval will become normal. Set to 0 to disable.
 async_recovery 1
 
+# Console API credentials.
+# Required for some features like the module graphs macros.
+
+# console_api_url: Api URL (http://localhost/pandora_console/include/api.php by default)
+console_api_url http://localhost/pandora_console/include/api.php
+
+# console_api_pass: Api pass
+# console_api_pass 1234
+
+# console_user: Console user name (admin by default)
+console_user admin
+
+# console_pass: Console password (pandora by default)
+console_pass pandora
+
 # Passphrase used to generate the key for password encryption (PANDORA FMS ENTERPRISE ONLY).
 #encryption_passphrase passphrase
+
+# Enable (1) or disable (0) events related to the unknown module status.
+unknown_events 1
 
 # Time interval (as a multiple of the module interval) before a module becomes unknown. Twice the module's interval by default.
 #unknown_interval 2
 
+# Maximum executing time of an alert (in  seconds)
+global_alert_timeout 15
+
+# If set to 1 allows PandoraFMS Server to be configured via the web console (PANDORA FMS ENTERPRISE ONLY).
+remote_config 0
+
+# Remote address to send the configuration file (PANDORA FMS ENTERPRISE ONLY).
+remote_config_address localhost
+
+# Remote port to send the configuration file (PANDORA FMS ENTERPRISE ONLY).
+#remote_config_port 41121
+
+# Extra options for the Tentacle client to send the configuration file (PANDORA FMS ENTERPRISE ONLY).
+#remote_config_opts
+
+# Module status change events will not be generated and module alerts will not
+# be executed for the specified number of seconds since the server starts up.
+warmup_event_interval 0
+
+# Modules will not become unknown (so no unknown events will be generated)  and
+# keepalive modules will not be updated for the specified number of seconds
+# since the server starts up.
+warmup_unknown_interval 300
+
+# Directory were additional enc files for the XML parser are located.
+enc_dir /usr/local/share/pandora_server/enc/

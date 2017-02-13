@@ -23,6 +23,7 @@ enterprise_include_once ('meta/include/functions_events_meta.php');
 enterprise_include_once ('include/functions_metaconsole.php');
 
 $get_events_details = (bool) get_parameter ('get_events_details');
+$get_list_events_agents = (bool) get_parameter ('get_list_events_agents');
 $get_extended_event = (bool) get_parameter ('get_extended_event');
 $change_status = (bool) get_parameter ('change_status');
 $change_owner = (bool) get_parameter ('change_owner');
@@ -295,17 +296,17 @@ if ($get_extended_event) {
 	
 	// Tabs
 	$tabs = "<ul style='background:#ffffff !important; border-top: 0px; border-left: 0px; border-right: 0px; border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; border-color: #D3D3D3;'>";
-	$tabs .= "<li><a href='#extended_event_general_page' id='link_general'>".html_print_image('images/lightning_go.png',true).__('General')."</a></li>";
-	$tabs .= "<li><a href='#extended_event_details_page' id='link_details'>".html_print_image('images/zoom.png',true).__('Details')."</a></li>";
-	$tabs .= "<li><a href='#extended_event_custom_fields_page' id='link_custom_fields'>".html_print_image('images/custom_field_col.png',true).__('Agent fields')."</a></li>";
-	$tabs .= "<li><a href='#extended_event_comments_page' id='link_comments'>".html_print_image('images/pencil.png',true).__('Comments')."</a></li>";
-	
-	if (!$readonly && 
+	$tabs .= "<li><a href='#extended_event_general_page' id='link_general'>".html_print_image('images/lightning_go.png',true)."<span style='position:relative;top:-6px;left:5px;margin-right:10px;'>".__('General')."</span></a></li>";
+	$tabs .= "<li><a href='#extended_event_details_page' id='link_details'>".html_print_image('images/zoom.png',true)."<span style='position:relative;top:-6px;left:5px;margin-right:10px;'>".__('Details')."</span></a></li>";
+	$tabs .= "<li><a href='#extended_event_custom_fields_page' id='link_custom_fields'>".html_print_image('images/custom_field_col.png',true)."<span style='position:relative;top:-6px;left:5px;margin-right:10px;'>".__('Agent fields')."</span></a></li>";
+	$tabs .= "<li><a href='#extended_event_comments_page' id='link_comments'>".html_print_image('images/pencil.png',true)."<span style='position:relative;top:-6px;left:5px;margin-right:10px;'>".__('Comments')."</span></a></li>";
+
+	if (!$readonly &&
 		(tags_checks_event_acl($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags'], $childrens_ids)) || (tags_checks_event_acl($config["id_user"], $event["id_grupo"], "EW", $event['clean_tags'],$childrens_ids))) {
-		$tabs .= "<li><a href='#extended_event_responses_page' id='link_responses'>".html_print_image('images/event_responses_col.png',true).__('Responses')."</a></li>";
+		$tabs .= "<li><a href='#extended_event_responses_page' id='link_responses'>".html_print_image('images/event_responses_col.png',true)."<span style='position:relative;top:-6px;left:3px;margin-right:10px;'>".__('Responses')."</span></a></li>";
 	}
 	if ($event['custom_data'] != '') {
-		$tabs .= "<li><a href='#extended_event_custom_data_page' id='link_custom_data'>".html_print_image('images/custom_field_col.png',true).__('Custom data')."</a></li>";
+		$tabs .= "<li><a href='#extended_event_custom_data_page' id='link_custom_data'>".html_print_image('images/custom_field_col.png',true)."<span style='position:relative;top:-6px;left:3px;margin-right:10px;'>".__('Custom data')."</span></a></li>";
 	}
 	$tabs .= "</ul>";
 	
@@ -511,5 +512,37 @@ if ($table_events) {
 	
 	events_print_event_table ("estado <> 1 $tags_condition", 10, '100%',
 		false, $id_agente,true);
+}
+
+if ($get_list_events_agents) {
+	global $config;
+	
+	$id_agent = get_parameter('id_agent');
+	$server_id = get_parameter('server_id');
+	$event_type = get_parameter("event_type");
+	$severity = get_parameter("severity");
+	$status = get_parameter("status");
+	$search = get_parameter("search");
+	$id_agent_module = get_parameter('id_agent_module');
+	$event_view_hr = get_parameter("event_view_hr");
+	$id_user_ack = get_parameter("id_user_ack");
+	$tag_with = get_parameter("tag_with");
+	$tag_without = get_parameter("tag_without");
+	$filter_only_alert = get_parameter("filter_only_alert");
+	$date_from = get_parameter("date_from");
+	$date_to = get_parameter("date_to");
+	$id_user = $config["id_user"];
+	$server_id = get_parameter("server_id");
+	
+	$returned_sql = events_sql_events_grouped_agents($id_agent, $server_id, 
+						$event_type,$severity, $status, $search, 
+						$id_agent_module, $event_view_hr, $id_user_ack, 
+						$tag_with, $tag_without, $filter_only_alert, 
+						$date_from, $date_to, $id_user);
+	
+	$returned_list = events_list_events_grouped_agents($returned_sql);
+	
+	echo $returned_list;
+	return;
 }
 ?>

@@ -64,7 +64,7 @@ UPDATE talert_commands SET fields_descriptions = '["Destination&#x20;address","S
 -- ---------------------------------------------------------------------
 INSERT INTO tconfig (token, value) VALUES ('post_process_custom_values', '{"0.00000038580247":"Seconds&#x20;to&#x20;months","0.00000165343915":"Seconds&#x20;to&#x20;weeks","0.00001157407407":"Seconds&#x20;to&#x20;days","0.01666666666667":"Seconds&#x20;to&#x20;minutes","0.00000000093132":"Bytes&#x20;to&#x20;Gigabytes","0.00000095367432":"Bytes&#x20;to&#x20;Megabytes","0.0009765625":"Bytes&#x20;to&#x20;Kilobytes","0.00000001653439":"Timeticks&#x20;to&#x20;weeks","0.00000011574074":"Timeticks&#x20;to&#x20;days"}');
 UPDATE tconfig SET value = 'v6.0dev' WHERE token = 'db_scheme_version';
-UPDATE tconfig SET value = 'https://artica.es/pandoraupdate6/server.php' WHERE token='url_update_manager';
+UPDATE tconfig SET value = 'https://firefly.artica.es/pandoraupdate6/server.php' WHERE token='url_update_manager';
 
 -- ---------------------------------------------------------------------
 -- Table `tnetwork_map`

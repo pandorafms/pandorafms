@@ -48,7 +48,7 @@ if (is_ajax ()) {
 
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "RW")) {
+if (! check_acl ($config['id_user'], 0, "RW") && ! check_acl ($config['id_user'], 0, "RM")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access graph builder");
 	include ("general/noaccess.php");
@@ -64,6 +64,13 @@ if ($edit_graph) {
 	$id_group = $graphInTgraph['id_group'];
 	$width = $graphInTgraph['width'];
 	$height = $graphInTgraph['height'];
+	$check = false;
+	$percentil = $graphInTgraph['percentil'];
+
+	if ($stacked == CUSTOM_GRAPH_BULLET_CHART_THRESHOLD){
+		$stacked = CUSTOM_GRAPH_BULLET_CHART;
+		$check = true;
+	}
 }
 else {
 	$id_agent = 0;
@@ -74,7 +81,9 @@ else {
 	$height = 210;
 	$period = SECONDS_1DAY;
 	$factor = 1;
-	$stacked = 0;
+	$stacked = 4;
+	$check = false;
+	$percentil = 0;
 }
 
 
@@ -104,9 +113,12 @@ if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 else	
 	$return_all_groups = false;
 	
-echo "<td><b>".__('Group')."</b></td><td>" .
-	html_print_select_groups($config['id_user'], "AR", $return_all_groups, 'graph_id_group', $id_group, '', '', '', true) .
-	"</td></tr>";
+echo "<td><b>".__('Group')."</b></td><td>";
+	if (check_acl ($config['id_user'], 0, "RW"))
+		echo html_print_select_groups($config['id_user'], 'RW', $return_all_groups, 'graph_id_group', $id_group, '', '', '', true);
+	elseif (check_acl ($config['id_user'], 0, "RM"))
+		echo html_print_select_groups($config['id_user'], 'RM', $return_all_groups, 'graph_id_group', $id_group, '', '', '', true);
+echo "</td></tr>";
 echo "<tr>";
 echo "<td class='datos2'><b>".__('Description')."</b></td>";
 echo "<td class='datos2' colspan=3><textarea name='description' style='height:45px;' cols=55 rows=2>";
@@ -137,7 +149,7 @@ echo "<td class='datos'>";
 html_print_extended_select_for_time ('period', $period, '', '', '0', 10);
 echo "</td><td class='datos2'>";
 echo "<b>".__('Type of graph')."</b></td>";
-echo "<td class='datos2'>";
+echo "<td class='datos2'> <div style='float:left;display:inline-block'>";
 
 include_once($config["homedir"] . "/include/functions_graph.php");
 
@@ -153,7 +165,17 @@ $stackeds = array(
 	CUSTOM_GRAPH_PIE => __('Pie')
 	);
 html_print_select ($stackeds, 'stacked', $stacked);
-echo "</td>";
+
+echo "<div style='float:right' id='thresholdDiv' name='thresholdDiv'>&nbsp;&nbsp;<b>".__('Equalize maximum thresholds')."</b>" .
+	ui_print_help_tip (__("If an option is selected, all graphs will have the highest value from all modules included in the graph as a maximum threshold"), true);
+
+html_print_checkbox('threshold', CUSTOM_GRAPH_BULLET_CHART_THRESHOLD, $check, false, false, '', false);
+echo "</div>";
+
+echo "</div></td>";
+
+echo "<tr><td class='datos2'><b>".__('Type of graph')."</b></td>";
+echo "<td class='datos2'>" . html_print_checkbox ("percentil", 1, $percentil, true) . "</td></tr>";
 
 echo "</table>";
 
@@ -167,15 +189,29 @@ echo "</form>";
 
 
 echo '<script type="text/javascript">
+	$(document).ready(function() {
+		if ($("#stacked").val() == '. CUSTOM_GRAPH_BULLET_CHART .') {
+			$("#thresholdDiv").show();
+		}else{
+			$("#thresholdDiv").hide();
+		}
+	});
+
 	$("#stacked").change(function(){
-		console.log($(this).val());
 		if ( $(this).val() == '. CUSTOM_GRAPH_GAUGE .') {
+			$("[name=threshold]").prop("checked", false);
 			$(".stacked").hide();
 			$("input[name=\'width\']").hide();
-		}
-		else {
+			$("#thresholdDiv").hide();
+		} else if ($(this).val() == '. CUSTOM_GRAPH_BULLET_CHART .') {
+			$("#thresholdDiv").show();
 			$(".stacked").show();
 			$("input[name=\'width\']").show();
+		} else {
+			$("[name=threshold]").prop("checked", false);
+			$(".stacked").show();
+			$("input[name=\'width\']").show();
+			$("#thresholdDiv").hide();
 		}
 	});
 

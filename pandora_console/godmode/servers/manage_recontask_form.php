@@ -18,7 +18,7 @@ global $config;
 
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "AW")) {
+if (! check_acl ($config['id_user'], 0, "PM")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access Agent Management");
 	require ("general/noaccess.php");
@@ -248,7 +248,7 @@ $table->data[4][0] = "<b>".__('Interval');
 $table->data[4][0] .= ui_print_help_tip (__('Manual interval means that it will be executed only On-demand'), true);
 
 $values = array (0 => __('Defined'), 1 => __('Manual'));
-$table->data[4][1] = html_print_select ($values, "interval_manual_defined", (int)($interval == 0), '','','',true);
+$table->data[4][1] = html_print_select ($values, "interval_manual_defined", (int)($interval === 0), '','','',true);
 
 $table->data[4][1] .= '<span id="interval_manual_container">';
 $table->data[4][1] .= html_print_extended_select_for_time ('interval' , $interval, '', '', '0', false, true, false, false);
@@ -298,8 +298,8 @@ $table->data[8][1] .= ui_print_help_tip(
 
 // Group
 $table->data[9][0] = "<b>".__('Group');
-$groups = users_get_groups (false, "AR", false);
-$table->data[9][1] = html_print_select_groups(false, "AR", false, 'id_group', $id_group, '', '', 0, true);
+$groups = users_get_groups (false, "PM", false);
+$table->data[9][1] = html_print_select_groups(false, "PM", false, 'id_group', $id_group, '', '', 0, true);
 
 // Incident
 $values = array (0 => __('No'), 1 => __('Yes'));
@@ -447,6 +447,7 @@ $('select#mode').change(function() {
 	else if (type == 'network_sweep') {
 		$(".recon_script").hide();
 		$(".network_sweep").show();
+		$('.macro_field').remove();
 	}
 }).change();
 

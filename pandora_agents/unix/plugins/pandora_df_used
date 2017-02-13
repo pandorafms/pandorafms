@@ -1,0 +1,98 @@
+#!/usr/bin/perl
+###############################################################################
+#
+# Copyright (c) 2016  Antonio Sánchez  <antonio.sanchez@artica.es>
+# Copyright (c) 2016  Artica Soluciones Tecnologicas S.L.
+#
+# By default, gather data from all data file system types.
+# You can add many filesystems you want to include in the checks by just passing 
+# their names as argument on the script execution, you can either use filesystem 
+# or mount point. It admits regular expressions and it is case sensitive.
+# You can also ignore certain checks by just using '-' and their name on execution.
+# 
+# Sample usage: ./pandora_df_used -/DB /run$ /dev$ 
+#
+# Sample usage:	./pandora_df_used tmpfs /dev/sda1
+#
+# Execute the script with '-h' parameter to display help.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.	
+#
+###############################################################################
+
+use strict;
+
+# Print help screen
+if (@ARGV[0] eq "-h")
+{
+	print "Script to retrieve filesystem % used space and mount point.\n";
+	print "Usage: ./pandora_df_used [optional parameters]\n";
+	print "\nOptional parameters can include additional filesystems/mount points, or exclude default checks.\n";
+	print "\nSample usage:\n";
+	print "		./pandora_df_used -/DB /run\$ /dev/sda1\n";
+	print "\nThis would display all info from default data filesystem types, ignore '/DB' and include '/run' and '/dev/sda1'.\n";
+	print "Arguments admit regular expressions and are case sensitive.\n";
+}
+else
+{
+	# Parse command line arguments
+	my %filesystems;
+	my %excluded_filesystems;
+	my $onlyexclude = 1;
+
+	# Store all "ext" fstypes in @lines array
+	my @lines = split /\n/, `df -khTP | tail -n +2 | awk '{print \$1":"\$2":"\$(NF-1)":"\$NF}' | grep -i "adfs\\|affs\\|autofs\\|btrfs\\|cifs\\|coda\\|coherent\\|efs\\|ext\\|hfs\\|hfsplus\\|hpfs\\|jfs\\|minix\\|msdos\\|ncpfs\\|nfs\\|nfs4\\|ntfs\\|proc\\|qnx4\\|reiserfs\\|smbfs\\|sysv\\|ubifs\\|udf\\|ufs\\|umsdos\\|usbfs\\|vfat\\|xenix\\|xfs\\|xiafs"`;
+
+	chomp (@lines);
+
+	# To skip indicated filesystems
+	foreach my $fs (@ARGV)
+	{
+		if (substr($fs,0,1) eq '-')
+		{
+			$excluded_filesystems{substr($fs,1,)} = '-1%';
+		}
+		else
+		{
+			my @linesmanual = split /\n/, `df -khTP | tail -n +2 | awk '{print \$1":"\$2":"\$(NF-1)":"\$NF}' | grep -i $fs`;
+			
+			chomp (@linesmanual);
+
+			$filesystems{$fs} = '-1%';
+			$onlyexclude = 0;
+
+			push (@lines, @linesmanual);
+		}
+	}
+
+	my $free;
+
+	foreach (@lines)
+	{
+		my ($filesystem, $fstype, $used_space, $mount_point) = split /:/,$_;
+
+		if (defined ($filesystems{$mount_point}) || (!defined ($excluded_filesystems{$mount_point})))
+		{
+			$free = 100 - $used_space;
+			$used_space = 100 - $free;
+
+			print "<module>\n";
+			print "<name><![CDATA[DiskUsed_" . $mount_point . "]]></name>\n";
+			print "<type><![CDATA[generic_data]]></type>\n";
+			print "<data><![CDATA[" . $used_space . "]]></data>\n";
+			print "<min_critical><![CDATA[95]]></min_critical>\n";
+			print "<unit><![CDATA[%]]></unit>\n";
+			print "<min_warning><![CDATA[90]]></min_warning>\n";
+			print "<description><![CDATA[% used space. Filesystem mounted: " . $filesystem . "]]></description>\n";
+			print "<module_group><![CDATA[System]]></module_group>\n";
+			print "</module>\n";
+		}
+	}
+}

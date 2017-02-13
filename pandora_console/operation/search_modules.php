@@ -73,10 +73,9 @@ else {
 		'nombre', 'web_content_string');
 	
 	foreach ($modules as $module) {
-		//~ html_debug_print($module);
 		$module["datos"] =
 			modules_get_last_value($module['id_agente_modulo']);
-		$module["module_name"] = 111;
+		$module["module_name"] = $module['nombre'];
 		
 		//To search the monitor status
 		$status_sql = sprintf('SELECT estado from tagente_estado where id_agente_modulo =' . $module['id_agente_modulo']);
@@ -105,15 +104,15 @@ else {
 		}
 		elseif ($status_sql['estado'] == 0) {
 			$statusCell = ui_print_status_image(STATUS_MODULE_OK,
-				__('NORMAL') . ": " . $module["datos"], true);
+				__('NORMAL') . ": " . modules_get_last_value($module["id_agente_modulo"]), true);
 		}
 		elseif ($status_sql['estado'] == 1) {
 			$statusCell = ui_print_status_image(STATUS_MODULE_CRITICAL,
-				__('CRITICAL') . ": " . $module["datos"], true);
+				__('CRITICAL') . ": " . modules_get_last_value($module["id_agente_modulo"]), true);
 		}
 		elseif ($status_sql['estado'] == 2) {
 			$statusCell = ui_print_status_image(STATUS_MODULE_WARNING,
-				__('WARNING') . ": " . $module["datos"], true);
+				__('WARNING') . ": " . modules_get_last_value($module["id_agente_modulo"]), true);
 		}
 		else {
 			$last_status = modules_get_agentmodule_last_status($module['id_agente_modulo']);
@@ -122,21 +121,21 @@ else {
 					$statusCell = ui_print_status_image(
 						STATUS_MODULE_OK,
 						__('UNKNOWN') . " - " . __('Last status') .
-						" " . __('NORMAL') .": " . $module["datos"],
+						" " . __('NORMAL') .": " . modules_get_last_value($module["id_agente_modulo"]),
 						true);
 					break;
 				case 1:
 					$statusCell = ui_print_status_image(
 						STATUS_MODULE_CRITICAL,
 						__('UNKNOWN') . " - " . __('Last status') .
-						" " . __('CRITICAL') . ": " . $module["datos"],
+						" " . __('CRITICAL') . ": " . modules_get_last_value($module["id_agente_modulo"]),
 						true);
 					break;
 				case 2:
 					$statusCell = ui_print_status_image(
 						STATUS_MODULE_WARNING,
 						__('UNKNOWN') . " - " . __('Last status') .
-						" " . __('WARNING') . ": " . $module["datos"],
+						" " . __('WARNING') . ": " . modules_get_last_value($module["id_agente_modulo"]),
 						true);
 					break;
 			}
@@ -176,8 +175,8 @@ else {
 					array("border" => "0", "alt" => "")) . "</a>";
 		}
 		
-		if (is_numeric($module["datos"])) {
-			$dataCell = format_numeric($module["datos"]);
+		if (is_numeric(modules_get_last_value($module["id_agente_modulo"]))) {
+			$dataCell = format_numeric(modules_get_last_value($module["id_agente_modulo"]));
 		}
 		else {
 			$dataCell = ui_print_module_string_value(

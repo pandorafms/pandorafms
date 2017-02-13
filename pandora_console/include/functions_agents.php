@@ -297,7 +297,8 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 function agents_get_agents ($filter = false, $fields = false,
 	$access = 'AR',
 	$order = array('field' => 'nombre', 'order' => 'ASC'),
-	$return = false) {
+	$return = false,
+	$disabled_agent = 0) {
 	
 	global $config;
 	
@@ -428,6 +429,13 @@ function agents_get_agents ($filter = false, $fields = false,
 	if ($where_nogroup == '') {
 		$where_nogroup = '1 = 1';
 	}
+
+	if ($disabled_agent == 1){
+		$disabled = 'disabled = 0';
+	}
+	else{
+		$disabled = '1 = 1';	
+	}
 	
 	$extra = false;
 	
@@ -438,12 +446,12 @@ function agents_get_agents ($filter = false, $fields = false,
 	}
 	
 	if ($extra) { 
-		$where = sprintf('(%s OR (%s)) AND (%s) AND (%s) %s',
-			$sql_extra, $where, $where_nogroup, $status_sql, $search);	
+		$where = sprintf('(%s OR (%s)) AND (%s) AND (%s) %s AND %s',
+			$sql_extra, $where, $where_nogroup, $status_sql, $search, $disabled);	
 	}
 	else {
-		$where = sprintf('%s AND %s AND (%s) %s',
-			$where, $where_nogroup, $status_sql, $search);
+		$where = sprintf('%s AND %s AND (%s) %s AND %s',
+			$where, $where_nogroup, $status_sql, $search, $disabled);
 	}
 	$sql = sprintf('SELECT %s
 		FROM tagente
@@ -1169,6 +1177,9 @@ function agents_get_modules ($id_agent = null, $details = false,
 							break;
 					}
 				}
+				else if (preg_match('/\bin\b/i',$field)) {
+					array_push ($fields, $field.' '.$value);
+				}
 				else {
 					switch ($config["dbtype"]) {
 						case "mysql":
@@ -1499,6 +1510,17 @@ function agents_get_address ($id_agent) {
 }
 
 /**
+ * Get description of an agent.
+ *
+ * @param int Agent id
+ *
+ * @return string The address of the given agent
+ */
+function agents_get_description ($id_agent) {
+	return (string) db_get_value ('comentarios', 'tagente', 'id_agente', (int) $id_agent);
+}
+
+/**
  * Get the agent that matches an IP address
  *
  * @param string IP address to get the agents.
@@ -1787,8 +1809,8 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 			"id_agent_module", $where_modules, true);
 		if (enterprise_installed()) {
 			$nodes = db_get_all_rows_filter(
-				"tnetworkmap_enterprise_nodes",
-				array("id_agent" => $id_agent));
+				"titem",
+				array("source_data" => $id_agent, "type" => 0));
 			if (empty($nodes)) {
 				$nodes = array();
 			}
@@ -1800,8 +1822,8 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 					"child", $node['id']);
 			}
 			
-			db_process_delete_temp ("tnetworkmap_enterprise_nodes",
-				"id_agent", $id_agent);
+			db_process_delete_temp ("titem",
+				"source_data", $id_agent);
 		}
 		
 		//Planned Downtime
@@ -1828,8 +1850,10 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 		enterprise_hook('policies_delete_agent', array($id_agent));
 		
 		// Delete agent in networkmap enterprise
-		enterprise_include_once('include/functions_networkmap_enterprise.php');
-		enterprise_hook('networkmap_enterprise_delete_nodes_by_agent', array($id_agent));
+		if (enterprise_installed()) {
+			enterprise_include_once("include/functions_pandora_networkmap.php");
+			networkmap_delete_nodes_by_agent(array($id_agent));
+		}
 		
 		// tagente_datos_inc
 		// Dont delete here, this records are deleted later, in database script
@@ -1864,6 +1888,8 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 		
 		//And at long last, the agent
 		db_process_delete_temp ("tagente", "id_agente", $id_agent);
+		
+		db_process_sql ("delete from ttag_module where id_agente_modulo in (select id_agente_modulo from tagente_modulo where id_agente = ".$id_agent.")");
 		
 		db_pandora_audit( "Agent management",
 			"Deleted agent '$agent_name'");

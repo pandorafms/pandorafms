@@ -58,12 +58,20 @@
 			window.document.step2_form.db_action.options[window.document.step2_form.db_action.length-1].selected=1;
 			ChangeDBDrop(window.document.step2_form.db_action);
 		}
+		function CheckDBhost(value){
+			if (( value != "localhost") && ( value != "127.0.0.1")) {
+				document.getElementById('tr_dbgrant').style["display"] = "block";
+			}
+			else {
+				document.getElementById('tr_dbgrant').style["display"] = "none";
+			}
+		}
 	</script>
 	<body>
 		<div style='height: 10px'>
 			<?php
-$version = '6.1dev';
-$build = '160601';
+$version = '7.0dev';
+$build = '170213';
 			$banner = "v$version Build $build";
 			
 			error_reporting(0);
@@ -214,6 +222,29 @@ function parse_mysql_dump($url) {
 				if(preg_match("/;[\040]*\$/", $sql_line)) {
 					if (!$result = mysql_query($query)) {
 						echo mysql_error(); //Uncomment for debug
+						echo "<i><br>$query<br></i>";
+						return 0;
+					}
+					$query = "";
+				}
+			}
+		}
+		return 1;
+	}
+	else
+		return 0;
+}
+
+function parse_mysqli_dump($connection, $url) {
+	if (file_exists($url)) {
+		$file_content = file($url);
+		$query = "";
+		foreach($file_content as $sql_line) {
+			if (trim($sql_line) != "" && strpos($sql_line, "--") === false) {
+				$query .= $sql_line;
+				if(preg_match("/;[\040]*\$/", $sql_line)) {
+					if (!$result = mysqli_query($connection, $query)) {
+						echo mysqli_error(); //Uncomment for debug
 						echo "<i><br>$query<br></i>";
 						return 0;
 					}
@@ -428,6 +459,9 @@ function adjust_paths_for_freebsd($engine, $connection = false) {
 			case 'mysql':
 				$result = mysql_query($adjust_sql[$i]);
 				break;
+			case 'mysqli':
+				$result = mysqli_query($connection, $adjust_sql[$i]);
+				break;
 			case 'oracle':
 				//Delete the last semicolon from current query
 				$query = substr($adjust_sql[$i], 0, strlen($adjust_sql[$i]) - 1);
@@ -557,6 +591,7 @@ function install_step2() {
 			$res += check_extension("json","PHP json extension");
 			$res += check_extension("curl","CURL (Client URL Library)");
 			$res += check_extension("filter","PHP filter extension");
+			$res += check_extension("calendar","PHP calendar extension");
 			if (PHP_OS == "FreeBSD") {
 				$res += check_exists ("/usr/local/bin/twopi","Graphviz Binary");
 			}
@@ -576,6 +611,7 @@ function install_step2() {
 			echo "</td><td>";
 			echo "</td></tr>";
 			check_extension("mysql", "PHP MySQL extension");
+			check_extension("mysqli", "PHP MySQL(mysqli) extension");
 			check_extension("pgsql", "PHP PostgreSQL extension");
 			check_extension("oci8", "PHP Oracle extension");
 			echo "</table>";
@@ -619,6 +655,9 @@ function install_step3() {
 	$options = '';
 	if (extension_loaded("mysql")) {
 		$options .= "<option value='mysql'>MySQL</option>";
+	}
+	if (extension_loaded("mysqli")) {
+		$options .= "<option value='mysqli'>MySQL(mysqli)</option>";
 	}
 	if (extension_loaded("pgsql")) {
 		$options .= "<option value='pgsql'>PostgreSQL</option>";
@@ -697,23 +736,24 @@ function install_step3() {
 				<input class='login' type='password' name='pass' value='' size=20>
 				
 				<tr><td>DB Hostname<br>
-				<input class='login' type='text' name='host' value='localhost' size=20>
+				<input class='login' type='text' name='host' value='localhost' onkeyup='CheckDBhost(this.value);'size=20>
 				
 				<td>DB Name (pandora by default)<br>
 				<input class='login' type='text' name='dbname' value='pandora' size=20>
 				
 				<tr>";
-	if ($_SERVER['SERVER_ADDR'] == 'localhost' || $_SERVER['SERVER_ADDR'] == '127.0.0.1') {
+
+	// the field dbgrant is only shown when the DB host is different from 127.0.0.1 or localhost
+    echo    "<tr id='tr_dbgrant' style='display:none;'>
+                            <td colspan=\"2\">DB Host Access <img style='cursor:help;' src='/pandora_console/images/tip.png' title='Ignored if DB Hostname is localhost or 127.0.0.1'/><br>
+                            <input class='login' type='text' name='dbgrant' value='" . $_SERVER['SERVER_ADDR'] . "' size=20>
+                        </td>
+                    </tr>";
+
 		
-		echo	"<td>DB Host Access<br>
-					<span style='font-size: 9px'>Ignored if DB Hostname is localhost</span>
-				<input class='login' type='text' name='dbgrant' value='" . $_SERVER['SERVER_ADDR'] . "' size=20>";	
-	} else {
-		
-		echo	"<td valign=top>
-				Drop Database if exists<br>
-				<input class='login' type='checkbox' name='drop' value=1>";	
-	}
+	echo	"   <td valign=top>Drop Database if exists<br>
+			        <input class='login' type='checkbox' name='drop' value=1>
+			    </td>";
 				
 	echo		"<td>Full path to HTTP publication directory<br>
 					<span style='font-size: 9px'>For example /var/www/pandora_console/</span>
@@ -845,9 +885,9 @@ function install_step4() {
 							}
 							
 							$random_password = random_name (8);
-							$host = 'localhost';
-							if ($dbhost != 'localhost')
-								$host = $dbgrant;
+							$host = $dbhost; // set default granted origin to the origin of the queries
+							if (($dbhost != 'localhost') && ($dbhost != '127.0.0.1'))
+								$host = $dbgrant; // if the granted origin is different from local machine, set the valid origin
 							$step5 = mysql_query ("GRANT ALL PRIVILEGES ON `$dbname`.* to pandora@$host 
 								IDENTIFIED BY '".$random_password."'");
 							mysql_query ("FLUSH PRIVILEGES");
@@ -863,6 +903,99 @@ function install_step4() {
 							$config_new = '<?php
 							// Begin of automatic config file
 							$config["dbtype"] = "' . $dbtype . '"; //DB type (mysql, postgresql...in future others)
+							$config["dbname"]="'.$dbname.'";			// MySQL DataBase name
+							$config["dbuser"]="pandora";			// DB User
+							$config["dbpass"]="'.$random_password.'";	// DB Password
+							$config["dbhost"]="'.$dbhost.'";			// DB Host
+							$config["homedir"]="'.$path.'";		// Config homedir
+							/*
+							----------Attention--------------------
+							Please note that in certain installations:
+								- reverse proxy.
+								- web server in other ports.
+								- https
+							
+							This variable might be dynamically altered.
+							
+							But it is save as backup in the
+							$config["homeurl_static"]
+							for expecial needs.
+							----------Attention--------------------
+							*/
+							$config["homeurl"]="'.$url.'";			// Base URL
+							$config["homeurl_static"]="'.$url.'";			// Don\'t  delete
+							// End of automatic config file
+							?>';
+							$step7 = fputs ($cfgout, $config_new);
+							$step7 = $step7 + fputs ($cfgout, $config_contents);
+							if ($step7 > 0)
+								$step7 = 1;
+							fclose ($cfgin);
+							fclose ($cfgout);
+							chmod ($pandora_config, 0600);
+							check_generic ($step7, "Created new config file at '".$pandora_config."'");
+						}
+					}
+					
+					if (($step7 + $step6 + $step5 + $step4 + $step3 + $step2 + $step1) == 7) {
+						$everything_ok = 1;
+					}
+					break;
+				case 'mysqli':
+					$connection = mysqli_connect ($dbhost, $dbuser, $dbpassword);
+					if (mysqli_connect_error() > 0) {
+						check_generic ( 0, "Connection with Database");
+					}
+					else {
+						check_generic ( 1, "Connection with Database");
+						
+						// Drop database if needed and don't want to install over an existing DB
+						if ($dbdrop == 1) {
+							mysqli_query ($connection, "DROP DATABASE IF EXISTS `$dbname`");
+						}
+						
+						// Create schema
+						if ($dbaction == 'db_new' || $dbdrop == 1) {
+							$step1 = mysqli_query ($connection, "CREATE DATABASE `$dbname`");
+							check_generic ($step1, "Creating database '$dbname'");
+						}
+						else {
+							$step1 = 1;
+						}
+						if ($step1 == 1) {
+							$step2 = mysqli_select_db($connection, $dbname);
+							check_generic ($step2, "Opening database '$dbname'");
+							
+							$step3 = parse_mysqli_dump($connection, "pandoradb.sql");
+							check_generic ($step3, "Creating schema");
+							
+							$step4 = parse_mysqli_dump($connection, "pandoradb_data.sql");
+							check_generic ($step4, "Populating database");
+							if (PHP_OS == "FreeBSD") {
+								$step_freebsd = adjust_paths_for_freebsd ($engine, $connection);
+								check_generic ($step_freebsd, "Adjusting paths in database for FreeBSD");
+							}
+							
+							$random_password = random_name (8);
+							$host = $dbhost; // set default granted origin to the origin of the queries
+							if (($dbhost != 'localhost') && ($dbhost != '127.0.0.1'))
+								$host = $dbgrant; // if the granted origin is different from local machine, set the valid origin
+							$step5 = mysqli_query ($connection, "GRANT ALL PRIVILEGES ON `$dbname`.* to pandora@$host 
+								IDENTIFIED BY '".$random_password."'");
+							mysqli_query ($connection, "FLUSH PRIVILEGES");
+							check_generic ($step5, "Established privileges for user pandora. A new random password has been generated: <b>$random_password</b><div class='warn'>Please write it down, you will need to setup your Pandora FMS server, editing the </i>/etc/pandora/pandora_server.conf</i> file</div>");
+							
+							$step6 = is_writable("include");
+							check_generic ($step6, "Write permissions to save config file in './include'");
+							
+							$cfgin = fopen ("include/config.inc.php","r");
+							$cfgout = fopen ($pandora_config,"w");
+							$config_contents = fread ($cfgin, filesize("include/config.inc.php"));
+							$dbtype = 'mysql';
+							$config_new = '<?php
+							// Begin of automatic config file
+							$config["dbtype"] = "' . $dbtype . '"; //DB type (mysql, postgresql...in future others)
+							$config["mysqli"] = true;
 							$config["dbname"]="'.$dbname.'";			// MySQL DataBase name
 							$config["dbuser"]="pandora";			// DB User
 							$config["dbpass"]="'.$random_password.'";	// DB Password
@@ -1214,6 +1347,15 @@ function install_step4() {
 						
 						if ($step1 == 1) {
 							mysql_query ("DROP DATABASE $dbname");
+						}
+						break;
+					case 'mysqli':
+						if (mysqli_error($connection) != "") {
+							echo "<div class='err'> <b>ERROR:</b> ". mysqli_error($connection).".</div>";
+						}
+						
+						if ($step1 == 1) {
+							mysqli_query ($connection, "DROP DATABASE $dbname");
 						}
 						break;
 					case 'pgsql':

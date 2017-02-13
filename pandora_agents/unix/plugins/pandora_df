@@ -11,6 +11,8 @@
 #
 # Sample usage:	./pandora_df tmpfs /dev/sda1
 #
+# Set the first parameter as "-r" to use regular expressions in name match
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; version 2 of the License.
@@ -27,11 +29,48 @@ use strict;
 # Retrieve information from all filesystems
 my $all_filesystems = 0;
 
+# Regex flag
+my $regex_mode = 0;
+
+sub check_re($$){
+	my $item  = shift;
+	my $array = shift;
+
+	foreach my $check (@{$array}){
+		if ($item =~ /$check/){
+			return 1;
+		}
+	}
+	return undef;
+}
+
+sub check_in($$){
+	my $filesystems = shift;
+	my $fs = shift;
+
+	if(($regex_mode == 0) || ( !defined ($regex_mode))) {
+		return defined ($filesystems->{$fs});
+	}
+	# check if matches any key
+	my @keys = keys %{$filesystems};
+	return check_re($fs, \@keys);
+}
+
+#
+#  MAIN
+#
+
 # Check command line parameters
 if ($#ARGV < 0) {
 	$all_filesystems = 1;
 }
-	
+
+# Check if regex mode is enabled
+if ($ARGV[0] eq "-r") {
+	$regex_mode = 1;
+	shift @ARGV;
+}
+
 # Parse command line parameters
 my %filesystems;
 my %excluded_filesystems;
@@ -59,16 +98,17 @@ if ($#df < 0) {
 	exit 1;
 }
 
+my %out;
 # Parse filesystem usage
 foreach my $row (@df) {
 	my @columns = split (' ', $row);
 	exit 1 if ($#columns < 4);
-	if (defined ($filesystems{$columns[0]}) || ($all_filesystems == 1 && !defined ($excluded_filesystems{$columns[0]}))) {
-		$filesystems{$columns[0]} = $columns[4] ;
+	if (check_in (\%filesystems,$columns[0]) || ($all_filesystems == 1 && !check_in(\%excluded_filesystems,$columns[0]) )) {
+		$out{$columns[0]} = $columns[4] ;
 	}
 }
 
-while (my ($filesystem, $use) = each (%filesystems)) {
+while (my ($filesystem, $use) = each (%out)) {
 
 	# Remove the trailing %
 	chop ($use);

@@ -10,8 +10,7 @@
 
 <p>El servidor de datos de Pandora FMS puede trabajar con alta disponibilidad y/o balanceo de carga. En una arquitectura muy grande, se pueden usar varios servidores de Pandora FMS a la vez, para poder manejar grandes volumenes de informacion distribuida por zonas geograficas o funcionales.</p>
 
-<p>Los servidores de Pandora FMS estan siempre en funcionamiento y verifican permanentemente si algun elemento tiene algun problema y si esta definido como alerta. Si ocurre esto, este ejecuta la accion definida en la alarma, tal como enviar un SMS, un correo electronico, o activar la ejecucion de un script.</p>
-
+<p>Los servidores de Pandora FMS están siempre en funcionamiento y verifican permanentemente si algún elemento tiene algún problema. Si existe alguna alerta asociada al problema, esta ejecuta la acción definida, como por ejemplo enviar un SMS, un correo electrónico, o activar la ejecución de un script.</p>
 <ul>
 <li type="circle">Servidor datos</li>
 <li type="circle">Servidor de red</li>

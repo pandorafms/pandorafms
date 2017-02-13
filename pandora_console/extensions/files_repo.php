@@ -100,7 +100,7 @@ function pandora_files_repo_godmode () {
 	}
 	
 	// Header tabs
-	$godmode['text'] = '<a href="index.php?sec=gextensions&sec2=extensions/files_repo">'
+	$godmode['text'] = '<a href="index.php?sec=godmode/extensions&sec2=extensions/files_repo">'
 			. html_print_image ("images/setup.png", true, array ("title" => __('Administration view')))
 			. "</a>";
 	$godmode['godmode'] = 1;
@@ -183,7 +183,7 @@ function pandora_files_repo_operation () {
 	// Header tabs
 	$onheader = array();
 	if (check_acl($config['id_user'], 0, "PM")) {
-		$godmode['text'] = '<a href="index.php?sec=gextensions&sec2=extensions/files_repo">'
+		$godmode['text'] = '<a href="index.php?sec=godmode/extensions&sec2=extensions/files_repo">'
 				. html_print_image ("images/setup.png", true, array ("title" => __('Administration view')))
 				. "</a>";
 		$godmode['godmode'] = 1;

@@ -6,4 +6,4 @@
 
 <h1>Component groups</h1>
 
-<p>Components are generic modules that you can apply repeatly to agents like a template. With this view you can create groups for this components.</p>
+<p>A component is a generic module that can be applied to agents repeatedly as if it were a template. With this view you can create groups for these components.</p>

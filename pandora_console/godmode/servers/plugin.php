@@ -93,7 +93,7 @@ require_once ($config['homedir'] . "/include/functions_filemanager.php");
 
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "LM")) {
+if (! check_acl ($config['id_user'], 0, "PM")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access Plugin Management");
 	require ("general/noaccess.php");
@@ -105,6 +105,8 @@ enterprise_include_once ('meta/include/functions_components_meta.php');
 $view = get_parameter ("view", "");
 $create = get_parameter ("create", "");
 $filemanager = (bool)get_parameter("filemanager", false);
+$edit_file = get_parameter("edit_file",false);
+$update_file = get_parameter("update_file",false);
 $plugin_command = get_parameter('plugin_command', '');
 $tab = get_parameter('tab', '');
 
@@ -142,57 +144,102 @@ if ($create != "") {
 // INIT FILEMANAGER
 // =====================================================================
 if ($filemanager) {
-	
-	$id_plugin = (int)get_parameter('id_plugin', 0);
-	
-	
-	/* Add custom directories here */
-	$fallback_directory = "attachment/plugin";
-	
-	$directory = (string) get_parameter ('directory', $fallback_directory);
-	$directory = str_replace("\\", "/", $directory);
-	
-	// A miminal security check to avoid directory traversal
-	if (preg_match ("/\.\./", $directory))
-		$directory = $fallback_directory;
-	if (preg_match ("/^\//", $directory))
-		$directory = $fallback_directory;
-	if (preg_match ("/^manager/", $directory))
-		$directory = $fallback_directory;
-	
-	$banned_directories['include'] = true;
-	$banned_directories['godmode'] = true;
-	$banned_directories['operation'] = true;
-	$banned_directories['reporting'] = true;
-	$banned_directories['general'] = true;
-	$banned_directories[ENTERPRISE_DIR] = true;
-	
-	if (isset ($banned_directories[$directory]))
-		$directory = $fallback_directory;
-	
-	$real_directory = realpath ($config['homedir'] . '/' . $directory);
-	
-	echo '<h4>' . __('Index of %s', $directory) . '</h4>';
-	
-	$chunck_url = '&view=' . $id_plugin;
-	if ($id_plugin == 0) {
-		$chunck_url = '&create=1';
+	if($edit_file) {
+		$location_file = get_parameter("location_file",'');
+		$filename = array_pop(explode("/",$location_file));
+		$file = file_get_contents($location_file);
+		echo "<h4>" . __("Edit file") ." ".$filename. "</h4>";
+		//echo "<a href='index.php?sec=gagente&sec2=enterprise/godmode/agentes/collections&action=file&id=" . $collection['id'] . "&directory=" . $relative_dir . "&hash2=" . $hash2 . "'>" . __('Back to file explorer') . "</a>";
+		echo "<form method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&filemanager=1"."&update_file=1'>";
+		//html_print_input_hidden('location_file', $locationFile);
+		echo "<table style='width: 98%'>";
+		echo "<tr>";
+		echo "<th>" . __('Edit') . "</th>";
+		echo "</tr>";
+		echo "<tr>";
+		echo "<td>";
+		echo "<textarea name='content_file' style='width: 100%; height: 400px;' >";
+		echo $file;
+		echo "</textarea>";
+		echo "</td>";
+		echo "</tr>";
+		echo "<tr align='right'>";
+		echo "<td>";
+		html_print_input_hidden('location_file', $location_file);
+
+		echo __('Compatibility mode').":";
+		$options = array('unix' => 'Unix', 'windows' => 'Windows');
+		html_print_select($options, 'compatibility', $compatibility);
+		echo " <input type='submit' name='submit' value='" . __('Update') . "' class='sub upd' />";
+		echo "</td>";
+		echo "</tr>";
+		echo "</table>";
+		echo "</form>";
+	}else {
+
+		if($update_file){
+			$location_file = get_parameter("location_file",'');
+			$contentFile = io_safe_output(get_parameter('content_file', ''));
+			$compatibility = get_parameter('compatibility', 'unix');
+			$is_win_compatible = strpos($contentFile, "\r\n");
+			// If is win compatible and the compatibility must be unix
+			if ($is_win_compatible !== false && $compatibility == 'unix') {
+				$contentFile = str_replace("\r\n", "\n", $contentFile);
+			}
+			// If is unix compatible and the compatibility must be win
+			else if ($is_win_compatible === false && $compatibility == 'windows') {
+				$contentFile = str_replace("\n", "\r\n", $contentFile);
+			}
+			$result = file_put_contents($location_file, $contentFile);
+
+		}
+		$id_plugin = (int)get_parameter('id_plugin', 0);
+
+		/* Add custom directories here */
+		$fallback_directory = "attachment/plugin";
+
+		$directory = (string) get_parameter ('directory', $fallback_directory);
+		$directory = str_replace("\\", "/", $directory);
+
+		// A miminal security check to avoid directory traversal
+		if (preg_match ("/\.\./", $directory))
+			$directory = $fallback_directory;
+		if (preg_match ("/^\//", $directory))
+			$directory = $fallback_directory;
+		if (preg_match ("/^manager/", $directory))
+			$directory = $fallback_directory;
+
+		$banned_directories['include'] = true;
+		$banned_directories['godmode'] = true;
+		$banned_directories['operation'] = true;
+		$banned_directories['reporting'] = true;
+		$banned_directories['general'] = true;
+		$banned_directories[ENTERPRISE_DIR] = true;
+
+		if (isset ($banned_directories[$directory]))
+			$directory = $fallback_directory;
+
+		$real_directory = realpath ($config['homedir'] . '/' . $directory);
+
+		echo '<h4>' . __('Index of %s', $directory) . '</h4>';
+
+		$chunck_url = '&view=' . $id_plugin;
+		if ($id_plugin == 0) {
+			$chunck_url = '&create=1';
+		}
+
+		$homedir_filemanager = isset ($config['homedir_filemanager']) ? $config['homedir_filemanager'] : false;
+		filemanager_file_explorer($real_directory,
+			$directory,
+			'index.php?sec=gservers&sec2=godmode/servers/plugin&filemanager=1&id_plugin=' . $id_plugin,
+			$fallback_directory,
+			true,
+			false,
+			'index.php?sec=gservers&sec2=godmode/servers/plugin' . $chunck_url . '&plugin_command=[FILE_FULLPATH]&id_plugin=' . $id_plugin,
+			true,
+			0775,
+			$homedir_filemanager);
 	}
-	
-	$homedir_filemanager = isset ($config['homedir_filemanager']) ? $config['homedir_filemanager'] : false;
-	
-	filemanager_file_explorer($real_directory,
-		$directory,
-		'index.php?sec=gservers&sec2=godmode/servers/plugin&filemanager=1&id_plugin=' . $id_plugin,
-		$fallback_directory,
-		false,
-		false,
-		'index.php?sec=gservers&sec2=godmode/servers/plugin' . $chunck_url . '&plugin_command=[FILE_FULLPATH]&id_plugin=' . $id_plugin,
-		true,
-		0775,
-		$homedir_filemanager);
-	
-	
 	return;
 }
 

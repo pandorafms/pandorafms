@@ -17,6 +17,8 @@
 include_once("include/functions_modules.php");
 include_once("include/functions_categories.php");
 
+echo "<script type='text/javascript' src='include/javascript/d3.3.5.14.js'></script>" . "\n";
+
 function prepend_table_simple ($row, $id = false) {
 	global $table_simple;
 	
@@ -100,15 +102,29 @@ global $__code_from;
 
 $disabledBecauseInPolicy = false;
 $disabledTextBecauseInPolicy = '';
+$largeClassDisabledBecauseInPolicy = '';
 
 $page = get_parameter('page', '');
+
 if (strstr($page, "policy_modules") === false && $id_agent_module) {
 	if ($config['enterprise_installed'])
-		$disabledBecauseInPolicy = policies_is_module_in_policy($id_agent_module) && policies_is_module_linked($id_agent_module);
+		if(policies_is_module_linked($id_agent_module) == 1){
+		$disabledBecauseInPolicy = 1;
+		}
+		else{
+		$disabledBecauseInPolicy = 0;
+		}
 	else
 		$disabledBecauseInPolicy = false;
 	if ($disabledBecauseInPolicy)
-		$disabledTextBecauseInPolicy = 'disabled = "disabled"';
+		$disabledTextBecauseInPolicy = 'readonly = "readonly"';
+}
+
+if($disabledBecauseInPolicy){
+	$classdisabledBecauseInPolicy = 'readonly';
+	$largeClassDisabledBecauseInPolicy = 'class=readonly';
+} else {
+	$classdisabledBecauseInPolicy = '';
 }
 
 $update_module_id = (int) get_parameter_get ('update_module');
@@ -119,9 +135,11 @@ $table_simple->class = 'databox';
 $table_simple->data = array ();
 $table_simple->colspan = array ();
 $table_simple->style = array ();
-$table_simple->style[0] = 'font-weight: bold; width: 26%;';
-$table_simple->style[1] = 'width: 40%';
-$table_simple->style[2] = 'font-weight: bold;';
+$table_simple->style[0] = 'font-weight: bold; width: 15%;';
+$table_simple->style[1] = 'width: 35%';
+$table_simple->style[2] = 'font-weight: bold; width: 25%;';
+$table_simple->style[3] = 'width: 25%';
+
 
 #$table_simple->colspan[4][1] = 3;
 $table_simple->colspan[5][1] = 3;
@@ -129,7 +147,7 @@ $table_simple->colspan[6][1] = 3;
 
 $table_simple->data[0][0] = __('Name');
 $table_simple->data[0][1] = html_print_input_text_extended ('name',
-	io_safe_output($name), 'text-name', '', 45, 100, $disabledBecauseInPolicy, '', 'autocomplete="off"', true);
+	io_safe_output($name), 'text-name', '', 45, 100, $disabledBecauseInPolicy, '', $largeClassDisabledBecauseInPolicy, true);
 //$table_simple->data[0][1] = html_print_input_text ('name',
 //	io_safe_output($name), '', 45, 100, true, $disabledBecauseInPolicy);
 
@@ -151,10 +169,21 @@ if ($policy_link != 0) {
 	$disabled_enable = 1;
 }
 $table_simple->data[0][2] = __('Disabled');
-$table_simple->data[0][3] = html_print_checkbox ("disabled", 1, $disabled, true, $disabled_enable);
+$table_simple->data[0][2] .= html_print_checkbox ("disabled", 1, $disabled, true, $disabled_enable);
+$table_simple->data[0][3] = __('Module group');
+$table_simple->data[0][3] .= html_print_select_from_sql ('SELECT id_mg, name FROM tmodule_group ORDER BY name',
+	'id_module_group', $id_module_group, '', __('Not assigned'), '0', true, false, true, $disabledBecauseInPolicy);
 
-$table_simple->data[1][0] = __('Type').' ' . ui_print_help_icon ('module_type', true);
-$table_simple->data[1][0] .= html_print_input_hidden ('id_module_type_hidden', $id_module_type, true);
+$in_policy = strstr($page, "policy_modules");
+if (!$in_policy) {
+	$table_simple->data[1][0] = __('Module parent');
+	$table_simple->data[1][1] .= html_print_select_from_sql ('SELECT id_agente_modulo, nombre FROM tagente_modulo WHERE id_agente = ' . $id_agente . ' ORDER BY nombre',
+		'parent_module_id', $parent_module_id, '', __('Not assigned'), '0', true, false, true);
+}
+
+
+$table_simple->data[2][0] = __('Type').' ' . ui_print_help_icon ('module_type', true);
+$table_simple->data[2][0] .= html_print_input_hidden ('id_module_type_hidden', $id_module_type, true);
 
 if (isset($id_agent_module)) {
 	if ($id_agent_module) {
@@ -183,8 +212,8 @@ if (!$edit) {
 		$type_names_hash[$tn['id_tipo']] = $tn['nombre'];
 	}
 	
-	$table_simple->data[1][1] = '<em>'.modules_get_moduletype_description ($id_module_type).' ('.$type_names_hash[$id_module_type].')</em>';
-	$table_simple->data[1][1] .= html_print_input_hidden('type_names',base64_encode(io_json_mb_encode($type_names_hash)),true);
+	$table_simple->data[2][1] = '<em>'.modules_get_moduletype_description ($id_module_type).' ('.$type_names_hash[$id_module_type].')</em>';
+	$table_simple->data[2][1] .= html_print_input_hidden('type_names',base64_encode(io_json_mb_encode($type_names_hash)),true);
 }
 else {
 	if (isset($id_module_type)) {
@@ -200,7 +229,7 @@ else {
 		ORDER BY descripcion',
 		implode (',', $categories));
 		
-	$table_simple->data[1][1] = html_print_select_from_sql ($sql, 'id_module_type',
+	$table_simple->data[2][1] = html_print_select_from_sql ($sql, 'id_module_type',
 		$idModuleType, '', '', '', true, false, false, $disabledBecauseInPolicy, false, false, 100);
 	
 	// Store the relation between id and name of the types on a hidden field
@@ -217,81 +246,90 @@ else {
 		$type_names_hash[$tn['id_tipo']] = $tn['nombre'];
 	}
 	
-	$table_simple->data[1][1] .= html_print_input_hidden('type_names',base64_encode(io_json_mb_encode($type_names_hash)),true);
+	$table_simple->data[2][1] .= html_print_input_hidden('type_names',base64_encode(io_json_mb_encode($type_names_hash)),true);
 }
-
-$table_simple->data[1][2] = __('Module group');
-$table_simple->data[1][3] = html_print_select_from_sql ('SELECT id_mg, name FROM tmodule_group ORDER BY name',
-	'id_module_group', $id_module_group, '', __('Not assigned'), '0',
-	true, false, true, $disabledBecauseInPolicy);
 
 if($disabledBecauseInPolicy){
- 	$table_simple->data[1][3] .= html_print_input_hidden ('id_module_group', $id_module_group, true);
+ 	$table_simple->data[2][3] .= html_print_input_hidden ('id_module_group', $id_module_group, true);
 }
+$table_simple->data[3][0] = __('Dynamic Threshold Interval') .' ' . ui_print_help_icon ('dynamic_threshold', true);
+$table_simple->data[3][1] = html_print_extended_select_for_time ('dynamic_interval', $dynamic_interval, '', 'None', '0', 10, true, 'width:150px',false, $classdisabledBecauseInPolicy, $disabledBecauseInPolicy);
+$table_simple->data[3][1] .= '<a onclick=advanced_option_dynamic()>' . html_print_image('images/cog.png', true, array('title' => __('Advanced options Dynamic Threshold'))) . '</a>';
 
-$table_simple->data[2][0] = __('Warning status').' ' . ui_print_help_icon ('warning_status', true);
+$table_simple->data[3][2] = '<span><em>'.__('Dynamic Threshold Min. ').'</em>';
+$table_simple->data[3][2] .= html_print_input_text ('dynamic_min', $dynamic_min, '', 10, 255, true,
+													$disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
+$table_simple->data[3][2] .= '<br /><em>'.__('Dynamic Threshold Max. ').'</em>';
+$table_simple->data[3][2] .= html_print_input_text ('dynamic_max', $dynamic_max, '', 10, 255, true,
+													$disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
+$table_simple->data[3][3] = '<span><em>'.__('Dynamic Threshold Two Tailed: ').'</em>';
+$table_simple->data[3][3] .= html_print_checkbox ("dynamic_two_tailed", 1, $dynamic_two_tailed, true, $disabledBecauseInPolicy);
 
-$table_simple->data[2][1] = '';
 
+$table_simple->data[4][0] = __('Warning status').' ' . ui_print_help_icon ('warning_status', true);
 if (!modules_is_string_type($id_module_type) || $edit) {
-	$table_simple->data[2][1] .= '<span id="minmax_warning"><em>'.__('Min. ').'</em>';
-	$table_simple->data[2][1] .= html_print_input_text ('min_warning', $min_warning,
-		'', 10, 255, true, $disabledBecauseInPolicy);
-	$table_simple->data[2][1] .= '<br /><em>'.__('Max.').'</em>';
-	$table_simple->data[2][1] .= html_print_input_text ('max_warning', $max_warning,
-		'', 10, 255, true, $disabledBecauseInPolicy).'</span>';
+	$table_simple->data[4][1] .= '<span id="minmax_warning"><em>'.__('Min. ').'</em>';
+	$table_simple->data[4][1] .= html_print_input_text ('min_warning', $min_warning, '', 10, 255, true,
+													$disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
+	$table_simple->data[4][1] .= '<br /><em>'.__('Max.').'</em>';
+	$table_simple->data[4][1] .= html_print_input_text ('max_warning', $max_warning, '', 10, 255, true, 
+													$disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy).'</span>';
 }
 if (modules_is_string_type($id_module_type) || $edit) {
-	$table_simple->data[2][1] .= '<span id="string_warning"><em>'.__('Str.').'</em>';
-	$table_simple->data[2][1] .= html_print_input_text ('str_warning', $str_warning, 
-		'', 10, 255, true, $disabledBecauseInPolicy).'</span>';
+	$table_simple->data[4][1] .= '<span id="string_warning"><em>'.__('Str.').'</em>';
+	$table_simple->data[4][1] .= html_print_input_text ('str_warning', str_replace("\"","",$str_warning), 
+		'', 10, 255, true, $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy).'</span>';
 }
-
-$table_simple->data[2][1] .= '<br /><em>'.__('Inverse interval').'</em>';
-$table_simple->data[2][1] .= html_print_checkbox ("warning_inverse", 1,
-	$warning_inverse, true);
-$table_simple->data[2][2] = __('Critical status').' ' . ui_print_help_icon ('critical_status', true);
-$table_simple->data[2][3] = '';
-
+	$table_simple->data[4][1] .= '<br /><em>'.__('Inverse interval').'</em>';
+	$table_simple->data[4][1] .= html_print_checkbox ("warning_inverse", 1, $warning_inverse, true, $disabledBecauseInPolicy);
 if (!modules_is_string_type($id_module_type) || $edit) {
-	$table_simple->data[2][3] .= '<span id="minmax_critical"><em>'.__('Min. ').'</em>';
-	$table_simple->data[2][3] .= html_print_input_text ('min_critical', $min_critical,
-		'', 10, 255, true, $disabledBecauseInPolicy);
-	$table_simple->data[2][3] .= '<br /><em>'.__('Max.').'</em>';
-	$table_simple->data[2][3] .= html_print_input_text ('max_critical', $max_critical,
-		'', 10, 255, true, $disabledBecauseInPolicy).'</span>';
+	$table_simple->data[4][2] = '<svg id="svg_dinamic" width="350" height="200" style="padding:40px; padding-left: 100px; margin-bottom: 60px;"> </svg>';
+	$table_simple->colspan[4][2] = 2;
+	$table_simple->rowspan[4][2] = 3;
+}
+$table_simple->data[5][0] = __('Critical status').' ' . ui_print_help_icon ('critical_status', true);
+if (!modules_is_string_type($id_module_type) || $edit) {
+	$table_simple->data[5][1] .= '<span id="minmax_critical"><em>'.__('Min. ').'</em>';
+	$table_simple->data[5][1] .= html_print_input_text ('min_critical', $min_critical, '', 10, 255, true,
+													$disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
+	$table_simple->data[5][1] .= '<br /><em>'.__('Max.').'</em>';
+	$table_simple->data[5][1] .= html_print_input_text ('max_critical', $max_critical, '', 10, 255, true,
+													$disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy).'</span>';
 }
 if (modules_is_string_type($id_module_type) || $edit) {
-	$table_simple->data[2][3] .= '<span id="string_critical"><em>'.__('Str.').'</em>';
-	$table_simple->data[2][3] .= html_print_input_text ('str_critical', $str_critical, 
-		'', 10, 255, true, $disabledBecauseInPolicy).'</span>';
+	$table_simple->data[5][1] .= '<span id="string_critical"><em>'.__('Str.').'</em>';
+	$table_simple->data[5][1] .= html_print_input_text ('str_critical', str_replace("\"","",$str_critical), 
+		'', 10, 255, true, $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy).'</span>';
 }
 
-$table_simple->data[2][3] .= '<br /><em>'.__('Inverse interval').'</em>';
-$table_simple->data[2][3] .= html_print_checkbox ("critical_inverse", 1, $critical_inverse, true);
+$table_simple->data[5][1] .= '<br /><em>'.__('Inverse interval').'</em>';
+$table_simple->data[5][1] .= html_print_checkbox ("critical_inverse", 1, $critical_inverse, true, $disabledBecauseInPolicy);
 
 /* FF stands for Flip-flop */
-$table_simple->data[3][0] = __('FF threshold').' ' . ui_print_help_icon ('ff_threshold', true);
-$table_simple->colspan[3][1] = 3;
+$table_simple->data[6][0] = __('FF threshold').' ' . ui_print_help_icon ('ff_threshold', true);
+$table_simple->colspan[5][1] = 3;
 
-$table_simple->data[3][1] = html_print_radio_button ('each_ff', 0, '', $each_ff, true) . ' ' . __('All state changing') . ' : ';
-$table_simple->data[3][1] .= html_print_input_text ('ff_event', $ff_event, '', 5
-, 15, true, $disabledBecauseInPolicy) . '<br />';
-$table_simple->data[3][1] .= html_print_radio_button ('each_ff', 1, '', $each_ff, true) . ' ' . __('Each state changing') . ' : ';
-$table_simple->data[3][1] .= __('To normal');
-$table_simple->data[3][1] .= html_print_input_text ('ff_event_normal', $ff_event_normal, '', 5, 15, true, $disabledBecauseInPolicy) . ' ';
-$table_simple->data[3][1] .= __('To warning');
-$table_simple->data[3][1] .= html_print_input_text ('ff_event_warning', $ff_event_warning, '', 5, 15, true, $disabledBecauseInPolicy) . ' ';
-$table_simple->data[3][1] .= __('To critical');
-$table_simple->data[3][1] .= html_print_input_text ('ff_event_critical', $ff_event_critical, '', 5, 15, true, $disabledBecauseInPolicy);
-$table_simple->data[4][0] = __('Historical data');
+$table_simple->data[6][1] = html_print_radio_button ('each_ff', 0, '', $each_ff, true, $disabledBecauseInPolicy) . ' ' . __('All state changing') . ' : ';
+$table_simple->data[6][1] .= html_print_input_text ('ff_event', $ff_event, '', 5, 15, true,
+													 $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy) . '<br />';
+$table_simple->data[6][1] .= html_print_radio_button ('each_ff', 1, '', $each_ff, true, $disabledBecauseInPolicy) . ' ' . __('Each state changing') . ' : ';
+$table_simple->data[6][1] .= __('To normal');
+$table_simple->data[6][1] .= html_print_input_text ('ff_event_normal', $ff_event_normal, '', 5, 15, true,
+													 $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy) . ' ';
+$table_simple->data[6][1] .= __('To warning');
+$table_simple->data[6][1] .= html_print_input_text ('ff_event_warning', $ff_event_warning, '', 5, 15, true,
+													 $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy) . ' ';
+$table_simple->data[6][1] .= __('To critical');
+$table_simple->data[6][1] .= html_print_input_text ('ff_event_critical', $ff_event_critical, '', 5, 15, true,
+													 $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
+$table_simple->data[7][0] = __('Historical data');
 if($disabledBecauseInPolicy) {
 	// If is disabled, we send a hidden in his place and print a false checkbox because HTML dont send disabled fields and could be disabled by error
-	$table_simple->data[4][1] = html_print_checkbox ("history_data_fake", 1, $history_data, true, $disabledBecauseInPolicy);
-	$table_simple->data[4][1] .= '<input type="hidden" name="history_data" value="'.(int)$history_data.'">';
+	$table_simple->data[7][1] = html_print_checkbox ("history_data_fake", 1, $history_data, true, $disabledBecauseInPolicy);
+	$table_simple->data[7][1] .= '<input type="hidden" name="history_data" value="'.(int)$history_data.'">';
 }
 else {
-	$table_simple->data[4][1] = html_print_checkbox ("history_data", 1, $history_data, true, $disabledBecauseInPolicy);
+	$table_simple->data[7][1] = html_print_checkbox ("history_data", 1, $history_data, true, $disabledBecauseInPolicy);
 }
 
 /* Advanced form part */
@@ -309,16 +347,16 @@ $table_advanced->colspan = array ();
 $table_advanced->data[0][0] = __('Description');
 $table_advanced->colspan[0][1] = 6;
 $table_advanced->data[0][1] = html_print_textarea ('description', 2, 65,
-	$description, $disabledTextBecauseInPolicy, true);
+	$description, $disabledTextBecauseInPolicy, true, $largeClassDisabledBecauseInPolicy);
 
 $table_advanced->data[1][0] = __('Custom ID');
 $table_advanced->colspan[1][1] = 2;
-$table_advanced->data[1][1] = html_print_input_text ('custom_id', $custom_id,
-	'', 20, 65, true);
+$table_advanced->data[1][1] = html_print_input_text ('custom_id', $custom_id, '', 20, 65, true, 
+							 $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
 
 $table_advanced->data[1][3] = __('Unit');
-$table_advanced->data[1][4] = html_print_input_text ('unit', $unit,
-	'', 20, 65, true);
+$table_advanced->data[1][4] = html_print_input_text ('unit', $unit, '', 20, 65, true,
+							 $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
 $table_advanced->colspan[1][4] = 3;
 
 $module_id_policy_module = 0;
@@ -357,7 +395,7 @@ if ($moduletype == MODULE_DATA) {
 else {
 	$table_advanced->data[2][0] = __('Interval') . ui_print_help_icon ('module_interval', true);
 	$table_advanced->colspan[2][1] = 2;
-	$table_advanced->data[2][1] = html_print_extended_select_for_time ('module_interval' , $interval, '', '', '0', false, true, false, false);
+	$table_advanced->data[2][1] = html_print_extended_select_for_time ('module_interval' , $interval, '', '', '0', false, true, false, false, $classdisabledBecauseInPolicy, $disabledBecauseInPolicy);
 }
 
 $table_advanced->data[2][1] .= html_print_input_hidden ('moduletype', $moduletype, true);
@@ -372,9 +410,9 @@ $table_advanced->colspan[2][4] = 3;
 $table_advanced->data[3][0] = __('Min. Value');
 $table_advanced->colspan[3][1] = 2;
 
-$table_advanced->data[3][1] = html_print_input_text ('min', $min, '', 5, 15, true, $disabledBecauseInPolicy). ' ' . ui_print_help_tip (__('Any value below this number is discarted.'), true);
+$table_advanced->data[3][1] = html_print_input_text ('min', $min, '', 5, 15, true, $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy). ' ' . ui_print_help_tip (__('Any value below this number is discarted.'), true);
 $table_advanced->data[3][3] = __('Max. Value');
-$table_advanced->data[3][4] = html_print_input_text ('max', $max, '', 5, 15, true, $disabledBecauseInPolicy). ' ' . ui_print_help_tip (__('Any value over this number is discarted.'), true);
+$table_advanced->data[3][4] = html_print_input_text ('max', $max, '', 5, 15, true, $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy). ' ' . ui_print_help_tip (__('Any value over this number is discarted.'), true);
 $table_advanced->colspan[3][4] = 3;
 
 $table_advanced->data[4][0] = __('Export target');
@@ -393,22 +431,22 @@ $table_advanced->colspan[4][1] = 2;
 // Code comes from module_editor
 if ($__code_from == 'modules') {
 	$throw_unknown_events_check =
-		!modules_is_disable_type_event($id_agent_module, EVENTS_GOING_UNKNOWN);
+		modules_is_disable_type_event($id_agent_module, EVENTS_GOING_UNKNOWN);
 }
 else {
 	global $__id_pol_mod;
 	
 	$throw_unknown_events_check =
-		!policy_module_is_disable_type_event($__id_pol_mod, EVENTS_GOING_UNKNOWN);
+		policy_module_is_disable_type_event($__id_pol_mod, EVENTS_GOING_UNKNOWN);
 }
-$table_advanced->data[4][3] = __('Throw unknown events');
+$table_advanced->data[4][3] = __('Discard unknown events');
 $table_advanced->data[4][4] = html_print_checkbox('throw_unknown_events',
-	1, $throw_unknown_events_check, true);
+	1, $throw_unknown_events_check, true, $disabledBecauseInPolicy);
 $table_advanced->colspan[4][4] = 3;
 
 $table_advanced->data[5][0] = __('FF interval') . ' ' . ui_print_help_icon ('ff_interval', true);
 $table_advanced->data[5][1] = html_print_input_text ('module_ff_interval', $ff_interval,
-	'', 5, 10, true, $disabledBecauseInPolicy) .
+	'', 5, 10, true, $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy) .
 	ui_print_help_tip (__('Module execution flip flop time interval (in secs).'), true);
 $table_advanced->colspan[5][1] = 2;
 
@@ -460,7 +498,7 @@ if (!tags_has_user_acl_tags($config["id_user"])) {
 			FROM ttag a, $__table_modules b 
 			WHERE a.id_tag = b.id_tag AND $__id_where = $__id )
 			ORDER BY name", 'id_tag_available[]', '', '','','',
-		true, true, false, false, 'width: 200px', '5');
+		true, true, false, $disabledBecauseInPolicy, 'width: 200px', '5');
 }
 else {
 	$user_tags = tags_get_user_tags($config["id_user"], "AW");
@@ -476,7 +514,7 @@ else {
 				FROM ttag a, $__table_modules b 
 				WHERE a.id_tag = b.id_tag AND $__id_where = $__id )
 				ORDER BY name", 'id_tag_available[]', '', '','','',
-			true, true, false, false, 'width: 200px', '5');
+			true, true, false, $disabledBecauseInPolicy, 'width: 200px', '5');
 	}
 	else {
 		$table_advanced->data[6][1] = html_print_select_from_sql (
@@ -487,7 +525,7 @@ else {
 				FROM ttag a, $__table_modules b 
 				WHERE a.id_tag = b.id_tag AND $__id_where = $__id )
 				ORDER BY name", 'id_tag_available[]', '', '','','',
-			true, true, false, false, 'width: 200px', '5');
+			true, true, false, $disabledBecauseInPolicy, 'width: 200px', '5');
 	}
 }
 $table_advanced->data[6][2] = html_print_image('images/darrowright.png', true, array('id' => 'right', 'title' => __('Add tags to module'))); //html_print_input_image ('add', 'images/darrowright.png', 1, '', true, array ('title' => __('Add tags to module')));
@@ -501,7 +539,7 @@ $table_advanced->data[6][4] = html_print_select_from_sql (
 		$__sql
 	ORDER BY name",
 	'id_tag_selected[]', '', '','','', true, true, false,
-	false, 'width: 200px', '5');
+	$disabledBecauseInPolicy, 'width: 200px', '5');
 
 if ($__code_from == 'modules') {
 	$table_advanced->data[6][5] = '<b>' . __('Tags from policy') . '</b>';
@@ -512,7 +550,7 @@ if ($__code_from == 'modules') {
 			$__sql_policy
 		ORDER BY name",
 		'id_tag_policy[]', '', '','','', true, true, false,
-		false, 'width: 200px', '5');
+		$disabledBecauseInPolicy, 'width: 200px', '5');
 }
 
 $table_advanced->data[7][0] = __('Quiet');
@@ -520,51 +558,73 @@ $table_advanced->data[7][0] .= ui_print_help_tip(
 	__('The module still stores data but the alerts and events will be stop'), true);
 $table_advanced->colspan[7][1] = 7;
 $table_advanced->data[7][1] = html_print_checkbox('quiet_module', 1,
-	$quiet_module, true);
+	$quiet_module, true, $disabledBecauseInPolicy);
 
 $table_advanced->data[8][0] = __('Critical instructions') .
 	ui_print_help_tip(__("Instructions when the status is critical"), true);
-$table_advanced->data[8][1] = html_print_textarea ('critical_instructions', 2, 65, $critical_instructions, '', true);
+$table_advanced->data[8][1] = html_print_textarea ('critical_instructions', 2, 65, $critical_instructions, $disabledTextBecauseInPolicy, true, $largeClassDisabledBecauseInPolicy);
+
 $table_advanced->colspan[8][1] = 6;
 
 $table_advanced->data[9][0] = __('Warning instructions') .
 	ui_print_help_tip(__("Instructions when the status is warning"), true);
-$table_advanced->data[9][1] = html_print_textarea ('warning_instructions', 2, 65, $warning_instructions, '', true);
+$table_advanced->data[9][1] = html_print_textarea ('warning_instructions', 2, 65, $warning_instructions, $disabledTextBecauseInPolicy, true, $largeClassDisabledBecauseInPolicy);
 $table_advanced->colspan[9][1] = 6;
 
 $table_advanced->data[10][0] = __('Unknown instructions'). ui_print_help_tip(__("Instructions when the status is unknown"), true);
-$table_advanced->data[10][1] = html_print_textarea ('unknown_instructions', 2, 65, $unknown_instructions, '', true);
+$table_advanced->data[10][1] = html_print_textarea ('unknown_instructions', 2, 65, $unknown_instructions, $disabledTextBecauseInPolicy, true, $largeClassDisabledBecauseInPolicy);
 $table_advanced->colspan[10][1] = 6;
 
 if (isset($id_agente) && $moduletype == MODULE_DATA) {
-	$table_advanced->data[11][0] = __('Cron') .
-		ui_print_help_tip (__('If cron is set the module interval is ignored and the module runs on the specified date and time'), true);
-	$table_advanced->data[11][1] = html_print_extended_select_for_cron ($hour, $minute, $mday, $month, $wday, true, true);
-	$table_advanced->colspan[11][1] = 6;
+	$has_remote_conf = enterprise_hook('config_agents_has_remote_configuration',array($agent["id_agente"]));
+	if ($has_remote_conf) {
+		$table_advanced->data[11][0] = __('Cron from') .
+			ui_print_help_tip (__('If cron is set the module interval is ignored and the module runs on the specified date and time'), true);
+		$table_advanced->data[11][1] = html_print_extended_select_for_cron ($hour_from, $minute_from, $mday_from, $month_from, $wday_from, true, $disabledBecauseInPolicy);
+		$table_advanced->colspan[11][1] = 6;
+
+		$table_advanced->data[12][0] = __('Cron to');
+		$table_advanced->data[12][1] = html_print_extended_select_for_cron ($hour_to, $minute_to, $mday_to, $month_to, $wday_to, true, $disabledBecauseInPolicy, true);
+		$table_advanced->colspan[12][1] = 6;
 	}
+	else {
+		$table_advanced->data[11][0] = __('Cron from') .
+			ui_print_help_tip (__('If cron is set the module interval is ignored and the module runs on the specified date and time'), true);
+		$table_advanced->data[11][1] = html_print_extended_select_for_cron ($hour_from, $minute_from, $mday_from, $month_from, $wday_from, true, true);
+		$table_advanced->colspan[11][1] = 6;
+
+		$table_advanced->data[12][0] = __('Cron to');
+		$table_advanced->data[12][1] = html_print_extended_select_for_cron ($hour_to, $minute_to, $mday_to, $month_to, $wday_to, true, true, true);
+		$table_advanced->colspan[12][1] = 6;
+	}
+}
 else {
-	$table_advanced->data[11][0] = __('Cron') .
+	$table_advanced->data[11][0] = __('Cron from') .
 		ui_print_help_tip (__('If cron is set the module interval is ignored and the module runs on the specified date and time'), true);
-	$table_advanced->data[11][1] = html_print_extended_select_for_cron ($hour, $minute, $mday, $month, $wday, true, false);
+	$table_advanced->data[11][1] = html_print_extended_select_for_cron ($hour_from, $minute_from, $mday_from, $month_from, $wday_from, true, $disabledBecauseInPolicy);
 	$table_advanced->colspan[11][1] = 6;
+
+	$table_advanced->data[12][0] = __('Cron to');
+	$table_advanced->data[12][1] = html_print_extended_select_for_cron ($hour_to, $minute_to, $mday_to, $month_to, $wday_to, true, $disabledBecauseInPolicy, true);
+	$table_advanced->colspan[12][1] = 6;
 }
 
-$table_advanced->data[12][0] = __('Timeout');
-$table_advanced->data[12][1] = html_print_input_text ('max_timeout', $max_timeout, '', 5, 10, true). ' ' . ui_print_help_tip (__('Seconds that agent will wait for the execution of the module.'), true);
-$table_advanced->data[12][2] = '';
-$table_advanced->data[12][3] = __('Retries');
-$table_advanced->data[12][4] = html_print_input_text ('max_retries', $max_retries, '', 5, 10, true). ' ' . ui_print_help_tip (__('Number of retries that the module will attempt to run.'), true);
-$table_advanced->colspan[12][4] = 3;
+$table_advanced->data[13][0] = __('Timeout');
+$table_advanced->data[13][1] = html_print_input_text ('max_timeout', $max_timeout, '', 5, 10, true, $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy). ' ' . ui_print_help_tip (__('Seconds that agent will wait for the execution of the module.'), true);
+$table_advanced->data[13][2] = '';
+$table_advanced->data[13][3] = __('Retries');
+$table_advanced->data[13][4] = html_print_input_text ('max_retries', $max_retries, '', 5, 10, true, $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy). ' ' . ui_print_help_tip (__('Number of retries that the module will attempt to run.'), true);
+$table_advanced->colspan[13][4] = 3;
 
 if (check_acl ($config['id_user'], 0, "PM")) {
-	$table_advanced->data[13][0] = __('Category');
-	$table_advanced->data[13][1] = html_print_select(
-		categories_get_all_categories('forselect'), 'id_category', $id_category, '', __('None'), 0, true);
-	$table_advanced->colspan[13][1] = 6;
+	$table_advanced->data[14][0] = __('Category');
+	$table_advanced->data[14][1] = html_print_select(
+		categories_get_all_categories('forselect'), 'id_category', $id_category, '', __('None'), 0, true, false, true, "", $disabledBecauseInPolicy);
+	$table_advanced->colspan[14][1] = 6;
 }
 else {
 	// Store in a hidden field if is not visible to avoid delete the value
-	$table_advanced->data[12][4] .= html_print_input_hidden ('id_category', $id_category, true);
+	$table_advanced->data[13][4] .= html_print_input_hidden ('id_category', $id_category, true);
 }
 
 /* Advanced form part */
@@ -584,16 +644,21 @@ if (isset($module_macros)) {
 	if (is_array($module_macros)) {
 		foreach ($module_macros as $macro_name => $macro_value) {
 			$table_macros->data[$macro_count][0] = __('Name');
-			$table_macros->data[$macro_count][1] = html_print_input_text ('module_macro_names[]', $macro_name, '', 50, 60, true);
+			$table_macros->data[$macro_count][1] = html_print_input_text ('module_macro_names[]', $macro_name, '', 50, 60, true, $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
 			$table_macros->data[$macro_count][2] = __('Value');
-			$table_macros->data[$macro_count][3] = html_print_input_text ('module_macro_values[]', $macro_value, '', 50, 60, true);
-			$table_macros->data[$macro_count][4] = '<a href="javascript: delete_macro(' . $macro_count . ');">' . html_print_image('images/cross.png', true) . '</a>';
+			$table_macros->data[$macro_count][3] = html_print_input_text ('module_macro_values[]', $macro_value, '', 50, 60, true, $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
+			if(!$disabledBecauseInPolicy){
+				$table_macros->data[$macro_count][4] = '<a href="javascript: delete_macro(' . $macro_count . ');">' . html_print_image('images/cross.png', true) . '</a>';
+			}
 			$macro_count++;
 		}
 	}
 }
-$table_macros->data[$macro_count][0] = '<span>'.__('Custom macros').'</span> <a href="javascript:add_macro();">'.html_print_image('images/add.png',true).'</a>';
-$table_macros->colspan[$macro_count][0] = 5;
+if(!$disabledBecauseInPolicy){
+	$table_macros->data[$macro_count][0] = '<span>'.__('Custom macros').'</span> <a href="javascript:add_macro();">'.html_print_image('images/add.png',true).'</a>';
+
+	$table_macros->colspan[$macro_count][0] = 5;
+}
 $macro_count++;
 
 html_print_input_hidden ('module_macro_count', $macro_count);
@@ -710,6 +775,7 @@ ui_require_jquery_file('json');
 <script type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {
+	var disabledBecauseInPolicy = '<?php echo $disabledBecauseInPolicy ?>';
 	$("#right").click (function () {
 		jQuery.each($("select[name='id_tag_available[]'] option:selected"), function (key, value) {
 			tag_name = $(value).html();
@@ -764,6 +830,7 @@ $(document).ready (function () {
 			$('#string_warning').hide();
 			$('#minmax_critical').show();
 			$('#minmax_warning').show();
+			$('#svg_dinamic').show();
 		}
 		else {
 			// String types
@@ -771,6 +838,7 @@ $(document).ready (function () {
 			$('#string_warning').show();
 			$('#minmax_critical').hide();
 			$('#minmax_warning').hide();
+			$('#svg_dinamic').hide();
 		}
 		
 		if (type_name_selected.match(/async/) == null) {
@@ -800,9 +868,88 @@ $(document).ready (function () {
 		validate_post_process();
 	});
 
+	//Dynamic_interval;
+	disabled_status(disabledBecauseInPolicy);
+	$('#dynamic_interval_select').change (function() {
+		disabled_status(disabledBecauseInPolicy);
+	});
+
+	//Dynamic_options_advance;
+	$('#simple-2-2').hide();
+	$('#simple-2-3').hide();
+
+	//paint graph stutus critical and warning:
+	paint_graph_values();
+	$('#text-min_warning').on ('input', function() {
+		paint_graph_values();
+		if (isNaN($('#text-min_warning').val()) && !($('#text-min_warning').val() == "-")){
+			$('#text-min_warning').val(0);
+		}
+	});
+	$('#text-max_warning').on ('input', function() {
+		paint_graph_values();
+		if (isNaN($('#text-max_warning').val()) && !($('#text-max_warning').val() == "-")){
+			$('#text-max_warning').val(0);
+		}
+	});
+	$('#text-min_critical').on ('input', function() {
+		paint_graph_values();
+		if (isNaN($('#text-min_critical').val()) && !($('#text-min_critical').val() == "-")){
+			$('#text-min_critical').val(0);
+		}
+	});
+	$('#text-max_critical').on ('input', function() {
+		paint_graph_values();
+		if (isNaN($('#text-max_critical').val()) && !($('#text-max_critical').val() == "-")){
+			$('#text-max_critical').val(0);
+		}
+	});
+	$('#checkbox-warning_inverse').change (function() {
+		paint_graph_values();
+	});
+	$('#checkbox-critical_inverse').change (function() {
+		paint_graph_values();
+	});
+
 });
 
-// Add a new module macro
+//readonly and add class input
+function disabled_status (disabledBecauseInPolicy) {
+	if($('#dynamic_interval_select').val() != 0){
+		$('#text-min_warning').prop('readonly', true);
+		$('#text-min_warning').addClass('readonly');
+		$('#text-max_warning').prop('readonly', true);
+		$('#text-max_warning').addClass('readonly');
+		$('#text-min_critical').prop('readonly', true);
+		$('#text-min_critical').addClass('readonly');
+		$('#text-max_critical').prop('readonly', true);
+		$('#text-max_critical').addClass('readonly');
+	} else {
+		if (!disabledBecauseInPolicy){
+			$('#text-min_warning').prop('readonly', false);
+			$('#text-min_warning').removeClass('readonly');
+			$('#text-max_warning').prop('readonly', false);
+			$('#text-max_warning').removeClass('readonly');
+			$('#text-min_critical').prop('readonly', false);
+			$('#text-min_critical').removeClass('readonly');
+			$('#text-max_critical').prop('readonly', false);
+			$('#text-max_critical').removeClass('readonly');
+		}
+	}
+}
+
+//Dynamic_options_advance;
+function advanced_option_dynamic() {
+	if($('#simple-2-2').is(":visible")){
+		$('#simple-2-2').hide();
+		$('#simple-2-3').hide();
+	} else {
+		$('#simple-2-2').show();
+		$('#simple-2-3').show();
+	}
+}
+
+//Add a new module macro
 function add_macro () {
 	var macro_count = parseInt($("#hidden-module_macro_count").val());
 	var delete_icon = '<?php html_print_image ("images/cross.png", false) ?>';
@@ -1027,6 +1174,312 @@ function validate_post_process() {
 	var new_post_process = post_process.replace(',', '.');
 	
 	$("#text-post_process").val(new_post_process);
+}
+
+//function paint graph
+function paint_graph_values(){
+	//Parse integrer
+	var min_w = parseInt($('#text-min_warning').val());
+		if(min_w == '0.00'){ min_w = 0; }
+	var max_w = parseInt($('#text-max_warning').val());
+		if(max_w == '0.00'){ max_w = 0; }
+	var min_c = parseInt($('#text-min_critical').val());
+		if(min_c =='0.00'){ min_c = 0; }
+	var max_c = parseInt($('#text-max_critical').val());
+		if(max_c =='0.00'){ max_c = 0; }
+	var inverse_w = $('input:checkbox[name=warning_inverse]:checked').val();
+		if(!inverse_w){ inverse_w = 0; }
+	var inverse_c = $('input:checkbox[name=critical_inverse]:checked').val();
+		if(!inverse_c){ inverse_c = 0; }
+	//inicialiced error
+	var error_w = 0;
+	var error_c = 0;
+	//if haven't error
+	if(max_w == 0 || max_w > min_w){
+		if(max_c == 0 || max_c > min_c){
+			paint_graph_status(min_w, max_w, min_c, max_c, inverse_w, inverse_c, error_w, error_c);
+		} else {
+			error_c = 1;
+			paint_graph_status(0,0,0,0,0,0, error_w, error_c);
+		}
+	} else {
+		error_w = 1;
+		paint_graph_status(0,0,0,0,0,0, error_w, error_c);
+	}
+}
+
+//function use d3.js for paint graph
+function paint_graph_status(min_w, max_w, min_c, max_c, inverse_w, inverse_c, error_w, error_c) {
+	
+	//Check if they are numbers
+	if(isNaN(min_w)){ min_w = 0; };
+	if(isNaN(max_w)){ max_w = 0; };
+	if(isNaN(min_c)){ min_c = 0; };
+	if(isNaN(max_c)){ max_c = 0; };
+
+	//messages legend
+	var legend_normal = '<?php echo __("Normal Status");?>';
+	var legend_warning = '<?php echo __("Warning Status");?>';
+	var legend_critical = '<?php echo __("Critical Status");?>';
+
+	//remove elements
+	d3.select("#svg_dinamic rect").remove();
+	$("#text-max_warning").removeClass("input_error");
+	$("#text-max_critical").removeClass("input_error");
+
+	//if haven't errors
+	if (error_w == 0 && error_c == 0){
+		//parse element
+		min_w = parseInt(min_w);
+		min_c = parseInt(min_c);
+		max_w = parseInt(max_w);
+		max_c = parseInt(max_c);
+		
+		//inicialize var
+		var range_min = 0;
+		var range_max = 0;
+		var range_max_min = 0;
+		var range_max_min = 0;
+		
+		//Find the lowest possible value
+		if(min_w < 0 || min_c < 0){
+			if(min_w < min_c){
+				range_min = min_w - 100;
+			} else {
+				range_min = min_c - 100;	
+			}
+		} else if (min_w > 0 || min_c > 0) {
+			if(min_w > min_c){
+				range_max_min = min_w;
+			} else {
+				range_max_min = min_c;	
+			}
+		} else {
+			if(min_w < min_c){
+				range_min = min_w - 100;
+			} else {
+				range_min = min_c - 100;	
+			}
+		}
+
+		//Find the maximum possible value
+		if(max_w > max_c){
+			range_max = max_w + 100 + range_max_min;
+		} else {
+			range_max = max_c + 100 + range_max_min;
+		}
+		
+		//Controls whether the maximum = 0 is infinite
+		if((max_w == 0 || max_w == 0.00) && min_w != 0){
+			max_w = range_max;
+		}
+		if((max_c == 0 || max_c == 0.00) && min_c != 0){
+			max_c = range_max;
+		}
+		
+		//Scale according to the position
+		position = 200 / (range_max-range_min);
+		
+		//axes
+		var yScale = d3.scale.linear()
+		    .domain([range_min, range_max])
+		    .range([100, -100]);
+
+	    var yAxis = d3.svg.axis()
+	            .orient("left")
+	            .scale(yScale);
+
+	    //create svg
+		var svg = d3.select("#svg_dinamic");
+		//delete elements
+		svg.selectAll("g").remove();
+		svg.selectAll("rect").remove();
+		svg.selectAll("text").remove();
+		svg.append("g")
+			.attr("transform", "translate(0, 100)")
+			.call(yAxis);
+		
+		//legend Normal text
+		svg.append("text")
+				.attr("x", 0)
+				.attr("y", -20)
+				.attr("fill", 'black')
+				.style("font-family", "arial")
+				.style("font-weight", "bold")
+				.style("font-size", 10)
+				.html(legend_normal)
+				.style("text-anchor", "first");
+
+		//legend Normal rect
+		svg.append("rect")
+			.attr("id", "legend_normal")
+	       	.attr("x", 72)
+	       	.attr("y", -30)
+	       	.attr("width", 10)
+	       	.attr("height", 10)
+	  		.style("fill", "#82B92E");
+
+	  	//legend Warning text
+		svg.append("text")
+				.attr("x", 91)
+				.attr("y", -20)
+				.attr("fill", 'black')
+				.style("font-family", "arial")
+				.style("font-weight", "bold")
+				.style("font-size", 10)
+				.html(legend_warning)
+				.style("text-anchor", "first");
+
+		//legend Warning rect
+		svg.append("rect")
+			.attr("id", "legend_warning")
+	       	.attr("x", 168)
+	       	.attr("y", -30)
+	       	.attr("width", 10)
+	       	.attr("height", 10)
+	  		.style("fill", "#ffd731");
+
+	  	//legend Critical text
+		svg.append("text")
+				.attr("x", 187)
+				.attr("y", -20)
+				.attr("fill", 'black')
+				.style("font-family", "arial")
+				.style("font-weight", "bold")
+				.style("font-size", 10)
+				.html(legend_critical)
+				.style("text-anchor", "first");
+
+		//legend critical rect
+		svg.append("rect")
+			.attr("id", "legend_critical")
+	       	.attr("x", 258)
+	       	.attr("y", -30)
+	       	.attr("width", 10)
+	       	.attr("height", 10)
+	  		.style("fill", "#fc4444");
+
+		//styles for number and axes
+	    svg.selectAll("g .domain")
+	    	.style("stroke-width",  2)
+	    	.style("fill",  "none")
+	    	.style("stroke", "black");
+
+	    svg.selectAll("g .tick text")
+	    	.style("font-size", "9pt")
+			.style("font-weight", "initial");
+
+	    //estatus normal
+		svg.append("rect")
+			.attr("id", "warning_rect")
+	       	.attr("x", 3)
+	       	.attr("y", 0)
+	       	.attr("width", 300)
+	       	.attr("height", 200)
+	  		.style("fill", "#82B92E");
+	  	
+	  	//controls the inverse warning
+	  	if(inverse_w == 0){
+			svg.append("rect").transition()
+				.duration(600)
+				.attr("id", "warning_rect")
+		       	.attr("x", 3)
+		       	.attr("y", ((range_max - min_w) * position) - ((max_w - min_w) * position))
+		       	.attr("width", 300)
+		       	.attr("height", ((max_w - min_w) * position))
+		  		.style("fill", "#ffd731");
+	  	}
+	  	else {
+	  		svg.append("rect").transition()
+	  			.duration(600)
+				.attr("id", "warning_rect")
+		       	.attr("x", 3)
+		       	.attr("y", 200 - ((min_w -range_min) * position))
+		       	.attr("width", 300)
+		       	.attr("height", (min_w -range_min) * position)
+		  		.style("fill", "#ffd731");
+		  	
+		  	svg.append("rect").transition()
+		  		.duration(600)
+				.attr("id", "warning_inverse_rect")
+		       	.attr("x", 3)
+		       	.attr("y",  0)
+		       	.attr("width", 300)
+		       	.attr("height", ((range_max - min_w) * position) - ((max_w - min_w) * position))
+		  		.style("fill", "#ffd731");
+		  	
+	  	}
+	  	//controls the inverse critical
+	  	if(inverse_c == 0){
+		    svg.append("rect").transition()
+		    	.duration(600)
+		    	.attr("id", "critical_rect")
+		       	.attr("x", 3)
+		       	.attr("y", ((range_max - min_c) * position) - ((max_c - min_c) * position))
+		       	.attr("width", 300)
+		       	.attr("height", ((max_c - min_c) * position))
+		  		.style("fill", "#fc4444");
+	  	}
+	  	else {
+	  		svg.append("rect").transition()
+				.duration(600)
+				.attr("id", "critical_rect")
+		       	.attr("x", 3)
+		       	.attr("y", 200 - ((min_c -range_min) * position))
+		       	.attr("width", 300)
+		       	.attr("height", (min_c -range_min) * position)
+		  		.style("fill", "#fc4444");
+		  	
+		  	svg.append("rect").transition()
+				.duration(600)
+				.attr("id", "critical_inverse_rect")
+		       	.attr("x", 3)
+		       	.attr("y", 0)
+		       	.attr("width", 300)
+		       	.attr("height", ((range_max - min_c) * position) - ((max_c - min_c) * position))
+		  		.style("fill", "#fc4444");
+	  	}
+	}
+	else {
+		var message_error_warning = '<?php echo __("Please introduce a maximum warning higher than the minimun warning") ?>';
+		var message_error_critical = '<?php echo __("Please introduce a maximum critical higher than the minimun critical") ?>';
+
+		d3.select("#svg_dinamic rect").remove();
+		//create svg
+		var svg = d3.select("#svg_dinamic");
+		svg.selectAll("g").remove();
+		svg.selectAll("rect").remove();
+		svg.selectAll("text").remove();
+		//message error warning
+		if (error_w == 1) {
+			$("#text-max_warning").addClass("input_error");
+			svg.append("text")
+				.attr("x", -90)
+				.attr("y", 10)
+				.attr("fill", 'black')
+				.style("font-family", "arial")
+				.style("font-weight", "bold")
+				.style("font-size", 14)
+				.style("fill", "red")
+				.html(message_error_warning)
+				.style("text-anchor", "first");
+		}
+		//message error critical
+		if (error_c == 1) {
+			$("#text-max_critical").addClass("input_error");
+			svg.append("text")
+				.attr("x", -90)
+				.attr("y", 105)
+				.attr("fill", 'black')
+				.style("font-family", "arial")
+				.style("font-weight", "bold")
+				.style("font-size", 14)
+				.style("fill", "red")
+				.html(message_error_critical)
+				.style("text-anchor", "first");	
+		}
+
+	}
 }
 
 /* End of relationship javascript */

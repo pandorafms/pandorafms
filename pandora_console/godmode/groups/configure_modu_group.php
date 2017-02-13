@@ -19,14 +19,18 @@ global $config;
 
 check_login ();
 
+enterprise_hook('open_meta_frame');
+
 if (! check_acl ($config['id_user'], 0, "PM")) {
 	db_pandora_audit("ACL Violation", "Trying to access Group Management2");
 	require ("general/noaccess.php");
 	return;
 }
 
-// Header
-ui_print_page_header (__("Module group management"), "images/module_group.png", false, "", true, "");
+if (!is_metaconsole()) {
+	// Header
+	ui_print_page_header (__("Module group management"), "images/module_group.png", false, "", true, "");
+}
 
 // Init vars
 $icon = "";
@@ -67,7 +71,10 @@ $table->data[0][1] = html_print_input_text ('name', $name, '', 35, 100, true);
 
 
 echo'</span>';
-echo '<form name="grupo" method="post" action="index.php?sec=gmodules&sec2=godmode/groups/modu_group_list">';
+if (is_metaconsole())
+	echo '<form name="grupo" method="post" action="index.php?sec=advanced&sec2=advanced/component_management&tab=module_group">';
+else
+	echo '<form name="grupo" method="post" action="index.php?sec=gmodules&sec2=godmode/groups/modu_group_list">';
 html_print_table ($table);
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 if ($id_group) {
@@ -81,4 +88,7 @@ else {
 }
 echo '</div>';
 echo '</form>';
+
+enterprise_hook('close_meta_frame');
+
 ?>

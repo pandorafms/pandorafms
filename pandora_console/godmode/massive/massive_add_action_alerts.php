@@ -52,7 +52,6 @@ $id_group = (int) get_parameter ('id_group');
 $id_agents = get_parameter ('id_agents');
 $id_alert_templates = (array) get_parameter ('id_alert_templates');
 $recursion = get_parameter ('recursion');
-
 $add = (bool) get_parameter_post ('add');
 
 if ($add) {
@@ -64,45 +63,61 @@ if ($add) {
 		$fires_max = (int) get_parameter ('fires_max');
 		
 		if (!empty($actions)) {
-			$agent_alerts = agents_get_alerts($id_agents);
-			$cont = 0;
-			$agent_alerts_id = array();
-			foreach ($agent_alerts['simple'] as $agent_alert) {
-				if (in_array($agent_alert['id_alert_template'], $id_alert_templates)) {
-					$agent_alerts_id[$cont] = $agent_alert['id'];
-					$cont = $cont + 1;
-				}
-			}
-			
-			$options = array();
-			
-			if ($fires_min > 0)
-				$options['fires_min'] = $fires_min;
-			if ($fires_max > 0)
-				$options['fires_max'] = $fires_max;
-				
-			if (empty($agent_alerts_id)) {
-				ui_print_result_message (false, '', __('Could not be added').". ".__('No alerts selected'));
-			}
-			else {
-				$results = true;
-				foreach ($agent_alerts_id as $agent_alert_id) {
-					foreach ($actions as $action) {
-						$result = alerts_add_alert_agent_module_action($agent_alert_id, $action, $options);
-						if ($result === false)
-							$results = false;
+			$modules = get_parameter ('module');
+			$modules_id = array();
+			if (!empty($modules)) {
+				foreach ($modules as $module) {
+					foreach ($id_agents as $id_agent) {
+						$module_id = modules_get_agentmodule_id($module, $id_agent);
+						$modules_id[] = $module_id['id_agente_modulo'];
 					}
 				}
 				
-				db_pandora_audit("Massive management", "Add alert action " . json_encode($id_agents), false, false, 'Agents: ' . 
-					json_encode($id_agents) . ' Alerts : ' . json_encode($agent_alerts) .
-					' Fires Min: ' . $fires_min . ' Fires Max: ' . $fires_max . ' Actions: ' . implode(',',$actions));
+				$agent_alerts = agents_get_alerts($id_agents);
+				$cont = 0;
+				$agent_alerts_id = array();
 				
-				ui_print_result_message ($results, __('Successfully added'), __('Could not be added'));
+				foreach ($agent_alerts['simple'] as $agent_alert) {
+					
+					if ((in_array($agent_alert['id_alert_template'], $id_alert_templates)) && (in_array($agent_alert['id_agent_module'], $modules_id))) {
+						$agent_alerts_id[$cont] = $agent_alert['id'];
+						$cont += 1;
+					}
+				}
+				
+				$options = array();
+				
+				if ($fires_min > 0)
+					$options['fires_min'] = $fires_min;
+				if ($fires_max > 0)
+					$options['fires_max'] = $fires_max;
+					
+				if (empty($agent_alerts_id)) {
+					ui_print_result_message (false, '', __('Could not be added').". ".__('No alerts selected'));
+				}
+				else {
+					$results = true;
+					foreach ($agent_alerts_id as $agent_alert_id) {
+						foreach ($actions as $action) {
+							$result = alerts_add_alert_agent_module_action($agent_alert_id, $action, $options);
+							if ($result === false)
+								$results = false;
+						}
+					}
+					
+					db_pandora_audit("Massive management", "Add alert action " . json_encode($id_agents), false, false, 'Agents: ' . 
+						json_encode($id_agents) . ' Alerts : ' . json_encode($agent_alerts) .
+						' Fires Min: ' . $fires_min . ' Fires Max: ' . $fires_max . ' Actions: ' . implode(',',$actions));
+					
+					ui_print_result_message ($results, __('Successfully added'), __('Could not be added'));
+				}
+			}
+			else {
+				ui_print_result_message (false, '', __('Could not be added').". ".__('No modules selected'));
 			}
 		}
 		else {
-			ui_print_result_message (false, '', __('Could not be added').". ".__('No action selected'));
+			ui_print_result_message (false, '', __('Could not be added').". ".__('No actions selected'));
 		}
 	}
 	
@@ -150,6 +165,15 @@ $table->data[2][0] .= '<span id="template_loading" class="invisible">';
 $table->data[2][0] .= html_print_image('images/spinner.png', true);
 $table->data[2][0] .= '</span>';
 $table->data[2][1] = html_print_select (array(), 'id_alert_templates[]', '', '', '', '', true, true, true, '', $alert_templates == 0);
+$table->data[2][2] = __('When select agents');
+$table->data[2][2] .= '<br>';
+$table->data[2][2] .= html_print_select (
+	array('common' => __('Show common modules'),
+		'all' => __('Show all modules'),'unknown' => __('Show unknown and not init modules')),
+	'modules_selection_mode',
+	'common', false, '', '', true);
+$table->data[2][3] = html_print_select (array(), 'module[]',
+	$modules_select, false, '', '', true, true, false);
 
 $actions = alerts_get_alert_actions ();
 $table->data[3][0] = __('Action');
@@ -231,6 +255,12 @@ $(document).ready (function () {
 	
 	$("#id_agents").change (function () {
 		update_alerts();
+	});
+	
+	$("#id_alert_templates").change(alert_templates_changed_by_multiple_agents_with_alerts);
+	
+	$("#modules_selection_mode").click(function () {
+		$("#id_alert_templates").trigger("change");
 	});
 	
 	function update_alerts() {

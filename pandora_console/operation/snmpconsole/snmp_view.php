@@ -22,8 +22,10 @@ require_once("include/functions_agents.php");
 require_once("include/functions_snmp.php");
 
 check_login ();
-
-if (! check_acl ($config['id_user'], 0, "AR")) {
+$agent_a = check_acl ($config['id_user'], 0, "AR");
+$agent_w = check_acl ($config['id_user'], 0, "AW");
+$access = ($agent_a == true) ? 'AR' : (($agent_w == true) ? 'AW' : 'AR');
+if (!$agent_a && !$agent_w) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access SNMP Console");
 	require ("general/noaccess.php");
@@ -41,7 +43,7 @@ $trap_type = (int) get_parameter ('trap_type', -1);
 $group_by = (int)get_parameter('group_by', 0);
 $refr = (int)get_parameter("refr", 0);
 
-$user_groups = users_get_groups ($config['id_user'], "AR", false);
+$user_groups = users_get_groups ($config['id_user'], $access, false);
 
 $str_user_groups = '';
 $i = 0;
@@ -480,6 +482,7 @@ $url_snmp = "index.php?" .
 	"filter_status=" . $filter_status . "&" .
 	"refr=" . ((int)get_parameter('refr', 0)) . "&" .
 	"pure=" . $config["pure"] . "&" .
+	"trap_type=" . $trap_type . "&" .
 	"group_by=" . $group_by . "&" .
 	"free_search_string=" . $free_search_string;
 

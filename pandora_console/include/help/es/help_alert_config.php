@@ -37,6 +37,7 @@ Además de las macros de módulo definidas, las siguientes macros están disponi
 <li>_timestamp_: Hora y fecha en que se disparó la alerta.</li>
 <li>_timezone_: Area Nombre _timestamp_ que representa en.</li>
 <li>_data_: Dato que hizo que la alerta se disparase.</li>
+<li>_prevdata_: Dato previo antes de disparase la alerta.</li>
 <li>_alert_description_: Descripción de la alerta.</li>
 <li>_alert_threshold_: Umbral de la alerta.</li>
 <li>_alert_times_fired_: Número de veces que se ha disparado la alerta.</li>
@@ -61,7 +62,7 @@ Además de las macros de módulo definidas, las siguientes macros están disponi
 <li>_groupcontact_ : Información de contacto del grupo.	Se configura al crear el grupo.</li>
 <li>_groupother_ : Otra información sobre el grupo. Se configura al crear el grupo.</li>
 <li>_email_tag_ : Emails asociados a los tags de módulos.</li>
-
+<li>_modulegraph_nh_: (Sólo para alertas que usen el comando eMail) Devuelve una imagen codificada en base64 de una gráfica del módulo con un período de n horas (eg. _modulegraph_24h_). Requiere de una configuración correcta de la conexión del servidor a la consola vía api, la cual se realiza en el fichero de configuración del servidor.</li>
 </ul>
 <p>
 Ejemplo: Error en el agente _agent_: _alert_description_ 

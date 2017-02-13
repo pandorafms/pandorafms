@@ -35,14 +35,16 @@ if (is_ajax ()) {
 	$get_agent_modules_json = (bool) get_parameter ('get_agent_modules_json');
 	$get_agent_status_tooltip = (bool) get_parameter ("get_agent_status_tooltip");
 	$get_agents_group_json = (bool) get_parameter ("get_agents_group_json");
+	$get_modules_group_json = (bool) get_parameter ("get_modules_group_json");
 	$get_agent_modules_json_for_multiple_agents = (bool) get_parameter("get_agent_modules_json_for_multiple_agents");
 	$get_agent_modules_alerts_json_for_multiple_agents = (bool) get_parameter("get_agent_modules_alerts_json_for_multiple_agents");
+	$get_agent_modules_multiple_alerts_json_for_multiple_agents = (bool) get_parameter("get_agent_modules_multiple_alerts_json_for_multiple_agents");
 	$get_agents_json_for_multiple_modules = (bool) get_parameter("get_agents_json_for_multiple_modules");
 	$get_agent_modules_json_for_multiple_agents_id = (bool) get_parameter("get_agent_modules_json_for_multiple_agents_id");
 	$get_agentmodule_status_tooltip = (bool) get_parameter ("get_agentmodule_status_tooltip");
 	$get_group_status_tooltip = (bool) get_parameter ("get_group_status_tooltip");
 	$get_agent_id = (bool) get_parameter ("get_agent_id");
-	
+	$id_group = (int) get_parameter('id_group');
 	if ($get_agents_group_json) {
 		$id_group = (int) get_parameter('id_group');
 		$recursion = (int) get_parameter ('recursion', 0);
@@ -104,15 +106,81 @@ if (is_ajax ()) {
 		$agents = db_get_all_rows_filter('tagente', $filter, $fields);
 		if (empty($agents)) $agents = array();
 		
+		foreach ($agents as $k => $v) {
+			$agents[$k] = io_safe_output($v);
+		}
+
 		// Add keys prefix
 		if ($keys_prefix !== '') {
 			foreach ($agents as $k => $v) {
-				$agents[$keys_prefix . $k] = $v;
+				$agents[$keys_prefix . $k] = io_safe_output($v);
 				unset($agents[$k]);
 			}
 		}
 		
 		echo json_encode($agents);
+		return;
+	}
+
+	if ($get_modules_group_json) {
+		$id_group = (int) get_parameter('id_module_group');
+		$id_agents = get_parameter('id_agents');
+		$selection = get_parameter('selection');
+
+		$agents = implode(",", $id_agents);
+
+		$filter_group = "";
+		$filter_agent = "";
+
+		if ($id_group != 0) {
+			$filter_group = " AND id_module_group = ". $id_group;
+		}
+		if ($agents != null) {
+			$filter_agent = " AND id_agente IN (" . $agents . ")";
+		}
+
+		if ($selection == 1 || (count($id_agents) == 1)) {
+			$modules = db_get_all_rows_sql("SELECT DISTINCT nombre, id_agente_modulo FROM tagente_modulo WHERE 1 = 1" . $filter_agent . $filter_group);
+
+			if (empty($modules)) $modules = array();
+
+			foreach ($modules as $k => $v) {
+				for ($j = $k + 1; $j <= sizeof($modules); $j++) {
+					if ($modules[$j]['nombre'] == $v['nombre']) {
+						unset($modules[$j]);
+					}
+				}
+			}
+		}
+		else {
+			$modules = db_get_all_rows_sql("SELECT nombre, id_agente_modulo FROM tagente_modulo WHERE 1 = 1" . $filter_agent . $filter_group);
+
+			if (empty($modules)) $modules = array();
+
+			foreach ($modules as $m) {
+				$is_in_all_agents = true;
+				$module_name = modules_get_agentmodule_name($m['id_agente_modulo']);
+				foreach ($id_agents as $a) {
+					$module_in_agent = db_get_value_filter('id_agente_modulo',
+						'tagente_modulo', array('id_agente' => $a, 'nombre' => $module_name));
+					if (!$module_in_agent) {
+						$is_in_all_agents = false;
+					}
+				}
+				if ($is_in_all_agents) {
+					$modules_to_report[] = $m;
+				}
+			}
+			$modules = $modules_to_report;
+
+			$modules = array_unique($modules);
+		}
+
+		foreach ($modules as $k => $v) {
+			$modules[$k] = io_safe_output($v);
+		}
+		
+		echo json_encode($modules);
 		return;
 	}
 	
@@ -135,7 +203,7 @@ if (is_ajax ()) {
 		
 		$return = array();
 		foreach ($modules as $module) {
-			$return[$module['id_agente_modulo']] = $module['nombre'];
+			$return[$module['id_agente_modulo']] = io_safe_output($module['nombre']);
 		}
 		
 		echo json_encode($return);
@@ -145,6 +213,7 @@ if (is_ajax ()) {
 	if ($get_agents_json_for_multiple_modules) {
 		$nameModules = get_parameter('module_name');
 		$selection_mode = get_parameter('selection_mode','common');
+		$status_modulo = (int) get_parameter ('status_module', -1);
 		
 		$groups = users_get_groups ($config["id_user"], "AW", false);
 		$group_id_list = ($groups ? join(",",array_keys($groups)):"0");
@@ -154,6 +223,32 @@ if (is_ajax ()) {
 			WHERE t1.id_agente = t2.id_agente
 				AND t1.id_grupo IN (' . $group_id_list .')
 				AND t2.nombre IN (\'' . implode('\',\'', $nameModules) . '\')';
+		
+		// Status selector
+		if ($status_modulo == AGENT_MODULE_STATUS_NORMAL) { //Normal
+			$sql_conditions .= ' estado = 0 AND utimestamp > 0)
+			OR (t1.id_tipo_modulo IN(21,22,23,100))) ';
+		}
+		elseif ($status_modulo == AGENT_MODULE_STATUS_CRITICAL_BAD) { //Critical
+			$sql_conditions .= ' estado = 1 AND utimestamp > 0 )';
+		}
+		elseif ($status_modulo == AGENT_MODULE_STATUS_WARNING) { //Warning
+			$sql_conditions .= ' estado = 2 AND utimestamp > 0 )';
+		}
+		elseif ($status_modulo == AGENT_MODULE_STATUS_NOT_NORMAL) { //Not normal
+			$sql_conditions .= ' estado <> 0';
+		} 
+		elseif ($status_modulo == AGENT_MODULE_STATUS_UNKNOWN) { //Unknown
+			$sql_conditions .= ' estado = 3 AND utimestamp <> 0 )';
+		}
+		elseif ($status_modulo == AGENT_MODULE_STATUS_NOT_INIT) { //Not init
+			$sql_conditions .= ' utimestamp = 0 )
+				AND t1.id_tipo_modulo NOT IN (21,22,23,100)';
+		}
+		
+		if ($status_modulo != -1) {
+			$filter .= ' AND t1.id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_estado where ' . $sql_conditions;
+		}
 		
 		if ($selection_mode == 'common') {
 			$sql .= 'AND (
@@ -179,6 +274,46 @@ if (is_ajax ()) {
 	}
 	
 	if ($get_agent_modules_alerts_json_for_multiple_agents) {
+		$idAgents = (array) get_parameter('id_agent');
+		$templates = (array) get_parameter('templates');
+		
+		$selection_mode = get_parameter('selection_mode','common');
+		
+		$sql = 'SELECT DISTINCT(nombre)
+			FROM tagente_modulo t1, talert_template_modules t2
+			WHERE t2.id_agent_module = t1.id_agente_modulo
+				AND delete_pending = 0
+				AND id_alert_template IN (' . implode(',', $templates) . ')
+				AND id_agente IN (' . implode(',', $idAgents) . ')';
+			
+		if ($selection_mode == 'common') {
+			$sql .= ' AND (
+					SELECT count(nombre)
+					FROM tagente_modulo t3, talert_template_modules t4
+					WHERE t4.id_agent_module = t3.id_agente_modulo
+						AND delete_pending = 0 AND t1.nombre = t3.nombre
+						AND id_agente IN (' . implode(',', $idAgents) . ')
+						AND id_alert_template IN (' . implode(',', $templates) . ')) = (' . count($idAgents) . ')';
+		}
+		
+		$sql .= ' ORDER BY t1.nombre';
+		
+		$nameModules = db_get_all_rows_sql($sql);
+		
+		if ($nameModules == false) {
+			$nameModules = array();
+		}
+		
+		$result = array();
+		foreach($nameModules as $nameModule) {
+			$result[] = io_safe_output($nameModule['nombre']);
+		}
+		
+		echo json_encode($result);
+		return;
+	}
+	
+	if ($get_agent_modules_multiple_alerts_json_for_multiple_agents) {
 		$idAgents = get_parameter('id_agent');
 		$id_template = get_parameter('template');
 		
@@ -225,6 +360,7 @@ if (is_ajax ()) {
 		$selection_mode = get_parameter('selection_mode', 'common');
 		$serialized = get_parameter('serialized', '');
 		$id_server = (int) get_parameter('id_server', 0);
+		$status_modulo = (int) get_parameter ('status_module', -1);
 		$metaconsole_server_name = null;
 		if (!empty($id_server)) {
 			$metaconsole_server_name = db_get_value('server_name',
@@ -259,6 +395,32 @@ if (is_ajax ()) {
 					$filter .= " AND UPPER(t1.nombre) LIKE UPPER('%$module_name%')";
 					break;
 			}
+		}
+		
+		// Status selector
+		if ($status_modulo == AGENT_MODULE_STATUS_NORMAL) { //Normal
+			$sql_conditions .= ' estado = 0 AND utimestamp > 0 )
+			 OR (t1.id_tipo_modulo IN(21,22,23,100)) ';
+		}
+		elseif ($status_modulo == AGENT_MODULE_STATUS_CRITICAL_BAD) { //Critical
+			$sql_conditions .= ' estado = 1 AND utimestamp > 0 )';
+		}
+		elseif ($status_modulo == AGENT_MODULE_STATUS_WARNING) { //Warning
+			$sql_conditions .= ' estado = 2 AND utimestamp > 0 )';
+		}
+		elseif ($status_modulo == AGENT_MODULE_STATUS_NOT_NORMAL) { //Not normal
+			$sql_conditions .= ' estado <> 0)';
+		} 
+		elseif ($status_modulo == AGENT_MODULE_STATUS_UNKNOWN) { //Unknown
+			$sql_conditions .= ' estado = 3 AND utimestamp <> 0 )';
+		}
+		elseif ($status_modulo == AGENT_MODULE_STATUS_NOT_INIT) { //Not init
+			$sql_conditions .= ' utimestamp = 0 )
+				AND t1.id_tipo_modulo NOT IN (21,22,23,100)';
+		}
+		
+		if ($status_modulo != -1) {
+			$filter .= ' AND t1.id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_estado where ' . $sql_conditions;
 		}
 		
 		if (is_metaconsole()) {
@@ -382,7 +544,19 @@ if (is_ajax ()) {
 			asort($result);
 		}
 		else {
-			$sql = 'SELECT DISTINCT(nombre)
+      
+      if(implode(',', $idAgents) < 0){
+      
+        
+      $sql = 'SELECT DISTINCT(nombre) FROM tagente_modulo
+WHERE nombre IN (
+SELECT nombre
+FROM tagente_modulo 
+GROUP BY nombre
+HAVING count(nombre) = (SELECT count(nombre) FROM tagente_modulo))';
+      }
+      else{
+      	$sql = 'SELECT DISTINCT(nombre)
 				FROM tagente_modulo t1
 				WHERE ' . $filter . '
 					AND t1.delete_pending = 0
@@ -395,8 +569,10 @@ if (is_ajax ()) {
 							WHERE t2.delete_pending = 0
 								AND t1.nombre = t2.nombre
 								AND t2.id_agente IN (' . implode(',', $idAgents) . ')) = (' . count($idAgents) . ')';
+			}elseif ($selection_mode == 'unknown'){
+				$sql .= 'AND t1.id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_estado where estado = 3 OR estado = 4)';
 			}
-			
+    }
 			$sql .= ' ORDER BY nombre';
 			
 			$nameModules = db_get_all_rows_sql($sql);
@@ -428,6 +604,7 @@ if (is_ajax ()) {
 		$delete_pending = (int) get_parameter ('delete_pending', -1);
 		// Use 0 as not received
 		$id_tipo_modulo = (int) get_parameter ('id_tipo_modulo', 0);
+		$status_modulo = (int) get_parameter ('status_module', -1);
 		
 		// Filter
 		$filter = array();
@@ -439,6 +616,33 @@ if (is_ajax ()) {
 			$filter['id_tipo_modulo'] = $id_tipo_modulo;
 		if (empty($filter))
 			$filter = false;
+		
+		// Status selector
+		if ($status_modulo == AGENT_MODULE_STATUS_NORMAL) { //Normal
+			$sql_conditions .= ' estado = 0 AND utimestamp > 0 ) 
+			OR (tagente_modulo.id_tipo_modulo IN(21,22,23,100)) ';
+		}
+		elseif ($status_modulo == AGENT_MODULE_STATUS_CRITICAL_BAD) { //Critical
+			$sql_conditions .= ' estado = 1 AND utimestamp > 0 )';
+		}
+		elseif ($status_modulo == AGENT_MODULE_STATUS_WARNING) { //Warning
+			$sql_conditions .= ' estado = 2 AND utimestamp > 0 )';
+		}
+		elseif ($status_modulo == AGENT_MODULE_STATUS_NOT_NORMAL) { //Not normal
+			$sql_conditions .= ' estado <> 0 )';
+		} 
+		elseif ($status_modulo == AGENT_MODULE_STATUS_UNKNOWN) { //Unknown
+			$sql_conditions .= ' estado = 3 AND utimestamp <> 0 )';
+		}
+		elseif ($status_modulo == AGENT_MODULE_STATUS_NOT_INIT) { //Not init
+			$sql_conditions .= ' utimestamp = 0 )
+				AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,100)';
+		}
+		
+		if ($status_modulo != -1) {
+			$filter['id_agente_modulo IN'] = ' (SELECT id_agente_modulo FROM tagente_estado where ' . $sql_conditions;
+		}
+		
 		
 		$get_id_and_name = (bool) get_parameter ('get_id_and_name');
 		$get_distinct_name = (bool) get_parameter ('get_distinct_name');
@@ -742,7 +946,9 @@ $id_agente = (int) get_parameter ("id_agente", 0);
 if (empty ($id_agente)) {
 	return;
 }
-
+$agent_a = check_acl ($config['id_user'], 0, "AR");
+$agent_w = check_acl ($config['id_user'], 0, "AW");
+$access = ($agent_a == true) ? 'AR' : (($agent_w == true) ? 'AW' : 'AR');
 $agent = db_get_row ('tagente', 'id_agente', $id_agente);
 // get group for this id_agente
 $id_grupo = $agent['id_grupo'];
@@ -753,7 +959,7 @@ if ($is_extra === ENTERPRISE_NOT_HOOK) {
 	$is_extra = false;
 }
 
-if (! check_acl ($config['id_user'], $id_grupo, "AR", $id_agente) && !$is_extra) {
+if (! check_acl ($config['id_user'], $id_grupo, "AR", $id_agente) && ! check_acl ($config['id_user'], $id_grupo, "AW", $id_agente) && !$is_extra) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access (read) to agent ".agents_get_name($id_agente));
 	include ("general/noaccess.php");
@@ -845,6 +1051,11 @@ $policyTab = enterprise_hook('policy_tab');
 if ($policyTab == -1)
 	$policyTab = "";
 
+/* UX Console */
+$ux_console_tab = enterprise_hook('ux_console_tab');
+if ($ux_console_tab == -1)
+	$ux_console_tab = "";
+
 
 /* GIS tab */
 $gistab="";
@@ -862,7 +1073,7 @@ if ($config['activate_gis']) {
 
 /* Incident tab */
 $total_incidents = agents_get_count_incidents($id_agente);
-if ($config['integria_enabled'] == 0 and $total_incidents > 0) {
+if ($total_incidents > 0) {
 	$incidenttab['text'] = '<a href="index.php?sec=gagente&amp;sec2=operation/agentes/ver_agente&tab=incident&id_agente='.$id_agente.'">' 
 		. html_print_image ("images/book_edit.png", true, array ("title" =>__('Incidents')))
 		. '</a>';
@@ -925,7 +1136,8 @@ if (enterprise_installed() && $config['log_collector']) {
 }
 
 /* eHorus tab */
-if ($config['ehorus_enabled'] && !empty($config['ehorus_custom_field'])) {
+if ($config['ehorus_enabled'] && !empty($config['ehorus_custom_field'])
+		&& (check_acl($config['id_user'], $id_grupo, 'AW') || is_user_admin($config['id_user']))) {
 	$ehorus_agent_id = agents_get_agent_custom_field($id_agente, $config['ehorus_custom_field']);
 	if (!empty($ehorus_agent_id)) {
 		$tab_url = 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=ehorus&id_agente='.$id_agente;
@@ -942,7 +1154,7 @@ if ($config['ehorus_enabled'] && !empty($config['ehorus_custom_field'])) {
 		$ehorus_tab['sub_menu'] .= '</a>';
 		$ehorus_tab['sub_menu'] .= '<a class="tab_display" href="' . $tab_url . '&client_tab=display">';
 		$ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'
-			. html_print_image("images/ehorus/vnc.png", true, array( 'title' => __('VNC')));
+			. html_print_image("images/ehorus/vnc.png", true, array( 'title' => __('Display')));
 		$ehorus_tab['sub_menu'] .= '</li>';
 		$ehorus_tab['sub_menu'] .= '</a>';
 		$ehorus_tab['sub_menu'] .= '<a class="tab_processes" href="' . $tab_url . '&client_tab=processes">';
@@ -974,7 +1186,8 @@ $onheader = array('manage' => $managetab,
 	'gis' => $gistab,
 	'custom' => $custom_fields,
 	'graphs' => $graphs,
-	'policy' => $policyTab);
+	'policy' => $policyTab,
+	'ux_console' => $ux_console_tab);
 
 //Added after it exists
 // If the agent has incidents associated
@@ -1078,6 +1291,9 @@ switch($tab) {
 	case "policy":
 		$header_description = ' - ' . __('Policy');
 		break;
+	case "ux_console_tab":
+		$header_description = ' - ' . __('UX Console');
+		break;
 	case "incident":
 		$header_description = ' - ' . __('Incident');
 		break;
@@ -1126,6 +1342,9 @@ switch ($tab) {
 		break;
 	case "policy":
 		enterprise_include ("operation/agentes/policy_view.php");
+		break;
+	case "ux_console_tab":
+		enterprise_include ("operation/agentes/ux_console_view.php");
 		break;
 	case "graphs";
 		require("operation/agentes/graphs.php");

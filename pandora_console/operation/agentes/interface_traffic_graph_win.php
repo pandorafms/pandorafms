@@ -144,6 +144,7 @@ $interface_traffic_modules = array(
 		$start_date = (string) get_parameter("start_date", date("Y-m-d"));
 		$zoom = (int) get_parameter ("zoom", 1);
 		$baseline = get_parameter ("baseline", 0);
+		$show_percentil = get_parameter ("show_percentil", 0);
 		
 		if ($zoom > 1) {
 			$height = $height * ($zoom / 2.1);
@@ -179,7 +180,15 @@ $interface_traffic_modules = array(
 			$config['homeurl'],
 			array_keys($interface_traffic_modules),
 			array_fill(0, count($interface_traffic_modules), $config["interface_unit"]),
-			false);
+			false,
+			true,
+			true,
+			true,
+			1,
+			false,
+			false,
+			(($show_percentil)? $config['percentil'] : null),
+			true);
 		
 		echo '</div>';
 		
@@ -188,7 +197,8 @@ $interface_traffic_modules = array(
 		///////////////////////////
 		$side_layer_params = array();
 		// TOP TEXT
-		$side_layer_params['top_text'] = "<div style='color: white; width: 100%; text-align: center; font-weight: bold; vertical-align: top;'>" . html_print_image('images/config_mc.png', true, array('width' => '16px')) . ' ' . __('Pandora FMS Graph configuration menu') . "</div>";
+
+		$side_layer_params['top_text'] = "<div style='color: white; width: 100%; text-align: center; font-weight: bold; vertical-align: top;'>" . html_print_image('/images/config.disabled.png', true, array('width' => '16px'),false,false,false,true) . ' ' . __('Pandora FMS Graph configuration menu') . "</div>";
 		$side_layer_params['body_text'] = "<div class='menu_sidebar_outer'>";
 		$side_layer_params['body_text'] .=__('Please, make your changes and apply with the <i>Reload</i> button');
 		
@@ -215,7 +225,7 @@ $interface_traffic_modules = array(
 		$data = array();
 		$data[0] = __('Begin date');
 		$data[1] = html_print_input_text ("start_date", substr ($start_date, 0, 10),'', 15, 255, true);
-		$data[1] .= html_print_image ("images/calendar_view_day.png", true, array ("onclick" => "scwShow(scwID('text-start_date'),this);", "style" => 'vertical-align: bottom;'));
+		$data[1] .= html_print_image ("/images/calendar_view_day.png", true, array ("onclick" => "scwShow(scwID('text-start_date'),this);", "style" => 'vertical-align: bottom;'),false,false,false,true);
 		$table->data[] = $data;
 		$table->rowclass[] = '';
 		
@@ -224,6 +234,12 @@ $interface_traffic_modules = array(
 		$data[1] = html_print_extended_select_for_time('period', $period, '', '', 0, 7, true);
 		$table->data[] = $data;
 		$table->rowclass[] = '';
+		
+		$data = array();
+		$data[0] = __('Show percentil');
+		$data[1] = html_print_checkbox ("show_percentil", 1, (bool) $show_percentil, true);
+		$table->data[] = $data;
+		$table->rowclass[] ='';
 		
 		$data = array();
 		$data[0] = __('Zoom factor');

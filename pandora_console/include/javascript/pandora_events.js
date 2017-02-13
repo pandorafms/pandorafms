@@ -44,6 +44,9 @@ function show_event_dialog(event_id, group_rep, dialog_page, result) {
 					resizable: true,
 					draggable: true,
 					modal: true,
+					close: function() {
+						$("#refrcounter").countdown("resume");
+					},
 					overlay: {
 						opacity: 0.5,
 						background: "black"
@@ -52,6 +55,8 @@ function show_event_dialog(event_id, group_rep, dialog_page, result) {
 					height: 530
 				})
 				.show ();
+				
+			$("#refrcounter").countdown("pause");
 				
 			switch (result) {
 				case 'comment_ok':
@@ -354,7 +359,7 @@ function perform_response(target) {
 		dataType: 'html',
 		success: function (data) {
 			if (data == '') {
-				$('#response_out').html('<i>No output</i>');
+				$('#response_out').html('<i>Unreachable host</i>');
 			}
 			else {
 				var out = data.replace(/[\n|\r]/g, "<br>");
@@ -487,4 +492,60 @@ function event_comment() {
 	});
 	
 	return false;
+}
+
+//Show event list when fielter repetead is Group agents
+function show_events_group_agent (id_insert, id_agent, server_id) {
+	
+	var ajax_file = $('#hidden-ajax_file').val();
+	parameter = [];
+	parameter.push ({name: "id_agent",
+			value: id_agent});
+	parameter.push ({name: "server_id",
+			value: server_id});
+	parameter.push ({name: "event_type",
+			value: $("#event_type").val()});
+	parameter.push ({name: "severity",
+			value: $("#severity").val()});
+	parameter.push ({name: "status",
+			value: $("#status").val()});
+	parameter.push ({name: "search",
+			value: $("#text-search").val()});
+	parameter.push ({name: "id_agent_module",
+			value: $('input:hidden[name=module_search_hidden]').val()});
+	parameter.push ({name: "event_view_hr",
+			value: $("#text-event_view_hr").val()});
+	parameter.push ({name: "id_user_ack",
+			value: $("#id_user_ack").val()});
+	parameter.push ({name: "tag_with",
+			value: Base64.decode($("#hidden-tag_with").val())});
+	parameter.push ({name: "tag_without",
+			value: Base64.decode($("#hidden-tag_without").val())});
+	parameter.push ({name: "filter_only_alert",
+			value: $("#filter_only_alert").val()});
+	parameter.push ({name: "date_from",
+			value: $("#text-date_from").val()});
+	parameter.push ({name: "date_to",
+			value: $("#text-date_to").val()});
+	parameter.push ({name: "server_id_search",
+			value: $("#server_id").val()});
+	parameter.push ({
+			name: "page",
+			value: "include/ajax/events"});
+	parameter.push ({
+			name: "get_list_events_agents",
+			value: 1});
+	
+	jQuery.ajax ({
+		type: 'POST',
+		url: action=ajax_file,
+		data: parameter,
+		dataType: 'html',
+		success: function (data) {
+			console.log(data);
+			$("#"+id_insert).html(data);
+			$("#"+id_insert).toggle();
+		}
+	});
+	
 }

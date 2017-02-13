@@ -157,6 +157,15 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 		}
 	}
 	
+	var module_status = -1;
+	if (typeof $("#status_module") !== 'undefined') {
+		try {
+			module_status = $("#status_module").val();
+		}
+		catch (error) {
+		}
+	}
+	
 	// Module name
 	var module_name = $("#text-module_filter").val();
 	
@@ -222,7 +231,8 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 			"name": module_name,
 			"selection_mode": selection_mode,
 			"serialized": serialized,
-			"id_server": id_server
+			"id_server": id_server,
+			"status_module": module_status
 		},
 		function (data) {
 			$('#module').empty ();
@@ -364,6 +374,78 @@ function agent_changed_by_multiple_agents_with_alerts (event, id_agent, selected
 }
 
 /**
+ * Fill up select box with id "module" with modules with alerts of one or more templates
+ * before agent has been selected, but this not empty the select box.s
+ *
+ * @param event that has been triggered
+ * @param id_agent Agent ID that has been selected
+ * @param selected Which module(s) have to be selected
+ */
+function alert_templates_changed_by_multiple_agents_with_alerts (event, id_agent, selected) {
+	var idAgents = Array();
+	
+	jQuery.each ($("#id_agents option:selected"), function (i, val) {
+		//val() because the var is same <option val="NNN"></option>
+		idAgents.push($(val).val());
+	});
+	
+	var selection_mode = $('#modules_selection_mode').val();
+	if(selection_mode == undefined) {
+		selection_mode = 'common';
+	}
+	
+	templates = Array();
+	jQuery.each ($("#id_alert_templates option:selected"), function (i, val) {
+		//val() because the var is same <option val="NNN"></option>
+		templates.push($(val).val());
+	});
+	
+	console.log(templates);
+	
+	$('#module').attr ('disabled', 1);
+	$('#module').empty ();
+	$('#module').append ($('<option></option>').html ("Loading...").attr ("value", 0));
+	jQuery.post ('ajax.php', 
+				{"page": "operation/agentes/ver_agente",
+				"get_agent_modules_alerts_json_for_multiple_agents": 1,
+				"templates[]": templates,
+				"id_agent[]": idAgents,
+				"selection_mode": selection_mode
+				},
+				function (data) {
+					$('#module').empty ();
+					
+					if (typeof($(document).data('text_for_module')) != 'undefined') {
+						$('#module').append ($('<option></option>').html ($(document).data('text_for_module')).attr("value", 0).prop('selected', true));
+					}
+					else {
+						if (typeof(data['any_text']) != 'undefined') {
+							$('#module').append ($('<option></option>').html (data['any_text']).attr ("value", 0).prop('selected', true));
+						}
+						else {
+							var anyText = $("#any_text").html(); //Trick for catch the translate text.
+							
+							if (anyText == null) {
+								anyText = 'Any';
+							}
+							
+							$('#module').append ($('<option></option>').html (anyText).attr ("value", 0).prop('selected', true));
+						}
+					}
+					jQuery.each (data, function (i, val) {
+								s = js_html_entity_decode(val);
+								$('#module').append ($('<option></option>').html (s).attr ("value", val));
+								$('#module').fadeIn ('normal');
+								});
+					if (selected != undefined)
+					$('#module').attr ('value', selected);
+					$('#module').removeAttr('disabled');
+				},
+				"json"
+				);
+}
+
+/**
  * Fill up select box with id "agent" with agents after module has been selected, but this not empty the select box.s
  *
  * @param event that has been triggered
@@ -382,6 +464,15 @@ function module_changed_by_multiple_modules (event, id_module, selected) {
 	$('#agents').empty ();
 	$('#agents').append ($('<option></option>').html ("Loading...").attr ("value", 0));
 	
+	var status_module = -1;
+	if (typeof $("#status_module") !== 'undefined') {
+		try {
+			status_module = $("#status_module").val();
+		}
+		catch (error) {
+		}
+	}
+	
 	var selection_mode = $('#agents_selection_mode').val();
 	if(selection_mode == undefined) {
 		selection_mode = 'common';
@@ -390,6 +481,7 @@ function module_changed_by_multiple_modules (event, id_module, selected) {
 	jQuery.post('ajax.php', 
 		{"page": "operation/agentes/ver_agente",
 		"get_agents_json_for_multiple_modules": 1,
+		"status_module": status_module,
 		"module_name[]": idModules,
 		"selection_mode": selection_mode
 		},
@@ -990,9 +1082,9 @@ function show_dialog_qrcode(dialog, text, where, width, height) {
 			}
 	}
 	
-	paint_qrcode(text, where, 256, 256)
+	paint_qrcode(text, where, 256, 256);
 	
-	$(dialog).dialog( "open" );
+	$(dialog).dialog({ autoOpen: false, modal: true }).dialog('open');
 }
 
 function openURLTagWindow(url) {
@@ -1023,6 +1115,21 @@ function toggle_full_value(id) {
 	});
 }
 
+function autoclick_profile_users(actual_level, firts_level, second_level) {
+	if ($('#checkbox-' + actual_level).is(":checked")) {
+		if (typeof firts_level !== "undefined") {
+			var is_checked_firts = $('#checkbox-' + firts_level).is(':checked');
+			if (!is_checked_firts) {
+				$('#checkbox-' + firts_level).prop('checked', true);
+			}
+			if (second_level !== false) {
+				if (!$('#checkbox-' + second_level).is(":checked")) {
+					$('#checkbox-' + second_level).prop('checked', true);
+				}
+			}
+		}
+	}
+}
 /**
  * Auto hides an element and shows it
  * when the user moves the mouse over the body.

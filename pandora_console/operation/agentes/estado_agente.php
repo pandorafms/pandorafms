@@ -26,7 +26,7 @@ enterprise_include_once('include/functions_config_agents.php');
 
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "AR")) {
+if (! check_acl ($config['id_user'], 0, "AR") && ! check_acl ($config['id_user'], 0, "AW")) {
 	db_pandora_audit("ACL Violation", "Trying to access agent main list view");
 	require ("general/noaccess.php");
 	
@@ -120,6 +120,9 @@ $recursion = get_parameter('recursion', 0);
 $status = (int) get_parameter ('status', -1);
 
 $strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
+$agent_a = (bool) check_acl ($config['id_user'], 0, "AR");
+$agent_w = (bool) check_acl ($config['id_user'], 0, "AW");
+$access = ($agent_a === true) ? 'AR' : (($agent_w === true) ? 'AW' : 'AR');
 
 $onheader = array();
 
@@ -163,8 +166,9 @@ echo '<tr><td style="white-space:nowrap;">';
 
 echo __('Group') . '&nbsp;';
 
-$groups = users_get_groups ();
-html_print_select_groups(false, "AR", true, 'group_id', $group_id, 'this.form.submit()', '', '', false, false, true, '', false, 'width:150px');
+$groups = users_get_groups (false, $access);
+
+html_print_select_groups(false, $access, true, 'group_id', $group_id, 'this.form.submit()', '', '', false, false, true, '', false, 'width:150px');
 
 echo '</td><td style="white-space:nowrap;">';
 
@@ -225,7 +229,8 @@ $order = null;
 $order_collation = "";
 switch ($config["dbtype"]) {
 	case "mysql":
-		$order_collation = " COLLATE utf8_general_ci";
+		//$order_collation = " COLLATE utf8_general_ci";
+		$order_collation = "";
 		break;
 	case "postgresql":
 	case "oracle":
@@ -235,6 +240,20 @@ switch ($config["dbtype"]) {
 
 
 switch ($sortField) {
+	case 'remote':
+		switch ($sort) {
+			case 'up':
+				$selectRemoteUp = $selected;
+				$order = array('field' => 'remote' . $order_collation,
+					'field2' => 'nombre' . $order_collation, 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectRemoteDown = $selected;
+				$order = array('field' => 'remote' . $order_collation,
+					'field2' => 'nombre' . $order_collation, 'order' => 'DESC');
+				break;
+		}
+		break;
 	case 'name':
 		switch ($sort) {
 			case 'up':
@@ -338,7 +357,28 @@ switch ($sortField) {
 
 $search_sql = '';
 if ($search != "") {
-	$search_sql = " AND ( nombre " . $order_collation . " LIKE '%$search%' OR direccion LIKE '%$search%' OR comentarios LIKE '%$search%') ";
+	//$search_sql = " AND ( nombre " . $order_collation . " LIKE '%$search%' OR direccion LIKE '%$search%' OR comentarios LIKE '%$search%') ";
+	$sql = "SELECT DISTINCT taddress_agent.id_agent FROM taddress
+	INNER JOIN taddress_agent ON
+	taddress.id_a = taddress_agent.id_a
+	WHERE taddress.ip LIKE '%$search%'";
+
+	$id = db_get_all_rows_sql($sql);
+	if($id != ''){
+		$aux = $id[0]['id_agent'];
+		$search_sql = " AND ( nombre " . $order_collation . "
+			LIKE '%$search%' OR tagente.id_agente = $aux";
+		if(count($id)>=2){
+			for ($i = 1; $i < count($id); $i++){
+				$aux = $id[$i]['id_agent'];
+				$search_sql .= " OR tagente.id_agente = $aux";
+			}
+		}
+		$search_sql .= ")";
+	}else{
+		$search_sql = " AND ( nombre " . $order_collation . "
+			LIKE '%$search%') ";
+	}
 }
 
 // Show only selected groups
@@ -350,7 +390,7 @@ if ($group_id > 0) {
 }
 else {
 	$groups = array();
-	$user_groups = users_get_groups($config["id_user"], "AR");
+	$user_groups = users_get_groups($config["id_user"], $access);
 	$groups = array_keys($user_groups);
 }
 
@@ -358,12 +398,14 @@ else {
 if ($strict_user) {
 	
 	$count_filter = array (
-		'order' => 'tagente.nombre COLLATE utf8_general_ci ASC',
+		//'order' => 'tagente.nombre COLLATE utf8_general_ci ASC',
+		'order' => 'tagente.nombre ASC',
 		'disabled' => 0,
 		'status' => $status,
 		'search' => $search);
 	$filter = array (
-		'order' => 'tagente.nombre COLLATE utf8_general_ci ASC',
+		//'order' => 'tagente.nombre COLLATE utf8_general_ci ASC',
+		'order' => 'tagente.nombre ASC',
 		'disabled' => 0,
 		'status' => $status,
 		'search' => $search,
@@ -382,7 +424,7 @@ if ($strict_user) {
 	$fields = array ('tagente.id_agente','tagente.id_grupo','tagente.id_os','tagente.ultimo_contacto','tagente.intervalo','tagente.comentarios description','tagente.quiet',
 		'tagente.normal_count','tagente.warning_count','tagente.critical_count','tagente.unknown_count','tagente.notinit_count','tagente.total_count','tagente.fired_count');
 	
-	$acltags = tags_get_user_module_and_tags ($config['id_user'], 'AR', $strict_user);
+	$acltags = tags_get_user_module_and_tags ($config['id_user'], $access, $strict_user);
 	
 	$total_agents = tags_get_all_user_agents (false, $config['id_user'], $acltags, $count_filter, $fields, false, $strict_user, true);
 	$total_agents = count($total_agents);
@@ -396,7 +438,7 @@ else {
 		'id_grupo' => $groups,
 		'search' => $search_sql,
 		'status' => $status),
-		array ('COUNT(*) as total'), 'AR', false);
+		array ('COUNT(*) as total'), $access, false);
 	$total_agents = isset ($total_agents[0]['total']) ?
 		$total_agents[0]['total'] : 0;
 	
@@ -423,7 +465,7 @@ else {
 			'notinit_count',
 			'total_count',
 			'fired_count'),
-		'AR',
+		$access,
 		$order);
 }
 
@@ -452,7 +494,13 @@ $table->head[1] = __('Description'). ' ' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=description&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp, "alt" => "up"))  . '</a>' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=description&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown, "alt" => "down")) . '</a>';
 
-$table->size[1] = "25%";
+$table->size[1] = "16%";
+
+$table->head[9] = __('Remote'). ' ' .
+	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=remote&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectRemoteUp, "alt" => "up"))  . '</a>' .
+	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=remote&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectRemoteDown, "alt" => "down")) . '</a>';
+
+$table->size[9] = "9%";
 
 $table->head[2] = __('OS'). ' ' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=os&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectOsUp, "alt" => "up"))  . '</a>' .
@@ -521,7 +569,7 @@ foreach ($agents as $agent) {
 	if ($agent['quiet']) {
 		$data[0] .= html_print_image("images/dot_green.disabled.png", true, array("border" => '0', "title" => __('Quiet'), "alt" => "")) . "&nbsp;";
 	}
-	$data[0] .= ui_print_agent_name($agent["id_agente"], true, 60, 'font-size:6.5pt !important;', true);
+	$data[0] .= ui_print_agent_name($agent["id_agente"], true, 60, 'font-size:8pt !important;', true);
 	$data[0] .= '</span>';
 	$data[0] .= '<div class="agentleft_' . $agent["id_agente"] . '" style="visibility: hidden; clear: left;">';
 	$data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'">'.__('View').'</a>';
@@ -531,15 +579,27 @@ foreach ($agents as $agent) {
 	}
 	$data[0] .= '</div></div>';
 	
-	$data[1] = ui_print_truncate_text(strip_tags(ui_bbcode_to_html($agent["description"])), 'description', false, true, true, '[&hellip;]', 'font-size: 6.5pt');
+	$data[1] = ui_print_truncate_text($agent["description"], 'description', false, true, true, '[&hellip;]', 'font-size: 6.5pt');
+	
+	$data[9] = "";
+	
+	if (enterprise_installed()) {
+		enterprise_include_once('include/functions_config_agents.php');
+		
+		if (enterprise_hook('config_agents_has_remote_configuration',array($agent["id_agente"]))) {
+	
+	$data[9] = html_print_image("images/application_edit.png", true, array("align" => 'middle', "title" => __('Remote config')));
+		
+		}
+	}
 	
 	$data[2] = ui_print_os_icon ($agent["id_os"], false, true);
 	
-	$data[3] = human_time_description_raw($agent["intervalo"]);
+	$data[3] = '<span style="font-size:6.5pt;">'.human_time_description_raw($agent["intervalo"])."</span>";
 	
 	$data[4] = ui_print_group_icon ($agent["id_grupo"], true);
-	
-	$data[5] = reporting_tiny_stats($agent, true, 'agent', ':', $strict_user);
+	$agent['not_init_count'] = $agent['notinit_count'];
+	$data[5] = reporting_tiny_stats($agent, true, ' ', ':', $strict_user);
 	
 	
 	$data[6] = $status_img;
@@ -587,6 +647,12 @@ if (!empty ($table->data)) {
 }
 else {
 	ui_print_info_message ( array ( 'no_close' => true, 'message' => __('There are no defined agents') ) );
+	echo '<div style="text-align: right; float: right;">';
+	echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
+		html_print_input_hidden ('new_agent', 1);
+		html_print_submit_button (__('Create agent'), 'crt', false, 'class="sub next"');
+	echo "</form>";
+	echo '</div>';
 }
 ?>
 

@@ -2,8 +2,8 @@
 # Pandora FMS Server 
 #
 %define name        pandorafms_server
-%define version     6.1dev
-%define release     160601
+%define version     7.0dev
+%define release     170213
 
 Summary:            Pandora FMS Server
 Name:               %{name}
@@ -28,7 +28,7 @@ Requires:           perl(HTTP::Request::Common) perl(LWP::Simple) perl(LWP::User
 Requires:           perl(XML::Simple) perl(XML::Twig) net-snmp-utils
 Requires:           perl(NetAddr::IP) net-snmp net-tools
 Requires:           perl(IO::Socket::INET6) perl(Net::Telnet)
-Requires:           nmap wmic sudo perl(JSON)
+Requires:           nmap sudo perl(JSON)
 Requires:           perl(Time::HiRes) perl(Encode::Locale)
 Requires:           perl perl(Sys::Syslog) perl(HTML::Entities)
 

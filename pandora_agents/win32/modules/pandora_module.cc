@@ -213,6 +213,8 @@ Pandora_Module::parseModuleTypeFromString (string type) {
 		return TYPE_ASYNC_STRING;
 	} else if (type == module_log_str) {
 		return TYPE_LOG;
+	} else if (type == module_generic_data_inc_abs_str) {
+		return TYPE_GENERIC_DATA_INC_ABS;
 	} else {
 		return TYPE_0;
 	}

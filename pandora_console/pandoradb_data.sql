@@ -35,6 +35,7 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('days_purge','45'),
 ('days_delete_unknown','0'),
 ('days_compact','0'),
+('days_autodisable_deletion','30'),
 ('graph_res','5'),
 ('step_compact','1'),
 ('db_scheme_first_version', '6.0dev'),
@@ -108,8 +109,10 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('custom_report_front_logo', 'images/pandora_logo_white.jpg'),
 ('custom_report_front_header', ''),
 ('custom_report_front_footer', ''),
-('post_process_custom_values', '{"0.00000038580247":"Seconds&#x20;to&#x20;months","0.00000165343915":"Seconds&#x20;to&#x20;weeks","0.00001157407407":"Seconds&#x20;to&#x20;days","0.01666666666667":"Seconds&#x20;to&#x20;minutes","0.00000000093132":"Bytes&#x20;to&#x20;Gigabytes","0.00000095367432":"Bytes&#x20;to&#x20;Megabytes","0.0009765625":"Bytes&#x20;to&#x20;Kilobytes","0.00000001653439":"Timeticks&#x20;to&#x20;weeks","0.00000011574074":"Timeticks&#x20;to&#x20;days"}'),
 ('minor_release_open', 0);
+('identification_reminder', 1),
+('identification_reminder_timestamp', 0),
+('post_process_custom_values', '{"0.00000038580247":"Seconds&#x20;to&#x20;months","0.00000165343915":"Seconds&#x20;to&#x20;weeks","0.00001157407407":"Seconds&#x20;to&#x20;days","0.01666666666667":"Seconds&#x20;to&#x20;minutes","0.00000000093132":"Bytes&#x20;to&#x20;Gigabytes","0.00000095367432":"Bytes&#x20;to&#x20;Megabytes","0.0009765625":"Bytes&#x20;to&#x20;Kilobytes","0.00000001653439":"Timeticks&#x20;to&#x20;weeks","0.00000011574074":"Timeticks&#x20;to&#x20;days"}');
 
 UNLOCK TABLES;
 
@@ -192,12 +195,12 @@ UNLOCK TABLES;
 
 
 LOCK TABLES `tlink` WRITE;
-INSERT INTO `tlink` VALUES 
-(1,'Pandora FMS Manual','http://wiki.pandorafms.com/?title=Pandora'),
-(2,'Pandora FMS','http://pandorafms.com'),
-(3,'Report a bug','https://sourceforge.net/tracker/?func=add&amp;group_id=155200&amp;atid=794852'),
-(4,'Suggest new feature','http://sourceforge.net/tracker/?group_id=155200&amp;atid=794855'),
-(5,'Module library','http://pandorafms.com/pandora/repository/en');
+INSERT INTO `tlink` VALUES
+(1,'Documentation','http://wiki.pandorafms.com/'),
+(2,'Enterprise Edition','http://pandorafms.com'),
+(3,'Report a bug','https://github.com/pandorafms/pandorafms/issues'),
+(4,'Suggest new feature','http://forums.pandorafms.com/index.php?board=22.0'),
+(5,'Module library','http://library.pandorafms.com/');
 
 UNLOCK TABLES;
 
@@ -991,7 +994,7 @@ INSERT INTO `tgis_map_layer` VALUES (1,'Group All',1,0,1,0);
 INSERT INTO `talert_commands` (`id`, `name`, `command`, `description`, `internal`, `fields_descriptions`, `fields_values`) VALUES (12,'Remote&#x20;agent&#x20;control','/usr/share/pandora_server/util/udp_client.pl&#x20;_address_&#x20;41122&#x20;&quot;_field1_&quot;','This&#x20;command&#x20;is&#x20;used&#x20;to&#x20;send&#x20;commands&#x20;to&#x20;the&#x20;Pandora&#x20;FMS&#x20;agents&#x20;with&#x20;the&#x20;UDP&#x20;server&#x20;enabled.&#x20;The&#x20;UDP&#x20;server&#x20;is&#x20;used&#x20;to&#x20;order&#x20;agents&#x20;&#40;Windows&#x20;and&#x20;UNIX&#41;&#x20;to&#x20;&quot;refresh&quot;&#x20;the&#x20;agent&#x20;execution:&#x20;that&#x20;means,&#x20;to&#x20;force&#x20;the&#x20;agent&#x20;to&#x20;execute&#x20;and&#x20;send&#x20;data',0,'[\"Command\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]','[\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]');
 
 INSERT INTO `talert_actions` (`id`, `name`, `id_alert_command`, `field1`, `field2`, `field3`, `field4`, `field5`, `field6`, `field7`, `field8`, `field9`, `field10`, `id_group`, `action_threshold`, `field1_recovery`, `field2_recovery`, `field3_recovery`, `field4_recovery`, `field5_recovery`, `field6_recovery`, `field7_recovery`, `field8_recovery`, `field9_recovery`, `field10_recovery`) VALUES
-(1,'Mail&#x20;to&#x20;XXX',1,'yourmail@domain.es','[PANDORA] Alert from agent _agent_ on module _module_','','','','','','','','',0,0,'','','','','','','','','','');
+(1,'Mail&#x20;to&#x20;Admin',1,'yourmail@domain.es','[PANDORA] Alert from agent _agent_ on module _module_','','','','','','','','',0,0,'','','','','','','','','','');
 INSERT INTO `talert_actions` (`id`, `name`, `id_alert_command`, `field1`, `field2`, `field3`, `field4`, `field5`, `field6`, `field7`, `field8`, `field9`, `field10`, `id_group`, `action_threshold`, `field1_recovery`, `field2_recovery`, `field3_recovery`, `field4_recovery`, `field5_recovery`, `field6_recovery`, `field7_recovery`, `field8_recovery`, `field9_recovery`, `field10_recovery`) VALUES
 (2,'Restart&#x20;agent',12,'REFRESH AGENT *','','','','','','','','','',0,0,'','','','','','','','','','');
 INSERT INTO `talert_actions` (`id`, `name`, `id_alert_command`, `field1`, `field2`, `field3`, `field4`, `field5`, `field6`, `field7`, `field8`, `field9`, `field10`, `id_group`, `action_threshold`, `field1_recovery`, `field2_recovery`, `field3_recovery`, `field4_recovery`, `field5_recovery`, `field6_recovery`, `field7_recovery`, `field8_recovery`, `field9_recovery`, `field10_recovery`) VALUES
@@ -1031,7 +1034,7 @@ INSERT INTO `tplugin` (`id`, `name`, `description`, `max_timeout`, `execute`, `p
 
 INSERT INTO `tplugin` (`id`, `name`, `description`, `max_timeout`, `max_retries`, `execute`, `net_dst_opt`, `net_port_opt`, `user_opt`, `pass_opt`, `plugin_type`, `macros`, `parameters`) VALUES (9,'Packet&#x20;Loss','Checks&#x20;for&#x20;dropped&#x20;packages&#x20;after&#x20;X&#x20;seconds&#x20;of&#x20;testing.&#x20;It&#x20;returns&#x20;%&#x20;of&#x20;dropped&#x20;packets.&#x20;It&#x20;uses&#x20;ping&#x20;flood&#x20;mode&#x20;to&#x20;launch&#x20;50&#x20;consecutive&#x20;pings&#x20;to&#x20;a&#x20;remote&#x20;destination.&#x20;On&#x20;local,&#x20;stable&#x20;networks,&#x20;value&#x20;should&#x20;be&#x20;0.&#x0d;&#x0a;',30,0,'/usr/share/pandora_server/util/plugin/packet_loss.sh','','','','',0,'{\"1\":{\"macro\":\"_field1_\",\"desc\":\"Test&#x20;time\",\"help\":\"\",\"value\":\"8\",\"hide\":\"\"},\"2\":{\"macro\":\"_field2_\",\"desc\":\"Target&#x20;IP\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"}}','_field1_&#x20;_field2_');
 
-INSERT INTO `tagent_custom_fields` VALUES (1,'Serial&#x20;Number',0),(2,'Department',0),(3,'Additional&#x20;ID',0);
+INSERT INTO `tagent_custom_fields` VALUES (1,'Serial&#x20;Number',0),(2,'Department',0),(3,'Additional&#x20;ID',0),(4,'eHorusID',0);
 
 INSERT INTO `ttag` VALUES (1,'network','Network&#x20;equipment','http://artica.es','',''),(2,'critical','Critical&#x20;modules','','',''),(3,'dmz','DMZ&#x20;Network&#x20;Zone','','',''),(4,'performance','Performance&#x20;anda&#x20;capacity&#x20;modules','','',''),(5,'configuration','','','','');
 

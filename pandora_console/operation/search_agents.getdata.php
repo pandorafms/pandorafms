@@ -117,6 +117,29 @@ if ($searchAgents) {
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
+		$sql = "SELECT DISTINCT taddress_agent.id_agent FROM taddress
+		INNER JOIN taddress_agent ON
+		taddress.id_a = taddress_agent.id_a
+		WHERE taddress.ip LIKE '%$stringSearchSQL%'";
+
+		$id = db_get_all_rows_sql($sql);
+		if($id != ''){
+			$aux = $id[0]['id_agent'];
+			$search_sql = " t1.nombre COLLATE utf8_general_ci LIKE '%%" . $stringSearchSQL . "%%' OR
+							t2.nombre COLLATE utf8_general_ci LIKE '%%" . $stringSearchSQL . "%%' OR
+							t1.id_agente = $aux";
+
+			if(count($id)>=2){
+				for ($i = 1; $i < count($id); $i++){
+					$aux = $id[$i]['id_agent'];
+					$search_sql .= " OR t1.id_agente = $aux";
+				}
+			}
+		}else{
+			$search_sql = " t1.nombre COLLATE utf8_general_ci LIKE '%%" . $stringSearchSQL . "%%' OR
+							t2.nombre COLLATE utf8_general_ci LIKE '%%" . $stringSearchSQL . "%%' OR
+							t1.direccion COLLATE utf8_general_ci LIKE '%%" . $stringSearchSQL . "%%'";
+		}
 			$sql = "
 				FROM tagente t1
 					INNER JOIN tgrupo t2
@@ -140,14 +163,35 @@ if ($searchAgents) {
 							)
 					)
 					AND (
-						t1.nombre COLLATE utf8_general_ci LIKE '%%" . $stringSearchSQL . "%%' OR
-						t2.nombre COLLATE utf8_general_ci LIKE '%%" . $stringSearchSQL . "%%' OR
-						t1.direccion COLLATE utf8_general_ci LIKE '%%" . $stringSearchSQL . "%%'
+						".$search_sql."
 					)
 			";
 			break;
 		case "postgresql":
 		case "oracle":
+			$sql = "SELECT DISTINCT taddress_agent.id_agent FROM taddress
+			INNER JOIN taddress_agent ON
+			taddress.id_a = taddress_agent.id_a
+			WHERE taddress.ip LIKE '%$stringSearchSQL%'";
+
+			$id = db_get_all_rows_sql($sql);
+			if($id != ''){
+				$aux = $id[0]['id_agent'];
+				$search_sql = " t1.nombre COLLATE utf8_general_ci LIKE '%%" . strtolower($stringSearchSQL) . "%%' OR
+								t2.nombre COLLATE utf8_general_ci LIKE '%%" . strtolower($stringSearchSQL) . "%%' OR
+								t1.id_agente = $aux";
+
+					if(count($id)>=2){
+						for ($i = 1; $i < count($id); $i++){
+							$aux = $id[$i]['id_agent'];
+							$search_sql .= " OR t1.id_agente = $aux";
+						}
+					}
+			}else{
+				$search_sql = " lower(t1.nombre) LIKE '%%" . strtolower($stringSearchSQL) . "%%' OR
+								lower(t2.nombre) LIKE '%%" . strtolower($stringSearchSQL) . "%%' OR
+								lower(t1.direccion) LIKE '%%" . strtolower($stringSearchSQL) . "%%'";
+			}
 			$sql = "
 				FROM tagente t1
 					INNER JOIN tgrupo t2
@@ -171,9 +215,7 @@ if ($searchAgents) {
 							)
 					)
 					AND (
-						lower(t1.nombre) LIKE '%%" . strtolower($stringSearchSQL) . "%%' OR
-						lower(t2.nombre) LIKE '%%" . strtolower($stringSearchSQL) . "%%' OR
-						lower(t1.direccion) LIKE '%%" . strtolower($stringSearchSQL) . "%%'
+						".$search_sql."
 					)
 			";
 			break;

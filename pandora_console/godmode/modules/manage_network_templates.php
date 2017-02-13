@@ -27,7 +27,16 @@ if (! check_acl ($config['id_user'], 0, "PM")) {
 }
 
 // Header
-ui_print_page_header (__('Module management')." &raquo; ".__('Module template management'), "images/gm_modules.png", false, "template_tab", true);
+
+/* Hello there! :)
+
+We added some of what seems to be "buggy" messages to the openSource version recently. This is not to force open-source users to move to the enterprise version, this is just to inform people using Pandora FMS open source that it requires skilled people to maintain and keep it running smoothly without professional support. This does not imply open-source version is limited in any way. If you check the recently added code, it contains only warnings and messages, no limitations except one: we removed the option to add custom logo in header. In the Update Manager section, it warns about the 'danger’ of applying automated updates without a proper backup, remembering in the process that the Enterprise version comes with a human-tested package. Maintaining an OpenSource version with more than 500 agents is not so easy, that's why someone using a Pandora with 8000 agents should consider asking for support. It's not a joke, we know of many setups with a huge number of agents, and we hate to hear that “its becoming unstable and slow” :(
+
+You can of course remove the warnings, that's why we include the source and do not use any kind of trick. And that's why we added here this comment, to let you know this does not reflect any change in our opensource mentality of does the last 14 years.
+
+*/
+
+ui_print_page_header (__('Module management')." &raquo; ".__('Module template management'), "images/gm_modules.png", false, "template_tab", true,"",true,"modulemodal");
 
 
 require_once ('include/functions_network_profiles.php');
@@ -94,7 +103,7 @@ if ($export_profile) {
 					components.tcp_port, components.tcp_send, components.tcp_rcv, components.snmp_community, components.snmp_oid, 
 					components.id_module_group, components.id_modulo, components.plugin_user, components.plugin_pass, components.plugin_parameter,
 					components.max_timeout, components.max_retries, components.history_data, components.min_warning, components.max_warning, components.str_warning, components.min_critical, 
-					components.max_critical, components.str_critical, components.min_ff_event, comp_group.name AS group_name, components.critical_instructions, components.warning_instructions, components.unknown_instructions
+					components.max_critical, components.str_critical, components.min_ff_event, components.dynamic_interval, components.dynamic_max, components.dynamic_min, components.dynamic_two_tailed, comp_group.name AS group_name, components.critical_instructions, components.warning_instructions, components.unknown_instructions
 				FROM `tnetwork_component` AS components, tnetwork_profile_component AS tpc, tnetwork_component_group AS comp_group
 				WHERE tpc.id_nc = components.id_nc
 					AND components.id_group = comp_group.id_sg
@@ -180,7 +189,7 @@ $table->class = "databox data";
 $table->head = array ();
 $table->head[0] = __('Name');
 $table->head[1] = __('Description');
-$table->head[2] = __('Action') .
+$table->head[2] = '<span style="margin-right:7%;">'.__('Action') .'</span>'.
 	html_print_checkbox('all_delete', 0, false, true, false, 'check_all_checkboxes();');
 $table->size = array ();
 $table->size[1] = '65%';

@@ -97,7 +97,7 @@ if ($file_id > 0) {
 $table->data[] = $row;
 $table->colspan[][1] = 1;
 
-$url = ui_get_full_url("index.php?sec=gextensions&sec2=extensions/files_repo");
+$url = ui_get_full_url("index.php?sec=godmode/extensions&sec2=extensions/files_repo");
 echo "<form method='post' action='$url' enctype='multipart/form-data'>";
 html_print_table($table);
 echo "</form>";

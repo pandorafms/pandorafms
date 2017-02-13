@@ -8865,7 +8865,7 @@ msgstr "添加新任务"
 
 #: ../../enterprise/extensions/cron/main.php:77
 #: ../../enterprise/extensions/cron/main.php:131
-msgid "Path doesn't exists or is not writable"
+msgid "Path doesn't exist or is not writable"
 msgstr "路径不存在或不可写入"
 
 #: ../../enterprise/extensions/cron/main.php:109
@@ -18727,7 +18727,7 @@ msgid "Correct Delete"
 msgstr "成功删除"
 
 #: ../../include/functions_api.php:1788
-msgid "Error in creation network module. Agent name doesn't exists."
+msgid "Error in creation network module. Agent name doesn't exist."
 msgstr "创建网络模块错误，代理名称不存在。"
 
 #: ../../include/functions_api.php:1794
@@ -18745,7 +18745,7 @@ msgid "Error updating network module. Module name cannot be left blank."
 msgstr "更新网络模块错误，模块名称不能为空。"
 
 #: ../../include/functions_api.php:1890
-msgid "Error updating network module. Id_module doesn't exists."
+msgid "Error updating network module. Id_module doesn't exist."
 msgstr "更新网络模块错误，“ID_模块”不存在。"
 
 #: ../../include/functions_api.php:1905
@@ -18753,7 +18753,7 @@ msgid "Error updating network module. Id_module exists in the new agent."
 msgstr "更新网络模块错误，“ID_模块”存在于新代理。"
 
 #: ../../include/functions_api.php:1912
-msgid "Error updating network module. Id_agent doesn't exists."
+msgid "Error updating network module. Id_agent doesn't exist."
 msgstr ""
 
 #: ../../include/functions_api.php:1962
@@ -18765,7 +18765,7 @@ msgid "Error in creation plugin module. Id_plugin cannot be left blank."
 msgstr "创建插件模块错误，“ID_插件”不能为空。"
 
 #: ../../include/functions_api.php:1998
-msgid "Error in creation plugin module. Agent name doesn't exists."
+msgid "Error in creation plugin module. Agent name doesn't exist."
 msgstr "创建插件模块错误，代理名称不存在。"
 
 #: ../../include/functions_api.php:2058
@@ -18777,7 +18777,7 @@ msgid "Error updating plugin module. Id_module cannot be left blank."
 msgstr "更新插件模块错误，“ID_模块”不能为空。"
 
 #: ../../include/functions_api.php:2096
-msgid "Error updating plugin module. Id_module doesn't exists."
+msgid "Error updating plugin module. Id_module doesn't exist."
 msgstr "更新插件模块错误，“ID_模块”不存在。"
 
 #: ../../include/functions_api.php:2108
@@ -18785,7 +18785,7 @@ msgid "Error updating plugin module. Id_module exists in the new agent."
 msgstr "更新插件模块错误，“ID_模块”存在于新代理。"
 
 #: ../../include/functions_api.php:2115
-msgid "Error updating plugin module. Id_agent doesn't exists."
+msgid "Error updating plugin module. Id_agent doesn't exist."
 msgstr ""
 
 #: ../../include/functions_api.php:2174
@@ -18797,7 +18797,7 @@ msgid "Error in creation data module. Module_name cannot be left blank."
 msgstr "创建数据模块错误，模块名称不能为空。"
 
 #: ../../include/functions_api.php:2210
-msgid "Error in creation data module. Agent name doesn't exists."
+msgid "Error in creation data module. Agent name doesn't exist."
 msgstr "创建数据模块错误，代理名称不存在。"
 
 #: ../../include/functions_api.php:2261 ../../include/functions_api.php:2323
@@ -18809,7 +18809,7 @@ msgid "Error in creation synthetic module. Module_name cannot be left blank."
 msgstr ""
 
 #: ../../include/functions_api.php:2300
-msgid "Error in creation synthetic module. Agent name doesn't exists."
+msgid "Error in creation synthetic module. Agent name doesn't exist."
 msgstr ""
 
 #: ../../include/functions_api.php:2382
@@ -18821,7 +18821,7 @@ msgid "Error updating data module. Id_module cannot be left blank."
 msgstr "创建数据模块错误，“ID_模块”不能为空。"
 
 #: ../../include/functions_api.php:2421
-msgid "Error updating data module. Id_module doesn't exists."
+msgid "Error updating data module. Id_module doesn't exist."
 msgstr "创建数据模块错误，“ID_模块”不存在。"
 
 #: ../../include/functions_api.php:2433
@@ -18829,7 +18829,7 @@ msgid "Error updating data module. Id_module exists in the new agent."
 msgstr "创建数据模块错误，“ID_模块”存在于新代理。"
 
 #: ../../include/functions_api.php:2440
-msgid "Error updating data module. Id_agent doesn't exists."
+msgid "Error updating data module. Id_agent doesn't exist."
 msgstr ""
 
 #: ../../include/functions_api.php:2486
@@ -18846,20 +18846,20 @@ msgid ""
 msgstr "创建简单网络管理协议模块错误，“ID_模块_类型”对简单网络管理协议模块无效。"
 
 #: ../../include/functions_api.php:2535
-msgid "Error in creation SNMP module. Agent name doesn't exists."
+msgid "Error in creation SNMP module. Agent name doesn't exist."
 msgstr "创建简单网络管理协议模块错误，代理名称不存在。"
 
 #: ../../include/functions_api.php:2550 ../../include/functions_api.php:2713
 #: ../../include/functions_api.php:5164
 msgid ""
-"Error in creation SNMP module. snmp3_priv_method doesn't exists. Set it to "
+"Error in creation SNMP module. snmp3_priv_method doesn't exist. Set it to "
 "'AES' or 'DES'. "
 msgstr "创建简单网络管理协议模块错误，“简单网络管理协议3_隐私_方式”不存在，请设置为“AES”或“DES”。 "
 
 #: ../../include/functions_api.php:2555 ../../include/functions_api.php:2722
 #: ../../include/functions_api.php:5169
 msgid ""
-"Error in creation SNMP module. snmp3_sec_level doesn't exists. Set it to "
+"Error in creation SNMP module. snmp3_sec_level doesn't exist. Set it to "
 "'authNoPriv' or 'authPriv' or 'noAuthNoPriv'. "
 msgstr ""
 "创建简单网络管理协议模块错误，“简单网络管理协议3_隐私_方式”不存在，请设置为“authNoPriv”、“authPriv”或“noAuthNoPriv"
@@ -18868,7 +18868,7 @@ msgstr ""
 #: ../../include/functions_api.php:2560 ../../include/functions_api.php:2728
 #: ../../include/functions_api.php:5174
 msgid ""
-"Error in creation SNMP module. snmp3_auth_method doesn't exists. Set it to "
+"Error in creation SNMP module. snmp3_auth_method doesn't exist. Set it to "
 "'MD5' or 'SHA'. "
 msgstr "创建简单网络管理协议模块错误，“简单网络管理协议3_隐私_方式”不存在，请设置为“MD5”或“SHA”。 "
 
@@ -18881,7 +18881,7 @@ msgid "Error updating SNMP module. Id_module cannot be left blank."
 msgstr "创建简单网络管理协议模块错误，“ID_模块”不能为空。"
 
 #: ../../include/functions_api.php:2684
-msgid "Error updating SNMP module. Id_module doesn't exists."
+msgid "Error updating SNMP module. Id_module doesn't exist."
 msgstr "创建简单网络管理协议模块错误，“ID_模块”不存在。"
 
 #: ../../include/functions_api.php:2696
@@ -18889,7 +18889,7 @@ msgid "Error updating SNMP module. Id_module exists in the new agent."
 msgstr "创建简单网络管理协议模块错误，“ID_模块”存在于新代理。"
 
 #: ../../include/functions_api.php:2703
-msgid "Error updating snmp module. Id_agent doesn't exists."
+msgid "Error updating snmp module. Id_agent doesn't exist."
 msgstr ""
 
 #: ../../include/functions_api.php:2813
@@ -18955,13 +18955,13 @@ msgstr "创建简单网络管理协议组件错误，简单网络管理协议组
 
 #: ../../include/functions_api.php:3036
 msgid ""
-"Error creating SNMP component. snmp3_priv_method doesn't exists. Set it to "
+"Error creating SNMP component. snmp3_priv_method doesn't exist. Set it to "
 "'AES' or 'DES'. "
 msgstr "创建简单网络管理协议组件错误，“简单网络管理协议3_隐私_方式”不存在，请设置为“AES”或“DES”。 "
 
 #: ../../include/functions_api.php:3045
 msgid ""
-"Error creating SNMP component. snmp3_sec_level doesn't exists. Set it to "
+"Error creating SNMP component. snmp3_sec_level doesn't exist. Set it to "
 "'authNoPriv' or 'authPriv' or 'noAuthNoPriv'. "
 msgstr ""
 "创建简单网络管理协议组件错误，“简单网络管理协议3_隐私_方式”不存在，请设置为“authNoPriv”、“authPriv”或“noAuthNoPriv"
@@ -18969,7 +18969,7 @@ msgstr ""
 
 #: ../../include/functions_api.php:3051
 msgid ""
-"Error creating SNMP component. snmp3_auth_method doesn't exists. Set it to "
+"Error creating SNMP component. snmp3_auth_method doesn't exist. Set it to "
 "'MD5' or 'SHA'. "
 msgstr "创建简单网络管理协议组件错误，“简单网络管理协议3_隐私_方式”不存在，请设置为“MD5”或“SHA”。 "
 
@@ -19002,7 +19002,7 @@ msgstr "自所有代理获取模块值错误，模块名称不能为空。"
 
 #: ../../include/functions_api.php:3240
 msgid ""
-"Error getting module value from all agents. Module name doesn't exists."
+"Error getting module value from all agents. Module name doesn't exist."
 msgstr "自所有代理获取模块值错误，模块名称不存在。"
 
 #: ../../include/functions_api.php:3285
@@ -19018,7 +19018,7 @@ msgid "Error updating alert template. Id_template cannot be left blank."
 msgstr "更新警告模版错误，“ID_模板”不能为空。"
 
 #: ../../include/functions_api.php:3396
-msgid "Error updating alert template. Id_template doesn't exists."
+msgid "Error updating alert template. Id_template doesn't exist."
 msgstr "更新警告模版错误，“ID_模板”不存在。"
 
 #: ../../include/functions_api.php:3422
@@ -19046,7 +19046,7 @@ msgid "Error getting all alert templates."
 msgstr "获取所有警告模版错误。"
 
 #: ../../include/functions_api.php:3533
-msgid "Error getting alert template. Id_template doesn't exists."
+msgid "Error getting alert template. Id_template doesn't exist."
 msgstr "获取警告模版错误，“ID_模版”不存在。"
 
 #: ../../include/functions_api.php:3550
@@ -19062,7 +19062,7 @@ msgid "Error getting plugins."
 msgstr "获取插件错误。"
 
 #: ../../include/functions_api.php:3651
-msgid "Error creating module from network component. Agent doesn't exists."
+msgid "Error creating module from network component. Agent doesn't exist."
 msgstr "从网络组件创建模块错误，代理不存在。"
 
 #: ../../include/functions_api.php:3658
@@ -19092,11 +19092,11 @@ msgid "Error assigning module to template. Id_template doensn't exists."
 msgstr "指定模块至模板错误，“ID_模板”不存在。"
 
 #: ../../include/functions_api.php:3733
-msgid "Error assigning module to template. Id_agent doesn't exists."
+msgid "Error assigning module to template. Id_agent doesn't exist."
 msgstr "指定模块至模板错误，“ID_代理”不存在。"
 
 #: ../../include/functions_api.php:3740
-msgid "Error assigning module to template. Id_module doesn't exists."
+msgid "Error assigning module to template. Id_module doesn't exist."
 msgstr "指定模块至模板错误，“ID_模块”不存在。"
 
 #: ../../include/functions_api.php:3748
@@ -19109,7 +19109,7 @@ msgid ""
 msgstr "删除模块模板错误，“ID_模板_模板”不能为空。"
 
 #: ../../include/functions_api.php:3781
-msgid "Error deleting module template. Id_module_template doesn't exists."
+msgid "Error deleting module template. Id_module_template doesn't exist."
 msgstr "删除模块模板错误，“ID_模板_模板”不存在。"
 
 #: ../../include/functions_api.php:3789 ../../include/functions_api.php:3848
@@ -19149,7 +19149,7 @@ msgid "Downtime stopped."
 msgstr "以阻止停机期。"
 
 #: ../../include/functions_api.php:4373
-msgid "and this modules are doesn't exists or not applicable a this agents: "
+msgid "the selected modules do not exist or do not belong to the intended agents: "
 msgstr ""
 
 #: ../../include/functions_api.php:4375
@@ -19157,7 +19157,7 @@ msgid "and this agents are generate problems: "
 msgstr ""
 
 #: ../../include/functions_api.php:4377
-msgid "and this agents with ids are doesn't exists: "
+msgid "and this agents with ids are don't exist: "
 msgstr ""
 
 #: ../../include/functions_api.php:4404
@@ -19169,7 +19169,7 @@ msgid "Error adding agent to policy. Id_agent cannot be left blank."
 msgstr "添加代理至协议错误。“ID_代理”不能为空。"
 
 #: ../../include/functions_api.php:4417
-msgid "Error adding agent to policy. Id_agent doesn't exists."
+msgid "Error adding agent to policy. Id_agent doesn't exist."
 msgstr "添加代理至协议错误，“ID_代理”不存在。"
 
 #: ../../include/functions_api.php:4425
@@ -19207,7 +19207,7 @@ msgid ""
 msgstr "更新协议数据模块错误，“ID_协议_模块”不能为空。"
 
 #: ../../include/functions_api.php:4570
-msgid "Error updating data module in policy. Module doesn't exists."
+msgid "Error updating data module in policy. Module doesn't exist."
 msgstr "更新协议数据模块错误，模块不存在。"
 
 #: ../../include/functions_api.php:4576
@@ -19256,7 +19256,7 @@ msgid ""
 msgstr "更新协议网络模块错误，“ID_协议_模块”不能为空。"
 
 #: ../../include/functions_api.php:4747
-msgid "Error updating network module in policy. Module doesn't exists."
+msgid "Error updating network module in policy. Module doesn't exist."
 msgstr "更新协议网络模块错误，模块不存在。"
 
 #: ../../include/functions_api.php:4753
@@ -19302,7 +19302,7 @@ msgid ""
 msgstr "更新协议插件模块错误，“ID_协议_模块”不能为空。"
 
 #: ../../include/functions_api.php:4921
-msgid "Error updating plugin module in policy. Module doesn't exists."
+msgid "Error updating plugin module in policy. Module doesn't exist."
 msgstr "更新协议插件模块错误，模块不存在。"
 
 #: ../../include/functions_api.php:4927
@@ -19347,7 +19347,7 @@ msgid ""
 msgstr "更新协议简单网络管理协议模块错误，“ID_协议_模块”不能为空。"
 
 #: ../../include/functions_api.php:5298
-msgid "Error updating SNMP module in policy. Module doesn't exists."
+msgid "Error updating SNMP module in policy. Module doesn't exist."
 msgstr "更新协议简单网络管理协议模块错误，模块不存在。"
 
 #: ../../include/functions_api.php:5303
@@ -19356,13 +19356,13 @@ msgstr "更新协议简单网络管理协议模块错误，模块类型并非简
 
 #: ../../include/functions_api.php:5313
 msgid ""
-"Error updating SNMP module. snmp3_priv_method doesn't exists. Set it to "
+"Error updating SNMP module. snmp3_priv_method doesn't exist. Set it to "
 "'AES' or 'DES'. "
 msgstr "更新简单网络管理协议模块错误，“简单网络管理协议3_隐私_方式“不存在，请设置为“AES”或“DES”。 "
 
 #: ../../include/functions_api.php:5323
 msgid ""
-"Error updating SNMP module. snmp3_sec_level doesn't exists. Set it to "
+"Error updating SNMP module. snmp3_sec_level doesn't exist. Set it to "
 "'authNoPriv' or 'authPriv' or 'noAuthNoPriv'. "
 msgstr ""
 "更新简单网络管理协议模块错误，“简单网络管理协议3_隐私_方式“不存在，请设置为“authNoPriv”、“authPriv”或“noAuthNoPriv"
@@ -19370,7 +19370,7 @@ msgstr ""
 
 #: ../../include/functions_api.php:5330
 msgid ""
-"Error updating SNMP module. snmp3_auth_method doesn't exists. Set it to "
+"Error updating SNMP module. snmp3_auth_method doesn't exist. Set it to "
 "'MD5' or 'SHA'. "
 msgstr "更新简单网络管理协议模块错误，“简单网络管理协议3_隐私_方式“不存在，请设置为“MD5”或“SHA”。 "
 
@@ -19403,7 +19403,7 @@ msgid "Error in group creation. Icon_name cannot be left blank."
 msgstr "创建组错误，图标名称不能为空。"
 
 #: ../../include/functions_api.php:5547 ../../include/functions_api.php:5684
-msgid "Error in group creation. Id_parent_group doesn't exists."
+msgid "Error in group creation. Id_parent_group doesn't exist."
 msgstr "创建组错误，“ID_源_组”不存在。"
 
 #: ../../include/functions_api.php:5575
@@ -19443,7 +19443,7 @@ msgid "Error updating user. Id_user cannot be left blank."
 msgstr "更新用户错误，ID 用户不能为空。"
 
 #: ../../include/functions_api.php:5904
-msgid "Error updating user. Id_user doesn't exists."
+msgid "Error updating user. Id_user doesn't exist."
 msgstr "更新用户错误，用户 ID 不存在。"
 
 #: ../../include/functions_api.php:5920
@@ -19463,7 +19463,7 @@ msgid "Error enable/disable user. Enable/disable value cannot be left blank."
 msgstr ""
 
 #: ../../include/functions_api.php:5972
-msgid "Error enable/disable user. The user doesn't exists."
+msgid "Error enable/disable user. The user doesn't exist."
 msgstr ""
 
 #: ../../include/functions_api.php:5981
@@ -19535,7 +19535,7 @@ msgid ""
 msgstr ""
 
 #: ../../include/functions_api.php:8439
-msgid "Error enable/disable agent. The agent doesn't exists."
+msgid "Error enable/disable agent. The agent doesn't exist."
 msgstr ""
 
 #: ../../include/functions_api.php:8450
@@ -19571,7 +19571,7 @@ msgid "Error updating special day. Id cannot be left blank."
 msgstr "更新特殊日期错误。ID不可留空。"
 
 #: ../../include/functions_api.php:8649
-msgid "Error updating special day. Id doesn't exists."
+msgid "Error updating special day. Id doesn't exist."
 msgstr "更新特殊日期错误。ID不存在。"
 
 #: ../../include/functions_api.php:8654
@@ -19583,7 +19583,7 @@ msgid "Error deleting special day. Id cannot be left blank."
 msgstr "删除特殊日期错误。ID不可留空。"
 
 #: ../../include/functions_api.php:8695
-msgid "Error deleting special day. Id doesn't exists."
+msgid "Error deleting special day. Id doesn't exist."
 msgstr "删除特殊日期错误。ID不存在"
 
 #: ../../include/functions_api.php:8702

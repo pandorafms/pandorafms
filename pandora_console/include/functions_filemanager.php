@@ -91,7 +91,9 @@ if (!function_exists ('mime_content_type')) {
 			'ods' => 'application/vnd.oasis.opendocument.spreadsheet'
 		);
 		
-		$ext = strtolower (array_pop (explode ('.', $filename)));
+		$ext_fields = explode ('.', $filename);
+		$ext = array_pop ($ext_fields);
+		$ext = strtolower ($ext);
 		if (array_key_exists ($ext, $mime_types)) {
 			return $mime_types[$ext];
 		}
@@ -114,7 +116,7 @@ if (!function_exists ('mime_content_type')) {
 global $config;
 
 if (isset($config['homedir_filemanager'])) {
-	$homedir_filemanager = $config['homedir_filemanager'];
+	$homedir_filemanager = io_safe_output($config['homedir_filemanager']);
 }
 else {
 	$homedir_filemanager = $config['homedir'];
@@ -687,10 +689,17 @@ function filemanager_file_explorer($real_directory, $relative_directory,
 				break;
 			case MIME_UNKNOWN:
 				if ($fileinfo['size'] == 0) {
-					if (strstr($fileinfo['name'], '.txt') !== false) {
+
+					if ((strstr($fileinfo['name'], '.txt') !== false)||(strstr($fileinfo['name'], '.conf') !== false)||(strstr($fileinfo['name'], '.sql') !== false)||(strstr($fileinfo['name'], '.pl') !== false)) {
 						$fileinfo['mime'] = MIME_TEXT;
 						$data[0] = html_print_image ('images/mimetypes/text.png', true, array('title' => __('Text file')));
+					}else{
+						//unknow
+						$data[0] = '';
 					}
+				}else{
+					//pdf
+					$data[0] = '';
 				}
 				break;
 			default:
@@ -709,7 +718,7 @@ function filemanager_file_explorer($real_directory, $relative_directory,
 		}
 		else {
 			$hash = md5($relative_path . $config['dbpass']);
-			$data[1] = '<a href="' . $hack_metaconsole . 'include/get_file.php?file='.base64_encode($relative_path).'&hash=' . $hash . '">'.$fileinfo['name'].'</a>';
+			$data[1] = '<a href="' . $hack_metaconsole . 'include/get_file.php?file='.urlencode(base64_encode($relative_path)).'&hash=' . $hash . '">'.$fileinfo['name'].'</a>';
 		}
 		$data[2] = ui_print_timestamp ($fileinfo['last_modified'], true,
 			array ('prominent' => true));
@@ -724,6 +733,7 @@ function filemanager_file_explorer($real_directory, $relative_directory,
 		//Delete button
 		$data[4] = '';
 		$data[4] .= '<span style="">';
+		$typefile = array_pop(explode(".",$fileinfo['name']));
 		if (is_writable ($fileinfo['realpath'])  &&
 			(! is_dir ($fileinfo['realpath']) || count (scandir ($fileinfo['realpath'])) < 3)) {
 			$data[4] .= '<form method="post" action="' . $url . '" style="display: inline;">';
@@ -743,14 +753,16 @@ function filemanager_file_explorer($real_directory, $relative_directory,
 			$data[4] .= '</form>';
 			
 			if (($editor) && (!$readOnly)) {
-				if ($fileinfo['mime'] == MIME_TEXT) {
-					$data[4] .= "<a style='vertical-align: top;' href='$url&edit_file=1&location_file=" . $fileinfo['realpath'] . "&hash=" . md5($fileinfo['realpath'] . $config['dbpass']) . "' style='float: left;'>" . html_print_image('images/edit.png', true, array("style" => 'margin-top: 2px;', 'title' => __('Edit file'))) . "</a>";
+				if (($typefile != 'bin') && ($typefile != 'pdf') && ($typefile != 'png') && ($typefile != 'jpg') &&
+					($typefile != 'iso') && ($typefile != 'docx') && ($typefile != 'doc')) {
+					$hash = md5($fileinfo['realpath'] . $config['dbpass']);
+					$data[4] .= "<a style='vertical-align: top;' href='$url&edit_file=1&hash=" . $hash . "&location_file=" . $fileinfo['realpath'] . "' style='float: left;'>" . html_print_image('images/edit.png', true, array("style" => 'margin-top: 2px;', 'title' => __('Edit file'))) . "</a>";
 				}
 			}
 		}
 		if ((!$fileinfo['is_dir']) && ($download_button)) {
-			$hash = md5($fileinfo['url'] . $config['dbpass']);
-			$data[4] .= '<a href="include/get_file.php?file='.base64_encode($fileinfo['url']).'&hash=' . $hash . '" style="vertical-align: 25%;">';
+			$hash = md5($fileinfo['realpath'] . $config['dbpass']);
+			$data[4] .= '<a href="include/get_file.php?file='.urlencode(base64_encode($fileinfo['realpath'])).'&hash=' . $hash . '" style="vertical-align: 25%;">';
 			$data[4] .= html_print_image('images/file.png', true);
 			$data[4] .= '</a>';
 		}

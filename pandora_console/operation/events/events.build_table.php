@@ -33,12 +33,8 @@ $table->data = array ();
 
 if ($group_rep == 2) {
 	$table->class = "databox filters data";
-	$table->head[0] = __('Agent name');
-	$table->head[1] = __('Unknown Monitor');
-	$table->head[2] = __('Monitor Normal');
-	$table->head[3] = __('Monitor Warning');
-	$table->head[4] = __('Monitor Critical');
-	$table->head[5] = __('Alert fired');
+	$table->head[1] = __('Agent');
+	$table->head[5] = __('More detail');
 	
 	$params = "search=" . rawurlencode(io_safe_input($search)) . 
 		"&amp;severity=" . $severity . 
@@ -48,7 +44,7 @@ if ($group_rep == 2) {
 		"&amp;refr=" . (int)get_parameter("refr", 0) . 
 		"&amp;id_agent_module=" . $id_agent_module . 
 		"&amp;pagination=" . $pagination . 
-		"&amp;group_rep=0" . 
+		"&amp;group_rep=2" . 
 		"&amp;event_view_hr=" . $event_view_hr . 
 		"&amp;id_user_ack=" . $id_user_ack .
 		"&amp;tag_with=". $tag_with_base64 . 
@@ -65,71 +61,46 @@ if ($group_rep == 2) {
 		"&amp;date_to=" . $date_to .
 		"&amp;pure=" . $config["pure"];
 
-	$url_agente = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;" . $params;
+	$url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;" . $params;
 	foreach ($result as $key => $res) {
-		if  ($meta)
-			$table->data[$key][0] = $key;
-		else
-			$table->data[$key][0] = agents_get_name ($key);
 		
-		$key_result = array_keys($res);
-		
-		if ($meta)
-			$agente = "&amp;text_agent=" . $key;
-		else
-			$agente = "&amp;id_agent=" . $key;
-		
-		$unknown = 0;
-		if (in_array('going_unknown',$key_result))
-			$unknown += $res['going_unknown'];
-		$url_unknown = $url_agente . $agente . "&amp;event_type=going_unknown";
-		$table->data[$key][1] = '<a href="'.$url_unknown.'" target="_blank" >' . $unknown . '</a>';
-		
-		$normal = 0;
-		if (in_array('going_down_normal',$key_result))
-			$normal += $res['going_down_normal'];
-		if (in_array('going_up_normal',$key_result))
-			$normal += $res['going_up_normal'];
-		$url_normal = $url_agente . $agente  . "&amp;event_type=normal";
-		$table->data[$key][2] = '<a href="'.$url_normal.'" target="_blank" >' . $normal . '</a>';
-		
-		$warning = 0;
-		if (in_array('going_up_warning',$key_result))
-			$warning += $res['going_up_warning'];
-		if (in_array('going_down_warning',$key_result))
-			$warning += $res['going_down_warning'];
-		$url_warning = $url_agente . $agente  . "&amp;event_type=warning";
-		$table->data[$key][3] = '<a href="'.$url_warning.'" target="_blank" >' . $warning . '</a>';
-		
-		$critical = 0;
-		if (in_array('going_up_critical',$key_result))
-			$critical += $res['going_up_critical'];
-		if (in_array('going_down_critical',$key_result))
-			$critical += $res['going_down_critical'];
-		$url_critical = $url_agente . $agente  . "&amp;event_type=critical";
-		$table->data[$key][4] = '<a href="'.$url_critical.'" target="_blank" >' . $critical . '</a>';
-		
-		$alert = 0;
-		if (in_array('alert_fired',$key_result))
-			$alert += $res['alert_fired'];
-		$url_alert = $url_agente . $agente  . "&amp;event_type=alert_fired";
-		$table->data[$key][5] = '<a href="'.$url_alert.'" target="_blank" >' . $alert . '</a>';
-		
-		if ($alert > 0) {
+		if ($res['event_type'] == 'alert_fired') {
 			$table->rowstyle[$key] = 'background: #FFA631;';
 		}
-		elseif ($critical > 0){
+		elseif ($res['event_type'] == 'going_up_critical' || $res['event_type'] == 'going_down_critical'){
 			$table->rowstyle[$key] = 'background: #FC4444;';
 		}
-		elseif ($warning > 0){
+		elseif ($res['event_type'] == 'going_up_warning' || $res['event_type'] == 'going_down_warning'){
 			$table->rowstyle[$key] = 'background: #FAD403;';
 		}
-		elseif ($normal > 0){
+		elseif ($res['event_type'] == 'going_up_normal' || $res['event_type'] == 'going_down_normal'){
 			$table->rowstyle[$key] = 'background: #80BA27;';
 		}
-		elseif ($unknown > 0){
+		elseif ($res['event_type'] == 'going_unknown'){
 			$table->rowstyle[$key] = 'background: #B2B2B2;';
 		}
+		
+		
+		if  ($meta)
+			$table->data[$key][1] = __('The Agent: ') . '"' . 
+				$res['id_agent'] . '", ' . __(' has ') . 
+					$res['total'] . __(' events.');
+		else
+			$table->data[$key][1] = __('The Agent: ') . '"' . 
+				agents_get_name ($res['id_agent']) . '", ' . __(' has ') . 
+					$res['total'] . __(' events.');
+		
+		$uniq = uniqid();
+		if  ($meta) {
+			$table->data[$key][2] = '<img id="open_agent_groups" src=images/zoom_mc.png data-id="'.$table->id.'-'.$uniq.'-0" data-open="false"
+				onclick=\'show_events_group_agent("'.$table->id.'-'.$uniq.'-0","'.$res['id_agent'].'",'.$res['id_server'].');\' />';
+		}
+		else {
+			$table->data[$key][2] = '<img id="open_agent_groups" src="images/zoom_mc.png" data-id="'.$table->id.'-'.$uniq.'-0" data-open="false"
+				onclick=\'show_events_group_agent("'.$table->id.'-'.$uniq.'-0",'.$res['id_agent'].',false);\'/>';
+		}
+		$table->cellstyle[$uniq][0] = "display:none;";
+		$table->data[$uniq][0] = false;
 	}
 	
 	if ($result) {

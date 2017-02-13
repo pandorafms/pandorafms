@@ -7,10 +7,22 @@ use POSIX;
 
 my $TOTAL=`vmstat -s | grep "total memory" | awk  '{ print $1 } '`;
 my $FREE=`vmstat -s | grep "free memory" | awk  '{ print $1 } '`;
-my $FREEP=($FREE/$TOTAL)*100; 
+my $FREEP;
+eval {
+$FREEP=($FREE/$TOTAL)*100; 
+};
+if ($@) {
+	$FREEP = 0;
+}
 my $STOTAL=`vmstat -s | grep "total swap" | awk  '{ print $1 } '`;
 my $SUSED=`vmstat -s | grep "free swap" | awk  '{ print $1 } '`;
-my $SFREE=($SUSED/$STOTAL)*100;
+my $SFREE;
+eval {
+$SFREE=($SUSED/$STOTAL)*100;
+};
+if ($@) {
+	$SFREE = 0;
+}
 
 $SFREE = floor($SFREE); 
 $FREEP = floor($FREEP);
@@ -21,7 +33,7 @@ my $freemem=`cat /proc/meminfo | grep 'MemFree' | awk '{ print \$2 } '`;
 my $cached=`cat /proc/meminfo | grep '^Cached:' | awk '{ print \$2 } '`;
 my $cachedswap=`cat /proc/meminfo | grep '^SwapCached:' | awk '{ print \$2 }'`;
 my $total_meminfo=`cat /proc/meminfo | grep 'MemTotal:' | awk '{ print \$2 }'`;
-my $available=$freemem+$cached+$cachedwap;
+my $available=$freemem+$cached+$cachedswap;
 my $available_percent = floor(($available / $total_meminfo)*100);
 
 

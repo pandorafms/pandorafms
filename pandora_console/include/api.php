@@ -56,7 +56,21 @@ $no_login_msg = "";
 // Don't change the format, it is parsed by applications
 switch($info) {
 	case 'version':
-		echo 'Pandora FMS ' . $pandora_version . ' - ' . $build_version;
+		if (!$config["minor_release_open"]) {
+			$config["minor_release_open"] = 0;
+		}
+		if (enterprise_installed()) {
+			if (!$config["minor_release_enterprise"]) {
+				$config["minor_release_enterprise"] = 0;
+			}
+		}
+		
+		if (enterprise_installed()) {
+			echo 'Pandora FMS ' . $pandora_version . ' - ' . $build_version . " MR" . $config["minor_release_enterprise"];
+		}
+		else {
+			echo 'Pandora FMS ' . $pandora_version . ' - ' . $build_version . " MR" . $config["minor_release_open"];
+		}
 		exit;
 }
 

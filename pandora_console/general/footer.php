@@ -26,8 +26,22 @@ if (! file_exists ($config["homedir"] . $license_file)) {
 	$license_file = 'general/license/pandora_info_en.html';
 }
 
+if (!$config["minor_release_open"]) {
+	$config["minor_release_open"] = 0;
+}
+if (enterprise_installed()) {
+	if (!$config["minor_release_enterprise"]) {
+		$config["minor_release_enterprise"] = 0;
+	}
+}
+
 echo '<a class="white_bold footer" target="_blank" href="' . $config["homeurl"] . $license_file. '">';
-echo sprintf(__('Pandora FMS %s - Build %s', $pandora_version, $build_version));
+if (enterprise_installed()) {
+	echo sprintf(__('Pandora FMS %s - Build %s - MR %s', $pandora_version, $build_version, $config["minor_release_enterprise"]));
+}
+else {
+	echo sprintf(__('Pandora FMS %s - Build %s - MR %s', $pandora_version, $build_version, $config["minor_release_open"]));
+}
 echo '</a><br />';
 echo '<a class="white footer">'. __('Page generated at') . ' '. ui_print_timestamp ($time, true, array ("prominent" => "timestamp")); //Always use timestamp here
 echo '</a>';

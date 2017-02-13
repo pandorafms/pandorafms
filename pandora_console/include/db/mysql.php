@@ -1315,4 +1315,49 @@ function mysql_db_process_file ($path, $handle_error = true) {
 		return false;
 	}
 }
+
+// --------------------------------------------------------------- 
+// Initiates a transaction and run the queries of an sql file
+// --------------------------------------------------------------- 
+
+function db_run_sql_file ($location) {
+	global $config;
+	
+	// Load file
+	$commands = file_get_contents($location);
+	
+	// Delete comments
+	$lines = explode("\n", $commands);
+	$commands = '';
+	foreach ($lines as $line) {
+		$line = trim($line);
+		if ($line && !preg_match('/^--/', $line) && !preg_match('/^\/\*/', $line)) {
+			$commands .= $line;
+		}
+	}
+	
+	// Convert to array
+	$commands = explode(";", $commands);
+	
+	// Run commands
+	mysql_db_process_sql_begin(); // Begin transaction
+	foreach ($commands as $command) {
+		if (trim($command)) {
+			$result = mysql_query($command);
+			
+			if (!$result) {
+				break; // Error
+			}
+		}
+	}
+	if ($result) {
+		mysql_db_process_sql_commit(); // Save results
+		return true;
+	}
+	else {
+		mysql_db_process_sql_rollback(); // Undo results
+		return false;
+	}
+}
+
 ?>

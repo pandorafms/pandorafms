@@ -615,20 +615,20 @@ function ui_print_group_icon_path ($id_group, $return = false, $path = "images/g
  */
 function ui_print_os_icon ($id_os, $name = true, $return = false,
 	$apply_skin = true, $networkmap = false, $only_src = false,
-	$relative = false, $options = false) {
+	$relative = false, $options = false, $big_icons = false) {
 	
-	
-	
-	$subfolter = 'os_icons';
+	$subfolder = 'os_icons';
 	if ($networkmap) {
-		$subfolter = 'networkmap';
+		$subfolder = 'networkmap';
 	}
+	if ($big_icons)
+		$subfolder .= '/so_big_icons';
 	
 	$icon = (string) db_get_value ('icon_name', 'tconfig_os', 'id_os', (int) $id_os);
 	$os_name = get_os_name ($id_os);
 	if (empty ($icon)) {
 		if ($only_src) {
-			$output = html_print_image("images/" . $subfolter . "/unknown.png",
+			$output = html_print_image("images/" . $subfolder . "/unknown.png",
 				true, $options, true, $relative, false, true);
 		}
 		else {
@@ -637,13 +637,13 @@ function ui_print_os_icon ($id_os, $name = true, $return = false,
 	}
 	else if ($apply_skin) {
 		if ($only_src) {
-			$output = html_print_image("images/" . $subfolter . "/" . $icon, true, $options, true, $relative, false, true);
+			$output = html_print_image("images/" . $subfolder . "/" . $icon, true, $options, true, $relative, false, true);
 		}
 		else {
 			if (!isset($options['title'])) {
 				$options['title'] = $os_name;
 			}
-			$output = html_print_image("images/" . $subfolter . "/" . $icon, true, $options, false, $relative, false, true);
+			$output = html_print_image("images/" . $subfolder . "/" . $icon, true, $options, false, $relative, false, true);
 		}
 	}
 	else

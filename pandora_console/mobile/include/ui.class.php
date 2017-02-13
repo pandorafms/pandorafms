@@ -780,6 +780,7 @@ class Table {
 		foreach ($data as $id => $row) {
 			$table_row = array();
 			foreach ($row as $key => $value) {
+				
 				if (!in_array($key, $this->head)) {
 					$this->head[] = $key;
 				}
@@ -843,45 +844,40 @@ class Table {
 		$html = '';
 		
 		$html = "<table data-role='table' id='" . $this->id . "' " .
-			"data-mode='reflow' class='" . $this->class_table . " ui-responsive table-stroke'>\n";
+			"data-mode='reflow' class='" . $this->class_table . " ui-responsive table-stroke'>";
 		
 		
-		$html .= "<thead>\n";
-		$html .= "<tr>\n";
-		//Empty head for white space between rows in the responsive vertical layout
-		$html .= "<th class='head_horizontal'></th>\n";
-		foreach ($this->head as $head) {
-			$html .= "<th class='head_horizontal'>" . $head . "</th>\n";
+		if ($this->head) {
+			$html .= "<thead>";
+			$html .= "<tr>";
+			//Empty head for white space between rows in the responsive vertical layout
+			//~ $html .= "<th class='head_horizontal'></th>";
+			foreach ($this->head as $head) {
+				$html .= "<th class='head_horizontal'>" . $head . "</th>";
+			}
+			$html .= "</tr>";
+			$html .= "</thead>";
 		}
-		$html .= "</tr>\n";
-		$html .= "</thead>\n";
 		
-		$html .= "<tbody>\n";
+		$html .= "<tbody>";
 		foreach ($this->rows as $key => $row) {
 			$class = '';
 			if (isset($this->rowClass[$key])) {
 				$class = $this->rowClass[$key];
 			}
 			
-			$html .= "<tr class='" . $class . "'>\n";
+			$html .= "<tr class='" . $class . "'>";
 			//Empty head for white space between rows in the responsive vertical layout
-			if (isset($this->row_heads[$key])) {
-				$html .= "<th class='head_vertical'>" . $this->row_heads[$key] . "</th>\n";
-			}
-			elseif ($this->row_keys_as_head_row) {
-				$html .= "<th class='head_vertical'>" . $key . "</th>\n";
-			}
-			else {
-				$html .= "<th class='head_vertical' style='font-size: 0px'></th>\n";
-			}
+			
 			foreach ($row as $key_cell => $cell) {
-				$html .= "<td class='cell_" . $key_cell . "'>" . $cell . "</td>\n";
+				$html .= "<td class='cell_" . $key_cell . "'>" . $cell . "</td>";
 			}
-			$html .= "</tr>\n";
+			
+			$html .= "</tr>";
 		}
 		
-		$html .= "</tbody>\n";
-		$html .= "</table>\n";
+		$html .= "</tbody>";
+		$html .= "</table>";
 		
 		return $html;
 	}

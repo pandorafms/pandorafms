@@ -325,7 +325,7 @@ class Agents {
 			
 			$row[7] = $row[__('Modules')] =
 				'<span class="show_collapside" style="vertical-align: 0%; display: none; font-weight: bolder;">' . __('Modules') . ' </span>' .
-				'<span class="agents_tiny_stats">' . reporting_tiny_stats($agent, true) . ' </span>';
+				'<span class="agents_tiny_stats">' . reporting_tiny_stats($agent, true, 'agent', '&nbsp;') . ' </span>';
 			
 			$last_time = strtotime ($agent["ultimo_contacto"]);
 			$now = time ();

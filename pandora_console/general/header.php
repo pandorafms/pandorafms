@@ -241,10 +241,7 @@ config_check();
 				if ($check_minor_release_available) {
 					set_pandora_error_for_header('There are one or more minor releases waiting for update, there are required administrator permissions', 'minor release/s available');
 				}
-				
-				if ($config["alert_cnt"] > 0) {
-					echo '<div id="alert_messages" style="display: none"></div>';
-				
+
 				echo '<div id="alert_messages" style="display: none"></div>';
 		
 				if ($config["alert_cnt"] > 0) {

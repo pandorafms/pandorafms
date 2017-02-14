@@ -141,20 +141,17 @@ function delete_link(source_id, source_module_id, target_id, target_module_id, i
 			url: action="ajax.php",
 			success: function (data) {
 				if (data['correct']) {
-					do {
-						found = -1;
-						
-						jQuery.each(graph.links, function(i, element) {
-							if ((element.source.id_db == source_id)
-								&& (element.target.id_db == target_id)) {
-								found = i;
-							}
-						});
-						if (found != -1)
-							graph.links.splice(found, 1);
-					}
-					while (found != -1);
+					found = -1;
 					
+					jQuery.each(graph.links, function(i, element) {
+						if (element.id_db == id_link) {
+							found = i;
+						}
+					});
+					if (found != -1) {
+						graph.links.splice(found, 1);
+					}
+				
 					draw_elements_graph();
 					set_positions_graph();
 				}
@@ -163,6 +160,7 @@ function delete_link(source_id, source_module_id, target_id, target_module_id, i
 			}
 		});
 	}
+	/*
 	else {
 		do {
 			found = -1;
@@ -181,7 +179,7 @@ function delete_link(source_id, source_module_id, target_id, target_module_id, i
 		draw_elements_graph();
 		set_positions_graph();
 	}
-	
+	*/
 }
 
 function update_fictional_node(id_db_node) {
@@ -483,6 +481,8 @@ function update_link(row_index, id_link) {
 	params.push("id_link=" + id_link);
 	params.push("interface_source=" + interface_source);
 	params.push("interface_target=" + interface_target);
+	params.push("source_text=" + text_source_interface);
+	params.push("target_text=" + text_target_interface);
 	params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
 	
 	jQuery.ajax ({
@@ -501,116 +501,48 @@ function update_link(row_index, id_link) {
 				$("select[name='interface_target_" + row_index + "'] option[value='" + interface_target + "']")
 					.prop("selected", true);
 				
-				if (interface_source == 0) {
-					jQuery.each(graph.links, function(i, link_each) {
-						if (link_each.id_db == id_link) {
-							//Found
-							graph.links[i].arrow_start = "";
-							graph.links[i].arrow_start = "";
-							graph.links[i].text_start = text_source_interface;
-							
-							//Remove the arrow
-							$("#link_id_" + id_link)
-								.attr("marker-start", "");
-							
-							$("tspan")
-								.filter(function() {
-									var textPath = $(this).parent();
-									if ($(textPath).attr('href') == "#link_id_" + id_link)
-										return true;
-									else return false;
-								})
-								.html(Array(25).join(" ") + text_source_interface);
+				jQuery.each(graph.links, function(j, link) {
+					if (link['id_db'] == id_link) {
+
+						var temp_link = {};
+						temp_link["id_db"] = String(id_link);
+						if (data['type_source'] == 1) {
+							temp_link["arrow_start"] = "module";
+							temp_link["id_module_start"] = interface_source;
 						}
-					});
-				}
-				else {
-					jQuery.each(graph.links, function(i, link_each) {
-						if (link_each.id_db == id_link) {
-							//Found
-							if (link_each.arrow_start == "") {
-								graph.links[i].id_db = data['id_link_change'];
+						else {
+							temp_link["arrow_start"] = "";
+							temp_link["id_agent_start"] = interface_source;
+							temp_link["id_module_start"] = 0;
+						}
+						if (data['type_target'] == 1) {
+							temp_link["arrow_end"] = "module";
+							temp_link["id_module_end"] = interface_target;
+						}
+						else {
+							temp_link["arrow_end"] = "";
+							temp_link["id_agent_end"] = interface_target;
+							temp_link["id_module_end"] = 0;
+						}
+						temp_link["status_start"] = "0";
+						temp_link["status_end"] = "0";
+
+						jQuery.each(graph.nodes, function(k, node) {
+							if (node['id_agent'] == data['id_db_target']) {
+								temp_link["target"] = graph.nodes[k];
 							}
-							
-							graph.links[i].arrow_start = "module";
-							graph.links[i].id_module_start = interface_source;
-							graph.links[i].text_start = text_source_interface;
-							
-							//Added th arrow
-							$("#link_id_" + id_link)
-								.attr("marker-start",
-									"url(#interface_start_1)");
-							
-							$("tspan")
-								.filter(function() {
-									var textPath = $(this).parent();
-									
-									if ($(textPath).attr('href') == "#link_id_" + id_link)
-										return true;
-									else return false;
-								})
-								.html(Array(25).join(" ") + text_source_interface);
-						}
-					});
-				}
-				
-				if (interface_target == 0) {
-					jQuery.each(graph.links, function(i, link_each) {
-						if (link_each.id_db == id_link) {
-							//Found
-							graph.links[i].arrow_end = "";
-							graph.links[i].id_module_end = 0;
-							graph.links[i].text_end = text_target_interface;
-							
-							//Remove the arrow
-							$("#link_id_" + id_link)
-								.attr("marker-end", "");
-							
-							$("tspan")
-								.filter(function() {
-									var textPath = $(this).parent();
-									
-									if ($(textPath).attr('href') == "#link_reverse_id_" + id_link)
-										return true;
-									else return false;
-								})
-								.html(Array(25).join(" ") + text_target_interface);
-						}
-					});
-				}
-				else {
-					jQuery.each(graph.links, function(i, link_each) {
-						if (link_each.id_db == id_link) {
-							
-							//Found
-							
-							if (link_each.arrow_end == "") {
-								graph.links[i].id_db = data['id_link_change'];
+							if (node['id_agent'] == data['id_db_source']) {
+								temp_link["source"] = graph.nodes[k];
 							}
-							
-							graph.links[i].arrow_end = "module";
-							graph.links[i].id_module_end = interface_target;
-							graph.links[i].text_end = text_target_interface;
-							
-							//Added th arrow
-							$("#link_id_" + id_link)
-								.attr("marker-end",
-									"url(#interface_end_1)");
-							
-							$("tspan")
-								.filter(function() {
-									var textPath = $(this).parent();
-									
-									if ($(textPath).attr('href') == "#link_reverse_id_" + id_link)
-										return true;
-									else return false;
-								})
-								.html(Array(25).join(" ") + text_target_interface);
-						}
-					});
-				}
+						});
+						graph.links.splice(j, 1, temp_link);
+					}
+				});
 				
+				//graph.links.push(temp_link);
+
 				draw_elements_graph();
+				init_drag_and_drop();
 				set_positions_graph();
 			}
 			else {
@@ -788,7 +720,6 @@ function edit_node(data, dblClick) {
 					.attr('class', "edit_icon_link_" + i)
 					.attr('href', 'javascript: update_link(' + i + "," + link_each.id_db + ');');
 				
-				
 				var params = [];
 				params.push("get_intefaces=1");
 				params.push("id_agent=" + link_each.source.id_agent);
@@ -802,6 +733,8 @@ function edit_node(data, dblClick) {
 					async: false,
 					success: function (data) {
 						if (data['correct']) {
+							$("select[name='interface_source_" + i + "']", template_relation_row).empty();
+							$("select[name='interface_source_" + i + "']", template_relation_row).append('<option value="' + link_each.source.id_agent + '">None</option>');
 							jQuery.each(data['interfaces'], function(j, interface) {
 								
 								$("select[name='interface_source_" + i + "']", template_relation_row)
@@ -831,8 +764,9 @@ function edit_node(data, dblClick) {
 					async: false,
 					success: function (data) {
 						if (data['correct']) {
+							$("select[name='interface_target_" + i + "']", template_relation_row).empty();
+							$("select[name='interface_target_" + i + "']", template_relation_row).append('<option value="' + link_each.target.id_agent + '">None</option>');
 							jQuery.each(data['interfaces'], function(j, interface) {
-								
 								$("select[name='interface_target_" + i + "']", template_relation_row)
 									.append($("<option>")
 										.attr("value", interface['id_agente_modulo'])
@@ -1905,7 +1839,6 @@ function add_interface_link_js () {
 				//temp_link['text_end'] = link['text_end'];
 				
 				jQuery.each(graph.nodes, function(j, node) {
-					console.log(node['id_db']);
 					if (node['id_agent'] == data['id_db_target']) {
 						temp_link['target'] = graph.nodes[j];
 					}
@@ -2816,7 +2749,6 @@ function draw_elements_graph() {
 	link = link.data(force.links(), function(d) {
 		return d.source.id + networkmap_id + "-" + d.target.id + networkmap_id;
 	});
-	
 	link_temp = link.enter()
 		.append("g");
 	link.exit().remove();

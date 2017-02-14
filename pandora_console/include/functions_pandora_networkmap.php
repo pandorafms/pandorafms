@@ -448,6 +448,7 @@ function networkmap_links_to_js_links($relations, $nodes_graph) {
 		enterprise_include_once('include/functions_pandora_networkmap.php');
 	}
 	
+	$count = 0;
 	foreach ($relations as $key => $relation) {
 		if (($relation['parent_type'] == 1) && ($relation['child_type'] == 1)) {
 			$id_target_agent = agents_get_agent_id_by_module_id($relation['id_parent_source_data']);
@@ -471,6 +472,8 @@ function networkmap_links_to_js_links($relations, $nodes_graph) {
 		}
 		
 		$item = array();
+		$item['id'] = $count;
+		$count++;
 		if (enterprise_installed()) {
 			$item['id_db'] = get_relation_id($relation);
 		}

@@ -2681,17 +2681,7 @@ function update_config_token ($cfgtoken, $cfgvalue) {
 	}
 }
 
-function update_conf_minor_release() {
-	global $config;
-	
-	$config['minor_release_open'] = db_get_value ('value', 'tconfig', 'token', 'minor_release_open');
-	
-	if (enterprise_installed()) {
-		$config['minor_release_enterprise'] = db_get_value ('value', 'tconfig', 'token', 'minor_release_enterprise');
-	}
-}
-
-function get_number_of_mr($mode) {
+function get_number_of_mr() {
 	global $config;
 	
 	$dir = $config["homedir"]."/extras/mr";
@@ -2699,37 +2689,17 @@ function get_number_of_mr($mode) {
 	
 	if (file_exists($dir) && is_dir($dir)) {
 		if (is_readable($dir)) {
-			if ($mode == 'open') {
-				$files = scandir($dir); // Get all the files from the directory ordered by asc
+			$files = scandir($dir); // Get all the files from the directory ordered by asc
+			
+			if ($files !== false) {
+				$pattern = "/^\d+\.sql$/";
+				$sqlfiles = preg_grep($pattern, $files); // Get the name of the correct files
+				$pattern = "/\.sql$/";
+				$replacement = "";
+				$sqlfiles_num = preg_replace($pattern, $replacement, $sqlfiles);
 				
-				if ($files !== false) {
-					$pattern = "/^\d+\.open\.sql$/";
-					$sqlfiles = preg_grep($pattern, $files); // Get the name of the correct files
-					$pattern = "/\.open\.sql$/";
-					$replacement = "";
-					$sqlfiles_num = preg_replace($pattern, $replacement, $sqlfiles);
-					
-					foreach ($sqlfiles_num as $num) {
-						$mr_size[] = $num;
-					}
-				}
-			}
-			else {
-				if (enterprise_installed()) {
-					$files2 = scandir($dir); // Get all the files from the directory ordered by asc
-					
-					if ($files2 !== false) {
-						$pattern2 = "/^\d+\.ent\.sql$/";
-						$sqlfiles2 = preg_grep($pattern2, $files2); // Get the name of the correct files
-						
-						$pattern2 = "/\.ent\.sql$/";
-						$replacement2 = "";
-						$sqlfiles_num2 = preg_replace($pattern2, $replacement2, $sqlfiles2); // Get the number of the file
-						
-						foreach ($sqlfiles_num2 as $num2) {
-							$mr_size[] = $num2;
-						}
-					}
+				foreach ($sqlfiles_num as $num) {
+					$mr_size[] = $num;
 				}
 			}
 		}

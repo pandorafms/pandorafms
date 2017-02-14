@@ -469,8 +469,7 @@ if (! isset ($config['id_user'])) {
 				}
 				
 				if ($have_minor_releases) {
-					$size_mr_o = get_number_of_mr('open');
-					$size_mr_e = get_number_of_mr('enterprise');
+					$size_mr = get_number_of_mr();
 					echo "<div class= 'dialog ui-dialog-content' title='".__("Minor release available")."' id='mr_dialog2'>" . __('') . "</div>";
 						?>
 						<script type="text/javascript" language="javascript">
@@ -486,17 +485,18 @@ if (! isset ($config['id_user'])) {
 									width: 600,
 									height: 350,
 									buttons: {
-										"Apply minor releases": function() {
-											var n_mr_o = '<?php echo implode(",", $size_mr_o);?>';
-											var n_mr_e = '<?php echo implode(",", $size_mr_e);?>';
-											$(this).dialog("close");
-											apply_minor_release(n_mr_o.split(","), n_mr_e.split(","));
+										"Apply minor releases": function () {
+											var n_mr = '<?php echo implode(",", $size_mr);?>';
+											apply_minor_release(n_mr.split(","));
 										},
-										Cancel: function() {
+										"Cancel": function () {
 											$(this).dialog("close");
 										}
 									}
 								});
+
+								$('button:contains(Apply minor releases)').attr("id","apply_rr_button");
+								$('button:contains(Cancel)').attr("id","cancel_rr_button");
 								
 								var dialog_text = "<div><h3>Do you want to apply minor releases?</h3></br>";
 								dialog_text = dialog_text + "<h2>We recommend launch a planned downtime to this process</h2></br>";
@@ -975,14 +975,18 @@ require('include/php_to_js_values.php');
 		};
 	})();
 
-	function apply_minor_release (n_mr_o, n_mr_e) {
+	function apply_minor_release (n_mr) {
 		var error = false;
-		$.each(n_mr_o, function(i, open_mr) {
+		$("#apply_rr_button").remove();
+		$("#cancel_rr_button").text("Close");
+		$('#mr_dialog2').empty();
+		$('#mr_dialog2').append("<img id=\"rr_image\" src=\"<?php echo $config['homeurl'] . 'images/spinner.gif'; ?>\">");
+		$.each(n_mr, function(i, mr) {
 			var params = {};
-			params["updare_rr_open"] = 1;
-			params["number"] = open_mr;
+			params["updare_rr"] = 1;
+			params["number"] = mr;
 			params["page"] = "include/ajax/rolling_release.ajax";
-			
+
 			jQuery.ajax ({
 				data: params,
 				async: false,
@@ -991,44 +995,25 @@ require('include/php_to_js_values.php');
 				url: "ajax.php",
 				success: function (data) {
 					if (data != "") {
-						alert("Error: " + data);
+						$('#mr_dialog2').empty();
+						$('#mr_dialog2').html("<h2>" + data + "</h2>");
 						error = true;
 					}
-				}
-			});
-			
-			if (error == true) {
-				return false;
-			}
-		});
-		var error2 = false;
-		$.each(n_mr_e, function(i, e_mr) {
-			var params = {};
-			params["updare_rr_enterprise"] = 1;
-			params["number"] = e_mr;
-			params["page"] = "enterprise/include/ajax/rolling_release.ajax";
-			
-			jQuery.ajax ({
-				data: params,
-				async: false,
-				dataType: "html",
-				type: "POST",
-				url: "ajax.php",
-				success: function (data) {
-					if (data != "") {
-						alert("Error: " + data);
-						error2 = true;
+					else {
+						$('#mr_dialog2').append("<p>- Applying DB MR #" + mr + "</p>");
 					}
 				}
 			});
 			
-			if (error2 == true) {
+			if (error) {
 				return false;
 			}
 		});
 		
-		if (!error && !error2) {
-			alert("Updated finished successfully");
+		$('#rr_image').remove();
+
+		if (!error) {
+			$('#mr_dialog2').append("<h2>Updated finished successfully</h2>");
 		}
 	}
 	

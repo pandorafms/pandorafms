@@ -17,13 +17,14 @@ if (is_ajax ()) {
 	global $config;
 	check_login();
 
-	$updare_rr_open = get_parameter('updare_rr_open', 0);
+	$updare_rr = get_parameter('updare_rr', 0);
 	
-	if ($updare_rr_open) {
+	if ($updare_rr) {
 		$number = get_parameter('number');
+
 		$dir = $config["homedir"]."/extras/mr";
 		
-		$file = "$dir/$number.open.sql";
+		$file = "$dir/$number.sql";
 		
 		$dangerous_query = false;
 		$mr_file = fopen($file, "r");
@@ -44,30 +45,29 @@ if (is_ajax ()) {
 		else {
 			if (file_exists($dir) && is_dir($dir)) {
 				if (is_readable($dir)) {
-					if ($config["minor_release_open"] >= $number) {
+					if ($config["MR"] >= $number) {
 						if (!file_exists($dir."/updated") || !is_dir($dir."/updated")) {
 							mkdir($dir."/updated");
 						}
-						$file_dest = "$dir/updated/$number.open.sql";
+						$file_dest = "$dir/updated/$number.sql";
 						if (copy($file, $file_dest)) {
 							unlink($file);
 						}
 					}
 					else {
 						$result = db_run_sql_file($file);
-						
 						if ($result) {
-							$update_config = update_config_token("minor_release_open", $number);
+							$update_config = update_config_token("MR", $number);
 							if ($update_config) {
-								$config["minor_release_open"] = $number;
+								$config["MR"] = $number;
 							}
 							
-							if ($config["minor_release_open"] == $number) {
+							if ($config["MR"] == $number) {
 								if (!file_exists($dir."/updated") || !is_dir($dir."/updated")) {
 									mkdir($dir."/updated");
 								}
 								
-								$file_dest = "$dir/updated/$number.open.sql";
+								$file_dest = "$dir/updated/$number.sql";
 								
 								if (copy($file, $file_dest)) {
 									unlink($file);

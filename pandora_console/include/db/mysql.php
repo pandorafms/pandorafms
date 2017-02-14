@@ -37,9 +37,9 @@ function mysql_connect_db($host = null, $db = null, $user = null, $pass = null, 
 	
 	// Non-persistent connection: This will help to avoid mysql errors like "has gone away" or locking problems
 	// If you want persistent connections change it to mysql_pconnect(). 
-	if ($config["mysqli"] === true) {
+	if ($config["mysqli"]) {
 		$connect_id = mysqli_connect($host, $user, $pass, $db, $port);
-		if (mysqli_connect_error() > 0) {
+		if (mysqli_connect_errno() > 0) {
 			return false;
 		}
 		db_change_cache_id ($db, $host);
@@ -1080,7 +1080,7 @@ function mysql_db_get_all_row_by_steps_sql($new = true, &$result, $sql = null) {
 function mysql_db_process_sql_begin() {
 	global $config;
 
-	if ($config["mysqli"] === true) {
+	if ($config["mysqli"]) {
 		mysqli_query ($config['dbconnection'], 'SET AUTOCOMMIT = 0');
 		mysqli_query ($config['dbconnection'], 'START TRANSACTION');
 	}
@@ -1096,7 +1096,7 @@ function mysql_db_process_sql_begin() {
 function mysql_db_process_sql_commit() {
 	global $config;
 
-	if ($config["mysqli"] === true) {
+	if ($config["mysqli"]) {
 		mysqli_query ($config['dbconnection'], 'COMMIT');
 		mysqli_query ($config['dbconnection'], 'SET AUTOCOMMIT = 1');
 	}
@@ -1112,7 +1112,7 @@ function mysql_db_process_sql_commit() {
 function mysql_db_process_sql_rollback() {
 	global $config;
 
-	if ($config["mysqli"] === true) {
+	if ($config["mysqli"]) {
 		mysqli_query ($config['dbconnection'], 'ROLLBACK ');
 		mysqli_query ($config['dbconnection'], 'SET AUTOCOMMIT = 1');
 	}
@@ -1144,7 +1144,7 @@ function mysql_safe_sql_string($string) {
 function mysql_db_get_last_error() {
 	global $config;
 
-	if ($config["mysqli"] === true) {
+	if ($config["mysqli"]) {
 		return mysqli_error();
 	}
 	else {
@@ -1188,7 +1188,7 @@ function mysql_get_system_time() {
 function mysql_db_get_type_field_table($table, $field) {
 	global $config;
 
-	if ($config["mysqli"] === true) {
+	if ($config["mysqli"]) {
 		$result = mysqli_query($config['dbconnection'], 'SELECT parameters FROM ' . $table);
 	
 		return mysqli_fetch_field_direct($result, $field); 
@@ -1221,7 +1221,7 @@ function mysql_db_get_table_count($sql, $search_history_db = false) {
 		
 		// Connect to the history DB
 		if (! isset ($config['history_db_connection']) || $config['history_db_connection'] === false) {
-			if ($config["mysqli"] === true) {
+			if ($config["mysqli"]) {
 				$config['history_db_connection'] = mysqli_connect_db ($config['history_db_host'], $config['history_db_user'], io_output_password($config['history_db_pass']), $config['history_db_name'], $config['history_db_port'], false);
 			}
 			else {
@@ -1272,7 +1272,7 @@ function mysql_db_process_file ($path, $handle_error = true) {
 				$query .= $sql_line;
 				
 				if (preg_match("/;[\040]*\$/", $sql_line)) {
-					if ($config["mysqli"] === true) {
+					if ($config["mysqli"]) {
 						$query_result = mysqli_query($config['dbconnection'], $query); 
 					}
 					else {
@@ -1325,7 +1325,6 @@ function db_run_sql_file ($location) {
 	
 	// Load file
 	$commands = file_get_contents($location);
-	
 	// Delete comments
 	$lines = explode("\n", $commands);
 	$commands = '';
@@ -1339,23 +1338,51 @@ function db_run_sql_file ($location) {
 	// Convert to array
 	$commands = explode(";", $commands);
 	
-	// Run commands
-	mysql_db_process_sql_begin(); // Begin transaction
+	if ($config['mysqli']) {
+		$mysqli = new mysqli($config["dbhost"], $config["dbuser"], $config["dbpass"], $config["dbname"], $config["dbport"]);
+
+		// Run commands
+		$mysqli->query($config['dbconnection'], 'SET AUTOCOMMIT = 0');
+		$mysqli->query($config['dbconnection'], 'START TRANSACTION');
+	}
+	else {
+		// Run commands
+		mysql_db_process_sql_begin(); // Begin transaction
+	}
+	
 	foreach ($commands as $command) {
 		if (trim($command)) {
-			$result = mysql_query($command);
+			if ($config['mysqli']) {
+				$result = $mysqli->query($command);
+			}
+			else {
+				$result = mysql_query($command);
+			}
 			
 			if (!$result) {
 				break; // Error
 			}
 		}
 	}
+
 	if ($result) {
-		mysql_db_process_sql_commit(); // Save results
+		if ($config['mysqli']) {
+			$mysqli->query($config['dbconnection'], 'COMMIT');
+			$mysqli->query($config['dbconnection'], 'SET AUTOCOMMIT = 1');
+		}
+		else {
+			mysql_db_process_sql_commit(); // Save results
+		}
 		return true;
 	}
 	else {
-		mysql_db_process_sql_rollback(); // Undo results
+		if ($config['mysqli']) {
+			$mysqli->query($config['dbconnection'], 'ROLLBACK ');
+			$mysqli->query($config['dbconnection'], 'SET AUTOCOMMIT = 1');
+		}
+		else {
+			mysql_db_process_sql_rollback(); // Undo results
+		}
 		return false;
 	}
 }

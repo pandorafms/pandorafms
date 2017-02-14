@@ -156,6 +156,7 @@ ALTER TABLE trel_item ADD `id_map` int(11) NOT NULL DEFAULT 0;
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('big_operation_step_datos_purge', '100');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('small_operation_step_datos_purge', '1000');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('days_autodisable_deletion', '30');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 0);
 
 -- ---------------------------------------------------------------------
 -- Table `tplanned_downtime_agents`

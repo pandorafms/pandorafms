@@ -661,7 +661,7 @@ function edit_node(data, dblClick) {
 			$("#node_options-fictional_node_update_button-1 input")
 				.attr("onclick", "update_fictional_node(" + data.id_db + ");");
 			
-			$("#node_details-0-1").html(data["text"]);
+			$("#node_details-0-1").html('<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' + data["id_agent"] + '">' + data["text"] + '</a>');
 			var params = [];
 			params.push("get_agent_info=1");
 			params.push("id_agent=" + data["id_agent"]);

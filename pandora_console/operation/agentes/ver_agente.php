@@ -126,9 +126,10 @@ if (is_ajax ()) {
 		$id_group = (int) get_parameter('id_module_group');
 		$id_agents = get_parameter('id_agents');
 		$selection = get_parameter('selection');
-
-		$agents = implode(",", $id_agents);
-
+		if(!isset($id_agents)){
+			$agents = implode(",", $id_agents);
+		}
+		
 		$filter_group = "";
 		$filter_agent = "";
 

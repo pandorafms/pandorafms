@@ -98,7 +98,7 @@ else {
 
 }
 
-
+$table = new stdClass();
 $table->width = '100%';
 $table->class = 'databox filters';
 if (defined("METACONSOLE")) {
@@ -203,7 +203,9 @@ else
 	$sec = "gagente";
 
 if (isset($config['metaconsole_node_id']) && $config['metaconsole_node_id'] > 0) {
-	$confirm_bottom = " onsubmit=' return message_check_create();'";
+	if(isset($config['metaconsole_agent_cache']) && $config['metaconsole_agent_cache'] == 1){
+		$confirm_bottom = " onsubmit=' return message_check_create();'";
+	}
 }
 else
 {

@@ -187,6 +187,7 @@ foreach ($groups as $group_key => $group_val) {
 // Format component groups in tree form
 $groups = component_groups_get_groups_tree_recursive($groups_clean,0,0);
 
+$table = new stdClass();
 $table->width = '100%';
 $table->class = 'databox data';
 $table->head = array ();

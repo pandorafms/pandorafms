@@ -5264,7 +5264,12 @@ function reporting_availability_graph($report, $content, $pdf=false) {
 					}
 					$i++;
 				}
-				$data['sla_value'] = ($data['time_ok']/($data['time_ok']+$data['time_error']))*100;
+				if (($data['time_ok']+$data['time_error']) > 0 ) {
+					$data['sla_value'] = ($data['time_ok']/($data['time_ok']+$data['time_error']))*100;
+				}
+				else {
+					$data['sla_value'] = 0;
+				}
 				$data['sla_fixed'] = sla_truncate($data['sla_value'],  $config['graph_precision'] );
 			}
 			else{

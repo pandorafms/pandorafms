@@ -141,7 +141,7 @@ function delete_link(source_id, source_module_id, target_id, target_module_id, i
 			url: action="ajax.php",
 			success: function (data) {
 				if (data['correct']) {
-					found = -1;
+					var found = -1;
 					
 					jQuery.each(graph.links, function(i, element) {
 						if (element.id_db == id_link) {
@@ -152,6 +152,27 @@ function delete_link(source_id, source_module_id, target_id, target_module_id, i
 						graph.links.splice(found, 1);
 					}
 				
+					$("#layer_graph_links_" + networkmap_id).remove();
+					$("#layer_graph_nodes_" + networkmap_id).remove();
+
+					window.layer_graph_links = window.layer_graph
+						.append("g")
+							.attr("id", "layer_graph_links_" + networkmap_id);
+					window.layer_graph_nodes = window.layer_graph
+						.append("g")
+							.attr("id", "layer_graph_nodes_" + networkmap_id);
+					
+					force.nodes(graph.nodes)
+						.links(graph.links)
+						.start();
+					
+					window.node = layer_graph_nodes.selectAll(".node");
+					window.link = layer_graph_links.selectAll(".link");
+					
+					draw_elements_graph();
+					init_drag_and_drop();
+					set_positions_graph();
+
 					draw_elements_graph();
 					set_positions_graph();
 				}
@@ -484,7 +505,7 @@ function update_link(row_index, id_link) {
 	params.push("source_text=" + text_source_interface);
 	params.push("target_text=" + text_target_interface);
 	params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
-	
+
 	jQuery.ajax ({
 		data: params.join ("&"),
 		dataType: 'json',
@@ -500,47 +521,69 @@ function update_link(row_index, id_link) {
 					.prop("selected", true);
 				$("select[name='interface_target_" + row_index + "'] option[value='" + interface_target + "']")
 					.prop("selected", true);
-				
-				jQuery.each(graph.links, function(j, link) {
+
+				var id = "";
+				var index = -1;
+				$.each(graph.links, function(j, link) {
 					if (link['id_db'] == id_link) {
-
-						var temp_link = {};
-						temp_link["id_db"] = String(id_link);
-						if (data['type_source'] == 1) {
-							temp_link["arrow_start"] = "module";
-							temp_link["id_module_start"] = interface_source;
-						}
-						else {
-							temp_link["arrow_start"] = "";
-							temp_link["id_agent_start"] = interface_source;
-							temp_link["id_module_start"] = 0;
-						}
-						if (data['type_target'] == 1) {
-							temp_link["arrow_end"] = "module";
-							temp_link["id_module_end"] = interface_target;
-						}
-						else {
-							temp_link["arrow_end"] = "";
-							temp_link["id_agent_end"] = interface_target;
-							temp_link["id_module_end"] = 0;
-						}
-						temp_link["status_start"] = "0";
-						temp_link["status_end"] = "0";
-
-						jQuery.each(graph.nodes, function(k, node) {
-							if (node['id_agent'] == data['id_db_target']) {
-								temp_link["target"] = graph.nodes[k];
-							}
-							if (node['id_agent'] == data['id_db_source']) {
-								temp_link["source"] = graph.nodes[k];
-							}
-						});
-						graph.links.splice(j, 1, temp_link);
+						index = j;
+						id = String(id_link);
 					}
 				});
-				
-				//graph.links.push(temp_link);
 
+				delete_link_from_id(index);
+
+				var temp_link = {};
+				temp_link["id_db"] = String(data['id_db_link']);
+				if (data['type_source'] == 1) {
+					temp_link["arrow_start"] = "module";
+					temp_link["id_module_start"] = interface_source;
+				}
+				else {
+					temp_link["arrow_start"] = "";
+					temp_link["id_agent_start"] = interface_source;
+					temp_link["id_module_start"] = 0;
+				}
+				if (data['type_target'] == 1) {
+					temp_link["arrow_end"] = "module";
+					temp_link["id_module_end"] = interface_target;
+				}
+				else {
+					temp_link["arrow_end"] = "";
+					temp_link["id_agent_end"] = interface_target;
+					temp_link["id_module_end"] = 0;
+				}
+				temp_link["status_start"] = "0";
+				temp_link["status_end"] = "0";
+
+				$.each(graph.nodes, function(k, node) {
+					if (node['id_agent'] == data['id_db_target']) {
+						temp_link["target"] = graph.nodes[k];
+					}
+					if (node['id_agent'] == data['id_db_source']) {
+						temp_link["source"] = graph.nodes[k];
+					}
+				});
+
+				add_new_link(temp_link);
+
+				$("#layer_graph_links_" + networkmap_id).remove();
+				$("#layer_graph_nodes_" + networkmap_id).remove();
+
+				window.layer_graph_links = window.layer_graph
+					.append("g")
+						.attr("id", "layer_graph_links_" + networkmap_id);
+				window.layer_graph_nodes = window.layer_graph
+					.append("g")
+						.attr("id", "layer_graph_nodes_" + networkmap_id);
+				
+				force.nodes(graph.nodes)
+					.links(graph.links)
+					.start();
+				
+				window.node = layer_graph_nodes.selectAll(".node");
+				window.link = layer_graph_links.selectAll(".link");
+				
 				draw_elements_graph();
 				init_drag_and_drop();
 				set_positions_graph();
@@ -550,6 +593,14 @@ function update_link(row_index, id_link) {
 			}
 		}
 	});
+}
+
+function delete_link_from_id (index) {
+	graph.links.splice(index, 1);
+}
+
+function add_new_link (new_link) {
+	graph.links.push(new_link);
 }
 
 function edit_node(data, dblClick) {
@@ -603,7 +654,6 @@ function edit_node(data, dblClick) {
 				dataType: 'json',
 				type: 'POST',
 				url: action="ajax.php",
-				async: false,
 				success: function (data) {
 					var adressess = "";
 					for (adress in data['adressess']) {
@@ -626,7 +676,6 @@ function edit_node(data, dblClick) {
 				dataType: 'json',
 				type: 'POST',
 				url: action="ajax.php",
-				async: false,
 				success: function (data) {
 					if (data.length == 0) {
 						$("#interface_information").find('tbody')
@@ -718,7 +767,10 @@ function edit_node(data, dblClick) {
 					.attr('class', "edit_icon_fail_" + i);
 				$(".edit_icon_link", template_relation_row)
 					.attr('class', "edit_icon_link_" + i)
-					.attr('href', 'javascript: update_link(' + i + "," + link_each.id_db + ');');
+					.click(function() {
+						update_link(i, link_each.id_db);
+					}
+				);
 				
 				var params = [];
 				params.push("get_intefaces=1");
@@ -730,7 +782,6 @@ function edit_node(data, dblClick) {
 					dataType: 'json',
 					type: 'POST',
 					url: action="ajax.php",
-					async: false,
 					success: function (data) {
 						if (data['correct']) {
 							$("select[name='interface_source_" + i + "']", template_relation_row).empty();
@@ -761,7 +812,6 @@ function edit_node(data, dblClick) {
 					dataType: 'json',
 					type: 'POST',
 					url: action="ajax.php",
-					async: false,
 					success: function (data) {
 						if (data['correct']) {
 							$("select[name='interface_target_" + i + "']", template_relation_row).empty();
@@ -2749,8 +2799,28 @@ function draw_elements_graph() {
 	link = link.data(force.links(), function(d) {
 		return d.source.id + networkmap_id + "-" + d.target.id + networkmap_id;
 	});
+	
 	link_temp = link.enter()
-		.append("g");
+		.append("g")
+			.attr("id", function(d) {
+				return "link_id_" + d.id_db + networkmap_id;
+			})
+			.attr("class", function(d) {
+				var holding_area_text = "";
+				if ((d.source.state == 'holding_area') ||
+					(d.target.state == 'holding_area')) {
+					
+					holding_area_text = " holding_area_link ";
+				}
+				
+				return "link " +
+					"source_" + d.source.id + networkmap_id + " " +
+					"target_" + d.target.id + networkmap_id + " " +
+					holding_area_text +
+					"id_module_start_" + d.id_module_start + " " +
+					"id_module_end_" + d.id_module_end;
+			});
+
 	link.exit().remove();
 	
 	link_temp.append("path")
@@ -2869,6 +2939,7 @@ function draw_elements_graph() {
 				});
 	
 	node = node.data(force.nodes(), function(d) { return d.id;});
+	
 	node_temp = node.enter()
 		.append("g")
 			.attr("id", function(d) {
@@ -3101,7 +3172,7 @@ function draw_elements_graph() {
 		.classed('dragable_node', true) //own dragable
 		.on("click", selected_node)
 		.on("contextmenu", function(d) { show_menu("node", d);});
-		
+	
 	node.exit().remove();
 }
 

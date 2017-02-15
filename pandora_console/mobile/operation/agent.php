@@ -114,92 +114,123 @@ class Agent {
 		$ui->showFooter(false);
 		$ui->beginContent();
 			if (empty($this->agent)) {
-				$ui->contentAddHtml('<span style="color: red;">' . __('No agent found') . '</span>');
+				$ui->contentAddHtml('<span style="color: red;">' . 
+					__('No agent found') . '</span>');
 			}
 			else {
 				$ui->contentBeginGrid();
-					if ($this->agent['disabled']) {
-						$agent_name = "<em>" . $agent_name . "</em>" . ui_print_help_tip(__('Disabled'), true);
-					}
-					else if ($this->agent['quiet']) {
-						$agent_name = "<em>" . $agent_name . "&nbsp;" . html_print_image("images/dot_green.disabled.png", true, array("border" => '0', "title" => __('Quiet'), "alt" => "")) . "</em>";
-					}
-					else {
-						$agent_name = $agent_name;
-					}
-					
-					
-					if ($system->getConfig('metaconsole')) {
-						metaconsole_connect(null, $this->agent['id_tmetaconsole_setup']);
-						$addresses = agents_get_addresses($this->agent['id_tagente']);
-					}
-					else
-						$addresses = agents_get_addresses($this->id);
-					
-					if ($system->getConfig('metaconsole'))
-						metaconsole_restore_db();
-					
-					$address = $this->agent['direccion'];
-					foreach ($addresses as $k => $add) {
-						if ($add == $address) {
-							unset($addresses[$k]);
-						}
-					}
-					$ip = html_print_image('images/world.png', true, array('title' => __('IP address'))) . '&nbsp;&nbsp;';
-					$ip .= empty($address) ? '<em>' . __('N/A') . '</em>' : $address;
-					if (!empty($addresses)) {
-						$ip .= ui_print_help_tip(__('Other IP addresses').': <br>'.implode('<br>',$addresses), true);
-					}
-					$ip .= '<br />';
-					
-					$last_contact = '<b>' . __('Last contact') . '</b>:&nbsp;'
-						.ui_print_timestamp ($this->agent["ultimo_contacto"], true) . '<br />';
-					
-					$description = '<b>' . __('Description') . ':</b><br>';
-					if (empty($agent["comentarios"])) {
-						$description .= '<i>' . __('N/A') . '</i>';
-					}
-					else {
-						$description .= $this->agent["comentarios"];
-					}
-					
-					
-					$html = '<div class="agent_details">';
-					$html .= ui_print_group_icon ($this->agent["id_grupo"], true, "groups_small", "", false) . '&nbsp;&nbsp;';
-					$html .= '<span class="agent_name">' . $agent_name . '</span><br />';
-					$html .= $ip;
-					$html .= $last_contact;
-					$html .= $description;
-					$html .= '</div>';
+				if ($this->agent['disabled']) {
+					$agent_name = "<em>" . $agent_name . "</em>" . 
+						ui_print_help_tip(__('Disabled'), true);
+				}
+				else if ($this->agent['quiet']) {
+					$agent_name = "<em>" . $agent_name . "&nbsp;" . 
+						html_print_image("images/dot_green.disabled.png", 
+						true, array("border" => '0', "title" => __('Quiet'), "alt" => "")) . "</em>";
+				}
+				else {
+					$agent_name = $agent_name;
+				}
+				
+				
 				if ($system->getConfig('metaconsole')) {
 					metaconsole_connect(null, $this->agent['id_tmetaconsole_setup']);
-				}	
+					//~ $addresses = agents_get_addresses($this->agent['id_tagente']);
+				}
+				else
+					$addresses = agents_get_addresses($this->id);
+				
+				if ($system->getConfig('metaconsole'))
+					metaconsole_restore_db();
+				
+				$address = $this->agent['direccion'];
+				//~ foreach ($addresses as $k => $add) {
+					//~ if ($add == $address) {
+						//~ unset($addresses[$k]);
+					//~ }
+				//~ }
+				
+				//~ $ip = html_print_image('images/world.png', 
+					//~ true, array('title' => __('IP address'))) . 
+					//~ '&nbsp;&nbsp;';
+				$ip .= empty($address) ? '<em>' . __('N/A') . 
+					'</em>' : $address;
+				
+				//~ if (!empty($addresses)) {
+					//~ $ip .= ui_print_help_tip(__('Other IP addresses') . 
+						//~ ':  ' . implode(', ',$addresses), true);
+				//~ }
+				
+				$last_contact = '<b>' . __('Last contact') . 
+					'</b>:&nbsp;' . 
+					ui_print_timestamp ($this->agent["ultimo_contacto"], true);
+				
+				//~ $description = '<b>' . __('Description') . ':</b>&nbsp;';
+				if (empty($agent["comentarios"])) {
+					$description .= '<i>' . __('N/A') . '</i>';
+				}
+				else {
+					$description .= $this->agent["comentarios"];
+				}
+				
+				$html = '<div class="agent_details" style:"float:left;">';
+				$html .= '<span class="agent_name">' . $agent_name . 
+						'</span>';
+				$html .= '</div>';
+				$html .= '<div class="agent_os">' . ui_print_os_icon ($this->agent["id_os"], false, true, 
+					true, false, false, false, false, true) . '</div>';
+				$html .= '<div class="agent_list_ips">';
+				$html .= $ip . ' -  ' . 
+					groups_get_name ($this->agent["id_grupo"], true);
+				$html .= '</div>
+						<div class="agent_last_contact">';
+				$html .= $last_contact;
+				$html .= '</div>
+						<div class="agent_description">';
+				$html .= $description;
+				$html .= '</div>';
+				
+				if ($system->getConfig('metaconsole')) {
+					metaconsole_connect(null, 
+						$this->agent['id_tmetaconsole_setup']);
+				}
+				
 				$ui->contentGridAddCell($html, 'agent_details');
-					ob_start();
-					$html = '<div class="agent_graphs">';
-					$html .= "<b>" . __('Modules by status') . "</b><br />";
-					$html .= graph_agent_status ($this->id, 160, 160, true);
-					$graph_js = ob_get_clean();
-					$html = $graph_js . $html;
-					unset($this->agent['fired_count']);
-					if ($this->agent['total_count'] > 0) {
-						$html .= '<span class="agents_tiny_stats agents_tiny_stats_tactical">' . reporting_tiny_stats($this->agent, true) . ' </span><br>';
-					}
-					$html .= "<b>" . __('Events (24h)') . "</b><br /><br />";
-					$html .= '<div id="events_bar"></div>';
-					$html .= '<br>';
-					$html .= '</div>';
+				
+				ob_start();
+				
+				$html = '<div class="agent_graphs">';
+				$html .= "<b>" . __('Modules by status') . "</b>";
+				$html .= graph_agent_status ($this->id, 160, 160, true);
+				$graph_js = ob_get_clean();
+				$html = $graph_js . $html;
+				
+				unset($this->agent['fired_count']);
+				
+				if ($this->agent['total_count'] > 0) {
+					$html .= '<div class="agents_tiny_stats agents_tiny_stats_tactical">' . 
+						reporting_tiny_stats($this->agent, true, 'agent', '&nbsp;') . ' </div>';
+				}
+				
+				$html .= '</div>';
+				$html .= '<div class="events_bar">';
+				$html .= "<b>" . __('Events (24h)') . "</b>";
+				$html .= '<div id="events_bar"></div>';
+				$html .= '</div>';
 				
 				$ui->contentGridAddCell($html, 'agent_graphs');
 				$ui->contentEndGrid();
+				
 				if ($system->getConfig('metaconsole'))
 					metaconsole_restore_db();
 				
 				$modules = new Modules();
+				
 				if ($system->getConfig('metaconsole'))
 					$filters = array('id_agent' => $this->agent['id_tagente'], 'all_modules' => true, 'status' => -1);
 				else
 					$filters = array('id_agent' => $this->id, 'all_modules' => true, 'status' => -1);
+				
 				$modules->setFilters($filters);
 				$modules->disabledColumns(array('agent'));
 				$ui->contentBeginCollapsible(__('Modules'));
@@ -208,19 +239,24 @@ class Agent {
 				
 				if ($system->getConfig('metaconsole')) {
 					metaconsole_connect(null, $this->agent['id_tmetaconsole_setup']);
-				}	
+				}
+				
 				$alerts = new Alerts();
+				
 				if ($system->getConfig('metaconsole'))
 					$filters = array('id_agent' => $this->agent['id_tagente'], 'all_alerts' => true);
 				else
 					$filters = array('id_agent' => $this->id, 'all_alerts' => true);
+				
 				$alerts->setFilters($filters);
 				$alerts->disabledColumns(array('agent'));
 				$ui->contentBeginCollapsible(__('Alerts'));
 				$ui->contentCollapsibleAddItem($alerts->listAlertsHtml(true));
 				$ui->contentEndCollapsible();
+				
 				if ($system->getConfig('metaconsole'))
 					metaconsole_restore_db();
+				
 				$events = new Events();
 				$events->addJavascriptDialog();
 				

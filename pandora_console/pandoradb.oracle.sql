@@ -1896,6 +1896,7 @@ CREATE TABLE tnetflow_filter (
 	ip_src CLOB,
 	dst_port CLOB,
 	src_port CLOB,
+	router_ip CLOB,
 	advanced_filter CLOB,
 	filter_args CLOB,
 	aggregate VARCHAR2(60),

@@ -295,6 +295,7 @@ function netflow_data_table ($data, $start_date, $end_date, $aggregate, $unit) {
 		foreach ($data['sources'] as $source => $null) {
 			$table->style[$j+1] = 'padding: 4px';
 			$table->align[$j+1] = "right";
+			$table->headstyle[$j+1] = 'text-align: right;';
 			$table->head[$j+1] = $source;
 			$source_index[$j] = $source;
 			$source_count++;

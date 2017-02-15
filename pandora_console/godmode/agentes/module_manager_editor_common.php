@@ -108,7 +108,12 @@ $page = get_parameter('page', '');
 
 if (strstr($page, "policy_modules") === false && $id_agent_module) {
 	if ($config['enterprise_installed'])
-		$disabledBecauseInPolicy = policies_is_module_in_policy($id_agent_module) && policies_is_module_linked($id_agent_module);
+		if(policies_is_module_linked($id_agent_module) == 1){
+		$disabledBecauseInPolicy = 1;
+		}
+		else{
+		$disabledBecauseInPolicy = 0;
+		}
 	else
 		$disabledBecauseInPolicy = false;
 	if ($disabledBecauseInPolicy)
@@ -571,34 +576,55 @@ $table_advanced->data[10][1] = html_print_textarea ('unknown_instructions', 2, 6
 $table_advanced->colspan[10][1] = 6;
 
 if (isset($id_agente) && $moduletype == MODULE_DATA) {
-	$table_advanced->data[11][0] = __('Cron') .
-		ui_print_help_tip (__('If cron is set the module interval is ignored and the module runs on the specified date and time'), true);
-	$table_advanced->data[11][1] = html_print_extended_select_for_cron ($hour, $minute, $mday, $month, $wday, true, true);
-	$table_advanced->colspan[11][1] = 6;
+	$has_remote_conf = enterprise_hook('config_agents_has_remote_configuration',array($agent["id_agente"]));
+	if ($has_remote_conf) {
+		$table_advanced->data[11][0] = __('Cron from') .
+			ui_print_help_tip (__('If cron is set the module interval is ignored and the module runs on the specified date and time'), true);
+		$table_advanced->data[11][1] = html_print_extended_select_for_cron ($hour_from, $minute_from, $mday_from, $month_from, $wday_from, true, $disabledBecauseInPolicy);
+		$table_advanced->colspan[11][1] = 6;
+
+		$table_advanced->data[12][0] = __('Cron to');
+		$table_advanced->data[12][1] = html_print_extended_select_for_cron ($hour_to, $minute_to, $mday_to, $month_to, $wday_to, true, $disabledBecauseInPolicy, true);
+		$table_advanced->colspan[12][1] = 6;
 	}
+	else {
+		$table_advanced->data[11][0] = __('Cron from') .
+			ui_print_help_tip (__('If cron is set the module interval is ignored and the module runs on the specified date and time'), true);
+		$table_advanced->data[11][1] = html_print_extended_select_for_cron ($hour_from, $minute_from, $mday_from, $month_from, $wday_from, true, true);
+		$table_advanced->colspan[11][1] = 6;
+
+		$table_advanced->data[12][0] = __('Cron to');
+		$table_advanced->data[12][1] = html_print_extended_select_for_cron ($hour_to, $minute_to, $mday_to, $month_to, $wday_to, true, true, true);
+		$table_advanced->colspan[12][1] = 6;
+	}
+}
 else {
-	$table_advanced->data[11][0] = __('Cron') .
+	$table_advanced->data[11][0] = __('Cron from') .
 		ui_print_help_tip (__('If cron is set the module interval is ignored and the module runs on the specified date and time'), true);
-	$table_advanced->data[11][1] = html_print_extended_select_for_cron ($hour, $minute, $mday, $month, $wday, true, $disabledBecauseInPolicy);
+	$table_advanced->data[11][1] = html_print_extended_select_for_cron ($hour_from, $minute_from, $mday_from, $month_from, $wday_from, true, $disabledBecauseInPolicy);
 	$table_advanced->colspan[11][1] = 6;
+
+	$table_advanced->data[12][0] = __('Cron to');
+	$table_advanced->data[12][1] = html_print_extended_select_for_cron ($hour_to, $minute_to, $mday_to, $month_to, $wday_to, true, $disabledBecauseInPolicy, true);
+	$table_advanced->colspan[12][1] = 6;
 }
 
-$table_advanced->data[12][0] = __('Timeout');
-$table_advanced->data[12][1] = html_print_input_text ('max_timeout', $max_timeout, '', 5, 10, true, $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy). ' ' . ui_print_help_tip (__('Seconds that agent will wait for the execution of the module.'), true);
-$table_advanced->data[12][2] = '';
-$table_advanced->data[12][3] = __('Retries');
-$table_advanced->data[12][4] = html_print_input_text ('max_retries', $max_retries, '', 5, 10, true, $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy). ' ' . ui_print_help_tip (__('Number of retries that the module will attempt to run.'), true);
-$table_advanced->colspan[12][4] = 3;
+$table_advanced->data[13][0] = __('Timeout');
+$table_advanced->data[13][1] = html_print_input_text ('max_timeout', $max_timeout, '', 5, 10, true, $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy). ' ' . ui_print_help_tip (__('Seconds that agent will wait for the execution of the module.'), true);
+$table_advanced->data[13][2] = '';
+$table_advanced->data[13][3] = __('Retries');
+$table_advanced->data[13][4] = html_print_input_text ('max_retries', $max_retries, '', 5, 10, true, $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy). ' ' . ui_print_help_tip (__('Number of retries that the module will attempt to run.'), true);
+$table_advanced->colspan[13][4] = 3;
 
 if (check_acl ($config['id_user'], 0, "PM")) {
-	$table_advanced->data[13][0] = __('Category');
-	$table_advanced->data[13][1] = html_print_select(
+	$table_advanced->data[14][0] = __('Category');
+	$table_advanced->data[14][1] = html_print_select(
 		categories_get_all_categories('forselect'), 'id_category', $id_category, '', __('None'), 0, true, false, true, "", $disabledBecauseInPolicy);
-	$table_advanced->colspan[13][1] = 6;
+	$table_advanced->colspan[14][1] = 6;
 }
 else {
 	// Store in a hidden field if is not visible to avoid delete the value
-	$table_advanced->data[12][4] .= html_print_input_hidden ('id_category', $id_category, true);
+	$table_advanced->data[13][4] .= html_print_input_hidden ('id_category', $id_category, true);
 }
 
 /* Advanced form part */

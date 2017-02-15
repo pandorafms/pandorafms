@@ -819,7 +819,7 @@ function html_print_extended_select_for_time ($name, $selected = '',
  * 
  * @return string HTML code if return parameter is true.
  */
-function html_print_extended_select_for_cron ($hour = '*', $minute = '*', $mday = '*', $month = '*', $wday = '*', $return = false, $disabled = false) {
+function html_print_extended_select_for_cron ($hour = '*', $minute = '*', $mday = '*', $month = '*', $wday = '*', $return = false, $disabled = false, $to = false) {
 	
 	# Hours
 	for ($i = 0; $i < 24; $i++) {
@@ -862,11 +862,20 @@ function html_print_extended_select_for_cron ($hour = '*', $minute = '*', $mday 
 	$table->head[3] = __('Month');
 	$table->head[4] = __('Week day');
 	
-	$table->data[0][0] = html_print_select ($hours, 'hour', $hour, '', __('Any'), '*', true, false, false,'',$disabled);	
-	$table->data[0][1] = html_print_select ($minutes, 'minute', $minute, '', __('Any'), '*', true, false, false,'',$disabled);
-	$table->data[0][2] = html_print_select ($mdays, 'mday', $mday, '', __('Any'), '*', true, false, false,'',$disabled);
-	$table->data[0][3] = html_print_select ($months, 'month', $month, '', __('Any'), '*', true, false, false,'',$disabled);
-	$table->data[0][4] = html_print_select ($wdays, 'wday', $wday, '', __('Any'), '*', true, false, false,'',$disabled);
+	if ($to) {
+		$table->data[0][0] = html_print_select ($hours, 'hour_to', $hour, '', __('Any'), '*', true, false, false,'',$disabled);	
+		$table->data[0][1] = html_print_select ($minutes, 'minute_to', $minute, '', __('Any'), '*', true, false, false,'',$disabled);
+		$table->data[0][2] = html_print_select ($mdays, 'mday_to', $mday, '', __('Any'), '*', true, false, false,'',$disabled);
+		$table->data[0][3] = html_print_select ($months, 'month_to', $month, '', __('Any'), '*', true, false, false,'',$disabled);
+		$table->data[0][4] = html_print_select ($wdays, 'wday_to', $wday, '', __('Any'), '*', true, false, false,'',$disabled);
+	}
+	else {
+		$table->data[0][0] = html_print_select ($hours, 'hour_from', $hour, '', __('Any'), '*', true, false, false,'',$disabled);	
+		$table->data[0][1] = html_print_select ($minutes, 'minute_from', $minute, '', __('Any'), '*', true, false, false,'',$disabled);
+		$table->data[0][2] = html_print_select ($mdays, 'mday_from', $mday, '', __('Any'), '*', true, false, false,'',$disabled);
+		$table->data[0][3] = html_print_select ($months, 'month_from', $month, '', __('Any'), '*', true, false, false,'',$disabled);
+		$table->data[0][4] = html_print_select ($wdays, 'wday_from', $wday, '', __('Any'), '*', true, false, false,'',$disabled);
+	}
 	
 	return html_print_table ($table, $return);
 }

@@ -1672,4 +1672,47 @@ function db_process_file ($path, $handle_error = true) {
 	}
 }
 
+/**
+ * Search for minor release files.
+ * 
+ * @return bool Return if minor release is available or not
+ */
+function db_check_minor_relase_available () {
+	global $config;
+	
+	$dir = $config["homedir"]."/extras/mr";
+	
+	$have_minor_release = false;
+	
+	if (file_exists($dir) && is_dir($dir)) {
+		if (is_readable($dir)) {
+			$files = scandir($dir); // Get all the files from the directory ordered by asc
+
+			if ($files !== false) {
+				$pattern = "/^\d+\.sql$/";
+				$sqlfiles = preg_grep($pattern, $files); // Get the name of the correct files
+				$files = null;
+				$pattern = "/\.sql$/";
+				$replacement = "";
+				$sqlfiles_num = preg_replace($pattern, $replacement, $sqlfiles); // Get the number of the file
+				
+				if ($sqlfiles_num) {
+					foreach ($sqlfiles_num as $sqlfile_num) {
+						if ($config["MR"] < $sqlfile_num) {
+							$have_minor_release = true;
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	if ($have_minor_release) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
 ?>

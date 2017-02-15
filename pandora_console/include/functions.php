@@ -2616,6 +2616,7 @@ function date2strftime_format($date_format) {
 		'O' => '%z',
 		'T' => '%Z',
 		'%' => '%%',
+		'G' => '%k',
 		);
 	
 	$return = "";
@@ -2664,6 +2665,46 @@ function pandora_setlocale() {
 	
 	setlocale(LC_ALL,
 		str_replace(array_keys($replace_locale), $replace_locale, $user_language));
+}
+
+function update_config_token ($cfgtoken, $cfgvalue) {
+	global $config;
+	
+	$delete = db_process_sql ("DELETE FROM tconfig WHERE token = '$cfgtoken'");
+	$insert = db_process_sql ("INSERT INTO tconfig (token, value) VALUES ('$cfgtoken', '$cfgvalue')");
+	
+	if ($delete && $insert) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+function get_number_of_mr() {
+	global $config;
+	
+	$dir = $config["homedir"]."/extras/mr";
+	$mr_size = array();
+	
+	if (file_exists($dir) && is_dir($dir)) {
+		if (is_readable($dir)) {
+			$files = scandir($dir); // Get all the files from the directory ordered by asc
+			
+			if ($files !== false) {
+				$pattern = "/^\d+\.sql$/";
+				$sqlfiles = preg_grep($pattern, $files); // Get the name of the correct files
+				$pattern = "/\.sql$/";
+				$replacement = "";
+				$sqlfiles_num = preg_replace($pattern, $replacement, $sqlfiles);
+				
+				foreach ($sqlfiles_num as $num) {
+					$mr_size[] = $num;
+				}
+			}
+		}
+	}
+	return $mr_size;
 }
 
 function remove_right_zeros ($value) {

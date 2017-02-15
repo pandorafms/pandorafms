@@ -1720,6 +1720,7 @@ CREATE TABLE IF NOT EXISTS `tnetflow_filter` (
 	`ip_src` TEXT NOT NULL,
 	`dst_port` TEXT NOT NULL,
 	`src_port` TEXT NOT NULL,
+	`router_ip` TEXT NOT NULL,
 	`advanced_filter` TEXT NOT NULL,
 	`filter_args` TEXT NOT NULL,
 	`aggregate` varchar(60),

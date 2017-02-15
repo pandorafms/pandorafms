@@ -156,6 +156,7 @@ ALTER TABLE trel_item ADD `id_map` int(11) NOT NULL DEFAULT 0;
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('big_operation_step_datos_purge', '100');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('small_operation_step_datos_purge', '1000');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('days_autodisable_deletion', '30');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 0);
 UPDATE tconfig SET value = 'https://firefly.artica.es/pandoraupdate7/server.php' WHERE token='url_update_manager';
 
 -- ---------------------------------------------------------------------
@@ -244,3 +245,8 @@ UPDATE tagente_modulo SET cron_interval = '' WHERE cron_interval LIKE '%    %';
 -- Table `tgraph`
 -- ---------------------------------------------------------------------
 ALTER TABLE tgraph ADD COLUMN `percentil` int(4) unsigned default '0';
+
+-- ---------------------------------------------------------------------
+-- Table `tnetflow_filter`
+-- ---------------------------------------------------------------------
+ALTER TABLE tnetflow_filter ADD COLUMN `router_ip` TEXT NOT NULL DEFAULT "";

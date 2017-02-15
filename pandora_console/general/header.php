@@ -233,12 +233,18 @@ config_check();
 				//======================================================
 				
 				
-				
+				$check_minor_release_available = false;
 				$pandora_management = check_acl($config['id_user'], 0, "PM");
 				
+				$check_minor_release_available = db_check_minor_relase_available ();
+				
+				if ($check_minor_release_available) {
+					set_pandora_error_for_header('There are one or more minor releases waiting for update, there are required administrator permissions', 'minor release/s available');
+				}
+
 				echo '<div id="alert_messages" style="display: none"></div>';
 		
-				if ($config["alert_cnt"] > 0) {					
+				if ($config["alert_cnt"] > 0) {
 					$maintenance_link = 'javascript:';
 					$maintenance_title = __("System alerts detected - Please fix as soon as possible");
 					$maintenance_class = $maintenance_id = 'show_systemalert_dialog white';

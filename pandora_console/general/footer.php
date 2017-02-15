@@ -26,8 +26,14 @@ if (! file_exists ($config["homedir"] . $license_file)) {
 	$license_file = 'general/license/pandora_info_en.html';
 }
 
+if (!$config["MR"]) {
+	$config["MR"] = 0;
+}
+
 echo '<a class="white_bold footer" target="_blank" href="' . $config["homeurl"] . $license_file. '">';
-echo sprintf(__('Pandora FMS %s - Build %s', $pandora_version, $build_version));
+
+echo sprintf(__('Pandora FMS %s - Build %s - MR %s', $pandora_version, $build_version, $config["MR"]));
+
 echo '</a><br />';
 echo '<a class="white footer">'. __('Page generated at') . ' '. ui_print_timestamp ($time, true, array ("prominent" => "timestamp")); //Always use timestamp here
 echo '</a>';

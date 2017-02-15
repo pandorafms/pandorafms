@@ -126,9 +126,10 @@ if (is_ajax ()) {
 		$id_group = (int) get_parameter('id_module_group');
 		$id_agents = get_parameter('id_agents');
 		$selection = get_parameter('selection');
-
-		$agents = implode(",", $id_agents);
-
+		if(!isset($id_agents)){
+			$agents = implode(",", $id_agents);
+		}
+		
 		$filter_group = "";
 		$filter_agent = "";
 
@@ -144,12 +145,12 @@ if (is_ajax ()) {
 
 			if (empty($modules)) $modules = array();
 
-			foreach ($modules as $k => $v) {
-				for ($j = $k + 1; $j <= sizeof($modules); $j++) {
-					if ($modules[$j]['nombre'] == $v['nombre']) {
-						unset($modules[$j]);
-					}
-				}
+			$found = array();
+			foreach ($modules as $i=>$row) {
+			    $check = $row['nombre'];
+			    if (@$found[$check]++) {
+			        unset($modules[$i]);
+			    }
 			}
 		}
 		else {
@@ -173,13 +174,21 @@ if (is_ajax ()) {
 			}
 			$modules = $modules_to_report;
 
-			$modules = array_unique($modules);
+			$found = array();
+			if (is_array($modules) || is_object($modules)){
+				foreach ($modules as $i=>$row) {
+				    $check = $row['nombre'];
+				    if (@$found[$check]++) {
+				        unset($modules[$i]);
+				    }
+				}
+			}
 		}
-
-		foreach ($modules as $k => $v) {
-			$modules[$k] = io_safe_output($v);
+		if (is_array($modules) || is_object($modules)){
+			foreach ($modules as $k => $v) {
+				$modules[$k] = io_safe_output($v);
+			}
 		}
-		
 		echo json_encode($modules);
 		return;
 	}

@@ -56,7 +56,12 @@ $no_login_msg = "";
 // Don't change the format, it is parsed by applications
 switch($info) {
 	case 'version':
-		echo 'Pandora FMS ' . $pandora_version . ' - ' . $build_version;
+		if (!$config["MR"]) {
+			$config["MR"] = 0;
+		}
+		
+		echo 'Pandora FMS ' . $pandora_version . ' - ' . $build_version . " MR" . $config["MR"];
+
 		exit;
 }
 

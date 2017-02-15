@@ -499,7 +499,7 @@ if ($agents !== false) {
 		
 		/* Begin Update tagente.remote 0/1 with remote agent function return */
 		
-			if(enterprise_hook('config_agents_has_remote_configuration',$agent['id_agente'])){
+			if(enterprise_hook('config_agents_has_remote_configuration',array($agent['id_agente']))){
 				db_process_sql_update('tagente', array('remote' => 1),'id_agente = '.$agent['id_agente'].'');
 			}
 			else{
@@ -584,7 +584,7 @@ if ($agents !== false) {
 		// Has remote configuration ?
 		if (enterprise_installed()) {
 			enterprise_include_once('include/functions_config_agents.php');
-			if (enterprise_hook('config_agents_has_remote_configuration',$agent["id_agente"])) {
+			if (enterprise_hook('config_agents_has_remote_configuration',array($agent["id_agente"]))) {
 				echo "<a href='index.php?" .
 					"sec=gagente&" .
 					"sec2=godmode/agentes/configurar_agente&" .

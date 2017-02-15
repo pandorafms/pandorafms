@@ -239,7 +239,7 @@ switch ($action) {
 				case 'SLA_weekly':
 				case 'SLA_monthly':
 				case 'SLA_hourly':
-				case 'availability_graph';
+				case 'availability_graph':
 					$description = $item['description'];
 					$only_display_wrong = $item['only_display_wrong'];
 					$monday = $item['monday'];
@@ -255,6 +255,13 @@ switch ($action) {
 					// 'top_n' filed will be reused for SLA sort option
 					$sla_sorted_by = $item['top_n'];
 					$period = $item['period'];
+					break;
+
+				case 'module_histogram_graph':
+					$description = $item['description'];
+					$period = $item['period'];
+					$idAgentModule = $item['id_agent_module'];
+					$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
 					break;
 
 				case 'SLA_services':
@@ -1912,12 +1919,14 @@ $(document).ready (function () {
 				},
 				function (data, status) {
 					$("#module").html('');
-					jQuery.each (data, function (id, value) {
-						option = $("<option></option>")
-							.attr ("value", value["id_agente_modulo"])
-							.html (value["nombre"]);
-						$("#module").append (option);
-					});
+					if(data){
+						jQuery.each (data, function (id, value) {
+							option = $("<option></option>")
+								.attr ("value", value["id_agente_modulo"])
+								.html (value["nombre"]);
+							$("#module").append (option);
+						});
+					}
 				},
 				"json"
 			);
@@ -1935,12 +1944,14 @@ $(document).ready (function () {
 				},
 				function (data, status) {
 					$("#module").html('');
-					jQuery.each (data, function (id, value) {
-						option = $("<option></option>")
-							.attr ("value", value["id_agente_modulo"])
-							.html (value["nombre"]);
-						$("#module").append (option);
-					});
+					if(data){
+						jQuery.each (data, function (id, value) {
+							option = $("<option></option>")
+								.attr ("value", value["id_agente_modulo"])
+								.html (value["nombre"]);
+							$("#module").append (option);
+						});
+					}
 				},
 				"json"
 			);
@@ -1988,7 +1999,6 @@ $(document).ready (function () {
 		
 	});
 
-	
 	$("#submit-create_item").click(function () {
 		var type = $('#type').val();
 		switch (type){
@@ -1998,7 +2008,7 @@ $(document).ready (function () {
 			case 'MTBF': case 'MTTR': case 'prediction_date': case 'projection_graph':
 			case 'avg_value': case 'max_value': case 'min_value': case 'monitor_report':
 			case 'database_serialized': case 'sumatory': case 'historical_data': 
-			case 'agent_configuration':
+			case 'agent_configuration': case 'module_histogram_graph':
 				if ($("#hidden-id_agent").val() == 0) {
 					alert( <?php echo "'" . __('Please select Agent'). "'"; ?> );
 					return false;
@@ -2018,7 +2028,7 @@ $(document).ready (function () {
 			case 'MTBF': case 'MTTR': case 'prediction_date': case 'projection_graph':
 			case 'avg_value': case 'max_value': case 'min_value': case 'monitor_report':
 			case 'database_serialized': case 'sumatory': case 'historical_data': 
-			case 'agent_configuration':
+			case 'agent_configuration': case 'module_histogram_graph':
 				if ($("#hidden-id_agent").val() == 0) {
 					alert( <?php echo "'" . __('Please select Agent'). "'"; ?> );
 					return false;
@@ -2607,6 +2617,13 @@ function chooseType() {
 			$("#row_period").show();
 			$("#sla_list").show();
 			$("#row_working_time").show();
+			break;
+
+		case 'module_histogram_graph':
+			$("#row_description").show();
+			$("#row_period").show();
+			$("#row_agent").show();
+			$("#row_module").show();
 			break;
 		
 		case 'SLA_monthly':

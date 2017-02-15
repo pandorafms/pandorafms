@@ -1162,6 +1162,7 @@ switch ($action) {
 								else
 									$style['label'] = '';
 								break;
+							case 'module_histogram_graph':
 							case 'agent_configuration':
 							case 'alert_report_agent':
 							case 'alert_report_module':
@@ -1489,6 +1490,7 @@ switch ($action) {
 								else
 									$style['label'] = '';
 								break;
+							case 'module_histogram_graph':
 							case 'agent_configuration':
 							case 'alert_report_agent':
 							case 'alert_report_module':

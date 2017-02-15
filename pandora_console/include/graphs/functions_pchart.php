@@ -273,17 +273,29 @@ if (empty($colors)) {
 }
 
 foreach ($colors as $i => $color) {
-	$rgb['border'] = html_html2rgb($color['border']);
-	$rgb_color[$i]['border']['R'] = $rgb['border'][0];
-	$rgb_color[$i]['border']['G'] = $rgb['border'][1];
-	$rgb_color[$i]['border']['B'] = $rgb['border'][2];
+	if (isset ($color['border'])) {
+		$rgb['border'] = html_html2rgb($color['border']);
 	
-	$rgb['color'] = html_html2rgb($color['color']);
-	$rgb_color[$i]['color']['R'] = $rgb['color'][0];
-	$rgb_color[$i]['color']['G'] = $rgb['color'][1];
-	$rgb_color[$i]['color']['B'] = $rgb['color'][2];
-	
-	$rgb_color[$i]['alpha'] = $color['alpha'];
+		if (isset($rgb['border'])) {
+			$rgb_color[$i]['border']['R'] = $rgb['border'][0];
+			$rgb_color[$i]['border']['G'] = $rgb['border'][1];
+			$rgb_color[$i]['border']['B'] = $rgb['border'][2];
+		}
+	}
+
+	if (isset ($color['color'])) {
+		$rgb['color'] = html_html2rgb($color['color']);
+
+		if (isset($rgb['color'])) {
+			$rgb_color[$i]['color']['R'] = $rgb['color'][0];
+			$rgb_color[$i]['color']['G'] = $rgb['color'][1];
+			$rgb_color[$i]['color']['B'] = $rgb['color'][2];
+		}
+	}
+
+	if (isset ($color['alpha'])) {
+		$rgb_color[$i]['alpha'] = $color['alpha'];
+	}
 }
 //add for report with max 15 modules comparation repeat
 $countlegend = count($legend);

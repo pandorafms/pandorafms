@@ -1109,13 +1109,12 @@ function loadFieldsFromDB(item) {
 				}
 
 			});
-			if (data.type == 6 || data.type == 7 || data.type == 8) {
+			
+			if (data.type == 6 || data.type == 7 || data.type == 8 || data.type == 1) {
 				
-					$("#period_row").css('display', '');
 					$("#period_row." + item).css('display', '');
 				}
 				else if (data.type == 2) {
-					$("#period_row").css('display', 'none');
 					$("#period_row." + item).css('display', 'none');
 				}
 				
@@ -1265,7 +1264,7 @@ function hiddenFields(item) {
 	$("#percentile_item_row_4." + item).css('display', '');
 
 	$("#period_row").css('display', 'none');
-	$("#period_row." + item).css('display', 'none');
+	$("#period_row." + item).css('display', '');
 
 	$("#size_row").css('display', 'none');
 	$("#size_row." + item).css('display', '');
@@ -3070,7 +3069,6 @@ function unselectAll() {
 
 function click_button_toolbox(id) {
 		unselectAll();
-		selectedItem = null;
 	switch (id) {
 		case 'static_graph':
 			toolbuttonActive = creationItem = 'static_graph';
@@ -3088,6 +3086,7 @@ function click_button_toolbox(id) {
 		case 'simple_value':
 			toolbuttonActive = creationItem = 'simple_value';
 			toggle_item_palette();
+			$("#period_row." + id).css('display', 'none');
 			break;
 		case 'label':
 			toolbuttonActive = creationItem = 'label';

@@ -648,7 +648,7 @@ function ui_print_os_icon ($id_os, $name = true, $return = false,
 	}
 	else
 		//$output = "<img src='images/os_icons/" . $icon . "' alt='" . $os_name . "' title='" . $os_name . "'>";
-		$output = "images/" . $subfolter . "/" . $icon;
+		$output = "images/" . $subfolder . "/" . $icon;
 	
 	if ($name === true) {
 		$output .= '&nbsp;&nbsp;' . $os_name;

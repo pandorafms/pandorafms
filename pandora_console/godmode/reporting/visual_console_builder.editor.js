@@ -2282,7 +2282,6 @@ function insertDB(type, values) {
 function updateDB_visual(type, idElement , values, event, top, left) {
 	metaconsole = $("input[name='metaconsole']").val();
 
-
 	radious_handle = 6;
 
 	switch (type) {
@@ -2383,8 +2382,6 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 
 function updateDB(type, idElement , values, event) {
 	metaconsole = $("input[name='metaconsole']").val();
-
-
 
 	var top = 0;
 	var left = 0;
@@ -2502,7 +2499,6 @@ function updateDB(type, idElement , values, event) {
 			values['left'] = left;
 		}
 	}
-
 
 	success_update = false;
 	if (!autosave) {
@@ -2662,7 +2658,6 @@ function eventsItems(drag) {
 		drag = false;
 	}
 
-
 	$('.item').unbind('click');
 	$('.item').unbind('dragstop');
 	$('.item').unbind('dragstart');
@@ -2670,7 +2665,6 @@ function eventsItems(drag) {
 	//$(".item").resizable(); //Disable but run in ff and in the waste (aka micro$oft IE) show ungly borders
 
 	$('.item').bind('click', function(event, ui) {
-
 		event.stopPropagation();
 		if (!is_opened_palette) {
 			var divParent = $(event.target);
@@ -2680,8 +2674,8 @@ function eventsItems(drag) {
 			unselectAll();
 			$(divParent).attr('withborder','true');
 			$(divParent).css('border', '1px blue dotted');
-			$(divParent).css('left', '-=1px');
-			$(divParent).css('top', '-=1px');
+			//$(divParent).css('left', '-=1px');
+			//$(divParent).css('top', '-=1px');
 			
 			if ($(divParent).hasClass('box_item')) {
 				creationItem = null;
@@ -3058,8 +3052,8 @@ function unselectAll() {
     $(".item").each(function(){
         $(this).css('border', '');
 				if($(this).attr('withborder') == 'true'){
-					$(this).css('top', '+=1');
-					$(this).css('left', '+=1');
+					//$(this).css('top', '+=1');
+					//$(this).css('left', '+=1');
 					$(this).attr('withborder', 'false');
 				}
 				
@@ -3068,7 +3062,7 @@ function unselectAll() {
 }
 
 function click_button_toolbox(id) {
-		unselectAll();
+	unselectAll();
 	switch (id) {
 		case 'static_graph':
 			toolbuttonActive = creationItem = 'static_graph';
@@ -3108,9 +3102,6 @@ function click_button_toolbox(id) {
 			toolbuttonActive = creationItem = 'line_item';
 			toggle_item_palette();
 			break;
-
-
-
 		case 'copy_item':
 			click_copy_item_callback();
 			break;
@@ -3336,8 +3327,9 @@ function showGrid() {
 	if (is_metaconsole()) {
 		url_hack_metaconsole = '../../';
 	}
-
+	
 	var display = $("#background_grid").css('display');
+	
 	if (display == 'none') {
 		$("#background_grid").css('display', '');
 		$("#background_img").css('opacity', '0.55');
@@ -3363,7 +3355,7 @@ function showGrid() {
 
 			values['absolute_left'] = pos_x;
 			values['absolute_top'] = pos_y;
-
+			
 			updateDB(classItem, idItem, values, 'show_grid');
 		});
 

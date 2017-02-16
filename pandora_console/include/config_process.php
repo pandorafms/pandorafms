@@ -68,6 +68,9 @@ else {
 	ini_set("error_log", $config["homedir"]."/pandora_console.log");
 }
 
+// Check if mysqli is available
+$config["mysqli"] = extension_loaded(mysqli);
+
 $config['start_time'] = microtime (true);
 
 $ownDir = dirname(__FILE__) . '/';

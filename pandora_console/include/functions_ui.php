@@ -2390,7 +2390,7 @@ function ui_get_full_url ($url = '', $no_proxy = false, $add_name_php_file = fal
  * @return string Header HTML
  */
 
-function ui_print_page_header ($title, $icon = "", $return = false, $help = "", $godmode = false, $options = "",$modal = false, $message = "") {
+function ui_print_page_header ($title, $icon = "", $return = false, $help = "", $godmode = false, $options = "",$modal = false, $message = "", $numChars = GENERIC_SIZE_TEXT) {
 	$title = io_safe_input_html($title);
 	if (($icon == "") && ($godmode == true)) {
 		$icon = "images/gm_setup.png";
@@ -2422,7 +2422,7 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 	}
 	
 	$buffer .= '<span style="margin-right:10px;">' .
-		ui_print_truncate_text($title, 'item_title');
+		ui_print_truncate_text($title, $numChars);
 
 	if ($modal && !enterprise_installed()){
 		$buffer .= "

@@ -1980,7 +1980,7 @@ if ($enterpriseEnable and defined('METACONSOLE')) {
 else {
 	ui_print_page_header(__('Reporting') . $textReportName,
 		"images/op_reporting.png", false,
-		"reporting_" . $activeTab . "_tab", false, $buttons);
+		"reporting_" . $activeTab . "_tab", false, $buttons,false,'',80);
 }
 
 if ($resultOperationDB !== null) {

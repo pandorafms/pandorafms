@@ -181,6 +181,7 @@ function dbmgr_extension_main () {
 	}
 	
 	echo "<div style='overflow: auto;'>";
+	$table = new stdClass();
 	$table->width = '100%';
 	$table->class = 'databox data';
 	$table->head = array_keys ($result[0]);

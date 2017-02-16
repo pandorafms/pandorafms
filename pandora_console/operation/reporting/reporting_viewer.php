@@ -127,10 +127,8 @@ else {
 	ui_print_page_header (
 		__('Reporting') .
 		" &raquo;  " .
-		__('Custom reporting') .
-		" - " .
 		reporting_get_name($id_report),
-		"images/op_reporting.png", false, "", false, $options);
+		"images/op_reporting.png", false, "", false, $options,false,'',80);
 }
 //------------------- END HEADER ---------------------------------------
 

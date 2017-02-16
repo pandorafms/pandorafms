@@ -720,6 +720,8 @@ if ($list_modules) {
 	if (empty ($modules)) {
 		$modules = array ();
 	}
+
+	$table = new stdClass();
 	$table->width = "100%";
 	$table->cellpadding = 4;
 	$table->cellspacing = 4;

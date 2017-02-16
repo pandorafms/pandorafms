@@ -2251,9 +2251,10 @@ function set_watermark(graph_id, plot, watermark_src) {
 		if ($('#'+graph_id+' .yAxis .tickLabel').eq(0).css('height') != undefined) {
 			down_ticks_height = $('#'+graph_id+' .yAxis .tickLabel').eq(0).css('height').split('px')[0];
 		}
-		var left_pos = parseInt(context.canvas.width - 3) - $('#watermark_image_'+graph_id)[0].width;
-		var top_pos = parseInt(context.canvas.height - down_ticks_height - 10) - $('#watermark_image_'+graph_id)[0].height;
-
+		//var left_pos = parseInt(context.canvas.width - 3) - $('#watermark_image_'+graph_id)[0].width;
+		//var top_pos = parseInt(context.canvas.height - down_ticks_height - 10) - $('#watermark_image_'+graph_id)[0].height;
+		var left_pos = 380;
+		var top_pos  = 6;
 		context.drawImage(this, left_pos, top_pos);
 
 	}, false);

@@ -3710,6 +3710,7 @@ function reporting_get_event_histogram ($events, $text_header_event = false) {
 				);
 		}
 	}
+	$table = new stdClass();
 	if (!$text_header_event) {
 		$table->width = '100%';
 	}

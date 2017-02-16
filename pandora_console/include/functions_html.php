@@ -170,6 +170,7 @@ function html_print_side_layer ($params) {
 	
 	$out_html = '<div id="side_layer" class="menu_sidebar ' . $round_class . '" style="display:none; z-index:1; overflow: hidden; height: ' . $params['height'] . '; width: ' . $params['width'] . ';">';
 	
+	$table = new stdClass();
 	$table->id = 'side_layer_layout';
 	$table->width = $params['width'] . 'px';
 	$table->cellspacing = 2;

@@ -4058,7 +4058,7 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 		'file' => $config['homedir'] .  "/images/logo_vertical_water.png",
 		'url' => ui_get_full_url("/images/logo_vertical_water.png",
 		false, false, false));
-	
+	$type_graph = $config['type_module_charts'];
 	if ($type_graph === 'area') {
 		if ($compare === 'separated') {
 			return area_graph($flash_chart, $chart, $width, $height/2, $color, $legend,

@@ -152,6 +152,7 @@ $id = get_parameter('id');
 		$width = get_parameter ("width", STATWIN_DEFAULT_CHART_WIDTH);
 		$height = get_parameter ("height", STATWIN_DEFAULT_CHART_HEIGHT);
 		$label = get_parameter ("label", "");
+		$label_graph = base64_decode(get_parameter ("label", ""));
 		$start_date = get_parameter ("start_date", date("Y/m/d"));
 		$start_time = get_parameter ("start_time", date("H:i:s"));
 		$draw_events = get_parameter ("draw_events", 0);
@@ -204,7 +205,7 @@ $id = get_parameter('id');
 		switch ($graph_type) {
 			case 'boolean':
 				echo grafico_modulo_boolean ($id, $period, $draw_events,
-					$width, $height, $label, $unit, $draw_alerts,
+					$width, $height, $label_graph, $unit, $draw_alerts,
 					$avg_only, false, $date, false, $urlImage,
 					'adapter_' . $graph_type, $time_compare,
 					$unknown_graph);
@@ -216,7 +217,7 @@ $id = get_parameter('id');
 				break;
 			case 'sparse':
 				echo grafico_modulo_sparse ($id, $period, $draw_events,
-					$width, $height, $label, $unit, $draw_alerts,
+					$width, $height, $label_graph, $unit, $draw_alerts,
 					$avg_only, false, $date, $unit, $baseline, 0, true,
 					false, $urlImage, 1, false,
 					'adapter_' . $graph_type, $time_compare,
@@ -230,7 +231,7 @@ $id = get_parameter('id');
 				break;
 			case 'string':
 				echo grafico_modulo_string ($id, $period, $draw_events,
-					$width, $height, $label, null, $draw_alerts, 1,
+					$width, $height, $label_graph, null, $draw_alerts, 1,
 					false, $date, false, $urlImage,
 					'adapter_' . $graph_type);
 				echo '<br>';
@@ -241,7 +242,7 @@ $id = get_parameter('id');
 				break;
 			case 'log4x':
 				echo grafico_modulo_log4x ($id, $period, $draw_events,
-					$width, $height, $label, $unit, $draw_alerts, 1,
+					$width, $height, $label_graph, $unit, $draw_alerts, 1,
 					$pure, $date);
 				echo '<br>';
 				if ($show_events_graph)
@@ -398,6 +399,7 @@ $id = get_parameter('id');
 		
 		unset($table);
 		
+		$table = new stdClass();
 		$table->id = 'stat_win_form';
 		$table->width = '100%';
 		$table->cellspacing = 2;

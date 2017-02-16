@@ -208,8 +208,6 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 	$return .= "<p id='legend_$graph_id' class='legend_graph' style='font-size:".$font_size."pt'></p>";
 	
 	if (!empty($threshold_data)) {
-		html_debug($threshold_data, true);
-		html_debug($yellow_threshold, true);
 		$yellow_up = $threshold_data['yellow_up'];
 		$red_up = $threshold_data['red_up'];
 		$yellow_inverse = $threshold_data['yellow_inverse'];
@@ -228,9 +226,6 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 			$red_up = $module_data['max_critical'];
 			$yellow_inverse = !($module_data['warning_inverse'] == 0);
 			$red_inverse = !($module_data['critical_inverse'] == 0);
-			html_debug($yellow_up, true);
-			html_debug($yellow_threshold, true);
-			html_debug($yellow_inverse, true);
 		}
 	}
 	

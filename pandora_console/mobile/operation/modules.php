@@ -638,10 +638,10 @@ class Modules {
 			$this->id_agent . '">' . $output . '</a>' . '</span>';*/
 				
 				if (!$ajax) {
+					unset($row[0]);
 					if ($this->columns['agent']) {
-						unset($row[0]);
+						unset($row[1]);
 					}
-					unset($row[1]);
 					unset($row[2]);
 					unset($row[4]);
 					unset($row[5]);
@@ -748,8 +748,8 @@ class Modules {
 									else {
 										$.each(data.modules, function(key, module) {
 											$(\"table#list_Modules tbody\").append(\"<tr>\" +
-													\"<td class='cell_1'><b class='ui-table-cell-label'>" . __('Module name') . "</b>\" + module[1] + \"</td>\" +
-													\"<td class='cell_0'><b class='ui-table-cell-label'>" . __('Agent name') . "</b>\" + module[0] + \"</td>\" +
+													\"<td class='cell_0'><b class='ui-table-cell-label'>" . __('Module name') . "</b>\" + module[0] + \"</td>\" +
+													\"<td class='cell_1'><b class='ui-table-cell-label'>" . __('Agent name') . "</b>\" + module[1] + \"</td>\" +
 													\"<td class='cell_2'><b class='ui-table-cell-label'>" . __('Status') . "</b>\" + module[5] + \"</td>\" +
 													\"<td class='cell_3'><b class='ui-table-cell-label'>" . __('Interval') . "</b>\" + module[4] + \"</td>\" +
 													\"<td class='cell_4'><b class='ui-table-cell-label'>" . __('Timestamp') . "</b>\" + module[6] + \"</td>\" +

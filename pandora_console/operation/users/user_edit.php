@@ -53,30 +53,6 @@ else {
 	$view_mode = true;
 }
 
-if (is_ajax ()) {
-	
-	$shortcut_update = get_parameter("shortcut_update", 0);
-	
-	// Update of user to show/don't show shortcut bar
-	if ($shortcut_update) {
-		
-		// First we get the actual state
-		$shortcut_value = db_get_value_filter('shortcut', 'tusuario', array('id_user' => $id));
-		
-		//Deactivate shorcut var
-		if ($shortcut_value == 1) {
-			db_process_sql_update('tusuario', array('shortcut' => 0), array('id_user' => $id));
-		}
-		// Activate shortcut var
-		else {
-			db_process_sql_update('tusuario', array('shortcut' => 1), array('id_user' => $id));
-		}
-	
-	}
-	
-	return;
-}
-
 // Header
 if ($meta) {
 	user_meta_print_header();
@@ -110,7 +86,6 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 	}
 	
 	$upd_info["flash_chart"] = get_parameter ("flash_charts", $config["flash_charts"]);
-	$upd_info["shortcut"] = get_parameter ("shortcut_bar", 0);
 	$upd_info["section"] = get_parameter ("section", $user_info["section"]);
 	$upd_info["data_section"] = get_parameter ("data_section", '');
 	$dashboard = get_parameter('dashboard', '');
@@ -201,14 +176,15 @@ if (defined('METACONSOLE')) {
 	$table->head_colspan[0] = 5;
 	$table->headstyle[0] = 'text-align: center';
 }
-$table->style[0] = 'width: 500px;';
-$table->style[2] = 'width: 200px;';
+$table->style[0] = 'min-width: 320px;width: 320px;margin-right:0px;padding-right:0px;';
+$table->style[1] = 'min-width: 280px;width: 280px;margin-right:0px;padding-right:0px;';
+$table->style[2] = 'min-width: 150px;width: 150px;margin-right:0px;margin-left:0px;padding-left:0px;padding-right:0px;';
 
 $data = array();
-$data[0] = '<b>' . __('User ID') . '</b>';
-$data[0] .= '<div style="position:absolute;left:200px;display:inline;">'.$jump . '<span style="font-weight: normal;">' . $id . '</span></div>';
-$data[1] = '<b>' . __('Full (display) name') . '</b>';
-$data[1] .= '<div style="position:absolute;left:700px;display:inline;">'.$jump . html_print_input_text_extended ("fullname", $user_info["fullname"], '', '', 40, 100, $view_mode, '', 'class="input"', true).'</div>';
+$data[0] = '<span style="width:50%;float:left;"><b>' . __('User ID') . '</b></span>';
+$data[0] .= $jump . '<span style="font-weight: normal;width:20%;float:left;">' . $id . '</span>';
+$data[1] = '<span style="width:40%;float:left;line-height:20px;"><b>' . __('Full (display) name') . '</b></span>';
+$data[1] .= $jump . '<span style="width:20%;float:left;line-height:20px;">' . html_print_input_text_extended ("fullname", $user_info["fullname"], '', '', 20, 100, $view_mode, '', 'class="input"', true).'</span>';
 // Show "Picture" (in future versions, why not, allow users to upload it's own avatar here.
 
 if (is_user_admin ($id)) {
@@ -229,10 +205,10 @@ $table->rowstyle[] = 'font-weight: bold;';
 $table->data[] = $data;
 
 $data = array();
-$data[0] = __('E-mail');
-$data[0] .= '<div style="position:absolute;left:200px;display:inline;">'.$jump . html_print_input_text_extended ("email", $user_info["email"], '', '', '40', '100', $view_mode, '', 'class="input"', true).'</div>';
-$data[1] = __('Phone number');
-$data[1] .= '<div style="position:absolute;left:700px;display:inline;">'.$jump . html_print_input_text_extended ("phone", $user_info["phone"], '', '', '40', '30', $view_mode, '', 'class="input"', true).'</div>';
+$data[0] = '<span style="width:50%;float:left;">'.__('E-mail').'</span>';
+$data[0] .= $jump .'<span style="width:20%;float:left;line-height:20px;">'. html_print_input_text_extended ("email", $user_info["email"], '', '', '25', '100', $view_mode, '', 'class="input"', true).'</span>';
+$data[1] = '<span style="width:40%;float:left;">'.__('Phone number').'</span>';
+$data[1] .= $jump . '<div style="width:20%;float:left;line-height:50px;">'.html_print_input_text_extended ("phone", $user_info["phone"], '', '', '20', '30', $view_mode, '', 'class="input"', true).'</div>';
 $table->rowclass[] = '';
 $table->rowstyle[] = 'font-weight: bold;';
 $table->data[] = $data;
@@ -240,10 +216,10 @@ $table->data[] = $data;
 if ($view_mode === false) {
 	if ($config["user_can_update_password"]) {
 		$data = array();
-		$data[0] = __('New Password');
-		$data[0] .=  '<div style="position:absolute;left:200px;display:inline;">'.$jump . html_print_input_text_extended ("password_new", "", '', '', '40', '45', $view_mode, '', 'class="input"', true, true).'</div>';
-		$data[1] = __('Password confirmation');
-		$data[1] .= '<div style="position:absolute;left:700px;display:inline;">'.$jump . html_print_input_text_extended ("password_conf", "", '', '', '40', '45', $view_mode, '', 'class="input"', true, true).'</div>';
+		$data[0] = '<span style="width:50%;float:left;">'.__('New Password').'</span>';
+		$data[0] .=  $jump .'<span style="width:20%;float:left;line-height:20px;">'.html_print_input_text_extended ("password_new", "", '', '', '25', '45', $view_mode, '', 'class="input"', true, true).'</span>';
+		$data[1] = '<span style="width:40%;float:left;">'.__('Password confirmation').'</span>';
+		$data[1] .= $jump . '<span style="width:20%;float:left;line-height:20px;">'.html_print_input_text_extended ("password_conf", "", '', '', '20', '45', $view_mode, '', 'class="input"', true, true).'</span>';
 		$table->rowclass[] = '';
 		$table->rowstyle[] = 'font-weight: bold;';
 		$table->data[] = $data;
@@ -259,26 +235,26 @@ if ($view_mode === false) {
 }
 
 $data = array();
-$data[0] = __('Block size for pagination') . ui_print_help_tip(__('If checkbox is clicked then block size global configuration is used'), true);
+$data[0] = '<span style="width:50%;float:left;">'.__('Block size for pagination') . ui_print_help_tip(__('If checkbox is clicked then block size global configuration is used'), true).'</span>';
 if ($user_info["block_size"] == 0) {
 	$block_size = $config["global_block_size"];
 }
 else {
 	$block_size = $user_info["block_size"];
 }
-$data[0] .= $jump . html_print_input_text ('block_size', $block_size, '', 5, 5, true);
-$data[0] .= $jump . html_print_checkbox('default_block_size', 1, $user_info["block_size"] == 0, true);
+$data[0] .= $jump .'<span style="font-weight: normal;width:15%;float:left;line-height:20px;">'. html_print_input_text ('block_size', $block_size, '', 5, 5, true).'</span>';
+$data[0] .= $jump . '<span style="width:2%;float:left;line-height:20px;">'.html_print_checkbox('default_block_size', 1, $user_info["block_size"] == 0, true).'</span>';
 $data[0] .= __('Default').' ('.$config["global_block_size"].')';
 
 $values = array(-1 => __('Default'),1 => __('Yes'),0 => __('No'));
 
-$data[1] = __('Interactive charts') . ui_print_help_tip(__('Whether to use Javascript or static PNG graphs'), true);
-$data[1] .= '<div style="position:absolute;left:700px;display:inline;">'.$jump . html_print_select($values, 'flash_charts', $user_info["flash_chart"], '', '', -1, true, false, false).'</div>';
+$data[1] = '<span style="width:40%;float:left;">'.__('Interactive charts') . ui_print_help_tip(__('Whether to use Javascript or static PNG graphs'), true).'</span>';
+$data[1] .= $jump . '<span style="width:20%;float:left;line-height:20px;">'. html_print_select($values, 'flash_charts', $user_info["flash_chart"], '', '', -1, true, false, false).'</span>';
 
 
-$data[2] = __('Language');
+$data[2] = '<span style="width:30%;float:left;">'.__('Language').'</span>';
 $data[2] .= $jump . html_print_select_from_sql ('SELECT id_language, name FROM tlanguage',
-	'language', $user_info["language"], '', __('Default'), 'default', true);
+	'language', $user_info["language"], '', __('Default'), 'default', true,'','','','','',10);
 
 $table->rowclass[] = '';
 $table->rowstyle[] = 'font-weight: bold;';
@@ -295,10 +271,7 @@ $id_usr = $config['id_user'];
 
 if (!$meta) {
 	$data = array();
-	$data[0] = __('Shortcut bar') . ui_print_help_tip(__('This will activate a shortcut bar with alerts, events, messages... information'), true);
-	$data[0] .= '<div style="position:absolute;left:200px;display:inline;">'.$jump . html_print_checkbox('shortcut_bar', 1, $user_info["shortcut"], true).'</div>';
-
-	$data[1] = __('Home screen'). ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type sec=estado&sec2=operation/agentes/estado_agente to show agent detail view'), true);
+	$data[0] = '<span style="width:40%;float:left;">'.__('Home screen'). ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type sec=estado&sec2=operation/agentes/estado_agente to show agent detail view'), true).'</span>';
 	$values = array (
 		'Default' =>__('Default'),
 		'Visual console'=>__('Visual console'),
@@ -311,7 +284,7 @@ if (!$meta) {
 		$values['Dashboard'] = __('Dashboard');
 	}
 
-	$data[1] .= '<div style="position:absolute;left:700px;display:inline;">'.$jump . html_print_select($values, 'section', io_safe_output($user_info["section"]), 'show_data_section();', '', -1, true, false, false).'</div>';
+	$data[0] .= $jump . '<span style="width:20%;float:left;line-height:20px;">'.html_print_select($values, 'section', io_safe_output($user_info["section"]), 'show_data_section();', '', -1, true, false, false).'</span>';
 
 	if (enterprise_installed()) {
 		$dashboards = get_user_dashboards ($config['id_user']);
@@ -324,7 +297,7 @@ if (!$meta) {
 				$dashboards_aux[$dashboard['name']] = $dashboard['name'];
 			}
 		}
-		$data[1] .= html_print_select ($dashboards_aux, 'dashboard', $user_info["data_section"], '', '', '', true);
+		$data[0] .= html_print_select ($dashboards_aux, 'dashboard', $user_info["data_section"], '', '', '', true);
 	}
 	
 	$layouts = visual_map_get_user_layouts ($config['id_user'], true);
@@ -337,17 +310,17 @@ if (!$meta) {
 			$layouts_aux[$layout] = $layout;
 		}
 	}
-	$data[1] .=  html_print_select ($layouts_aux, 'visual_console', $user_info["data_section"], '', '', '', true);
-	$data[1] .=  html_print_input_text ('data_section', $user_info["data_section"], '', 60, 255, true, false);
+	$data[0] .=  html_print_select ($layouts_aux, 'visual_console', $user_info["data_section"], '', '', '', true);
+	$data[0] .=  html_print_input_text ('data_section', $user_info["data_section"], '', 60, 255, true, false);
 	
 	
 	
 	// User only can change skins if has more than one group 
-	$data[2] = '';
+	$data[1] = '';
 	if (function_exists('skins_print_select')) {
 		if (count($usr_groups) > 1) {
-			$data[2] = __('Skin');
-			$data[2] .= $jump . skins_print_select($id_usr,'skin', $user_info['id_skin'], '', __('None'), 0, true);
+			$data[1] = '<span style="width:30%;float:left;">'.__('Skin').'</span>';
+			$data[1] .= $jump . skins_print_select($id_usr,'skin', $user_info['id_skin'], '', __('None'), 0, true);
 		}
 	}
 	$table->rowclass[] = '';
@@ -358,20 +331,20 @@ if (!$meta) {
 // Double auth
 $double_auth_enabled = (bool) db_get_value('id', 'tuser_double_auth', 'id_user', $config['id_user']);
 $data = array();
-$data[0] = __('Double authentication');
-$data[0] .= '<div style="position:absolute;left:200px;display:inline;">'.$jump;
-$data[0] .= html_print_checkbox('double_auth', 1, $double_auth_enabled, true).'</span>';
+$data[0] = '<span style="width:50%;float:left;">'.__('Double authentication').'</span>';
+$data[0] .= $jump;
+$data[0] .= '<span style="width:20%;float:left;line-height:20px;">'.html_print_checkbox('double_auth', 1, $double_auth_enabled, true).'</span>';
 if ($double_auth_enabled) {
 	$data[0] .= $jump;
 	$data[0] .= html_print_button(__('Show information'), 'show_info', false, 'javascript:show_double_auth_info();', '', true);
 }
 // Dialog
-$data[0] .= "<div id=\"dialog-double_auth\"><div id=\"dialog-double_auth-container\"></div></div>";
+$data[0] .= '<div id="dialog-double_auth"><div id="dialog-double_auth-container"></div></div>';
 
 if (check_acl ($config['id_user'], 0, "ER")){
-	$data[1] = __('Event filter');
-	$data[1] .= '<div style="position:absolute;left:700px;display:inline;">'.$jump . html_print_select_from_sql ('SELECT id_filter, id_name FROM tevent_filter',
-		'event_filter', $user_info["id_filter"], '', __('None'), NULL, true).'</div>';
+	$data[1] = '<span style="width:40%;float:left;">'.__('Event filter').'</span>';
+	$data[1] .= $jump . '<span style="width:20%;float:left;line-height:20px;">'. html_print_select_from_sql ('SELECT id_filter, id_name FROM tevent_filter',
+		'event_filter', $user_info["id_filter"], '', __('None'), NULL, true).'</span>';
 }// Newsletter
 else if (license_free()) {
 	$data[1] = __('Newsletter Subscribed') . ':';
@@ -443,7 +416,7 @@ $select_out = html_print_select ($autorefresh_list_out, 'autorefresh_list_out[]'
 $arrows = " ";
 $select_in = html_print_select ($autorefresh_list, 'autorefresh_list[]', '', '', '', '', true, true, true, '', false, 'width:200px');
 
-$table_ichanges = '<table>
+$table_ichanges = '<table style="position:relative;left:160px;">
 		<tr>
 			<td>' . __('Full list of pages') . '</td>
 			<td></td>
@@ -479,7 +452,7 @@ $table->rowstyle[] = 'font-weight: bold;';
 $table->data[] = $data;
 
 $data = array();
-$data[0] = html_print_textarea("comments", 2, 60, $user_info["comments"], ($view_mode ? 'readonly="readonly"' : ''), true);
+$data[0] = '<div style="width:98%">'.html_print_textarea("comments", 2, 60, $user_info["comments"], ($view_mode ? 'readonly="readonly"' : ''), true).'</div>';
 $data[0] .= html_print_input_hidden('quick_language_change', 1, true);
 $table->colspan[count($table->data)][0] = 3;
 $table->rowclass[] = '';
@@ -505,6 +478,7 @@ unset($table);
 if (!defined('METACONSOLE'))
 	echo '<h4>'.__('Profiles/Groups assigned to this user').'</h4>';
 
+$table = new stdClass();
 $table->width = '100%';
 $table->class = 'databox data';
 if (defined('METACONSOLE')) {

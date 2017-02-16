@@ -15,6 +15,7 @@ from selenium.common.exceptions import NoAlertPresentException
 from selenium.webdriver.remote.webelement import WebElement
 
 import unittest2, time, re
+import logging
 
 class SimpleService(PandoraWebDriverTestCase):
 
@@ -31,6 +32,7 @@ class SimpleService(PandoraWebDriverTestCase):
 	module_normal_2_name = gen_random_string(6)
 	module_warning_1_name = gen_random_string(6)
 
+	logging.basicConfig(filename="Service.log", level=logging.INFO, filemode='w')
 	
 	@is_enterprise	
 	def test_A_simple_service(self):
@@ -106,6 +108,8 @@ class SimpleService(PandoraWebDriverTestCase):
 		element = driver.find_element_by_xpath('//td/img[@data-title="Warning"]')
 		self.assertIsInstance(element,WebElement)
 
+		logging.info("test_A_simple_service is correct")
+
 	@is_enterprise
 	def test_B_simple_service(self):
 
@@ -135,6 +139,8 @@ class SimpleService(PandoraWebDriverTestCase):
 
 		element = driver.find_element_by_xpath('//td/img[@data-title="Critical"]')
 		self.assertIsInstance(element,WebElement)
+
+		logging.info("test_B_simple_service is correct")
 
 	@is_enterprise
 	def test_C_simple_service(self):
@@ -166,7 +172,8 @@ class SimpleService(PandoraWebDriverTestCase):
 		element = driver.find_element_by_xpath('//td/img[@data-title="Ok"]')
 		self.assertIsInstance(element,WebElement)
 
-	
+		logging.info("test_C_simple_service is correct")	
+
 class ManualService(PandoraWebDriverTestCase):
 
         test_name = u'Auto service tests'
@@ -224,6 +231,9 @@ class ManualService(PandoraWebDriverTestCase):
 
                 element = driver.find_element_by_xpath('//td/img[@data-title="Ok"]')
                 self.assertIsInstance(element,WebElement)
+		
+		logging.info("test_A_manual_service_ok is correct")
+
 
 	@is_enterprise
 	def test_B_auto_service_critical(self):
@@ -249,6 +259,8 @@ class ManualService(PandoraWebDriverTestCase):
 		element = driver.find_element_by_xpath('//td/img[@data-title="Critical"]')
 		self.assertIsInstance(element,WebElement)		
 
+		logging.info("test_B_auto_service_critical is correct")
+
 	@is_enterprise
 	def test_C_auto_service_warning(self):
 
@@ -273,6 +285,143 @@ class ManualService(PandoraWebDriverTestCase):
 		element = driver.find_element_by_xpath('//td/img[@data-title="Warning"]')
 		self.assertIsInstance(element,WebElement)
 
+		logging.info("test_C_auto_service_warning is correct")
+
+class serviceInsideService(PandoraWebDriverTestCase):
+
+		test_name = u'Auto service tests'
+		test_description = u'Test for check that states are inherited'
+		tickets_associated = []
+
+		agent_name = gen_random_string(6)
+
+		module_ok_1_name = gen_random_string(6)
+		module_warning_1_name = gen_random_string(6)
+		module_critical_1_name = gen_random_string(6)
+
+		@is_enterprise
+		def test_A_service_ok(self):
+
+			u"""
+			Comprobar que un servicio padre hereda el estado del hijo, en este caso "ok"
+			"""
+
+			father_service_name = gen_random_string(6)
+
+			service_name = gen_random_string(6)
+
+			driver = self.driver
+			self.login()
+			detect_and_pass_all_wizards(driver)
+
+			activate_api(driver,"1234")
+
+			#Creamos agentes y modulos warning, critical y ok que usaremos en los 3 test de servicios tipo manual
+			params = [self.agent_name,"127.0.0.1","0","4","0","300","2","pandorafms","2","0","0","pruebas"]
+			create_agent_api(driver,params,user="admin",pwd="pandora")
+
+			params = [self.agent_name,self.module_critical_1_name,"0","6","1","0","0","0","0","0","0","0","0","129.99.40.1","0","0","180","0","0","0","0","Host_Alive"]
+			add_network_module_to_agent_api(driver,params,user="admin",pwd="pandora",apipwd="1234")
+
+			params = [self.agent_name,self.module_warning_1_name,"0","7","1","-10","9999","0","0","0","0","0","0","127.0.0.1","0","0","180","0","0","0","0","Host_Latency"]
+			add_network_module_to_agent_api(driver,params,user="admin",pwd="pandora",apipwd="1234")
+
+			params = [self.agent_name,self.module_ok_1_name,"0","6","1","0","0","0","0","0","0","0","0","127.0.0.1","0","0","180","0","0","0","0","Host_Alive"]
+			add_network_module_to_agent_api(driver,params,user="admin",pwd="pandora",apipwd="1234")
+
+			lista = driver.current_url.split('/')
+
+			url = lista[0]+'//'+lista[2]+'/pandora_console'
+
+			driver.get(url)
+
+			#Creamos el servicio añadiendo modulo en warnining y el servicio será OK
+			create_service(driver,service_name,"Applications",self.agent_name,description=service_name,mode="manual",critical="1",warning="0.5")
+
+			add_elements_to_service(driver,service_name,"Module",agent_name=self.agent_name,module=self.module_ok_1_name,description=self.module_ok_1_name,ok_weight="0.2")
+			add_elements_to_service(driver,service_name,"Module",agent_name=self.agent_name,module=self.module_warning_1_name,description=self.module_warning_1_name,warning_weight="0.2")
+
+			#Creamos el servicio padre
+			create_service(driver,father_service_name,"Applications",self.agent_name,description="this is the father service",mode="manual")
+
+			add_elements_to_service(driver,father_service_name,"Service",service_to_add=father_service_name,description=service_name,ok_weight="0.2")
+		
+			force_service(driver,service_name)
+		
+			force_service(driver,father_service_name)
+
+			search_service(driver,father_service_name,go_to_service=False)
+
+			element = driver.find_element_by_xpath('//td/img[@data-title="Ok"]')
+			self.assertIsInstance(element,WebElement)
+
+			logging.info("test_A_service_ok is correct")
+
+		@is_enterprise	
+		def test_B_service_critical(self):
+
+			u"""
+			Comprobar que un servicio padre hereda el estado del hijo, en este caso "warning"
+			"""	
+			
+			father_service_name = gen_random_string(6)			
+			service_name = gen_random_string(6)
+
+			driver = self.driver
+
+			#Creamos el servicio añadiendo el modulo ok y warning y el servicio será critical
+			create_service(driver,service_name,"Applications",self.agent_name,description=service_name,mode="manual",critical="1",warning="0.5")
+			add_elements_to_service(driver,service_name,"Module",agent_name=self.agent_name,module=self.module_ok_1_name,description=self.module_ok_1_name,ok_weight="0.5")
+			add_elements_to_service(driver,service_name,"Module",agent_name=self.agent_name,module=self.module_critical_1_name,description=self.module_critical_1_name,critical_weight="0.5")
+
+			#Creamos el servicio padre
+			create_service(driver,father_service_name,"Applications",self.agent_name,description="this is the father service",mode="manual")
 	
+			add_elements_to_service(driver,father_service_name,"Service",service_to_add=father_service_name,description=service_name,ok_weight="0.2")
+			
+			force_service(driver,service_name)
+
+			force_service(driver,father_service_name)
+
+			search_service(driver,father_service_name,go_to_service=False)
+
+			element = driver.find_element_by_xpath('//td/img[@data-title="Critical"]')
+			self.assertIsInstance(element,WebElement)
+
+			logging.info("test_B_service_critical is correct")
+
+		@is_enterprise
+		def test_C_service_warning(self):
+
+				u"""
+				Comprobar que un servicio padre hereda el estado del hijo, en este caso "warning"
+				"""
+
+				father_service_name = gen_random_string(6)
+				service_name = gen_random_string(6)
+
+				driver = self.driver
+
+				#Creamos el servicio añadiendo el modulo ok y warning y el servicio será crit
+				create_service(driver,service_name,"Applications",self.agent_name,description=service_name,mode="manual",critical="1",warning="0.5")
+
+				add_elements_to_service(driver,service_name,"Module",agent_name=self.agent_name,module=self.module_warning_1_name,description=self.module_warning_1_name,warning_weight="0.3")
+				add_elements_to_service(driver,service_name,"Module",agent_name=self.agent_name,module=self.module_critical_1_name,description=self.module_critical_1_name,critical_weight="0.3")
+
+				#Creamos el servicio padre
+				create_service(driver,father_service_name,"Applications",self.agent_name,description="this is the father service",mode="manual")
+
+				add_elements_to_service(driver,father_service_name,"Service",service_to_add=father_service_name,description=service_name,ok_weight="0.2")
+
+				force_service(driver,service_name)
+
+				force_service(driver,father_service_name)
+
+				search_service(driver,father_service_name,go_to_service=False)
+
+				element = driver.find_element_by_xpath('//td/img[@data-title="Critical"]')
+				self.assertIsInstance(element,WebElement)
+		
+				logging.info("test_C_service_warning is correct")
 if __name__ == "__main__":
 	unittest2.main()

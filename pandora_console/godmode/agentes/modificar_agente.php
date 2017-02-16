@@ -178,7 +178,8 @@ echo "</tr></table>";
 $order_collation = "";
 switch ($config["dbtype"]) {
 	case "mysql":
-		$order_collation = "COLLATE utf8_general_ci";
+		$order_collation = "";
+		//$order_collation = "COLLATE utf8_general_ci";
 		break;
 	case "postgresql":
 	case "oracle":
@@ -194,6 +195,22 @@ $selectOsDown = '';
 $selectGroupUp = '';
 $selectGroupDown = '';
 switch ($sortField) {
+	case 'remote':
+		switch ($sort) {
+			case 'up':
+				$selectRemoteUp = $selected;
+				$order = array('field' => 'remote ' . $order_collation,
+					'field2' => 'nombre ' . $order_collation,
+					'order' => 'ASC');
+				break;
+			case 'down':
+				$selectRemoteDown = $selected;
+				$order = array('field' => 'remote ' . $order_collation,
+					'field2' => 'nombre ' . $order_collation,
+					'order' => 'DESC');
+				break;
+		}
+		break;
 	case 'name':
 		switch ($sort) {
 			case 'up':
@@ -265,8 +282,8 @@ if ($search != "") {
 	$id = db_get_all_rows_sql($sql);
 	if($id != ''){
 		$aux = $id[0]['id_agent'];
-		$search_sql = " AND ( nombre " . $order_collation . "
-			LIKE '%$search%' OR tagente.id_agente = $aux";
+		$search_sql = " AND ( LOWER(nombre) " . $order_collation . "
+			LIKE LOWER('%$search%') OR tagente.id_agente = $aux";
 		if(count($id)>=2){
 			for ($i = 1; $i < count($id); $i++){
 				$aux = $id[$i]['id_agent'];
@@ -461,7 +478,10 @@ if ($agents !== false) {
 		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=name&sort=up&disabled=$disabled">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp)) . '</a>' .
 		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=name&sort=down&disabled=$disabled">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown)) . '</a>';
 	echo "</th>";
-	echo "<th title='".__('Remote agent configuration')."'>".__('R')."</th>";
+	echo "<th title='".__('Remote agent configuration')."'>".__('R'). ' ' .
+		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=remote&sort=up&disabled=$disabled">' . html_print_image("images/sort_up.png", true, array("style" => $selectRemoteUp)) . '</a>' .
+		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=remote&sort=down&disabled=$disabled">' . html_print_image("images/sort_down.png", true, array("style" => $selectRemoteDown)) . '</a>';
+	echo "</th>";
 	echo "<th>".__('OS'). ' ' .
 		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=os&sort=up&disabled=$disabled">' . html_print_image("images/sort_up.png", true, array("style" => $selectOsUp)) . '</a>' .
 		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=os&sort=down&disabled=$disabled">' . html_print_image("images/sort_down.png", true, array("style" => $selectOsDown)) . '</a>';
@@ -477,6 +497,18 @@ if ($agents !== false) {
 	$rowPair = true;
 	$iterator = 0;
 	foreach ($agents as $agent) {
+		
+		/* Begin Update tagente.remote 0/1 with remote agent function return */
+		
+			if(enterprise_hook('config_agents_has_remote_configuration',array($agent['id_agente']))){
+				db_process_sql_update('tagente', array('remote' => 1),'id_agente = '.$agent['id_agente'].'');
+			}
+			else{
+				db_process_sql_update('tagente', array('remote' => 0),'id_agente = '.$agent['id_agente'].'');
+			}
+			
+			/* End Update tagente.remote 0/1 with remote agent function return */
+			
 		$id_grupo = $agent["id_grupo"];
 		
 		if (! check_acl ($config["id_user"], $id_grupo, "AW", $agent['id_agente']) && ! check_acl ($config["id_user"], $id_grupo, "AD", $agent['id_agente']))
@@ -556,7 +588,7 @@ if ($agents !== false) {
 		// Has remote configuration ?
 		if (enterprise_installed()) {
 			enterprise_include_once('include/functions_config_agents.php');
-			if (config_agents_has_remote_configuration($agent["id_agente"])) {
+			if (enterprise_hook('config_agents_has_remote_configuration',array($agent["id_agente"]))) {
 				echo "<a href='index.php?" .
 					"sec=gagente&" .
 					"sec2=godmode/agentes/configurar_agente&" .

@@ -10,6 +10,7 @@ from selenium.common.exceptions import NoAlertPresentException
 from selenium.webdriver.remote.webelement import WebElement
 
 import unittest2, time, re	
+import logging
 
 class Users(PandoraWebDriverTestCase):
 
@@ -22,6 +23,8 @@ class Users(PandoraWebDriverTestCase):
 		u"""
 		Modify home screen, and check that change is correct. Return this change
 		"""
+
+		logging.basicConfig(filename="Users.log", level=logging.INFO, filemode='w')
 
 		driver = self.driver
 		self.login()
@@ -39,7 +42,8 @@ class Users(PandoraWebDriverTestCase):
 		
 		activate_home_screen(driver,"Default")
 			
-		
+		logging.info("test_A_home_screen is correct")
+
 if __name__ == "__main__":
 	unittest2.main()
 

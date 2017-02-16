@@ -10,6 +10,7 @@ from selenium.common.exceptions import StaleElementReferenceException
 from include.module_functions import *
 
 import unittest2, time, re
+import logging
 
 class Network_server_module(PandoraWebDriverTestCase):
 
@@ -22,6 +23,8 @@ class Network_server_module(PandoraWebDriverTestCase):
 		u"""
 		Creates a simple ICMP check against localhost and checks the result is 1
 		"""
+
+		logging.basicConfig(filename="Network_server_module.log", level=logging.INFO, filemode='w')
 
 		driver = self.driver
 		self.login()
@@ -52,6 +55,8 @@ class Network_server_module(PandoraWebDriverTestCase):
 			except AssertionError as e:
 				self.verificationErrors.append(str(e))
 				break
+
+		logging.info("test_create_ICMP_module is correct")
 
 if __name__ == "__main__":
 	unittest2.main()

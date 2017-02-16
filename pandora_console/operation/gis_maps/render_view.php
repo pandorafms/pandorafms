@@ -29,6 +29,15 @@ $show_history = get_parameter ('show_history', 'n');
 $map = db_get_row ('tgis_map', 'id_tgis_map', $idMap);
 $confMap = gis_get_map_conf($idMap);
 
+/* -------------------------------------------------- */
+/* I apply this change because open maps now are paid */
+/* --------------- Remove to go back ---------------- */
+/* -------------------------------------------------- */
+if ($confMap !== false) { /* ------------------------ */
+	$confMap = get_good_con(); /* ------------------- */
+} /* ------------------------------------------------ */
+/* -------------------------------------------------- */
+
 if (! check_acl ($config['id_user'], $map['group_id'], "MR") && ! check_acl ($config['id_user'], $map['group_id'], "MW") && ! check_acl ($config['id_user'], $map['group_id'], "MM")) {
 	db_pandora_audit("ACL Violation", "Trying to access map builder");
 	require ("general/noaccess.php");

@@ -109,6 +109,7 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('custom_report_front_logo', 'images/pandora_logo_white.jpg'),
 ('custom_report_front_header', ''),
 ('custom_report_front_footer', ''),
+('MR', 0),
 ('identification_reminder', 1),
 ('identification_reminder_timestamp', 0),
 ('post_process_custom_values', '{"0.00000038580247":"Seconds&#x20;to&#x20;months","0.00000165343915":"Seconds&#x20;to&#x20;weeks","0.00001157407407":"Seconds&#x20;to&#x20;days","0.01666666666667":"Seconds&#x20;to&#x20;minutes","0.00000000093132":"Bytes&#x20;to&#x20;Gigabytes","0.00000095367432":"Bytes&#x20;to&#x20;Megabytes","0.0009765625":"Bytes&#x20;to&#x20;Kilobytes","0.00000001653439":"Timeticks&#x20;to&#x20;weeks","0.00000011574074":"Timeticks&#x20;to&#x20;days"}');
@@ -1033,7 +1034,7 @@ INSERT INTO `tplugin` (`id`, `name`, `description`, `max_timeout`, `execute`, `p
 
 INSERT INTO `tplugin` (`id`, `name`, `description`, `max_timeout`, `max_retries`, `execute`, `net_dst_opt`, `net_port_opt`, `user_opt`, `pass_opt`, `plugin_type`, `macros`, `parameters`) VALUES (9,'Packet&#x20;Loss','Checks&#x20;for&#x20;dropped&#x20;packages&#x20;after&#x20;X&#x20;seconds&#x20;of&#x20;testing.&#x20;It&#x20;returns&#x20;%&#x20;of&#x20;dropped&#x20;packets.&#x20;It&#x20;uses&#x20;ping&#x20;flood&#x20;mode&#x20;to&#x20;launch&#x20;50&#x20;consecutive&#x20;pings&#x20;to&#x20;a&#x20;remote&#x20;destination.&#x20;On&#x20;local,&#x20;stable&#x20;networks,&#x20;value&#x20;should&#x20;be&#x20;0.&#x0d;&#x0a;',30,0,'/usr/share/pandora_server/util/plugin/packet_loss.sh','','','','',0,'{\"1\":{\"macro\":\"_field1_\",\"desc\":\"Test&#x20;time\",\"help\":\"\",\"value\":\"8\",\"hide\":\"\"},\"2\":{\"macro\":\"_field2_\",\"desc\":\"Target&#x20;IP\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"}}','_field1_&#x20;_field2_');
 
-INSERT INTO `tagent_custom_fields` VALUES (1,'Serial&#x20;Number',0),(2,'Department',0),(3,'Additional&#x20;ID',0);
+INSERT INTO `tagent_custom_fields` VALUES (1,'Serial&#x20;Number',0),(2,'Department',0),(3,'Additional&#x20;ID',0),(4,'eHorusID',0);
 
 INSERT INTO `ttag` VALUES (1,'network','Network&#x20;equipment','http://artica.es','',''),(2,'critical','Critical&#x20;modules','','',''),(3,'dmz','DMZ&#x20;Network&#x20;Zone','','',''),(4,'performance','Performance&#x20;anda&#x20;capacity&#x20;modules','','',''),(5,'configuration','','','','');
 

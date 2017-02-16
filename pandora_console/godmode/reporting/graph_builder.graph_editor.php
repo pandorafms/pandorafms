@@ -148,7 +148,7 @@ echo "<td style='vertical-align: top;'>".__('Agents')."</td>";
 echo "<td></td>";
 echo "<td style='vertical-align: top;'>".__('Modules')."</td>";
 echo "</tr><tr>";
-echo "<td>".html_print_select (agents_get_group_agents(), 'id_agents[]', 0, false, '', '', true, true, true, '', false, 'width:300px;')."</td>";
+echo "<td>".html_print_select (agents_get_group_agents(), 'id_agents[]', 0, false, '', '', true, true, true, '', false, '')."</td>";
 echo "<td style='vertical-align: center; text-align: center;'>" . html_print_image("images/darrowright.png", true) . "</td>";
 echo "<td>".html_print_select (array (), 'module[]', 0, false, '', 0, true, true, true, '', false, 'width:300px;')."</td>";
 echo "</tr><tr>";

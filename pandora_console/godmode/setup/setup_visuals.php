@@ -112,6 +112,27 @@ $table_behaviour->data[$row][1] .= __('No') . '&nbsp;' .
 $row++;
 //Daniel maya 02/06/2016 Display menu with click --END
 
+if (enterprise_installed()) {
+	$table_behaviour->data[$row][0] = __('Service label font size');
+	$table_behaviour->data[$row][1] = html_print_input_text ('service_label_font_size', $config["service_label_font_size"], '', 5, 5, true);
+	$row++;
+
+	$table_behaviour->data[$row][0] = __('Service item padding size');
+	$table_behaviour->data[$row][1] = html_print_input_text ('service_item_padding_size', $config["service_item_padding_size"], '', 5, 5, true);
+	$row++;
+}
+
+$table_behaviour->data[$row][0] = __('Classic menu mode').
+	ui_print_help_tip(__('Text menu options always visible, don\'t hide'), true);
+$table_behaviour->data[$row][1] = __('Yes') . '&nbsp;' .
+		html_print_radio_button ('classic_menu', 1, '',
+		$config["classic_menu"], true) .
+	'&nbsp;&nbsp;';
+$table_behaviour->data[$row][1] .= __('No') . '&nbsp;' .
+	html_print_radio_button ('classic_menu', 0, '',
+		$config["classic_menu"], true);
+$row++;
+
 echo "<fieldset>";
 echo "<legend>" . __('Behaviour configuration') . "</legend>";
 html_print_table ($table_behaviour);
@@ -150,19 +171,62 @@ $backgrounds_list_png = list_files("images/backgrounds", "png", 1, 0);
 $backgrounds_list = array_merge($backgrounds_list_jpg, $backgrounds_list_png);
 $backgrounds_list = array_merge($backgrounds_list, $backgrounds_list_gif);
 asort($backgrounds_list);
+
+if(!enterprise_installed()){
+	$open=true; 
+}
+
 $table_styles->data[$row][1] = html_print_select ($backgrounds_list,
 	'login_background', $config["login_background"], '', __('Default'),
-	'', true);
+	'', true,false,true,'',false,'width:240px');
 $table_styles->data[$row][1] .= "&nbsp;" .
 	html_print_button(__("View"), 'login_background_preview', false, '', 'class="sub camera"', true);
 $row++;
 
 $table_styles->data[$row][0] = __('Custom logo') . ui_print_help_icon("custom_logo", true);
-$table_styles->data[$row][1] = html_print_select(
+
+if(enterprise_installed()){
+	$ent_files = list_files('enterprise/images/custom_logo', "png", 1, 0);
+	$open_files = list_files('images/custom_logo', "png", 1, 0);
+	
+	$table_styles->data[$row][1] = html_print_select(
+	array_merge($ent_files, $open_files), 'custom_logo',
+	$config["custom_logo"], '', '', '',true,false,true,'',$open,'width:240px');
+}
+else{
+	$table_styles->data[$row][1] = html_print_select(
 	list_files('images/custom_logo', "png", 1, 0), 'custom_logo',
-	$config["custom_logo"], '', '', '', true);
-$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'custom_logo_preview', false, '', 'class="sub camera"', true);
+	$config["custom_logo"], '', '', '',true,false,true,'',$open,'width:240px');
+}
+	
+	$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'custom_logo_preview', $open, '', 'class="sub camera"', true,false,$open,'visualmodal');
 $row++;
+
+$table_styles->data[$row][0] = __('Custom logo in login') . ui_print_help_icon("custom_logo_login", true);
+
+
+	$table_styles->data[$row][1] = html_print_select(
+		list_files('enterprise/images/custom_logo_login', "png", 1, 0), 'custom_logo_login',
+		$config["custom_logo_login"], '', '', '',true,false,true,'',$open,'width:240px');
+
+
+	$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'custom_logo_login_preview', $open, '', 'class="sub camera"', true,false,$open,'visualmodal');
+$row++;
+
+
+$table_styles->data[$row][0] = __('Disable logo in graphs');
+$table_styles->data[$row][1] = __('Yes') . '&nbsp;' .
+	html_print_radio_button_extended ('fixed_graph', 1, '', $config["fixed_graph"], $open, '','',true) .
+	'&nbsp;&nbsp;';
+	/* Hello there! :)
+We added some of what seems to be "buggy" messages to the openSource version recently. This is not to force open-source users to move to the enterprise version, this is just to inform people using Pandora FMS open source that it requires skilled people to maintain and keep it running smoothly without professional support. This does not imply open-source version is limited in any way. If you check the recently added code, it contains only warnings and messages, no limitations except one: we removed the option to add custom logo in header. In the Update Manager section, it warns about the 'danger’ of applying automated updates without a proper backup, remembering in the process that the Enterprise version comes with a human-tested package. Maintaining an OpenSource version with more than 500 agents is not so easy, that's why someone using a Pandora with 8000 agents should consider asking for support. It's not a joke, we know of many setups with a huge number of agents, and we hate to hear that “its becoming unstable and slow” :(
+You can of course remove the warnings, that's why we include the source and do not use any kind of trick. And that's why we added here this comment, to let you know this does not reflect any change in our opensource mentality of does the last 14 years.
+*/
+	
+$table_styles->data[$row][1] .= __('No') . '&nbsp;' .
+	html_print_radio_button_extended ('fixed_graph', 0, '', $config["fixed_graph"], $open, '','',true, $open,'visualmodal');
+$row++;
+
 
 $table_styles->data[$row][0] = __('Fixed header');
 $table_styles->data[$row][1] = __('Yes') . '&nbsp;' .
@@ -291,6 +355,14 @@ $table_font->data[$row][1] = html_print_input_text('item_title_size_text',
 	$config["item_title_size_text"], '', 3, 3, true);
 $row++;
 
+$table_font->data[$row][0] = __('Show units in values report') .
+	ui_print_help_tip(__('This enabling this, max, min and avg values will be shown with units.'), true);
+$table_font->data[$row][1] = __('Yes') . '&nbsp;' .
+	html_print_radio_button ('simple_module_value', 1, '', $config["simple_module_value"], true).'&nbsp;&nbsp;';
+$table_font->data[$row][1] .= __('No') . '&nbsp;' .
+	html_print_radio_button ('simple_module_value', 0, '', $config["simple_module_value"], true);
+$row++;
+
 echo "<fieldset>";
 echo "<legend>" . __('Font and Text configuration') . "</legend>";
 html_print_table ($table_font);
@@ -354,6 +426,16 @@ $table_chars->data[$row][0] = __('Value to interface graphics');
 $table_chars->data[$row][1] = html_print_input_text ('interface_unit', $config["interface_unit"], '', 20, 20, true);
 $row++;
 
+$disabled_graph_precision = false;
+if (!enterprise_installed()) {
+	$disabled_graph_precision = true;
+}
+
+$table_chars->data[$row][0] = __('Data precision for reports');
+$table_chars->data[$row][0] .= ui_print_help_tip(__('Precision must be a integer number between 0 and 5'), true);
+$table_chars->data[$row][1] = html_print_input_text ('graph_precision', $config["graph_precision"], '', 5, 5, true, $disabled_graph_precision, false, "onChange=\"change_precision()\"");
+$row++;
+
 $table_chars->data[$row][0] = __('Default line thickness for the Custom Graph.');
 $table_chars->data[$row][1] = html_print_input_text ('custom_graph_width',
 	$config["custom_graph_width"], '', 5, 5, true);
@@ -394,6 +476,28 @@ $table_chars->data[$row][1] .= __('Line').'&nbsp;' .
 		$config["type_module_charts"] != 'area', true);
 $row++;
 
+$table_chars->data[$row][0] = __('Type of interface charts');
+$table_chars->data[$row][1] = __('Area').'&nbsp;' .
+	html_print_radio_button ('type_interface_charts', 'area', '',
+		$config["type_interface_charts"] == 'area', true).'&nbsp;&nbsp;';
+$table_chars->data[$row][1] .= __('Line').'&nbsp;' .
+	html_print_radio_button ('type_interface_charts', 'line', '',
+		$config["type_interface_charts"] != 'area', true);
+$row++;
+
+$table_chars->data[$row][0] = __('Show only average');
+$table_chars->data[$row][0] .= ui_print_help_tip(__('Allows only show the average in graphs'), true);
+$table_chars->data[$row][1] = __('Yes').'&nbsp;' .
+	html_print_radio_button ('only_average', 1, '', $config["only_average"], true).'&nbsp;&nbsp;';
+$table_chars->data[$row][1] .= __('No').'&nbsp;' .
+	html_print_radio_button ('only_average', 0, '', $config["only_average"], true);
+$row++;
+
+$table_chars->data[$row][0] = __('Percentil');
+$table_chars->data[$row][0] .= ui_print_help_tip(__('Allows only show the average in graphs'), true);
+$table_chars->data[$row][1] = html_print_input_text ('percentil', $config['percentil'], '', 20, 20, true);
+$row++;
+
 echo "<fieldset>";
 echo "<legend>" . __('Charts configuration') . "</legend>";
 html_print_table ($table_chars);
@@ -414,6 +518,16 @@ $table_other->data[$row][0] = __('Default line thickness for the Visual Console'
 $table_other->data[$row][1] = html_print_input_text ('vc_line_thickness', $config["vc_line_thickness"], '', 5, 5, true);
 $row++;
 
+// Enrique (27/01/2017) New feature: Show report info on top of reports
+$table_other->data[$row][0] = __('Show report info with description') .
+	ui_print_help_tip(
+		__('Custom report description info. It will be applied to all reports and templates by default.'), true);
+$table_other->data[$row][1] = html_print_checkbox('custom_report_info', 1,
+	$config['custom_report_info'], true);
+$row++;
+
+//----------------------------------------------------------------------
+
 // Juanma (07/05/2014) New feature: Table for custom front page for reports  
 $table_other->data[$row][0] = __('Custom report front page') .
 	ui_print_help_tip(
@@ -422,28 +536,6 @@ $table_other->data[$row][1] = html_print_checkbox('custom_report_front', 1,
 	$config['custom_report_front'], true);
 $row++;
 //----------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 $dirItems = scandir($config['homedir'] . '/images/custom_logo');
 foreach ($dirItems as $entryDir) {
@@ -668,23 +760,23 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 <script language="javascript" type="text/javascript">
 
 // Juanma (07/05/2014) New feature: Custom front page for reports  
-function display_custom_report_front (show) {
+function display_custom_report_front (show,table) {
 	
 	if (show == true) {
-		$('tr#table2-custom_report_front-font').show();
-		$('tr#table2-custom_report_front-logo').show();
-		$('tr#table2-custom_report_front-preview').show();
-		$('tr#table2-custom_report_front-header').show();
-		$('tr#table2-custom_report_front-first_page').show();
-		$('tr#table2-custom_report_front-footer').show();
+		$('tr#'+table+'-custom_report_front-font').show();
+		$('tr#'+table+'-custom_report_front-logo').show();
+		$('tr#'+table+'-custom_report_front-preview').show();
+		$('tr#'+table+'-custom_report_front-header').show();
+		$('tr#'+table+'-custom_report_front-first_page').show();
+		$('tr#'+table+'-custom_report_front-footer').show();
 	}
 	else {
-		$('tr#table2-custom_report_front-font').hide();
-		$('tr#table2-custom_report_front-logo').hide();
-		$('tr#table2-custom_report_front-preview').hide();
-		$('tr#table2-custom_report_front-header').hide();
-		$('tr#table2-custom_report_front-first_page').hide();
-		$('tr#table2-custom_report_front-footer').hide();
+		$('tr#'+table+'-custom_report_front-font').hide();
+		$('tr#'+table+'-custom_report_front-logo').hide();
+		$('tr#'+table+'-custom_report_front-preview').hide();
+		$('tr#'+table+'-custom_report_front-header').hide();
+		$('tr#'+table+'-custom_report_front-first_page').hide();
+		$('tr#'+table+'-custom_report_front-footer').hide();
 	}
 	
 }
@@ -705,7 +797,13 @@ function showPreview() {
 			$("#preview_image").html(data);
 		}
 	);
-	
+}
+
+function change_precision() {
+	var value = $("#text-graph_precision").val();
+	if ((value < 0) || (value > 5)) {
+		$("#text-graph_precision").val(1);
+	}
 }
 
 tinyMCE.init({
@@ -785,12 +883,12 @@ $(document).ready (function () {
 	// Juanma (06/05/2014) New feature: Custom front page for reports  
 	var custom_report = $('#checkbox-custom_report_front')
 		.prop('checked');
-	display_custom_report_front(custom_report);
+	display_custom_report_front(custom_report,$('#checkbox-custom_report_front').parent().parent().parent().parent().attr('id'));
 	
 	$("#checkbox-custom_report_front").click( function()  {
 		var custom_report = $('#checkbox-custom_report_front')
 			.prop('checked');
-		display_custom_report_front(custom_report);
+		display_custom_report_front(custom_report,$(this).parent().parent().parent().parent().attr('id'));
 	});
 });
 
@@ -798,7 +896,47 @@ $(document).ready (function () {
 
 $("#button-custom_logo_preview").click (function (e) {
 	var icon_name = $("select#custom_logo option:selected").val();
-	var icon_path = "<?php echo $config['homeurl']; ?>/images/custom_logo/" + icon_name;
+	var icon_path = "<?php echo $config['homeurl'];  if(enterprise_installed){ echo 'enterprise/'; } ?>images/custom_logo/" + icon_name;
+
+	if (icon_name == "")
+		return;
+
+	$dialog = $("<div></div>");
+	$image = $("<img src=\"" + icon_path + "\">");
+	$image
+		.css('max-width', '500px')
+		.css('max-height', '500px');
+
+	try {
+		$dialog
+			.hide()
+			.html($image)
+			.dialog({
+				title: "<?php echo __('Logo preview'); ?>",
+				resizable: true,
+				draggable: true,
+				modal: true,
+				overlay: {
+					opacity: 0.5,
+					background: "black"
+				},
+				minHeight: 1,
+				width: $image.width,
+				close: function () {
+					$dialog
+						.empty()
+						.remove();
+				}
+			}).show();
+	}
+	catch (err) {
+		// console.log(err);
+	}
+});
+
+$("#button-custom_logo_login_preview").click (function (e) {
+	var icon_name = $("select#custom_logo_login option:selected").val();
+	var icon_path = "<?php echo $config['homeurl']; if(enterprise_installed){ echo 'enterprise/'; } ?>images/custom_logo_login/" + icon_name;
 
 	if (icon_name == "")
 		return;

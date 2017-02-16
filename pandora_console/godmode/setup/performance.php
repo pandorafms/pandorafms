@@ -24,7 +24,7 @@ if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_us
 	return;
 }
 // Load enterprise extensions
-enterprise_include_once ('godmode/setup/setup.php');
+//~ enterprise_include_once ('godmode/setup/setup.php');
 
 /*
 NOTICE FOR DEVELOPERS:
@@ -43,6 +43,8 @@ $table->style[0] = "font-weight: bold";
 
 $table->size[0] = '70%';
 $table->size[1] = '30%';
+
+enterprise_hook('enterprise_warnings_history_days');
 
 $table->data[1][0] = __('Max. days before delete events') . ui_print_help_tip(__('If the compaction or purge of the data is more frequent than the events deletion, anomalies in module graphs could appear'), true);
 $table->data[1][1] = html_print_input_text ('event_purge', $config["event_purge"], '', 5, 5, true);
@@ -70,6 +72,17 @@ $table->data[8][1] = html_print_input_text ('days_delete_unknown', $config["days
 
 $table->data[9][0] = __('Max. days before delete autodisabled agents');
 $table->data[9][1] = html_print_input_text ('days_autodisable_deletion', $config["days_autodisable_deletion"], '', 5, 5, true);
+
+$table->data[10][0] = __('Retention period of past special days') . ui_print_help_tip(__('This number is days to keep past special days. 0 means never remove.'), true);
+$table->data[10][1] = html_print_input_text ('num_past_special_days', $config["num_past_special_days"], '', 5, 5, true);
+
+$table->data[11][0] = __('Max. macro data fields') . ui_print_help_tip(__('Number of macro fields in alerts and templates between 1 and 50'), true);
+$table->data[11][1] = html_print_input_text ('max_macro_fields', $config["max_macro_fields"], '', 5, 5, true, false, false, "onChange=\"change_macro_fields()\"");
+
+if (enterprise_installed ()) {
+	$table->data[12][0] = __('Max. days before delete inventory data');
+	$table->data[12][1] = html_print_input_text ('inventory_purge', $config["inventory_purge"], '', 5, 5, true);
+}
 
 $table_other = new stdClass();
 $table_other->width = '100%';
@@ -143,4 +156,17 @@ echo '</div>';
 echo '</form>';
 ?>
 
+<script language="javascript" type="text/javascript">
 
+function change_macro_fields() {
+	var value = $("#text-max_macro_fields").val();
+	console.log(value);
+	if (value <= 0) {
+		$("#text-max_macro_fields").val(1);
+	}
+	else if (value > 15) {
+		$("#text-max_macro_fields").val(15);
+	}
+}
+
+</script>

@@ -36,7 +36,7 @@ if ($develop_bypass != 1) {
 			exit;
 		}
 	}
-
+	
 	if (filesize("include/config.php") == 0) {
 		include ("install.php");
 		exit;
@@ -100,7 +100,7 @@ if (!empty ($config["https"]) && empty ($_SERVER['HTTPS'])) {
 	if (sizeof ($_REQUEST))
 		//Some (old) browsers don't like the ?&key=var
 		$query .= '?1=1';
-
+	
 	//We don't clean these variables up as they're only being passed along
 	foreach ($_GET as $key => $value) {
 		if ($key == 1)
@@ -111,11 +111,11 @@ if (!empty ($config["https"]) && empty ($_SERVER['HTTPS'])) {
 		$query .= '&'.$key.'='.$value;
 	}
 	$url = ui_get_full_url($query);
-
+	
 	// Prevent HTTP response splitting attacks
 	// http://en.wikipedia.org/wiki/HTTP_response_splitting
 	$url = str_replace ("\n", "", $url);
-
+	
 	header ('Location: '.$url);
 	exit; //Always exit after sending location headers
 }
@@ -141,7 +141,7 @@ echo '<head>' . "\n";
 //This starts the page head. In the call back function, things from $page['head'] array will be processed into the head
 ob_start ('ui_process_page_head');
 
-// Enterprise main
+// Enterprise main 
 enterprise_include ('index.php');
 
 echo '<script type="text/javascript">';
@@ -172,15 +172,16 @@ $process_login = false;
 $change_pass = get_parameter_post('renew_password', 0);
 
 if ($change_pass == 1) {
-
+	
 	$password_old = (string) get_parameter_post ('old_password', '');
 	$password_new = (string) get_parameter_post ('new_password', '');
 	$password_confirm = (string) get_parameter_post ('confirm_new_password', '');
 	$id = (string) get_parameter_post ('login', '');
-
+	
 	$changed_pass = login_update_password_check ($password_old, $password_new, $password_confirm, $id);
 }
 
+$minor_release_message = false;
 $searchPage = false;
 $search = get_parameter_get("head_search_keywords");
 if (strlen($search) > 0) {
@@ -195,40 +196,40 @@ if (strlen($search) > 0) {
 if (! isset ($config['id_user'])) {
 	if (isset ($_GET["login"])) {
 		include_once('include/functions_db.php'); //Include it to use escape_string_sql function
-
+		
 		$config["auth_error"] = ""; //Set this to the error message from the authorization mechanism
 		$nick = get_parameter_post ("nick"); //This is the variable with the login
 		$pass = get_parameter_post ("pass"); //This is the variable with the password
 		$nick = db_escape_string_sql($nick);
 		$pass = db_escape_string_sql($pass);
-
+		
 		//Since now, only the $pass variable are needed
 		unset ($_GET['pass'], $_POST['pass'], $_REQUEST['pass']);
-
+		
 		// If the auth_code exists, we assume the user has come through the double auth page
 		if (isset ($_POST['auth_code'])) {
 			$double_auth_success = false;
-
+			
 			// The double authentication is activated and the user has surpassed the first step (the login).
 			// Now the authentication code provided will be checked.
 			if (isset ($_SESSION['prepared_login_da'])) {
 				if (isset ($_SESSION['prepared_login_da']['id_user'])
 						&& isset ($_SESSION['prepared_login_da']['timestamp'])) {
-
+					
 					// The user has a maximum of 5 minutes to introduce the double auth code
 					$dauth_period = SECONDS_2MINUTES;
 					$now = time();
 					$dauth_time = $_SESSION['prepared_login_da']['timestamp'];
-
+					
 					if ($now - $dauth_period < $dauth_time) {
 						// Nick
 						$nick = $_SESSION["prepared_login_da"]['id_user'];
 						// Code
 						$code = (string) get_parameter_post ("auth_code");
-
+						
 						if (!empty($code)) {
 							$result = validate_double_auth_code($nick, $code);
-
+							
 							if ($result === true) {
 								// Double auth success
 								$double_auth_success = true;
@@ -238,7 +239,7 @@ if (! isset ($config['id_user'])) {
 								$login_screen = 'double_auth';
 								// Error message
 								$config["auth_error"] = __("Invalid code");
-
+								
 								if (!isset($_SESSION['prepared_login_da']['attempts']))
 									$_SESSION['prepared_login_da']['attempts'] = 0;
 								$_SESSION['prepared_login_da']['attempts']++;
@@ -249,7 +250,7 @@ if (! isset ($config['id_user'])) {
 							$login_screen = 'double_auth';
 							// Error message
 							$config["auth_error"] = __("The code shouldn't be empty");
-
+							
 							if (!isset($_SESSION['prepared_login_da']['attempts']))
 								$_SESSION['prepared_login_da']['attempts'] = 0;
 							$_SESSION['prepared_login_da']['attempts']++;
@@ -258,7 +259,7 @@ if (! isset ($config['id_user'])) {
 					else {
 						// Expired login
 						unset ($_SESSION['prepared_login_da']);
-
+						
 						// Error message
 						$config["auth_error"] = __('Expired login');
 					}
@@ -266,7 +267,7 @@ if (! isset ($config['id_user'])) {
 				else {
 					// If the code doesn't exist, remove the prepared login
 					unset ($_SESSION['prepared_login_da']);
-
+					
 					// Error message
 					$config["auth_error"] = __('Login error');
 				}
@@ -276,10 +277,10 @@ if (! isset ($config['id_user'])) {
 				// Error message
 				$config["auth_error"] = __('Login error');
 			}
-
+			
 			// Remove the authenticator code
 			unset ($_POST['auth_code'], $code);
-
+			
 			if (!$double_auth_success) {
 				$login_failed = true;
 				require_once ('general/login_page.php');
@@ -313,27 +314,27 @@ if (! isset ($config['id_user'])) {
 			// The auth file can set $config["auth_error"] to an informative error output or reference their internal error messages to it
 			// process_user_login should return false in case of errors or invalid login, the nickname if correct
 			$nick_in_db = process_user_login ($nick, $pass);
-
+			
 			$expired_pass = false;
-
+			
 			if (($nick_in_db != false) && ((!is_user_admin($nick)
 				|| $config['enable_pass_policy_admin']))
 				&& (defined('PANDORA_ENTERPRISE'))
 				&& ($config['enable_pass_policy'])) {
 				include_once(ENTERPRISE_DIR . "/include/auth/mysql.php");
-
+				
 				$blocked = login_check_blocked($nick);
-
+				
 				if ($blocked) {
 					require_once ('general/login_page.php');
 					db_pandora_audit("Password expired", "Password expired: ".$nick, $nick);
 					while (@ob_end_flush ());
 					exit ("</html>");
 				}
-
+				
 				//Checks if password has expired
 				$check_status = check_pass_status($nick, $pass);
-
+				
 				switch ($check_status) {
 					case PASSSWORD_POLICIES_FIRST_CHANGE: //first change
 					case PASSSWORD_POLICIES_EXPIRED: //pass expired
@@ -343,10 +344,10 @@ if (! isset ($config['id_user'])) {
 				}
 			}
 		}
-
+		
 		if (($nick_in_db !== false) && $expired_pass) {
 			//login ok and password has expired
-
+			
 			require_once ('general/login_page.php');
 			db_pandora_audit("Password expired",
 				"Password expired: " . $nick, $nick);
@@ -355,7 +356,7 @@ if (! isset ($config['id_user'])) {
 		}
 		else if (($nick_in_db !== false) && (!$expired_pass)) {
 			//login ok and password has not expired
-
+			
 			// Double auth check
 			if ((!isset ($double_auth_success) || !$double_auth_success) && is_double_auth_enabled($nick_in_db)) {
 				// Store this values in the session to know if the user login was correct
@@ -364,14 +365,14 @@ if (! isset ($config['id_user'])) {
 						'timestamp' => time(),
 						'attempts' => 0
 					);
-
+				
 				// Load the page to introduce the double auth code
 				$login_screen = 'double_auth';
 				require_once ('general/login_page.php');
 				while (@ob_end_flush ());
 				exit ("</html>");
 			}
-
+			
 			//login ok and password has not expired
 			$process_login = true;
 			
@@ -384,7 +385,7 @@ if (! isset ($config['id_user'])) {
 				// Avoid the show homepage when the user go to
 				// a specific section of pandora
 				// for example when timeout the sesion
-
+				
 				unset ($_GET["sec2"]);
 				$_GET["sec"] = "general/logon_ok";
 				$home_page ='';
@@ -436,24 +437,94 @@ if (! isset ($config['id_user'])) {
 						$_GET["sec"] = "general/logon_ok";
 					}
 				}
-
+				
 			}
-
+			
 			db_logon ($nick_in_db, $_SERVER['REMOTE_ADDR']);
 			$_SESSION['id_usuario'] = $nick_in_db;
 			$config['id_user'] = $nick_in_db;
+			
+			if (is_user_admin($config['id_user'])) {
+				$have_minor_releases = db_check_minor_relase_available();
+				
+				// PHP configuration values
+				$PHPupload_max_filesize = config_return_in_bytes(ini_get('upload_max_filesize'));
+				$PHPmemory_limit = config_return_in_bytes(ini_get('memory_limit'));
+				$PHPmax_execution_time = ini_get('max_execution_time');
+				
+				if ($PHPmax_execution_time !== '0') {
+					set_time_limit(0);
+				}
+				
+				$PHPupload_max_filesize_min = config_return_in_bytes('800M');
+				
+				if ($PHPupload_max_filesize < $PHPupload_max_filesize_min) {
+					ini_set('upload_max_filesize', config_return_in_bytes('800M'));
+				}
+				
+				$PHPmemory_limit_min = config_return_in_bytes('500M');
+				
+				if ($PHPmemory_limit < $PHPmemory_limit_min && $PHPmemory_limit !== '-1') {
+					ini_set('memory_limit', config_return_in_bytes('500M'));
+				}
+				
+				if ($have_minor_releases) {
+					$size_mr = get_number_of_mr();
+					echo "<div class= 'dialog ui-dialog-content' title='".__("Minor release available")."' id='mr_dialog2'>" . __('') . "</div>";
+						?>
+						<script type="text/javascript" language="javascript">
+							$(document).ready (function () {;
+								$('#mr_dialog2').dialog ({
+									resizable: true,
+									draggable: true,
+									modal: true,
+									overlay: {
+										opacity: 0.5,
+										background: 'black'
+									},
+									width: 600,
+									height: 350,
+									buttons: {
+										"Apply minor releases": function () {
+											var n_mr = '<?php echo implode(",", $size_mr);?>';
+											apply_minor_release(n_mr.split(","));
+										},
+										"Cancel": function () {
+											$(this).dialog("close");
+										}
+									}
+								});
 
+								$('button:contains(Apply minor releases)').attr("id","apply_rr_button");
+								$('button:contains(Cancel)').attr("id","cancel_rr_button");
+								
+								var dialog_text = "<div><h3>Do you want to apply minor releases?</h3></br>";
+								dialog_text = dialog_text + "<h2>We recommend launch a planned downtime to this process</h2></br>";
+								dialog_text = dialog_text + "<a href=\"<?php echo $config['homeurl']; ?>index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list\">Planned downtimes</a></div>"
+								
+								$('#mr_dialog2').html(dialog_text);
+								$('#mr_dialog2').dialog('open');
+							});
+						</script>
+						<?php
+				}
+			}
+			
+			set_time_limit((int)$PHPmax_execution_time);
+			ini_set('upload_max_filesize', $PHPupload_max_filesize);
+			ini_set('memory_limit', $PHPmemory_limit);
+			
 			//==========================================================
 			//-------- SET THE CUSTOM CONFIGS OF USER ------------------
-
+			
 			config_user_set_custom_config();
 			//==========================================================
-
+			
 			//Remove everything that might have to do with people's passwords or logins
 			unset ($pass, $login_good);
-
+			
 			$user_language = get_user_language($config['id_user']);
-
+			
 			$l10n = NULL;
 			if (file_exists ('./include/languages/' . $user_language . '.mo')) {
 				$l10n = new gettext_reader (new CachedFileReader ('./include/languages/'.$user_language.'.mo'));
@@ -466,7 +537,7 @@ if (! isset ($config['id_user'])) {
 			if ((!is_user_admin($nick) || $config['enable_pass_policy_admin']) && defined('PANDORA_ENTERPRISE')) {
 				$blocked = login_check_blocked($nick);
 			}
-
+			
 			if (!$blocked) {
 				if (defined('PANDORA_ENTERPRISE')) {
 					login_check_failed($nick); //Checks failed attempts
@@ -489,7 +560,7 @@ if (! isset ($config['id_user'])) {
 	elseif (isset ($_GET["loginhash"])) {
 		$loginhash_data = get_parameter("loginhash_data", "");
 		$loginhash_user = str_rot13(get_parameter("loginhash_user", ""));
-
+		
 		if ($config["loginhash_pwd"] != "" && $loginhash_data == md5($loginhash_user.io_output_password($config["loginhash_pwd"]))) {
 			db_logon ($loginhash_user, $_SERVER['REMOTE_ADDR']);
 			$_SESSION['id_usuario'] = $loginhash_user;
@@ -509,7 +580,41 @@ if (! isset ($config['id_user'])) {
 		exit ("</html>");
 	}
 }
-
+else {
+	$user_in_db = db_get_row_filter('tusuario', 
+		array('id_user' => $config['id_user']), '*');
+	if ($user_in_db == false) {
+		//logout
+		$_REQUEST = array ();
+		$_GET = array ();
+		$_POST = array ();
+		$config["auth_error"] = __("User doesn\'t exist.");
+		$iduser = $_SESSION["id_usuario"];
+		logoff_db ($iduser, $_SERVER["REMOTE_ADDR"]);
+		unset($_SESSION["id_usuario"]);
+		unset($iduser);
+		require_once ('general/login_page.php');
+		while (@ob_end_flush ());
+		exit ("</html>");
+	}
+	else {
+		if (((bool) $user_in_db['is_admin'] === false) && 
+				((bool) $user_in_db['not_login'] === true)) {
+			//logout
+			$_REQUEST = array ();
+			$_GET = array ();
+			$_POST = array ();
+			$config["auth_error"] = __("User only can use the API.");
+			$iduser = $_SESSION["id_usuario"];
+			logoff_db ($iduser, $_SERVER["REMOTE_ADDR"]);
+			unset($_SESSION["id_usuario"]);
+			unset($iduser);
+			require_once ('general/login_page.php');
+			while (@ob_end_flush ());
+			exit ("</html>");
+		}
+	}
+}
 // Log off
 if (isset ($_GET["bye"])) {
 	include ("general/logoff.php");
@@ -552,12 +657,12 @@ if (license_free() && is_user_admin ($config['id_user']) &&
 if ($process_login) {
 	 /* Call all extensions login function */
 	extensions_call_login_function ();
-
+	
 	unset($_SESSION['new_update']);
-
+	
 	require_once("include/functions_update_manager.php");
 	enterprise_include_once("include/functions_update_manager.php");
-
+	
 	if ($config["autoupdate"] == 1) {
 		if (enterprise_installed()) {
 			$result = update_manager_check_online_enterprise_packages_available();
@@ -567,12 +672,12 @@ if ($process_login) {
 		}
 		if ($result)
 			$_SESSION['new_update'] = 'new';
-
+		
 	}
-
+	
 	//Set the initial global counter for chat.
 	users_get_last_global_counter('session');
-
+	
 	$config['logged'] = true;
 }
 //----------------------------------------------------------------------
@@ -586,7 +691,7 @@ if (isset($_SERVER['HTTP_REFERER']))
 $chunks = explode('?', $old_page);
 if (count($chunks) == 2) {
 	$chunks = explode('&', $chunks[1]);
-
+	
 	foreach ($chunks as $chunk) {
 		if (strstr($chunk, 'sec=') !== false) {
 			$old_sec = str_replace('sec=', '', $chunk);
@@ -630,7 +735,7 @@ if (is_user_admin ($config['id_user']) &&
 if (get_parameter ('login', 0) !== 0) {
 	// Display news dialog
 	include_once("general/news_dialog.php");
-
+	
 	// Display login help info dialog
 	// If it's configured to not skip this
 	$display_previous_popup = false;
@@ -646,16 +751,26 @@ if (get_parameter ('login', 0) !== 0) {
 			
 		include_once("general/login_help_dialog.php");
 	}
-
+	
 }
 
 // Header
 if ($config["pure"] == 0) {
-	echo '<div id="container"><div id="head">';
-	require ("general/header.php");
-	echo '</div><div id="page"><div id="menu">';
-	require ("general/main_menu.php");
-	echo '</div>';
+	if ($config['classic_menu']) {
+		echo '<div id="container"><div id="head">';
+		require ("general/header.php");
+		echo '</div><div id="menu">';
+		require ("general/main_menu.php");
+		echo '</div>';
+		echo '<div style="padding-left:100px;" id="page">';
+	}
+	else {
+		echo '<div id="container"><div id="head">';
+		require ("general/header.php");
+		echo '</div><div id="page"><div id="menu">';
+		require ("general/main_menu.php");
+		echo '</div>';
+	}
 }
 else {
 	echo '<div id="main_pure">';
@@ -682,33 +797,33 @@ if ($searchPage) {
 }
 else {
 	if ($page != "") {
-
+		
 		$main_sec = get_sec($sec);
 		if ($main_sec == false) {
 			if ($sec == 'extensions')
 				$main_sec = get_parameter('extension_in_menu');
 			else
 				if ($sec == 'gextensions')
-+					$main_sec = get_parameter('extension_in_menu');
+					$main_sec = get_parameter('extension_in_menu');
 				else
 					$main_sec = $sec;
 			$sec = $sec2;
 			$sec2 = '';
 		}
 		$page .= '.php';
-
+		
 		// Enterprise ACL check
 		if (enterprise_hook ('enterprise_acl',
 			array ($config['id_user'], $main_sec, $sec, true,$sec2)) == false) {
-
+			
 			require ("general/noaccess.php");
-
+			
 		}
 		else {
 			$sec = $main_sec;
 			if (file_exists ($page)) {
 				if (! extensions_is_extension ($page)) {
-
+					
 					require_once($page);
 				}
 				else {
@@ -717,12 +832,12 @@ else {
 					else
 						extensions_call_main_function (basename ($page));
 				}
-			}
+			} 
 			else {
 				ui_print_error_message(__('Sorry! I can\'t find the page!'));
 			}
 		}
-	}
+	} 
 	else {
 		//home screen chosen by the user
 		$home_page ='';
@@ -731,9 +846,9 @@ else {
 			$home_page = io_safe_output($user_info['section']);
 			$home_url = $user_info['data_section'];
 		}
-
-
-
+		
+		
+		
 		if ($home_page != '') {
 			switch ($home_page) {
 				case 'Event list':
@@ -765,7 +880,7 @@ else {
 					if (($home_url == '') || ($id_visualc == false)) {
 						$str = 'sec=visualc&sec2=operation/visual_console/index&refr=60';
 					}
-					else
+					else 
 						$str = 'sec=visualc&sec2=operation/visual_console/render_view&id='.$id_visualc .'&refr=60';
 					parse_str($str, $res);
 					foreach ($res as $key => $param) {
@@ -781,7 +896,7 @@ else {
 					}
 					if (isset($_GET['sec2'])) {
 						$file = $_GET['sec2'] . '.php';
-
+						
 						if (!file_exists ($file)) {
 							unset($_GET['sec2']);
 							require('general/logon_ok.php');
@@ -796,9 +911,6 @@ else {
 		else {
 			require("general/logon_ok.php");
 		}
-	}
-	if ($config["pure"] == 0) {
-		require("general/shortcut_bar.php");
 	}
 }
 
@@ -842,15 +954,15 @@ require('include/php_to_js_values.php');
 <script type="text/javascript" language="javascript">
 	//Initial load of page
 	$(document).ready(adjustFooter);
-
+	
 	//Every resize of window
 	$(window).resize(adjustFooter);
-
+	
 	//Every show/hide call may need footer re-layout
 	(function() {
 		var oShow = jQuery.fn.show;
 		var oHide = jQuery.fn.hide;
-
+		
 		jQuery.fn.show = function () {
 			var rv = oShow.apply(this, arguments);
 			adjustFooter();
@@ -863,6 +975,47 @@ require('include/php_to_js_values.php');
 		};
 	})();
 
+	function apply_minor_release (n_mr) {
+		var error = false;
+		$("#apply_rr_button").remove();
+		$("#cancel_rr_button").text("Close");
+		$('#mr_dialog2').empty();
+		$('#mr_dialog2').append("<img id=\"rr_image\" src=\"<?php echo $config['homeurl'] . 'images/spinner.gif'; ?>\">");
+		$.each(n_mr, function(i, mr) {
+			var params = {};
+			params["updare_rr"] = 1;
+			params["number"] = mr;
+			params["page"] = "include/ajax/rolling_release.ajax";
+
+			jQuery.ajax ({
+				data: params,
+				async: false,
+				dataType: "html",
+				type: "POST",
+				url: "ajax.php",
+				success: function (data) {
+					if (data != "") {
+						$('#mr_dialog2').empty();
+						$('#mr_dialog2').html("<h2>" + data + "</h2>");
+						error = true;
+					}
+					else {
+						$('#mr_dialog2').append("<p>- Applying DB MR #" + mr + "</p>");
+					}
+				}
+			});
+			
+			if (error) {
+				return false;
+			}
+		});
+		
+		$('#rr_image').remove();
+
+		if (!error) {
+			$('#mr_dialog2').append("<h2>Updated finished successfully</h2>");
+		}
+	}
 	
 	function force_run_register () {
 		run_identification_wizard (1, 0, 0);

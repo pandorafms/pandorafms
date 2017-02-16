@@ -53,7 +53,7 @@ function modules_is_disable_type_event($id_agent_module = false, $type_event = f
 	if ($id_agent_module === false) {
 		switch ($type_event) {
 			case EVENTS_GOING_UNKNOWN:
-				return true;
+				return false;
 				break;
 			case EVENTS_UNKNOWN:
 				return false;
@@ -118,7 +118,7 @@ function modules_is_disable_type_event($id_agent_module = false, $type_event = f
 			return false;
 		}
 	}
-	return true;
+	return false;
 }
 
 /**
@@ -231,7 +231,7 @@ function modules_copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent
 	
 	if ($module['id_modulo'] == MODULE_DATA) {
 		if (enterprise_installed()) {
-			if (config_agents_has_remote_configuration($id_agente)) {
+			if (enterprise_hook('config_agents_has_remote_configuration',array($id_agente))) {
 				$result = enterprise_hook(
 					'config_agents_copy_agent_module_to_agent',
 					array($id_agent_module, $id_new_module));
@@ -411,9 +411,19 @@ function modules_update_agent_module ($id, $values,
 			return ERR_EXIST;
 		}
 	}
-	
-	
-	
+
+	if(isset ($values['ip_target'])){
+		if($values['ip_target'] == 'force_pri'){
+			$sql_agent = "SELECT id_agente FROM tagente_modulo WHERE id_agente_modulo=" .  $id;
+			$id_agente = mysql_db_process_sql($sql_agent);
+			$values['ip_target'] = agents_get_address ($id_agente);
+		}
+		elseif($values['ip_target'] == 'custom'){
+			$values['ip_target'] = $values['custom_ip_target'];
+		}
+	}
+	unset($values['custom_ip_target']);
+
 	$where = array();
 	$where['id_agente_modulo'] = $id;
 	if ($onlyNoDeletePending) {
@@ -1840,6 +1850,7 @@ function modules_get_modulegroup_name ($modulegroup_id) {
 function modules_get_status($id_agent_module, $db_status, $data, &$status, &$title) {
 	$status = STATUS_MODULE_WARNING;
 	$title = "";
+	global $config;
 	
 	// This module is initialized ? (has real data)
 	//$module_init = db_get_value ('utimestamp', 'tagente_estado', 'id_agente_modulo', $id_agent_module);
@@ -1879,7 +1890,7 @@ function modules_get_status($id_agent_module, $db_status, $data, &$status, &$tit
 	}
 	
 	if (is_numeric($data)) {
-		$title .= ": " . format_for_graph($data);
+		$title .= ": " . remove_right_zeros(number_format($data, $config['graph_precision']));
 	}
 	else {
 		$text = io_safe_output($data);
@@ -2476,6 +2487,86 @@ function modules_get_modules_name ($sql_from , $sql_conditions = '', $meta = fal
 		if ($key_group_all !== false)
 			unset($groups_select[$key_group_all]);
 		return $modules;
+	}
+}
+
+function get_same_modules ($agents, $modules) {
+	$modules_to_report = array();
+	if ($modules != "") {
+		foreach ($modules as $m) {
+			$module_name = modules_get_agentmodule_name($m);
+			foreach ($agents as $a) {
+				$module_in_agent = db_get_value_filter('id_agente_modulo',
+					'tagente_modulo', array('id_agente' => $a, 'nombre' => $module_name));
+				if ($module_in_agent) {
+					$modules_to_report[] = $module_in_agent;
+				}
+			}
+		}
+	}
+
+	$modules_to_report = array_merge($modules_to_report, $modules);
+	$modules_to_report = array_unique($modules_to_report);
+	
+	return $modules_to_report;
+}
+
+function get_hierachy_modules_tree ($modules) {
+	$new_modules = array();
+
+	$new_modules_root = array_filter($modules, function ($module) {
+		return (isset($module['parent_module_id']) && ($module['parent_module_id'] == 0));
+	});
+
+	$new_modules_child = array_filter($modules, function ($module) {
+		return (isset($module['parent_module_id']) && ($module['parent_module_id'] != 0));
+	});
+
+	while (!empty($new_modules_child)) {
+		foreach ($new_modules_child as $i => $child) {
+			recursive_modules_tree($new_modules_root, $new_modules_child, $i, $child);
+		}
+	}
+
+	return $new_modules_root;
+}
+
+function recursive_modules_tree (&$new_modules, &$new_modules_child, $i, $child) {
+	foreach ($new_modules as $index => $module) {
+		if ($module['id_agente_modulo'] == $child['parent_module_id']) {
+			$new_modules[$index]['child'][] = $child;
+			$new_modules[$index]['have_childs'] = true;
+			unset($new_modules_child[$i]);
+			break;
+		}
+		else if (isset($new_modules[$index]['child'])) {
+			recursive_modules_tree ($new_modules[$index]['child'], $new_modules_child, $i, $child);
+		}
+	}
+}
+
+function get_dt_from_modules_tree ($modules) {
+	$final_modules = array();
+
+	foreach ($modules as $i => $module) {
+		$final_modules[$module['id_agente_modulo']] = $module;
+		$final_modules[$module['id_agente_modulo']]['deep'] = 0;
+		if (isset($modules[$i]['child'])) {
+			recursive_get_dt_from_modules_tree($final_modules, $modules[$i]['child'], $final_modules[$module['id_agente_modulo']]['deep']);
+		}
+		unset($modules[$i]);
+	}
+	
+	return $final_modules;
+}
+
+function recursive_get_dt_from_modules_tree (&$f_modules, $modules, $deep) {
+	foreach ($modules as $i => $module) {
+		$f_modules[$module['id_agente_modulo']] = $module;
+		$f_modules[$module['id_agente_modulo']]['deep'] = $deep + 1;
+		if (isset($modules[$i]['child'])) {
+			recursive_get_dt_from_modules_tree($f_modules, $modules[$i]['child'], $f_modules[$module['id_agente_modulo']]['deep']);
+		}
 	}
 }
 

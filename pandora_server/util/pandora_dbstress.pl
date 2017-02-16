@@ -189,7 +189,7 @@ sub process_module($$$$$){
 		$data_object{"data"} = $valor;
 
 		pandora_process_module ($pa_config, \%data_object, $agent, $module, '', $timestamp, $utimestamp, 1, $dbh, "");
-		pandora_update_agent($pa_config, $timestamp, $target_agent, $pa_config->{'servername'}.'_Data', $pa_config->{'version'}, -1, $dbh);
+		pandora_update_agent($pa_config, $timestamp, $target_agent, undef, undef, -1, $dbh);
 
 		$modules_processed++;
 		$modules_processed_total++;

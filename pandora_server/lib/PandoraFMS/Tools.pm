@@ -57,6 +57,7 @@ our @EXPORT = qw(
 	ICMPSERVER
 	SNMPSERVER
 	SATELLITESERVER
+	MFSERVER
 	TRANSACTIONALSERVER
 	METACONSOLE_LICENSE
 	$DEVNULL
@@ -98,6 +99,7 @@ our @EXPORT = qw(
 	month_have_days
 	translate_obj
 	valid_regex
+	set_file_permissions
 );
 
 # ID of the different servers
@@ -116,6 +118,7 @@ use constant ICMPSERVER => 11;
 use constant SNMPSERVER => 12;
 use constant SATELLITESERVER => 13;
 use constant TRANSACTIONALSERVER => 14;
+use constant MFSERVER => 15;
 
 # Value for a metaconsole license type
 use constant METACONSOLE_LICENSE => 0x01;
@@ -126,7 +129,7 @@ use constant FIRED_ALERT => 1;
 
 # Set OS, OS version and /dev/null
 our $OS = $^O;
-our $OS_VERSION;
+our $OS_VERSION = "unknown";
 our $DEVNULL = '/dev/null';
 if ($OS eq 'linux') {
 	$OS_VERSION = `lsb_release -sd 2>/dev/null`;
@@ -136,8 +139,38 @@ if ($OS eq 'linux') {
 	$OS = "windows";
 	$OS_VERSION = `ver`;
 	$DEVNULL = '/Nul';
+} elsif ($OS eq 'freebsd') {
+	$OS_VERSION = `uname -r`;
 }
 chomp($OS_VERSION);
+
+
+###############################################################################
+# Sets user:group owner for the given file
+###############################################################################
+sub set_file_permissions($$;$) {
+	my ($pa_config, $file, $grants) = @_;
+	if ($^O !~ /win/i ) { # Only for Linux environments
+		eval {
+			if (defined ($grants)) {
+				$grants = oct($grants);
+			}
+			else {
+				$grants = oct("0777");
+			}
+			my $uid  = getpwnam($pa_config->{'user'});
+			my $gid  = getgrnam($pa_config->{'group'});
+			my $perm = $grants & (~oct($pa_config->{'umask'}));
+
+			chown $uid, $gid, $file;
+			chmod ( $perm, $file );
+		};
+		if ($@) {
+			# Ignore error
+		}
+	}
+}
+
 
 ########################################################################
 ## SUB pandora_trash_ascii 

@@ -304,7 +304,7 @@ function update_template ($step) {
 	}
 	elseif ($step == 3) {
 		$recovery_notify = (bool) get_parameter ('recovery_notify');
-		for($i=1;$i<=10;$i++) {
+		for($i=1;$i<=$config['max_macro_fields'];$i++) {
 			$values['field'.$i] = (string) get_parameter ('field'.$i);
 			$values['field'.$i.'_recovery'] = $recovery_notify ? (string) get_parameter ('field'.$i.'_recovery') : '';
 		}
@@ -354,10 +354,10 @@ $sunday = true;
 $special_day = false;
 $default_action = 0;
 $fields = array();
-for ($i = 1; $i <= 10; $i++) {
+for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
 	$fields[$i] = '';
 }
-for ($i = 1; $i <= 10; $i++) {
+for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
 	$fields_recovery[$i] = '';
 }
 $priority = 1;
@@ -473,13 +473,13 @@ if ($id && ! $create_template) {
 	$min_alerts_reset_counter = $template['min_alerts_reset_counter'];
 	$threshold = $template['time_threshold'];
 	$fields = array();
-	for ($i = 1; $i <= 10; $i++) {
+	for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
 		$fields[$i] = $template['field'.$i];
 	}
 	$recovery_notify = $template['recovery_notify'];
 	
 	$fields_recovery = array();
-	for ($i = 1; $i <= 10; $i++) {
+	for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
 		$fields_recovery[$i] = $template['field'.$i.'_recovery'];
 	}
 	
@@ -632,15 +632,21 @@ if ($step == 2) {
 	$table->colspan['example'][1] = 4;
 }
 else if ($step == 3) {
-	$table->style[0] = 'font-weight: bold; vertical-align: top';
+	$table->style[0] = 'font-weight: bold; vertical-align: middle';
 	$table->style[1] = 'font-weight: bold; vertical-align: top';
 	$table->style[2] = 'font-weight: bold; vertical-align: top';
 	$table->size = array ();
-	$table->size[0] = '20%';
+	$table->size[0] = '10%';
+	$table->size[1] = '45%';
+	$table->size[2] = '45%';
 	
 	/* Alert recover */
 	if (! $recovery_notify) {
 		$table->cellstyle['label_fields'][2] = 'display:none;';
+		for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
+			$table->cellstyle['field' . $i][2] = 'display:none;';
+		}
+		/*
 		$table->cellstyle['field1'][2] = 'display:none;';
 		$table->cellstyle['field2'][2] = 'display:none;';
 		$table->cellstyle['field3'][2] = 'display:none;';
@@ -651,6 +657,7 @@ else if ($step == 3) {
 		$table->cellstyle['field8'][2] = 'display:none;';
 		$table->cellstyle['field9'][2] = 'display:none;';
 		$table->cellstyle['field10'][2] = 'display:none;';
+		*/
 	}
 	$table->data[0][0] = __('Alert recovery');
 	$values = array (false => __('Disabled'), true => __('Enabled'));
@@ -663,7 +670,7 @@ else if ($step == 3) {
 	$table->data['label_fields'][1] = __('Firing fields');
 	$table->data['label_fields'][2] = __('Recovery fields');
 	
-	for ($i = 1; $i <= 10; $i++) {
+	for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
 		if (isset($template[$name])) {
 			$value = $template[$name];
 		}
@@ -673,11 +680,36 @@ else if ($step == 3) {
 		
 		//$table->rowclass['field'.$i] = 'row_field';
 		
-		$table->data['field'.$i][0] = sprintf(__('Field %s'), $i) .
-			ui_print_help_icon ('alert_macros', true);
-		$table->data['field'.$i][1] = html_print_textarea('field'.$i, 1, 1, isset($fields[$i]) ? $fields[$i] : '', 'style="min-height:40px;" class="fields"', true);
+		
+		$table->data['field'.$i][0] = sprintf(__('Field %s'), $i) . ui_print_help_icon ('alert_macros', true);
+		//TinyMCE	
+		//triggering fields
+			//basic
+			$table->data['field'.$i][1] = "<div style=\"padding: 4px 0px;\"><b><small>";
+			$table->data['field'.$i][1] .= __('Basic') . "&nbsp;&nbsp;";
+			$table->data['field'.$i][1] .= html_print_radio_button_extended ('editor_type_value_'.$i, 0, '', false, false, "removeTinyMCE('textarea_field".$i."')", '', true);
+			//Advanced
+			$table->data['field'.$i][1] .= "&nbsp;&nbsp;&nbsp;&nbsp;";
+			$table->data['field'.$i][1] .= __('Advanced') . "&nbsp;&nbsp;";
+			$table->data['field'.$i][1] .= html_print_radio_button_extended ('editor_type_value_'.$i, 0, '', true, false, "addTinyMCE('textarea_field".$i."')", '', true);
+			$table->data['field'.$i][1] .= "</small></b></div>";
+		
+			//Texarea
+			$table->data['field'.$i][1] .= html_print_textarea('field'.$i, 1, 1, isset($fields[$i]) ? $fields[$i] : '', 'style="min-height:40px;" class="fields"', true);
+		
 		// Recovery
-		$table->data['field'.$i][2] = html_print_textarea ('field'.$i.'_recovery', 1, 1, isset($fields_recovery[$i]) ? $fields_recovery[$i] : '', 'style="min-height:40px" class="fields"', true);
+			//basic
+			$table->data['field'.$i][2] = "<div style=\"padding: 4px 0px;\"><b><small>";
+			$table->data['field'.$i][2] .= __('Basic') . "&nbsp;&nbsp;";
+			$table->data['field'.$i][2] .= html_print_radio_button_extended ('editor_type_recovery_value_'.$i, 0, '', false, false, "removeTinyMCE('textarea_field".$i."_recovery')", '', true);
+			//advanced
+			$table->data['field'.$i][2] .= "&nbsp;&nbsp;&nbsp;&nbsp;";
+			$table->data['field'.$i][2] .= __('Advanced') . "&nbsp;&nbsp;";
+			$table->data['field'.$i][2] .= html_print_radio_button_extended ('editor_type_recovery_value_'.$i, 0, '', true, false, "addTinyMCE('textarea_field".$i."_recovery')", '', true);
+			$table->data['field'.$i][2] .= "</small></b></div>";
+
+			//Texarea
+			$table->data['field'.$i][2] .= html_print_textarea ('field'.$i.'_recovery', 1, 1, isset($fields_recovery[$i]) ? $fields_recovery[$i] : '', 'style="min-height:40px" class="fields"', true);
 	}
 }
 else {
@@ -804,6 +836,7 @@ enterprise_hook('close_meta_frame');
 ui_require_javascript_file ('pandora_alerts');
 ui_include_time_picker();
 ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascript/i18n/");
+ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 ?>
 
 <script type="text/javascript">
@@ -813,13 +846,13 @@ var matches_not = <?php echo "\"" . __("The alert would fire when the value does
 var is = <?php echo "'" . __("The alert would fire when the value is <span id=\"value\"></span>") . "'";?>;
 var is_not = <?php echo "'" . __("The alert would fire when the value is not <span id=\"value\"></span>") . "'";?>;
 var between = <?php echo "'" . __("The alert would fire when the value is between <span id=\"min\"></span> and <span id=\"max\"></span>") . "'";?>;
-var between_not = <?php echo "'" . __("The alert would fire when the value is not between <span id=\"min\"></span> and <span id=\"max\"></span>") . "'";?>;
+var between_not = <?php echo "\"" . __("The alert would fire when the value is not between <span id=\'min\'></span> and <span id=\'max\'></span>") . "\"";?>;
 var under = <?php echo "'" . __("The alert would fire when the value is below <span id=\"min\"></span>") . "'";?>;
 var over = <?php echo "'" . __("The alert would fire when the value is above <span id=\"max\"></span>") . "'";?>;
 var warning = <?php echo "'" . __("The alert would fire when the module is in warning status") . "'";?>;
 var critical = <?php echo "'" . __("The alert would fire when the module is in critical status") . "'";?>;
-var onchange_msg = <?php echo "'" . __("The alert would fire when the module value changes") . "'";?>;
-var onchange_not = <?php echo "'" . __("The alert would fire when the module value does not change") . "'";?>;
+var onchange_msg = <?php echo "\"" . __("The alert would fire when the module value changes") . "\"";?>;
+var onchange_not = <?php echo "\"" . __("The alert would fire when the module value does not change") . "\"";?>;
 var unknown = <?php echo "'" . __("The alert would fire when the module is in unknown status") . "'";?>;
 var error_message_min_max_zero = <?php echo "'" . __("The alert template cannot have the same value for min and max thresholds.") . "'";?>;
 
@@ -1062,12 +1095,40 @@ if ($step == 2) {
 elseif ($step == 3) {
 ?>
 	$("#recovery_notify").change (function () {
+		var max_fields = parseInt('<?php echo $config["max_macro_fields"]; ?>');
+
 		if (this.value == 1) {
-			$("#template-label_fields-2, #template-field1-2, #template-field2-2, #template-field3-2, #template-field4-2, #template-field5-2, #template-field6-2, #template-field7-2, #template-field8-2, #template-field9-2, #template-field10-2").show ();
+			$("#template-label_fields-2").show();
+			for (i = 1; i <= max_fields; i++) {
+				$("#template-field" + i + "-2").show();
+			}
+			//$("#template-label_fields-2, #template-field1-2, #template-field2-2, #template-field3-2, #template-field4-2, #template-field5-2, #template-field6-2, #template-field7-2, #template-field8-2, #template-field9-2, #template-field10-2").show ();
 		}
 		else {
-			$("#template-label_fields-2, #template-field1-2, #template-field2-2, #template-field3-2, #template-field4-2, #template-field5-2, #template-field6-2, #template-field7-2, #template-field8-2, #template-field9-2, #template-field10-2").hide ();
+			$("#template-label_fields-2").hide();
+			for (i = 1; i <= max_fields; i++) {
+				$("#template-field" + i + "-2").hide();
+			}
+			//$("#template-label_fields-2, #template-field1-2, #template-field2-2, #template-field3-2, #template-field4-2, #template-field5-2, #template-field6-2, #template-field7-2, #template-field8-2, #template-field9-2, #template-field10-2").hide ();
 		}
+	});
+
+	tinyMCE.init({
+		selector: 'textarea.tiny-mce-editor',
+		theme : "advanced",
+		plugins : "preview, print, table, searchreplace, nonbreaking, xhtmlxtras, noneditable",
+		theme_advanced_buttons1 : "bold,italic,underline,|,justifyleft,justifycenter,justifyright,justifyfull,|,formatselect,fontselect,fontsize,select",
+		theme_advanced_buttons2 : "search,replace,|,bullist,numlist,|,undo,redo,|,link,unlink,image,|,cleanup,code,preview,|,forecolor,backcolor",
+		theme_advanced_buttons3 : "",
+		theme_advanced_toolbar_location : "top",
+		theme_advanced_toolbar_align : "left",
+		theme_advanced_resizing : true,
+		theme_advanced_statusbar_location : "bottom",
+		force_p_newlines : false,
+		forced_root_block : '',
+		inline_styles : true,
+		valid_children : "+body[style]",
+		element_format : "html"
 	});
 <?php
 }

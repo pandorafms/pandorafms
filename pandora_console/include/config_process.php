@@ -22,8 +22,8 @@
 /**
  * Pandora build version and version 
  */
-$build_version = 'PC160922';
-$pandora_version = 'v6.1dev';
+$build_version = 'PC170216';
+$pandora_version = 'v7.0dev';
 
 // Do not overwrite default timezone set if defined.
 $script_tz = @date_default_timezone_get();
@@ -66,6 +66,11 @@ else {
 	ini_set("display_errors", 1);
 	ini_set("log_errors", 1);
 	ini_set("error_log", $config["homedir"]."/pandora_console.log");
+}
+
+// Check if mysqli is available
+if (!(isset($config["mysqli"]))) {
+	$config["mysqli"] = extension_loaded(mysqli);
 }
 
 $config['start_time'] = microtime (true);
@@ -112,6 +117,9 @@ require_once ($ownDir. 'functions_config.php');
 // We need a timezone BEFORE calling config_process_config. 
 // If not we will get ugly warnings. Set Europe/Madrid by default
 // Later will be replaced by the good one.
+if (!isset($config["homeurl_static"])) {
+	$config["homeurl_static"] = $config["homeurl"];
+}
 
 date_default_timezone_set("Europe/Madrid");
 
@@ -122,11 +130,6 @@ config_prepare_session();
 require_once ($config["homedir"].'/include/load_session.php');
 if(session_id() == '') {
 	$resultado = session_start();
-}
-
-
-if (!isset($config["homeurl_static"])) {
-	$config["homeurl_static"] = $config["homeurl"];
 }
 
 // Set a the system timezone default 
@@ -163,7 +166,7 @@ if (!isset($config['inventory_changes_blacklist'])) {
 //NEW UPDATE MANAGER URL
 if (!isset($config['url_update_manager'])) {
 	config_update_value('url_update_manager',
-		'https://firefly.artica.es/pandoraupdate6/server.php');
+		'https://firefly.artica.es/pandoraupdate7/server.php');
 }
 
 if (defined('METACONSOLE')) {

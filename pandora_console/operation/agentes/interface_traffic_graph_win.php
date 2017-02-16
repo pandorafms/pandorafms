@@ -144,6 +144,7 @@ $interface_traffic_modules = array(
 		$start_date = (string) get_parameter("start_date", date("Y-m-d"));
 		$zoom = (int) get_parameter ("zoom", 1);
 		$baseline = get_parameter ("baseline", 0);
+		$show_percentil = get_parameter ("show_percentil", 0);
 		
 		if ($zoom > 1) {
 			$height = $height * ($zoom / 2.1);
@@ -179,7 +180,15 @@ $interface_traffic_modules = array(
 			$config['homeurl'],
 			array_keys($interface_traffic_modules),
 			array_fill(0, count($interface_traffic_modules), $config["interface_unit"]),
-			false);
+			false,
+			true,
+			true,
+			true,
+			1,
+			false,
+			false,
+			(($show_percentil)? $config['percentil'] : null),
+			true);
 		
 		echo '</div>';
 		
@@ -225,6 +234,12 @@ $interface_traffic_modules = array(
 		$data[1] = html_print_extended_select_for_time('period', $period, '', '', 0, 7, true);
 		$table->data[] = $data;
 		$table->rowclass[] = '';
+		
+		$data = array();
+		$data[0] = __('Show percentil');
+		$data[1] = html_print_checkbox ("show_percentil", 1, (bool) $show_percentil, true);
+		$table->data[] = $data;
+		$table->rowclass[] ='';
 		
 		$data = array();
 		$data[0] = __('Zoom factor');

@@ -62,7 +62,8 @@ if ($config["realtimestats"] == 0) {
 	$updated_time .= "</a>";
 }
 else {
-	$updated_time = __("Updated at realtime");
+	//	$updated_info = __("Updated at realtime");
+		$updated_info = "";
 }
 
 // Header
@@ -79,6 +80,7 @@ $monitor_critical = 0;
 $monitor_unknown = 0;
 $monitor_not_init = 0;
 $agents_unknown = 0;
+$agents_critical = 0;
 $agents_notinit = 0;
 $all_alerts_fired = 0;
 
@@ -92,6 +94,7 @@ foreach ($all_data as $group_all_data) {
 	
 	$agents_unknown += $group_all_data["_agents_unknown_"];
 	$agents_notinit += $group_all_data["_agents_not_init_"];
+	$agents_critical += $group_all_data["_agents_critical_"];
 
 	$all_alerts_fired += $group_all_data["_monitors_alerts_fired_"];
 }
@@ -106,6 +109,7 @@ $total_unknown = format_numeric (($monitor_unknown*100)/$total,2);
 $total_monitor_not_init = format_numeric (($monitor_not_init*100)/$total,2);
 //Agents
 $total_agent_unknown = format_numeric (($agents_unknown*100)/$total_agentes,2);
+$total_agent_critical = format_numeric (($agents_critical*100)/$total_agentes,2);
 $total_not_init = format_numeric (($agents_notinit*100)/$total_agentes,2);
 
 echo '<table cellpadding="0" cellspacing="0" border="0" width="100%" class="databox">';
@@ -120,6 +124,7 @@ echo '<table cellpadding="0" cellspacing="0" border="0" width="100%" class="data
 		echo "<td align='center'>";
 			echo "<span id='sumary' style='background-color:#B2B2B2;'>". $total_agent_unknown ."%</span>";
 			echo "<span id='sumary' style='background-color:#5bb6e5;'>". $total_not_init ."%</span>";
+			echo "<span id='sumary' style='background-color:#FC4444;'>". $total_agent_critical ."%</span>";
 		echo "</td>";
 		echo "<td align='center'>";
 			echo "<span id='sumary' style='background-color:#FC4444;'>". $total_critical ."%</span>";
@@ -150,7 +155,7 @@ if (!empty($result_groups)) {
 	echo '<table cellpadding="0" cellspacing="0" style="margin-top:10px;" class="databox data" border="0" width="100%">';
 		echo "<tr>";
 			echo "<th colspan=2 ></th>";
-			echo "<th colspan=3 class='difference' style='text-align:center'>" . __("Agents") . "</th>";
+			echo "<th colspan=4 class='difference' style='text-align:center'>" . __("Agents") . "</th>";
 			echo "<th colspan=6 style='text-align:center'>" . __("Modules") . "</th>";
 		echo "</tr>";
 		
@@ -160,6 +165,7 @@ if (!empty($result_groups)) {
 			echo "<th width='10%' style='min-width: 60px;text-align:center;'>" . __("Total") . "</th>";
 			echo "<th width='10%' style='min-width: 60px;text-align:center;'>" . __("Unknown") . "</th>";
 			echo "<th width='10%' style='min-width: 60px;text-align:center;'>" . __("Not init") . "</th>";
+			echo "<th width='10%' style='min-width: 60px;text-align:center;'>" . __("Critical") . "</th>";
 			echo "<th width='10%' style='min-width: 60px;text-align:center;'>" . __("Unknown") . "</th>";
 			echo "<th width='10%' style='min-width: 60px;text-align:center;'>" . __("Not Init") . "</th>";
 			echo "<th width='10%' style='min-width: 60px;text-align:center;'>" . __("Normal") . "</th>";
@@ -294,6 +300,24 @@ if (!empty($result_groups)) {
 
 			if ($data["_agents_not_init_"] > 0 && ($data["_id_"] != 0)) {
 				echo $link . $data["_agents_not_init_"] . "</a>";
+			}
+			echo "</td>";
+			
+			// Agents critical
+			echo "<td class='group_view_data group_view_data_unk $color_class' style='font-weight: bold; font-size: 18px; text-align: center;'>";
+			if (isset($data['_is_tag_'])) {
+				$link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;'
+				href='index.php?sec=monitoring&sec2=operation/tree&tag_id=".$data['_id_']. "&status=" . AGENT_STATUS_CRITICAL ."'>";
+			} else {
+				$link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
+				href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=".$data['_id_']."&status=" . AGENT_STATUS_CRITICAL ."'>";
+			}
+			if (($data["_id_"] == 0) && ($agents_critical != 0)) {
+				echo $link . $agents_critical . "</a>";
+			}
+
+			if ($data["_agents_critical_"] > 0 && ($data["_id_"] != 0)) {
+				echo $link . $data["_agents_critical_"] . "</a>";
 			}
 			echo "</td>";
 			

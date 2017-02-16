@@ -40,8 +40,8 @@ my $Sem = undef;
 # Semaphore used to control the number of threads
 my $ThreadSem = undef;
 
-use constant AGENT_VERSION => '6.1dev';
-use constant AGENT_BUILD => '160922';
+use constant AGENT_VERSION => '7.0dev';
+use constant AGENT_BUILD => '170216';
 
 # Agent log default file size maximum and instances
 use constant DEFAULT_MAX_LOG_SIZE => 600000;
@@ -136,9 +136,12 @@ my %DefaultConf = (
 	'debug' => 0,		
 	'agent_name' => '',
 	'agent_alias' => hostname(),
+	'ehorus_conf' => undef,
 	'agent_name_cmd' => '',
 	'description' => '',
 	'group' => '',
+	'group_id' => undef,
+	'group_password' => undef,
 	'encoding' => 'UTF-8',
 	'server_port' => 41121,
 	'transfer_mode' => 'tentacle',
@@ -634,6 +637,16 @@ sub parse_conf_modules($) {
 		# FF interval
 		} elsif ($line =~ /^\s*module_ff_interval\s+(\S+)\s*$/) {
 			$module->{'module_ff_interval'} = $1;
+		} elsif ($line =~ /^\s*module_min_ff_event_normal\s+(\S+)\s*$/) {
+			$module->{'min_ff_event_normal'} = $1;
+		} elsif ($line =~ /^\s*module_min_ff_event_warning\s+(\S+)\s*$/) {
+			$module->{'min_ff_event_warning'} = $1;
+		} elsif ($line =~ /^\s*module_min_ff_event_critical\s+(\S+)\s*$/) {
+			$module->{'min_ff_event_critical'} = $1;
+		} elsif ($line =~ /^\s*module_ff_timeout\s+(\S+)\s*$/) {
+			$module->{'ff_timeout'} = $1;
+		} elsif ($line =~ /^\s*module_each_ff\s+(\S+)\s*$/) {
+			$module->{'each_ff'} = $1;
 		# Macros
 		} elsif ($line =~ /^\s*module_macro(\S+)\s+(.*)\s*$/) {
 			$module->{'macros'}{$1} = $2;
@@ -2083,7 +2096,14 @@ sub write_module_xml ($@) {
 	
 	# Module Alert template
 	$Xml .= "	<crontab>" . $module->{'cron'} . "</crontab>\n" if (defined ($module->{'cron'}) and ($module->{'cron'} ne ""));
-		
+
+	# FF threshold configuration
+	$Xml .= "	<min_ff_event_normal>" . $module->{'min_ff_event_normal'} . "</min_ff_event_normal>\n" if (defined ($module->{'min_ff_event_normal'}));
+	$Xml .= "	<min_ff_event_warning>" . $module->{'min_ff_event_warning'} . "</min_ff_event_warning>\n" if (defined ($module->{'min_ff_event_warning'}));
+	$Xml .= "	<min_ff_event_critical>" . $module->{'min_ff_event_critical'} . "</min_ff_event_critical>\n" if (defined ($module->{'min_ff_event_critical'}));
+	$Xml .= "	<ff_timeout>" . $module->{'ff_timeout'} . "</ff_timeout>\n" if (defined ($module->{'ff_timeout'}));
+	$Xml .= "	<each_ff>" . $module->{'each_ff'} . "</each_ff>\n" if (defined ($module->{'each_ff'}));
+
 	# Data list
 	if ($#data > 0) {
 		$Xml .= "	<data><![CDATA[" . join('', @data) . "]]></data>\n";
@@ -2377,6 +2397,39 @@ sub config_update ($$) {
 }
 
 ################################################################################
+# Get the eHorus key from the eHorus agent configuration file.
+################################################################################
+sub get_ehkey {
+	my $fh;
+
+	return '' unless defined($Conf{'ehorus_conf'});
+
+	# Open the eHorus configuration file.
+	if (!open($fh, '<', $Conf{'ehorus_conf'})) {
+		# Do not write to the log, since ehorus_conf points to the default eHorus configuration file by default.
+		return '';
+	}
+
+	# Look for the eHorus key.
+	while (my $line = <$fh>) {
+		
+		# Skip comments.
+		next if ($line =~ m/^\s*#/);
+
+		if ($line =~ m/\s*eh_key\s+(\S+)/) {
+			my $eh_key = $1;
+			close($fh);
+
+			return $eh_key;
+		}
+	}
+
+	# Not found.
+	close($fh);
+	return '';
+}
+
+################################################################################
 # Main.
 ################################################################################
 
@@ -2526,12 +2579,15 @@ while (1) {
 	if(defined($Conf{'address'})) {
 		# Check if address is auto to get the local ip
 		if ($Conf{'address'} eq 'auto') {
-			# Tested on Ubuntu, debian, Suse, Solaris 10 and AIX 5.1
-			my @address_list = `ifconfig -a 2>$DevNull | grep -v '127.0.0' | grep '[0-9]*\\.[0-9]*\\.[0-9]*' | awk '{ print \$2 }' | awk -F':' '{ print \$2 }'`;
-			if ($#address_list < 0) {
-				# Tested on Red Hat 7
-				@address_list = `ip addr show 2>$DevNull | grep -v '127.0.0' | grep '[0-9]*\\.[0-9]*\\.[0-9]*' | awk '{print \$2}' | cut -d/ -f1`;
+			my @address_list;
+
+			if( -x "/bin/ip" || -x "/sbin/ip" || -x "/usr/sbin/ip" ) {
+				@address_list = `ip addr show 2>$DevNull | sed -e '/127.0.0/d' -e '/[0-9]*\\.[0-9]*\\.[0-9]*/!d' -e 's/^[ \\t]*\\([^ \\t]*\\)[ \\t]*\\([^ \\t]*\\)[ \\t].*/\\2/' -e 's/\\/.*//'`;
 			}
+			else {
+				@address_list = `ifconfig -a 2>$DevNull | sed -e '/127.0.0/d' -e '/[0-9]*\\.[0-9]*\\.[0-9]*/!d' -e 's/^[ \\t]*\\([^ \\t]*\\)[ \\t]*\\([^ \\t]*\\)[ \\t].*/\\2/' -e 's/.*://'`;
+			}
+
 			for (my $i = 0; $i <= $#address_list; $i++) {		
 				chomp($address_list[$i]);
 				if ($i > 0) {
@@ -2549,11 +2605,14 @@ while (1) {
 	# Clear the XML
 	$Xml = "";
 
+	# Get the eHorus key.
+	my $eh_key = get_ehkey();
+
 	# Custom fields
-	
 	my @customfieldskeys = keys(%Customfields);
-	if ($#customfieldskeys > -1) {
+	if ($#customfieldskeys > -1 || $eh_key ne '') {
 		$Xml .= "<custom_fields>\n";
+
 		foreach my $customfieldkey (@customfieldskeys) {
 			if($customfieldkey =~ m/^(custom_field\d+_)name/) {
 				if(defined($Customfields{$1."value"})) {
@@ -2564,6 +2623,15 @@ while (1) {
 				}
 			}
 		}
+
+		# Add the eHorus key as a custom field.
+		if ($eh_key ne '') {
+			$Xml .= "	<field>\n";
+			$Xml .= "		<name>eHorusID</name>\n";
+			$Xml .= "		<value><![CDATA[". $eh_key ."]]></value>\n";
+			$Xml .= "	</field>\n";
+		}
+
 		$Xml .= "</custom_fields>\n";
 	}
 	
@@ -2596,7 +2664,9 @@ while (1) {
 		
 		# Compose the XML
 		my $xml_header = "<?xml version='1.0' encoding='" . $Conf{'encoding'} . "'?>\n" .
-			"<agent_data description='" . $Conf{'description'} ."' group='" . $Conf{'group'} .
+			"<agent_data description='" . $Conf{'description'} . "' group='" . $Conf{'group'} .
+			(defined($Conf{'group_password'}) ? ("' group_password='" . $Conf{'group_password'}) : '') .
+			(defined($Conf{'group_id'}) ? ("' group_id='" . $Conf{'group_id'}) : '') .
 			"' os_name='$OS' os_version='$OS_VERSION' interval='" . $Conf{'interval'} .
 			"' version='" . AGENT_VERSION . '(Build ' . AGENT_BUILD . ')' . ($Conf{'autotime'} eq '1' ? '' : "' timestamp='" . strftime ('%Y/%m/%d %H:%M:%S', localtime ())) .
 			"' agent_name='" . $Conf{'agent_name'} . "' agent_alias='". $Conf{'agent_alias'} . 
@@ -2651,6 +2721,7 @@ while (1) {
 				$xml_header .= "' position_description='" .$Conf{'position_description'};
 			}
 		}
+
 		$xml_header .= "'>\n";
 		$Xml = $xml_header . $Xml . "</agent_data>";
 

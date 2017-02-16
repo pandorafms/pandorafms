@@ -14,6 +14,7 @@ from selenium.common.exceptions import NoAlertPresentException
 from selenium.webdriver.remote.webelement import WebElement
 
 import unittest2, time, re
+import logging
 
 class Bulk_operations(PandoraWebDriverTestCase):
 	
@@ -27,6 +28,8 @@ class Bulk_operations(PandoraWebDriverTestCase):
 		Creation two agents and delete this agents using bulk operation
 		Ticket Associated = 3831
 		"""
+
+		logging.basicConfig(filename="Bulk_operations.log", level=logging.INFO, filemode='w')
 
 		agent_name_1 = gen_random_string(6)
                 agent_name_2 = gen_random_string(6)
@@ -53,6 +56,8 @@ class Bulk_operations(PandoraWebDriverTestCase):
 				
 		self.assertRegexpMatches(self.close_alert_and_get_its_text(), r"^Are you sure[\s\S]$")
 		self.assertEqual(self.driver.find_element_by_xpath('//div[@id="main"]//td[contains(.,"Successfully deleted (2)")]').text,"Successfully deleted (2)")
+
+		logging.info("test_A_delete_agent_bulk_operations is correct")
 
 	def test_B_edit_agents_group_bulk_operations(self):
 
@@ -85,6 +90,8 @@ class Bulk_operations(PandoraWebDriverTestCase):
 
 		self.assertRegexpMatches(self.close_alert_and_get_its_text(), r"^Are you sure[\s\S]$")
 		self.assertEqual(self.driver.find_element_by_xpath('//div[@id="main"]//td[contains(.,"Agents updated successfully(2)")]').text,"Agents updated successfully(2)")
+
+		logging.info("test_B_edit_agents_group_bulk_operations is correct")
 
 	def test_C_edit_agent_description_bulk_operation(self):
 
@@ -121,6 +128,8 @@ class Bulk_operations(PandoraWebDriverTestCase):
 		search_agent(driver,agent_name_1,go_to_agent=True)
 
 		self.assertEqual("test C edit description bulk operation" in driver.page_source,True)
+
+		logging.info("test_C_edit_agent_description_bulk_operation is correct")
 
 	def test_D_delete_modules_in_bulk(self):
 		
@@ -169,6 +178,7 @@ class Bulk_operations(PandoraWebDriverTestCase):
 
 		self.assertEqual(element,[])
 
+		logging.info("test_D_delete_modules_in_bulk is correct")
 
 	def test_E_edit_module_group_in_bulk(self):
 
@@ -215,6 +225,7 @@ class Bulk_operations(PandoraWebDriverTestCase):
 
 		self.assertEqual("Users" in driver.page_source,True)
 
+		logging.info("test_E_edit_module_group_in_bulk is correct")
 
 	def test_F_edit_module_umbral_in_bulk(self):
 
@@ -267,7 +278,7 @@ class Bulk_operations(PandoraWebDriverTestCase):
 		element = driver.find_element_by_xpath('//tr//td[contains(.,"2")]')
 		self.assertIsInstance(element,WebElement)	
 
-
+		logging.info("test_F_edit_module_umbral_in_bulk is correct")
 
 	def test_G_edit_module_threshold_in_bulk(self):
 
@@ -324,7 +335,59 @@ class Bulk_operations(PandoraWebDriverTestCase):
 		element = driver.find_element_by_xpath('//tr//td[contains(.,"2")]')
 		self.assertIsInstance(element,WebElement)
 
+		logging.info("test_G_edit_module_threshold_in_bulk is correct")
 
+	def test_H_copy_modules_in_bulk(self):
+
+		u"""
+		Create three agents One of them with a module. Through a bulk operation, copy this module in other two agents
+		"""
+
+		agent_name_1 = gen_random_string(6)
+		agent_name_2 = gen_random_string(6)
+		agent_name_3 = gen_random_string(6)
+
+		module_name_1 = gen_random_string(6)
+
+		driver = self.driver
+
+		activate_api(driver,"1234")
+
+		params = [agent_name_1,"127.0.0.1","0","4","0","300","2","pandorafms","2","0","0","pruebas"]
+		create_agent_api(driver,params,user="admin",pwd="pandora")
+
+		params = [agent_name_2,"127.0.0.1","0","4","0","300","2","pandorafms","2","0","0","pruebas"]
+		create_agent_api(driver,params,user="admin",pwd="pandora")
+
+		params = [agent_name_3,"127.0.0.1","0","4","0","300","2","pandorafms","2","0","0","pruebas"]
+		create_agent_api(driver,params,user="admin",pwd="pandora")
+
+		params = [agent_name_1,module_name_1,"0","6","1","0","0","0","0","0","0","0","0","129.99.40.1","0","0","180","0","0","0","0","Host_Alive"]
+		add_network_module_to_agent_api(driver,params,user="admin",pwd="pandora",apipwd="1234")
+
+		lista = driver.current_url.split('/')
+
+		url = lista[0]+'//'+lista[2]+'/pandora_console'
+
+		driver.get(url)
+
+		destiny_agents_list = [agent_name_2,agent_name_3]
+
+		module_list = [module_name_1]
+
+		agent_name = agent_name_1.lower()
+		
+		copy_modules_in_bulk(driver,agent_name,module_list,destiny_agents_list) 
+
+		search_module(driver,agent_name_2,module_name_1)
+
+		self.assertEqual(module_name_1 in driver.page_source,True)
+
+		search_module(driver,agent_name_3,module_name_1)
+
+		self.assertEqual(module_name_1 in driver.page_source,True)
+	
+		logging.info("test_H_copy_modules_in_bulk is correct")
 
 if __name__ == "__main__":
         unittest2.main()

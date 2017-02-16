@@ -83,6 +83,22 @@ function visual_map_main() {
 
 	//Fixed to wait the load of images.
 	$(window).load(function() {
+		
+		$('#radiobtn0001').click(function(){
+			$("#custom_graph option[value=0]").prop("selected", true);
+		});
+		
+		$('.labelpos').click(function(event){
+			$("#labelposup img").attr('src','/pandora_console/images/label_up.png');
+			$("#labelposdown img").attr('src','/pandora_console/images/label_down.png');
+			$("#labelposleft img").attr('src','/pandora_console/images/label_left.png');
+			$("#labelposright img").attr('src','/pandora_console/images/label_right.png');
+			$('.labelpos').attr('sel','no');
+			$("#"+$(this).attr('id')+" img").attr('src','/pandora_console/images/label_'+$(this).attr('id').replace('labelpos','')+'_2.png');
+			$("#"+$(this).attr('id')).attr('sel','yes');
+					
+		});
+		
 			draw_lines(lines, 'background', true);
 
 			draw_user_lines("", 0, 0, 0 , 0, 0, true);
@@ -101,11 +117,13 @@ function visual_map_main() {
 				$("#custom_graph_row").css('display', 'none');
 				$("#agent_row").css('display', '');
 				$("#module_row").css('display', '');
+				$("#type_graph").css('display', '');
 			}
 			else {
 				$("#custom_graph_row").css('display', '');
 				$("#agent_row").css('display', 'none');
 				$("#module_row").css('display', 'none');
+				$("#type_graph").css('display', 'none');
 			}
 		}
 	});
@@ -149,7 +167,6 @@ function is_metaconsole() {
 
 function update_button_palette_callback() {
 
-
 	var values = {};
 
 	values = readFields();
@@ -174,31 +191,79 @@ function update_button_palette_callback() {
 			idElement = 0;
 			break;
 		case 'box_item':
+		
+		if($('input[name=width_box]').val() == ''){
+		alert('Undefined width');
+		return false;
+		}
+		if($('input[name=height_box]').val() == ''){
+		alert('Undefined height');
+		return false;
+		}
+		
 			$("#" + idItem + " div").css('background-color', values['fill_color']);
 			$("#" + idItem + " div").css('border-color', values['border_color']);
 			$("#" + idItem + " div").css('border-width', values['border_width'] + "px");
-			$("#" + idItem + " div").css('height', values['height_box'] + "px");
-			$("#" + idItem + " div").css('width', values['width_box'] + "px");
+			
+			if(values['height_box']==0 || values['width_box']==0){
+				$("#" + idItem + " div").css('width', "300px");
+				$("#" + idItem + " div").css('height', "180px");
+			}
+			else{
+				$("#" + idItem + " div").css('height', values['height_box'] + "px");
+				$("#" + idItem + " div").css('width', values['width_box'] + "px");
+			}
 			break;
 		case 'group_item':
 		case 'static_graph':
+		
+		if($('input[name=width]').val() == ''){
+		alert('Undefined width');
+		return false;
+		}
+		if($('input[name=height]').val() == ''){
+		alert('Undefined height');
+		return false;
+		}
+		
 			$("#text_" + idItem).html(values['label']);
-
-			if ((values['width'] != 0) && (values['height'] != 0)) {
-				$("#image_" + idItem).attr('width', values['width']);
-				$("#image_" + idItem).attr('height', values['height']);
-				$("#" + idItem).css('width', values['width'] + 'px');
-				$("#" + idItem).css('height', values['height'] + 'px');
+			
+			
+			
+			if ((values['width'] == 0) || (values['height'] == 0)) {
+				$("#image_" + idItem).removeAttr('width');
+				$("#image_" + idItem).removeAttr('height');
+				$("#image_" + idItem).attr('width', 70);
+				$("#image_" + idItem).attr('height', 70);
+				$("#image_" + idItem).css('width', '70px');
+				$("#image_" + idItem).css('height', '70px');
+				
 			}
 			else {
 				$("#image_" + idItem).removeAttr('width');
 				$("#image_" + idItem).removeAttr('height');
-				$("#" + idItem).css('width', '');
-				$("#" + idItem).css('height', '');
+				$("#image_" + idItem).attr('width', values['width']);
+				$("#image_" + idItem).attr('height', values['height']);
+				$("#image_" + idItem).css('width', values['width'] + 'px');
+				$("#image_" + idItem).css('height', values['height'] + 'px');
 			}
+			
+		
+			
 			break;
 		case 'percentile_bar':
 		case 'percentile_item':
+			
+		if($('input[name=width_percentile]').val() == ''){
+		alert('Undefined width');
+		return false;
+		}
+		if($('input[name=height_percentile]').val() == ''){
+		alert('Undefined height');
+		return false;
+		}
+		
+		
 			$("#text_" + idItem).html(values['label']);
 			$("#image_" + idItem).attr("src", "images/spinner.gif");
 			if (values['type_percentile'] == 'bubble') {
@@ -207,9 +272,27 @@ function update_button_palette_callback() {
 			else {
 				setPercentileBar(idItem, values);
 			}
+			
+			
 
 			break;
 		case 'module_graph':
+		
+		if($('input[name=width_module_graph]').val() == ''){
+		alert('Undefined width');
+		return false;
+		}
+		if($('input[name=height_module_graph]').val() == ''){
+		alert('Undefined height');
+		return false;
+		}
+		if($('#custom_graph_row').css('display') != 'none' && $("#custom_graph option:selected").html() == 'None'){
+				alert('Undefined graph');
+		return false;
+		}
+		
+		
+		
 			$("#text_" + idItem).html(values['label']);
 			$("#image_" + idItem).attr("src", "images/spinner.gif");
 			setModuleGraph(idItem);
@@ -224,47 +307,131 @@ function update_button_palette_callback() {
 			$("#text_" + idItem).html(values['label']);
 			break;
 		case 'icon':
+		
+		if($('input[name=width]').val() == ''){
+		alert('Undefined width');
+		return false;
+		}
+		if($('input[name=height]').val() == ''){
+		alert('Undefined height');
+		return false;
+		}
+		
+		
 			$("#image_" + idItem).attr('src', "images/spinner.gif");
 
-			if ((values['width'] != 0) && (values['height'] != 0)) {
-				$("#image_" + idItem).attr('width', values['width']);
-				$("#image_" + idItem).attr('height', values['height']);
-				$("#" + idItem).css('width', values['width'] + 'px');
-				$("#" + idItem).css('height', values['height'] + 'px');
+			if ((values['width'] == 0) || (values['height'] == 0)) {
+				$("#image_" + idItem).removeAttr('width');
+				$("#image_" + idItem).removeAttr('height');
+				$("#image_" + idItem).attr('width', 70);
+				$("#image_" + idItem).attr('height', 70);
+				$("#image_" + idItem).css('width', '70px');
+				$("#image_" + idItem).css('height', '70px');
+				
 			}
 			else {
 				$("#image_" + idItem).removeAttr('width');
 				$("#image_" + idItem).removeAttr('height');
-				$("#" + idItem).css('width', '');
-				$("#" + idItem).css('height', '');
+				$("#image_" + idItem).attr('width', values['width']);
+				$("#image_" + idItem).attr('height', values['height']);
+				$("#image_" + idItem).css('width', values['width'] + 'px');
+				$("#image_" + idItem).css('height', values['height'] + 'px');
 			}
 			var image = values['image'] + ".png";
 			set_image("image", idItem, image);
 			break;
 		default:
+		if($('input[name=width]').val() == ''){
+		alert('Undefined width');
+		return false;
+		}
+		if($('input[name=height]').val() == ''){
+		alert('Undefined height');
+		return false;
+		}
 			//Maybe save in any Enterprise item.
 			if (typeof(enterprise_update_button_palette_callback) == 'function') {
 				enterprise_update_button_palette_callback(values);
 			}
-			break;
+
+		break;
+		
 	}
 
 	updateDB(selectedItem, idItem , values);
 
 	toggle_item_palette();
+	
+	if(values['label_position']=='left'){
+		$("#" + idItem + ' table').css('float','left');
+		$("#" + idItem + ' img').css('float','right');
+		$("#" + idItem + ' img').css('margin-left','');
+		$("#" + idItem + ' table').css('height',$("#" + idItem+ ' img').css('height'));
+		$("#" + idItem + ' table').css('width','');
+		$("#" + idItem + ' img').css('margin-top',(parseInt($("#" + idItem).css('height'))/2)-(parseInt($("#" + idItem + " img").css('height'))/2)+'px');
+		$("#" + idItem + ' > p').remove();
+	}
+	else if(values['label_position']=='right'){
+		$("#" + idItem + ' table').css('float','right');
+		$("#" + idItem + ' img').css('float','left');
+		$("#" + idItem + ' img').css('margin-left','');
+		$("#" + idItem + ' table').css('height',$("#" + idItem+ ' img').css('height'));
+		$("#" + idItem + ' table').css('width','');
+		$("#" + idItem + ' img').css('margin-top',(parseInt($("#" + idItem).css('height'))/2)-(parseInt($("#" + idItem + " img").css('height'))/2)+'px');
+		$("#" + idItem + ' > p').remove();
+	}
+	
+	else if(values['label_position']=='down'){
+		$("#" + idItem + ' table').css('float','');			
+		$("#" + idItem + ' img').css('float','');	
+		var tempoimg = $('#' + idItem + ' table').clone();
+		$('#' + idItem + ' table').remove();
+		$('#' + idItem).append(tempoimg);
+		$("#" + idItem + ' table').css('height','');
+		$("#" + idItem + ' table').css('width','100%');
+		$("#" + idItem + ' span').css('width','100%');
+		$("#" + idItem + ' img').css('margin-top','');
+		//if(parseInt($("#" + idItem).css('width'))-parseInt($("#" + idItem + " img").css('width'))/2 == 0 || values['height'] == 0 || values['width'] == 0){
+			$("#" + idItem + ' img').css('margin-left',(parseInt($("#" + idItem).css('width'))/2)-(parseInt($("#" + idItem + " img").css('width'))/2)+'px');
+		//}
+		//else{
+			//$("#" + idItem + ' img').css('margin-left','');
+		//}
+		
+		$("#" + idItem + ' > p').remove();
+	}
+	else if(values['label_position']=='up'){
+		$("#" + idItem + ' table').css('float','');			
+		$("#" + idItem + ' img').css('float','');	
+		var tempoimg = $('#' + idItem + ' img').clone();
+		$('#' + idItem + ' img').remove();
+		$('#' + idItem).append(tempoimg);
+		$("#" + idItem + ' table').css('height','');
+		$("#" + idItem + ' table').css('width','100%');
+		$("#" + idItem + ' span').css('width','100%');
+		$("#" + idItem + ' img').css('margin-top','');
+		//if(parseInt($("#" + idItem).css('width'))-parseInt($("#" + idItem + " img").css('width'))/2 == 0 || values['height'] == 0 || values['width'] == 0){
+			//$("#" + idItem + ' img').css('margin-left','');
+			
+		//}
+		//else{
+			$("#" + idItem + ' img').css('margin-left',(parseInt($("#" + idItem).css('width'))/2)-(parseInt($("#" + idItem + " img").css('width'))/2)+'px');
+		//}
+		$("#" + idItem + ' > p').remove();
+	}
+		
 }
 
 function readFields() {
+	
+	$("#text-label_ifr").contents().find("p").css('overflow','hidden');
 	metaconsole = $("input[name='metaconsole']").val();
-
 	var values = {};
-
 	values['label'] = $("input[name=label]").val();
-
-
 	var text = tinymce.get('text-label').getContent();
 	values['label'] = text;
-
+	values['line-height'] = $("#text-label_ifr").contents().find("p").css('line-height');
+	values['type_graph'] = $("select[name=type_graph]").val();
 	values['image'] = $("select[name=image]").val();
 	values['background_color'] = $("select[name=background_color]").val();
 	values['left'] = $("input[name=left]").val();
@@ -299,7 +466,8 @@ function readFields() {
 	values['line_width'] = parseInt(
 		$("input[name='line_width']").val());
 	values['line_color'] = $("input[name='line_color']").val();
-
+	values['label_position'] = $(".labelpos[sel=yes]").attr('position');
+	
 	if (is_metaconsole()) {
 		values['metaconsole'] = 1;
 		values['id_agent'] = $("#hidden-agent").val();
@@ -326,9 +494,25 @@ function create_button_palette_callback() {
 	var validate = true;
 	switch (creationItem) {
 		case 'box_item':
+		if (($("input[name='width_box']").val() == '')) {
+			alert('Undefined width');
+			validate = false;
+		}
+		if (($("input[name='height_box']").val() == '')) {
+			alert('Undefined height');
+			validate = false;
+		}
 			break;
 		case 'group_item':
 		case 'static_graph':
+			if ((values['width'] == '')) {
+				alert('Undefined width');
+				validate = false;
+			}
+			if ((values['height'] == '')) {
+				alert('Undefined height');
+				validate = false;
+			}
 			if ((values['label'] == '') && (values['image'] == '')) {
 				alert($("#message_alert_no_label_no_image").html());
 				validate = false;
@@ -341,6 +525,14 @@ function create_button_palette_callback() {
 			}
 			break;
 		case 'icon':
+			if ((values['width'] == '')) {
+				alert('Undefined width');
+				validate = false;
+			}
+			if ((values['height'] == '')) {
+				alert('Undefined height');
+				validate = false;
+			}
 			if ((values['image'] == '')) {
 				alert($("#message_alert_no_image").html());
 				validate = false;
@@ -348,6 +540,10 @@ function create_button_palette_callback() {
 			break;
 		case 'percentile_bar':
 		case 'percentile_item':
+			if ((values['width'] == '')) {
+				alert('Undefined width');
+				validate = false;
+			}
 			if ((values['agent'] == '')) {
 				alert($("#message_alert_no_agent").html());
 				validate = false;
@@ -365,7 +561,15 @@ function create_button_palette_callback() {
 				validate = false;
 			}
 			break;
-		case 'module_graph':
+		case 'module_graph':		
+			if (values['width_module_graph'] == '') {
+				alert('Undefined width');
+				validate = false;
+			}
+			if (values['height_module_graph'] == '') {
+				alert('Undefined height');
+				validate = false;
+			}
 			if (values['id_custom_graph'] == 0) {
 				if ((values['agent'] == '')) {
 					alert($("#message_alert_no_agent").html());
@@ -624,9 +828,6 @@ function toggle_item_palette() {
 			enterprise_activeToolboxButton(false);
 		}
 
-
-
-
 		if (creationItem != null) {
 			//Create a item
 
@@ -663,9 +864,27 @@ function toggle_item_palette() {
 
 		hiddenFields(item);
 
-
-
 		$("#properties_panel").show("fast");
+		
+				$( ".lineheighttd").remove();				
+				//$('.mceToolbarEndButton').before(
+				//	'<td id="divlineheight" class="lineheighttd"><img height="20px" width="20px" style="margin-bottom:2px;" src="images/line_height.png"></td><td class="lineheighttd"><select style="margin-right:5px;margin-left:5px" class="lineheight"><option class="lineheightsize"  value="2pt">2pt</option><option class="lineheightsize"  value="4pt">4pt</option><option class="lineheightsize"  value="6pt">6pt</option><option class="lineheightsize"  value="8pt">8pt</option><option class="lineheightsize" value="10pt">10pt</option><option class="lineheightsize"  value="12pt">12pt</option><option class="lineheightsize"  value="14pt">14pt</option><option class="lineheightsize"  value="16pt">16pt</option><option class="lineheightsize"  value="18pt">18pt</option><option class="lineheightsize"  value="20pt">20pt</option><option class="lineheightsize" value="22pt">22pt</option><option class="lineheightsize" value="24pt">24pt</option><option class="lineheightsize" value="26pt">26pt</option><option class="lineheightsize" value="28pt">28pt</option></select></td>'
+				//);
+		    $('.mceToolbarEndButton').before(
+					'<td id="divlineheight" class="lineheighttd"><img height="20px" width="20px" style="margin-bottom:2px;" src="images/line_height.png"></td><td class="lineheighttd"><select style="width:60px;margin-right:5px;margin-left:5px" id="lineheight" class="lineheight"><option class="lineheightsize"  value="2px">2px</option><option class="lineheightsize"  value="6px">6px</option><option class="lineheightsize" value="10px">10px</option><option class="lineheightsize"  value="14px">14px</option><option class="lineheightsize"  value="18px" selected="selected">18px</option><option class="lineheightsize" value="22px">22px</option><option class="lineheightsize" value="26px">26px</option><option class="lineheightsize" value="30px">30px</option><option class="lineheightsize" value="36px">36px</option><option class="lineheightsize" value="72px">72px</option><option class="lineheightsize" value="96px">96px</option><option class="lineheightsize" value="128px">128px</option><option class="lineheightsize" value="154px">154px</option><option class="lineheightsize" value="196px">196px</option></select></td>'
+				);
+				
+				$('.lineheight').click(function(){
+					$( "#text-label_ifr" ).contents().find( "p" ).attr( "data-mce-style","line-height:"+$(this).val()+";");
+					$( "#text-label_ifr" ).contents().find( "p" ).css("line-height",$(this).val());
+					$( "#text-label_ifr" ).contents().find( "span" ).attr( "data-mce-style","line-height:"+$(this).val()+";");
+					$( "#text-label_ifr" ).contents().find( "span" ).css("line-height",$(this).val());
+				
+				});
+				
+				$( "#text-label_ifr" ).contents().find( "p" ).css("line-height",$('#lineheight').val());
+					$( "#text-label_ifr" ).contents().find( "span" ).css("line-height",$('#lineheight').val());
+								
 	}
 }
 
@@ -737,6 +956,8 @@ function loadFieldsFromDB(item) {
 					tinymce.get('text-label').setContent(val);
 					$("input[name=label]").val(val);
 				}
+				
+				$('#lineheight').val($("#text-label_ifr").contents().find("p").css('line-height'));
 
 				if (key == 'enable_link') {
 					if (val == "1") {
@@ -748,7 +969,21 @@ function loadFieldsFromDB(item) {
 							.prop("checked", false);
 					}
 				}
-
+				
+				if (key == 'type_graph') {
+						$("select[name=type_graph]").val(val);
+					}
+					
+					if (key == 'label_position') {
+						$('#labelposup'+" img").attr('src','/pandora_console/images/label_up.png');
+						$('#labelposdown'+" img").attr('src','/pandora_console/images/label_down.png');
+						$('#labelposleft'+" img").attr('src','/pandora_console/images/label_left.png');
+						$('#labelposright'+" img").attr('src','/pandora_console/images/label_right.png');
+						$('.labelpos').attr('sel','no');
+						$('#labelpos'+val+" img").attr('src','/pandora_console/images/label_'+$('#labelpos'+val).attr('id').replace('labelpos','')+'_2.png');
+						$('#labelpos'+val).attr('sel','yes');
+					}
+					
 				if (key == 'image') {
 					//Load image preview
 					$("select[name=image]").val(val);
@@ -874,30 +1109,45 @@ function loadFieldsFromDB(item) {
 				}
 
 			});
+			
+			if (data.type == 6 || data.type == 7 || data.type == 8 || data.type == 1) {
+				
+					$("#period_row." + item).css('display', '');
+				}
+				else if (data.type == 2) {
+					$("#period_row." + item).css('display', 'none');
+				}
+				
 
 			if (data.type == 1) {
-				if (data.id_custom_graph > 0) {
-					$("input[name='radio_choice'][value='custom_graph']")
-						.prop('checked', true);
-					$("input[name='radio_choice']").trigger('change');
-					$("#custom_graph option[value=" + data.id_custom_graph + "]")
-						.prop("selected", true);
-				}
-				else {
+				if (data.id_custom_graph == 0) {
 					$("input[name='radio_choice'][value='module_graph']")
 						.prop('checked', true);
 					$("input[name='radio_choice']").trigger('change');
+					
+		
+				}
+				else {
+	
+					$("input[name='radio_choice'][value='custom_graph']")
+						.prop('checked', true);
+					$("input[name='radio_choice']").trigger('change');
+
+	  		$("#custom_graph option[value=" + data.id_custom_graph + "]").prop("selected", true);
+										
 				}
 			}
 
 			if (typeof(enterprise_loadFieldsFromDB) == 'function') {
 				enterprise_loadFieldsFromDB(data);
 			}
-
+	
 			$("#loading_in_progress_dialog").dialog("close");
 		}
 	});
 }
+
+
 
 function setAspectRatioBackground(side) {
 	toggle_item_palette();
@@ -1030,6 +1280,9 @@ function hiddenFields(item) {
 
 	$("#background_color").css('display', 'none');
 	$("#background_color." + item).css('display', '');
+	
+	$("#type_graph").css('display', 'none');
+	$("#type_graph." + item).css('display', '');
 
 	$("#radio_choice_graph").css('display', 'none');
 	$("#radio_choice_graph." + item).css('display', '');
@@ -1058,10 +1311,6 @@ function hiddenFields(item) {
 	$("#line_case").css('display', 'none');
 	$("#line_case." + item).css('display', '');
 
-
-
-
-
 	$("input[name='radio_choice']").trigger('change');
 
 	if (typeof(enterprise_hiddenFields) == 'function') {
@@ -1085,7 +1334,7 @@ function cleanFields(item) {
 	$("input[name=top]").val(0);
 	$("input[name=agent]").val('');
 	$("select[name=module]").val('');
-	$("input[name=process_value]").val('');
+	$("select[name=process_value]").val(0);
 	$("select[name=background_image]").val('');
 	$("input[name=width_percentile]").val('');
 	$("input[name=max_percentile]").val('');
@@ -1162,6 +1411,15 @@ function set_static_graph_status(idElement, image, status) {
 			data: parameter,
 			success: function (data) {
 				set_static_graph_status(idElement, image, data);
+				
+				if($('#'+idElement+' table').css('float') == 'right' || $('#'+idElement+ ' table').css('float') == 'left'){
+				$('#'+idElement+ ' img').css('margin-top', 	parseInt($('#'+idElement).css('height'))/2 - parseInt($('#'+idElement+ ' img').css('height'))/2);	
+				}
+				else{
+				$('#'+idElement+ ' img').css('margin-left',parseInt($('#'+idElement).css('width'))/2 - parseInt($('#'+idElement+ ' img').css('width'))/2);		
+				}
+				
+								
 			}
 		});
 
@@ -1239,8 +1497,8 @@ function setModuleGraph(id_data) {
 			id_agente_modulo = data['id_agente_modulo'];
 			id_custom_graph = data['id_custom_graph'];
 			label = data['label'];
-			height = data['height'];
-			width = data['width'];
+			height = (data['height']);
+			width = (data['width']);
 			period = data['period'];
 			background_color = data['image'];
 
@@ -1277,8 +1535,36 @@ function setModuleGraph(id_data) {
 						$('#' + id_data).html(data['url']);
 					}
 					else {
-						$("#image_" + id_data).attr('src', data['url']);
+						if($("#module_row").css('display')!='none'){
+							$("#" + id_data + " img").attr('src', 'images/console/signes/module_graph.png');
+								if($('#text-width_module_graph').val() == 0 || $('#text-height_module_graph').val() == 0){
+									$("#" + id_data + " img").css('width', '300px');
+									$("#" + id_data + " img").css('height', '180px');
+								}
+								else{
+									$("#" + id_data + " img").css('width', $('#text-width_module_graph').val()+'px');
+									$("#" + id_data + " img").css('height', $('#text-height_module_graph').val()+'px');
+								}
+						}else{
+							$("#" + id_data + " img").attr('src', 'images/console/signes/custom_graph.png');
+								if($('#text-width_module_graph').val() == 0 || $('#text-height_module_graph').val() == 0){
+									$("#" + id_data + " img").css('width', '300px');
+									$("#" + id_data + " img").css('height', '180px');
+								}
+								else{
+									$("#" + id_data + " img").css('width', $('#text-width_module_graph').val()+'px');
+									$("#" + id_data + " img").css('height', $('#text-height_module_graph').val()+'px');
+								}
+						}
 					}
+					
+					if($('#'+id_data+' table').css('float') == 'right' || $('#'+id_data+ ' table').css('float') == 'left'){
+					$('#'+id_data+ ' img').css('margin-top', 	parseInt($('#'+id_data).css('height'))/2 - parseInt($('#'+id_data+ ' img').css('height'))/2);	
+					}
+					else{
+					$('#'+id_data+ ' img').css('margin-left',parseInt($('#'+id_data).css('width'))/2 - parseInt($('#'+id_data+ ' img').css('width'))/2);		
+					}
+					
 				}
 			});
 		}
@@ -1305,8 +1591,9 @@ function setModuleValue(id_data, process_simple_value, period) {
 		dataType: 'json',
 		success: function (data) {
 			var currentValue = $("#text_" + id_data).html();
-			currentValue = currentValue.replace(/_VALUE_/gi, data.value);
+			//currentValue = currentValue.replace(/_VALUE_/gi, data.value);
 			$("#text_" + id_data).html(currentValue);
+			//$("#text_" + id_data).html('Data value');
 		}
 	});
 }
@@ -1337,8 +1624,8 @@ function setPercentileBar(id_data, values) {
 		dataType: 'json',
 		success: function (data) {
 			module_value = data['value'];
-			//max_percentile = data['max_percentile'];
-			//width_percentile = data['width_percentile'];
+			max_percentile = data['max_percentile'];
+			width_percentile = data['width_percentile'];
 			unit_text = false;
 
 			if ((data['unit_text'] != false) || typeof(data['unit_text']) != 'boolean') {
@@ -1363,7 +1650,27 @@ function setPercentileBar(id_data, values) {
 				'width=' + width_percentile + '&mode=1&progress=' + percentile +
 				'&font=' + font + '&value_text=' + value_text + '&colorRGB=' + colorRGB;
 
-			$("#image_" + id_data).attr('src', img);
+			$("#"+  id_data).attr('src', img);
+			
+			$("#" + id_data + " img").attr('src', 'images/console/signes/percentil.png');
+			if($('#text-width_percentile').val() == 0){
+			$("#" + id_data + " img").css('width', '130px');
+			}
+			else{
+			$("#" + id_data + " img").css('width', $('#text-width_percentile').val()+'px');
+			}
+			
+			$("#" + id_data + " img").css('height', '30px');
+			
+			
+			if($('#'+id_data+' table').css('float') == 'right' || $('#'+id_data+ ' table').css('float') == 'left'){
+			$('#'+id_data+ ' img').css('margin-top', 	parseInt($('#'+id_data).css('height'))/2 - parseInt($('#'+id_data+ ' img').css('height'))/2);	
+			}
+			else{
+			$('#'+id_data+ ' img').css('margin-left',parseInt($('#'+id_data).css('width'))/2 - parseInt($('#'+id_data+ ' img').css('width'))/2);		
+			}
+			
+			
 		}
 	});
 }
@@ -1394,8 +1701,8 @@ function setPercentileBubble(id_data, values) {
 		dataType: 'json',
 		success: function (data) {
 			module_value = data['value'];
-			//max_percentile = data['max_percentile'];
-			//width_percentile = data['width_percentile'];
+			max_percentile = data['max_percentile'];
+			width_percentile = data['width_percentile'];
 			unit_text = false
 			if ((data['unit_text'] != false) || typeof(data['unit_text']) != 'boolean')
 				unit_text = data['unit_text'];
@@ -1418,6 +1725,26 @@ function setPercentileBubble(id_data, values) {
 				'&font=' + font + '&value_text=' + value_text + '&colorRGB=' + colorRGB;
 
 			$("#image_" + id_data).attr('src', img);
+			
+			$("#" + id_data + " img").attr('src', 'images/console/signes/percentil_bubble.png');
+			
+			
+			if($('#text-width_percentile').val() == 0){
+			$("#" + id_data + " img").css('width', '130px');
+			$("#" + id_data + " img").css('height', '130px');
+			}
+			else{
+			$("#" + id_data + " img").css('width', $('#text-width_percentile').val()+'px');
+			$("#" + id_data + " img").css('height', $('#text-width_percentile').val()+'px');
+			}
+			
+			if($('#'+id_data+' table').css('float') == 'right' || $('#'+id_data+ ' table').css('float') == 'left'){
+			$('#'+id_data+ ' img').css('margin-top', 	parseInt($('#'+id_data).css('height'))/2 - parseInt($('#'+id_data+ ' img').css('height'))/2);	
+			}
+			else{
+			$('#'+id_data+ ' img').css('margin-left',parseInt($('#'+id_data).css('width'))/2 - parseInt($('#'+id_data+ ' img').css('width'))/2);		
+			}
+			
 		}
 	});
 }
@@ -1486,29 +1813,59 @@ function createItem(type, values, id_data) {
 
 	switch (type) {
 		case 'box_item':
-			item = $('<div id="' + id_data + '" '
-				+ 'class="item box_item" '
-				+ 'style="text-align: center; '
-					+ 'position: absolute; '
-					+ 'display: inline-block; '
-					+ 'z-index: 1; '
-					+ 'top: ' + values['top'] + 'px; '
-					+ 'left: ' + values['left'] + 'px;">'
-					+ '<div '
-					+ 'style=" '
-					+ 'width: ' + values['width_box'] + 'px;'
-					+ 'height: ' + values['height_box'] + 'px;'
-					+ 'border-style: solid;'
-					+ 'border-width: ' + values['border_width'] + 'px;'
-					+ 'border-color: ' + values['border_color'] + ';'
-					+ 'background-color: ' + values['fill_color'] + ';'
-					+ '">'
+		
+			if(values['width_box'] == 0 || values['height_box'] == 0){
+				item = $('<div id="' + id_data + '" '
+					+ 'class="item box_item" '
+					+ 'style="text-align: left; '
+						+ 'position: absolute; '
+						+ 'display: inline-block; '
+						+ 'z-index: 1; '
+						+ 'top: ' + values['top'] + 'px; '
+						+ 'left: ' + values['left'] + 'px;">'
+						+ '<div '
+						+ 'style=" '
+						+ 'width: 300px;'
+						+ 'height: 180px;'
+						+ 'border-style: solid;'
+						+ 'border-width: ' + values['border_width'] + 'px;'
+						+ 'border-color: ' + values['border_color'] + ';'
+						+ 'background-color: ' + values['fill_color'] + ';'
+						+ '">'
+						+ '</div>'
 					+ '</div>'
-				+ '</div>'
-				+ '<input id="hidden-status_' + id_data + '" '
-					+ 'type="hidden" value="0" '
-					+ 'name="status_' + id_data + '">'
-			);
+					+ '<input id="hidden-status_' + id_data + '" '
+						+ 'type="hidden" value="0" '
+						+ 'name="status_' + id_data + '">'
+				);
+			}
+			else{
+				item = $('<div id="' + id_data + '" '
+					+ 'class="item box_item" '
+					+ 'style="text-align: left; '
+						+ 'position: absolute; '
+						+ 'display: inline-block; '
+						+ 'z-index: 1; '
+						+ 'top: ' + values['top'] + 'px; '
+						+ 'left: ' + values['left'] + 'px;">'
+						+ '<div '
+						+ 'style=" '
+						+ 'width: ' + values['width_box'] + 'px;'
+						+ 'height: ' + values['height_box'] + 'px;'
+						+ 'border-style: solid;'
+						+ 'border-width: ' + values['border_width'] + 'px;'
+						+ 'border-color: ' + values['border_color'] + ';'
+						+ 'background-color: ' + values['fill_color'] + ';'
+						+ '">'
+						+ '</div>'
+					+ '</div>'
+					+ '<input id="hidden-status_' + id_data + '" '
+						+ 'type="hidden" value="0" '
+						+ 'name="status_' + id_data + '">'
+				);
+			}
+		
+			
 			break;
 		case 'group_item':
 		case 'static_graph':
@@ -1526,47 +1883,107 @@ function createItem(type, values, id_data) {
 			item = $('<div></div>')
 				.attr('id', id_data)
 				.attr('class', 'item ' + class_type)
-				.css('text-align', 'center')
+				.css('text-align', 'left')
 				.css('position', 'absolute')
 				.css('display', 'inline-block')
 				.css('top', values['top'] + 'px')
 				.css('left', values['left'] + 'px');
-			if ((values['width'] == 0) && (values['height'] == 0)) {
-				// Do none
+				
+				
+				
+			if(values['label_position'] == 'left'){
+			
+				var $image = $('<img></img>')
+					.attr('id', 'image_' + id_data)
+					.attr('class', 'image')
+					.attr('src', img_src)
+					.attr('style','float:right;');
+			
 			}
-			else {
-				item.css('width', values['width']  + 'px')
-					.css('height', values['height'] + 'px');
+			else if(values['label_position'] == 'right'){
+			
+				var $image = $('<img></img>')
+					.attr('id', 'image_' + id_data)
+					.attr('class', 'image')
+					.attr('src', img_src)
+					.attr('style','float:left;');
+			
 			}
-
-			var $image = $('<img></img>')
-				.attr('id', 'image_' + id_data)
-				.attr('class', 'image')
-				.attr('src', img_src);
-			if ((values['width'] == 0) && (values['height'] == 0)) {
+			else{
+				
+				var $image = $('<img></img>')
+					.attr('id', 'image_' + id_data)
+					.attr('class', 'image')
+					.attr('src', img_src);
+				
+			}
+				
+			if ((values['width'] == 0) || (values['height'] == 0)) {
 				// Do none
+				$image.attr('width', '70')
+					.attr('height', '70');
 			}
 			else {
 				$image.attr('width', values['width'])
 					.attr('height', values['height']);
 			}
-
+/*
 			var $span = $('<span></span>')
 				.attr('id', 'text_' + id_data)
 				.attr('class', 'text')
 				.append(values['label']);
-
+			
+*/
 			var $input = $('<input></input>')
 				.attr('id', 'hidden-status_' + id_data)
 				.attr('type', 'hidden')
 				.attr('value', -1)
 				.attr('name', 'status_' + id_data);
 
+		if(values['label_position'] == 'up'){
 			item
+				.append('<table><tr><td></td></tr><tr><td><span id="text_'+id_data+'" class="text">'+values['label']+'</span></td></tr><tr><td></td></tr></table>')
 				.append($image)
 				.append($image)
-				.append($span)
 				.append($input);
+				
+			}
+			else if(values['label_position'] == 'down'){
+				item
+					.append($image)
+					.append($image)
+					.append('<table><tr><td></td></tr><tr><td><span id="text_'+id_data+'" class="text">'+values['label']+'</span></td></tr><tr><td></td></tr></table>')
+					.append($input);				
+			}
+			else if(values['label_position'] == 'left'){
+				
+				if(values['height'] == 0){
+					item
+						.append('<table style="float:left;height:70px"><tr><td></td></tr><tr><td><span id="text_'+id_data+'" class="text">'+values['label']+'</span></td></tr><tr><td></td></tr></table>');
+				}
+				else{
+					item
+						.append('<table style="float:left;height:'+values['height']+'px"><tr><td></td></tr><tr><td><span id="text_'+id_data+'" class="text">'+values['label']+'</span></td></tr><tr><td></td></tr></table>')
+				}
+					item
+					.append($image)
+					.append($image)
+					.append($input);				
+			}
+			else if(values['label_position'] == 'right'){
+				if(values['height'] == 0){
+					item
+						.append('<table style="float:right;height:70px"><tr><td></td></tr><tr><td><span id="text_'+id_data+'" class="text">'+values['label']+'</span></td></tr><tr><td></td></tr></table>');
+				}
+				else{
+					item
+						.append('<table style="float:right;height:'+values['height']+'px"><tr><td></td></tr><tr><td><span id="text_'+id_data+'" class="text">'+values['label']+'</span></td></tr><tr><td></td></tr></table>')
+				}
+					item
+					.append($image)
+					.append($image)
+					.append($input);				
+			}
 
 			set_static_graph_status(id_data, values['image']);
 
@@ -1577,21 +1994,72 @@ function createItem(type, values, id_data) {
 			var imageSize = '';
 
 			if (values['type_percentile'] == 'percentile') {
-				item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: center; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
-						'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span><br />' +
-						'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" />' +
-						'</div>'
-				);
-
+				
+				if(values['label_position'] == 'up'){
+					item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+							'<table><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+							'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" />' +
+							'</div>'
+					);
+				}
+				else if(values['label_position'] == 'down'){
+					item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+							'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" />' + 					
+							'<table><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+							'</div>'
+					);
+					
+				}
+				else if(values['label_position'] == 'right'){
+					item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+							'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" style="float:left;" />' + 					
+							'<table style="float:left;height:'+values['height']+'px"><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+							'</div>'
+					);
+					
+				}
+				else if(values['label_position'] == 'left'){
+					item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+							'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" style="float:right;"/>' + 					
+							'<table style="float:left;height:'+values['height']+'px"><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+							'</div>'
+					);
+					
+				}
+				
 				setPercentileBar(id_data, values);
 			}
 			else {
-				item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: center; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
-						'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span><br />' +
-						'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" />' +
-						'</div>'
-				);
-
+				
+				
+				if(values['label_position'] == 'up'){
+					item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+							'<table><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+							'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" />' +
+							'</div>'
+					);
+				}
+				else if(values['label_position'] == 'down'){
+					item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+							'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" />' + 					
+							'<table><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+							'</div>'
+					);
+				}
+				else if(values['label_position'] == 'left'){
+					item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+							'<img style="float:right;" class="image" id="image_' + id_data + '" src="images/spinner.gif" />' + 					
+							'<table style="float:left;height:'+values['height']+'px;"><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+							'</div>'
+					);
+				}
+				else if(values['label_position'] == 'right'){
+					item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+							'<img style="float:left;" class="image" id="image_' + id_data + '" src="images/spinner.gif" />' + 					
+							'<table style="float:right;height:'+values['height']+'px;"><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+							'</div>'
+					);
+				}
 				setPercentileBubble(id_data, values);
 			}
 			break;
@@ -1599,17 +2067,42 @@ function createItem(type, values, id_data) {
 			sizeStyle = '';
 			imageSize = '';
 
-			item = $('<div id="' + id_data + '" class="item module_graph" style="text-align: center; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
-					'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span><br />' +
-					'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" style="border:1px solid #808080;" />' +
-				'</div>'
-			);
+			if(values['label_position'] == 'up'){
+				item = $('<div id="' + id_data + '" class="item module_graph" style="text-align: left; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+						'<table><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+						'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" />' +
+					'</div>'
+				);				
+			}
+			else if(values['label_position'] == 'down'){
+				item = $('<div id="' + id_data + '" class="item module_graph" style="text-align: left; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+						'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" />' +
+						'<table><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+					'</div>'
+				);				
+			}
+			else if(values['label_position'] == 'left'){
+				item = $('<div id="' + id_data + '" class="item module_graph" style="text-align: left; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+						'<img style="float:right" class="image" id="image_' + id_data + '" src="images/spinner.gif" />' +
+						'<table style="float:left;height:'+values['height_module_graph']+'px;"><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+					'</div>'
+				);				
+			}
+			else if(values['label_position'] == 'right'){
+				item = $('<div id="' + id_data + '" class="item module_graph" style="text-align: left; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+						'<img style="float:left" class="image" id="image_' + id_data + '" src="images/spinner.gif" />' +
+						'<table style="float:right;height:'+values['height_module_graph']+'px;"><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+					'</div>'
+				);				
+			}
+
+			
 			setModuleGraph(id_data);
 			break;
 		case 'simple_value':
 			sizeStyle = '';
 			imageSize = '';
-			item = $('<div id="' + id_data + '" class="item simple_value" style="text-align: center; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+			item = $('<div id="' + id_data + '" class="item simple_value" style="position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
 					'<span id="text_' + id_data + '" class="text"> ' + values['label'] + '</span> ' + '</div>'
 			);
 			setModuleValue(id_data,values.process_simple_value,values.period);
@@ -1626,16 +2119,16 @@ function createItem(type, values, id_data) {
 				);
 			break;
 		case 'icon':
-			if ((values['width'] == 0) && (values['height'] == 0)) {
-				sizeStyle = '';
-				imageSize = '';
+			if ((values['width'] == 0) || (values['height'] == 0)) {
+				sizeStyle = 'width: ' + '70'  + 'px; height: ' + '70' + 'px;';
+				imageSize = 'width="' + '70'  + '" height="' + '70' + '"';
 			}
 			else {
 				sizeStyle = 'width: ' + values['width']  + 'px; height: ' + values['height'] + 'px;';
 				imageSize = 'width="' + values['width']  + '" height="' + values['height'] + '"';
 			}
 
-			item = $('<div id="' + id_data + '" class="item icon" style="text-align: center; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+			item = $('<div id="' + id_data + '" class="item icon" style="text-align: left; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
 				'<img id="image_' + id_data + '" class="image" src="images/spinner.gif" ' + imageSize + ' /><br />' +
 				'</div>'
 			);
@@ -1650,6 +2143,7 @@ function createItem(type, values, id_data) {
 				if (temp_item != false) {
 					item = temp_item;
 				}
+					$('#'+id_data).css({'width':'','height':''});
 			}
 			break;
 	}
@@ -1670,6 +2164,15 @@ function createItem(type, values, id_data) {
 
 		refresh_lines(lines, 'background', true);
 	}
+	
+	
+	if(values['label_position'] == 'right'){
+	$('#text_'+id_data).css({'display':'block','float':'right'});
+	}
+	else if(values['label_position'] == 'left'){
+		$('#text_'+id_data).css({'display':'block','float':'left'});
+	}
+	
 }
 
 function addItemSelectParents(id_data, text) {
@@ -1736,7 +2239,7 @@ function insertDB(type, values) {
 						// Draw handler start
 						item = $('<div id="handler_start_' + id + '" ' +
 							'class="item handler_start" ' +
-							'style="text-align: center; ' +
+							'style="text-align: left; ' +
 								'z-index: 1;' +
 								'position: absolute; ' +
 								'top: ' + (values['line_start_y']  - radious_handle) + 'px; ' +
@@ -1751,7 +2254,7 @@ function insertDB(type, values) {
 						// Draw handler stop
 						item = $('<div id="handler_end_' + id + '" ' +
 							'class="item handler_end" ' +
-							'style="text-align: center; ' +
+							'style="text-align: left; ' +
 								'z-index: 1;' +
 								'position: absolute; ' +
 								'top: ' + (values['line_end_y']  - radious_handle) + 'px; ' +
@@ -1778,7 +2281,6 @@ function insertDB(type, values) {
 
 function updateDB_visual(type, idElement , values, event, top, left) {
 	metaconsole = $("input[name='metaconsole']").val();
-
 
 	radious_handle = 6;
 
@@ -1880,8 +2382,6 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 
 function updateDB(type, idElement , values, event) {
 	metaconsole = $("input[name='metaconsole']").val();
-
-
 
 	var top = 0;
 	var left = 0;
@@ -1999,7 +2499,6 @@ function updateDB(type, idElement , values, event) {
 			values['left'] = left;
 		}
 	}
-
 
 	success_update = false;
 	if (!autosave) {
@@ -2159,7 +2658,6 @@ function eventsItems(drag) {
 		drag = false;
 	}
 
-
 	$('.item').unbind('click');
 	$('.item').unbind('dragstop');
 	$('.item').unbind('dragstart');
@@ -2167,7 +2665,6 @@ function eventsItems(drag) {
 	//$(".item").resizable(); //Disable but run in ff and in the waste (aka micro$oft IE) show ungly borders
 
 	$('.item').bind('click', function(event, ui) {
-
 		event.stopPropagation();
 		if (!is_opened_palette) {
 			var divParent = $(event.target);
@@ -2175,8 +2672,11 @@ function eventsItems(drag) {
 				divParent = $(divParent).parent();
 			}
 			unselectAll();
-			$(divParent).css('border', '2px blue dotted');
-
+			$(divParent).attr('withborder','true');
+			$(divParent).css('border', '1px blue dotted');
+			//$(divParent).css('left', '-=1px');
+			//$(divParent).css('top', '-=1px');
+			
 			if ($(divParent).hasClass('box_item')) {
 				creationItem = null;
 				selectedItem = 'box_item';
@@ -2293,7 +2793,7 @@ function eventsItems(drag) {
 		event.stopPropagation();
 		if (!is_opened_palette) {
 			unselectAll();
-			$(event.target).css('border', '2px blue dotted');
+			$(event.target).css('border', '1px blue dotted');
 
 			selectedItem = null;
 			if ($(event.target).hasClass('box_item')) {
@@ -2500,7 +3000,7 @@ function eventsBackground() {
 		event.stopPropagation();
 		if (!is_opened_palette) {
 			unselectAll();
-			$("#background").css('border', '2px blue dotted');
+			$("#background").css('border', '1px blue dotted');
 			activeToolboxButton('copy_item', false);
 			activeToolboxButton('edit_item', true);
 			activeToolboxButton('delete_item', false);
@@ -2547,11 +3047,22 @@ function move_elements_resize(original_width, original_height, width, height) {
 }
 
 function unselectAll() {
-	$("#background").css('border', '2px black solid');
-	$(".item").css('border', '');
+	$("#background").css('border', '1px lightgray solid');
+	
+    $(".item").each(function(){
+        $(this).css('border', '');
+				if($(this).attr('withborder') == 'true'){
+					//$(this).css('top', '+=1');
+					//$(this).css('left', '+=1');
+					$(this).attr('withborder', 'false');
+				}
+				
+    });
+	
 }
 
 function click_button_toolbox(id) {
+	unselectAll();
 	switch (id) {
 		case 'static_graph':
 			toolbuttonActive = creationItem = 'static_graph';
@@ -2569,6 +3080,7 @@ function click_button_toolbox(id) {
 		case 'simple_value':
 			toolbuttonActive = creationItem = 'simple_value';
 			toggle_item_palette();
+			$("#period_row." + id).css('display', 'none');
 			break;
 		case 'label':
 			toolbuttonActive = creationItem = 'label';
@@ -2590,9 +3102,6 @@ function click_button_toolbox(id) {
 			toolbuttonActive = creationItem = 'line_item';
 			toggle_item_palette();
 			break;
-
-
-
 		case 'copy_item':
 			click_copy_item_callback();
 			break;
@@ -2759,6 +3268,7 @@ function showPreviewStaticGraph(staticGraph) {
 
 				jQuery.each(data, function(i, line) {
 					$("#preview").append(line);
+					$('#preview > img').css({'max-width':'70px','max-height':'70px'});
 				});
 			}
 		});
@@ -2800,6 +3310,7 @@ function showPreviewIcon(icon) {
 				$("#preview")
 					.empty()
 					.append(data);
+				$('#preview > img').css({'max-width':'70px','max-height':'70px'});
 			}
 		});
 	}
@@ -2816,8 +3327,9 @@ function showGrid() {
 	if (is_metaconsole()) {
 		url_hack_metaconsole = '../../';
 	}
-
+	
 	var display = $("#background_grid").css('display');
+	
 	if (display == 'none') {
 		$("#background_grid").css('display', '');
 		$("#background_img").css('opacity', '0.55');
@@ -2843,7 +3355,7 @@ function showGrid() {
 
 			values['absolute_left'] = pos_x;
 			values['absolute_top'] = pos_y;
-
+			
 			updateDB(classItem, idItem, values, 'show_grid');
 		});
 

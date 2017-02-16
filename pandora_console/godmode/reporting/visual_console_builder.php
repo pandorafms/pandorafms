@@ -103,6 +103,9 @@ switch ($activeTab) {
 			case 'new':
 				$idGroup = '';
 				$background = '';
+				$background_color = '';
+				$width = '';
+				$height = '';
 				$visualConsoleName = '';
 				break;
 			
@@ -110,6 +113,9 @@ switch ($activeTab) {
 			case 'save':
 				$idGroup = (int) get_parameter('id_group');
 				$background = (string) get_parameter('background');
+				$background_color = (string) get_parameter('background_color');
+				$width = (int) get_parameter('width');
+				$height = (int) get_parameter('height');
 				$visualConsoleName = (string) get_parameter('name');
 				
 				// ACL for the new visual console
@@ -128,7 +134,10 @@ switch ($activeTab) {
 				$values = array(
 						'name' => $visualConsoleName,
 						'id_group' => $idGroup, 
-						'background' => $background
+						'background' => $background,
+						'background_color' => $background_color,
+						'width' => $width,
+						'height' => $height
 				);
 				
 				$error = $_FILES['background_image']['error'];
@@ -196,12 +205,13 @@ switch ($activeTab) {
 					
 				// If the background is changed the size is reseted
 				$background_now = $visualConsole['background'];
-				if ($background_now != $background && $background) {
+				/*if ($background_now != $background && $background) {
 					$sizeBackground = getimagesize($config['homedir'] . '/images/console/background/' . $background);
 					$values['width'] = $sizeBackground[0];
 					$values['height'] = $sizeBackground[1];
-				}
-				
+				}*/
+				$values['width'] = $width;
+				$values['height'] = $height;
 				switch ($action) {
 					case 'update':
 						$result = false;
@@ -261,6 +271,9 @@ switch ($activeTab) {
 				$visualConsoleName = $visualConsole['name'];
 				$idGroup = $visualConsole['id_group'];
 				$background = $visualConsole['background'];
+				$background_color = $visualConsole['background_color'];
+				$width = $visualConsole['width'];
+				$height = $visualConsole['height'];
 				break;
 		}
 		break;
@@ -295,6 +308,7 @@ switch ($activeTab) {
 				//Update background
 				
 				$background = get_parameter('background');
+				$background_color = get_parameter('background_color');
 				$width = get_parameter('width');
 				$height = get_parameter('height');
 				
@@ -307,6 +321,7 @@ switch ($activeTab) {
 				
 				db_process_sql_update('tlayout',
 					array('background' => $background,
+					'background_color' => $background_color,
 						'width' => $width,
 						'height' => $height),
 					array('id' => $idVisualConsole));
@@ -379,11 +394,16 @@ switch ($activeTab) {
 	case 'wizard':
 		$visualConsoleName = $visualConsole['name'];
 		$background = $visualConsole['background'];
+		
+		$fonts = get_parameter ('fonts');
+		$fontf = get_parameter ('fontf');
+		
+		
 		switch ($action) {
 			case 'update':
 				$id_agents = get_parameter ('id_agents', array ());
 				$name_modules = get_parameter ('module', array ());
-				
+							
 				$type = (int)get_parameter('type', STATIC_GRAPH);
 				$image = get_parameter ('image');
 				$range = (int) get_parameter ("range", 50);
@@ -450,7 +470,7 @@ switch ($activeTab) {
 						$enable_link,
 						$id_server,
 						$kind_relationship,
-						$item_in_the_map);
+						$item_in_the_map,$fontf,$fonts);
 						
 					$statusProcessInDB = array('flag' => true,
 						'message' => $message);
@@ -517,7 +537,7 @@ switch ($activeTab) {
 								$enable_link,
 								$id_server,
 								$kind_relationship,
-								$item_in_the_map);
+								$item_in_the_map,$fontf,$fonts);
 							
 							
 						}
@@ -575,7 +595,7 @@ switch ($activeTab) {
 								$enable_link,
 								$id_server,
 								$kind_relationship,
-								$item_in_the_map);
+								$item_in_the_map,$fontf,$fonts);
 						}
 						
 						

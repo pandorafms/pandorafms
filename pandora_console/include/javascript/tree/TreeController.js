@@ -393,19 +393,41 @@ var TreeController = {
 							if (typeof element.showGraphs != 'undefined' && element.showGraphs != 0) {
 								// Graph pop-up
 								if (typeof element.moduleGraph != 'undefined') {
+									
+									if(element.statusImageHTML.indexOf('data:image')!=-1){
 									var $graphImage = $('<img src="'+(controller.baseURL.length > 0 ? controller.baseURL : '')
-											+'images/chart_curve.png" /> ');
+											+'images/photo.png" /> ');
+									}
+									else{
+									
+									var $graphImage = $('<img src="'+(controller.baseURL.length > 0 ? controller.baseURL : '')
+											+'images/chart_curve.png" /> ');	
+									}
+									
 									$graphImage
 										.addClass('module-graph')
 										.click(function (e) {
 											e.preventDefault();
-
+	if(element.statusImageHTML.indexOf('data:image')!=-1){
 											try {
-												winopeng(element.moduleGraph.url, element.moduleGraph.handle);
+												winopeng('operation/agentes/snapshot_view.php?id='+element.id+'&refr=&label='+element.name);
 											}
 											catch (error) {
 												// console.log(error);
 											}
+										}
+										else{
+											
+											try {
+												
+													winopeng(element.moduleGraph.url, element.moduleGraph.handle);
+											}
+											catch (error) {
+												// console.log(error);
+											}
+											
+											
+										}
 										});
 
 									$content.append($graphImage);

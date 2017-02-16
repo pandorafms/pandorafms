@@ -75,6 +75,7 @@ if ($add_graph) {
 	$stacked = get_parameter ("stacked", 0);
 	$period = get_parameter_post ("period");
 	$threshold = get_parameter('threshold');
+	$percentil = get_parameter ("percentil", 0);
 
 	if ($threshold == CUSTOM_GRAPH_BULLET_CHART_THRESHOLD){
 		$stacked = $threshold;
@@ -90,7 +91,9 @@ if ($add_graph) {
 		'height' => $height,
 		'private' => 0,
 		'id_group' => $idGroup,
-		'stacked' => $stacked);
+		'stacked' => $stacked,
+		'percentil' => $percentil
+		);
 	
 	if (trim($name) != "") {
 		$id_graph = db_process_sql_insert('tgraph', $values);
@@ -116,6 +119,7 @@ if ($update_graph) {
 	$height = get_parameter('height');
 	$period = get_parameter('period');
 	$stacked = get_parameter('stacked');
+	$percentil = get_parameter('percentil');
 	$alerts = get_parameter('alerts');
 	$threshold = get_parameter('threshold');
 
@@ -126,7 +130,7 @@ if ($update_graph) {
 	if (trim($name) != "") {
 		
 		$success = db_process_sql_update('tgraph', 
-			array('name' => $name, 'id_group' => $id_group, 'description' => $description, 'width' => $width, 'height' => $height, 'period' => $period, 'stacked' => $stacked), 
+			array('name' => $name, 'id_group' => $id_group, 'description' => $description, 'width' => $width, 'height' => $height, 'period' => $period, 'stacked' => $stacked, 'percentil' => $percentil ),
 			array('id_graph' => $id_graph));
 		if ($success !== false)
 			db_pandora_audit("Report management", "Update graph #$id_graph");

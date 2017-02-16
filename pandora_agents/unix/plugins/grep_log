@@ -19,9 +19,9 @@
 # GNU General Public License for more details.	
 #
 ###############################################################################
-
 use strict;
 use File::Basename;
+use Scalar::Util qw(looks_like_number);
 
 # Output format (module or log_module).
 my $Output = 'module';
@@ -30,7 +30,7 @@ my $Output = 'module';
 my $Verbose = 0;
 
 # Index file storage directory, with a trailing '/'
-my $Idx_dir='/tmp/';
+my $Idx_dir=($^O =~ /win/i)?'C:\\':'/tmp/';
 
 # Log file
 my $Log_file = '';
@@ -58,6 +58,44 @@ my $summary_flag = 0;
 
 # Number of coincidences found
 my $coincidences = 0;
+
+########################################################################################
+# Erase blank spaces before and after the string 
+########################################################################################
+sub trim($){
+	my $string = shift;
+	if (empty ($string)){
+		return "";
+	}
+
+	$string =~ s/\r//g;
+
+	chomp ($string);
+	$string =~ s/^\s+//g;
+	$string =~ s/\s+$//g;
+
+	return $string;
+}
+
+########################################################################################
+# Empty
+########################################################################################
+sub empty($){
+	my $str = shift;
+
+	if (! (defined ($str)) ){
+		return 1;
+	}
+
+	if(looks_like_number($str)){
+		return 0;
+	}
+
+	if ($str =~ /^\ *[\n\r]{0,2}\ *$/) {
+		return 1;
+	}
+	return 0;
+}
 
 ###############################################################################
 # SUB error_msg
@@ -188,7 +226,10 @@ sub parse_log (;$$) {
 	seek(LOGFILE, $Idx_pos, 0);
 
 	# Parse log file
-	my @data;
+	my %data;
+
+	# Matched line id
+	my $matched_line = 0;
 
 	if ( (defined($up_lines)) || (defined($bot_lines)) ){
 		# Detailed workmode
@@ -210,8 +251,9 @@ sub parse_log (;$$) {
 				$flag = 1;
 				# Push upper lines
 				for (my $i = ($curr_line-$up_lines); $i<=$curr_line; $i++){
+					if ($i < 0) {next;}
 					if (defined ($lines[$i])) {
-						push (@data, $lines[$i]);
+						push (@{$data{$matched_line}}, $lines[$i]);
 					}
 
 				}
@@ -220,16 +262,17 @@ sub parse_log (;$$) {
 				# Push bottom lines
 				for (my $i = ($curr_line+$flag); $i<=($curr_line+$bot_lines); $i++){
 					if (defined ($lines[$i])) {
-						push (@data, $lines[$i]);
+						push (@{$data{$matched_line}}, $lines[$i]);
 					}
 				}
 			}
+			$matched_line++;
 		}
 	}
 	else { # Standar workmode
 		while ($line = <LOGFILE>) {
 			if ($line =~ m/$Reg_exp/i) {
-				push @data, $line;
+				push (@{$data{$matched_line++}}, $line);
 			}
 		}
 	}
@@ -240,7 +283,7 @@ sub parse_log (;$$) {
 	# Save the index file
 	save_idx();
 
-	return @data;
+	return \%data;
 }
 
 ###############################################################################
@@ -262,11 +305,12 @@ sub print_summary() {
 # SUB parse_log
 # Print log data to stdout.
 ###############################################################################
-sub print_log (@) {
-	my @data = @_;
+sub print_log ($) {
+	my $data = shift;
 
 	# No data
-	if ($#data < 0) {
+	my @kdata = keys (%{$data});
+	if ($#kdata < 0) {
 		print_summary() if ($summary_flag == 1);
 		return;
 	}
@@ -276,8 +320,8 @@ sub print_log (@) {
 		my $output = "<log_module>\n";
 		$output .= "<source><![CDATA[" . $Module_name . "]]></source>\n";
 		$output .= "<data><![CDATA[";
-		foreach my $line (@data) {
-			$output .= $line;
+		foreach my $line (@kdata) {
+			$output .= $data->{$line};
 		}
 		$output .= "]]></data>";
 		$output .= "</log_module>\n";
@@ -292,8 +336,12 @@ sub print_log (@) {
 		$output .= "<name><![CDATA[" . $Module_name . "]]></name>\n";
 		$output .= "<type><![CDATA[async_string]]></type>\n";
 		$output .= "<datalist>\n";
-		foreach my $line (@data) {
-			$output .= "<data><value><![CDATA[$line]]></value></data>\n";
+		foreach my $line (@kdata) {
+			$output .= "<data><value><![CDATA[";
+			foreach my $content (@{$data->{$line}}) {
+				$output .= $content;
+			}
+			$output .= "]]></value></data>\n";
 		}
 		$output .= "</datalist>\n";
 		$output .= "</module>\n";
@@ -314,12 +362,12 @@ if ($#ARGV < 2) {
 	exit 1;
 }
 
-$Log_file = $ARGV[0];
-$Module_name = $ARGV[1];
-$Reg_exp = $ARGV[2];
-my $up_lines  = $ARGV[3];
-my $bot_lines = $ARGV[4];
-my $sum_flag  = $ARGV[5];
+$Log_file     = trim($ARGV[0]);
+$Module_name  = trim($ARGV[1]);
+$Reg_exp      = trim($ARGV[2]);
+my $up_lines  = trim($ARGV[3]);
+my $bot_lines = trim($ARGV[4]);
+my $sum_flag  = trim($ARGV[5]);
 
 if (   ( defined($up_lines)  && ($up_lines  eq "--summary"))
     || ( defined($bot_lines) && ($bot_lines eq "--summary"))
@@ -348,9 +396,9 @@ if (! -e $Idx_file) {
 load_idx();
 
 # Parse log file
-my @data = parse_log($up_lines,$bot_lines);
+my $data = parse_log($up_lines,$bot_lines);
 
 # Print output to stdout
-print_log (@data);
+print_log ($data);
 
 exit 0;

@@ -56,6 +56,9 @@ function rrmdir($dir) {
 		reset($objects);
 		rmdir($dir);
 	}
+	else {
+		unlink ($dir);
+	}
 }
 
 function update_manager_install_package_step2() {
@@ -290,7 +293,7 @@ function update_manager_check_online_free_packages ($is_ajax=true) {
 	
 	//For to test in the shell
 	/*
-	wget https://artica.es/pandoraupdate6/server.php -O- --no-check-certificate --post-data "action=newest_package&license=PANDORA_FREE&limit_count=1&current_package=1&version=v5.1RC1&build=PC140625"
+	wget https://artica.es/pandoraupdate7/server.php -O- --no-check-certificate --post-data "action=newest_package&license=PANDORA_FREE&limit_count=1&current_package=1&version=v5.1RC1&build=PC140625"
 	*/
 	
 	$curlObj = curl_init();
@@ -605,15 +608,43 @@ function update_manager_starting_update() {
 	$path_package = $config['attachment_store'] .
 		"/downloads/last_package.tgz";
 	
-	$full_path = $config['attachment_store'] . "/downloads/pandora_console";
-	rrmdir($full_path);
-	
-	
+	$full_path = $config['attachment_store'] . "/downloads/unix";
+
 	ob_start();
-	$result = system("tar xvzf " . $path_package .
-		" -C " . $config['attachment_store'] . "/downloads/", $none);
+
+	if (!defined('PHP_VERSION_ID')) {
+		$version = explode('.', PHP_VERSION);
+		define('PHP_VERSION_ID', ($version[0] * 10000 + $version[1] * 100 + $version[2]));
+	}
+
+	$extracted = false;
+	// Phar and exception working fine in 5.5.0 or higher
+	if (PHP_VERSION_ID >= 50505) {
+		$phar = new PharData($path_package);
+		try {
+			$result = $phar->extractTo($config['attachment_store'] . "/downloads/",null, true);
+			$extracted = true;
+		}
+		catch (Exception $e) {
+			echo ' There\'s a problem ... -> ' . $e->getMessage();
+			$extracted = false;
+		}
+	}
+
+	if($extracted === false) {
+		if (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
+			// unsupported OS
+			echo "This OS [" . PHP_OS . "] does not support direct extraction of tgz files. Upgrade PHP version to be > 5.5.0";
+		}
+		else {
+			system('tar xzf "' . $path_package . '" -C ' . $config['attachment_store'] . "/downloads/");
+		}
+	}
+
 	ob_end_clean();
-	
+
+	rrmdir($path_package);
+
 	if ($result != 0) {
 		db_process_sql_update('tconfig',
 			array('value' => json_encode(
@@ -640,7 +671,9 @@ function update_manager_starting_update() {
 		$full_path,
 		$homedir,
 		array('install.php'));
-	
+
+	rrmdir($full_path);
+
 	if (!$result) {
 		db_process_sql_update('tconfig',
 			array('value' => json_encode(
@@ -796,7 +829,7 @@ function update_manger_get_single_message ($message_id) {
 	
 	$sql = 'SELECT data, svn_version, db_field_value FROM tupdate ';
 	$sql .= 'WHERE svn_version=' . $message_id;
-	html_debug ("S: " . $sql, true);
+	
 	$message = db_get_row_sql($sql);
 	return $message;
 }

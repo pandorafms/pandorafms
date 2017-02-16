@@ -242,6 +242,15 @@ if(!$new_agent){
 $groups = users_get_groups ($config["id_user"], "AR",false);
 $agents = agents_get_group_agents (array_keys ($groups));
 
+
+$modules = db_get_all_rows_sql("SELECT id_agente_modulo as id_module, nombre as name FROM tagente_modulo 
+								WHERE id_agente = " . $id_parent);
+$modules_values = array();
+$modules_values[0] = __('Any');
+foreach ($modules as $m) {
+	$modules_values[$m['id_module']] = $m['name'];
+}
+
 $table->data[3][0] = __('Parent');
 $params = array();
 $params['return'] = true;
@@ -254,6 +263,8 @@ $params['value'] = db_get_value ("alias","tagente","id_agente",$id_parent);
 $table->data[3][1] = ui_print_agent_autocomplete_input($params);
 
 $table->data[3][1] .= html_print_checkbox ("cascade_protection", 1, $cascade_protection, true).__('Cascade protection'). "&nbsp;" . ui_print_help_icon("cascade_protection", true);
+
+$table->data[3][1] .= "&nbsp;&nbsp;" .  __('Module') . "&nbsp;" . html_print_select ($modules_values, "cascade_protection_module", $cascade_protection_module, "", "", 0, true);
 
 $table->data[4][0] = __('Group');
 $table->data[4][1] = html_print_select_groups(false, "AR", false, 'grupo', $grupo, '', '', 0, true);
@@ -540,6 +551,57 @@ ui_require_jquery_file('bgiframe');
 	
 	$(document).ready (function() {
 		$("select#id_os").pandoraSelectOS ();
+
+		var checked = $("#checkbox-cascade_protection").is(":checked");
+		if (checked) {
+			$("#cascade_protection_module").removeAttr("disabled");
+		}
+		else {
+			$("#cascade_protection_module").attr("disabled", 'disabled');
+		}
+
+		$("#checkbox-cascade_protection").change(function () {
+			var checked = $("#checkbox-cascade_protection").is(":checked");
+	
+			if (checked) {
+				$("#cascade_protection_module").removeAttr("disabled");
+			}
+			else {
+				$("#cascade_protection_module").val(0);
+				$("#cascade_protection_module").attr("disabled", 'disabled');
+			}
+		});
+
+		$("#text-id_parent").on("autocompletechange", function () {
+			agent_name = $("#text-id_parent").val();
+			
+			var params = {};
+			params["get_agent_modules_json_by_name"] = 1;
+			params["agent_name"] = agent_name;
+			params["page"] = "include/ajax/module";
+			
+			jQuery.ajax ({
+				data: params,
+				dataType: "json",
+				type: "POST",
+				url: "ajax.php",
+				success: function (data) {
+					$('#cascade_protection_module').empty();
+					$('#cascade_protection_module')
+							.append ($('<option></option>')
+							.html("Any")
+							.prop("value", 0)
+							.prop("selected", 'selected'));
+					jQuery.each (data, function (i, val) {
+						$('#cascade_protection_module')
+							.append ($('<option></option>')
+							.html(val['name'])
+							.prop("value", val['id_module'])
+							.prop("selected", 'selected'));
+					});
+				}
+			});
+		});
 		
 		paint_qrcode(
 			"<?php

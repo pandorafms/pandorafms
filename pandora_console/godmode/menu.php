@@ -122,11 +122,10 @@ if (check_acl ($config['id_user'], 0, "AW")) {
 	$sub2["godmode/massive/massive_operations&amp;tab=massive_alerts"]["text"] = __('Alerts operations');
 	enterprise_hook('massivepolicies_submenu');
 	enterprise_hook('massivesnmp_submenu');
+	enterprise_hook('massivesatellite_submenu');
 
 	$sub["gmassive"]["sub2"] = $sub2;
 }
-
-enterprise_hook('massivesatellite_submenu');
 
 if (!empty($sub)) {
 	$menu_godmode["gmodules"]["text"] = __('Configuration');
@@ -430,8 +429,10 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	$menu_godmode["messages"]["id"] = "god-um_messages";
 
 	$sub = array ();
-	$sub["godmode/update_manager/update_manager&tab=offline"]["text"] = __('Update Manager offline');
-	$sub["godmode/update_manager/update_manager&tab=offline"]["id"] = 'Offline';
+	if ($config['enterprise_installed']) {
+		$sub["godmode/update_manager/update_manager&tab=offline"]["text"] = __('Update Manager offline');
+		$sub["godmode/update_manager/update_manager&tab=offline"]["id"] = 'Offline';
+	}
 	$sub["godmode/update_manager/update_manager&tab=online"]["text"] = __('Update Manager online');
 	$sub["godmode/update_manager/update_manager&tab=online"]["id"] = 'Online';
 	$sub["godmode/update_manager/update_manager&tab=setup"]["text"] = __('Update Manager options');

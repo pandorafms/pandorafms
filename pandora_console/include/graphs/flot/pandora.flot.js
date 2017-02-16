@@ -39,7 +39,7 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 			},
 			background: {
 				opacity: 0.5,
-				color: '#000'
+				color: ''
 			}
 		};
 	}
@@ -103,7 +103,7 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 
 		index = obj.seriesIndex;
 		legends.css('color', '#3F3F3D');
-		legends.eq(index).css('color', '#000000');
+		legends.eq(index).css('color', '');
 	}
 
 	// Reset styles
@@ -153,7 +153,7 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 		},
 		background: {
 			opacity: 0.5,
-			color: '#000'
+			color: ''
 		}
 	};
 	
@@ -225,7 +225,7 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 		
 		index = obj.seriesIndex;
 		legends.css('color', '#3F3F3D');
-		legends.eq(index).css('color', '#000000');
+		legends.eq(index).css('color', '');
 	}
 	
 	function Clickpie(event, pos, obj) {
@@ -317,7 +317,7 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 					axisLabelPadding: 3,
 					ticks: yFormatter,
 					tickSize: 1,
-					color: '#000',
+					color: '',
 					},
 			legend: {
 				show: false
@@ -328,11 +328,10 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 	// the X axis show negative part instead to
 	// show the axis only the positive part.
 	if (maxvalue == 0) {
-		options['xaxes'][0]['min'] = 0;
-
+		options['yaxis']['min'] = 0;
 		// Fixed the values with a lot of decimals in the situation
 		// with all 0 values.
-		options['xaxes'][0]['tickDecimals'] = 0;
+		options['yaxis']['tickDecimals'] = 0;
 	}
 
 
@@ -547,13 +546,13 @@ function showTooltip(x, y, color, contents) {
     }).appendTo("body").fadeIn(200);
 }
 
-function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors, water_mark, maxvalue, water_mark, separator, separator2, font, font_size ) {
-
+function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors, water_mark, maxvalue, water_mark, separator, separator2, font, font_size , from_ux) {
 	values = values.split(separator2);
 	legend = legend.split(separator);
 	font = font.split("/").pop().split(".").shift();
 	labels_long = labels_long.length > 0 ? labels_long.split(separator) : 0;
 	colors = colors.length > 0 ? colors.split(separator) : [];
+	
 	var colors_data = colors.length > 0
 		? colors
 		: ['#FFA631','#FC4444','#FAD403','#5BB6E5','#F2919D','#80BA27'];
@@ -562,15 +561,22 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 	for (i = 0; i < values.length; i++) {
 		var serie = values[i].split(separator);
 		
-		
 		var aux = new Array();
 		for (j = 0; j < serie.length; j++) {
 			var aux2 = parseFloat(serie[j]);
 			aux.push([aux2, j]);
-			datas.push( {
-				data: [[j, aux2]],
-				color: colors_data[0]
-			});
+			if (from_ux) {
+				datas.push( {
+					data: [[j, aux2]],
+					color: colors_data[j]
+				});
+			}
+			else {
+				datas.push( {
+					data: [[j, aux2]],
+					color: colors_data[0]
+				});
+			}
 		};
 	}
 	
@@ -613,7 +619,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 		},
 		legend: {
 			noColumns: 100,
-			labelBoxBorderColor: "#000000",
+			labelBoxBorderColor: "",
 			margin: 100,
 			container: true,
 			sorted: false
@@ -712,7 +718,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 	}
 
 	function lFormatter(v, axis) {
-		return '<div style=color:#000>'+v+'</div>';
+		return '<div style=color:>'+v+'</div>';
 	}
 
 	// Events
@@ -766,12 +772,12 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
 				hoverable: true,
 				clickable: true,
 				borderWidth:1,
-				borderColor: '#000',
+				borderColor: '',
 				tickColor: '#fff'
 				},
 			xaxes: [ {
 					tickFormatter: xFormatter,
-					color: '#000',
+					color: '',
 					tickSize: intervaltick,
 					tickLength: 0
 					} ],
@@ -851,7 +857,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	alert_ids, legend_alerts, yellow_threshold, red_threshold,
 	force_integer, separator, separator2, 
 	yellow_up, red_up, yellow_inverse, red_inverse,
-	series_suffix_str, dashboard, vconsole, xaxisname) {
+	series_suffix_str, dashboard, vconsole, xaxisname,background_color,legend_color) {
 
 	var threshold = true;
 	var thresholded = false;
@@ -946,7 +952,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			serie_color = colors[i];
 		}
 		else {
-			serie_color = null;
+			serie_color = '#8c2';
 		}
 
 		var normalw = '#efe';
@@ -980,9 +986,9 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			//threshold: [{ below: 80, color: "rgb(200, 20, 30)" } , { below: 65, color: "rgb(30, 200, 30)" }, { below: 50, color: "rgb(30, 200, 30)" }],
 			lines: {
 				show: line_show,
-				fill: 0.2,
+				fill: filled,
 				fillColor: {
-					colors: [ { opacity: 0.9 }, { opacity: 0.6 } ]
+					colors: [ { opacity: 0.5 }, { opacity: 1 } ]
 				},
 				lineWidth: lineWidth,
 				steps: steps_chart
@@ -1510,12 +1516,11 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 
 	// The first execution, the graph data is the base data
 	datas = data_base;
-
 	// minTickSize
 	var count_data = datas[0].data.length;
 	var min_tick_pixels = 80;
 	var steps = parseInt( count_data / (width/min_tick_pixels));
-
+	
 	var options = {
 			series: {
 				stack: stacked,
@@ -1533,8 +1538,9 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				clickable: true,
 				borderWidth:1,
 				borderColor: '#666',
-				tickColor: '#eee',
-				markings: markings
+				tickColor: background_color,
+				markings: markings,
+				color: legend_color
 				},
 			xaxes: [ {
 					axisLabelFontSizePixels: font_size,
@@ -1542,17 +1548,18 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 					axisLabel: xaxisname,
 					tickFormatter: xFormatter,
 					minTickSize: steps,
-					color: '#000'
+					color: '',
+					font: font
 				} ],
 			yaxes: [ {
 						tickFormatter: yFormatter,
-						color: '#000'
+						color: ''
 					},
 					{
 						// align if we are to the right
 						alignTicksWithAxis: 1,
-						position: 'right'
-
+						position: 'right',
+						font: font
 						//tickFormatter: dFormatter
 					} ]
 					,
@@ -1576,7 +1583,11 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	// Re-calculate the graph height with the legend height
 	if (dashboard || vconsole) {
 		var hDiff = $('#'+graph_id).height() - $('#legend_'+graph_id).height();
-		$('#'+graph_id).css('height', hDiff);
+		if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ){
+		}
+		else {
+			$('#'+graph_id).css('height', hDiff);
+		}
 	}
 	
 	if (vconsole) {
@@ -1604,7 +1615,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			xaxes: [ {
 				tickFormatter: xFormatter,
 				minTickSize: steps,
-				color: '#000'
+				color: ''
 				} ],
 		yaxis: {ticks: [], autoscaleMargin: 0.1 },
 		selection: {mode: 'x', color: '#777' },
@@ -1632,7 +1643,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				xaxes: [ {
 						tickFormatter: xFormatter,
 						minTickSize: new_steps,
-						color: '#000'
+						color: ''
 						} ],
 				legend: { show: false }
 			}));
@@ -1700,6 +1711,16 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 
 			var y = series.data[j][1];
 
+			var how_bigger = "";
+			if (y > 1000000) {
+				how_bigger = "M";
+				y = y / 1000000;
+			}
+			else if (y > 1000) {
+				how_bigger = "K";
+				y = y / 1000;
+			}
+
 			if (currentRanges == null || (currentRanges.xaxis.from < j && j < currentRanges.xaxis.to)) {
 				$('#timestamp_'+graph_id).show();
 				// If no legend, the timestamp labels are short and with value
@@ -1733,24 +1754,23 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				$('#timestamp_'+graph_id).hide();
 			}
 
-			var label_aux = series.label + ' = ';
+			var label_aux = series.label;
 
 			// The graphs of points type and unknown graphs will dont be updated
 			if (serie_types[i] != 'points' && series.label != $('#hidden-unknown_text').val()) {
-
 				$('#legend_' + graph_id + ' .legendLabel')
-					.eq(i).text(label_aux.replace(/=.*/,
-					'= ' + parseFloat(y).toFixed(2) + ' ' + unit));
+					.eq(i).html(label_aux +	'= ' + parseFloat(y).toFixed(precision_graph) + how_bigger + ' ' + unit);
+				console.log($('#legend_' + graph_id + ' .legendLabel'));
 			}
 
 			$('#legend_' + graph_id + ' .legendLabel')
 				.eq(i).css('font-size',font_size+'pt');
 
 			$('#legend_' + graph_id + ' .legendLabel')
-				.eq(i).css('color','#000');
+				.eq(i).css('color','');
 
-			$('#legend_' + graph_id + ' .legendLabel')
-				.eq(i).css('font-family',font+'Font');
+			//~ $('#legend_' + graph_id + ' .legendLabel')
+				//~ .eq(i).css('font-family',font+'Font');
 
 			i++;
 		}
@@ -1843,8 +1863,10 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 		$('#timestamp_'+graph_id).hide();
 		dataset = plot.getData();
 		for (i = 0; i < dataset.length; ++i) {
+			var series = dataset[i];
+			var label_aux = series.label;
 			$('#legend_' + graph_id + ' .legendLabel')
-				.eq(i).text(legends.eq(i).text().replace(/=.*/, ''));
+				.eq(i).html(label_aux);
 		}
 		plot.clearCrosshair();
 		overview.clearCrosshair();
@@ -1865,9 +1887,9 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	}
 
 	function lFormatter(v, item) {
-		return '<div class='+font+' style=color:#000;font-size:'+font_size+'pt>'+v+'</div>';
+		return '<div style=font-size:'+font_size+'pt>'+v+'</div>';
 		// Prepared to turn series with a checkbox
-		//return '<div style=color:#000;font-size:'+font_size+'pt><input type="checkbox" id="' + graph_id + '_' + item.id +'" checked="checked" class="check_serie_'+graph_id+'">'+v+'</div>';
+		//return '<div style=color:;font-size:'+font_size+'pt><input type="checkbox" id="' + graph_id + '_' + item.id +'" checked="checked" class="check_serie_'+graph_id+'">'+v+'</div>';
 	}
 
 	// Used to export the graph data to a file.
@@ -2229,9 +2251,10 @@ function set_watermark(graph_id, plot, watermark_src) {
 		if ($('#'+graph_id+' .yAxis .tickLabel').eq(0).css('height') != undefined) {
 			down_ticks_height = $('#'+graph_id+' .yAxis .tickLabel').eq(0).css('height').split('px')[0];
 		}
-		var left_pos = parseInt(context.canvas.width - 3) - $('#watermark_image_'+graph_id)[0].width;
-		var top_pos = parseInt(context.canvas.height - down_ticks_height - 20) - $('#watermark_image_'+graph_id)[0].height;
-
+		//var left_pos = parseInt(context.canvas.width - 3) - $('#watermark_image_'+graph_id)[0].width;
+		//var top_pos = parseInt(context.canvas.height - down_ticks_height - 10) - $('#watermark_image_'+graph_id)[0].height;
+		var left_pos = 380;
+		var top_pos  = 6;
 		context.drawImage(this, left_pos, top_pos);
 
 	}, false);

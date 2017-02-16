@@ -94,11 +94,11 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 			};
 			
 			function show_others() {
-				if (!$("#checkbox-avg_only").attr('checked')) {
-					$("#hidden-show_other").val(0);
+				if ($('#checkbox-avg_only').is(":checked") == true) {
+					$("#hidden-show_other").val(1);
 				}
 				else {
-					$("#hidden-show_other").val(1);
+					$("#hidden-show_other").val(0);
 				}
 			}
 			//-->
@@ -137,16 +137,25 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 		}
 		
 		$draw_alerts = get_parameter("draw_alerts", 0);
-		$avg_only = get_parameter ("avg_only", 1);
-		$show_other = (bool)get_parameter('show_other', false);
-		if ($show_other) {
+
+		if(isset($config['only_average'])){
+			$avg_only = 1;
+		} 
+		else {
 			$avg_only = 0;
 		}
+
+		$show_other = get_parameter('show_other');
+		if (isset($show_other)) {
+			$avg_only = $show_other;
+		}
+
 		$period = get_parameter ("period", SECONDS_1DAY);
 		$id = get_parameter ("id", 0);
 		$width = get_parameter ("width", STATWIN_DEFAULT_CHART_WIDTH);
 		$height = get_parameter ("height", STATWIN_DEFAULT_CHART_HEIGHT);
 		$label = get_parameter ("label", "");
+		$label_graph = base64_decode(get_parameter ("label", ""));
 		$start_date = get_parameter ("start_date", date("Y/m/d"));
 		$start_time = get_parameter ("start_time", date("H:i:s"));
 		$draw_events = get_parameter ("draw_events", 0);
@@ -154,7 +163,7 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 		$zoom = get_parameter ("zoom", 1);
 		$baseline = get_parameter ("baseline", 0);
 		$show_events_graph = get_parameter ("show_events_graph", 0);
-		$show_percentil_95 = get_parameter ("show_percentil_95", 0);
+		$show_percentil = get_parameter ("show_percentil", 0);
 		$time_compare_separated = get_parameter ("time_compare_separated", 0);
 		$time_compare_overlapped = get_parameter ("time_compare_overlapped", 0);
 		$unknown_graph = get_parameter_checkbox ("unknown_graph", 1);
@@ -199,7 +208,7 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 		switch ($graph_type) {
 			case 'boolean':
 				echo grafico_modulo_boolean ($id, $period, $draw_events,
-					$width, $height, $label, $unit, $draw_alerts,
+					$width, $height, $label_graph, $unit, $draw_alerts,
 					$avg_only, false, $date, false, $urlImage,
 					'adapter_' . $graph_type, $time_compare,
 					$unknown_graph);
@@ -211,12 +220,12 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 				break;
 			case 'sparse':
 				echo grafico_modulo_sparse ($id, $period, $draw_events,
-					$width, $height, $label, $unit, $draw_alerts,
+					$width, $height, $label_graph, $unit, $draw_alerts,
 					$avg_only, false, $date, $unit, $baseline, 0, true,
 					false, $urlImage, 1, false,
 					'adapter_' . $graph_type, $time_compare,
 					$unknown_graph, true, 'white',
-					(($show_percentil_95)? 95 : null));
+					(($show_percentil)? $config['percentil'] : null));
 				echo '<br>';
 				if ($show_events_graph)
 					echo graphic_module_events($id, $width, $height,
@@ -225,7 +234,7 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 				break;
 			case 'string':
 				echo grafico_modulo_string ($id, $period, $draw_events,
-					$width, $height, $label, null, $draw_alerts, 1,
+					$width, $height, $label_graph, null, $draw_alerts, 1,
 					false, $date, false, $urlImage,
 					'adapter_' . $graph_type);
 				echo '<br>';
@@ -236,7 +245,7 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 				break;
 			case 'log4x':
 				echo grafico_modulo_log4x ($id, $period, $draw_events,
-					$width, $height, $label, $unit, $draw_alerts, 1,
+					$width, $height, $label_graph, $unit, $draw_alerts, 1,
 					$pure, $date);
 				echo '<br>';
 				if ($show_events_graph)
@@ -364,8 +373,8 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 			case 'boolean':
 			case 'sparse':
 				$data = array();
-				$data[0] = __('Show percentil 95º');
-				$data[1] = html_print_checkbox ("show_percentil_95", 1, (bool) $show_percentil_95, true);
+				$data[0] = __('Show percentil');
+				$data[1] = html_print_checkbox ("show_percentil", 1, (bool) $show_percentil, true);
 				$table->data[] = $data;
 				$table->rowclass[] ='';
 				
@@ -393,6 +402,7 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 		
 		unset($table);
 		
+		$table = new stdClass();
 		$table->id = 'stat_win_form';
 		$table->width = '100%';
 		$table->cellspacing = 2;

@@ -32,6 +32,7 @@ config_check();
 					
 					if (!defined ('PANDORA_ENTERPRISE')) {
 						$logo_title = 'Pandora FMS Opensource';
+						$custom_logo = 'images/custom_logo/pandora_logo_head_3.png';
 					}
 					else {
 						if (file_exists(ENTERPRISE_DIR . '/' . $custom_logo)) {
@@ -64,7 +65,7 @@ config_check();
 					$table->style[8] =
 					$table->style[9] =
 					$table->style['qr'] =
-					'width: 22px; text-align:center; height: 22px; padding-right: 9px;';
+					'width: 22px; text-align:center; height: 22px; padding-right: 9px;padding-left: 9px;';
 				$table->style[7] = 'width: 20px; padding-right: 9px;';
 				$table->style['searchbar'] = 'width: 180px; min-width: 180px;';
 				$table->style[11] = 'padding-left: 10px; padding-right: 5px;width: 16px;';
@@ -125,16 +126,18 @@ config_check();
 				$servers_link_open = '<a class="white" href="index.php?sec=gservers&amp;sec2=godmode/servers/modificar_server&amp;refr=60">';
 				$servers_link_close = '</a>';
 				
-				$show_qr_code_header = 'display: none;';
-				if (isset($config['show_qr_code_header']))
-					if ($config['show_qr_code_header'])
-						$show_qr_code_header = '';
+				if ($config['show_qr_code_header'] == 0){
+					$show_qr_code_header = 'display: none;';
+				}
+				else {
+					$show_qr_code_header = 'display: inline;';
+				}
 				
 				$table->data[0]['qr'] =
 					'<div style="' . $show_qr_code_header . '" id="qr_code_container" style="">' .
 					'<a href="javascript: show_dialog_qrcode();">' .
 					html_print_image(
-						"images/qrcode_icon.jpg",
+						"images/qrcode_icon.png",
 						true,
 						array("alt" => __('QR Code of the page'),
 							'title' => __('QR Code of the page'))) .
@@ -188,7 +191,7 @@ config_check();
 					$_GET['refr'] = null;
 				}
 				
-				if (array_search($_GET['sec2'], $config['autorefresh_white_list']) !== false) {
+				if ($config['autorefresh_white_list'] !== null && array_search($_GET['sec2'], $config['autorefresh_white_list']) !== false) {
 					$autorefresh_img = html_print_image("images/header_refresh.png", true, array("class" => 'bot', "alt" => 'lightning', 'title' => __('Configure autorefresh')));
 					
 					if ($_GET['refr']) {
@@ -230,12 +233,18 @@ config_check();
 				//======================================================
 				
 				
-				
+				$check_minor_release_available = false;
 				$pandora_management = check_acl($config['id_user'], 0, "PM");
 				
+				$check_minor_release_available = db_check_minor_relase_available ();
+				
+				if ($check_minor_release_available) {
+					set_pandora_error_for_header('There are one or more minor releases waiting for update, there are required administrator permissions', 'minor release/s available');
+				}
+
+				echo '<div id="alert_messages" style="display: none"></div>';
+		
 				if ($config["alert_cnt"] > 0) {
-					echo '<div id="alert_messages" style="display: none"></div>';
-					
 					$maintenance_link = 'javascript:';
 					$maintenance_title = __("System alerts detected - Please fix as soon as possible");
 					$maintenance_class = $maintenance_id = 'show_systemalert_dialog white';
@@ -270,7 +279,11 @@ config_check();
 				$table->data[0][3] = $maintenance_img;
 				
 				// Main help icon
-				$table->data[0][4] = ui_print_help_icon ("main_help", true, '', 'images/header_help.png');
+				$table->data[0][4] = '<a href="#" class="modalpopup" id="helpmodal">'.html_print_image("images/header_help.png",
+					true, array(
+						"title" => __('Main help'),
+						"id" => "helpmodal",
+						"class" => "modalpopup")).'</a>';
 				
 				// Logout
 				$table->data[0][5] = '<a class="white" href="' . ui_get_full_url('index.php?bye=bye') . '">';
@@ -369,11 +382,19 @@ config_check();
 			$("#agent_access").css("display","");
 		});
 		
-		
+		function blinkmail(){
+			$("#yougotmail").delay(100).fadeTo(300,0.2).delay(100).fadeTo(300,1, blinkmail);
+		}
+		function blinkalert(){
+			$("#yougotalert").delay(100).fadeTo(300,0.2).delay(100).fadeTo(300,1, blinkalert);
+		}
+		function blinkpubli(){
+			$(".publienterprise").delay(100).fadeTo(300,0.2).delay(100).fadeTo(300,1, blinkpubli);
+		}
 		<?php
 		if ($msg_cnt > 0) {
 		?>
-			$("#yougotmail").pulsate ();
+			blinkmail();
 		<?php
 		}
 		?>
@@ -382,11 +403,11 @@ config_check();
 		<?php
 		if ($config["alert_cnt"] > 0) {
 		?>
-			$("#yougotalert").pulsate ();
+			blinkalert();
 		<?php
 		}
 		?>
-		$("#publienterprise").pulsate ();
+			blinkpubli();
 
 		<?php
 		if ($_GET["refr"]) {

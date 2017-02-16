@@ -118,6 +118,7 @@ if (!isset ($id_agente)) {
 $id_agent = (int)get_parameter('id_agente');
 $status_filter_monitor = (int)get_parameter('status_filter_monitor', -1);
 $status_text_monitor = get_parameter('status_text_monitor', '');
+$status_hierachy_mode = get_parameter('status_hierachy_mode', -1);
 $sort_field = get_parameter('sort_field', 'name');
 $sort = get_parameter('sort', 'up');
 
@@ -138,7 +139,7 @@ echo "</h4>";
 ob_start();
 
 
-print_form_filter_monitors($id_agente, $status_filter_monitor, $status_text_monitor);
+print_form_filter_monitors($id_agente, $status_filter_monitor, $status_text_monitor, $status_hierachy_mode);
 
 echo "<div id='module_list_loading'>" .
 	html_print_image('images/spinner.gif', true) .
@@ -185,6 +186,20 @@ ui_toggle($html_toggle,
 		*/
 	});
 	
+	function change_module_filter () {
+		hierachy_mode = $("#checkbox-status_hierachy_mode").is(":checked");
+		if (hierachy_mode) {
+			$("#status_module_group").disable();
+			$("#status_filter_monitor").disable();
+			$("#status_module_group").val(-1);
+			$("#status_filter_monitor").val(-1);
+		}
+		else {
+			$("#status_module_group").enable();
+			$("#status_filter_monitor").enable();
+		}
+	}
+
 	function order_module_list(sort_field_param, sort_rows_param) {
 		sort_field = sort_field_param;
 		sort_rows = sort_rows_param;
@@ -223,7 +238,8 @@ ui_toggle($html_toggle,
 		filter_status = $("#status_filter_monitor").val();
 		filter_group = $("#status_module_group").val();
 		filter_text = $("input[name='status_text_monitor']").val();
-		
+		hierachy_mode = $("#checkbox-status_hierachy_mode").is(":checked");
+
 		var parameters = {};
 		
 		parameters["list_modules"] = 1;
@@ -233,6 +249,7 @@ ui_toggle($html_toggle,
 		parameters["status_filter_monitor"] = filter_status;
 		parameters["status_text_monitor"] = filter_text;
 		parameters["status_module_group"] = filter_group;
+		parameters["hierachy_mode"] = hierachy_mode;
 		parameters["filter_monitors"] = 1;
 		parameters["monitors_change_filter"] = 1;
 		parameters["page"] = "include/ajax/module";
@@ -260,6 +277,9 @@ ui_toggle($html_toggle,
 		$("#status_filter_monitor").val(-1);
 		$("#status_module_group").val(-1);
 		$("input[name='status_text_monitor']").val("");
+		$("#checkbox-status_hierachy_mode").prop("checked", false);
+		$("#status_module_group").enable();
+		$("#status_filter_monitor").enable();
 		
 		filter_modules();
 	}
@@ -330,7 +350,6 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 		
 	// Show the modal window of an module
 	function show_module_detail_dialog(module_id, id_agent, server_name, offset, period,module_name) {
-		
 		var server_name = '';
 		var extra_parameters = '';
 		if ($('input[name=selection_mode]:checked').val()) {
@@ -412,7 +431,7 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 </script>
 <?php
 function print_form_filter_monitors($id_agent, $status_filter_monitor = -1,
-	$status_text_monitor = '', $status_module_group=-1) {
+	$status_text_monitor = '', $status_module_group=-1, $status_hierachy_mode=-1) {
 	
 	$form_text = '';
 	$table = new stdClass();
@@ -450,8 +469,10 @@ function print_form_filter_monitors($id_agent, $status_filter_monitor = -1,
 			$rows_select[$module_group['id_mg']] = __($module_group['name']);
 	}
 	$table->data[0][5] = html_print_select ($rows_select,'status_module_group', $status_module_group, '', '',0, true);
-	$table->data[0][6] = html_print_button(__('Filter'), 'filter', false, 'filter_modules();', 'class="sub search"', true);
-	$table->data[0][7] = '&nbsp;' . html_print_button(__('Reset'), 'filter', false, 'reset_filter_modules();', 'class="sub upd" style="margin-top:0px;"', true);
+	$table->data[0][6] = __('Show in hierachy mode');
+	$table->data[0][6] .= html_print_checkbox ('status_hierachy_mode', "", false, true, false, "onChange=change_module_filter();");
+	$table->data[0][7] = html_print_button(__('Filter'), 'filter', false, 'filter_modules();', 'class="sub search"', true);
+	$table->data[0][8] = '&nbsp;' . html_print_button(__('Reset'), 'filter', false, 'reset_filter_modules();', 'class="sub upd" style="margin-top:0px;"', true);
 	$form_text .= html_print_table($table, true);
 	
 	$filter_hidden = false;

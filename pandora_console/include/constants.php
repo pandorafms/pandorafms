@@ -333,20 +333,21 @@ define('PASSSWORD_POLICIES_FIRST_CHANGE',	1);
 define('PASSSWORD_POLICIES_EXPIRED',		2);
 
 /* SERVER TYPES */
-define('SERVER_TYPE_DATA',					0);
-define('SERVER_TYPE_NETWORK',				1);
-define('SERVER_TYPE_SNMP',					2);
-define('SERVER_TYPE_RECON',					3);
-define('SERVER_TYPE_PLUGIN',				4);
-define('SERVER_TYPE_PREDICTION',			5);
-define('SERVER_TYPE_WMI',					6);
-define('SERVER_TYPE_EXPORT',				7);
-define('SERVER_TYPE_INVENTORY',				8);
-define('SERVER_TYPE_WEB',					9);
-define('SERVER_TYPE_EVENT',					10);
-define('SERVER_TYPE_ENTERPRISE_ICMP',		11);
-define('SERVER_TYPE_ENTERPRISE_SNMP',		12);
-define('SERVER_TYPE_ENTERPRISE_SATELLITE',	13);
+define('SERVER_TYPE_DATA',					    0);
+define('SERVER_TYPE_NETWORK',				    1);
+define('SERVER_TYPE_SNMP',					    2);
+define('SERVER_TYPE_RECON',					    3);
+define('SERVER_TYPE_PLUGIN',				    4);
+define('SERVER_TYPE_PREDICTION',			    5);
+define('SERVER_TYPE_WMI',					    6);
+define('SERVER_TYPE_EXPORT',				    7);
+define('SERVER_TYPE_INVENTORY',				    8);
+define('SERVER_TYPE_WEB',					    9);
+define('SERVER_TYPE_EVENT',					    10);
+define('SERVER_TYPE_ENTERPRISE_ICMP',		    11);
+define('SERVER_TYPE_ENTERPRISE_SNMP',		    12);
+define('SERVER_TYPE_ENTERPRISE_SATELLITE',	    13);
+define('SERVER_TYPE_ENTERPRISE_TRANSACTIONAL',	14);
 
 /* REPORTS */
 define('REPORT_TOP_N_MAX',	1);
@@ -463,6 +464,7 @@ define("OPTION_TREE_GROUP_SELECT",		6);
 define("OPTION_SINGLE_SELECT_TIME",		7);
 define("OPTION_CUSTOM_INPUT",			8);
 define("OPTION_AGENT_AUTOCOMPLETE",		9);
+define("OPTION_SELECT_MULTISELECTION",	10);
 
 /* Transactional map constants */
 define("NODE_TYPE", 0);

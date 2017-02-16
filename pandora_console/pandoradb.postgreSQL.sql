@@ -67,6 +67,7 @@ CREATE TABLE "tagente" (
 	"agent_version" varchar(100) default '',
 	"ultimo_contacto_remoto" TIMESTAMP without time zone default '1970-01-01 00:00:00',
 	"disabled" SMALLINT NOT NULL default 0,
+	"remote" SMALLINT NOT NULL default 0,
 	"id_parent" INTEGER default 0,
 	"custom_id" varchar(255) default '',
 	"server_name" varchar(100) default '',
@@ -87,7 +88,8 @@ CREATE TABLE "tagente" (
 	"total_count" INTEGER NOT NULL default 0,
 	"fired_count" INTEGER NOT NULL default 0,
 	"update_module_count" SMALLINT NOT NULL DEFAULT 1,
-	"update_alert_count" SMALLINT NOT NULL DEFAULT 1
+	"update_alert_count" SMALLINT NOT NULL DEFAULT 1,
+	"transactional_agent" SMALLINT NOT NULL DEFAULT 0
 );
 CREATE INDEX "tagente_nombre_idx" ON "tagente"("nombre");
 CREATE INDEX "tagente_direccion_idx" ON "tagente"("direccion");
@@ -245,7 +247,12 @@ CREATE TABLE "tagente_modulo" (
 	"min_ff_event_warning" INTEGER default 0,
 	"min_ff_event_critical" INTEGER default 0,
 	"each_ff" SMALLINT default 0,
-	"ff_timeout" INTEGER default 0
+	"ff_timeout" INTEGER default 0,
+	"dynamic_interval" INTEGER default 0,
+	"dynamic_max" INTEGER default 0,
+	"dynamic_min" INTEGER default 0,
+	"dynamic_next" INTEGER NOT NULL default 0,
+	"dynamic_two_tailed" INTEGER default 0
 );
 CREATE INDEX "tagente_modulo_id_agente_idx" ON "tagente_modulo"("id_agente");
 CREATE INDEX "tagente_modulo_id_tipo_modulo_idx" ON "tagente_modulo"("id_tipo_modulo");
@@ -273,6 +280,11 @@ CREATE TABLE "talert_snmp" (
 	"al_field8" text NOT NULL default '',
 	"al_field9" text NOT NULL default '',
 	"al_field10" text NOT NULL default '',
+	"al_field11" text NOT NULL default '',
+	"al_field12" text NOT NULL default '',
+	"al_field13" text NOT NULL default '',
+	"al_field14" text NOT NULL default '',
+	"al_field15" text NOT NULL default '',
 	"description" varchar(255) default '',
 	"alert_type" SMALLINT NOT NULL default 0,
 	"agent" varchar(100) default '',
@@ -355,6 +367,11 @@ CREATE TABLE "talert_actions" (
 	"field8" text NOT NULL default '',
 	"field9" text NOT NULL default '',
 	"field10" text NOT NULL default '',
+	"field11" text NOT NULL default '',
+	"field12" text NOT NULL default '',
+	"field13" text NOT NULL default '',
+	"field14" text NOT NULL default '',
+	"field15" text NOT NULL default '',
 	"id_group" BIGINT NOT NULL default 0,
 	"action_threshold" BIGINT NOT NULL default 0,
 	"field1_recovery" text NOT NULL default '',
@@ -366,7 +383,12 @@ CREATE TABLE "talert_actions" (
 	"field7_recovery" text NOT NULL default '',
 	"field8_recovery" text NOT NULL default '',
 	"field9_recovery" text NOT NULL default '',
-	"field10_recovery" text NOT NULL default ''
+	"field10_recovery" text NOT NULL default '',
+	"field11_recovery" text NOT NULL default '',
+	"field12_recovery" text NOT NULL default '',
+	"field13_recovery" text NOT NULL default '',
+	"field14_recovery" text NOT NULL default '',
+	"field15_recovery" text NOT NULL default '',
 );
 
 CREATE TYPE type_talert_templates_alert_template AS ENUM ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critical', 'onchange', 'unknown', 'always');
@@ -386,6 +408,11 @@ CREATE TABLE "talert_templates" (
 	"field8" text NOT NULL default '',
 	"field9" text NOT NULL default '',
 	"field10" text NOT NULL default '',
+	"field11" text NOT NULL default '',
+	"field12" text NOT NULL default '',
+	"field13" text NOT NULL default '',
+	"field14" text NOT NULL default '',
+	"field15" text NOT NULL default '',
 	"type" type_talert_templates_alert_template,
 	"value" varchar(255) default '',
 	"matches_value" SMALLINT default 0,
@@ -414,6 +441,11 @@ CREATE TABLE "talert_templates" (
 	"field8_recovery" text NOT NULL default '',
 	"field9_recovery" text NOT NULL default '',
 	"field10_recovery" text NOT NULL default '',
+	"field11_recovery" text NOT NULL default '',
+	"field12_recovery" text NOT NULL default '',
+	"field13_recovery" text NOT NULL default '',
+	"field14_recovery" text NOT NULL default '',
+	"field15_recovery" text NOT NULL default '',
 	"priority" INTEGER NOT NULL default 0,
 	"id_group" INTEGER NOT NULL default 0,
 	"special_day" SMALLINT default 0,
@@ -702,9 +734,14 @@ CREATE TABLE "tnetwork_component" (
 	"disabled_types_event" TEXT default '',
 	"module_macros" TEXT default '',
 	"min_ff_event_normal" INTEGER default 0,
-        "min_ff_event_warning" INTEGER default 0,
-        "min_ff_event_critical" INTEGER default 0,
-        "each_ff" SMALLINT default 0
+    	"min_ff_event_warning" INTEGER default 0,
+    	"min_ff_event_critical" INTEGER default 0,
+    	"each_ff" SMALLINT default 0,
+    	"dynamic_interval" INTEGER default 0,
+	"dynamic_max" INTEGER default 0,
+	"dynamic_min" INTEGER default 0,
+	"dynamic_next" INTEGER NOT NULL default 0,
+	"dynamic_two_tailed" INTEGER default 0
 );
 
 -- ---------------------------------------------------------------------
@@ -923,7 +960,8 @@ CREATE TABLE "tusuario" (
 	"metaconsole_assigned_server" INTEGER NOT NULL default 0,
 	"metaconsole_access_node" SMALLINT DEFAULT 0,
 	"metaconsole_access" type_tusuario_metaconsole_access default 'basic',
-	"strict_acl" SMALLINT DEFAULT 0
+	"strict_acl" SMALLINT DEFAULT 0,
+	"session_time" INTEGER DEFAULT 0
 );
 
 -- -----------------------------------------------------
@@ -978,7 +1016,8 @@ CREATE TABLE "tgraph" (
 	"events" SMALLINT NOT NULL default 0,
 	"stacked" SMALLINT NOT NULL default 0,
 	"id_group" BIGINT NOT NULL default 0,
-	"id_graph_template" INTEGER NOT NULL default 0 
+	"id_graph_template" INTEGER NOT NULL default 0,
+	"percentil" INTEGER NOT NULL default 0 
 );
 
 -- -----------------------------------------------------
@@ -1100,6 +1139,7 @@ CREATE TABLE "tlayout" (
 	"id_group" INTEGER NOT NULL,
 	"background" varchar(200)  NOT NULL,
 	"height" INTEGER NOT NULL default 0,
+	"background_color" varchar(50) NOT NULL default '#FFF',
 	"width" INTEGER NOT NULL default 0
 );
 
@@ -1126,6 +1166,8 @@ CREATE TABLE "tlayout_data" (
 	"id_group" INTEGER NOT NULL default 0,
 	"id_custom_graph" INTEGER NOT NULL default 0,
 	"border_width" INTEGER NOT NULL default 0,
+	"type_graph" varchar(50) NOT NULL DEFAULT 'area',
+	"label_position" varchar(50) NOT NULL DEFAULT 'down',
 	"border_color" varchar(200) DEFAULT '',
 	"fill_color" varchar(200) DEFAULT '' 
 );
@@ -1555,6 +1597,7 @@ CREATE TABLE "tnetflow_filter" (
 	"ip_src" TEXT NOT NULL,
   	"dst_port" TEXT NOT NULL,
 	"src_port" TEXT NOT NULL,
+	"router_ip" TEXT NOT NULL,
 	"advanced_filter" TEXT NOT NULL,
 	"filter_args" TEXT NOT NULL,
 	"aggregate" varchar(60),
@@ -1708,7 +1751,12 @@ CREATE TABLE  "talert_snmp_action" (
 	"al_field7" TEXT default '',
 	"al_field8" TEXT default '',
 	"al_field9" TEXT default '',
-	"al_field10" TEXT default ''
+	"al_field10" TEXT default '',
+	"al_field11" TEXT default '',
+	"al_field12" TEXT default '',
+	"al_field13" TEXT default '',
+	"al_field14" TEXT default '',
+	"al_field15" TEXT default '',
 );
 
 -- ---------------------------------------------------------------------
@@ -1726,7 +1774,7 @@ CREATE TABLE "tsessions_php" (
 CREATE TABLE IF NOT EXISTS "tmap" (
 	"id" SERIAL NOT NULL PRIMARY KEY,
 	"id_group" INTEGER default 0,
-	"id_user" INTEGER default 0,
+	"id_user" varchar(250) default '',
 	"type" SMALLINT NOT NULL default 0,
 	"subtype" SMALLINT NOT NULL default 0,
 	"name" varchar(250) default '',
@@ -1771,6 +1819,8 @@ CREATE TABLE IF NOT EXISTS "trel_item" (
 	"id" SERIAL NOT NULL PRIMARY KEY,
 	"id_parent" INTEGER default 0,
 	"id_child" INTEGER default 0,
+	"id_parent_source_data" INTEGER default 0,
+	"id_child_source_data" INTEGER default 0,
 	"parent_type" SMALLINT NOT NULL default 0,
 	"child_type" SMALLINT NOT NULL default 0,
 	"id_item" INTEGER default 0,

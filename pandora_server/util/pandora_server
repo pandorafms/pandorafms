@@ -24,6 +24,10 @@
 # Description:    Pandora FMS Server startup script
 ### END INIT INFO
 
+if [ -x /lib/lsb/init-functions ]; then
+. /lib/lsb/init-functions
+fi
+
 # If you want to run several pandora servers in this machine, just copy 
 # this script to another name, editing PANDORA_HOME to the new .conf 
 

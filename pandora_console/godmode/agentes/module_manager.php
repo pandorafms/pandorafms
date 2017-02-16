@@ -101,6 +101,7 @@ if (strstr($sec2, "enterprise/godmode/policies/policies") !== false) {
 }
 
 $show_creation = false;
+$checked = get_parameter("checked");
 
 if (($policy_page) || (isset($agent))) {
 	if ($policy_page) {
@@ -114,6 +115,18 @@ if (($policy_page) || (isset($agent))) {
 	if ($show_creation) {
 		// Create module/type combo
 		echo '<form id="create_module_type" method="post" action="'.$url.'">';
+		if (!$policy_page) {
+			echo '<td class="datos" style="font-weight: bold;">';
+			echo __('Show in hierachy mode');
+			if ($checked == "true") {
+				$checked = true;
+			}
+			else {
+				$checked = false;
+			}
+			html_print_checkbox ('status_hierachy_mode', "", $checked, false, false, "onChange=change_mod_filter();");
+			echo '</td>';
+		}
 		echo '<td class="datos" style="font-weight: bold;">';
 		echo __("Type");
 		html_print_select ($modules, 'moduletype', '', '', '', '', false, false, false, '', false, 'max-width:300px;' );
@@ -450,12 +463,23 @@ switch ($config["dbtype"]) {
 		else {
 			$limit_sql = '';
 		}
-		$sql = sprintf("SELECT %s
-			FROM tagente_modulo
-			LEFT JOIN tmodule_group
-			ON tagente_modulo.id_module_group = tmodule_group.id_mg
-			WHERE %s %s %s %s %s",
-			$params, $basic_where, $where, $where_tags, $order_sql, $limit_sql);
+		if ($checked) {
+			$sql = sprintf("SELECT *
+				FROM tagente_modulo
+				LEFT JOIN tmodule_group
+				ON tagente_modulo.id_module_group = tmodule_group.id_mg
+				WHERE %s %s %s %s %s",
+				 $basic_where, $where, $where_tags, $order_sql, $limit_sql);
+		}
+		else {
+			$sql = sprintf("SELECT %s
+				FROM tagente_modulo
+				LEFT JOIN tmodule_group
+				ON tagente_modulo.id_module_group = tmodule_group.id_mg
+				WHERE %s %s %s %s %s",
+				$params, $basic_where, $where, $where_tags, $order_sql, $limit_sql);
+		}
+		
 		
 		$modules = db_get_all_rows_sql($sql);
 		break;
@@ -465,12 +489,24 @@ switch ($config["dbtype"]) {
 			$set['limit'] = $limit;
 			$set['offset'] = $offset;
 		}
-		$sql = sprintf("SELECT %s
-			FROM tagente_modulo
-			LEFT JOIN tmodule_group
-			ON tmodule_group.id_mg = tagente_modulo.id_module_group
-			WHERE %s %s %s %s",
-			$params, $basic_where, $where, $where_tags, $order_sql);
+
+		if ($checked) {
+			$sql = sprintf("SELECT *
+				FROM tagente_modulo
+				LEFT JOIN tmodule_group
+				ON tmodule_group.id_mg = tagente_modulo.id_module_group
+				WHERE %s %s %s %s",
+				 $basic_where, $where, $where_tags, $order_sql);
+		}
+		else {
+			$sql = sprintf("SELECT %s
+				FROM tagente_modulo
+				LEFT JOIN tmodule_group
+				ON tmodule_group.id_mg = tagente_modulo.id_module_group
+				WHERE %s %s %s %s",
+				$params, $basic_where, $where, $where_tags, $order_sql);
+		}
+		
 		$modules = oracle_recode_query ($sql, $set, 'AND', false);
 		break;
 }
@@ -555,6 +591,15 @@ foreach($tempRows as $row) {
 	$numericModules[$row['id_tipo']] = true;
 }
 
+if ($checked) {
+	$modules_hierachy = array();
+	$modules_hierachy = get_hierachy_modules_tree($modules);
+
+	$modules_dt = get_dt_from_modules_tree($modules_hierachy);
+
+	$modules = $modules_dt;
+}
+
 foreach ($modules as $module) {
 	if (! check_acl ($config["id_user"], $group, "AW", $id_agente) && ! check_acl ($config["id_user"], $group, "AD", $id_agente)) {
 		continue;
@@ -570,20 +615,29 @@ foreach ($modules as $module) {
 	$module_group2 = $module["id_module_group"];
 	
 	$data = array ();
-	if ($module['id_module_group'] != $last_modulegroup) {
-		$last_modulegroup = $module['id_module_group'];
-		$data[0] = '<strong>'.modules_get_modulegroup_name ($last_modulegroup).'</strong>';
-		$i = array_push ($table->data, $data);
-		$table->rowstyle[$i - 1] = 'text-align: center';
-		$table->rowclass[$i - 1] = 'datos3';
-		if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK)
-				$table->colspan[$i - 1][0] = 10;
-		else
-			$table->colspan[$i - 1][0] = 8;
-		
-		$data = array ();
+
+	if (!$checked) {
+		if ($module['id_module_group'] != $last_modulegroup) {
+			$last_modulegroup = $module['id_module_group'];
+			$data[0] = '<strong>'.modules_get_modulegroup_name ($last_modulegroup).'</strong>';
+			$i = array_push ($table->data, $data);
+			$table->rowstyle[$i - 1] = 'text-align: center';
+			$table->rowclass[$i - 1] = 'datos3';
+			if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK)
+					$table->colspan[$i - 1][0] = 10;
+			else
+				$table->colspan[$i - 1][0] = 8;
+			
+			$data = array ();
+		}
 	}
 	$data[0] = "";
+
+	if (isset($module['deep']) && ($module['deep'] != 0)) {
+		$data[0] .= str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $module['deep']);
+		$data[0] .= html_print_image("images/icono_escuadra.png", true, array("style" => 'padding-bottom: inherit;')) . "&nbsp;&nbsp;";
+	}
+
 	if ($module['quiet']) {
 		$data[0] .= html_print_image("images/dot_green.disabled.png",
 			true, array("border" => '0', "title" => __('Quiet'),
@@ -764,3 +818,22 @@ if (check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
 	echo '</form>';
 }
 ?>
+
+<script type="text/javascript">
+	function change_mod_filter() {
+		var checked = $("#checkbox-status_hierachy_mode").is(":checked");
+
+		if (/checked/.test(window.location)) {
+			var url = window.location.toString();
+			if (checked) {
+				window.location = url.replace("checked=false", "checked=true");
+			}
+			else {
+				window.location = url.replace("checked=true", "checked=false");
+			}
+		}
+		else {
+			window.location = window.location + "&checked=true";
+		}
+	}
+</script>

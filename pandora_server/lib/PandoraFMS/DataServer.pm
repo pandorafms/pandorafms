@@ -25,6 +25,7 @@ use threads::shared;
 use Thread::Semaphore;
 
 use Time::Local;
+use XML::Parser::Expat;
 use XML::Simple;
 use POSIX qw(setsid strftime);
 
@@ -70,6 +71,29 @@ sub new ($$;$) {
 	
 	# Call the constructor of the parent class
 	my $self = $class->SUPER::new($config, DATASERVER, \&PandoraFMS::DataServer::data_producer, \&PandoraFMS::DataServer::data_consumer, $dbh);
+
+	# Load external .enc files for XML::Parser.
+	if ($config->{'enc_dir'} ne '') {
+		if (opendir(my $dh, $config->{'enc_dir'})) {
+			while (my $enc_file = readdir($dh)) {
+
+				# Ignore unknown files.
+				next unless ($enc_file =~ m/.enc$/);
+
+				# Load the .enc file.
+				eval {
+					local $SIG{__DIE__} = {};
+					XML::Parser::Expat::load_encoding($config->{'enc_dir'} . '/' . $enc_file);
+				};
+				if ($@) {
+					print_message ($config, " [WARNING] Error loading encoding file: $enc_file", 1);
+				}
+			}
+			closedir($dh);
+		} else {
+			print_message($config, " [WARNING] Error opening directory " . $config->{'enc_dir'} . ": $!", 1);
+		}
+	}
 
 	bless $self, $class;
 	return $self;
@@ -236,7 +260,7 @@ sub process_xml_data ($$$$$) {
 		$data->{'custom_id'}, $data->{'url_address'});
 
 	# Timezone offset must be an integer beween -12 and +12
-	if (!defined($timezone_offset) || $timezone_offset !~ /[-+]?[0-9,11,12]/) {
+	if (!defined($timezone_offset) || $timezone_offset !~ /[-+]?\d+/) {
 		$timezone_offset = 0;
 	}
 	
@@ -320,7 +344,14 @@ sub process_xml_data ($$$$$) {
 		my $os = pandora_get_os ($dbh, $data->{'os_name'});
 		my $group_id = $pa_config->{'autocreate_group'};
 		if (! defined (get_group_name ($dbh, $group_id))) {
-			if (defined ($data->{'group'}) && $data->{'group'} ne '') {
+			if (defined ($data->{'group_id'}) && $data->{'group_id'} ne '') {
+				$group_id = $data->{'group_id'};
+				if (! defined (get_group_name ($dbh, $group_id))) {
+					pandora_event ($pa_config, "Unable to create agent '$agent_name': group ID '" . $group_id . "' does not exist.", 0, 0, 0, 0, 0, 'error', 0, $dbh);
+					logger($pa_config, "Group ID " . $group_id . " does not exist.", 3);
+					return;
+				}
+			} elsif (defined ($data->{'group'}) && $data->{'group'} ne '') {
 				$group_id = get_group_id ($dbh, $data->{'group'});
 				if (! defined (get_group_name ($dbh, $group_id))) {
 					pandora_event ($pa_config, "Unable to create agent '$agent_name': group '" . $data->{'group'} . "' does not exist.", 0, 0, 0, 0, 0, 'error', 0, $dbh);
@@ -332,6 +363,13 @@ sub process_xml_data ($$$$$) {
 					logger($pa_config, "Group id $group_id does not exist (check autocreate_group config token).", 3);
 					return;
 			}
+		}
+
+		# Check the group password.
+		my $rc = enterprise_hook('check_group_password', [$dbh, $group_id, $data->{'group_password'}]);
+		if (defined($rc) && $rc != 1) {
+			logger($pa_config, "Agent $agent_name did not send a valid password for group id $group_id.", 10);
+			return;
 		}
 
 		my $description = '';
@@ -527,6 +565,23 @@ sub process_xml_data ($$$$$) {
 		}
 	}
 
+	# Link modules
+	foreach my $module_data (@{$data->{'module'}}) {
+
+		my $module_name = get_tag_value ($module_data, 'name', '');
+		$module_name =~ s/\r//g;
+		$module_name =~ s/\n//g;
+		
+		# Unnamed module
+		next if ($module_name eq '');
+
+		# No parent module defined
+		my $parent_module_name = get_tag_value ($module_data, 'module_parent', undef);
+		next if (! defined ($parent_module_name));
+		
+		link_modules($pa_config, $dbh, $agent_id, $module_name, $parent_module_name);
+	}
+
 	# Process inventory modules
 	enterprise_hook('process_inventory_data', [$pa_config, $data, $server_id, $agent_name,
 							 $interval, $timestamp, $dbh]);
@@ -561,7 +616,8 @@ sub process_module_data ($$$$$$$$$$) {
 	            'datalist' => 0, 'status' => 0, 'unit' => 0, 'timestamp' => 0, 'module_group' => 0, 'custom_id' => '', 
 	            'str_warning' => '', 'str_critical' => '', 'critical_instructions' => '', 'warning_instructions' => '',
 	            'unknown_instructions' => '', 'tags' => '', 'critical_inverse' => 0, 'warning_inverse' => 0, 'quiet' => 0,
-	            'module_ff_interval' => 0, 'alert_template' => '', 'crontab' => ''};
+				'module_ff_interval' => 0, 'alert_template' => '', 'crontab' =>	'', 'min_ff_event_normal' => 0,
+				'min_ff_event_warning' => 0, 'min_ff_event_critical' => 0, 'ff_timeout' => 0, 'each_ff' => 0, 'module_parent' => 0};
 	
 	# Other tags will be saved here
 	$module_conf->{'extended_info'} = '';
@@ -585,6 +641,12 @@ sub process_module_data ($$$$$$$$$$) {
 	
 	# Name XML tag and column name don't match
 	$module_conf->{'nombre'} = safe_input($module_name);
+
+	# Check if module is 'Transactional subsystem status'
+	my $enable_transactional_subsystem = 0;
+	if ($module_conf->{'name'} eq "Transactional subsystem status") {
+		$enable_transactional_subsystem = 1;
+	}
 	delete $module_conf->{'name'};
 	
 	# Calculate the module interval in seconds
@@ -631,8 +693,16 @@ sub process_module_data ($$$$$$$$$$) {
 		
 		# The group name has to be translated to a group ID
 		if (defined $module_conf->{'module_group'}) {
-			$module_conf->{'id_module_group'} = get_module_group_id ($dbh, $module_conf->{'module_group'});
+			my $id_group_module = get_module_group_id ($dbh, $module_conf->{'module_group'});
+			if ( $id_group_module >= 0) {
+				$module_conf->{'id_module_group'} = $id_group_module;
+			}
 			delete $module_conf->{'module_group'};
+		}
+
+		if ($enable_transactional_subsystem == 1) {
+			# Defines current agent as transactional agent
+			pandora_mark_transactional_agent($dbh, $agent->{'id_agente'});
 		}
 		
 		$module_conf->{'id_modulo'} = 1;
@@ -655,9 +725,16 @@ sub process_module_data ($$$$$$$$$$) {
 		}
 		delete $module_conf->{'crontab'};
 
+		# module_parent is a special case. It is not stored in the DB, but we will need it later.
+		my $module_parent = $module_conf->{'module_parent'};
+		delete $module_conf->{'module_parent'};
+
 		# Create the module
 		my $module_id = pandora_create_module_from_hash ($pa_config, $module_conf, $dbh);
 		
+		# Restore module_parent.
+		$module_conf->{'module_parent'} = $module_parent;
+
 		$module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND ' . db_text('nombre') . ' = ?', $agent->{'id_agente'}, safe_input($module_name));
 		if (! defined ($module)) {
 			logger($pa_config, "Could not create module '$module_name' for agent '$agent_name'.", 3);
@@ -836,6 +913,26 @@ sub process_xml_server ($$$$) {
 	
 	# Update server information
 	pandora_update_server ($pa_config, $dbh, $data->{'server_name'}, 0, 1, $server_type, $threads, $modules, $version, $data->{'keepalive'});
+}
+
+
+###############################################################################
+# Link two modules
+###############################################################################
+sub link_modules {
+	my ($pa_config, $dbh, $agent_id, $child_name, $parent_name) = @_;
+
+	# Get the child module ID.
+	my $child_id = get_agent_module_id ($dbh, $child_name, $agent_id);
+	return unless ($child_id != -1);
+
+	# Get the parent module ID.
+	my $parent_id = get_agent_module_id ($dbh, $parent_name, $agent_id);
+	return unless ($parent_id != -1);
+
+	# Link them.
+    logger($pa_config, "Linking module $child_name to module $parent_name for agent ID $agent_id", 10);
+	db_do($dbh, "UPDATE tagente_modulo SET parent_module_id = ? WHERE id_agente_modulo = ?", $parent_id, $child_id);
 }
 
 1;

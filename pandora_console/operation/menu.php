@@ -113,24 +113,13 @@ if (!empty($sub)) {
 //Start network view
 $sub = array();
 if (check_acl ($config['id_user'], 0, "MR") || check_acl ($config['id_user'], 0, "MW") || check_acl ($config['id_user'], 0, "MM")) {
-	$sub["operation/agentes/networkmap_list"]["text"] = __('Network map');
-	$sub["operation/agentes/networkmap_list"]["id"] = 'Network map';
-	$sub["operation/agentes/networkmap_list"]["refr"] = 0;
-	$sub["operation/agentes/networkmap_list"]["pages"] = array(
-		"operation/agentes/networkmap"
-		);
+	//Network enterprise
+	$sub["operation/agentes/pandora_networkmap"]["text"] = __('Network map');
+	$sub["operation/agentes/pandora_networkmap"]["id"] = 'Network map';
+	$sub["operation/agentes/pandora_networkmap"]["refr"] = 0;
 	
 	enterprise_hook ('transmap_console');
-	
-	$sub["operation/maps/networkmap_list"]["text"] = __('(Temp) Network map');
-	$sub["operation/maps/networkmap_list"]["id"] = '(Temp) Network map';
-	$sub["operation/maps/networkmap_list"]["refr"] = 0;
-	$sub["operation/maps/networkmap_list"]["pages"] = array(
-		"operation/maps/networkmap"
-		);
 }
-
-enterprise_hook ('networkmap_console');
 
 enterprise_hook ('services_menu');
 
@@ -328,7 +317,7 @@ if (check_acl ($config['id_user'], 0, "ER")
 		
 		window.open(url,
 			'<?php __('Sound Alerts'); ?>',
-			'width=400, height=350, resizable=yes, toolbar=no, location=no, directories=no, status=no, menubar=no');
+			'width=400, height=380, resizable=no, toolbar=no, location=no, directories=no, status=no, menubar=no');
 	}
 	</script>
 	<?php
@@ -360,15 +349,8 @@ if (check_acl ($config['id_user'], 0, "IR")
 	|| check_acl ($config['id_user'], 0, "IW") 
 	|| check_acl ($config['id_user'], 0, "IM")) {
 	$temp_sec2 = $sec2;
-	if($config['integria_enabled']) {
-		$sec2 = "incident";
-		$sec2sub = "operation/integria_incidents/incident_statistics";
-	}
-	else {
-		$sec2 = "incident";
-		$sec2sub = "operation/incidents/incident_statistics";
-	}
-	
+	$sec2 = "incident";
+	$sec2sub = "operation/incidents/incident_statistics";
 	$sub[$sec2]["text"] = __('Incidents');
 	$sub[$sec2]["id"] = 'Incidents';
 	$sub[$sec2]["type"] = "direct";

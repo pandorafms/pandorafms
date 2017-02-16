@@ -35,7 +35,6 @@
 					$("option[value!=0]", $select).remove ();
 					if (! config.callbackBefore (this))
 						return;
-					
 					var opts = {
 						"page" : "godmode/groups/group_list",
 						"get_group_agents" : 1,
@@ -43,15 +42,15 @@
 						"recursion" : config.recursion,
 						"filter_agents_json" : config.filter_agents_json,
 						"disabled" : (typeof config.disabled === "function")
-							? (config.disabled() ? 1 : 0)
-							: (config.disabled ? 1 : 0),
+							? (config.disabled())
+							: (config.disabled),
 						"status_agents" : config.status_agents,
 						"add_alert_bulk_op" : config.add_alert_bulk_op,
 						"privilege" : config.privilege,
 						// Add a key prefix to avoid auto sorting in js object conversion
 						"keys_prefix" : "_"
 					};
-					
+					if(opts['disabled'] == 1 || opts['disabled'] == 0){
 					jQuery.post ("ajax.php",
 						opts,
 						function (data, status) {
@@ -73,6 +72,57 @@
 						},
 						"json"
 					);
+				}
+				else{
+					opts['disabled'] = 0;
+					jQuery.post ("ajax.php",
+						opts,
+						function (data, status) {
+							jQuery.each (data, function (id, value) {
+								// Remove keys_prefix from the index
+								id = id.substring(1);
+								if (id !== 'keycount') {
+									config.callbackPre ();
+									option = $("<option></option>")
+										.attr ("value", id)
+										.html (value);
+									config.callbackPost (id, value, option);
+									$(config.agentSelect).append (option);
+								}
+							});
+							$(config.loading).hide ();
+							$select.enable ();
+							config.callbackAfter ();
+						},
+						"json"
+					);
+					opts['disabled'] = 1;
+					jQuery.post ("ajax.php",
+						opts,
+						function (data, status) {
+							jQuery.each (data, function (id, value) {
+								// Remove keys_prefix from the index
+								id = id.substring(1);
+								if (id !== 'keycount') {
+									config.callbackPre ();
+									option = $("<option></option>")
+										.attr ("value", id)
+										.html (value);
+									config.callbackPost (id, value, option);
+									$(config.agentSelect).append (option);
+								}
+							});
+							$(config.loading).hide ();
+							$select.enable ();
+							config.callbackAfter ();
+						},
+						"json"
+					);
+					
+				}
+					
+					
+					
 				});
 			});
 		};

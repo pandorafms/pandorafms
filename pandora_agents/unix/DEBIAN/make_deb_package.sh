@@ -14,7 +14,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-pandora_version="6.1dev-160922"
+pandora_version="7.0dev-170216"
 
 echo "Test if you has the tools for to make the packages."
 whereis dpkg-deb | cut -d":" -f2 | grep dpkg-deb > /dev/null
@@ -37,6 +37,7 @@ mkdir -p temp_package/usr/sbin/
 mkdir -p temp_package/etc/pandora/plugins
 mkdir -p temp_package/etc/pandora/collections
 mkdir -p temp_package/etc/init.d/
+mkdir -p temp_package/lib/systemd/system/
 mkdir -p temp_package/var/log/pandora/
 mkdir -p temp_package/var/spool/pandora/data_out
 mkdir -p temp_package/usr/share/man/man1/
@@ -63,6 +64,7 @@ cp -aRf tentacle_client temp_package/usr/bin/
 cp -aRf pandora_agent temp_package/usr/bin/
 cp -aRf pandora_agent_exec temp_package/usr/bin/pandora_agent_exec
 cp -aRf pandora_agent_daemon temp_package/etc/init.d/pandora_agent_daemon
+cp -aRf pandora_agent_daemon.service temp_package/lib/systemd/system/pandora_agent_daemon.service
 cp -aRf pandora_agent_logrotate temp_package/etc/logrotate.d/pandora_agent
 cp Linux/pandora_agent.conf temp_package/etc/pandora/
 

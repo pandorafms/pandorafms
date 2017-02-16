@@ -482,6 +482,7 @@ $url_snmp = "index.php?" .
 	"filter_status=" . $filter_status . "&" .
 	"refr=" . ((int)get_parameter('refr', 0)) . "&" .
 	"pure=" . $config["pure"] . "&" .
+	"trap_type=" . $trap_type . "&" .
 	"group_by=" . $group_by . "&" .
 	"free_search_string=" . $free_search_string;
 

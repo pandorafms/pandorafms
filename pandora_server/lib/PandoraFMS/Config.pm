@@ -42,8 +42,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "6.1dev";
-my $pandora_build = "160922";
+my $pandora_version = "7.0dev";
+my $pandora_build = "170216";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -167,7 +167,7 @@ sub pandora_get_sharedconfig ($$) {
 	$pa_config->{'replication_limit'} = pandora_get_tconfig_token ($dbh, 'replication_limit', 1000);
 	$pa_config->{'include_agents'} = pandora_get_tconfig_token ($dbh, 'include_agents', 0);
 
-	if ($pa_config->{'include_agents'}== '') {
+	if ($pa_config->{'include_agents'} eq '') {
 		$pa_config->{'include_agents'} = 0;
 	}
 
@@ -195,6 +195,9 @@ sub pandora_load_config {
 	$pa_config->{"dbname"} = "pandora";
 	$pa_config->{"basepath"} = $pa_config->{'pandora_path'}; # Compatibility with Pandora 1.1
 	$pa_config->{"incomingdir"} = "/var/spool/pandora/data_in";
+	$pa_config->{"user"}  = "pandora"; # environment settings default user owner for files generated
+	$pa_config->{"group"} = "apache"; # environment settings default group owner for files generated
+	$pa_config->{"umask"} = "0007"; # environment settings umask applied over chmod (A & (not B))
 	$pa_config->{"server_threshold"} = 30;
 	$pa_config->{"alert_threshold"} = 60;
 	$pa_config->{"log_file"} = "/var/log/pandora_server.log";
@@ -423,6 +426,12 @@ sub pandora_load_config {
 	$pa_config->{"warmup_unknown_on"} = 1; # 6.1
 
 	#$pa_config->{'include_agents'} = 0; #6.1
+	#
+	# External .enc files for XML::Parser.
+	$pa_config->{"enc_dir"} = ""; # > 6.0SP4
+
+	# Enable (1) or disable (0) events related to the unknown status.
+	$pa_config->{"unknown_events"} = 1; # > 6.0SP4
 
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
@@ -549,6 +558,15 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^translate_enterprise_strings\s+([0-1])/i) { 
 			$pa_config->{'translate_enterprise_strings'}= clean_blank($1); 
 		}
+		elsif ($parametro =~ m/^user\s(.*)/i) { 
+			$pa_config->{'user'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^group\s(.*)/i) { 
+			$pa_config->{'group'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^umask\s(.*)/i) { 
+			$pa_config->{'umask'}= clean_blank($1); 
+		}
 		elsif ($parametro =~ m/^dbengine\s(.*)/i) { 
 			$pa_config->{'dbengine'}= clean_blank($1); 
 		}
@@ -606,7 +624,7 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^transactional_threads\s+([0-9]*)/i) {
 			$pa_config->{'transactional_threads'}= clean_blank($1);
 		}
-		elsif ($parametro =~ m/^transactional_threshold\s+([0-9]*)/i) {
+		elsif ($parametro =~ m/^transactional_threshold\s+([0-9]*\.{0,1}[0-9]*)/i) {
 			$pa_config->{'transactional_threshold'}= clean_blank($1);
 		}
 		if ($parametro =~ m/^transactional_pool\s(.*)/i) {
@@ -944,6 +962,12 @@ sub pandora_load_config {
 		#elsif ($parametro =~ m/^include_agents\s+([0-1])/i) {
 		#	$pa_config->{'include_agents'}= clean_blank($1);
 		#}
+		elsif ($parametro =~ m/^enc_dir\s+(.*)/i) {
+			$pa_config->{'enc_dir'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^unknown_events\s+([0-1])/i) {
+			$pa_config->{'unknown_events'} = clean_blank($1);
+		}
 	} # end of loop for parameter #
 
 	# Set to RDBMS' standard port

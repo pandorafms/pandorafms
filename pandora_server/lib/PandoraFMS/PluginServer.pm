@@ -235,6 +235,7 @@ sub data_consumer ($$) {
 				_email_tag_ => undef,
 				_phone_tag_ => undef,
 				_name_tag_ => undef,
+				'_agentcustomfield_\d+_' => undef,
 	);
 	$parameters = subst_alert_macros ($parameters, \%macros, $pa_config, $dbh, $agent, $module);
 
@@ -313,7 +314,7 @@ sub data_consumer ($$) {
 		$agent_os_version = $pa_config->{'servername'}.'_Plugin';
 	}
 
-	pandora_update_agent ($pa_config, $timestamp, $module->{'id_agente'}, $agent_os_version, $pa_config->{'version'}, -1, $dbh);
+	pandora_update_agent ($pa_config, $timestamp, $module->{'id_agente'}, undef, undef, -1, $dbh);
 }
 
 1;

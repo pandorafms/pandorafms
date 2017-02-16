@@ -60,10 +60,14 @@ get_distro () {
 GET_DISTRO="`get_distro`"
 DISTRO=`echo $GET_DISTRO | cut -f 1 -d ":"`
 
-rm /etc/init.d/pandora_server
-rm /etc/init.d/tentacle_serverd
-update-rc.d pandora_server remove
-update-rc.d tentacle_serverd remove
+if [ -x `command -v systemctl` ]; then
+  systemctl disable pandora_server
+  systemctl disable tentacle_serverd
+  systemctl daemon-reload
+else
+  update-rc.d pandora_server remove
+  update-rc.d tentacle_serverd remove
+fi
 
 if [ -d /etc/cron.hourly ]
 then

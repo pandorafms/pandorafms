@@ -11,7 +11,9 @@ from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import NoAlertPresentException
 from selenium.webdriver.remote.webelement import WebElement
+
 import unittest2, time, re
+import logging
 
 class Policies(PandoraWebDriverTestCase):
 
@@ -22,6 +24,7 @@ class Policies(PandoraWebDriverTestCase):
 	policy_name = gen_random_string(6)
 	network_server_module_name = gen_random_string(6)
 
+	logging.basicConfig(filename="Policies.log", level=logging.INFO, filemode='w')
 
 	@is_enterprise
 	def test_A_create_policy(self):
@@ -40,7 +43,8 @@ class Policies(PandoraWebDriverTestCase):
 		element = driver.find_element_by_xpath('//a[contains(.,"'+self.policy_name+'")]')
 		self.assertIsInstance(element,WebElement)
 
-	
+		logging.info("test_A_create_policy is correct")	
+
 	@is_enterprise
 	def test_B_add_network_server_module_to_policy(self):
 		
@@ -54,7 +58,8 @@ class Policies(PandoraWebDriverTestCase):
 		element = driver.find_element_by_xpath('//td[contains(.,"uccessfully")]')
 		self.assertIsInstance(element,WebElement)
 
-	
+		logging.info("test_B_add_network_server_module_to_policy is correct")	
+
 	@is_enterprise
 	def test_C_add_collection_to_policy(self):
 
@@ -77,7 +82,7 @@ class Policies(PandoraWebDriverTestCase):
 		element = driver.find_element_by_xpath('//td[contains(.,"Correct: add the collection in the policy")]')
 		self.assertIsInstance(element,WebElement)
 
-
+		logging.info("test_C_add_collection_to_policy is correct")
 
 	@is_enterprise
 	def test_D_Apply_policy_to_agents(self):
@@ -128,6 +133,62 @@ class Policies(PandoraWebDriverTestCase):
                 module = driver.find_element_by_xpath('//td[contains(.,"'+module_name_2+'")]')
                 self.assertIsInstance(module,WebElement)
 
+		logging.info("test_D_Apply_policy_to_agents is correct")
+
+	@is_enterprise
+	def test_E_Apply_policy_to_agents_with_spaces(self):
+
+		u"""
+		Create a policy and two agents with spaces in name, apply policy in this agents and check that this it works
+		"""
+
+		policy_name = gen_random_string(6)
+		agent_name_1 = "test agent 1"
+		agent_name_2 = "test agent 2"
+		agent_name_3 = "test agent 3"
+		module_name = gen_random_string(6)
+
+		driver = self.driver
+
+		create_agent(driver,agent_name_1,description="First agent by test")
+		create_agent(driver,agent_name_2,description="Second agent by test")
+		create_agent(driver,agent_name_3,description="Third agent by test")
+
+		create_policy(driver,policy_name,"Applications",description="This is policy by test")
+
+		add_module_policy(driver,policy_name,"network_server",driver,module_name=module_name,component_group="Network Management",network_component="Host Alive")
+
+		list_agent = (agent_name_1,agent_name_2,agent_name_3)
+		apply_policy_to_agent(driver,policy_name,list_agent)
+
+
+		search_agent(driver,agent_name_1,go_to_agent=True)
+
+		driver.find_element_by_xpath('//*[@id="menu_tab"]/ul//img[@data-title="Manage"]').click()
+		driver.find_element_by_xpath('//ul[@class="mn"]/li/a/img[@data-title="Modules"]').click()
+
+		module = driver.find_element_by_xpath('//td[contains(.,"'+module_name+'")]')
+		self.assertIsInstance(module,WebElement)
+
+
+		search_agent(driver,agent_name_2,go_to_agent=True)
+
+		driver.find_element_by_xpath('//*[@id="menu_tab"]/ul//img[@data-title="Manage"]').click()
+		driver.find_element_by_xpath('//ul[@class="mn"]/li/a/img[@data-title="Modules"]').click()
+
+		module = driver.find_element_by_xpath('//td[contains(.,"'+module_name+'")]')
+		self.assertIsInstance(module,WebElement)
+
+
+		search_agent(driver,agent_name_3,go_to_agent=True)
+
+		driver.find_element_by_xpath('//*[@id="menu_tab"]/ul//img[@data-title="Manage"]').click()
+		driver.find_element_by_xpath('//ul[@class="mn"]/li/a/img[@data-title="Modules"]').click()
+
+		module = driver.find_element_by_xpath('//td[contains(.,"'+module_name+'")]')
+		self.assertIsInstance(module,WebElement)
+
+		logging.info("test_E_Apply_policy_to_agents_with_spaces is correct")
 
 if __name__ == "__main__":
 	unittest2.main()

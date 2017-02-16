@@ -89,7 +89,7 @@ if (is_ajax ()) {
 		}
 		
 		$fields_rows = array();
-		for ($i = 1; $i <= 10; $i++) {
+		for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
 
 			if (($i == 5) && ($command['id'] == 3)){
 				continue;
@@ -260,7 +260,7 @@ if ($create_command) {
 	$fields_values = array();
 	$info_fields = '';
 	$values = array();
-	for ($i=1;$i<=10;$i++) {
+	for ($i=1;$i<=$config['max_macro_fields'];$i++) {
 		$fields_descriptions[] = (string) get_parameter ('field'.$i.'_description');
 		$fields_values[] = (string) get_parameter ('field'.$i.'_values');
 		$info_fields .= ' Field'.$i.': ' . $fields_values[$i - 1];

@@ -390,6 +390,9 @@ if (! $id_agente) {
 	}*/
 }
 else {
+	$table->head[0] = __('Module') . '&nbsp;' .
+		'<a href="' . $url . '&sort_field=module&sort=up&pure='.$pure.'">' . html_print_image("images/sort_up.png", true, array("style" => $selectModuleUp)) . '</a>' .
+		'<a href="' . $url . '&sort_field=module&sort=down&pure='.$pure.'">' . html_print_image("images/sort_down.png", true, array("style" => $selectModuleDown)) . '</a>';
 	/* Different sizes or the layout screws up */
 	$table->size[0] = '0%';
 	$table->size[1] = '10%';

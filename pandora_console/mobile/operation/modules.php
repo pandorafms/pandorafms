@@ -117,8 +117,8 @@ class Modules {
 		}
 		
 		$this->status = $system->getRequest('status', __("Status"));
-		if (($this->status === __("Status")) || ($this->status == AGENT_MODULE_STATUS_NOT_NORMAL)) {
-			$this->status = AGENT_MODULE_STATUS_NOT_NORMAL;
+		if (($this->status === __("Status")) || ($this->status == AGENT_MODULE_STATUS_ALL)) {
+			$this->status = AGENT_MODULE_STATUS_ALL;
 		}
 		else {
 			$this->default = false;
@@ -278,6 +278,7 @@ class Modules {
 		
 		$total = 0;
 		$modules = array();
+		$modules_db = array();
 		
 		$sql_conditions_base = " WHERE tagente.id_agente = tagente_modulo.id_agente 
 			AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo";
@@ -405,8 +406,34 @@ class Modules {
 			$sql_limit = " LIMIT " . (int)($page * $system->getPageSize()) . "," . (int)$system->getPageSize();
 		}
 		
-		$total = db_get_value_sql($sql_total. $sql);
-		$modules_db = db_get_all_rows_sql($sql_select . $sql . $sql_limit);
+		if ($system->getConfig('metaconsole')) {
+			$servers = db_get_all_rows_sql ('SELECT *
+				FROM tmetaconsole_setup
+				WHERE disabled = 0');
+			if ($servers === false)
+				$servers = array();
+			
+			//$modules_db = array();
+			$total = 0;
+			foreach ($servers as $server) {
+				if (metaconsole_connect($server) != NOERR)
+					continue;
+				
+				$temp_modules = db_get_all_rows_sql($sql_select . $sql . $sql_limit);
+				
+				foreach ($temp_modules as $result_element_key => $result_element_value) {
+					array_push($modules_db, $result_element_value);
+				}
+				$total += db_get_value_sql($sql_total. $sql);
+				
+				metaconsole_restore_db();
+			}
+			
+		}
+		else {
+			$total = db_get_value_sql($sql_total. $sql);
+			$modules_db = db_get_all_rows_sql($sql_select . $sql . $sql_limit);
+		}
 		
 		if (empty($modules_db)) {
 			$modules_db = array();
@@ -416,8 +443,49 @@ class Modules {
 			foreach ($modules_db as $module) {
 				$row = array();
 				
+				$image_status = '';
+				if ($module['utimestamp'] == 0 && (($module['module_type'] < 21 ||
+					$module['module_type'] > 23) && $module['module_type'] != 100)) {
+					$image_status = ui_print_status_image(STATUS_MODULE_NO_DATA,
+						__('NOT INIT'), true);
+				}
+				elseif ($module["estado"] == 0) {
+					$image_status = ui_print_status_image(STATUS_MODULE_OK,
+						__('NORMAL') . ": " . $module["datos"], true);
+				}
+				elseif ($module["estado"] == 1) {
+					$image_status = ui_print_status_image(STATUS_MODULE_CRITICAL,
+						__('CRITICAL') . ": " . $module["datos"], true);
+				}
+				elseif ($module["estado"] == 2) {
+					$image_status = ui_print_status_image(STATUS_MODULE_WARNING,
+						__('WARNING') . ": " . $module["datos"], true);
+				}
+				else {
+					$last_status =  modules_get_agentmodule_last_status(
+						$module['id_agente_modulo']);
+					switch($last_status) {
+						case 0:
+							$image_status = ui_print_status_image(STATUS_MODULE_UNKNOWN,
+								__('UNKNOWN') . " - " . __('Last status') . " " .
+								__('NORMAL') . ": " . $module["datos"], true);
+							break;
+						case 1:
+							$image_status = ui_print_status_image(STATUS_MODULE_UNKNOWN,
+								__('UNKNOWN') . " - " . __('Last status') ." " .
+								__('CRITICAL') . ": " . $module["datos"], true);
+							break;
+						case 2:
+							$image_status = ui_print_status_image(STATUS_MODULE_UNKNOWN,
+								__('UNKNOWN') . " - " . __('Last status') . " " .
+								__('WARNING') . ": " . $module["datos"], true);
+							break;
+					}
+				}
+				
+				
 				$row[0] =
-				$row[__('Module name')] =
+				$row[__('Module name')] = '<span class="tiny" style="margin-right: 5px;">' . $image_status . '</span>' . 
 					'<span class="data module_name">' .
 					ui_print_truncate_text($module['module_name'], 30, false) .
 					"</span>";
@@ -428,6 +496,7 @@ class Modules {
 						ui_print_truncate_text($module['agent_name'], 50, false) .
 						'</span>';
 				}
+				
 				if ($module['utimestamp'] == 0 && (($module['module_type'] < 21 ||
 					$module['module_type'] > 23) && $module['module_type'] != 100)) {
 					$row[5] = $row[__('Status')] = ui_print_status_image(STATUS_MODULE_NO_DATA,
@@ -521,18 +590,58 @@ class Modules {
 					}
 				}
 				
-				$row[7] = $row[__('Data')] = 
-					'<span style="white-space: nowrap;">' .
-					'<span style="display: none;" class="show_collapside">' . $row[__('Status')] . '&nbsp;&nbsp;</span>' .
+				
+				$is_snapshot = is_snapshot_data($module["datos"]);
+	
+				$handle = "snapshot" . "_" . $module["id_agente_modulo"];
+				$url = 'include/procesos.php?agente=' . $module["id_agente_modulo"];
+		
+				$link = "window.open('../operation/agentes/snapshot_view.php?" .
+				"id=" . $module["id_agente_modulo"] .
+				"&refr=" . $module["module_interval"]."','".$handle."','width=700, height=480')";
+	
+				if ($is_snapshot) {
+					if (is_image_data($module["datos"])) {
+						$row[7] = $row[__('Data')] = '<a href="javascript:' . $link . '">' .
+							html_print_image("images/photo.png", true,
+								array("border" => '0',
+								"alt" => "",
+								"title" => __("Snapshot view"))) . '</a> &nbsp;&nbsp;';
+					}
+					else {
+						$row[7] = $row[__('Data')] = '<a href="javascript:' . $link . '">' .
+							html_print_image("images/default_list.png", true,
+							array("border" => '0',
+								"alt" => "",
+								"title" => __("Snapshot view"))) . '</a> &nbsp;&nbsp;';
+					}
+				}			 
+				 else {
+					$row[7] = $row[__('Data')] = '<span style="white-space: nowrap;">' .
+					'<span style="display: none;" class="show_collapside">' .
+						$row[__('Status')] . '&nbsp;&nbsp;</span>' .
 					'<a data-ajax="false" class="ui-link" ' .
-						'href="index.php?page=module_graph&id=' . $module['id_agente_modulo'] . '&id_agent=' . $this->id_agent . '">' .
-					$output . '</a>' . '</span>';
+						'href="index.php?page=module_graph&id=' . 
+					$module['id_agente_modulo'] . '&id_agent=' . 
+					$this->id_agent . '">' . $output . '</a>' . '</span>';
+				}
+				
+				
+		/*
+		
+			'<span style="white-space: nowrap;">' .
+			'<span style="display: none;" class="show_collapside">' .
+				$row[__('Status')] . '&nbsp;&nbsp;</span>' .
+			'<a data-ajax="false" class="ui-link" ' .
+				'href="index.php?page=module_graph&id=' . 
+			$module['id_agente_modulo'] . '&id_agent=' . 
+			$this->id_agent . '">' . $output . '</a>' . '</span>';*/
 				
 				if (!$ajax) {
+					unset($row[0]);
 					if ($this->columns['agent']) {
-						unset($row[0]);
+						unset($row[1]);
 					}
-					unset($row[1]);
 					unset($row[2]);
 					unset($row[4]);
 					unset($row[5]);
@@ -572,12 +681,12 @@ class Modules {
 				$ui->contentAddHtml($table->getHTML());
 			}
 			else {
-				foreach ($listModules['modules'] as $key => $module) {
-					$listModules['modules'][$key][__('Status')] .=
-						'<span style="display: none;" class="show_collapside">' .
-						$listModules['modules'][$key][__('Data')] . 
-						'</span>';
-				}
+				//~ foreach ($listModules['modules'] as $key => $module) {
+					//~ $listModules['modules'][$key][__('Status')] .=
+						//~ '<span style="display: none;" class="show_collapside">' .
+						//~ $listModules['modules'][$key][__('Data')] . 
+						//~ '</span>';
+				//~ }
 				
 				$table = new Table();
 				$table->id = 'list_agent_Modules';
@@ -592,7 +701,7 @@ class Modules {
 			if (!$this->all_modules) {
 				if ($system->getPageSize() < $listModules['total']) {
 					$ui->contentAddHtml('<div id="loading_rows">' .
-							html_print_image('images/spinner.gif', true) .
+							html_print_image('images/spinner.gif', true, false, false, false, false, true) .
 							' ' . __('Loading...') .
 						'</div>');
 					
@@ -639,9 +748,8 @@ class Modules {
 									else {
 										$.each(data.modules, function(key, module) {
 											$(\"table#list_Modules tbody\").append(\"<tr>\" +
-													\"<th class='head_vertical'></th>\" +
-													\"<td class='cell_1'><b class='ui-table-cell-label'>" . __('Module name') . "</b>\" + module[0] + \"</td>\" +
-													\"<td class='cell_0'><b class='ui-table-cell-label'>" . __('Agent name') . "</b>\" + module[1] + \"</td>\" +
+													\"<td class='cell_0'><b class='ui-table-cell-label'>" . __('Module name') . "</b>\" + module[0] + \"</td>\" +
+													\"<td class='cell_1'><b class='ui-table-cell-label'>" . __('Agent name') . "</b>\" + module[1] + \"</td>\" +
 													\"<td class='cell_2'><b class='ui-table-cell-label'>" . __('Status') . "</b>\" + module[5] + \"</td>\" +
 													\"<td class='cell_3'><b class='ui-table-cell-label'>" . __('Interval') . "</b>\" + module[4] + \"</td>\" +
 													\"<td class='cell_4'><b class='ui-table-cell-label'>" . __('Timestamp') . "</b>\" + module[6] + \"</td>\" +

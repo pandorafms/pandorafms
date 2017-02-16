@@ -429,6 +429,11 @@ function servers_get_info ($id_server = -1) {
 				$server["type"] = "enterprise satellite";
 				$id_modulo = 0;
 				break;
+			case SERVER_TYPE_ENTERPRISE_TRANSACTIONAL:
+				$server["img"] = html_print_image ("images/transactional_map.png", true, array ("title" => __('Enterprise Transactional server')));
+				$server["type"] = "enterprise transactional";
+				$id_modulo = 0;
+				break;
 			default:
 				$server["img"] = '';
 				$server["type"] = "unknown";

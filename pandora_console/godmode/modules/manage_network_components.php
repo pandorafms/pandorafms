@@ -38,9 +38,18 @@ if (defined('METACONSOLE')) {
 	$sec = 'advanced';
 }
 else {
+	
+	/* Hello there! :)
+
+We added some of what seems to be "buggy" messages to the openSource version recently. This is not to force open-source users to move to the enterprise version, this is just to inform people using Pandora FMS open source that it requires skilled people to maintain and keep it running smoothly without professional support. This does not imply open-source version is limited in any way. If you check the recently added code, it contains only warnings and messages, no limitations except one: we removed the option to add custom logo in header. In the Update Manager section, it warns about the 'danger’ of applying automated updates without a proper backup, remembering in the process that the Enterprise version comes with a human-tested package. Maintaining an OpenSource version with more than 500 agents is not so easy, that's why someone using a Pandora with 8000 agents should consider asking for support. It's not a joke, we know of many setups with a huge number of agents, and we hate to hear that “its becoming unstable and slow” :(
+
+You can of course remove the warnings, that's why we include the source and do not use any kind of trick. And that's why we added here this comment, to let you know this does not reflect any change in our opensource mentality of does the last 14 years.
+
+*/
+	
 	ui_print_page_header (__('Module management') . ' &raquo; ' .
 		__('Network component management'), "", false,
-		"network_component", true,"sell",true,"module");
+		"network_component", true,"sell",true,"modulemodal");
 	$sec = 'gmodules';
 }
 
@@ -70,13 +79,17 @@ if (!empty($macros)) {
 		$macros[$k]['value'] = get_parameter($m['macro'], '');
 	}
 	
-	$macros = json_encode($macros);
+	$macros = io_json_mb_encode($macros);
 }
 
 $max_timeout = (int) get_parameter ('max_timeout');
 $max_retries = (int) get_parameter ('max_retries');
 $id_modulo = (int) get_parameter ('id_component_type');
 $id_plugin = (int) get_parameter ('id_plugin');
+$dynamic_interval = (int) get_parameter('dynamic_interval');
+$dynamic_max = (int) get_parameter('dynamic_max');
+$dynamic_min = (int) get_parameter('dynamic_min');
+$dynamic_two_tailed = (int) get_parameter('dynamic_two_tailed');
 $min_warning = (float) get_parameter ('min_warning');
 $max_warning = (float) get_parameter ('max_warning');
 $str_warning = (string) get_parameter ('str_warning');
@@ -126,7 +139,7 @@ $snmp3_security_level = (string) get_parameter('snmp3_security_level');
 
 $throw_unknown_events = get_parameter('throw_unknown_events', false);
 //Set the event type that can show.
-$disabled_types_event = array(EVENTS_GOING_UNKNOWN => (int)!$throw_unknown_events);
+$disabled_types_event = array(EVENTS_GOING_UNKNOWN => (int)$throw_unknown_events);
 $disabled_types_event = json_encode($disabled_types_event);
 
 $create_component = (bool) get_parameter ('create_component');
@@ -203,6 +216,10 @@ if ($create_component) {
 				'max_timeout' => $max_timeout,
 				'max_retries' => $max_retries,
 				'history_data' => $history_data,
+				'dynamic_interval' => $dynamic_interval,
+				'dynamic_max' => $dynamic_max,
+				'dynamic_min' => $dynamic_min,
+				'dynamic_two_tailed' => $dynamic_two_tailed,
 				'min_warning' => $min_warning,
 				'max_warning' => $max_warning,
 				'str_warning' => $str_warning,
@@ -289,6 +306,10 @@ if ($update_component) {
 				'max_timeout' => $max_timeout,
 				'max_retries' => $max_retries,
 				'history_data' => $history_data,
+				'dynamic_interval' => $dynamic_interval,
+				'dynamic_max' => $dynamic_max,
+				'dynamic_min' => $dynamic_min,
+				'dynamic_two_tailed' => $dynamic_two_tailed,
 				'min_warning' => $min_warning,
 				'max_warning' => $max_warning,
 				'str_warning' => $str_warning,
@@ -417,6 +438,10 @@ $url = ui_get_url_refresh (array ('offset' => false,
 	'id_modulo' => false,
 	'id_plugin' => false,
 	'history_data' => false,
+	'dynamic_interval' => false,
+	'dynamic_max' => false,
+	'dynamic_min' => false,
+	'dynamic_two_tailed' => false,
 	'min_warning' => false,
 	'max_warning' => false,
 	'str_warning' => false,

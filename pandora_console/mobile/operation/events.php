@@ -80,6 +80,7 @@ class Events {
 					
 					$events = array();
 					$end = 1;
+					
 					foreach ($events_db as $event) {
 						$end = 0;
 						
@@ -101,10 +102,10 @@ class Events {
 							$img_st = str_replace("white.png", "dark.png", $img_st);
 						}
 						
-						$status_icon = html_print_image($img_st, true);
+						$status_icon = html_print_image($img_st, true, false, false, false, false, true);
 						
 						$row = array();
-						$row[] = '<b class="ui-table-cell-label">' . __('Event Name') . '</b><a href="javascript: openDetails(' . $event['id_evento'] . ')"><div class="event_name">' . io_safe_output($event['evento']) . '</div></a>';
+						$row[] = '<b class="ui-table-cell-label">' . __('Event Name') . '</b><a href="javascript: openDetails(' . $event['id_evento'] . ')"><div class="event_name">' . io_safe_output(str_replace(array('&nbsp;','&#20;'), ' ', $event['evento'])) . '</div></a>';
 						
 						if ($event["id_agente"] == 0) {
 							$agent_name = __('System');
@@ -114,7 +115,7 @@ class Events {
 						}
 						
 						$row_1 = '<span class="events_agent">' . $agent_name . '</span>';
-						$row_1 .= '<span class="events_timestamp">' . $status_icon . '<br>' . ui_print_timestamp ($event['timestamp_rep'], true, array('units' => 'tiny')) . '</span>';
+						$row_1 .= '<span class="events_timestamp">' .  ui_print_timestamp ($event['timestamp_rep'], true, array('units' => 'tiny')) . $status_icon . '</span>';
 						
 						$row[] = $row_1;
 						
@@ -130,13 +131,17 @@ class Events {
 					
 					$id_event = $system->getRequest('id_event', 0);
 					
-					$event = events_get_event($id_event);
+					$meta = false;
+					if ($system->getConfig('metaconsole'))
+						$meta = true;
+					
+					$event = events_get_event($id_event, false, $meta);
 					if ($event) {
 						//Check if it is a event from module.
 						if ($event['id_agentmodule'] > 0) {
 							$event['module_graph_link'] =
 								'<a data-ajax="false" href="index.php?page=module_graph&id=' . $event['id_agentmodule'] . '">' .
-								html_print_image('images/chart_curve.png', true, array ("style" => 'vertical-align: middle;')) .
+								html_print_image('images/chart_curve.png', true, array ("style" => 'vertical-align: middle;'), false, false, false, true) .
 								'</a>';
 						}
 						else {
@@ -220,7 +225,7 @@ class Events {
 							array ("class" => "image_status",
 								"width" => 12,
 								"height" => 12,
-								"title" => $event_criticity));						
+								"title" => $event_criticity), false, false, false, true);						
 						
 						if ($event['estado'] == 1) {
 							$user_ack = db_get_value('fullname', 'tusuario', 'id_user', $event['id_usuario']);
@@ -252,7 +257,7 @@ class Events {
 						}
 						$event["status"] = $title_st;
 						$event["status"] .= ' ';
-						$event["status"] .= html_print_image($img_st,true);
+						$event["status"] .= html_print_image($img_st,true, false, false, false, false, true);
 						
 						$event["group"] = groups_get_name ($event["id_grupo"], true);
 						$event["group"] .= ui_print_group_icon ($event["id_grupo"], true);
@@ -720,7 +725,7 @@ class Events {
 		}
 		
 		$system = System::getInstance();
-		$groups = users_get_groups($system->getConfig('id_user'), 'IR');
+		$groups = users_get_groups($system->getConfig('id_user'), 'ER');
 		
 		//Group selection
 		if ($this->group > 0 && in_array ($this->group, array_keys ($groups))) {
@@ -758,13 +763,18 @@ class Events {
 			$pagination = $system->getPageSize();
 		}
 		
+		$meta = false;
+		if ($system->getConfig('metaconsole'))
+			$meta = true;
+		
 		$events_db = events_get_events_grouped($sql_post,
-			$offset, $pagination, false, false);
+			$offset, $pagination, $meta, false);
+		
 		if (empty($events_db)) {
 			$events_db = array();
 		}
 		
-		$total_events = events_get_total_events_grouped($sql_post);
+		$total_events = events_get_total_events_grouped($sql_post, $meta);
 		
 		return array('events' => $events_db, 'total' => $total_events);
 	}
@@ -783,7 +793,7 @@ class Events {
 			$ui->contentAddHtml($table->getHTML());
 			
 			$ui->contentAddHtml('<div id="loading_rows">' .
-					html_print_image('images/spinner.gif', true) .
+					html_print_image('images/spinner.gif', true, false, false, false, false, true) .
 					' ' . __('Loading...') .
 				'</div>' . $no_events);
 			
@@ -956,10 +966,10 @@ class Events {
 						var new_rows = \"\";
 						$.each(data.events, function(key, event) {
 							new_rows = \"<tr class='events \" + event[2] + \"'>\" +
-									\"<td class='cell_0'>\" +
+									\"<td class='cell_0' style='vertical-align:middle;'>\" +
 										event[0] +
 									\"</td>\" +
-									\"<td>\" + event[1] + \"</td>\" +
+									\"<td style='vertical-align:middle;'>\" + event[1] + \"</td>\" +
 								\"</tr>\" + new_rows;
 							});
 							

@@ -69,7 +69,9 @@ else {
 }
 
 // Check if mysqli is available
-$config["mysqli"] = extension_loaded(mysqli);
+if (!(isset($config["mysqli"]))) {
+	$config["mysqli"] = extension_loaded(mysqli);
+}
 
 $config['start_time'] = microtime (true);
 

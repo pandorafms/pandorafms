@@ -1364,11 +1364,18 @@ DIV.nodata_container {
 .widget_agent_module > th {
     background-color: #373737;
 }
-#list_agent_Modules >tbody > tr > td {
+#list_agent_Modules > tbody > tr > td {
 	clear: none;
 	vertical-align: middle;
 	padding: 0px;
 }
 #list_agent_Modules > tbody > tr > td.cell_0  {
 	border-top: 0px none;	
+}
+
+.legend_graph td.legendLabel > div {
+	font-size: 12px !important;
+}
+.legend_graph td.legendLabel {
+	font-size: 12px !important;
 }

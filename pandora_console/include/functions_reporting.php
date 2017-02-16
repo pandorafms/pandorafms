@@ -3956,8 +3956,8 @@ function sla_check_value($value, $min, $max, $inverse_interval = 0) {
 	if (!isset($inverse_interval)) {
 		$inverse_interval = 0;
 	}
-	if ( (!isset($max)) && (!isset($min)) ) {
-		return ($inverse_interval==0)?true:false;
+	if ( (!isset($max)) && (!isset($min)) ) { // disabled thresholds
+		return true;
 	}
 	if ($max == $min) { // equal
 		if ($value == $max) {
@@ -4290,8 +4290,8 @@ function reporting_advanced_sla ($id_agent_module, $time_from = null, $time_to =
 			$max_value = null;
 		}
 		if ( (!(isset($max_value))) && (!(isset($min_value))) ) {
-			$max_value = 0;
-			$min_value = 0;
+			$max_value = null;
+			$min_value = null;
 		}
 	}
 

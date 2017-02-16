@@ -365,7 +365,7 @@ switch ($action) {
 		}
 		// Page header for normal console
 		else
-			ui_print_page_header (__('Reporting').' &raquo; '.__('Custom reporting'), "images/op_reporting.png", false, "", false, $buttons);
+			ui_print_page_header (__('Reporting').' &raquo; '.__('Custom reporting'), "images/op_reporting.png", false, "", false, $buttons,false,'',80);
 		
 		
 		if ($action == 'delete_report') {
@@ -1908,7 +1908,7 @@ switch ($action) {
 			}
 			// Page header for normal console
 			else
-				ui_print_page_header (__('Reporting') . $subsection, "images/op_reporting.png", false, "", false, $buttons);
+				ui_print_page_header (__('Reporting') . $subsection, "images/op_reporting.png", false, "", false, $buttons,false,'',80);
 			
 			
 			reporting_enterprise_select_main_tab($action);

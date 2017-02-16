@@ -1556,7 +1556,7 @@ function config_process_config () {
 	//Daniel maya 02/06/2016 Display menu with click --END
 	if (isset($config['enterprise_installed']) && $config['enterprise_installed'] == 1) {
 		if (!isset($config["service_label_font_size"])) {
-			config_update_value ('service_label_font_size', 11);
+			config_update_value ('service_label_font_size', 20);
 		}
 
 		if (!isset($config["service_item_padding_size"])) {

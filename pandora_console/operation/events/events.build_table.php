@@ -407,14 +407,12 @@ else {
 		}
 		
 		if (in_array('evento', $show_fields)) {
-			$event_with_formated_data = get_data_formated_in_event_name(io_safe_output($event["evento"]));
-			
 			// Event description
 			$data[$i] = '<span title="'.$event["evento"].'" class="f9">';
 			if($allow_action) {
 				$data[$i] .= '<a href="javascript:" onclick="show_event_dialog(' . $event["id_evento"] . ', '.$group_rep.');">';
 			}
-			$data[$i] .= '<span class="'.$myclass.'" style="font-size: 7.5pt;">' . ui_print_truncate_text ($event_with_formated_data, 160) . '</span>';
+			$data[$i] .= '<span class="'.$myclass.'" style="font-size: 7.5pt;">' . ui_print_truncate_text (io_safe_output($event["evento"]), 160) . '</span>';
 			if($allow_action) {
 				$data[$i] .= '</a>';
 			}

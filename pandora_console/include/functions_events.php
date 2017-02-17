@@ -4076,17 +4076,7 @@ function events_list_events_grouped_agents($sql) {
 	return html_print_table($table,true);
 }
 
-function get_data_formated_in_event_name ($event_name) {
-	if (preg_match('/\(\d+\.\d+\)/', $event_name)) {
-		$event_name_parts = explode(" (", $event_name);
-		$data = explode(")", $event_name_parts[1]);
-		$data_event = (int)$data[0];
-		$data_event = remove_right_zeros(number_format($data_event, $config['graph_precision']));
-		return $event_name_parts[0] . " (" . $data_event . ")";
-	}
-	else {
-		return $event_name;
-	}
-}
+
+
 
 ?>

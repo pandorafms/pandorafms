@@ -123,7 +123,8 @@ function visual_map_print_item($mode = "read", $layoutData,
 	}
 	
 	$agentname = agents_get_name(agents_get_module_id ($id_module));
-	$label = str_replace($agentname,ui_print_truncate_text($agentname, 'agent_small', false, true, false, '…', false),$label);
+	$label = str_replace(ui_print_truncate_text($agentname, 
+		'agent_small', false, true, false, '…', false), $agentname, $label);
 	$text = '<span id="text_' . $id . '" class="text">' . $label .'</span>';
 
 	if($height == 0){

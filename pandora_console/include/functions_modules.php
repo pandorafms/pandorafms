@@ -2432,4 +2432,8 @@ function modules_get_modules_name ($sql_from , $sql_conditions = '', $meta = fal
 	}
 }
 
+function modules_get_agentmodule_mininterval($id_agent) {
+	$sql = sprintf('SELECT min(current_interval) min_interval from tagente_estado where id_agente = %d', $id_agent);
+	return db_get_row_sql($sql);
+}
 ?>

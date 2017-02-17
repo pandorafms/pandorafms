@@ -2462,22 +2462,13 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 	if(get_parameter('pure')==1){
 		echo 'width:100%;height:100%;position:absolute;';
 	}
-	
-	
-	echo 'background-color:'.$layout["background_color"].';"><div id="background_'.$id_layout.'"
-		style="margin:0px auto;';
-
-		if(get_parameter('pure')==1){
-			echo 'top: 50%;
-    transform: translate(-0%, -50%);
-    -webkit-transform: translate(-0%, -50%);';
-		}		
 		
- echo 'text-align:;
-			z-index: 0;
-			position:relative;
-			width:' . $mapWidth . 'px;
-			height:' . $mapHeight . 'px;">';
+	echo 'background-color:'.$layout["background_color"].';"><div id="background_'.$id_layout.'"
+				style="margin:0px auto;text-align:
+				z-index: 0;
+				position:relative;
+				width:' . $mapWidth . 'px;
+				height:' . $mapHeight . 'px;">';
 	echo "<img src='" .
 		ui_get_full_url($backgroundImage) . "' width='100%' height='100%' />";
 	

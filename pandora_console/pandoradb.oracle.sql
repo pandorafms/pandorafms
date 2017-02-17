@@ -91,6 +91,7 @@ CREATE TABLE tagente (
 	custom_id VARCHAR2(255) DEFAULT '',
 	server_name VARCHAR2(100) DEFAULT '',
 	cascade_protection NUMBER(5, 0) DEFAULT 0,
+	cascade_protection_module NUMBER(5, 0) DEFAULT 0,
 	--number of hours of diference with the server timezone
 	timezone_offset NUMBER(5, 0) DEFAULT 0,
 	--path in the server to the image of the icon representing the agent

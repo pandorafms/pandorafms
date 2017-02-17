@@ -2391,7 +2391,8 @@ function ui_get_full_url ($url = '', $no_proxy = false, $add_name_php_file = fal
  * @return string Header HTML
  */
 
-function ui_print_page_header ($title, $icon = "", $return = false, $help = "", $godmode = false, $options = "", $alias = "") {
+
+function ui_print_page_header ($title, $icon = "", $return = false, $help = "", $godmode = false, $options = "", $modal = false, $message = "", $numChars = GENERIC_SIZE_TEXT, $alias = "") {
 	$title = io_safe_input_html($title);
 	if (($icon == "") && ($godmode == true)) {
 		$icon = "images/gm_setup.png";
@@ -2421,11 +2422,10 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 	if(strpos($title, "Monitoring » Services »") != -1){
 		$title = str_replace("Monitoring » Services » Service Map » ",'',$title);
 	}
-	
-	$buffer .= '<ul class="mn"><li class="' . $type . '">&nbsp;' . '&nbsp; ';
+
 	if(empty($alias)){
-		$buffer .= '<span style="">' .
-			ui_print_truncate_text($title, 38);
+		$buffer .= '<span style="margin-right:10px;">' .
+		ui_print_truncate_text($title, $numChars);
 	}else{
 		$buffer .= '<span style="">' .
 			'<span title='.$title.'>'.$alias.'</span>';

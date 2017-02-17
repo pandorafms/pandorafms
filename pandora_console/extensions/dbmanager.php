@@ -14,7 +14,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-function dbmanager_query ($sql, &$error) {
+function dbmanager_query ($sql, &$error, $dbconnection) {
 	global $config;
 	
 	switch ($config["dbtype"]) {
@@ -25,22 +25,49 @@ function dbmanager_query ($sql, &$error) {
 				return false;
 			
 			$sql = html_entity_decode($sql, ENT_QUOTES);
-			
-			$result = mysql_query ($sql);
-			if ($result === false) {
-				$backtrace = debug_backtrace ();
-				$error = mysql_error ();
-				return false;
+			if ($config["mysqli"]) {
+				$result = mysqli_query ($dbconnection, $sql);
+				if ($result === false) {
+					$backtrace = debug_backtrace ();
+					$error = mysqli_error ($dbconnection);
+					return false;
+				}
+			}
+			else{
+				$result = mysql_query ($sql, $dbconnection);
+				if ($result === false) {
+					$backtrace = debug_backtrace ();
+					$error = mysql_error ();
+					return false;
+				}	
 			}
 			
 			if ($result === true) {
-				return mysql_affected_rows ();
+				if($config["mysqli"]){
+					return mysqli_affected_rows ($dbconnection);
+				}
+				else{
+					return mysql_affected_rows ();	
+				}
 			}
 			
-			while ($row = mysql_fetch_array ($result, MYSQL_ASSOC)) {
-				array_push ($retval, $row);
+			if($config["mysqli"]){
+				while ($row = mysqli_fetch_array ($result, MYSQL_ASSOC)) {
+					array_push ($retval, $row);
+				}
 			}
-			mysql_free_result ($result);
+			else{
+				while ($row = mysql_fetch_array ($result, MYSQL_ASSOC)) {
+					array_push ($retval, $row);
+				}
+			}
+
+			if($config["mysqli"]){
+				mysqli_free_result ($result);
+			}
+			else{
+				mysql_free_result ($result);	
+			}
 			
 			if (! empty ($retval))
 				return $retval;
@@ -131,8 +158,10 @@ function dbmgr_extension_main () {
 	echo "<hr />";
 	echo "<br />";
 	
+	$dbconnection = $config['dbconnection'];
 	$error = '';
-	$result = dbmanager_query ($sql, $error);
+	
+	$result = dbmanager_query ($sql, $error, $dbconnection);
 	
 	if ($result === false) {
 		echo '<strong>An error has occured when querying the database.</strong><br />';
@@ -152,6 +181,7 @@ function dbmgr_extension_main () {
 	}
 	
 	echo "<div style='overflow: auto;'>";
+	$table = new stdClass();
 	$table->width = '100%';
 	$table->class = 'databox data';
 	$table->head = array_keys ($result[0]);

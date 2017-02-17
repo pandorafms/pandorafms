@@ -1214,7 +1214,7 @@ function set_positions_graph() {
 			return d.y - ((node_radius / 0.8) / 2);
 		});
 	
-	var position_text = node_radius * 0.6;
+	var position_text = node_radius * 0.8;
 	
 	node.selectAll(".node_text")
 		.attr("x", function(d) {
@@ -2893,7 +2893,7 @@ function draw_elements_graph() {
 					return "#link_id_" + d.id_db;
 			})
 			.append("tspan")
-				.attr("style", "font-size: 8px; " +
+				.attr("style", "font-size: 12px; " +
 					"font-style:normal; " +
 					"font-weight:normal; " +
 					"line-height: 100%; " +
@@ -2919,7 +2919,7 @@ function draw_elements_graph() {
 				return "#link_reverse_id_" + d.id_db;
 			})
 			.append("tspan")
-				.attr("style", "font-size: 8px; " +
+				.attr("style", "font-size: 12px; " +
 					"font-style:normal; " +
 					"font-weight:normal; " +
 					"line-height: 100%; " +
@@ -3152,7 +3152,7 @@ function draw_elements_graph() {
 	node_temp.append("title")
 		.text(function(d) {return d.text; });
 	
-	var font_size = (node_radius / 2.8);
+	var font_size = (node_radius / 1.5);
 	
 	node_temp.append("text")
 		.attr("class", "node_text")

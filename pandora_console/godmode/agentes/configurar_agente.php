@@ -559,7 +559,7 @@ if ($id_agente) {
 	}
 	$agent = db_get_row ('tagente', 'id_agente', $id_agente);
 	ui_print_page_header ($agent["nombre"],
-	"images/setup.png", false, $help_header , true, $onheader,$agent["alias"] . ' ' . $tab_description);
+	"images/setup.png", false, $help_header , true, $onheader, false, '', GENERIC_SIZE_TEXT, $agent["alias"] . ' ' . $tab_description);
 }
 else {
 	// Create agent 

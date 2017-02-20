@@ -125,35 +125,40 @@ $table->data[3][0] = __('Background image');
 $table->data[3][1] = html_print_input_file('background_image',true);
 $table->data[4][0] = __('Background color');
 
-if($action == 'new'){
-$table->data[4][1] .= html_print_input_text ('background_color', 'white', '', 8, 8, true);	
+if ($action == 'new') {
+	$table->data[4][1] .= html_print_input_text ('background_color', 
+		'white', '', 8, 8, true);	
 }
-else{
-	$table->data[4][1] .= html_print_input_text ('background_color', $background_color, '', 8, 8, true);
+else {
+	$table->data[4][1] .= html_print_input_text ('background_color', 
+		$background_color, '', 8, 8, true);
 }
-
 
 $table->data[5][0] = __('Size - (Width x Height)');
 
-if($action == 'new'){
-$table->data[5][1] = '<button id="modsize" style="margin-right:20px;" value="modsize">Set custom size</button>';
-}
-else{
-$table->data[5][1] = '<button id="modsize" style="margin-right:20px;" value="modsize">Set custom size</button>';
-}
+$table->data[5][1] = '<button id="modsize" 
+	style="margin-right:20px;" value="modsize">' . 
+	__('Set custom size') . '</button>';
 
-$table->data[5][1] .= '<span class="opt" style="visibility:hidden;">'.html_print_input_text('width', 1024, '', 10, 10, true , false) .
-	' x ' .
+$table->data[5][1] .= '<span class="opt" style="visibility:hidden;">' . 
+	html_print_input_text('width', 1024, '', 10, 10, true , false) .
+		' x ' .
 	html_print_input_text('height', 768, '', 10, 10, true, false).'</span>';
 
-if($action == 'new'){
-$table->data[5][1] .= '<span class="opt" style="visibility:hidden;">'.'<button id="getsize" style="margin-left:20px;" value="modsize">Set default size</button>'.'</span>';
+$table->data[5][1] .= '<span class="opt" style="visibility:hidden;">
+			<button id="getsize" style="margin-left:20px;" 
+			value="modsize">' . __('Set default size') . 
+			'</button></span>';
+
+if ($action == 'new') {
+	$table->data[5][2] = '<img id="imagen" style="display:none" 
+	src="">';	
 }
-else{
-$table->data[5][1] .= '<span class="opt" style="visibility:hidden;">'.'<button id="getsize" style="margin-left:20px;" value="modsize">Set default size</button>'.'</span>';
+else {
+	$table->data[5][2] = '<img id="imagen" style="display:none" 
+	src="images/console/background/'.$background.'">';
 }
 
-$table->data[5][2] = '<img id="imagen" style="display:none" src="images/console/background/'.$background.'">';
 $table->data[0][3] = $table->data[0][4] = $table->data[0][5] = '';
 if ($action == 'new') {
 	$textButtonSubmit = __('Save');
@@ -166,18 +171,10 @@ else {
 
 html_print_table($table);
 
-	echo '<div class="action-buttons" style="width: '.$table->width.'">';
-	if($action == 'new'){
-		html_print_submit_button ($textButtonSubmit, 'update_layout', false,
-			'class="' . $classButtonSubmit . '"');
-	}
-	else{
-		html_print_submit_button ($textButtonSubmit, 'update_layout', false,
-			'class="' . $classButtonSubmit . '"');
-	}
-	echo '</div>';
-
-
+echo '<div class="action-buttons" style="width: ' . $table->width . '">';
+html_print_submit_button ($textButtonSubmit, 'update_layout', false,
+	'class="' . $classButtonSubmit . '"');
+echo '</div>';
 
 echo "</form>";
 ?>

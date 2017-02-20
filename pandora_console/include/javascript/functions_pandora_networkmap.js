@@ -1560,7 +1560,7 @@ function show_menu(item, data) {
 							var selection = d3.selectAll('.node_selected');
 							selection = selection[0];
 							if (selection.length > 1) {
-								alert("Yo no tengo dedo, por eso no poido trabajo, una ayuda, amorfa");
+								alert("Only one-one relations (one father, one son)");
 							}
 							else {
 								add_interface_link(data);
@@ -1603,7 +1603,7 @@ function show_menu(item, data) {
 							var selection = d3.selectAll('.node_selected');
 							selection = selection[0];
 							if (selection.length > 1) {
-								alert("Yo no tengo dedo, por eso no poido trabajo");
+								alert("Only one-one relations (one father, one son)");
 							}
 							else {
 								set_parent(data);

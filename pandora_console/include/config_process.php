@@ -22,7 +22,7 @@
 /**
  * Pandora build version and version 
  */
-$build_version = 'PC170217';
+$build_version = 'PC170220';
 $pandora_version = 'v7.0dev';
 
 // Do not overwrite default timezone set if defined.
@@ -166,7 +166,7 @@ if (!isset($config['inventory_changes_blacklist'])) {
 //NEW UPDATE MANAGER URL
 if (!isset($config['url_update_manager'])) {
 	config_update_value('url_update_manager',
-		'https://firefly.artica.es/pandoraupdate7/server.php');
+		'https://licensing.artica.es/pandoraupdate7/server.php');
 }
 
 if (defined('METACONSOLE')) {

@@ -1403,10 +1403,20 @@ function reporting_html_agent_module($table, $item) {
 									$row['agent_name']),
 								true, array('width' => '20px', 'height' => '20px'));
 							break;
-						case AGENT_STATUS_ALERT_FIRED:
+						case AGENT_MODULE_STATUS_NORMAL_ALERT:
+						case AGENT_MODULE_STATUS_WARNING_ALERT:
+						case AGENT_MODULE_STATUS_CRITICAL_ALERT:
 							$table_data .= ui_print_status_image(
 								'module_alertsfired.png',
 								__("%s in %s : ALERTS FIRED",
+									$module_name,
+									$row['agent_name']),
+								true, array('width' => '20px', 'height' => '20px'));
+							break;
+						case 4:
+							$table_data .= ui_print_status_image(
+								'module_no_data.png',
+								__("%s in %s : Not initialize",
 									$module_name,
 									$row['agent_name']),
 								true, array('width' => '20px', 'height' => '20px'));
@@ -1429,6 +1439,7 @@ function reporting_html_agent_module($table, $item) {
 		$table_data .= "<tr><td class='legend_square_simple'><div style='background-color: " . COL_WARNING . ";'></div></td><td>" . __("Yellow cell when the module has a warning status") . "</td></tr>";
 		$table_data .= "<tr><td class='legend_square_simple'><div style='background-color: " . COL_NORMAL . ";'></div></td><td>" . __("Green cell when the module has a normal status") . "</td></tr>";
 		$table_data .= "<tr><td class='legend_square_simple'><div style='background-color: " . COL_UNKNOWN . ";'></div></td><td>" . __("Grey cell when the module has an unknown status") . "</td></tr>";
+		$table_data .= "<tr><td class='legend_square_simple'><div style='background-color: " . COL_NOTINIT . ";'></div></td><td>" . __("Cell turns grey when the module is in 'not initialize' status") . "</td></tr>";
 		$table_data .= "</table>";
 		$table_data .= "</div>";
 		

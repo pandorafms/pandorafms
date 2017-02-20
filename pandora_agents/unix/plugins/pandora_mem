@@ -33,7 +33,7 @@ my $freemem=`cat /proc/meminfo | grep 'MemFree' | awk '{ print \$2 } '`;
 my $cached=`cat /proc/meminfo | grep '^Cached:' | awk '{ print \$2 } '`;
 my $cachedswap=`cat /proc/meminfo | grep '^SwapCached:' | awk '{ print \$2 }'`;
 my $total_meminfo=`cat /proc/meminfo | grep 'MemTotal:' | awk '{ print \$2 }'`;
-my $available=$freemem+$cached+$cachedwap;
+my $available=$freemem+$cached+$cachedswap;
 my $available_percent = floor(($available / $total_meminfo)*100);
 
 

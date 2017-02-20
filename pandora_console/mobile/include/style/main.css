@@ -34,6 +34,10 @@ body {
 	
 }
 
+.agent_graphs, .events_bar {
+	padding-top: 10px;
+}
+
 #tactical1 *, #tactical2 * {
 	font-weight: bold;
 }
@@ -520,11 +524,32 @@ table.event_details td.cell_event_name {
 }
 
 .agent_details {
-	line-height: 35px;
+	padding: 10px 0px 10px 0px;
+}
+.agent_details > img {
+	vertical-align: middle;
+	width: 20px;
+}
+.agent_os{
+	float: right;
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	padding: 10px;
 }
 
-.agent_details img {
-	float: left;
+.agent_list_ips {
+	padding: 10px 0px 10px 0px;
+}
+.agent_list_ips > img {
+	vertical-align: middle;
+	width: 20px;
+}
+.agent_last_contact {
+	padding: 10px 0px 10px 0px;
+}
+.agent_description {
+	padding: 10px 0px 10px 0px;
 }
 
 .agent_name {
@@ -544,8 +569,8 @@ table.event_details td.cell_event_name {
 }
 
 #list_agents td {
-	height: 35px;
-	padding-top: 20px;
+	height: 25px;
+	padding-top: 10px;
 }
 
 .agents_tiny_stats_tactical {
@@ -554,7 +579,33 @@ table.event_details td.cell_event_name {
 	width: 100%;
 }
 
-@media screen and (max-width: 25em) {
+@media screen and (max-width: 34.99em) {
+	#list_agents td {
+		height: 35px;
+		padding-top: 7px;
+		display: table-cell;
+		clear: none;
+		padding-left: 0px !important;
+		padding-right: 0px !important;
+	}
+	
+	#list_agents td.cell_0 {
+		width: 45%;
+		border-top: 0px none;
+	}
+	#list_agents td.cell_0>span.tiny>img {
+		width: 5px;
+		height: 30px;
+		margin-top: -6px;
+		margin-left: 0px;
+	}
+	#list_agents td.cell_5 {
+		width: 30%;
+	}
+	#list_agents td.cell_6 {
+		width: 25%;
+	}
+
 	#list_agents .cell_2 .ui-table-cell-label,
 	#list_agents .cell_3 .ui-table-cell-label,
 	#list_agents .cell_6 .ui-table-cell-label,
@@ -572,7 +623,6 @@ table.event_details td.cell_event_name {
 	
 	#list_agents .cell_2,
 	#list_agents .cell_3,
-	#list_agents .cell_6,
 	#list_agents .cell_7 {
 		display: inline !important;
 		float: none !important;
@@ -594,7 +644,7 @@ table.event_details td.cell_event_name {
 	}
 	
 	#list_agents .show_collapside {
-		display: inline !important;
+		display: none !important;
 	}
 	
 	#list_agents .cell_1,
@@ -605,15 +655,23 @@ table.event_details td.cell_event_name {
 	}
 	
 	#list_agents .cell_0 .ui-link {
-		font-size: 15px;
+		font-size: 12px;
 	}
 	
 	#list_agents .cell_6 .show_collapside {
-		display: inline !important;
+		display: none !important;
 	}
 	
 	.agents_tiny_stats * {
 		font-size: 12px !important;
+	}
+	
+	#list_agent_Modules td {
+		padding-top: 7px !important;
+	}
+	
+	.agents_tiny_stats {
+		float: right;
 	}
 }
 
@@ -738,7 +796,7 @@ table.event_details td.cell_event_name {
 /*END-----------Visual maps styles---------------------------------------*/
 
 /*INIT-----------Modules styles---------------------------------------*/
-@media screen and (max-width: 25em) {
+@media screen and (max-width: 34.99em) {
 	#list_Modules .cell_1 .ui-table-cell-label,
 	#list_Modules .cell_5 .ui-table-cell-label,
 	#list_Modules .cell_6 .ui-table-cell-label {
@@ -755,7 +813,17 @@ table.event_details td.cell_event_name {
 	#list_Modules .cell_3 .ui-table-cell-label,
 	#list_Modules .cell_4 .ui-table-cell-label,
 	#list_Modules .cell_5 .ui-table-cell-label {
-		display: none;
+		display: none !important;
+	}
+	
+	#list_Modules td {
+		height: 35px;
+		padding-top: 7px;
+		display: table-cell;
+		clear: none;
+		float: none;
+		padding-left: 0px !important;
+		padding-right: 0px !important;
 	}
 	
 	#list_Modules .show_collapside {
@@ -766,18 +834,43 @@ table.event_details td.cell_event_name {
 		white-space: nowrap;
 	}
 	
+	#list_Modules .cell_1,
 	#list_Modules .cell_2,
 	#list_Modules .cell_3 {
 		display: none !important;
 	}
 	
 	#list_Modules .cell_0 .show_collapside,
-	#list_Modules .cell_1 .show_collapside {
+	#list_Modules .cell_1 .show_collapside,
+	#list_Modules .cell_4 .show_collapside,
+	#list_Modules .cell_5 .show_collapside {
 		display: none !important;
 	}
 	
 	#list_Modules .cell_0 .ui-link {
-		font-size: 15px;
+		font-size: 12px;
+	}
+	
+	#list_Modules .cell_0{
+		width: 50%;
+		border-top: 0px none; 
+	}
+	#list_Modules .cell_4{
+		width: 25%;
+	}
+	#list_Modules .cell_5{
+		width: 25%;
+	}
+}
+	#list_Modules td.cell_0>span.tiny>img {
+		width: 5px;
+		height: 30px;
+		margin-top: -5px;
+		margin-left: 0px;
+		float: left;
+	}
+	#list_Modules .module_name {
+		font-size: 12px  !important;
 	}
 }
 
@@ -795,6 +888,10 @@ table.event_details td.cell_event_name {
 	padding-top: 20px;
 }
 
+#list_agent_Modules td.cell_0 > span.tiny {
+	display: none;
+}
+
 #list_Modules .cell_5 img {
 	float: left;
 }
@@ -809,7 +906,7 @@ table.event_details td.cell_event_name {
 	line-height: 20px;
 }
 
-@media screen and (max-width: 25em) {
+@media screen and (max-width: 34.99em) {
 	#list_agent_Modules .ui-table-cell-label,
 	#list_agent_Modules .cell_2, 
 	#list_agent_Modules .cell_3 {
@@ -877,7 +974,7 @@ li.ui-btn {
 	float: left;
 }
 
-@media screen and (max-width: 25em) {
+@media screen and (max-width: 34.99em) {
 	.ui-table th, .ui-table td {
 		padding: 8px !important;
 		padding-left: 3px;
@@ -924,7 +1021,7 @@ li.ui-btn {
 	height: 28px !important;
 }
 
-@media screen and (max-width: 25em)
+@media screen and (max-width: 35em)
 {
 	.events .status_row {
 		display: none;
@@ -939,12 +1036,12 @@ li.ui-btn {
 		min-width: 50%;
 	}
 	
-	.agents_tiny_stats, .agents_last_contact {
+	.agents_last_contact {
 		float: right;
 	}
 }
 
-@media screen and (min-width: 25em)
+@media screen and (min-width: 35em)
 {
 	.events .cell_0 .event_link{
 		display: none;
@@ -1028,7 +1125,7 @@ li.ui-btn {
 	}
 
 	.event_name {
-		font-size: 18px !important;
+		font-size: 15px !important;
 	}
 	
 	.login_logo img {
@@ -1050,7 +1147,7 @@ li.ui-btn {
 }
 
 .event_name {
-	font-size: 15px;
+	font-size: 12px;
 	font-weight: bold;
 }
 
@@ -1199,6 +1296,11 @@ span.nobold * {
 	line-height: 1.1em;
 }
 
+.events_timestamp > img {
+	vertical-align: middle;
+	margin-left: 10px;
+}
+
 .events_agent {
 	float: left;
 }
@@ -1257,4 +1359,23 @@ DIV.nodata_container {
 /* JQuery Mobile responsive hack to tables with */
 .ui-table-reflow.ui-responsive {
 	display: table !important;
+}
+
+.widget_agent_module > th {
+    background-color: #373737;
+}
+#list_agent_Modules > tbody > tr > td {
+	clear: none;
+	vertical-align: middle;
+	padding: 0px;
+}
+#list_agent_Modules > tbody > tr > td.cell_0  {
+	border-top: 0px none;	
+}
+
+.legend_graph td.legendLabel > div {
+	font-size: 12px !important;
+}
+.legend_graph td.legendLabel {
+	font-size: 12px !important;
 }

@@ -299,44 +299,49 @@ function reporting_make_reporting_data($report = null, $id_report,
 					$force_height_chart);
 				break;
 			case 'netflow_area':
-				$report['contents'][] = reporting_simple_baseline_graph(
+				$report['contents'][] = reporting_netflow(
 					$report,
 					$content,
 					$type,
 					$force_width_chart,
-					$force_height_chart);
+					$force_height_chart,
+					'netflow_area');
 				break;
 			case 'netflow_pie':
-				$report['contents'][] = reporting_netflow_pie(
+				$report['contents'][] = reporting_netflow(
 					$report,
 					$content,
 					$type,
 					$force_width_chart,
-					$force_height_chart);
+					$force_height_chart,
+					'netflow_pie');
 				break;
 			case 'netflow_data':
-				$report['contents'][] = reporting_netflow_data(
+				$report['contents'][] = reporting_netflow(
 					$report,
 					$content,
 					$type,
 					$force_width_chart,
-					$force_height_chart);
+					$force_height_chart,
+					'netflow_data');
 				break;
 			case 'netflow_statistics':
-				$report['contents'][] = reporting_netflow_statistics(
+				$report['contents'][] = reporting_netflow(
 					$report,
 					$content,
 					$type,
 					$force_width_chart,
-					$force_height_chart);
+					$force_height_chart,
+					'netflow_statistics');
 				break;
 			case 'netflow_summary':
-				$report['contents'][] = reporting_netflow_summary(
+				$report['contents'][] = reporting_netflow(
 					$report,
 					$content,
 					$type,
 					$force_width_chart,
-					$force_height_chart);
+					$force_height_chart,
+					'netflow_summary');
 				break;
 			case 'monitor_report':
 				$report['contents'][] = reporting_monitor_report(
@@ -6660,6 +6665,202 @@ function reporting_get_group_stats ($id_group = 0, $access = 'AR') {
 	
 	return ($data);
 }
+
+/** 
+ * Get general statistical info on a group
+ * 
+ * @param int Group Id to get info from. 0 = all
+ * 
+ * @return array Group statistics
+ */
+function reporting_get_group_stats_resume ($id_group = 0, $access = 'AR') {
+	global $config;
+	
+	$data = array ();
+	$data["monitor_checks"] = 0;
+	$data["monitor_not_init"] = 0;
+	$data["monitor_unknown"] = 0;
+	$data["monitor_ok"] = 0;
+	$data["monitor_bad"] = 0; // Critical + Unknown + Warning
+	$data["monitor_warning"] = 0;
+	$data["monitor_critical"] = 0;
+	$data["monitor_not_normal"] = 0;
+	$data["monitor_alerts"] = 0;
+	$data["monitor_alerts_fired"] = 0;
+	$data["monitor_alerts_fire_count"] = 0;
+	$data["total_agents"] = 0;
+	$data["total_alerts"] = 0;
+	$data["total_checks"] = 0;
+	$data["alerts"] = 0;
+	$data["agents_unknown"] = 0;
+	$data["monitor_health"] = 100;
+	$data["alert_level"] = 100;
+	$data["module_sanity"] = 100;
+	$data["server_sanity"] = 100;
+	$data["total_not_init"] = 0;
+	$data["monitor_non_init"] = 0;
+	$data["agent_ok"] = 0;
+	$data["agent_warning"] = 0;
+	$data["agent_critical"] = 0;
+	$data["agent_unknown"] = 0;
+	$data["agent_not_init"] = 0;
+	
+	$cur_time = get_system_time ();
+	
+	//Check for access credentials using check_acl. More overhead, much safer
+	if (!check_acl ($config["id_user"], $id_group, $access)) {
+		return $data;
+	}
+	
+	if ($id_group == 0) {
+		$id_group = array_keys(
+			users_get_groups($config['id_user'], $access, false));
+	}
+	
+	// -----------------------------------------------------------------
+	// Server processed stats. NOT realtime (taken from tgroup_stat)
+	// -----------------------------------------------------------------
+	if ($config["realtimestats"] == 0) {
+		
+		if (!is_array($id_group)) {
+			$my_group = $id_group;
+			$id_group = array();
+			$id_group[0] = $my_group;
+		}
+		
+		foreach ($id_group as $group) {
+			$group_stat = db_get_all_rows_sql ("SELECT *
+				FROM tgroup_stat, tgrupo
+				WHERE tgrupo.id_grupo = tgroup_stat.id_group
+					AND tgroup_stat.id_group = $group
+				ORDER BY nombre");
+			
+			$data["monitor_checks"] += $group_stat[0]["modules"];
+			$data["agent_not_init"] += $group_stat[0]["non-init"];
+			$data["agent_unknown"] += $group_stat[0]["unknown"];
+			$data["agent_ok"] += $group_stat[0]["normal"];
+			$data["agent_warning"] += $group_stat[0]["warning"];
+			$data["agent_critical"] += $group_stat[0]["critical"];
+			$data["monitor_alerts"] += $group_stat[0]["alerts"];
+			$data["monitor_alerts_fired"] += $group_stat[0]["alerts_fired"];
+			$data["monitor_alerts_fire_count"] += $group_stat[0]["alerts_fired"];
+			$data["total_checks"] += $group_stat[0]["modules"];
+			$data["total_alerts"] += $group_stat[0]["alerts"];
+			$data["total_agents"] += $group_stat[0]["agents"];
+			$data["agents_unknown"] += $group_stat[0]["agents_unknown"];
+			$data["utimestamp"] = $group_stat[0]["utimestamp"];
+			
+			// This fields are not in database
+			$data["monitor_ok"] += (int) groups_get_normal_monitors($group);
+			$data["monitor_warning"] += (int) groups_get_warning_monitors($group);
+			$data["monitor_critical"] += (int) groups_get_critical_monitors($group);
+			$data["monitor_unknown"] += (int) groups_get_unknown_monitors($group);
+			$data["monitor_not_init"] += (int) groups_get_not_init_monitors($group);
+		}
+		
+	// -------------------------------------------------------------------
+	// Realtime stats, done by PHP Console
+	// -------------------------------------------------------------------
+	}
+	else {
+		
+		if (!empty($id_group)) {
+
+			$sql = "SELECT tg.id_grupo as id, tg.nombre as name, 
+					SUM(ta.normal_count) as monitor_ok, 
+					SUM(ta.warning_count) as monitor_warning, 
+					SUM(ta.critical_count) as monitor_critical, 
+					SUM(ta.unknown_count) as monitor_unknown, 
+					SUM(ta.notinit_count) as monitor_not_init, 
+					count(ta.nombre) as total_agents 
+					FROM tagente ta, tgrupo tg 
+					WHERE tg.id_grupo = ta.id_grupo 
+					AND ta.id_grupo = ". $id_group ."  
+					GROUP BY ta.id_grupo;";
+
+			$data_array = db_get_all_rows_sql($sql);
+			$data = $data_array[0];
+			
+			// Get total count of monitors for this group, except disabled.
+			$data["monitor_checks"] = $data["monitor_not_init"] + $data["monitor_unknown"] + $data["monitor_warning"] + $data["monitor_critical"] + $data["monitor_ok"];
+			
+			// Calculate not_normal monitors
+			$data["monitor_not_normal"] += $data["monitor_checks"] - $data["monitor_ok"];
+		}
+		
+		// Get total count of monitors for this group, except disabled.
+		
+		$data["monitor_checks"] = $data["monitor_not_init"] + $data["monitor_unknown"] + $data["monitor_warning"] + $data["monitor_critical"] + $data["monitor_ok"];
+
+	}
+	
+	if ($data["monitor_unknown"] > 0 && $data["monitor_checks"] > 0) {
+		$data["monitor_health"] = format_numeric (100 - ($data["monitor_not_normal"] / ($data["monitor_checks"] / 100)), 1);
+	}
+	else {
+		$data["monitor_health"] = 100;
+	}
+	
+	if ($data["monitor_not_init"] > 0 && $data["monitor_checks"] > 0) {
+		$data["module_sanity"] = format_numeric (100 - ($data["monitor_not_init"] / ($data["monitor_checks"] / 100)), 1);
+	}
+	else {
+		$data["module_sanity"] = 100;
+	}
+	
+	if (isset($data["alerts"])) {
+		if ($data["monitor_alerts_fired"] > 0 && $data["alerts"] > 0) {
+			$data["alert_level"] = format_numeric (100 - ($data	["monitor_alerts_fired"] / ($data["alerts"] / 100)), 1);
+		}
+		else {
+			$data["alert_level"] = 100;
+		}
+	} 
+	else {
+		$data["alert_level"] = 100;
+		$data["alerts"] = 0;
+	}
+	
+	$data["monitor_bad"] = $data["monitor_critical"] + $data["monitor_warning"];
+	
+	if ($data["monitor_bad"] > 0 && $data["monitor_checks"] > 0) {
+		$data["global_health"] = format_numeric (100 - ($data["monitor_bad"] / ($data["monitor_checks"] / 100)), 1);
+	}
+	else {
+		$data["global_health"] = 100;
+	}
+	
+	$data["server_sanity"] = format_numeric (100 - $data["module_sanity"], 1);
+	
+	
+	$data['alert_fired'] = 0;
+	if ($data["monitor_alerts_fired"] > 0) {
+		$data['alert_fired'] = 1;
+	}
+	
+	
+	if ($data["monitor_critical"] > 0) {
+		$data['status'] = 'critical';
+	}
+	elseif ($data["monitor_warning"] > 0) {
+		$data['status'] = 'warning';
+	}
+	elseif (($data["monitor_unknown"] > 0) ||  ($data["agents_unknown"] > 0)) {
+		$data['status'] = 'unknown';
+	}
+	elseif ($data["monitor_ok"] > 0)  {
+		$data['status'] = 'ok';
+	}
+	elseif ($data["agent_not_init"] > 0)  {
+		$data['status'] = 'not_init';
+	}
+	else {
+		$data['status'] = 'none';
+	}
+
+	return ($data);
+}
+
 
 function reporting_get_stats_indicators($data, $width = 280, $height = 20, $html = true) {
 	$table_ind = html_get_predefined_table();

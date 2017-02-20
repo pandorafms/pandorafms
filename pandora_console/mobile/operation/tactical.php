@@ -207,7 +207,7 @@ class Tactical {
 					}
 					else {
 						max_height = $('#tactical2 .tactical_set').height();
-						$('#tactical1').height(max_height);
+						//~ $('#tactical1').height(max_height);
 					}
 				}
 				

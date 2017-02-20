@@ -174,7 +174,7 @@ switch ($activeTab) {
 						
 						if ($uploadOK == 1) {
 							if (move_uploaded_file($_FILES["background_image"]["tmp_name"], $target_file)) {
-								$background = $_FILES["background_image"]["name"];
+								$background = $nameImage;
 								$values['background'] = $background;
 								$error2 = chmod($target_file, 0644);
 								$uploadOK = $error2;

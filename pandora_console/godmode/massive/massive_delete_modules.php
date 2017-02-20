@@ -395,7 +395,7 @@ $table->style[2] = 'font-weight: bold';
 
 $table->data['selection_mode'][0] = __('Selection mode');
 $table->data['selection_mode'][1] = __('Select modules first') . ' ' .
-	html_print_radio_button_extended ("selection_mode", 'modules', '', $selection_mode, false, '', 'style="margin-right: 40px;"', true);
+	html_print_radio_button_extended ("selection_mode", 'modules', '', $selection_mode, false, '', 'style="margin-right: 40px;"', true).'<br>';
 $table->data['selection_mode'][1] .= __('Select agents first') . ' ' .
 	html_print_radio_button_extended ("selection_mode", 'agents', '', $selection_mode, false, '', 'style="margin-right: 40px;"', true);
 

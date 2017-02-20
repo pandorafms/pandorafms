@@ -608,16 +608,7 @@ foreach ($agents as $agent) {
 	
 	$data[7] = $alert_img;
 	
-	
-	$last_time = strtotime ($agent["ultimo_contacto"]);
-	$now = time ();
-	$diferencia = $now - $last_time;
-	$time = ui_print_timestamp ($last_time, true, array('style' => 'font-size:6.5pt'));
-	$style = '';
-	if ($diferencia > ($agent["intervalo"] * 2))
-		$data[8] = '<b><span style="color: #ff0000;">'.$time.'</span></b>';
-	else
-		$data[8] = $time;
+	$data[8] = agents_get_interval_status ($agent);
 	
 	// This old code was returning "never" on agents without modules, BAD !!
 	// And does not print outdated agents in red. WRONG !!!!

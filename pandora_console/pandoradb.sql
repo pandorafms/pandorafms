@@ -67,6 +67,7 @@ CREATE TABLE IF NOT EXISTS `tagente` (
 	`custom_id` varchar(255) default '',
 	`server_name` varchar(100) default '',
 	`cascade_protection` tinyint(2) NOT NULL default '0',
+	`cascade_protection_module` tinyint(2) NOT NULL default '0',
 	`timezone_offset` TINYINT(2) NULL DEFAULT '0' COMMENT 'nuber of hours of diference with the server timezone' ,
 	`icon_path` VARCHAR(127) NULL DEFAULT NULL COMMENT 'path in the server to the image of the icon representing the agent' ,
 	`update_gis_data` TINYINT(1) NOT NULL DEFAULT '1' COMMENT 'set it to one to update the position data (altitude, longitude, latitude) when getting information from the agent or to 0 to keep the last value and do not update it' ,
@@ -1068,7 +1069,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
 	`metaconsole_access_node` tinyint(1) unsigned NOT NULL default 0,
 	`strict_acl` tinyint(1) unsigned NOT NULL DEFAULT 0,
 	`id_filter`  int(10) unsigned NULL default NULL,
-	`session_time` int(10) unsigned NOT NULL default 0,
+	`session_time` int(10) signed NOT NULL default 0,
 	CONSTRAINT `fk_filter_id` FOREIGN KEY (`id_filter`) REFERENCES tevent_filter (`id_filter`) ON DELETE SET NULL,
 	UNIQUE KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

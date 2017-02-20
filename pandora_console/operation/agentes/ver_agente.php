@@ -1314,7 +1314,7 @@ switch($tab) {
 		break;
 }
 
-ui_print_page_header($agent["nombre"] , $icon, false, "", false, $onheader, $agent["alias"] . $header_description);
+ui_print_page_header($agent["nombre"] , $icon, false, "", false, $onheader, false, '', GENERIC_SIZE_TEXT, $agent["alias"] . $header_description);
 
 
 switch ($tab) {

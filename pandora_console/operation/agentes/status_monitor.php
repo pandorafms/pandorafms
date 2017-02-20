@@ -47,7 +47,7 @@ else {
 
 $ag_freestring 		= 		get_parameter ('ag_freestring');
 $moduletype 		= 		(string) get_parameter ('moduletype');
-$datatype 		= 		(string) get_parameter ('datatype');
+$datatype 			= 		(string) get_parameter ('datatype');
 $ag_modulename 		= 		(string) get_parameter ('ag_modulename');
 $refr 				= 		(int) get_parameter('refr', 0);
 $offset 			= 		(int) get_parameter ('offset', 0);
@@ -164,10 +164,10 @@ if ($moduletype != '') {
 // Freestring selector
 if ($ag_freestring != '') {
 	$sql_conditions .= sprintf (' AND (tagente.nombre LIKE \'%%%s%%\'
+		OR tagente.alias LIKE \'%%%s%%\'
 		OR tagente_modulo.nombre LIKE \'%%%s%%\'
-		OR tagente_modulo.descripcion LIKE \'%%%s%%\'
-		OR tagente.alias LIKE \'%%%s%%\')',
-		$ag_freestring, $ag_freestring, $ag_freestring, $ag_freestring);
+		OR tagente_modulo.descripcion LIKE \'%%%s%%\')',
+		$ag_freestring, $ag_freestring, $ag_freestring);
 }
 
 // Status selector
@@ -725,8 +725,8 @@ switch ($config['dbtype']) {
 			tagente_modulo.id_agente_modulo,
 			tagente_modulo.id_modulo,
 			tagente.intervalo AS agent_interval,
+			tagente.alias AS agent_alias,
 			tagente.nombre AS agent_name,
-			tagente.alias AS alias,  
 			tagente_modulo.nombre AS module_name,
 			tagente_modulo.history_data,
 			tagente_modulo.flag AS flag,
@@ -773,8 +773,8 @@ switch ($config['dbtype']) {
 			tagente_modulo.id_agente_modulo,
 			tagente_modulo.id_modulo,
 			tagente.intervalo AS agent_interval,
+			tagente.alias AS agent_alias, 
 			tagente.nombre AS agent_name, 
-			tagente.alias AS alias,
 			tagente_modulo.nombre AS module_name,
 			tagente_modulo.history_data,
 			tagente_modulo.flag AS flag,
@@ -817,8 +817,8 @@ switch ($config['dbtype']) {
 			tagente_modulo.id_agente_modulo,
 			tagente_modulo.id_modulo,
 			tagente.intervalo AS agent_interval,
+			tagente.alias AS agent_alias,
 			tagente.nombre AS agent_name,
-			tagente.alias AS alias,
 			tagente_modulo.nombre AS module_name,
 			tagente_modulo.history_data,
 			tagente_modulo.flag AS flag,
@@ -946,8 +946,8 @@ if (!empty($result)) {
 		$table->head[0] = '<span title=\'' . __('Policy') . '\'>' . __('P.') . '</span>';
 
 	$table->head[1] = __('Agent');
-	$table->head[1] .=' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;datatype='.$datatype . '&amp;moduletype='.$moduletype . '&amp;modulegroup='.$modulegroup . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=agent_name&amp;sort=up">' . html_print_image('images/sort_up.png', true, array('style' => $selectAgentNameUp, 'alt' => 'up'))  . '</a>' .
-	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;datatype='.$datatype . '&amp;moduletype='.$moduletype . '&amp;modulegroup='.$modulegroup . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=agent_name&amp;sort=down">' . html_print_image('images/sort_down.png', true, array('style' => $selectAgentNameDown, 'alt' => 'down')) . '</a>';
+	$table->head[1] .=' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;datatype='.$datatype . '&amp;moduletype='.$moduletype . '&amp;modulegroup='.$modulegroup . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=agent_alias&amp;sort=up">' . html_print_image('images/sort_up.png', true, array('style' => $selectAgentNameUp, 'alt' => 'up'))  . '</a>' .
+	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;datatype='.$datatype . '&amp;moduletype='.$moduletype . '&amp;modulegroup='.$modulegroup . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=agent_alias&amp;sort=down">' . html_print_image('images/sort_down.png', true, array('style' => $selectAgentNameDown, 'alt' => 'down')) . '</a>';
 
 	$table->head[2] = __('Data Type');
 	$table->head[2] .= ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype . '&amp;moduletype='.$moduletype . '&amp;refr=' . $refr . '&amp;modulegroup='.$modulegroup . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=type&amp;sort=up">' . html_print_image('images/sort_up.png', true, array('style' => $selectTypeUp, 'alt' => 'up'))  . '</a>' .
@@ -1056,6 +1056,8 @@ if (!empty($result)) {
 			}
 		}
 		
+		$agent_alias = !empty($row['agent_alias']) ? $row['agent_alias'] : $row['agent_name'];
+		
 		// TODO: Calculate hash access before to use it more simply like other sections. I.E. Events view
 		if (defined('METACONSOLE')) {
 			$agent_link = '<a href="'.
@@ -1066,54 +1068,49 @@ if (!empty($result)) {
 					'loginhash=auto&amp;' .
 					'loginhash_data=' . $row['hashdata'] . '&amp;' .
 					'loginhash_user=' . str_rot13($row['user']) . '">';
-			$agent_name = ui_print_truncate_text($row['agent_name'],
+			$agent_alias = ui_print_truncate_text($agent_alias,
 				'agent_small', false, true, false, '[&hellip;]',
 				'font-size:7.5pt;');
 			if (can_user_access_node ()) {
-				$data[1] = $agent_link . '<b>' . $agent_name . '</b></a>';
+				$data[1] = $agent_link . '<b>' . $agent_alias . '</b></a>';
 			}
 			else {
-				$data[1] = $agent_name;
+				$data[1] = $agent_alias;
 			}
 		}
 		else {
 			$data[1] = '<strong><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$row['id_agent'].'">';
-			$data[1] .= ui_print_truncate_text($row['agent_name'], 'agent_medium', false, true, false, '[&hellip;]', 'font-size:7.5pt;');
+			$data[1] .= ui_print_truncate_text($agent_alias, 'agent_medium', false, true, false, '[&hellip;]', 'font-size:7.5pt;');
 			$data[1] .= '</a></strong>';
 		}
-	}
-	else {
-		$data[1] = '<strong><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$row['id_agent'].'">';
-		$data[1] .= '<span style="font-weight:bold" title="' . $row['agent_name'] . '">'.$row['alias'].'</span>';
-		$data[1] .= '</a></strong>';
-	}
-	
-	$data[2] = html_print_image('images/'. modules_show_icon_type ($row['module_type']), true);
-	if (check_acl ($config['id_user'], $row['id_group'], 'AW')) {
-		$show_edit_icon = true;
-		if (defined('METACONSOLE')) {
-			if (!can_user_access_node ()) {
-				$show_edit_icon = false;
-			}
+		
+		
+		$data[2] = html_print_image('images/' . modules_show_icon_type ($row['module_type']), true);
+		if (check_acl ($config['id_user'], $row['id_group'], 'AW')) {
+			$show_edit_icon = true;
+			if (defined('METACONSOLE')) {
+				if (!can_user_access_node ()) {
+					$show_edit_icon = false;
+				}
 				
-			$url_edit_module = $row['server_url'] . 'index.php?' .
-				'sec=gagente&amp;' .
-				'sec2=godmode/agentes/configurar_agente&amp;' .
-				'id_agente=' . $row['id_agent'] . '&amp;' .
-				'tab=module&amp;' .
-				'id_agent_module=' . $row['id_agente_modulo'] . '&amp;' .
-				'edit_module=1' .
-				'&amp;loginhash=auto&amp;loginhash_data=' . $row['hashdata'] . '&amp;loginhash_user=' . str_rot13($row['user']);
+				$url_edit_module = $row['server_url'] . 'index.php?' .
+					'sec=gagente&amp;' .
+					'sec2=godmode/agentes/configurar_agente&amp;' .
+					'id_agente=' . $row['id_agent'] . '&amp;' .
+					'tab=module&amp;' .
+					'id_agent_module=' . $row['id_agente_modulo'] . '&amp;' .
+					'edit_module=1' .
+					'&amp;loginhash=auto&amp;loginhash_data=' . $row['hashdata'] . '&amp;loginhash_user=' . str_rot13($row['user']);
 			}
-		else {
-			$url_edit_module = 'index.php?' .
-				'sec=gagente&amp;' .
-				'sec2=godmode/agentes/configurar_agente&amp;' .
-				'id_agente=' . $row['id_agent'] . '&amp;' .
-				'tab=module&amp;' .
-				'id_agent_module=' . $row['id_agente_modulo'] . '&amp;' .
-				'edit_module=1';
-		}
+			else {
+				$url_edit_module = 'index.php?' .
+					'sec=gagente&amp;' .
+					'sec2=godmode/agentes/configurar_agente&amp;' .
+					'id_agente=' . $row['id_agent'] . '&amp;' .
+					'tab=module&amp;' .
+					'id_agent_module=' . $row['id_agente_modulo'] . '&amp;' .
+					'edit_module=1';
+			}
 			
 			if ($show_edit_icon) {
 				$data[2] .= '<a href="' . $url_edit_module . '">' .

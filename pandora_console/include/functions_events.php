@@ -979,7 +979,7 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 					$myclass =  get_priority_class ($event["criticity"]);
 					
 					$data[4] = "<a class='$myclass' href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$event["id_agente"]."'>".
-								agents_get_name ($event["id_agente"]). "</A>";
+								agents_get_alias($event["id_agente"]). "</A>";
 					
 				// ui_print_agent_name ($event["id_agente"], true, 25, '', true);
 				// for System or SNMP generated alerts

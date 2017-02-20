@@ -246,7 +246,6 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 				"style='display: none; " .
 					"text-align: center; " .
 					"width: " . $menu_width . "px; ".
-					"border: solid 1px #666; ".
 					"border-bottom: 0px; " .
 					"padding: 4px 4px 4px 4px;margin-bottom:5px;'>
 				<a href='javascript:'><img id='menu_cancelzoom_$graph_id' src='".$homeurl."images/zoom_cross_grey.disabled.png' alt='".__('Cancel zoom')."' title='".__('Cancel zoom')."'></a>";

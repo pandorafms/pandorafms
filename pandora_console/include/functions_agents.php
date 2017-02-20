@@ -1326,6 +1326,28 @@ function agents_get_name ($id_agent, $case = "none") {
 }
 
 /**
+ * Get alias of an agent.
+ *
+ * @param int $id_agent Agent id.
+ * @param string $case Case (upper, lower, none)
+ *
+ * @return string Alias of the given agent.
+ */
+function agents_get_alias ($id_agent, $case = 'none') {
+	$alias = (string) db_get_value ('alias', 'tagente', 'id_agente', (int) $id_agent);
+	
+	switch ($case) {
+		case 'upper':
+			return mb_strtoupper($alias, 'UTF-8');
+		case 'lower':
+			return mb_strtolower($alias, 'UTF-8');
+		case 'none':
+		default:
+			return ($alias);
+	}
+}
+
+/**
  * Get the number of pandora data packets in the database.
  *
  * In case an array is passed, it will have a value for every agent passed

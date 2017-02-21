@@ -37,6 +37,7 @@ function createXMLData($agent, $agentModule, $time, $data) {
 	$xml = sprintf($xmlTemplate, io_safe_output(get_os_name($agent['id_os'])),
 		io_safe_output($agent['os_version']), $agent['intervalo'],
 		io_safe_output($agent['agent_version']), $time,
+		io_safe_output($agent['nombre']),
 		io_safe_output($agent['alias']), $agent['timezone_offset'],
 		io_safe_output($agentModule['nombre']), io_safe_output($agentModule['descripcion']), modules_get_type_name($agentModule['id_tipo_modulo']), $data);
 
@@ -62,6 +63,14 @@ function mainInsertData() {
 	
 	$save = (bool)get_parameter('save', false);
 	$id_agent = (string)get_parameter('id_agent', '');
+	
+	foreach ($_POST as $key => $value) {
+		if(strpos($key,"agent_autocomplete_idagent")!== false){
+			$id_agente = $value;
+		}
+	}
+	
+	
 	$id_agent_module = (int)get_parameter('id_agent_module', '');
 	$data = (string)get_parameter('data');
 	$date = (string) get_parameter('date', date(DATE_FORMAT));
@@ -84,7 +93,8 @@ function mainInsertData() {
 			ui_print_error_message(__('You haven\'t privileges for insert data in the agent.'));
 		}
 		else {
-			$agent = db_get_row_filter('tagente', array('alias' => $id_agent));
+			
+			$agent = db_get_row_filter('tagente', array('id_agente' => $id_agente));
 			$agentModule = db_get_row_filter('tagente_modulo', array('id_agente_modulo' => $id_agent_module));
 			
 			$done = 0;
@@ -117,14 +127,14 @@ function mainInsertData() {
 		}
 		
 		if ($errors > 0) {
-			$msg = sprintf(__('Can\'t save agent (%s), module (%s) data xml.'), $agent['nombre'], $agentModule['nombre']);
+			$msg = sprintf(__('Can\'t save agent (%s), module (%s) data xml.'), $agent['alias'], $agentModule['nombre']);
 			if ($errors > 1) {
 				$msg .= " ($errors)";
 			}
 			ui_print_error_message($msg);
 		}
 		if ($done > 0) {
-			$msg = sprintf(__('Save agent (%s), module (%s) data xml.'), $agent['nombre'], $agentModule['nombre']);
+			$msg = sprintf(__('Save agent (%s), module (%s) data xml.'), $agent['alias'], $agentModule['nombre']);
 			if ($done > 1) {
 				$msg .= " ($done)";
 			}
@@ -154,14 +164,19 @@ function mainInsertData() {
 	$params['javascript_is_function_select'] = true;
 	$params['javascript_name_function_select'] = 'custom_select_function';
 	$params['javascript_code_function_select'] = '';
+	$params['use_hidden_input_idagent'] = true;
+	$params['print_hidden_input_idagent'] = true;
+	$params['hidden_input_idagent_id'] = 'hidden-autocomplete_id_agent';
+	
 	$table->data[0][1] = ui_print_agent_autocomplete_input($params);
 	
 	$table->data[1][0] = __('Module');
 	$modules = array ();
-	if ($id_agent)
-		$modules = agents_get_modules ($id_agent, false, array("delete_pending" => 0));
+	if ($id_agente){
+		$modules = agents_get_modules ($id_agente, false, array("delete_pending" => 0));
+	}
 	$table->data[1][1] = html_print_select ($modules, 'id_agent_module', $id_agent_module, true,
-		__('Select'), 0, true, false, true, '', ($id_agent === ''));
+		__('Select'), 0, true, false, true, '', ($id_agente === ''));
 	$table->data[2][0] = __('Data');
 	$table->data[2][1] = html_print_input_text('data', $data, __('Data'), 40, 60, true);
 	$table->data[3][0] = __('Date');
@@ -207,9 +222,10 @@ function mainInsertData() {
 	
 	function custom_select_function(agent_name) {
 		$('#id_agent_module').empty ();
-		
 		var inputs = [];
-		inputs.push ("agent_name=" + agent_name);
+		var id_agent = $('#hidden-autocomplete_id_agent').val();
+		
+		inputs.push ("id_agent=" + id_agent);
 		inputs.push ("delete_pending=0");
 		inputs.push ("get_agent_modules_json=1");
 		inputs.push ("page=operation/agentes/ver_agente");

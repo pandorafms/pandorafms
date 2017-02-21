@@ -1222,21 +1222,21 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			else {
 				$agent_name = io_safe_output(
 					modules_get_agentmodule_agent_name ($agent_module_id));
-                $alias = db_get_row ('tagente', 'nombre', $agent_name);
+				$alias = db_get_value ("alias","tagente","nombre",$agent_name);
 				$module_name = io_safe_output(
 					modules_get_agentmodule_name ($agent_module_id));
 				
 				if ($flash_charts)
-					$module_name_list[$i] = '<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . $alias['alias'] . " / " . $module_name. '</span>';
+					$module_name_list[$i] = '<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . $alias . " / " . $module_name. '</span>';
 				else
-					$module_name_list[$i] = $alias['alias'] . " / " . $module_name;
+					$module_name_list[$i] = $alias . " / " . $module_name;
 			}
 		}
 		else {
 			//Get and process agent name
 			$agent_name = io_safe_output(
 				modules_get_agentmodule_agent_name ($agent_module_id));
-            $alias = db_get_row ('tagente', 'nombre', $agent_name);
+			$alias = db_get_value ("alias","tagente","nombre",$agent_name);
 			$agent_name = ui_print_truncate_text($agent_name, 'agent_small', false, true, false, '...', false);
 			
 			$agent_id = agents_get_agent_id ($agent_name);
@@ -1255,13 +1255,13 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				else
 					$module_name_list[$i] = '<span style=\"font-size:' . 
 						($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . 
-						$alias['alias'] . ' / ' . $module_name . '</span>';
+						$alias . ' / ' . $module_name . '</span>';
 			}
 			else {
 				if ($labels[$agent_module_id] != '')
 					$module_name_list[$i] = $labels[$agent_module_id];
 				else
-					$module_name_list[$i] = $alias['alias'] . ' / ' . $module_name;
+					$module_name_list[$i] = $alias . ' / ' . $module_name;
 			}
 		}
 		
@@ -1528,8 +1528,8 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				if ( !empty($labels) && isset($labels[$module]) ){
                     $label = io_safe_input($labels[$module]);
                 }else{
-                    $alias = db_get_row ("tagente","id_agente",$temp[$module]['id_agente']);
-                    $label = $alias['alias'] . ': ' . $temp[$module]['nombre'];
+					$alias = db_get_value ("alias","tagente","id_agente",$temp[$module]['id_agente']);
+                    $label = $alias . ': ' . $temp[$module]['nombre'];
                 }
 					
 				
@@ -1597,8 +1597,8 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				if (!empty($labels) && isset($labels[$module]) ){
                     $label = $labels[$module];
                 }else {
-                    $alias = db_get_row ("tagente","id_agente",$module_data['id_agente']);
-                    $label = $alias['alias'] . " - " .$module_data['nombre'];
+					$alias = db_get_value ("alias","tagente","id_agente",$module_data['id_agente']);
+                    $label = $alias . " - " .$module_data['nombre'];
                 }
 					
 				$temp[$label]['g'] = round($temp_data,4);
@@ -1657,8 +1657,8 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				if ( !empty($labels) && isset($labels[$module]) ){
 					$label = io_safe_output($labels[$module]);
 				}else {
-                    $alias = db_get_row ("tagente","id_agente",$data_module['id_agente']);
-					$label = io_safe_output($alias['alias'] . ": " . $data_module['nombre']);
+					$alias = db_get_value ("alias","tagente","id_agente",$data_module['id_agente']);
+					$label = io_safe_output($alias . ": " . $data_module['nombre']);
 				}
 				
 				$temp[$label] = array('value'=>$value,

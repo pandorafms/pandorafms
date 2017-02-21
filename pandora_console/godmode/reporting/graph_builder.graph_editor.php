@@ -41,7 +41,7 @@ if (isset ($_GET["get_agent"])) {
 
 if ($editGraph) {
 	$graphRows = db_get_all_rows_sql("SELECT t1.*,
-		(SELECT t3.nombre 
+		(SELECT t3.alias 
 			FROM tagente t3 
 			WHERE t3.id_agente = 
 				(SELECT t2.id_agente 
@@ -98,8 +98,7 @@ if (count($module_array) > 0) {
 			$color = 1;
 		}
 		
-		$alias = db_get_row ('tagente', 'nombre', $agent_array[$a]);
-		echo "<tr><td class='$tdcolor'>" . $alias['alias'] . "</td>";
+		echo "<tr><td class='$tdcolor'>" . $agent_array[$a] . "</td>";
 		echo "<td class='$tdcolor'>";
 		echo modules_get_agentmodule_name ($module_array[$a])."</td>";
 		

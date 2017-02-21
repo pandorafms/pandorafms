@@ -237,9 +237,9 @@ $table->data = array ();
 
 
 $table->data['selection_mode'][0] = __('Selection mode');
-$table->data['selection_mode'][1] = __('Select modules first') . ' ' .
+$table->data['selection_mode'][1] = '<span style="width:110px;display:inline-block;">'.__('Select modules first ') . '</span>' .
 	html_print_radio_button_extended ("selection_mode", 'modules', '', $selection_mode, false, '', 'style="margin-right: 40px;"', true).'<br>';
-$table->data['selection_mode'][1] .= __('Select agents first') . ' ' .
+$table->data['selection_mode'][1] .= '<span style="width:110px;display:inline-block;">'.__('Select agents first ') . '</span>' .
 	html_print_radio_button_extended ("selection_mode", 'agents', '', $selection_mode, false, '', 'style="margin-right: 40px;"', true);
 
 

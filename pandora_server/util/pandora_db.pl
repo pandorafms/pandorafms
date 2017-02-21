@@ -936,6 +936,12 @@ sub pandora_checkdb_consistency {
 		log_message ('CHECKDB',
 			"Deleting non-existing module $id_agente_modulo in state table.");
 	}
+
+	#-------------------------------------------------------------------
+	# 3. Update empty aliases.
+	#-------------------------------------------------------------------
+	log_message ('CHECKDB', "Updating empty aliases.");
+	db_do ($dbh, "UPDATE tagente SET alias=nombre WHERE alias=''");
 }
 
 ##############################################################################

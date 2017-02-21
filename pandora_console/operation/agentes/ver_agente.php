@@ -126,71 +126,8 @@ if (is_ajax ()) {
 		$id_group = (int) get_parameter('id_module_group');
 		$id_agents = get_parameter('id_agents');
 		$selection = get_parameter('selection');
-		if(isset($id_agents)){
-			$agents = implode(",", $id_agents);
-		}
 		
-		$filter_group = "";
-		$filter_agent = "";
-
-		if ($id_group != 0) {
-			$filter_group = " AND id_module_group = ". $id_group;
-		}
-		if ($agents != null) {
-			$filter_agent = " AND id_agente IN (" . $agents . ")";
-		}
-
-		if ($selection == 1 || (count($id_agents) == 1)) {
-			$modules = db_get_all_rows_sql("SELECT DISTINCT nombre, id_agente_modulo FROM tagente_modulo WHERE 1 = 1" . $filter_agent . $filter_group);
-
-			if (empty($modules)) $modules = array();
-
-			$found = array();
-			foreach ($modules as $i=>$row) {
-			    $check = $row['nombre'];
-			    if (@$found[$check]++) {
-			        unset($modules[$i]);
-			    }
-			}
-		}
-		else {
-			$modules = db_get_all_rows_sql("SELECT nombre, id_agente_modulo FROM tagente_modulo WHERE 1 = 1" . $filter_agent . $filter_group);
-
-			if (empty($modules)) $modules = array();
-
-			foreach ($modules as $m) {
-				$is_in_all_agents = true;
-				$module_name = modules_get_agentmodule_name($m['id_agente_modulo']);
-				foreach ($id_agents as $a) {
-					$module_in_agent = db_get_value_filter('id_agente_modulo',
-						'tagente_modulo', array('id_agente' => $a, 'nombre' => $module_name));
-					if (!$module_in_agent) {
-						$is_in_all_agents = false;
-					}
-				}
-				if ($is_in_all_agents) {
-					$modules_to_report[] = $m;
-				}
-			}
-			$modules = $modules_to_report;
-
-			$found = array();
-			if (is_array($modules) || is_object($modules)){
-				foreach ($modules as $i=>$row) {
-				    $check = $row['nombre'];
-				    if (@$found[$check]++) {
-				        unset($modules[$i]);
-				    }
-				}
-			}
-		}
-		if (is_array($modules) || is_object($modules)){
-			foreach ($modules as $k => $v) {
-				$modules[$k] = io_safe_output($v);
-			}
-		}
-		echo json_encode($modules);
-		return;
+		select_modules_for_agent_group($id_group, $id_agents, $selection);
 	}
 	
 	if ($get_agent_json) {

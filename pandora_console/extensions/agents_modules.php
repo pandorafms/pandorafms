@@ -148,19 +148,18 @@ function mainAgentsModules() {
 	$agents = agents_get_group_agents($group_id);
 	if ((empty($agents)) || $agents == -1) $agents = array();
 	$filter_agents_label = '<b>'.__('Agents').'</b>';
-	$filter_agents = html_print_select($agents, 'id_agents2[]', $agents_id, '', '', 0, true, true, true, '', false, "min-width: 180px");
+	$filter_agents = html_print_select($agents, 'id_agents2[]', $agents_id, '', '', 0, true, true, true, '', false, "min-width: 180px; max-width: 200px;");
 
 	//type show
 	$selection = array(0 => __('Show common modules'),
 						1=> __('Show all modules'));
 	$filter_type_show_label = '<b>'.__('Show common modules').'</b>';
-	$filter_type_show = html_print_select($selection, 'selection_agent_module', $selection_a_m, '', "", 0, true, false, true, '', false, "min-width: 180px");
+	$filter_type_show = html_print_select($selection, 'selection_agent_module', $selection_a_m, '', "", 0, true, false, true, '', false, "min-width: 180px;");
 
 	//modules
-	$all_modules = db_get_all_rows_sql("SELECT DISTINCT nombre, id_agente_modulo FROM tagente_modulo WHERE id_agente IN (" . implode(',', array_keys($agents)) . ")");
-	
+	$all_modules = select_modules_for_agent_group($group_id, $agents_id, $selection_a_m, false);
 	$filter_modules_label = '<b>'.__('Module').'</b>';
-	$filter_modules = html_print_select($all_modules, 'module[]', $modules_selected, '', __('None'), 0, true, true, true, '', false, "min-width: 180px");
+	$filter_modules = html_print_select($all_modules, 'module[]', $modules_selected, '', '', 0, true, true, true, '', false, "min-width: 180px; max-width: 200px;");
 
 	//update
 	$filter_update = html_print_submit_button(__('Update item'), 'edit_item', false, 'class="sub upd"', true);
@@ -618,7 +617,6 @@ extensions_add_main_function('mainAgentsModules');
 			);
 		});
 
-		selection_agent_module();
 	});
 
 	function selection_agent_module() {

@@ -297,7 +297,8 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 function agents_get_agents ($filter = false, $fields = false,
 	$access = 'AR',
 	$order = array('field' => 'nombre', 'order' => 'ASC'),
-	$return = false) {
+	$return = false,
+	$disabled_agent = 0) {
 	
 	global $config;
 	
@@ -428,6 +429,13 @@ function agents_get_agents ($filter = false, $fields = false,
 	if ($where_nogroup == '') {
 		$where_nogroup = '1 = 1';
 	}
+
+	if ($disabled_agent == 1){
+		$disabled = 'disabled = 0';
+	}
+	else{
+		$disabled = '1 = 1';	
+	}
 	
 	$extra = false;
 	
@@ -438,12 +446,12 @@ function agents_get_agents ($filter = false, $fields = false,
 	}
 	
 	if ($extra) { 
-		$where = sprintf('(%s OR (%s)) AND (%s) AND (%s) %s',
-			$sql_extra, $where, $where_nogroup, $status_sql, $search);	
+		$where = sprintf('(%s OR (%s)) AND (%s) AND (%s) %s AND %s',
+			$sql_extra, $where, $where_nogroup, $status_sql, $search, $disabled);	
 	}
 	else {
-		$where = sprintf('%s AND %s AND (%s) %s',
-			$where, $where_nogroup, $status_sql, $search);
+		$where = sprintf('%s AND %s AND (%s) %s AND %s',
+			$where, $where_nogroup, $status_sql, $search, $disabled);
 	}
 	$sql = sprintf('SELECT %s
 		FROM tagente
@@ -1169,6 +1177,9 @@ function agents_get_modules ($id_agent = null, $details = false,
 							break;
 					}
 				}
+				else if (preg_match('/\bin\b/i',$field)) {
+					array_push ($fields, $field.' '.$value);
+				}
 				else {
 					switch ($config["dbtype"]) {
 						case "mysql":
@@ -1378,6 +1389,29 @@ function agents_check_alert_fired ($id_agent) {
  */
 function agents_get_interval ($id_agent) {
 	return (int) db_get_value ('intervalo', 'tagente', 'id_agente', $id_agent);
+}
+
+/**
+ * Get all data of agent.
+ *
+ * @param Agent object.
+ *
+ * @return The interval value and status of last contact
+ */
+function agents_get_interval_status ($agent) {
+	
+	$return = '';
+	$last_time = strtotime ($agent["ultimo_contacto"]);
+	$now = time ();
+	$diferencia = $now - $last_time;
+	$time = ui_print_timestamp ($last_time, true, array('style' => 'font-size:6.5pt'));
+	$min_interval = modules_get_agentmodule_mininterval($agent['id_agente']);
+	
+	$return = $time;
+	if ($diferencia > ($min_interval["min_interval"] * 2))
+		$return = '<b><span style="color: #ff0000;">'.$time.'</span></b>';
+	
+	return $return;
 }
 
 /**
@@ -1877,6 +1911,8 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 		
 		//And at long last, the agent
 		db_process_delete_temp ("tagente", "id_agente", $id_agent);
+		
+		db_process_sql ("delete from ttag_module where id_agente_modulo in (select id_agente_modulo from tagente_modulo where id_agente = ".$id_agent.")");
 		
 		db_pandora_audit( "Agent management",
 			"Deleted agent '$agent_name'");

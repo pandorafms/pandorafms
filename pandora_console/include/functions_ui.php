@@ -615,20 +615,20 @@ function ui_print_group_icon_path ($id_group, $return = false, $path = "images/g
  */
 function ui_print_os_icon ($id_os, $name = true, $return = false,
 	$apply_skin = true, $networkmap = false, $only_src = false,
-	$relative = false, $options = false) {
+	$relative = false, $options = false, $big_icons = false) {
 	
-	
-	
-	$subfolter = 'os_icons';
+	$subfolder = 'os_icons';
 	if ($networkmap) {
-		$subfolter = 'networkmap';
+		$subfolder = 'networkmap';
 	}
+	if ($big_icons)
+		$subfolder .= '/so_big_icons';
 	
 	$icon = (string) db_get_value ('icon_name', 'tconfig_os', 'id_os', (int) $id_os);
 	$os_name = get_os_name ($id_os);
 	if (empty ($icon)) {
 		if ($only_src) {
-			$output = html_print_image("images/" . $subfolter . "/unknown.png",
+			$output = html_print_image("images/" . $subfolder . "/unknown.png",
 				true, $options, true, $relative, false, true);
 		}
 		else {
@@ -637,18 +637,18 @@ function ui_print_os_icon ($id_os, $name = true, $return = false,
 	}
 	else if ($apply_skin) {
 		if ($only_src) {
-			$output = html_print_image("images/" . $subfolter . "/" . $icon, true, $options, true, $relative, false, true);
+			$output = html_print_image("images/" . $subfolder . "/" . $icon, true, $options, true, $relative, false, true);
 		}
 		else {
 			if (!isset($options['title'])) {
 				$options['title'] = $os_name;
 			}
-			$output = html_print_image("images/" . $subfolter . "/" . $icon, true, $options, false, $relative, false, true);
+			$output = html_print_image("images/" . $subfolder . "/" . $icon, true, $options, false, $relative, false, true);
 		}
 	}
 	else
 		//$output = "<img src='images/os_icons/" . $icon . "' alt='" . $os_name . "' title='" . $os_name . "'>";
-		$output = "images/" . $subfolter . "/" . $icon;
+		$output = "images/" . $subfolder . "/" . $icon;
 	
 	if ($name === true) {
 		$output .= '&nbsp;&nbsp;' . $os_name;
@@ -815,7 +815,6 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 	
 	if (!defined('METACONSOLE')) {
 		// Force alert execution
-		$data[$index['force_execution']] = '';
 		if (check_acl ($config["id_user"], $id_group, "AW") || check_acl ($config["id_user"], $id_group, "LM")) {
 			if ($alert["force_execution"] == 0) {
 				$data[$index['force_execution']] =
@@ -2391,7 +2390,7 @@ function ui_get_full_url ($url = '', $no_proxy = false, $add_name_php_file = fal
  * @return string Header HTML
  */
 
-function ui_print_page_header ($title, $icon = "", $return = false, $help = "", $godmode = false, $options = "",$modal = false, $message = "") {
+function ui_print_page_header ($title, $icon = "", $return = false, $help = "", $godmode = false, $options = "",$modal = false, $message = "", $numChars = GENERIC_SIZE_TEXT) {
 	$title = io_safe_input_html($title);
 	if (($icon == "") && ($godmode == true)) {
 		$icon = "images/gm_setup.png";
@@ -2417,8 +2416,14 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 
 
 	$buffer .= '<ul class="mn"><li class="' . $type . '">&nbsp;' . '&nbsp; ';
+	
+	if(strpos($title, "Monitoring » Services »") != -1){
+		$title = str_replace("Monitoring » Services » Service Map » ",'',$title);
+	}
+	
 	$buffer .= '<span style="margin-right:10px;">' .
-		ui_print_truncate_text($title, 'item_title');
+		ui_print_truncate_text($title, $numChars);
+
 	if ($modal && !enterprise_installed()){
 		$buffer .= "
 		<div id='".$message."' class='publienterprise' title='Community version' style='float: right;margin-top: -2px !important; margin-left: 2px !important;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
@@ -3650,12 +3655,21 @@ function ui_print_module_string_value($value, $id_agente_module,
 			"id=" . $id_agente_module .
 			"&refr=" . $current_interval .
 			"&label=" . rawurlencode(urlencode(io_safe_output($module_name))) . "','" . $win_handle . "', 700,480)";
-		
-		$salida = '<a href="javascript:' . $link . '">' .
-			html_print_image("images/photo.png", true,
-				array("border" => '0',
-					"alt" => "",
-					"title" => __("Snapshot view"))) . '</a> &nbsp;&nbsp;';
+		if (is_image_data($value)) {	
+			$salida = '<a href="javascript:' . $link . '">' .
+				html_print_image("images/photo.png", true,
+					array("border" => '0',
+						"alt" => "",
+						"title" => __("Snapshot view"))) . '</a> &nbsp;&nbsp;';
+		}
+		else {
+			$salida = '<a href="javascript:' . $link . '">' .
+                                html_print_image("images/default_list.png", true,
+                                        array("border" => '0',
+                                                "alt" => "",
+                                                "title" => __("Snapshot view"))) . '</a> &nbsp;&nbsp;';
+
+		}
 	}
 	else {
 		

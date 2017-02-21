@@ -149,7 +149,7 @@ if ($create_action) {
 	$fields_values = array();
 	$info_fields = '';
 	$values = array();
-	for($i=1;$i<=10;$i++) {
+	for($i=1;$i<=$config['max_macro_fields'];$i++) {
 		$values['field'.$i] = (string) get_parameter ('field'.$i.'_value');
 		$info_fields .= ' Field'.$i.': ' . $values['field'.$i];
 		$values['field'.$i.'_recovery'] = (string) get_parameter ('field'.$i.'_recovery_value');
@@ -228,7 +228,7 @@ if ($update_action) {
 	$info_fields = '';
 	$values = array();
 	
-	for ($i = 1; $i <= 10; $i++) {
+	for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
 		$values['field'.$i] = (string) get_parameter ('field'.$i.'_value');
 		$info_fields .= ' Field1: ' . $values['field'.$i];
 		$values['field'.$i.'_recovery'] = (string) get_parameter ('field'.$i.'_recovery_value');

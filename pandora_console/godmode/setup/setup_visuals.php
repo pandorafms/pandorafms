@@ -112,6 +112,27 @@ $table_behaviour->data[$row][1] .= __('No') . '&nbsp;' .
 $row++;
 //Daniel maya 02/06/2016 Display menu with click --END
 
+if (enterprise_installed()) {
+	$table_behaviour->data[$row][0] = __('Service label font size');
+	$table_behaviour->data[$row][1] = html_print_input_text ('service_label_font_size', $config["service_label_font_size"], '', 5, 5, true);
+	$row++;
+
+	$table_behaviour->data[$row][0] = __('Service item padding size');
+	$table_behaviour->data[$row][1] = html_print_input_text ('service_item_padding_size', $config["service_item_padding_size"], '', 5, 5, true);
+	$row++;
+}
+
+$table_behaviour->data[$row][0] = __('Classic menu mode').
+	ui_print_help_tip(__('Text menu options always visible, don\'t hide'), true);
+$table_behaviour->data[$row][1] = __('Yes') . '&nbsp;' .
+		html_print_radio_button ('classic_menu', 1, '',
+		$config["classic_menu"], true) .
+	'&nbsp;&nbsp;';
+$table_behaviour->data[$row][1] .= __('No') . '&nbsp;' .
+	html_print_radio_button ('classic_menu', 0, '',
+		$config["classic_menu"], true);
+$row++;
+
 echo "<fieldset>";
 echo "<legend>" . __('Behaviour configuration') . "</legend>";
 html_print_table ($table_behaviour);
@@ -165,14 +186,14 @@ $row++;
 $table_styles->data[$row][0] = __('Custom logo') . ui_print_help_icon("custom_logo", true);
 
 if(enterprise_installed()){
-
-$table_styles->data[$row][1] = html_print_select(
-list_files('enterprise/images/custom_logo', "png", 1, 0), 'custom_logo',
-$config["custom_logo"], '', '', '',true,false,true,'',$open,'width:240px');
-
+	$ent_files = list_files('enterprise/images/custom_logo', "png", 1, 0);
+	$open_files = list_files('images/custom_logo', "png", 1, 0);
+	
+	$table_styles->data[$row][1] = html_print_select(
+	array_merge($ent_files, $open_files), 'custom_logo',
+	$config["custom_logo"], '', '', '',true,false,true,'',$open,'width:240px');
 }
 else{
-
 	$table_styles->data[$row][1] = html_print_select(
 	list_files('images/custom_logo', "png", 1, 0), 'custom_logo',
 	$config["custom_logo"], '', '', '',true,false,true,'',$open,'width:240px');
@@ -193,7 +214,7 @@ $table_styles->data[$row][0] = __('Custom logo in login') . ui_print_help_icon("
 $row++;
 
 
-$table_styles->data[$row][0] = __('Disable Pandora FMS on graphs');
+$table_styles->data[$row][0] = __('Disable logo in graphs');
 $table_styles->data[$row][1] = __('Yes') . '&nbsp;' .
 	html_print_radio_button_extended ('fixed_graph', 1, '', $config["fixed_graph"], $open, '','',true) .
 	'&nbsp;&nbsp;';
@@ -334,6 +355,14 @@ $table_font->data[$row][1] = html_print_input_text('item_title_size_text',
 	$config["item_title_size_text"], '', 3, 3, true);
 $row++;
 
+$table_font->data[$row][0] = __('Show units in values report') .
+	ui_print_help_tip(__('This enabling this, max, min and avg values will be shown with units.'), true);
+$table_font->data[$row][1] = __('Yes') . '&nbsp;' .
+	html_print_radio_button ('simple_module_value', 1, '', $config["simple_module_value"], true).'&nbsp;&nbsp;';
+$table_font->data[$row][1] .= __('No') . '&nbsp;' .
+	html_print_radio_button ('simple_module_value', 0, '', $config["simple_module_value"], true);
+$row++;
+
 echo "<fieldset>";
 echo "<legend>" . __('Font and Text configuration') . "</legend>";
 html_print_table ($table_font);
@@ -447,6 +476,28 @@ $table_chars->data[$row][1] .= __('Line').'&nbsp;' .
 		$config["type_module_charts"] != 'area', true);
 $row++;
 
+$table_chars->data[$row][0] = __('Type of interface charts');
+$table_chars->data[$row][1] = __('Area').'&nbsp;' .
+	html_print_radio_button ('type_interface_charts', 'area', '',
+		$config["type_interface_charts"] == 'area', true).'&nbsp;&nbsp;';
+$table_chars->data[$row][1] .= __('Line').'&nbsp;' .
+	html_print_radio_button ('type_interface_charts', 'line', '',
+		$config["type_interface_charts"] != 'area', true);
+$row++;
+
+$table_chars->data[$row][0] = __('Show only average');
+$table_chars->data[$row][0] .= ui_print_help_tip(__('Allows only show the average in graphs'), true);
+$table_chars->data[$row][1] = __('Yes').'&nbsp;' .
+	html_print_radio_button ('only_average', 1, '', $config["only_average"], true).'&nbsp;&nbsp;';
+$table_chars->data[$row][1] .= __('No').'&nbsp;' .
+	html_print_radio_button ('only_average', 0, '', $config["only_average"], true);
+$row++;
+
+$table_chars->data[$row][0] = __('Percentil');
+$table_chars->data[$row][0] .= ui_print_help_tip(__('Allows only show the average in graphs'), true);
+$table_chars->data[$row][1] = html_print_input_text ('percentil', $config['percentil'], '', 20, 20, true);
+$row++;
+
 echo "<fieldset>";
 echo "<legend>" . __('Charts configuration') . "</legend>";
 html_print_table ($table_chars);
@@ -467,6 +518,16 @@ $table_other->data[$row][0] = __('Default line thickness for the Visual Console'
 $table_other->data[$row][1] = html_print_input_text ('vc_line_thickness', $config["vc_line_thickness"], '', 5, 5, true);
 $row++;
 
+// Enrique (27/01/2017) New feature: Show report info on top of reports
+$table_other->data[$row][0] = __('Show report info with description') .
+	ui_print_help_tip(
+		__('Custom report description info. It will be applied to all reports and templates by default.'), true);
+$table_other->data[$row][1] = html_print_checkbox('custom_report_info', 1,
+	$config['custom_report_info'], true);
+$row++;
+
+//----------------------------------------------------------------------
+
 // Juanma (07/05/2014) New feature: Table for custom front page for reports  
 $table_other->data[$row][0] = __('Custom report front page') .
 	ui_print_help_tip(
@@ -475,28 +536,6 @@ $table_other->data[$row][1] = html_print_checkbox('custom_report_front', 1,
 	$config['custom_report_front'], true);
 $row++;
 //----------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 $dirItems = scandir($config['homedir'] . '/images/custom_logo');
 foreach ($dirItems as $entryDir) {
@@ -721,23 +760,23 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 <script language="javascript" type="text/javascript">
 
 // Juanma (07/05/2014) New feature: Custom front page for reports  
-function display_custom_report_front (show) {
+function display_custom_report_front (show,table) {
 	
 	if (show == true) {
-		$('tr#table2-custom_report_front-font').show();
-		$('tr#table2-custom_report_front-logo').show();
-		$('tr#table2-custom_report_front-preview').show();
-		$('tr#table2-custom_report_front-header').show();
-		$('tr#table2-custom_report_front-first_page').show();
-		$('tr#table2-custom_report_front-footer').show();
+		$('tr#'+table+'-custom_report_front-font').show();
+		$('tr#'+table+'-custom_report_front-logo').show();
+		$('tr#'+table+'-custom_report_front-preview').show();
+		$('tr#'+table+'-custom_report_front-header').show();
+		$('tr#'+table+'-custom_report_front-first_page').show();
+		$('tr#'+table+'-custom_report_front-footer').show();
 	}
 	else {
-		$('tr#table2-custom_report_front-font').hide();
-		$('tr#table2-custom_report_front-logo').hide();
-		$('tr#table2-custom_report_front-preview').hide();
-		$('tr#table2-custom_report_front-header').hide();
-		$('tr#table2-custom_report_front-first_page').hide();
-		$('tr#table2-custom_report_front-footer').hide();
+		$('tr#'+table+'-custom_report_front-font').hide();
+		$('tr#'+table+'-custom_report_front-logo').hide();
+		$('tr#'+table+'-custom_report_front-preview').hide();
+		$('tr#'+table+'-custom_report_front-header').hide();
+		$('tr#'+table+'-custom_report_front-first_page').hide();
+		$('tr#'+table+'-custom_report_front-footer').hide();
 	}
 	
 }
@@ -844,12 +883,12 @@ $(document).ready (function () {
 	// Juanma (06/05/2014) New feature: Custom front page for reports  
 	var custom_report = $('#checkbox-custom_report_front')
 		.prop('checked');
-	display_custom_report_front(custom_report);
+	display_custom_report_front(custom_report,$('#checkbox-custom_report_front').parent().parent().parent().parent().attr('id'));
 	
 	$("#checkbox-custom_report_front").click( function()  {
 		var custom_report = $('#checkbox-custom_report_front')
 			.prop('checked');
-		display_custom_report_front(custom_report);
+		display_custom_report_front(custom_report,$(this).parent().parent().parent().parent().attr('id'));
 	});
 });
 

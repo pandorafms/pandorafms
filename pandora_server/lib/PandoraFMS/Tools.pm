@@ -57,6 +57,7 @@ our @EXPORT = qw(
 	ICMPSERVER
 	SNMPSERVER
 	SATELLITESERVER
+	MFSERVER
 	TRANSACTIONALSERVER
 	METACONSOLE_LICENSE
 	$DEVNULL
@@ -117,6 +118,7 @@ use constant ICMPSERVER => 11;
 use constant SNMPSERVER => 12;
 use constant SATELLITESERVER => 13;
 use constant TRANSACTIONALSERVER => 14;
+use constant MFSERVER => 15;
 
 # Value for a metaconsole license type
 use constant METACONSOLE_LICENSE => 0x01;

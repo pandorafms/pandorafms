@@ -136,6 +136,49 @@ $table->data["staticgraph_modulegraph"][1] = __('Width').': ' .
 $table->data["staticgraph_modulegraph"][1] .= '&nbsp;&nbsp;&nbsp;' .
 	__('Height') . ': ' .
 	html_print_input_text('height', 0, '', 5, 5, true);
+	
+	  $fontf = array('Roboto' => 'Roboto',
+			 'lato' => 'Lato',
+			 'opensans' => 'Open Sans',
+			 'nunito' => 'Nunito',
+			 'leaguegothic' => 'League Gothic'
+	 	 );
+		 
+		 $fonts = array('4pt' => '4pt','6pt' => '6pt','8pt' => '8pt','10pt' => '10pt','12pt' => '12pt','14pt' => '14pt','24pt' => '24pt','36pt' => '36pt','72pt' => '72pt','96pt' => '96pt','128pt' => '128pt','154pt' => '154pt','196pt' => '196pt');
+		 
+	/*	 
+		 $fontf = array('andale mono,times' => 'Andale Mono',
+ 			 'arial,helvetica,sans-serif' => 'Arial',
+ 			 'arial black,avant garde' => 'Arial Black',
+ 			 'comic sans ms,sans-serif' => 'Comic Sans MS',
+ 			 'courier new,courier' => 'Courier New',
+ 			 'georgia,palatino' => 'Georgia',
+ 			 'helvetica,impact' => 'Helvetica',
+ 			 'impact,chicago' => 'Impact',
+ 			 'symbol' => 'Symbol',
+ 			 'tahoma,arial,helvetica,sans-serif' => 'Tahoma',
+ 			 'terminal,monaco' => 'Terminal',
+ 			 'times new roman,times' => 'Times New Roman',
+ 			 'trebuchet ms,geneva' => 'Trebuchet MS',
+ 			 'verdana,geneva' => 'Verdana',
+ 			 'Webdings' => 'Webdings',
+ 			 'Wingdings'  => 'Wingdings' 
+ 	 	 );
+	*/
+	
+	$table->rowstyle['all_9'] = 'display: none;';
+	$table->data['all_9'][0] = __('Font');
+	$table->colspan['all_9'][1] = "3";
+	$table->data["all_9"][1] = html_print_select($fontf,
+		'fontf', $fontf['Roboto'], '', '', '', true);
+		
+		
+		
+		$table->rowstyle['all_10'] = 'display: none;';
+		$table->data['all_10'][0] = __('Font size');
+		$table->colspan['all_10'][1] = "3";
+		$table->data["all_10"][1] = html_print_select($fonts,
+			'fonts', $fonts['12pt'], '', '', '', true);
 
 
 $table->rowstyle["modulegraph_simplevalue"] = 'display: none;';

@@ -73,9 +73,6 @@ if (is_ajax ()) {
 		if (is_metaconsole()) {
 			$server_id = (int) get_parameter('serverID');
 			$server = metaconsole_get_servers($server_id);
-			
-			if (metaconsole_connect($server) != NOERR)
-				return;
 		}
 		
 		ob_clean();
@@ -98,11 +95,7 @@ if (is_ajax ()) {
 			}
 		}
 		echo '<br></div>';
-		
-		if (!empty($server) && is_metaconsole()) {
-			metaconsole_restore_db();
-		}
-		
+				
 		return;
 	}
 	

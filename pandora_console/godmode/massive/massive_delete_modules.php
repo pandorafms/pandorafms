@@ -395,7 +395,7 @@ $table->style[2] = 'font-weight: bold';
 
 $table->data['selection_mode'][0] = __('Selection mode');
 $table->data['selection_mode'][1] = __('Select modules first') . ' ' .
-	html_print_radio_button_extended ("selection_mode", 'modules', '', $selection_mode, false, '', 'style="margin-right: 40px;"', true);
+	html_print_radio_button_extended ("selection_mode", 'modules', '', $selection_mode, false, '', 'style="margin-right: 40px;"', true).'<br>';
 $table->data['selection_mode'][1] .= __('Select agents first') . ' ' .
 	html_print_radio_button_extended ("selection_mode", 'agents', '', $selection_mode, false, '', 'style="margin-right: 40px;"', true);
 
@@ -460,7 +460,19 @@ $table->data['form_agents_2'][1] = html_print_select($status_list,
 	'status_agents', 'selected', '', __('All'), AGENT_STATUS_ALL, true);
 $table->data['form_agents_2'][3] = '';
 
-
+$table->rowclass['form_modules_3'] = '';
+$table->data['form_modules_3'][0] = __('Module Status');
+$table->colspan['form_modules_3'][1] = 2;
+$status_list = array ();
+$status_list[AGENT_MODULE_STATUS_NORMAL] = __('Normal');
+$status_list[AGENT_MODULE_STATUS_WARNING] = __('Warning');
+$status_list[AGENT_MODULE_STATUS_CRITICAL_BAD] = __('Critical');
+$status_list[AGENT_MODULE_STATUS_UNKNOWN] = __('Unknown');
+$status_list[AGENT_MODULE_STATUS_NOT_NORMAL] = __('Not normal');
+$status_list[AGENT_MODULE_STATUS_NOT_INIT] = __('Not init');
+$table->data['form_modules_3'][1] = html_print_select($status_list,
+	'status_module', 'selected', '', __('All'), AGENT_MODULE_STATUS_ALL, true);
+$table->data['form_modules_3'][3] = '';
 
 $table->rowstyle['form_modules_2'] = 'vertical-align: top;';
 $table->rowclass['form_modules_2'] = 'select_modules_row select_modules_row_2';
@@ -568,6 +580,10 @@ $(document).ready (function () {
 		
 		if (this.value != '0')
 			params['id_tipo_modulo'] = this.value;
+		
+		var status_module = $('#status_module').val();
+		if (status_module != '-1')
+			params['status_module'] = status_module;
 		
 		$("#module_loading").show ();
 		$("tr#delete_table-edit1, tr#delete_table-edit2").hide ();
@@ -710,6 +726,16 @@ $(document).ready (function () {
 		if (count_parameters > limit_parameters_massive) {
 			alert("<?php echo __('Unsucessful sending the data, please contact with your administrator or make with less elements.'); ?>");
 			return false;
+		}
+	});
+	
+	$("#status_module").change(function() {
+		selector = $("#form_modules input[name=selection_mode]:checked").val();
+		if(selector == 'agents') {
+			$("#id_agents").trigger("change");
+		}
+		else if(selector == 'modules') {
+			$("#module_type").trigger("change");
 		}
 	});
 });

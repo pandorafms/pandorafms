@@ -304,7 +304,7 @@ function update_template ($step) {
 	}
 	elseif ($step == 3) {
 		$recovery_notify = (bool) get_parameter ('recovery_notify');
-		for($i=1;$i<=10;$i++) {
+		for($i=1;$i<=$config['max_macro_fields'];$i++) {
 			$values['field'.$i] = (string) get_parameter ('field'.$i);
 			$values['field'.$i.'_recovery'] = $recovery_notify ? (string) get_parameter ('field'.$i.'_recovery') : '';
 		}
@@ -354,10 +354,10 @@ $sunday = true;
 $special_day = false;
 $default_action = 0;
 $fields = array();
-for ($i = 1; $i <= 10; $i++) {
+for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
 	$fields[$i] = '';
 }
-for ($i = 1; $i <= 10; $i++) {
+for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
 	$fields_recovery[$i] = '';
 }
 $priority = 1;
@@ -473,13 +473,13 @@ if ($id && ! $create_template) {
 	$min_alerts_reset_counter = $template['min_alerts_reset_counter'];
 	$threshold = $template['time_threshold'];
 	$fields = array();
-	for ($i = 1; $i <= 10; $i++) {
+	for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
 		$fields[$i] = $template['field'.$i];
 	}
 	$recovery_notify = $template['recovery_notify'];
 	
 	$fields_recovery = array();
-	for ($i = 1; $i <= 10; $i++) {
+	for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
 		$fields_recovery[$i] = $template['field'.$i.'_recovery'];
 	}
 	
@@ -643,6 +643,10 @@ else if ($step == 3) {
 	/* Alert recover */
 	if (! $recovery_notify) {
 		$table->cellstyle['label_fields'][2] = 'display:none;';
+		for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
+			$table->cellstyle['field' . $i][2] = 'display:none;';
+		}
+		/*
 		$table->cellstyle['field1'][2] = 'display:none;';
 		$table->cellstyle['field2'][2] = 'display:none;';
 		$table->cellstyle['field3'][2] = 'display:none;';
@@ -653,6 +657,7 @@ else if ($step == 3) {
 		$table->cellstyle['field8'][2] = 'display:none;';
 		$table->cellstyle['field9'][2] = 'display:none;';
 		$table->cellstyle['field10'][2] = 'display:none;';
+		*/
 	}
 	$table->data[0][0] = __('Alert recovery');
 	$values = array (false => __('Disabled'), true => __('Enabled'));
@@ -665,7 +670,7 @@ else if ($step == 3) {
 	$table->data['label_fields'][1] = __('Firing fields');
 	$table->data['label_fields'][2] = __('Recovery fields');
 	
-	for ($i = 1; $i <= 10; $i++) {
+	for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
 		if (isset($template[$name])) {
 			$value = $template[$name];
 		}
@@ -1090,11 +1095,21 @@ if ($step == 2) {
 elseif ($step == 3) {
 ?>
 	$("#recovery_notify").change (function () {
+		var max_fields = parseInt('<?php echo $config["max_macro_fields"]; ?>');
+
 		if (this.value == 1) {
-			$("#template-label_fields-2, #template-field1-2, #template-field2-2, #template-field3-2, #template-field4-2, #template-field5-2, #template-field6-2, #template-field7-2, #template-field8-2, #template-field9-2, #template-field10-2").show ();
+			$("#template-label_fields-2").show();
+			for (i = 1; i <= max_fields; i++) {
+				$("#template-field" + i + "-2").show();
+			}
+			//$("#template-label_fields-2, #template-field1-2, #template-field2-2, #template-field3-2, #template-field4-2, #template-field5-2, #template-field6-2, #template-field7-2, #template-field8-2, #template-field9-2, #template-field10-2").show ();
 		}
 		else {
-			$("#template-label_fields-2, #template-field1-2, #template-field2-2, #template-field3-2, #template-field4-2, #template-field5-2, #template-field6-2, #template-field7-2, #template-field8-2, #template-field9-2, #template-field10-2").hide ();
+			$("#template-label_fields-2").hide();
+			for (i = 1; i <= max_fields; i++) {
+				$("#template-field" + i + "-2").hide();
+			}
+			//$("#template-label_fields-2, #template-field1-2, #template-field2-2, #template-field3-2, #template-field4-2, #template-field5-2, #template-field6-2, #template-field7-2, #template-field8-2, #template-field9-2, #template-field10-2").hide ();
 		}
 	});
 

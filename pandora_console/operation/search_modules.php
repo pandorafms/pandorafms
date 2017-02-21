@@ -73,10 +73,9 @@ else {
 		'nombre', 'web_content_string');
 	
 	foreach ($modules as $module) {
-		//~ html_debug_print($module);
 		$module["datos"] =
 			modules_get_last_value($module['id_agente_modulo']);
-		$module["module_name"] = 111;
+		$module["module_name"] = $module['nombre'];
 		
 		//To search the monitor status
 		$status_sql = sprintf('SELECT estado from tagente_estado where id_agente_modulo =' . $module['id_agente_modulo']);

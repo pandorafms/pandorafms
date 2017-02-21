@@ -233,12 +233,18 @@ config_check();
 				//======================================================
 				
 				
-				
+				$check_minor_release_available = false;
 				$pandora_management = check_acl($config['id_user'], 0, "PM");
 				
+				$check_minor_release_available = db_check_minor_relase_available ();
+				
+				if ($check_minor_release_available) {
+					set_pandora_error_for_header('There are one or more minor releases waiting for update, there are required administrator permissions', 'minor release/s available');
+				}
+
+				echo '<div id="alert_messages" style="display: none"></div>';
+		
 				if ($config["alert_cnt"] > 0) {
-					echo '<div id="alert_messages" style="display: none"></div>';
-					
 					$maintenance_link = 'javascript:';
 					$maintenance_title = __("System alerts detected - Please fix as soon as possible");
 					$maintenance_class = $maintenance_id = 'show_systemalert_dialog white';
@@ -273,7 +279,11 @@ config_check();
 				$table->data[0][3] = $maintenance_img;
 				
 				// Main help icon
-				$table->data[0][4] = ui_print_help_icon ("main_help", true, '', 'images/header_help.png');
+				$table->data[0][4] = '<a href="#" class="modalpopup" id="helpmodal">'.html_print_image("images/header_help.png",
+					true, array(
+						"title" => __('Main help'),
+						"id" => "helpmodal",
+						"class" => "modalpopup")).'</a>';
 				
 				// Logout
 				$table->data[0][5] = '<a class="white" href="' . ui_get_full_url('index.php?bye=bye') . '">';

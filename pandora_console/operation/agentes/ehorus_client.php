@@ -14,13 +14,12 @@
 // GNU General Public License for more details.
 
 
-// Global & session management
-require_once ('../../include/config.php');
-
-if (! isset($_SESSION[$config['homeurl_static']]['id_usuario'])) {
+if (! isset($_SESSION['id_usuario'])) {
 	session_start();
 }
 
+// Global & session management
+require_once ('../../include/config.php');
 require_once ($config['homedir'] . '/include/functions.php');
 
 check_login();
@@ -42,6 +41,7 @@ $section = (string) get_parameter_get('section');
 		<title>eHorus client</title>
 		<link rel="stylesheet" href="../../include/ehorus/css/bootstrap.min.css" type="text/css" />
 		<link rel="stylesheet" href="../../include/ehorus/css/style.css" type="text/css" />
+		<link rel="stylesheet" href="../../include/ehorus/css/xterm.css" type="text/css" />
 		<script type="text/javascript" src="../../include/ehorus/bundle.min.js"></script>
 	</head>
 	<body>

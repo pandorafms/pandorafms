@@ -396,7 +396,8 @@ $agent_field_column_mapping = array(
 	'agent_id_parent' => 'id_parent as agent_id_parent',
 	'agent_custom_id' => 'custom_id as agent_custom_id',
 	'agent_server_name' => 'server_name as agent_server_name',
-	'agent_cascade_protection' => 'cascade_protection as agent_cascade_protection');
+	'agent_cascade_protection' => 'cascade_protection as agent_cascade_protection',
+	'agent_cascade_protection_module' => 'cascade_protection_module as agent_cascade_protection_module',);
 
 /* module related field mappings 1/2 (output field => column for 'tagente_modulo') */
 $module_field_column_mampping = array(
@@ -540,6 +541,7 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType) {
 		'agent_custom_id',
 		'agent_server_name',
 		'agent_cascade_protection',
+		'agent_cascade_protection_module',
 		
 		'module_id_agent_modulo',
 		'module_id_agent',
@@ -1060,20 +1062,32 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3) {
 		return;
 	}
 	
-		//html_debug_print($other);
 	$name = $other['data'][0];
 	$ip = $other['data'][1];
 	$idParent = $other['data'][2];
 	$idGroup = $other['data'][3];
 	$cascadeProtection = $other['data'][4];
-	$intervalSeconds = $other['data'][5];
-	$idOS = $other['data'][6];
-	$nameServer = $other['data'][7];
-	$customId = $other['data'][8];
-	$learningMode = $other['data'][9];
-	$disabled = $other['data'][10];
-	$description = $other['data'][11];
+	$cascadeProtectionModule = $other['data'][5];
+	$intervalSeconds = $other['data'][6];
+	$idOS = $other['data'][7];
+	$nameServer = $other['data'][8];
+	$customId = $other['data'][9];
+	$learningMode = $other['data'][10];
+	$disabled = $other['data'][11];
+	$description = $other['data'][12];
 	
+	if ($cascadeProtection == 1) {
+		if (($idParent != 0) && (db_get_value_sql('SELECT id_agente_modulo
+									FROM tagente_modulo
+									WHERE id_agente = ' . $idParent . 
+									' AND id_agente_modulo = ' . $cascadeProtectionModule) === false)) {
+				returnError('parent_agent_not_exist', 'Is not a parent module to do cascade protection.');
+		}
+	}
+	else {
+		$cascadeProtectionModule = 0;
+	}
+
 	$return = db_process_sql_update('tagente', 
 		array('nombre' => $name,
 			'direccion' => $ip,
@@ -1084,6 +1098,7 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3) {
 			'id_os' => $idOS,
 			'disabled' => $disabled,
 			'cascade_protection' => $cascadeProtection,
+			'cascade_protection_module' => $cascadeProtectionModule,
 			'server_name' => $nameServer,
 			'id_parent' => $idParent,
 			'custom_id' => $customId),
@@ -1124,14 +1139,27 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 	$idParent = $other['data'][2];
 	$idGroup = $other['data'][3];
 	$cascadeProtection = $other['data'][4];
-	$intervalSeconds = $other['data'][5];
-	$idOS = $other['data'][6];
+	$cascadeProtectionModule = $other['data'][5];
+	$intervalSeconds = $other['data'][6];
+	$idOS = $other['data'][7];
 	//$idServer = $other['data'][7];
-	$nameServer = $other['data'][7];
-	$customId = $other['data'][8];
-	$learningMode = $other['data'][9];
-	$disabled = $other['data'][10];
-	$description = $other['data'][11];
+	$nameServer = $other['data'][8];
+	$customId = $other['data'][9];
+	$learningMode = $other['data'][10];
+	$disabled = $other['data'][11];
+	$description = $other['data'][12];
+
+	if ($cascadeProtection == 1) {
+		if (($idParent != 0) && (db_get_value_sql('SELECT id_agente_modulo
+									FROM tagente_modulo
+									WHERE id_agente = ' . $idParent . 
+									' AND id_agente_modulo = ' . $cascadeProtectionModule) === false)) {
+				returnError('parent_agent_not_exist', 'Is not a parent module to do cascade protection.');
+		}
+	}
+	else {
+		$cascadeProtectionModule = 0;
+	}
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
@@ -1183,10 +1211,11 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 				'id_os' => $idOS,
 				'disabled' => $disabled,
 				'cascade_protection' => $cascadeProtection,
+				'cascade_protection_module' => $cascadeProtectionModule,
 				'server_name' => $nameServer,
 				'id_parent' => $idParent,
 				'custom_id' => $customId));
-
+		
 		if (!empty($idAgente) && !empty($ip)) {
 			// register ip for this agent in 'taddress'
 			agents_add_address ($idAgente, $ip);
@@ -1481,6 +1510,308 @@ function api_get_agent_modules($thrash1, $thrash2, $other, $thrash3) {
 	else {
 		returnError('error_agent_modules', 'No modules retrieved.');
 	}
+}
+
+function api_get_db_uncompress_module_data ($id_agente_modulo,$tstart,$other){
+	global $config;
+	
+	if (!isset($id_agente_modulo)) {
+		return false;
+	}
+
+	if ((!isset($tstart)) || ($tstart === false)) {
+		// Return data from the begining
+		//$tstart = 0;
+		$tstart = 0;
+	}
+	$tend = $other['data'];
+	if ((!isset($tend)) || ($tend === false)) {
+		// Return data until now
+		$tend = time();
+	}
+
+	if ($tstart > $tend) {
+		return false;
+	}
+	
+	$search_historydb = false;
+	$table = "tagente_datos";
+	
+	$module = modules_get_agentmodule($id_agente_modulo);
+	
+	if ($module === false){
+		// module not exists
+		return false;
+	}
+	$module_type = $module['id_tipo_modulo'];
+	$module_type_str = modules_get_type_name ($module_type);
+	if (strstr ($module_type_str, 'string') !== false) {
+		$table = "tagente_datos_string";
+	}
+	
+	// Get first available utimestamp in active DB
+	$query  = " SELECT utimestamp, datos FROM $table ";
+	$query .= " WHERE id_agente_modulo=$id_agente_modulo AND utimestamp < $tstart";
+	$query .= " ORDER BY utimestamp DESC LIMIT 1";
+
+
+	$ret = db_get_all_rows_sql( $query , $search_historydb);
+
+	
+	if ( ( $ret === false ) || (( isset($ret[0]["utimestamp"]) && ($ret[0]["utimestamp"] > $tstart )))) {
+		// Value older than first retrieved from active DB
+		$search_historydb = true;
+
+		$ret = db_get_all_rows_sql( $query , $search_historydb);
+	}
+	else {
+		$first_data["utimestamp"] = $ret[0]["utimestamp"];
+		$first_data["datos"]      = $ret[0]["datos"];
+	}
+
+	if ( ( $ret === false ) || (( isset($ret[0]["utimestamp"]) && ($ret[0]["utimestamp"] > $tstart )))) {
+		// No previous data. -> not init
+		// Avoid false unknown status
+		$first_data["utimestamp"] = time();
+		$first_data["datos"]      = false;
+	}
+	else {
+		$first_data["utimestamp"] = $ret[0]["utimestamp"];
+		$first_data["datos"]      = $ret[0]["datos"];
+	}
+	
+	$query  = " SELECT utimestamp, datos FROM $table ";
+	$query .= " WHERE id_agente_modulo=$id_agente_modulo AND utimestamp >= $tstart AND utimestamp <= $tend";
+	$query .= " ORDER BY utimestamp ASC";
+
+	// Retrieve all data from module in given range
+	$raw_data = db_get_all_rows_sql($query, $search_historydb);
+	
+	if (($raw_data === false) && ($ret === false)) {
+		// No data
+		return false;
+	}
+
+	// Retrieve going unknown events in range
+	$unknown_events = db_get_module_ranges_unknown($id_agente_modulo, $tstart, $tend);
+	
+	// Retrieve module_interval to build the template
+	$module_interval = modules_get_interval ($id_agente_modulo);
+	$slice_size = $module_interval;
+	
+	
+
+	// We'll return a bidimensional array
+	// Structure returned: schema:
+	// 
+	// uncompressed_data =>
+	//      pool_id (int)
+	//          utimestamp (start of current slice)
+	//          data
+	//              array
+	//                  utimestamp
+	//                  datos
+
+	$return = array();
+	// Point current_timestamp to begin of the set and initialize flags
+	$current_timestamp   = $tstart;
+	$last_inserted_value = $first_data["datos"];
+	$last_timestamp      = $first_data["utimestamp"];
+	$data_found          = 0;
+
+	// Build template
+	$pool_id = 0;
+	$now = time();
+
+	$in_unknown_status = 0;
+	if (is_array($unknown_events)) {
+		$current_unknown = array_shift($unknown_events);
+	}
+	
+	while ( $current_timestamp < $tend ) {
+		$expected_data_generated = 0;
+
+		$return[$pool_id]["data"] = array();
+		$tmp_data   = array();
+		$data_found = 0;
+		
+		if (is_array($unknown_events)) {
+			$i = 0;
+			while ($current_timestamp >= $unknown_events[$i]["time_to"] ) {
+				// Skip unknown events in past
+				array_splice($unknown_events, $i,1);
+				$i++;
+				if (!isset($unknown_events[$i])) {
+					break;
+				}
+			}
+			if (isset($current_unknown)) {
+
+				// check if recovered from unknown status
+				if(is_array($unknown_events) && isset($current_unknown)) {
+					if (   (($current_timestamp+$slice_size) > $current_unknown["time_to"])
+						&& ($current_timestamp < $current_unknown["time_to"])
+						&& ($in_unknown_status == 1) ) {
+						// Recovered from unknown
+
+						if (   ($current_unknown["time_to"] > $current_timestamp)
+							&& ($expected_data_generated == 0) ) {
+							// also add the "expected" data
+							$tmp_data["utimestamp"] = $current_timestamp;
+							if ($in_unknown_status == 1) {
+								$tmp_data["datos"]  = null;
+							}
+							else {
+								$tmp_data["datos"]  = $last_inserted_value;
+							}
+							$return[$pool_id]["utimestamp"] = $current_timestamp;
+							array_push($return[$pool_id]["data"], $tmp_data);
+							$expected_data_generated = 1;
+						}
+
+
+						$tmp_data["utimestamp"] = $current_unknown["time_to"];
+						$tmp_data["datos"]      = $last_inserted_value;
+						// debug purpose
+						$tmp_data["obs"]        = "event recovery data";
+						
+						$return[$pool_id]["utimestamp"] = $current_timestamp;
+						array_push($return[$pool_id]["data"], $tmp_data);
+						$data_found = 1;
+						$in_unknown_status = 0;
+					}
+
+					if (   (($current_timestamp+$slice_size) > $current_unknown["time_from"])
+						&& (($current_timestamp+$slice_size) < $current_unknown["time_to"])
+						&& ($in_unknown_status == 0) ) {
+						// Add unknown state detected
+
+						if ( $current_unknown["time_from"] < ($current_timestamp+$slice_size)) {
+							if (   ($current_unknown["time_from"] > $current_timestamp)
+								&& ($expected_data_generated == 0) ) {
+								// also add the "expected" data
+								$tmp_data["utimestamp"] = $current_timestamp;
+								if ($in_unknown_status == 1) {
+									$tmp_data["datos"]  = null;
+								}
+								else {
+									$tmp_data["datos"]  = $last_inserted_value;
+								}
+								$return[$pool_id]["utimestamp"] = $current_timestamp;
+								array_push($return[$pool_id]["data"], $tmp_data);
+								$expected_data_generated = 1;
+							}
+
+							$tmp_data["utimestamp"] = $current_unknown["time_from"];
+							$tmp_data["datos"]      = null;
+							// debug purpose
+							$tmp_data["obs"] = "event data";
+							$return[$pool_id]["utimestamp"] = $current_timestamp;
+							array_push($return[$pool_id]["data"], $tmp_data);
+							$data_found = 1;
+						}
+						$in_unknown_status = 1;
+					}
+
+					if ( ($in_unknown_status == 0) && ($current_timestamp >= $current_unknown["time_to"]) ) {
+						$current_unknown = array_shift($unknown_events);
+					}
+				}
+			} // unknown events handle
+		}
+
+		// Search for data
+		$i=0;
+		
+		if (is_array($raw_data)) {
+			foreach ($raw_data as $data) {
+				if ( ($data["utimestamp"] >= $current_timestamp)
+				  && ($data["utimestamp"] < ($current_timestamp+$slice_size)) ) {
+					// Data in block, push in, and remove from $raw_data (processed)
+
+					if (   ($data["utimestamp"] > $current_timestamp)
+						&& ($expected_data_generated == 0) ) {
+						// also add the "expected" data
+						$tmp_data["utimestamp"] = $current_timestamp;
+						if ($in_unknown_status == 1) {
+							$tmp_data["datos"]  = null;
+						}
+						else {
+							$tmp_data["datos"]  = $last_inserted_value;
+						}
+						$tmp_data["obs"] = "expected data";
+						$return[$pool_id]["utimestamp"] = $current_timestamp;
+						array_push($return[$pool_id]["data"], $tmp_data);
+						$expected_data_generated = 1;
+					}
+
+					$tmp_data["utimestamp"] = intval($data["utimestamp"]);
+					$tmp_data["datos"]      = $data["datos"];
+					// debug purpose
+					$tmp_data["obs"] = "real data";
+
+					$return[$pool_id]["utimestamp"] = $current_timestamp;
+					array_push($return[$pool_id]["data"], $tmp_data);
+
+					$last_inserted_value = $data["datos"];
+					$last_timestamp      = intval($data["utimestamp"]);
+
+					unset($raw_data[$i]);
+					$data_found = 1;
+					$in_unknown_status = 0;
+				}
+				elseif ($data["utimestamp"] > ($current_timestamp+$slice_size)) {
+					// Data in future, stop searching new ones
+					break;
+				}
+			}
+			$i++;
+		}
+
+		if ($data_found == 0) {
+			// No data found, lug the last_value until SECONDS_1DAY + 2*modules_get_interval
+			// UNKNOWN!
+
+			if (($current_timestamp > $now) || (($current_timestamp - $last_timestamp) > (SECONDS_1DAY + 2*$module_interval))) {
+				if (isset($last_inserted_value)) {
+					// unhandled unknown status control
+					$unhandled_time_unknown = $current_timestamp - (SECONDS_1DAY + 2*$module_interval) - $last_timestamp;
+					if ($unhandled_time_unknown > 0) {
+						// unhandled unknown status detected. Add to previous pool
+						$tmp_data["utimestamp"] = intval($last_timestamp) +  (SECONDS_1DAY + 2*$module_interval);
+						$tmp_data["datos"]      = null;
+						// debug purpose
+						$tmp_data["obs"] = "unknown extra";
+						// add to previous pool if needed
+						if (isset($return[$pool_id-1])) {
+							array_push($return[$pool_id-1]["data"], $tmp_data);
+						}
+					}
+				}
+				$last_inserted_value = null;
+			}
+
+			$tmp_data["utimestamp"] = $current_timestamp;
+
+			if ($in_unknown_status == 1) {
+				$tmp_data["datos"]  = null;
+			}
+			else {
+				$tmp_data["datos"]  = $last_inserted_value;
+			}
+			// debug purpose
+			$tmp_data["obs"] = "virtual data";
+			
+			$return[$pool_id]["utimestamp"] = $current_timestamp;
+			array_push($return[$pool_id]["data"], $tmp_data);
+		}
+
+		$pool_id++;
+		$current_timestamp += $slice_size;
+		
+	}
+	$data = array('type' => 'array', 'data' => $return);
+	returnData('json', $return, ';');
 }
 
 
@@ -5903,11 +6234,11 @@ function api_set_create_netflow_filter($thrash1, $thrash2, $other, $thrash3) {
  * 
  * @param integer $id The ID of module in DB. 
  * @param $thrash1 Don't use.
- * @param array $other it's array, $other as param is <separator>;<period> in this order
+ * @param array $other it's array, $other as param is <separator>;<period>;<tstart>;<tend> in this order
  *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
  *  example:
  *  
- *  api.php?op=get&op2=module_data&id=17&other=;|604800&other_mode=url_encode_separator_|
+ *  api.php?op=get&op2=module_data&id=17&other=;|604800|20161201T13:40|20161215T13:40&other_mode=url_encode_separator_|
  *  
  * @param $returnType Don't use.
  */
@@ -5916,14 +6247,42 @@ function api_get_module_data($id, $thrash1, $other, $returnType) {
 		return;
 	}
 	
-	$separator = $other['data'][0];
-	$periodSeconds = $other['data'][1];
-	
-	$sql = sprintf ("SELECT utimestamp, datos 
-		FROM tagente_datos 
-		WHERE id_agente_modulo = %d AND utimestamp > %d 
-		ORDER BY utimestamp DESC", $id, get_system_time () - $periodSeconds);
-	
+	$data = explode("|", $other['data']);
+	$separator = $data[0];
+	$periodSeconds = $data[1];
+	$tstart = $data[2];
+	$tend = $data[3];
+
+	$dateStart = explode("T", $tstart);
+	$dateYearStart = substr($dateStart[0], 0, 4);
+	$dateMonthStart = substr($dateStart[0], 4, 2);
+	$dateDayStart = substr($dateStart[0], 6, 2);
+	$date_start = $dateYearStart . "-" . $dateMonthStart . "-" . $dateDayStart . " " . $dateStart[1];
+	$date_start = new DateTime($date_start);
+	$date_start = $date_start->format('U');
+
+	$dateEnd = explode("T", $tend);
+	$dateYearEnd = substr($dateEnd[0], 0, 4);
+	$dateMonthEnd = substr($dateEnd[0], 4, 2);
+	$dateDayEnd = substr($dateEnd[0], 6, 2);
+	$date_end = $dateYearEnd . "-" . $dateMonthEnd . "-" . $dateDayEnd . " " . $dateEnd[1];
+	$date_end = new DateTime($date_end);
+	$date_end = $date_end->format('U');
+
+	if (($tstart != "") && ($tend != "")) {
+		$sql = sprintf ("SELECT utimestamp, datos 
+			FROM tagente_datos 
+			WHERE id_agente_modulo = %d AND utimestamp > %d 
+			AND utimestamp < %d 
+			ORDER BY utimestamp DESC", $id, $date_start, $date_end);
+	}
+	else {
+		$sql = sprintf ("SELECT utimestamp, datos 
+			FROM tagente_datos 
+			WHERE id_agente_modulo = %d AND utimestamp > %d 
+			ORDER BY utimestamp DESC", $id, get_system_time () - $periodSeconds);
+	}
+
 	$data['type'] = 'array';
 	$data['list_index'] = array('utimestamp', 'datos');
 	$data['data'] = db_get_all_rows_sql($sql);

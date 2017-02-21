@@ -425,28 +425,11 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 	}
 	
 	foreach ($modules_node_ref as $id_module => $node_count) {
-		if (! modules_relation_exists($id_module, array_keys($modules_node_ref))) {
-			if ($show_snmp_modules) {
-				$module_type = modules_get_agentmodule_type($id_module);
-				if ($module_type != 18) {
-					unset($nodes[$node_count]);
-					unset($orphans[$node_count]);
-					unset($parents[$node_count]);
-				}
-			}
-			else {
-				unset($nodes[$node_count]);
-				unset($orphans[$node_count]);
-				unset($parents[$node_count]);
-			}
-		}
-		else {
-			$module_type = modules_get_agentmodule_type($id_module);
-			if ($module_type != 18) {
-				unset($nodes[$node_count]);
-				unset($orphans[$node_count]);
-				unset($parents[$node_count]);
-			}
+		$module_type = modules_get_agentmodule_type($id_module);
+		if ($module_type != 18) {
+			unset($nodes[$node_count]);
+			unset($orphans[$node_count]);
+			unset($parents[$node_count]);
 		}
 	}
 	

@@ -409,7 +409,7 @@ function networkmap_clean_relations_for_js(&$relations) {
 		
 		foreach ($relations as $key => $relation) {
 			if ($relation['id_parent_source_data'] == $relation['id_child_source_data']) {
-				if (($relation['id_parent_source_data'] != -2) && $relation['id_child_source_data'] != -2) {
+				if (($relation['child_type'] != 3) && $relation['parent_type'] != 3) {
 					$cleaned = false;
 					
 					if ($relation['parent_type'] == 1) {
@@ -448,6 +448,7 @@ function networkmap_links_to_js_links($relations, $nodes_graph) {
 		enterprise_include_once('include/functions_pandora_networkmap.php');
 	}
 	
+	$count = 0;
 	foreach ($relations as $key => $relation) {
 		if (($relation['parent_type'] == 1) && ($relation['child_type'] == 1)) {
 			$id_target_agent = agents_get_agent_id_by_module_id($relation['id_parent_source_data']);
@@ -456,12 +457,14 @@ function networkmap_links_to_js_links($relations, $nodes_graph) {
 			$id_source_module = $relation['id_child_source_data'];
 		}
 		else if (($relation['parent_type'] == 1) && ($relation['child_type'] == 0)) {
+			$id_target_agent = agents_get_agent_id_by_module_id($relation['id_parent_source_data']);
 			$id_target_module = $relation['id_parent_source_data'];
 			$id_source_agent = $relation['id_child_source_data'];
 		}
 		else if (($relation['parent_type'] == 0) && ($relation['child_type'] == 1)) {
 			$id_target_agent = $relation['id_parent_source_data'];
 			$id_source_module = $relation['id_child_source_data'];
+			$id_source_agent = agents_get_agent_id_by_module_id($relation['id_child_source_data']);
 		}
 		else {
 			$id_target_agent = $relation['id_parent_source_data'];
@@ -469,6 +472,8 @@ function networkmap_links_to_js_links($relations, $nodes_graph) {
 		}
 		
 		$item = array();
+		$item['id'] = $count;
+		$count++;
 		if (enterprise_installed()) {
 			$item['id_db'] = get_relation_id($relation);
 		}
@@ -534,6 +539,10 @@ function networkmap_links_to_js_links($relations, $nodes_graph) {
 			$agent = $relation['id_parent_source_data'];
 			$agent2 = agents_get_agent_id_by_module_id($relation['id_child_source_data']);
 		}
+		else if ($relation['parent_type'] == 1) {
+			$agent = agents_get_agent_id_by_module_id($relation['id_parent_source_data']);
+			$agent2 = $relation['id_child_source_data'];
+		}
 		else if (($relation['parent_type'] == 3) && ($relation['child_type'] == 3)) {
 			foreach ($nodes_graph as $key => $node) {
 				if ($relation['id_parent'] == $node['id_db']) {
@@ -567,6 +576,12 @@ function networkmap_links_to_js_links($relations, $nodes_graph) {
 		else {
 			$agent = $relation['id_parent_source_data'];
 			$agent2 = $relation['id_child_source_data'];
+			if ($agent == 0) {
+				$agent = -1;
+			}
+			if ($agent2 == 0) {
+				$agent = -1;
+			}
 		}
 		
 		foreach ($nodes_graph as $node) {
@@ -587,10 +602,8 @@ function networkmap_links_to_js_links($relations, $nodes_graph) {
 				}
 			}
 		}
-		
 		$return[] = $item;
 	}
-	
 	return $return;
 }
 
@@ -733,6 +746,8 @@ function networkmap_write_js_array($id, $nodes_and_relations = array(), $map_das
 	echo "var dialog_node_edit_title = '" . __('Edit node %s') . "';\n";
 	echo "var holding_area_title = '" . __('Holding Area') . "';\n";
 	echo "var edit_menu = '" . __('Show details and options') . "';\n";
+	echo "var interface_link_add = '" . __('Add a interface link') . "';\n";
+	echo "var set_parent_link = '" . __('Set parent interface') . "';\n";
 	echo "var set_as_children_menu = '" . __('Set as children') . "';\n";
 	echo "var set_parent_menu = '" . __('Set parent') . "';\n";
 	echo "var abort_relationship_menu = '" . __('Abort the action of set relationship') . "';\n";
@@ -741,6 +756,7 @@ function networkmap_write_js_array($id, $nodes_and_relations = array(), $map_das
 	echo "var set_center_menu = '" . __('Set center') . "';\n";
 	echo "var refresh_menu = '" . __('Refresh') . "';\n";
 	echo "var refresh_holding_area_menu = '" . __('Refresh Holding area') . "';\n";
+	echo "var abort_relationship_interface = '" . __('Abort the action of set interface relationship') . "';\n";
 	echo "var abort_relationship_menu = '" . __('Abort the action of set relationship') . "';\n";
 	
 	echo "\n";
@@ -1226,7 +1242,7 @@ function migrate_older_open_maps($id) {
 function show_networkmap($id = 0, $user_readonly = false, $nodes_and_relations = array(), $dashboard_mode = false, $map_dash_details = array()) {
 	global $config;
 	$clean_relations = clean_duplicate_links($nodes_and_relations['relations']);
-	
+
 	$hide_minimap = "";
 	
 	$nodes_and_relations['relations'] = $clean_relations;
@@ -1445,8 +1461,6 @@ if (empty($list_networkmaps))
 	$table->data['template_row']['node_target'] = '';
 	$table->data['template_row']['edit'] = "";
 	
-	$table->data['template_row']['edit'] = '';
-	
 	$table->data['template_row']['edit'] .=
 		'<span class="edit_icon_correct" style="display: none;">' . 
 			html_print_image('images/dot_green.png', true) . '</span>' .
@@ -1456,7 +1470,7 @@ if (empty($list_networkmaps))
 			html_print_image('images/spinner.gif', true) . '</span>' .
 		'<span class="edit_icon"><a class="edit_icon_link" title="' . __('Update') . '" href="#">' .
 		html_print_image('images/config.png', true) . '</a></span>';
-	
+
 	$table->data['template_row']['edit'] .=
 		'<a class="delete_icon" href="#">' .
 		html_print_image('images/delete.png', true) . '</a>';
@@ -1473,6 +1487,44 @@ if (empty($list_networkmaps))
 	ui_toggle(html_print_table($table, true), __('Relations'),
 		__('Relations'), true);
 	?>
+	</div>
+</div>
+
+<div id="dialog_interface_link" style="display: none;" title="Interface link">
+	<div style="text-align: left; width: 100%;">
+		<?php
+		$table = new stdClass();
+		$table->id = 'interface_link_table';
+		$table->width = "100%";
+		$table->head['node_source_interface'] = __('Node source');
+		$table->head['interface_source_select'] = __('Interface source');
+		$table->head['interface_target_select'] = __('Interface Target');
+		$table->head['node_target_interface'] = __('Node target');
+
+		$table->data = array();
+
+		$table->data['interface_row']['node_source_interface'] = html_print_label("", "node_source_interface");
+
+		$table->data['interface_row']['interface_source_select'] = 
+			html_print_select(array(), 'interface_source_select', '', '',
+				__('None'), 0);
+
+		$table->data['interface_row']['interface_target_select'] =
+			html_print_select(array(), 'interface_target_select', '', '',
+				__('None'), 0);
+
+		$table->data['interface_row']['node_target_interface'] = html_print_label("", "node_target_interface");
+
+		?>
+		<br><br>
+		<?php
+
+		$table->data['interface_row']['interface_link_button'] =
+			html_print_button(__('Add interface link'), '', false,
+				'add_interface_link_js();', 'class="sub"');
+
+		html_print_table($table, true)
+		?>
 	</div>
 </div>
 

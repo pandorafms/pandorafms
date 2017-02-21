@@ -43,7 +43,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 	
 	
 	
-	echo '<div id="properties_panel" style="display: none; position: absolute; border: 2px solid #114105; padding: 5px; background: white; z-index: 90;">';
+	echo '<div id="properties_panel" style="display: none; position: absolute; border: 1px solid lightgray; padding: 5px; background: white; z-index: 90;">';
 	//----------------------------Hiden Form----------------------------
 	?>
 	<table class="databox filters" border="0" cellpadding="4" cellspacing="4" width="350">
@@ -164,7 +164,27 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'datos',
 				'group_item');
 			$form_items['label_row']['html'] =
-				'<td align="left" valign="top" style="">' . __('Label') . '</td>
+				'<td align="left" valign="top" style="">' . __('Label') . '
+				
+				<div id="label_box_arrow" style="text-align:center;width:120px;height:110px;margin-top:50px;">
+					<span>Label position</span>
+					<div class="labelpos" id="labelposup" position="up" style="width:20px;height:20px;margin-top:10px;margin-left:45px;cursor: pointer;">
+						'. html_print_image ('images/label_up.png', true, array('style'=>'height:100%;width:100%;')). '
+					</div>
+					<div class="labelpos" id="labelposleft" position="left" style="position:relative;top:-5px;width:20px;height:20px;margin-top:15px;cursor: pointer;">
+						'. html_print_image ('images/label_left.png', true, array('style'=>'height:100%;width:100%;')). '
+					</div>
+					<div style="font-weight:bold;width:40px;height:20px;position:relative;margin-left:35px;margin-top:-24px;cursor: default;">
+						<span style="float:left;margin-top:3px;margin-left:5px;">Object</span>
+					</div>
+					<div class="labelpos" id="labelposright" position="right" style="top:2px;width:20px;height:20px;position:relative;margin-left:90px;margin-top:-24px;cursor: pointer;">
+						'. html_print_image ('images/label_right.png', true, array('style'=>'height:100%;width:100%;')). '
+					</div>
+					<div class="labelpos" sel="yes" id="labelposdown" position="down" style="width:20px;height:20px;position:relative;margin-left:45px;margin-top:10px;cursor: pointer;">
+						'. html_print_image ('images/label_down_2.png', true, array('style'=>'height:100%;width:100%;')). '
+					</div>
+				</div>
+				</td>
 				<td align="left" style="">' .
 				html_print_input_text('label', '', '', 20, 200, true) . '</td>';
 			
@@ -254,7 +274,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'percentile_bar', 'percentile_item', 'module_graph',
 				'simple_value', 'datos');
 			$form_items['agent_row']['html'] = '<td align="left">' .
-				__('Agent') . '</td>';
+				__('Agent') . '</td>';			
 			$params = array();
 			$params['return'] = true;
 			$params['show_helptip'] = true;
@@ -291,6 +311,18 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				<td align="left">' .
 				html_print_select(array(), 'module', '', '', __('Any'), 0, true) .
 				'</td>';
+				
+				
+				$form_items['type_graph'] = array();
+				$form_items['type_graph']['items'] = array(
+					'Line',
+					'Area');
+				$form_items['type_graph']['html'] = '<td align="left"><span>' .
+					__('Type of graph') . '</span></td>
+					<td align="left">'. html_print_select (
+						array ('line' => __('Line'), 
+						'area' => __('Area')),
+						'type_graph', '', '', 0, 'area', true, false, false) . '</td>';
 			
 			$own_info = get_user_info($config['id_user']);
 			if (!$own_info['is_admin'] && !check_acl ($config['id_user'], 0, "PM"))
@@ -425,7 +457,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items['button_update_row'] = array();
 			$form_items['button_update_row']['items'] = array('datos');
 			$form_items['button_update_row']['html'] = '<td align="left" colspan="2" style="text-align: right;">' .
-				html_print_button(__('Cancel'), 'cancel_button', false, 'cancel_button_palette_callback();', 'class="sub cancel"', true) .
+				html_print_button(__('Cancel'), 'cancel_button', false, 'cancel_button_palette_callback();', 'class="sub cancel"', true) . '<span ="margin-right:10px;">&nbsp</span>' .
 				html_print_button(__('Update'), 'update_button', false, 'update_button_palette_callback();', 'class="sub upd"', true) .
 				'</td>';
 			
@@ -433,7 +465,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items['button_create_row'] = array();
 			$form_items['button_create_row']['items'] = array('datos');
 			$form_items['button_create_row']['html'] = '<td align="left" colspan="2" style="text-align: right;">' .
-				html_print_button(__('Cancel'), 'cancel_button', false, 'cancel_button_palette_callback();', 'class="sub cancel"', true) . 
+				html_print_button(__('Cancel'), 'cancel_button', false, 'cancel_button_palette_callback();', 'class="sub cancel"', true)  . '<span ="margin-right:10px;">&nbsp</span>' .
 				html_print_button(__('Create'), 'create_button', false, 'create_button_palette_callback();', 'class="sub wand"', true) . 
 				'</td>';
 			
@@ -577,6 +609,8 @@ function visual_map_editor_print_toolbox() {
 		visual_map_print_button_editor('group_item', __('Group'), 'left', false, 'group_item_min', true);
 		visual_map_print_button_editor('box_item', __('Box'), 'left', false, 'box_item_min', true);
 		visual_map_print_button_editor('line_item', __('Line'), 'left', false, 'line_item_min', true);
+  echo '<a href="javascript:" class="tip"><img src="'.$config['homeurl'].'/images/tip.png" data-title="The data displayed in editor mode is not real" data-use_title_for_force_title="1" 
+			class="forced_title" alt="The data displayed in editor mode is not real"></a>';
 		
 		enterprise_hook("enterprise_visual_map_editor_print_toolbox");
 		

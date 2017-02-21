@@ -84,7 +84,7 @@ class ModuleGraph {
 		$this->height = (int)$system->getRequest('height', 0);
 		
 		//Sancho says "put the height to 1/2 for to make more beautyful"
-		//$this->height = $this->height / 2;
+		$this->height = $this->height / 1.5;
 		
 		$this->height -= 80; //Correct the height
 		
@@ -144,7 +144,7 @@ class ModuleGraph {
 								$this->draw_events,
 								$this->width,
 								$this->height,
-								$label,
+								false,
 								$unit,
 								$this->draw_alerts,
 								$this->avg_only,
@@ -172,7 +172,7 @@ class ModuleGraph {
 								$this->draw_events,
 								$this->width,
 								$this->height,
-								$label,
+								false,
 								null,
 								$this->draw_alerts,
 								$this->avg_only,
@@ -203,7 +203,7 @@ class ModuleGraph {
 								$this->draw_events,
 								$this->width,
 								$this->height,
-								$label,
+								false,
 								null,
 								$this->draw_alerts,
 								1,
@@ -229,7 +229,7 @@ class ModuleGraph {
 								$this->draw_events,
 								$this->width,
 								$this->height,
-								$label,
+								false,
 								$unit_name,
 								$this->draw_alerts,
 								1,
@@ -279,37 +279,34 @@ class ModuleGraph {
 		ob_start();
 		?>
 		<script type="text/javascript">
-			$(document).bind('ready', function() {
+			$(document).ready(function() {
 				function load_graph() {
 					$("#loading_graph").show();
 					
-					$("#graph_content").html($('#loading_graph').html())
-						.height(($(window).height()
+					 var heigth = $(document).height()
 							- $(".ui-header").height()
 							- $(".ui-collapsible").height()
-							- 55) + "px").width($(".ui-collapsible").width() + "px");
-					
-					ajax_get_graph($("#id_module").val());
+							- 55;
+					var width = $(document).width() - 25;
+					ajax_get_graph($("#id_module").val(), heigth, width);
 				}
 				
 				load_graph();
 				
 				// Detect orientation change to refresh dinamic content
-				$(window).on({
-					orientationchange: function(e) {
-						// Reload dinamic content
-						load_graph();
-					}
+				window.addEventListener("resize", function() {
+					// Reload dinamic content
+					load_graph();
 				});
 			});
 			
-			function ajax_get_graph(id) {
+			function ajax_get_graph(id, heigth_graph, width_graph) {
 				postvars = {};
 				postvars["action"] = "ajax";
 				postvars["parameter1"] = "module_graph";
 				postvars["parameter2"] = "get_graph";
-				postvars["width"] = $("#graph_content").width();
-				postvars["height"] = $("#graph_content").height();
+				postvars["width"] = width_graph;
+				postvars["height"] = heigth_graph;
 				
 				postvars["draw_alerts"] = ($("input[name = 'draw_alerts']").is(":checked"))?1:0;
 				postvars["draw_events"] = ($("input[name = 'draw_events']").is(":checked"))?1:0;

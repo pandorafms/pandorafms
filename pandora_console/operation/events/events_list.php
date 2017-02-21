@@ -701,7 +701,10 @@ elseif ($group_rep == 1) {
 		$offset,
 		$pagination,
 		$meta,
-		$history);
+		$history,
+		false,
+		false,
+		'DESC');
 }
 elseif ($group_rep == 2) {
 	$result = events_get_events_grouped_by_agent(
@@ -819,32 +822,17 @@ if ($group_rep == 0) {
 	$sql = "SELECT COUNT(id_evento)
 			FROM $event_table
 			WHERE 1=1 $sql_post";
+	$total_events = (int) db_get_sql ($sql);
 }
 elseif ($group_rep == 1) {
-	switch ($config["dbtype"]) {
-		case "mysql":
-		case "postgresql":
-			$sql = "SELECT COUNT(1)
-				FROM (SELECT 1
-					FROM $event_table
-					WHERE 1=1 $sql_post
-					GROUP BY evento, id_agentmodule) t";
-			break;
-		case "oracle":
-			$sql = "SELECT COUNT(1)
-					FROM (SELECT 1
-						FROM $event_table
-						WHERE 1=1 $sql_post
-						GROUP BY to_char(evento), id_agentmodule) t";
-			break;
-	}
+	$total_events = events_get_events_grouped($sql_post, false,
+		false, $meta, $history, true, false);
 }
 elseif ($group_rep == 2) {
 	$sql = "SELECT COUNT(*) FROM (select id_agente as total from $event_table WHERE id_agente > 0  
 					$sql_post GROUP BY id_agente ORDER BY id_agente ) AS t";
+	$total_events = (int) db_get_sql ($sql);
 }
-
-$total_events = (int) db_get_sql ($sql);
 
 if (empty ($result)) {
 	$result = array ();

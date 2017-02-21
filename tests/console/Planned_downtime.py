@@ -13,8 +13,9 @@ from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import NoAlertPresentException
 from selenium.webdriver.remote.webelement import WebElement
-import unittest2, time, re, datetime
 
+import unittest2, time, re, datetime
+import logging
 
 class Planned_downtime(PandoraWebDriverTestCase):
 
@@ -27,6 +28,9 @@ class Planned_downtime(PandoraWebDriverTestCase):
 		u"""
 		Create and search planned downtime quiet
 		"""
+
+		logging.basicConfig(filename="Planned_downtime.log", level=logging.INFO, filemode='w')
+
 		driver = self.driver
 		self.login()
 		detect_and_pass_all_wizards(driver)
@@ -41,6 +45,8 @@ class Planned_downtime(PandoraWebDriverTestCase):
 
 		element = driver.find_element_by_xpath('//img[@data-title="Running"]')
                 self.assertIsInstance(element,WebElement)
+
+		logging.info("atest_A_create_planned_downtime_Quiet is correct")
 	
 	def atest_B_create_planned_downtime_disabled_agents(self):
 		
@@ -59,6 +65,8 @@ class Planned_downtime(PandoraWebDriverTestCase):
 	
 		element = driver.find_element_by_xpath('//img[@data-title="Running"]')
                 self.assertIsInstance(element,WebElement)
+
+		logging.info("atest_B_create_planned_downtime_disabled_agents is correct")
 	   
 	def atest_C_create_planned_downtime_disabled_only_alerts(self):
 		
@@ -78,6 +86,8 @@ class Planned_downtime(PandoraWebDriverTestCase):
  		element = driver.find_element_by_xpath('//img[@data-title="Running"]')
                 self.assertIsInstance(element,WebElement)
 
+		logging.info("atest_C_create_planned_downtime_disabled_only_alerts is correct")
+
         def atest_D_delete_planned_downtime(self):
 
 	
@@ -88,6 +98,8 @@ class Planned_downtime(PandoraWebDriverTestCase):
                 create_planned_downtime(driver,planned_name,"Applications","Quiet","Once",description=planned_name)
 
 		delete_planned_downtime(driver,planned_name)
+
+		logging.info("atest_D_delete_planned_downtime is correct")
 
 	def atest_E_quiet_functionality(self):
 
@@ -160,6 +172,8 @@ class Planned_downtime(PandoraWebDriverTestCase):
 		event_who_should_be_present_b = driver.find_elements_by_xpath('//tbody/tr[td[3][contains(.,"Alert fired")] and td[4][contains(.,"'+agent_name_B+'")]]')
 
 		self.assertNotEqual(event_who_should_be_present_b,[])
+
+		logging.info("atest_E_quiet_functionality is correct")
 
 if __name__ == "__main__":
 	unittest2.main()

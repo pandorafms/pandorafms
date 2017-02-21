@@ -157,7 +157,7 @@ $table->data[5][2] = html_print_textarea ('command_recovery_preview', 5, 30, '',
 	'disabled="disabled"', true);
 
 $row = 6;
-for ($i = 1; $i <= 10; $i++) {
+for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
 	$table->data['field' . $i][0] = html_print_image(
 		'images/spinner.gif', true);
 	$table->data['field' . $i][1] = html_print_image(
@@ -273,8 +273,8 @@ $(document).ready (function () {
 				command_description = js_html_entity_decode (data["description"]);
 				render_command_description(command_description);
 				
-				
-				for (i = 1; i <= 10; i++) {
+				var max_fields = parseInt('<?php echo $config["max_macro_fields"]; ?>');
+				for (i = 1; i <= max_fields; i++) {
 					var old_value = '';
 					var old_recovery_value = '';
 					var field_row = data["fields_rows"][i];

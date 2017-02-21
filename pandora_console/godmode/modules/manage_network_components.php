@@ -139,7 +139,7 @@ $snmp3_security_level = (string) get_parameter('snmp3_security_level');
 
 $throw_unknown_events = get_parameter('throw_unknown_events', false);
 //Set the event type that can show.
-$disabled_types_event = array(EVENTS_GOING_UNKNOWN => (int)!$throw_unknown_events);
+$disabled_types_event = array(EVENTS_GOING_UNKNOWN => (int)$throw_unknown_events);
 $disabled_types_event = json_encode($disabled_types_event);
 
 $create_component = (bool) get_parameter ('create_component');

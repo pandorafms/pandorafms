@@ -109,9 +109,24 @@ function events_get_event ($id, $fields = false) {
 	
 	return $event;
 }
+function events_get_events_no_grouped($sql_post, $offset = 0,
+	$pagination = 1, $meta = false, $history = false, $total = false, 
+	$history_db = false, $order = "ASC") {
+	
+	global $config; 
+	
+	$table = events_get_events_table($meta, $history);
+
+	$sql = "SELECT * FROM $table te WHERE 1=1 " . $sql_post;
+
+	$events = db_get_all_rows_sql ($sql, $history_db);
+
+	return $events;
+}
 
 function events_get_events_grouped($sql_post, $offset = 0,
-	$pagination = 1, $meta = false, $history = false, $total = false) {
+	$pagination = 1, $meta = false, $history = false, $total = false, 
+	$history_db = false, $order = "ASC") {
 	
 	global $config; 
 	
@@ -123,7 +138,7 @@ function events_get_events_grouped($sql_post, $offset = 0,
 	else {
 		$groupby_extra = '';
 	}
-	
+
 	switch ($config["dbtype"]) {
 		case "mysql":
 			db_process_sql ('SET group_concat_max_len = 9999999');
@@ -135,19 +150,19 @@ function events_get_events_grouped($sql_post, $offset = 0,
 			}
 			else {
 				$sql = "SELECT *, MAX(id_evento) AS id_evento,
-						GROUP_CONCAT(DISTINCT user_comment SEPARATOR '<br>') AS user_comment,
-						GROUP_CONCAT(DISTINCT id_evento SEPARATOR ',') AS similar_ids,
-						COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep, 
-						MIN(utimestamp) AS timestamp_rep_min,
-						(SELECT owner_user FROM $table WHERE id_evento = MAX(te.id_evento)) owner_user,
-						(SELECT id_usuario FROM $table WHERE id_evento = MAX(te.id_evento)) id_usuario,
-						(SELECT id_agente FROM $table WHERE id_evento = MAX(te.id_evento)) id_agente,
-						(SELECT criticity FROM $table WHERE id_evento = MAX(te.id_evento)) AS criticity,
-						(SELECT ack_utimestamp FROM $table WHERE id_evento = MAX(te.id_evento)) AS ack_utimestamp
-					FROM $table te
-					WHERE 1=1 " . $sql_post . "
-					GROUP BY estado, evento, id_agentmodule" . $groupby_extra . "
-					ORDER BY timestamp_rep DESC LIMIT " . $offset . "," . $pagination;
+					GROUP_CONCAT(DISTINCT user_comment SEPARATOR '<br>') AS user_comment,
+					GROUP_CONCAT(DISTINCT id_evento SEPARATOR ',') AS similar_ids,
+					COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep, 
+					MIN(utimestamp) AS timestamp_rep_min,
+					(SELECT owner_user FROM $table WHERE id_evento = MAX(te.id_evento)) owner_user,
+					(SELECT id_usuario FROM $table WHERE id_evento = MAX(te.id_evento)) id_usuario,
+					(SELECT id_agente FROM $table WHERE id_evento = MAX(te.id_evento)) id_agente,
+					(SELECT criticity FROM $table WHERE id_evento = MAX(te.id_evento)) AS criticity,
+					(SELECT ack_utimestamp FROM $table WHERE id_evento = MAX(te.id_evento)) AS ack_utimestamp
+				FROM $table te
+				WHERE 1=1 " . $sql_post . "
+				GROUP BY estado, evento, id_agentmodule" . $groupby_extra . "
+				ORDER BY timestamp_rep " . $order . " LIMIT " . $offset . "," . $pagination;
 			}
 			break;
 		case "postgresql":
@@ -179,7 +194,7 @@ function events_get_events_grouped($sql_post, $offset = 0,
 						te.owner_user,
 						te.ack_utimestamp,
 						te.custom_data " . $groupby_extra . "
-					ORDER BY timestamp_rep DESC LIMIT " . $pagination . " OFFSET " . $offset;
+					ORDER BY timestamp_rep ASC LIMIT " . $pagination . " OFFSET " . $offset;
 			}
 			break;
 		case "oracle":
@@ -204,14 +219,13 @@ function events_get_events_grouped($sql_post, $offset = 0,
 									WHERE 1=1 $sql_post
 									GROUP BY estado, to_char(evento), id_agentmodule$groupby_extra) tb
 							ON ta.id_evento = tb.id_evento
-						ORDER BY tb.timestamp_rep DESC";
+						ORDER BY tb.timestamp_rep ASC";
 				$sql = oracle_recode_query ($sql, $set);
 			}
 			break;
 	}
-	
 	//Extract the events by filter (or not) from db
-	$events = db_get_all_rows_sql ($sql);
+	$events = db_get_all_rows_sql ($sql, $history_db);
 	
 	if ($total) {
 		return reset($events[0]);
@@ -220,7 +234,7 @@ function events_get_events_grouped($sql_post, $offset = 0,
 		// Override the column 'user_comment' with the column 'user_comments' when oracle
 		if (!empty($events) && $config["dbtype"] == "oracle") {
 			array_walk($events, function(&$value, $key) {
-				set_if_defined($value['user_comments'], $value['user_comments']);
+				set_if_defined($value['user_comment'], $value['user_comments']);
 			});
 		}
 		
@@ -633,7 +647,7 @@ function events_comment ($id_event, $comment = '', $action = 'Added comment', $m
 				case 'oracle':
 					$sql_validation = "UPDATE $event_table 
 						SET user_comment='" . $comment . "' || user_comment) 
-						WHERE id_evento in (" . implode(',', $id_event) . ")";
+						WHERE id_evento in (" . implode(',', $id_event) . ")";	
 					
 					$ret = db_process_sql($sql_validation);
 					break;
@@ -1183,65 +1197,6 @@ function events_print_type_description ($type, $return = false) {
  *
  * @return array An array with all the events happened.
  */
-function events_get_group_events ($id_group, $period, $date,
-	$filter_event_validated = false, $filter_event_critical = false,
-	$filter_event_warning = false, $filter_event_no_validated = false,
-	$filter_event_search = false, $meta = false) {
-	
-	global $config;
-	
-	$id_group = groups_safe_acl ($config["id_user"], $id_group, "ER");
-	
-	if (empty ($id_group)) {
-		//An empty array means the user doesn't have access
-		return false;
-	}
-	
-	$datelimit = $date - $period;
-	
-	$sql_where = ' AND 1 = 1 ';
-	$criticities = array();
-	if ($filter_event_critical) {
-		$criticities[] = 4;
-	}
-	if ($filter_event_warning) {
-		$criticities[] = 3;
-	}
-	if (!empty($criticities)) {
-		$sql_where .= ' AND criticity IN (' . implode(', ', $criticities) . ')';
-	}
-	if ($filter_event_validated) {
-		$sql_where .= ' AND estado = 1 ';
-	}
-	if ($filter_event_no_validated) {
-		$sql_where .= ' AND estado = 0 ';
-	}
-	
-	if (!empty($filter_event_search)) {
-		$sql_where .= ' AND (evento LIKE "%'. io_safe_input($filter_event_search) . '%"'.
-			' OR id_evento LIKE "%' . io_safe_input($filter_event_search) . '%")';
-	}
-	
-	$sql_where .= sprintf('
-		AND id_grupo IN (%s)
-		AND utimestamp > %d
-		AND utimestamp <= %d ',
-		implode (",", $id_group), $datelimit, $date);
-	
-	return events_get_events_grouped($sql_where, 0, 1000, $meta);
-}
-
-/**
- * Get all the events happened in a group during a period of time.
- *
- * The returned events will be in the time interval ($date - $period, $date]
- *
- * @param mixed $id_group Group id to get events for.
- * @param int $period Period of time in seconds to get events.
- * @param int $date Beginning date to get events.
- *
- * @return array An array with all the events happened.
- */
 function events_get_group_events_steps ($begin, &$result, $id_group, $period, $date,
 	$filter_event_validated = false, $filter_event_critical = false,
 	$filter_event_warning = false, $filter_event_no_validated = false) {
@@ -1303,83 +1258,121 @@ function events_get_group_events_steps ($begin, &$result, $id_group, $period, $d
  *
  * @return array An array with all the events happened.
  */
-function events_get_agent ($id_agent, $period, $date = 0,
-	$filter_event_validated = false, $filter_event_critical = false,
-	$filter_event_warning = false, $filter_event_no_validated = false) {
-	
+function events_get_agent ($id_agent, $period, $date = 0, 
+	$history = false, $show_summary_group = false, $filter_event_severity = false,
+	$filter_event_type = false, $filter_event_status = false, $filter_event_filter_search=false, 
+	$id_group = false, $events_group = false, $id_agent_module = false, $events_module = false) {
+	global $config;
+
 	if (!is_numeric ($date)) {
 		$date = strtotime ($date);
 	}
 	if (empty ($date)) {
 		$date = get_system_time ();
 	}
+
+	if($events_group){
+		$id_group = groups_safe_acl ($config["id_user"], $id_group, "ER");
 	
+		if (empty ($id_group)) {
+			//An empty array means the user doesn't have access
+			return false;
+		}
+	}
+
 	$datelimit = $date - $period;
 	
 	$sql_where = '';
-	
-	$criticities = array();
-	if ($filter_event_critical) {
-		$criticities[] = 4;
-	}
-	if ($filter_event_warning) {
-		$criticities[] = 3;
-	}
-	if (!empty($criticities)) {
-		$sql_where .= ' AND criticity IN (' . implode(', ', $criticities) . ')';
-	}
-	
-	if ( $filter_event_validated && $filter_event_no_validated ) {
-		$sql_where .= " AND (estado = 1 OR estado = 0)";
-	}
-	else {
-		if ($filter_event_validated) {
-			$sql_where .= ' AND estado = 1 ';
-		} else {
-			if ($filter_event_no_validated) {
-				$sql_where .= ' AND estado = 0 ';
+	$severity_all = 0;
+	if (!empty($filter_event_severity)) {
+		foreach ($filter_event_severity as $key => $value) {
+			switch ($value) {
+				case -1:
+					$severity_all = 1;
+					break;
+				case 34:
+					$filter_event_severity[$key] = '3, 4'; 
+					break;
+				case 20:
+					$filter_event_severity[$key] = '0, 1, 3, 4, 5, 6';
+					break;
+				case 21:
+					$filter_event_severity[$key] = '4, 2';
+					break;
+				default:
+					break;
 			}
+		}
+		if(!$severity_all){
+			$sql_where .= ' AND criticity IN (' . implode(', ', $filter_event_severity) . ')';
+		}
+	}
+
+	$status_all = 0;
+	if(!empty($filter_event_status)){
+		foreach ($filter_event_status as $key => $value) {
+			switch ($value) {
+				case -1:
+					$status_all = 1;
+					break;
+				case  3:
+					$filter_event_status[$key] = ('0, 2');
+				default:
+					break;
+			}
+		}
+		if(!$status_all){
+			$sql_where .= ' AND estado IN (' . implode(', ', $filter_event_status) . ')';	
 		}
 	}
 	
-	$sql_where .= sprintf(' AND id_agente = %d AND utimestamp > %d
-			AND utimestamp <= %d ', $id_agent, $datelimit, $date);
-	
-	return events_get_events_grouped($sql_where, 0, 1000, is_metaconsole());
-}
+	if (!empty($filter_event_type) && $filter_event_type[0] != 'all') {
+		$sql_where .= ' AND (';
+		$type = array();
+		foreach ($filter_event_type as $event_type) {
+			if ($event_type != "") {
+				// If normal, warning, could be several (going_up_warning, going_down_warning... too complex 
+				// for the user so for him is presented only "warning, critical and normal"
+				if ($event_type == "warning" || $event_type == "critical" || $event_type == "normal") {
+					$type[] = " event_type LIKE '%$event_type%' ";
+				}
+				else if ($event_type == "not_normal") {
+					$type[] = " (event_type LIKE '%warning%' OR event_type LIKE '%critical%' OR event_type LIKE '%unknown%') ";
+				}
+				else if ($event_type != "all") {
+					$type[] = " event_type = '" . $event_type."'";
+				}
+			}
+		}
+		$sql_where .= implode(' OR ', $type) . ')';
+	}
 
-/**
- * Get all the events happened in an Agent during a period of time.
- *
- * The returned events will be in the time interval ($date - $period, $date]
- *
- * @param int $id_agent_module Module id to get events.
- * @param int $period Period of time in seconds to get events.
- * @param int $date Beginning date to get events.
- *
- * @return array An array with all the events happened.
- */
-function events_get_module ($id_agent_module, $period, $date = 0) {
-	if (!is_numeric ($date)) {
-		$date = strtotime ($date);
-	}
-	if (empty ($date)) {
-		$date = get_system_time ();
+	if (!empty($filter_event_filter_search)) {
+		$sql_where .= ' AND (evento LIKE "%'. io_safe_input($filter_event_filter_search) . '%"'.
+			' OR id_evento LIKE "%' . io_safe_input($filter_event_filter_search) . '%")';
 	}
 	
-	$datelimit = $date - $period;
-	
-	$sql_where = sprintf(' AND id_agentmodule = %d AND utimestamp > %d
+	if($events_group){
+		$sql_where .= sprintf(' AND id_grupo IN (%s) AND utimestamp > %d
+			AND utimestamp <= %d ', implode (",", $id_group), $datelimit, $date);
+	}
+	elseif($events_module){
+		$sql_where .= sprintf(' AND id_agentmodule = %d AND utimestamp > %d
 			AND utimestamp <= %d ', $id_agent_module, $datelimit, $date);
-	
-	return events_get_events_grouped($sql_where, 0, 1000);
-	
-	$sql = sprintf ('SELECT evento, event_type, criticity, count(*) as count_rep, max(timestamp) AS time2
-		FROM tevento
-		WHERE id_agentmodule = %d AND utimestamp > %d AND utimestamp <= %d 
-		GROUP BY id_agentmodule, evento ORDER BY time2 DESC', $id_agent_module, $datelimit, $date);
-	
-	return db_get_all_rows_sql ($sql);
+	}
+	else{
+		$sql_where .= sprintf(' AND id_agente = %d AND utimestamp > %d
+			AND utimestamp <= %d ', $id_agent, $datelimit, $date);
+	}
+
+	if($show_summary_group){
+		return events_get_events_grouped($sql_where, 0, 1000, 
+				is_metaconsole(), false, false, $history);
+	}
+	else{
+		return events_get_events_no_grouped($sql_where, 0, 1000, 
+				is_metaconsole(), false, false, $history);
+	}
 }
 
 /**
@@ -1497,13 +1490,22 @@ function events_get_severity_types ($severity_id) {
  *
  * @return array Status description array.
  */
-function events_get_all_status () {
+function events_get_all_status ($report = false) {
 	$fields = array ();
-	$fields[-1] = __('All event');
-	$fields[0] = __('Only new');
-	$fields[1] = __('Only validated');
-	$fields[2] = __('Only in process');
-	$fields[3] = __('Only not validated');
+	if(!$report){
+		$fields[-1] = __('All event');
+		$fields[0]  = __('Only new');
+		$fields[1]  = __('Only validated');
+		$fields[2]  = __('Only in process');
+		$fields[3]  = __('Only not validated');
+	}
+	else{
+		$fields[-1] = __('All event');
+		$fields[0]  = __('New');
+		$fields[1]  = __('Validated');
+		$fields[2]  = __('In process');
+		$fields[3]  = __('Not Validated');
+	}
 	
 	return $fields;
 } 
@@ -2591,12 +2593,20 @@ function events_clean_tags ($tags) {
  * @return array An array with all the events happened.
  */
 function events_get_count_events_by_agent ($id_group, $period, $date,
-	$filter_event_validated = false, $filter_event_critical = false,
-	$filter_event_warning = false, $filter_event_no_validated = false,
-	$filter_event_search = false) {
+	$filter_event_severity = false, $filter_event_type = false,
+	$filter_event_status = false, $filter_event_filter_search = false) {
 	
 	global $config;
-	
+
+	//date
+	if (!is_numeric ($date)) {
+		$date = strtotime ($date);
+	}
+	if (empty ($date)) {
+		$date = get_system_time ();
+	}
+
+	//group
 	$id_group = groups_safe_acl ($config["id_user"], $id_group, "AR");
 	
 	if (empty ($id_group)) {
@@ -2606,30 +2616,76 @@ function events_get_count_events_by_agent ($id_group, $period, $date,
 	
 	$datelimit = $date - $period;
 	
-	$sql_where = ' AND 1 = 1 ';
-	$criticities = array();
-	if ($filter_event_critical) {
-		$criticities[] = 4;
+	$sql_where = '';
+	$severity_all = 0;
+	if (!empty($filter_event_severity)) {
+		foreach ($filter_event_severity as $key => $value) {
+			switch ($value) {
+				case -1:
+					$severity_all = 1;
+					break;
+				case 34:
+					$filter_event_severity[$key] = '3, 4'; 
+					break;
+				case 20:
+					$filter_event_severity[$key] = '0, 1, 3, 4, 5, 6';
+					break;
+				case 21:
+					$filter_event_severity[$key] = '4, 2';
+					break;
+				default:
+					break;
+			}
+		}
+		if(!$severity_all){
+			$sql_where .= ' AND criticity IN (' . implode(', ', $filter_event_severity) . ')';
+		}
 	}
-	if ($filter_event_warning) {
-		$criticities[] = 3;
-	}
-	if (!empty($criticities)) {
-		$sql_where .= ' AND criticity IN (' . implode(', ', $criticities) . ')';
+
+	$status_all = 0;
+	if(!empty($filter_event_status)){
+		foreach ($filter_event_status as $key => $value) {
+			switch ($value) {
+				case -1:
+					$status_all = 1;
+					break;
+				case  3:
+					$filter_event_status[$key] = ('0, 2');
+				default:
+					break;
+			}
+		}
+		if(!$status_all){
+			$sql_where .= ' AND estado IN (' . implode(', ', $filter_event_status) . ')';	
+		}
 	}
 	
-	if ($filter_event_validated) {
-		$sql_where .= ' AND estado = 1 ';
+	if (!empty($filter_event_type) && $filter_event_type[0] != 'all') {
+		$sql_where .= ' AND (';
+		$type = array();
+		foreach ($filter_event_type as $event_type) {
+			if ($event_type != "") {
+				// If normal, warning, could be several (going_up_warning, going_down_warning... too complex 
+				// for the user so for him is presented only "warning, critical and normal"
+				if ($event_type == "warning" || $event_type == "critical" || $event_type == "normal") {
+					$type[] = " event_type LIKE '%$event_type%' ";
+				}
+				else if ($event_type == "not_normal") {
+					$type[] = " (event_type LIKE '%warning%' OR event_type LIKE '%critical%' OR event_type LIKE '%unknown%') ";
+				}
+				else if ($event_type != "all") {
+					$type[] = " event_type = '" . $event_type."'";
+				}
+			}
+		}
+		$sql_where .= implode(' OR ', $type) . ')';
 	}
-	if ($filter_event_no_validated) {
-		$sql_where .= ' AND estado = 0 ';
+
+	if (!empty($filter_event_filter_search)) {
+		$sql_where .= ' AND (evento LIKE "%'. io_safe_input($filter_event_filter_search) . '%"'.
+			' OR id_evento LIKE "%' . io_safe_input($filter_event_filter_search) . '%")';
 	}
-	
-	if (!empty($filter_event_search)) {
-		$sql_where .= ' AND (evento LIKE "%%'. io_safe_input($filter_event_search) . '%%"'.
-			' OR id_evento LIKE "%%' . io_safe_input($filter_event_search) . '%%")';
-	}
-	
+
 	$sql = sprintf ('SELECT id_agente,
 		(SELECT t2.nombre
 			FROM tagente t2
@@ -2637,9 +2693,9 @@ function events_get_count_events_by_agent ($id_group, $period, $date,
 		COUNT(*) AS count
 		FROM tevento t3
 		WHERE utimestamp > %d AND utimestamp <= %d
-			AND id_grupo IN (%s) ' . $sql_where . '
+			AND id_grupo IN (%s) %s 
 		GROUP BY id_agente',
-		$datelimit, $date, implode (",", $id_group));
+		$datelimit, $date, implode (",", $id_group), $sql_where);
 	
 	$rows = db_get_all_rows_sql ($sql);
 	
@@ -2670,12 +2726,10 @@ function events_get_count_events_by_agent ($id_group, $period, $date,
  * @return array An array with all the events happened.
  */
 function events_get_count_events_validated_by_user ($filter, $period, $date,
-	$filter_event_validated = false, $filter_event_critical = false,
-	$filter_event_warning = false, $filter_event_no_validated = false,
-	$filter_event_search = false) {
-	
+	$filter_event_severity = false, $filter_event_type = false,
+	$filter_event_status = false, $filter_event_filter_search = false) {
 	global $config;
-	
+	//group
 	$sql_filter = ' AND 1=1 ';
 	if (isset($filter['id_group'])) {
 		$id_group = groups_safe_acl ($config["id_user"], $filter['id_group'], "AR");
@@ -2688,35 +2742,95 @@ function events_get_count_events_validated_by_user ($filter, $period, $date,
 		$sql_filter .= 
 			sprintf(' AND id_grupo IN (%s) ', implode (",", $id_group));
 	}
+
 	if (!empty($filter['id_agent'])) {
 		$sql_filter .= 
 			sprintf(' AND id_agente = %d ', $filter['id_agent']);
 	}
 	
+	if(!empty($filter['id_agentmodule'])){
+		$sql_filter .= 
+			sprintf(' AND id_agentmodule = %d ', $filter['id_agentmodule']);	
+	}
+
+	//date
+	if (!is_numeric ($date)) {
+		$date = strtotime ($date);
+	}
+	if (empty ($date)) {
+		$date = get_system_time ();
+	}
+
 	$datelimit = $date - $period;
 	
-	$sql_where = ' AND 1 = 1 ';
-	$criticities = array();
-	if ($filter_event_critical) {
-		$criticities[] = 4;
+	$sql_where = '';
+	$severity_all = 0;
+	if (!empty($filter_event_severity)) {
+		foreach ($filter_event_severity as $key => $value) {
+			switch ($value) {
+				case -1:
+					$severity_all = 1;
+					break;
+				case 34:
+					$filter_event_severity[$key] = '3, 4'; 
+					break;
+				case 20:
+					$filter_event_severity[$key] = '0, 1, 3, 4, 5, 6';
+					break;
+				case 21:
+					$filter_event_severity[$key] = '4, 2';
+					break;
+				default:
+					break;
+			}
+		}
+		if(!$severity_all){
+			$sql_where .= ' AND criticity IN (' . implode(', ', $filter_event_severity) . ')';
+		}
 	}
-	if ($filter_event_warning) {
-		$criticities[] = 3;
-	}
-	if (!empty($criticities)) {
-		$sql_where .= ' AND criticity IN (' . implode(', ', $criticities) . ')';
+
+	$status_all = 0;
+	if(!empty($filter_event_status)){
+		foreach ($filter_event_status as $key => $value) {
+			switch ($value) {
+				case -1:
+					$status_all = 1;
+					break;
+				case  3:
+					$filter_event_status[$key] = ('0, 2');
+				default:
+					break;
+			}
+		}
+		if(!$status_all){
+			$sql_where .= ' AND estado IN (' . implode(', ', $filter_event_status) . ')';	
+		}
 	}
 	
-	if ($filter_event_validated) {
-		$sql_where .= ' AND estado = 1 ';
+	if (!empty($filter_event_type) && $filter_event_type[0] != 'all') {
+		$sql_where .= ' AND (';
+		$type = array();
+		foreach ($filter_event_type as $event_type) {
+			if ($event_type != "") {
+				// If normal, warning, could be several (going_up_warning, going_down_warning... too complex 
+				// for the user so for him is presented only "warning, critical and normal"
+				if ($event_type == "warning" || $event_type == "critical" || $event_type == "normal") {
+					$type[] = " event_type LIKE '%$event_type%' ";
+				}
+				else if ($event_type == "not_normal") {
+					$type[] = " (event_type LIKE '%warning%' OR event_type LIKE '%critical%' OR event_type LIKE '%unknown%') ";
+				}
+				else if ($event_type != "all") {
+					$type[] = " event_type = '" . $event_type."'";
+				}
+			}
+		}
+		$sql_where .= implode(' OR ', $type) . ')';
 	}
-	if ($filter_event_no_validated) {
-		$sql_where .= ' AND estado = 0 ';
-	}
-	
-	if (!empty($filter_event_search)) {
-		$sql_where .= ' AND (evento LIKE "%%'. io_safe_input($filter_event_search) . '%%"'.
-			' OR id_evento LIKE "%%' . io_safe_input($filter_event_search) . '%%")';
+
+	if (!empty($filter_event_filter_search)) {
+		$sql_where .= ' AND (evento LIKE "%'. io_safe_input($filter_event_filter_search) . '%"'.
+			' OR id_evento LIKE "%' . io_safe_input($filter_event_filter_search) . '%")';
 	}
 	
 	$sql = sprintf ('SELECT id_usuario,
@@ -2726,10 +2840,9 @@ function events_get_count_events_validated_by_user ($filter, $period, $date,
 		COUNT(*) AS count
 		FROM tevento t3
 		WHERE utimestamp > %d AND utimestamp <= %d
-			%s ' . $sql_where . '
+			%s %s
 		GROUP BY id_usuario',
-		$datelimit, $date, $sql_filter);
-	
+		$datelimit, $date, $sql_filter, $sql_where);
 	$rows = db_get_all_rows_sql ($sql);
 	
 	if ($rows == false)
@@ -2743,7 +2856,6 @@ function events_get_count_events_validated_by_user ($filter, $period, $date,
 		}
 		$return[$user_name] = $row['count'];
 	}
-	
 	return $return;
 }
 
@@ -2759,9 +2871,8 @@ function events_get_count_events_validated_by_user ($filter, $period, $date,
  * @return array An array with all the events happened.
  */
 function events_get_count_events_by_criticity ($filter, $period, $date,
-	$filter_event_validated = false, $filter_event_critical = false,
-	$filter_event_warning = false, $filter_event_no_validated = false,
-	$filter_event_search = false) {
+	$filter_event_severity = false, $filter_event_type = false,
+	$filter_event_status = false, $filter_event_filter_search = false) {
 	
 	global $config;
 	
@@ -2777,44 +2888,103 @@ function events_get_count_events_by_criticity ($filter, $period, $date,
 		$sql_filter .= 
 			sprintf(' AND id_grupo IN (%s) ', implode (",", $id_group));
 	}
+	
 	if (!empty($filter['id_agent'])) {
 		$sql_filter .= 
 			sprintf(' AND id_agente = %d ', $filter['id_agent']);
 	}
+
+	if(!empty($filter['id_agentmodule'])){
+		$sql_filter .= 
+			sprintf(' AND id_agentmodule = %d ', $filter['id_agentmodule']);	
+	}
+
+	if (!is_numeric ($date)) {
+		$date = strtotime ($date);
+	}
+	if (empty ($date)) {
+		$date = get_system_time ();
+	}
 	
 	$datelimit = $date - $period;
 	
-	$sql_where = ' AND 1 = 1 ';
-	$criticities = array();
-	if ($filter_event_critical) {
-		$criticities[] = 4;
+	$sql_where = '';
+	$severity_all = 0;
+	if (!empty($filter_event_severity)) {
+		foreach ($filter_event_severity as $key => $value) {
+			switch ($value) {
+				case -1:
+					$severity_all = 1;
+					break;
+				case 34:
+					$filter_event_severity[$key] = '3, 4'; 
+					break;
+				case 20:
+					$filter_event_severity[$key] = '0, 1, 3, 4, 5, 6';
+					break;
+				case 21:
+					$filter_event_severity[$key] = '4, 2';
+					break;
+				default:
+					break;
+			}
+		}
+		if(!$severity_all){
+			$sql_where .= ' AND criticity IN (' . implode(', ', $filter_event_severity) . ')';
+		}
 	}
-	if ($filter_event_warning) {
-		$criticities[] = 3;
-	}
-	if (!empty($criticities)) {
-		$sql_where .= ' AND criticity IN (' . implode(', ', $criticities) . ')';
+
+	$status_all = 0;
+	if(!empty($filter_event_status)){
+		foreach ($filter_event_status as $key => $value) {
+			switch ($value) {
+				case -1:
+					$status_all = 1;
+					break;
+				case  3:
+					$filter_event_status[$key] = ('0, 2');
+				default:
+					break;
+			}
+		}
+		if(!$status_all){
+			$sql_where .= ' AND estado IN (' . implode(', ', $filter_event_status) . ')';	
+		}
 	}
 	
-	if ($filter_event_validated) {
-		$sql_where .= ' AND estado = 1 ';
+	if (!empty($filter_event_type) && $filter_event_type[0] != 'all') {
+		$sql_where .= ' AND (';
+		$type = array();
+		foreach ($filter_event_type as $event_type) {
+			if ($event_type != "") {
+				// If normal, warning, could be several (going_up_warning, going_down_warning... too complex 
+				// for the user so for him is presented only "warning, critical and normal"
+				if ($event_type == "warning" || $event_type == "critical" || $event_type == "normal") {
+					$type[] = " event_type LIKE '%$event_type%' ";
+				}
+				else if ($event_type == "not_normal") {
+					$type[] = " (event_type LIKE '%warning%' OR event_type LIKE '%critical%' OR event_type LIKE '%unknown%') ";
+				}
+				else if ($event_type != "all") {
+					$type[] = " event_type = '" . $event_type."'";
+				}
+			}
+		}
+		$sql_where .= implode(' OR ', $type) . ')';
 	}
-	if ($filter_event_no_validated) {
-		$sql_where .= ' AND estado = 0 ';
+
+	if (!empty($filter_event_filter_search)) {
+		$sql_where .= ' AND (evento LIKE "%'. io_safe_input($filter_event_filter_search) . '%"'.
+			' OR id_evento LIKE "%' . io_safe_input($filter_event_filter_search) . '%")';
 	}
-	
-	if (!empty($filter_event_search)) {
-		$sql_where .= ' AND (evento LIKE "%%'. io_safe_input($filter_event_search) . '%%"'.
-			' OR id_evento LIKE "%%' . io_safe_input($filter_event_search) . '%%")';
-	}
-	
+
 	$sql = sprintf ('SELECT criticity,
 		COUNT(*) AS count
 		FROM tevento
 		WHERE utimestamp > %d AND utimestamp <= %d
-			%s ' . $sql_where . '
+			%s %s
 		GROUP BY criticity',
-		$datelimit, $date, $sql_filter);
+		$datelimit, $date, $sql_filter, $sql_where);
 	
 	$rows = db_get_all_rows_sql ($sql);
 	
@@ -2841,12 +3011,12 @@ function events_get_count_events_by_criticity ($filter, $period, $date,
  * @return array An array with all the events happened.
  */
 function events_get_count_events_validated ($filter, $period = null, $date = null,
-	$filter_event_validated = false, $filter_event_critical = false,
-	$filter_event_warning = false, $filter_event_no_validated = false,
-	$filter_event_search = false) {
+	$filter_event_severity = false, $filter_event_type = false,
+	$filter_event_status = false, $filter_event_filter_search = false) {
 	
 	global $config;
 
+	//group
 	$sql_filter = " 1=1 ";
 	if (isset($filter['id_group'])) {
 		$id_group = groups_safe_acl ($config["id_user"], $filter['id_group'], "AR");
@@ -2859,11 +3029,25 @@ function events_get_count_events_validated ($filter, $period = null, $date = nul
 		$sql_filter .=
 			sprintf(" AND id_grupo IN (%s) ", implode (",", $id_group));
 	}
+	//agent
 	if (!empty($filter['id_agent'])) {
 		$sql_filter .=
 			sprintf(" AND id_agente = %d ", $filter['id_agent']);
 	}
+	//module
+	if(!empty($filter['id_agentmodule'])){
+		$sql_filter .= 
+			sprintf(' AND id_agentmodule = %d ', $filter['id_agentmodule']);	
+	}
 	
+	//date
+	if (!is_numeric ($date)) {
+		$date = strtotime ($date);
+	}
+	if (empty ($date)) {
+		$date = get_system_time ();
+	}
+
 	$date_filter = '';
 	if (!empty($date) && !empty($period)) {
 		$datelimit = $date - $period;
@@ -2882,31 +3066,77 @@ function events_get_count_events_validated ($filter, $period = null, $date = nul
 		$date_filter .= sprintf (" AND utimestamp <= %d ", $date);
 	}
 
-	$sql_where = " AND 1=1 ";
-	$criticities = array();
-	if ($filter_event_critical) {
-		$criticities[] = 4;
-	}
-	if ($filter_event_warning) {
-		$criticities[] = 3;
-	}
-	if (!empty($criticities)) {
-		$sql_where .= " AND criticity IN (" . implode(",", $criticities) . ")";
-	}
-	
-	if ($filter_event_validated) {
-		$sql_where .= " AND estado = 1 ";
-	}
-	if ($filter_event_no_validated) {
-		$sql_where .= " AND estado = 0 ";
-	}
-	
-	if (!empty($filter_event_search)) {
-		$sql_where .= " AND (evento LIKE '%%" . io_safe_input($filter_event_search) . "%%'" .
-			" OR id_evento LIKE '%%" . io_safe_input($filter_event_search) . "%%')";
+	$sql_where = '';
+	$severity_all = 0;
+	if (!empty($filter_event_severity)) {
+		foreach ($filter_event_severity as $key => $value) {
+			switch ($value) {
+				case -1:
+					$severity_all = 1;
+					break;
+				case 34:
+					$filter_event_severity[$key] = '3, 4'; 
+					break;
+				case 20:
+					$filter_event_severity[$key] = '0, 1, 3, 4, 5, 6';
+					break;
+				case 21:
+					$filter_event_severity[$key] = '4, 2';
+					break;
+				default:
+					break;
+			}
+		}
+		if(!$severity_all){
+			$sql_where .= ' AND criticity IN (' . implode(', ', $filter_event_severity) . ')';
+		}
 	}
 
-	$sql = sprintf ("SELECT estado, COUNT(*) AS count FROM tevento WHERE %s " . $sql_where . " GROUP BY estado", $sql_filter);
+	$status_all = 0;
+	if(!empty($filter_event_status)){
+		foreach ($filter_event_status as $key => $value) {
+			switch ($value) {
+				case -1:
+					$status_all = 1;
+					break;
+				case  3:
+					$filter_event_status[$key] = ('0, 2');
+				default:
+					break;
+			}
+		}
+		if(!$status_all){
+			$sql_where .= ' AND estado IN (' . implode(', ', $filter_event_status) . ')';	
+		}
+	}
+	
+	if (!empty($filter_event_type) && $filter_event_type[0] != 'all') {
+		$sql_where .= ' AND (';
+		$type = array();
+		foreach ($filter_event_type as $event_type) {
+			if ($event_type != "") {
+				// If normal, warning, could be several (going_up_warning, going_down_warning... too complex 
+				// for the user so for him is presented only "warning, critical and normal"
+				if ($event_type == "warning" || $event_type == "critical" || $event_type == "normal") {
+					$type[] = " event_type LIKE '%$event_type%' ";
+				}
+				else if ($event_type == "not_normal") {
+					$type[] = " (event_type LIKE '%warning%' OR event_type LIKE '%critical%' OR event_type LIKE '%unknown%') ";
+				}
+				else if ($event_type != "all") {
+					$type[] = " event_type = '" . $event_type."'";
+				}
+			}
+		}
+		$sql_where .= implode(' OR ', $type) . ')';
+	}
+
+	if (!empty($filter_event_filter_search)) {
+		$sql_where .= ' AND (evento LIKE "%'. io_safe_input($filter_event_filter_search) . '%"'.
+			' OR id_evento LIKE "%' . io_safe_input($filter_event_filter_search) . '%")';
+	}
+
+	$sql = sprintf ("SELECT estado, COUNT(*) AS count FROM tevento WHERE %s %s GROUP BY estado", $sql_filter, $sql_where);
 
 	$rows = db_get_all_rows_sql ($sql);
 	

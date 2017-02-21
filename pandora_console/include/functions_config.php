@@ -407,6 +407,12 @@ function config_update_config () {
 						$error_update[] = __('Small Operation Step to purge old data');
 					if (!config_update_value ('num_past_special_days', get_parameter ('num_past_special_days')))
 						$error_update[] = __('Retention period of past special days');
+					if (!config_update_value ('max_macro_fields', get_parameter ('max_macro_fields')))
+						$error_update[] = __('Max. macro data fields');
+					if (isset($config['enterprise_installed']) && $config['enterprise_installed'] == 1) {
+						if (!config_update_value ('inventory_purge', get_parameter ('inventory_purge')))
+							$error_update[] = __('Max. days before delete inventory data');
+					}
 					/////////////
 					break;
 					
@@ -490,6 +496,8 @@ function config_update_config () {
 						$error_update[] = __('Item title size text');
 					if (!config_update_value ('gis_label', get_parameter ('gis_label')))
 						$error_update[] = __('GIS Labels');
+					if (!config_update_value ('simple_module_value', get_parameter ('simple_module_value')))
+						$error_update[] = __('Show units in values report');
 					if (!config_update_value ('gis_default_icon', get_parameter ('gis_default_icon')))
 						$error_update[] = __('Default icon in GIS');
 					if (!config_update_value ('autohidden_menu', get_parameter('autohidden_menu')))
@@ -514,6 +522,10 @@ function config_update_config () {
 						$error_update[] = __('Default line thickness for the Custom Graph.');
 					if (!config_update_value ('type_module_charts', (string) get_parameter('type_module_charts', 'area')))
 						$error_update[] = __('Default type of module charts.');
+					if (!config_update_value ('type_interface_charts', (string) get_parameter('type_interface_charts', 'line')))
+						$error_update[] = __('Default type of interface charts.');
+					if (!config_update_value ('only_average', (bool) get_parameter('only_average', false)))
+						$error_update[] = __('Default show only average or min and max');
 					if (!config_update_value ('render_proc', (bool) get_parameter('render_proc', false)))
 						$error_update[] = __('Display data of proc modules in other format');
 					if (!config_update_value ('render_proc_ok', (string) get_parameter('render_proc_ok', __('Ok') )))
@@ -524,6 +536,16 @@ function config_update_config () {
 					if (!config_update_value ('click_display', (bool) get_parameter('click_display', false)))
 						$error_update[] = __('Display lateral menus with left click');
 					//Daniel maya 02/06/2016 Display menu with click --END
+					if (isset($config['enterprise_installed']) && $config['enterprise_installed'] == 1) {
+						if (!config_update_value ('service_label_font_size', get_parameter('service_label_font_size', false)))
+							$error_update[] = __('Service label font size');
+						if (!config_update_value ('service_item_padding_size', get_parameter('service_item_padding_size', false)))
+							$error_update[] = __('Service item padding size');
+					}
+					if (!config_update_value ('percentil', (int) get_parameter('percentil', 0)))
+						$error_update[] = __('Default percentil');
+					if (!config_update_value ('classic_menu', (bool) get_parameter('classic_menu', false)))
+						$error_update[] = __('Classic menu mode');
 
 
 					//--------------------------------------------------
@@ -596,7 +618,8 @@ function config_update_config () {
 						$error_update[] = __('Delete interval');
 					//--------------------------------------------------
 				
-				
+					if (!config_update_value ('custom_report_info', get_parameter('custom_report_info')))
+						$error_update[] = __('Custom report info');
 				
 				
 				// Juanma (06/05/2014) New feature: Custom front page for reports  	
@@ -648,6 +671,8 @@ function config_update_config () {
 			case 'hist_db':
 				if (!config_update_value ('history_db_enabled', get_parameter ('history_db_enabled')))
 					$error_update[] = __('Enable history database');
+				if (!config_update_value ('history_event_enabled', get_parameter ('history_event_enabled')))
+					$error_update[] = __('Enable history event');
 				if (!config_update_value ('history_db_host', get_parameter ('history_db_host')))
 					$error_update[] = __('Host');
 				if (!config_update_value ('history_db_port', get_parameter ('history_db_port')))
@@ -660,6 +685,8 @@ function config_update_config () {
 					$error_update[] = __('Database password');
 				if (!config_update_value ('history_db_days', get_parameter ('history_db_days')))
 					$error_update[] = __('Days');
+				if (!config_update_value ('history_event_days', get_parameter ('history_event_days')))
+					$error_update[] = __('Event Days');
 				if (!config_update_value ('history_db_step', get_parameter ('history_db_step')))
 					$error_update[] = __('Step');
 				if (!config_update_value ('history_db_delay', get_parameter ('history_db_delay')))
@@ -804,8 +831,8 @@ function config_process_config () {
 		config_update_value ('autorefresh_white_list', '');
 	}
 	// Load user session
-	if (isset ($_SESSION[$config['homeurl_static']]['id_usuario']))
-		$config["id_user"] = $_SESSION[$config['homeurl_static']]["id_usuario"];
+	if (isset ($_SESSION['id_usuario']))
+		$config["id_user"] = $_SESSION["id_usuario"];
 	
 	if (!isset ($config["round_corner"])) {
 		config_update_value ('round_corner', false);
@@ -845,6 +872,16 @@ function config_process_config () {
 
 	if (!isset ($config["num_past_special_days"])) {
 		config_update_value ('num_past_special_days', 0);
+	}
+
+	if (isset($config['enterprise_installed'])) {
+		if (!isset($config['inventory_purge'])) {
+			config_update_value ('inventory_purge',  21);
+		}
+	}
+
+	if (!isset($config['max_macro_fields'])) {
+		config_update_value ('max_macro_fields', 10);
 	}
 
 	if (!isset ($config["event_purge"])) {
@@ -1062,6 +1099,10 @@ function config_process_config () {
 		config_update_value ( 'history_db_enabled', false);
 	}
 	
+	if (!isset ($config['history_event_enabled'])) {
+		config_update_value ( 'history_event_enabled', false);
+	}
+	
 	if (!isset ($config['history_db_host'])) {
 		config_update_value ( 'history_db_host', '');
 	}
@@ -1084,6 +1125,10 @@ function config_process_config () {
 	
 	if (!isset ($config['history_db_days'])) {
 		config_update_value ( 'history_db_days', 0);
+	}
+	
+	if (!isset ($config['history_event_days'])) {
+		config_update_value ('history_event_days', 90);
 	}
 	
 	if (!isset ($config['history_db_step'])) {
@@ -1340,22 +1385,6 @@ function config_process_config () {
 		config_update_value ('saml_path', '/opt/');
 	}
 	
-	if (!isset ($config['integria_enabled'])) {
-		config_update_value ( 'integria_enabled', '0');
-	}
-	
-	if (!isset ($config['integria_api_password'])) {
-		config_update_value ( 'integria_api_password', '');
-	}
-	
-	if (!isset ($config['integria_inventory'])) {
-		config_update_value ( 'integria_inventory', '0');
-	}
-	
-	if (!isset ($config['integria_url'])) {
-		config_update_value ( 'integria_url', '');
-	}
-	
 	if (!isset ($config['autoupdate'])) {
 		config_update_value ( 'autoupdate', 1);
 	}
@@ -1448,6 +1477,10 @@ function config_process_config () {
 	if (!isset($config['item_title_size_text'])) {
 		config_update_value ('item_title_size_text', 45);
 	}
+
+	if (!isset($config['simple_module_value'])) {
+		config_update_value ('simple_module_value', 1);
+	}
 	
 	if (!isset($config['gis_label'])) {
 		config_update_value ('gis_label', 0);
@@ -1501,6 +1534,10 @@ function config_process_config () {
 	if (!isset($config['type_module_charts'])) {
 		config_update_value ('type_module_charts', 'area');
 	}
+
+	if (!isset($config['type_interface_charts'])) {
+		config_update_value ('type_interface_charts', 'line');
+	}
 	
 	if (!isset($config['render_proc'])) {
 		config_update_value ('render_proc', 0);
@@ -1517,6 +1554,19 @@ function config_process_config () {
 		config_update_value ('click_display', 1);
 	}
 	//Daniel maya 02/06/2016 Display menu with click --END
+	if (isset($config['enterprise_installed']) && $config['enterprise_installed'] == 1) {
+		if (!isset($config["service_label_font_size"])) {
+			config_update_value ('service_label_font_size', 20);
+		}
+
+		if (!isset($config["service_item_padding_size"])) {
+			config_update_value ('service_item_padding_size', 80);
+		}
+	}
+	if (!isset($config["classic_menu"])) {
+		config_update_value ('classic_menu', 0);
+	}
+
 	if (!isset($config['command_snapshot'])) {
 		config_update_value ('command_snapshot', 1);
 	}
@@ -1868,8 +1918,23 @@ function config_user_set_custom_config() {
 function config_prepare_session() {
 	global $config;
 	
-	// Change the session timeout value to session_timeout minutes  // 8*60*60 = 8 hours
-	$sessionCookieExpireTime = $config["session_timeout"] * 60;
+	$user = users_get_user_by_id($config["id_user"]);
+	$user_sesion_time = $user['session_time'];
+
+	if ($user_sesion_time == 0) {
+		// Change the session timeout value to session_timeout minutes  // 8*60*60 = 8 hours
+		$sessionCookieExpireTime = $config["session_timeout"];
+	}
+	else {
+		// Change the session timeout value to session_timeout minutes  // 8*60*60 = 8 hours
+		$sessionCookieExpireTime = $user_sesion_time;
+	}
+	
+	if ($sessionCookieExpireTime <= 0)
+		$sessionCookieExpireTime = 10 * 365 * 24 * 60 * 60;
+	else
+		$sessionCookieExpireTime *= 60;
+	
 	ini_set('session.gc_maxlifetime', $sessionCookieExpireTime);
 	session_set_cookie_params ($sessionCookieExpireTime);
 	

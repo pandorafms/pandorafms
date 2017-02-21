@@ -256,7 +256,7 @@ function main_net_tools () {
 function godmode_net_tools() {
 	global $config;
 	
-	check_config ();
+	check_login();
 	
 	if (! check_acl ($config['id_user'], 0, "PM")) {
 		db_pandora_audit("ACL Violation",
@@ -292,7 +292,8 @@ function godmode_net_tools() {
 	else {
 		
 		if (isset($config['network_tools_config'])) {
-			$network_tools_config = json_decode($config['network_tools_config'], true);
+			$network_tools_config_output = io_safe_output($config['network_tools_config']);
+			$network_tools_config = json_decode($network_tools_config_output, true);
 			$traceroute_path = $network_tools_config['traceroute_path'];
 			$ping_path = $network_tools_config['ping_path'];
 			$nmap_path = $network_tools_config['nmap_path'];

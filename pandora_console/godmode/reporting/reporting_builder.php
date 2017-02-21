@@ -365,7 +365,7 @@ switch ($action) {
 		}
 		// Page header for normal console
 		else
-			ui_print_page_header (__('Reporting').' &raquo; '.__('Custom reporting'), "images/op_reporting.png", false, "", false, $buttons);
+			ui_print_page_header (__('Reporting').' &raquo; '.__('Custom reporting'), "images/op_reporting.png", false, "", false, $buttons,false,'',80);
 		
 		
 		if ($action == 'delete_report') {
@@ -936,14 +936,27 @@ switch ($action) {
 								$values['text'] = $intervals;
 								break;
 							case 'SLA_monthly':
+							case 'SLA_weekly':
+							case 'SLA_hourly':
 							case 'SLA_services':
 							case 'SLA':
+							case 'availability_graph':
 								$values['period'] = get_parameter('period');
 								$values['top_n'] = get_parameter('combo_sla_sort_options',0);
 								$values['top_n_value'] = get_parameter('quantity');
 								$values['text'] = get_parameter('text');
 								$values['show_graph'] = get_parameter('combo_graph_options');
 								
+								$good_format = true;
+								break;
+							case 'agent_module':
+								$agents_to_report = get_parameter('id_agents2');
+								$modules_to_report = get_parameter('module', "");
+
+								$es['module'] = get_same_modules($agents_to_report, $modules_to_report);
+								$es['id_agents'] = $agents_to_report;
+
+								$values['external_source'] = json_encode($es);
 								$good_format = true;
 								break;
 							case 'inventory':
@@ -1052,14 +1065,14 @@ switch ($action) {
 							$resultOperationDB = false;
 							break;
 						}
-						$filter_event_validated = get_parameter('filter_event_validated', 0);
-						$filter_event_no_validated = get_parameter('filter_event_no_validated', 0);
-						$filter_event_critical = get_parameter('filter_event_critical', 0);
-						$filter_event_warning = get_parameter('filter_event_warning', 0);
-						
-						$event_graph_by_agent = get_parameter('event_graph_by_agent', 0);
-						$event_graph_by_user_validator = get_parameter('event_graph_by_user_validator', 0);
-						$event_graph_by_criticity = get_parameter('event_graph_by_criticity', 0);
+						$show_summary_group    = get_parameter('show_summary_group', 0);
+						$filter_event_severity = get_parameter('filter_event_severity', 0);
+						$filter_event_type     = get_parameter('filter_event_type', '');
+						$filter_event_status   = get_parameter('filter_event_status', 0);
+
+						$event_graph_by_agent                 = get_parameter('event_graph_by_agent', 0);
+						$event_graph_by_user_validator        = get_parameter('event_graph_by_user_validator', 0);
+						$event_graph_by_criticity             = get_parameter('event_graph_by_criticity', 0);
 						$event_graph_validated_vs_unvalidated = get_parameter('event_graph_validated_vs_unvalidated', 0);
 						
 						$event_filter_search = get_parameter('filter_search', '');
@@ -1121,42 +1134,36 @@ switch ($action) {
 						switch ($values['type']) {
 							case 'event_report_agent':
 							case 'event_report_group':
+							case 'event_report_module':
 								//Added for events items
-								$style['filter_event_no_validated'] = $filter_event_no_validated;
-								$style['filter_event_validated'] = $filter_event_validated;
-								$style['filter_event_critical'] = $filter_event_critical;
-								$style['filter_event_warning'] = $filter_event_warning;
+								$style['show_summary_group']    = $show_summary_group;
+								$style['filter_event_severity'] = json_encode($filter_event_severity);
+								$style['filter_event_type']     = json_encode($filter_event_type);
+								$style['filter_event_status']   = json_encode($filter_event_status);
 								
 								$style['event_graph_by_agent'] = $event_graph_by_agent;
 								$style['event_graph_by_user_validator'] = $event_graph_by_user_validator;
 								$style['event_graph_by_criticity'] = $event_graph_by_criticity;
 								$style['event_graph_validated_vs_unvalidated'] = $event_graph_validated_vs_unvalidated;
 								
-								switch ($values['type']) {
-									case 'event_report_group':
-										$style['event_filter_search'] =
-											$event_filter_search;
-										break;
-									case 'event_report_agent':
-										if ($label != '')
-											$style['label'] = $label;
-										else
-											$style['label'] = '';
-										break;
-								}
-								break;
-							case 'simple_graph':
-								// Warning. We are using this column to hold this value to avoid
-								// the modification of the database for compatibility reasons.
-								$style['only_avg'] = (int) get_parameter('only_avg');
-								$style['percentil_95'] = (int) get_parameter('percentil_95');
+								$style['event_filter_search'] = $event_filter_search;
 								if ($label != '')
 									$style['label'] = $label;
 								else
 									$style['label'] = '';
 								break;
+							case 'simple_graph':
+								// Warning. We are using this column to hold this value to avoid
+								// the modification of the database for compatibility reasons.
+								$style['only_avg'] = (int) get_parameter('only_avg');
+								$style['percentil'] = (int) get_parameter('percentil');
+								if ($label != '')
+									$style['label'] = $label;
+								else
+									$style['label'] = '';
+								break;
+							case 'module_histogram_graph':
 							case 'agent_configuration':
-							case 'event_report_module':
 							case 'alert_report_agent':
 							case 'alert_report_module':
 							case 'historical_data':
@@ -1256,6 +1263,16 @@ switch ($action) {
 								$es['date'] = get_parameter('date');
 								$es['id_agents'] = get_parameter('id_agents');
 								$es['inventory_modules'] = get_parameter('inventory_modules');
+								$values['external_source'] = json_encode($es);
+								$good_format = true;
+								break;
+							case 'agent_module':
+							$agents_to_report = get_parameter('id_agents2');
+								$modules_to_report = get_parameter('module', "");
+
+								$es['module'] = get_same_modules($agents_to_report, $modules_to_report);
+								$es['id_agents'] = $agents_to_report;
+
 								$values['external_source'] = json_encode($es);
 								$good_format = true;
 								break;
@@ -1426,35 +1443,35 @@ switch ($action) {
 						switch ($values['type']) {
 							case 'event_report_agent':
 							case 'event_report_group':
-								$filter_event_no_validated = get_parameter('filter_event_no_validated', 0);
-								$filter_event_validated = get_parameter('filter_event_validated', 0);
-								$filter_event_critical = get_parameter('filter_event_critical', 0);
-								$filter_event_warning = get_parameter('filter_event_warning', 0);
+							case 'event_report_module':	
+								$show_summary_group    = get_parameter('show_summary_group', 0);
+								$filter_event_severity = get_parameter('filter_event_severity', '');
+								$filter_event_type     = get_parameter('filter_event_type', '');
+								$filter_event_status   = get_parameter('filter_event_status', '');
 								
-								$event_graph_by_agent = get_parameter('event_graph_by_agent', 0);
-								$event_graph_by_user_validator = get_parameter('event_graph_by_user_validator', 0);
-								$event_graph_by_criticity = get_parameter('event_graph_by_criticity', 0);
+								$event_graph_by_agent                 = get_parameter('event_graph_by_agent', 0);
+								$event_graph_by_user_validator        = get_parameter('event_graph_by_user_validator', 0);
+								$event_graph_by_criticity             = get_parameter('event_graph_by_criticity', 0);
 								$event_graph_validated_vs_unvalidated = get_parameter('event_graph_validated_vs_unvalidated', 0);
 								
 								$event_filter_search = get_parameter('filter_search', '');
 								
 								//Added for events items
-								$style['filter_event_no_validated'] = $filter_event_no_validated;
-								$style['filter_event_validated'] = $filter_event_validated;
-								$style['filter_event_critical'] = $filter_event_critical;
-								$style['filter_event_warning'] = $filter_event_warning;
-								
-								$style['event_graph_by_agent'] = $event_graph_by_agent;
-								$style['event_graph_by_user_validator'] = $event_graph_by_user_validator;
-								$style['event_graph_by_criticity'] = $event_graph_by_criticity;
+								$style['show_summary_group']    = $show_summary_group;
+								$style['filter_event_severity'] = json_encode($filter_event_severity);
+								$style['filter_event_type']     = json_encode($filter_event_type);
+								$style['filter_event_status']   = json_encode($filter_event_status);
+
+								$style['event_graph_by_agent']                 = $event_graph_by_agent;
+								$style['event_graph_by_user_validator']        = $event_graph_by_user_validator;
+								$style['event_graph_by_criticity']             = $event_graph_by_criticity;
 								$style['event_graph_validated_vs_unvalidated'] = $event_graph_validated_vs_unvalidated;
+								
 								
 								switch ($values['type']) {
 									case 'event_report_group':
-										$style['event_filter_search'] =
-											$event_filter_search;
-										break;
 									case 'event_report_agent':
+										$style['event_filter_search'] = $event_filter_search;
 										if ($label != '')
 											$style['label'] = $label;
 										else
@@ -1467,14 +1484,14 @@ switch ($action) {
 								// Warning. We are using this column to hold this value to avoid
 								// the modification of the database for compatibility reasons.
 								$style['only_avg'] = (int) get_parameter('only_avg');
-								$style['percentil_95'] = (int) get_parameter('percentil_95');
+								$style['percentil'] = (int) get_parameter('percentil');
 								if ($label != '')
 									$style['label'] = $label;
 								else
 									$style['label'] = '';
 								break;
+							case 'module_histogram_graph':
 							case 'agent_configuration':
-							case 'event_report_module':
 							case 'alert_report_agent':
 							case 'alert_report_module':
 							case 'historical_data':
@@ -1891,7 +1908,7 @@ switch ($action) {
 			}
 			// Page header for normal console
 			else
-				ui_print_page_header (__('Reporting') . $subsection, "images/op_reporting.png", false, "", false, $buttons);
+				ui_print_page_header (__('Reporting') . $subsection, "images/op_reporting.png", false, "", false, $buttons,false,'',80);
 			
 			
 			reporting_enterprise_select_main_tab($action);
@@ -1963,26 +1980,21 @@ if ($enterpriseEnable and defined('METACONSOLE')) {
 else {
 	ui_print_page_header(__('Reporting') . $textReportName,
 		"images/op_reporting.png", false,
-		"reporting_" . $activeTab . "_tab", false, $buttons);
+		"reporting_" . $activeTab . "_tab", false, $buttons,false,'',80);
 }
 
-
-
 if ($resultOperationDB !== null) {
-	
-	
 	$err = '';
-	
-	if($_POST[sla_min]==''){
-		$err.='You must enter some character in SLA min field<br>';
+	switch ($_POST['type']) {
+		case 'custom_graph':
+			$err.='You must enter custom graph';
+			break;
+		case 'SLA':
+			$err.='You must enter some character in SLA limit field';
+		default:
+			$err.='';
+			break;
 	}
-	if($_POST[sla_max]==''){
-		$err.='You must enter some character in SLA max field<br>';
-	}
-	if($_POST[sla_limit]==''){
-		$err.='You must enter some character in SLA limit field';
-	}
-
 	ui_print_result_message ($resultOperationDB, __('Successfull action'), __('Unsuccessfull action<br><br>'.$err));
 }
 

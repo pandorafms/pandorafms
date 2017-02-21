@@ -42,8 +42,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "6.1dev";
-my $pandora_build = "161107";
+my $pandora_version = "7.0dev";
+my $pandora_build = "170221";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -200,6 +200,7 @@ sub pandora_load_config {
 	$pa_config->{"umask"} = "0007"; # environment settings umask applied over chmod (A & (not B))
 	$pa_config->{"server_threshold"} = 30;
 	$pa_config->{"alert_threshold"} = 60;
+	$pa_config->{"graph_precision"} = 1;
 	$pa_config->{"log_file"} = "/var/log/pandora_server.log";
 	$pa_config->{"errorlog_file"} = "/var/log/pandora_server.error";
 	$pa_config->{"networktimeout"} = 5;	# By default, not in config file yet
@@ -426,6 +427,12 @@ sub pandora_load_config {
 	$pa_config->{"warmup_unknown_on"} = 1; # 6.1
 
 	#$pa_config->{'include_agents'} = 0; #6.1
+	#
+	# External .enc files for XML::Parser.
+	$pa_config->{"enc_dir"} = ""; # > 6.0SP4
+
+	# Enable (1) or disable (0) events related to the unknown status.
+	$pa_config->{"unknown_events"} = 1; # > 6.0SP4
 
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
@@ -685,6 +692,9 @@ sub pandora_load_config {
 		} 
 		elsif ($parametro =~ m/^alert_threshold\s+([0-9]*)/i) { 
 			$pa_config->{"alert_threshold"} = clean_blank($1); 
+		} 
+		elsif ($parametro =~ m/^graph_precision\s+([0-9]*)/i) { 
+			$pa_config->{"graph_precision"} = clean_blank($1); 
 		} 
 		elsif ($parametro =~ m/^network_timeout\s+([0-9]*)/i) {
 			$pa_config->{'networktimeout'}= clean_blank($1); 
@@ -956,6 +966,12 @@ sub pandora_load_config {
 		#elsif ($parametro =~ m/^include_agents\s+([0-1])/i) {
 		#	$pa_config->{'include_agents'}= clean_blank($1);
 		#}
+		elsif ($parametro =~ m/^enc_dir\s+(.*)/i) {
+			$pa_config->{'enc_dir'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^unknown_events\s+([0-1])/i) {
+			$pa_config->{'unknown_events'} = clean_blank($1);
+		}
 	} # end of loop for parameter #
 
 	# Set to RDBMS' standard port

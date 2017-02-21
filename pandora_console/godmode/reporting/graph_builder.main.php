@@ -65,6 +65,7 @@ if ($edit_graph) {
 	$width = $graphInTgraph['width'];
 	$height = $graphInTgraph['height'];
 	$check = false;
+	$percentil = $graphInTgraph['percentil'];
 
 	if ($stacked == CUSTOM_GRAPH_BULLET_CHART_THRESHOLD){
 		$stacked = CUSTOM_GRAPH_BULLET_CHART;
@@ -82,6 +83,7 @@ else {
 	$factor = 1;
 	$stacked = 4;
 	$check = false;
+	$percentil = 0;
 }
 
 
@@ -170,9 +172,10 @@ echo "<div style='float:right' id='thresholdDiv' name='thresholdDiv'>&nbsp;&nbsp
 html_print_checkbox('threshold', CUSTOM_GRAPH_BULLET_CHART_THRESHOLD, $check, false, false, '', false);
 echo "</div>";
 
-
-
 echo "</div></td>";
+
+echo "<tr><td class='datos2'><b>".__('Type of graph')."</b></td>";
+echo "<td class='datos2'>" . html_print_checkbox ("percentil", 1, $percentil, true) . "</td></tr>";
 
 echo "</table>";
 

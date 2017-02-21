@@ -13,6 +13,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import NoAlertPresentException
 from selenium.webdriver.remote.webelement import WebElement
 import unittest2, time, re
+import logging
 
 class ACLPropagation(PandoraWebDriverTestCase):
 
@@ -26,6 +27,9 @@ class ACLPropagation(PandoraWebDriverTestCase):
 		ACL Propagation test: Creates one group "A" with ACL propagation, then a group "B" son of "A" with no ACL propagation, and finally group "C".
 		The test asserts if a user with privileges to "A" can see the agent of "B" but no agents of "C".
 		"""
+		
+		logging.basicConfig(filename="ACL.log", level=logging.INFO, filemode='w')
+
         	group_name_A = gen_random_string(6)
         	group_name_B = gen_random_string(6)
         	group_name_C = gen_random_string(6)
@@ -69,6 +73,8 @@ class ACLPropagation(PandoraWebDriverTestCase):
 		search_agent(driver,agent_name_B,go_to_agent=False)
 		element = driver.find_elements_by_xpath('//a[contains(.,"'+agent_name_B+'")]')
 		self.assertEqual(element,[])
+		
+		logging.info("test_ACL_propagation is correct")
 
 class ACLReports(PandoraWebDriverTestCase):
 
@@ -124,6 +130,8 @@ class ACLReports(PandoraWebDriverTestCase):
                 element = driver.find_element_by_xpath('//td[contains(.,"No data found.")]')
                 self.assertIsInstance(element,WebElement)
 
+		logging.info("test_ACL_reports is correct")
+
 class ACLTags(PandoraWebDriverTestCase):
 
         test_name = u'ACL tag test'
@@ -175,6 +183,8 @@ class ACLTags(PandoraWebDriverTestCase):
 		#The user should NOT be able to see the module without tag
 		#modules = driver.find_elements_by_xpath('//td[contains(.,"'+module_name_A+'")]')
 		#self.assertEqual(modules,[])
+
+		#logging.info("test_ACL_tag is correct")
  
 if __name__ == "__main__":
 	unittest2.main()

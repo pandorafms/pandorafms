@@ -91,6 +91,7 @@ CREATE TABLE tagente (
 	custom_id VARCHAR2(255) DEFAULT '',
 	server_name VARCHAR2(100) DEFAULT '',
 	cascade_protection NUMBER(5, 0) DEFAULT 0,
+	cascade_protection_module NUMBER(5, 0) DEFAULT 0,
 	--number of hours of diference with the server timezone
 	timezone_offset NUMBER(5, 0) DEFAULT 0,
 	--path in the server to the image of the icon representing the agent
@@ -290,6 +291,7 @@ CREATE TABLE tagente_modulo (
 	prediction_sample_window INTEGER default 0,
 	prediction_samples INTEGER default 0,
 	prediction_threshold INTEGER default 0,
+	parent_module_id NUMBER(10, 0),
 	CONSTRAINT t_agente_modulo_wizard_cons CHECK (wizard_level IN ('basic','advanced','nowizard'))
 );
 CREATE INDEX tagente_modulo_id_agente_idx ON tagente_modulo(id_agente);
@@ -329,6 +331,11 @@ CREATE TABLE talert_snmp (
 	al_field8 CLOB DEFAULT '',
 	al_field9 CLOB DEFAULT '',
 	al_field10 CLOB DEFAULT '',
+	al_field11 CLOB DEFAULT '',
+	al_field12 CLOB DEFAULT '',
+	al_field13 CLOB DEFAULT '',
+	al_field14 CLOB DEFAULT '',
+	al_field15 CLOB DEFAULT '',
 	description VARCHAR2(255) DEFAULT '',
 	alert_type NUMBER(5, 0) DEFAULT 0,
 	agent VARCHAR2(100) DEFAULT '',
@@ -423,6 +430,11 @@ CREATE TABLE talert_actions (
 	field8 CLOB DEFAULT '',
 	field9 CLOB DEFAULT '',
 	field10 CLOB DEFAULT '',
+	field11 CLOB DEFAULT '',
+	field12 CLOB DEFAULT '',
+	field13 CLOB DEFAULT '',
+	field14 CLOB DEFAULT '',
+	field15 CLOB DEFAULT '',
 	id_group NUMBER(19, 0) DEFAULT 0,
 	action_threshold NUMBER(19, 0) DEFAULT 0,
 	field1_recovery CLOB DEFAULT '',
@@ -434,7 +446,12 @@ CREATE TABLE talert_actions (
 	field7_recovery CLOB DEFAULT '',
 	field8_recovery CLOB DEFAULT '',
 	field9_recovery CLOB DEFAULT '',
-	field10_recovery CLOB DEFAULT ''
+	field10_recovery CLOB DEFAULT '',
+	field11_recovery CLOB DEFAULT '',
+	field12_recovery CLOB DEFAULT '',
+	field13_recovery CLOB DEFAULT '',
+	field14_recovery CLOB DEFAULT '',
+	field15_recovery CLOB DEFAULT '',
 );
 
 CREATE SEQUENCE talert_actions_s INCREMENT BY 1 START WITH 1;
@@ -463,6 +480,11 @@ CREATE TABLE talert_templates (
 	field8 CLOB DEFAULT '',
 	field9 CLOB DEFAULT '',
 	field10 CLOB DEFAULT '',
+	field11 CLOB DEFAULT '',
+	field12 CLOB DEFAULT '',
+	field13 CLOB DEFAULT '',
+	field14 CLOB DEFAULT '',
+	field15 CLOB DEFAULT '',
 	type VARCHAR2(50), 
 	value VARCHAR2(255) DEFAULT '',
 	matches_value NUMBER(5, 0) DEFAULT 0,
@@ -491,6 +513,11 @@ CREATE TABLE talert_templates (
 	field8_recovery CLOB DEFAULT '',
 	field9_recovery CLOB DEFAULT '',
 	field10_recovery CLOB DEFAULT '',
+	field11_recovery CLOB DEFAULT '',
+	field12_recovery CLOB DEFAULT '',
+	field13_recovery CLOB DEFAULT '',
+	field14_recovery CLOB DEFAULT '',
+	field15_recovery CLOB DEFAULT '',
 	priority NUMBER(10, 0) DEFAULT 0,
 	id_group NUMBER(10, 0) DEFAULT 0, 
 	special_day NUMBER(5, 0) DEFAULT 0,
@@ -1128,6 +1155,7 @@ CREATE TABLE tusuario (
 	metaconsole_assigned_server NUMBER(10, 0) DEFAULT 0,
 	metaconsole_access_node NUMBER(10, 0) DEFAULT 0,
 	strict_acl NUMBER(5,0) DEFAULT 0,
+	session_time INTEGER DEFAULT 0,
 	CONSTRAINT t_usuario_metaconsole_acc_cons CHECK (metaconsole_access IN ('basic','advanced'))
 );
 
@@ -1194,7 +1222,8 @@ CREATE TABLE tgraph (
 	events NUMBER(5, 0) DEFAULT 0,
 	stacked NUMBER(5, 0) DEFAULT 0,
 	id_group NUMBER(19, 0) DEFAULT 0,
-	id_graph_template NUMBER(11, 0) DEFAULT 0 
+	id_graph_template NUMBER(11, 0) DEFAULT 0,
+	percentil NUMBER(5, 0) DEFAULT 0 
 );
 
 CREATE SEQUENCE tgraph_s INCREMENT BY 1 START WITH 1;
@@ -1345,8 +1374,9 @@ CREATE TABLE tlayout (
 	id NUMBER(10, 0) PRIMARY KEY,
 	name varchar(50) ,
 	id_group NUMBER(10, 0),
-	background varchar(200) ,
+	background VARCHAR2(200) ,
 	height NUMBER(10, 0) DEFAULT 0,
+	background_color VARCHAR2(50) DEFAULT '#FFF',
 	width NUMBER(10, 0) DEFAULT 0
 );
 
@@ -1376,6 +1406,8 @@ CREATE TABLE tlayout_data (
 	id_group NUMBER(10, 0) DEFAULT 0,
 	id_custom_graph NUMBER(10, 0) DEFAULT 0,
 	border_width NUMBER(10, 0) DEFAULT 0,
+	type_graph VARCHAR2(50) DEFAULT 'area',
+	label_position VARCHAR2(50) DEFAULT 'down',
 	border_color VARCHAR2(200) DEFAULT '',
 	fill_color VARCHAR2(200) DEFAULT ''
 );
@@ -1865,6 +1897,7 @@ CREATE TABLE tnetflow_filter (
 	ip_src CLOB,
 	dst_port CLOB,
 	src_port CLOB,
+	router_ip CLOB,
 	advanced_filter CLOB,
 	filter_args CLOB,
 	aggregate VARCHAR2(60),
@@ -2053,7 +2086,12 @@ CREATE TABLE talert_snmp_action (
 	al_field7 CLOB DEFAULT '',
 	al_field8 CLOB DEFAULT '',
 	al_field9 CLOB DEFAULT '',
-	al_field10 CLOB DEFAULT ''
+	al_field10 CLOB DEFAULT '',
+	al_field11 CLOB DEFAULT '',
+	al_field12 CLOB DEFAULT '',
+	al_field13 CLOB DEFAULT '',
+	al_field14 CLOB DEFAULT '',
+	al_field15 CLOB DEFAULT ''
 );
 CREATE SEQUENCE talert_snmp_action_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER talert_snmp_action_inc BEFORE INSERT ON talert_snmp_action REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT talert_snmp_action_s.nextval INTO :NEW.id FROM dual; END;;

@@ -117,6 +117,9 @@
 .context-menu-item.icon-set_parent { background-image: url(../../images/father.png); }
 .context-menu-item.icon-add_node { background-image: url(../../images/add.png); }
 .context-menu-item.icon-refresh_holding_area { background-image: url(../../images/refresh_holding_area.png); }
+.context-menu-item.icon-interface_link_children { background-image: url(../../images/icono_link_hijo.png); }
+.context-menu-item.icon-interface_link_parent { background-image: url(../../images/icono_link_padre.png); }
+.context-menu-item.icon-interface_link_cancel { background-image: url(../../images/link_abortar.png); }
 
 /* vertically align inside labels */
 .context-menu-input > label > * { vertical-align: top; }

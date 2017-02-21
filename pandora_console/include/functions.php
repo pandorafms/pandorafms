@@ -244,7 +244,7 @@ function format_for_graph ($number , $decimals = 1, $dec_point = ".", $thousands
 		$number = $number / 1000;
 	}
 	
-	return format_numeric ($number, $decimals). $shorts[$pos]; //This will actually do the rounding and the decimals
+	return remove_right_zeros(format_numeric ($number, $decimals)). $shorts[$pos]; //This will actually do the rounding and the decimals
 }
 
 function human_milliseconds_to_string($seconds) {
@@ -1596,8 +1596,6 @@ function get_snmpwalk($ip_target, $snmp_version, $snmp_community = '',
 			break;
 	}
 	
-	//html_debug_print($command_str);
-	
 	exec($command_str, $output, $rc);
 	
 	// Parse the output of snmpwalk
@@ -1730,9 +1728,9 @@ function check_login ($output = true) {
 		exit;
 	}
 	
-	if ((isset($_SESSION[$config['homeurl_static']]["id_usuario"])) AND ($_SESSION[$config['homeurl_static']]["id_usuario"] != "")) {
-		if (is_user ($_SESSION[$config['homeurl_static']]["id_usuario"])) {
-			$config['id_user'] = $_SESSION[$config['homeurl_static']]["id_usuario"];
+	if ((isset($_SESSION["id_usuario"])) AND ($_SESSION["id_usuario"] != "")) {
+		if (is_user ($_SESSION["id_usuario"])) {
+			$config['id_user'] = $_SESSION["id_usuario"];
 			
 			return true;
 		}
@@ -2293,6 +2291,11 @@ function print_audit_csv ($data) {
 	global $config;
 	global $graphic_type;
 
+	if (!$data) {
+		echo __('No data found to export');
+		return 0;
+	}
+
 	$config['ignore_callback'] = true;
 	while (@ob_end_clean ());
 	
@@ -2300,20 +2303,20 @@ function print_audit_csv ($data) {
 	header("Content-Disposition: attachment; filename=audit_log".date("Y-m-d_His").".csv");
 	header("Pragma: no-cache");
 	header("Expires: 0");
+
+	// BOM
+	print pack('C*',0xEF,0xBB,0xBF);
 	
-	if ($data) {
-		echo __('User') . ';' .
-			__('Action') . ';' .
-			__('Date') . ';' .
-			__('Source ID') . ';' .
-			__('Comments') ."\n";
-		foreach ($data as $line) {
-			echo io_safe_output($line['id_usuario']) . ';' .  io_safe_output($line['accion']) . ';' .  $line['fecha'] . ';' .  $line['ip_origen'] . ';'.  io_safe_output($line['descripcion']). "\n";
-		}
+	echo __('User') . ';' .
+		__('Action') . ';' .
+		__('Date') . ';' .
+		__('Source ID') . ';' .
+		__('Comments') ."\n";
+	foreach ($data as $line) {
+		echo io_safe_output($line['id_usuario']) . ';' .  io_safe_output($line['accion']) . ';' .  $line['fecha'] . ';' .  $line['ip_origen'] . ';'.  io_safe_output($line['descripcion']). "\n";
 	}
-	else {
-		echo __('No data found to export');
-	}
+
+	exit;
 }
 
 /**
@@ -2613,6 +2616,7 @@ function date2strftime_format($date_format) {
 		'O' => '%z',
 		'T' => '%Z',
 		'%' => '%%',
+		'G' => '%k',
 		);
 	
 	$return = "";
@@ -2653,7 +2657,7 @@ function pandora_setlocale() {
 		'el' => 'el_GR',
 		'ru' => 'ru_RU',
 		'ar' => 'ar_MA',
-		'ja' => 'ja_JP',
+		'ja' => 'ja_JP.UTF-8',
 		'zh_CN' => 'zh_CN',
 		);
 	
@@ -2663,8 +2667,54 @@ function pandora_setlocale() {
 		str_replace(array_keys($replace_locale), $replace_locale, $user_language));
 }
 
+function update_config_token ($cfgtoken, $cfgvalue) {
+	global $config;
+	
+	$delete = db_process_sql ("DELETE FROM tconfig WHERE token = '$cfgtoken'");
+	$insert = db_process_sql ("INSERT INTO tconfig (token, value) VALUES ('$cfgtoken', '$cfgvalue')");
+	
+	if ($delete && $insert) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+function get_number_of_mr() {
+	global $config;
+	
+	$dir = $config["homedir"]."/extras/mr";
+	$mr_size = array();
+	
+	if (file_exists($dir) && is_dir($dir)) {
+		if (is_readable($dir)) {
+			$files = scandir($dir); // Get all the files from the directory ordered by asc
+			
+			if ($files !== false) {
+				$pattern = "/^\d+\.sql$/";
+				$sqlfiles = preg_grep($pattern, $files); // Get the name of the correct files
+				$pattern = "/\.sql$/";
+				$replacement = "";
+				$sqlfiles_num = preg_replace($pattern, $replacement, $sqlfiles);
+				
+				foreach ($sqlfiles_num as $num) {
+					$mr_size[] = $num;
+				}
+			}
+		}
+	}
+	return $mr_size;
+}
+
 function remove_right_zeros ($value) {
-	$value_to_return = rtrim($value, "0");
-	return rtrim($value_to_return, ".");
+	$is_decimal = explode(".", $value);
+	if (isset($is_decimal[1])) {
+		$value_to_return = rtrim($value, "0");
+		return rtrim($value_to_return, ".");
+	}
+	else {
+		return $value;
+	}
 }
 ?>

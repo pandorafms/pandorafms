@@ -13,13 +13,13 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-require_once ('../../include/config.php');
 
-if (! isset($_SESSION[$config['homeurl_static']]['id_usuario'])) {
+if (! isset($_SESSION['id_usuario'])) {
 	session_start();
 	//session_write_close();
 }
 
+require_once ('../../include/config.php');
 require_once ($config['homedir'] . '/include/auth/mysql.php');
 require_once ($config['homedir'] . '/include/functions.php');
 require_once ($config['homedir'] . '/include/functions_db.php');
@@ -62,18 +62,20 @@ $label = get_parameter ("label");
 			FROM tagente_estado
 			WHERE id_agente_modulo = $id");
 		
-		echo "<h2 id='title_snapshot_view'>";
+		echo "<h2 style='text-align:center;' id='title_snapshot_view'>";
 		echo __("Current data at");
 		echo " ";
 		echo $row["timestamp"];
 		echo "</h2>";
 		$datos = io_safe_output($row["datos"]);
 		if (is_image_data($datos)) {
-			echo '<img src="' . $datos . '" alt="image"/>';
+			echo '<center><img src="' . $datos . '" alt="image"/></center>';
 		}
 		else {
+			$datos = preg_replace ('/</', '&lt;', $datos);
+			$datos = preg_replace ('/>/', '&gt;', $datos);
 			$datos = preg_replace ('/\n/i','<br>',$datos);
-			$datos =  preg_replace ('/\s/i','&nbsp;',$datos);
+			$datos = preg_replace ('/\s/i','&nbsp;',$datos);
 			echo "<div id='result_div' style='width: 100%; height: 100%; overflow: scroll; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left'>";
 			echo $datos;
 			echo "</div>";

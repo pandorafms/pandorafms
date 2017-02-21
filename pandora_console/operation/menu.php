@@ -317,7 +317,7 @@ if (check_acl ($config['id_user'], 0, "ER")
 		
 		window.open(url,
 			'<?php __('Sound Alerts'); ?>',
-			'width=400, height=350, resizable=yes, toolbar=no, location=no, directories=no, status=no, menubar=no');
+			'width=400, height=380, resizable=no, toolbar=no, location=no, directories=no, status=no, menubar=no');
 	}
 	</script>
 	<?php
@@ -349,15 +349,8 @@ if (check_acl ($config['id_user'], 0, "IR")
 	|| check_acl ($config['id_user'], 0, "IW") 
 	|| check_acl ($config['id_user'], 0, "IM")) {
 	$temp_sec2 = $sec2;
-	if($config['integria_enabled']) {
-		$sec2 = "incident";
-		$sec2sub = "operation/integria_incidents/incident_statistics";
-	}
-	else {
-		$sec2 = "incident";
-		$sec2sub = "operation/incidents/incident_statistics";
-	}
-	
+	$sec2 = "incident";
+	$sec2sub = "operation/incidents/incident_statistics";
 	$sub[$sec2]["text"] = __('Incidents');
 	$sub[$sec2]["id"] = 'Incidents';
 	$sub[$sec2]["type"] = "direct";

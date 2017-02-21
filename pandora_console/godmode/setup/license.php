@@ -108,7 +108,7 @@ echo '</div>';
 echo '' . __('To get your <b>Pandora FMS Enterprise License</b>:') . '<br />';
 echo '<ul>';
 echo '<li>';
-echo '' . sprintf(__('Go to %s'), "<a target=\"_blank\" href=\"https://licensing.artica.es/pandoraupdate6/index.php?section=generate_key_client\">https://licensing.artica.es/pandoraupdate6/index.php?section=generate_key_client</a>");
+echo '' . sprintf(__('Go to %s'), "<a target=\"_blank\" href=\"https://licensing.artica.es/pandoraupdate7/index.php?section=generate_key_client\">https://licensing.artica.es/pandoraupdate7/index.php?section=generate_key_client</a>");
 echo '</li>';
 echo '<li>';
 echo '' .__('Enter the <b>auth key</b> and the following <b>request key</b>:');

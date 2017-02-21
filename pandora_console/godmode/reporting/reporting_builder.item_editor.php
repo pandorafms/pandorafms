@@ -91,19 +91,19 @@ $inventory_modules = array();
 $date = null;
 // Only avg is selected by default for the simple graphs
 $only_avg = true;
-$percentil_95 = false;
+$percentil = false;
 $time_compare_overlapped = false;
 
 //Added for events items
-$filter_event_validated = false;
-$filter_event_no_validated = false;
-$filter_event_critical = false;
-$filter_event_warning = false;
-
+$show_summary_group    = false;
+$filter_event_severity = false;
+$filter_event_type     = false;
+$filter_event_status   = false;
 $event_graph_by_agent = false;
 $event_graph_by_user_validator = false;
 $event_graph_by_criticity = false;
 $event_graph_validated_vs_unvalidated = false;
+
 $netflow_filter = 0;
 $max_values = 0;
 $resolution = 0;
@@ -133,6 +133,8 @@ switch ($action) {
 		
 		switch ($type) {
 			case 'SLA_monthly':
+			case 'SLA_weekly':
+			case 'SLA_hourly':
 			case 'SLA_services':
 			case 'SLA':
 			case 'top_n':
@@ -141,6 +143,8 @@ switch ($action) {
 			case 'network_interfaces_report':
 			case 'availability':
 			case 'event_report_log':
+			case 'availability_graph':
+			case 'agent_module':
 				$get_data_editor = true;
 				break;
 			
@@ -195,7 +199,7 @@ switch ($action) {
 					$description = $item['description'];
 				case 'simple_graph':
 					$only_avg = isset($style['only_avg']) ? (bool) $style['only_avg'] : true;
-					$percentil_95 = isset($style['percentil_95']) ? $style['percentil_95'] : 0;
+					$percentil = isset($style['percentil']) ? $config['percentil'] : 0;
 					// The break hasn't be forgotten.
 				case 'simple_baseline_graph':
 				case 'projection_graph':
@@ -233,39 +237,36 @@ switch ($action) {
 					$period = $item['period'];
 					$idCustomGraph = $item['id_gs'];
 					break;
+				
 				case 'SLA':
+				case 'SLA_weekly':
+				case 'SLA_monthly':
+				case 'SLA_hourly':
+				case 'availability_graph':
+					$description = $item['description'];
+					$only_display_wrong = $item['only_display_wrong'];
+					$monday = $item['monday'];
+					$tuesday = $item['tuesday'];
+					$wednesday = $item['wednesday'];
+					$thursday = $item['thursday'];
+					$friday = $item['friday'];
+					$saturday = $item['saturday'];
+					$sunday = $item['sunday'];
+					$time_from = $item['time_from'];
+					$time_to = $item['time_to'];
+					$show_graph = $item['show_graph'];
+					// 'top_n' filed will be reused for SLA sort option
+					$sla_sorted_by = $item['top_n'];
+					$period = $item['period'];
+					break;
+
+				case 'module_histogram_graph':
 					$description = $item['description'];
 					$period = $item['period'];
-					$only_display_wrong = $item['only_display_wrong'];
-					$monday = $item['monday'];
-					$tuesday = $item['tuesday'];
-					$wednesday = $item['wednesday'];
-					$thursday = $item['thursday'];
-					$friday = $item['friday'];
-					$saturday = $item['saturday'];
-					$sunday = $item['sunday'];
-					$time_from = $item['time_from'];
-					$time_to = $item['time_to'];
-					$show_graph = $item['show_graph'];
-					// 'top_n' filed will be reused for SLA sort option
-					$sla_sorted_by = $item['top_n'];
+					$idAgentModule = $item['id_agent_module'];
+					$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
 					break;
-				case 'SLA_monthly':
-					$description = $item['description'];
-					$only_display_wrong = $item['only_display_wrong'];
-					$monday = $item['monday'];
-					$tuesday = $item['tuesday'];
-					$wednesday = $item['wednesday'];
-					$thursday = $item['thursday'];
-					$friday = $item['friday'];
-					$saturday = $item['saturday'];
-					$sunday = $item['sunday'];
-					$time_from = $item['time_from'];
-					$time_to = $item['time_to'];
-					$show_graph = $item['show_graph'];
-					// 'top_n' filed will be reused for SLA sort option
-					$sla_sorted_by = $item['top_n'];
-					break;
+
 				case 'SLA_services':
 					$description = $item['description'];
 					$period = $item['period'];
@@ -408,31 +409,19 @@ switch ($action) {
 					$group = $item['id_group'];
 					break;
 				case 'event_report_agent':
-					$description = $item['description'];
-					$idAgent = $item['id_agent'];
-					$period = $item['period'];
-					
-					//Added for events items
-					$filter_event_no_validated = $style['filter_event_no_validated'];
-					$filter_event_validated = $style['filter_event_validated'];
-					$filter_event_critical = $style['filter_event_critical'];
-					$filter_event_warning = $style['filter_event_warning'];
-					
-					$event_graph_by_agent = $style['event_graph_by_agent'];
-					$event_graph_by_user_validator = $style['event_graph_by_user_validator'];
-					$event_graph_by_criticity = $style['event_graph_by_criticity'];
-					$event_graph_validated_vs_unvalidated = $style['event_graph_validated_vs_unvalidated'];
-					break;
 				case 'event_report_group':
+				case 'event_report_module':
 					$description = $item['description'];
 					$period = $item['period'];
 					$group = $item['id_group'];
-					
+					$idAgent = $item['id_agent'];
+					$idAgentModule = $item['id_agent_module'];
+
 					//Added for events items
-					$filter_event_no_validated = $style['filter_event_no_validated'];
-					$filter_event_validated = $style['filter_event_validated'];
-					$filter_event_critical = $style['filter_event_critical'];
-					$filter_event_warning = $style['filter_event_warning'];
+					$show_summary_group    = $style['show_summary_group'];
+					$filter_event_severity = json_decode($style['filter_event_severity'], true);
+					$filter_event_status   = json_decode($style['filter_event_status'], true);
+					$filter_event_type     = json_decode($style['filter_event_type'], true);
 					
 					$event_graph_by_agent = $style['event_graph_by_agent'];
 					$event_graph_by_user_validator = $style['event_graph_by_user_validator'];
@@ -440,14 +429,6 @@ switch ($action) {
 					$event_graph_validated_vs_unvalidated = $style['event_graph_validated_vs_unvalidated'];
 					
 					$filter_search = $style['event_filter_search'];
-					break;
-				case 'event_report_module':
-					$description = $item['description'];
-					$idAgentModule = $item['id_agent_module'];
-					$idAgent = db_get_value_filter('id_agente',
-						'tagente_modulo',
-						array('id_agente_modulo' => $idAgentModule));
-					$period = $item['period'];
 					break;
 				case 'general':
 					$description = $item['description'];
@@ -517,8 +498,19 @@ switch ($action) {
 					break;
 				case 'agent_module':
 					$description = $item['description'];
+					$es = json_decode($item['external_source'], true);
+					$agents_id = get_parameter('id_agents2');
+					$selection_a_m = get_parameter('selection');
+					
+					if ((count($es['module']) == 1) && ($es['module'][0] == 0)) {
+						$module = "";
+					}
+					else {
+						$module = $es['module'];
+					}
 					$group = $item['id_group'];
-					$modulegroup = $item ['id_module_group'];
+					$modulegroup = $item['id_module_group'];
+					$idAgentModule = $module;
 					break;
 				case 'inventory':
 					$description = $item['description'];
@@ -990,6 +982,50 @@ You can of course remove the warnings, that's why we include the source and do n
 				?>
 			</td>
 		</tr>
+
+		<tr id="agents_row" style="" class="datos">
+			<td style="font-weight:bold;"><?php echo __('Agents'); ?></td>
+			<td>
+				<?php 
+					$agents = agents_get_group_agents($group);
+					if ((empty($agents)) || $agents == -1) $agents = array();
+					
+					$agents_select = array();
+					if (is_array($id_agents) || is_object($id_agents)){
+						foreach ($id_agents as $id) {
+							foreach ($agents as $key => $a) {
+								if ($key == (int)$id) {
+									$agents_select[$key] = $key;
+								}
+							}
+						}
+					}
+					html_print_select($agents, 'id_agents2[]', $agents_id, $script = '', "", 0, false, true, true, '', false, "min-width: 180px");
+				?>
+			</td>
+		</tr>
+
+		<tr id="select_agent_modules" style="" class="datos">
+			<td style="font-weight:bold;"><?php echo __('Show modules'); ?></td>
+			<td>
+				<?php 
+					$selection = array(0 => __('Show common modules'),
+						1=> __('Show all modules'));
+					html_print_select($selection, 'selection_agent_module', $selection_a_m, $script = '', "", 0, false, false, true, '', false, "min-width: 180px");
+				?>
+			</td>
+		</tr>
+		
+		<tr id="modules_row" style="" class="datos">
+			<td style="font-weight:bold;"><?php echo __('Modules'); ?></td>
+			<td>
+				<?php
+					$all_modules = db_get_all_rows_sql("SELECT DISTINCT nombre, id_agente_modulo FROM tagente_modulo WHERE id_agente IN (" . implode(',', array_keys($agents)) . ")");
+					
+					html_print_select($all_modules, 'module[]', "", $script = '', __('None'), 0, false, true, true, '', false, "min-width: 180px");
+				?>
+			</td>
+		</tr>
 		
 		<tr id="row_agent_multi" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Agents'); ?></td>
@@ -1219,8 +1255,8 @@ You can of course remove the warnings, that's why we include the source and do n
 			<td><?php html_print_checkbox('only_avg', 1, $only_avg);?></td>
 		</tr>
 		<tr id="row_percentil" style="" class="datos">
-			<td style="font-weight:bold;"><?php echo __('Percentil 95');?></td>
-			<td><?php html_print_checkbox('percentil_95', 1, $percentil_95);?></td>
+			<td style="font-weight:bold;"><?php echo __('Percentil');?></td>
+			<td><?php html_print_checkbox('percentil', 1, $percentil);?></td>
 		</tr>
 		<tr id="row_exception_condition_value" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Value'); ?></td>
@@ -1288,7 +1324,7 @@ You can of course remove the warnings, that's why we include the source and do n
 		</tr>
 		
 		<tr id="row_show_resume" style="" class="datos">
-			<td style="font-weight:bold;"><?php echo __('Show resume') . ui_print_help_tip(__('Show a resume table with max, min, average of total modules on the report bottom'), true);?></td>
+			<td style="font-weight:bold;"><?php echo __('Show resume') . ui_print_help_tip(__('Show a summary chart with max, min and average number of total modules at the end of the report and Checks.'), true);?></td>
 			<td>
 				<?php
 				html_print_checkbox('checkbox_show_resume', 1,
@@ -1296,22 +1332,52 @@ You can of course remove the warnings, that's why we include the source and do n
 				?>
 			</td>
 		</tr>
-		<tr id="row_event_filter" style="" class="datos">
-			<td style="font-weight:bold;"><?php echo __('Event filter'); ?></td>
+
+		<tr id="row_show_summary_group" style="" class="datos">
+			<td style="font-weight:bold;"><?php echo __('Show Summary group'); ?></td>
 			<td>
 				<?php
-				echo __('No Validated');
-				html_print_checkbox ('filter_event_no_validated', true, $filter_event_no_validated);
-				echo __('Validated');
-				html_print_checkbox ('filter_event_validated', true, $filter_event_validated);
-				echo __('Critical');
-				html_print_checkbox ('filter_event_critical', true, $filter_event_critical);
-				echo __('Warning');
-				html_print_checkbox ('filter_event_warning', true, $filter_event_warning);
+				html_print_checkbox ('show_summary_group', true, $show_summary_group);
+				?>
+			</td>
+		</tr>
+
+		<tr id="row_event_severity" style="" class="datos">
+			<td style="font-weight:bold;"><?php echo __('Severity'); ?></td>
+			<td>
+				<?php
+					$valuesSeverity = get_priorities ();
+					html_print_select ($valuesSeverity, 'filter_event_severity[]', 
+						$filter_event_severity, '', __('All'), '-1', false, true, 
+						false, '', false, false, false, false, false, '');
+				?>
+			</td>
+		</tr>
+
+		<tr id="row_event_type" style="" class="datos">
+			<td style="font-weight:bold;"><?php echo __('Event type'); ?></td>
+			<td>
+				<?php
+					$event_types_select = get_event_types();
+					html_print_select ($event_types_select, 'filter_event_type[]', 
+						$filter_event_type, '', __('All'), 'all', false, true, 
+						false, '', false, false, false, false, false, '');
 				?>
 			</td>
 		</tr>
 		
+		<tr id="row_event_status" style="" class="datos">
+			<td style="font-weight:bold;"><?php echo __('Event Status'); ?></td>
+			<td>
+				<?php
+					$fields = events_get_all_status(true);
+					html_print_select ($fields, 'filter_event_status[]', 
+						$filter_event_status, '', '', '', false, true, 
+						false, '', false, false, false, false, false, '');
+				?>
+			</td>
+		</tr>
+
 		<tr id="row_event_graphs" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Event graphs'); ?></td>
 			<td>
@@ -1373,9 +1439,7 @@ You can of course remove the warnings, that's why we include the source and do n
 				?>
 			</td>
 		</tr>
-		
-		
-		
+
 		<tr id="row_filter_search" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Free search');?></td>
 			<td>
@@ -1798,7 +1862,111 @@ ui_require_javascript_file ('pandora_inventory', ENTERPRISE_DIR.'/include/javasc
 $(document).ready (function () {
 	chooseType();
 	chooseSQLquery();
-	
+
+	$("#id_agents").change(agent_changed_by_multiple_agents);
+
+	$("#combo_group").change (
+		function () {
+			jQuery.post ("ajax.php",
+				{"page" : "operation/agentes/ver_agente",
+					"get_agents_group_json" : 1,
+					"id_group" : this.value,
+					"privilege" : "AW",
+					"keys_prefix" : "_"
+				},
+				function (data, status) {
+					$("#id_agents").html('');
+					$("#id_agents2").html('');
+					$("#module").html('');
+					jQuery.each (data, function (id, value) {
+						// Remove keys_prefix from the index
+						id = id.substring(1);
+						
+						option = $("<option></option>")
+							.attr ("value", value["id_agente"])
+							.html (value["nombre"]);
+						$("#id_agents").append (option);
+						$("#id_agents2").append (option);
+					});
+				},
+				"json"
+			);
+		}
+	);
+
+	$("#combo_modulegroup").change (
+		function () {
+			jQuery.post ("ajax.php",
+				{"page" : "operation/agentes/ver_agente",
+					"get_modules_group_json" : 1,
+					"id_module_group" : this.value,
+					"id_agents" : $("#id_agents2").val(),
+					"selection" : $("#selection_agent_module").val()
+				},
+				function (data, status) {
+					$("#module").html('');
+					jQuery.each (data, function (id, value) {
+						option = $("<option></option>")
+							.attr ("value", value["id_agente_modulo"])
+							.html (value["nombre"]);
+						$("#module").append (option);
+					});
+				},
+				"json"
+			);
+		}
+	);
+
+	$("#id_agents2").change (
+		function () {
+			jQuery.post ("ajax.php",
+				{"page" : "operation/agentes/ver_agente",
+					"get_modules_group_json" : 1,
+					"id_module_group" : $("#combo_modulegroup").val(),
+					"id_agents" : $("#id_agents2").val(),
+					"selection" : $("#selection_agent_module").val()
+				},
+				function (data, status) {
+					$("#module").html('');
+					if(data){
+						jQuery.each (data, function (id, value) {
+							option = $("<option></option>")
+								.attr ("value", value["id_agente_modulo"])
+								.html (value["nombre"]);
+							$("#module").append (option);
+						});
+					}
+				},
+				"json"
+			);
+		}
+	);
+
+	$("#selection_agent_module").change(
+		function() {
+			jQuery.post ("ajax.php",
+				{"page" : "operation/agentes/ver_agente",
+					"get_modules_group_json" : 1,
+					"id_module_group" : $("#combo_modulegroup").val(),
+					"id_agents" : $("#id_agents2").val(),
+					"selection" : $("#selection_agent_module").val()
+				},
+				function (data, status) {
+					$("#module").html('');
+					if(data){
+						jQuery.each (data, function (id, value) {
+							option = $("<option></option>")
+								.attr ("value", value["id_agente_modulo"])
+								.html (value["nombre"]);
+							$("#module").append (option);
+						});
+					}
+				},
+				"json"
+			);
+		}
+	);
+
 	$("#text-time_to, #text-time_from").timepicker({
 		showSecond: true,
 		timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
@@ -1826,11 +1994,10 @@ $(document).ready (function () {
 			async: false,
 			timeout: 10000,
 			success: function (data) {
-				console.log(data);
 				switch (data) {
 					case 'boolean':
 					case 'sparse':
-						$("#row_percentil").show();
+						//$("#row_percentil").show();
 						break;
 					default:
 						$("#row_percentil").hide();
@@ -1839,6 +2006,46 @@ $(document).ready (function () {
 			}
 		});
 		
+	});
+
+	$("#submit-create_item").click(function () {
+		var type = $('#type').val();
+		switch (type){
+			case 'alert_report_module': case 'alert_report_agent': 
+			case 'event_report_agent': case 'event_report_module': 
+			case 'simple_graph': case 'simple_baseline_graph': case 'TTRT': case 'TTO':
+			case 'MTBF': case 'MTTR': case 'prediction_date': case 'projection_graph':
+			case 'avg_value': case 'max_value': case 'min_value': case 'monitor_report':
+			case 'database_serialized': case 'sumatory': case 'historical_data': 
+			case 'agent_configuration': case 'module_histogram_graph':
+				if ($("#hidden-id_agent").val() == 0) {
+					alert( <?php echo "'" . __('Please select Agent'). "'"; ?> );
+					return false;
+				}
+				break;
+			default:
+				break;
+		}
+	});
+
+	$("#submit-edit_item").click(function () {
+		var type = $('#type').val();
+		switch (type){
+			case 'alert_report_module': case 'alert_report_agent': 
+			case 'event_report_agent': case 'event_report_module': 
+			case 'simple_graph': case 'simple_baseline_graph': case 'TTRT': case 'TTO':
+			case 'MTBF': case 'MTTR': case 'prediction_date': case 'projection_graph':
+			case 'avg_value': case 'max_value': case 'min_value': case 'monitor_report':
+			case 'database_serialized': case 'sumatory': case 'historical_data': 
+			case 'agent_configuration': case 'module_histogram_graph':
+				if ($("#hidden-id_agent").val() == 0) {
+					alert( <?php echo "'" . __('Please select Agent'). "'"; ?> );
+					return false;
+				}
+				break;
+			default:
+				break;
+		}
 	});
 	
 });
@@ -2325,7 +2532,6 @@ function chooseType() {
 	$("#row_date").hide();
 	$("#row_agent_multi").hide();
 	$("#row_module_multi").hide();
-	$("#row_event_filter").hide();
 	$("#row_event_graphs").hide();
 	$("#row_event_graph_by_agent").hide();
 	$("#row_event_graph_by_user").hide();
@@ -2338,6 +2544,13 @@ function chooseType() {
 	$("#row_filter_search").hide();
 	$("#row_percentil").hide();
 	$("#log_help_tip").css("visibility", "hidden");
+	$("#agents_row").hide();
+	$("#select_agent_modules").hide();
+	$("#modules_row").hide();
+	$("#row_show_summary_group").hide();
+	$("#row_event_severity").hide();
+	$("#row_event_type").hide();
+	$("#row_event_status").hide();
 	
 	// SLA list default state
 	$("#sla_list").hide();
@@ -2380,7 +2593,7 @@ function chooseType() {
 		case 'simple_graph':
 			$("#row_time_compare_overlapped").show();
 			$("#row_only_avg").show();
-			if ($("#checkbox-percentil_95").prop("checked"))
+			if ($("#checkbox-percentil").prop("checked"))
 				$("#row_percentil").show();
 			// The break hasn't be forgotten, this element
 			// only should be shown on the simple graphs.
@@ -2429,16 +2642,30 @@ function chooseType() {
 			$("#row_working_time").show();
 			$("#row_only_display_wrong").show();
 			$("#row_show_graph").show();
-			$("#row_show_in_two_columns").show();
 			$("#row_sort").show();
 			$('#row_hide_notinit_agents').show();
 			break;
+
+		case 'availability_graph':
+			$("#row_description").show();
+			$("#row_period").show();
+			$("#sla_list").show();
+			$("#row_working_time").show();
+			break;
+
+		case 'module_histogram_graph':
+			$("#row_description").show();
+			$("#row_period").show();
+			$("#row_agent").show();
+			$("#row_module").show();
+			break;
 		
 		case 'SLA_monthly':
+		case 'SLA_weekly':
+		case 'SLA_hourly':
 			$("#row_description").show();
 			$("#sla_list").show();
 			$("#row_working_time").show();
-			$("#row_show_in_two_columns").show();
 			$("#row_sort").show();
 			break;
 		
@@ -2624,20 +2851,44 @@ function chooseType() {
 			$("#row_show_in_two_columns").show();
 			break;
 		
+		case 'event_report_group':
+			$("#row_description").show();
+			$("#row_period").show();
+			$("#row_servers").show();
+			$("#row_group").show();
+			$("#row_event_severity").show();
+			$("#row_event_status").show();
+			$("#row_show_summary_group").show();
+			
+			$("#row_event_graph_by_agent").show();
+			$("#row_event_graph_by_user").show();
+			$("#row_event_graph_by_criticity").show();
+			$("#row_event_graph_by_validated").show();
+			$("#row_event_type").show();
+			
+			$("#row_filter_search").show();
+			break;
+
+
 		case 'event_report_agent':
 			$("#row_description").show();
 			$("#row_agent").show();
 			$("#row_period").show();
-			$("#row_show_in_two_columns").show();
-			$("#row_event_filter").show();
+			$("#row_event_severity").show();
+			$("#row_event_status").show();
+			$("#row_show_summary_group").show();
 			$("#row_event_graphs").show();
+			$("#row_event_type").show();
+			
 			
 			$("#row_event_graph_by_user").show();
 			$("#row_event_graph_by_criticity").show();
 			$("#row_event_graph_by_validated").show();
 			
+			
 			$('#agent_autocomplete').hide();
 			$('#agent_autocomplete_events').show();
+			$("#row_filter_search").show();
 			break;
 		
 		case 'event_report_module':
@@ -2645,15 +2896,19 @@ function chooseType() {
 			$("#row_agent").show();
 			$("#row_module").show();
 			$("#row_period").show();
-			$("#row_show_in_two_columns").show();
-			
-			$("#row_event_graph_by_agent").show();
+			$("#row_event_severity").show();
+			$("#row_event_status").show();
+			$("#row_show_summary_group").show();
+			$("#row_event_graphs").show();
+			$("#row_event_type").show();
+
 			$("#row_event_graph_by_user").show();
 			$("#row_event_graph_by_criticity").show();
 			$("#row_event_graph_by_validated").show();
 			
 			$('#agent_autocomplete').hide();
 			$('#agent_autocomplete_events').show();
+			$("#row_filter_search").show();
 			break;
 		
 		case 'general':
@@ -2734,6 +2989,9 @@ function chooseType() {
 			$("#row_description").show();
 			$("#row_group").show();
 			$("#row_module_group").show();
+			$("#select_agent_modules").show();
+			$("#agents_row").show();
+			$("#modules_row").show();
 			break;
 		
 		case 'inventory_changes':

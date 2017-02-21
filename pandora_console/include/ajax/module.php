@@ -34,7 +34,21 @@ $change_module_relation_updates = (bool) get_parameter('change_module_relation_u
 $get_id_tag = (bool) get_parameter('get_id_tag', 0);
 $get_type = (bool) get_parameter('get_type', 0);
 $list_modules = (bool) get_parameter('list_modules', 0);
+$get_agent_modules_json_by_name = (bool) get_parameter('get_agent_modules_json_by_name', 0);
 
+
+if ($get_agent_modules_json_by_name) {
+	$agent_name = get_parameter('agent_name');
+
+	$agent_id = agents_get_agent_id($agent_name);
+
+	$agent_modules = db_get_all_rows_sql("SELECT id_agente_modulo as id_module, nombre as name FROM tagente_modulo
+											WHERE id_agente = " . $agent_id);
+
+	echo json_encode ($agent_modules);
+	
+	return;
+}
 
 if ($get_plugin_macros) {
 	if ( https_is_running() ) {
@@ -286,8 +300,20 @@ if ($get_module_detail) {
 				}
 				else if (is_numeric($row[$attr[0]]) && !modules_is_string_type($row['module_type']) ) {
 					
-					$data[] = remove_right_zeros(number_format($row[$attr[0]], $config['graph_precision']));
+					//~ $data[] = remove_right_zeros(number_format($row[$attr[0]], $config['graph_precision']));
 					//~ $data[] = (double) $row[$attr[0]];
+					switch($row['module_type']) {
+						case 15:
+							$value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module_id);
+							if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0')
+								$data[] = human_milliseconds_to_string($row['data']);
+							else
+								$data[] = remove_right_zeros(number_format($row[$attr[0]], $config['graph_precision']));
+							break;
+						default:
+							$data[] = remove_right_zeros(number_format($row[$attr[0]], $config['graph_precision']));
+							break;
+					}
 				}
 				else {
 					if ($row[$attr[0]] == '') {
@@ -694,6 +720,8 @@ if ($list_modules) {
 	if (empty ($modules)) {
 		$modules = array ();
 	}
+
+	$table = new stdClass();
 	$table->width = "100%";
 	$table->cellpadding = 4;
 	$table->cellspacing = 4;
@@ -738,21 +766,32 @@ if ($list_modules) {
 
 	$show_context_help_first_time = false;
 
+	$hierachy_mode = get_parameter('hierachy_mode', false);
+
+	if ($hierachy_mode == "true") {
+		$modules_hierachy = array();
+		$modules_hierachy = get_hierachy_modules_tree($modules);
+
+		$modules_dt = get_dt_from_modules_tree($modules_hierachy);
+
+		$modules = $modules_dt;
+	}
+	
 	foreach ($modules as $module) {
-		//The code add the row of 1 cell with title of group for to be more organice the list.
+		if ($hierachy_mode !== "true") {
+			//The code add the row of 1 cell with title of group for to be more organice the list.
+			if ($module["id_module_group"] != $last_modulegroup)
+			{
+				$table->colspan[$rowIndex][0] = count($table->head);
+				$table->rowclass[$rowIndex] = 'datos4';
 
-		if ($module["id_module_group"] != $last_modulegroup)
-		{
-			$table->colspan[$rowIndex][0] = count($table->head);
-			$table->rowclass[$rowIndex] = 'datos4';
+				array_push ($table->data, array ('<b>'.$module['name'].'</b>'));
 
-			array_push ($table->data, array ('<b>'.$module['name'].'</b>'));
-
-			$rowIndex++;
-			$last_modulegroup = $module["id_module_group"];
+				$rowIndex++;
+				$last_modulegroup = $module["id_module_group"];
+			}
+			//End of title of group
 		}
-		//End of title of group
-		
 		
 		$data = array ();
 		if (($module["id_modulo"] != 1) && ($module["id_tipo_modulo"] != 100)) {
@@ -772,7 +811,8 @@ if ($list_modules) {
 			}
 		}
 		else {
-			$data[0] = '';
+			if ($agent_w)
+				$data[0] = '';
 		}
 		
 		if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
@@ -828,9 +868,14 @@ if ($list_modules) {
 			$data[2] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'&amp;tab=module&amp;id_agent_module='.$module["id_agente_modulo"].'&amp;edit_module='.$module["id_modulo"].'">' . html_print_image("images/config.png", true, array("alt" => '0', "border" => "", "title" => __('Edit'))) . '</a>';
 
 
-
-
+		
 		$data[3] = "";
+
+		if (isset($module['deep']) && ($module['deep'] != 0)) {
+			$data[3] .= str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $module['deep']);
+			$data[3] .= html_print_image("images/icono_escuadra.png", true, array("style" => 'padding-bottom: inherit;')) . "&nbsp;&nbsp;";
+		}
+		
 		if ($module['quiet']) {
 			$data[3] .= html_print_image("images/dot_green.disabled.png", true,
 				array("border" => '0', "title" => __('Quiet'), "alt" => ""))
@@ -924,12 +969,35 @@ if ($list_modules) {
 								$salida = $config["render_proc_fail"];
 							break;
 						default:
-							$salida = remove_right_zeros(number_format($module["datos"], $config['graph_precision']));
+							switch($module['id_tipo_modulo']) {
+								case 15:
+									$value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module['id_agente_modulo']);
+									if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0')
+										$salida = human_milliseconds_to_string($module['datos']);
+									else
+										$salida = remove_right_zeros(number_format($module["datos"], $config['graph_precision']));
+									break;
+								default:
+									$salida = remove_right_zeros(number_format($module["datos"], $config['graph_precision']));
+									break;
+							}
 						break;
 					}
 				}
 				else {
-					$salida = remove_right_zeros(number_format($module["datos"], $config['graph_precision']));
+					switch($module['id_tipo_modulo']) {
+						case 15:
+							$value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module['id_agente_modulo']);
+							if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0')
+								$salida = human_milliseconds_to_string($module['datos']);
+							else
+								$salida = remove_right_zeros(number_format($module["datos"], $config['graph_precision']));
+							break;
+						default:
+							$salida = remove_right_zeros(number_format($module["datos"], $config['graph_precision']));
+							break;
+					}
+					//~ $salida = (number_format($module["datos"], $config['graph_precision']));
 				}
 				// Show units ONLY in numeric data types
 				if (isset($module["unit"])) {
@@ -972,7 +1040,7 @@ if ($list_modules) {
 				"refresh=" . SECONDS_10MINUTES . "&amp;" .
 				"draw_events=$draw_events', 'day_".$win_handle."')";
 
-if(!is_snapshot_data($module['datos'])){
+		if(!is_snapshot_data($module['datos'])){
 			$data[8] .= '<a href="javascript:'.$link.'">' . html_print_image("images/chart_curve.png", true, array("border" => '0', "alt" => "")) . '</a> &nbsp;&nbsp;';
 			}
 			$server_name = '';

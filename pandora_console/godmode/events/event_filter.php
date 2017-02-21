@@ -147,28 +147,26 @@ foreach ($filters as $filter) {
 		href='index.php?sec=geventos&sec2=godmode/events/events&section=filter&delete=1&id=".$filter['id_filter']."&offset=0&pure=".$config['pure']."'>" . 
 		html_print_image('images/cross.png', true, array('title' => __('Delete'))) . "</a>" .
 		html_print_checkbox_extended ('delete_multiple[]', $filter['id_filter'], false, false, '', 'class="check_delete"', true);
-	
+
 	array_push ($table->data, $data);
 }
 
 if (isset($data)) {
-	html_print_table ($table);
+	echo "<form method='post' action='index.php?sec=geventos&sec2=godmode/events/events&amp;pure=".$config['pure']."'>";
+		html_print_input_hidden('multiple_delete', 1);
+		html_print_table ($table);
+		if(!is_metaconsole())
+			echo "<div style='padding-bottom: 20px; text-align: right;'>";
+		else
+			echo "<div style='float:right; '>";
+		html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
+		echo "</div>";
+	echo "</form>";
 }
 else {
 	ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no defined filters') ) );
 }
 
-if (isset($data)) {
-	echo "<form method='post' action='index.php?sec=geventos&sec2=godmode/events/events&amp;pure=".$config['pure']."'>";
-	html_print_input_hidden('multiple_delete', 1);
-	if(!is_metaconsole())
-		echo "<div style='padding-bottom: 20px; text-align: right;'>";
-	else
-		echo "<div style='float:right; '>";
-	html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
-	echo "</div>";
-	echo "</form>";
-}
 if(!defined("METACONSOLE"))
 	echo "<div style='padding-bottom: 20px; text-align: right; width:100%;'>";
 else
@@ -181,11 +179,11 @@ echo "</div>";
 
 <script type="text/javascript">
 	function check_all_checkboxes() {
-		if ($("input[name=all_delete]").attr('checked')) {
-			$(".check_delete").attr('checked', true);
+		if ($("#checkbox-all_delete").prop("checked")) {
+			$(".check_delete").prop('checked', true);
 		}
 		else {
-			$(".check_delete").attr('checked', false);
+			$(".check_delete").prop('checked', false);
 		}
 	}
 </script>

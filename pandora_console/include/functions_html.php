@@ -170,6 +170,7 @@ function html_print_side_layer ($params) {
 	
 	$out_html = '<div id="side_layer" class="menu_sidebar ' . $round_class . '" style="display:none; z-index:1; overflow: hidden; height: ' . $params['height'] . '; width: ' . $params['width'] . ';">';
 	
+	$table = new stdClass();
 	$table->id = 'side_layer_layout';
 	$table->width = $params['width'] . 'px';
 	$table->cellspacing = 2;
@@ -429,7 +430,7 @@ function html_print_select_groups($id_user = false, $privilege = "AR",
 function html_print_select ($fields, $name, $selected = '', $script = '',
 	$nothing = '', $nothing_value = 0, $return = false, $multiple = false,
 	$sort = true, $class = '', $disabled = false, $style = false,
-	$option_style = false, $size = false,$modal=false,$message=''){
+	$option_style = false, $size = false,$modal=false,$message='',$select_all=false){
 
 	$output = "\n";
 	
@@ -513,7 +514,12 @@ function html_print_select ($fields, $name, $selected = '', $script = '',
 				$optlabel = $label['name'];
 			}
 			
-			$output .= '<option value="'.$value.'"';
+			$output .= '<option ';
+			if($select_all){
+			$output .= 'selected ';	
+			}
+			$output .= 'value="'.$value.'"';
+			
 			if (is_array ($selected) && in_array ($value, $selected)) {
 				$output .= ' selected="selected"';
 			}
@@ -612,18 +618,12 @@ function html_print_extended_select_for_post_process($name, $selected = '',
 	$fields = post_process_get_custom_values();
 	$selected_float = (float)$selected;
 	$found = false;
-	foreach ($fields as $value => $text) {
-		$value = (float)$value;
-		
-		
-		
-		if ($value == $selected_float) {
-			$found = true;
-			break;
-		}
-	}
+	
+	if (array_key_exists($selected, $fields))
+		$found = true;
+	
 	if (!$found) {
-		$fields[floatval($selected)] = floatval($selected);
+		$fields[$selected] = floatval($selected);
 	}
 	
 	
@@ -633,9 +633,6 @@ function html_print_extended_select_for_post_process($name, $selected = '',
 	else {
 		$uniq_name = $name;
 	}
-	
-	
-	
 	
 	ob_start();
 	
@@ -823,7 +820,7 @@ function html_print_extended_select_for_time ($name, $selected = '',
  * 
  * @return string HTML code if return parameter is true.
  */
-function html_print_extended_select_for_cron ($hour = '*', $minute = '*', $mday = '*', $month = '*', $wday = '*', $return = false, $disabled = false) {
+function html_print_extended_select_for_cron ($hour = '*', $minute = '*', $mday = '*', $month = '*', $wday = '*', $return = false, $disabled = false, $to = false) {
 	
 	# Hours
 	for ($i = 0; $i < 24; $i++) {
@@ -866,11 +863,20 @@ function html_print_extended_select_for_cron ($hour = '*', $minute = '*', $mday 
 	$table->head[3] = __('Month');
 	$table->head[4] = __('Week day');
 	
-	$table->data[0][0] = html_print_select ($hours, 'hour', $hour, '', __('Any'), '*', true, false, false,'',$disabled);	
-	$table->data[0][1] = html_print_select ($minutes, 'minute', $minute, '', __('Any'), '*', true, false, false,'',$disabled);
-	$table->data[0][2] = html_print_select ($mdays, 'mday', $mday, '', __('Any'), '*', true, false, false,'',$disabled);
-	$table->data[0][3] = html_print_select ($months, 'month', $month, '', __('Any'), '*', true, false, false,'',$disabled);
-	$table->data[0][4] = html_print_select ($wdays, 'wday', $wday, '', __('Any'), '*', true, false, false,'',$disabled);
+	if ($to) {
+		$table->data[0][0] = html_print_select ($hours, 'hour_to', $hour, '', __('Any'), '*', true, false, false,'',$disabled);	
+		$table->data[0][1] = html_print_select ($minutes, 'minute_to', $minute, '', __('Any'), '*', true, false, false,'',$disabled);
+		$table->data[0][2] = html_print_select ($mdays, 'mday_to', $mday, '', __('Any'), '*', true, false, false,'',$disabled);
+		$table->data[0][3] = html_print_select ($months, 'month_to', $month, '', __('Any'), '*', true, false, false,'',$disabled);
+		$table->data[0][4] = html_print_select ($wdays, 'wday_to', $wday, '', __('Any'), '*', true, false, false,'',$disabled);
+	}
+	else {
+		$table->data[0][0] = html_print_select ($hours, 'hour_from', $hour, '', __('Any'), '*', true, false, false,'',$disabled);	
+		$table->data[0][1] = html_print_select ($minutes, 'minute_from', $minute, '', __('Any'), '*', true, false, false,'',$disabled);
+		$table->data[0][2] = html_print_select ($mdays, 'mday_from', $mday, '', __('Any'), '*', true, false, false,'',$disabled);
+		$table->data[0][3] = html_print_select ($months, 'month_from', $month, '', __('Any'), '*', true, false, false,'',$disabled);
+		$table->data[0][4] = html_print_select ($wdays, 'wday_from', $wday, '', __('Any'), '*', true, false, false,'',$disabled);
+	}
 	
 	return html_print_table ($table, $return);
 }
@@ -1080,7 +1086,7 @@ function html_print_input_password ($name, $value, $alt = '',
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_input_text ($name, $value, $alt = '', $size = 50, $maxlength = 255, $return = false, $disabled = false, $required = false, $function = "", $class = "") {
+function html_print_input_text ($name, $value, $alt = '', $size = 50, $maxlength = 255, $return = false, $disabled = false, $required = false, $function = "", $class = "", $onChange ="") {
 	if ($maxlength == 0)
 		$maxlength = 255;
 		
@@ -1092,6 +1098,9 @@ function html_print_input_text ($name, $value, $alt = '', $size = 50, $maxlength
 		$attr['required'] = 'required';
 	if ($class != '')
 		$attr['class'] = $class;
+	if ($onChange != '') {
+		$attr['onchange'] = $onChange;
+	}
 	
 	return html_print_input_text_extended ($name, $value, 'text-'.$name, $alt, $size, $maxlength, $disabled, '', $attr, $return, false, $function);
 }
@@ -1506,11 +1515,11 @@ function html_print_table (&$table, $return = false) {
 		$table->border = '0';
 	}
 	
-	if (empty ($table->tablealign) || $table->tablealign != 'left' || $table->tablealign != 'right') {
-		$table->tablealign = '';
+	if (empty ($table->tablealign) || (($table->tablealign != 'left') && ($table->tablealign != 'right'))) {
+		$table->tablealign = '"';
 	}
 	else {
-		$table->tablealign = 'style="float:'.$table->tablealign.';"'; //Align is deprecated. Use float instead
+		$table->tablealign = 'float:'.$table->tablealign.';"'; //Align is deprecated. Use float instead
 	}
 	
 	if (!isset ($table->cellpadding)) {
@@ -1532,10 +1541,10 @@ function html_print_table (&$table, $return = false) {
 	$tableid = empty ($table->id) ? 'table'.$table_count : $table->id;
 	
 	if (!empty($table->width)) {
-		$output .= '<table style="width:' . $table->width . ';' . $styleTable . '"'.$table->tablealign;
+		$output .= '<table style="width:' . $table->width . '; ' . $styleTable . ' '.$table->tablealign;
 	}
 	else {
-		$output .= '<table style="' . $styleTable . '"'.$table->tablealign;
+		$output .= '<table style="' . $styleTable . ' ' . $table->tablealign;
 	}
 	$output .= ' cellpadding="'.$table->cellpadding.'" cellspacing="'.$table->cellspacing.'"';
 	$output .= ' border="'.$table->border.'" class="'.$table->class.'" id="'.$tableid.'">';

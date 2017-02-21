@@ -67,6 +67,7 @@ CREATE TABLE IF NOT EXISTS `tagente` (
 	`custom_id` varchar(255) default '',
 	`server_name` varchar(100) default '',
 	`cascade_protection` tinyint(2) NOT NULL default '0',
+	`cascade_protection_module` tinyint(2) NOT NULL default '0',
 	`timezone_offset` TINYINT(2) NULL DEFAULT '0' COMMENT 'nuber of hours of diference with the server timezone' ,
 	`icon_path` VARCHAR(127) NULL DEFAULT NULL COMMENT 'path in the server to the image of the icon representing the agent' ,
 	`update_gis_data` TINYINT(1) NOT NULL DEFAULT '1' COMMENT 'set it to one to update the position data (altitude, longitude, latitude) when getting information from the agent or to 0 to keep the last value and do not update it' ,
@@ -252,6 +253,7 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
 	`prediction_sample_window` int(10) default 0,
 	`prediction_samples` int(4) default 0,
 	`prediction_threshold` int(4) default 0,
+	`parent_module_id` int(10) unsigned NOT NULL,
 	PRIMARY KEY  (`id_agente_modulo`),
 	KEY `main_idx` (`id_agente_modulo`,`id_agente`),
 	KEY `tam_agente` (`id_agente`),
@@ -289,6 +291,11 @@ CREATE TABLE  IF NOT EXISTS  `talert_snmp` (
 	`al_field8` text NOT NULL,
 	`al_field9` text NOT NULL,
 	`al_field10` text NOT NULL,
+	`al_field11` text NOT NULL,
+	`al_field12` text NOT NULL,
+	`al_field13` text NOT NULL,
+	`al_field14` text NOT NULL,
+	`al_field15` text NOT NULL,
 	`description` varchar(255) default '',
 	`alert_type` int(2) unsigned NOT NULL default '0',
 	`agent` varchar(100) default '',
@@ -379,6 +386,11 @@ CREATE TABLE  IF NOT EXISTS `talert_actions` (
 	`field8` text NOT NULL,
 	`field9` text NOT NULL,
 	`field10` text NOT NULL,
+	`field11` text NOT NULL,
+	`field12` text NOT NULL,
+	`field13` text NOT NULL,
+	`field14` text NOT NULL,
+	`field15` text NOT NULL,
 	`id_group` mediumint(8) unsigned NULL default 0,
 	`action_threshold` int(10) NOT NULL default '0',
 	`field1_recovery` text NOT NULL,
@@ -391,6 +403,11 @@ CREATE TABLE  IF NOT EXISTS `talert_actions` (
 	`field8_recovery` text NOT NULL,
 	`field9_recovery` text NOT NULL,
 	`field10_recovery` text NOT NULL,
+	`field11_recovery` text NOT NULL,
+	`field12_recovery` text NOT NULL,
+	`field13_recovery` text NOT NULL,
+	`field14_recovery` text NOT NULL,
+	`field15_recovery` text NOT NULL,
 	PRIMARY KEY  (`id`),
 	FOREIGN KEY (`id_alert_command`) REFERENCES talert_commands(`id`)
 		ON DELETE CASCADE ON UPDATE CASCADE
@@ -414,6 +431,11 @@ CREATE TABLE IF NOT EXISTS `talert_templates` (
 	`field8` text NOT NULL,
 	`field9` text NOT NULL,
 	`field10` text NOT NULL,
+	`field11` text NOT NULL,
+	`field12` text NOT NULL,
+	`field13` text NOT NULL,
+	`field14` text NOT NULL,
+	`field15` text NOT NULL,
 	`type` ENUM ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critical', 'onchange', 'unknown', 'always'),
 	`value` varchar(255) default '',
 	`matches_value` tinyint(1) default 0,
@@ -442,6 +464,11 @@ CREATE TABLE IF NOT EXISTS `talert_templates` (
 	`field8_recovery` text NOT NULL,
 	`field9_recovery` text NOT NULL,
 	`field10_recovery` text NOT NULL,
+	`field11_recovery` text NOT NULL,
+	`field12_recovery` text NOT NULL,
+	`field13_recovery` text NOT NULL,
+	`field14_recovery` text NOT NULL,
+	`field15_recovery` text NOT NULL,
 	`priority` tinyint(4) default '0',
 	`id_group` mediumint(8) unsigned NULL default 0,
 	`special_day` tinyint(1) default 0,
@@ -1041,6 +1068,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
 	`metaconsole_access_node` tinyint(1) unsigned NOT NULL default 0,
 	`strict_acl` tinyint(1) unsigned NOT NULL DEFAULT 0,
 	`id_filter`  int(10) unsigned NULL default NULL,
+	`session_time` int(10) signed NOT NULL default 0,
 	CONSTRAINT `fk_filter_id` FOREIGN KEY (`id_filter`) REFERENCES tevent_filter (`id_filter`) ON DELETE SET NULL,
 	UNIQUE KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -1103,6 +1131,7 @@ CREATE TABLE IF NOT EXISTS `tgraph` (
 	`stacked` tinyint(1) UNSIGNED NOT NULL default 0,
 	`id_group` mediumint(8) unsigned NULL default 0,
 	`id_graph_template` int(11) NOT NULL default 0,
+	`percentil` tinyint(1) UNSIGNED NOT NULL default 0,
 	PRIMARY KEY(`id_graph`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -1238,6 +1267,7 @@ CREATE TABLE IF NOT EXISTS `tlayout` (
 	`background` varchar(200)  NOT NULL,
 	`height` INTEGER UNSIGNED NOT NULL default 0,
 	`width` INTEGER UNSIGNED NOT NULL default 0,
+	`background_color` varchar(50) NOT NULL default '#FFF',
 	PRIMARY KEY(`id`)
 )  ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -1264,6 +1294,8 @@ CREATE TABLE IF NOT EXISTS `tlayout_data` (
 	`id_group` INTEGER UNSIGNED NOT NULL default 0,
 	`id_custom_graph` INTEGER UNSIGNED NOT NULL default 0,
 	`border_width` INTEGER UNSIGNED NOT NULL default 0,
+	`type_graph` varchar(50) NOT NULL default 'area',
+	`label_position` varchar(50) NOT NULL default 'down',
 	`border_color` varchar(200) DEFAULT "",
 	`fill_color` varchar(200) DEFAULT "",
 	PRIMARY KEY(`id`)
@@ -1689,6 +1721,7 @@ CREATE TABLE IF NOT EXISTS `tnetflow_filter` (
 	`ip_src` TEXT NOT NULL,
 	`dst_port` TEXT NOT NULL,
 	`src_port` TEXT NOT NULL,
+	`router_ip` TEXT NOT NULL,
 	`advanced_filter` TEXT NOT NULL,
 	`filter_args` TEXT NOT NULL,
 	`aggregate` varchar(60),
@@ -1829,6 +1862,11 @@ CREATE TABLE  IF NOT EXISTS  `talert_snmp_action` (
 	`al_field8` text NOT NULL,
 	`al_field9` text NOT NULL,
 	`al_field10` text NOT NULL,
+	`al_field11` text NOT NULL,
+	`al_field12` text NOT NULL,
+	`al_field13` text NOT NULL,
+	`al_field14` text NOT NULL,
+	`al_field15` text NOT NULL,
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

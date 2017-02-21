@@ -65,8 +65,8 @@ INSERT INTO tconfig (token, value) VALUES ('days_compact','0');
 INSERT INTO tconfig (token, value) VALUES ('graph_res','5');
 INSERT INTO tconfig (token, value) VALUES ('step_compact','1');
 INSERT INTO tconfig (token, value) VALUES ('db_scheme_first_version','6.0orc');
-INSERT INTO tconfig (token, value) VALUES('db_scheme_version','6.1dev');
-INSERT INTO tconfig (token, value) VALUES('db_scheme_build','PD161107');
+INSERT INTO tconfig (token, value) VALUES('db_scheme_version','7.0dev');
+INSERT INTO tconfig (token, value) VALUES('db_scheme_build','PD170221');
 INSERT INTO tconfig (token, value) VALUES ('show_unknown','0');
 INSERT INTO tconfig (token, value) VALUES ('show_lastalerts','1');
 INSERT INTO tconfig (token, value) VALUES ('style','pandora');
@@ -137,6 +137,7 @@ INSERT INTO tconfig (token, value) VALUES ('custom_report_front_header', '');
 INSERT INTO tconfig (token, value) VALUES ('custom_report_front_footer', '');
 INSERT INTO tconfig (token, value) VALUES ('identification_reminder', 1);
 INSERT INTO tconfig (token, value) VALUES ('identification_reminder_timestamp', 0);
+INSERT INTO tconfig (token, value) VALUES ('MR', 0);
 INSERT INTO tconfig (token, value) VALUES ('post_process_custom_values', '{"0.00000038580247":"Seconds&#x20;to&#x20;months","0.00000165343915":"Seconds&#x20;to&#x20;weeks","0.00001157407407":"Seconds&#x20;to&#x20;days","0.01666666666667":"Seconds&#x20;to&#x20;minutes","0.00000000093132":"Bytes&#x20;to&#x20;Gigabytes","0.00000095367432":"Bytes&#x20;to&#x20;Megabytes","0.0009765625":"Bytes&#x20;to&#x20;Kilobytes","0.00000001653439":"Timeticks&#x20;to&#x20;weeks","0.00000011574074":"Timeticks&#x20;to&#x20;days"}');
 
 COMMIT;
@@ -1371,6 +1372,7 @@ EXECUTE IMMEDIATE 'ALTER TRIGGER tagent_custom_fields_inc DISABLE';
 INSERT INTO tagent_custom_fields VALUES (1,'Serial&#x20;Number',0);
 INSERT INTO tagent_custom_fields VALUES (2,'Department',0);
 INSERT INTO tagent_custom_fields VALUES (3,'Additional&#x20;ID',0);
+INSERT INTO tagent_custom_fields VALUES (4,'eHorusID',0);
 
 -- Update curr val of sequence
 update_currval('tagent_custom_fields', 'id_field');

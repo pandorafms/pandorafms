@@ -586,7 +586,7 @@ foreach ($agents as $agent) {
 	if (enterprise_installed()) {
 		enterprise_include_once('include/functions_config_agents.php');
 		
-		if (config_agents_has_remote_configuration($agent["id_agente"])) {
+		if (enterprise_hook('config_agents_has_remote_configuration',array($agent["id_agente"]))) {
 	
 	$data[9] = html_print_image("images/application_edit.png", true, array("align" => 'middle', "title" => __('Remote config')));
 		
@@ -598,7 +598,7 @@ foreach ($agents as $agent) {
 	$data[3] = '<span style="font-size:6.5pt;">'.human_time_description_raw($agent["intervalo"])."</span>";
 	
 	$data[4] = ui_print_group_icon ($agent["id_grupo"], true);
-	
+	$agent['not_init_count'] = $agent['notinit_count'];
 	$data[5] = reporting_tiny_stats($agent, true, 'agent', ':', $strict_user);
 	
 	
@@ -606,16 +606,7 @@ foreach ($agents as $agent) {
 	
 	$data[7] = $alert_img;
 	
-	
-	$last_time = strtotime ($agent["ultimo_contacto"]);
-	$now = time ();
-	$diferencia = $now - $last_time;
-	$time = ui_print_timestamp ($last_time, true, array('style' => 'font-size:6.5pt'));
-	$style = '';
-	if ($diferencia > ($agent["intervalo"] * 2))
-		$data[8] = '<b><span style="color: #ff0000;">'.$time.'</span></b>';
-	else
-		$data[8] = $time;
+	$data[8] = agents_get_interval_status ($agent);
 	
 	// This old code was returning "never" on agents without modules, BAD !!
 	// And does not print outdated agents in red. WRONG !!!!

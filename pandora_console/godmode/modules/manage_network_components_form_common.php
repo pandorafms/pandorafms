@@ -168,9 +168,9 @@ $table->data[8][3] = html_print_input_text ('max', $max, '', 5, 15, true) . ' ' 
 $table->data[9][0] = __('Unit');
 $table->data[9][1] = html_print_input_text ('unit', $unit, '', 12, 25, true);
 
-$table->data[9][2] = __('Throw unknown events');
+$table->data[9][2] = __('Discard unknown events');
 $table->data[9][3] = html_print_checkbox('throw_unknown_events', 1,
-	!network_components_is_disable_type_event($id, EVENTS_GOING_UNKNOWN), true);
+	network_components_is_disable_type_event($id, EVENTS_GOING_UNKNOWN), true);
 
 $table->data[10][0] = __('Critical instructions'). ui_print_help_tip(__("Instructions when the status is critical"), true);
 $table->data[10][1] = html_print_textarea ('critical_instructions', 2, 65, $critical_instructions, '', true);

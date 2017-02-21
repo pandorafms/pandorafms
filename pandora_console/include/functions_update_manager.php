@@ -293,7 +293,7 @@ function update_manager_check_online_free_packages ($is_ajax=true) {
 	
 	//For to test in the shell
 	/*
-	wget https://artica.es/pandoraupdate6/server.php -O- --no-check-certificate --post-data "action=newest_package&license=PANDORA_FREE&limit_count=1&current_package=1&version=v5.1RC1&build=PC140625"
+	wget https://artica.es/pandoraupdate7/server.php -O- --no-check-certificate --post-data "action=newest_package&license=PANDORA_FREE&limit_count=1&current_package=1&version=v5.1RC1&build=PC140625"
 	*/
 	
 	$curlObj = curl_init();
@@ -608,10 +608,9 @@ function update_manager_starting_update() {
 	$path_package = $config['attachment_store'] .
 		"/downloads/last_package.tgz";
 	
-	$full_path = $config['attachment_store'] . "/downloads/pandora_console";
+	$full_path = $config['attachment_store'] . "/downloads/unix";
 
 	ob_start();
-
 
 	if (!defined('PHP_VERSION_ID')) {
 		$version = explode('.', PHP_VERSION);

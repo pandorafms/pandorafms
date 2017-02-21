@@ -58,6 +58,10 @@ if (is_ajax ()) {
 			$row['control'] = __('Yes').'&nbsp;'.html_print_radio_button_extended('autocreate_remote_users', 1, '', $config['autocreate_remote_users'], false, '', '', true).'&nbsp;&nbsp;';
 			$row['control'] .= __('No').'&nbsp;'.html_print_radio_button_extended('autocreate_remote_users', 0, '', $config['autocreate_remote_users'], false, '', '', true);
 			$table->data['autocreate_remote_users'] = $row;
+			
+			if (enterprise_installed()) {
+				add_enterprise_auth_autocreate_profiles($table, $type_auth);
+			}
 		}
 
 		switch ($type_auth) {
@@ -135,7 +139,7 @@ if (is_ajax ()) {
 		set_when_empty ($config["session_timeout"], 90);
 		$row = array();
 		$row['name'] = __('Session timeout (mins)')
-			. ui_print_help_tip(__("This is defined in minutes"), true);
+			. ui_print_help_tip(__("This is defined in minutes, If you wish a permanent session should putting -1 in this field."), true);
 		$row['control'] = html_print_input_text ('session_timeout', $config["session_timeout"], '', 10, 10, true);
 		$table->data['session_timeout'] = $row;
 
@@ -202,7 +206,6 @@ echo '</form>';
 
 <script type="text/javascript">
 	$('#auth').on('change', function(){
-		console.log('poco a poco');
 		type_auth = $('#auth').val();
 		$.ajax({
 			type: "POST",

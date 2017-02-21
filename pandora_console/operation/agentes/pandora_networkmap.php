@@ -301,7 +301,7 @@ switch ($tab) {
 			$text_filter = $old_map_open['text_filter'];
 			
 			if ($text_filter != "migrated") {
-				$open_maps_to_migrate[] = $old_map_open['id'];
+				$open_maps_to_migrate[] = $old_map_open['id_networkmap'];
 			}
 		}
 		

@@ -24,6 +24,7 @@ if (is_ajax()) {
 	
 	$save_identification = get_parameter ('save_required_wizard', 0);
 	$change_language = get_parameter ('change_language', 0);
+	$cancel_wizard = get_parameter ('cancel_wizard', 0);
 	
 	// Updates the values get on the identification wizard
 	if ($save_identification) {
@@ -50,6 +51,10 @@ if (is_ajax()) {
 	//Change the language if is change in checkbox
 	if ($change_language !== 0) {
 		config_update_value ('language', $change_language);
+	}
+	
+	if ($cancel_wizard !== 0) {
+		config_update_value ('initial_wizard', 1);
 	}
 	
 	return;
@@ -117,6 +122,9 @@ echo '<div id="login_id_dialog" title="' .
 	echo '<div style="position:absolute; margin: 0 auto; bottom: 0px; right: 10px; border: 1px solid #FFF; width: 570px">';
 		echo '<div style="float: right; width: 20%;">';
 		html_print_submit_button(__("Register"), 'id_dialog_button', false, 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok" style="width:100px;"');  
+		echo '</div>';
+		echo '<div style="float: right; width: 20%;">';
+			html_print_button(__("Cancel"), 'cancel', false, '', 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok" style="width:100px;"');  
 		echo '</div>';
 		echo '<div id="all-required" style="float: right; margin-right: 30px; display: none; color: red;">';
 			echo __("All fields required");
@@ -214,6 +222,16 @@ $(document).ready (function () {
 	$(".ui-widget-overlay").css("background", "#000");
 	$(".ui-widget-overlay").css("opacity", 0.6);
 	$(".ui-draggable").css("cursor", "inherit");
+	
+	$("#button-cancel").click (function () {
+		jQuery.post ("ajax.php",
+			{"page": "general/login_required",
+			"cancel_wizard": 1},
+			function (data) {}
+		);
+		
+		$("#login_id_dialog" ).dialog('close');
+	});
 	
 });
 

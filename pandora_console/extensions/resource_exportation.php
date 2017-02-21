@@ -25,11 +25,11 @@ if (isset($_GET['get_ptr'])) {
 		require_once ($ownDir.'../include/config.php');
 		
 		// Login check
-		if (!isset($_SESSION[$config['homeurl_static']]["id_usuario"])) {
+		if (!isset($_SESSION["id_usuario"])) {
 			$config['id_user'] = null;
 		}
 		else {
-			$config['id_user'] = $_SESSION[$config['homeurl_static']]["id_usuario"];
+			$config['id_user'] = $_SESSION["id_usuario"];
 		}
 		
 		
@@ -68,8 +68,10 @@ function output_xml_resource($hook_enterprise) {
 			output_xml_visual_console($id);
 			break;
 		default:
-			if ($hook_enterprise === true)
-				return enterprise_output_xml_resource($type, $id);
+			if ($hook_enterprise === true) {
+				$include_agents = get_parameter('include_agents', 0);
+				return enterprise_output_xml_resource($type, $id, $include_agents);
+			}
 			break;
 	}
 }
@@ -330,7 +332,7 @@ function resource_exportation_extension_main() {
 	}
 	
 	$hook_enterprise = enterprise_include ('extensions/resource_exportation/functions.php');
-	
+
 	ui_print_page_header (__('Resource exportation'), "images/extensions.png", false, "", true, "" );
 	
 	echo "<div class=notify>";
@@ -362,8 +364,16 @@ function resource_exportation_extension_main() {
 	function export_to_ptr(type) {
 		id = $("select#" + type + " option:selected").val();
 		url = location.href.split('index');
-		url = url[0] + 'extensions/resource_exportation.php?get_ptr=1&type=' + type
-			+ '&id=' + id;
+		if (type == "policy") {
+			var include_agents = $("#checkbox-export_agents").prop("checked")
+			
+			url = url[0] + 'extensions/resource_exportation.php?get_ptr=1&type=' + type
+				+ '&id=' + id + '&include_agents=' + include_agents;
+		}
+		else {
+			url = url[0] + 'extensions/resource_exportation.php?get_ptr=1&type=' + type
+				+ '&id=' + id;
+		}
 
 		location.href=url;
 	}

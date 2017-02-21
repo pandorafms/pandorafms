@@ -141,21 +141,38 @@ function delete_link(source_id, source_module_id, target_id, target_module_id, i
 			url: action="ajax.php",
 			success: function (data) {
 				if (data['correct']) {
+					var found = -1;
 					
-					do {
-						found = -1;
-						
-						jQuery.each(graph.links, function(i, element) {
-							if ((element.source.id_db == source_id)
-								&& (element.target.id_db == target_id)) {
-								found = i;
-							}
-						});
-						if (found != -1)
-							graph.links.splice(found, 1);
+					jQuery.each(graph.links, function(i, element) {
+						if (element.id_db == id_link) {
+							found = i;
+						}
+					});
+					if (found != -1) {
+						graph.links.splice(found, 1);
 					}
-					while (found != -1);
+				
+					$("#layer_graph_links_" + networkmap_id).remove();
+					$("#layer_graph_nodes_" + networkmap_id).remove();
+
+					window.layer_graph_links = window.layer_graph
+						.append("g")
+							.attr("id", "layer_graph_links_" + networkmap_id);
+					window.layer_graph_nodes = window.layer_graph
+						.append("g")
+							.attr("id", "layer_graph_nodes_" + networkmap_id);
 					
+					force.nodes(graph.nodes)
+						.links(graph.links)
+						.start();
+					
+					window.node = layer_graph_nodes.selectAll(".node");
+					window.link = layer_graph_links.selectAll(".link");
+					
+					draw_elements_graph();
+					init_drag_and_drop();
+					set_positions_graph();
+
 					draw_elements_graph();
 					set_positions_graph();
 				}
@@ -164,6 +181,7 @@ function delete_link(source_id, source_module_id, target_id, target_module_id, i
 			}
 		});
 	}
+	/*
 	else {
 		do {
 			found = -1;
@@ -182,7 +200,7 @@ function delete_link(source_id, source_module_id, target_id, target_module_id, i
 		draw_elements_graph();
 		set_positions_graph();
 	}
-	
+	*/
 }
 
 function update_fictional_node(id_db_node) {
@@ -461,7 +479,7 @@ function update_link(row_index, id_link) {
 	var text_source_interface = "";
 	if (interface_source != 0) {
 		text_source_interface = $("select[name='interface_source_" +
-			row_index + "'] option:selected").text();
+			row_index +"'] option:selected").text();
 	}
 	
 	var interface_target = parseInt(
@@ -470,9 +488,9 @@ function update_link(row_index, id_link) {
 		);
 	
 	var text_target_interface = "";
-	if (interface_source != 0) {
-		text_source_interface = $("select[name='interface_source_" +
-			row_index + "'] option:selected").text();
+	if (interface_target != 0) {
+		text_target_interface = $("select[name='interface_target_" +
+			row_index +"'] option:selected").text();
 	}
 	
 	$(".edit_icon_progress_" + row_index).css("display", "");
@@ -484,8 +502,10 @@ function update_link(row_index, id_link) {
 	params.push("id_link=" + id_link);
 	params.push("interface_source=" + interface_source);
 	params.push("interface_target=" + interface_target);
+	params.push("source_text=" + text_source_interface);
+	params.push("target_text=" + text_target_interface);
 	params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
-	
+
 	jQuery.ajax ({
 		data: params.join ("&"),
 		dataType: 'json',
@@ -497,123 +517,75 @@ function update_link(row_index, id_link) {
 			if (data['correct']) {
 				$(".edit_icon_correct_" + row_index).css("display", "");
 				
-				$("select[name='interface_source_" + row_index + networkmap_id + "'] option[value='" + interface_source + "']")
+				$("select[name='interface_source_" + row_index + "'] option[value='" + interface_source + "']")
 					.prop("selected", true);
-				$("select[name='interface_target_" + row_index + networkmap_id + "'] option[value='" + interface_target + "']")
+				$("select[name='interface_target_" + row_index + "'] option[value='" + interface_target + "']")
 					.prop("selected", true);
-				
-				
-				
-				if (interface_source == 0) {
-					jQuery.each(graph.links, function(i, link_each) {
-						if (link_each.id_db == id_link) {
-							//Found
-							graph.links[i].arrow_start = "";
-							graph.links[i].arrow_start = "";
-							graph.links[i].text_start = text_source_interface;
-							
-							//Remove the arrow
-							$("#link_id_" + id_link)
-								.attr("marker-start", "");
-							
-							$("tspan")
-								.filter(function() {
-									var textPath = $(this).parent();
-									if ($(textPath).attr('href') == "#link_id_" + id_link)
-										return true;
-									else return false;
-								})
-								.html(Array(25).join(" ") + text_source_interface);
-						}
-					});
+
+				var id = "";
+				var index = -1;
+				$.each(graph.links, function(j, link) {
+					if (link['id_db'] == id_link) {
+						index = j;
+						id = String(id_link);
+					}
+				});
+
+				delete_link_from_id(index);
+
+				var temp_link = {};
+				temp_link["id_db"] = String(data['id_db_link']);
+				if (data['type_source'] == 1) {
+					temp_link["arrow_start"] = "module";
+					temp_link["id_module_start"] = interface_source;
 				}
 				else {
-					jQuery.each(graph.links, function(i, link_each) {
-						if (link_each.id_db == id_link) {
-							//Found
-							if (link_each.arrow_start == "") {
-								graph.links[i].id_db = data['id_link_change'];
-							}
-							
-							graph.links[i].arrow_start = "module";
-							graph.links[i].id_module_start = interface_source;
-							graph.links[i].text_start = text_source_interface;
-							
-							//Added th arrow
-							$("#link_id_" + id_link)
-								.attr("marker-start",
-									"url(#interface_start_1)");
-							
-							$("tspan")
-								.filter(function() {
-									var textPath = $(this).parent();
-									
-									if ($(textPath).attr('href') == "#link_id_" + id_link)
-										return true;
-									else return false;
-								})
-								.html(Array(25).join(" ") + text_source_interface);
-						}
-					});
+					temp_link["arrow_start"] = "";
+					temp_link["id_agent_start"] = interface_source;
+					temp_link["id_module_start"] = 0;
 				}
-				
-				if (interface_target == 0) {
-					jQuery.each(graph.links, function(i, link_each) {
-						if (link_each.id_db == id_link) {
-							//Found
-							graph.links[i].arrow_end = "";
-							graph.links[i].id_module_end = 0;
-							graph.links[i].text_end = text_target_interface;
-							
-							//Remove the arrow
-							$("#link_id_" + id_link)
-								.attr("marker-end", "");
-							
-							$("tspan")
-								.filter(function() {
-									var textPath = $(this).parent();
-									
-									if ($(textPath).attr('href') == "#link_reverse_id_" + id_link)
-										return true;
-									else return false;
-								})
-								.html(Array(25).join(" ") + text_target_interface);
-						}
-					});
+				if (data['type_target'] == 1) {
+					temp_link["arrow_end"] = "module";
+					temp_link["id_module_end"] = interface_target;
 				}
 				else {
-					jQuery.each(graph.links, function(i, link_each) {
-						if (link_each.id_db == id_link) {
-							
-							//Found
-							
-							if (link_each.arrow_end == "") {
-								graph.links[i].id_db = data['id_link_change'];
-							}
-							
-							graph.links[i].arrow_end = "module";
-							graph.links[i].id_module_end = interface_target;
-							graph.links[i].text_end = text_target_interface;
-							
-							//Added th arrow
-							$("#link_id_" + id_link)
-								.attr("marker-end",
-									"url(#interface_end_1)");
-							
-							$("tspan")
-								.filter(function() {
-									var textPath = $(this).parent();
-									
-									if ($(textPath).attr('href') == "#link_reverse_id_" + id_link)
-										return true;
-									else return false;
-								})
-								.html(Array(25).join(" ") + text_target_interface);
-						}
-					});
+					temp_link["arrow_end"] = "";
+					temp_link["id_agent_end"] = interface_target;
+					temp_link["id_module_end"] = 0;
 				}
+				temp_link["status_start"] = "0";
+				temp_link["status_end"] = "0";
+
+				$.each(graph.nodes, function(k, node) {
+					if (node['id_agent'] == data['id_db_target']) {
+						temp_link["target"] = graph.nodes[k];
+					}
+					if (node['id_agent'] == data['id_db_source']) {
+						temp_link["source"] = graph.nodes[k];
+					}
+				});
+
+				add_new_link(temp_link);
+
+				$("#layer_graph_links_" + networkmap_id).remove();
+				$("#layer_graph_nodes_" + networkmap_id).remove();
+
+				window.layer_graph_links = window.layer_graph
+					.append("g")
+						.attr("id", "layer_graph_links_" + networkmap_id);
+				window.layer_graph_nodes = window.layer_graph
+					.append("g")
+						.attr("id", "layer_graph_nodes_" + networkmap_id);
+				
+				force.nodes(graph.nodes)
+					.links(graph.links)
+					.start();
+				
+				window.node = layer_graph_nodes.selectAll(".node");
+				window.link = layer_graph_links.selectAll(".link");
 				
 				draw_elements_graph();
+				init_drag_and_drop();
 				set_positions_graph();
 			}
 			else {
@@ -621,6 +593,14 @@ function update_link(row_index, id_link) {
 			}
 		}
 	});
+}
+
+function delete_link_from_id (index) {
+	graph.links.splice(index, 1);
+}
+
+function add_new_link (new_link) {
+	graph.links.push(new_link);
 }
 
 function edit_node(data, dblClick) {
@@ -664,7 +644,7 @@ function edit_node(data, dblClick) {
 			$("#node_options-fictional_node_update_button-1 input")
 				.attr("onclick", "update_fictional_node(" + data.id_db + ");");
 			
-			$("#node_details-0-1").html(data["text"]);
+			$("#node_details-0-1").html('<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' + data["id_agent"] + '">' + data["text"] + '</a>');
 			var params = [];
 			params.push("get_agent_info=1");
 			params.push("id_agent=" + data["id_agent"]);
@@ -674,7 +654,6 @@ function edit_node(data, dblClick) {
 				dataType: 'json',
 				type: 'POST',
 				url: action="ajax.php",
-				async: false,
 				success: function (data) {
 					var adressess = "";
 					for (adress in data['adressess']) {
@@ -697,7 +676,6 @@ function edit_node(data, dblClick) {
 				dataType: 'json',
 				type: 'POST',
 				url: action="ajax.php",
-				async: false,
 				success: function (data) {
 					if (data.length == 0) {
 						$("#interface_information").find('tbody')
@@ -789,8 +767,10 @@ function edit_node(data, dblClick) {
 					.attr('class', "edit_icon_fail_" + i);
 				$(".edit_icon_link", template_relation_row)
 					.attr('class', "edit_icon_link_" + i)
-					.attr('href', 'javascript: update_link(' + i + "," + link_each.id_db + ');');
-				
+					.click(function() {
+						update_link(i, link_each.id_db);
+					}
+				);
 				
 				var params = [];
 				params.push("get_intefaces=1");
@@ -802,9 +782,10 @@ function edit_node(data, dblClick) {
 					dataType: 'json',
 					type: 'POST',
 					url: action="ajax.php",
-					async: false,
 					success: function (data) {
 						if (data['correct']) {
+							$("select[name='interface_source_" + i + "']", template_relation_row).empty();
+							$("select[name='interface_source_" + i + "']", template_relation_row).append('<option value="' + link_each.source.id_agent + '">None</option>');
 							jQuery.each(data['interfaces'], function(j, interface) {
 								
 								$("select[name='interface_source_" + i + "']", template_relation_row)
@@ -831,11 +812,11 @@ function edit_node(data, dblClick) {
 					dataType: 'json',
 					type: 'POST',
 					url: action="ajax.php",
-					async: false,
 					success: function (data) {
 						if (data['correct']) {
+							$("select[name='interface_target_" + i + "']", template_relation_row).empty();
+							$("select[name='interface_target_" + i + "']", template_relation_row).append('<option value="' + link_each.target.id_agent + '">None</option>');
 							jQuery.each(data['interfaces'], function(j, interface) {
-								
 								$("select[name='interface_target_" + i + "']", template_relation_row)
 									.append($("<option>")
 										.attr("value", interface['id_agente_modulo'])
@@ -1233,7 +1214,7 @@ function set_positions_graph() {
 			return d.y - ((node_radius / 0.8) / 2);
 		});
 	
-	var position_text = node_radius * 0.6;
+	var position_text = node_radius * 0.8;
 	
 	node.selectAll(".node_text")
 		.attr("x", function(d) {
@@ -1497,6 +1478,38 @@ function show_menu(item, data) {
 						edit_node(data, false);
 					}
 				};
+			items_list["interface_link"] = {
+					name: interface_link_add,
+					icon: "interface_link_children",
+					disabled : function() {
+						if (enterprise_installed) {
+							return false;
+						}
+						else {
+							return true;
+						}
+					},
+					"callback": function(key, options) {
+						var selection = d3.selectAll('.node_children');
+						selection
+							.each(function(d) {
+								d3.select("#id_node_" + d.id + networkmap_id)
+									.classed("node_children", false);
+							}
+						);
+						
+						selection = d3.selectAll('.node_selected');
+						selection
+							.each(function(d) {
+								d3.select("#id_node_" + d.id + networkmap_id)
+									.classed("node_selected", false)
+									.classed("node_children", true);
+							}
+						);
+						
+						flag_setting_interface_link_running = true;
+					}
+				};
 			items_list["children"] = {
 					name: set_as_children_menu,
 					icon: "children",
@@ -1529,7 +1542,50 @@ function show_menu(item, data) {
 						flag_setting_relationship_running = true;
 					}
 				};
-			
+
+			if (flag_setting_interface_link_running) {
+				if (d3.select("#id_node_" + data.id + networkmap_id).attr("class").search("node_children") == -1) {
+					items_list["set_parent_interface"] = {
+						name: set_parent_link,
+						icon: "interface_link_parent",
+						disabled : function() {
+							if (enterprise_installed) {
+								return false;
+							}
+							else {
+								return true;
+							}
+						},
+						"callback": function(key, options) {
+							var selection = d3.selectAll('.node_selected');
+							selection = selection[0];
+							if (selection.length > 1) {
+								alert("Only one-one relations (one father, one son)");
+							}
+							else {
+								add_interface_link(data);
+							}
+						}
+					};
+				}
+				
+				items_list["cancel_set_parent_interface"] = {
+					name: abort_relationship_interface,
+					icon: "interface_link_cancel",
+					disabled : function() {
+						if (enterprise_installed) {
+							return false;
+						}
+						else {
+							return true;
+						}
+					},
+					"callback": function(key, options) {
+						cancel_set_parent_interface();
+					}
+				};
+			}
+
 			if (flag_setting_relationship_running) {
 				if (d3.select("#id_node_" + data.id + networkmap_id).attr("class").search("node_children") == -1) {
 					items_list["set_parent"] = {
@@ -1547,7 +1603,7 @@ function show_menu(item, data) {
 							var selection = d3.selectAll('.node_selected');
 							selection = selection[0];
 							if (selection.length > 1) {
-								alert("Yo no tengo dedo, por eso no poido trabajo");
+								alert("Only one-one relations (one father, one son)");
 							}
 							else {
 								set_parent(data);
@@ -1673,6 +1729,24 @@ function show_menu(item, data) {
 					}
 				};
 			}
+
+			if (flag_setting_relationship_running) {
+				items_list["cancel_set_parent_interface"] = {
+					name: abort_relationship_interface,
+					icon: "cancel_set_parent",
+					disabled : function() {
+						if (enterprise_installed) {
+							return false;
+						}
+						else {
+							return true;
+						}
+					},
+					"callback": function(key, options) {
+						cancel_set_parent_interface();
+					}
+				};
+			}
 			
 			
 			$.contextMenu('destroy');
@@ -1689,6 +1763,147 @@ function show_menu(item, data) {
 	$("#networkconsole_" + networkmap_id).contextMenu({
 		x: mouse[0],
 		y: mouse[1]
+	});
+}
+
+function add_interface_link(data_parent) {
+	var selection = d3.selectAll('.node_children');
+		
+	count = selection.size();
+	
+	selection.each(function(child_data) {
+			var repeat = false;
+			jQuery.each(graph.links, function(i, link_item) {
+				if ((link_item.source_id_db == child_data.id_db) &&
+					(link_item.target_id_db == data_parent.id_db)){
+					
+					repeat = true;
+				}
+				
+				if ((link_item.source_id_db == data_parent.id_db) &&
+					(link_item.target_id_db == child_data.id_db)){
+					
+					repeat = true;
+				}
+			});
+			
+			if (repeat) {
+				count = count - 1;
+				if (count == 0) {
+					draw_elements_graph();
+					set_positions_graph();
+					
+					cancel_set_parent();
+					cancel_set_parent_interface();
+				}
+				
+				return; //Break
+			}
+			
+			var params = [];
+			params.push("set_relationship_interface=1");
+			params.push("id=" + networkmap_id);
+			params.push("child=" + child_data.id_db);
+			params.push("parent=" + data_parent.id_db);
+			params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
+		
+			jQuery.ajax ({
+				data: params.join ("&"),
+				dataType: 'json',
+				type: 'POST',
+				url: action="ajax.php",
+				success: function (data) {
+					var parent_name = data_parent.text;
+					var child_name = child_data.text;
+					$('#label-node_source_interface').text(child_name);
+					$('#label-node_target_interface').text(parent_name);
+
+					$("#interface_target_select").empty();
+					$('#interface_target_select').append('<option value="' + data_parent.id_agent + '">None</option>');
+					jQuery.each(data.interfaces_parent, function(i, interface) {
+						$('#interface_target_select').append('<option value="' + interface.id_agente_modulo + '">' + interface.nombre + '</option>');
+					});
+
+					$("#interface_source_select").empty();
+					$('#interface_source_select').append('<option value="' + child_data.id_agent + '">None</option>');
+					jQuery.each(data.interfaces_child, function(i, interface) {
+						$('#interface_source_select').append('<option value="' + interface.id_agente_modulo + '">' + interface.nombre + '</option>');
+					});
+
+					$('#dialog_interface_link').dialog("open");
+				}
+			});
+	});
+}
+
+function add_interface_link_js () {
+	cancel_set_parent_interface();
+	$('#dialog_interface_link').dialog("close");
+	
+	source_value = $('#interface_source_select').val();
+	source_text = $('#interface_source_select').find('option:selected').text();
+	target_value = $('#interface_target_select').val();
+	target_text = $('#interface_target_select').find('option:selected').text();
+
+	var params = [];
+	params.push("add_interface_relation=1");
+	params.push("id=" + networkmap_id);
+	params.push("source_value=" + source_value);
+	params.push("target_value=" + target_value);
+	params.push("source_text=" + source_text);
+	params.push("target_text=" + target_text);
+	params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
+
+	jQuery.ajax ({
+		data: params.join ("&"),
+		dataType: 'json',
+		type: 'POST',
+		url: action="ajax.php",
+		success: function (data) {
+			if (data['correct']) {
+				var temp_link = {};
+				temp_link['id_db'] = data['id_db_link'];
+				if (data['type_source'] == 1) {
+					temp_link['arrow_start'] = "module";
+					temp_link['id_module_start'] = source_value;
+				}
+				else {
+					temp_link['arrow_start'] = "";
+					temp_link['id_agent_start'] = source_value;
+					temp_link['id_module_start'] = 0;
+				}
+				if (data['type_target'] == 1) {
+					temp_link['arrow_end'] = "module";
+					temp_link['id_module_end'] = target_value;
+				}
+				else {
+					temp_link['arrow_end'] = "";
+					temp_link['id_agent_end'] = target_value;
+					temp_link['id_module_end'] = 0;
+				}
+				temp_link['status_start'] = "0";
+				temp_link['status_end'] = "0";
+				
+				
+				//temp_link['text_start'] = link['text_start'];
+				//temp_link['text_end'] = link['text_end'];
+				
+				jQuery.each(graph.nodes, function(j, node) {
+					if (node['id_agent'] == data['id_db_target']) {
+						temp_link['target'] = graph.nodes[j];
+					}
+					if (node['id_agent'] == data['id_db_source']) {
+						temp_link['source'] = graph.nodes[j];
+					}
+				});
+				
+				graph.links.push(temp_link);
+
+				draw_elements_graph();
+				init_drag_and_drop();
+				set_positions_graph();
+			}
+		}
 	});
 }
 
@@ -1819,6 +2034,7 @@ function set_parent(parent_data) {
 						set_positions_graph();
 						
 						cancel_set_parent();
+						cancel_set_parent_interface();
 					}
 					
 					return; //Break
@@ -1864,12 +2080,27 @@ function set_parent(parent_data) {
 							set_positions_graph();
 							
 							cancel_set_parent();
+							cancel_set_parent_interface();
 						}
 					}
 				});
 			}
 		);
 	}
+}
+
+function cancel_set_parent_interface () {
+	var selection = d3.selectAll('.node_children');
+	
+	selection
+		.each(function(d) {
+			d3.select("#id_node_" + d.id + networkmap_id)
+				.classed("node_selected", true)
+				.classed("node_children", false);
+		}
+	);
+	
+	flag_setting_interface_link_running = false;
 }
 
 function cancel_set_parent() {
@@ -2081,7 +2312,7 @@ function add_fictional_node() {
 	}
 }
 
-function init_graph(parameter_object) {	
+function init_graph(parameter_object) {
 	window.width_svg = $("#networkconsole_" + networkmap_id).width();
 	if ($("#main").height()) {
 		window.height_svg = $("#main").height();
@@ -2114,6 +2345,7 @@ function init_graph(parameter_object) {
 	window.in_a_node = false;
 	window.enterprise_installed = false;
 	window.flag_setting_relationship_running = false;
+	window.flag_setting_interface_link_running = false;
 	
 	window.minimap_w = 0;
 	window.minimap_h = 0;
@@ -2470,6 +2702,11 @@ function init_graph(parameter_object) {
 		autoOpen: false,
 		width: 650
 	});
+
+	$("#dialog_interface_link").dialog({
+		autoOpen: false,
+		width: 650
+	});
 	
 	$("#dialog_node_add").dialog({
 		autoOpen: false,
@@ -2564,7 +2801,26 @@ function draw_elements_graph() {
 	});
 	
 	link_temp = link.enter()
-		.append("g");
+		.append("g")
+			.attr("id", function(d) {
+				return "link_id_" + d.id_db + networkmap_id;
+			})
+			.attr("class", function(d) {
+				var holding_area_text = "";
+				if ((d.source.state == 'holding_area') ||
+					(d.target.state == 'holding_area')) {
+					
+					holding_area_text = " holding_area_link ";
+				}
+				
+				return "link " +
+					"source_" + d.source.id + networkmap_id + " " +
+					"target_" + d.target.id + networkmap_id + " " +
+					holding_area_text +
+					"id_module_start_" + d.id_module_start + " " +
+					"id_module_end_" + d.id_module_end;
+			});
+
 	link.exit().remove();
 	
 	link_temp.append("path")
@@ -2637,7 +2893,7 @@ function draw_elements_graph() {
 					return "#link_id_" + d.id_db;
 			})
 			.append("tspan")
-				.attr("style", "font-size: 8px; " +
+				.attr("style", "font-size: 12px; " +
 					"font-style:normal; " +
 					"font-weight:normal; " +
 					"line-height: 100%; " +
@@ -2663,7 +2919,7 @@ function draw_elements_graph() {
 				return "#link_reverse_id_" + d.id_db;
 			})
 			.append("tspan")
-				.attr("style", "font-size: 8px; " +
+				.attr("style", "font-size: 12px; " +
 					"font-style:normal; " +
 					"font-weight:normal; " +
 					"line-height: 100%; " +
@@ -2683,6 +2939,7 @@ function draw_elements_graph() {
 				});
 	
 	node = node.data(force.nodes(), function(d) { return d.id;});
+	
 	node_temp = node.enter()
 		.append("g")
 			.attr("id", function(d) {
@@ -2895,7 +3152,7 @@ function draw_elements_graph() {
 	node_temp.append("title")
 		.text(function(d) {return d.text; });
 	
-	var font_size = (node_radius / 2.8);
+	var font_size = (node_radius / 1.5);
 	
 	node_temp.append("text")
 		.attr("class", "node_text")
@@ -2915,7 +3172,7 @@ function draw_elements_graph() {
 		.classed('dragable_node', true) //own dragable
 		.on("click", selected_node)
 		.on("contextmenu", function(d) { show_menu("node", d);});
-		
+	
 	node.exit().remove();
 }
 

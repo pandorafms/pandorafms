@@ -581,7 +581,7 @@ function groups_get_status ($id_group = 0, $strict_user = false) {
 		$data['agent_unknown'] = $groups_status['_agents_unknown_'];
 		
 	} else {
-		$data = reporting_get_group_stats($id_group);
+		$data = reporting_get_group_stats_resume($id_group);
 	}
 	
 	if ($data['monitor_alerts_fired'] > 0) {

@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/pandorafms/pandorafms.svg?branch=develop)](https://travis-ci.org/pandorafms/pandorafms)
 
-[![Pandora logo](http://pandorafms.com/github/logo_2.png)](http://pandorafms.org)
+[![Pandora logo](http://wolf359.artica.es/public_images/logo_pandora_community.png)](http://pandorafms.org)
 
 Pandora FMS is a monitoring software for IT infrastructure management which includes network equipment, Windows and Unix servers, virtual infrastructure and all different kind of applications. It has a large amount of features, making it a new generation software which discovers all the monitoring issues that an organization may need.
 
@@ -33,13 +33,13 @@ Pandora FMS is a monitoring tool that not only measures if a parameter is right 
 * Multiuser, several levels of ACL management.
 
 ### Screenshots
-![screenshot 1](http://pandorafms.com/github/agent_list.png)
+![screenshot 1](http://wolf359.artica.es/public_images/captura-pantalla-pandora3.png)
 <br />
 <br />
-![screenshot 2](http://pandorafms.com/github/captura_pantalla5.png)
+![screenshot 2](http://wolf359.artica.es/public_images/pandora6.0sp3-monitor-view.png)
 <br />
 <br />
-![screenshot 3](http://pandorafms.com/github/pandora_sla_report2.png)
+![screenshot 3](http://wolf359.artica.es/public_images/pandora6.0sp3-agentview.png)
 <br />
 <br />
-![screenshot 4](http://pandorafms.com/github/services.png)
+![screenshot 4](http://wolf359.artica.es/public_images/pandora6.0sp3-sample-visual-console.png)

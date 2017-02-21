@@ -434,6 +434,20 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 				}
 			}
 		}
+
+		if ($uncompressed_module || ($timestamp > time ())) {
+			if (!isset($chart[$timestamp]['no_data'.$series_suffix])) {
+				$chart[$timestamp]['no_data'.$series_suffix] = 0;
+			}
+			if ($chart[$timestamp]['sum'.$series_suffix] == $last_known) {
+				$chart[$timestamp]['no_data'.$series_suffix] = 0;
+				$series_type['no_data'.$series_suffix] = 'area';
+			}
+			else {
+				$chart[$timestamp]['no_data'.$series_suffix] = $last_known;
+				$series_type['no_data'.$series_suffix] = 'area';
+			}
+		}
 		
 		if ($show_unknown) {
 			if (!isset($chart[$timestamp]['unknown'.$series_suffix])) {
@@ -470,7 +484,7 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 		$avg = array_map(function($item) { return $item['sum'];}, $chart);
 		
 		$percentil_result = get_percentile($percentil, $avg);
-		
+
 		//Fill the data of chart
 		array_walk($chart, function(&$item) use ($percentil_result, $series_suffix) {
 			$item['percentil' . $series_suffix] = $percentil_result; });
@@ -484,7 +498,7 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	$show_alerts = false, $avg_only = 0, $date = 0, $unit = '',
 	$baseline = 0, $return_data = 0, $show_title = true, $projection = false, 
 	$adapt_key = '', $compare = false, $series_suffix = '', $series_suffix_str = '', 
-	$show_unknown = false, $percentil = null, $dashboard = false, $vconsole = false) {
+	$show_unknown = false, $percentil = null, $dashboard = false, $vconsole = false,$type_graph='area') {
 	
 	global $config;
 	global $chart;
@@ -705,6 +719,9 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 			array('border' => '#ff7f00', 'color' => '#ff7f00',
 				'alpha' => CHART_DEFAULT_ALPHA);
 	}
+	$color['no_data'.$series_suffix] = array(
+		'border' => '#000000', 'color' => '#f2c40e',
+		'alpha' => CHART_DEFAULT_ALPHA);
 	if ($show_unknown) {
 		$color['unknown' . $series_suffix] =
 			array('border' => '#999999', 'color' => '#999999',
@@ -738,18 +755,20 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 			. __('Avg') . ': ' . remove_right_zeros(number_format($graph_stats['sum']['avg'], $config['graph_precision'])) . ($unit ? ' ' . $unit : '');
 	}
 	else if (!$avg_only) {
-		$legend['max'.$series_suffix] = __('Max').$series_suffix_str.': '.__('Last').': '.remove_right_zeros(number_format($graph_stats['max']['last'], $config['graph_precision'])).' '.$unit.' ; '.__('Avg').': '.remove_right_zeros(number_format($graph_stats['max']['avg'], $config['graph_precision'])).' '.$unit.' ; '.__('Max').': '.remove_right_zeros(number_format($graph_stats['max']['max'], $config['graph_precision'])).' '.$unit.' ; '.__('Min').': '.remove_right_zeros(number_format($graph_stats['max']['min'], $config['graph_precision'])).' '.$unit.' --> '.__('Selected');
-		$legend['sum'.$series_suffix] = __('Avg').$series_suffix_str.': '.__('Last').': '.remove_right_zeros(number_format($graph_stats['sum']['last'], $config['graph_precision'])).' '.$unit.' ; '.__('Avg').': '.remove_right_zeros(number_format($graph_stats['sum']['avg'], $config['graph_precision'])).' '.$unit.' ; '.__('Max').': '.remove_right_zeros(number_format($graph_stats['sum']['max'], $config['graph_precision'])).' '.$unit.' ; '.__('Min').': '.remove_right_zeros(number_format($graph_stats['sum']['min'], $config['graph_precision'])).' '.$unit.' --> '.__('Selected');
-		$legend['min'.$series_suffix] = __('Min').$series_suffix_str.': '.__('Last').': '.remove_right_zeros(number_format($graph_stats['min']['last'], $config['graph_precision'])).' '.$unit.' ; '.__('Avg').': '.remove_right_zeros(number_format($graph_stats['min']['avg'], $config['graph_precision'])).' '.$unit.' ; '.__('Max').': '.remove_right_zeros(number_format($graph_stats['min']['max'], $config['graph_precision'])).' '.$unit.' ; '.__('Min').': '.remove_right_zeros(number_format($graph_stats['min']['min'], $config['graph_precision'])).' '.$unit.' --> '.__('Selected');
+		$legend['max'.$series_suffix] = __('Max').$series_suffix_str.': '.__('Avg').': '.remove_right_zeros(number_format($graph_stats['max']['avg'], $config['graph_precision'])).' '.$unit.' ; '.__('Max').': '.remove_right_zeros(number_format($graph_stats['max']['max'], $config['graph_precision'])).' '.$unit.' ; '.__('Min').': '.remove_right_zeros(number_format($graph_stats['max']['min'], $config['graph_precision'])).' '.$unit;
+		$legend['sum'.$series_suffix] = __('Avg').$series_suffix_str.': '.__('Avg').': '.remove_right_zeros(number_format($graph_stats['sum']['avg'], $config['graph_precision'])).' '.$unit.' ; '.__('Max').': '.remove_right_zeros(number_format($graph_stats['sum']['max'], $config['graph_precision'])).' '.$unit.' ; '.__('Min').': '.remove_right_zeros(number_format($graph_stats['sum']['min'], $config['graph_precision'])).' '.$unit;
+		$legend['min'.$series_suffix] = __('Min').$series_suffix_str.': '.__('Avg').': '.remove_right_zeros(number_format($graph_stats['min']['avg'], $config['graph_precision'])).' '.$unit.' ; '.__('Max').': '.remove_right_zeros(number_format($graph_stats['min']['max'], $config['graph_precision'])).' '.$unit.' ; '.__('Min').': '.remove_right_zeros(number_format($graph_stats['min']['min'], $config['graph_precision'])).' '.$unit;
 	}
 	else {
-		$legend['sum'.$series_suffix] = __('Avg').$series_suffix_str.': '.__('Last').': '.remove_right_zeros(number_format($graph_stats['sum']['last'], $config['graph_precision'])).' '.$unit.' ; '.__('Avg').': '.remove_right_zeros(number_format($graph_stats['sum']['avg'], $config['graph_precision'])).' '.$unit.' ; '.__('Max').': '.remove_right_zeros(number_format($graph_stats['sum']['max'], $config['graph_precision'])).' '.$unit.' ; '.__('Min').': '.remove_right_zeros(number_format($graph_stats['sum']['min'], $config['graph_precision'])).' '.$unit.' --> '.__('Selected');
+		$legend['sum'.$series_suffix] = __('Avg').$series_suffix_str.': '.__('Avg').': '.remove_right_zeros(number_format($graph_stats['sum']['avg'], $config['graph_precision'])).' '.$unit.' ; '.__('Max').': '.remove_right_zeros(number_format($graph_stats['sum']['max'], $config['graph_precision'])).' '.$unit.' ; '.__('Min').': '.remove_right_zeros(number_format($graph_stats['sum']['min'], $config['graph_precision'])).' '.$unit;
 	}
 	//Baseline was replaced by compare graph feature
 	/*if ($baseline) {
 		$legend['baseline'.$series_suffix] = __('Baseline');
 	}*/
-	
+	//$legend['no_data'.$series_suffix] = __('No data').$series_suffix_str;
+	//$chart_extra_data['legend_no_data'] = $legend['no_data'.$series_suffix_str];
+
 	if ($show_unknown) {
 		$legend['unknown'.$series_suffix] = __('Unknown').$series_suffix_str;
 		$chart_extra_data['legend_unknown'] = $legend['unknown'.$series_suffix_str];
@@ -771,7 +790,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	$only_image = false, $homeurl = '', $ttl = 1, $projection = false,
 	$adapt_key = '', $compare = false, $show_unknown = false,
 	$menu = true, $backgroundColor = 'white', $percentil = null,
-	$dashboard = false, $vconsole = false) {
+	$dashboard = false, $vconsole = false,$type_graph = 'area') {
 	
 	global $config;
 	global $graphic_type;
@@ -802,7 +821,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 			$show_alerts, $avg_only, $date-$period, $unit, $baseline,
 			$return_data, $show_title, $projection, $adapt_key,
 			$compare, $series_suffix, $series_suffix_str,
-			$show_unknown, $percentil, $dashboard, $vconsole);
+			$show_unknown, $percentil, $dashboard, $vconsole,$type_graph);
 		
 		switch ($compare) {
 			case 'separated':
@@ -835,7 +854,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		$show_alerts, $avg_only,
 		$date, $unit, $baseline, $return_data, $show_title,
 		$projection, $adapt_key, $compare, '', '', $show_unknown,
-		$percentil, $dashboard, $vconsole);
+		$percentil, $dashboard, $vconsole,$type_graph);
 	
 	
 	if ($return_data) {
@@ -865,7 +884,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
 	
-	if ($config['type_module_charts'] === 'area') {
+	if ($type_graph === 'area') {
 		if ($compare === 'separated') {
 			return
 				area_graph($flash_chart, $chart, $width, $height/2, $color,
@@ -899,7 +918,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 					$backgroundColor, $dashboard, $vconsole, $agent_module_id);
 		}
 	}
-	elseif ($config['type_module_charts'] === 'line') {
+	elseif ($type_graph === 'line') {
 		if ($compare === 'separated') {
 			return
 				line_graph($flash_chart, $chart, $width, $height/2, $color,
@@ -974,7 +993,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	$prediction_period = false, $background_color = 'white',
 	$name_list = array(), $unit_list = array(), $show_last = true, $show_max = true,
 	$show_min = true, $show_avg = true, $labels = array(), $dashboard = false,
-	$vconsole = false, $percentil = null) {
+	$vconsole = false, $percentil = null, $from_interface = false) {
 	
 	global $config;
 	global $graphic_type;
@@ -988,11 +1007,8 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	}
 	
 	// Set the title and time format
-	if ($temp_range <= SECONDS_6HOURS) {
-		$time_format = 'H:i:s';
-	}
-	elseif ($temp_range < SECONDS_1DAY) {
-		$time_format = 'H:i';
+	if ($temp_range <= SECONDS_1DAY) {
+		$time_format = 'd.m.Y H:i:s';
 	}
 	elseif ($temp_range < SECONDS_15DAYS) {
 		$time_format = 'M d';
@@ -1082,7 +1098,20 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	$graph_values = array();
 	$module_name_list = array();
 	$collector = 0;
-
+	$user = users_get_user_by_id($config['id_user']);
+	$user_flash_charts = $user['flash_chart'];
+	
+	if ($user_flash_charts == 1)
+		$flash_charts = true;
+	elseif($user_flash_charts == -1)
+		$flash_charts = $config['flash_charts'];
+	elseif($user_flash_charts == 0)
+		$flash_charts = false;
+	
+	if ($only_image) {
+		$flash_charts = false;
+	}
+	
 	// Calculate data for each module
 	for ($i = 0; $i < $module_number; $i++) {
 		$automatic_custom_graph_meta = false;
@@ -1196,7 +1225,10 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				$module_name = io_safe_output(
 					modules_get_agentmodule_name ($agent_module_id));
 				
-				$module_name_list[$i] = '<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . $agent_name . " / " . $module_name. '</span>';
+				if ($flash_charts)
+					$module_name_list[$i] = '<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . $agent_name . " / " . $module_name. '</span>';
+				else
+					$module_name_list[$i] = $agent_name . " / " . $module_name;
 			}
 		}
 		else {
@@ -1213,10 +1245,22 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			$module_name = sprintf(__("%s"), $module_name);
 			$module_name = ui_print_truncate_text($module_name, 'module_small', false, true, false, '...', false);
 			
-			if ($labels[$agent_module_id] != '')
-				$module_name_list[$i] = '<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . $labels[$agent_module_id] . '</span>';
-			else
-				$module_name_list[$i] = '<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . $agent_name . ' / ' . $module_name . '</span>';
+			if ($flash_charts) {
+				if ($labels[$agent_module_id] != '')
+					$module_name_list[$i] = '<span style=\"font-size:' . 
+						($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . 
+						$labels[$agent_module_id] . '</span>';
+				else
+					$module_name_list[$i] = '<span style=\"font-size:' . 
+						($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . 
+						$agent_name . ' / ' . $module_name . '</span>';
+			}
+			else {
+				if ($labels[$agent_module_id] != '')
+					$module_name_list[$i] = $labels[$agent_module_id];
+				else
+					$module_name_list[$i] = $agent_name . ' / ' . $module_name;
+			}
 		}
 		
 		// Data iterator
@@ -1413,19 +1457,6 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	}
 	
 	$temp = array();
-	$user = users_get_user_by_id($config['id_user']);
-	$user_flash_charts = $user['flash_chart'];
-	
-	if ($user_flash_charts == 1)
-		$flash_charts = true;
-	elseif($user_flash_charts == -1)
-		$flash_charts = $config['flash_charts'];
-	elseif($user_flash_charts == 0)
-		$flash_charts = false;
-	
-	if ($only_image) {
-		$flash_charts = false;
-	}
 	
 	if ($flash_charts === false && $stacked == CUSTOM_GRAPH_GAUGE) 
 		$stacked = CUSTOM_GRAPH_BULLET_CHART;
@@ -1709,14 +1740,14 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 						$temp[$timestamp_point][$graph_group] = $point_value;
 					}
 					
-					$percentile_value = get_percentile($percentil, $point);
+					$percentile_value = get_percentile($config['percentil'], $point);
 					$percentil_result[$graph_group] = array_fill ( 0, count($point), $percentile_value);
 					$series_type[$graph_group] = 'line';
 					$agent_name = io_safe_output(
 						modules_get_agentmodule_agent_name ($module_list[$graph_group]));
 					$module_name = io_safe_output(
 						modules_get_agentmodule_name ($module_list[$graph_group]));
-					$module_name_list['percentil'.$graph_group] = __('Percentile %dº', $percentil) . __(' of module ') . $agent_name .' / ' . $module_name . ' (' . $percentile_value . ' ' . $unit . ') ';
+					$module_name_list['percentil'.$graph_group] = __('Percentile %dº', $config['percentil']) . __(' of module ') . $agent_name .' / ' . $module_name . ' (' . $percentile_value . ' ' . $unit . ') ';
 				}
 			}
 			else {
@@ -1798,14 +1829,124 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		'color' => COL_GRAPH13,
 		'alpha' => CHART_DEFAULT_ALPHA);
 	
+	$threshold_data = array();
+
+	if ($from_interface) {
+		$yellow_threshold = 0;
+		$red_threshold = 0;
+
+		$yellow_up = 0;
+		$red_up = 0;
+
+		$yellow_inverse = 0;
+		$red_inverse = 0;
+
+		$compare_warning = false;
+		$compare_critical = false;
+
+		$do_it_warning_min = true;
+		$do_it_critical_min = true;
+
+		$do_it_warning_max = true;
+		$do_it_critical_max = true;
+
+		$do_it_warning_inverse = true;
+		$do_it_critical_inverse = true;
+		foreach ($module_list as $index => $id_module) {
+			// Get module warning_min and critical_min
+			$warning_min = db_get_value('min_warning','tagente_modulo','id_agente_modulo',$id_module);
+			$critical_min = db_get_value('min_critical','tagente_modulo','id_agente_modulo',$id_module);
+
+			if ($index == 0) {
+				$compare_warning = $warning_min;
+			}
+			else {
+				if ($compare_warning != $warning_min) {
+					$do_it_warning_min = false;
+				}
+			}
+
+			if ($index == 0) {
+				$compare_critical = $critical_min;
+			}
+			else {
+				if ($compare_critical != $critical_min) {
+					$do_it_critical_min = false;
+				}
+			}
+		}
+
+		if ($do_it_warning_min || $do_it_critical_min) {
+			foreach ($module_list as $index => $id_module) {
+				$warning_max = db_get_value('max_warning','tagente_modulo','id_agente_modulo',$id_module);
+				$critical_max = db_get_value('max_critical','tagente_modulo','id_agente_modulo',$id_module);
+
+				if ($index == 0) {
+					$yellow_up = $warning_max;
+				}
+				else {
+					if ($yellow_up != $warning_max) {
+						$do_it_warning_max = false;
+					}
+				}
+
+				if ($index == 0) {
+					$red_up = $critical_max;
+				}
+				else {
+					if ($red_up != $critical_max) {
+						$do_it_critical_max = false;
+					}
+				}
+			}
+		}
+
+		if ($do_it_warning_min || $do_it_critical_min) {
+			foreach ($module_list as $index => $id_module) {
+				$warning_inverse = db_get_value('warning_inverse','tagente_modulo','id_agente_modulo',$id_module);
+				$critical_inverse = db_get_value('critical_inverse','tagente_modulo','id_agente_modulo',$id_module);
+
+				if ($index == 0) {
+					$yellow_inverse = $warning_inverse;
+				}
+				else {
+					if ($yellow_inverse != $warning_inverse) {
+						$do_it_warning_inverse = false;
+					}
+				}
+
+				if ($index == 0) {
+					$red_inverse = $critical_inverse;
+				}
+				else {
+					if ($red_inverse != $critical_inverse) {
+						$do_it_critical_inverse = false;
+					}
+				}
+			}
+		}
+		
+		if ($do_it_warning_min && $do_it_warning_max && $do_it_warning_inverse) {
+			$yellow_threshold = $compare_warning;
+			$threshold_data['yellow_up'] = $yellow_up;
+			$threshold_data['yellow_inverse'] = (bool)$yellow_inverse;
+		}
+
+		if ($do_it_critical_min && $do_it_critical_max && $do_it_critical_inverse) {
+			$red_threshold = $compare_critical;
+			$threshold_data['red_up'] = $red_up;
+			$threshold_data['red_inverse'] = (bool)$red_inverse;
+		}
+	}
+
 	switch ($stacked) {
 		case CUSTOM_GRAPH_AREA:
 			return area_graph($flash_charts, $graph_values, $width,
 				$height, $color, $module_name_list, $long_index,
 				ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 				$title, "", $homeurl, $water_mark, $config['fontpath'],
-				$fixed_font_size, $unit, $ttl, array(), array(), 0,  0,  '',
-				false, '', true, $background_color,$dashboard, $vconsole);
+				$fixed_font_size, $unit, $ttl, array(), array(), $yellow_threshold, $red_threshold,  '',
+				false, '', true, $background_color,$dashboard, $vconsole, 0, $percentil_result, $threshold_data);
 			break;
 		default:
 		case CUSTOM_GRAPH_STACKED_AREA: 
@@ -1821,7 +1962,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 				$title, "", $water_mark, $config['fontpath'], $fixed_font_size,
 				$unit, $ttl, $homeurl, $background_color, $dashboard, 
-				$vconsole, $series_type, $percentil_result); 
+				$vconsole, $series_type, $percentil_result, $yellow_threshold, $red_threshold, $threshold_data); 
 			break;
 		case CUSTOM_GRAPH_STACKED_LINE:
 			return stacked_line_graph($flash_charts, $graph_values,
@@ -2221,7 +2362,9 @@ function graph_sla_slicebar ($id, $period, $sla_min, $sla_max, $date, $daysWeek 
 		2 => COL_WARNING,
 		3 => COL_CRITICAL,
 		4 => COL_UNKNOWN,
-		5 => $col_planned_downtime);
+		5 => "#ff8400",//COL_MINOR,
+		6 => COL_NOTINIT,
+		7 => "#ddd");//COL_MAJOR);
 	
 	return slicesbar_graph($data, $period, $width, $height, $colors,
 		$config['fontpath'], $round_corner, $home_url, $ttl);
@@ -2851,7 +2994,7 @@ function graph_events_validated($width = 300, $height = 200, $url = "", $meta = 
 	global $config;
 	global $graphic_type;
 	
-	$data_graph = reporting_get_count_events_validated(
+	$data_graph = events_get_count_events_validated(
 		array('id_group' => array_keys(users_get_groups())));
 	
 	$colors = array();
@@ -3915,8 +4058,8 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 		'file' => $config['homedir'] .  "/images/logo_vertical_water.png",
 		'url' => ui_get_full_url("/images/logo_vertical_water.png",
 		false, false, false));
-	
-	if ($config['type_module_charts'] === 'area') {
+	$type_graph = $config['type_module_charts'];
+	if ($type_graph === 'area') {
 		if ($compare === 'separated') {
 			return area_graph($flash_chart, $chart, $width, $height/2, $color, $legend,
 				$long_index, ui_get_full_url("images/image_problem.opaque.png", false, false, false),
@@ -3938,7 +4081,7 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 				$chart_extra_data, 0, 0, $adapt_key, false, $series_suffix_str, $menu);
 		}
 	}
-	elseif ($config['type_module_charts'] === 'line') {
+	elseif ($type_graph === 'line') {
 		if ($compare === 'separated') {
 			return
 				line_graph($flash_chart, $chart, $width, $height/2, $color,
@@ -4484,7 +4627,7 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
 	
-	if ($config['type_module_charts'] === 'area') {
+	if ($type_graph === 'area') {
 		return area_graph($flash_chart, $chart, $width, $height, $color,
 			$legend, array(), '', "", $unit, $homeurl,
 			$water_mark, $config['fontpath'], $config['font_size'], $unit,

@@ -2436,4 +2436,13 @@ function modules_get_agentmodule_mininterval($id_agent) {
 	$sql = sprintf('SELECT min(current_interval) min_interval from tagente_estado where id_agente = %d', $id_agent);
 	return db_get_row_sql($sql);
 }
+function modules_get_agentmodule_mininterval_no_async($id_agent) {
+	
+	$sql = 'SELECT MIN(tae.current_interval) AS min_interval
+					FROM tagente_estado tae
+					INNER JOIN tagente_modulo tam ON tae.id_agente_modulo = tam.id_agente_modulo
+					INNER JOIN ttipo_modulo ttm ON tam.id_tipo_modulo = ttm.id_tipo where ttm.nombre not like "async%" and tae.id_agente = '.$id_agent;
+
+	return db_get_row_sql($sql);
+}
 ?>

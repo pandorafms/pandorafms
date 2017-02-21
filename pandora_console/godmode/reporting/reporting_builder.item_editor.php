@@ -698,7 +698,8 @@ You can of course remove the warnings, that's why we include the source and do n
 		<tr id="row_period" style="" class="datos">
 			<td style="font-weight:bold;">
 				<?php
-				echo __('Period');
+				echo __('Time lapse');
+				ui_print_help_tip(__('This is the range, or period of time over which the report renders the information for this report type. For example, a week means data from a week ago from now. '));
 				?>
 			</td>
 			<td style="">

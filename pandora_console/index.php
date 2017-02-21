@@ -508,11 +508,11 @@ if (! isset ($config['id_user'])) {
 						</script>
 						<?php
 				}
+				
+				set_time_limit((int)$PHPmax_execution_time);
+				ini_set('upload_max_filesize', $PHPupload_max_filesize);
+				ini_set('memory_limit', $PHPmemory_limit);
 			}
-			
-			set_time_limit((int)$PHPmax_execution_time);
-			ini_set('upload_max_filesize', $PHPupload_max_filesize);
-			ini_set('memory_limit', $PHPmemory_limit);
 			
 			//==========================================================
 			//-------- SET THE CUSTOM CONFIGS OF USER ------------------

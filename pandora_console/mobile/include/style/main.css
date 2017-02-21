@@ -585,12 +585,13 @@ table.event_details td.cell_event_name {
 		padding-top: 7px;
 		display: table-cell;
 		clear: none;
+		float: none;
 		padding-left: 0px !important;
 		padding-right: 0px !important;
+		width: auto !important;
 	}
 	
 	#list_agents td.cell_0 {
-		width: 45%;
 		border-top: 0px none;
 	}
 	#list_agents td.cell_0>span.tiny>img {
@@ -598,12 +599,6 @@ table.event_details td.cell_event_name {
 		height: 30px;
 		margin-top: -6px;
 		margin-left: 0px;
-	}
-	#list_agents td.cell_5 {
-		width: 30%;
-	}
-	#list_agents td.cell_6 {
-		width: 25%;
 	}
 
 	#list_agents .cell_2 .ui-table-cell-label,

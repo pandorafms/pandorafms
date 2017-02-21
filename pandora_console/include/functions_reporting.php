@@ -165,6 +165,12 @@ function reporting_make_reporting_data($report = null, $id_report,
 						$force_width_chart,
 						$force_height_chart);
 				break;
+			case 'event_report_log':
+				$report['contents'][] =
+					reporting_log(
+						$report,
+						$content);
+				break;
 			case 'general':
 				$report['contents'][] =
 					reporting_general(

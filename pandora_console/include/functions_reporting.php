@@ -5960,7 +5960,10 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 					true,
 					true,
 					'white',
-					($content['style']['percentil'] == 1) ? $config['percentil'] : null);
+					($content['style']['percentil'] == 1) ? $config['percentil'] : null,
+					false,
+					false,
+					$config['type_module_charts']);
 			}
 			break;
 		case 'data':

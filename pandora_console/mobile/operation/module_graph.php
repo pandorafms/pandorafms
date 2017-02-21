@@ -187,7 +187,8 @@ class ModuleGraph {
 								1,
 								false,
 								'adapter_' . $this->graph_type,
-								$time_compare, $this->unknown_graph, false);
+								$time_compare, $this->unknown_graph, false,
+								'white', null, false, false, $config['type_module_charts']);
 							if ($this->draw_events) {
 								$graph .= '<br>';
 								$graph .= graphic_module_events($this->id,

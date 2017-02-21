@@ -790,12 +790,11 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	$only_image = false, $homeurl = '', $ttl = 1, $projection = false,
 	$adapt_key = '', $compare = false, $show_unknown = false,
 	$menu = true, $backgroundColor = 'white', $percentil = null,
-	$dashboard = false, $vconsole = false,$type_graph = 'area') {
+	$dashboard = false, $vconsole = false, $type_graph = 'area') {
 	
 	global $config;
 	global $graphic_type;
-	
-	
+
 	$flash_chart = $config['flash_charts'];
 	
 	enterprise_include_once("include/functions_reporting.php");
@@ -4059,6 +4058,7 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 		'url' => ui_get_full_url("/images/logo_vertical_water.png",
 		false, false, false));
 	$type_graph = $config['type_module_charts'];
+	
 	if ($type_graph === 'area') {
 		if ($compare === 'separated') {
 			return area_graph($flash_chart, $chart, $width, $height/2, $color, $legend,

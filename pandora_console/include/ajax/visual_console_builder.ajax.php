@@ -161,7 +161,8 @@ switch ($action) {
 			$img = grafico_modulo_sparse($id_agent_module,
 				$period, 0, $width, $height, '', null, false, 1,
 				0, 0, '', 0, 0, true, true, '', 1, false, '',
-				false, false, true, $background_color);
+				false, false, true, $background_color,
+				false, false, false, $config['type_module_charts']);
 		}
 		
 		//Restore db connection

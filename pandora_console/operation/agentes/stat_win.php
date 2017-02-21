@@ -222,7 +222,8 @@ $id = get_parameter('id');
 					false, $urlImage, 1, false,
 					'adapter_' . $graph_type, $time_compare,
 					$unknown_graph, true, 'white',
-					(($show_percentil)? $config['percentil'] : null));
+					(($show_percentil)? $config['percentil'] : null),
+					false, false, $config['type_module_charts']);
 				echo '<br>';
 				if ($show_events_graph)
 					echo graphic_module_events($id, $width, $height,

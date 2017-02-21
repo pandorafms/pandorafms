@@ -107,7 +107,7 @@ if ($print_sparse_graph) {
 		$pure, $date, $unit, $baseline, $return_data, $show_title,
 		$only_image, $homeurl, $ttl, $projection, $adapt_key, $compare,
 		$show_unknown, $menu, $backgroundColor, $percentil,
-		$dashboard, $vconsole);
+		$dashboard, $vconsole, $config['type_module_charts']);
 	return;
 }
 

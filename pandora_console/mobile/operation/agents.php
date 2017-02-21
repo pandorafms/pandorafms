@@ -421,12 +421,9 @@ class Agents {
 											$.each(data.agents, function(key, agent) {
 												$(\"table#list_agents tbody\")
 													.append(\"<tr class=''>\" +
-														\"<th class='head_vertical'></th>\" +
 														\"<td class='cell_0'>\" + agent[0] + \"</td>\" +
-														// \"<td class='cell_1'>\" + agent[1] + \"</td>\" +
 														\"<td class='cell_1'>\" + agent[2] + \"</td>\" +
 														\"<td class='cell_2'>\" + agent[3] + \"</td>\" +
-														// \"<td class='cell_4'>\" + agent[4] + \"</td>\" +
 														\"<td class='cell_3'>\" + agent[5] + \"</td>\" +
 														\"<td class='cell_4'>\" + agent[6] + \"</td>\" +
 														\"<td class='cell_5'>\" + agent[7] + \"</td>\" +

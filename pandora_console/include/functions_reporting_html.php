@@ -174,6 +174,9 @@ function reporting_html_print_report($report, $mini = false, $report_info = 1) {
 			case 'availability':
 				reporting_html_availability($table, $item);
 				break;
+			case 'event_report_log':
+				reporting_html_log($table, $item);
+				break;
 			case 'availability_graph':
 				reporting_html_availability_graph($table, $item);
 				break;

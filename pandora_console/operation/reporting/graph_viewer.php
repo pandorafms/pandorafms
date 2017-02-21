@@ -94,9 +94,9 @@ if ($view_graph) {
 	$events = $graph["events"];
 	$description = $graph["description"];
 	$stacked = (int) get_parameter ('stacked', -1);
-	$percentil = (int) get_parameter ('percentil', 0);
+	$percentil = ($graph['percentil']) ? 1 : null;
 	$check = get_parameter('threshold',false);
-
+	
 	if($check == CUSTOM_GRAPH_BULLET_CHART_THRESHOLD){
 		$check = true;
 		$stacked = CUSTOM_GRAPH_BULLET_CHART_THRESHOLD;

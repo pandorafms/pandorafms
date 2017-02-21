@@ -1392,6 +1392,29 @@ function agents_get_interval ($id_agent) {
 }
 
 /**
+ * Get all data of agent.
+ *
+ * @param Agent object.
+ *
+ * @return The interval value and status of last contact
+ */
+function agents_get_interval_status ($agent) {
+	
+	$return = '';
+	$last_time = strtotime ($agent["ultimo_contacto"]);
+	$now = time ();
+	$diferencia = $now - $last_time;
+	$time = ui_print_timestamp ($last_time, true, array('style' => 'font-size:6.5pt'));
+	$min_interval = modules_get_agentmodule_mininterval($agent['id_agente']);
+	
+	$return = $time;
+	if ($diferencia > ($min_interval["min_interval"] * 2))
+		$return = '<b><span style="color: #ff0000;">'.$time.'</span></b>';
+	
+	return $return;
+}
+
+/**
  * Get the operating system of an agent.
  *
  * @param int Agent id.

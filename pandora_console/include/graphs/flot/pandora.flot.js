@@ -1537,7 +1537,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				hoverable: true,
 				clickable: true,
 				borderWidth:1,
-				borderColor: '#666',
+				borderColor: '#C1C1C1',
 				tickColor: background_color,
 				markings: markings,
 				color: legend_color
@@ -2198,10 +2198,10 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 		set_watermark(graph_id, plot, $('#watermark_image_'+graph_id).attr('src'));
 	}
 
-	adjust_menu(graph_id, plot, parent_height);
+	adjust_menu(graph_id, plot, parent_height, width);
 }
 
-function adjust_menu(graph_id, plot, parent_height) {
+function adjust_menu(graph_id, plot, parent_height, width) {
 	if ($('#'+graph_id+' .xAxis .tickLabel').eq(0).css('width') != undefined) {
 		left_ticks_width = $('#'+graph_id+' .xAxis .tickLabel').eq(0).css('width').split('px')[0];
 	}
@@ -2234,7 +2234,7 @@ function adjust_menu(graph_id, plot, parent_height) {
 	//$('#legend_' + graph_id).css('width',plot.width());
 
 	$('#menu_' + graph_id)
-		.css('left',plot.width() - $('#menu_'+graph_id).width() + 10);
+		.css('left',width - $('#menu_'+graph_id).width());
 	$('#menu_' + graph_id).show();
 }
 
@@ -2251,10 +2251,10 @@ function set_watermark(graph_id, plot, watermark_src) {
 		if ($('#'+graph_id+' .yAxis .tickLabel').eq(0).css('height') != undefined) {
 			down_ticks_height = $('#'+graph_id+' .yAxis .tickLabel').eq(0).css('height').split('px')[0];
 		}
-		//var left_pos = parseInt(context.canvas.width - 3) - $('#watermark_image_'+graph_id)[0].width;
-		//var top_pos = parseInt(context.canvas.height - down_ticks_height - 10) - $('#watermark_image_'+graph_id)[0].height;
-		var left_pos = 380;
+		var left_pos = parseInt(context.canvas.width - 3) - $('#watermark_image_'+graph_id)[0].width;
 		var top_pos  = 6;
+		//var top_pos = parseInt(context.canvas.height - down_ticks_height - 10) - $('#watermark_image_'+graph_id)[0].height;
+		//var left_pos = 380;
 		context.drawImage(this, left_pos, top_pos);
 
 	}, false);

@@ -202,38 +202,39 @@ else {
 		}
 		array_push ($table->data, $data);
 	}
-	html_print_table($table);
+	
 }
-echo "<table width='100%'>";
-	echo "<tr>";
-		echo "<td>";
-			echo "<div style='float: right;'>";
-				if (!empty($messages)) {
-					if ($show_sent)
-						echo '<form method="post" style="float:right;" action="index.php?sec=workspace&amp;sec2=operation/messages/message_list&show_sent=1&amp;multiple_delete=1">';
-					else
-						echo '<form method="post" action="index.php?sec=workspace&amp;sec2=operation/messages/message_list&amp;multiple_delete=1">';
-					html_print_submit_button(__('Delete'), 'delete_btn',
-						false, 'class="sub delete"');
-					echo "</form>";
-				}
-				echo '<form method="post" style="float:right;" action="index.php?sec=workspace&sec2=operation/messages/message_edit">';
-					html_print_submit_button (__('Create message'), 'create', false, 'class="sub next" style="margin-right:5px;"');
-				echo "</form>";
-			echo "</div>";
-		echo "</td>";
-	echo "</tr>";
-echo "</table>";
 
+if (!empty($messages)) {
+	if ($show_sent) {
+		echo '<form method="post" action="index.php?sec=workspace&amp;sec2=operation/messages/message_list&show_sent=1">';
+	}
+	else {
+		echo '<form method="post" action="index.php?sec=workspace&amp;sec2=operation/messages/message_list">';
+	}
+	html_print_input_hidden('multiple_delete', 1);
+	html_print_table($table);
+		echo "<div style='float: right;'>";
+			html_print_submit_button(__('Delete'), 'delete_btn',
+				false, 'class="sub delete"');
+		echo "</div>";
+	echo "</form>";
+}
+
+echo "<div style='float: right;'>";
+	echo '<form method="post" style="float:right;" action="index.php?sec=workspace&sec2=operation/messages/message_edit">';
+		html_print_submit_button (__('Create message'), 'create', false, 'class="sub next" style="margin-right:5px;"');
+	echo "</form>";
+echo "</div>";
 ?>
 
 <script type="text/javascript">
 	function check_all_checkboxes() {
-		if ($("input[name=all_delete]").attr('checked')) {
-			$(".check_delete").attr('checked', true);
+		if ($("input[name=all_delete]").prop('checked')) {
+			$(".check_delete").prop('checked', true);
 		}
 		else {
-			$(".check_delete").attr('checked', false);
+			$(".check_delete").prop('checked', false);
 		}
 	}
 </script>

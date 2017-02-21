@@ -176,7 +176,7 @@ if ($create_user) {
 	}
 	$values["not_login"] = (bool)get_parameter ('not_login', false);
 	$values["strict_acl"] = (bool)get_parameter ('strict_acl', false);
-	$values["session_time"] = get_parameter('session_time', 0);
+	$values["session_time"] = (int)get_parameter('session_time', 0);
 	
 	if ($id == '') {
 		ui_print_error_message (__('User ID cannot be empty'));
@@ -280,7 +280,7 @@ if ($update_user) {
 	}
 	$values["not_login"] = (bool)get_parameter ('not_login', false);
 	$values["strict_acl"] = (bool)get_parameter ('strict_acl', false);
-	$values["session_time"] = get_parameter('session_time', 0);
+	$values["session_time"] = (int)get_parameter('session_time', 0);
 	
 	$res1 = update_user ($id, $values);
 	

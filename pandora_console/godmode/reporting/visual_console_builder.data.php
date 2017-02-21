@@ -95,12 +95,26 @@ if (defined('METACONSOLE')) {
 	$table->align[1] = 'left';
 }
 $table->class = 'databox filters';
+$table->size[0] = '20%';
+$table->size[1] = '20%';
+$table->size[1] = '50%';
 $table->data = array ();
 $table->data[0][0] = __('Name:') .
 	ui_print_help_tip(__("Use [ or ( as first character, for example '[*] Map name', to render this map name in main menu"), true);
 
 $table->data[0][1] = html_print_input_text('name', $visualConsoleName,
 	'', 80, 100, true);
+
+$table->rowspan[0][2] = 6;
+if ($action == 'new') {
+	$table->data[0][2] = '<img id="imagen" style="display:none;" 
+	src="">';
+}
+else {
+	$table->data[0][2] = '<img id="imagen" style="width:230px;" 
+	src="images/console/background/'.$background.'">';
+}
+	
 $table->data[1][0] = __('Group:');
 $groups = users_get_groups ($config['id_user'], 'RW');
 
@@ -125,36 +139,31 @@ $table->data[3][0] = __('Background image');
 $table->data[3][1] = html_print_input_file('background_image',true);
 $table->data[4][0] = __('Background color');
 
-if($action == 'new'){
-$table->data[4][1] .= html_print_input_text ('background_color', 'white', '', 8, 8, true);	
+if ($action == 'new') {
+	$table->data[4][1] .= html_print_input_text ('background_color', 
+		'white', '', 8, 8, true);	
 }
-else{
-	$table->data[4][1] .= html_print_input_text ('background_color', $background_color, '', 8, 8, true);
+else {
+	$table->data[4][1] .= html_print_input_text ('background_color', 
+		$background_color, '', 8, 8, true);
 }
-
 
 $table->data[5][0] = __('Size - (Width x Height)');
 
-if($action == 'new'){
-$table->data[5][1] = '<button id="modsize" style="margin-right:20px;" value="modsize">Set custom size</button>';
-}
-else{
-$table->data[5][1] = '<button id="modsize" style="margin-right:20px;" value="modsize">Set custom size</button>';
-}
+$table->data[5][1] = '<button id="modsize" 
+	style="margin-right:20px;" value="modsize">' . 
+	__('Set custom size') . '</button>';
 
-$table->data[5][1] .= '<span class="opt" style="visibility:hidden;">'.html_print_input_text('width', 1024, '', 10, 10, true , false) .
-	' x ' .
+$table->data[5][1] .= '<span class="opt" style="visibility:hidden;">' . 
+	html_print_input_text('width', 1024, '', 10, 10, true , false) .
+		' x ' .
 	html_print_input_text('height', 768, '', 10, 10, true, false).'</span>';
 
-if($action == 'new'){
-$table->data[5][1] .= '<span class="opt" style="visibility:hidden;">'.'<button id="getsize" style="margin-left:20px;" value="modsize">Set default size</button>'.'</span>';
-}
-else{
-$table->data[5][1] .= '<span class="opt" style="visibility:hidden;">'.'<button id="getsize" style="margin-left:20px;" value="modsize">Set default size</button>'.'</span>';
-}
+$table->data[5][1] .= '<span class="opt" style="visibility:hidden;">
+			<button id="getsize" style="margin-left:20px;" 
+			value="modsize">' . __('Set default size') . 
+			'</button></span>';
 
-$table->data[5][2] = '<img id="imagen" style="display:none" src="images/console/background/'.$background.'">';
-$table->data[0][3] = $table->data[0][4] = $table->data[0][5] = '';
 if ($action == 'new') {
 	$textButtonSubmit = __('Save');
 	$classButtonSubmit = 'sub wand';
@@ -166,18 +175,10 @@ else {
 
 html_print_table($table);
 
-	echo '<div class="action-buttons" style="width: '.$table->width.'">';
-	if($action == 'new'){
-		html_print_submit_button ($textButtonSubmit, 'update_layout', false,
-			'class="' . $classButtonSubmit . '"');
-	}
-	else{
-		html_print_submit_button ($textButtonSubmit, 'update_layout', false,
-			'class="' . $classButtonSubmit . '"');
-	}
-	echo '</div>';
-
-
+echo '<div class="action-buttons" style="width: ' . $table->width . '">';
+html_print_submit_button ($textButtonSubmit, 'update_layout', false,
+	'class="' . $classButtonSubmit . '"');
+echo '</div>';
 
 echo "</form>";
 ?>
@@ -188,46 +189,60 @@ echo "</form>";
 
 $(document).ready (function () {
 	
-$("#modsize").click(function(event){
-    event.preventDefault();
+	$("#modsize").click(function(event){
+		event.preventDefault();
 		
 		if($('.opt').css('visibility') == 'hidden'){
 			$('.opt').css('visibility','visible');
 		}
-			
+		
+		if ($('#imagen').attr('src') != '') {
+			$('input[name=width]').val($('#imagen').width());
+			$('input[name=height]').val($('#imagen').height());
+		}
+	});
+
+	$("#getsize").click(function(event){
+		event.preventDefault();
 		$('input[name=width]').val($('#imagen').width());
 		$('input[name=height]').val($('#imagen').height());
-			
-});
+	});
 
-$("#getsize").click(function(event){
-    event.preventDefault();
+	$("#background").change(function() {
+		$('#imagen').attr('src','images/console/background/'+$('#background').val());
+		$('#imagen').width(230);
+		$('#imagen').show();
+	});
+
+	$( "input[type=submit]" ).click(function( event ) {
+		if($( "#getsize" ).css('visibility')=='hidden'){
+			$('input[name=width]').val($('#imagen').width());
+			$('input[name=height]').val($('#imagen').height());
+		}
+	});
+
+
+	$("#file-background_image").change(function(){
+		readURL(this);
+	});
 	
-$('input[name=width]').val($('#imagen').width());
-$('input[name=height]').val($('#imagen').height());
-
-});
-
-$("#background").click(function(event){
-	$('#imagen').attr('src','images/console/background/'+$('#background').val());
-});
-
-$( "input[type=submit]" ).click(function( event ) {
-	
-	if($( "#getsize" ).css('visibility')=='hidden'){
-		$('input[name=width]').val($('#imagen').width());
-		$('input[name=height]').val($('#imagen').height());
+	function readURL(input) {
+		if (input.files && input.files[0]) {
+			var reader = new FileReader();
+			reader.onload = function (e) {
+				$('#imagen').attr('src', e.target.result);
+				$('#imagen').width(230);
+				$('#imagen').show();
+			}
+			reader.readAsDataURL(input.files[0]);
+		}
 	}
-	
-	
-});
 
-
-$("#file-background_image").change(function(event){
-	$('#back').submit();
-});
-
-$("#text-background_color").attachColorPicker();
+	$("#imgInp").change(function(){
+		readURL(this);
+	});
+		
+	$("#text-background_color").attachColorPicker();
 
 });
 

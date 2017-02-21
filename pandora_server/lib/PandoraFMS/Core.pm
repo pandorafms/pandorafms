@@ -947,6 +947,13 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		$group = get_db_single_row ($dbh, 'SELECT * FROM tgrupo WHERE id_grupo = ?', $agent->{'id_grupo'});
 	}
 
+	if (is_numeric($data)) {
+		my $data_precision = $pa_config->{'graph_precision'};
+		$data = sprintf("%.$data_precision" . "f", $data);
+		$data =~ s/0+$//;
+		$data =~ s/\.+$//;
+	}
+
 	# Thanks to people of Cordoba univ. for the patch for adding module and 
 	# id_agent macros to the alert.
 	
@@ -3965,6 +3972,13 @@ sub generate_status_event ($$$$$$$$) {
 		return;
 	}
 
+	if (is_numeric($data)) {
+		my $data_precision = $pa_config->{'graph_precision'};
+		$data = sprintf("%.$data_precision" . "f", $data);
+		$data =~ s/0+$//;
+		$data =~ s/\.+$//;
+	}
+	
 	# Replace macros
 	my %macros = (
 		_module_ => safe_output($module->{'nombre'}),

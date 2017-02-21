@@ -2437,8 +2437,8 @@ function reporting_html_availability(&$table, $item) {
 			$table1->head = array ();
 			$table1->head['max_text'] = __('Agent max value');
 			$table1->head['max']      = __('Max Value');
-			$table1->head['min_text'] = __('Agent min');
-			$table1->head['min']      = __('Agent min Value');
+			$table1->head['min_text'] = __('Agent min value');
+			$table1->head['min']      = __('Min Value');
 			$table1->head['avg']      = __('Average Value');
 			
 			$table1->headstyle = array();

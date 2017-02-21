@@ -56,6 +56,10 @@ $show_history = get_parameter ('show_history', 'n');
 $map = db_get_row ('tgis_map', 'id_tgis_map', $idMap);
 $confMap = gis_get_map_conf($idMap);
 
+// Default open map (used to overwrite unlicensed google map view)
+$confMapDefault = get_good_con();
+$confMapUrlDefault = json_decode($confMapDefault['conection_data'], true)['url'];
+
 $num_baselayer=0;
 // Initialy there is no Gmap base layer.
 $gmap_layer = false;
@@ -71,11 +75,17 @@ if ($confMap !== false) {
 				$baselayers[$num_baselayer]['url'] = $decodeJSON['url'];
 				break;
 			case 'Gmap':
-				$baselayers[$num_baselayer]['gmap_type'] = $decodeJSON['gmap_type'];
-				$baselayers[$num_baselayer]['gmap_key'] = $decodeJSON['gmap_key'];
-				$gmap_key = $decodeJSON['gmap_key'];
-				// Onece a Gmap base layer is found we mark it to import the API
-				$gmap_layer = true;
+				if (!isset($decodeJSON['gmap_key']) || empty($decodeJSON['gmap_key'])) {
+					// If there is not gmap_key, show the default view
+					$baselayers[$num_baselayer]['url'] = $confMapUrlDefault;
+					$baselayers[$num_baselayer]['typeBaseLayer'] = 'OSM';
+				} else {
+					$baselayers[$num_baselayer]['gmap_type'] = $decodeJSON['gmap_type'];
+					$baselayers[$num_baselayer]['gmap_key'] = $decodeJSON['gmap_key'];
+					$gmap_key = $decodeJSON['gmap_key'];
+					// Once a Gmap base layer is found we mark it to import the API
+					$gmap_layer = true;
+				}
 				break;
 			case 'Static_Image':
 				$baselayers[$num_baselayer]['url'] = $decodeJSON['url'];

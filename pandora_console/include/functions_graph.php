@@ -1221,19 +1221,21 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			else {
 				$agent_name = io_safe_output(
 					modules_get_agentmodule_agent_name ($agent_module_id));
+				$alias = db_get_value ("alias","tagente","nombre",$agent_name);
 				$module_name = io_safe_output(
 					modules_get_agentmodule_name ($agent_module_id));
 				
 				if ($flash_charts)
-					$module_name_list[$i] = '<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . $agent_name . " / " . $module_name. '</span>';
+					$module_name_list[$i] = '<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . $alias . " / " . $module_name. '</span>';
 				else
-					$module_name_list[$i] = $agent_name . " / " . $module_name;
+					$module_name_list[$i] = $alias . " / " . $module_name;
 			}
 		}
 		else {
 			//Get and process agent name
 			$agent_name = io_safe_output(
 				modules_get_agentmodule_agent_name ($agent_module_id));
+			$alias = db_get_value ("alias","tagente","nombre",$agent_name);
 			$agent_name = ui_print_truncate_text($agent_name, 'agent_small', false, true, false, '...', false);
 			
 			$agent_id = agents_get_agent_id ($agent_name);
@@ -1252,13 +1254,13 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				else
 					$module_name_list[$i] = '<span style=\"font-size:' . 
 						($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . 
-						$agent_name . ' / ' . $module_name . '</span>';
+						$alias . ' / ' . $module_name . '</span>';
 			}
 			else {
 				if ($labels[$agent_module_id] != '')
 					$module_name_list[$i] = $labels[$agent_module_id];
 				else
-					$module_name_list[$i] = $agent_name . ' / ' . $module_name;
+					$module_name_list[$i] = $alias . ' / ' . $module_name;
 			}
 		}
 		
@@ -1522,11 +1524,13 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 						$value = false;
 				}
 				
-				
-				if ( !empty($labels) && isset($labels[$module]) )
-					$label = io_safe_input($labels[$module]);
-				else
-					$label = agents_get_name($temp[$module]['id_agente']) . ': ' . $temp[$module]['nombre'];
+				if ( !empty($labels) && isset($labels[$module]) ){
+                    $label = io_safe_input($labels[$module]);
+                }else{
+					$alias = db_get_value ("alias","tagente","id_agente",$temp[$module]['id_agente']);
+                    $label = $alias . ': ' . $temp[$module]['nombre'];
+                }
+					
 				
 				$temp[$module]['label'] = $label;
 				$temp[$module]['value'] = $value;
@@ -1589,10 +1593,13 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				$agent_name = io_safe_output(
 					modules_get_agentmodule_agent_name ($module));
 				
-				if (!empty($labels) && isset($labels[$module]) )
-					$label = $labels[$module];
-				else
-					$label = $agent_name . " - " .$module_data['nombre'];
+				if (!empty($labels) && isset($labels[$module]) ){
+                    $label = $labels[$module];
+                }else {
+					$alias = db_get_value ("alias","tagente","id_agente",$module_data['id_agente']);
+                    $label = $alias . " - " .$module_data['nombre'];
+                }
+					
 				$temp[$label]['g'] = round($temp_data,4);
 				
 				
@@ -1649,8 +1656,8 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				if ( !empty($labels) && isset($labels[$module]) ){
 					$label = io_safe_output($labels[$module]);
 				}else {
-					$agent_name = agents_get_name($data_module['id_agente']);
-					$label = io_safe_output($agent_name . ": " . $data_module['nombre']);
+					$alias = db_get_value ("alias","tagente","id_agente",$data_module['id_agente']);
+					$label = io_safe_output($alias . ": " . $data_module['nombre']);
 				}
 				
 				$temp[$label] = array('value'=>$value,
@@ -3126,7 +3133,9 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 					$name = mb_substr (io_safe_output($row['agent_name']), 0, 14)." (".$row["count"].")";
 				}
 				else {
-					$name = mb_substr (agents_get_name ($row["id_agente"], "lower"), 0, 14)." (".$row["count"].")";
+					$alias = db_get_value ("alias","tagente","id_agente",$row["id_agente"]);
+					//$name = mb_substr (agents_get_name ($row["id_agente"], "lower"), 0, 14)." (".$row["count"].")";
+					$name = mb_substr ($alias, 0, 14)." (".$row["count"].")";
 				}
 				$data[$name] = $row["count"];
 			}

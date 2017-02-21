@@ -370,7 +370,10 @@ foreach ($layoutDatas as $layoutData) {
 						"none", $layoutData['id_metaconsole'], true);
 				}
 				else {
-					$params['value'] = agents_get_name($layoutData['id_agent']);
+					$params['print_hidden_input_idagent'] = true;
+					$params['hidden_input_idagent_name'] = 'id_agent_' . $idLayoutData;
+					$params['hidden_input_idagent_value'] = $layoutData['id_agent'];
+					$params['value'] = db_get_value ("alias","tagente","id_agente",$layoutData['id_agent']);
 				}
 				
 				if ($layoutData['id_agent'] == 0 and $layoutData['id_custom_graph'] != 0) {

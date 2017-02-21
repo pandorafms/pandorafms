@@ -139,6 +139,13 @@ unset($report['private']);
 unset($report['custom_logo']);
 //----------------------------------------------------------------------
 
+//change agent name
+if(count($report['contents']) > 0){
+    for($i = 0;$i < count($report['contents']); $i++){
+        $aux = explode("-",$report['contents'][$i]['subtitle']);
+        $report['contents'][$i]['subtitle'] = db_get_value ("alias","tagente","nombre",$report['contents'][$i]['agent_name']) .' -'. $aux[1];
+    }
+}
 
 $xml = null;
 $xml = array2XML($report, "report", $xml);

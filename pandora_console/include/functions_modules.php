@@ -1024,6 +1024,18 @@ function modules_get_agentmodule_agent_name ($id_agentmodule) {
 }
 
 /**
+ * Get agent alias of an agent module.
+ *
+ * @param int $id_agente_modulo Agent module id.
+ *
+ * @return string The alias of the given agent module.
+ */
+function modules_get_agentmodule_agent_alias ($id_agentmodule) {
+	// Since this is a helper function we don't need to do casting
+	return (string) agents_get_alias (modules_get_agentmodule_agent ($id_agentmodule));
+}
+
+/**
  * Get the module name of an agent module.
  *
  * @param int $id_agente_modulo Agent module id.

@@ -2878,12 +2878,12 @@ Create a new entry in B<tagente> optionaly with position information
 
 =cut
 ##########################################################################
-sub pandora_create_agent ($$$$$$$$$$;$$$$$$$$) {
+sub pandora_create_agent ($$$$$$$$$$;$$$$$$$$$) {
 	my ($pa_config, $server_name, $agent_name, $address,
 		$group_id, $parent_id, $os_id,
 		$description, $interval, $dbh, $timezone_offset,
 		$longitude, $latitude, $altitude, $position_description,
-		$custom_id, $url_address, $agent_mode) = @_;
+		$custom_id, $url_address, $agent_mode, $alias) = @_;
 	
 	logger ($pa_config, "Server '$server_name' creating agent '$agent_name' address '$address'.", 10);
 	
@@ -2909,7 +2909,8 @@ sub pandora_create_agent ($$$$$$$$$$;$$$$$$$$) {
 	                                                 'modo' => $agent_mode,
 	                                                 'custom_id' => $custom_id,
 	                                                 'url_address' => $url_address,
-	                                                 'timezone_offset' => $timezone_offset
+	                                                 'timezone_offset' => $timezone_offset,
+	                                                 'alias' => $alias
 	                                                });                           
 	                                                
 	my $agent_id = db_insert ($dbh, 'id_agente', "INSERT INTO tagente $columns", @{$values});
@@ -2923,7 +2924,7 @@ sub pandora_create_agent ($$$$$$$$$$;$$$$$$$$) {
 	}
 	
 	logger ($pa_config, "Server '$server_name' CREATED agent '$agent_name' address '$address'.", 10);
-	pandora_event ($pa_config, "Agent [$agent_name] created by $server_name", $group_id, $agent_id, 2, 0, 0, 'new_agent', 0, $dbh);
+	pandora_event ($pa_config, "Agent [$alias] created by $server_name", $group_id, $agent_id, 2, 0, 0, 'new_agent', 0, $dbh);
 	return $agent_id;
 }
 
@@ -4508,7 +4509,7 @@ sub pandora_self_monitoring ($$) {
 
 	my $xml_output = "";
 	
-	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='Pandora FMS Server version " . $pa_config->{'version'} . "' agent_name='".$pa_config->{'servername'}."' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
+	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='Pandora FMS Server version " . $pa_config->{'version'} . "' agent_name='".$pa_config->{'servername'} . "' agent_alias='".$pa_config->{'servername'} . "' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
 	$xml_output .=" <module>";
 	$xml_output .=" <name>Status</name>";
 	$xml_output .=" <type>generic_proc</type>";

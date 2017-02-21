@@ -787,6 +787,7 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 	
 	// Get agent id
 	$id_agent = modules_get_agentmodule_agent ($alert['id_agent_module']);
+	$agente = db_get_row ('tagente', 'id_agente', $id_agent);
 	$template = alerts_get_alert_template ($alert['id_alert_template']);
 	$description = io_safe_output($template['name']);
 	
@@ -847,10 +848,10 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 		}
 		else {
 			if ($agent_style !== false) {
-				$data[$index['agent_name']] .= ui_print_agent_name ($id_agent, true, 'agent_medium', $styleDisabled . " $agent_style", false, $console_url, $url_hash, $agent_name);
+				$data[$index['agent_name']] .='<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agent.'"> <span style="font-size: 7pt;font-weight:bold" title ="' . $agente['nombre']. '">'.$agente["alias"].'</span></a>';
 			}
 			else {
-				$data[$index['agent_name']] .= ui_print_agent_name ($id_agent, true, 'agent_medium', $styleDisabled, false, $console_url, $url_hash);
+				$data[$index['agent_name']] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agent.'"> <span style="font-size: 7pt;font-weight:bold" title ="' . $agente['nombre']. '">'.$agente["alias"].'</span></a>';
 			}
 		}
 		
@@ -2390,7 +2391,8 @@ function ui_get_full_url ($url = '', $no_proxy = false, $add_name_php_file = fal
  * @return string Header HTML
  */
 
-function ui_print_page_header ($title, $icon = "", $return = false, $help = "", $godmode = false, $options = "",$modal = false, $message = "", $numChars = GENERIC_SIZE_TEXT) {
+
+function ui_print_page_header ($title, $icon = "", $return = false, $help = "", $godmode = false, $options = "", $modal = false, $message = "", $numChars = GENERIC_SIZE_TEXT, $alias = "") {
 	$title = io_safe_input_html($title);
 	if (($icon == "") && ($godmode == true)) {
 		$icon = "images/gm_setup.png";
@@ -2415,9 +2417,14 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 
 	$buffer .= '<ul class="mn"><li class="' . $type . '">&nbsp;' . '&nbsp; ';
 	
-	$buffer .= '<span style="margin-right:10px;">' .
-		ui_print_truncate_text($title, $numChars);
-
+	if(strpos($title, "Monitoring » Services »") != -1){
+		$title = str_replace("Monitoring » Services » Service Map » ",'',$title);
+	}
+	
+	$buffer .= '<span style="margin-right:10px;">';
+	if (empty($alias)) $buffer .= ui_print_truncate_text($title, $numChars);
+	else $buffer .=  ui_print_truncate_text($alias, $numChars);
+	
 	if ($modal && !enterprise_installed()){
 		$buffer .= "
 		<div id='".$message."' class='publienterprise' title='Community version' style='float: right;margin-top: -2px !important; margin-left: 2px !important;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
@@ -3206,7 +3213,7 @@ function ui_print_agent_autocomplete_input($parameters) {
 				
 				
 				select: function( event, ui ) {
-					var agent_name = ui.item.name;
+					var agent_name = ui.item.alias;
 					var agent_id = ui.item.id;
 					var server_name = "";
 					var server_id = "";
@@ -3264,10 +3271,10 @@ function ui_print_agent_autocomplete_input($parameters) {
 				})
 			.data("ui-autocomplete")._renderItem = function( ul, item ) {
 				if (item.ip == "") {
-					text = "<a>" + item.name + "</a>";
+					text = "<a>" + item.alias+ "</a>";
 				}
 				else {
-					text = "<a>" + item.name
+					text = "<a>" + item.alias
 						+ "<br><span style=\"font-size: 70%; font-style: italic;\">IP:" + item.ip + "</span></a>";
 				}
 				
@@ -3287,6 +3294,12 @@ function ui_print_agent_autocomplete_input($parameters) {
 						break;
 					case \'description\':
 						return $("<li style=\'background: #FEFCC6;\'></li>")
+							.data("item.autocomplete", item)
+							.append(text)
+							.appendTo(ul);
+						break;
+					case \'alias\':
+						return $("<li style=\'background: #a8e7eb;\'></li>")
 							.data("item.autocomplete", item)
 							.append(text)
 							.appendTo(ul);

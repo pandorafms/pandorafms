@@ -386,6 +386,10 @@ function mainAgentsModules() {
 	foreach ($agents as $agent) {
 		// Get stats for this group
 		$agent_status = agents_get_status($agent['id_agente']);
+		$alias = db_get_row ("tagente", "id_agente", $agent['id_agente']);
+		if (empty($alias['alias'])){
+			$alias['alias'] = $agent['nombre'];
+		}
 		
 		switch($agent_status) {
 			case 4: // Alert fired status
@@ -411,7 +415,7 @@ function mainAgentsModules() {
 		
 		echo "<td class='$rowcolor'>
 			<a class='$rowcolor' href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$agent['id_agente']."'>" .
-			ui_print_truncate_text(io_safe_output($agent['nombre']), 'agent_size_text_small', true, true, true, '...', 'font-size:10px; font-weight: bold;') .
+			$alias['alias'] .
 			"</a></td>";
 		$agent_modules = agents_get_modules($agent['id_agente'], false, $filter_module_group, true, true);
 		

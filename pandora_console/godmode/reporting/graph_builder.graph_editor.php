@@ -41,7 +41,7 @@ if (isset ($_GET["get_agent"])) {
 
 if ($editGraph) {
 	$graphRows = db_get_all_rows_sql("SELECT t1.*,
-		(SELECT t3.nombre 
+		(SELECT t3.alias 
 			FROM tagente t3 
 			WHERE t3.id_agente = 
 				(SELECT t2.id_agente 

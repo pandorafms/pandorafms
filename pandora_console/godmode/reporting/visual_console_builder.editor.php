@@ -87,10 +87,7 @@ echo "<div id='background_grid'
 
 //Print the layout datas from the DB.
 foreach ($layoutDatas as $layoutData) {
-	
-	$layoutData['status_calculated'] = 
-		visual_map_get_status_element($layoutData);
-	
+	$layoutData['status_calculated'] = visual_map_get_status_element($layoutData);
 	
 	// Pending delete and disable modules must be ignored
 	$delete_pending_module = db_get_value ("delete_pending",

@@ -138,7 +138,8 @@ if ($searchAgents) {
 		}else{
 			$search_sql = " t1.nombre COLLATE utf8_general_ci LIKE '%%" . $stringSearchSQL . "%%' OR
 							t2.nombre COLLATE utf8_general_ci LIKE '%%" . $stringSearchSQL . "%%' OR
-							t1.direccion COLLATE utf8_general_ci LIKE '%%" . $stringSearchSQL . "%%'";
+							t1.direccion COLLATE utf8_general_ci LIKE '%%" . $stringSearchSQL . "%%' OR
+							t1.alias COLLATE utf8_general_ci LIKE '%%" . $stringSearchSQL . "%%'";
 		}
 			$sql = "
 				FROM tagente t1
@@ -190,7 +191,8 @@ if ($searchAgents) {
 			}else{
 				$search_sql = " lower(t1.nombre) LIKE '%%" . strtolower($stringSearchSQL) . "%%' OR
 								lower(t2.nombre) LIKE '%%" . strtolower($stringSearchSQL) . "%%' OR
-								lower(t1.direccion) LIKE '%%" . strtolower($stringSearchSQL) . "%%'";
+								lower(t1.direccion) LIKE '%%" . strtolower($stringSearchSQL) . "%%' OR
+								lower(t1.alias) LIKE '%%" . strtolower($stringSearchSQL) . "%%'";
 			}
 			$sql = "
 				FROM tagente t1
@@ -220,8 +222,8 @@ if ($searchAgents) {
 			";
 			break;
 	}
-	
-	$select = "SELECT t1.id_agente, t1.ultimo_contacto, t1.nombre, t1.id_os, t1.intervalo, t1.id_grupo, t1.disabled";
+
+	$select = "SELECT t1.id_agente, t1.ultimo_contacto, t1.nombre, t1.id_os, t1.intervalo, t1.id_grupo, t1.disabled, t1.alias";
 	if ($only_count) {
 		$limit = " ORDER BY " . $order['field'] . " " . $order['order'] . 
 			" LIMIT " . $config["block_size"] . " OFFSET 0";

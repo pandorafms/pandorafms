@@ -437,6 +437,7 @@ function readFields() {
 	values['left'] = $("input[name=left]").val();
 	values['top'] = $("input[name=top]").val();
 	values['agent'] = $("input[name=agent]").val();
+	values['id_agent'] = $("input[name=id_agent]").val();
 	values['module'] = $("select[name=module]").val();
 	values['process_simple_value'] = $("select[name=process_value]").val();
 	values['background'] = $("#background_image").val();
@@ -996,6 +997,9 @@ function loadFieldsFromDB(item) {
 				if (key == 'agent_name') {
 					$("input[name=agent]").val(val);
 					//Reload no-sincrone the select of modules
+				}
+				if (key == 'id_agent') {
+					$("input[name=id_agent]").val(val);
 				}
 				if (key == 'modules_html') {
 					$("select[name=module]").empty().html(val);

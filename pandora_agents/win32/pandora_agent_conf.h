@@ -55,7 +55,9 @@ namespace Pandora {
 		void 				parseFile(string path_file, Collection *aux);
 		void               setFile     (string *all_conf);
 		void               setFile     (string filename);
+		void               updateFile (string key, string value);
 		string             getValue    (const string key);
+		void               setValue    (const string key, const string value);
 		
 		string	        getCurrentCollectionName();
 		unsigned char	getCurrentCollectionVerify();

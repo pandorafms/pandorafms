@@ -365,7 +365,8 @@ switch ($activeTab) {
 						$values['id_agent'] = (int) get_parameter('id_agent_' . $id, 0);
 					}
 					else {
-						$values['id_agent'] = agents_get_agent_id($agentName);
+						$agent_id = (int) get_parameter('id_agent_' . $id, 0);
+						$values['id_agent'] = $agent_id;
 					}
 					$values['id_agente_modulo'] = get_parameter('module_' . $id, 0);
 					$values['id_custom_graph'] = get_parameter('custom_graph_' . $id, 0);

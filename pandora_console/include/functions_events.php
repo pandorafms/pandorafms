@@ -979,7 +979,7 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 					$myclass =  get_priority_class ($event["criticity"]);
 					
 					$data[4] = "<a class='$myclass' href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$event["id_agente"]."'>".
-								agents_get_name ($event["id_agente"]). "</A>";
+								agents_get_alias($event["id_agente"]). "</A>";
 					
 				// ui_print_agent_name ($event["id_agente"], true, 25, '', true);
 				// for System or SNMP generated alerts
@@ -2017,10 +2017,13 @@ function events_page_details ($event, $server = "") {
 		$data = array();
 		$data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('Name').'</div>';
 		if (can_user_access_node ()) {
-			$data[1] = ui_print_agent_name ($event["id_agente"], true, 'agent_medium', '', false, $serverstring, $hashstring, $agent['nombre']);
+			//$data[1] = ui_print_agent_name ($event["id_agente"], true, 'agent_medium', '', false, $serverstring, $hashstring, $agent['nombre']);
+            $alias = db_get_row ("tagente","id_agente",$event["id_agente"]);
+            $data[1] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $event["id_agente"] . '" title='.$alias['nombre']. '>';
+            $data[1] .= '<b>' . $alias['alias'] . '</a></b>';
 		}
 		else {
-			$data[1] = ui_print_truncate_text($agent['nombre'], 'agent_medium', true, true, true);
+			$data[1] = ui_print_truncate_text($agent['alias'], 'agent_medium', true, true, true);
 		}
 		$table_details->data[] = $data;
 		

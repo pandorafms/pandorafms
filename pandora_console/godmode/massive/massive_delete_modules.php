@@ -39,10 +39,10 @@ if (is_ajax ()) {
 		$agents_modules = modules_get_agents_with_module_name ($module_name, $id_group,
 			array ('delete_pending' => 0,
 				'tagente_modulo.disabled' => 0),
-			array ('tagente.id_agente', 'tagente.nombre'),
+			array ('tagente.id_agente', 'tagente.alias'),
 			$recursion);
 		
-		echo json_encode (index_array ($agents_modules, 'id_agente', 'nombre'));
+		echo json_encode (index_array ($agents_modules, 'id_agente', 'alias'));
 		return;
 	}
 	return;
@@ -702,7 +702,7 @@ $(document).ready (function () {
 						
 						option = $("<option></option>")
 							.attr ("value", value["id_agente"])
-							.html (value["nombre"]);
+							.html (value["alias"]);
 						$("#id_agents").append (option);
 					});
 				},
@@ -729,6 +729,12 @@ $(document).ready (function () {
 		}
 	});
 	
+	if("<?php echo $delete ?>"){
+		if("<?php echo $selection_mode ?>" == 'agents'){
+			$("#groups_select").trigger("change");
+		}
+	}
+
 	$("#status_module").change(function() {
 		selector = $("#form_modules input[name=selection_mode]:checked").val();
 		if(selector == 'agents') {

@@ -134,7 +134,9 @@ ALTER TABLE tnetwork_component ADD COLUMN dynamic_two_tailed tinyint(1) unsigned
 ALTER TABLE tagente ADD transactional_agent tinyint(1) NOT NULL default 0;
 ALTER TABLE tagente ADD remoteto tinyint(1) NOT NULL default 0;
 ALTER TABLE tagente ADD cascade_protection_module int(10) unsigned default '0';
+ALTER TABLE tagente ADD COLUMN (alias VARCHAR2(600) not null DEFAULT '');
 
+UPDATE `tagente` SET tagente.alias = tagente.nombre;
 -- ---------------------------------------------------------------------
 -- Table `tlayout`
 -- ---------------------------------------------------------------------

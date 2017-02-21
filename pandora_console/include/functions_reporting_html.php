@@ -152,6 +152,10 @@ function reporting_html_print_report($report, $mini = false, $report_info = 1) {
 		}
 		else
 			$label = '';
+			
+        $aux = explode("-",$item['subtitle']);
+		$item['subtitle'] = db_get_value ("alias","tagente","nombre",$item['agent_name']) .' -'. $aux[1];
+		
 		reporting_html_header($table,
 			$mini, $item['title'],
 			$item['subtitle'],
@@ -1224,8 +1228,9 @@ function reporting_html_inventory_changes($table, $item) {
 			$table1->data[2][0] = __('Added');
 			$table1->colspan[2][0] = 2;
 			
-			
-			$table1->data = array_merge($table1->data, $module_item['added']);
+			if (count ($module_item['added'])) {
+				$table1->data = array_merge($table1->data, $module_item['added']);
+			}
 			
 			
 			$table1->cellstyle[3 + count($module_item['added'])][0] =
@@ -1233,8 +1238,9 @@ function reporting_html_inventory_changes($table, $item) {
 			$table1->data[3 + count($module_item['added'])][0] = __('Deleted');
 			$table1->colspan[3 + count($module_item['added'])][0] = 2;
 			
-			
-			$table1->data = array_merge($table1->data, $module_item['deleted']);
+			if (count ($module_item['deleted'])) {
+				$table1->data = array_merge($table1->data, $module_item['deleted']);
+			}
 			
 			
 			$table->colspan[

@@ -100,6 +100,15 @@ Key_Value::getKey () {
 }
 
 /**
+ * Set the key of the object.
+ * 
+ */
+void
+Key_Value::setKey (const string key) {
+	this->key = key;
+}
+
+/**
  * Get the value of the object.
  * 
  * @return The value
@@ -107,6 +116,16 @@ Key_Value::getKey () {
 string
 Key_Value::getValue () {
 	return value;
+}
+
+/**
+ * Set the value of the object.
+ * 
+ * @return The value
+ */
+void
+Key_Value::setValue (const string value) {
+	this->value = value;
 }
 
 void

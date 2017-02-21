@@ -221,7 +221,7 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 		}
 	}
 	
-	$selectText = 'talert_template_modules.*, t2.nombre AS agent_module_name, t3.nombre AS agent_name, t4.name AS template_name';
+	$selectText = 'talert_template_modules.*, t2.nombre AS agent_module_name, t3.alias AS agent_name, t4.name AS template_name';
 	if ($count !== false) {
 		$selectText = 'COUNT(talert_template_modules.id) AS count';
 	}
@@ -890,6 +890,21 @@ function agents_get_group_agents ($id_group = 0, $search = false,
 			unset ($search["name"]);
 		}
 		
+		if (isset ($search["alias"])) {
+			$name = io_safe_input ($search["alias"]);
+			switch ($config["dbtype"]) {
+				case "mysql":
+				case "postgresql":
+					$filter[] = "alias COLLATE utf8_general_ci LIKE '$name'";
+					break;
+				case "oracle":
+					$filter[] = "UPPER(alias) LIKE UPPER('$name')";
+					break;
+			}
+			
+			unset ($search["alias"]);
+		}
+		
 		if (isset($search['status'])) {
 			switch ($search['status']) {
 				case AGENT_STATUS_NORMAL:
@@ -941,14 +956,14 @@ function agents_get_group_agents ($id_group = 0, $search = false,
 		$filter['disabled'] = 0;
 	}
 	
-	$filter['order'] = 'nombre';
+	$filter['order'] = 'alias';
 	
 	if (is_metaconsole()) {
 		$table_name = 'tmetaconsole_agent';
 		
 		$fields = array(
 				'id_tagente AS id_agente',
-				'nombre',
+				'alias',
 				'id_tmetaconsole_setup AS id_server'
 			);
 	}
@@ -957,7 +972,7 @@ function agents_get_group_agents ($id_group = 0, $search = false,
 		
 		$fields = array(
 				'id_agente',
-				'nombre'
+				'alias'
 			);
 	}
 	
@@ -968,7 +983,7 @@ function agents_get_group_agents ($id_group = 0, $search = false,
 	
 	$agents = array ();
 	foreach ($result as $row) {
-		if (!isset($row["id_agente"]) || !isset($row["nombre"]))
+		if (!isset($row["id_agente"]) || !isset($row["alias"]))
 			continue;
 		
 		if ($serialized && isset($row["id_server"])) {
@@ -980,13 +995,13 @@ function agents_get_group_agents ($id_group = 0, $search = false,
 		
 		switch ($case) {
 			case "lower":
-				$value = mb_strtolower ($row["nombre"], "UTF-8");
+				$value = mb_strtolower ($row["alias"], "UTF-8");
 				break;
 			case "upper":
-				$value = mb_strtoupper ($row["nombre"], "UTF-8");
+				$value = mb_strtoupper ($row["alias"], "UTF-8");
 				break;
 			default:
-				$value = $row["nombre"];
+				$value = $row["alias"];
 				break;
 		}
 		
@@ -1307,6 +1322,28 @@ function agents_get_name ($id_agent, $case = "none") {
 		default:
 			return ($agent);
 			break;
+	}
+}
+
+/**
+ * Get alias of an agent.
+ *
+ * @param int $id_agent Agent id.
+ * @param string $case Case (upper, lower, none)
+ *
+ * @return string Alias of the given agent.
+ */
+function agents_get_alias ($id_agent, $case = 'none') {
+	$alias = (string) db_get_value ('alias', 'tagente', 'id_agente', (int) $id_agent);
+	
+	switch ($case) {
+		case 'upper':
+			return mb_strtoupper($alias, 'UTF-8');
+		case 'lower':
+			return mb_strtolower($alias, 'UTF-8');
+		case 'none':
+		default:
+			return ($alias);
 	}
 }
 

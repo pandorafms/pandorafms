@@ -29,7 +29,7 @@ require_once ("include/functions_reporting.php");
 require_once ("include/functions_tactical.php");
 require_once ($config["homedir"] . '/include/functions_graph.php');
 
-ui_print_page_header (__('Welcome to Pandora FMS Web Console'),'',false,"",false);
+//ui_print_page_header (__('Welcome to Pandora FMS Web Console'),'',false,"",false);
 
 if (tags_has_user_acl_tags()) {
 	ui_print_tags_warning();

@@ -168,20 +168,22 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				
 				<div id="label_box_arrow" style="text-align:center;width:120px;height:110px;margin-top:50px;">
 					<span>Label position</span>
-					
-					<div class="labelpos" id="labelposup" position="up" style="width:20px;height:20px;margin-top:10px;margin-left:45px;cursor: pointer;"><img src="'.$config['homeurl'].'images/label_up.png" style="height:100%;width:100%;"></div>
-					
-					<div class="labelpos" id="labelposleft" position="left" style="position:relative;top:-5px;width:20px;height:20px;margin-top:15px;cursor: pointer;"><img src="'.$config['homeurl'].'images/label_left.png" style="height:100%;width:100%;"></div>
-					
-					<div style="font-weight:bold;width:40px;height:20px;position:relative;margin-left:35px;margin-top:-24px;cursor: default;"><span style="float:left;margin-top:3px;margin-left:5px;">Object</span></div>
-					
-					<div class="labelpos" id="labelposright" position="right" style="top:2px;width:20px;height:20px;position:relative;margin-left:90px;margin-top:-24px;cursor: pointer;"><img src="'.$config['homeurl'].'images/label_right.png" style="height:100%;width:100%;"></div>
-					
-					<div class="labelpos" sel="yes" id="labelposdown" position="down" style="width:20px;height:20px;position:relative;margin-left:45px;margin-top:10px;cursor: pointer;"><img src="'.$config['homeurl'].'images/label_down_2.png" style="height:100%;width:100%;"></div>
-					
+					<div class="labelpos" id="labelposup" position="up" style="width:20px;height:20px;margin-top:10px;margin-left:45px;cursor: pointer;">
+						'. html_print_image ('images/label_up.png', true, array('style'=>'height:100%;width:100%;')). '
+					</div>
+					<div class="labelpos" id="labelposleft" position="left" style="position:relative;top:-5px;width:20px;height:20px;margin-top:15px;cursor: pointer;">
+						'. html_print_image ('images/label_left.png', true, array('style'=>'height:100%;width:100%;')). '
+					</div>
+					<div style="font-weight:bold;width:40px;height:20px;position:relative;margin-left:35px;margin-top:-24px;cursor: default;">
+						<span style="float:left;margin-top:3px;margin-left:5px;">Object</span>
+					</div>
+					<div class="labelpos" id="labelposright" position="right" style="top:2px;width:20px;height:20px;position:relative;margin-left:90px;margin-top:-24px;cursor: pointer;">
+						'. html_print_image ('images/label_right.png', true, array('style'=>'height:100%;width:100%;')). '
+					</div>
+					<div class="labelpos" sel="yes" id="labelposdown" position="down" style="width:20px;height:20px;position:relative;margin-left:45px;margin-top:10px;cursor: pointer;">
+						'. html_print_image ('images/label_down_2.png', true, array('style'=>'height:100%;width:100%;')). '
+					</div>
 				</div>
-				
-				
 				</td>
 				<td align="left" style="">' .
 				html_print_input_text('label', '', '', 20, 200, true) . '</td>';

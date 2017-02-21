@@ -41,6 +41,7 @@ $section = (string) get_parameter_get('section');
 		<title>eHorus client</title>
 		<link rel="stylesheet" href="../../include/ehorus/css/bootstrap.min.css" type="text/css" />
 		<link rel="stylesheet" href="../../include/ehorus/css/style.css" type="text/css" />
+		<link rel="stylesheet" href="../../include/ehorus/css/xterm.css" type="text/css" />
 		<script type="text/javascript" src="../../include/ehorus/bundle.min.js"></script>
 	</head>
 	<body>

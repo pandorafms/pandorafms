@@ -142,6 +142,7 @@ switch ($action) {
 			case 'general':
 			case 'network_interfaces_report':
 			case 'availability':
+			case 'event_report_log':
 			case 'availability_graph':
 			case 'agent_module':
 				$get_data_editor = true;
@@ -193,7 +194,9 @@ switch ($action) {
 					$idAgentModule = $item['id_agent_module'];
 					$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
 					break;
-				
+				case 'event_report_log':
+					$period = $item['period'];
+					$description = $item['description'];
 				case 'simple_graph':
 					$only_avg = isset($style['only_avg']) ? (bool) $style['only_avg'] : true;
 					$percentil = isset($style['percentil']) ? $config['percentil'] : 0;
@@ -569,6 +572,7 @@ switch ($action) {
 				case 'MTBF':
 				case 'MTTR':
 				case 'simple_baseline_graph':
+				case 'event_report_log':
 					$label = (isset($style['label'])) ? $style['label'] : '';
 					break;
 				default:
@@ -632,7 +636,12 @@ You can of course remove the warnings, that's why we include the source and do n
 					echo '<input type="hidden" id="type" name="type" value="' . $type . '" />';
 				}
 				?>
+				<?php
+					$text = __('This type of report brings a lot of data loading, it is recommended to use it for scheduled reports and not for real-time view.');
+					echo '<a id="log_help_tip" style="visibility: hidden;" href="javascript:" class="tip" >' . html_print_image ("images/tip.png", true, array('title' => $text)) . '</a>';
+				?>
 			</td>
+			
 		</tr>
 		
 		<tr id="row_name" style="" class="datos">
@@ -689,7 +698,8 @@ You can of course remove the warnings, that's why we include the source and do n
 		<tr id="row_period" style="" class="datos">
 			<td style="font-weight:bold;">
 				<?php
-				echo __('Period');
+				echo __('Time lapse');
+				ui_print_help_tip(__('This is the range, or period of time over which the report renders the information for this report type. For example, a week means data from a week ago from now. '));
 				?>
 			</td>
 			<td style="">
@@ -2534,6 +2544,7 @@ function chooseType() {
 	$("#row_last_value").hide();
 	$("#row_filter_search").hide();
 	$("#row_percentil").hide();
+	$("#log_help_tip").css("visibility", "hidden");
 	$("#agents_row").hide();
 	$("#select_agent_modules").hide();
 	$("#modules_row").hide();
@@ -2556,6 +2567,30 @@ function chooseType() {
 	$('#agent_autocomplete_events').show();
 	
 	switch (type) {
+		case 'event_report_group':
+			$("#row_description").show();
+			$("#row_period").show();
+			$("#row_servers").show();
+			$("#row_group").show();
+			$("#row_show_in_two_columns").show();
+			$("#row_event_filter").show();
+			$("#row_event_graphs").show();
+			
+			$("#row_event_graph_by_agent").show();
+			$("#row_event_graph_by_user").show();
+			$("#row_event_graph_by_criticity").show();
+			$("#row_event_graph_by_validated").show();
+			
+			$("#row_filter_search").show();
+			break;
+
+		case 'event_report_log':
+			$("#log_help_tip").css("visibility", "visible");
+			$("#row_description").show();
+			$("#row_period").show();
+			$("#row_agent").show();
+			break;
+		
 		case 'simple_graph':
 			$("#row_time_compare_overlapped").show();
 			$("#row_only_avg").show();

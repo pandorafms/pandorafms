@@ -32,12 +32,12 @@ require_once ("../include/functions_html.php");
 
 $id = get_parameter ('id');
 
-if (! isset($_SESSION[$config['homeurl_static']]['id_usuario'])) {
+if (! isset($_SESSION['id_usuario'])) {
 	session_start();
 	session_write_close();
 }
 
-$user_language = get_user_language ($_SESSION[$config['homeurl_static']]['id_usuario']);
+$user_language = get_user_language ($_SESSION['id_usuario']);
 
 if (file_exists ('../include/languages/'.$user_language.'.mo')) {
 	$l10n = new gettext_reader (new CachedFileReader ('../include/languages/'.$user_language.'.mo'));

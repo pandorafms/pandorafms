@@ -57,6 +57,7 @@ if ($id) {
 	$search = $filter['search'];
 	$text_agent = $filter['text_agent'];
 	$id_agent = $filter['id_agent'];
+	$text_module = $filter['text_module'];
 	$id_agent_module = $filter['id_agent_module'];
 	$pagination = $filter['pagination'];
 	$event_view_hr = $filter['event_view_hr'];
@@ -76,13 +77,13 @@ if ($id) {
 	$filter_only_alert = $filter['filter_only_alert'];
 	
 	if ($id_agent_module != 0) {
-		$text_module = db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $id_agent_module);
+		$text_module = modules_get_agentmodule_name($id_agent_module);
 		if ($text_module == false) {
 			$text_module = '';
 		}
 	}
 	if ($id_agent != 0) {
-		$text_agent = db_get_value('alias', 'tagente', 'id_agente', $id_agent);
+		$text_agent = agents_get_alias($id_agent);
 		if ($text_agent == false) {
 			$text_agent =  '';
 		}
@@ -111,7 +112,7 @@ else {
 	$filter_only_alert = '';
 }
 
-if($update || $create) {
+if ($update || $create) {
 	$id_group = (string) get_parameter ('id_group');
 	$id_group_filter = get_parameter('id_group_filter');
 	$id_name = (string) get_parameter ('id_name');
@@ -120,8 +121,9 @@ if($update || $create) {
 	$status = get_parameter('status', '');
 	$search = get_parameter('search', '');
 	$text_agent = get_parameter('text_agent', '');
-	$id_agent_module = get_parameter('module_search_hidden', '');
-	$id_agent = get_parameter('id_agent', '');
+	$id_agent = (int) get_parameter('id_agent');
+	$text_module = get_parameter('text_module', '');
+	$id_agent_module = (int) get_parameter('module_search_hidden');
 	$pagination = get_parameter('pagination', '');
 	$event_view_hr = get_parameter('event_view_hr', '');
 	$id_user_ack = get_parameter('id_user_ack', '');
@@ -383,10 +385,9 @@ $table->data[20][1] = html_print_select(
 	"filter_only_alert", $filter_only_alert, '', '', '', true);
 
 if (!is_metaconsole()) {
-	echo $id_agent_module;
 	$table->data[21][0] = '<b>' . __('Module search') . '</b>';
 	$table->data[21][1] .= html_print_autocomplete_modules('module_search',
-		$text_module, false, $id_agent_module, true, '', array(), true);
+		$text_module, false, true, '', array(), true, $id_agent_module);
 }
 
 echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=edit_filter&pure='.$config['pure'].'">';

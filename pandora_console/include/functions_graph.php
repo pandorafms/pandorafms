@@ -3198,7 +3198,7 @@ function grafico_eventos_agente ($width = 300, $height = 200, $result = false, $
 				$count[] = __('SYSTEM');
 			}
 			else
-				$count[] = agents_get_name ($row["id_agente"]) ;
+				$count[] = agents_get_alias($row["id_agente"]) ;
 		}
 		
 	}

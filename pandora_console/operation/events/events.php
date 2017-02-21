@@ -78,7 +78,7 @@ if (is_ajax ()) {
 		}
 		elseif ($event["id_agente"] > 0) {
 			// Agent name
-			echo agents_get_name ($event["id_agente"]);
+			echo agents_get_alias($event["id_agente"]);
 		}
 		else {
 			echo '';
@@ -234,7 +234,7 @@ $server_id = (int)get_parameter('server_id', 0);
 $text_agent = (string) get_parameter("text_agent");
 
 if ($id_agent != 0) {
-	$text_agent = db_get_value('nombre', 'tagente', 'id_agente', $id_agent);
+	$text_agent = agents_get_alias($id_agent);
 	if ($text_agent == false) {
 		$text_agent =  '';
 		$id_agent = 0;

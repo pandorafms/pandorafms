@@ -131,6 +131,9 @@ if ($view_graph) {
 	
 	if (check_acl ($config['id_user'], 0, "RW")) {
 		$options = array(
+			'graph_list' => array('active' => false,
+				'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graphs">' . 
+					html_print_image("images/list.png", true, array ("title" => __('Graph list'))) .'</a>'),
 			'main' => array('active' => false,
 				'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=main&edit_graph=1&id=' . $id_graph . '">' . 
 					html_print_image("images/chart.png", true, array ("title" => __('Main data'))) .'</a>'),
@@ -160,13 +163,12 @@ if ($view_graph) {
 	}
 	
 	// Header
-	ui_print_page_header (__('Reporting') . " &raquo;  " .
-		__('Custom graphs') . " - " . $graph['name'],
-		"images/chart.png", false, "", false, $options);
+	ui_print_page_header ($graph['name'],
+			"images/chart.png", false, "", false, $options);
 	
 	$graph_return = custom_graphs_print($id_graph, $height, $width, $period, $stacked,
 			true, $unixdate);
-	
+
 	if ($graph_return){
 		echo "<table class='databox filters' cellpadding='0' cellspacing='0' width='100%'>";
 		echo "<tr><td>";

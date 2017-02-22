@@ -59,6 +59,9 @@ echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/
 $label = get_parameter('label');
 $label = base64_decode($label);
 $id = get_parameter('id');
+$id_agent = db_get_value ("id_agente","tagente_modulo","id_agente_modulo",$id);
+$alias = db_get_value ("alias","tagente","id_agente",$id_agent);
+//$agent = agents_get_agent_with_ip ("192.168.50.31");
 //$label = rawurldecode(urldecode(base64_decode(get_parameter('label', ''))));
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -74,7 +77,7 @@ $id = get_parameter('id');
 		}
 		?>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<title>Pandora FMS Graph (<?php echo modules_get_agentmodule_agent_name ($id) . ' - ' . $label; ?>)</title>
+		<title>Pandora FMS Graph (<?php echo $alias . ' - ' . $label; ?>)</title>
 		<link rel="stylesheet" href="../../include/styles/pandora_minimal.css" type="text/css" />
 		<link rel="stylesheet" href="../../include/styles/jquery-ui-1.10.0.custom.css" type="text/css" />
 		<script type='text/javascript' src='../../include/javascript/pandora.js'></script>
@@ -222,7 +225,8 @@ $id = get_parameter('id');
 					false, $urlImage, 1, false,
 					'adapter_' . $graph_type, $time_compare,
 					$unknown_graph, true, 'white',
-					(($show_percentil)? $config['percentil'] : null));
+					(($show_percentil)? $config['percentil'] : null),
+					false, false, $config['type_module_charts']);
 				echo '<br>';
 				if ($show_events_graph)
 					echo graphic_module_events($id, $width, $height,

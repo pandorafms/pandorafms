@@ -148,19 +148,18 @@ function mainAgentsModules() {
 	$agents = agents_get_group_agents($group_id);
 	if ((empty($agents)) || $agents == -1) $agents = array();
 	$filter_agents_label = '<b>'.__('Agents').'</b>';
-	$filter_agents = html_print_select($agents, 'id_agents2[]', $agents_id, '', '', 0, true, true, true, '', false, "min-width: 180px");
+	$filter_agents = html_print_select($agents, 'id_agents2[]', $agents_id, '', '', 0, true, true, true, '', false, "min-width: 180px; max-width: 200px;");
 
 	//type show
 	$selection = array(0 => __('Show common modules'),
 						1=> __('Show all modules'));
 	$filter_type_show_label = '<b>'.__('Show common modules').'</b>';
-	$filter_type_show = html_print_select($selection, 'selection_agent_module', $selection_a_m, '', "", 0, true, false, true, '', false, "min-width: 180px");
+	$filter_type_show = html_print_select($selection, 'selection_agent_module', $selection_a_m, '', "", 0, true, false, true, '', false, "min-width: 180px;");
 
 	//modules
-	$all_modules = db_get_all_rows_sql("SELECT DISTINCT nombre, id_agente_modulo FROM tagente_modulo WHERE id_agente IN (" . implode(',', array_keys($agents)) . ")");
-	
+	$all_modules = select_modules_for_agent_group($group_id, $agents_id, $selection_a_m, false);
 	$filter_modules_label = '<b>'.__('Module').'</b>';
-	$filter_modules = html_print_select($all_modules, 'module[]', $modules_selected, '', __('None'), 0, true, true, true, '', false, "min-width: 180px");
+	$filter_modules = html_print_select($all_modules, 'module[]', $modules_selected, '', '', 0, true, true, true, '', false, "min-width: 180px; max-width: 200px;");
 
 	//update
 	$filter_update = html_print_submit_button(__('Update item'), 'edit_item', false, 'class="sub upd"', true);
@@ -218,35 +217,52 @@ function mainAgentsModules() {
 	
 	if($agents_id[0] != -1){
 		$agents = $agents_id;
-		$all_modules = array();
-		$total_pagination = count($agents);
-		foreach ($modules_selected as $key => $value) {
-			$all_modules[$value] = io_safe_output(modules_get_agentmodule_name($value));  
-		}
 	}
 	else {
 		$agents = '';
 		$agents = agents_get_group_agents($group_id,array('disabled' => 0));
 		$agents = array_keys($agents);	
-		$filter_module_group = array('disabled' => 0);
-		
-		if ($modulegroup > 0) {
-			$filter_module_group['id_module_group'] = $modulegroup;
-		}
-		$count = 0;
-		foreach ($agents as $agent) {
-			$module = agents_get_modules($agent, false,
-				$filter_module_group, true, false);
-			if ($module == false) {
-				unset($agents[$count]);
-			}
-			$count++;
-		}
-		$total_pagination = count($agents);
+	}
+	
+	$filter_module_group = array('disabled' => 0);
+	
+	if ($modulegroup > 0) {
+		$filter_module_group['id_module_group'] = $modulegroup;
+	}
 
+	$count = 0;
+	foreach ($agents as $agent) {
+		$module = agents_get_modules($agent, false,
+			$filter_module_group, true, true);
+		if ($module == false) {
+			unset($agents[$count]);
+		}
+		$count++;
+	}
+	$total_pagination = count($agents);
 
+	if($agents_id[0] != -1){
+		$all_modules = array();
+		foreach ($modules_selected as $key => $value) {
+			//$all_modules[$value] = io_safe_output(modules_get_agentmodule_name($value));
+			$name = modules_get_agentmodule_name($value);
+			$sql = "SELECT id_agente_modulo 
+					FROM tagente_modulo 
+					WHERE nombre = '". $name ."';";
+
+			$result_sql = db_get_all_rows_sql($sql);
+			
+			if(is_array($result_sql)){
+				foreach ($result_sql as $key => $value) {
+					$all_modules[$value['id_agente_modulo']] = io_safe_output($name); 
+				}
+			} 
+			 
+		}
+	}
+	else{
 		$all_modules = agents_get_modules($agents, false,
-			$filter_module_group, true, false);
+		$filter_module_group, true, true);
 	}
 
 	$modules_by_name = array();
@@ -369,6 +385,10 @@ function mainAgentsModules() {
 	foreach ($agents as $agent) {
 		// Get stats for this group
 		$agent_status = agents_get_status($agent['id_agente']);
+		$alias = db_get_row ("tagente", "id_agente", $agent['id_agente']);
+		if (empty($alias['alias'])){
+			$alias['alias'] = $agent['nombre'];
+		}
 		
 		switch($agent_status) {
 			case 4: // Alert fired status
@@ -394,9 +414,9 @@ function mainAgentsModules() {
 		
 		echo "<td class='$rowcolor'>
 			<a class='$rowcolor' href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$agent['id_agente']."'>" .
-			ui_print_truncate_text(io_safe_output($agent['nombre']), 'agent_size_text_small', true, true, true, '...', 'font-size:10px; font-weight: bold;') .
+			$alias['alias'] .
 			"</a></td>";
-		$agent_modules = agents_get_modules($agent['id_agente'], false, $filter_module_group, true, false);
+		$agent_modules = agents_get_modules($agent['id_agente'], false, $filter_module_group, true, true);
 		
 		$nmodules = 0;
 		
@@ -408,6 +428,7 @@ function mainAgentsModules() {
 			}
 			
 			$match = false;
+			
 			foreach ($module['id'] as $module_id) {
 				if (!$match && array_key_exists($module_id,$agent_modules)) {
 					$status = modules_get_agentmodule_status($module_id);
@@ -438,8 +459,13 @@ function mainAgentsModules() {
 						case AGENT_MODULE_STATUS_UNKNOWN:
 							ui_print_status_image ('module_unknown.png', modules_get_last_value($module_id), false, array('width' => '20px', 'height' => '20px'));
 							break;
-						case 4:
+						case AGENT_MODULE_STATUS_NORMAL_ALERT:
+						case AGENT_MODULE_STATUS_WARNING_ALERT:
+						case AGENT_MODULE_STATUS_CRITICAL_ALERT:
 							ui_print_status_image ('module_alertsfired.png', modules_get_last_value($module_id), false, array('width' => '20px', 'height' => '20px'));
+							break;
+						case 4:
+							ui_print_status_image ('module_no_data.png', modules_get_last_value($module_id), false, array('width' => '20px', 'height' => '20px'));
 							break;
 					}
 					echo '</a>';
@@ -467,6 +493,7 @@ function mainAgentsModules() {
 	echo "<tr><td class='legend_square_simple'><div style='background-color: " . COL_WARNING . ";'></div></td><td>" . __("Yellow cell when the module has a warning status") . "</td></tr>";
 	echo "<tr><td class='legend_square_simple'><div style='background-color: " . COL_NORMAL . ";'></div></td><td>" . __("Green cell when the module has a normal status") . "</td></tr>";
 	echo "<tr><td class='legend_square_simple'><div style='background-color: " . COL_UNKNOWN . ";'></div></td><td>" . __("Grey cell when the module has an unknown status") . "</td></tr>";
+	echo "<tr><td class='legend_square_simple'><div style='background-color: " . COL_NOTINIT . ";'></div></td><td>" . __("Cell turns grey when the module is in 'not initialize' status") . "</td></tr>";
 	echo "</table>";
 	echo "</div>";
 	
@@ -563,7 +590,7 @@ extensions_add_main_function('mainAgentsModules');
 			);
 		});
 
-		$("#id_agents2").change (function(){
+		$("#id_agents2").click (function(){
 			selection_agent_module();
 		});
 
@@ -590,8 +617,6 @@ extensions_add_main_function('mainAgentsModules');
 			);
 		});
 
-		selection_agent_module();
-
 	});
 
 	function selection_agent_module() {
@@ -614,6 +639,6 @@ extensions_add_main_function('mainAgentsModules');
 				}
 			},
 			"json"
-			);
+		);
 	}
 </script>

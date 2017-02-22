@@ -258,13 +258,13 @@ switch ($sortField) {
 		switch ($sort) {
 			case 'up':
 				$selectNameUp = $selected;
-				$order = array('field' => 'nombre' . $order_collation,
-					'field2' => 'nombre' . $order_collation, 'order' => 'ASC');
+				$order = array('field' => 'alias' . $order_collation,
+					'field2' => 'alias' . $order_collation, 'order' => 'ASC');
 				break;
 			case 'down':
 				$selectNameDown = $selected;
-				$order = array('field' => 'nombre' . $order_collation,
-					'field2' => 'nombre' . $order_collation, 'order' => 'DESC');
+				$order = array('field' => 'alias' . $order_collation,
+					'field2' => 'alias' . $order_collation, 'order' => 'DESC');
 				break;
 		}
 		break;
@@ -273,12 +273,12 @@ switch ($sortField) {
 			case 'up':
 				$selectOsUp = $selected;
 				$order = array('field' => 'id_os',
-					'field2' => 'nombre' . $order_collation, 'order' => 'ASC');
+					'field2' => 'alias' . $order_collation, 'order' => 'ASC');
 				break;
 			case 'down':
 				$selectOsDown = $selected;
 				$order = array('field' => 'id_os',
-					'field2' => 'nombre' . $order_collation, 'order' => 'DESC');
+					'field2' => 'alias' . $order_collation, 'order' => 'DESC');
 				break;
 		}
 		break;
@@ -287,12 +287,12 @@ switch ($sortField) {
 			case 'up':
 				$selectIntervalUp = $selected;
 				$order = array('field' => 'intervalo',
-					'field2' => 'nombre' . $order_collation, 'order' => 'ASC');
+					'field2' => 'alias' . $order_collation, 'order' => 'ASC');
 				break;
 			case 'down':
 				$selectIntervalDown = $selected;
 				$order = array('field' => 'intervalo',
-					'field2' => 'nombre' . $order_collation, 'order' => 'DESC');
+					'field2' => 'alias' . $order_collation, 'order' => 'DESC');
 				break;
 		}
 		break;
@@ -301,12 +301,12 @@ switch ($sortField) {
 			case 'up':
 				$selectGroupUp = $selected;
 				$order = array('field' => 'id_grupo',
-					'field2' => 'nombre' . $order_collation, 'order' => 'ASC');
+					'field2' => 'alias' . $order_collation, 'order' => 'ASC');
 				break;
 			case 'down':
 				$selectGroupDown = $selected;
 				$order = array('field' => 'id_grupo',
-					'field2' => 'nombre' . $order_collation, 'order' => 'DESC');
+					'field2' => 'alias' . $order_collation, 'order' => 'DESC');
 				break;
 		}
 		break;
@@ -315,12 +315,12 @@ switch ($sortField) {
 			case 'up':
 				$selectLastContactUp = $selected;
 				$order = array('field' => 'ultimo_contacto',
-					'field2' => 'nombre' . $order_collation, 'order' => 'DESC');
+					'field2' => 'alias' . $order_collation, 'order' => 'DESC');
 				break;
 			case 'down':
 				$selectLastContactDown = $selected;
 				$order = array('field' => 'ultimo_contacto',
-					'field2' => 'nombre' . $order_collation, 'order' => 'ASC');
+					'field2' => 'alias' . $order_collation, 'order' => 'ASC');
 				break;
 		}
 		break;
@@ -329,12 +329,12 @@ switch ($sortField) {
 			case 'up':
 				$selectLastContactUp = $selected;
 				$order = array('field' => 'comentarios',
-					'field2' => 'nombre' . $order_collation, 'order' => 'DESC');
+					'field2' => 'alias' . $order_collation, 'order' => 'DESC');
 				break;
 			case 'down':
 				$selectLastContactDown = $selected;
 				$order = array('field' => 'comentarios',
-					'field2' => 'nombre' . $order_collation, 'order' => 'ASC');
+					'field2' => 'alias' . $order_collation, 'order' => 'ASC');
 				break;
 		}
 		break;
@@ -349,8 +349,8 @@ switch ($sortField) {
 		$selectGroupDown = '';
 		$selectLastContactUp = '';
 		$selectLastContactDown = '';
-		$order = array('field' => 'nombre' . $order_collation,
-			'field2' => 'nombre' . $order_collation,
+		$order = array('field' => 'alias' . $order_collation,
+			'field2' => 'alias' . $order_collation,
 			'order' => 'ASC');
 		break;
 }
@@ -377,7 +377,7 @@ if ($search != "") {
 		$search_sql .= ")";
 	}else{
 		$search_sql = " AND ( nombre " . $order_collation . "
-			LIKE '%$search%') ";
+			LIKE '%$search%' OR alias ".$order_collation." LIKE '%$search%') ";
 	}
 }
 
@@ -453,6 +453,8 @@ else {
 		
 		array ('id_agente',
 			'id_grupo',
+			'nombre',
+			'alias',
 			'id_os',
 			'ultimo_contacto',
 			'intervalo',
@@ -569,7 +571,7 @@ foreach ($agents as $agent) {
 	if ($agent['quiet']) {
 		$data[0] .= html_print_image("images/dot_green.disabled.png", true, array("border" => '0', "title" => __('Quiet'), "alt" => "")) . "&nbsp;";
 	}
-	$data[0] .= ui_print_agent_name($agent["id_agente"], true, 60, 'font-size:8pt !important;', true);
+	$data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'"> <span style="font-size: 7pt;font-weight:bold" title ="' . $agent["nombre"]. '">'.$agent["alias"].'</span></a>';
 	$data[0] .= '</span>';
 	$data[0] .= '<div class="agentleft_' . $agent["id_agente"] . '" style="visibility: hidden; clear: left;">';
 	$data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'">'.__('View').'</a>';
@@ -599,7 +601,7 @@ foreach ($agents as $agent) {
 	
 	$data[4] = ui_print_group_icon ($agent["id_grupo"], true);
 	$agent['not_init_count'] = $agent['notinit_count'];
-	$data[5] = reporting_tiny_stats($agent, true, ' ', ':', $strict_user);
+	$data[5] = reporting_tiny_stats($agent, true, 'modules', ':', $strict_user);
 	
 	
 	$data[6] = $status_img;

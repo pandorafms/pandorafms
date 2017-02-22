@@ -87,10 +87,12 @@ else {
 		$modulesCell = reporting_tiny_stats($agent_info, true);
 		
 		if ($agent['disabled']) {
-			$cellName = "<em>" . ui_print_agent_name ($agent["id_agente"], true, "text-transform: uppercase;") . ui_print_help_tip(__('Disabled'), true) . "</em>";
+			$cellName = "<em>" . '<a style href=index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].' title='.$agent["nombre"].'><b>'.
+			'<span style>'.$agent["alias"].'</span></b></a>'. ui_print_help_tip(__('Disabled'), true) . "</em>";
 		}
 		else {
-			$cellName = ui_print_agent_name ($agent["id_agente"], true, "text-transform: uppercase;");
+			$cellName = '<a style href=index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].' title='.$agent["nombre"].'><b>'.
+			'<span style>'.$agent["alias"].'</span></b></a>';
 		}
 		
 		$last_time = strtotime ($agent["ultimo_contacto"]);

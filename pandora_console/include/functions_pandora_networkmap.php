@@ -851,7 +851,7 @@ function networkmap_loadfile($id = 0, $file = '',
 						case 'agent':
 							$data['id_agent'] = $ids[$node_id]['id_agent'];
 							
-							$text = agents_get_name($ids[$node_id]['id_agent']);
+							$text = agents_get_alias($ids[$node_id]['id_agent']);
 							$text = io_safe_output($text);
 							$text = ui_print_truncate_text($text,
 								'agent_medium', false, true, false,

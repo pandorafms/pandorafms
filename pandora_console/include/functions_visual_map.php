@@ -122,8 +122,6 @@ function visual_map_print_item($mode = "read", $layoutData,
 		$left = $left * $proportion['proportion_width'];
 	}
 	
-	$agentname = agents_get_name(agents_get_module_id ($id_module));
-	$label = str_replace($agentname,ui_print_truncate_text($agentname, 'agent_small', false, true, false, '…', false),$label);
 	$text = '<span id="text_' . $id . '" class="text">' . $label .'</span>';
 
 	if($height == 0){
@@ -1670,7 +1668,7 @@ function visual_map_process_wizard_add ($id_agents, $image, $id_layout, $range,
 				break;
 		}
 		
-		$label = agents_get_name($id_agent);
+		$label = agents_get_alias($id_agent);
 		
 		$value_label = '(_VALUE_)';
 		if ($type === SIMPLE_VALUE) {
@@ -1747,12 +1745,12 @@ function visual_map_process_wizard_add_modules ($id_modules, $image,
 			}
 		}
 		
-		$id_agent = modules_get_agentmodule_agent ($id_module);
+		$id_agent = modules_get_agentmodule_agent($id_module);
 		
 		switch ($label_type) {
 			case 'agent_module':
 			default:
-				$agent_label = agents_get_name ($id_agent);
+				$agent_label = agents_get_alias($id_agent);
 				$module_label = modules_get_agentmodule_name($id_module);
 				$label = '<p><span class="visual_font_size_'.$fonts.'" style="font-family:'.$fontf.';">'.$agent_label . " - " . $module_label.'</span></p>';
 				break;
@@ -1761,7 +1759,7 @@ function visual_map_process_wizard_add_modules ($id_modules, $image,
 				$label = '<p><span class="visual_font_size_'.$fonts.'" style="font-family:'.$fontf.';">'.$module_label.'</span></p>';
 				break;
 			case 'agent':
-				$agent_label = agents_get_name ($id_agent);
+				$agent_label = agents_get_alias($id_agent);
 				$label = '<p><span class="visual_font_size_'.$fonts.'" style="font-family:'.$fontf.';">'.$agent_label.'</span></p>';
 				break;
 			case 'none':
@@ -1953,9 +1951,7 @@ function visual_map_process_wizard_add_agents ($id_agents, $image,
 		
 		switch ($label_type) {
 			case 'agent':
-				$agent_label = 
-					agents_get_name($id_agent);
-				$label = $agent_label;
+				$label = agents_get_alias($id_agent);
 				break;
 			case 'none':
 				$label = '';

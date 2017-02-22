@@ -179,7 +179,7 @@ if ($free_search != '') {
 					WHERE id_agente IN (
 						SELECT id_agente
 						FROM tagente
-						WHERE nombre LIKE "%' . $free_search . '%"))' .
+						WHERE nombre LIKE "%' . $free_search . '%") OR alias LIKE "%' . $free_search . '%")' .
 				')';
 			
 			break;
@@ -214,7 +214,7 @@ if ($free_search != '') {
 					WHERE id_agente IN (
 						SELECT id_agente
 						FROM tagente
-						WHERE nombre LIKE \'%' . $free_search . '%\'))' .
+						WHERE nombre LIKE \'%' . $free_search . '%\' OR alias LIKE \'%' . $free_search . '%\'))' .
 				')';
 			
 			break;

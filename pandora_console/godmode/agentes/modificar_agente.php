@@ -215,14 +215,14 @@ switch ($sortField) {
 		switch ($sort) {
 			case 'up':
 				$selectNameUp = $selected;
-				$order = array('field' => 'nombre ' . $order_collation,
-					'field2' => 'nombre ' . $order_collation,
+				$order = array('field' => 'alias ' . $order_collation,
+					'field2' => 'alias ' . $order_collation,
 					'order' => 'ASC');
 				break;
 			case 'down':
 				$selectNameDown = $selected;
-				$order = array('field' => 'nombre ' . $order_collation,
-					'field2' => 'nombre ' . $order_collation,
+				$order = array('field' => 'alias ' . $order_collation,
+					'field2' => 'alias ' . $order_collation,
 					'order' => 'DESC');
 				break;
 		}
@@ -232,13 +232,13 @@ switch ($sortField) {
 			case 'up':
 				$selectOsUp = $selected;
 				$order = array('field' => 'id_os',
-					'field2' => 'nombre ' . $order_collation,
+					'field2' => 'alias ' . $order_collation,
 					'order' => 'ASC');
 				break;
 			case 'down':
 				$selectOsDown = $selected;
 				$order = array('field' => 'id_os',
-					'field2' => 'nombre ' . $order_collation,
+					'field2' => 'alias ' . $order_collation,
 					'order' => 'DESC');
 				break;
 		}
@@ -248,13 +248,13 @@ switch ($sortField) {
 			case 'up':
 				$selectGroupUp = $selected;
 				$order = array('field' => 'id_grupo',
-					'field2' => 'nombre ' . $order_collation,
+					'field2' => 'alias ' . $order_collation,
 					'order' => 'ASC');
 				break;
 			case 'down':
 				$selectGroupDown = $selected;
 				$order = array('field' => 'id_grupo',
-					'field2' => 'nombre ' . $order_collation,
+					'field2' => 'alias ' . $order_collation,
 					'order' => 'DESC');
 				break;
 		}
@@ -266,8 +266,8 @@ switch ($sortField) {
 		$selectOsDown = '';
 		$selectGroupUp = '';
 		$selectGroupDown = '';
-		$order = array('field' => 'nombre ' . $order_collation,
-			'field2' => 'nombre ' . $order_collation,
+		$order = array('field' => 'alias ' . $order_collation,
+			'field2' => 'alias ' . $order_collation,
 			'order' => 'ASC');
 		break;
 }
@@ -292,8 +292,9 @@ if ($search != "") {
 		}
 		$search_sql .= ")";
 	}else{
-		$search_sql = " AND ( LOWER(nombre) " . $order_collation . "
-			LIKE LOWER('%$search%')) ";
+		$search_sql = " AND ( nombre " . $order_collation . "
+			LIKE '%$search%' OR alias " . $order_collation . "
+			LIKE '%$search%') ";
 	}
 }
 
@@ -386,7 +387,7 @@ else {
 					FROM tagente
 					WHERE 1=1
 						%s
-					ORDER BY %s %s %s LIMIT %d OFFSET %d', $search_sql, $order['field'], $order['field2'],
+					ORDER BY %s %s, %s %s LIMIT %d OFFSET %d', $search_sql, $order['field'],$order['order'], $order['field2'],
 					$order['order'], $config["block_size"], $offset);
 				break;
 			case "oracle":
@@ -397,7 +398,7 @@ else {
 					FROM tagente
 					WHERE 1=1
 						%s
-					ORDER BY %s %s %s', $search_sql, $order['field'], $order['field2'], $order['order']);
+					ORDER BY %s %s, %s %s', $search_sql, $order['field'],$order['order'], $order['field2'], $order['order']);
 				$sql = oracle_recode_query ($sql, $set);
 				break;
 		}
@@ -547,11 +548,14 @@ if ($agents !== false) {
 		else {
 			$main_tab = 'module';
 		}
-		
-		echo "<a href='index.php?sec=gagente&
+
+		if($agent["alias"] == ''){
+			$agent["alias"] = $agent["nombre"];
+		}
+		echo "<a alt =".$agent["nombre"]." href='index.php?sec=gagente&
 			sec2=godmode/agentes/configurar_agente&tab=$main_tab&
 			id_agente=" . $agent["id_agente"] . "'>" .
-			ui_print_truncate_text($agent["nombre"], 'agent_medium', true, true, true, '[&hellip;]', 'font-size: 7pt') .
+			'<span style="font-size: 7pt" title="' . $agent["nombre"] . '">'.$agent["alias"].'</span>' .
 			"</a>";
 		echo "</strong>";
 		if ($agent["disabled"]) {

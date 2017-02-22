@@ -512,9 +512,13 @@ function gis_get_map_conf($idMap) {
 }
 
 function get_good_con() {
-	$sql = 'SELECT * FROM tgis_map_connection WHERE id_tmap_connection = 2';
-
-	return db_get_all_rows_sql($sql);
+	
+	$good_map = db_get_row('tgis_map_connection', 'id_tmap_connection', 2);
+	// Try to open the default OpenStreetMap
+	if ($good_map !== false) {
+		return $good_map;
+	}
+	return db_get_row('tgis_map_connection', 'connection_type', 'OSM');
 }
 
 function gis_get_map_connection($idMapConnection) {

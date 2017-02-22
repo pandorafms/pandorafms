@@ -33,7 +33,7 @@ use PandoraFMS::Tools;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0dev PS170217";
+my $version = "7.0dev PS170222";
 
 # Pandora server configuration
 my %conf;
@@ -936,6 +936,12 @@ sub pandora_checkdb_consistency {
 		log_message ('CHECKDB',
 			"Deleting non-existing module $id_agente_modulo in state table.");
 	}
+
+	#-------------------------------------------------------------------
+	# 3. Update empty aliases.
+	#-------------------------------------------------------------------
+	log_message ('CHECKDB', "Updating empty aliases.");
+	db_do ($dbh, "UPDATE tagente SET alias=nombre WHERE alias=''");
 }
 
 ##############################################################################

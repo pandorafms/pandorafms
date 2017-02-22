@@ -49,8 +49,8 @@ if (is_ajax ()) {
 			$standby = (int) get_parameter ('standby');
 
 			$agents_alerts = alerts_get_agents_with_alert_template ($id_alert_templates, false,
-				array('order' => 'tagente.nombre, talert_template_modules.standby', 'talert_template_modules.standby' => $standby), 
-				array ('CONCAT(tagente.nombre, " - ", tagente_modulo.nombre) as agent_agentmodule_name', 
+				array('order' => 'tagente.alias, talert_template_modules.standby', 'talert_template_modules.standby' => $standby), 
+				array ('CONCAT(tagente.alias, " - ", tagente_modulo.nombre) as agent_agentmodule_name', 
 				'talert_template_modules.id as template_module_id'), $id_agents);
 
 			echo json_encode (index_array ($agents_alerts, 'template_module_id', 'agent_agentmodule_name'));
@@ -156,8 +156,8 @@ $table->data[3][0] .= '<span id="alerts_loading" class="invisible">';
 $table->data[3][0] .= html_print_image('images/spinner.png', true);
 $table->data[3][0] .= '</span>';
 $agents_alerts = alerts_get_agents_with_alert_template ($id_alert_templates, $id_group,
-	false, array ('tagente.nombre', 'tagente.id_agente'));
-$table->data[3][1] = html_print_select (index_array ($agents_alerts, 'id_agente', 'nombre'),
+	false, array ('tagente.alias', 'tagente.id_agente'));
+$table->data[3][1] = html_print_select (index_array ($agents_alerts, 'id_agente', 'alias'),
 	'id_not_standby_alerts[]', '', '', '', '', true, true, true, '', $id_alert_templates == 0);
 
 $table->data[4][0] = __('Action');
@@ -172,7 +172,7 @@ $table->data[5][0] = __('Standby alerts').ui_print_help_tip(__('Format').":<br> 
 $table->data[5][0] .= '<span id="alerts_loading2" class="invisible">';
 $table->data[5][0] .= html_print_image('images/spinner.png', true);
 $table->data[5][0] .= '</span>';
-$table->data[5][1] = html_print_select (index_array ($agents_alerts, 'id_agente2', 'nombre'),
+$table->data[5][1] = html_print_select (index_array ($agents_alerts, 'id_agente2', 'alias'),
 	'id_standby_alerts[]', '', '', '', '', true, true, true, '', $id_alert_templates == 0);
 $table->data[5][1] .= '</form>';
 

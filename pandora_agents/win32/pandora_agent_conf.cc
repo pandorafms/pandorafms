@@ -351,6 +351,70 @@ Pandora::Pandora_Agent_Conf::setFile (string filename) {
 }
 
 /**
+ * Update a configuration value in the configuration file. If it is not found,
+ * it is appended at the end of the file.
+ * 
+ * @param string key Name of the configuration option.
+ * @param string value New value.
+ */
+void
+Pandora::Pandora_Agent_Conf::updateFile (string key, string value){
+	string       buffer, filename, temp_filename;
+	int pos;
+	
+	/* Open the configuration file. */
+	filename = Pandora::getPandoraInstallDir ();
+	filename += "pandora_agent.conf";
+	ifstream     file (filename.c_str ());
+	if (!file.is_open ()) {
+		return;
+	}
+
+	/* Open the temporary file. */
+	temp_filename = filename + ".tmp";
+	ofstream     temp_file (temp_filename.c_str ());
+	if (!temp_file.is_open ()) {
+		return;
+	}
+	
+	/* Look for the configuration value. */
+	bool found = false;
+	while (!file.eof ()) {
+		getline (file, buffer);
+	
+		/* Copy the rest of the file if the key was found. */
+		if (found) {
+			temp_file << buffer << std::endl;
+			continue;
+		}
+
+		/* We will only look for the key in the first three characters, hoping
+		   to catch "key", "#key" and "# key". We would also catch "..key", but
+		   no such keys exist in the configuration file. */
+		pos = buffer.find(key);
+		if (pos == std::string::npos || pos > 2) {
+			temp_file << buffer << std::endl;
+			continue;
+		}
+
+		/* Match! */
+		found = true;
+		temp_file << key + " " + value << std::endl;
+	}
+
+	/* Append the value at the end of the file if it was not found. */
+	if (!found) {
+		temp_file << key + " " + value << std::endl;
+	}
+
+	/* Rename the temporary file. */
+	file.close ();
+	temp_file.close ();
+	remove(filename.c_str());
+	rename(temp_filename.c_str(), filename.c_str());
+}
+
+/**
  * Queries for a configuration value.
  * 
  * This method search in the key_values attribute for a
@@ -373,6 +437,33 @@ Pandora::Pandora_Agent_Conf::getValue (const string key)
 	}
 	
 	return "";
+}
+
+/**
+ * Sets a configuration value.
+ * 
+ * @param key Key to look for.
+ * @param string New value.
+ *
+ */
+void
+Pandora::Pandora_Agent_Conf::setValue (const string key, const string value)
+{
+	std::list<Key_Value>::iterator i;
+	
+	// Update.
+	for (i = this->key_values->begin (); i != this->key_values->end (); i++) {
+		if ((*i).getKey () == key) {
+			(*i).setValue (value);
+			return;
+		}
+	}
+
+	// Append.
+	Key_Value kv;
+	kv.setKey(key);
+	kv.setValue(value);
+	this->key_values->push_back (kv);
 }
 
 /**

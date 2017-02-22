@@ -152,6 +152,10 @@ function reporting_html_print_report($report, $mini = false, $report_info = 1) {
 		}
 		else
 			$label = '';
+			
+        $aux = explode("-",$item['subtitle']);
+		$item['subtitle'] = db_get_value ("alias","tagente","nombre",$item['agent_name']) .' -'. $aux[1];
+		
 		reporting_html_header($table,
 			$mini, $item['title'],
 			$item['subtitle'],
@@ -173,6 +177,9 @@ function reporting_html_print_report($report, $mini = false, $report_info = 1) {
 		switch ($item['type']) {
 			case 'availability':
 				reporting_html_availability($table, $item);
+				break;
+			case 'event_report_log':
+				reporting_html_log($table, $item);
 				break;
 			case 'availability_graph':
 				reporting_html_availability_graph($table, $item);
@@ -1221,8 +1228,9 @@ function reporting_html_inventory_changes($table, $item) {
 			$table1->data[2][0] = __('Added');
 			$table1->colspan[2][0] = 2;
 			
-			
-			$table1->data = array_merge($table1->data, $module_item['added']);
+			if (count ($module_item['added'])) {
+				$table1->data = array_merge($table1->data, $module_item['added']);
+			}
 			
 			
 			$table1->cellstyle[3 + count($module_item['added'])][0] =
@@ -1230,8 +1238,9 @@ function reporting_html_inventory_changes($table, $item) {
 			$table1->data[3 + count($module_item['added'])][0] = __('Deleted');
 			$table1->colspan[3 + count($module_item['added'])][0] = 2;
 			
-			
-			$table1->data = array_merge($table1->data, $module_item['deleted']);
+			if (count ($module_item['deleted'])) {
+				$table1->data = array_merge($table1->data, $module_item['deleted']);
+			}
 			
 			
 			$table->colspan[
@@ -1403,10 +1412,20 @@ function reporting_html_agent_module($table, $item) {
 									$row['agent_name']),
 								true, array('width' => '20px', 'height' => '20px'));
 							break;
-						case AGENT_STATUS_ALERT_FIRED:
+						case AGENT_MODULE_STATUS_NORMAL_ALERT:
+						case AGENT_MODULE_STATUS_WARNING_ALERT:
+						case AGENT_MODULE_STATUS_CRITICAL_ALERT:
 							$table_data .= ui_print_status_image(
 								'module_alertsfired.png',
 								__("%s in %s : ALERTS FIRED",
+									$module_name,
+									$row['agent_name']),
+								true, array('width' => '20px', 'height' => '20px'));
+							break;
+						case 4:
+							$table_data .= ui_print_status_image(
+								'module_no_data.png',
+								__("%s in %s : Not initialize",
 									$module_name,
 									$row['agent_name']),
 								true, array('width' => '20px', 'height' => '20px'));
@@ -1429,6 +1448,7 @@ function reporting_html_agent_module($table, $item) {
 		$table_data .= "<tr><td class='legend_square_simple'><div style='background-color: " . COL_WARNING . ";'></div></td><td>" . __("Yellow cell when the module has a warning status") . "</td></tr>";
 		$table_data .= "<tr><td class='legend_square_simple'><div style='background-color: " . COL_NORMAL . ";'></div></td><td>" . __("Green cell when the module has a normal status") . "</td></tr>";
 		$table_data .= "<tr><td class='legend_square_simple'><div style='background-color: " . COL_UNKNOWN . ";'></div></td><td>" . __("Grey cell when the module has an unknown status") . "</td></tr>";
+		$table_data .= "<tr><td class='legend_square_simple'><div style='background-color: " . COL_NOTINIT . ";'></div></td><td>" . __("Cell turns grey when the module is in 'not initialize' status") . "</td></tr>";
 		$table_data .= "</table>";
 		$table_data .= "</div>";
 		
@@ -2423,8 +2443,8 @@ function reporting_html_availability(&$table, $item) {
 			$table1->head = array ();
 			$table1->head['max_text'] = __('Agent max value');
 			$table1->head['max']      = __('Max Value');
-			$table1->head['min_text'] = __('Agent min');
-			$table1->head['min']      = __('Agent min Value');
+			$table1->head['min_text'] = __('Agent min value');
+			$table1->head['min']      = __('Min Value');
 			$table1->head['avg']      = __('Average Value');
 			
 			$table1->headstyle = array();

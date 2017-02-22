@@ -73,6 +73,7 @@ $campo_3 = "";
 $maximo = 0;
 $minimo = 0;
 $nombre_agente = "";
+$alias = get_parameter('alias', '');
 $direccion_agente = get_parameter('direccion', '');
 $direccion_agente = trim(io_safe_output($direccion_agente));
 $direccion_agente = io_safe_input($direccion_agente);
@@ -147,10 +148,11 @@ $module_macros = array ();
 
 // Create agent
 if ($create_agent) {
-	$nombre_agente = (string) get_parameter_post("agente",'');
+	$alias = (string) get_parameter_post("alias",'');
 	$direccion_agente = (string) get_parameter_post("direccion",'');
 	$direccion_agente = trim(io_safe_output($direccion_agente));
 	$direccion_agente = io_safe_input($direccion_agente);
+	$nombre_agente = hash("sha256",$alias . "|" .$direccion_agente ."|". time() ."|". sprintf("%04d", rand(0,10000)));
 	$grupo = (int) get_parameter_post ("grupo");
 	$intervalo = (string) get_parameter_post ("intervalo", SECONDS_5MINUTES);
 	$comentarios = (string) get_parameter_post ("comentarios", '');
@@ -179,18 +181,19 @@ if ($create_agent) {
 	}
 	
 	// Check if agent exists (BUG WC-50518-2)
-	if ($nombre_agente == "") {
-		$agent_creation_error = __('No agent name specified');
+	if ($alias == "") {
+		$agent_creation_error = __('No agent alias specified');
 		$agent_created_ok = 0;
 	}
-	elseif (agents_get_agent_id ($nombre_agente)) {
+	/*elseif (agents_get_agent_id ($nombre_agente)) {
 		$agent_creation_error =
 			__('There is already an agent in the database with this name');
 		$agent_created_ok = 0;
-	}
+	}*/
 	else {
 		$id_agente = db_process_sql_insert ('tagente', 
 			array ('nombre' => $nombre_agente,
+				'alias' => $alias,
 				'direccion' => $direccion_agente,
 				'id_grupo' => $grupo,
 				'intervalo' => $intervalo,
@@ -241,7 +244,7 @@ if ($create_agent) {
 				' Quiet: ' . (int)$quiet;
 			
 			db_pandora_audit("Agent management",
-				"Created agent $nombre_agente", false, true, $info);
+				"Created agent $alias", false, true, $info);
 		}
 		else {
 			$id_agente = 0;
@@ -554,10 +557,9 @@ if ($id_agente) {
 		default:
 			break;
 	}
-	
-	ui_print_page_header (
-		agents_get_name ($id_agente) . ' ' . $tab_description,
-		"images/setup.png", false, $help_header , true, $onheader);
+	$agent = db_get_row ('tagente', 'id_agente', $id_agente);
+	ui_print_page_header ($agent["nombre"],
+	"images/setup.png", false, $help_header , true, $onheader, false, '', GENERIC_SIZE_TEXT, $agent["alias"] . ' ' . $tab_description);
 }
 else {
 	// Create agent 
@@ -641,6 +643,7 @@ $update_agent = (bool) get_parameter ('update_agent');
 if ($update_agent) { // if modified some agent paramenter
 	$id_agente = (int) get_parameter_post ("id_agente");
 	$nombre_agente = str_replace('`','&lsquo;',(string) get_parameter_post ("agente", ""));
+	$alias = str_replace('`','&lsquo;',(string) get_parameter_post ("alias", ""));
 	$direccion_agente = (string) get_parameter_post ("direccion", '');
 	$direccion_agente = trim(io_safe_output($direccion_agente));
 	$direccion_agente = io_safe_input($direccion_agente);
@@ -705,14 +708,14 @@ if ($update_agent) { // if modified some agent paramenter
 	}
 	
 	//Verify if there is another agent with the same name but different ID
-	if ($nombre_agente == "") {
-		ui_print_error_message(__('No agent name specified'));
+	if ($alias == "") {
+		ui_print_error_message(__('No agent alias specified'));
 		//If there is an agent with the same name, but a different ID
 	}
-	elseif (agents_get_agent_id ($nombre_agente) > 0 &&
+	/*elseif (agents_get_agent_id ($nombre_agente) > 0 &&
 		agents_get_agent_id ($nombre_agente) != $id_agente) {
 		ui_print_error_message(__('There is already an agent in the database with this name'));
-	}
+	}*/
 	else {
 		//If different IP is specified than previous, add the IP
 		if ($direccion_agente != '' &&
@@ -732,7 +735,7 @@ if ($update_agent) { // if modified some agent paramenter
 				'id_parent' => $id_parent,
 				'id_os' => $id_os,
 				'modo' => $modo,
-				'nombre' => $nombre_agente,
+				'alias' => $alias,
 				'direccion' => $direccion_agente,
 				'id_grupo' => $grupo,
 				'intervalo' => $intervalo,
@@ -778,8 +781,8 @@ if ($update_agent) { // if modified some agent paramenter
 			enterprise_hook ('update_agent', array ($id_agente));
 			ui_print_success_message (__('Successfully updated'));
 			db_pandora_audit("Agent management",
-				"Updated agent $nombre_agente", false, false, $info);
-			
+				"Updated agent $alias", false, false, $info);
+
 		}
 	}
 }
@@ -804,6 +807,12 @@ if ($id_agente) {
 	
 	$intervalo = $agent["intervalo"]; // Define interval in seconds
 	$nombre_agente = $agent["nombre"];
+	if(empty($alias)){
+		$alias = $agent["alias"];
+		if(empty($alias)){
+			$alias = $nombre_agente;
+		}
+	}
 	$direccion_agente = $agent["direccion"];
 	$grupo = $agent["id_grupo"];
 	$ultima_act = $agent["ultimo_contacto"];
@@ -1075,7 +1084,7 @@ if ($update_module || $create_module) {
 	
 	$throw_unknown_events = (bool)get_parameter('throw_unknown_events', false);
 	//Set the event type that can show.
-	$disabled_types_event = array(EVENTS_GOING_UNKNOWN => (int)!$throw_unknown_events);
+	$disabled_types_event = array(EVENTS_GOING_UNKNOWN => (int)$throw_unknown_events);
 	$disabled_types_event = io_json_mb_encode($disabled_types_event);
 	
 	$module_macro_names = (array) get_parameter('module_macro_names', array());
@@ -1200,7 +1209,7 @@ if ($update_module) {
 		$edit_module = true;
 		
 		db_pandora_audit("Agent management",
-			"Fail to try update module '$name' for agent " . $agent["nombre"]);
+			"Fail to try update module '$name' for agent " . $agent["alias"]);
 	}
 	else {
 		if ($prediction_module == 3) {
@@ -1218,7 +1227,7 @@ if ($update_module) {
 		$agent = db_get_row ('tagente', 'id_agente', $id_agente);
 		
 		db_pandora_audit("Agent management",
-			"Updated module '$name' for agent ".$agent["nombre"], false, false, io_json_mb_encode($values));
+			"Updated module '$name' for agent ".$agent["alias"], false, false, io_json_mb_encode($values));
 	}
 }
 
@@ -1336,7 +1345,7 @@ if ($create_module) {
 		$edit_module = true;
 		$moduletype = $id_module;
 		db_pandora_audit("Agent management",
-			"Fail to try added module '$name' for agent ".$agent["nombre"]);
+			"Fail to try added module '$name' for agent ".$agent["alias"]);
 	}
 	else {
 		if ($prediction_module == 3) {
@@ -1354,7 +1363,7 @@ if ($create_module) {
 		
 		$agent = db_get_row ('tagente', 'id_agente', $id_agente);
 		db_pandora_audit("Agent management",
-			"Added module '$name' for agent ".$agent["nombre"], false, true, io_json_mb_encode($values));
+			"Added module '$name' for agent ".$agent["alias"], false, true, io_json_mb_encode($values));
 	}
 }
 
@@ -1471,7 +1480,7 @@ if ($delete_module) { // DELETE agent module !
 		
 		$agent = db_get_row ('tagente', 'id_agente', $id_agente);
 		db_pandora_audit("Agent management",
-			"Deleted module '".$module_data["nombre"]."' for agent ".$agent["nombre"]);
+			"Deleted module '".$module_data["nombre"]."' for agent ".$agent["alias"]);
 	}
 }
 
@@ -1502,11 +1511,11 @@ if (!empty($duplicate_module)) { // DUPLICATE agent module !
 	
 	if ($result) {
 		db_pandora_audit("Agent management",
-			"Duplicate module '".$id_duplicate_module."' for agent " . $agent["nombre"] . " with the new id for clon " . $result);
+			"Duplicate module '".$id_duplicate_module."' for agent " . $agent["alias"] . " with the new id for clon " . $result);
 	}
 	else {
 		db_pandora_audit("Agent management",
-			"Fail to try duplicate module '".$id_duplicate_module."' for agent " . $agent["nombre"]);
+			"Fail to try duplicate module '".$id_duplicate_module."' for agent " . $agent["alias"]);
 	}
 }
 

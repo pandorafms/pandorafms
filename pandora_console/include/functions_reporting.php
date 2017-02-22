@@ -165,6 +165,12 @@ function reporting_make_reporting_data($report = null, $id_report,
 						$force_width_chart,
 						$force_height_chart);
 				break;
+			case 'event_report_log':
+				$report['contents'][] =
+					reporting_log(
+						$report,
+						$content);
+				break;
 			case 'general':
 				$report['contents'][] =
 					reporting_general(
@@ -5954,7 +5960,10 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 					true,
 					true,
 					'white',
-					($content['style']['percentil'] == 1) ? $config['percentil'] : null);
+					($content['style']['percentil'] == 1) ? $config['percentil'] : null,
+					false,
+					false,
+					$config['type_module_charts']);
 			}
 			break;
 		case 'data':
@@ -7965,10 +7974,11 @@ function reporting_tiny_stats ($counts_info, $return = false, $type = 'agent', $
 	switch ($type) {
 		case 'modules':
 			$template_title['total_count'] = __('%d Total modules');
-			$template_title['normal_count'] = __('%d Normal modules');
-			$template_title['critical_count'] = __('%d Critical modules');
-			$template_title['warning_count'] = __('%d Warning modules');
-			$template_title['unknown_count'] = __('%d Unknown modules');
+			$template_title['normal_count'] = __('%d Modules in normal status');
+			$template_title['critical_count'] = __('%d Modules in critical status');
+			$template_title['warning_count'] = __('%d Modules in warning status');
+			$template_title['unknown_count'] = __('%d Modules in unknown status');
+			$template_title['not_init_count'] = __('%d Not init modules');
 			break;
 		case 'agent':
 			$template_title['total_count'] = __('%d Total modules');

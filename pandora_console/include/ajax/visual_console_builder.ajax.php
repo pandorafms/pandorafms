@@ -161,7 +161,8 @@ switch ($action) {
 			$img = grafico_modulo_sparse($id_agent_module,
 				$period, 0, $width, $height, '', null, false, 1,
 				0, 0, '', 0, 0, true, true, '', 1, false, '',
-				false, false, true, $background_color);
+				false, false, true, $background_color,
+				false, false, false, $config['type_module_charts']);
 		}
 		
 		//Restore db connection
@@ -477,6 +478,9 @@ switch ($action) {
 						$values['id_agent'] = $id_agent;
 					}
 				}
+				else if (!empty($id_agent)) {
+					$values['id_agent'] = $id_agent;
+				}
 				else if ($agent !== null) {
 					$id_agent = agents_get_agent_id($agent);
 					$values['id_agent'] = $id_agent;
@@ -663,12 +667,12 @@ switch ($action) {
 				
 				if (!empty($connection['server_name'])) {
 					$elementFields['agent_name'] =
-						io_safe_output(agents_get_name($elementFields['id_agent']))
+						io_safe_output(agents_get_alias($elementFields['id_agent']))
 						. " (" . io_safe_output($connection['server_name']) . ")";
 				}
 				else {
 					$elementFields['agent_name'] =
-						io_safe_output(agents_get_name($elementFields['id_agent']));
+						io_safe_output(agents_get_alias($elementFields['id_agent']));
 				}
 				
 				//Make the html of select box of modules about id_agent.
@@ -783,10 +787,15 @@ switch ($action) {
 			$values['id_agent'] = $id_agent;
 		}
 		else {
-			if ($agent != '')
+			if (!empty($id_agent)) {
+				$values['id_agent'] = $id_agent;
+			}
+			else if (!empty($agent)) {
 				$values['id_agent'] = agents_get_agent_id($agent);
-			else
+			}
+			else {
 				$values['id_agent'] = 0;
+			}
 		}
 		$values['id_agente_modulo'] = $id_module;
 		$values['id_layout_linked'] = $map_linked;

@@ -100,8 +100,8 @@ $table_behaviour->data[$row][1] = html_print_input_text ('render_proc_fail', $co
 $row++;
 
 //Daniel maya 02/06/2016 Display menu with click --INI
-$table_behaviour->data[$row][0] = __('Display lateral menus with click').
-	ui_print_help_tip(__('If you check this option, the lateral menus display with left click. Otherwise it will show by placing the mouse over'), true);
+$table_behaviour->data[$row][0] = __('Click to display lateral menus').
+	ui_print_help_tip(__('When enabled, the lateral menus are shown when left clicking them, instead of hovering over them'), true);
 $table_behaviour->data[$row][1] = __('Yes') . '&nbsp;' .
 		html_print_radio_button ('click_display', 1, '',
 		$config["click_display"], true) .
@@ -117,7 +117,7 @@ if (enterprise_installed()) {
 	$table_behaviour->data[$row][1] = html_print_input_text ('service_label_font_size', $config["service_label_font_size"], '', 5, 5, true);
 	$row++;
 
-	$table_behaviour->data[$row][0] = __('Service item padding size');
+	$table_behaviour->data[$row][0] = __('Space between items in Service maps');
 	$table_behaviour->data[$row][1] = html_print_input_text ('service_item_padding_size', $config["service_item_padding_size"], '', 5, 5, true);
 	$row++;
 }
@@ -183,7 +183,7 @@ $table_styles->data[$row][1] .= "&nbsp;" .
 	html_print_button(__("View"), 'login_background_preview', false, '', 'class="sub camera"', true);
 $row++;
 
-$table_styles->data[$row][0] = __('Custom logo') . ui_print_help_icon("custom_logo", true);
+$table_styles->data[$row][0] = __('Custom logo (header)') . ui_print_help_icon("custom_logo", true);
 
 if(enterprise_installed()){
 	$ent_files = list_files('enterprise/images/custom_logo', "png", 1, 0);
@@ -202,7 +202,7 @@ else{
 	$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'custom_logo_preview', $open, '', 'class="sub camera"', true,false,$open,'visualmodal');
 $row++;
 
-$table_styles->data[$row][0] = __('Custom logo in login') . ui_print_help_icon("custom_logo_login", true);
+$table_styles->data[$row][0] = __('Custom logo (login)') . ui_print_help_icon("custom_logo_login", true);
 
 
 	$table_styles->data[$row][1] = html_print_select(
@@ -355,7 +355,7 @@ $table_font->data[$row][1] = html_print_input_text('item_title_size_text',
 	$config["item_title_size_text"], '', 3, 3, true);
 $row++;
 
-$table_font->data[$row][0] = __('Show units in values report') .
+$table_font->data[$row][0] = __('Show unit along with value in reports') .
 	ui_print_help_tip(__('This enabling this, max, min and avg values will be shown with units.'), true);
 $table_font->data[$row][1] = __('Yes') . '&nbsp;' .
 	html_print_radio_button ('simple_module_value', 1, '', $config["simple_module_value"], true).'&nbsp;&nbsp;';
@@ -432,7 +432,7 @@ if (!enterprise_installed()) {
 }
 
 $table_chars->data[$row][0] = __('Data precision for reports');
-$table_chars->data[$row][0] .= ui_print_help_tip(__('Precision must be a integer number between 0 and 5'), true);
+$table_chars->data[$row][0] .= ui_print_help_tip(__('Number of decimals shown in reports. It must be a number between 0 and 5'), true);
 $table_chars->data[$row][1] = html_print_input_text ('graph_precision', $config["graph_precision"], '', 5, 5, true, $disabled_graph_precision, false, "onChange=\"change_precision()\"");
 $row++;
 
@@ -486,15 +486,15 @@ $table_chars->data[$row][1] .= __('Line').'&nbsp;' .
 $row++;
 
 $table_chars->data[$row][0] = __('Show only average');
-$table_chars->data[$row][0] .= ui_print_help_tip(__('Allows only show the average in graphs'), true);
+$table_chars->data[$row][0] .= ui_print_help_tip(__('Hide Max and Min values in graphs'), true);
 $table_chars->data[$row][1] = __('Yes').'&nbsp;' .
 	html_print_radio_button ('only_average', 1, '', $config["only_average"], true).'&nbsp;&nbsp;';
 $table_chars->data[$row][1] .= __('No').'&nbsp;' .
 	html_print_radio_button ('only_average', 0, '', $config["only_average"], true);
 $row++;
 
-$table_chars->data[$row][0] = __('Percentil');
-$table_chars->data[$row][0] .= ui_print_help_tip(__('Allows only show the average in graphs'), true);
+$table_chars->data[$row][0] = __('Percentile');
+$table_chars->data[$row][0] .= ui_print_help_tip(__('Show percentile 95 in graphs'), true);
 $table_chars->data[$row][1] = html_print_input_text ('percentil', $config['percentil'], '', 20, 20, true);
 $row++;
 
@@ -636,10 +636,6 @@ $table_other->data[$row][1] .= __('No') . '&nbsp;' .
 	html_print_radio_button ('show_group_name', 0, '',
 		$config["show_group_name"], true);
 $row++;
-
-
-
-
 
 $table_other->data[$row][0] = __('Date format string') . ui_print_help_icon("date_format", true);
 $table_other->data[$row][1] = '<em>'.__('Example').'</em> '.date ($config["date_format"]);

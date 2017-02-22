@@ -87,10 +87,7 @@ echo "<div id='background_grid'
 
 //Print the layout datas from the DB.
 foreach ($layoutDatas as $layoutData) {
-	
-	$layoutData['status_calculated'] = 
-		visual_map_get_status_element($layoutData);
-	
+	$layoutData['status_calculated'] = visual_map_get_status_element($layoutData);
 	
 	// Pending delete and disable modules must be ignored
 	$delete_pending_module = db_get_value ("delete_pending",
@@ -134,6 +131,7 @@ $backgroundSizes = getimagesize(
 html_print_input_hidden('background_original_width', $backgroundSizes[0]);
 html_print_input_hidden('background_original_height', $backgroundSizes[1]);
 html_print_input_hidden('id_visual_console', $visualConsole['id']);
+html_print_input_hidden('message_size', __('Please min size recommend is 1024x768'));
 
 
 // Loading dialog

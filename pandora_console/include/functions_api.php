@@ -9287,8 +9287,9 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4) {
 	$graph_html = grafico_modulo_sparse(
 		$id_module, $graph_seconds, false, 600, 300, '',
 		'', false, false, true, time(), '', 0, 0, true, true,
-		ui_get_full_url(false) . '/', 1, false, '', false, true);
-	
+		ui_get_full_url(false) . '/', 1, false, '', false, true,
+		true, 'white', null, false, false, $config['type_module_charts']);
+		
        $graph_image_file_encoded = false;
         if (preg_match("/<img src='(.+)'./", $graph_html, $matches)) {
                 $file_url = $matches[1];

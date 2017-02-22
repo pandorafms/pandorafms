@@ -150,7 +150,7 @@ if (!empty($downtimes)) {
 
 		$affected_items = array();
 
-		$sql_agents = "SELECT tpda.id_agent AS agent_id, tpda.all_modules AS all_modules, ta.nombre AS agent_name
+		$sql_agents = "SELECT tpda.id_agent AS agent_id, tpda.all_modules AS all_modules, ta.nombre AS agent_name, ta.alias
 				 		FROM tplanned_downtime_agents tpda, tagente ta
 				 		WHERE tpda.id_downtime = $id
 				 			AND tpda.id_agent = ta.id_agente";
@@ -159,7 +159,7 @@ if (!empty($downtimes)) {
 		if (!empty($downtime_agents)) {
 			foreach ($downtime_agents as $downtime_agent) {
 				$downtime_items = array();
-				$downtime_items[] = $downtime_agent['agent_name'];
+				$downtime_items[] = $downtime_agent[alias];
 
 				if (!$downtime_agent['all_modules']) {
 					$agent_id = $downtime_agent['agent_id'];

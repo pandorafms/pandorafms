@@ -174,7 +174,7 @@ echo "</div>";
 
 echo "</div></td>";
 
-echo "<tr><td class='datos2'><b>".__('Type of graph')."</b></td>";
+echo "<tr><td class='datos2'><b>".__('Percentil')."</b></td>";
 echo "<td class='datos2'>" . html_print_checkbox ("percentil", 1, $percentil, true) . "</td></tr>";
 
 echo "</table>";

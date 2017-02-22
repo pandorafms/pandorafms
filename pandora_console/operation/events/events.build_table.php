@@ -436,7 +436,9 @@ else {
 					}
 				}
 				else {
-					$data[$i] .= ui_print_agent_name ($event["id_agente"], true);
+					$agent = db_get_row ("tagente","id_agente",$event["id_agente"]);
+					$data[$i] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $event["id_agente"] . '" title='.$agent['nombre']. '>';
+					$data[$i] .= '<b>' . $agent['alias'] . '</a></b>';
 				}
 			}
 			else {

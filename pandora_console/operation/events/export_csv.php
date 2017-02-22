@@ -105,6 +105,7 @@ echo chr (13);
 $new = true;
 while ($event = db_get_all_row_by_steps_sql($new, $result, $sql)) {
 	$new = false;
+	$alias = db_get_value ("alias","tagente","id_agente",$event["id_agente"]);
 	if ((!check_acl($config["id_user"], $event["id_grupo"], "ER") && 
 		!check_acl($config["id_user"], $event["id_grupo"], "EW") && !check_acl($config["id_user"], $event["id_grupo"], "EM") ) ||
 	(!check_acl($config["id_user"], 0, "PM") && $event["event_type"] == 'system'))
@@ -112,7 +113,7 @@ while ($event = db_get_all_row_by_steps_sql($new, $result, $sql)) {
 	
 	echo $event["timestamp"];
 	echo ",";
-	echo io_safe_output(agents_get_name($event["id_agente"]));
+	echo io_safe_output($alias);
 	echo ",";
 	echo io_safe_output(groups_get_name($event["id_grupo"]));
 	echo ",";

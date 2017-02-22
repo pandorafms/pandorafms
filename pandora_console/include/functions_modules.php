@@ -1024,6 +1024,18 @@ function modules_get_agentmodule_agent_name ($id_agentmodule) {
 }
 
 /**
+ * Get agent alias of an agent module.
+ *
+ * @param int $id_agente_modulo Agent module id.
+ *
+ * @return string The alias of the given agent module.
+ */
+function modules_get_agentmodule_agent_alias ($id_agentmodule) {
+	// Since this is a helper function we don't need to do casting
+	return (string) agents_get_alias (modules_get_agentmodule_agent ($id_agentmodule));
+}
+
+/**
  * Get the module name of an agent module.
  *
  * @param int $id_agente_modulo Agent module id.
@@ -2492,6 +2504,16 @@ function modules_get_modules_name ($sql_from , $sql_conditions = '', $meta = fal
 
 function modules_get_agentmodule_mininterval($id_agent) {
 	$sql = sprintf('SELECT min(current_interval) min_interval from tagente_estado where id_agente = %d', $id_agent);
+	return db_get_row_sql($sql);
+}
+
+function modules_get_agentmodule_mininterval_no_async($id_agent) {
+	
+	$sql = 'SELECT MIN(tae.current_interval) AS min_interval
+					FROM tagente_estado tae
+					INNER JOIN tagente_modulo tam ON tae.id_agente_modulo = tam.id_agente_modulo
+					INNER JOIN ttipo_modulo ttm ON tam.id_tipo_modulo = ttm.id_tipo where ttm.nombre not like "async%" and tae.id_agente = '.$id_agent;
+
 	return db_get_row_sql($sql);
 }
 

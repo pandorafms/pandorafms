@@ -26,6 +26,7 @@
 #include "ssh/pandora_ssh_client.h"
 #include "ftp/pandora_ftp_client.h"
 #include "misc/pandora_file.h"
+#include "misc/sha256.h"
 #include "windows/pandora_windows_info.h"
 #include "udp_server/udp_server.h"
 
@@ -39,6 +40,8 @@
 #include <pandora_agent_conf.h>
 #include <fstream>
 #include <unistd.h>
+#include <sstream>
+#include <string>
 
 #define BUFSIZE 4096
 
@@ -207,7 +210,7 @@ void
 Pandora_Windows_Service::pandora_init () {
 	string conf_file, interval, debug, disable_logfile, intensive_interval, util_dir, path, env;
 	string udp_server_enabled, udp_server_port, udp_server_addr, udp_server_auth_addr;
-	string name_agent, name;
+	string agent_name, agent_name_cmd, agent_alias, pandora_agent;
 	string proxy_mode, server_ip;
 	string *all_conf;
 	int pos, num;
@@ -255,12 +258,60 @@ Pandora_Windows_Service::pandora_init () {
 	this->modules = new Pandora_Module_List (conf_file);
 	delete []all_conf;
 	
-	name = checkAgentName(conf_file);
-	if (name.empty ()) {
-		name = Pandora_Windows_Info::getSystemName ();
+	// Get the agent name.
+	agent_name = conf->getValue ("agent_name");
+	printf("AGENT NAME: %s\n", agent_name.c_str());
+	if (agent_name == "") {
+		agent_name_cmd = conf->getValue ("agent_name_cmd");
+
+		// Random name.
+		if (agent_name_cmd == "__rand__") {
+			agent_name = generateAgentName();
+			this->conf->setValue("agent_name", agent_name);
+			conf->updateFile("agent_name", agent_name); // Write random names to disk!
+		}
+		// Name from command.
+		else if (agent_name_cmd != "") {
+			agent_name_cmd = "cmd.exe /c \"" + agent_name_cmd + "\"";
+			static string temp_agent_name = getAgentNameFromCmdExec(agent_name_cmd);
+
+			// Delete new line and carriage return.
+			pos = temp_agent_name.find("\n");
+			if(pos != string::npos) {
+				temp_agent_name.erase(pos, temp_agent_name.size () - pos);
+			}
+			pos = temp_agent_name.find("\r");
+			if(pos != string::npos) {
+				temp_agent_name.erase(pos, temp_agent_name.size () - pos);
+			}
+
+			// Remove leading and trailing white spaces.
+			temp_agent_name = trim(temp_agent_name);
+			if (temp_agent_name != "") {
+				agent_name = temp_agent_name;
+				this->conf->setValue("agent_name", agent_name);
+			}
+		}
 	}
-	name_agent = "PANDORA_AGENT=" + name;
-	putenv(name_agent.c_str());
+
+	printf("AGENT NAME2: %s\n", agent_name.c_str());
+	// Fall back to the hostname if agent_name is still empty.
+	if (agent_name == "") {
+		agent_name = Pandora_Windows_Info::getSystemName ();
+		this->conf->setValue("agent_name", agent_name);
+	}
+	printf("AGENT NAME3: %s\n", agent_name.c_str());
+	printf("AGENT NAME4: %s\n", this->conf->getValue("agent_name").c_str());
+
+	// Get the agent alias.
+	conf->getValue ("agent_alias");
+	if (agent_alias == "") {
+		agent_alias = Pandora_Windows_Info::getSystemName ();
+		this->conf->setValue("agent_alias", agent_alias);
+	}
+
+	pandora_agent = "PANDORA_AGENT=" + agent_name;
+	putenv(pandora_agent.c_str());
 	
 	debug = conf->getValue ("debug");
 	setPandoraDebug (is_enabled (debug));
@@ -383,7 +434,7 @@ Pandora_Windows_Service::launchTentacleProxy() {
 string
 Pandora_Windows_Service::getXmlHeader () {
 	char          timestamp[20];
-	string        agent_name, os_name, os_version, encoding, value, xml, address, parent_agent_name, agent_name_cmd;
+	string        agent_name, os_name, os_version, encoding, value, xml, address, parent_agent_name, agent_name_cmd, agent_alias;
 	string        custom_id, url_address, latitude, longitude, altitude, position_description, gis_exec, gis_result, agent_mode;
 	string        group_password, group_id, ehorus_conf;
 	time_t        ctime;
@@ -392,30 +443,9 @@ Pandora_Windows_Service::getXmlHeader () {
 	
 	// Get agent name
 	agent_name = conf->getValue ("agent_name");
-	if (agent_name == "") {
-		agent_name = Pandora_Windows_Info::getSystemName ();
-	}
 
-	agent_name_cmd = conf->getValue ("agent_name_cmd");
-	if (agent_name_cmd != "") {
-		agent_name_cmd = "cmd.exe /c \"" + agent_name_cmd + "\"";
-		static string temp_agent_name = getAgentNameFromCmdExec(agent_name_cmd);
-		// Delete carriage return if is provided
-		pos = temp_agent_name.find("\n");
-		if(pos != string::npos) {
-			temp_agent_name.erase(pos, temp_agent_name.size () - pos);
-		}
-		pos = temp_agent_name.find("\r");
-		if(pos != string::npos) {
-			temp_agent_name.erase(pos, temp_agent_name.size () - pos);
-		}
-		// Remove white spaces of the first and last.
-		temp_agent_name = trim(temp_agent_name);
-
-		if (temp_agent_name != "") {
-			agent_name = temp_agent_name;
-		}
-        }
+	// Get agent alias
+	conf->getValue ("agent_alias");
 
 	// Get parent agent name
 	parent_agent_name = conf->getValue ("parent_agent_name");
@@ -443,6 +473,7 @@ Pandora_Windows_Service::getXmlHeader () {
 
 	xml = "<?xml version=\"1.0\" encoding=\"" + encoding + "\" ?>\n" +
 	      "<agent_data agent_name=\"" + agent_name +
+	      "\" agent_alias=\"" + agent_alias +
 	      "\" description=\"" + conf->getValue ("description") +
 	      "\" version=\"" + getPandoraAgentVersion ();
 
@@ -1492,35 +1523,8 @@ Pandora_Windows_Service::checkConfig (string file) {
 	}
 
 	/* Get agent name */
-	 tmp = checkAgentName(file);
-	if (tmp.empty ()) {
-		tmp = Pandora_Windows_Info::getSystemName ();
-	}
-	agent_name = tmp;
+	tmp = conf->getValue ("agent_name");
 
-	/* Get agent name cmd */
-	tmp = conf->getValue ("agent_name_cmd");
-	if (!tmp.empty ()) {
-		tmp = "cmd.exe /c \"" + tmp + "\"";
-		tmp = getCoordinatesFromCmdExec(tmp);
-
-		// Delete carriage return if is provided
-		pos = tmp.find("\n");
-		if(pos != string::npos) {
-			tmp.erase(pos, tmp.size () - pos);
-		}
-		pos = tmp.find("\r");
-		if(pos != string::npos) {
-			tmp.erase(pos, tmp.size () - pos);
-		}
-
-		// Remove white spaces of the first and last.
-		tmp = trim (tmp);
-
-		if (tmp != "") {
-			agent_name = tmp;
-		}
-	}
 
 	/* Error getting agent name */
 	if (agent_name.empty ()) {
@@ -1722,10 +1726,6 @@ Pandora_Windows_Service::sendXml (Pandora_Module_List *modules) {
 	/* Generate temporal filename */
 	random_integer = inttostr (rand());
 	tmp_filename = conf->getValue ("agent_name");
-	
-	if (tmp_filename == "") {
-		tmp_filename = Pandora_Windows_Info::getSystemName ();
-	}
 	tmp_filename += "." + random_integer + ".data";
 
 	xml_filename = conf->getValue ("temporal");
@@ -2098,3 +2098,17 @@ Pandora_Windows_Service::getIntensiveInterval () {
 	return this->intensive_interval;
 }
 
+string
+Pandora_Windows_Service::generateAgentName () {
+	stringstream data;
+	char digest[SHA256_HEX_LENGTH + 1];
+
+    std::srand(std::time(0));
+	data << this->conf->getValue("agent_alias") <<
+	        this->conf->getValue("server_ip") <<
+		    time(NULL) <<
+		    std::rand();
+
+	sha256(data.str().c_str(), digest);
+	return std::string(digest);
+}

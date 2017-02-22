@@ -237,9 +237,9 @@ $table->data = array ();
 
 
 $table->data['selection_mode'][0] = __('Selection mode');
-$table->data['selection_mode'][1] = __('Select modules first') . ' ' .
+$table->data['selection_mode'][1] = '<span style="width:110px;display:inline-block;">'.__('Select modules first ') . '</span>' .
 	html_print_radio_button_extended ("selection_mode", 'modules', '', $selection_mode, false, '', 'style="margin-right: 40px;"', true).'<br>';
-$table->data['selection_mode'][1] .= __('Select agents first') . ' ' .
+$table->data['selection_mode'][1] .= '<span style="width:110px;display:inline-block;">'.__('Select agents first ') . '</span>' .
 	html_print_radio_button_extended ("selection_mode", 'agents', '', $selection_mode, false, '', 'style="margin-right: 40px;"', true);
 
 
@@ -1010,7 +1010,7 @@ $(document).ready (function () {
 						
 						option = $("<option></option>")
 							.attr("value", value["id_agente"])
-							.html(value["nombre"]);
+							.html(value["alias"]);
 						$("#id_agents").append (option);
 					});
 				},
@@ -1023,6 +1023,13 @@ $(document).ready (function () {
 		$("#groups_select").trigger("change");
 	});
 	
+
+	if("<?php echo $update ?>"){
+		if("<?php echo $selection_mode ?>" == 'agents'){
+			$("#groups_select").trigger("change");
+		}	
+	}
+
 	$("#status_module").change(function() {
 		
 		selector = $("#form_edit input[name=selection_mode]:checked").val();
@@ -1033,6 +1040,7 @@ $(document).ready (function () {
 			$("#module_type").trigger("change");
 		}
 	});
+
 });
 
 function disabled_status () {

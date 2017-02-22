@@ -437,6 +437,7 @@ function readFields() {
 	values['left'] = $("input[name=left]").val();
 	values['top'] = $("input[name=top]").val();
 	values['agent'] = $("input[name=agent]").val();
+	values['id_agent'] = $("input[name=id_agent]").val();
 	values['module'] = $("select[name=module]").val();
 	values['process_simple_value'] = $("select[name=process_value]").val();
 	values['background'] = $("#background_image").val();
@@ -971,18 +972,18 @@ function loadFieldsFromDB(item) {
 				}
 				
 				if (key == 'type_graph') {
-						$("select[name=type_graph]").val(val);
-					}
+					$("select[name=type_graph]").val(val);
+				}
 					
-					if (key == 'label_position') {
-						$('#labelposup'+" img").attr('src','/pandora_console/images/label_up.png');
-						$('#labelposdown'+" img").attr('src','/pandora_console/images/label_down.png');
-						$('#labelposleft'+" img").attr('src','/pandora_console/images/label_left.png');
-						$('#labelposright'+" img").attr('src','/pandora_console/images/label_right.png');
-						$('.labelpos').attr('sel','no');
-						$('#labelpos'+val+" img").attr('src','/pandora_console/images/label_'+$('#labelpos'+val).attr('id').replace('labelpos','')+'_2.png');
-						$('#labelpos'+val).attr('sel','yes');
-					}
+				if (key == 'label_position') {
+					$('#labelposup'+" img").attr('src','/pandora_console/images/label_up.png');
+					$('#labelposdown'+" img").attr('src','/pandora_console/images/label_down.png');
+					$('#labelposleft'+" img").attr('src','/pandora_console/images/label_left.png');
+					$('#labelposright'+" img").attr('src','/pandora_console/images/label_right.png');
+					$('.labelpos').attr('sel','no');
+					$('#labelpos'+val+" img").attr('src','/pandora_console/images/label_'+$('#labelpos'+val).attr('id').replace('labelpos','')+'_2.png');
+					$('#labelpos'+val).attr('sel','yes');
+				}
 					
 				if (key == 'image') {
 					//Load image preview
@@ -996,6 +997,9 @@ function loadFieldsFromDB(item) {
 				if (key == 'agent_name') {
 					$("input[name=agent]").val(val);
 					//Reload no-sincrone the select of modules
+				}
+				if (key == 'id_agent') {
+					$("input[name=id_agent]").val(val);
 				}
 				if (key == 'modules_html') {
 					$("select[name=module]").empty().html(val);
@@ -1165,7 +1169,14 @@ function setAspectRatioBackground(side) {
 		success: function(data) {
 			old_width = parseInt($("#background").css('width').replace('px', ''));
 			old_height = parseInt($("#background").css('height').replace('px', ''));
-
+			
+			if (old_width < 1024) {
+				old_width = 1024;
+			}
+			if (old_height < 768) {
+				old_height = 768;
+			}
+			
 			img_width = data[0];
 			img_height = data[1];
 
@@ -2975,23 +2986,45 @@ function eventsBackground() {
 	$('#background').bind('resizestop', function(event, ui) {
 		if (!is_opened_palette) {
 			unselectAll();
-
+			
+			var launch_message = false;
+			var dont_resize = false;
 			var values = {};
-			values['width'] = $('#background').css('width').replace('px', '');
-			values['height'] = $('#background').css('height').replace('px', '');
+			var actual_width = $('#background').css('width').replace('px', '');
+			var actual_height = $('#background').css('height').replace('px', '');
+			
+			if (actual_width < 1024) {
+				actual_width = 1024;
+				$('#background').css('width', 1024);
+				launch_message = true;
+				dont_resize = true;
+			}
+			if (actual_height < 768) {
+				actual_height = 768;
+				$('#background').css('height', 768);
+				launch_message = true;
+				dont_resize = true;
+			}
+			
+			values['width'] = actual_width;
+			values['height'] = actual_height;
+			
+			if (!dont_resize) {
+				updateDB('background', 0, values, 'resizestop');
+				
+				width = ui.size['width'];
+				height = ui.size['height'];
 
-			updateDB('background', 0, values, 'resizestop');
+				original_width = ui.originalSize['width'];
+				original_height = ui.originalSize['height'];
+				
+				move_elements_resize(original_width, original_height, width, height);
 
-			width = ui.size['width'];
-			height = ui.size['height'];
-
-			original_width = ui.originalSize['width'];
-			original_height = ui.originalSize['height'];
-
-			move_elements_resize(original_width, original_height, width, height);
-
-			$('#background_grid').css('width', width);
-			$('#background_grid').css('height', height);
+				$('#background_grid').css('width', width);
+				$('#background_grid').css('height', height);
+			}
+			if (launch_message)
+				alert($('#hidden-message_size').val());
 		}
 	});
 

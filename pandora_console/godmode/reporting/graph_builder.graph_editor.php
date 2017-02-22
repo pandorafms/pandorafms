@@ -41,7 +41,7 @@ if (isset ($_GET["get_agent"])) {
 
 if ($editGraph) {
 	$graphRows = db_get_all_rows_sql("SELECT t1.*,
-		(SELECT t3.nombre 
+		(SELECT t3.alias 
 			FROM tagente t3 
 			WHERE t3.id_agente = 
 				(SELECT t2.id_agente 
@@ -149,7 +149,7 @@ echo "<td style='vertical-align: top;'>".__('Modules')."</td>";
 echo "</tr><tr>";
 echo "<td>".html_print_select (agents_get_group_agents(), 'id_agents[]', 0, false, '', '', true, true, true, '', false, '')."</td>";
 echo "<td style='vertical-align: center; text-align: center;'>" . html_print_image("images/darrowright.png", true) . "</td>";
-echo "<td>".html_print_select (array (), 'module[]', 0, false, '', 0, true, true, true, '', false, 'width:300px;')."</td>";
+echo "<td>".html_print_select (array (), 'module[]', 0, false, '', 0, true, true, true, '', false, '')."</td>";
 echo "</tr><tr>";
 echo "<td colspan='3'>";
 echo "<table cellpadding='4'><tr>";

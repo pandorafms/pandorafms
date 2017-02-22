@@ -671,18 +671,30 @@ function ui_print_os_icon ($id_os, $name = true, $return = false,
  * @param string extra parameters to concatenate in the link
  * @param string name of the agent to avoid the query in some cases
  * @param bool if the agent will provided with link or not
+ * @param bool use the agent alias or the name
  * 
  * @return string HTML with agent name and link
  */
-function ui_print_agent_name ($id_agent, $return = false, $cutoff = 'agent_medium', $style = '', $cutname = false, $server_url = '', $extra_params = '', $known_agent_name = false, $link = true) {
+function ui_print_agent_name ($id_agent, $return = false, $cutoff = 'agent_medium', $style = '', $cutname = false, $server_url = '', $extra_params = '', $known_agent_name = false, $link = true, $alias = true) {
 	if ($known_agent_name === false) {
-		$agent_name = (string) agents_get_name ($id_agent);
+		if ($alias) {
+			$agent_name = (string) agents_get_alias($id_agent);
+		}
+		else {
+			$agent_name = (string) agents_get_name($id_agent);
+		}
 	}
 	else {
 		$agent_name = $known_agent_name;
 	}
 	
-	$agent_name_full = $agent_name;
+	if ($alias) {
+		$agent_name_full = (string) agents_get_name($id_agent);
+	}
+	else {
+		$agent_name_full = $agent_name;
+	}
+	
 	if ($cutname) {
 		$agent_name = ui_print_truncate_text($agent_name, $cutoff, true, true, true, '[&hellip;]', $style);
 	}

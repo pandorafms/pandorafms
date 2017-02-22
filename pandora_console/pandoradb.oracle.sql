@@ -291,6 +291,7 @@ CREATE TABLE tagente_modulo (
 	prediction_sample_window INTEGER default 0,
 	prediction_samples INTEGER default 0,
 	prediction_threshold INTEGER default 0,
+	alias varchar2(600) NOT NULL default '',
 	parent_module_id NUMBER(10, 0),
 	CONSTRAINT t_agente_modulo_wizard_cons CHECK (wizard_level IN ('basic','advanced','nowizard'))
 );

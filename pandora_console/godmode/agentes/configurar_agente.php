@@ -148,11 +148,11 @@ $module_macros = array ();
 
 // Create agent
 if ($create_agent) {
-	$nombre_agente = md5($alias . $direccion_agente);
 	$alias = (string) get_parameter_post("alias",'');
 	$direccion_agente = (string) get_parameter_post("direccion",'');
 	$direccion_agente = trim(io_safe_output($direccion_agente));
 	$direccion_agente = io_safe_input($direccion_agente);
+	$nombre_agente = hash("sha256",$alias . "|" .$direccion_agente ."|". time() ."|". sprintf("%04d", rand(0,10000)));
 	$grupo = (int) get_parameter_post ("grupo");
 	$intervalo = (string) get_parameter_post ("intervalo", SECONDS_5MINUTES);
 	$comentarios = (string) get_parameter_post ("comentarios", '');

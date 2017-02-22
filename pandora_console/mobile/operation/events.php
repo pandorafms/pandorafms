@@ -152,7 +152,7 @@ class Events {
 							$event['agent'] = "<a style='color: black;'" .
 								"href='index.php?page=agent&id=" . 
 								$event['id_agente'] . "'>" .								
-								agents_get_name($event['id_agente']) .
+								agents_get_alias($event['id_agente']) .
 								"</a>";
 						}
 						else {

@@ -406,6 +406,7 @@ switch ($action) {
 		
 		switch ($type) {
 			case 'background':
+			$values = array();
 				if ($background !== null)
 					$values['background'] = $background;
 				if ($width !== null)

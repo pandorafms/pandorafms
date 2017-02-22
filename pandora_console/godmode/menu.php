@@ -395,14 +395,20 @@ if (is_array ($config['extensions'])) {
 		}
 	}
 	
+	// Complete the submenu
+	$extension_view = array();
+	$extension_view["godmode/extensions"]["id"] = 'Extension manager view';
+	$extension_view["godmode/extensions"]["text"] = __('Extension manager view');
+	$extension_submenu = array_merge($extension_view,$sub2);
 	
-	if (!empty($sub2)) {
-		$sub["godmode/extensions"]["sub2"] = $sub2;
-		$sub["godmode/extensions"]["text"] = __('Extension manager');
-		$sub["godmode/extensions"]["id"] = 'Extension manager';
-		$submenu = array_merge($menu_godmode["gextensions"]["sub"],$sub);
-		$menu_godmode["gextensions"]["sub"] = $submenu;
-	}
+	$sub["godmode/extensions"]["sub2"] = $extension_submenu;
+	$sub["godmode/extensions"]["text"] = __('Extension manager');
+	$sub["godmode/extensions"]["id"] = 'Extension manager';
+	$sub["godmode/extensions"]["type"] = 'direct';
+	$sub["godmode/extensions"]["subtype"] = 'nolink';
+	
+	$submenu = array_merge($menu_godmode["gextensions"]["sub"],$sub);
+	$menu_godmode["gextensions"]["sub"] = $submenu;
 }
 
 $menu_godmode["links"]["text"] = __('Links');

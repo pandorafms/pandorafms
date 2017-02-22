@@ -1262,7 +1262,7 @@ div.title_line {
 
 #menu_tab_left li.view {
 	background: #82b92e;
-	max-width: 45%;
+	max-width: 60%;
 	min-width: 20%;
 	padding: 5px 5px 0px;
 	text-align: center;
@@ -1289,7 +1289,7 @@ div.title_line {
 
 #menu_tab_left li a, #menu_tab_left li span {
 	text-transform: uppercase;
-	padding: 0px 20px 0px 20px;
+	padding: 0px 0px 0px 5px;
 	color: #fff;
 	font-size: 9.5pt;
 	line-height: 20px;

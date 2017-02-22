@@ -875,8 +875,8 @@ $(document).ready (function () {
 	});
 
 	//Dynamic_options_advance;
-	$('#simple-2-2').hide();
-	$('#simple-2-3').hide();
+	$('#simple-3-2').hide();
+	$('#simple-3-3').hide();
 
 	//paint graph stutus critical and warning:
 	paint_graph_values();
@@ -940,12 +940,12 @@ function disabled_status (disabledBecauseInPolicy) {
 
 //Dynamic_options_advance;
 function advanced_option_dynamic() {
-	if($('#simple-2-2').is(":visible")){
-		$('#simple-2-2').hide();
-		$('#simple-2-3').hide();
+	if($('#simple-3-2').is(":visible")){
+		$('#simple-3-2').hide();
+		$('#simple-3-3').hide();
 	} else {
-		$('#simple-2-2').show();
-		$('#simple-2-3').show();
+		$('#simple-3-2').show();
+		$('#simple-3-3').show();
 	}
 }
 

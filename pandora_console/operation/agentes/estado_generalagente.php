@@ -73,12 +73,7 @@ $table_agent->styleTable = 'padding:0px;';
 $table_agent->data = array();
 $data = array();
 
-/*$agent_name = ui_print_agent_name ($agent["id_agente"], true, 500,
-	"font-size: medium;", true);*/
-
-$agent_name = "<a alt =".$agent["nombre"]." href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=" . $agent["id_agente"] . "'>" .
-	'<span style="font-size: medium;font-weight:bold" title="' . $agent["nombre"] . '">'.$agent["alias"].'</span>' .
-	"</a>";
+$agent_name = ui_print_agent_name($agent["id_agente"], true, 500, "font-size: medium;font-weight:bold", true);
 
 if ($agent['disabled']) {
 	$agent_name = "<em>" . $agent_name . "</em>" . ui_print_help_tip(__('Disabled'), true);

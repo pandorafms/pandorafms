@@ -76,7 +76,7 @@ $table->data[9][1] = html_print_input_text ('days_autodisable_deletion', $config
 $table->data[10][0] = __('Retention period of past special days') . ui_print_help_tip(__('This number is days to keep past special days. 0 means never remove.'), true);
 $table->data[10][1] = html_print_input_text ('num_past_special_days', $config["num_past_special_days"], '', 5, 5, true);
 
-$table->data[11][0] = __('Max. macro data fields') . ui_print_help_tip(__('Number of macro fields in alerts and templates between 1 and 50'), true);
+$table->data[11][0] = __('Max. macro data fields') . ui_print_help_tip(__('Number of macro fields in alerts and templates between 1 and 15'), true);
 $table->data[11][1] = html_print_input_text ('max_macro_fields', $config["max_macro_fields"], '', 5, 5, true, false, false, "onChange=\"change_macro_fields()\"");
 
 if (enterprise_installed ()) {

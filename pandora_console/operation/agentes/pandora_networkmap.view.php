@@ -750,9 +750,9 @@ else {
 	}
 	
 	if (!$dash_mode) {
-		ui_print_page_header(sprintf(__('Networkmap - %s'),
-			io_safe_output($networkmap['name'])), "images/bricks.png",
-			false, "network_map_enterprise", false, $buttons);
+		ui_print_page_header(io_safe_output($networkmap['name']), 
+			"images/bricks.png", false, "network_map_enterprise", 
+			false, $buttons, false, '', $config['item_title_size_text']);
 	}
 	
 	$nodes_and_relations = networkmap_process_networkmap($id);

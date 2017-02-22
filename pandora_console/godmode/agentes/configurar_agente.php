@@ -557,9 +557,10 @@ if ($id_agente) {
 		default:
 			break;
 	}
-	$agent = db_get_row ('tagente', 'id_agente', $id_agente);
-	ui_print_page_header ($agent["nombre"],
-	"images/setup.png", false, $help_header , true, $onheader, false, '', GENERIC_SIZE_TEXT, $agent["alias"] . ' ' . $tab_description);
+	
+	ui_print_page_header ( agents_get_alias ($id_agente),
+		"images/setup.png", false, $help_header , true, $onheader, 
+		false, '', $config['item_title_size_text']);
 }
 else {
 	// Create agent 

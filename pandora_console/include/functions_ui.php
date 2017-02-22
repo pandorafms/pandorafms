@@ -2403,8 +2403,10 @@ function ui_get_full_url ($url = '', $no_proxy = false, $add_name_php_file = fal
  * @return string Header HTML
  */
 
-
-function ui_print_page_header ($title, $icon = "", $return = false, $help = "", $godmode = false, $options = "", $modal = false, $message = "", $numChars = GENERIC_SIZE_TEXT, $alias = "") {
+function ui_print_page_header ($title, $icon = "", $return = false, 
+	$help = "", $godmode = false, $options = "", $modal = false, 
+	$message = "", $numChars = GENERIC_SIZE_TEXT, $alias = "") {
+	
 	$title = io_safe_input_html($title);
 	if (($icon == "") && ($godmode == true)) {
 		$icon = "images/gm_setup.png";

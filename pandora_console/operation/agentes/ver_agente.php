@@ -1209,49 +1209,8 @@ foreach ($config['extensions'] as $extension) {
 	}
 }
 
-$header_description = '';
-switch($tab) {
-	case "main":
-		break;
-	case "data":
-		$header_description = ' - ' . __('Last data');
-		break;
-	case "alert":
-		$header_description = ' - ' . __('Alerts');
-		break;
-	case "inventory":
-		$header_description = ' - ' . __('Inventory');
-		break;
-	case "collection":
-		$header_description = ' - ' . __('Collection');
-		break;
-	case "gis":
-		$header_description = ' - ' . __('Gis');
-		break;
-	case "custom_fields":
-		$header_description = ' - ' . __('Custom fields');
-		break;
-	case "graphs":
-		$header_description = ' - ' . __('Graphs');
-		break;
-	case "policy":
-		$header_description = ' - ' . __('Policy');
-		break;
-	case "ux_console_tab":
-		$header_description = ' - ' . __('UX Console');
-		break;
-	case "incident":
-		$header_description = ' - ' . __('Incident');
-		break;
-	case "url_address":
-		$header_description = ' - ' . __('Url address');
-		break;
-	case "ehorus":
-		$header_description = ' - ' . __('eHorus');
-		break;
-}
-
-ui_print_page_header($agent["nombre"] , $icon, false, "", false, $onheader, false, '', GENERIC_SIZE_TEXT, $agent["alias"] . $header_description);
+ui_print_page_header(agents_get_alias($id_agente), $icon, false, 
+	"", false, $onheader, false, '', $config['item_title_size_text']);
 
 
 switch ($tab) {

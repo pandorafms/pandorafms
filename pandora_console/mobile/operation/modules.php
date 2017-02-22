@@ -371,15 +371,16 @@ class Modules {
 			AS tags, 
 			tagente_modulo.id_agente_modulo,
 			tagente.intervalo AS agent_interval,
-			tagente.nombre AS agent_name, 
+			tagente.nombre AS agent_name,
+			tagente.alias AS agent_alias,
 			tagente_modulo.nombre AS module_name,
 			tagente_modulo.history_data,
 			tagente_modulo.flag AS flag,
-			tagente.id_grupo AS id_group, 
-			tagente.id_agente AS id_agent, 
+			tagente.id_grupo AS id_group,
+			tagente.id_agente AS id_agent,
 			tagente_modulo.id_tipo_modulo AS module_type,
-			tagente_modulo.module_interval, 
-			tagente_estado.datos, 
+			tagente_modulo.module_interval,
+			tagente_estado.datos,
 			tagente_estado.estado,
 			tagente_modulo.min_warning,
 			tagente_modulo.max_warning,
@@ -493,7 +494,7 @@ class Modules {
 				if ($this->columns['agent']) {
 					$row[1] = $row[__('Agent name')] =
 						'<span class="data"><span class="show_collapside" style="display: none; font-weight: bolder;">' . __('Agent') . ' </span>' .
-						ui_print_truncate_text($module['agent_name'], 50, false) .
+						ui_print_truncate_text($module['agent_alias'], 50, false) .
 						'</span>';
 				}
 				

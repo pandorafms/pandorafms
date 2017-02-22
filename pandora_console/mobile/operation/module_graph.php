@@ -353,7 +353,7 @@ class ModuleGraph {
 	}
 	
 	private function showModuleGraph() {
-		$agent_name = agents_get_name($this->module['id_agente']);
+		$agent_alias = agents_get_alias($this->module['id_agente']);
 		
 		$ui = Ui::getInstance();
 		
@@ -384,7 +384,7 @@ class ModuleGraph {
 				'value' => $this->id,
 				'type' => 'hidden'
 				)));
-			$title = sprintf(__('Options for %s : %s'), $agent_name, $this->module["nombre"]);
+			$title = sprintf(__('Options for %s : %s'), $agent_alias, $this->module["nombre"]);
 			$ui->contentBeginCollapsible($title);
 				$ui->beginForm("index.php?page=module_graph&id=" . $this->id);
 					$options = array(

@@ -218,7 +218,8 @@ class Agents {
 		$search_sql = '';
 		if (!empty($this->free_search)) {
 			$search_sql = " AND (
-				nombre COLLATE utf8_general_ci LIKE '%" . $this->free_search . "%'
+				alias COLLATE utf8_general_ci LIKE '%" . $this->free_search . "%'
+				OR nombre COLLATE utf8_general_ci LIKE '%" . $this->free_search . "%'
 				OR direccion LIKE '%" . $this->free_search . "%'
 				OR comentarios LIKE '%" . $this->free_search . "%') ";
 		}
@@ -241,7 +242,7 @@ class Agents {
 		}
 		$total = isset($total[0]['total']) ? $total[0]['total'] : 0;
 		
-		$order = array('field' => 'nombre COLLATE utf8_general_ci',
+		$order = array('field' => 'alias COLLATE utf8_general_ci',
 			'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'ASC');
 		if (!$system->getConfig('metaconsole')) {
 			$agents_db = agents_get_agents(array(
@@ -254,7 +255,7 @@ class Agents {
 				array ('id_agente',
 					'id_grupo',
 					'id_os',
-					'nombre',
+					'alias',
 					'ultimo_contacto',
 					'intervalo',
 					'comentarios description',
@@ -279,7 +280,7 @@ class Agents {
 				array ('id_agente',
 					'id_grupo',
 					'id_os',
-					'nombre',
+					'alias',
 					'ultimo_contacto',
 					'intervalo',
 					'comentarios description',
@@ -307,7 +308,7 @@ class Agents {
 			
 			
 			$row[0] = $row[__('Agent')] = '<span class="tiny" style="margin-right: 5px;">' . $img_status . '</span>' . 
-				'<a class="ui-link" data-ajax="false" href="index.php?page=agent&id=' . $agent['id_agente'] . '">' . ui_print_truncate_text(io_safe_output($agent['nombre']), 30, false) . '</a>';
+				'<a class="ui-link" data-ajax="false" href="index.php?page=agent&id=' . $agent['id_agente'] . '">' . ui_print_truncate_text(io_safe_output($agent['alias']), 30, false) . '</a>';
 			//~ $row[1] = $row[__('Description')] = '<span class="small">' .
 				//~ ui_print_truncate_text($agent["description"], 'description', false, true) .
 				//~ '</span>';

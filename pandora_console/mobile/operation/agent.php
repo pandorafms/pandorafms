@@ -89,7 +89,7 @@ class Agent {
 					exit;
 			}
 		}
-	 }
+	}
 	
 	private function show_agent() {
 		$ui = Ui::getInstance();
@@ -98,10 +98,10 @@ class Agent {
 		$ui->createPage();
 		
 		if ($this->id != 0) {
-			$agent_name = (string) $this->agent['nombre'];
+			$agent_alias = (string) $this->agent['alias'];
 			
 			$ui->createDefaultHeader(
-				sprintf('%s', $agent_name),
+				sprintf('%s', $agent_alias),
 				$ui->createHeaderButton(
 					array('icon' => 'back',
 						'pos' => 'left',
@@ -120,16 +120,13 @@ class Agent {
 			else {
 				$ui->contentBeginGrid();
 				if ($this->agent['disabled']) {
-					$agent_name = "<em>" . $agent_name . "</em>" . 
+					$agent_alias = "<em>" . $agent_alias . "</em>" . 
 						ui_print_help_tip(__('Disabled'), true);
 				}
 				else if ($this->agent['quiet']) {
-					$agent_name = "<em>" . $agent_name . "&nbsp;" . 
+					$agent_alias = "<em>" . $agent_alias . "&nbsp;" . 
 						html_print_image("images/dot_green.disabled.png", 
 						true, array("border" => '0', "title" => __('Quiet'), "alt" => "")) . "</em>";
-				}
-				else {
-					$agent_name = $agent_name;
 				}
 				
 				
@@ -174,7 +171,7 @@ class Agent {
 				}
 				
 				$html = '<div class="agent_details" style:"float:left;">';
-				$html .= '<span class="agent_name">' . $agent_name . 
+				$html .= '<span class="agent_name">' . $agent_alias . 
 						'</span>';
 				$html .= '</div>';
 				$html .= '<div class="agent_os">' . ui_print_os_icon ($this->agent["id_os"], false, true, 

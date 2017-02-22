@@ -128,7 +128,7 @@ else {
 		__('Reporting') .
 		" &raquo;  " .
 		reporting_get_name($id_report),
-		"images/op_reporting.png", false, "", false, $options,false,'',80);
+		"images/op_reporting.png", false, "", false, $options,false,'',50);
 }
 //------------------- END HEADER ---------------------------------------
 

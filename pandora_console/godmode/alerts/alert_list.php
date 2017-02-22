@@ -86,18 +86,18 @@ if ($create_alert) {
 			"talert_templates","id", $id_alert_template);
 		$module_name = db_get_value ("nombre",
 			"tagente_modulo","id_agente_modulo", $id_agent_module);
-		$agent_name = agents_get_name (db_get_value ("id_agente",
+		$agent_alias = agents_get_alias (db_get_value ("id_agente",
 			"tagente_modulo","id_agente_modulo", $id_agent_module));
 		
 		// Audit the creation only when the alert creation is correct
 		if ($id) {
 			db_pandora_audit("Alert management",
-				"Added alert '$alert_template_name' for module '$module_name' in agent '$agent_name'",
+				"Added alert '$alert_template_name' for module '$module_name' in agent '$agent_alias'",
 				false, false, 'ID: ' . $id);
 		}
 		else {
 			db_pandora_audit("Alert management",
-				"Fail Added alert '$alert_template_name' for module '$module_name' in agent '$agent_name'");
+				"Fail Added alert '$alert_template_name' for module '$module_name' in agent '$agent_alias'");
 		}
 		
 		$messageAction = ui_print_result_message ($id,
@@ -127,18 +127,18 @@ if ($delete_alert) {
 	$id_agent_module = $temp["id_agent_module"];
 	$alert_template_name = db_get_value ("name", "talert_templates","id", $id_alert_template);
 	$module_name = db_get_value ("nombre", "tagente_modulo","id_agente_modulo", $id_agent_module);
-	$agent_name = agents_get_name(
+	$agent_alias = agents_get_alias(
 		db_get_value("id_agente", "tagente_modulo","id_agente_modulo", $id_agent_module));
 	
 	$result = alerts_delete_alert_agent_module ($id_alert_agent_module);
 	
 	if ($result) {
 		db_pandora_audit("Alert management",
-			"Deleted alert '$alert_template_name' for module '$module_name' in agent '$agent_name'");
+			"Deleted alert '$alert_template_name' for module '$module_name' in agent '$agent_alias'");
 	}
 	else {
 		db_pandora_audit("Alert management",
-			"Fail to deleted alert '$alert_template_name' for module '$module_name' in agent '$agent_name'");
+			"Fail to deleted alert '$alert_template_name' for module '$module_name' in agent '$agent_alias'");
 	}
 	
 	$messageAction = ui_print_result_message ($result,

@@ -56,6 +56,7 @@ $table_behaviour = new stdClass();
 $table_behaviour->width = '100%';
 $table_behaviour->class = "databox filters";
 $table_behaviour->style[0] = 'font-weight: bold;';
+$table_behaviour->size[0] = '50%';
 $table_behaviour->data = array ();
 
 $table_behaviour->data[$row][0] = __('Block size for pagination');
@@ -146,6 +147,7 @@ $table_styles = new stdClass();
 $table_styles->width = '100%';
 $table_styles->class = "databox filters";
 $table_styles->style[0] = 'font-weight: bold;';
+$table_styles->size[0] = '50%';
 $table_styles->data = array ();
 
 $table_styles->data[$row][0] = __('Style template');
@@ -261,6 +263,7 @@ $table_gis = new stdClass();
 $table_gis->width = '100%';
 $table_gis->class = "databox filters";
 $table_gis->style[0] = 'font-weight: bold;';
+$table_gis->size[0] = '50%';
 $table_gis->data = array ();
 
 $table_gis->data[$row][0] = __('GIS Labels') .
@@ -297,6 +300,7 @@ $table_font = new stdClass();
 $table_font->width = '100%';
 $table_font->class = "databox filters";
 $table_font->style[0] = 'font-weight: bold;';
+$table_font->size[0] = '50%';
 $table_font->data = array ();
 
 $table_font->data[$row][0] = __('Font path');
@@ -376,6 +380,7 @@ $table_chars = new stdClass();
 $table_chars->width = '100%';
 $table_chars->class = "databox filters";
 $table_chars->style[0] = 'font-weight: bold;';
+$table_chars->size[0] = '50%';
 $table_chars->data = array ();
 
 $table_chars->data[$row][0] = __('Graph color (min)');
@@ -511,6 +516,7 @@ $table_other = new stdClass();
 $table_other->width = '100%';
 $table_other->class = "databox filters";
 $table_other->style[0] = 'font-weight: bold;';
+$table_other->size[0] = '50%';
 $table_other->data = array ();
 
 if (empty($config["vc_line_thickness"])) $config["vc_line_thickness"] = 2;

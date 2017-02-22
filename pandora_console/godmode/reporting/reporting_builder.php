@@ -1677,7 +1677,7 @@ switch ($action) {
 							$sql = sprintf($sql, 'DESC');
 							break;
 					}
-					echo $sql;
+					
 					$ids = db_get_all_rows_sql($sql);
 				
 				}

@@ -280,7 +280,7 @@ if ($agent["id_parent"] == 0) {
 	$data[1] = '<em>' . __('N/A') . '</em>';
 }
 else {
-	$data[1] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$agent["id_parent"].'">'.agents_get_name ($agent["id_parent"]).'</a>';
+	$data[1] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$agent["id_parent"].'">'.agents_get_alias($agent["id_parent"]).'</a>';
 }
 
 $table_data->data[] = $data;

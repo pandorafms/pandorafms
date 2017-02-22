@@ -87,7 +87,7 @@ if ($group_rep == 2) {
 					$res['total'] . __(' events.');
 		else
 			$table->data[$key][1] = __('The Agent: ') . '"' . 
-				agents_get_name ($res['id_agent']) . '", ' . __(' has ') . 
+				agents_get_alias($res['id_agent']) . '", ' . __(' has ') . 
 					$res['total'] . __(' events.');
 		
 		$uniq = uniqid();

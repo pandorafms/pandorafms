@@ -339,7 +339,7 @@ function print_alerts_summary_modal_window($id, $alerts) {
 	
 	$content = html_print_table($table,true);
 	
-	$agent = modules_get_agentmodule_agent_name($alerts[0]['id_agent_module']);
+	$agent = modules_get_agentmodule_agent_alias($alerts[0]['id_agent_module']);
 	$template = alerts_get_alert_template_name($alerts[0]['id_alert_template']);
 	
 	echo '<div id="alerts_details_'.$id.'" title="'.__('Agent').': '.$agent.' / '.__('Template').': '.$template.'" style="display:none">'.$content.'</div>';

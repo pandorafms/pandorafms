@@ -80,8 +80,7 @@ else {
 		
 		array_push($table->data, array(
 		$disabledCell,
-		//print_agent_name ($alert["id_agente"], true, "upper"),
-		agents_get_name($alert["id_agente"]),
+		ui_print_agent_name($alert["id_agente"], true),
 		$alert["module_name"],
 		$alert["template_name"],$actionCell
 		));

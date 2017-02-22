@@ -2776,7 +2776,7 @@ function visual_map_get_items_parents($idVisual) {
 	foreach ($items as $item) {
 		$agent = null;
 		if ($item['id_agent'] != 0) {
-			$agent = io_safe_output(agents_get_name($item['id_agent']));
+			$agent = io_safe_output(agents_get_alias($item['id_agent']));
 		}
 		
 		$return[$item['id']] = visual_map_create_internal_name_item(

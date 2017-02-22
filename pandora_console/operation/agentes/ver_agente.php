@@ -818,7 +818,7 @@ HAVING count(nombre) = (SELECT count(nombre) FROM tagente_modulo))';
 			echo $modulegroup.'<br />';
 		}
 		echo '<strong>'.__('Agent').':</strong> ';
-		echo ui_print_truncate_text(modules_get_agentmodule_agent_name($module['id_agente_modulo']), 'agent_small', false, true, false).'<br />';
+		echo ui_print_truncate_text(modules_get_agentmodule_agent_alias($module['id_agente_modulo']), 'agent_small', false, true, false).'<br />';
 		
 		if ($module['id_tipo_modulo'] == 18) {
 			echo '<strong>'.__('Address').':</strong> ';

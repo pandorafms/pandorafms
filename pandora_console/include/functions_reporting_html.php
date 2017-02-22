@@ -870,7 +870,7 @@ function reporting_html_event_report_group($table, $item, $pdf = 0) {
 			$data[] = events_print_type_img ($event["event_type"], true);
 			
 			if (!empty($event['id_agente']))
-				$data[] = agents_get_name($event['id_agente']);
+				$data[] = agents_get_alias($event['id_agente']);
 			else
 				$data[] = __('Pandora System');
 			$data[] = get_priority_name ($event['criticity']);
@@ -2876,7 +2876,7 @@ function reporting_get_fired_alerts_table ($alerts_fired) {
 			$alert_module = $tuple[0];
 			$template = $tuple[1];
 			if (! isset ($data[0]))
-				$data[0] = agents_get_name ($id_agent);
+				$data[0] = agents_get_alias($id_agent);
 			else
 				$data[0] = '';
 			$data[1] = $template['name'];
@@ -3038,7 +3038,7 @@ function reporting_get_monitors_down_table ($monitors_down) {
 			$data = array ();
 			foreach ($monitors as $monitor) {
 				if (! isset ($data[0]))
-					$data[0] = agents_get_name ($id_agent);
+					$data[0] = agents_get_alias($id_agent);
 				else
 					$data[0] = '';
 				if ($monitor['descripcion'] != '') {
@@ -3230,7 +3230,7 @@ function reporting_get_agent_detailed ($id_agent, $period = 0, $date = 0, $retur
 	/* Show modules in agent */
 	$output .= '<div class="agent_reporting">';
 	$output .= '<h3 style="text-decoration: underline">' .
-		__('Agent') . ' - ' . agents_get_name ($id_agent) . '</h3>';
+		__('Agent') . ' - ' . agents_get_alias($id_agent) . '</h3>';
 	$output .= '<h4>'.__('Modules').'</h3>';
 	$table_modules = reporting_get_agent_modules_table ($id_agent, $period, $date);
 	$table_modules->width = '99%';

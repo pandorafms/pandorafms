@@ -112,9 +112,8 @@ if ($show_update_action_menu) {
 	$id_agent = (int) get_parameter ('id_agent');
 	$id_alert = (int) get_parameter ('id_alert');
 	
-	$module_name = modules_get_agentmodule_name ($id_agent_module);
-	$id_agent = modules_get_agentmodule_agent ($id_agent_module);
-	$agent_name = agents_get_name ($id_agent);
+	$module_name = modules_get_agentmodule_name($id_agent_module);
+	$agent_alias = modules_get_agentmodule_agent_alias($id_agent);
 	
 	$id_action = (int) get_parameter ('id_action');
 	
@@ -131,7 +130,7 @@ if ($show_update_action_menu) {
 				$data .= __('Agent');
 				$data .= '</td>';
 				$data .= '<td class="datos">';
-				$data .= ui_print_truncate_text($agent_name, 'agent_small', false, true, true, '[&hellip;]');
+				$data .= ui_print_truncate_text($agent_alias, 'agent_small', false, true, true, '[&hellip;]');
 				$data .= '</td>';
 			$data .= '</tr>';
 		}

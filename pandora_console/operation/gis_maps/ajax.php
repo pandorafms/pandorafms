@@ -213,7 +213,7 @@ switch ($opt) {
 		
 		$returnJSON = array();
 		$returnJSON['correct'] = 1;
-		$returnJSON['content'] = __('Agent') . ': <a style="font-weight: bolder;" href="?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $row['tagente_id_agente'] . '">'.agents_get_name($row['tagente_id_agente']).'</a><br />';
+		$returnJSON['content'] = __('Agent') . ': <a style="font-weight: bolder;" href="?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $row['tagente_id_agente'] . '">'.agents_get_alias($row['tagente_id_agente']).'</a><br />';
 		$returnJSON['content'] .= __('Position (Lat, Long, Alt)') . ': (' . $row['latitude'] . ', ' . $row['longitude'] . ', ' . $row['altitude'] . ') <br />';
 		$returnJSON['content'] .= __('Start contact') . ': ' . $row['start_timestamp'] . '<br />';
 		$returnJSON['content'] .= __('Last contact') . ': ' . $row['end_timestamp'] . '<br />';

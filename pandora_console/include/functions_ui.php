@@ -3727,7 +3727,7 @@ function ui_print_module_string_value($value, $id_agente_module,
 			}
 			else {
 				$title_dialog =
-					modules_get_agentmodule_agent_name($id_agente_module) .
+					modules_get_agentmodule_agent_alias($id_agente_module) .
 					" / " . $module_name;
 				$salida = "<div " .
 					"id='hidden_value_module_" . $id_agente_module . "'

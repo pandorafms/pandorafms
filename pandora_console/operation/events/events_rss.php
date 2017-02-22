@@ -179,7 +179,7 @@ foreach ($result as $row) {
 	}
 	elseif ($row["id_agente"] > 0) {
 		// Agent name
-		$agent_name = agents_get_name ($row["id_agente"]);
+		$agent_name = agents_get_alias($row["id_agente"]);
 	}
 	else {
 		$agent_name = __('Alert').__('SNMP');

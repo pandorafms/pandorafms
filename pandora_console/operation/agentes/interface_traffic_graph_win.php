@@ -80,7 +80,7 @@ $interface_traffic_modules = array(
 		}
 ?>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<title>Pandora FMS Graph (<?php echo agents_get_name($agent_id) . ' - ' . $interface_name; ?>)</title>
+		<title>Pandora FMS Graph (<?php echo agents_get_alias($agent_id) . ' - ' . $interface_name; ?>)</title>
 		<link rel="stylesheet" href="../../include/styles/pandora_minimal.css" type="text/css" />
 		<script type='text/javaScript' src='../../include/javascript/calendar.js'></script>
 		<script type='text/javascript' src='../../include/javascript/pandora.js'></script>

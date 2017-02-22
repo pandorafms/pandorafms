@@ -1531,7 +1531,7 @@ function print_SLA_list($width, $action, $idItem = null) {
 						$idAgent = db_get_value_filter('id_agente',
 							'tagente_modulo',
 							array('id_agente_modulo' => $item['id_agent_module']));
-						$nameAgent = agents_get_name ($idAgent);
+						$nameAgent = agents_get_alias($idAgent);
 						
 						$nameModule = db_get_value_filter('nombre',
 							'tagente_modulo',
@@ -1744,7 +1744,7 @@ function print_General_list($width, $action, $idItem = null, $type = 'general') 
 							'id_agente', 'tagente_modulo',
 							array('id_agente_modulo' => $item['id_agent_module']));
 						
-						$nameAgent = agents_get_name ($idAgent);
+						$nameAgent = agents_get_alias($idAgent);
 						$nameModule = db_get_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
 						
 						$server_name_element = '';

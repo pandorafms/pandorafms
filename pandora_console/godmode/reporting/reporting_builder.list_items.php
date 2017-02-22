@@ -382,8 +382,10 @@ foreach ($items as $item) {
 				$module_name_db = implode('<br>',$modules);
 			}
 			else {
-				$alias = db_get_value ("alias","tagente","id_agente",agents_get_agent_id_by_module_id($item['id_agent_module']));
-				$agent_name_db = '<span title='. agents_get_name(agents_get_agent_id_by_module_id($item['id_agent_module'])) . '>' .$alias . '</span>';
+				$agent_id = agents_get_agent_id_by_module_id($item['id_agent_module']);
+				$agent_name = agents_get_name($agent_id);
+				$agent_alias = agents_get_alias($agent_id);
+				$agent_name_db = '<span title='. $agent_name . '>' .$alias . '</span>';
 				$module_name_db = db_get_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
 				$module_name_db = ui_print_truncate_text(io_safe_output($module_name_db), 'module_small');
 			}
@@ -393,7 +395,7 @@ foreach ($items as $item) {
 		}
 	}
 	else {
-		$alias = db_get_value ("alias","tagente","id_agente",$item['id_agent']);
+		$alias = agents_get_alias($item['id_agent']);
 		$row[2] = '<span title='. agents_get_name($item['id_agent']) . '>' .$alias . '</span>';
 		
 		if ($item['id_agent_module'] == '') {

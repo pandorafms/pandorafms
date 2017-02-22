@@ -162,7 +162,7 @@ if (($config['dbtype'] == 'oracle') && ($result !== false)) {
 	}
 }
 
-$header_title = __('Received data from')." ".modules_get_agentmodule_agent_name ($module_id)." / ".modules_get_agentmodule_name ($module_id); 
+$header_title = __('Received data from')." ".modules_get_agentmodule_agent_alias($module_id)." / ".modules_get_agentmodule_name ($module_id); 
 
 echo "<form method='post' action='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=" . $agentId . "&tab=data_view&id=" . $module_id . "'>";
 

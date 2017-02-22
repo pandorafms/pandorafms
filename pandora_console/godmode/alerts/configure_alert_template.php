@@ -554,7 +554,7 @@ if ($step == 2) {
 	$table->data[3][1] = html_print_input_text ('min_alerts',
 		$min_alerts, '', 5, 7, true);
 
-	$table->data[3][2] = __('Reset counter when alert is not continuously') . ui_print_help_tip(__('Enable this option if you want to reset the counter for minimum number of alerts when the alert state is not continuously even if it\'s in the time threshold.'), true);;
+	$table->data[3][2] = __('Reset counter for non-sustained alerts') . ui_print_help_tip(__('Enable this option if you want the counter to be reset when the alert is not being fired consecutively, even if it\'s within the time threshold'), true);
 	$table->data[3][3] = html_print_checkbox ('min_alerts_reset_counter', 1, $min_alerts_reset_counter, true);
 
 	$table->data[4][0] = __('Max. number of alerts');
@@ -585,7 +585,7 @@ if ($step == 2) {
 			'default_action', $default_action, '', __('None'), 0,
 			true, false, false, false, false, false, 0) .
 		ui_print_help_tip (
-			__('In case you fill any Field 1, Field 2 or Field 3 above, those will replace the corresponding fields of this associated "Default action".'), true);
+			__('Unless they\'re left blank, the fields from the action will override those set on the template.'), true);
 	
 	$table->data[6][0] = __('Condition type');
 	$table->data[6][1] = html_print_select (alerts_get_alert_templates_types (), 'type',

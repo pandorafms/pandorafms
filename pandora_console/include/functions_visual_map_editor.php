@@ -610,9 +610,14 @@ function visual_map_editor_print_toolbox() {
 		visual_map_print_button_editor('group_item', __('Group'), 'left', false, 'group_item_min', true);
 		visual_map_print_button_editor('box_item', __('Box'), 'left', false, 'box_item_min', true);
 		visual_map_print_button_editor('line_item', __('Line'), 'left', false, 'line_item_min', true);
-  echo '<a href="javascript:" class="tip"><img src="'.$config['homeurl'].'/images/tip.png" data-title="The data displayed in editor mode is not real" data-use_title_for_force_title="1" 
+  		if(defined("METACONSOLE")){
+ 		 echo '<a href="javascript:" class="tip"><img src="'.$config['homeurl_static'].'/images/tip.png" data-title="The data displayed in editor mode is not real" data-use_title_for_force_title="1" 
 			class="forced_title" alt="The data displayed in editor mode is not real"></a>';
-		
+		}
+		else{
+			echo '<a href="javascript:" class="tip"><img src="'.$config['homeurl'].'/images/tip.png" data-title="The data displayed in editor mode is not real" data-use_title_for_force_title="1" 
+			class="forced_title" alt="The data displayed in editor mode is not real"></a>';
+		}
 		enterprise_hook("enterprise_visual_map_editor_print_toolbox");
 		
 		$text_autosave = html_print_input_hidden ('auto_save', true, true);

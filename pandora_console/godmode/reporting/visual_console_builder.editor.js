@@ -174,6 +174,12 @@ function update_button_palette_callback() {
 	// TODO VALIDATE DATA
 	switch (selectedItem) {
 		case 'background':
+			
+			if(values['width'] < 1024 || values['height'] < 768){
+			alert('Please min size recommend is 1024x768');
+			return false;	
+			}
+			
 			if(values['width'] == 0 && values['height'] == 0) {
 				values['width'] =
 					$("#hidden-background_original_width").val();
@@ -972,8 +978,8 @@ function loadFieldsFromDB(item) {
 				}
 				
 				if (key == 'type_graph') {
-						$("select[name=type_graph]").val(val);
-					}
+					$("select[name=type_graph]").val(val);
+				}
 					
 					if (key == 'label_position') {
 						$('#labelposup'+" img").attr('src','images/label_up.png');
@@ -3022,6 +3028,9 @@ function eventsBackground() {
 
 				$('#background_grid').css('width', width);
 				$('#background_grid').css('height', height);
+			}
+			else{
+				updateDB('background', 0, values, 'resizestop');
 			}
 			if (launch_message)
 				alert($('#hidden-message_size').val());

@@ -564,7 +564,7 @@ foreach ($agents as $agent) {
 	
 	$data[4] = ui_print_group_icon ($agent["id_grupo"], true);
 	
-	$data[5] = reporting_tiny_stats($agent, true, 'agent', ':', $strict_user);
+	$data[5] = reporting_tiny_stats($agent, true, 'modules', ':', $strict_user);
 	
 	
 	$data[6] = $status_img;

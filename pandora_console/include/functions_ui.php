@@ -2411,15 +2411,9 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 		$separator_class = "separator_view";
 	}
 
-
 	$buffer = '<div id="'.$type2.'" style=""><div id="menu_tab_left">';
 
-
 	$buffer .= '<ul class="mn"><li class="' . $type . '">&nbsp;' . '&nbsp; ';
-	
-	if(strpos($title, "Monitoring » Services »") != -1){
-		$title = str_replace("Monitoring » Services » Service Map » ",'',$title);
-	}
 	
 	$buffer .= '<span style="margin-right:10px;">' .
 		ui_print_truncate_text($title, 'item_title');

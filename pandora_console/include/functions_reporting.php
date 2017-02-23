@@ -7915,7 +7915,7 @@ function reporting_tiny_stats ($counts_info, $return = false, $type = 'agent', $
 			$template_title['critical_count'] = __('%d Modules in critical status');
 			$template_title['warning_count'] = __('%d Modules in warning status');
 			$template_title['unknown_count'] = __('%d Modules in unknown status');
-			$template_title['not_init_count'] = __('%d Not init modules');
+			$template_title['not_init_count'] = __('%d Modules in not init status');
 			break;
 		case 'agent':
 			$template_title['total_count'] = __('%d Total modules');

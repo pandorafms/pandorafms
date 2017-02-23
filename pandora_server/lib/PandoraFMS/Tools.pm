@@ -58,6 +58,8 @@ our @EXPORT = qw(
 	SNMPSERVER
 	SATELLITESERVER
 	MFSERVER
+	TRANSACTIONALSERVER
+	SYNCSERVER
 	METACONSOLE_LICENSE
 	$DEVNULL
 	$OS
@@ -121,6 +123,7 @@ use constant ICMPSERVER => 11;
 use constant SNMPSERVER => 12;
 use constant SATELLITESERVER => 13;
 use constant MFSERVER => 15;
+use constant SYNCSERVER => 16;
 
 # Module statuses.
 use constant STATUS_NORMAL => 0;

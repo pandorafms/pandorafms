@@ -2429,24 +2429,24 @@ function ui_print_page_header ($title, $icon = "", $return = false,
 
 	$buffer = '<div id="'.$type2.'" style=""><div id="menu_tab_left">';
 
-	$buffer .= '<ul class="mn"><li class="' . $type . '">&nbsp;' . '&nbsp; ';
+	$buffer .= '<ul class="mn"><li class="' . $type . '">';
 	
 	if(strpos($title, "Monitoring » Services »") != -1){
 		$title = str_replace("Monitoring » Services » Service Map » ",'',$title);
 	}
 	
-	$buffer .= '<span style="margin-right:10px;">';
+	$buffer .= '<span>';
 	if (empty($alias)) $buffer .= ui_print_truncate_text($title, $numChars);
 	else $buffer .=  ui_print_truncate_text($alias, $numChars);
 	
 	if ($modal && !enterprise_installed()){
 		$buffer .= "
-		<div id='".$message."' class='publienterprise' title='Community version' style='float: right;margin-top: -2px !important; margin-left: 2px !important;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
+		<div id='".$message."' class='publienterprise' title='Community version' style='float: right;margin-top: -2px !important;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
 		";
 	}
 
 	if ($help != "")
-		$buffer .= "<div class='head_help' style='float: right; margin-top: -2px !important; margin-left: 2px !important;'>" .
+		$buffer .= "<div class='head_help' style='float: right; margin-top: -2px !important;'>" .
 			ui_print_help_icon ($help, true, '', 'images/help_w.png') . "</div>";
 	$buffer .= '</span></li></ul></div>';
 	

@@ -152,7 +152,7 @@ define('COL_GRAPH13',	'#E83128');
 
 /* The styles */
 /* Size of text in characters for truncate */
-define('GENERIC_SIZE_TEXT',	25);
+define('GENERIC_SIZE_TEXT',	50);
 
 
 

@@ -1252,7 +1252,6 @@ div.title_line {
 	text-decoration: none;
 }
 #menu_tab_left li.view a {
-	padding: 2px 10px 2px 10px;
 	color: #fff;
 	font-weight: bold;
 	font-weight: 100;
@@ -1263,7 +1262,7 @@ div.title_line {
 #menu_tab_left li.view {
 	background: #82b92e;
 	max-width: 60%;
-	min-width: 20%;
+	min-width: 30%;
 	padding: 5px 5px 0px;
 	text-align: center;
 	-moz-border-top-right-radius: 3px;
@@ -1289,13 +1288,12 @@ div.title_line {
 
 #menu_tab_left li a, #menu_tab_left li span {
 	text-transform: uppercase;
-	padding: 0px 0px 0px 5px;
 	color: #fff;
-	font-size: 9.5pt;
+	font-size: 100%;
 	line-height: 20px;
 	letter-spacing:0px;
 	font-family: verdana, sans-serif;
-	font-weight: normal;	
+	font-weight: bold;	
 }
 
 span.users {

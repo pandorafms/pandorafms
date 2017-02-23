@@ -124,11 +124,8 @@ if ($config['metaconsole'] == 1 and defined('METACONSOLE')) {
 	ui_meta_print_header(__('Reporting'), "", $options);
 }
 else {
-	ui_print_page_header (
-		__('Reporting') .
-		" &raquo;  " .
-		reporting_get_name($id_report),
-		"images/op_reporting.png", false, "", false, $options,false,'',50);
+	ui_print_page_header (reporting_get_name($id_report), "images/op_reporting.png", 
+							false, "", false, $options,false,'',50);
 }
 //------------------- END HEADER ---------------------------------------
 

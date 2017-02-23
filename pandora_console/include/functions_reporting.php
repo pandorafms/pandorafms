@@ -1867,6 +1867,7 @@ function reporting_exception($report, $content, $type = 'dinamic',
 		$max = $min;
 		$avg = 0;
 		
+		$items = array();
 		
 		$i = 0;
 		foreach ($exceptions as $exc) {
@@ -1880,10 +1881,10 @@ function reporting_exception($report, $content, $type = 'dinamic',
 				}
 			}
 			
-			$ag_name = modules_get_agentmodule_agent_name ($exc ['id_agent_module']);
-			$mod_name = modules_get_agentmodule_name ($exc ['id_agent_module']);
-			$unit = db_get_value('unit', 'tagente_modulo',
-				'id_agente_modulo', $exc['id_agent_module']);
+			$ag_name = modules_get_agentmodule_agent_name($exc['id_agent_module']);
+			$ag_alias = modules_get_agentmodule_agent_alias($exc['id_agent_module']);
+			$mod_name = modules_get_agentmodule_name($exc['id_agent_module']);
+			$unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $exc['id_agent_module']);
 			
 			if ($content['period'] == 0) {
 				$value =
@@ -1954,18 +1955,21 @@ function reporting_exception($report, $content, $type = 'dinamic',
 						break;
 				}
 				
-				$i++;
-				$data_exceptions[] = $value;
-				$id_agent_module[] = $exc['id_agent_module'];
-				$agent_name[] = $ag_name;
-				$module_name[] = $mod_name;
-				$units[] = $unit;
+				$item = array();
+				$item['value'] = $value;
+				$item['module_id'] = $exc['id_agent_module'];
+				$item['module'] = $mod_name;
+				$item['agent'] = $ag_alias;
+				$item['unit'] = $unit;
 				if ($exc['operation'] == 'avg') {
-					$operation[] = "rate";
+					$item['operation'] = "rate";
 				}
 				else {
-					$operation[] = $exc['operation'];
+					$item['operation'] = $exc['operation'];
 				}
+				$items[] = $item;
+				
+				$i++;
 			}
 			//Restore dbconnection
 			if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
@@ -2008,64 +2012,62 @@ function reporting_exception($report, $content, $type = 'dinamic',
 		else {
 			$avg = $avg / $i;
 			
-			switch ($order_uptodown) {
-				//Order descending
-				case 1:
-					array_multisort($data_exceptions, SORT_DESC,
-						$agent_name, SORT_ASC, $module_name, SORT_ASC,
-						$id_agent_module, SORT_ASC);
-					break;
-				//Order ascending
-				case 2:
-					array_multisort($data_exceptions, SORT_ASC,
-						$agent_name, SORT_ASC, $module_name, SORT_ASC,
-						$id_agent_module, SORT_ASC);
-					break;
-				//Order by agent name or without selection
-				case 0:
-				case 3:
-					array_multisort($agent_name, SORT_ASC,
-						$data_exceptions, SORT_ASC, $module_name,
-						SORT_ASC, $id_agent_module, SORT_ASC);
-					break;
-			}
-			
-			if ($order_uptodown == 1 || $order_uptodown == 2) {
-				$j = 0;
-				$data_pie_graph = array();
-				$data_hbar = array();
-				foreach ($data_exceptions as $dex) {
-					$data_hbar[$agent_name[$j]]['g'] = $dex;
-					$data_pie_graph[$agent_name[$j]] = $dex;
-					if ($show_graph == 0 || $show_graph == 1) {
-						$data = array();
-						$data['agent'] = $agent_name[$j];
-						$data['module'] = $module_name[$j];
-						$data['operation'] = __($operation[$j]);
-						$data['value'] = $dex;
-						$data['formated_value'] = format_for_graph($dex, 2) . " " . $units[$j];
-						$return['data'][] = $data;
-					}
-					$j++;
+			// Sort the items
+			$sort_number = function ($a, $b, $sort = SORT_ASC) {
+				if ($a == $b) return 0;
+				else if ($a > $b) return ($sort === SORT_ASC) ? 1 : -1;
+				else return ($sort === SORT_ASC) ? -1 : 1;
+			};
+			$sort_string = function ($a, $b, $sort = SORT_ASC) {
+				if ($sort === SORT_ASC) return strcasecmp($a, $b);
+				else return strcasecmp($b, $a);
+			};
+			usort($items, function($a, $b) use ($order_uptodown, $sort_number, $sort_string) {
+				switch ($order_uptodown) {
+					case 1:
+					case 2:
+						if ($a['value'] == $b['value']) {
+							if ($a['agent'] == $b['agent']) {
+								if ($a['module'] == $b['module']) {
+									return $sort_number($a['module_id'], $b['module_id']);
+								}
+								return $sort_string($a['module'], $b['module']);
+							}
+							return $sort_string($a['agent'], $b['agent']);
+						}
+						return $sort_number($a['value'], $b['value'], ($order_uptodown == 1) ? SORT_DESC : SORT_ASC);
+					//Order by agent name or without selection
+					case 0:
+					case 3:
+						if ($a['agent'] == $b['agent']) {
+							if ($a['value'] == $b['value']) {
+								if ($a['module'] == $b['module']) {
+									return $sort_number($a['module_id'], $b['module_id']);
+								}
+								return $sort_string($a['module'], $b['module']);
+							}
+							return $sort_number($a['value'], $b['value']);
+						}
+						return $sort_string($a['agent'], $b['agent']);
 				}
-			}
-			else if ($order_uptodown == 0 || $order_uptodown == 3) {
-				$j = 0;
-				$data_pie_graph = array();
-				$data_hbar = array();
-				foreach ($agent_name as $an) {
-					$data_hbar[$an]['g'] = $data_exceptions[$j];
-					$data_pie_graph[$an] = $data_exceptions[$j];
-					if ($show_graph == 0 || $show_graph == 1) {
-						$data = array();
-						$data['agent'] = $an;
-						$data['module'] = $module_name[$j];
-						$data['operation'] = __($operation[$j]);
-						$data['value'] = $data_exceptions[$j];
-						$data['formated_value'] = format_for_graph($data_exceptions[$j], 2) . " " . $units[$j];
-						$return['data'][] = $data;
-					}
-					$j++;
+			});
+			
+			$data_pie_graph = array();
+			$data_hbar = array();
+			foreach ($items as $key => $item) {
+				if ($show_graph == 1 || $show_graph == 2) {
+					// TODO: Find a better way to show the graphs
+					$data_hbar[$item['agent'] . ' - ' . $item['operation']]['g'] = $item['value'];
+					$data_pie_graph[$item['agent'] . ' - ' . $item['operation']] = $item['value'];
+				}
+				if ($show_graph == 0 || $show_graph == 1) {
+					$data = array();
+					$data['agent'] = $item['agent'];
+					$data['module'] = $item['module'];
+					$data['operation'] = __($item['operation']);
+					$data['value'] = $item['value'];
+					$data['formated_value'] = format_for_graph($item['value'], 2) . " " . $item['unit'];
+					$return['data'][] = $data;
 				}
 			}
 			

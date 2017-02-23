@@ -469,7 +469,7 @@ function netflow_get_data ($start_date, $end_date, $interval_length, $filter, $a
 		
 		// Parse aggregates
 		foreach ($string as $line) {
-			if ($line=='') {
+			if ($line == '') {
 				continue;
 			}
 			$val = explode(',',$line);

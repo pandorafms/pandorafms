@@ -83,7 +83,7 @@ $filter['router_ip'] = get_parameter('router_ip');
 
 // Read chart configuration
 $chart_type = get_parameter('chart_type', 'netflow_area');
-$max_aggregates = (int) get_parameter('max_aggregates', 0);
+$max_aggregates = (int) get_parameter('max_aggregates', 1);
 $period = (int) get_parameter('period', SECONDS_1DAY);
 $update_date = (int) get_parameter('update_date', 0);
 $date = get_parameter_post ('date', date (DATE_FORMAT, get_system_time ()));
@@ -103,9 +103,10 @@ $update = get_parameter('update_button', '');
 $end_date = strtotime ($date . " " . $time);
 $start_date = $end_date - $period;
 
-if (! defined ('METACONSOLE')) {
+if (!is_metaconsole()) {
 	//Header
-	ui_print_page_header (__('Netflow live view'), "images/op_netflow.png", false, "", false, array ());
+	ui_print_page_header (__('Netflow live view'), 
+		"images/op_netflow.png", false, "", false, array ());
 	
 	$is_windows = strtoupper(substr(PHP_OS, 0, 3)) == 'WIN';
 	if ($is_windows) {
@@ -126,7 +127,6 @@ if (! defined ('METACONSOLE')) {
 			ui_print_error_message(sprintf(__('Make sure nfdump version 1.6.8 or newer is installed!')));
 		}
 	}
-	
 }
 else {
 	$nav_bar = array(array('link' => 'index.php?sec=main', 'text' => __('Main')),
@@ -181,18 +181,20 @@ enterprise_hook('open_meta_frame');
 
 $class = "databox filters";
 
-echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&sec2=operation/netflow/nf_live_view&pure='.$pure.'">';
+echo '<form method="post" action="' . $config['homeurl'] . 
+	'index.php?sec=netf&sec2=operation/netflow/nf_live_view&pure=' . 
+	$pure . '">';
+	
 	echo "<table class='".$class."' width='100%'>";
-	if (defined("METACONSOLE")) {
-				echo "<thead>
-						<tr>
-							<th align=center colspan=6>
-								" . __('Draw live filter') . "
-							</th>
-						</tr>
-					</thead>";
-	}
-	if (defined ('METACONSOLE')) {
+	if (is_metaconsole()) {
+		echo "<thead>
+			<tr>
+				<th align=center colspan=6>
+					" . __('Draw live filter') . "
+				</th>
+			</tr>
+		</thead>";
+		
 		$list_servers = array();
 		
 		$servers = db_get_all_rows_sql ("SELECT *
@@ -250,7 +252,8 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 	echo "<tr>";
 	
 	echo "<td>" . '<b>' . __('Type') . '</b>' . "</td>";
-	echo "<td>" . html_print_select (netflow_get_chart_types (), 'chart_type', $chart_type,'','',0,true) . "</td>";
+	echo "<td>" . html_print_select (netflow_get_chart_types (), 
+		'chart_type', $chart_type,'','',0,true) . "</td>";
 	
 	echo "<td>" . '<b>' . __('Max. values') . '</b>' . "</td>";
 	$max_values = array ('2' => '2',
@@ -267,10 +270,18 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 		"</a>";
 	echo "</td>";
 	
-	$onclick = "if (!confirm('".__('Warning').". ".__('IP address resolution can take a lot of time')."')) return false;";
-	$radio_buttons = __('Yes').'&nbsp;&nbsp;'.html_print_radio_button_extended ('address_resolution', 1, '', $address_resolution, false, $onclick, '', true).'&nbsp;&nbsp;&nbsp;';
-	$radio_buttons .= __('No').'&nbsp;&nbsp;'.html_print_radio_button ('address_resolution', 0, '', $address_resolution, true);
-	echo "<td>" . '<b>'.__('IP address resolution').'</b>' . ui_print_help_tip (__("Resolve the IP addresses to get their hostnames."), true) . "</td>";
+	$onclick = "if (!confirm('".__('Warning') . ". " . 
+		__('IP address resolution can take a lot of time') . 
+		"')) return false;";
+	$radio_buttons = __('Yes').'&nbsp;&nbsp;' . 
+		html_print_radio_button_extended ('address_resolution', 1, '', 
+			$address_resolution, false, $onclick, '', true) . 
+		'&nbsp;&nbsp;&nbsp;';
+	$radio_buttons .= __('No').'&nbsp;&nbsp;' . 
+		html_print_radio_button ('address_resolution', 0, '', 
+		$address_resolution, true);
+	echo "<td>" . '<b>'.__('IP address resolution').'</b>' . 
+		ui_print_help_tip (__("Resolve the IP addresses to get their hostnames."), true) . "</td>";
 	echo "<td>$radio_buttons</td>";
 	
 	echo "</tr>";
@@ -292,7 +303,8 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 	echo "<tr class='filter_save' style='display: none;'>";
 	
 	echo "<td>" . '<span id="filter_name_color"><b>'.__('Name').'</b></span>' . "</td>";
-	echo "<td colspan='2'>" . html_print_input_text ('name', $filter['id_name'], false, 20, 80, true) . "</td>";
+	echo "<td colspan='2'>" . html_print_input_text ('name', 
+		$filter['id_name'], false, 20, 80, true) . "</td>";
 	$own_info = get_user_info ($config['id_user']);
 	echo "<td>" . '<span id="filter_group_color"><b>'.__('Group').'</b></span>' . "</td>";
 	echo "<td colspan='2'>" . html_print_select_groups($config['id_user'], "IW", $own_info['is_admin'], 'assign_group', $filter['id_group'], '', '', -1, true, false, false) . "</td>";
@@ -364,7 +376,7 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 		echo "<td></td>";
 	}
 	else {
-		echo "<td style='font-weight:bold;'>" . __('Src Port'). ui_print_help_tip (__("Source port. A comma separated list of source ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22"), true) . "</td>";
+		echo "<td style='font-weight:bold;'>" . __('Src Port') . ui_print_help_tip (__("Source port. A comma separated list of source ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22"), true) . "</td>";
 		echo "<td colspan='2'>" . html_print_input_text ('src_port', $filter['src_port'], false, 30, 80, true) . "</td>";
 	}
 	
@@ -382,7 +394,7 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 	echo "</tr>";
 	echo "<tr>";
 	
-	echo "<td>" . '<b>'.__('Aggregate by').'</b>'. ui_print_help_icon ('aggregate_by', true) . "</td>";
+	echo "<td>" . '<b>' . __('Aggregate by') . '</b>' . ui_print_help_icon ('aggregate_by', true) . "</td>";
 	$aggregate_list = array();
 	$aggregate_list = array ('none' => __('None'), 'proto' => __('Protocol'), 'srcip' =>__('Src Ip Address'), 'dstip' =>__('Dst Ip Address'), 'srcport' =>__('Src Port'), 'dstport' =>__('Dst Port') );
 	echo "<td colspan='2'>" . html_print_select ($aggregate_list, "aggregate", $filter['aggregate'], '', '', 0, true, false, true, '', false) . "</td>";

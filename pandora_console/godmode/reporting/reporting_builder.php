@@ -343,7 +343,7 @@ switch ($action) {
 		switch ($activeTab) {
 			case 'main':
 				$buttons['list_reports']['active'] = true;
-				$subsection = ' &raquo; '.__('Custom reporting');
+				$subsection = __('Custom reporting');
 				break;
 			default:
 				$subsection = reporting_enterprise_add_subsection_main($activeTab, $buttons);
@@ -365,7 +365,7 @@ switch ($action) {
 		}
 		// Page header for normal console
 		else
-			ui_print_page_header (__('Reporting').' &raquo; '.__('Custom reporting'), "images/op_reporting.png", false, "", false, $buttons,false,'',50);
+			ui_print_page_header (__('Custom reporting'), "images/op_reporting.png", false, "", false, $buttons,false,'',60);
 		
 		
 		if ($action == 'delete_report') {
@@ -1886,7 +1886,7 @@ switch ($action) {
 			switch ($activeTab) {
 				case 'main':
 					$buttons['list_reports']['active'] = true;
-					$subsection = ' &raquo; ' . __('Custom reporting');
+					$subsection = __('Custom reporting');
 					break;
 				default:
 					$subsection = reporting_enterprise_add_subsection_main($activeTab, $buttons);
@@ -1908,7 +1908,7 @@ switch ($action) {
 			}
 			// Page header for normal console
 			else
-				ui_print_page_header (__('Reporting') . $subsection, "images/op_reporting.png", false, "", false, $buttons,false,'',50);
+				ui_print_page_header ($subsection, "images/op_reporting.png", false, "", false, $buttons,false,'',60);
 			
 			
 			reporting_enterprise_select_main_tab($action);
@@ -1952,7 +1952,7 @@ $buttons['view'] = array('active' => false,
 $buttons[$activeTab]['active'] = true;
 
 if ($idReport != 0) {
-	$textReportName = " &raquo; " . $reportName;
+	$textReportName = $reportName;
 }
 else {
 	$temp = $buttons['main'];
@@ -1978,9 +1978,9 @@ if ($enterpriseEnable and defined('METACONSOLE')) {
 	ui_meta_print_header(__('Reporting'). $textReportName, "", $buttons);
 }
 else {
-	ui_print_page_header(__('Reporting') . $textReportName,
+	ui_print_page_header($textReportName,
 		"images/op_reporting.png", false,
-		"reporting_" . $activeTab . "_tab", false, $buttons,false,'',50);
+		"reporting_" . $activeTab . "_tab", false, $buttons,false,'',60);
 }
 
 if ($resultOperationDB !== null) {

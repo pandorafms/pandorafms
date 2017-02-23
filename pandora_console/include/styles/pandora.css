@@ -207,6 +207,9 @@ div#activity{
 	padding-top: 0px;
 	padding-bottom: 18px;
 }
+div#activity table td > img {
+	vertical-align: middle;
+}
 div#noa {
 	float: right;
 	padding-right: 50px;

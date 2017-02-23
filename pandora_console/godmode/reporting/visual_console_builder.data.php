@@ -107,12 +107,16 @@ $table->data[0][1] = html_print_input_text('name', $visualConsoleName,
 
 $table->rowspan[0][2] = 6;
 if ($action == 'new') {
-	$table->data[0][2] = '<img id="imagen" style="display:none;" 
+	$table->data[0][2] = '<img id="imagen2" style="display:none;" 
+	src="">';
+	$table->data[0][2] .= '<img id="imagen" style="display:none;" 
 	src="">';
 }
 else {
-	$table->data[0][2] = '<img id="imagen" style="width:230px;" 
+	$table->data[0][2] = '<img id="imagen2" style="width:230px;" 
 	src="images/console/background/'.$background.'">';
+	$table->data[0][2] .= '<img id="imagen" style="display:none;" 
+	src="">';
 }
 	
 $table->data[1][0] = __('Group:');
@@ -161,7 +165,7 @@ $table->data[5][1] .= '<span class="opt" style="visibility:hidden;">' .
 
 $table->data[5][1] .= '<span class="opt" style="visibility:hidden;">
 			<button id="getsize" style="margin-left:20px;" 
-			value="modsize">' . __('Set default size') . 
+			value="modsize">' . __('Get default image size') . 
 			'</button></span>';
 
 if ($action == 'new') {
@@ -189,6 +193,9 @@ echo "</form>";
 
 $(document).ready (function () {
 	
+	$('#imagen').attr('src','images/console/background/'+$('#background').val());
+	$('#imagen2').attr('src','images/console/background/'+$('#background').val());
+	
 	$("#modsize").click(function(event){
 		event.preventDefault();
 		
@@ -197,30 +204,68 @@ $(document).ready (function () {
 		}
 		
 		if ($('#imagen').attr('src') != '') {
-			$('input[name=width]').val($('#imagen').width());
-			$('input[name=height]').val($('#imagen').height());
+			
+			if (parseInt($('#imagen').width()) < 1024){
+				alert('Default width is '+$('#imagen').width()+'px, smaller than minimum -> 1024px');
+				$('input[name=width]').val('1024');
+			}
+			else{
+				$('input[name=width]').val($('#imagen').width());
+			}
+			if (parseInt($('#imagen').height()) < 768){
+				alert('Default height is '+$('#imagen').height()+'px, smaller than minimum -> 768px');
+					$('input[name=height]').val('768');
+			}
+			else{
+				$('input[name=height]').val($('#imagen').height());
+			}
+						
 		}
 	});
 
 	$("#getsize").click(function(event){
 		event.preventDefault();
-		$('input[name=width]').val($('#imagen').width());
-		$('input[name=height]').val($('#imagen').height());
+		
+		if (parseInt($('#imagen').width()) < 1024){
+			alert('Default width is '+$('#imagen').width()+'px, smaller than minimum -> 1024px');
+			$('input[name=width]').val('1024');
+		}
+		else{
+			$('input[name=width]').val($('#imagen').width());
+		}
+		if (parseInt($('#imagen').height()) < 768){
+			alert('Default height is '+$('#imagen').height()+'px, smaller than minimum -> 768px');	
+			$('input[name=height]').val('768');
+		}
+		else{
+			$('input[name=height]').val($('#imagen').height());
+		}
+		
+	});
+	
+	$( "input[type=submit]" ).click(function( event ) {
+		if($( "#getsize" ).css('visibility')=='hidden'){
+			if (parseInt($('#imagen').width()) < 1024){
+				$('input[name=width]').val('1024');
+			}
+			else{
+				$('input[name=width]').val($('#imagen').width());
+			}
+			if (parseInt($('#imagen').height()) < 768){
+				$('input[name=height]').val('768');
+			}
+			else{
+				$('input[name=height]').val($('#imagen').height());
+			}
+		}
 	});
 
 	$("#background").change(function() {
 		$('#imagen').attr('src','images/console/background/'+$('#background').val());
-		$('#imagen').width(230);
-		$('#imagen').show();
+		$('#imagen2').attr('src','images/console/background/'+$('#background').val());
+		$('#imagen2').width(230);
+		$('#imagen2').show();
 	});
-
-	$( "input[type=submit]" ).click(function( event ) {
-		if($( "#getsize" ).css('visibility')=='hidden'){
-			$('input[name=width]').val($('#imagen').width());
-			$('input[name=height]').val($('#imagen').height());
-		}
-	});
-
 
 	$("#file-background_image").change(function(){
 		readURL(this);
@@ -231,8 +276,9 @@ $(document).ready (function () {
 			var reader = new FileReader();
 			reader.onload = function (e) {
 				$('#imagen').attr('src', e.target.result);
-				$('#imagen').width(230);
-				$('#imagen').show();
+				$('#imagen2').attr('src', e.target.result);
+				$('#imagen2').width(230);
+				$('#imagen2').show();
 			}
 			reader.readAsDataURL(input.files[0]);
 		}

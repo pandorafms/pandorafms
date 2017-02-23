@@ -1168,7 +1168,6 @@ sub send_file_list {
 	# List files.
 	while (my $file = readdir ($dh)) {
 		next if ($file =~ /[$t_invalid_chars]/); # Only list files valid for Tentacle.
-		next if (-d $file); # Skip directories.
 		$data .= "$file\n";
 	}
 	closedir $dh;

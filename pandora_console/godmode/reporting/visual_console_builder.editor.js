@@ -88,13 +88,13 @@ function visual_map_main() {
 			$("#custom_graph option[value=0]").prop("selected", true);
 		});
 		
-		$('.labelpos').click(function(event){
-			$("#labelposup img").attr('src','/pandora_console/images/label_up.png');
-			$("#labelposdown img").attr('src','/pandora_console/images/label_down.png');
-			$("#labelposleft img").attr('src','/pandora_console/images/label_left.png');
-			$("#labelposright img").attr('src','/pandora_console/images/label_right.png');
+		$('.labelpos').click(function(event) {
+			$("#labelposup img").attr('src','images/label_up.png');
+			$("#labelposdown img").attr('src','images/label_down.png');
+			$("#labelposleft img").attr('src','images/label_left.png');
+			$("#labelposright img").attr('src','images/label_right.png');
 			$('.labelpos').attr('sel','no');
-			$("#"+$(this).attr('id')+" img").attr('src','/pandora_console/images/label_'+$(this).attr('id').replace('labelpos','')+'_2.png');
+			$("#"+$(this).attr('id')+" img").attr('src','images/label_'+$(this).attr('id').replace('labelpos','')+'_2.png');
 			$("#"+$(this).attr('id')).attr('sel','yes');
 					
 		});
@@ -972,18 +972,18 @@ function loadFieldsFromDB(item) {
 				}
 				
 				if (key == 'type_graph') {
-					$("select[name=type_graph]").val(val);
-				}
+						$("select[name=type_graph]").val(val);
+					}
 					
-				if (key == 'label_position') {
-					$('#labelposup'+" img").attr('src','/pandora_console/images/label_up.png');
-					$('#labelposdown'+" img").attr('src','/pandora_console/images/label_down.png');
-					$('#labelposleft'+" img").attr('src','/pandora_console/images/label_left.png');
-					$('#labelposright'+" img").attr('src','/pandora_console/images/label_right.png');
-					$('.labelpos').attr('sel','no');
-					$('#labelpos'+val+" img").attr('src','/pandora_console/images/label_'+$('#labelpos'+val).attr('id').replace('labelpos','')+'_2.png');
-					$('#labelpos'+val).attr('sel','yes');
-				}
+					if (key == 'label_position') {
+						$('#labelposup'+" img").attr('src','images/label_up.png');
+						$('#labelposdown'+" img").attr('src','images/label_down.png');
+						$('#labelposleft'+" img").attr('src','images/label_left.png');
+						$('#labelposright'+" img").attr('src','images/label_right.png');
+						$('.labelpos').attr('sel','no');
+						$('#labelpos'+val+" img").attr('src','images/label_'+$('#labelpos'+val).attr('id').replace('labelpos','')+'_2.png');
+						$('#labelpos'+val).attr('sel','yes');
+					}
 					
 				if (key == 'image') {
 					//Load image preview

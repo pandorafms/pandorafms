@@ -385,7 +385,7 @@ sub start_ssl {
 			SSL_passwd_cb => sub {return $t_ssl_pwd},
 			SSL_use_cert =>'1',
 			# No authentication
-			SSL_verify_mode => '0x00', 
+			SSL_verify_mode => 0x00, 
 		);
 	}
 	else {
@@ -397,7 +397,7 @@ sub start_ssl {
 			SSL_passwd_cb => sub {return $t_ssl_pwd},
 			SSL_use_cert =>'1',
 			# Verify peer
-			SSL_verify_mode => '0x01', 
+			SSL_verify_mode => 0x01, 
 		);
 	}
 

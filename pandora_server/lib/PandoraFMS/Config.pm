@@ -274,9 +274,12 @@ sub pandora_load_config {
 	$pa_config->{"translate_enterprise_strings"} = 1; # 5.1
 	$pa_config->{"syncserver"} = 0; # 7.0
 	$pa_config->{"sync_address"} = ''; # 7.0
+	$pa_config->{"sync_ca"} = ''; # 7.0
+	$pa_config->{"sync_cert"} = ''; # 7.0
+	$pa_config->{"sync_key"} = ''; # 7.0
 	$pa_config->{"sync_port"} = '41121'; # 7.0
-	$pa_config->{"sync_timeout"} = 5; # 7.0
 	$pa_config->{"sync_retries"} = 2; # 7.0
+	$pa_config->{"sync_timeout"} = 5; # 7.0
 	
 	# Internal MTA for alerts, each server need its own config.
 	$pa_config->{"mta_address"} = '127.0.0.1'; # Introduced on 2.0
@@ -983,14 +986,23 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^sync_address\s+(.*)/i) {
 			$pa_config->{'sync_address'}= clean_blank($1);
 		}
+		elsif ($parametro =~ m/^sync_ca\s+(.*)/i) {
+			$pa_config->{'sync_ca'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^sync_cert\s+(.*)/i) {
+			$pa_config->{'sync_cert'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^sync_key\s+(.*)/i) {
+			$pa_config->{'sync_key'}= clean_blank($1);
+		}
 		elsif ($parametro =~ m/^sync_port\s+([0-9]*)/i) {
 			$pa_config->{'sync_port'}= clean_blank($1);
 		}
-		elsif ($parametro =~ m/^sync_retries\s+([0-9]*)/i) {
-			$pa_config->{'sync_retries'}= clean_blank($1);
-		}
 		elsif ($parametro =~ m/^sync_timeout\s+([0-9]*)/i) {
 			$pa_config->{'sync_timeout'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^sync_retries\s+([0-9]*)/i) {
+			$pa_config->{'sync_retries'}= clean_blank($1);
 		}
 	} # end of loop for parameter #
 

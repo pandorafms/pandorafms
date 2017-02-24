@@ -208,8 +208,12 @@ function custom_graphs_print($id_graph, $height, $width, $period,
 		foreach ($sources as $source) {
 			array_push ($modules, $source['id_agent_module']);
 			array_push ($weights, $source['weight']);
-			if ($source['label'] != '')
-				$labels[$source['id_agent_module']] = $source['label'];
+			if ($source['label'] != ''){
+					$item['type']            = 'custom_graph';
+					$item['id_agent']        = agents_get_module_id($source['id_agent_module']);
+					$item['id_agent_module'] = $source['id_agent_module'];
+					$labels[$source['id_agent_module']] = reporting_label_macro($item, $source['label']);
+			}
 		}
 	}
 		

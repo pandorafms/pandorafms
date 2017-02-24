@@ -901,7 +901,7 @@ You can of course remove the warnings, that's why we include the source and do n
 					metaconsole_restore_db();
 				}
 				else {
-					$agent_name = agents_get_name ($idAgent);
+					$agent_name = agents_get_alias ($idAgent);
 				}
 				
 				html_print_input_hidden('id_agent', $idAgent);

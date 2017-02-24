@@ -153,8 +153,8 @@ function reporting_html_print_report($report, $mini = false, $report_info = 1) {
 		else
 			$label = '';
 			
-        $aux = explode("-",$item['subtitle']);
-		$item['subtitle'] = db_get_value ("alias","tagente","nombre",$item['agent_name']) .' -'. $aux[1];
+        //$aux = explode("-",$item['subtitle']);
+		//$item['subtitle'] = db_get_value ("alias","tagente","nombre",$item['agent_name']) .' -'. $aux[1];
 		
 		reporting_html_header($table,
 			$mini, $item['title'],
@@ -165,14 +165,14 @@ function reporting_html_print_report($report, $mini = false, $report_info = 1) {
 			$item['date']['to'],
 			$label);
 			
-			$table->data['description_row']['description'] =  $item['description'];
+		$table->data['description_row']['description'] =  $item['description'];
 		
-			if($item['type']=='event_report_agent' || $item['type']=='event_report_group' || $item['type']=='event_report_module'){
-				
-				$table->data['count_row']['count'] = "Total events: ".$item["total_events"];
-			}
-			 
-			$table->colspan['description_row']['description'] = 3;
+		if($item['type']=='event_report_agent' || $item['type']=='event_report_group' || $item['type']=='event_report_module'){
+			
+			$table->data['count_row']['count'] = "Total events: ".$item["total_events"];
+		}
+		 
+		$table->colspan['description_row']['description'] = 3;
 		
 		switch ($item['type']) {
 			case 'availability':
@@ -1326,14 +1326,10 @@ function reporting_html_agent_module($table, $item) {
 		$list_modules = $first['modules'];
 		
 		foreach ($list_modules as $module_name => $module) {
-			$file_name = string2image(
-				ui_print_truncate_text($module_name, 'module_small',
-					false, true, false, '...'),
-				false, false, 6, 270, '#B1B1B1', 'FFF', 4, 0);
-			$table_data .= '<th width="22px">' .
-				html_print_image($file_name, true,
-					array('title' => $module_name)) .
-				"</th>";
+			$file_name = ui_print_truncate_text($module_name, 'module_small',
+					false, true, false, '...');
+			$table_data .= '<th style="padding: 10px;">' .
+				$file_name . "</th>";
 		}
 		
 		
@@ -1364,14 +1360,16 @@ function reporting_html_agent_module($table, $item) {
 					$textcolor = '#FFF';
 					break;
 			}
-			
+			/*
 			$file_name = string2image(
 				ui_print_truncate_text($row['agent_name'], 'agent_small',
 					false, true, false, '...'),
 				false, false, 6, 0, $rowcolor, $textcolor, 4, 0);
+			*/
+			$file_name = ui_print_truncate_text($row['agent_name'], 'agent_small',
+					false, true, false, '...');
 			$table_data .= "<td style='background-color: " . $rowcolor . ";'>" .
-				html_print_image($file_name, true,
-					array('title' => $row['agent_name'])) . "</td>";
+				$file_name . "</td>";
 			
 			foreach ($row['modules'] as $module_name => $module) {
 				if (is_null($module)) {

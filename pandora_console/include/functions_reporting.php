@@ -709,7 +709,7 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 			}
 
 			$data = array();
-			$data['agent']        = modules_get_agentmodule_agent_name($sla['id_agent_module']);
+			$data['agent']        = modules_get_agentmodule_agent_alias($sla['id_agent_module']);
 			$data['module']       = modules_get_agentmodule_name($sla['id_agent_module']);
 			$data['max']          = $sla['sla_max'];
 			$data['min']          = $sla['sla_min'];
@@ -819,7 +819,7 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 			// Slice graphs calculation
 			if ($show_graphs) {
 				$dataslice = array();
-				$dataslice['agent'] = modules_get_agentmodule_agent_name ($sla['id_agent_module']);
+				$dataslice['agent'] = modules_get_agentmodule_agent_alias ($sla['id_agent_module']);
 				$dataslice['module'] = modules_get_agentmodule_name ($sla['id_agent_module']);
 				$dataslice['sla_value'] = $data['sla_value'];
 				$dataslice['order'] = $data['sla_value'];
@@ -1689,7 +1689,7 @@ function reporting_agent_module($report, $content) {
 		foreach ($agents as $agent) {
 			$row = array();
 			$row['agent_status'][$agent] = agents_get_status($agent);
-			$row['agent_name'] = agents_get_name($agent);
+			$row['agent_name'] = agents_get_alias($agent);
 			
 			$agent_modules = agents_get_modules($agent);
 			
@@ -2169,13 +2169,13 @@ function reporting_group_report($report, $content) {
 	$return["date"] = reporting_get_date_text($report, $content);
 	
 	$return["data"] = array();
-	
+
 	$events = events_get_agent(
 		false,
 		$content['period'],
 		$report['datetime'],
 		false,
-		false,
+		true,
 		false,
 		false,
 		false,
@@ -3700,7 +3700,7 @@ function reporting_value($report, $content, $type) {
 	$module_name = io_safe_output(
 		modules_get_agentmodule_name($content['id_agent_module']));
 	$agent_name = io_safe_output(
-		modules_get_agentmodule_agent_name ($content['id_agent_module']));
+		modules_get_agentmodule_agent_alias ($content['id_agent_module']));
 	$unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo',
 		$content ['id_agent_module']);
 	
@@ -5206,7 +5206,7 @@ function reporting_availability_graph($report, $content, $pdf=false) {
 			}
 
 			$data = array();
-			$data['agent']        = modules_get_agentmodule_agent_name($sla['id_agent_module']);
+			$data['agent']        = modules_get_agentmodule_agent_alias($sla['id_agent_module']);
 			$data['module']       = modules_get_agentmodule_name($sla['id_agent_module']);
 			$data['max']          = $sla['sla_max'];
 			$data['min']          = $sla['sla_min'];
@@ -5317,7 +5317,7 @@ function reporting_availability_graph($report, $content, $pdf=false) {
 			
 			// Slice graphs calculation
 			$dataslice = array();
-			$dataslice['agent']        = modules_get_agentmodule_agent_name ($sla['id_agent_module']);
+			$dataslice['agent']        = modules_get_agentmodule_agent_alias ($sla['id_agent_module']);
 			$dataslice['module']       = modules_get_agentmodule_name ($sla['id_agent_module']);
 			$dataslice['order']        = $data['sla_value'];
 			$dataslice['checks_total'] = $data['checks_total'];
@@ -5504,7 +5504,7 @@ function reporting_general($report, $content) {
 		}
 		
 		$mod_name = modules_get_agentmodule_name ($row['id_agent_module']);
-		$ag_name = modules_get_agentmodule_agent_name ($row['id_agent_module']);
+		$ag_name = modules_get_agentmodule_agent_alias ($row['id_agent_module']);
 		$type_mod = modules_get_last_value($row['id_agent_module']);
 		$unit = db_get_value('unit', 'tagente_modulo',
 			'id_agente_modulo',
@@ -10329,7 +10329,7 @@ function reporting_label_macro ($item, $label) {
 		case 'alert_report_agent':
 		case 'agent_configuration':
 			if (preg_match("/_agent_/", $label)) {
-				$agent_name = agents_get_name($item['id_agent']);
+				$agent_name = agents_get_alias($item['id_agent']);
 				$label = str_replace("_agent_", $agent_name, $label);
 			}
 			
@@ -10368,7 +10368,7 @@ function reporting_label_macro ($item, $label) {
 		case 'MTBF':
 		case 'MTTR':
 			if (preg_match("/_agent_/", $label)) {
-				$agent_name = agents_get_name($item['id_agent']);
+				$agent_name = agents_get_alias($item['id_agent']);
 				$label = str_replace("_agent_", $agent_name, $label);
 			}
 			

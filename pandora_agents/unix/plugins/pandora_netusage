@@ -10,5 +10,6 @@ echo " <type><![CDATA[generic_data_inc]]></type>"
 echo " <data><![CDATA[$TOTAL]]></data>"
 echo " <unit><![CDATA[bytes/sec]]></unit>"
 echo " <description><![CDATA[Total bytes/sec transfered in this system]]></description>"
+echo " <module_group>Networking</module_group>"
 echo "</module>"
 

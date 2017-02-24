@@ -30,7 +30,7 @@ my $Output = 'module';
 my $Verbose = 0;
 
 # Index file storage directory, with a trailing '/'
-my $Idx_dir=($^O =~ /win/i)?'C:\\':'/tmp/';
+my $Idx_dir=($^O =~ /win/i)?'.\\':'/tmp/';
 
 # Log file
 my $Log_file = '';
@@ -58,6 +58,10 @@ my $summary_flag = 0;
 
 # Number of coincidences found
 my $coincidences = 0;
+
+if ( (defined ($ENV{GREP_LOG_TMP})) && (-d $ENV{GREP_LOG_TMP}) ) {
+	$Idx_dir=$ENV{GREP_LOG_TMP};
+}
 
 ########################################################################################
 # Erase blank spaces before and after the string 

@@ -122,6 +122,9 @@ my $t_directory = '';
 # Filters
 my @t_filters;
 
+# Enable (1) or disable (0) insecure mode
+my $t_insecure = 0;
+
 # String containing quoted invalid file name characters
 my $t_invalid_chars = '\?\[\]\/\\\=\+\<\>\:\;\'\,\*\~';
 
@@ -215,6 +218,7 @@ sub print_help {
 	print ("\t-e cert\t\tOpenSSL certificate file. Enables SSL.\n");
 	print ("\t-f ca_cert\tVerify that the peer certificate is signed by a ca.\n");
 	print ("\t-h\t\tShow help.\n");
+	print ("\t-I\t\tEnable insecure operations (file listing and moving).\n");
 	print ("\t-i\t\tFilters.\n");
 	print ("\t-k key\t\tOpenSSL private key file.\n");
 	print ("\t-l log_file\t\tFile to write logs.\n");
@@ -278,7 +282,7 @@ sub parse_options {
 	my @t_addresses_tmp;
 
 	# Get options
-	if (getopts ('a:b:c:de:f:g:hi:k:l:m:op:qr:s:S:t:TvVwx:', \%opts) == 0 || defined ($opts{'h'})) {
+	if (getopts ('a:b:c:de:f:g:hIi:k:l:m:op:qr:s:S:t:TvVwx:', \%opts) == 0 || defined ($opts{'h'})) {
 		print_help ();
 		exit 1;
 	}
@@ -354,6 +358,11 @@ sub parse_options {
 		if (! -f $t_ssl_ca) {
 			error ("File $t_ssl_ca does not exist.");
 		}
+	}
+
+	# Insecure mode
+	if (defined ($opts{'I'})) {
+		$t_insecure = 1;
 	}
 
 	# Filters (regexp:dir;regexp:dir...)
@@ -850,6 +859,26 @@ sub serve_connection {
 			print_info ("Connection closed from " . $t_client_socket->sockhost ());
 			last;
 		}
+		# File listing.
+		elsif ($command =~ /^LS <(.*)>$/) {
+			if ($t_insecure == 0) {
+				print_info ("Insecure mode disabled. Rejected request to list files matched by filter $1 from " . $t_client_socket->sockhost ());
+				last;
+			}
+
+			print_info ("Request to list files matched by filter $1 from " . $t_client_socket->sockhost ());
+			send_file_list ($1);
+		}
+		# Client wants to move a file
+		elsif ($command =~ /^MV <(.*)>$/) {
+			if ($t_insecure == 0) {
+				print_info ("Insecure mode disabled. Rejected request to move file $1 from " . $t_client_socket->sockhost ());
+				last;
+			}
+
+			print_info ("Request to move file '$1' from " . $t_client_socket->sockhost ());
+			move_file ($1);
+		}
 		# Unknown command
 		else {
 			print_log ("Unknown command '$command' from " . $t_client_socket->sockhost ());
@@ -1053,6 +1082,109 @@ sub error {
 	close ($fh) if (defined($log_file));
 
 	die("\n");
+}
+
+################################################################################
+## SUB move_file
+## Send a file to the client and delete it
+################################################################################
+sub move_file {
+	my $base_name = $_[0];
+	my $data = '';
+	my $file;
+	my $response;
+	my $size;
+
+	# Check file name
+	if ($base_name =~ /[$t_invalid_chars]/) {
+		print_log ("Requested file '$base_name' from " . $t_client_socket->sockhost () . " has an invalid file name");
+		send_data ("MV ERR\n");
+		return;
+	}
+	
+	# Apply filters
+	$file = "$t_directory/" . apply_filters ($base_name) . $base_name;
+
+	# Check if file exists
+	if (! -f $file) {
+		print_log ("Requested file '$file' from " . $t_client_socket->sockhost () . " does not exist");
+		send_data ("MV ERR\n");
+		return;
+	}
+
+	$size = -s $file;
+	send_data ("MV SIZE $size\n");
+	
+	# Wait for client response
+	$response = recv_command ($t_block_size);
+	if ($response ne "MV OK") {
+		print_log ("Requested file '$file' from " . $t_client_socket->sockhost () . " not sent");
+		return;
+	}
+
+	# Send the file
+	open (FILE, $file) || error ("Cannot open file '$file' for reading.");
+	binmode (FILE);
+
+	while ($data = <FILE>) {
+		send_data ($data);
+	}
+
+	close (FILE);
+	unlink($file);
+
+	print_log ("Requested file '$file' from " . $t_client_socket->sockhost () . " sent and deleted");
+}
+
+################################################################################
+## SUB send_file_list
+## Send a list of files to the client after applying the given filter.
+################################################################################
+sub send_file_list {
+	my $filter = $_[0];
+	my $data = '';
+	my $dir;
+	my $dh;
+	my $response;
+	my $size;
+
+	# Check file name
+	if ($filter =~ /[$t_invalid_chars]/) {
+		print_log ("Invalid file listing filter '$filter' from " . $t_client_socket->sockhost ());
+		send_data ("LS ERR\n");
+		return;
+	}
+	
+	# Apply filters
+	$dir = "$t_directory/" . apply_filters ($filter);
+
+	# Open the directory.
+	if (! opendir ($dh, $dir)) {
+		print_log ("Error opening directory $dir as requested from " . $t_client_socket->sockhost () . ": $!");
+		send_data ("LS ERR\n");
+		return;
+	}
+
+	# List files.
+	while (my $file = readdir ($dh)) {
+		next if ($file =~ /[$t_invalid_chars]/); # Only list files valid for Tentacle.
+		$data .= "$file\n";
+	}
+	closedir $dh;
+
+	$size = length ($data);
+	send_data ("LS SIZE $size\n");
+	
+	# Wait for client response
+	$response = recv_command ($t_block_size);
+	if ($response ne "LS OK") {
+		print_log ("Requested directory listing from " . $t_client_socket->sockhost () . " not sent");
+		return;
+	}
+
+	send_data ($data);
+
+	print_log ("Requested directory listing from " . $t_client_socket->sockhost () . " sent");
 }
 
 ################################################################################

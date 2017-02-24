@@ -100,17 +100,41 @@ if ($search_agents && (!is_metaconsole() || $force_local)) {
 	}
 	
 	$data = array();
+	//Get agents for only the alias
+	$filter_alias = $filter;
+	switch ($config['dbtype']) {
+		case "mysql":
+			$filter_alias[] = '(alias LIKE "%'.$string.'%")';
+			break;
+		case "postgresql":
+			$filter_alias[] = '(alias LIKE \'%'.$string.'%\')';
+			break;
+		case "oracle":
+			$filter_alias[] = '(UPPER(alias) LIKE UPPER(\'%'.$string.'%\'))';
+			break;
+	}
+	$agents = agents_get_agents($filter_alias, array ('id_agente', 'nombre', 'direccion', 'alias'));
+	if ($agents !== false) {
+		foreach ($agents as $agent) {
+			$data[] = array('id' => $agent['id_agente'],
+				'name' => io_safe_output($agent['nombre']),
+				'alias' => io_safe_output($agent['alias']),
+				'ip' => io_safe_output($agent['direccion']),
+				'filter' => 'alias');
+		}
+	}
+	
 	//Get agents for only the name.
 	$filter_agents = $filter;
 	switch ($config['dbtype']) {
 		case "mysql":
-			$filter_agents[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$string.'%")';
+			$filter_agents[] = '(alias NOT LIKE "%'.$string.'%" AND nombre COLLATE utf8_general_ci LIKE "%'.$string.'%")';
 			break;
 		case "postgresql":
-			$filter_agents[] = '(nombre LIKE \'%'.$string.'%\')';
+			$filter_agents[] = '(alias NOT LIKE \'%'.$string.'%\' AND nombre LIKE \'%'.$string.'%\')';
 			break;
 		case "oracle":
-			$filter_agents[] = '(UPPER(nombre) LIKE UPPER(\'%'.$string.'%\'))';
+			$filter_agents[] = '(UPPER(alias) NOT LIKE UPPER(\'%'.$string.'%\') AND UPPER(nombre) LIKE UPPER(\'%'.$string.'%\'))';
 			break;
 	}
 	$agents = agents_get_agents($filter_agents, array ('id_agente', 'nombre', 'direccion','alias'));
@@ -128,13 +152,13 @@ if ($search_agents && (!is_metaconsole() || $force_local)) {
 	$filter_address = $filter;
 	switch ($config['dbtype']) {
 		case "mysql":
-			$filter_address[] = '(nombre COLLATE utf8_general_ci NOT LIKE "%'.$string.'%" AND direccion LIKE "%'.$string.'%")';
+			$filter_address[] = '(alias NOT LIKE "%'.$string.'%" AND nombre COLLATE utf8_general_ci NOT LIKE "%'.$string.'%" AND direccion LIKE "%'.$string.'%")';
 			break;
 		case "postgresql":
-			$filter_address[] = '(nombre NOT LIKE \'%'.$string.'%\' AND direccion LIKE \'%'.$string.'%\')';
+			$filter_address[] = '(alias NOT LIKE \'%'.$string.'%\' AND nombre NOT LIKE \'%'.$string.'%\' AND direccion LIKE \'%'.$string.'%\')';
 			break;
 		case "oracle":
-			$filter_address[] = '(UPPER(nombre) NOT LIKE UPPER(\'%'.$string.'%\') AND UPPER(direccion) LIKE UPPER(\'%'.$string.'%\'))';
+			$filter_address[] = '(UPPER(alias) NOT LIKE UPPER(\'%'.$string.'%\') AND UPPER(nombre) NOT LIKE UPPER(\'%'.$string.'%\') AND UPPER(direccion) LIKE UPPER(\'%'.$string.'%\'))';
 			break;
 	}
 	$agents = agents_get_agents($filter_address, array ('id_agente', 'nombre', 'direccion', 'alias'));
@@ -152,13 +176,13 @@ if ($search_agents && (!is_metaconsole() || $force_local)) {
 	$filter_description = $filter;
 	switch ($config['dbtype']) {
 		case "mysql":
-			$filter_description[] = '(nombre COLLATE utf8_general_ci NOT LIKE "%'.$string.'%" AND direccion NOT LIKE "%'.$string.'%" AND comentarios LIKE "%'.$string.'%")';
+			$filter_description[] = '(alias NOT LIKE "%'.$string.'%" AND nombre COLLATE utf8_general_ci NOT LIKE "%'.$string.'%" AND direccion NOT LIKE "%'.$string.'%" AND comentarios LIKE "%'.$string.'%")';
 			break;
 		case "postgresql":
-			$filter_description[] = '(nombre NOT LIKE \'%'.$string.'%\' AND direccion NOT LIKE \'%'.$string.'%\' AND comentarios LIKE \'%'.$string.'%\')';
+			$filter_description[] = '(alias NOT LIKE \'%'.$string.'%\' AND nombre NOT LIKE \'%'.$string.'%\' AND direccion NOT LIKE \'%'.$string.'%\' AND comentarios LIKE \'%'.$string.'%\')';
 			break;
 		case "oracle":
-			$filter_description[] = '(UPPER(nombre) NOT LIKE UPPER(\'%'.$string.'%\') AND UPPER(direccion) NOT LIKE UPPER(\'%'.$string.'%\') AND UPPER(comentarios) LIKE UPPER(\'%'.$string.'%\'))';
+			$filter_description[] = '(UPPER(alias) NOT LIKE UPPER(\'%'.$string.'%\') AND UPPER(nombre) NOT LIKE UPPER(\'%'.$string.'%\') AND UPPER(direccion) NOT LIKE UPPER(\'%'.$string.'%\') AND UPPER(comentarios) LIKE UPPER(\'%'.$string.'%\'))';
 			break;
 	}
 	$agents = agents_get_agents($filter_description, array ('id_agente', 'nombre', 'direccion', 'alias'));
@@ -169,30 +193,6 @@ if ($search_agents && (!is_metaconsole() || $force_local)) {
 				'alias' => io_safe_output($agent['alias']),
 				'ip' => io_safe_output($agent['direccion']),
 				'filter' => 'description');
-		}
-	}
-
-	//Get agents for only the alias
-	$filter_description = $filter;
-	switch ($config['dbtype']) {
-		case "mysql":
-			$filter_description[] = '(nombre COLLATE utf8_general_ci NOT LIKE "%'.$string.'%" AND direccion NOT LIKE "%'.$string.'%" AND comentarios NOT LIKE "%'.$string.'%" AND alias LIKE "%'.$string.'%")';
-			break;
-		case "postgresql":
-			$filter_description[] = '(nombre NOT LIKE \'%'.$string.'%\' AND direccion NOT LIKE \'%'.$string.'%\' AND comentarios NOT LIKE \'%'.$string.'%\' AND alias LIKE \'%'.$string.'%\')';
-			break;
-		case "oracle":
-			$filter_description[] = '(UPPER(nombre) NOT LIKE UPPER(\'%'.$string.'%\') AND UPPER(direccion) NOT LIKE UPPER(\'%'.$string.'%\') AND UPPER(comentarios) NOT LIKE UPPER(\'%'.$string.'%\') AND UPPER(alias) LIKE UPPER(\'%'.$string.'%\'))';
-			break;
-	}
-	$agents = agents_get_agents($filter_description, array ('id_agente', 'nombre', 'direccion', 'alias'));
-	if ($agents !== false) {
-		foreach ($agents as $agent) {
-			$data[] = array('id' => $agent['id_agente'],
-				'name' => io_safe_output($agent['nombre']),
-				'alias' => io_safe_output($agent['alias']),
-				'ip' => io_safe_output($agent['direccion']),
-				'filter' => 'alias');
 		}
 	}
 	echo json_encode($data);
@@ -216,7 +216,7 @@ elseif ($search_agents && is_metaconsole()) {
 	$data = array();
 	
 	$fields = array(
-			'id_tagente AS id_agente', 'nombre',
+			'id_tagente AS id_agente', 'nombre', 'alias',
 			'direccion', 'id_tmetaconsole_setup AS id_server'
 		);
 	
@@ -244,17 +244,43 @@ elseif ($search_agents && is_metaconsole()) {
 	}
 	
 	if (!empty($string)) {
+		//Get agents for only the alias.
+		$filter_alias = $filter;
+		switch ($config['dbtype']) {
+			case "mysql":
+				$filter_alias[] = '(alias COLLATE utf8_general_ci LIKE "%'.$string.'%")';
+				break;
+			case "postgresql":
+				$filter_alias[] = '(alias LIKE \'%'.$string.'%\')';
+				break;
+			case "oracle":
+				$filter_alias[] = '(UPPER(alias) LIKE UPPER(\'%'.$string.'%\'))';
+				break;
+		}
+		
+		$agents = db_get_all_rows_filter('tmetaconsole_agent', $filter_alias, $fields);
+		if ($agents !== false) {
+			foreach ($agents as $agent) {
+				$data[] = array('id' => $agent['id_agente'],
+					'name' => io_safe_output($agent['nombre']),
+					'alias' => io_safe_output($agent['alias']),
+					'ip' => io_safe_output($agent['direccion']),
+					'id_server' => $agent['id_server'],
+					'filter' => 'alias');
+			}
+		}
+		
 		//Get agents for only the name.
 		$filter_agents = $filter;
 		switch ($config['dbtype']) {
 			case "mysql":
-				$filter_agents[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$string.'%")';
+				$filter_agents[] = '(alias COLLATE utf8_general_ci NOT LIKE "%'.$string.'%" AND nombre COLLATE utf8_general_ci LIKE "%'.$string.'%")';
 				break;
 			case "postgresql":
-				$filter_agents[] = '(nombre LIKE \'%'.$string.'%\')';
+				$filter_agents[] = '(alias NOT LIKE \'%'.$string.'%\' AND nombre LIKE \'%'.$string.'%\')';
 				break;
 			case "oracle":
-				$filter_agents[] = '(UPPER(nombre) LIKE UPPER(\'%'.$string.'%\'))';
+				$filter_agents[] = '(UPPER(alias) NOT LIKE UPPER(\'%'.$string.'%\') AND UPPER(nombre) LIKE UPPER(\'%'.$string.'%\'))';
 				break;
 		}
 		
@@ -263,6 +289,7 @@ elseif ($search_agents && is_metaconsole()) {
 			foreach ($agents as $agent) {
 				$data[] = array('id' => $agent['id_agente'],
 					'name' => io_safe_output($agent['nombre']),
+					'alias' => io_safe_output($agent['alias']),
 					'ip' => io_safe_output($agent['direccion']),
 					'id_server' => $agent['id_server'],
 					'filter' => 'agent');
@@ -273,13 +300,13 @@ elseif ($search_agents && is_metaconsole()) {
 		$filter_address = $filter;
 		switch ($config['dbtype']) {
 			case "mysql":
-				$filter_address[] = '(nombre COLLATE utf8_general_ci NOT LIKE "%'.$string.'%" AND direccion LIKE "%'.$string.'%")';
+				$filter_address[] = '(alias COLLATE utf8_general_ci NOT LIKE "%'.$string.'%" AND nombre COLLATE utf8_general_ci NOT LIKE "%'.$string.'%" AND direccion LIKE "%'.$string.'%")';
 				break;
 			case "postgresql":
-				$filter_address[] = '(nombre NOT LIKE \'%'.$string.'%\' AND direccion LIKE \'%'.$string.'%\')';
+				$filter_address[] = '(alias NOT LIKE \'%'.$string.'%\' AND nombre NOT LIKE \'%'.$string.'%\' AND direccion LIKE \'%'.$string.'%\')';
 				break;
 			case "oracle":
-				$filter_address[] = '(UPPER(nombre) NOT LIKE UPPER(\'%'.$string.'%\') AND UPPER(direccion) LIKE UPPER(\'%'.$string.'%\'))';
+				$filter_address[] = '(UPPER(alias) NOT LIKE UPPER(\'%'.$string.'%\') AND UPPER(nombre) NOT LIKE UPPER(\'%'.$string.'%\') AND UPPER(direccion) LIKE UPPER(\'%'.$string.'%\'))';
 				break;
 		}
 		
@@ -288,6 +315,7 @@ elseif ($search_agents && is_metaconsole()) {
 			foreach ($agents as $agent) {
 				$data[] = array('id' => $agent['id_agente'],
 					'name' => io_safe_output($agent['nombre']),
+					'alias' => io_safe_output($agent['alias']),
 					'ip' => io_safe_output($agent['direccion']),
 					'id_server' => $agent['id_server'],
 					'filter' => 'address');
@@ -298,13 +326,13 @@ elseif ($search_agents && is_metaconsole()) {
 		$filter_description = $filter;
 		switch ($config['dbtype']) {
 			case "mysql":
-				$filter_description[] = '(nombre COLLATE utf8_general_ci NOT LIKE "%'.$string.'%" AND direccion NOT LIKE "%'.$string.'%" AND comentarios LIKE "%'.$string.'%")';
+				$filter_description[] = '(alias COLLATE utf8_general_ci NOT LIKE "%'.$string.'%" AND nombre COLLATE utf8_general_ci NOT LIKE "%'.$string.'%" AND direccion NOT LIKE "%'.$string.'%" AND comentarios LIKE "%'.$string.'%")';
 				break;
 			case "postgresql":
-				$filter_description[] = '(nombre NOT LIKE \'%'.$string.'%\' AND direccion NOT LIKE \'%'.$string.'%\' AND comentarios LIKE \'%'.$string.'%\')';
+				$filter_description[] = '(alias NOT LIKE \'%'.$string.'%\' AND nombre NOT LIKE \'%'.$string.'%\' AND direccion NOT LIKE \'%'.$string.'%\' AND comentarios LIKE \'%'.$string.'%\')';
 				break;
 			case "oracle":
-				$filter_description[] = '(UPPER(nombre) NOT LIKE UPPER(\'%'.$string.'%\') AND UPPER(direccion) NOT LIKE UPPER(\'%'.$string.'%\') AND UPPER(comentarios) LIKE UPPER(\'%'.$string.'%\'))';
+				$filter_description[] = '(UPPER(alias) NOT LIKE UPPER(\'%'.$string.'%\') AND UPPER(nombre) NOT LIKE UPPER(\'%'.$string.'%\') AND UPPER(direccion) NOT LIKE UPPER(\'%'.$string.'%\') AND UPPER(comentarios) LIKE UPPER(\'%'.$string.'%\'))';
 				break;
 		}
 		
@@ -313,6 +341,7 @@ elseif ($search_agents && is_metaconsole()) {
 			foreach ($agents as $agent) {
 				$data[] = array('id' => $agent['id_agente'],
 					'name' => io_safe_output($agent['nombre']),
+					'alias' => io_safe_output($agent['alias']),
 					'ip' => io_safe_output($agent['direccion']),
 					'id_server' => $agent['id_server'],
 					'filter' => 'description');

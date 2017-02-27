@@ -26,7 +26,7 @@ tentacle_client - Tentacle Client
 
 =head1 VERSION
 
-Version 0.3.0
+Version 0.4.0
 
 =head1 USAGE
 
@@ -50,16 +50,26 @@ Tentacle was created to replace more complex tools like SCP and FTP for simple f
 
 The client and server (B<TCP port 41121>) are designed to be run from the command line or called from a shell script, and B<no configuration files are needed>. 
 
+If IO::Socket::INET6 is installed, the tentacle client supports IPv6.
+
 =cut
 
 use strict;
 use File::Basename;
 use Getopt::Std;
 use IO::Select;
-use IO::Socket::INET;
+use Socket (qw(SOCK_STREAM AF_INET AF_INET6));
+my $SOCKET_MODULE =
+	eval { require IO::Socket::INET6 } ? 'IO::Socket::INET6'
+      : eval { require IO::Socket::INET }  ? 'IO::Socket::INET'
+      : die $@;
+
+if ($SOCKET_MODULE eq 'IO::Socket::INET') {
+	print_log ("IO::Socket::INET6 is not found. IPv6 is disabled.");
+}
 
 # Program version
-our $VERSION = '0.3.0';
+our $VERSION = '0.4.0';
 
 # Server address
 my $t_address = '127.0.0.1';
@@ -164,9 +174,10 @@ sub parse_options {
 	# Address
 	if (defined ($opts{'a'})) {
 		$t_address = $opts{'a'};
-		if ($t_address !~ /^[a-zA-Z\.][a-zA-Z0-9\.\-]+$/ && ($t_address  !~ /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/
+		if (($t_address !~ /^[a-zA-Z\.][a-zA-Z0-9\.\-]+$/ && ($t_address  !~ /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/
 			|| $1 < 0 || $1 > 255 || $2 < 0 || $2 > 255
-			|| $3 < 0 || $3 > 255 || $4 < 0 || $4 > 255)) {
+			|| $3 < 0 || $3 > 255 || $4 < 0 || $4 > 255)) &&
+			($t_address !~ /^[0-9a-f:]+$/o)) {
 			error ("Address $t_address is not valid.");
 		}
 
@@ -297,11 +308,22 @@ sub parse_options {
 sub start_client {
 
 	# Connect to server
-	$t_socket = IO::Socket::INET->new (
-	       	PeerAddr => $t_address,
-		PeerPort => $t_port,
-		Type     => SOCK_STREAM
-	);
+	if ($SOCKET_MODULE ne 'IO::Socket::INET') {
+		$t_socket = $SOCKET_MODULE->new (
+			Domain   => AF_INET6,
+			PeerAddr => $t_address,
+			PeerPort => $t_port,
+			Type     => SOCK_STREAM
+		);
+	}
+	if (! defined ($t_socket)) {
+		$t_socket = $SOCKET_MODULE->new (
+			Domain   => AF_INET,
+			PeerAddr => $t_address,
+			PeerPort => $t_port,
+			Type     => SOCK_STREAM
+		);
+	}
 
 	if (! defined ($t_socket)) {
 		error ("Cannot connect to $t_address on port $t_port: $!.");
@@ -321,10 +343,20 @@ sub start_client {
 sub start_client_proxy {
 
 	# Connect to proxy
-	$t_socket = IO::Socket::INET->new (
-		PeerAddr => $t_proxy_address,
-		PeerPort => $t_proxy_port,
-	);
+	if ($SOCKET_MODULE ne 'IO::Socket::INET') {
+		$t_socket = $SOCKET_MODULE->new (
+			Domain   => AF_INET6,
+			PeerAddr => $t_proxy_address,
+			PeerPort => $t_proxy_port,
+		);
+	}
+	if (! defined ($t_socket)) {
+		$t_socket = $SOCKET_MODULE->new (
+			Domain   => AF_INET,
+			PeerAddr => $t_proxy_address,
+			PeerPort => $t_proxy_port,
+		);
+	}
 
 	if (! defined ($t_socket)) {
 		error ("Cannot connect to proxy server $t_proxy_address on port $t_proxy_port: $!.");
@@ -362,6 +394,7 @@ sub start_client_proxy {
 ################################################################################
 sub stop_client {
 
+	$t_socket->shutdown(2);
 	$t_socket->close ();
 }
 
@@ -527,10 +560,11 @@ sub send_file {
 	# Send the file
 	open (FILE, $file) || error ("Cannot open file '$file' for reading.");
 	binmode (FILE);
-	
-	while ($data = <FILE>) {
-		send_data ($data);
+	{
+		local $/ = undef;
+		$data = <FILE>;
 	}
+	send_data ($data);
 	
 	close (FILE);
 
@@ -620,6 +654,7 @@ sub recv_data {
 ################################################################################
 sub send_data {
 	my $data = $_[0];
+	my $block_size;
 	my $retries = 0;
 	my $size;
 	my $total = 0;
@@ -632,7 +667,8 @@ sub send_data {
 		# Try to write data to the socket
 		if ($t_select->can_write ($t_timeout)) {
 
-			$written = syswrite ($t_socket, $data, $size - $total, $total);
+			$block_size = ($size - $total) > $t_block_size ? $t_block_size : ($size - $total);
+			$written = syswrite ($t_socket, $data, $block_size, $total);
 
 			# Read error
 			if (! defined ($written)) {

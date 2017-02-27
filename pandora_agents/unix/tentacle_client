@@ -394,6 +394,7 @@ sub start_client_proxy {
 ################################################################################
 sub stop_client {
 
+	$t_socket->shutdown(2);
 	$t_socket->close ();
 }
 
@@ -407,7 +408,6 @@ sub start_ssl {
 	if ($t_ssl_cert eq ''){
 		IO::Socket::SSL->start_SSL (
 			$t_socket,
-			SSL_verify_mode => 0x00,
 		);
 	}
 	elsif ($t_ssl_ca eq '') {
@@ -560,10 +560,11 @@ sub send_file {
 	# Send the file
 	open (FILE, $file) || error ("Cannot open file '$file' for reading.");
 	binmode (FILE);
-	
-	while ($data = <FILE>) {
-		send_data ($data);
+	{
+		local $/ = undef;
+		$data = <FILE>;
 	}
+	send_data ($data);
 	
 	close (FILE);
 
@@ -653,6 +654,7 @@ sub recv_data {
 ################################################################################
 sub send_data {
 	my $data = $_[0];
+	my $block_size;
 	my $retries = 0;
 	my $size;
 	my $total = 0;
@@ -665,7 +667,8 @@ sub send_data {
 		# Try to write data to the socket
 		if ($t_select->can_write ($t_timeout)) {
 
-			$written = syswrite ($t_socket, $data, $size - $total, $total);
+			$block_size = ($size - $total) > $t_block_size ? $t_block_size : ($size - $total);
+			$written = syswrite ($t_socket, $data, $block_size, $total);
 
 			# Read error
 			if (! defined ($written)) {

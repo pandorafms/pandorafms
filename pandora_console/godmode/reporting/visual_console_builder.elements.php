@@ -366,7 +366,7 @@ foreach ($layoutDatas as $layoutData) {
 					$params['hidden_input_idagent_name'] = 'id_agent_' . $idLayoutData;
 					$params['hidden_input_idagent_value'] = $layoutData['id_agent'];
 					
-					$params['value'] = agents_meta_get_name($layoutData['id_agent'],
+					$params['value'] = agents_meta_get_alias($layoutData['id_agent'],
 						"none", $layoutData['id_metaconsole'], true);
 				}
 				else {

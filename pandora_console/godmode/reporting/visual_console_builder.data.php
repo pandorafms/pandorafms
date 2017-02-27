@@ -244,20 +244,20 @@ $(document).ready (function () {
 	});
 	
 	$( "input[type=submit]" ).click(function( event ) {
-		if($( "#getsize" ).css('visibility')=='hidden'){
 			if (parseInt($('#imagen').width()) < 1024){
+				alert('Default width is '+$('#imagen').width()+'px, smaller than minimum -> 1024px');
 				$('input[name=width]').val('1024');
 			}
 			else{
 				$('input[name=width]').val($('#imagen').width());
 			}
 			if (parseInt($('#imagen').height()) < 768){
+				alert('Default height is '+$('#imagen').height()+'px, smaller than minimum -> 768px');	
 				$('input[name=height]').val('768');
 			}
 			else{
 				$('input[name=height]').val($('#imagen').height());
 			}
-		}
 	});
 
 	$("#background").change(function() {

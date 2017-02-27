@@ -12,7 +12,7 @@ eval {
 $SFREE=($SUSED/$STOTAL)*100;
 };
 if ($@) {
-        $SFREE = 0;
+        $SFREE = 100;
 }
 
 $SFREE = floor($SFREE);

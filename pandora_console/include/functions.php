@@ -792,9 +792,11 @@ function get_cookie($name, $default = '') {
 function set_cookie($name, $value) {
 	if (is_null($value)) {
 		unset($_COOKIE[$value]);
-		setcookie($value, null, -1, '/');
+		setcookie($name, null, -1, '/');
 	}
-	setcookie($name, $value);
+	else {
+		setcookie($name, $value);
+	}
 }
 
 /** 

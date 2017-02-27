@@ -1463,6 +1463,7 @@ function reporting_html_exception($table, $item) {
 		$table->data['group_report']['cell'] = $item['failed'];
 	}
 	else {
+		$table1 = new stdClass();
 		$table1->width = '99%';
 		
 		$table1->align = array();
@@ -1805,6 +1806,7 @@ function reporting_html_event_report_agent($table, $item, $pdf = 0) {
 function reporting_html_historical_data($table, $item) {
 	global $config;
 
+	$table1 = new stdClass();
 	$table1->width = '100%';
 	$table1->head = array (__('Date'), __('Data'));
 	$table1->data = array ();
@@ -1826,6 +1828,7 @@ function reporting_html_historical_data($table, $item) {
 
 function reporting_html_database_serialized($table, $item) {
 	
+	$table1 = new stdClass();
 	$table1->width = '100%';
 	$table1->head = array (__('Date'));
 	if (!empty($item['keys'])) {
@@ -1882,7 +1885,7 @@ function reporting_html_network_interfaces_report($table, $item) {
 			$table_agent->width = '100%';
 			$table_agent->data = array();
 			$table_agent->head = array();
-			$table_agent->head[0] = sprintf(__("Agent '%s'"), $agent['name']);
+			$table_agent->head[0] = __("Agent") . " " . $agent['agent'];
 			$table_agent->headstyle = array();
 			$table_agent->headstyle[0] = 'font-size: 16px;';
 			$table_agent->style[0] = 'text-align: center';
@@ -1901,8 +1904,8 @@ function reporting_html_network_interfaces_report($table, $item) {
 				$table_interface->head['ip'] = __('IP');
 				$table_interface->head['mac'] = __('Mac');
 				$table_interface->head['status'] = __('Actual status');
-				$table_interface->style['ip'] = 'text-align: left';
-				$table_interface->style['mac'] = 'text-align: left';
+				$table_interface->style['ip'] = 'text-align: center';
+				$table_interface->style['mac'] = 'text-align: center';
 				$table_interface->style['status'] = 'width: 150px; text-align: center';
 				
 				$data = array();
@@ -1922,9 +1925,9 @@ function reporting_html_network_interfaces_report($table, $item) {
 			}
 			
 			$id = uniqid();
-			
+			$table->colspan['agents'][$id] = 3;
 			$table->data['agents'][$id] = html_print_table($table_agent, true);
-			$table->colspan[$id][0] = 3;
+			
 		}
 	}
 }
@@ -2437,7 +2440,7 @@ function reporting_html_availability(&$table, $item) {
 		$table1->width = '99%';
 		$table1->data = array ();
 		
-		if (($same_agent_in_resume == "") && (strpos($item['resume']['min_text'], $same_agent_in_resume) === false)) {
+		if (! empty($same_agent_in_resume) && ($same_agent_in_resume == "") && (strpos($item['resume']['min_text'], $same_agent_in_resume) === false)) {
 			$table1->head = array ();
 			$table1->head['max_text'] = __('Agent max value');
 			$table1->head['max']      = __('Max Value');

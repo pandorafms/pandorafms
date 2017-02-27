@@ -125,7 +125,7 @@ if ($config['metaconsole'] == 1 and defined('METACONSOLE')) {
 }
 else {
 	ui_print_page_header (reporting_get_name($id_report), "images/op_reporting.png", 
-							false, "", false, $options,false,'',50);
+							false, "", false, $options,false,'',55);
 }
 //------------------- END HEADER ---------------------------------------
 

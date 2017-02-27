@@ -1010,7 +1010,7 @@ function reporting_event_top_n($report, $content, $type = 'dinamic',
 				}
 			}
 			
-			$ag_name = modules_get_agentmodule_agent_name($row ['id_agent_module']); 
+			$ag_name = modules_get_agentmodule_agent_alias($row ['id_agent_module']); 
 			$mod_name = modules_get_agentmodule_name ($row ['id_agent_module']);
 			$unit = db_get_value('unit', 'tagente_modulo',
 				'id_agente_modulo', $row ['id_agent_module']); 
@@ -1468,7 +1468,7 @@ function reporting_event_report_module($report, $content,
 	}
 	
 	$return['title'] = $content['name'];
-	$return['subtitle'] = agents_get_name($content['id_agent']) .
+	$return['subtitle'] = agents_get_alias($content['id_agent']) .
 		" - " .
 		io_safe_output(
 			modules_get_agentmodule_name($content['id_agent_module']));
@@ -1538,7 +1538,7 @@ function reporting_inventory_changes($report, $content, $type) {
 	}
 	
 	$return['title'] = $content['name'];
-	$return['subtitle'] = agents_get_name($content['id_agent']);
+	$return['subtitle'] = agents_get_alias($content['id_agent']);
 	$return["description"] = $content["description"];
 	$return["date"] = reporting_get_date_text($report, $content);
 	
@@ -2214,7 +2214,7 @@ function reporting_event_report_agent($report, $content,
 		$history = true;
 	
 	$return['title']              = $content['name'];
-	$return['subtitle']           = agents_get_name($content['id_agent']);
+	$return['subtitle']           = agents_get_alias($content['id_agent']);
 	$return["description"]        = $content["description"];
 	$return["date"]               = reporting_get_date_text($report, $content);
 	$return['label']              = (isset($content['style']['label'])) ? $content['style']['label'] : '';
@@ -2766,7 +2766,7 @@ function reporting_alert_report_group($report, $content) {
 		$data_row = array();
 		
 	
-		$data_row['agent'] = io_safe_output(agents_get_name(
+		$data_row['agent'] = io_safe_output(agents_get_alias(
 			agents_get_agent_id_by_module_id($agent_module['id_agent_module'])));
 		$data_row['module'] = db_get_value_filter('nombre', 'tagente_modulo',
 			array('id_agente_modulo' => $agent_module['id_agent_module']));
@@ -2871,7 +2871,7 @@ function reporting_alert_report_agent($report, $content) {
 		metaconsole_connect($server);
 	}
 	
-	$agent_name = agents_get_name($content['id_agent']);
+	$agent_name = agents_get_alias($content['id_agent']);
 	
 	$return['title'] = $content['name'];
 	$return['subtitle'] = $agent_name;
@@ -2992,7 +2992,7 @@ function reporting_alert_report_module($report, $content) {
 	$module_name = io_safe_output(
 		modules_get_agentmodule_name($content['id_agent_module']));
 	$agent_name = io_safe_output(
-		modules_get_agentmodule_agent_name ($content['id_agent_module']));
+		modules_get_agentmodule_agent_alias ($content['id_agent_module']));
 	
 	$return['title'] = $content['name'];
 	$return['subtitle'] = $agent_name . " - " . $module_name;
@@ -3004,7 +3004,7 @@ function reporting_alert_report_module($report, $content) {
 	$data_row = array();
 		
 	
-	$data_row['agent'] = io_safe_output(agents_get_name(
+	$data_row['agent'] = io_safe_output(agents_get_alias(
 		agents_get_agent_id_by_module_id($content['id_agent_module'])));
 	$data_row['module'] = db_get_value_filter('nombre', 'tagente_modulo',
 		array('id_agente_modulo' => $content['id_agent_module']));
@@ -3013,7 +3013,7 @@ function reporting_alert_report_module($report, $content) {
 	$alerts = alerts_get_effective_alert_actions($content['id_agent_module']);
 
 	if ($alerts === false){
-		continue;
+		return;
 	}
 
 	$ntemplates = 0;
@@ -3538,7 +3538,7 @@ function reporting_agent_configuration($report, $content) {
 	$agent_data = db_get_row_sql($sql);
 	
 	$agent_configuration = array();
-	$agent_configuration['name'] = $agent_data['nombre'];
+	$agent_configuration['name'] = $agent_data['alias'];
 	$agent_configuration['group'] = groups_get_name($agent_data['id_grupo']);
 	$agent_configuration['group_icon'] =
 		ui_print_group_icon ($agent_data['id_grupo'], true, '', '', false);
@@ -4929,7 +4929,7 @@ function reporting_availability($report, $content, $date=false, $time=false) {
 					$item['id_agent_module']);
 			}
 			
-			$row['data']['agent'] = modules_get_agentmodule_agent_name(
+			$row['data']['agent'] = modules_get_agentmodule_agent_alias(
 				$item['id_agent_module']);
 			
 			$text = $row['data']['agent'] . " (" . $text . ")";
@@ -5861,7 +5861,7 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 	$module_name = io_safe_output(
 		modules_get_agentmodule_name($content['id_agent_module']));
 	$agent_name = io_safe_output(
-		modules_get_agentmodule_agent_name ($content['id_agent_module']));
+		modules_get_agentmodule_agent_alias ($content['id_agent_module']));
 	
 	
 	
@@ -10328,6 +10328,7 @@ function reporting_label_macro ($item, $label) {
 		case 'event_report_agent':
 		case 'alert_report_agent':
 		case 'agent_configuration':
+		case 'event_report_log':
 			if (preg_match("/_agent_/", $label)) {
 				$agent_name = agents_get_alias($item['id_agent']);
 				$label = str_replace("_agent_", $agent_name, $label);

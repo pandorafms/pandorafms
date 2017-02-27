@@ -2687,7 +2687,7 @@ function events_get_count_events_by_agent ($id_group, $period, $date,
 	}
 
 	$sql = sprintf ('SELECT id_agente,
-		(SELECT t2.nombre
+		(SELECT t2.alias
 			FROM tagente t2
 			WHERE t2.id_agente = t3.id_agente) AS agent_name,
 		COUNT(*) AS count

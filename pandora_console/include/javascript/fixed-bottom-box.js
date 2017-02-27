@@ -108,7 +108,6 @@
 			var headBody = $('<div></div>');
 			headBody
 				.addClass('fixed-bottom-box-head-body')
-				.append(head)
 				.click(function(event) {
 					self.toggle();
 				});

@@ -523,8 +523,13 @@ function treeview_printTable($id_agente, $server_data = array(), $no_head = fals
 		$cellName = '';
 	}
 	
-	$cellName .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$agent["id_agente"].'">' .
-	'<b><span style="font-weight:bold;text-transform:uppercase;" title="' . $agent["nombre"] . '">'.$agent["alias"].'</span></b></a>';
+	if (is_metaconsole()) {
+		$cellName .= '<a href="'.$server_data[server_url].'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$agent["id_agente"].'">' .
+		'<b><span style="font-weight:bold;text-transform:uppercase;" title="' . $agent["nombre"] . '">'.$agent["alias"].'</span></b></a>';
+	} else {
+		$cellName .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$agent["id_agente"].'">' .
+		'<b><span style="font-weight:bold;text-transform:uppercase;" title="' . $agent["nombre"] . '">'.$agent["alias"].'</span></b></a>';
+	}
 
 	if ($agent['disabled']) {
 		$cellName .= ui_print_help_tip(__('Disabled'), true) . "</em>";

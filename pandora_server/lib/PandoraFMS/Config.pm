@@ -274,6 +274,7 @@ sub pandora_load_config {
 	$pa_config->{"translate_enterprise_strings"} = 1; # 5.1
 	$pa_config->{"syncserver"} = 0; # 7.0
 	$pa_config->{"sync_address"} = ''; # 7.0
+	$pa_config->{"sync_block_size"} = 65535; # 7.0
 	$pa_config->{"sync_ca"} = ''; # 7.0
 	$pa_config->{"sync_cert"} = ''; # 7.0
 	$pa_config->{"sync_key"} = ''; # 7.0
@@ -985,6 +986,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^sync_address\s+(.*)/i) {
 			$pa_config->{'sync_address'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^sync_block_size\s+([0-9]*)/i) {
+			$pa_config->{'sync_block_size'}= clean_blank($1);
 		}
 		elsif ($parametro =~ m/^sync_ca\s+(.*)/i) {
 			$pa_config->{'sync_ca'}= clean_blank($1);

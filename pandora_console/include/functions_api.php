@@ -6282,10 +6282,18 @@ function api_get_module_data($id, $thrash1, $other, $returnType) {
 			ORDER BY utimestamp DESC", $id, $date_start, $date_end);
 	}
 	else {
-		$sql = sprintf ("SELECT utimestamp, datos 
-			FROM tagente_datos 
-			WHERE id_agente_modulo = %d AND utimestamp > %d 
-			ORDER BY utimestamp DESC", $id, get_system_time () - $periodSeconds);
+		if ($periodSeconds == null) {
+			$sql = sprintf ("SELECT utimestamp, datos 
+				FROM tagente_datos 
+				WHERE id_agente_modulo = %d 
+				ORDER BY utimestamp DESC", $id);
+		}
+		else {
+			$sql = sprintf ("SELECT utimestamp, datos 
+				FROM tagente_datos 
+				WHERE id_agente_modulo = %d AND utimestamp > %d 
+				ORDER BY utimestamp DESC", $id, get_system_time () - $periodSeconds);
+		}
 	}
 
 	$data['type'] = 'array';

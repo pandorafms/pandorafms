@@ -135,6 +135,7 @@ install_startup_script () {
 	SCRIPT_NAME=`basename $SRC`
 
 	echo "Copying the daemon script into $INITDIR"
+	[ -d $DESTDIR$INITDIR ] || mkdir -p $DESTDIR$INITDIR
 	cp $SRC $DESTDIR$INITDIR
 
 	[ "$DESTDIR" ] && return
@@ -256,6 +257,7 @@ install () {
 			fi
 			if [ "$DISTRO" != "FreeBSD" ] && [ "$DISTRO" != "NetBSD" ]
 			then
+				[ -d $DESTDIR$PREFIX/bin ] || mkdir -p $DESTDIR$PREFIX/bin
 				ln -s /usr/local/bin/pandora_server $DESTDIR$PREFIX/bin
 				ln -s /usr/local/bin/pandora_exec $DESTDIR$PREFIX/bin
 				ln -s /usr/local/bin/tentacle_server $DESTDIR$PREFIX/bin
@@ -295,18 +297,18 @@ install () {
 	fi
 
 	mkdir -p $DESTDIR$PANDORA_SPOOL/data_in 2> /dev/null
-	chmod 770 $DESTDIR$PANDORA_SPOOL/data_in
+	chmod 2770 $DESTDIR$PANDORA_SPOOL/data_in
 	mkdir $DESTDIR$PANDORA_SPOOL/data_in/conf 2> /dev/null
-	chmod 770 $DESTDIR$PANDORA_SPOOL/data_in/conf
+	chmod 2770 $DESTDIR$PANDORA_SPOOL/data_in/conf
 	mkdir $DESTDIR$PANDORA_SPOOL/data_in/md5 2> /dev/null
-	chmod 770 $DESTDIR$PANDORA_SPOOL/data_in/md5
+	chmod 2770 $DESTDIR$PANDORA_SPOOL/data_in/md5
 	mkdir $DESTDIR$PANDORA_SPOOL/data_in/collections 2> /dev/null
-	chmod 770 $DESTDIR$PANDORA_SPOOL/data_in/collections
+	chmod 2770 $DESTDIR$PANDORA_SPOOL/data_in/collections
 	mkdir $DESTDIR$PANDORA_SPOOL/data_in/netflow 2> /dev/null
-	chmod 770 $DESTDIR$PANDORA_SPOOL/data_in/netflow
+	chmod 2770 $DESTDIR$PANDORA_SPOOL/data_in/netflow
 	mkdir -p $DESTDIR$PANDORA_LOG 2> /dev/null	
 	chown -R pandora $DESTDIR$PANDORA_LOG 2> /dev/null
-	chmod 770 $DESTDIR$PANDORA_LOG 2> /dev/null
+	chmod 2770 $DESTDIR$PANDORA_LOG 2> /dev/null
 
 	echo "Giving proper permission to /var/spool/pandora"
 	for group in "www-data" wwwrun www apache
@@ -339,13 +341,14 @@ install () {
 	fi
 
 	echo "Installing Pandora Server manual"
+	[ -d $DESTDIR$MANDIR ] || mkdir -p $DESTDIR$MANDIR
 	cp man/man1/pandora_server.1.gz $DESTDIR$MANDIR
 
 	install_startup_script -s 90 $PANDORA_INIT_SCRIPT
 
 	if [ -d /etc/logrotate.d ]
 	then
-		[ -d $DESTDIR/etc/logrotate.d ] && mkdir -p $DESTDIR/etc/logrotate.d
+		[ -d $DESTDIR/etc/logrotate.d ] || mkdir -p $DESTDIR/etc/logrotate.d
 		echo "Creating logrotate.d entry for Pandora FMS log management"
 		cp util/pandora_server_logrotate $DESTDIR/etc/logrotate.d/pandora_server
 	else
@@ -372,7 +375,7 @@ install () {
 		[ ! -d $DESTDIR/etc/cron.hourly ] && mkdir -p $DESTDIR/etc/cron.hourly
 		echo "Creating the Cron script to run Pandora DB tool each hour"
 		echo "#!/bin/bash" > $DESTDIR/etc/cron.hourly/pandora_db	
-		echo "perl $PANDORA_HOME/util/pandora_db.pl /etc/pandora/pandora_server.conf" >> /etc/cron.hourly/pandora_db	
+		echo "perl $PANDORA_HOME/util/pandora_db.pl /etc/pandora/pandora_server.conf" >> $DESTDIR/etc/cron.hourly/pandora_db	
 		chmod +x /etc/cron.hourly/pandora_db
 	elif [ "$DISTRO" = "FreeBSD" ] || [ "$DISTRO" = "NetBSD" ]
 	then

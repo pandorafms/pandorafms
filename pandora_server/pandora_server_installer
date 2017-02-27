@@ -375,7 +375,7 @@ install () {
 		[ ! -d $DESTDIR/etc/cron.hourly ] && mkdir -p $DESTDIR/etc/cron.hourly
 		echo "Creating the Cron script to run Pandora DB tool each hour"
 		echo "#!/bin/bash" > $DESTDIR/etc/cron.hourly/pandora_db	
-		echo "perl $PANDORA_HOME/util/pandora_db.pl /etc/pandora/pandora_server.conf" >> $DESTDIR/etc/cron.hourly/pandora_db	
+		echo "perl $PANDORA_HOME/util/pandora_db.pl /etc/pandora/pandora_server.conf" >> /etc/cron.hourly/pandora_db	
 		chmod +x /etc/cron.hourly/pandora_db
 	elif [ "$DISTRO" = "FreeBSD" ] || [ "$DISTRO" = "NetBSD" ]
 	then

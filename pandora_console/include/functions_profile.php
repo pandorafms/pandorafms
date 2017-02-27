@@ -95,7 +95,7 @@ function profile_create_user_profile ($id_user,
 	}
 	
 	if ($assignUser !== false)
-	$assign = $assignUser;
+		$assign = $assignUser;
 	
 	$insert = array (
 		"id_usuario" => $id_user,

@@ -1253,6 +1253,10 @@ function config_process_config () {
 		config_update_value ( 'ad_advanced_config', 0);
 	}
 	
+	if (!isset ($config['ad_adv_user_node'])) {
+		config_update_value ( 'ad_adv_user_node', 1);
+	}
+	
 	if (!isset ($config['ad_domain'])) {
 		config_update_value ( 'ad_domain', '');
 	}

@@ -268,7 +268,9 @@ function process_user_login_remote ($login, $pass, $api = false) {
 		return false;
 	}
 	
-	if ($config["auth"] === 'ad' && (isset($config['ad_advanced_config']) && $config['ad_advanced_config'])) {
+	if ($config["auth"] === 'ad' && 
+		(isset($config['ad_advanced_config']) && 
+			$config['ad_advanced_config'])) {
 		
 		
 		if ( defined('METACONSOLE') ) {

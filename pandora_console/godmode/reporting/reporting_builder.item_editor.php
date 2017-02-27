@@ -197,6 +197,16 @@ switch ($action) {
 				case 'event_report_log':
 					$period = $item['period'];
 					$description = $item['description'];
+					$es = json_decode($item['external_source'], true);
+					$id_agents = $es['id_agents'];
+					if ((count($es['module']) == 1) && ($es['module'][0] == 0)) {
+						$module = "";
+					}
+					else {
+						$module = $es['module'];
+					}
+					$idAgentModule = $module;
+					break;
 				case 'simple_graph':
 					$only_avg = isset($style['only_avg']) ? (bool) $style['only_avg'] : true;
 					$percentil = isset($style['percentil']) ? $config['percentil'] : 0;
@@ -499,7 +509,7 @@ switch ($action) {
 				case 'agent_module':
 					$description = $item['description'];
 					$es = json_decode($item['external_source'], true);
-					$agents_id = get_parameter('id_agents2');
+					$id_agents = $es['id_agents'];
 					$selection_a_m = get_parameter('selection');
 					
 					if ((count($es['module']) == 1) && ($es['module'][0] == 0)) {
@@ -587,7 +597,6 @@ switch ($action) {
 		
 		break;
 }
-
 
 $urlForm = $config['homeurl'] .
 	'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=' . $actionParameter . '&id_report=' . $idReport;
@@ -1001,7 +1010,7 @@ You can of course remove the warnings, that's why we include the source and do n
 							}
 						}
 					}
-					html_print_select($agents, 'id_agents2[]', $agents_id, $script = '', "", 0, false, true, true, '', false, "min-width: 180px");
+					html_print_select($agents, 'id_agents2[]', $agents_select, $script = '', "", 0, false, true, true, '', false, "min-width: 180px");
 				?>
 			</td>
 		</tr>
@@ -1021,9 +1030,23 @@ You can of course remove the warnings, that's why we include the source and do n
 			<td style="font-weight:bold;"><?php echo __('Modules'); ?></td>
 			<td>
 				<?php
-					$all_modules = db_get_all_rows_sql("SELECT DISTINCT nombre, id_agente_modulo FROM tagente_modulo WHERE id_agente IN (" . implode(',', array_keys($agents)) . ")");
-					
-					html_print_select($all_modules, 'module[]', "", $script = '', __('None'), 0, false, true, true, '', false, "min-width: 180px");
+					$all_modules = db_get_all_rows_sql("SELECT DISTINCT nombre, id_agente_modulo FROM tagente_modulo WHERE id_agente IN (" . implode(',', array_values($id_agents)) . ")");
+					if ((empty($all_modules)) || $all_modules == -1) $all_modules = array();
+					$modules_select = array();
+					$all_modules_structured = array();
+					if (is_array($idAgentModule) || is_object($idAgentModule)){
+						foreach ($idAgentModule as $id) {
+							foreach ($all_modules as $key => $a) {
+								if ($a['id_agente_modulo'] == (int)$id) {
+									$modules_select[$a['id_agente_modulo']] = $a['id_agente_modulo'];
+								}
+							}
+						}
+					}
+					foreach ($all_modules as $a) {
+						$all_modules_structured[$a['id_agente_modulo']] = $a['nombre'];
+					}
+					html_print_select($all_modules_structured, 'module[]', $modules_select, $script = '', __('None'), 0, false, true, true, '', false, "min-width: 180px");
 				?>
 			</td>
 		</tr>
@@ -2588,7 +2611,8 @@ function chooseType() {
 			$("#log_help_tip").css("visibility", "visible");
 			$("#row_description").show();
 			$("#row_period").show();
-			$("#row_agent").show();
+			$("#agents_row").show();
+			$("#modules_row").show();
 			break;
 		
 		case 'simple_graph':

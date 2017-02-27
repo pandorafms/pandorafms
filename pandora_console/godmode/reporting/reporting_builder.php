@@ -922,6 +922,16 @@ switch ($action) {
 								$values['text'] = get_parameter('text');
 								$good_format = true;
 								break;
+							case 'event_report_log':
+								$agents_to_report = get_parameter('id_agents2');
+								$modules_to_report = get_parameter('module', "");
+
+								$es['module'] = get_same_modules($agents_to_report, $modules_to_report);
+								$es['id_agents'] = $agents_to_report;
+
+								$values['external_source'] = json_encode($es);
+								$good_format = true;
+								break;
 							case 'prediction_date':
 								$values['period'] = get_parameter('period1');
 								$values['top_n'] = get_parameter('radiobutton_max_min_avg');
@@ -1266,8 +1276,18 @@ switch ($action) {
 								$values['external_source'] = json_encode($es);
 								$good_format = true;
 								break;
+							case 'event_report_log':
+								$agents_to_report = get_parameter('id_agents2');
+								$modules_to_report = get_parameter('module', "");
+
+								$es['module'] = get_same_modules($agents_to_report, $modules_to_report);
+								$es['id_agents'] = $agents_to_report;
+
+								$values['external_source'] = json_encode($es);
+								$good_format = true;
+								break;
 							case 'agent_module':
-							$agents_to_report = get_parameter('id_agents2');
+								$agents_to_report = get_parameter('id_agents2');
 								$modules_to_report = get_parameter('module', "");
 
 								$es['module'] = get_same_modules($agents_to_report, $modules_to_report);

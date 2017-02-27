@@ -35,7 +35,7 @@ echo '<a class="white_bold footer" target="_blank" href="' . $config["homeurl"] 
 echo sprintf(__('Pandora FMS %s - Build %s - MR %s', $pandora_version, $build_version, $config["MR"]));
 
 echo '</a><br />';
-echo '<a class="white footer">'. __('Page generated at') . ' '. ui_print_timestamp ($time, true, array ("prominent" => "timestamp")); //Always use timestamp here
+echo '<a class="white footer">'. __('Page generated at') . ' '. date('F j, Y h:i a'); //Always use timestamp here
 echo '</a>';
 if (isset ($config['debug'])) {
 	$cache_info = array();

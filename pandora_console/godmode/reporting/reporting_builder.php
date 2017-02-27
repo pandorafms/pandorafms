@@ -924,9 +924,9 @@ switch ($action) {
 								break;
 							case 'event_report_log':
 								$agents_to_report = get_parameter('id_agents2');
-								$modules_to_report = get_parameter('module', "");
+								$source = get_parameter('source', "");
 
-								$es['module'] = get_same_modules($agents_to_report, $modules_to_report);
+								$es['source'] = $source;
 								$es['id_agents'] = $agents_to_report;
 
 								$values['external_source'] = json_encode($es);
@@ -1278,9 +1278,9 @@ switch ($action) {
 								break;
 							case 'event_report_log':
 								$agents_to_report = get_parameter('id_agents2');
-								$modules_to_report = get_parameter('module', "");
+								$source = get_parameter('source', "");
 
-								$es['module'] = get_same_modules($agents_to_report, $modules_to_report);
+								$es['source'] = $source;
 								$es['id_agents'] = $agents_to_report;
 
 								$values['external_source'] = json_encode($es);

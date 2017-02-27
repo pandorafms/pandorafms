@@ -63,6 +63,7 @@ $order_uptodown = 0;
 $show_resume = 0;
 $show_address_agent = 0;
 $top_n = 0;
+$source = 0;
 $top_n_value = 10;
 $exception_condition = REPORT_EXCEPTION_CONDITION_EVERYTHING;
 $exception_condition_value = 10;
@@ -199,13 +200,7 @@ switch ($action) {
 					$description = $item['description'];
 					$es = json_decode($item['external_source'], true);
 					$id_agents = $es['id_agents'];
-					if ((count($es['module']) == 1) && ($es['module'][0] == 0)) {
-						$module = "";
-					}
-					else {
-						$module = $es['module'];
-					}
-					$idAgentModule = $module;
+					$source = $es['source'];
 					break;
 				case 'simple_graph':
 					$only_avg = isset($style['only_avg']) ? (bool) $style['only_avg'] : true;
@@ -879,6 +874,34 @@ You can of course remove the warnings, that's why we include the source and do n
 				elseif(check_acl ($config['id_user'], 0, "RM"))
 					html_print_select_groups($config['id_user'],
 						"RM", true, 'combo_group', $group, '');
+				?>
+			</td>
+		</tr>
+		<tr id="row_source" style="" class="datos">
+			<td style="font-weight:bold;"><?php echo __('Source');?></td>
+			<td style="">
+				<?php
+					$agents = agents_get_group_agents($group);
+					if ((empty($agents)) || $agents == -1) $agents = array();
+
+					$sql = 'SELECT source
+							FROM tagente,tagent_module_log
+							WHERE tagente.id_agente = tagent_module_log.id_agent ';
+					
+					if (!empty($agents)) {
+						$index = 0;
+						foreach ($agents as $key => $a) {
+							if ($index == 0) {
+								$sql .= ' AND (id_agente = ' . $key;
+							}
+							else {
+								$sql .= ' OR id_agente = ' . $key;
+							}
+							$index++;
+						}
+						$sql .= ")";
+					}
+					html_print_select_from_sql ($sql, 'source', $source, '', __('All'), '', false, false, false);
 				?>
 			</td>
 		</tr>
@@ -2575,6 +2598,7 @@ function chooseType() {
 	$("#row_event_severity").hide();
 	$("#row_event_type").hide();
 	$("#row_event_status").hide();
+	$("#row_source").hide();
 	
 	// SLA list default state
 	$("#sla_list").hide();
@@ -2612,7 +2636,7 @@ function chooseType() {
 			$("#row_description").show();
 			$("#row_period").show();
 			$("#agents_row").show();
-			$("#modules_row").show();
+			$("#row_source").show();
 			break;
 		
 		case 'simple_graph':

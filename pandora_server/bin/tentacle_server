@@ -607,6 +607,7 @@ sub start_server {
 ################################################################################
 sub send_data_proxy {
 	my $data = $_[0];
+	my $block_size;
 	my $retries = 0;
 	my $size;
 	my $total = 0;
@@ -619,6 +620,7 @@ sub send_data_proxy {
 		# Try to write data to the socket
 		if ($t_proxy_select->can_write ($t_timeout)) {
 
+			$block_size = ($size - $total) > $t_block_size ? $t_block_size : ($size - $total);
 			$written = syswrite ($t_proxy_socket, $data, $size - $total, $total);
 
 			# Write error
@@ -631,21 +633,19 @@ sub send_data_proxy {
 				error ("Connection from " . $t_proxy_socket->sockhost () . " unexpectedly closed.");
 			}
 	
+			$total += $written;
+
+			# Check if all data was written
+			if ($total == $size) {
+				return;
+			}
 		}
-
-		$total += $written;
-
-		# Check if all data was written
-		if ($total == $size) {
-			return;
-		}
-
 		# Retry
-		$retries++;
-
-		# But check for error conditions first
-		if ($retries > $t_retries) {
-			error ("Connection from " . $t_proxy_socket->sockhost () . " timed out.");
+		else {
+			$retries++;
+			if ($retries > $t_retries) {
+				error ("Connection from " . $t_proxy_socket->sockhost () . " timed out.");
+			}
 		}
 	}
 }
@@ -1006,11 +1006,12 @@ sub send_file {
 	# Send the file
 	open (FILE, $file) || error ("Cannot open file '$file' for reading.");
 	binmode (FILE);
-
-	while ($data = <FILE>) {
-		send_data ($data);
+	{
+		local $/ = undef;
+		$data = <FILE>;
 	}
 
+	send_data ($data);
 	close (FILE);
 
 	print_log ("Requested file '$file' from " . $t_client_socket->sockhost () . " sent");
@@ -1275,6 +1276,7 @@ sub recv_data {
 ################################################################################
 sub send_data {
 	my $data = $_[0];
+	my $block_size;
 	my $retries = 0;
 	my $size;
 	my $total = 0;
@@ -1287,7 +1289,8 @@ sub send_data {
 		# Try to write data to the socket
 		if ($t_select->can_write ($t_timeout)) {
 
-			$written = syswrite ($t_client_socket, $data, $size - $total, $total);
+			$block_size = ($size - $total) > $t_block_size ? $t_block_size : ($size - $total);
+			$written = syswrite ($t_client_socket, $data, $block_size, $total);
 
 			# Write error
 			if (! defined ($written)) {
@@ -1299,21 +1302,19 @@ sub send_data {
 				error ("Connection from " . $t_client_socket->sockhost () . " unexpectedly closed.");
 			}
 	
+			$total += $written;
+
+			# Check if all data was written
+			if ($total == $size) {
+				return;
+			}
 		}
-
-		$total += $written;
-
-		# Check if all data was written
-		if ($total == $size) {
-			return;
-		}
-
 		# Retry
-		$retries++;
-
-		# But check for error conditions first
-		if ($retries > $t_retries) {
-			error ("Connection from " . $t_client_socket->sockhost () . " timed out.");
+		else {
+			$retries++;
+			if ($retries > $t_retries) {
+				error ("Connection from " . $t_client_socket->sockhost () . " timed out.");
+			}
 		}
 	}
 }

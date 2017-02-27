@@ -297,20 +297,20 @@ install () {
 	fi
 
 	mkdir -p $DESTDIR$PANDORA_SPOOL/data_in 2> /dev/null
-	chmod 770 $DESTDIR$PANDORA_SPOOL/data_in
+	chmod 2770 $DESTDIR$PANDORA_SPOOL/data_in
 	mkdir $DESTDIR$PANDORA_SPOOL/data_in/conf 2> /dev/null
-	chmod 770 $DESTDIR$PANDORA_SPOOL/data_in/conf
+	chmod 2770 $DESTDIR$PANDORA_SPOOL/data_in/conf
 	mkdir $DESTDIR$PANDORA_SPOOL/data_in/md5 2> /dev/null
-	chmod 770 $DESTDIR$PANDORA_SPOOL/data_in/md5
+	chmod 2770 $DESTDIR$PANDORA_SPOOL/data_in/md5
 	mkdir $DESTDIR$PANDORA_SPOOL/data_in/collections 2> /dev/null
-	chmod 770 $DESTDIR$PANDORA_SPOOL/data_in/collections
+	chmod 2770 $DESTDIR$PANDORA_SPOOL/data_in/collections
 	mkdir $DESTDIR$PANDORA_SPOOL/data_in/netflow 2> /dev/null
-	chmod 770 $DESTDIR$PANDORA_SPOOL/data_in/netflow
+	chmod 2770 $DESTDIR$PANDORA_SPOOL/data_in/netflow
 	mkdir $DESTDIR$PANDORA_SPOOL/data_in/trans 2> /dev/null
-	chmod 770 $DESTDIR$PANDORA_SPOOL/data_in/trans
+	chmod 2770 $DESTDIR$PANDORA_SPOOL/data_in/trans
 	mkdir -p $DESTDIR$PANDORA_LOG 2> /dev/null	
 	chown -R pandora $DESTDIR$PANDORA_LOG 2> /dev/null
-	chmod 770 $DESTDIR$PANDORA_LOG 2> /dev/null
+	chmod 2770 $DESTDIR$PANDORA_LOG 2> /dev/null
 
 	echo "Giving proper permission to /var/spool/pandora"
 	for group in "www-data" wwwrun www apache

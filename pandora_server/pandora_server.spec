@@ -171,7 +171,7 @@ rm -Rf /usr/share/man/man1/tentacle_server.1.gz
 %{prefix}/pandora_server
 /var/log/pandora
 
-%defattr(-,pandora,www,770)
+%defattr(-,pandora,www,2770)
 /var/spool/pandora
 /var/spool/pandora/data_in
 /var/spool/pandora/data_in/md5

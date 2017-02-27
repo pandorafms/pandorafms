@@ -175,7 +175,7 @@ exit 0
 %defattr(600,root,root)
 /etc/pandora/pandora_server.conf.new
 
-%defattr(-,pandora,apache,770)
+%defattr(-,pandora,apache,2770)
 %{_localstatedir}/spool/pandora
 %{_localstatedir}/spool/pandora/data_in
 %{_localstatedir}/spool/pandora/data_in/md5

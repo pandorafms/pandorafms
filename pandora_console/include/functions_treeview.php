@@ -524,7 +524,23 @@ function treeview_printTable($id_agente, $server_data = array(), $no_head = fals
 	}
 	
 	if (is_metaconsole()) {
-		$cellName .= '<a href="'.$server_data[server_url].'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$agent["id_agente"].'">' .
+		$pwd = $server_data["auth_token"]; // Create HASH login info
+		$user = $config["id_user"];
+		
+		// Extract auth token from serialized field
+		$pwd_deserialiced = json_decode($pwd, true);
+		$hashdata = $user.$pwd_deserialiced['auth_token'];
+		
+		$hashdata = md5($hashdata);
+		$url = $server_data["server_url"] . "/index.php?" .
+				"sec=estado&" .
+				"sec2=operation/agentes/ver_agente&" .
+				"id_agente=" . $agent["id_agente"] . "&" .
+				"loginhash=auto&" .
+				"loginhash_data=$hashdata&" .
+				"loginhash_user=" . str_rot13($user);
+		
+		$cellName .= '<a href="'.$url.'">' .
 		'<b><span style="font-weight:bold;text-transform:uppercase;" title="' . $agent["nombre"] . '">'.$agent["alias"].'</span></b></a>';
 	} else {
 		$cellName .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$agent["id_agente"].'">' .

@@ -820,6 +820,19 @@ if (check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
 ?>
 
 <script type="text/javascript">
+
+$(document).ready (function () {
+		
+			$('[id^=checkbox-id_delete]').change(function(){
+				if($(this).parent().parent().hasClass('checkselected')){
+					$(this).parent().parent().removeClass('checkselected');
+				}
+				else{
+					$(this).parent().parent().addClass('checkselected');							
+				}
+			});					
+});
+
 	function change_mod_filter() {
 		var checked = $("#checkbox-status_hierachy_mode").is(":checked");
 

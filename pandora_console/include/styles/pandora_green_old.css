@@ -3342,3 +3342,13 @@ color:#82b92e;font-family:Nunito;font-size:10pt;position:relative;top:6px;
 #tinymce{
 	padding-top:20px;
 }
+
+.rowPair:hover, .rowOdd:hover{
+	background-color: #eee;
+}
+.databox.data > tbody > tr:hover{
+	background-color: #eee;
+}
+.checkselected{
+	background-color: #eee;
+}

@@ -3,14 +3,16 @@
 ' Pandora FMS Plugin, (c) 2017 Fermin Hernandez
 ' ------------------------------------------
 
-Dim usedMEM, totalMEM, Percent
+Dim usedMEM, Percent
+Dim totalMEM
 
 strComputer = "."
 Set objWMIService = GetObject("winmgmts:" & "{impersonationLevel=impersonate}!\\" & strComputer & "\root\cimv2")
+Set colRAMs = objWMIService.ExecQuery("Select * from Win32_ComputerSystem")
 
-Set colRAMs = objWMIService.ExecQuery("Select capacity from Win32_PhysicalMemory")
+totalMEM = 0
 For Each total in colRAMs
-	totalMEM = total.capacity
+	totalMEM = total.totalPhysicalMemory
 Next
 
 Set colUSEDs = objWMIService.ExecQuery("Select freePhysicalMemory from Win32_OperatingSystem")
@@ -37,7 +39,7 @@ End If
 on error goto 0 
 
 'Print only when there's results
-If (NOT flag) Then
+If (NOT flag AND totalMEM <> 0) Then
 	Percent = round (100 - (usedMEM / totalMEM) * 100, 2)
 	Wscript.StdOut.WriteLine "<module>"
 	Wscript.StdOut.WriteLine "    <name><![CDATA[Memory_Used]]></name>"

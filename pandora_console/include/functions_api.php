@@ -6246,30 +6246,35 @@ function api_get_module_data($id, $thrash1, $other, $returnType) {
 	if (defined ('METACONSOLE')) {
 		return;
 	}
-	
+
 	$data = explode("|", $other['data']);
 	$separator = $data[0];
 	$periodSeconds = $data[1];
 	$tstart = $data[2];
 	$tend = $data[3];
 
-	$dateStart = explode("T", $tstart);
-	$dateYearStart = substr($dateStart[0], 0, 4);
-	$dateMonthStart = substr($dateStart[0], 4, 2);
-	$dateDayStart = substr($dateStart[0], 6, 2);
-	$date_start = $dateYearStart . "-" . $dateMonthStart . "-" . $dateDayStart . " " . $dateStart[1];
-	$date_start = new DateTime($date_start);
-	$date_start = $date_start->format('U');
-
-	$dateEnd = explode("T", $tend);
-	$dateYearEnd = substr($dateEnd[0], 0, 4);
-	$dateMonthEnd = substr($dateEnd[0], 4, 2);
-	$dateDayEnd = substr($dateEnd[0], 6, 2);
-	$date_end = $dateYearEnd . "-" . $dateMonthEnd . "-" . $dateDayEnd . " " . $dateEnd[1];
-	$date_end = new DateTime($date_end);
-	$date_end = $date_end->format('U');
-
 	if (($tstart != "") && ($tend != "")) {
+		try {
+			$dateStart = explode("T", $tstart);
+			$dateYearStart = substr($dateStart[0], 0, 4);
+			$dateMonthStart = substr($dateStart[0], 4, 2);
+			$dateDayStart = substr($dateStart[0], 6, 2);
+			$date_start = $dateYearStart . "-" . $dateMonthStart . "-" . $dateDayStart . " " . $dateStart[1];
+			$date_start = new DateTime($date_start);
+			$date_start = $date_start->format('U');
+
+			$dateEnd = explode("T", $tend);
+			$dateYearEnd = substr($dateEnd[0], 0, 4);
+			$dateMonthEnd = substr($dateEnd[0], 4, 2);
+			$dateDayEnd = substr($dateEnd[0], 6, 2);
+			$date_end = $dateYearEnd . "-" . $dateMonthEnd . "-" . $dateDayEnd . " " . $dateEnd[1];
+			$date_end = new DateTime($date_end);
+			$date_end = $date_end->format('U');
+		}
+		catch (Exception $e) {
+			returnError('error_query_module_data', 'Error in date format. ');
+		}
+
 		$sql = sprintf ("SELECT utimestamp, datos 
 			FROM tagente_datos 
 			WHERE id_agente_modulo = %d AND utimestamp > %d 
@@ -6287,10 +6292,15 @@ function api_get_module_data($id, $thrash1, $other, $returnType) {
 	$data['list_index'] = array('utimestamp', 'datos');
 	$data['data'] = db_get_all_rows_sql($sql);
 	
-	if ($data === false)
+	if ($data === false) {
 		returnError('error_query_module_data', 'Error in the query of module data.');
-	else
+	}
+	else if ($data['data'] == "") {
+		returnError('error_query_module_data', 'No data to show.');
+	}
+	else {
 		returnData('csv', $data, $separator);
+	}
 }
 
 /**

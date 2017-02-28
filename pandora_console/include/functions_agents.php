@@ -1245,7 +1245,6 @@ function agents_get_modules ($id_agent = null, $details = false,
 					io_safe_output(implode (",", (array) $details)),
 					$where);
 	
-	
 	$result = db_get_all_rows_sql ($sql);
 	
 	
@@ -2345,7 +2344,7 @@ function agents_get_network_interfaces ($agents = false, $agents_filter = false)
 		}
 		$fields = array(
 				'id_agente',
-				'nombre',
+				'alias',
 				'id_grupo'
 			);
 		$agents = agents_get_agents($filter, $fields);
@@ -2356,7 +2355,7 @@ function agents_get_network_interfaces ($agents = false, $agents_filter = false)
 	foreach ($agents as $agent) {
 		$agent_id = $agent['id_agente'];
 		$agent_group_id = $agent['id_grupo'];
-		$agent_name = $agent['nombre'];
+		$agent_name = $agent['alias'];
 		$agent_interfaces = array();
 		
 		$accepted_module_types = array();
@@ -2387,31 +2386,36 @@ function agents_get_network_interfaces ($agents = false, $agents_filter = false)
 		else
 			$columns[] = 'descripcion';
 
-		$filter = " id_agente = $agent_id AND disabled = 0 AND id_tipo_modulo IN (".implode(",", $accepted_module_types).") AND nombre LIKE 'ifOperStatus_%'";
+		$filter = " id_agente = $agent_id AND disabled = 0 AND id_tipo_modulo IN (".implode(",", $accepted_module_types).") AND (nombre LIKE '%_ifOperStatus' OR nombre LIKE 'ifOperStatus_%')";
 		
 		$modules = agents_get_modules($agent_id, $columns, $filter, true, false);
-
+		
 		if (!empty($modules)) {
+			
 			$interfaces = array();
-
+			$type_interface = 0;
 			foreach ($modules as $module) {
 				$module_name = (string) $module['nombre'];
 
 				// Trying to get the interface name from the module name
-				if (preg_match ("/_(.+)$/", $module_name, $matches)) {
+				if (preg_match ("/^(.+)_if.+/", $module_name, $matches)) {
 					if ($matches[1]) {
 						$interface_name = $matches[1];
 						$interface_name_escaped = str_replace("/", "\/", $interface_name);
-
-						if (preg_match ("/^ifOperStatus_$interface_name_escaped$/i", $module_name, $matches)) {
-							$interfaces[$interface_name] = $module;
-						}
-
+						$interfaces[$interface_name] = $module;
+						$type_interface=0;
+					}
+				}
+				elseif(	preg_match ("/^if.+_(.+)$/", $module_name, $matches) ){
+					if ($matches[1]) {
+						$interface_name = $matches[1];
+						$interface_name_escaped = str_replace("/", "\/", $interface_name);
+						$interfaces[$interface_name] = $module;
+						$type_interface=1;
 					}
 				}
 			}
 			unset($modules);
-
 			foreach ($interfaces as $interface_name => $module) {
 				$interface_name_escaped = str_replace("/", "\/", $interface_name);
 				
@@ -2447,19 +2451,36 @@ function agents_get_network_interfaces ($agents = false, $agents_filter = false)
 						"id_agente_modulo",
 						"nombre"
 					);
-				$interface_traffic_modules = agents_get_modules($agent_id, $columns, "nombre LIKE 'if%Octets_$interface_name'");
+				if($type_interface){
+					$interface_traffic_modules = agents_get_modules($agent_id, $columns, "nombre LIKE 'if%Octets_$interface_name'");
+				}else{
+					$interface_traffic_modules = agents_get_modules($agent_id, $columns, "nombre LIKE '" . $interface_name ."_if%Octets'");
+				}
 				if (!empty($interface_traffic_modules) && count($interface_traffic_modules) >= 2) {
 					$interface_traffic_modules_aux = array('in' => '', 'out' => '');
 					foreach ($interface_traffic_modules as $interface_traffic_module) {
 						$interface_name_escaped = str_replace("/", "\/", $interface_name);
-						if (preg_match ("/^if(.+)Octets_$interface_name_escaped$/i", $interface_traffic_module['nombre'], $matches)) {
-							if (strtolower($matches[1]) == 'in') {
-								$interface_traffic_modules_aux['in'] = $interface_traffic_module['id_agente_modulo'];
-							}
-							elseif (strtolower($matches[1]) == 'out') {
-								$interface_traffic_modules_aux['out'] = $interface_traffic_module['id_agente_modulo'];
+						if($type_interface){
+							if (preg_match ("/^if(.+)Octets_$interface_name_escaped$/i", $interface_traffic_module['nombre'], $matches)) {
+								if (strtolower($matches[1]) == 'in') {
+									$interface_traffic_modules_aux['in'] = $interface_traffic_module['id_agente_modulo'];
+								}
+								elseif (strtolower($matches[1]) == 'out') {
+									$interface_traffic_modules_aux['out'] = $interface_traffic_module['id_agente_modulo'];
+								}
 							}
 						}
+						else {
+							if (preg_match ("/^" . $interface_name_escaped . "_if(.+)Octets$/i", $interface_traffic_module['nombre'], $matches)) {
+								if (strtolower($matches[1]) == 'in') {
+									$interface_traffic_modules_aux['in'] = $interface_traffic_module['id_agente_modulo'];
+								}
+								elseif (strtolower($matches[1]) == 'out') {
+									$interface_traffic_modules_aux['out'] = $interface_traffic_module['id_agente_modulo'];
+								}
+							}
+						}
+
 					}
 					if (!empty($interface_traffic_modules_aux['in']) && !empty($interface_traffic_modules_aux['out'])) {
 						$interface_traffic_modules = $interface_traffic_modules_aux;

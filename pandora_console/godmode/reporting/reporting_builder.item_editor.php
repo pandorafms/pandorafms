@@ -1078,12 +1078,15 @@ You can of course remove the warnings, that's why we include the source and do n
 			<td style="font-weight:bold;"><?php echo __('Agents'); ?></td>
 			<td>
 				<?php 
-					$agents = enterprise_hook('inventory_get_agents');
+					$fields = array ();
+					$fields[0] = "id_agente";
+					$fields[1] = "alias";
+					$agents = enterprise_hook('inventory_get_agents', array(false , $fields));
 					if ((empty($agents)) || $agents == -1) $agents = array();
 					
 					$agents_select = array();
 					foreach ($agents as $a) {
-						$agents_select[$a['id_agente']] = $a['nombre'];
+						$agents_select[$a['id_agente']] = $a['alias'];
 					}
 					html_print_select($agents_select, 'id_agents[]', $id_agents, $script = '', __('All'), -1, false, true, true, '', false, "min-width: 180px");
 				?>
@@ -1931,7 +1934,7 @@ $(document).ready (function () {
 						
 						option = $("<option></option>")
 							.attr ("value", value["id_agente"])
-							.html (value["nombre"]);
+							.html (value["alias"]);
 						$("#id_agents").append (option);
 						$("#id_agents2").append (option);
 					});

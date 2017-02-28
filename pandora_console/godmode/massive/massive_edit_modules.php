@@ -468,17 +468,9 @@ $table->data['edit3'][2] = __('SMNP community');
 $table->data['edit3'][3] = html_print_input_text ('snmp_community', '',
 	'', 10, 15, true);
 
-$target_ip_values = array();
-$target_ip_values['auto']      = __('Auto');
-$target_ip_values['force_pri'] = __('Force primary key');
-$target_ip_values['custom']    = __('Custom');
-
 $table->data['edit35'][0] = __('Target IP');
-$table->data['edit35'][1] = html_print_select ($target_ip_values,
-	'ip_target', '', '', __('No change'), '', true, false, false, '', false, 'width:200px;');
-
-$table->data['edit35'][1] .= html_print_input_text ('custom_ip_target', '', '', 15, 60, true);
-
+$table->data['edit35'][1] = html_print_input_text ('ip_target', '', '',
+	15, 60, true);
 $table->data['edit35'][2] = __('SNMP version');
 $table->data['edit35'][3] = html_print_select ($snmp_versions,
 	'tcp_send', '', '', __('No change'), '', true, false, false, '');
@@ -643,7 +635,6 @@ $(document).ready (function () {
 		}
 	});
 	
-	$("#text-custom_ip_target").hide();
 	
 	$("#id_agents").change(agent_changed_by_multiple_agents);
 	$("#module_name").change(module_changed_by_multiple_modules);
@@ -917,15 +908,6 @@ $(document).ready (function () {
 		}
 	});
 
-	$('#ip_target').change(function() {
-		if($(this).val() == 'custom') {
-			$("#text-custom_ip_target").show();	
-		}
-		else{
-			$("#text-custom_ip_target").hide();	
-		}
-	});
-
 	var recursion;
 
 	$("#checkbox-recursion").click(function () {
@@ -1036,7 +1018,7 @@ function process_manage_edit ($module_name, $agents_select = null) {
 		'id_export', 'history_data', 'critical_inverse',
 		'warning_inverse', 'critical_instructions',
 		'warning_instructions', 'unknown_instructions', 'policy_linked', 
-		'id_category', 'disabled_types_event', 'ip_target', "custom_ip_target",
+		'id_category', 'disabled_types_event', 'ip_target',
 		'descripcion', 'min_ff_event_normal', 'min_ff_event_warning',
 		'min_ff_event_critical', 'each_ff', 'module_ff_interval',
 		'ff_timeout', 'max_timeout');

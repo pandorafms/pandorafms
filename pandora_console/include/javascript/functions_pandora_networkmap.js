@@ -142,7 +142,6 @@ function delete_link(source_id, source_module_id, target_id, target_module_id, i
 			success: function (data) {
 				if (data['correct']) {
 					var found = -1;
-					
 					jQuery.each(graph.links, function(i, element) {
 						if (element.id_db == id_link) {
 							found = i;
@@ -151,7 +150,7 @@ function delete_link(source_id, source_module_id, target_id, target_module_id, i
 					if (found != -1) {
 						graph.links.splice(found, 1);
 					}
-				
+					
 					$("#layer_graph_links_" + networkmap_id).remove();
 					$("#layer_graph_nodes_" + networkmap_id).remove();
 
@@ -172,35 +171,12 @@ function delete_link(source_id, source_module_id, target_id, target_module_id, i
 					draw_elements_graph();
 					init_drag_and_drop();
 					set_positions_graph();
-
-					draw_elements_graph();
-					set_positions_graph();
 				}
 				
 				$("#dialog_node_edit").dialog("close");
 			}
 		});
 	}
-	/*
-	else {
-		do {
-			found = -1;
-			
-			jQuery.each(graph.links, function(i, element) {
-				if ((element.source.id_db == source_id)
-					&& (element.target.id_db == target_id)) {
-					found = i;
-				}
-			});
-			if (found != -1)
-				graph.links.splice(found, 1);
-		}
-		while (found != -1);
-		
-		draw_elements_graph();
-		set_positions_graph();
-	}
-	*/
 }
 
 function update_fictional_node(id_db_node) {
@@ -632,7 +608,9 @@ function edit_node(data, dblClick) {
 				.classed("node_selected", true);
 			
 			id = d3.select(edit_node).attr("id").replace("id_node_", "");
-			id = id.replace(networkmap_id, "");
+			id_networkmap_lenght = networkmap_id.toString().length;
+			id_node_length = id.length - id_networkmap_lenght;
+			id = id.substring(0, id_node_length);
 			node_selected = graph.nodes[id];
 			
 			selected_links = get_relations(node_selected);
@@ -1899,6 +1877,23 @@ function add_interface_link_js () {
 				
 				graph.links.push(temp_link);
 
+				$("#layer_graph_links_" + networkmap_id).remove();
+				$("#layer_graph_nodes_" + networkmap_id).remove();
+
+				window.layer_graph_links = window.layer_graph
+					.append("g")
+						.attr("id", "layer_graph_links_" + networkmap_id);
+				window.layer_graph_nodes = window.layer_graph
+					.append("g")
+						.attr("id", "layer_graph_nodes_" + networkmap_id);
+				
+				force.nodes(graph.nodes)
+					.links(graph.links)
+					.start();
+				
+				window.node = layer_graph_nodes.selectAll(".node");
+				window.link = layer_graph_links.selectAll(".link");
+				
 				draw_elements_graph();
 				init_drag_and_drop();
 				set_positions_graph();

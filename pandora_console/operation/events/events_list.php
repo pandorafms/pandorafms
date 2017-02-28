@@ -613,19 +613,6 @@ $data[0] .= '<a href="javascript:" onclick="show_load_filter_dialog();">' .
 				html_print_image("images/load.png", true, array("border" => '0', "title" => __('Load filter'), "alt" => __('Load filter'))) . '</a> &nbsp;';
 $data[0] .= '<a id="events_graph_link" href="javascript: show_events_graph_dialog()">' . 
 				html_print_image('images/chart_curve.png', true, array('title' => __('Show events graph'))) . '</a> <br />';
-
-
-if (empty($id_name)) {
-	$data[0] .= '<div id="filter_loaded_span" style="font-weight: normal">[' .
-		__('No filter loaded') .
-		']</div>';
-}
-else {
-	$data[0] .= '<div id="filter_loaded_span" style="font-weight: normal">[' .
-		__('Filter loaded') . ': ' . $id_name .
-		']</div>';
-}
-
 $data[0] .= '</div>';
 
 
@@ -725,6 +712,9 @@ elseif ($group_rep == 2) {
 		$history);	
 }
 
+$filter_resume['title'] = empty($id_name)
+	? __('No filter loaded')
+	: __('Filter loaded') . ': ' . $id_name;
 // Active filter tag view call (only enterprise version)
 // It is required to pass some references to enterprise function 
 // to translate the active filters

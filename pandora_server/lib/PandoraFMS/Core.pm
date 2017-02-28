@@ -974,7 +974,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_field13_ => $field13,
 				_field14_ => $field14,
 				_field15_ => $field15,
-				_agent_ => (defined ($agent)) ? $agent->{'nombre'} : '',
+				_agent_ => (defined ($agent)) ? $agent->{'alias'} : '',
 				_agentcustomid_ => (defined ($agent)) ? $agent->{'custom_id'} : '',
 				'_agentcustomfield_\d+_'  => undef,
 				_agentdescription_ => (defined ($agent)) ? $agent->{'comentarios'} : '',
@@ -1049,31 +1049,31 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 			push @command_args, subst_alert_macros($word, \%macros, $pa_config, $dbh, $agent, $module);
 		}
 		my $command = join(' ', @command_args);
-		logger($pa_config, "Executing command '$command' for action '" . safe_output($action->{'name'}) . "' alert '". safe_output($alert->{'name'}) . "' agent '" . (defined ($agent) ? safe_output($agent->{'nombre'}) : 'N/A') . "'.", 8);
+		logger($pa_config, "Executing command '$command' for action '" . safe_output($action->{'name'}) . "' alert '". safe_output($alert->{'name'}) . "' agent '" . (defined ($agent) ? safe_output($agent->{'alias'}) : 'N/A') . "'.", 8);
 		
 		eval {
 			if ($pa_config->{'global_alert_timeout'} == 0){
 				system ($command);
-				logger($pa_config, "Command '$command' for action '" . safe_output($action->{'name'}) . "' alert '". safe_output($alert->{'name'}) . "' agent '" . (defined ($agent) ? safe_output($agent->{'nombre'}) : 'N/A') . "' returned with errorlevel " . ($? >> 8), 8);
+				logger($pa_config, "Command '$command' for action '" . safe_output($action->{'name'}) . "' alert '". safe_output($alert->{'name'}) . "' agent '" . (defined ($agent) ? safe_output($agent->{'alias'}) : 'N/A') . "' returned with errorlevel " . ($? >> 8), 8);
 			} else {
 				my $command_timeout = safe_output($pa_config->{'plugin_exec'}) . " " . $pa_config->{'global_alert_timeout'} . " " . $command;
 				system ($command_timeout);
 				my $return_code = ($? >> 8) & 0xff;
-				logger($pa_config, "Command '$command_timeout' for action '" . safe_output($action->{'name'}) . "' alert '". safe_output($alert->{'name'}) . "' agent '" . (defined ($agent) ? safe_output($agent->{'nombre'}) : 'N/A') . "' returned with errorlevel " . $return_code, 8);
+				logger($pa_config, "Command '$command_timeout' for action '" . safe_output($action->{'name'}) . "' alert '". safe_output($alert->{'name'}) . "' agent '" . (defined ($agent) ? safe_output($agent->{'alias'}) : 'N/A') . "' returned with errorlevel " . $return_code, 8);
 				if ($return_code != 0) {
-					logger ($pa_config, "Action '" . safe_output($action->{'name'}) . "' alert '" . safe_output($alert->{'name'}) . "' agent '" . (defined ($agent) ? safe_output($agent->{'nombre'}) : 'N/A') . "' exceeded the global alert timeout " . $pa_config->{'global_alert_timeout'} . " seconds" , 8);
+					logger ($pa_config, "Action '" . safe_output($action->{'name'}) . "' alert '" . safe_output($alert->{'name'}) . "' agent '" . (defined ($agent) ? safe_output($agent->{'alias'}) : 'N/A') . "' exceeded the global alert timeout " . $pa_config->{'global_alert_timeout'} . " seconds" , 8);
 				}
 			}	
 		};
 		
 		if ($@){
-			logger($pa_config, "Error $@ executing command '$command' for action '" . safe_output($action->{'name'}) . "' alert '". safe_output($alert->{'name'}) . "' agent '" . (defined ($agent) ? safe_output($agent->{'nombre'}) : 'N/A') ."'.", 8);
+			logger($pa_config, "Error $@ executing command '$command' for action '" . safe_output($action->{'name'}) . "' alert '". safe_output($alert->{'name'}) . "' agent '" . (defined ($agent) ? safe_output($agent->{'alias'}) : 'N/A') ."'.", 8);
 		}
 	
 	# Internal Audit
 	} elsif ($clean_name eq "Internal Audit") {
 		$field1 = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module);
-		pandora_audit ($pa_config, $field1, defined ($agent) ? safe_output($agent->{'nombre'}) : 'N/A', 'Alert (' . safe_output($alert->{'description'}) . ')', $dbh);
+		pandora_audit ($pa_config, $field1, defined ($agent) ? safe_output($agent->{'alias'}) : 'N/A', 'Alert (' . safe_output($alert->{'description'}) . ')', $dbh);
 	
 	# Email
 	} elsif ($clean_name eq "eMail") {
@@ -1307,7 +1307,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 
 	# Unknown
 	} else {
-		logger($pa_config, "Unknown action '" . $action->{'name'} . "' for alert '". $alert->{'name'} . "' agent '" . (defined ($agent) ? $agent->{'nombre'} : 'N/A') . "'.", 3);
+		logger($pa_config, "Unknown action '" . $action->{'name'} . "' for alert '". $alert->{'name'} . "' agent '" . (defined ($agent) ? $agent->{'alias'} : 'N/A') . "'.", 3);
 	}
 	
 	# Update action last execution date

@@ -65,10 +65,6 @@ $extra_title = __('Network server module');
 
 $data = array ();
 $data[0] = __('Target IP');
-//show agent_for defect;
-if($ip_target == 'auto'){
-	$ip_target = agents_get_address ($id_agente);
-}
 $data[1] = html_print_input_text ('ip_target', $ip_target, '', 15, 60, true);
 
 // In ICMP modules, port is not configurable

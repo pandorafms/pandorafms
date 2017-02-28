@@ -121,8 +121,8 @@ if ($severity != -1) {
 
 // In metaconsole mode the agent search is performed by name
 if ($meta) {
-	$filter_resume['agent'] = $text_agent;
-	if ($text_agent != __('All')) {
+	if (($text_agent != __('All')) && ($text_agent !== '')) {
+		$filter_resume['agent'] = $text_agent;
 		$sql_post .= " AND agent_name LIKE '%$text_agent%'";
 	}
 }

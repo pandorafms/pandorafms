@@ -734,7 +734,8 @@ enterprise_hook('print_event_tags_active_filters',
 			'event_type' => $types,
 			'severity' => $severities,
 			'duplicate' => $repeated_sel,
-			'alerts' => $alert_events_titles)
+			'alerts' => $alert_events_titles,
+			'groups' => users_get_groups_for_select($config["id_user"], $access, true, true, false))
 	)
 );
 

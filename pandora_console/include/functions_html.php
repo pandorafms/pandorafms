@@ -2162,7 +2162,7 @@ function html_print_autocomplete_modules($name = 'module',
 	ob_start();
 	
 	html_print_input_text_extended ($name, $default, 'text-' . $name, '', 30, 100, false, '',
-		array('style' => 'background: url(images/input_module.png) no-repeat right;'));
+		array('style' => 'background: url(images/search_module.png) no-repeat right;'));
 	html_print_input_hidden($name . "_hidden", $id_agent_module);
 	ui_print_help_tip(__('Type at least two characters to search the module.'), false);
 	

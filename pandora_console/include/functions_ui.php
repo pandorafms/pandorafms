@@ -2760,7 +2760,7 @@ function ui_print_agent_autocomplete_input($parameters) {
 	
 	
 	//Default value
-	$icon_image = html_print_image('images/input_agent.png', true, false, true);
+	$icon_image = html_print_image('images/search_agent.png', true, false, true);
 	if (isset($parameters['icon_image'])) {
 		$icon_image = $parameters['icon_image'];
 	}

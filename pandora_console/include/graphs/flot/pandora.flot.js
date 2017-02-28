@@ -1519,7 +1519,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	// minTickSize
 	var count_data = datas[0].data.length;
 	var min_tick_pixels = 80;
-	var steps = parseInt( count_data / (width/min_tick_pixels));
+	//~ var steps = parseInt( count_data / (width/min_tick_pixels));
 	
 	var options = {
 			series: {
@@ -1547,7 +1547,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 					axisLabelUseCanvas: false,
 					axisLabel: xaxisname,
 					tickFormatter: xFormatter,
-					minTickSize: steps,
+					//~ minTickSize: steps,
 					color: '',
 					font: font
 				} ],
@@ -1603,25 +1603,26 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	// Adjust linked graph to the width and position of the main plot
 
 	// Miniplot
-	var overview = $.plot($('#overview_'+graph_id),datas, {
-		series: {
-			stack: stacked,
-			lines: { show: true, lineWidth: 1 },
-			shadowSize: 0
-		},
-		grid: { borderWidth: 1, hoverable: true, autoHighlight: false},
-		xaxis: { },
-			xaxes: [ {
-				tickFormatter: xFormatter,
-				minTickSize: steps,
-				color: ''
-				} ],
-		yaxis: {ticks: [], autoscaleMargin: 0.1 },
-		selection: {mode: 'x', color: '#777' },
-		legend: {show: false},
-		crosshair: {mode: 'x'}
-	});
-
+	if ( !dashboard ) {
+		var overview = $.plot($('#overview_'+graph_id),datas, {
+			series: {
+				stack: stacked,
+				lines: { show: true, lineWidth: 1 },
+				shadowSize: 0
+			},
+			grid: { borderWidth: 1, hoverable: true, autoHighlight: false},
+			xaxis: { },
+				xaxes: [ {
+					tickFormatter: xFormatter,
+					minTickSize: steps,
+					color: ''
+					} ],
+			yaxis: {ticks: [], autoscaleMargin: 0.1 },
+			selection: {mode: 'x', color: '#777' },
+			legend: {show: false},
+			crosshair: {mode: 'x'}
+		});
+	}
 	// Connection between plot and miniplot
 
 	$('#' + graph_id).bind('plotselected', function (event, ranges) {
@@ -1669,7 +1670,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			plot.setSelection(ranges);
 		});
 
-	var legends = $('#legend_' + graph_id + ' .legendLabel');
+	//~ var legends = $('#legend_' + graph_id + ' .legendLabel');
 
 
 	var updateLegendTimeout = null;
@@ -1768,8 +1769,8 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			$('#legend_' + graph_id + ' .legendLabel')
 				.eq(i).css('color','');
 
-			//~ $('#legend_' + graph_id + ' .legendLabel')
-				//~ .eq(i).css('font-family',font+'Font');
+			$('#legend_' + graph_id + ' .legendLabel')
+				.eq(i).css('font-family',font+'Font');
 
 			i++;
 		}
@@ -1857,7 +1858,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	$('#'+graph_id).bind('mouseout',resetInteractivity);
 	$('#overview_'+graph_id).bind('mouseout',resetInteractivity);
 	
-	// Reset interactivity styles
+	//~ // Reset interactivity styles
 	function resetInteractivity() {
 		$('#timestamp_'+graph_id).hide();
 		dataset = plot.getData();
@@ -1891,207 +1892,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 		// Prepared to turn series with a checkbox
 		//return '<div style=color:;font-size:'+font_size+'pt><input type="checkbox" id="' + graph_id + '_' + item.id +'" checked="checked" class="check_serie_'+graph_id+'">'+v+'</div>';
 	}
-
-	// Used to export the graph data to a file.
-	// Uses plot, labels and labels_long as scope variables.
-	//~ function exportData (options) {
-		//~ options = options || {};
-
-		//~ // Options
-		//~ var type = options.type || 'csv';
-		//~ type = type.toLowerCase().trim();
-
-		//~ var graphData,
-			//~ dataObject,
-			//~ dataObjects = plot.getData(),
-			//~ result = [];
-
-		//~ // Throw errors
-		//~ var retrieveDataOject = function (dataObjects) {
-			//~ var result;
-
-			//~ if (typeof dataObjects === 'undefined')
-				//~ throw new Error('Empty parameter');
-
-			//~ // Try to retrieve the avg set (not 100% reliable, I know)
-			//~ if (dataObjects.length == 1) {
-				//~ result = dataObjects.shift();
-			//~ }
-			//~ if (dataObjects.length > 1) {
-				//~ dataObjects.forEach(function (element) {
-					//~ if (/^Avg.:/i.test(element.label))
-						//~ result = element;
-				//~ });
-
-				//~ // If the avg set is missing, retrieve the first set
-				//~ if (typeof result === 'undefined')
-					//~ result = dataObjects.shift();
-			//~ }
-
-			//~ if (typeof result === 'undefined')
-				//~ throw new Error('Empty result');
-
-			//~ return result;
-		//~ }
-
-		//~ // Throw errors
-		//~ var processDataObject = function (dataObject) {
-			//~ var result;
-
-			//~ if (typeof dataObject === 'undefined')
-				//~ throw new Error('Empty parameter');
-
-			//~ if (typeof dataObject.data === 'undefined'
-					//~ || !(dataObject.data instanceof Array))
-				//~ throw new Error('Object malformed');
-
-			//~ /* {
-			 //~ *   head: [<column>,<column>,...,<column>],
-			 //~ *   data: [
-			 //~ *     [<data>,<data>,...,<data>],
-			 //~ *     [<data>,<data>,...,<data>],
-			 //~ *     ...,
-			 //~ *     [<data>,<data>,...,<data>],
-			 //~ *   ]
-			 //~ * }
-			 //~ */
-			//~ if (type === 'csv') {
-
-				//~ result = {
-					//~ head: ['date', 'value','label'],
-					//~ data: []
-				//~ };
-
-				//~ dataObject.data.forEach(function (item, index) {
-					//~ var date = '', value = item[1];
-
-					//~ // Long labels are preferred
-					//~ if (typeof labels_long[index] !== 'undefined')
-						//~ date = labels_long[index];
-					//~ else if (typeof labels[index] !== 'undefined')
-						//~ date = labels[index];
-
-					//~ result.data.push([date, value,dataObject.label]);
-				//~ });
-			//~ }
-			//~ /* [
-			 //~ *   {
-			 //~ *     'date': <date>,
-			 //~ *     'value': <value>
-			 //~ *   }
-			 //~ * ],
-			 //~ * [
-			 //~ *   {
-			 //~ *     'date': <date>,
-			 //~ *     'value': <value>
-			 //~ *   }
-			 //~ * ],
-			 //~ * ...,
-			 //~ * [
-			 //~ *   {
-			 //~ *     'date': <date>,
-			 //~ *     'value': <value>
-			 //~ *   }
-			 //~ * ]
-			 //~ */
-			//~ else if (type === 'json') {
-				//~ result = [];
-
-				//~ dataObject.data.forEach(function (item, index) {
-					//~ var date = '', value = item[1];
-
-					//~ // Long labels are preferred
-					//~ if (typeof labels_long[index] !== 'undefined')
-						//~ date = labels_long[index];
-					//~ else if (typeof labels[index] !== 'undefined')
-						//~ date = labels[index];
-
-					//~ result.push({
-						//~ 'date': date,
-						//~ 'value': value,
-						//~ 'label': dataObject.label
-					//~ });
-				//~ });
-			//~ }
-
-			//~ if (typeof result === 'undefined')
-				//~ throw new Error('Empty result');
-
-			//~ return result;
-		//~ }
-
-		//~ try {
-			//~ var elements = [];
-			//~ var custom_graph = $('input:hidden[name=custom_graph]').value;
-
-			//~ if (custom_graph) {
-				//~ dataObject = retrieveDataOject(dataObjects);
-				//~ dataObjects.forEach(function (element) {
-					//~ elements.push(processDataObject(element));
-				//~ });
-				//~ graphData = elements;
-			//~ }
-			//~ else {
-				//~ dataObject = retrieveDataOject(dataObjects);
-				//~ elements.push(processDataObject(dataObject));
-				//~ graphData = elements;
-			//~ }
-
-			//~ // Transform the object data into a string
-			//~ // cause PHP has limitations in the number
-			//~ // of POST params received.
-			//~ var graphDataStr = JSON.stringify(graphData);
-
-			//~ // Build form
-			//~ var $form = $('<form></form>'),
-				//~ $dataInput = $('<input>'),
-				//~ $typeInput = $('<input>'),
-				//~ $separatorInput = $('<input>'),
-				//~ $excelInput = $('<input>');
-
-			//~ $dataInput
-				//~ .prop('name', 'data')
-				//~ .prop('type', 'text')
-				//~ .prop('value', graphDataStr);
-
-			//~ $typeInput
-				//~ .prop('name', 'type')
-				//~ .prop('type', 'text')
-				//~ .prop('value', type);
-
-			//~ $separatorInput
-				//~ .prop('name', 'separator')
-				//~ .prop('type', 'text')
-				//~ .prop('value', ';');
-
-			//~ $excelInput
-				//~ .prop('name', 'excel_encoding')
-				//~ .prop('type', 'text')
-				//~ .prop('value', 0);
-
-			//~ $form
-				//~ .prop('method', 'POST')
-				//~ .prop('action', homeurl + '/include/graphs/export_data.php')
-				//~ .append($dataInput, $typeInput, $separatorInput, $excelInput)
-				//~ .hide()
-				//~ // Firefox made me write into the DOM for this :(
-				//~ .appendTo('body')
-				//~ .submit();
-		//~ }
-		//~ catch (e) {
-			//~ alert('There was an error exporting the data');
-			//~ console.log(e);
-		//~ }
-	//~ }
-
-	// Prepared to turn series with a checkbox
-	//~ $('.check_serie_'+graph_id).click(function() {
-		//~ // Format of the id is graph_3905jf93f03_serie_id
-		//~ id_clicked = this.id.split('_')[3];
-		//~ // Update the serie clicked
-		//~ showed[id_clicked] = this.checked;
-	//~ });
-
+	
 	if (menu) {
 		var parent_height;
 		$('#menu_overview_' + graph_id).click(function() {
@@ -2119,7 +1920,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				//~ event.preventDefault();
 				//~ plot.exportDataJSON();
 		//~ });
-
+		
 		$('#menu_threshold_' + graph_id).click(function() {
 			datas = new Array();
 
@@ -2193,12 +1994,12 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			$('#menu_'+graph_id).parent().css('height').split('px')[0]);
 		adjust_menu(graph_id, plot, parent_height);
 	}
-
-	if (water_mark) {
-		set_watermark(graph_id, plot, $('#watermark_image_'+graph_id).attr('src'));
+	
+	if (!dashboard) {
+		if (water_mark)
+			set_watermark(graph_id, plot, $('#watermark_image_'+graph_id).attr('src'));
+		adjust_menu(graph_id, plot, parent_height, width);
 	}
-
-	adjust_menu(graph_id, plot, parent_height, width);
 }
 
 function adjust_menu(graph_id, plot, parent_height, width) {

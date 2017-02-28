@@ -461,7 +461,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 	
 	// Javascript code
 	$return .= "<script type='text/javascript'>";
-	$return .= "//<![CDATA[\n";
+	$return .= "$(document).ready( function () {";
 	$return .= "pandoraFlotArea(" .
 		"'$graph_id', \n" .
 		"'$values', \n" .
@@ -474,7 +474,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 		"$watermark, \n" .
 		"$width, \n" .
 		"$max_x, \n" .
-		"'" . $homeurl . "', \n" .
+		"'$homeurl', \n" .
 		"'$unit', \n" .
 		"$font_size, \n" .
 		"'$font', \n" .
@@ -500,11 +500,8 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 		"'$xaxisname', \n" .
 		"'$background_color', \n" .
 		"'$legend_color'
-	
 	);";
-	
-	
-	$return .= "\n//]]>";
+	$return .= "});";
 	$return .= "</script>";
 	
 	// Parent layer

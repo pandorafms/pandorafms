@@ -260,7 +260,6 @@ Pandora_Windows_Service::pandora_init () {
 	
 	// Get the agent name.
 	agent_name = conf->getValue ("agent_name");
-	printf("AGENT NAME: %s\n", agent_name.c_str());
 	if (agent_name == "") {
 		agent_name_cmd = conf->getValue ("agent_name_cmd");
 
@@ -294,14 +293,11 @@ Pandora_Windows_Service::pandora_init () {
 		}
 	}
 
-	printf("AGENT NAME2: %s\n", agent_name.c_str());
 	// Fall back to the hostname if agent_name is still empty.
 	if (agent_name == "") {
 		agent_name = Pandora_Windows_Info::getSystemName ();
 		this->conf->setValue("agent_name", agent_name);
 	}
-	printf("AGENT NAME3: %s\n", agent_name.c_str());
-	printf("AGENT NAME4: %s\n", this->conf->getValue("agent_name").c_str());
 
 	// Get the agent alias.
 	conf->getValue ("agent_alias");

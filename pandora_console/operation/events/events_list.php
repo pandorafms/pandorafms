@@ -25,6 +25,7 @@ require_once ($config['homedir'] . "/include/functions_users.php"); //Users func
 require_once ($config['homedir'] . "/include/functions_groups.php");
 require_once ($config["homedir"] . "/include/functions_graph.php");
 require_once ($config["homedir"] . "/include/functions_tags.php");
+enterprise_include_once('include/functions_events.php');
 
 check_login ();
 
@@ -163,6 +164,7 @@ $sql_post = "";
 
 $id_user = $config['id_user'];
 
+$filter_resume = array();
 require('events.build_query.php');
 
 // Now $sql_post have all the where condition
@@ -459,7 +461,12 @@ $table_advanced->rowclass[] = '';
 
 $data = array();
 $data[0] = __("Alert events") . $jump;
-$data[0] .= html_print_select (array('-1' => __('All'), '0' => __('Filter alert events'), '1' => __('Only alert events')), "filter_only_alert", $filter_only_alert, '', '', '', true);
+$alert_events_titles = array(
+	'-1' => __('All'),
+	'0' => __('Filter alert events'),
+	'1' => __('Only alert events')
+);
+$data[0] .= html_print_select ($alert_events_titles, "filter_only_alert", $filter_only_alert, '', '', '', true);
 $data[1] = __('Block size for pagination') . $jump;
 $lpagination[25] = 25;
 $lpagination[50] = 50;
@@ -561,7 +568,8 @@ $types["not_normal"] = __("Not normal");
 $data[1] .= html_print_select ($types, 'event_type', $event_type, '', __('All'), '', true);
 
 $data[2] = __('Severity') . $jump;
-$data[2] .= html_print_select (get_priorities (), "severity", $severity, '', __('All'), '-1', true, false, false);
+$severities = get_priorities ();
+$data[2] .= html_print_select ($severities, "severity", $severity, '', __('All'), '-1', true, false, false);
 $table->data[] = $data;
 $table->rowclass[] = '';
 
@@ -641,7 +649,7 @@ $events_filter .= "</form>"; //This is the filter div
 if (is_metaconsole())
 	ui_toggle($events_filter, __("Show Options"));
 else
-	ui_toggle($events_filter, __('Event control filter'), '', !$open_filter);
+	ui_toggle($events_filter, __('Event control filter'));
 
 // Error div for ajax messages
 echo "<div id='show_filter_error' style='display: none;'>";
@@ -696,6 +704,7 @@ if ($group_rep == 0) {
 	$result = db_get_all_rows_sql ($sql);
 }
 elseif ($group_rep == 1) {
+	$filter_resume['duplicate'] = $group_rep;
 	$result = events_get_events_grouped(
 		$sql_post,
 		$offset,
@@ -707,6 +716,7 @@ elseif ($group_rep == 1) {
 		'DESC');
 }
 elseif ($group_rep == 2) {
+	$filter_resume['duplicate'] = $group_rep;
 	$result = events_get_events_grouped_by_agent(
 		$sql_post,
 		$offset,
@@ -714,6 +724,19 @@ elseif ($group_rep == 2) {
 		$meta,
 		$history);	
 }
+
+// Active filter tag view call (only enterprise version)
+// It is required to pass some references to enterprise function 
+// to translate the active filters
+enterprise_hook('print_event_tags_active_filters',
+	array( $filter_resume, array(
+			'status' => $fields,
+			'event_type' => $types,
+			'severity' => $severities,
+			'duplicate' => $repeated_sel,
+			'alerts' => $alert_events_titles)
+	)
+);
 
 if (!empty($result)) {
 	if ($group_rep == 0) {

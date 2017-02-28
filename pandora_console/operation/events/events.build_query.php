@@ -24,6 +24,7 @@ elseif (check_acl ($id_user, 0, "EM"))
 $propagate = db_get_value('propagate','tgrupo','id_grupo',$id_group);
 
 if ($id_group > 0) {
+	$filter_resume['groups'] = $id_group;
 	if ($propagate) {
 		$childrens_ids = array($id_group);
 		
@@ -66,18 +67,22 @@ switch ($status) {
 	case 0:
 	case 1:
 	case 2:
+		$filter_resume['status'] = $status;
 		$sql_post .= " AND estado = " . $status;
 		break;
 	case 3:
+		$filter_resume['status'] = $status;
 		$sql_post .= " AND (estado = 0 OR estado = 2)";
 		break;
 }
 
 if ($search != "") {
+	$filter_resume['free_search'] = $search;
 	$sql_post .= " AND (evento LIKE '%". io_safe_input($search) . "%' OR id_evento LIKE '%$search%')";
 }
 
 if ($event_type != "") {
+	$filter_resume['event_type'] = $event_type;
 	// If normal, warning, could be several (going_up_warning, going_down_warning... too complex 
 	// for the user so for him is presented only "warning, critical and normal"
 	if ($event_type == "warning" || $event_type == "critical" || $event_type == "normal") {
@@ -93,6 +98,7 @@ if ($event_type != "") {
 }
 
 if ($severity != -1) {
+	$filter_resume['severity'] = $severity;
 	switch ($severity) {
 		case EVENT_CRIT_WARNING_OR_CRITICAL:
 			$sql_post .= "
@@ -115,6 +121,7 @@ if ($severity != -1) {
 
 // In metaconsole mode the agent search is performed by name
 if ($meta) {
+	$filter_resume['agent'] = $text_agent;
 	if ($text_agent != __('All')) {
 		$sql_post .= " AND agent_name LIKE '%$text_agent%'";
 	}
@@ -128,6 +135,7 @@ else {
 			$sql_post .= " AND 1 = 0";
 			break;
 		default:
+			$filter_resume['agent'] = $id_agent;
 			$sql_post .= " AND id_agente = " . $id_agent;
 			break;
 	}
@@ -140,6 +148,7 @@ if ($meta) {
 }
 else {
 	if (!empty($text_module)) {
+		$filter_resume['module'] = $text_module;
 		$sql_post .= " AND id_agentmodule IN (
 				SELECT id_agente_modulo
 				FROM tagente_modulo
@@ -148,8 +157,10 @@ else {
 	}
 }
 
-if ($id_user_ack != "0")
+if ($id_user_ack != "0") {
+	$filter_resume['user_ack'] = $id_user_ack;
 	$sql_post .= " AND id_usuario = '" . $id_user_ack . "'";
+}
 
 if (!isset($date_from)) {
 	$date_from = "";
@@ -160,6 +171,7 @@ if (!isset($date_to)) {
 
 if (($date_from == '') && ($date_to == '')) {
 	if ($event_view_hr > 0) {
+		$filter_resume['hours_max'] = $event_view_hr;
 		$unixtime = get_system_time () - ($event_view_hr * SECONDS_1HOUR);
 		$sql_post .= " AND (utimestamp > " . $unixtime . ")";
 	}
@@ -167,18 +179,22 @@ if (($date_from == '') && ($date_to == '')) {
 else {
 	if ($date_from != '') {
 		if($time_from != '') {
+			$filter_resume['time_from'] = $date_from . " " . $time_from;
 			$udate_from = strtotime($date_from . " " . $time_from);
 			$sql_post .= " AND (utimestamp >= " . $udate_from . ")";
 		} else {
+			$filter_resume['time_from'] = $date_from; 
 			$udate_from = strtotime($date_from . " 00:00:00");
 			$sql_post .= " AND (utimestamp >= " . $udate_from . ")";
 		}
 	}
 	if ($date_to != '') {
 		if($time_to != '') {
+			$filter_resume['time_to'] = $date_to . " " . $time_to;
 			$udate_to = strtotime($date_to . " " . $time_to);
 			$sql_post .= " AND (utimestamp <= " . $udate_to . ")";
 		} else {
+			$filter_resume['time_to'] = $date_to;
 			$udate_to = strtotime($date_to . " 23:59:59");
 			$sql_post .= " AND (utimestamp <= " . $udate_to . ")";
 		}
@@ -189,6 +205,7 @@ else {
 if (!empty($tag_with)) {
 	$sql_post .= ' AND ( ';
 	$first = true;
+	$filter_resume['tag_inc'] = $tag_with;
 	foreach ($tag_with as $id_tag) {
 		if ($first) $first = false;
 		else $sql_post .= " AND ";
@@ -205,6 +222,7 @@ if (!empty($tag_with)) {
 if (!empty($tag_without)) {
 	$sql_post .= ' AND ( ';
 	$first = true;
+	$filter_resume['tag_no_inc'] = $tag_without;
 	foreach ($tag_without as $id_tag) {
 		if ($first) $first = false;
 		else $sql_post .= " AND ";
@@ -216,10 +234,14 @@ if (!empty($tag_without)) {
 
 // Filter/Only alerts
 if (isset($filter_only_alert)) {
-	if ($filter_only_alert == 0)
+	if ($filter_only_alert == 0) {
+		$filter_resume['alerts'] = $filter_only_alert;
 		$sql_post .= " AND event_type NOT LIKE '%alert%'";
-	else if ($filter_only_alert == 1)
+	}
+	else if ($filter_only_alert == 1) {
+		$filter_resume['alerts'] = $filter_only_alert;
 		$sql_post .= " AND event_type LIKE '%alert%'";
+	}
 }
 
 // Tags ACLS
@@ -247,6 +269,7 @@ if (($tags_acls_condition != ERR_WRONG_PARAMETERS) && ($tags_acls_condition != E
 if ($meta) {
 	
 	if ($server_id) {
+		$filter_resume['server'] = $server_id;
 		$sql_post .= " AND server_id = " . $server_id;
 	} else {
 		$enabled_nodes = db_get_all_rows_sql('

@@ -399,7 +399,8 @@ function reporting_make_reporting_data($report = null, $id_report,
 			case 'network_interfaces_report':
 				$report['contents'][] = reporting_network_interfaces_report(
 					$report,
-					$content);
+					$content,
+					$type);
 				break;
 			case 'group_configuration':
 				$report['contents'][] = reporting_group_configuration(
@@ -2583,11 +2584,11 @@ function reporting_group_configuration($report, $content) {
 	return reporting_check_structure_content($return);
 }
 
-function reporting_network_interfaces_report($report, $content,
-	$type = 'dinamic', $force_width_chart = null, $force_height_chart = null) {
+function reporting_network_interfaces_report($report, $content, $type = 'dinamic') {
 	
 	global $config;
 	
+
 	$return['type'] = 'network_interfaces_report';
 	
 	if (empty($content['name'])) {
@@ -2646,7 +2647,6 @@ function reporting_network_interfaces_report($report, $content,
 				
 				switch ($type) {
 					case 'dinamic':
-					case 'static':
 						if (!empty($interface['traffic'])) {
 							$row_interface['chart'] = custom_graphs_print(0,
 								$height,
@@ -2665,10 +2665,31 @@ function reporting_network_interfaces_report($report, $content,
 								true,
 								true,
 								true,
-								$ttl);
+								1);
 							}
 						break;
 					case 'data':
+					case 'static':
+						if (!empty($interface['traffic'])) {
+							$row_interface['chart'] = custom_graphs_print(0,
+								$height,
+								$width,
+								$content['period'],
+								null,
+								true,
+								$report["datetime"],
+								true,
+								'white',
+								array_values($interface['traffic']),
+								$config['homeurl'],
+								array_keys($interface['traffic']),
+								array_fill(0, count($interface['traffic']), __("bytes/s")),
+								false,
+								true,
+								true,
+								true,
+								2);
+							}
 						break;
 				}
 				
@@ -2678,7 +2699,6 @@ function reporting_network_interfaces_report($report, $content,
 			$return['data'][] = $row_data;
 		}
 	}
-	
 	return reporting_check_structure_content($return);
 }
 

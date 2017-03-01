@@ -1444,7 +1444,7 @@ function agents_get_interval_status ($agent) {
 	$time = ui_print_timestamp ($last_time, true, array('style' => 'font-size:6.5pt'));
 	$min_interval = modules_get_agentmodule_mininterval_no_async($agent['id_agente']);
 	$return = $time;
-	if ($diferencia > ($min_interval["min_interval"] * 2))
+	if ($diferencia > ($min_interval["min_interval"] * 2) && $min_interval['num_interval'] > 0)
 		$return = '<b><span style="color: #ff0000;">'.$time.'</span></b>';
 	
 	return $return;

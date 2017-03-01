@@ -183,10 +183,10 @@ if ($layers != false) {
 		
 		$agentNames = array_unique($agentNamesByGroup + $agentNamesByLayer);
 		
-		foreach ($agentNames as $agentName) {
-			$idAgent = agents_get_agent_id($agentName);
+		foreach ($agentNames as $key => $agentName) {
+			$idAgent = $key;
 			$coords = gis_get_data_last_position_agent($idAgent);
-			
+
 			if ($coords === false) {
 				$coords['stored_latitude'] = $map['default_latitude'];
 				$coords['stored_longitude'] = $map['default_longitude'];
@@ -197,7 +197,6 @@ if ($layers != false) {
 					gis_add_path($layer['layer_name'], $idAgent, $lastPosition);
 				}
 			}
-			
 			
 			$icon = gis_get_agent_icon_map($idAgent, true);
 			$icon_size = getimagesize($icon);

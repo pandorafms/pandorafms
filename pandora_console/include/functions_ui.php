@@ -2760,7 +2760,7 @@ function ui_print_agent_autocomplete_input($parameters) {
 	
 	
 	//Default value
-	$icon_image = html_print_image('images/input_agent.png', true, false, true);
+	$icon_image = html_print_image('images/search_agent.png', true, false, true);
 	if (isset($parameters['icon_image'])) {
 		$icon_image = $parameters['icon_image'];
 	}
@@ -3746,5 +3746,27 @@ function ui_print_module_string_value($value, $id_agente_module,
 	}
 	
 	return $salida;
+}
+
+/**
+* Displays a tag list
+*/
+function ui_print_tags_view($title = '', $tags = array()) {
+	$tv = '';
+	$tv .= '<div class="tag-wrapper">';
+	if ($title !== '') $tv .= '<h3>' . $title . '</h3>';
+		foreach ($tags as $tag) {
+			$tv .= '<div class=pandora-tag>';
+				$tv .= '<span class=pandora-tag-title>';
+					$tv .= $tag['title'];
+				$tv .= '</span>';
+				
+				$tv .= '<span class=pandora-tag-value>';
+					$tv .= $tag['value'];
+				$tv .= '</span>';
+			$tv .= '</div>';
+		}
+	$tv .= '</div>';
+	echo $tv;
 }
 ?>

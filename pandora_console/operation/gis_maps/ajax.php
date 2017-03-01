@@ -117,7 +117,7 @@ switch ($opt) {
 		switch ($config["dbtype"]) {
 			case "mysql":
 				if (empty($idAgentsWithGIS)) {
-					$agentsGISStatus = db_get_all_rows_sql('SELECT t1.nombre, id_parent, t1.id_agente AS tagente_id_agente,
+					$agentsGISStatus = db_get_all_rows_sql('SELECT t1.alias, id_parent, t1.id_agente AS tagente_id_agente,
 							IFNULL(t2.stored_longitude, ' . $defaultCoords['default_longitude'] . ') AS stored_longitude,
 							IFNULL(t2.stored_latitude, ' . $defaultCoords['default_latitude'] . ') AS stored_latitude
 						FROM tagente t1
@@ -125,7 +125,7 @@ switch ($opt) {
 							WHERE 1 = 0');
 				}
 				else {
-					$agentsGISStatus = db_get_all_rows_sql('SELECT t1.nombre, id_parent, t1.id_agente AS tagente_id_agente,
+					$agentsGISStatus = db_get_all_rows_sql('SELECT t1.alias, id_parent, t1.id_agente AS tagente_id_agente,
 							IFNULL(t2.stored_longitude, ' . $defaultCoords['default_longitude'] . ') AS stored_longitude,
 							IFNULL(t2.stored_latitude, ' . $defaultCoords['default_latitude'] . ') AS stored_latitude
 						FROM tagente t1
@@ -135,7 +135,7 @@ switch ($opt) {
 				break;
 			case "postgresql":
 				if (empty($idAgentsWithGIS)) {
-					$agentsGISStatus = db_get_all_rows_sql('SELECT t1.nombre, id_parent, t1.id_agente AS tagente_id_agente,
+					$agentsGISStatus = db_get_all_rows_sql('SELECT t1.alias, id_parent, t1.id_agente AS tagente_id_agente,
 							COALESCE(t2.stored_longitude, ' . $defaultCoords['default_longitude'] . ') AS stored_longitude,
 							COALESCE(t2.stored_latitude, ' . $defaultCoords['default_latitude'] . ') AS stored_latitude
 						FROM tagente t1
@@ -143,7 +143,7 @@ switch ($opt) {
 							WHERE 1 = 0');
 				}
 				else {
-					$agentsGISStatus = db_get_all_rows_sql('SELECT t1.nombre, id_parent, t1.id_agente AS tagente_id_agente,
+					$agentsGISStatus = db_get_all_rows_sql('SELECT t1.alias, id_parent, t1.id_agente AS tagente_id_agente,
 							COALESCE(t2.stored_longitude, ' . $defaultCoords['default_longitude'] . ') AS stored_longitude,
 							COALESCE(t2.stored_latitude, ' . $defaultCoords['default_latitude'] . ') AS stored_latitude
 						FROM tagente t1
@@ -153,7 +153,7 @@ switch ($opt) {
 				break;
 			case "oracle":
 				if (empty($idAgentsWithGIS)) {
-					$agentsGISStatus = db_get_all_rows_sql('SELECT t1.nombre, id_parent, t1.id_agente AS tagente_id_agente,
+					$agentsGISStatus = db_get_all_rows_sql('SELECT t1.alias, id_parent, t1.id_agente AS tagente_id_agente,
 							COALESCE(t2.stored_longitude, ' . $defaultCoords['default_longitude'] . ') AS stored_longitude,
 							COALESCE(t2.stored_latitude, ' . $defaultCoords['default_latitude'] . ') AS stored_latitude
 						FROM tagente t1
@@ -161,7 +161,7 @@ switch ($opt) {
 							WHERE 1 = 0');
 				}
 				else {
-					$agentsGISStatus = db_get_all_rows_sql('SELECT t1.nombre, id_parent, t1.id_agente AS tagente_id_agente,
+					$agentsGISStatus = db_get_all_rows_sql('SELECT t1.alias, id_parent, t1.id_agente AS tagente_id_agente,
 							COALESCE(t2.stored_longitude, ' . $defaultCoords['default_longitude'] . ') AS stored_longitude,
 							COALESCE(t2.stored_latitude, ' . $defaultCoords['default_latitude'] . ') AS stored_latitude
 						FROM tagente t1
@@ -180,7 +180,7 @@ switch ($opt) {
 			$status = agents_get_status($row['tagente_id_agente']);
 			
 			if (!$config['gis_label'])
-				$row['nombre'] = '';
+				$row['alias'] = '';
 			
 			$icon = gis_get_agent_icon_map($row['tagente_id_agente'], true, $status);
 			if ($icon[0] !== '/') {
@@ -196,7 +196,7 @@ switch ($opt) {
 				'icon_path' => $config["homeurl"] . '/' . $icon,
 				'icon_width' => $icon_width,
 				'icon_height' => $icon_height,
-				'name' => $row['nombre'],
+				'name' => io_safe_output($row['alias']),
 				'status' => $status,
 				'stored_longitude' => $row['stored_longitude'],
 				'stored_latitude' => $row['stored_latitude'],

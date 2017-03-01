@@ -558,7 +558,7 @@ extensions_add_main_function('mainAgentsModules');
 						
 						option = $("<option></option>")
 							.attr ("value", value["id_agente"])
-							.html (value["nombre"]);
+							.html (value["alias"]);
 						$("#id_agents").append (option);
 						$("#id_agents2").append (option);
 					});

@@ -76,9 +76,36 @@ function forecast_projection_graph($module_id,
 	//$table->data = array();
 
 	// Creates data for calculation
-	foreach ($module_data as $utimestamp => $row) {
-		if ($utimestamp == '') {
-			continue;
+	if (is_array($module_data) || is_object($module_data)) {
+		foreach ($module_data as $utimestamp => $row) {
+			if ($utimestamp == '') {
+				continue;
+			}
+			
+			$data[0] = '';
+			$data[1] = $cont;
+			$data[2] = date($config["date_format"], $utimestamp);
+			$data[3] = $utimestamp;
+			$data[4] = $row['sum'];
+			$data[5] = $utimestamp * $row['sum'];
+			$data[6] = $utimestamp * $utimestamp;
+			$data[7] = $row['sum'] * $row['sum'];
+			if ($cont == 1) {
+				$data[8] = 0;
+			}
+			else {
+				$data[8] = $utimestamp - $last_timestamp;
+			}
+			
+			$sum_obs = $sum_obs + $cont;
+			$sum_xi = $sum_xi + $utimestamp;
+			$sum_yi = $sum_yi + $row['sum'];
+			$sum_xi_yi = $sum_xi_yi + $data[5];
+			$sum_xi2 = $sum_xi2 + $data[6];
+			$sum_yi2 = $sum_yi2 + $data[7];
+			$sum_diff_dates = $sum_diff_dates + $data[8];
+			$last_timestamp = $utimestamp;	
+			$cont++;
 		}
 	}
 	

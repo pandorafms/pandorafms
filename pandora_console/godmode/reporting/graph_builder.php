@@ -198,6 +198,9 @@ if ($change_label) {
 
 if ($edit_graph) {
 	$buttons = array(
+		'graph_list' => array('active' => false,
+				'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graphs">' . 
+					html_print_image("images/list.png", true, array ("title" => __('Graph list'))) .'</a>'),
 		'main' => array('active' => false,
 			'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=main&edit_graph=1&id=' . $id_graph . '">' . 
 				html_print_image("images/chart.png", true, array ("title" => __('Main data'))) .'</a>'),

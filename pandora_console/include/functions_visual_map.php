@@ -882,72 +882,62 @@ else{
 			$only_image = !$graph_javascript || $isExternalLink;
 			if ($layoutData['id_custom_graph'] != 0) {
 				// Show only avg on the visual console
-				if(get_parameter('action') == 'edit'){
-					if($width == 0 || $height == 0){
-							$img =  '<img src="images/console/signes/custom_graph.png" style="width:300px;height:180px;'.$imgpos.'">';	
+				if (get_parameter('action') == 'edit') {
+					if($width == 0 || $height == 0) {
+						$img =  '<img src="images/console/signes/custom_graph.png" style="width:300px;height:180px;'.$imgpos.'">';	
+					}
+					else {
+						$img =  '<img src="images/console/signes/custom_graph.png" style="width:'.$width.'px;height:'.$height.'px;'.$imgpos.'">';
+					}				
+			 	}
+				else {
+					if ($width == 0 || $height == 0) {
+						if ($layoutData['label_position']=='left') {
+							$img = '<div style="float:right;height:'.$himg.'px;">'.custom_graphs_print(
+							$layoutData['id_custom_graph'], 180, 300,
+							$period, null, true, 0, $only_image, $layoutData['image'],
+							array(), '', array(), array(), true,
+							false, false, true, 1, false, true).'</div>';
 						}
-						else{
-							$img =  '<img src="images/console/signes/custom_graph.png" style="width:'.$width.'px;height:'.$height.'px;'.$imgpos.'">';
-						}				
-			 		}
-				else{
-			
-						if($width == 0 || $height == 0){
-			
-							if($layoutData['label_position']=='left'){
-								$img = '<div style="float:right;height:'.$himg.'px;">'.custom_graphs_print(
-								$layoutData['id_custom_graph'], 180, 300,
-								$period, null, true, 0, false, $layoutData['image'],
-								array(), '', array(), array(), true,
-								false, false, true, 1, false, true).'</div>';
-							}
-							else if($layoutData['label_position']=='right'){
-							$img = '<div style="float:left;height:'.$himg.'px;">'.custom_graphs_print(
-								$layoutData['id_custom_graph'], 180, 300,
-								$period, null, true, 0, false, $layoutData['image'],
-								array(), '', array(), array(), true,
-								false, false, true, 1, false, true).'</div>';
-							}
-							else{
-								$img = custom_graphs_print(
-								$layoutData['id_custom_graph'], 180, 300,
-								$period, null, true, 0, false, $layoutData['image'],
-								array(), '', array(), array(), true,
-								false, false, true, 1, false, true);
-							}
-			
-					
-				}
-				
-				else{
-					
-					if($layoutData['label_position']=='left'){
-						$img = '<div style="float:right;height:'.$himg.'px;">'.custom_graphs_print(
-						$layoutData['id_custom_graph'],$height,$width,
-						$period, null, true, 0, false, $layoutData['image'],
-						array(), '', array(), array(), true,
-						false, false, true, 1, false, true).'</div>';
-					}
-					else if($layoutData['label_position']=='right'){
+						elseif ($layoutData['label_position']=='right') {
 						$img = '<div style="float:left;height:'.$himg.'px;">'.custom_graphs_print(
-						$layoutData['id_custom_graph'],$height,$width,
-						$period, null, true, 0, false, $layoutData['image'],
-						array(), '', array(), array(), true,
-						false, false, true, 1, false, true).'</div>';
+							$layoutData['id_custom_graph'], 180, 300,
+							$period, null, true, 0, $only_image, $layoutData['image'],
+							array(), '', array(), array(), true,
+							false, false, true, 1, false, true).'</div>';
+						}
+						else {
+							$img = custom_graphs_print(
+							$layoutData['id_custom_graph'], 180, 300,
+							$period, null, true, 0, $only_image, $layoutData['image'],
+							array(), '', array(), array(), true,
+							false, false, true, 1, false, true);
+						}
 					}
-					else{
-						$img = custom_graphs_print(
-						$layoutData['id_custom_graph'],$height,$width,
-						$period, null, true, 0, false, $layoutData['image'],
-						array(), '', array(), array(), true,
-						false, false, true, 1, false, true);
+					else {
+						if ($layoutData['label_position']=='left') {
+							$img = '<div style="float:right;height:'.$himg.'px;">'.custom_graphs_print(
+							$layoutData['id_custom_graph'], $height, $width,
+							$period, null, true, 0, $only_image, $layoutData['image'],
+							array(), '', array(), array(), true,
+							false, false, true, 1, false, true).'</div>';
+						}
+						elseif($layoutData['label_position']=='right') {
+							$img = '<div style="float:left;height:'.$himg.'px;">'.custom_graphs_print(
+							$layoutData['id_custom_graph'], $height, $width,
+							$period, null, true, 0, $only_image, $layoutData['image'],
+							array(), '', array(), array(), true,
+							false, false, true, 1, false, true).'</div>';
+						}
+						else {
+							$img = custom_graphs_print(
+							$layoutData['id_custom_graph'], $height, $width,
+							$period, null, true, 0, $only_image, $layoutData['image'],
+							array(), '', array(), array(), true,
+							false, false, true, 1, false, true);
+						}
 					}
-					
-					
 				}
-					
-					}
-		
 			}
 			else {
 				if ($isExternalLink)
@@ -955,65 +945,71 @@ else{
 				else
 					$homeurl = '';
 		
-				if(get_parameter('action') == 'edit'){
+				if (get_parameter('action') == 'edit') {
 					if($width == 0 || $height == 0){
-							$img =  '<img src="images/console/signes/module_graph.png" style="width:300px;height:180px;'.$imgpos.'">';	
-						}
-						else{
-							$img =  '<img src="images/console/signes/module_graph.png" style="width:'.$width.'px;height:'.$height.'px;'.$imgpos.'">';
-						}				
-			 		}
-			else{
-			
-				if($width == 0 || $height == 0){
-					
-					if($layoutData['label_position']=='left'){
-						$img =  '<div style="float:right;height:'.$himg.'px;">'.grafico_modulo_sparse($id_module, $period, 0,300,180,
-						'',null,
-						false, 1, false, 0, '', 0, 0, true, false, '', 1, false,
-						'', false, false, false, $layoutData['image'], null, true, false,$type_graph).'</div>';
-					}
-					else if($layoutData['label_position']=='right'){
-						$img =  '<div style="float:left;height:'.$himg.'px;">'.grafico_modulo_sparse($id_module, $period, 0,300,180,
-						'',null,
-						false, 1, false, 0, '', 0, 0, true, false, '', 1, false,
-						'', false, false, false, $layoutData['image'], null, true, false,$type_graph).'</div>';
+						$img =  '<img src="images/console/signes/module_graph.png" style="width:300px;height:180px;'.$imgpos.'">';	
 					}
 					else{
-						$img =  grafico_modulo_sparse($id_module, $period, 0,300,180,
-						'',null,
-						false, 1, false, 0, '', 0, 0, true, false, '', 1, false,
-						'', false, false, false, $layoutData['image'], null, true, false,$type_graph);
-					}
-									
-									
-					}
-					else{
+						$img =  '<img src="images/console/signes/module_graph.png" style="width:'.$width.'px;height:'.$height.'px;'.$imgpos.'">';
+					}				
+			 	}
+				else {
+					if ($width == 0 || $height == 0) {
 						
-						if($layoutData['label_position']=='left'){
-							$img =  '<div style="float:right;height:'.$himg.'px;">'.grafico_modulo_sparse($id_module, $period, 0,$width,$height,
-							'',null,
-							false, 1, false, 0, '', 0, 0, true, false, '', 1, false,
-							'', false, false, false, $layoutData['image'], null, true, false,$type_graph).'</div>';
-					  }
-						else if($layoutData['label_position']=='right'){
-							$img =  '<div style="float:left;height:'.$himg.'px;">'.grafico_modulo_sparse($id_module, $period, 0,$width,$height,
-							'',null,
-							false, 1, false, 0, '', 0, 0, true, false, '', 1, false,
-							'', false, false, false, $layoutData['image'], null, true, false,$type_graph).'</div>';
+						if ($layoutData['label_position']=='left') {
+							$img =  '<div style="float:right;height:'.$himg.'px;">'.
+							grafico_modulo_sparse($id_module, $period, 
+							0, 300, 180, '',null, false, 1, false, 0, 
+							'', 0, 0, true, $only_image, '', 1, false, '', 
+							false, false, false, $layoutData['image'], 
+							null, true, false, $type_graph) . '</div>';
 						}
-						else{
-							$img =  grafico_modulo_sparse($id_module, $period, 0,$width,$height,
+						elseif($layoutData['label_position']=='right') {
+							$img =  '<div style="float:left;height:'.$himg.'px;">' . 
+								grafico_modulo_sparse($id_module, 
+								$period, 0, 300, 180, '',null, false, 
+								1, false, 0, '', 0, 0, true, $only_image, '', 
+								1, false, '', false, false, false, 
+								$layoutData['image'], null, true, 
+								false, $type_graph) . '</div>';
+						}
+						else {
+							$img =  grafico_modulo_sparse($id_module, $period, 0,300,180,
 							'',null,
-							false, 1, false, 0, '', 0, 0, true, false, '', 1, false,
+							false, 1, false, 0, '', 0, 0, true, $only_image, '', 1, false,
 							'', false, false, false, $layoutData['image'], null, true, false,$type_graph);
 						}
-						
 					}
-					
-					
+					else{
+						if ($layoutData['label_position']=='left') {
+							$img =  '<div style="float:right;height:'.$himg.'px;">' . 
+								grafico_modulo_sparse($id_module, $period, 
+							0, $width, $height, '', null, false, 1, 
+							false, 0, '', 0, 0, true, $only_image, '', 
+							1, false, '', false, false, false, 
+							$layoutData['image'], null, true, 
+							false, $type_graph) . '</div>';
+						}
+						elseif ($layoutData['label_position']=='right') {
+							$img =  '<div style="float:left;height:'.$himg.'px;">' . 
+								grafico_modulo_sparse($id_module, $period, 
+								0, $width, $height, '', null, false, 1, 
+								false, 0, '', 0, 0, true, $only_image, 
+								'', 1, false, '', false, false, false, 
+								$layoutData['image'], null, true, 
+								false, $type_graph) . '</div>';
+						}
+						else {
+							$img =  grafico_modulo_sparse($id_module, 
+								$period, 0, $width, $height, '', null, 
+								false, 1, false, 0, '', 0, 0, true, 
+								$only_image, '', 1, false, '', false, 
+								false, false, $layoutData['image'], 
+								null, true, false, $type_graph);
+						}
 					}
-		      }
+				}
+		    }
 			
 			//Restore db connection
 			if ($layoutData['id_metaconsole'] != 0) {
@@ -1081,9 +1077,7 @@ else{
 	
 	switch ($type) {
 		case BOX_ITEM:
-		
-			
-			if($width == 0 || $width == 0){
+			if ($width == 0 || $width == 0) {
 				$style = "";
 				$style .= "width: 300px; ";
 				$style .= "height: 180px; ";
@@ -1093,29 +1087,28 @@ else{
 				$style .= "background-color: " . $fill_color . "; ";
 				echo "<div style='" . $style . "'></div>";
 			}
-				else{
-					if (!empty($proportion)){
-						$style = "";
-						$style .= "width: " . ($width * $proportion['proportion_width']) . "px; ";
-						$style .= "height: " . ($height * $proportion['proportion_height']) . "px; ";
-						$style .= "border-style: solid; ";
-						$style .= "border-width: " . $border_width . "px; ";
-						$style .= "border-color: " . $border_color . "; ";
-						$style .= "background-color: " . $fill_color . "; ";
-						echo "<div style='" . $style . "'></div>";
-					}
-					else{
-						$style = "";
-						$style .= "width: " . $width . "px; ";
-						$style .= "height: " . $height . "px; ";
-						$style .= "border-style: solid; ";
-						$style .= "border-width: " . $border_width . "px; ";
-						$style .= "border-color: " . $border_color . "; ";
-						$style .= "background-color: " . $fill_color . "; ";
-						echo "<div style='" . $style . "'></div>";
-					}
+			else {
+				if (!empty($proportion)) {
+					$style = "";
+					$style .= "width: " . ($width * $proportion['proportion_width']) . "px; ";
+					$style .= "height: " . ($height * $proportion['proportion_height']) . "px; ";
+					$style .= "border-style: solid; ";
+					$style .= "border-width: " . $border_width . "px; ";
+					$style .= "border-color: " . $border_color . "; ";
+					$style .= "background-color: " . $fill_color . "; ";
+					echo "<div style='" . $style . "'></div>";
 				}
-
+				else {
+					$style = "";
+					$style .= "width: " . $width . "px; ";
+					$style .= "height: " . $height . "px; ";
+					$style .= "border-style: solid; ";
+					$style .= "border-width: " . $border_width . "px; ";
+					$style .= "border-color: " . $border_color . "; ";
+					$style .= "background-color: " . $fill_color . "; ";
+					echo "<div style='" . $style . "'></div>";
+				}
+			}
 			break;
 		case STATIC_GRAPH:
 		case GROUP_ITEM:
@@ -1351,14 +1344,16 @@ else{
 			break;
 		
 		case MODULE_GRAPH:
-			if($layoutData['label_position']=='up'){
+			if ($layoutData['label_position']=='up') {
 				echo io_safe_output($text);
 			}
+			
 			echo $img;
-			if($layoutData['label_position']=='down'){
-			echo io_safe_output($text);
-			}			
-			else if($layoutData['label_position']=='left' || $layoutData['label_position']=='right'){
+			
+			if ($layoutData['label_position']=='down') {
+				echo io_safe_output($text);
+			}	
+			elseif($layoutData['label_position']=='left' || $layoutData['label_position']=='right') {
 				echo io_safe_output($text);
 			}
 			break;
@@ -2390,8 +2385,8 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 		
 		//Fixed to wait the load of images.
 		$(window).load(function () {
-			draw_lines(lines, 'background_'+id_layout);
-			draw_user_lines_read('background_'+id_layout);
+			draw_lines(lines, 'background_' + id_layout);
+			draw_user_lines_read('background_' + id_layout);
 			//center_labels();
 		});
 		/* ]]> */
@@ -2433,20 +2428,20 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 			$backgroundImage =
 				'/include/Image/image_functions.php?getFile=1&thumb=1&thumb_size=' . $mapWidth . 'x' . $mapHeight . '&file=' .
 				$config['homeurl'] . 'images/console/background/' .
-				io_safe_input ($layout["background"]);
+				$layout["background"];
 		}
 		else {
 			$backgroundImage =
 				'/include/Image/image_functions.php?getFile=1&thumb=1&thumb_size=' . $mapWidth . 'x' . $mapHeight . '&file=' .
 				$config['homedir'] . '/images/console/background/' .
-				io_safe_input ($layout["background"]);
+				($layout["background"]);
 		}
 	}
 	else {
 		$mapWidth = $layout["width"];
 		$mapHeight = $layout["height"];
 		$backgroundImage = $metaconsole_hack . 'images/console/background/' .
-			io_safe_input ($layout["background"]);
+			$layout["background"];
 	}
 	
 	if (defined('METACONSOLE')) {

@@ -464,7 +464,7 @@ function js_addAgentPoint(layerName, pointName, lon, lat, id, type_string, statu
 			type: type_string,
 			long_lat: new OpenLayers.LonLat(lon, lat).transform(map.displayProjection, map.getProjectionObject())
 		});
-	
+
 	if (isHideFeatureByStatus(statusAgent)) {
 		feature.style.display = 'none';
 	}
@@ -536,9 +536,9 @@ function js_addAgentPointExtent(layerName, pointName, lon, lat, icon, width, hei
 	
 	feature = new OpenLayers.Feature.Vector(point,
 		{
-			id_parent: idParent,
+			id_parent: idParent.toString(),
 			status: statusA,
-			id: id,
+			id: id.toString(),
 			type: type_string,
 			long_lat: new OpenLayers.LonLat(lon, lat).transform(map.displayProjection, map.getProjectionObject())
 		},

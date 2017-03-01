@@ -173,9 +173,9 @@ if (!empty ($graphs)) {
 		$data = array ();
 		
 		$data[0] = '<a href="index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id='.
-			$graph['id_graph'].'">' . $graph['name'] . '</a>';
+			$graph['id_graph'].'">' . ui_print_truncate_text($graph['name'], 70) . '</a>';
 		
-		$data[1] = $graph["description"];
+		$data[1] = ui_print_truncate_text($graph["description"], 70);
 		
 		$data[2] = $graph["graphs_count"];
 		$data[3] = ui_print_group_icon($graph['id_group'],true);

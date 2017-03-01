@@ -3806,3 +3806,40 @@ color:#82b92e;font-family:Nunito;font-size:10pt;position:relative;top:6px;
 .checkselected{
 	background-color: #eee;
 }
+.tag-wrapper{
+	padding: 0 10px 0 0;
+	overflow: auto;
+}
+
+.pandora-tag{
+	float:left;
+	margin-bottom:18px;
+	padding:1px 6px 1px 0;
+}
+
+.pandora-tag-title{
+	color: white;
+	background-color: #373737;
+	font-weight: bold;
+	padding: 6px 6px 6px 10px;
+	border: #373737;
+	border-width: 1px;
+	border-top-style: solid;
+	border-top-left-radius: 12px;
+	border-left-style: solid;
+	border-bottom-left-radius: 12px;
+	border-bottom-style: solid;
+}
+
+.pandora-tag-value{
+	color: #373737;
+	font-weight: bold;
+	padding: 6px 10px 6px 6px;
+	border: #373737;
+	border-width: 1px;
+	border-top-style: solid;
+	border-top-right-radius: 12px;
+	border-right-style: solid;
+	border-bottom-right-radius: 12px;
+	border-bottom-style: solid;
+}

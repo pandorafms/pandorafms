@@ -6247,11 +6247,10 @@ function api_get_module_data($id, $thrash1, $other, $returnType) {
 		return;
 	}
 
-	$data = explode("|", $other['data']);
-	$separator = $data[0];
-	$periodSeconds = $data[1];
-	$tstart = $data[2];
-	$tend = $data[3];
+	$separator = $other['data'][0];
+	$periodSeconds = $other['data'][1];
+	$tstart = $other['data'][2];
+	$tend = $other['data'][3];
 
 	if (($tstart != "") && ($tend != "")) {
 		try {

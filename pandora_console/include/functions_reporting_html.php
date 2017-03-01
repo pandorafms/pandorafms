@@ -2439,8 +2439,7 @@ function reporting_html_availability(&$table, $item) {
 	if ($item['resume']['resume'] && !empty($item["data"])) {
 		$table1->width = '99%';
 		$table1->data = array ();
-		
-		if (! empty($same_agent_in_resume) && ($same_agent_in_resume == "") && (strpos($item['resume']['min_text'], $same_agent_in_resume) === false)) {
+		if ((strpos($item['resume']['min_text'], $same_agent_in_resume) === false)) {
 			$table1->head = array ();
 			$table1->head['max_text'] = __('Agent max value');
 			$table1->head['max']      = __('Max Value');

@@ -2896,6 +2896,7 @@ sub pandora_create_agent ($$$$$$$$$$;$$$$$$$$$) {
 	}
 	
 	$agent_mode = 1 unless defined($agent_mode);
+	$alias = $agent_name unless defined($alias);
 
 	$description = "Created by $server_name" unless ($description ne '');	
 	my ($columns, $values) = db_insert_get_values ({ 'nombre' => safe_input($agent_name),

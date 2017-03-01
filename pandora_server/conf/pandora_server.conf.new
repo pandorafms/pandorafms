@@ -548,3 +548,7 @@ warmup_unknown_interval 300
 # Directory were additional enc files for the XML parser are located.
 enc_dir /usr/share/pandora_server/enc/
 
+# The number of times dynamic_min and dynamic_max will be recalculated per dynamic_interval.
+# Go to http://wiki.pandorafms.com/ for more information.
+dynamic_updates 5
+

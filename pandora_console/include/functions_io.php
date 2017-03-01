@@ -426,6 +426,41 @@ function __ ($string /*, variable arguments */) {
 	return vsprintf ($l10n->translate ($string), $args);
 }
 
+/**
+ * Get a translated string for extension
+ *
+ * @param string String to translate. It can have special format characters like
+ * a printf
+ * @param mixed Optional parameters to be replaced in string. Example:
+ * <code>
+ * echo ___('Hello!');
+ * echo ___('Hello, %s!', $user);
+ * </code>
+ *
+ * @return string The translated string. If not defined, the same string will be returned
+ */
+function ___ ($string /*, variable arguments */) {
+       global $config;
+
+       $trace = debug_backtrace();
+       foreach($config['extensions'] as $extension){
+               $extension_file = $extension['file'];
+               if(!isset($config['extensions'][$extension_file]['translate_function'])){
+                       continue;
+               }
+               foreach($trace as $item){
+                       if(pathinfo($item['file'], PATHINFO_BASENAME) == $extension_file){
+                               $tranlateString = call_user_func_array($config['extensions'][$extension_file]['translate_function'], func_get_args());
+                               if ($tranlateString !== false) {
+                                       return $tranlateString;
+                               }
+                       }
+               }
+       }
+
+       return call_user_func_array('__', func_get_args());
+}
+
 /*
  * json_encode for multibyte characters.
  *

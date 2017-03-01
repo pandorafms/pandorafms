@@ -5760,7 +5760,12 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 	$return['type'] = 'custom_graph';
 	
 	if (empty($content['name'])) {
-		$content['name'] = __('Simple graph');
+		if ($type_report == "custom_graph") {
+			$content['name'] = __('Custom graph');
+		}
+		else {
+			$content['name'] = __('Simple graph');
+		}
 	}
 	
 	$return['title'] = $content['name'];

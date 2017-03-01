@@ -1671,8 +1671,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			plot.setSelection(ranges);
 		});
 
-	//~ var legends = $('#legend_' + graph_id + ' .legendLabel');
-
+	var legends = $('#legend_' + graph_id + ' .legendLabel');
 
 	var updateLegendTimeout = null;
 	var latestPosition = null;

@@ -481,4 +481,18 @@ function extensions_add_login_function ($function_name) {
 	$extension = &$config['extensions'][$extension_file];
 	$extension['login_function'] = $function_name;
 }
+
+/**
+ * Adds extension function when translation string
+ *
+ * @param string $function_name Callback function name
+ */
+function extensions_add_translation_string_function($translate_function_name)
+{
+	global $config;
+	global $extension_file;
+
+	$extension = &$config['extensions'][$extension_file];
+	$extension['translate_function'] = $translate_function_name;
+}
 ?>

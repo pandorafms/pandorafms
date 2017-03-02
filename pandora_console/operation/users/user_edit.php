@@ -271,7 +271,7 @@ $id_usr = $config['id_user'];
 
 if (!$meta) {
 	$data = array();
-	$data[0] = '<span style="width:40%;float:left;">'.__('Home screen'). ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type sec=estado&sec2=operation/agentes/estado_agente to show agent detail view'), true).'</span>';
+	$data[0] = '<span style="width:50%;float:left;">'.__('Home screen'). ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type sec=estado&sec2=operation/agentes/estado_agente to show agent detail view'), true).'</span>';
 	$values = array (
 		'Default' =>__('Default'),
 		'Visual console'=>__('Visual console'),
@@ -319,8 +319,8 @@ if (!$meta) {
 	$data[1] = '';
 	if (function_exists('skins_print_select')) {
 		if (count($usr_groups) > 1) {
-			$data[1] = '<span style="width:30%;float:left;">'.__('Skin').'</span>';
-			$data[1] .= $jump . skins_print_select($id_usr,'skin', $user_info['id_skin'], '', __('None'), 0, true);
+			$data[1] = '<span style="width:40%;float:left;">'.__('Skin').'</span>';
+			$data[1] .= $jump . '<span style="width:20%;float:left;">'. skins_print_select($id_usr,'skin', $user_info['id_skin'], '', __('None'), 0, true).'</span>';
 		}
 	}
 	$table->rowclass[] = '';

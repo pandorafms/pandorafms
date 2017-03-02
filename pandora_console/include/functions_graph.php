@@ -3987,7 +3987,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 }
 
 function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
-	$width, $height , $title, $unit_name, $show_alerts, $avg_only = 0, $pure=0,
+	$width, $height , $title='', $unit_name, $show_alerts, $avg_only = 0, $pure=0,
 	$date = 0, $only_image = false, $homeurl = '', $adapt_key = '', $compare = false, 
 	$show_unknown = false, $menu = true) {
 	
@@ -4084,7 +4084,7 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 		else {
 			return area_graph($flash_chart, $chart, $width, $height, $color, $legend,
 				$long_index, ui_get_full_url("images/image_problem.opaque.png", false, false, false),
-				"", $unit, $homeurl, $water_mark,
+				$title, $unit, $homeurl, $water_mark,
 				$config['fontpath'], $config['font_size'], $unit, 1, $series_type, 
 				$chart_extra_data, 0, 0, $adapt_key, false, $series_suffix_str, $menu);
 		}

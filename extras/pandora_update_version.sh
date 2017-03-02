@@ -20,7 +20,6 @@ if [ $# == 2 ]; then
 else
 	BUILD=$3
 fi
-TEMP_FILE="/tmp/pandora_update_version.tmp"
 SPEC_FILES="$CODEHOME/pandora_console/pandora_console.spec \
 $CODEHOME/pandora_agents/unix/pandora_agent.spec \
 $CODEHOME/pandora_server/pandora_server.spec \
@@ -59,11 +58,11 @@ function update_spec_version {
 	FILE=$1
 
 	if [ $NB == 1 ]; then
-		sed -e "s/^\s*%define\s\s*release\s\s*.*/%define release     $BUILD/" "$FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$FILE"
+		sed -i -e "s/^\s*%define\s\s*release\s\s*.*/%define release     $BUILD/" "$FILE"
 	else
-		sed -e "s/^\s*%define\s\s*release\s\s*.*/%define release     1/" "$FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$FILE"
+		sed -i -e "s/^\s*%define\s\s*release\s\s*.*/%define release     1/" "$FILE"
 	fi
-	sed -e "s/^\s*%define\s\s*version\s\s*.*/%define version     $VERSION/" "$FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$FILE"
+	sed -i -e "s/^\s*%define\s\s*version\s\s*.*/%define version     $VERSION/" "$FILE"
 }
 
 # Update version in debian dirs
@@ -76,15 +75,14 @@ function update_deb_version {
 		LOCAL_VERSION="$VERSION"
 	fi
 
-	sed -e "s/^pandora_version\s*=.*/pandora_version=\"$LOCAL_VERSION\"/" "$DEBIAN_DIR/make_deb_package.sh" > "$TEMP_FILE" && mv "$TEMP_FILE" "$DEBIAN_DIR/make_deb_package.sh" && sed -e "s/^Version:\s*.*/Version: $LOCAL_VERSION/" "$DEBIAN_DIR/control" > "$TEMP_FILE" && mv "$TEMP_FILE" "$DEBIAN_DIR/control"
+	sed -i -e "s/^pandora_version\s*=.*/pandora_version=\"$LOCAL_VERSION\"/" "$DEBIAN_DIR/make_deb_package.sh" && sed -i -e "s/^Version:\s*.*/Version: $LOCAL_VERSION/" "$DEBIAN_DIR/control"
 }
 
 # Update version in installer
 function update_installer_version {
 	FILE=$1
 
-	sed -e "/^PI_VERSION/s/=.*/=\"$VERSION\"/" -e "/^PI_BUILD/s/=.*/=\"$BUILD\"/" "$FILE" > "$TEMP_FILE" \
-		&& mv "$TEMP_FILE" "$FILE"
+	sed -i -e "/^PI_VERSION/s/=.*/=\"$VERSION\"/" -e "/^PI_BUILD/s/=.*/=\"$BUILD\"/" "$FILE"
 }
 
 # Spec files
@@ -107,55 +105,54 @@ done
 
 # Pandora Server
 echo "Updating Pandora Server version..."
-sed -e "s/my\s\s*\$pandora_version\s*=.*/my \$pandora_version = \"$VERSION\";/" "$SERVER_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$SERVER_FILE"
-sed -e "s/my\s\s*\$pandora_build\s*=.*/my \$pandora_build = \"$BUILD\";/" "$SERVER_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$SERVER_FILE"
+sed -i -e "s/my\s\s*\$pandora_version\s*=.*/my \$pandora_version = \"$VERSION\";/" "$SERVER_FILE"
+sed -i -e "s/my\s\s*\$pandora_build\s*=.*/my \$pandora_build = \"$BUILD\";/" "$SERVER_FILE"
 echo "Updating DB maintenance script version..."
-sed -e "s/my\s\s*\$version\s*=.*/my \$version = \"$VERSION PS$BUILD\";/" "$SERVER_DB_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$SERVER_DB_FILE"
+sed -i -e "s/my\s\s*\$version\s*=.*/my \$version = \"$VERSION PS$BUILD\";/" "$SERVER_DB_FILE"
 echo "Updating CLI script version..."
-sed -e "s/my\s\s*\$version\s*=.*/my \$version = \"$VERSION PS$BUILD\";/" "$SERVER_CLI_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$SERVER_CLI_FILE"
-sed -e "s/\s*\#\s*\Version.*/\# Version $VERSION/" "$SERVER_CONF_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$SERVER_CONF_FILE"
+sed -i -e "s/my\s\s*\$version\s*=.*/my \$version = \"$VERSION PS$BUILD\";/" "$SERVER_CLI_FILE"
+sed -i -e "s/\s*\#\s*\Version.*/\# Version $VERSION/" "$SERVER_CONF_FILE"
 
 # Pandora Satellite Server
 echo "Updating Pandora Satellite Server version..."
-sed -e "s/\s*use constant SATELLITE_VERSION.*/use constant SATELLITE_VERSION \=\> \"$VERSION\";/" "$SATELLITE_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$SATELLITE_FILE"
-sed -e "s/\s*use constant SATELLITE_BUILD.*/use constant SATELLITE_BUILD \=\> \"$BUILD\";/" "$SATELLITE_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$SATELLITE_FILE"
+sed -i -e "s/\s*use constant SATELLITE_VERSION.*/use constant SATELLITE_VERSION \=\> \"$VERSION\";/" "$SATELLITE_FILE"
+sed -i -e "s/\s*use constant SATELLITE_BUILD.*/use constant SATELLITE_BUILD \=\> \"$BUILD\";/" "$SATELLITE_FILE"
 
 # Pandora Console
 echo "Updating Pandora Console DB version..."
-sed -e "s/\s*[(]\s*'db_scheme_version'\s*\,.*/('db_scheme_version'\,'$VERSION'),/" "$CONSOLE_DB_FILE_ORACLE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$CONSOLE_DB_FILE_ORACLE"
-sed -e "s/\s*[(]\s*'db_scheme_build'\s*\,.*/('db_scheme_build'\,'PD$BUILD'),/" "$CONSOLE_DB_FILE_ORACLE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$CONSOLE_DB_FILE_ORACLE"
+sed -i -e "s/\s*[(]\s*'db_scheme_version'\s*\,.*/('db_scheme_version'\,'$VERSION'),/" "$CONSOLE_DB_FILE_ORACLE"
+sed -i -e "s/\s*[(]\s*'db_scheme_build'\s*\,.*/('db_scheme_build'\,'PD$BUILD'),/" "$CONSOLE_DB_FILE_ORACLE"
 
-sed -e "s/\s*[(]\s*'db_scheme_version'\s*\,.*/('db_scheme_version'\,'$VERSION');/" "$CONSOLE_DB_FILE_ORACLE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$CONSOLE_DB_FILE_ORACLE"
-sed -e "s/\s*[(]\s*'db_scheme_build'\s*\,.*/('db_scheme_build'\,'PD$BUILD');/" "$CONSOLE_DB_FILE_ORACLE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$CONSOLE_DB_FILE_ORACLE"
+sed -i -e "s/\s*[(]\s*'db_scheme_version'\s*\,.*/('db_scheme_version'\,'$VERSION');/" "$CONSOLE_DB_FILE_ORACLE"
+sed -i -e "s/\s*[(]\s*'db_scheme_build'\s*\,.*/('db_scheme_build'\,'PD$BUILD');/" "$CONSOLE_DB_FILE_ORACLE"
 
 echo "Updating Pandora Console version..."
-sed -e "s/\s*\$pandora_version\s*=.*/\$pandora_version = 'v$VERSION';/" "$CONSOLE_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$CONSOLE_FILE"
-sed -e "s/\s*\$build_version\s*=.*/\$build_version = 'PC$BUILD';/" "$CONSOLE_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$CONSOLE_FILE"
+sed -i -e "s/\s*\$pandora_version\s*=.*/\$pandora_version = 'v$VERSION';/" "$CONSOLE_FILE"
+sed -i -e "s/\s*\$build_version\s*=.*/\$build_version = 'PC$BUILD';/" "$CONSOLE_FILE"
 echo "Updating Pandora Console installer version..."
-sed -e "s/\s*\$version\s*=.*/\$version = '$VERSION';/" "$CONSOLE_INSTALL_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$CONSOLE_INSTALL_FILE"
-sed -e "s/\s*\$build\s*=.*/\$build = '$BUILD';/" "$CONSOLE_INSTALL_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$CONSOLE_INSTALL_FILE"
+sed -i -e "s/\s*\$version\s*=.*/\$version = '$VERSION';/" "$CONSOLE_INSTALL_FILE"
+sed -i -e "s/\s*\$build\s*=.*/\$build = '$BUILD';/" "$CONSOLE_INSTALL_FILE"
 echo "Setting develop_bypass to 0..."
-sed -e "s/\s*if\s*(\s*[!]\s*isset\s*(\s*$develop_bypass\s*)\s*)\s*$develop_bypass\s*=.*/if ([!]isset($develop_bypass)) $develop_bypass = 0;/" "$CONSOLE_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$CONSOLE_FILE"
+sed -i -e "s/\s*if\s*(\s*[!]\s*isset\s*(\s*$develop_bypass\s*)\s*)\s*$develop_bypass\s*=.*/if ([!]isset($develop_bypass)) $develop_bypass = 0;/" "$CONSOLE_FILE"
 
 # Pandora Agents
 echo "Updating Pandora Unix Agent version..."
-sed -e "s/\s*use\s*constant\s*AGENT_VERSION =>.*/use constant AGENT_VERSION => '$VERSION';/" "$AGENT_UNIX_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$AGENT_UNIX_FILE"
-sed -e "s/\s*use\s*constant\s*AGENT_BUILD =>.*/use constant AGENT_BUILD => '$BUILD';/" "$AGENT_UNIX_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$AGENT_UNIX_FILE"
+sed -i -e "s/\s*use\s*constant\s*AGENT_VERSION =>.*/use constant AGENT_VERSION => '$VERSION';/" "$AGENT_UNIX_FILE"
+sed -i -e "s/\s*use\s*constant\s*AGENT_BUILD =>.*/use constant AGENT_BUILD => '$BUILD';/" "$AGENT_UNIX_FILE"
 echo "Updating Pandora Windows Agent version..."
-sed -e "s/\s*#define\s*PANDORA_VERSION\s*.*/#define PANDORA_VERSION (\"$VERSION(Build $BUILD)\")/" "$AGENT_WIN_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$AGENT_WIN_FILE"
-sed -e "s/{Pandora FMS Windows Agent v.*}/{Pandora FMS Windows Agent v$VERSION}/" "$AGENT_WIN_MPI_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$AGENT_WIN_MPI_FILE"
+sed -i -e "s/\s*#define\s*PANDORA_VERSION\s*.*/#define PANDORA_VERSION (\"$VERSION(Build $BUILD)\")/" "$AGENT_WIN_FILE"
+sed -i -e "s/{Pandora FMS Windows Agent v.*}/{Pandora FMS Windows Agent v$VERSION}/" "$AGENT_WIN_MPI_FILE"
 NUMERIC_VERSION=$(echo $VERSION | sed -e "s/\([0-9]*\.[0-9]*\).*/\1/")
-sed -n "1h;1!H;\${;g;s/[\r\n]InstallVersion[\r\n]{\S*}/\nInstallVersion\n{$NUMERIC_VERSION.0.0}/g;p;}" "$AGENT_WIN_MPI_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$AGENT_WIN_MPI_FILE"
-sed -n "1h;1!H;\${;g;s/[\r\n]Version[\r\n]{[^\n\r]*}/\nVersion\n{$BUILD}/g;p;}" "$AGENT_WIN_MPI_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$AGENT_WIN_MPI_FILE"
+sed -in "1h;1!H;\${;g;s/[\r\n]InstallVersion[\r\n]{\S*}/\nInstallVersion\n{$NUMERIC_VERSION.0.0}/g;p;}" "$AGENT_WIN_MPI_FILE"
+sed -in "1h;1!H;\${;g;s/[\r\n]Version[\r\n]{[^\n\r]*}/\nVersion\n{$BUILD}/g;p;}" "$AGENT_WIN_MPI_FILE"
 if [ $NB == 1 ]; then
-	sed -n "1h;1!H;\${;g;s/[\r\n]Windows\,Executable[\r\n]{[^\n\r]*}/\nWindows\,Executable\n{\<\%AppName\%\>\-\<\%Version\%\>\-Setup\<\%Ext\%\>}/g;p;}" "$AGENT_WIN_MPI_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$AGENT_WIN_MPI_FILE"
+	sed --in-place -n "1h;1!H;\${;g;s/[\r\n]Windows\,Executable[\r\n]{[^\n\r]*}/\nWindows\,Executable\n{\<\%AppName\%\>\-\<\%Version\%\>\-Setup\<\%Ext\%\>}/g;p;}" "$AGENT_WIN_MPI_FILE"
 else
-	sed -n "1h;1!H;\${;g;s/[\r\n]Windows\,Executable[\r\n]{[^\n\r]*}/\nWindows\,Executable\n{\<\%AppName\%\>\-Setup\<\%Ext\%\>}/g;p;}" "$AGENT_WIN_MPI_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$AGENT_WIN_MPI_FILE"
+	sed --in-place -n "1h;1!H;\${;g;s/[\r\n]Windows\,Executable[\r\n]{[^\n\r]*}/\nWindows\,Executable\n{\<\%AppName\%\>\-Setup\<\%Ext\%\>}/g;p;}" "$AGENT_WIN_MPI_FILE"
 fi
-sed -e "s/\s*VALUE \"ProductVersion\".*/      VALUE \"ProductVersion\", \"($VERSION(Build $BUILD))\"/" "$AGENT_WIN_RC_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$AGENT_WIN_RC_FILE"
+sed -i -e "s/\s*VALUE \"ProductVersion\".*/      VALUE \"ProductVersion\", \"($VERSION(Build $BUILD))\"/" "$AGENT_WIN_RC_FILE"
 echo "Updating Agent configuration files..."
 for conf in `find $AGENT_BASE_DIR -name pandora_agent.conf`; do
-	sed -e "s/#\s*[Vv]ersion\s*[^\,]*/# Version $VERSION/" "$conf" > "$TEMP_FILE" && mv "$TEMP_FILE" "$conf"
+	sed -i -e "s/#\s*[Vv]ersion\s*[^\,]*/# Version $VERSION/" "$conf"
 done
 
-rm -f "$TEMP_FILE"

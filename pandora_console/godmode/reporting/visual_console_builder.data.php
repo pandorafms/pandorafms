@@ -152,16 +152,25 @@ else {
 		$background_color, '', 8, 8, true);
 }
 
-$table->data[5][0] = __('Size - (Width x Height)');
+if($idVisualConsole){
+	$preimageh = db_get_value_sql('select height from tlayout where id ='.$idVisualConsole);
+	$preimagew = db_get_value_sql('select width from tlayout where id ='.$idVisualConsole);
+}
+else{
+	$preimageh = 768;
+	$preimagew = 1024;
+}
+
+$table->data[5][0] = __('Layout size').': <span id="preimagew">'.$preimagew.'</span> x <span id="preimageh">'.$preimageh.'</span>';
 
 $table->data[5][1] = '<button id="modsize" 
 	style="margin-right:20px;" value="modsize">' . 
 	__('Set custom size') . '</button>';
 
 $table->data[5][1] .= '<span class="opt" style="visibility:hidden;">' . 
-	html_print_input_text('width', 1024, '', 10, 10, true , false) .
+	html_print_input_text('width', $preimagew, '', 10, 10, true , false) .
 		' x ' .
-	html_print_input_text('height', 768, '', 10, 10, true, false).'</span>';
+	html_print_input_text('height', $preimageh, '', 10, 10, true, false).'</span>';
 
 $table->data[5][1] .= '<span class="opt" style="visibility:hidden;">
 			<button id="getsize" style="margin-left:20px;" 
@@ -192,10 +201,7 @@ echo "</form>";
 <script>
 
 $(document).ready (function () {
-	
-	$('#imagen').attr('src','images/console/background/'+$('#background').val());
-	$('#imagen2').attr('src','images/console/background/'+$('#background').val());
-	
+		
 	$("#modsize").click(function(event){
 		event.preventDefault();
 		
@@ -208,16 +214,20 @@ $(document).ready (function () {
 			if (parseInt($('#imagen').width()) < 1024){
 				alert('Default width is '+$('#imagen').width()+'px, smaller than minimum -> 1024px');
 				$('input[name=width]').val('1024');
+				$('#preimagew').html(1024);
 			}
 			else{
 				$('input[name=width]').val($('#imagen').width());
+				$('#preimagew').html($('#imagen').width());
 			}
 			if (parseInt($('#imagen').height()) < 768){
 				alert('Default height is '+$('#imagen').height()+'px, smaller than minimum -> 768px');
-					$('input[name=height]').val('768');
+				$('input[name=height]').val('768');
+				$('#preimageh').html(768);
 			}
 			else{
 				$('input[name=height]').val($('#imagen').height());
+				$('#preimageh').html($('#imagen').height());
 			}
 						
 		}
@@ -226,45 +236,64 @@ $(document).ready (function () {
 	$("#getsize").click(function(event){
 		event.preventDefault();
 		
+		if ($('#imagen').attr('src') != '') {
+		
 		if (parseInt($('#imagen').width()) < 1024){
 			alert('Default width is '+$('#imagen').width()+'px, smaller than minimum -> 1024px');
 			$('input[name=width]').val('1024');
+			$('#preimagew').html(1024);			
 		}
 		else{
 			$('input[name=width]').val($('#imagen').width());
+			$('#preimagew').html($('#imagen').width());			
 		}
 		if (parseInt($('#imagen').height()) < 768){
 			alert('Default height is '+$('#imagen').height()+'px, smaller than minimum -> 768px');	
 			$('input[name=height]').val('768');
+			$('#preimageh').html(768);
 		}
 		else{
 			$('input[name=height]').val($('#imagen').height());
+			$('#preimageh').html($('#imagen').height());
 		}
+		
+	}
 		
 	});
 	
 	$( "input[type=submit]" ).click(function( event ) {
-			if (parseInt($('#imagen').width()) < 1024){
-				alert('Default width is '+$('#imagen').width()+'px, smaller than minimum -> 1024px');
+			if (parseInt($('input[name=width]').val()) < 1024){
+				alert('Default width is '+$('input[name=width]').val()+'px, smaller than minimum -> 1024px');
 				$('input[name=width]').val('1024');
+				$('#preimagew').html('1024');
+				var x = 1;
 			}
-			else{
-				$('input[name=width]').val($('#imagen').width());
-			}
-			if (parseInt($('#imagen').height()) < 768){
-				alert('Default height is '+$('#imagen').height()+'px, smaller than minimum -> 768px');	
+			
+			if (parseInt($('input[name=height]').val()) < 768){
+				alert('Default height is '+$('input[name=height]').val()+'px, smaller than minimum -> 768px');
 				$('input[name=height]').val('768');
+				$('#preimageh').html('768');
+				var y = 1;
 			}
-			else{
-				$('input[name=height]').val($('#imagen').height());
+			
+			if (x || y){
+				return false;
 			}
+			
 	});
 
 	$("#background").change(function() {
-		$('#imagen').attr('src','images/console/background/'+$('#background').val());
 		$('#imagen2').attr('src','images/console/background/'+$('#background').val());
 		$('#imagen2').width(230);
-		$('#imagen2').show();
+		$('#imagen2').show();		
+	});
+	
+	$("#background").mouseout(function() {		
+		$('#imagen').attr('src','images/console/background/'+$('#background').val());
+		$('input[name=width]').val($('#imagen').width());
+		$('input[name=height]').val($('#imagen').height());
+		$('#preimagew').html($('#imagen').width());
+		$('#preimageh').html($('#imagen').height());
 	});
 
 	$("#file-background_image").change(function(){
@@ -276,12 +305,17 @@ $(document).ready (function () {
 			var reader = new FileReader();
 			reader.onload = function (e) {
 				$('#imagen').attr('src', e.target.result);
+				$('input[name=width]').val($('#imagen').width());
+				$('input[name=height]').val($('#imagen').height());
+				$('#preimagew').html($('#imagen').width());
+				$('#preimageh').html($('#imagen').height());
 				$('#imagen2').attr('src', e.target.result);
 				$('#imagen2').width(230);
 				$('#imagen2').show();
 			}
 			reader.readAsDataURL(input.files[0]);
 		}
+		
 	}
 
 	$("#imgInp").change(function(){

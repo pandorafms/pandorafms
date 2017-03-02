@@ -489,11 +489,11 @@ if ($list_modules) {
 			switch ($sort) {
 				case 'up':
 					$selectStatusUp = $selected;
-					$order = array('field' => 'tagente_estado.estado', 'order' => 'ASC');
+					$order = array('field' => 'tagente_estado.estado=0 DESC,tagente_estado.estado=3 DESC,tagente_estado.estado=2 DESC,tagente_estado.estado=1 DESC', 'order' => '');
 					break;
 				case 'down':
 					$selectStatusDown = $selected;
-					$order = array('field' => 'tagente_estado.estado', 'order' => 'DESC');
+					$order = array('field' => 'tagente_estado.estado=1 DESC,tagente_estado.estado=2 DESC,tagente_estado.estado=3 DESC,tagente_estado.estado=0 DESC', 'order' => '');
 					break;
 			}
 			break;
@@ -565,7 +565,6 @@ if ($list_modules) {
 	if (!empty($status_text_monitor)) {
 		$status_text_monitor_sql .= $status_text_monitor . '%';
 	}
-
 
 	//Count monitors/modules
 	switch ($config["dbtype"]) {

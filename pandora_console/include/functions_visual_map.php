@@ -817,12 +817,39 @@ else{
 				}
 			}
 			
+			//data
 			$module_value = db_get_sql ('SELECT datos
 				FROM tagente_estado
 				WHERE id_agente_modulo = ' . $id_module);
+			//state
+			$module_status = db_get_sql ('SELECT estado
+				FROM tagente_estado
+				WHERE id_agente_modulo = ' . $id_module);
+			
 			if (empty($module_value) || $module_value == 0) {
 				$colorStatus = COL_UNKNOWN;
 			}
+			else{
+				switch ($module_status) {
+					case 0: //Normal
+						$colorStatus = COL_NORMAL;		
+						break;
+					case 1: //Critical
+						$colorStatus = COL_CRITICAL;
+						break;
+					case 2: //Warning
+						$colorStatus = COL_WARNING;
+						break;
+					case 4: //Not_INIT
+						$colorStatus = COL_NOTINIT;
+						break;
+					case 3: //Unknown
+					default:
+						$colorStatus = COL_UNKNOWN;
+						break;
+				}
+			}
+
 			$value_text = false;
 			if ($layoutData['image'] == 'percent') {
 				$value_text = false;
@@ -944,13 +971,24 @@ else{
 					$homeurl = $config['homeurl'];
 				else
 					$homeurl = '';
-		
-				if (get_parameter('action') == 'edit') {
+				
+				if ( (get_parameter('action') == 'edit') || (get_parameter('operation') == 'edit_visualmap') ) {
 					if($width == 0 || $height == 0){
-						$img =  '<img src="images/console/signes/module_graph.png" style="width:300px;height:180px;'.$imgpos.'">';	
+						if ($layoutData['id_metaconsole'] != 0) {
+							$img =  '<img src="../../images/console/signes/module_graph.png" style="width:300px;height:180px;'.$imgpos.'">';
+						}
+						else{
+							$img =  '<img src="images/console/signes/module_graph.png" style="width:300px;height:180px;'.$imgpos.'">';	
+						}
+							
 					}
 					else{
-						$img =  '<img src="images/console/signes/module_graph.png" style="width:'.$width.'px;height:'.$height.'px;'.$imgpos.'">';
+						if ($layoutData['id_metaconsole'] != 0) {
+							$img =  '<img src="../../images/console/signes/module_graph.png" style="width:'.$width.'px;height:'.	$height.'px;'.$imgpos.'">';
+						}
+						else{
+							$img =  '<img src="images/console/signes/module_graph.png" style="width:'.$width.'px;height:'.	$height.'px;'.$imgpos.'">';
+						}
 					}				
 			 	}
 				else {
@@ -1005,7 +1043,7 @@ else{
 								false, 1, false, 0, '', 0, 0, true, 
 								$only_image, '', 1, false, '', false, 
 								false, false, $layoutData['image'], 
-								null, true, false, $type_graph);
+								null, false, true, $type_graph);
 						}
 					}
 				}

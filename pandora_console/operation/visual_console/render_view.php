@@ -149,7 +149,7 @@ if ($config['pure']) {
 	// Container of the visual map (ajax loaded)
 	echo '<div id="vc-container">' .
 		visual_map_print_visual_map ($id_layout, true, true, 
-			null, null, '', false, $graph_javascript)
+			null, null, '', false, true)
 	. '</div>';
 	
 	// Floating menu - Start
@@ -204,7 +204,7 @@ if ($config['pure']) {
 	<?php
 }
 else {
-	visual_map_print_visual_map ($id_layout, true, true, null, null, '', false, $graph_javascript, true);
+	visual_map_print_visual_map ($id_layout, true, true, null, null, '', false, true, true);
 }
 
 ui_require_javascript_file('wz_jsgraphics');

@@ -906,7 +906,8 @@ else{
 				}
 			}
 			
-			$only_image = !$graph_javascript || $isExternalLink;
+			$only_image = !$graph_javascript && $isExternalLink;
+			
 			if ($layoutData['id_custom_graph'] != 0) {
 				// Show only avg on the visual console
 				if (get_parameter('action') == 'edit') {

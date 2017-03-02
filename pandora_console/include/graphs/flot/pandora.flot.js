@@ -1577,7 +1577,6 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	}
 	
 	var stack = 0, bars = true, lines = false, steps = false;
-
 	var plot = $.plot($('#' + graph_id), datas, options);
 	
 	// Re-calculate the graph height with the legend height
@@ -1760,7 +1759,6 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			if (serie_types[i] != 'points' && series.label != $('#hidden-unknown_text').val()) {
 				$('#legend_' + graph_id + ' .legendLabel')
 					.eq(i).html(label_aux +	'= ' + parseFloat(y).toFixed(precision_graph) + how_bigger + ' ' + unit);
-				console.log($('#legend_' + graph_id + ' .legendLabel'));
 			}
 
 			$('#legend_' + graph_id + ' .legendLabel')

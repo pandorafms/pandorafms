@@ -1183,8 +1183,20 @@ if ($update_module) {
 		$result = false;
 	}
 	else {
-		$result = modules_update_agent_module ($id_agent_module,
-			$values, false, $id_tag);
+		$check_dynamic = 
+			db_get_row_sql('SELECT dynamic_interval, dynamic_max, dynamic_min, dynamic_two_tailed 
+										 FROM tagente_modulo WHERE id_agente_modulo =' . $id_agent_module);
+		
+		if( ($check_dynamic['dynamic_interval'] == $dynamic_interval) && 
+			($check_dynamic['dynamic_max'] == $dynamic_max) && 
+			($check_dynamic['dynamic_min'] == $dynamic_min) && 
+			($check_dynamic['dynamic_two_tailed'] == $dynamic_two_tailed) ) {
+			$result = modules_update_agent_module ($id_agent_module, $values, false, $id_tag);
+		}
+		else{
+			$values['dynamic_next'] = 0;
+			$result = modules_update_agent_module ($id_agent_module, $values, false, $id_tag);
+		}
 	}
 	
 	if (is_error($result)) {

@@ -239,7 +239,7 @@ function process_user_login_remote ($login, $pass, $api = false) {
 			
 			
 			$return = enterprise_hook ('prepare_permissions_groups_of_user_ad',
-				array ($login, $pass, false, true));
+				array ($login, $pass, false, true, defined('METACONSOLE')));
 			
 			if ($return === "error_permissions") {
 				$config["auth_error"] =
@@ -337,15 +337,28 @@ function process_user_login_remote ($login, $pass, $api = false) {
 			
 			$servers = metaconsole_get_servers();
 			foreach ($servers as $server) {
+				$perfil_maestro = db_get_row('tperfil',
+					'id_perfil', $config['default_remote_profile']);
+
 				if (metaconsole_connect($server) == NOERR ) {
+					
+					if (!profile_exist($perfil_maestro['name'])) {
+						unset($perfil_maestro['id_perfil']);
+						$id_profile = db_process_sql_insert('tperfil', $perfil_maestro);
+					}
+					else {
+						$id_profile = db_get_value('id_perfil', 'tperfil', 'name', $perfil_maestro['name']);
+					}
+					
 					if (create_user ($login, $pass,
 						array ('fullname' => $login, 
 						'comments' => 'Imported from ' . $config['auth'])
 					) === false)
 						continue;
-					profile_create_user_profile ($login, $config['default_remote_profile'], 
+					profile_create_user_profile ($login, $id_profile, 
 						$config['default_remote_group'], false, $config['default_assign_tags']);
 				}
+				
 				metaconsole_restore_db();
 			}
 		}

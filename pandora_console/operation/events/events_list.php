@@ -417,11 +417,9 @@ $params['return'] = true;
 if ($meta) {
 	$params['javascript_page'] = 'enterprise/meta/include/ajax/events.ajax';
 }
-else {
-	$params['print_hidden_input_idagent'] = true;
-	$params['hidden_input_idagent_name'] = 'id_agent';
-	$params['hidden_input_idagent_value'] = $id_agent;
-}
+$params['print_hidden_input_idagent'] = true;
+$params['hidden_input_idagent_name'] = 'id_agent';
+$params['hidden_input_idagent_value'] = $id_agent;
 
 $data[1] .= ui_print_agent_autocomplete_input($params);
 $table_advanced->data[] = $data;

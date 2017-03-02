@@ -121,9 +121,12 @@ if ($severity != -1) {
 
 // In metaconsole mode the agent search is performed by name
 if ($meta) {
-	if (($text_agent != __('All')) && ($text_agent !== '')) {
+	$text_agent = get_parameter("text_agent","");
+	$id_agent = get_parameter('id_agent',0);
+	if($id_agent){
+		$sql_post .= " AND agent_name IN (SELECT nombre FROM tmetaconsole_agent WHERE
+		id_tagente =".$id_agent." AND alias LIKE '".io_safe_input($text_agent)."')";
 		$filter_resume['agent'] = $text_agent;
-		$sql_post .= " AND agent_name LIKE '%$text_agent%'";
 	}
 }
 else {

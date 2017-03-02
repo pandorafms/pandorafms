@@ -594,14 +594,14 @@ switch ($action) {
 				
 				if (check_acl ($config["id_user"], $report["id_group"], "RW") || check_acl ($config["id_user"], $report["id_group"], "RM")) {
 					$data[0] = '<a href="' . $config['homeurl'] . 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&action=edit&id_report='.
-						$report['id_report'].'&pure='.$pure.'">'.$report['name'].'</a>';
+						$report['id_report'].'&pure='.$pure.'">'.ui_print_truncate_text($report['name'], 70).'</a>';
 				}
 				else {
-					$data[0] = $report['name'];
+					$data[0] = ui_print_truncate_text($report['name'], 70);
 				}
 				
 				
-				$data[1] = $report['description'];
+				$data[1] = ui_print_truncate_text($report['description'], 70);
 				
 				//Remove html and xml button if items are larger than limit
 				$item_count = db_get_num_rows ('SELECT * FROM treport_content WHERE id_report=' . $report['id_report']);

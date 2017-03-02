@@ -299,7 +299,7 @@ if ($items) {
 		$table->head[3] .= ' <a onclick="return message_check_sort_items();" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&field=module&id_report=' . $idReport . $urlFilter . '&pure=' . $config['pure'] . '">' . html_print_image("images/sort_up.png", true, array("title" => __('Ascendent'))) . '</a>' .
 			'<a onclick="return message_check_sort_items();" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=down&field=module&id_report=' . $idReport . $urlFilter . '&pure=' . $config['pure'] . '">' . html_print_image("images/sort_down.png", true, array("title" => __('Descent'))) . '</a>';
 	}
-	$table->head[4] = __('Period');
+	$table->head[4] = __('Time lapse');
 	$table->head[5] = __('Name') . " / " . __('Description');
 	if (check_acl ($config['id_user'], 0, "RM")) {
 		$table->head[6] = '<span title="' . __('Options') . '">' . __('Op.') . '</span>';

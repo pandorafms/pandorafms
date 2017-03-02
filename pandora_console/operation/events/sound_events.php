@@ -141,8 +141,7 @@ function changeGroup() {
 		},
 		function (data) {
 			$("#id_agents").empty();
-			$("#id_agents").style("size", 0);
-
+			
 			jQuery.each (data, function (id, value) {
 				if (value != "") {
 					$("#id_agents").append('<option value="' + id + '">' + value + '</option>');

@@ -355,6 +355,12 @@ $ignored_params['refr'] = '';
 			
 		});
 		
+		$(".graph").each(function(){
+			height =	parseInt($(this).css("height")) - 30;
+		
+			$(this).css('height', height);
+		});
+		
 		/*
 		$('.percentile_item a > img').each(function(){
 			

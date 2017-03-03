@@ -250,11 +250,6 @@ function update_manager_check_online_free_packages_available() {
 	$http_status = curl_getinfo($curlObj, CURLINFO_HTTP_CODE);
 	curl_close($curlObj);
 	
-	//~ html_debug_print("----------", true);
-	//~ html_debug_print($params, true);
-	//~ html_debug_print($http_status, true);
-	//~ html_debug_print($result, true);
-	
 	if ($result === false) {
 		return false;
 	}
@@ -315,11 +310,6 @@ function update_manager_check_online_free_packages ($is_ajax=true) {
 	$result = curl_exec($curlObj);
 	$http_status = curl_getinfo($curlObj, CURLINFO_HTTP_CODE);
 	curl_close($curlObj);
-	
-	//~ html_debug_print("=============", true);
-	//~ html_debug_print($params, true);
-	//~ html_debug_print($http_status, true);
-	//~ html_debug_print($result, true);
 	
 	if ($result === false) {
 		if ($is_ajax) {
@@ -412,10 +402,6 @@ function update_manager_curl_request ($action, $additional_params = false) {
 	curl_close($curlObj);
 	
 	$error_array['http_status'] = $http_status;
-	//~ html_debug_print("=============", true);
-	//~ html_debug_print($params, true);
-	//~ html_debug_print($http_status, true);
-	//~ html_debug_print($result, true);
 	
 	if ($result === false) {
 		$error_array['success'] = false;
@@ -590,10 +576,6 @@ function update_manager_remote_read_messages ($id_message) {
 		);
 	
 	$result = update_manager_curl_request ('mark_as_read', $params);
-	
-	//if (!$result['success']) {
-	//	html_debug ($result['update_message'], true);
-	//}
 	
 	return $result['success'];
 }

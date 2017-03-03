@@ -221,7 +221,7 @@ $table->data[2][0] .= html_print_image('images/spinner.png', true);
 $table->data[2][0] .= '</span>';
 $agents_alerts = alerts_get_agents_with_alert_template ($id_alert_template, $id_group,
 	false, array ('tagente.alias', 'tagente.id_agente'));
-html_debug($agents_alerts);
+
 $table->data[2][1] = html_print_select (index_array ($agents_alerts, 'id_agente', 'alias'),
 	'id_agents[]', '', '', '', '', true, true, true, '', $id_alert_template == 0);
 $table->data[2][2] = __('When select agents');

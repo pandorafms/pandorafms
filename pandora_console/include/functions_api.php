@@ -6086,7 +6086,6 @@ function api_set_update_group($id_group, $thrash2, $other, $thrash3) {
 		return;
 	}
 	
-		//html_debug_print($other);
 	$name = $other['data'][0];
 	$icon = $other['data'][1];
 	$parent = $other['data'][2];
@@ -7853,9 +7852,8 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
 	else if ($other['type'] == 'array') {
 		$separator = $other['data'][0];
 	}
-	//html_debug_print($filter, true);
+	
 	$result = db_get_all_rows_sql ($sql);
-	//html_debug_print($sql, true);
 	
 	if (($result !== false) &&
 		(!$filter['total']) &&
@@ -7910,8 +7908,6 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
 			$result[$key] = $row;
 		}
 	}
-	
-	//html_debug_print($result);
 	
 	$data['type'] = 'array';
 	$data['data'] = $result;

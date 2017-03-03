@@ -885,7 +885,6 @@ $(document).ready (function () {
 
 	disabled_two_tailed(disabledBecauseInPolicy);
 	$('#checkbox-dynamic_two_tailed').change (function() {
-		console.log('enter');
 		disabled_two_tailed(disabledBecauseInPolicy);
 	});
 
@@ -954,16 +953,14 @@ function disabled_status (disabledBecauseInPolicy) {
 }
 
 function disabled_two_tailed (disabledBecauseInPolicy) {
-	console.log('entra a la funcion');
 	if($('#checkbox-dynamic_two_tailed').prop('checked')){
-		$('#text-dynamic_max').prop('readonly', true);
-		$('#text-dynamic_max').addClass('readonly');
+		$('#text-dynamic_max').prop('readonly', false);
+		$('#text-dynamic_max').removeClass('readonly');
 	}
 	else{
-		console.log('no');
 		if (disabledBecauseInPolicy == 0){
-			$('#text-dynamic_max').prop('readonly', false);
-			$('#text-dynamic_max').removeClass('readonly');
+			$('#text-dynamic_max').prop('readonly', true);
+			$('#text-dynamic_max').addClass('readonly');
 		}
 	}
 }

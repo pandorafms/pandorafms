@@ -153,7 +153,7 @@ if ($config['pure']) {
 	. '</div>';
 	
 	// Floating menu - Start
-	echo '<div id="vc-controls">';
+	echo '<div id="vc-controls" style="z-index: 999">';
 
 	echo '<div id="menu_tab">';
 	echo '<ul class="mn">';

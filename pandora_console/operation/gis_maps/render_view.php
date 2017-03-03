@@ -31,7 +31,9 @@ $confMap = gis_get_map_conf($idMap);
 
 // Default open map (used to overwrite unlicensed google map view)
 $confMapDefault = get_good_con();
-$confMapUrlDefault = json_decode($confMapDefault['conection_data'], true)['url'];
+$confMapDefaultFull = array();
+$confMapDefaultUrlFull = json_decode($confMapDefault['conection_data'], true);
+$confMapUrlDefault = $confMapDefaultFull['url'];
 
 if (! check_acl ($config['id_user'], $map['group_id'], "MR") && ! check_acl ($config['id_user'], $map['group_id'], "MW") && ! check_acl ($config['id_user'], $map['group_id'], "MM")) {
 	db_pandora_audit("ACL Violation", "Trying to access map builder");

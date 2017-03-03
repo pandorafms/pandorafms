@@ -465,11 +465,11 @@ if ($list_modules) {
 			switch ($sort) {
 				case 'up':
 					$selectTypeUp = $selected;
-					$order = array('field' => 'tagente_modulo.id_tipo_modulo', 'order' => 'ASC');
+					$order = array('field' => 'tagente_modulo.id_modulo', 'order' => 'ASC');
 					break;
 				case 'down':
 					$selectTypeDown = $selected;
-					$order = array('field' => 'tagente_modulo.id_tipo_modulo', 'order' => 'DESC');
+					$order = array('field' => 'tagente_modulo.id_modulo', 'order' => 'DESC');
 					break;
 			}
 			break;
@@ -634,7 +634,6 @@ if ($list_modules) {
 	else
 		$count_modules = 0;
 
-
 	//Get monitors/modules
 	// Get all module from agent
 	switch ($config["dbtype"]) {
@@ -652,7 +651,7 @@ if ($list_modules) {
 					AND %s %s
 					AND tagente_estado.estado != %d
 					AND tagente_modulo.%s
-				ORDER BY tmodule_group.name , %s  %s",
+				ORDER BY tmodule_group.name , %s %s",
 				$id_agente, $status_text_monitor_sql,$status_module_group_filter,$status_filter_sql, $tags_sql, AGENT_MODULE_STATUS_NO_DATA,
 				$status_module_group_filter, $order['field'], $order['order']);
 

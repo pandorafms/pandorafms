@@ -1783,7 +1783,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	
 	
 	//Work around for fixed the agents name with huge size chars.
-	$fixed_font_size = $config['font_size'] - 2;
+	$fixed_font_size = $config['font_size'];
 	
 	//Set graph color
 	

@@ -271,6 +271,10 @@ else {
 	$show_validate_button = false;
 
 	$idx = 0;
+	
+	if($meta){
+		$alias_array = array();
+	}
 	//Arrange data. We already did ACL's in the query
 	foreach ($result as $event) {
 		$data = array ();
@@ -427,12 +431,17 @@ else {
 			if ($event["id_agente"] > 0) {
 				// Agent name
 				if ($meta) {
+					if(!empty($event["agent_name"])){
+						if(!array_key_exists($event["agent_name"],$alias_array)){
+							$alias_array [$event["agent_name"]] = db_get_value("alias","tmetaconsole_agent","nombre",$event["agent_name"]);
+						}
+					}
 					$agent_link = '<a href="'.$event["server_url"].'/index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=' . $event["id_agente"] . $event["server_url_hash"] . '">';
 					if (can_user_access_node ()) {
-						$data[$i] = '<b>' . $agent_link . $event["agent_name"] . '</a></b>';
+						$data[$i] = '<b>' . $agent_link . $alias_array [$event["agent_name"]]  . '</a></b>';
 					}
 					else {
-						$data[$i] = $event["agent_name"];
+						$data[$i] = $alias_array [$event["agent_name"]] ;
 					}
 				}
 				else {

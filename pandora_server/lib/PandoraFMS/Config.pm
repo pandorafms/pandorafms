@@ -282,6 +282,8 @@ sub pandora_load_config {
 	$pa_config->{"sync_retries"} = 2; # 7.0
 	$pa_config->{"sync_timeout"} = 5; # 7.0
 	$pa_config->{"dynamic_updates"} = 5; # 7.0
+	$pa_config->{"dynamic_warning"} = 25; # 7.0
+	$pa_config->{"dynamic_constant"} = 10; # 7.0
 	
 	# Internal MTA for alerts, each server need its own config.
 	$pa_config->{"mta_address"} = '127.0.0.1'; # Introduced on 2.0
@@ -1011,6 +1013,12 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^dynamic_updates\s+([0-9]*)/i) {
 			$pa_config->{'dynamic_updates'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^dynamic_warning\s+([0-9]*)/i) {
+			$pa_config->{'dynamic_warning'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^dynamic_constant\s+([0-9]*)/i) {
+			$pa_config->{'dynamic_constant'}= clean_blank($1);
 		}
 	} # end of loop for parameter #
 

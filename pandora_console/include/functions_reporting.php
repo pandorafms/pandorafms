@@ -3200,8 +3200,6 @@ function reporting_monitor_report($report, $content) {
 		metaconsole_connect($server);
 	}
 	
-	$module = modules_get_agentmodule ($content['id_agent_module']);
-	
 	$module_name = io_safe_output(
 		modules_get_agentmodule_name($content['id_agent_module']));
 	$agent_name = io_safe_output(
@@ -3209,22 +3207,16 @@ function reporting_monitor_report($report, $content) {
 	
 	$return['agent_name'] = $agent_name;
 	$return['module_name'] = $module_name;
-	
-	$value = reporting_get_agentmodule_monitor(
-		$content['id_agent_module'],
-		$content['period'],
-		$module['min_critical'],
-		$module['max_critical'],
-		$report["datetime"]);
-	
-	if ($value === __('Unknown')) {
+
+	// All values (except id module and report time) by default
+	$report = reporting_advanced_sla ($content['id_agent_module'],
+		$report["datetime"] - $content['period'], $report["datetime"]);
+
+	if ($report['time_total'] === $report['time_unknown'] || empty($content['id_agent_module'])) {
 		$return['data']['unknown'] = 1;
-	}
-	else {
-		$return['data']['unknown'] = 0;
-		
-		$return["data"]["ok"]["value"] = $value;
-		$return["data"]["ok"]["formated_value"] = format_numeric($value, 2);
+	} else {
+		$return["data"]["ok"]["value"] = $report['SLA'];
+		$return["data"]["ok"]["formated_value"] = $report['SLA_fixed'];
 		
 		$return["data"]["fail"]["value"] = 100 - $return["data"]["ok"]["value"];
 		$return["data"]["fail"]["formated_value"] = (100 - $return["data"]["ok"]["formated_value"]);
@@ -3498,7 +3490,7 @@ function reporting_projection_graph($report, $content,
 				$content['period'],
 				$width,
 				$height,
-				'Projection%20Sample%20Graph',
+				'',
 				'',
 				0,
 				0,
@@ -8380,149 +8372,6 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0,
 		
 		return $sla;
 	}
-}
-
-
-/** 
- * Get Monitor report of a module.
- * if (($min_value < $data['datos'])OR ($max_value > 0 AND 
-		($data['datos'] > $min_value AND $data['datos'] < $max_value)))
- * @param int Agent module to calculate monitor report
- * @param int Period to check the SLA compliance.
- * @param int Minimum data value the module in the right interval
- * @param int Maximum data value the module in the right interval. False will
- * ignore max value
- * @param int Beginning date of the report in UNIX time (current date by default).
- * 
- * @return float Monitor percentage of the requested module. False if no data were
- * found
- */
-function reporting_get_agentmodule_monitor ($id_agent_module, $period = 0, $min_value = 1, $max_value = false, $date = 0) {
-	global $config;
-	
-	
-	
-	if (empty($id_agent_module))
-		return false;
-	
-	// Set initial conditions
-	$bad_period = 0;
-	// Limit date to start searching data
-	$datelimit = $date - $period;
-	$search_in_history_db = db_search_in_history_db($datelimit);
-	
-	// Initialize variables
-	if (empty ($date)) {
-		$date = get_system_time ();
-	}
-	if ($daysWeek === null) {
-		$daysWeek = array();
-	}
-	
-	
-	
-	
-	// Calculate the SLA for large time without hours
-	
-	// Get interval data
-	$sql = sprintf ('SELECT *
-		FROM tagente_datos
-		WHERE id_agente_modulo = %d
-			AND utimestamp > %d AND utimestamp <= %d',
-		$id_agent_module, $datelimit, $date);
-	
-	$sql .= ' ORDER BY utimestamp ASC';
-	$interval_data = db_get_all_rows_sql ($sql, $search_in_history_db);
-	
-	if ($interval_data === false) {
-		$interval_data = array ();
-	}
-	
-	// Calculate planned downtime dates
-	$downtime_dates = reporting_get_planned_downtimes_intervals(
-		$id_agent_module, $datelimit, $date);
-	
-	// Get previous data
-	$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
-	
-	if ($previous_data !== false) {
-		$previous_data['utimestamp'] = $datelimit;
-		array_unshift ($interval_data, $previous_data);
-	}
-	
-	// Get next data
-	$next_data = modules_get_next_data ($id_agent_module, $date);
-	
-	if ($next_data !== false) {
-		$next_data['utimestamp'] = $date;
-		array_push ($interval_data, $next_data);
-	}
-	else if (count ($interval_data) > 0) {
-		// Propagate the last known data to the end of the interval
-		$next_data = array_pop ($interval_data);
-		array_push ($interval_data, $next_data);
-		$next_data['utimestamp'] = $date;
-		array_push ($interval_data, $next_data);
-	}
-	
-	if (count ($interval_data) < 2) {
-		return false;
-	}
-	
-	
-	$first_data = array_shift ($interval_data);
-	
-	// Do not count the empty start of an interval as 0
-	if ($first_data['utimestamp'] != $datelimit) {
-		$period = $date - $first_data['utimestamp'];
-	}
-	
-	$previous_utimestamp = $first_data['utimestamp'];
-	if (($max_value > 0 AND $min_value > 0 ) AND ($data['datos'] > $min_value 
-		AND $data['datos'] < $max_value)) {
-		
-		$previous_status = 1;
-		foreach ($downtime_dates as $date_dt) {
-			
-			if (($date_dt['date_from'] <= $previous_utimestamp) AND
-				($date_dt['date_to'] >= $previous_utimestamp)) {
-				
-				$previous_status = 0;
-			}
-		}
-	}
-	else {
-		$previous_status = 0;
-	}
-	
-	foreach ($interval_data as $data) {
-		// Previous status was critical
-		if ($previous_status == 1) {
-			$bad_period += $data['utimestamp'] - $previous_utimestamp;
-		}
-		
-		if (array_key_exists('datos', $data)) {
-			// Re-calculate previous status for the next data
-			if (($max_value > 0) AND ($data['datos'] > $min_value 
-				AND $data['datos'] < $max_value)) {
-				
-				$previous_status = 1;
-				foreach ($downtime_dates as $date_dt) {
-					if (($date_dt['date_from'] <= $data['utimestamp']) AND ($date_dt['date_to'] >= $data['utimestamp'])) {
-						$previous_status = 0;
-					}
-				}
-			}
-			else {
-				$previous_status = 0;
-			}
-		}
-		
-		$previous_utimestamp = $data['utimestamp'];
-	}
-	
-	// Return the percentage of SLA compliance
-	return (float) (100 - ($bad_period / $period) * 100);
 }
 
 

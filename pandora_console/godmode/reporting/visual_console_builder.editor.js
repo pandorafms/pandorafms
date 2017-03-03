@@ -89,13 +89,24 @@ function visual_map_main() {
 		});
 		
 		$('.labelpos').click(function(event) {
-			$("#labelposup img").attr('src','images/label_up.png');
-			$("#labelposdown img").attr('src','images/label_down.png');
-			$("#labelposleft img").attr('src','images/label_left.png');
-			$("#labelposright img").attr('src','images/label_right.png');
-			$('.labelpos').attr('sel','no');
-			$("#"+$(this).attr('id')+" img").attr('src','images/label_'+$(this).attr('id').replace('labelpos','')+'_2.png');
-			$("#"+$(this).attr('id')).attr('sel','yes');
+			if($("#hidden-metaconsole").val() == 1){
+				$("#labelposup img").attr('src','../../images/label_up.png');
+				$("#labelposdown img").attr('src','../../images/label_down.png');
+				$("#labelposleft img").attr('src','../../images/label_left.png');
+				$("#labelposright img").attr('src','../../images/label_right.png');
+				$('.labelpos').attr('sel','no');
+				$("#"+$(this).attr('id')+" img").attr('src','../../images/label_'+$(this).attr('id').replace('labelpos','')+'_2.png');
+				$("#"+$(this).attr('id')).attr('sel','yes');
+			}
+			else{
+				$("#labelposup img").attr('src','images/label_up.png');
+				$("#labelposdown img").attr('src','images/label_down.png');
+				$("#labelposleft img").attr('src','images/label_left.png');
+				$("#labelposright img").attr('src','images/label_right.png');
+				$('.labelpos').attr('sel','no');
+				$("#"+$(this).attr('id')+" img").attr('src','images/label_'+$(this).attr('id').replace('labelpos','')+'_2.png');
+				$("#"+$(this).attr('id')).attr('sel','yes');	
+			}
 					
 		});
 		
@@ -982,13 +993,24 @@ function loadFieldsFromDB(item) {
 				}
 					
 					if (key == 'label_position') {
-						$('#labelposup'+" img").attr('src','images/label_up.png');
-						$('#labelposdown'+" img").attr('src','images/label_down.png');
-						$('#labelposleft'+" img").attr('src','images/label_left.png');
-						$('#labelposright'+" img").attr('src','images/label_right.png');
-						$('.labelpos').attr('sel','no');
-						$('#labelpos'+val+" img").attr('src','images/label_'+$('#labelpos'+val).attr('id').replace('labelpos','')+'_2.png');
-						$('#labelpos'+val).attr('sel','yes');
+						if($("#hidden-metaconsole").val() == 1){
+							$('#labelposup'+" img").attr('src','../../images/label_up.png');
+							$('#labelposdown'+" img").attr('src','../../images/label_down.png');
+							$('#labelposleft'+" img").attr('src','../../images/label_left.png');
+							$('#labelposright'+" img").attr('src','../../images/label_right.png');
+							$('.labelpos').attr('sel','no');
+							$('#labelpos'+val+" img").attr('src','../../images/label_'+$('#labelpos'+val).attr('id').replace('labelpos','')+'_2.png');
+							$('#labelpos'+val).attr('sel','yes');
+						}
+						else{
+							$('#labelposup'+" img").attr('src','images/label_up.png');
+							$('#labelposdown'+" img").attr('src','images/label_down.png');
+							$('#labelposleft'+" img").attr('src','images/label_left.png');
+							$('#labelposright'+" img").attr('src','images/label_right.png');
+							$('.labelpos').attr('sel','no');
+							$('#labelpos'+val+" img").attr('src','images/label_'+$('#labelpos'+val).attr('id').replace('labelpos','')+'_2.png');
+							$('#labelpos'+val).attr('sel','yes');
+						}
 					}
 					
 				if (key == 'image') {

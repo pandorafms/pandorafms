@@ -186,7 +186,7 @@ ALTER TABLE tevent_filter ADD COLUMN `date_to` date DEFAULT NULL;
 -- Table `tusuario`
 -- ---------------------------------------------------------------------
 ALTER TABLE tusuario ADD COLUMN `id_filter` int(10) unsigned NULL default NULL;
-ALTER TABLE tusuario ADD COLUMN CONSTRAINT `fk_id_filter` FOREIGN KEY (id_filter) REFERENCES tevent_filter(id_filter) ON DELETE SET NULL;
+ALTER TABLE tusuario CONSTRAINT `fk_id_filter` FOREIGN KEY (id_filter) REFERENCES tevent_filter(id_filter) ON DELETE SET NULL;
 ALTER TABLE tusuario ADD COLUMN `session_time` int(10) signed NOT NULL default '0';
 
 -- ---------------------------------------------------------------------

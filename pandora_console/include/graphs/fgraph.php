@@ -399,7 +399,7 @@ function stacked_line_graph($flash_chart, $chart_data, $width, $height,
 			false,
 			'',
 			$menu,
-			$background_color,
+			$backgroundColor,
 			$dashboard,
 			$vconsole);
 	}

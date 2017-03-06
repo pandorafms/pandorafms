@@ -15,12 +15,16 @@
 // GNU General Public License for more details.
 
 global $config;
+global $incident_w;
+global $incident_m;
 check_login ();
 ui_require_css_file ('firts_task');
 ?>
 <?php 
 
-ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no incidents defined yet.') ) ); 
+ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no incidents defined yet.') ) );
+
+if ($incident_w || $incident_m) {
 ?>
 
 <div class="new_task">
@@ -41,3 +45,4 @@ ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no in
 		</form>
 	</div>
 </div>
+<?php } ?>

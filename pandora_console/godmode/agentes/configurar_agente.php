@@ -471,25 +471,27 @@ if ($id_agente) {
 	
 	//Extensions tabs
 	foreach ($config['extensions'] as $extension) {
-		if (isset($extension['extension_god_tab']) && check_acl ($config["id_user"], $group, "AW", $id_agente)) {
-			$image = $extension['extension_god_tab']['icon'];
-			$name = $extension['extension_god_tab']['name'];
-			$id = $extension['extension_god_tab']['id'];
-			
-			$id_extension = get_parameter('id_extension', '');
-			
-			if ($id_extension == $id) {
-				$active = true;
+		if (isset($extension['extension_god_tab'])) {
+			if (check_acl ($config["id_user"], $group, $extension['extension_god_tab']['acl'])) {
+				$image = $extension['extension_god_tab']['icon'];
+				$name = $extension['extension_god_tab']['name'];
+				$id = $extension['extension_god_tab']['id'];
+				
+				$id_extension = get_parameter('id_extension', '');
+				
+				if ($id_extension == $id) {
+					$active = true;
+				}
+				else {
+					$active = false;
+				}
+				
+				$url = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=extension&id_agente='.$id_agente . '&id_extension=' . $id;
+				
+				$extension_tab = array('text' => '<a href="' . $url .'">' . html_print_image ($image, true, array ( "title" => $name)) . '</a>', 'active' => $active);
+				
+				$onheader = $onheader + array($id => $extension_tab);
 			}
-			else {
-				$active = false;
-			}
-			
-			$url = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=extension&id_agente='.$id_agente . '&id_extension=' . $id;
-			
-			$extension_tab = array('text' => '<a href="' . $url .'">' . html_print_image ($image, true, array ( "title" => $name)) . '</a>', 'active' => $active);
-			
-			$onheader = $onheader + array($id => $extension_tab);
 		}
 	}
 	
@@ -590,7 +592,6 @@ if ($delete_conf_file) {
 		__('Conf file deleted successfully'),
 		__('Could not delete conf file'));
 }
-
 
 // Show agent creation results
 if ($create_agent) {

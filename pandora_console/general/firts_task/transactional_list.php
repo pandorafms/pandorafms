@@ -15,10 +15,15 @@
 // GNU General Public License for more details.
 
 global $config;
+global $networkmaps_write;
+global $networkmaps_manage;
 check_login ();
 ui_require_css_file ('firts_task');
 ?>
-<?php ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no transactions defined yet.') ) ); ?>
+<?php ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no transactions defined yet.') ) ); 
+
+if ($networkmaps_write || $networkmaps_manage) {
+?>
 
 <div class="new_task">
 	<div class="image_task">
@@ -34,3 +39,4 @@ Transaction graphs represent the different processes within our infrastructure t
 		</form>
 	</div>
 </div>
+<?php } ?>

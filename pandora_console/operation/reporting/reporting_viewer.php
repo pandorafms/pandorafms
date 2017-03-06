@@ -215,6 +215,9 @@ if ($enable_init_date) {
 
 $report = reporting_make_reporting_data(null, $id_report, $date, $time,
 	$period, 'dinamic');
+	for ($i=0; $i < sizeof($report['contents']); $i++) { 
+		$report['contents'][$i]['description'] = str_replace('&#x0d;&#x0a;','<br/>',$report['contents'][$i]['description']);
+	}
 reporting_html_print_report($report,false,$config['custom_report_info']);
 
 

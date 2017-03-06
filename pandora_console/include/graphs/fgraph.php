@@ -569,7 +569,7 @@ function line_graph($flash_chart, $chart_data, $width, $height, $color,
 		$graph['font'] = $font;
 		$graph['font_size'] = $font_size;
 		$graph['backgroundColor'] = $backgroundColor;
-		
+		$graph['percentil'] = $percentil_values;
 		$id_graph = serialize_in_temp($graph, null, $ttl);
 		
 		return "<img src='" . $homeurl . "include/graphs/functions_pchart.php?static_graph=1&graph_type=line&ttl=".$ttl."&id_graph=" . $id_graph . "' />";

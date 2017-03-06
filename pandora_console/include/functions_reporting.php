@@ -1221,14 +1221,14 @@ function reporting_event_top_n($report, $content, $type = 'dinamic',
 					array(),
 					"",
 					"",
-					true,
-					ui_get_full_url(false, true, false, false) . '/',
+					false,
+					false,
 					$config['homedir'] . "/images/logo_vertical_water.png",
 					$config['fontpath'],
 					$config['font_size'],
 					true,
 					$ttl,
-					true);
+					$config['homeurl']);
 			}
 			
 			$return['resume'] = null;

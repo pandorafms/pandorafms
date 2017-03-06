@@ -3387,11 +3387,11 @@ function reporting_prediction_date($report, $content) {
 	$return['agent_name'] = $agent_name;
 	$return['module_name'] = $module_name;
 	
-	set_time_limit(500);
+	$intervals_text = explode(';', $content['text']);
 	
-	$intervals_text = $content['text'];
-	$max_interval = substr($intervals_text, 0, strpos($intervals_text, ';'));
-	$min_interval = substr($intervals_text, strpos($intervals_text, ';') + 1);			
+	$max_interval = $intervals_text[0];
+	$min_interval = $intervals_text[1];
+		
 	$value = forecast_prediction_date ($content['id_agent_module'], $content['period'],  $max_interval, $min_interval);
 	
 	if ($value === false) {

@@ -287,6 +287,7 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color,
 		$graph['backgroundColor'] = $backgroundColor;
 		$graph['unit'] = $unit;
 		$graph['series_type'] = $series_type;
+		$graph['percentil'] = $percentil_values;
 		
 		$id_graph = serialize_in_temp($graph, null, $ttl);
 		// Warning: This string is used in the function "api_get_module_graph" from 'functions_api.php' with the regec patern "/<img src='(.+)'>/"

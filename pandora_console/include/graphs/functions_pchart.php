@@ -230,6 +230,9 @@ switch ($graph_type) {
 				$i=0;
 				foreach ($data as $key => $value) {
 					$data[$key]['percentil' . $j] = $percentil[$j][$i];
+					if($graph_type == 'area'){
+						$series_type['percentil' . $j] = 'line';
+					}
 					$i++;
 				}
 			}

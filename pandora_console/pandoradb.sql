@@ -84,6 +84,7 @@ CREATE TABLE IF NOT EXISTS `tagente` (
 	`update_alert_count` tinyint(1) NOT NULL default '0',
 	`alias` varchar(600) BINARY NOT NULL default '',
 	`transactional_agent` tinyint(1) NOT NULL default '0',
+	`alias_as_name` tinyint(2) NOT NULL default '0',
 	PRIMARY KEY  (`id_agente`),
 	KEY `nombre` (`nombre`(255)),
 	KEY `direccion` (`direccion`),

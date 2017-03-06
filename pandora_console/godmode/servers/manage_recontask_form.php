@@ -120,10 +120,10 @@ if (isset($_GET["update"]) || (isset($_GET["upd"]))) {
 		$os_detect = $row["os_detect"];
 		$resolve_names = $row["resolve_names"];
 		$os_detect = $row["os_detect"];
-		$resolve_names = $row["resolve_names"];
 		$parent_detection = $row["parent_detection"];
 		$parent_recursion = $row["parent_recursion"];
 		$macros = $row["macros"];
+		$alias_as_name = $row["alias_as_name"];
 		
 		$name_script = db_get_value('name',
 			'trecon_script', 'id_recon_script', $id_recon_script);
@@ -168,6 +168,7 @@ elseif (isset($_GET["create"]) || isset($_GET["crt"])) {
 		$parent_detection = 1;
 		$parent_recursion = 5;
 		$macros = '';
+		$alias_as_name = 0;
 	}
 
 	$modify = false;
@@ -369,6 +370,10 @@ $table->data[20][1] =  html_print_checkbox ('parent_detection', 1, $parent_detec
 // Parent recursion
 $table->data[21][0] = "<b>".__('Parent recursion');
 $table->data[21][1] =  html_print_input_text ('parent_recursion', $parent_recursion, '', 5, 0, true) . ui_print_help_tip (__('Maximum number of parent hosts that will be created if parent detection is enabled.'), true);
+
+// Alias as name
+$table->data[22][0] = "<b>".__('Alias as Name');
+$table->data[22][1] =  html_print_checkbox ('alias_as_name', 1, $alias_as_name, true);
 
 // Different Form url if it's a create or if it's a update form
 echo '<form name="modulo" method="post" action="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&'.(($id_rt != -1) ? 'update='.$id_rt : 'create=1').'">';

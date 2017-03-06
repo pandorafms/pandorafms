@@ -107,6 +107,7 @@ if ((isset ($_GET["update"])) OR ((isset ($_GET["create"])))) {
 	$resolve_names = (int) get_parameter ("resolve_names", 0);
 	$parent_detection = (int) get_parameter ("parent_detection", 0);
 	$parent_recursion = (int) get_parameter ("parent_recursion", 1);
+	$alias_as_name = (int) get_parameter ("alias_as_name", 0);
 	
 	// Get macros
 	$macros = (string) get_parameter ('macros');
@@ -149,7 +150,8 @@ if (isset($_GET["update"])) {
 		'resolve_names' => $resolve_names,
 		'parent_detection' => $parent_detection,
 		'parent_recursion' => $parent_recursion,
-		'macros' => $macros
+		'macros' => $macros,
+		'alias_as_name' => $alias_as_name
 		);
 		
 	$where = array('id_rt' => $id);
@@ -209,7 +211,8 @@ if (isset($_GET["create"])) {
 		'resolve_names' => $resolve_names,
 		'parent_detection' => $parent_detection,
 		'parent_recursion' => $parent_recursion,
-		'macros' => $macros
+		'macros' => $macros,
+		'alias_as_name' => $alias_as_name
 		);
 
 	$name = io_safe_output($name);

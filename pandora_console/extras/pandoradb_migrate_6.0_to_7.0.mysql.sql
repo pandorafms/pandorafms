@@ -1278,3 +1278,8 @@ UPDATE `tmetaconsole_agent` SET tmetaconsole_agent.alias = tmetaconsole_agent.no
 -- Table `twidget_dashboard`
 -- ---------------------------------------------------------------------
 ALTER TABLE twidget_dashboard MODIFY options LONGTEXT NOT NULL default "";
+
+-- ---------------------------------------------------------------------
+-- Table `trecon_task`
+-- ---------------------------------------------------------------------
+ALTER TABLE trecon_task ADD `alias_as_name` int(2) unsigned default '0';

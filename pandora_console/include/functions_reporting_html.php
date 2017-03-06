@@ -1360,13 +1360,8 @@ function reporting_html_agent_module($table, $item) {
 					$textcolor = '#FFF';
 					break;
 			}
-			/*
-			$file_name = string2image(
-				ui_print_truncate_text($row['agent_name'], 'agent_small',
-					false, true, false, '...'),
-				false, false, 6, 0, $rowcolor, $textcolor, 4, 0);
-			*/
-			$file_name = ui_print_truncate_text($row['agent_name'], 'agent_small',
+			
+			$file_name = ui_print_truncate_text($row['agent_alias'], 'agent_small',
 					false, true, false, '...');
 			$table_data .= "<td style='background-color: " . $rowcolor . ";'>" .
 				$file_name . "</td>";

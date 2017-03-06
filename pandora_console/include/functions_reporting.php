@@ -5780,7 +5780,15 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 	reporting_set_conf_charts($width, $height, $only_image, $type,
 		$content, $ttl);
 	
-	$height += count($modules) * REPORTING_CUSTOM_GRAPH_LEGEND_EACH_MODULE_VERTICAL_SIZE;
+	//height for bullet chart
+	if($graph['stacked'] != 4){
+		$height += count($modules) * REPORTING_CUSTOM_GRAPH_LEGEND_EACH_MODULE_VERTICAL_SIZE;
+	}
+	else{
+		if(!$only_image){
+			$height = 50;
+		}
+	}
 	
 	switch ($type) {
 		case 'dinamic':

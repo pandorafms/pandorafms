@@ -196,7 +196,7 @@ switch ($opt) {
 				'icon_path' => $config["homeurl"] . '/' . $icon,
 				'icon_width' => $icon_width,
 				'icon_height' => $icon_height,
-				'name' => $row['nombre'],
+				'name' => io_safe_output($row['nombre']),
 				'status' => $status,
 				'stored_longitude' => $row['stored_longitude'],
 				'stored_latitude' => $row['stored_latitude'],

@@ -1,5 +1,5 @@
 package: pandorafms-agent-unix
-Version: NG_BETA-170303
+Version: NG_BETA-170306
 Architecture: all
 Priority: optional
 Section: admin

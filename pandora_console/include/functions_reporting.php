@@ -1199,7 +1199,7 @@ function reporting_event_top_n($report, $content, $type = 'dinamic',
 			
 			
 			if ($show_graph != REPORT_TOP_N_ONLY_TABLE) {
-				
+				arsort($data_pie_graph);
 				$return['charts']['pie'] = pie3d_graph(false,
 					$data_pie_graph,
 					$width, $height,

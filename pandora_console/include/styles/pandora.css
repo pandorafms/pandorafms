@@ -3006,9 +3006,18 @@ table#policy_modules td * {
 	padding: 10px 30px;
 	font-size: 20px;
 	font-weight: bold;
-	height: 66px;
-	width: 191px;
 	border-radius: 2px;
+}
+
+div.sumary_div{
+	color: #FFF;
+    margin: 10px;
+    padding: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    border-radius: 2px;
+    width: 60px;
+    text-align: center;
 }
 
 .databox.data>tbody>tr>td{

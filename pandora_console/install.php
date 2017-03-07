@@ -419,7 +419,7 @@ function install_step1_licence() {
 		echo file_get_contents ("COPYING");
 		echo "</textarea>";
 		echo "<p>";
-		echo "<div style='text-align: right;'><button class='btn_install_next' type='submit'>Yes, I accept licence terms</button></div>";
+		echo "<div style='text-align: right;'><button id='btn_accept' class='btn_install_next' type='submit'>Yes, I accept licence terms</button></div>";
 	}
 	echo "</div>";
 		
@@ -490,17 +490,17 @@ function install_step2() {
 					modules.
 				</div>
 				<div style='text-align:right; width:100%;'>
-				Ignore it. <a href='install.php?step=3' style='font-weight: bolder;'><button class='btn_install_next' type='submit'>Force install Step #3</button></a>
+				Ignore it. <a id='step3' href='install.php?step=3' style='font-weight: bolder;'><button class='btn_install_next' type='submit'>Force install Step #3</button></a>
 				</div>";
 			}
 			else {
 				echo "<div style='text-align:right; width:100%;'>";
-				echo "<a id='step3' href='install.php?step=3'><br>
+				echo "<a id='step3' href='install.php?step=3'>
 				<button class='btn_install_next' type='submit'>Next</button></a>";
 				echo "</div>";
-				echo "<div style='clear: both;'><!-- --></div>";
 			}
 			echo "</div>";
+			echo "<div style='clear: both;'><!-- --></div>";
 			echo "
 		</div>
 		<div style='clear: both;'><!-- --></div>
@@ -636,7 +636,7 @@ function install_step3() {
 	
 	if (!$error) {
 		echo "<div style='text-align:right; width:100%;'>";
-		echo "<a id='step4' href='install.php?step=4'><br>
+		echo "<a id='step4' href='install.php?step=4'>
 				<button class='btn_install_next' type='submit'>Next</button></a>";
 		echo "</div>";
 	}
@@ -896,9 +896,10 @@ function install_step4() {
 		echo "</table>";
 				
 			if ($everything_ok == 1) {
+				echo "<div style='text-align:right; width:100%;'>";
+				echo "<a id='step5' href='install.php?step=5'>
+				<button class='btn_install_next' type='submit'>Next</button></a>";
 				echo "</div>";
-				echo "<div style='margin-top: 20px;'><a id='step5' href='install.php?step=5'>
-				<img align='right' src='images/arrow_next.png' border='0' alt=''></a></div>";
 			}
 			else {
 				$info = "<div class='err'><b>There were some problems.
@@ -936,7 +937,7 @@ function install_step4() {
 				}
 				echo "</div>";
 			}
-			
+		echo "</div>";
 		echo "<div style='clear: both;'></div>";
 		echo "
 		</div>

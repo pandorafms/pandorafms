@@ -301,5 +301,30 @@ $ignored_params['refr'] = '';
 				$(this).css('margin-top','');
 			}
 		});
+		
+		$(".graph").each(function(){
+			height =	parseInt($(this).css("height")) - 30;
+		
+			$(this).css('height', height);
+		});
+		
+		/*
+		$('.percentile_item a > img').each(function(){
+			
+			if($(this).css('float')=='left' || $(this).css('float')=='right'){
+				
+				
+			$(this).css('margin-top',(parseInt($(this).parent().parent().css('height'))/2-parseInt($(this).css('height'))/2)+'px');
+			$(this).css('margin-left','');
+			
+			}
+			else{
+				$(this).css('margin-left',(parseInt($(this).parent().parent().css('width'))/2-parseInt($(this).css('width'))/2)+'px');
+				$(this).css('margin-top','');
+			}
+			
+		});
+		*/
+	
 	});
 </script>

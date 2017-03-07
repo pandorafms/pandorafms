@@ -2713,8 +2713,8 @@ function eventsItems(drag) {
 			unselectAll();
 			$(divParent).attr('withborder','true');
 			$(divParent).css('border', '1px blue dotted');
-			//$(divParent).css('left', '-=1px');
-			//$(divParent).css('top', '-=1px');
+			$(divParent).css('left', '-=1px');
+			$(divParent).css('top', '-=1px');
 			
 			if ($(divParent).hasClass('box_item')) {
 				creationItem = null;
@@ -3116,8 +3116,8 @@ function unselectAll() {
     $(".item").each(function(){
         $(this).css('border', '');
 				if($(this).attr('withborder') == 'true'){
-					//$(this).css('top', '+=1');
-					//$(this).css('left', '+=1');
+					$(this).css('top', '+=1');
+					$(this).css('left', '+=1');
 					$(this).attr('withborder', 'false');
 				}
 				

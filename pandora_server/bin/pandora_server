@@ -352,25 +352,21 @@ sub pandora_server_tasks ($) {
 					}
 				}
 	
-				# Pandora self monitoring
-				if (defined($pa_config->{"self_monitoring"}) 
-					&& $pa_config->{"self_monitoring"} == 1
-					&& $counter % $pa_config->{'self_monitoring_interval'} == 0) {
-					pandora_self_monitoring ($pa_config, $dbh);
-				}
+			}
+
+			# Pandora self monitoring
+			if (defined($pa_config->{"self_monitoring"}) 
+				&& $pa_config->{"self_monitoring"} == 1
+				&& $counter % $pa_config->{'self_monitoring_interval'} == 0) {
+				pandora_self_monitoring ($pa_config, $dbh);
+			}
 		
-			
-				# Avoid counter overflow
-				if ($counter > 10000){
-					$counter = 0;
-				}
-				else {
-					$counter++;
-				}
+			# Avoid counter overflow
+			if ($counter > 10000){
+				$counter = 0;
 			}
 			else {
-				# Do an additional sleep if we are not the master server
-				sleep ($pa_config->{'server_threshold'});
+				$counter++;
 			}
 		};
 

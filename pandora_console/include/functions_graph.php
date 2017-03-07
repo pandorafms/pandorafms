@@ -1429,8 +1429,6 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		
 		if ($projection == false or ($projection != false and $i == 0)) {
 			$module_name_list[$i] .= ": ";
-			if ($show_last)
-				$module_name_list[$i] .= __('Last') . ": $last $unit; ";
 			if ($show_max)
 				$module_name_list[$i] .= __("Max") . ": $max $unit; ";
 			if ($show_min)

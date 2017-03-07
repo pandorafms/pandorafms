@@ -196,7 +196,6 @@ if ($create_agent) {
 		if($alias_as_name){
 			$sql = 'SELECT nombre FROM tagente WHERE nombre = "' . $alias . '"';
 			$exists_alias  = db_get_row_sql($sql);
-			html_debug_print($exists_alias, true);
 			$nombre_agente = $alias;
 		}
 

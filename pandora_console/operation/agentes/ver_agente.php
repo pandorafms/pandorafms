@@ -490,35 +490,33 @@ if (is_ajax ()) {
 			asort($result);
 		}
 		else {
-      
-      if(implode(',', $idAgents) < 0){
-      
-        
-      $sql = 'SELECT DISTINCT(nombre) FROM tagente_modulo
-WHERE nombre IN (
-SELECT nombre
-FROM tagente_modulo 
-GROUP BY nombre
-HAVING count(nombre) = (SELECT count(nombre) FROM tagente_modulo))';
-      }
-      else{
-      	$sql = 'SELECT DISTINCT(nombre)
-				FROM tagente_modulo t1
-				WHERE ' . $filter . '
-					AND t1.delete_pending = 0
-					AND t1.id_agente IN (' . implode(',', $idAgents) . ')';
-			
-			if ($selection_mode == 'common') {
-				$sql .= ' AND (
-							SELECT count(nombre)
-							FROM tagente_modulo t2
-							WHERE t2.delete_pending = 0
-								AND t1.nombre = t2.nombre
-								AND t2.id_agente IN (' . implode(',', $idAgents) . ')) = (' . count($idAgents) . ')';
-			}elseif ($selection_mode == 'unknown'){
-				$sql .= 'AND t1.id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_estado where estado = 3 OR estado = 4)';
+		  if(implode(',', $idAgents) < 0) {
+			$sql = 'SELECT DISTINCT(nombre) FROM tagente_modulo
+				WHERE nombre IN (
+				SELECT nombre
+				FROM tagente_modulo 
+				GROUP BY nombre
+				HAVING count(nombre) = (SELECT count(nombre) FROM tagente_modulo))';
+		  }
+		  else {
+			$sql = 'SELECT DISTINCT(nombre)
+					FROM tagente_modulo t1
+					WHERE ' . $filter . '
+						AND t1.delete_pending = 0
+						AND t1.id_agente IN (' . implode(',', $idAgents) . ')';
+				
+				if ($selection_mode == 'common') {
+					$sql .= ' AND (
+								SELECT count(nombre)
+								FROM tagente_modulo t2
+								WHERE t2.delete_pending = 0
+									AND t1.nombre = t2.nombre
+									AND t2.id_agente IN (' . implode(',', $idAgents) . ')) = (' . count($idAgents) . ')';
+				}
+				elseif ($selection_mode == 'unknown') {
+					$sql .= 'AND t1.id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_estado where estado = 3 OR estado = 4)';
+				}
 			}
-    }
 			$sql .= ' ORDER BY nombre';
 			
 			$nameModules = db_get_all_rows_sql($sql);

@@ -2524,7 +2524,9 @@ function agents_get_agent_custom_field ($agent_id, $custom_field_name) {
 	return db_get_value_sql($sql);
 }
 
-function select_modules_for_agent_group($id_group, $id_agents, $selection, $return=true){
+function select_modules_for_agent_group($id_group, $id_agents, 
+	$selection, $return = true) {
+	
 	$agents = implode(",", $id_agents);
 
 	$filter_group = "";

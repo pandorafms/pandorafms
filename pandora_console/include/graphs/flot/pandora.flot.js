@@ -164,9 +164,8 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 				pie: {
 					show: true,
 					radius: 3/4,
-					innerRadius: 0.4,
-					label: label_conf
-					
+					innerRadius: 0.4
+					//label: label_conf
 				}
 			},
 			legend: {

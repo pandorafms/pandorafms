@@ -137,6 +137,10 @@ if (isset($graph['series_type'])) {
 	$series_type = $graph['series_type'];
 }
 
+if (isset($graph['percentil'])){
+	$percentil = $graph['percentil']; 
+}
+
 
 
 /*
@@ -219,9 +223,22 @@ switch ($graph_type) {
 	case 'line':
 	case 'threshold':
 	case 'scatter':
+	
+		if (!empty($percentil)) {
+			$count_percentil = count($percentil);
+			for ($j=0; $j < $count_percentil; $j++) {
+				$i=0;
+				foreach ($data as $key => $value) {
+					$data[$key]['percentil' . $j] = $percentil[$j][$i];
+					if($graph_type == 'area'){
+						$series_type['percentil' . $j] = 'line';
+					}
+					$i++;
+				}
+			}
+		}
 		foreach ($data as $i => $d) {
 			$data_values[] = $d;
-			
 			
 			if (($c % $step) == 0) {
 				$data_keys[] = $i;
@@ -297,6 +314,36 @@ foreach ($colors as $i => $color) {
 		$rgb_color[$i]['alpha'] = $color['alpha'];
 	}
 }
+
+//add color for percentil
+if($percentil){
+	for ($j=0; $j < $count_percentil; $j++) {
+		if (isset ($colors[$j]['border'])) {
+			$rgb['border'] = html_html2rgb($colors[$j]['border']);
+			
+			if (isset($rgb['border'])) {
+				$rgb_color['percentil' . $j]['border']['R'] = $rgb['border'][0];
+				$rgb_color['percentil' . $j]['border']['G'] = $rgb['border'][1];
+				$rgb_color['percentil' . $j]['border']['B'] = $rgb['border'][2];
+			}
+		}
+
+		if (isset ($colors[$j]['color'])) {
+			$rgb['color'] = html_html2rgb($colors[$j]['color']);
+			
+			if (isset($rgb['color'])) {
+				$rgb_color['percentil' . $j]['color']['R'] = $rgb['color'][0];
+				$rgb_color['percentil' . $j]['color']['G'] = $rgb['color'][1];
+				$rgb_color['percentil' . $j]['color']['B'] = $rgb['color'][2];
+			}
+		}
+
+		if (isset ($colors[$j]['alpha'])) {
+			$rgb_color['percentil' . $j]['alpha'] = $colors[$j]['alpha'];
+		}
+	}
+}
+
 //add for report with max 15 modules comparation repeat
 $countlegend = count($legend);
 if($countlegend > 15){
@@ -812,7 +859,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 					"BorderB" => $rgb_color[$i]['border']["B"], 
 					"Alpha" => $rgb_color[$i]['alpha']));
 				
-			/*$palette_color = array();
+			$palette_color = array();
 			if (isset($rgb_color[$i]['color'])) {
 				$palette_color["R"] = $rgb_color[$i]['color']["R"];
 				$palette_color["G"] = $rgb_color[$i]['color']["G"];
@@ -827,7 +874,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 				$palette_color["Alpha"] = $rgb_color[$i]['Alpha'];
 			}
 			
-			$MyData->setPalette($point_id, $palette_color);*/
+			$MyData->setPalette($point_id, $palette_color);
 		}
 		
 		// The weight of the line is not calculated in pixels, so it needs to be transformed

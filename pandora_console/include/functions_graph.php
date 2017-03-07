@@ -480,7 +480,7 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 		}
 	}
 	
-	if (!is_null($percentil)) {
+	if (!is_null($percentil) && $percentil) {
 		$avg = array_map(function($item) { return $item['sum'];}, $chart);
 		
 		$percentil_result = get_percentile($percentil, $avg);
@@ -774,7 +774,7 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 		$chart_extra_data['legend_unknown'] = $legend['unknown'.$series_suffix_str];
 	}
 	
-	if (!is_null($percentil)) {
+	if (!is_null($percentil) && $percentil) {
 		$first_data = reset($chart);
 		$percentil_value = format_for_graph($first_data['percentil'], 2);
 		
@@ -1429,8 +1429,6 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		
 		if ($projection == false or ($projection != false and $i == 0)) {
 			$module_name_list[$i] .= ": ";
-			if ($show_last)
-				$module_name_list[$i] .= __('Last') . ": $last $unit; ";
 			if ($show_max)
 				$module_name_list[$i] .= __("Max") . ": $max $unit; ";
 			if ($show_min)
@@ -1739,8 +1737,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			}
 			break;
 		default:
-			if (!is_null($percentil)) {
-				
+			if (!is_null($percentil) && $percentil) {
 				foreach ($graph_values as $graph_group => $point) {
 					foreach ($point as $timestamp_point => $point_value) {
 						$temp[$timestamp_point][$graph_group] = $point_value;
@@ -1750,7 +1747,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 					$percentil_result[$graph_group] = array_fill ( 0, count($point), $percentile_value);
 					$series_type[$graph_group] = 'line';
 					$agent_name = io_safe_output(
-						modules_get_agentmodule_agent_name ($module_list[$graph_group]));
+						modules_get_agentmodule_agent_alias ($module_list[$graph_group]));
 					$module_name = io_safe_output(
 						modules_get_agentmodule_name ($module_list[$graph_group]));
 					$module_name_list['percentil'.$graph_group] = __('Percentile %dº', $config['percentil']) . __(' of module ') . $agent_name .' / ' . $module_name . ' (' . $percentile_value . ' ' . $unit . ') ';
@@ -2004,7 +2001,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				$width, $height, $color, $module_name_list, $long_index,
 				ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 				"", "", $water_mark, $config['fontpath'], $fixed_font_size,
-				"", $ttl, $homeurl, $background_color);
+				"", $ttl, $homeurl, $background_color, true);
 			break;
 		case CUSTOM_GRAPH_PIE:
 			return ring_graph($flash_charts, $graph_values, $width, $height,
@@ -2825,7 +2822,7 @@ function graph_incidents_status () {
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
 	
-	return pie3d_graph($config['flash_charts'], $data, 370, 180,
+	return pie3d_graph($config['flash_charts'], $data, 320, 200,
 		__('Other'), '', $water_mark,
 		$config['fontpath'], $config['font_size']);
 }

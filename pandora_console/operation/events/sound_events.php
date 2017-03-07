@@ -69,35 +69,42 @@ echo "<h1 class='modalheaderh1'>" . __("Sound console"). "</h1>";
 
 $table = null;
 $table->width = '100%';
-
+$table->class = ' ';
 $table->size[0] = '10%';
 $table->style[0] = 'font-weight: bold; vertical-align: top;';
 $table->style[1] = 'font-weight: bold; vertical-align: top;';
+$table->style[2] = 'font-weight: bold; vertical-align: top;';
 
 $table->data[0][0] = __('Group');
-$table->data[0][0] .= html_print_select_groups(false, $access, true, 'group', '', 'changeGroup();', '', 0, true) . '<br />' . '<br />';
-$table->data[0][0] .= __('Agent');
-$table->data[0][0] .= html_print_select($agents, 'id_agents[]', true, false, '', '', true, true,'','','','','',false,'','',true);
-$table->data[0][1] = __('Type');
-$table->data[0][1] .= '<br />' . html_print_checkbox('alert_fired', 'alert_fired', true, true, false, 'changeType();') . __('Alert fired') . '<br />' .
+$table->data[0][1] .= html_print_select_groups(false, $access, true, 'group', '', 'changeGroup();', '', 0, true) . '<br />' . '<br />';
+$table->data[1][0] .= __('Agent');
+$table->data[1][1] .= html_print_select($agents, 'id_agents[]', true, false, '', '', true, true,'','','','','',false,'','',true);
+$table->data[0][2] = __('Type');
+$table->data[0][3] .= html_print_checkbox('alert_fired', 'alert_fired', true, true, false, 'changeType();') . __('Alert fired') . '<br />' .
 	html_print_checkbox('critical', 'critical', true, true, false, 'changeType();') . __('Monitor critical') . '<br />' .
 	html_print_checkbox('unknown', 'unknown', true, true, false, 'changeType();') . __('Monitor unknown') . '<br />' .
 	html_print_checkbox('warning', 'warning', true, true, false, 'changeType();') . __('Monitor warning') . '<br />';
 
 html_print_table($table);
 
-echo '<br />';
-echo '<div style="text-align:center">';
-echo '<a href="javascript: toggleButton();">' .
-		html_print_image("images/play.button.png", true, array("id" => "button")) .
-	'</a>';
-echo '<a href="javascript: ok();">' .
-		html_print_image("images/ok.button.png", true, array("style" => "margin-left: 15px;")) . 
-	'</a>';
-echo '<a href="javascript: test_sound_button();">' .
-		html_print_image("images/icono_test.png", true, array("id" => "button_try", "style" => "margin-left: 15px;")) . 
-	'</a>';
-echo '</div>';
+echo '<br>';
+$table = null;
+$table->width = '100%';
+$table->class = ' ';
+$table->bgcolor = 'white';
+$table->data[0][0] = '<a href="javascript: toggleButton();">' .
+					 html_print_image("images/play.button.png", true, array("id" => "button")) .
+					 '</a>';
+
+$table->data[0][1] .= '<a href="javascript: ok();">' .
+					  html_print_image("images/ok.button.png", true, array("style" => "margin-left: 15px;")) . 
+					  '</a>';
+
+$table->data[0][2] .= '<a href="javascript: test_sound_button();">' .
+					  html_print_image("images/icono_test.png", true, array("id" => "button_try", "style" => "margin-left: 15px;")) . 
+					 '</a>';
+html_print_table($table);
+
 ?>
 <script src="../../include/javascript/jquery.js" type="text/javascript"></script>
 <script type="text/javascript">
@@ -120,7 +127,7 @@ var test_sound = false;
 
 function test_sound_button() {
 	if (!test_sound) {
-		$("#button_try").attr('src', '../../images/icono_test_active.png');
+		$("#button_try").attr('src', '../../images/icono_test.png');
 		$('body').append("<audio src='../../include/sounds/Star_Trek_emergency_simulation.wav' autoplay='true' hidden='true' loop='false'>");
 		test_sound = true;
 	}
@@ -273,6 +280,8 @@ function animation() {
 $(document).ready (function () {
 	setInterval("check_event()", (10 * 1000)); //10 seconds between ajax request
 	setInterval("animation()", (0.1 * 1000)); 
+	$("#table1").css("background-color", "#fff");
+	$("#table2").css("background-color", "#fff");
 });
 </script>
 <?php

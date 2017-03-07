@@ -74,6 +74,7 @@ $maximo = 0;
 $minimo = 0;
 $nombre_agente = "";
 $alias = get_parameter('alias', '');
+$alias_as_name = 0;
 $direccion_agente = get_parameter('direccion', '');
 $direccion_agente = trim(io_safe_output($direccion_agente));
 $direccion_agente = io_safe_input($direccion_agente);
@@ -149,6 +150,7 @@ $module_macros = array ();
 // Create agent
 if ($create_agent) {
 	$alias = (string) get_parameter_post("alias",'');
+	$alias_as_name = (int) get_parameter_post("alias_as_name", 0);
 	$direccion_agente = (string) get_parameter_post("direccion",'');
 	$direccion_agente = trim(io_safe_output($direccion_agente));
 	$direccion_agente = io_safe_input($direccion_agente);
@@ -175,7 +177,7 @@ if ($create_agent) {
 	if ($fields === false) $fields = array();
 	
 	$field_values = array();
-	
+
 	foreach ($fields as $field) {
 		$field_values[$field['id_field']] = (string) get_parameter_post ('customvalue_'.$field['id_field'], '');
 	}
@@ -191,26 +193,40 @@ if ($create_agent) {
 		$agent_created_ok = 0;
 	}*/
 	else {
-		$id_agente = db_process_sql_insert ('tagente', 
-			array ('nombre' => $nombre_agente,
-				'alias' => $alias,
-				'direccion' => $direccion_agente,
-				'id_grupo' => $grupo,
-				'intervalo' => $intervalo,
-				'comentarios' => $comentarios,
-				'modo' => $modo,
-				'id_os' => $id_os,
-				'disabled' => $disabled,
-				'cascade_protection' => $cascade_protection,
-				'cascade_protection_module' => $cascade_protection_module,
-				'server_name' => $server_name,
-				'id_parent' => $id_parent,
-				'custom_id' => $custom_id,
-				'icon_path' => $icon_path,
-				'update_gis_data' => $update_gis_data,
-				'url_address' => $url_description,
-				'quiet' => $quiet));
-		enterprise_hook ('update_agent', array ($id_agente));
+		if($alias_as_name){
+			$sql = 'SELECT nombre FROM tagente WHERE nombre = "' . $alias . '"';
+			$exists_alias  = db_get_row_sql($sql);
+			html_debug_print($exists_alias, true);
+			$nombre_agente = $alias;
+		}
+
+		if(!$exists_alias){
+			$id_agente = db_process_sql_insert ('tagente', 
+				array ('nombre' => $nombre_agente,
+					'alias' => $alias,
+					'alias_as_name' => $alias_as_name,
+					'direccion' => $direccion_agente,
+					'id_grupo' => $grupo,
+					'intervalo' => $intervalo,
+					'comentarios' => $comentarios,
+					'modo' => $modo,
+					'id_os' => $id_os,
+					'disabled' => $disabled,
+					'cascade_protection' => $cascade_protection,
+					'cascade_protection_module' => $cascade_protection_module,
+					'server_name' => $server_name,
+					'id_parent' => $id_parent,
+					'custom_id' => $custom_id,
+					'icon_path' => $icon_path,
+					'update_gis_data' => $update_gis_data,
+					'url_address' => $url_description,
+					'quiet' => $quiet));
+			enterprise_hook ('update_agent', array ($id_agente));
+		}
+		else{
+			$id_agente = false;
+		}
+
 		if ($id_agente !== false) {
 			// Create custom fields for this agent
 			foreach ($field_values as $key => $value) {
@@ -249,6 +265,9 @@ if ($create_agent) {
 		else {
 			$id_agente = 0;
 			$agent_creation_error = __('Could not be created');
+			if($exists_alias){
+				$agent_creation_error = __('Could not be created, because name already exists');
+			}
 		}
 	}
 }
@@ -471,25 +490,27 @@ if ($id_agente) {
 	
 	//Extensions tabs
 	foreach ($config['extensions'] as $extension) {
-		if (isset($extension['extension_god_tab']) && check_acl ($config["id_user"], $group, "AW", $id_agente)) {
-			$image = $extension['extension_god_tab']['icon'];
-			$name = $extension['extension_god_tab']['name'];
-			$id = $extension['extension_god_tab']['id'];
-			
-			$id_extension = get_parameter('id_extension', '');
-			
-			if ($id_extension == $id) {
-				$active = true;
+		if (isset($extension['extension_god_tab'])) {
+			if (check_acl ($config["id_user"], $group, $extension['extension_god_tab']['acl'])) {
+				$image = $extension['extension_god_tab']['icon'];
+				$name = $extension['extension_god_tab']['name'];
+				$id = $extension['extension_god_tab']['id'];
+				
+				$id_extension = get_parameter('id_extension', '');
+				
+				if ($id_extension == $id) {
+					$active = true;
+				}
+				else {
+					$active = false;
+				}
+				
+				$url = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=extension&id_agente='.$id_agente . '&id_extension=' . $id;
+				
+				$extension_tab = array('text' => '<a href="' . $url .'">' . html_print_image ($image, true, array ( "title" => $name)) . '</a>', 'active' => $active);
+				
+				$onheader = $onheader + array($id => $extension_tab);
 			}
-			else {
-				$active = false;
-			}
-			
-			$url = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=extension&id_agente='.$id_agente . '&id_extension=' . $id;
-			
-			$extension_tab = array('text' => '<a href="' . $url .'">' . html_print_image ($image, true, array ( "title" => $name)) . '</a>', 'active' => $active);
-			
-			$onheader = $onheader + array($id => $extension_tab);
 		}
 	}
 	
@@ -591,7 +612,6 @@ if ($delete_conf_file) {
 		__('Could not delete conf file'));
 }
 
-
 // Show agent creation results
 if ($create_agent) {
 	if (!isset($agent_creation_error)) {
@@ -645,6 +665,7 @@ if ($update_agent) { // if modified some agent paramenter
 	$id_agente = (int) get_parameter_post ("id_agente");
 	$nombre_agente = str_replace('`','&lsquo;',(string) get_parameter_post ("agente", ""));
 	$alias = str_replace('`','&lsquo;',(string) get_parameter_post ("alias", ""));
+	$alias_as_name = (int) get_parameter_post ('alias_as_name', 0);
 	$direccion_agente = (string) get_parameter_post ("direccion", '');
 	$direccion_agente = trim(io_safe_output($direccion_agente));
 	$direccion_agente = io_safe_input($direccion_agente);
@@ -737,6 +758,7 @@ if ($update_agent) { // if modified some agent paramenter
 				'id_os' => $id_os,
 				'modo' => $modo,
 				'alias' => $alias,
+				'alias_as_name' => $alias_as_name,
 				'direccion' => $direccion_agente,
 				'id_grupo' => $grupo,
 				'intervalo' => $intervalo,
@@ -814,6 +836,7 @@ if ($id_agente) {
 			$alias = $nombre_agente;
 		}
 	}
+	$alias_as_name = $agent["alias_as_name"];
 	$direccion_agente = $agent["direccion"];
 	$grupo = $agent["id_grupo"];
 	$ultima_act = $agent["ultimo_contacto"];

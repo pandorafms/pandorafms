@@ -84,6 +84,7 @@ CREATE TABLE IF NOT EXISTS `tagente` (
 	`update_alert_count` tinyint(1) NOT NULL default '0',
 	`alias` varchar(600) BINARY NOT NULL default '',
 	`transactional_agent` tinyint(1) NOT NULL default '0',
+	`alias_as_name` tinyint(2) NOT NULL default '0',
 	PRIMARY KEY  (`id_agente`),
 	KEY `nombre` (`nombre`(255)),
 	KEY `direccion` (`direccion`),
@@ -726,6 +727,7 @@ CREATE TABLE IF NOT EXISTS `trecon_task` (
 	`parent_recursion` tinyint(1) unsigned default '0',
 	`disabled` tinyint(1) unsigned NOT NULL DEFAULT '0',
 	`macros` TEXT,
+	`alias_as_name` tinyint(2) NOT NULL default '0',
 	PRIMARY KEY  (`id_rt`),
 	KEY `recon_task_daemon` (`id_recon_server`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
@@ -2881,6 +2883,7 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_agent` (
 	`update_alert_count` tinyint(1) NOT NULL default '0',
 	`transactional_agent` tinyint(1) NOT NULL default '0',
 	`alias` varchar(600) BINARY NOT NULL default '',
+	`alias_as_name` tinyint(2) NOT NULL default '0',
 	PRIMARY KEY  (`id_agente`),
 	KEY `nombre` (`nombre`(255)),
 	KEY `direccion` (`direccion`),

@@ -15,6 +15,8 @@
 // GNU General Public License for more details.
 
 global $config;
+global $vconsoles_write;
+global $vconsoles_manage;
 check_login ();
 ui_require_css_file ('firts_task');
 
@@ -22,6 +24,7 @@ ui_print_info_message(
 	array(
 		'no_close'=>true,
 		'message'=>  __('There are no visual console defined yet.')));
+if ($vconsoles_write || $vconsoles_manage) {
 ?>
 
 <div class="new_task">
@@ -41,3 +44,4 @@ ui_print_info_message(
 		</form>
 	</div>
 </div>
+<?php } ?>

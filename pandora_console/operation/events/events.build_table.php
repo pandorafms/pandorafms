@@ -259,6 +259,9 @@ else {
 			$table->head[$i] = html_print_checkbox ("all_validate_box", "1", false, true);
 			$table->align[$i] = 'left';
 		}
+		else {
+			$table->head[$i] = '';
+		}
 	}
 
 	if ($meta) {

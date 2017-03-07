@@ -8,3 +8,5 @@ include/config.php
 pandora_console.log
 enterprise
 *.bak
+audit.log
+install_old.php

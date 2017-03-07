@@ -284,18 +284,15 @@ sub pandora_server_tasks ($) {
 				# TASKS EXECUTED EVERY 5 SECONDS (Low latency tasks)
 				# --------------------------------------------------
 				if (($counter % 5) == 0) {
-								
+
 					# Update forced alerts
 					pandora_exec_forced_alerts ($pa_config, $dbh);
-	
-					# Rotate Log File
-					pandora_rotate_logfile($pa_config);
 				}
 				
 				# TASKS EXECUTED EVERY 30 SECONDS (Mid latency tasks)
 				# ---------------------------------------------------
 				if (($counter % 30) == 0) {
-		
+	
 					# Update module status and fired alert counts
 					my @agents = get_db_rows ($dbh, 'SELECT id_agente, nombre, update_module_count, update_alert_count FROM tagente WHERE disabled = 0 AND (update_module_count=1 OR update_alert_count=1)');
 					foreach my $agent (@agents) {
@@ -351,26 +348,28 @@ sub pandora_server_tasks ($) {
 						db_do ($dbh, 'UPDATE tevento SET estado=1, ack_utimestamp=? WHERE estado=0 AND utimestamp < ? AND utimestamp > ?', $time_ref, $expiry_limit, $expiry_window);
 					}
 				}
-	
-				# Pandora self monitoring
-				if (defined($pa_config->{"self_monitoring"}) 
-					&& $pa_config->{"self_monitoring"} == 1
-					&& $counter % $pa_config->{'self_monitoring_interval'} == 0) {
-					pandora_self_monitoring ($pa_config, $dbh);
-				}
-		
-			
-				# Avoid counter overflow
-				if ($counter > 10000){
-					$counter = 0;
-				}
-				else {
-					$counter++;
-				}
+			}
+
+			# COMMON TASKS (master and non-master) 
+			# ---------------------------------------------------------------
+
+			# Rotate Log File
+			if (($counter % 30) == 0) {
+				pandora_rotate_logfile($pa_config);
+			}
+			# Pandora self monitoring
+			if (defined($pa_config->{"self_monitoring"}) 
+				&& $pa_config->{"self_monitoring"} == 1
+				&& $counter % $pa_config->{'self_monitoring_interval'} == 0) {
+				pandora_self_monitoring ($pa_config, $dbh);
+			}
+
+			# Avoid counter overflow
+			if ($counter > 10000){
+				$counter = 0;
 			}
 			else {
-				# Do an additional sleep if we are not the master server
-				sleep ($pa_config->{'server_threshold'});
+				$counter++;
 			}
 		};
 

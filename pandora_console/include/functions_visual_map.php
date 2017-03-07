@@ -124,105 +124,83 @@ function visual_map_print_item($mode = "read", $layoutData,
 	
 	$text = '<span id="text_' . $id . '" class="text">' . $label .'</span>';
 
-	if($height == 0){
-		
-	switch($type){
-		
-		case 0:
-		case 11:
-		$tableheight0 = '70';
-		break;
-		
-		case 3:
-		$tableheight0 = '30';
-		break;
-		
-		case 9:
-		$tableheight0 = '130';
-		break;
-		
-		case 1:
-		$tableheight0 = '180';
-		break;
-		
-		case SERVICE:
-		$tableheight0 = '50';
-		break;
-	
+	if ($height == 0) {
+		switch($type) {
+			case 0:
+			case 11:
+				$tableheight0 = '70';
+				break;
+			case 3:
+				$tableheight0 = '30';
+				break;
+			case 9:
+				$tableheight0 = '130';
+				break;
+			case 1:
+				$tableheight0 = '180';
+				break;
+			case SERVICE:
+				$tableheight0 = '50';
+				break;
+		}
 	}
-}
-else{
-	$tableheight0 = $height;
-}
+	else {
+		$tableheight0 = $height;
+	}
 
-if ($layoutData['width'] == 0 || $layoutData['height'] == 0){
-	switch($type){
-		
-		case 0:
-		case 11:
-		$himg = '70';
-		$wimg ='70';
-		break;
-		
-		case 3:
-		
-		if(get_parameter('action') == 'edit'){
-		
-		$himg = '30';
-		$wimg = '150';
-		
-		}
-		else{
-			$himg = '15';
-			$wimg = '150';
-		}
-		
-		
-		break;
-		
-		case 9:
-		$himg = '130';
-		$wimg = '130';
-		break;
-		
-		case 1:
-		$himg = '180';
-		$wimg = '300';
-		break;
-		
-		case SERVICE:
-		$himg = '50';
-		$wimg = '150';
-		break;
-	
-	}
-}
-else{
-	$wimg = $layoutData['width'];
-	$himg = $layoutData['height'];
-	
-	if($type == 3){
-		if(get_parameter('action') == 'edit'){
-		
-		$himg = '30';
-		
-		}
-		else{
-			$himg = '15';
+	if ($layoutData['width'] == 0 || $layoutData['height'] == 0) {
+		switch($type) {
+			case 0:
+			case 11:
+				$himg = '70';
+				$wimg ='70';
+				break;
+			case 3:
+				if (get_parameter('action') == 'edit') {
+					$himg = '30';
+					$wimg = '150';
+				}
+				else{
+					$himg = '15';
+					$wimg = '150';
+				}
+				break;
+			case 9:
+				$himg = '130';
+				$wimg = '130';
+				break;
+			case 1:
+				$himg = '180';
+				$wimg = '300';
+				break;
+			case SERVICE:
+				$himg = '50';
+				$wimg = '150';
+				break;
 		}
 	}
-	if($type == 9){
-	$himg = $wimg;
+	else {
+		$wimg = $layoutData['width'];
+		$himg = $layoutData['height'];
+		
+		if ($type == 3) {
+			if(get_parameter('action') == 'edit')
+				$himg = '30';
+			else
+				$himg = '15';
+		}
+		if ($type == 9) {
+			$himg = $wimg;
+		}
 	}
-}
 
-	if($label_position == 'left'){
+	if ($label_position == 'left') {
 		$text = '<table style="float:left;height:'.$himg.'px;"><tr><td></td></tr><tr><td><span id="text_' . $id . '" class="text">' . $label .'</span></td></tr><tr><td></td></tr></table>';	
 	}
-	else if($label_position == 'right'){
+	elseif ($label_position == 'right') {
 		$text = '<table style="float:right;height:'.$himg.'px;"><tr><td></td></tr><tr><td><span style="" id="text_' . $id . '" class="text">' . $label .'</span></td></tr><tr><td></td></tr></table>';
 	}
-	else{
+	else {
 		$text = '<table style="width:'.$wimg.'px;"><tr><td></td></tr><tr><td><span style="" id="text_' . $id . '" class="text">' . $label .'</span></td></tr><tr><td></td></tr></table>';
 	}
 	
@@ -276,9 +254,7 @@ else{
 			case GROUP_ITEM:
 				if ($layoutData['enable_link']
 					&& can_user_access_node()) {
-					
 					$link = true;
-					
 				}
 				break;
 			case LABEL:
@@ -1013,10 +989,11 @@ else{
 								false, $type_graph) . '</div>';
 						}
 						else {
-							$img =  grafico_modulo_sparse($id_module, $period, 0,300,180,
-							'',null,
-							false, 1, false, 0, '', 0, 0, true, $only_image, '', 1, false,
-							'', false, false, false, $layoutData['image'], null, true, false,$type_graph);
+							$img =  grafico_modulo_sparse($id_module, 
+							$period, 0, 300, 180, '',null, false, 1, 
+							false, 0, '', 0, 0, true, $only_image, '', 
+							1, false, '', false, false, false, 
+							$layoutData['image'], null, true, false, $type_graph);
 						}
 					}
 					else{
@@ -1237,72 +1214,66 @@ else{
 			break;
 		
 		case PERCENTILE_BAR:
-		
-		$imgpos = '';
-								
-		if($layoutData['label_position']=='left'){
-			$imgpos = 'float:right;';
-		}
-		else if($layoutData['label_position']=='right'){
-			$imgpos = 'float:left;';
-		}
-		
-		$progress_bar_heigh = 15;
-		if (!empty($proportion)) {
-			if ($width != 0) {
-				$width = (integer)($proportion['proportion_width'] * $width);
+			$imgpos = '';
+							
+			if($layoutData['label_position']=='left'){
+				$imgpos = 'float:right;';
 			}
-			else {
-				$width = (integer)($proportion['proportion_width'] * $infoImage[0]);
+			else if($layoutData['label_position']=='right'){
+				$imgpos = 'float:left;';
 			}
-
-			if ($height != 0) {
-				$height = (integer)($proportion['proportion_height'] * $height);
-				$progress_bar_heigh = $progress_bar_heigh * $proportion['proportion_height'];
-			}
-			else {
-				$height = (integer)($proportion['proportion_height'] * $infoImage[1]);
-			}
-		}
-		
-		if($layoutData['label_position']=='up'){
-			echo io_safe_output($text);
-		}
-		
-		ob_start();
-		if ($type == PERCENTILE_BUBBLE) {
-			echo progress_bubble($percentile, $width, $width, '', 1, $value_text, $colorStatus,$imgpos);
-		}
-		else {
-			echo progress_bar($percentile, $width, $progress_bar_heigh, '', 1, $value_text, $colorStatus,$imgpos);
-		}
-		$img = ob_get_clean();
-		
-		
-		if(get_parameter('action') == 'edit'){
-		
-		if($width == 0){
-		$img =  '<img src="images/console/signes/percentil.png" style="width:130px;height:30px;'.$imgpos.'">';	
-		}
-		else{
-		$img =  '<img src="images/console/signes/percentil.png" style="width:'.$width.'px;height:30px;'.$imgpos.'">';	
-		}
-					
-		}
-		else{
 			
-		$img = str_replace('>', 'class="image" style="height:'.$himg.'px;width:'.$wimg.'px;'.$imgpos.'" id="image_' . $id . '" />', $img);
-		
-		}
-		
-		echo $img;		
-		
-		if($layoutData['label_position']=='down'){
-			echo io_safe_output($text);
-		}			
-		else if($layoutData['label_position']=='left' || $layoutData['label_position']=='right'){
-			echo io_safe_output($text);
-		}	
+			$progress_bar_heigh = 15;
+			if (!empty($proportion)) {
+				if ($width != 0) {
+					$width = (integer)($proportion['proportion_width'] * $width);
+				}
+				else {
+					$width = (integer)($proportion['proportion_width'] * $infoImage[0]);
+				}
+
+				if ($height != 0) {
+					$height = (integer)($proportion['proportion_height'] * $height);
+					$progress_bar_heigh = $progress_bar_heigh * $proportion['proportion_height'];
+				}
+				else {
+					$height = (integer)($proportion['proportion_height'] * $infoImage[1]);
+				}
+			}
+			
+			if($layoutData['label_position']=='up'){
+				echo io_safe_output($text);
+			}
+			
+			ob_start();
+			if ($type == PERCENTILE_BUBBLE) {
+				echo progress_bubble($percentile, $width, $width, '', 1, $value_text, $colorStatus,$imgpos);
+			}
+			else {
+				echo progress_bar($percentile, $width, $progress_bar_heigh, '', 1, $value_text, $colorStatus,$imgpos);
+			}
+			$img = ob_get_clean();
+			
+			if (get_parameter('action') == 'edit') {
+				if ($width == 0) {
+					$img = '<img src="images/console/signes/percentil.png" style="width:130px;height:30px;'.$imgpos.'">';	
+				}
+				else {
+					$img = '<img src="images/console/signes/percentil.png" style="width:'.$width.'px;height:30px;'.$imgpos.'">';	
+				}
+			}
+			else{
+				$img = str_replace('>', 'class="image" style="height:'.$himg.'px;width:'.$wimg.'px;'.$imgpos.'" id="image_' . $id . '" />', $img);
+			}
+			
+			echo $img;		
+			
+			if($layoutData['label_position']=='down'){
+				echo io_safe_output($text);
+			}			
+			else if($layoutData['label_position']=='left' || $layoutData['label_position']=='right'){
+				echo io_safe_output($text);
+			}	
 		
 		break;
 		

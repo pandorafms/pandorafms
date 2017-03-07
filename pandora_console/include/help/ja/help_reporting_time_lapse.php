@@ -1,8 +1,8 @@
 <?php
 /**
- * @package Include/help/en
+ * @package Include/help/ja
  */
 ?>
-<h1>Reports - Time lapse</h1>
+<h1>レポート - 時間経過</h1>
 <br>
-This is the range, or period of time over which the report renders the information for this report type. For example, a week means data from a week ago from now. 
+これは、レポートがこのレポートタイプの情報をレンダリングする範囲または期間です。 たとえば、1週間は、今から1週間前のデータを意味します。

@@ -346,10 +346,7 @@ function postgresql_db_process_sql_insert($table, $values) {
 	}
 	
 	$query .= '(' . implode(', ', $fields) . ')';
-	
 	$query .= ' VALUES (' . $values_str . ')';
-	
-	//html_debug_print($query);
 	
 	return db_process_sql($query, 'insert_id');
 }

@@ -776,10 +776,10 @@ You can of course remove the warnings, that's why we include the source and do n
 			<td style="font-weight:bold;"><?php echo __('Data range') . ui_print_help_icon('prediction_date', true); ?></td>
 			<td>
 				<?php
-				echo __('Max') . "&nbsp;";
-				html_print_input_text('max_interval', $max_interval, '', 5, 10);
-				echo "&nbsp;" . __('Min') . "&nbsp;";
+				echo __('Min') . "&nbsp;";
 				html_print_input_text('min_interval', $min_interval, '', 5, 10);
+				echo "&nbsp;" . __('Max') . "&nbsp;";
+				html_print_input_text('max_interval', $max_interval, '', 5, 10);
 				?>
 			</td>
 		</tr>

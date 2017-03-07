@@ -287,6 +287,7 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color,
 		$graph['backgroundColor'] = $backgroundColor;
 		$graph['unit'] = $unit;
 		$graph['series_type'] = $series_type;
+		$graph['percentil'] = $percentil_values;
 		
 		$id_graph = serialize_in_temp($graph, null, $ttl);
 		// Warning: This string is used in the function "api_get_module_graph" from 'functions_api.php' with the regec patern "/<img src='(.+)'>/"
@@ -399,7 +400,7 @@ function stacked_line_graph($flash_chart, $chart_data, $width, $height,
 			false,
 			'',
 			$menu,
-			$background_color,
+			$backgroundColor,
 			$dashboard,
 			$vconsole);
 	}
@@ -569,7 +570,7 @@ function line_graph($flash_chart, $chart_data, $width, $height, $color,
 		$graph['font'] = $font;
 		$graph['font_size'] = $font_size;
 		$graph['backgroundColor'] = $backgroundColor;
-		
+		$graph['percentil'] = $percentil_values;
 		$id_graph = serialize_in_temp($graph, null, $ttl);
 		
 		return "<img src='" . $homeurl . "include/graphs/functions_pchart.php?static_graph=1&graph_type=line&ttl=".$ttl."&id_graph=" . $id_graph . "' />";

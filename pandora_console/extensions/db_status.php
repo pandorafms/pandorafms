@@ -181,10 +181,6 @@ function extension_db_check_tables_differences($connection_test,
 	
 	$diff_tables = array_diff($tables_test, $tables_system);
 	
-	//~ html_debug_print($tables_test);
-	//~ html_debug_print($tables_system);
-	//~ html_debug_print($diff_tables);
-	
 	ui_print_result_message(
 		empty($diff_tables),
 		__('Successful the DB Pandora has all tables'),

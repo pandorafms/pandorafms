@@ -173,7 +173,7 @@ function list_files ($directory, $stringSearch, $searchHandler, $return = false)
 	}
 	if ($searchHandler == 1) {
 		while (false !== ($fileName = @readdir ($directoryHandler))) {
-			if (@substr_count ($fileName, $stringSearch) > 0) {
+			if ((@substr_count ($fileName, $stringSearch) > 0) || (@substr_count ($fileName, strtoupper($stringSearch)) > 0)) {
 				$result[$fileName] = $fileName;
 			}
 		}

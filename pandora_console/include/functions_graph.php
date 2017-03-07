@@ -2001,7 +2001,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				$width, $height, $color, $module_name_list, $long_index,
 				ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 				"", "", $water_mark, $config['fontpath'], $fixed_font_size,
-				"", $ttl, $homeurl, $background_color);
+				"", $ttl, $homeurl, $background_color, true);
 			break;
 		case CUSTOM_GRAPH_PIE:
 			return ring_graph($flash_charts, $graph_values, $width, $height,

@@ -1170,7 +1170,7 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3) {
 		return;
 	}
 	
-	$name = $other['data'][0];
+	$alias = $other['data'][0];
 	$ip = $other['data'][1];
 	$idParent = $other['data'][2];
 	$idGroup = $other['data'][3];
@@ -1197,7 +1197,7 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3) {
 	}
 
 	$return = db_process_sql_update('tagente', 
-		array('nombre' => $name,
+		array('alias' => $alias,
 			'direccion' => $ip,
 			'id_grupo' => $idGroup,
 			'intervalo' => $intervalSeconds,
@@ -1242,7 +1242,7 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 		return;
 	}
 	
-	$name = $other['data'][0];
+	$alias = $other['data'][0];
 	$ip = $other['data'][1];
 	$idParent = $other['data'][2];
 	$idGroup = $other['data'][3];
@@ -1256,6 +1256,16 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 	$learningMode = $other['data'][10];
 	$disabled = $other['data'][11];
 	$description = $other['data'][12];
+	$alias_as_name = $other['data'][13];
+
+	if($alias_as_name && !empty($alias)){
+		$name = $alias;	
+	} else {
+		$name = hash("sha256",$alias . "|" .$direccion_agente ."|". time() ."|". sprintf("%04d", rand(0,10000)));
+		if(empty($alias)){
+			$alias = $name;
+		}
+	}
 
 	if ($cascadeProtection == 1) {
 		if (($idParent != 0) && (db_get_value_sql('SELECT id_agente_modulo
@@ -1311,6 +1321,7 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 	else {
 		$idAgente = db_process_sql_insert ('tagente', 
 			array ('nombre' => $name,
+				'alias' => $alias,
 				'direccion' => $ip,
 				'id_grupo' => $idGroup,
 				'intervalo' => $intervalSeconds,
@@ -2086,13 +2097,14 @@ function api_get_group_agent_by_alias($thrash1, $thrash2, $other, $thrash3) {
 		
 		foreach($servers as $server) {
 			if (metaconsole_connect($server) == NOERR) {
-				$agent_id = agents_get_agent_id($other['data'][0],true);
+				$sql = sprintf("SELECT tagente.id_agente FROM tagente WHERE alias LIKE  '%s' ",$other['data'][0]);
+				$agent_id = db_get_all_rows_sql($sql);
 				
-				if ($agent_id) {
+				foreach ($agent_id as &$id) {
 					$sql = sprintf("SELECT groups.nombre nombre 
 						FROM tagente agents, tgrupo groups
 						WHERE id_agente = %d 
-							AND agents.id_grupo = groups.id_grupo",$agent_id);
+							AND agents.id_grupo = groups.id_grupo",$id['id_agente']);
 					$group_server_names = db_get_all_rows_sql($sql);
 					
 					if ($group_server_names) {

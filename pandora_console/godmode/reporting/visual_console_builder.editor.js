@@ -2177,7 +2177,9 @@ function createItem(type, values, id_data) {
 		default:
 			//Maybe create in any Enterprise item.
 			if (typeof(enterprise_createItem) == 'function') {
-				values['image'] = 'visualmap.services';
+				if (values['image'] == "") {
+					values['image'] = 'visualmap.services';
+				}
 				temp_item = enterprise_createItem(type, values, id_data);
 				if (temp_item != false) {
 					item = temp_item;

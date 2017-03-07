@@ -23,8 +23,7 @@ h1 {
     text-align: center;
 }
 h2 {
-	font: bold 1em Arial, Sans-serif;
-    border-bottom: solid 1px #00aa00;
+	font: Verdana;
 	font-size: 16px;
 }
 
@@ -40,7 +39,6 @@ div#logo_img {
 }
 div#wizard {
 	text-align: left;
-	border: 1px solid #999;
 	margin-top: 1em;
 
 	width: 650px;
@@ -51,7 +49,6 @@ div#wizard {
 	margin-top: 0px;
 	margin-left: 0px;
 	margin-right: 0px;
-	border-radius: 10px;
 	position: relative;
 }
 
@@ -74,19 +71,13 @@ div#install_box, div#install_img {
 
 div#install_box {
 	background: F3F3F3;
-	-moz-border-radius: 8px;
-	-webkit-border-radius: 8px;
-	border-radius: 8px;
-	border: 0px;
+	border: 1px solid #ccc;
 	padding: 10px 25px;
-	margin-top: 10px;
-	-moz-box-shadow: -1px 1px 6px #aaa;
-	-webkit-box-shadow: -1px 1px 6px #aaa;
-	box-shadow: -1px 1px 6px #aaa;
+	margin-top: 40px;
 }
 
 div#install_box h2 {
-	color: #00aa00;
+	color: #82B92E;
 	text-transform: uppercase;
 }
 
@@ -114,22 +105,25 @@ input#step4, input#step4:hover {
 	background-color: #fafafa;
 }
 div.warn {
-	background: url(../../images/warn.png) no-repeat 0% -2px;
-	color: #880;
-	margin-top: 7px;
-	padding: 2px 1px 6px 30px;
+	min-height: 24px;
+	background: url(../../images/icono_warning_install.png) no-repeat 0% -2px;
+	color: #222;
+	margin-top: 14px;
+	padding: 2px 1px 6px 40px;
 }
 div.info {
-	background: url(../../images/info.png) no-repeat 0% -2px;
-        color: #222;
-        margin-top: 7px;
-        padding: 2px 1px 6px 30px;
+	min-height: 24px;
+	background: url(../../images/icono_info_install.png) no-repeat 0% -2px;
+	color: #222;
+	margin-top: 14px;
+	padding: 2px 1px 6px 40px;
 }
 div.err {
-	background: url(../../images/error_red.png) no-repeat 0% -2px;
-	    color: #cc0000;
-        margin-top: 7px;
-        padding: 2px 1px 6px 30px;
+	min-height: 24px;
+	background: url(../../images/icono_critical_install.png) no-repeat 0% -2px;
+	color: #cc0000;
+	margin-top: 14px;
+	padding: 2px 1px 6px 40px;
 }
 span.arr {
 	background: url(../../images/arrow.png) no-repeat;
@@ -152,8 +146,22 @@ body{
 }
 
 div.installation_step {
-	position: absolute; 
+	position: static;
+	float: right;
 	top: 7px; 
 	right: 10px; 
 	color: #666;
+	margin-top: 14px;
+	margin-right: 12px;
+}
+
+.btn_install_next {
+	margin: 10px;
+	padding: 8px 20px 8px 20px;
+	background-color: transparent;
+	border: 1px solid #82B92E;
+	font: bold 1em Verdana;
+	font-size: 14pt;
+	color: #82B92E;
+	border-radius: 0%;
 }

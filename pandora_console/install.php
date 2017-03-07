@@ -150,41 +150,52 @@ function check_exists ( $file, $label ) {
 }
 
 function check_generic ( $ok, $label ) {
-	echo "<tr><td>";
-	echo "<span class='arr'> $label </span>";
-	echo "</td><td>";
+	echo "<tr><td style='width:10%'>";
 	if ($ok == 0 ) {
 		echo " <img src='images/dot_red.png'>";
+		echo "<td>";
+		echo "<span class='arr'> $label </span>";
+		echo "</td>";
+		echo "</td></tr>";
 		return 1;
 	}
 	else {
 		echo " <img src='images/dot_green.png'>";
+		echo "<td>";
+		echo "<span class='arr'> $label </span>";
+		echo "</td>";
+		echo "</td></tr>";
 		return 0;
 	}
-	echo "</td></tr>";
 }
 
 function check_writable ( $fullpath, $label ) {
-	echo "<tr><td>";
-	echo "<span class='arr'> $label </span>";
-	echo "</td><td>";
+	echo "<tr><td style='width:10%;'>";
 	if (file_exists($fullpath))
 		if (is_writable($fullpath)) {
-			echo " <img src='images/dot_green.png'>";
+			echo " <img style='margin-left:50px;' src='images/dot_green.png'>";
+			echo "<td>";
+			echo "<span class='arr'> $label </span>";
+			echo "</td>";
 			echo "</td></tr>";
 			return 0;
 		}
 		else {
-			echo " <img src='images/dot_red.png'>";
+			echo " <img style='margin-left:50px;' src='images/dot_red.png'>";
+			echo "<td>";
+			echo "<span class='arr'> $label </span>";
+			echo "</td>";
 			echo "</td></tr>";
 			return 1;
 		}
 	else {
-		echo " <img src='images/dot_red.png'>";
+		echo " <img style='margin-left:50px;' src='images/dot_red.png'>";
+		echo "<td>";
+		echo "<span class='arr'> $label </span>";
+		echo "</td>";
 		echo "</td></tr>";
 		return 1;
 	}
-
 }
 
 function check_variable ( $var, $value, $label, $mode ) {
@@ -269,16 +280,19 @@ function random_name ($size) {
 function print_logo_status ($step, $step_total) {
 	global $banner;
 	
-	return "
-		<div id='logo_img'>
-			<div>
-			<img src='images/pandora_tinylogo_open.png' border='0'><br>
-			<span style='font-size: 9px;'>$banner</span>
-			</div>
-			<div class='installation_step'>
-			<b>Install step $step of $step_total</b>
+	$header = "
+		<div id='logo_img' style='width: 100%;'>
+			<div style='width:100%; background-color:#333333;'>
+				<img src='images/logo_opensource.png' border='0'><br>
+				<span style='font-size: 9px;'>$banner</span>
 			</div>
 		</div>";
+	$header .= "
+		<div class='installation_step'>
+			<b>Install step $step of $step_total</b>
+		</div>";
+
+	return $header;
 }
 
 //
@@ -361,14 +375,17 @@ function install_step1() {
 		If you want to upgrade from Pandora FMS 4.x to 5.0 version, please use the migration tool inside /extras directory in this setup.
 		</div>";
 
+		echo "<br>";
+
 		if ($writable == 0) {
+			echo "<div style='text-align:right; width:100%;'>";
+			echo "<a id='step11' href='install.php?step=11'><button type='submit' class='btn_install_next'>Next</button></a>";
 			echo "</div>";
-			echo "<a id='step11' href='install.php?step=11'><img align='right' style='margin-top: 20px;' src='images/arrow_next.png' border='0'></a>";
 		}
 		else {
 			echo "<div class='err'><b>ERROR:</b>You need to setup permissions to be able to write in ./include directory</div>";
-			echo "</div>";
 		}
+		echo "</div>";
 				
 		echo "<div style='clear:both;'></div>";
 		echo "
@@ -402,7 +419,7 @@ function install_step1_licence() {
 		echo file_get_contents ("COPYING");
 		echo "</textarea>";
 		echo "<p>";
-		echo "<div style='text-align: right;'><input type=submit value='Yes, I accept licence terms'></div>";
+		echo "<div style='text-align: right;'><button class='btn_install_next' type='submit'>Yes, I accept licence terms</button></div>";
 	}
 	echo "</div>";
 		
@@ -472,17 +489,18 @@ function install_step2() {
 					your HTTP/Apache server after it to use the new
 					modules.
 				</div>
-				<div style='text-align: right;'>
-				Ignore it. <a href='install.php?step=3' style='font-weight: bolder;'>Force install Step #3</a>
+				<div style='text-align:right; width:100%;'>
+				Ignore it. <a href='install.php?step=3' style='font-weight: bolder;'><button class='btn_install_next' type='submit'>Force install Step #3</button></a>
 				</div>";
-				echo "</div>";
 			}
 			else {
-				echo "</div>";
+				echo "<div style='text-align:right; width:100%;'>";
 				echo "<a id='step3' href='install.php?step=3'><br>
-				<img align='right' src='images/arrow_next.png' border='0' alt=''></a>
-				<div style='clear: both;'><!-- --></div>";
+				<button class='btn_install_next' type='submit'>Next</button></a>";
+				echo "</div>";
+				echo "<div style='clear: both;'><!-- --></div>";
 			}
+			echo "</div>";
 			echo "
 		</div>
 		<div style='clear: both;'><!-- --></div>
@@ -616,12 +634,14 @@ function install_step3() {
 			</table>
 			";
 	
+	if (!$error) {
+		echo "<div style='text-align:right; width:100%;'>";
+		echo "<a id='step4' href='install.php?step=4'><br>
+				<button class='btn_install_next' type='submit'>Next</button></a>";
+		echo "</div>";
+	}
 
 	echo "</div>";
-	
-	if (!$error) {
-		echo "<input type='image' src='images/arrow_next.png' value='Step #4' id='step4'>";
-	}
 	
 	echo "</form>";
 	
@@ -945,10 +965,10 @@ function install_step5() {
 			for updates.
 			<p>Select if you want to rename '<i>install.php</i>'.</p>
 			<form method='post' action='index.php'>
-				<input type='submit' name='rn_file' value='Yes, rename the file'>
+				<button class='btn_install_next' type='submit' name='rn_file'>Yes, rename the file</button>
 				<input type='hidden' name='rename_file' value='1'>
 			</form>
-			<p><br><b><a id='access_pandora' href='index.php'>Click here to access to your Pandora FMS console</a>.</b>
+			<p><br><b><a id='access_pandora' href='index.php'><button class='btn_install_next' type='submit'>Click here to access to your Pandora FMS console</button></a>.</b>
 			</p>
 		</div>";
 

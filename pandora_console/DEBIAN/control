@@ -1,5 +1,5 @@
 package: pandorafms-console
-Version: NG_BETA-170307
+Version: NG_BETA-170308
 Architecture: all
 Priority: optional
 Section: admin

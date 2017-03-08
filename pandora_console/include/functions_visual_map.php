@@ -1182,17 +1182,28 @@ function visual_map_print_item($mode = "read", $layoutData,
 				else if($layoutData['label_position']=='right'){
 					$imgpos = 'float:left';
 				}
-				
-				if ($width == 0 || $height == 0) 
-				echo html_print_image($img, true,
-					array("class" => "image",
+				$varsize = getimagesize($img);
+				if ($width == 0 || $height == 0) {
+					if($varsize[0] > 150 || $varsize[1] > 150){
+						echo html_print_image($img, true,
+						array("class" => "image",
 						"id" => "image_" . $id,
 						"width" => "70px",
 						"height" => "70px",
 						"title" => $img_style_title,
 						"style" => $borderStyle.$imgpos), false,
 						false, false, $isExternalLink);
-				else
+					}
+					else{
+						echo html_print_image($img, true,
+						array("class" => "image",
+						"id" => "image_" . $id,
+						"title" => $img_style_title,
+						"style" => $borderStyle.$imgpos), false,
+						false, false, $isExternalLink);
+					}
+				}
+				else{
 				echo html_print_image($img, true,
 					array("class" => "image",
 						"id" => "image_" . $id,
@@ -1201,6 +1212,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 						"title" => $img_style_title,
 						"style" => $borderStyle.$imgpos), false,
 						false, false, $isExternalLink);
+				}
 					
 			}
 			
@@ -1466,18 +1478,30 @@ function visual_map_print_item($mode = "read", $layoutData,
 					}
 				}
 				
-				if (($width != 0) && ($height != 0)) 
+				$varsize = getimagesize($img);
+				if (($width != 0) && ($height != 0)){ 
 					echo html_print_image($img, true,
 						array("class" => "image",
 							"id" => "image_" . $id,
 							"width" => "$width",
 							"height" => "$height"), false,
 							false, false, $isExternalLink);
-				else
+				}
+				else{
+					if($varsize[0] > 150 || $varsize[0] > 150){
 					echo html_print_image($img, true,
 						array("class" => "image", "id" => "image_" . $id,"width" => "70px",
 						"70px" => "$height"),
 						false, false, false, $isExternalLink);
+					}
+					else{
+						echo html_print_image($img, true,
+							array("class" => "image",
+								"id" => "image_" . $id), false,
+								false, false, $isExternalLink);
+					}
+				}
+			
 			}
 			break;
 		default:

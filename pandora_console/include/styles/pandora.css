@@ -3011,13 +3011,23 @@ table#policy_modules td * {
 
 div.sumary_div{
 	color: #FFF;
-    margin: 10px;
-    padding: 10px;
     font-size: 20px;
     font-weight: bold;
     border-radius: 2px;
-    width: 60px;
+    width: 120px;
+    height: 40px;
     text-align: center;
+    display: table-cell;
+    vertical-align: middle;
+}
+
+div.div_groups_status{
+	width: 350px;
+	background-color: white;
+	border: 1px solid #ECECEC;
+	border-radius: 5px;
+	margin: 20px;
+	float:left;
 }
 
 .databox.data>tbody>tr>td{

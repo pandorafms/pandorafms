@@ -304,11 +304,14 @@ function process_user_login_remote ($login, $pass, $api = false) {
 		}
 	}
 	else {
+		
+		$user_info = array ('fullname' => $login, 
+				'comments' => 'Imported from ' . $config['auth']);
+		if ( is_metaconsole() && $config["auth"] === 'ad')
+			$user_info['metaconsole_access_node'] = true;
+		
 		// Create the user in the local database
-		if (create_user ($login, $pass,
-				array ('fullname' => $login, 
-				'comments' => 'Imported from ' . $config['auth'])
-			) === false) {
+		if (create_user ($login, $pass, $user_info) === false) {
 			$config["auth_error"] = __("User not found in database or incorrect password");
 			return false;
 		}

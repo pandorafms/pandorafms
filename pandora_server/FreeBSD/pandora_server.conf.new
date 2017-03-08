@@ -504,6 +504,10 @@ console_api_url http://localhost/pandora_console/include/api.php
 console_user admin
 
 # console_pass: Console password (pandora by default)
+# To make sure console_api_url, console_api_pass, console_user and console_pass are properly configured run:
+# 	curl "<console_api_url>?op=get&op2=test&apipass=<console_api_pass>&user=<console_user>&pass=<console_pass>"
+# It should return a string similar to:
+# 	OK,{VERSION},{BUILD}
 console_pass pandora
 
 # Passphrase used to generate the key for password encryption (PANDORA FMS ENTERPRISE ONLY).

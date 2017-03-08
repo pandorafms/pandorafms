@@ -434,6 +434,16 @@ function servers_get_info ($id_server = -1) {
 				$server["type"] = "enterprise transactional";
 				$id_modulo = 0;
 				break;
+			case SERVER_TYPE_MAINFRAME:
+				$server["img"] = html_print_image ("images/mainframe.png", true, array ("title" => __('Mainframe server')));
+				$server["type"] = "mainframe";
+				$id_modulo = 0;
+				break;
+			case SERVER_TYPE_SYNC:
+				$server["img"] = html_print_image ("images/sync.png", true, array ("title" => __('Sync server')));
+				$server["type"] = "sync";
+				$id_modulo = 0;
+				break;
 			default:
 				$server["img"] = '';
 				$server["type"] = "unknown";

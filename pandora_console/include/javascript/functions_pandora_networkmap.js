@@ -1903,10 +1903,17 @@ function add_interface_link_js () {
 }
 
 function refresh_holding_area() {
+	holding_pos_x = d3.select("#holding_area_" + networkmap_id).attr("x");
+	holding_pos_y = d3.select("#holding_area_" + networkmap_id).attr("y");
+	
+	var pos_x = parseInt(holding_pos_x) + parseInt(node_radius);
+	var pos_y = parseInt(holding_pos_y) + parseInt(node_radius);
 	if (enterprise_installed) {
 		var params = [];
 		params.push("refresh_holding_area=1");
 		params.push("id=" + networkmap_id);
+		params.push("x=" + pos_x);
+		params.push("y=" + pos_y);
 		params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
 		jQuery.ajax ({
 			data: params.join ("&"),
@@ -1914,6 +1921,7 @@ function refresh_holding_area() {
 			type: 'POST',
 			url: action="ajax.php",
 			success: function (data) {
+				
 				if (data['correct']) {
 					window.holding_area = data['holding_area'];
 					
@@ -1932,7 +1940,7 @@ function refresh_holding_area() {
 						temp_node['y'] = node['y'];
 						temp_node['z'] = 0;
 						temp_node['fixed'] = true;
-						temp_node['state'] = node['state'];
+						temp_node['state'] = 'holding_area';
 						temp_node['type'] = 0;
 						temp_node['color'] = node['color'];
 						temp_node['shape'] = node['shape'];
@@ -2142,11 +2150,15 @@ function init_drag_and_drop() {
 			var selection = d3.selectAll('.node_selected');
 			
 			if (enterprise_installed) {
+				holding_pos_x = d3.select("#holding_area_" + networkmap_id).attr("x");
+				holding_pos_y = d3.select("#holding_area_" + networkmap_id).attr("y");
 				selection
 					.each(function(d) {
 						var params = [];
 						params.push("update_node=1");
 						params.push("node=" + JSON.stringify(d));
+						params.push("x=" + holding_pos_x);
+						params.push("y=" + holding_pos_y);
 						params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
 						jQuery.ajax ({
 							data: params.join ("&"),
@@ -2159,14 +2171,13 @@ function init_drag_and_drop() {
 									if (data['state'] == "") {
 										//Remove the style of nodes and links
 										//in holding area
-										
 										d3.select("#id_node_" + d.id + networkmap_id)
 											.classed("holding_area", false);
-										
 										d3.select(".source_" + d.id + networkmap_id)
 											.classed("holding_area_link", false);
 										d3.select(".target_" + d.id + networkmap_id)
 											.classed("holding_area_link", false);
+										graph.nodes[d.id].state = "";
 									}
 								}
 							}

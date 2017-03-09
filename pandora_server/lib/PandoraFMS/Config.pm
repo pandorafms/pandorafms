@@ -167,6 +167,9 @@ sub pandora_get_sharedconfig ($$) {
 	$pa_config->{'replication_limit'} = pandora_get_tconfig_token ($dbh, 'replication_limit', 1000);
 	$pa_config->{'include_agents'} = pandora_get_tconfig_token ($dbh, 'include_agents', 0);
 
+	#Public url
+	$pa_config->{'public_url'} = pandora_get_tconfig_token ($dbh, 'public_url', 'http://localhost/pandora_console');
+
 	if ($pa_config->{'include_agents'} eq '') {
 		$pa_config->{'include_agents'} = 0;
 	}

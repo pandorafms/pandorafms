@@ -985,6 +985,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_timezone_ => strftime ("%Z", localtime()),
 				_data_ => $data,
 				_prevdata_ => undef,
+				_homeurl_ => $pa_config->{'public_url'},
 				_alert_name_ => $alert->{'name'},
 				_alert_description_ => $alert->{'description'},
 				_alert_threshold_ => $alert->{'time_threshold'},

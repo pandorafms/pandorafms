@@ -399,11 +399,6 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 		
 		// Parse modules
 		foreach ($modules as $key => $module) {
-			
-			if ($module['id_tipo_modulo'] != 18 && $module['id_tipo_modulo'] != 6) {
-				continue;
-			}
-			
 			$node_count ++;
 			$modules_node_ref[$module['id_agente_modulo']] = $node_count;
 			$module['id_node'] = $node_count;

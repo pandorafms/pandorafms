@@ -9553,10 +9553,15 @@ function api_set_delete_special_day($id_special_day, $thrash2, $thrash3, $thrash
  * @param $thrash4 Don't use.
  *
  * example:
- *  api.php?op=get&op2=module_graph&id=1&other=3600
+ *  http://localhost/pandora_console/include/
+ *		api.php?op=get&op2=module_graph&id=5&other=40000%7C1&other_mode=url_encode_separator_%7C&apipass=1234
+ *		&api=1&user=admin&pass=pandora
  *
  */
 function api_get_module_graph($id_module, $thrash2, $other, $thrash4) {
+	
+	global $config;
+
 	if (defined ('METACONSOLE')) {
 		return;
 	}
@@ -9574,9 +9579,9 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4) {
 	}
 	
 	$graph_seconds =
-		(!empty($other) && isset($other['data']))
+		(!empty($other) && isset($other['data'][0]))
 		?
-		$other['data']
+		$other['data'][0]
 		:
 		SECONDS_1HOUR; // 1 hour by default
 	
@@ -9636,7 +9641,7 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4) {
                 // returnError('error_module_graph', __(''));
         }
         else {
-			if($other['data'] < 40000){
+			if($other['data'][1]){
 				header('Content-type: text/html');
             	returnData('string', array('type' => 'string', 'data' => '<img src="data:image/jpeg;base64,' . $graph_image_file_encoded . '">'));
         	} else {

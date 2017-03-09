@@ -142,9 +142,9 @@ $table->style[0] = 'font-weight: bold; vertical-align:top';
 $table->style[2] = 'font-weight: bold; vertical-align:top';
 $table->size = array ();
 $table->size[0] = '15%';
-$table->size[1] = '40%';
+$table->size[1] = '25%';
 $table->size[2] = '15%';
-$table->size[3] = '40%';
+$table->size[3] = '30%';
 
 $table->data = array ();
 	

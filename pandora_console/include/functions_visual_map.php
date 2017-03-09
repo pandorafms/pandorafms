@@ -1160,7 +1160,11 @@ function visual_map_print_item($mode = "read", $layoutData,
 					if (is_file($config['homedir'] . '/' . $img))
 						$infoImage = getimagesize($config['homedir'] . '/' . $img);
 					
-					if ($height !== 0 || $height !== 0) {
+					if ($height == 0 || $height == 0) {
+						$height = '70px';
+						$width = '70px';
+					}
+					else {
 						$height = (integer)($proportion['proportion_height'] * $height);
 						$width = (integer)($proportion['proportion_width'] * $width);
 					}
@@ -1168,28 +1172,40 @@ function visual_map_print_item($mode = "read", $layoutData,
 					
 				$imgpos = '';
 								
-				if ($layoutData['label_position']=='up') {
+				if($layoutData['label_position']=='up'){
 					echo io_safe_output($text);
 				}
 				
-				if ($layoutData['label_position']=='left') {
+				if($layoutData['label_position']=='left'){
 					$imgpos = 'float:right';
 				}
-				elseif ($layoutData['label_position']=='right') {
+				else if($layoutData['label_position']=='right'){
 					$imgpos = 'float:left';
 				}
-				
+				$varsize = getimagesize($img);
 				if ($width == 0 || $height == 0) {
-					echo html_print_image($img, true,
+					if($varsize[0] > 150 || $varsize[1] > 150){
+						echo html_print_image($img, true,
+						array("class" => "image",
+						"id" => "image_" . $id,
+						"width" => "70px",
+						"height" => "70px",
+						"title" => $img_style_title,
+						"style" => $borderStyle.$imgpos), false,
+						false, false, $isExternalLink);
+					}
+					else{
+						echo html_print_image($img, true,
 						array("class" => "image",
 						"id" => "image_" . $id,
 						"title" => $img_style_title,
 						"style" => $borderStyle.$imgpos), false,
 						false, false, $isExternalLink);
+					}
 				}
 				else{
-					echo html_print_image($img, true,
-						array("class" => "image",
+				echo html_print_image($img, true,
+					array("class" => "image",
 						"id" => "image_" . $id,
 						"width" => $width,
 						"height" => $height,

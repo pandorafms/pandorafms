@@ -242,8 +242,6 @@ config_check();
 					set_pandora_error_for_header('There are one or more minor releases waiting for update, there are required administrator permissions', 'minor release/s available');
 				}
 
-				echo '<div id="alert_messages" style="display: none"></div>';
-		
 				if ($config["alert_cnt"] > 0) {
 					$maintenance_link = 'javascript:';
 					$maintenance_title = __("System alerts detected - Please fix as soon as possible");

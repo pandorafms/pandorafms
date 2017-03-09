@@ -703,7 +703,7 @@ function networkmap_write_js_array($id, $nodes_and_relations = array(), $map_das
 			continue;
 		if ($link_js['source'] == -1)
 			continue;
-		if ($link_js['target'] == $link_js['source']) 
+		if ($link_js['target'] == $link_js['source'])
 			continue;
 		echo "networkmap.links.push(" . json_encode($link_js) . ");\n";
 	}

@@ -329,13 +329,14 @@ function agent_changed_by_multiple_agents_with_alerts (event, id_agent, selected
 		selection_mode = 'common';
 	}
 	
-	template = $('#id_alert_template option:selected').attr("value");
+	template = $('#id_alert_template option:selected').val();
+	
 	$('#module').attr ('disabled', 1);
 	$('#module').empty ();
 	$('#module').append ($('<option></option>').html ("Loading...").attr ("value", 0));
 	jQuery.post ('ajax.php', 
 				{"page": "operation/agentes/ver_agente",
-				"get_agent_modules_alerts_json_for_multiple_agents": 1,
+				"get_agent_modules_multiple_alerts_json_for_multiple_agents": 1,
 				"template": template,
 				"id_agent[]": idAgents,
 				"selection_mode": selection_mode

@@ -346,97 +346,107 @@ if ($check_online_free_packages) {
 }
 
 if ($update_last_free_package) {
-	
 	$package = get_parameter('package', '');
 	$version = get_parameter('version', '');
+	$accept = (boolean)get_parameter('accept', false);
 	$package_url = base64_decode($package);
 	
-	$params = array('action' => 'get_package',
-		'license' => $license,
-		'limit_count' => $users,
-		'current_package' => $current_package,
-		'package' => $package,
-		'version' => $config['version'],
-		'build' => $config['build']);
-	
-	$curlObj = curl_init();
-	//curl_setopt($curlObj, CURLOPT_URL, $config['url_updatemanager']);
-	curl_setopt($curlObj, CURLOPT_URL, $package_url);
-	curl_setopt($curlObj, CURLOPT_RETURNTRANSFER, 1);
-	curl_setopt($curlObj, CURLOPT_FOLLOWLOCATION, true);
-	//curl_setopt($curlObj, CURLOPT_POST, true);
-	//curl_setopt($curlObj, CURLOPT_POSTFIELDS, $params);
-	curl_setopt($curlObj, CURLOPT_SSL_VERIFYPEER, false);
-	if (isset($config['update_manager_proxy_server'])) {
-		curl_setopt($curlObj, CURLOPT_PROXY, $config['update_manager_proxy_server']);
-	}
-	if (isset($config['update_manager_proxy_port'])) {
-		curl_setopt($curlObj, CURLOPT_PROXYPORT, $config['update_manager_proxy_port']);
-	}
-	if (isset($config['update_manager_proxy_user'])) {
-		curl_setopt($curlObj, CURLOPT_PROXYUSERPWD, $config['update_manager_proxy_user'] . ':' . $config['update_manager_proxy_password']);
-	}
-	
-	$result = curl_exec($curlObj);
-	$http_status = curl_getinfo($curlObj, CURLINFO_HTTP_CODE);
-	
-	curl_close($curlObj);
-	
-	
-	
-	
-	
-	if (empty($result)) {
-		echo json_encode(array(
-			'in_progress' => false,
-			'message' => __('Fail to update to the last package.')));
-	}
-	else {
-		file_put_contents(
-			$config['attachment_store'] . "/downloads/last_package.tgz" , $result);
-		
-		echo json_encode(array(
-			'in_progress' => true,
-			'message' => __('Starting to update to the last package.')));
-		
-		
-		$progress_update_status = db_get_value(
-			'value', 'tconfig', 'token', 'progress_update_status');
-		
-		
-		
-		if (empty($progress_update_status)) {
-			db_process_sql_insert('tconfig',
-				array(
-					'value' => 0,
-					'token' => 'progress_update')
-			);
+	if ($accept) {
+		$have_minor_releases = db_check_minor_relase_available();
+
+		if ($have_minor_releases) {
 			
-			db_process_sql_insert('tconfig',
-				array(
-					'value' => json_encode(
-						array(
-							'status' => 'in_progress',
-							'message' => ''
-						)),
-					'token' => 'progress_update_status')
-				);
 		}
 		else {
-			db_process_sql_update('tconfig',
-				array('value' => 0),
-				array('token' => 'progress_update'));
+			$params = array('action' => 'get_package',
+			'license' => $license,
+			'limit_count' => $users,
+			'current_package' => $current_package,
+			'package' => $package,
+			'version' => $config['version'],
+			'build' => $config['build']);
 			
-			db_process_sql_update('tconfig',
-				array('value' => json_encode(
+			$curlObj = curl_init();
+			//curl_setopt($curlObj, CURLOPT_URL, $config['url_updatemanager']);
+			curl_setopt($curlObj, CURLOPT_URL, $package_url);
+			curl_setopt($curlObj, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($curlObj, CURLOPT_FOLLOWLOCATION, true);
+			//curl_setopt($curlObj, CURLOPT_POST, true);
+			//curl_setopt($curlObj, CURLOPT_POSTFIELDS, $params);
+			curl_setopt($curlObj, CURLOPT_SSL_VERIFYPEER, false);
+			if (isset($config['update_manager_proxy_server'])) {
+				curl_setopt($curlObj, CURLOPT_PROXY, $config['update_manager_proxy_server']);
+			}
+			if (isset($config['update_manager_proxy_port'])) {
+				curl_setopt($curlObj, CURLOPT_PROXYPORT, $config['update_manager_proxy_port']);
+			}
+			if (isset($config['update_manager_proxy_user'])) {
+				curl_setopt($curlObj, CURLOPT_PROXYUSERPWD, $config['update_manager_proxy_user'] . ':' . $config['update_manager_proxy_password']);
+			}
+			
+			$result = curl_exec($curlObj);
+			$http_status = curl_getinfo($curlObj, CURLINFO_HTTP_CODE);
+			
+			curl_close($curlObj);
+
+			if (empty($result)) {
+				echo json_encode(array(
+					'in_progress' => false,
+					'message' => __('Fail to update to the last package.')));
+			}
+			else {
+				file_put_contents(
+					$config['attachment_store'] . "/downloads/last_package.tgz" , $result);
+				
+				echo json_encode(array(
+					'in_progress' => true,
+					'message' => __('Starting to update to the last package.')));
+				
+				
+				$progress_update_status = db_get_value(
+					'value', 'tconfig', 'token', 'progress_update_status');
+				
+				
+				
+				if (empty($progress_update_status)) {
+					db_process_sql_insert('tconfig',
 						array(
-							'status' => 'in_progress',
-							'message' => ''
-						)
-					)
-				),
-				array('token' => 'progress_update_status'));
+							'value' => 0,
+							'token' => 'progress_update')
+					);
+					
+					db_process_sql_insert('tconfig',
+						array(
+							'value' => json_encode(
+								array(
+									'status' => 'in_progress',
+									'message' => ''
+								)),
+							'token' => 'progress_update_status')
+						);
+				}
+				else {
+					db_process_sql_update('tconfig',
+						array('value' => 0),
+						array('token' => 'progress_update'));
+					
+					db_process_sql_update('tconfig',
+						array('value' => json_encode(
+								array(
+									'status' => 'in_progress',
+									'message' => ''
+								)
+							)
+						),
+						array('token' => 'progress_update_status'));
+				}
+			}
 		}
+	}
+	else {
+		echo json_encode(array(
+				'in_progress' => false,
+				'message' => __('Package not accepted.')));
 	}
 	
 	return;

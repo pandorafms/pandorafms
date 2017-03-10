@@ -295,33 +295,88 @@ function update_last_package(package, version, homeurl) {
 	$("#box_online .loading").show();
 	$("#box_online .download_package").show();
 	
-	var parameters = {};
-	parameters['page'] = 'include/ajax/update_manager.ajax';
-	parameters['update_last_free_package'] = 1;
-	parameters['package'] = package;
-	parameters['version'] = version;
-	
-	jQuery.post(
-		home_url + "ajax.php",
-		parameters,
-		function (data) {
-			if (data['in_progress']) {
-				$("#box_online .loading").hide();
-				$("#box_online .download_package").hide();
-				
-				$("#box_online .content").html(data['message']);
-				
-				install_free_package(package, version, homeurl);
-				setTimeout(function () {
-					check_progress_update(homeurl);	
-				}, 1000);
-			}
-			else {
-				$("#box_online .content").html(data['message']);
-			}
+	$("<div id='pkg_apply_dialog' class= 'dialog ui-dialog-content'></div>").dialog ({
+		resizable: true,
+		draggable: true,
+		modal: true,
+		overlay: {
+			opacity: 0.5,
+			background: 'black'
 		},
-		"json"
-	);
+		width: 600,
+		height: 350,
+		buttons: {
+			"Apply package": function () {
+				$(this).dialog("close");
+
+				var parameters = {};
+				parameters['page'] = 'include/ajax/update_manager.ajax';
+				parameters['update_last_free_package'] = 1;
+				parameters['package'] = package;
+				parameters['version'] = version;
+				parameters['accept'] = 1;
+				
+				jQuery.post(
+					home_url + "ajax.php",
+					parameters,
+					function (data) {
+						if (data['in_progress']) {
+							$("#box_online .loading").hide();
+							$("#box_online .download_package").hide();
+							
+							$("#box_online .content").html(data['message']);
+							
+							install_free_package(package, version, homeurl);
+							setTimeout(function () {
+								check_progress_update(homeurl);	
+							}, 1000);
+						}
+						else {
+							$("#box_online .content").html(data['message']);
+						}
+					},
+					"json"
+				);
+			},
+			"Cancel": function () {
+				$(this).dialog("close");
+
+				var parameters = {};
+				parameters['page'] = 'include/ajax/update_manager.ajax';
+				parameters['update_last_free_package'] = 1;
+				parameters['package'] = package;
+				parameters['version'] = version;
+				parameters['accept'] = 0;
+				
+				jQuery.post(
+					home_url + "ajax.php",
+					parameters,
+					function (data) {
+						if (data['in_progress']) {
+							$("#box_online .loading").hide();
+							$("#box_online .download_package").hide();
+							
+							$("#box_online .content").html(data['message']);
+							
+							install_free_package(package, version, homeurl);
+							setTimeout(function () {
+								check_progress_update(homeurl);	
+							}, 1000);
+						}
+						else {
+							$("#box_online .content").html(data['message']);
+						}
+					},
+					"json"
+				);
+			}
+		}
+	});
+
+	var dialog_text = "<div><h3>Do you want to apply the package?</h3></br>";
+	
+	$('#pkg_apply_dialog').html(dialog_text);
+	$('#pkg_apply_dialog').dialog('open');
 }
 
 function check_progress_update(homeurl) {

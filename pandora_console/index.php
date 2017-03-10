@@ -445,8 +445,6 @@ if (! isset ($config['id_user'])) {
 			$config['id_user'] = $nick_in_db;
 			
 			if (is_user_admin($config['id_user'])) {
-				$have_minor_releases = db_check_minor_relase_available();
-				
 				// PHP configuration values
 				$PHPupload_max_filesize = config_return_in_bytes(ini_get('upload_max_filesize'));
 				$PHPmemory_limit = config_return_in_bytes(ini_get('memory_limit'));
@@ -467,7 +465,9 @@ if (! isset ($config['id_user'])) {
 				if ($PHPmemory_limit < $PHPmemory_limit_min && $PHPmemory_limit !== '-1') {
 					ini_set('memory_limit', config_return_in_bytes('500M'));
 				}
-				
+				/* MINOR RELEASE -- Arturo --
+				$have_minor_releases = db_check_minor_relase_available();
+
 				if ($have_minor_releases) {
 					$size_mr = get_number_of_mr();
 					echo "<div class= 'dialog ui-dialog-content' title='".__("Minor release available")."' id='mr_dialog2'>" . __('') . "</div>";
@@ -508,6 +508,7 @@ if (! isset ($config['id_user'])) {
 						</script>
 						<?php
 				}
+				*/
 				
 				set_time_limit((int)$PHPmax_execution_time);
 				ini_set('upload_max_filesize', $PHPupload_max_filesize);
@@ -976,6 +977,7 @@ require('include/php_to_js_values.php');
 		};
 	})();
 
+	/* MINOR RELEASE -- Arturo --
 	function apply_minor_release (n_mr) {
 		var error = false;
 		$("#apply_rr_button").remove();
@@ -1017,6 +1019,7 @@ require('include/php_to_js_values.php');
 			$('#mr_dialog2').append("<h2>Updated finished successfully</h2>");
 		}
 	}
+	*/
 	
 	function force_run_register () {
 		run_identification_wizard (1, 0, 0);

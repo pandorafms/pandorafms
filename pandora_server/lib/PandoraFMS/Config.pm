@@ -42,8 +42,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "NG_BETA";
-my $pandora_build = "170308";
+my $pandora_version = "7.0NG_BETA";
+my $pandora_build = "170310";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -166,6 +166,9 @@ sub pandora_get_sharedconfig ($$) {
 	#Limit of events replicate in metaconsole
 	$pa_config->{'replication_limit'} = pandora_get_tconfig_token ($dbh, 'replication_limit', 1000);
 	$pa_config->{'include_agents'} = pandora_get_tconfig_token ($dbh, 'include_agents', 0);
+
+	#Public url
+	$pa_config->{'public_url'} = pandora_get_tconfig_token ($dbh, 'public_url', 'http://localhost/pandora_console');
 
 	if ($pa_config->{'include_agents'} eq '') {
 		$pa_config->{'include_agents'} = 0;

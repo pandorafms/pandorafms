@@ -59,14 +59,24 @@ $(document).ready (function () {
 	});
 
 	$("a.show_systemalert_dialog").click (function () {
-		$('body').append( "<div id='opacidad' style='position:fixed;background:black;opacity:0.6;z-index:1'></div>" );
-			jQuery.get ("ajax.php",
+		jQuery.get ("ajax.php",
 			{"page": "operation/system_alert"},
 				function (data, status) {
-					$("#alert_messages").hide ()
-						.empty ()
-						.append (data)
-						.show ();
+					$("#alert_messages").html(data);
+					$("#alert_messages").dialog({
+						resizable: false,
+						draggable: true,
+						width: 450,
+						modal: true,
+						overlay: {
+							opacity: 0.5,
+							background: "black"
+						},
+						open: function (event, ui) {
+							dialog_open = this;
+						}
+					});
+					$("#alert_messages").css('padding','0px');
 				},
 				"html"
 			);

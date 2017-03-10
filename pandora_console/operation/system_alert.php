@@ -7,10 +7,10 @@ echo "
 <div class='modalheader'>
 <span class='modalheadertext'>";
 
-if(!enterprise_installed()){
+if (!enterprise_installed()) {
 	echo "Community version";
 }
-else{
+else {
 	echo "Enterprise version";
 }
 
@@ -18,10 +18,11 @@ echo "</span>
 <img class='modalclosex cerrar' src='".$config['homeurl']."/images/icono_cerrar.png'>
 </div>";
 
+echo "<div style='overflow-y:scroll;height:550px;'>";
+echo get_pandora_error_for_header();
+echo "</div>";
 
-echo get_pandora_error_for_header()."
-
-<div class='modalokbutton cerrar'>
+echo "<div class='modalokbutton cerrar'>
 <span class='modalokbuttontext close'>OK</span>
 </div>";
 
@@ -31,8 +32,7 @@ echo get_pandora_error_for_header()."
 <script>
 
 $(".cerrar").click(function(){
-  $("#alert_messages").hide();
-  $( "#opacidad" ).remove();
+  $("#alert_messages").dialog('close');
 });
 
 </script>

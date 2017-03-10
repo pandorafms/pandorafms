@@ -985,6 +985,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_timezone_ => strftime ("%Z", localtime()),
 				_data_ => $data,
 				_prevdata_ => undef,
+				_homeurl_ => $pa_config->{'public_url'},
 				_alert_name_ => $alert->{'name'},
 				_alert_description_ => $alert->{'description'},
 				_alert_threshold_ => $alert->{'time_threshold'},
@@ -1103,8 +1104,8 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		my $subst_func = sub {
 			my $hours = shift;
 			my $period = $hours * 3600; # Hours to seconds
-			$params->{"other"} = $period;
-			
+			$params->{"other"} = $period . '%7C0';
+			$params->{"other_mode"} = 'url_encode_separator_%7C';
 			my $cid = 'module_graph_' . $hours . 'h';
 			
 			if (! exists($module_graph_list->{$cid}) && defined $url) {

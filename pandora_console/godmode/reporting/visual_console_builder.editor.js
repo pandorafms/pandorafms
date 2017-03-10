@@ -243,30 +243,33 @@ function update_button_palette_callback() {
 		return false;
 		}
 		
-			$("#text_" + idItem).html(values['label']);
-			
-			
-			
-			if ((values['width'] == 0) || (values['height'] == 0)) {
+		$("#text_" + idItem).html(values['label']);
+		if ((values['width'] == 0) || (values['height'] == 0)) {
+			if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
 				$("#image_" + idItem).removeAttr('width');
 				$("#image_" + idItem).removeAttr('height');
 				$("#image_" + idItem).attr('width', 70);
 				$("#image_" + idItem).attr('height', 70);
 				$("#image_" + idItem).css('width', '70px');
 				$("#image_" + idItem).css('height', '70px');
-				
 			}
-			else {
+			else{
 				$("#image_" + idItem).removeAttr('width');
 				$("#image_" + idItem).removeAttr('height');
-				$("#image_" + idItem).attr('width', values['width']);
-				$("#image_" + idItem).attr('height', values['height']);
-				$("#image_" + idItem).css('width', values['width'] + 'px');
-				$("#image_" + idItem).css('height', values['height'] + 'px');
-			}
-			
-		
-			
+				$("#image_" + idItem).attr('width', $('#preview > img')[0].naturalHeight);
+				$("#image_" + idItem).attr('height', $('#preview > img')[0].naturalHeight);
+				$("#image_" + idItem).css('width', $('#preview > img')[0].naturalHeight+'px');
+				$("#image_" + idItem).css('height', $('#preview > img')[0].naturalHeight+'px');	
+			}			
+		}
+		else {
+			$("#image_" + idItem).removeAttr('width');
+			$("#image_" + idItem).removeAttr('height');
+			$("#image_" + idItem).attr('width', values['width']);
+			$("#image_" + idItem).attr('height', values['height']);
+			$("#image_" + idItem).css('width', values['width'] + 'px');
+			$("#image_" + idItem).css('height', values['height'] + 'px');
+		}
 			break;
 		case 'percentile_bar':
 		case 'percentile_item':
@@ -333,27 +336,33 @@ function update_button_palette_callback() {
 		alert('Undefined height');
 		return false;
 		}
-		
-		
-			$("#image_" + idItem).attr('src', "images/spinner.gif");
-
-			if ((values['width'] == 0) || (values['height'] == 0)) {
+		$("#image_" + idItem).attr('src', "images/spinner.gif");
+		if ((values['width'] == 0) || (values['height'] == 0)) {
+			if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
 				$("#image_" + idItem).removeAttr('width');
 				$("#image_" + idItem).removeAttr('height');
 				$("#image_" + idItem).attr('width', 70);
 				$("#image_" + idItem).attr('height', 70);
 				$("#image_" + idItem).css('width', '70px');
 				$("#image_" + idItem).css('height', '70px');
-				
-			}
-			else {
+				}
+			else{
 				$("#image_" + idItem).removeAttr('width');
 				$("#image_" + idItem).removeAttr('height');
-				$("#image_" + idItem).attr('width', values['width']);
-				$("#image_" + idItem).attr('height', values['height']);
-				$("#image_" + idItem).css('width', values['width'] + 'px');
-				$("#image_" + idItem).css('height', values['height'] + 'px');
-			}
+				$("#image_" + idItem).attr('width', $('#preview > img')[0].naturalHeight);
+				$("#image_" + idItem).attr('height', $('#preview > img')[0].naturalHeight);
+				$("#image_" + idItem).css('width', $('#preview > img')[0].naturalHeight+'px');
+				$("#image_" + idItem).css('height', $('#preview > img')[0].naturalHeight+'px');	
+			}		
+		}
+		else {
+			$("#image_" + idItem).removeAttr('width');
+			$("#image_" + idItem).removeAttr('height');
+			$("#image_" + idItem).attr('width', values['width']);
+			$("#image_" + idItem).attr('height', values['height']);
+			$("#image_" + idItem).css('width', values['width'] + 'px');
+			$("#image_" + idItem).css('height', values['height'] + 'px');	
+		}
 			var image = values['image'] + ".png";
 			set_image("image", idItem, image);
 			break;
@@ -1959,8 +1968,10 @@ function createItem(type, values, id_data) {
 				
 			if ((values['width'] == 0) || (values['height'] == 0)) {
 				// Do none
-				$image.attr('width', '70')
-					.attr('height', '70');
+				if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+					$image.attr('width', '70')
+						.attr('height', '70');
+				}			
 			}
 			else {
 				$image.attr('width', values['width'])
@@ -2159,8 +2170,10 @@ function createItem(type, values, id_data) {
 			break;
 		case 'icon':
 			if ((values['width'] == 0) || (values['height'] == 0)) {
-				sizeStyle = 'width: ' + '70'  + 'px; height: ' + '70' + 'px;';
-				imageSize = 'width="' + '70'  + '" height="' + '70' + '"';
+				if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+					sizeStyle = 'width: ' + '70'  + 'px; height: ' + '70' + 'px;';
+					imageSize = 'width="' + '70'  + '" height="' + '70' + '"';
+				}			
 			}
 			else {
 				sizeStyle = 'width: ' + values['width']  + 'px; height: ' + values['height'] + 'px;';
@@ -2177,12 +2190,14 @@ function createItem(type, values, id_data) {
 		default:
 			//Maybe create in any Enterprise item.
 			if (typeof(enterprise_createItem) == 'function') {
-				values['image'] = 'visualmap.services';
+				if (values['image'] == "") {
+					values['image'] = 'visualmap.services';
+				}
 				temp_item = enterprise_createItem(type, values, id_data);
 				if (temp_item != false) {
 					item = temp_item;
 				}
-					$('#'+id_data).css({'width':'','height':''});
+				$('#'+id_data).css({'width':'','height':''});
 			}
 			break;
 	}
@@ -2233,7 +2248,6 @@ function insertDB(type, values) {
 			background: "black"
 		}
 	});
-
 
 	var id = null;
 
@@ -2713,8 +2727,8 @@ function eventsItems(drag) {
 			unselectAll();
 			$(divParent).attr('withborder','true');
 			$(divParent).css('border', '1px blue dotted');
-			//$(divParent).css('left', '-=1px');
-			//$(divParent).css('top', '-=1px');
+			$(divParent).css('left', '-=1px');
+			$(divParent).css('top', '-=1px');
 			
 			if ($(divParent).hasClass('box_item')) {
 				creationItem = null;
@@ -3116,8 +3130,8 @@ function unselectAll() {
     $(".item").each(function(){
         $(this).css('border', '');
 				if($(this).attr('withborder') == 'true'){
-					//$(this).css('top', '+=1');
-					//$(this).css('left', '+=1');
+					$(this).css('top', '+=1');
+					$(this).css('left', '+=1');
 					$(this).attr('withborder', 'false');
 				}
 				

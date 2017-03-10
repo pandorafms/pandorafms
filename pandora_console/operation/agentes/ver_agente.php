@@ -490,35 +490,33 @@ if (is_ajax ()) {
 			asort($result);
 		}
 		else {
-      
-      if(implode(',', $idAgents) < 0){
-      
-        
-      $sql = 'SELECT DISTINCT(nombre) FROM tagente_modulo
-WHERE nombre IN (
-SELECT nombre
-FROM tagente_modulo 
-GROUP BY nombre
-HAVING count(nombre) = (SELECT count(nombre) FROM tagente_modulo))';
-      }
-      else{
-      	$sql = 'SELECT DISTINCT(nombre)
-				FROM tagente_modulo t1
-				WHERE ' . $filter . '
-					AND t1.delete_pending = 0
-					AND t1.id_agente IN (' . implode(',', $idAgents) . ')';
-			
-			if ($selection_mode == 'common') {
-				$sql .= ' AND (
-							SELECT count(nombre)
-							FROM tagente_modulo t2
-							WHERE t2.delete_pending = 0
-								AND t1.nombre = t2.nombre
-								AND t2.id_agente IN (' . implode(',', $idAgents) . ')) = (' . count($idAgents) . ')';
-			}elseif ($selection_mode == 'unknown'){
-				$sql .= 'AND t1.id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_estado where estado = 3 OR estado = 4)';
+		  if(implode(',', $idAgents) < 0) {
+			$sql = 'SELECT DISTINCT(nombre) FROM tagente_modulo
+				WHERE nombre IN (
+				SELECT nombre
+				FROM tagente_modulo 
+				GROUP BY nombre
+				HAVING count(nombre) = (SELECT count(nombre) FROM tagente_modulo))';
+		  }
+		  else {
+			$sql = 'SELECT DISTINCT(nombre)
+					FROM tagente_modulo t1
+					WHERE ' . $filter . '
+						AND t1.delete_pending = 0
+						AND t1.id_agente IN (' . implode(',', $idAgents) . ')';
+				
+				if ($selection_mode == 'common') {
+					$sql .= ' AND (
+								SELECT count(nombre)
+								FROM tagente_modulo t2
+								WHERE t2.delete_pending = 0
+									AND t1.nombre = t2.nombre
+									AND t2.id_agente IN (' . implode(',', $idAgents) . ')) = (' . count($idAgents) . ')';
+				}
+				elseif ($selection_mode == 'unknown') {
+					$sql .= 'AND t1.id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_estado where estado = 3 OR estado = 4)';
+				}
 			}
-    }
 			$sql .= ' ORDER BY nombre';
 			
 			$nameModules = db_get_all_rows_sql($sql);
@@ -1155,57 +1153,53 @@ if (isset($ehorus_tab) && !empty($ehorus_tab)) {
 //Tabs for extensions
 foreach ($config['extensions'] as $extension) {
 	if (isset($extension['extension_ope_tab'])) {
-		
-		//VMware extension is only available for VMware OS
-		if ($extension['extension_ope_tab']['id'] === "vmware_manager") {
-			
-			//Check if OS is vmware
-			$id_remote_field = db_get_value ("id_field",
-				"tagent_custom_fields", "name", "vmware_type");
-			
-			$vmware_type = db_get_value_filter("description",
-				"tagent_custom_data",
-				array("id_field" => $id_remote_field, "id_agent" => $agent["id_agente"]));
-			
-			if ($vmware_type != "vm") {
-				continue;
+		if (check_acl($config['id_user'], $id_grupo, $extension['extension_ope_tab']['acl'])) {
+			//VMware extension is only available for VMware OS
+			if ($extension['extension_ope_tab']['id'] === "vmware_manager") {
+				//Check if OS is vmware
+				$id_remote_field = db_get_value ("id_field",
+					"tagent_custom_fields", "name", "vmware_type");
+				
+				$vmware_type = db_get_value_filter("description",
+					"tagent_custom_data",
+					array("id_field" => $id_remote_field, "id_agent" => $agent["id_agente"]));
+				
+				if ($vmware_type != "vm") {
+					continue;
+				}
 			}
 			
-		}
-		
-		//RHEV extension is only available for RHEV Virtual Machines
-		if ($extension['extension_ope_tab']['id'] === "rhev_manager") {
-			//Get id for remote field "rhev_type"
-			$id_remote_field = db_get_value("id_field", "tagent_custom_fields", "name", "rhev_type");
-			
-			//Get rhev type for this agent
-			$rhev_type = db_get_value_filter ("description", "tagent_custom_data", array ("id_field" => $id_remote_field, "id_agent" => $agent['id_agente']));
-			
-			//Check if rhev type is a vm
-			if ($rhev_type != "vm") {
-				continue;
+			//RHEV extension is only available for RHEV Virtual Machines
+			if ($extension['extension_ope_tab']['id'] === "rhev_manager") {
+				//Get id for remote field "rhev_type"
+				$id_remote_field = db_get_value("id_field", "tagent_custom_fields", "name", "rhev_type");
+				//Get rhev type for this agent
+				$rhev_type = db_get_value_filter ("description", "tagent_custom_data", array ("id_field" => $id_remote_field, "id_agent" => $agent['id_agente']));
+				//Check if rhev type is a vm
+				if ($rhev_type != "vm") {
+					continue;
+				}
 			}
+			
+			$image = $extension['extension_ope_tab']['icon'];
+			$name = $extension['extension_ope_tab']['name'];
+			$id = $extension['extension_ope_tab']['id'];
+			
+			$id_extension = get_parameter('id_extension', '');
+			
+			if ($id_extension == $id) {
+				$active = true;
+			}
+			else {
+				$active = false;
+			}
+			
+			$url = 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=extension&id_agente='.$id_agente . '&id_extension=' . $id;
+			
+			$extension_tab = array('text' => '<a href="' . $url .'">' . html_print_image ($image, true, array ( "title" => $name)) . '</a>', 'active' => $active);
+			
+			$onheader = $onheader + array($id => $extension_tab);
 		}
-		
-		
-		$image = $extension['extension_ope_tab']['icon'];
-		$name = $extension['extension_ope_tab']['name'];
-		$id = $extension['extension_ope_tab']['id'];
-		
-		$id_extension = get_parameter('id_extension', '');
-		
-		if ($id_extension == $id) {
-			$active = true;
-		}
-		else {
-			$active = false;
-		}
-		
-		$url = 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=extension&id_agente='.$id_agente . '&id_extension=' . $id;
-		
-		$extension_tab = array('text' => '<a href="' . $url .'">' . html_print_image ($image, true, array ( "title" => $name)) . '</a>', 'active' => $active);
-		
-		$onheader = $onheader + array($id => $extension_tab);
 	}
 }
 

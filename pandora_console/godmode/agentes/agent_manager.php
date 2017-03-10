@@ -204,8 +204,9 @@ if (!$new_agent) {
 }
 $table->data[1][0] = __('Alias');
 $table->data[1][1] = html_print_input_text ('alias', $alias, '', 50, 100, true);
-
-
+if($new_agent){
+	$table->data[1][1] .= html_print_checkbox ("alias_as_name", 1, $alias_as_name, true).__('Use alias as name');
+}
 
 $table->data[2][0] = __('IP Address');
 $table->data[2][1] = html_print_input_text ('direccion', $direccion_agente, '', 16, 100, true);

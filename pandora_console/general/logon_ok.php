@@ -146,10 +146,12 @@ if (!empty($all_data)) {
 			$table->data[] = $tdata;
 			
 			// Users
-			$tdata = array();
-			$tdata[0] = reporting_get_stats_users($data);
-			$table->rowclass[] = '';
-			$table->data[] = $tdata;
+			if (users_is_admin()) {
+				$tdata = array();
+				$tdata[0] = reporting_get_stats_users($data);
+				$table->rowclass[] = '';
+				$table->data[] = $tdata;
+			}
 			
 			html_print_table($table);
 			unset($table);

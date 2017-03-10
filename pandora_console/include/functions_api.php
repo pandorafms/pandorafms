@@ -342,6 +342,52 @@ function api_get_agent_module_name_last_value($agentName, $moduleName, $other = 
 	}
 }
 
+
+function api_get_agent_module_name_last_value_alias($alias, $moduleName, $other = ';', $returnType)
+{
+	global $config;
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$sql = sprintf('SELECT tagente_modulo.id_agente_modulo FROM tagente_modulo 
+					INNER JOIN tagente ON tagente_modulo.id_agente = tagente.id_agente 
+					WHERE tagente.alias LIKE "%s" AND tagente_modulo.nombre LIKE "%s"', $alias, $moduleName);
+			break;
+		case "postgresql":
+		case "oracle":
+			$sql = sprintf('SELECT tagente_modulo.id_agente_modulo FROM tagente_modulo 
+					INNER JOIN tagente ON tagente_modulo.id_agente = tagente.id_agente 
+					WHERE tagente.alias LIKE \'%s\' AND tagente_modulo.nombre LIKE \'%s\'', $alias, $moduleName);
+			break;
+	}
+	
+	$idModuleAgent = db_get_value_sql($sql);
+	
+	if ($idModuleAgent === false) {
+		switch ($other['type']) {
+			case 'string':
+				switch ($other['data']) {
+					case 'error_message':
+					default:
+						returnError('id_not_found', $returnType);
+					break;
+				}
+				break;
+			case 'array':
+				switch ($other['data'][0]) {
+					case 'error_value':
+						returnData($returnType, array('type' => 'string', 'data' => $other['data'][1]));
+						break;
+				}
+				break;
+		}
+	}
+	else {
+		api_get_module_last_value($idModuleAgent, null, $other, $returnType);
+	}
+}
+
+
 function api_get_module_last_value($idAgentModule, $trash1, $other = ';', $returnType) {
 	if (defined ('METACONSOLE')) {
 		return;
@@ -525,7 +571,7 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType) {
 		'group_other',
 		
 		'agent_id',
-		'agent_name',
+		'alias',
 		'agent_direction',
 		'agent_comentary',
 		'agent_id_group',
@@ -542,6 +588,7 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType) {
 		'agent_server_name',
 		'agent_cascade_protection',
 		'agent_cascade_protection_module',
+		'agent_name',
 		
 		'module_id_agent_modulo',
 		'module_id_agent',
@@ -764,7 +811,7 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType) {
 	$groups = str_replace('\n', $returnReplace, $groups);
 	
 	$agents = db_get_all_rows_sql('
-		SELECT id_agente AS agent_id, id_grupo AS agent_id_group ' . $agent_additional_columns . ' FROM tagente');
+		SELECT id_agente AS agent_id, id_grupo AS agent_id_group , alias' . $agent_additional_columns . ' FROM tagente');
 	if ($agents === false) $agents = array();
 	$agents = str_replace('\n', $returnReplace, $agents);
 	
@@ -936,6 +983,67 @@ function api_get_module_properties_by_name($agent_name, $module_name, $other, $r
 /*
  * subroutine for api_get_module_properties() and api_get_module_properties_by_name().
  */
+
+ /**
+ * 
+ * @param $alias
+ * @param $module_name
+ * @param mixed $other If $other is string is only the separator,
+ *  but if it's array, $other as param is <separator>;<replace_return>;(<field_1>,<field_2>...<field_n>) in this order
+ *  and separator char (after text ; ) must be diferent that separator (and other) url (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  return csv with fields type_row,group_id and agent_name, separate with ";" and the return of the text replace for " "
+ *  api.php?op=get&op2=module_properties_by_name&id=sample_agent&id2=sample_module&return_type=csv&other=;| |module_id_agent,module_name,module_str_critical,module_str_warning&other_mode=url_encode_separator_|
+ *  	
+ * @param $returnType
+ * @return unknown_type
+ */
+function api_get_module_properties_by_alias($alias, $module_name, $other, $returnType)
+{
+	if ($other['type'] == 'array') {
+		$separator = $other['data'][0];
+		$returnReplace = $other['data'][1];
+		if (trim($other['data'][2]) == '')
+			$fields = false;
+		else {
+			$fields = explode(',', $other['data'][2]);
+			foreach($fields as $index => $field)
+				$fields[$index] = trim($field);
+		}
+		
+	}
+	else {
+		if (strlen($other['data']) == 0)
+			$separator = ';'; //by default
+		else
+			$separator = $other['data'];
+		$returnReplace = ' ';
+		$fields = false;
+	}
+
+	$sql = sprintf('SELECT tagente_modulo.id_agente_modulo FROM tagente_modulo 
+					INNER JOIN tagente ON tagente_modulo.id_agente = tagente.id_agente 
+					WHERE tagente.alias LIKE "%s" AND tagente_modulo.nombre LIKE "%s"', $alias, $module_name); 
+
+	$module_id = db_get_value_sql($sql);
+
+	if( !empty($alias) && $module_id > 0 ) {
+		get_module_properties($module_id, $fields, $separator, $returnType, $returnReplace);
+	}
+	else {
+		if(empty($alias)) {
+			returnError('error_get_module_properties_by_name', __('Does not exist agent with this name.'));
+		} else {
+			returnError('error_get_module_properties_by_name', __('Does not exist module with this name.'));
+		}
+	}
+}
+
+/*
+ * subroutine for api_get_module_properties() and api_get_module_properties_by_name().
+ */
+
 function get_module_properties($id_module, $fields, $separator, $returnType, $returnReplace)
 {
 	/** NOTE: if you want to add an output field, you have to add it to;
@@ -1062,7 +1170,7 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3) {
 		return;
 	}
 	
-	$name = $other['data'][0];
+	$alias = $other['data'][0];
 	$ip = $other['data'][1];
 	$idParent = $other['data'][2];
 	$idGroup = $other['data'][3];
@@ -1089,7 +1197,7 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3) {
 	}
 
 	$return = db_process_sql_update('tagente', 
-		array('nombre' => $name,
+		array('alias' => $alias,
 			'direccion' => $ip,
 			'id_grupo' => $idGroup,
 			'intervalo' => $intervalSeconds,
@@ -1134,7 +1242,7 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 		return;
 	}
 	
-	$name = $other['data'][0];
+	$alias = $other['data'][0];
 	$ip = $other['data'][1];
 	$idParent = $other['data'][2];
 	$idGroup = $other['data'][3];
@@ -1148,6 +1256,16 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 	$learningMode = $other['data'][10];
 	$disabled = $other['data'][11];
 	$description = $other['data'][12];
+	$alias_as_name = $other['data'][13];
+
+	if($alias_as_name && !empty($alias)){
+		$name = $alias;	
+	} else {
+		$name = hash("sha256",$alias . "|" .$direccion_agente ."|". time() ."|". sprintf("%04d", rand(0,10000)));
+		if(empty($alias)){
+			$alias = $name;
+		}
+	}
 
 	if ($cascadeProtection == 1) {
 		if (($idParent != 0) && (db_get_value_sql('SELECT id_agente_modulo
@@ -1203,6 +1321,7 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 	else {
 		$idAgente = db_process_sql_insert ('tagente', 
 			array ('nombre' => $name,
+				'alias' => $alias,
 				'direccion' => $ip,
 				'id_grupo' => $idGroup,
 				'intervalo' => $intervalSeconds,
@@ -1371,9 +1490,9 @@ function api_get_all_agents($thrash1, $thrash2, $other, $returnType) {
 		}
 	}
 	if (isset($other['data'][3])) {
-		// Filter by name
+		// Filter by alias
 		if ($other['data'][3] != "") {
-			$where .= " AND nombre LIKE ('%" . $other['data'][3] . "%')";
+			$where .= " AND alias LIKE ('%" . $other['data'][3] . "%')";
 		}
 	}
 	if (isset($other['data'][4])) {
@@ -1394,14 +1513,14 @@ function api_get_all_agents($thrash1, $thrash2, $other, $returnType) {
 	// Initialization of array
 	$result_agents = array();
 	// Filter by state
-	$sql = "SELECT id_agente, nombre, direccion, comentarios,
-			tconfig_os.name, url_address
+	$sql = "SELECT id_agente, alias, direccion, comentarios,
+			tconfig_os.name, url_address, nombre
 		FROM tagente, tconfig_os
 		WHERE tagente.id_os = tconfig_os.id_os
 			AND disabled = 0 " . $where;
 	
 	$all_agents = db_get_all_rows_sql($sql);
-	
+
 	// Filter by status: unknown, warning, critical, without modules 
 	if (isset($other['data'][2])) {
 		if ($other['data'][2] != "") {
@@ -1469,7 +1588,6 @@ function api_get_all_agents($thrash1, $thrash2, $other, $returnType) {
 	
 	if (count($result_agents) > 0 and $result_agents !== false) {
 		$data = array('type' => 'array', 'data' => $result_agents);
-		
 		returnData($returnType, $data, $separator);
 	}
 	else {
@@ -1950,6 +2068,79 @@ function api_get_group_agent_by_name($thrash1, $thrash2, $other, $thrash3) {
 	}
 }
 
+
+/**
+ * Get name group for an agent, and print all the result like a csv.
+ * 
+ * @param $thrash1 Don't use.
+ * @param $thrash2 Don't use.
+ * @param array $other it's array, $other as param are the filters available <alias> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  api.php?op=get&op2=group_agent_by_alias&return_type=csv&other=Pepito&other_mode=url_encode_separator_|
+ * 
+ * @param $thrash3 Don't use.
+ */
+function api_get_group_agent_by_alias($thrash1, $thrash2, $other, $thrash3) {
+	
+	$group_names =array();
+	
+	if (is_metaconsole()) {
+		$servers = db_get_all_rows_sql ("SELECT *
+			FROM tmetaconsole_setup
+				WHERE disabled = 0");
+			
+		if ($servers === false)
+			$servers = array();
+		
+		
+		foreach($servers as $server) {
+			if (metaconsole_connect($server) == NOERR) {
+				$sql = sprintf("SELECT tagente.id_agente FROM tagente WHERE alias LIKE  '%s' ",$other['data'][0]);
+				$agent_id = db_get_all_rows_sql($sql);
+				
+				foreach ($agent_id as &$id) {
+					$sql = sprintf("SELECT groups.nombre nombre 
+						FROM tagente agents, tgrupo groups
+						WHERE id_agente = %d 
+							AND agents.id_grupo = groups.id_grupo",$id['id_agente']);
+					$group_server_names = db_get_all_rows_sql($sql);
+					
+					if ($group_server_names) {
+						foreach($group_server_names as $group_server_name) {
+							$group_names[] = $group_server_name;
+						}
+					}
+				}
+			}
+			metaconsole_restore_db();
+		}
+	}
+	else {
+		$sql = sprintf("SELECT tagente.id_agente FROM tagente WHERE alias LIKE  '%s' ",$other['data'][0]);
+		$agent_id = db_get_all_rows_sql($sql);
+
+		foreach ($agent_id as &$id) {
+			$sql = sprintf("SELECT groups.nombre nombre 
+			FROM tagente agents, tgrupo groups
+			WHERE id_agente = %d 
+				AND agents.id_grupo = groups.id_grupo",$id['id_agente']);
+			$group_name = db_get_all_rows_sql($sql);
+			$group_names[] = $group_name[0];
+		}
+	}
+	
+	if (count($group_names) > 0 and $group_names !== false) {
+		$data = array('type' => 'array', 'data' => $group_names);
+		
+		returnData('csv', $data, ';');
+	}
+	else {
+		returnError('error_group_agent', 'No groups retrieved.');
+	}
+}
+
 /**
  * Get id server whare agent is located, and print all the result like a csv.
  * 
@@ -2057,6 +2248,78 @@ function api_get_id_group_agent_by_name($thrash1, $thrash2, $other, $thrash3) {
 	if (count($group_names) > 0 and $group_names !== false) {
 		$data = array('type' => 'array', 'data' => $group_names);
 		
+		returnData('csv', $data);
+	}
+	else {
+		returnError('error_group_agent', 'No groups retrieved.');
+	}
+}
+
+
+/**
+ * Get id group for an agent, and print all the result like a csv.
+ * 
+ * @param $thrash1 Don't use.
+ * @param $thrash2 Don't use.
+ * @param array $other it's array, $other as param are the filters available <alias> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  api.php?op=get&op2=id_group_agent_by_alias&return_type=csv&other=Nova&other_mode=url_encode_separator_|
+ * 
+ * @param $thrash3 Don't use.
+ */
+function api_get_id_group_agent_by_alias($thrash1, $thrash2, $other, $thrash3) {
+	
+	$group_names =array();
+	
+	if (is_metaconsole()) {
+		$servers = db_get_all_rows_sql ("SELECT *
+			FROM tmetaconsole_setup
+				WHERE disabled = 0");
+			
+		if ($servers === false)
+			$servers = array();
+		
+		
+		foreach($servers as $server) {
+			if (metaconsole_connect($server) == NOERR) {
+				$sql = sprintf("SELECT tagente.id_agente FROM tagente WHERE alias LIKE  '%s' ",$other['data'][0]);
+				$agent_id = db_get_all_rows_sql($sql);
+				
+				foreach ($agent_id as &$id) {
+					$sql = sprintf("SELECT groups.id_grupo id_group 
+						FROM tagente agents, tgrupo groups
+						WHERE id_agente = %d 
+							AND agents.id_grupo = groups.id_grupo",$id['id_agente']);
+					$group_server_names = db_get_all_rows_sql($sql);
+					
+					if ($group_server_names) {
+						foreach($group_server_names as $group_server_name) {
+							$group_names[] = $group_server_name;
+						}
+					}
+				}
+			}
+			metaconsole_restore_db();
+		}
+	}
+	else {
+		$sql = sprintf("SELECT tagente.id_agente FROM tagente WHERE alias LIKE  '%s' ",$other['data'][0]);
+		$agent_id = db_get_all_rows_sql($sql);
+
+		foreach ($agent_id as &$id) {
+			$sql = sprintf("SELECT groups.id_grupo id_group
+			FROM tagente agents, tgrupo groups
+			WHERE id_agente = %d 
+				AND agents.id_grupo = groups.id_grupo",$id['id_agente']);
+			$group_name = db_get_all_rows_sql($sql);
+			$group_names[] = $group_name[0];
+		}
+		
+	}
+	if (count($group_names) > 0 and $group_names !== false) {
+		$data = array('type' => 'array', 'data' => $group_names);
 		returnData('csv', $data);
 	}
 	else {
@@ -3702,7 +3965,7 @@ function api_get_module_value_all_agents($id, $thrash1, $other, $thrash2) {
 		return;
 	}
 	
-	$sql = sprintf("SELECT agent.id_agente, agent.nombre, module_state.datos FROM tagente agent, tagente_modulo module, tagente_estado module_state WHERE agent.id_agente = module.id_agente AND module.id_agente_modulo=module_state.id_agente_modulo AND module.nombre = '%s'", $id);
+	$sql = sprintf("SELECT agent.id_agente, agent.alias, module_state.datos, agent.nombre FROM tagente agent, tagente_modulo module, tagente_estado module_state WHERE agent.id_agente = module.id_agente AND module.id_agente_modulo=module_state.id_agente_modulo AND module.nombre = '%s'", $id);
 	
 	$module_values = db_get_all_rows_sql($sql);
 	
@@ -6086,7 +6349,6 @@ function api_set_update_group($id_group, $thrash2, $other, $thrash3) {
 		return;
 	}
 	
-		//html_debug_print($other);
 	$name = $other['data'][0];
 	$icon = $other['data'][1];
 	$parent = $other['data'][2];
@@ -7714,7 +7976,7 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
 					}
 					else {
 						$sql = "SELECT *,
-							(SELECT t1.nombre
+							(SELECT t1.alias
 								FROM tagente t1
 								WHERE t1.id_agente = tevento.id_agente) AS agent_name,
 							(SELECT t2.nombre
@@ -7740,7 +8002,7 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
 			case "postgresql":
 				//TODO TOTAL
 				$sql = "SELECT *,
-					(SELECT t1.nombre
+					(SELECT t1.alias
 						FROM tagente t1
 						WHERE t1.id_agente = tevento.id_agente) AS agent_name,
 					(SELECT t2.nombre
@@ -7767,6 +8029,9 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
 				$set['offset'] = $offset;
 				
 				$sql = "SELECT *,
+					(SELECT t1.alias
+						FROM tagente t1
+						WHERE t1.id_agente = tevento.id_agente) AS alias,
 					(SELECT t1.nombre
 						FROM tagente t1
 						WHERE t1.id_agente = tevento.id_agente) AS agent_name,
@@ -7853,9 +8118,8 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
 	else if ($other['type'] == 'array') {
 		$separator = $other['data'][0];
 	}
-	//html_debug_print($filter, true);
+	
 	$result = db_get_all_rows_sql ($sql);
-	//html_debug_print($sql, true);
 	
 	if (($result !== false) &&
 		(!$filter['total']) &&
@@ -7911,8 +8175,6 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
 		}
 	}
 	
-	//html_debug_print($result);
-	
 	$data['type'] = 'array';
 	$data['data'] = $result;
 	
@@ -7945,10 +8207,8 @@ function api_get_events($trash1, $trash2, $other, $returnType, $user_in_db = nul
 				returnError('ERROR_API_PANDORAFMS', $returnType);
 			}
 		}
-		
 		return;
 	}
-	
 	
 	
 	if ($other['type'] == 'string') {
@@ -8390,7 +8650,7 @@ function api_get_total_agents($id_group, $trash1, $trash2, $returnType) {
 /**
  * Agent name for a given id
  * 
- * @param int $id_group 
+ * @param int $id_agent 
  * 
 **/
 // http://localhost/pandora_console/include/api.php?op=get&op2=agent_name&id=1&apipass=1234&user=admin&pass=pandora
@@ -8400,6 +8660,31 @@ function api_get_agent_name($id_agent, $trash1, $trash2, $returnType) {
 	}
 	
 	$sql = sprintf('SELECT nombre
+		FROM tagente
+		WHERE id_agente = %d', $id_agent);
+	$value = db_get_value_sql($sql);
+	if ($value === false) {
+		returnError('id_not_found', $returnType);
+	}
+	
+	$data = array('type' => 'string', 'data' => $value);
+	
+	returnData($returnType, $data);
+}
+
+/**
+ * Agent alias for a given id
+ * 
+ * @param int $id_agent 
+ * 
+**/
+// http://localhost/pandora_console/include/api.php?op=get&op2=agent_name&id=1&apipass=1234&user=admin&pass=pandora
+function api_get_agent_alias($id_agent, $trash1, $trash2, $returnType) {
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+	
+	$sql = sprintf('SELECT alias
 		FROM tagente
 		WHERE id_agente = %d', $id_agent);
 	$value = db_get_value_sql($sql);

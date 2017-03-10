@@ -348,6 +348,8 @@ define('SERVER_TYPE_ENTERPRISE_ICMP',		    11);
 define('SERVER_TYPE_ENTERPRISE_SNMP',		    12);
 define('SERVER_TYPE_ENTERPRISE_SATELLITE',	    13);
 define('SERVER_TYPE_ENTERPRISE_TRANSACTIONAL',	14);
+define('SERVER_TYPE_MAINFRAME',	                15);
+define('SERVER_TYPE_SYNC',	                    16);
 
 /* REPORTS */
 define('REPORT_TOP_N_MAX',	1);

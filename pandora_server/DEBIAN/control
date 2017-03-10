@@ -1,5 +1,5 @@
 package: pandorafms-server
-Version: NG_BETA-170302
+Version: NG_BETA-170308
 Architecture: all
 Priority: optional
 Section: admin

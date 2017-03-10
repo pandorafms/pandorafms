@@ -1360,13 +1360,8 @@ function reporting_html_agent_module($table, $item) {
 					$textcolor = '#FFF';
 					break;
 			}
-			/*
-			$file_name = string2image(
-				ui_print_truncate_text($row['agent_name'], 'agent_small',
-					false, true, false, '...'),
-				false, false, 6, 0, $rowcolor, $textcolor, 4, 0);
-			*/
-			$file_name = ui_print_truncate_text($row['agent_name'], 'agent_small',
+			
+			$file_name = ui_print_truncate_text($row['agent_alias'], 'agent_small',
 					false, true, false, '...');
 			$table_data .= "<td style='background-color: " . $rowcolor . ";'>" .
 				$file_name . "</td>";
@@ -2060,7 +2055,7 @@ function reporting_html_monitor_report($table, $item, $mini) {
 function reporting_html_graph($table, $item) {
 	$table->colspan['chart']['cell'] = 3;
 	$table->cellstyle['chart']['cell'] = 'text-align: center;';
-	$table->data['chart']['cell'] = $item['chart'];
+	$table->data['chart']['cell'] = $item['chart'].'<br><br><br><br>';
 }
 
 function reporting_html_prediction_date($table, $item, $mini) {

@@ -480,7 +480,7 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 		}
 	}
 	
-	if (!is_null($percentil)) {
+	if (!is_null($percentil) && $percentil) {
 		$avg = array_map(function($item) { return $item['sum'];}, $chart);
 		
 		$percentil_result = get_percentile($percentil, $avg);
@@ -774,7 +774,7 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 		$chart_extra_data['legend_unknown'] = $legend['unknown'.$series_suffix_str];
 	}
 	
-	if (!is_null($percentil)) {
+	if (!is_null($percentil) && $percentil) {
 		$first_data = reset($chart);
 		$percentil_value = format_for_graph($first_data['percentil'], 2);
 		
@@ -1429,8 +1429,6 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		
 		if ($projection == false or ($projection != false and $i == 0)) {
 			$module_name_list[$i] .= ": ";
-			if ($show_last)
-				$module_name_list[$i] .= __('Last') . ": $last $unit; ";
 			if ($show_max)
 				$module_name_list[$i] .= __("Max") . ": $max $unit; ";
 			if ($show_min)
@@ -1739,8 +1737,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			}
 			break;
 		default:
-			if (!is_null($percentil)) {
-				
+			if (!is_null($percentil) && $percentil) {
 				foreach ($graph_values as $graph_group => $point) {
 					foreach ($point as $timestamp_point => $point_value) {
 						$temp[$timestamp_point][$graph_group] = $point_value;
@@ -1750,7 +1747,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 					$percentil_result[$graph_group] = array_fill ( 0, count($point), $percentile_value);
 					$series_type[$graph_group] = 'line';
 					$agent_name = io_safe_output(
-						modules_get_agentmodule_agent_name ($module_list[$graph_group]));
+						modules_get_agentmodule_agent_alias ($module_list[$graph_group]));
 					$module_name = io_safe_output(
 						modules_get_agentmodule_name ($module_list[$graph_group]));
 					$module_name_list['percentil'.$graph_group] = __('Percentile %dº', $config['percentil']) . __(' of module ') . $agent_name .' / ' . $module_name . ' (' . $percentile_value . ' ' . $unit . ') ';
@@ -2004,7 +2001,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				$width, $height, $color, $module_name_list, $long_index,
 				ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 				"", "", $water_mark, $config['fontpath'], $fixed_font_size,
-				"", $ttl, $homeurl, $background_color);
+				"", $ttl, $homeurl, $background_color, true);
 			break;
 		case CUSTOM_GRAPH_PIE:
 			return ring_graph($flash_charts, $graph_values, $width, $height,
@@ -2825,7 +2822,7 @@ function graph_incidents_status () {
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
 	
-	return pie3d_graph($config['flash_charts'], $data, 370, 180,
+	return pie3d_graph($config['flash_charts'], $data, 320, 200,
 		__('Other'), '', $water_mark,
 		$config['fontpath'], $config['font_size']);
 }
@@ -2996,12 +2993,29 @@ function graphic_incident_source($width = 320, $height = 200) {
 		$config['fontpath'], $config['font_size']);
 }
 
-function graph_events_validated($width = 300, $height = 200, $url = "", $meta = false, $history = false) {
+function graph_events_validated($width = 300, $height = 200, $extra_filters = array(), $meta = false, $history = false) {
 	global $config;
 	global $graphic_type;
 	
+	$event_type = false;
+	if (array_key_exists('event_type', $extra_filters))
+		$event_type = $extra_filters['event_type'];
+	
+	$event_severity = false;
+	if (array_key_exists('event_severity', $extra_filters))
+		$event_severity = $extra_filters['event_severity'];
+	
+	$event_status = false;
+	if (array_key_exists('event_status', $extra_filters))
+		$event_status = $extra_filters['event_status'];
+	
+	$event_filter_search = false;
+	if (array_key_exists('event_filter_search', $extra_filters))
+		$event_filter_search = $extra_filters['event_filter_search'];
+	
 	$data_graph = events_get_count_events_validated(
-		array('id_group' => array_keys(users_get_groups())));
+		array('id_group' => array_keys(users_get_groups())), null, null, 
+		$event_severity, $event_type, $event_status, $event_filter_search);
 	
 	$colors = array();
 	foreach ($data_graph as $k => $v) {
@@ -3088,25 +3102,12 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 	//This will give the distinct id_agente, give the id_grupo that goes
 	//with it and then the number of times it occured. GROUP BY statement
 	//is required if both DISTINCT() and COUNT() are in the statement 
-	switch ($config["dbtype"]) {
-		case "mysql":
-		case "postgresql":
-			$sql = sprintf ('SELECT DISTINCT(id_agente) AS id_agente,
+	$sql = sprintf ('SELECT DISTINCT(id_agente) AS id_agente,
 					COUNT(id_agente) AS count'.$field_extra.'
 				FROM '.$event_table.'
 				WHERE 1=1 %s %s
 				GROUP BY id_agente'.$groupby_extra.'
 				ORDER BY count DESC LIMIT 8', $url, $tags_condition);
-			break;
-		case "oracle":
-			$sql = sprintf ('SELECT DISTINCT(id_agente) AS id_agente,
-					id_grupo, COUNT(id_agente) AS count'.$field_extra.'
-				FROM '.$event_table.'
-				WHERE rownum <= 8 %s %s
-				GROUP BY id_agente, id_grupo'.$groupby_extra.'
-				ORDER BY count DESC', $url, $tags_condition); 
-			break;
-	}
 	
 	$result = db_get_all_rows_sql ($sql, false, false);
 	if ($result === false) {
@@ -3253,9 +3254,14 @@ function grafico_eventos_total($filter = "", $width = 320, $height = 200, $noWat
 	$legend = array ();
 	$total = 0;
 	
-	$sql = "SELECT criticity, COUNT(id_evento) events
-		FROM tevento
-		GROUP BY criticity ORDER BY events DESC";
+	$where = '';
+	if (!users_is_admin()) {
+		$where = 'WHERE event_type NOT IN (\'recon_host_detected\', \'system\',\'error\', \'new_agent\', \'configuration_change\')';
+	}
+	
+	$sql = sprintf("SELECT criticity, COUNT(id_evento) events
+		FROM tevento %s 
+		GROUP BY criticity ORDER BY events DESC", $where);
 	
 	$criticities = db_get_all_rows_sql ($sql, false, false);
 	
@@ -3322,23 +3328,17 @@ function grafico_eventos_usuario ($width, $height) {
 	
 	$data = array ();
 	$max_items = 5;
-	switch ($config["dbtype"]) {
-		case "mysql":
-		case "postgresql":
-			$sql = sprintf ('SELECT COUNT(id_evento) events, id_usuario
-				FROM tevento
-				GROUP BY id_usuario
-				ORDER BY 1 DESC LIMIT %d', $max_items);
-			break;
-		case "oracle":
-			$sql = sprintf ('SELECT *
-				FROM (SELECT COUNT(id_evento) events, id_usuario
-					FROM tevento
-					GROUP BY id_usuario
-					ORDER BY 1 DESC)
-				WHERE rownum <= %d', $max_items);
-			break;
+	
+	$where = '';
+	if (!users_is_admin()) {
+		$where = 'WHERE event_type NOT IN (\'recon_host_detected\', \'system\',\'error\', \'new_agent\', \'configuration_change\')';
 	}
+	
+	$sql = sprintf ('SELECT COUNT(id_evento) events, id_usuario
+				FROM tevento %s
+				GROUP BY id_usuario
+				ORDER BY 1 DESC LIMIT %d', $where, $max_items);
+	
 	$events = db_get_all_rows_sql ($sql);
 	
 	if ($events === false) {

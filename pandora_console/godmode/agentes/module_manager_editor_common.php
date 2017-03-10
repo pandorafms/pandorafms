@@ -139,6 +139,7 @@ $table_simple->style[0] = 'font-weight: bold; width: 15%;';
 $table_simple->style[1] = 'width: 35%';
 $table_simple->style[2] = 'font-weight: bold; width: 25%;';
 $table_simple->style[3] = 'width: 25%';
+$table_simple->cellclass = array();
 
 
 #$table_simple->colspan[4][1] = 3;
@@ -255,6 +256,14 @@ if($disabledBecauseInPolicy){
 $table_simple->data[3][0] = __('Dynamic Threshold Interval') .' ' . ui_print_help_icon ('dynamic_threshold', true);
 $table_simple->data[3][1] = html_print_extended_select_for_time ('dynamic_interval', $dynamic_interval, '', 'None', '0', 10, true, 'width:150px',false, $classdisabledBecauseInPolicy, $disabledBecauseInPolicy);
 $table_simple->data[3][1] .= '<a onclick=advanced_option_dynamic()>' . html_print_image('images/cog.png', true, array('title' => __('Advanced options Dynamic Threshold'))) . '</a>';
+if($in_policy){
+	$table_simple->cellclass[2][2] = 'hide_dinamic';
+	$table_simple->cellclass[2][3] = 'hide_dinamic';
+}
+else{
+	$table_simple->cellclass[3][2] = 'hide_dinamic';
+	$table_simple->cellclass[3][3] = 'hide_dinamic';
+}
 
 $table_simple->data[3][2] = '<span><em>'.__('Dynamic Threshold Min. ').'</em>';
 $table_simple->data[3][2] .= html_print_input_text ('dynamic_min', $dynamic_min, '', 10, 255, true,
@@ -874,9 +883,14 @@ $(document).ready (function () {
 		disabled_status(disabledBecauseInPolicy);
 	});
 
+	disabled_two_tailed(disabledBecauseInPolicy);
+	$('#checkbox-dynamic_two_tailed').change (function() {
+		disabled_two_tailed(disabledBecauseInPolicy);
+	});
+
+
 	//Dynamic_options_advance;
-	$('#simple-3-2').hide();
-	$('#simple-3-3').hide();
+	$('.hide_dinamic').hide();
 
 	//paint graph stutus critical and warning:
 	paint_graph_values();
@@ -925,7 +939,7 @@ function disabled_status (disabledBecauseInPolicy) {
 		$('#text-max_critical').prop('readonly', true);
 		$('#text-max_critical').addClass('readonly');
 	} else {
-		if (!disabledBecauseInPolicy){
+		if (disabledBecauseInPolicy == 0){
 			$('#text-min_warning').prop('readonly', false);
 			$('#text-min_warning').removeClass('readonly');
 			$('#text-max_warning').prop('readonly', false);
@@ -938,14 +952,27 @@ function disabled_status (disabledBecauseInPolicy) {
 	}
 }
 
+function disabled_two_tailed (disabledBecauseInPolicy) {
+	if($('#checkbox-dynamic_two_tailed').prop('checked')){
+		$('#text-dynamic_max').prop('readonly', false);
+		$('#text-dynamic_max').removeClass('readonly');
+	}
+	else{
+		if (disabledBecauseInPolicy == 0){
+			$('#text-dynamic_max').prop('readonly', true);
+			$('#text-dynamic_max').addClass('readonly');
+		}
+	}
+}
+
 //Dynamic_options_advance;
 function advanced_option_dynamic() {
-	if($('#simple-3-2').is(":visible")){
-		$('#simple-3-2').hide();
-		$('#simple-3-3').hide();
+	if($('.hide_dinamic').is(":visible")){
+		$('.hide_dinamic').hide();
+		
 	} else {
-		$('#simple-3-2').show();
-		$('#simple-3-3').show();
+		$('.hide_dinamic').show();
+		
 	}
 }
 

@@ -164,9 +164,8 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 				pie: {
 					show: true,
 					radius: 3/4,
-					innerRadius: 0.4,
-					label: label_conf
-					
+					innerRadius: 0.4
+					//label: label_conf
 				}
 			},
 			legend: {
@@ -1723,7 +1722,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			if (currentRanges == null || (currentRanges.xaxis.from < j && j < currentRanges.xaxis.to)) {
 				$('#timestamp_'+graph_id).show();
 				// If no legend, the timestamp labels are short and with value
-				if (legends.length == 0) {
+				if (legend.length == 0) {
 					$('#timestamp_'+graph_id).text(labels[j] + ' (' + parseFloat(y).toFixed(2) + ')');
 				}
 				else {
@@ -1946,6 +1945,11 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 					$.extend(true, {}, options, {
 						yaxis: {max: maxim_data + (maxim_data*0.5)},
 					}));
+				} else {
+					plot = $.plot($('#' + graph_id), data_base,
+					$.extend(true, {}, options, {
+						yaxis: {max: plot.getAxes().yaxis.max},
+					}));
 				}
 				datas = add_threshold (data_base, threshold_data, plot.getAxes().yaxis.min, plot.getAxes().yaxis.max,
 										yellow_threshold, red_threshold, extremes, red_up);
@@ -1977,7 +1981,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 
 		// Adjust the menu image on top of the plot
 		// If there is no legend we increase top-padding to make space to the menu
-		if (legends.length == 0) {
+		if (legend.length == 0) {
 			$('#menu_' + graph_id).parent().css('padding-top',
 				$('#menu_' + graph_id).css('height'));
 		}

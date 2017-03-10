@@ -930,6 +930,7 @@ switch ($action) {
 								$es['id_agents'] = $agents_to_report;
 
 								$values['external_source'] = json_encode($es);
+								$values['period'] = get_parameter('period');
 								$good_format = true;
 								break;
 							case 'prediction_date':
@@ -1284,6 +1285,7 @@ switch ($action) {
 								$es['id_agents'] = $agents_to_report;
 
 								$values['external_source'] = json_encode($es);
+								$values['period'] = get_parameter('period');
 								$good_format = true;
 								break;
 							case 'agent_module':

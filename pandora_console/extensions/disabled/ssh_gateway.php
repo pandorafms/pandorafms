@@ -20,7 +20,7 @@ $id_agente = get_parameter ("id_agente");
 $address = agents_get_address($id_agente);
 
 if (!empty($address) || empty($id_agente)) {
-	extensions_add_opemode_tab_agent ('ssh_gateway','SSH Gateway','extensions/ssh_gateway/secure_console.png',"ssh_gateway", "v1r1");
+	extensions_add_opemode_tab_agent ('ssh_gateway','SSH Gateway','extensions/ssh_gateway/secure_console.png',"ssh_gateway", "v1r1", 'AW');
 }
 
 function ssh_gateway () {

@@ -143,8 +143,8 @@ echo "Updating Pandora Windows Agent version..."
 sed -i -e "s/\s*#define\s*PANDORA_VERSION\s*.*/#define PANDORA_VERSION (\"$VERSION(Build $BUILD)\")/" "$AGENT_WIN_FILE"
 sed -i -e "s/{Pandora FMS Windows Agent v.*}/{Pandora FMS Windows Agent v$VERSION}/" "$AGENT_WIN_MPI_FILE"
 NUMERIC_VERSION=$(echo $VERSION | sed -e "s/\([0-9]*\.[0-9]*\).*/\1/")
-sed -in "1h;1!H;\${;g;s/[\r\n]InstallVersion[\r\n]{\S*}/\nInstallVersion\n{$NUMERIC_VERSION.0.0}/g;p;}" "$AGENT_WIN_MPI_FILE"
-sed -in "1h;1!H;\${;g;s/[\r\n]Version[\r\n]{[^\n\r]*}/\nVersion\n{$BUILD}/g;p;}" "$AGENT_WIN_MPI_FILE"
+sed -i -n "1h;1!H;\${;g;s/[\r\n]InstallVersion[\r\n]{\S*}/\nInstallVersion\n{$NUMERIC_VERSION.0.0}/g;p;}" "$AGENT_WIN_MPI_FILE"
+sed -i -n "1h;1!H;\${;g;s/[\r\n]Version[\r\n]{[^\n\r]*}/\nVersion\n{$BUILD}/g;p;}" "$AGENT_WIN_MPI_FILE"
 if [ $NB == 1 ]; then
 	sed --in-place -n "1h;1!H;\${;g;s/[\r\n]Windows\,Executable[\r\n]{[^\n\r]*}/\nWindows\,Executable\n{\<\%AppName\%\>\-\<\%Version\%\>\-Setup\<\%Ext\%\>}/g;p;}" "$AGENT_WIN_MPI_FILE"
 else

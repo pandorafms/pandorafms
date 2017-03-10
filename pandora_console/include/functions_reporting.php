@@ -1200,7 +1200,7 @@ function reporting_event_top_n($report, $content, $type = 'dinamic',
 			
 			
 			if ($show_graph != REPORT_TOP_N_ONLY_TABLE) {
-				
+				arsort($data_pie_graph);
 				$return['charts']['pie'] = pie3d_graph(false,
 					$data_pie_graph,
 					$width, $height,
@@ -1222,14 +1222,14 @@ function reporting_event_top_n($report, $content, $type = 'dinamic',
 					array(),
 					"",
 					"",
-					true,
-					ui_get_full_url(false, true, false, false) . '/',
+					false,
+					false,
 					$config['homedir'] . "/images/logo_vertical_water.png",
 					$config['fontpath'],
 					$config['font_size'],
 					true,
 					$ttl,
-					true);
+					$config['homeurl']);
 			}
 			
 			$return['resume'] = null;
@@ -3407,11 +3407,11 @@ function reporting_prediction_date($report, $content) {
 	$return['agent_name'] = $agent_name;
 	$return['module_name'] = $module_name;
 	
-	set_time_limit(500);
+	$intervals_text = explode(';', $content['text']);
 	
-	$intervals_text = $content['text'];
-	$max_interval = substr($intervals_text, 0, strpos($intervals_text, ';'));
-	$min_interval = substr($intervals_text, strpos($intervals_text, ';') + 1);			
+	$max_interval = $intervals_text[0];
+	$min_interval = $intervals_text[1];
+		
 	$value = forecast_prediction_date ($content['id_agent_module'], $content['period'],  $max_interval, $min_interval);
 	
 	if ($value === false) {
@@ -5800,7 +5800,15 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 	reporting_set_conf_charts($width, $height, $only_image, $type,
 		$content, $ttl);
 	
-	$height += count($modules) * REPORTING_CUSTOM_GRAPH_LEGEND_EACH_MODULE_VERTICAL_SIZE;
+	//height for bullet chart
+	if($graph['stacked'] != 4){
+		$height += count($modules) * REPORTING_CUSTOM_GRAPH_LEGEND_EACH_MODULE_VERTICAL_SIZE;
+	}
+	else{
+		if(!$only_image){
+			$height = 50;
+		}
+	}
 	
 	switch ($type) {
 		case 'dinamic':

@@ -306,11 +306,14 @@ function process_user_login_remote ($login, $pass, $api = false) {
 		}
 	}
 	else {
+		
+		$user_info = array ('fullname' => $login, 
+				'comments' => 'Imported from ' . $config['auth']);
+		if ( is_metaconsole() && $config["auth"] === 'ad')
+			$user_info['metaconsole_access_node'] = $config['ad_adv_user_node'];
+		
 		// Create the user in the local database
-		if (create_user ($login, $pass,
-				array ('fullname' => $login, 
-				'comments' => 'Imported from ' . $config['auth'])
-			) === false) {
+		if (create_user ($login, $pass, $user_info ) === false) {
 			$config["auth_error"] = __("User not found in database or incorrect password");
 			return false;
 		}
@@ -339,7 +342,7 @@ function process_user_login_remote ($login, $pass, $api = false) {
 			foreach ($servers as $server) {
 				$perfil_maestro = db_get_row('tperfil',
 					'id_perfil', $config['default_remote_profile']);
-
+				
 				if (metaconsole_connect($server) == NOERR ) {
 					
 					if (!profile_exist($perfil_maestro['name'])) {
@@ -350,10 +353,12 @@ function process_user_login_remote ($login, $pass, $api = false) {
 						$id_profile = db_get_value('id_perfil', 'tperfil', 'name', $perfil_maestro['name']);
 					}
 					
-					if (create_user ($login, $pass,
-						array ('fullname' => $login, 
-						'comments' => 'Imported from ' . $config['auth'])
-					) === false)
+					if ($config["auth"] === 'ad') {
+						unset($user_info['metaconsole_access_node']);
+						$user_info['not_login'] = (int) !$config['ad_adv_user_node'];
+					}
+					
+					if (create_user ($login, $pass, $user_info) === false)
 						continue;
 					profile_create_user_profile ($login, $id_profile, 
 						$config['default_remote_group'], false, $config['default_assign_tags']);

@@ -157,19 +157,15 @@ $data_agents = array(
 $table->data[1][0] = reporting_get_stats_alerts($data);
 $table->data[2][0] = reporting_get_stats_modules_status($data, 180, 100, false, $data_agents);
 $table->data[3][0] = reporting_get_stats_agents_monitors($data);
+
 $table->rowclass[] = '';
-
-
-
 
 // ---------------------------------------------------------------------
 // Server performance 
 // ---------------------------------------------------------------------
 if ($is_admin) {
-	
 	$table->data[4][0] = reporting_get_stats_servers(false);
 	$table->rowclass[] = '';
-	
 }
 
 html_print_table($table);
@@ -177,7 +173,6 @@ html_print_table($table);
 echo '</td>'; //Left column
 
 echo '<td style="vertical-align: top; width: 75%; padding-top: 0px;" id="rightcolumn">';
-
 
 // ---------------------------------------------------------------------
 // Last events information

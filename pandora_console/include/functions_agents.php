@@ -90,7 +90,7 @@ function agents_create_agent ($name, $id_group, $interval, $ip_address, $values 
 	
 	$id_agent = db_process_sql_insert ('tagente', $values);
 	if ($id_agent === false) {
-		return false;
+		return false;,
 	}
 	
 	// Create address for this agent in taddress
@@ -2620,6 +2620,18 @@ function select_modules_for_agent_group($id_group, $id_agents,
 		echo json_encode($modules);
 		return;
 	}
+}
+
+/**
+ * Returns a random name identifier for an agent.
+ *
+ * @param string Descriptive name of the agent.
+ * @param string Address of the agent.
+ *
+ * @return string Random identifier name.
+ */
+function agents_generate_name ($alias, $address = '') {
+	return hash('sha256', $alias . '|' . $address . '|' . time() . '|' . sprintf('%04d', rand(0, 10000)));
 }
 
 ?>

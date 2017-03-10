@@ -275,9 +275,8 @@ sub gateway_connectivity($$) {
 	# Same host, different IP addresses.
 	return if ($host eq $gw);
 
-	$self->call('set_parent', $host, $gw);
 	$self->call('message', "Host $host is reached via gateway $gw.", 5);
-	$self->mark_connected($host);
+	$self->mark_connected($gw, '', $host, '');
 }
 
 ########################################################################################
@@ -1298,7 +1297,7 @@ sub switch_to_switch_connectivity($$$) {
 }
 
 ##########################################################################
-# Connect the given hosts to its parent using traceroute.
+# Connect the given host to its parent using traceroute.
 ##########################################################################
 sub traceroute_connectivity($$) {
 	my ($self, $host) = @_;
@@ -1328,10 +1327,9 @@ sub traceroute_connectivity($$) {
 		last unless defined($hops[$i]);
 		my $parent = $hops[$i]->ipaddr();
 
-		$self->call('set_parent', $device, $parent);
 		if ($device eq $host) {
 			$self->call('message', "Host $host is one hop away from host $parent.", 10);
-			$self->mark_connected($host); 
+			$self->mark_connected($parent, '', $host, ''); 
 		}
 
 		# Move on to the next hop.

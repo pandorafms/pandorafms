@@ -1866,7 +1866,7 @@ function reporting_html_group_configuration($table, $item) {
 	$table->data['group_configuration']['cell'] = $cell;
 }
 
-function reporting_html_network_interfaces_report($table, $item) {
+function reporting_html_network_interfaces_report($table, $item, $pdf= false) {
 	
 	if (!empty($item['failed'])) {
 		$table->colspan['interfaces']['cell'] = 3;
@@ -1886,7 +1886,9 @@ function reporting_html_network_interfaces_report($table, $item) {
 			$table_agent->style[0] = 'text-align: center';
 			
 			$table_agent->data['interfaces'] = "";
-			
+			if($pdf){
+				$return_pdf .= __("Agent") . " " . $agent['agent'];
+			}
 			foreach ($agent['interfaces'] as $interface) {
 				$table_interface = new StdClass();
 				$table_interface->width = '100%';
@@ -1902,7 +1904,7 @@ function reporting_html_network_interfaces_report($table, $item) {
 				$table_interface->style['ip'] = 'text-align: center';
 				$table_interface->style['mac'] = 'text-align: center';
 				$table_interface->style['status'] = 'width: 150px; text-align: center';
-				
+
 				$data = array();
 				$data['ip'] = !empty($interface['ip']) ? $interface['ip'] : "--";
 				$data['mac'] = !empty($interface['mac']) ? $interface['mac'] : "--";
@@ -1914,16 +1916,21 @@ function reporting_html_network_interfaces_report($table, $item) {
 					$table_interface->colspan['graph'][0] = 3;
 					$table_interface->cellstyle['graph'][0] = 'text-align: center;';
 				}
-				
+				if($pdf){
+					$table_interface->class = 'table-beauty';					
+					$return_pdf .= html_print_table($table_interface, true);
+				}
 				$table_agent->data['interfaces'] .= html_print_table($table_interface, true);
 				$table_agent->colspan[$interface_name][0] = 3;
 			}
 			
 			$id = uniqid();
-			$table->colspan['agents'][$id] = 3;
-			$table->data['agents'][$id] = html_print_table($table_agent, true);
-			
+			$table->colspan[$id][0] = 3;
+			$table->data[$id] = html_print_table($table_agent, true);
 		}
+	}
+	if($pdf){
+		return $return_pdf;
 	}
 }
 

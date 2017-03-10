@@ -37,6 +37,7 @@ use PandoraFMS::DB;
 use PandoraFMS::Core;
 use PandoraFMS::ProducerConsumerServer;
 use PandoraFMS::GIS qw(get_reverse_geoip_sql get_reverse_geoip_file get_random_close_point);
+use Recon::Base;
 
 # Patched Nmap::Parser. See http://search.cpan.org/dist/Nmap-Parser/.
 use PandoraFMS::NmapParser;
@@ -49,6 +50,11 @@ my @TaskQueue :shared;
 my %PendingTasks :shared;
 my $Sem :shared;
 my $TaskSem :shared;
+
+# IDs from tconfig_os.
+use constant OS_OTHER => 10;
+use constant OS_ROUTER => 17;
+use constant OS_SWITCH => 18;
 
 ########################################################################################
 # Recon Server class constructor.
@@ -147,309 +153,32 @@ sub data_consumer ($$) {
 	my $nmap_args  = '-nsP -PE --max-retries '.$pa_config->{'icmp_checks'}.' --host-timeout '.$pa_config->{'networktimeout'}.'s -T'.$pa_config->{'recon_timing_template'};
 	my $np = new PandoraFMS::NmapParser;
 	eval {
-		$np->parsescan($pa_config->{'nmap'}, $nmap_args, ($task->{'subnet'}));
+		my @subnets = split(/,/, $task->{'subnet'});
+		my @communities = split(/,/, $task->{'snmp_community'});
+
+		my $recon = new Recon::Base(
+			communities => \@communities,
+			dbh => $dbh,
+			group_id => $task->{'id_group'},
+			id_os => $task->{'id_os'},
+			id_network_profile => $task->{'id_network_profile'},
+			os_detection => $task->{'os_detect'},
+			parent_detection => $task->{'parent_detection'},
+			parent_recursion => $task->{'parent_recursion'},
+			pa_config => $pa_config,
+			recon_ports => $task->{'recon_ports'},
+			resolve_names => $task->{'resolve_names'},
+			subnets => \@subnets,
+			task_id => $task->{'id_tr'},
+			%{$pa_config}
+		);
+
+		$recon->scan();
 	};
 	if ($@) {
 		update_recon_task ($dbh, $task_id, -1);
 		return;
 	}
-
-	# Parse scanned hosts
-	my $module_hash;
-	my @up_hosts = $np->all_hosts ('up');
-	my $total_up = scalar (@up_hosts);
-	my $progress = 0;
-	my $added_hosts = '';
-	foreach my $host (@up_hosts) {
-		$progress++;
-		
-		# Get agent address
-		my $addr = $host->addr();
-		next unless ($addr ne '0');
-		
-		# Update the recon task or break if it does not exist anymore
-		last if (update_recon_task ($dbh, $task_id, ceil ($progress / ($total_up / 100))) eq '0E0');
-		
-		# Resolve hostnames
-		my $host_name = undef;
-		if ($task->{'resolve_names'} == 1){
-			$host_name = gethostbyaddr (inet_aton($addr), AF_INET);
-		}
-		$host_name = $addr unless defined ($host_name);
-
-		# Does the host already exist?
-		my $agent = get_agent_from_addr ($dbh, $addr);
-		if (! defined ($agent)) {
-			$agent = get_agent_from_name ($dbh, $host_name);
-		}		
-
-		my $agent_id = defined ($agent) ? $agent->{'id_agente'} : 0;
-		if ($agent_id > 0) {
-
-			# Skip if not in learning mode
-			next unless (($agent->{'modo'} == 1) || ($agent->{'modo'} == 2));
-		}
-
-		# Get the parent host
-		my $parent_id = 0;
-		if ($task->{'parent_detection'} == 1) {
-			$parent_id = get_host_parent ($pa_config, $addr, $dbh, $task->{'id_group'}, $task->{'parent_recursion'}, $task->{'resolve_names'}, $task->{'os_detect'});
-		}
-
-		# If the agent already exists update parent and continue
-		if ($agent_id > 0) {
-			if ($parent_id > 0) {
-				db_do ($dbh, 'UPDATE tagente SET id_parent = ? WHERE id_agente = ?', $parent_id, $agent_id );
-			}
-			next;
-		}
-
-		# Filter by TCP port
-		if ((defined ($task->{'recon_ports'})) && ($task->{'recon_ports'} ne "")) {
-			next unless (tcp_scan ($pa_config, $addr, $task->{'recon_ports'}) > 0);
-		}
-
-		# Filter by OS
-		my $id_os = 11; # Network by default
-		if ($task->{'os_detect'} == 1){
-			$id_os = guess_os ($pa_config, $dbh, $addr);
-			next if ($task->{'id_os'} > 0 && $task->{'id_os'} != $id_os);
-		}
-		
-        # GIS Code -----------------------------
-
-		# If GIS is activated try to geolocate the ip address of the agent 
-        # and store also it's position.
-
-		if($pa_config->{'activate_gis'} == 1 && $pa_config->{'recon_reverse_geolocation_mode'} !~ m/^disabled$/i) {
-
-			# Try to get aproximated positional information for the Agent.
-			my $region_info = undef;
-			if ($pa_config->{'recon_reverse_geolocation_mode'} =~ m/^sql$/i) {
-				logger($pa_config, "Trying to get gis data of $addr from the SQL database", 8);
-				$region_info = get_reverse_geoip_sql($pa_config, $addr, $dbh);	
-			}
-			elsif ($pa_config->{'recon_reverse_geolocation_mode'} =~ m/^file$/i) {
-				logger($pa_config, "Trying to get gis data of $addr from the file database", 8);
-				$region_info = get_reverse_geoip_file($pa_config, $addr);	
-			}
-			else {
-				logger($pa_config, "ERROR:Trying to get gis data of $addr. Unknown source", 5);
-			}
-			if (defined($region_info))  {
-				my $location_description = '';
-				if (defined($region_info->{'region'})) {
-					$location_description .= "$region_info->{'region'}, ";
-				}
-				if (defined($region_info->{'city'})) {
-					$location_description .= "$region_info->{'city'}, ";
-				}
-				if (defined($region_info->{'country_name'})) {
-					$location_description .= "($region_info->{'country_name'})";
-				}
-				# We store a random offset in the coordinates to avoid all the agents apear on the same place.
-				my ($longitude, $latitude) = get_random_close_point ($pa_config, $region_info->{'longitude'}, $region_info->{'latitude'});
-				
-				logger($pa_config, "Placing agent on random position (Lon,Lat)  =  ($longitude, $latitude)", 8);
-				# Crate a new agent adding the positional info (as is unknown we set 0 time_offset, and 0 altitude)
-				$agent_id = pandora_create_agent ($pa_config, $pa_config->{'servername'},
-					                                  $host_name, $addr, $task->{'id_group'}, 
-									  $parent_id, $id_os, '', 300, $dbh, 0, 
-								          $longitude, $latitude, 0, $location_description);
-			}
-			else {
-				logger($pa_config,"Id location of '$addr' for host '$host_name' NOT found", 3);
-				# Create a new agent
-				$agent_id = pandora_create_agent ($pa_config, $pa_config->{'servername'},
-					                                  $host_name, $addr, $task->{'id_group'},
-									  $parent_id, $id_os, '', 300, $dbh);
-			}
-		}
-		# End of GIS code -----------------------------      
-		else {
-			# Create a new agent
-			logger ($pa_config, "Creating an agent through recon task: " . $host_name, 10);
-			$agent_id = pandora_create_agent ($pa_config, $pa_config->{'servername'},
-					                                  $host_name, $addr, $task->{'id_group'},
-									  $parent_id, $id_os, '', 300, $dbh);
-		}
-		
-		# Check agent creation
-		if ($agent_id <= 0) {
-			logger($pa_config, "Error creating agent '$host_name'.", 3);
-			next;
-		}
-		
-		# Add the new address if it does not exist
-		my $addr_id = get_addr_id ($dbh, $addr);
-		$addr_id = add_address ($dbh, $addr) unless ($addr_id > 0);
-		if ($addr_id <= 0) {
-			logger($pa_config, "Could not add address '$addr' for host '$host_name'.", 3);
-			next;
-		}
-		
-		# Assign the new address to the agent
-		my $agent_addr_id = get_agent_addr_id ($dbh, $addr_id, $agent_id);
-		if ($agent_addr_id <= 0) {
-			db_do ($dbh, 'INSERT INTO taddress_agent (id_a, id_agent)
-				VALUES (?, ?)', $addr_id, $agent_id);
-		}
-		
-		# Create network profile modules for the agent
-		create_network_profile_modules ($pa_config, $dbh, $agent_id, $task->{'id_network_profile'}, $addr, $task->{'snmp_community'});
-		
-		# Generate an event
-		pandora_event ($pa_config, "[RECON] New host [$host_name] detected on network [" . $task->{'subnet'} . ']',
-		               $task->{'id_group'}, $agent_id, 2, 0, 0, 'recon_host_detected', 0, $dbh);
-		
-		$added_hosts .= "$addr ";
-	}
-	
-	# Create an incident with totals
-	if ($added_hosts ne '' && $task->{'create_incident'} == 1) {
-		my $text = "At " . strftime ("%Y-%m-%d %H:%M:%S", localtime()) . " ($added_hosts) new hosts were detected by Pandora FMS Recon Server running on [" . $pa_config->{'servername'} . "_Recon]. This incident has been automatically created following instructions for this recon task [" . $task->{'id_group'} . "].\n\n";
-		if ($task->{'id_network_profile'} > 0) {
-			$text .= "Aditionally, and following instruction for this task, agent(s) has been created, with modules assigned to network component profile [" . get_nc_profile_name ($dbh, $task->{'id_network_profile'}) . "]. Please check this agent as soon as possible to verify it.";
-		}
-		$text .= "\n\nThis is the list of IP addresses found: \n\n$added_hosts";
-		pandora_create_incident ($pa_config, $dbh, "[RECON] New hosts detected", $text, 0, 0, 'Pandora FMS Recon Server', $task->{'id_group'});
-	}
-	
-	logger($pa_config, "Finished recon task for net " . $task->{'subnet'} . ".", 10);
-	
-	# Mark recon task as done
-	update_recon_task ($dbh, $task_id, -1);
-}
-
-
-##########################################################################
-# Returns the ID of the parent of the given host if available.
-##########################################################################	
-sub get_host_parent {
-	my ($pa_config, $host, $dbh, $group, $max_depth, $resolve, $os_detect) = @_;
-	
-	# Call nmap
-	my $nmap_args  = '-nsP -PE --traceroute --max-retries '.$pa_config->{'icmp_checks'}.' --host-timeout '.$pa_config->{'networktimeout'}.'s -T'.$pa_config->{'nmap_timing_template'};
-	my $np = new PandoraFMS::NmapParser;
-	eval {
-		$np->parsescan($pa_config->{'nmap'}, $nmap_args, ($host));
-	};
-	if ($@) {
-		return 0;
-	}
-	
-	# Get hops
-	my ($h) = $np->all_hosts ();
-	return 0 unless defined ($h);
-	my @all_hops = $h->all_trace_hops ();
-	my @hops;
-	
-	# Skip target host
-	pop (@all_hops);
-	
-	# Save the last max_depth hosts in reverse order
-	for (my $i = 0; $i < $max_depth; $i++) {
-		my $hop = pop (@all_hops);
-		last unless defined ($hop);
-		push (@hops, $hop);
-	}
-	
-	# Parse hops from first to last
-	my $parent_id = 0;
-	for (my $i = 0; $i < $max_depth; $i++) {
-		my $hop = pop (@hops);
-		last unless defined ($hop);
-		
-		# Get host information
-		my $host_addr = $hop->ipaddr ();
-		
-		# Check if the host exists
-		my $agent = get_agent_from_addr ($dbh, $host_addr);
-		if (defined ($agent)) {
-			# Move to the next host if module is not in learning mode
-			if ($agent->{'modo'} != 1) {
-				$parent_id = $agent->{'id_agente'};
-				next;
-			}
-		}
-		
-		
-		# Add the new address if it does not exist
-		my $addr_id = get_addr_id ($dbh, $host_addr);
-		$addr_id = add_address ($dbh, $host_addr) unless ($addr_id > 0);
-	
-		# Should not happen
-		if ($addr_id <= 0) {
-				logger($pa_config, "Could not add address '$host_addr'", 1);
-				return 0;
-		}
-		
-		# Get the host's name
-		my $host_name = undef;
-		if ($resolve == 1){
-			$host_name = gethostbyaddr(inet_aton($host_addr), AF_INET);
-		}
-		$host_name = $host_addr unless defined ($host_name);
-		
-		# Detect host's OS
-		my $id_os = 11;
-		if ($os_detect == 1) {
-			$id_os = guess_os ($pa_config, $dbh, $host_addr);
-		}
-		
-		# Create the host
-		my $agent_id = 0;
-		my $agent_parent = get_agent_from_addr ($dbh, $host_addr);
-		if (!defined($agent_parent)) {
-			$agent_parent = get_agent_from_name($dbh, $host_addr);
-		}
-		if (defined ($agent_parent)) {
-			$agent_id = $agent_parent->{'id_agente'};
-			logger ($pa_config, "Updating agent " . $agent_id . " with parent $parent_id in host $host_addr");
-			db_do ($dbh, 'UPDATE tagente SET id_parent=? WHERE id_agente=?', $parent_id, $agent_id);
-		} else {
-			$agent_id = pandora_create_agent ($pa_config, $pa_config->{'servername'}, $host_name, $host_addr, $group, $parent_id, $id_os, '', 300, $dbh);
-			db_do ($dbh, 'INSERT INTO taddress_agent (id_a, id_agent)
-				VALUES (?, ?)', $addr_id, $agent_id);
-		}
-		
-		# Move to the next host
-		$parent_id = $agent_id;
-	}
-	return $parent_id;
-}
-
-##############################################################################
-# TCP scan the given host/port. Returns 1 if successful, 0 otherwise.
-##############################################################################
-sub tcp_scan ($$$) {
-	my ($pa_config, $host, $portlist) = @_;
-	
-	my $nmap = $pa_config->{'nmap'};
-	my $output = `"$nmap" -p$portlist $host | grep open | wc -l`;
-	return 0 if ($? != 0);
-	return $output;
-}
-
-##########################################################################
-# Guess OS using xprobe2.
-##########################################################################
-sub guess_os {
-	my ($pa_config, $dbh, $host) = @_;
-	
-	# Use xprobe2 if available
-	my $xprobe = $pa_config->{'xprobe2'};
-	if (-e $xprobe){
-			my $output = `$xprobe $host 2>$DEVNULL | grep 'Running OS' | head -1`;
-			return 10 if ($? != 0);
-			return pandora_get_os ($dbh, $output);
-	}
-	
-	# Use nmap by default
-	my $nmap = $pa_config->{'nmap'};
-	my $output = `"$nmap" -F -O $host 2>$DEVNULL | grep 'Aggressive OS guesses'`;
-	return 10 if ($? != 0);
-	return pandora_get_os ($dbh, $output);
 }
 
 ##########################################################################
@@ -460,33 +189,6 @@ sub update_recon_task ($$$) {
 	
 	db_do ($dbh, 'UPDATE trecon_task SET utimestamp = ?, status = ? WHERE id_rt = ?', time (), $status, $id_task);
 } 
-
-##########################################################################
-# Create network profile modules for the given agent.
-##########################################################################
-sub create_network_profile_modules {
-	my ($pa_config, $dbh, $agent_id, $np_id, $addr, $snmp_community) = @_;
-	
-	return unless ($np_id > 0);
-	
-	# Get network components associated to the network profile
-	my @np_components = get_db_rows ($dbh, 'SELECT * FROM tnetwork_profile_component WHERE id_np = ?', $np_id);
-	
-	foreach my $np_component (@np_components) {
-		# Get network component data
-		my $component = get_db_single_row ($dbh, 'SELECT * FROM tnetwork_component WHERE id_nc = ?', $np_component->{'id_nc'});
-		
-		if (! defined ($component)) {
-			logger($pa_config, "Network component ID " . $np_component->{'id_nc'} . " for agent $addr not found.", 3);
-			next;
-		}
-		
-		# Use snmp_community from network task instead the component snmp_community
-		$component->{'snmp_community'} = safe_output ($snmp_community);
-	
-		pandora_create_module_from_network_component($pa_config, $component, $agent_id, $dbh);
-	}
-}
 
 ##########################################################################
 # Executes recon scripts
@@ -538,6 +240,385 @@ sub exec_recon_script ($$$) {
 	
 	logger($pa_config, 'Done executing recon script ' . safe_output($script->{'name'}), 10);
 	return 0;
+}
+
+##########################################################################
+# Guess the OS using xprobe2 or nmap.
+##########################################################################
+sub Recon::Base::guess_os($$) {
+	my ($self, $device) = @_;
+
+	# OS detection disabled. Use the device type.
+	if ($self->{'os_detection'} == 0) {
+		my $device_type = $self->get_device_type($device);
+		return OS_ROUTER if ($device_type eq 'router');
+		return OS_SWITCH if ($device_type eq 'switch');
+		return OS_OTHER;
+	}
+
+	# Use xprobe2 if available
+	if (-e $self->{pa_config}->{xprobe2}) {
+			my $output = `"$self->{pa_config}->{xprobe2}" $device 2>$DEVNULL | grep 'Running OS' | head -1`;
+			return OS_OTHER if ($? != 0);
+			return pandora_get_os($self->{'dbh'}, $output);
+	}
+	
+	# Use nmap by default
+	if (-e $self->{pa_config}->{nmap}) {
+		my $output = `"$self->{pa_config}->{nmap}" -F -O $device 2>$DEVNULL | grep 'Aggressive OS guesses'`;
+		return OS_OTHER if ($? != 0);
+		return pandora_get_os($self->{'dbh'}, $output);
+	}
+
+	return OS_OTHER;
+}
+
+##############################################################################
+# Returns the number of open ports from the given list.
+##############################################################################
+sub Recon::Base::tcp_scan ($$) {
+	my ($self, $host) = @_;
+
+	my $open_ports = `"$self->{pa_config}->{nmap}" -p$self->{recon_ports} $host | grep open | wc -l`;
+	return $open_ports;
+}
+
+##########################################################################
+# Create network profile modules for the given agent.
+##########################################################################
+sub Recon::Base::create_network_profile_modules($$$) {
+	my ($self, $agent_id, $device) = @_;
+	
+	return unless ($self->{'id_network_profile'} > 0);
+	
+	# Get network components associated to the network profile.
+	my @np_components = get_db_rows($self->{'dbh'}, 'SELECT * FROM tnetwork_profile_component WHERE id_np = ?', $self->{'id_network_profile'});
+	foreach my $np_component (@np_components) {
+
+		# Get network component data
+		my $component = get_db_single_row($self->{'dbh'}, 'SELECT * FROM tnetwork_component WHERE id_nc = ?', $np_component->{'id_nc'});
+		if (!defined ($component)) {
+			$self->call('message', "Network component ID " . $np_component->{'id_nc'} . " not found.", 5);
+			next;
+		}
+		
+		# Use snmp_community from network task instead the component snmp_community
+		$component->{'snmp_community'} = safe_output($self->get_community($device));
+	
+		pandora_create_module_from_network_component($self->{'pa_config'}, $component, $agent_id, $self->{'dbh'});
+	}
+}
+
+##########################################################################
+# Connect the given devices in the Pandora FMS database.
+##########################################################################
+sub Recon::Base::connect_agents($$$$$) {
+	my ($self, $dev_1, $if_1, $dev_2, $if_2) = @_;
+
+	# Check switch connectivy.
+	return if ($self->is_switch_connected($dev_1, $if_1, $dev_2, $if_2) == 1);
+
+	# Get the agent for the first device.
+	my $agent_1 = get_agent_from_addr($self->{'dbh'}, $dev_1);
+	if (!defined($agent_1)) {
+		$agent_1 = get_agent_from_name($self->{'dbh'}, $dev_1);
+	}
+	return unless defined($agent_1);
+
+	# Get the agent for the second device.
+	my $agent_2 = get_agent_from_addr($self->{'dbh'}, $dev_2);
+	if (!defined($agent_2)) {
+		$agent_2 = get_agent_from_name($self->{'dbh'}, $dev_2);
+	}
+	return unless defined($agent_2);
+
+	# Check whether the modules exists.
+	my $module_name_1 = safe_input($if_1 eq '' ? 'ping' : "${if_1}_ifOperStatus");
+	my $module_name_2 = safe_input($if_2 eq '' ? 'ping' : "${if_2}_ifOperStatus");
+	my $module_id_1 = get_agent_module_id($self->{'dbh'}, $module_name_1, $agent_1->{'id_agente'});
+	if ($module_id_1 <= 0) {
+		$self->call('message', "ERROR: Module " . safe_output($module_name_1) . " does not exist for agent $dev_1.", 5);
+		return;
+	}
+	my $module_id_2 = get_agent_module_id($self->{'dbh'}, $module_name_2, $agent_2->{'id_agente'});
+	if ($module_id_2 <= 0) {
+		$self->call('message', "ERROR: Module " . safe_output($module_name_2) . " does not exist for agent $dev_2.", 5);
+		return;
+	}
+
+	# Make sure the modules are not already connected.
+	if ($self->are_connected($dev_1, $if_1, $dev_2, $if_2)) {
+			$self->call('message', "Devices $dev_1 and $dev_2 are already connected.", 10);
+			return;
+	}
+
+	# Connect the modules if they are not already connected.
+	my $connection_id = get_db_value($self->{'dbh'}, 'SELECT id FROM tmodule_relationship WHERE (module_a = ? AND module_b = ?) OR (module_b = ? AND module_a = ?)', $module_id_1, $module_id_2, $module_id_1, $module_id_2);
+	if (! defined($connection_id)) {
+		db_do($self->{'dbh'}, 'INSERT INTO tmodule_relationship (`module_a`, `module_b`, `id_rt`) VALUES(?, ?, ?)', $module_id_1, $module_id_2, $self->{'task_id'});
+	}
+}
+
+##########################################################################
+# Create an agent for the given device. Returns the ID of the new (or
+# existing) agent, undef on error.
+##########################################################################
+sub Recon::Base::create_agent($$) {
+	my ($self, $device) = @_;
+
+	my @agents = get_db_rows($self->{'dbh'},
+		'SELECT * FROM taddress, taddress_agent, tagente
+		 WHERE tagente.id_agente = taddress_agent.id_agent
+			AND taddress_agent.id_a = taddress.id_a
+			AND ip = ?', $device
+	);
+
+	# Does the host already exist?
+	my $agent;
+	foreach my $candidate (@agents) {
+	  $agent = {map {$_} %$candidate}; # copy contents, do not use shallow copy
+	  # exclude $device itself, because it handle corner case when target includes NAT
+	  my @registered = map {$_->{ip}} get_db_rows($self->{'dbh'},
+	  	'SELECT ip FROM taddress, taddress_agent, tagente
+	  	 WHERE tagente.id_agente = taddress_agent.id_agent
+	  		AND taddress_agent.id_a = taddress.id_a
+	  		AND tagente.id_agente = ?
+			AND taddress.ip != ?', $agent->{id_agente}, $device
+	  );
+	  foreach my $ip_addr (@registered) {
+		my @matched = grep { $_ =~ /^$ip_addr$/ } $self->get_addresses($device);
+		if (scalar(@matched) == 0) {
+			$agent = undef;
+			last;
+		}
+	  }
+	  last if(defined($agent)); # exit loop if match all ip_addr
+	}
+
+	if (!defined($agent)) {
+		$agent = get_agent_from_name($self->{'dbh'}, $device);
+	}
+
+	my ($agent_id, $agent_learning);
+	if (!defined($agent)) {
+
+		# Resolve hostnames.
+		my $host_name = $self->{'resolve_names'} == 1 ? gethostbyaddr (inet_aton($device), AF_INET) : $device;
+		$host_name = $device unless defined ($host_name);
+
+		# Guess the OS.
+		my $id_os = $self->guess_os($device);
+
+		# Are we filtering hosts by OS?
+		return if ($self->{'id_os'} > 0 && $id_os != $self->{'id_os'});
+
+		# Are we filtering hosts by TCP port?
+		return if ($self->{'recon_ports'} ne '' && $self->tcp_scan($device) == 0);
+
+		$agent_id = pandora_create_agent($self->{'pa_config'}, $self->{'pa_config'}->{'servername'}, $host_name, $device, $self->{'group_id'}, 0, $id_os, '', 300, $self->{'dbh'});
+		return undef unless defined ($agent_id) and ($agent_id > 0);
+		pandora_event($self->{'pa_config'}, "[RECON] New " . $self->get_device_type($device) . " found (" . join(',', $self->get_addresses($device)) . ").", $self->{'group_id'}, $agent_id, 2, 0, 0, 'recon_host_detected', 0, $self->{'dbh'});
+		$agent_learning = 1;
+
+		# Create network profile modules for the agent
+		$self->create_network_profile_modules($agent_id, $device);
+	}
+	else {
+		$agent_id = $agent->{'id_agente'};
+		$agent_learning = $agent->{'modo'};
+	}
+
+	# Do not create any modules if the agent is not in learning mode.
+	return unless ($agent_learning == 1);
+
+	# Add found IP addresses to the agent.
+	foreach my $ip_addr ($self->get_addresses($device)) {
+		my $addr_id = get_addr_id($self->{'dbh'}, $ip_addr);
+		$addr_id = add_address($self->{'dbh'}, $ip_addr) unless ($addr_id > 0);
+		next unless ($addr_id > 0);
+
+		# Assign the new address to the agent
+		my $agent_addr_id = get_agent_addr_id($self->{'dbh'}, $addr_id, $agent_id);
+		if ($agent_addr_id <= 0) {
+			db_do($self->{'dbh'}, 'INSERT INTO taddress_agent (`id_a`, `id_agent`)
+						  VALUES (?, ?)', $addr_id, $agent_id);
+		}
+	}
+
+	# Create a ping module.
+	my $module_id = get_agent_module_id($self->{'dbh'}, "ping", $agent_id);
+	if ($module_id <= 0) {
+		my %module = ('id_tipo_modulo' => 6,
+				   'id_modulo' => 2,
+				   'nombre' => "ping",
+				   'descripcion' => '',
+				   'id_agente' => $agent_id,
+				   'ip_target' => $device);
+		pandora_create_module_from_hash ($self->{'pa_config'}, \%module, $self->{'dbh'});
+	}
+
+	# Add interfaces to the agent if it responds to SNMP.
+	my $community = $self->get_community($device);
+	return $agent_id unless defined($community);
+
+	my @output = $self->snmp_get_value_array($device, $Recon::Base::IFINDEX);
+	foreach my $if_index (@output) {
+		next unless ($if_index =~ /^[0-9]+$/);
+
+		# Check the status of the interface.
+		if ($self->{'all_ifaces'} == 0) {
+			my $if_status = $self->snmp_get_value($device, "$Recon::Base::IFOPERSTATUS.$if_index");
+			next unless $if_status == 1;
+		}
+
+		# Fill the module description with the IP and MAC addresses.
+		my $mac = $self->get_if_mac($device, $if_index);
+		my $ip = $self->get_if_ip($device, $if_index);
+		my $if_desc = ($mac ne '' ? "MAC $mac " : '') . ($ip ne '' ? "IP $ip" : '');
+
+		# Get the name of the network interface.
+		my $if_name = $self->snmp_get_value($device, "$Recon::Base::IFNAME.$if_index");
+		$if_name = "if$if_index" unless defined ($if_name);
+		$if_name =~ s/"//g;
+
+		# Check whether the module already exists.
+		my $module_id = get_agent_module_id($self->{'dbh'}, "${if_name}_ifOperStatus", $agent_id);
+		next if ($module_id > 0 && !$agent_learning);
+	
+		# Encode problematic characters.
+		$if_name = safe_input($if_name);
+		$if_desc = safe_input($if_desc);
+
+		# Interface status module.
+		$module_id = get_agent_module_id($self->{'dbh'}, "${if_name}_ifOperStatus", $agent_id);
+		if ($module_id <= 0) {
+			my %module = ('id_tipo_modulo' => 18,
+				'id_modulo' => 2,
+				'nombre' => "${if_name}_ifOperStatus",
+				'descripcion' => $if_desc,
+				'id_agente' => $agent_id,
+				'ip_target' => $device,
+				'tcp_send' => 1,
+				'snmp_community' => $community,
+				'snmp_oid' => "$Recon::Base::IFOPERSTATUS.$if_index"
+			);
+			pandora_create_module_from_hash ($self->{'pa_config'}, \%module, $self->{'dbh'});
+		} else {
+			my %module = (
+				'descripcion' => $if_desc,
+				'ip_target' => $device,
+				'snmp_community' => $community,
+			);
+			pandora_update_module_from_hash ($self->{'pa_config'}, \%module, 'id_agente_modulo', $module_id, $self->{'dbh'});
+		}
+
+		# Incoming traffic module.
+		$module_id = get_agent_module_id($self->{'dbh'}, "${if_name}_ifInOctets", $agent_id);
+		if ($module_id <= 0) {
+			my %module = ('id_tipo_modulo' => 16,
+					   'id_modulo' => 2,
+					   'nombre' => "${if_name}_ifInOctets",
+					   'descripcion' => 'The total number of octets received on the interface, including framing characters.',
+					   'id_agente' => $agent_id,
+					   'ip_target' => $device,
+					   'tcp_send' => 1,
+					   'snmp_community' => $community,
+					   'snmp_oid' => "$Recon::Base::IFINOCTECTS.$if_index");
+			pandora_create_module_from_hash ($self->{'pa_config'}, \%module, $self->{'dbh'});
+		} else {
+			my %module = (
+				'ip_target' => $device,
+				'snmp_community' => $community,
+			);
+			pandora_update_module_from_hash ($self->{'pa_config'}, \%module, 'id_agente_modulo', $module_id, $self->{'dbh'});
+		}
+
+		# Outgoing traffic module.
+		$module_id = get_agent_module_id($self->{'dbh'}, "${if_name}_ifOutOctets", $agent_id);
+		if ($module_id <= 0) {
+			my %module = ('id_tipo_modulo' => 16,
+					   'id_modulo' => 2,
+					   'nombre' => "${if_name}_ifOutOctets",
+					   'descripcion' => 'The total number of octets received on the interface, including framing characters.',
+					   'id_agente' => $agent_id,
+					   'ip_target' => $device,
+					   'tcp_send' => 1,
+					   'snmp_community' => $community,
+					   'snmp_oid' => "$Recon::Base::IFOUTOCTECTS.$if_index");
+			pandora_create_module_from_hash ($self->{'pa_config'}, \%module, $self->{'dbh'});
+		} else {
+			my %module = (
+				'ip_target' => $device,
+				'snmp_community' => $community,
+			);
+			pandora_update_module_from_hash ($self->{'pa_config'}, \%module, 'id_agente_modulo', $module_id, $self->{'dbh'});
+		}
+	}
+
+	return $agent_id;
+}
+
+##########################################################################
+# Delete already existing connections.
+##########################################################################
+sub Recon::Base::delete_connections($) {
+	my ($self) = @_;
+
+	$self->call('message', "Deleting connections...", 10);
+	db_do($self->{'dbh'}, 'DELETE FROM tmodule_relationship WHERE id_rt=?', $self->{'task_id'});
+}
+
+#######################################################################
+# Print log messages.
+#######################################################################
+sub Recon::Base::message($$$) {
+	my ($self, $message, $verbosity) = @_;
+	
+	logger($self->{'pa_config'}, "[Recon task " . $self->{'task_id'} . "] $message", $verbosity);
+}
+
+##########################################################################
+# Connect the given hosts to its parent.
+##########################################################################
+sub Recon::Base::set_parent($$$) {
+	my ($self, $host, $parent) = @_;
+
+	return unless ($self->{'parent_detection'} == 1);
+
+	# Get the agent for the host.
+	my $agent = get_agent_from_addr($self->{'dbh'}, $host);
+	if (!defined($agent)) {
+		$agent = get_agent_from_name($self->{'dbh'}, $host);
+	}
+	return unless defined($agent);
+
+	# Check if the parent agent exists.
+	my $agent_parent = get_agent_from_addr($self->{'dbh'}, $parent);
+	if (!defined($agent_parent)) {
+		$agent_parent = get_agent_from_name($self->{'dbh'}, $parent);
+	}
+
+	my $parent_id;
+	if (defined ($agent_parent)) {
+		$parent_id = $agent_parent->{'id_agente'};
+		return unless ($agent_parent->{'modo'} == 1);
+	} else {
+		$parent_id = $self->call('create_agent', $parent);
+	}
+
+	# Connect the host to its parent.
+	if ($parent_id > 0) {
+		db_do($self->{'dbh'}, 'UPDATE tagente SET id_parent=? WHERE id_agente=?', $parent_id, $agent->{'id_agente'});
+	}
+}
+
+##########################################################################
+# Update recon task status.
+##########################################################################
+sub Recon::Base::update_progress ($$) {
+	my ($self, $progress) = @_;
+
+	db_do ($self->{'dbh'}, 'UPDATE trecon_task SET utimestamp = ?, status = ? WHERE id_rt = ?', time (), $progress, $self->{'task_id'});
 }
 
 1;

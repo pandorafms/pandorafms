@@ -456,7 +456,7 @@ switch ($tab) {
 					$count = db_get_value_sql(
 						'SELECT COUNT(*)
 						FROM titem
-						WHERE id_map = ' . $network_map['id'] . ' AND deleted = 0');
+						WHERE id_map = ' . $network_map['id'] . ' AND deleted = 0 AND type = 0');
 				}
 				
 				if (empty($count))
@@ -466,7 +466,7 @@ switch ($tab) {
 					$data['nodes'] = __('Pending to generate');
 				}
 				else {
-					$data['nodes'] = $count;
+					$data['nodes'] = $count - 1; //PandoraFMS node is not an agent
 				}
 				
 				$data['groups'] = ui_print_group_icon ($network_map['id_group'], true);

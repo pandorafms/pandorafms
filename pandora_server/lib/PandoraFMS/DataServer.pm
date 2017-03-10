@@ -232,6 +232,8 @@ sub data_consumer ($$) {
 		unlink ($file_name);
 		if (defined($xml_data->{'server_name'})) {
 			process_xml_server ($self->getConfig (), $file_name, $xml_data, $self->getDBH ());
+		} elsif (defined($xml_data->{'connection_source'})) {
+			enterprise_hook('process_xml_connections', [$self->getConfig (), $file_name, $xml_data, $self->getDBH ()]);
 		} else {
 			process_xml_data ($self->getConfig (), $file_name, $xml_data, $self->getServerID (), $self->getDBH ());
 		}

@@ -1254,6 +1254,10 @@ UPDATE treport_custom_sql SET `sql` = 'select&#x20;t1.alias&#x20;as&#x20;agent_n
 	WHERE id = 3;
 
 -- ---------------------------------------------------------------------
+-- Table `tmodule_relationship`
+-- ---------------------------------------------------------------------
+ALTER TABLE tmodule_relationship ADD COLUMN `id_server` varchar(100) NOT NULL DEFAULT '';
+
 -- Table `tlocal_component`
 -- ---------------------------------------------------------------------
 ALTER TABLE tlocal_component ADD COLUMN `dynamic_next` bigint(20) NOT NULL default '0';

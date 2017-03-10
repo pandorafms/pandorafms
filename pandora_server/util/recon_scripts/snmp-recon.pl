@@ -863,12 +863,16 @@ sub create_pandora_agent($) {
 
 		# Get the name of the network interface.
 		my $if_name = snmp_get_value($device, $COMMUNITIES{$device}, "$IFNAME.$if_index");
-		$if_name = "if$if_index" unless defined ($if_name);
+		$if_name = "$if_index" unless defined ($if_name);
 		$if_name =~ s/"//g;
 
 		# Check whether the module already exists.
-		my $module_id = get_agent_module_id($DBH, "ifOperStatus_${if_name}", $agent_id);
-		next if ($module_id > 0 && !$agent_learning);
+		my $module_id = get_agent_module_id($DBH, "${if_name}_ifOperStatus", $agent_id);
+		next if ($module_id > 0);
+
+		# Check whether the module already exists (former naming convention).
+		$module_id = get_agent_module_id($DBH, "ifOperStatus_${if_name}", $agent_id);
+		next if ($module_id > 0);
 	
 		# Encode problematic characters.
 		$if_name = safe_input($if_name);
@@ -877,7 +881,7 @@ sub create_pandora_agent($) {
 		# Interface status module.
 		my %module = ('id_tipo_modulo' => 18,
 		           'id_modulo' => 2,
-		           'nombre' => "ifOperStatus_${if_name}",
+		           'nombre' => "${if_name}_ifOperStatus",
 		           'descripcion' => $if_desc,
 		           'id_agente' => $agent_id,
 		           'ip_target' => $device,
@@ -889,7 +893,7 @@ sub create_pandora_agent($) {
 		# Incoming traffic module.
 		%module = ('id_tipo_modulo' => 16,
 		           'id_modulo' => 2,
-		           'nombre' => "ifInOctets_${if_name}",
+		           'nombre' => "${if_name}_ifInOctets",
 		           'descripcion' => 'The total number of octets received on the interface, including framing characters.',
 		           'id_agente' => $agent_id,
 		           'ip_target' => $device,
@@ -901,7 +905,7 @@ sub create_pandora_agent($) {
 		# Outgoing traffic module.
 		%module = ('id_tipo_modulo' => 16,
 		           'id_modulo' => 2,
-		           'nombre' => "ifOutOctets_${if_name}",
+		           'nombre' => "${if_name}_ifOutOctets",
 		           'descripcion' => 'The total number of octets received on the interface, including framing characters.',
 		           'id_agente' => $agent_id,
 		           'ip_target' => $device,
@@ -957,17 +961,27 @@ sub connect_pandora_agents($$$$) {
 	return unless defined($agent_2);
 
 	# Check whether the modules exists.
-	my $module_name_1 = safe_input($if_1 eq '' ? 'ping' : "ifOperStatus_$if_1");
-	my $module_name_2 = safe_input($if_2 eq '' ? 'ping' : "ifOperStatus_$if_2");
+	my $module_name_1 = safe_input($if_1 eq '' ? 'ping' : "${if_1}_ifOperStatus");
+	my $module_name_2 = safe_input($if_2 eq '' ? 'ping' : "${if_2}_ifOperStatus");
 	my $module_id_1 = get_agent_module_id($DBH, $module_name_1, $agent_1->{'id_agente'});
 	if ($module_id_1 <= 0) {
-		message("ERROR: Module " . safe_output($module_name_1) . " does not exist for agent $dev_1.");
-		return;
+		# Old naming convention.
+		$module_name_1 = safe_input($if_1 eq '' ? 'ping' : "ifOperStatus_$if_1");
+		$module_id_1 = get_agent_module_id($DBH, $module_name_1, $agent_1->{'id_agente'});
+		if ($module_id_1 <= 0) {
+			message("ERROR: Module " . safe_output($module_name_1) . " does not exist for agent $dev_1.");
+			return;
+		}
 	}
 	my $module_id_2 = get_agent_module_id($DBH, $module_name_2, $agent_2->{'id_agente'});
 	if ($module_id_2 <= 0) {
-		message("ERROR: Module " . safe_output($module_name_2) . " does not exist for agent $dev_2.");
-		return;
+		# Old naming convention.
+		$module_name_2 = safe_input($if_2 eq '' ? 'ping' : "ifOperStatus_$if_2");
+		$module_id_2 = get_agent_module_id($DBH, $module_name_2, $agent_2->{'id_agente'});
+		if ($module_id_2 <= 0) {
+			message("ERROR: Module " . safe_output($module_name_2) . " does not exist for agent $dev_2.");
+			return;
+		}
 	}
 
 	# Make sure the modules are not already connected.

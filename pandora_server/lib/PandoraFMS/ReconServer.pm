@@ -169,7 +169,7 @@ sub data_consumer ($$) {
 			recon_ports => $task->{'recon_ports'},
 			resolve_names => $task->{'resolve_names'},
 			subnets => \@subnets,
-			task_id => $task->{'id_tr'},
+			task_id => $task->{'id_rt'},
 			%{$pa_config}
 		);
 

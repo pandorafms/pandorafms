@@ -103,8 +103,8 @@ $data[2] = '<span id="alerts_loading" class="invisible">';
 $data[2] .= html_print_image('images/spinner.png', true);
 $data[2] .= '</span>';
 $users_profiles = "";
-$users_order = array('field' => 'full_name', 'order' => 'ASC');
-$data[2] .= html_print_select (users_get_info($users_order), 'users_id[]', '', '', '', 
+$users_order = array('field' => 'id_user', 'order' => 'ASC');
+$data[2] .= html_print_select (users_get_info($users_order,'id_user'), 'users_id[]', '', '', '', 
 	'', true, true, true, '', false, 'width: 100%');
 
 

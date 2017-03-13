@@ -228,7 +228,7 @@ function parse_mysql_dump($url) {
 		$file_content = file($url);
 		$query = "";
 		foreach($file_content as $sql_line) {
-			if (trim($sql_line) != "" && strpos($sql_line, "--") === false) {
+			if (trim($sql_line) != "" && strpos($sql_line, "-- ") === false) {
 				$query .= $sql_line;
 				if(preg_match("/;[\040]*\$/", $sql_line)) {
 					if (!$result = mysql_query($query)) {
@@ -251,7 +251,7 @@ function parse_mysqli_dump($connection, $url) {
 		$file_content = file($url);
 		$query = "";
 		foreach($file_content as $sql_line) {
-			if (trim($sql_line) != "" && strpos($sql_line, "--") === false) {
+			if (trim($sql_line) != "" && strpos($sql_line, "-- ") === false) {
 				$query .= $sql_line;
 				if(preg_match("/;[\040]*\$/", $sql_line)) {
 					if (!$result = mysqli_query($connection, $query)) {

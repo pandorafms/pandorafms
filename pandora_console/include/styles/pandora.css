@@ -3595,8 +3595,10 @@ div.simple_value > a > span.text p
 	border-bottom-left-radius: 5px;
 	z-index:3;
 	position:fixed;
-	width:650px;
-	top: 30%;
+	width:750px;
+	max-width:750px;
+	min-width:750px;
+	top: 20%;
 	background:white;
 }
 .modalheader{

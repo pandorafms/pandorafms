@@ -18,7 +18,7 @@ echo "</span>
 <img class='modalclosex cerrar' src='".$config['homeurl']."/images/icono_cerrar.png'>
 </div>";
 
-echo "<div style='overflow-y:scroll;height:550px;'>";
+echo "<div style='overflow-y:auto;height:400px;min-height:400px;max-height:400px;'>";
 echo get_pandora_error_for_header();
 echo "</div>";
 
@@ -32,7 +32,8 @@ echo "<div class='modalokbutton cerrar'>
 <script>
 
 $(".cerrar").click(function(){
-  $("#alert_messages").dialog('close');
+  $("#alert_messages").hide();
+  $( "#opacidad" ).remove();
 });
 
 </script>

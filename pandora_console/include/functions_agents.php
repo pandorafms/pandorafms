@@ -90,7 +90,7 @@ function agents_create_agent ($name, $id_group, $interval, $ip_address, $values 
 	
 	$id_agent = db_process_sql_insert ('tagente', $values);
 	if ($id_agent === false) {
-		return false;,
+		return false;
 	}
 	
 	// Create address for this agent in taddress

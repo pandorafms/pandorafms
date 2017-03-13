@@ -465,50 +465,6 @@ if (! isset ($config['id_user'])) {
 				if ($PHPmemory_limit < $PHPmemory_limit_min && $PHPmemory_limit !== '-1') {
 					ini_set('memory_limit', config_return_in_bytes('500M'));
 				}
-				/* MINOR RELEASE -- Arturo --
-				$have_minor_releases = db_check_minor_relase_available();
-
-				if ($have_minor_releases) {
-					$size_mr = get_number_of_mr();
-					echo "<div class= 'dialog ui-dialog-content' title='".__("Minor release available")."' id='mr_dialog2'>" . __('') . "</div>";
-						?>
-						<script type="text/javascript" language="javascript">
-							$(document).ready (function () {;
-								$('#mr_dialog2').dialog ({
-									resizable: true,
-									draggable: true,
-									modal: true,
-									overlay: {
-										opacity: 0.5,
-										background: 'black'
-									},
-									width: 600,
-									height: 350,
-									buttons: {
-										"Apply minor releases": function () {
-											var n_mr = '<?php echo implode(",", $size_mr);?>';
-											apply_minor_release(n_mr.split(","));
-										},
-										"Cancel": function () {
-											$(this).dialog("close");
-										}
-									}
-								});
-
-								$('button:contains(Apply minor releases)').attr("id","apply_rr_button");
-								$('button:contains(Cancel)').attr("id","cancel_rr_button");
-								
-								var dialog_text = "<div><h3>Do you want to apply minor releases?</h3></br>";
-								dialog_text = dialog_text + "<h2>We recommend launch a planned downtime to this process</h2></br>";
-								dialog_text = dialog_text + "<a href=\"<?php echo $config['homeurl']; ?>index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list\">Planned downtimes</a></div>"
-								
-								$('#mr_dialog2').html(dialog_text);
-								$('#mr_dialog2').dialog('open');
-							});
-						</script>
-						<?php
-				}
-				*/
 				
 				set_time_limit((int)$PHPmax_execution_time);
 				ini_set('upload_max_filesize', $PHPupload_max_filesize);
@@ -976,50 +932,6 @@ require('include/php_to_js_values.php');
 			return rv;
 		};
 	})();
-
-	/* MINOR RELEASE -- Arturo --
-	function apply_minor_release (n_mr) {
-		var error = false;
-		$("#apply_rr_button").remove();
-		$("#cancel_rr_button").text("Close");
-		$('#mr_dialog2').empty();
-		$('#mr_dialog2').append("<img id=\"rr_image\" src=\"<?php echo $config['homeurl'] . 'images/spinner.gif'; ?>\">");
-		$.each(n_mr, function(i, mr) {
-			var params = {};
-			params["updare_rr"] = 1;
-			params["number"] = mr;
-			params["page"] = "include/ajax/rolling_release.ajax";
-
-			jQuery.ajax ({
-				data: params,
-				async: false,
-				dataType: "html",
-				type: "POST",
-				url: "ajax.php",
-				success: function (data) {
-					if (data != "") {
-						$('#mr_dialog2').empty();
-						$('#mr_dialog2').html("<h2>" + data + "</h2>");
-						error = true;
-					}
-					else {
-						$('#mr_dialog2').append("<p>- Applying DB MR #" + mr + "</p>");
-					}
-				}
-			});
-			
-			if (error) {
-				return false;
-			}
-		});
-		
-		$('#rr_image').remove();
-
-		if (!error) {
-			$('#mr_dialog2').append("<h2>Updated finished successfully</h2>");
-		}
-	}
-	*/
 	
 	function force_run_register () {
 		run_identification_wizard (1, 0, 0);

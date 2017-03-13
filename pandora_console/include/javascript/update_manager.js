@@ -311,31 +311,114 @@ function update_last_package(package, version, homeurl) {
 
 				var parameters = {};
 				parameters['page'] = 'include/ajax/update_manager.ajax';
-				parameters['update_last_free_package'] = 1;
-				parameters['package'] = package;
-				parameters['version'] = version;
-				parameters['accept'] = 1;
+				parameters['search_minor'] = 1;
 				
 				jQuery.post(
 					home_url + "ajax.php",
 					parameters,
 					function (data) {
-						if (data['in_progress']) {
-							$("#box_online .loading").hide();
-							$("#box_online .download_package").hide();
+						$("#box_online .loading").hide();
+						$("#box_online .downloading_package").hide();
+						
+						if (data['have_minor']) {
+							$("<div id='mr_dialog2' class='dialog ui-dialog-content' title='Menor release available'></div>").dialog ({
+								resizable: true,
+								draggable: true,
+								modal: true,
+								overlay: {
+									opacity: 0.5,
+									background: 'black'
+								},
+								width: 600,
+								height: 350,
+								buttons: {
+									"Apply minor releases": function () {
+										var no_error = apply_minor_release(data['mr']);
+
+										if (no_error) {
+											var parameters2 = {};
+											parameters2['page'] = 'include/ajax/update_manager.ajax';
+											parameters2['update_last_free_package'] = 1;
+											parameters2['package'] = package;
+											parameters2['version'] = version;
+											parameters2['accept'] = 1;
+											
+											jQuery.post(
+												home_url + "ajax.php",
+												parameters2,
+												function (data) {
+													if (data['in_progress']) {
+														$("#box_online .loading").hide();
+														$("#box_online .download_package").hide();
+														
+														$("#box_online .content").html(data['message']);
+														
+														install_free_package(package, version, homeurl);
+														setTimeout(function () {
+															check_progress_update(homeurl);	
+														}, 1000);
+													}
+													else {
+														$("#box_online .content").html(data['message']);
+													}
+												},
+												"json"
+											);
+										}
+										else {
+											$("#box_online .content").html("Error in MR file");
+										}
+									},
+									"Cancel": function () {
+										$(this).dialog("close");
+										$("#box_online .loading").hide();
+										$("#box_online .downloading_package").hide();
+										$("#box_online .content").html("MR not accepted");
+									}
+								}
+							});
+
+							$('button:contains(Apply minor releases)').attr("id","apply_rr_button");
+							$('button:contains(Cancel)').attr("id","cancel_rr_button");
 							
-							$("#box_online .content").html(data['message']);
+							var dialog_text = "<div><h3>Do you want to apply minor releases?</h3></br>";
+							dialog_text = dialog_text + "<h2>We recommend launch a planned downtime to this process</h2></br>";
+							dialog_text = dialog_text + "<a href=\"<?php echo $config['homeurl']; ?>index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list\">Planned downtimes</a></div>"
 							
-							install_free_package(package, version, homeurl);
-							setTimeout(function () {
-								check_progress_update(homeurl);	
-							}, 1000);
+							$('#mr_dialog2').html(dialog_text);
+							$('#mr_dialog2').dialog('open');
 						}
 						else {
-							$("#box_online .content").html(data['message']);
+							var parameters2 = {};
+							parameters2['page'] = 'include/ajax/update_manager.ajax';
+							parameters2['update_last_free_package'] = 1;
+							parameters2['package'] = package;
+							parameters2['version'] = version;
+							parameters2['accept'] = 1;
+							
+							jQuery.post(
+								home_url + "ajax.php",
+								parameters2,
+								function (data) {
+									if (data['in_progress']) {
+										$("#box_online .loading").hide();
+										$("#box_online .download_package").hide();
+										
+										$("#box_online .content").html(data['message']);
+										
+										install_free_package(package, version, homeurl);
+										setTimeout(function () {
+											check_progress_update(homeurl);	
+										}, 1000);
+									}
+									else {
+										$("#box_online .content").html(data['message']);
+									}
+								},
+								"json"
+							);
 						}
-					},
-					"json"
+					}
 				);
 			},
 			"Cancel": function () {
@@ -465,4 +548,47 @@ function install_free_package(package, version, homeurl) {
 			}
 		}
 	});
+}
+
+function apply_minor_release (n_mr) {
+	var error = false;
+	$("#apply_rr_button").remove();
+	$("#cancel_rr_button").remove();
+	$('#mr_dialog2').empty();
+	$.each(n_mr, function(i, mr) {
+		var params = {};
+		params["updare_rr"] = 1;
+		params["number"] = mr;
+		params["page"] = "include/ajax/rolling_release.ajax";
+
+		jQuery.ajax ({
+			data: params,
+			async: false,
+			dataType: "html",
+			type: "POST",
+			url: "ajax.php",
+			success: function (data) {
+				if (data != "") {
+					$('#mr_dialog2').empty();
+					$('#mr_dialog2').html("<h2>" + data + "</h2>");
+					error = true;
+				}
+				else {
+					$('#mr_dialog2').append("<p>- Applying DB MR #" + mr + "</p>");
+				}
+			}
+		});
+		
+		if (error) {
+			return false;
+		}
+	});
+
+	if (error) {
+		return false;
+	}
+	else{
+		$('#mr_dialog2').append("<h2>Updated finished successfully</h2>");
+		return true;
+	}
 }

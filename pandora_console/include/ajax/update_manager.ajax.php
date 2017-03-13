@@ -36,6 +36,7 @@ $check_online_free_packages = (bool)get_parameter('check_online_free_packages');
 $update_last_free_package = (bool)get_parameter('update_last_free_package');
 $check_update_free_package = (bool)get_parameter('check_update_free_package');
 $install_free_package = (bool)get_parameter('install_free_package');
+$search_minor = (bool)get_parameter('search_minor');
 
 if ($upload_file) {
 	ob_clean();
@@ -108,128 +109,137 @@ if ($install_package) {
 	global $config;
 	ob_clean();
 	
-	$package = (string) get_parameter("package");
-	$package = trim($package);
-	
-	$chunks = explode("_", basename($package));
-	$chunks = explode(".", $chunks[1]);
-	$version = $chunks[0];
-	
-	// All files extracted
-	$files_total = $package . "/files.txt";
-	// Files copied
-	$files_copied = $package . "/files.copied.txt";
-	$return = array();
-	
-	if (file_exists($files_copied)) {
-		unlink($files_copied);
-	}
-	
-	if (file_exists($package)) {
+	$accept = (bool)get_parameter("accept", false);
+	if ($accept) {
+		$package = (string) get_parameter("package");
+		$package = trim($package);
 		
-		if ($files_h = fopen($files_total, "r")) {
+		$chunks = explode("_", basename($package));
+		$chunks = explode(".", $chunks[1]);
+		$version = $chunks[0];
+		
+		// All files extracted
+		$files_total = $package . "/files.txt";
+		// Files copied
+		$files_copied = $package . "/files.copied.txt";
+		$return = array();
+		
+		if (file_exists($files_copied)) {
+			unlink($files_copied);
+		}
+		
+		if (file_exists($package)) {
 			
-			while ($line = stream_get_line($files_h, 65535, "\n")) {
-				$line = trim($line);
+			if ($files_h = fopen($files_total, "r")) {
 				
-				// Tries to move the old file to the directory backup inside the extracted package
-				if (file_exists($config["homedir"] . "/" . $line)) {
-					rename($config["homedir"] . "/" . $line,
-						$package . "/backup/" . $line);
-				}
-				// Tries to move the new file to the Pandora directory
-				$dirname = dirname($line);
-				if (!file_exists($config["homedir"] . "/" . $dirname)) {
-					$dir_array = explode("/", $dirname);
-					$temp_dir = "";
-					foreach ($dir_array as $dir) {
-						$temp_dir .= "/" . $dir;
-						if (!file_exists($config["homedir"] . $temp_dir)) {
-							mkdir($config["homedir"] . $temp_dir);
+				while ($line = stream_get_line($files_h, 65535, "\n")) {
+					$line = trim($line);
+					
+					// Tries to move the old file to the directory backup inside the extracted package
+					if (file_exists($config["homedir"] . "/" . $line)) {
+						rename($config["homedir"] . "/" . $line,
+							$package . "/backup/" . $line);
+					}
+					// Tries to move the new file to the Pandora directory
+					$dirname = dirname($line);
+					if (!file_exists($config["homedir"] . "/" . $dirname)) {
+						$dir_array = explode("/", $dirname);
+						$temp_dir = "";
+						foreach ($dir_array as $dir) {
+							$temp_dir .= "/" . $dir;
+							if (!file_exists($config["homedir"] . $temp_dir)) {
+								mkdir($config["homedir"] . $temp_dir);
+							}
 						}
 					}
-				}
-				if (is_dir($package . "/" . $line)) {
-					if (!file_exists($config["homedir"] . "/" . $line)) {
-						mkdir($config["homedir"] . "/" . $line);
-						file_put_contents($files_copied, $line."\n", FILE_APPEND | LOCK_EX);
+					if (is_dir($package . "/" . $line)) {
+						if (!file_exists($config["homedir"] . "/" . $line)) {
+							mkdir($config["homedir"] . "/" . $line);
+							file_put_contents($files_copied, $line."\n", FILE_APPEND | LOCK_EX);
+						}
 					}
-				}
-				else {
-					if (rename($package."/".$line, $config["homedir"]."/".$line)) {
-						
-						// Append the moved file to the copied files txt
-						if (!file_put_contents($files_copied, $line."\n", FILE_APPEND | LOCK_EX)) {
+					else {
+						if (rename($package."/".$line, $config["homedir"]."/".$line)) {
+							
+							// Append the moved file to the copied files txt
+							if (!file_put_contents($files_copied, $line."\n", FILE_APPEND | LOCK_EX)) {
+								
+								// If the copy process fail, this code tries to restore the files backed up before
+								if ($files_copied_h = fopen($files_copied, "r")) {
+									while ($line_c = stream_get_line($files_copied_h, 65535, "\n")) {
+										$line_c = trim($line_c);
+										if (!rename($package."/backup/".$line, $config["homedir"]."/".$line_c)) {
+											$backup_status = __("Some of your files might not be recovered.");
+										}
+									}
+									if (!rename($package."/backup/".$line, $config["homedir"]."/".$line)) {
+										$backup_status = __("Some of your files might not be recovered.");
+									}
+									fclose($files_copied_h);
+								} else {
+									$backup_status = __("Some of your old files might not be recovered.");
+								}
+								
+								fclose($files_h);
+								$return["status"] = "error";
+								$return["message"]= __("Line '$line' not copied to the progress file.")."&nbsp;".$backup_status;
+								echo json_encode($return);
+								return;
+							}
+						}
+						else {
 							
 							// If the copy process fail, this code tries to restore the files backed up before
 							if ($files_copied_h = fopen($files_copied, "r")) {
 								while ($line_c = stream_get_line($files_copied_h, 65535, "\n")) {
 									$line_c = trim($line_c);
-									if (!rename($package."/backup/".$line, $config["homedir"]."/".$line_c)) {
-										$backup_status = __("Some of your files might not be recovered.");
+									if (!rename($package."/backup/".$line, $config["homedir"]."/".$line)) {
+										$backup_status = __("Some of your old files might not be recovered.");
 									}
 								}
-								if (!rename($package."/backup/".$line, $config["homedir"]."/".$line)) {
-									$backup_status = __("Some of your files might not be recovered.");
-								}
 								fclose($files_copied_h);
-							} else {
-								$backup_status = __("Some of your old files might not be recovered.");
+							}
+							else {
+								$backup_status = __("Some of your files might not be recovered.");
 							}
 							
 							fclose($files_h);
 							$return["status"] = "error";
-							$return["message"]= __("Line '$line' not copied to the progress file.")."&nbsp;".$backup_status;
+							$return["message"]= __("File '$line' not copied.")."&nbsp;".$backup_status;
 							echo json_encode($return);
 							return;
 						}
 					}
-					else {
-						
-						// If the copy process fail, this code tries to restore the files backed up before
-						if ($files_copied_h = fopen($files_copied, "r")) {
-							while ($line_c = stream_get_line($files_copied_h, 65535, "\n")) {
-								$line_c = trim($line_c);
-								if (!rename($package."/backup/".$line, $config["homedir"]."/".$line)) {
-									$backup_status = __("Some of your old files might not be recovered.");
-								}
-							}
-							fclose($files_copied_h);
-						}
-						else {
-							$backup_status = __("Some of your files might not be recovered.");
-						}
-						
-						fclose($files_h);
-						$return["status"] = "error";
-						$return["message"]= __("File '$line' not copied.")."&nbsp;".$backup_status;
-						echo json_encode($return);
-						return;
-					}
 				}
+				fclose($files_h);
 			}
-			fclose($files_h);
+			else {
+				$return["status"] = "error";
+				$return["message"]= __("An error ocurred while reading a file.");
+				echo json_encode($return);
+				return;
+			}
 		}
 		else {
 			$return["status"] = "error";
-			$return["message"]= __("An error ocurred while reading a file.");
+			$return["message"]= __("The package does not exist");
 			echo json_encode($return);
 			return;
 		}
-	}
-	else {
-		$return["status"] = "error";
-		$return["message"]= __("The package does not exist");
+
+		update_manager_enterprise_set_version($version);
+		db_pandora_audit("Update Pandora", "Update version: $version of Pandora FMS by ".$config['id_user']);
+		
+		$return["status"] = "success";
 		echo json_encode($return);
 		return;
 	}
-	
-	update_manager_enterprise_set_version($version);
-	db_pandora_audit("Update Pandora", "Update version: $version of Pandora FMS by ".$config['id_user']);
-	
-	$return["status"] = "success";
-	echo json_encode($return);
-	return;
+	else {
+		$return["status"] = "error";
+		$return["message"]= __("Package not accepted");
+		echo json_encode($return);
+		return;
+	}
 }
 
 if ($check_install_package) {
@@ -345,98 +355,114 @@ if ($check_online_free_packages) {
 	return;
 }
 
+if ($search_minor) {
+	$have_minor_releases = db_check_minor_relase_available();
+
+	$return['have_minor'] = false;
+	if ($have_minor_releases) {
+		$return['have_minor'] = true;
+		$size_mr = get_number_of_mr();
+		$return['mr'] = $size_mr;
+	}
+
+	echo json_encode($return);
+
+	return;
+}
+
 if ($update_last_free_package) {
-	
 	$package = get_parameter('package', '');
 	$version = get_parameter('version', '');
+	$accept = (boolean)get_parameter('accept', false);
 	$package_url = base64_decode($package);
 	
-	$params = array('action' => 'get_package',
+	if ($accept) {
+		$params = array('action' => 'get_package',
 		'license' => $license,
 		'limit_count' => $users,
 		'current_package' => $current_package,
 		'package' => $package,
 		'version' => $config['version'],
 		'build' => $config['build']);
-	
-	$curlObj = curl_init();
-	//curl_setopt($curlObj, CURLOPT_URL, $config['url_updatemanager']);
-	curl_setopt($curlObj, CURLOPT_URL, $package_url);
-	curl_setopt($curlObj, CURLOPT_RETURNTRANSFER, 1);
-	curl_setopt($curlObj, CURLOPT_FOLLOWLOCATION, true);
-	//curl_setopt($curlObj, CURLOPT_POST, true);
-	//curl_setopt($curlObj, CURLOPT_POSTFIELDS, $params);
-	curl_setopt($curlObj, CURLOPT_SSL_VERIFYPEER, false);
-	if (isset($config['update_manager_proxy_server'])) {
-		curl_setopt($curlObj, CURLOPT_PROXY, $config['update_manager_proxy_server']);
-	}
-	if (isset($config['update_manager_proxy_port'])) {
-		curl_setopt($curlObj, CURLOPT_PROXYPORT, $config['update_manager_proxy_port']);
-	}
-	if (isset($config['update_manager_proxy_user'])) {
-		curl_setopt($curlObj, CURLOPT_PROXYUSERPWD, $config['update_manager_proxy_user'] . ':' . $config['update_manager_proxy_password']);
-	}
-	
-	$result = curl_exec($curlObj);
-	$http_status = curl_getinfo($curlObj, CURLINFO_HTTP_CODE);
-	
-	curl_close($curlObj);
-	
-	
-	
-	
-	
-	if (empty($result)) {
-		echo json_encode(array(
-			'in_progress' => false,
-			'message' => __('Fail to update to the last package.')));
-	}
-	else {
-		file_put_contents(
-			$config['attachment_store'] . "/downloads/last_package.tgz" , $result);
 		
-		echo json_encode(array(
-			'in_progress' => true,
-			'message' => __('Starting to update to the last package.')));
+		$curlObj = curl_init();
+		curl_setopt($curlObj, CURLOPT_URL, $package_url);
+		curl_setopt($curlObj, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($curlObj, CURLOPT_FOLLOWLOCATION, true);
+		curl_setopt($curlObj, CURLOPT_SSL_VERIFYPEER, false);
+		if (isset($config['update_manager_proxy_server'])) {
+			curl_setopt($curlObj, CURLOPT_PROXY, $config['update_manager_proxy_server']);
+		}
+		if (isset($config['update_manager_proxy_port'])) {
+			curl_setopt($curlObj, CURLOPT_PROXYPORT, $config['update_manager_proxy_port']);
+		}
+		if (isset($config['update_manager_proxy_user'])) {
+			curl_setopt($curlObj, CURLOPT_PROXYUSERPWD, $config['update_manager_proxy_user'] . ':' . $config['update_manager_proxy_password']);
+		}
 		
+		$result = curl_exec($curlObj);
+		$http_status = curl_getinfo($curlObj, CURLINFO_HTTP_CODE);
 		
-		$progress_update_status = db_get_value(
-			'value', 'tconfig', 'token', 'progress_update_status');
-		
-		
-		
-		if (empty($progress_update_status)) {
-			db_process_sql_insert('tconfig',
-				array(
-					'value' => 0,
-					'token' => 'progress_update')
-			);
-			
-			db_process_sql_insert('tconfig',
-				array(
-					'value' => json_encode(
-						array(
-							'status' => 'in_progress',
-							'message' => ''
-						)),
-					'token' => 'progress_update_status')
-				);
+		curl_close($curlObj);
+
+		if (empty($result)) {
+			echo json_encode(array(
+				'in_progress' => false,
+				'message' => __('Fail to update to the last package.')));
 		}
 		else {
-			db_process_sql_update('tconfig',
-				array('value' => 0),
-				array('token' => 'progress_update'));
+			file_put_contents(
+				$config['attachment_store'] . "/downloads/last_package.tgz" , $result);
 			
-			db_process_sql_update('tconfig',
-				array('value' => json_encode(
-						array(
-							'status' => 'in_progress',
-							'message' => ''
+			echo json_encode(array(
+				'in_progress' => true,
+				'message' => __('Starting to update to the last package.')));
+			
+			
+			$progress_update_status = db_get_value(
+				'value', 'tconfig', 'token', 'progress_update_status');
+			
+			
+			
+			if (empty($progress_update_status)) {
+				db_process_sql_insert('tconfig',
+					array(
+						'value' => 0,
+						'token' => 'progress_update')
+				);
+				
+				db_process_sql_insert('tconfig',
+					array(
+						'value' => json_encode(
+							array(
+								'status' => 'in_progress',
+								'message' => ''
+							)),
+						'token' => 'progress_update_status')
+					);
+			}
+			else {
+				db_process_sql_update('tconfig',
+					array('value' => 0),
+					array('token' => 'progress_update'));
+				
+				db_process_sql_update('tconfig',
+					array('value' => json_encode(
+							array(
+								'status' => 'in_progress',
+								'message' => ''
+							)
 						)
-					)
-				),
-				array('token' => 'progress_update_status'));
+					),
+					array('token' => 'progress_update_status'));
+			}
 		}
+	}
+	else {
+		$return["in_progress"] = false;
+		$return["message"] = __("Package not accepted.");
+	
+		echo json_encode($return);
 	}
 	
 	return;

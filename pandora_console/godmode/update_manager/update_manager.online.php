@@ -40,9 +40,6 @@ if(!enterprise_installed()){
 	$open=true; 
 }
 
-
-
-
 $memory_limit = ini_get("memory_limit");
 $memory_limit = str_replace("M", "", $memory_limit);
 $memory_limit = (int)$memory_limit;
@@ -66,7 +63,6 @@ if ($memory_limit < 100) {
 	);
 }
 
-
 /* Translators: Do not translade Update Manager, it's the name of the program */
 
 if (is_metaconsole()) {
@@ -86,16 +82,15 @@ echo "<span class='loading' style='font-size:18pt;'>";
 echo "<img src='images/wait.gif' />";
 echo "</span><br><br>";
 
-echo "<div><b>".__('The last version of package installed is:')."</b></div><br>";
-echo "<div style='color:#82b92e;font-size:40pt;font-weight:bold;'>".$current_package."</div>";
+echo "<div><b>" . __('The last version of package installed is:') . "</b></div><br>";
+echo "<div style='color:#82b92e;font-size:40pt;font-weight:bold;'>" . $current_package . "</div>";
 
-	
 	echo "<div class='checking_package' style='font-size:18pt;width:100%; text-align: center; display: none;'>";
-	echo __('Checking for the newest package.');
+		echo __('Checking for the newest package.');
 	echo "</div>";
 	
 	echo "<div class='downloading_package' style='font-size:18pt;width:100%; text-align: center; display: none;'>";
-	echo __('Downloading for the newest package.');
+		echo __('Downloading for the newest package.');
 	echo "</div>";
 	
 	echo "<div class='content'></div>";
@@ -103,17 +98,39 @@ echo "<div style='color:#82b92e;font-size:40pt;font-weight:bold;'>".$current_pac
 	echo "<div class='progressbar' style='display: none;'><img class='progressbar_img' src='' /></div>";
 	
 	
-	/* Hello there! :)
+	/* -------------------------------------------------------------------------
+	
+	Hello there! :)
 
-We added some of what seems to be "buggy" messages to the openSource version recently. This is not to force open-source users to move to the enterprise version, this is just to inform people using Pandora FMS open source that it requires skilled people to maintain and keep it running smoothly without professional support. This does not imply open-source version is limited in any way. If you check the recently added code, it contains only warnings and messages, no limitations except one: we removed the option to add custom logo in header. In the Update Manager section, it warns about the 'danger’ of applying automated updates without a proper backup, remembering in the process that the Enterprise version comes with a human-tested package. Maintaining an OpenSource version with more than 500 agents is not so easy, that's why someone using a Pandora with 8000 agents should consider asking for support. It's not a joke, we know of many setups with a huge number of agents, and we hate to hear that “its becoming unstable and slow” :(
+	We added some of what seems to be "buggy" messages to the openSource version 
+	recently. This is not to force open-source users to move to the enterprise 
+	version, this is just to inform people using Pandora FMS open source that it 
+	requires skilled people to maintain and keep it running smoothly without 
+	professional support. This does not imply open-source version is limited 
+	in any way. If you check the recently added code, it contains only warnings 
+	and messages, no limitations except one: we removed the option to add custom 
+	logo in header. In the Update Manager section, it warns about the 'danger’ 
+	of applying automated updates without a proper backup, remembering in the 
+	process that the Enterprise version comes with a human-tested package. 
+	Maintaining an OpenSource version with more than 500 agents is not so 
+	easy, that's why someone using a Pandora with 8000 agents should consider 
+	asking for support. It's not a joke, we know of many setups with a huge 
+	number of agents, and we hate to hear that “its becoming unstable and slow” :(
 
-You can of course remove the warnings, that's why we include the source and do not use any kind of trick. And that's why we added here this comment, to let you know this does not reflect any change in our opensource mentality of does the last 14 years.
+	You can of course remove the warnings, that's why we include the source and 
+	do not use any kind of trick. And that's why we added here this comment, to 
+	let you know this does not reflect any change in our opensource mentality of 
+	does the last 14 years.
 
-*/
+	------------------------------------------------------------------------- */
 
 	if($open){
-		echo "<br><br><div id='updatemodal' class='publienterprisehide' title='Community version' style=''><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/icono_exclamacion_2.png'></div><br>
-		";
+		echo "
+			<br><br>
+			<div id='updatemodal' class='publienterprisehide' title='Community version' style=''>
+				<img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/icono_exclamacion_2.png'>
+			</div>
+			<br>";
 	}
 	
 

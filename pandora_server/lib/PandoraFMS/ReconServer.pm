@@ -37,7 +37,7 @@ use PandoraFMS::DB;
 use PandoraFMS::Core;
 use PandoraFMS::ProducerConsumerServer;
 use PandoraFMS::GIS qw(get_reverse_geoip_sql get_reverse_geoip_file get_random_close_point);
-use Recon::Base;
+use PandoraFMS::Recon::Base;
 
 # Patched Nmap::Parser. See http://search.cpan.org/dist/Nmap-Parser/.
 use PandoraFMS::NmapParser;
@@ -156,7 +156,7 @@ sub data_consumer ($$) {
 		my @subnets = split(/,/, $task->{'subnet'});
 		my @communities = split(/,/, $task->{'snmp_community'});
 
-		my $recon = new Recon::Base(
+		my $recon = new PandoraFMS::Recon::Base(
 			communities => \@communities,
 			dbh => $dbh,
 			group_id => $task->{'id_group'},
@@ -245,7 +245,7 @@ sub exec_recon_script ($$$) {
 ##########################################################################
 # Guess the OS using xprobe2 or nmap.
 ##########################################################################
-sub Recon::Base::guess_os($$) {
+sub PandoraFMS::Recon::Base::guess_os($$) {
 	my ($self, $device) = @_;
 
 	# OS detection disabled. Use the device type.
@@ -276,7 +276,7 @@ sub Recon::Base::guess_os($$) {
 ##############################################################################
 # Returns the number of open ports from the given list.
 ##############################################################################
-sub Recon::Base::tcp_scan ($$) {
+sub PandoraFMS::Recon::Base::tcp_scan ($$) {
 	my ($self, $host) = @_;
 
 	my $open_ports = `"$self->{pa_config}->{nmap}" -p$self->{recon_ports} $host | grep open | wc -l`;
@@ -286,7 +286,7 @@ sub Recon::Base::tcp_scan ($$) {
 ##########################################################################
 # Create network profile modules for the given agent.
 ##########################################################################
-sub Recon::Base::create_network_profile_modules($$$) {
+sub PandoraFMS::Recon::Base::create_network_profile_modules($$$) {
 	my ($self, $agent_id, $device) = @_;
 	
 	return unless ($self->{'id_network_profile'} > 0);
@@ -312,7 +312,7 @@ sub Recon::Base::create_network_profile_modules($$$) {
 ##########################################################################
 # Connect the given devices in the Pandora FMS database.
 ##########################################################################
-sub Recon::Base::connect_agents($$$$$) {
+sub PandoraFMS::Recon::Base::connect_agents($$$$$) {
 	my ($self, $dev_1, $if_1, $dev_2, $if_2) = @_;
 
 	# Check switch connectivy.
@@ -363,7 +363,7 @@ sub Recon::Base::connect_agents($$$$$) {
 # Create an agent for the given device. Returns the ID of the new (or
 # existing) agent, undef on error.
 ##########################################################################
-sub Recon::Base::create_agent($$) {
+sub PandoraFMS::Recon::Base::create_agent($$) {
 	my ($self, $device) = @_;
 
 	my @agents = get_db_rows($self->{'dbh'},
@@ -461,13 +461,13 @@ sub Recon::Base::create_agent($$) {
 	my $community = $self->get_community($device);
 	return $agent_id unless defined($community);
 
-	my @output = $self->snmp_get_value_array($device, $Recon::Base::IFINDEX);
+	my @output = $self->snmp_get_value_array($device, $PandoraFMS::Recon::Base::IFINDEX);
 	foreach my $if_index (@output) {
 		next unless ($if_index =~ /^[0-9]+$/);
 
 		# Check the status of the interface.
 		if ($self->{'all_ifaces'} == 0) {
-			my $if_status = $self->snmp_get_value($device, "$Recon::Base::IFOPERSTATUS.$if_index");
+			my $if_status = $self->snmp_get_value($device, "$PandoraFMS::Recon::Base::IFOPERSTATUS.$if_index");
 			next unless $if_status == 1;
 		}
 
@@ -477,7 +477,7 @@ sub Recon::Base::create_agent($$) {
 		my $if_desc = ($mac ne '' ? "MAC $mac " : '') . ($ip ne '' ? "IP $ip" : '');
 
 		# Get the name of the network interface.
-		my $if_name = $self->snmp_get_value($device, "$Recon::Base::IFNAME.$if_index");
+		my $if_name = $self->snmp_get_value($device, "$PandoraFMS::Recon::Base::IFNAME.$if_index");
 		$if_name = "if$if_index" unless defined ($if_name);
 		$if_name =~ s/"//g;
 
@@ -500,7 +500,7 @@ sub Recon::Base::create_agent($$) {
 				'ip_target' => $device,
 				'tcp_send' => 1,
 				'snmp_community' => $community,
-				'snmp_oid' => "$Recon::Base::IFOPERSTATUS.$if_index"
+				'snmp_oid' => "$PandoraFMS::Recon::Base::IFOPERSTATUS.$if_index"
 			);
 			pandora_create_module_from_hash ($self->{'pa_config'}, \%module, $self->{'dbh'});
 		} else {
@@ -523,7 +523,7 @@ sub Recon::Base::create_agent($$) {
 					   'ip_target' => $device,
 					   'tcp_send' => 1,
 					   'snmp_community' => $community,
-					   'snmp_oid' => "$Recon::Base::IFINOCTECTS.$if_index");
+					   'snmp_oid' => "$PandoraFMS::Recon::Base::IFINOCTECTS.$if_index");
 			pandora_create_module_from_hash ($self->{'pa_config'}, \%module, $self->{'dbh'});
 		} else {
 			my %module = (
@@ -544,7 +544,7 @@ sub Recon::Base::create_agent($$) {
 					   'ip_target' => $device,
 					   'tcp_send' => 1,
 					   'snmp_community' => $community,
-					   'snmp_oid' => "$Recon::Base::IFOUTOCTECTS.$if_index");
+					   'snmp_oid' => "$PandoraFMS::Recon::Base::IFOUTOCTECTS.$if_index");
 			pandora_create_module_from_hash ($self->{'pa_config'}, \%module, $self->{'dbh'});
 		} else {
 			my %module = (
@@ -561,7 +561,7 @@ sub Recon::Base::create_agent($$) {
 ##########################################################################
 # Delete already existing connections.
 ##########################################################################
-sub Recon::Base::delete_connections($) {
+sub PandoraFMS::Recon::Base::delete_connections($) {
 	my ($self) = @_;
 
 	$self->call('message', "Deleting connections...", 10);
@@ -571,7 +571,7 @@ sub Recon::Base::delete_connections($) {
 #######################################################################
 # Print log messages.
 #######################################################################
-sub Recon::Base::message($$$) {
+sub PandoraFMS::Recon::Base::message($$$) {
 	my ($self, $message, $verbosity) = @_;
 	
 	logger($self->{'pa_config'}, "[Recon task " . $self->{'task_id'} . "] $message", $verbosity);
@@ -580,7 +580,7 @@ sub Recon::Base::message($$$) {
 ##########################################################################
 # Connect the given hosts to its parent.
 ##########################################################################
-sub Recon::Base::set_parent($$$) {
+sub PandoraFMS::Recon::Base::set_parent($$$) {
 	my ($self, $host, $parent) = @_;
 
 	return unless ($self->{'parent_detection'} == 1);
@@ -615,7 +615,7 @@ sub Recon::Base::set_parent($$$) {
 ##########################################################################
 # Update recon task status.
 ##########################################################################
-sub Recon::Base::update_progress ($$) {
+sub PandoraFMS::Recon::Base::update_progress ($$) {
 	my ($self, $progress) = @_;
 
 	db_do ($self->{'dbh'}, 'UPDATE trecon_task SET utimestamp = ?, status = ? WHERE id_rt = ?', time (), $progress, $self->{'task_id'});

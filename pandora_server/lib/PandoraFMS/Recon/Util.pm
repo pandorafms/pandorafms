@@ -2,7 +2,7 @@
 # (c) Ártica ST 2016 <info@artica.es>
 # Utility functions for the network topology discovery modules.
 
-package Recon::Util;
+package PandoraFMS::Recon::Util;
 use strict;
 use warnings;
 

@@ -3222,13 +3222,12 @@ table#policy_modules td * {
 	-webkit-border-bottom-left-radius: 5px;
 	border-bottom-right-radius: 5px;
 	border-bottom-left-radius: 5px;
-	z-index:2;
-	left: 50%;
-	top: 50%;
-	transform: translate(-50%, -50%);
-	-webkit-transform: translate(-50%, -50%);
+	z-index:3;
 	position:fixed;
-	width:650px;
+	width:750px;
+	max-width:750px;
+	min-width:750px;
+	top: 20%;
 	background:white;
 }
 .modalheader{

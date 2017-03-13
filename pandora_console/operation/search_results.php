@@ -34,6 +34,7 @@ foreach ($arrayKeywords as $keyword) {
 	array_push($temp, "%" . $keyword . "%");
 }
 $stringSearchSQL = implode("&#x20;", $temp);
+$stringSearchSQL = str_replace('_', '\_', $stringSearchSQL);
 
 if ($config['search_category'] == "all") 
 	$searchTab = "main";

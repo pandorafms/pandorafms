@@ -430,7 +430,7 @@ function extensions_add_godmode_tab_agent($tabId, $tabName, $tabIcon, $tabFuncti
  * @param tabIcon Path to the image icon 
  * @param tabFunction Name of the function to execute when this extension is called
  */
-function extensions_add_opemode_tab_agent($tabId, $tabName, $tabIcon, $tabFunction, $version="N/A") {
+function extensions_add_opemode_tab_agent($tabId, $tabName, $tabIcon, $tabFunction, $version = "N/A", $acl = 'AR') {
 	global $config;
 	global $extension_file;
 	
@@ -441,6 +441,7 @@ function extensions_add_opemode_tab_agent($tabId, $tabName, $tabIcon, $tabFuncti
 	$extension['extension_ope_tab']['icon'] = $tabIcon;
 	$extension['extension_ope_tab']['function'] = $tabFunction;
 	$extension['extension_ope_tab']['version'] = $version;
+	$extension['extension_ope_tab']['acl'] = $acl;
 }
 
 /**

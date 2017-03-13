@@ -43,6 +43,8 @@ $baseurl = ui_get_full_url(false, false, false, false);
 	var package_updated_successfully = "<?php echo __('Package updated successfully.'); ?>\n";
 	var if_there_are_any_database_change = "<?php echo __('If there are any database change, it will be applied on the next login.'); ?>\n";
 	var package_not_updated = "<?php echo __('Package not updated.'); ?>\n";
+	var error_in_mr = "<?php echo __('Error in MR file'); ?>\n";
+	var error_in_mr_accept = "<?php echo __('MR not accepted'); ?>\n";
 </script>
 
 <form id="form-offline_update" method="post" enctype="multipart/form-data" class="fileupload_form">

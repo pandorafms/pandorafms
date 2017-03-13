@@ -22,7 +22,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-package Recon::NmapParser;
+package PandoraFMS::Recon::NmapParser;
 
 use strict;
 use XML::Twig;

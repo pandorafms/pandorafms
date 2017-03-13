@@ -2,7 +2,7 @@
 # (c) Ártica ST 2014 <info@artica.es>
 # Module for network topology discovery.
 
-package Recon::Base;
+package PandoraFMS::Recon::Base;
 use strict;
 use warnings;
 
@@ -11,8 +11,8 @@ use lib '/usr/lib/perl5';
 
 use NetAddr::IP;
 use POSIX qw/ceil/;
-use Recon::NmapParser;
-use Recon::Util;
+use PandoraFMS::Recon::NmapParser;
+use PandoraFMS::Recon::Util;
 use Socket qw/inet_aton/;
 
 # Some useful OIDs.
@@ -1304,7 +1304,7 @@ sub traceroute_connectivity($$) {
 
 	# Perform a traceroute.
 	my $nmap_args  = '-nsP -PE --traceroute --max-retries '.$self->{'icmp_checks'}.' --host-timeout '.$self->{'icmp_timeout'}.'s -T'.$self->{'recon_timing_template'};
-	my $np = Recon::NmapParser->new();
+	my $np = PandoraFMS::Recon::NmapParser->new();
 	eval {
 		$np->parsescan($self->{'nmap'}, $nmap_args, ($host));
 	};

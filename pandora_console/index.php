@@ -933,7 +933,6 @@ if ($config["pure"] == 0) {
 	echo '</div>';
 }
 
-echo '<div id="alert_messages" style="display: none"></div>';
 /// Clippy function
 require_once('include/functions_clippy.php');
 clippy_start($sec2);

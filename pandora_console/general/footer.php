@@ -36,7 +36,8 @@ echo sprintf(__('Pandora FMS %s - Build %s - MR %s', $pandora_version, $build_ve
 
 echo '</a><br />';
 echo '<a class="white footer">'. __('Page generated at') . ' '. date('F j, Y h:i a'); //Always use timestamp here
-echo '</a>';
+echo '</a><br /><span style="color:#eff">'.__("&reg; Ártica ST").'</span>';
+
 if (isset ($config['debug'])) {
 	$cache_info = array();
 	$cache_info = db_get_cached_queries();

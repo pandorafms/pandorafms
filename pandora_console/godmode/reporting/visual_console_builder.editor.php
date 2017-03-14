@@ -131,7 +131,7 @@ $backgroundSizes = getimagesize(
 html_print_input_hidden('background_original_width', $backgroundSizes[0]);
 html_print_input_hidden('background_original_height', $backgroundSizes[1]);
 html_print_input_hidden('id_visual_console', $visualConsole['id']);
-html_print_input_hidden('message_size', __('Please min size recommend is 1024x768'));
+html_print_input_hidden('message_size', __('Min allowed size is 1024x768'));
 
 
 // Loading dialog

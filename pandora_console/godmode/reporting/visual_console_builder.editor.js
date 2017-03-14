@@ -187,7 +187,7 @@ function update_button_palette_callback() {
 		case 'background':
 			
 			if(values['width'] < 1024 || values['height'] < 768){
-			alert('Please min size recommend is 1024x768');
+			alert('Min allowed size is 1024x768');
 			return false;	
 			}
 			

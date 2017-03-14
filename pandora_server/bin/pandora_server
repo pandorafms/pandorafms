@@ -173,8 +173,6 @@ sub pandora_crash () {
 	# worried about that. If perl has a more "clean" way to avoid this messages
 	# will be nice to replace this code, but at this time it's the only way I know
 	
-	callback_stop() if ($^O eq 'MSWin32' && defined($Config{'win32_service'}));
-
 	foreach my $error_line (@_) {
 		# Trap the XML error and exit without nasty messages
 		if ($error_line =~ m/XML\/Parser/) {
@@ -208,6 +206,8 @@ sub pandora_crash () {
 	print_message (\%Config, ' [E] Unhandled error in "' . $Config{'servername'} . "\". See more information in logfiles at '/var/log/pandora' \n", 0);
 	print_message (\%Config, " Error description:\n", 0);
 	print_message (\%Config, $full_error, 0);
+	
+	callback_stop() if ($^O eq 'MSWin32' && defined($Config{'win32_service'}));
 }
 
 ########################################################################################

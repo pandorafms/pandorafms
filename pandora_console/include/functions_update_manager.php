@@ -343,7 +343,7 @@ function update_manager_check_online_free_packages ($is_ajax=true) {
 				echo "<p><b>There is a new version:</b> " . $result[0]['version'] . "</p>";
 				echo "<a href='javascript: update_last_package(\"" . base64_encode($result[0]["file_name"]) .
 					"\", \"" . $result[0]['version'] ."\");'>" .
-					__("Update to the last version") . "</a>";
+					__("Update to the next version") . "</a>";
 			}
 			else {
 				echo __("There is no update available.");

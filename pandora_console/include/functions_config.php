@@ -301,7 +301,7 @@ function config_update_config () {
 					if (!config_update_value ('ad_start_tls', get_parameter ('ad_start_tls')))
 						$error_update[] = __('Start TLS');
 					if (!config_update_value ('ad_advanced_config', get_parameter ('ad_advanced_config')))
-						$error_update[] = __('Advance Config AD');
+						$error_update[] = __('Advanced Config AD');
 					if (!config_update_value ('ad_domain', get_parameter ('ad_domain')))
 						$error_update[] = __('Domain');
 					if (!config_update_value ('ad_adv_perms', get_parameter ('ad_adv_perms')))

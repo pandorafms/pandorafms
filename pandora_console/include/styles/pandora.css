@@ -2441,11 +2441,11 @@ span#plugin_description {
 	font-size: 8pt !important;
 	line-height: 8pt;
 }
-.visual_font_size_10pt, .visual_font_size_10pt > em , .visual_font_size_10pt > strong, .visual_font_size_10pt > strong > em, .visual_font_size_10pt > em > strong, .visual_font_size_10pt em span, .visual_font_size_10pt span em   {
+.visual_font_size_10pt, .visual_font_size_10pt > em, .visual_font_size_10pt > strong, .visual_font_size_10pt > strong > span , .visual_font_size_10pt > span, .visual_font_size_10pt > strong > em, .visual_font_size_10pt > em > strong, .visual_font_size_10pt em span, .visual_font_size_10pt span em   {
 	font-size: 10pt !important;
 	line-height: 10pt;
 }
-.visual_font_size_12pt, .visual_font_size_12pt > em , .visual_font_size_12pt > strong, .visual_font_size_12pt > strong > em, .visual_font_size_12pt > em > strong, .visual_font_size_12pt em span, .visual_font_size_12pt span em   {
+.visual_font_size_12pt, .visual_font_size_12pt > em, .visual_font_size_12pt > strong, .visual_font_size_12pt > strong > span , .visual_font_size_12pt > span, .visual_font_size_12pt > strong > em, .visual_font_size_12pt > em > strong, .visual_font_size_12pt em span, .visual_font_size_12pt span em   {
 	font-size: 12pt !important;
 	line-height: 12pt;
 }

@@ -1039,6 +1039,7 @@ sub scan($) {
 	# Find devices.
 	$self->call('message', "[1/7] Scanning the network...", 3);
 	my @subnets = @{$self->get_subnets()};
+	my $progress = 1;
 	foreach my $subnet (@subnets) {
 
 		# Clean blanks.
@@ -1051,7 +1052,7 @@ sub scan($) {
 		}
 	
 		my @hosts = map { (split('/', $_))[0] } $net_addr->hostenum;
-		my ($step, $progress) = ((50.0 / scalar(@subnets)) / scalar(@hosts), 1); # The first 50% of the recon task.
+		my $step = 50.0 / scalar(@subnets) / scalar(@hosts); # The first 50% of the recon task approx.
 		foreach my $host (@hosts) {
 
 			$self->call('message', "Scanning host: $host", 5);

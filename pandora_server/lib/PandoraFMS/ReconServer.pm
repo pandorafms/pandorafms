@@ -153,8 +153,8 @@ sub data_consumer ($$) {
 	my $nmap_args  = '-nsP -PE --max-retries '.$pa_config->{'icmp_checks'}.' --host-timeout '.$pa_config->{'networktimeout'}.'s -T'.$pa_config->{'recon_timing_template'};
 	my $np = new PandoraFMS::NmapParser;
 	eval {
-		my @subnets = split(/,/, $task->{'subnet'});
-		my @communities = split(/,/, $task->{'snmp_community'});
+		my @subnets = split(/,/, safe_output($task->{'subnet'}));
+		my @communities = split(/,/, safe_output($task->{'snmp_community'}));
 
 		my $recon = new PandoraFMS::Recon::Base(
 			communities => \@communities,

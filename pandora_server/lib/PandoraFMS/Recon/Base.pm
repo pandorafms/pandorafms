@@ -858,6 +858,10 @@ sub snmp_responds($$) {
 	return 1 if (defined($self->get_community($device)));
 
 	foreach my $community (@{$self->{'communities'}}) {
+
+		# Clean blanks.
+		$community =~ s/\s+//g;
+
 		`snmpwalk -M/dev/null -r$self->{'snmp_checks'} -t$self->{'snmp_timeout'} -v1 -On -Oe -c $community $device .0 2>/dev/null`;
 		if ($? == 0) {
 			$self->set_community($device, $community);
@@ -1036,6 +1040,10 @@ sub scan($) {
 	$self->call('message', "[1/7] Scanning the network...", 3);
 	my @subnets = @{$self->get_subnets()};
 	foreach my $subnet (@subnets) {
+
+		# Clean blanks.
+		$subnet =~ s/\s+//g;
+
 	    my $net_addr = new NetAddr::IP ($subnet);
 		if (!defined($net_addr)) {
 			$self->call('message', "Invalid network: $subnet", 3);

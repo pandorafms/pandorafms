@@ -173,8 +173,8 @@ sub pandora_crash () {
 	# worried about that. If perl has a more "clean" way to avoid this messages
 	# will be nice to replace this code, but at this time it's the only way I know
 	
-	callback_stop() if ($^O eq 'MSWin32' && defined($Config{'win32_service'}) && @_ !~ m/XML\/Parser/);
-	
+	callback_stop() if ($^O eq 'MSWin32' && defined($Config{'win32_service'}));
+
 	foreach my $error_line (@_) {
 		# Trap the XML error and exit without nasty messages
 		if ($error_line =~ m/XML\/Parser/) {

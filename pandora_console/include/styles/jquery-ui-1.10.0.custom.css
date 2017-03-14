@@ -159,6 +159,9 @@ button.ui-button-icons-only {
 }
 .ui-button-text-only .ui-button-text {
 	padding: .4em 1em;
+	font-family: nunito;
+	font-size: 9pt;
+	color: #82B92E
 }
 .ui-button-icon-only .ui-button-text,
 .ui-button-icons-only .ui-button-text {
@@ -409,8 +412,8 @@ button.ui-button::-moz-focus-inner {
 	text-align: center;
 	padding: .4em 1em;
 	padding-top: 8px;
-	padding-bottom: 12px;
-	height: 37px;
+	padding-bottom: 14px;
+	height: 30px;
 	/*margin: 3px;*/
 	position: relative;
 }
@@ -452,6 +455,7 @@ button.ui-button::-moz-focus-inner {
 .ui-dialog .ui-dialog-buttonpane button {
 	margin: .5em 1em .5em 0;
 	cursor: pointer;
+	background: white;
 	background-color: white;
 	border: 1px solid #82b92e;
 	height:30px;

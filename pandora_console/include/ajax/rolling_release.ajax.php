@@ -38,7 +38,13 @@ if (is_ajax ()) {
 		
 		if ($dangerous_query) {
 			$error_file = fopen($config["homedir"] . "/extras/mr/error.txt", "w");
-			$message = "The sql file contains a dangerous query";
+
+			$message = "<div>";
+			$message .= "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
+			$message .= "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
+			$message .= "<p style='font-family:Verdana; font-size:12pt;'>The sql file contains a dangerous query</p></div>";
+			$message .= "</div>";
+
 			fwrite($error_file, $message);
 			fclose($error_file);
 		}
@@ -76,7 +82,13 @@ if (is_ajax ()) {
 						}
 						else {
 							$error_file = fopen($config["homedir"] . "/extras/mr/error.txt", "w");
-							$message = "An error occurred while updating the database schema to the minor release " . $number;
+
+							$message = "<div>";
+							$message .= "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
+							$message .= "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
+							$message .= "<p style='font-family:Verdana; font-size:12pt;'>An error occurred while updating the database schema to the minor release " . $number . "</p></div>";
+							$message .= "</div>";
+
 							fwrite($error_file, $message);
 							fclose($error_file);
 						}
@@ -84,14 +96,26 @@ if (is_ajax ()) {
 				}
 				else {
 					$error_file = fopen($config["homedir"] . "/extras/mr/error.txt", "w");
-					$message = "The directory ' . $dir . ' should have read permissions in order to update the database schema";
+
+					$message = "<div>";
+					$message .= "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
+					$message .= "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
+					$message .= "<p style='font-family:Verdana; font-size:12pt;'>The directory " . $dir . " should have read permissions in order to update the database schema</p></div>";
+					$message .= "</div>";
+
 					fwrite($error_file, $message);
 					fclose($error_file);
 				}
 			}
 			else {
 				$error_file = fopen($config["homedir"] . "/extras/mr/error.txt", "w");
-				$message = "The directory ' . $dir . ' does not exist";
+
+				$message = "<div>";
+				$message .= "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
+				$message .= "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
+				$message .= "<p style='font-family:Verdana; font-size:12pt;'>The directory " . $dir . " does not exist</p></div>";
+				$message .= "</div>";
+
 				fwrite($error_file, $message);
 				fclose($error_file);
 			}

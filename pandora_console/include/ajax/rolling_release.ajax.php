@@ -35,7 +35,8 @@ if (is_ajax ()) {
 				$dangerous_query = true;
 			}
 		}
-		
+		html_debug($number, true);
+		html_debug($config['MR'], true);
 		if ($dangerous_query) {
 			$error_file = fopen($config["homedir"] . "/extras/mr/error.txt", "w");
 

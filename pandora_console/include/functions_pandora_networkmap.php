@@ -82,7 +82,7 @@ function networkmap_process_networkmap($id = 0) {
 			$recon_task = db_get_row_filter('trecon_task',
 				array('id_rt' => $networkmap['source_data']));
 				
-			$ip_mask = $recon_task['field1'];
+			$ip_mask = $recon_task['subnet'];
 			break;
 		case 2:
 			$ip_mask = $networkmap['source_data'];

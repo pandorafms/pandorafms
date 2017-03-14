@@ -251,11 +251,63 @@ function install_package (package, homeurl) {
 												success: function (data) {
 													$('#form-offline_update ul').find('li').removeClass('loading');
 													if (data.status == "success") {
+														$("<div id='success_pkg' class='dialog ui-dialog-content' title='Update package'></div>").dialog ({
+															resizable: true,
+															draggable: true,
+															modal: true,
+															overlay: {
+																opacity: 0.5,
+																background: 'black'
+															},
+															width: 600,
+															height: 250,
+															buttons: {
+																"Ok": function () {
+																	$(this).dialog("close");
+																}
+															}
+														});
+
+														var dialog_success_pkg_text = "<div>";
+														dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_exito_mr.png'></div>";
+														dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>SUCCESS</strong></h3>";
+														dialog_success_pkg_text = dialog_success_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_updated_successfully + "</p></div>";
+														dialog_success_pkg_text = dialog_success_pkg_text + "</div>";
+														
+														$('#success_pkg').html(dialog_success_pkg_text);
+														$('#success_pkg').dialog('open');
+
 														$('#form-offline_update ul').find('li').addClass('suc');
 														$('#form-offline_update ul').find('li').find('p').html(package_updated_successfully)
 															.append("<i>" + if_there_are_any_database_change + "</i>");
 													}
 													else {
+														$("<div id='error_pkg' class='dialog ui-dialog-content' title='Update package'></div>").dialog ({
+															resizable: true,
+															draggable: true,
+															modal: true,
+															overlay: {
+																opacity: 0.5,
+																background: 'black'
+															},
+															width: 600,
+															height: 250,
+															buttons: {
+																"Ok": function () {
+																	$(this).dialog("close");
+																}
+															}
+														});
+
+														var dialog_error_pkg_text = "<div>";
+														dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
+														dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
+														dialog_error_pkg_text = dialog_error_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_not_updated + "</p></div>";
+														dialog_error_pkg_text = dialog_error_pkg_text + "</div>";
+														
+														$('#error_pkg').html(dialog_error_pkg_text);
+														$('#error_pkg').dialog('open');
+
 														$('#form-offline_update ul').find('li').addClass('error');
 														$('#form-offline_update ul').find('li').find('p').html(package_not_updated)
 															.append("<i>"+data.message+"</i>");
@@ -348,11 +400,63 @@ function install_package (package, homeurl) {
 								success: function (data) {
 									$('#form-offline_update ul').find('li').removeClass('loading');
 									if (data.status == "success") {
+										$("<div id='success_pkg' class='dialog ui-dialog-content' title='Update package'></div>").dialog ({
+											resizable: true,
+											draggable: true,
+											modal: true,
+											overlay: {
+												opacity: 0.5,
+												background: 'black'
+											},
+											width: 600,
+											height: 250,
+											buttons: {
+												"Ok": function () {
+													$(this).dialog("close");
+												}
+											}
+										});
+
+										var dialog_success_pkg_text = "<div>";
+										dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_exito_mr.png'></div>";
+										dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>SUCCESS</strong></h3>";
+										dialog_success_pkg_text = dialog_success_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_updated_successfully + "</p></div>";
+										dialog_success_pkg_text = dialog_success_pkg_text + "</div>";
+										
+										$('#success_pkg').html(dialog_success_pkg_text);
+										$('#success_pkg').dialog('open');
+
 										$('#form-offline_update ul').find('li').addClass('suc');
 										$('#form-offline_update ul').find('li').find('p').html(package_updated_successfully)
 											.append("<i>" + if_there_are_any_database_change + "</i>");
 									}
 									else {
+										$("<div id='error_pkg' class='dialog ui-dialog-content' title='Update package'></div>").dialog ({
+											resizable: true,
+											draggable: true,
+											modal: true,
+											overlay: {
+												opacity: 0.5,
+												background: 'black'
+											},
+											width: 600,
+											height: 250,
+											buttons: {
+												"Ok": function () {
+													$(this).dialog("close");
+												}
+											}
+										});
+
+										var dialog_error_pkg_text = "<div>";
+										dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
+										dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
+										dialog_error_pkg_text = dialog_error_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_not_updated + "</p></div>";
+										dialog_error_pkg_text = dialog_error_pkg_text + "</div>";
+										
+										$('#error_pkg').html(dialog_error_pkg_text);
+										$('#error_pkg').dialog('open');
+
 										$('#form-offline_update ul').find('li').addClass('error');
 										$('#form-offline_update ul').find('li').find('p').html(package_not_updated)
 											.append("<i>"+data.message+"</i>");
@@ -797,6 +901,32 @@ function install_free_package(package, version, homeurl) {
 		timeout: 600000,
 		dataType: "json",
 		error: function(data) {
+			$("<div id='error_pkg' class='dialog ui-dialog-content' title='Update package'></div>").dialog ({
+				resizable: true,
+				draggable: true,
+				modal: true,
+				overlay: {
+					opacity: 0.5,
+					background: 'black'
+				},
+				width: 600,
+				height: 250,
+				buttons: {
+					"Ok": function () {
+						$(this).dialog("close");
+					}
+				}
+			});
+
+			var dialog_error_pkg_text = "<div>";
+			dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
+			dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
+			dialog_error_pkg_text = dialog_error_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + unknown_error_update_manager + "</p></div>";
+			dialog_error_pkg_text = dialog_error_pkg_text + "</div>";
+			
+			$('#error_pkg').html(dialog_error_pkg_text);
+			$('#error_pkg').dialog('open');
+
 			correct_install_progress = false;
 			stop_check_progress = 1;
 			
@@ -807,12 +937,64 @@ function install_free_package(package, version, homeurl) {
 		success: function (data) {
 			if (correct_install_progress) {
 				if (data["status"] == "success") {
+					$("<div id='success_pkg' class='dialog ui-dialog-content' title='Update package'></div>").dialog ({
+						resizable: true,
+						draggable: true,
+						modal: true,
+						overlay: {
+							opacity: 0.5,
+							background: 'black'
+						},
+						width: 600,
+						height: 250,
+						buttons: {
+							"Ok": function () {
+								$(this).dialog("close");
+							}
+						}
+					});
+
+					var dialog_success_pkg_text = "<div>";
+					dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_exito_mr.png'></div>";
+					dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>SUCCESS</strong></h3>";
+					dialog_success_pkg_text = dialog_success_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + data['message'] + "</p></div>";
+					dialog_success_pkg_text = dialog_success_pkg_text + "</div>";
+					
+					$('#success_pkg').html(dialog_success_pkg_text);
+					$('#success_pkg').dialog('open');
+
 					$("#box_online .loading").hide();
 					$("#box_online .progressbar").hide();
 					$("#box_online .content").html(data['message']);
 					stop_check_progress = 1;
 				}
 				else {
+					$("<div id='error_pkg' class='dialog ui-dialog-content' title='Update package'></div>").dialog ({
+						resizable: true,
+						draggable: true,
+						modal: true,
+						overlay: {
+							opacity: 0.5,
+							background: 'black'
+						},
+						width: 600,
+						height: 250,
+						buttons: {
+							"Ok": function () {
+								$(this).dialog("close");
+							}
+						}
+					});
+
+					var dialog_error_pkg_text = "<div>";
+					dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
+					dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
+					dialog_error_pkg_text = dialog_error_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + data['message'] + "</p></div>";
+					dialog_error_pkg_text = dialog_error_pkg_text + "</div>";
+					
+					$('#error_pkg').html(dialog_error_pkg_text);
+					$('#error_pkg').dialog('open');
+
 					$("#box_online .loading").hide();
 					$("#box_online .progressbar").hide();
 					$("#box_online .content").html(data['message']);

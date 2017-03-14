@@ -1152,7 +1152,7 @@ if (isset($ehorus_tab) && !empty($ehorus_tab)) {
 
 //Tabs for extensions
 foreach ($config['extensions'] as $extension) {
-	if (isset($extension['extension_ope_tab'])) {
+	if (isset($extension['extension_ope_tab']) && !isset($extension['extension_god_tab'])) {
 		if (check_acl($config['id_user'], $id_grupo, $extension['extension_ope_tab']['acl'])) {
 			//VMware extension is only available for VMware OS
 			if ($extension['extension_ope_tab']['id'] === "vmware_manager") {

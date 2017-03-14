@@ -376,8 +376,10 @@ $table->data[21][0] = "<b>".__('Parent recursion');
 $table->data[21][1] =  html_print_input_text ('parent_recursion', $parent_recursion, '', 5, 0, true) . ui_print_help_tip (__('Maximum number of parent hosts that will be created if parent detection is enabled.'), true);
 
 // Alias as name
-$table->data[22][0] = "<b>".__('Alias as Name');
-$table->data[22][1] =  html_print_checkbox ('alias_as_name', 1, $alias_as_name, true);
+// NOTE: The 7.0NG Recon Server will not generate random names, since IP
+// address collisions could have other consequences.
+//$table->data[22][0] = "<b>".__('Alias as Name');
+//$table->data[22][1] =  html_print_checkbox ('alias_as_name', 1, $alias_as_name, true);
 
 // Different Form url if it's a create or if it's a update form
 echo '<form name="modulo" method="post" action="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&'.(($id_rt != -1) ? 'update='.$id_rt : 'create=1').'">';

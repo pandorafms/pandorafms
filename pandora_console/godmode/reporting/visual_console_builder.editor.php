@@ -240,7 +240,6 @@ ui_require_javascript_file ('encode_decode_base64');
 		else{
 			$('#period_row').css('display','');
 		}
-	})
-	
+	});
 			
 </script>

@@ -414,11 +414,11 @@ function update_button_palette_callback() {
 		$('#' + idItem + ' table').remove();
 		$('#' + idItem).append(tempoimg);
 		$("#" + idItem + ' table').css('height','');
-		$("#" + idItem + ' table').css('width','100%');
-		$("#" + idItem + ' span').css('width','100%');
+		$("#" + idItem + ' table').css('width','70');
+		$("#" + idItem + ' span').css('width','70');
 		$("#" + idItem + ' img').css('margin-top','');
 		//if(parseInt($("#" + idItem).css('width'))-parseInt($("#" + idItem + " img").css('width'))/2 == 0 || values['height'] == 0 || values['width'] == 0){
-			$("#" + idItem + ' img').css('margin-left',(parseInt($("#" + idItem).css('width'))/2)-(parseInt($("#" + idItem + " img").css('width'))/2)+'px');
+			//$("#" + idItem + ' img').css('margin-left',(parseInt($("#" + idItem).css('width'))/2)-(parseInt($("#" + idItem + " img").css('width'))/2)+'px');
 		//}
 		//else{
 			//$("#" + idItem + ' img').css('margin-left','');
@@ -433,15 +433,15 @@ function update_button_palette_callback() {
 		$('#' + idItem + ' img').remove();
 		$('#' + idItem).append(tempoimg);
 		$("#" + idItem + ' table').css('height','');
-		$("#" + idItem + ' table').css('width','100%');
-		$("#" + idItem + ' span').css('width','100%');
+		$("#" + idItem + ' table').css('width','70');
+		$("#" + idItem + ' span').css('width','70');
 		$("#" + idItem + ' img').css('margin-top','');
 		//if(parseInt($("#" + idItem).css('width'))-parseInt($("#" + idItem + " img").css('width'))/2 == 0 || values['height'] == 0 || values['width'] == 0){
 			//$("#" + idItem + ' img').css('margin-left','');
 			
 		//}
 		//else{
-			$("#" + idItem + ' img').css('margin-left',(parseInt($("#" + idItem).css('width'))/2)-(parseInt($("#" + idItem + " img").css('width'))/2)+'px');
+			//$("#" + idItem + ' img').css('margin-left',(parseInt($("#" + idItem).css('width'))/2)-(parseInt($("#" + idItem + " img").css('width'))/2)+'px');
 		//}
 		$("#" + idItem + ' > p').remove();
 	}
@@ -1464,7 +1464,7 @@ function set_static_graph_status(idElement, image, status) {
 				$('#'+idElement+ ' img').css('margin-top', 	parseInt($('#'+idElement).css('height'))/2 - parseInt($('#'+idElement+ ' img').css('height'))/2);	
 				}
 				else{
-				$('#'+idElement+ ' img').css('margin-left',parseInt($('#'+idElement).css('width'))/2 - parseInt($('#'+idElement+ ' img').css('width'))/2);		
+				$('#'+idElement+ ' img').css('margin-left',parseInt($('#'+idElement).css('width'))/2 - parseInt($('#'+idElement+ ' img').css('width'))/2);
 				}
 				
 								
@@ -1990,19 +1990,19 @@ function createItem(type, values, id_data) {
 				.attr('value', -1)
 				.attr('name', 'status_' + id_data);
 
-		if(values['label_position'] == 'up'){
-			item
-				.append('<table><tr><td></td></tr><tr><td><span id="text_'+id_data+'" class="text">'+values['label']+'</span></td></tr><tr><td></td></tr></table>')
-				.append($image)
-				.append($image)
-				.append($input);
+			if(values['label_position'] == 'up'){
+				item
+					.append('<table style="width:70px"><tr><td></td></tr><tr><td><span id="text_'+id_data+'" class="text">'+values['label']+'</span></td></tr><tr><td></td></tr></table>')
+					.append($image)
+					.append($image)
+					.append($input);
 				
 			}
 			else if(values['label_position'] == 'down'){
 				item
 					.append($image)
 					.append($image)
-					.append('<table><tr><td></td></tr><tr><td><span id="text_'+id_data+'" class="text">'+values['label']+'</span></td></tr><tr><td></td></tr></table>')
+					.append('<table style="width:70px"><tr><td></td></tr><tr><td><span id="text_'+id_data+'" class="text">'+values['label']+'</span></td></tr><tr><td></td></tr></table>')
 					.append($input);				
 			}
 			else if(values['label_position'] == 'left'){

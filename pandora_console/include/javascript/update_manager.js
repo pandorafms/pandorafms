@@ -319,7 +319,7 @@ function install_package (package, homeurl) {
 							$('button:contains(Cancel)').attr("id","cancel_rr_button");
 							
 							var dialog_have_mr_mr_text = "<div>";
-							dialog_have_mr_mr_text = dialog_have_mr_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_info_mr.png'></div>";
+							dialog_have_mr_mr_text = dialog_have_mr_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_warning_mr.png'></div>";
 							dialog_have_mr_mr_text = dialog_have_mr_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>There are a DB changes</strong></h3>";
 							dialog_have_mr_mr_text = dialog_have_mr_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>There are a new database changes available to apply. Do you want to start the DB update process?</p>";
 							dialog_have_mr_mr_text = dialog_have_mr_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>We recommend launch a <a style='font-family:Verdana bold; font-size:12pt; color:#82B92E'href=\"index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list\">Planned downtime</a> to this process</p></div>";
@@ -625,7 +625,7 @@ function update_last_package(package, version, homeurl) {
 							$('button:contains(Cancel)').attr("id","cancel_rr_button");
 							
 							var dialog_have_mr_mr_text = "<div>";
-							dialog_have_mr_mr_text = dialog_have_mr_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_info_mr.png'></div>";
+							dialog_have_mr_mr_text = dialog_have_mr_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_warning_mr.png'></div>";
 							dialog_have_mr_mr_text = dialog_have_mr_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>There are a DB changes</strong></h3>";
 							dialog_have_mr_mr_text = dialog_have_mr_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>There are a new database changes available to apply. Do you want to start the DB update process?</p>";
 							dialog_have_mr_mr_text = dialog_have_mr_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>We recommend launch a <a style='font-family:Verdana bold; font-size:12pt; color:#82B92E'href=\"index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list\">Planned downtime</a> to this process</p></div>";

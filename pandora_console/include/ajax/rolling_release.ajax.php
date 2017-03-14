@@ -51,7 +51,7 @@ if (is_ajax ()) {
 		else {
 			if (file_exists($dir) && is_dir($dir)) {
 				if (is_readable($dir)) {
-					if ($number >= $config['MR'] + 1) {
+					if ($number > $config['MR'] + 1) {
 						$message = "bad_mr_filename";
 
 						echo $message;

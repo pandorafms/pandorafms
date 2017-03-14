@@ -1,4 +1,4 @@
-BEGIN transaction;
+START TRANSACTION;
 CREATE TABLE IF NOT EXISTS `ttable_test_nueva` (
 	`id` int(10) unsigned NOT NULL auto_increment,
 	`field1` varchar(60) NOT NULL default '',

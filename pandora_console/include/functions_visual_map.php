@@ -2434,8 +2434,11 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 	$proportion_height = 0;
 	$proportion_width = 0;
 	
+	
+	
 	if (!is_null($height) && !is_null($width)) {
 		$resizedMap = true;
+		
 		
 		if ($keep_aspect_ratio) {
 			$ratio = min($width / $layout['width'], $height / $layout['height']);
@@ -2450,48 +2453,49 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 		$dif_height = $layout["height"] - $mapHeight;
 		$dif_width = $layout["width"] - $mapWidth;
 		
+		
 		$proportion_height = $mapHeight / $layout["height"];
 		$proportion_width = $mapWidth / $layout["width"];
 		
-		if ($layout["background"] != 'None.png' ) {
-			if (is_metaconsole()) {
-				$backgroundImage =
-					'/include/Image/image_functions.php?getFile=1&thumb=1&thumb_size=' . $mapWidth . 'x' . $mapHeight . '&file=' .
-					$config['homeurl'] . 'images/console/background/' .
-					$layout["background"];
-			}
-			else {
-				$backgroundImage =
-					'/include/Image/image_functions.php?getFile=1&thumb=1&thumb_size=' . $mapWidth . 'x' . $mapHeight . '&file=' .
-					$config['homedir'] . '/images/console/background/' .
-					($layout["background"]);
-			}
+		
+		if (is_metaconsole()) {
+			$backgroundImage =
+				'/include/Image/image_functions.php?getFile=1&thumb=1&thumb_size=' . $mapWidth . 'x' . $mapHeight . '&file=' .
+				$config['homeurl'] . 'images/console/background/' .
+				$layout["background"];
+		}
+		else {
+			$backgroundImage =
+				'/include/Image/image_functions.php?getFile=1&thumb=1&thumb_size=' . $mapWidth . 'x' . $mapHeight . '&file=' .
+				$config['homedir'] . '/images/console/background/' .
+				($layout["background"]);
 		}
 	}
 	else {
 		$mapWidth = $layout["width"];
 		$mapHeight = $layout["height"];
-		$backgroundImage = '';
-		if ($layout["background"] != 'None.png' )
-			$backgroundImage = $metaconsole_hack . 'images/console/background/' .
-				$layout["background"];
+		$backgroundImage = $metaconsole_hack . 'images/console/background/' .
+			$layout["background"];
 	}
 	
 	if (defined('METACONSOLE')) {
 		echo "<div style='width: 100%; overflow:auto; margin: 0 auto; padding:5px;'>";
 	}
 	
-	echo '<div id="background_'.$id_layout.'"
+	echo '<div style="';
+	
+	if(get_parameter('pure')==1){
+		echo 'width:100%;height:100%;position:absolute;';
+	}
+		
+	echo 'background-color:'.$layout["background_color"].';"><div id="background_'.$id_layout.'"
 				style="margin:0px auto;text-align:
 				z-index: 0;
 				position:relative;
 				width:' . $mapWidth . 'px;
-				height:' . $mapHeight . 'px;
-				background-color:'.$layout["background_color"].';">';
-	
-	if ($layout["background"] != 'None.png' )
-		echo "<img src='" .
-			ui_get_full_url($backgroundImage) . "' width='100%' height='100%' />";
+				height:' . $mapHeight . 'px;">';
+	echo "<img src='" .
+		ui_get_full_url($backgroundImage) . "' width='100%' height='100%' />";
 	
 	
 	$layout_datas = db_get_all_rows_field_filter('tlayout_data',

@@ -116,6 +116,7 @@ sub new {
 
 		# Per device VLAN cache.
 		vlan_cache => {},
+		vlan_cache_enabled => 0,
 
 		# Configuration parameters.
 		all_ifaces => 0,
@@ -315,6 +316,8 @@ sub find_aliases($$) {
 sub find_vlans ($$) {
 	my ($self, $device) = @_;
 	my %vlan_hash;
+
+	return unless ($self->{'vlan_cache_enabled'} == 1);
 
 	foreach my $vlan ($self->snmp_get_value_array($device, $VTPVLANIFINDEX)) {
 		next if $vlan eq '0';

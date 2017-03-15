@@ -58,8 +58,8 @@ $baseurl = ui_get_full_url(false, false, false, false);
 	var text2_mr_file = "<?php echo __('We recommend launch a '); ?>\n";
 	var text3_mr_file = "<?php echo __('planned downtime'); ?>\n";
 	var text4_mr_file = "<?php echo __(' to this process'); ?>\n";
-	var text1_package_file = "<?php echo __('There are a new update available'); ?>\n";
-	var text2_package_file = "<?php echo __('There are a new update available to apply. Do you want to start the update process?'); ?>\n";
+	var text1_package_file = "<?php echo __('There is a new update available'); ?>\n";
+	var text2_package_file = "<?php echo __('There is a new update available to apply. Do you want to start the update process?'); ?>\n";
 	var applying_mr = "<?php echo __('Applying DB MR'); ?>\n";
 </script>
 

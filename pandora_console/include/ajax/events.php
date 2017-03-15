@@ -53,7 +53,7 @@ if ($get_event_name) {
 		return;
 	}
 	
-	ui_print_truncate_text(io_safe_output($name), 75, false, false, false, '...');
+	ui_print_truncate_text(strip_tags(io_safe_output($name)), 75, false, false, false, '...');
 	
 	return;
 }

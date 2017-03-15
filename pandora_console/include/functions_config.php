@@ -467,15 +467,16 @@ function config_update_config () {
 						$error_update[] = __('Font size');
 					if (!config_update_value ('flash_charts', (bool) get_parameter ('flash_charts')))
 						$error_update[] = __('Interactive charts');
-					
-						
-						if (!config_update_value ('custom_logo', (string) get_parameter ('custom_logo')))
-							$error_update[] = __('Custom logo');
-							if (!config_update_value ('custom_logo_login', (string) get_parameter ('custom_logo_login')))
-							$error_update[] = __('Custom logo login');
-	
-						
-						
+					if (!config_update_value ('custom_logo', (string) get_parameter ('custom_logo')))
+						$error_update[] = __('Custom logo');
+					if (!config_update_value ('custom_logo_login', (string) get_parameter ('custom_logo_login')))
+						$error_update[] = __('Custom logo login');
+					if (!config_update_value ('custom_splash_login', (string) get_parameter ('custom_splash_login')))
+						$error_update[] = __('Custom splash login');
+					if (!config_update_value ('custom_title1_login', (string) get_parameter ('custom_title1_login')))
+						$error_update[] = __('Custom title1 login');
+					if (!config_update_value ('custom_title2_login', (string) get_parameter ('custom_title2_login')))
+						$error_update[] = __('Custom title2 login');
 					if (!config_update_value ('login_background', (string) get_parameter ('login_background')))
 						$error_update[] = __('Login background');
 					if (!config_update_value ('vc_refr', get_parameter('vc_refr')))
@@ -1084,17 +1085,26 @@ function config_process_config () {
 		config_update_value ('fixed_menu', false);
 	}
 	
-
-	
 	if (!isset ($config["custom_logo"])) {
 		config_update_value ('custom_logo', 'pandora_logo_head_4.png');
+	}
 
-	}
 	if (!isset ($config["custom_logo_login"])) {
-		config_update_value ('custom_logo_login', 'login_logo.png');
+		config_update_value ('custom_logo_login', 'login_logo_v7.png');
 	}
 	
+	if (!isset ($config["custom_splash_login"])) {
+		config_update_value ('custom_splash_login', 'splash_image_default.png');
+	}
 	
+	if (!isset ($config["custom_title1_login"])) {
+		config_update_value ('custom_title1_login', __('WELCOME TO PANDORA FMS'));
+	}
+
+	if (!isset ($config["custom_title2_login"])) {
+		config_update_value ('custom_title2_login', __('NEXT GENERATION'));
+	}
+
 	if (!isset ($config['history_db_enabled'])) {
 		config_update_value ( 'history_db_enabled', false);
 	}

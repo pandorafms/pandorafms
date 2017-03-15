@@ -45,8 +45,8 @@ switch ($login_screen) {
 		$logo_link = 'index.php';
 		$logo_title = __('Refresh');
 		break;
+	$splash_title = __('Splash login');
 }
-
 
 $url = '?login=1';
 //These variables come from index.php
@@ -64,7 +64,17 @@ if (!empty($config['login_background'])) {
 echo '<div id="login_body" ' . $login_body_style . '></div>';
 echo '<div id="header_login">';
 	echo '<div id="icon_custom_pandora">';
-		echo '<img src="images/custom_logo/logo_login_consola.png" alt="pandora_console">';
+		if (defined ('PANDORA_ENTERPRISE')) {
+			if(isset ($config['custom_logo'])){
+				echo '<img src="images/custom_logo/' . $config['custom_logo'] .'" alt="pandora_console">';
+			}
+			else{
+				echo '<img src="images/custom_logo/logo_login_consola.png" alt="pandora_console">';
+			}
+		}
+		else{
+			echo '<img src="images/custom_logo/logo_login_consola.png" alt="pandora_console">';	
+		}
 	echo '</div>';
 	echo '<div id="list_icon_docs_support"><ul>';
 		echo '<li><a href="http://wiki.pandorafms.com/" target="_blank"><img src="images/icono_docs.png" alt="docs pandora"></a></li>';
@@ -100,7 +110,7 @@ echo '<div class="login_page">';
 					html_print_image ("images/custom_logo_login/login_logo.png", false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
 				}
 				else{
-				html_print_image ("images/custom_logo_login/".$config['custom_logo_login'], false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
+					html_print_image ("images/custom_logo_login/".$config['custom_logo_login'], false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
 				}
 				echo "<br><span style='font-size:120%;color:white;top:10px;position:relative;'>Community edition</span>";
 			}
@@ -195,18 +205,47 @@ echo '<div class="login_page">';
 	}
 	
 	echo '</form></div>';
-
 	echo '<div class="login_data">';
 		echo '<div class ="text_banner_login">';
 			echo '<div><span class="span1">';
-				echo "WELCOME TO PANDORA FMS";
+				if(defined ('PANDORA_ENTERPRISE')){
+					if($config['custom_title1_login']){
+						echo strtoupper(io_safe_output($config['custom_title1_login']));
+					}
+					else{
+						echo __('WELCOME TO PANDORA FMS');
+					}
+				}
+				else{
+					echo __('WELCOME TO PANDORA FMS');
+				}
 			echo '</span></div>';
 			echo '<div><span class="span2">';
-				echo " NEXT GENERATION ";
+				if(defined ('PANDORA_ENTERPRISE')){
+					if($config['custom_title2_login']){
+						echo strtoupper(io_safe_output($config['custom_title2_login']));
+					}
+					else{
+						echo __('NEXT GENERATION');
+					}
+				}
+				else{
+					echo __('NEXT GENERATION');
+				}
 			echo '</span></div>';
 		echo '</div>';
 		echo '<div class ="img_banner_login">';
-			html_print_image ("/images/splash_imagenes.png", false);
+			if (defined ('PANDORA_ENTERPRISE')) {
+				if(isset($config['custom_splash_login'])){
+					html_print_image ("enterprise/images/custom_splash_login/".$config['custom_splash_login'], false, array ( "alt" => "splash", "border" => 0, "title" => $splash_title), false, true);
+				}
+				else{
+					html_print_image ("enterprise/images/custom_splash_login/splash_image_default.png", false, array ("alt" => "logo", "border" => 0, "title" => $splash_title), false, true);
+				}
+			} 
+			else{
+				html_print_image ("images/splash_image_default.png", false, array ("alt" => "logo", "border" => 0, "title" => $splash_title), false, true);
+			}
 		echo '</div>';
 	echo '</div>';
 echo '</div>';
@@ -304,7 +343,6 @@ html_print_div(array('id' => 'modal_alert', 'hidden' => true));
 			.show ();
 	}
 	<?php
-	html_debug_print($login_screen, true);
 	switch($login_screen) {
 		case 'error_authconfig':
 		case 'error_emptyconfig':
@@ -378,7 +416,7 @@ html_print_div(array('id' => 'modal_alert', 'hidden' => true));
 		});
 
 		$("#submit-hide-login-error").click (function () {
-			$("#login_failed" ).dialog('close'):
+			$("#login_failed" ).dialog('close');
 			$("#login_correct_pass").dialog('close');
 		});
 	});

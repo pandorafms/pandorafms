@@ -3881,11 +3881,16 @@ div#list_icon_docs_support{
 	margin-right: 4%;
 }
 
+div#list_icon_docs_support ul{
+	margin-top: 5px;
+}
+
 div#list_icon_docs_support ul li{
 	display: inline-block;
 	color:white;
 	vertical-align: middle;
 	margin-right: 5px;
+	font-size: 10pt;
 }
 
 li#li_margin_left{
@@ -4033,16 +4038,15 @@ div.text_banner_login span{
 }
 
 span.span1{
-	font-weight: 100;
+	font-weight: lighter;
     font-size: 3vw;
-    font-family: leto;
-    font-style: italic;
+    font-family: 'lato';
 }
 
 span.span2{
 	font-weight: 300;
     font-size: 3vw;
-    font-family: leto;
+    font-family: 'lato';
 }
 
 div.img_banner_login{

@@ -77,7 +77,10 @@ if (is_ajax ()) {
 								
 								$file_dest = "$dir/updated/$number.sql";
 								
-								if (copy($file, $file_dest)) {
+								if (file_exists($file_dest)) {
+									unlink($file);
+								}
+								else if (copy($file, $file_dest)) {
 									unlink($file);
 								}
 							}

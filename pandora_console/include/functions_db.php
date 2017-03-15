@@ -1739,8 +1739,18 @@ function db_check_minor_relase_available_to_um () {
 				$replacement = "";
 				$sqlfiles_num = preg_replace($pattern, $replacement, $sqlfiles); // Get the number of the file
 				
-				if ($sqlfiles_num) {
-							$have_minor_release = true;
+				$exists = false;
+				foreach ($sqlfiles_num as $num) {
+					$file_dest = "$dir/updated/$num.sql";
+					
+					if (file_exists($file_dest)) {
+						$exists = true;
+						unlink("$dir/$num.sql");
+					}
+				}
+
+				if ($sqlfiles_num && !$exists) {
+					$have_minor_release = true;
 				}
 			}
 		}

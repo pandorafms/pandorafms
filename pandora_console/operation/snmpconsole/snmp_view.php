@@ -172,14 +172,15 @@ foreach ($all_traps as $trap) {
 	$oids[$oid] = $oid;
 }
 
-
-
-
-
+$prea = array_keys($user_groups);
+$ids = join(',',$prea);
+//Cuantos usuarios hay operadores con un grupo que exista y no lo tenga ningun usuario
+$user_in_group_wo_agents = db_get_value_sql('select count(DISTINCT(id_usuario)) from tusuario_perfil where id_usuario ="'.$config['id_user'].'" and id_perfil = 1 and id_grupo in (select id_grupo from tgrupo where id_grupo in ('.$ids.') and id_grupo not in (select id_grupo from tagente))');
 
 switch ($config["dbtype"]) {
 	case "mysql":
 	case "postgresql":
+	if($user_in_group_wo_agents == 0){
 		$rows = db_get_all_rows_filter('tagente',
 			array('id_grupo' => array_keys($user_groups)),
 			array('id_agente'));
@@ -189,7 +190,8 @@ switch ($config["dbtype"]) {
 		$address_by_user_groups = agents_get_addresses($id_agents);
 		foreach ($address_by_user_groups as $i => $a)
 			$address_by_user_groups[$i] = '"' . $a . '"';
-
+		}
+		else{
 		$rows = db_get_all_rows_filter('tagente',
 			array(),
 			array('id_agente'));
@@ -199,7 +201,7 @@ switch ($config["dbtype"]) {
 		$all_address_agents = agents_get_addresses($id_agents);
 		foreach ($all_address_agents as $i => $a)
 			$all_address_agents[$i] = '"' . $a . '"';
-
+		}
 		break;
 }
 

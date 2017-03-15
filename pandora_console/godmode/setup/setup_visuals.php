@@ -204,7 +204,7 @@ else{
 	$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'custom_logo_preview', $open, '', 'class="sub camera"', true,false,$open,'visualmodal');
 $row++;
 
-$table_styles->data[$row][0] = __('Custom logo (login)') . ui_print_help_icon("custom_logo_login", true);
+$table_styles->data[$row][0] = __('Custom logo (login)') . ui_print_help_icon("custom_logo", true);
 
 if(enterprise_installed()) {
 	$table_styles->data[$row][1] = html_print_select(

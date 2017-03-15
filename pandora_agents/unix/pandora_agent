@@ -41,7 +41,7 @@ my $Sem = undef;
 my $ThreadSem = undef;
 
 use constant AGENT_VERSION => '7.0NG';
-use constant AGENT_BUILD => '170313';
+use constant AGENT_BUILD => '170315';
 
 # Agent log default file size maximum and instances
 use constant DEFAULT_MAX_LOG_SIZE => 600000;
@@ -2560,7 +2560,8 @@ while (1) {
 			%Collections = ();
 			%Conf = %DefaultConf;
 			read_config ();
-					
+			
+			$Conf{'agent_alias'} = $broker_agent;
 			# Check for a new configuration
 			check_remote_config () unless ($Conf{'debug'} eq '1');
 				

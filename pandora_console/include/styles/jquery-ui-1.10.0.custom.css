@@ -159,6 +159,9 @@ button.ui-button-icons-only {
 }
 .ui-button-text-only .ui-button-text {
 	padding: .4em 1em;
+	font-family: nunito;
+	font-size: 9pt;
+	color: #82B92E
 }
 .ui-button-icon-only .ui-button-text,
 .ui-button-icons-only .ui-button-text {
@@ -405,30 +408,33 @@ button.ui-button::-moz-focus-inner {
 	outline: 0;
 }
 .ui-dialog .ui-dialog-titlebar {
+	display: list-item;
+	text-align: center;
 	padding: .4em 1em;
 	padding-top: 8px;
-	padding-bottom: 8px;
+	padding-bottom: 14px;
+	height: 30px;
 	/*margin: 3px;*/
 	position: relative;
 }
 .ui-dialog .ui-dialog-title {
-	float: left;
+	font-family: Nunito;
+	font-size: 13pt;
 	margin: .1em 0;
 	white-space: nowrap;
 	width: 100%;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	text-align: center;
-    font-size: 11pt;
+    	font-size: 11pt;
 }
 .ui-dialog .ui-dialog-titlebar-close {
 	position: absolute;
-	right: .3em;
+	right: 1em;
 	width: 21px;
 	margin: 0px 0 0 0;
 	padding: 1px;
 	height: 20px;
-	bottom: 20%;
+	bottom: 30%;
 }
 .ui-dialog .ui-dialog-content {
 	position: relative;
@@ -448,8 +454,13 @@ button.ui-button::-moz-focus-inner {
 	float: right;
 }
 .ui-dialog .ui-dialog-buttonpane button {
-	margin: .5em .4em .5em 0;
+	margin: .5em 1em .5em 0;
 	cursor: pointer;
+	background: white;
+	background-color: white;
+	border: 1px solid #82b92e;
+	height:30px;
+	width:90px;
 }
 .ui-dialog .ui-resizable-se {
 	width: 12px;
@@ -1254,9 +1265,7 @@ body .ui-tooltip {
 }
 
 .ui-dialog-titlebar .ui-icon-closethick {
-	background-image: url("../../images/close_button_dialog.png");
-	width: 14px;
-	height: 13px;
+	background-image: url("../../images/icono_cerrar.png");
 	margin-top: -8px;
 }
 

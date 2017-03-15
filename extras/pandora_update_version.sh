@@ -42,6 +42,8 @@ SERVER_FILE="$CODEHOME/pandora_server/lib/PandoraFMS/Config.pm"
 SERVER_DB_FILE="$CODEHOME/pandora_server/util/pandora_db.pl"
 SERVER_CLI_FILE="$CODEHOME/pandora_server/util/pandora_manage.pl"
 SERVER_CONF_FILE="$CODEHOME/pandora_server/conf/pandora_server.conf.new"
+SERVER_WIN_MPI_OPEN_FILE="$PANDHOME_ENT/pandora_server/extras/nsis_installer/pandorafms_open.nsi"
+SERVER_WIN_MPI_ENT_FILE="$PANDHOME_ENT/pandora_server/extras/nsis_installer/pandorafms_ent.nsi"
 CONSOLE_DB_FILE="$CODEHOME/pandora_console/pandoradb_data.sql"
 CONSOLE_DB_FILE_ORACLE="$CODEHOME/pandora_console/pandoradb.data.oracle.sql"
 CONSOLE_FILE="$CODEHOME/pandora_console/include/config_process.php"
@@ -112,6 +114,8 @@ sed -i -e "s/my\s\s*\$version\s*=.*/my \$version = \"$VERSION PS$BUILD\";/" "$SE
 echo "Updating CLI script version..."
 sed -i -e "s/my\s\s*\$version\s*=.*/my \$version = \"$VERSION PS$BUILD\";/" "$SERVER_CLI_FILE"
 sed -i -e "s/\s*\#\s*\Version.*/\# Version $VERSION/" "$SERVER_CONF_FILE"
+sed -i -e "s/\s*\!define PRODUCT_VERSION.*/\!define PRODUCT_VERSION \"$VERSION\"/" "$SERVER_WIN_MPI_OPEN_FILE"
+sed -i -e "s/\s*\!define PRODUCT_VERSION.*/\!define PRODUCT_VERSION \"$VERSION\"/" "$SERVER_WIN_MPI_ENT_FILE"
 
 # Pandora Satellite Server
 echo "Updating Pandora Satellite Server version..."

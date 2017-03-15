@@ -340,6 +340,30 @@ function update_manager_check_online_free_packages ($is_ajax=true) {
 			$result = json_decode($result, true);
 			
 			if (!empty($result)) {
+				?>
+				<script type="text/javascript">
+					var mr_available = "<?php echo __('Minor release available'); ?>\n";
+					var package_available = "<?php echo __('New package available'); ?>\n";
+					var mr_not_accepted = "<?php echo __('Minor release rejected. Changes will not apply.'); ?>\n";
+					var mr_not_accepted_code_yes = "<?php echo __('Minor release rejected. Package will apply.'); ?>\n";
+					var mr_cancel = "<?php echo __('Minor release rejected. Changes will not apply.'); ?>\n";
+					var package_cancel = "<?php echo __('These package changes will not apply.'); ?>\n";
+					var package_not_accepted = "<?php echo __('Package rejected. These package changes will not apply.'); ?>\n";
+					var mr_success = "<?php echo __('Database successfully updated'); ?>\n";
+					var mr_error = "<?php echo __('Error in MR file'); ?>\n";
+					var package_success = "<?php echo __('Package updated successfully'); ?>\n";
+					var package_error = "<?php echo __('Error in package updated'); ?>\n";
+					var bad_mr_file = "<?php echo __('Database MR version is inconsistent, do you want to apply the package?'); ?>\n";
+					var text1_mr_file = "<?php echo __('There are a new database changes available to apply. Do you want to start the DB update process?'); ?>\n";
+					var text2_mr_file = "<?php echo __('We recommend launch a '); ?>\n";
+					var text3_mr_file = "<?php echo __('planned downtime'); ?>\n";
+					var text4_mr_file = "<?php echo __(' to this process'); ?>\n";
+					var text1_package_file = "<?php echo __('There is a new update available'); ?>\n";
+					var text2_package_file = "<?php echo __('There is a new update available to apply. Do you want to start the update process?'); ?>\n";
+					var applying_mr = "<?php echo __('Applying DB MR'); ?>\n";
+				</script>
+				<?php
+
 				echo "<p><b>There is a new version:</b> " . $result[0]['version'] . "</p>";
 				echo "<a href='javascript: update_last_package(\"" . base64_encode($result[0]["file_name"]) .
 					"\", \"" . $result[0]['version'] ."\");'>" .

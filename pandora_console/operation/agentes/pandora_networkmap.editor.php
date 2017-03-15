@@ -139,9 +139,7 @@ $id_snmp_l2_recon = db_get_value('id_recon_script', 'trecon_script',
 if (! check_acl ($config['id_user'], 0, "PM")) {
 	$sql = sprintf('SELECT *
 		FROM trecon_task RT, tusuario_perfil UP
-		WHERE 
-			id_recon_script = ' . $id_snmp_l2_recon . ' AND
-			UP.id_usuario = "%s" AND UP.id_grupo = RT.id_group', 
+		WHERE UP.id_usuario = "%s" AND UP.id_grupo = RT.id_group', 
 		$config['id_user']);
 	
 	
@@ -149,8 +147,7 @@ if (! check_acl ($config['id_user'], 0, "PM")) {
 }
 else {
 	$sql = sprintf('SELECT *
-		FROM trecon_task
-		WHERE id_recon_script = ' . $id_snmp_l2_recon);
+		FROM trecon_task');
 	$result = db_get_all_rows_sql ($sql);
 }
 

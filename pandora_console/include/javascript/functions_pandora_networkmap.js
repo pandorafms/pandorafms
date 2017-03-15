@@ -1876,23 +1876,6 @@ function add_interface_link_js () {
 				});
 				
 				graph.links.push(temp_link);
-
-				$("#layer_graph_links_" + networkmap_id).remove();
-				$("#layer_graph_nodes_" + networkmap_id).remove();
-
-				window.layer_graph_links = window.layer_graph
-					.append("g")
-						.attr("id", "layer_graph_links_" + networkmap_id);
-				window.layer_graph_nodes = window.layer_graph
-					.append("g")
-						.attr("id", "layer_graph_nodes_" + networkmap_id);
-				
-				force.nodes(graph.nodes)
-					.links(graph.links)
-					.start();
-				
-				window.node = layer_graph_nodes.selectAll(".node");
-				window.link = layer_graph_links.selectAll(".link");
 				
 				draw_elements_graph();
 				init_drag_and_drop();

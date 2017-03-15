@@ -82,7 +82,7 @@ function networkmap_process_networkmap($id = 0) {
 			$recon_task = db_get_row_filter('trecon_task',
 				array('id_rt' => $networkmap['source_data']));
 				
-			$ip_mask = $recon_task['field1'];
+			$ip_mask = $recon_task['subnet'];
 			break;
 		case 2:
 			$ip_mask = $networkmap['source_data'];
@@ -576,12 +576,6 @@ function networkmap_links_to_js_links($relations, $nodes_graph) {
 		else {
 			$agent = $relation['id_parent_source_data'];
 			$agent2 = $relation['id_child_source_data'];
-			if ($agent == 0) {
-				$agent = -1;
-			}
-			if ($agent2 == 0) {
-				$agent = -1;
-			}
 		}
 		
 		foreach ($nodes_graph as $node) {
@@ -829,7 +823,7 @@ function networkmap_loadfile($id = 0, $file = '',
 				$data['type'] = '';
 				if (preg_match('/Pandora FMS/', $line) != 0) {
 					$data['text'] = 'Pandora FMS';
-					$data['id_agent'] = -1;
+					$data['id_agent'] = 0;
 				}
 				else {
 					$data['type'] = $ids[$node_id]['type'];

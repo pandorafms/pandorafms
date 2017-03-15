@@ -405,17 +405,29 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 			$module['type'] = 'module';
 			
 			// Try to get the interface name
-			if (preg_match ("/_(.+)$/" , (string)$module['nombre'], $matches)) {
+			if (preg_match ("/(.+)_ifOperStatus$/" , (string)$module['nombre'], $matches)) {
 				if ($matches[1]) {
-					$module['nombre'] = $matches[1];
+						$module['nombre'] = $matches[1];
+
+						// Save node parent information to define edges later
+						$parents[$node_count] = $module['parent'] = $agent['id_node'];
+						
+						// Add node
+						$nodes[$node_count] = $module;
 				}
 			}
-			
-			// Save node parent information to define edges later
-			$parents[$node_count] = $module['parent'] = $agent['id_node'];
-			
-			// Add node
-			$nodes[$node_count] = $module;
+			else {
+				$have_relations_a = db_get_value('id', 'tmodule_relationship', 'module_a', $module['id_agente_modulo']);
+				$have_relations_b = db_get_value('id', 'tmodule_relationship', 'module_b', $module['id_agente_modulo']);
+
+				if ($have_relations_a || $have_relations_b) {
+					// Save node parent information to define edges later
+					$parents[$node_count] = $module['parent'] = $agent['id_node'];
+					
+					// Add node
+					$nodes[$node_count] = $module;
+				}
+			}
 		}
 	}
 	

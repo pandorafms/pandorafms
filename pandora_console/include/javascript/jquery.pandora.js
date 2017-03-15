@@ -173,11 +173,11 @@ $(document).ready (function () {
 	if ($('#msg_change_password').length) {
 
 		$( "#msg_change_password" ).dialog({
-			resizable: true,
+			resizable: false,
 			draggable: true,
 			modal: true,
-			height: 360,
-			width: 590,
+			height: 350,
+			width: 620,
 			overlay: {
 				opacity: 0.5,
 				background: "black"
@@ -189,15 +189,31 @@ $(document).ready (function () {
 	if ($('#login_blocked').length) {
 
 		$( "#login_blocked" ).dialog({
-					resizable: true,
-					draggable: true,
-					modal: true,
-					height: 180,
-					width: 400,
-					overlay: {
-								opacity: 0.5,
-								background: "black"
-							}
+			resizable: true,
+			draggable: true,
+			modal: true,
+			height: 200,
+			width: 520,
+			overlay: {
+				opacity: 0.5,
+				background: "black"
+			}
+		});
+
+	}
+
+	if ($('#login_correct_pass').length) {
+
+		$( "#login_correct_pass" ).dialog({
+			resizable: true,
+			draggable: true,
+			modal: true,
+			height: 200,
+			width: 520,
+			overlay: {
+				opacity: 0.5,
+				background: "black"
+			}
 		});
 
 	}

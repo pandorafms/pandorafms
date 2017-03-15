@@ -415,9 +415,11 @@ button.ui-button::-moz-focus-inner {
 	float: left;
 	margin: .1em 0;
 	white-space: nowrap;
-	width: 90%;
+	width: 100%;
 	overflow: hidden;
 	text-overflow: ellipsis;
+	text-align: center;
+    font-size: 11pt;
 }
 .ui-dialog .ui-dialog-titlebar-close {
 	position: absolute;
@@ -1255,7 +1257,7 @@ body .ui-tooltip {
 	background-image: url("../../images/close_button_dialog.png");
 	width: 14px;
 	height: 13px;
-	margin-top: -5px;
+	margin-top: -8px;
 }
 
 .ui-dialog-title {

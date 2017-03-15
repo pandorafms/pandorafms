@@ -2694,7 +2694,7 @@ function graph_incidents_status () {
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
 	
-	return pie3d_graph($config['flash_charts'], $data, 370, 180,
+	return pie3d_graph($config['flash_charts'], $data, 320, 200,
 		__('Other'), '', $water_mark,
 		$config['fontpath'], $config['font_size']);
 }

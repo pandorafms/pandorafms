@@ -83,7 +83,7 @@ echo "<img src='images/wait.gif' />";
 echo "</span><br><br>";
 
 echo "<div><b>" . __('The last version of package installed is:') . "</b></div><br>";
-echo "<div style='color:#82b92e;font-size:40pt;font-weight:bold;'>" . $current_package . "</div>";
+echo "<div id='pkg_version' style='color:#82b92e;font-size:40pt;font-weight:bold;'>" . $current_package . "</div>";
 
 	echo "<div class='checking_package' style='font-size:18pt;width:100%; text-align: center; display: none;'>";
 		echo __('Checking for the newest package.');

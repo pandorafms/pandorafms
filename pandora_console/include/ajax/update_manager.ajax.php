@@ -236,7 +236,7 @@ if ($install_package) {
 	}
 	else {
 		$return["status"] = "error";
-		$return["message"]= __("Package not accepted");
+		$return["message"]= __("Package rejected.");
 		echo json_encode($return);
 		return;
 	}
@@ -460,7 +460,7 @@ if ($update_last_free_package) {
 	}
 	else {
 		$return["in_progress"] = false;
-		$return["message"] = __("Package not accepted.");
+		$return["message"] = __("Package rejected.");
 	
 		echo json_encode($return);
 	}

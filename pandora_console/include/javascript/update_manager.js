@@ -193,7 +193,7 @@ function formatFileSize(bytes) {
 function install_package (package, homeurl) {
 	var home_url = (typeof homeurl !== 'undefined') ? homeurl + '/' : '';
 	
-	$("<div id='pkg_apply_dialog' class= 'dialog ui-dialog-content'></div>").dialog ({
+	$("<div id='pkg_apply_dialog' class='dialog ui-dialog-content' title='" + package_available + "'></div>").dialog ({
 		resizable: true,
 		draggable: true,
 		modal: true,
@@ -204,8 +204,8 @@ function install_package (package, homeurl) {
 		width: 600,
 		height: 250,
 		buttons: {
-			"Apply package": function () {
-				$("#pkg_apply_dialog").dialog("close");
+			"Ok": function () {
+				$(this).dialog("close");
 
 				var parameters = {};
 				parameters['page'] = 'include/ajax/update_manager.ajax';
@@ -218,7 +218,7 @@ function install_package (package, homeurl) {
 					dataType: "json",
 					success: function (data) {
 						if (data['have_minor']) {
-							$("<div id='mr_dialog2' class='dialog ui-dialog-content' title='Menor release available'></div>").dialog ({
+							$("<div id='mr_dialog2' class='dialog ui-dialog-content' title='" + mr_available + "'></div>").dialog ({
 								resizable: true,
 								draggable: true,
 								modal: true,
@@ -234,9 +234,9 @@ function install_package (package, homeurl) {
 										err = apply_minor_release(data['mr']);
 
 										if (!err['error']) {
-											if (err['message'] !=  undefined) {
+											if (err['message'] == 'bad_mr_filename') {
 												$("#mr_dialog2").dialog("close");
-												$("<div id='bad_message' class='dialog ui-dialog-content' title='Bad MR file name'></div>").dialog ({
+												$("<div id='bad_message' class='dialog ui-dialog-content' title='" + mr_available + "'></div>").dialog ({
 													resizable: true,
 													draggable: true,
 													modal: true,
@@ -266,7 +266,7 @@ function install_package (package, homeurl) {
 																success: function (data) {
 																	$('#form-offline_update ul').find('li').removeClass('loading');
 																	if (data.status == "success") {
-																		$("<div id='success_pkg' class='dialog ui-dialog-content' title='Update package'></div>").dialog ({
+																		$("<div id='success_pkg' class='dialog ui-dialog-content' title='" + package_available + "'></div>").dialog ({
 																			resizable: true,
 																			draggable: true,
 																			modal: true,
@@ -286,7 +286,7 @@ function install_package (package, homeurl) {
 																		var dialog_success_pkg_text = "<div>";
 																		dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_exito_mr.png'></div>";
 																		dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>SUCCESS</strong></h3>";
-																		dialog_success_pkg_text = dialog_success_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_updated_successfully + "</p></div>";
+																		dialog_success_pkg_text = dialog_success_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + data['message'] + "</p></div>";
 																		dialog_success_pkg_text = dialog_success_pkg_text + "</div>";
 																		
 																		$('#success_pkg').html(dialog_success_pkg_text);
@@ -297,7 +297,7 @@ function install_package (package, homeurl) {
 																			.append("<i>" + if_there_are_any_database_change + "</i>");
 																	}
 																	else {
-																		$("<div id='error_pkg' class='dialog ui-dialog-content' title='Update package'></div>").dialog ({
+																		$("<div id='error_pkg' class='dialog ui-dialog-content' title='" + package_available + "'></div>").dialog ({
 																			resizable: true,
 																			draggable: true,
 																			modal: true,
@@ -317,7 +317,7 @@ function install_package (package, homeurl) {
 																		var dialog_error_pkg_text = "<div>";
 																		dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
 																		dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
-																		dialog_error_pkg_text = dialog_error_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_not_updated + "</p></div>";
+																		dialog_error_pkg_text = dialog_error_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + data['message'] + "</p></div>";
 																		dialog_error_pkg_text = dialog_error_pkg_text + "</div>";
 																		
 																		$('#error_pkg').html(dialog_error_pkg_text);
@@ -339,7 +339,7 @@ function install_package (package, homeurl) {
 														},
 														"Cancel": function () {
 															$(this).dialog("close");
-															$("#box_online .content").html("Package not accepted");
+															$("#box_online .content").html(mr_not_accepted);
 														}
 													}
 												});
@@ -347,13 +347,40 @@ function install_package (package, homeurl) {
 												var dialog_bad_message_text = "<div>";
 												dialog_bad_message_text = dialog_bad_message_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
 												dialog_bad_message_text = dialog_bad_message_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
-												dialog_bad_message_text = dialog_bad_message_text + "<p style='font-family:Verdana; font-size:12pt;'>Bad MR filename, do you want to apply the package?</p></div>";
+												dialog_bad_message_text = dialog_bad_message_text + "<p style='font-family:Verdana; font-size:12pt;'>" + bad_mr_file + "</p></div>";
 												dialog_bad_message_text = dialog_bad_message_text + "</div>";
 												
 												$('#bad_message').html(dialog_bad_message_text);
 												$('#bad_message').dialog('open');
 											}
 											else {
+												$("#mr_dialog2").dialog("close");
+												$("<div id='success_mr' class='dialog ui-dialog-content' title='" + mr_available + "'></div>").dialog ({
+													resizable: true,
+													draggable: true,
+													modal: true,
+													overlay: {
+														opacity: 0.5,
+														background: 'black'
+													},
+													width: 600,
+													height: 250,
+													buttons: {
+														"Ok": function () {
+															$(this).dialog("close");
+														}
+													}
+												});
+
+												var dialog_success_mr_text = "<div>";
+												dialog_success_mr_text = dialog_success_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_exito_mr.png'></div>";
+												dialog_success_mr_text = dialog_success_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>SUCCESS</strong></h3>";
+												dialog_success_mr_text = dialog_success_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + mr_success + "</p></div>";
+												dialog_success_mr_text = dialog_success_mr_text + "</div>";
+												
+												$('#success_mr').html(dialog_success_mr_text);
+												$('#success_mr').dialog('open');
+
 												var parameters = {};
 												parameters['page'] = 'include/ajax/update_manager.ajax';
 												parameters['install_package'] = 1;
@@ -371,7 +398,7 @@ function install_package (package, homeurl) {
 													success: function (data) {
 														$('#form-offline_update ul').find('li').removeClass('loading');
 														if (data.status == "success") {
-															$("<div id='success_pkg' class='dialog ui-dialog-content' title='Update package'></div>").dialog ({
+															$("<div id='success_pkg' class='dialog ui-dialog-content' title='" + package_available + "'></div>").dialog ({
 																resizable: true,
 																draggable: true,
 																modal: true,
@@ -391,7 +418,7 @@ function install_package (package, homeurl) {
 															var dialog_success_pkg_text = "<div>";
 															dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_exito_mr.png'></div>";
 															dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>SUCCESS</strong></h3>";
-															dialog_success_pkg_text = dialog_success_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_updated_successfully + "</p></div>";
+															dialog_success_pkg_text = dialog_success_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + data['message'] + "</p></div>";
 															dialog_success_pkg_text = dialog_success_pkg_text + "</div>";
 															
 															$('#success_pkg').html(dialog_success_pkg_text);
@@ -402,7 +429,7 @@ function install_package (package, homeurl) {
 																.append("<i>" + if_there_are_any_database_change + "</i>");
 														}
 														else {
-															$("<div id='error_pkg' class='dialog ui-dialog-content' title='Update package'></div>").dialog ({
+															$("<div id='error_pkg' class='dialog ui-dialog-content' title='" + package_available + "'></div>").dialog ({
 																resizable: true,
 																draggable: true,
 																modal: true,
@@ -422,7 +449,7 @@ function install_package (package, homeurl) {
 															var dialog_error_pkg_text = "<div>";
 															dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
 															dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
-															dialog_error_pkg_text = dialog_error_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_not_updated + "</p></div>";
+															dialog_error_pkg_text = dialog_error_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + data['message'] + "</p></div>";
 															dialog_error_pkg_text = dialog_error_pkg_text + "</div>";
 															
 															$('#error_pkg').html(dialog_error_pkg_text);
@@ -444,6 +471,33 @@ function install_package (package, homeurl) {
 											}
 										}
 										else {
+											$("#mr_dialog2").dialog("close");
+											$("<div id='error_mr' class='dialog ui-dialog-content' title='" + mr_available + "'></div>").dialog ({
+												resizable: true,
+												draggable: true,
+												modal: true,
+												overlay: {
+													opacity: 0.5,
+													background: 'black'
+												},
+												width: 600,
+												height: 250,
+												buttons: {
+													"Ok": function () {
+														$(this).dialog("close");
+													}
+												}
+											});
+
+											var dialog_error_mr_text = "<div>";
+											dialog_error_mr_text = dialog_error_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
+											dialog_error_mr_text = dialog_error_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
+											dialog_error_mr_text = dialog_error_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + mr_error + "</p></div>";
+											dialog_error_mr_text = dialog_error_mr_text + "</div>";
+											
+											$('#error_mr').html(dialog_error_mr_text);
+											$('#error_mr').dialog('open');
+
 											$('#form-offline_update ul').find('li').addClass('error');
 											$('#form-offline_update ul').find('li').find('p').html(error_in_mr)
 												.append("<i>"+data.message+"</i>");
@@ -452,27 +506,27 @@ function install_package (package, homeurl) {
 									"Cancel": function () {
 										$("#mr_dialog2").dialog("close");
 
-										$("<div id='cancel_mr' class='dialog ui-dialog-content' title='Menor release available'></div>").dialog ({
+										$("<div id='cancel_mr' class='dialog ui-dialog-content' title='" + mr_available + "'></div>").dialog ({
 											resizable: true,
-														draggable: true,
-														modal: true,
-														overlay: {
-															opacity: 0.5,
-															background: 'black'
-														},
-														width: 600,
-														height: 220,
-														buttons: {
-															"Ok": function () {
-																$(this).dialog("close");
-															}
-														}
+											draggable: true,
+											modal: true,
+											overlay: {
+												opacity: 0.5,
+												background: 'black'
+											},
+											width: 600,
+											height: 220,
+											buttons: {
+												"Ok": function () {
+													$(this).dialog("close");
+												}
+											}
 										});
 
 										var dialog_cancel_mr_text = "<div>";
 										dialog_cancel_mr_text = dialog_cancel_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_info_mr.png'></div>";
 										dialog_cancel_mr_text = dialog_cancel_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>INFO</strong></h3>";
-										dialog_cancel_mr_text = dialog_cancel_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>These database changes will not apply.</p></div>";
+										dialog_cancel_mr_text = dialog_cancel_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + mr_cancel + "</p></div>";
 										dialog_cancel_mr_text = dialog_cancel_mr_text + "</div>";
 										
 										$('#cancel_mr').html(dialog_cancel_mr_text);
@@ -491,12 +545,12 @@ function install_package (package, homeurl) {
 							$('button:contains(Apply MR)').attr("id","apply_rr_button");
 							$('button:contains(Cancel)').attr("id","cancel_rr_button");
 							
-							var dialog_have_mr_mr_text = "<div>";
-							dialog_have_mr_mr_text = dialog_have_mr_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_warning_mr.png'></div>";
-							dialog_have_mr_mr_text = dialog_have_mr_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>There are a DB changes</strong></h3>";
-							dialog_have_mr_mr_text = dialog_have_mr_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>There are a new database changes available to apply. Do you want to start the DB update process?</p>";
-							dialog_have_mr_mr_text = dialog_have_mr_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>We recommend launch a <a style='font-family:Verdana bold; font-size:12pt; color:#82B92E'href=\"index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list\">Planned downtime</a> to this process</p></div>";
-							dialog_have_mr_mr_text = dialog_have_mr_mr_text + "</div>";
+							var dialog_have_mr_text = "<div>";
+							dialog_have_mr_text = dialog_have_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_warning_mr.png'></div>";
+							dialog_have_mr_text = dialog_have_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>There are a DB changes</strong></h3>";
+							dialog_have_mr_text = dialog_have_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + text1_mr_file + "</p>";
+							dialog_have_mr_text = dialog_have_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + text2_mr_file + "<a style='font-family:Verdana bold; font-size:12pt; color:#82B92E'href=\"index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list\">" + text3_mr_file + "</a>" + text4_mr_file + "</p></div>";
+							dialog_have_mr_text = dialog_have_mr_text + "</div>";
 														
 							$('#mr_dialog2').html(dialog_have_mr_mr_text);
 							$('#mr_dialog2').dialog('open');
@@ -521,7 +575,7 @@ function install_package (package, homeurl) {
 								success: function (data) {
 									$('#form-offline_update ul').find('li').removeClass('loading');
 									if (data.status == "success") {
-										$("<div id='success_pkg' class='dialog ui-dialog-content' title='Update package'></div>").dialog ({
+										$("<div id='success_pkg' class='dialog ui-dialog-content' title='" + package_available + "'></div>").dialog ({
 											resizable: true,
 											draggable: true,
 											modal: true,
@@ -541,7 +595,7 @@ function install_package (package, homeurl) {
 										var dialog_success_pkg_text = "<div>";
 										dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_exito_mr.png'></div>";
 										dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>SUCCESS</strong></h3>";
-										dialog_success_pkg_text = dialog_success_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_updated_successfully + "</p></div>";
+										dialog_success_pkg_text = dialog_success_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + data['message'] + "</p></div>";
 										dialog_success_pkg_text = dialog_success_pkg_text + "</div>";
 										
 										$('#success_pkg').html(dialog_success_pkg_text);
@@ -552,7 +606,7 @@ function install_package (package, homeurl) {
 											.append("<i>" + if_there_are_any_database_change + "</i>");
 									}
 									else {
-										$("<div id='error_pkg' class='dialog ui-dialog-content' title='Update package'></div>").dialog ({
+										$("<div id='error_pkg' class='dialog ui-dialog-content' title='" + package_available + "'></div>").dialog ({
 											resizable: true,
 											draggable: true,
 											modal: true,
@@ -572,7 +626,7 @@ function install_package (package, homeurl) {
 										var dialog_error_pkg_text = "<div>";
 										dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
 										dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
-										dialog_error_pkg_text = dialog_error_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_not_updated + "</p></div>";
+										dialog_error_pkg_text = dialog_error_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + data['message'] + "</p></div>";
 										dialog_error_pkg_text = dialog_error_pkg_text + "</div>";
 										
 										$('#error_pkg').html(dialog_error_pkg_text);
@@ -598,27 +652,27 @@ function install_package (package, homeurl) {
 			"Cancel": function () {
 				$(this).dialog("close");
 
-				$("<div id='cancel_pkg' class='dialog ui-dialog-content' title='Menor release available'></div>").dialog ({
+				$("<div id='cancel_pkg' class='dialog ui-dialog-content' title='" + package_available + "'></div>").dialog ({
 					resizable: true,
-								draggable: true,
-								modal: true,
-								overlay: {
-									opacity: 0.5,
-									background: 'black'
-								},
-								width: 600,
-								height: 220,
-								buttons: {
-									"Ok": function () {
-										$(this).dialog("close");
-									}
-								}
+					draggable: true,
+					modal: true,
+					overlay: {
+						opacity: 0.5,
+						background: 'black'
+					},
+					width: 600,
+					height: 220,
+					buttons: {
+						"Ok": function () {
+							$(this).dialog("close");
+						}
+					}
 				});
 
 				var dialog_cancel_pkg_text = "<div>";
 				dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_info_mr.png'></div>";
 				dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>INFO</strong></h3>";
-				dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>These changes will not apply.</p></div>";
+				dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_cancel + "</p></div>";
 				dialog_cancel_pkg_text = dialog_cancel_pkg_text + "</div>";
 
 				var parameters = {};
@@ -662,8 +716,8 @@ function install_package (package, homeurl) {
 
 	var dialog_text = "<div>";
 	dialog_text = dialog_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_info_mr.png'></div>";
-	dialog_text = dialog_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>There are a new update available</strong></h3>";
-	dialog_text = dialog_text + "<p style='font-family:Verdana; font-size:12pt;'>There are a new update available to apply. Do you want to start the update process?</p></div>";
+	dialog_text = dialog_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>" + text1_package_file + "</strong></h3>";
+	dialog_text = dialog_text + "<p style='font-family:Verdana; font-size:12pt;'>" + text2_package_file + "</p></div>";
 	dialog_text = dialog_text + "</div>";
 	
 	$('#pkg_apply_dialog').html(dialog_text);
@@ -736,7 +790,7 @@ function update_last_package(package, version, homeurl) {
 	$("#box_online .loading").show();
 	$("#box_online .download_package").show();
 	
-	$("<div id='pkg_apply_dialog' class= 'dialog ui-dialog-content'></div>").dialog ({
+	$("<div id='pkg_apply_dialog' class='dialog ui-dialog-content' title='" + package_available + "'></div>").dialog ({
 		resizable: true,
 		draggable: true,
 		modal: true,
@@ -762,7 +816,7 @@ function update_last_package(package, version, homeurl) {
 						$("#box_online .downloading_package").hide();
 						
 						if (data['have_minor']) {
-							$("<div id='mr_dialog2' class='dialog ui-dialog-content' title='Menor release available'></div>").dialog ({
+							$("<div id='mr_dialog2' class='dialog ui-dialog-content' title='" + mr_available + "'></div>").dialog ({
 								resizable: true,
 								draggable: true,
 								modal: true,
@@ -778,9 +832,9 @@ function update_last_package(package, version, homeurl) {
 										err = apply_minor_release(data['mr']);
 
 										if (!err['error']) {
-											if (err['message'] !=  undefined) {
+											if (err['message'] == 'bad_mr_filename') {
 												$("#mr_dialog2").dialog("close");
-												$("<div id='bad_message' class='dialog ui-dialog-content' title='Bad MR file name'></div>").dialog ({
+												$("<div id='bad_message' class='dialog ui-dialog-content' title='" + mr_available + "'></div>").dialog ({
 													resizable: true,
 													draggable: true,
 													modal: true,
@@ -824,7 +878,7 @@ function update_last_package(package, version, homeurl) {
 														},
 														"Cancel": function () {
 															$(this).dialog("close");
-															$("#box_online .content").html("Package not accepted");
+															$("#box_online .content").html(package_not_accepted);
 														}
 													}
 												});
@@ -832,13 +886,40 @@ function update_last_package(package, version, homeurl) {
 												var dialog_bad_message_text = "<div>";
 												dialog_bad_message_text = dialog_bad_message_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
 												dialog_bad_message_text = dialog_bad_message_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
-												dialog_bad_message_text = dialog_bad_message_text + "<p style='font-family:Verdana; font-size:12pt;'>Bad MR filename, do you want to apply the package?</p></div>";
+												dialog_bad_message_text = dialog_bad_message_text + "<p style='font-family:Verdana; font-size:12pt;'>" + bad_mr_file + "</p></div>";
 												dialog_bad_message_text = dialog_bad_message_text + "</div>";
 												
 												$('#bad_message').html(dialog_bad_message_text);
 												$('#bad_message').dialog('open');
 											}
 											else {
+												$("#mr_dialog2").dialog("close");
+												$("<div id='success_mr' class='dialog ui-dialog-content' title='" + mr_available + "'></div>").dialog ({
+													resizable: true,
+													draggable: true,
+													modal: true,
+													overlay: {
+														opacity: 0.5,
+														background: 'black'
+													},
+													width: 600,
+													height: 250,
+													buttons: {
+														"Ok": function () {
+															$(this).dialog("close");
+														}
+													}
+												});
+
+												var dialog_success_mr_text = "<div>";
+												dialog_success_mr_text = dialog_success_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_exito_mr.png'></div>";
+												dialog_success_mr_text = dialog_success_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>SUCCESS</strong></h3>";
+												dialog_success_mr_text = dialog_success_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + mr_success + "</p></div>";
+												dialog_success_mr_text = dialog_success_mr_text + "</div>";
+												
+												$('#success_mr').html(dialog_success_mr_text);
+												$('#success_mr').dialog('open');
+
 												var parameters2 = {};
 												parameters2['page'] = 'include/ajax/update_manager.ajax';
 												parameters2['update_last_free_package'] = 1;
@@ -870,33 +951,60 @@ function update_last_package(package, version, homeurl) {
 											}
 										}
 										else {
-											$("#box_online .content").html("Error in MR file");
+											$("#mr_dialog2").dialog("close");
+											$("<div id='error_mr' class='dialog ui-dialog-content' title='" + mr_available + "'></div>").dialog ({
+												resizable: true,
+												draggable: true,
+												modal: true,
+												overlay: {
+													opacity: 0.5,
+													background: 'black'
+												},
+												width: 600,
+												height: 250,
+												buttons: {
+													"Ok": function () {
+														$(this).dialog("close");
+													}
+												}
+											});
+
+											var dialog_error_mr_text = "<div>";
+											dialog_error_mr_text = dialog_error_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
+											dialog_error_mr_text = dialog_error_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
+											dialog_error_mr_text = dialog_error_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + mr_error + "</p></div>";
+											dialog_error_mr_text = dialog_error_mr_text + "</div>";
+											
+											$('#error_mr').html(dialog_error_mr_text);
+											$('#error_mr').dialog('open');
+
+											$("#box_online .content").html(mr_error);
 										}
 									},
 									"Cancel": function () {
 										$(this).dialog("close");
 
-										$("<div id='cancel_mr' class='dialog ui-dialog-content' title='Menor release available'></div>").dialog ({
+										$("<div id='cancel_mr' class='dialog ui-dialog-content' title='" + mr_available + "'></div>").dialog ({
 											resizable: true,
-														draggable: true,
-														modal: true,
-														overlay: {
-															opacity: 0.5,
-															background: 'black'
-														},
-														width: 600,
-														height: 220,
-														buttons: {
-															"Ok": function () {
-																$(this).dialog("close");
-															}
-														}
+											draggable: true,
+											modal: true,
+											overlay: {
+												opacity: 0.5,
+												background: 'black'
+											},
+											width: 600,
+											height: 220,
+											buttons: {
+												"Ok": function () {
+													$(this).dialog("close");
+												}
+											}
 										});
 
 										var dialog_cancel_mr_text = "<div>";
 										dialog_cancel_mr_text = dialog_cancel_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_info_mr.png'></div>";
 										dialog_cancel_mr_text = dialog_cancel_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>INFO</strong></h3>";
-										dialog_cancel_mr_text = dialog_cancel_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>These database changes will not apply.</p></div>";
+										dialog_cancel_mr_text = dialog_cancel_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + mr_cancel + "</p></div>";
 										dialog_cancel_mr_text = dialog_cancel_mr_text + "</div>";
 										
 										$('#cancel_mr').html(dialog_cancel_mr_text);
@@ -912,12 +1020,12 @@ function update_last_package(package, version, homeurl) {
 							$('button:contains(Apply MR)').attr("id","apply_rr_button");
 							$('button:contains(Cancel)').attr("id","cancel_rr_button");
 							
-							var dialog_have_mr_mr_text = "<div>";
-							dialog_have_mr_mr_text = dialog_have_mr_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_warning_mr.png'></div>";
-							dialog_have_mr_mr_text = dialog_have_mr_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>There are a DB changes</strong></h3>";
-							dialog_have_mr_mr_text = dialog_have_mr_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>There are a new database changes available to apply. Do you want to start the DB update process?</p>";
-							dialog_have_mr_mr_text = dialog_have_mr_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>We recommend launch a <a style='font-family:Verdana bold; font-size:12pt; color:#82B92E'href=\"index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list\">Planned downtime</a> to this process</p></div>";
-							dialog_have_mr_mr_text = dialog_have_mr_mr_text + "</div>";
+							var dialog_have_mr_text = "<div>";
+							dialog_have_mr_text = dialog_have_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_warning_mr.png'></div>";
+							dialog_have_mr_text = dialog_have_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>There are a DB changes</strong></h3>";
+							dialog_have_mr_text = dialog_have_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + text1_mr_file + "</p>";
+							dialog_have_mr_text = dialog_have_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + text2_mr_file + "<a style='font-family:Verdana bold; font-size:12pt; color:#82B92E'href=\"index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list\">" + text3_mr_file + "</a>" + text4_mr_file + "</p></div>";
+							dialog_have_mr_text = dialog_have_mr_text + "</div>";
 														
 							$('#mr_dialog2').html(dialog_have_mr_mr_text);
 							$('#mr_dialog2').dialog('open');
@@ -958,27 +1066,27 @@ function update_last_package(package, version, homeurl) {
 			"Cancel": function () {
 				$(this).dialog("close");
 
-				$("<div id='cancel_pkg' class='dialog ui-dialog-content' title='Menor release available'></div>").dialog ({
+				$("<div id='cancel_pkg' class='dialog ui-dialog-content' title='" + package_available + "'></div>").dialog ({
 					resizable: true,
-								draggable: true,
-								modal: true,
-								overlay: {
-									opacity: 0.5,
-									background: 'black'
-								},
-								width: 600,
-								height: 220,
-								buttons: {
-									"Ok": function () {
-										$(this).dialog("close");
-									}
-								}
+					draggable: true,
+					modal: true,
+					overlay: {
+						opacity: 0.5,
+						background: 'black'
+					},
+					width: 600,
+					height: 220,
+					buttons: {
+						"Ok": function () {
+							$(this).dialog("close");
+						}
+					}
 				});
 
 				var dialog_cancel_pkg_text = "<div>";
 				dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_info_mr.png'></div>";
 				dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>INFO</strong></h3>";
-				dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>These changes will not apply.</p></div>";
+				dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_cancel + "</p></div>";
 				dialog_cancel_pkg_text = dialog_cancel_pkg_text + "</div>";
 				
 				$('#cancel_pkg').html(dialog_cancel_pkg_text);
@@ -1018,8 +1126,8 @@ function update_last_package(package, version, homeurl) {
 
 	var dialog_text = "<div>";
 	dialog_text = dialog_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_info_mr.png'></div>";
-	dialog_text = dialog_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>There are a new update available</strong></h3>";
-	dialog_text = dialog_text + "<p style='font-family:Verdana; font-size:12pt;'>There are a new update available to apply. Do you want to start the update process?</p></div>";
+	dialog_text = dialog_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>" + text1_package_file + "</strong></h3>";
+	dialog_text = dialog_text + "<p style='font-family:Verdana; font-size:12pt;'>" + text2_package_file + "</p></div>";
 	dialog_text = dialog_text + "</div>";
 	
 	$('#pkg_apply_dialog').html(dialog_text);
@@ -1085,7 +1193,7 @@ function install_free_package(package, version, homeurl) {
 		timeout: 600000,
 		dataType: "json",
 		error: function(data) {
-			$("<div id='error_pkg' class='dialog ui-dialog-content' title='Update package'></div>").dialog ({
+			$("<div id='error_pkg' class='dialog ui-dialog-content' title='" + package_available + "'></div>").dialog ({
 				resizable: true,
 				draggable: true,
 				modal: true,
@@ -1105,7 +1213,7 @@ function install_free_package(package, version, homeurl) {
 			var dialog_error_pkg_text = "<div>";
 			dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
 			dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
-			dialog_error_pkg_text = dialog_error_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + unknown_error_update_manager + "</p></div>";
+			dialog_error_pkg_text = dialog_error_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + data['message'] + "</p></div>";
 			dialog_error_pkg_text = dialog_error_pkg_text + "</div>";
 			
 			$('#error_pkg').html(dialog_error_pkg_text);
@@ -1121,7 +1229,7 @@ function install_free_package(package, version, homeurl) {
 		success: function (data) {
 			if (correct_install_progress) {
 				if (data["status"] == "success") {
-					$("<div id='success_pkg' class='dialog ui-dialog-content' title='Update package'></div>").dialog ({
+					$("<div id='success_pkg' class='dialog ui-dialog-content' title='" + package_available + "'></div>").dialog ({
 						resizable: true,
 						draggable: true,
 						modal: true,
@@ -1153,7 +1261,7 @@ function install_free_package(package, version, homeurl) {
 					stop_check_progress = 1;
 				}
 				else {
-					$("<div id='error_pkg' class='dialog ui-dialog-content' title='Update package'></div>").dialog ({
+					$("<div id='error_pkg' class='dialog ui-dialog-content' title='" + package_available + "'></div>").dialog ({
 						resizable: true,
 						draggable: true,
 						modal: true,
@@ -1213,7 +1321,6 @@ function apply_minor_release (n_mr) {
 				if (data == 'bad_mr_filename') {
 					error['error'] = false;
 					error['message'] = "bad_mr_filename";
-					return false;
 				}
 				else if (data != "") {
 					$('#mr_dialog2').empty();
@@ -1221,32 +1328,20 @@ function apply_minor_release (n_mr) {
 					error['error'] = true;
 				}
 				else {
-					$('#mr_dialog2').append("<p style='font-family:Verdana; font-size:12pt;'>- Applying DB MR #" + mr + "</p>");
+					$('#mr_dialog2').append("<p style='font-family:Verdana; font-size:12pt;'>- " + applying_mr + " #" + mr + "</p>");
 				}
 			}
 		});
 		
-		if (error) {
+		if (error['error']) {
+			return false;
+		}
+		else if(error['message'] == "bad_mr_filename") {
 			return false;
 		}
 	});
 	$('#mr_dialog2').append("</div>");
 	$(".ui-dialog-buttonset").empty();
 
-	if (error) {
-		return error;
-	}
-	else{
-		if (error['message'] != undefined) {
-			return error;
-		}
-		$('#mr_dialog2').empty();
-		var dialog_ok_mr_text = "<div>";
-		dialog_ok_mr_text = dialog_ok_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_exito_mr.png'></div>";
-		dialog_ok_mr_text = dialog_ok_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>SUCCESS</strong></h3>";
-		dialog_ok_mr_text = dialog_ok_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>Updated finished successfully.</p></div>";
-		dialog_ok_mr_text = dialog_ok_mr_text + "</div>";
-		$('#mr_dialog2').html(dialog_ok_mr_text);
-		return error;
-	}
+	return error;
 }

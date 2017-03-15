@@ -415,11 +415,11 @@ else {
 		
 		if (in_array('evento', $show_fields)) {
 			// Event description
-			$data[$i] = '<span title="'.$event["evento"].'" class="f9">';
+			$data[$i] = '<span title="' . strip_tags(io_safe_output($event["evento"])) . '" class="f9">';
 			if($allow_action) {
 				$data[$i] .= '<a href="javascript:" onclick="show_event_dialog(' . $event["id_evento"] . ', '.$group_rep.');">';
 			}
-			$data[$i] .= '<span class="'.$myclass.'" style="font-size: 7.5pt;">' . ui_print_truncate_text (io_safe_output($event["evento"]), 160) . '</span>';
+			$data[$i] .= '<span class="' . $myclass . '" style="font-size: 7.5pt;">' . ui_print_truncate_text (strip_tags(io_safe_output($event["evento"])), 160) . '</span>';
 			if($allow_action) {
 				$data[$i] .= '</a>';
 			}
@@ -695,7 +695,7 @@ else {
 			}
 			
 			$data[$i] .= '<a href="javascript:" onclick="show_event_dialog(' . $event["id_evento"] . ', '.$group_rep.');">';
-			$data[$i] .= html_print_input_hidden('event_title_'.$event["id_evento"], "#".$event["id_evento"]." - ".$event["evento"], true);
+			$data[$i] .= html_print_input_hidden('event_title_'.$event["id_evento"], "#".$event["id_evento"]." - " . strip_tags(io_safe_output($event["evento"])), true);
 			$data[$i] .= html_print_image ("images/eye.png", true,
 				array ("title" => __('Show more')));
 			$data[$i] .= '</a>';

@@ -970,7 +970,7 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 			$data[2] = events_print_type_img ($event["event_type"], true);
 			
 			/* Event text */
-			$data[3] = ui_print_string_substr (io_safe_output($event["evento"]), 75, true, '7.5');
+			$data[3] = ui_print_string_substr (strip_tags(io_safe_output($event["evento"])), 75, true, '7.5');
 			
 			if($agent_id == 0) {
 				if ($event["id_agente"] > 0) {
@@ -2336,7 +2336,7 @@ function events_page_general ($event) {
 	
 	$data = array();
 	$data[0] = __('Event name');
-	$data[1] = io_safe_output(io_safe_output($event["evento"]));
+	$data[1] = strip_tags(io_safe_output($event["evento"]));
 	$table_general->data[] = $data;
 	
 	$data = array();

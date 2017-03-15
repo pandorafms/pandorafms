@@ -50,10 +50,10 @@ if (is_ajax ()) {
 		else {
 			if (file_exists($dir) && is_dir($dir)) {
 				if (is_readable($dir)) {
-					if (($number >= $config['MR'] + 1) || ($number == $config['MR'])) {
+					if (($number > $config['MR'] + 1) || ($number == $config['MR'])) {
 						$message = "bad_mr_filename";
 					}
-					else if ($config["MR"] >= $number) {
+					else if ($config["MR"] > $number) {
 						if (!file_exists($dir."/updated") || !is_dir($dir."/updated")) {
 							mkdir($dir."/updated");
 						}

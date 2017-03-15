@@ -249,6 +249,33 @@ function install_package (package, homeurl) {
 													buttons: {
 														"Apply": function() {
 															$(this).dialog("close");
+
+															$("<div id='accept_package_mr_fail' class='dialog ui-dialog-content' title='" + mr_available + "'></div>").dialog ({
+																resizable: true,
+																draggable: true,
+																modal: true,
+																overlay: {
+																	opacity: 0.5,
+																	background: 'black'
+																},
+																width: 600,
+																height: 250,
+																buttons: {
+																	"Ok": function () {
+																		$(this).dialog("close");
+																	}
+																}
+															});
+
+															var dialog_accept_package_mr_fail_text = "<div>";
+															dialog_accept_package_mr_fail_text = dialog_accept_package_mr_fail_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_info_mr.png'></div>";
+															dialog_accept_package_mr_fail_text = dialog_accept_package_mr_fail_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>INFO</strong></h3>";
+															dialog_accept_package_mr_fail_text = dialog_accept_package_mr_fail_text + "<p style='font-family:Verdana; font-size:12pt;'>" + mr_not_accepted_code_yes + "</p></div>";
+															dialog_accept_package_mr_fail_text = dialog_accept_package_mr_fail_text + "</div>";
+															
+															$('#accept_package_mr_fail').html(dialog_accept_package_mr_fail_text);
+															$('#accept_package_mr_fail').dialog('open');
+
 															var parameters = {};
 															parameters['page'] = 'include/ajax/update_manager.ajax';
 															parameters['install_package'] = 1;
@@ -339,6 +366,33 @@ function install_package (package, homeurl) {
 														},
 														"Cancel": function () {
 															$(this).dialog("close");
+
+															$("<div id='cancel_pkg' class='dialog ui-dialog-content' title='" + package_available + "'></div>").dialog ({
+																resizable: true,
+																draggable: true,
+																modal: true,
+																overlay: {
+																	opacity: 0.5,
+																	background: 'black'
+																},
+																width: 600,
+																height: 220,
+																buttons: {
+																	"Ok": function () {
+																		$(this).dialog("close");
+																	}
+																}
+															});
+
+															var dialog_cancel_pkg_text = "<div>";
+															dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_info_mr.png'></div>";
+															dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>INFO</strong></h3>";
+															dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_cancel + "</p></div>";
+															dialog_cancel_pkg_text = dialog_cancel_pkg_text + "</div>";
+															
+															$('#cancel_pkg').html(dialog_cancel_pkg_text);
+															$('#cancel_pkg').dialog('open');
+
 															$("#box_online .content").html(mr_not_accepted);
 														}
 													}
@@ -847,6 +901,33 @@ function update_last_package(package, version, homeurl) {
 													buttons: {
 														"Apply": function() {
 															$(this).dialog("close");
+
+															$("<div id='accept_package_mr_fail' class='dialog ui-dialog-content' title='" + mr_available + "'></div>").dialog ({
+																resizable: true,
+																draggable: true,
+																modal: true,
+																overlay: {
+																	opacity: 0.5,
+																	background: 'black'
+																},
+																width: 600,
+																height: 250,
+																buttons: {
+																	"Ok": function () {
+																		$(this).dialog("close");
+																	}
+																}
+															});
+
+															var dialog_accept_package_mr_fail_text = "<div>";
+															dialog_accept_package_mr_fail_text = dialog_accept_package_mr_fail_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_info_mr.png'></div>";
+															dialog_accept_package_mr_fail_text = dialog_accept_package_mr_fail_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>INFO</strong></h3>";
+															dialog_accept_package_mr_fail_text = dialog_accept_package_mr_fail_text + "<p style='font-family:Verdana; font-size:12pt;'>" + mr_not_accepted_code_yes + "</p></div>";
+															dialog_accept_package_mr_fail_text = dialog_accept_package_mr_fail_text + "</div>";
+															
+															$('#accept_package_mr_fail').html(dialog_accept_package_mr_fail_text);
+															$('#accept_package_mr_fail').dialog('open');
+
 															var parameters2 = {};
 															parameters2['page'] = 'include/ajax/update_manager.ajax';
 															parameters2['update_last_free_package'] = 1;
@@ -878,6 +959,35 @@ function update_last_package(package, version, homeurl) {
 														},
 														"Cancel": function () {
 															$(this).dialog("close");
+
+															$(this).dialog("close");
+
+															$("<div id='cancel_pkg' class='dialog ui-dialog-content' title='" + package_available + "'></div>").dialog ({
+																resizable: true,
+																draggable: true,
+																modal: true,
+																overlay: {
+																	opacity: 0.5,
+																	background: 'black'
+																},
+																width: 600,
+																height: 220,
+																buttons: {
+																	"Ok": function () {
+																		$(this).dialog("close");
+																	}
+																}
+															});
+
+															var dialog_cancel_pkg_text = "<div>";
+															dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_info_mr.png'></div>";
+															dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>INFO</strong></h3>";
+															dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_cancel + "</p></div>";
+															dialog_cancel_pkg_text = dialog_cancel_pkg_text + "</div>";
+															
+															$('#cancel_pkg').html(dialog_cancel_pkg_text);
+															$('#cancel_pkg').dialog('open');
+
 															$("#box_online .content").html(package_not_accepted);
 														}
 													}

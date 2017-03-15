@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-15 13:43+0100\n"
-"PO-Revision-Date: 2017-03-15 14:34+0000\n"
+"POT-Creation-Date: 2017-03-15 15:19+0100\n"
+"PO-Revision-Date: 2017-03-15 15:46+0000\n"
 "Last-Translator: artu30 <gonzalez.arturo1991@gmail.com>\n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-03-15 14:39+0000\n"
+"X-Launchpad-Export-Date: 2017-03-15 15:59+0000\n"
 "X-Generator: Launchpad (build 18331)\n"
 
 #: ../../extensions/agents_alerts.php:55
@@ -630,8 +630,8 @@ msgstr "Módulo"
 #: ../../operation/events/events.build_table.php:253
 #: ../../operation/incidents/incident.php:343
 #: ../../operation/search_alerts.php:48
-#: ../../operation/snmpconsole/snmp_view.php:540
-#: ../../operation/snmpconsole/snmp_view.php:838
+#: ../../operation/snmpconsole/snmp_view.php:542
+#: ../../operation/snmpconsole/snmp_view.php:840
 #: ../../enterprise/dashboard/widgets/top_n.php:129
 #: ../../enterprise/extensions/ipam/ipam_list.php:200
 #: ../../enterprise/godmode/admin_access_logs.php:25
@@ -731,9 +731,9 @@ msgstr "Lanzada por última vez"
 #: ../../operation/messages/message_list.php:121
 #: ../../operation/search_agents.php:64 ../../operation/search_modules.php:51
 #: ../../operation/servers/recon_view.php:98
-#: ../../operation/snmpconsole/snmp_view.php:404
-#: ../../operation/snmpconsole/snmp_view.php:506
-#: ../../operation/snmpconsole/snmp_view.php:822
+#: ../../operation/snmpconsole/snmp_view.php:406
+#: ../../operation/snmpconsole/snmp_view.php:508
+#: ../../operation/snmpconsole/snmp_view.php:824
 #: ../../enterprise/dashboard/widgets/tactical.php:32
 #: ../../enterprise/extensions/backup/main.php:69
 #: ../../enterprise/extensions/vmware/vmware_view.php:997
@@ -793,7 +793,7 @@ msgstr "Estado"
 #: ../../include/functions_ui.php:908
 #: ../../operation/events/events_list.php:474
 #: ../../operation/gis_maps/gis_map.php:93
-#: ../../operation/snmpconsole/snmp_view.php:395
+#: ../../operation/snmpconsole/snmp_view.php:397
 #: ../../operation/users/user_edit.php:247
 #: ../../operation/users/user_edit.php:249
 #: ../../operation/users/user_edit.php:257
@@ -825,7 +825,7 @@ msgstr "Predeterminado"
 #: ../../include/functions_ui.php:921 ../../mobile/operation/alerts.php:253
 #: ../../operation/agentes/group_view.php:174
 #: ../../operation/events/sound_events.php:83
-#: ../../operation/snmpconsole/snmp_view.php:644
+#: ../../operation/snmpconsole/snmp_view.php:646
 #: ../../enterprise/godmode/alerts/alert_events_list.php:617
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:637
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:872
@@ -865,7 +865,7 @@ msgstr "Alerta desactivada"
 #: ../../include/functions_agents.php:2176
 #: ../../include/functions_reporting.php:7911
 #: ../../include/functions_ui.php:929 ../../mobile/operation/alerts.php:261
-#: ../../operation/snmpconsole/snmp_view.php:647
+#: ../../operation/snmpconsole/snmp_view.php:649
 #: ../../enterprise/godmode/alerts/alert_events_list.php:626
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:639
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:880
@@ -1164,10 +1164,10 @@ msgstr "Grupo del módulo"
 #: ../../operation/events/events_rss.php:110
 #: ../../operation/events/export_csv.php:54
 #: ../../operation/gis_maps/render_view.php:148
-#: ../../operation/snmpconsole/snmp_view.php:384
-#: ../../operation/snmpconsole/snmp_view.php:401
-#: ../../operation/snmpconsole/snmp_view.php:406
-#: ../../operation/snmpconsole/snmp_view.php:546 ../../operation/tree.php:130
+#: ../../operation/snmpconsole/snmp_view.php:386
+#: ../../operation/snmpconsole/snmp_view.php:403
+#: ../../operation/snmpconsole/snmp_view.php:408
+#: ../../operation/snmpconsole/snmp_view.php:548 ../../operation/tree.php:130
 #: ../../operation/tree.php:155
 #: ../../enterprise/dashboard/widgets/events_list.php:52
 #: ../../enterprise/dashboard/widgets/tree_view.php:52
@@ -1364,7 +1364,7 @@ msgstr "Más modulos"
 #: ../../extensions/module_groups.php:296
 #: ../../godmode/snmpconsole/snmp_alert.php:1343
 #: ../../include/functions_reporting_html.php:1438
-#: ../../operation/snmpconsole/snmp_view.php:844
+#: ../../operation/snmpconsole/snmp_view.php:846
 #: ../../enterprise/dashboard/widgets/service_map.php:49
 #: ../../enterprise/dashboard/widgets/service_map.php:74
 #: ../../enterprise/operation/services/services.service_map.php:116
@@ -1569,9 +1569,9 @@ msgstr "Tipo de retorno"
 #: ../../operation/gis_maps/render_view.php:152
 #: ../../operation/snmpconsole/snmp_statistics.php:172
 #: ../../operation/snmpconsole/snmp_statistics.php:219
-#: ../../operation/snmpconsole/snmp_view.php:429
-#: ../../operation/snmpconsole/snmp_view.php:719
-#: ../../operation/snmpconsole/snmp_view.php:741
+#: ../../operation/snmpconsole/snmp_view.php:431
+#: ../../operation/snmpconsole/snmp_view.php:721
+#: ../../operation/snmpconsole/snmp_view.php:743
 #: ../../operation/users/user_edit.php:282
 #: ../../enterprise/godmode/massive/massive_delete_alerts_snmp.php:33
 #: ../../enterprise/godmode/massive/massive_modify_alerts_snmp.php:34
@@ -2154,7 +2154,7 @@ msgstr "Enlace público"
 #: ../../operation/agentes/datos_agente.php:209
 #: ../../operation/events/events_list.php:627
 #: ../../operation/reporting/reporting_viewer.php:201
-#: ../../operation/snmpconsole/snmp_view.php:450
+#: ../../operation/snmpconsole/snmp_view.php:452
 #: ../../operation/users/user_edit.php:472
 #: ../../enterprise/dashboard/main_dashboard.php:282
 #: ../../enterprise/dashboard/widget.php:190
@@ -2563,9 +2563,9 @@ msgstr "Editar"
 #: ../../operation/incidents/incident_detail.php:472
 #: ../../operation/messages/message_list.php:193
 #: ../../operation/messages/message_list.php:199
-#: ../../operation/snmpconsole/snmp_view.php:659
-#: ../../operation/snmpconsole/snmp_view.php:665
-#: ../../operation/snmpconsole/snmp_view.php:816
+#: ../../operation/snmpconsole/snmp_view.php:661
+#: ../../operation/snmpconsole/snmp_view.php:667
+#: ../../operation/snmpconsole/snmp_view.php:818
 #: ../../operation/users/user_edit.php:799
 #: ../../enterprise/dashboard/dashboards.php:131
 #: ../../enterprise/extensions/backup/main.php:190
@@ -2692,10 +2692,10 @@ msgstr "¿Está seguro?"
 #: ../../operation/messages/message_list.php:194
 #: ../../operation/messages/message_list.php:200
 #: ../../operation/messages/message_list.php:218
-#: ../../operation/snmpconsole/snmp_view.php:659
-#: ../../operation/snmpconsole/snmp_view.php:665
-#: ../../operation/snmpconsole/snmp_view.php:816
-#: ../../operation/snmpconsole/snmp_view.php:841
+#: ../../operation/snmpconsole/snmp_view.php:661
+#: ../../operation/snmpconsole/snmp_view.php:667
+#: ../../operation/snmpconsole/snmp_view.php:818
+#: ../../operation/snmpconsole/snmp_view.php:843
 #: ../../enterprise/dashboard/dashboards.php:91
 #: ../../enterprise/dashboard/dashboards.php:131
 #: ../../enterprise/extensions/backup/main.php:146
@@ -5161,7 +5161,7 @@ msgstr "Desea continuar sin ningún registro?"
 #: ../../include/functions_events.php:2382
 #: ../../mobile/operation/events.php:186 ../../mobile/operation/events.php:193
 #: ../../operation/netflow/nf_live_view.php:280
-#: ../../operation/snmpconsole/snmp_view.php:439
+#: ../../operation/snmpconsole/snmp_view.php:441
 #: ../../operation/users/user_edit.php:249
 #: ../../enterprise/extensions/cron/functions.php:327
 #: ../../enterprise/godmode/reporting/graph_template_item_editor.php:173
@@ -5257,7 +5257,7 @@ msgstr "No"
 #: ../../godmode/update_manager/update_manager.setup.php:124
 #: ../../godmode/users/configure_user.php:516
 #: ../../operation/netflow/nf_live_view.php:276
-#: ../../operation/snmpconsole/snmp_view.php:436
+#: ../../operation/snmpconsole/snmp_view.php:438
 #: ../../operation/users/user_edit.php:249
 #: ../../enterprise/extensions/cron/functions.php:327
 #: ../../enterprise/godmode/reporting/graph_template_item_editor.php:171
@@ -6246,9 +6246,9 @@ msgstr "Servidor"
 #: ../../operation/events/events_list.php:281
 #: ../../operation/events/events_list.php:881
 #: ../../operation/netflow/nf_live_view.php:399
-#: ../../operation/snmpconsole/snmp_view.php:423
-#: ../../operation/snmpconsole/snmp_view.php:719
-#: ../../operation/snmpconsole/snmp_view.php:723
+#: ../../operation/snmpconsole/snmp_view.php:425
+#: ../../operation/snmpconsole/snmp_view.php:721
+#: ../../operation/snmpconsole/snmp_view.php:725
 #: ../../operation/users/user_edit.php:323
 #: ../../operation/users/user_edit.php:347
 #: ../../operation/users/user_edit.php:387
@@ -7518,9 +7518,9 @@ msgstr "Plugins del agente"
 #: ../../operation/agentes/estado_monitores.php:449
 #: ../../operation/events/events.build_table.php:204
 #: ../../operation/events/events_rss.php:185
-#: ../../operation/snmpconsole/snmp_view.php:382
-#: ../../operation/snmpconsole/snmp_view.php:536
-#: ../../operation/snmpconsole/snmp_view.php:830
+#: ../../operation/snmpconsole/snmp_view.php:384
+#: ../../operation/snmpconsole/snmp_view.php:538
+#: ../../operation/snmpconsole/snmp_view.php:832
 #: ../../enterprise/godmode/policies/policy_external_alerts.php:169
 #: ../../enterprise/meta/include/functions_events_meta.php:82
 msgid "Alert"
@@ -7931,7 +7931,7 @@ msgstr "No hay ningún agente definido"
 #: ../../operation/agentes/estado_agente.php:626
 #: ../../operation/agentes/estado_agente.php:646
 #: ../../operation/snmpconsole/snmp_statistics.php:151
-#: ../../operation/snmpconsole/snmp_view.php:583
+#: ../../operation/snmpconsole/snmp_view.php:585
 #: ../../enterprise/meta/monitoring/wizard/wizard.agent.php:75
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:199
 msgid "Create agent"
@@ -9404,8 +9404,8 @@ msgstr "No está en ejecución"
 #: ../../operation/agentes/estado_generalagente.php:176
 #: ../../operation/agentes/estado_generalagente.php:280
 #: ../../operation/agentes/estado_generalagente.php:359
-#: ../../operation/snmpconsole/snmp_view.php:600
-#: ../../operation/snmpconsole/snmp_view.php:619
+#: ../../operation/snmpconsole/snmp_view.php:602
+#: ../../operation/snmpconsole/snmp_view.php:621
 #: ../../enterprise/extensions/ipam/ipam_ajax.php:159
 #: ../../enterprise/extensions/ipam/ipam_ajax.php:181
 #: ../../enterprise/extensions/ipam/ipam_network.php:559
@@ -9775,7 +9775,7 @@ msgstr "Filtro de control de alertas"
 #: ../../godmode/users/user_list.php:249
 #: ../../operation/agentes/alerts_status.php:396
 #: ../../operation/agentes/graphs.php:163
-#: ../../operation/snmpconsole/snmp_view.php:454
+#: ../../operation/snmpconsole/snmp_view.php:456
 #: ../../enterprise/godmode/policies/policy_queue.php:277
 #: ../../enterprise/godmode/policies/policy_queue.php:364
 msgid "Toggle filter(s)"
@@ -11378,7 +11378,7 @@ msgstr "Nombre del evento"
 #: ../../operation/events/events.php:87
 #: ../../operation/messages/message_list.php:127
 #: ../../operation/search_modules.php:54
-#: ../../operation/snmpconsole/snmp_view.php:532
+#: ../../operation/snmpconsole/snmp_view.php:534
 #: ../../enterprise/include/functions_inventory.php:65
 #: ../../enterprise/include/functions_inventory.php:241
 #: ../../enterprise/include/functions_reporting_csv.php:349
@@ -11431,7 +11431,7 @@ msgstr "Módulo de agente"
 #: ../../mobile/operation/events.php:633
 #: ../../operation/events/events.build_table.php:211
 #: ../../operation/events/events_list.php:568
-#: ../../operation/snmpconsole/snmp_view.php:399
+#: ../../operation/snmpconsole/snmp_view.php:401
 #: ../../enterprise/dashboard/widgets/events_list.php:54
 #: ../../enterprise/godmode/alerts/configure_alert_rule.php:158
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1671
@@ -11603,7 +11603,7 @@ msgstr "Estado del evento"
 #: ../../mobile/operation/events.php:642
 #: ../../mobile/operation/modules.php:254
 #: ../../operation/events/events_list.php:408
-#: ../../operation/snmpconsole/snmp_view.php:413
+#: ../../operation/snmpconsole/snmp_view.php:415
 #: ../../enterprise/extensions/ipam/ipam_network.php:281
 #: ../../enterprise/godmode/massive/massive_delete_alerts_snmp.php:165
 #: ../../enterprise/godmode/massive/massive_modify_alerts_snmp.php:216
@@ -11630,7 +11630,7 @@ msgstr "Búsqueda de agente"
 #: ../../godmode/users/configure_user.php:519
 #: ../../include/functions_config.php:457
 #: ../../operation/events/events_list.php:468
-#: ../../operation/snmpconsole/snmp_view.php:388
+#: ../../operation/snmpconsole/snmp_view.php:390
 #: ../../operation/users/user_edit.php:238
 #: ../../enterprise/meta/advanced/metasetup.visual.php:117
 #: ../../enterprise/meta/include/functions_meta.php:1071
@@ -13858,7 +13858,7 @@ msgstr ""
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1605
 #: ../../enterprise/godmode/reporting/reporting_builder.wizard.php:266
 msgid "Percentil"
-msgstr "Porcentaje"
+msgstr "Percentil"
 
 #: ../../godmode/reporting/graph_builder.php:203
 #: ../../godmode/reporting/graphs.php:43 ../../godmode/reporting/graphs.php:53
@@ -15088,7 +15088,7 @@ msgstr "Ancho (px)"
 #: ../../godmode/reporting/visual_console_builder.wizard.php:218
 #: ../../godmode/setup/setup_visuals.php:506
 msgid "Percentile"
-msgstr "Porcentaje"
+msgstr "Percentil"
 
 #: ../../godmode/reporting/visual_console_builder.wizard.php:223
 msgid "Bubble"
@@ -15935,9 +15935,9 @@ msgstr "Con licencia para"
 #: ../../operation/agentes/alerts_status.php:511
 #: ../../operation/agentes/alerts_status.php:545
 #: ../../operation/agentes/alerts_status.php:590
-#: ../../operation/snmpconsole/snmp_view.php:654
-#: ../../operation/snmpconsole/snmp_view.php:811
-#: ../../operation/snmpconsole/snmp_view.php:839
+#: ../../operation/snmpconsole/snmp_view.php:656
+#: ../../operation/snmpconsole/snmp_view.php:813
+#: ../../operation/snmpconsole/snmp_view.php:841
 #: ../../enterprise/extensions/vmware/main.php:182
 #: ../../enterprise/extensions/vmware/main.php:189
 #: ../../enterprise/godmode/alerts/alert_events_list.php:426
@@ -17634,45 +17634,45 @@ msgid "Unsucessful save the snmp translation."
 msgstr "No se pudo guardar la traducción de SNMP"
 
 #: ../../godmode/snmpconsole/snmp_alert.php:28
-#: ../../operation/snmpconsole/snmp_view.php:424
-#: ../../operation/snmpconsole/snmp_view.php:719
-#: ../../operation/snmpconsole/snmp_view.php:726
+#: ../../operation/snmpconsole/snmp_view.php:426
+#: ../../operation/snmpconsole/snmp_view.php:721
+#: ../../operation/snmpconsole/snmp_view.php:728
 #: ../../enterprise/godmode/massive/massive_delete_alerts_snmp.php:28
 #: ../../enterprise/godmode/massive/massive_modify_alerts_snmp.php:29
 msgid "Cold start (0)"
 msgstr "Inicio cero (0)"
 
 #: ../../godmode/snmpconsole/snmp_alert.php:29
-#: ../../operation/snmpconsole/snmp_view.php:425
-#: ../../operation/snmpconsole/snmp_view.php:719
-#: ../../operation/snmpconsole/snmp_view.php:729
+#: ../../operation/snmpconsole/snmp_view.php:427
+#: ../../operation/snmpconsole/snmp_view.php:721
+#: ../../operation/snmpconsole/snmp_view.php:731
 #: ../../enterprise/godmode/massive/massive_delete_alerts_snmp.php:29
 #: ../../enterprise/godmode/massive/massive_modify_alerts_snmp.php:30
 msgid "Warm start (1)"
 msgstr "Comienzo de inicio (1)"
 
 #: ../../godmode/snmpconsole/snmp_alert.php:30
-#: ../../operation/snmpconsole/snmp_view.php:426
-#: ../../operation/snmpconsole/snmp_view.php:719
-#: ../../operation/snmpconsole/snmp_view.php:732
+#: ../../operation/snmpconsole/snmp_view.php:428
+#: ../../operation/snmpconsole/snmp_view.php:721
+#: ../../operation/snmpconsole/snmp_view.php:734
 #: ../../enterprise/godmode/massive/massive_delete_alerts_snmp.php:30
 #: ../../enterprise/godmode/massive/massive_modify_alerts_snmp.php:31
 msgid "Link down (2)"
 msgstr "Enlace interrumpido (2)"
 
 #: ../../godmode/snmpconsole/snmp_alert.php:31
-#: ../../operation/snmpconsole/snmp_view.php:427
-#: ../../operation/snmpconsole/snmp_view.php:719
-#: ../../operation/snmpconsole/snmp_view.php:735
+#: ../../operation/snmpconsole/snmp_view.php:429
+#: ../../operation/snmpconsole/snmp_view.php:721
+#: ../../operation/snmpconsole/snmp_view.php:737
 #: ../../enterprise/godmode/massive/massive_delete_alerts_snmp.php:31
 #: ../../enterprise/godmode/massive/massive_modify_alerts_snmp.php:32
 msgid "Link up (3)"
 msgstr "Enlace activo  (3)"
 
 #: ../../godmode/snmpconsole/snmp_alert.php:32
-#: ../../operation/snmpconsole/snmp_view.php:428
-#: ../../operation/snmpconsole/snmp_view.php:719
-#: ../../operation/snmpconsole/snmp_view.php:738
+#: ../../operation/snmpconsole/snmp_view.php:430
+#: ../../operation/snmpconsole/snmp_view.php:721
+#: ../../operation/snmpconsole/snmp_view.php:740
 #: ../../enterprise/godmode/massive/massive_delete_alerts_snmp.php:32
 #: ../../enterprise/godmode/massive/massive_modify_alerts_snmp.php:33
 msgid "Authentication failure (4)"
@@ -17738,7 +17738,7 @@ msgstr "Alertas que no han podido ser eliminadas correctamente (%s / %s)"
 #: ../../godmode/snmpconsole/snmp_alert.php:637
 #: ../../godmode/snmpconsole/snmp_alert.php:1157
 #: ../../godmode/snmpconsole/snmp_trap_generator.php:72
-#: ../../operation/snmpconsole/snmp_view.php:514
+#: ../../operation/snmpconsole/snmp_view.php:516
 msgid "Enterprise String"
 msgstr "Cadena Enterprise"
 
@@ -17750,14 +17750,14 @@ msgstr "Valor/OID personalizado"
 #: ../../godmode/snmpconsole/snmp_alert.php:652
 #: ../../godmode/snmpconsole/snmp_alert.php:1153
 #: ../../godmode/snmpconsole/snmp_trap_generator.php:78
-#: ../../operation/snmpconsole/snmp_view.php:510
+#: ../../operation/snmpconsole/snmp_view.php:512
 #: ../../enterprise/godmode/massive/massive_modify_alerts_snmp.php:247
 msgid "SNMP Agent"
 msgstr "Agente SNMP"
 
 #: ../../godmode/snmpconsole/snmp_alert.php:664
 #: ../../godmode/snmpconsole/snmp_alert.php:1003
-#: ../../operation/snmpconsole/snmp_view.php:420
+#: ../../operation/snmpconsole/snmp_view.php:422
 #: ../../enterprise/godmode/massive/massive_delete_alerts_snmp.php:169
 #: ../../enterprise/godmode/massive/massive_modify_alerts_snmp.php:220
 #: ../../enterprise/godmode/massive/massive_modify_alerts_snmp.php:249
@@ -18531,7 +18531,7 @@ msgstr "Crear Usuario"
 #: ../../godmode/users/user_list.php:266
 #: ../../include/functions_reporting_html.php:2816
 #: ../../operation/search_users.php:38
-#: ../../operation/snmpconsole/snmp_view.php:528
+#: ../../operation/snmpconsole/snmp_view.php:530
 #: ../../operation/users/user_edit.php:184
 msgid "User ID"
 msgstr "ID usuario"
@@ -21713,7 +21713,7 @@ msgstr "Espacio entre los nodos del mapa de servicios"
 
 #: ../../include/functions_config.php:546
 msgid "Default percentil"
-msgstr "Porcentaje por defecto"
+msgstr "Percentil por defecto"
 
 #: ../../include/functions_config.php:566
 msgid "Add the custom post process"
@@ -22120,9 +22120,9 @@ msgstr "Últimos eventos"
 #: ../../include/functions_events.php:3151
 #: ../../include/functions_events.php:3159
 #: ../../include/functions_graph.php:3022
-#: ../../operation/snmpconsole/snmp_view.php:408
-#: ../../operation/snmpconsole/snmp_view.php:573
-#: ../../operation/snmpconsole/snmp_view.php:824
+#: ../../operation/snmpconsole/snmp_view.php:410
+#: ../../operation/snmpconsole/snmp_view.php:575
+#: ../../operation/snmpconsole/snmp_view.php:826
 msgid "Validated"
 msgstr "Validado"
 
@@ -22341,9 +22341,9 @@ msgstr "Sistema de Pandora"
 
 #: ../../include/functions_events.php:3154
 #: ../../include/functions_events.php:3159
-#: ../../operation/snmpconsole/snmp_view.php:407
-#: ../../operation/snmpconsole/snmp_view.php:569
-#: ../../operation/snmpconsole/snmp_view.php:827
+#: ../../operation/snmpconsole/snmp_view.php:409
+#: ../../operation/snmpconsole/snmp_view.php:571
+#: ../../operation/snmpconsole/snmp_view.php:829
 msgid "Not validated"
 msgstr "Sin validar"
 
@@ -22377,7 +22377,7 @@ msgstr "No puede borrar eventos en proceso"
 
 #: ../../include/functions_events.php:4046
 #: ../../operation/events/events.build_table.php:700
-#: ../../operation/snmpconsole/snmp_view.php:669
+#: ../../operation/snmpconsole/snmp_view.php:671
 msgid "Show more"
 msgstr "Mostrar más"
 
@@ -24818,7 +24818,7 @@ msgstr "Valor máximo"
 #: ../../include/functions_reporting_html.php:807
 #: ../../include/functions_reporting_html.php:1025
 #: ../../include/functions_reporting_html.php:1638
-#: ../../operation/snmpconsole/snmp_view.php:519
+#: ../../operation/snmpconsole/snmp_view.php:521
 #: ../../enterprise/godmode/alerts/configure_alert_rule.php:143
 msgid "Count"
 msgstr "Número"
@@ -24909,7 +24909,7 @@ msgstr "Monitores"
 #: ../../mobile/operation/alerts.php:38
 #: ../../operation/agentes/alerts_status.functions.php:74
 #: ../../operation/snmpconsole/snmp_view.php:164
-#: ../../operation/snmpconsole/snmp_view.php:832
+#: ../../operation/snmpconsole/snmp_view.php:834
 #: ../../enterprise/include/functions_reporting_pdf.php:726
 msgid "Fired"
 msgstr "Lanzada"
@@ -25748,7 +25748,7 @@ msgstr "Todos (Habilitados)"
 #: ../../mobile/operation/alerts.php:39
 #: ../../operation/agentes/alerts_status.functions.php:75
 #: ../../operation/snmpconsole/snmp_view.php:164
-#: ../../operation/snmpconsole/snmp_view.php:835
+#: ../../operation/snmpconsole/snmp_view.php:837
 msgid "Not fired"
 msgstr "No disparado"
 
@@ -27623,7 +27623,7 @@ msgstr ""
 "debe usar el editor de trap SNMP."
 
 #: ../../operation/snmpconsole/snmp_statistics.php:116
-#: ../../operation/snmpconsole/snmp_view.php:467
+#: ../../operation/snmpconsole/snmp_view.php:469
 msgid "There are no SNMP traps in database"
 msgstr "No hay definido ningún agente SNMP"
 
@@ -27637,7 +27637,7 @@ msgid "Number"
 msgstr "Número"
 
 #: ../../operation/snmpconsole/snmp_statistics.php:156
-#: ../../operation/snmpconsole/snmp_view.php:589
+#: ../../operation/snmpconsole/snmp_view.php:591
 msgid "View agent details"
 msgstr "Ver detalles del agente"
 
@@ -27649,7 +27649,7 @@ msgstr "Traps recibidos por cadena Enterprise"
 msgid "Trap Enterprise String"
 msgstr "Traps Enterprise de cadena"
 
-#: ../../operation/snmpconsole/snmp_view.php:414
+#: ../../operation/snmpconsole/snmp_view.php:416
 msgid ""
 "Search by any alphanumeric field in the trap.\n"
 "\t\tREMEMBER trap sources need to be searched by IP Address"
@@ -27657,52 +27657,52 @@ msgstr ""
 "Búsqueda según campos alfanuméricos en el trap.\n"
 "\t \t RECUERDE las fuentes de trap tienen que buscarse según dirección IP"
 
-#: ../../operation/snmpconsole/snmp_view.php:421
+#: ../../operation/snmpconsole/snmp_view.php:423
 msgid "Search by trap type"
 msgstr "Búsqueda por tipo de trap"
 
-#: ../../operation/snmpconsole/snmp_view.php:435
+#: ../../operation/snmpconsole/snmp_view.php:437
 msgid "Group by Enterprise String/IP"
 msgstr "Agrupado por cadena Enterprise/IP"
 
-#: ../../operation/snmpconsole/snmp_view.php:524
+#: ../../operation/snmpconsole/snmp_view.php:526
 msgid "Trap subtype"
 msgstr "Subtipo trap"
 
-#: ../../operation/snmpconsole/snmp_view.php:681
+#: ../../operation/snmpconsole/snmp_view.php:683
 msgid "Variable bindings:"
 msgstr "Enlaces variables"
 
-#: ../../operation/snmpconsole/snmp_view.php:694
+#: ../../operation/snmpconsole/snmp_view.php:696
 msgid "See more details"
 msgstr "Ver más detalles"
 
-#: ../../operation/snmpconsole/snmp_view.php:707
+#: ../../operation/snmpconsole/snmp_view.php:709
 msgid "Enterprise String:"
 msgstr "Cadena Enterprise"
 
-#: ../../operation/snmpconsole/snmp_view.php:713
+#: ../../operation/snmpconsole/snmp_view.php:715
 #: ../../enterprise/godmode/agentes/collections.data.php:379
 msgid "Description:"
 msgstr "Descripción:"
 
-#: ../../operation/snmpconsole/snmp_view.php:745
+#: ../../operation/snmpconsole/snmp_view.php:747
 msgid "Trap type:"
 msgstr "Tipo trap:"
 
-#: ../../operation/snmpconsole/snmp_view.php:773
+#: ../../operation/snmpconsole/snmp_view.php:775
 msgid "Count:"
 msgstr "Contar"
 
-#: ../../operation/snmpconsole/snmp_view.php:777
+#: ../../operation/snmpconsole/snmp_view.php:779
 msgid "First trap:"
 msgstr "Primer trap:"
 
-#: ../../operation/snmpconsole/snmp_view.php:781
+#: ../../operation/snmpconsole/snmp_view.php:783
 msgid "Last trap:"
 msgstr "Ultimo trap:"
 
-#: ../../operation/snmpconsole/snmp_view.php:801
+#: ../../operation/snmpconsole/snmp_view.php:803
 msgid "No matching traps found"
 msgstr "No se encontraron traps coincidentes"
 
@@ -32289,11 +32289,12 @@ msgstr ""
 
 #: ../../enterprise/godmode/setup/setup_auth.php:355
 msgid ""
-"Enable this option will be synchronice the groups and tags each new user "
-"when he/she will login."
+"Enable this option to assign profiles, groups and tags to users from "
+"specific AD groups (updated at the next login)"
 msgstr ""
-"Activar esta opción sincronizará grupos y etiquetas cuando el usuario vuelva "
-"a iniciar sesión"
+"Al habilitar esta opción podrá asignar perfiles, grupos y etiquetas a "
+"usuarios que provengan de ciertos grupos del AD (se actualiza en el "
+"siguiente login)"
 
 #: ../../enterprise/godmode/setup/setup_auth.php:389
 #: ../../enterprise/meta/include/functions_meta.php:754
@@ -36655,6 +36656,13 @@ msgstr "El usuario solo puede usar la API"
 
 #~ msgid "Refresh network map state"
 #~ msgstr "Refrescar el estado del mapa de red"
+
+#~ msgid ""
+#~ "Enable this option will be synchronice the groups and tags each new user "
+#~ "when he/she will login."
+#~ msgstr ""
+#~ "Activar esta opción sincronizará grupos y etiquetas cuando el usuario vuelva "
+#~ "a iniciar sesión"
 
 #~ msgid ""
 #~ "If you check this option, the lateral menus display with left click. "

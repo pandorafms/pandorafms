@@ -513,45 +513,95 @@ sub PandoraFMS::Recon::Base::create_agent($$) {
 		}
 
 		# Incoming traffic module.
-		$module_id = get_agent_module_id($self->{'dbh'}, "${if_name}_ifInOctets", $agent_id);
-		if ($module_id <= 0) {
-			my %module = ('id_tipo_modulo' => 16,
-					   'id_modulo' => 2,
-					   'nombre' => "${if_name}_ifInOctets",
-					   'descripcion' => 'The total number of octets received on the interface, including framing characters.',
-					   'id_agente' => $agent_id,
-					   'ip_target' => $device,
-					   'tcp_send' => 1,
-					   'snmp_community' => $community,
-					   'snmp_oid' => "$PandoraFMS::Recon::Base::IFINOCTECTS.$if_index");
-			pandora_create_module_from_hash ($self->{'pa_config'}, \%module, $self->{'dbh'});
-		} else {
-			my %module = (
-				'ip_target' => $device,
-				'snmp_community' => $community,
-			);
-			pandora_update_module_from_hash ($self->{'pa_config'}, \%module, 'id_agente_modulo', $module_id, $self->{'dbh'});
+		my $if_hc_in_octets = $self->snmp_get_value($device, "$PandoraFMS::Recon::Base::IFHCINOCTECTS.$if_index");
+		if (defined($if_hc_in_octets)) {
+			$module_id = get_agent_module_id($self->{'dbh'}, "${if_name}_ifHCInOctets", $agent_id);
+			if ($module_id <= 0) {
+				my %module = ('id_tipo_modulo' => 16,
+						   'id_modulo' => 2,
+						   'nombre' => "${if_name}_ifHCInOctets",
+						   'descripcion' => 'The total number of octets received on the interface, including framing characters. This object is a 64-bit version of ifInOctets.',
+						   'id_agente' => $agent_id,
+						   'ip_target' => $device,
+						   'tcp_send' => 1,
+						   'snmp_community' => $community,
+						   'snmp_oid' => "$PandoraFMS::Recon::Base::IFHCINOCTECTS.$if_index");
+				pandora_create_module_from_hash ($self->{'pa_config'}, \%module, $self->{'dbh'});
+			} else {
+				my %module = (
+					'ip_target' => $device,
+					'snmp_community' => $community,
+				);
+				pandora_update_module_from_hash ($self->{'pa_config'}, \%module, 'id_agente_modulo', $module_id, $self->{'dbh'});
+			}
+		}
+		# ifInOctets
+		else {
+			$module_id = get_agent_module_id($self->{'dbh'}, "${if_name}_ifInOctets", $agent_id);
+			if ($module_id <= 0) {
+				my %module = ('id_tipo_modulo' => 16,
+						   'id_modulo' => 2,
+						   'nombre' => "${if_name}_ifInOctets",
+						   'descripcion' => 'The total number of octets received on the interface, including framing characters.',
+						   'id_agente' => $agent_id,
+						   'ip_target' => $device,
+						   'tcp_send' => 1,
+						   'snmp_community' => $community,
+						   'snmp_oid' => "$PandoraFMS::Recon::Base::IFINOCTECTS.$if_index");
+				pandora_create_module_from_hash ($self->{'pa_config'}, \%module, $self->{'dbh'});
+			} else {
+				my %module = (
+					'ip_target' => $device,
+					'snmp_community' => $community,
+				);
+				pandora_update_module_from_hash ($self->{'pa_config'}, \%module, 'id_agente_modulo', $module_id, $self->{'dbh'});
+			}
 		}
 
 		# Outgoing traffic module.
-		$module_id = get_agent_module_id($self->{'dbh'}, "${if_name}_ifOutOctets", $agent_id);
-		if ($module_id <= 0) {
-			my %module = ('id_tipo_modulo' => 16,
-					   'id_modulo' => 2,
-					   'nombre' => "${if_name}_ifOutOctets",
-					   'descripcion' => 'The total number of octets received on the interface, including framing characters.',
-					   'id_agente' => $agent_id,
-					   'ip_target' => $device,
-					   'tcp_send' => 1,
-					   'snmp_community' => $community,
-					   'snmp_oid' => "$PandoraFMS::Recon::Base::IFOUTOCTECTS.$if_index");
-			pandora_create_module_from_hash ($self->{'pa_config'}, \%module, $self->{'dbh'});
-		} else {
-			my %module = (
-				'ip_target' => $device,
-				'snmp_community' => $community,
-			);
-			pandora_update_module_from_hash ($self->{'pa_config'}, \%module, 'id_agente_modulo', $module_id, $self->{'dbh'});
+		my $if_hc_out_octets = $self->snmp_get_value($device, "$PandoraFMS::Recon::Base::IFHCOUTOCTECTS.$if_index");
+		if (defined($if_hc_out_octets)) {
+			$module_id = get_agent_module_id($self->{'dbh'}, "${if_name}_ifHCOutOctets", $agent_id);
+			if ($module_id <= 0) {
+				my %module = ('id_tipo_modulo' => 16,
+						   'id_modulo' => 2,
+						   'nombre' => "${if_name}_ifHCOutOctets",
+						   'descripcion' => 'The total number of octets received on the interface, including framing characters. This object is a 64-bit version of ifOutOctets.',
+						   'id_agente' => $agent_id,
+						   'ip_target' => $device,
+						   'tcp_send' => 1,
+						   'snmp_community' => $community,
+						   'snmp_oid' => "$PandoraFMS::Recon::Base::IFHCOUTOCTECTS.$if_index");
+				pandora_create_module_from_hash ($self->{'pa_config'}, \%module, $self->{'dbh'});
+			} else {
+				my %module = (
+					'ip_target' => $device,
+					'snmp_community' => $community,
+				);
+				pandora_update_module_from_hash ($self->{'pa_config'}, \%module, 'id_agente_modulo', $module_id, $self->{'dbh'});
+			}
+		}
+		# ifOutOctets
+		else {
+			$module_id = get_agent_module_id($self->{'dbh'}, "${if_name}_ifOutOctets", $agent_id);
+			if ($module_id <= 0) {
+				my %module = ('id_tipo_modulo' => 16,
+						   'id_modulo' => 2,
+						   'nombre' => "${if_name}_ifOutOctets",
+						   'descripcion' => 'The total number of octets received on the interface, including framing characters.',
+						   'id_agente' => $agent_id,
+						   'ip_target' => $device,
+						   'tcp_send' => 1,
+						   'snmp_community' => $community,
+						   'snmp_oid' => "$PandoraFMS::Recon::Base::IFOUTOCTECTS.$if_index");
+				pandora_create_module_from_hash ($self->{'pa_config'}, \%module, $self->{'dbh'});
+			} else {
+				my %module = (
+					'ip_target' => $device,
+					'snmp_community' => $community,
+				);
+				pandora_update_module_from_hash ($self->{'pa_config'}, \%module, 'id_agente_modulo', $module_id, $self->{'dbh'});
+			}
 		}
 	}
 

@@ -21,6 +21,8 @@ our $DOT1DBASEPORTIFINDEX = ".1.3.6.1.2.1.17.1.4.1.2";
 our $DOT1DTPFDBADDRESS = ".1.3.6.1.2.1.17.4.3.1.1";
 our $DOT1DTPFDBPORT = ".1.3.6.1.2.1.17.4.3.1.2";
 our $IFDESC = ".1.3.6.1.2.1.2.2.1.2";
+our $IFHCINOCTECTS = ".1.3.6.1.2.1.31.1.1.1.6";
+our $IFHCOUTOCTECTS = ".1.3.6.1.2.1.31.1.1.1.10";
 our $IFINDEX = ".1.3.6.1.2.1.2.2.1.1";
 our $IFINOCTECTS = ".1.3.6.1.2.1.2.2.1.10";
 our $IFOPERSTATUS = ".1.3.6.1.2.1.2.2.1.8";
@@ -48,6 +50,8 @@ our @EXPORT = qw(
 	$DOT1DTPFDBADDRESS
 	$DOT1DTPFDBPORT
 	$IFDESC
+	$IFHCINOCTECTS
+	$IFHCOUTOCTECTS
 	$IFINDEX
 	$IFINOCTECTS
 	$IFOPERSTATUS
@@ -1052,6 +1056,8 @@ sub scan($) {
 		}
 	
 		my @hosts = map { (split('/', $_))[0] } $net_addr->hostenum;
+		next if (scalar(@hosts) == 0);
+
 		my $step = 50.0 / scalar(@subnets) / scalar(@hosts); # The first 50% of the recon task approx.
 		foreach my $host (@hosts) {
 
@@ -1293,7 +1299,7 @@ sub switch_to_switch_connectivity($$$) {
 
 					next if ($self->are_connected($switch_1, $if_name_1, $switch_2, $if_name_2));
 					$self->call('message', "Switch $switch_1 (if $if_name_1) is connected to switch $switch_2 (if $if_name_2).", 5);
-					$self->call(' / scalar(@subnets))connect_agents', $switch_1, $if_name_1, $switch_2, $if_name_2);
+					$self->call('connect_agents', $switch_1, $if_name_1, $switch_2, $if_name_2);
 					$self->mark_connected($switch_1, $if_name_1, $switch_2, $if_name_2);
 
 					# Mark switch to switch connections.

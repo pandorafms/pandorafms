@@ -38,6 +38,7 @@
 #include "pandora_module_plugin.h"
 #include "pandora_module_ping.h"
 #include "pandora_module_snmpget.h"
+#include "../windows/pandora_wmi.h"
 #include "../pandora_strutils.h"
 #include <list>
 
@@ -1137,6 +1138,13 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	} else if (module_freedisk_percent != "") {
 		module = new Pandora_Module_Freedisk_Percent (module_name,
 						      module_freedisk_percent);
+		// Added a description with the memory free
+		char buffer[100];
+		unsigned long memory = Pandora_Wmi::getDiskFreeSpace(module_freedisk_percent);
+		if (sprintf(buffer, "Free memory %s %dMB",
+				module_freedisk_percent.c_str(), memory) > 0) {
+			module->setDescription(buffer);
+		}
 	} else if (module_freememory != "") {
 		module = new Pandora_Module_Freememory (module_name);
 	} else if (module_freememory_percent != "") {

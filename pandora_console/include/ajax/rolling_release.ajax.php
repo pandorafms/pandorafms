@@ -21,7 +21,7 @@ if (is_ajax ()) {
 	
 	if ($updare_rr) {
 		$number = get_parameter('number');
-
+		$package = ger_parameter('package');
 		$dir = sys_get_temp_dir() . "/pandora_oum/" . $package . "/extras/mr";
 		$file = "$dir/$number.sql";
 		

@@ -203,7 +203,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 	}
 	
 	// Parent layer
-	$return = "<div class='parent_graph' style='width: " . $width . "px; " . $background_style . "'>";
+	$return = "<div class='parent_graph' style='width: " . ($width + 100) . "px; height: ".($height + 200 )."px; " . $background_style . "'>";
 	// Set some containers to legend, graph, timestamp tooltip, etc.
 	$return .= "<p id='legend_$graph_id' class='legend_graph' style='font-size:".$font_size."pt'></p>";
 	
@@ -245,9 +245,10 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 			$return .= "<div id='menu_$graph_id' class='menu_graph' " .
 				"style='display: none; " .
 					"text-align: center; " .
-					"width: " . $menu_width . "px; ".
+					"width: 25px; ".
 					"border-bottom: 0px; " .
-					"padding: 4px 4px 4px 4px;margin-bottom:5px;'>
+					"padding: 4px 4px 4px 4px;
+					margin-bottom:5px;'>
 				<a href='javascript:'><img id='menu_cancelzoom_$graph_id' src='".$homeurl."images/zoom_cross_grey.disabled.png' alt='".__('Cancel zoom')."' title='".__('Cancel zoom')."'></a>";
 			if ($threshold) {
 				$return .= " <a href='javascript:'><img id='menu_threshold_$graph_id' src='".$homeurl."images/chart_curve_threshold.png' alt='".__('Warning and Critical thresholds')."' title='".__('Warning and Critical thresholds')."'></a>";

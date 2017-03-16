@@ -1540,33 +1540,30 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				tickColor: background_color,
 				markings: markings,
 				color: legend_color
-				},
-			xaxes: [ {
-					axisLabelFontSizePixels: font_size,
-					axisLabelUseCanvas: false,
-					axisLabel: xaxisname,
-					tickFormatter: xFormatter,
-					//~ minTickSize: steps,
-					color: '',
-					font: font
-				} ],
-			yaxes: [ {
-						tickFormatter: yFormatter,
-						color: ''
-					},
-					{
-						// align if we are to the right
-						alignTicksWithAxis: 1,
-						position: 'right',
-						font: font
-						//tickFormatter: dFormatter
-					} ]
-					,
+			},
+			xaxes: [{
+				axisLabelFontSizePixels: font_size,
+				axisLabelUseCanvas: false,
+				axisLabel: xaxisname,
+				tickFormatter: xFormatter,
+				labelHeight: 50,
+				color: '',
+				font: font
+			}],
+			yaxes: [{
+				tickFormatter: yFormatter,
+				color: '',
+				alignTicksWithAxis: 1,
+				position: 'left',
+				font: font,
+				labelWidth: 50,
+				reserveSpace: true,
+			}],
 			legend: {
 				position: 'se',
 				container: $('#legend_' + graph_id),
 				labelFormatter: lFormatter
-				}
+			}
 		};
 	if (vconsole) {
 		options.grid['hoverable'] = false;
@@ -1874,18 +1871,18 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 		if (labels[v] == undefined) {
 			return '';
 		}
-		return '<div class='+font+' style=font-size:'+font_size+'pt>'+labels[v]+'</div>';
+		return '<div class='+font+' style="font-size:'+font_size+'pt; margin-top:15px; transform:rotate(-28deg)">'+labels[v]+'</div>';
 	}
 
 	function yFormatter(v, axis) {
 		axis.datamin = 0;
 		var formatted = number_format(v,force_integer,unit);
 
-		return '<div class='+font+' style=font-size:'+font_size+'pt>'+formatted+'</div>';
+		return '<div class='+font+' style="font-size:'+font_size+'pt;">'+formatted+'</div>';
 	}
 
 	function lFormatter(v, item) {
-		return '<div style=font-size:'+font_size+'pt>'+v+'</div>';
+		return '<div style="font-size:'+font_size+'pt;">'+v+'</div>';
 		// Prepared to turn series with a checkbox
 		//return '<div style=color:;font-size:'+font_size+'pt><input type="checkbox" id="' + graph_id + '_' + item.id +'" checked="checked" class="check_serie_'+graph_id+'">'+v+'</div>';
 	}
@@ -1994,7 +1991,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 		$('#legend_'+graph_id).css('margin-bottom', '10px');
 		parent_height = parseInt(
 			$('#menu_'+graph_id).parent().css('height').split('px')[0]);
-		adjust_menu(graph_id, plot, parent_height);
+		adjust_menu(graph_id, plot, parent_height, width);
 	}
 	
 	if (!dashboard) {
@@ -2028,16 +2025,16 @@ function adjust_menu(graph_id, plot, parent_height, width) {
 		menu_height = $('#menu_'+graph_id).height();
 	}
 
-	offset_between_graph_and_div_graph_container = $('#' + graph_id).offset().top -
-		$('#' + graph_id).parent().offset().top;
+	offset = $('#' + graph_id).offsetTop;
+	
 	$('#menu_' + graph_id)
 		.css('top',
-			((offset_between_graph_and_div_graph_container - menu_height - 5) + 'px'));
+			((offset + 10) + 'px'));
 
 	//$('#legend_' + graph_id).css('width',plot.width());
 
-	$('#menu_' + graph_id)
-		.css('left',width - $('#menu_'+graph_id).width());
+	$('#menu_' + graph_id).css('left', $('#'+graph_id)[0].offsetWidth);
+	
 	$('#menu_' + graph_id).show();
 }
 

@@ -1720,10 +1720,10 @@ function db_check_minor_relase_available () {
  * 
  * @return bool Return if minor release is available or not
  */
-function db_check_minor_relase_available_to_um () {
+function db_check_minor_relase_available_to_um ($package) {
 	global $config;
 	
-	$dir = $config["homedir"]."/extras/mr";
+	$dir = sys_get_temp_dir() . "/pandora_oum/" . $package . "/extras/mr";
 	
 	$have_minor_release = false;
 	
@@ -1741,7 +1741,7 @@ function db_check_minor_relase_available_to_um () {
 				
 				$exists = false;
 				foreach ($sqlfiles_num as $num) {
-					$file_dest = "$dir/updated/$num.sql";
+					$file_dest = $config["homedir"] . "/extras/mr/updated/$num.sql";
 					
 					if (file_exists($file_dest)) {
 						$exists = true;

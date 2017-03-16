@@ -22,8 +22,7 @@ if (is_ajax ()) {
 	if ($updare_rr) {
 		$number = get_parameter('number');
 
-		$dir = $config["homedir"]."/extras/mr";
-		
+		$dir = sys_get_temp_dir() . "/pandora_oum/" . $package . "/extras/mr";
 		$file = "$dir/$number.sql";
 		
 		$dangerous_query = false;
@@ -57,7 +56,8 @@ if (is_ajax ()) {
 						if (!file_exists($dir."/updated") || !is_dir($dir."/updated")) {
 							mkdir($dir."/updated");
 						}
-						$file_dest = "$dir/updated/$number.sql";
+						
+						$file_dest = $config["homedir"] . "/extras/mr/updated/$number.sql";
 						if (copy($file, $file_dest)) {
 							unlink($file);
 						}
@@ -75,7 +75,7 @@ if (is_ajax ()) {
 									mkdir($dir."/updated");
 								}
 								
-								$file_dest = "$dir/updated/$number.sql";
+								$file_dest = $config["homedir"] . "/extras/mr/updated/$number.sql";
 								html_debug("FILE EXISTS: " . (int)file_exists($file_dest), true);
 								if (file_exists($file_dest)) {
 									unlink($file);

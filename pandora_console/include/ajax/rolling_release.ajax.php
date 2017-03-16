@@ -25,7 +25,6 @@ if (is_ajax ()) {
 		$dir = sys_get_temp_dir() . "/pandora_oum/" . $package . "/extras/mr";
 		$file = "$dir/$number.sql";
 		
-		html_debug($file, true);
 		$dangerous_query = false;
 		$mr_file = fopen($file, "r");
 		while (!feof($mr_file)) {
@@ -50,8 +49,6 @@ if (is_ajax ()) {
 		else {
 			if (file_exists($dir) && is_dir($dir)) {
 				if (is_readable($dir)) {
-					html_debug($number, true);
-					html_debug($config['MR'], true);
 					if (($number > $config['MR'] + 1) || ($number == $config['MR'])) {
 						$message = "bad_mr_filename";
 					}
@@ -64,6 +61,7 @@ if (is_ajax ()) {
 						if (copy($file, $file_dest)) {
 							unlink($file);
 						}
+						$message = "bad_mr_filename";
 					}
 					else {
 						$result = db_run_sql_file($file);
@@ -79,12 +77,10 @@ if (is_ajax ()) {
 								}
 								
 								$file_dest = $config["homedir"] . "/extras/mr/updated/$number.sql";
-								html_debug("FILE EXISTS: " . (int)file_exists($file_dest), true);
-								if (file_exists($file_dest) !== 0) {
-									unlink($file);
-								}
-								else if (copy($file, $file_dest)) {
-									html_debug("FILE: " . $file, true);
+								
+								chmod($file, 0777);
+								chmod($config["homedir"] . "/extras/mr/updated", 0777);
+								if (copy($file, $file_dest)) {
 									unlink($file);
 								}
 							}

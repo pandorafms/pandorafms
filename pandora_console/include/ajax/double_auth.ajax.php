@@ -296,6 +296,8 @@ if ($get_double_auth_generation_page) {
 
 	ob_clean();
 ?>
+
+<script type="text/javascript" src="../../include/javascript/qrcode.js"></script>
 <script type="text/javascript">
 	var secret = "<?php echo $secret; ?>";
 	var userID = "<?php echo $config['id_user']; ?>";

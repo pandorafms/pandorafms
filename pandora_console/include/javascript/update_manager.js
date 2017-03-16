@@ -210,6 +210,8 @@ function install_package (package, homeurl) {
 				var parameters = {};
 				parameters['page'] = 'include/ajax/update_manager.ajax';
 				parameters['search_minor'] = 1;
+				parameters['package'] = package;
+				parameters['ent'] = 1;
 				
 				$.ajax({
 					type: 'POST',
@@ -231,7 +233,7 @@ function install_package (package, homeurl) {
 								buttons: {
 									"Apply MR": function () {
 										var err = [];
-										err = apply_minor_release(data['mr'], 1);
+										err = apply_minor_release(data['mr'], package, 1, 1);
 
 										if (!err['error']) {
 											if (err['message'] == 'bad_mr_filename') {
@@ -957,6 +959,7 @@ function install_free_package_prev_step(package, version, homeurl) {
 				parameters['search_minor'] = 1;
 				parameters['ent'] = 0;
 				parameters['package'] = package;
+				parameters['offline'] = 0;
 				
 				jQuery.post(
 					home_url + "ajax.php",
@@ -979,7 +982,7 @@ function install_free_package_prev_step(package, version, homeurl) {
 								buttons: {
 									"Apply MR": function () {
 										var err = [];
-										err = apply_minor_release(data['mr'], 0);
+										err = apply_minor_release(data['mr'], package, 0, 0);
 
 										if (!err['error']) {
 											if (err['message'] == 'bad_mr_filename') {
@@ -1463,7 +1466,7 @@ function install_free_package(package, version, homeurl) {
 	});
 }
 
-function apply_minor_release (n_mr, ent) {
+function apply_minor_release (n_mr, pkg, ent, off) {
 	var error = [];
 	error['error'] = false;
 	$('#mr_dialog2').empty();
@@ -1472,6 +1475,8 @@ function apply_minor_release (n_mr, ent) {
 		params["updare_rr"] = 1;
 		params["number"] = mr;
 		params["ent"] = ent;
+		params["pkg"] = pkg;
+		params["off"] = off;
 		params["page"] = "include/ajax/rolling_release.ajax";
 
 		jQuery.ajax ({

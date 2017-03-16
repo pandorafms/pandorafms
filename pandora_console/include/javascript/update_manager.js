@@ -313,7 +313,7 @@ function install_package (package, homeurl) {
 																		var dialog_success_pkg_text = "<div>";
 																		dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_exito_mr.png'></div>";
 																		dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>SUCCESS</strong></h3>";
-																		dialog_success_pkg_text = dialog_success_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + data['message'] + "</p></div>";
+																		dialog_success_pkg_text = dialog_success_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_success + "</p></div>";
 																		dialog_success_pkg_text = dialog_success_pkg_text + "</div>";
 																		
 																		$('#success_pkg').html(dialog_success_pkg_text);
@@ -344,7 +344,7 @@ function install_package (package, homeurl) {
 																		var dialog_error_pkg_text = "<div>";
 																		dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
 																		dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
-																		dialog_error_pkg_text = dialog_error_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + data['message'] + "</p></div>";
+																		dialog_error_pkg_text = dialog_error_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_error + "</p></div>";
 																		dialog_error_pkg_text = dialog_error_pkg_text + "</div>";
 																		
 																		$('#error_pkg').html(dialog_error_pkg_text);
@@ -472,7 +472,7 @@ function install_package (package, homeurl) {
 															var dialog_success_pkg_text = "<div>";
 															dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_exito_mr.png'></div>";
 															dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>SUCCESS</strong></h3>";
-															dialog_success_pkg_text = dialog_success_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + data['message'] + "</p></div>";
+															dialog_success_pkg_text = dialog_success_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_success + "</p></div>";
 															dialog_success_pkg_text = dialog_success_pkg_text + "</div>";
 															
 															$('#success_pkg').html(dialog_success_pkg_text);
@@ -503,7 +503,7 @@ function install_package (package, homeurl) {
 															var dialog_error_pkg_text = "<div>";
 															dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
 															dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
-															dialog_error_pkg_text = dialog_error_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + data['message'] + "</p></div>";
+															dialog_error_pkg_text = dialog_error_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_error + "</p></div>";
 															dialog_error_pkg_text = dialog_error_pkg_text + "</div>";
 															
 															$('#error_pkg').html(dialog_error_pkg_text);
@@ -649,7 +649,7 @@ function install_package (package, homeurl) {
 										var dialog_success_pkg_text = "<div>";
 										dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_exito_mr.png'></div>";
 										dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>SUCCESS</strong></h3>";
-										dialog_success_pkg_text = dialog_success_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + data['message'] + "</p></div>";
+										dialog_success_pkg_text = dialog_success_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_success + "</p></div>";
 										dialog_success_pkg_text = dialog_success_pkg_text + "</div>";
 										
 										$('#success_pkg').html(dialog_success_pkg_text);
@@ -680,7 +680,7 @@ function install_package (package, homeurl) {
 										var dialog_error_pkg_text = "<div>";
 										dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
 										dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
-										dialog_error_pkg_text = dialog_error_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + data['message'] + "</p></div>";
+										dialog_error_pkg_text = dialog_error_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_error + "</p></div>";
 										dialog_error_pkg_text = dialog_error_pkg_text + "</div>";
 										
 										$('#error_pkg').html(dialog_error_pkg_text);

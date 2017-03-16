@@ -76,11 +76,12 @@ if (is_ajax ()) {
 								}
 								
 								$file_dest = "$dir/updated/$number.sql";
-								
+								html_debug("FILE EXISTS: " . (int)file_exists($file_dest), true);
 								if (file_exists($file_dest)) {
 									unlink($file);
 								}
 								else if (copy($file, $file_dest)) {
+									html_debug("FILE: " . $file, true);
 									unlink($file);
 								}
 							}

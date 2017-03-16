@@ -29,9 +29,6 @@ Description: The default Pandora FMS theme layout
 	font-family: verdana, sans-serif;
 	letter-spacing: 0.03pt;
 	font-size: 8pt;
-/*
-	color: #3F3F3F;
-*/
 }
 svg * {
 	font-size: 11pt;
@@ -376,6 +373,20 @@ div#foot {
   src: local('Nunito-Regular'), url(../../fonts/nunito.woff) format('woff');
 }
 
+@font-face {
+	font-family: 'lato-thin';
+	src: url('../../fonts/Lato-Hairline.ttf'); 
+}
+@font-face {
+	font-family: 'lato-bolder';
+	src: url('../../fonts/Lato-Light.ttf'); 
+}
+@font-face {
+	font-family: 'lato-boldest';
+	src: url('../../fonts/Lato-Regular.ttf'); 
+}
+
+
 #login_body {
 	/* Set rules to fill background */
 	min-height: 100%;
@@ -421,75 +432,13 @@ p.log_in {
 	padding: 0px 10px;
 	width:300px;
 }
+
 h1#log_f {
 	color: #c00;
 	border-bottom: 1px solid #c00;
 	padding-bottom: 3px;
 }
-/*
-div#login {
-	border-width: 2px 2px 2px 2px;
-	border-style: solid;
-	border-color: #000;
-	font-size: 12px !important;
-}
 
-
-.databox_login, .databox_logout {
-	border-radius: 5px;
-	height: 200px;
-}
-
-
-#login_inner {
-	width: 100%;
-	height: 100%;
-	border-radius: 5px;
-	
-	background-color: #373737 !important;
-
-}
-
-#login_outer {
-	border-radius: 11px;
-	background-color: #000;
-	width: 500px !important;
-	color: #FFF !important;
-	margin: 0px auto;
-}
-
-
-.version_login{
-	
-
-	float: right;
-	margin-top: 18px;
-	width: 80px;
-	height: 0px;
-	border-right: 13px solid transparent;
-	border-left: 25px solid transparent;
-	border-bottom: 18px solid #82B92E;
-	left: 16px;
-	position: relative;
-}
-
-
-#login_outer * {
-	font-family: Nunito, "Arial Rounded MT", Arial, Helvetica, sans-serif;
-	font-weight: bold;
-}
-
-.login_border{
-	border-right: 1px solid #FFF;
-	text-align: center;
-}
-
-table#login_layout {
-	width: 100%;
-	height: 160px;
-	position:fixed;
-}
-*/
 div#error_login {
 	text-align: center;
 	margin-top: 5px;
@@ -4038,15 +3987,15 @@ div.text_banner_login span{
 }
 
 span.span1{
-	font-weight: lighter;
     font-size: 3vw;
-    font-family: 'lato';
+    font-family: 'lato-thin';
+    color: white;
 }
 
 span.span2{
-	font-weight: 300;
     font-size: 3vw;
-    font-family: 'lato';
+    font-family: 'lato-boldest';
+    color: white;
 }
 
 div.img_banner_login{

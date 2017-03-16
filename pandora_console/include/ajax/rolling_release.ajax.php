@@ -24,7 +24,7 @@ if (is_ajax ()) {
 
 		$dir = $config["homedir"]."/extras/mr";
 		
-		$file = $dir = sys_get_temp_dir() . "/extras/mr/$number.sql";
+		$file = "$dir/$number.sql";
 		
 		$dangerous_query = false;
 		$mr_file = fopen($file, "r");

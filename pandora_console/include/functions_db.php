@@ -1723,7 +1723,7 @@ function db_check_minor_relase_available () {
 function db_check_minor_relase_available_to_um () {
 	global $config;
 	
-	$dir = sys_get_temp_dir() . "/extras/mr";
+	$dir = $config["homedir"]."/extras/mr";
 	
 	$have_minor_release = false;
 	

@@ -356,7 +356,8 @@ if ($check_online_free_packages) {
 }
 
 if ($search_minor) {
-	$have_minor_releases = db_check_minor_relase_available_to_um();
+	$package = get_parameter('package', '');
+	$have_minor_releases = db_check_minor_relase_available_to_um($package);
 
 	$return['have_minor'] = false;
 	if ($have_minor_releases) {

@@ -2511,6 +2511,8 @@ function reporting_html_availability_graph(&$table, $item, $pdf=0) {
 			}
 		}
 	}
+	
+	if($item['type'] == 'availability_graph'){
 
 	//table_legend_graphs;
 	$table2 = new stdClass();
@@ -2546,6 +2548,8 @@ function reporting_html_availability_graph(&$table, $item, $pdf=0) {
 	$table2->data[0][10] = '<img src ="'. $src .'images/square_light_gray.png">';
 	$table2->size[11] = '15%';
 	$table2->data[0][11] = '<span>'.__('Ignore time'). '</span>';
+	
+	}
 	
 	$table->colspan['charts']['cell'] = 2;
 	$table->data['charts']['cell'] = html_print_table($table1, true);

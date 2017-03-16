@@ -78,8 +78,6 @@ if (is_ajax ()) {
 								
 								$file_dest = $config["homedir"] . "/extras/mr/updated/$number.sql";
 								
-								chmod($file, 0777);
-								chmod($config["homedir"] . "/extras/mr/updated", 0777);
 								if (copy($file, $file_dest)) {
 									unlink($file);
 								}

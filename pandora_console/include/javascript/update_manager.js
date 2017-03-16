@@ -844,6 +844,100 @@ function update_last_package(package, version, homeurl) {
 	$("#box_online .loading").show();
 	$("#box_online .download_package").show();
 	
+	var parameters = {};
+	parameters['page'] = 'include/ajax/update_manager.ajax';
+	parameters['update_last_free_package'] = 1;
+	parameters['package'] = package;
+	parameters['version'] = version;
+	parameters['accept'] = 0;
+	
+	jQuery.post(
+		home_url + "ajax.php",
+		parameters,
+		function (data) {
+			if (data['in_progress']) {
+				$("#box_online .loading").hide();
+				$("#box_online .download_package").hide();
+				
+				$("#box_online .content").html(data['message']);
+				
+				var parameters2 = {};
+				parameters2['page'] = 'include/ajax/update_manager.ajax';
+				parameters2['unzip_free_package'] = 1;
+				parameters2['package'] = package;
+				parameters2['version'] = version;
+				
+				jQuery.post(
+					home_url + "ajax.php",
+					parameters2,
+					function (data) {
+						if (data['correct']) {
+							$("#box_online .loading").hide();
+							$("#box_online .download_package").hide();
+							
+							$("#box_online .content").html(data['message']);
+							
+							install_free_package_prev_step(package, version, homeurl);
+						}
+						else {
+							$("#box_online .content").html(data['message']);
+						}
+					},
+					"json"
+				);
+			}
+			else {
+				$("#box_online .content").html(data['message']);
+			}
+		},
+		"json"
+	);
+}
+
+function check_progress_update(homeurl) {
+	var home_url = (typeof homeurl !== 'undefined') ? homeurl + '/' : '';
+	
+	if (stop_check_progress) {
+		return;
+	}
+	
+	var parameters = {};
+	parameters['page'] = 'include/ajax/update_manager.ajax';
+	parameters['check_update_free_package'] = 1;
+	
+	jQuery.post(
+		home_url + "ajax.php",
+		parameters,
+		function (data) {
+			if (stop_check_progress) {
+				return;
+			}
+			
+			if (data['correct']) {
+				if (data['end']) {
+					//$("#box_online .content").html(data['message']);
+				}
+				else {
+					$("#box_online .progressbar").show();
+					
+					$("#box_online .progressbar .progressbar_img").attr('src',
+						data['progressbar']);
+					
+					setTimeout(function () {
+						check_progress_update(homeurl);	
+					}, 1000);
+				}
+			}
+			else {
+				correct_install_progress = false;
+				$("#box_online .content").html(data['message']);
+			}
+		},
+		"json"
+	);
+}
+
+function install_free_package_prev_step(package, version, homeurl) {
 	$("<div id='pkg_apply_dialog' class='dialog ui-dialog-content' title='" + package_available + "'></div>").dialog ({
 		resizable: true,
 		draggable: true,
@@ -1242,49 +1336,6 @@ function update_last_package(package, version, homeurl) {
 	
 	$('#pkg_apply_dialog').html(dialog_text);
 	$('#pkg_apply_dialog').dialog('open');
-}
-
-function check_progress_update(homeurl) {
-	var home_url = (typeof homeurl !== 'undefined') ? homeurl + '/' : '';
-	
-	if (stop_check_progress) {
-		return;
-	}
-	
-	var parameters = {};
-	parameters['page'] = 'include/ajax/update_manager.ajax';
-	parameters['check_update_free_package'] = 1;
-	
-	jQuery.post(
-		home_url + "ajax.php",
-		parameters,
-		function (data) {
-			if (stop_check_progress) {
-				return;
-			}
-			
-			if (data['correct']) {
-				if (data['end']) {
-					//$("#box_online .content").html(data['message']);
-				}
-				else {
-					$("#box_online .progressbar").show();
-					
-					$("#box_online .progressbar .progressbar_img").attr('src',
-						data['progressbar']);
-					
-					setTimeout(function () {
-						check_progress_update(homeurl);	
-					}, 1000);
-				}
-			}
-			else {
-				correct_install_progress = false;
-				$("#box_online .content").html(data['message']);
-			}
-		},
-		"json"
-	);
 }
 
 function install_free_package(package, version, homeurl) {

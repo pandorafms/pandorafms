@@ -231,7 +231,7 @@ function install_package (package, homeurl) {
 								buttons: {
 									"Apply MR": function () {
 										var err = [];
-										err = apply_minor_release(data['mr']);
+										err = apply_minor_release(data['mr'], 1);
 
 										if (!err['error']) {
 											if (err['message'] == 'bad_mr_filename') {
@@ -955,6 +955,8 @@ function install_free_package_prev_step(package, version, homeurl) {
 				var parameters = {};
 				parameters['page'] = 'include/ajax/update_manager.ajax';
 				parameters['search_minor'] = 1;
+				parameters['ent'] = 0;
+				parameters['package'] = package;
 				
 				jQuery.post(
 					home_url + "ajax.php",
@@ -977,7 +979,7 @@ function install_free_package_prev_step(package, version, homeurl) {
 								buttons: {
 									"Apply MR": function () {
 										var err = [];
-										err = apply_minor_release(data['mr']);
+										err = apply_minor_release(data['mr'], 0);
 
 										if (!err['error']) {
 											if (err['message'] == 'bad_mr_filename') {
@@ -1461,7 +1463,7 @@ function install_free_package(package, version, homeurl) {
 	});
 }
 
-function apply_minor_release (n_mr) {
+function apply_minor_release (n_mr, ent) {
 	var error = [];
 	error['error'] = false;
 	$('#mr_dialog2').empty();
@@ -1469,6 +1471,7 @@ function apply_minor_release (n_mr) {
 		var params = {};
 		params["updare_rr"] = 1;
 		params["number"] = mr;
+		params["ent"] = ent;
 		params["page"] = "include/ajax/rolling_release.ajax";
 
 		jQuery.ajax ({

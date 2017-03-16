@@ -22,6 +22,13 @@ if (is_ajax ()) {
 	if ($updare_rr) {
 		$number = get_parameter('number');
 		$package = get_parameter('package');
+		$ent = get_parameter('ent');
+		if (!$ent) {
+			$dir = $config['attachment_store'] . "/last_package/downloads/extras/mr";
+		}
+		else {
+			$dir = sys_get_temp_dir() . "/pandora_oum/" . $package . "/extras/mr";
+		}
 		$dir = sys_get_temp_dir() . "/pandora_oum/" . $package . "/extras/mr";
 		$file = "$dir/$number.sql";
 		

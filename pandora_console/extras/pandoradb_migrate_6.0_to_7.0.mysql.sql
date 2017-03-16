@@ -1037,9 +1037,9 @@ CREATE TABLE IF NOT EXISTS `trel_item` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`id_parent` int(10) unsigned NOT NULL default 0,
 	`id_child` int(10) unsigned NOT NULL default 0,
-	`id_map` int(10) unsigned NOT NULL default 0,
-	`id_parent_source_data` int(10) unsigned NOT NULL default 0,
-	`id_child_source_data` int(10) unsigned NOT NULL default 0,
+	`id_map` int(11) unsigned NOT NULL default 0,
+	`id_parent_source_data` int(11) unsigned NOT NULL default 0,
+	`id_child_source_data` int(11) unsigned NOT NULL default 0,
 	`parent_type` int(10) unsigned NOT NULL default 0,
 	`child_type` int(10) unsigned NOT NULL default 0,
 	`id_item` int(10) unsigned NOT NULL default 0,
@@ -1130,13 +1130,6 @@ ALTER TABLE tmap MODIFY `id_user` varchar(128);
 ALTER TABLE titem MODIFY `source_data` int(10) unsigned;
 
 -- ---------------------------------------------------------------------
--- Table `trel_item`
--- ---------------------------------------------------------------------
-ALTER TABLE trel_item ADD `id_parent_source_data` int(11) NOT NULL DEFAULT 0;
-ALTER TABLE trel_item ADD `id_child_source_data` int(11) NOT NULL DEFAULT 0;
-ALTER TABLE trel_item ADD `id_map` int(11) NOT NULL DEFAULT 0;
-
--- ---------------------------------------------------------------------
 -- Table `tconfig`
 -- ---------------------------------------------------------------------
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('big_operation_step_datos_purge', '100');
@@ -1167,12 +1160,12 @@ UPDATE `tlink` SET `link` = 'https://github.com/pandorafms/pandorafms/issues' WH
 -- ---------------------------------------------------------------------
 ALTER TABLE tevent_filter ADD COLUMN `date_from` date DEFAULT NULL;
 ALTER TABLE tevent_filter ADD COLUMN `date_to` date DEFAULT NULL;
-
 -- ---------------------------------------------------------------------
 -- Table `tusuario`
 -- ---------------------------------------------------------------------
-ALTER TABLE tusuario ADD COLUMN `id_filter` int(10) unsigned NULL default NULL;
-ALTER TABLE tusuario CONSTRAINT `fk_id_filter` FOREIGN KEY (id_filter) REFERENCES tevent_filter(id_filter) ON DELETE SET NULL;
+
+ALTER TABLE tusuario ADD COLUMN `id_filter` int(10) UNSIGNED NULL DEFAULT NULL;
+ALTER TABLE tusuario ADD CONSTRAINT `fk_id_filter` FOREIGN KEY (`id_filter`) REFERENCES tevent_filter(`id_filter`) ON DELETE SET NULL;
 ALTER TABLE tusuario ADD COLUMN `session_time` int(10) signed NOT NULL default '0';
 
 -- ---------------------------------------------------------------------

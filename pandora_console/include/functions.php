@@ -2683,10 +2683,16 @@ function update_config_token ($cfgtoken, $cfgvalue) {
 	}
 }
 
-function get_number_of_mr($package) {
+function get_number_of_mr($package, $ent) {
 	global $config;
 	
-	$dir = sys_get_temp_dir() . "/pandora_oum/" . $package . "/extras/mr";
+	if (!$ent) {
+		$dir = $config['attachment_store'] . "/last_package/downloads/extras/mr";
+	}
+	else {
+		$dir = sys_get_temp_dir() . "/pandora_oum/" . $package . "/extras/mr";
+	}
+	
 	$mr_size = array();
 	
 	if (file_exists($dir) && is_dir($dir)) {

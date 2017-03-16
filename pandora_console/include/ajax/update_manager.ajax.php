@@ -358,12 +358,14 @@ if ($check_online_free_packages) {
 
 if ($search_minor) {
 	$package = get_parameter('package', '');
-	$have_minor_releases = db_check_minor_relase_available_to_um($package);
+	$ent = get_parameter('ent', false);
+
+	$have_minor_releases = db_check_minor_relase_available_to_um($package, $ent);
 
 	$return['have_minor'] = false;
 	if ($have_minor_releases) {
 		$return['have_minor'] = true;
-		$size_mr = get_number_of_mr($package);
+		$size_mr = get_number_of_mr($package, $ent);
 		$return['mr'] = $size_mr;
 	}
 
@@ -522,9 +524,7 @@ if ($unzip_free_package) {
 if ($install_free_package) {
 	$version = get_parameter('version', '');
 
-	if ($result)
-		update_manager_set_current_package($version);
-	
+	update_manager_set_current_package($version);
 	
 	sleep(3);
 	

@@ -362,7 +362,7 @@ if ($search_minor) {
 	$return['have_minor'] = false;
 	if ($have_minor_releases) {
 		$return['have_minor'] = true;
-		$size_mr = get_number_of_mr();
+		$size_mr = get_number_of_mr($package);
 		$return['mr'] = $size_mr;
 	}
 

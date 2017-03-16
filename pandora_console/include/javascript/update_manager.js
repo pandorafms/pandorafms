@@ -608,7 +608,7 @@ function install_package (package, homeurl) {
 							dialog_have_mr_text = dialog_have_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + text2_mr_file + "<a style='font-family:Verdana bold; font-size:12pt; color:#82B92E'href=\"index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list\">" + text3_mr_file + "</a>" + text4_mr_file + "</p></div>";
 							dialog_have_mr_text = dialog_have_mr_text + "</div>";
 														
-							$('#mr_dialog2').html(dialog_have_mr_mr_text);
+							$('#mr_dialog2').html(dialog_have_mr_text);
 							$('#mr_dialog2').dialog('open');
 						}
 						else {

@@ -1141,7 +1141,7 @@ You can of course remove the warnings, that's why we include the source and do n
 					html_print_select($graphs, 'id_custom_graph', $value_selected, 'change_custom_graph();', __('None'), 0);
 				}
 				else {
-					$list_custom_graphs = custom_graphs_get_user ($config['id_user'], false, true, "IR");
+					$list_custom_graphs = custom_graphs_get_user ($config['id_user'], false, true, "RR");
 					
 					$graphs = array();
 					foreach ($list_custom_graphs as $custom_graph) {

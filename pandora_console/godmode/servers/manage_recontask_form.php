@@ -299,7 +299,7 @@ $table->data[8][1] .= ui_print_help_tip(
 // Group
 $table->data[9][0] = "<b>".__('Group');
 $groups = users_get_groups (false, "PM", false);
-$table->data[9][1] = html_print_select_groups(false, "PM", true, 'id_group', $id_group, '', '', 0, true);
+$table->data[9][1] = html_print_select_groups(false, "PM", false, 'id_group', $id_group, '', '', 0, true);
 
 // Incident
 $values = array (0 => __('No'), 1 => __('Yes'));

@@ -604,11 +604,7 @@ function update_manager_remote_read_messages ($id_message) {
 	return $result['success'];
 }
 
-/**
- * The update copy entirire the tgz or fail (leave some parts copies and some part not).
- * This does make any thing with the BD.
- */
-function update_manager_starting_update() {
+function update_manager_extract_package() {
 	global $config;
 	
 	$path_package = $config['attachment_store'] .
@@ -636,8 +632,11 @@ function update_manager_starting_update() {
 			$extracted = false;
 		}
 	}
+	$return = true;
 
 	if($extracted === false) {
+		$return = false;
+
 		if (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
 			// unsupported OS
 			echo "This OS [" . PHP_OS . "] does not support direct extraction of tgz files. Upgrade PHP version to be > 5.5.0";
@@ -668,8 +667,21 @@ function update_manager_starting_update() {
 	db_process_sql_update('tconfig',
 		array('value' => 50),
 		array('token' => 'progress_update'));
+
+	return $return;
+}
+
+/**
+ * The update copy entirire the tgz or fail (leave some parts copies and some part not).
+ * This does make any thing with the BD.
+ */
+function update_manager_starting_update() {
+	global $config;
+
+	$path_package = $config['attachment_store'] .
+		"/downloads/last_package.tgz";
 	
-	
+	$full_path = $config['attachment_store'] . "/downloads/unix";
 	
 	$homedir = $config['homedir'];
 	

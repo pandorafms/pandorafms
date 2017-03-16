@@ -140,8 +140,7 @@ echo '<head>' . "\n";
 
 //This starts the page head. In the call back function, things from $page['head'] array will be processed into the head
 ob_start ('ui_process_page_head');
-echo '<link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">';
-echo '<link href="https://fonts.googleapis.com/css?family=Lato:100" rel="stylesheet">';
+
 // Enterprise main 
 enterprise_include ('index.php');
 

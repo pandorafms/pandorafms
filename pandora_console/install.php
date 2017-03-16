@@ -469,7 +469,7 @@ function install_step1() {
 			<p>For more information, please refer to documentation.<br>
 			<i>Pandora FMS Development Team</i></p>
 		";
-		if (file_exists("include/config.php")) {
+		if (file_exists("include/config.php") && (filesize("include/config.php") > 0)) {
 			echo "<div class='warn'><b>Warning:</b> You already have a config.php file. 
 			Configuration and database would be overwritten if you continued.</div>";
 		}

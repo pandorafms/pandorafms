@@ -1728,7 +1728,7 @@ function db_check_minor_relase_available_to_um ($package, $ent, $offline) {
 	}
 	else {
 		if ($offline) {
-			$dir = $package . "extras/mr";
+			$dir = $package . "/extras/mr";
 		}
 		else {
 			$dir = sys_get_temp_dir() . "/pandora_oum/" . $package . "/extras/mr";

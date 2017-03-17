@@ -212,6 +212,7 @@ function install_package (package, homeurl) {
 				parameters['search_minor'] = 1;
 				parameters['package'] = package;
 				parameters['ent'] = 1;
+				parameters['offline'] = 1;
 				
 				$.ajax({
 					type: 'POST',

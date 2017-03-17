@@ -201,7 +201,7 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 		// log4x doesnt support flash yet
 		//
 		if ($config['flash_charts'] == 1)
-			echo '<div style="margin-left: 70px; padding-top: 10px;">';
+			echo '<div style="margin-left: 100px; padding-top: 10px;">';
 		else
 			echo '<div style="margin-left: 50px; padding-top: 10px;">';
 		

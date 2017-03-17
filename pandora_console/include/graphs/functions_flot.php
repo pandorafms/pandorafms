@@ -203,7 +203,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 	}
 	
 	// Parent layer
-	$return = "<div class='parent_graph' style='width: " . ($width + 100) . "px; " . $background_style . "'>";
+	$return = "<div class='parent_graph' style='width: " . ($width) . "px; " . $background_style . "'>";
 	// Set some containers to legend, graph, timestamp tooltip, etc.
 	$return .= "<p id='legend_$graph_id' class='legend_graph' style='font-size:".$font_size."pt'></p>";
 	
@@ -242,13 +242,18 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 		}
 		$menu_width = 25 * $nbuttons + 15;
 		if ( $dashboard == false AND $vconsole == false) {
-			$return .= "<div id='menu_$graph_id' class='menu_graph' " .
+			$return .= "<div id='geneal_menu_$graph_id' class='menu_graph' style='
+							width: 30px;
+							height: 250px;
+							left: " . $width . "px;
+							position: absolute;
+							top: 0px;
+							background-color: white;'>";
+			$return .= "<div id='menu_$graph_id' " .
 				"style='display: none; " .
-					"text-align: center; " .
-					"width: 25px; ".
-					"border-bottom: 0px; " .
-					"padding: 4px 4px 4px 4px;
-					margin-bottom:5px;'>
+					"text-align: center;" .
+					"position: relative;".
+					"border-bottom: 0px;'>
 				<a href='javascript:'><img id='menu_cancelzoom_$graph_id' src='".$homeurl."images/zoom_cross_grey.disabled.png' alt='".__('Cancel zoom')."' title='".__('Cancel zoom')."'></a>";
 			if ($threshold) {
 				$return .= " <a href='javascript:'><img id='menu_threshold_$graph_id' src='".$homeurl."images/chart_curve_threshold.png' alt='".__('Warning and Critical thresholds')."' title='".__('Warning and Critical thresholds')."'></a>";
@@ -261,6 +266,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 			// Button disabled. This feature works, but seems that is not useful enough to the final users.
 			//$return .= " <a href='javascript:'><img id='menu_export_json_$graph_id' src='".$homeurl."images/json.png' alt='".__('Export to JSON')."' title='".__('Export to JSON')."'></a>";
 			
+			$return .= "</div>";
 			$return .= "</div>";
 		}
 	}

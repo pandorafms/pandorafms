@@ -1556,7 +1556,6 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				alignTicksWithAxis: 1,
 				position: 'left',
 				font: font,
-				labelWidth: 50,
 				reserveSpace: true,
 			}],
 			legend: {
@@ -1871,7 +1870,11 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 		if (labels[v] == undefined) {
 			return '';
 		}
-		return '<div class='+font+' style="font-size:'+font_size+'pt; margin-top:15px; transform:rotate(-28deg)">'+labels[v]+'</div>';
+		
+		extra_css = '';
+		if (!dashboard || !vconsole)
+			 extra_css = " transform:rotate(-28deg); margin-left: -50px;";
+		return '<div class='+font+' style="font-size:'+font_size+'pt; margin-top:15px;'+extra_css+'">'+labels[v]+'</div>';
 	}
 
 	function yFormatter(v, axis) {
@@ -2025,15 +2028,13 @@ function adjust_menu(graph_id, plot, parent_height, width) {
 		menu_height = $('#menu_'+graph_id).height();
 	}
 
-	offset = $('#' + graph_id).offsetTop;
-	
-	$('#menu_' + graph_id)
-		.css('top',
-			((offset + 10) + 'px'));
+	offset = $('#' + graph_id)[0].offsetTop;
+	console.log(offset);
+	$('#menu_' + graph_id).css('top', ((offset) + 'px'));
 
 	//$('#legend_' + graph_id).css('width',plot.width());
 
-	$('#menu_' + graph_id).css('left', $('#'+graph_id)[0].offsetWidth);
+	//~ $('#menu_' + graph_id).css('left', $('#'+graph_id)[0].offsetWidth);
 	
 	$('#menu_' + graph_id).show();
 }

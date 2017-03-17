@@ -414,7 +414,7 @@ button.ui-button::-moz-focus-inner {
 	position: relative;
 }
 .ui-dialog .ui-dialog-title {
-	font-family: Nunito;
+	font-family: Nunito, sans-serif;
 	margin: .1em 0;
 	white-space: nowrap;
 	width: 100%;
@@ -842,6 +842,7 @@ body .ui-tooltip {
 	background: #e6e6e6 url(images/ui-bg_glass_75_e6e6e6_1x400.png) 50% 50% repeat-x;
 	font-weight: normal;
 	color: #555555;
+	margin-top: 3px;
 }
 .ui-state-default a,
 .ui-state-default a:link,
@@ -1208,7 +1209,7 @@ body .ui-tooltip {
 }
 
 .ui-dialog .ui-widget-header {
-	background-color: #82b92e !important;
+	background-color: #82b92e;
 }
 
 .ui_tpicker_hour,

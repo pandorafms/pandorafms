@@ -25,6 +25,7 @@ Besides the defined module macros, the following macros are available:
 <li>_agentdescription_: Description of the agent that triggered the alert.</li>
 <li>_agentgroup_: Agent’s group name.</li>
 <li>_agentstatus_: Current agent status.</li>
+<li>_agentos_: Agent's operative system.</li>
 <li>_address_: Address of the agent that triggered the alert.</li>
 <li>_timestamp_: Time and date on which the alert was triggered (yy-mm-dd hh:mm:ss).</li>
 <li>_timezone_: Timezone that is represented on _timestamp_.</li>

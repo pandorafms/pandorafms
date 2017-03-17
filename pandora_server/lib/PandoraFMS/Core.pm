@@ -980,6 +980,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_agentdescription_ => (defined ($agent)) ? $agent->{'comentarios'} : '',
 				_agentgroup_ => (defined ($group)) ? $group->{'nombre'} : '',
 				_agentstatus_ => undef,
+				_agentos_ => (defined ($agent)) ? get_os_name($dbh, $agent->{'id_os'}) : '',
 				_address_ => (defined ($agent)) ? $agent->{'direccion'} : '',
 				_timestamp_ => (defined($timestamp)) ? $timestamp : strftime ("%Y-%m-%d %H:%M:%S", localtime()),
 				_timezone_ => strftime ("%Z", localtime()),

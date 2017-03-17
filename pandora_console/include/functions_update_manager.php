@@ -609,8 +609,6 @@ function update_manager_extract_package() {
 	
 	$path_package = $config['attachment_store'] .
 		"/downloads/last_package.tgz";
-	
-	$full_path = $config['attachment_store'] . "/downloads/unix";
 
 	ob_start();
 
@@ -680,7 +678,7 @@ function update_manager_extract_package() {
 function update_manager_starting_update() {
 	global $config;
 	
-	$full_path = $config['attachment_store'] . "/downloads/unix";
+	$full_path = $config['attachment_store'] . "/downloads/";
 	
 	$homedir = $config['homedir'];
 	

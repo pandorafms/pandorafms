@@ -1405,6 +1405,8 @@ function install_free_package(package, version, homeurl) {
 					$('#success_pkg').html(dialog_success_pkg_text);
 					$('#success_pkg').dialog('open');
 
+					$("#pkg_version").text(version);
+
 					$("#box_online .loading").hide();
 					$("#box_online .progressbar").hide();
 					$("#box_online .content").html(data['message']);

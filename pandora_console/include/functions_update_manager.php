@@ -620,6 +620,7 @@ function update_manager_extract_package() {
 	}
 
 	$extracted = false;
+
 	// Phar and exception working fine in 5.5.0 or higher
 	if (PHP_VERSION_ID >= 50505) {
 		$phar = new PharData($path_package);
@@ -642,6 +643,7 @@ function update_manager_extract_package() {
 			echo "This OS [" . PHP_OS . "] does not support direct extraction of tgz files. Upgrade PHP version to be > 5.5.0";
 		}
 		else {
+			$return = true;
 			system('tar xzf "' . $path_package . '" -C ' . $config['attachment_store'] . "/downloads/");
 		}
 	}

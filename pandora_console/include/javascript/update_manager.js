@@ -950,6 +950,8 @@ function check_progress_update(homeurl) {
 }
 
 function install_free_package_prev_step(package, version, homeurl) {
+	var home_url = (typeof homeurl !== 'undefined') ? homeurl + '/' : '';
+	
 	$("<div id='pkg_apply_dialog' class='dialog ui-dialog-content' title='" + package_available + "'></div>").dialog ({
 		resizable: true,
 		draggable: true,

@@ -37,7 +37,7 @@ $update_last_free_package = (bool)get_parameter('update_last_free_package');
 $check_update_free_package = (bool)get_parameter('check_update_free_package');
 $install_free_package = (bool)get_parameter('install_free_package');
 $search_minor = (bool)get_parameter('search_minor');
-$unzip_free_package = (bool)get_parameter('$unzip_free_package');
+$unzip_free_package = (bool)get_parameter('unzip_free_package');
 
 if ($upload_file) {
 	ob_clean();
@@ -508,14 +508,14 @@ if ($check_update_free_package) {
 if ($unzip_free_package) {
 	$version = get_parameter('version', '');
 	
-	$result = update_manager_starting_update();
+	$result = update_manager_extract_package();
 
 	if ($result) {
-		$return["status"] = "correct";
+		$return["correct"] = true;
 		$return["message"]= __("The package is extracted.");
 	}
 	else {
-		$return["status"] = "error";
+		$return["correct"] = false;
 		$return["message"]= __("Error in package extraction.");
 	}
 
@@ -525,12 +525,20 @@ if ($unzip_free_package) {
 if ($install_free_package) {
 	$version = get_parameter('version', '');
 
+	$install = update_manager_starting_update();
 	update_manager_set_current_package($version);
 	
 	sleep(3);
 	
-	$return["status"] = "success";
-	$return["message"]= __("The package is installed.");
+	if ($install) {
+		$return["status"] = "success";
+		$return["message"]= __("The package is installed.");
+	}
+	else {
+		$return["status"] = "error";
+		$return["message"]= __("An error ocurred in the installation process.");
+	}
+	
 	echo json_encode($return);
 }
 ?>

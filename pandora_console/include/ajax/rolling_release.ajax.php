@@ -25,7 +25,7 @@ if (is_ajax ()) {
 		$ent = get_parameter('ent');
 		$offline = get_parameter('offline');
 		if (!$ent) {
-			$dir = $config['attachment_store'] . "/last_package/downloads/extras/mr";
+			$dir = $config['attachment_store'] . "/last_package/downloads/pandora_console/extras/mr";
 		}
 		else {
 			if ($offline) {

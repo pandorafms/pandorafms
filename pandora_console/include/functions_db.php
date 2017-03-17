@@ -1742,7 +1742,6 @@ function db_check_minor_relase_available_to_um ($package) {
 				$exists = false;
 				foreach ($sqlfiles_num as $num) {
 					$file_dest = $config["homedir"] . "/extras/mr/updated/$num.sql";
-					
 					if (file_exists($file_dest)) {
 						$exists = true;
 						unlink("$dir/$num.sql");

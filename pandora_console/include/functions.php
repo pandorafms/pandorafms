@@ -1531,7 +1531,7 @@ function get_snmpwalk($ip_target, $snmp_version, $snmp_community = '',
 				$snmpwalk_bin = '/usr/pkg/bin/snmpwalk';
 				break;
 			default:
-				$snmpwalk_bin = 'snmpbulkwalk';
+				$snmpwalk_bin = 'snmpwalk';
 				break;
 		}
 	}

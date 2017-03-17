@@ -1313,34 +1313,9 @@ function install_free_package_prev_step(package, version, homeurl) {
 				$('#cancel_pkg').html(dialog_cancel_pkg_text);
 				$('#cancel_pkg').dialog('open');
 
-				var parameters = {};
-				parameters['page'] = 'include/ajax/update_manager.ajax';
-				parameters['update_last_free_package'] = 1;
-				parameters['package'] = package;
-				parameters['version'] = version;
-				parameters['accept'] = 0;
-				
-				jQuery.post(
-					home_url + "ajax.php",
-					parameters,
-					function (data) {
-						if (data['in_progress']) {
-							$("#box_online .loading").hide();
-							$("#box_online .download_package").hide();
-							
-							$("#box_online .content").html(data['message']);
-							
-							install_free_package(package, version, homeurl);
-							setTimeout(function () {
-								check_progress_update(homeurl);	
-							}, 1000);
-						}
-						else {
-							$("#box_online .content").html(data['message']);
-						}
-					},
-					"json"
-				);
+				$("#box_online .loading").hide();
+				$("#box_online .progressbar").hide();
+				$("#box_online .content").html(package_cancel);
 			}
 		}
 	});

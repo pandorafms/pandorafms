@@ -378,7 +378,6 @@ if ($search_minor) {
 if ($update_last_free_package) {
 	$package = get_parameter('package', '');
 	$version = get_parameter('version', '');
-	$accept = (boolean)get_parameter('accept', false);
 	$package_url = base64_decode($package);
 	
 	$params = array('action' => 'get_package',
@@ -520,6 +519,8 @@ if ($unzip_free_package) {
 	}
 
 	echo json_encode($return);
+
+	return;
 }
 
 if ($install_free_package) {
@@ -540,5 +541,7 @@ if ($install_free_package) {
 	}
 	
 	echo json_encode($return);
+
+	return;
 }
 ?>

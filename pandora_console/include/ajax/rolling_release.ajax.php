@@ -23,13 +23,18 @@ if (is_ajax ()) {
 		$number = get_parameter('number');
 		$package = get_parameter('package');
 		$ent = get_parameter('ent');
+		$offline = get_parameter('offline');
 		if (!$ent) {
 			$dir = $config['attachment_store'] . "/last_package/downloads/extras/mr";
 		}
 		else {
-			$dir = sys_get_temp_dir() . "/pandora_oum/" . $package . "/extras/mr";
+			if ($offline) {
+				$dir = $package . "/extras/mr";
+			}
+			else {
+				$dir = sys_get_temp_dir() . "/pandora_oum/" . $package . "/extras/mr";
+			}
 		}
-		$dir = sys_get_temp_dir() . "/pandora_oum/" . $package . "/extras/mr";
 		$file = "$dir/$number.sql";
 		
 		$dangerous_query = false;

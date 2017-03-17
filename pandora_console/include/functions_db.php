@@ -1720,14 +1720,19 @@ function db_check_minor_relase_available () {
  * 
  * @return bool Return if minor release is available or not
  */
-function db_check_minor_relase_available_to_um ($package, $ent) {
+function db_check_minor_relase_available_to_um ($package, $ent, $offline) {
 	global $config;
 	
 	if (!$ent) {
 		$dir = $config['attachment_store'] . "/last_package/downloads/extras/mr";
 	}
 	else {
-		$dir = sys_get_temp_dir() . "/pandora_oum/" . $package . "/extras/mr";
+		if ($offline) {
+			$dir = $package . "/extras/mr";
+		}
+		else {
+			$dir = sys_get_temp_dir() . "/pandora_oum/" . $package . "/extras/mr";
+		}
 	}
 	
 	$have_minor_release = false;
@@ -1747,8 +1752,6 @@ function db_check_minor_relase_available_to_um ($package, $ent) {
 				$exists = false;
 				foreach ($sqlfiles_num as $num) {
 					$file_dest = $config["homedir"] . "/extras/mr/updated/$num.sql";
-					html_debug("AAAAA " . $file_dest, true);
-					html_debug(file_exists($file_dest), true);
 					if (file_exists($file_dest)) {
 						$exists = true;
 						unlink("$dir/$num.sql");

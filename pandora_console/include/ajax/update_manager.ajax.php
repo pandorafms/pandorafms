@@ -359,13 +359,14 @@ if ($check_online_free_packages) {
 if ($search_minor) {
 	$package = get_parameter('package', '');
 	$ent = get_parameter('ent', false);
+	$offline = get_parameter('offline', false);
 
-	$have_minor_releases = db_check_minor_relase_available_to_um($package, $ent);
+	$have_minor_releases = db_check_minor_relase_available_to_um($package, $ent, $offline);
 
 	$return['have_minor'] = false;
 	if ($have_minor_releases) {
 		$return['have_minor'] = true;
-		$size_mr = get_number_of_mr($package, $ent);
+		$size_mr = get_number_of_mr($package, $ent, $offline);
 		$return['mr'] = $size_mr;
 	}
 

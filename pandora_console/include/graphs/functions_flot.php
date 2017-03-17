@@ -203,7 +203,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 	}
 	
 	// Parent layer
-	$return = "<div class='parent_graph' style='width: " . ($width + 100) . "px; height: ".($height + 200 )."px; " . $background_style . "'>";
+	$return = "<div class='parent_graph' style='width: " . ($width + 100) . "px; " . $background_style . "'>";
 	// Set some containers to legend, graph, timestamp tooltip, etc.
 	$return .= "<p id='legend_$graph_id' class='legend_graph' style='font-size:".$font_size."pt'></p>";
 	
@@ -274,7 +274,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 		$height = 1;
 	}
 	if (!$dashboard && !$vconsole)
-		$return .= "<div id='overview_$graph_id' class='overview_graph' style='display: none; margin-left:0px; margin-top:20px; width: ".$width."px; height: ".$height ."px;'></div>";
+		$return .= "<div id='overview_$graph_id' class='overview_graph' style='display: none; margin-left:0px; margin-top:20px; margin-bottom:50px; width: ".$width."px; height: ".$height ."px;'></div>";
 	
 	if ($water_mark != '') {
 		$return .= "<div id='watermark_$graph_id' style='display:none; position:absolute;'><img id='watermark_image_$graph_id' src='$water_mark'></div>";

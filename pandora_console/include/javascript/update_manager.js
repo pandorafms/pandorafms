@@ -396,7 +396,10 @@ function install_package (package, homeurl) {
 															$('#cancel_pkg').html(dialog_cancel_pkg_text);
 															$('#cancel_pkg').dialog('open');
 
-															$("#box_online .content").html(mr_not_accepted);
+															$('#form-offline_update ul').find('li').removeClass('loading');
+															$('#form-offline_update ul').find('li').addClass('error');
+															$('#form-offline_update ul').find('li').find('p').html(mr_not_accepted)
+																.append("<i>"+data.message+"</i>");
 														}
 													}
 												});
@@ -589,11 +592,9 @@ function install_package (package, homeurl) {
 										$('#cancel_mr').html(dialog_cancel_mr_text);
 										$('#cancel_mr').dialog('open');
 
-										$("#box_online .loading").hide();
-										$("#box_online .downloading_package").hide();
-										$("#box_online .content").html("MR not accepted");
+										$('#form-offline_update ul').find('li').removeClass('loading');
 										$('#form-offline_update ul').find('li').addClass('error');
-										$('#form-offline_update ul').find('li').find('p').html(error_in_mr_accept)
+										$('#form-offline_update ul').find('li').find('p').html(mr_not_accepted)
 											.append("<i>"+data.message+"</i>");
 									}
 								}
@@ -731,6 +732,14 @@ function install_package (package, homeurl) {
 				dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>INFO</strong></h3>";
 				dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_cancel + "</p></div>";
 				dialog_cancel_pkg_text = dialog_cancel_pkg_text + "</div>";
+
+				$('#cancel_pkg').html(dialog_cancel_pkg_text);
+				$('#cancel_pkg').dialog('open');
+
+				$('#form-offline_update ul').find('li').removeClass('loading');
+				$('#form-offline_update ul').find('li').addClass('error');
+				$('#form-offline_update ul').find('li').find('p').html(package_not_accepted)
+					.append("<i>"+data.message+"</i>");
 
 				var parameters = {};
 				parameters['page'] = 'include/ajax/update_manager.ajax';

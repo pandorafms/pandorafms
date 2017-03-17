@@ -722,7 +722,6 @@ function update_manager_starting_update() {
 	}
 }
 
-
 function update_manager_recurse_copy($src, $dst, $black_list) { 
 	$dir = opendir($src); 
 	@mkdir($dst);

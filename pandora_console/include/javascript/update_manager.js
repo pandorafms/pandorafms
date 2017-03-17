@@ -1044,7 +1044,6 @@ function install_free_package_prev_step(package, version, homeurl) {
 															parameters2['update_last_free_package'] = 1;
 															parameters2['package'] = package;
 															parameters2['version'] = version;
-															parameters2['accept'] = 1;
 															
 															jQuery.post(
 																home_url + "ajax.php",
@@ -1146,7 +1145,6 @@ function install_free_package_prev_step(package, version, homeurl) {
 												parameters2['update_last_free_package'] = 1;
 												parameters2['package'] = package;
 												parameters2['version'] = version;
-												parameters2['accept'] = 1;
 												
 												jQuery.post(
 													home_url + "ajax.php",
@@ -1257,7 +1255,6 @@ function install_free_package_prev_step(package, version, homeurl) {
 							parameters2['update_last_free_package'] = 1;
 							parameters2['package'] = package;
 							parameters2['version'] = version;
-							parameters2['accept'] = 1;
 							
 							jQuery.post(
 								home_url + "ajax.php",

@@ -59,6 +59,7 @@ Además de las macros de módulo definidas, las siguientes macros están disponi
 <li>_moduletags_: URLs asociadas a los tags de módulos.</li>
 <li>_alert_critical_instructions_: Instrucciones contenidas en el módulo para un estado CRITICAL.</li>
 <li>_alert_warning_instructions_: Instrucciones contenidas en el módulo para un estado WARNING.</li>
+<li>_alert_unknown_instructions_: Instrucciones contenidas en el módulo para un estado UNKNOWN.</li>
 <li>_modulegraph_<i>n</i>h_: (>=6.0) (Solo para alertas que usen el comando <i>eMail</i>)
 Devuelve una imagen codificada en base64 de una gráfica del módulo con un período de <i>n</i> horas (eg. _modulegraph_24h_).
 Requiere de una configuración correcta de la conexión del servidor a la consola vía api,

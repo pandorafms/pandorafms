@@ -73,7 +73,7 @@ echo '<div id="header_login">';
 			}
 		}
 		else{
-			echo '<img src="images/custom_logo/logo_login_consola.png" alt="pandora_console">';	
+			echo '<img src="images/custom_logo/pandora_logo_head_3.png" alt="pandora_console">';	
 		}
 	echo '</div>';
 	echo '<div id="list_icon_docs_support"><ul>';

@@ -677,9 +677,6 @@ function update_manager_extract_package() {
  */
 function update_manager_starting_update() {
 	global $config;
-
-	$path_package = $config['attachment_store'] .
-		"/downloads/last_package.tgz";
 	
 	$full_path = $config['attachment_store'] . "/downloads/unix";
 	
@@ -729,7 +726,6 @@ function update_manager_recurse_copy($src, $dst, $black_list) {
 	@mkdir($dst);
 	@trigger_error("NONE");
 	
-	//debugPrint("mkdir(" . $dst . ")", true);
 	while (false !== ( $file = readdir($dir)) ) { 
 		if (( $file != '.' ) && ( $file != '..' ) && (!in_array($file, $black_list))) { 
 			if ( is_dir($src . '/' . $file) ) { 

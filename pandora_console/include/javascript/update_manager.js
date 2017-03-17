@@ -1476,8 +1476,8 @@ function apply_minor_release (n_mr, pkg, ent, off) {
 		params["updare_rr"] = 1;
 		params["number"] = mr;
 		params["ent"] = ent;
-		params["pkg"] = pkg;
-		params["off"] = off;
+		params["package"] = pkg;
+		params["offline"] = off;
 		params["page"] = "include/ajax/rolling_release.ajax";
 
 		jQuery.ajax ({

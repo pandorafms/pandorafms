@@ -404,28 +404,25 @@ button.ui-button::-moz-focus-inner {
 	position: absolute;
 	top: 0;
 	left: 0;
-	/*padding: .2em;*/
 	outline: 0;
 }
 .ui-dialog .ui-dialog-titlebar {
-	display: list-item;
+	display: inherit;
 	text-align: center;
 	padding: .4em 1em;
-	padding-top: 8px;
-	padding-bottom: 14px;
 	height: 30px;
-	/*margin: 3px;*/
 	position: relative;
 }
 .ui-dialog .ui-dialog-title {
 	font-family: Nunito;
-	font-size: 13pt;
 	margin: .1em 0;
 	white-space: nowrap;
 	width: 100%;
 	overflow: hidden;
 	text-overflow: ellipsis;
-    	font-size: 11pt;
+   	font-size: 11pt;
+   	position: relative;
+    top: 5px;
 }
 .ui-dialog .ui-dialog-titlebar-close {
 	position: absolute;

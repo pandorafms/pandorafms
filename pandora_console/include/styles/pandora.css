@@ -4115,3 +4115,7 @@ div.button_message_alert_form input{
     margin-right: 25px;
 }
 
+.ui-dialog .ui-dialog-titlebar {
+	background-color: #82b92e !important;
+}
+

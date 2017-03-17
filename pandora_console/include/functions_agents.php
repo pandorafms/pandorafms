@@ -1347,6 +1347,20 @@ function agents_get_alias ($id_agent, $case = 'none') {
 	}
 }
 
+function agents_get_alias_by_name ($name, $case = 'none') {
+	$alias = (string) db_get_value ('alias', 'tagente', 'nombre', $name);
+	
+	switch ($case) {
+		case 'upper':
+			return mb_strtoupper($alias, 'UTF-8');
+		case 'lower':
+			return mb_strtolower($alias, 'UTF-8');
+		case 'none':
+		default:
+			return ($alias);
+	}
+}
+
 /**
  * Get the number of pandora data packets in the database.
  *

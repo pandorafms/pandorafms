@@ -527,11 +527,11 @@ if ($install_free_package) {
 	$version = get_parameter('version', '');
 
 	$install = update_manager_starting_update();
-	update_manager_set_current_package($version);
 	
 	sleep(3);
 	
 	if ($install) {
+		update_manager_set_current_package($version);
 		$return["status"] = "success";
 		$return["message"]= __("The package is installed.");
 	}

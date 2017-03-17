@@ -1445,6 +1445,32 @@ function install_free_package(package, version, homeurl) {
 			}
 			else {
 				stop_check_progress = 1;
+
+				$("<div id='error_pkg' class='dialog ui-dialog-content' title='" + package_available + "'></div>").dialog ({
+					resizable: true,
+					draggable: true,
+					modal: true,
+					overlay: {
+						opacity: 0.5,
+						background: 'black'
+					},
+					width: 600,
+					height: 250,
+					buttons: {
+						"Ok": function () {
+							$(this).dialog("close");
+						}
+					}
+				});
+
+				var dialog_error_pkg_text = "<div>";
+				dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
+				dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
+				dialog_error_pkg_text = dialog_error_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + data['message'] + "</p></div>";
+				dialog_error_pkg_text = dialog_error_pkg_text + "</div>";
+				
+				$('#error_pkg').html(dialog_error_pkg_text);
+				$('#error_pkg').dialog('open');
 			}
 		}
 	});

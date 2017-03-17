@@ -217,9 +217,35 @@ else {
                 $config["custom_logo_login"], '', '', '',true,false,true,'',$open,'width:240px');
 }
 
-	$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'custom_logo_login_preview', $open, '', 'class="sub camera"', true,false,$open,'visualmodal');
+$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'custom_logo_login_preview', $open, '', 'class="sub camera"', true,false,$open,'visualmodal');
 $row++;
 
+//Splash login
+if(enterprise_installed()) {
+	$table_styles->data[$row][0] = __('Custom Splash (login)') . ui_print_help_icon("custom_logo_login", true);
+
+	$table_styles->data[$row][1] = html_print_select(
+		list_files('enterprise/images/custom_splash_login', "png", 1, 0), 'custom_splash_login',
+		$config["custom_splash_login"], '', '', '',true,false,true,'',$open,'width:240px');
+
+	$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'custom_splash_login_preview', $open, '', 'class="sub camera"', true,false,$open,'visualmodal');
+	
+	$row++;
+}
+
+//login title1
+if(enterprise_installed()) {
+	$table_styles->data[$row][0] = __('Title 1 (login)') . ui_print_help_icon("custom_logo_login", true);
+	$table_styles->data[$row][1] = html_print_input_text ('custom_title1_login', $config["custom_title1_login"], '', 50, 50, true);
+	$row++;
+}
+
+//login text2
+if(enterprise_installed()) {
+	$table_styles->data[$row][0] = __('Title 2 (login)') . ui_print_help_icon("custom_logo_login", true);
+	$table_styles->data[$row][1] = html_print_input_text ('custom_title2_login', $config["custom_title2_login"], '', 50, 50, true);
+	$row++;
+}	
 
 $table_styles->data[$row][0] = __('Disable logo in graphs');
 $table_styles->data[$row][1] = __('Yes') . '&nbsp;' .
@@ -909,7 +935,7 @@ $("#button-custom_logo_preview").click (function (e) {
 		return;
 
 	$dialog = $("<div></div>");
-	$image = $("<img src=\"" + icon_path + "\">");
+	$image = $("<div style='background-color:grey'><img src=\"" + icon_path + "\"></div>");
 	$image
 		.css('max-width', '500px')
 		.css('max-height', '500px');
@@ -949,7 +975,7 @@ $("#button-custom_logo_login_preview").click (function (e) {
 		return;
 
 	$dialog = $("<div></div>");
-	$image = $("<img src=\"" + icon_path + "\">");
+	$image = $("<div style='background-color:grey'><img src=\"" + icon_path + "\"></div>");
 	$image
 		.css('max-width', '500px')
 		.css('max-height', '500px');
@@ -980,6 +1006,47 @@ $("#button-custom_logo_login_preview").click (function (e) {
 		// console.log(err);
 	}
 });
+
+$("#button-custom_splash_login_preview").click (function (e) {
+	var icon_name = $("select#custom_splash_login option:selected").val();
+	var icon_path = "<?php echo $config['homeurl']; if(enterprise_installed){ echo 'enterprise/'; } ?>images/custom_splash_login/" + icon_name;
+
+	if (icon_name == "")
+		return;
+
+	$dialog = $("<div></div>");
+	$image = $("<img src=\"" + icon_path + "\">");
+	$image
+		.css('max-width', '500px')
+		.css('max-height', '500px');
+
+	try {
+		$dialog
+			.hide()
+			.html($image)
+			.dialog({
+				title: "<?php echo __('Splash Preview'); ?>",
+				resizable: true,
+				draggable: true,
+				modal: true,
+				overlay: {
+					opacity: 0.5,
+					background: "black"
+				},
+				minHeight: 1,
+				width: $image.width,
+				close: function () {
+					$dialog
+						.empty()
+						.remove();
+				}
+			}).show();
+	}
+	catch (err) {
+		// console.log(err);
+	}
+});
+
 
 $("#button-login_background_preview").click (function (e) {
 	var icon_name = $("select#login_background option:selected").val();

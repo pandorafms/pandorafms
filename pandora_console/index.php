@@ -339,7 +339,7 @@ if (! isset ($config['id_user'])) {
 					case PASSSWORD_POLICIES_FIRST_CHANGE: //first change
 					case PASSSWORD_POLICIES_EXPIRED: //pass expired
 						$expired_pass = true;
-						login_change_password($nick);
+						login_change_password($nick, '',$check_status);
 						break;
 				}
 			}

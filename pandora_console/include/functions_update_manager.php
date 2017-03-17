@@ -678,16 +678,16 @@ function update_manager_extract_package() {
 function update_manager_starting_update() {
 	global $config;
 	
-	$full_path = $config['attachment_store'] . "/downloads/";
+	$full_path = $config['attachment_store'] . "/downloads";
 	
 	$homedir = $config['homedir'];
-	
+
 	$result = update_manager_recurse_copy(
 		$full_path,
 		$homedir,
 		array('install.php'));
 
-	rrmdir($full_path);
+	rrmdir($full_path . "/pandora_console");
 
 	if (!$result) {
 		db_process_sql_update('tconfig',

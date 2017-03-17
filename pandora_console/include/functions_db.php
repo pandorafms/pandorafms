@@ -1720,20 +1720,10 @@ function db_check_minor_relase_available () {
  * 
  * @return bool Return if minor release is available or not
  */
-function db_check_minor_relase_available_to_um ($package, $ent, $offline) {
+function db_check_minor_relase_available_to_um ($package) {
 	global $config;
 	
-	if (!$ent) {
-		$dir = $config['attachment_store'] . "/last_package/downloads/extras/mr";
-	}
-	else {
-		if ($offline) {
-			$dir = $package . "/extras/mr";
-		}
-		else {
-			$dir = sys_get_temp_dir() . "/pandora_oum/" . $package . "/extras/mr";
-		}
-	}
+	$dir = sys_get_temp_dir() . "/pandora_oum/" . $package . "/extras/mr";
 	
 	$have_minor_release = false;
 	

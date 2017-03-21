@@ -1287,3 +1287,8 @@ ALTER TABLE trecon_task ADD `alias_as_name` int(2) unsigned default '0';
 -- ---------------------------------------------------------------------
 UPDATE twidget_dashboard SET id_widget = (SELECT id FROM twidget WHERE unique_name = 'graph_module_histogram') WHERE id_widget = (SELECT id FROM twidget WHERE unique_name = 'graph_availability');
 DELETE FROM twidget WHERE unique_name = 'graph_availability';
+
+-- ---------------------------------------------------------------------
+-- Table `tbackup`
+-- ---------------------------------------------------------------------
+ALTER TABLE tbackup ADD COLUMN `filepath` varchar(512) NOT NULL DEFAULT "";

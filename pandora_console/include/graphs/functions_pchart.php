@@ -749,6 +749,7 @@ function pch_bar_graph ($graph_type, $index, $data, $width, $height, $font,
 				"GridR"=>200,"GridG"=>200,"GridB"=>200,"DrawSubTicks"=>TRUE,"CycleBackground"=>TRUE, 
 				"Mode"=>SCALE_MODE_START0, "LabelRotation" => 60);
 			$margin_left = 40;
+			$margin_right = 0;
 			$margin_top = 10;
 			$margin_bottom = 3 * $max_chars;
 			break;
@@ -757,24 +758,14 @@ function pch_bar_graph ($graph_type, $index, $data, $width, $height, $font,
 				"CycleBackground"=>TRUE, "Mode"=>SCALE_MODE_START0, "Pos"=>SCALE_POS_TOPBOTTOM, 
 				"LabelValuesRotation" => 30);
 			$margin_left = $font_size * $max_chars;
+			$margin_right = 15;
 			$margin_top = 40;
 			$margin_bottom = 10;
 			break;
 	}
 	
-	$water_mark_height = 0;
-	$water_mark_width = 0;
-	if (!empty($water_mark)) {
-		$size_water_mark = getimagesize($water_mark);
-		$water_mark_height = $size_water_mark[1];
-		$water_mark_width = $size_water_mark[0];
-		
-		$myPicture->drawFromPNG(($width - $water_mark_width),
-			($height - $water_mark_height) - $margin_bottom, $water_mark);
-	}
-	
 	/* Define the chart area */
-	$myPicture->setGraphArea($margin_left,$margin_top,$width - $water_mark_width,$height-$margin_bottom);
+	$myPicture->setGraphArea($margin_left, $margin_top, $width - $margin_right, $height - $margin_bottom);
 	
 	$myPicture->drawScale($scaleSettings);
 	/*
@@ -791,6 +782,15 @@ function pch_bar_graph ($graph_type, $index, $data, $width, $height, $font,
 	$settings = array("ForceTransparency"=>"-1", "Gradient"=>TRUE,"GradientMode"=>GRADIENT_EFFECT_CAN,"DisplayValues"=>$show_values,"DisplayZeroValues"=>FALSE,"DisplayR"=>100,"DisplayG"=>100,"DisplayB"=>100,"DisplayShadow"=>TRUE,"Surrounding"=>5,"AroundZero"=>FALSE, "OverrideColors"=>$overridePalette);
 	
 	$myPicture->drawBarChart($settings);
+	
+	// Paint the water mark at the last moment to show it in front
+	if (!empty($water_mark)) {
+		$size_water_mark = getimagesize($water_mark);
+		$water_mark_width = $size_water_mark[0];
+		
+		$myPicture->drawFromPNG(($width - $water_mark_width - $margin_right),
+			$margin_top, $water_mark);
+	}
 	
 	/* Render the picture */
 	$myPicture->stroke(); 
@@ -907,7 +907,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 		
 	}
 	/* Create the pChart object */
-	$myPicture = new pImage($width, $height, $MyData, $transparent,
+	$myPicture = new pImage($width, $height + $font_size, $MyData, $transparent,
 		$backgroundColor, $fontColor);
 	
 	/* Turn of Antialiasing */
@@ -920,6 +920,8 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	$myPicture->setFontProperties(
 		array("FontName" =>$font, "FontSize" => $font_size));
 	
+	// By default, set a top margin of 5 px
+	$top_margin = 5;
 	if (isset($legend)) {
 		/* Set horizontal legend if is posible */
 		$legend_mode = LEGEND_HORIZONTAL;
@@ -929,6 +931,9 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 			$legend_mode = LEGEND_VERTICAL;
 			$size = $myPicture->getLegendSize(array("Style"=>LEGEND_NOBORDER,"Mode"=>$legend_mode));
 		}
+		
+		// Update the top margin to add the legend Height
+		$top_margin = $size['Height'];
 		
 		/* Write the chart legend */
 		$myPicture->drawLegend($width - $size['Width'], 8,
@@ -948,7 +953,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 		
 		$myPicture->drawFromPNG(
 			($width - $water_mark_width),
-			($height - $water_mark_height) - $margin_bottom,
+			$top_margin,
 			$water_mark);
 	}
 	
@@ -999,20 +1004,9 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 		$chart_size = $default_chart_size;
 	}
 	
-	if (isset($size['Height'])) {
-		/* Define the chart area */
-		//if ($yaxisname != '') {
-		//}
-		$myPicture->setGraphArea($chart_size, $size['Height'], 
-			($width - $water_mark_width),
-			($height - $margin_bottom));
-	}
-	else {
-		/* Define the chart area */
-		$myPicture->setGraphArea($chart_size, 5,
-			($width - $water_mark_width),
-			($height - $margin_bottom));
-	}
+	$myPicture->setGraphArea($chart_size, $top_margin, 
+		$width,
+		($height - $margin_bottom));
 	
 	/*Get minimun value to draw axis properly*/
 	$min_data = min(min($data));

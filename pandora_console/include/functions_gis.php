@@ -1074,7 +1074,7 @@ function gis_get_agent_map($agent_id, $heigth, $width, $show_history = false, $c
 	
 	
 	gis_add_agent_point("layer_for_agent_" . $agent_name,
-		$clean_agent_name, $agentPositionLatitude, $agentPositionLongitude,
+		io_safe_output($clean_agent_name), $agentPositionLatitude, $agentPositionLongitude,
 		$agent_icon, $agent_icon_width, $agent_icon_height, $agent_id,
 		$status, 'point_agent_info');
 	

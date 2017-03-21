@@ -528,6 +528,8 @@ function install_package (package, homeurl) {
 												
 												// Check the status of the update
 												check_install_package(package, homeurl);
+
+												remove_rr_file(data['mr']);
 											}
 										}
 										else {
@@ -1167,6 +1169,8 @@ function install_free_package_prev_step(package, version, homeurl) {
 													},
 													"json"
 												);
+
+												remove_rr_file(data['mr']);
 											}
 										}
 										else {
@@ -1525,4 +1529,21 @@ function apply_minor_release (n_mr, pkg, ent, off) {
 	$(".ui-dialog-buttonset").empty();
 
 	return error;
+}
+
+function remove_rr_file (number) {
+	var params = {};
+	params["remove_rr"] = 1;
+	params["number"] = number;
+	params["page"] = "include/ajax/rolling_release.ajax";
+
+	jQuery.ajax ({
+		data: params,
+		async: false,
+		dataType: "html",
+		type: "POST",
+		url: "ajax.php",
+		success: function (data) {
+		}
+	});
 }

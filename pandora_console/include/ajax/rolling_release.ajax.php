@@ -18,6 +18,7 @@ if (is_ajax ()) {
 	check_login();
 
 	$updare_rr = get_parameter('updare_rr', 0);
+	$remove_rr = get_parameter('remove_rr', 0);
 	
 	if ($updare_rr) {
 		$number = get_parameter('number');
@@ -138,6 +139,15 @@ if (is_ajax ()) {
 		
 		echo $message;
 		return;
+	}
+
+	if ($remove_rr) {
+		$number = get_parameter('number');
+
+		$file = $config["homedir"] . "/extras/mr/$number.sql";
+		if (file_exists($file)) {
+			unlink($file);
+		}
 	}
 }
 

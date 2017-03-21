@@ -66,14 +66,13 @@ if (is_ajax ()) {
 						$message = "bad_mr_filename";
 					}
 					else if ($config["MR"] > $number) {
-						if (!file_exists($dir."/updated") || !is_dir($dir."/updated")) {
-							mkdir($dir."/updated");
+						if (!file_exists($config["homedir"] . "/extras/mr/updated") || !is_dir($config["homedir"] . "/extras/mr/updated")) {
+							mkdir($config["homedir"] . "/extras/mr/updated");
 						}
 						
 						$file_dest = $config["homedir"] . "/extras/mr/updated/$number.sql";
-						if (copy($file, $file_dest)) {
-							unlink($file);
-						}
+						copy($file, $file_dest);
+												
 						$message = "bad_mr_filename";
 					}
 					else {
@@ -85,15 +84,13 @@ if (is_ajax ()) {
 							}
 							
 							if ($config["MR"] == $number) {
-								if (!file_exists($dir."/updated") || !is_dir($dir."/updated")) {
-									mkdir($dir."/updated");
+								if (!file_exists($config["homedir"] . "/extras/mr/updated") || !is_dir($config["homedir"] . "/extras/mr/updated")) {
+									mkdir($config["homedir"] . "/extras/mr/updated");
 								}
 								
 								$file_dest = $config["homedir"] . "/extras/mr/updated/$number.sql";
 								
-								if (copy($file, $file_dest)) {
-									unlink($file);
-								}
+								copy($file, $file_dest);
 							}
 						}
 						else {

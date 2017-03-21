@@ -141,10 +141,14 @@ if (is_ajax ()) {
 	if ($remove_rr) {
 		$number = get_parameter('number');
 
-		$file = $config["homedir"] . "/extras/mr/$number.sql";
-		if (file_exists($file)) {
-			unlink($file);
+		for ($i = 1; $i <= $number; $i++) {
+			$file = $config["homedir"] . "/extras/mr/$i.sql";
+			if (file_exists($file)) {
+				unlink($file);
+			}
 		}
+		
+		return;
 	}
 }
 

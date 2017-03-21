@@ -19,7 +19,7 @@ if (is_ajax ()) {
 
 	$updare_rr = get_parameter('updare_rr', 0);
 	$remove_rr = get_parameter('remove_rr', 0);
-	$$remove_rr_extras = get_parameter('remove_rr_extras', 0);
+	$remove_rr_extras = get_parameter('remove_rr_extras', 0);
 	
 	if ($updare_rr) {
 		$number = get_parameter('number');

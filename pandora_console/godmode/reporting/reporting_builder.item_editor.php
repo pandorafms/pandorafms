@@ -1053,7 +1053,12 @@ You can of course remove the warnings, that's why we include the source and do n
 			<td style="font-weight:bold;"><?php echo __('Modules'); ?></td>
 			<td>
 				<?php
-					$all_modules = db_get_all_rows_sql("SELECT DISTINCT nombre, id_agente_modulo FROM tagente_modulo WHERE id_agente IN (" . implode(',', array_values($id_agents)) . ")");
+					if(empty($id_agents)||$id_agents == NULL|| $id_agents === 0){
+						$all_modules = "";
+					}else{
+						$all_modules = db_get_all_rows_sql("SELECT DISTINCT nombre, id_agente_modulo FROM 
+							tagente_modulo WHERE id_agente IN (" . implode(',', array_values($id_agents)) . ")");
+					}
 					if ((empty($all_modules)) || $all_modules == -1) $all_modules = array();
 					$modules_select = array();
 					$all_modules_structured = array();

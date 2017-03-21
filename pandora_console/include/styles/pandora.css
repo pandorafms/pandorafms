@@ -248,13 +248,6 @@ div#main {
 }
 div#main_help {
 	width: 100%;
-	padding-left: 0px;
-	padding-top: 0px;
-	background-color: #ffffff;
-	margin-top: 0px;
-	margin-left: 0px;
-	margin-right: 0px;
-	border-radius: 10px;
 }
 div#main_help div.databox, .license_databox {
 	background: F3F3F3;
@@ -3993,7 +3986,7 @@ span.span1{
 
 span.span2{
     font-size: 3vw;
-    font-family: 'lato-boldest';
+    font-family: 'lato-bolder';
     color: white;
 }
 
@@ -4119,3 +4112,37 @@ div.button_message_alert_form input{
 	background-color: #82b92e !important;
 }
 
+/*
+	styles help pandora
+*/
+
+div#main_help_new {
+	text-align: center;
+	padding: 20px;
+    border-bottom: 1px solid #c2c2c2;
+}
+
+div#main_help_new_content {
+	padding-left: 30px;
+    padding-right: 30px;
+    padding-bottom: 20px;
+    padding-top: 10px;
+    background: white;
+    height: 100%;
+}
+
+div#main_help_new_content h1 {
+	font-family: 'lato-boldest';
+	font-size: 14pt;
+}
+
+div#main_help_new_content p {
+	font-family: 'lato-bolder';
+	font-size: 12pt;
+}
+
+div#footer_help{
+	background: #333;
+	text-align: center;
+	padding: 10px;
+}

@@ -61,7 +61,7 @@ if (!empty($config['login_background'])) {
 	$background_url = "../../images/backgrounds/" . $config['login_background'];
 	$login_body_style = "style=\"background-image: url('$background_url');\"";
 }
-echo '<div id="login_body" ' . $login_body_style . '></div>';
+echo '<div id="login_body" ' . $login_body_style . '>';
 echo '<div id="header_login">';
 	echo '<div id="icon_custom_pandora">';
 		if (defined ('PANDORA_ENTERPRISE')) {
@@ -107,7 +107,7 @@ echo '<div class="login_page">';
 			}
 			else {
 				if (!isset ($config["custom_logo_login"]) || $config["custom_logo_login"] == 0){
-					html_print_image ("images/custom_logo_login/login_logo.png", false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
+					html_print_image ("images/custom_logo_login/pandora_logo.png", false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
 				}
 				else{
 					html_print_image ("images/custom_logo_login/".$config['custom_logo_login'], false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
@@ -249,17 +249,8 @@ echo '<div class="login_page">';
 		echo '</div>';
 	echo '</div>';
 echo '</div>';
-
-
-if (defined ('METACONSOLE')) {
-	echo '<div id="ver_num">';
-}
-else {
-	echo '<div id="ver_num">';
-}
-
-echo $pandora_version.(($develop_bypass == 1) ? ' '.__('Build').' '.$build_version : '') . '</div>';
-
+echo '<div id="ver_num">'.$pandora_version.(($develop_bypass == 1) ? ' '.__('Build').' '.$build_version : '') . '</div>';
+echo '</div>';
 
 if (isset ($login_failed)) {
 	echo '<div id="login_failed" title="' . __('Login failed') . '">';

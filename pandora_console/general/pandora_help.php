@@ -19,7 +19,7 @@ require_once ("../include/config.php");
 require_once ("../include/functions.php");
 require_once ("../include/functions_html.php");
 ?>
-<html style="height:100%; margin-top: 25px; margin-left: 15px; margin-right: 15px;"><head><title>
+<html style="height:100%; margin-top: 25px; margin-left: 15px; margin-right: 15px; background-color: #333;"><head><title>
 <?php
 	echo __('Pandora FMS help system');
 ?>
@@ -27,7 +27,7 @@ require_once ("../include/functions_html.php");
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 </head>
 <?php echo '<link rel="stylesheet" href="../include/styles/'.$config['style'].'.css" type="text/css">'; ?>
-<body style="background-color: #555555; height: 100%; ">
+<body style="height: 100%; ">
 <?php
 
 $id = get_parameter ('id');
@@ -62,17 +62,25 @@ foreach ($files as $file) {
 
 if (! $id || ! file_exists ($help_file)) {
 	echo '<div id="main_help">';
-	echo '<span style="float:left; margin: 20px 20px 0px 20px; padding: 0px">';
-	echo html_print_image('images/pandora_tinylogo.png', true, array("border" => '0'));
-	echo "</span>";
-	echo '<p style="text-align: right"><strong style="float: right; padding-top: 12px; padding-right: 8px;">'. html_print_image('images/interrogant.png', true, array('title' => __('Pandora FMS help system'))) . '</strong></p>';
-	echo '<div style="clear:both;"></div>';
+		if (is_metaconsole()) {
+			
+		}
+		else{
+			echo html_print_image('images/pandora_tinylogo.png', true, array("border" => '0'));	
+		}
+	echo '</div>';
 	echo '<div style="font-family: verdana, arial; font-size: 11px; text-align:left">';
 	echo '<div style="font-size: 12px; margin-left: 20px; margin-right:20px; " class="databox">';
 	echo '<h1>';
 	echo __('Help system error');
 	echo "</h1><HR><br>";
 	echo "<div style='text-align: center;'>";
+	if (is_metaconsole()) {
+		echo '<img src="'.$config["homeurl"].'images/pandora_logo.png">';
+	}
+	else{
+		echo html_print_image("images/pandora_logo.png", false, array("border" => '0')) . '<br>';
+	}
 	echo html_print_image("images/pandora_logo.png", array("border" => '0')) . '<br>';
 	echo "</div>";
 	echo '<div class="msg">'.__('Pandora FMS help system has been called with a help reference that currently don\'t exist. There is no help content to show.').'</div></div></div>';
@@ -83,31 +91,33 @@ if (! $id || ! file_exists ($help_file)) {
 }
 
 /* Show help */
-echo '<div id="main_help">';
-echo '<span style="float:left; margin: 20px 20px 0px 20px; padding: 0px">';
-if (empty($config['enterprise_installed'])) {
-	echo html_print_image('images/pandora_tinylogo_open.png', true, array("border" => '0'));
-}
-else {
-	echo html_print_image('images/pandora_tinylogo.png', true, array("border" => '0'));
-}
-echo "</span>";
-echo '<p style="text-align: right"><strong style="float: right; padding-top: 12px; padding-right: 8px;">'. html_print_image('images/interrogant.png', true, array('title' => __('Pandora FMS help system'))) . '</strong></p>';
-echo '<div style="clear:both;"></div>';
-echo '<div style="font-family: verdana, arial; font-size: 11px; text-align:left">';
-echo '<div style="font-size: 12px; margin-left: 20px; margin-right:20px;" class="databox">';
+echo '<div id="main_help_new">';
+	if (empty($config['enterprise_installed'])) {
+		echo html_print_image('images/pandora_tinylogo_open.png', true, array("border" => '0'));
+	}
+	else {
+		if (is_metaconsole()) {
+			echo '<img src="'.$config["homeurl"].'images/pandora_tinylogo.png">';
+		}
+		else{
+			echo html_print_image('images/pandora_tinylogo.png', true, array("border" => '0'));
+		}
+	}
+echo '</div>';
+echo '<div id="main_help_new_content">';
 ob_start();
 require_once ($help_file);
 $help = ob_get_contents();
 ob_end_clean();
 
 // Add a line after H1 tags
-$help = str_replace('</H1>', '</H1><HR>', $help);
-$help = str_replace('</h1>', '</h1><hr>', $help);
+$help = str_replace('</H1>', '</H1>', $help);
+$help = str_replace('</h1>', '</h1>', $help);
 echo $help;
-echo '<br /><br /></div>';
-echo '<div style="text-align: center; padding: 15px; font-family: verdana, arial; font-size: 11px;">';
+echo '</div>';
+echo '<div id="footer_help">';
 include ('footer.php');
+echo '</div>';
 ?>
 </body>
 </html>

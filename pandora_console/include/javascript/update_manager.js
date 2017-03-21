@@ -705,6 +705,8 @@ function install_package (package, homeurl) {
 							
 							// Check the status of the update
 							check_install_package(package, homeurl);
+
+							remove_rr_file_to_extras();
 						}
 					}
 				});
@@ -1281,6 +1283,8 @@ function install_free_package_prev_step(package, version, homeurl) {
 								},
 								"json"
 							);
+
+							remove_rr_file_to_extras();
 						}
 					}
 				);
@@ -1535,6 +1539,22 @@ function remove_rr_file (number) {
 	var params = {};
 	params["remove_rr"] = 1;
 	params["number"] = number;
+	params["page"] = "include/ajax/rolling_release.ajax";
+
+	jQuery.ajax ({
+		data: params,
+		async: false,
+		dataType: "html",
+		type: "POST",
+		url: "ajax.php",
+		success: function (data) {
+		}
+	});
+}
+
+function remove_rr_file_to_extras () {
+	var params = {};
+	params["remove_rr_extras"] = 1;
 	params["page"] = "include/ajax/rolling_release.ajax";
 
 	jQuery.ajax ({

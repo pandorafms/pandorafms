@@ -1543,7 +1543,6 @@ function remove_rr_file (number) {
 
 	jQuery.ajax ({
 		data: params,
-		async: false,
 		dataType: "html",
 		type: "POST",
 		url: "ajax.php",
@@ -1559,7 +1558,6 @@ function remove_rr_file_to_extras () {
 
 	jQuery.ajax ({
 		data: params,
-		async: false,
 		dataType: "html",
 		type: "POST",
 		url: "ajax.php",

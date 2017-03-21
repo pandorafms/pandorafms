@@ -78,6 +78,7 @@ if (is_ajax ()) {
 					}
 					else {
 						$result = db_run_sql_file($file);
+
 						if ($result) {
 							$update_config = update_config_token("MR", $number);
 							if ($update_config) {
@@ -176,6 +177,7 @@ if (is_ajax ()) {
 				}
 			}
 		}
+		return;
 	}
 }
 

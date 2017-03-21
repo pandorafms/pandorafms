@@ -1361,7 +1361,7 @@ function reporting_html_agent_module($table, $item) {
 					break;
 			}
 			
-			$file_name = ui_print_truncate_text($row['agent_alias'], 'agent_small',
+			$file_name = ui_print_truncate_text($row['agent_name'], 'agent_small',
 					false, true, false, '...');
 			$table_data .= "<td style='background-color: " . $rowcolor . ";'>" .
 				$file_name . "</td>";

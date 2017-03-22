@@ -3604,7 +3604,12 @@ sub on_demand_macro($$$$$$) {
 		return (defined($field_value)) ? $field_value : '';	
 	} elsif ($macro eq '_prevdata_') {
 		return '' unless defined ($module);
-		my $field_value = get_db_value($dbh, 'SELECT datos FROM tagente_datos where id_agente_modulo = ? order by utimestamp desc limit 1 offset 1', $module->{'id_agente_modulo'});
+		if ($module->{'id_tipo_modulo'} eq 3){
+			my $field_value = get_db_value($dbh, 'SELECT datos FROM tagente_datos_string where id_agente_modulo = ? order by utimestamp desc limit 1 offset 1', $module->{'id_agente_modulo'});
+		}
+		else{
+			my $field_value = get_db_value($dbh, 'SELECT datos FROM tagente_datos where id_agente_modulo = ? order by utimestamp desc limit 1 offset 1', $module->{'id_agente_modulo'});
+		}
 	}
 }
 

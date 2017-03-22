@@ -124,6 +124,8 @@ if (isset($_GET["update"]) || (isset($_GET["upd"]))) {
 		$parent_recursion = $row["parent_recursion"];
 		$macros = $row["macros"];
 		$alias_as_name = $row["alias_as_name"];
+		$snmp_enabled = $row["snmp_enabled"];
+		$vlan_enabled = $row["vlan_enabled"];
 		
 		$name_script = db_get_value('name',
 			'trecon_script', 'id_recon_script', $id_recon_script);
@@ -169,6 +171,8 @@ elseif (isset($_GET["create"]) || isset($_GET["crt"])) {
 		$parent_recursion = 5;
 		$macros = '';
 		$alias_as_name = 0;
+		$snmp_enabled = 0;
+		$vlan_enabled = 0;
 	}
 
 	$modify = false;
@@ -207,6 +211,8 @@ $table->rowclass[18] = "network_sweep";
 $table->rowclass[19] = "network_sweep";
 $table->rowclass[20] = "network_sweep";
 $table->rowclass[21] = "network_sweep";
+$table->rowclass[22] = "network_sweep";
+$table->rowclass[23] = "network_sweep";
 
 $table->rowclass[6] = "recon_script";
 $table->rowclass[12] = "recon_script";
@@ -374,6 +380,14 @@ $table->data[20][1] =  html_print_checkbox ('parent_detection', 1, $parent_detec
 // Parent recursion
 $table->data[21][0] = "<b>".__('Parent recursion');
 $table->data[21][1] =  html_print_input_text ('parent_recursion', $parent_recursion, '', 5, 0, true) . ui_print_help_tip (__('Maximum number of parent hosts that will be created if parent detection is enabled.'), true);
+
+//snmp_enabled
+$table->data[22][0] = "<b>".__('SNMP enabled');
+$table->data[22][1] =  html_print_checkbox ('snmp_enabled', 1, $snmp_enabled, true);
+
+//vlan_enabled
+$table->data[23][0] = "<b>".__('Vlan enabled');
+$table->data[23][1] =  html_print_checkbox ('vlan_enabled', 1, $vlan_enabled, true);
 
 // Alias as name
 // NOTE: The 7.0NG Recon Server will not generate random names, since IP

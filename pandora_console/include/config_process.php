@@ -127,9 +127,9 @@ require_once ($ownDir. 'functions_config.php');
 // Later will be replaced by the good one.
 if (!defined('METACONSOLE')) {
 	if(!isset($config["homeurl"])){
-		$url = preg_match('/(\/.+)\/.*\/*/', $_SERVER['REQUEST_URI'], $match);
-		$config["homeurl"] = $match[1];
-		$config["homeurl_static"] = $match[1];
+		$url = explode('/', $_SERVER['REQUEST_URI']);
+		$config["homeurl"] = $url[1];
+		$config["homeurl_static"] = $url[1];
 		$config["error"] = "homeurl_bad_defined";
 		return;
 	}

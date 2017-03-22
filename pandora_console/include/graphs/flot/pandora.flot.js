@@ -1872,8 +1872,6 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 		}
 		
 		extra_css = '';
-		if (!dashboard || !vconsole)
-			 extra_css = " transform:rotate(-28deg); margin-left: -50px;";
 		return '<div class='+font+' style="font-size:'+font_size+'pt; margin-top:15px;'+extra_css+'">'+labels[v]+'</div>';
 	}
 

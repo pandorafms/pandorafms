@@ -133,17 +133,15 @@ if (!defined('METACONSOLE')) {
 		$config["error"] = "homeurl_bad_defined";
 		return;
 	}
-	//else{
-		//$url = preg_match('/(\/.+)\/.*\/*/', $_SERVER['REQUEST_URI'], $match);
-		//html_debug_print($config["homeurl"], true);
-		//html_debug_print($match[1], true);
-		//if($config["homeurl"] != $match[1]){
-		//	$config["homeurl"] = $match[1];
-		//	$config["homeurl_static"] = $match[1];
-		//	$config["error"] = "homeurl_bad_defined";
-		//	return;
-		//}
-	//}
+	else{
+		$url = explode('/', $_SERVER['REQUEST_URI']);
+		if($config["homeurl"] != '/'.$url[1]){
+			$config["homeurl"] = '/'.$url[1];
+			$config["homeurl_static"] = '/'.$url[1];
+			$config["error"] = "homeurl_bad_defined";
+			return;
+		}
+	}
 }
 if (!isset($config["homeurl_static"])) {
 	$config["homeurl_static"] = $config["homeurl"];

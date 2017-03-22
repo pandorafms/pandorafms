@@ -222,7 +222,7 @@ $row++;
 
 //Splash login
 if(enterprise_installed()) {
-	$table_styles->data[$row][0] = __('Custom Splash (login)') . ui_print_help_icon("custom_logo_login", true);
+	$table_styles->data[$row][0] = __('Custom Splash (login)');
 
 	$table_styles->data[$row][1] = html_print_select(
 		list_files('enterprise/images/custom_splash_login', "png", 1, 0), 'custom_splash_login',
@@ -235,14 +235,14 @@ if(enterprise_installed()) {
 
 //login title1
 if(enterprise_installed()) {
-	$table_styles->data[$row][0] = __('Title 1 (login)') . ui_print_help_icon("custom_logo_login", true);
+	$table_styles->data[$row][0] = __('Title 1 (login)');
 	$table_styles->data[$row][1] = html_print_input_text ('custom_title1_login', $config["custom_title1_login"], '', 50, 50, true);
 	$row++;
 }
 
 //login text2
 if(enterprise_installed()) {
-	$table_styles->data[$row][0] = __('Title 2 (login)') . ui_print_help_icon("custom_logo_login", true);
+	$table_styles->data[$row][0] = __('Title 2 (login)');
 	$table_styles->data[$row][1] = html_print_input_text ('custom_title2_login', $config["custom_title2_login"], '', 50, 50, true);
 	$row++;
 }	

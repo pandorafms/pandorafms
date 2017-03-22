@@ -1281,6 +1281,8 @@ ALTER TABLE twidget_dashboard MODIFY options LONGTEXT NOT NULL default "";
 -- Table `trecon_task`
 -- ---------------------------------------------------------------------
 ALTER TABLE trecon_task ADD `alias_as_name` int(2) unsigned default '0';
+ALTER TABLE trecon_task ADD `snmp_enabled` int(2) unsigned default '0';
+ALTER TABLE trecon_task ADD `vlan_enabled` int(2) unsigned default '0';
 
 -- ---------------------------------------------------------------------
 -- Table `twidget` AND Table `twidget_dashboard`

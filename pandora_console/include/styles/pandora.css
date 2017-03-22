@@ -383,7 +383,7 @@ div#foot {
 #login_body {
 	/* Set rules to fill background */
 	min-height: 100%;
-	min-width: 1024px;
+	min-width: 1200px;
 	width: 100%;
 	z-index: -9999;
 	position: absolute;
@@ -3847,7 +3847,7 @@ div.container_login{
 	margin-top: 10%;
     margin-left: 5%;
     margin-right: 5%;
-    min-width: 1200px;
+    
 }
 
 div.login_page {
@@ -4014,7 +4014,7 @@ div.img_banner_login img{
 
 /*modal windows login*/
 div.content_alert{
-	width: 100%;
+	width: 98%;
     margin-top: 20px;
 }
 
@@ -4145,4 +4145,9 @@ div#footer_help{
 	background: #333;
 	text-align: center;
 	padding: 10px;
+}
+
+/*center ui dialog center*/
+.ui-dialog-titlebar .ui-icon-closethick {
+	margin-top: -5px !important;
 }

@@ -36,11 +36,12 @@ if (!isset($config)) {
 		}
 	}
 }
-
-require_once ($config['homedir'].'/include/functions.php');
-require_once ($config['homedir'].'/include/functions_users.php');
-require_once ($config['homedir'].'/include/functions_groups.php');
-require_once ($config['homedir'].'/include/functions_ui.php');
+else{
+	require_once ($config['homedir'].'/include/functions.php');
+	require_once ($config['homedir'].'/include/functions_users.php');
+	require_once ($config['homedir'].'/include/functions_groups.php');
+	require_once ($config['homedir'].'/include/functions_ui.php');
+}
 
 
 /**

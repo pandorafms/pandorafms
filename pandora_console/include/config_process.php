@@ -35,6 +35,14 @@ else {
 	ini_set("date.timezone", $script_tz);
 }
 
+//home dir bad defined
+if (!is_dir($config['homedir'])) {
+	$ownDir = dirname(__FILE__) . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR;
+	$config['homedir'] = $ownDir;
+	$config["error"] = "homedir_bad_defined";
+}
+
+
 /* Help to debug problems. Override global PHP configuration */
 global $develop_bypass;
 if ($develop_bypass != 1) {
@@ -117,8 +125,32 @@ require_once ($ownDir. 'functions_config.php');
 // We need a timezone BEFORE calling config_process_config. 
 // If not we will get ugly warnings. Set Europe/Madrid by default
 // Later will be replaced by the good one.
+if (!defined('METACONSOLE')) {
+	if(!isset($config["homeurl"])){
+		$url = preg_match('/(\/.+)\/.*\/*/', $_SERVER['REQUEST_URI'], $match);
+		$config["homeurl"] = $match[1];
+		$config["homeurl_static"] = $match[1];
+		$config["error"] = "homeurl_bad_defined";
+		return;
+	}
+	else{
+		$url = preg_match('/(\/.+)\/.*\/*/', $_SERVER['REQUEST_URI'], $match);
+		if($config["homeurl"] != $match[1]){
+			$config["homeurl"] = $match[1];
+			$config["homeurl_static"] = $match[1];
+			$config["error"] = "homeurl_bad_defined";
+			return;
+		}
+	}
+}
 if (!isset($config["homeurl_static"])) {
 	$config["homeurl_static"] = $config["homeurl"];
+}
+else{
+	if($config["homeurl_static"] != $config["homeurl"]){
+		$config["error"] = "homeurl_bad_defined";
+		return;
+	}
 }
 
 date_default_timezone_set("Europe/Madrid");

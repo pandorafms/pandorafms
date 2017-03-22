@@ -36,6 +36,13 @@ switch ($login_screen) {
 		break;
 	case 'logout':
 	case 'double_auth':
+	case 'error_install':
+	case 'error_authconfig':
+	case 'error_dbconfig':
+	case 'error_noconfig':
+	case 'error_perms':
+	case 'homedir_bad_defined':
+	case 'homeurl_bad_defined':
 		$logo_link = 'index.php';
 		$logo_title = __('Go to Login');
 		break;
@@ -290,6 +297,89 @@ if ($login_screen == 'logout'){
 	echo '</div>';
 }
 
+switch ($login_screen) {
+	case 'error_authconfig':
+	case 'error_dbconfig':
+		$title = __('Problem with Pandora FMS database');
+		$message = __('Cannot connect to the database, please check your database setup in the <b>include/config.php</b> file.<i><br/><br/>
+		Probably your database, hostname, user or password values are incorrect or
+		the database server is not running.').'<br /><br />';
+		$message .= '<span class="red">';
+		$message .= '<b>' . __('DB ERROR') . ':</b><br>';
+		$message .= db_get_last_error();
+		$message .= '</span>';
+		
+		if ($error_code == 'error_authconfig') {
+			$message .= '<br/><br/>';
+			$message .= __('If you have modified auth system, this problem could be because Pandora cannot override authorization variables from the config database. Remove them from your database by executing:<br><pre>DELETE FROM tconfig WHERE token = "auth";</pre>');
+		}
+		break;
+	case 'error_emptyconfig':
+		$title = __('Empty configuration table');
+		$message = __('Cannot load configuration variables from database. Please check your database setup in the
+		<b>include/config.php</b> file.<i><br><br>
+		Most likely your database schema has been created but there are is no data in it, you have a problem with the database access credentials or your schema is out of date.
+		<br><br>Pandora FMS Console cannot find <i>include/config.php</i> or this file has invalid
+		permissions and HTTP server cannot read it. Please read documentation to fix this problem.</i>').'<br /><br />';
+		break;
+	case 'error_noconfig':
+		$title = __('No configuration file found');
+		$message = __('Pandora FMS Console cannot find <i>include/config.php</i> or this file has invalid
+		permissions and HTTP server cannot read it. Please read documentation to fix this problem.').'<br /><br />';
+		if (file_exists('install.php')) {
+			$link_start = '<a href="install.php">';
+			$link_end = '</a>';
+		}
+		else {
+			$link_start = '';
+			$link_end = '';
+		}
+		
+		$message .= sprintf(__('You may try to run the %s<b>installation wizard</b>%s to create one.'), $link_start, $link_end);
+		break;
+	case 'error_install':
+		$title = __('Installer active');
+		$message = __('For security reasons, normal operation is not possible until you delete installer file.
+		Please delete the <i>./install.php</i> file before running Pandora FMS Console.');
+		break;
+	case 'error_perms':
+		$title = __('Bad permission for include/config.php');
+		$message = __('For security reasons, <i>config.php</i> must have restrictive permissions, and "other" users
+		should not read it or write to it. It should be written only for owner
+		(usually www-data or http daemon user), normal operation is not possible until you change
+		permissions for <i>include/config.php</i> file. Please do it, it is for your security.');
+		break;
+	case 'homedir_bad_defined':
+		$title = __('Bad defined homedir');
+		$message = __('In the config.php file in the variable $config["homedir"] = add the correct path');
+		break;
+	case 'homeurl_bad_defined':
+		$title = __('Bad defined homeurl or homeurl_static');
+		$message = __('In the config.php file in the variable $config["homeurl"] or $config["homeurl_static"] = add the correct path');
+		break;
+}
+
+if($login_screen == 'error_authconfig' || $login_screen == 'error_emptyconfig' || $login_screen == 'error_install' ||
+	$login_screen == 'error_dbconfig' || $login_screen == 'error_noconfig' || $login_screen == 'error_perms' || 
+	$login_screen == 'homedir_bad_defined' || $login_screen == 'homeurl_bad_defined'){
+	echo '<div id="modal_alert" title="' . __('Login failed') . '">';
+		echo '<div class="content_alert">';
+			echo '<div class="icon_message_alert">';
+				echo html_print_image('images/icono_stop.png', true, array("alt" => __('Login failed'), "border" => 0));
+			echo '</div>';
+			echo '<div class="content_message_alert">';
+				echo '<div class="text_message_alert">';
+					echo '<h1>' . $title . '</h1>';
+					echo '<p> ' . $message . '</h1>';
+				echo '</div>';
+				echo '<div class="button_message_alert">';
+					html_print_submit_button("Ok", 'hide-login-error', false);  
+				echo '</div>';
+			echo '</div>';
+		echo '</div>';
+	echo '</div>';
+}
+
 ui_require_css_file ('dialog');
 ui_require_css_file ('jquery-ui-1.10.0.custom');
 ui_require_jquery_file('jquery-ui-1.10.0.custom');
@@ -299,50 +389,55 @@ ui_require_jquery_file('jquery-ui-1.10.0.custom');
 // Hidden div to forced title
 html_print_div(array('id' => 'forced_title_layer', 'class' => 'forced_title_layer', 'hidden' => true));
 
-html_print_div(array('id' => 'modal_alert', 'hidden' => true));
+//html_print_div(array('id' => 'modal_alert', 'hidden' => true));
 
 ?>
-<script type="text/javascript" language="javascript">
-	
+<script type="text/javascript" language="javascript">	
 	function show_normal_menu() {
 		document.getElementById('input_saml').style.display = 'none';
 		document.getElementById('log_nick').style.display = 'block';
 		document.getElementById('log_pass').style.display = 'block';
 		document.getElementById('log_button').style.display = 'block';
 		document.getElementById('remove_button').style.display = 'none';
-		
 		document.getElementById('log_nick').className = 'login_nick';
 		document.getElementById('log_pass').className = 'login_pass';
 	}
-	
-	function modal_alert_critical() {
-		$("#modal_alert").hide ()
-			.empty ()
-			.append ($('#log_msg').html())
-			.dialog ({
+
+	<?php
+	switch($login_screen) {
+		case 'error_authconfig':
+		case 'error_dbconfig':
+		case 'error_emptyconfig':
+		case 'error_noconfig':
+		case 'error_install':
+		case 'error_perms':
+		case 'homedir_bad_defined':
+		case 'homeurl_bad_defined':
+
+	?>
+	// Auto popup
+	$(document).ready (function () {
+		$(function() {
+			$("#modal_alert").dialog ({
 				title: $('#log_title').html(),
 				resizable: true,
 				draggable: false,
 				modal: true,
+				width: 600,
+				height: 250,
 				overlay: {
 					opacity: 0.5,
 					background: "black"
-				},
-				width: 500,
-				height: 200
-			})
-			.show ();
-	}
-	<?php
-	switch($login_screen) {
-		case 'error_authconfig':
-		case 'error_emptyconfig':
-	?>
-			// Auto popup
-			//modal_alert_critical();
-		$("#submit-hide-login-error").click (function () {
-			$("#login_failed" ).dialog('close')
+				}
+			});
 		});
+
+		$("#submit-hide-login-error").click (function () {
+			$("#modal_alert" ).dialog('close');
+			
+		});
+	});
+
 	<?php
 		break;
 		case 'logout':

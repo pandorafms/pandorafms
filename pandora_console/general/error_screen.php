@@ -13,28 +13,18 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
+include_once("include/functions.php");
+include_once("include/functions_html.php");
+include_once("include/functions_ui.php");
+include_once("include/functions_io.php");
+include_once("include/functions_extensions.php");
+echo '<html>';
+ob_start ('ui_process_page_head');
+echo '<link rel="stylesheet" href="include/styles/pandora.css" type="text/css">';
+echo '</head>' . "\n";
 
-?>
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-<head>
-<title>Pandora FMS - The Flexible Monitoring System - Console error</title>
-<meta http-equiv="expires" content="0">
-<meta http-equiv="content-type" content="text/html; charset=utf8">
-<meta name="resource-type" content="document">
-<meta name="distribution" content="global">
-<meta name="author" content="Sancho Lerena">
-<meta name="copyright" content="This is GPL software. Created by Sancho Lerena and others">
-<meta name="keywords" content="pandora, monitoring, system, GPL, software">
-<meta name="robots" content="index, follow">
-<link rel="icon" href="images/pandora.ico" type="image/ico">
-<link rel="stylesheet" href="include/styles/pandora.css" type="text/css">
-<link rel="stylesheet" href="include/styles/jquery-ui-1.10.0.custom.css" type="text/css">
-<link rel="stylesheet" href="include/styles/dialog.css" type="text/css">
-</head>
-<body>
-<?php 
+require_once ("include/functions_themes.php");
+ob_start ('ui_process_page_body');
 
 // At this point, $login_screen is setted with the error type desired
 

@@ -143,6 +143,7 @@ $interface_traffic_modules = array(
 		$width = (int) get_parameter("width", 555);
 		$height = (int) get_parameter("height", 245);
 		$start_date = (string) get_parameter("start_date", date("Y-m-d"));
+		$start_time = get_parameter ("start_time", date("H:i:s"));
 		$zoom = (int) get_parameter ("zoom", 1);
 		$baseline = get_parameter ("baseline", 0);
 		$show_percentil = get_parameter ("show_percentil", 0);
@@ -154,12 +155,19 @@ $interface_traffic_modules = array(
 			echo "<script type='text/javascript'>window.resizeTo($width + 120, $height + 320);</script>";
 		}
 		
-		$current = date("Y-m-d");
+		/*$current = date("Y-m-d");
 		
 		if ($start_date != $current)
 			$date = strtotime($start_date);
 		else
 			$date = $utime;
+		*/
+		$date = strtotime("$start_date $start_time");
+		$now = time();
+		
+		if ($date > $now){
+			$date = $now;
+		}
 		
 		$urlImage = ui_get_full_url(false);
 		
@@ -227,6 +235,12 @@ $interface_traffic_modules = array(
 		$data[0] = __('Begin date');
 		$data[1] = html_print_input_text ("start_date", substr ($start_date, 0, 10),'', 15, 255, true);
 		$data[1] .= html_print_image ("/images/calendar_view_day.png", true, array ("onclick" => "scwShow(scwID('text-start_date'),this);", "style" => 'vertical-align: bottom;'),false,false,false,true);
+		$table->data[] = $data;
+		$table->rowclass[] = '';
+		
+		$data = array();
+		$data[0] = __('Begin time');
+		$data[1] = html_print_input_text ("start_time", $start_time,'', 10, 10, true);
 		$table->data[] = $data;
 		$table->rowclass[] = '';
 		
@@ -333,6 +347,7 @@ ui_include_time_picker(true);
 	$("#text-start_date").datepicker({
 		dateFormat: "<?php echo DATE_FORMAT_JS; ?>"
 	});
+	
 	$("#text-start_time").timepicker({
 		showSecond: true,
 		timeFormat: '<?php echo TIME_FORMAT_JS; ?>',

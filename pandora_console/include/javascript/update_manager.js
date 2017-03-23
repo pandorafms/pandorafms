@@ -607,7 +607,7 @@ function install_package (package, homeurl) {
 							
 							var dialog_have_mr_text = "<div>";
 							dialog_have_mr_text = dialog_have_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_warning_mr.png'></div>";
-							dialog_have_mr_text = dialog_have_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>There are a DB changes</strong></h3>";
+							dialog_have_mr_text = dialog_have_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>This package includes db changes</strong></h3>";
 							dialog_have_mr_text = dialog_have_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + text1_mr_file + "</p>";
 							dialog_have_mr_text = dialog_have_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + text2_mr_file + "<a style='font-family:Verdana bold; font-size:12pt; color:#82B92E'href=\"index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list\">" + text3_mr_file + "</a>" + text4_mr_file + "</p></div>";
 							dialog_have_mr_text = dialog_have_mr_text + "</div>";
@@ -1247,7 +1247,7 @@ function install_free_package_prev_step(package, version, homeurl) {
 							
 							var dialog_have_mr_text = "<div>";
 							dialog_have_mr_text = dialog_have_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_warning_mr.png'></div>";
-							dialog_have_mr_text = dialog_have_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>There are a DB changes</strong></h3>";
+							dialog_have_mr_text = dialog_have_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>This package includes db changes</strong></h3>";
 							dialog_have_mr_text = dialog_have_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + text1_mr_file + "</p>";
 							dialog_have_mr_text = dialog_have_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + text2_mr_file + "<a style='font-family:Verdana bold; font-size:12pt; color:#82B92E'href=\"index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list\">" + text3_mr_file + "</a>" + text4_mr_file + "</p></div>";
 							dialog_have_mr_text = dialog_have_mr_text + "</div>";

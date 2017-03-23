@@ -491,6 +491,16 @@ $table_other->data[$row][0] = __('Default line thickness for the Visual Console'
 $table_other->data[$row][1] = html_print_input_text ('vc_line_thickness', $config["vc_line_thickness"], '', 5, 5, true);
 $row++;
 
+// Enrique (27/01/2017) New feature: Show report info on top of reports
+$table_other->data[$row][0] = __('Show report info with description') .
+	ui_print_help_tip(
+		__('Custom report description info. It will be applied to all reports and templates by default.'), true);
+$table_other->data[$row][1] = html_print_checkbox('custom_report_info', 1,
+	$config['custom_report_info'], true);
+$row++;
+
+//----------------------------------------------------------------------
+
 // Juanma (07/05/2014) New feature: Table for custom front page for reports  
 $table_other->data[$row][0] = __('Custom report front page') .
 	ui_print_help_tip(
@@ -499,28 +509,6 @@ $table_other->data[$row][1] = html_print_checkbox('custom_report_front', 1,
 	$config['custom_report_front'], true);
 $row++;
 //----------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 $dirItems = scandir($config['homedir'] . '/images/custom_logo');
 foreach ($dirItems as $entryDir) {

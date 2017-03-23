@@ -100,7 +100,39 @@ function reporting_html_header(&$table, $mini, $title, $subtitle,
 	array_push ($table->data, $data);
 }
 
-function reporting_html_print_report($report, $mini = false) {
+function html_do_report_info($report) {
+	global $config;
+	
+	$date_today = date ($config["date_format"]);
+	
+	$html = '<div style="border: 1px dashed #999; padding: 10px 15px; background: #f5f5f5;margin-top:20px;margin-bottom:20px;">' .
+		'<table>
+			<tr>
+				<td><b>' . __('Generated') . ': </b></td><td>' . $date_today . '</td>
+			</tr>
+			<tr>
+				<td><b>' . __('Report date') . ': </b></td>';
+				if (isset($report['period'])) {
+					$html .= '<td>' . date($config["date_format"], ($report['datetime'] - $report['period']));
+				}
+				else {
+					$html .= '<td>' . __('Items period before') . ' <b>' . date($config["date_format"], $report['datetime']) . '</b></td>';
+				}
+	$html .= '</tr>
+			<tr>
+				<td valign="top"><b>' . __('Description') . ': </b></td><td>' . io_safe_output($report['description']) . '</td>
+			</tr>
+		 </table>' .
+		'</div>';
+	
+	echo $html;
+}
+
+function reporting_html_print_report($report, $mini = false, $report_info = 1) {
+	
+	if($report_info == 1){
+		html_do_report_info($report);	
+	}
 	
 	foreach ($report['contents'] as $key => $item) {
 		$table = new stdClass();

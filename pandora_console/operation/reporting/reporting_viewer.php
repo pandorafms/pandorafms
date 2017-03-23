@@ -221,7 +221,7 @@ if ($enable_init_date) {
 $report = reporting_make_reporting_data(null, $id_report, $date, $time,
 	$period, 'dinamic');
 
-reporting_html_print_report($report);
+reporting_html_print_report($report,false,$config['custom_report_info']);
 
 
 //----------------------------------------------------------------------

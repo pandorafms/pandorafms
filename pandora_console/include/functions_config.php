@@ -593,10 +593,9 @@ function config_update_config () {
 					if (!config_update_value ('interval_values', $interval_values))
 						$error_update[] = __('Delete interval');
 					//--------------------------------------------------
-				
-				
-				
-				
+				if (!config_update_value ('custom_report_info', get_parameter('custom_report_info')))
+					$error_update[] = __('Custom report info');
+								
 				// Juanma (06/05/2014) New feature: Custom front page for reports  	
 				if (!config_update_value ('custom_report_front', get_parameter('custom_report_front')))
 					$error_update[] = __('Custom report front');

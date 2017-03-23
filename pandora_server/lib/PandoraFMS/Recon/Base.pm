@@ -1154,7 +1154,7 @@ sub scan($) {
 
 	# Get a list of found hosts.
 	my @hosts = @{$self->get_hosts()};
-	if (scalar(@hosts) > 0) {
+	if (scalar(@hosts) > 0 && $self->{'parent_detection'} == 1) {
 		# Delete previous connections. 
 		$self->call('delete_connections');
 	

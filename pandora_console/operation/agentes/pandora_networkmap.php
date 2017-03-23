@@ -74,7 +74,7 @@ if ($new_networkmap || $save_networkmap) {
 		$width = 4000;
 		$height = 4000;
 		
-		$method = (string) get_parameter('method', 'twopi');
+		$method = (string) get_parameter('method', 'fdp');
 		
 		$recon_task_id = (int) get_parameter(
 			'recon_task_id', 0);
@@ -203,7 +203,7 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
 		}
 		
 		$name = (string) get_parameter('name', '');
-		$method = (string) get_parameter('method', 'twopi');
+		$method = (string) get_parameter('method', 'fdp');
 		
 		$recon_task_id = (int) get_parameter(
 			'recon_task_id', 0);

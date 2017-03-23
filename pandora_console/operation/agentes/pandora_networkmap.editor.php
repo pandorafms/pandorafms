@@ -33,7 +33,7 @@ if ($new_networkmap) {
 	$id_group = 0;
 	$node_radius = 40;
 	$description = "";
-	$method = 'twopi';
+	$method = 'fdp';
 	$recon_task_id = 0;
 	$source = 'group';
 	$ip_mask = '';

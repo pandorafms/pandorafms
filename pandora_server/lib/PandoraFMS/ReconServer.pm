@@ -168,8 +168,10 @@ sub data_consumer ($$) {
 			pa_config => $pa_config,
 			recon_ports => $task->{'recon_ports'},
 			resolve_names => $task->{'resolve_names'},
+			snmp_enabled => $task->{'snmp_enabled'},
 			subnets => \@subnets,
 			task_id => $task->{'id_rt'},
+			vlan_cache_enabled => $task->{'vlan_enabled'},
 			%{$pa_config}
 		);
 
@@ -251,6 +253,8 @@ sub PandoraFMS::Recon::Base::guess_os($$) {
 	# OS detection disabled. Use the device type.
 	if ($self->{'os_detection'} == 0) {
 		my $device_type = $self->get_device_type($device);
+		return OS_OTHER unless defined($device_type);
+
 		return OS_ROUTER if ($device_type eq 'router');
 		return OS_SWITCH if ($device_type eq 'switch');
 		return OS_OTHER;
@@ -315,9 +319,6 @@ sub PandoraFMS::Recon::Base::create_network_profile_modules($$$) {
 sub PandoraFMS::Recon::Base::connect_agents($$$$$) {
 	my ($self, $dev_1, $if_1, $dev_2, $if_2) = @_;
 
-	# Check switch connectivy.
-	return if ($self->is_switch_connected($dev_1, $if_1, $dev_2, $if_2) == 1);
-
 	# Get the agent for the first device.
 	my $agent_1 = get_agent_from_addr($self->{'dbh'}, $dev_1);
 	if (!defined($agent_1)) {
@@ -332,9 +333,13 @@ sub PandoraFMS::Recon::Base::connect_agents($$$$$) {
 	}
 	return unless defined($agent_2);
 
+	# Use ping modules by default.
+	$if_1 = 'ping' if ($if_1 eq '');
+	$if_2 = 'ping' if ($if_2 eq '');
+
 	# Check whether the modules exists.
-	my $module_name_1 = safe_input($if_1 eq '' ? 'ping' : "${if_1}_ifOperStatus");
-	my $module_name_2 = safe_input($if_2 eq '' ? 'ping' : "${if_2}_ifOperStatus");
+	my $module_name_1 = $if_1 eq 'ping' ? 'ping' : "${if_1}_ifOperStatus";
+	my $module_name_2 = $if_2 eq 'ping' ? 'ping' : "${if_2}_ifOperStatus";
 	my $module_id_1 = get_agent_module_id($self->{'dbh'}, $module_name_1, $agent_1->{'id_agente'});
 	if ($module_id_1 <= 0) {
 		$self->call('message', "ERROR: Module " . safe_output($module_name_1) . " does not exist for agent $dev_1.", 5);
@@ -344,12 +349,6 @@ sub PandoraFMS::Recon::Base::connect_agents($$$$$) {
 	if ($module_id_2 <= 0) {
 		$self->call('message', "ERROR: Module " . safe_output($module_name_2) . " does not exist for agent $dev_2.", 5);
 		return;
-	}
-
-	# Make sure the modules are not already connected.
-	if ($self->are_connected($dev_1, $if_1, $dev_2, $if_2)) {
-			$self->call('message', "Devices $dev_1 and $dev_2 are already connected.", 10);
-			return;
 	}
 
 	# Connect the modules if they are not already connected.
@@ -647,19 +646,13 @@ sub PandoraFMS::Recon::Base::set_parent($$$) {
 	if (!defined($agent_parent)) {
 		$agent_parent = get_agent_from_name($self->{'dbh'}, $parent);
 	}
+	return unless (defined ($agent_parent));
 
-	my $parent_id;
-	if (defined ($agent_parent)) {
-		$parent_id = $agent_parent->{'id_agente'};
-		return unless ($agent_parent->{'modo'} == 1);
-	} else {
-		$parent_id = $self->call('create_agent', $parent);
-	}
+	# Is the agent in learning mode?
+	return unless ($agent_parent->{'modo'} == 1);
 
 	# Connect the host to its parent.
-	if ($parent_id > 0) {
-		db_do($self->{'dbh'}, 'UPDATE tagente SET id_parent=? WHERE id_agente=?', $parent_id, $agent->{'id_agente'});
-	}
+	db_do($self->{'dbh'}, 'UPDATE tagente SET id_parent=? WHERE id_agente=?', $agent_parent->{'id_agente'}, $agent->{'id_agente'});
 }
 
 ##########################################################################

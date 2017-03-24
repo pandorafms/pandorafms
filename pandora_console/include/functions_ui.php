@@ -800,7 +800,7 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 			else {
 				$img = 'images/policies.png';
 				
-				$data[$index['policy']] = '<a href="?sec=gpolicies&amp;sec2=enterprise/godmode/policies/policies&amp;id=' . $policyInfo['id'] . '">' .
+				$data[$index['policy']] = '<a href="?sec=gmodules&amp;sec2=enterprise/godmode/policies/policies&amp;id=' . $policyInfo['id'] . '">' .
 					html_print_image($img,true, array('title' => $policyInfo['name'])) .
 					'</a>';
 			}

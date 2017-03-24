@@ -115,7 +115,7 @@ if (enterprise_installed() && $alert['id_policy_alerts'] != 0) {
 	else {
 		$img = 'images/policies.png';
 		
-		$policy = '<a href="?sec=gpolicies&amp;sec2=enterprise/godmode/policies/policies&amp;id=' . $policyInfo['id'] . '">' . 
+		$policy = '<a href="?sec=gmodules&amp;sec2=enterprise/godmode/policies/policies&amp;id=' . $policyInfo['id'] . '">' . 
 			html_print_image($img, true, array('title' => $policyInfo['name'])) .
 			'</a>';
 	}

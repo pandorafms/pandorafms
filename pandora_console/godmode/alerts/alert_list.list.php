@@ -679,7 +679,7 @@ foreach ($simple_alerts as $alert) {
 			else {
 				$img = 'images/policies.png';
 
-				$data[3] .= '&nbsp;&nbsp;<a href="?sec=gpolicies&sec2=enterprise/godmode/policies/policies&pure='.$pure.'&id=' . $policyInfo['id'] . '">' .
+				$data[3] .= '&nbsp;&nbsp;<a href="?sec=gmodules&sec2=enterprise/godmode/policies/policies&pure='.$pure.'&id=' . $policyInfo['id'] . '">' .
 					html_print_image($img, true, array('title' => $policyInfo['name'])) .
 					'</a>';
 			}

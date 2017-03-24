@@ -27,7 +27,7 @@ if (is_ajax ()) {
 		$ent = get_parameter('ent');
 		$offline = get_parameter('offline');
 		if (!$ent) {
-			$dir = $config['attachment_store'] . "/last_package/downloads/pandora_console/extras/mr";
+			$dir = $config['attachment_store'] . "/downloads/pandora_console/extras/mr";
 		}
 		else {
 			if ($offline) {
@@ -38,7 +38,6 @@ if (is_ajax ()) {
 			}
 		}
 		$file = "$dir/$number.sql";
-		
 		$dangerous_query = false;
 		$mr_file = fopen($file, "r");
 		while (!feof($mr_file)) {

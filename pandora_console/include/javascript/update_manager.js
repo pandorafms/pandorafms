@@ -872,7 +872,6 @@ function update_last_package(package, version, homeurl) {
 		parameters,
 		function (data) {
 			if (data['in_progress']) {
-				$("#box_online .loading").hide();
 				$("#box_online .download_package").hide();
 				
 				$("#box_online .content").html(data['message']);
@@ -888,7 +887,6 @@ function update_last_package(package, version, homeurl) {
 					parameters2,
 					function (data) {
 						if (data['correct']) {
-							$("#box_online .loading").hide();
 							$("#box_online .download_package").hide();
 							
 							$("#box_online .content").html(data['message']);
@@ -981,9 +979,7 @@ function install_free_package_prev_step(package, version, homeurl) {
 					home_url + "ajax.php",
 					parameters,
 					function (data) {
-						$("#box_online .loading").hide();
 						$("#box_online .downloading_package").hide();
-						
 						if (data['have_minor']) {
 							$("<div id='mr_dialog2' class='dialog ui-dialog-content' title='" + mr_available + "'></div>").dialog ({
 								resizable: true,
@@ -999,7 +995,6 @@ function install_free_package_prev_step(package, version, homeurl) {
 									"Apply MR": function () {
 										var err = [];
 										err = apply_minor_release(data['mr'], package, 0, 0);
-
 										if (!err['error']) {
 											if (err['message'] == 'bad_mr_filename') {
 												$("#mr_dialog2").dialog("close");
@@ -1054,7 +1049,6 @@ function install_free_package_prev_step(package, version, homeurl) {
 																parameters2,
 																function (data) {
 																	if (data['in_progress']) {
-																		$("#box_online .loading").hide();
 																		$("#box_online .download_package").hide();
 																		
 																		$("#box_online .content").html(data['message']);
@@ -1070,6 +1064,8 @@ function install_free_package_prev_step(package, version, homeurl) {
 																},
 																"json"
 															);
+
+															remove_rr_file_to_extras();
 														},
 														"Cancel": function () {
 															$(this).dialog("close");
@@ -1155,7 +1151,6 @@ function install_free_package_prev_step(package, version, homeurl) {
 													parameters2,
 													function (data) {
 														if (data['in_progress']) {
-															$("#box_online .loading").hide();
 															$("#box_online .download_package").hide();
 															
 															$("#box_online .content").html(data['message']);
@@ -1172,7 +1167,7 @@ function install_free_package_prev_step(package, version, homeurl) {
 													"json"
 												);
 
-												remove_rr_file(data['mr']);
+												remove_rr_file_to_extras();
 											}
 										}
 										else {
@@ -1252,7 +1247,7 @@ function install_free_package_prev_step(package, version, homeurl) {
 							dialog_have_mr_text = dialog_have_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + text2_mr_file + "<a style='font-family:Verdana bold; font-size:12pt; color:#82B92E'href=\"index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list\">" + text3_mr_file + "</a>" + text4_mr_file + "</p></div>";
 							dialog_have_mr_text = dialog_have_mr_text + "</div>";
 														
-							$('#mr_dialog2').html(dialog_have_mr_mr_text);
+							$('#mr_dialog2').html(dialog_have_mr_text);
 							$('#mr_dialog2').dialog('open');
 						}
 						else {
@@ -1267,7 +1262,6 @@ function install_free_package_prev_step(package, version, homeurl) {
 								parameters2,
 								function (data) {
 									if (data['in_progress']) {
-										$("#box_online .loading").hide();
 										$("#box_online .download_package").hide();
 										
 										$("#box_online .content").html(data['message']);
@@ -1286,7 +1280,8 @@ function install_free_package_prev_step(package, version, homeurl) {
 
 							remove_rr_file_to_extras();
 						}
-					}
+					},
+					"json"
 				);
 			},
 			"Cancel": function () {

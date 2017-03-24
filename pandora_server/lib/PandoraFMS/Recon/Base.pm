@@ -249,8 +249,8 @@ sub are_connected($$$$$) {
 	$if_1 = "ping" if $if_1 eq '';
 	$if_2 = "ping" if $if_2 eq '';
 
-	if (defined($self->{'connections'}->{"${dev_1}\t${if_1}\t${dev_2}\t{$if_2}"}) ||
-	    defined($self->{'connections'}->{"${dev_2}\t${if_2}\t${dev_1}\t{$if_1}"})) {
+	if (defined($self->{'connections'}->{"${dev_1}\t${if_1}\t${dev_2}\t${if_2}"}) ||
+	    defined($self->{'connections'}->{"${dev_2}\t${if_2}\t${dev_1}\t${if_1}"})) {
 		return 1;
 	}
 

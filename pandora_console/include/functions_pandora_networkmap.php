@@ -1038,7 +1038,7 @@ function clean_duplicate_links ($relations) {
 				if (enterprise_installed()) {
 					delete_link($segregation_links['mm'][$index_to_del]);
 				}
-				unset($segregation_links['mm'][$index_to_del]);
+				//unset($segregation_links['mm'][$index_to_del]);
 			}
 			$index_to_del++;
 		}
@@ -1142,8 +1142,8 @@ function clean_duplicate_links ($relations) {
 	}
 	
 	$final_links3['aa'] = $final_links2['aa'];
-	$final_links3['mm'] = $final_links2['mm'];
-	$final_links3['am'] = $final_links2['am'];
+	$final_links3['mm'] = $segregation_links['mm'];
+	$final_links3['am'] = $segregation_links['am'];
 	$final_links3['ff'] = $final_links2['ff'];
 	
 	$cleaned_links = array();

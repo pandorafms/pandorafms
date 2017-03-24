@@ -2786,9 +2786,9 @@ function myMouseoutRhombusFunction(node_id) {
 
 function draw_elements_graph() {
 	link = link.data(force.links(), function(d) {
-		return d.source.id + networkmap_id + "-" + d.target.id + networkmap_id;
+		return d.source.id + networkmap_id + "-" + d.target.id + networkmap_id + Math.random();
 	});
-	
+	console.log(link);
 	link_temp = link.enter()
 		.append("g")
 			.attr("id", function(d) {

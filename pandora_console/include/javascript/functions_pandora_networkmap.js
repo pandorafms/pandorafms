@@ -1147,7 +1147,7 @@ function zoom(manual) {
 function set_positions_graph() {
 	link.selectAll("path.link")
 		.attr("d", function(d) {
-			if (d.arrow_end == "module" && d.arrow_start == "module") {
+			if (d.arrow_end == "module" || d.arrow_start == "module") {
 				return arcPath(true, d);
 			}
 			else {
@@ -1158,7 +1158,7 @@ function set_positions_graph() {
 	
 	link.selectAll("path.link_reverse")
 		.attr("d", function(d) {
-			if (d.arrow_end == "module" && d.arrow_start == "module") {
+			if (d.arrow_end == "module" || d.arrow_start == "module") {
 				return arcPath(false, d);
 			}
 			else {

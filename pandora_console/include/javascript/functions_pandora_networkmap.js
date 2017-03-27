@@ -172,7 +172,6 @@ function delete_link(source_id, source_module_id, target_id, target_module_id, i
 					init_drag_and_drop();
 					set_positions_graph();
 				}
-				
 				$("#dialog_node_edit").dialog("close");
 			}
 		});
@@ -1188,8 +1187,8 @@ function set_positions_graph() {
 				var arcScale = d3.scale.ordinal()
 										.domain(siblings)
 										.rangePoints([1, siblingCount]);
-				drx = drx/(1 + (1/siblingCount) * (arcScale(d.text_start) - 1));
-				dry = dry/(1 + (1/siblingCount) * (arcScale(d.text_start) - 1));
+				drx = drx/(1 + (1/siblingCount) * (arcScale(d.text_start + d.id_db + networkmap_id) - 1));
+				dry = dry/(1 + (1/siblingCount) * (arcScale(d.text_start + d.id_db + networkmap_id) - 1));
 
 				return "M" + x1 + "," + y1 + "A" + drx + ", " + dry + " " + xRotation + ", " + largeArc + ", " + sweep + " " + x2 + "," + y2;
 			}
@@ -1216,7 +1215,7 @@ function set_positions_graph() {
 		var siblings = [];
 		for(var i = 0; i < graph.links.length; ++i){
 			if( (graph.links[i].source.id == source.id && graph.links[i].target.id == target.id) || (graph.links[i].source.id == target.id && graph.links[i].target.id == source.id) )
-				siblings.push(graph.links[i].text_start);
+				siblings.push(graph.links[i].text_start + graph.links[i].id_db + networkmap_id);
 		}
 		return siblings;
 	}

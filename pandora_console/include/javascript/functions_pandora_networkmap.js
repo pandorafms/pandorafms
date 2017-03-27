@@ -532,6 +532,9 @@ function update_link(row_index, id_link) {
 				temp_link["status_start"] = "0";
 				temp_link["status_end"] = "0";
 
+				temp_link["text_start"] = data["text_start"];
+				temp_link["text_end"] = data["text_end"];
+
 				$.each(graph.nodes, function(k, node) {
 					if (node['id_agent'] == data['id_db_target']) {
 						temp_link["target"] = graph.nodes[k];
@@ -1924,8 +1927,8 @@ function add_interface_link_js () {
 				temp_link['status_end'] = "0";
 				
 				
-				//temp_link['text_start'] = link['text_start'];
-				//temp_link['text_end'] = link['text_end'];
+				temp_link['text_start'] = data['text_start'];
+				temp_link['text_end'] = data['text_end'];
 				
 				jQuery.each(graph.nodes, function(j, node) {
 					if (node['id_agent'] == data['id_db_target']) {

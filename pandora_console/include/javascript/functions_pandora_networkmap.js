@@ -2849,7 +2849,7 @@ function draw_elements_graph() {
 	link = link.data(force.links(), function(d) {
 		return d.source.id + networkmap_id + "-" + d.target.id + networkmap_id + Math.random();
 	});
-	console.log(link);
+	
 	link_temp = link.enter()
 		.append("g")
 			.attr("id", function(d) {
@@ -2875,7 +2875,7 @@ function draw_elements_graph() {
 	
 	link_temp.append("path")
 		.attr("id", function(d) {
-			return "link_id_" + d.id_db + networkmap_id;
+			return "link_id_text_" + d.id_db + networkmap_id;
 		})
 		.attr("class",  function(d) {
 			var holding_area_text = "";
@@ -2926,10 +2926,10 @@ function draw_elements_graph() {
 		});
 	
 	//Add the reverse line for the end marker, it is invisible
-	 link_temp.append("path")
-			.attr("id", function(d) {
-				return "link_reverse_id_" + d.id_db;
-			})
+	link_temp.append("path")
+		.attr("id", function(d) {
+			return "link_reverse_id_" + d.id_db + networkmap_id;
+		})
 		.attr("stroke-width", 0)
 		.attr("d", null)
 		.attr("class",  function(d) {
@@ -2940,7 +2940,7 @@ function draw_elements_graph() {
 		.attr("xml:space", "preserve")
 		.append("textPath")
 			.attr("xlink:href", function(d) {
-					return "#link_id_" + d.id_db;
+					return "#link_id_text_" + d.id_db + networkmap_id;
 			})
 			.append("tspan")
 				.attr("style", "font-size: 12px; " +
@@ -2952,7 +2952,7 @@ function draw_elements_graph() {
 					"fill:#000000; " +
 					"fill-opacity:1; " +
 					"stroke:none; " +
-					"text-align:end; ")
+					"text-align:start; ")
 				.text(function(d) {
 					var text_link = "";
 					if (d.text_start) {
@@ -2966,7 +2966,7 @@ function draw_elements_graph() {
 		.attr("xml:space", "preserve")
 		.append("textPath")
 			.attr("xlink:href", function(d) {
-				return "#link_reverse_id_" + d.id_db;
+				return "#link_reverse_id_" + d.id_db + networkmap_id;
 			})
 			.append("tspan")
 				.attr("style", "font-size: 12px; " +

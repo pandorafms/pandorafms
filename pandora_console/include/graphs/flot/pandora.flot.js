@@ -142,22 +142,30 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 	}
 	
 	var label_conf;
-	
-	label_conf = {
-		show: true,
-		radius: 0.75,
-		formatter: function(label, series) {
-			return '<div style="font-size:' + font_size + 'pt;' +
-				'text-align:center;padding:2px;color:white;">' +
-				series.percent.toFixed(2) + '%</div>';
-		},
-		background: {
-			opacity: 0.5,
-			color: ''
-		}
-	};
-	
 	var show_legend = true;
+	
+	if((width < 400) && (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))) {
+		show_legend = false;
+		label_conf = {
+			show: false
+		};
+	}
+	else {
+		label_conf = {
+			show: true,
+			radius: 0.75,
+			formatter: function(label, series) {
+				return '<div style="font-size:' + font_size + 'pt;' +
+					'text-align:center;padding:2px;color:white;">' +
+					series.percent.toFixed(2) + '%</div>';
+			},
+			background: {
+				opacity: 0.5,
+				color: ''
+			}
+		};
+		
+	}
 	
 	var conf_pie = {
 			series: {
@@ -176,6 +184,9 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 				clickable: true
 			}
 		};
+	if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+		conf_pie.series.pie.label = {show: false};
+	}
 	
 	var plot = $.plot($('#'+graph_id), data, conf_pie);
 	if (no_data == data.length) {
@@ -205,17 +216,17 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 	
 	var pielegends = $('#'+graph_id+' .pieLabelBackground');
 	pielegends.each(function () {
-		$(this).css('transform', "rotate(-35deg)");
+		$(this).css('transform', "rotate(-35deg)").css('color', 'black');
 	});
 	var labelpielegends = $('#'+graph_id+' .pieLabel');
 	labelpielegends.each(function () {
-		$(this).css('transform', "rotate(-35deg)");
+		$(this).css('transform', "rotate(-35deg)").css('color', 'black');
 	});
 	
 	// Events
 	$('#' + graph_id).bind('plothover', pieHover);
 	$('#' + graph_id).bind('plotclick', Clickpie);
-	$('#' + graph_id).bind('mouseout',resetInteractivity);
+	$('#' + graph_id).bind('mouseout', resetInteractivity);
 	$('#' + graph_id).css('margin-left', 'auto');
 	$('#' + graph_id).css('margin-right', 'auto');
 	
@@ -309,15 +320,19 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 				borderWidth: 1,
 				backgroundColor: { colors: ["#FFF", "#FFF"] }
 				},
+			xaxis: {
+				axisLabelUseCanvas: true,
+				axisLabelFontSizePixels: font_size,
+				axisLabelFontFamily: font+'Font',
+				tickFormatter: xFormatter,
+			},
 			yaxis:  {
-					axisLabelUseCanvas: true,
-					axisLabelFontSizePixels: 12,
-					axisLabelFontFamily: font+'Font',
-					axisLabelPadding: 3,
-					ticks: yFormatter,
-					tickSize: 1,
-					color: '',
-					},
+				axisLabelUseCanvas: true,
+				axisLabelFontSizePixels: font_size,
+				axisLabelFontFamily: font+'Font',
+				ticks: yFormatter,
+				color: '',
+			},
 			legend: {
 				show: false
 			}
@@ -340,138 +355,35 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 	$('#' + graph_id).css("margin-left","auto");
 	$('#' + graph_id).css("margin-right","auto");
 	$('#' + graph_id).find('div.legend-tooltip').tooltip({ track: true });
-	// Adjust the top of yaxis tick to set it in the middle of the bars
-	//yAxisHeight = $('#' + graph_id + ' .yAxis .tickLabel')
-		//.css('height').split('px')[0];
 	
-	//~ i = 0;
-	//~ $('#' + graph_id + ' .yAxis .tickLabel').each(function() {
-		//~ $(this).css('display','none');
-		//~ $(this).addClass("legend_"+i);
-		//~ i++;
-	//~ });
-	
-	$('#' + graph_id + ' .xAxis .tickLabel').each(function() {
-		/*
-		tickTop = $(this).css('top').split('px')[0];
-		tickNewTop = parseInt(parseInt(tickTop) - (yAxisHeight / 2) - 3);
-		$(this).css('top', tickNewTop + 'px');
-
-		valuesNewTop = parseInt(parseInt(tickTop) - (yAxisHeight));
-
-		$('#value_' + i + '_' + graph_id)
-			.css('top',parseInt(plot.offset().top) + parseInt(valuesNewTop));
-
-		pixelPerValue = parseInt(plot.width()) / maxvalue;
-
-		inCanvasValuePos = parseInt(pixelPerValue *
-			($('#value_' + i + '_' + graph_id).html()));
-		label_width = ($('#value_' + i + '_' + graph_id)
-			.css('width').split('px')[0] - 3);
-
-		label_left_offset = plot.offset().left + inCanvasValuePos + 5; //Label located on right side of bar + 5 pixels
-
-		//If label fit into the bar just recalculate left position to fit on right side of bar
-		if (inCanvasValuePos > label_width) {
-			label_left_offset = plot.offset().left + inCanvasValuePos
-				- $('#value_' + i + '_' + graph_id).css('width').split('px')[0] - 3;
-		}
-
-		$('#value_' + i + '_' + graph_id)
-			.css('left', label_left_offset);
-		i++;
-		*/
-		label = parseFloat($(this).text());
-		text = label.toLocaleString();
-		if ( label >= 1000000)
-			text = text.substring(0,4) + "M";
-		else if (label >= 100000)
-				text = text.substring(0,3) + "K";
-			else if (label >= 1000)
-					text = text.substring(0,2) + "K";
-		
-		$(this).text(text);
-		
-	});
-	/*
-	// When resize the window, adjust the values
-	$('#' + graph_id).parent().resize(function () {
-		i = 0;
-		pixelPerValue = parseInt(plot.width()) / maxvalue;
-
-		$('#' + graph_id + ' .yAxis .tickLabel').each(function() {
-			inCanvasValuePos = parseInt(pixelPerValue *
-				($('#value_' + i + '_' + graph_id).html()));
-			label_width = ($('#value_' + i + '_' + graph_id)
-				.css('width').split('px')[0] - 3);
-
-			label_left_offset = plot.offset().left + inCanvasValuePos + 5; //Label located on right side of bar + 5 pixels
-
-			//If label fit into the bar just recalculate left position to fit on right side of bar
-			if (inCanvasValuePos > label_width) {
-				label_left_offset = plot.offset().left + inCanvasValuePos
-					- $('#value_' + i + '_' + graph_id)
-						.css('width').split('px')[0] - 3;
-			}
-
-			$('#value_' + i + '_' + graph_id)
-				.css('left', label_left_offset);
-			i++;
-		});
-	});
-
-	// Format functions
-	function xFormatter(v, axis) {
-		if (labels[v] != undefined) {
-			return labels[v];
-		}
-		else {
-			return '';
-		}
-	}
-
-	function yFormatter(v, axis) {
-		return v;
-	}
-
-	// Events
-	$('#' + graph_id).bind('plothover',  function (event, pos, item) {
-		$('.values_' + graph_id).css('font-weight', '');
-		if (item != null) {
-			index = item.dataIndex;
-			$('#value_' + index + '_' + graph_id)
-				.css('font-weight', 'bold');
-		}
-	});
-
-	if (water_mark) {
-		set_watermark(graph_id, plot,
-			$('#watermark_image_' + graph_id).attr('src'));
-	}
-
-	if (maxvalue == 0) {
-
-		// Fixed the position for the graphs with all values in
-		// bars is 0.
-
-		$(".values_" + graph_id).css("left", (plot.offset().left + 5) + "px");
-	}
-	* */
 	function yFormatter(v, axis) {
 		format = new Array();
 		for (i = 0; i < labels_total.length; i++) {
 			var label = labels_total[i][1];
-			var shortLabel = reduceText(label, 30);
+			var shortLabel = reduceText(label, 25);
 			var title = '';
 			if (label !== shortLabel) {
 				title = label;
 				label = shortLabel;
 			}
-			format.push([i,'<div style=font-size:'+font_size+'pt title="'+title+'" class="'+font+'">'
+			format.push([i,'<div style="font-size:'+font_size+'pt !important; word-break:keep-all; max-width: 150px;" title="'+title+'" class="'+font+'">'
 				+ label
 				+ '</div>']);
 		}
 		return format;
+	}
+	
+	function xFormatter(v, axis) {
+		label = parseFloat(v);
+		text = label.toLocaleString();
+		if ( label >= 1000000)
+			text = text.substring(0,4) + "M";
+		else if (label >= 100000)
+			text = text.substring(0,3) + "K";
+		else if (label >= 1000)
+			text = text.substring(0,2) + "K";
+		
+		return '<div style="font-size:'+font_size+'pt !important;">'+text+'</div>';
 	}
 	
 	if (water_mark) {
@@ -600,20 +512,30 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 		},
 		xaxis: {
 			axisLabelUseCanvas: true,
-			axisLabelFontSizePixels: 7,
+			axisLabelFontSizePixels: font_size,
 			axisLabelFontFamily: font+'Font',
 			axisLabelPadding: 0,
 			ticks: xFormatter,
 			labelWidth: 130,
+			labelHeight: 50,
 		},
 		yaxis: {
 			axisLabelUseCanvas: true,
-			axisLabelFontSizePixels: 7,
+			axisLabelFontSizePixels: font_size,
 			axisLabelFontFamily: font+'Font',
 			axisLabelPadding: 100,
 			autoscaleMargin: 0.02,
 			tickFormatter: function (v, axis) {
-				return v ;
+				label = parseFloat(v);
+				text = label.toLocaleString();
+				if ( label >= 1000000)
+					text = text.substring(0,4) + "M";
+				else if (label >= 100000)
+					text = text.substring(0,3) + "K";
+				else if (label >= 1000)
+					text = text.substring(0,2) + "K";
+				
+				return '<div style="font-size:'+font_size+'pt !important;">'+text+'</div>';
 			}
 		},
 		legend: {
@@ -630,82 +552,43 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 		}
 	};
 	
+	if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
+		options.xaxis.labelWidth = 100;
+	
 	var plot = $.plot($('#'+graph_id),datas, options );
 	$('#' + graph_id).VUseTooltip();
 	$('#' + graph_id).css("margin-left","auto");
 	$('#' + graph_id).css("margin-right","auto");
-	$('#' + graph_id).find('div.legend-tooltip').tooltip({ track: true });
-	// Adjust the top of yaxis tick to set it in the middle of the bars
-	//yAxisHeight = $('#'+graph_id+' .yAxis .tickLabel').css('height').split('px')[0];
-	
-	//plot.getPlaceholder().onload = function(){pruebas};
-	//~ i = 0;
-	//~ $('#'+graph_id+' .xAxis .tickLabel').each(function() {
-		//~ $(this).css('display','none');
-		//~ $(this).addClass("legend_"+i);
-		//~ i++;
-		//~ tickNewTop = parseInt(parseInt(tickTop) - (yAxisHeight/2)-3);
-		//~ $(this).css('top', tickNewTop+'px');
-		//~
-		//~ valuesNewTop = parseInt(parseInt(tickTop) - (yAxisHeight));
-		//~
-		//~ $('#value_'+i+'_'+graph_id).css('top',parseInt(plot.offset().top) + parseInt(valuesNewTop));
-//~
-		//~ pixelPerValue = parseInt(plot.width()) / maxvalue;
-		//~
-		//~ inCanvasValuePos = parseInt(pixelPerValue * ($('#value_'+i+'_'+graph_id).html()));
-		//~
-		//~ $('#value_'+i+'_'+graph_id).css('left',plot.offset().left + inCanvasValuePos - $('#value_'+i+'_'+graph_id).css('width').split('px')[0] - 3);
-	//~ });
-	
-	// When resize the window, adjust the values
-	//~ $('#'+graph_id).parent().resize(function () {
-		//~ i = 0;
-		//~ pixelPerValue = parseInt(plot.width()) / maxvalue;
-		//~
-		//~ $('#'+graph_id+' .yAxis .tickLabel').each(function() {
-			//~ inCanvasValuePos = parseInt(pixelPerValue * ($('#value_'+i+'_'+graph_id).html()));
-			//~
-			//~ $('#value_'+i+'_'+graph_id).css('left',plot.offset().left + inCanvasValuePos - $('#value_'+i+'_'+graph_id).css('width').split('px')[0] - 3);
-			//~ i++;
-		//~ });
-	//~ });
-	
-	
-	
-	$('#'+graph_id+' .yAxis .tickLabel').each(function() {
-		label = parseFloat($(this).text());
-		text = label.toLocaleString();
-		if ( label >= 1000000)
-			text = text.substring(0,4) + "M";
-		else if (label >= 100000)
-				text = text.substring(0,3) + "K";
-			else if (label >= 1000)
-					text = text.substring(0,2) + "K";
-		
-		$(this).text(text);
-	});
+	//~ $('#' + graph_id).find('div.legend-tooltip').tooltip({ track: true });
 	
 	$('#'+graph_id+' .xAxis .tickLabel')
 		.css('transform', 'rotate(-45deg)')
+		.css('max-width','100px')
 		.find('div')
 			.css('position', 'relative')
 			.css('top', '+10px')
-			.css('left', '-20px');
-	
+			.css('left', '-30px');
+	if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
+		$('#'+graph_id+' .xAxis .tickLabel')
+			.find('div')
+				.css('top', '+0px')
+				.css('left', '-20px');
 	// Format functions
 	function xFormatter(v, axis) {
 		var format = new Array();
 		for (i = 0; i < labels_total.length; i++) {
 			var label = labels_total[i][1];
-			var shortLabel = reduceText(label, 35);
+			var shortLabel = reduceText(label, 28);
+			if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
+				shortLabel = reduceText(label, 18);
 			var title = '';
 			if (label !== shortLabel) {
 				title = label;
 				label = shortLabel;
 			}
+			
 			format.push([i,
-				'<div class="'+font+'" title="'+title+'" style="word-break: break-word; max-width: 110px;font-size:'+font_size+'pt">'
+				'<div class="'+font+'" title="'+title+'" style="word-break: normal; max-width: 100px;font-size:'+font_size+'pt !important;">'
 				+ label
 				+ '</div>']);
 		}
@@ -713,22 +596,13 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 	}
 
 	function yFormatter(v, axis) {
-		return v;
+		return '<div class="'+font+'" style="font-size:'+font_size+'pt !important;">'+v+'</div>';
 	}
 
 	function lFormatter(v, axis) {
-		return '<div style=color:>'+v+'</div>';
+		return '<div style="font-size:'+font_size+'pt !important;">'+v+'</div>';
 	}
-
-	// Events
-	//~ $('#'+graph_id).bind('plothover',  function (event, pos, item) {
-		//~ $('.values_'+graph_id).css('font-weight', '');
-		//~ if(item != null) {
-			//~ index = item.dataIndex;
-			//~ $('#value_'+index+'_'+graph_id).css('font-weight', 'bold');
-		//~ }
-	//~ });
-
+	
 	if (water_mark) {
 		set_watermark(graph_id, plot, $('#watermark_image_'+graph_id).attr('src'));
 	}
@@ -1581,7 +1455,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	// Re-calculate the graph height with the legend height
 	if (dashboard || vconsole) {
 		var hDiff = $('#'+graph_id).height() - $('#legend_'+graph_id).height();
-		if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ){
+		if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ){
 		}
 		else {
 			$('#'+graph_id).css('height', hDiff);
@@ -1874,18 +1748,18 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 		if (labels[v] == undefined) {
 			return '';
 		}
-		return '<div class='+font+' style=font-size:'+font_size+'pt>'+labels[v]+'</div>';
+		return '<div class='+font+' style="font-size:'+font_size+'pt !important;">'+labels[v]+'</div>';
 	}
 
 	function yFormatter(v, axis) {
 		axis.datamin = 0;
 		var formatted = number_format(v,force_integer,unit);
 
-		return '<div class='+font+' style=font-size:'+font_size+'pt>'+formatted+'</div>';
+		return '<div class='+font+' style="font-size:'+font_size+'pt !important;">'+formatted+'</div>';
 	}
 
 	function lFormatter(v, item) {
-		return '<div style=font-size:'+font_size+'pt>'+v+'</div>';
+		return '<div style="font-size:'+font_size+'pt !important;">'+v+'</div>';
 		// Prepared to turn series with a checkbox
 		//return '<div style=color:;font-size:'+font_size+'pt><input type="checkbox" id="' + graph_id + '_' + item.id +'" checked="checked" class="check_serie_'+graph_id+'">'+v+'</div>';
 	}
@@ -1994,7 +1868,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 		$('#legend_'+graph_id).css('margin-bottom', '10px');
 		parent_height = parseInt(
 			$('#menu_'+graph_id).parent().css('height').split('px')[0]);
-		adjust_menu(graph_id, plot, parent_height);
+		adjust_menu(graph_id, plot, parent_height, width);
 	}
 	
 	if (!dashboard) {
@@ -2195,5 +2069,6 @@ function add_threshold (data_base, threshold_data, y_min, y_max, yellow_threshol
 function reduceText (text, maxLength) {
 	if (text.length <= maxLength) return text
 	var firstSlideEnd = parseInt((maxLength - 3) / 2);
-	return text.substr(0, firstSlideEnd) + '...' + text.substr(-firstSlideEnd - 3);
+	var str_cut = text.substr(0, firstSlideEnd);
+	return str_cut + '...' + text.substr(-firstSlideEnd - 3);
 }

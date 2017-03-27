@@ -1294,3 +1294,8 @@ DELETE FROM twidget WHERE unique_name = 'graph_availability';
 -- Table `tbackup`
 -- ---------------------------------------------------------------------
 ALTER TABLE tbackup ADD COLUMN `filepath` varchar(512) NOT NULL DEFAULT "";
+
+-- ---------------------------------------------------------------------
+-- Table `tconfig`
+-- ---------------------------------------------------------------------
+UPDATE `tconfig` SET `value` = 'login_logo_v7.png' where `token`='custom_logo_login';

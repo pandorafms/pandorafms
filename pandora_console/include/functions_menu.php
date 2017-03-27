@@ -746,7 +746,7 @@ function menu_calculate_top($level1, $level2, $level3 = false) {
 
 	}
 	// Positionate in the middle
-	if ($total > 12 && (($total < 18) || (($level1 - $comp) <= 2))) {
+	if ($total > 12 && (($total < 18) || (($level1 - $comp) <= 4))) {
 		return - ( floor($comp/2) * 35);
 	}
 	// Positionate in the bottom

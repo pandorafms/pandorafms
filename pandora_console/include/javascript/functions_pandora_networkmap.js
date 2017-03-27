@@ -1145,18 +1145,79 @@ function zoom(manual) {
 function set_positions_graph() {
 	link.selectAll("path.link")
 		.attr("d", function(d) {
-			
-			return "M " + d.source.x + " " + d.source.y +
-				" L " + d.target.x + " " + d.target.y;
-		});
+			if (d.arrow_end == "module" && d.arrow_start == "module") {
+				return arcPath(true, d);
+			}
+			else {
+				return "M " + d.source.x + " " + d.source.y + " L " + d.target.x + " " + d.target.y;
+			}
+		})
+		.style("fill", "none");
 	
 	link.selectAll("path.link_reverse")
 		.attr("d", function(d) {
-			
-			return "M " + d.target.x + " " + d.target.y +
-				" L " + d.source.x + " " + d.source.y;
-		});
+			if (d.arrow_end == "module" && d.arrow_start == "module") {
+				return arcPath(false, d);
+			}
+			else {
+				return "M " + d.target.x + " " + d.target.y + " L " + d.source.x + " " + d.source.y;
+			}
+		})
+		.style("fill", "none");
 	
+	function arcPath(leftHand, d) {
+		var x1 = leftHand ? d.source.x : d.target.x,
+			y1 = leftHand ? d.source.y : d.target.y,
+			x2 = leftHand ? d.target.x : d.source.x,
+			y2 = leftHand ? d.target.y : d.source.y,
+			dx = x2 - x1,
+			dy = y2 - y1,
+			dr = Math.sqrt(dx * dx + dy * dy),
+			drx = dr,
+			dry = dr,
+			sweep = leftHand ? 0 : 1;
+			siblingCount = countSiblingLinks(d.source, d.target)
+			xRotation = 0,
+			largeArc = 0;
+
+			if (siblingCount > 1) {
+				var siblings = getSiblingLinks(d.source, d.target);
+				var arcScale = d3.scale.ordinal()
+										.domain(siblings)
+										.rangePoints([1, siblingCount]);
+				drx = drx/(1 + (1/siblingCount) * (arcScale(d.text_start) - 1));
+				dry = dry/(1 + (1/siblingCount) * (arcScale(d.text_start) - 1));
+
+				return "M" + x1 + "," + y1 + "A" + drx + ", " + dry + " " + xRotation + ", " + largeArc + ", " + sweep + " " + x2 + "," + y2;
+			}
+			else {
+				if (leftHand) {
+					return "M " + d.source.x + " " + d.source.y + " L " + d.target.x + " " + d.target.y;
+				}
+				else {
+					return "M " + d.target.x + " " + d.target.y + " L " + d.source.x + " " + d.source.y;
+				}
+			}
+	}
+
+	function countSiblingLinks (source, target) {
+		var count = 0;
+		for(var i = 0; i < graph.links.length; ++i){
+			if( (graph.links[i].source.id == source.id && graph.links[i].target.id == target.id) || (graph.links[i].source.id == target.id && graph.links[i].target.id == source.id) )
+				count++;
+		}
+		return count;
+	}
+
+	function getSiblingLinks (source, target) {
+		var siblings = [];
+		for(var i = 0; i < graph.links.length; ++i){
+			if( (graph.links[i].source.id == source.id && graph.links[i].target.id == target.id) || (graph.links[i].source.id == target.id && graph.links[i].target.id == source.id) )
+				siblings.push(graph.links[i].text_start);
+		}
+		return siblings;
+	}
+
 	node.selectAll(".node_shape_circle")
 		.attr("cx", function(d) {
 			return d.x;

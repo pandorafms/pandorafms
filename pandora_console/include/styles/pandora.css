@@ -1946,7 +1946,7 @@ div.warn {
 /* Submenus havent borders */
 .submenu_not_selected, .submenu_selected, .submenu2 {
 	border: 0px !important;
-	min-height: 0px !important;
+	min-height: 35px !important;
 }
 
 /* Pandora width style theme */

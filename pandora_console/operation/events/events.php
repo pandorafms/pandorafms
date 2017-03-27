@@ -138,7 +138,7 @@ if (is_ajax ()) {
 		$alert = get_parameter('alert_fired');
 		if ($alert == 'true') {
 			$resultAlert = alerts_get_event_status_group($idGroup,
-				'alert_fired', $query);
+				array('alert_fired','alert_ceased'), $query);
 		}
 		$critical = get_parameter('critical');
 		if ($critical == 'true') {

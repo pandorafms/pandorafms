@@ -132,40 +132,59 @@ function alerts_get_alerts($id_group = 0, $free_search = "", $status = "all", $s
  * 
  * @return mixed Return id if the group have any alert is fired or false is not.
  */
-function alerts_get_event_status_group($idGroup, $type = "alert_fired", $query = 'AND 1=1') {
-	global $config;
-	
-	$return = false;
-	
-	$typeWhere = '';
-	
-	if (!is_array($type)) {
-		$typeWhere = ' AND event_type = "' . $type . '" ';
-	}
-	else {
-		$temp = array();
-		foreach ($type as $item) {
-			$temp[] = '"' . $item . '"';
-		}
-		
-		$typeWhere = ' AND event_type IN (' . implode(',', $temp) . ')';
-	}
-	
-	$agents = agents_get_group_agents($idGroup, false, "lower", false);
-	
-	$idAgents = array_keys($agents);
-	
-	$result = db_get_all_rows_sql('SELECT id_evento
-		FROM tevento
-		WHERE estado = 0 AND id_agente IN (' . implode(',', $idAgents) . ') ' . $typeWhere . $query . '
-		ORDER BY id_evento DESC LIMIT 1');
-	
-	if ($result === false) {
-		return false;
-	}
-	
-	return $result[0]['id_evento'];
-}
+ function alerts_get_event_status_group($idGroup, $type = "alert_fired", $query = 'AND 1=1', $agents = null) {
+  global $config;
+  
+  $return = false;
+  
+  $typeWhere = '';
+  
+  if (!is_array($type)) {
+ 	 $typeWhere = ' AND event_type = "' . $type . '" ';
+  }
+  else {
+ 	 $temp = array();
+ 	 foreach ($type as $item) {
+ 		 array_push ( $temp , $item );
+ 	 }
+ 	 
+ 	 $typeWhere = ' AND event_type IN (';
+ 	 
+ 	 foreach ($temp as $ele) {
+ 		 $typeWhere .= "'".$ele."'";
+ 		 
+ 		 if($ele != end($temp)){
+ 			 $typeWhere .= ",";
+ 		 }
+ 		 
+ 	 }
+ 	 
+ 	 $typeWhere .= ')';
+ 		
+  }
+  
+  if ($agents == null) {
+ 	 $agents = agents_get_group_agents($idGroup, false, "lower", false);
+
+ 	 $idAgents = array_keys($agents);
+ 		 
+  }
+  else {
+ 	 $idAgents = array_values($agents);
+ 	 
+  }
+  
+  $result = db_get_all_rows_sql('SELECT id_evento
+ 	 FROM tevento
+ 	 WHERE estado = 0 AND id_agente IN (0,' . implode(',', $idAgents) . ') ' . $typeWhere . $query . '
+ 	 ORDER BY id_evento DESC LIMIT 1');
+  
+  if ($result === false) {
+ 	 return false;
+  }
+  
+  return $result[0]['id_evento'];
+ }
 
 /**
  * Insert in talert_commands a new command.

@@ -519,13 +519,23 @@ function networkmap_links_to_js_links($relations, $nodes_graph) {
 			$item['arrow_end'] = 'module';
 			$item['status_end'] = modules_get_agentmodule_status((int)$id_target_module, false, false, null);
 			$item['id_module_end'] = (int)$id_target_module;
-			$item['text_end'] = io_safe_output(modules_get_agentmodule_name((int)$id_target_module));
+			$text_end = io_safe_output(modules_get_agentmodule_name((int)$id_target_module));
+			if (preg_match ("/(.+)_ifOperStatus$/" , (string)$text_end, $matches)) {
+				if ($matches[1]) {
+					$item['text_end'] = $matches[1];
+				}
+			}
 		}
 		if ($relation['child_type'] == 1) {
 			$item['arrow_start'] = 'module';
 			$item['status_start'] = modules_get_agentmodule_status((int)$id_source_module, false, false, null);
 			$item['id_module_start'] = (int)$id_source_module;
-			$item['text_start'] = io_safe_output(modules_get_agentmodule_name((int)$id_source_module));
+			$text_start = io_safe_output(modules_get_agentmodule_name((int)$id_source_module));
+			if (preg_match ("/(.+)_ifOperStatus$/" , (string)$text_start, $matches)) {
+				if ($matches[1]) {
+					$item['text_start'] = $matches[1];
+				}
+			}
 		}
 		
 		$agent = 0;

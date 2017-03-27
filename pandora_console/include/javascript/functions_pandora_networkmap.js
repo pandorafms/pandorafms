@@ -733,10 +733,10 @@ function edit_node(data, dblClick) {
 				
 				$("select[name='interface_source']", template_relation_row)
 					.attr('name', "interface_source_" + i)
-					.attr('id', "interface_source_" + i + networkmap_id);
+					.attr('id', "interface_source_" + i);
 				$("select[name='interface_target']", template_relation_row)
 					.attr('name', "interface_target_" + i)
-					.attr('id', "interface_target_" + i + networkmap_id);
+					.attr('id', "interface_target_" + i);
 				$(".edit_icon_progress", template_relation_row)
 					.attr('class', "edit_icon_progress_" + i);
 				$(".edit_icon", template_relation_row)
@@ -2617,19 +2617,19 @@ function init_graph(parameter_object) {
 		.data(module_color_status)
 		.enter()
 		.append("marker")
-		.attr("id", function(d) { return "interface_end_" + d.status_code; })
-		.attr("refX", (node_radius / 2) + (interface_radius / 2))
-		.attr("refY", interface_radius)
-		.attr("markerWidth", (node_radius / 2) + interface_radius)
-		.attr("markerHeight", (node_radius / 2) + interface_radius)
-		.attr("orient", "auto")
-		.append("circle")
-			.attr("cx", interface_radius)
-			.attr("cy", interface_radius)
-			.attr("r", interface_radius)
-			.attr("style", function(d) {
-				return "fill: " + d.color + ";";
-			});
+			.attr("id", function(d) { return "interface_end_" + d.status_code; })
+			.attr("refX", (node_radius / 2) + (interface_radius / 2))
+			.attr("refY", interface_radius)
+			.attr("markerWidth", (node_radius / 2) + interface_radius)
+			.attr("markerHeight", (node_radius / 2) + interface_radius)
+			.attr("orient", "auto")
+			.append("circle")
+				.attr("cx", interface_radius)
+				.attr("cy", interface_radius)
+				.attr("r", interface_radius)
+				.attr("style", function(d) {
+					return "fill: " + d.color + ";";
+				});
 			
 	defs.append("marker")
 		.attr("id", "interface_start")

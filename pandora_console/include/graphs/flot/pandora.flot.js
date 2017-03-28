@@ -144,7 +144,7 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 	var label_conf;
 	var show_legend = true;
 	
-	if((width < 400) && (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))) {
+	if((width <= 450)) {
 		show_legend = false;
 		label_conf = {
 			show: false
@@ -354,7 +354,7 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 	$('#' + graph_id).HUseTooltip();
 	$('#' + graph_id).css("margin-left","auto");
 	$('#' + graph_id).css("margin-right","auto");
-	$('#' + graph_id).find('div.legend-tooltip').tooltip({ track: true });
+	//~ $('#' + graph_id).find('div.legend-tooltip').tooltip({ track: true });
 	
 	function yFormatter(v, axis) {
 		format = new Array();
@@ -731,7 +731,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	force_integer, separator, separator2, 
 	yellow_up, red_up, yellow_inverse, red_inverse,
 	series_suffix_str, dashboard, vconsole, xaxisname,background_color,legend_color) {
-
+	
 	var threshold = true;
 	var thresholded = false;
 	font = font.split("/").pop().split(".").shift();
@@ -1928,6 +1928,7 @@ function set_watermark(graph_id, plot, watermark_src) {
 		if ($('#'+graph_id+' .yAxis .tickLabel').eq(0).css('height') != undefined) {
 			down_ticks_height = $('#'+graph_id+' .yAxis .tickLabel').eq(0).css('height').split('px')[0];
 		}
+		
 		var left_pos = parseInt(context.canvas.width - 3) - $('#watermark_image_'+graph_id)[0].width;
 		var top_pos  = 6;
 		//var top_pos = parseInt(context.canvas.height - down_ticks_height - 10) - $('#watermark_image_'+graph_id)[0].height;

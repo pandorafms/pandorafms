@@ -2792,7 +2792,7 @@ function reporting_alert_report_group($report, $content) {
 		$alerts = alerts_get_effective_alert_actions($agent_module['id_agent_module']);
 
 		if ($alerts === false){
-			continue;
+			return;
 		}
 		
 		$ntemplates = 0;
@@ -2909,7 +2909,7 @@ function reporting_alert_report_agent($report, $content) {
 		$alerts = alerts_get_effective_alert_actions($id);
 
 		if ($alerts === false){
-			continue;
+			return;
 		}
 
 		$ntemplates = 0;
@@ -3030,7 +3030,7 @@ function reporting_alert_report_module($report, $content) {
 	$alerts = alerts_get_effective_alert_actions($content['id_agent_module']);
 
 	if ($alerts === false){
-		continue;
+		return;
 	}
 
 	$ntemplates = 0;

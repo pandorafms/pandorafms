@@ -927,16 +927,34 @@ function add_agent_node(agents) {
 						temp_node['state'] = data['state'];
 						
 						graph.nodes.push(temp_node);
-						/* FLECHAS EMPEZADO PARA MEJORAR
+
 						jQuery.each(data['rel'], function(i, relation) {
 							var temp_link = {};
+							if (i == 0) {
+								var found = 0;
+								temp_link['source'] = graph.nodes[temp_node['id']];
+								jQuery.each(graph.nodes, function(j, element) {
+									if (element.id_agent == relation['id_agent_end']) {
+										found = j;
+									}
+								});
+								temp_link['target'] = graph.nodes[found];
+							}
+							else {
+								var found = 0;
+								temp_link['target'] = graph.nodes[temp_node['id']];
+								jQuery.each(graph.nodes, function(j, element) {
+									if (element.id_agent == relation['id_agent_start']) {
+										found = j;
+									}
+								});
+								temp_link['source'] = graph.nodes[found];
+							}
 							temp_link['id_db'] = String(relation['id_db']);
 							temp_link['id_agent_end'] = String(relation['id_agent_end']);
 							temp_link['id_agent_start'] = String(relation['id_agent_start']);
 							temp_link['id_module_end'] = relation['id_module_end'];
 							temp_link['id_module_start'] = relation['id_module_start'];
-							temp_link['source'] = relation['source'];
-							temp_link['target'] = relation['target'];
 							temp_link['source_in_db'] = String(relation['source_in_db']);
 							temp_link['target_in_db'] = String(relation['target_in_db']);
 							temp_link['arrow_end'] = relation['arrow_end'];
@@ -948,7 +966,6 @@ function add_agent_node(agents) {
 							
 							graph.links.push(temp_link);
 						});
-						*/
 						
 						draw_elements_graph();
 						init_drag_and_drop();
@@ -1155,7 +1172,7 @@ function set_positions_graph() {
 			}
 		})
 		.style("fill", "none");
-	
+
 	link.selectAll("path.link_reverse")
 		.attr("d", function(d) {
 			if (d.arrow_end == "module" || d.arrow_start == "module") {
@@ -1179,7 +1196,7 @@ function set_positions_graph() {
 			dry = dr,
 			sweep = leftHand ? 0 : 1;
 			siblingCount = countSiblingLinks(d.source, d.target)
-			xRotation = 0,
+			xRotation = 1,
 			largeArc = 0;
 
 			if (siblingCount > 1) {
@@ -2032,6 +2049,23 @@ function refresh_holding_area() {
 						
 						graph.links.push(temp_link);
 					});
+					
+					$("#layer_graph_links_" + networkmap_id).remove();
+					$("#layer_graph_nodes_" + networkmap_id).remove();
+
+					window.layer_graph_links = window.layer_graph
+						.append("g")
+							.attr("id", "layer_graph_links_" + networkmap_id);
+					window.layer_graph_nodes = window.layer_graph
+						.append("g")
+							.attr("id", "layer_graph_nodes_" + networkmap_id);
+					
+					force.nodes(graph.nodes)
+						.links(graph.links)
+						.start();
+					
+					window.node = layer_graph_nodes.selectAll(".node");
+					window.link = layer_graph_links.selectAll(".link");
 					
 					draw_elements_graph();
 					init_drag_and_drop();

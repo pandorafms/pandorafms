@@ -172,7 +172,6 @@ function delete_link(source_id, source_module_id, target_id, target_module_id, i
 					init_drag_and_drop();
 					set_positions_graph();
 				}
-				
 				$("#dialog_node_edit").dialog("close");
 			}
 		});
@@ -532,6 +531,9 @@ function update_link(row_index, id_link) {
 				temp_link["status_start"] = "0";
 				temp_link["status_end"] = "0";
 
+				temp_link["text_start"] = data["text_start"];
+				temp_link["text_end"] = data["text_end"];
+
 				$.each(graph.nodes, function(k, node) {
 					if (node['id_agent'] == data['id_db_target']) {
 						temp_link["target"] = graph.nodes[k];
@@ -731,10 +733,10 @@ function edit_node(data, dblClick) {
 				
 				$("select[name='interface_source']", template_relation_row)
 					.attr('name', "interface_source_" + i)
-					.attr('id', "interface_source_" + i + networkmap_id);
+					.attr('id', "interface_source_" + i);
 				$("select[name='interface_target']", template_relation_row)
 					.attr('name', "interface_target_" + i)
-					.attr('id', "interface_target_" + i + networkmap_id);
+					.attr('id', "interface_target_" + i);
 				$(".edit_icon_progress", template_relation_row)
 					.attr('class', "edit_icon_progress_" + i);
 				$(".edit_icon", template_relation_row)
@@ -925,16 +927,34 @@ function add_agent_node(agents) {
 						temp_node['state'] = data['state'];
 						
 						graph.nodes.push(temp_node);
-						/* FLECHAS EMPEZADO PARA MEJORAR
-						jQuery.each(data['rel'], function(i, relation) {
+
+						/*jQuery.each(data['rel'], function(i, relation) {
 							var temp_link = {};
+							if (i == 0) {
+								var found = 0;
+								temp_link['source'] = graph.nodes[temp_node['id']];
+								jQuery.each(graph.nodes, function(j, element) {
+									if (element.id_agent == relation['id_agent_end']) {
+										found = j;
+									}
+								});
+								temp_link['target'] = graph.nodes[found];
+							}
+							else {
+								var found = 0;
+								temp_link['target'] = graph.nodes[temp_node['id']];
+								jQuery.each(graph.nodes, function(j, element) {
+									if (element.id_agent == relation['id_agent_start']) {
+										found = j;
+									}
+								});
+								temp_link['source'] = graph.nodes[found];
+							}
 							temp_link['id_db'] = String(relation['id_db']);
 							temp_link['id_agent_end'] = String(relation['id_agent_end']);
 							temp_link['id_agent_start'] = String(relation['id_agent_start']);
 							temp_link['id_module_end'] = relation['id_module_end'];
 							temp_link['id_module_start'] = relation['id_module_start'];
-							temp_link['source'] = relation['source'];
-							temp_link['target'] = relation['target'];
 							temp_link['source_in_db'] = String(relation['source_in_db']);
 							temp_link['target_in_db'] = String(relation['target_in_db']);
 							temp_link['arrow_end'] = relation['arrow_end'];
@@ -945,8 +965,7 @@ function add_agent_node(agents) {
 							temp_link['text_start'] = relation['text_start'];
 							
 							graph.links.push(temp_link);
-						});
-						*/
+						});*/
 						
 						draw_elements_graph();
 						init_drag_and_drop();
@@ -1145,18 +1164,79 @@ function zoom(manual) {
 function set_positions_graph() {
 	link.selectAll("path.link")
 		.attr("d", function(d) {
-			
-			return "M " + d.source.x + " " + d.source.y +
-				" L " + d.target.x + " " + d.target.y;
-		});
-	
+			if (d.arrow_end == "module" || d.arrow_start == "module") {
+				return arcPath(true, d);
+			}
+			else {
+				return "M " + d.source.x + " " + d.source.y + " L " + d.target.x + " " + d.target.y;
+			}
+		})
+		.style("fill", "none");
+
 	link.selectAll("path.link_reverse")
 		.attr("d", function(d) {
-			
-			return "M " + d.target.x + " " + d.target.y +
-				" L " + d.source.x + " " + d.source.y;
-		});
+			if (d.arrow_end == "module" || d.arrow_start == "module") {
+				return arcPath(false, d);
+			}
+			else {
+				return "M " + d.target.x + " " + d.target.y + " L " + d.source.x + " " + d.source.y;
+			}
+		})
+		.style("fill", "none");
 	
+	function arcPath(leftHand, d) {
+		var x1 = leftHand ? d.source.x : d.target.x,
+			y1 = leftHand ? d.source.y : d.target.y,
+			x2 = leftHand ? d.target.x : d.source.x,
+			y2 = leftHand ? d.target.y : d.source.y,
+			dx = x2 - x1,
+			dy = y2 - y1,
+			dr = Math.sqrt(dx * dx + dy * dy),
+			drx = dr,
+			dry = dr,
+			sweep = leftHand ? 0 : 1;
+			siblingCount = countSiblingLinks(d.source, d.target)
+			xRotation = 1,
+			largeArc = 0;
+
+			if (siblingCount > 1) {
+				var siblings = getSiblingLinks(d.source, d.target);
+				var arcScale = d3.scale.ordinal()
+										.domain(siblings)
+										.rangePoints([1, siblingCount]);
+				drx = drx/(1 + (1/siblingCount) * (arcScale(d.text_start + d.id_db + networkmap_id) - 1));
+				dry = dry/(1 + (1/siblingCount) * (arcScale(d.text_start + d.id_db + networkmap_id) - 1));
+
+				return "M" + x1 + "," + y1 + "A" + drx + ", " + dry + " " + xRotation + ", " + largeArc + ", " + sweep + " " + x2 + "," + y2;
+			}
+			else {
+				if (leftHand) {
+					return "M " + d.source.x + " " + d.source.y + " L " + d.target.x + " " + d.target.y;
+				}
+				else {
+					return "M " + d.target.x + " " + d.target.y + " L " + d.source.x + " " + d.source.y;
+				}
+			}
+	}
+
+	function countSiblingLinks (source, target) {
+		var count = 0;
+		for(var i = 0; i < graph.links.length; ++i){
+			if( (graph.links[i].source.id == source.id && graph.links[i].target.id == target.id) || (graph.links[i].source.id == target.id && graph.links[i].target.id == source.id) )
+				count++;
+		}
+		return count;
+	}
+
+	function getSiblingLinks (source, target) {
+		var siblings = [];
+		for(var i = 0; i < graph.links.length; ++i){
+			if( (graph.links[i].source.id == source.id && graph.links[i].target.id == target.id) || (graph.links[i].source.id == target.id && graph.links[i].target.id == source.id) )
+				siblings.push(graph.links[i].text_start + graph.links[i].id_db + networkmap_id);
+		}
+		return siblings;
+	}
+
 	node.selectAll(".node_shape_circle")
 		.attr("cx", function(d) {
 			return d.x;
@@ -1863,8 +1943,8 @@ function add_interface_link_js () {
 				temp_link['status_end'] = "0";
 				
 				
-				//temp_link['text_start'] = link['text_start'];
-				//temp_link['text_end'] = link['text_end'];
+				temp_link['text_start'] = data['text_start'];
+				temp_link['text_end'] = data['text_end'];
 				
 				jQuery.each(graph.nodes, function(j, node) {
 					if (node['id_agent'] == data['id_db_target']) {
@@ -1892,6 +1972,7 @@ function refresh_holding_area() {
 	var pos_x = parseInt(holding_pos_x) + parseInt(node_radius);
 	var pos_y = parseInt(holding_pos_y) + parseInt(node_radius);
 	if (enterprise_installed) {
+		$('#holding_spinner_' + networkmap_id).css("display", "");
 		var params = [];
 		params.push("refresh_holding_area=1");
 		params.push("id=" + networkmap_id);
@@ -1904,16 +1985,13 @@ function refresh_holding_area() {
 			type: 'POST',
 			url: action="ajax.php",
 			success: function (data) {
-				
 				if (data['correct']) {
 					window.holding_area = data['holding_area'];
-					
-					var length_nodes = graph.nodes.length;
 					
 					jQuery.each(holding_area.nodes, function(i, node) {
 						var temp_node = {};
 						
-						temp_node['id'] = length_nodes + node['id'];
+						temp_node['id'] = graph.nodes.length;
 						holding_area.nodes[i]['id'] = temp_node['id'];
 						
 						temp_node['id_db'] = node['id_db'];
@@ -1970,10 +2048,32 @@ function refresh_holding_area() {
 						graph.links.push(temp_link);
 					});
 					
+					$("#layer_graph_links_" + networkmap_id).remove();
+					$("#layer_graph_nodes_" + networkmap_id).remove();
+
+					window.layer_graph_links = window.layer_graph
+						.append("g")
+							.attr("id", "layer_graph_links_" + networkmap_id);
+					window.layer_graph_nodes = window.layer_graph
+						.append("g")
+							.attr("id", "layer_graph_nodes_" + networkmap_id);
+					
+					force.nodes(graph.nodes)
+						.links(graph.links)
+						.start();
+					
+					window.node = layer_graph_nodes.selectAll(".node");
+					window.link = layer_graph_links.selectAll(".link");
+					
 					draw_elements_graph();
 					init_drag_and_drop();
 					set_positions_graph();
+
+					$('#holding_spinner_' + networkmap_id).css("display", "none");
 				}
+			},
+			error: function(){
+				$('#holding_spinner_' + networkmap_id).css("display", "none");
 			}
 		});
 	}
@@ -2554,19 +2654,19 @@ function init_graph(parameter_object) {
 		.data(module_color_status)
 		.enter()
 		.append("marker")
-		.attr("id", function(d) { return "interface_end_" + d.status_code; })
-		.attr("refX", (node_radius / 2) + (interface_radius / 2))
-		.attr("refY", interface_radius)
-		.attr("markerWidth", (node_radius / 2) + interface_radius)
-		.attr("markerHeight", (node_radius / 2) + interface_radius)
-		.attr("orient", "auto")
-		.append("circle")
-			.attr("cx", interface_radius)
-			.attr("cy", interface_radius)
-			.attr("r", interface_radius)
-			.attr("style", function(d) {
-				return "fill: " + d.color + ";";
-			});
+			.attr("id", function(d) { return "interface_end_" + d.status_code; })
+			.attr("refX", (node_radius / 2) + (interface_radius / 2))
+			.attr("refY", interface_radius)
+			.attr("markerWidth", (node_radius / 2) + interface_radius)
+			.attr("markerHeight", (node_radius / 2) + interface_radius)
+			.attr("orient", "auto")
+			.append("circle")
+				.attr("cx", interface_radius)
+				.attr("cy", interface_radius)
+				.attr("r", interface_radius)
+				.attr("style", function(d) {
+					return "fill: " + d.color + ";";
+				});
 			
 	defs.append("marker")
 		.attr("id", "interface_start")
@@ -2786,7 +2886,7 @@ function myMouseoutRhombusFunction(node_id) {
 
 function draw_elements_graph() {
 	link = link.data(force.links(), function(d) {
-		return d.source.id + networkmap_id + "-" + d.target.id + networkmap_id;
+		return d.source.id + networkmap_id + "-" + d.target.id + networkmap_id + Math.random();
 	});
 	
 	link_temp = link.enter()
@@ -2814,7 +2914,7 @@ function draw_elements_graph() {
 	
 	link_temp.append("path")
 		.attr("id", function(d) {
-			return "link_id_" + d.id_db + networkmap_id;
+			return "link_id_text_" + d.id_db + networkmap_id;
 		})
 		.attr("class",  function(d) {
 			var holding_area_text = "";
@@ -2865,10 +2965,10 @@ function draw_elements_graph() {
 		});
 	
 	//Add the reverse line for the end marker, it is invisible
-	 link_temp.append("path")
-			.attr("id", function(d) {
-				return "link_reverse_id_" + d.id_db;
-			})
+	link_temp.append("path")
+		.attr("id", function(d) {
+			return "link_reverse_id_" + d.id_db + networkmap_id;
+		})
 		.attr("stroke-width", 0)
 		.attr("d", null)
 		.attr("class",  function(d) {
@@ -2879,7 +2979,7 @@ function draw_elements_graph() {
 		.attr("xml:space", "preserve")
 		.append("textPath")
 			.attr("xlink:href", function(d) {
-					return "#link_id_" + d.id_db;
+					return "#link_id_text_" + d.id_db + networkmap_id;
 			})
 			.append("tspan")
 				.attr("style", "font-size: 12px; " +
@@ -2891,7 +2991,7 @@ function draw_elements_graph() {
 					"fill:#000000; " +
 					"fill-opacity:1; " +
 					"stroke:none; " +
-					"text-align:end; ")
+					"text-align:start; ")
 				.text(function(d) {
 					var text_link = "";
 					if (d.text_start) {
@@ -2905,7 +3005,7 @@ function draw_elements_graph() {
 		.attr("xml:space", "preserve")
 		.append("textPath")
 			.attr("xlink:href", function(d) {
-				return "#link_reverse_id_" + d.id_db;
+				return "#link_reverse_id_" + d.id_db + networkmap_id;
 			})
 			.append("tspan")
 				.attr("style", "font-size: 12px; " +

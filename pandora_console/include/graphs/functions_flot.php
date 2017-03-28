@@ -54,8 +54,6 @@ function include_javascript_dependencies_flot_graph($return = false) {
 				ui_get_full_url($metaconsole_hack . '/include/graphs/flot/jquery.flot.exportdata.pandora.js') .'"></script>
 			<script language="javascript" type="text/javascript" src="'.
 				ui_get_full_url($metaconsole_hack . '/include/graphs/flot/jquery.flot.axislabels.js') .'"></script>
-			<script language="javascript" type="text/javascript" src="'.
-				ui_get_full_url($metaconsole_hack . '/include/graphs/flot/jquery.flot.image.js') .'"></script>
 			<script language="javascript" type="text/javascript" src="'.				
 				ui_get_full_url($metaconsole_hack . '/include/graphs/flot/pandora.flot.js') .'"></script>';
 		$output .= "

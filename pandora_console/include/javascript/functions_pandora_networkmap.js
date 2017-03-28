@@ -928,7 +928,7 @@ function add_agent_node(agents) {
 						
 						graph.nodes.push(temp_node);
 
-						jQuery.each(data['rel'], function(i, relation) {
+						/*jQuery.each(data['rel'], function(i, relation) {
 							var temp_link = {};
 							if (i == 0) {
 								var found = 0;
@@ -965,7 +965,7 @@ function add_agent_node(agents) {
 							temp_link['text_start'] = relation['text_start'];
 							
 							graph.links.push(temp_link);
-						});
+						});*/
 						
 						draw_elements_graph();
 						init_drag_and_drop();
@@ -1972,6 +1972,7 @@ function refresh_holding_area() {
 	var pos_x = parseInt(holding_pos_x) + parseInt(node_radius);
 	var pos_y = parseInt(holding_pos_y) + parseInt(node_radius);
 	if (enterprise_installed) {
+		$('#holding_spinner_' + networkmap_id).css("display", "");
 		var params = [];
 		params.push("refresh_holding_area=1");
 		params.push("id=" + networkmap_id);
@@ -1984,16 +1985,13 @@ function refresh_holding_area() {
 			type: 'POST',
 			url: action="ajax.php",
 			success: function (data) {
-				
 				if (data['correct']) {
 					window.holding_area = data['holding_area'];
-					
-					var length_nodes = graph.nodes.length;
 					
 					jQuery.each(holding_area.nodes, function(i, node) {
 						var temp_node = {};
 						
-						temp_node['id'] = length_nodes + node['id'];
+						temp_node['id'] = graph.nodes.length;
 						holding_area.nodes[i]['id'] = temp_node['id'];
 						
 						temp_node['id_db'] = node['id_db'];
@@ -2070,7 +2068,12 @@ function refresh_holding_area() {
 					draw_elements_graph();
 					init_drag_and_drop();
 					set_positions_graph();
+
+					$('#holding_spinner_' + networkmap_id).css("display", "none");
 				}
+			},
+			error: function(){
+				$('#holding_spinner_' + networkmap_id).css("display", "none");
 			}
 		});
 	}

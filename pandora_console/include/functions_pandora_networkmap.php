@@ -1280,6 +1280,9 @@ function show_networkmap($id = 0, $user_readonly = false, $nodes_and_relations =
 						<img id="image_hide_show_labels" src="images/icono_borrar.png" />
 					</a>
 				</div>';
+			echo '<div id="holding_spinner_' . $networkmap['id'] . '" style="display: none; position: absolute; right: 50px; top: 20px;">
+						<img id="image_hide_show_labels" src="images/spinner.gif" />
+				</div>';
 		
 	echo '</div>';
 	

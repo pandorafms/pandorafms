@@ -450,6 +450,7 @@ if (!empty($network_interfaces)) {
 	$table_interface->head_colspan[0] = 8;
 	$table_interface->data = array();
 	$event_text_cont = 0;
+	
 	foreach ($network_interfaces as $interface_name => $interface) {
 		if (!empty($interface['traffic'])) {
 			$permission = false;

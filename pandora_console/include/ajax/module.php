@@ -745,7 +745,7 @@ if ($list_modules) {
 	$table->head[5] = __('Status') . ' ' .
 		'<a href="' . $url . '&sort_field=status&amp;sort=up&refr=&filter_monitors=1&status_filter_monitor=' .$status_filter_monitor.' &status_text_monitor='. $status_text_monitor.'&status_module_group= '.$status_module_group.'">' . html_print_image("images/sort_up.png", true, array("style" => $selectStatusUp, "alt" => "up")) . '</a>' .
 		'<a href="' . $url . '&sort_field=status&amp;sort=down&refr=&filter_monitors=1&status_filter_monitor=' .$status_filter_monitor.' &status_text_monitor='. $status_text_monitor.'&status_module_group= '.$status_module_group.'">' . html_print_image("images/sort_down.png", true, array("style" => $selectStatusDown, "alt" => "down")) . '</a>';
-	$table->head[6] = __('Warn');
+	$table->head[6] = __('Thresholds');
 	$table->head[7] = __('Data');
 	$table->head[8] = __('Graph');
 	$table->head[9] = __('Last contact') . ' ' .

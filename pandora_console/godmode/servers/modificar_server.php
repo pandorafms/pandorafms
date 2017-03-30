@@ -55,12 +55,12 @@ if (isset($_GET["server"])) {
 
 }
 elseif (isset($_GET["server_remote"])) {
-	
 	// Headers
 	$id_server= get_parameter_get ("server_remote");
+	$ext = get_parameter ("ext", '');
 	ui_print_page_header (__('Remote Configuration'), "images/gm_servers.png", false, "servers", true);
 	enterprise_include("godmode/servers/server_disk_conf_editor.php");
-	}
+}
 else {
 	// Header
 	ui_print_page_header (__('Pandora servers'), "images/gm_servers.png", false, "servers", true);
@@ -119,7 +119,8 @@ else {
 		
 		$correct = false;
 		$id_server = get_parameter ("id_server");
-		$server_md5 = md5(io_safe_output(servers_get_name ($id_server,'none')), FALSE);
+		$ext = get_parameter ("ext", '');
+		$server_md5 = md5(io_safe_output(servers_get_name ($id_server,'none') . $ext), FALSE);
 		
 		if (file_exists ($config["remote_config"] . "/md5/" . $server_md5 . ".srv.md5")) {
 			// Server remote configuration editor

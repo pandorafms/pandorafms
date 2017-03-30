@@ -1459,7 +1459,9 @@ sub valid_regex ($) {
 sub is_metaconsole ($) {
 	my ($pa_config) = @_;
 
-	if (defined($pa_config->{"license_type"}) && $pa_config->{"license_type"} == METACONSOLE_LICENSE) {
+	if (defined($pa_config->{"license_type"}) &&
+		$pa_config->{"license_type"} == METACONSOLE_LICENSE &&
+		$pa_config->{"node_metaconsole"} == 0) {
 		return 1;
 	}
 

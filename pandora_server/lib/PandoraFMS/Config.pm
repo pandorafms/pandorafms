@@ -170,6 +170,11 @@ sub pandora_get_sharedconfig ($$) {
 	#Public url
 	$pa_config->{'public_url'} = pandora_get_tconfig_token ($dbh, 'public_url', 'http://localhost/pandora_console');
 
+	# Node with a metaconsole license.
+	# NOTE: This must be read when checking license limits!
+	#$pa_config->{"node_metaconsole"} = pandora_get_tconfig_token ($dbh, 'node_metaconsole', 0);
+
+
 	if ($pa_config->{'include_agents'} eq '') {
 		$pa_config->{'include_agents'} = 0;
 	}
@@ -400,6 +405,7 @@ sub pandora_load_config {
 	$pa_config->{"stats_interval"} = 300;
 	$pa_config->{"agentaccess"} = 1; 
 	$pa_config->{"event_storm_protection"} = 0; 
+	$pa_config->{"node_metaconsole"} = 0; # > 7.0NG
 	# -------------------------------------------------------------------------
 	
 	#SNMP Forwarding tokens

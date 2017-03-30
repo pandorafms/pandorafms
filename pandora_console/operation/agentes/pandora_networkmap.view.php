@@ -759,3 +759,18 @@ else {
 	show_networkmap($id, $user_readonly, $nodes_and_relations, $dash_mode, $map_dash_details);
 }
 ?>
+
+<script>
+$(document).ready(function() {
+    $("*").on("click", function(){
+        if($("[aria-describedby=dialog_node_edit]").css('display') == 'block'){
+            $('#foot').css({'top':$("[aria-describedby=dialog_node_edit]").height()-150,'position':'relative'});
+
+        }
+        else{
+            $('#foot').css({'position':'','top':'0'});
+        }
+
+	});
+});
+</script>

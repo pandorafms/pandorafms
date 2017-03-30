@@ -2310,6 +2310,7 @@ function init_drag_and_drop() {
 					graph.nodes[d.id].py = d.py + delta[1];
 				});
 			
+			draw_elements_graph();
 			set_positions_graph();
 			
 			d3.event.sourceEvent.stopPropagation();
@@ -2979,8 +2980,27 @@ function draw_elements_graph() {
 		.attr("xml:space", "preserve")
 		.append("textPath")
 			.attr("xlink:href", function(d) {
-					return "#link_id_text_" + d.id_db + networkmap_id;
+					if (d.source.x < d.target.x) {
+						return "#link_id_text_" + d.id_db + networkmap_id;
+					}
+					else {
+						return "#link_reverse_id_" + d.id_db + networkmap_id;
+					}
 			})
+			.attr("startOffset", function(d) {
+				if (d.source.x < d.target.x) {
+					return "";
+				}
+				else {
+					return "85%";
+				}})
+			.attr("text-anchor", function(d) {
+				if (d.source.x < d.target.x) {
+					return "";
+				}
+				else {
+					return "end";
+				}})
 			.append("tspan")
 				.attr("style", "font-size: 12px; " +
 					"font-style:normal; " +
@@ -3005,8 +3025,27 @@ function draw_elements_graph() {
 		.attr("xml:space", "preserve")
 		.append("textPath")
 			.attr("xlink:href", function(d) {
-				return "#link_reverse_id_" + d.id_db + networkmap_id;
+				if (d.source.x < d.target.x) {
+					return "#link_id_text_" + d.id_db + networkmap_id;
+				}
+				else {
+					return "#link_reverse_id_" + d.id_db + networkmap_id;
+				}
 			})
+			.attr("startOffset", function(d) {
+				if (d.source.x < d.target.x) {
+					return "85%";
+				}
+				else {
+					return "";
+				}})
+			.attr("text-anchor", function(d) {
+				if (d.source.x < d.target.x) {
+					return "end";
+				}
+				else {
+					return "";
+				}})
 			.append("tspan")
 				.attr("style", "font-size: 12px; " +
 					"font-style:normal; " +
@@ -3026,7 +3065,7 @@ function draw_elements_graph() {
 					
 					return (Array(25).join(" ")) + text_link;
 				});
-	
+
 	node = node.data(force.nodes(), function(d) { return d.id;});
 	
 	node_temp = node.enter()

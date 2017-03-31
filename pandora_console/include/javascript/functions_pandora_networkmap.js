@@ -218,6 +218,43 @@ function update_fictional_node(id_db_node) {
 	}
 }
 
+function update_node_name (id_db_node) {
+	if (enterprise_installed) {
+		var name = $("input[name='edit_name_node']").val();
+		
+		var params = [];
+		params.push("update_node_name=1");
+		params.push("networkmap_id=" + networkmap_id);
+		params.push("node_id=" + id_db_node);
+		params.push("name=" + name);
+		params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
+		
+		jQuery.ajax ({
+			data: params.join ("&"),
+			dataType: 'json',
+			type: 'POST',
+			url: action="ajax.php",
+			success: function (data) {
+				if (data['correct']) {
+					$("#dialog_node_edit").dialog("close");
+					
+					jQuery.each(graph.nodes, function(i, element) {
+						if (element.id_db == id_db_node) {
+							graph.nodes[i].text = name;
+							
+							$("#id_node_" + i + networkmap_id + " title").html(name);
+							$("#id_node_" + i + networkmap_id + " tspan").html(name);
+						}
+					});
+					
+					draw_elements_graph();
+					set_positions_graph();
+				}
+			}
+		});
+	}
+}
+
 function change_shape(id_db_node) {
 	if (enterprise_installed) {
 		var shape = $("select[name='shape']").val();
@@ -623,6 +660,9 @@ function edit_node(data, dblClick) {
 				"javascript: change_shape(" + data.id_db + ");");
 			$("#node_options-fictional_node_update_button-1 input")
 				.attr("onclick", "update_fictional_node(" + data.id_db + ");");
+
+			$("#node_options-node_name-2 input")
+				.attr("onclick", "update_node_name(" + data.id_db + ");");
 			
 			$("#node_details-0-1").html('<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' + data["id_agent"] + '">' + data["text"] + '</a>');
 			var params = [];
@@ -691,7 +731,7 @@ function edit_node(data, dblClick) {
 					dialog_node_edit_title.replace("%s", data.text));
 			$("#dialog_node_edit").dialog("open");
 			
-			if (data.id_agent == -2) {
+			if (data.id_agent == undefined || data.id_agent == -2) {
 				//Fictional node
 				$("#node_options-fictional_node_name")
 					.css("display", "");
@@ -703,14 +743,22 @@ function edit_node(data, dblClick) {
 					.val(data.networkmap_id);
 				$("#node_options-fictional_node_update_button")
 					.css("display", "");
+				$("#node_options-node_name")
+					.css("display", "none");
+				$("#node_options-node_update_button")
+					.css("display", "none");
 			}
 			else {
+				$("input[name='edit_name_node']")
+					.val(data.text);
 				$("#node_options-fictional_node_name")
 					.css("display", "none");
 				$("#node_options-fictional_node_networkmap_link")
 					.css("display", "none");
 				$("#node_options-fictional_node_update_button")
 					.css("display", "none");
+				$("#node_options-node_name")
+					.css("display", "");
 			}
 			
 			//Clean
@@ -2425,7 +2473,7 @@ function init_graph(parameter_object) {
 	if (typeof(parameter_object.node_radius) != "undefined") {
 		window.node_radius = parameter_object.node_radius;
 	}
-	window.interface_radius = 5;
+	window.interface_radius = 3;
 	window.disabled_drag_zoom = false;
 	window.key_multiple_selection = 17; //CTRL key
 	window.flag_multiple_selection = false;
@@ -2644,7 +2692,7 @@ function init_graph(parameter_object) {
 			.attr("markerHeight", (node_radius / 2) + interface_radius)
 			.attr("orient", "auto")
 			.append("circle")
-				.attr("cx", (node_radius / 2) - (interface_radius / 2))
+				.attr("cx", (node_radius / 2.3) - (interface_radius / 2.3))
 				.attr("cy", interface_radius)
 				.attr("r", interface_radius)
 				.attr("style", function(d) {
@@ -2656,7 +2704,7 @@ function init_graph(parameter_object) {
 		.enter()
 		.append("marker")
 			.attr("id", function(d) { return "interface_end_" + d.status_code; })
-			.attr("refX", (node_radius / 2) + (interface_radius / 2))
+			.attr("refX", (node_radius / 2.3) + (interface_radius / 2.3))
 			.attr("refY", interface_radius)
 			.attr("markerWidth", (node_radius / 2) + interface_radius)
 			.attr("markerHeight", (node_radius / 2) + interface_radius)

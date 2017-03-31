@@ -160,9 +160,6 @@ sub pandora_get_sharedconfig ($$) {
 	# Pandora FMS Console's attachment directory
 	$pa_config->{"attachment_dir"} = pandora_get_tconfig_token ($dbh, 'attachment_store', '/var/www/pandora_console/attachment');
 
-	# Metaconsole agent cache.
-	$pa_config->{"metaconsole_agent_cache"} = pandora_get_tconfig_token ($dbh, 'metaconsole_agent_cache', 0);
-	
 	#Limit of events replicate in metaconsole
 	$pa_config->{'replication_limit'} = pandora_get_tconfig_token ($dbh, 'replication_limit', 1000);
 	$pa_config->{'include_agents'} = pandora_get_tconfig_token ($dbh, 'include_agents', 0);

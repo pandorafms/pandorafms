@@ -4994,7 +4994,7 @@ sub pandora_update_agent_module_count ($$$) {
 	') WHERE id_agente = ' . $agent_id);
 
 	# Sync the agent cache every time the module count is updated.
-	enterprise_hook('update_agent_cache', [$pa_config, $dbh, $agent_id]) if ($pa_config->{'metaconsole_agent_cache'} == 1);
+	enterprise_hook('update_agent_cache', [$pa_config, $dbh, $agent_id]) if ($pa_config->{'node_metaconsole'} == 1);
 }
 
 ##########################################################################
@@ -5008,7 +5008,7 @@ sub pandora_update_agent_alert_count ($$$) {
 	') WHERE id_agente = ' . $agent_id);
 	
 	# Sync the agent cache every time the module count is updated.
-	enterprise_hook('update_agent_cache', [$pa_config, $dbh, $agent_id]) if ($pa_config->{'metaconsole_agent_cache'} == 1);
+	enterprise_hook('update_agent_cache', [$pa_config, $dbh, $agent_id]) if ($pa_config->{'node_metaconsole'} == 1);
 }
 
 ########################################################################

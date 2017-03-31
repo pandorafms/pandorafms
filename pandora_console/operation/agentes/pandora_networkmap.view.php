@@ -762,15 +762,24 @@ else {
 
 <script>
 $(document).ready(function() {
-    $("*").on("click", function(){
-        if($("[aria-describedby=dialog_node_edit]").css('display') == 'block'){
-            $('#foot').css({'top':$("[aria-describedby=dialog_node_edit]").height()-150,'position':'relative'});
+	$("*").on("click", function(){
+			if($("[aria-describedby=dialog_node_edit]").css('display') == 'block'){
+			$('#foot').css({'top':parseInt($("[aria-describedby=dialog_node_edit]").css('height')+$("[aria-describedby=dialog_node_edit]").css('top')),'position':'relative'});	
+			
+		}
+		else{
+			$('#foot').css({'position':'','top':'0'});
+		}
+	
+    
+});
 
-        }
-        else{
-            $('#foot').css({'position':'','top':'0'});
-        }
+$("[aria-describedby=dialog_node_edit]").on('dialogclose', function(event) {
+	
+	 $('#foot').css({'position':'','top':'0'});
+	
+});
 
-	});
+
 });
 </script>

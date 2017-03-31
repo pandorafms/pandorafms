@@ -642,6 +642,10 @@ function edit_node(data, dblClick) {
 					$("#node_details-1-1").html(adressess);
 					$("#node_details-2-1").html(data["os"]);
 					$("#node_details-3-1").html(data["group"]);
+				},
+				success: function(){
+					$('[aria-describedby=dialog_node_edit]').css({'top':'200px'});
+					$('#foot').css({'top':parseInt($("[aria-describedby=dialog_node_edit]").css('height')+$("[aria-describedby=dialog_node_edit]").css('top')),'position':'relative'});	
 				}
 			});
 			

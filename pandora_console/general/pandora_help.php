@@ -27,7 +27,7 @@ require_once ("../include/functions_html.php");
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 </head>
 <?php echo '<link rel="stylesheet" href="../include/styles/'.$config['style'].'.css" type="text/css">'; ?>
-<body style="height: 100%; ">
+<body style="height: 100%;background-color: #333">
 <?php
 
 $id = get_parameter ('id');
@@ -60,38 +60,31 @@ foreach ($files as $file) {
 	}
 }
 
+
 if (! $id || ! file_exists ($help_file)) {
-	echo '<div id="main_help">';
-		if (is_metaconsole()) {
-			
-		}
-		else{
-			echo html_print_image('images/pandora_tinylogo.png', true, array("border" => '0'));	
+	echo '<div id="main_help" style="background-color: #fff;text-align:center; padding-top: 15px; padding-bottom: 15px; ">';
+		if (!is_metaconsole()) {
+			echo html_print_image('images/pandora_tinylogo.png', true, array("border" => '0'));
 		}
 	echo '</div>';
-	echo '<div style="font-family: verdana, arial; font-size: 11px; text-align:left">';
-	echo '<div style="font-size: 12px; margin-left: 20px; margin-right:20px; " class="databox">';
-	echo '<h1>';
+	echo '<div style="font-family: verdana, arial; font-size: 11px; text-align:left; background-color: #fff;">';
+	echo '<div style="font-size: 12px; background-color: #fff; ;border:0px;" class="databox">';
+	echo '<HR style="margin-top: 0px;">';
+	echo '<h1 style="padding-left: 30px">';
 	echo __('Help system error');
-	echo "</h1><HR><br>";
-	echo "<div style='text-align: center;'>";
-	if (is_metaconsole()) {
-		echo '<img src="'.$config["homeurl"].'images/pandora_logo.png">';
-	}
-	else{
-		echo html_print_image("images/pandora_logo.png", false, array("border" => '0')) . '<br>';
-	}
-	echo html_print_image("images/pandora_logo.png", array("border" => '0')) . '<br>';
+	echo "</h1>";
+	echo "<div style='text-align: center; background-color: #fff'>";
+
 	echo "</div>";
-	echo '<div class="msg">'.__('Pandora FMS help system has been called with a help reference that currently don\'t exist. There is no help content to show.').'</div></div></div>';
+	echo '<div class="msg" style="padding-left: 30px;padding-right: 30px;padding-bottom: 15px;">'.__('Pandora FMS help system has been called with a help reference that currently don\'t exist. There is no help content to show.').'</div></div></div>';
 	echo '<br /><br />';
-	echo '<div style="text-align: center; padding: 15px; font-family: verdana, arial; font-size: 11px;">';
+	echo '<div style="text-align: center; padding: 5px; font-family: verdana, arial; font-size: 11px;">';
 	include ('footer.php');
 	return;
 }
 
 /* Show help */
-echo '<div id="main_help_new">';
+echo '<div id="main_help_new" style="background-color: #fff">';
 	if (empty($config['enterprise_installed'])) {
 		echo html_print_image('images/pandora_tinylogo_open.png', true, array("border" => '0'));
 	}
@@ -104,15 +97,13 @@ echo '<div id="main_help_new">';
 		}
 	}
 echo '</div>';
-echo '<div id="main_help_new_content">';
+echo '<div id="main_help_new_content" style="height: auto ! important;overfloat: auto;">';
 ob_start();
 require_once ($help_file);
 $help = ob_get_contents();
 ob_end_clean();
 
 // Add a line after H1 tags
-$help = str_replace('</H1>', '</H1>', $help);
-$help = str_replace('</h1>', '</h1>', $help);
 echo $help;
 echo '</div>';
 echo '<div id="footer_help">';

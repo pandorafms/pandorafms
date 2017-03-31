@@ -246,6 +246,7 @@ $table->data[2][1] = html_print_select ($fields, "mode", $mode, '', '', 0, true)
 
 // Network 
 $table->data[3][0] = "<b>" . __('Network') . "</b>";
+$table->data[3][0] .= ui_print_help_tip (__('You can specify several networks, separated by commas, for example: 192.168.50.0/24,192.168.60.0/24'), true);
 $table->data[3][1] = html_print_input_text ('network', $network, '', 25, 0, true);
 
 // Interval
@@ -324,6 +325,7 @@ $table->data[11][1] =  html_print_checkbox ('snmp_enabled', 1, $snmp_enabled, tr
 
 // SNMP default community
 $table->data[12][0] = "<b>".__('SNMP Default community');
+$table->data[12][0] .= ui_print_help_tip (__('You can specify several values, separated by commas, for example: public,mysecret,1234'), true);
 $table->data[12][1] =  html_print_input_text ('snmp_community', $snmp_community, '', 35, 0, true);
 
 // Explanation

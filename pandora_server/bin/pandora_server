@@ -102,7 +102,7 @@ sub pandora_startup () {
 	$Config{"encryption_key"} = enterprise_hook('pandora_get_encryption_key', [\%Config, $Config{"encryption_passphrase"}]);
 
 	# Update the agent cache.
-	enterprise_hook('update_agent_cache', [\%Config, $DBH]) if ($Config{'metaconsole_agent_cache'} == 1);
+	enterprise_hook('update_agent_cache', [\%Config, $DBH]) if ($Config{'node_metaconsole'} == 1);
 
 	pandora_audit (\%Config, 'Pandora FMS Server Daemon starting', 'SYSTEM', 'System', $DBH);
 	

@@ -1335,7 +1335,6 @@ function show_networkmap($id = 0, $user_readonly = false, $nodes_and_relations =
 	////////////////////////////////////////////////////////////////////////
 	$(document).ready(function() {
 		init_graph({
-			refesh_period: networkmap_refresh_time,
 			graph: networkmap,
 			networkmap_center: networkmap_center,
 			networkmap_dimensions: networkmap_dimensions,
@@ -1347,8 +1346,6 @@ function show_networkmap($id = 0, $user_readonly = false, $nodes_and_relations =
 		init_drag_and_drop();
 		init_minimap();
 		function_open_minimap();
-		
-		window.interval_obj = setInterval(update_networkmap, networkmap_refresh_time);
 		
 		$(document.body).on("mouseleave",
 			".context-menu-list",

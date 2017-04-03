@@ -618,7 +618,7 @@ function add_new_link (new_link) {
 	graph.links.push(new_link);
 }
 
-function edit_node(data, dblClick) {
+function edit_node(data_node, dblClick) {
 	if (enterprise_installed) {
 		var flag_edit_node = true;
 		var edit_node = null
@@ -633,7 +633,7 @@ function edit_node(data, dblClick) {
 			edit_node = selection[0].pop();
 		}
 		else if (dblClick){
-			edit_node = d3.select("#id_node_" + data['id'] + networkmap_id);
+			edit_node = d3.select("#id_node_" + data_node['id'] + networkmap_id);
 			edit_node = edit_node[0][0];
 		}
 		else {
@@ -654,21 +654,22 @@ function edit_node(data, dblClick) {
 			
 			selected_links = get_relations(node_selected);
 			
-			$("select[name='shape'] option[value='" + data.shape + "']")
+			$("select[name='shape'] option[value='" + node_selected.shape + "']")
 				.prop("selected", true);
 			$("select[name='shape']").attr("onchange",
-				"javascript: change_shape(" + data.id_db + ");");
+				"javascript: change_shape(" + node_selected.id_db + ");");
 			$("#node_options-fictional_node_update_button-1 input")
-				.attr("onclick", "update_fictional_node(" + data.id_db + ");");
+				.attr("onclick", "update_fictional_node(" + node_selected.id_db + ");");
 
 			$("#node_options-node_name-2 input")
-				.attr("onclick", "update_node_name(" + data.id_db + ");");
+				.attr("onclick", "update_node_name(" + node_selected.id_db + ");");
 			
-			$("#node_details-0-1").html('<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' + data["id_agent"] + '">' + data["text"] + '</a>');
+			$("#node_details-0-1").html('<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' + node_selected["id_agent"] + '">' + node_selected["text"] + '</a>');
 			var params = [];
 			params.push("get_agent_info=1");
-			params.push("id_agent=" + data["id_agent"]);
+			params.push("id_agent=" + node_selected["id_agent"]);
 			params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
+			
 			jQuery.ajax ({
 				data: params.join ("&"),
 				dataType: 'json',
@@ -682,69 +683,29 @@ function edit_node(data, dblClick) {
 					$("#node_details-1-1").html(adressess);
 					$("#node_details-2-1").html(data["os"]);
 					$("#node_details-3-1").html(data["group"]);
-				},
-				success: function(){
+
 					$('[aria-describedby=dialog_node_edit]').css({'top':'200px'});
 					$('#foot').css({'top':parseInt($("[aria-describedby=dialog_node_edit]").css('height')+$("[aria-describedby=dialog_node_edit]").css('top')),'position':'relative'});	
-				}
-			});
-			
-			$("#interface_information").find("tr:gt(0)").remove();
-			
-			var params = [];
-			params.push("get_interface_info=1");
-			params.push("id_agent=" + data["id_agent"]);
-			params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
-			jQuery.ajax ({
-				data: params.join ("&"),
-				dataType: 'json',
-				type: 'POST',
-				url: action="ajax.php",
-				success: function (data) {
-					if (data.length == 0) {
-						$("#interface_information").find('tbody')
-							.append($('<tr>').html("<p style=\"text-align: center;\">It has no interface to display</p>"));
-					}
-					else {
-						jQuery.each(data, function(j, interface) {
-							$("#interface_information").find('tbody')
-								.append($('<tr>')
-									.append($('<td>')
-										.html(interface['name'])
-									)
-									.append($('<td>')
-										.html(interface['status'])
-									)
-									.append($('<td>')
-										.html(interface['graph'])
-									)
-									.append($('<td>')
-										.html(interface['ip'])
-									)
-									.append($('<td>')
-										.html(interface['mac'])
-									)
-								);
-						});
-					}
+
+					get_interface_data_to_table(node_selected, selected_links);
 				}
 			});
 			
 			$("#dialog_node_edit" )
 				.dialog( "option", "title",
-					dialog_node_edit_title.replace("%s", data.text));
+					dialog_node_edit_title.replace("%s", node_selected.text));
 			$("#dialog_node_edit").dialog("open");
 			
-			if (data.id_agent == undefined || data.id_agent == -2) {
+			if (node_selected.id_agent == undefined || node_selected.id_agent == -2) {
 				//Fictional node
 				$("#node_options-fictional_node_name")
 					.css("display", "");
 				$("input[name='edit_name_fictional_node']")
-					.val(data.text);
+					.val(node_selected.text);
 				$("#node_options-fictional_node_networkmap_link")
 					.css("display", "");
 				$("#edit_networkmap_to_link")
-					.val(data.networkmap_id);
+					.val(node_selected.networkmap_id);
 				$("#node_options-fictional_node_update_button")
 					.css("display", "");
 				$("#node_options-node_name")
@@ -754,7 +715,7 @@ function edit_node(data, dblClick) {
 			}
 			else {
 				$("input[name='edit_name_node']")
-					.val(data.text);
+					.val(node_selected.text);
 				$("#node_options-fictional_node_name")
 					.css("display", "none");
 				$("#node_options-fictional_node_networkmap_link")
@@ -770,122 +731,158 @@ function edit_node(data, dblClick) {
 			//Show the no relations
 			$("#relations_table-loading").css('display', 'none');
 			$("#relations_table-no_relations").css('display', '');
-			
-			
-			jQuery.each(selected_links, function(i, link_each) {
-				
-				$("#relations_table-no_relations").css('display', 'none');
-				$("#relations_table-loading").css('display', '');
-				
-				var template_relation_row = $("#relations_table-template_row")
-					.clone();
-				
-				$(template_relation_row).css('display', '');
-				$(template_relation_row).attr('class', 'relation_link_row');
-				
-				$("select[name='interface_source']", template_relation_row)
-					.attr('name', "interface_source_" + i)
-					.attr('id', "interface_source_" + i);
-				$("select[name='interface_target']", template_relation_row)
-					.attr('name', "interface_target_" + i)
-					.attr('id', "interface_target_" + i);
-				$(".edit_icon_progress", template_relation_row)
-					.attr('class', "edit_icon_progress_" + i);
-				$(".edit_icon", template_relation_row)
-					.attr('class', "edit_icon_" + i);
-				$(".edit_icon_correct", template_relation_row)
-					.attr('class', "edit_icon_correct_" + i);
-				$(".edit_icon_fail", template_relation_row)
-					.attr('class', "edit_icon_fail_" + i);
-				$(".edit_icon_link", template_relation_row)
-					.attr('class', "edit_icon_link_" + i)
-					.click(function() {
-						update_link(i, link_each.id_db);
-					}
-				);
-				
-				var params = [];
-				params.push("get_intefaces=1");
-				params.push("id_agent=" + link_each.source.id_agent);
-				params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
-				
-				jQuery.ajax ({
-					data: params.join ("&"),
-					dataType: 'json',
-					type: 'POST',
-					url: action="ajax.php",
-					success: function (data) {
-						if (data['correct']) {
-							$("select[name='interface_source_" + i + "']", template_relation_row).empty();
-							$("select[name='interface_source_" + i + "']", template_relation_row).append('<option value="' + link_each.source.id_agent + '">None</option>');
-							jQuery.each(data['interfaces'], function(j, interface) {
-								
-								$("select[name='interface_source_" + i + "']", template_relation_row)
-									.append($("<option>")
-										.attr("value", interface['id_agente_modulo'])
-										.html(interface['nombre']));
-								
-								if (interface.id_agente_modulo == link_each.id_module_start) {
-									$("select[name='interface_source_" + i + "'] option[value='" + interface['id_agente_modulo'] + "']", template_relation_row)
-										.prop("selected", true);
-								}
-							});
-						}
-					}
-				});
-				
-				var params = [];
-				params.push("get_intefaces=1");
-				params.push("id_agent=" + link_each.target.id_agent);
-				params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
-				
-				jQuery.ajax ({
-					data: params.join ("&"),
-					dataType: 'json',
-					type: 'POST',
-					url: action="ajax.php",
-					success: function (data) {
-						if (data['correct']) {
-							$("select[name='interface_target_" + i + "']", template_relation_row).empty();
-							$("select[name='interface_target_" + i + "']", template_relation_row).append('<option value="' + link_each.target.id_agent + '">None</option>');
-							jQuery.each(data['interfaces'], function(j, interface) {
-								$("select[name='interface_target_" + i + "']", template_relation_row)
-									.append($("<option>")
-										.attr("value", interface['id_agente_modulo'])
-										.html(interface['nombre']));
-								
-								if (interface.id_agente_modulo == link_each.id_module_end) {
-									$("select[name='interface_target_" + i + "'] option[value='" + interface['id_agente_modulo'] + "']", template_relation_row)
-										.prop("selected", true);
-								}
-							});
-							
-						}
-					}
-				});
-				
-				$("#relations_table-template_row-node_source", template_relation_row)
-					.html(link_each.source.text);
-				$("#relations_table-template_row-node_target", template_relation_row)
-					.html(link_each.target.text);
-				$("#relations_table-template_row-edit", template_relation_row)
-					.attr("align", "center");
-				$("#relations_table-template_row-edit .delete_icon", template_relation_row)
-					.attr("href", "javascript: " +
-						"delete_link(" +
-							link_each.source.id_db + "," +
-							link_each.id_module_start + "," +
-							link_each.target.id_db + "," +
-							link_each.id_module_end + "," +
-							link_each.id_db + ");");
-				$("#relations_table tbody").append(template_relation_row);
-				
-				template_relation_row = null;
-			});
-			
-			$("#relations_table-loading").css('display', 'none');	
 		}
 	}
+}
+
+function get_interface_data_to_table (node_selected, selected_links) {
+	$("#interface_information").find("tr:gt(0)").remove();
+
+	var params = [];
+	params.push("get_interface_info=1");
+	params.push("id_agent=" + node_selected["id_agent"]);
+	params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
+	jQuery.ajax ({
+		data: params.join ("&"),
+		dataType: 'json',
+		type: 'POST',
+		url: action="ajax.php",
+		success: function (data) {
+			if (data.length == 0) {
+				$("#interface_information").find('tbody')
+					.append($('<tr>').html("<p style=\"text-align: center;\">It has no interface to display</p>"));
+			}
+			else {
+				jQuery.each(data, function(j, interface) {
+					$("#interface_information").find('tbody')
+						.append($('<tr>')
+							.append($('<td>')
+								.html(interface['name'])
+							)
+							.append($('<td>')
+								.html(interface['status'])
+							)
+							.append($('<td>')
+								.html(interface['graph'])
+							)
+							.append($('<td>')
+								.html(interface['ip'])
+							)
+							.append($('<td>')
+								.html(interface['mac'])
+							)
+						);
+				});
+			}
+			load_interfaces(selected_links);
+		}
+	});
+}
+
+function load_interfaces (selected_links) {
+	//Clean
+	$("#relations_table .relation_link_row").remove();
+	//Show the no relations
+	$("#relations_table-loading").css('display', 'none');
+	$("#relations_table-no_relations").css('display', '');
+	
+	jQuery.each(selected_links, function(i, link_each) {
+		$("#relations_table-no_relations").css('display', 'none');
+		$("#relations_table-loading").css('display', '');
+		
+		var template_relation_row = $("#relations_table-template_row")
+			.clone();
+		
+		$(template_relation_row).css('display', '');
+		$(template_relation_row).attr('class', 'relation_link_row');
+		
+		$("select[name='interface_source']", template_relation_row)
+			.attr('name', "interface_source_" + i)
+			.attr('id', "interface_source_" + i);
+		$("select[name='interface_target']", template_relation_row)
+			.attr('name', "interface_target_" + i)
+			.attr('id', "interface_target_" + i);
+		$(".edit_icon_progress", template_relation_row)
+			.attr('class', "edit_icon_progress_" + i);
+		$(".edit_icon", template_relation_row)
+			.attr('class', "edit_icon_" + i);
+		$(".edit_icon_correct", template_relation_row)
+			.attr('class', "edit_icon_correct_" + i);
+		$(".edit_icon_fail", template_relation_row)
+			.attr('class', "edit_icon_fail_" + i);
+		$(".edit_icon_link", template_relation_row)
+			.attr('class', "edit_icon_link_" + i)
+			.click(function() {
+				update_link(i, link_each.id_db);
+			}
+		);
+		
+		var params3 = [];
+		params3.push("get_intefaces=1");
+		params3.push("id_agent_target=" + link_each.target.id_agent);
+		params3.push("id_agent_source=" + link_each.source.id_agent);
+		params3.push("page=enterprise/operation/agentes/pandora_networkmap.view");
+		
+		jQuery.ajax ({
+			data: params3.join ("&"),
+			dataType: 'json',
+			type: 'POST',
+			async: true,
+			cache: false,
+			url: action="ajax.php",
+			success: function (data) {
+				if (data['correct']) {
+					$("select[name='interface_target_" + i + "']", template_relation_row).empty();
+					$("select[name='interface_target_" + i + "']", template_relation_row).append('<option value="' + link_each.target.id_agent + '">None</option>');
+
+					$("select[name='interface_source_" + i + "']", template_relation_row).empty();
+					$("select[name='interface_source_" + i + "']", template_relation_row).append('<option value="' + link_each.source.id_agent + '">None</option>');
+					jQuery.each(data['target_interfaces'], function(j, interface) {
+						$("select[name='interface_target_" + i + "']", template_relation_row)
+							.append($("<option>")
+								.attr("value", interface['id_agente_modulo'])
+								.html(interface['nombre']));
+						
+						if (interface.id_agente_modulo == link_each.id_module_end) {
+							$("select[name='interface_target_" + i + "'] option[value='" + interface['id_agente_modulo'] + "']", template_relation_row)
+								.prop("selected", true);
+						}
+					});
+					
+					jQuery.each(data['source_interfaces'], function(j, interface) {
+						$("select[name='interface_source_" + i + "']", template_relation_row)
+							.append($("<option>")
+								.attr("value", interface['id_agente_modulo'])
+								.html(interface['nombre']));
+						
+						if (interface.id_agente_modulo == link_each.id_module_start) {
+							$("select[name='interface_source_" + i + "'] option[value='" + interface['id_agente_modulo'] + "']", template_relation_row)
+								.prop("selected", true);
+						}
+					});
+					$("#relations_table-loading").css('display', 'none');
+				}
+			}
+		});
+
+		$("#relations_table-template_row-node_source", template_relation_row)
+			.html(link_each.source.text);
+		$("#relations_table-template_row-node_target", template_relation_row)
+			.html(link_each.target.text);
+		$("#relations_table-template_row-edit", template_relation_row)
+			.attr("align", "center");
+		$("#relations_table-template_row-edit .delete_icon", template_relation_row)
+			.attr("href", "javascript: " +
+				"delete_link(" +
+					link_each.source.id_db + "," +
+					link_each.id_module_start + "," +
+					link_each.target.id_db + "," +
+					link_each.id_module_end + "," +
+					link_each.id_db + ");");
+		$("#relations_table tbody").append(template_relation_row);
+		
+		template_relation_row = null;
+	});
 }
 
 function add_node() {

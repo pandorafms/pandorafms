@@ -1428,6 +1428,13 @@ if (empty($list_networkmaps))
 			html_print_image('images/dot_green.png', true) . '</span>' .
 		'<span id="shape_icon_fail" style="display: none;">' .
 			html_print_image('images/dot_red.png', true) . '</span>';
+	$table->data["node_name"][0] = __('Name');
+	$table->data["node_name"][1] = html_print_input_text('edit_name_node',
+		'', __('name node'), '20', '50', true);
+	$table->data["node_name"][2] =
+		html_print_button(__('Update node'), '', false,
+			'', 'class="sub"', true);
+	
 	$table->data["fictional_node_name"][0] = __('Name');
 	$table->data["fictional_node_name"][1] = html_print_input_text('edit_name_fictional_node',
 		'', __('name fictional node'), '20', '50', true);

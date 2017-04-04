@@ -652,7 +652,6 @@ else {
 <script type="text/javascript">
 $(document).ready (function () {
 	$("[class^='left']").mouseenter (function () {
-		console.log($(this));
 		$(".agent"+$(this)[0].className).css('visibility', '');
 	}).mouseleave(function () {
 		$(".agent"+$(this)[0].className).css('visibility', 'hidden');

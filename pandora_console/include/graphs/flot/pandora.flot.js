@@ -1923,11 +1923,9 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 
 			if (thresholded) {
 				$.each(data_base, function() {
-					// Prepared to turning series
-					//if(showed[this.id.split('_')[1]]) {
-						datas.push(this);
-					//}
+					datas.push(this);
 				});
+				
 				plot = $.plot($('#' + graph_id), data_base,
 					$.extend(true, {}, options, {
 						yaxis: {max: max_draw},
@@ -1935,7 +1933,6 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				thresholded = false;
 			}
 			else {
-				
 				var max_draw = plot.getAxes().yaxis.datamax;
 				if (max_draw < red_threshold || max_draw < yellow_threshold) {
 					
@@ -1945,7 +1942,8 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 					$.extend(true, {}, options, {
 						yaxis: {max: maxim_data + (maxim_data*0.5)},
 					}));
-				} else {
+				}
+				else {
 					plot = $.plot($('#' + graph_id), data_base,
 					$.extend(true, {}, options, {
 						yaxis: {max: plot.getAxes().yaxis.max},
@@ -1954,13 +1952,10 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				datas = add_threshold (data_base, threshold_data, plot.getAxes().yaxis.min, plot.getAxes().yaxis.max,
 										yellow_threshold, red_threshold, extremes, red_up);
 				thresholded = true;
-				
 			}
 			
 			plot.setData(datas);
 			plot.draw();
-
-			//~ plot.setSelection(currentRanges);
 		});
 
 		$('#menu_cancelzoom_' + graph_id).click(function() {

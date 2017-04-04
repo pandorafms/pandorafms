@@ -401,8 +401,6 @@ function alert_templates_changed_by_multiple_agents_with_alerts (event, id_agent
 		templates.push($(val).val());
 	});
 	
-	console.log(templates);
-	
 	$('#module').attr ('disabled', 1);
 	$('#module').empty ();
 	$('#module').append ($('<option></option>').html ("Loading...").attr ("value", 0));

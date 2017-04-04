@@ -1073,7 +1073,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		# non-ascii chars should be encoded in UTF-8.
 		if ($field3 =~ /[^[:ascii:]]/o) {
 			$field3 = encode("UTF-8", $field3);
-			$content_type = 'text/plain; charset="UTF-8"';
+			$content_type = 'text/html; charset="UTF-8"';
 		}
 		
 		# Build the mail with attached content
@@ -1084,8 +1084,8 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 			$boundary = "--" . $boundary;
 			
 			$field3 = $boundary . "\n"
-					. "Content-Type: " . $html_content_type . "\n"
-					. "Content-Transfer-Encoding: quoted-printable\n\n"
+					. "Content-Type: " . $html_content_type . "\n\n"
+					#. "Content-Transfer-Encoding: quoted-printable\n\n"
 					. $field3 . "\n";
 
 			

@@ -1344,7 +1344,8 @@ function reporting_html_agent_module($table, $item) {
 								__("%s in %s : NORMAL",
 									$module_name,
 									$row['agent_name']),
-								true, array('width' => '20px', 'height' => '20px'));
+								true, array('width' => '20px', 'height' => '20px'), 
+								'images/status_sets/default/');
 							break;
 						case AGENT_STATUS_CRITICAL:
 							$table_data .= ui_print_status_image(
@@ -1352,7 +1353,8 @@ function reporting_html_agent_module($table, $item) {
 								__("%s in %s : CRITICAL",
 									$module_name,
 									$row['agent_name']),
-								true, array('width' => '20px', 'height' => '20px'));
+								true, array('width' => '20px', 'height' => '20px'), 
+								'images/status_sets/default/');
 							break;
 						case AGENT_STATUS_WARNING:
 							$table_data .= ui_print_status_image(
@@ -1360,7 +1362,8 @@ function reporting_html_agent_module($table, $item) {
 								__("%s in %s : WARNING",
 									$module_name,
 									$row['agent_name']),
-								true, array('width' => '20px', 'height' => '20px'));
+								true, array('width' => '20px', 'height' => '20px'), 
+								'images/status_sets/default/');
 							break;
 						case AGENT_STATUS_UNKNOWN:
 							$table_data .= ui_print_status_image(
@@ -1368,7 +1371,8 @@ function reporting_html_agent_module($table, $item) {
 								__("%s in %s : UNKNOWN",
 									$module_name,
 									$row['agent_name']),
-								true, array('width' => '20px', 'height' => '20px'));
+								true, array('width' => '20px', 'height' => '20px'), 
+								'images/status_sets/default/');
 							break;
 						case AGENT_STATUS_ALERT_FIRED:
 							$table_data .= ui_print_status_image(
@@ -1376,7 +1380,8 @@ function reporting_html_agent_module($table, $item) {
 								__("%s in %s : ALERTS FIRED",
 									$module_name,
 									$row['agent_name']),
-								true, array('width' => '20px', 'height' => '20px'));
+								true, array('width' => '20px', 'height' => '20px'), 
+								'images/status_sets/default/');
 							break;
 					}
 					$table_data .= "</td>";

@@ -451,13 +451,13 @@ button.ui-button::-moz-focus-inner {
 	float: right;
 }
 .ui-dialog .ui-dialog-buttonpane button {
-	margin: .5em 1em .5em 0;
-	cursor: pointer;
-	background: white;
-	background-color: white;
-	border: 1px solid #82b92e;
-	height:30px;
-	width:90px;
+	margin: .5em 1em .5em 0 !important;
+	cursor: pointer !important;
+	background: white !important;
+	background-color: white !important;
+	border: 1px solid #82b92e !important;
+	height:30px !important;
+	width:90px !important;
 }
 .ui-dialog .ui-resizable-se {
 	width: 12px;

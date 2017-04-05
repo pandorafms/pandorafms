@@ -891,7 +891,7 @@ function update_last_package(package, version, homeurl) {
 							
 							$("#box_online .content").html(data['message']);
 							
-							install_free_package_prev_step(package, version, homeurl);
+							install_free_package_prev_step(package, version, home_url);
 						}
 						else {
 							$("#box_online .content").html(data['message']);

@@ -158,6 +158,7 @@ if ($create_user) {
 	$values['comments'] = (string) get_parameter ('comments');
 	$values['is_admin'] = (int) get_parameter ('is_admin', 0);
 	$values['language'] = get_parameter ('language', 'default');
+	$values['default_event_filter'] = (int) get_parameter('default_event_filter');
 	if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 		$values['id_skin'] = (int) get_parameter ('skin', 0);
 	}
@@ -266,6 +267,7 @@ if ($update_user) {
 	$values['comments'] = (string) get_parameter ('comments');
 	$values['is_admin'] = get_parameter ('is_admin', 0 );
 	$values['language'] = (string) get_parameter ('language');
+	$values['default_event_filter'] = (int) get_parameter('default_event_filter');
 	if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 		$values['id_skin'] = get_parameter ('skin', 0);
 	}
@@ -547,7 +549,16 @@ $table->data[14][1] = html_print_checkbox('strict_acl', 1, $user_info["strict_ac
 $table->data[15][0] = __('Session Time');
 $table->data[15][0] .= ui_print_help_tip(__('This is defined in minutes, If you wish a permanent session should putting -1 in this field.'), true);
 $table->data[15][1] = html_print_input_text ('session_time', $user_info["session_time"], '', 5, 5, true);
-	
+
+$event_filter_data = db_get_all_rows_sql('SELECT id_name, id_filter FROM tevent_filter');
+$event_filter = array();
+$event_filter[0] = __('None');
+foreach ($event_filter_data as $filter) {
+	$event_filter[$filter['id_filter']] = $filter['id_name'];
+}
+$table->data[16][0] = __('Default event filter');
+$table->data[16][1] = html_print_select ($event_filter, 'default_event_filter', $user_info["default_event_filter"], '','', __('None'), true, false, false);
+
 if($meta) {
 	enterprise_include('include/functions_metaconsole.php');
 	$data = array();

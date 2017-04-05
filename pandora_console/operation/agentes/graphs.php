@@ -123,7 +123,7 @@ $table->rowspan[0][1] = 7;
 $table->data[0][0] = __('Modules');
 $table->data[0][1] = html_print_select($list_modules, 'modules[]',
 	$modules, '', '', 0, true, true,
-	true, '', false, "width: 100%; height: 200px;");
+	true, '', false, "min-width:200px;max-width:460px;height: 200px;");
 
 $table->rowspan[2][0] = 7;
 $table->data[2][0] = "";

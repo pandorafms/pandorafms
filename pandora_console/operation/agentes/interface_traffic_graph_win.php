@@ -82,10 +82,11 @@ $interface_traffic_modules = array(
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<title>Pandora FMS Graph (<?php echo agents_get_name($agent_id) . ' - ' . $interface_name; ?>)</title>
 		<link rel="stylesheet" href="../../include/styles/pandora_minimal.css" type="text/css" />
-		<script type='text/javaScript' src='../../include/javascript/calendar.js'></script>
+		<link rel="stylesheet" href="../../include/styles/jquery-ui-1.10.0.custom.css" type="text/css" />
 		<script type='text/javascript' src='../../include/javascript/pandora.js'></script>
 		<script type='text/javascript' src='../../include/javascript/jquery-1.9.0.js'></script>
 		<script type='text/javascript' src='../../include/javascript/jquery.pandora.js'></script>
+		<script type='text/javascript' src='../../include/javascript/jquery.jquery-ui-1.10.0.custom.js'>
 		<script type='text/javascript'>
 			<!--
 			window.onload = function() {
@@ -295,6 +296,13 @@ $interface_traffic_modules = array(
 		
 	</body>
 </html>
+<?php
+// Echo the script tags of the datepicker and the timepicker
+// Modify the user language cause the ui.datepicker language files use - instead _
+$custom_user_language = str_replace('_', '-', $user_language);
+ui_require_jquery_file("ui.datepicker-" . $custom_user_language, "include/javascript/i18n/", true);
+ui_include_time_picker(true);
+?>
 <script>
 	
 <?php
@@ -320,6 +328,23 @@ $interface_traffic_modules = array(
 <?php
 	}
 ?>
+	// Add datepicker and timepicker
+	$("#text-start_date").datepicker({
+		dateFormat: "<?php echo DATE_FORMAT_JS; ?>"
+	});
+	$("#text-start_time").timepicker({
+		showSecond: true,
+		timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
+		timeOnlyTitle: '<?php echo __('Choose time');?>',
+		timeText: '<?php echo __('Time');?>',
+		hourText: '<?php echo __('Hour');?>',
+		minuteText: '<?php echo __('Minute');?>',
+		secondText: '<?php echo __('Second');?>',
+		currentText: '<?php echo __('Now');?>',
+		closeText: '<?php echo __('Close');?>'
+	});
+	
+	$.datepicker.setDefaults($.datepicker.regional["<?php echo $custom_user_language; ?>"]);
 	
 	forced_title_callback();
 </script>

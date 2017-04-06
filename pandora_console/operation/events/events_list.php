@@ -163,6 +163,107 @@ if ($id_agent == 0 && !empty($text_agent)) {
 	$id_agent = -1;
 }
 
+$id_name = get_parameter('id_name', '');
+
+/* -------------------------------------------------------------------------- */
+/* ------------------------ DEFAULT USER FILTER ----------------------------- */
+$user = $config['id_user'];
+$user_filter = db_get_value_filter('default_event_filter', 'tusuario', array('id_user' => $user));
+$update_from_filter_table = (bool)get_parameter('update_from_filter_table', false);
+
+if ($user_filter != 0 && empty($id_name) && !$update_from_filter_table) {
+	$user_default_filter = db_get_all_rows_filter('tevent_filter', array('id_filter' => $user_filter));
+	$user_default_filter = $user_default_filter[0];
+
+	// FORM
+	$id_name = $user_default_filter['id_name'];
+	$id_group = $user_default_filter['id_group'];
+	if ($user_default_filter['event_type'] != "") {
+		$event_type = $user_default_filter['event_type'];
+	}
+	
+	$severity = $user_default_filter['severity'];
+	$status = $user_default_filter['status'];
+	$event_view_hr = $user_default_filter['event_view_hr'];
+	$group_rep = $user_default_filter['group_rep'];
+	if ($user_default_filter['search'] != "") {
+		$search = $user_default_filter['search'];
+	}
+	if ($user_default_filter['id_user_ack'] != 0) {
+		$id_user_ack = $user_default_filter['id_user_ack'];
+	}
+	if ($user_default_filter['id_agent_module'] != 0) {
+		$id_agent_module = $user_default_filter['id_agent_module'];
+	}
+	if ($user_default_filter['id_agent'] != 0) {
+		$id_agent = $user_default_filter['id_agent'];
+	}
+	if ($user_default_filter['text_agent'] != "") {
+		$text_agent = $user_default_filter['text_agent'];
+	}
+	if ($user_default_filter['filter_only_alert'] != -1) {
+		$filter_only_alert = $user_default_filter['filter_only_alert'];
+	}
+	if ($user_default_filter['pagination'] != 20) {
+		$pagination = $user_default_filter['pagination'];
+	}
+	if ($user_default_filter['date_from'] != "0000-00-00") {
+		$date_from = $user_default_filter['date_from'];
+	}
+	if ($user_default_filter['date_to'] != "0000-00-00") {
+		$date_to = $user_default_filter['date_to'];
+	}
+	if ($user_default_filter['tag_with'] != "[]") {
+		$tag_with = $user_default_filter['tag_with'];
+		$tag_with_clean = io_safe_output($tag_with);
+		$tag_with = json_decode($tag_with_clean, true);
+	}
+	if ($user_default_filter['tag_without'] != "[]") {
+		$tag_without = $user_default_filter['tag_without'];
+		$tag_without_clear = io_safe_output($tag_without);
+		$tag_without = json_decode($tag_without_clear, true);
+	}
+
+	// TAGS
+	$filter_resume['severity'] = $user_default_filter['severity'];
+	$filter_resume['status'] = $user_default_filter['status'];
+	$filter_resume['groups'] = $user_default_filter['id_group'];
+	if ($user_default_filter['id_agent'] != 0) {
+		$filter_resume['agent'] = $user_default_filter['id_agent'];
+	}
+	if ($user_default_filter['id_agent_module'] != 0) {
+		$filter_resume['module'] = $user_default_filter['id_agent_module'];
+	}
+	if ($user_default_filter['event_type'] != "") {
+		$filter_resume['event_type'] = $user_default_filter['event_type'];
+	}
+	if ($user_default_filter['search'] != "") {
+		$filter_resume['free_search'] = $user_default_filter['search'];
+	}
+	if ($user_default_filter['date_from'] != "0000-00-00") {
+		$filter_resume['time_from'] = $user_default_filter['date_from'];
+	}
+	if ($user_default_filter['date_to'] != "0000-00-00") {
+		$filter_resume['time_to'] = $user_default_filter['date_to'];
+	}
+	if (io_safe_output($user_default_filter['tag_with']) != "[]") {
+		$tag_with_clean_tag = io_safe_output($user_default_filter['tag_with']);
+		$filter_resume['tag_inc'] = json_decode($tag_with_clean_tag, true);
+	}
+	if (io_safe_output($user_default_filter['tag_without']) != "[]") {
+		$tag_without_clean_tag = io_safe_output($user_default_filter['tag_without']);
+		$filter_resume['tag_no_inc'] = json_decode($tag_without_clean_tag, true);
+	}
+	if ($user_default_filter['filter_only_alert'] != -1) {
+		$filter_resume['alerts'] = $user_default_filter['filter_only_alert'];
+	}
+	$filter_resume['hours_max'] = $user_default_filter['event_view_hr'];
+	if ($user_default_filter['id_user_ack'] != 0) {
+		$filter_resume['user_ack'] = $user_default_filter['id_user_ack'];
+	}
+}
+/* -------------------------------------------------------------------------- */
+
 /////////////////////////////////////////////
 // Build the condition of the events query
 
@@ -175,8 +276,6 @@ require('events.build_query.php');
 
 // Now $sql_post have all the where condition
 /////////////////////////////////////////////
-
-$id_name = get_parameter('id_name', '');
 
 // Trick to catch if any filter button has been pushed (don't collapse filter)
 // or the filter was open before click or autorefresh is in use (collapse filter)
@@ -264,83 +363,6 @@ if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0,
 	echo '</div>';
 	echo '</div>';
 }
-
-/* -------------------------------------------------------------------------- */
-/* ------------------------ DEFAULT USER FILTER ----------------------------- */
-$user = $config['id_user'];
-$user_filter = db_get_value_filter('default_event_filter', 'tusuario', array('id_user' => $user));
-$update_from_filter_table = (bool)get_parameter('update_from_filter_table', false);
-if ($user_filter != 0 && empty($id_name) && !$update_from_filter_table) {
-	$user_default_filter = db_get_all_rows_filter('tevent_filter', array('id_filter' => $user_filter));
-	$user_default_filter = $user_default_filter[0];
-
-	// FORM
-	$id_name = $user_default_filter['id_name'];
-	$id_group = $user_default_filter['id_group'];
-	$event_type = $user_default_filter['event_type'];
-	$severity = $user_default_filter['severity'];
-	$status = $user_default_filter['status'];
-	$event_view_hr = $user_default_filter['event_view_hr'];
-	$group_rep = $user_default_filter['group_rep'];
-	$search = $user_default_filter['search'];
-	$id_user_ack = $user_default_filter['id_user_ack'];
-	$id_agent_module = $user_default_filter['id_agent_module'];
-	$id_agent = $user_default_filter['id_agent'];
-	$text_agent = $user_default_filter['text_agent'];
-	$filter_only_alert = $user_default_filter['filter_only_alert'];
-	$pagination = $user_default_filter['pagination'];
-	$date_from = $user_default_filter['date_from'];
-	$date_to = $user_default_filter['date_to'];
-	$tag_with = $user_default_filter['tag_with'];
-	$tag_without = $user_default_filter['tag_without'];
-	if ($tag_with != "[]") {
-		$tag_with_clean = io_safe_output($tag_with);
-		$tag_with = json_decode($tag_with_clean, true);
-	}
-	if ($tag_without != "[]") {
-		$tag_without_clear = io_safe_output($tag_without);
-		$tag_without = json_decode($tag_without_clear, true);
-	}
-
-	// TAGS
-	$filter_resume['severity'] = $user_default_filter['severity'];
-	$filter_resume['status'] = $user_default_filter['status'];
-	$filter_resume['groups'] = $user_default_filter['id_group'];
-	if ($user_default_filter['id_agent'] != 0) {
-		$filter_resume['agent'] = $user_default_filter['id_agent'];
-	}
-	if ($user_default_filter['id_agent_module'] != 0) {
-		$filter_resume['module'] = $user_default_filter['id_agent_module'];
-	}
-	if ($user_default_filter['event_type'] != "") {
-		$filter_resume['event_type'] = $user_default_filter['event_type'];
-	}
-	if ($user_default_filter['search'] != "") {
-		$filter_resume['free_search'] = $user_default_filter['search'];
-	}
-	if ($user_default_filter['date_from'] != "0000-00-00") {
-		$filter_resume['time_from'] = $user_default_filter['date_from'];
-	}
-	if ($user_default_filter['date_to'] != "0000-00-00") {
-		$filter_resume['time_to'] = $user_default_filter['date_to'];
-	}
-	if (io_safe_output($user_default_filter['tag_with']) != "[]") {
-		$tag_with_clean_tag = io_safe_output($user_default_filter['tag_with']);
-		$filter_resume['tag_inc'] = json_decode($tag_with_clean_tag, true);
-	}
-	if (io_safe_output($user_default_filter['tag_without']) != "[]") {
-		$tag_without_clean_tag = io_safe_output($user_default_filter['tag_without']);
-		$filter_resume['tag_no_inc'] = json_decode($tag_without_clean_tag, true);
-	}
-	if ($user_default_filter['filter_only_alert'] != -1) {
-		$filter_resume['alerts'] = $user_default_filter['filter_only_alert'];
-	}
-	$filter_resume['hours_max'] = $user_default_filter['event_view_hr'];
-	if ($user_default_filter['id_user_ack'] != 0) {
-		$filter_resume['user_ack'] = $user_default_filter['id_user_ack'];
-	}
-}
-/* -------------------------------------------------------------------------- */
 
 // Load filter div for dialog
 echo '<div id="load_filter_layer" style="display: none">';

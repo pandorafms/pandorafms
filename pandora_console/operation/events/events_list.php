@@ -126,7 +126,13 @@ if (is_ajax()) {
 		$values['id_group_filter'] = get_parameter('id_group_filter');
 		$values['date_from'] = get_parameter('date_from');
 		$values['date_to'] = get_parameter('date_to');
-html_debug($values, true);
+		if (io_safe_output($values['tag_with']) == "[\"0\"]") {
+			$values['tag_with'] = "[]";
+		}
+		if (io_safe_output($values['tag_without']) == "[\"0\"]") {
+			$values['tag_without'] = "[]";
+		}
+
 		$result = db_process_sql_update('tevent_filter',
 			$values, array('id_filter' => $id));
 		
@@ -318,11 +324,11 @@ if ($user_filter != 0 && empty($id_name) && !$update_from_filter_table) {
 	if ($user_default_filter['date_to'] != "0000-00-00") {
 		$filter_resume['time_to'] = $user_default_filter['date_to'];
 	}
-	if ($user_default_filter['tag_with'] != "[]") {
+	if (io_safe_output($user_default_filter['tag_with']) != "[]") {
 		$tag_with_clean_tag = io_safe_output($user_default_filter['tag_with']);
 		$filter_resume['tag_inc'] = json_decode($tag_with_clean_tag, true);
 	}
-	if ($user_default_filter['tag_without'] != "[]") {
+	if (io_safe_output($user_default_filter['tag_without']) != "[]") {
 		$tag_without_clean_tag = io_safe_output($user_default_filter['tag_without']);
 		$filter_resume['tag_no_inc'] = json_decode($tag_without_clean_tag, true);
 	}
@@ -370,14 +376,14 @@ $tags_select_without = array();
 $tag_with_temp = array();
 $tag_without_temp = array();
 foreach ($tags as $id_tag => $tag) {
-	if (array_search($id_tag, $tag_with) === false) {
+	if ((array_search($id_tag, $tag_with) === false) || (array_search($id_tag, $tag_with) === null)) {
 		$tags_select_with[$id_tag] = ui_print_truncate_text ($tag, 50, true);
 	}
 	else {
 		$tag_with_temp[$id_tag] = ui_print_truncate_text ($tag, 50, true);
 	}
 	
-	if (array_search($id_tag, $tag_without) === false) {
+	if ((array_search($id_tag, $tag_without) === false) || (array_search($id_tag, $tag_without) === null)) {
 		$tags_select_without[$id_tag] = ui_print_truncate_text ($tag, 50, true);
 	}
 	else {
@@ -1087,11 +1093,15 @@ $(document).ready( function() {
 			$("#text-date_from").val('');
 			$("#text-date_to").val('');
 			$("#pagination").val(20);
+			$("#update_from_filter_table").val(1);
 			
 			clear_tags_inputs();
 			
 			// Update the view of filter load with no loaded filters message
 			$('#filter_loaded_span').html($('#not_filter_loaded_text').html());
+
+			// Update the view with the loaded filter
+			$('#submit-update').trigger('click');
 		}
 		// If filter selected then load filter
 		else {

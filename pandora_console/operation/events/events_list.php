@@ -126,7 +126,7 @@ if (is_ajax()) {
 		$values['id_group_filter'] = get_parameter('id_group_filter');
 		$values['date_from'] = get_parameter('date_from');
 		$values['date_to'] = get_parameter('date_to');
-
+html_debug($values, true);
 		$result = db_process_sql_update('tevent_filter',
 			$values, array('id_filter' => $id));
 		
@@ -263,7 +263,8 @@ if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0,
 /* ------------------------ DEFAULT USER FILTER ----------------------------- */
 $user = $config['id_user'];
 $user_filter = db_get_value_filter('default_event_filter', 'tusuario', array('id_user' => $user));
-if ($user_filter != 0 && empty($id_name)) {
+$update_from_filter_table = (bool)get_parameter('update_from_filter_table', false);
+if ($user_filter != 0 && empty($id_name) && !$update_from_filter_table) {
 	$user_default_filter = db_get_all_rows_filter('tevent_filter', array('id_filter' => $user_filter));
 	$user_default_filter = $user_default_filter[0];
 
@@ -693,6 +694,11 @@ $table->rowstyle[count($table->data)] = 'text-align:right;';
 $table->data[] = $data;
 $table->rowclass[] = '';
 
+$data = array();
+$data[0] = html_print_input_hidden('update_from_filter_table', 1, true);
+$table->data[] = $data;
+$table->rowclass[] = '';
+
 $events_filter .= html_print_table($table, true);
 
 unset($table);
@@ -956,7 +962,32 @@ var text_none = "<?php echo __('None'); ?>";
 var group_agents_id = false;
 
 $(document).ready( function() {
+	id_select_destiny = "#tag_with_temp";
+	id_hidden = "#hidden-tag_with";
+
+	value_store = [];
 	
+	jQuery.each($(id_select_destiny + " option"), function(key, element) {
+		val = $(element).val();
+		
+		value_store.push(val);
+	});
+	
+	$(id_hidden).val(Base64.encode(jQuery.toJSON(value_store)));
+	
+	id_select_destiny2 = "#tag_without_temp";
+	id_hidden2 = "#hidden-tag_without";
+	
+	value_store2 = [];
+	
+	jQuery.each($(id_select_destiny2 + " option"), function(key, element) {
+		val = $(element).val();
+		
+		value_store2.push(val);
+	});
+	
+	$(id_hidden2).val(Base64.encode(jQuery.toJSON(value_store2)));
+
 	$("#text-date_from, #text-date_to").datepicker({dateFormat: "<?php echo DATE_FORMAT_JS; ?>"});
 	
 	// If the events are not charged, dont show graphs link
@@ -1053,6 +1084,9 @@ $(document).ready( function() {
 			$("#row_name").css('visibility', 'hidden');
 			$("#submit-update_filter").css('visibility', 'hidden');
 			$("#id_group").val(0);
+			$("#text-date_from").val('');
+			$("#text-date_to").val('');
+			$("#pagination").val(20);
 			
 			clear_tags_inputs();
 			

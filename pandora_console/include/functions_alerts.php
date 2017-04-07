@@ -145,10 +145,22 @@ function alerts_get_event_status_group($idGroup, $type = "alert_fired", $query =
 	else {
 		$temp = array();
 		foreach ($type as $item) {
-			$temp[] = '"' . $item . '"';
+			array_push ( $temp , $item );
 		}
 		
-		$typeWhere = ' AND event_type IN (' . implode(',', $temp) . ')';
+		$typeWhere = ' AND event_type IN (';
+		
+		foreach ($temp as $ele) {
+			$typeWhere .= "'".$ele."'";
+			
+			if($ele != end($temp)){
+				$typeWhere .= ",";
+			}
+			
+		}
+		
+		$typeWhere .= ')';
+		 
 	}
 	
 	if ($agents == null) {
@@ -160,14 +172,11 @@ function alerts_get_event_status_group($idGroup, $type = "alert_fired", $query =
 	else {
 		$idAgents = array_values($agents);
 		
-		if($type=='alert_fired'){
-				$idAgents = array_keys($agents);
-		}
 	}
 	
 	$result = db_get_all_rows_sql('SELECT id_evento
 		FROM tevento
-		WHERE estado = 0 AND id_agente IN (' . implode(',', $idAgents) . ') ' . $typeWhere . $query . '
+		WHERE estado = 0 AND id_agente IN (0,' . implode(',', $idAgents) . ') ' . $typeWhere . $query . '
 		ORDER BY id_evento DESC LIMIT 1');
 	
 	if ($result === false) {

@@ -3125,9 +3125,8 @@ function move_elements_resize(original_width, original_height, width, height) {
 }
 
 function unselectAll() {
-	$("#background").css('border', '1px lightgray solid');
-	
-    $(".item").each(function(){
+	$("#background").css('border', '1px lightgray solid');	
+	$(".item").each(function(){
         $(this).css('border', '');
 				if($(this).attr('withborder') == 'true'){
 					$(this).css('top', '+=1');
@@ -3136,7 +3135,7 @@ function unselectAll() {
 				}
 				
     });
-	
+	selectedItem = null;
 }
 
 function click_button_toolbox(id) {

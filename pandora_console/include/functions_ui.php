@@ -124,7 +124,7 @@ function ui_print_truncate_text($text, $numChars = GENERIC_SIZE_TEXT, $showTextI
 			}
 		}
 		if ($showTextInAToopTip) {
-			$truncateText = $truncateText . ui_print_help_tip($text, true);
+			$truncateText = $truncateText . ui_print_help_tip(htmlspecialchars($text), true);
 		}
 		else {
 			if ($style !== false) {

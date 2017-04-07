@@ -298,6 +298,26 @@ function update_button_palette_callback() {
 			break;
 		case 'module_graph':
 		
+		
+		if($('#dir_items').html() == 'horizontal'){
+			if(parseInt($('#text-left').val()) + (parseInt($('input[name=height_module_graph]').val() * $('#count_items').html())) > parseInt($('#background').css('width'))
+			|| parseInt($('#text-left').val()) + (parseInt($('input[name=width_module_graph]').val() * $('#count_items').html())) > parseInt($('#background').css('width'))){
+				
+				alert($('#count_items').html()+' joined graph items are wider than background');
+				return false;
+				
+			}
+		}
+		
+		if($('#dir_items').html() == 'vertical'){
+			if(parseInt($('#text-top').val()) + (parseInt($('input[name=height_module_graph]').val() * $('#count_items').html())) > parseInt($('#background').css('height'))){
+				alert($('#count_items').html()+' joined graph items are higher than background');
+				return false;
+				
+			}
+		}
+				
+		
 		if($('input[name=width_module_graph]').val() == ''){
 		alert('Undefined width');
 		return false;
@@ -1151,6 +1171,8 @@ function loadFieldsFromDB(item) {
 
 			});
 			
+				$('#count_items').html(1);		
+			
 			if (data.type == 6 || data.type == 7 || data.type == 8 || data.type == 1) {
 				
 					$("#period_row." + item).css('display', '');
@@ -1169,6 +1191,20 @@ function loadFieldsFromDB(item) {
 		
 				}
 				else {
+					
+					jQuery.get ("ajax.php",
+						{"page": "general/cg_items","data": data.id_custom_graph},
+							function (data, status) {
+								if(data.split(",")[0] == 4){
+									$('#count_items').html(data.split(",")[1]);
+									$('#dir_items').html('vertical');
+								}
+								else if (data.split(",")[0] == 5) {
+									$('#count_items').html(data.split(",")[1]);
+									$('#dir_items').html('horizontal');
+									
+								}
+							});
 	
 					$("input[name='radio_choice'][value='custom_graph']")
 						.prop('checked', true);

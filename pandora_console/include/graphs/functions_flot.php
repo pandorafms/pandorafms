@@ -600,7 +600,7 @@ function flot_custom_pie_chart ($flash_charts, $graph_values,
 	
 	$graph_id = uniqid('graph_');
 	
-	$return = "<div id='$graph_id' class='graph' style='width: ".$width."px; height: ".$height."px;'></div>";
+	$return = "<div id='$graph_id' class='graph noresizevc' style='width: ".$width."px; height: ".$height."px;'></div>";
 	
 	if ($water_mark != '') {
 		$return .= "<div id='watermark_$graph_id' style='display:none; position:absolute;'><img id='watermark_image_$graph_id' src='".$water_mark["url"]."'></div>";

@@ -500,8 +500,7 @@ if (isset ($id_inc)) {
 		echo '</a>';
 		echo '</div>';
 		
-		echo '<div><
-		form method="post" id="file_control" action="index.php?sec=workspace&sec2=operation/incidents/incident_detail&id='.$id_inc.'&upload_file=1" 
+		echo '<div><form method="post" id="file_control" action="index.php?sec=workspace&sec2=operation/incidents/incident_detail&id='.$id_inc.'&upload_file=1" 
 			enctype="multipart/form-data">
 			<h4>'.__('Add attachment').'</h4>';
 		echo '<table cellpadding="4" cellspacing="3" class="databox" width="100%">

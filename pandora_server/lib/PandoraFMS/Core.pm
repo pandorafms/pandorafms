@@ -4053,10 +4053,10 @@ sub export_module_data ($$$$$$$) {
 	# Data export is disabled
  	return if ($module->{'id_export'} < 1);
 
-	logger($pa_config, "Exporting data for module '" . $module->{'nombre'} . "' agent '" . $agent->{'nombre'} . "'.", 10);
+	logger($pa_config, "Exporting data for module '" . $module->{'nombre'} . "' agent '" . $agent->{'alias'} . "'.", 10);
 	db_do($dbh, 'INSERT INTO tserver_export_data 
 		(id_export_server, agent_name , module_name, module_type, data, timestamp) VALUES
-		(?, ?, ?, ?, ?, ?)', $module->{'id_export'}, $agent->{'nombre'}, $module->{'nombre'}, $module_type, $data, $timestamp);
+		(?, ?, ?, ?, ?, ?)', $module->{'id_export'}, $agent->{'alias'}, $module->{'nombre'}, $module_type, $data, $timestamp);
 }
 
 ##########################################################################

@@ -197,9 +197,7 @@ if ($user_filter != 0 && empty($id_name) && !$update_from_filter_table) {
 	}
 	if ($user_default_filter['id_agent'] != 0) {
 		$id_agent = $user_default_filter['id_agent'];
-	}
-	if ($user_default_filter['text_agent'] != "") {
-		$text_agent = $user_default_filter['text_agent'];
+		$text_agent = agents_get_alias($id_agent);
 	}
 	if ($user_default_filter['filter_only_alert'] != -1) {
 		$filter_only_alert = $user_default_filter['filter_only_alert'];
@@ -213,53 +211,15 @@ if ($user_filter != 0 && empty($id_name) && !$update_from_filter_table) {
 	if ($user_default_filter['date_to'] != "0000-00-00") {
 		$date_to = $user_default_filter['date_to'];
 	}
-	if ($user_default_filter['tag_with'] != "[]") {
+	if (io_safe_output($user_default_filter['tag_with']) != "[]" && io_safe_output($user_default_filter['tag_with']) != "[\"0\"]") {
 		$tag_with = $user_default_filter['tag_with'];
 		$tag_with_clean = io_safe_output($tag_with);
 		$tag_with = json_decode($tag_with_clean, true);
 	}
-	if ($user_default_filter['tag_without'] != "[]") {
+	if (io_safe_output($user_default_filter['tag_without']) != "[]" && io_safe_output($user_default_filter['tag_without']) != "[\"0\"]") {
 		$tag_without = $user_default_filter['tag_without'];
 		$tag_without_clear = io_safe_output($tag_without);
 		$tag_without = json_decode($tag_without_clear, true);
-	}
-
-	// TAGS
-	$filter_resume['severity'] = $user_default_filter['severity'];
-	$filter_resume['status'] = $user_default_filter['status'];
-	$filter_resume['groups'] = $user_default_filter['id_group'];
-	if ($user_default_filter['id_agent'] != 0) {
-		$filter_resume['agent'] = $user_default_filter['id_agent'];
-	}
-	if ($user_default_filter['id_agent_module'] != 0) {
-		$filter_resume['module'] = $user_default_filter['id_agent_module'];
-	}
-	if ($user_default_filter['event_type'] != "") {
-		$filter_resume['event_type'] = $user_default_filter['event_type'];
-	}
-	if ($user_default_filter['search'] != "") {
-		$filter_resume['free_search'] = $user_default_filter['search'];
-	}
-	if ($user_default_filter['date_from'] != "0000-00-00") {
-		$filter_resume['time_from'] = $user_default_filter['date_from'];
-	}
-	if ($user_default_filter['date_to'] != "0000-00-00") {
-		$filter_resume['time_to'] = $user_default_filter['date_to'];
-	}
-	if (io_safe_output($user_default_filter['tag_with']) != "[]") {
-		$tag_with_clean_tag = io_safe_output($user_default_filter['tag_with']);
-		$filter_resume['tag_inc'] = json_decode($tag_with_clean_tag, true);
-	}
-	if (io_safe_output($user_default_filter['tag_without']) != "[]") {
-		$tag_without_clean_tag = io_safe_output($user_default_filter['tag_without']);
-		$filter_resume['tag_no_inc'] = json_decode($tag_without_clean_tag, true);
-	}
-	if ($user_default_filter['filter_only_alert'] != -1) {
-		$filter_resume['alerts'] = $user_default_filter['filter_only_alert'];
-	}
-	$filter_resume['hours_max'] = $user_default_filter['event_view_hr'];
-	if ($user_default_filter['id_user_ack'] != 0) {
-		$filter_resume['user_ack'] = $user_default_filter['id_user_ack'];
 	}
 }
 /* -------------------------------------------------------------------------- */
@@ -272,8 +232,8 @@ $sql_post = "";
 $id_user = $config['id_user'];
 
 $filter_resume = array();
-require('events.build_query.php');
 
+require('events.build_query.php');
 // Now $sql_post have all the where condition
 /////////////////////////////////////////////
 
@@ -1101,7 +1061,7 @@ $(document).ready( function() {
 			$("#severity").val(-1);
 			$("#status").val(3);
 			$("#text-search").val('');
-			$('input:hidden[name=id_agent]').val();
+			$('input:hidden[name=id_agent]').val("");
 			$('input:hidden[name=module_search_hidden]').val();
 			$("#pagination").val(25);
 			$("#text-event_view_hr").val(8);
@@ -1116,6 +1076,7 @@ $(document).ready( function() {
 			$("#text-date_to").val('');
 			$("#pagination").val(20);
 			$("#update_from_filter_table").val(1);
+			$("#text_id_agent").val("");
 			
 			clear_tags_inputs();
 			

@@ -1519,7 +1519,7 @@ Pandora_Windows_Service::checkConfig (string file) {
 	}
 
 	/* Get agent name */
-	tmp = conf->getValue ("agent_name");
+	agent_name = conf->getValue ("agent_name");
 
 
 	/* Error getting agent name */

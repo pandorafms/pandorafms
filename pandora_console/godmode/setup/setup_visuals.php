@@ -755,7 +755,7 @@ $table_other->data[$row][1] .= html_print_input_hidden ('interval_values', $conf
 $table_other->data[$row][1] .= html_print_input_hidden ('interval_to_delete', '', true);
 //----------------------------------------------------------------------
 $row++;
-html_debug($config['csv_divider']);
+
 $common_dividers = array(
 	";" => ";",
 	"," => ",",

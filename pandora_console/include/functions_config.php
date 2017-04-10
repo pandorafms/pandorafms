@@ -655,7 +655,10 @@ function config_update_config () {
 					$error_update[] = __('Custom report front') . ' - ' . __('First page');				
 				
 				if (!config_update_value ('custom_report_front_footer', get_parameter('custom_report_front_footer')))
-					$error_update[] = __('Custom report front') . ' - ' . __('Footer');				
+					$error_update[] = __('Custom report front') . ' - ' . __('Footer');	
+
+					if (!config_update_value ('csv_divider', (string) get_parameter('csv_divider', ';')))
+						$error_update[] = __('CSV divider');
 				
 				break;
 			case 'net':
@@ -1618,6 +1621,10 @@ function config_process_config () {
 	}
 	if (!isset($config["classic_menu"])) {
 		config_update_value ('classic_menu', 0);
+	}
+
+	if (!isset($config["csv_divider"])) {
+		config_update_value ('csv_divider', ";");
 	}
 
 	if (!isset($config['command_snapshot'])) {

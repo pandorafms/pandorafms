@@ -840,10 +840,10 @@ sub pandora_checkdb_consistency {
 		log_message ('CHECKDB', "Ignoring not-init data.");
 	}
 	
-	log_message ('CHECKDB',
-		"Deleting unknown data (More than " . $conf{'_days_delete_unknown'} . " days).");
-	
 	if (defined($conf{'_days_delete_unknown'}) && $conf{'_days_delete_unknown'} > 0) {
+	    log_message ('CHECKDB',
+		    "Deleting unknown data (More than " . $conf{'_days_delete_unknown'} . " days).");
+	
 		my @modules = get_db_rows($dbh,
 			'SELECT tagente_modulo.id_agente_modulo, tagente_modulo.id_agente
 			FROM tagente_modulo, tagente_estado

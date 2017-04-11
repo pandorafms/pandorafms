@@ -40,7 +40,8 @@ If (NOT flag) Then
     set ifaces_cfg = objWMIService.ExecQuery("Select ipaddress from Win32_NetworkAdapterConfiguration Where Caption='" & iface.caption & "'")
     Wscript.StdOut.Write "<data><![CDATA[" & iface.ProductName & ";" & iface.MACAddress & ";"
     for each iface_cfg in ifaces_cfg
-      if ( iface_cfg.IPAddress(0) <> "" ) then
+      On Error Resume Next
+      if (iface_cfg.IPAddress(0) <> "" ) then
         Wscript.StdOut.Write trim(iface_cfg.IPAddress(0))
       end if
     next

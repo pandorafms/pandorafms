@@ -669,6 +669,7 @@ sub pandora_load_config ($) {
 	$conf->{'dbengine'} = 'mysql' unless defined ($conf->{'dbengine'});
 	$conf->{'dbport'} = '3306' unless defined ($conf->{'dbport'});
 	$conf->{'claim_back_snmp_modules'} = '1' unless defined ($conf->{'claim_back_snmp_modules'});
+    $conf->{'verbosity'} = '3' unless defined ($conf->{'verbosity'});
 
     # Dynamic interval configuration.                                                                                                                             
 	$conf->{"dynamic_constant"} = 0.10 unless defined($conf->{"dynamic_constant"});

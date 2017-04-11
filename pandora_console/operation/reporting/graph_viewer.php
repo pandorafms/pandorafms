@@ -25,6 +25,16 @@ $delete_graph = (bool) get_parameter ('delete_graph');
 $view_graph = (bool) get_parameter ('view_graph');
 $id_graph = (int) get_parameter ('id');
 
+if($id_graph !== 0){
+	$sql = "SELECT * FROM tgraph 
+	WHERE (private = 0 OR (private = 1 AND id_user = '".$config["id_user"]."'))
+	AND id_graph = ".$id_graph;
+	$control = db_process_sql($sql);
+	if(!$control){
+		header('Location: index.php?sec=reporting&sec2=godmode/reporting/graphs');
+	}
+}
+
 // Delete module SQL code
 if ($delete_graph) {
 	if (check_acl ($config['id_user'], 0, "AW")) {

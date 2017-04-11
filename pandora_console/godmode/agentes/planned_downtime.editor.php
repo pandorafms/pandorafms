@@ -1173,7 +1173,7 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 			secondText: '<?php echo __('Second');?>',
 			currentText: '<?php echo __('Now');?>',
 			closeText: '<?php echo __('Close');?>'});
-		$("#text-once_date_from, #text-once_date_to").datepicker({dateFormat: "<?php echo DATE_FORMAT_JS; ?>"});
+		$("#text-once_date_from, #text-once_date_to").datepicker({dateFormat: "<?php echo DATE_FORMAT_JS; ?>", showButtonPanel: true});
 		
 		$.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
 		

@@ -44,7 +44,7 @@ If (NOT flag) Then
         Wscript.StdOut.Write trim(iface_cfg.IPAddress(0))
       end if
     next
-    wscript.stdOut.WriteLine "]]></data>"
+    Wscript.StdOut.WriteLine "]]></data>"
   Next
 
   Wscript.StdOut.WriteLine "</datalist>"

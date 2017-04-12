@@ -5498,10 +5498,42 @@ function reporting_increment ($report, $content) {
 
 	$return["data"] = array();
 
-	$old_data = db_get_value_sql('SELECT datos FROM tagente_datos WHERE id_agente_modulo = ' . $id_agent_module . ' 
+	if (defined('METACONSOLE')) {
+		$sql1 = 'SELECT datos FROM tagente_datos WHERE id_agente_modulo = ' . $id_agent_module . ' 
+									 AND utimestamp <= ' . (time() - $period) . ' ORDER BY utimestamp DESC';
+		$sql2 = 'SELECT datos FROM tagente_datos WHERE id_agente_modulo = ' . $id_agent_module . ' ORDER BY utimestamp DESC';
+
+		$servers = db_get_all_rows_sql ('SELECT *
+		FROM tmetaconsole_setup
+		WHERE disabled = 0');
+
+		if ($servers === false)
+			$servers = array();
+		
+		$result = array();
+		$count_modules = 0;
+		foreach ($servers as $server) {
+			// If connection was good then retrieve all data server
+			if (metaconsole_connect($server) == NOERR)
+				$connection = true;
+			else
+				$connection = false;
+			
+			$old_data = db_get_value_sql ($sql1);
+
+			$last_data = db_get_value_sql ($sql2);
+		}
+	}
+	else {
+		$old_data = db_get_value_sql('SELECT datos FROM tagente_datos WHERE id_agente_modulo = ' . $id_agent_module . ' 
 									 AND utimestamp <= ' . (time() - $period) . ' ORDER BY utimestamp DESC');
 
-	$last_data = db_get_value_sql('SELECT datos FROM tagente_datos WHERE id_agente_modulo = ' . $id_agent_module . ' ORDER BY utimestamp DESC');
+		$last_data = db_get_value_sql('SELECT datos FROM tagente_datos WHERE id_agente_modulo = ' . $id_agent_module . ' ORDER BY utimestamp DESC');
+	}
+
+	if (!defined('METACONSOLE')) {
+
+	}
 
 	if ($old_data === false || $last_data === false) {
 		$return["data"]['message'] = __('The monitor have no data in this range of dates or monitor type is not numeric');

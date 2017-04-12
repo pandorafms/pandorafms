@@ -2257,8 +2257,8 @@ function reporting_html_increment(&$table, $item) {
 		$table1_row = array();
 		$table1_row[0] = agents_get_alias($item['id_agent']);
 		$table1_row[1] = modules_get_agentmodule_name($item['id_agent_module']);
-		$table1_row[2] = date("F j, Y, g:i a", $item['from']);
-		$table1_row[3] = date("F j, Y, g:i a", $item['to']);
+		$table1_row[2] = date("F j, Y, G:i", $item['from']);
+		$table1_row[3] = date("F j, Y, G:i", $item['to']);
 		$table1_row[4] = $item["data"]['old'];
 		$table1_row[5] = $item["data"]['now'];
 		if ($item["data"]['inc'] == 'negative') {

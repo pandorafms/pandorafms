@@ -5503,7 +5503,11 @@ function reporting_increment ($report, $content) {
 
 	$last_data = db_get_value_sql('SELECT datos FROM tagente_datos WHERE id_agente_modulo = ' . $id_agent_module . ' ORDER BY utimestamp DESC');
 
-	if (is_numeric($old_data) && is_numeric($last_data)) {
+	if ($old_data === false || $last_data === false) {
+		$return["data"]['message'] = __('The monitor have no data in this range of dates or monitor type is not numeric');
+		$return["data"]['error'] = true;
+	}
+	else if (is_numeric($old_data) && is_numeric($last_data)) {
 		$return["data"]['old'] = $old_data;
 		$return["data"]['now'] = $last_data;
 		$increment = $old_data - $last_data;

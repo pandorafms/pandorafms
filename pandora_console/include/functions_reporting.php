@@ -171,6 +171,12 @@ function reporting_make_reporting_data($report = null, $id_report,
 						$report,
 						$content);
 				break;
+			case 'increment':
+				$report['contents'][] =
+					reporting_increment(
+						$report,
+						$content);
+				break;
 			case 'general':
 				$report['contents'][] =
 					reporting_general(
@@ -5461,6 +5467,65 @@ function reporting_availability_graph($report, $content, $pdf=false) {
 			}
 		}
 	}
+	return reporting_check_structure_content($return);
+}
+
+/**
+ * reporting_increment
+ *
+ *  Generates a structure the report.
+ *
+ */
+function reporting_increment ($report, $content) {
+	global $config;
+
+	$return = array();
+	$return['type'] = 'increment';
+	if (empty($content['name'])) {
+		$content['name'] = __('Increment');
+	}
+	
+	$return['title'] = $content['name'];
+	$return["description"] = $content["description"];
+	$return["id_agent_module"] = $content["id_agent_module"];
+	$return["id_agent"] = $content["id_agent"];
+
+	$id_agent_module = $content['id_agent_module'];
+	$period = (int)$content['period'];
+
+	$return["from"] = time() - $period;
+	$return["to"] = time();
+
+	$return["data"] = array();
+
+	$old_data = db_get_value_sql('SELECT datos FROM tagente_datos WHERE id_agente_modulo = ' . $id_agent_module . ' 
+									 AND utimestamp <= ' . (time() - $period) . ' ORDER BY utimestamp DESC');
+
+	$last_data = db_get_value_sql('SELECT datos FROM tagente_datos WHERE id_agente_modulo = ' . $id_agent_module . ' ORDER BY utimestamp DESC');
+
+	if (is_numeric($old_data) && is_numeric($last_data)) {
+		$return["data"]['old'] = $old_data;
+		$return["data"]['now'] = $last_data;
+		$increment = $old_data - $last_data;
+		
+		if ($increment < 0) {
+			$return["data"]['inc'] = 'positive';
+			$return["data"]["inc_data"] = $last_data - $old_data;
+		}
+		else if ($increment == 0) {
+			$return["data"]['inc'] = 'neutral';
+			$return["data"]["inc_data"] = 0;
+		}
+		else {
+			$return["data"]['inc'] = 'negative';
+			$return["data"]["inc_data"] = $old_data - $last_data;
+		}
+	}
+	else {
+		$return["data"]['message'] = __('The monitor type is not numeric');
+		$return["data"]['error'] = true;
+	}
+
 	return reporting_check_structure_content($return);
 }
 

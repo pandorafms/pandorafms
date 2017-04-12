@@ -208,6 +208,9 @@ function reporting_html_print_report($report, $mini = false, $report_info = 1) {
 			case 'avg_value':
 				reporting_html_avg_value($table, $item, $mini);
 				break;
+			case 'increment':
+				reporting_html_increment($table, $item);
+				break;
 			case 'min_value':
 				reporting_html_min_value($table, $item, $mini);
 				break;
@@ -2211,6 +2214,69 @@ function reporting_html_value(&$table, $item, $mini, $only_value = false, $check
 	}
 	
 	$table->data['data']['cell'] .= '</p>';
+}
+
+function reporting_html_increment(&$table, $item) {
+	global $config;
+
+	if (isset($item["data"]['error'])) {
+		$table->colspan['error']['cell'] = 3;
+		$table->data['error']['cell'] = $item["data"]['message'];
+	}
+	else {
+		$table1 = new stdClass();
+		$table1->width = '99%';
+		$table1->data = array ();
+		
+		$table1->head = array ();
+		$table1->head[0] = __('Agent');
+		$table1->head[1] = __('Module');
+		$table1->head[2] = __('From');
+		$table1->head[3] = __('To');
+		$table1->head[4] = __('From data');
+		$table1->head[5] = __('To data');
+		$table1->head[6] = __('Increment');
+		
+		$table1->headstyle = array();
+		$table1->headstyle[0]  = 'text-align: left';
+		$table1->headstyle[1]  = 'text-align: left';
+		$table1->headstyle[2]  = 'text-align: left';
+		$table1->headstyle[3]  = 'text-align: left';
+		$table1->headstyle[4]  = 'text-align: right';
+		$table1->headstyle[5]  = 'text-align: right';
+		$table1->headstyle[6]  = 'text-align: right';
+
+		$table1->style[0]  = 'text-align: left';
+		$table1->style[1]  = 'text-align: left';
+		$table1->style[2]  = 'text-align: left';
+		$table1->style[3]  = 'text-align: left';
+		$table1->style[4]  = 'text-align: right';
+		$table1->style[5]  = 'text-align: right';
+		$table1->style[6]  = 'text-align: right';
+
+		$table1_row = array();
+		$table1_row[0] = agents_get_alias($item['id_agent']);
+		$table1_row[1] = modules_get_agentmodule_name($item['id_agent_module']);
+		$table1_row[2] = date("F j, Y, g:i a", $item['from']);
+		$table1_row[3] = date("F j, Y, g:i a", $item['to']);
+		$table1_row[4] = $item["data"]['old'];
+		$table1_row[5] = $item["data"]['now'];
+		if ($item["data"]['inc'] == 'negative') {
+			$table1_row[6] = __('Negative increase: ') . $item["data"]["inc_data"];
+		}
+		else if ($item["data"]['inc'] == 'positive') {
+			$table1_row[6] = __('Positive increase: ') . $item["data"]["inc_data"];
+		}
+		else {
+			$table1_row[6] = __('Neutral increase: ') . $item["data"]["inc_data"];
+		}
+
+		$table1->data[] = $table1_row;
+
+		$data = array();
+		$data[0] = html_print_table($table1, true);
+		array_push ($table->data, $data);
+	}
 }
 
 function reporting_html_url(&$table, $item, $key) {

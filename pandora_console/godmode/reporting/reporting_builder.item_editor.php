@@ -144,6 +144,7 @@ switch ($action) {
 			case 'network_interfaces_report':
 			case 'availability':
 			case 'event_report_log':
+			case 'increment':
 			case 'availability_graph':
 			case 'agent_module':
 				$get_data_editor = true;
@@ -270,6 +271,13 @@ switch ($action) {
 					$period = $item['period'];
 					$idAgentModule = $item['id_agent_module'];
 					$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+					break;
+
+				case 'increment':
+					$description = $item['description'];
+					$idAgentModule = $item['id_agent_module'];
+					$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+					$period = $item['period'];
 					break;
 
 				case 'SLA_services':
@@ -578,6 +586,7 @@ switch ($action) {
 				case 'MTTR':
 				case 'simple_baseline_graph':
 				case 'event_report_log':
+				case 'increment':
 					$label = (isset($style['label'])) ? $style['label'] : '';
 					break;
 				default:
@@ -2645,6 +2654,13 @@ function chooseType() {
 			$("#row_period").show();
 			$("#agents_row").show();
 			$("#row_source").show();
+			break;
+
+		case 'increment':
+			$("#row_description").show();
+			$("#row_agent").show();
+			$("#row_module").show();
+			$("#row_period").show();
 			break;
 		
 		case 'simple_graph':

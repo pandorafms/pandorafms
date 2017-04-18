@@ -109,7 +109,7 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('custom_report_front_logo', 'images/pandora_logo_white.jpg'),
 ('custom_report_front_header', ''),
 ('custom_report_front_footer', ''),
-('MR', 0),
+('MR', 1),
 ('identification_reminder', 1),
 ('identification_reminder_timestamp', 0),
 ('current_package_enterprise', '700'),

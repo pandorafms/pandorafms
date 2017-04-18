@@ -446,7 +446,10 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				html_print_input_text('width_module_graph', 300, '', 3, 5, true) . 
 				' X ' .
 				html_print_input_text('height_module_graph', 180, '', 3, 5, true) .
-				'</td>';
+				' X ' .
+				'<span id="count_items">1</span> '.
+				'<span id="dir_items"></span> item/s				
+				</td>';
 			
 			
 			//Insert and modify before the buttons to create or update.
@@ -587,6 +590,49 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$(".border_color").attachColorPicker();
 			$(".fill_color").attachColorPicker();
 			$(".line_color").attachColorPicker();
+			
+			$("input[name=radio_choice]").change(function(){
+				$('#count_items').html(1);
+			});
+			
+			$("#custom_graph").click(function(){
+			$('#count_items').html(1);	
+				jQuery.get ("ajax.php",
+					{"page": "general/cg_items","data": $(this).val()},
+						function (data, status) {
+							if(data.split(",")[0] == 8){
+								size = 400+(data.split(",")[1] * 50);
+								if(data.split(",")[1]>3){
+									size = 400+(3 * 50);
+								}
+								$('#text-width_module_graph').val(size);
+								$('#text-height_module_graph').val(180);
+								
+							}
+							else if (data.split(",")[0] == 4) {
+								size = data.split(",")[1];
+								if(data.split(",")[1] > 1){
+									$('#count_items').html(data.split(",")[1]);
+									$('#dir_items').html('vertical');
+								}			
+								$('#text-width_module_graph').val(300);
+								$('#text-height_module_graph').val(50);
+							}
+							else if (data.split(",")[0] == 5) {
+								size = data.split(",")[1];
+								if(data.split(",")[1] > 1){
+									$('#count_items').html(data.split(",")[1]);
+									$('#dir_items').html('horizontal');
+								}
+								$('#text-width_module_graph').val(100);
+								$('#text-height_module_graph').val(100);
+							}
+					
+						});
+								
+				});
+			
+			
 		});
 	</script>
 	<?php

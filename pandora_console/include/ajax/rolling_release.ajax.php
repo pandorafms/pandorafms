@@ -140,17 +140,19 @@ if (is_ajax ()) {
 	}
 
 	if ($remove_rr) {
-		$number = get_parameter('number');
+        $numbers = get_parameter('number',0);
 
-		for ($i = 1; $i <= $number; $i++) {
-			$file = $config["homedir"] . "/extras/mr/$i.sql";
-			if (file_exists($file)) {
-				unlink($file);
-			}
-		}
-		
-		return;
-	}
+        foreach ($numbers as $number) {
+            for ($i = 1; $i <= $number; $i++) {
+                $file = $config["homedir"] . "/extras/mr/$i.sql";
+                if (file_exists($file)) {
+                    unlink($file);
+                }
+            }
+        }
+
+        return;
+    }
 
 	if ($remove_rr_extras) {
 		$dir = $config["homedir"] . "/extras/mr/";

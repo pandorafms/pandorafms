@@ -1649,8 +1649,21 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 		if (thresholded) {
 			var zoom_data_threshold = new Array ();
 			
+			var y_recal = axis_thresholded(threshold_data, plot.getAxes().yaxis.min, plot.getAxes().yaxis.max,
+									red_threshold, extremes, red_up);
+			plot = $.plot($('#' + graph_id), data_base,
+			$.extend(true, {}, options, {
+				yaxis: {
+					max: y_recal.max,
+					min: y_recal.min
+				},
+				xaxis: {
+					min: plot.getAxes().xaxis.min,
+					max: plot.getAxes().xaxis.max
+				}
+			}));
 			zoom_data_threshold = add_threshold (data_base, threshold_data, plot.getAxes().yaxis.min, plot.getAxes().yaxis.max,
-										yellow_threshold, red_threshold, extremes, red_up);
+										red_threshold, extremes, red_up);
 			plot.setData(zoom_data_threshold);
 			plot.draw();
 		}
@@ -1931,28 +1944,32 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				plot = $.plot($('#' + graph_id), data_base,
 					$.extend(true, {}, options, {
 						yaxis: {max: max_draw},
+						xaxis: {
+							min: plot.getAxes().xaxis.min,
+							max: plot.getAxes().xaxis.max
+						}
 					}));
 				thresholded = false;
 			}
 			else {
 				
 				var max_draw = plot.getAxes().yaxis.datamax;
-				if (max_draw < red_threshold || max_draw < yellow_threshold) {
-					
-					var maxim_data = (red_threshold < yellow_threshold) ?  yellow_threshold : red_threshold
-					
-					plot = $.plot($('#' + graph_id), data_base,
-					$.extend(true, {}, options, {
-						yaxis: {max: maxim_data + (maxim_data*0.5)},
-					}));
-				} else {
-					plot = $.plot($('#' + graph_id), data_base,
-					$.extend(true, {}, options, {
-						yaxis: {max: plot.getAxes().yaxis.max},
-					}));
-				}
+				// Recalculate the y axis
+				var y_recal = axis_thresholded(threshold_data, plot.getAxes().yaxis.min, plot.getAxes().yaxis.max,
+										red_threshold, extremes, red_up);
+				plot = $.plot($('#' + graph_id), data_base,
+				$.extend(true, {}, options, {
+					yaxis: {
+						max: y_recal.max,
+						min: y_recal.min
+					},
+					xaxis: {
+						min: plot.getAxes().xaxis.min,
+						max: plot.getAxes().xaxis.max
+					}
+				}));
 				datas = add_threshold (data_base, threshold_data, plot.getAxes().yaxis.min, plot.getAxes().yaxis.max,
-										yellow_threshold, red_threshold, extremes, red_up);
+										red_threshold, extremes, red_up);
 				thresholded = true;
 				
 			}
@@ -2143,7 +2160,65 @@ function number_format(number, force_integer, unit) {
 	
 	return number + ' ' + shorts[pos] + unit;
 }
-function add_threshold (data_base, threshold_data, y_min, y_max, yellow_threshold,
+// Recalculate the threshold data depends on warning and critical
+function axis_thresholded (threshold_data, y_min, y_max, red_threshold, extremes, red_up) {
+	
+	var y = {
+		min: 0,
+		max: 0
+	};
+	
+	// Default values
+	var yaxis_resize = {
+		up: null,
+		normal_up: 0,
+		normal_down: 0,
+		down: null
+	};
+	// Resize the y axis to display all intervals
+	$.each(threshold_data, function() {
+		if (/_up/.test(this.id)){
+			yaxis_resize['up'] = this.data[0][1];
+		}
+		if (/_down/.test(this.id)){
+			if (/critical/.test(this.id)) {
+				yaxis_resize['down'] = red_threshold;
+			} else {
+				yaxis_resize['down'] = extremes[this.id];
+			}
+		}
+		if (/_normal/.test(this.id)){
+			var end;
+			if (/critical/.test(this.id)) {
+				end = red_up;
+			} else {
+				end = extremes[this.id + '_2'];
+			}
+			if (yaxis_resize['normal_up'] < end) yaxis_resize['normal_up'] = end;
+			if (yaxis_resize['normal_down'] > this.data[0][1]) yaxis_resize['normal_down'] = this.data[0][1];
+		}
+	});
+	
+	// If you need to display a up or a down bar, display 10% of data height
+	var margin_up_or_down = (y_max - y_min)*0.10;
+	
+	// Calculate the new axis
+	y['max'] = yaxis_resize['normal_up'] > y_max ? yaxis_resize['normal_up'] : y_max;
+	y['min'] = yaxis_resize['normal_down'] > y_min ? yaxis_resize['normal_down'] : y_min;
+	if (yaxis_resize['up'] !== null) {
+		y['max'] = (yaxis_resize['up'] + margin_up_or_down) < y_max
+			? y_max
+			: yaxis_resize['up'] + margin_up_or_down;
+	}
+	if (yaxis_resize['down'] !== null) {
+		y['min'] = (yaxis_resize['down'] - margin_up_or_down) < y_min
+			? yaxis_resize['up'] + margin_up_or_down
+			: y_min;
+	}
+	
+	return y;
+}
+function add_threshold (data_base, threshold_data, y_min, y_max,
 						red_threshold, extremes, red_up) {
 	
 	var datas = new Array ();

@@ -851,7 +851,7 @@ if ($list_modules) {
 					}
 				}
 
-				$data[1] = '<a href="?sec=gpolicies&amp;sec2=enterprise/godmode/policies/policies&amp;id=' . $id_policy . '">' .
+				$data[1] = '<a href="?sec=gmodules&amp;sec2=enterprise/godmode/policies/policies&amp;id=' . $id_policy . '">' .
 					html_print_image($img,true, array('title' => $title)) .
 					'</a>';
 			}

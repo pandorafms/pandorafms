@@ -694,7 +694,7 @@ foreach ($modules as $module) {
 				}
 			}
 			
-			$data[1] = '<a href="?sec=gpolicies&sec2=enterprise/godmode/policies/policies&id=' . $policyInfo['id_policy'] . '">' . 
+			$data[1] = '<a href="?sec=gmodules&sec2=enterprise/godmode/policies/policies&id=' . $policyInfo['id_policy'] . '">' . 
 				html_print_image($img,true, array('title' => $title)) .
 				'</a>';
 		}

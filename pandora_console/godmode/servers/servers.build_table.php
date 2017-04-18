@@ -124,9 +124,14 @@ foreach ($servers as $server) {
 	}
 	$data[7] = ui_print_timestamp ($server['keepalive'], true);
 	
+	
+	$ext = '_server';
+	if ($server['type'] != 'data')
+		$ext = '';
+	
 	$safe_server_name = servers_get_name($server["id_server"]);
-	if (!isset($names_servers[$safe_server_name])){
-		if (servers_check_remote_config ($safe_server_name) && enterprise_installed()) {
+	if (($server['type'] == 'data' || $server['type'] == 'enterprise satellite')) {
+		if (servers_check_remote_config ($safe_server_name . $ext) && enterprise_installed()) {
 			$names_servers[$safe_server_name] = true;
 		} else {
 			$names_servers[$safe_server_name] = false;
@@ -154,8 +159,8 @@ foreach ($servers as $server) {
 			array('title' => __('Edit')));
 		$data[8] .= '</a>';
 		
-		if ($names_servers[$safe_server_name] === true) {
-			$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_remote='.$server["id_server"].'">';
+		if (($names_servers[$safe_server_name] === true) && ($server['type'] == 'data' || $server['type'] == 'enterprise satellite')) {
+			$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_remote='.$server["id_server"].'&ext='.$ext.'">';
 			$data[8] .= html_print_image ('images/remote_configuration.png', true,
 				array('title' => __('Remote configuration')));
 			$data[8] .= '</a>';

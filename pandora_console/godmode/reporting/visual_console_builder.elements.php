@@ -354,7 +354,7 @@ foreach ($layoutDatas as $layoutData) {
 				$params['input_name'] = 'agent_' . $idLayoutData;
 				$params['javascript_is_function_select'] = true;
 				$params['selectbox_id'] = 'module_' . $idLayoutData;
-				if (defined('METACONSOLE')) {
+				if (is_metaconsole()) {
 					$params['javascript_ajax_page'] = '../../ajax.php';
 					$params['disabled_javascript_on_blur_function'] = true;
 					
@@ -370,6 +370,9 @@ foreach ($layoutDatas as $layoutData) {
 						"none", $layoutData['id_metaconsole'], true);
 				}
 				else {
+					$params['print_hidden_input_idagent'] = true;
+					$params['hidden_input_idagent_name'] = 'id_agent_' . $idLayoutData;
+					$params['hidden_input_idagent_value'] = $layoutData['id_agent'];
 					$params['value'] = agents_get_name($layoutData['id_agent']);
 				}
 				

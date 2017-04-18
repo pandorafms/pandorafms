@@ -264,6 +264,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$params['javascript_is_function_select'] = true;
 			$params['use_hidden_input_idagent'] = true;
 			$params['print_hidden_input_idagent'] = true;
+			$params['hidden_input_idagent_name'] = 'id_agent';
 			if (defined('METACONSOLE')) {
 				$params['javascript_ajax_page'] = '../../ajax.php';
 				$params['disabled_javascript_on_blur_function'] = true;

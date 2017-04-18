@@ -243,7 +243,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 			$nbuttons++;
 		}
 		$menu_width = 25 * $nbuttons + 15;
-		if ( if ( $dashboard == false AND $vconsole == false) {) {
+		if ( $dashboard == false AND $vconsole == false) {
 			$return .= "<div id='menu_$graph_id' class='menu_graph' " .
 				"style='display: none; " .
 					"text-align: center; " .

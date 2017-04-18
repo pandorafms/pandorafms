@@ -205,7 +205,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 	// Parent layer
 	$return = "<div class='parent_graph' style='width: " . $width . "px; " . $background_style . "'>";
 	// Set some containers to legend, graph, timestamp tooltip, etc.
-	$return .= "<p id='legend_$graph_id' class='legend_graph' style='font-size:".$font_size."pt'></p>";
+	$return .= "<p id='legend_$graph_id' class='legend_graph' style='font-size:$font_size"."pt !important;'></p>";
 	
 	if (!empty($threshold_data)) {
 		$yellow_up = $threshold_data['yellow_up'];
@@ -241,7 +241,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 			$nbuttons++;
 		}
 		$menu_width = 25 * $nbuttons + 15;
-		if ( $dashboard == false AND $vconsole == false) {
+		if ( if ( $dashboard == false AND $vconsole == false) {) {
 			$return .= "<div id='menu_$graph_id' class='menu_graph' " .
 				"style='display: none; " .
 					"text-align: center; " .

@@ -300,7 +300,7 @@ Pandora_Windows_Service::pandora_init () {
 	}
 
 	// Get the agent alias.
-	conf->getValue ("agent_alias");
+	agent_alias = conf->getValue ("agent_alias");
 	if (agent_alias == "") {
 		agent_alias = Pandora_Windows_Info::getSystemName ();
 		this->conf->setValue("agent_alias", agent_alias);
@@ -441,7 +441,7 @@ Pandora_Windows_Service::getXmlHeader () {
 	agent_name = conf->getValue ("agent_name");
 
 	// Get agent alias
-	conf->getValue ("agent_alias");
+	agent_alias = conf->getValue ("agent_alias");
 
 	// Get parent agent name
 	parent_agent_name = conf->getValue ("parent_agent_name");
@@ -1519,7 +1519,7 @@ Pandora_Windows_Service::checkConfig (string file) {
 	}
 
 	/* Get agent name */
-	tmp = conf->getValue ("agent_name");
+	agent_name = conf->getValue ("agent_name");
 
 
 	/* Error getting agent name */

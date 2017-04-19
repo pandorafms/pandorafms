@@ -1291,6 +1291,22 @@ UPDATE twidget_dashboard SET id_widget = (SELECT id FROM twidget WHERE unique_na
 DELETE FROM twidget WHERE unique_name = 'graph_availability';
 
 -- ---------------------------------------------------------------------
--- Table `tbackup`
+-- Table `tbackup` (Extension table. Modify only if exists)
 -- ---------------------------------------------------------------------
-ALTER TABLE tbackup ADD COLUMN `filepath` varchar(512) NOT NULL DEFAULT "";
+DROP PROCEDURE IF EXISTS addcol;
+delimiter //
+CREATE PROCEDURE addcol()
+BEGIN
+SET @vv1 = (SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = 'tbackup');
+IF @vv1>0 THEN
+	ALTER TABLE tbackup ADD COLUMN `filepath` varchar(512) NOT NULL DEFAULT "";
+END IF;
+END;
+//
+CALL addcol();
+DROP PROCEDURE addcol;
+
+-- ---------------------------------------------------------------------
+-- Table `tconfig`
+-- ---------------------------------------------------------------------
+UPDATE `tconfig` SET `value` = 'login_logo_v7.png' where `token`='custom_logo_login';

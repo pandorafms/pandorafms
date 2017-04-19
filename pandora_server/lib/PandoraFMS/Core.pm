@@ -4053,10 +4053,10 @@ sub export_module_data ($$$$$$$) {
 	# Data export is disabled
  	return if ($module->{'id_export'} < 1);
 
-	logger($pa_config, "Exporting data for module '" . $module->{'nombre'} . "' agent '" . $agent->{'nombre'} . "'.", 10);
+	logger($pa_config, "Exporting data for module '" . $module->{'nombre'} . "' agent '" . $agent->{'alias'} . "'.", 10);
 	db_do($dbh, 'INSERT INTO tserver_export_data 
 		(id_export_server, agent_name , module_name, module_type, data, timestamp) VALUES
-		(?, ?, ?, ?, ?, ?)', $module->{'id_export'}, $agent->{'nombre'}, $module->{'nombre'}, $module_type, $data, $timestamp);
+		(?, ?, ?, ?, ?, ?)', $module->{'id_export'}, $agent->{'alias'}, $module->{'nombre'}, $module_type, $data, $timestamp);
 }
 
 ##########################################################################
@@ -4994,7 +4994,7 @@ sub pandora_update_agent_module_count ($$$) {
 	') WHERE id_agente = ' . $agent_id);
 
 	# Sync the agent cache every time the module count is updated.
-	enterprise_hook('update_agent_cache', [$pa_config, $dbh, $agent_id]) if ($pa_config->{'metaconsole_agent_cache'} == 1);
+	enterprise_hook('update_agent_cache', [$pa_config, $dbh, $agent_id]) if ($pa_config->{'node_metaconsole'} == 1);
 }
 
 ##########################################################################
@@ -5008,7 +5008,7 @@ sub pandora_update_agent_alert_count ($$$) {
 	') WHERE id_agente = ' . $agent_id);
 	
 	# Sync the agent cache every time the module count is updated.
-	enterprise_hook('update_agent_cache', [$pa_config, $dbh, $agent_id]) if ($pa_config->{'metaconsole_agent_cache'} == 1);
+	enterprise_hook('update_agent_cache', [$pa_config, $dbh, $agent_id]) if ($pa_config->{'node_metaconsole'} == 1);
 }
 
 ########################################################################

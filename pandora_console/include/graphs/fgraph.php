@@ -143,8 +143,12 @@ function progressbar($progress, $width, $height, $title, $font,
 	$graph['mode'] = $mode;
 	
 	$id_graph = serialize_in_temp($graph, null, $ttl);
-	
-	return "<img src='include/graphs/functions_gd.php?static_graph=1&graph_type=progressbar&ttl=".$ttl."&id_graph=".$id_graph."'>";
+	if (is_metaconsole()) {
+		return "<img src='../../include/graphs/functions_gd.php?static_graph=1&graph_type=progressbar&ttl=".$ttl."&id_graph=".$id_graph."'>";
+	}
+	else {
+		return "<img src='include/graphs/functions_gd.php?static_graph=1&graph_type=progressbar&ttl=".$ttl."&id_graph=".$id_graph."'>";
+	}
 }
 
 

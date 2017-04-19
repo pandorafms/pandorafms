@@ -27,7 +27,7 @@ if (is_ajax ()) {
 		$ent = get_parameter('ent');
 		$offline = get_parameter('offline');
 		if (!$ent) {
-			$dir = $config['attachment_store'] . "/last_package/downloads/pandora_console/extras/mr";
+			$dir = $config['attachment_store'] . "/downloads/pandora_console/extras/mr";
 		}
 		else {
 			if ($offline) {
@@ -38,7 +38,6 @@ if (is_ajax ()) {
 			}
 		}
 		$file = "$dir/$number.sql";
-		
 		$dangerous_query = false;
 		$mr_file = fopen($file, "r");
 		while (!feof($mr_file)) {
@@ -141,17 +140,19 @@ if (is_ajax ()) {
 	}
 
 	if ($remove_rr) {
-		$number = get_parameter('number');
+        $numbers = get_parameter('number',0);
 
-		for ($i = 1; $i <= $number; $i++) {
-			$file = $config["homedir"] . "/extras/mr/$i.sql";
-			if (file_exists($file)) {
-				unlink($file);
-			}
-		}
-		
-		return;
-	}
+        foreach ($numbers as $number) {
+            for ($i = 1; $i <= $number; $i++) {
+                $file = $config["homedir"] . "/extras/mr/$i.sql";
+                if (file_exists($file)) {
+                    unlink($file);
+                }
+            }
+        }
+
+        return;
+    }
 
 	if ($remove_rr_extras) {
 		$dir = $config["homedir"] . "/extras/mr/";

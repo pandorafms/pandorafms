@@ -43,7 +43,7 @@ our @EXPORT = qw(
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "7.0NG";
-my $pandora_build = "170323";
+my $pandora_build = "170419";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -160,15 +160,17 @@ sub pandora_get_sharedconfig ($$) {
 	# Pandora FMS Console's attachment directory
 	$pa_config->{"attachment_dir"} = pandora_get_tconfig_token ($dbh, 'attachment_store', '/var/www/pandora_console/attachment');
 
-	# Metaconsole agent cache.
-	$pa_config->{"metaconsole_agent_cache"} = pandora_get_tconfig_token ($dbh, 'metaconsole_agent_cache', 0);
-	
 	#Limit of events replicate in metaconsole
 	$pa_config->{'replication_limit'} = pandora_get_tconfig_token ($dbh, 'replication_limit', 1000);
 	$pa_config->{'include_agents'} = pandora_get_tconfig_token ($dbh, 'include_agents', 0);
 
 	#Public url
 	$pa_config->{'public_url'} = pandora_get_tconfig_token ($dbh, 'public_url', 'http://localhost/pandora_console');
+
+	# Node with a metaconsole license.
+	# NOTE: This must be read when checking license limits!
+	#$pa_config->{"node_metaconsole"} = pandora_get_tconfig_token ($dbh, 'node_metaconsole', 0);
+
 
 	if ($pa_config->{'include_agents'} eq '') {
 		$pa_config->{'include_agents'} = 0;
@@ -400,6 +402,7 @@ sub pandora_load_config {
 	$pa_config->{"stats_interval"} = 300;
 	$pa_config->{"agentaccess"} = 1; 
 	$pa_config->{"event_storm_protection"} = 0; 
+	$pa_config->{"node_metaconsole"} = 0; # > 7.0NG
 	# -------------------------------------------------------------------------
 	
 	#SNMP Forwarding tokens

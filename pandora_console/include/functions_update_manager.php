@@ -363,10 +363,10 @@ function update_manager_check_online_free_packages ($is_ajax=true) {
 					var applying_mr = "<?php echo __('Applying DB MR'); ?>\n";
 				</script>
 				<?php
-
+				$baseurl = ui_get_full_url(false, false, false, false);
 				echo "<p><b>There is a new version:</b> " . $result[0]['version'] . "</p>";
 				echo "<a href='javascript: update_last_package(\"" . base64_encode($result[0]["file_name"]) .
-					"\", \"" . $result[0]['version'] ."\");'>" .
+					"\", \"" . $result[0]['version'] ."\", \"" . $baseurl ."\");'>" .
 					__("Update to the last version") . "</a>";
 			}
 			else {

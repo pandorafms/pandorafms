@@ -2687,7 +2687,7 @@ function get_number_of_mr($package, $ent, $offline) {
 	global $config;
 	
 	if (!$ent) {
-		$dir = $config['attachment_store'] . "/last_package/downloads/pandora_console/extras/mr";
+		$dir = $config['attachment_store'] . "/downloads/pandora_console/extras/mr";
 	}
 	else {
 		if ($offline) {

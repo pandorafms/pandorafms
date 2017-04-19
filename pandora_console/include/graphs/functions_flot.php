@@ -205,7 +205,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 	// Parent layer
 	$return = "<div class='parent_graph' style='width: " . $width . "px; " . $background_style . "'>";
 	// Set some containers to legend, graph, timestamp tooltip, etc.
-	$return .= "<p id='legend_$graph_id' class='legend_graph' style='font-size:".$font_size."pt'></p>";
+	$return .= "<p id='legend_$graph_id' class='legend_graph' style='font-size:$font_size"."pt !important;'></p>";
 	
 	if (!empty($threshold_data)) {
 		$yellow_up = $threshold_data['yellow_up'];
@@ -265,7 +265,9 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 	}
 	$return .= html_print_input_hidden('line_width_graph', $config['custom_graph_width'], true);
 	$return .= "<div id='timestamp_$graph_id' class='timestamp_graph' style='font-size:".$font_size."pt;display:none; position:absolute; background:#fff; border: solid 1px #aaa; padding: 2px; z-index:1000;'></div>";
-	$return .= "<div id='$graph_id' class='graph $adapt_key' style='width: ".$width."px; height: ".$height."px;'></div>";
+	$return .= "<div id='$graph_id' class='";
+	if($type=='area_simple'){$return .= "noresizevc ";}
+	$return .= "graph $adapt_key' style='width: ".$width."px; height: ".$height."px;'></div>";
 	if ($menu) {
 		$height = 100;
 	}
@@ -598,7 +600,7 @@ function flot_custom_pie_chart ($flash_charts, $graph_values,
 	
 	$graph_id = uniqid('graph_');
 	
-	$return = "<div id='$graph_id' class='graph' style='width: ".$width."px; height: ".$height."px;'></div>";
+	$return = "<div id='$graph_id' class='graph noresizevc' style='width: ".$width."px; height: ".$height."px;'></div>";
 	
 	if ($water_mark != '') {
 		$return .= "<div id='watermark_$graph_id' style='display:none; position:absolute;'><img id='watermark_image_$graph_id' src='".$water_mark["url"]."'></div>";

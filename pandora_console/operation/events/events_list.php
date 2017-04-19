@@ -57,6 +57,7 @@ if (is_ajax()) {
 		
 		$event_filter = events_get_event_filter($id_filter);
 		
+		$event_filter['search'] = io_safe_output($event_filter['search']);
 		$event_filter['id_name'] = io_safe_output($event_filter['id_name']);
 		$event_filter['tag_with'] = base64_encode(io_safe_output($event_filter['tag_with']));
 		$event_filter['tag_without'] = base64_encode(io_safe_output($event_filter['tag_without']));

@@ -1724,7 +1724,7 @@ function db_check_minor_relase_available_to_um ($package, $ent, $offline) {
 	global $config;
 	
 	if (!$ent) {
-		$dir = $config['attachment_store'] . "/last_package/downloads/pandora_console/extras/mr";
+		$dir = $config['attachment_store'] . "/downloads/pandora_console/extras/mr";
 	}
 	else {
 		if ($offline) {
@@ -1736,7 +1736,6 @@ function db_check_minor_relase_available_to_um ($package, $ent, $offline) {
 	}
 	
 	$have_minor_release = false;
-	
 	if (file_exists($dir) && is_dir($dir)) {
 		if (is_readable($dir)) {
 			$files = scandir($dir); // Get all the files from the directory ordered by asc

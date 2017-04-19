@@ -1739,6 +1739,10 @@ function agents_get_status($id_agent = 0, $noACLs = false) {
 		}
 	}
 	
+	if (!isset($modules) || empty($modules) || count($modules) == 0) {
+		return AGENT_MODULE_STATUS_NOT_INIT;
+	}
+	
 	$modules_status = array();
 	$modules_async = 0;
 	foreach ($modules as $module) {
@@ -2473,27 +2477,27 @@ function agents_get_network_interfaces ($agents = false, $agents_filter = false)
 				else{
 					$interface_traffic_modules = agents_get_modules($agent_id, $columns, "nombre LIKE 'if%Octets_$interface_name'");
 				}
+				
 				if (!empty($interface_traffic_modules) && count($interface_traffic_modules) >= 2) {
 					$interface_traffic_modules_aux = array('in' => '', 'out' => '');
 					foreach ($interface_traffic_modules as $interface_traffic_module) {
 						$interface_name_escaped = str_replace("/", "\/", $interface_name);
-						if($type_interface){
-							
+						if ($type_interface) {
 							if (preg_match ("/^" . $interface_name_escaped . "_if(.+)Octets$/i", $interface_traffic_module['nombre'], $matches)) {
-								if (strtolower($matches[1]) == 'in') {
+								if (strtolower($matches[1]) == 'in' || strtolower($matches[1]) == 'hcin') {
 									$interface_traffic_modules_aux['in'] = $interface_traffic_module['id_agente_modulo'];
 								}
-								elseif (strtolower($matches[1]) == 'out') {
+								elseif (strtolower($matches[1]) == 'out' || strtolower($matches[1]) == 'hcout') {
 									$interface_traffic_modules_aux['out'] = $interface_traffic_module['id_agente_modulo'];
 								}
 							}
 						}
 						else{
 							if (preg_match ("/^if(.+)Octets_$interface_name_escaped$/i", $interface_traffic_module['nombre'], $matches)) {
-								if (strtolower($matches[1]) == 'in') {
+								if (strtolower($matches[1]) == 'in' || strtolower($matches[1]) == 'hcin') {
 									$interface_traffic_modules_aux['in'] = $interface_traffic_module['id_agente_modulo'];
 								}
-								elseif (strtolower($matches[1]) == 'out') {
+								elseif (strtolower($matches[1]) == 'out' || strtolower($matches[1]) == 'hcout') {
 									$interface_traffic_modules_aux['out'] = $interface_traffic_module['id_agente_modulo'];
 								}
 							}

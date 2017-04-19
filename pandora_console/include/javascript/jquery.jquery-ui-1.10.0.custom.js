@@ -5727,7 +5727,7 @@ $.widget( "ui.dialog", {
 							if ( !$( event.target ).closest(".ui-dialog").length ) {
 								event.preventDefault();
 								$(".ui-dialog:visible:last .ui-dialog-content")
-									.data("ui-dialog")._focusTabbable();
+									.data("ui-dialog");
 							}
 						}
 					});

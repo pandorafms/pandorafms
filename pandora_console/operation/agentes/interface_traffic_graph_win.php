@@ -82,11 +82,12 @@ $interface_traffic_modules = array(
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<title>Pandora FMS Graph (<?php echo agents_get_alias($agent_id) . ' - ' . $interface_name; ?>)</title>
 		<link rel="stylesheet" href="../../include/styles/pandora_minimal.css" type="text/css" />
-		<script type='text/javaScript' src='../../include/javascript/calendar.js'></script>
+		<link rel="stylesheet" href="../../include/styles/jquery-ui-1.10.0.custom.css" type="text/css" />
 		<script type='text/javascript' src='../../include/javascript/pandora.js'></script>
 		<script type='text/javascript' src='../../include/javascript/jquery-1.9.0.js'></script>
 		<script type='text/javascript' src='../../include/javascript/jquery.pandora.js'></script>
-		<script type='text/javascript'>
+		<script type='text/javascript' src='../../include/javascript/jquery.jquery-ui-1.10.0.custom.js'></script>
+			<script type='text/javascript'>
 			<!--
 			window.onload = function() {
 				// Hack to repeat the init process to period select
@@ -103,7 +104,7 @@ $interface_traffic_modules = array(
 					$("#hidden-show_other").val(0);
 				}
 			}
-			//-->
+			-->
 		</script>
 	</head>
 	<body bgcolor="#ffffff" style='background:#ffffff;'>
@@ -142,6 +143,7 @@ $interface_traffic_modules = array(
 		$width = (int) get_parameter("width", 555);
 		$height = (int) get_parameter("height", 245);
 		$start_date = (string) get_parameter("start_date", date("Y-m-d"));
+		$start_time = get_parameter ("start_time", date("H:i:s"));
 		$zoom = (int) get_parameter ("zoom", 1);
 		$baseline = get_parameter ("baseline", 0);
 		$show_percentil = get_parameter ("show_percentil", 0);
@@ -153,12 +155,19 @@ $interface_traffic_modules = array(
 			echo "<script type='text/javascript'>window.resizeTo($width + 120, $height + 320);</script>";
 		}
 		
-		$current = date("Y-m-d");
+		/*$current = date("Y-m-d");
 		
 		if ($start_date != $current)
 			$date = strtotime($start_date);
 		else
 			$date = $utime;
+		*/
+		$date = strtotime("$start_date $start_time");
+		$now = time();
+		
+		if ($date > $now){
+			$date = $now;
+		}
 		
 		$urlImage = ui_get_full_url(false);
 		
@@ -230,6 +239,12 @@ $interface_traffic_modules = array(
 		$table->rowclass[] = '';
 		
 		$data = array();
+		$data[0] = __('Begin time');
+		$data[1] = html_print_input_text ("start_time", $start_time,'', 10, 10, true);
+		$table->data[] = $data;
+		$table->rowclass[] = '';
+		
+		$data = array();
 		$data[0] = __('Time range');
 		$data[1] = html_print_extended_select_for_time('period', $period, '', '', 0, 7, true);
 		$table->data[] = $data;
@@ -295,6 +310,13 @@ $interface_traffic_modules = array(
 		
 	</body>
 </html>
+<?php
+// Echo the script tags of the datepicker and the timepicker
+// Modify the user language cause the ui.datepicker language files use - instead _
+$custom_user_language = str_replace('_', '-', $user_language);
+ui_require_jquery_file("ui.datepicker-" . $custom_user_language, "include/javascript/i18n/", true);
+ui_include_time_picker(true);
+?>
 <script>
 	
 <?php
@@ -320,6 +342,25 @@ $interface_traffic_modules = array(
 <?php
 	}
 ?>
+	
+	// Add datepicker and timepicker
+	$("#text-start_date").datepicker({
+		dateFormat: "<?php echo DATE_FORMAT_JS; ?>"
+	});
+	
+	$("#text-start_time").timepicker({
+		showSecond: true,
+		timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
+		timeOnlyTitle: '<?php echo __('Choose time');?>',
+		timeText: '<?php echo __('Time');?>',
+		hourText: '<?php echo __('Hour');?>',
+		minuteText: '<?php echo __('Minute');?>',
+		secondText: '<?php echo __('Second');?>',
+		currentText: '<?php echo __('Now');?>',
+		closeText: '<?php echo __('Close');?>'
+	});
+	
+	$.datepicker.setDefaults($.datepicker.regional["<?php echo $custom_user_language; ?>"]);
 	
 	forced_title_callback();
 </script>

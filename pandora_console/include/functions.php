@@ -2730,4 +2730,38 @@ function remove_right_zeros ($value) {
 		return $value;
 	}
 }
+
+function send_email_to_user ($to, $body, $subject) {
+	global $config;
+	
+	require_once($config['homedir'] . '/include/swiftmailer/swift_required.php');
+	require_once($config['homedir'] . '/include/email_config_user.php');
+	
+	$result = false;
+	try {
+		$transport = Swift_SmtpTransport::newInstance($email_smtpServer, $email_smtpPort);
+		$transport->setUsername($email_username);
+		$transport->setPassword($email_password);
+		
+		$mailer = Swift_Mailer::newInstance($transport);
+		
+		$message = Swift_Message::newInstance($subject);
+		$message->setFrom($email_from);
+		$to = trim($to);
+		$message->setTo(array($to => $to));
+		$message->setBody($body, 'text/html');
+		
+		ini_restore ('sendmail_from');
+		html_debug("AAAA", true);
+		$result = $mailer->send($message);
+	}
+	catch (Exception $e) {
+		error_log($e->getMessage());
+		db_pandora_audit("Pandora mail", $e->getMessage());
+		html_debug($e->getMessage(), true);
+	}
+	
+	return $result;
+}
+
 ?>

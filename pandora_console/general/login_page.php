@@ -267,22 +267,42 @@ echo '<div id="ver_num">'.$pandora_version.(($develop_bypass == 1) ? ' '.__('Bui
 echo '</div>';
 
 if ($mail != "") {
-	echo '<div id="reset_correct" title="' . __('Password reset') . '">';
-		echo '<div class="content_alert">';
-			echo '<div class="icon_message_alert">';
-				echo html_print_image('images/icono_logo_pandora.png', true, array("alt" => __('Password reset'), "border" => 0));
-			echo '</div>';
-			echo '<div class="content_message_alert">';
-				echo '<div class="text_message_alert">';
-					echo '<h1>' . __('INFO') . '</h1>';
-					echo '<p>'  . __('An email has been sent to the user\'s address') . '</p>';
+	if ($email_error_message == '') {
+		echo '<div id="reset_correct" title="' . __('Password reset') . '">';
+			echo '<div class="content_alert">';
+				echo '<div class="icon_message_alert">';
+					echo html_print_image('images/icono_logo_pandora.png', true, array("alt" => __('Password reset'), "border" => 0));
 				echo '</div>';
-				echo '<div class="button_message_alert">';
-					html_print_submit_button("Ok", 'reset_correct_button', false);  
+				echo '<div class="content_message_alert">';
+					echo '<div class="text_message_alert">';
+						echo '<h1>' . __('INFO') . '</h1>';
+						echo '<p>'  . __('An email has been sent to the user\'s address') . '</p>';
+					echo '</div>';
+					echo '<div class="button_message_alert">';
+						html_print_submit_button("Ok", 'reset_correct_button', false);  
+					echo '</div>';
 				echo '</div>';
 			echo '</div>';
 		echo '</div>';
-	echo '</div>';
+	}
+	else {
+		echo '<div id="reset_correct" title="' . __('Password reset') . '">';
+			echo '<div class="content_alert">';
+				echo '<div class="icon_message_alert">';
+					echo html_print_image('images/icono_stop.png', true, array("alt" => __('Password reset'), "border" => 0));
+				echo '</div>';
+				echo '<div class="content_message_alert">';
+					echo '<div class="text_message_alert">';
+						echo '<h1>' . __('ERROR') . '</h1>';
+						echo '<p>'  . $email_error_message . '</p>';
+					echo '</div>';
+					echo '<div class="button_message_alert">';
+						html_print_submit_button("Ok", 'reset_correct_button', false);  
+					echo '</div>';
+				echo '</div>';
+			echo '</div>';
+		echo '</div>';
+	}
 }
 
 if (isset ($login_failed)) {

@@ -592,7 +592,24 @@ if (! isset ($config['id_user'])) {
 				require_once ('general/reset_pass.php');
 				}
 				else {
-					// MANDAR CORREO ELECTRÓNICO AL USUARIO Y VOLVER A LA PÁGINA DE INICIO
+					$subject = '[Pandora] '.__('Reset password');
+					$body = __('This is the automatic message');
+					$body .= ' "<strong>' . $user_reset_pass . '"</strong>';
+					$body .= '<p />';
+					$body .= __('Please, click in the link below to reset your password');
+					$body .= '<p />';
+					$body .= '<a href="">' . __('Reset your password') . '</a>';
+					$body .= '<p />';
+					$body .= 'Pandora FMS';
+					$body .= '<p />';
+					$body .= '<em>'.__('Please do not answer or reply to this email').'</em>';
+					
+					$result = send_email_to_user($mail, $body, $subject);
+					
+					$email_error_message = "";
+					if (!$result) {
+						$email_error_message = __('Error at sending the email');
+					}
 
 					require_once ('general/login_page.php');
 				}

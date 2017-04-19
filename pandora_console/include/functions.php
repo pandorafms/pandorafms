@@ -2752,7 +2752,7 @@ function send_email_to_user ($to, $body, $subject) {
 		$message->setBody($body, 'text/html');
 		
 		ini_restore ('sendmail_from');
-		html_debug("AAAA", true);
+		
 		$result = $mailer->send($message);
 	}
 	catch (Exception $e) {

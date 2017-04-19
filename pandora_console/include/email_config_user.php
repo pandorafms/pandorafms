@@ -17,4 +17,5 @@ $email_smtpServer = '127.0.0.1';
 $email_smtpPort = 25;
 $email_username = '';
 $email_password = '';
+
 ?>

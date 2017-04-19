@@ -210,7 +210,14 @@ echo '<div class="login_page">';
 			}
 			break;
 	}
-	
+
+	$reset_pass_link = 'reset_pass.php';
+	// Reset password link
+	echo '<div style="width:70%; height:40px; margin-right:auto; margin-left:auto; margin-top:20px; text-align:center;">';
+	echo '<a style="color: white !important;" href="index.php?reset=true&first=true">' . __('Forgotten your password?');
+	echo '</a>';
+	echo '</div>';
+
 	echo '</form></div>';
 	echo '<div class="login_data">';
 		echo '<div class ="text_banner_login">';
@@ -258,6 +265,25 @@ echo '<div class="login_page">';
 echo '</div>';
 echo '<div id="ver_num">'.$pandora_version.(($develop_bypass == 1) ? ' '.__('Build').' '.$build_version : '') . '</div>';
 echo '</div>';
+
+if ($mail != "") {
+	echo '<div id="reset_correct" title="' . __('Password reset') . '">';
+		echo '<div class="content_alert">';
+			echo '<div class="icon_message_alert">';
+				echo html_print_image('images/icono_logo_pandora.png', true, array("alt" => __('Password reset'), "border" => 0));
+			echo '</div>';
+			echo '<div class="content_message_alert">';
+				echo '<div class="text_message_alert">';
+					echo '<h1>' . __('INFO') . '</h1>';
+					echo '<p>'  . __('An email has been sent to the user\'s address') . '</p>';
+				echo '</div>';
+				echo '<div class="button_message_alert">';
+					html_print_submit_button("Ok", 'reset_correct_button', false);  
+				echo '</div>';
+			echo '</div>';
+		echo '</div>';
+	echo '</div>';
+}
 
 if (isset ($login_failed)) {
 	echo '<div id="login_failed" title="' . __('Login failed') . '">';
@@ -512,5 +538,26 @@ html_print_div(array('id' => 'forced_title_layer', 'class' => 'forced_title_laye
 	<?php 
 	}
 	?>
+
+	$(document).ready (function () {
+		$(function() {
+			$("#reset_correct").dialog({
+				resizable: true,
+				draggable: true,
+				modal: true,
+				height: 220,
+				width: 528,
+				clickOutside: true,
+				overlay: {
+					opacity: 0.5,
+					background: "black"
+				}
+			});
+		});
+
+		$("#submit-reset_correct_button").click (function () {
+			$("#reset_correct").dialog('close');
+		});		
+	});
 	/* ]]> */
 </script>

@@ -547,7 +547,60 @@ if (! isset ($config['id_user'])) {
 	}
 	// There is no user connected
 	else {
-		require_once ('general/login_page.php');
+		$reset = (boolean)get_parameter('reset', 0);
+		$first = (boolean)get_parameter('first', 0);
+		if (!$reset) {
+			require_once ('general/login_page.php');
+		}
+		else {
+			$user_reset_pass = get_parameter('user_reset_pass', "");
+			$error = "";
+			$mail = "";
+			$show_error = false;
+
+			if (!$first) {
+				if ($reset) {
+					if ($user_reset_pass == '') {
+						$reset = false;
+						$error = __('Id user cannot be empty');
+						$show_error = true;
+					}
+					else {
+						$check_user = check_user_id($user_reset_pass);
+
+						if (!$check_user) {
+							$reset = false;
+							$error = __('User no exists in db');
+							$show_error = true;
+						}
+						else {
+							$check_mail = check_user_have_mail($user_reset_pass);
+
+							if (!$check_mail) {
+								$reset = false;
+								$error = __('User no have any email direction asociated');
+								$show_error = true;
+							}
+							else {
+								$mail = $check_mail;
+							}
+						}
+					}
+				}
+
+				if (!$reset) {
+				require_once ('general/reset_pass.php');
+				}
+				else {
+					// MANDAR CORREO ELECTRÓNICO AL USUARIO Y VOLVER A LA PÁGINA DE INICIO
+
+					require_once ('general/login_page.php');
+				}
+			}
+			else {
+				require_once ('general/reset_pass.php');
+			}
+		}
 		while (@ob_end_flush ());
 		exit ("</html>");
 	}

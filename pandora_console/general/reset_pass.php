@@ -102,8 +102,15 @@ echo '<div id="login_body" ' . $login_body_style . '>';
                 html_print_submit_button(__("Reset password"), "login_button", false, 'class="sub next_login"');
             echo '</div>';
 
+        echo '</form>';
+
+        echo '<form method="post" action="' . ui_get_full_url('index.php') . '">';
+            echo '<div class="login_button">';
+                html_print_submit_button(__("Back to login"), "login_button", false, 'class="sub next_login"');
+            echo '</div>';
         echo '</form></div>';
-        echo '<div class="login_data">';
+
+        echo '<div style="float:right;" class="login_data">';
             echo '<div class ="text_banner_login">';
                 echo '<div><span class="span1">';
                     if(defined ('PANDORA_ENTERPRISE')){
@@ -151,7 +158,7 @@ echo '<div id="login_body" ' . $login_body_style . '>';
     echo '</div>';
     echo '<div id="ver_num">'.$pandora_version.(($develop_bypass == 1) ? ' '.__('Build').' '.$build_version : '') . '</div>';
     echo '</div>';
-    
+
 if ($show_error) {
     echo '<div id="reset_pass_error" title="' . __('Reset password failed') . '">';
         echo '<div class="content_alert">';

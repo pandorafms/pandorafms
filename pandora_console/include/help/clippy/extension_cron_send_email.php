@@ -36,7 +36,7 @@ function clippy_extension_cron_send_email() {
 		'intro' => '<table>' .
 			'<tr>' .
 			'<td class="context_help_body">' .
-			__('The configuration of email for the task email is in the mail setup:') . '<br />' .
+			__('The configuration of email for the task email is in the enterprise setup:') . '<br />' .
 			__('Please check if the email configuration is correct.') .
 			'</td>' .
 			'</tr>' .

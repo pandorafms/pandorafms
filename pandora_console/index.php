@@ -651,7 +651,7 @@ if (! isset ($config['id_user'])) {
 							$cod_hash = $user_reset_pass . "::::" . md5(rand(10, 1000000) . rand(10, 1000000) . rand(10, 1000000));
 
 							$subject = '[Pandora] '.__('Reset password');
-							$body = __('This is the automatic message');
+							$body = __('This is the automatic message to the user');
 							$body .= ' "<strong>' . $user_reset_pass . '"</strong>';
 							$body .= '<p />';
 							$body .= __('Please, click in the link below to reset your password');

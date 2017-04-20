@@ -585,11 +585,11 @@ if (! isset ($config['id_user'])) {
 				if ($db_reset_pass_entry) {
 					if (($db_reset_pass_entry + SECONDS_2HOUR) < time()) {
 						$process_error_message = __('This user has not requested a password change');
-						db_process_sql_delete('treset_pass', array('id_user' => $id_user));
+						delete_reset_pass_entry($id_user);
 						require_once ('general/login_page.php');
 					}
 					else {
-						db_process_sql_delete('treset_pass', array('id_user' => $id_user));
+						delete_reset_pass_entry($id_user);
 						require_once ('enterprise/include/process_reset_pass.php');
 					}
 				}
@@ -599,6 +599,9 @@ if (! isset ($config['id_user'])) {
 				}
 			}
 			else {
+				if ($config['enterprise_installed']) {
+					enterprise_include_once ('include/functions_reset_pass.php');
+				}
 				if (!$reset) {
 					require_once ('general/login_page.php');
 				}

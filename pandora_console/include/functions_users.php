@@ -892,30 +892,4 @@ function users_get_strict_mode_groups($id_user, $return_group_all) {
 	return $return_user_groups;
 }
 
-function check_user_id ($id_user) {
-	global $config;
-	
-	$exists = db_get_value ('id_user', 'tusuario', 'id_user', $id_user);
-
-	if ($exists) {
-		return true;
-	}
-	else {
-		return false;
-	}
-}
-
-function check_user_have_mail ($id_user) {
-	global $config;
-	
-	$exists_mail = db_get_value ('email', 'tusuario', 'id_user', $id_user);
-
-	if ($exists_mail) {
-		return $exists_mail;
-	}
-	else {
-		return false;
-	}
-}
-
 ?>

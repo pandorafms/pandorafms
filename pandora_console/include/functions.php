@@ -2731,46 +2731,4 @@ function remove_right_zeros ($value) {
 	}
 }
 
-function send_email_to_user ($to, $body, $subject) {
-	global $config;
-	
-	require_once($config['homedir'] . '/include/swiftmailer/swift_required.php');
-	require_once($config['homedir'] . '/include/email_config_user.php');
-	
-	$result = false;
-	try {
-		$transport = Swift_SmtpTransport::newInstance($email_smtpServer, $email_smtpPort);
-		$transport->setUsername($email_username);
-		$transport->setPassword($email_password);
-		
-		$mailer = Swift_Mailer::newInstance($transport);
-		
-		$message = Swift_Message::newInstance($subject);
-		$message->setFrom($email_from);
-		$to = trim($to);
-		$message->setTo(array($to => $to));
-		$message->setBody($body, 'text/html');
-		
-		ini_restore ('sendmail_from');
-		
-		$result = $mailer->send($message);
-	}
-	catch (Exception $e) {
-		error_log($e->getMessage());
-		db_pandora_audit("Pandora mail", $e->getMessage());
-	}
-	
-	return $result;
-}
-
-function send_token_to_db ($id_user, $cod_hash) {
-	db_process_sql_delete('treset_pass', array('id_user' => $id_user));
-
-	$values = array();
-	$values['id_user'] = $id_user;
-	$values['cod_hash'] = $cod_hash;
-	$values['reset_time'] = time();
-	db_process_sql_insert('treset_pass', $values);
-}
-
 ?>

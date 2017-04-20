@@ -550,7 +550,7 @@ if (! isset ($config['id_user'])) {
 		if ($config['enterprise_installed']) {
 			enterprise_include_once ('include/functions_reset_pass.php');
 		}
-		
+
 		$correct_pass_change = (boolean)get_parameter('correct_pass_change', 0);
 		$reset = (boolean)get_parameter('reset', 0);
 		$first = (boolean)get_parameter('first', 0);
@@ -588,7 +588,7 @@ if (! isset ($config['id_user'])) {
 
 				if ($db_reset_pass_entry) {
 					if (($db_reset_pass_entry + SECONDS_2HOUR) < time()) {
-						$process_error_message = __('This user has not requested a password change');
+						$process_error_message = __('Too much time since password change request');
 						delete_reset_pass_entry($id_user);
 						require_once ('general/login_page.php');
 					}
@@ -598,7 +598,7 @@ if (! isset ($config['id_user'])) {
 					}
 				}
 				else {
-					$process_error_message = __('Too much time since password change request');
+					$process_error_message = __('This user has not requested a password change');
 					require_once ('general/login_page.php');
 				}
 			}

@@ -268,7 +268,7 @@ echo '</div>';
 echo '<div id="ver_num">'.$pandora_version.(($develop_bypass == 1) ? ' '.__('Build').' '.$build_version : '') . '</div>';
 echo '</div>';
 
-if ($process_error_message == '') {
+if ($process_error_message == '' && $mail != "") {
 	echo '<div id="reset_correct" title="' . __('Password reset') . '">';
 		echo '<div class="content_alert">';
 			echo '<div class="icon_message_alert">';
@@ -286,7 +286,7 @@ if ($process_error_message == '') {
 		echo '</div>';
 	echo '</div>';
 }
-else {
+else if ($process_error_message != '') {
 	echo '<div id="reset_correct" title="' . __('Password reset') . '">';
 		echo '<div class="content_alert">';
 			echo '<div class="icon_message_alert">';

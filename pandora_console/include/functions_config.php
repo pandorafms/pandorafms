@@ -249,6 +249,19 @@ function config_update_config () {
 						$inventory_changes_blacklist = get_parameter('inventory_changes_blacklist', array());
 						if (!config_update_value ('inventory_changes_blacklist', implode(',',$inventory_changes_blacklist)))
 							$error_update[] = __('Inventory changes blacklist');
+
+						if (!config_update_value ('email_from_dir', get_parameter('email_from_dir')))
+							$error_update[] = __('From dir');
+						if (!config_update_value ('email_from_name', get_parameter('email_from_name')))
+							$error_update[] = __('From name');
+						if (!config_update_value ('email_smtpServer', get_parameter('email_smtpServer')))
+							$error_update[] = __('Server SMTP');
+						if (!config_update_value ('email_smtpPort', (int)get_parameter('email_smtpPort')))
+							$error_update[] = __('Port SMTP');
+						if (!config_update_value ('email_username', get_parameter('email_username')))
+							$error_update[] = __('Email user');
+						if (!config_update_value ('email_password', get_parameter('email_password')))
+							$error_update[] = __('Email password');
 						
 					}
 					break;
@@ -707,20 +720,6 @@ function config_update_config () {
 					$error_update[] = __('Step');
 				if (!config_update_value ('history_db_delay', get_parameter ('history_db_delay')))
 					$error_update[] = __('Delay');
-				break;
-			case 'mail':
-				if (!config_update_value ('email_from_dir', get_parameter('email_from_dir')))
-					$error_update[] = __('From dir');
-				if (!config_update_value ('email_from_name', get_parameter('email_from_name')))
-					$error_update[] = __('From name');
-				if (!config_update_value ('email_smtpServer', get_parameter('email_smtpServer')))
-					$error_update[] = __('Server SMTP');
-				if (!config_update_value ('email_smtpPort', (int)get_parameter('email_smtpPort')))
-					$error_update[] = __('Port SMTP');
-				if (!config_update_value ('email_username', get_parameter('email_username')))
-					$error_update[] = __('Email user');
-				if (!config_update_value ('email_password', get_parameter('email_password')))
-					$error_update[] = __('Email password');
 				break;
 			case 'ehorus':
 				if (!config_update_value('ehorus_enabled', (int) get_parameter('ehorus_enabled', $config['ehorus_enabled'])))

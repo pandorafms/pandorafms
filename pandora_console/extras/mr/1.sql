@@ -1,0 +1,3 @@
+START TRANSACTION;
+ALTER TABLE tusuario add field1 int(10) unsigned NOT NULL DEFAULT 0;
+COMMIT;

@@ -212,12 +212,14 @@ echo '<div class="login_page">';
 	}
 
 	if ($config['enterprise_installed']) {
-		$reset_pass_link = 'reset_pass.php';
-		// Reset password link
-		echo '<div style="width:70%; height:40px; margin-right:auto; margin-left:auto; margin-top:20px; text-align:center;">';
-		echo '<a style="color: white !important;" href="index.php?reset=true&first=true">' . __('Forgotten your password?');
-		echo '</a>';
-		echo '</div>';
+		if ($config["reset_pass_option"]) {
+			$reset_pass_link = 'reset_pass.php';
+			// Reset password link
+			echo '<div style="width:70%; height:40px; margin-right:auto; margin-left:auto; margin-top:20px; text-align:center;">';
+			echo '<a style="color: white !important;" href="index.php?reset=true&first=true">' . __('Forgotten your password?');
+			echo '</a>';
+			echo '</div>';
+		}
 	}
 
 	echo '</form></div>';

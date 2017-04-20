@@ -245,6 +245,8 @@ function config_update_config () {
 							$error_update[] = __('Metaconsole agent cache');
 						if (!config_update_value ('log_collector', (bool)get_parameter('log_collector')))
 							$error_update[] = __('Activate Log Collector');
+						if (!config_update_value ('reset_pass_option', (bool)get_parameter('reset_pass_option')))
+							$error_update[] = __('Activate reset password');
 						
 						$inventory_changes_blacklist = get_parameter('inventory_changes_blacklist', array());
 						if (!config_update_value ('inventory_changes_blacklist', implode(',',$inventory_changes_blacklist)))
@@ -999,6 +1001,10 @@ function config_process_config () {
 	
 	if (!isset ($config["log_collector"])) {
 		config_update_value ('log_collector', 0);
+	}
+
+	if (!isset ($config["reset_pass_option"])) {
+		config_update_value ('reset_pass_option', 0);
 	}
 
 	if (!isset ($config["include_agents"])) {

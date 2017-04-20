@@ -249,6 +249,7 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	enterprise_hook ('enterprise_submenu');
 	enterprise_hook ('historydb_submenu');
 	enterprise_hook ('log_collector_submenu');
+	enterprise_hook ('mail_submenu');
 	
 	$sub2["godmode/setup/setup&amp;section=auth"]["text"] =  __('Authentication');
 	$sub2["godmode/setup/setup&amp;section=auth"]["refr"] = 0;

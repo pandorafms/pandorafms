@@ -547,6 +547,10 @@ if (! isset ($config['id_user'])) {
 	}
 	// There is no user connected
 	else {
+		if ($config['enterprise_installed']) {
+			enterprise_include_once ('include/functions_reset_pass.php');
+		}
+		
 		$correct_pass_change = (boolean)get_parameter('correct_pass_change', 0);
 		$reset = (boolean)get_parameter('reset', 0);
 		$first = (boolean)get_parameter('first', 0);
@@ -599,9 +603,6 @@ if (! isset ($config['id_user'])) {
 				}
 			}
 			else {
-				if ($config['enterprise_installed']) {
-					enterprise_include_once ('include/functions_reset_pass.php');
-				}
 				if (!$reset) {
 					require_once ('general/login_page.php');
 				}

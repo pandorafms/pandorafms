@@ -708,6 +708,20 @@ function config_update_config () {
 				if (!config_update_value ('history_db_delay', get_parameter ('history_db_delay')))
 					$error_update[] = __('Delay');
 				break;
+			case 'mail':
+				if (!config_update_value ('email_from_dir', get_parameter('email_from_dir')))
+					$error_update[] = __('From dir');
+				if (!config_update_value ('email_from_name', get_parameter('email_from_name')))
+					$error_update[] = __('From name');
+				if (!config_update_value ('email_smtpServer', get_parameter('email_smtpServer')))
+					$error_update[] = __('Server SMTP');
+				if (!config_update_value ('email_smtpPort', (int)get_parameter('email_smtpPort')))
+					$error_update[] = __('Port SMTP');
+				if (!config_update_value ('email_username', get_parameter('email_username')))
+					$error_update[] = __('Email user');
+				if (!config_update_value ('email_password', get_parameter('email_password')))
+					$error_update[] = __('Email password');
+				break;
 			case 'ehorus':
 				if (!config_update_value('ehorus_enabled', (int) get_parameter('ehorus_enabled', $config['ehorus_enabled'])))
 					$error_update[] = __('Enable eHorus');
@@ -1187,7 +1201,31 @@ function config_process_config () {
 	if (!isset ($config['history_db_delay'])) {
 		config_update_value ( 'history_db_delay', 0);
 	}
-	
+
+	if (!isset ($config['email_from_dir'])) {
+		config_update_value ( 'email_from_dir', "pandora@pandorafms.org");
+	}
+
+	if (!isset ($config['email_from_name'])) {
+		config_update_value ( 'email_from_name', "Pandora FMS");
+	}
+
+	if (!isset ($config['email_smtpServer'])) {
+		config_update_value ( 'email_smtpServer', "127.0.0.1");
+	}
+
+	if (!isset ($config['email_smtpPort'])) {
+		config_update_value ( 'email_smtpPort', 25);
+	}
+
+	if (!isset ($config['email_username'])) {
+		config_update_value ( 'email_username', "");
+	}
+
+	if (!isset ($config['email_password'])) {
+		config_update_value ( 'email_password', "");
+	}
+
 	if (!isset ($config['activate_gis'])) {
 		config_update_value ( 'activate_gis', 0);
 	}

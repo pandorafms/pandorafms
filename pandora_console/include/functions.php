@@ -1992,13 +1992,13 @@ function get_os_name ($id_os) {
 function get_user_dashboards ($id_user) {
 	if (users_is_admin($id_user)) {
 		$sql = "SELECT name
-			FROM tdashboard";
+			FROM tdashboard WHERE id_user = '" . $id_user ."' OR id_user = ''";
 	}
 	else {
 		$user_can_manage_all = users_can_manage_group_all('RR');
 		if ($user_can_manage_all) {
 			$sql = "SELECT name
-				FROM tdashboard";
+				FROM tdashboard WHERE id_user = '" . $id_user ."' OR id_user = ''";
 		}
 		else {
 			$user_groups = users_get_groups($id_user, "RR", false);
@@ -2013,7 +2013,7 @@ function get_user_dashboards ($id_user) {
 
 			$sql = "SELECT name
 				FROM tdashboard
-				WHERE id_group IN (" . implode(",", $u_groups) . ")";
+				WHERE id_group IN (" . implode(",", $u_groups) . ") AND (id_user = '" . $id_user ."' OR id_user = '')";
 		}
 	}
 	

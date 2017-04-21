@@ -542,7 +542,7 @@ if ($agents !== false) {
 		// Has remote configuration ?
 		if (enterprise_installed()) {
 			enterprise_include_once('include/functions_config_agents.php');
-			if (enterprise_hook('config_agents_has_remote_configuration',$agent["id_agente"])) {
+			if (enterprise_hook('config_agents_has_remote_configuration',array($agent["id_agente"]))) {
 				echo "<a href='index.php?" .
 					"sec=gagente&" .
 					"sec2=godmode/agentes/configurar_agente&" .

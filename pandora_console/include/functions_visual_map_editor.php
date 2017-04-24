@@ -606,7 +606,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 									size = 400+(3 * 50);
 								}
 								$('#text-width_module_graph').val(size);
-								$('#text-height_module_graph').val(180);
+								$('#text-height_module_graph').val(140);
 								
 							}
 							else if (data.split(",")[0] == 4) {

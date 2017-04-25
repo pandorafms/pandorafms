@@ -1327,3 +1327,169 @@ function Gauge(placeholderName, configuration, font)
 	// initialization
 	this.configure(configuration);
 }
+
+function print_phases_donut (recipient, phases) {
+	var svg = d3.select(recipient)
+		.append("svg")
+			.attr("width", 500)
+			.attr("height", 200)
+		.append("g");
+
+	svg.append("g")
+		.attr("class", "slices");
+	svg.append("g")
+		.attr("class", "labels");
+	svg.append("g")
+		.attr("class", "lines");
+
+	var width = 500,
+		height = 200,
+		radius = Math.min(width, height) / 2;
+
+	var pie = d3.layout.pie()
+		.sort(null)
+		.value(function(d) {
+			return 1;
+		});
+
+	var arc = d3.svg.arc()
+		.outerRadius(radius * 0.8)
+		.innerRadius(radius * 0.4);
+
+	var outerArc = d3.svg.arc()
+		.innerRadius(radius * 0.9)
+		.outerRadius(radius * 0.9);
+
+	svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+	var key = function(d){ return d.data.label; };
+
+	function phasesData (){
+		return phases.map(function(phase){
+			return { label: phase_name(phase, 1), label2: phase_name(phase, 2), value: phase.status }
+		});
+	}
+
+	function phase_name (phase, index) {
+		if (index == 1) {
+			return phase.phase_name;
+		}
+		else {
+			return phase.phase_time + "ms";
+		}
+	}
+
+	print_phases(phasesData());
+
+	function print_phases(data) {
+		/* ------- PIE SLICES -------*/
+		var slice = svg.select(".slices").selectAll("path.slice")
+			.data(pie(data), key);
+
+		slice.enter()
+			.insert("path")
+			.style("fill", function(d) {
+				if (d.data.value == 0) {
+					return "#80BA27";
+				}
+				else {
+					return "#FC4444";
+				}
+			})
+			.attr("class", "slice");
+
+		slice
+			.transition().duration(0)
+			.attrTween("d", function(d) {
+				this._current = this._current || d;
+				var interpolate = d3.interpolate(this._current, d);
+				this._current = interpolate(0);
+				return function(t) {
+					return arc(interpolate(t));
+				};
+			})
+
+		slice.exit()
+			.remove();
+
+		/* ------- TEXT LABELS -------*/
+
+		var text = svg.select(".labels").selectAll("text")
+			.data(pie(data), key);
+
+		text.enter()
+			.append("text")
+				.append("tspan")
+					.attr("dy", ".1em")
+					.text(function(d) {
+						return d.data.label;
+					})
+					.style("font-family", "Verdana")
+					.style("font-size", "10px")
+				.append("tspan")
+					.attr("dy", "1.4em")
+					.attr("dx", "-6em")
+					.text(function(d) {
+						return d.data.label2;
+					})
+					.style("font-family", "Verdana")
+					.style("font-size", "10px");
+		
+		function midAngle(d){
+			return d.startAngle + (d.endAngle - d.startAngle)/2;
+		}
+
+		text.transition().duration(0)
+			.attrTween("transform", function(d) {
+				this._current = this._current || d;
+				var interpolate = d3.interpolate(this._current, d);
+				this._current = interpolate(0);
+				return function(t) {
+					var d2 = interpolate(t);
+					var pos = outerArc.centroid(d2);
+					pos[0] = radius * (midAngle(d2) < Math.PI ? 1 : -1);
+					return "translate("+ pos +")";
+				};
+			})
+			.styleTween("text-anchor", function(d){
+				this._current = this._current || d;
+				var interpolate = d3.interpolate(this._current, d);
+				this._current = interpolate(0);
+				return function(t) {
+					var d2 = interpolate(t);
+					return midAngle(d2) < Math.PI ? "start":"end";
+				};
+			});
+
+		text.exit()
+			.remove();
+
+		/* ------- SLICE TO TEXT POLYLINES -------*/
+
+		var polyline = svg.select(".lines").selectAll("polyline")
+			.data(pie(data), key);
+		
+		polyline.enter()
+			.append("polyline");
+
+		polyline.transition().duration(0)
+			.attrTween("points", function(d){
+				this._current = this._current || d;
+				var interpolate = d3.interpolate(this._current, d);
+				this._current = interpolate(0);
+				return function(t) {
+					var d2 = interpolate(t);
+					var pos = outerArc.centroid(d2);
+					pos[0] = radius * 0.95 * (midAngle(d2) < Math.PI ? 1 : -1);
+					return [arc.centroid(d2), outerArc.centroid(d2), pos];
+				};			
+			})
+			.style("stroke", "black")
+			.style("opacity", ".3")
+			.style("stroke-width", "2px")
+			.style("fill", "none");
+		
+		polyline.exit()
+			.remove();
+	}
+}

@@ -72,6 +72,7 @@ our @EXPORT = qw(
 		get_module_name
 		get_nc_profile_name
 		get_os_id
+		get_os_name
 		get_plugin_id
 		get_profile_id
 		get_priority_name
@@ -246,6 +247,16 @@ sub get_os_id ($$) {
 	my ($dbh, $os_name) = @_;
 
 	my $rc = get_db_value ($dbh, "SELECT id_os FROM tconfig_os WHERE name = ?", $os_name);
+	return defined ($rc) ? $rc : -1;
+}
+
+########################################################################
+## Return OS name given the OS id.
+########################################################################
+sub get_os_name ($$) {
+	my ($dbh, $os_id) = @_;
+
+	my $rc = get_db_value ($dbh, "SELECT name FROM tconfig_os WHERE id_os = ?", $os_id);
 	return defined ($rc) ? $rc : -1;
 }
 

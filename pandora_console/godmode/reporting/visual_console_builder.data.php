@@ -51,7 +51,7 @@ $pure = get_parameter('pure', 0);
 switch ($action) {
 	case 'new':
 		if (!defined('METACONSOLE')) {
-			echo "<form id='back' method='post' action='index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=" . $activeTab  . "' enctype='multipart/form-data'>";
+			echo "<form id='back' method='post' action='index.php?sec=network&sec2=godmode/reporting/visual_console_builder&tab=" . $activeTab  . "' enctype='multipart/form-data'>";
 			html_print_input_hidden('action', 'save');
 		}
 		else {
@@ -63,7 +63,7 @@ switch ($action) {
 	case 'update':
 	case 'save':
 		if (!defined('METACONSOLE')) {
-			echo "<form id='back' method='post' action='index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=" . $activeTab  . "&id_visual_console=" . $idVisualConsole . "' enctype='multipart/form-data'>";
+			echo "<form id='back' method='post' action='index.php?sec=network&sec2=godmode/reporting/visual_console_builder&tab=" . $activeTab  . "&id_visual_console=" . $idVisualConsole . "' enctype='multipart/form-data'>";
 			html_print_input_hidden('action', 'update');
 		}
 		else {
@@ -74,7 +74,7 @@ switch ($action) {
 		break;
 	case 'edit':
 		if (!defined('METACONSOLE')) {
-			echo "<form id='back' method='post' action='index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=" . $activeTab  . "&id_visual_console=" . $idVisualConsole . "' enctype='multipart/form-data'>";
+			echo "<form id='back' method='post' action='index.php?sec=network&sec2=godmode/reporting/visual_console_builder&tab=" . $activeTab  . "&id_visual_console=" . $idVisualConsole . "' enctype='multipart/form-data'>";
 			html_print_input_hidden('action', 'update');
 		}
 		else {

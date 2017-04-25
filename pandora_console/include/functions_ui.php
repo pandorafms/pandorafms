@@ -3752,20 +3752,24 @@ function ui_print_module_string_value($value, $id_agente_module,
 * Displays a tag list
 */
 function ui_print_tags_view($title = '', $tags = array()) {
-	$tv = '';
-	$tv .= '<div class="tag-wrapper">';
-	if ($title !== '') $tv .= '<h3>' . $title . '</h3>';
-		foreach ($tags as $tag) {
-			$tv .= '<div class=pandora-tag>';
-				$tv .= '<span class=pandora-tag-title>';
-					$tv .= $tag['title'];
-				$tv .= '</span>';
+	if (!empty($title)){
+		$tv .= '<div class="tag-wrapper">';
+		$tv .= '<h3>' . $title . '</h3>';
+	} else {
+		$tv .= '<div class="tag-wrapper" style="padding-top: 10px">';
+	}
+	
+	foreach ($tags as $tag) {
+		$tv .= '<div class=pandora-tag>';
+			$tv .= '<span class=pandora-tag-title>';
+				$tv .= $tag['title'];
+			$tv .= '</span>';
 				
-				$tv .= '<span class=pandora-tag-value>';
-					$tv .= $tag['value'];
-				$tv .= '</span>';
-			$tv .= '</div>';
-		}
+			$tv .= '<span class=pandora-tag-value>';
+				$tv .= $tag['value'];
+			$tv .= '</span>';
+		$tv .= '</div>';
+	}
 	$tv .= '</div>';
 	echo $tv;
 }

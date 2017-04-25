@@ -17,6 +17,7 @@
 include_once($config['homedir'] . "/include/functions_agents.php");
 include_once($config['homedir'] . "/include/functions_modules.php");
 include_once($config['homedir'] . '/include/functions_users.php');
+$refr = get_parameter('refresh', 0); // By default 30 seconds
 
 function mainAgentsModules() {
 	global $config;
@@ -63,7 +64,7 @@ function mainAgentsModules() {
 	$updated_time = $updated_info;
 	
 	$modulegroup = get_parameter('modulegroup', 0);
-	$refr = get_parameter('refr', 30); // By default 30 seconds
+	$refr = get_parameter('refresh', 0); // By default 30 seconds
 	
 	$group_id = (int)get_parameter('group_id', 0);
 	$offset = (int)get_parameter('offset', 0);
@@ -97,29 +98,13 @@ function mainAgentsModules() {
 		serialize_in_temp($agents_id, $config['id_user']."_agents", 1);
 	}
 
-	$comborefr = '<form method="post" action="' . ui_get_url_refresh (array ('offset' => $offset, 'hor_offset' => $offset,'group_id' => $group_id, 'modulegroup' => $modulegroup)).'">';
-	$comborefr .= '<b>'.__('Refresh').'</b>';
-	$comborefr .= html_print_select (
-		array('30' => '30 ' . __('seconds'),
-			(string)SECONDS_1MINUTE => __('1 minute'),
-			(string)SECONDS_2MINUTES => __('2 minutes'),
-			(string)SECONDS_5MINUTES => __('5 minutes'),
-			(string)SECONDS_10MINUTES => __('10 minutes')),
-		'refr', (int)get_parameter('refr', 0),
-		$script = 'this.form.submit()', '', 0, true, false, false, '',
-		false, 'width: 100px; margin-right: 10px; margin-top: 5px;');
-	$comborefr .= "</form>";
-	
 	if ($config["pure"] == 0) {
-		$fullscreen['text'] = '<a href="index.php?extension_in_menu=estado&amp;sec=extensions&amp;sec2=extensions/agents_modules&amp;pure=1&amp;offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'">'
+		$fullscreen['text'] = '<a href="index.php?extension_in_menu=estado&amp;sec=extensions&amp;sec2=extensions/agents_modules&amp;pure=1&amp;offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'&refresh='.$refr.'">'
 			. html_print_image ("images/full_screen.png", true, array ("title" => __('Full screen mode')))
 			. "</a>";
 	}
 	else {
-		$fullscreen['text'] = '<a href="index.php?extension_in_menu=estado&amp;sec=extensions&amp;sec2=extensions/agents_modules&amp;refr=0&amp;offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'">'
-			. html_print_image ("images/normal_screen.png", true, array ("title" => __('Back to normal mode')))
-			. "</a>";
-		$config['refr'] = $refr;
+		
 	}
 
 	$groups = users_get_groups ();
@@ -168,26 +153,57 @@ function mainAgentsModules() {
 		'combo_module_groups' => $filter_module_groups,
 		'combo_groups' => $filter_groups);
 	
-	if ($config['pure'] == 1) {
-		$onheader['combo_refr'] = $comborefr;
-	}
-	
-	// Header
-	ui_print_page_header (__("Agents/Modules"), "images/module_mc.png", false, "", false, $updated_time);
-	
 	// Old style table, we need a lot of special formatting,don't use table function
 	// Prepare old-style table
-	echo '<table style="width:100%;">';
-	echo "<tr>";
-		if ($config['pure'] == 1){ 
-			echo "<td>" . $comborefr  . "</td>";
-			echo "<td>"  . $fullscreen['text'] . "</td>";
-		}
-		else{
-			echo "<td> <span style='float: right;'>" . $fullscreen['text'] . "</span> </td>";
-		}
-	echo "</tr>";
-	echo "</table>";
+	if ($config['pure'] == 0){ 
+		// Header
+		ui_print_page_header (__("Agents/Modules"), "images/module_mc.png", false, "", false, $updated_time);
+		echo '<table style="width:100%;">';
+		echo "<tr>";
+		echo "<td> <span style='float: right;'>" . $fullscreen['text'] . "</span> </td>";
+		echo "</tr>";
+		echo "</table>";
+	} else {
+		$url =" index.php?sec=view&sec2=extensions/agents_modules&amp;pure=0&amp;offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'&refresh=$refr";
+		// Floating menu - Start
+		echo '<div id="vc-controls" style="z-index: 999">';
+
+		echo '<div id="menu_tab">';
+		echo '<ul class="mn">';
+
+		// Quit fullscreen
+		echo '<li class="nomn">';
+		echo '<a target="_top" href="' . $url . '">';
+		echo html_print_image('images/normal_screen.png', true, array('title' => __('Back to normal mode')));
+		echo '</a>';
+		echo '</li>';
+
+		// Countdown
+		echo '<li class="nomn">';
+		echo '<div class="vc-refr">';
+		echo '<div class="vc-countdown"></div>';
+		echo '<div id="vc-refr-form">';
+		echo __('Refresh') . ':';
+		echo html_print_select(get_refresh_time_array(), 'refresh', $refr, '', '', 0, true, false, false);
+		echo '</div>';
+		echo '</div>';
+		echo '</li>';
+
+		// Console name
+		echo '<li class="nomn">';
+		echo '<div class="vc-title">' . __('Agent/module view') . '</div>';
+		echo '</li>';
+
+		echo '</ul>';
+		echo '</div>';
+
+		echo '</div>';
+		// Floating menu - End
+		
+		ui_require_jquery_file('countdown');
+		ui_require_css_file('countdown');
+	}
+	
 	
 	if($config['pure'] != 1){
 		echo '<form method="post" action="' . ui_get_url_refresh (array ('offset' => $offset, 'hor_offset' => $offset,'group_id' => $group_id, 'modulegroup' => $modulegroup)).'">';
@@ -300,7 +316,7 @@ function mainAgentsModules() {
 	
 	$agents = agents_get_agents ($filter_groups);
 	$nagents = count($agents);
-	
+
 	if ($all_modules == false || $agents == false) {
 		ui_print_info_message ( array('no_close'=>true, 'message'=> __('There are no agents with modules') ) );
 		return;
@@ -481,7 +497,7 @@ function mainAgentsModules() {
 		
 		echo "</tr>";
 	}
-	
+
 	echo "</table>";
 	
 	echo "<div class='legend_basic' style='width: 96%'>";
@@ -538,9 +554,50 @@ function mainAgentsModules() {
 extensions_add_operation_menu_option(__("Agents/Modules view"), 'estado', 'agents_modules/icon_menu.png', "v1r1","view");
 extensions_add_main_function('mainAgentsModules');
 
+$ignored_params['refresh']='';
+
 ?>
 <script type="text/javascript">
 	$(document).ready (function () {
+		var refr = <?php echo (int)$refr; ?>;
+		var pure = <?php echo (int) $config['pure']; ?>;
+		var href = "<?php echo ui_get_url_refresh ($ignored_params); ?>";
+		if (pure) {
+			var startCountDown = function (duration, cb) {
+				$('div.vc-countdown').countdown('destroy');
+				if (!duration) return;
+				var t = new Date();
+				t.setTime(t.getTime() + duration * 1000);
+				$('div.vc-countdown').countdown({
+					until: t,
+					format: 'MS',
+					layout: '(%M%nn%M:%S%nn%S <?php echo __('Until refresh'); ?>) ',
+					alwaysExpire: true,
+					onExpiry: function () {
+						$('div.vc-countdown').countdown('destroy');
+						url = js_html_entity_decode( href ) + duration;
+						$(document).attr ("location", url);
+					}
+				});
+			}
+			
+			startCountDown(refr, false);
+			//~ // Auto hide controls
+			var controls = document.getElementById('vc-controls');
+			autoHideElement(controls, 1000);
+			
+			$('select#refresh').change(function (event) {
+				refr = Number.parseInt(event.target.value, 10);
+				startCountDown(refr, false);
+			});
+		}
+		else {
+			
+			$('#refresh').change(function () {
+				$('#hidden-vc_refr').val($('#refresh option:selected').val());
+			});
+		}
+		
 		$("#group_id").change (function () {
 			jQuery.post ("ajax.php",
 				{"page" : "operation/agentes/ver_agente",

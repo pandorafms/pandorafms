@@ -232,6 +232,7 @@ $time_from = (string)get_parameter('time_from', '');
 $time_to = (string)get_parameter('time_to', '');
 $server_id = (int)get_parameter('server_id', 0);
 $text_agent = (string) get_parameter("text_agent");
+$refr = (int) get_parameter ('refresh');
 
 if ($id_agent != 0) {
 	$text_agent = agents_get_alias($id_agent);
@@ -286,7 +287,7 @@ $params = "search=" . rawurlencode(io_safe_input($search)) .
 	"&amp;status=" . $status . 
 	"&amp;id_group=" . $id_group . 
 	"&amp;recursion=" . $recursion . 
-	"&amp;refr=" . (int)get_parameter("refr", 0) . 
+	"&amp;refresh=" . (int)get_parameter("refresh", 0) . 
 	"&amp;id_agent=" . $id_agent . 
 	"&amp;id_agent_module=" . $id_agent_module . 
 	"&amp;pagination=" . $pagination . 
@@ -306,8 +307,7 @@ $params = "search=" . rawurlencode(io_safe_input($search)) .
 	"&amp;date_from=" . $date_from .
 	"&amp;date_to=" . $date_to .
 	"&amp;time_from=" . $time_from .
-	"&amp;time_to=" . $time_to .
-	"&amp;pure=" . $config["pure"];
+	"&amp;time_to=" . $time_to;
 
 if ($meta) {
 	$params .= "&amp;text_agent=" . $text_agent;
@@ -443,15 +443,43 @@ if ($config["pure"] == 0 || $meta) {
 }
 else {
 	// Fullscreen
-	echo "<h2>" . __('Events') . " &raquo; " . __('Main event view') . "&nbsp;";
-	echo ui_print_help_icon ("eventview", true);
-	echo "&nbsp;";
-	
+	// Floating menu - Start
+	echo '<div id="vc-controls" style="z-index: 999">';
+
+	echo '<div id="menu_tab">';
+	echo '<ul class="mn">';
+
+	// Quit fullscreen
+	echo '<li class="nomn">';
 	echo '<a target="_top" href="' . $url . '&amp;pure=0">';
-	html_print_image ("images/normalscreen.png", false,
-		array("title" => __('Back to normal mode')));
+	echo html_print_image('images/normal_screen.png', true, array('title' => __('Back to normal mode')));
 	echo '</a>';
-	echo "</h2>";
+	echo '</li>';
+
+	// Countdown
+	echo '<li class="nomn">';
+	echo '<div class="vc-refr">';
+	echo '<div class="vc-countdown"></div>';
+	echo '<div id="vc-refr-form">';
+	echo __('Refresh') . ':';
+	echo html_print_select(get_refresh_time_array(), 'refresh', $refr, '', '', 0, true, false, false);
+	echo '</div>';
+	echo '</div>';
+	echo '</li>';
+
+	// Console name
+	echo '<li class="nomn">';
+	echo '<div class="vc-title">' . __('Event viewer') . '</div>';
+	echo '</li>';
+
+	echo '</ul>';
+	echo '</div>';
+
+	echo '</div>';
+	// Floating menu - End
+	
+	ui_require_jquery_file('countdown');
+	ui_require_css_file('countdown');
 }
 
 // Error div for ajax messages
@@ -525,11 +553,58 @@ echo "<div id='event_response_window'></div>";
 ui_require_jquery_file ('bgiframe');
 ui_require_javascript_file('pandora_events');
 enterprise_hook('close_meta_frame');
+ui_require_javascript_file('wz_jsgraphics');
+ui_require_javascript_file('pandora_visual_console');
+
+$ignored_params['refresh']='';
 ?>
 <script language="javascript" type="text/javascript">
 /* <![CDATA[ */
 
 $(document).ready( function() {
+	
+	var refr = <?php echo (int)$refr; ?>;
+	var pure = <?php echo (int) $config['pure']; ?>;
+	var href = "<?php echo ui_get_url_refresh ($ignored_params); ?>";
+	// alert($(location).attr('href'));
+	if (pure) {
+		var startCountDown = function (duration, cb) {
+			$('div.vc-countdown').countdown('destroy');
+			if (!duration) return;
+			var t = new Date();
+			t.setTime(t.getTime() + duration * 1000);
+			$('div.vc-countdown').countdown({
+				until: t,
+				format: 'MS',
+				layout: '(%M%nn%M:%S%nn%S <?php echo __('Until refresh'); ?>) ',
+				alwaysExpire: true,
+				onExpiry: function () {
+					$('div.vc-countdown').countdown('destroy');
+					//cb();
+					
+					url = js_html_entity_decode( href ) + duration;
+					$(document).attr ("location", url);
+					
+				}
+			});
+		}
+		
+		startCountDown(refr, false);
+		//~ // Auto hide controls
+		var controls = document.getElementById('vc-controls');
+		autoHideElement(controls, 1000);
+		
+		$('select#refresh').change(function (event) {
+			refr = Number.parseInt(event.target.value, 10);
+			startCountDown(refr, false);
+		});
+	}
+	else {
+		
+		$('#refresh').change(function () {
+			$('#hidden-vc_refr').val($('#refresh option:selected').val());
+		});
+	}
 	
 	$("input[name=all_validate_box]").change (function() {
 		if ($(this).is(":checked")) {

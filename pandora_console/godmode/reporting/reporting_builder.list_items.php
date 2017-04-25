@@ -38,6 +38,9 @@ switch ($config['dbtype']) {
 		break;
 }
 
+$report_w = check_acl ($config['id_user'], 0, "RW");
+$report_m = check_acl ($config['id_user'], 0, "RM");
+
 if ($config ['metaconsole'] == 1 and defined('METACONSOLE')) {
 	$agents = array();
 	$agents = metaconsole_get_report_agents($idReport);
@@ -303,10 +306,14 @@ if ($items) {
 	$table->head[5] = __('Name') . " / " . __('Description');
 	if (check_acl ($config['id_user'], 0, "RM")) {
 		$table->head[6] = '<span title="' . __('Options') . '">' . __('Op.') . '</span>';
+		if ($report_w || $report_m) {
+			$table->head[6] .= html_print_checkbox('all_delete', 0, false, true, false,
+				'check_all_checkboxes();');
+		}
 	}
 	$table->head[7] = __('Sort');
 	
-	$table->align[6] = 'center';
+	$table->align[6] = 'left';
 	$table->align[7] = 'center';
 }
 else {
@@ -544,6 +551,16 @@ echo "</form>";
 
 ?>
 <script type="text/javascript">
+
+function check_all_checkboxes() {
+	if ($("input[name=all_delete]").prop("checked")) {
+		$(".check_delete").prop("checked", true);
+	}
+	else {
+		$(".check_delete").prop("checked", false);
+	}
+}
+
 function toggleFormFilter() {
 	if ($("#form_filter").css('display') == 'none') {
 		$("#image_form_filter").attr('src', <?php echo "'" . html_print_image('images/up.png', true, false, true) . "'"; ?> );

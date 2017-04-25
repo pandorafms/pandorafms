@@ -1332,7 +1332,7 @@ function print_phases_donut (recipient, phases) {
 	var svg = d3.select(recipient)
 		.append("svg")
 			.attr("width", 500)
-			.attr("height", 200)
+			.attr("height", 300)
 		.append("g");
 
 	svg.append("g")
@@ -1343,13 +1343,13 @@ function print_phases_donut (recipient, phases) {
 		.attr("class", "lines");
 
 	var width = 500,
-		height = 200,
+		height = 300,
 		radius = Math.min(width, height) / 2;
 
 	var pie = d3.layout.pie()
 		.sort(null)
 		.value(function(d) {
-			return 1;
+			return parseFloat(d.label2);
 		});
 
 	var arc = d3.svg.arc()
@@ -1375,7 +1375,7 @@ function print_phases_donut (recipient, phases) {
 			return phase.phase_name;
 		}
 		else {
-			return phase.phase_time + "ms";
+			return phase.phase_time;
 		}
 	}
 
@@ -1429,7 +1429,7 @@ function print_phases_donut (recipient, phases) {
 					.attr("dy", "1.4em")
 					.attr("dx", "-6em")
 					.text(function(d) {
-						return d.data.label2;
+						return d.data.label2 + "ms";
 					})
 					.style("font-family", "Verdana")
 					.style("font-size", "10px");

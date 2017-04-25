@@ -1407,7 +1407,7 @@ function print_phases_donut (recipient, phases) {
 				return function(t) {
 					return arc(interpolate(t));
 				};
-			})
+			});
 
 		slice.exit()
 			.remove();

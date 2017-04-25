@@ -10,4 +10,6 @@ CREATE TABLE IF NOT EXISTS `treset_pass` (
     PRIMARY KEY (`id`) 
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+UPDATE tgis_map_connection SET conection_data = '{"type":"OSM","url":"http://tile.openstreetmap.org/${z}/${x}/${y}.png"}' where id_tmap_connection = 1;
+
 COMMIT;

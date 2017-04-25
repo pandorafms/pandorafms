@@ -73,154 +73,156 @@ else {
 		'nombre', 'web_content_string');
 	
 	foreach ($modules as $module) {
-		$module["datos"] =
-			modules_get_last_value($module['id_agente_modulo']);
-		$module["module_name"] = $module['nombre'];
-		
-		//To search the monitor status
-		$status_sql = sprintf('SELECT estado from tagente_estado where id_agente_modulo =' . $module['id_agente_modulo']);
-		$status_sql = db_process_sql($status_sql);
-		$status_sql = $status_sql[0];
-		//To search the monitor utimestamp
-		$utimestamp_sql = sprintf('SELECT utimestamp from tagente_estado where id_agente_modulo =' . $module['id_agente_modulo']);
-		$utimestamp_sql = db_process_sql($utimestamp_sql);
-		$utimestamp_sql = $utimestamp_sql[0];
-		
-		
-		$agent = db_get_row ('tagente', 'id_agente', $module['id_agente']);
-		$agentCell = '<a title='.$module['agent_name'].' href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $module['id_agente'] . '">' .
-			$agent['alias'] . '</a>';
-		
-		$typeCell = ui_print_moduletype_icon($module["id_tipo_modulo"], true);
-		
-		$intervalCell = modules_get_interval ($module['id_agente_modulo']);
-		
-		if ($utimestamp_sql['utimestamp'] == 0 &&
-			(
-				($module['id_tipo_modulo'] < 21 || $module['id_tipo_modulo'] > 23) &&
-				$module['id_tipo_modulo'] != 100)
-			) {
-			$statusCell = ui_print_status_image(STATUS_MODULE_NO_DATA,
-				__('NOT INIT'), true);
-		}
-		elseif ($status_sql['estado'] == 0) {
-			$statusCell = ui_print_status_image(STATUS_MODULE_OK,
-				__('NORMAL') . ": " . modules_get_last_value($module["id_agente_modulo"]), true);
-		}
-		elseif ($status_sql['estado'] == 1) {
-			$statusCell = ui_print_status_image(STATUS_MODULE_CRITICAL,
-				__('CRITICAL') . ": " . modules_get_last_value($module["id_agente_modulo"]), true);
-		}
-		elseif ($status_sql['estado'] == 2) {
-			$statusCell = ui_print_status_image(STATUS_MODULE_WARNING,
-				__('WARNING') . ": " . modules_get_last_value($module["id_agente_modulo"]), true);
-		}
-		else {
-			$last_status = modules_get_agentmodule_last_status($module['id_agente_modulo']);
-			switch($last_status) {
-				case 0:
-					$statusCell = ui_print_status_image(
-						STATUS_MODULE_OK,
-						__('UNKNOWN') . " - " . __('Last status') .
-						" " . __('NORMAL') .": " . modules_get_last_value($module["id_agente_modulo"]),
-						true);
-					break;
-				case 1:
-					$statusCell = ui_print_status_image(
-						STATUS_MODULE_CRITICAL,
-						__('UNKNOWN') . " - " . __('Last status') .
-						" " . __('CRITICAL') . ": " . modules_get_last_value($module["id_agente_modulo"]),
-						true);
-					break;
-				case 2:
-					$statusCell = ui_print_status_image(
-						STATUS_MODULE_WARNING,
-						__('UNKNOWN') . " - " . __('Last status') .
-						" " . __('WARNING') . ": " . modules_get_last_value($module["id_agente_modulo"]),
-						true);
-					break;
+		if(!$module['disabled']){
+			$module["datos"] =
+				modules_get_last_value($module['id_agente_modulo']);
+			$module["module_name"] = $module['nombre'];
+			
+			//To search the monitor status
+			$status_sql = sprintf('SELECT estado from tagente_estado where id_agente_modulo =' . $module['id_agente_modulo']);
+			$status_sql = db_process_sql($status_sql);
+			$status_sql = $status_sql[0];
+			//To search the monitor utimestamp
+			$utimestamp_sql = sprintf('SELECT utimestamp from tagente_estado where id_agente_modulo =' . $module['id_agente_modulo']);
+			$utimestamp_sql = db_process_sql($utimestamp_sql);
+			$utimestamp_sql = $utimestamp_sql[0];
+			
+			
+			$agent = db_get_row ('tagente', 'id_agente', $module['id_agente']);
+			$agentCell = '<a title='.$module['agent_name'].' href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $module['id_agente'] . '">' .
+				$agent['alias'] . '</a>';
+			
+			$typeCell = ui_print_moduletype_icon($module["id_tipo_modulo"], true);
+			
+			$intervalCell = modules_get_interval ($module['id_agente_modulo']);
+			
+			if ($utimestamp_sql['utimestamp'] == 0 &&
+				(
+					($module['id_tipo_modulo'] < 21 || $module['id_tipo_modulo'] > 23) &&
+					$module['id_tipo_modulo'] != 100)
+				) {
+				$statusCell = ui_print_status_image(STATUS_MODULE_NO_DATA,
+					__('NOT INIT'), true);
 			}
-		}
-		
-		$graphCell = "";
-		if ($module['history_data'] == 1) {
+			elseif ($status_sql['estado'] == 0) {
+				$statusCell = ui_print_status_image(STATUS_MODULE_OK,
+					__('NORMAL') . ": " . modules_get_last_value($module["id_agente_modulo"]), true);
+			}
+			elseif ($status_sql['estado'] == 1) {
+				$statusCell = ui_print_status_image(STATUS_MODULE_CRITICAL,
+					__('CRITICAL') . ": " . modules_get_last_value($module["id_agente_modulo"]), true);
+			}
+			elseif ($status_sql['estado'] == 2) {
+				$statusCell = ui_print_status_image(STATUS_MODULE_WARNING,
+					__('WARNING') . ": " . modules_get_last_value($module["id_agente_modulo"]), true);
+			}
+			else {
+				$last_status = modules_get_agentmodule_last_status($module['id_agente_modulo']);
+				switch($last_status) {
+					case 0:
+						$statusCell = ui_print_status_image(
+							STATUS_MODULE_OK,
+							__('UNKNOWN') . " - " . __('Last status') .
+							" " . __('NORMAL') .": " . modules_get_last_value($module["id_agente_modulo"]),
+							true);
+						break;
+					case 1:
+						$statusCell = ui_print_status_image(
+							STATUS_MODULE_CRITICAL,
+							__('UNKNOWN') . " - " . __('Last status') .
+							" " . __('CRITICAL') . ": " . modules_get_last_value($module["id_agente_modulo"]),
+							true);
+						break;
+					case 2:
+						$statusCell = ui_print_status_image(
+							STATUS_MODULE_WARNING,
+							__('UNKNOWN') . " - " . __('Last status') .
+							" " . __('WARNING') . ": " . modules_get_last_value($module["id_agente_modulo"]),
+							true);
+						break;
+				}
+			}
 			
-			$graph_type = return_graphtype ($module["id_tipo_modulo"]);
+			$graphCell = "";
+			if ($module['history_data'] == 1) {
+				
+				$graph_type = return_graphtype ($module["id_tipo_modulo"]);
+				
+				$name_module_type = modules_get_moduletype_name ($module["id_tipo_modulo"]);
+				$handle = "stat" . $name_module_type . "_" . $module["id_agente_modulo"];
+				$url = 'include/procesos.php?agente=' . $module["id_agente_modulo"];
+				$win_handle = dechex(crc32($module["id_agente_modulo"] . $module["module_name"]));
+				
+				$link ="winopeng('" .
+					"operation/agentes/stat_win.php?" .
+					"type=$graph_type&" .
+					"period=" . SECONDS_1DAY . "&" .
+					"id=" . $module["id_agente_modulo"] . "&" .
+					"label=" . rawurlencode(
+						urlencode(
+							base64_encode($module["module_name"]))) . "&" .
+					"refresh=" . SECONDS_10MINUTES . "', " .
+					"'day_" . $win_handle . "')";
+				
+				$graphCell = '<a href="javascript:'.$link.'">' . html_print_image("images/chart_curve.png", true, array("border" => 0, "alt" => "")) . '</a>';
+				$graphCell .= "&nbsp;" .
+					"<a href='index.php?" .
+					"sec=estado&amp;" .
+					"sec2=operation/agentes/ver_agente&amp;" .
+					"id_agente=" . $module["id_agente"] . "&amp;" .
+					"tab=data_view&" .
+					"period=" . SECONDS_1DAY . "&amp;" .
+					"id=" . $module["id_agente_modulo"] . "'>" .
+					html_print_image('images/binary.png', true,
+						array("border" => "0", "alt" => "")) . "</a>";
+			}
 			
-			$name_module_type = modules_get_moduletype_name ($module["id_tipo_modulo"]);
-			$handle = "stat" . $name_module_type . "_" . $module["id_agente_modulo"];
-			$url = 'include/procesos.php?agente=' . $module["id_agente_modulo"];
-			$win_handle = dechex(crc32($module["id_agente_modulo"] . $module["module_name"]));
+			if (is_numeric(modules_get_last_value($module["id_agente_modulo"]))) {
+				$dataCell = format_numeric(modules_get_last_value($module["id_agente_modulo"]));
+			}
+			else {
+				$dataCell = ui_print_module_string_value(
+					$module["datos"], $module["id_agente_modulo"],
+					$module["current_interval"]);
+			}
 			
-			$link ="winopeng('" .
-				"operation/agentes/stat_win.php?" .
-				"type=$graph_type&" .
-				"period=" . SECONDS_1DAY . "&" .
-				"id=" . $module["id_agente_modulo"] . "&" .
-				"label=" . rawurlencode(
-					urlencode(
-						base64_encode($module["module_name"]))) . "&" .
-				"refresh=" . SECONDS_10MINUTES . "', " .
-				"'day_" . $win_handle . "')";
+			if ($module['estado'] == 3) {
+				$option = array ("html_attr" => 'class="redb"');
+			}
+			else {
+				$option = array ();
+			}
+			$timestampCell = ui_print_timestamp ($utimestamp_sql["utimestamp"], true, $option);
 			
-			$graphCell = '<a href="javascript:'.$link.'">' . html_print_image("images/chart_curve.png", true, array("border" => 0, "alt" => "")) . '</a>';
-			$graphCell .= "&nbsp;" .
-				"<a href='index.php?" .
-				"sec=estado&amp;" .
-				"sec2=operation/agentes/ver_agente&amp;" .
-				"id_agente=" . $module["id_agente"] . "&amp;" .
-				"tab=data_view&" .
-				"period=" . SECONDS_1DAY . "&amp;" .
-				"id=" . $module["id_agente_modulo"] . "'>" .
-				html_print_image('images/binary.png', true,
-					array("border" => "0", "alt" => "")) . "</a>";
-		}
-		
-		if (is_numeric(modules_get_last_value($module["id_agente_modulo"]))) {
-			$dataCell = format_numeric(modules_get_last_value($module["id_agente_modulo"]));
-		}
-		else {
-			$dataCell = ui_print_module_string_value(
-				$module["datos"], $module["id_agente_modulo"],
-				$module["current_interval"]);
-		}
-		
-		if ($module['estado'] == 3) {
-			$option = array ("html_attr" => 'class="redb"');
-		}
-		else {
-			$option = array ();
-		}
-		$timestampCell = ui_print_timestamp ($utimestamp_sql["utimestamp"], true, $option);
-		
-		
-		$group_agent = agents_get_agent_group($module['id_agente']);
-		
-		if (check_acl ($config['id_user'], $group_agent, "AW")) {
-			$edit_module = 'aaa';
 			
-			$url_edit = "index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente="
-				. $module['id_agente'] . "&tab=module&id_agent_module=" . 
-				$module["id_agente_modulo"] . "&edit_module=1";
+			$group_agent = agents_get_agent_group($module['id_agente']);
 			
-			$edit_module = '<a href="' . $url_edit . '">' .
-				html_print_image("images/config.png", true) . '</a>';
+			if (check_acl ($config['id_user'], $group_agent, "AW")) {
+				$edit_module = 'aaa';
+				
+				$url_edit = "index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente="
+					. $module['id_agente'] . "&tab=module&id_agent_module=" . 
+					$module["id_agente_modulo"] . "&edit_module=1";
+				
+				$edit_module = '<a href="' . $url_edit . '">' .
+					html_print_image("images/config.png", true) . '</a>';
+			}
+			else {
+				$edit_module = '';
+			}
+			
+			
+			array_push($table->data, array(
+				$module['module_name'],
+				$agentCell,
+				$typeCell,
+				$intervalCell,
+				$statusCell,
+				$graphCell,
+				$dataCell,
+				$timestampCell,
+				$edit_module));
 		}
-		else {
-			$edit_module = '';
-		}
-		
-		
-		array_push($table->data, array(
-			$module['module_name'],
-			$agentCell,
-			$typeCell,
-			$intervalCell,
-			$statusCell,
-			$graphCell,
-			$dataCell,
-			$timestampCell,
-			$edit_module));
 	}
 	
 	echo "<br />";

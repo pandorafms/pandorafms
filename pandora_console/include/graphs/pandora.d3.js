@@ -1413,7 +1413,6 @@ function print_phases_donut (recipient, phases) {
 			.remove();
 
 		/* ------- TEXT LABELS -------*/
-
 		var text = svg.select(".labels").selectAll("text")
 			.data(pie(data), key);
 
@@ -1465,7 +1464,6 @@ function print_phases_donut (recipient, phases) {
 			.remove();
 
 		/* ------- SLICE TO TEXT POLYLINES -------*/
-
 		var polyline = svg.select(".lines").selectAll("polyline")
 			.data(pie(data), key);
 		

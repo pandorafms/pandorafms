@@ -1200,7 +1200,7 @@ sub cli_create_data_module($) {
 		open (FILE, $definition_file);
 		while (<FILE>) {
 			chomp;
-			my ($key, $val) = split / /;
+			my ($key, $val) = split / /,2;
 			if ($key eq 'module_name') {
 				$module_name_def =  $val;
 			}

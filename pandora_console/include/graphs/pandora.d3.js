@@ -1331,7 +1331,7 @@ function Gauge(placeholderName, configuration, font)
 function print_phases_donut (recipient, phases) {
 	var svg = d3.select(recipient)
 		.append("svg")
-			.attr("width", 500)
+			.attr("width", 600)
 			.attr("height", 300)
 		.append("g");
 
@@ -1342,7 +1342,7 @@ function print_phases_donut (recipient, phases) {
 	svg.append("g")
 		.attr("class", "lines");
 
-	var width = 500,
+	var width = 550,
 		height = 300,
 		radius = Math.min(width, height) / 2;
 

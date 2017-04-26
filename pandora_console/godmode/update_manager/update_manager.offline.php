@@ -54,6 +54,7 @@ $baseurl = ui_get_full_url(false, false, false, false);
 	var package_success = "<?php echo __('Package updated successfully'); ?>\n";
 	var package_error = "<?php echo __('Error in package updated'); ?>\n";
 	var bad_mr_file = "<?php echo __('Database MR version is inconsistent, do you want to apply the package?'); ?>\n";
+	var mr_available_header = "<?php echo __('There are db changes'); ?>\n";
 	var text1_mr_file = "<?php echo __('There are a new database changes available to apply. Do you want to start the DB update process?'); ?>\n";
 	var text2_mr_file = "<?php echo __('We recommend launch a '); ?>\n";
 	var text3_mr_file = "<?php echo __('planned downtime'); ?>\n";
@@ -61,6 +62,10 @@ $baseurl = ui_get_full_url(false, false, false, false);
 	var text1_package_file = "<?php echo __('There is a new update available'); ?>\n";
 	var text2_package_file = "<?php echo __('There is a new update available to apply. Do you want to start the update process?'); ?>\n";
 	var applying_mr = "<?php echo __('Applying DB MR'); ?>\n";
+	var cancel_button = "<?php echo __('Cancel'); ?>\n";
+	var ok_button = "<?php echo __('Ok'); ?>\n";
+	var apply_mr_button = "<?php echo __('Apply MR'); ?>\n";
+	var apply_button = "<?php echo __('Apply'); ?>\n";
 </script>
 
 <form id="form-offline_update" method="post" enctype="multipart/form-data" class="fileupload_form">

@@ -1095,7 +1095,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		my $url ||= $pa_config->{"console_api_url"};
 		
 		my $params = {};
-		$params->{"apipass"} ||= $pa_config->{"console_api_pass"};
+		$params->{"apipass"} = $pa_config->{"console_api_pass"};
 		$params->{"user"} ||= $pa_config->{"console_user"};
 		$params->{"pass"} ||= $pa_config->{"console_pass"};
 		$params->{"op"} = "get";
@@ -1135,10 +1135,10 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		
 		# Check if message has non-ascii chars.
 		# non-ascii chars should be encoded in UTF-8.
-		#if ($field3 =~ /[^[:ascii:]]/o) {
-		#	$field3 = encode("UTF-8", $field3);
-		#	$content_type = 'text/plain; charset="UTF-8"';
-		#}
+		if ($field3 =~ /[^[:ascii:]]/o) {
+			$field3 = encode("UTF-8", $field3);
+			$content_type = 'text/html; charset="UTF-8"';
+		}
 		
 		# Build the mail with attached content
 		if (keys(%{$module_graph_list}) > 0) {

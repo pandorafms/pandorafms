@@ -1068,6 +1068,8 @@ function ui_print_alert_template_example ($id_alert_template, $return = false, $
  * @return string The help tip
  */
 function ui_print_help_icon ($help_id, $return = false, $home_url = '', $image = "images/help.png") {
+	global $config;
+
 	if (empty($home_url))
 		$home_url = "";
 	
@@ -1078,7 +1080,7 @@ function ui_print_help_icon ($help_id, $return = false, $home_url = '', $image =
 	$output = html_print_image ($image, true,
 		array ("class" => "img_help",
 			"title" => __('Help'),
-			"onclick" => "open_help ('" . $help_id . "','" . $home_url . "')"));
+			"onclick" => "open_help ('" . $help_id . "','" . $home_url . "','" . $config['id_user'] . "')"));
 	if (!$return)
 		echo $output;
 	

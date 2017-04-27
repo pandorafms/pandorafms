@@ -281,6 +281,10 @@ $(document).ready (function () {
 			}
 			
 	});
+	
+	//Preload image size and activate auto image size changer when user click over a image in the selector
+	
+	var size_changer_state = false;
 
 	$("#background").change(function() {
 		$('#imagen2').attr('src','images/console/background/'+$('#background').val());
@@ -288,12 +292,18 @@ $(document).ready (function () {
 		$('#imagen2').show();		
 	});
 	
-	$("#background").mouseout(function() {		
-		$('#imagen').attr('src','images/console/background/'+$('#background').val());
-		$('input[name=width]').val($('#imagen').width());
-		$('input[name=height]').val($('#imagen').height());
-		$('#preimagew').html($('#imagen').width());
-		$('#preimageh').html($('#imagen').height());
+	$("#background").click(function(){
+			size_changer_state = true;
+	});
+	
+	$("#background").mouseout(function() {
+		if(size_changer_state){
+			$('#imagen').attr('src','images/console/background/'+$('#background').val());
+			$('input[name=width]').val($('#imagen').width());
+			$('input[name=height]').val($('#imagen').height());
+			$('#preimagew').html($('#imagen').width());
+			$('#preimageh').html($('#imagen').height());
+		}		
 	});
 
 	$("#file-background_image").change(function(){

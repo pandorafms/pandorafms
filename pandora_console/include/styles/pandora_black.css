@@ -2770,6 +2770,14 @@ div#agent_wizard_subtabs {
 	text-decoration: underline;
 }
 
+#code_license_dialog a:hover {
+	color:red;
+}
+
+#code_license_dialog *{
+	color: #222222;
+}
+
 /* GRAPHS CSS */
 
 .parent_graph {

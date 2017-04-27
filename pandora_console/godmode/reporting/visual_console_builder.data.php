@@ -198,7 +198,7 @@ echo "</form>";
 
 <script src="include/javascript/jquery.colorpicker.js"></script>
 
-<script>
+<script type="text/javascript">
 
 $(document).ready (function () {
 		
@@ -258,6 +258,29 @@ $(document).ready (function () {
 		}
 		
 	}
+	else{
+		original_image=new Image();
+		original_image.src='images/console/background/'+$('#background').val();
+		if (parseInt(original_image.width) < 1024){
+			alert('Default width is '+original_image.width+'px, smaller than minimum -> 1024px');
+			$('input[name=width]').val('1024');
+			$('#preimagew').html(1024);			
+		}
+		else{
+			$('input[name=width]').val(original_image.height);
+			$('#preimagew').html(original_image.height);			
+		}
+		if (parseInt(original_image.height) < 768){
+			alert('Default height is '+original_image.height+'px, smaller than minimum -> 768px');	
+			$('input[name=height]').val('768');
+			$('#preimageh').html(768);
+		}
+		else{
+			$('input[name=height]').val(original_image.height);
+			$('#preimageh').html(original_image.height);
+		}
+		
+	}
 		
 	});
 	
@@ -293,7 +316,9 @@ $(document).ready (function () {
 	});
 	
 	$("#background").click(function(){
+		if('<?php echo (get_parameter('action')=='edit'); ?>' == false){
 			size_changer_state = true;
+			}
 	});
 	
 	$("#background").mouseout(function() {
@@ -303,6 +328,7 @@ $(document).ready (function () {
 			$('input[name=height]').val($('#imagen').height());
 			$('#preimagew').html($('#imagen').width());
 			$('#preimageh').html($('#imagen').height());
+			size_changer_state = false;
 		}		
 	});
 

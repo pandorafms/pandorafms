@@ -375,7 +375,7 @@ sub pandora_purgedb ($$) {
 	
 	
 	# Delete old netflow data
-	if ($conf->{'_netflow_max_lifetime'} > 0) {
+	if (defined ($conf->{'_netflow_max_lifetime'}) && $conf->{'_netflow_max_lifetime'} > 0) {
 		log_message ('PURGE', "Deleting old netflow data.");
 		if (! defined ($conf->{'_netflow_path'}) || ! -d $conf->{'_netflow_path'}) {
 			log_message ('!', "Netflow data directory does not exist, skipping.");
@@ -1038,8 +1038,10 @@ else {
 
 # Connect to the DB
 my $dbh = db_connect ($conf{'dbengine'}, $conf{'dbname'}, $conf{'dbhost'}, $conf{'dbport'}, $conf{'dbuser'}, $conf{'dbpass'});
-my $history_dbh = ($conf{'_history_db_enabled'} eq '1') ? db_connect ($conf{'dbengine'}, $conf{'_history_db_name'},
+if (defined($conf{'_history_db_enabled'})) {
+	my $history_dbh = ($conf{'_history_db_enabled'} eq '1') ? db_connect ($conf{'dbengine'}, $conf{'_history_db_name'},
 		$conf{'_history_db_host'}, $conf{'_history_db_port'}, $conf{'_history_db_user'}, $conf{'_history_db_pass'}) : undef;
+}
 
 # Get a lock
 my $lock = db_get_lock ($dbh, 'pandora_db');

@@ -197,13 +197,16 @@ if (($create_group) && (check_acl($config['id_user'], 0, "PM"))) {
 				'parent' => $id_parent,
 				'disabled' => $alerts_disabled,
 				'custom_id' => $custom_id,
-				'id_skin' => $skin,
 				'description' => $description,
 				'contact' => $contact,
 				'propagate' => $propagate,
-				'other' => $other,
-				'password' => io_safe_input($group_pass)
+				'other' => $other
 			);
+			
+			if(enterprise_installed()){
+				$values['id_skin'] = $skin;
+				$values['password'] = io_safe_input($group_pass);
+			}
 		
 			$result = db_process_sql_insert('tgrupo', $values);
 			if ($result) {

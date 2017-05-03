@@ -434,7 +434,7 @@ if (! isset ($config['id_user'])) {
 				
 			}
 			
-			db_logon ($nick_in_db, $_SERVER['REMOTE_ADDR']);
+			@db_logon ($nick_in_db, $_SERVER['REMOTE_ADDR']);
 			$_SESSION['id_usuario'] = $nick_in_db;
 			$config['id_user'] = $nick_in_db;
 			

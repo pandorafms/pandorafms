@@ -103,7 +103,7 @@ echo '<div class="login_page">';
 					html_print_image ("images/custom_logo_login/".$config['custom_logo_login'], false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
 				}
 			}
-			else if (defined ('PANDORA_ENTERPRISE')) {
+			else if (file_exists (ENTERPRISE_DIR . "/load_enterprise.php")) {
 
 				if (!isset ($config["custom_logo_login"])){
 					html_print_image ("enterprise/images/custom_logo_login/login_logo_v7.png", false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);

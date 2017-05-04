@@ -63,7 +63,9 @@ class User {
 			$user = $system->getRequest('user', null);
 			$password = $system->getRequest('password', null);
 			
-			$this->login($user, $password);
+			$nick = $system->safeInput($user);
+			$pass = $system->safeInput($password);
+			$this->login($nick, $pass);
 		}
 		
 		return $this->logged;
@@ -76,6 +78,7 @@ class User {
 			$user = $system->getRequest('user', null);
 			$user = $system->safeInput($user);
 			$password = $system->getRequest('password', null);
+			$password = $system->safeInput($password);
 		}
 		
 		if (!empty($user) && !empty($password)) {

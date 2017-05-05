@@ -1038,6 +1038,9 @@ else {
 
 # Connect to the DB
 my $dbh = db_connect ($conf{'dbengine'}, $conf{'dbname'}, $conf{'dbhost'}, $conf{'dbport'}, $conf{'dbuser'}, $conf{'dbpass'});
+if (!defined($conf{'_history_db_enabled'})) {
+	$conf{'_history_db_enabled'} = 0;
+}
 my $history_dbh = ($conf{'_history_db_enabled'} eq '1') ? db_connect ($conf{'dbengine'}, $conf{'_history_db_name'},
 	$conf{'_history_db_host'}, $conf{'_history_db_port'}, $conf{'_history_db_user'}, $conf{'_history_db_pass'}) : undef;
 

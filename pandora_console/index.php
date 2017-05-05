@@ -101,11 +101,6 @@ if ($config['metaconsole'] == 1 && $config['enterprise_installed'] == 1) {
 	header ("Location: " . $config['homeurl'] . "enterprise/meta");
 }
 
-/* Enterprise support */
-if (file_exists (ENTERPRISE_DIR . "/load_enterprise.php")) {
-	include_once (ENTERPRISE_DIR . "/load_enterprise.php");
-}
-
 if (file_exists (ENTERPRISE_DIR . "/include/functions_login.php")) {
 	include_once (ENTERPRISE_DIR . "/include/functions_login.php");
 }
@@ -587,6 +582,12 @@ else {
 		}
 	}
 }
+
+/* Enterprise support */
+if (file_exists (ENTERPRISE_DIR . "/load_enterprise.php")) {
+	include_once (ENTERPRISE_DIR . "/load_enterprise.php");
+}
+
 // Log off
 if (isset ($_GET["bye"])) {
 	include ("general/logoff.php");

@@ -882,6 +882,9 @@ $(document).ready (function () {
 	$('#dynamic_interval_select').change (function() {
 		disabled_status(disabledBecauseInPolicy);
 	});
+	$('#dynamic_interval').change (function() {
+		disabled_status(disabledBecauseInPolicy);
+	});
 
 	disabled_two_tailed(disabledBecauseInPolicy);
 	$('#checkbox-dynamic_two_tailed').change (function() {
@@ -929,7 +932,7 @@ $(document).ready (function () {
 
 //readonly and add class input
 function disabled_status (disabledBecauseInPolicy) {
-	if($('#dynamic_interval_select').val() != 0){
+	if($('#dynamic_interval_select').val() != 0 && $('#dynamic_interval').val() != 0){
 		$('#text-min_warning').prop('readonly', true);
 		$('#text-min_warning').addClass('readonly');
 		$('#text-max_warning').prop('readonly', true);

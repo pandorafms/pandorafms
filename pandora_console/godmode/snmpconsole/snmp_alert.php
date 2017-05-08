@@ -1394,10 +1394,7 @@ $(document).ready (function () {
 			name: "get_recovery_fields",
 			value: "0"
 		});
-		jQuery.get (
-			<?php
-			echo "'" . ui_get_full_url("ajax.php", false, false, false) . "'";
-			?>,
+		jQuery.post (<?php echo "'" . ui_get_full_url("ajax.php", false, false, false) . "'"; ?>,
 			values,
 			function (data, status) {
 				var max_fields = parseInt('<?php echo $config["max_macro_fields"]; ?>');

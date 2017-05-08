@@ -382,6 +382,10 @@ webserver 1
 
 web_threads 1
 
+# Default timeout (in seconds) for web modules.
+
+web_timeout 60
+
 # Uncomment to perform web checks with CURL instead of LWP.
 #web_engine curl
 

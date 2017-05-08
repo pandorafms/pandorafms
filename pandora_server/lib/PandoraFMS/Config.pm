@@ -208,6 +208,7 @@ sub pandora_load_config {
 	$pa_config->{"exportserver"} = 1; # default
 	$pa_config->{"inventoryserver"} = 1; # default
 	$pa_config->{"webserver"} = 1; # 3.0
+	$pa_config->{"web_timeout"} = 60; # 6.0SP5
 	$pa_config->{"servermode"} = "";
 	$pa_config->{'snmp_logfile'} = "/var/log/pandora_snmptrap.log";
 	$pa_config->{"network_threads"} = 3; # Fixed default
@@ -603,6 +604,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^webserver\s+([0-9]*)/i) {
 			$pa_config->{'webserver'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^web_timeout\s+([0-9]*)/i) {
+			$pa_config->{'web_timeout'}= clean_blank($1); 
 		}
 		elsif ($parametro =~ m/^eventserver\s+([0-9]*)/i) {
 			$pa_config->{'eventserver'}= clean_blank($1);

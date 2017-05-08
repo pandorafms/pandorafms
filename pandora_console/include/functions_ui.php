@@ -1611,6 +1611,17 @@ function ui_pagination ($count, $url = false, $offset = 0,
 		$url = ui_get_url_refresh (array ($offset_name => false));
 	}
 	
+	// Pagination links for users include delete, create and other params, now not use these params, and not retry the previous action when go to pagination link.
+	
+	$remove = array("user_del","disable_user","delete_user");
+	$finalUrl = $config['homeurl'].'?';
+	foreach($_GET as $index => $get){
+   		if(!in_array($index, $remove)){
+        		$finalUrl .= $index.'='.$get.'&';
+		}
+	}
+	$url = $finalUrl;
+
 	/*
 	 URL passed render links with some parameter
 	 &offset - Offset records passed to next page

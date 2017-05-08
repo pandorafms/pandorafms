@@ -1442,6 +1442,10 @@ Pandora_Windows_Service::checkAgentName(string filename){
 			pos = buffer.find("agent_name");
 			if (pos != string::npos){
 				name_agent = buffer.substr(pos+11);
+				if (name_agent.at(0) == '"' && name_agent.at(name_agent.size() - 1) == '"') {
+					name_agent.erase(0, 1);
+					name_agent.erase(name_agent.size() - 1, 1);
+				}
 				return name_agent;
 			}
 		}

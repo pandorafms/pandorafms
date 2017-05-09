@@ -1497,13 +1497,11 @@ function set_static_graph_status(idElement, image, status) {
 				set_static_graph_status(idElement, image, data);
 				
 				if($('#'+idElement+' table').css('float') == 'right' || $('#'+idElement+ ' table').css('float') == 'left'){
-				$('#'+idElement+ ' img').css('margin-top', 	parseInt($('#'+idElement).css('height'))/2 - parseInt($('#'+idElement+ ' img').css('height'))/2);	
+					$('#'+idElement+ ' img').css('margin-top', parseInt($('#'+idElement).css('height'))/2 - parseInt($('#'+idElement+ ' img').css('height'))/2);	
 				}
 				else{
-				$('#'+idElement+ ' img').css('margin-left',parseInt($('#'+idElement).css('width'))/2 - parseInt($('#'+idElement+ ' img').css('width'))/2);
+					$('#'+idElement+ ' img').css('margin-left', parseInt($('#'+idElement).css('width'))/2 - parseInt($('#'+idElement+ ' img').css('width'))/2);
 				}
-				
-								
 			}
 		});
 

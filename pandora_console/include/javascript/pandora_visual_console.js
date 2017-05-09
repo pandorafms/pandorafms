@@ -17,7 +17,6 @@
  * @param editor Boolean variable to set other css selector in editor (when true).
  */
 function draw_line (line, id_div) {
-	
 	selector = '';
 	
 	//Check if the global var resize_map is defined

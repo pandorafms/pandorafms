@@ -17,13 +17,6 @@ global $config;
 // Login check
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "LW")) {
-	db_pandora_audit("ACL Violation",
-		"Trying to access Alert Management");
-	require ("general/noaccess.php");
-	exit;
-}
-
 require_once ('include/functions_agents.php');
 require_once ('include/functions_alerts.php');
 $isFunctionPolicies = enterprise_include ('include/functions_policies.php');
@@ -42,6 +35,13 @@ if ($get_agent_alerts_simple) {
 	$id_group = agents_get_agent_group ($id_agent);
 	
 	if (! check_acl ($config['id_user'], $id_group, "AR")) {
+		db_pandora_audit("ACL Violation",
+			"Trying to access Alert Management");
+		echo json_encode (false);
+		return;
+	}
+
+	if (! check_acl ($config['id_user'], 0, "LW")) {
 		db_pandora_audit("ACL Violation",
 			"Trying to access Alert Management");
 		echo json_encode (false);
@@ -66,12 +66,17 @@ if ($get_agent_alerts_simple) {
 		$alert['agent_name'] = modules_get_agentmodule_agent_name ($alert['id_agent_module']);
 		$retval[$alert['id']] = $alert;
 	}
-	
 	echo json_encode ($retval);
 	return;
 }
 
 if ($enable_alert) {
+	if (! check_acl ($config['id_user'], 0, "LW")) {
+		db_pandora_audit("ACL Violation",
+			"Trying to access Alert Management");
+		return false;
+	}
+
 	$id_alert = (int) get_parameter ('id_alert');
 
 	$result = alerts_agent_module_disable ($id_alert, false);
@@ -83,6 +88,12 @@ if ($enable_alert) {
 }
 
 if ($disable_alert) {
+	if (! check_acl ($config['id_user'], 0, "LW")) {
+		db_pandora_audit("ACL Violation",
+			"Trying to access Alert Management");
+		return false;
+	}
+
 	$id_alert = (int) get_parameter ('id_alert');
 
 	$result = alerts_agent_module_disable ($id_alert, true);
@@ -94,6 +105,12 @@ if ($disable_alert) {
 }
 
 if ($get_actions_module) {
+	if (! check_acl ($config['id_user'], 0, "LW")) {
+		db_pandora_audit("ACL Violation",
+			"Trying to access Alert Management");
+		return false;
+	}
+
 	$id_module = get_parameter ('id_module');
 	
 	if (empty($id_module))

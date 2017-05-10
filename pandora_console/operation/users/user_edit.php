@@ -376,7 +376,7 @@ $autorefresh_list_out['enterprise/operation/services/services'] = "services";
 $autorefresh_list_out['enterprise/dashboard/main_dashboard'] = "main_dashboard";
 $autorefresh_list_out['operation/reporting/graph_viewer'] = "graph_viewer";
 $autorefresh_list_out['operation/snmpconsole/snmp_view'] = "snmp_view";
-$autorefresh_list_out['operation/agentes/networkmap'] = "networkmap";
+$autorefresh_list_out['operation/agentes/pandora_networkmap'] = "networkmap";
 $autorefresh_list_out['operation/visual_console/render_view'] = "render_view";
 $autorefresh_list_out['operation/events/events'] = "events";
 

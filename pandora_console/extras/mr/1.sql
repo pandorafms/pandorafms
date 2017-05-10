@@ -12,4 +12,6 @@ CREATE TABLE IF NOT EXISTS `treset_pass` (
 
 UPDATE tgis_map_connection SET conection_data = '{"type":"OSM","url":"http://tile.openstreetmap.org/${z}/${x}/${y}.png"}' where id_tmap_connection = 1;
 
+ALTER TABLE tpolicy_modules MODIFY post_process double(24,15) default 0;
+
 COMMIT;

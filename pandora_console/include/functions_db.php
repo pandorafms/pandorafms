@@ -1720,13 +1720,22 @@ function db_check_minor_relase_available () {
  * 
  * @return bool Return if minor release is available or not
  */
-function db_check_minor_relase_available_to_um ($package) {
+function db_check_minor_relase_available_to_um ($package, $ent, $offline) {
 	global $config;
 	
-	$dir = sys_get_temp_dir() . "/pandora_oum/" . $package . "/extras/mr";
+	if (!$ent) {
+		$dir = $config['attachment_store'] . "/downloads/pandora_console/extras/mr";
+	}
+	else {
+		if ($offline) {
+			$dir = $package . "/extras/mr";
+		}
+		else {
+			$dir = sys_get_temp_dir() . "/pandora_oum/" . $package . "/extras/mr";
+		}
+	}
 	
 	$have_minor_release = false;
-	
 	if (file_exists($dir) && is_dir($dir)) {
 		if (is_readable($dir)) {
 			$files = scandir($dir); // Get all the files from the directory ordered by asc
@@ -1744,7 +1753,10 @@ function db_check_minor_relase_available_to_um ($package) {
 					$file_dest = $config["homedir"] . "/extras/mr/updated/$num.sql";
 					if (file_exists($file_dest)) {
 						$exists = true;
-						unlink("$dir/$num.sql");
+						update_config_token("MR", $num);
+						if (file_exists($config["homedir"] . "/extras/mr/$num.sql")) {
+							unlink($config["homedir"] . "/extras/mr/$num.sql");
+						}
 					}
 				}
 

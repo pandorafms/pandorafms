@@ -35,7 +35,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG PS170316";
+my $version = "7.0NG.702 PS170510";
 
 # save program name for logging
 my $progname = basename($0);
@@ -1220,7 +1220,7 @@ sub cli_create_data_module($) {
 		open (FILE, $definition_file);
 		while (<FILE>) {
 			chomp;
-			my ($key, $val) = split / /;
+			my ($key, $val) = split / /,2;
 			if ($key eq 'module_name') {
 				$module_name_def =  $val;
 			}

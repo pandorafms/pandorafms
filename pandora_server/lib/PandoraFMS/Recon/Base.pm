@@ -15,12 +15,17 @@ use PandoraFMS::Recon::NmapParser;
 use PandoraFMS::Recon::Util;
 use Socket qw/inet_aton/;
 
+# /dev/null
+my $DEVNULL = ($^O eq 'MSWin32') ? '/Nul' : '/dev/null';
+
 # Some useful OIDs.
 our $DOT1DBASEBRIDGEADDRESS = ".1.3.6.1.2.1.17.1.1.0";
 our $DOT1DBASEPORTIFINDEX = ".1.3.6.1.2.1.17.1.4.1.2";
 our $DOT1DTPFDBADDRESS = ".1.3.6.1.2.1.17.4.3.1.1";
 our $DOT1DTPFDBPORT = ".1.3.6.1.2.1.17.4.3.1.2";
 our $IFDESC = ".1.3.6.1.2.1.2.2.1.2";
+our $IFHCINOCTECTS = ".1.3.6.1.2.1.31.1.1.1.6";
+our $IFHCOUTOCTECTS = ".1.3.6.1.2.1.31.1.1.1.10";
 our $IFINDEX = ".1.3.6.1.2.1.2.2.1.1";
 our $IFINOCTECTS = ".1.3.6.1.2.1.2.2.1.10";
 our $IFOPERSTATUS = ".1.3.6.1.2.1.2.2.1.8";
@@ -48,6 +53,8 @@ our @EXPORT = qw(
 	$DOT1DTPFDBADDRESS
 	$DOT1DTPFDBPORT
 	$IFDESC
+	$IFHCINOCTECTS
+	$IFHCOUTOCTECTS
 	$IFINDEX
 	$IFINOCTECTS
 	$IFOPERSTATUS
@@ -92,8 +99,11 @@ sub new {
 		routers => [],
 		switches => [],
 
-		# Found MAC addresses.
-		mac => {},
+		# Found interfaces.
+		ifaces => {},
+
+		# Found parents.
+		parents => {},
 
 		# Route cache.
 		routes => [],
@@ -101,6 +111,9 @@ sub new {
 
 		# SNMP query cache.
 		snmp_cache => {},
+
+		# Globally enable/disable SNMP scans.
+		snmp_enabled => 1,
 
 		# Switch to switch connections. Used to properly connect hosts
 		# that are connected to a switch wich is in turn connected to another switch,
@@ -112,6 +125,8 @@ sub new {
 
 		# Per device VLAN cache.
 		vlan_cache => {},
+		vlan_cache_enabled => 1,     # User configuration. Globally disables the VLAN cache.
+		__vlan_cache_enabled__ => 0, # Internal state. Allows us to enable/disable the VLAN cache on a per SNMP query basis.
 
 		# Configuration parameters.
 		all_ifaces => 0,
@@ -137,6 +152,9 @@ sub new {
 	# Perform some sanity checks.
 	die("No subnet was specified.") unless defined($self->{'subnets'});
 
+	# Disable SNMP scans if no community was given.
+	$self->{'snmp_enabled'} = 0 if (scalar(@{$self->{'communities'}}) == 0);
+
 	return bless($self, $class);
 }
 
@@ -155,8 +173,67 @@ sub add_addresses($$$) {
 sub add_mac($$$) {
 	my ($self, $mac, $ip_addr) = @_;
 
+	$mac = parse_mac($mac);
 	$self->{'arp_cache'}->{$mac} = $ip_addr;
 }
+
+########################################################################################
+# Add an interface/MAC to the interface cache.
+########################################################################################
+sub add_iface($$$) {
+	my ($self, $iface, $mac) = @_;
+
+	$iface =~ s/"//g;
+	$self->{'ifaces'}->{$mac} = $iface;
+}
+
+########################################################################################
+# Discover connectivity from address forwarding tables.
+########################################################################################
+sub aft_connectivity($$) {
+	my ($self, $switch) = @_;
+	my (%mac_temp, @aft_temp);
+
+	return unless defined($self->get_community($switch));
+
+	$self->enable_vlan_cache();
+
+	# Get the address forwarding table (AFT) of each switch.
+	my @aft;
+	foreach my $mac ($self->snmp_get_value_array($switch, $DOT1DTPFDBADDRESS)) {
+		push(@aft, parse_mac($mac));
+	}
+	# Search for matching entries.
+	foreach my $aft_mac (@aft) {
+
+		# Do we know who this is?
+		my $host = $self->get_ip_from_mac($aft_mac);
+		next unless defined($host) and $host ne '';
+
+		# Get the name of the host interface if available.
+		my $host_if_name = $self->get_iface($aft_mac);
+		$host_if_name = defined($host_if_name) ? $host_if_name : 'ping';
+
+		# Get the interface associated to the port were we found the MAC address.
+		my $switch_if_name = $self->get_if_from_aft($switch, $aft_mac);
+		next unless defined ($switch_if_name) and ($switch_if_name ne '');
+
+		# Do not connect a host to a switch twice using the same interface.
+		# The switch is probably connected to another switch.
+		next if ($self->is_switch_connected($host, $host_if_name));
+		$self->mark_switch_connected($host, $host_if_name);
+
+		# The switch and the host are already connected.
+		next if ($self->are_connected($switch, $switch_if_name, $host, $host_if_name));
+
+		# Connect!
+		$self->mark_connected($switch, $switch_if_name, $host, $host_if_name);
+		$self->call('message', "Switch $switch (if $switch_if_name) is connected to host $host (if $host_if_name).", 5);
+	}
+
+	$self->disable_vlan_cache();
+}
+
 
 ########################################################################################
 # Return 1 if the given devices are connected to each other, 0 otherwise.
@@ -172,8 +249,8 @@ sub are_connected($$$$$) {
 	$if_1 = "ping" if $if_1 eq '';
 	$if_2 = "ping" if $if_2 eq '';
 
-	if (defined($self->{'connections'}->{"${dev_1}\t${if_1}\t${dev_2}\t{$if_2}"}) ||
-	    defined($self->{'connections'}->{"${dev_2}\t${if_2}\t${dev_1}\t{$if_1}"})) {
+	if (defined($self->{'connections'}->{"${dev_1}\t${if_1}\t${dev_2}\t${if_2}"}) ||
+	    defined($self->{'connections'}->{"${dev_2}\t${if_2}\t${dev_1}\t${if_1}"})) {
 		return 1;
 	}
 
@@ -181,68 +258,57 @@ sub are_connected($$$$$) {
 }
 
 ########################################################################################
-# Find devices using ARP caches.
+# Discover as much information as possible from the given device using SNMP.
 ########################################################################################
-sub arp_cache_discovery($$) {
+sub snmp_discovery($$) {
 	my ($self, $device) = @_;
 
-	# The device has already been visited.
+	# Have we already visited this device?
 	return if ($self->is_visited($device));
-
-	# The device does not belong to one of the scanned sub-nets.
-	return if ($self->in_subnet($device) == 0);
 
 	# Mark the device as visited.
 	$self->mark_visited($device);
 
-	# Check if the device responds to SNMP.
-	if ($self->snmp_responds($device)) {
+	# Are SNMP scans enabled?
+	if ($self->{'snmp_enabled'} == 1) {
 
-		# Fill the VLAN cache.
-		$self->find_vlans($device);
-
-		# Guess device type.
-		$self->guess_device_type($device);
-
-		# Find aliases for the device.
-		$self->find_aliases($device);
-		
-		# Get ARP cache.
-		my @output = $self->snmp_get($device, $IPNETTOMEDIAPHYSADDRESS);
-		foreach my $line (@output) {
-			next unless ($line =~ /^$IPNETTOMEDIAPHYSADDRESS.\d+.(\S+)\s+=\s+\S+:\s+(.*)$/);
-			my ($ip_addr, $mac_addr) = ($1, $2);
-
-			# Skip broadcast, net and local addresses.
-			next if ($ip_addr =~ m/\.255$|\.0$|127\.0\.0\.1$/);
-
-			# Save the MAC to connect hosts to switches/routers.
-			$mac_addr = parse_mac($mac_addr);
-			$self->add_mac($mac_addr, $ip_addr);
-
-			# Recursively visit found devices.
-			$self->arp_cache_discovery($ip_addr);
+		# Try to find the MAC with an ARP request.
+		$self->get_mac_from_ip($device);
+	
+		# Check if the device responds to SNMP.
+		if ($self->snmp_responds($device)) {
+	
+			# Fill the VLAN cache.
+			$self->find_vlans($device);
+	
+			# Guess the device type.
+			$self->guess_device_type($device);
+	
+			# Find aliases for the device.
+			$self->find_aliases($device);
+			
+			# Find interfaces for the device.
+			$self->find_ifaces($device);
+	
+			# Try to learn more MAC addresses from the device's ARP cache.
+			my @output = $self->snmp_get($device, $IPNETTOMEDIAPHYSADDRESS);
+			foreach my $line (@output) {
+				next unless ($line =~ /^$IPNETTOMEDIAPHYSADDRESS.\d+.(\S+)\s+=\s+\S+:\s+(.*)$/);
+				my ($ip_addr, $mac_addr) = ($1, $2);
+	
+				# Skip broadcast, net and local addresses.
+				next if ($ip_addr =~ m/\.255$|\.0$|127\.0\.0\.1$/);
+	
+				$mac_addr = parse_mac($mac_addr);
+				$self->add_mac($mac_addr, $ip_addr);
+				$self->call('message', "Found MAC $mac_addr for host $ip_addr in the ARP cache of host $device.", 5);
+			}
 		}
 	}
 
-	# Separate devices by type to find device connectivity later.
-	my $device_type = $self->get_device_type($device);
-	if ($device_type eq 'host' || $device_type eq 'printer') {
+	# Create an agent for the device and add it to the list of known hosts.
+	push(@{$self->{'hosts'}}, $device);
 
-		# Hosts are indexed to help find router/switch to host connectivity.
-		push(@{$self->{'hosts'}}, $device);
-	}
-	elsif ($device_type eq 'switch') {
-		push(@{$self->{'switches'}}, $device);
-	}
-	elsif ($device_type eq 'router') {
-		push(@{$self->{'routers'}}, $device);
-	}
-	else {
-		$self->call('message', "Unknown device type: $device_type", 5);
-	}
-
-	# Create an agent for the device.
 	$self->call('create_agent', $device);
 }
 
@@ -257,6 +323,25 @@ sub call {
 	if ($self->can($func)) {
 		$self->$func(@params);
 	}
+}
+
+########################################################################################
+# Disable the VLAN cache.
+########################################################################################
+sub disable_vlan_cache($$) {
+	my ($self, $device) = @_;
+
+	$self->{'__vlan_cache_enabled__'} = 0;
+}
+
+########################################################################################
+# Enable the VLAN cache.
+########################################################################################
+sub enable_vlan_cache($$) {
+	my ($self, $device) = @_;
+
+	return if ($self->{'vlan_cache_enabled'} == 0);
+	$self->{'__vlan_cache_enabled__'} = 1;
 }
 
 ##########################################################################
@@ -296,12 +381,51 @@ sub find_aliases($$) {
 		next if ($ip_address eq $device);
 
 		$self->add_addresses($device, $ip_address);
-		push(@{$self->{'hosts'}}, $ip_address);
+
+		# Try to find the MAC with an ARP request.
+		$self->get_mac_from_ip($ip_address);
 
 		$self->call('message', "Found address $ip_address for host $device.", 5);
 
+		# Is this address an alias itself?
+		$device = $self->{'aliases'}->{$device} if defined($self->{'aliases'}->{$device});
+		next if ($ip_address eq $device);
+
 		# Link the two addresses.
 		$self->{'aliases'}->{$ip_address} = $device;
+	}
+}
+
+########################################################################################
+# Find all the interfaces for the given host.
+########################################################################################
+sub find_ifaces($$) {
+	my ($self, $device) = @_;
+
+	# Does it respond to SNMP?
+	my $community = $self->get_community($device);
+	return unless defined($community);
+
+	my @output = $self->snmp_get_value_array($device, $PandoraFMS::Recon::Base::IFINDEX);
+	foreach my $if_index (@output) {
+
+		next unless ($if_index =~ /^[0-9]+$/);
+
+		# Get the MAC.
+		my $mac = $self->get_if_mac($device, $if_index);
+		next unless (defined($mac) && $mac ne '');
+
+		# Save it.
+		$self->add_mac($mac, $device);
+
+		# Get the name of the network interface.
+		my $if_name = $self->snmp_get_value($device, "$PandoraFMS::Recon::Base::IFNAME.$if_index");
+		next unless defined($if_name);
+
+		# Save it.
+		$self->add_iface($if_name, $mac);
+
+		$self->call('message', "Found interface $if_name MAC $mac for host $device.", 5);
 	}
 }
 
@@ -350,15 +474,6 @@ sub get_device($$) {
 }
 
 ########################################################################################
-# Return all known hosts, switches and routers.
-########################################################################################
-sub get_all_devices($) {
-	my ($self) = @_;
-
-	return (@{$self->{'hosts'}}, @{$self->{'switches'}}, @{$self->{'routers'}});
-}
-
-########################################################################################
 # Get the SNMP community of the given device. Returns undef if no community was found.
 ########################################################################################
 sub get_community($$) {
@@ -378,6 +493,15 @@ sub get_connections($) {
 	my ($self) = @_;
 
 	return $self->{'connections'};
+}
+
+########################################################################################
+# Return the parent relationship hash.
+########################################################################################
+sub get_parents($) {
+	my ($self) = @_;
+
+	return $self->{'parents'};
 }
 
 ########################################################################################
@@ -401,6 +525,17 @@ sub get_hosts($) {
 	my ($self) = @_;
 
 	return $self->{'hosts'};
+}
+
+########################################################################################
+# Add an interface/MAC to the interface cache.
+########################################################################################
+sub get_iface($$) {
+	my ($self, $mac) = @_;
+
+	return undef unless defined($self->{'ifaces'}->{$mac});
+
+	return $self->{'ifaces'}->{$mac};
 }
 
 ########################################################################################
@@ -475,6 +610,24 @@ sub get_if_from_mac($$$) {
 }
 
 ########################################################################################
+# Get an interface name from a port number. Returns '' on error.
+########################################################################################
+sub get_if_from_port($$$) {
+	my ($self, $switch, $port) = @_;
+
+	# Get the interface index associated to the port.
+	my $if_index = $self->snmp_get_value($switch, "$DOT1DBASEPORTIFINDEX.$port");
+	return '' unless defined($if_index);
+
+	# Get the interface name.
+	my $if_name = $self->snmp_get_value($switch, "$IFNAME.$if_index");
+	return "if$if_index" unless defined($if_name);
+
+	$if_name =~ s/"//g;
+	return $if_name;
+}
+
+########################################################################################
 # Returns the IP address of the given interface (by index).
 ########################################################################################
 sub get_if_ip($$$) {
@@ -518,12 +671,38 @@ sub get_ip_from_mac($$) {
 }
 
 ########################################################################################
-# Return all known routers.
+# Attemtps to find 
 ########################################################################################
-sub get_routers($) {
-	my ($self) = @_;
+sub get_mac_from_ip($$) {
+	my ($self, $host) = @_;
+	my $mac = undef;
 
-	return $self->{'routers'};
+	eval {
+		$mac = `arping -c 1 -r $host 2>$DEVNULL`;
+		$mac = undef unless ($? == 0);
+	};
+
+	return unless defined($mac);
+
+	# Clean-up the MAC address.
+	chomp($mac);
+	$mac = parse_mac($mac);
+	$self->add_mac($mac, $host);
+
+	$self->call('message', "Found MAC $mac for host $host in the local ARP cache.", 5);
+}
+
+########################################################################################
+# Get a port number from an AFT entry. Returns undef on error.
+########################################################################################
+sub get_port_from_aft($$$) {
+	my ($self, $switch, $mac) = @_;
+
+	# Get the port associated to the MAC.
+	my $port = $self->snmp_get_value($switch, "$DOT1DTPFDBPORT." . mac_to_dec($mac));
+	return '' unless defined($port);
+
+	return $port;
 }
 
 ########################################################################################
@@ -583,16 +762,6 @@ sub get_subnets($) {
 }
 
 ########################################################################################
-# Return all known switches.
-########################################################################################
-sub get_switches($) {
-	my ($self) = @_;
-
-	# No subnets specified.
-	return $self->{'switches'};
-}
-
-########################################################################################
 # Get an array of all the visited devices.
 # NOTE: This functions returns the whole device structures, not just address
 # like get_hosts, get_switches, get_routers and get_all_devices.
@@ -608,6 +777,9 @@ sub get_visited_devices($) {
 ########################################################################################
 sub get_vlans($$) {
 	my ($self, $device) = @_;
+
+	# Is the VLAN cache disabled?
+	return () unless ($self->{'__vlan_cache_enabled__'} == 1);
 
 	return () unless defined($self->{'vlan_cache'}->{$device});
 
@@ -687,53 +859,17 @@ sub guess_device_type($$) {
 }
 
 ########################################################################################
-# Discover host connectivity.
+# Return 1 if the given device has a parent.
 ########################################################################################
-sub host_connectivity($$) {
+sub has_parent($$) {
 	my ($self, $device) = @_;
 
-	return unless defined($self->get_community($device));
+	# Check for aliases!
+	$device = $self->{'aliases'}->{$device} if defined($self->{'aliases'}->{$device});
 
-	# Get the device type.
-	my $device_type = $self->get_device_type($device);
+	return 1 if (defined($self->{'parents'}->{$device}));
 
-	# Get the address forwarding table (AFT) of the device.
-	my @aft = $self->snmp_get_value_array($device, $DOT1DTPFDBADDRESS);
-	foreach my $mac (@aft) {
-		$mac = parse_mac($mac);
-
-		# We need an IP address.
-		my $host = $self->get_ip_from_mac($mac);
-		next unless defined($host);
-
-		# Did we scan that IP address?
-		next unless $self->is_visited($host);
-
-		my $device_if_name = $self->get_if_from_aft($device, $mac);
-		next unless ($device_if_name ne '');
-
-		# We may or may not be able to get the host's interface via SNMP.
-		my $host_if_name = $self->get_if_from_mac($host, $mac);
-
-		# Are the devices already connected?
-		next if ($self->are_connected($device, $device_if_name, $host, $host_if_name));
-
-		if ($device_type eq 'router') {
-			next if ($self->is_switch_connected($device, $device_if_name)); # The router is probably connected to a switch.
-			$self->call('message', "Host $host" . ($host_if_name ne '' ? " (if $host_if_name)" : '') . " is connected to router $device (if $device_if_name).", 5);
-		}
-		elsif ($device_type eq 'switch') {
-			next if ($self->is_switch_connected($device, $device_if_name)); # The switch is probably connected to another switch.
-			$self->call('message', "Host $host" . ($host_if_name ne '' ? " (if $host_if_name)" : '') . " is connected to switch $device (if $device_if_name).", 5);
-		}
-		else {
-			$self->call('message', "Host $host" . ($host_if_name ne '' ? " (if $host_if_name)" : '') . " is connected to host $device (if $device_if_name).", 5);
-		}
-
-		# Connect the two devices.
-		$self->call('connect_agents', $device, $device_if_name, $host, $host_if_name);
-		$self->mark_connected($device, $device_if_name, $host, $host_if_name);
-	}
+	return 0;
 }
 
 ########################################################################################
@@ -750,22 +886,6 @@ sub in_subnet($$) {
 		if (subnet_matches($device, $subnet)) {
 			return 1;
 		}
-	}
-
-	return 0;
-}
-
-########################################################################################
-# Return 1 if the given device is connected, 0 otherwise.
-########################################################################################
-sub is_connected($$) {
-	my ($self, $device) = @_;
-
-	# Check for aliases!
-	$device = $self->{'aliases'}->{$device} if defined($self->{'aliases'}->{$device});
-
-	if ($self->{'visited_devices'}->{$device}->{'connected'} == 1) {
-		return 1;
 	}
 
 	return 0;
@@ -806,22 +926,30 @@ sub is_visited($$) {
 # Mark the given devices as connected to each other on the given interfaces.
 ########################################################################################
 sub mark_connected($$;$$$) {
-	my ($self, $dev_1, $if_1, $dev_2, $if_2) = @_;
+	my ($self, $parent, $parent_if, $child, $child_if) = @_;
 
 	# Check for aliases!
-	$dev_1 = $self->{'aliases'}->{$dev_1} if defined($self->{'aliases'}->{$dev_1});
-	$self->{'visited_devices'}->{$dev_1}->{'connected'} = 1;
+	$parent = $self->{'aliases'}->{$parent} if defined($self->{'aliases'}->{$parent});
+	$child = $self->{'aliases'}->{$child} if defined($self->{'aliases'}->{$child});
 
-	if (defined($if_2)) {
-		# Use ping modules when interfaces are unknown.
-		$if_1 = "ping" if $if_1 eq '';
-		$if_2 = "ping" if $if_2 eq '';
+	# Use ping modules when interfaces are unknown.
+	$parent_if = "ping" if $parent_if eq '';
+	$child_if = "ping" if $child_if eq '';
 
-		$dev_2 = $self->{'aliases'}->{$dev_2} if defined($self->{'aliases'}->{$dev_2});
-		$self->{'connections'}->{"${dev_1}\t${if_1}\t${dev_2}\t${if_2}"} = 1;
-		$self->{'visited_devices'}->{$dev_2}->{'connected'} = 1;
+	# Do not connect devices using ping modules. A parent-child relationship is enough.
+	if ($parent_if ne "ping" || $child_if ne "ping") {
+		$self->{'connections'}->{"${parent}\t${parent_if}\t${child}\t${child_if}"} = 1;
+		$self->call('connect_agents', $parent, $parent_if, $child, $child_if);
+	}
 
-		$self->call('set_parent', $dev_2, $dev_1);
+	# Prevent parent-child loops.
+	if (!defined($self->{'parents'}->{$parent}) ||
+		$self->{'parents'}->{$parent} ne $child) {
+
+		# A parent-child relationship is always created to help complete the map with
+		# layer 3 information.
+		$self->{'parents'}->{$child} = $parent;
+		$self->call('set_parent', $child, $parent);
 	}
 }
 
@@ -843,7 +971,6 @@ sub mark_visited($$) {
 	my ($self, $device) = @_;
 
 	$self->{'visited_devices'}->{$device} = { 'addr' => { $device => '' },
-	                                          'connected' => 0,
 	                                          'type' => 'host' };
 }
 
@@ -942,87 +1069,71 @@ sub ping ($$$) {
 	return 0;
 }
 
-########################################################################################
-# Discover router to router connectivity.
-########################################################################################
-sub router_to_router_connectivity($$) {
-	my ($self, $router_1, $router_2) = @_;
+##########################################################################
+# Scan the given subnet.
+##########################################################################
+sub scan_subnet($) {
+	my ($self) = @_;
+	my $progress = 1;
 
-	return unless defined($self->get_community($router_1)) and
-	              defined($self->get_community($router_2));
+	my @subnets = @{$self->get_subnets()};
+	foreach my $subnet (@subnets) {
 
-	# Get the list of next hops of the routers.
-	my %next_hops_1 = $self->snmp_get_value_hash($router_1, $IPROUTENEXTHOP);
-	my %next_hops_2 = $self->snmp_get_value_hash($router_2, $IPROUTENEXTHOP);
+		# Clean blanks.
+		$subnet =~ s/\s+//g;
 
-	# Search for matching entries.
-	foreach my $ip_addr_1 ($self->get_addresses($router_1)) {
-		if (defined($next_hops_2{$ip_addr_1})) {
-			foreach my $ip_addr_2 ($self->get_addresses($router_2)) {
-				if (defined($next_hops_1{$ip_addr_2})) {
-					my $if_1 = $self->get_if_from_ip($router_1, $ip_addr_2);
-					next unless $if_1 ne '';
-					my $if_2 = $self->get_if_from_ip($router_2, $ip_addr_1);
-					next unless $if_2 ne '';
+		my $net_addr = new NetAddr::IP ($subnet);
+		if (!defined($net_addr)) {
+			$self->call('message', "Invalid network: $subnet", 3);
+			next;
+		}
 
-					next if ($self->are_connected($router_1, $if_1, $router_2, $if_2));
-					$self->call('message', "Router $ip_addr_1 (if $if_2) is connected to router $ip_addr_2 (if $if_2).", 5);
-					$self->call('connect_agents', $router_1, $if_1, $router_2, $if_2);
-					$self->mark_connected($router_1, $if_1, $router_2, $if_2);
-					
-					# Mark connections in case the routers are switches too.
-					$self->mark_switch_connected($router_1, $if_1);
-					$self->mark_switch_connected($router_1, $if_2);
-				}
+		# Save the network and broadcast addresses.
+		my $network = $net_addr->network();
+		my $broadcast = $net_addr->broadcast();
+
+		# fping scan.
+		if (-x $self->{'fping'} && $net_addr->num() > 1) {
+			$self->call('message', "Calling fping...", 5);
+	
+			my @hosts = `$self->{'fping'} -ga "$subnet" 2>DEVNULL`;
+			next if (scalar(@hosts) == 0);
+		
+			my $step = 50.0 / scalar(@subnets) / scalar(@hosts); # The first 50% of the recon task approx.
+			foreach my $line (@hosts) {
+				chomp($line);
+
+				my @temp = split(/ /, $line);
+				next if (scalar(@temp) != 1); # Junk is shown for broadcast addresses.
+				my $host = $temp[0];
+
+				# Skip network and broadcast addresses.
+				next if ($host eq $network->addr() || $host eq $broadcast->addr());
+				
+				$self->call('message', "Scanning host: $host", 5);
+				$self->call('update_progress', ceil($progress));
+				$progress += $step;
+		
+				$self->snmp_discovery($host);
 			}
 		}
-	}
-}
-
-########################################################################################
-# Discover router to switch connectivity.
-########################################################################################
-sub router_to_switch_connectivity($$$) {
-	my ($self, $router, $switch) = @_;
-	my (%mac_temp, @aft_temp);
-
-	return unless defined($self->get_community($router)) and
-	              defined($self->get_community($switch));
-
-	# Get the list of MAC addresses of the router.
-	my %mac_router;
-	%mac_temp = $self->snmp_get_value_hash($router, $IFPHYSADDRESS);
-	foreach my $mac (keys(%mac_temp)) {
-		$mac_router{parse_mac($mac)} = '';
-	}
-	
-	# Get the address forwarding table (AFT) of the switch.
-	my @aft;
-	@aft_temp = $self->snmp_get_value_array($switch, $DOT1DTPFDBADDRESS);
-	foreach my $mac (@aft_temp) {
-		push(@aft, parse_mac($mac));
-	}
-
-	# Search for matching entries in the AFT.
-	foreach my $aft_mac (@aft) {
-		if (defined($mac_router{$aft_mac})) {
-
-			# Get the router interface.
-			my $router_if_name = $self->get_if_from_mac($router, $aft_mac);
-			next unless ($router_if_name ne '');
-
-			# Get the switch interface.
-			my $switch_if_name = $self->get_if_from_aft($switch, $aft_mac);
-			next unless ($switch_if_name ne '');
-
-			next if ($self->are_connected($router, $router_if_name, $switch, $switch_if_name));
-			$self->call('message', "Router $router (if $router_if_name) is connected to switch $switch (if $switch_if_name).", 5);
-			$self->call('connect_agents', $router, $router_if_name, $switch, $switch_if_name);
-			$self->mark_connected($router, $router_if_name, $switch, $switch_if_name);
-
-			# Mark connections in case the routers are switches too.
-			$self->mark_switch_connected($switch, $switch_if_name);
-			$self->mark_switch_connected($router, $router_if_name);
+		# ping scan.
+		else {
+			my @hosts = map { (split('/', $_))[0] } $net_addr->hostenum;
+			next if (scalar(@hosts) == 0);
+		
+			my $step = 50.0 / scalar(@subnets) / scalar(@hosts); # The first 50% of the recon task approx.
+			foreach my $host (@hosts) {
+		
+				$self->call('message', "Scanning host: $host", 5);
+				$self->call('update_progress', ceil($progress));
+				$progress += $step;
+		
+				# Check if the host is up.
+				next if ($self->ping($host) == 0);
+		
+				$self->snmp_discovery($host);
+			}
 		}
 	}
 }
@@ -1032,100 +1143,53 @@ sub router_to_switch_connectivity($$$) {
 ##########################################################################
 sub scan($) {
 	my ($self) = @_;
+	my ($progress, $step);
 
 	# 1%
 	$self->call('update_progress', 1);
 
 	# Find devices.
-	$self->call('message', "[1/7] Scanning the network...", 3);
-	my @subnets = @{$self->get_subnets()};
-	my $progress = 1;
-	foreach my $subnet (@subnets) {
-
-		# Clean blanks.
-		$subnet =~ s/\s+//g;
-
-	    my $net_addr = new NetAddr::IP ($subnet);
-		if (!defined($net_addr)) {
-			$self->call('message', "Invalid network: $subnet", 3);
-			return;
-		}
-	
-		my @hosts = map { (split('/', $_))[0] } $net_addr->hostenum;
-		my $step = 50.0 / scalar(@subnets) / scalar(@hosts); # The first 50% of the recon task approx.
-		foreach my $host (@hosts) {
-
-			$self->call('message', "Scanning host: $host", 5);
-			$self->call('update_progress', ceil($progress));
-			$progress += $step;
-
-			# Check if the device has already been visited.
-			next if ($self->is_visited($host));
-	
-			# Check if the host is up.
-			next if ($self->ping($host) == 0);
-	
-			$self->arp_cache_discovery($host);
-		}
-	}
+	$self->call('message', "[1/5] Scanning the network...", 3);
+	$self->scan_subnet();
 
 	# Get a list of found hosts.
-	my @hosts = (@{$self->get_routers()}, @{$self->get_switches()}, @{$self->get_hosts()});
-
-	# Delete previous connections. 
-	$self->call('delete_connections');
-
-	# Try all known connectivity methods by brute force.
-	$self->call('message', "[2/7] Finding switch to switch connectivity...", 3);
-	for (my $i = 0; defined($hosts[$i]); $i++) {
-		my $switch_1 = $hosts[$i];
-		for (my $j = $i + 1; defined($hosts[$j]); $j++) {
-			my $switch_2 = $hosts[$j];
-			$self->switch_to_switch_connectivity($switch_1, $switch_2) if ($switch_1 ne $switch_2);
-		}
-	}
-	$self->call('update_progress', 60);
-
-	$self->call('message', "[3/7] Finding router to switch connectivity...", 3);
-	foreach my $router (@hosts) {
-		foreach my $switch (@hosts) {
-			$self->router_to_switch_connectivity($router, $switch) if ($router ne $switch);
-		}
-	}
-	$self->call('update_progress', 70);
-
-	$self->call('message', "[4/7] Finding router to router connectivity...", 3);
-	for (my $i = 0; defined($hosts[$i]); $i++) {
-		my $router_1 = $hosts[$i];
-		for (my $j = $i + 1; defined($hosts[$j]); $j++) {
-			my $router_2 = $hosts[$j];
-			$self->router_to_router_connectivity($router_1, $router_2) if ($router_1 ne $router_2);
-		}
-	}
-	$self->call('update_progress', 80);
-
-	# Find switch/router to host connections.
-	$self->call('message', "[5/7] Finding switch/router to end host connectivity...", 3);
-	foreach my $device (@hosts) {
-		$self->host_connectivity($device);
-	}
-	$self->call('update_progress', 90);
+	my @hosts = @{$self->get_hosts()};
+	if (scalar(@hosts) > 0 && $self->{'parent_detection'} == 1) {
+		# Delete previous connections. 
+		$self->call('delete_connections');
 	
-	# Connect hosts that are still unconnected using traceroute.
-	$self->call('message', "[6/7] Finding host to hop connectivity.", 3);
-	foreach my $host (@hosts) {
-		next if ($self->is_connected($host));
-		$self->traceroute_connectivity($host);
+		# Connectivity from address forwarding tables.
+		$self->call('message', "[1/4] Finding address forwarding table connectivity...", 3);
+		($progress, $step) = (50, 20.0 / scalar(@hosts)); # From 50% to 70%.
+		for (my $i = 0; defined($hosts[$i]); $i++) {
+			$self->call('update_progress', $progress);
+			$progress += $step;
+			$self->aft_connectivity($hosts[$i]);
+		}
+	
+		# Connect hosts that are still unconnected using traceroute.
+		$self->call('message', "[3/4] Finding traceroute connectivity.", 3);
+		($progress, $step) = (70, 20.0 / scalar(@hosts)); # From 70% to 90%.
+		foreach my $host (@hosts) {
+			$self->call('update_progress', $progress);
+			$progress += $step;
+			next if ($self->has_parent($host));
+			$self->traceroute_connectivity($host);
+		}
+	
+		# Connect hosts that are still unconnected using known gateways.
+		$self->call('message', "[4/4] Finding host to gateway connectivity.", 3);
+		($progress, $step) = (90, 10.0 / scalar(@hosts)); # From 70% to 90%.
+		$self->get_routes(); # Update the route cache.
+		foreach my $host (@hosts) {
+			$self->call('update_progress', $progress);
+			$progress += $step;
+			next if ($self->has_parent($host));
+			$self->gateway_connectivity($host);
+		}
 	}
-	$self->call('update_progress', 95);
 
-	# Connect hosts that are still unconnected using known gateways.
-	$self->call('message', "[7/7] Finding host to gateway connectivity.", 3);
-	$self->get_routes(); # Update the route cache.
-	foreach my $host (@hosts) {
-		next if ($self->is_connected($host));
-		$self->gateway_connectivity($host);
-	}
+	# Done!
 	$self->call('update_progress', -1);
 	
 	# Print debug information on found devices.
@@ -1247,64 +1311,6 @@ sub snmp_get_value_hash($$$) {
 	return %values;
 }
 
-########################################################################################
-# Discover switch to switch connectivity.
-########################################################################################
-sub switch_to_switch_connectivity($$$) {
-	my ($self, $switch_1, $switch_2) = @_;
-	my (%mac_temp, @aft_temp);
-
-	return unless defined($self->get_community($switch_1)) and
-	              defined($self->get_community($switch_2));
-
-	# Get the list of MAC addresses of each switch.
-	my %mac_1;
-	%mac_temp = $self->snmp_get_value_hash($switch_1, $IFPHYSADDRESS);
-	foreach my $mac (keys(%mac_temp)) {
-		$mac_1{parse_mac($mac)} = '';
-	}
-	my %mac_2;
-	%mac_temp = $self->snmp_get_value_hash($switch_2, $IFPHYSADDRESS);
-	foreach my $mac (keys(%mac_temp)) {
-		$mac_2{parse_mac($mac)} = '';
-	}
-
-	# Get the address forwarding table (AFT) of each switch.
-	my @aft_1;
-	@aft_temp = $self->snmp_get_value_array($switch_1, $DOT1DTPFDBADDRESS);
-	foreach my $mac (@aft_temp) {
-		push(@aft_1, parse_mac($mac));
-	}
-	my @aft_2;
-	@aft_temp = $self->snmp_get_value_array($switch_2, $DOT1DTPFDBADDRESS);
-	foreach my $mac (@aft_temp) {
-		push(@aft_2, parse_mac($mac));
-	}
-
-	# Search for matching entries.
-	foreach my $aft_mac_1 (@aft_1) {
-		if (defined($mac_2{$aft_mac_1})) {
-			foreach my $aft_mac_2 (@aft_2) {
-				if (defined($mac_1{$aft_mac_2})) {
-					my $if_name_1 = $self->get_if_from_aft($switch_1, $aft_mac_1);
-					next unless ($if_name_1) ne '';
-					my $if_name_2 = $self->get_if_from_aft($switch_2, $aft_mac_2);
-					next unless ($if_name_2) ne '';
-
-					next if ($self->are_connected($switch_1, $if_name_1, $switch_2, $if_name_2));
-					$self->call('message', "Switch $switch_1 (if $if_name_1) is connected to switch $switch_2 (if $if_name_2).", 5);
-					$self->call(' / scalar(@subnets))connect_agents', $switch_1, $if_name_1, $switch_2, $if_name_2);
-					$self->mark_connected($switch_1, $if_name_1, $switch_2, $if_name_2);
-
-					# Mark switch to switch connections.
-					$self->mark_switch_connected($switch_1, $if_name_1);
-					$self->mark_switch_connected($switch_2, $if_name_2);
-				}
-			}
-		}
-	}
-}
-
 ##########################################################################
 # Connect the given host to its parent using traceroute.
 ##########################################################################
@@ -1333,13 +1339,14 @@ sub traceroute_connectivity($$) {
 	# Look for parents.
 	my $device = $host;
 	for (my $i = 0; $i < $self->{'parent_recursion'}; $i++) {
-		last unless defined($hops[$i]);
+		next unless defined($hops[$i]);
 		my $parent = $hops[$i]->ipaddr();
 
-		if ($device eq $host) {
-			$self->call('message', "Host $host is one hop away from host $parent.", 10);
-			$self->mark_connected($parent, '', $host, ''); 
-		}
+		# Create an agent for the parent.
+		$self->call('create_agent', $parent);
+
+		$self->call('message', "Host $device is one hop away from host $parent.", 5);
+		$self->mark_connected($parent, '', $device, ''); 
 
 		# Move on to the next hop.
 		$device = $parent;

@@ -18,13 +18,26 @@ if (is_ajax ()) {
 	check_login();
 
 	$updare_rr = get_parameter('updare_rr', 0);
+	$remove_rr = get_parameter('remove_rr', 0);
+	$remove_rr_extras = get_parameter('remove_rr_extras', 0);
 	
 	if ($updare_rr) {
 		$number = get_parameter('number');
 		$package = get_parameter('package');
-		$dir = sys_get_temp_dir() . "/pandora_oum/" . $package . "/extras/mr";
+		$ent = get_parameter('ent');
+		$offline = get_parameter('offline');
+		if (!$ent) {
+			$dir = $config['attachment_store'] . "/downloads/pandora_console/extras/mr";
+		}
+		else {
+			if ($offline) {
+				$dir = $package . "/extras/mr";
+			}
+			else {
+				$dir = sys_get_temp_dir() . "/pandora_oum/" . $package . "/extras/mr";
+			}
+		}
 		$file = "$dir/$number.sql";
-		
 		$dangerous_query = false;
 		$mr_file = fopen($file, "r");
 		while (!feof($mr_file)) {
@@ -53,18 +66,18 @@ if (is_ajax ()) {
 						$message = "bad_mr_filename";
 					}
 					else if ($config["MR"] > $number) {
-						if (!file_exists($dir."/updated") || !is_dir($dir."/updated")) {
-							mkdir($dir."/updated");
+						if (!file_exists($config["homedir"] . "/extras/mr/updated") || !is_dir($config["homedir"] . "/extras/mr/updated")) {
+							mkdir($config["homedir"] . "/extras/mr/updated");
 						}
 						
 						$file_dest = $config["homedir"] . "/extras/mr/updated/$number.sql";
-						if (copy($file, $file_dest)) {
-							unlink($file);
-						}
+						copy($file, $file_dest);
+												
 						$message = "bad_mr_filename";
 					}
 					else {
 						$result = db_run_sql_file($file);
+
 						if ($result) {
 							$update_config = update_config_token("MR", $number);
 							if ($update_config) {
@@ -72,17 +85,13 @@ if (is_ajax ()) {
 							}
 							
 							if ($config["MR"] == $number) {
-								if (!file_exists($dir."/updated") || !is_dir($dir."/updated")) {
-									mkdir($dir."/updated");
+								if (!file_exists($config["homedir"] . "/extras/mr/updated") || !is_dir($config["homedir"] . "/extras/mr/updated")) {
+									mkdir($config["homedir"] . "/extras/mr/updated");
 								}
 								
 								$file_dest = $config["homedir"] . "/extras/mr/updated/$number.sql";
 								
-								chmod($file, 0777);
-								chmod($config["homedir"] . "/extras/mr/updated", 0777);
-								if (copy($file, $file_dest)) {
-									unlink($file);
-								}
+								copy($file, $file_dest);
 							}
 						}
 						else {
@@ -127,6 +136,48 @@ if (is_ajax ()) {
 		}
 		
 		echo $message;
+		return;
+	}
+
+	if ($remove_rr) {
+        $numbers = get_parameter('number',0);
+
+        foreach ($numbers as $number) {
+            for ($i = 1; $i <= $number; $i++) {
+                $file = $config["homedir"] . "/extras/mr/$i.sql";
+                if (file_exists($file)) {
+                    unlink($file);
+                }
+            }
+        }
+
+        return;
+    }
+
+	if ($remove_rr_extras) {
+		$dir = $config["homedir"] . "/extras/mr/";
+		
+		if (file_exists($dir) && is_dir($dir)) {
+			if (is_readable($dir)) {
+				$files = scandir($dir); // Get all the files from the directory ordered by asc
+
+				if ($files !== false) {
+					$pattern = "/^\d+\.sql$/";
+					$sqlfiles = preg_grep($pattern, $files); // Get the name of the correct files
+					$files = null;
+					$pattern = "/\.sql$/";
+					$replacement = "";
+					$sqlfiles_num = preg_replace($pattern, $replacement, $sqlfiles); // Get the number of the file
+					
+					foreach ($sqlfiles_num as $num) {
+						$file = $dir . "$num.sql";
+						if (file_exists($file)) {
+							unlink($file);
+						}
+					}
+				}
+			}
+		}
 		return;
 	}
 }

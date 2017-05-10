@@ -210,6 +210,9 @@ function install_package (package, homeurl) {
 				var parameters = {};
 				parameters['page'] = 'include/ajax/update_manager.ajax';
 				parameters['search_minor'] = 1;
+				parameters['package'] = package;
+				parameters['ent'] = 1;
+				parameters['offline'] = 1;
 				
 				$.ajax({
 					type: 'POST',
@@ -231,7 +234,7 @@ function install_package (package, homeurl) {
 								buttons: {
 									"Apply MR": function () {
 										var err = [];
-										err = apply_minor_release(data['mr']);
+										err = apply_minor_release(data['mr'], package, 1, 1, home_url);
 
 										if (!err['error']) {
 											if (err['message'] == 'bad_mr_filename') {
@@ -268,7 +271,7 @@ function install_package (package, homeurl) {
 															});
 
 															var dialog_accept_package_mr_fail_text = "<div>";
-															dialog_accept_package_mr_fail_text = dialog_accept_package_mr_fail_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_info_mr.png'></div>";
+															dialog_accept_package_mr_fail_text = dialog_accept_package_mr_fail_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_info_mr.png'></div>";
 															dialog_accept_package_mr_fail_text = dialog_accept_package_mr_fail_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>INFO</strong></h3>";
 															dialog_accept_package_mr_fail_text = dialog_accept_package_mr_fail_text + "<p style='font-family:Verdana; font-size:12pt;'>" + mr_not_accepted_code_yes + "</p></div>";
 															dialog_accept_package_mr_fail_text = dialog_accept_package_mr_fail_text + "</div>";
@@ -311,7 +314,7 @@ function install_package (package, homeurl) {
 																		});
 
 																		var dialog_success_pkg_text = "<div>";
-																		dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_exito_mr.png'></div>";
+																		dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_exito_mr.png'></div>";
 																		dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>SUCCESS</strong></h3>";
 																		dialog_success_pkg_text = dialog_success_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_success + "</p></div>";
 																		dialog_success_pkg_text = dialog_success_pkg_text + "</div>";
@@ -342,7 +345,7 @@ function install_package (package, homeurl) {
 																		});
 
 																		var dialog_error_pkg_text = "<div>";
-																		dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
+																		dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_error_mr.png'></div>";
 																		dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
 																		dialog_error_pkg_text = dialog_error_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_error + "</p></div>";
 																		dialog_error_pkg_text = dialog_error_pkg_text + "</div>";
@@ -385,7 +388,7 @@ function install_package (package, homeurl) {
 															});
 
 															var dialog_cancel_pkg_text = "<div>";
-															dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_info_mr.png'></div>";
+															dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_info_mr.png'></div>";
 															dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>INFO</strong></h3>";
 															dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_cancel + "</p></div>";
 															dialog_cancel_pkg_text = dialog_cancel_pkg_text + "</div>";
@@ -393,13 +396,16 @@ function install_package (package, homeurl) {
 															$('#cancel_pkg').html(dialog_cancel_pkg_text);
 															$('#cancel_pkg').dialog('open');
 
-															$("#box_online .content").html(mr_not_accepted);
+															$('#form-offline_update ul').find('li').removeClass('loading');
+															$('#form-offline_update ul').find('li').addClass('error');
+															$('#form-offline_update ul').find('li').find('p').html(mr_not_accepted)
+																.append("<i>"+data.message+"</i>");
 														}
 													}
 												});
 
 												var dialog_bad_message_text = "<div>";
-												dialog_bad_message_text = dialog_bad_message_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
+												dialog_bad_message_text = dialog_bad_message_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_error_mr.png'></div>";
 												dialog_bad_message_text = dialog_bad_message_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
 												dialog_bad_message_text = dialog_bad_message_text + "<p style='font-family:Verdana; font-size:12pt;'>" + bad_mr_file + "</p></div>";
 												dialog_bad_message_text = dialog_bad_message_text + "</div>";
@@ -427,7 +433,7 @@ function install_package (package, homeurl) {
 												});
 
 												var dialog_success_mr_text = "<div>";
-												dialog_success_mr_text = dialog_success_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_exito_mr.png'></div>";
+												dialog_success_mr_text = dialog_success_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_exito_mr.png'></div>";
 												dialog_success_mr_text = dialog_success_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>SUCCESS</strong></h3>";
 												dialog_success_mr_text = dialog_success_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + mr_success + "</p></div>";
 												dialog_success_mr_text = dialog_success_mr_text + "</div>";
@@ -470,7 +476,7 @@ function install_package (package, homeurl) {
 															});
 
 															var dialog_success_pkg_text = "<div>";
-															dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_exito_mr.png'></div>";
+															dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_exito_mr.png'></div>";
 															dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>SUCCESS</strong></h3>";
 															dialog_success_pkg_text = dialog_success_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_success + "</p></div>";
 															dialog_success_pkg_text = dialog_success_pkg_text + "</div>";
@@ -501,7 +507,7 @@ function install_package (package, homeurl) {
 															});
 
 															var dialog_error_pkg_text = "<div>";
-															dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
+															dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_error_mr.png'></div>";
 															dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
 															dialog_error_pkg_text = dialog_error_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_error + "</p></div>";
 															dialog_error_pkg_text = dialog_error_pkg_text + "</div>";
@@ -522,6 +528,8 @@ function install_package (package, homeurl) {
 												
 												// Check the status of the update
 												check_install_package(package, homeurl);
+
+												remove_rr_file(data['mr'], home_url);
 											}
 										}
 										else {
@@ -544,7 +552,7 @@ function install_package (package, homeurl) {
 											});
 
 											var dialog_error_mr_text = "<div>";
-											dialog_error_mr_text = dialog_error_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
+											dialog_error_mr_text = dialog_error_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_error_mr.png'></div>";
 											dialog_error_mr_text = dialog_error_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
 											dialog_error_mr_text = dialog_error_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + mr_error + "</p></div>";
 											dialog_error_mr_text = dialog_error_mr_text + "</div>";
@@ -578,7 +586,7 @@ function install_package (package, homeurl) {
 										});
 
 										var dialog_cancel_mr_text = "<div>";
-										dialog_cancel_mr_text = dialog_cancel_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_info_mr.png'></div>";
+										dialog_cancel_mr_text = dialog_cancel_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_info_mr.png'></div>";
 										dialog_cancel_mr_text = dialog_cancel_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>INFO</strong></h3>";
 										dialog_cancel_mr_text = dialog_cancel_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + mr_cancel + "</p></div>";
 										dialog_cancel_mr_text = dialog_cancel_mr_text + "</div>";
@@ -586,11 +594,9 @@ function install_package (package, homeurl) {
 										$('#cancel_mr').html(dialog_cancel_mr_text);
 										$('#cancel_mr').dialog('open');
 
-										$("#box_online .loading").hide();
-										$("#box_online .downloading_package").hide();
-										$("#box_online .content").html("MR not accepted");
+										$('#form-offline_update ul').find('li').removeClass('loading');
 										$('#form-offline_update ul').find('li').addClass('error');
-										$('#form-offline_update ul').find('li').find('p').html(error_in_mr_accept)
+										$('#form-offline_update ul').find('li').find('p').html(mr_not_accepted)
 											.append("<i>"+data.message+"</i>");
 									}
 								}
@@ -600,13 +606,13 @@ function install_package (package, homeurl) {
 							$('button:contains(Cancel)').attr("id","cancel_rr_button");
 							
 							var dialog_have_mr_text = "<div>";
-							dialog_have_mr_text = dialog_have_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_warning_mr.png'></div>";
-							dialog_have_mr_text = dialog_have_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>There are a DB changes</strong></h3>";
+							dialog_have_mr_text = dialog_have_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_warning_mr.png'></div>";
+							dialog_have_mr_text = dialog_have_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>This package includes db changes</strong></h3>";
 							dialog_have_mr_text = dialog_have_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + text1_mr_file + "</p>";
 							dialog_have_mr_text = dialog_have_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + text2_mr_file + "<a style='font-family:Verdana bold; font-size:12pt; color:#82B92E'href=\"index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list\">" + text3_mr_file + "</a>" + text4_mr_file + "</p></div>";
 							dialog_have_mr_text = dialog_have_mr_text + "</div>";
 														
-							$('#mr_dialog2').html(dialog_have_mr_mr_text);
+							$('#mr_dialog2').html(dialog_have_mr_text);
 							$('#mr_dialog2').dialog('open');
 						}
 						else {
@@ -647,7 +653,7 @@ function install_package (package, homeurl) {
 										});
 
 										var dialog_success_pkg_text = "<div>";
-										dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_exito_mr.png'></div>";
+										dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_exito_mr.png'></div>";
 										dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>SUCCESS</strong></h3>";
 										dialog_success_pkg_text = dialog_success_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_success + "</p></div>";
 										dialog_success_pkg_text = dialog_success_pkg_text + "</div>";
@@ -678,7 +684,7 @@ function install_package (package, homeurl) {
 										});
 
 										var dialog_error_pkg_text = "<div>";
-										dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
+										dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_error_mr.png'></div>";
 										dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
 										dialog_error_pkg_text = dialog_error_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_error + "</p></div>";
 										dialog_error_pkg_text = dialog_error_pkg_text + "</div>";
@@ -699,6 +705,8 @@ function install_package (package, homeurl) {
 							
 							// Check the status of the update
 							check_install_package(package, homeurl);
+
+							remove_rr_file_to_extras(home_url);
 						}
 					}
 				});
@@ -724,10 +732,18 @@ function install_package (package, homeurl) {
 				});
 
 				var dialog_cancel_pkg_text = "<div>";
-				dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_info_mr.png'></div>";
+				dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_info_mr.png'></div>";
 				dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>INFO</strong></h3>";
 				dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_cancel + "</p></div>";
 				dialog_cancel_pkg_text = dialog_cancel_pkg_text + "</div>";
+
+				$('#cancel_pkg').html(dialog_cancel_pkg_text);
+				$('#cancel_pkg').dialog('open');
+
+				$('#form-offline_update ul').find('li').removeClass('loading');
+				$('#form-offline_update ul').find('li').addClass('error');
+				$('#form-offline_update ul').find('li').find('p').html(package_not_accepted)
+					.append("<i>"+data.message+"</i>");
 
 				var parameters = {};
 				parameters['page'] = 'include/ajax/update_manager.ajax';
@@ -769,7 +785,7 @@ function install_package (package, homeurl) {
 	});
 
 	var dialog_text = "<div>";
-	dialog_text = dialog_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_info_mr.png'></div>";
+	dialog_text = dialog_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_info_mr.png'></div>";
 	dialog_text = dialog_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>" + text1_package_file + "</strong></h3>";
 	dialog_text = dialog_text + "<p style='font-family:Verdana; font-size:12pt;'>" + text2_package_file + "</p></div>";
 	dialog_text = dialog_text + "</div>";
@@ -844,385 +860,38 @@ function update_last_package(package, version, homeurl) {
 	$("#box_online .loading").show();
 	$("#box_online .download_package").show();
 	
-	$("<div id='pkg_apply_dialog' class='dialog ui-dialog-content' title='" + package_available + "'></div>").dialog ({
-		resizable: true,
-		draggable: true,
-		modal: true,
-		overlay: {
-			opacity: 0.5,
-			background: 'black'
-		},
-		width: 600,
-		height: 250,
-		buttons: {
-			"OK": function () {
-				$(this).dialog("close");
-
-				var parameters = {};
-				parameters['page'] = 'include/ajax/update_manager.ajax';
-				parameters['search_minor'] = 1;
+	var parameters = {};
+	parameters['page'] = 'include/ajax/update_manager.ajax';
+	parameters['update_last_free_package'] = 1;
+	parameters['package'] = package;
+	parameters['version'] = version;
+	parameters['accept'] = 0;
+	
+	jQuery.post(
+		home_url + "ajax.php",
+		parameters,
+		function (data) {
+			if (data['in_progress']) {
+				$("#box_online .download_package").hide();
+				
+				$("#box_online .content").html(data['message']);
+				
+				var parameters2 = {};
+				parameters2['page'] = 'include/ajax/update_manager.ajax';
+				parameters2['unzip_free_package'] = 1;
+				parameters2['package'] = package;
+				parameters2['version'] = version;
 				
 				jQuery.post(
 					home_url + "ajax.php",
-					parameters,
+					parameters2,
 					function (data) {
-						$("#box_online .loading").hide();
-						$("#box_online .downloading_package").hide();
-						
-						if (data['have_minor']) {
-							$("<div id='mr_dialog2' class='dialog ui-dialog-content' title='" + mr_available + "'></div>").dialog ({
-								resizable: true,
-								draggable: true,
-								modal: true,
-								overlay: {
-									opacity: 0.5,
-									background: 'black'
-								},
-								width: 600,
-								height: 270,
-								buttons: {
-									"Apply MR": function () {
-										var err = [];
-										err = apply_minor_release(data['mr']);
-
-										if (!err['error']) {
-											if (err['message'] == 'bad_mr_filename') {
-												$("#mr_dialog2").dialog("close");
-												$("<div id='bad_message' class='dialog ui-dialog-content' title='" + mr_available + "'></div>").dialog ({
-													resizable: true,
-													draggable: true,
-													modal: true,
-													overlay: {
-														opacity: 0.5,
-														background: 'black'
-													},
-													width: 600,
-													height: 270,
-													buttons: {
-														"Apply": function() {
-															$(this).dialog("close");
-
-															$("<div id='accept_package_mr_fail' class='dialog ui-dialog-content' title='" + mr_available + "'></div>").dialog ({
-																resizable: true,
-																draggable: true,
-																modal: true,
-																overlay: {
-																	opacity: 0.5,
-																	background: 'black'
-																},
-																width: 600,
-																height: 250,
-																buttons: {
-																	"Ok": function () {
-																		$(this).dialog("close");
-																	}
-																}
-															});
-
-															var dialog_accept_package_mr_fail_text = "<div>";
-															dialog_accept_package_mr_fail_text = dialog_accept_package_mr_fail_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_info_mr.png'></div>";
-															dialog_accept_package_mr_fail_text = dialog_accept_package_mr_fail_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>INFO</strong></h3>";
-															dialog_accept_package_mr_fail_text = dialog_accept_package_mr_fail_text + "<p style='font-family:Verdana; font-size:12pt;'>" + mr_not_accepted_code_yes + "</p></div>";
-															dialog_accept_package_mr_fail_text = dialog_accept_package_mr_fail_text + "</div>";
-															
-															$('#accept_package_mr_fail').html(dialog_accept_package_mr_fail_text);
-															$('#accept_package_mr_fail').dialog('open');
-
-															var parameters2 = {};
-															parameters2['page'] = 'include/ajax/update_manager.ajax';
-															parameters2['update_last_free_package'] = 1;
-															parameters2['package'] = package;
-															parameters2['version'] = version;
-															parameters2['accept'] = 1;
-															
-															jQuery.post(
-																home_url + "ajax.php",
-																parameters2,
-																function (data) {
-																	if (data['in_progress']) {
-																		$("#box_online .loading").hide();
-																		$("#box_online .download_package").hide();
-																		
-																		$("#box_online .content").html(data['message']);
-																		
-																		install_free_package(package, version, homeurl);
-																		setTimeout(function () {
-																			check_progress_update(homeurl);	
-																		}, 1000);
-																	}
-																	else {
-																		$("#box_online .content").html(data['message']);
-																	}
-																},
-																"json"
-															);
-														},
-														"Cancel": function () {
-															$(this).dialog("close");
-
-															$(this).dialog("close");
-
-															$("<div id='cancel_pkg' class='dialog ui-dialog-content' title='" + package_available + "'></div>").dialog ({
-																resizable: true,
-																draggable: true,
-																modal: true,
-																overlay: {
-																	opacity: 0.5,
-																	background: 'black'
-																},
-																width: 600,
-																height: 220,
-																buttons: {
-																	"Ok": function () {
-																		$(this).dialog("close");
-																	}
-																}
-															});
-
-															var dialog_cancel_pkg_text = "<div>";
-															dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_info_mr.png'></div>";
-															dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>INFO</strong></h3>";
-															dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_cancel + "</p></div>";
-															dialog_cancel_pkg_text = dialog_cancel_pkg_text + "</div>";
-															
-															$('#cancel_pkg').html(dialog_cancel_pkg_text);
-															$('#cancel_pkg').dialog('open');
-
-															$("#box_online .content").html(package_not_accepted);
-														}
-													}
-												});
-
-												var dialog_bad_message_text = "<div>";
-												dialog_bad_message_text = dialog_bad_message_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
-												dialog_bad_message_text = dialog_bad_message_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
-												dialog_bad_message_text = dialog_bad_message_text + "<p style='font-family:Verdana; font-size:12pt;'>" + bad_mr_file + "</p></div>";
-												dialog_bad_message_text = dialog_bad_message_text + "</div>";
-												
-												$('#bad_message').html(dialog_bad_message_text);
-												$('#bad_message').dialog('open');
-											}
-											else {
-												$("#mr_dialog2").dialog("close");
-												$("<div id='success_mr' class='dialog ui-dialog-content' title='" + mr_available + "'></div>").dialog ({
-													resizable: true,
-													draggable: true,
-													modal: true,
-													overlay: {
-														opacity: 0.5,
-														background: 'black'
-													},
-													width: 600,
-													height: 250,
-													buttons: {
-														"Ok": function () {
-															$(this).dialog("close");
-														}
-													}
-												});
-
-												var dialog_success_mr_text = "<div>";
-												dialog_success_mr_text = dialog_success_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_exito_mr.png'></div>";
-												dialog_success_mr_text = dialog_success_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>SUCCESS</strong></h3>";
-												dialog_success_mr_text = dialog_success_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + mr_success + "</p></div>";
-												dialog_success_mr_text = dialog_success_mr_text + "</div>";
-												
-												$('#success_mr').html(dialog_success_mr_text);
-												$('#success_mr').dialog('open');
-
-												var parameters2 = {};
-												parameters2['page'] = 'include/ajax/update_manager.ajax';
-												parameters2['update_last_free_package'] = 1;
-												parameters2['package'] = package;
-												parameters2['version'] = version;
-												parameters2['accept'] = 1;
-												
-												jQuery.post(
-													home_url + "ajax.php",
-													parameters2,
-													function (data) {
-														if (data['in_progress']) {
-															$("#box_online .loading").hide();
-															$("#box_online .download_package").hide();
-															
-															$("#box_online .content").html(data['message']);
-															
-															install_free_package(package, version, homeurl);
-															setTimeout(function () {
-																check_progress_update(homeurl);	
-															}, 1000);
-														}
-														else {
-															$("#box_online .content").html(data['message']);
-														}
-													},
-													"json"
-												);
-											}
-										}
-										else {
-											$("#mr_dialog2").dialog("close");
-											$("<div id='error_mr' class='dialog ui-dialog-content' title='" + mr_available + "'></div>").dialog ({
-												resizable: true,
-												draggable: true,
-												modal: true,
-												overlay: {
-													opacity: 0.5,
-													background: 'black'
-												},
-												width: 600,
-												height: 250,
-												buttons: {
-													"Ok": function () {
-														$(this).dialog("close");
-													}
-												}
-											});
-
-											var dialog_error_mr_text = "<div>";
-											dialog_error_mr_text = dialog_error_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
-											dialog_error_mr_text = dialog_error_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
-											dialog_error_mr_text = dialog_error_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + mr_error + "</p></div>";
-											dialog_error_mr_text = dialog_error_mr_text + "</div>";
-											
-											$('#error_mr').html(dialog_error_mr_text);
-											$('#error_mr').dialog('open');
-
-											$("#box_online .content").html(mr_error);
-										}
-									},
-									"Cancel": function () {
-										$(this).dialog("close");
-
-										$("<div id='cancel_mr' class='dialog ui-dialog-content' title='" + mr_available + "'></div>").dialog ({
-											resizable: true,
-											draggable: true,
-											modal: true,
-											overlay: {
-												opacity: 0.5,
-												background: 'black'
-											},
-											width: 600,
-											height: 220,
-											buttons: {
-												"Ok": function () {
-													$(this).dialog("close");
-												}
-											}
-										});
-
-										var dialog_cancel_mr_text = "<div>";
-										dialog_cancel_mr_text = dialog_cancel_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_info_mr.png'></div>";
-										dialog_cancel_mr_text = dialog_cancel_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>INFO</strong></h3>";
-										dialog_cancel_mr_text = dialog_cancel_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + mr_cancel + "</p></div>";
-										dialog_cancel_mr_text = dialog_cancel_mr_text + "</div>";
-										
-										$('#cancel_mr').html(dialog_cancel_mr_text);
-										$('#cancel_mr').dialog('open');
-
-										$("#box_online .loading").hide();
-										$("#box_online .downloading_package").hide();
-										$("#box_online .content").html("MR not accepted");
-									}
-								}
-							});
-
-							$('button:contains(Apply MR)').attr("id","apply_rr_button");
-							$('button:contains(Cancel)').attr("id","cancel_rr_button");
-							
-							var dialog_have_mr_text = "<div>";
-							dialog_have_mr_text = dialog_have_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_warning_mr.png'></div>";
-							dialog_have_mr_text = dialog_have_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>There are a DB changes</strong></h3>";
-							dialog_have_mr_text = dialog_have_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + text1_mr_file + "</p>";
-							dialog_have_mr_text = dialog_have_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + text2_mr_file + "<a style='font-family:Verdana bold; font-size:12pt; color:#82B92E'href=\"index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list\">" + text3_mr_file + "</a>" + text4_mr_file + "</p></div>";
-							dialog_have_mr_text = dialog_have_mr_text + "</div>";
-														
-							$('#mr_dialog2').html(dialog_have_mr_mr_text);
-							$('#mr_dialog2').dialog('open');
-						}
-						else {
-							var parameters2 = {};
-							parameters2['page'] = 'include/ajax/update_manager.ajax';
-							parameters2['update_last_free_package'] = 1;
-							parameters2['package'] = package;
-							parameters2['version'] = version;
-							parameters2['accept'] = 1;
-							
-							jQuery.post(
-								home_url + "ajax.php",
-								parameters2,
-								function (data) {
-									if (data['in_progress']) {
-										$("#box_online .loading").hide();
-										$("#box_online .download_package").hide();
-										
-										$("#box_online .content").html(data['message']);
-										
-										install_free_package(package, version, homeurl);
-										setTimeout(function () {
-											check_progress_update(homeurl);	
-										}, 1000);
-									}
-									else {
-										$("#box_online .content").html(data['message']);
-									}
-								},
-								"json"
-							);
-						}
-					}
-				);
-			},
-			"Cancel": function () {
-				$(this).dialog("close");
-
-				$("<div id='cancel_pkg' class='dialog ui-dialog-content' title='" + package_available + "'></div>").dialog ({
-					resizable: true,
-					draggable: true,
-					modal: true,
-					overlay: {
-						opacity: 0.5,
-						background: 'black'
-					},
-					width: 600,
-					height: 220,
-					buttons: {
-						"Ok": function () {
-							$(this).dialog("close");
-						}
-					}
-				});
-
-				var dialog_cancel_pkg_text = "<div>";
-				dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_info_mr.png'></div>";
-				dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>INFO</strong></h3>";
-				dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_cancel + "</p></div>";
-				dialog_cancel_pkg_text = dialog_cancel_pkg_text + "</div>";
-				
-				$('#cancel_pkg').html(dialog_cancel_pkg_text);
-				$('#cancel_pkg').dialog('open');
-
-				var parameters = {};
-				parameters['page'] = 'include/ajax/update_manager.ajax';
-				parameters['update_last_free_package'] = 1;
-				parameters['package'] = package;
-				parameters['version'] = version;
-				parameters['accept'] = 0;
-				
-				jQuery.post(
-					home_url + "ajax.php",
-					parameters,
-					function (data) {
-						if (data['in_progress']) {
-							$("#box_online .loading").hide();
+						if (data['correct']) {
 							$("#box_online .download_package").hide();
 							
 							$("#box_online .content").html(data['message']);
 							
-							install_free_package(package, version, homeurl);
-							setTimeout(function () {
-								check_progress_update(homeurl);	
-							}, 1000);
+							install_free_package_prev_step(package, version, home_url);
 						}
 						else {
 							$("#box_online .content").html(data['message']);
@@ -1231,17 +900,12 @@ function update_last_package(package, version, homeurl) {
 					"json"
 				);
 			}
-		}
-	});
-
-	var dialog_text = "<div>";
-	dialog_text = dialog_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_info_mr.png'></div>";
-	dialog_text = dialog_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>" + text1_package_file + "</strong></h3>";
-	dialog_text = dialog_text + "<p style='font-family:Verdana; font-size:12pt;'>" + text2_package_file + "</p></div>";
-	dialog_text = dialog_text + "</div>";
-	
-	$('#pkg_apply_dialog').html(dialog_text);
-	$('#pkg_apply_dialog').dialog('open');
+			else {
+				$("#box_online .content").html(data['message']);
+			}
+		},
+		"json"
+	);
 }
 
 function check_progress_update(homeurl) {
@@ -1287,6 +951,385 @@ function check_progress_update(homeurl) {
 	);
 }
 
+function install_free_package_prev_step(package, version, homeurl) {
+	var home_url = (typeof homeurl !== 'undefined') ? homeurl + '/' : '';
+	
+	$("<div id='pkg_apply_dialog' class='dialog ui-dialog-content' title='" + package_available + "'></div>").dialog ({
+		resizable: true,
+		draggable: true,
+		modal: true,
+		overlay: {
+			opacity: 0.5,
+			background: 'black'
+		},
+		width: 600,
+		height: 250,
+		buttons: {
+			"OK": function () {
+				$(this).dialog("close");
+
+				var parameters = {};
+				parameters['page'] = 'include/ajax/update_manager.ajax';
+				parameters['search_minor'] = 1;
+				parameters['ent'] = 0;
+				parameters['package'] = package;
+				parameters['offline'] = 0;
+				
+				jQuery.post(
+					home_url + "ajax.php",
+					parameters,
+					function (data) {
+						$("#box_online .downloading_package").hide();
+						if (data['have_minor']) {
+							$("<div id='mr_dialog2' class='dialog ui-dialog-content' title='" + mr_available + "'></div>").dialog ({
+								resizable: true,
+								draggable: true,
+								modal: true,
+								overlay: {
+									opacity: 0.5,
+									background: 'black'
+								},
+								width: 600,
+								height: 270,
+								buttons: {
+									"Apply MR": function () {
+										var err = [];
+										err = apply_minor_release(data['mr'], package, 0, 0, home_url);
+										if (!err['error']) {
+											if (err['message'] == 'bad_mr_filename') {
+												$("#mr_dialog2").dialog("close");
+												$("<div id='bad_message' class='dialog ui-dialog-content' title='" + mr_available + "'></div>").dialog ({
+													resizable: true,
+													draggable: true,
+													modal: true,
+													overlay: {
+														opacity: 0.5,
+														background: 'black'
+													},
+													width: 600,
+													height: 270,
+													buttons: {
+														"Apply": function() {
+															$(this).dialog("close");
+
+															$("<div id='accept_package_mr_fail' class='dialog ui-dialog-content' title='" + mr_available + "'></div>").dialog ({
+																resizable: true,
+																draggable: true,
+																modal: true,
+																overlay: {
+																	opacity: 0.5,
+																	background: 'black'
+																},
+																width: 600,
+																height: 250,
+																buttons: {
+																	"Ok": function () {
+																		$(this).dialog("close");
+																	}
+																}
+															});
+
+															var dialog_accept_package_mr_fail_text = "<div>";
+															dialog_accept_package_mr_fail_text = dialog_accept_package_mr_fail_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_info_mr.png'></div>";
+															dialog_accept_package_mr_fail_text = dialog_accept_package_mr_fail_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>INFO</strong></h3>";
+															dialog_accept_package_mr_fail_text = dialog_accept_package_mr_fail_text + "<p style='font-family:Verdana; font-size:12pt;'>" + mr_not_accepted_code_yes + "</p></div>";
+															dialog_accept_package_mr_fail_text = dialog_accept_package_mr_fail_text + "</div>";
+															
+															$('#accept_package_mr_fail').html(dialog_accept_package_mr_fail_text);
+															$('#accept_package_mr_fail').dialog('open');
+
+															var parameters2 = {};
+															parameters2['page'] = 'include/ajax/update_manager.ajax';
+															parameters2['update_last_free_package'] = 1;
+															parameters2['package'] = package;
+															parameters2['version'] = version;
+															
+															jQuery.post(
+																home_url + "ajax.php",
+																parameters2,
+																function (data) {
+																	if (data['in_progress']) {
+																		$("#box_online .download_package").hide();
+																		
+																		$("#box_online .content").html(data['message']);
+																		
+																		install_free_package(package, version, homeurl);
+																		setTimeout(function () {
+																			check_progress_update(homeurl);	
+																		}, 1000);
+																	}
+																	else {
+																		$("#box_online .content").html(data['message']);
+																	}
+																},
+																"json"
+															);
+
+															remove_rr_file_to_extras(home_url);
+														},
+														"Cancel": function () {
+															$(this).dialog("close");
+
+															$(this).dialog("close");
+
+															$("<div id='cancel_pkg' class='dialog ui-dialog-content' title='" + package_available + "'></div>").dialog ({
+																resizable: true,
+																draggable: true,
+																modal: true,
+																overlay: {
+																	opacity: 0.5,
+																	background: 'black'
+																},
+																width: 600,
+																height: 220,
+																buttons: {
+																	"Ok": function () {
+																		$(this).dialog("close");
+																	}
+																}
+															});
+
+															var dialog_cancel_pkg_text = "<div>";
+															dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_info_mr.png'></div>";
+															dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>INFO</strong></h3>";
+															dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_cancel + "</p></div>";
+															dialog_cancel_pkg_text = dialog_cancel_pkg_text + "</div>";
+															
+															$('#cancel_pkg').html(dialog_cancel_pkg_text);
+															$('#cancel_pkg').dialog('open');
+
+															$("#box_online .content").html(package_not_accepted);
+														}
+													}
+												});
+
+												var dialog_bad_message_text = "<div>";
+												dialog_bad_message_text = dialog_bad_message_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_error_mr.png'></div>";
+												dialog_bad_message_text = dialog_bad_message_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
+												dialog_bad_message_text = dialog_bad_message_text + "<p style='font-family:Verdana; font-size:12pt;'>" + bad_mr_file + "</p></div>";
+												dialog_bad_message_text = dialog_bad_message_text + "</div>";
+												
+												$('#bad_message').html(dialog_bad_message_text);
+												$('#bad_message').dialog('open');
+											}
+											else {
+												$("#mr_dialog2").dialog("close");
+												$("<div id='success_mr' class='dialog ui-dialog-content' title='" + mr_available + "'></div>").dialog ({
+													resizable: true,
+													draggable: true,
+													modal: true,
+													overlay: {
+														opacity: 0.5,
+														background: 'black'
+													},
+													width: 600,
+													height: 250,
+													buttons: {
+														"Ok": function () {
+															$(this).dialog("close");
+														}
+													}
+												});
+
+												var dialog_success_mr_text = "<div>";
+												dialog_success_mr_text = dialog_success_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_exito_mr.png'></div>";
+												dialog_success_mr_text = dialog_success_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>SUCCESS</strong></h3>";
+												dialog_success_mr_text = dialog_success_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + mr_success + "</p></div>";
+												dialog_success_mr_text = dialog_success_mr_text + "</div>";
+												
+												$('#success_mr').html(dialog_success_mr_text);
+												$('#success_mr').dialog('open');
+
+												var parameters2 = {};
+												parameters2['page'] = 'include/ajax/update_manager.ajax';
+												parameters2['update_last_free_package'] = 1;
+												parameters2['package'] = package;
+												parameters2['version'] = version;
+												
+												jQuery.post(
+													home_url + "ajax.php",
+													parameters2,
+													function (data) {
+														if (data['in_progress']) {
+															$("#box_online .download_package").hide();
+															
+															$("#box_online .content").html(data['message']);
+															
+															install_free_package(package, version, homeurl);
+															setTimeout(function () {
+																check_progress_update(homeurl);	
+															}, 1000);
+														}
+														else {
+															$("#box_online .content").html(data['message']);
+														}
+													},
+													"json"
+												);
+
+												remove_rr_file_to_extras(home_url);
+											}
+										}
+										else {
+											$("#mr_dialog2").dialog("close");
+											$("<div id='error_mr' class='dialog ui-dialog-content' title='" + mr_available + "'></div>").dialog ({
+												resizable: true,
+												draggable: true,
+												modal: true,
+												overlay: {
+													opacity: 0.5,
+													background: 'black'
+												},
+												width: 600,
+												height: 250,
+												buttons: {
+													"Ok": function () {
+														$(this).dialog("close");
+													}
+												}
+											});
+
+											var dialog_error_mr_text = "<div>";
+											dialog_error_mr_text = dialog_error_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_error_mr.png'></div>";
+											dialog_error_mr_text = dialog_error_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
+											dialog_error_mr_text = dialog_error_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + mr_error + "</p></div>";
+											dialog_error_mr_text = dialog_error_mr_text + "</div>";
+											
+											$('#error_mr').html(dialog_error_mr_text);
+											$('#error_mr').dialog('open');
+
+											$("#box_online .content").html(mr_error);
+										}
+									},
+									"Cancel": function () {
+										$(this).dialog("close");
+
+										$("<div id='cancel_mr' class='dialog ui-dialog-content' title='" + mr_available + "'></div>").dialog ({
+											resizable: true,
+											draggable: true,
+											modal: true,
+											overlay: {
+												opacity: 0.5,
+												background: 'black'
+											},
+											width: 600,
+											height: 220,
+											buttons: {
+												"Ok": function () {
+													$(this).dialog("close");
+												}
+											}
+										});
+
+										var dialog_cancel_mr_text = "<div>";
+										dialog_cancel_mr_text = dialog_cancel_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_info_mr.png'></div>";
+										dialog_cancel_mr_text = dialog_cancel_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>INFO</strong></h3>";
+										dialog_cancel_mr_text = dialog_cancel_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + mr_cancel + "</p></div>";
+										dialog_cancel_mr_text = dialog_cancel_mr_text + "</div>";
+										
+										$('#cancel_mr').html(dialog_cancel_mr_text);
+										$('#cancel_mr').dialog('open');
+
+										$("#box_online .loading").hide();
+										$("#box_online .downloading_package").hide();
+										$("#box_online .content").html("MR not accepted");
+									}
+								}
+							});
+
+							$('button:contains(Apply MR)').attr("id","apply_rr_button");
+							$('button:contains(Cancel)').attr("id","cancel_rr_button");
+							
+							var dialog_have_mr_text = "<div>";
+							dialog_have_mr_text = dialog_have_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_warning_mr.png'></div>";
+							dialog_have_mr_text = dialog_have_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>This package includes db changes</strong></h3>";
+							dialog_have_mr_text = dialog_have_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + text1_mr_file + "</p>";
+							dialog_have_mr_text = dialog_have_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + text2_mr_file + "<a style='font-family:Verdana bold; font-size:12pt; color:#82B92E'href=\"index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list\">" + text3_mr_file + "</a>" + text4_mr_file + "</p></div>";
+							dialog_have_mr_text = dialog_have_mr_text + "</div>";
+														
+							$('#mr_dialog2').html(dialog_have_mr_text);
+							$('#mr_dialog2').dialog('open');
+						}
+						else {
+							var parameters2 = {};
+							parameters2['page'] = 'include/ajax/update_manager.ajax';
+							parameters2['update_last_free_package'] = 1;
+							parameters2['package'] = package;
+							parameters2['version'] = version;
+							
+							jQuery.post(
+								home_url + "ajax.php",
+								parameters2,
+								function (data) {
+									if (data['in_progress']) {
+										$("#box_online .download_package").hide();
+										
+										$("#box_online .content").html(data['message']);
+										
+										install_free_package(package, version, homeurl);
+										setTimeout(function () {
+											check_progress_update(homeurl);	
+										}, 1000);
+									}
+									else {
+										$("#box_online .content").html(data['message']);
+									}
+								},
+								"json"
+							);
+
+							remove_rr_file_to_extras(home_url);
+						}
+					},
+					"json"
+				);
+			},
+			"Cancel": function () {
+				$(this).dialog("close");
+
+				$("<div id='cancel_pkg' class='dialog ui-dialog-content' title='" + package_available + "'></div>").dialog ({
+					resizable: true,
+					draggable: true,
+					modal: true,
+					overlay: {
+						opacity: 0.5,
+						background: 'black'
+					},
+					width: 600,
+					height: 220,
+					buttons: {
+						"Ok": function () {
+							$(this).dialog("close");
+						}
+					}
+				});
+
+				var dialog_cancel_pkg_text = "<div>";
+				dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_info_mr.png'></div>";
+				dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>INFO</strong></h3>";
+				dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_cancel + "</p></div>";
+				dialog_cancel_pkg_text = dialog_cancel_pkg_text + "</div>";
+				
+				$('#cancel_pkg').html(dialog_cancel_pkg_text);
+				$('#cancel_pkg').dialog('open');
+
+				$("#box_online .loading").hide();
+				$("#box_online .progressbar").hide();
+				$("#box_online .content").html(package_cancel);
+			}
+		}
+	});
+
+	var dialog_text = "<div>";
+	dialog_text = dialog_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_info_mr.png'></div>";
+	dialog_text = dialog_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>" + text1_package_file + "</strong></h3>";
+	dialog_text = dialog_text + "<p style='font-family:Verdana; font-size:12pt;'>" + text2_package_file + "</p></div>";
+	dialog_text = dialog_text + "</div>";
+	
+	$('#pkg_apply_dialog').html(dialog_text);
+	$('#pkg_apply_dialog').dialog('open');
+}
+
 function install_free_package(package, version, homeurl) {
 	var home_url = (typeof homeurl !== 'undefined') ? homeurl + '/' : '';
 	
@@ -1321,7 +1364,7 @@ function install_free_package(package, version, homeurl) {
 			});
 
 			var dialog_error_pkg_text = "<div>";
-			dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
+			dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_error_mr.png'></div>";
 			dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
 			dialog_error_pkg_text = dialog_error_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + data['message'] + "</p></div>";
 			dialog_error_pkg_text = dialog_error_pkg_text + "</div>";
@@ -1357,13 +1400,15 @@ function install_free_package(package, version, homeurl) {
 					});
 
 					var dialog_success_pkg_text = "<div>";
-					dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_exito_mr.png'></div>";
+					dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_exito_mr.png'></div>";
 					dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>SUCCESS</strong></h3>";
 					dialog_success_pkg_text = dialog_success_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + data['message'] + "</p></div>";
 					dialog_success_pkg_text = dialog_success_pkg_text + "</div>";
 					
 					$('#success_pkg').html(dialog_success_pkg_text);
 					$('#success_pkg').dialog('open');
+
+					$("#pkg_version").text(version);
 
 					$("#box_online .loading").hide();
 					$("#box_online .progressbar").hide();
@@ -1389,7 +1434,7 @@ function install_free_package(package, version, homeurl) {
 					});
 
 					var dialog_error_pkg_text = "<div>";
-					dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
+					dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_error_mr.png'></div>";
 					dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
 					dialog_error_pkg_text = dialog_error_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + data['message'] + "</p></div>";
 					dialog_error_pkg_text = dialog_error_pkg_text + "</div>";
@@ -1405,12 +1450,39 @@ function install_free_package(package, version, homeurl) {
 			}
 			else {
 				stop_check_progress = 1;
+
+				$("<div id='error_pkg' class='dialog ui-dialog-content' title='" + package_available + "'></div>").dialog ({
+					resizable: true,
+					draggable: true,
+					modal: true,
+					overlay: {
+						opacity: 0.5,
+						background: 'black'
+					},
+					width: 600,
+					height: 250,
+					buttons: {
+						"Ok": function () {
+							$(this).dialog("close");
+						}
+					}
+				});
+
+				var dialog_error_pkg_text = "<div>";
+				dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_error_mr.png'></div>";
+				dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
+				dialog_error_pkg_text = dialog_error_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + data['message'] + "</p></div>";
+				dialog_error_pkg_text = dialog_error_pkg_text + "</div>";
+				
+				$('#error_pkg').html(dialog_error_pkg_text);
+				$('#error_pkg').dialog('open');
 			}
 		}
 	});
 }
 
-function apply_minor_release (n_mr) {
+function apply_minor_release (n_mr, pkg, ent, off, homeurl) {
+	var home_url = (typeof homeurl !== 'undefined') ? homeurl + '/' : '';
 	var error = [];
 	error['error'] = false;
 	$('#mr_dialog2').empty();
@@ -1418,6 +1490,9 @@ function apply_minor_release (n_mr) {
 		var params = {};
 		params["updare_rr"] = 1;
 		params["number"] = mr;
+		params["ent"] = ent;
+		params["package"] = pkg;
+		params["offline"] = off;
 		params["page"] = "include/ajax/rolling_release.ajax";
 
 		jQuery.ajax ({
@@ -1425,7 +1500,7 @@ function apply_minor_release (n_mr) {
 			async: false,
 			dataType: "html",
 			type: "POST",
-			url: "ajax.php",
+			url: home_url + "ajax.php",
 			success: function (data) {
 				$('#mr_dialog2').append("</div style='max-height:50px'>");
 				if (data == 'bad_mr_filename') {
@@ -1454,4 +1529,37 @@ function apply_minor_release (n_mr) {
 	$(".ui-dialog-buttonset").empty();
 
 	return error;
+}
+
+function remove_rr_file (number, homeurl) {
+	var home_url = (typeof homeurl !== 'undefined') ? homeurl + '/' : '';
+	var params = {};
+	params["remove_rr"] = 1;
+	params["number"] = number;
+	params["page"] = "include/ajax/rolling_release.ajax";
+
+	jQuery.ajax ({
+		data: params,
+		dataType: "html",
+		type: "POST",
+		url: home_url + "ajax.php",
+		success: function (data) {
+		}
+	});
+}
+
+function remove_rr_file_to_extras (homeurl) {
+	var home_url = (typeof homeurl !== 'undefined') ? homeurl + '/' : '';
+	var params = {};
+	params["remove_rr_extras"] = 1;
+	params["page"] = "include/ajax/rolling_release.ajax";
+
+	jQuery.ajax ({
+		data: params,
+		dataType: "html",
+		type: "POST",
+		url: home_url + "ajax.php",
+		success: function (data) {
+		}
+	});
 }

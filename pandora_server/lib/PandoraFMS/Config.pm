@@ -42,8 +42,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG";
-my $pandora_build = "170316";
+my $pandora_version = "7.0NG.702";
+my $pandora_build = "170510";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -160,15 +160,17 @@ sub pandora_get_sharedconfig ($$) {
 	# Pandora FMS Console's attachment directory
 	$pa_config->{"attachment_dir"} = pandora_get_tconfig_token ($dbh, 'attachment_store', '/var/www/pandora_console/attachment');
 
-	# Metaconsole agent cache.
-	$pa_config->{"metaconsole_agent_cache"} = pandora_get_tconfig_token ($dbh, 'metaconsole_agent_cache', 0);
-	
 	#Limit of events replicate in metaconsole
 	$pa_config->{'replication_limit'} = pandora_get_tconfig_token ($dbh, 'replication_limit', 1000);
 	$pa_config->{'include_agents'} = pandora_get_tconfig_token ($dbh, 'include_agents', 0);
 
 	#Public url
 	$pa_config->{'public_url'} = pandora_get_tconfig_token ($dbh, 'public_url', 'http://localhost/pandora_console');
+
+	# Node with a metaconsole license.
+	# NOTE: This must be read when checking license limits!
+	#$pa_config->{"node_metaconsole"} = pandora_get_tconfig_token ($dbh, 'node_metaconsole', 0);
+
 
 	if ($pa_config->{'include_agents'} eq '') {
 		$pa_config->{'include_agents'} = 0;
@@ -221,6 +223,7 @@ sub pandora_load_config {
 	$pa_config->{"exportserver"} = 1; # default
 	$pa_config->{"inventoryserver"} = 1; # default
 	$pa_config->{"webserver"} = 1; # 3.0
+	$pa_config->{"web_timeout"} = 60; # 6.0SP5
 	$pa_config->{"transactionalserver"} = 0; # Default 0, introduced on 6.1
 	$pa_config->{"transactional_threads"} = 1; # Default 1, introduced on 6.1
 	$pa_config->{"transactional_threshold"} = 2; # Default 2, introduced on 6.1
@@ -400,6 +403,7 @@ sub pandora_load_config {
 	$pa_config->{"stats_interval"} = 300;
 	$pa_config->{"agentaccess"} = 1; 
 	$pa_config->{"event_storm_protection"} = 0; 
+	$pa_config->{"node_metaconsole"} = 0; # > 7.0NG
 	# -------------------------------------------------------------------------
 	
 	#SNMP Forwarding tokens
@@ -633,6 +637,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^webserver\s+([0-9]*)/i) {
 			$pa_config->{'webserver'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^web_timeout\s+([0-9]*)/i) {
+			$pa_config->{'web_timeout'}= clean_blank($1); 
 		}
 		elsif ($parametro =~ m/^transactionalserver\s+([0-9]*)/i) {
 			$pa_config->{'transactionalserver'}= clean_blank($1);

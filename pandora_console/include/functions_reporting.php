@@ -311,7 +311,8 @@ function reporting_make_reporting_data($report = null, $id_report,
 					$type,
 					$force_width_chart,
 					$force_height_chart,
-					'netflow_area');
+					'netflow_area',
+					$pdf);
 				break;
 			case 'netflow_pie':
 				$report['contents'][] = reporting_netflow(
@@ -320,7 +321,8 @@ function reporting_make_reporting_data($report = null, $id_report,
 					$type,
 					$force_width_chart,
 					$force_height_chart,
-					'netflow_pie');
+					'netflow_pie',
+					$pdf);
 				break;
 			case 'netflow_data':
 				$report['contents'][] = reporting_netflow(
@@ -329,7 +331,8 @@ function reporting_make_reporting_data($report = null, $id_report,
 					$type,
 					$force_width_chart,
 					$force_height_chart,
-					'netflow_data');
+					'netflow_data',
+					$pdf);
 				break;
 			case 'netflow_statistics':
 				$report['contents'][] = reporting_netflow(
@@ -338,7 +341,8 @@ function reporting_make_reporting_data($report = null, $id_report,
 					$type,
 					$force_width_chart,
 					$force_height_chart,
-					'netflow_statistics');
+					'netflow_statistics',
+					$pdf);
 				break;
 			case 'netflow_summary':
 				$report['contents'][] = reporting_netflow(
@@ -347,7 +351,8 @@ function reporting_make_reporting_data($report = null, $id_report,
 					$type,
 					$force_width_chart,
 					$force_height_chart,
-					'netflow_summary');
+					'netflow_summary',
+					$pdf);
 				break;
 			case 'monitor_report':
 				$report['contents'][] = reporting_monitor_report(
@@ -3241,7 +3246,7 @@ function reporting_monitor_report($report, $content) {
 }
 
 function reporting_netflow($report, $content, $type,
-	$force_width_chart, $force_height_chart, $type_netflow = null) {
+	$force_width_chart, $force_height_chart, $type_netflow = null, $pdf = false) {
 	
 	global $config;
 	
@@ -3315,7 +3320,7 @@ function reporting_netflow($report, $content, $type,
 				$filter,
 				$content['top_n_value'],
 				$content ['server_name'],
-				'HTML');
+				$pdf ? 'PDF' : 'HTML');
 			break;
 		case 'data':
 			break;
@@ -5962,7 +5967,7 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 					false,
 					$width,
 					$height,
-					'<br>' . $label,
+					$label,
 					'',
 					false,
 					$only_avg,
@@ -5987,7 +5992,7 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 					false,
 					$width,
 					$height,
-					'<br>' . $label,
+					$label,
 					'',
 					false,
 					$only_avg,

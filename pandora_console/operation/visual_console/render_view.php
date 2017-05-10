@@ -198,10 +198,16 @@ if ($config['pure']) {
 		/* Avoid the main_pure container 1000px height */
 		body.pure {
 			min-height: 100px;
+			<?php
+			echo "background-color: ".$layout['background_color'].";";
+			?>
 		}
 		div#main_pure {
 			height: 100%;
 			margin: 0px;
+			<?php
+			echo "background-color: ".$layout['background_color'].";";
+			?>
 		}
 	</style>
 	<?php
@@ -302,9 +308,8 @@ $ignored_params['refr'] = '';
 			}
 		});
 		
-		$(".graph").each(function(){
-			height =	parseInt($(this).css("height")) - 30;
-		
+		$(".graph:not([class~='noresizevc'])").each(function(){
+			height = parseInt($(this).css("height")) - 30;
 			$(this).css('height', height);
 		});
 		

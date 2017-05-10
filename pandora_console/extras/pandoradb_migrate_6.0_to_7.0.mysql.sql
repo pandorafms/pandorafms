@@ -1037,9 +1037,9 @@ CREATE TABLE IF NOT EXISTS `trel_item` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`id_parent` int(10) unsigned NOT NULL default 0,
 	`id_child` int(10) unsigned NOT NULL default 0,
-	`id_map` int(10) unsigned NOT NULL default 0,
-	`id_parent_source_data` int(10) unsigned NOT NULL default 0,
-	`id_child_source_data` int(10) unsigned NOT NULL default 0,
+	`id_map` int(11) unsigned NOT NULL default 0,
+	`id_parent_source_data` int(11) unsigned NOT NULL default 0,
+	`id_child_source_data` int(11) unsigned NOT NULL default 0,
 	`parent_type` int(10) unsigned NOT NULL default 0,
 	`child_type` int(10) unsigned NOT NULL default 0,
 	`id_item` int(10) unsigned NOT NULL default 0,
@@ -1130,13 +1130,6 @@ ALTER TABLE tmap MODIFY `id_user` varchar(128);
 ALTER TABLE titem MODIFY `source_data` int(10) unsigned;
 
 -- ---------------------------------------------------------------------
--- Table `trel_item`
--- ---------------------------------------------------------------------
-ALTER TABLE trel_item ADD `id_parent_source_data` int(11) NOT NULL DEFAULT 0;
-ALTER TABLE trel_item ADD `id_child_source_data` int(11) NOT NULL DEFAULT 0;
-ALTER TABLE trel_item ADD `id_map` int(11) NOT NULL DEFAULT 0;
-
--- ---------------------------------------------------------------------
 -- Table `tconfig`
 -- ---------------------------------------------------------------------
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('big_operation_step_datos_purge', '100');
@@ -1167,12 +1160,12 @@ UPDATE `tlink` SET `link` = 'https://github.com/pandorafms/pandorafms/issues' WH
 -- ---------------------------------------------------------------------
 ALTER TABLE tevent_filter ADD COLUMN `date_from` date DEFAULT NULL;
 ALTER TABLE tevent_filter ADD COLUMN `date_to` date DEFAULT NULL;
-
 -- ---------------------------------------------------------------------
 -- Table `tusuario`
 -- ---------------------------------------------------------------------
-ALTER TABLE tusuario ADD COLUMN `id_filter` int(10) unsigned NULL default NULL;
-ALTER TABLE tusuario CONSTRAINT `fk_id_filter` FOREIGN KEY (id_filter) REFERENCES tevent_filter(id_filter) ON DELETE SET NULL;
+
+ALTER TABLE tusuario ADD COLUMN `id_filter` int(10) UNSIGNED NULL DEFAULT NULL;
+ALTER TABLE tusuario ADD CONSTRAINT `fk_id_filter` FOREIGN KEY (`id_filter`) REFERENCES tevent_filter(`id_filter`) ON DELETE SET NULL;
 ALTER TABLE tusuario ADD COLUMN `session_time` int(10) signed NOT NULL default '0';
 
 -- ---------------------------------------------------------------------
@@ -1288,9 +1281,32 @@ ALTER TABLE twidget_dashboard MODIFY options LONGTEXT NOT NULL default "";
 -- Table `trecon_task`
 -- ---------------------------------------------------------------------
 ALTER TABLE trecon_task ADD `alias_as_name` int(2) unsigned default '0';
+ALTER TABLE trecon_task ADD `snmp_enabled` int(2) unsigned default '0';
+ALTER TABLE trecon_task ADD `vlan_enabled` int(2) unsigned default '0';
 
 -- ---------------------------------------------------------------------
 -- Table `twidget` AND Table `twidget_dashboard`
 -- ---------------------------------------------------------------------
 UPDATE twidget_dashboard SET id_widget = (SELECT id FROM twidget WHERE unique_name = 'graph_module_histogram') WHERE id_widget = (SELECT id FROM twidget WHERE unique_name = 'graph_availability');
 DELETE FROM twidget WHERE unique_name = 'graph_availability';
+
+-- ---------------------------------------------------------------------
+-- Table `tbackup` (Extension table. Modify only if exists)
+-- ---------------------------------------------------------------------
+DROP PROCEDURE IF EXISTS addcol;
+delimiter //
+CREATE PROCEDURE addcol()
+BEGIN
+SET @vv1 = (SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = 'tbackup');
+IF @vv1>0 THEN
+	ALTER TABLE tbackup ADD COLUMN `filepath` varchar(512) NOT NULL DEFAULT "";
+END IF;
+END;
+//
+CALL addcol();
+DROP PROCEDURE addcol;
+
+-- ---------------------------------------------------------------------
+-- Table `tconfig`
+-- ---------------------------------------------------------------------
+UPDATE `tconfig` SET `value` = 'login_logo_v7.png' where `token`='custom_logo_login';

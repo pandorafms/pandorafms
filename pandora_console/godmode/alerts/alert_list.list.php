@@ -576,8 +576,9 @@ foreach ($simple_alerts as $alert) {
 			$own_groups = users_get_groups($config['id_user'], 'LM', true);
 		$filter_groups = '';
 		$filter_groups = implode(',', array_keys($own_groups));
-		$actions = alerts_get_alert_actions_filter(true, 'id_group IN (' . $filter_groups . ')');
-		
+		if($filter_groups != null){
+			$actions = alerts_get_alert_actions_filter(true, 'id_group IN (' . $filter_groups . ')');	
+		}
 		$data[2] .= '<div id="add_action-div-'.$alert['id'].'" style="display:none;text-align:left">';
 			$data[2] .= '<form id="add_action_form-'.$alert['id'] . '" method="post">';
 				$data[2] .= '<table class="databox_color" style="width:100%">';
@@ -688,7 +689,7 @@ foreach ($simple_alerts as $alert) {
 			else {
 				$img = 'images/policies.png';
 
-				$data[3] .= '&nbsp;&nbsp;<a href="?sec=gpolicies&sec2=enterprise/godmode/policies/policies&pure='.$pure.'&id=' . $policyInfo['id'] . '">' .
+				$data[3] .= '&nbsp;&nbsp;<a href="?sec=gmodules&sec2=enterprise/godmode/policies/policies&pure='.$pure.'&id=' . $policyInfo['id'] . '">' .
 					html_print_image($img, true, array('title' => $policyInfo['name'])) .
 					'</a>';
 			}

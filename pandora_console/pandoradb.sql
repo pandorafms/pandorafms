@@ -728,6 +728,8 @@ CREATE TABLE IF NOT EXISTS `trecon_task` (
 	`disabled` tinyint(1) unsigned NOT NULL DEFAULT '0',
 	`macros` TEXT,
 	`alias_as_name` tinyint(2) NOT NULL default '0',
+	`snmp_enabled` tinyint(1) unsigned default '0',
+	`vlan_enabled` tinyint(1) unsigned default '0',
 	PRIMARY KEY  (`id_rt`),
 	KEY `recon_task_daemon` (`id_recon_server`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;

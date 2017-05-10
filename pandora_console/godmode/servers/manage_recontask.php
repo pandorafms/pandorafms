@@ -108,7 +108,8 @@ if ((isset ($_GET["update"])) OR ((isset ($_GET["create"])))) {
 	$parent_detection = (int) get_parameter ("parent_detection", 0);
 	$parent_recursion = (int) get_parameter ("parent_recursion", 1);
 	$alias_as_name = (int) get_parameter ("alias_as_name", 0);
-	
+	$snmp_enabled = (int) get_parameter ('snmp_enabled', 0);
+	$vlan_enabled = (int) get_parameter ('vlan_enabled', 0);
 	// Get macros
 	$macros = (string) get_parameter ('macros');
 	
@@ -151,7 +152,9 @@ if (isset($_GET["update"])) {
 		'parent_detection' => $parent_detection,
 		'parent_recursion' => $parent_recursion,
 		'macros' => $macros,
-		'alias_as_name' => $alias_as_name
+		'alias_as_name' => $alias_as_name,
+		'snmp_enabled' => $snmp_enabled,
+		'vlan_enabled' => $vlan_enabled
 		);
 		
 	$where = array('id_rt' => $id);
@@ -212,7 +215,9 @@ if (isset($_GET["create"])) {
 		'parent_detection' => $parent_detection,
 		'parent_recursion' => $parent_recursion,
 		'macros' => $macros,
-		'alias_as_name' => $alias_as_name
+		'alias_as_name' => $alias_as_name,
+		'snmp_enabled' => $snmp_enabled,
+		'vlan_enabled' => $vlan_enabled
 		);
 
 	$name = io_safe_output($name);

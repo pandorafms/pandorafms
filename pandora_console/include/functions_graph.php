@@ -1773,10 +1773,12 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	}
 	*/
 	
+	if($config["fixed_graph"] == false){
+		$water_mark = array(
+			'file' => $config['homedir'] .  "/images/logo_vertical_water.png",
+			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	}
 	
-	$water_mark = array(
-		'file' => $config['homedir'] .  "/images/logo_vertical_water.png",
-		'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	
 	
 	//Work around for fixed the agents name with huge size chars.
@@ -4240,7 +4242,7 @@ function graph_netflow_aggregate_area ($data, $period, $width, $height, $unit = 
 		$sources, array (), ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 		"", $unit, $homeurl,
 		$config['homedir'] .  "/images/logo_vertical_water.png",
-		$config['fontpath'], $config['font_size'], $unit, 2);
+		$config['fontpath'], $config['font_size'], $unit, $ttl);
 }
 
 

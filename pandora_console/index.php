@@ -28,6 +28,11 @@ if ($develop_bypass != 1) {
 	if (! file_exists ("include/config.php")) {
 		if (! file_exists ("install.php")) {
 			$login_screen = 'error_noconfig';
+			$ownDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
+			$config['homedir'] = $ownDir;
+			$config['homeurl'] =  $_SERVER['REQUEST_URI'];
+			$config['homeurl_static'] =  $_SERVER['REQUEST_URI'];
+			
 			require('general/error_screen.php');
 			exit;
 		}
@@ -60,7 +65,12 @@ if ($develop_bypass != 1) {
 		if ((substr (sprintf ('%o', fileperms('include/config.php')), -4) != "0600") &&
 			(substr (sprintf ('%o', fileperms('include/config.php')), -4) != "0660") &&
 			(substr (sprintf ('%o', fileperms('include/config.php')), -4) != "0640")) {
+			$ownDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
+			$config['homedir'] = $ownDir;
+			$config['homeurl'] =  $_SERVER['REQUEST_URI'];
+			$config['homeurl_static'] =  $_SERVER['REQUEST_URI'];
 			$login_screen = 'error_perms';
+			
 			require('general/error_screen.php');
 			exit;
 		}
@@ -80,15 +90,15 @@ if(session_id() == '') {
 require_once ("include/config.php");
 require_once ("include/functions_config.php");
 
+if (isset($config["error"])) {
+	$login_screen = $config["error"];
+	require('general/error_screen.php');
+	exit;
+}
 
 // If metaconsole activated, redirect to it
 if ($config['metaconsole'] == 1 && $config['enterprise_installed'] == 1) {
 	header ("Location: " . $config['homeurl'] . "enterprise/meta");
-}
-
-/* Enterprise support */
-if (file_exists (ENTERPRISE_DIR . "/load_enterprise.php")) {
-	include_once (ENTERPRISE_DIR . "/load_enterprise.php");
 }
 
 if (file_exists (ENTERPRISE_DIR . "/include/functions_login.php")) {
@@ -339,7 +349,7 @@ if (! isset ($config['id_user'])) {
 					case PASSSWORD_POLICIES_FIRST_CHANGE: //first change
 					case PASSSWORD_POLICIES_EXPIRED: //pass expired
 						$expired_pass = true;
-						login_change_password($nick);
+						login_change_password($nick, '',$check_status);
 						break;
 				}
 			}
@@ -572,6 +582,12 @@ else {
 		}
 	}
 }
+
+/* Enterprise support */
+if (file_exists (ENTERPRISE_DIR . "/load_enterprise.php")) {
+	include_once (ENTERPRISE_DIR . "/load_enterprise.php");
+}
+
 // Log off
 if (isset ($_GET["bye"])) {
 	include ("general/logoff.php");

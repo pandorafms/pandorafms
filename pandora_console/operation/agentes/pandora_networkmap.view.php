@@ -759,3 +759,27 @@ else {
 	show_networkmap($id, $user_readonly, $nodes_and_relations, $dash_mode, $map_dash_details);
 }
 ?>
+
+<script>
+$(document).ready(function() {
+	$("*").on("click", function(){
+			if($("[aria-describedby=dialog_node_edit]").css('display') == 'block'){
+			$('#foot').css({'top':parseInt($("[aria-describedby=dialog_node_edit]").css('height')+$("[aria-describedby=dialog_node_edit]").css('top')),'position':'relative'});	
+			
+		}
+		else{
+			$('#foot').css({'position':'','top':'0'});
+		}
+	
+    
+});
+
+$("[aria-describedby=dialog_node_edit]").on('dialogclose', function(event) {
+	
+	 $('#foot').css({'position':'','top':'0'});
+	
+});
+
+
+});
+</script>

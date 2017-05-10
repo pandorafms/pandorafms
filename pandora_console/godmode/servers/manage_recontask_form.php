@@ -124,6 +124,8 @@ if (isset($_GET["update"]) || (isset($_GET["upd"]))) {
 		$parent_recursion = $row["parent_recursion"];
 		$macros = $row["macros"];
 		$alias_as_name = $row["alias_as_name"];
+		$snmp_enabled = $row["snmp_enabled"];
+		$vlan_enabled = $row["vlan_enabled"];
 		
 		$name_script = db_get_value('name',
 			'trecon_script', 'id_recon_script', $id_recon_script);
@@ -169,6 +171,8 @@ elseif (isset($_GET["create"]) || isset($_GET["crt"])) {
 		$parent_recursion = 5;
 		$macros = '';
 		$alias_as_name = 0;
+		$snmp_enabled = 0;
+		$vlan_enabled = 0;
 	}
 
 	$modify = false;
@@ -202,18 +206,20 @@ $table->rowclass[5] = "network_sweep";
 $table->rowclass[7] = "network_sweep";
 $table->rowclass[8] = "network_sweep";
 $table->rowclass[11] = "network_sweep";
-$table->rowclass[17] = "network_sweep";
+$table->rowclass[12] = "network_sweep";
 $table->rowclass[18] = "network_sweep";
 $table->rowclass[19] = "network_sweep";
 $table->rowclass[20] = "network_sweep";
 $table->rowclass[21] = "network_sweep";
+$table->rowclass[22] = "network_sweep";
+$table->rowclass[23] = "network_sweep";
 
 $table->rowclass[6] = "recon_script";
-$table->rowclass[12] = "recon_script";
 $table->rowclass[13] = "recon_script";
 $table->rowclass[14] = "recon_script";
 $table->rowclass[15] = "recon_script";
 $table->rowclass[16] = "recon_script";
+$table->rowclass[17] = "recon_script";
 // Name
 $table->data[0][0] = "<b>" . __('Task name') . "</b>";
 $table->data[0][1] = html_print_input_text ('name', $name, '', 25, 0, true);
@@ -240,6 +246,7 @@ $table->data[2][1] = html_print_select ($fields, "mode", $mode, '', '', 0, true)
 
 // Network 
 $table->data[3][0] = "<b>" . __('Network') . "</b>";
+$table->data[3][0] .= ui_print_help_tip (__('You can specify several networks, separated by commas, for example: 192.168.50.0/24,192.168.60.0/24'), true);
 $table->data[3][1] = html_print_input_text ('network', $network, '', 25, 0, true);
 
 // Interval
@@ -312,15 +319,20 @@ $table->data[10][0] = "<b>".__('Incident');
 $table->data[10][1] = html_print_select ($values, "create_incident", $create_incident,
 	'','','',true) . ' ' . ui_print_help_tip (__('Choose if the discovery of a new system creates an incident or not.'), true);
 
+//snmp_enabled
+$table->data[11][0] = "<b>".__('SNMP enabled');
+$table->data[11][1] =  html_print_checkbox ('snmp_enabled', 1, $snmp_enabled, true);
+
 // SNMP default community
-$table->data[11][0] = "<b>".__('SNMP Default community');
-$table->data[11][1] =  html_print_input_text ('snmp_community', $snmp_community, '', 35, 0, true);
+$table->data[12][0] = "<b>".__('SNMP Default community');
+$table->data[12][0] .= ui_print_help_tip (__('You can specify several values, separated by commas, for example: public,mysecret,1234'), true);
+$table->data[12][1] =  html_print_input_text ('snmp_community', $snmp_community, '', 35, 0, true);
 
 // Explanation
 $explanation = db_get_value('description', 'trecon_script', 'id_recon_script', $id_recon_script);
 
-$table->data[12][0] = "<b>" . __('Explanation') . "</b>";
-$table->data[12][1] = "<span id='spinner_layout' style='display: none;'>" . html_print_image ("images/spinner.gif", true) .
+$table->data[13][0] = "<b>" . __('Explanation') . "</b>";
+$table->data[13][1] = "<span id='spinner_layout' style='display: none;'>" . html_print_image ("images/spinner.gif", true) .
 "</span>" . html_print_textarea('explanation', 4, 60, $explanation, 'style="width: 388px;"', true);
 
 // A hidden "model row" to clone it from javascript to add fields dynamicaly
@@ -356,24 +368,28 @@ if (!empty($macros)) {
 }
 
 // Comments
-$table->data[17][0] = "<b>".__('Comments');
-$table->data[17][1] =  html_print_input_text ('description', $description, '', 45, 0, true);
+$table->data[18][0] = "<b>".__('Comments');
+$table->data[18][1] =  html_print_input_text ('description', $description, '', 45, 0, true);
 
 // OS detection
-$table->data[18][0] = "<b>".__('OS detection');
-$table->data[18][1] =  html_print_checkbox ('os_detect', 1, $os_detect, true);
+$table->data[19][0] = "<b>".__('OS detection');
+$table->data[19][1] =  html_print_checkbox ('os_detect', 1, $os_detect, true);
 
 // Name resolution
-$table->data[19][0] = "<b>".__('Name resolution');
-$table->data[19][1] =  html_print_checkbox ('resolve_names', 1, $resolve_names, true);
+$table->data[20][0] = "<b>".__('Name resolution');
+$table->data[20][1] =  html_print_checkbox ('resolve_names', 1, $resolve_names, true);
 
 // Parent detection
-$table->data[20][0] = "<b>".__('Parent detection');
-$table->data[20][1] =  html_print_checkbox ('parent_detection', 1, $parent_detection, true);
+$table->data[21][0] = "<b>".__('Parent detection');
+$table->data[21][1] =  html_print_checkbox ('parent_detection', 1, $parent_detection, true);
 
 // Parent recursion
-$table->data[21][0] = "<b>".__('Parent recursion');
-$table->data[21][1] =  html_print_input_text ('parent_recursion', $parent_recursion, '', 5, 0, true) . ui_print_help_tip (__('Maximum number of parent hosts that will be created if parent detection is enabled.'), true);
+$table->data[22][0] = "<b>".__('Parent recursion');
+$table->data[22][1] =  html_print_input_text ('parent_recursion', $parent_recursion, '', 5, 0, true) . ui_print_help_tip (__('Maximum number of parent hosts that will be created if parent detection is enabled.'), true);
+
+//vlan_enabled
+$table->data[23][0] = "<b>".__('Vlan enabled');
+$table->data[23][1] =  html_print_checkbox ('vlan_enabled', 1, $vlan_enabled, true);
 
 // Alias as name
 // NOTE: The 7.0NG Recon Server will not generate random names, since IP

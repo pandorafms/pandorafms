@@ -172,7 +172,6 @@ function delete_link(source_id, source_module_id, target_id, target_module_id, i
 					init_drag_and_drop();
 					set_positions_graph();
 				}
-				
 				$("#dialog_node_edit").dialog("close");
 			}
 		});
@@ -205,6 +204,43 @@ function update_fictional_node(id_db_node) {
 						if (element.id_db == id_db_node) {
 							graph.nodes[i].text = name;
 							graph.nodes[i].networkmap_id = networkmap_to_link;
+							
+							$("#id_node_" + i + networkmap_id + " title").html(name);
+							$("#id_node_" + i + networkmap_id + " tspan").html(name);
+						}
+					});
+					
+					draw_elements_graph();
+					set_positions_graph();
+				}
+			}
+		});
+	}
+}
+
+function update_node_name (id_db_node) {
+	if (enterprise_installed) {
+		var name = $("input[name='edit_name_node']").val();
+		
+		var params = [];
+		params.push("update_node_name=1");
+		params.push("networkmap_id=" + networkmap_id);
+		params.push("node_id=" + id_db_node);
+		params.push("name=" + name);
+		params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
+		
+		jQuery.ajax ({
+			data: params.join ("&"),
+			dataType: 'json',
+			type: 'POST',
+			url: action="ajax.php",
+			success: function (data) {
+				if (data['correct']) {
+					$("#dialog_node_edit").dialog("close");
+					
+					jQuery.each(graph.nodes, function(i, element) {
+						if (element.id_db == id_db_node) {
+							graph.nodes[i].text = name;
 							
 							$("#id_node_" + i + networkmap_id + " title").html(name);
 							$("#id_node_" + i + networkmap_id + " tspan").html(name);
@@ -532,6 +568,9 @@ function update_link(row_index, id_link) {
 				temp_link["status_start"] = "0";
 				temp_link["status_end"] = "0";
 
+				temp_link["text_start"] = data["text_start"];
+				temp_link["text_end"] = data["text_end"];
+
 				$.each(graph.nodes, function(k, node) {
 					if (node['id_agent'] == data['id_db_target']) {
 						temp_link["target"] = graph.nodes[k];
@@ -579,7 +618,7 @@ function add_new_link (new_link) {
 	graph.links.push(new_link);
 }
 
-function edit_node(data, dblClick) {
+function edit_node(data_node, dblClick) {
 	if (enterprise_installed) {
 		var flag_edit_node = true;
 		var edit_node = null
@@ -594,7 +633,7 @@ function edit_node(data, dblClick) {
 			edit_node = selection[0].pop();
 		}
 		else if (dblClick){
-			edit_node = d3.select("#id_node_" + data['id'] + networkmap_id);
+			edit_node = d3.select("#id_node_" + data_node['id'] + networkmap_id);
 			edit_node = edit_node[0][0];
 		}
 		else {
@@ -615,18 +654,22 @@ function edit_node(data, dblClick) {
 			
 			selected_links = get_relations(node_selected);
 			
-			$("select[name='shape'] option[value='" + data.shape + "']")
+			$("select[name='shape'] option[value='" + node_selected.shape + "']")
 				.prop("selected", true);
 			$("select[name='shape']").attr("onchange",
-				"javascript: change_shape(" + data.id_db + ");");
+				"javascript: change_shape(" + node_selected.id_db + ");");
 			$("#node_options-fictional_node_update_button-1 input")
-				.attr("onclick", "update_fictional_node(" + data.id_db + ");");
+				.attr("onclick", "update_fictional_node(" + node_selected.id_db + ");");
+
+			$("#node_options-node_name-2 input")
+				.attr("onclick", "update_node_name(" + node_selected.id_db + ");");
 			
-			$("#node_details-0-1").html('<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' + data["id_agent"] + '">' + data["text"] + '</a>');
+			$("#node_details-0-1").html('<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' + node_selected["id_agent"] + '">' + node_selected["text"] + '</a>');
 			var params = [];
 			params.push("get_agent_info=1");
-			params.push("id_agent=" + data["id_agent"]);
+			params.push("id_agent=" + node_selected["id_agent"]);
 			params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
+			
 			jQuery.ajax ({
 				data: params.join ("&"),
 				dataType: 'json',
@@ -640,75 +683,47 @@ function edit_node(data, dblClick) {
 					$("#node_details-1-1").html(adressess);
 					$("#node_details-2-1").html(data["os"]);
 					$("#node_details-3-1").html(data["group"]);
-				}
-			});
-			
-			$("#interface_information").find("tr:gt(0)").remove();
-			
-			var params = [];
-			params.push("get_interface_info=1");
-			params.push("id_agent=" + data["id_agent"]);
-			params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
-			jQuery.ajax ({
-				data: params.join ("&"),
-				dataType: 'json',
-				type: 'POST',
-				url: action="ajax.php",
-				success: function (data) {
-					if (data.length == 0) {
-						$("#interface_information").find('tbody')
-							.append($('<tr>').html("<p style=\"text-align: center;\">It has no interface to display</p>"));
-					}
-					else {
-						jQuery.each(data, function(j, interface) {
-							$("#interface_information").find('tbody')
-								.append($('<tr>')
-									.append($('<td>')
-										.html(interface['name'])
-									)
-									.append($('<td>')
-										.html(interface['status'])
-									)
-									.append($('<td>')
-										.html(interface['graph'])
-									)
-									.append($('<td>')
-										.html(interface['ip'])
-									)
-									.append($('<td>')
-										.html(interface['mac'])
-									)
-								);
-						});
-					}
+
+					$('[aria-describedby=dialog_node_edit]').css({'top':'200px'});
+					$('#foot').css({'top':parseInt($("[aria-describedby=dialog_node_edit]").css('height')+$("[aria-describedby=dialog_node_edit]").css('top')),'position':'relative'});	
+
+					get_interface_data_to_table(node_selected, selected_links);
 				}
 			});
 			
 			$("#dialog_node_edit" )
 				.dialog( "option", "title",
-					dialog_node_edit_title.replace("%s", data.text));
+					dialog_node_edit_title.replace("%s", node_selected.text));
 			$("#dialog_node_edit").dialog("open");
 			
-			if (data.id_agent == -2) {
+			if (node_selected.id_agent == undefined || node_selected.id_agent == -2) {
 				//Fictional node
 				$("#node_options-fictional_node_name")
 					.css("display", "");
 				$("input[name='edit_name_fictional_node']")
-					.val(data.text);
+					.val(node_selected.text);
 				$("#node_options-fictional_node_networkmap_link")
 					.css("display", "");
 				$("#edit_networkmap_to_link")
-					.val(data.networkmap_id);
+					.val(node_selected.networkmap_id);
 				$("#node_options-fictional_node_update_button")
 					.css("display", "");
+				$("#node_options-node_name")
+					.css("display", "none");
+				$("#node_options-node_update_button")
+					.css("display", "none");
 			}
 			else {
+				$("input[name='edit_name_node']")
+					.val(node_selected.text);
 				$("#node_options-fictional_node_name")
 					.css("display", "none");
 				$("#node_options-fictional_node_networkmap_link")
 					.css("display", "none");
 				$("#node_options-fictional_node_update_button")
 					.css("display", "none");
+				$("#node_options-node_name")
+					.css("display", "");
 			}
 			
 			//Clean
@@ -716,122 +731,158 @@ function edit_node(data, dblClick) {
 			//Show the no relations
 			$("#relations_table-loading").css('display', 'none');
 			$("#relations_table-no_relations").css('display', '');
-			
-			
-			jQuery.each(selected_links, function(i, link_each) {
-				
-				$("#relations_table-no_relations").css('display', 'none');
-				$("#relations_table-loading").css('display', '');
-				
-				var template_relation_row = $("#relations_table-template_row")
-					.clone();
-				
-				$(template_relation_row).css('display', '');
-				$(template_relation_row).attr('class', 'relation_link_row');
-				
-				$("select[name='interface_source']", template_relation_row)
-					.attr('name', "interface_source_" + i)
-					.attr('id', "interface_source_" + i + networkmap_id);
-				$("select[name='interface_target']", template_relation_row)
-					.attr('name', "interface_target_" + i)
-					.attr('id', "interface_target_" + i + networkmap_id);
-				$(".edit_icon_progress", template_relation_row)
-					.attr('class', "edit_icon_progress_" + i);
-				$(".edit_icon", template_relation_row)
-					.attr('class', "edit_icon_" + i);
-				$(".edit_icon_correct", template_relation_row)
-					.attr('class', "edit_icon_correct_" + i);
-				$(".edit_icon_fail", template_relation_row)
-					.attr('class', "edit_icon_fail_" + i);
-				$(".edit_icon_link", template_relation_row)
-					.attr('class', "edit_icon_link_" + i)
-					.click(function() {
-						update_link(i, link_each.id_db);
-					}
-				);
-				
-				var params = [];
-				params.push("get_intefaces=1");
-				params.push("id_agent=" + link_each.source.id_agent);
-				params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
-				
-				jQuery.ajax ({
-					data: params.join ("&"),
-					dataType: 'json',
-					type: 'POST',
-					url: action="ajax.php",
-					success: function (data) {
-						if (data['correct']) {
-							$("select[name='interface_source_" + i + "']", template_relation_row).empty();
-							$("select[name='interface_source_" + i + "']", template_relation_row).append('<option value="' + link_each.source.id_agent + '">None</option>');
-							jQuery.each(data['interfaces'], function(j, interface) {
-								
-								$("select[name='interface_source_" + i + "']", template_relation_row)
-									.append($("<option>")
-										.attr("value", interface['id_agente_modulo'])
-										.html(interface['nombre']));
-								
-								if (interface.id_agente_modulo == link_each.id_module_start) {
-									$("select[name='interface_source_" + i + "'] option[value='" + interface['id_agente_modulo'] + "']", template_relation_row)
-										.prop("selected", true);
-								}
-							});
-						}
-					}
-				});
-				
-				var params = [];
-				params.push("get_intefaces=1");
-				params.push("id_agent=" + link_each.target.id_agent);
-				params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
-				
-				jQuery.ajax ({
-					data: params.join ("&"),
-					dataType: 'json',
-					type: 'POST',
-					url: action="ajax.php",
-					success: function (data) {
-						if (data['correct']) {
-							$("select[name='interface_target_" + i + "']", template_relation_row).empty();
-							$("select[name='interface_target_" + i + "']", template_relation_row).append('<option value="' + link_each.target.id_agent + '">None</option>');
-							jQuery.each(data['interfaces'], function(j, interface) {
-								$("select[name='interface_target_" + i + "']", template_relation_row)
-									.append($("<option>")
-										.attr("value", interface['id_agente_modulo'])
-										.html(interface['nombre']));
-								
-								if (interface.id_agente_modulo == link_each.id_module_end) {
-									$("select[name='interface_target_" + i + "'] option[value='" + interface['id_agente_modulo'] + "']", template_relation_row)
-										.prop("selected", true);
-								}
-							});
-							
-						}
-					}
-				});
-				
-				$("#relations_table-template_row-node_source", template_relation_row)
-					.html(link_each.source.text);
-				$("#relations_table-template_row-node_target", template_relation_row)
-					.html(link_each.target.text);
-				$("#relations_table-template_row-edit", template_relation_row)
-					.attr("align", "center");
-				$("#relations_table-template_row-edit .delete_icon", template_relation_row)
-					.attr("href", "javascript: " +
-						"delete_link(" +
-							link_each.source.id_db + "," +
-							link_each.id_module_start + "," +
-							link_each.target.id_db + "," +
-							link_each.id_module_end + "," +
-							link_each.id_db + ");");
-				$("#relations_table tbody").append(template_relation_row);
-				
-				template_relation_row = null;
-			});
-			
-			$("#relations_table-loading").css('display', 'none');	
 		}
 	}
+}
+
+function get_interface_data_to_table (node_selected, selected_links) {
+	$("#interface_information").find("tr:gt(0)").remove();
+
+	var params = [];
+	params.push("get_interface_info=1");
+	params.push("id_agent=" + node_selected["id_agent"]);
+	params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
+	jQuery.ajax ({
+		data: params.join ("&"),
+		dataType: 'json',
+		type: 'POST',
+		url: action="ajax.php",
+		success: function (data) {
+			if (data.length == 0) {
+				$("#interface_information").find('tbody')
+					.append($('<tr>').html("<p style=\"text-align: center;\">It has no interface to display</p>"));
+			}
+			else {
+				jQuery.each(data, function(j, interface) {
+					$("#interface_information").find('tbody')
+						.append($('<tr>')
+							.append($('<td>')
+								.html(interface['name'])
+							)
+							.append($('<td>')
+								.html(interface['status'])
+							)
+							.append($('<td>')
+								.html(interface['graph'])
+							)
+							.append($('<td>')
+								.html(interface['ip'])
+							)
+							.append($('<td>')
+								.html(interface['mac'])
+							)
+						);
+				});
+			}
+			load_interfaces(selected_links);
+		}
+	});
+}
+
+function load_interfaces (selected_links) {
+	//Clean
+	$("#relations_table .relation_link_row").remove();
+	//Show the no relations
+	$("#relations_table-loading").css('display', 'none');
+	$("#relations_table-no_relations").css('display', '');
+	
+	jQuery.each(selected_links, function(i, link_each) {
+		$("#relations_table-no_relations").css('display', 'none');
+		$("#relations_table-loading").css('display', '');
+		
+		var template_relation_row = $("#relations_table-template_row")
+			.clone();
+		
+		$(template_relation_row).css('display', '');
+		$(template_relation_row).attr('class', 'relation_link_row');
+		
+		$("select[name='interface_source']", template_relation_row)
+			.attr('name', "interface_source_" + i)
+			.attr('id', "interface_source_" + i);
+		$("select[name='interface_target']", template_relation_row)
+			.attr('name', "interface_target_" + i)
+			.attr('id', "interface_target_" + i);
+		$(".edit_icon_progress", template_relation_row)
+			.attr('class', "edit_icon_progress_" + i);
+		$(".edit_icon", template_relation_row)
+			.attr('class', "edit_icon_" + i);
+		$(".edit_icon_correct", template_relation_row)
+			.attr('class', "edit_icon_correct_" + i);
+		$(".edit_icon_fail", template_relation_row)
+			.attr('class', "edit_icon_fail_" + i);
+		$(".edit_icon_link", template_relation_row)
+			.attr('class', "edit_icon_link_" + i)
+			.click(function() {
+				update_link(i, link_each.id_db);
+			}
+		);
+		
+		var params3 = [];
+		params3.push("get_intefaces=1");
+		params3.push("id_agent_target=" + link_each.target.id_agent);
+		params3.push("id_agent_source=" + link_each.source.id_agent);
+		params3.push("page=enterprise/operation/agentes/pandora_networkmap.view");
+		
+		jQuery.ajax ({
+			data: params3.join ("&"),
+			dataType: 'json',
+			type: 'POST',
+			async: true,
+			cache: false,
+			url: action="ajax.php",
+			success: function (data) {
+				if (data['correct']) {
+					$("select[name='interface_target_" + i + "']", template_relation_row).empty();
+					$("select[name='interface_target_" + i + "']", template_relation_row).append('<option value="' + link_each.target.id_agent + '">None</option>');
+
+					$("select[name='interface_source_" + i + "']", template_relation_row).empty();
+					$("select[name='interface_source_" + i + "']", template_relation_row).append('<option value="' + link_each.source.id_agent + '">None</option>');
+					jQuery.each(data['target_interfaces'], function(j, interface) {
+						$("select[name='interface_target_" + i + "']", template_relation_row)
+							.append($("<option>")
+								.attr("value", interface['id_agente_modulo'])
+								.html(interface['nombre']));
+						
+						if (interface.id_agente_modulo == link_each.id_module_end) {
+							$("select[name='interface_target_" + i + "'] option[value='" + interface['id_agente_modulo'] + "']", template_relation_row)
+								.prop("selected", true);
+						}
+					});
+					
+					jQuery.each(data['source_interfaces'], function(j, interface) {
+						$("select[name='interface_source_" + i + "']", template_relation_row)
+							.append($("<option>")
+								.attr("value", interface['id_agente_modulo'])
+								.html(interface['nombre']));
+						
+						if (interface.id_agente_modulo == link_each.id_module_start) {
+							$("select[name='interface_source_" + i + "'] option[value='" + interface['id_agente_modulo'] + "']", template_relation_row)
+								.prop("selected", true);
+						}
+					});
+					$("#relations_table-loading").css('display', 'none');
+				}
+			}
+		});
+
+		$("#relations_table-template_row-node_source", template_relation_row)
+			.html(link_each.source.text);
+		$("#relations_table-template_row-node_target", template_relation_row)
+			.html(link_each.target.text);
+		$("#relations_table-template_row-edit", template_relation_row)
+			.attr("align", "center");
+		$("#relations_table-template_row-edit .delete_icon", template_relation_row)
+			.attr("href", "javascript: " +
+				"delete_link(" +
+					link_each.source.id_db + "," +
+					link_each.id_module_start + "," +
+					link_each.target.id_db + "," +
+					link_each.id_module_end + "," +
+					link_each.id_db + ");");
+		$("#relations_table tbody").append(template_relation_row);
+		
+		template_relation_row = null;
+	});
 }
 
 function add_node() {
@@ -925,16 +976,34 @@ function add_agent_node(agents) {
 						temp_node['state'] = data['state'];
 						
 						graph.nodes.push(temp_node);
-						/* FLECHAS EMPEZADO PARA MEJORAR
-						jQuery.each(data['rel'], function(i, relation) {
+
+						/*jQuery.each(data['rel'], function(i, relation) {
 							var temp_link = {};
+							if (i == 0) {
+								var found = 0;
+								temp_link['source'] = graph.nodes[temp_node['id']];
+								jQuery.each(graph.nodes, function(j, element) {
+									if (element.id_agent == relation['id_agent_end']) {
+										found = j;
+									}
+								});
+								temp_link['target'] = graph.nodes[found];
+							}
+							else {
+								var found = 0;
+								temp_link['target'] = graph.nodes[temp_node['id']];
+								jQuery.each(graph.nodes, function(j, element) {
+									if (element.id_agent == relation['id_agent_start']) {
+										found = j;
+									}
+								});
+								temp_link['source'] = graph.nodes[found];
+							}
 							temp_link['id_db'] = String(relation['id_db']);
 							temp_link['id_agent_end'] = String(relation['id_agent_end']);
 							temp_link['id_agent_start'] = String(relation['id_agent_start']);
 							temp_link['id_module_end'] = relation['id_module_end'];
 							temp_link['id_module_start'] = relation['id_module_start'];
-							temp_link['source'] = relation['source'];
-							temp_link['target'] = relation['target'];
 							temp_link['source_in_db'] = String(relation['source_in_db']);
 							temp_link['target_in_db'] = String(relation['target_in_db']);
 							temp_link['arrow_end'] = relation['arrow_end'];
@@ -945,8 +1014,7 @@ function add_agent_node(agents) {
 							temp_link['text_start'] = relation['text_start'];
 							
 							graph.links.push(temp_link);
-						});
-						*/
+						});*/
 						
 						draw_elements_graph();
 						init_drag_and_drop();
@@ -1145,18 +1213,79 @@ function zoom(manual) {
 function set_positions_graph() {
 	link.selectAll("path.link")
 		.attr("d", function(d) {
-			
-			return "M " + d.source.x + " " + d.source.y +
-				" L " + d.target.x + " " + d.target.y;
-		});
-	
+			if (d.arrow_end == "module" || d.arrow_start == "module") {
+				return arcPath(true, d);
+			}
+			else {
+				return "M " + d.source.x + " " + d.source.y + " L " + d.target.x + " " + d.target.y;
+			}
+		})
+		.style("fill", "none");
+
 	link.selectAll("path.link_reverse")
 		.attr("d", function(d) {
-			
-			return "M " + d.target.x + " " + d.target.y +
-				" L " + d.source.x + " " + d.source.y;
-		});
+			if (d.arrow_end == "module" || d.arrow_start == "module") {
+				return arcPath(false, d);
+			}
+			else {
+				return "M " + d.target.x + " " + d.target.y + " L " + d.source.x + " " + d.source.y;
+			}
+		})
+		.style("fill", "none");
 	
+	function arcPath(leftHand, d) {
+		var x1 = leftHand ? d.source.x : d.target.x,
+			y1 = leftHand ? d.source.y : d.target.y,
+			x2 = leftHand ? d.target.x : d.source.x,
+			y2 = leftHand ? d.target.y : d.source.y,
+			dx = x2 - x1,
+			dy = y2 - y1,
+			dr = Math.sqrt(dx * dx + dy * dy),
+			drx = dr,
+			dry = dr,
+			sweep = leftHand ? 0 : 1;
+			siblingCount = countSiblingLinks(d.source, d.target)
+			xRotation = 1,
+			largeArc = 0;
+
+			if (siblingCount > 1) {
+				var siblings = getSiblingLinks(d.source, d.target);
+				var arcScale = d3.scale.ordinal()
+										.domain(siblings)
+										.rangePoints([1, siblingCount]);
+				drx = drx/(1 + (1/siblingCount) * (arcScale(d.text_start + d.id_db + networkmap_id) - 1));
+				dry = dry/(1 + (1/siblingCount) * (arcScale(d.text_start + d.id_db + networkmap_id) - 1));
+
+				return "M" + x1 + "," + y1 + "A" + drx + ", " + dry + " " + xRotation + ", " + largeArc + ", " + sweep + " " + x2 + "," + y2;
+			}
+			else {
+				if (leftHand) {
+					return "M " + d.source.x + " " + d.source.y + " L " + d.target.x + " " + d.target.y;
+				}
+				else {
+					return "M " + d.target.x + " " + d.target.y + " L " + d.source.x + " " + d.source.y;
+				}
+			}
+	}
+
+	function countSiblingLinks (source, target) {
+		var count = 0;
+		for(var i = 0; i < graph.links.length; ++i){
+			if( (graph.links[i].source.id == source.id && graph.links[i].target.id == target.id) || (graph.links[i].source.id == target.id && graph.links[i].target.id == source.id) )
+				count++;
+		}
+		return count;
+	}
+
+	function getSiblingLinks (source, target) {
+		var siblings = [];
+		for(var i = 0; i < graph.links.length; ++i){
+			if( (graph.links[i].source.id == source.id && graph.links[i].target.id == target.id) || (graph.links[i].source.id == target.id && graph.links[i].target.id == source.id) )
+				siblings.push(graph.links[i].text_start + graph.links[i].id_db + networkmap_id);
+		}
+		return siblings;
+	}
+
 	node.selectAll(".node_shape_circle")
 		.attr("cx", function(d) {
 			return d.x;
@@ -1863,8 +1992,8 @@ function add_interface_link_js () {
 				temp_link['status_end'] = "0";
 				
 				
-				//temp_link['text_start'] = link['text_start'];
-				//temp_link['text_end'] = link['text_end'];
+				temp_link['text_start'] = data['text_start'];
+				temp_link['text_end'] = data['text_end'];
 				
 				jQuery.each(graph.nodes, function(j, node) {
 					if (node['id_agent'] == data['id_db_target']) {
@@ -1892,6 +2021,7 @@ function refresh_holding_area() {
 	var pos_x = parseInt(holding_pos_x) + parseInt(node_radius);
 	var pos_y = parseInt(holding_pos_y) + parseInt(node_radius);
 	if (enterprise_installed) {
+		$('#holding_spinner_' + networkmap_id).css("display", "");
 		var params = [];
 		params.push("refresh_holding_area=1");
 		params.push("id=" + networkmap_id);
@@ -1904,16 +2034,13 @@ function refresh_holding_area() {
 			type: 'POST',
 			url: action="ajax.php",
 			success: function (data) {
-				
 				if (data['correct']) {
 					window.holding_area = data['holding_area'];
-					
-					var length_nodes = graph.nodes.length;
 					
 					jQuery.each(holding_area.nodes, function(i, node) {
 						var temp_node = {};
 						
-						temp_node['id'] = length_nodes + node['id'];
+						temp_node['id'] = graph.nodes.length;
 						holding_area.nodes[i]['id'] = temp_node['id'];
 						
 						temp_node['id_db'] = node['id_db'];
@@ -1970,10 +2097,32 @@ function refresh_holding_area() {
 						graph.links.push(temp_link);
 					});
 					
+					$("#layer_graph_links_" + networkmap_id).remove();
+					$("#layer_graph_nodes_" + networkmap_id).remove();
+
+					window.layer_graph_links = window.layer_graph
+						.append("g")
+							.attr("id", "layer_graph_links_" + networkmap_id);
+					window.layer_graph_nodes = window.layer_graph
+						.append("g")
+							.attr("id", "layer_graph_nodes_" + networkmap_id);
+					
+					force.nodes(graph.nodes)
+						.links(graph.links)
+						.start();
+					
+					window.node = layer_graph_nodes.selectAll(".node");
+					window.link = layer_graph_links.selectAll(".link");
+					
 					draw_elements_graph();
 					init_drag_and_drop();
 					set_positions_graph();
+
+					$('#holding_spinner_' + networkmap_id).css("display", "none");
 				}
+			},
+			error: function(){
+				$('#holding_spinner_' + networkmap_id).css("display", "none");
 			}
 		});
 	}
@@ -2210,6 +2359,7 @@ function init_drag_and_drop() {
 					graph.nodes[d.id].py = d.py + delta[1];
 				});
 			
+			draw_elements_graph();
 			set_positions_graph();
 			
 			d3.event.sourceEvent.stopPropagation();
@@ -2324,7 +2474,7 @@ function init_graph(parameter_object) {
 	if (typeof(parameter_object.node_radius) != "undefined") {
 		window.node_radius = parameter_object.node_radius;
 	}
-	window.interface_radius = 5;
+	window.interface_radius = 3;
 	window.disabled_drag_zoom = false;
 	window.key_multiple_selection = 17; //CTRL key
 	window.flag_multiple_selection = false;
@@ -2543,7 +2693,7 @@ function init_graph(parameter_object) {
 			.attr("markerHeight", (node_radius / 2) + interface_radius)
 			.attr("orient", "auto")
 			.append("circle")
-				.attr("cx", (node_radius / 2) - (interface_radius / 2))
+				.attr("cx", (node_radius / 2.3) - (interface_radius / 2.3))
 				.attr("cy", interface_radius)
 				.attr("r", interface_radius)
 				.attr("style", function(d) {
@@ -2554,19 +2704,19 @@ function init_graph(parameter_object) {
 		.data(module_color_status)
 		.enter()
 		.append("marker")
-		.attr("id", function(d) { return "interface_end_" + d.status_code; })
-		.attr("refX", (node_radius / 2) + (interface_radius / 2))
-		.attr("refY", interface_radius)
-		.attr("markerWidth", (node_radius / 2) + interface_radius)
-		.attr("markerHeight", (node_radius / 2) + interface_radius)
-		.attr("orient", "auto")
-		.append("circle")
-			.attr("cx", interface_radius)
-			.attr("cy", interface_radius)
-			.attr("r", interface_radius)
-			.attr("style", function(d) {
-				return "fill: " + d.color + ";";
-			});
+			.attr("id", function(d) { return "interface_end_" + d.status_code; })
+			.attr("refX", (node_radius / 2.3) + (interface_radius / 2.3))
+			.attr("refY", interface_radius)
+			.attr("markerWidth", (node_radius / 2) + interface_radius)
+			.attr("markerHeight", (node_radius / 2) + interface_radius)
+			.attr("orient", "auto")
+			.append("circle")
+				.attr("cx", interface_radius)
+				.attr("cy", interface_radius)
+				.attr("r", interface_radius)
+				.attr("style", function(d) {
+					return "fill: " + d.color + ";";
+				});
 			
 	defs.append("marker")
 		.attr("id", "interface_start")
@@ -2786,7 +2936,7 @@ function myMouseoutRhombusFunction(node_id) {
 
 function draw_elements_graph() {
 	link = link.data(force.links(), function(d) {
-		return d.source.id + networkmap_id + "-" + d.target.id + networkmap_id;
+		return d.source.id + networkmap_id + "-" + d.target.id + networkmap_id + Math.random();
 	});
 	
 	link_temp = link.enter()
@@ -2814,7 +2964,7 @@ function draw_elements_graph() {
 	
 	link_temp.append("path")
 		.attr("id", function(d) {
-			return "link_id_" + d.id_db + networkmap_id;
+			return "link_id_text_" + d.id_db + networkmap_id;
 		})
 		.attr("class",  function(d) {
 			var holding_area_text = "";
@@ -2865,10 +3015,10 @@ function draw_elements_graph() {
 		});
 	
 	//Add the reverse line for the end marker, it is invisible
-	 link_temp.append("path")
-			.attr("id", function(d) {
-				return "link_reverse_id_" + d.id_db;
-			})
+	link_temp.append("path")
+		.attr("id", function(d) {
+			return "link_reverse_id_" + d.id_db + networkmap_id;
+		})
 		.attr("stroke-width", 0)
 		.attr("d", null)
 		.attr("class",  function(d) {
@@ -2879,8 +3029,27 @@ function draw_elements_graph() {
 		.attr("xml:space", "preserve")
 		.append("textPath")
 			.attr("xlink:href", function(d) {
-					return "#link_id_" + d.id_db;
+					if (d.source.x < d.target.x) {
+						return "#link_id_text_" + d.id_db + networkmap_id;
+					}
+					else {
+						return "#link_reverse_id_" + d.id_db + networkmap_id;
+					}
 			})
+			.attr("startOffset", function(d) {
+				if (d.source.x < d.target.x) {
+					return "";
+				}
+				else {
+					return "85%";
+				}})
+			.attr("text-anchor", function(d) {
+				if (d.source.x < d.target.x) {
+					return "";
+				}
+				else {
+					return "end";
+				}})
 			.append("tspan")
 				.attr("style", "font-size: 12px; " +
 					"font-style:normal; " +
@@ -2891,7 +3060,7 @@ function draw_elements_graph() {
 					"fill:#000000; " +
 					"fill-opacity:1; " +
 					"stroke:none; " +
-					"text-align:end; ")
+					"text-align:start; ")
 				.text(function(d) {
 					var text_link = "";
 					if (d.text_start) {
@@ -2905,8 +3074,27 @@ function draw_elements_graph() {
 		.attr("xml:space", "preserve")
 		.append("textPath")
 			.attr("xlink:href", function(d) {
-				return "#link_reverse_id_" + d.id_db;
+				if (d.source.x < d.target.x) {
+					return "#link_id_text_" + d.id_db + networkmap_id;
+				}
+				else {
+					return "#link_reverse_id_" + d.id_db + networkmap_id;
+				}
 			})
+			.attr("startOffset", function(d) {
+				if (d.source.x < d.target.x) {
+					return "85%";
+				}
+				else {
+					return "";
+				}})
+			.attr("text-anchor", function(d) {
+				if (d.source.x < d.target.x) {
+					return "end";
+				}
+				else {
+					return "";
+				}})
 			.append("tspan")
 				.attr("style", "font-size: 12px; " +
 					"font-style:normal; " +
@@ -2926,7 +3114,7 @@ function draw_elements_graph() {
 					
 					return (Array(25).join(" ")) + text_link;
 				});
-	
+
 	node = node.data(force.nodes(), function(d) { return d.id;});
 	
 	node_temp = node.enter()

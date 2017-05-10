@@ -345,7 +345,7 @@ function update_manager_check_online_free_packages ($is_ajax=true) {
 					var mr_available = "<?php echo __('Minor release available'); ?>\n";
 					var package_available = "<?php echo __('New package available'); ?>\n";
 					var mr_not_accepted = "<?php echo __('Minor release rejected. Changes will not apply.'); ?>\n";
-					var mr_not_accepted_code_yes = "<?php echo __('Minor release rejected. Package will apply.'); ?>\n";
+					var mr_not_accepted_code_yes = "<?php echo __('Minor release rejected. The database will not be updated and the package will apply.'); ?>\n";
 					var mr_cancel = "<?php echo __('Minor release rejected. Changes will not apply.'); ?>\n";
 					var package_cancel = "<?php echo __('These package changes will not apply.'); ?>\n";
 					var package_not_accepted = "<?php echo __('Package rejected. These package changes will not apply.'); ?>\n";
@@ -363,10 +363,10 @@ function update_manager_check_online_free_packages ($is_ajax=true) {
 					var applying_mr = "<?php echo __('Applying DB MR'); ?>\n";
 				</script>
 				<?php
-
+				$baseurl = ui_get_full_url(false, false, false, false);
 				echo "<p><b>There is a new version:</b> " . $result[0]['version'] . "</p>";
 				echo "<a href='javascript: update_last_package(\"" . base64_encode($result[0]["file_name"]) .
-					"\", \"" . $result[0]['version'] ."\");'>" .
+					"\", \"" . $result[0]['version'] ."\", \"" . $baseurl ."\");'>" .
 					__("Update to the last version") . "</a>";
 			}
 			else {
@@ -604,17 +604,11 @@ function update_manager_remote_read_messages ($id_message) {
 	return $result['success'];
 }
 
-/**
- * The update copy entirire the tgz or fail (leave some parts copies and some part not).
- * This does make any thing with the BD.
- */
-function update_manager_starting_update() {
+function update_manager_extract_package() {
 	global $config;
 	
 	$path_package = $config['attachment_store'] .
 		"/downloads/last_package.tgz";
-	
-	$full_path = $config['attachment_store'] . "/downloads/unix";
 
 	ob_start();
 
@@ -624,6 +618,7 @@ function update_manager_starting_update() {
 	}
 
 	$extracted = false;
+
 	// Phar and exception working fine in 5.5.0 or higher
 	if (PHP_VERSION_ID >= 50505) {
 		$phar = new PharData($path_package);
@@ -636,13 +631,17 @@ function update_manager_starting_update() {
 			$extracted = false;
 		}
 	}
+	$return = true;
 
 	if($extracted === false) {
+		$return = false;
+
 		if (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
 			// unsupported OS
 			echo "This OS [" . PHP_OS . "] does not support direct extraction of tgz files. Upgrade PHP version to be > 5.5.0";
 		}
 		else {
+			$return = true;
 			system('tar xzf "' . $path_package . '" -C ' . $config['attachment_store'] . "/downloads/");
 		}
 	}
@@ -668,17 +667,27 @@ function update_manager_starting_update() {
 	db_process_sql_update('tconfig',
 		array('value' => 50),
 		array('token' => 'progress_update'));
+
+	return $return;
+}
+
+/**
+ * The update copy entirire the tgz or fail (leave some parts copies and some part not).
+ * This does make any thing with the BD.
+ */
+function update_manager_starting_update() {
+	global $config;
 	
-	
+	$full_path = $config['attachment_store'] . "/downloads";
 	
 	$homedir = $config['homedir'];
-	
+
 	$result = update_manager_recurse_copy(
 		$full_path,
 		$homedir,
 		array('install.php'));
 
-	rrmdir($full_path);
+	rrmdir($full_path . "/pandora_console");
 
 	if (!$result) {
 		db_process_sql_update('tconfig',
@@ -711,13 +720,11 @@ function update_manager_starting_update() {
 	}
 }
 
-
 function update_manager_recurse_copy($src, $dst, $black_list) { 
 	$dir = opendir($src); 
 	@mkdir($dst);
 	@trigger_error("NONE");
 	
-	//debugPrint("mkdir(" . $dst . ")", true);
 	while (false !== ( $file = readdir($dir)) ) { 
 		if (( $file != '.' ) && ( $file != '..' ) && (!in_array($file, $black_list))) { 
 			if ( is_dir($src . '/' . $file) ) { 

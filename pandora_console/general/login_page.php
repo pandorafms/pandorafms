@@ -36,6 +36,13 @@ switch ($login_screen) {
 		break;
 	case 'logout':
 	case 'double_auth':
+	case 'error_install':
+	case 'error_authconfig':
+	case 'error_dbconfig':
+	case 'error_noconfig':
+	case 'error_perms':
+	case 'homedir_bad_defined':
+	case 'homeurl_bad_defined':
 		$logo_link = 'index.php';
 		$logo_title = __('Go to Login');
 		break;
@@ -45,8 +52,8 @@ switch ($login_screen) {
 		$logo_link = 'index.php';
 		$logo_title = __('Refresh');
 		break;
+	$splash_title = __('Splash login');
 }
-
 
 $url = '?login=1';
 //These variables come from index.php
@@ -58,36 +65,36 @@ if (!empty ($page) && !empty ($sec)) {
 $login_body_style = '';
 // Overrides the default background with the defined by the user
 if (!empty($config['login_background'])) {
-	$background_url = ui_get_full_url("images/backgrounds/") . $config['login_background'];
+	$background_url = "../../images/backgrounds/" . $config['login_background'];
 	$login_body_style = "style=\"background-image: url('$background_url');\"";
 }
-echo '<div id="login_body" ' . $login_body_style . '></div>';
-echo '<div class="login_page"><div id="login_outer">';
-echo '<div class="databox_login" id="login">';
-echo '<div id="login_inner">';
-
-echo '<div id="login_in">';
-	echo '<div class="version_login">
-		<div style="padding-top: 2px; color: #FFF;">' . $pandora_version . '</div></div>';
-	echo '<form method="post" action="' . ui_get_full_url('index.php'.$url) . '" >';
-	
-	//TODO: Put branding in variables (external file) or database
-	/* CUSTOM BRANDING STARTS HERE */
-	
-	// Replace the following with your own URL and logo.
-	// A mashup of the Pandora FMS logo and your companies highly preferred
-	echo '<table id="login_layout">';
-	echo'<tr style="height:15px;"><td>';
-	echo '<div class="login_links">';
-	echo '<a href="http://wiki.pandorafms.com/" target="_blank">' . __('Docs') . '</a>';
-	echo ' | ';
-	echo '<a href="https://pandorafms.com/monitoring-services/support/" target="_blank">' . __('Support') . '</a>';
+echo '<div id="login_body" ' . $login_body_style . '>';
+echo '<div id="header_login">';
+	echo '<div id="icon_custom_pandora">';
+		if (defined ('PANDORA_ENTERPRISE')) {
+			if(isset ($config['custom_logo'])){
+				echo '<img src="images/custom_logo/' . $config['custom_logo'] .'" alt="pandora_console">';
+			}
+			else{
+				echo '<img src="images/custom_logo/logo_login_consola.png" alt="pandora_console">';
+			}
+		}
+		else{
+			echo '<img src="images/custom_logo/pandora_logo_head_3.png" alt="pandora_console">';	
+		}
 	echo '</div>';
-	echo '</td></tr>';
-	echo'<tr>
-		<td class="login_border" rowspan=2 style="width: 160px;">';
-	
-			echo '<a href="' . $logo_link . '">';
+	echo '<div id="list_icon_docs_support"><ul>';
+		echo '<li><a href="http://wiki.pandorafms.com/" target="_blank"><img src="images/icono_docs.png" alt="docs pandora"></a></li>';
+		echo '<li>' . __('Docs') . '</li>';
+		echo '<li id="li_margin_left"><a href="https://pandorafms.com/monitoring-services/support/" target="_blank"><img src="images/icono_support.png" alt="support pandora"></a></li>';
+		echo '<li>' . __('Support') . '</li>';
+	echo '</ul></div>';	
+echo '</div>';
+
+echo '<div class="container_login">';
+echo '<div class="login_page">';
+	echo '<form method="post" action="' . ui_get_full_url('index.php'.$url) . '" ><div class="login_logo_icon">';
+		echo '<a href="' . $logo_link . '">';
 			if (defined ('METACONSOLE')) {
 				if (!isset ($config["custom_logo_login"])){
 					html_print_image ("images/custom_logo_login/login_logo.png", false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
@@ -95,33 +102,29 @@ echo '<div id="login_in">';
 				else{
 					html_print_image ("images/custom_logo_login/".$config['custom_logo_login'], false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
 				}
-		}
-			else if (defined ('PANDORA_ENTERPRISE')) {
+			}
+			else if (file_exists (ENTERPRISE_DIR . "/load_enterprise.php")) {
+
 				if (!isset ($config["custom_logo_login"])){
-					html_print_image ("enterprise/images/custom_logo_login/login_logo.png", false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
+					html_print_image ("enterprise/images/custom_logo_login/login_logo_v7.png", false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
 				}
 				else{
-				html_print_image ("enterprise/images/custom_logo_login/".$config['custom_logo_login'], false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
+					html_print_image ("enterprise/images/custom_logo_login/".$config['custom_logo_login'], false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
 				}
 			}
 			else {
 				if (!isset ($config["custom_logo_login"]) || $config["custom_logo_login"] == 0){
-					html_print_image ("images/custom_logo_login/login_logo.png", false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
+					html_print_image ("images/custom_logo_login/pandora_logo.png", false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
 				}
 				else{
-				html_print_image ("images/custom_logo_login/".$config['custom_logo_login'], false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
+					html_print_image ("images/custom_logo_login/".$config['custom_logo_login'], false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
 				}
 				echo "<br><span style='font-size:120%;color:white;top:10px;position:relative;'>Community edition</span>";
 			}
-			echo '</a>';
+		echo '</a></div>';
 			
-			// This prints the current pandora console version.
-			// For stable/live function it might be wise to comment it out
-
-			/* CUSTOM BRANDING ENDS HERE */
-	echo '</td><td style="padding-top: 15px; position:absolute;">';
-
 	switch ($login_screen) {
+		case 'logout':
 		case 'login':
 			if (!empty ($page) && !empty ($sec)) {
 				foreach ($_POST as $key => $value) {
@@ -130,39 +133,47 @@ echo '<div id="login_in">';
 			}
 			if ($config['auth'] == 'saml') {
 				echo '<div id="log_nick" class="login_nick" style="display: none;">';
-					html_print_image ("/images/usuario_login.png", false);
+					echo '<div>';
+						html_print_image ("/images/usuario_login.png", false);
+					echo '</div>';
 					html_print_input_text_extended ("nick", '', "nick", '', '', '' , false,
-						'', 'id="nick_text" class="login login_user" placeholder="'.__('User').'"');
+						'', 'placeholder="'.__('User').'"');
 				echo '</div>';
 
 				echo '<div id="log_pass" class="login_pass" style="display: none;">';
-					html_print_image ("/images/candado_login.png", false);
+					echo '<div>';
+						html_print_image ("/images/candado_login.png", false);
+					echo '</div>';
 					html_print_input_text_extended ("pass", '', "pass", '', '', '' ,false,
-						'', 'id="pass_text" class="login login_password" placeholder="'.__('Password').'"', false, true);
+						'', 'placeholder="'.__('Password').'"', false, true);
 				echo '</div>';
 				
-				echo '<div id="log_button" class="login_button" style="display: none;">';
+				echo '<div id="log_button" class="login_button" style="display: none; margin-bottom: 20px;">';
 					html_print_submit_button(__("Login as admin"), "login_button", false, 'class="sub next_login"');
 				echo '</div>';
 				
-				echo '<div style="padding-left: 50px !important">';
-						echo '<input type="button" id="input_saml" class="next_login" style="width: 150px;" value="Login as admin" onclick="show_normal_menu()">';
-					echo '<br><br>';
-						echo '<div class="saml_button">';
-							html_print_submit_button(__("Login with SAML"), "login_button_saml", false, 'class="next_login" style="width: 150px;');
-						echo '</div>';
+				echo '<div class="login_button" id="remove_button" style="margin-bottom: 20px;">';
+					echo '<input type="button" id="input_saml" value="Login as admin" onclick="show_normal_menu()">';
+				echo '</div>';
+
+				echo '<div class="login_button">';
+					html_print_submit_button(__("Login with SAML"), "login_button_saml", false, '');
 				echo '</div>';
 			}
 			else {
 				echo '<div class="login_nick">';
-				html_print_image ("/images/usuario_login.png", false);
+				echo '<div>';
+					html_print_image ("/images/usuario_login.png", false);
+				echo '</div>';
 				html_print_input_text_extended ("nick", '', "nick", '', '', '' , false,
-					'', 'class="login login_user" placeholder="'.__('User').'"');
-				echo '</div><br />';
+					'', 'autocomplete="off" placeholder="'.__('User').'"');
+				echo '</div>';
 				echo '<div class="login_pass">';
-				html_print_image ("/images/candado_login.png", false);
+				echo '<div>';
+					html_print_image ("/images/candado_login.png", false);
+				echo '</div>';
 				html_print_input_text_extended ("pass", '', "pass", '', '', '' ,false,
-					'', 'class="login login_password" placeholder="'.__('Password').'"', false, true);
+					'', 'autocomplete="off" placeholder="'.__('Password').'"', false, true);
 				echo '</div>';
 				echo '<div class="login_button">';
 				html_print_submit_button(__("Login"), "login_button", false, 'class="sub next_login"');
@@ -170,23 +181,17 @@ echo '<div id="login_in">';
 			}
 			
 			break;
-		case 'logout':
-			echo '<h1 id="log_title">' . __('Logged out') . '</h1>';
-			echo '<p class="log_in">';
-			echo __('Your session is over. Please close your browser window to close this Pandora session.').'<br /><br />';
-			echo '</p>';
-			break;
 		case 'double_auth':
 			if (!empty ($page) && !empty ($sec)) {
 				foreach ($_POST as $key => $value) {
 					html_print_input_hidden ($key, $value);
 				}
 			}
-			echo '<div class="login_double_auth_code_text">';
-			echo __('Authenticator code') . '<br>';
+			echo '<div class="login_nick">';
+			echo '<div>';
+				html_print_image ("/images/icono_autenticacion.png", false);
 			echo '</div>';
-			echo '<div class="login_double_auth_code">';
-			html_print_input_text_extended ("auth_code", '', "auth_code", '', '', '' , false, '', 'class="login login_password"', false, true);
+			html_print_input_text_extended ("auth_code", '', "auth_code", '', '', '' , false, '', 'class="login login_password" placeholder="'.__('Authentication code').'"', false, true);
 			echo '</div>';
 			echo '<div class="login_button">';
 			html_print_submit_button(__("Check code") . '&nbsp;&nbsp;>', "login_button", false, 'class="sub next_login"');
@@ -206,43 +211,172 @@ echo '<div id="login_in">';
 			break;
 	}
 	
-	echo '</td></tr></table>';
-echo '</form>
-	</div>
-</div>
-</div>
-</div>
-</div>';
-
-if (defined ('METACONSOLE')) {
-	echo '<div id="ver_num">';
-}
-else {
-	echo '<div id="ver_num">';
-}
-
-echo $pandora_version.(($develop_bypass == 1) ? ' '.__('Build').' '.$build_version : '') . '</div>';
-
+	echo '</form></div>';
+	echo '<div class="login_data">';
+		echo '<div class ="text_banner_login">';
+			echo '<div><span class="span1">';
+				if(defined ('PANDORA_ENTERPRISE')){
+					if($config['custom_title1_login']){
+						echo strtoupper(io_safe_output($config['custom_title1_login']));
+					}
+					else{
+						echo __('WELCOME TO PANDORA FMS');
+					}
+				}
+				else{
+					echo __('WELCOME TO PANDORA FMS');
+				}
+			echo '</span></div>';
+			echo '<div><span class="span2">';
+				if(defined ('PANDORA_ENTERPRISE')){
+					if($config['custom_title2_login']){
+						echo strtoupper(io_safe_output($config['custom_title2_login']));
+					}
+					else{
+						echo __('NEXT GENERATION');
+					}
+				}
+				else{
+					echo __('NEXT GENERATION');
+				}
+			echo '</span></div>';
+		echo '</div>';
+		echo '<div class ="img_banner_login">';
+			if (defined ('PANDORA_ENTERPRISE')) {
+				if(isset($config['custom_splash_login'])){
+					html_print_image ("enterprise/images/custom_splash_login/".$config['custom_splash_login'], false, array ( "alt" => "splash", "border" => 0, "title" => $splash_title), false, true);
+				}
+				else{
+					html_print_image ("enterprise/images/custom_splash_login/splash_image_default.png", false, array ("alt" => "logo", "border" => 0, "title" => $splash_title), false, true);
+				}
+			} 
+			else{
+				html_print_image ("images/splash_image_default.png", false, array ("alt" => "logo", "border" => 0, "title" => $splash_title), false, true);
+			}
+		echo '</div>';
+	echo '</div>';
+echo '</div>';
+echo '<div id="ver_num">'.$pandora_version.(($develop_bypass == 1) ? ' '.__('Build').' '.$build_version : '') . '</div>';
+echo '</div>';
 
 if (isset ($login_failed)) {
-	echo '<div id="login_failed" title="Login failed" style="">';
-		
-		echo '<div style="position:absolute; top:0px; text-align: center; left:0%; right:0%; height:100px; width:400px; margin: 0 auto; ">';
-			
-			echo '<div id="error_login" style="margin-top: 20px">';
-			echo '<strong style="font-size: 10pt">' . $config["auth_error"] . '</strong>';
+	echo '<div id="login_failed" title="' . __('Login failed') . '">';
+		echo '<div class="content_alert">';
+			echo '<div class="icon_message_alert">';
+				echo html_print_image('images/icono_stop.png', true, array("alt" => __('Login failed'), "border" => 0));
 			echo '</div>';
-			
-			echo '<div id="error_login_icon">';
-			echo html_print_image('images/error_login.png', true, array("alt" => __('Login failed'), "border" => 0));
+			echo '<div class="content_message_alert">';
+				echo '<div class="text_message_alert">';
+					echo '<h1>' . __('ERROR') . '</h1>';
+					echo '<p>'  . $config["auth_error"] . '</p>';
+				echo '</div>';
+				echo '<div class="button_message_alert">';
+					html_print_submit_button("Ok", 'hide-login-error', false);  
+				echo '</div>';
 			echo '</div>';
-			
-			echo '<div style="position:absolute; margin: 0 auto; top: 70px; left: 35%; ">';
-				html_print_submit_button("Ok", 'hide-login-error', false, 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok" style="width:100px;"');  
-			echo '</div>';
-			
 		echo '</div>';
+	echo '</div>';
+}
+
+if ($login_screen == 'logout'){
+	echo '<div id="login_logout" title="' . __('Logged out') . '">';
+		echo '<div class="content_alert">';
+			echo '<div class="icon_message_alert">';
+				echo html_print_image('images/icono_logo_pandora.png', true, array("alt" => __('Logged out'), "border" => 0));
+			echo '</div>';
+			echo '<div class="content_message_alert">';
+				echo '<div class="text_message_alert">';
+					echo '<h1>'. __('Logged out') .'</h1>';
+					echo '<p>' . __('Your session is over. Please close your browser window to close this Pandora session.') .'</p>';
+				echo '</div>';
+				echo '<div class="button_message_alert">';
+					html_print_submit_button("Ok", 'hide-login-logout', false);  
+				echo '</div>';
+			echo '</div>';
+		echo '</div>';
+	echo '</div>';
+}
+
+switch ($login_screen) {
+	case 'error_authconfig':
+	case 'error_dbconfig':
+		$title = __('Problem with Pandora FMS database');
+		$message = __('Cannot connect to the database, please check your database setup in the <b>include/config.php</b> file.<i><br/><br/>
+		Probably your database, hostname, user or password values are incorrect or
+		the database server is not running.').'<br /><br />';
+		$message .= '<span class="red">';
+		$message .= '<b>' . __('DB ERROR') . ':</b><br>';
+		$message .= db_get_last_error();
+		$message .= '</span>';
 		
+		if ($error_code == 'error_authconfig') {
+			$message .= '<br/><br/>';
+			$message .= __('If you have modified auth system, this problem could be because Pandora cannot override authorization variables from the config database. Remove them from your database by executing:<br><pre>DELETE FROM tconfig WHERE token = "auth";</pre>');
+		}
+		break;
+	case 'error_emptyconfig':
+		$title = __('Empty configuration table');
+		$message = __('Cannot load configuration variables from database. Please check your database setup in the
+		<b>include/config.php</b> file.<i><br><br>
+		Most likely your database schema has been created but there are is no data in it, you have a problem with the database access credentials or your schema is out of date.
+		<br><br>Pandora FMS Console cannot find <i>include/config.php</i> or this file has invalid
+		permissions and HTTP server cannot read it. Please read documentation to fix this problem.</i>').'<br /><br />';
+		break;
+	case 'error_noconfig':
+		$title = __('No configuration file found');
+		$message = __('Pandora FMS Console cannot find <i>include/config.php</i> or this file has invalid
+		permissions and HTTP server cannot read it. Please read documentation to fix this problem.').'<br /><br />';
+		if (file_exists('install.php')) {
+			$link_start = '<a href="install.php">';
+			$link_end = '</a>';
+		}
+		else {
+			$link_start = '';
+			$link_end = '';
+		}
+		
+		$message .= sprintf(__('You may try to run the %s<b>installation wizard</b>%s to create one.'), $link_start, $link_end);
+		break;
+	case 'error_install':
+		$title = __('Installer active');
+		$message = __('For security reasons, normal operation is not possible until you delete installer file.
+		Please delete the <i>./install.php</i> file before running Pandora FMS Console.');
+		break;
+	case 'error_perms':
+		$title = __('Bad permission for include/config.php');
+		$message = __('For security reasons, <i>config.php</i> must have restrictive permissions, and "other" users
+		should not read it or write to it. It should be written only for owner
+		(usually www-data or http daemon user), normal operation is not possible until you change
+		permissions for <i>include/config.php</i> file. Please do it, it is for your security.');
+		break;
+	case 'homedir_bad_defined':
+		$title = __('Bad defined homedir');
+		$message = __('In the config.php file in the variable $config["homedir"] = add the correct path');
+		break;
+	case 'homeurl_bad_defined':
+		$title = __('Bad defined homeurl or homeurl_static');
+		$message = __('In the config.php file in the variable $config["homeurl"] or $config["homeurl_static"] = add the correct path');
+		break;
+}
+
+if($login_screen == 'error_authconfig' || $login_screen == 'error_emptyconfig' || $login_screen == 'error_install' ||
+	$login_screen == 'error_dbconfig' || $login_screen == 'error_noconfig' || $login_screen == 'error_perms' || 
+	$login_screen == 'homedir_bad_defined' || $login_screen == 'homeurl_bad_defined'){
+	echo '<div id="modal_alert" title="' . __('Login failed') . '">';
+		echo '<div class="content_alert">';
+			echo '<div class="icon_message_alert">';
+				echo html_print_image('images/icono_stop.png', true, array("alt" => __('Login failed'), "border" => 0));
+			echo '</div>';
+			echo '<div class="content_message_alert">';
+				echo '<div class="text_message_alert">';
+					echo '<h1>' . $title . '</h1>';
+					echo '<p> ' . $message . '</h1>';
+				echo '</div>';
+				echo '<div class="button_message_alert">';
+					html_print_submit_button("Ok", 'hide-login-error', false);  
+				echo '</div>';
+			echo '</div>';
+		echo '</div>';
 	echo '</div>';
 }
 
@@ -252,145 +386,85 @@ ui_require_jquery_file('jquery-ui-1.10.0.custom');
 ?>
 
 <?php
-	if (!isset ($login_failed)) {
-?>
-	<!--[if lte IE 8]>
-	<div id="dialog" title="WARNING! You are using an outdated browser.">
-		<div style="position:absolute; top:20px; text-align: left; font-size: 9.5pt; line-height: 18px; left:0%; right:0%; margin: 0 auto; width:650px; border: 1px solid #FFF; ">
-			<?php
-			echo __("Pandora FMS frontend is built on advanced, modern technologies and does not support old browsers.");
-			echo "<br>" . __("It is highly recommended that you choose and install a modern browser. It is free of charge and only takes a couple of minutes.");
-			?>
-		</div>
-		
-		<div style="position: relative; top: 90px; margin: 0 auto; width: 650px; border: 1px solid #FFF;">
-			<table style="width: 650px;">
-				<tr>
-					<td style="width: 20%;">
-						<a target="_blank" style="text-decoration: none; color: #6495ED;" href="https://www.google.com/chrome">
-							<img style="width: 60px;" src="images/google_chrome.png" />
-							<div style="position: relative; top: 11px;">
-								Google Chrome
-								<br />
-								<span style="text-decoration: underline;">Download page</span>
-							</div>
-						</a>
-					</td>
-					<td style="font-size: 10px; line-height: 15px; width: 20%;">
-						<a target="_blank" style="text-decoration: none; color: #6495ED;" href="http://www.mozilla.org/en-US/firefox/fx/">
-							<img style="width: 60px;" src="images/mozilla_firefox.png" />
-							<div style="position: relative; top: 5px;">
-								Mozilla Firefox
-								<br />
-								<span style="text-decoration: underline;">Download page</span>
-							</div>
-						</a>
-					</td>
-					<td style="width: 20%;">
-						<a target="_blank" style="text-decoration: none; color: #6495ED;" href="http://windows.microsoft.com/es-ES/internet-explorer/downloads/ie-9/worldwide-languages">
-							<img style="width: 63px;" src="images/iexplorer.jpeg" />
-							<div style="position: relative; top: 10px;">
-								Internet Explorer
-								<br />
-								<span style="text-decoration: underline;">Download page</span>
-							</div>
-						</a>
-					</td>
-					<td style="width: 20%;">
-						<a target="_blank" style="text-decoration: none; color: #6495ED;" href="http://www.opera.com/download/">
-							<img style="width: 50px;" src="images/opera_browser.png" />
-							<div style="position: relative; top: 16px;">
-								Opera browser
-								<br />
-								<span style="text-decoration: underline;">Download page</span>
-							</div>
-						</a>
-					</td>
-					<td style="width: 20%;">
-						<a target="_blank" style="text-decoration: none; color: #6495ED;" href="http://www.apple.com/es/safari/download/">
-							<img style="width: 60px;" src="images/safari_browser.jpeg" />
-							<div style="position: relative; top: 11px;">
-								Apple safari
-								<br />
-								<span style="text-decoration: underline;">Download page</span>
-							</div>
-						</a>
-					</td>
-				</tr>
-			</table>
-		</div>
-			<div style="position: relative; top:120px; width:650px; margin: 0 auto; text-align: left;  border: 1px solid #FFF;">
-				<?php 
-					echo '<span style="font-size: 10pt; color: #2E2E2E; font-weight: bold;">';
-						echo __('Why is it recommended to upgrade the web browser?');
-					echo '</span>';
-					
-					echo '<span style="font-size: 9.5pt; line-height: 18px;">';
-						echo '<br><br>' .
-							__('New browsers usually come with support for new technologies, increasing web page speed, better privacy settings and so on. They also resolve security and functional issues.');
-					echo '</span>';
-				?>
-			</div>
-			
-			<div style="float:right; margin-top:160px; margin-right: 50px; width: 200px;">
-				<a id="close-dialog-browser" href="#" style="text-decoration: none;">
-					<span style="color: #6495ED;">
-						<?php
-						echo __('Continue despite this warning');
-						?>
-					</span>
-				</a>
-			</div>
-	</div>
-	<![endif]-->
-<?php
-}
-
 // Hidden div to forced title
 html_print_div(array('id' => 'forced_title_layer', 'class' => 'forced_title_layer', 'hidden' => true));
 
-html_print_div(array('id' => 'modal_alert', 'hidden' => true));
+//html_print_div(array('id' => 'modal_alert', 'hidden' => true));
 
 ?>
-<script type="text/javascript" language="javascript">
-	/* <![CDATA[ */
+<script type="text/javascript" language="javascript">	
 	function show_normal_menu() {
 		document.getElementById('input_saml').style.display = 'none';
 		document.getElementById('log_nick').style.display = 'block';
 		document.getElementById('log_pass').style.display = 'block';
-		document.getElementById('log_button').style.display = 'inline';
-		
+		document.getElementById('log_button').style.display = 'block';
+		document.getElementById('remove_button').style.display = 'none';
 		document.getElementById('log_nick').className = 'login_nick';
 		document.getElementById('log_pass').className = 'login_pass';
 	}
-	
-	function modal_alert_critical() {
-		$("#modal_alert").hide ()
-			.empty ()
-			.append ($('#log_msg').html())
-			.dialog ({
+
+	<?php
+	switch($login_screen) {
+		case 'error_authconfig':
+		case 'error_dbconfig':
+		case 'error_emptyconfig':
+		case 'error_noconfig':
+		case 'error_install':
+		case 'error_perms':
+		case 'homedir_bad_defined':
+		case 'homeurl_bad_defined':
+
+	?>
+	// Auto popup
+	$(document).ready (function () {
+		$(function() {
+			$("#modal_alert").dialog ({
 				title: $('#log_title').html(),
 				resizable: true,
 				draggable: false,
 				modal: true,
+				width: 600,
+				height: 250,
 				overlay: {
 					opacity: 0.5,
 					background: "black"
-				},
-				width: 500,
-				height: 200
-			})
-			.show ();
-	}
+				}
+			});
+		});
+
+		$("#submit-hide-login-error").click (function () {
+			$("#modal_alert" ).dialog('close');
+			
+		});
+	});
+
 	<?php
-	switch($login_screen) {
-		case 'error_authconfig':
-		case 'error_emptyconfig':
+		break;
+		case 'logout':
 	?>
-			// Auto popup
-			//modal_alert_critical();
+	$(document).ready (function () {
+		$(function() {
+			$("#login_logout").dialog({
+				resizable: true,
+				draggable: true,
+				modal: true,
+				height: 220,
+				width: 528,
+				clickOutside: true,
+				overlay: {
+					opacity: 0.5,
+					background: "black"
+				}
+			});
+		});
+
+		$("#submit-hide-login-logout").click (function () {
+			$("#login_logout").dialog('close');
+		});		
+	});
+
 	<?php
-			break;
+		break;
 		default:
 	?>
 	$(document).ready (function () {
@@ -404,12 +478,13 @@ html_print_div(array('id' => 'modal_alert', 'hidden' => true));
 				width: 700,
 				overlay: {
 					opacity: 0.5,
-					background: "black"}
+					background: "black"
+				}
 			});
 		});
 		
 		$("#close-dialog-browser").click (function () {
-			$("#dialog" ).dialog('close')
+			$("#dialog" ).dialog('close');
 		});
 		
 		$(function() {
@@ -417,16 +492,18 @@ html_print_div(array('id' => 'modal_alert', 'hidden' => true));
 				resizable: true,
 				draggable: true,
 				modal: true,
-				height: 160,
-				width: 400,
+				height: 220,
+				width: 528,
 				overlay: {
 					opacity: 0.5,
-					background: "black"}
+					background: "black"
+				}
 			});
 		});
-		
+
 		$("#submit-hide-login-error").click (function () {
-			$("#login_failed" ).dialog('close')
+			$("#login_failed" ).dialog('close');
+			$("#login_correct_pass").dialog('close');
 		});
 	});
 	

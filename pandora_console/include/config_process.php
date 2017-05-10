@@ -22,8 +22,8 @@
 /**
  * Pandora build version and version 
  */
-$build_version = 'PC170316';
-$pandora_version = 'v7.0NG';
+$build_version = 'PC170510';
+$pandora_version = 'v7.0NG.702';
 
 // Do not overwrite default timezone set if defined.
 $script_tz = @date_default_timezone_get();
@@ -34,6 +34,14 @@ if (empty($script_tz)) {
 else {
 	ini_set("date.timezone", $script_tz);
 }
+
+//home dir bad defined
+if (!is_dir($config['homedir'])) {
+	$ownDir = dirname(__FILE__) . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR;
+	$config['homedir'] = $ownDir;
+	$config["error"] = "homedir_bad_defined";
+}
+
 
 /* Help to debug problems. Override global PHP configuration */
 global $develop_bypass;
@@ -117,8 +125,32 @@ require_once ($ownDir. 'functions_config.php');
 // We need a timezone BEFORE calling config_process_config. 
 // If not we will get ugly warnings. Set Europe/Madrid by default
 // Later will be replaced by the good one.
+if (!defined('METACONSOLE')) {
+	if(!isset($config["homeurl"])){
+		$url = explode('/', $_SERVER['REQUEST_URI']);
+		$config["homeurl"] = $url[1];
+		$config["homeurl_static"] = $url[1];
+		$config["error"] = "homeurl_bad_defined";
+		return;
+	}
+	else{
+		$url = explode('/', $_SERVER['REQUEST_URI']);
+		if($config["homeurl"] != '/'.$url[1]){
+			$config["homeurl"] = '/'.$url[1];
+			$config["homeurl_static"] = '/'.$url[1];
+			$config["error"] = "homeurl_bad_defined";
+			return;
+		}
+	}
+}
 if (!isset($config["homeurl_static"])) {
 	$config["homeurl_static"] = $config["homeurl"];
+}
+else{
+	if($config["homeurl_static"] != $config["homeurl"]){
+		$config["error"] = "homeurl_bad_defined";
+		return;
+	}
 }
 
 date_default_timezone_set("Europe/Madrid");

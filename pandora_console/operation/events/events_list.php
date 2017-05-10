@@ -57,6 +57,7 @@ if (is_ajax()) {
 		
 		$event_filter = events_get_event_filter($id_filter);
 		
+		$event_filter['search'] = io_safe_output($event_filter['search']);
 		$event_filter['id_name'] = io_safe_output($event_filter['id_name']);
 		$event_filter['tag_with'] = base64_encode(io_safe_output($event_filter['tag_with']));
 		$event_filter['tag_without'] = base64_encode(io_safe_output($event_filter['tag_without']));
@@ -631,10 +632,20 @@ $events_filter .= $botom_update;
 
 $events_filter .= "</form>"; //This is the filter div
 
-if (is_metaconsole())
+$filter_resume['title'] = empty($id_name)
+	? __('No filter loaded')
+	: __('Filter loaded') . ': ' . $id_name;
+
+if (is_metaconsole()){
 	ui_toggle($events_filter, __("Show Options"));
-else
-	ui_toggle($events_filter, __('Event control filter'));
+} else {
+	if($config['pure']){
+		ui_toggle($events_filter, __('Event control filter') .". ". $filter_resume['title']);
+	} else {
+		ui_toggle($events_filter, __('Event control filter'));
+	}
+}
+	
 
 // Error div for ajax messages
 echo "<div id='show_filter_error' style='display: none;'>";
@@ -710,9 +721,8 @@ elseif ($group_rep == 2) {
 		$history);	
 }
 
-$filter_resume['title'] = empty($id_name)
-	? __('No filter loaded')
-	: __('Filter loaded') . ': ' . $id_name;
+
+
 // Active filter tag view call (only enterprise version)
 // It is required to pass some references to enterprise function 
 // to translate the active filters

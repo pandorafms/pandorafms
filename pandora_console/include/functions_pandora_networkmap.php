@@ -27,6 +27,10 @@ function networkmap_delete_networkmap($id = 0) {
 	return $result;
 }
 
+function networkmap_delete_nodes($id_map) {
+	return db_process_sql_delete('titem', array('id_map' => $id_map));
+}
+
 function networkmap_process_networkmap($id = 0) {
 	global $config;
 	
@@ -519,13 +523,23 @@ function networkmap_links_to_js_links($relations, $nodes_graph) {
 			$item['arrow_end'] = 'module';
 			$item['status_end'] = modules_get_agentmodule_status((int)$id_target_module, false, false, null);
 			$item['id_module_end'] = (int)$id_target_module;
-			$item['text_end'] = io_safe_output(modules_get_agentmodule_name((int)$id_target_module));
+			$text_end = io_safe_output(modules_get_agentmodule_name((int)$id_target_module));
+			if (preg_match ("/(.+)_ifOperStatus$/" , (string)$text_end, $matches)) {
+				if ($matches[1]) {
+					$item['text_end'] = $matches[1];
+				}
+			}
 		}
 		if ($relation['child_type'] == 1) {
 			$item['arrow_start'] = 'module';
 			$item['status_start'] = modules_get_agentmodule_status((int)$id_source_module, false, false, null);
 			$item['id_module_start'] = (int)$id_source_module;
-			$item['text_start'] = io_safe_output(modules_get_agentmodule_name((int)$id_source_module));
+			$text_start = io_safe_output(modules_get_agentmodule_name((int)$id_source_module));
+			if (preg_match ("/(.+)_ifOperStatus$/" , (string)$text_start, $matches)) {
+				if ($matches[1]) {
+					$item['text_start'] = $matches[1];
+				}
+			}
 		}
 		
 		$agent = 0;
@@ -1038,7 +1052,7 @@ function clean_duplicate_links ($relations) {
 				if (enterprise_installed()) {
 					delete_link($segregation_links['mm'][$index_to_del]);
 				}
-				unset($segregation_links['mm'][$index_to_del]);
+				//unset($segregation_links['mm'][$index_to_del]);
 			}
 			$index_to_del++;
 		}
@@ -1142,8 +1156,8 @@ function clean_duplicate_links ($relations) {
 	}
 	
 	$final_links3['aa'] = $final_links2['aa'];
-	$final_links3['mm'] = $final_links2['mm'];
-	$final_links3['am'] = $final_links2['am'];
+	$final_links3['mm'] = $segregation_links['mm'];
+	$final_links3['am'] = $segregation_links['am'];
 	$final_links3['ff'] = $final_links2['ff'];
 	
 	$cleaned_links = array();
@@ -1270,6 +1284,9 @@ function show_networkmap($id = 0, $user_readonly = false, $nodes_and_relations =
 						<img id="image_hide_show_labels" src="images/icono_borrar.png" />
 					</a>
 				</div>';
+			echo '<div id="holding_spinner_' . $networkmap['id'] . '" style="display: none; position: absolute; right: 50px; top: 20px;">
+						<img id="image_hide_show_labels" src="images/spinner.gif" />
+				</div>';
 		
 	echo '</div>';
 	
@@ -1322,7 +1339,6 @@ function show_networkmap($id = 0, $user_readonly = false, $nodes_and_relations =
 	////////////////////////////////////////////////////////////////////////
 	$(document).ready(function() {
 		init_graph({
-			refesh_period: networkmap_refresh_time,
 			graph: networkmap,
 			networkmap_center: networkmap_center,
 			networkmap_dimensions: networkmap_dimensions,
@@ -1334,8 +1350,6 @@ function show_networkmap($id = 0, $user_readonly = false, $nodes_and_relations =
 		init_drag_and_drop();
 		init_minimap();
 		function_open_minimap();
-		
-		window.interval_obj = setInterval(update_networkmap, networkmap_refresh_time);
 		
 		$(document.body).on("mouseleave",
 			".context-menu-list",
@@ -1415,6 +1429,13 @@ if (empty($list_networkmaps))
 			html_print_image('images/dot_green.png', true) . '</span>' .
 		'<span id="shape_icon_fail" style="display: none;">' .
 			html_print_image('images/dot_red.png', true) . '</span>';
+	$table->data["node_name"][0] = __('Name');
+	$table->data["node_name"][1] = html_print_input_text('edit_name_node',
+		'', __('name node'), '20', '50', true);
+	$table->data["node_name"][2] =
+		html_print_button(__('Update node'), '', false,
+			'', 'class="sub"', true);
+	
 	$table->data["fictional_node_name"][0] = __('Name');
 	$table->data["fictional_node_name"][1] = html_print_input_text('edit_name_fictional_node',
 		'', __('name fictional node'), '20', '50', true);

@@ -183,7 +183,7 @@ if ($update_agents) {
 	
 	ui_print_result_message ($result !== false,
 		__('Agents updated successfully') . '(' . $n_edited . ')',
-		__('Agents cannot be updated'));
+		__('Agents cannot be updated (maybe there was no field to update)'));
 }
 $id_group = 0;
 

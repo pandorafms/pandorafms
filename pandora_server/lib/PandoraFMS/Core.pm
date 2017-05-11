@@ -2591,7 +2591,7 @@ sub pandora_delete_module ($$;$) {
 	
 	my $agent_name = get_agent_name($dbh, $module->{'id_agente'});
 	
-	if ((defined($conf)) && (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf')) {
+	if ((defined($conf)) && (-e $conf->{incomingdir}.'/conf/'.md5(encode_utf8(safe_output($agent_name))).'.conf')) {
 		enterprise_hook('pandora_delete_module_from_conf', [$conf,$agent_name,$module->{'nombre'}]);
 	}
 	
@@ -2885,12 +2885,11 @@ sub pandora_delete_agent ($$;$) {
 	
 	if (defined $conf) {
 		# Delete the conf files
-		if (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf') {
-			unlink($conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf');
-		}
-		if (-e $conf->{incomingdir}.'/md5/'.md5($agent_name).'.md5') {
-			unlink($conf->{incomingdir}.'/md5/'.md5($agent_name).'.md5');
-		}
+		my $conf_fname = $conf->{incomingdir}.'/conf/'.md5(encode_utf8(safe_output($agent_name))).'.conf';
+		unlink($conf_fname) if (-f $conf_fname);
+		
+		my $md5_fname = $conf->{incomingdir}.'/md5/'.md5(encode_utf8(safe_output($agent_name))).'.md5';
+		unlink($md5_fname) if (-f $md5_fname);
 	}
 
 	foreach my $module (@modules) {

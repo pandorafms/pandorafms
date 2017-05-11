@@ -5471,9 +5471,8 @@ function reporting_availability_graph($report, $content, $pdf=false) {
  *
  */
 function reporting_general($report, $content) {
-	
 	global $config;
-	
+
 	$return = array();
 	$return['type'] = 'general';
 	$return['subtype'] = $content['group_by_agent'];
@@ -5501,6 +5500,7 @@ function reporting_general($report, $content) {
 	$return["max"]["formated_value"] = null;
 	$return["max"]["agent"] = null;
 	$return["max"]["module"] = null;
+	$return["show_in_same_row"] = $content['style']['show_in_same_row'];
 	
 	if (empty($content['subitems'])) {
 		$generals = db_get_all_rows_filter(
@@ -5692,8 +5692,9 @@ function reporting_general($report, $content) {
 				$data = array();
 				$data['agent'] = $agent_name[$i];
 				$data['module'] = $module_name[$i];
-				
-				
+				$data['id_agent_module'] = $id_agent_module[$i];
+				$data['id_agent'] = agents_get_agent_id_by_module_id($id_agent_module[$i]);
+
 				$data['operator'] = "";
 				if ($content['period'] != 0) {
 					switch ($operations[$i]) {

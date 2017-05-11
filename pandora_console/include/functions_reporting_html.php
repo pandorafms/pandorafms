@@ -2578,50 +2578,86 @@ function get_agent_first_time ($agent_name) {
 }
 
 function reporting_html_general(&$table, $item) {
-	
 	if (!empty($item["data"])) {
+		$data_in_same_row = $item['show_in_same_row'];
 		switch ($item['subtype']) {
 			case REPORT_GENERAL_NOT_GROUP_BY_AGENT:
-				$table1 = new stdClass();
-				$table1->width = '99%';
-				$table1->data = array ();
-				$table1->head = array ();
-				$table1->head[0] = __('Agent');
-				$table1->head[1] = __('Module');
-				if ($item['date']['period'] != 0) {
-					$table1->head[2] = __('Operation');
-				}
-				$table1->head[3] = __('Value');
-				$table1->style[0] = 'text-align: left';
-				$table1->style[1] = 'text-align: left';
-				$table1->style[2] = 'text-align: left';
-				$table1->style[3] = 'text-align: left';
-				
-				/* Begin - Order by agent */
-				
-				foreach ($item['data'] as $key => $row) {
-    			$aux[$key] = $row['agent'];
-				}
-				
-				array_multisort($aux, SORT_ASC, $item['data']);
-				
-				/* End - Order by agent */
-				
-				foreach ($item['data'] as $row) {
+				if (!$data_in_same_row) {
+					$table1 = new stdClass();
+					$table1->width = '99%';
+					$table1->data = array ();
+					$table1->head = array ();
+					$table1->head[0] = __('Agent');
+					$table1->head[1] = __('Module');
 					if ($item['date']['period'] != 0) {
-						$table1->data[] = array(
-							$row['agent'],
-							$row['module'],
-							$row['operator'],
-							$row['formated_value']);
+						$table1->head[2] = __('Operation');
 					}
-					else {
-						$table1->data[] = array(
-							$row['agent'],
-							$row['module'],
-							$row['formated_value']);
+					$table1->head[3] = __('Value');
+					$table1->style[0] = 'text-align: left';
+					$table1->style[1] = 'text-align: left';
+					$table1->style[2] = 'text-align: left';
+					$table1->style[3] = 'text-align: left';
+					
+					/* Begin - Order by agent */
+					
+					foreach ($item['data'] as $key => $row) {
+					$aux[$key] = $row['agent'];
+					}
+					
+					array_multisort($aux, SORT_ASC, $item['data']);
+					
+					/* End - Order by agent */
+					
+					foreach ($item['data'] as $row) {
+						if ($item['date']['period'] != 0) {
+							$table1->data[] = array(
+								$row['agent'],
+								$row['module'],
+								$row['operator'],
+								$row['formated_value']);
+						}
+						else {
+							$table1->data[] = array(
+								$row['agent'],
+								$row['module'],
+								$row['formated_value']);
+						}
 					}
 				}
+				else {
+					//html_debug($item['data']);
+					$order_data = array();
+					foreach ($item['data'] as $row) {
+						$order_data[$row['id_agent']][$row['id_agent_module']][$row['operator']] = $row['formated_value'];
+					}
+					
+					$table1 = new stdClass();
+					$table1->width = '99%';
+					$table1->data = array ();
+					$table1->head = array ();
+					$table1->head[0] = __('Agent');
+					$table1->head[1] = __('Module');
+					$table1->head[2] = __('Avg');
+					$table1->head[3] = __('Max');
+					$table1->head[4] = __('Min');
+					$table1->style[0] = 'text-align: center';
+					$table1->style[1] = 'text-align: center';
+					$table1->style[2] = 'text-align: center';
+					$table1->style[3] = 'text-align: center';
+					$table1->style[4] = 'text-align: center';
+
+					foreach ($order_data as $id_agent => $row) {
+						foreach ($row as $id_module => $row2) {
+							$table1->data[] = array(
+								agents_get_alias($id_agent),
+								modules_get_agentmodule_name($id_module),
+								$row2['Rate'],
+								$row2['Maximum'],
+								$row2['Minimum']);
+						}
+					}
+				}
+
 				break;
 			case REPORT_GENERAL_GROUP_BY_AGENT:
 				$list_modules = array();
@@ -2639,9 +2675,9 @@ function reporting_html_general(&$table, $item) {
 					$row = array();
 					
 					$row['agent'] = $agent;
-					$table1->style['agent'] = 'text-align: left;';
+					$table1->style['agent'] = 'text-align: center;';
 					foreach ($list_modules as $name) {
-						$table1->style[$name] = 'text-align: right;';
+						$table1->style[$name] = 'text-align: center;';
 						if (isset($modules[$name])) {
 							$row[$name] = $modules[$name];
 						}

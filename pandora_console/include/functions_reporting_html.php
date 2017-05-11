@@ -2625,7 +2625,6 @@ function reporting_html_general(&$table, $item) {
 					}
 				}
 				else {
-					//html_debug($item['data']);
 					$order_data = array();
 					foreach ($item['data'] as $row) {
 						$order_data[$row['id_agent']][$row['id_agent_module']][$row['operator']] = $row['formated_value'];

@@ -4502,7 +4502,7 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
 	
-	if ($config['type_module_charts'] === 'area') {
+	if ($type_graph === 'area') {
 		return area_graph($flash_chart, $chart, $width, $height, $color,
 			$legend, array(), '', "", $unit, $homeurl,
 			$water_mark, $config['fontpath'], $config['font_size'], $unit,

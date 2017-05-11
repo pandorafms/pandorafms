@@ -274,7 +274,6 @@ $table_simple->data[3][2] .= html_print_input_text ('dynamic_max', $dynamic_max,
 $table_simple->data[3][3] = '<span><em>'.__('Dynamic Threshold Two Tailed: ').'</em>';
 $table_simple->data[3][3] .= html_print_checkbox ("dynamic_two_tailed", 1, $dynamic_two_tailed, true, $disabledBecauseInPolicy);
 
-
 $table_simple->data[4][0] = __('Warning status').' ' . ui_print_help_icon ('warning_status', true);
 if (!modules_is_string_type($id_module_type) || $edit) {
 	$table_simple->data[4][1] .= '<span id="minmax_warning"><em>'.__('Min. ').'</em>';
@@ -1206,18 +1205,19 @@ function validate_post_process() {
 //function paint graph
 function paint_graph_values(){
 	//Parse integrer
-	var min_w = parseInt($('#text-min_warning').val());
+	var min_w = parseFloat($('#text-min_warning').val());
 		if(min_w == '0.00'){ min_w = 0; }
-	var max_w = parseInt($('#text-max_warning').val());
+	var max_w = parseFloat($('#text-max_warning').val());
 		if(max_w == '0.00'){ max_w = 0; }
-	var min_c = parseInt($('#text-min_critical').val());
+	var min_c = parseFloat($('#text-min_critical').val());
 		if(min_c =='0.00'){ min_c = 0; }
-	var max_c = parseInt($('#text-max_critical').val());
+	var max_c = parseFloat($('#text-max_critical').val());
 		if(max_c =='0.00'){ max_c = 0; }
 	var inverse_w = $('input:checkbox[name=warning_inverse]:checked').val();
 		if(!inverse_w){ inverse_w = 0; }
 	var inverse_c = $('input:checkbox[name=critical_inverse]:checked').val();
 		if(!inverse_c){ inverse_c = 0; }
+
 	//inicialiced error
 	var error_w = 0;
 	var error_c = 0;
@@ -1257,10 +1257,10 @@ function paint_graph_status(min_w, max_w, min_c, max_c, inverse_w, inverse_c, er
 	//if haven't errors
 	if (error_w == 0 && error_c == 0){
 		//parse element
-		min_w = parseInt(min_w);
-		min_c = parseInt(min_c);
-		max_w = parseInt(max_w);
-		max_c = parseInt(max_c);
+		min_w = parseFloat(min_w);
+		min_c = parseFloat(min_c);
+		max_w = parseFloat(max_w);
+		max_c = parseFloat(max_c);
 		
 		//inicialize var
 		var range_min = 0;

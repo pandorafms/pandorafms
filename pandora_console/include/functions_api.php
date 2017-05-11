@@ -8904,6 +8904,9 @@ function api_set_delete_special_day($id_special_day, $thrash2, $thrash3, $thrash
  *
  */
 function api_get_module_graph($id_module, $thrash2, $other, $thrash4) {
+	
+	global $config;
+
 	if (defined ('METACONSOLE')) {
 		return;
 	}
@@ -8921,9 +8924,9 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4) {
 	}
 	
 	$graph_seconds =
-		(!empty($other) && isset($other['data']))
+		(!empty($other) && isset($other['data'][0]))
 		?
-		$other['data']
+		$other['data'][0]
 		:
 		SECONDS_1HOUR; // 1 hour by default
 	
@@ -8936,8 +8939,9 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4) {
 	$graph_html = grafico_modulo_sparse(
 		$id_module, $graph_seconds, false, 600, 300, '',
 		'', false, false, true, time(), '', 0, 0, true, true,
-		ui_get_full_url(false) . '/', 1, false, '', false, true);
-	
+		ui_get_full_url(false) . '/', 1, false, '', false, true,
+		true, 'white', null, false, false, $config['type_module_charts']);
+		
        $graph_image_file_encoded = false;
         if (preg_match("/<img src='(.+)'./", $graph_html, $matches)) {
                 $file_url = $matches[1];
@@ -8982,7 +8986,7 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4) {
                 // returnError('error_module_graph', __(''));
         }
         else {
-			if($other['data'] < 40000){
+			if($other['data'][1]){
 				header('Content-type: text/html');
             	returnData('string', array('type' => 'string', 'data' => '<img src="data:image/jpeg;base64,' . $graph_image_file_encoded . '">'));
         	} else {

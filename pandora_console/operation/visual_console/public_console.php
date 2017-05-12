@@ -84,7 +84,7 @@ if ($layout) {
 	//~ ob_start();
 	//~ // Render map
 	visual_map_print_visual_map($id_layout, true, true, $width, $height,
-		'../../', true, $graph_javascript, true);
+		'../../', true, true, true);
 	//~ return;
 }
 else {
@@ -92,7 +92,7 @@ else {
 }
 
 // Floating menu - Start
-echo '<div id="vc-controls">';
+echo '<div id="vc-controls" style="z-index:300;">';
 
 echo '<div id="menu_tab">';
 echo '<ul class="mn">';
@@ -189,6 +189,72 @@ $ignored_params['refr'] = '';
 		$('select#refr').change(function (event) {
 			refr = Number.parseInt(event.target.value, 10);
 			startCountDown(refr, false);
+		});
+		
+		
+		$('body').css('background-color','<?php echo $layout["background_color"]; ?>');
+		
+		$(".module_graph .menu_graph").css('display','none');
+		
+		$(".parent_graph").each(function(){
+			
+		if($(this).css('background-color') != 'rgb(255, 255, 255)'){
+				$(this).css('color', '#999');				
+				}
+		});			
+
+		$(".overlay").removeClass("overlay").addClass("overlaydisabled");
+		
+		$('.item:not(.icon) img').each(function(){
+			
+			
+			if($(this).css('float')=='left' || $(this).css('float')=='right'){
+			
+				
+			$(this).css('margin-top',(parseInt($(this).parent().parent().css('height'))/2-parseInt($(this).css('height'))/2)+'px');
+			$(this).css('margin-left','');
+			
+			}
+			else{
+				$(this).css('margin-left',(parseInt($(this).parent().parent().css('width'))/2-parseInt($(this).css('width'))/2)+'px');
+				$(this).css('margin-top','');
+			}
+			
+		});
+		
+		$('.item > div').each(function(){
+			if($(this).css('float')=='left' || $(this).css('float')=='right'){
+			
+				
+			$(this).css('margin-top',(parseInt($(this).parent().css('height'))/2-parseInt($(this).css('height'))/2-15)+'px');
+			$(this).css('margin-left','');
+			
+			}
+			else{
+				$(this).css('margin-left',(parseInt($(this).parent().css('width'))/2-parseInt($(this).css('width'))/2)+'px');
+				$(this).css('margin-top','');
+			}
+			
+		});
+		
+		$('.item > a > div').each(function(){
+			if($(this).css('float')=='left' || $(this).css('float')=='right'){
+			
+				
+			$(this).css('margin-top',(parseInt($(this).parent().parent().css('height'))/2-parseInt($(this).css('height'))/2-5)+'px');
+			$(this).css('margin-left','');
+			
+			}
+			else{
+				$(this).css('margin-left',(parseInt($(this).parent().parent().css('width'))/2-parseInt($(this).css('width'))/2)+'px');
+				$(this).css('margin-top','');
+			}
+			
+		});
+		
+		$(".graph:not([class~='noresizevc'])").each(function(){
+			height = parseInt($(this).css("height")) - 30;
+			$(this).css('height', height);
 		});
 		
 		// Start the map fetch

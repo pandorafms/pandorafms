@@ -351,9 +351,12 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 			}
 			elseif ($period < SECONDS_1MONTH) {
 				$time_format = "M \nd H\h";
-			} 
-			else {
+			}
+			elseif ($period < SECONDS_6MONTHS) {
 				$time_format = "M \nd H\h";
+			}
+			else {
+				$time_format = "M Y";
 			}
 		}
 		else {
@@ -369,9 +372,12 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 			}
 			elseif ($period < SECONDS_1MONTH) {
 				$time_format = "M d H\h";
-			} 
-			else {
+			}
+			elseif ($period < SECONDS_6MONTHS) {
 				$time_format = "M d H\h";
+			}
+			else {
+				$time_format = "M Y";
 			}
 		}
 		

@@ -345,7 +345,7 @@ function update_manager_check_online_free_packages ($is_ajax=true) {
 					var mr_available = "<?php echo __('Minor release available'); ?>\n";
 					var package_available = "<?php echo __('New package available'); ?>\n";
 					var mr_not_accepted = "<?php echo __('Minor release rejected. Changes will not apply.'); ?>\n";
-					var mr_not_accepted_code_yes = "<?php echo __('Minor release rejected. Package will apply.'); ?>\n";
+					var mr_not_accepted_code_yes = "<?php echo __('Minor release rejected. The database will not be updated and the package will apply.'); ?>\n";
 					var mr_cancel = "<?php echo __('Minor release rejected. Changes will not apply.'); ?>\n";
 					var package_cancel = "<?php echo __('These package changes will not apply.'); ?>\n";
 					var package_not_accepted = "<?php echo __('Package rejected. These package changes will not apply.'); ?>\n";
@@ -364,10 +364,10 @@ function update_manager_check_online_free_packages ($is_ajax=true) {
 					var applying_mr = "<?php echo __('Applying DB MR'); ?>\n";
 				</script>
 				<?php
-
+				$baseurl = ui_get_full_url(false, false, false, false);
 				echo "<p><b>There is a new version:</b> " . $result[0]['version'] . "</p>";
 				echo "<a href='javascript: update_last_package(\"" . base64_encode($result[0]["file_name"]) .
-					"\", \"" . $result[0]['version'] ."\");'>" .
+					"\", \"" . $result[0]['version'] ."\", \"" . $baseurl ."\");'>" .
 					__("Update to the last version") . "</a>";
 			}
 			else {

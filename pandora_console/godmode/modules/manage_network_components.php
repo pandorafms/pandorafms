@@ -49,7 +49,7 @@ You can of course remove the warnings, that's why we include the source and do n
 	
 	ui_print_page_header (__('Module management') . ' &raquo; ' .
 		__('Network component management'), "", false,
-		"network_component", true,"sell",true,"modulemodal");
+		"network_component", true,"",true,"modulemodal");
 	$sec = 'gmodules';
 }
 

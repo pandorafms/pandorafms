@@ -195,9 +195,9 @@ More detail and specific examples can be found in the included HTML file.
 			
 			if (options.series.pie.offset.left=='auto')
 				if (options.legend.position.match('w'))
-					centerLeft += legendWidth/2;
+					centerLeft += legendWidth;
 				else
-					centerLeft -= legendWidth/2;
+					centerLeft -= legendWidth;
 			else
 				centerLeft += options.series.pie.offset.left;
 					

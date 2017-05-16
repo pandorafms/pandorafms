@@ -293,8 +293,8 @@ if ($search != "") {
 		$search_sql .= ")";
 	}else{
 		$search_sql = " AND ( nombre " . $order_collation . "
-			LIKE '%$search%' OR alias " . $order_collation . "
-			LIKE '%$search%') ";
+			LIKE LOWER('%$search%') OR alias " . $order_collation . "
+			LIKE LOWER('%$search%')) ";
 	}
 }
 

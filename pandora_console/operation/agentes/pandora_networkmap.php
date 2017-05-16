@@ -248,6 +248,10 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
 			true);
 		
 		if ($result) {
+			// If change the group, the map must be regenerated
+			if ($id_group != $id_group_old) {
+				networkmap_delete_nodes($id);
+			}
 			$networkmap_write = $networkmap_write_new;
 			$networkmap_manage = $networkmap_manage_new;
 		}

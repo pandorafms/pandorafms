@@ -234,7 +234,7 @@ function install_package (package, homeurl) {
 								buttons: {
 									"Apply MR": function () {
 										var err = [];
-										err = apply_minor_release(data['mr'], package, 1, 1);
+										err = apply_minor_release(data['mr'], package, 1, 1, home_url);
 
 										if (!err['error']) {
 											if (err['message'] == 'bad_mr_filename') {
@@ -271,7 +271,7 @@ function install_package (package, homeurl) {
 															});
 
 															var dialog_accept_package_mr_fail_text = "<div>";
-															dialog_accept_package_mr_fail_text = dialog_accept_package_mr_fail_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_info_mr.png'></div>";
+															dialog_accept_package_mr_fail_text = dialog_accept_package_mr_fail_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_info_mr.png'></div>";
 															dialog_accept_package_mr_fail_text = dialog_accept_package_mr_fail_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>INFO</strong></h3>";
 															dialog_accept_package_mr_fail_text = dialog_accept_package_mr_fail_text + "<p style='font-family:Verdana; font-size:12pt;'>" + mr_not_accepted_code_yes + "</p></div>";
 															dialog_accept_package_mr_fail_text = dialog_accept_package_mr_fail_text + "</div>";
@@ -314,7 +314,7 @@ function install_package (package, homeurl) {
 																		});
 
 																		var dialog_success_pkg_text = "<div>";
-																		dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_exito_mr.png'></div>";
+																		dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_exito_mr.png'></div>";
 																		dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>SUCCESS</strong></h3>";
 																		dialog_success_pkg_text = dialog_success_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_success + "</p></div>";
 																		dialog_success_pkg_text = dialog_success_pkg_text + "</div>";
@@ -345,7 +345,7 @@ function install_package (package, homeurl) {
 																		});
 
 																		var dialog_error_pkg_text = "<div>";
-																		dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
+																		dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_error_mr.png'></div>";
 																		dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
 																		dialog_error_pkg_text = dialog_error_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_error + "</p></div>";
 																		dialog_error_pkg_text = dialog_error_pkg_text + "</div>";
@@ -388,7 +388,7 @@ function install_package (package, homeurl) {
 															});
 
 															var dialog_cancel_pkg_text = "<div>";
-															dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_info_mr.png'></div>";
+															dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_info_mr.png'></div>";
 															dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>INFO</strong></h3>";
 															dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_cancel + "</p></div>";
 															dialog_cancel_pkg_text = dialog_cancel_pkg_text + "</div>";
@@ -405,7 +405,7 @@ function install_package (package, homeurl) {
 												});
 
 												var dialog_bad_message_text = "<div>";
-												dialog_bad_message_text = dialog_bad_message_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
+												dialog_bad_message_text = dialog_bad_message_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_error_mr.png'></div>";
 												dialog_bad_message_text = dialog_bad_message_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
 												dialog_bad_message_text = dialog_bad_message_text + "<p style='font-family:Verdana; font-size:12pt;'>" + bad_mr_file + "</p></div>";
 												dialog_bad_message_text = dialog_bad_message_text + "</div>";
@@ -433,7 +433,7 @@ function install_package (package, homeurl) {
 												});
 
 												var dialog_success_mr_text = "<div>";
-												dialog_success_mr_text = dialog_success_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_exito_mr.png'></div>";
+												dialog_success_mr_text = dialog_success_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_exito_mr.png'></div>";
 												dialog_success_mr_text = dialog_success_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>SUCCESS</strong></h3>";
 												dialog_success_mr_text = dialog_success_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + mr_success + "</p></div>";
 												dialog_success_mr_text = dialog_success_mr_text + "</div>";
@@ -476,7 +476,7 @@ function install_package (package, homeurl) {
 															});
 
 															var dialog_success_pkg_text = "<div>";
-															dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_exito_mr.png'></div>";
+															dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_exito_mr.png'></div>";
 															dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>SUCCESS</strong></h3>";
 															dialog_success_pkg_text = dialog_success_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_success + "</p></div>";
 															dialog_success_pkg_text = dialog_success_pkg_text + "</div>";
@@ -507,7 +507,7 @@ function install_package (package, homeurl) {
 															});
 
 															var dialog_error_pkg_text = "<div>";
-															dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
+															dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_error_mr.png'></div>";
 															dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
 															dialog_error_pkg_text = dialog_error_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_error + "</p></div>";
 															dialog_error_pkg_text = dialog_error_pkg_text + "</div>";
@@ -529,7 +529,7 @@ function install_package (package, homeurl) {
 												// Check the status of the update
 												check_install_package(package, homeurl);
 
-												remove_rr_file(data['mr']);
+												remove_rr_file(data['mr'], home_url);
 											}
 										}
 										else {
@@ -552,7 +552,7 @@ function install_package (package, homeurl) {
 											});
 
 											var dialog_error_mr_text = "<div>";
-											dialog_error_mr_text = dialog_error_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
+											dialog_error_mr_text = dialog_error_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_error_mr.png'></div>";
 											dialog_error_mr_text = dialog_error_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
 											dialog_error_mr_text = dialog_error_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + mr_error + "</p></div>";
 											dialog_error_mr_text = dialog_error_mr_text + "</div>";
@@ -586,7 +586,7 @@ function install_package (package, homeurl) {
 										});
 
 										var dialog_cancel_mr_text = "<div>";
-										dialog_cancel_mr_text = dialog_cancel_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_info_mr.png'></div>";
+										dialog_cancel_mr_text = dialog_cancel_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_info_mr.png'></div>";
 										dialog_cancel_mr_text = dialog_cancel_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>INFO</strong></h3>";
 										dialog_cancel_mr_text = dialog_cancel_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + mr_cancel + "</p></div>";
 										dialog_cancel_mr_text = dialog_cancel_mr_text + "</div>";
@@ -606,8 +606,8 @@ function install_package (package, homeurl) {
 							$('button:contains(Cancel)').attr("id","cancel_rr_button");
 							
 							var dialog_have_mr_text = "<div>";
-							dialog_have_mr_text = dialog_have_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_warning_mr.png'></div>";
-							dialog_have_mr_text = dialog_have_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>" + mr_available_header + "</strong></h3>";
+							dialog_have_mr_text = dialog_have_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_warning_mr.png'></div>";
+							dialog_have_mr_text = dialog_have_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>This package includes db changes</strong></h3>";
 							dialog_have_mr_text = dialog_have_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + text1_mr_file + "</p>";
 							dialog_have_mr_text = dialog_have_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + text2_mr_file + "<a style='font-family:Verdana bold; font-size:12pt; color:#82B92E'href=\"index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list\">" + text3_mr_file + "</a>" + text4_mr_file + "</p></div>";
 							dialog_have_mr_text = dialog_have_mr_text + "</div>";
@@ -653,7 +653,7 @@ function install_package (package, homeurl) {
 										});
 
 										var dialog_success_pkg_text = "<div>";
-										dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_exito_mr.png'></div>";
+										dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_exito_mr.png'></div>";
 										dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>SUCCESS</strong></h3>";
 										dialog_success_pkg_text = dialog_success_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_success + "</p></div>";
 										dialog_success_pkg_text = dialog_success_pkg_text + "</div>";
@@ -684,7 +684,7 @@ function install_package (package, homeurl) {
 										});
 
 										var dialog_error_pkg_text = "<div>";
-										dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
+										dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_error_mr.png'></div>";
 										dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
 										dialog_error_pkg_text = dialog_error_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_error + "</p></div>";
 										dialog_error_pkg_text = dialog_error_pkg_text + "</div>";
@@ -706,7 +706,7 @@ function install_package (package, homeurl) {
 							// Check the status of the update
 							check_install_package(package, homeurl);
 
-							remove_rr_file_to_extras();
+							remove_rr_file_to_extras(home_url);
 						}
 					}
 				});
@@ -732,7 +732,7 @@ function install_package (package, homeurl) {
 				});
 
 				var dialog_cancel_pkg_text = "<div>";
-				dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_info_mr.png'></div>";
+				dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_info_mr.png'></div>";
 				dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>INFO</strong></h3>";
 				dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_cancel + "</p></div>";
 				dialog_cancel_pkg_text = dialog_cancel_pkg_text + "</div>";
@@ -785,7 +785,7 @@ function install_package (package, homeurl) {
 	});
 
 	var dialog_text = "<div>";
-	dialog_text = dialog_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_info_mr.png'></div>";
+	dialog_text = dialog_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_info_mr.png'></div>";
 	dialog_text = dialog_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>" + text1_package_file + "</strong></h3>";
 	dialog_text = dialog_text + "<p style='font-family:Verdana; font-size:12pt;'>" + text2_package_file + "</p></div>";
 	dialog_text = dialog_text + "</div>";
@@ -891,7 +891,7 @@ function update_last_package(package, version, homeurl) {
 							
 							$("#box_online .content").html(data['message']);
 							
-							install_free_package_prev_step(package, version, homeurl);
+							install_free_package_prev_step(package, version, home_url);
 						}
 						else {
 							$("#box_online .content").html(data['message']);
@@ -994,7 +994,7 @@ function install_free_package_prev_step(package, version, homeurl) {
 								buttons: {
 									"Apply MR": function () {
 										var err = [];
-										err = apply_minor_release(data['mr'], package, 0, 0);
+										err = apply_minor_release(data['mr'], package, 0, 0, home_url);
 										if (!err['error']) {
 											if (err['message'] == 'bad_mr_filename') {
 												$("#mr_dialog2").dialog("close");
@@ -1030,7 +1030,7 @@ function install_free_package_prev_step(package, version, homeurl) {
 															});
 
 															var dialog_accept_package_mr_fail_text = "<div>";
-															dialog_accept_package_mr_fail_text = dialog_accept_package_mr_fail_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_info_mr.png'></div>";
+															dialog_accept_package_mr_fail_text = dialog_accept_package_mr_fail_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_info_mr.png'></div>";
 															dialog_accept_package_mr_fail_text = dialog_accept_package_mr_fail_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>INFO</strong></h3>";
 															dialog_accept_package_mr_fail_text = dialog_accept_package_mr_fail_text + "<p style='font-family:Verdana; font-size:12pt;'>" + mr_not_accepted_code_yes + "</p></div>";
 															dialog_accept_package_mr_fail_text = dialog_accept_package_mr_fail_text + "</div>";
@@ -1065,7 +1065,7 @@ function install_free_package_prev_step(package, version, homeurl) {
 																"json"
 															);
 
-															remove_rr_file_to_extras();
+															remove_rr_file_to_extras(home_url);
 														},
 														"Cancel": function () {
 															$(this).dialog("close");
@@ -1090,7 +1090,7 @@ function install_free_package_prev_step(package, version, homeurl) {
 															});
 
 															var dialog_cancel_pkg_text = "<div>";
-															dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_info_mr.png'></div>";
+															dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_info_mr.png'></div>";
 															dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>INFO</strong></h3>";
 															dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_cancel + "</p></div>";
 															dialog_cancel_pkg_text = dialog_cancel_pkg_text + "</div>";
@@ -1104,7 +1104,7 @@ function install_free_package_prev_step(package, version, homeurl) {
 												});
 
 												var dialog_bad_message_text = "<div>";
-												dialog_bad_message_text = dialog_bad_message_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
+												dialog_bad_message_text = dialog_bad_message_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_error_mr.png'></div>";
 												dialog_bad_message_text = dialog_bad_message_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
 												dialog_bad_message_text = dialog_bad_message_text + "<p style='font-family:Verdana; font-size:12pt;'>" + bad_mr_file + "</p></div>";
 												dialog_bad_message_text = dialog_bad_message_text + "</div>";
@@ -1132,7 +1132,7 @@ function install_free_package_prev_step(package, version, homeurl) {
 												});
 
 												var dialog_success_mr_text = "<div>";
-												dialog_success_mr_text = dialog_success_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_exito_mr.png'></div>";
+												dialog_success_mr_text = dialog_success_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_exito_mr.png'></div>";
 												dialog_success_mr_text = dialog_success_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>SUCCESS</strong></h3>";
 												dialog_success_mr_text = dialog_success_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + mr_success + "</p></div>";
 												dialog_success_mr_text = dialog_success_mr_text + "</div>";
@@ -1167,7 +1167,7 @@ function install_free_package_prev_step(package, version, homeurl) {
 													"json"
 												);
 
-												remove_rr_file_to_extras();
+												remove_rr_file_to_extras(home_url);
 											}
 										}
 										else {
@@ -1190,7 +1190,7 @@ function install_free_package_prev_step(package, version, homeurl) {
 											});
 
 											var dialog_error_mr_text = "<div>";
-											dialog_error_mr_text = dialog_error_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
+											dialog_error_mr_text = dialog_error_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_error_mr.png'></div>";
 											dialog_error_mr_text = dialog_error_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
 											dialog_error_mr_text = dialog_error_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + mr_error + "</p></div>";
 											dialog_error_mr_text = dialog_error_mr_text + "</div>";
@@ -1222,7 +1222,7 @@ function install_free_package_prev_step(package, version, homeurl) {
 										});
 
 										var dialog_cancel_mr_text = "<div>";
-										dialog_cancel_mr_text = dialog_cancel_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_info_mr.png'></div>";
+										dialog_cancel_mr_text = dialog_cancel_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_info_mr.png'></div>";
 										dialog_cancel_mr_text = dialog_cancel_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>INFO</strong></h3>";
 										dialog_cancel_mr_text = dialog_cancel_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + mr_cancel + "</p></div>";
 										dialog_cancel_mr_text = dialog_cancel_mr_text + "</div>";
@@ -1241,8 +1241,8 @@ function install_free_package_prev_step(package, version, homeurl) {
 							$('button:contains(Cancel)').attr("id","cancel_rr_button");
 							
 							var dialog_have_mr_text = "<div>";
-							dialog_have_mr_text = dialog_have_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_warning_mr.png'></div>";
-							dialog_have_mr_text = dialog_have_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>" + mr_available_header + "</strong></h3>";
+							dialog_have_mr_text = dialog_have_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_warning_mr.png'></div>";
+							dialog_have_mr_text = dialog_have_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>This package includes db changes</strong></h3>";
 							dialog_have_mr_text = dialog_have_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + text1_mr_file + "</p>";
 							dialog_have_mr_text = dialog_have_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + text2_mr_file + "<a style='font-family:Verdana bold; font-size:12pt; color:#82B92E'href=\"index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list\">" + text3_mr_file + "</a>" + text4_mr_file + "</p></div>";
 							dialog_have_mr_text = dialog_have_mr_text + "</div>";
@@ -1278,7 +1278,7 @@ function install_free_package_prev_step(package, version, homeurl) {
 								"json"
 							);
 
-							remove_rr_file_to_extras();
+							remove_rr_file_to_extras(home_url);
 						}
 					},
 					"json"
@@ -1305,7 +1305,7 @@ function install_free_package_prev_step(package, version, homeurl) {
 				});
 
 				var dialog_cancel_pkg_text = "<div>";
-				dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_info_mr.png'></div>";
+				dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_info_mr.png'></div>";
 				dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>INFO</strong></h3>";
 				dialog_cancel_pkg_text = dialog_cancel_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + package_cancel + "</p></div>";
 				dialog_cancel_pkg_text = dialog_cancel_pkg_text + "</div>";
@@ -1321,7 +1321,7 @@ function install_free_package_prev_step(package, version, homeurl) {
 	});
 
 	var dialog_text = "<div>";
-	dialog_text = dialog_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_info_mr.png'></div>";
+	dialog_text = dialog_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_info_mr.png'></div>";
 	dialog_text = dialog_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>" + text1_package_file + "</strong></h3>";
 	dialog_text = dialog_text + "<p style='font-family:Verdana; font-size:12pt;'>" + text2_package_file + "</p></div>";
 	dialog_text = dialog_text + "</div>";
@@ -1364,7 +1364,7 @@ function install_free_package(package, version, homeurl) {
 			});
 
 			var dialog_error_pkg_text = "<div>";
-			dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
+			dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_error_mr.png'></div>";
 			dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
 			dialog_error_pkg_text = dialog_error_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + data['message'] + "</p></div>";
 			dialog_error_pkg_text = dialog_error_pkg_text + "</div>";
@@ -1400,7 +1400,7 @@ function install_free_package(package, version, homeurl) {
 					});
 
 					var dialog_success_pkg_text = "<div>";
-					dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_exito_mr.png'></div>";
+					dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_exito_mr.png'></div>";
 					dialog_success_pkg_text = dialog_success_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>SUCCESS</strong></h3>";
 					dialog_success_pkg_text = dialog_success_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + data['message'] + "</p></div>";
 					dialog_success_pkg_text = dialog_success_pkg_text + "</div>";
@@ -1434,7 +1434,7 @@ function install_free_package(package, version, homeurl) {
 					});
 
 					var dialog_error_pkg_text = "<div>";
-					dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
+					dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_error_mr.png'></div>";
 					dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
 					dialog_error_pkg_text = dialog_error_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + data['message'] + "</p></div>";
 					dialog_error_pkg_text = dialog_error_pkg_text + "</div>";
@@ -1469,7 +1469,7 @@ function install_free_package(package, version, homeurl) {
 				});
 
 				var dialog_error_pkg_text = "<div>";
-				dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
+				dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_error_mr.png'></div>";
 				dialog_error_pkg_text = dialog_error_pkg_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
 				dialog_error_pkg_text = dialog_error_pkg_text + "<p style='font-family:Verdana; font-size:12pt;'>" + data['message'] + "</p></div>";
 				dialog_error_pkg_text = dialog_error_pkg_text + "</div>";
@@ -1481,7 +1481,8 @@ function install_free_package(package, version, homeurl) {
 	});
 }
 
-function apply_minor_release (n_mr, pkg, ent, off) {
+function apply_minor_release (n_mr, pkg, ent, off, homeurl) {
+	var home_url = (typeof homeurl !== 'undefined') ? homeurl + '/' : '';
 	var error = [];
 	error['error'] = false;
 	$('#mr_dialog2').empty();
@@ -1499,7 +1500,7 @@ function apply_minor_release (n_mr, pkg, ent, off) {
 			async: false,
 			dataType: "html",
 			type: "POST",
-			url: "ajax.php",
+			url: home_url + "ajax.php",
 			success: function (data) {
 				$('#mr_dialog2').append("</div style='max-height:50px'>");
 				if (data == 'bad_mr_filename') {
@@ -1530,7 +1531,8 @@ function apply_minor_release (n_mr, pkg, ent, off) {
 	return error;
 }
 
-function remove_rr_file (number) {
+function remove_rr_file (number, homeurl) {
+	var home_url = (typeof homeurl !== 'undefined') ? homeurl + '/' : '';
 	var params = {};
 	params["remove_rr"] = 1;
 	params["number"] = number;
@@ -1540,13 +1542,14 @@ function remove_rr_file (number) {
 		data: params,
 		dataType: "html",
 		type: "POST",
-		url: "ajax.php",
+		url: home_url + "ajax.php",
 		success: function (data) {
 		}
 	});
 }
 
-function remove_rr_file_to_extras () {
+function remove_rr_file_to_extras (homeurl) {
+	var home_url = (typeof homeurl !== 'undefined') ? homeurl + '/' : '';
 	var params = {};
 	params["remove_rr_extras"] = 1;
 	params["page"] = "include/ajax/rolling_release.ajax";
@@ -1555,7 +1558,7 @@ function remove_rr_file_to_extras () {
 		data: params,
 		dataType: "html",
 		type: "POST",
-		url: "ajax.php",
+		url: home_url + "ajax.php",
 		success: function (data) {
 		}
 	});

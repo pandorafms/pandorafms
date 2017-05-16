@@ -291,7 +291,7 @@ foreach ($layoutDatas as $layoutData) {
 	//Delete row button
 	if (!defined('METACONSOLE')) {
 		$url_delete = "index.php?" .
-			"sec=reporting&" .
+			"sec=network&" .
 			"sec2=godmode/reporting/visual_console_builder&" .
 			"tab=" . $activeTab  . "&" .
 			"action=delete&" .
@@ -496,7 +496,7 @@ foreach ($layoutDatas as $layoutData) {
 $pure = get_parameter('pure', 0);
 
 if (!defined('METACONSOLE')) {
-	echo '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=' . $activeTab  . '&id_visual_console=' . $visualConsole["id"] . '">';
+	echo '<form method="post" action="index.php?sec=network&sec2=godmode/reporting/visual_console_builder&tab=' . $activeTab  . '&id_visual_console=' . $visualConsole["id"] . '">';
 }
 else {
 	echo "<form method='post' action='index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure=0&tab=list_elements&id_visual_console=" . $idVisualConsole . "'>";
@@ -522,7 +522,7 @@ echo '</form>';
 // Form for multiple delete
 if (!defined('METACONSOLE')) {
 	$url_multiple_delete = "index.php?" .
-		"sec=reporting&" .
+		"sec=network&" .
 		"sec2=godmode/reporting/visual_console_builder&" .
 		"tab=" . $activeTab  . "&" .
 		"id_visual_console=" . $visualConsole["id"];

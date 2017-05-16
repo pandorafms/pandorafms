@@ -124,7 +124,7 @@ function ui_print_truncate_text($text, $numChars = GENERIC_SIZE_TEXT, $showTextI
 			}
 		}
 		if ($showTextInAToopTip) {
-			$truncateText = $truncateText . ui_print_help_tip($text, true);
+			$truncateText = $truncateText . ui_print_help_tip(htmlspecialchars($text), true);
 		}
 		else {
 			if ($style !== false) {
@@ -813,7 +813,7 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 			else {
 				$img = 'images/policies.png';
 				
-				$data[$index['policy']] = '<a href="?sec=gpolicies&amp;sec2=enterprise/godmode/policies/policies&amp;id=' . $policyInfo['id'] . '">' .
+				$data[$index['policy']] = '<a href="?sec=gmodules&amp;sec2=enterprise/godmode/policies/policies&amp;id=' . $policyInfo['id'] . '">' .
 					html_print_image($img,true, array('title' => $policyInfo['name'])) .
 					'</a>';
 			}
@@ -1068,6 +1068,8 @@ function ui_print_alert_template_example ($id_alert_template, $return = false, $
  * @return string The help tip
  */
 function ui_print_help_icon ($help_id, $return = false, $home_url = '', $image = "images/help.png") {
+	global $config;
+
 	if (empty($home_url))
 		$home_url = "";
 	
@@ -1078,7 +1080,7 @@ function ui_print_help_icon ($help_id, $return = false, $home_url = '', $image =
 	$output = html_print_image ($image, true,
 		array ("class" => "img_help",
 			"title" => __('Help'),
-			"onclick" => "open_help ('" . $help_id . "','" . $home_url . "')"));
+			"onclick" => "open_help ('" . $help_id . "','" . $home_url . "','" . $config['id_user'] . "')"));
 	if (!$return)
 		echo $output;
 	
@@ -3752,20 +3754,24 @@ function ui_print_module_string_value($value, $id_agente_module,
 * Displays a tag list
 */
 function ui_print_tags_view($title = '', $tags = array()) {
-	$tv = '';
-	$tv .= '<div class="tag-wrapper">';
-	if ($title !== '') $tv .= '<h3>' . $title . '</h3>';
-		foreach ($tags as $tag) {
-			$tv .= '<div class=pandora-tag>';
-				$tv .= '<span class=pandora-tag-title>';
-					$tv .= $tag['title'];
-				$tv .= '</span>';
+	if (!empty($title)){
+		$tv .= '<div class="tag-wrapper">';
+		$tv .= '<h3>' . $title . '</h3>';
+	} else {
+		$tv .= '<div class="tag-wrapper" style="padding-top: 10px">';
+	}
+	
+	foreach ($tags as $tag) {
+		$tv .= '<div class=pandora-tag>';
+			$tv .= '<span class=pandora-tag-title>';
+				$tv .= $tag['title'];
+			$tv .= '</span>';
 				
-				$tv .= '<span class=pandora-tag-value>';
-					$tv .= $tag['value'];
-				$tv .= '</span>';
-			$tv .= '</div>';
-		}
+			$tv .= '<span class=pandora-tag-value>';
+				$tv .= $tag['value'];
+			$tv .= '</span>';
+		$tv .= '</div>';
+	}
 	$tv .= '</div>';
 	echo $tv;
 }

@@ -980,6 +980,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_agentdescription_ => (defined ($agent)) ? $agent->{'comentarios'} : '',
 				_agentgroup_ => (defined ($group)) ? $group->{'nombre'} : '',
 				_agentstatus_ => undef,
+				_agentos_ => (defined ($agent)) ? get_os_name($dbh, $agent->{'id_os'}) : '',
 				_address_ => (defined ($agent)) ? $agent->{'direccion'} : '',
 				_timestamp_ => (defined($timestamp)) ? $timestamp : strftime ("%Y-%m-%d %H:%M:%S", localtime()),
 				_timezone_ => strftime ("%Z", localtime()),
@@ -1094,7 +1095,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		my $url ||= $pa_config->{"console_api_url"};
 		
 		my $params = {};
-		$params->{"apipass"} ||= $pa_config->{"console_api_pass"};
+		$params->{"apipass"} = $pa_config->{"console_api_pass"};
 		$params->{"user"} ||= $pa_config->{"console_user"};
 		$params->{"pass"} ||= $pa_config->{"console_pass"};
 		$params->{"op"} = "get";
@@ -1134,10 +1135,10 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		
 		# Check if message has non-ascii chars.
 		# non-ascii chars should be encoded in UTF-8.
-		#if ($field3 =~ /[^[:ascii:]]/o) {
-		#	$field3 = encode("UTF-8", $field3);
-		#	$content_type = 'text/plain; charset="UTF-8"';
-		#}
+		if ($field3 =~ /[^[:ascii:]]/o) {
+			$field3 = encode("UTF-8", $field3);
+			$content_type = 'text/html; charset="UTF-8"';
+		}
 		
 		# Build the mail with attached content
 		if (keys(%{$module_graph_list}) > 0) {
@@ -2680,7 +2681,7 @@ sub pandora_delete_module ($$;$) {
 	
 	my $agent_name = get_agent_name($dbh, $module->{'id_agente'});
 	
-	if ((defined($conf)) && (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf')) {
+	if ((defined($conf)) && (-e $conf->{incomingdir}.'/conf/'.md5(encode_utf8(safe_output($agent_name))).'.conf')) {
 		enterprise_hook('pandora_delete_module_from_conf', [$conf,$agent_name,$module->{'nombre'}]);
 	}
 	
@@ -2978,12 +2979,11 @@ sub pandora_delete_agent ($$;$) {
 	
 	if (defined $conf) {
 		# Delete the conf files
-		if (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf') {
-			unlink($conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf');
-		}
-		if (-e $conf->{incomingdir}.'/md5/'.md5($agent_name).'.md5') {
-			unlink($conf->{incomingdir}.'/md5/'.md5($agent_name).'.md5');
-		}
+		my $conf_fname = $conf->{incomingdir}.'/conf/'.md5(encode_utf8(safe_output($agent_name))).'.conf';
+		unlink($conf_fname) if (-f $conf_fname);
+		
+		my $md5_fname = $conf->{incomingdir}.'/md5/'.md5(encode_utf8(safe_output($agent_name))).'.md5';
+		unlink($md5_fname) if (-f $md5_fname);
 	}
 
 	foreach my $module (@modules) {
@@ -4053,10 +4053,10 @@ sub export_module_data ($$$$$$$) {
 	# Data export is disabled
  	return if ($module->{'id_export'} < 1);
 
-	logger($pa_config, "Exporting data for module '" . $module->{'nombre'} . "' agent '" . $agent->{'nombre'} . "'.", 10);
+	logger($pa_config, "Exporting data for module '" . $module->{'nombre'} . "' agent '" . $agent->{'alias'} . "'.", 10);
 	db_do($dbh, 'INSERT INTO tserver_export_data 
 		(id_export_server, agent_name , module_name, module_type, data, timestamp) VALUES
-		(?, ?, ?, ?, ?, ?)', $module->{'id_export'}, $agent->{'nombre'}, $module->{'nombre'}, $module_type, $data, $timestamp);
+		(?, ?, ?, ?, ?, ?)', $module->{'id_export'}, $agent->{'alias'}, $module->{'nombre'}, $module_type, $data, $timestamp);
 }
 
 ##########################################################################

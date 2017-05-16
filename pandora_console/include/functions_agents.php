@@ -1739,6 +1739,10 @@ function agents_get_status($id_agent = 0, $noACLs = false) {
 		}
 	}
 	
+	if (!isset($modules) || empty($modules) || count($modules) == 0) {
+		return AGENT_MODULE_STATUS_NOT_INIT;
+	}
+	
 	$modules_status = array();
 	$modules_async = 0;
 	foreach ($modules as $module) {

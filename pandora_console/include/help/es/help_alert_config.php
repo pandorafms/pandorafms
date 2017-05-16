@@ -34,6 +34,7 @@ Además de las macros de módulo definidas, las siguientes macros están disponi
 <li>_agentgroup_ : Nombre del grupo del agente.</li>
 <li>_agentstatus_ : Estado actual del agente.</li>
 <li>_address_: Dirección del agente que disparó la alerta.</li>
+<li>_agentos_: Sistema operativo del agente.</li>
 <li>_timestamp_: Hora y fecha en que se disparó la alerta.</li>
 <li>_timezone_: Area Nombre _timestamp_ que representa en.</li>
 <li>_data_: Dato que hizo que la alerta se disparase.</li>

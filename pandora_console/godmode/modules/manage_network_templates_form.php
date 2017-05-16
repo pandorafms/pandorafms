@@ -73,9 +73,11 @@ elseif (isset ($_GET["add_module"])) {
 
 if (isset ($_GET["create"]) || isset ($_GET["update"])) {
 	//Submitted form
-	$name = get_parameter_post ("name");
+	$name = io_safe_output(get_parameter_post ("name"));
 	$description = get_parameter_post ("description");
-	if ($name != "") {
+
+	if (!empty($name) && !ctype_space($name)) {
+		$name = io_safe_input($name);
 		if ($id_np > 0) {
 			//Profile exists
 			$values = array(

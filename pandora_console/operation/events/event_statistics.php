@@ -48,7 +48,7 @@ echo "<table width=95%>";
 		echo "</td>";
 
 		echo "<td valign='top'>";
-			echo grafico_eventos_usuario(300, 200);
+			echo grafico_eventos_usuario(320, 296);
 		echo "</td>";
 	echo "</tr>";
 
@@ -78,7 +78,7 @@ echo "<table width=95%>";
 								'alert_ceased','alert_manual_validation', 'critical',
 								'warning','normal');
 			}
-			echo graph_events_validated(300, 200, $extra_filter);
+			echo graph_events_validated(320, 296, $extra_filter);
 		echo "</td>";
 	echo "</tr>";
 

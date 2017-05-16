@@ -15,7 +15,7 @@ if(!enterprise_installed()){
 	$open=true; 
 }
 
-$tipo = $_GET['message'];
+$tipo = $_POST['message'];
 
 echo "
 <div class='modalheader'>

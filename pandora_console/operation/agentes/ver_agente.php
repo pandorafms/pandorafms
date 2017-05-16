@@ -549,6 +549,8 @@ if (is_ajax ()) {
 		// Use 0 as not received
 		$id_tipo_modulo = (int) get_parameter ('id_tipo_modulo', 0);
 		$status_modulo = (int) get_parameter ('status_module', -1);
+
+		$tags = (array) get_parameter ('tags', array());
 		
 		// Filter
 		$filter = array();

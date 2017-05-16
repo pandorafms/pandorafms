@@ -193,6 +193,9 @@ $ignored_params['refr'] = '';
 		
 		
 		$('body').css('background-color','<?php echo $layout["background_color"]; ?>');
+		$('body').css('margin','0');
+		$('body').css('height','100%');
+		$('body').css('overflow','hidden');
 		
 		$(".module_graph .menu_graph").css('display','none');
 		

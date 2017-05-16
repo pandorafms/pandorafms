@@ -198,6 +198,9 @@ if ($config['pure']) {
 		/* Avoid the main_pure container 1000px height */
 		body.pure {
 			min-height: 100px;
+			margin: 0px;
+			overflow: hidden;
+			height: 100%;
 			<?php
 			echo "background-color: ".$layout['background_color'].";";
 			?>

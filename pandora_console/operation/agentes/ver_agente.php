@@ -551,7 +551,7 @@ if (is_ajax ()) {
 		$status_modulo = (int) get_parameter ('status_module', -1);
 
 		$tags = (array) get_parameter ('tags', array());
-		
+
 		// Filter
 		$filter = array();
 		if ($disabled !== -1)
@@ -631,7 +631,7 @@ if (is_ajax ()) {
 							agents_get_group_agents(
 								array_keys (users_get_groups ()), $search, "none"));
 					
-					$agent_modules = agents_get_modules ($id_agent, $fields, $filter, $indexed);
+					$agent_modules = agents_get_modules ($id_agent, $fields, $filter, $indexed, true, false, $tags);
 				}
 				// Restore db connection
 				metaconsole_restore_db();
@@ -644,19 +644,38 @@ if (is_ajax ()) {
 					agents_get_group_agents(
 						array_keys(users_get_groups ()), $search, "none"));
 			
-			$agent_modules = agents_get_modules ($id_agent, $fields, $filter, $indexed);
+			$agent_modules = agents_get_modules ($id_agent, $fields, $filter, $indexed, true, false, $tags);
 		}
 		
 		if (empty($agent_modules))
 			$agent_modules = array();
+
+		if (!empty($tags)) {
+			$implode_tags = implode(",", $tags);
+			$tag_modules = db_get_all_rows_sql("SELECT DISTINCT id_agente_modulo FROM ttag_module WHERE id_tag IN (" . $implode_tags . ")");
+			if ($tag_modules) {
+				$final_modules = array();
+				foreach ($agent_modules as $key => $module) {
+					$in_array = false;
+					foreach ($tag_modules as $t_module) {
+						if ($module['id_agente_modulo'] == $t_module['id_agente_modulo']) {
+							$in_array = true;
+						}
+					}
+					if ($in_array) {
+						$final_modules[] = $module;
+					}
+				}
+				$agent_modules = $final_modules;
+			}
+			else {
+				$agent_modules = array();
+			}
+		}
 		
 		foreach ($agent_modules as $key => $module) {
 			$agent_modules[$key]['nombre'] = io_safe_output($module['nombre']);
 		}
-		
-		
-		//Hack to translate text "any" in PHP to javascript
-		//$agent_modules['any_text'] = __('Any');
 		
 		echo json_encode ($agent_modules);
 		

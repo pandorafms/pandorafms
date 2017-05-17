@@ -431,7 +431,7 @@ html_print_div(array('id' => 'forced_title_layer', 'class' => 'forced_title_laye
 				draggable: false,
 				modal: true,
 				width: 600,
-				height: 250,
+				height: 280,
 				overlay: {
 					opacity: 0.5,
 					background: "black"

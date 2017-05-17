@@ -341,8 +341,12 @@ $table->data['form_agents_2'][1] = html_print_select($status_list,
 	'status_agents', 'selected', '', __('All'), AGENT_STATUS_ALL, true);
 $table->data['form_agents_2'][3] = '';
 
-
-
+$tags = tags_get_user_tags();
+$table->rowstyle['form_agents_4'] = 'vertical-align: top;';
+$table->rowclass['form_agents_4'] = 'select_agents_row select_agents_row_2';
+$table->data['form_agents_4'][0] = __('Tags');
+$table->data['form_agents_4'][1] = html_print_select ($tags, 'tags[]',
+	$tags_name, false, __('Any'), -1, true, true, true);
 
 $table->rowstyle['form_agents_3'] = 'vertical-align: top;';
 $table->rowclass['form_agents_3'] = 'select_agents_row select_agents_row_2';
@@ -974,7 +978,6 @@ $(document).ready (function () {
 
 	$("#groups_select").change (
 		function () {
-			
 			if (this.value < 0) {
 				clean_lists();
 				$(".select_agents_row_2").css('display', 'none');
@@ -1059,14 +1062,12 @@ $(document).ready (function () {
 	});
 
 	$("#tags").change(function() {
-		
 		selector = $("#form_edit input[name=selection_mode]:checked").val();
-		if(selector == 'agents') {
-			$("#id_agents").trigger("change");
-		}
-		else if(selector == 'modules') {
-			$("#module_type").trigger("change");
-		}
+		$("#module_type").trigger("change");
+	});
+	$("#tags1").change(function() {
+		selector = $("#form_edit input[name=selection_mode]:checked").val();
+		$("#id_agents").trigger("change");
 	});
 });
 

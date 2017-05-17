@@ -129,7 +129,8 @@ if (!$delete_template) {
 		alerts_meta_print_header ();
 	}
 	else {
-		ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/gm_alerts.png", false, "alerts_config", true);
+		//~ ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/gm_alerts.png", false, "alerts_config", true);
+		ui_print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/gm_alerts.png", false, "", true);
 	}
 }
 

@@ -59,9 +59,12 @@ if ($a_template !== false) {
 			alerts_meta_print_header();
 		}
 		else {
+			//~ ui_print_page_header (__('Alerts') .
+				//~ ' &raquo; ' . __('Configure alert template'), "",
+				//~ false, "alerts_config", true);
 			ui_print_page_header (__('Alerts') .
 				' &raquo; ' . __('Configure alert template'), "",
-				false, "alerts_config", true);
+				false, "", true);
 		}
 	}
 	else {

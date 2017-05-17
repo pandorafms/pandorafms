@@ -73,7 +73,7 @@ echo '<div id="header_login">';
 	echo '<div id="icon_custom_pandora">';
 		if (defined ('PANDORA_ENTERPRISE')) {
 			if(isset ($config['custom_logo'])){
-				echo '<img src="images/custom_logo/' . $config['custom_logo'] .'" alt="pandora_console">';
+				echo '<img src="enterprise/images/custom_logo/' . $config['custom_logo'] .'" alt="pandora_console">';
 			}
 			else{
 				echo '<img src="images/custom_logo/logo_login_consola.png" alt="pandora_console">';

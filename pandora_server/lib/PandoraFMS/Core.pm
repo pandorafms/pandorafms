@@ -4069,17 +4069,29 @@ sub pandora_inhibit_alerts {
 	return 0 if ($agent->{'cascade_protection'} ne '1' || $agent->{'id_parent'} eq '0' || $depth > 1024);
 
 	# Are any of the parent's critical alerts fired?	
-	my $count = get_db_value ($dbh, 'SELECT COUNT(*) FROM tagente_modulo, talert_template_modules, talert_templates
+	my $count = 0;
+	if ($agent->{'cascade_protection_module'} != 0) {
+		$count = get_db_value ($dbh, 'SELECT COUNT(*) FROM tagente_modulo, talert_template_modules, talert_templates
+				WHERE tagente_modulo.id_agente = ?
+				AND tagente_modulo.id_agente_modulo = ?
+				AND tagente_modulo.id_agente_modulo = talert_template_modules.id_agent_module
+				AND tagente_modulo.disabled = 0
+				AND talert_template_modules.id_alert_template = talert_templates.id
+				AND talert_template_modules.times_fired > 0
+				AND talert_templates.priority = 4', $agent->{'id_parent'}, $agent->{'cascade_protection_module'});
+	}
+	else {
+		$count = get_db_value ($dbh, 'SELECT COUNT(*) FROM tagente_modulo, talert_template_modules, talert_templates
 				WHERE tagente_modulo.id_agente = ?
 				AND tagente_modulo.id_agente_modulo = talert_template_modules.id_agent_module
 				AND tagente_modulo.disabled = 0
 				AND talert_template_modules.id_alert_template = talert_templates.id
 				AND talert_template_modules.times_fired > 0
 				AND talert_templates.priority = 4', $agent->{'id_parent'});
-	return 1 if ($count > 0);
-	
-	
+	}
 
+	return 1 if (defined($count) && $count > 0);
+	
 	# Check the parent's parent next
 	$agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE id_agente = ?', $agent->{'id_parent'});
 	return 0 unless defined ($agent);

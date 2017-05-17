@@ -633,8 +633,6 @@ echo '</form>';
 if ($id_downtime > 0) {
 	
 	echo "<td valign=top style='width:300px;padding-left:20px;'>";
-	// Show available agents to include into downtime
-	echo '<h4>' . __('Available agents') . ':</h4>';
 	
 	$filter_group = (int) get_parameter("filter_group", 0);
 	
@@ -707,7 +705,8 @@ if ($id_downtime > 0) {
 	echo "<br /><br />";
 	html_print_submit_button (__('Filter by group'), '', false, 'class="sub next"',false);
 	echo "</form>";
-	
+	// Show available agents to include into downtime
+	echo '<h4>' . __('Available agents') . ':</h4>';
 	echo "<form method=post action='index.php?sec=estado&sec2=godmode/agentes/planned_downtime.editor&insert_downtime_agent=1&id_downtime=$id_downtime'>";
 	
 	echo html_print_select ($agents, "id_agents[]", -1, '', _("Any"), -2, false, true, true, '', false, 'width: 180px;');

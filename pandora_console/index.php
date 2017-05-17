@@ -453,7 +453,7 @@ if (! isset ($config['id_user'])) {
 			db_logon ($nick_in_db, $_SERVER['REMOTE_ADDR']);
 			$_SESSION['id_usuario'] = $nick_in_db;
 			$config['id_user'] = $nick_in_db;
-			
+			config_prepare_session();
 			if (is_user_admin($config['id_user'])) {
 				// PHP configuration values
 				$PHPupload_max_filesize = config_return_in_bytes(ini_get('upload_max_filesize'));

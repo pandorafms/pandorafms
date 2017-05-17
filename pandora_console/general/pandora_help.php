@@ -31,13 +31,14 @@ require_once ("../include/functions_html.php");
 <?php
 
 $id = get_parameter ('id');
+$id_user = get_parameter ('id_user');
 
 if (! isset($_SESSION['id_usuario'])) {
 	session_start();
 	session_write_close();
 }
 
-$user_language = get_user_language ($_SESSION['id_usuario']);
+$user_language = get_user_language ($id_user);
 
 if (file_exists ('../include/languages/'.$user_language.'.mo')) {
 	$l10n = new gettext_reader (new CachedFileReader ('../include/languages/'.$user_language.'.mo'));

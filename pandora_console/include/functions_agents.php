@@ -1836,6 +1836,7 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 		continue;
 		
 		$agent_name = agents_get_name($id_agent, "");
+		$agent_alias = io_safe_output(agents_get_alias($id_agent));
 		
 		/* Check for deletion permissions */
 		$id_group = agents_get_agent_group ($id_agent);
@@ -1943,6 +1944,7 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 				if (enterprise_hook('config_agents_has_remote_configuration', array($id_agent))) {
 					$agent_name = agents_get_name($id_agent);
 					$agent_name = io_safe_output($agent_name);
+					$agent_alias = io_safe_output(agents_get_alias($id_agent));
 					$agent_md5 = md5 ($agent_name, false);
 					
 					// Agent remote configuration editor
@@ -1957,7 +1959,7 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 					
 					if ($error) {
 						db_pandora_audit( "Agent management",
-							"Error: Deleted agent '$agent_name', the error is in the delete conf or md5.");
+							"Error: Deleted agent '$agent_alias', the error is in the delete conf or md5.");
 					}
 				}
 			}
@@ -1969,7 +1971,7 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 		db_process_sql ("delete from ttag_module where id_agente_modulo in (select id_agente_modulo from tagente_modulo where id_agente = ".$id_agent.")");
 		
 		db_pandora_audit( "Agent management",
-			"Deleted agent '$agent_name'");
+			"Deleted agent '$agent_alias'");
 		
 		// Delete the agent from the metaconsole cache
 		enterprise_include_once('include/functions_agents.php');

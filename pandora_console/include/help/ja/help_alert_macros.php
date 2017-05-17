@@ -60,6 +60,7 @@
 <li>_moduletags_ : モジュールタグに関連付けられた URL。</li>
 <li>_alert_critical_instructions_: モジュールの障害状態時手順。</li>
 <li>_alert_warning_instructions_: モジュールの警告状態時手順。</li>
+<li>_alert_unknown_instructions_: Instructions for UNKNOWN status contained in the module.</li>
 <li>_modulegraph_<i>n</i>h_: (>=6.0) (<i>eMail</i>コマンドを使うアラートのみ)
 n で示す期間の base64 でエンコードされたモジュールグラフを返します。(例: _modulegraph_24h_) サーバとコンソールの API の設定が正しくできている必要があります。この設定は、サーバの設定ファイルで行います。 </li>
 </ul>

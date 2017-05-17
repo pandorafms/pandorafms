@@ -40,8 +40,8 @@ my $Sem = undef;
 # Semaphore used to control the number of threads
 my $ThreadSem = undef;
 
-use constant AGENT_VERSION => '7.0NG.702';
-use constant AGENT_BUILD => '170508';
+use constant AGENT_VERSION => '7.0NG.703';
+use constant AGENT_BUILD => '170517';
 
 # Agent log default file size maximum and instances
 use constant DEFAULT_MAX_LOG_SIZE => 600000;
@@ -135,9 +135,10 @@ my %DefaultConf = (
 	'interval' => 300,
 	'debug' => 0,		
 	'agent_name' => '',
-	'agent_alias' => hostname(),
+	'agent_alias' => '',
 	'ehorus_conf' => undef,
 	'agent_name_cmd' => '',
+	'agent_alias_cmd' => '',
 	'description' => '',
 	'group' => '',
 	'group_id' => undef,
@@ -802,6 +803,23 @@ sub read_config (;$) {
 	
 	# Module, plugin and collection definitions
 	parse_conf_modules(\@file);
+	
+	# If agent_alias_cmd is defined, agent_alias is set by command result.
+	if ($Conf{'agent_alias'} eq '') {
+		if ($Conf{'agent_alias_cmd'} ne '') {
+			my $result = `$Conf{'agent_alias_cmd'}`;
+			# Use only the first line.
+			my ($temp_agent_alias, $remain2) = split(/\n/, $result);
+			chomp ($temp_agent_alias);
+	
+			# Remove white spaces of the first and last.
+			$temp_agent_alias =~ s/^ *(.*?) *$/$1/;
+	
+			$Conf{'agent_alias'} = $temp_agent_alias if ($temp_agent_alias ne '');
+		} else {
+			$Conf{'agent_alias'} = hostname();
+		}
+	}
 
 	# If agent_name_cmd is defined, agent_name is set by command result.
 	if ($Conf{'agent_name'} eq '') {

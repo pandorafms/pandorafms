@@ -185,7 +185,7 @@ echo "
 </div>";
 if($open){
 echo "<div class='modalgobutton gopandora'>
-<span class='modalokbuttontext'>About Enterprise</span>
+<span class='modalgobuttontext'>About Enterprise</span>
 </div>";
 }
 

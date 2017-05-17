@@ -2431,7 +2431,7 @@ function modules_get_agentmodule_mininterval_no_async($id_agent) {
 	$sql = 'SELECT COUNT(tae.current_interval) AS num_interval, MIN(tae.current_interval) AS min_interval
 					FROM tagente_estado tae
 					INNER JOIN tagente_modulo tam ON tae.id_agente_modulo = tam.id_agente_modulo
-					INNER JOIN ttipo_modulo ttm ON tam.id_tipo_modulo = ttm.id_tipo where ttm.nombre not like "async%" and tae.id_agente = '.$id_agent.' and tam.disabled = 0';
+					INNER JOIN ttipo_modulo ttm ON tam.id_tipo_modulo = ttm.id_tipo where ttm.nombre not like "async%" and tae.id_agente = '.$id_agent.' and tam.disabled = 0 and tae.current_interval != 0';
 
 	return db_get_row_sql($sql);
 }

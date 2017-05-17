@@ -257,7 +257,36 @@ Pandora_Windows_Service::pandora_init () {
 	// Read modules
 	this->modules = new Pandora_Module_List (conf_file);
 	delete []all_conf;
-	
+    
+    // Get the agent alias.
+	agent_alias = conf->getValue ("agent_alias");
+	if (agent_alias == "") {
+        agent_alias_cmd = conf->getValue ("agent_alias_cmd");
+        if (agent_alias_cmd != "") {
+            agent_alias_cmd = "cmd.exe /c \"" + agent_alias_cmd + "\"";
+			static string temp_agent_alias = getAgentNameFromCmdExec(agent_alias_cmd);
+
+			// Delete new line and carriage return.
+			pos = temp_agent_alias.find("\n");
+			if(pos != string::npos) {
+				temp_agent_alias.erase(pos, temp_agent_alias.size () - pos);
+			}
+			pos = temp_agent_alias.find("\r");
+			if(pos != string::npos) {
+				temp_agent_alias.erase(pos, temp_agent_alias.size () - pos);
+			}
+
+			// Remove leading and trailing white spaces.
+			temp_agent_alias = trim(temp_agent_alias);
+			if (temp_agent_alias != "") {
+				agent_alias = temp_agent_alias;
+            }
+        } else {
+            agent_alias = Pandora_Windows_Info::getSystemName ();
+        }
+	}
+	this->conf->setValue("agent_alias", agent_alias);
+    
 	// Get the agent name.
 	agent_name = conf->getValue ("agent_name");
 	if (agent_name == "") {
@@ -297,13 +326,6 @@ Pandora_Windows_Service::pandora_init () {
 	if (agent_name == "") {
 		agent_name = Pandora_Windows_Info::getSystemName ();
 		this->conf->setValue("agent_name", agent_name);
-	}
-
-	// Get the agent alias.
-	agent_alias = conf->getValue ("agent_alias");
-	if (agent_alias == "") {
-		agent_alias = Pandora_Windows_Info::getSystemName ();
-		this->conf->setValue("agent_alias", agent_alias);
 	}
 
 	pandora_agent = "PANDORA_AGENT=" + agent_name;

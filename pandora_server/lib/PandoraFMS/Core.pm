@@ -552,6 +552,7 @@ sub pandora_process_alert ($$$$$$$$;$) {
 
 		$alert->{'critical_instructions'} = $critical_instructions;
 		$alert->{'warning_instructions'} = $warning_instructions;
+		$alert->{'unknown_instructions'} = $unknown_instructions;
 		
 		# Generate an event
 		if ($table eq 'tevent_alert') {
@@ -761,6 +762,7 @@ sub pandora_execute_alert ($$$$$$$$$;$) {
 
 	$alert->{'critical_instructions'} = $critical_instructions;
 	$alert->{'warning_instructions'} = $warning_instructions;
+	$alert->{'unknown_instructions'} = $unknown_instructions;
 
 	# Execute actions
 	my $event_generated = 0;
@@ -937,6 +939,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_alert_text_severity_ => get_priority_name($alert->{'priority'}),
 				_alert_critical_instructions_ => $alert->{'critical_instructions'},
 				_alert_warning_instructions_ => $alert->{'warning_instructions'},
+				_alert_unknown_instructions_ => $alert->{'unknown_instructions'},
 				_groupcontact_ => (defined ($group)) ? $group->{'contact'} : '',
 				_groupcustomid_ => (defined ($group)) ? $group->{'custom_id'} : '',
 				_groupother_ => (defined ($group)) ? $group->{'other'} : '',

@@ -1789,5 +1789,9 @@ Pandora_Module::getIntensiveMatch () {
 	return this->intensive_match;
 }
 
+bool
+Pandora_Module::getAsync () {
+	return this->async;
+}
 					
 

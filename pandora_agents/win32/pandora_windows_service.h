@@ -42,6 +42,7 @@ namespace Pandora {
 	private:
 		Pandora_Agent_Conf  *conf;
 		Pandora_Module_List *modules;
+		Pandora_Module_List *broker_modules;
 		long                 execution_number;
 		string               agent_name;
 		time_t               timestamp;
@@ -97,6 +98,7 @@ namespace Pandora {
 		void           pandora_run  (int forced_run);
 		void           pandora_run  ();
 		void           pandora_init ();
+		void           pandora_init (bool reload_modules);
 		
 		long           interval;
 		long           interval_sec;

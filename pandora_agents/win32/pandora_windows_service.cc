@@ -73,6 +73,7 @@ Pandora_Windows_Service::setValues (const char * svc_name,
 	this->service_description   = (char *) svc_description;
 	execution_number            = 0;
 	this->modules               = NULL;
+	this->broker_modules		= NULL;
 	this->conf                  = NULL;
 	this->interval              = 60000;
 	this->timestamp             = 0;
@@ -101,6 +102,10 @@ Pandora_Windows_Service::~Pandora_Windows_Service () {
 
 	if (this->modules != NULL) {
 		delete this->modules;
+	}
+
+	if (this->broker_modules != NULL) {
+		delete this->broker_modules;
 	}
 	pandoraLog ("Pandora agent stopped");
 }
@@ -133,10 +138,10 @@ Pandora_Windows_Service::pandora_init_broker (string file_conf) {
 	
 	this->conf = Pandora::Pandora_Agent_Conf::getInstance ();
 	this->conf->setFile (file_conf);
-	if (this->modules != NULL) {
-		delete this->modules;
+	if (this->broker_modules != NULL) {
+		delete this->broker_modules;
 	}
-	this->modules = new Pandora_Module_List (file_conf);
+	this->broker_modules = new Pandora_Module_List (file_conf);
 	
 	pandoraDebug ("Pandora broker agent started");
 }
@@ -205,6 +210,11 @@ Pandora_Windows_Service::check_broker_agents(string *all_conf){
 
 void
 Pandora_Windows_Service::pandora_init () {
+	pandora_init(true);
+}
+
+void
+Pandora_Windows_Service::pandora_init (bool reload_modules) {
 	string conf_file, interval, debug, disable_logfile, intensive_interval, util_dir, path, env;
 	string udp_server_enabled, udp_server_port, udp_server_addr, udp_server_auth_addr;
 	string name_agent, name;
@@ -221,7 +231,7 @@ Pandora_Windows_Service::pandora_init () {
 	
 	this->conf = Pandora::Pandora_Agent_Conf::getInstance ();
 	this->conf->setFile (all_conf);
-	if (this->modules != NULL) {
+	if (this->modules != NULL && reload_modules) {
 		delete this->modules;
 	}
 
@@ -252,7 +262,9 @@ Pandora_Windows_Service::pandora_init () {
 	this->setSleepTime (this->intensive_interval);
 
 	// Read modules
-	this->modules = new Pandora_Module_List (conf_file);
+	if (reload_modules) {
+		this->modules = new Pandora_Module_List (conf_file);
+	}
 	delete []all_conf;
 	
 	name = checkAgentName(conf_file);
@@ -1803,19 +1815,19 @@ Pandora_Windows_Service::pandora_run_broker (string config) {
 
 	server_addr = conf->getValue ("server_ip");
 
-	if (this->modules != NULL) {
-		this->modules->goFirst ();
+	if (this->broker_modules != NULL) {
+		this->broker_modules->goFirst ();
 	
-		while (! this->modules->isLast ()) {
+		while (! this->broker_modules->isLast ()) {
 			Pandora_Module *module;
 		
-			module = this->modules->getCurrentValue ();
+			module = this->broker_modules->getCurrentValue ();
 			
 			/* Check preconditions */
 			if (module->evaluatePreconditions () == 0) {
 				pandoraDebug ("Preconditions not matched for module %s", module->getName ().c_str ());
 				module->setNoOutput ();
-				this->modules->goNext ();
+				this->broker_modules->goNext ();
 				continue;
 			}
 	
@@ -1823,15 +1835,23 @@ Pandora_Windows_Service::pandora_run_broker (string config) {
 			if (module->checkCron (module->getInterval (), atoi (conf->getValue ("interval").c_str())) == 0) {
 				pandoraDebug ("Cron not matched for module %s", module->getName ().c_str ());
 				module->setNoOutput ();
-				this->modules->goNext ();
+				this->broker_modules->goNext ();
 				continue;
 			}
 			
+			/* Check async */
+			if (module->getAsync()) {
+				pandoraDebug ("Forbidden async module %s in broker agents", module->getName ().c_str ());
+				module->setNoOutput ();
+				this->broker_modules->goNext ();
+				continue;
+			}
+
 			pandoraDebug ("Run %s", module->getName ().c_str ());
 			module->run ();
 			if (! module->hasOutput ()) {
 				module->setNoOutput ();
-				this->modules->goNext ();
+				this->broker_modules->goNext ();
 				continue;
 			}
 			
@@ -1844,7 +1864,7 @@ Pandora_Windows_Service::pandora_run_broker (string config) {
 			intensive_match = module->evaluateIntensiveConditions ();
 			if (intensive_match == module->getIntensiveMatch () && module->getTimestamp () + module->getInterval () * this->interval_sec > this->run_time) {
 				module->setNoOutput ();
-				this->modules->goNext ();
+				this->broker_modules->goNext ();
 				continue;
 			}
 			module->setIntensiveMatch (intensive_match);
@@ -1859,7 +1879,7 @@ Pandora_Windows_Service::pandora_run_broker (string config) {
 			/* At least one module has data */
 			data_flag = 1;
 
-			this->modules->goNext ();
+			this->broker_modules->goNext ();
 		}
 	}
 
@@ -1867,7 +1887,7 @@ Pandora_Windows_Service::pandora_run_broker (string config) {
 		
 		// Send the XML
 		if (!server_addr.empty ()) {
-		  this->sendXml (this->modules);
+		  this->sendXml (this->broker_modules);
 		}
 	}
 	
@@ -2006,7 +2026,7 @@ Pandora_Windows_Service::pandora_run (int forced_run) {
 	
 	/* Reload the original configuration */
 	if (num != 0) {
-		pandora_init ();
+		pandora_init (false);
 	}
 
 	/* Reset time reference if necessary */

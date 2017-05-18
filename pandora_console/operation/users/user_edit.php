@@ -288,6 +288,7 @@ if (!$meta) {
 
 	if (enterprise_installed()) {
 		$dashboards = get_user_dashboards ($config['id_user']);
+		
 		$dashboards_aux = array();
 		if ($dashboards === false) {
 			$dashboards = array('None'=>'None');

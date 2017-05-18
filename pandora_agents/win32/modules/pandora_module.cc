@@ -368,7 +368,7 @@ Pandora_Module::getDataOutput (Pandora_Data *data) {
 	}
 	
 	if (this->has_limits) {
-		if (value >= this->max || value <= this->min) {
+		if (value > this->max || value < this->min) {
 			pandoraLog ("The returned value was not in the interval on module %s",
 				    this->module_name.c_str ());
 			throw Value_Error ();
@@ -1789,5 +1789,9 @@ Pandora_Module::getIntensiveMatch () {
 	return this->intensive_match;
 }
 
+bool
+Pandora_Module::getAsync () {
+	return this->async;
+}
 					
 

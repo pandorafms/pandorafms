@@ -159,8 +159,7 @@ if ($create_agent) {
 	$intervalo = (string) get_parameter_post ("intervalo", SECONDS_5MINUTES);
 	$comentarios = (string) get_parameter_post ("comentarios", '');
 	$modo = (int) get_parameter_post ("modo");
-	$id_parent = (string) get_parameter_post ("id_parent",'');
-	$id_parent = (int) agents_get_agent_id ($id_parent);
+	$id_parent = (int) get_parameter_post ("id_agent_parent");
 	$server_name = (string) get_parameter_post ("server_name");
 	$id_os = (int) get_parameter_post ("id_os");
 	$disabled = (int) get_parameter_post ("disabled");
@@ -690,8 +689,7 @@ if ($update_agent) { // if modified some agent paramenter
 	$id_os = (int) get_parameter_post ("id_os");
 	$disabled = (bool) get_parameter_post ("disabled");
 	$server_name = (string) get_parameter_post ("server_name", "");
-	$parent_name = (string) get_parameter_post ("id_parent");
-	$id_parent = (int) agents_get_agent_id ($parent_name);
+	$id_parent = (int) get_parameter_post ("id_agent_parent");
 	$custom_id = (string) get_parameter_post ("custom_id", "");
 	$cascade_protection = (int) get_parameter_post ("cascade_protection", 0);
 	$cascade_protection_module = (int) get_parameter ("cascade_protection_module", 0);

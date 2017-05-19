@@ -671,11 +671,6 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 		$baseline_data, $events, $series_suffix, $start_unknown,
 		$percentil);
 
-	html_debug("DATA: ", true);
-	html_debug(count($data), true);
-	html_debug("CHART: ", true);
-	html_debug(count($chart), true);
-
 	// Return chart data and don't draw
 	if ($return_data == 1) {
 		return $chart;
@@ -3594,7 +3589,8 @@ function fs_error_image ($width = 300, $height = 110) {
 
 function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	$unit_name, $show_alerts, $avg_only = 0,
-	$date = 0, $series_suffix = '', $series_suffix_str = '', $show_unknown = false) {
+	$date = 0, $series_suffix = '', $series_suffix_str = '', $show_unknown = false,
+	$fullscale = false) {
 	
 	global $config;
 	global $chart;
@@ -3659,6 +3655,26 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 		array ('datos', 'utimestamp'), 'AND', $search_in_history_db);
 	if ($data === false) {
 		$data = array ();
+	}
+
+	if ($fullscale) {
+		$all_data = db_uncompress_module_data($agent_module_id, time() - $period);
+		
+		$new_uncompress_data = array();
+		$index = 0;
+		foreach ($all_data as $uncompress_data) {
+			foreach ($uncompress_data['data'] as $mod_data) {
+				$new_uncompress_data[$index]['datos'] = $mod_data['datos'];
+				$new_uncompress_data[$index]['utimestamp'] = $mod_data['utimestamp'];
+				$index++;
+			}
+		}
+		$new_uncompress_data[$index - 1]['id_agente_modulo'] = $agent_module_id;
+		
+		$data = $new_uncompress_data;
+
+		$resolution = count($data); //Number of points of the graph
+		$interval = (int) ($period / $resolution);
 	}
 	
 	// Uncompressed module data
@@ -3993,7 +4009,6 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	else
 		$unit = $unit_name;
 	
-	
 	$series_suffix_str = '';
 	if ($compare !== false) {
 		$series_suffix = '2';
@@ -4001,7 +4016,7 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 		// Build the data of the previous period
 		grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 			$unit_name, $show_alerts, $avg_only, $date-$period, $series_suffix, 
-			$series_suffix_str, $show_unknown);
+			$series_suffix_str, $show_unknown, $fullscale);
 		switch ($compare) {
 			case 'separated':
 				// Store the chart calculated
@@ -4027,7 +4042,7 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	}
 	
 	grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
-		$unit_name, $show_alerts, $avg_only, $date, '', '', $show_unknown);
+		$unit_name, $show_alerts, $avg_only, $date, '', '', $show_unknown, $fullscale);
 	
 	if ($compare === 'overlapped') {
 		$i = 0;

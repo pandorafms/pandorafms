@@ -33,6 +33,8 @@ if ($develop_bypass != 1) {
 			$config['homeurl'] =  $_SERVER['REQUEST_URI'];
 			$config['homeurl_static'] =  $_SERVER['REQUEST_URI'];
 			
+			
+			
 			require('general/error_screen.php');
 			exit;
 		}
@@ -65,12 +67,12 @@ if ($develop_bypass != 1) {
 		if ((substr (sprintf ('%o', fileperms('include/config.php')), -4) != "0600") &&
 			(substr (sprintf ('%o', fileperms('include/config.php')), -4) != "0660") &&
 			(substr (sprintf ('%o', fileperms('include/config.php')), -4) != "0640")) {
-			$ownDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
+			$ownDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;	
+			$url = explode('/', $_SERVER['REQUEST_URI']);
 			$config['homedir'] = $ownDir;
-			$config['homeurl'] =  $_SERVER['REQUEST_URI'];
-			$config['homeurl_static'] =  $_SERVER['REQUEST_URI'];
+			$config['homeurl'] =  "/" . $url[1];
+			$config['homeurl_static'] = "/" .  $url[1];
 			$login_screen = 'error_perms';
-			
 			require('general/error_screen.php');
 			exit;
 		}

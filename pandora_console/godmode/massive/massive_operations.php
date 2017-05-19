@@ -62,7 +62,7 @@ $options_plugins = array(
 		'edit_plugins' => __('Bulk plugin edit')
 	);
 
-if (! check_acl ($config['id_user'], 0, "PM")) {
+if (! check_acl ($config['id_user'], 0, "AW")) {
 	unset($options_modules['edit_modules']);
 }
 

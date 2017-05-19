@@ -16,7 +16,7 @@
 // Load global vars
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "PM")) {
+if (! check_acl ($config['id_user'], 0, "AW")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access massive module update");
 	require ("general/noaccess.php");

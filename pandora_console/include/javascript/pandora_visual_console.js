@@ -38,6 +38,30 @@ function draw_line (line, id_div) {
 	have_node_begin_img = $('#' + line['node_begin'] + " img").length;
 	have_node_end_img = $('#' + line['node_end'] + " img").length;
 	
+<<<<<<< Updated upstream
+=======
+	if (have_node_begin_img) {
+		var img_pos_begin = $('#' + line['node_begin'] + " img").position();
+		var img_margin_left_begin = $('#' + line['node_begin'] + " img").css("margin-left");
+		var img_margin_left_begin_aux = img_margin_left_begin.split("px");
+		img_margin_left_begin = parseFloat(img_margin_left_begin_aux[0]);
+
+		var img_margin_top_begin = $('#' + line['node_begin'] + " img").css("margin-top");
+		var img_margin_top_begin_aux = img_margin_top_begin.split("px");
+		img_margin_top_begin = parseFloat(img_margin_top_begin_aux[0]);
+	}
+	if (have_node_end_img) {
+		var img_pos_end = $('#' + line['node_end'] + " img").position();
+		var img_margin_left_end = $('#' + line['node_end'] + " img").css("margin-left");
+		var img_margin_left_end_aux = img_margin_left_end.split("px");
+		img_margin_left_end = parseFloat(img_margin_left_end_aux[0]);
+
+		var img_margin_top_end = $('#' + line['node_end'] + " img").css("margin-top");
+		var img_margin_top_end_aux = img_margin_top_end.split("px");
+		img_margin_top_end = parseFloat(img_margin_top_end_aux[0]);
+	}
+
+>>>>>>> Stashed changes
 	if (line['x1']) {
 		x1 = line['x'];
 	}
@@ -57,6 +81,10 @@ function draw_line (line, id_div) {
 	else {
 		if (have_node_begin_img) {
 			height = parseInt($('#' + line['node_begin'] + " img").css('height'));
+<<<<<<< Updated upstream
+=======
+			y1 = parseInt($('#' + line['node_begin']).css (selector + 'top')) + (height / 2) + img_pos_begin.top + img_margin_top_begin;
+>>>>>>> Stashed changes
 		}
 		else {
 			height = $('#' + line['node_begin']).height();
@@ -83,6 +111,10 @@ function draw_line (line, id_div) {
 	else {
 		if (have_node_end_img) {
 			height = parseInt($('#' + line['node_end'] + " img").css('height'));
+<<<<<<< Updated upstream
+=======
+			y2 = parseInt($('#' + line['node_end']).css (selector + 'top')) + (height / 2) + img_pos_end.top + img_margin_top_end;
+>>>>>>> Stashed changes
 		}
 		else {
 			height = $('#' + line['node_end']).height();

@@ -40,6 +40,11 @@ else $graph_type = '';
 ob_start ();
 
 if (!empty($graph_type)) {
+	$homedir = $_GET['homedir'];
+	if ($homedir != null) {
+		$config['homedir'] = $homedir;
+	}
+
 	include_once($homeurl . 'include/functions.php');
 	include_once($homeurl . 'include/functions_html.php');
 	

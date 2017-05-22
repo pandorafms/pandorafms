@@ -560,6 +560,7 @@ sub pandora_process_alert ($$$$$$$$;$) {
 
 		$alert->{'critical_instructions'} = $critical_instructions;
 		$alert->{'warning_instructions'} = $warning_instructions;
+		$alert->{'unknown_instructions'} = $unknown_instructions;
 		
 		# Generate an event
 		if ($table eq 'tevent_alert') {
@@ -769,6 +770,7 @@ sub pandora_execute_alert ($$$$$$$$$;$) {
 
 	$alert->{'critical_instructions'} = $critical_instructions;
 	$alert->{'warning_instructions'} = $warning_instructions;
+	$alert->{'unknown_instructions'} = $unknown_instructions;
 
 	# Execute actions
 	my $event_generated = 0;
@@ -995,6 +997,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_alert_text_severity_ => get_priority_name($alert->{'priority'}),
 				_alert_critical_instructions_ => $alert->{'critical_instructions'},
 				_alert_warning_instructions_ => $alert->{'warning_instructions'},
+				_alert_unknown_instructions_ => $alert->{'unknown_instructions'},
 				_groupcontact_ => (defined ($group)) ? $group->{'contact'} : '',
 				_groupcustomid_ => (defined ($group)) ? $group->{'custom_id'} : '',
 				_groupother_ => (defined ($group)) ? $group->{'other'} : '',
@@ -1095,7 +1098,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		my $url ||= $pa_config->{"console_api_url"};
 		
 		my $params = {};
-		$params->{"apipass"} ||= $pa_config->{"console_api_pass"};
+		$params->{"apipass"} = $pa_config->{"console_api_pass"};
 		$params->{"user"} ||= $pa_config->{"console_user"};
 		$params->{"pass"} ||= $pa_config->{"console_pass"};
 		$params->{"op"} = "get";
@@ -1135,10 +1138,10 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		
 		# Check if message has non-ascii chars.
 		# non-ascii chars should be encoded in UTF-8.
-		#if ($field3 =~ /[^[:ascii:]]/o) {
-		#	$field3 = encode("UTF-8", $field3);
-		#	$content_type = 'text/plain; charset="UTF-8"';
-		#}
+		if ($field3 =~ /[^[:ascii:]]/o) {
+			$field3 = encode("UTF-8", $field3);
+			$content_type = 'text/html; charset="UTF-8"';
+		}
 		
 		# Build the mail with attached content
 		if (keys(%{$module_graph_list}) > 0) {
@@ -2681,7 +2684,7 @@ sub pandora_delete_module ($$;$) {
 	
 	my $agent_name = get_agent_name($dbh, $module->{'id_agente'});
 	
-	if ((defined($conf)) && (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf')) {
+	if ((defined($conf)) && (-e $conf->{incomingdir}.'/conf/'.md5(encode_utf8(safe_output($agent_name))).'.conf')) {
 		enterprise_hook('pandora_delete_module_from_conf', [$conf,$agent_name,$module->{'nombre'}]);
 	}
 	
@@ -2979,12 +2982,11 @@ sub pandora_delete_agent ($$;$) {
 	
 	if (defined $conf) {
 		# Delete the conf files
-		if (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf') {
-			unlink($conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf');
-		}
-		if (-e $conf->{incomingdir}.'/md5/'.md5($agent_name).'.md5') {
-			unlink($conf->{incomingdir}.'/md5/'.md5($agent_name).'.md5');
-		}
+		my $conf_fname = $conf->{incomingdir}.'/conf/'.md5(encode_utf8(safe_output($agent_name))).'.conf';
+		unlink($conf_fname) if (-f $conf_fname);
+		
+		my $md5_fname = $conf->{incomingdir}.'/md5/'.md5(encode_utf8(safe_output($agent_name))).'.md5';
+		unlink($md5_fname) if (-f $md5_fname);
 	}
 
 	foreach my $module (@modules) {
@@ -4070,17 +4072,29 @@ sub pandora_inhibit_alerts {
 	return 0 if ($agent->{'cascade_protection'} ne '1' || $agent->{'id_parent'} eq '0' || $depth > 1024);
 
 	# Are any of the parent's critical alerts fired?	
-	my $count = get_db_value ($dbh, 'SELECT COUNT(*) FROM tagente_modulo, talert_template_modules, talert_templates
+	my $count = 0;
+	if ($agent->{'cascade_protection_module'} != 0) {
+		$count = get_db_value ($dbh, 'SELECT COUNT(*) FROM tagente_modulo, talert_template_modules, talert_templates
+				WHERE tagente_modulo.id_agente = ?
+				AND tagente_modulo.id_agente_modulo = ?
+				AND tagente_modulo.id_agente_modulo = talert_template_modules.id_agent_module
+				AND tagente_modulo.disabled = 0
+				AND talert_template_modules.id_alert_template = talert_templates.id
+				AND talert_template_modules.times_fired > 0
+				AND talert_templates.priority = 4', $agent->{'id_parent'}, $agent->{'cascade_protection_module'});
+	}
+	else {
+		$count = get_db_value ($dbh, 'SELECT COUNT(*) FROM tagente_modulo, talert_template_modules, talert_templates
 				WHERE tagente_modulo.id_agente = ?
 				AND tagente_modulo.id_agente_modulo = talert_template_modules.id_agent_module
 				AND tagente_modulo.disabled = 0
 				AND talert_template_modules.id_alert_template = talert_templates.id
 				AND talert_template_modules.times_fired > 0
 				AND talert_templates.priority = 4', $agent->{'id_parent'});
-	return 1 if ($count > 0);
-	
-	
+	}
 
+	return 1 if (defined($count) && $count > 0);
+	
 	# Check the parent's parent next
 	$agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE id_agente = ?', $agent->{'id_parent'});
 	return 0 unless defined ($agent);

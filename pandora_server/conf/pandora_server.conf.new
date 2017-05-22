@@ -1,7 +1,7 @@
 #############################################################################
 # Pandora FMS Server Parameters
 # Pandora FMS, the Flexible Monitoring System.
-# Version 7.0NG.702
+# Version 7.0NG.703
 # Licensed under GPL license v2,
 # (c) 2003-2016 Artica Soluciones Tecnologicas
 # http://www.pandorafms.com
@@ -381,6 +381,10 @@ webserver 1
 # Number of threads for the Web Server (PANDORA FMS ENTERPRISE ONLY).
 
 web_threads 1
+
+# Default timeout (in seconds) for web modules.
+
+web_timeout 60
 
 # Uncomment to perform web checks with CURL instead of LWP.
 #web_engine curl

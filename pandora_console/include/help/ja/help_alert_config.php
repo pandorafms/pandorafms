@@ -31,6 +31,7 @@ email アクションを設定するには、_field1_ (送信先アドレス)、
 <li>_agentdescription_ : 発生したアラートの説明</li>
 <li>_agentgroup_ : エージェントグループ名</li>
 <li>_agentstatus : エージェントの現在の状態</li>
+<li>_agentos_: Agent's operative system</li>
 <li>_address_ : アラートが発生したエージェントのアドレス</li>
 <li>_timestamp_ : アラートが発生した日時 (yy-mm-dd hh:mm:ss).</li>
 <li>_timezone_: _timestamp_ で使用されるタイムゾーン名.</li>

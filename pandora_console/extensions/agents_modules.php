@@ -75,6 +75,8 @@ function mainAgentsModules() {
 	$modules_selected = (array)get_parameter('module', 0);
 	$update_item = (string)get_parameter('edit_item','');
 	$save_serialize = (int)get_parameter('save_serialize', 0);
+	$full_modules_selected = explode(";",get_parameter('full_modules_selected', 0));
+	$full_agents_id = explode(";",get_parameter('full_agents_id', 0));
 	
 	if($save_serialize && $update_item == ''){
 		$unserialize_modules_selected  = unserialize_in_temp($config['id_user']."_agent_module", true, 1);
@@ -97,16 +99,40 @@ function mainAgentsModules() {
 	if($agents_id[0] != -1 ){
 		serialize_in_temp($agents_id, $config['id_user']."_agents", 1);
 	}
+	
 
 	if ($config["pure"] == 0) {
-		$fullscreen['text'] = '<a href="index.php?extension_in_menu=estado&amp;sec=extensions&amp;sec2=extensions/agents_modules&amp;pure=1&amp;offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'&refresh='.$refr.'">'
-			. html_print_image ("images/full_screen.png", true, array ("title" => __('Full screen mode')))
-			. "</a>";
+		if($modules_selected[0] && $agents_id[0]){
+			
+			$full_modules = urlencode(implode(";",$modules_selected));
+			$full_agents = urlencode(implode(";",$agents_id));
+			
+			$fullscreen['text'] = '<a href="index.php?extension_in_menu=estado&amp;sec=extensions&amp;sec2=extensions/agents_modules&amp;pure=1&amp;
+			offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'&refresh='.$refr.'&full_modules_selected='.$full_modules.'
+			&full_agents_id='.$full_agents.'&selection_agent_module='.$selection_a_m.'">'
+				. html_print_image ("images/full_screen.png", true, array ("title" => __('Full screen mode')))
+				. "</a>";
+				
+		} else if($full_modules_selected[0] && $full_agents_id[0]){
+			
+			$full_modules = urlencode(implode(";",$full_modules_selected));
+			$full_agents = urlencode(implode(";",$full_agents_id));
+			
+			$fullscreen['text'] = '<a href="index.php?extension_in_menu=estado&amp;sec=extensions&amp;sec2=extensions/agents_modules&amp;pure=1&amp;
+			offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'&refresh='.$refr.'&full_modules_selected='.$full_modules.'
+			&full_agents_id='.$full_agents.'&selection_agent_module='.$selection_a_m.'">'
+				. html_print_image ("images/full_screen.png", true, array ("title" => __('Full screen mode')))
+				. "</a>";
+				
+		} else {
+			
+			$fullscreen['text'] = '<a href="index.php?extension_in_menu=estado&amp;sec=extensions&amp;sec2=extensions/agents_modules&amp;pure=1&amp;
+			offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'&refresh='.$refr.'">'
+				. html_print_image ("images/full_screen.png", true, array ("title" => __('Full screen mode')))
+				. "</a>";
+		}
 	}
-	else {
-		
-	}
-
+	
 	$groups = users_get_groups ();
 	
 	//groups
@@ -144,7 +170,7 @@ function mainAgentsModules() {
 	//modules
 	$all_modules = select_modules_for_agent_group($group_id, $agents_id, $selection_a_m, false);
 	$filter_modules_label = '<b>'.__('Module').'</b>';
-	$filter_modules = html_print_select($all_modules, 'module[]', $modules_selected, '', '', 0, true, true, true, '', false, "min-width: 180px; max-width: 200px;");
+	$filter_modules = html_print_select($all_modules, 'module[]', $modules_selected, '', '', 0, true, true, false, '', false, "min-width: 180px; max-width: 200px;");
 
 	//update
 	$filter_update = html_print_submit_button(__('Update item'), 'edit_item', false, 'class="sub upd"', true);
@@ -164,7 +190,19 @@ function mainAgentsModules() {
 		echo "</tr>";
 		echo "</table>";
 	} else {
-		$url =" index.php?sec=view&sec2=extensions/agents_modules&amp;pure=0&amp;offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'&refresh=$refr";
+		if ($full_agents_id[0]){
+			
+			$full_modules = urlencode(implode(";",$full_modules_selected)) ;
+			$full_agents = urlencode(implode(";",$full_agents_id));
+			
+			$url =" index.php?sec=view&sec2=extensions/agents_modules&amp;pure=0&amp;offset=$offset
+			&group_id=$group_id&modulegroup=$modulegroup&refresh=$refr&full_modules_selected=$full_modules
+			&full_agents_id=$full_agents&selection_agent_module=$selection_a_m";
+			
+		} else {
+			$url =" index.php?sec=view&sec2=extensions/agents_modules&amp;pure=0&amp;offset=$offset&group_id=$group_id&modulegroup=$modulegroup&refresh=$refr";
+		}
+		
 		// Floating menu - Start
 		echo '<div id="vc-controls" style="z-index: 999">';
 
@@ -206,7 +244,9 @@ function mainAgentsModules() {
 	
 	
 	if($config['pure'] != 1){
-		echo '<form method="post" action="' . ui_get_url_refresh (array ('offset' => $offset, 'hor_offset' => $offset,'group_id' => $group_id, 'modulegroup' => $modulegroup)).'">';
+		echo '<form method="post" action="' 
+		. ui_get_url_refresh (array ('offset' => $offset, 'hor_offset' => $offset,'group_id' => $group_id, 'modulegroup' => $modulegroup)).'">';
+		
 		echo '<table class="databox filters" cellpadding="0" cellspacing="0" border="0" style="width:100%;">';
 			echo "<tr>";
 				echo "<td>" . $filter_groups_label . "</td>";
@@ -235,9 +275,14 @@ function mainAgentsModules() {
 		$agents = $agents_id;
 	}
 	else {
-		$agents = '';
-		$agents = agents_get_group_agents($group_id,array('disabled' => 0));
-		$agents = array_keys($agents);	
+		if($full_agents_id[0]){
+			$agents = $full_agents_id;
+		} else {
+			$agents = '';
+			$agents = agents_get_group_agents($group_id,array('disabled' => 0));
+			$agents = array_keys($agents);	
+		}
+		
 	}
 	
 	$filter_module_group = array('disabled' => 0);
@@ -260,7 +305,6 @@ function mainAgentsModules() {
 	if($agents_id[0] != -1){
 		$all_modules = array();
 		foreach ($modules_selected as $key => $value) {
-			//$all_modules[$value] = io_safe_output(modules_get_agentmodule_name($value));
 			$name = modules_get_agentmodule_name($value);
 			$sql = "SELECT id_agente_modulo 
 					FROM tagente_modulo 
@@ -277,13 +321,33 @@ function mainAgentsModules() {
 		}
 	}
 	else{
-		$all_modules = agents_get_modules($agents, false,
-		$filter_module_group, true, true);
+		if ($full_modules_selected[0]){
+			foreach ($full_modules_selected as $key => $value) {
+				$name = modules_get_agentmodule_name($value);
+				$sql = "SELECT id_agente_modulo 
+						FROM tagente_modulo 
+						WHERE nombre = '". $name ."';";
+
+				$result_sql = db_get_all_rows_sql($sql);
+				if(is_array($result_sql)){
+					foreach ($result_sql as $key => $value) {
+						$all_modules[$value['id_agente_modulo']] = io_safe_output($name); 
+					}
+				} 
+				// $all_modules[$value] = modules_get_agentmodule_name($value);
+			}
+
+		} else {
+			$all_modules = agents_get_modules($agents, false,
+			$filter_module_group, true, true);
+		}
+		
 	}
 
 	$modules_by_name = array();
 	$name = '';
 	$cont = 0;
+	
 	
 	foreach ($all_modules as $key => $module) {
 		if ($module == $name) {
@@ -494,7 +558,6 @@ function mainAgentsModules() {
 				echo "<td></td>";
 			}
 		}
-		
 		echo "</tr>";
 	}
 
@@ -509,7 +572,7 @@ function mainAgentsModules() {
 	echo "<tr><td class='legend_square_simple'><div style='background-color: " . COL_WARNING . ";'></div></td><td>" . __("Yellow cell when the module has a warning status") . "</td></tr>";
 	echo "<tr><td class='legend_square_simple'><div style='background-color: " . COL_NORMAL . ";'></div></td><td>" . __("Green cell when the module has a normal status") . "</td></tr>";
 	echo "<tr><td class='legend_square_simple'><div style='background-color: " . COL_UNKNOWN . ";'></div></td><td>" . __("Grey cell when the module has an unknown status") . "</td></tr>";
-	echo "<tr><td class='legend_square_simple'><div style='background-color: " . COL_NOTINIT . ";'></div></td><td>" . __("Cell turns grey when the module is in 'not initialize' status") . "</td></tr>";
+	echo "<tr><td class='legend_square_simple'><div style='background-color: " . COL_NOTINIT . ";'></div></td><td>" . __("Cell turns blue when the module is in 'not initialize' status") . "</td></tr>";
 	echo "</table>";
 	echo "</div>";
 	
@@ -562,6 +625,8 @@ $ignored_params['refresh']='';
 		var refr = <?php echo (int)$refr; ?>;
 		var pure = <?php echo (int) $config['pure']; ?>;
 		var href = "<?php echo ui_get_url_refresh ($ignored_params); ?>";
+		
+		
 		if (pure) {
 			var startCountDown = function (duration, cb) {
 				$('div.vc-countdown').countdown('destroy');
@@ -592,6 +657,17 @@ $ignored_params['refresh']='';
 			});
 		}
 		else {
+			
+			var agentes_id = $("#id_agents2").val();
+			var id_agentes = $.get("full_agents_id");
+			if (agentes_id === null && id_agentes !== null) {
+				id_agentes = id_agentes.split(";")
+				id_agentes.forEach(function(element) {
+					$("#id_agents2 option[value="+ element +"]").attr("selected",true);
+				});
+				
+				selection_agent_module();
+			}
 			
 			$('#refresh').change(function () {
 				$('#hidden-vc_refr').val($('#refresh option:selected').val());
@@ -693,9 +769,34 @@ $ignored_params['refresh']='';
 							.html (value["nombre"]);
 						$("#module").append (option);
 					});
+					
+					var id_modules = $.get("full_modules_selected");
+					if(id_modules !== null) {
+						id_modules = id_modules.split(";");
+						id_modules.forEach(function(element) {
+			    			$("#module option[value="+ element +"]").attr("selected",true);
+						});
+					}
 				}
 			},
 			"json"
 		);
 	}
+	
+	(function($) {  
+    $.get = function(key)   {  
+        key = key.replace(/[\[]/, '\\[');  
+        key = key.replace(/[\]]/, '\\]');  
+        var pattern = "[\\?&]" + key + "=([^&#]*)";  
+        var regex = new RegExp(pattern);  
+        var url = unescape(window.location.href);  
+        var results = regex.exec(url);  
+        if (results === null) {  
+            return null;  
+        } else {  
+            return results[1];  
+        }  
+    }  
+	})(jQuery); 
+
 </script>

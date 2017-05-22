@@ -17,7 +17,6 @@
  * @param editor Boolean variable to set other css selector in editor (when true).
  */
 function draw_line (line, id_div) {
-	
 	selector = '';
 	
 	//Check if the global var resize_map is defined
@@ -69,8 +68,9 @@ function draw_line (line, id_div) {
 		}
 		else {
 			width = $('#' + line['node_begin']).width();
+			x1 = parseInt($('#' + line['node_begin']).css (selector + 'left')) + (width / 2);
 		}
-		x1 = parseInt($('#' + line['node_begin']).css (selector + 'left')) + (width / 2);
+		
 	}
 	
 	if (line['y1']) {
@@ -83,8 +83,8 @@ function draw_line (line, id_div) {
 		}
 		else {
 			height = $('#' + line['node_begin']).height();
+			y1 = parseInt($('#' + line['node_begin']).css (selector + 'top')) + (height / 2);
 		}
-		y1 = parseInt($('#' + line['node_begin']).css (selector + 'top')) + (height / 2);
 	}
 	
 	if (line['x2']) {
@@ -97,8 +97,8 @@ function draw_line (line, id_div) {
 		}
 		else {
 			width = $('#' + line['node_end']).width();
+			x2 = parseInt($('#' + line['node_end']).css (selector + 'left')) + (width / 2);
 		}
-		x2 = parseInt($('#' + line['node_end']).css (selector + 'left')) + (width / 2);
 	}
 	
 	if (line['y2']) {
@@ -111,8 +111,8 @@ function draw_line (line, id_div) {
 		}
 		else {
 			height = $('#' + line['node_end']).height();
+			y2 = parseInt($('#' + line['node_end']).css (selector + 'top')) + (height / 2);
 		}
-		y2 = parseInt($('#' + line['node_end']).css (selector + 'top')) + (height / 2);
 	}
 	
 	

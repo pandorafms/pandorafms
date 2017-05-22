@@ -49,6 +49,9 @@ function menu_print_menu (&$menu) {
 			'') .
 		'>';
 	
+	// Use $config because a global var is required because normal
+	// and godmode menu are painted separately
+	if (!isset($config['count_main_menu'])) $config['count_main_menu'] = 0;
 	foreach ($menu as $mainsec => $main) {
 		$extensionInMenuParameter = (string) get_parameter ('extension_in_menu','');
 		
@@ -369,6 +372,12 @@ function menu_print_menu (&$menu) {
 					$sub_title = '';
 				}
 				
+				// Added a top on inline styles
+				$top = menu_calculate_top($config['count_main_menu'], $count_sub, $count_sub2);
+				if ($top !== 0) {
+					$display = rtrim($display, "'");
+					$display .= "top: " . $top . "px;'";
+				}
 				//Add submenu2 to submenu string
 				$submenu_output .= "<ul id='sub" . str_replace(' ','_',$sub["id"]) . "' class=submenu2 $display>";
 				$submenu_output .= $submenu2_list;
@@ -419,10 +428,12 @@ function menu_print_menu (&$menu) {
 				$visible = false;
 			}
 			
-			$output .= '<ul id="subicon_'.$id.'" class="submenu'.($visible ? '' : ' invisible').'">';
+			$top = menu_calculate_top($config["count_main_menu"], $count_sub);
+			$output .= '<ul id="subicon_'.$id.'" class="submenu'.($visible ? '' : ' invisible').'" style="top: ' . $top . 'px">';
 			$output .= $submenu_output;
 			$output .= '</ul>';
 		}
+		$config["count_main_menu"]++;
 		$output .= '</li>';
 		echo $output;
 		$menu_selected = false;
@@ -717,5 +728,32 @@ function menu_sec3_in_sec2($sec,$sec2,$sec3) {
 	}
 	
 	return false;
+}
+
+// Positionate the menu element. Added a negative top.
+// 35px is the height of a menu item
+function menu_calculate_top($level1, $level2, $level3 = false) {
+	$level2--;
+	if ($level3 !== false) {
+		// If level3 is set, the position is calculated like box is in the center.
+		// wiouth considering level2 box can be moved.
+		$level3--;
+		$total = $level1 + $level3;
+		$comp = $level3;
+	} else {
+		$total = $level1 + $level2;
+		$comp = $level2;
+
+	}
+	// Positionate in the middle
+	if ($total > 12 && (($total < 18) || (($level1 - $comp) <= 4))) {
+		return - ( floor($comp/2) * 35);
+	}
+	// Positionate in the bottom
+	if ($total >= 18) {
+		return - $comp * 35;
+	}
+	// return 0 by default
+	return 0;
 }
 ?>

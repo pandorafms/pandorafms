@@ -353,8 +353,11 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 			elseif ($period < SECONDS_1MONTH) {
 				$time_format = "M \nd H\h";
 			} 
-			else {
+			elseif ($period < SECONDS_6MONTHS) {
 				$time_format = "M \nd H\h";
+			}
+			else {
+				$time_format = "M Y";
 			}
 		}
 		else {
@@ -371,8 +374,11 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 			elseif ($period < SECONDS_1MONTH) {
 				$time_format = "M d H\h";
 			} 
-			else {
+			elseif ($period < SECONDS_6MONTHS) {
 				$time_format = "M d H\h";
+			}
+			else {
+				$time_format = "M Y";
 			}
 		}
 		
@@ -1019,10 +1025,17 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	elseif ($temp_range <= SECONDS_1MONTH) {
 		$time_format = 'M d';
 		$time_format_2 = 'H\h';
-	} 
-	else {
+	}
+	elseif ($temp_range <= SECONDS_1MONTH) {
 		$time_format = 'M d';
 		$time_format_2 = 'H\h';
+	} 
+	elseif ($period < SECONDS_6MONTHS) {
+		$time_format = 'M d';
+		$time_format_2 = 'H\h';
+	}
+	else {
+		$time_format = "M Y";
 	}
 	
 	// Set variables
@@ -2304,10 +2317,9 @@ function progress_bar($progress, $width, $height, $title = '', $mode = 1, $value
 	
 	require_once("include_graph_dependencies.php");
 	include_graphs_dependencies($config['homedir'].'/');
-	
 	$src = ui_get_full_url(
 		"/include/graphs/fgraph.php?homeurl=../../&graph_type=progressbar" .
-		"&width=".$width."&height=".$height."&progress=".$progress.
+		"&width=".$width."&homedir=".$config['homedir']."&height=".$height."&progress=".$progress.
 		"&mode=" . $mode . "&out_of_lim_str=".$out_of_lim_str .
 		"&title=".$title."&font=".$config['fontpath']."&value_text=". $value_text . 
 		"&colorRGB=". $colorRGB, false, false, false
@@ -3802,9 +3814,12 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 		}
 		elseif ($period < SECONDS_1MONTH) {
 			$time_format = 'M d H\h';
-		} 
+		}
+		elseif ($period < SECONDS_6MONTHS) {
+			$time_format = "M d H\h";
+		}
 		else {
-			$time_format = 'M d H\h';
+			$time_format = "M Y";
 		}
 		
 		$timestamp_short = date($time_format, $timestamp);
@@ -3925,8 +3940,11 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	elseif ($period < SECONDS_1MONTH) {
 		$time_format = 'M d H\h';
 	} 
+	elseif ($period < SECONDS_6MONTHS) {
+		$time_format = "M d H\h";
+	}
 	else {
-		$time_format = 'M d H\h';
+		$time_format = "M Y";
 	}
 	
 	// Flash chart
@@ -4145,8 +4163,11 @@ function graph_netflow_aggregate_area ($data, $period, $width, $height, $unit = 
 	elseif ($period < SECONDS_1MONTH) {
 		$chart_time_format = 'M d H\h';
 	}
+	elseif ($period < SECONDS_6MONTHS) {
+		$chart_time_format = "M d H\h";
+	}
 	else {
-		$chart_time_format = 'M d H\h';
+		$chart_time_format = "M Y";
 	}
 	
 	// Calculate source indexes
@@ -4271,8 +4292,11 @@ function graph_netflow_total_area ($data, $period, $width, $height, $unit = '', 
 	elseif ($period < SECONDS_1MONTH) {
 		$chart_time_format = 'M d H\h';
 	}
-	else { 
-		$chart_time_format = 'M d H\h';
+	elseif ($period < SECONDS_6MONTHS) {
+		$chart_time_format = "M d H\h";
+	}
+	else {
+		$chart_time_format = "M Y";
 	}
 
 	// Calculate min, max and avg values
@@ -4567,8 +4591,11 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 		elseif ($period < SECONDS_1MONTH) {
 			$time_format = 'M d H\h';
 		}
+		elseif ($period < SECONDS_6MONTHS) {
+			$time_format = "M d H\h";
+		}
 		else {
-			$time_format = 'M d H\h';
+			$time_format = "M Y";
 		}
 		
 		$timestamp_short = date($time_format, $timestamp);
@@ -4742,8 +4769,11 @@ function graphic_module_events ($id_module, $width, $height, $period = 0, $homeu
 	elseif ($period < SECONDS_1MONTH) {
 		$time_format = 'M d H\h';
 	}
-	else { 
-		$time_format = 'M d H\h';
+	elseif ($period < SECONDS_6MONTHS) {
+		$time_format = "M d H\h";
+	}
+	else {
+		$time_format = "M Y";
 	}
 	
 	$legend = array();

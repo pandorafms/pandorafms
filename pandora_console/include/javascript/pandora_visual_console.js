@@ -38,8 +38,6 @@ function draw_line (line, id_div) {
 	have_node_begin_img = $('#' + line['node_begin'] + " img").length;
 	have_node_end_img = $('#' + line['node_end'] + " img").length;
 	
-<<<<<<< Updated upstream
-=======
 	if (have_node_begin_img) {
 		var img_pos_begin = $('#' + line['node_begin'] + " img").position();
 		var img_margin_left_begin = $('#' + line['node_begin'] + " img").css("margin-left");
@@ -61,13 +59,13 @@ function draw_line (line, id_div) {
 		img_margin_top_end = parseFloat(img_margin_top_end_aux[0]);
 	}
 
->>>>>>> Stashed changes
 	if (line['x1']) {
 		x1 = line['x'];
 	}
 	else {
 		if (have_node_begin_img) {
 			width = $('#' + line['node_begin'] + " img").width();
+			x1 = parseInt($('#' + line['node_begin']).css (selector + 'left')) + (width / 2) + img_pos_begin.left + img_margin_left_begin;
 		}
 		else {
 			width = $('#' + line['node_begin']).width();
@@ -81,10 +79,7 @@ function draw_line (line, id_div) {
 	else {
 		if (have_node_begin_img) {
 			height = parseInt($('#' + line['node_begin'] + " img").css('height'));
-<<<<<<< Updated upstream
-=======
 			y1 = parseInt($('#' + line['node_begin']).css (selector + 'top')) + (height / 2) + img_pos_begin.top + img_margin_top_begin;
->>>>>>> Stashed changes
 		}
 		else {
 			height = $('#' + line['node_begin']).height();
@@ -98,6 +93,7 @@ function draw_line (line, id_div) {
 	else {
 		if (have_node_end_img) {
 			width = $('#' + line['node_end'] + " img").width();
+			x2 = parseInt($('#' + line['node_end']).css (selector + 'left')) + (width / 2) + img_pos_end.left + img_margin_left_end;
 		}
 		else {
 			width = $('#' + line['node_end']).width();
@@ -111,10 +107,7 @@ function draw_line (line, id_div) {
 	else {
 		if (have_node_end_img) {
 			height = parseInt($('#' + line['node_end'] + " img").css('height'));
-<<<<<<< Updated upstream
-=======
 			y2 = parseInt($('#' + line['node_end']).css (selector + 'top')) + (height / 2) + img_pos_end.top + img_margin_top_end;
->>>>>>> Stashed changes
 		}
 		else {
 			height = $('#' + line['node_end']).height();

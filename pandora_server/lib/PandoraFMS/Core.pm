@@ -976,7 +976,9 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_field13_ => $field13,
 				_field14_ => $field14,
 				_field15_ => $field15,
-				_agent_ => (defined ($agent)) ? $agent->{'alias'} : '',
+				_agentname_ => (defined ($agent)) ? $agent->{'nombre'} : '',
+				_agentalias_ => (defined ($agent)) ? $agent->{'alias'} : '',
+				_agent_ => (defined ($agent)) ? ($agent->{'alias'} ? $agent->{'alias'} : $agent->{'nombre'}) : '',
 				_agentcustomid_ => (defined ($agent)) ? $agent->{'custom_id'} : '',
 				'_agentcustomfield_\d+_'  => undef,
 				_agentdescription_ => (defined ($agent)) ? $agent->{'comentarios'} : '',
@@ -1213,6 +1215,9 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		}
 		$agent_name = subst_alert_macros ($agent_name, \%macros, $pa_config, $dbh, $agent, $module);
 		my $fullagent = get_agent_from_name ($dbh, $agent_name);
+		if( ! $fullagent && $macros{'_agentname_'} ) {
+			$fullagent = get_agent_from_name ($dbh, $macros{'_agentname_'} );
+		}
 		
 		# Field 5 (priority)
 		my $priority = $field5;
@@ -3423,6 +3428,7 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 			if (defined($this_agent)){
 				%agent = ( 
 					'nombre' => $this_agent->{'nombre'},
+					'alias'  => $this_agent->{'alias'},
 					'id_agente' => $this_agent->{'id_agente'},
 					'direccion' => $trap_agent,
 					'id_grupo' => $this_agent->{'id_grupo'},

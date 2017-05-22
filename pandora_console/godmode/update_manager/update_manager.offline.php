@@ -62,6 +62,10 @@ $baseurl = ui_get_full_url(false, false, false, false);
 	var text1_package_file = "<?php echo __('There is a new update available'); ?>\n";
 	var text2_package_file = "<?php echo __('There is a new update available to apply. Do you want to start the update process?'); ?>\n";
 	var applying_mr = "<?php echo __('Applying DB MR'); ?>\n";
+	var cancel_button = "<?php echo __('Cancel'); ?>\n";
+	var ok_button = "<?php echo __('Ok'); ?>\n";
+	var apply_mr_button = "<?php echo __('Apply MR'); ?>\n";
+	var apply_button = "<?php echo __('Apply'); ?>\n";
 </script>
 
 <form id="form-offline_update" method="post" enctype="multipart/form-data" class="fileupload_form">

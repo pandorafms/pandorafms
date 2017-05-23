@@ -1018,6 +1018,8 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_email_tag_ => undef,
 				_phone_tag_ => undef,
 				_name_tag_ => undef,
+				_all_address_ => undef,
+				'_address_\d+_'  => undef,
 				 );
 	
 	if ((defined ($extra_macros)) && (ref($extra_macros) eq "HASH")) {
@@ -3613,6 +3615,29 @@ sub on_demand_macro($$$$$$) {
 		else{
 			my $field_value = get_db_value($dbh, 'SELECT datos FROM tagente_datos where id_agente_modulo = ? order by utimestamp desc limit 1 offset 1', $module->{'id_agente_modulo'});
 		}
+	}elsif ($macro eq '_all_address_') {
+		return '' unless defined ($module);
+		my @rows = get_db_rows ($dbh, 'SELECT ip FROM taddress_agent taag, taddress ta WHERE ta.id_a = taag.id_a AND id_agent = ?', $module->{'id_agente'});
+
+		my $field_value = "<pre>";
+		my $count=1;
+		foreach my $element (@rows) {
+			$field_value .= $count.": " . $element->{'ip'} . "\n";
+			$count++;
+		}
+		$field_value .= "</pre>";
+		return(defined($field_value)) ? $field_value : '';
+	} elsif ($macro =~ /_address_(\d+)_/) {
+		return '' unless defined ($module);
+		my $field_number = $1 - 1;
+		my @rows = get_db_rows ($dbh, 'SELECT ip FROM taddress_agent taag, taddress ta WHERE ta.id_a = taag.id_a AND id_agent = ?', $module->{'id_agente'});
+		
+		my $field_value = $rows[$field_number]->{'ip'};
+		if($field_value == ''){
+			$field_value = 'Ip not defined';
+		}
+		
+		return(defined($field_value)) ? $field_value : '';
 	}
 }
 

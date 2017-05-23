@@ -1182,7 +1182,9 @@ function visual_map_print_item($mode = "read", $layoutData,
 				else if($layoutData['label_position']=='right'){
 					$imgpos = 'float:left';
 				}
+				
 				$varsize = getimagesize($img);
+				
 				if ($width == 0 || $height == 0) {
 					if($varsize[0] > 150 || $varsize[1] > 150){
 						echo html_print_image($img, true,

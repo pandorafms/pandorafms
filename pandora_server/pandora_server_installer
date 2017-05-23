@@ -8,8 +8,8 @@
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
-PI_VERSION="7.0NG"
-PI_BUILD="170418"
+PI_VERSION="7.0NG.703"
+PI_BUILD="170523"
 
 MODE=$1
 if [ $# -gt 1 ]; then

@@ -201,49 +201,6 @@ li:hover ul { display: block; }
 	background: url(../../images/um_messages.menu.png) no-repeat 50% 50%;
 }
 
-#subicon_god-setup {
-	top: -140px;
-}
-#subBulk_operations {
-	top: -210px;
-}
-
-#subicon_god-servers {
-	top: -120px;
-}
-
-#subicon_god-alerts {
-	top: -70px;
-}
-
-#subicon_god-links {
-	top: -140px;
-}
-
-#subicon_god-extensions {
-	top: -180px;
-}
-
-#subicon_god-um_messages {
-	top: -90px;
-}
-
-#subicon_god-configuration {
-	top: -100px;
-}
-
-#subDB_maintenance {
-	top: -120px;
-}
-
-#subExtension_manager {
-	top: -100px;
-}
-
-#subSetup {
-	top: -80px;
-}
-
 #menu_container {
 	z-index: 3;
 	position: absolute;

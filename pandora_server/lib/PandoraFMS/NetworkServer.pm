@@ -339,8 +339,8 @@ sub pandora_snmp_get_command ($$$$$$$$$$$) {
 # Makes a call to SNMP modules to get a value,
 ##########################################################################
 
-sub pandora_query_snmp ($$$) {
-	my ($pa_config, $module, $dbh) = @_;
+sub pandora_query_snmp ($$$$) {
+	my ($pa_config, $module, $ip_target, $dbh) = @_;
 
 	my $snmp_version = $module->{"tcp_send"}; # (1, 2, 2c or 3)
 	my $snmp3_privacy_method = $module->{"custom_string_1"}; # DES/AES
@@ -350,7 +350,7 @@ sub pandora_query_snmp ($$$) {
 	my $snmp3_auth_pass = pandora_output_password($pa_config, $module->{"plugin_pass"});
 	my $snmp3_auth_method = $module->{"plugin_parameter"}; #MD5/SHA1
 	my $snmp_community = $module->{"snmp_community"};
-	my $snmp_target = $module->{"ip_target"};
+	my $snmp_target = $ip_target;
 	my $snmp_oid = $module->{"snmp_oid"};
 	my $snmp_port = $module->{"tcp_port"};
 
@@ -493,7 +493,7 @@ sub exec_network_module ($$$$) {
 				($id_tipo_modulo == 16) || 
 				($id_tipo_modulo == 17)) {
 
-			($module_data, $module_result) = pandora_query_snmp ($pa_config, $module, $dbh);
+			($module_data, $module_result) = pandora_query_snmp ($pa_config, $module, $ip_target, $dbh);
 
 		    if ($module_result == 0) { # A correct SNMP Query
 			    # SNMP_DATA_PROC

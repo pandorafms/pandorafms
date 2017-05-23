@@ -41,7 +41,8 @@ $pagination = (int) get_parameter ("pagination", $config["block_size"]);
 $offset = (int) get_parameter ('offset',0);
 $trap_type = (int) get_parameter ('trap_type', -1);
 $group_by = (int)get_parameter('group_by', 0);
-$refr = (int)get_parameter("refr", 0);
+$refr = (int)get_parameter("refresh");
+$default_refr = !empty($refr) ? $refr : $config['vc_refr'];
 
 $user_groups = users_get_groups ($config['id_user'], $access, false);
 
@@ -69,21 +70,18 @@ $url = "index.php?sec=estado&" .
 
 $statistics['text'] = '<a href="index.php?sec=estado&sec2=operation/snmpconsole/snmp_statistics&pure=' . $config["pure"] . '&refr=' . $refr . '">' . 
 	html_print_image("images/op_reporting.png", true, array ("title" => __('Statistics'))) .'</a>';
-$list['text'] = '<a href="' . $url . '&pure=' . $config["pure"] . '&refr=' . $refr . '">' . 
+$list['text'] = '<a href="' . $url . '&pure=' . $config["pure"] . '&refresh=' . $refr . '">' . 
 	html_print_image("images/op_snmp.png", true, array ("title" => __('List'))) .'</a>';
 $list['active'] = true;
 
 if ($config["pure"]) {
-	$fullscreen['text'] = '<a target="_top" href="'.$url.'&pure=0&refr=' . $refr . '">' . html_print_image("images/normal_screen.png", true, array("title" => __('Normal screen')))  . '</a>';
+	$fullscreen['text'] = '<a target="_top" href="'.$url.'&pure=0&refresh=' . $refr . '">' . html_print_image("images/normal_screen.png", true, array("title" => __('Normal screen')))  . '</a>';
 }
 else {
 	// Fullscreen
-	$fullscreen['text'] = '<a target="_top" href="'.$url.'&pure=1&refr=' . $refr . '">' . html_print_image("images/full_screen.png", true, array("title" => __('Full screen'))) . '</a>';
+	$fullscreen['text'] = '<a target="_top" href="'.$url.'&pure=1&refresh=' . $refr . '">' . html_print_image("images/full_screen.png", true, array("title" => __('Full screen'))) . '</a>';
 }
 
-// Header
-ui_print_page_header(__("SNMP Console"), "images/op_snmp.png", false,
-	"", false, array($fullscreen, $list, $statistics));
 
 // OPERATIONS
 
@@ -445,7 +443,7 @@ if ($config['dbtype'] != 'oracle') {
 $filter = '<form method="POST" action="index.php?' .
 	'sec=snmpconsole&' .
 	'sec2=operation/snmpconsole/snmp_view&' .
-	'refr=' . ((int)get_parameter('refr', 0)) . '&' .
+	'refresh=' . ((int)get_parameter('refresh', 0)) . '&' .
 	'pure=' . $config["pure"] . '">';
 $filter .= html_print_table($table, true);
 $filter .= '<div style="width: ' . $table->width . '; text-align: right;">';
@@ -453,9 +451,7 @@ $filter .= html_print_submit_button(__('Update'), 'search', false, 'class="sub u
 $filter .= '</div>';
 $filter .= '</form>';
 
-ui_toggle($filter, __('Toggle filter(s)'));
 
-unset ($table);
 
 
 
@@ -466,9 +462,102 @@ $trapcount = (int) db_get_value_sql($sql_count);
 
 // No traps 
 if (empty ($traps)) {
+	// Header
+	ui_print_page_header(__("SNMP Console"), "images/op_snmp.png", false,
+		"", false, array($list, $statistics));
 	ui_print_info_message ( array('no_close'=>true, 'message'=> __('There are no SNMP traps in database') ) );
 	return;
+} else{
+	if($config["pure"]){
+		echo '<div id="dashboard-controls">';
+
+		echo '<div id="menu_tab">';
+		echo '<ul class="mn">';
+		// Normal view button
+		echo '<li class="nomn">';
+		$normal_url = "index.php?" .
+			"sec=snmpconsole&" .
+			"sec2=operation/snmpconsole/snmp_view&" .
+			"filter_severity=" . $filter_severity . "&" .
+			"filter_fired=" . $filter_fired . "&" .
+			"filter_status=" . $filter_status . "&" .
+			"refresh=" . ((int)get_parameter('refresh', 0)) . "&" .
+			"pure=0&" .
+			"trap_type=" . $trap_type . "&" .
+			"group_by=" . $group_by . "&" .
+			"free_search_string=" . $free_search_string;
+		
+		$urlPagination = $normal_url . "&" .
+			"pagination=" . $pagination . "&" .
+			"offset=" . $offset;
+			
+		echo '<a href="' . $urlPagination . '">';
+		echo html_print_image('images/normal_screen.png', true, array('title' => __('Exit fullscreen')));
+		echo '</a>';
+		echo '</li>';
+		
+		// Auto refresh control
+		echo '<li class="nomn">';
+		echo '<div class="dashboard-refr" style="margin-top: 6px;">';
+		echo '<div class="dashboard-countdown" style="display: inline;"></div>';
+		$normal_url = "index.php?" .
+			"sec=snmpconsole&" .
+			"sec2=operation/snmpconsole/snmp_view&" .
+			"filter_severity=" . $filter_severity . "&" .
+			"filter_fired=" . $filter_fired . "&" .
+			"filter_status=" . $filter_status . "&" .
+			"refresh=" . ((int)get_parameter('refresh', 0)) . "&" .
+			"pure=1&" .
+			"trap_type=" . $trap_type . "&" .
+			"group_by=" . $group_by . "&" .
+			"free_search_string=" . $free_search_string;
+		
+		$urlPagination = $normal_url . "&" .
+			"pagination=" . $pagination . "&" .
+			"offset=" . $offset;
+		
+		
+		echo '<form id="refr-form" method="get" action="' . $urlPagination . '" style="display: inline;">';
+		echo __('Refresh every') . ':';
+		echo html_print_select(get_refresh_time_array(), 'refresh', $refr, '', '', 0, true, false, false);
+		echo '</form>';
+		echo '</li>';
+		
+		html_print_input_hidden('sec', 'snmpconsole');
+		html_print_input_hidden('sec2', 'operation/snmpconsole/snmp_view');
+		html_print_input_hidden('pure', 1);
+		html_print_input_hidden('refresh', ($refr > 0 ? $refr : $default_refr));
+		
+		// Dashboard name
+		echo '<li class="nomn">';
+		echo '<div class="dashboard-title">' . __('SNMP Traps') . '</div>';
+		echo '</li>';
+
+		echo '</ul>';
+		echo '</div>';
+
+		echo '</div>';
+		
+		ui_require_css_file('pandora_enterprise', ENTERPRISE_DIR . '/include/styles/');
+		ui_require_css_file('pandora_dashboard', ENTERPRISE_DIR . '/include/styles/');
+		ui_require_css_file('cluetip');
+
+		ui_require_jquery_file('countdown');
+		ui_require_javascript_file('pandora_dashboard', ENTERPRISE_DIR.'/include/javascript/');
+		ui_require_javascript_file('wz_jsgraphics');
+		ui_require_javascript_file('pandora_visual_console');
+
+		
+	} else {
+		// Header
+		ui_print_page_header(__("SNMP Console"), "images/op_snmp.png", false,
+			"", false, array($fullscreen, $list, $statistics));
+	}
+	
 }
+
+ui_toggle($filter, __('Toggle filter(s)'));
+unset ($table);
 
 if (($config['dbtype'] == 'oracle') && ($traps !== false)) {
 	for ($i = 0; $i < count($traps); $i++) {
@@ -482,7 +571,7 @@ $url_snmp = "index.php?" .
 	"filter_severity=" . $filter_severity . "&" .
 	"filter_fired=" . $filter_fired . "&" .
 	"filter_status=" . $filter_status . "&" .
-	"refr=" . ((int)get_parameter('refr', 0)) . "&" .
+	"refresh=" . ((int)get_parameter('refresh', 0)) . "&" .
 	"pure=" . $config["pure"] . "&" .
 	"trap_type=" . $trap_type . "&" .
 	"group_by=" . $group_by . "&" .
@@ -589,7 +678,7 @@ if ($traps !== false) {
 				continue;
 			}
 			$data[1] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'" title="'.__('View agent details').'">';
-			$data[1] .= '<strong>'.$agent["nombre"].ui_print_help_tip($trap['source'], true);'</strong></a>';
+			$data[1] .= '<strong>'.$agent["nombre"].ui_print_help_tip($trap['source'], true, "images/tip-blanco.png");'</strong></a>';
 		}
 		
 		//OID
@@ -688,7 +777,7 @@ if ($traps !== false) {
 			"filter_severity=" . $filter_severity . "&" .
 			"filter_fired=" . $filter_fired . "&" .
 			"filter_status=" . $filter_status . "&" .
-			"refr=" . ((int)get_parameter('refr', 0)) . "&" .
+			"refresh=" . ((int)get_parameter('refresh', 0)) . "&" .
 			"pure=" . $config["pure"] . "&" .
 			"group_by=0&" .
 			"free_search_string=" . $free_search_string;
@@ -855,7 +944,48 @@ echo '<div style="clear:both;">&nbsp;</div>';
 ?>
 
 <script language="JavaScript" type="text/javascript">
-	<!--
+
+	$(document).ready( function() {
+		var controls = document.getElementById('dashboard-controls');
+		autoHideElement(controls, 1000);
+		
+		var startCountDown = function (duration, cb) {
+			$('div.dashboard-countdown').countdown('destroy');
+			if (!duration) return;
+			var t = new Date();
+			t.setTime(t.getTime() + duration * 1000);
+			$('div.dashboard-countdown').countdown({
+				until: t,
+				format: 'MS',
+				layout: '(%M%nn%M:%S%nn%S <?php echo __('Until next'); ?>) ',
+				alwaysExpire: true,
+				onExpiry: function () {
+					$('div.dashboard-countdown').countdown('destroy');
+					cb();
+				}
+			});
+		}
+		
+		// Auto refresh select
+		$('form#refr-form').submit(function (event) {
+			event.preventDefault();
+		});
+		
+		var handleRefrChange = function (event) {
+			event.preventDefault();
+			var url = $('form#refr-form').prop('action');
+			var refr = Number.parseInt(event.target.value, 10);
+			
+			startCountDown(refr, function () {
+				window.location = url + '&refresh=' + refr;
+			});
+		}
+		
+		$('form#refr-form select').change(handleRefrChange).change();
+		
+		
+	});
+	
 	function CheckAll() {
 		for (var i = 0; i < document.eventtable.elements.length; i++) {
 			var e = document.eventtable.elements[i];
@@ -883,5 +1013,5 @@ echo '<div style="clear:both;">&nbsp;</div>';
 			$('.trap_info_' + id_trap).css('display', '');
 		}
 	}
-	//-->
+
 </script>

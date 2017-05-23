@@ -1293,6 +1293,7 @@ DELETE FROM twidget WHERE unique_name = 'graph_availability';
 -- ---------------------------------------------------------------------
 -- Table `tbackup` (Extension table. Modify only if exists)
 -- ---------------------------------------------------------------------
+DROP PROCEDURE IF EXISTS addcol;
 delimiter //
 CREATE PROCEDURE addcol()
 BEGIN

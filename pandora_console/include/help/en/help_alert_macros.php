@@ -25,6 +25,7 @@ Besides the defined module macros, the following macros are available:
 <li>_agentdescription_: Description of the agent that triggered the alert.</li>
 <li>_agentgroup_: Agent’s group name.</li>
 <li>_agentstatus_: Current agent status.</li>
+<li>_agentos_: Agent's operative system.</li>
 <li>_address_: Address of the agent that triggered the alert.</li>
 <li>_timestamp_: Time and date on which the alert was triggered (yy-mm-dd hh:mm:ss).</li>
 <li>_timezone_: Timezone that is represented on _timestamp_.</li>
@@ -60,6 +61,7 @@ Besides the defined module macros, the following macros are available:
 <li>_moduletags_: URLs associated to the module’s tags.</li>
 <li>_alert_critical_instructions_: Instructions for CRITICAL status contained in the module.</li>
 <li>_alert_warning_instructions_: Instructions for WARNING status contained in the module.</li>
+<li>_alert_unknown_instructions_: Instructions for UNKNOWN status contained in the module.</li>
 <li>_modulegraph_<i>n</i>h_: (>=6.0) (Only for alerts that use the command <i>eMail</i>)
 Returns an image encoded in base64 of a module’s graph with a period of <i>n</i> hours (eg. _modulegraph_24h_).
 A correct setup of the connection between the server and the console's API is required.

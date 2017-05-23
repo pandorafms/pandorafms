@@ -127,6 +127,12 @@ if (is_ajax()) {
 		$values['id_group_filter'] = get_parameter('id_group_filter');
 		$values['date_from'] = get_parameter('date_from');
 		$values['date_to'] = get_parameter('date_to');
+		if (io_safe_output($values['tag_with']) == "[\"0\"]") {
+			$values['tag_with'] = "[]";
+		}
+		if (io_safe_output($values['tag_without']) == "[\"0\"]") {
+			$values['tag_without'] = "[]";
+		}
 
 		$result = db_process_sql_update('tevent_filter',
 			$values, array('id_filter' => $id));
@@ -158,6 +164,67 @@ if ($id_agent == 0 && !empty($text_agent)) {
 	$id_agent = -1;
 }
 
+$id_name = get_parameter('id_name', '');
+
+/* -------------------------------------------------------------------------- */
+/* ------------------------ DEFAULT USER FILTER ----------------------------- */
+$user = $config['id_user'];
+$user_filter = db_get_value_filter('default_event_filter', 'tusuario', array('id_user' => $user));
+$update_from_filter_table = (bool)get_parameter('update_from_filter_table', false);
+
+if ($user_filter != 0 && empty($id_name) && !$update_from_filter_table) {
+	$user_default_filter = db_get_all_rows_filter('tevent_filter', array('id_filter' => $user_filter));
+	$user_default_filter = $user_default_filter[0];
+
+	// FORM
+	$id_name = $user_default_filter['id_name'];
+	$id_group = $user_default_filter['id_group'];
+	if ($user_default_filter['event_type'] != "") {
+		$event_type = $user_default_filter['event_type'];
+	}
+	
+	$severity = $user_default_filter['severity'];
+	$status = $user_default_filter['status'];
+	$event_view_hr = $user_default_filter['event_view_hr'];
+	$group_rep = $user_default_filter['group_rep'];
+	if ($user_default_filter['search'] != "") {
+		$search = $user_default_filter['search'];
+	}
+	if ($user_default_filter['id_user_ack'] != 0) {
+		$id_user_ack = $user_default_filter['id_user_ack'];
+	}
+	if ($user_default_filter['id_agent_module'] != 0) {
+		$id_agent_module = $user_default_filter['id_agent_module'];
+	}
+	if ($user_default_filter['id_agent'] != 0) {
+		$id_agent = $user_default_filter['id_agent'];
+		$text_agent = agents_get_alias($id_agent);
+	}
+	if ($user_default_filter['filter_only_alert'] != -1) {
+		$filter_only_alert = $user_default_filter['filter_only_alert'];
+	}
+	if ($user_default_filter['pagination'] != 20) {
+		$pagination = $user_default_filter['pagination'];
+	}
+	if ($user_default_filter['date_from'] != "0000-00-00") {
+		$date_from = $user_default_filter['date_from'];
+	}
+	if ($user_default_filter['date_to'] != "0000-00-00") {
+		$date_to = $user_default_filter['date_to'];
+	}
+	if (io_safe_output($user_default_filter['tag_with']) != "[]" && io_safe_output($user_default_filter['tag_with']) != "[\"0\"]") {
+		$tag_with = $user_default_filter['tag_with'];
+		$tag_with_clean = io_safe_output($tag_with);
+		$tag_with = json_decode($tag_with_clean, true);
+	}
+	if (io_safe_output($user_default_filter['tag_without']) != "[]" && io_safe_output($user_default_filter['tag_without']) != "[\"0\"]") {
+		$tag_without = $user_default_filter['tag_without'];
+		$tag_without_clear = io_safe_output($tag_without);
+		$tag_without = json_decode($tag_without_clear, true);
+	}
+}
+/* -------------------------------------------------------------------------- */
+
 /////////////////////////////////////////////
 // Build the condition of the events query
 
@@ -166,12 +233,10 @@ $sql_post = "";
 $id_user = $config['id_user'];
 
 $filter_resume = array();
-require('events.build_query.php');
 
+require('events.build_query.php');
 // Now $sql_post have all the where condition
 /////////////////////////////////////////////
-
-$id_name = get_parameter('id_name', '');
 
 // Trick to catch if any filter button has been pushed (don't collapse filter)
 // or the filter was open before click or autorefresh is in use (collapse filter)
@@ -294,14 +359,14 @@ $tags_select_without = array();
 $tag_with_temp = array();
 $tag_without_temp = array();
 foreach ($tags as $id_tag => $tag) {
-	if (array_search($id_tag, $tag_with) === false) {
+	if ((array_search($id_tag, $tag_with) === false) || (array_search($id_tag, $tag_with) === null)) {
 		$tags_select_with[$id_tag] = ui_print_truncate_text ($tag, 50, true);
 	}
 	else {
 		$tag_with_temp[$id_tag] = ui_print_truncate_text ($tag, 50, true);
 	}
 	
-	if (array_search($id_tag, $tag_without) === false) {
+	if ((array_search($id_tag, $tag_without) === false) || (array_search($id_tag, $tag_without) === null)) {
 		$tags_select_without[$id_tag] = ui_print_truncate_text ($tag, 50, true);
 	}
 	else {
@@ -392,7 +457,6 @@ if ($open_filter) {
 else {
 	$events_filter .= html_print_input_hidden('open_filter', 'false', true);
 }
-
 
 //----------------------------------------------------------------------
 //- INI ADVANCE FILTER -------------------------------------------------
@@ -535,7 +599,6 @@ if (defined('METACONSOLE'))
 $table_advanced->rowclass[] = '';
 //- END ADVANCE FILTER -------------------------------------------------
 
-
 $table = new stdClass();
 $table->id = 'events_filter_form';
 $table->width = '100%';
@@ -617,6 +680,11 @@ $data[0] .= '</div>';
 
 $table->colspan[count($table->data)][1] = 4;
 $table->rowstyle[count($table->data)] = 'text-align:right;';
+$table->data[] = $data;
+$table->rowclass[] = '';
+
+$data = array();
+$data[0] = html_print_input_hidden('update_from_filter_table', 1, true);
 $table->data[] = $data;
 $table->rowclass[] = '';
 
@@ -892,7 +960,32 @@ var text_none = "<?php echo __('None'); ?>";
 var group_agents_id = false;
 
 $(document).ready( function() {
+	id_select_destiny = "#tag_with_temp";
+	id_hidden = "#hidden-tag_with";
+
+	value_store = [];
 	
+	jQuery.each($(id_select_destiny + " option"), function(key, element) {
+		val = $(element).val();
+		
+		value_store.push(val);
+	});
+	
+	$(id_hidden).val(Base64.encode(jQuery.toJSON(value_store)));
+	
+	id_select_destiny2 = "#tag_without_temp";
+	id_hidden2 = "#hidden-tag_without";
+	
+	value_store2 = [];
+	
+	jQuery.each($(id_select_destiny2 + " option"), function(key, element) {
+		val = $(element).val();
+		
+		value_store2.push(val);
+	});
+	
+	$(id_hidden2).val(Base64.encode(jQuery.toJSON(value_store2)));
+
 	$("#text-date_from, #text-date_to").datepicker({dateFormat: "<?php echo DATE_FORMAT_JS; ?>"});
 	
 	// If the events are not charged, dont show graphs link
@@ -978,7 +1071,7 @@ $(document).ready( function() {
 			$("#severity").val(-1);
 			$("#status").val(3);
 			$("#text-search").val('');
-			$('input:hidden[name=id_agent]').val();
+			$('input:hidden[name=id_agent]').val("");
 			$('input:hidden[name=module_search_hidden]').val();
 			$("#pagination").val(25);
 			$("#text-event_view_hr").val(8);
@@ -989,11 +1082,19 @@ $(document).ready( function() {
 			$("#row_name").css('visibility', 'hidden');
 			$("#submit-update_filter").css('visibility', 'hidden');
 			$("#id_group").val(0);
+			$("#text-date_from").val('');
+			$("#text-date_to").val('');
+			$("#pagination").val(20);
+			$("#update_from_filter_table").val(1);
+			$("#text_id_agent").val("");
 			
 			clear_tags_inputs();
 			
 			// Update the view of filter load with no loaded filters message
 			$('#filter_loaded_span').html($('#not_filter_loaded_text').html());
+
+			// Update the view with the loaded filter
+			$('#submit-update').trigger('click');
 		}
 		// If filter selected then load filter
 		else {

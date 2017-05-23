@@ -563,7 +563,7 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	
 	// Get module data
 	if ($fullscale) {
-		$uncompress_data = db_uncompress_module_data((int)$agent_module_id, $datelimit, get_system_time());
+		$uncompress_data = db_uncompress_module_data((int)$agent_module_id, $datelimit, $date);
 
 		$new_data = array();
 		$index = 0;

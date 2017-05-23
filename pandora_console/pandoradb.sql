@@ -2927,3 +2927,11 @@ create table IF NOT EXISTS `tphase`(
     `timeout` int unsigned default null,
     PRIMARY KEY (`phase_id`,`transaction_id`)
 ) engine=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `treset_pass` (
+	`id` bigint(10) unsigned NOT NULL auto_increment,
+	`id_user` varchar(100) NOT NULL default '',
+	`cod_hash` varchar(100) NOT NULL default '',
+	`reset_time` int(10) unsigned NOT NULL default 0,
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

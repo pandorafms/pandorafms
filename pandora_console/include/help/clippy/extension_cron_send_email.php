@@ -36,9 +36,7 @@ function clippy_extension_cron_send_email() {
 		'intro' => '<table>' .
 			'<tr>' .
 			'<td class="context_help_body">' .
-			'<div style="word-break: break-word;">' . 
-			__('The configuration of email for the task email is in the file:') . '<br />' .
-			'&lt;www&gt;/pandora_console/enterprise/extensions/cron/email_config.php <br />' .
+			__('The configuration of email for the task email is in the enterprise setup:') . '<br />' .
 			__('Please check if the email configuration is correct.') .
 			'</div>' .
 			'</td>' .

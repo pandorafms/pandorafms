@@ -2040,6 +2040,9 @@ function html_print_label ($text, $id, $return = false, $options = false) {
 	if ($options) {
 		if (isset ($options['class']))
 			$output .= 'class="'.$options['class'].'" ';
+		
+		if (isset ($options['style']))
+			$output .= 'style="'.$options['style'].'" ';
 	}
 	
 	$output .= 'for="'.$id.'" >';

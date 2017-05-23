@@ -2753,4 +2753,5 @@ function remove_right_zeros ($value) {
 		return $value;
 	}
 }
+
 ?>

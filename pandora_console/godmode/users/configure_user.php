@@ -640,7 +640,8 @@ $table->data[16][0] = __('Default event filter');
 $table->data[16][1] = html_print_select ($event_filter, 'default_event_filter', $user_info["default_event_filter"], '','', __('None'), true, false, false);
 
 if($meta) {
-	enterprise_include('include/functions_metaconsole.php');
+	enterprise_include_once ('include/functions_metaconsole.php');
+	
 	$data = array();
 	$data[0] = __('Enable agents managment');
 	$data[1] = html_print_checkbox('metaconsole_agents_manager', 1, $user_info["metaconsole_agents_manager"], true);

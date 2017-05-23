@@ -3670,15 +3670,17 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	}
 
 	if ($fullscale) {
-		$all_data = db_uncompress_module_data($agent_module_id, time() - $period);
+		$all_data = db_uncompress_module_data($agent_module_id, $datelimit, $date);
 		
 		$new_uncompress_data = array();
 		$index = 0;
 		foreach ($all_data as $uncompress_data) {
 			foreach ($uncompress_data['data'] as $mod_data) {
-				$new_uncompress_data[$index]['datos'] = $mod_data['datos'];
-				$new_uncompress_data[$index]['utimestamp'] = $mod_data['utimestamp'];
-				$index++;
+				if ($mod_data['datos'] != "") {
+					$new_uncompress_data[$index]['datos'] = $mod_data['datos'];
+					$new_uncompress_data[$index]['utimestamp'] = $mod_data['utimestamp'];
+					$index++;
+				}
 			}
 		}
 		$new_uncompress_data[$index - 1]['id_agente_modulo'] = $agent_module_id;
@@ -3834,9 +3836,15 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 		}
 		elseif ($period < SECONDS_1MONTH) {
 			$time_format = 'M d H\h';
+			if ($fullscale) {
+				$time_format = 'M d H:i';
+			}
 		} 
 		else {
 			$time_format = 'M d H\h';
+			if ($fullscale) {
+				$time_format = 'M d H:i';
+			}
 		}
 		
 		$timestamp_short = date($time_format, $timestamp);
@@ -3944,9 +3952,15 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	}
 	elseif ($period < SECONDS_1MONTH) {
 		$time_format = 'M d H\h';
+		if ($fullscale) {
+			$time_format = 'M d H:i';
+		}
 	} 
 	else {
 		$time_format = 'M d H\h';
+		if ($fullscale) {
+			$time_format = 'M d H:i';
+		}
 	}
 	
 	// Flash chart

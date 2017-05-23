@@ -232,7 +232,7 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 				$projection, $avg_only = false, $uncompressed_module = false, 
 				$show_events = false, $show_alerts = false, $show_unknown = false, $baseline = false, 
 				$baseline_data = array(), $events = array(), $series_suffix = '', $start_unknown = false,
-				$percentil = null) {
+				$percentil = null, $fullscale = false) {
 	
 	global $config;
 	global $chart_extra_data;
@@ -350,9 +350,15 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 			}
 			elseif ($period < SECONDS_1MONTH) {
 				$time_format = "M \nd H\h";
+				if ($fullscale) {
+					$time_format = "M \nd H:i";
+				}
 			} 
 			else {
 				$time_format = "M \nd H\h";
+				if ($fullscale) {
+					$time_format = "M \nd H:i";
+				}
 			}
 		}
 		else {
@@ -368,9 +374,15 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 			}
 			elseif ($period < SECONDS_1MONTH) {
 				$time_format = "M d H\h";
+				if ($fullscale) {
+					$time_format = "M d H:i";
+				}
 			} 
 			else {
 				$time_format = "M d H\h";
+				if ($fullscale) {
+					$time_format = "M d H:i";
+				}
 			}
 		}
 		
@@ -550,13 +562,30 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	}
 	
 	// Get module data
-	$data = db_get_all_rows_filter ('tagente_datos',
-		array ('id_agente_modulo' => (int)$agent_module_id,
-			"utimestamp > $datelimit",
-			"utimestamp < $date",
-			'order' => 'utimestamp ASC'),
-		array ('datos', 'utimestamp'), 'AND', $search_in_history_db);
-	
+	if ($fullscale) {
+		$uncompress_data = db_uncompress_module_data((int)$agent_module_id, $datelimit, get_system_time());
+
+		$new_data = array();
+		$index = 0;
+		foreach ($uncompress_data as $key => $u_data) {
+			foreach ($u_data['data'] as $key2 => $u_data2) {
+				if ($u_data2['datos'] != "") {
+					$new_data[$index]['datos'] = $u_data2['datos'];
+					$new_data[$index]['utimestamp'] = $u_data2['utimestamp'];
+					$index++;
+				}
+			}
+		}
+		$data = $new_data;
+	}
+	else {
+		$data = db_get_all_rows_filter ('tagente_datos',
+			array ('id_agente_modulo' => (int)$agent_module_id,
+				"utimestamp > $datelimit",
+				"utimestamp < $date",
+				'order' => 'utimestamp ASC'),
+			array ('datos', 'utimestamp'), 'AND', $search_in_history_db);
+	}
 	
 	// Get module warning_min and critical_min
 	$warning_min = db_get_value('min_warning','tagente_modulo','id_agente_modulo',$agent_module_id);
@@ -596,23 +625,6 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 		}
 		
 		$min_necessary = 2;
-	}
-
-	if ($fullscale) {
-		$all_data = db_uncompress_module_data($agent_module_id, time() - $period);
-		
-		$new_uncompress_data = array();
-		$index = 0;
-		foreach ($all_data as $uncompress_data) {
-			foreach ($uncompress_data['data'] as $mod_data) {
-				$new_uncompress_data[$index]['datos'] = $mod_data['datos'];
-				$new_uncompress_data[$index]['utimestamp'] = $mod_data['utimestamp'];
-				$index++;
-			}
-		}
-		$new_uncompress_data[$index - 1]['id_agente_modulo'] = $agent_module_id;
-		
-		$data = $new_uncompress_data;
 	}
 
 	// Check available data
@@ -669,7 +681,7 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 		$projection, $avg_only, $uncompressed_module, 
 		$show_events, $show_alerts, $show_unknown, $baseline, 
 		$baseline_data, $events, $series_suffix, $start_unknown,
-		$percentil);
+		$percentil, $fullscale);
 
 	// Return chart data and don't draw
 	if ($return_data == 1) {

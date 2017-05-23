@@ -1249,3 +1249,8 @@ INSERT INTO `tpolicy_modules` (`id_policy`, `configuration_data`, `id_tipo_modul
 -- Dumping data for table `tprofile_view`
 --
 INSERT INTO `tprofile_view` (`id_profile`, `sec`, `sec2`, `sec3`) VALUES (5, '*', '*','*');
+
+--
+-- Dumping data for table `tcontainer`
+--
+INSERT INTO `tcontainer` SET `name` = 'Default graph container';

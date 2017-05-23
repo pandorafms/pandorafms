@@ -62,11 +62,11 @@ echo '<div id="login_help_dialog" title="' .
 			echo '</td>';
 			
 			echo '<td style="border:1px solid #FFF; text-align:center;">';
-				echo '<a href="http://openideas.info/smf/" target="_blank" style="text-decoration:none;">' .
+				echo '<a href="https://pandorafms.com/forums" target="_blank" style="text-decoration:none;">' .
 					html_print_image('images/support.png', true,
 						array("alt" => __('Support'), "border" => 0)) . '</a>';
 				echo '<br style="margin-bottom: 40px;" />';
-				echo '<a style="font-size: 9pt;" href="http://openideas.info/smf/" target="_blank">' . __('Support') . ' / ' . __('Forums') . '</a>';
+				echo '<a style="font-size: 9pt;" href="https://pandorafms.com/forums" target="_blank">' . __('Support') . ' / ' . __('Forums') . '</a>';
 			echo '</td>';
 			
 			echo '<td style="border:1px solid #FFF; text-align:center;">';

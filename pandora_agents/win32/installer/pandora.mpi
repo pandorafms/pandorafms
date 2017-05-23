@@ -3,7 +3,7 @@ AllowLanguageSelection
 {Yes}
 
 AppName
-{Pandora FMS Windows Agent v7.0NG}
+{Pandora FMS Windows Agent v7.0NG.703}
 
 ApplicationID
 {17E3D2CF-CA02-406B-8A80-9D31C17BD08F}
@@ -186,7 +186,7 @@ UpgradeApplicationID
 {}
 
 Version
-{170419}
+{170523}
 
 ViewReadme
 {Yes}

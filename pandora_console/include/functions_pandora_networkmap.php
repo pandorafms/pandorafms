@@ -27,6 +27,10 @@ function networkmap_delete_networkmap($id = 0) {
 	return $result;
 }
 
+function networkmap_delete_nodes($id_map) {
+	return db_process_sql_delete('titem', array('id_map' => $id_map));
+}
+
 function networkmap_process_networkmap($id = 0) {
 	global $config;
 	

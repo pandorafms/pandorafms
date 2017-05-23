@@ -42,8 +42,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG";
-my $pandora_build = "170419";
+my $pandora_version = "7.0NG.703";
+my $pandora_build = "170523";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -223,6 +223,7 @@ sub pandora_load_config {
 	$pa_config->{"exportserver"} = 1; # default
 	$pa_config->{"inventoryserver"} = 1; # default
 	$pa_config->{"webserver"} = 1; # 3.0
+	$pa_config->{"web_timeout"} = 60; # 6.0SP5
 	$pa_config->{"transactionalserver"} = 0; # Default 0, introduced on 6.1
 	$pa_config->{"transactional_threads"} = 1; # Default 1, introduced on 6.1
 	$pa_config->{"transactional_threshold"} = 2; # Default 2, introduced on 6.1
@@ -636,6 +637,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^webserver\s+([0-9]*)/i) {
 			$pa_config->{'webserver'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^web_timeout\s+([0-9]*)/i) {
+			$pa_config->{'web_timeout'}= clean_blank($1); 
 		}
 		elsif ($parametro =~ m/^transactionalserver\s+([0-9]*)/i) {
 			$pa_config->{'transactionalserver'}= clean_blank($1);

@@ -616,10 +616,20 @@ switch ($action) {
 					}
 				}
 				
+				$item_in_db = db_get_row_filter ('tlayout_data', array ('id' => $id_element));
+
+				if (($item_in_db['parent_item'] == 0) && ($values['parent_item'] != 0)) {
+					$new_line = 1;
+				}
+
 				$result = db_process_sql_update('tlayout_data', $values,
 					array('id' => $id_element));
 				
-				echo (int)$result;
+				$return_val = array();
+				$return_val['correct'] = (int)$result;
+				$return_val['new_line'] = $new_line;
+
+				echo json_encode($return_val);
 				break;
 		}
 		break;

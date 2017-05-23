@@ -203,8 +203,9 @@ function install_package (package, homeurl) {
 		},
 		width: 600,
 		height: 250,
-		buttons: {
-			"Ok": function () {
+		buttons: [{
+			text:ok_button,
+			click: function () {
 				$(this).dialog("close");
 
 				var parameters = {};
@@ -231,8 +232,9 @@ function install_package (package, homeurl) {
 								},
 								width: 600,
 								height: 270,
-								buttons: {
-									"Apply MR": function () {
+								buttons: [{
+									text:apply_mr_button,
+									click: function () {
 										var err = [];
 										err = apply_minor_release(data['mr'], package, 1, 1, home_url);
 
@@ -249,8 +251,9 @@ function install_package (package, homeurl) {
 													},
 													width: 600,
 													height: 270,
-													buttons: {
-														"Apply": function() {
+													buttons: [{
+														text:apply_button,
+														click: function() {
 															$(this).dialog("close");
 
 															$("<div id='accept_package_mr_fail' class='dialog ui-dialog-content' title='" + mr_available + "'></div>").dialog ({
@@ -263,11 +266,12 @@ function install_package (package, homeurl) {
 																},
 																width: 600,
 																height: 250,
-																buttons: {
-																	"Ok": function () {
+																buttons: [{
+																	text:ok_button,
+																	click: function () {
 																		$(this).dialog("close");
 																	}
-																}
+																}]
 															});
 
 															var dialog_accept_package_mr_fail_text = "<div>";
@@ -306,11 +310,12 @@ function install_package (package, homeurl) {
 																			},
 																			width: 600,
 																			height: 250,
-																			buttons: {
-																				"Ok": function () {
+																			buttons: [{
+																				text:ok_button,
+																				click: function () {
 																					$(this).dialog("close");
 																				}
-																			}
+																			}]
 																		});
 
 																		var dialog_success_pkg_text = "<div>";
@@ -337,11 +342,12 @@ function install_package (package, homeurl) {
 																			},
 																			width: 600,
 																			height: 250,
-																			buttons: {
-																				"Ok": function () {
+																			buttons: [{
+																				text:ok_button,
+																				click: function () {
 																					$(this).dialog("close");
 																				}
-																			}
+																			}]
 																		});
 
 																		var dialog_error_pkg_text = "<div>";
@@ -366,8 +372,11 @@ function install_package (package, homeurl) {
 															
 															// Check the status of the update
 															check_install_package(package, homeurl);
-														},
-														"Cancel": function () {
+														}
+													},
+													{
+														text:cancel_button,
+														click: function () {
 															$(this).dialog("close");
 
 															$("<div id='cancel_pkg' class='dialog ui-dialog-content' title='" + package_available + "'></div>").dialog ({
@@ -380,11 +389,12 @@ function install_package (package, homeurl) {
 																},
 																width: 600,
 																height: 220,
-																buttons: {
-																	"Ok": function () {
+																buttons: [{
+																	text:ok_button,
+																	click: function () {
 																		$(this).dialog("close");
 																	}
-																}
+																}]
 															});
 
 															var dialog_cancel_pkg_text = "<div>";
@@ -401,7 +411,7 @@ function install_package (package, homeurl) {
 															$('#form-offline_update ul').find('li').find('p').html(mr_not_accepted)
 																.append("<i>"+data.message+"</i>");
 														}
-													}
+													}]
 												});
 
 												var dialog_bad_message_text = "<div>";
@@ -425,11 +435,12 @@ function install_package (package, homeurl) {
 													},
 													width: 600,
 													height: 250,
-													buttons: {
-														"Ok": function () {
+													buttons: [{
+														text:ok_button,
+														click: function () {
 															$(this).dialog("close");
 														}
-													}
+													}]
 												});
 
 												var dialog_success_mr_text = "<div>";
@@ -468,11 +479,12 @@ function install_package (package, homeurl) {
 																},
 																width: 600,
 																height: 250,
-																buttons: {
-																	"Ok": function () {
+																buttons: [{
+																	text:ok_button,
+																	click: function () {
 																		$(this).dialog("close");
 																	}
-																}
+																}]
 															});
 
 															var dialog_success_pkg_text = "<div>";
@@ -499,11 +511,12 @@ function install_package (package, homeurl) {
 																},
 																width: 600,
 																height: 250,
-																buttons: {
-																	"Ok": function () {
+																buttons: [{
+																	text:ok_button,
+																	click: function () {
 																		$(this).dialog("close");
 																	}
-																}
+																}]
 															});
 
 															var dialog_error_pkg_text = "<div>";
@@ -544,11 +557,12 @@ function install_package (package, homeurl) {
 												},
 												width: 600,
 												height: 250,
-												buttons: {
-													"Ok": function () {
+												buttons: [{
+													text:ok_button,
+													click: function () {
 														$(this).dialog("close");
 													}
-												}
+												}]
 											});
 
 											var dialog_error_mr_text = "<div>";
@@ -564,8 +578,11 @@ function install_package (package, homeurl) {
 											$('#form-offline_update ul').find('li').find('p').html(error_in_mr)
 												.append("<i>"+data.message+"</i>");
 										}
-									},
-									"Cancel": function () {
+									}
+								},
+								{
+									text:cancel_button,
+									click: function () {
 										$("#mr_dialog2").dialog("close");
 
 										$("<div id='cancel_mr' class='dialog ui-dialog-content' title='" + mr_available + "'></div>").dialog ({
@@ -578,11 +595,12 @@ function install_package (package, homeurl) {
 											},
 											width: 600,
 											height: 220,
-											buttons: {
-												"Ok": function () {
+											buttons: [{
+												text:ok_button,
+												click: function () {
 													$(this).dialog("close");
 												}
-											}
+											}]
 										});
 
 										var dialog_cancel_mr_text = "<div>";
@@ -599,7 +617,7 @@ function install_package (package, homeurl) {
 										$('#form-offline_update ul').find('li').find('p').html(mr_not_accepted)
 											.append("<i>"+data.message+"</i>");
 									}
-								}
+								}]
 							});
 
 							$('button:contains(Apply MR)').attr("id","apply_rr_button");
@@ -607,7 +625,7 @@ function install_package (package, homeurl) {
 							
 							var dialog_have_mr_text = "<div>";
 							dialog_have_mr_text = dialog_have_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_warning_mr.png'></div>";
-							dialog_have_mr_text = dialog_have_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>There are a DB changes</strong></h3>";
+							dialog_have_mr_text = dialog_have_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>" + mr_available_header + "</strong></h3>";
 							dialog_have_mr_text = dialog_have_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + text1_mr_file + "</p>";
 							dialog_have_mr_text = dialog_have_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + text2_mr_file + "<a style='font-family:Verdana bold; font-size:12pt; color:#82B92E'href=\"index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list\">" + text3_mr_file + "</a>" + text4_mr_file + "</p></div>";
 							dialog_have_mr_text = dialog_have_mr_text + "</div>";
@@ -645,11 +663,12 @@ function install_package (package, homeurl) {
 											},
 											width: 600,
 											height: 250,
-											buttons: {
-												"Ok": function () {
+											buttons: [{
+												text:ok_button,
+												click: function () {
 													$(this).dialog("close");
 												}
-											}
+											}]
 										});
 
 										var dialog_success_pkg_text = "<div>";
@@ -676,11 +695,12 @@ function install_package (package, homeurl) {
 											},
 											width: 600,
 											height: 250,
-											buttons: {
-												"Ok": function () {
+											buttons: [{
+												text:ok_button,
+												click: function () {
 													$(this).dialog("close");
 												}
-											}
+											}]
 										});
 
 										var dialog_error_pkg_text = "<div>";
@@ -710,8 +730,11 @@ function install_package (package, homeurl) {
 						}
 					}
 				});
-			},
-			"Cancel": function () {
+			}
+		},
+		{
+			text:cancel_button,
+			click: function () {
 				$(this).dialog("close");
 
 				$("<div id='cancel_pkg' class='dialog ui-dialog-content' title='" + package_available + "'></div>").dialog ({
@@ -724,11 +747,12 @@ function install_package (package, homeurl) {
 					},
 					width: 600,
 					height: 220,
-					buttons: {
-						"Ok": function () {
+					buttons: [{
+						text:ok_button,
+						click: function () {
 							$(this).dialog("close");
 						}
-					}
+					}]
 				});
 
 				var dialog_cancel_pkg_text = "<div>";
@@ -781,7 +805,7 @@ function install_package (package, homeurl) {
 				// Check the status of the update
 				check_install_package(package, homeurl);
 			}
-		}
+		}]
 	});
 
 	var dialog_text = "<div>";
@@ -964,8 +988,9 @@ function install_free_package_prev_step(package, version, homeurl) {
 		},
 		width: 600,
 		height: 250,
-		buttons: {
-			"OK": function () {
+		buttons: [{
+			text:ok_button,
+			click: function () {
 				$(this).dialog("close");
 
 				var parameters = {};
@@ -991,8 +1016,9 @@ function install_free_package_prev_step(package, version, homeurl) {
 								},
 								width: 600,
 								height: 270,
-								buttons: {
-									"Apply MR": function () {
+								buttons: [{
+									text:apply_mr_button,
+									click: function () {
 										var err = [];
 										err = apply_minor_release(data['mr'], package, 0, 0, home_url);
 										if (!err['error']) {
@@ -1008,8 +1034,9 @@ function install_free_package_prev_step(package, version, homeurl) {
 													},
 													width: 600,
 													height: 270,
-													buttons: {
-														"Apply": function() {
+													buttons: [{
+														text:apply_button,
+														click: function() {
 															$(this).dialog("close");
 
 															$("<div id='accept_package_mr_fail' class='dialog ui-dialog-content' title='" + mr_available + "'></div>").dialog ({
@@ -1022,11 +1049,12 @@ function install_free_package_prev_step(package, version, homeurl) {
 																},
 																width: 600,
 																height: 250,
-																buttons: {
-																	"Ok": function () {
+																buttons: [{
+																	text:ok_button,
+																	click: function () {
 																		$(this).dialog("close");
 																	}
-																}
+																}]
 															});
 
 															var dialog_accept_package_mr_fail_text = "<div>";
@@ -1066,8 +1094,11 @@ function install_free_package_prev_step(package, version, homeurl) {
 															);
 
 															remove_rr_file_to_extras(home_url);
-														},
-														"Cancel": function () {
+														}
+													},
+													{
+														text:cancel_button,
+														click: function () {
 															$(this).dialog("close");
 
 															$(this).dialog("close");
@@ -1082,11 +1113,12 @@ function install_free_package_prev_step(package, version, homeurl) {
 																},
 																width: 600,
 																height: 220,
-																buttons: {
-																	"Ok": function () {
+																buttons: [{
+																	text:ok_button,
+																	click: function () {
 																		$(this).dialog("close");
 																	}
-																}
+																}]
 															});
 
 															var dialog_cancel_pkg_text = "<div>";
@@ -1100,7 +1132,7 @@ function install_free_package_prev_step(package, version, homeurl) {
 
 															$("#box_online .content").html(package_not_accepted);
 														}
-													}
+													}]
 												});
 
 												var dialog_bad_message_text = "<div>";
@@ -1124,11 +1156,12 @@ function install_free_package_prev_step(package, version, homeurl) {
 													},
 													width: 600,
 													height: 250,
-													buttons: {
-														"Ok": function () {
+													buttons: [{
+														text:ok_button,
+														click: function () {
 															$(this).dialog("close");
 														}
-													}
+													}]
 												});
 
 												var dialog_success_mr_text = "<div>";
@@ -1182,11 +1215,12 @@ function install_free_package_prev_step(package, version, homeurl) {
 												},
 												width: 600,
 												height: 250,
-												buttons: {
-													"Ok": function () {
+												buttons: [{
+													text:ok_button,
+													click: function () {
 														$(this).dialog("close");
 													}
-												}
+												}]
 											});
 
 											var dialog_error_mr_text = "<div>";
@@ -1200,7 +1234,9 @@ function install_free_package_prev_step(package, version, homeurl) {
 
 											$("#box_online .content").html(mr_error);
 										}
-									},
+									}
+								},
+								{
 									"Cancel": function () {
 										$(this).dialog("close");
 
@@ -1214,11 +1250,12 @@ function install_free_package_prev_step(package, version, homeurl) {
 											},
 											width: 600,
 											height: 220,
-											buttons: {
-												"Ok": function () {
+											buttons: [{
+												text:ok_button,
+												click: function () {
 													$(this).dialog("close");
 												}
-											}
+											}]
 										});
 
 										var dialog_cancel_mr_text = "<div>";
@@ -1234,7 +1271,7 @@ function install_free_package_prev_step(package, version, homeurl) {
 										$("#box_online .downloading_package").hide();
 										$("#box_online .content").html("MR not accepted");
 									}
-								}
+								}]
 							});
 
 							$('button:contains(Apply MR)').attr("id","apply_rr_button");
@@ -1242,7 +1279,7 @@ function install_free_package_prev_step(package, version, homeurl) {
 							
 							var dialog_have_mr_text = "<div>";
 							dialog_have_mr_text = dialog_have_mr_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='" + home_url + "images/icono_warning_mr.png'></div>";
-							dialog_have_mr_text = dialog_have_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>There are a DB changes</strong></h3>";
+							dialog_have_mr_text = dialog_have_mr_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>" + mr_available_header + "</strong></h3>";
 							dialog_have_mr_text = dialog_have_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + text1_mr_file + "</p>";
 							dialog_have_mr_text = dialog_have_mr_text + "<p style='font-family:Verdana; font-size:12pt;'>" + text2_mr_file + "<a style='font-family:Verdana bold; font-size:12pt; color:#82B92E'href=\"index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list\">" + text3_mr_file + "</a>" + text4_mr_file + "</p></div>";
 							dialog_have_mr_text = dialog_have_mr_text + "</div>";
@@ -1283,8 +1320,11 @@ function install_free_package_prev_step(package, version, homeurl) {
 					},
 					"json"
 				);
-			},
-			"Cancel": function () {
+			}
+		},
+		{
+			text:cancel_button,
+			click: function () {
 				$(this).dialog("close");
 
 				$("<div id='cancel_pkg' class='dialog ui-dialog-content' title='" + package_available + "'></div>").dialog ({
@@ -1297,11 +1337,12 @@ function install_free_package_prev_step(package, version, homeurl) {
 					},
 					width: 600,
 					height: 220,
-					buttons: {
-						"Ok": function () {
+					buttons: [{
+						text:ok_button,
+						click: function () {
 							$(this).dialog("close");
 						}
-					}
+					}]
 				});
 
 				var dialog_cancel_pkg_text = "<div>";
@@ -1317,7 +1358,7 @@ function install_free_package_prev_step(package, version, homeurl) {
 				$("#box_online .progressbar").hide();
 				$("#box_online .content").html(package_cancel);
 			}
-		}
+		}]
 	});
 
 	var dialog_text = "<div>";
@@ -1356,11 +1397,12 @@ function install_free_package(package, version, homeurl) {
 				},
 				width: 600,
 				height: 250,
-				buttons: {
-					"Ok": function () {
+				buttons: [{
+					text:ok_button,
+					click: function () {
 						$(this).dialog("close");
 					}
-				}
+				}]
 			});
 
 			var dialog_error_pkg_text = "<div>";
@@ -1392,11 +1434,12 @@ function install_free_package(package, version, homeurl) {
 						},
 						width: 600,
 						height: 250,
-						buttons: {
-							"Ok": function () {
+						buttons: [{
+							text:ok_button,
+							click: function () {
 								$(this).dialog("close");
 							}
-						}
+						}]
 					});
 
 					var dialog_success_pkg_text = "<div>";
@@ -1426,11 +1469,12 @@ function install_free_package(package, version, homeurl) {
 						},
 						width: 600,
 						height: 250,
-						buttons: {
-							"Ok": function () {
+						buttons: [{
+							text:ok_button,
+							click: function () {
 								$(this).dialog("close");
 							}
-						}
+						}]
 					});
 
 					var dialog_error_pkg_text = "<div>";
@@ -1461,11 +1505,12 @@ function install_free_package(package, version, homeurl) {
 					},
 					width: 600,
 					height: 250,
-					buttons: {
-						"Ok": function () {
+					buttons: [{
+						text:ok_button,
+						click: function () {
 							$(this).dialog("close");
 						}
-					}
+					}]
 				});
 
 				var dialog_error_pkg_text = "<div>";

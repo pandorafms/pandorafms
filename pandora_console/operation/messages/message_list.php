@@ -28,15 +28,15 @@ if ($show_sent) {
 }
 
 $buttons['message_list'] = array('active' => $active_list,
-	'text' => '<a href="index.php?sec=workspace&sec2=operation/messages/message_list">' .
+	'text' => '<a href="index.php?sec=message_list&sec2=operation/messages/message_list">' .
 	html_print_image("images/email_inbox.png", true, array ("title" => __('Received messages'))) .'</a>');
 
 $buttons['sent_messages'] = array('active' => $active_sent,
-	'text' => '<a href="index.php?sec=workspace&sec2=operation/messages/message_list&amp;show_sent=1">' .
+	'text' => '<a href="index.php?sec=message_list&sec2=operation/messages/message_list&amp;show_sent=1">' .
 	html_print_image("images/email_outbox.png", true, array ("title" => __('Sent messages'))) .'</a>');
 
 $buttons['create_message'] = array('active' => false,
-	'text' => '<a href="index.php?sec=workspace&sec2=operation/messages/message_edit">' .
+	'text' => '<a href="index.php?sec=message_list&sec2=operation/messages/message_edit">' .
 	html_print_image("images/new_message.png", true, array ("title" => __('Create message'))) .'</a>');
 
 if (!is_ajax ()) {
@@ -132,24 +132,24 @@ else {
 		$data[0] = '';
 		if ($message["status"] == 1) {
 			if ($show_sent) {
-				$data[0] .= '<a href="index.php?sec=workspace&amp;sec2=operation/messages/message_edit&read_message=1&amp;show_sent=1&amp;id_message='.$message_id.'">';
+				$data[0] .= '<a href="index.php?sec=message_list&amp;sec2=operation/messages/message_edit&read_message=1&amp;show_sent=1&amp;id_message='.$message_id.'">';
 				$data[0] .= html_print_image ("images/email_open.png", true, array ("border" => 0, "title" => __('Click to read')));
 				$data[0] .= '</a>';
 			}
 			else { 
-				$data[0] .= '<a href="index.php?sec=workspace&amp;sec2=operation/messages/message_list&amp;mark_unread=1&amp;id_message='.$message_id.'">';
+				$data[0] .= '<a href="index.php?sec=message_list&amp;sec2=operation/messages/message_list&amp;mark_unread=1&amp;id_message='.$message_id.'">';
 				$data[0] .= html_print_image ("images/email_open.png", true, array ("border" => 0, "title" => __('Mark as unread')));
 				$data[0] .= '</a>';
 			}
 		}
 		else {
 			if ($show_sent) {
-				$data[0] .= '<a href="index.php?sec=workspace&amp;sec2=operation/messages/message_edit&amp;read_message=1&amp;show_sent=1&amp;id_message='.$message_id.'">';
+				$data[0] .= '<a href="index.php?sec=message_list&amp;sec2=operation/messages/message_edit&amp;read_message=1&amp;show_sent=1&amp;id_message='.$message_id.'">';
 				$data[0] .= html_print_image ("images/email.png", true, array ("border" => 0, "title" => __('Message unread - click to read')));
 				$data[0] .= '</a>';
 			}
 			else {
-				$data[0] .= '<a href="index.php?sec=workspace&amp;sec2=operation/messages/message_edit&amp;read_message=1&amp;id_message='.$message_id.'">';
+				$data[0] .= '<a href="index.php?sec=message_list&amp;sec2=operation/messages/message_edit&amp;read_message=1&amp;id_message='.$message_id.'">';
 				$data[0] .= html_print_image ("images/email.png", true, array ("border" => 0, "title" => __('Message unread - click to read')));
 				$data[0] .= '</a>';
 			}
@@ -171,10 +171,10 @@ else {
 		}
 		
 		if ($show_sent) {
-			$data[2] = '<a href="index.php?sec=workspace&amp;sec2=operation/messages/message_edit&amp;read_message=1&show_sent=1&amp;id_message='.$message_id.'">';
+			$data[2] = '<a href="index.php?sec=message_list&amp;sec2=operation/messages/message_edit&amp;read_message=1&show_sent=1&amp;id_message='.$message_id.'">';
 		}
 		else {
-			$data[2] = '<a href="index.php?sec=workspace&amp;sec2=operation/messages/message_edit&amp;read_message=1&amp;id_message='.$message_id.'">';
+			$data[2] = '<a href="index.php?sec=message_list&amp;sec2=operation/messages/message_edit&amp;read_message=1&amp;id_message='.$message_id.'">';
 		}
 		if ($message["subject"] == "") {
 			$data[2] .= __('No Subject');
@@ -189,13 +189,13 @@ else {
 			array ("prominent" => "timestamp"));
 		
 		if ($show_sent) {
-			$data[4] = '<a href="index.php?sec=workspace&amp;sec2=operation/messages/message_list&show_sent=1&delete_message=1&id='.$message_id.'"
+			$data[4] = '<a href="index.php?sec=message_list&amp;sec2=operation/messages/message_list&show_sent=1&delete_message=1&id='.$message_id.'"
 				onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">' .
 				html_print_image ('images/cross.png', true, array("title" => __('Delete'))) . '</a>'.
 				html_print_checkbox_extended ('delete_multiple[]', $message_id, false, false, '', 'class="check_delete"', true);
 		}
 		else {
-			$data[4] = '<a href="index.php?sec=workspace&amp;sec2=operation/messages/message_list&delete_message=1&id='.$message_id.'"
+			$data[4] = '<a href="index.php?sec=message_list&amp;sec2=operation/messages/message_list&delete_message=1&id='.$message_id.'"
 				onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">' .
 				html_print_image ('images/cross.png', true, array("title" => __('Delete'))) . '</a>'.
 				html_print_checkbox_extended ('delete_multiple[]', $message_id, false, false, '', 'class="check_delete"', true);
@@ -207,10 +207,10 @@ else {
 
 if (!empty($messages)) {
 	if ($show_sent) {
-		echo '<form method="post" action="index.php?sec=workspace&amp;sec2=operation/messages/message_list&show_sent=1">';
+		echo '<form method="post" action="index.php?sec=message_list&amp;sec2=operation/messages/message_list&show_sent=1">';
 	}
 	else {
-		echo '<form method="post" action="index.php?sec=workspace&amp;sec2=operation/messages/message_list">';
+		echo '<form method="post" action="index.php?sec=message_list&amp;sec2=operation/messages/message_list">';
 	}
 	html_print_input_hidden('multiple_delete', 1);
 	html_print_table($table);
@@ -222,7 +222,7 @@ if (!empty($messages)) {
 }
 
 echo "<div style='float: right;'>";
-	echo '<form method="post" style="float:right;" action="index.php?sec=workspace&sec2=operation/messages/message_edit">';
+	echo '<form method="post" style="float:right;" action="index.php?sec=message_list&sec2=operation/messages/message_edit">';
 		html_print_submit_button (__('Create message'), 'create', false, 'class="sub next" style="margin-right:5px;"');
 	echo "</form>";
 echo "</div>";

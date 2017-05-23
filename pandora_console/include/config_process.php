@@ -22,8 +22,8 @@
 /**
  * Pandora build version and version 
  */
-$build_version = 'PC170419';
-$pandora_version = 'v7.0NG';
+$build_version = 'PC170523';
+$pandora_version = 'v7.0NG.703';
 
 // Do not overwrite default timezone set if defined.
 $script_tz = @date_default_timezone_get();
@@ -110,18 +110,6 @@ require_once ($ownDir . 'constants.php');
 require_once ($ownDir . 'functions_db.php');
 require_once ($ownDir . 'functions.php');
 
-db_select_engine();
-$config['dbconnection'] = db_connect();
-
-
-if (! defined ('EXTENSIONS_DIR'))
-	define ('EXTENSIONS_DIR', 'extensions');
-
-if (! defined ('ENTERPRISE_DIR'))
-	define ('ENTERPRISE_DIR', 'enterprise');
-
-require_once ($ownDir. 'functions_config.php');
-
 // We need a timezone BEFORE calling config_process_config. 
 // If not we will get ugly warnings. Set Europe/Madrid by default
 // Later will be replaced by the good one.
@@ -152,6 +140,18 @@ else{
 		return;
 	}
 }
+
+db_select_engine();
+$config['dbconnection'] = db_connect();
+
+
+if (! defined ('EXTENSIONS_DIR'))
+	define ('EXTENSIONS_DIR', 'extensions');
+
+if (! defined ('ENTERPRISE_DIR'))
+	define ('ENTERPRISE_DIR', 'enterprise');
+
+require_once ($ownDir. 'functions_config.php');
 
 date_default_timezone_set("Europe/Madrid");
 

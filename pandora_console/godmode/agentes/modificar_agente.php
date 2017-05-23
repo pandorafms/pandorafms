@@ -99,6 +99,7 @@ if ($agent_to_delete) {
 
 if ($enable_agent) {
 	$result = db_process_sql_update('tagente', array('disabled' => 0), array('id_agente' => $enable_agent));
+	$alias = agents_get_alias($enable_agent);
 	
 	if ($result) {
 		// Update the agent from the metaconsole cache
@@ -106,10 +107,10 @@ if ($enable_agent) {
 		$values = array('disabled' => 0);
 		enterprise_hook ('agent_update_from_cache', array($enable_agent, $values));
 		
-		db_pandora_audit("Agent management", 'Enable  ' . $enable_agent);
+		db_pandora_audit("Agent management", 'Enable  ' . $alias);
 	}
 	else {
-		db_pandora_audit("Agent management", 'Fail to enable ' . $enable_agent);
+		db_pandora_audit("Agent management", 'Fail to enable ' . $alias);
 	}
 	
 	ui_print_result_message ($result,
@@ -118,6 +119,7 @@ if ($enable_agent) {
 
 if ($disable_agent) {
 	$result = db_process_sql_update('tagente', array('disabled' => 1), array('id_agente' => $disable_agent));
+	$alias = agents_get_alias($disable_agent);
 	
 	if ($result) {
 		// Update the agent from the metaconsole cache
@@ -125,10 +127,10 @@ if ($disable_agent) {
 		$values = array('disabled' => 1);
 		enterprise_hook ('agent_update_from_cache', array($disable_agent, $values));
 		
-		db_pandora_audit("Agent management", 'Disable  ' . $disable_agent);
+		db_pandora_audit("Agent management", 'Disable  ' . $alias);
 	}
 	else {
-		db_pandora_audit("Agent management", 'Fail to disable ' . $disable_agent);
+		db_pandora_audit("Agent management", 'Fail to disable ' . $alias);
 	}
 	
 	ui_print_result_message ($result,

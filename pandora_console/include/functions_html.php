@@ -737,7 +737,7 @@ function html_print_extended_select_for_time ($name, $selected = '',
 	if (!is_user_admin($config['id_user'])) {
 		unset($fields[-1]);
 		
-		$returnString = html_print_select ($fields, $name, $selected,"" . $script,
+		$returnString = html_print_select ($fields, $name . '_select', $selected,"" . $script,
 			$nothing, $nothing_value, true, false, false, '', false, 'font-size: xx-small;'.$select_style);
 		
 		if ($return) {

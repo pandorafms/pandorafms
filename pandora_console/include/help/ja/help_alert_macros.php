@@ -25,6 +25,7 @@
 <li>_agentdescription_ : 発生したアラートの説明</li>
 <li>_agentgroup_ : エージェントグループ名</li>
 <li>_agentstatus_ : エージェントの現在の状態</li>
+<li>_agentos_: Agent's operative system</li>
 <li>_address_ : アラートが発生したエージェントのアドレス</li>
 <li>_timestamp_ : アラートが発生した日時 (yy-mm-dd hh:mm:ss).</li>
 <li>_timezone_: _timestamp_ で使用されるタイムゾーン名.</li>
@@ -59,6 +60,7 @@
 <li>_moduletags_ : モジュールタグに関連付けられた URL。</li>
 <li>_alert_critical_instructions_: モジュールの障害状態時手順。</li>
 <li>_alert_warning_instructions_: モジュールの警告状態時手順。</li>
+<li>_alert_unknown_instructions_: Instructions for UNKNOWN status contained in the module.</li>
 <li>_modulegraph_<i>n</i>h_: (>=6.0) (<i>eMail</i>コマンドを使うアラートのみ)
 n で示す期間の base64 でエンコードされたモジュールグラフを返します。(例: _modulegraph_24h_) サーバとコンソールの API の設定が正しくできている必要があります。この設定は、サーバの設定ファイルで行います。 </li>
 </ul>

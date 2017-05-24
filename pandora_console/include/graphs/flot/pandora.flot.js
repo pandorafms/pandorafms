@@ -1392,7 +1392,10 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	// minTickSize
 	var count_data = datas[0].data.length;
 	var min_tick_pixels = 80;
-	//~ var steps = parseInt( count_data / (width/min_tick_pixels));
+	
+	if (unit != "") {
+		xaxisname = xaxisname + " (" + unit + ")"
+	}
 	
 	var options = {
 			series: {
@@ -1428,6 +1431,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				tickFormatter: yFormatter,
 				color: '',
 				alignTicksWithAxis: 1,
+				labelWidth: 30,
 				position: 'left',
 				font: font,
 				reserveSpace: true,
@@ -1763,7 +1767,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 
 	function yFormatter(v, axis) {
 		axis.datamin = 0;
-		var formatted = number_format(v,force_integer,unit);
+		var formatted = number_format(v, force_integer, "");
 
 		return '<div class='+font+' style="font-size:'+font_size+'pt;">'+formatted+'</div>';
 	}
@@ -1917,7 +1921,7 @@ function adjust_menu(graph_id, plot, parent_height, width) {
 	}
 
 	offset = $('#' + graph_id)[0].offsetTop;
-	console.log(offset);
+	
 	$('#menu_' + graph_id).css('top', ((offset) + 'px'));
 
 	//$('#legend_' + graph_id).css('width',plot.width());
@@ -1986,6 +1990,7 @@ function get_event_details (event_ids) {
 function adjust_left_width_canvas(adapter_id, adapted_id) {
 	var adapter_left_margin = $('#'+adapter_id+' .yAxis .tickLabel').width();
 	var adapted_pix = $('#'+adapted_id).width();
+	
 	var new_adapted_width = adapted_pix - adapter_left_margin;
 	
 	$('#'+adapted_id).width(new_adapted_width);

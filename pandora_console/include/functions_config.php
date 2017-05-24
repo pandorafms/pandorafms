@@ -428,6 +428,8 @@ function config_update_config () {
 						if (!config_update_value ('inventory_purge', get_parameter ('inventory_purge')))
 							$error_update[] = __('Max. days before delete inventory data');
 					}
+					if (!config_update_value ('max_graph_container', get_parameter ('max_graph_container')))
+						$error_update[] = __('Graph container - Max. Items');
 					/////////////
 					break;
 					
@@ -912,6 +914,10 @@ function config_process_config () {
 		if (!isset($config['inventory_purge'])) {
 			config_update_value ('inventory_purge',  21);
 		}
+	}
+	
+	if (!isset($config['max_graph_container'])) {
+		config_update_value ('max_graph_container', 10);
 	}
 
 	if (!isset($config['max_macro_fields'])) {

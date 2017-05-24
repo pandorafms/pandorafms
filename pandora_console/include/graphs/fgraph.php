@@ -564,7 +564,8 @@ function line_graph($flash_chart, $chart_data, $width, $height, $color,
 			$vconsole,
 			false,
 			$percentil_values,
-			$threshold_data);
+			$threshold_data,
+			$xaxisname);
 	}
 	else {
 		$graph = array();

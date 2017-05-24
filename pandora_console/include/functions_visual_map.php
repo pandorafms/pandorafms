@@ -974,24 +974,24 @@ function visual_map_print_item($mode = "read", $layoutData,
 						if ($layoutData['label_position']=='left') {
 							$img =  '<div style="float:right;height:'.$himg.'px;">'.
 							grafico_modulo_sparse($id_module, $period, 
-							0, 300, 180, '',null, false, 1, false, 0, 
-							'', 0, 0, true, $only_image, '', 1, false, '', 
+							0, 300, 180, modules_get_agentmodule_name($id_module),null, false, 1, false, 0, 
+							modules_get_unit($id_module), 0, 0, true, $only_image, '', 1, false, '', 
 							false, false, false, $layoutData['image'], 
 							null, true, false, $type_graph) . '</div>';
 						}
 						elseif($layoutData['label_position']=='right') {
 							$img =  '<div style="float:left;height:'.$himg.'px;">' . 
 								grafico_modulo_sparse($id_module, 
-								$period, 0, 300, 180, '',null, false, 
-								1, false, 0, '', 0, 0, true, $only_image, '', 
+								$period, 0, 300, 180, modules_get_agentmodule_name($id_module),null, false, 
+								1, false, 0, modules_get_unit($id_module), 0, 0, true, $only_image, '', 
 								1, false, '', false, false, false, 
 								$layoutData['image'], null, true, 
 								false, $type_graph) . '</div>';
 						}
 						else {
 							$img =  grafico_modulo_sparse($id_module, 
-							$period, 0, 300, 180, '',null, false, 1, 
-							false, 0, '', 0, 0, true, $only_image, '', 
+							$period, 0, 300, 180, modules_get_agentmodule_name($id_module),null, false, 1, 
+							false, 0, modules_get_unit($id_module), 0, 0, true, $only_image, '', 
 							1, false, '', false, false, false, 
 							$layoutData['image'], null, true, false, $type_graph);
 						}
@@ -1000,8 +1000,8 @@ function visual_map_print_item($mode = "read", $layoutData,
 						if ($layoutData['label_position']=='left') {
 							$img =  '<div style="float:right;height:'.$himg.'px;">' . 
 								grafico_modulo_sparse($id_module, $period, 
-							0, $width, $height, '', null, false, 1, 
-							false, 0, '', 0, 0, true, $only_image, '', 
+							0, $width, $height, modules_get_agentmodule_name($id_module), null, false, 1, 
+							false, 0, modules_get_unit($id_module), 0, 0, true, $only_image, '', 
 							1, false, '', false, false, false, 
 							$layoutData['image'], null, true, 
 							false, $type_graph) . '</div>';
@@ -1009,16 +1009,16 @@ function visual_map_print_item($mode = "read", $layoutData,
 						elseif ($layoutData['label_position']=='right') {
 							$img =  '<div style="float:left;height:'.$himg.'px;">' . 
 								grafico_modulo_sparse($id_module, $period, 
-								0, $width, $height, '', null, false, 1, 
-								false, 0, '', 0, 0, true, $only_image, 
-								'', 1, false, '', false, false, false, 
+								0, $width, $height, modules_get_agentmodule_name($id_module), null, false, 1, 
+								false, 0, modules_get_unit($id_module), 0, 0, true, $only_image, 
+								'', 1, false, modules_get_unit($id_module), false, false, false, 
 								$layoutData['image'], null, true, 
 								false, $type_graph) . '</div>';
 						}
 						else {
 							$img =  grafico_modulo_sparse($id_module, 
-								$period, 0, $width, $height, '', null, 
-								false, 1, false, 0, '', 0, 0, true, 
+								$period, 0, $width, $height, modules_get_agentmodule_name($id_module), null, 
+								false, 1, false, 0, modules_get_unit($id_module), 0, 0, true, 
 								$only_image, '', 1, false, '', false, 
 								false, false, $layoutData['image'], 
 								null, false, true, $type_graph);

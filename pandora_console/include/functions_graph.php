@@ -929,13 +929,13 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 				line_graph($flash_chart, $chart, $width, $height/2, $color,
 					$legend, $long_index,
 					ui_get_full_url("images/image_problem.opaque.png", false, false, false),
-					"", $unit, $water_mark, $config['fontpath'],
+					$title, $unit, $water_mark, $config['fontpath'],
 					$config['font_size'], $unit, $ttl, $homeurl, $backgroundColor).
 				'<br>'.
 				line_graph($flash_chart, $chart_prev, $width, $height/2, $color,
 					$legend, $long_index,
 					ui_get_full_url("images/image_problem.opaque.png", false, false, false),
-					"", $unit, $water_mark, $config['fontpath'],
+					$title, $unit, $water_mark, $config['fontpath'],
 					$config['font_size'], $unit, $ttl, $homeurl, $backgroundColor);
 		}
 		else {
@@ -944,7 +944,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 				line_graph($flash_chart, $chart, $width, $height, $color,
 					$legend, $long_index,
 					ui_get_full_url("images/image_problem.opaque.png", false, false, false),
-					"", $unit, $water_mark, $config['fontpath'],
+					$title, $unit, $water_mark, $config['fontpath'],
 					$config['font_size'], $unit, $ttl, $homeurl, $backgroundColor);
 		}
 	}
@@ -1778,21 +1778,11 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	
 	$graph_values = $temp;
 	
-	/*
-	for ($i = 0; $i < $module_number; $i++) {
-		if ($weight_list[$i] != 1) {
-			$module_name_list[$i] .= " (x". format_numeric ($weight_list[$i], 1).")";
-		}
-	}
-	*/
-	
 	if($config["fixed_graph"] == false){
 		$water_mark = array(
 			'file' => $config['homedir'] .  "/images/logo_vertical_water.png",
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
-	
-	
 	
 	//Work around for fixed the agents name with huge size chars.
 	$fixed_font_size = $config['font_size'];
@@ -4130,7 +4120,7 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 				line_graph($flash_chart, $chart, $width, $height, $color,
 					$legend, $long_index,
 					ui_get_full_url("images/image_problem.opaque.png", false, false, false),
-					"", $unit, $water_mark, $config['fontpath'],
+					$title, $unit, $water_mark, $config['fontpath'],
 					$config['font_size'], $unit, $ttl, $homeurl, $backgroundColor);
 		}
 	}
@@ -4713,7 +4703,7 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 	
 	if ($type_graph === 'area') {
 		return area_graph($flash_chart, $chart, $width, $height, $color,
-			$legend, array(), '', "", $unit, $homeurl,
+			$legend, array(), '', $title, $unit, $homeurl,
 			$water_mark, $config['fontpath'], $config['font_size'], $unit,
 			1, array(),	array(), 0, 0, $adapt_key, true, '', $menu);
 	}
@@ -4722,7 +4712,7 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 			line_graph($flash_chart, $chart, $width, $height, $color,
 				$legend, $long_index,
 				ui_get_full_url("images/image_problem.opaque.png", false, false, false),
-				"", $unit, $water_mark, $config['fontpath'],
+				$title, $unit, $water_mark, $config['fontpath'],
 				$config['font_size'], $unit, $ttl, $homeurl, $backgroundColor);
 	}
 }

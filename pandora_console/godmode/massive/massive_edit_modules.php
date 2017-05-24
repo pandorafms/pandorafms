@@ -533,7 +533,13 @@ $table->data['edit6'][0] = __('Export target');
 $targets2 = db_get_all_rows_sql ("SELECT id, name FROM tserver_export ORDER by name");
 if ($targets2 === false)
 	$targets2 = array();
-$targets =  array_merge(array(0 => __('None')), $targets2 );
+
+$targets = array();
+$targets[0] = __('None');
+foreach ($targets2 as $t) {
+        $targets[$t['id']] = $t['name'];
+}
+
 $table->data['edit6'][1] = html_print_select ($targets, 'id_export', '','', __('No change'), '', true, false, false);
 $table->data['edit6'][2] = __('Unit');
 $table->data['edit6'][3] = html_print_input_text ('unit', '', '', 15, 60, true);

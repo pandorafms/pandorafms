@@ -1436,9 +1436,6 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		if (!empty($unit_list) && $units_number == $module_number && isset($unit_list[$i])) {
 			$unit = $unit_list[$i];
 		}
-		else {
-			$unit = modules_get_unit($agent_module_id);
-		}
 		
 		if ($projection == false or ($projection != false and $i == 0)) {
 			$module_name_list[$i] .= ": ";

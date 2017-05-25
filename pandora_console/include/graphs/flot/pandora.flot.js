@@ -1476,7 +1476,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	// Adjust linked graph to the width and position of the main plot
 
 	// Miniplot
-	if ( !dashboard && !vconsole) {
+	if (!vconsole) {
 		var overview = $.plot($('#overview_'+graph_id),datas, {
 			series: {
 				stack: stacked,

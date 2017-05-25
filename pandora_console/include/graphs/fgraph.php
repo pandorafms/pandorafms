@@ -249,7 +249,7 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color,
 		return '<img src="' . $no_data_image . '" />';
 	}
 
-	if ($dashboard || $vconsole) $menu = false;
+	if ($vconsole) $menu = false;
 	
 	if ($flash_chart) {
 		return flot_area_simple_graph(

@@ -270,7 +270,28 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 			$return .= "</div>";
 			$return .= "</div>";
 		}
+
+		if ($dashboard) {
+			$return .= "<div id='geneal_menu_$graph_id' class='menu_graph' style='
+							width: 30px;
+							height: 250px;
+							left: " . $width . "px;
+							position: absolute;
+							top: 0px;
+							background-color: white;'>";
+
+			$return .= "<div id='menu_$graph_id' " .
+				"style='display: none; " .
+					"text-align: center;" .
+					"position: relative;".
+					"border-bottom: 0px;'>
+				<a href='javascript:'><img id='menu_cancelzoom_$graph_id' src='".$homeurl."images/zoom_cross_grey.disabled.png' alt='".__('Cancel zoom')."' title='".__('Cancel zoom')."'></a>";
+		
+			$return .= "</div>";
+			$return .= "</div>";
+		}
 	}
+
 	$return .= html_print_input_hidden('line_width_graph', $config['custom_graph_width'], true);
 	$return .= "<div id='timestamp_$graph_id' class='timestamp_graph' style='font-size:".$font_size."pt;display:none; position:absolute; background:#fff; border: solid 1px #aaa; padding: 2px; z-index:1000;'></div>";
 	$return .= "<div id='$graph_id' class='";
@@ -282,7 +303,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 	else {
 		$height = 1;
 	}
-	if (!$dashboard && !$vconsole)
+	if (!$vconsole)
 		$return .= "<div id='overview_$graph_id' class='overview_graph' style='display: none; margin-left:0px; margin-top:20px; margin-bottom:50px; width: ".$width."px; height: ".$height ."px;'></div>";
 	
 	if ($water_mark != '') {

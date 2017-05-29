@@ -621,7 +621,7 @@ if (! isset ($config['id_user'])) {
 
 								if (!$check_user) {
 									$reset = false;
-									$error = __('User no exists in db');
+									$error = __('User doesn\'t exist in database');
 									$show_error = true;
 								}
 								else {
@@ -629,7 +629,7 @@ if (! isset ($config['id_user'])) {
 
 									if (!$check_mail) {
 										$reset = false;
-										$error = __('User no have any email direction asociated');
+										$error = __('This user doesn\'t have a valid email address');
 										$show_error = true;
 									}
 									else {
@@ -648,16 +648,16 @@ if (! isset ($config['id_user'])) {
 							$cod_hash = $user_reset_pass . "::::" . md5(rand(10, 1000000) . rand(10, 1000000) . rand(10, 1000000));
 
 							$subject = '[Pandora] '.__('Reset password');
-							$body = __('This is the automatic message to the user');
+							$body = __('This is an automatically sent message for user ');
 							$body .= ' "<strong>' . $user_reset_pass . '"</strong>';
 							$body .= '<p />';
-							$body .= __('Please, click in the link below to reset your password');
+							$body .= __('Please click the link below to reset your password');
 							$body .= '<p />';
 							$body .= '<a href="' . $config['homeurl'] . 'index.php?reset_hash=' . $cod_hash . '">' . __('Reset your password') . '</a>';
 							$body .= '<p />';
 							$body .= 'Pandora FMS';
 							$body .= '<p />';
-							$body .= '<em>'.__('Please do not answer or reply to this email').'</em>';
+							$body .= '<em>'.__('Please do not reply to this email.').'</em>';
 							
 							$result = send_email_to_user($mail, $body, $subject);
 							

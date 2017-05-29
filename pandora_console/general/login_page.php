@@ -223,7 +223,7 @@ echo '<div class="login_page">';
 			$reset_pass_link = 'reset_pass.php';
 			// Reset password link
 			echo '<div style="width:70%; height:40px; margin-right:auto; margin-left:auto; margin-top:20px; text-align:center;">';
-			echo '<a style="color: white !important;" href="index.php?reset=true&first=true">' . __('Forgotten your password?');
+			echo '<a style="color: white !important;" href="index.php?reset=true&first=true">' . __('Forgot your password?');
 			echo '</a>';
 			echo '</div>';
 		}
@@ -286,7 +286,7 @@ if ($process_error_message == '' && $mail != "") {
 			echo '<div class="content_message_alert">';
 				echo '<div class="text_message_alert">';
 					echo '<h1>' . __('INFO') . '</h1>';
-					echo '<p>'  . __('An email has been sent to the user\'s address') . '</p>';
+					echo '<p>'  . __('An email has been sent to your email address') . '</p>';
 				echo '</div>';
 				echo '<div class="button_message_alert">';
 					html_print_submit_button("Ok", 'reset_correct_button', false);  

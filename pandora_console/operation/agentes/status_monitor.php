@@ -292,7 +292,7 @@ $table->style[4] = 'font-weight: bold;';
 $table->data[0][0] = __('Group');
 $table->data[0][1] = html_print_select_groups($config['id_user'], 'AR',
 	true, 'ag_group', $ag_group, '',  '', '0', true, false, 
-		false, 'w130', false, 'width:150px;', false, false,
+		false, '', false, '', false, false,
 		'id_grupo', false);
 
 $fields = array ();

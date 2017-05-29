@@ -1219,6 +1219,7 @@ ALTER TABLE tlayout_data ADD `label_position` varchar(50) NOT NULL default 'down
 -- Table `tagent_custom_fields`
 -- ---------------------------------------------------------------------
 INSERT INTO `tagent_custom_fields` (`name`) VALUES ('eHorusID');
+ALTER TABLE tagent_custom_fields ADD `is_password_type` tinyint(1) NOT NULL DEFAULT 0; 
 
 -- ---------------------------------------------------------------------
 -- Table `tagente_modulo` Fixed problems with blank space 

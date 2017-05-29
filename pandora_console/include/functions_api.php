@@ -1382,9 +1382,20 @@ function api_set_create_custom_field($t1, $t2, $other, $returnType) {
 			returnError('error_parameter', 'Custom field display flag required');
 			return;
 		}
+
+		$is_password_type = 0;
+		
+		if ($other['data'][2] != '') {
+			$is_password_type = $other['data'][2];
+		}
+		else {
+			returnError('error_parameter', 'Custom field is password type required');
+			return;
+		}
 		
 		$result = db_process_sql_insert('tagent_custom_fields',
-			array('name' => $name, 'display_on_front' => $display_front));
+			array('name' => $name, 'display_on_front' => $display_front,
+			'is_password_type' => $is_password_type));
 		
 		$data['type'] = "string";
 		$data["data"] = $result;

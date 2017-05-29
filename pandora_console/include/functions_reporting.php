@@ -5517,7 +5517,8 @@ function reporting_general($report, $content) {
 	}
 	
 	$i = 0;
-	foreach ($generals as $key => $row) {
+	$index = 0;
+	foreach ($generals as $row) {
 		//Metaconsole connection
 		$server_name = $row ['server_name'];
 		if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
@@ -5547,78 +5548,78 @@ function reporting_general($report, $content) {
 			$row['id_agent_module']);
 		
 		if ($content['period'] == 0) {
-			$data_res[$key] =
+			$data_res[$index] =
 				modules_get_last_value($row['id_agent_module']);
 		}
 		else {
 			if(is_numeric($type_mod)){
 				switch ($row['operation']) {
 					case 'sum':
-						$data_res[$key] =
+						$data_res[$index] =
 							reporting_get_agentmodule_data_sum(
 								$row['id_agent_module'], $content['period'], $report["datetime"]);
 						break;
 					case 'max':
-						$data_res[$key] =
+						$data_res[$index] =
 							reporting_get_agentmodule_data_max(
 								$row['id_agent_module'], $content['period']);
 						break;
 					case 'min':
-						$data_res[$key] =
+						$data_res[$index] =
 							reporting_get_agentmodule_data_min(
 								$row['id_agent_module'], $content['period']);
 						break;
 					case 'avg':
 					default:
-						$data_res[$key] =
+						$data_res[$index] =
 							reporting_get_agentmodule_data_average(
 								$row['id_agent_module'], $content['period']);
 						break;
 				}
 			} else {
-				$data_res[$key] = $type_mod;
+				$data_res[$index] = $type_mod;
 			}
 		}
 		
 		switch ($content['group_by_agent']) {
 			case REPORT_GENERAL_NOT_GROUP_BY_AGENT:
-				$id_agent_module[$key] = $row['id_agent_module'];
-				$agent_name[$key] = $ag_name;
-				$module_name[$key] = $mod_name;
-				$units[$key] = $unit;
-				$operations[$key] = $row['operation'];
+				$id_agent_module[$index] = $row['id_agent_module'];
+				$agent_name[$index] = $ag_name;
+				$module_name[$index] = $mod_name;
+				$units[$index] = $unit;
+				$operations[$index] = $row['operation'];
 				break;
 			case REPORT_GENERAL_GROUP_BY_AGENT:
-				if ($data_res[$key] === false) {
+				if ($data_res[$index] === false) {
 					$return["data"][$ag_name][$mod_name] = null;
 				}
 				else {
-					if (!is_numeric($data_res[$key])) {
-						$return["data"][$ag_name][$mod_name] = $data_res[$key];
+					if (!is_numeric($data_res[$index])) {
+						$return["data"][$ag_name][$mod_name] = $data_res[$index];
 					}
 					else {
 						$return["data"][$ag_name][$mod_name] =
-							format_for_graph($data_res[$key], 2) . " " . $unit;
+							format_for_graph($data_res[$index], 2) . " " . $unit;
 					}
 				}
 				break;
 		}
 		
 		// Calculate the avg, min and max
-		if (is_numeric($data_res[$key])) {
+		if (is_numeric($data_res[$index])) {
 			$change_min = false;
 			if (is_null($return["min"]["value"])) {
 				$change_min = true;
 			}
 			else {
-				if ($return["min"]["value"] > $data_res[$key]) {
+				if ($return["min"]["value"] > $data_res[$index]) {
 					$change_min = true;
 				}
 			}
 			if ($change_min) {
-				$return["min"]["value"] = $data_res[$key];
+				$return["min"]["value"] = $data_res[$index];
 				$return["min"]["formated_value"] =
-					format_for_graph($data_res[$key], 2) . " " . $unit;
+					format_for_graph($data_res[$index], 2) . " " . $unit;
 				$return["min"]["agent"] = $ag_name;
 				$return["min"]["module"] = $mod_name;
 			}
@@ -5628,30 +5629,31 @@ function reporting_general($report, $content) {
 				$change_max = true;
 			}
 			else {
-				if ($return["max"]["value"] < $data_res[$key]) {
+				if ($return["max"]["value"] < $data_res[$index]) {
 					$change_max = true;
 				}
 			}
 			
 			if ($change_max) {
-				$return["max"]["value"] = $data_res[$key];
+				$return["max"]["value"] = $data_res[$index];
 				$return["max"]["formated_value"] =
-					format_for_graph($data_res[$key], 2) . " " . $unit;
+					format_for_graph($data_res[$index], 2) . " " . $unit;
 				$return["max"]["agent"] = $ag_name;
 				$return["max"]["module"] = $mod_name;
 			}
 			
 			if ($i == 0) {
-				$return["avg_value"] = $data_res[$key];
+				$return["avg_value"] = $data_res[$index];
 			}
 			else {
 				$return["avg_value"] =
 					(($return["avg_value"] * $i) / ($i + 1))
 					+
-					($data_res[$key] / ($i + 1));
+					($data_res[$index] / ($i + 1));
 			}
 		}
-		
+
+		$index++;
 		$i++;
 		
 		//Restore dbconnection

@@ -450,8 +450,14 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 				$series_type['no_data'.$series_suffix] = 'area';
 			}
 			else {
-				$chart[$timestamp]['no_data'.$series_suffix] = $last_known;
-				$series_type['no_data'.$series_suffix] = 'area';
+				if($uncompressed_module){
+					$chart[$timestamp]['sum'.$series_suffix] = $last_known;
+					$series_type['sum'.$series_suffix] = 'area';
+				}
+				else{
+					$chart[$timestamp]['no_data'.$series_suffix] = $last_known;
+					$series_type['no_data'.$series_suffix] = 'area';
+				}
 			}
 		}
 		

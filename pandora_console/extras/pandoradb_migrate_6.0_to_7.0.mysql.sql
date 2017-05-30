@@ -1135,10 +1135,10 @@ ALTER TABLE titem MODIFY `source_data` int(10) unsigned;
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('big_operation_step_datos_purge', '100');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('small_operation_step_datos_purge', '1000');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('days_autodisable_deletion', '30');
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 0);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 1);
 UPDATE tconfig SET value = 'https://licensing.artica.es/pandoraupdate7/server.php' WHERE token='url_update_manager';
 DELETE FROM `tconfig` WHERE `token` = 'current_package_enterprise';
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '700');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '704');
 
 -- ---------------------------------------------------------------------
 -- Table `tplanned_downtime_agents`
@@ -1348,3 +1348,17 @@ CREATE TABLE IF NOT EXISTS `tcontainer_item` (
 	FOREIGN KEY (`id_container`) REFERENCES tcontainer(`id_container`)
 	ON DELETE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE tusuario add default_event_filter int(10) unsigned NOT NULL DEFAULT 0;
+
+CREATE TABLE IF NOT EXISTS `treset_pass` (
+    `id` bigint(10) unsigned NOT NULL auto_increment,
+    `id_user` varchar(100) NOT NULL default '',
+    `cod_hash` varchar(100) NOT NULL default '',
+    `reset_time` int(10) unsigned NOT NULL default 0,
+    PRIMARY KEY (`id`) 
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+UPDATE tgis_map_connection SET conection_data = '{"type":"OSM","url":"http://tile.openstreetmap.org/${z}/${x}/${y}.png"}' where id_tmap_connection = 1;
+
+ALTER TABLE tpolicy_modules MODIFY post_process double(24,15) default 0;

@@ -110,6 +110,9 @@ if ($update) {
 					$success += (int)$result;
 				}
 			}
+			if ($success == 0) {
+				$error_msg = __("Error updating the modules from a module type");
+			}
 		}
 		else if ($force == 'group') {
 			$agents_ = array_keys(agents_get_group_agents($group_select, false, 'none'));
@@ -129,6 +132,9 @@ if ($update) {
 					$success += (int)$result;
 				}
 			}
+			if ($success == 0) {
+				$error_msg = __("Error updating the modules from an agent group");
+			}
 		}
 	}
 	else {
@@ -146,11 +152,14 @@ if ($update) {
 				
 			}
 		}
+		if ($success == 0) {
+			$error_msg = __("Error updating the modules (maybe there was no field to update)");
+		}
 	}
 	
 	ui_print_result_message ($success > 0,
 		__('Successfully updated') . "(" . $success . "/" . $count . ")",
-		__('Could not be updated'));
+		$error_msg);
 	
 	$info = 'Modules: ' . json_encode($modules_) . ' Agents: ' . json_encode($agents_);
 	if ($success > 0) {

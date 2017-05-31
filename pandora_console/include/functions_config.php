@@ -348,16 +348,6 @@ function config_update_config () {
 					if (!config_update_value ('rpandora_pass', io_input_password(get_parameter ('rpandora_pass'))))
 						$error_update[] = __('Password');
 					
-					if (!config_update_value ('rbabel_server', get_parameter ('rbabel_server')))
-						$error_update[] = __('Babel Enterprise host');
-					if (!config_update_value ('rbabel_port', get_parameter ('rbabel_port')))
-						$error_update[] = __('MySQL port');
-					if (!config_update_value ('rbabel_dbname', get_parameter ('rbabel_dbname')))
-						$error_update[] = __('Database name');
-					if (!config_update_value ('rbabel_user', get_parameter ('rbabel_user')))
-						$error_update[] = __('User');
-					if (!config_update_value ('rbabel_pass', io_input_password(get_parameter ('rbabel_pass'))))
-						$error_update[] = __('Password');
 					if (!config_update_value ('rintegria_server', get_parameter ('rintegria_server')))
 						$error_update[] = __('Integria host');
 					if (!config_update_value ('rintegria_port', get_parameter ('rintegria_port')))
@@ -1444,26 +1434,6 @@ function config_process_config () {
 	
 	if (!isset ($config['rpandora_pass'])) {
 		config_update_value ( 'rpandora_pass', '');
-	}
-	
-	if (!isset ($config['rbabel_server'])) {
-		config_update_value ( 'rbabel_server', 'localhost');
-	}
-	
-	if (!isset ($config['rbabel_port'])) {
-		config_update_value ( 'rbabel_port', 3306);
-	}
-	
-	if (!isset ($config['rbabel_dbname'])) {
-		config_update_value ( 'rbabel_dbname', 'babel');
-	}
-	
-	if (!isset ($config['rbabel_user'])) {
-		config_update_value ( 'rbabel_user', 'babel');
-	}
-	
-	if (!isset ($config['rbabel_pass'])) {
-		config_update_value ( 'rbabel_pass', '');
 	}
 	
 	if (!isset ($config['rintegria_server'])) {

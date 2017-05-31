@@ -3941,7 +3941,9 @@ function reporting_sql($report, $content) {
 			$return['header'] = $header;
 		}
 		
-		$result = db_get_all_rows_sql($sql);
+		$historical_db = db_get_value_sql("SELECT historical_db from treport_content where id_rc =".$content['id_rc']);
+		
+		$result = db_get_all_rows_sql($sql,$historical_db);
 		if ($result !== false) {
 			
 			foreach ($result as $row) {

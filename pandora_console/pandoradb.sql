@@ -2070,7 +2070,7 @@ CREATE TABLE IF NOT EXISTS `tpolicy_modules` (
 	`plugin_pass` text default '',
 	`plugin_parameter` text,
 	`id_plugin` int(10) default '0',
-	`post_process` double(24,15) default NULL,
+	`post_process` double(24,15) default 0,
 	`prediction_module` bigint(14) default '0',
 	`max_timeout` int(4) unsigned default '0',
 	`max_retries` int(4) unsigned default '0',

@@ -1300,8 +1300,8 @@ function ui_process_page_head ($string, $bitfield) {
 			$_GET['sec2'] == 'enterprise/dashboard/main_dashboard') {
 			
 			$query = ui_get_url_refresh (false, false);
-			$output .= '<meta http-equiv="refresh" content="' .
-				$config_refr . '; URL=' . $query . '" />';
+			//$output .= '<meta http-equiv="refresh" content="' .
+				//$config_refr . '; URL=' . $query . '" />';
 			
 		}
 	}

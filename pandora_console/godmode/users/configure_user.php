@@ -622,10 +622,6 @@ $table->data[14][0] = __('Not Login');
 $table->data[14][0] .= ui_print_help_tip(__('The user with not login set only can access to API.'), true);
 $table->data[14][1] = html_print_checkbox('not_login', 1, $user_info["not_login"], true);
 
-$table->data[15][0] = __('Strict ACL');
-$table->data[15][0] .= ui_print_help_tip(__('With this option enabled, the user will can access to accurate information. It is not recommended for admin users because performance could be affected'), true);
-$table->data[15][1] = html_print_checkbox('strict_acl', 1, $user_info["strict_acl"], true);
-
 $table->data[15][0] = __('Session Time');
 $table->data[15][0] .= ui_print_help_tip(__('This is defined in minutes, If you wish a permanent session should putting -1 in this field.'), true);
 $table->data[15][1] = html_print_input_text ('session_time', $user_info["session_time"], '', 5, 5, true);

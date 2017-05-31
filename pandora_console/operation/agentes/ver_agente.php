@@ -301,6 +301,7 @@ if (is_ajax ()) {
 	
 	if ($get_agent_modules_json_for_multiple_agents) {
 		$idAgents = get_parameter('id_agent');
+		$tags = get_parameter('tags', null);
 		$module_types_excluded = get_parameter('module_types_excluded', array());
 		$module_name = (string) get_parameter('name');
 		$selection_mode = get_parameter('selection_mode', 'common');
@@ -491,7 +492,7 @@ if (is_ajax ()) {
 		}
 		else {
 		  if(implode(',', $idAgents) < 0) {
-			$sql = 'SELECT DISTINCT(nombre) FROM tagente_modulo
+			$sql = 'SELECT DISTINCT nombre, id_agente_modulo FROM tagente_modulo
 				WHERE nombre IN (
 				SELECT nombre
 				FROM tagente_modulo 
@@ -499,7 +500,7 @@ if (is_ajax ()) {
 				HAVING count(nombre) = (SELECT count(nombre) FROM tagente_modulo))';
 		  }
 		  else {
-			$sql = 'SELECT DISTINCT(nombre)
+			$sql = 'SELECT DISTINCT nombre, id_agente_modulo
 					FROM tagente_modulo t1
 					WHERE ' . $filter . '
 						AND t1.delete_pending = 0
@@ -520,6 +521,31 @@ if (is_ajax ()) {
 			$sql .= ' ORDER BY nombre';
 			
 			$nameModules = db_get_all_rows_sql($sql);
+			
+			if ($tags != null) {
+				if ((count($tags) >= 1) && ($tags[0] != "") && ($tags[0] != -1)) {
+					$implode_tags = implode(",", $tags);
+					$tag_modules = db_get_all_rows_sql("SELECT DISTINCT id_agente_modulo FROM ttag_module WHERE id_tag IN (" . $implode_tags . ")");
+					if ($tag_modules) {
+						$final_modules = array();
+						foreach ($nameModules as $key => $module) {
+							$in_array = false;
+							foreach ($tag_modules as $t_module) {
+								if ($module['id_agente_modulo'] == $t_module['id_agente_modulo']) {
+									$in_array = true;
+								}
+							}
+							if ($in_array) {
+								$final_modules[] = $module;
+							}
+						}
+						$nameModules = $final_modules;
+					}
+					else {
+						$nameModules = array();
+					}
+				}
+			}
 			
 			if ($nameModules == false) {
 				$nameModules = array();
@@ -549,7 +575,9 @@ if (is_ajax ()) {
 		// Use 0 as not received
 		$id_tipo_modulo = (int) get_parameter ('id_tipo_modulo', 0);
 		$status_modulo = (int) get_parameter ('status_module', -1);
-		
+
+		$tags = (array) get_parameter ('tags', array());
+
 		// Filter
 		$filter = array();
 		if ($disabled !== -1)
@@ -629,7 +657,7 @@ if (is_ajax ()) {
 							agents_get_group_agents(
 								array_keys (users_get_groups ()), $search, "none"));
 					
-					$agent_modules = agents_get_modules ($id_agent, $fields, $filter, $indexed);
+					$agent_modules = agents_get_modules ($id_agent, $fields, $filter, $indexed, true, false, $tags);
 				}
 				// Restore db connection
 				metaconsole_restore_db();
@@ -642,19 +670,38 @@ if (is_ajax ()) {
 					agents_get_group_agents(
 						array_keys(users_get_groups ()), $search, "none"));
 			
-			$agent_modules = agents_get_modules ($id_agent, $fields, $filter, $indexed);
+			$agent_modules = agents_get_modules ($id_agent, $fields, $filter, $indexed, true, false, $tags);
 		}
 		
 		if (empty($agent_modules))
 			$agent_modules = array();
+
+		if (!empty($tags)) {
+			$implode_tags = implode(",", $tags);
+			$tag_modules = db_get_all_rows_sql("SELECT DISTINCT id_agente_modulo FROM ttag_module WHERE id_tag IN (" . $implode_tags . ")");
+			if ($tag_modules) {
+				$final_modules = array();
+				foreach ($agent_modules as $key => $module) {
+					$in_array = false;
+					foreach ($tag_modules as $t_module) {
+						if ($module['id_agente_modulo'] == $t_module['id_agente_modulo']) {
+							$in_array = true;
+						}
+					}
+					if ($in_array) {
+						$final_modules[] = $module;
+					}
+				}
+				$agent_modules = $final_modules;
+			}
+			else {
+				$agent_modules = array();
+			}
+		}
 		
 		foreach ($agent_modules as $key => $module) {
 			$agent_modules[$key]['nombre'] = io_safe_output($module['nombre']);
 		}
-		
-		
-		//Hack to translate text "any" in PHP to javascript
-		//$agent_modules['any_text'] = __('Any');
 		
 		echo json_encode ($agent_modules);
 		

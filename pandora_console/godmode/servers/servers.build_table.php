@@ -141,6 +141,14 @@ foreach ($servers as $server) {
 	//Only Pandora Administrator can delete servers
 	if (check_acl ($config["id_user"], 0, "PM")) {
 		 $data[8] = '';
+		 
+		 if ($server['type'] == 'recon') {
+			$data[8] .= '<a href="index.php?sec=gservers&sec2=operation/servers/recon_view">';
+			$data[8] .= html_print_image ('images/firts_task/icono_grande_reconserver.png', true,
+				array('title' => __('Manage recon tasks'),'style' => 'width:21px;height:21px;'));
+			$data[8] .= '</a>&nbsp;&nbsp;';
+		}		 
+		 
 		 if ($server['type'] == 'data') {
 			$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&refr=0&server_reset_counts='.$server["id_server"].'">';
 			$data[8] .= html_print_image ('images/target.png', true,

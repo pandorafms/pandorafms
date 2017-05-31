@@ -65,7 +65,7 @@ if (!empty ($page) && !empty ($sec)) {
 $login_body_style = '';
 // Overrides the default background with the defined by the user
 if (!empty($config['login_background'])) {
-	$background_url = "../../images/backgrounds/" . $config['login_background'];
+	$background_url = "images/backgrounds/" . $config['login_background'];
 	$login_body_style = "style=\"background-image: url('$background_url');\"";
 }
 echo '<div id="login_body" ' . $login_body_style . '>';

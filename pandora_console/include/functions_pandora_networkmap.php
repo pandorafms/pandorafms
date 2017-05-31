@@ -764,7 +764,7 @@ function networkmap_write_js_array($id, $nodes_and_relations = array(), $map_das
 	echo "var set_center_menu = '" . __('Set center') . "';\n";
 	echo "var refresh_menu = '" . __('Refresh') . "';\n";
 	echo "var refresh_holding_area_menu = '" . __('Refresh Holding area') . "';\n";
-	echo "var abort_relationship_interface = '" . __('Abort the action of set interface relationship') . "';\n";
+	echo "var abort_relationship_interface = '" . __('Abort the interface relationship') . "';\n";
 	echo "var abort_relationship_menu = '" . __('Abort the action of set relationship') . "';\n";
 	
 	echo "\n";

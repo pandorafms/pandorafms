@@ -450,8 +450,14 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 				$series_type['no_data'.$series_suffix] = 'area';
 			}
 			else {
-				$chart[$timestamp]['no_data'.$series_suffix] = $last_known;
-				$series_type['no_data'.$series_suffix] = 'area';
+				if($uncompressed_module){
+					$chart[$timestamp]['sum'.$series_suffix] = $last_known;
+					$series_type['sum'.$series_suffix] = 'area';
+				}
+				else{
+					$chart[$timestamp]['no_data'.$series_suffix] = $last_known;
+					$series_type['no_data'.$series_suffix] = 'area';
+				}
 			}
 		}
 		
@@ -3382,6 +3388,7 @@ function graph_custom_sql_graph ($id, $width, $height,
 	global $config;
 	
 	$report_content = db_get_row ('treport_content', 'id_rc', $id);
+	$historical_db = db_get_value_sql("SELECT historical_db from treport_content where id_rc =".$id);
 	if ($report_content["external_source"] != "") {
 		$sql = io_safe_output ($report_content["external_source"]);
 	}
@@ -3413,8 +3420,9 @@ function graph_custom_sql_graph ($id, $width, $height,
 			break;
 	}
 	
+	$data_result = db_get_all_rows_sql ($sql,$historical_db);
 	
-	$data_result = db_get_all_rows_sql ($sql);
+	
 	
 	if (($config['metaconsole'] == 1) && defined('METACONSOLE'))
 		enterprise_hook('metaconsole_restore_db');
@@ -3438,17 +3446,16 @@ function graph_custom_sql_graph ($id, $width, $height,
 		switch ($type) {
 			case 'sql_graph_vbar': // vertical bar
 			case 'sql_graph_hbar': // horizontal bar
-				$data[$label]['g'] = $value;
+				$data[$label."_".$count]['g'] = $value;
 				break;
 			case 'sql_graph_pie': // Pie
-				$data[$label] = $value;
+				$data[$label."_".$count] = $value;
 				break;
 		}
 	}
 	
 	$flash_charts = $config['flash_charts'];
-	
-	
+		
 	if ($only_image) {
 		$flash_charts = false;
 	}

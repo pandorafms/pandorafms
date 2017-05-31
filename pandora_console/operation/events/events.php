@@ -160,18 +160,30 @@ if (is_ajax ()) {
 		if ($resultAlert) {
 			$return = array('fired' => $resultAlert,
 				'sound' => $config['sound_alert']);
+			$event = events_get_event($resultAlert);
+			$module_name = modules_get_agentmodule_name($event['id_agentmodule']);
+			$return['message'] = __('Alert fired in module ') . io_safe_output($module_name);
 		}
 		else if ($resultCritical) {
 			$return = array('fired' => $resultCritical,
 				'sound' => $config['sound_critical']);
+			$event = events_get_event($resultCritical);
+			$module_name = modules_get_agentmodule_name($event['id_agentmodule']);
+			$return['message'] = __('Module ') . io_safe_output($module_name) . __(' is going to critical');
 		}
 		else if ($resultWarning) {
 			$return = array('fired' => $resultWarning,
 				'sound' => $config['sound_warning']);
+			$event = events_get_event($resultWarning);
+			$module_name = modules_get_agentmodule_name($event['id_agentmodule']);
+			$return['message'] = __('Module ') . io_safe_output($module_name) . __(' is going to warning');
 		}
 		else if ($resultUnknown) {
-			$return = array('fired' => $resultWarning,
+			$return = array('fired' => $resultUnknown,
 				'sound' => $config['sound_alert']);
+			$event = events_get_event($resultUnknown);
+			$module_name = modules_get_agentmodule_name($event['id_agentmodule']);
+			$return['message'] = __('Module ') . io_safe_output($module_name) . __(' is going to unknown');
 		}
 		else {
 			$return = array('fired' => 0);
@@ -436,7 +448,7 @@ if ($config["pure"] == 0 || $meta) {
 				echo ui_get_full_url('operation/events/sound_events.php');
 				?>';
 			
-			window.open(url, '<?php __('Sound Alerts'); ?>','width=400, height=380, toolbar=no, location=no, directories=no, status=no, menubar=no, resizable=no'); 
+			window.open(url, '<?php __('Sound Alerts'); ?>','width=600, height=450, toolbar=no, location=no, directories=no, status=no, menubar=no, resizable=no'); 
 		}
 	</script>
 	<?php

@@ -120,7 +120,7 @@ foreach ($fields as $field) {
 		$data[2] = html_print_image('images/tick.png', true);
 	}
 	else {
-		$data[2] = html_print_image('images/delete.png', true);
+		$data[2] = html_print_image('images/icono_stop.png', true,array ('style' => 'width:21px;height:21px;'));
 	}
 	
 	$data[3] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configure_field&id_field='.$field['id_field'].'">' . html_print_image("images/config.png", true, array("alt" => __('Edit'), "title" => __('Edit'), "border" => '0')) . '</a>';

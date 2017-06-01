@@ -1585,6 +1585,7 @@ function ui_process_page_body ($string, $bitfield) {
  * @param bool $return Whether to return or print this
  * @param string $offset_name The name of parameter for the offset.
  * @param bool $print_total_items Show the text with the total items. By default true.
+ * @param string $set_id Set id of div.
  *
  * @return string The pagination div or nothing if no pagination needs to be done
  */
@@ -1592,7 +1593,7 @@ function ui_pagination ($count, $url = false, $offset = 0,
 	$pagination = 0, $return = false, $offset_name = 'offset',
 	$print_total_items = true, $other_class = '',
 	$script = "",
-	$parameter_script = array('count' => '', 'offset' => 'offset_param')) {
+	$parameter_script = array('count' => '', 'offset' => 'offset_param'), $set_id = '') {
 	
 	global $config;
 	
@@ -1613,6 +1614,9 @@ function ui_pagination ($count, $url = false, $offset = 0,
 		$url = ui_get_url_refresh (array ($offset_name => false));
 	}
 	
+	if(!empty($set_id)){
+		$set_id=  " id = '$set_id'";
+	}
 	/*
 	 URL passed render links with some parameter
 	 &offset - Offset records passed to next page
@@ -1624,7 +1628,7 @@ function ui_pagination ($count, $url = false, $offset = 0,
 	if ($count <= $pagination) {
 		
 		if ($print_total_items) {
-			$output = "<div class='pagination $other_class'>";
+			$output = "<div class='pagination $other_class' $set_id>";
 			//Show the count of items
 			$output .= sprintf(__('Total items: %s'), $count);
 			// End div and layout
@@ -1648,7 +1652,7 @@ function ui_pagination ($count, $url = false, $offset = 0,
 	}
 	
 	
-	$output = "<div class='pagination $other_class'>";
+	$output = "<div class='pagination $other_class' $set_id>";
 	
 	//Show the count of items
 	if ($print_total_items) {

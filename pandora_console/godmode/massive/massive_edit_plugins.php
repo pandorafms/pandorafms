@@ -674,7 +674,7 @@ echo '</form>';
 	}
 	
 	var processGet = function (params, callback) {
-		return jQuery.get(ajaxPage, params, 'json')
+		return jQuery.post(ajaxPage, params, 'json')
 			.done(function (data, textStatus, jqXHR) {
 				try {
 					data = JSON.parse(data);

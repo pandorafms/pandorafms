@@ -77,7 +77,7 @@ $table->style[1] = 'font-weight: bold; vertical-align: top;';
 $table->style[2] = 'font-weight: bold; vertical-align: top;';
 
 $table->data[0][0] = __('Group');
-$table->data[0][1] = html_print_select_groups(false, $access, true, 'group', '', 'changeGroup();', '', 0, true) . '<br />' . '<br />';
+$table->data[0][1] = html_print_select_groups(false, $access, true, 'group', '', 'changeGroup();', '', 0, true, false, true, '', false, 'width:120px;') . '<br />' . '<br />';
 
 $table->data[0][2] = __('Type');
 $table->data[0][3] = html_print_checkbox('alert_fired', 'alert_fired', true, true, false, 'changeType();') . __('Alert fired') . '<br />' .
@@ -86,10 +86,10 @@ $table->data[0][3] = html_print_checkbox('alert_fired', 'alert_fired', true, tru
 	html_print_checkbox('warning', 'warning', true, true, false, 'changeType();') . __('Monitor warning') . '<br />';
 
 $table->data[1][0] = __('Agent');
-$table->data[1][1] = html_print_select($agents, 'id_agents[]', true, false, '', '', true, true,'','','','width:104px; height:60px','',false,'','',true);
+$table->data[1][1] = html_print_select($agents, 'id_agents[]', true, false, '', '', true, true,'','','','width:120px; height:100px','',false,'','',true);
 
 $table->data[1][2] = __('Event');
-$table->data[1][3] = html_print_textarea ("events_fired", 1, 20, '', 'readonly="readonly" style="background: #ddd; resize:none;"', true);
+$table->data[1][3] = html_print_textarea ("events_fired", 200, 20, '', 'readonly="readonly" style="max-height:100px; background: #ddd; resize:none;"', true);
 
 html_print_table($table);
 
@@ -128,11 +128,8 @@ var warning = true;
 var unknown = true;
 
 var running = false;
-var fired = false;
 
 var id_row = 0;
-
-var redBackground = false;
 
 var button_play_status = "play";
 
@@ -196,7 +193,6 @@ function toggleButton() {
 }
 
 function ok() {
-	fired = false;
 	$('#button_status').attr('src','../../images/tick_sound_events.png');
 	$('audio').remove();
 	$('#textarea_events_fired').val("");
@@ -206,10 +202,8 @@ function stopSound() {
 	$('audio').remove();
 	
 	$('body').css('background', '#494949');
-	redBackground = false;
 	
 	running = false;
-	fired = false;
 }
 
 function startSound() {
@@ -245,37 +239,36 @@ function check_event() {
 	var agents = $("#id_agents").val();
 	
 	if (running) {
-		if (!fired) {
-			jQuery.post ("../../ajax.php",
-				{"page" : "operation/events/events",
-					"get_events_fired": 1,
-					"id_group": group,
-					"agents[]" : agents,
-					"alert_fired": alert_fired,
-					"critical": critical,
-					"warning": warning,
-					"unknown": unknown,
-					"id_row": id_row
-				},
-				function (data) {
-					firedId = parseInt(data['fired']);
-					if (firedId != 0) {
-						id_row = firedId;
-						fired = true;
-						var actual_text = $('#textarea_events_fired').val();
-						if (actual_text == "") {
-							$('#textarea_events_fired').val(data['message']);
-						}
-						else {
-							$('#textarea_events_fired').val(actual_text + "\n" + data['message']);
-						}
-						$('#button_status').attr('src','../../images/sound_events_console_alert.gif');
-						$('body').append("<audio src='../../" + data['sound'] + "' autoplay='true' hidden='true' loop='true'>");
+		jQuery.post ("../../ajax.php",
+			{"page" : "operation/events/events",
+				"get_events_fired": 1,
+				"id_group": group,
+				"agents[]" : agents,
+				"alert_fired": alert_fired,
+				"critical": critical,
+				"warning": warning,
+				"unknown": unknown,
+				"id_row": id_row
+			},
+			function (data) {
+				firedId = parseInt(data['fired']);
+				if (firedId != 0) {
+					id_row = firedId;
+					var actual_text = $('#textarea_events_fired').val();
+					if (actual_text == "") {
+						$('#textarea_events_fired').val(data['message'] + "\n");
 					}
-				},
-				"json"
-			);
-		}
+					else {
+						$('#textarea_events_fired').val(actual_text + "\n" + data['message'] + "\n");
+					}
+					$('#button_status').attr('src','../../images/sound_events_console_alert.gif');
+					$('audio').remove();
+					$('body').append("<audio src='../../" + data['sound'] + "' autoplay='true' hidden='true' loop='true'>");
+				}
+				
+			},
+			"json"
+		);
 	}
 }
 

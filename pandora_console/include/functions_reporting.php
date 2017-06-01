@@ -7197,24 +7197,26 @@ function reporting_get_stats_users($data) {
 	}
 	
 	// Users table
-	$table_us = html_get_predefined_table();
-	
-	$tdata = array();
-	$tdata[0] = html_print_image('images/user_green.png', true, array('title' => __('Defined users')));
-	$tdata[1] = count (get_users ());
-	$tdata[1] = '<a class="big_data" href="' . $urls["defined_users"] . '">' . $tdata[1] . '</a>';
-	
-	$tdata[2] = $tdata[3] = '&nbsp;';
-	$table_us->rowclass[] = '';
-	$table_us->data[] = $tdata;
-	
-	$output = '<fieldset class="databox tactical_set">
-				<legend>' . 
-					__('Users') . 
-				'</legend>' . 
-				html_print_table($table_us, true) . '</fieldset>';
-	
-	return $output;
+	if (check_acl ($config['id_user'], 0, "UM")) {
+		$table_us = html_get_predefined_table();
+		
+		$tdata = array();
+		$tdata[0] = html_print_image('images/user_green.png', true, array('title' => __('Defined users')));
+		$tdata[1] = count (get_users ());
+		$tdata[1] = '<a class="big_data" href="' . $urls["defined_users"] . '">' . $tdata[1] . '</a>';
+		
+		$tdata[2] = $tdata[3] = '&nbsp;';
+		$table_us->rowclass[] = '';
+		$table_us->data[] = $tdata;
+		
+		$output = '<fieldset class="databox tactical_set">
+					<legend>' . 
+						__('Users') . 
+					'</legend>' . 
+					html_print_table($table_us, true) . '</fieldset>';
+		
+		return $output;
+	}
 }
 
 /** 
@@ -10208,3 +10210,4 @@ function reporting_label_macro ($item, $label) {
 }
 
 ?>
+

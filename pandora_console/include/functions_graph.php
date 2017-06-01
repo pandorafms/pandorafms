@@ -470,20 +470,6 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 			$series_type['unknown'.$series_suffix] = 'area';
 		}
 		
-		//$chart[$timestamp]['count'] = 0;
-		/////////
-		//$chart[$timestamp]['timestamp_bottom'] = $timestamp;
-		//$chart[$timestamp]['timestamp_top'] = $timestamp + $interval;
-		/////////
-
-		//Baseline was replaced by compare graphs feature
-		/*if ($baseline) {
-			$chart[$timestamp]['baseline'.$series_suffix] = array_shift ($baseline_data);
-			if ($chart[$timestamp]['baseline'.$series_suffix] == NULL) {
-				$chart[$timestamp]['baseline'.$series_suffix] = 0;
-			}
-		}*/
-		
 		if (!empty($event_ids)) {
 			$chart_extra_data[count($chart)-1]['events'] = implode(',',$event_ids);
 		}
@@ -748,8 +734,7 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	$color['min'.$series_suffix] = array(
 		'border' => '#000000', 'color' => $config['graph_color1'],
 		'alpha' => CHART_DEFAULT_ALPHA);
-	//Baseline was replaced by compare graph feature
-	//$color['baseline'.$series_suffix] = array('border' => null, 'color' => '#0097BD', 'alpha' => 10);
+
 	$color['unit'.$series_suffix] = array('border' => null, 'color' => '#0097BC', 'alpha' => 10);		
 	
 	if ($show_events) {
@@ -761,7 +746,17 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 		$chart_extra_data['legend_alerts'] = $legend['alert'.$series_suffix_str];
 	}
 	
-	if ($dashboard || $vconsole) {
+	if ($vconsole) {
+		$legend['sum'.$series_suffix] =
+			__('Last') . ': ' . remove_right_zeros(number_format($graph_stats['sum']['last'], $config['graph_precision'])) . ($unit ? ' ' . $unit : '') . ' ; '
+			. __('Avg') . ': ' . remove_right_zeros(number_format($graph_stats['sum']['avg'], $config['graph_precision'])) . ($unit ? ' ' . $unit : '');
+	}
+	else if ($dashboard && !$avg_only) {
+		$legend['max'.$series_suffix] = __('Max').$series_suffix_str.': '.__('Avg').': '.remove_right_zeros(number_format($graph_stats['max']['avg'], $config['graph_precision'])).' '.$unit.' ; '.__('Max').': '.remove_right_zeros(number_format($graph_stats['max']['max'], $config['graph_precision'])).' '.$unit.' ; '.__('Min').': '.remove_right_zeros(number_format($graph_stats['max']['min'], $config['graph_precision'])).' '.$unit;
+		$legend['sum'.$series_suffix] = __('Avg').$series_suffix_str.': '.__('Avg').': '.remove_right_zeros(number_format($graph_stats['sum']['avg'], $config['graph_precision'])).' '.$unit.' ; '.__('Max').': '.remove_right_zeros(number_format($graph_stats['sum']['max'], $config['graph_precision'])).' '.$unit.' ; '.__('Min').': '.remove_right_zeros(number_format($graph_stats['sum']['min'], $config['graph_precision'])).' '.$unit;
+		$legend['min'.$series_suffix] = __('Min').$series_suffix_str.': '.__('Avg').': '.remove_right_zeros(number_format($graph_stats['min']['avg'], $config['graph_precision'])).' '.$unit.' ; '.__('Max').': '.remove_right_zeros(number_format($graph_stats['min']['max'], $config['graph_precision'])).' '.$unit.' ; '.__('Min').': '.remove_right_zeros(number_format($graph_stats['min']['min'], $config['graph_precision'])).' '.$unit;
+	}
+	else if ($dashboard) {
 		$legend['sum'.$series_suffix] =
 			__('Last') . ': ' . remove_right_zeros(number_format($graph_stats['sum']['last'], $config['graph_precision'])) . ($unit ? ' ' . $unit : '') . ' ; '
 			. __('Avg') . ': ' . remove_right_zeros(number_format($graph_stats['sum']['avg'], $config['graph_precision'])) . ($unit ? ' ' . $unit : '');
@@ -774,12 +769,6 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	else {
 		$legend['sum'.$series_suffix] = __('Avg').$series_suffix_str.': '.__('Avg').': '.remove_right_zeros(number_format($graph_stats['sum']['avg'], $config['graph_precision'])).' '.$unit.' ; '.__('Max').': '.remove_right_zeros(number_format($graph_stats['sum']['max'], $config['graph_precision'])).' '.$unit.' ; '.__('Min').': '.remove_right_zeros(number_format($graph_stats['sum']['min'], $config['graph_precision'])).' '.$unit;
 	}
-	//Baseline was replaced by compare graph feature
-	/*if ($baseline) {
-		$legend['baseline'.$series_suffix] = __('Baseline');
-	}*/
-	//$legend['no_data'.$series_suffix] = __('No data').$series_suffix_str;
-	//$chart_extra_data['legend_no_data'] = $legend['no_data'.$series_suffix_str];
 
 	if ($show_unknown) {
 		$legend['unknown'.$series_suffix] = __('Unknown').$series_suffix_str;
@@ -803,7 +792,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	$adapt_key = '', $compare = false, $show_unknown = false,
 	$menu = true, $backgroundColor = 'white', $percentil = null,
 	$dashboard = false, $vconsole = false, $type_graph = 'area') {
-	
+
 	global $config;
 	global $graphic_type;
 

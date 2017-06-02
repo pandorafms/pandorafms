@@ -98,10 +98,22 @@ if (isset ($_GET["delete"])) {
 	$id_trap = (int) get_parameter_get ("delete", 0);
 	if ($id_trap > 0 && check_acl ($config['id_user'], 0, "IM")) {
 		
-		$result = db_process_sql_delete('ttrap', array('id_trap' => $id_trap));
-		ui_print_result_message ($result,
-			__('Successfully deleted'),
-			__('Could not be deleted'));
+		if($group_by){
+			$sql_ids_traps = "SELECT id_trap FROM ttrap WHERE oid IN (SELECT oid FROM ttrap WHERE id_trap = ".$id_trap.")
+			AND source IN (SELECT source FROM ttrap WHERE id_trap = ".$id_trap.")";
+			$ids_traps = db_get_all_rows_sql($sql_ids_traps);
+
+			foreach ($ids_traps as $key => $value) {
+				$result = db_process_sql_delete('ttrap', array('id_trap' => $value['id_trap']));
+			}
+			
+		} else {
+			$result = db_process_sql_delete('ttrap', array('id_trap' => $id_trap));
+			ui_print_result_message ($result,
+				__('Successfully deleted'),
+				__('Could not be deleted'));
+		}
+		
 	}
 	else {
 		db_pandora_audit("ACL Violation",
@@ -132,8 +144,20 @@ if (isset ($_GET["check"])) {
 if (isset ($_POST["deletebt"])) {
 	$trap_ids = get_parameter_post ("snmptrapid", array ());
 	if (is_array ($trap_ids) && check_acl ($config['id_user'], 0, "IW")) {
-		foreach ($trap_ids as $id_trap) {
-			db_process_sql_delete('ttrap', array('id_trap' => $id_trap));
+		if($group_by){
+			foreach ($trap_ids as $key => $value) {
+				$sql_ids_traps = "SELECT id_trap FROM ttrap WHERE oid IN (SELECT oid FROM ttrap WHERE id_trap = ".$value.")
+				AND source IN (SELECT source FROM ttrap WHERE id_trap = ".$value.")";
+				$ids_traps = db_get_all_rows_sql($sql_ids_traps);
+				
+				foreach ($ids_traps as $key2 => $value2) {
+					$result = db_process_sql_delete('ttrap', array('id_trap' => $value2['id_trap']));
+				}
+			}
+		} else {
+			foreach ($trap_ids as $id_trap) {
+				db_process_sql_delete('ttrap', array('id_trap' => $id_trap));
+			}
 		}
 	}
 	else {

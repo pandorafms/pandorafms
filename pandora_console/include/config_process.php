@@ -114,12 +114,23 @@ require_once ($ownDir . 'functions.php');
 // If not we will get ugly warnings. Set Europe/Madrid by default
 // Later will be replaced by the good one.
 if (!defined('METACONSOLE')) {
-	$url = explode('/', $_SERVER['REQUEST_URI']);
-	array_pop($url);
-	$config["homeurl"] = rtrim(join("/", $url),"/");
-	$config["homeurl_static"] = $config["homeurl"];
+	if(!isset($config["homeurl"])){
+		$url = explode('/', $_SERVER['REQUEST_URI']);
+		$config["homeurl"] = $url[1];
+		$config["homeurl_static"] = $url[1];
+		$config["error"] = "homeurl_bad_defined";
+		return;
+	}
+	else{
+		$url = explode('/', $_SERVER['REQUEST_URI']);
+		if($config["homeurl"] != '/'.$url[1]){
+			$config["homeurl"] = '/'.$url[1];
+			$config["homeurl_static"] = '/'.$url[1];
+			$config["error"] = "homeurl_bad_defined";
+			return;
+		}
+	}
 }
-
 if (!isset($config["homeurl_static"])) {
 	$config["homeurl_static"] = $config["homeurl"];
 }

@@ -2056,6 +2056,7 @@ CREATE TABLE IF NOT EXISTS `tpolicy_modules` (
 	`max` bigint(20) default '0',
 	`min` bigint(20) default '0',
 	`module_interval` int(4) unsigned default '0',
+	`ip_target` varchar(100) default '',
 	`tcp_port` int(4) unsigned default '0',
 	`tcp_send` text default '',
 	`tcp_rcv` text default '',

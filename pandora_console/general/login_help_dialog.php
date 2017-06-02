@@ -119,7 +119,7 @@ $(document).ready (function () {
 		
 		// Update config['skip_login_help_dialog'] to don't display more this message
 		if (skip_login_help) {
-			jQuery.get ("ajax.php",
+			jQuery.post ("ajax.php",
 			{"page": "general/login_help_dialog",
 			 "skip_login_help": 1},
 			function (data) {}

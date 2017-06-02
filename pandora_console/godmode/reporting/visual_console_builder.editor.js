@@ -3181,7 +3181,6 @@ function unselectAll() {
 }
 
 function click_button_toolbox(id) {
-	unselectAll();
 	switch (id) {
 		case 'static_graph':
 			toolbuttonActive = creationItem = 'static_graph';

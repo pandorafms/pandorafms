@@ -898,47 +898,52 @@ function visual_map_print_item($mode = "read", $layoutData,
 					if ($width == 0 || $height == 0) {
 						if ($layoutData['label_position']=='left') {
 							$img = '<div style="float:right;height:'.$himg.'px;">'.custom_graphs_print(
-							$layoutData['id_custom_graph'], 180, 300,
+							$layoutData['id_custom_graph'], 180, 480,
 							$period, null, true, 0, $only_image, $layoutData['image'],
 							array(), '', array(), array(), true,
 							false, false, true, 1, false, true).'</div>';
 						}
 						elseif ($layoutData['label_position']=='right') {
 						$img = '<div style="float:left;height:'.$himg.'px;">'.custom_graphs_print(
-							$layoutData['id_custom_graph'], 180, 300,
+							$layoutData['id_custom_graph'], 180, 480,
 							$period, null, true, 0, $only_image, $layoutData['image'],
 							array(), '', array(), array(), true,
 							false, false, true, 1, false, true).'</div>';
 						}
 						else {
 							$img = custom_graphs_print(
-							$layoutData['id_custom_graph'], 180, 300,
+							$layoutData['id_custom_graph'], 180, 480,
 							$period, null, true, 0, $only_image, $layoutData['image'],
 							array(), '', array(), array(), true,
 							false, false, true, 1, false, true);
 						}
 					}
 					else {
-						if ($layoutData['label_position']=='left') {
-							$img = '<div style="float:right;height:'.$himg.'px;">'.custom_graphs_print(
-							$layoutData['id_custom_graph'], $height, $width,
-							$period, null, true, 0, $only_image, $layoutData['image'],
-							array(), '', array(), array(), true,
-							false, false, true, 1, false, true).'</div>';
-						}
-						elseif($layoutData['label_position']=='right') {
-							$img = '<div style="float:left;height:'.$himg.'px;">'.custom_graphs_print(
-							$layoutData['id_custom_graph'], $height, $width,
-							$period, null, true, 0, $only_image, $layoutData['image'],
-							array(), '', array(), array(), true,
-							false, false, true, 1, false, true).'</div>';
+						if ($width < 480){
+							$img = '<div class="error">'._("Could not draw pie with labels contained inside canvas. Resize widget to 500px width minimum").'</div>';
 						}
 						else {
-							$img = custom_graphs_print(
-							$layoutData['id_custom_graph'], $height, $width,
-							$period, null, true, 0, $only_image, $layoutData['image'],
-							array(), '', array(), array(), true,
-							false, false, true, 1, false, true);
+							if ($layoutData['label_position']=='left') {
+								$img = '<div style="float:right;height:'.$himg.'px;">'.custom_graphs_print(
+								$layoutData['id_custom_graph'], $height, $width,
+								$period, null, true, 0, $only_image, $layoutData['image'],
+								array(), '', array(), array(), true,
+								false, false, true, 1, false, true).'</div>';
+							}
+							elseif($layoutData['label_position']=='right') {
+								$img = '<div style="float:left;height:'.$himg.'px;">'.custom_graphs_print(
+								$layoutData['id_custom_graph'], $height, $width,
+								$period, null, true, 0, $only_image, $layoutData['image'],
+								array(), '', array(), array(), true,
+								false, false, true, 1, false, true).'</div>';
+							}
+							else {
+								$img = custom_graphs_print(
+								$layoutData['id_custom_graph'], $height, $width,
+								$period, null, true, 0, $only_image, $layoutData['image'],
+								array(), '', array(), array(), true,
+								false, false, true, 1, false, true);
+							}
 						}
 					}
 				}

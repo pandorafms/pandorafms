@@ -161,29 +161,45 @@ if (is_ajax ()) {
 			$return = array('fired' => $resultAlert,
 				'sound' => $config['sound_alert']);
 			$event = events_get_event($resultAlert);
+
 			$module_name = modules_get_agentmodule_name($event['id_agentmodule']);
-			$return['message'] = __('Alert fired in module ') . io_safe_output($module_name);
+			$agent_name = agents_get_alias($event['id_agente']);
+
+			$return['message'] = $agent_name . " - " . __('Alert fired in module ') . io_safe_output($module_name) . 
+				" - " . $event['timestamp'];
 		}
 		else if ($resultCritical) {
 			$return = array('fired' => $resultCritical,
 				'sound' => $config['sound_critical']);
 			$event = events_get_event($resultCritical);
+
 			$module_name = modules_get_agentmodule_name($event['id_agentmodule']);
-			$return['message'] = __('Module ') . io_safe_output($module_name) . __(' is going to critical');
+			$agent_name = agents_get_alias($event['id_agente']);
+
+			$return['message'] = $agent_name . " - " . __('Module ') . io_safe_output($module_name) . __(' is going to critical') . 
+				" - " . $event['timestamp'];
 		}
 		else if ($resultWarning) {
 			$return = array('fired' => $resultWarning,
 				'sound' => $config['sound_warning']);
 			$event = events_get_event($resultWarning);
+
 			$module_name = modules_get_agentmodule_name($event['id_agentmodule']);
-			$return['message'] = __('Module ') . io_safe_output($module_name) . __(' is going to warning');
+			$agent_name = agents_get_alias($event['id_agente']);
+
+			$return['message'] = $agent_name . " - " . __('Module ') . io_safe_output($module_name) . __(' is going to warning') . 
+				" - " . $event['timestamp'];
 		}
 		else if ($resultUnknown) {
 			$return = array('fired' => $resultUnknown,
 				'sound' => $config['sound_alert']);
 			$event = events_get_event($resultUnknown);
+
 			$module_name = modules_get_agentmodule_name($event['id_agentmodule']);
-			$return['message'] = __('Module ') . io_safe_output($module_name) . __(' is going to unknown');
+			$agent_name = agents_get_alias($event['id_agente']);
+
+			$return['message'] = $agent_name . " - " . __('Module ') . io_safe_output($module_name) . __(' is going to unknown') . 
+				" - " . $event['timestamp'];
 		}
 		else {
 			$return = array('fired' => 0);

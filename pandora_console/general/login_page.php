@@ -65,7 +65,7 @@ if (!empty ($page) && !empty ($sec)) {
 $login_body_style = '';
 // Overrides the default background with the defined by the user
 if (!empty($config['login_background'])) {
-	$background_url = "../../images/backgrounds/" . $config['login_background'];
+	$background_url = "images/backgrounds/" . $config['login_background'];
 	$login_body_style = "style=\"background-image: url('$background_url');\"";
 }
 echo '<div id="login_body" ' . $login_body_style . '>';
@@ -73,7 +73,7 @@ echo '<div id="header_login">';
 	echo '<div id="icon_custom_pandora">';
 		if (defined ('PANDORA_ENTERPRISE')) {
 			if(isset ($config['custom_logo'])){
-				echo '<img src="images/custom_logo/' . $config['custom_logo'] .'" alt="pandora_console">';
+				echo '<img src="enterprise/images/custom_logo/' . $config['custom_logo'] .'" alt="pandora_console">';
 			}
 			else{
 				echo '<img src="images/custom_logo/logo_login_consola.png" alt="pandora_console">';
@@ -83,12 +83,19 @@ echo '<div id="header_login">';
 			echo '<img src="images/custom_logo/pandora_logo_head_3.png" alt="pandora_console">';	
 		}
 	echo '</div>';
-	echo '<div id="list_icon_docs_support"><ul>';
-		echo '<li><a href="http://wiki.pandorafms.com/" target="_blank"><img src="images/icono_docs.png" alt="docs pandora"></a></li>';
-		echo '<li>' . __('Docs') . '</li>';
-		echo '<li id="li_margin_left"><a href="https://pandorafms.com/monitoring-services/support/" target="_blank"><img src="images/icono_support.png" alt="support pandora"></a></li>';
-		echo '<li>' . __('Support') . '</li>';
-	echo '</ul></div>';	
+	
+		echo '<div id="list_icon_docs_support"><ul>';
+			echo '<li><a href="http://wiki.pandorafms.com/" target="_blank"><img src="images/icono_docs.png" alt="docs pandora"></a></li>';
+			echo '<li>' . __('Docs') . '</li>';
+			if (defined ('PANDORA_ENTERPRISE')) {
+				echo '<li id="li_margin_left"><a href="https://support.artica.es" target="_blank"><img src="images/icono_support.png" alt="support pandora"></a></li>';
+			} else {
+				echo '<li id="li_margin_left"><a href="https://pandorafms.com/monitoring-services/support/" target="_blank"><img src="images/icono_support.png" alt="support pandora"></a></li>';
+			}
+			echo '<li>' . __('Support') . '</li>';
+		echo '</ul></div>';
+	
+		
 echo '</div>';
 
 echo '<div class="container_login">';
@@ -210,7 +217,18 @@ echo '<div class="login_page">';
 			}
 			break;
 	}
-	
+
+	if ($config['enterprise_installed']) {
+		if ($config["reset_pass_option"]) {
+			$reset_pass_link = 'reset_pass.php';
+			// Reset password link
+			echo '<div style="width:70%; height:40px; margin-right:auto; margin-left:auto; margin-top:20px; text-align:center;">';
+			echo '<a style="color: white !important;" href="index.php?reset=true&first=true">' . __('Forgot your password?');
+			echo '</a>';
+			echo '</div>';
+		}
+	}
+
 	echo '</form></div>';
 	echo '<div class="login_data">';
 		echo '<div class ="text_banner_login">';
@@ -258,6 +276,63 @@ echo '<div class="login_page">';
 echo '</div>';
 echo '<div id="ver_num">'.$pandora_version.(($develop_bypass == 1) ? ' '.__('Build').' '.$build_version : '') . '</div>';
 echo '</div>';
+
+if ($process_error_message == '' && $mail != "") {
+	echo '<div id="reset_correct" title="' . __('Password reset') . '">';
+		echo '<div class="content_alert">';
+			echo '<div class="icon_message_alert">';
+				echo html_print_image('images/icono_logo_pandora.png', true, array("alt" => __('Password reset'), "border" => 0));
+			echo '</div>';
+			echo '<div class="content_message_alert">';
+				echo '<div class="text_message_alert">';
+					echo '<h1>' . __('INFO') . '</h1>';
+					echo '<p>'  . __('An email has been sent to your email address') . '</p>';
+				echo '</div>';
+				echo '<div class="button_message_alert">';
+					html_print_submit_button("Ok", 'reset_correct_button', false);  
+				echo '</div>';
+			echo '</div>';
+		echo '</div>';
+	echo '</div>';
+}
+else if ($process_error_message != '') {
+	echo '<div id="reset_correct" title="' . __('Password reset') . '">';
+		echo '<div class="content_alert">';
+			echo '<div class="icon_message_alert">';
+				echo html_print_image('images/icono_stop.png', true, array("alt" => __('Password reset'), "border" => 0));
+			echo '</div>';
+			echo '<div class="content_message_alert">';
+				echo '<div class="text_message_alert">';
+					echo '<h1>' . __('ERROR') . '</h1>';
+					echo '<p>'  . $process_error_message . '</p>';
+				echo '</div>';
+				echo '<div class="button_message_alert">';
+					html_print_submit_button("Ok", 'reset_correct_button', false);  
+				echo '</div>';
+			echo '</div>';
+		echo '</div>';
+	echo '</div>';
+}
+
+
+if ($correct_reset_pass_process != "") {
+	echo '<div id="final_process_correct" title="' . __('Password reset') . '">';
+		echo '<div class="content_alert">';
+			echo '<div class="icon_message_alert">';
+				echo html_print_image('images/icono_logo_pandora.png', true, array("alt" => __('Password reset'), "border" => 0));
+			echo '</div>';
+			echo '<div class="content_message_alert">';
+				echo '<div class="text_message_alert">';
+					echo '<h1>' . __('SUCCESS') . '</h1>';
+					echo '<p>'  . $correct_reset_pass_process . '</p>';
+				echo '</div>';
+				echo '<div class="button_message_alert">';
+					html_print_submit_button("Ok", 'final_process_correct_button', false);  
+				echo '</div>';
+			echo '</div>';
+		echo '</div>';
+	echo '</div>';
+}
 
 if (isset ($login_failed)) {
 	echo '<div id="login_failed" title="' . __('Login failed') . '">';
@@ -424,7 +499,6 @@ html_print_div(array('id' => 'forced_title_layer', 'class' => 'forced_title_laye
 				draggable: false,
 				modal: true,
 				width: 600,
-				height: 250,
 				overlay: {
 					opacity: 0.5,
 					background: "black"
@@ -512,5 +586,47 @@ html_print_div(array('id' => 'forced_title_layer', 'class' => 'forced_title_laye
 	<?php 
 	}
 	?>
+
+	$(document).ready (function () {
+		$(function() {
+			$("#reset_correct").dialog({
+				resizable: true,
+				draggable: true,
+				modal: true,
+				height: 220,
+				width: 528,
+				clickOutside: true,
+				overlay: {
+					opacity: 0.5,
+					background: "black"
+				}
+			});
+		});
+
+		$("#submit-reset_correct_button").click (function () {
+			$("#reset_correct").dialog('close');
+		});		
+	});
+
+	$(document).ready (function () {
+		$(function() {
+			$("#final_process_correct").dialog({
+				resizable: true,
+				draggable: true,
+				modal: true,
+				height: 220,
+				width: 528,
+				clickOutside: true,
+				overlay: {
+					opacity: 0.5,
+					background: "black"
+				}
+			});
+		});
+
+		$("#submit-final_process_correct_button").click (function () {
+			$("#final_process_correct").dialog('close');
+		});		
+	});
 	/* ]]> */
 </script>

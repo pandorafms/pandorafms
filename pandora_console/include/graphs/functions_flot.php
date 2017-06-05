@@ -138,7 +138,8 @@ function flot_line_stacked_graph($chart_data, $width, $height, $color,
 	$chart_extra_data = array(), $yellow_threshold = 0, 
 	$red_threshold = 0, $adapt_key= '', $force_integer = false, 
 	$series_suffix_str = '', $menu = true, $background_color = 'white', 
-	$dashboard = false, $vconsole = false, $agent_module_id = 0) {
+	$dashboard = false, $vconsole = false, $agent_module_id = 0,
+	$xaxisname = "") {
 	
 	global $config;
 	
@@ -147,7 +148,7 @@ function flot_line_stacked_graph($chart_data, $width, $height, $color,
 		$water_mark, $serie_types, $chart_extra_data, $yellow_threshold,
 		$red_threshold, $adapt_key, $force_integer, $series_suffix_str,
 		$menu, $background_color, $dashboard, $vconsole, 
-		$agent_module_id, $font, $font_size);
+		$agent_module_id, $font, $font_size, $xaxisname);
 }
 
 function flot_line_simple_graph($chart_data, $width, $height, $color,
@@ -157,7 +158,8 @@ function flot_line_simple_graph($chart_data, $width, $height, $color,
 	$red_threshold = 0, $adapt_key= '', $force_integer = false, 
 	$series_suffix_str = '', $menu = true, $background_color = 'white', 
 	$dashboard = false, $vconsole = false, $agent_module_id = 0, 
-	$percentil_values = array(), $threshold_data = array()) {
+	$percentil_values = array(), $threshold_data = array(),
+	$xaxisname = '') {
 	
 	global $config;
 	
@@ -166,7 +168,7 @@ function flot_line_simple_graph($chart_data, $width, $height, $color,
 		$water_mark, $serie_types, $chart_extra_data, $yellow_threshold,
 		$red_threshold, $adapt_key, $force_integer, $series_suffix_str,
 		$menu, $background_color, $dashboard, $vconsole, 
-		$agent_module_id, $font, $font_size, '', $percentil_values,
+		$agent_module_id, $font, $font_size, $xaxisname, $percentil_values,
 		$threshold_data);
 }
 
@@ -179,7 +181,6 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 	$percentil_values = array(), $threshold_data = array()) {
 	
 	global $config;
-	
 	
 	include_javascript_dependencies_flot_graph();
 
@@ -203,7 +204,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 	}
 	
 	// Parent layer
-	$return = "<div class='parent_graph' style='width: " . $width . "px; " . $background_style . "'>";
+	$return = "<div class='parent_graph' style='width: " . ($width) . "px; " . $background_style . "'>";
 	// Set some containers to legend, graph, timestamp tooltip, etc.
 	$return .= "<p id='legend_$graph_id' class='legend_graph' style='font-size:$font_size"."pt !important;'></p>";
 	
@@ -242,12 +243,18 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 		}
 		$menu_width = 25 * $nbuttons + 15;
 		if ( $dashboard == false AND $vconsole == false) {
-			$return .= "<div id='menu_$graph_id' class='menu_graph' " .
+			$return .= "<div id='geneal_menu_$graph_id' class='menu_graph' style='
+							width: 30px;
+							height: 250px;
+							left: " . $width . "px;
+							position: absolute;
+							top: 0px;
+							background-color: white;'>";
+			$return .= "<div id='menu_$graph_id' " .
 				"style='display: none; " .
-					"text-align: center; " .
-					"width: " . $menu_width . "px; ".
-					"border-bottom: 0px; " .
-					"padding: 4px 4px 4px 4px;margin-bottom:5px;'>
+					"text-align: center;" .
+					"position: relative;".
+					"border-bottom: 0px;'>
 				<a href='javascript:'><img id='menu_cancelzoom_$graph_id' src='".$homeurl."images/zoom_cross_grey.disabled.png' alt='".__('Cancel zoom')."' title='".__('Cancel zoom')."'></a>";
 			if ($threshold) {
 				$return .= " <a href='javascript:'><img id='menu_threshold_$graph_id' src='".$homeurl."images/chart_curve_threshold.png' alt='".__('Warning and Critical thresholds')."' title='".__('Warning and Critical thresholds')."'></a>";
@@ -261,8 +268,30 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 			//$return .= " <a href='javascript:'><img id='menu_export_json_$graph_id' src='".$homeurl."images/json.png' alt='".__('Export to JSON')."' title='".__('Export to JSON')."'></a>";
 			
 			$return .= "</div>";
+			$return .= "</div>";
+		}
+
+		if ($dashboard) {
+			$return .= "<div id='geneal_menu_$graph_id' class='menu_graph' style='
+							width: 30px;
+							height: 250px;
+							left: " . $width . "px;
+							position: absolute;
+							top: 0px;
+							background-color: white;'>";
+
+			$return .= "<div id='menu_$graph_id' " .
+				"style='display: none; " .
+					"text-align: center;" .
+					"position: relative;".
+					"border-bottom: 0px;'>
+				<a href='javascript:'><img id='menu_cancelzoom_$graph_id' src='".$homeurl."images/zoom_cross_grey.disabled.png' alt='".__('Cancel zoom')."' title='".__('Cancel zoom')."'></a>";
+		
+			$return .= "</div>";
+			$return .= "</div>";
 		}
 	}
+
 	$return .= html_print_input_hidden('line_width_graph', $config['custom_graph_width'], true);
 	$return .= "<div id='timestamp_$graph_id' class='timestamp_graph' style='font-size:".$font_size."pt;display:none; position:absolute; background:#fff; border: solid 1px #aaa; padding: 2px; z-index:1000;'></div>";
 	$return .= "<div id='$graph_id' class='";
@@ -274,8 +303,8 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 	else {
 		$height = 1;
 	}
-	if (!$dashboard && !$vconsole)
-		$return .= "<div id='overview_$graph_id' class='overview_graph' style='display: none; margin-left:0px; margin-top:20px; width: ".$width."px; height: ".$height ."px;'></div>";
+	if (!$vconsole)
+		$return .= "<div id='overview_$graph_id' class='overview_graph' style='display: none; margin-left:0px; margin-top:20px; margin-bottom:50px; width: ".$width."px; height: ".$height ."px;'></div>";
 	
 	if ($water_mark != '') {
 		$return .= "<div id='watermark_$graph_id' style='display:none; position:absolute;'><img id='watermark_image_$graph_id' src='$water_mark'></div>";

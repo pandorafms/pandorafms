@@ -33,6 +33,8 @@ if ($develop_bypass != 1) {
 			$config['homeurl'] =  $_SERVER['REQUEST_URI'];
 			$config['homeurl_static'] =  $_SERVER['REQUEST_URI'];
 			
+			
+			
 			require('general/error_screen.php');
 			exit;
 		}
@@ -65,12 +67,12 @@ if ($develop_bypass != 1) {
 		if ((substr (sprintf ('%o', fileperms('include/config.php')), -4) != "0600") &&
 			(substr (sprintf ('%o', fileperms('include/config.php')), -4) != "0660") &&
 			(substr (sprintf ('%o', fileperms('include/config.php')), -4) != "0640")) {
-			$ownDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
+			$ownDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;	
+			$url = explode('/', $_SERVER['REQUEST_URI']);
 			$config['homedir'] = $ownDir;
-			$config['homeurl'] =  $_SERVER['REQUEST_URI'];
-			$config['homeurl_static'] =  $_SERVER['REQUEST_URI'];
+			$config['homeurl'] =  "/" . $url[1];
+			$config['homeurl_static'] = "/" .  $url[1];
 			$login_screen = 'error_perms';
-			
 			require('general/error_screen.php');
 			exit;
 		}
@@ -453,7 +455,7 @@ if (! isset ($config['id_user'])) {
 			db_logon ($nick_in_db, $_SERVER['REMOTE_ADDR']);
 			$_SESSION['id_usuario'] = $nick_in_db;
 			$config['id_user'] = $nick_in_db;
-			
+			config_prepare_session();
 			if (is_user_admin($config['id_user'])) {
 				// PHP configuration values
 				$PHPupload_max_filesize = config_return_in_bytes(ini_get('upload_max_filesize'));
@@ -542,7 +544,141 @@ if (! isset ($config['id_user'])) {
 	}
 	// There is no user connected
 	else {
-		require_once ('general/login_page.php');
+		if ($config['enterprise_installed']) {
+			enterprise_include_once ('include/functions_reset_pass.php');
+		}
+
+		$correct_pass_change = (boolean)get_parameter('correct_pass_change', 0);
+		$reset = (boolean)get_parameter('reset', 0);
+		$first = (boolean)get_parameter('first', 0);
+		$reset_hash = get_parameter('reset_hash', "");
+
+		if ($correct_pass_change) {
+			$correct_reset_pass_process = "";
+			$process_error_message = "";
+			$pass1 = get_parameter('pass1');
+			$pass2 = get_parameter('pass2');
+			$id_user = get_parameter('id_user');
+
+			if ($pass1 == $pass2) {
+				$res = update_user_password ($id_user, $pass1);
+				if ($res) {
+					$correct_reset_pass_process = __('Password changed successfully');
+				}
+				else {
+					$process_error_message = __('Failed to change password');
+				}
+			}
+			else {
+				$process_error_message = __('Passwords must be the same');
+			}
+			require_once ('general/login_page.php');
+		}
+		else {
+			if ($reset_hash != "") {
+				$hash_data = explode(":::", $reset_hash);
+				$id_user = $hash_data[0];
+				$codified_hash = $hash_data[1];
+
+				$db_reset_pass_entry = db_get_value_filter('reset_time', 'treset_pass', array('id_user' => $id_user, 'cod_hash' => $id_user . ":::" . $codified_hash));
+				$process_error_message = "";
+
+				if ($db_reset_pass_entry) {
+					if (($db_reset_pass_entry + SECONDS_2HOUR) < time()) {
+						$process_error_message = __('Too much time since password change request');
+						delete_reset_pass_entry($id_user);
+						require_once ('general/login_page.php');
+					}
+					else {
+						delete_reset_pass_entry($id_user);
+						require_once ('enterprise/include/process_reset_pass.php');
+					}
+				}
+				else {
+					$process_error_message = __('This user has not requested a password change');
+					require_once ('general/login_page.php');
+				}
+			}
+			else {
+				if (!$reset) {
+					require_once ('general/login_page.php');
+				}
+				else {
+					$user_reset_pass = get_parameter('user_reset_pass', "");
+					$error = "";
+					$mail = "";
+					$show_error = false;
+
+					if (!$first) {
+						if ($reset) {
+							if ($user_reset_pass == '') {
+								$reset = false;
+								$error = __('Id user cannot be empty');
+								$show_error = true;
+							}
+							else {
+								$check_user = check_user_id($user_reset_pass);
+
+								if (!$check_user) {
+									$reset = false;
+									$error = __('User doesn\'t exist in database');
+									$show_error = true;
+								}
+								else {
+									$check_mail = check_user_have_mail($user_reset_pass);
+
+									if (!$check_mail) {
+										$reset = false;
+										$error = __('This user doesn\'t have a valid email address');
+										$show_error = true;
+									}
+									else {
+										$mail = $check_mail;
+									}
+								}
+							}
+						}
+
+						if (!$reset) {
+							if ($config['enterprise_installed']) {
+								require_once ('enterprise/include/reset_pass.php');
+							}
+						}
+						else {
+							$cod_hash = $user_reset_pass . "::::" . md5(rand(10, 1000000) . rand(10, 1000000) . rand(10, 1000000));
+
+							$subject = '[Pandora] '.__('Reset password');
+							$body = __('This is an automatically sent message for user ');
+							$body .= ' "<strong>' . $user_reset_pass . '"</strong>';
+							$body .= '<p />';
+							$body .= __('Please click the link below to reset your password');
+							$body .= '<p />';
+							$body .= '<a href="' . $config['homeurl'] . 'index.php?reset_hash=' . $cod_hash . '">' . __('Reset your password') . '</a>';
+							$body .= '<p />';
+							$body .= 'Pandora FMS';
+							$body .= '<p />';
+							$body .= '<em>'.__('Please do not reply to this email.').'</em>';
+							
+							$result = send_email_to_user($mail, $body, $subject);
+							
+							$process_error_message = "";
+							if (!$result) {
+								$process_error_message = __('Error at sending the email');
+							}
+							else {
+								send_token_to_db($user_reset_pass, $cod_hash);
+							}
+
+							require_once ('general/login_page.php');
+						}
+					}
+					else {
+						require_once ('enterprise/include/reset_pass.php');
+					}
+				}
+			}
+		}
+		
 		while (@ob_end_flush ());
 		exit ("</html>");
 	}

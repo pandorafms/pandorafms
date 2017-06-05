@@ -700,12 +700,17 @@ function html_print_extended_select_for_post_process($name, $selected = '',
 function html_print_extended_select_for_time ($name, $selected = '',
 	$script = '', $nothing = '', $nothing_value = '0', $size = false,
 	$return = false, $select_style = false, $unique_name = true, $class='',
-	$readonly = false) {
+	$readonly = false, $custom_fields = false,$style_icon = '') {
 	
 	global $config;
 	
-	$fields = get_periods();
-
+	if($custom_fields){
+		$fields = $custom_fields;
+	} else {
+		$fields = get_periods();
+	}
+	
+	
 	if ( ! $selected ) {
 		foreach( $fields as $t_key => $t_value){
 			if ( $t_key != -1 ) {
@@ -737,7 +742,7 @@ function html_print_extended_select_for_time ($name, $selected = '',
 	if (!is_user_admin($config['id_user'])) {
 		unset($fields[-1]);
 		
-		$returnString = html_print_select ($fields, $name, $selected,"" . $script,
+		$returnString = html_print_select ($fields, $name . '_select', $selected,"" . $script,
 			$nothing, $nothing_value, true, false, false, '', false, 'font-size: xx-small;'.$select_style);
 		
 		if ($return) {
@@ -770,7 +775,7 @@ function html_print_extended_select_for_time ($name, $selected = '',
 				array('class' => $uniq_name . '_toggler',
 					'alt' => __('Custom'),
 					'title' => __('Custom'),
-					'style' => 'width: 18px;'), false, false, true) .
+					'style' => 'width: 18px;'.$style_icon), false, false, true) .
 			'</a>';
 	echo '</div>';
 	
@@ -784,7 +789,7 @@ function html_print_extended_select_for_time ($name, $selected = '',
 			html_print_image('images/default_list.png', true,
 				array('class' => $uniq_name . '_toggler',
 					'alt' => __('List'),
-					'title' => __('List'), 'style' => 'width: 18px;')) .
+					'title' => __('List'), 'style' => 'width: 18px;'.$style_icon)) .
 			'</a>';
 	echo '</div>';
 	echo "<script type='text/javascript'>
@@ -2040,6 +2045,9 @@ function html_print_label ($text, $id, $return = false, $options = false) {
 	if ($options) {
 		if (isset ($options['class']))
 			$output .= 'class="'.$options['class'].'" ';
+		
+		if (isset ($options['style']))
+			$output .= 'style="'.$options['style'].'" ';
 	}
 	
 	$output .= 'for="'.$id.'" >';

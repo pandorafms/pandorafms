@@ -367,7 +367,8 @@ if ($search != "") {
 	if($id != ''){
 		$aux = $id[0]['id_agent'];
 		$search_sql = " AND ( nombre " . $order_collation . "
-			LIKE '%$search%' OR tagente.id_agente = $aux";
+			COLLATE utf8_general_ci LIKE '%$search%' OR alias ".$order_collation." COLLATE utf8_general_ci LIKE '%$search%' 
+			OR tagente.id_agente = $aux";
 		if(count($id)>=2){
 			for ($i = 1; $i < count($id); $i++){
 				$aux = $id[$i]['id_agent'];
@@ -377,7 +378,7 @@ if ($search != "") {
 		$search_sql .= ")";
 	}else{
 		$search_sql = " AND ( nombre " . $order_collation . "
-			LIKE '%$search%' OR alias ".$order_collation." LIKE '%$search%') ";
+			COLLATE utf8_general_ci LIKE '%$search%' OR alias ".$order_collation." COLLATE utf8_general_ci LIKE '%$search%') ";
 	}
 }
 
@@ -428,9 +429,8 @@ if ($strict_user) {
 	
 	$total_agents = tags_get_all_user_agents (false, $config['id_user'], $acltags, $count_filter, $fields, false, $strict_user, true);
 	$total_agents = count($total_agents);
+
 	$agents = tags_get_all_user_agents (false, $config['id_user'], $acltags, $filter, $fields, false, $strict_user, true);
-	
-	
 }
 else {
 	$total_agents = agents_get_agents(array (

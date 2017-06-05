@@ -756,6 +756,26 @@ $table_other->data[$row][1] .= html_print_input_hidden ('interval_to_delete', ''
 //----------------------------------------------------------------------
 $row++;
 
+$common_dividers = array(
+	";" => ";",
+	"," => ",",
+	"|" => "|");
+$table_other->data[$row][0] = __('CSV divider');
+if ($config['csv_divider'] != ";" && $config['csv_divider'] != "," && $config['csv_divider'] != "|") {
+	$table_other->data[$row][1] = html_print_input_text ('csv_divider', $config['csv_divider'], "", 20, 255, true);
+	$table_other->data[$row][1] .= '<a id="csv_divider_custom" onclick="javascript: edit_csv_divider();">' .
+										html_print_image('images/default_list.png', true, array('id' => 'select')) . 
+									"</a>";
+}
+else {
+	$table_other->data[$row][1] = html_print_select ($common_dividers, 'csv_divider', $config['csv_divider'], "", '', '', true, false, false);
+	$table_other->data[$row][1] .= '<a id="csv_divider_custom" onclick="javascript: edit_csv_divider();">' .
+										html_print_image('images/pencil.png', true, array('id' => 'pencil')) . 
+									"</a>";
+}
+$row++;
+
+
 echo "<fieldset>";
 echo "<legend>" . __('Other configuration') . "</legend>";
 html_print_table ($table_other);
@@ -791,6 +811,27 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 
 ?>
 <script language="javascript" type="text/javascript">
+
+function edit_csv_divider () {
+	if ($("#csv_divider_custom img").attr("id") == "pencil") {
+		$("#csv_divider_custom img").attr("src", "images/default_list.png");
+		$("#csv_divider_custom img").attr("id", "select");
+		var value = $("#csv_divider").val();
+		$("#csv_divider").replaceWith("<input id='text-csv_divider' name='csv_divider' type='text'>");
+		$("#text-csv_divider").val(value);
+	}
+	else {
+		$("#csv_divider_custom img").attr("src", "images/pencil.png");
+		$("#csv_divider_custom img").attr("id", "pencil");
+		$("#text-csv_divider").replaceWith("<select id='csv_divider' name='csv_divider'>");
+		var o = new Option(";", ";");
+		var o1 = new Option(",", ",");
+		var o2 = new Option("|", "|");
+		$("#csv_divider").append(o);
+		$("#csv_divider").append(o1);
+		$("#csv_divider").append(o2);
+	}
+}
 
 // Juanma (07/05/2014) New feature: Custom front page for reports  
 function display_custom_report_front (show,table) {

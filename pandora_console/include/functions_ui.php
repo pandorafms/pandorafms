@@ -1300,8 +1300,8 @@ function ui_process_page_head ($string, $bitfield) {
 			$_GET['sec2'] == 'enterprise/dashboard/main_dashboard') {
 			
 			$query = ui_get_url_refresh (false, false);
-			$output .= '<meta http-equiv="refresh" content="' .
-				$config_refr . '; URL=' . $query . '" />';
+			//$output .= '<meta http-equiv="refresh" content="' .
+				//$config_refr . '; URL=' . $query . '" />';
 			
 		}
 	}
@@ -1613,6 +1613,17 @@ function ui_pagination ($count, $url = false, $offset = 0,
 		$url = ui_get_url_refresh (array ($offset_name => false));
 	}
 	
+	// Pagination links for users include delete, create and other params, now not use these params, and not retry the previous action when go to pagination link.
+	
+	$remove = array("user_del","disable_user","delete_user");
+	$finalUrl = $config['homeurl'].'?';
+	foreach($_GET as $index => $get){
+   		if(!in_array($index, $remove)){
+        		$finalUrl .= $index.'='.$get.'&';
+		}
+	}
+	$url = $finalUrl;
+
 	/*
 	 URL passed render links with some parameter
 	 &offset - Offset records passed to next page
@@ -1640,20 +1651,12 @@ function ui_pagination ($count, $url = false, $offset = 0,
 	}
 	
 	$number_of_pages = ceil($count / $pagination);
-	//~ html_debug_print('number_of_pages');
-	//~ html_debug_print($number_of_pages);
 	$actual_page = floor($offset / $pagination);
-	//~ html_debug_print('actual_page');
-	//~ html_debug_print($actual_page);
 	$ini_page = floor($actual_page / $block_limit) * $block_limit;
-	//~ html_debug_print('ini_page');
-	//~ html_debug_print($ini_page);
 	$end_page = $ini_page + $block_limit - 1;
 	if ($end_page > $number_of_pages) {
 		$end_page = $number_of_pages - 1;
 	}
-	//~ html_debug_print('end_page');
-	//~ html_debug_print($end_page);
 	
 	
 	$output = "<div class='pagination $other_class'>";
@@ -2909,6 +2912,11 @@ function ui_print_agent_autocomplete_input($parameters) {
 	if (isset($parameters['input_id_server_value'])) {
 		$input_id_server_value = $parameters['input_id_server_value'];
 	}
+
+	$from_ux_transaction = ''; //Default value
+	if (isset($parameters['from_ux'])) {
+		$from_ux_transaction = $parameters['from_ux'];
+	}
 	
 	
 	$metaconsole_enabled = false; //Default value
@@ -2996,10 +3004,39 @@ function ui_print_agent_autocomplete_input($parameters) {
 	if (isset($parameters['javascript_name_function_select'])) {
 		$javascript_name_function_select = $parameters['javascript_name_function_select'];
 	}
-	
-	
-	
-	$javascript_code_function_select = '
+
+	if ($from_ux_transaction != "") {
+		$javascript_code_function_select = '
+		function function_select_' . $input_name . '(agent_name) {
+			console.log(agent_name);
+			$("#' . $selectbox_id . '").empty();
+			
+			var inputs = [];
+			inputs.push ("id_agent=" + $("#' . $hidden_input_idagent_id . '").val());
+			inputs.push ("get_agent_transactions=1");
+			inputs.push ("page=enterprise/include/ajax/ux_transaction.ajax");
+			
+			jQuery.ajax ({
+				data: inputs.join ("&"),
+				type: "POST",
+				url: action="' . $javascript_ajax_page . '",
+				dataType: "json",
+				success: function (data) {
+					if (data) {
+						$("#' . $selectbox_id . '").append ($("<option value=0>None</option>"));
+						jQuery.each (data, function (id, value) {
+							$("#' . $selectbox_id . '").append ($("<option value=" + id + ">" + value + "</option>"));
+						});
+					}
+				}
+			});
+			
+			return false;
+		}
+		';
+	}
+	else {
+		$javascript_code_function_select = '
 		function function_select_' . $input_name . '(agent_name) {
 			
 			$("#' . $selectbox_id . '").empty ();
@@ -3060,6 +3097,8 @@ function ui_print_agent_autocomplete_input($parameters) {
 			return false;
 		}
 		';
+	}
+	
 	if (isset($parameters['javascript_code_function_select'])) {
 		$javascript_code_function_select = $parameters['javascript_code_function_select'];
 	}

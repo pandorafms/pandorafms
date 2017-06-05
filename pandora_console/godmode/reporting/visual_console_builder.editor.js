@@ -1497,13 +1497,11 @@ function set_static_graph_status(idElement, image, status) {
 				set_static_graph_status(idElement, image, data);
 				
 				if($('#'+idElement+' table').css('float') == 'right' || $('#'+idElement+ ' table').css('float') == 'left'){
-				$('#'+idElement+ ' img').css('margin-top', 	parseInt($('#'+idElement).css('height'))/2 - parseInt($('#'+idElement+ ' img').css('height'))/2);	
+					$('#'+idElement+ ' img').css('margin-top', parseInt($('#'+idElement).css('height'))/2 - parseInt($('#'+idElement+ ' img').css('height'))/2);	
 				}
 				else{
-				$('#'+idElement+ ' img').css('margin-left',parseInt($('#'+idElement).css('width'))/2 - parseInt($('#'+idElement+ ' img').css('width'))/2);
+					$('#'+idElement+ ' img').css('margin-left', parseInt($('#'+idElement).css('width'))/2 - parseInt($('#'+idElement+ ' img').css('width'))/2);
 				}
-				
-								
 			}
 		});
 
@@ -1849,10 +1847,8 @@ function get_image_url(img_src) {
 	});
 }
 
-function set_color_line_status(lines, line, id_data, values) {
+function set_color_line_status(lines, id_data, values) {
 	metaconsole = $("input[name='metaconsole']").val();
-
-
 
 	var parameter = Array();
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
@@ -1874,7 +1870,6 @@ function set_color_line_status(lines, line, id_data, values) {
 				"node_begin":  values['parent'],
 				"node_end": id_data,
 				"color": color };
-
 
 			lines.push(line);
 
@@ -2250,7 +2245,7 @@ function createItem(type, values, id_data) {
 
 		lines.push(line);
 
-		set_color_line_status(lines, line, id_data, values);
+		set_color_line_status(lines, id_data, values);
 
 		refresh_lines(lines, 'background', true);
 	}
@@ -2446,7 +2441,7 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 			
 			if (typeof(values['parent']) != 'undefined' && values['parent'] > 0 ) {
 				if (!found) {
-					set_color_line_status(lines, line, idElement, values);
+					set_color_line_status(lines, idElement, values);
 				}
 			}
 			
@@ -2465,6 +2460,7 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 			refresh_lines(lines, 'background', true);
 			break;
 	}
+	
 	refresh_lines(lines, 'background', true);
 	draw_user_lines("", 0, 0, 0 , 0, 0, true);
 }
@@ -2601,9 +2597,19 @@ function updateDB(type, idElement , values, event) {
 			url: get_url_ajax(),
 			data: parameter,
 			type: "POST",
-			dataType: 'text',
+			dataType: 'json',
 			success: function (data) {
-				updateDB_visual(type, idElement , values, event, top, left);
+				if (data['correct']) {
+					if (data['new_line']) {
+						var line = {"id": idElement,
+							"node_begin":  values['parent'],
+							"node_end": idElement,
+							"color": '#cccccc' };
+
+						lines.push(line);
+					}
+					updateDB_visual(type, idElement , values, event, top, left);
+				}
 			}
 		});
 	}
@@ -3175,7 +3181,6 @@ function unselectAll() {
 }
 
 function click_button_toolbox(id) {
-	unselectAll();
 	switch (id) {
 		case 'static_graph':
 			toolbuttonActive = creationItem = 'static_graph';

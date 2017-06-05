@@ -147,7 +147,7 @@ var open = "<?php echo $open;?>";
 if(open){
 	$(document).ready(function() {
 	$('body').append( "<div id='opacidad' style='position:fixed;background:black;opacity:0.6;z-index:1'></div>" );
-	jQuery.get ("ajax.php",
+	jQuery.post ("ajax.php",
 		{
 	"page": "general/alert_enterprise",
 	"message":"infomodal"},

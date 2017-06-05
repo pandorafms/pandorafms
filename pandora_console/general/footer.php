@@ -32,7 +32,15 @@ if (!$config["MR"]) {
 
 echo '<a class="white_bold footer" target="_blank" href="' . $config["homeurl"] . $license_file. '">';
 
-echo sprintf(__('Pandora FMS %s - Build %s - MR %s', $pandora_version, $build_version, $config["MR"]));
+if($current_package == 0){
+$build_package_version =	$build_version;
+}
+else{
+$build_package_version =	$current_package;
+}
+
+
+echo sprintf(__('Pandora FMS %s - Build %s - MR %s', $pandora_version, $build_package_version, $config["MR"]));
 
 echo '</a><br />';
 echo '<a class="white footer">'. __('Page generated at') . ' '. date('F j, Y h:i a'); //Always use timestamp here

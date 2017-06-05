@@ -408,7 +408,9 @@ if (is_array ($config['extensions'])) {
 	$sub["godmode/extensions"]["subtype"] = 'nolink';
 	
 	$submenu = array_merge($menu_godmode["gextensions"]["sub"],$sub);
-	$menu_godmode["gextensions"]["sub"] = $submenu;
+	if($menu_godmode['gextensions']['sub'] != null){
+		$menu_godmode["gextensions"]["sub"] = $submenu;	
+	}
 }
 
 $menu_godmode["links"]["text"] = __('Links');

@@ -141,16 +141,6 @@ if (isset($graph['percentil'])){
 	$percentil = $graph['percentil']; 
 }
 
-
-
-/*
-$colors = array();
-$colors['pep1'] = array('border' => '#000000', 'color' => '#000000', 'alpha' => 50);
-$colors['pep2'] = array('border' => '#ff7f00', 'color' => '#ff0000', 'alpha' => 50);
-$colors['pep3'] = array('border' => '#ff0000', 'color' => '#00ff00', 'alpha' => 50);
-$colors['pep4'] = array('border' => '#000000', 'color' => '#0000ff', 'alpha' => 50);
-*/
-
 $step = 1;
 if ($force_steps) {
 	$pixels_between_xdata = 50;
@@ -356,26 +346,6 @@ if($countlegend > 15){
 		$countlegend--;
 	} 
 }
-
-/*foreach($colors as $i => $color) {
-	if (isset($color['border'])) {
-		$rgb['border'] = html_html2rgb($color['border']);
-		$rgb_color[$i]['border']['R'] = $rgb['border'][0];
-		$rgb_color[$i]['border']['G'] = $rgb['border'][1];
-		$rgb_color[$i]['border']['B'] = $rgb['border'][2];
-	}
-	
-	if (isset($color['color'])) {
-		$rgb['color'] = html_html2rgb($color['color']);
-		$rgb_color[$i]['color']['R'] = $rgb['color'][0];
-		$rgb_color[$i]['color']['G'] = $rgb['color'][1];
-		$rgb_color[$i]['color']['B'] = $rgb['color'][2];
-	}
-	
-	if (isset($color['color'])) {
-		$rgb_color[$i]['alpha'] = $color['alpha'];
-	}
-}*/
 
 ob_get_clean(); //HACK TO EAT ANYTHING THAT CORRUPS THE IMAGE FILE
 
@@ -807,10 +777,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	if (!is_array($legend) || empty($legend)) {
 		unset($legend);
 	}
-	/*$legend=array('pep1' => 'pep1','pep2' => 'pep2','pep3' => 'pep3','pep4' => 'pep4');
-	$data=array(array('pep1' => 1, 'pep2' => 1, 'pep3' => 3, 'pep4' => 3), array('pep1' => 1, 'pep2' => 3, 'pep3' => 1,'pep4' => 4), array('pep1' => 3, 'pep2' => 1, 'pep3' => 1,'pep4' =>1), array('pep1' => 1, 'pep2' =>1, 'pep3' =>1,'pep4' =>0));
-	$index=array(1,2,3,4);
-	*/
+	
 	if (is_array(reset($data))) {
 		$data2 = array();
 		foreach ($data as $i =>$values) {
@@ -882,7 +849,6 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 		$MyData->setSerieWeight($point_id, $config['custom_graph_width'] * $reduction_coefficient);
 	}
 	
-	//$MyData->addPoints($data,"Yaxis");
 	$MyData->setAxisName(0,$unit);
 	$MyData->addPoints($index,"Xaxis");
 	$MyData->setSerieDescription("Xaxis", $xaxisname);

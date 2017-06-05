@@ -340,24 +340,28 @@ switch ($action) {
 					$sql = $item['external_source'];
 					$idCustom = $item['treport_custom_sql_id'];
 					$header = $item['header_definition'];
+					$historical_db = $item['historical_db'];
 					$period = 0;
 					break;
 				case 'sql_graph_pie':
 					$description = $item['description'];
 					$sql = $item['external_source'];
 					$idCustom = $item['treport_custom_sql_id'];
+					$historical_db = $item['historical_db'];
 					$period = 0;
 					break;
 				case 'sql_graph_vbar':
 					$description = $item['description'];
 					$sql = $item['external_source'];
 					$idCustom = $item['treport_custom_sql_id'];
+					$historical_db = $item['historical_db'];
 					$period = 0;
 					break;
 				case 'sql_graph_hbar':
 					$description = $item['description'];
 					$sql = $item['external_source'];
 					$idCustom = $item['treport_custom_sql_id'];
+					$historical_db = $item['historical_db'];
 					$period = 0;
 					break;
 				case 'url':
@@ -658,7 +662,6 @@ You can of course remove the warnings, that's why we include the source and do n
 				?>
 			</td>
 		</tr>
-		
 		<tr id="row_netflow_filter" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Filter');?></td>
 			<td>
@@ -1463,10 +1466,19 @@ You can of course remove the warnings, that's why we include the source and do n
 			</td>
 		</tr>
 		
+		<tr id="row_historical_db_check" style="" class="datos">
+			<td style="font-weight:bold;">
+				<?php echo __('Query History Database'); ?>
+			</td>
+			<td style="">
+				<?php
+				html_print_checkbox('historical_db_check',1,$historical_db);?>
+			</td>
+		</tr>
+		
 		<tr id="row_show_in_two_columns" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Show in two columns');?></td>
-			<td><?php html_print_checkbox('show_in_two_columns', 1, $show_in_two_columns, false,
-				false, 'if ($(\'input[name=show_in_two_columns]\').is(\':checked\')) $(\'input[name=show_in_landscape]\').attr(\'checked\', false);');?></td>
+			<td><?php html_print_checkbox('show_in_two_columns', 1, $show_in_two_columns);?></td>
 		</tr>
 		
 		<tr id="row_sort" style="" class="datos">
@@ -2579,6 +2591,7 @@ function chooseType() {
 	$("#row_exception_condition_value").hide();
 	$("#row_exception_condition").hide();
 	$("#row_show_in_two_columns").hide();
+	$("#row_historical_db_check").hide();
 	$("#row_show_in_landscape").hide();
 	$('#row_hide_notinit_agents').hide();
 	$("#row_module_group").hide();
@@ -2637,6 +2650,7 @@ function chooseType() {
 			$("#row_event_graph_by_validated").show();
 			
 			$("#row_filter_search").show();
+			$("#row_historical_db_check").hide();
 			break;
 
 		case 'event_report_log':
@@ -2645,6 +2659,7 @@ function chooseType() {
 			$("#row_period").show();
 			$("#agents_row").show();
 			$("#row_source").show();
+			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'simple_graph':
@@ -2662,6 +2677,7 @@ function chooseType() {
 			$("#row_show_in_two_columns").show();
 			$("#row_show_in_landscape").show();
 			$("#row_time_compare_overlapped").show();
+			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'projection_graph':
@@ -2672,6 +2688,7 @@ function chooseType() {
 			$("#row_estimate").show();
 			$("#row_show_in_two_columns").show();
 			$("#row_show_in_landscape").show();
+			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'prediction_date':
@@ -2681,6 +2698,7 @@ function chooseType() {
 			$("#row_module").show();
 			$("#row_interval").show();
 			$("#row_show_in_two_columns").show();
+			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'custom_graph':
@@ -2690,6 +2708,7 @@ function chooseType() {
 			$("#row_custom_graph").show();
 			$("#row_show_in_two_columns").show();
 			$("#row_show_in_landscape").show();
+			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'SLA':
@@ -2701,6 +2720,7 @@ function chooseType() {
 			$("#row_show_graph").show();
 			$("#row_sort").show();
 			$('#row_hide_notinit_agents').show();
+			$("#row_historical_db_check").hide();
 			break;
 
 		case 'availability_graph':
@@ -2708,6 +2728,7 @@ function chooseType() {
 			$("#row_period").show();
 			$("#sla_list").show();
 			$("#row_working_time").show();
+			$("#row_historical_db_check").hide();
 			break;
 
 		case 'module_histogram_graph':
@@ -2715,6 +2736,7 @@ function chooseType() {
 			$("#row_period").show();
 			$("#row_agent").show();
 			$("#row_module").show();
+			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'SLA_monthly':
@@ -2724,6 +2746,7 @@ function chooseType() {
 			$("#sla_list").show();
 			$("#row_working_time").show();
 			$("#row_sort").show();
+			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'SLA_services':
@@ -2740,6 +2763,7 @@ function chooseType() {
 			$(".sla_list_sla_max_col").hide();
 			$(".sla_list_sla_limit_col").hide();
 			$("#sla_list").show();
+			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'monitor_report':
@@ -2748,6 +2772,7 @@ function chooseType() {
 			$("#row_module").show();
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
+			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'avg_value':
@@ -2756,6 +2781,7 @@ function chooseType() {
 			$("#row_module").show();
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
+			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'max_value':
@@ -2764,6 +2790,7 @@ function chooseType() {
 			$("#row_module").show();
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
+			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'min_value':
@@ -2772,6 +2799,7 @@ function chooseType() {
 			$("#row_module").show();
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
+			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'sumatory':
@@ -2780,6 +2808,7 @@ function chooseType() {
 			$("#row_module").show();
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
+			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'historical_data':
@@ -2788,6 +2817,7 @@ function chooseType() {
 			$("#row_module").show();
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
+			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'agent_detailed':
@@ -2795,12 +2825,14 @@ function chooseType() {
 			$("#row_agent").show();
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
+			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'text':
 			$("#row_description").show();
 			$("#row_text").show();
 			$("#row_show_in_two_columns").show();
+			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'sql':
@@ -2811,6 +2843,7 @@ function chooseType() {
 			$("#row_custom_example").show();
 			$("#row_show_in_two_columns").show();
 			$("#row_servers").show();
+			$("#row_historical_db_check").show();
 			break;
 		
 		case 'sql_graph_pie':
@@ -2819,6 +2852,8 @@ function chooseType() {
 			$("#row_show_in_two_columns").show();
 			$("#row_show_in_landscape").show();
 			$("#row_servers").show();
+			$("#row_historical_db_check").show();
+			
 			break;
 		
 		case 'sql_graph_hbar':
@@ -2827,6 +2862,7 @@ function chooseType() {
 			$("#row_show_in_two_columns").show();
 			$("#row_show_in_landscape").show();
 			$("#row_servers").show();
+			$("#row_historical_db_check").show();
 			break;
 		
 		case 'sql_graph_vbar':
@@ -2835,11 +2871,13 @@ function chooseType() {
 			$("#row_show_in_two_columns").show();
 			$("#row_show_in_landscape").show();
 			$("#row_servers").show();
+			$("#row_historical_db_check").show();
 			break;
 		
 		case 'url':
 			$("#row_description").show();
 			$("#row_url").show();
+			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'database_serialized':
@@ -2851,6 +2889,7 @@ function chooseType() {
 			$("#row_line_separator").show();
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
+			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'TTRT':
@@ -2859,6 +2898,7 @@ function chooseType() {
 			$("#row_module").show();
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
+			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'TTO':
@@ -2867,6 +2907,7 @@ function chooseType() {
 			$("#row_module").show();
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
+			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'MTBF':
@@ -2875,6 +2916,7 @@ function chooseType() {
 			$("#row_module").show();
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
+			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'MTTR':
@@ -2883,6 +2925,7 @@ function chooseType() {
 			$("#row_module").show();
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
+			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'alert_report_module':
@@ -2891,6 +2934,7 @@ function chooseType() {
 			$("#row_module").show();
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
+			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'alert_report_group':
@@ -2899,6 +2943,7 @@ function chooseType() {
 			$("#row_show_in_two_columns").show();
 			$("#row_group").show();
 			$("#row_servers").show();
+			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'alert_report_agent':
@@ -2906,6 +2951,7 @@ function chooseType() {
 			$("#row_agent").show();
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
+			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'event_report_group':
@@ -2924,6 +2970,7 @@ function chooseType() {
 			$("#row_event_type").show();
 			
 			$("#row_filter_search").show();
+			$("#row_historical_db_check").hide();
 			break;
 
 
@@ -2946,6 +2993,7 @@ function chooseType() {
 			$('#agent_autocomplete').hide();
 			$('#agent_autocomplete_events').show();
 			$("#row_filter_search").show();
+			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'event_report_module':
@@ -2966,6 +3014,7 @@ function chooseType() {
 			$('#agent_autocomplete').hide();
 			$('#agent_autocomplete_events').show();
 			$("#row_filter_search").show();
+			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'general':
@@ -2984,6 +3033,7 @@ function chooseType() {
 				$("#row_period").hide();
 				$("input[name='last_value']").prop("checked", true);
 			}
+			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'availability':
@@ -2996,18 +3046,21 @@ function chooseType() {
 			$("#row_show_resume").show();
 			$("#row_working_time").show();
 			$('#row_hide_notinit_agents').show();
+			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'group_report':
 			$("#row_group").show();
 			$("#row_servers").show();
 			$("#row_description").show();
+			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'network_interfaces_report':
 			$("#row_group").show();
 			$("#row_description").show();
 			$("#row_period").show();
+			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'top_n':
@@ -3020,6 +3073,7 @@ function chooseType() {
 			$("#row_show_resume").show();
 			$("#row_show_graph").show();
 			$("#row_show_in_two_columns").show();
+			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'exception':
@@ -3040,6 +3094,7 @@ function chooseType() {
 				$("#row_period").hide();
 				$("input[name='last_value']").prop("checked", true);
 			}
+			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'agent_module':
@@ -3049,6 +3104,7 @@ function chooseType() {
 			$("#select_agent_modules").show();
 			$("#agents_row").show();
 			$("#modules_row").show();
+			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'inventory_changes':
@@ -3065,6 +3121,7 @@ function chooseType() {
 			$("#combo_group").change(function() {
 				updateAgents($(this).val(), <?php echo '"' . ui_get_full_url(false, false, false, false) . '"'; ?>);
 			});
+			$("#row_historical_db_check").hide();
 			
 			break;
 		
@@ -3099,18 +3156,22 @@ function chooseType() {
 			
 			if (!$("#hidden-date_selected").val())
 				updateInventoryDates(<?php echo '"' . ui_get_full_url(false, false, false, false) . '"'; ?>);
+				$("#row_historical_db_check").hide();
 			break;
 		
 		case 'inventory_changes':
+		$("#row_historical_db_check").hide();
 			break;
 		
 		case 'agent_configuration':
 			$("#row_agent").show();
+			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'group_configuration':
 			$("#row_group").show();
 			$("#row_servers").show();
+			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'netflow_area':
@@ -3120,6 +3181,7 @@ function chooseType() {
 			$("#row_max_values").show();
 			$("#row_resolution").show();
 			$("#row_servers").show();
+			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'netflow_pie':
@@ -3129,6 +3191,7 @@ function chooseType() {
 			$("#row_max_values").show();
 			$("#row_resolution").show();
 			$("#row_servers").show();
+			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'netflow_data':
@@ -3138,6 +3201,7 @@ function chooseType() {
 			$("#row_max_values").show();
 			$("#row_resolution").show();
 			$("#row_servers").show();
+			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'netflow_summary':
@@ -3146,6 +3210,7 @@ function chooseType() {
 			$("#row_period").show();
 			$("#row_resolution").show();
 			$("#row_servers").show();
+			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'netflow_statistics':
@@ -3155,6 +3220,7 @@ function chooseType() {
 			$("#row_max_values").show();
 			$("#row_resolution").show();
 			$("#row_servers").show();
+			$("#row_historical_db_check").hide();
 			break;
 	}
 	switch (type) {

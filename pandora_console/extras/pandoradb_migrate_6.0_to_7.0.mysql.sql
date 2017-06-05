@@ -1135,10 +1135,10 @@ ALTER TABLE titem MODIFY `source_data` int(10) unsigned;
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('big_operation_step_datos_purge', '100');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('small_operation_step_datos_purge', '1000');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('days_autodisable_deletion', '30');
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 0);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 1);
 UPDATE tconfig SET value = 'https://licensing.artica.es/pandoraupdate7/server.php' WHERE token='url_update_manager';
 DELETE FROM `tconfig` WHERE `token` = 'current_package_enterprise';
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '700');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '704');
 
 -- ---------------------------------------------------------------------
 -- Table `tplanned_downtime_agents`
@@ -1246,6 +1246,12 @@ UPDATE treport_custom_sql SET `sql` = 'select&#x20;&#40;select&#x20;tagente.alia
 UPDATE treport_custom_sql SET `sql` = 'select&#x20;t1.alias&#x20;as&#x20;agent_name,&#x20;t2.nombre&#x20;as&#x20;module_name,&#x20;&#40;select&#x20;talert_templates.name&#x20;from&#x20;talert_templates&#x20;where&#x20;talert_templates.id&#x20;=&#x20;t3.id_alert_template&#41;&#x20;as&#x20;template,&#x20;&#40;select&#x20;group_concat&#40;t02.name&#41;&#x20;from&#x20;talert_template_module_actions&#x20;as&#x20;t01&#x20;inner&#x20;join&#x20;talert_actions&#x20;as&#x20;t02&#x20;on&#x20;t01.id_alert_action&#x20;=&#x20;t02.id&#x20;where&#x20;t01.id_alert_template_module&#x20;=&#x20;t3.id&#x20;group&#x20;by&#x20;t01.id_alert_template_module&#41;&#x20;as&#x20;actions&#x20;from&#x20;tagente&#x20;as&#x20;t1&#x20;inner&#x20;join&#x20;tagente_modulo&#x20;as&#x20;t2&#x20;on&#x20;t1.id_agente&#x20;=&#x20;t2.id_agente&#x20;inner&#x20;join&#x20;talert_template_modules&#x20;as&#x20;t3&#x20;on&#x20;t2.id_agente_modulo&#x20;=&#x20;t3.id_agent_module&#x20;order&#x20;by&#x20;agent_name,&#x20;module_name;' 
 	WHERE id = 3;
 
+-- ----------------------------------------------------------------------
+-- Table `treport_content`
+-- ---------------------------------------------------------------------
+	
+ALTER TABLE treport_content ADD COLUMN `historical_db` tinyint(1) NOT NULL DEFAULT '0';
+
 -- ---------------------------------------------------------------------
 -- Table `tmodule_relationship`
 -- ---------------------------------------------------------------------
@@ -1259,6 +1265,7 @@ ALTER TABLE tlocal_component ADD COLUMN `dynamic_two_tailed` tinyint(1) unsigned
 -- ---------------------------------------------------------------------
 -- Table `tpolicy_module`
 -- ---------------------------------------------------------------------
+ALTER TABLE tpolicy_modules ADD COLUMN `ip_target`varchar(100) default '';
 ALTER TABLE tpolicy_modules ADD COLUMN `dynamic_next` bigint(20) NOT NULL default '0';
 ALTER TABLE tpolicy_modules ADD COLUMN `dynamic_two_tailed` tinyint(1) unsigned default '0';
 
@@ -1310,3 +1317,55 @@ DROP PROCEDURE addcol;
 -- Table `tconfig`
 -- ---------------------------------------------------------------------
 UPDATE `tconfig` SET `value` = 'login_logo_v7.png' where `token`='custom_logo_login';
+
+-- ---------------------------------------------------------------------
+-- Table `tcontainer`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tcontainer` (
+	`id_container` mediumint(4) unsigned NOT NULL auto_increment,
+	`name` varchar(100) NOT NULL default '',
+	`parent` mediumint(4) unsigned NOT NULL default 0,
+	`disabled` tinyint(3) unsigned NOT NULL default 0,
+	`id_group` mediumint(8) unsigned NULL default 0, 
+	`description` TEXT NOT NULL,
+ 	PRIMARY KEY  (`id_container`),
+ 	KEY `parent_index` (`parent`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `tcontainer` SET `name` = 'Default graph container';
+
+-- ---------------------------------------------------------------------
+-- Table `tcontainer_item`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tcontainer_item` (
+	`id_ci` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`id_container` mediumint(4) unsigned NOT NULL default 0,
+	`type` varchar(30) default 'simple_graph',
+	`id_agent` int(10) unsigned NOT NULL default 0,
+	`id_agent_module` bigint(14) unsigned NULL default NULL,
+	`time_lapse` int(11) NOT NULL default 0,
+	`id_graph` INTEGER UNSIGNED default 0,
+	`only_average` tinyint (1) unsigned default 0 not null,
+	`id_group` INT (10) unsigned NOT NULL DEFAULT 0,
+	`id_module_group` INT (10) unsigned NOT NULL DEFAULT 0,
+	`agent` varchar(100) NOT NULL default '',
+	`module` varchar(100) NOT NULL default '',
+	`id_tag` integer(10) unsigned NOT NULL DEFAULT 0,
+	PRIMARY KEY(`id_ci`),
+	FOREIGN KEY (`id_container`) REFERENCES tcontainer(`id_container`)
+	ON DELETE CASCADE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE tusuario add default_event_filter int(10) unsigned NOT NULL DEFAULT 0;
+
+CREATE TABLE IF NOT EXISTS `treset_pass` (
+    `id` bigint(10) unsigned NOT NULL auto_increment,
+    `id_user` varchar(100) NOT NULL default '',
+    `cod_hash` varchar(100) NOT NULL default '',
+    `reset_time` int(10) unsigned NOT NULL default 0,
+    PRIMARY KEY (`id`) 
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+UPDATE tgis_map_connection SET conection_data = '{"type":"OSM","url":"http://tile.openstreetmap.org/${z}/${x}/${y}.png"}' where id_tmap_connection = 1;
+
+ALTER TABLE tpolicy_modules MODIFY post_process double(24,15) default 0;

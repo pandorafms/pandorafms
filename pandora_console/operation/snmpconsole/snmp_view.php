@@ -43,6 +43,10 @@ $trap_type = (int) get_parameter ('trap_type', -1);
 $group_by = (int)get_parameter('group_by', 0);
 $refr = (int)get_parameter("refresh");
 $default_refr = !empty($refr) ? $refr : $config['vc_refr'];
+$date_from_trap = get_parameter("date_from_trap", "");
+$date_to_trap = get_parameter("date_to_trap", "");
+$time_from_trap = get_parameter("time_from_trap", "");
+$time_to_trap = get_parameter("time_to_trap", "");
 
 $user_groups = users_get_groups ($config['id_user'], $access, false);
 
@@ -66,7 +70,11 @@ $url = "index.php?sec=estado&" .
 	"pagination=" . $pagination . "&" .
 	"offset=" . $offset . "&" .
 	"trap_type=" . $trap_type . "&" .
-	"group_by=" .$group_by;
+	"group_by=" .$group_by . "&" .
+	"date_from_trap=" . $date_from_trap . "&" .
+	"date_to_trap=" . $date_to_trap . "&" .
+	"time_from_trap=" . $time_from_trap . "&" .
+	"time_to_trap=" . $time_to_trap;
 
 $statistics['text'] = '<a href="index.php?sec=estado&sec2=operation/snmpconsole/snmp_statistics&pure=' . $config["pure"] . '&refr=' . $refr . '">' . 
 	html_print_image("images/op_reporting.png", true, array ("title" => __('Statistics'))) .'</a>';
@@ -325,6 +333,31 @@ if ($free_search_string != '') {
 	}
 }
 
+if ($date_from_trap != "") {
+	if ($time_from_trap != "") {
+		$whereSubquery .= '
+			AND (UNIX_TIMESTAMP(timestamp) > UNIX_TIMESTAMP("' . $date_from_trap . " " . $time_from_trap . '"))
+		';
+	}
+	else {
+		$whereSubquery .= '
+			AND (UNIX_TIMESTAMP(timestamp) > UNIX_TIMESTAMP("' . $date_from_trap . ' 23:59:59"))
+		';
+	}
+}
+if ($date_to_trap != "") {
+	if ($time_to_trap) {
+		$whereSubquery .= '
+			AND (UNIX_TIMESTAMP(timestamp) < UNIX_TIMESTAMP("' . $date_to_trap . " " . $time_to_trap . '"))
+		';
+	}
+	else {
+		$whereSubquery .= '
+			AND (UNIX_TIMESTAMP(timestamp) < UNIX_TIMESTAMP("' . $date_to_trap . ' 23:59:59"))
+		';
+	}
+}
+
 if ($filter_severity != -1) {
 	//Test if install the enterprise to search oid in text or oid field in ttrap.
 	if ($config['enterprise_installed'])
@@ -416,8 +449,18 @@ $table->data[2][3] = '<strong>' . __('Free search') . '</strong>' .
 $table->data[2][4] = html_print_input_text('free_search_string',
 	$free_search_string, '', 40, 0, true);
 
+$table->data[4][0] = '<strong>' . __('From (Date)') . '</strong>';
+$table->data[4][1] = html_print_input_text ('date_from_trap', $date_from_trap, '', 15, 10, true);
+$table->data[4][2] = '<strong>' . __('To (Date)') . '</strong>';
+$table->data[4][3] = html_print_input_text ('date_to_trap', $date_to_trap, '', 15, 10, true);
+
+$table->data[5][0] = '<strong>' . __('From (Time)') . '</strong>';
+$table->data[5][1] = html_print_input_text ('time_from_trap', $time_from_trap, false, 15, 10, true);
+$table->data[5][2] = '<strong>' . __('To (Time)') . '</strong>';
+$table->data[5][3] = html_print_input_text ('time_to_trap', $time_to_trap, false, 15, 10, true);
+
 // Type filter (ColdStart, WarmStart, LinkDown, LinkUp, authenticationFailure, Other)
-$table->data[4][1] = '<strong>' . __('Trap type') . '</strong>' .
+$table->data[6][1] = '<strong>' . __('Trap type') . '</strong>' .
 	ui_print_help_tip(__('Search by trap type'), true);
 $trap_types = array(
 	-1 => __('None'),
@@ -427,7 +470,7 @@ $trap_types = array(
 	3 => __('Link up (3)'),
 	4 => __('Authentication failure (4)'),
 	5 => __('Other'));
-$table->data[4][2] = html_print_select($trap_types, 'trap_type',
+$table->data[6][2] = html_print_select($trap_types, 'trap_type',
 	$trap_type, 'this.form.submit();', '', '', true, false, false);
 
 // Disable this feature (time will decide if temporarily) in Oracle cause the group by is very confictive
@@ -485,7 +528,11 @@ if (empty ($traps)) {
 			"pure=0&" .
 			"trap_type=" . $trap_type . "&" .
 			"group_by=" . $group_by . "&" .
-			"free_search_string=" . $free_search_string;
+			"free_search_string=" . $free_search_string . "&" .
+			"date_from_trap=" . $date_from_trap . "&" .
+			"date_to_trap=" . $date_to_trap . "&" .
+			"time_from_trap=" . $time_from_trap . "&" .
+			"time_to_trap=" . $time_to_trap;
 		
 		$urlPagination = $normal_url . "&" .
 			"pagination=" . $pagination . "&" .
@@ -510,7 +557,11 @@ if (empty ($traps)) {
 			"pure=1&" .
 			"trap_type=" . $trap_type . "&" .
 			"group_by=" . $group_by . "&" .
-			"free_search_string=" . $free_search_string;
+			"free_search_string=" . $free_search_string . "&" .
+			"date_from_trap=" . $date_from_trap . "&" .
+			"date_to_trap=" . $date_to_trap . "&" .
+			"time_from_trap=" . $time_from_trap . "&" .
+			"time_to_trap=" . $time_to_trap;
 		
 		$urlPagination = $normal_url . "&" .
 			"pagination=" . $pagination . "&" .
@@ -575,7 +626,11 @@ $url_snmp = "index.php?" .
 	"pure=" . $config["pure"] . "&" .
 	"trap_type=" . $trap_type . "&" .
 	"group_by=" . $group_by . "&" .
-	"free_search_string=" . $free_search_string;
+	"free_search_string=" . $free_search_string . "&" .
+	"date_from_trap=" . $date_from_trap . "&" .
+	"date_to_trap=" . $date_to_trap . "&" .
+	"time_from_trap=" . $time_from_trap . "&" .
+	"time_to_trap=" . $time_to_trap;
 
 $urlPagination = $url_snmp . "&" .
 	"pagination=" . $pagination . "&" .
@@ -678,7 +733,7 @@ if ($traps !== false) {
 				continue;
 			}
 			$data[1] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'" title="'.__('View agent details').'">';
-			$data[1] .= '<strong>'.$agent["nombre"].ui_print_help_tip($trap['source'], true);'</strong></a>';
+			$data[1] .= '<strong>'.$agent["nombre"].ui_print_help_tip($trap['source'], true, "images/tip-blanco.png");'</strong></a>';
 		}
 		
 		//OID
@@ -780,7 +835,11 @@ if ($traps !== false) {
 			"refresh=" . ((int)get_parameter('refresh', 0)) . "&" .
 			"pure=" . $config["pure"] . "&" .
 			"group_by=0&" .
-			"free_search_string=" . $free_search_string;
+			"free_search_string=" . $free_search_string . "&" .
+			"date_from_trap=" . $date_from_trap . "&" .
+			"date_to_trap=" . $date_to_trap . "&" .
+			"time_from_trap=" . $time_from_trap . "&" .
+			"time_to_trap=" . $time_to_trap;
 			
 			$string .= '<a href='.$new_url.'>'.__('See more details').'</a>';
 		}
@@ -940,12 +999,54 @@ foreach (get_priorities () as $num => $name) {
 echo '</div>';
 echo '<div style="clear:both;">&nbsp;</div>';
 
-
+ui_include_time_picker();
 ?>
 
 <script language="JavaScript" type="text/javascript">
 
 	$(document).ready( function() {
+		var $startDate = $("#text-date_from_trap");
+		var $startTime = $("#text-time_from_trap");
+		var $endDate = $("#text-date_to_trap");
+		var $endTime = $("#text-time_to_trap");
+
+		$startDate.datepicker({
+			dateFormat: "<?php echo DATE_FORMAT_JS; ?>",
+			onClose: function(selectedDate) {
+				$endDate.datepicker("option", "minDate", selectedDate);
+			}
+		});
+		$endDate.datepicker({
+			dateFormat: "<?php echo DATE_FORMAT_JS; ?>",
+			onClose: function(selectedDate) {
+				$startDate.datepicker("option", "maxDate", selectedDate);
+			}
+		});
+		
+		$startTime.timepicker({
+			showSecond: true,
+			timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
+			timeOnlyTitle: '<?php echo __('Choose time');?>',
+			timeText: '<?php echo __('Time');?>',
+			hourText: '<?php echo __('Hour');?>',
+			minuteText: '<?php echo __('Minute');?>',
+			secondText: '<?php echo __('Second');?>',
+			currentText: '<?php echo __('Now');?>',
+			closeText: '<?php echo __('Close');?>'
+		});
+
+		$endTime.timepicker({
+			showSecond: true,
+			timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
+			timeOnlyTitle: '<?php echo __('Choose time');?>',
+			timeText: '<?php echo __('Time');?>',
+			hourText: '<?php echo __('Hour');?>',
+			minuteText: '<?php echo __('Minute');?>',
+			secondText: '<?php echo __('Second');?>',
+			currentText: '<?php echo __('Now');?>',
+			closeText: '<?php echo __('Close');?>'
+		});
+
 		var controls = document.getElementById('dashboard-controls');
 		autoHideElement(controls, 1000);
 		

@@ -1019,7 +1019,8 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_phone_tag_ => undef,
 				_name_tag_ => undef,
 				_all_address_ => undef,
-				'_address_\d+_'  => undef,
+				'_address_\d+_' => undef,
+				'_data_module_\S+_ ' => undef,
 				 );
 	
 	if ((defined ($extra_macros)) && (ref($extra_macros) eq "HASH")) {
@@ -3635,6 +3636,28 @@ sub on_demand_macro($$$$$$) {
 		my $field_value = $rows[$field_number]->{'ip'};
 		if($field_value == ''){
 			$field_value = 'Ip not defined';
+		}
+		
+		return(defined($field_value)) ? $field_value : '';
+	} elsif ($macro =~ /_data_module_(\S+)_/) {
+		my $field_number = $1;
+		
+		my @rows = get_db_rows ($dbh, 'SELECT alias FROM tagente WHERE id_agente = (SELECT id_agente FROM tagente_modulo WHERE nombre = ?)', $field_number);
+
+		use Data::Dumper;
+		$Data::Dumper::Sortkeys = 1;
+	
+		my $field_value = '';
+		foreach my $row (@rows) {
+			my $agent_name = $row->{'alias'};
+
+			if ($agent_name ne "") {
+				$field_value .= "Agent " . $agent_name . " - Module " . $field_number;
+			}
+		}
+
+		if($field_value eq ''){
+			$field_value = 'Module ' . $field_number . " not found";
 		}
 		
 		return(defined($field_value)) ? $field_value : '';

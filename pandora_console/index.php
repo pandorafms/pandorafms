@@ -28,13 +28,31 @@ if ($develop_bypass != 1) {
 	if (! file_exists ("include/config.php")) {
 		if (! file_exists ("install.php")) {
 			$login_screen = 'error_noconfig';
-			$ownDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
+			$ownDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;	
 			$config['homedir'] = $ownDir;
-			$config['homeurl'] =  $_SERVER['REQUEST_URI'];
-			$config['homeurl_static'] =  $_SERVER['REQUEST_URI'];
-			
-			
-			
+			if (!defined('METACONSOLE')) {
+				$url = explode('/', $_SERVER['REQUEST_URI']);
+				$flag_url =0;
+				foreach ($url as $key => $value) {
+					if (strpos($value, 'index.php?') !== false || $flag_url) {
+					    $flag_url=1;
+					    unset($url[$key]);
+					}
+				}
+				$config["homeurl"] = rtrim(join("/", $url),"/");
+			}
+			else{
+				$url = explode('/', $_SERVER['REQUEST_URI']);
+				$flag_url =0;
+				foreach ($url as $key => $value) {
+					if (strpos($value, 'enterprise') !== false || $flag_url) {
+					    $flag_url=1;
+					    unset($url[$key]);
+					}
+				}
+				$config["homeurl"] = rtrim(join("/", $url),"/");
+			}
+			$config["homeurl_static"] = $config["homeurl"];
 			require('general/error_screen.php');
 			exit;
 		}
@@ -58,6 +76,31 @@ if ($develop_bypass != 1) {
 
 	// Check for installer presence
 	if (file_exists ("install.php")) {
+		$ownDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;	
+		$config['homedir'] = $ownDir;
+		if (!defined('METACONSOLE')) {
+			$url = explode('/', $_SERVER['REQUEST_URI']);
+			$flag_url =0;
+			foreach ($url as $key => $value) {
+				if (strpos($value, 'index.php?') !== false || $flag_url) {
+				    $flag_url=1;
+				    unset($url[$key]);
+				}
+			}
+			$config["homeurl"] = rtrim(join("/", $url),"/");
+		}
+		else{
+			$url = explode('/', $_SERVER['REQUEST_URI']);
+			$flag_url =0;
+			foreach ($url as $key => $value) {
+				if (strpos($value, 'enterprise') !== false || $flag_url) {
+				    $flag_url=1;
+				    unset($url[$key]);
+				}
+			}
+			$config["homeurl"] = rtrim(join("/", $url),"/");
+		}
+		$config["homeurl_static"] = $config["homeurl"];
 		$login_screen = 'error_install';
 		require('general/error_screen.php');
 		exit;
@@ -68,10 +111,30 @@ if ($develop_bypass != 1) {
 			(substr (sprintf ('%o', fileperms('include/config.php')), -4) != "0660") &&
 			(substr (sprintf ('%o', fileperms('include/config.php')), -4) != "0640")) {
 			$ownDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;	
-			$url = explode('/', $_SERVER['REQUEST_URI']);
 			$config['homedir'] = $ownDir;
-			$config['homeurl'] =  "/" . $url[1];
-			$config['homeurl_static'] = "/" .  $url[1];
+			if (!defined('METACONSOLE')) {
+				$url = explode('/', $_SERVER['REQUEST_URI']);
+				$flag_url =0;
+				foreach ($url as $key => $value) {
+					if (strpos($value, 'index.php?') !== false || $flag_url) {
+					    $flag_url=1;
+					    unset($url[$key]);
+					}
+				}
+				$config["homeurl"] = rtrim(join("/", $url),"/");
+			}
+			else{
+				$url = explode('/', $_SERVER['REQUEST_URI']);
+				$flag_url =0;
+				foreach ($url as $key => $value) {
+					if (strpos($value, 'enterprise') !== false || $flag_url) {
+					    $flag_url=1;
+					    unset($url[$key]);
+					}
+				}
+				$config["homeurl"] = rtrim(join("/", $url),"/");
+			}
+			$config["homeurl_static"] = $config["homeurl"];
 			$login_screen = 'error_perms';
 			require('general/error_screen.php');
 			exit;

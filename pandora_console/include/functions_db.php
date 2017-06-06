@@ -64,7 +64,17 @@ function db_connect($host = null, $db = null, $user = null, $pass = null, $port 
 	// Something went wrong
 	if ($return === false) {
 		if ($critical) {
+			
 			$login_screen = 'error_authconfig';
+			$url = explode('/', $_SERVER['REQUEST_URI']);
+			$flag_url =0;
+			foreach ($url as $key => $value) {
+				if (strpos($value, 'index.php?') !== false || $flag_url) {
+				    $flag_url=1;
+				    unset($url[$key]);
+				}
+			}
+			$config["homeurl"] = rtrim(join("/", $url),"/");
 			
 			require($config['homedir'] . '/general/error_screen.php');
 			exit;

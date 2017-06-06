@@ -122,7 +122,16 @@ function networkmap_process_networkmap($id = 0) {
 			null,
 			$old_mode);
 		
-		$filename_dot = sys_get_temp_dir() . "/networkmap_" . $filter;
+		switch (PHP_OS) {
+			case "WIN32":
+			case "WINNT":
+			case "Windows":
+				$filename_dot = sys_get_temp_dir() . "\\networkmap_" . $filter;
+				break;
+			default:
+				$filename_dot = sys_get_temp_dir() . "/networkmap_" . $filter;
+				break;
+		}
 		
 		if ($simple) {
 			$filename_dot .= "_simple";
@@ -133,8 +142,17 @@ function networkmap_process_networkmap($id = 0) {
 		$filename_dot .= "_" . $id . ".dot";
 		
 		file_put_contents($filename_dot, $graph);
-		
-		$filename_plain = sys_get_temp_dir() . "/plain.txt";
+
+		switch (PHP_OS) {
+			case "WIN32":
+			case "WINNT":
+			case "Windows":
+				$filename_plain = sys_get_temp_dir() . "\\plain.txt";
+				break;
+			default:
+				$filename_plain = sys_get_temp_dir() . "/plain.txt";
+				break;
+		}
 		
 		$cmd = "$filter -Tplain -o " . $filename_plain . " " .
 			$filename_dot;

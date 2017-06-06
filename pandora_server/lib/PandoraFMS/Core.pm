@@ -1019,7 +1019,8 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_phone_tag_ => undef,
 				_name_tag_ => undef,
 				_all_address_ => undef,
-				'_address_\d+_'  => undef,
+				'_address_\d+_' => undef,
+				'_data_module_\S+_ ' => undef,
 				 );
 	
 	if ((defined ($extra_macros)) && (ref($extra_macros) eq "HASH")) {
@@ -3635,6 +3636,34 @@ sub on_demand_macro($$$$$$) {
 		my $field_value = $rows[$field_number]->{'ip'};
 		if($field_value == ''){
 			$field_value = 'Ip not defined';
+		}
+		
+		return(defined($field_value)) ? $field_value : '';
+	} elsif ($macro =~ /_data_module_(\S+)_/) {
+		my $field_number = $1;
+		
+		my $id_mod = get_db_value ($dbh, 'SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = ? AND nombre = ?', $module->{'id_agente'}, $field_number);
+		my $type_mod = get_db_value ($dbh, 'SELECT id_tipo_modulo FROM tagente_modulo WHERE id_agente_modulo = ?', $id_mod);
+		my $unit_mod = get_db_value ($dbh, 'SELECT unit FROM tagente_modulo WHERE id_agente_modulo = ?', $id_mod);
+
+		my $field_value = "";
+		if ($type_mod eq 3){
+			$field_value = get_db_value($dbh, 'SELECT datos FROM tagente_datos_string where id_agente_modulo = ? order by utimestamp desc limit 1', $id_mod);
+		}
+		else{
+			$field_value = get_db_value($dbh, 'SELECT datos FROM tagente_datos where id_agente_modulo = ? order by utimestamp desc limit 1', $id_mod);
+			
+			my $data_precision = $pa_config->{'graph_precision'};
+			$field_value = sprintf("%.$data_precision" . "f", $field_value);
+			$field_value =~ s/0+$//;
+			$field_value =~ s/\.+$//;
+		}
+
+		if ($field_value eq ''){
+			$field_value = 'Module ' . $field_number . " not found";
+		}
+		elsif ($unit_mod ne '') {
+			$field_value .= $unit_mod;
 		}
 		
 		return(defined($field_value)) ? $field_value : '';

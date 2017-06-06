@@ -911,6 +911,10 @@ echo '</form>';
 		try {
 			var agentsFiltered = agentsFilteredWithAgents(agents, ids);
 			var modules = moduleNamesFromAgents(agentsFiltered);
+						
+		for (var i = 0; i < modules.length; i++) {
+			modules[i] = htmlDecode(modules[i]);
+		}
 			
 			fillModules(modules, modulesSelected);
 		}

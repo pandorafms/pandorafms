@@ -266,21 +266,16 @@ if ($get_module_detail) {
 		foreach ($columns as $col => $attr) {
 			if ($attr[1] != "modules_format_data") {
 				$data[] = date('d F Y h:i:s A', $row['utimestamp']);
-
 			}
 			elseif (($config['command_snapshot']) && (preg_match ("/[\n]+/i", $row[$attr[0]]))) {
 				// Its a single-data, multiline data (data snapshot) ?
 
-
 				// Detect string data with \n and convert to <br>'s
 				$datos = $row[$attr[0]];
-				//$datos = preg_replace ('/\n/i','<br>',$row[$attr[0]]);
-				//$datos = preg_replace ('/\s/i','&nbsp;',$datos);
 
 				// Because this *SHIT* of print_table monster, I cannot format properly this cells
 				// so, eat this, motherfucker :))
-
-				$datos =  io_safe_input($datos);
+				$datos =  preg_replace("/\n/", "</br></br>", $datos);
 
 				// I dont why, but using index (value) method, data is automatically converted to html entities ¿?
 				$data[] = $datos;
@@ -288,7 +283,6 @@ if ($get_module_detail) {
 			elseif ($is_web_content_string) {
 				//Fixed the goliat sends the strings from web
 				//without HTML entities
-
 				$data[] = io_safe_input($row[$attr[0]]);
 			}
 			else {
@@ -299,9 +293,6 @@ if ($get_module_detail) {
 					$data[] = io_safe_input($row[$attr[0]]);
 				}
 				else if (is_numeric($row[$attr[0]]) && !modules_is_string_type($row['module_type']) ) {
-					
-					//~ $data[] = remove_right_zeros(number_format($row[$attr[0]], $config['graph_precision']));
-					//~ $data[] = (double) $row[$attr[0]];
 					switch($row['module_type']) {
 						case 15:
 							$value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module_id);
@@ -320,17 +311,12 @@ if ($get_module_detail) {
 						$data[] = 'No data';
 					}
 					else {
-					
-					if(is_snapshot_data($row[$attr[0]])){	
-						$data[] = "<a target='_blank' href='".io_safe_input($row[$attr[0]])."'><img style='width:300px' src='".io_safe_input($row[$attr[0]])."'></a>";
-					}
-					else{
-						$data[] = $row[$attr[0]];
-					}
-						
-						
-					
-					
+						if(is_snapshot_data($row[$attr[0]])){	
+							$data[] = "<a target='_blank' href='".io_safe_input($row[$attr[0]])."'><img style='width:300px' src='".io_safe_input($row[$attr[0]])."'></a>";
+						}
+						else{
+							$data[] = $row[$attr[0]];
+						}
 					}
 				}
 			}

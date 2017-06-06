@@ -3642,22 +3642,28 @@ sub on_demand_macro($$$$$$) {
 	} elsif ($macro =~ /_data_module_(\S+)_/) {
 		my $field_number = $1;
 		
-		my @rows = get_db_rows ($dbh, 'SELECT alias FROM tagente WHERE id_agente = (SELECT id_agente FROM tagente_modulo WHERE nombre = ?)', $field_number);
+		my $id_mod = get_db_value ($dbh, 'SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = ? AND nombre = ?', $module->{'id_agente'}, $field_number);
+		my $type_mod = get_db_value ($dbh, 'SELECT id_tipo_modulo FROM tagente_modulo WHERE id_agente_modulo = ?', $id_mod);
+		my $unit_mod = get_db_value ($dbh, 'SELECT unit FROM tagente_modulo WHERE id_agente_modulo = ?', $id_mod);
 
-		use Data::Dumper;
-		$Data::Dumper::Sortkeys = 1;
-	
-		my $field_value = '';
-		foreach my $row (@rows) {
-			my $agent_name = $row->{'alias'};
-
-			if ($agent_name ne "") {
-				$field_value .= "Agent " . $agent_name . " - Module " . $field_number;
-			}
+		my $field_value = "";
+		if ($type_mod eq 3){
+			$field_value = get_db_value($dbh, 'SELECT datos FROM tagente_datos_string where id_agente_modulo = ? order by utimestamp desc limit 1', $id_mod);
+		}
+		else{
+			$field_value = get_db_value($dbh, 'SELECT datos FROM tagente_datos where id_agente_modulo = ? order by utimestamp desc limit 1', $id_mod);
+			
+			my $data_precision = $pa_config->{'graph_precision'};
+			$field_value = sprintf("%.$data_precision" . "f", $field_value);
+			$field_value =~ s/0+$//;
+			$field_value =~ s/\.+$//;
 		}
 
-		if($field_value eq ''){
+		if ($field_value eq ''){
 			$field_value = 'Module ' . $field_number . " not found";
+		}
+		elsif ($unit_mod ne '') {
+			$field_value .= $unit_mod;
 		}
 		
 		return(defined($field_value)) ? $field_value : '';

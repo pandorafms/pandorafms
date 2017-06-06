@@ -148,14 +148,15 @@ function networkmap_process_networkmap($id = 0) {
 			case "WINNT":
 			case "Windows":
 				$filename_plain = sys_get_temp_dir() . "\\plain.txt";
+				$cmd = $config['graphviz_win'] . "$filter -Tplain -o " . $filename_plain . " " .
+					$filename_dot;
 				break;
 			default:
 				$filename_plain = sys_get_temp_dir() . "/plain.txt";
+				$cmd = "$filter -Tplain -o " . $filename_plain . " " .
+					$filename_dot;
 				break;
 		}
-		
-		$cmd = "$filter -Tplain -o " . $filename_plain . " " .
-			$filename_dot;
 
 		system ($cmd);
 		

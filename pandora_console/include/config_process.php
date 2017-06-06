@@ -37,9 +37,21 @@ else {
 
 //home dir bad defined
 if (!is_dir($config['homedir'])) {
+	$url = explode('/', $_SERVER['REQUEST_URI']);
+	$flag_url =0;
+	foreach ($url as $key => $value) {
+		if (strpos($value, 'index.php?') !== false || $flag_url) {
+		    $flag_url=1;
+		    unset($url[$key]);
+		}
+	}
+	$config["homeurl"] = rtrim(join("/", $url),"/");
+	$config["homeurl_static"] = $config["homeurl"];
+
 	$ownDir = dirname(__FILE__) . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR;
 	$config['homedir'] = $ownDir;
 	$config["error"] = "homedir_bad_defined";
+	return;
 }
 
 
@@ -114,23 +126,28 @@ require_once ($ownDir . 'functions.php');
 // If not we will get ugly warnings. Set Europe/Madrid by default
 // Later will be replaced by the good one.
 if (!defined('METACONSOLE')) {
-	if(!isset($config["homeurl"])){
-		$url = explode('/', $_SERVER['REQUEST_URI']);
-		$config["homeurl"] = $url[1];
-		$config["homeurl_static"] = $url[1];
-		$config["error"] = "homeurl_bad_defined";
-		return;
-	}
-	else{
-		$url = explode('/', $_SERVER['REQUEST_URI']);
-		if($config["homeurl"] != '/'.$url[1]){
-			$config["homeurl"] = '/'.$url[1];
-			$config["homeurl_static"] = '/'.$url[1];
-			$config["error"] = "homeurl_bad_defined";
-			return;
+	$url = explode('/', $_SERVER['REQUEST_URI']);
+	$flag_url =0;
+	foreach ($url as $key => $value) {
+		if (strpos($value, 'index.php?') !== false || $flag_url) {
+		    $flag_url=1;
+		    unset($url[$key]);
 		}
 	}
+	$config["homeurl"] = rtrim(join("/", $url),"/");
 }
+else{
+	$url = explode('/', $_SERVER['REQUEST_URI']);
+	$flag_url =0;
+	foreach ($url as $key => $value) {
+		if (strpos($value, 'enterprise') !== false || $flag_url) {
+		    $flag_url=1;
+		    unset($url[$key]);
+		}
+	}
+	$config["homeurl"] = rtrim(join("/", $url),"/");
+}
+
 if (!isset($config["homeurl_static"])) {
 	$config["homeurl_static"] = $config["homeurl"];
 }

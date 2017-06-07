@@ -33,6 +33,8 @@ Apart from the defined module macros, the following macros are also available:
 <li>_agentstatus_ : Current status of the agent.</li>
 <li>_agentos_: Agent's operative system.</li>
 <li>_address_ : Address of the agent that fired the alert.</li>
+<li>_all_address_ : All address of the agent that fired the alert.</li>
+<li>_address_n_ : The address of the agent that corresponds to the position indicated in "n" e.g: address_1_ , address_2_</li>
 <li>_timestamp_ : Time when the alert was fired (yy-mm-dd hh:mm:ss).</li>
 <li>_timezone_ : Timezone name that _timestamp_ represents in.</li>
 <li>_data_ : Module data that caused the alert to fire.</li>

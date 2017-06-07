@@ -109,7 +109,6 @@ if (is_ajax ()) {
 			break;
 
 			case 'pandora':
-			case 'babel':
 			case 'ad':
 			case 'saml':
 			case 'integria':

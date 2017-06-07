@@ -40,6 +40,11 @@ else $graph_type = '';
 ob_start ();
 
 if (!empty($graph_type)) {
+	$homedir = $_GET['homedir'];
+	if ($homedir != null) {
+		$config['homedir'] = $homedir;
+	}
+
 	include_once($homeurl . 'include/functions.php');
 	include_once($homeurl . 'include/functions_html.php');
 	
@@ -244,7 +249,7 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color,
 		return '<img src="' . $no_data_image . '" />';
 	}
 
-	if ($dashboard || $vconsole) $menu = false;
+	if ($vconsole) $menu = false;
 	
 	if ($flash_chart) {
 		return flot_area_simple_graph(
@@ -559,7 +564,8 @@ function line_graph($flash_chart, $chart_data, $width, $height, $color,
 			$vconsole,
 			false,
 			$percentil_values,
-			$threshold_data);
+			$threshold_data,
+			$xaxisname);
 	}
 	else {
 		$graph = array();

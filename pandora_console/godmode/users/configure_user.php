@@ -23,6 +23,7 @@ enterprise_hook('open_meta_frame');
 include_once($config['homedir'] . "/include/functions_profile.php");
 include_once($config['homedir'] . '/include/functions_users.php');
 include_once ($config['homedir'] . '/include/functions_groups.php');
+include_once ($config['homedir'] . '/include/functions_visual_map.php');
 
 $meta = false;
 if(enterprise_installed() && defined("METACONSOLE")) {
@@ -30,6 +31,7 @@ if(enterprise_installed() && defined("METACONSOLE")) {
 }
 
 $isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
+enterprise_include_once ('include/functions_dashboard.php');
 
 //Add the columns for the enterprise Pandora edition.
 $enterprise_include = false;
@@ -129,6 +131,9 @@ if ($new_user && $config['admin_can_add_user']) {
 	if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 		$user_info['id_skin'] = '';
 	}
+	
+	$user_info['section'] = '';
+	$user_info['data_section'] = '';
 	//This attributes are inherited from global configuration
 	$user_info['block_size'] = $config["block_size"];
 	$user_info['flash_chart'] = $config["flash_charts"];
@@ -158,11 +163,26 @@ if ($create_user) {
 	$values['comments'] = (string) get_parameter ('comments');
 	$values['is_admin'] = (int) get_parameter ('is_admin', 0);
 	$values['language'] = get_parameter ('language', 'default');
+	$values['default_event_filter'] = (int) get_parameter('default_event_filter');
+	$dashboard = get_parameter('dashboard', '');
+	$visual_console = get_parameter('visual_console', '');
+	
 	if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 		$values['id_skin'] = (int) get_parameter ('skin', 0);
 	}
 	$values['block_size'] = (int) get_parameter ('block_size', $config["block_size"]);
 	$values['flash_chart'] = (int) get_parameter ('flash_charts', $config["flash_charts"]);
+	
+	$values['section'] = get_parameter ('section');
+	if (($values['section'] == 'Event list') || ($values['section'] == 'Group view') || ($values['section'] == 'Alert detail') || ($values['section'] == 'Tactical view') || ($values['section'] == 'Default')) {
+		$values["data_section"] = '';
+	} else if ($values['section'] == 'Dashboard') {
+		$values["data_section"] = $dashboard;
+	} else if (io_safe_output($values['section']) == 'Visual console') {
+		$values["data_section"] = $visual_console;
+	} else if ($values['section'] == 'Other'){
+		$values["data_section"] = get_parameter ('data_section');
+	}
 	
 	if (enterprise_installed()) {
 		$values['force_change_pass'] = 1;
@@ -266,11 +286,27 @@ if ($update_user) {
 	$values['comments'] = (string) get_parameter ('comments');
 	$values['is_admin'] = get_parameter ('is_admin', 0 );
 	$values['language'] = (string) get_parameter ('language');
+	$values['default_event_filter'] = (int) get_parameter('default_event_filter');
+	$dashboard = get_parameter('dashboard', '');
+	$visual_console = get_parameter('visual_console', '');
+	
 	if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 		$values['id_skin'] = get_parameter ('skin', 0);
 	}
 	$values['block_size'] = get_parameter ('block_size', $config["block_size"]);
 	$values['flash_chart'] = get_parameter ('flash_charts', $config["flash_charts"]);
+	
+	
+	$values['section'] = get_parameter ('section');
+	if (($values['section'] == 'Event list') || ($values['section'] == 'Group view') || ($values['section'] == 'Alert detail') || ($values['section'] == 'Tactical view') || ($values['section'] == 'Default')) {
+		$values["data_section"] = '';
+	} else if ($values['section'] == 'Dashboard') {
+		$values["data_section"] = $dashboard;
+	} else if (io_safe_output($values['section']) == 'Visual console') {
+		$values["data_section"] = $visual_console;
+	} else if ($values['section'] == 'Other'){
+		$values["data_section"] = get_parameter ('data_section');
+	}
 	
 	if(enterprise_installed() && defined('METACONSOLE')) {
 		$values['metaconsole_access'] = get_parameter ('metaconsole_access');
@@ -282,6 +318,7 @@ if ($update_user) {
 	$values["strict_acl"] = (bool)get_parameter ('strict_acl', false);
 	$values["session_time"] = (int)get_parameter('session_time', 0);
 	
+
 	$res1 = update_user ($id, $values);
 	
 	if ($config['user_can_update_password']) {
@@ -324,7 +361,8 @@ if ($update_user) {
 				' Phone: ' . $values['phone'] . ' Comments: ' . $values['comments'] .
 				' Is_admin: ' . $values['is_admin'] .
 				' Language: ' . $values['language'] . 
-				' Block size: ' . $values['block_size'] . ' Flash Chats: ' . $values['flash_chart'];
+				' Block size: ' . $values['block_size'] . ' Flash Chats: ' . $values['flash_chart'] .
+				' Section: ' . $values['section'];
 			
 			if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 				$info .= ' Skin: ' . $values['id_skin'];
@@ -512,15 +550,59 @@ if (!$meta) {
 	}
 }
 
-$table->data[11][0] = __('Interactive charts'). ' ' .ui_print_help_tip(__('Whether to use Javascript or static PNG graphs'), true) ;
+$table->data[11][0] = __('Interactive charts').' '.ui_print_help_tip(__('Whether to use Javascript or static PNG graphs'), true) ;
 $values = array(-1 => __('Use global conf'), 1 => __('Yes'), 0 => __('No'));
 $table->data[11][1] = html_print_select($values, 'flash_charts',
 	$user_info["flash_chart"], '', '', -1, true, false, false);
-$table->data[12][0] = __('Block size for pagination');
-$table->data[12][1] = html_print_input_text ('block_size', $user_info["block_size"], '', 5, 5, true);
+
+$table->data[12][0] = __('Home screen').
+		ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type sec=estado&sec2=operation/agentes/estado_agente to show agent detail view'), true);
+$values = array (
+	'Default' =>__('Default'),
+	'Visual console'=>__('Visual console'),
+	'Event list'=>__('Event list'),
+	'Group view'=>__('Group view'),
+	'Tactical view'=>__('Tactical view'),
+	'Alert detail' => __('Alert detail'),
+	'Other'=>__('Other'));
+if (enterprise_installed()) {
+	$values['Dashboard'] = __('Dashboard');
+}
+$table->data[12][1] = html_print_select($values, 'section', io_safe_output($user_info["section"]), 'show_data_section();', '', -1, true, false, false);	
+
+if (enterprise_installed()) {
+	$dashboards = dashboard_get_dashboards();
+	$dashboards_aux = array();
+	if ($dashboards === false) {
+		$dashboards = array('None'=>'None');
+	}
+	else {
+		foreach ($dashboards as $key => $dashboard) {
+			$dashboards_aux[$dashboard['name']] = $dashboard['name'];
+		}
+	}
+	$table->data[12][1] .= html_print_select ($dashboards_aux, 'dashboard', $user_info["data_section"], '', '', '', true);
+}
+
+$layouts = visual_map_get_user_layouts ($config['id_user'], true);
+$layouts_aux = array();
+if ($layouts === false) {
+	$layouts_aux = array('None'=>'None');
+}
+else {
+	foreach ($layouts as $layout) {
+		$layouts_aux[$layout] = $layout;
+	}
+}
+
+$table->data[12][1] .= html_print_select ($layouts_aux, 'visual_console', $user_info["data_section"], '', '', '', true);
+$table->data[12][1] .=  html_print_input_text ('data_section', $user_info["data_section"], '', 60, 255, true, false);
+	
+$table->data[13][0] = __('Block size for pagination');
+$table->data[13][1] = html_print_input_text ('block_size', $user_info["block_size"], '', 5, 5, true);
 
 if ($id == $config['id_user']) {
-	$table->data[12][1] .= html_print_input_hidden('quick_language_change', 1, true);
+	$table->data[13][1] .= html_print_input_hidden('quick_language_change', 1, true);
 }
 
 if (enterprise_installed() && defined('METACONSOLE')) {
@@ -528,28 +610,34 @@ if (enterprise_installed() && defined('METACONSOLE')) {
 	if (isset($user_info["metaconsole_access"])) {
 		$user_info_metaconsole_access = $user_info["metaconsole_access"];
 	}
-	$table->data[12][0] = __('Metaconsole access'). ' ' .ui_print_help_icon ('meta_access', true);
+	$table->data[13][0] = __('Metaconsole access'). ' ' .ui_print_help_icon ('meta_access', true);
 	$metaconsole_accesses = array('basic' => __('Basic'),
 		'advanced' => __('Advanced'));
-	$table->data[12][1] = html_print_select($metaconsole_accesses,
+	$table->data[13][1] = html_print_select($metaconsole_accesses,
 		'metaconsole_access', $user_info_metaconsole_access,
 		'','',-1,true, false, false);
 }
 
-$table->data[13][0] = __('Not Login');
-$table->data[13][0] .= ui_print_help_tip(__('The user with not login set only can access to API.'), true);
-$table->data[13][1] = html_print_checkbox('not_login', 1, $user_info["not_login"], true);
-
-$table->data[14][0] = __('Strict ACL');
-$table->data[14][0] .= ui_print_help_tip(__('With this option enabled, the user will can access to accurate information. It is not recommended for admin users because performance could be affected'), true);
-$table->data[14][1] = html_print_checkbox('strict_acl', 1, $user_info["strict_acl"], true);
+$table->data[14][0] = __('Not Login');
+$table->data[14][0] .= ui_print_help_tip(__('The user with not login set only can access to API.'), true);
+$table->data[14][1] = html_print_checkbox('not_login', 1, $user_info["not_login"], true);
 
 $table->data[15][0] = __('Session Time');
 $table->data[15][0] .= ui_print_help_tip(__('This is defined in minutes, If you wish a permanent session should putting -1 in this field.'), true);
 $table->data[15][1] = html_print_input_text ('session_time', $user_info["session_time"], '', 5, 5, true);
-	
+
+$event_filter_data = db_get_all_rows_sql('SELECT id_name, id_filter FROM tevent_filter');
+$event_filter = array();
+$event_filter[0] = __('None');
+foreach ($event_filter_data as $filter) {
+	$event_filter[$filter['id_filter']] = $filter['id_name'];
+}
+$table->data[16][0] = __('Default event filter');
+$table->data[16][1] = html_print_select ($event_filter, 'default_event_filter', $user_info["default_event_filter"], '','', __('None'), true, false, false);
+
 if($meta) {
-	enterprise_include('include/functions_metaconsole.php');
+	enterprise_include_once ('include/functions_metaconsole.php');
+	
 	$data = array();
 	$data[0] = __('Enable agents managment');
 	$data[1] = html_print_checkbox('metaconsole_agents_manager', 1, $user_info["metaconsole_agents_manager"], true);
@@ -738,6 +826,56 @@ $(document).ready (function () {
 	
 	$('input:radio[name="is_admin"]').trigger('change');
 	$('#checkbox-metaconsole_agents_manager').trigger('change');
+	
+	show_data_section();
 });
+
+function show_data_section () {
+	section = $("#section").val();
+	
+	switch (section) {
+		case <?php echo "'" . 'Dashboard' . "'"; ?>:
+			$("#text-data_section").css("display", "none");
+			$("#dashboard").css("display", "");
+			$("#visual_console").css("display", "none");
+			break;
+		case <?php echo "'" . 'Visual console' . "'"; ?>:
+			$("#text-data_section").css("display", "none");
+			$("#dashboard").css("display", "none");
+			$("#visual_console").css("display", "");
+			break;
+		case <?php echo "'" . 'Event list' . "'"; ?>:
+			$("#text-data_section").css("display", "none");
+			$("#dashboard").css("display", "none");
+			$("#visual_console").css("display", "none");
+			break;
+		case <?php echo "'" . 'Group view' . "'"; ?>:
+			$("#text-data_section").css("display", "none");
+			$("#dashboard").css("display", "none");
+			$("#visual_console").css("display", "none");
+			break;
+		case <?php echo "'" . 'Tactical view' . "'"; ?>:
+			$("#text-data_section").css("display", "none");
+			$("#dashboard").css("display", "none");
+			$("#visual_console").css("display", "none");
+			break;
+		case <?php echo "'" . 'Alert detail' . "'"; ?>:
+			$("#text-data_section").css("display", "none");
+			$("#dashboard").css("display", "none");
+			$("#visual_console").css("display", "none");
+			break;
+		case <?php echo "'" . 'Other' . "'"; ?>:
+			$("#text-data_section").css("display", "");
+			$("#dashboard").css("display", "none");
+			$("#visual_console").css("display", "none");
+			break;
+		case <?php echo "'" . 'Default' . "'"; ?>:
+			$("#text-data_section").css("display", "none");
+			$("#dashboard").css("display", "none");
+			$("#visual_console").css("display", "none");
+			break;
+	}
+}
+
 /* ]]> */
 </script>

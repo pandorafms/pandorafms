@@ -22,8 +22,8 @@ function winopeng_var (url, wid, width, height) {
         status = wid;
 }
 
-function open_help (help_id, home_url) {
-	open (home_url+"general/pandora_help.php?id="+help_id, "pandorahelp", "width=650,height=500,status=0,toolbar=0,menubar=0,scrollbars=1,location=0");
+function open_help (help_id, home_url, id_user) {
+	open (home_url+"general/pandora_help.php?id="+help_id+"&id_user="+id_user, "pandorahelp", "width=650,height=500,status=0,toolbar=0,menubar=0,scrollbars=1,location=0");
 }
 
 /**
@@ -175,7 +175,9 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 		//val() because the var is same <option val="NNN"></option>
 		idAgents.push($(val).val());
 	});
-	
+
+	var tags_to_search = $('#tags1').val();
+
 	//Hack to find only enabled modules
 	//Pass a flag as global var
 	find_modules = 'all';
@@ -226,6 +228,7 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 			"page": "operation/agentes/ver_agente",
 			"get_agent_modules_json_for_multiple_agents": 1,
 			"id_agent[]": idAgents,
+			"tags[]": tags_to_search,
 			"all": find_modules,
 			"module_types_excluded[]": module_types_excluded,
 			"name": module_name,
@@ -400,8 +403,6 @@ function alert_templates_changed_by_multiple_agents_with_alerts (event, id_agent
 		//val() because the var is same <option val="NNN"></option>
 		templates.push($(val).val());
 	});
-	
-	console.log(templates);
 	
 	$('#module').attr ('disabled', 1);
 	$('#module').empty ();
@@ -1092,7 +1093,7 @@ function openURLTagWindow(url) {
 	window.open(url, '','width=300, height=300, toolbar=no, location=no, directories=no, status=no, menubar=no'); 
 }
 
-function removeTinyMCE(elementID) {console.log(elementID);
+function removeTinyMCE(elementID) {
 	if (elementID.length > 0 && !isEmptyObject(tinyMCE))
 		tinyMCE.EditorManager.execCommand('mceRemoveControl', true, elementID);
 }
@@ -1182,4 +1183,14 @@ var autoHideElement = function (element, hideTime) {
 	
 	// Start hide
 	startHideTimeout(hideTime);
+}
+
+function htmlEncode(value){
+  // Create a in-memory div, set its inner text (which jQuery automatically encodes)
+  // Then grab the encoded contents back out. The div never exists on the page.
+  return $('<div/>').text(value).html();
+}
+
+function htmlDecode(value){
+  return $('<div/>').html(value).text();
 }

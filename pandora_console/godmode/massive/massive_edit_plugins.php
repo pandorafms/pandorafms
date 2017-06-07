@@ -674,7 +674,7 @@ echo '</form>';
 	}
 	
 	var processGet = function (params, callback) {
-		return jQuery.get(ajaxPage, params, 'json')
+		return jQuery.post(ajaxPage, params, 'json')
 			.done(function (data, textStatus, jqXHR) {
 				try {
 					data = JSON.parse(data);
@@ -911,6 +911,10 @@ echo '</form>';
 		try {
 			var agentsFiltered = agentsFilteredWithAgents(agents, ids);
 			var modules = moduleNamesFromAgents(agentsFiltered);
+						
+		for (var i = 0; i < modules.length; i++) {
+			modules[i] = htmlDecode(modules[i]);
+		}
 			
 			fillModules(modules, modulesSelected);
 		}

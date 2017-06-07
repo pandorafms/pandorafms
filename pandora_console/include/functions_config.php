@@ -249,6 +249,19 @@ function config_update_config () {
 						$inventory_changes_blacklist = get_parameter('inventory_changes_blacklist', array());
 						if (!config_update_value ('inventory_changes_blacklist', implode(',',$inventory_changes_blacklist)))
 							$error_update[] = __('Inventory changes blacklist');
+
+						if (!config_update_value ('email_from_dir', get_parameter('email_from_dir')))
+							$error_update[] = __('From dir');
+						if (!config_update_value ('email_from_name', get_parameter('email_from_name')))
+							$error_update[] = __('From name');
+						if (!config_update_value ('email_smtpServer', get_parameter('email_smtpServer')))
+							$error_update[] = __('Server SMTP');
+						if (!config_update_value ('email_smtpPort', (int)get_parameter('email_smtpPort')))
+							$error_update[] = __('Port SMTP');
+						if (!config_update_value ('email_username', get_parameter('email_username')))
+							$error_update[] = __('Email user');
+						if (!config_update_value ('email_password', get_parameter('email_password')))
+							$error_update[] = __('Email password');
 						
 					}
 					break;
@@ -277,6 +290,8 @@ function config_update_config () {
 							$error_update[] = __('Enable password history');
 						if (!config_update_value ('compare_pass', get_parameter('compare_pass')))
 							$error_update[] = __('Compare previous password');
+						if (!config_update_value ('reset_pass_option', (bool)get_parameter('reset_pass_option')))
+							$error_update[] = __('Activate reset password');
 					}
 					break;
 				case 'auth':
@@ -333,16 +348,6 @@ function config_update_config () {
 					if (!config_update_value ('rpandora_pass', io_input_password(get_parameter ('rpandora_pass'))))
 						$error_update[] = __('Password');
 					
-					if (!config_update_value ('rbabel_server', get_parameter ('rbabel_server')))
-						$error_update[] = __('Babel Enterprise host');
-					if (!config_update_value ('rbabel_port', get_parameter ('rbabel_port')))
-						$error_update[] = __('MySQL port');
-					if (!config_update_value ('rbabel_dbname', get_parameter ('rbabel_dbname')))
-						$error_update[] = __('Database name');
-					if (!config_update_value ('rbabel_user', get_parameter ('rbabel_user')))
-						$error_update[] = __('User');
-					if (!config_update_value ('rbabel_pass', io_input_password(get_parameter ('rbabel_pass'))))
-						$error_update[] = __('Password');
 					if (!config_update_value ('rintegria_server', get_parameter ('rintegria_server')))
 						$error_update[] = __('Integria host');
 					if (!config_update_value ('rintegria_port', get_parameter ('rintegria_port')))
@@ -413,6 +418,8 @@ function config_update_config () {
 						if (!config_update_value ('inventory_purge', get_parameter ('inventory_purge')))
 							$error_update[] = __('Max. days before delete inventory data');
 					}
+					if (!config_update_value ('max_graph_container', get_parameter ('max_graph_container')))
+						$error_update[] = __('Graph container - Max. Items');
 					/////////////
 					break;
 					
@@ -655,7 +662,10 @@ function config_update_config () {
 					$error_update[] = __('Custom report front') . ' - ' . __('First page');				
 				
 				if (!config_update_value ('custom_report_front_footer', get_parameter('custom_report_front_footer')))
-					$error_update[] = __('Custom report front') . ' - ' . __('Footer');				
+					$error_update[] = __('Custom report front') . ' - ' . __('Footer');	
+
+					if (!config_update_value ('csv_divider', (string) get_parameter('csv_divider', ';')))
+						$error_update[] = __('CSV divider');
 				
 				break;
 			case 'net':
@@ -895,6 +905,10 @@ function config_process_config () {
 			config_update_value ('inventory_purge',  21);
 		}
 	}
+	
+	if (!isset($config['max_graph_container'])) {
+		config_update_value ('max_graph_container', 10);
+	}
 
 	if (!isset($config['max_macro_fields'])) {
 		config_update_value ('max_macro_fields', 10);
@@ -986,6 +1000,10 @@ function config_process_config () {
 	
 	if (!isset ($config["log_collector"])) {
 		config_update_value ('log_collector', 0);
+	}
+
+	if (!isset ($config["reset_pass_option"])) {
+		config_update_value ('reset_pass_option', 0);
 	}
 
 	if (!isset ($config["include_agents"])) {
@@ -1187,7 +1205,31 @@ function config_process_config () {
 	if (!isset ($config['history_db_delay'])) {
 		config_update_value ( 'history_db_delay', 0);
 	}
-	
+
+	if (!isset ($config['email_from_dir'])) {
+		config_update_value ( 'email_from_dir', "pandora@pandorafms.org");
+	}
+
+	if (!isset ($config['email_from_name'])) {
+		config_update_value ( 'email_from_name', "Pandora FMS");
+	}
+
+	if (!isset ($config['email_smtpServer'])) {
+		config_update_value ( 'email_smtpServer', "127.0.0.1");
+	}
+
+	if (!isset ($config['email_smtpPort'])) {
+		config_update_value ( 'email_smtpPort', 25);
+	}
+
+	if (!isset ($config['email_username'])) {
+		config_update_value ( 'email_username', "");
+	}
+
+	if (!isset ($config['email_password'])) {
+		config_update_value ( 'email_password', "");
+	}
+
 	if (!isset ($config['activate_gis'])) {
 		config_update_value ( 'activate_gis', 0);
 	}
@@ -1394,26 +1436,6 @@ function config_process_config () {
 		config_update_value ( 'rpandora_pass', '');
 	}
 	
-	if (!isset ($config['rbabel_server'])) {
-		config_update_value ( 'rbabel_server', 'localhost');
-	}
-	
-	if (!isset ($config['rbabel_port'])) {
-		config_update_value ( 'rbabel_port', 3306);
-	}
-	
-	if (!isset ($config['rbabel_dbname'])) {
-		config_update_value ( 'rbabel_dbname', 'babel');
-	}
-	
-	if (!isset ($config['rbabel_user'])) {
-		config_update_value ( 'rbabel_user', 'babel');
-	}
-	
-	if (!isset ($config['rbabel_pass'])) {
-		config_update_value ( 'rbabel_pass', '');
-	}
-	
 	if (!isset ($config['rintegria_server'])) {
 		config_update_value ( 'rintegria_server', 'localhost');
 	}
@@ -1618,6 +1640,10 @@ function config_process_config () {
 	}
 	if (!isset($config["classic_menu"])) {
 		config_update_value ('classic_menu', 0);
+	}
+
+	if (!isset($config["csv_divider"])) {
+		config_update_value ('csv_divider', ";");
 	}
 
 	if (!isset($config['command_snapshot'])) {

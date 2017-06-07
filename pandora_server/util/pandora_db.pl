@@ -33,7 +33,7 @@ use PandoraFMS::Tools;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.702 PS170511";
+my $version = "7.0NG.704 PS170607";
 
 # Pandora server configuration
 my %conf;
@@ -93,7 +93,7 @@ sub pandora_purgedb ($$) {
 	}
 
 	# Delete old inventory data
-	if ($conf->{'_inventory_purge'} > 0) {
+	if (defined($conf->{'_inventory_purge'}) && $conf->{'_inventory_purge'} > 0) {
 		if (enterprise_load (\%conf) != 0) {
 			my $ulimit_timestamp_inventory = time() - (86400 * $conf->{'_inventory_purge'});
 

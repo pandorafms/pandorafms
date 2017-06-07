@@ -126,7 +126,14 @@ if ($delete_group) {
 	
 	if ($result) {
 		$result = db_process_sql_update('tagente_modulo', array('id_module_group' => 0), array('id_module_group' => $id_group));
-
+		db_process_sql_update('tpolicy_modules', array('id_module_group' => 0), array('id_module_group' => $id_group));
+		db_process_sql_update('tcontainer_item', array('id_module_group' => 0), array('id_module_group' => $id_group));
+		db_process_sql_update('tnetwork_component', array('id_module_group' => 0), array('id_module_group' => $id_group));
+		db_process_sql_update('treport_content', array('id_module_group' => 0), array('id_module_group' => $id_group));
+		db_process_sql_update('tnetwork_map', array('id_module_group' => 0), array('id_module_group' => $id_group));
+		db_process_sql_update('tlocal_component', array('id_module_group' => 0), array('id_module_group' => $id_group));
+		db_process_sql_update('treport_content_template', array('id_module_group' => 0), array('id_module_group' => $id_group));
+		
 		// A group with no modules can be deleted, to avoid a message error then do the follwing
 		if ($result !== false)
 			$result = true;

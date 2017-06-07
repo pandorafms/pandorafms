@@ -201,14 +201,6 @@ function process_user_login_remote ($login, $pass, $api = false) {
 			}
 			break;
 		
-		// Remote Babel Enterprise
-		case 'babel':
-			if (enterprise_hook ('remote_babel_process_user_login', array ($login, $pass)) === false) {
-				$config["auth_error"] = "User not found in database or incorrect password";
-				return false;
-			}
-			break;
-		
 		// Remote Integria
 		case 'integria':
 			if (enterprise_hook ('remote_integria_process_user_login', array ($login, $pass)) === false) {

@@ -572,6 +572,42 @@ CREATE TABLE IF NOT EXISTS  `tconfig_os` (
 	PRIMARY KEY  (`id_os`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- -----------------------------------------------------
+-- Table `tcontainer`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tcontainer` (
+	`id_container` mediumint(4) unsigned NOT NULL auto_increment,
+	`name` varchar(100) NOT NULL default '',
+	`parent` mediumint(4) unsigned NOT NULL default 0,
+	`disabled` tinyint(3) unsigned NOT NULL default 0,
+	`id_group` mediumint(8) unsigned NULL default 0, 
+	`description` TEXT NOT NULL,
+ 	PRIMARY KEY  (`id_container`),
+ 	KEY `parent_index` (`parent`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tcontainer_item`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tcontainer_item` (
+	`id_ci` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`id_container` mediumint(4) unsigned NOT NULL default 0,
+	`type` varchar(30) default 'simple_graph',
+	`id_agent` int(10) unsigned NOT NULL default 0,
+	`id_agent_module` bigint(14) unsigned NULL default NULL,
+	`time_lapse` int(11) NOT NULL default 0,
+	`id_graph` INTEGER UNSIGNED default 0,
+	`only_average` tinyint (1) unsigned default 0 not null,
+	`id_group` INT (10) unsigned NOT NULL DEFAULT 0,
+	`id_module_group` INT (10) unsigned NOT NULL DEFAULT 0,
+	`agent` varchar(100) NOT NULL default '',
+	`module` varchar(100) NOT NULL default '',
+	`id_tag` integer(10) unsigned NOT NULL DEFAULT 0,
+	PRIMARY KEY(`id_ci`),
+	FOREIGN KEY (`id_container`) REFERENCES tcontainer(`id_container`)
+	ON DELETE CASCADE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
 -- ---------------------------------------------------------------------
 -- Table `tevento`
 -- ---------------------------------------------------------------------
@@ -1075,6 +1111,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
 	`strict_acl` tinyint(1) unsigned NOT NULL DEFAULT 0,
 	`id_filter`  int(10) unsigned NULL default NULL,
 	`session_time` int(10) signed NOT NULL default 0,
+	`default_event_filter` int(10) unsigned NOT NULL default 0,
 	CONSTRAINT `fk_filter_id` FOREIGN KEY (`id_filter`) REFERENCES tevent_filter (`id_filter`) ON DELETE SET NULL,
 	UNIQUE KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -1218,6 +1255,7 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`id_group` INT (10) unsigned NOT NULL DEFAULT 0,
 	`id_module_group` INT (10) unsigned NOT NULL DEFAULT 0,
 	`server_name` text,
+	`historical_db` tinyint(1) UNSIGNED NOT NULL default 0,
 	PRIMARY KEY(`id_rc`),
 	FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
 		ON UPDATE CASCADE ON DELETE CASCADE
@@ -2018,6 +2056,7 @@ CREATE TABLE IF NOT EXISTS `tpolicy_modules` (
 	`max` bigint(20) default '0',
 	`min` bigint(20) default '0',
 	`module_interval` int(4) unsigned default '0',
+	`ip_target` varchar(100) default '',
 	`tcp_port` int(4) unsigned default '0',
 	`tcp_send` text default '',
 	`tcp_rcv` text default '',
@@ -2032,7 +2071,7 @@ CREATE TABLE IF NOT EXISTS `tpolicy_modules` (
 	`plugin_pass` text default '',
 	`plugin_parameter` text,
 	`id_plugin` int(10) default '0',
-	`post_process` double(24,15) default NULL,
+	`post_process` double(24,15) default 0,
 	`prediction_module` bigint(14) default '0',
 	`max_timeout` int(4) unsigned default '0',
 	`max_retries` int(4) unsigned default '0',
@@ -2926,3 +2965,11 @@ create table IF NOT EXISTS `tphase`(
     `timeout` int unsigned default null,
     PRIMARY KEY (`phase_id`,`transaction_id`)
 ) engine=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `treset_pass` (
+	`id` bigint(10) unsigned NOT NULL auto_increment,
+	`id_user` varchar(100) NOT NULL default '',
+	`cod_hash` varchar(100) NOT NULL default '',
+	`reset_time` int(10) unsigned NOT NULL default 0,
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

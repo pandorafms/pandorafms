@@ -560,6 +560,7 @@ sub pandora_process_alert ($$$$$$$$;$) {
 
 		$alert->{'critical_instructions'} = $critical_instructions;
 		$alert->{'warning_instructions'} = $warning_instructions;
+		$alert->{'unknown_instructions'} = $unknown_instructions;
 		
 		# Generate an event
 		if ($table eq 'tevent_alert') {
@@ -769,6 +770,7 @@ sub pandora_execute_alert ($$$$$$$$$;$) {
 
 	$alert->{'critical_instructions'} = $critical_instructions;
 	$alert->{'warning_instructions'} = $warning_instructions;
+	$alert->{'unknown_instructions'} = $unknown_instructions;
 
 	# Execute actions
 	my $event_generated = 0;
@@ -995,6 +997,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_alert_text_severity_ => get_priority_name($alert->{'priority'}),
 				_alert_critical_instructions_ => $alert->{'critical_instructions'},
 				_alert_warning_instructions_ => $alert->{'warning_instructions'},
+				_alert_unknown_instructions_ => $alert->{'unknown_instructions'},
 				_groupcontact_ => (defined ($group)) ? $group->{'contact'} : '',
 				_groupcustomid_ => (defined ($group)) ? $group->{'custom_id'} : '',
 				_groupother_ => (defined ($group)) ? $group->{'other'} : '',
@@ -1015,6 +1018,9 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_email_tag_ => undef,
 				_phone_tag_ => undef,
 				_name_tag_ => undef,
+				_all_address_ => undef,
+				'_address_\d+_' => undef,
+				'_data_module_\S+_ ' => undef,
 				 );
 	
 	if ((defined ($extra_macros)) && (ref($extra_macros) eq "HASH")) {
@@ -2681,7 +2687,7 @@ sub pandora_delete_module ($$;$) {
 	
 	my $agent_name = get_agent_name($dbh, $module->{'id_agente'});
 	
-	if ((defined($conf)) && (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf')) {
+	if ((defined($conf)) && (-e $conf->{incomingdir}.'/conf/'.md5(encode_utf8(safe_output($agent_name))).'.conf')) {
 		enterprise_hook('pandora_delete_module_from_conf', [$conf,$agent_name,$module->{'nombre'}]);
 	}
 	
@@ -2979,12 +2985,11 @@ sub pandora_delete_agent ($$;$) {
 	
 	if (defined $conf) {
 		# Delete the conf files
-		if (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf') {
-			unlink($conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf');
-		}
-		if (-e $conf->{incomingdir}.'/md5/'.md5($agent_name).'.md5') {
-			unlink($conf->{incomingdir}.'/md5/'.md5($agent_name).'.md5');
-		}
+		my $conf_fname = $conf->{incomingdir}.'/conf/'.md5(encode_utf8(safe_output($agent_name))).'.conf';
+		unlink($conf_fname) if (-f $conf_fname);
+		
+		my $md5_fname = $conf->{incomingdir}.'/md5/'.md5(encode_utf8(safe_output($agent_name))).'.md5';
+		unlink($md5_fname) if (-f $md5_fname);
 	}
 
 	foreach my $module (@modules) {
@@ -3611,6 +3616,57 @@ sub on_demand_macro($$$$$$) {
 		else{
 			my $field_value = get_db_value($dbh, 'SELECT datos FROM tagente_datos where id_agente_modulo = ? order by utimestamp desc limit 1 offset 1', $module->{'id_agente_modulo'});
 		}
+	}elsif ($macro eq '_all_address_') {
+		return '' unless defined ($module);
+		my @rows = get_db_rows ($dbh, 'SELECT ip FROM taddress_agent taag, taddress ta WHERE ta.id_a = taag.id_a AND id_agent = ?', $module->{'id_agente'});
+
+		my $field_value = "<pre>";
+		my $count=1;
+		foreach my $element (@rows) {
+			$field_value .= $count.": " . $element->{'ip'} . "\n";
+			$count++;
+		}
+		$field_value .= "</pre>";
+		return(defined($field_value)) ? $field_value : '';
+	} elsif ($macro =~ /_address_(\d+)_/) {
+		return '' unless defined ($module);
+		my $field_number = $1 - 1;
+		my @rows = get_db_rows ($dbh, 'SELECT ip FROM taddress_agent taag, taddress ta WHERE ta.id_a = taag.id_a AND id_agent = ?', $module->{'id_agente'});
+		
+		my $field_value = $rows[$field_number]->{'ip'};
+		if($field_value == ''){
+			$field_value = 'Ip not defined';
+		}
+		
+		return(defined($field_value)) ? $field_value : '';
+	} elsif ($macro =~ /_data_module_(\S+)_/) {
+		my $field_number = $1;
+		
+		my $id_mod = get_db_value ($dbh, 'SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = ? AND nombre = ?', $module->{'id_agente'}, $field_number);
+		my $type_mod = get_db_value ($dbh, 'SELECT id_tipo_modulo FROM tagente_modulo WHERE id_agente_modulo = ?', $id_mod);
+		my $unit_mod = get_db_value ($dbh, 'SELECT unit FROM tagente_modulo WHERE id_agente_modulo = ?', $id_mod);
+
+		my $field_value = "";
+		if ($type_mod eq 3){
+			$field_value = get_db_value($dbh, 'SELECT datos FROM tagente_datos_string where id_agente_modulo = ? order by utimestamp desc limit 1', $id_mod);
+		}
+		else{
+			$field_value = get_db_value($dbh, 'SELECT datos FROM tagente_datos where id_agente_modulo = ? order by utimestamp desc limit 1', $id_mod);
+			
+			my $data_precision = $pa_config->{'graph_precision'};
+			$field_value = sprintf("%.$data_precision" . "f", $field_value);
+			$field_value =~ s/0+$//;
+			$field_value =~ s/\.+$//;
+		}
+
+		if ($field_value eq ''){
+			$field_value = 'Module ' . $field_number . " not found";
+		}
+		elsif ($unit_mod ne '') {
+			$field_value .= $unit_mod;
+		}
+		
+		return(defined($field_value)) ? $field_value : '';
 	}
 }
 
@@ -4070,17 +4126,29 @@ sub pandora_inhibit_alerts {
 	return 0 if ($agent->{'cascade_protection'} ne '1' || $agent->{'id_parent'} eq '0' || $depth > 1024);
 
 	# Are any of the parent's critical alerts fired?	
-	my $count = get_db_value ($dbh, 'SELECT COUNT(*) FROM tagente_modulo, talert_template_modules, talert_templates
+	my $count = 0;
+	if ($agent->{'cascade_protection_module'} != 0) {
+		$count = get_db_value ($dbh, 'SELECT COUNT(*) FROM tagente_modulo, talert_template_modules, talert_templates
+				WHERE tagente_modulo.id_agente = ?
+				AND tagente_modulo.id_agente_modulo = ?
+				AND tagente_modulo.id_agente_modulo = talert_template_modules.id_agent_module
+				AND tagente_modulo.disabled = 0
+				AND talert_template_modules.id_alert_template = talert_templates.id
+				AND talert_template_modules.times_fired > 0
+				AND talert_templates.priority = 4', $agent->{'id_parent'}, $agent->{'cascade_protection_module'});
+	}
+	else {
+		$count = get_db_value ($dbh, 'SELECT COUNT(*) FROM tagente_modulo, talert_template_modules, talert_templates
 				WHERE tagente_modulo.id_agente = ?
 				AND tagente_modulo.id_agente_modulo = talert_template_modules.id_agent_module
 				AND tagente_modulo.disabled = 0
 				AND talert_template_modules.id_alert_template = talert_templates.id
 				AND talert_template_modules.times_fired > 0
 				AND talert_templates.priority = 4', $agent->{'id_parent'});
-	return 1 if ($count > 0);
-	
-	
+	}
 
+	return 1 if (defined($count) && $count > 0);
+	
 	# Check the parent's parent next
 	$agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE id_agente = ?', $agent->{'id_parent'});
 	return 0 unless defined ($agent);

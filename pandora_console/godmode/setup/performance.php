@@ -138,6 +138,9 @@ $table_other->data[10][1] = html_print_input_text ('big_operation_step_datos_pur
 $table_other->data[11][0] = __('Small Operation Step to purge old data') . ui_print_help_tip(__('The number of rows that are processed in a single query in deletion. Default is 1000. Increase to 3000-5000 in fast systems. Decrease to 500 or 250 on systems with locks.'), true);
 $table_other->data[11][1] = html_print_input_text ('small_operation_step_datos_purge', $config["small_operation_step_datos_purge"], '', 5, 5, true);
 
+$table_other->data[12][0] = __('Graph container - Max. Items') . ui_print_help_tip(__('The number of graphs that are viewed in a container. Default is 10 .Increasing this number could lead to performance problems'), true);
+$table_other->data[12][1] = html_print_input_text ('max_graph_container', $config["max_graph_container"], '', 5, 5, true);
+
 echo '<form id="form_setup" method="post">';
 echo "<fieldset>";
 echo "<legend>" . __('Database maintenance options') . "</legend>";

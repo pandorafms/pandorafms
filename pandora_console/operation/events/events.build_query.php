@@ -81,15 +81,19 @@ $events_wi_cdata = db_get_all_rows_sql('SELECT id_evento,custom_data from tevent
 $count_events = 0;
 $events_wi_cdata_id = 'OR id_evento IN (';
 foreach ($events_wi_cdata as $key => $value) {
-	if(strpos(base64_decode($value['custom_data']),$search) != false){
+	if(strpos(strtolower(base64_decode($value['custom_data'])),strtolower($search)) != false){
 		$events_wi_cdata_id .= $value['id_evento'];
 		$count_events++;
 	}
 	if ($value !== end($events_wi_cdata) && $count_events > 0) {
   	$events_wi_cdata_id .= ',';
-  }
+		$events_wi_cdata_id = str_replace(',,', ',', $events_wi_cdata_id);
+	}
 }
+
 $events_wi_cdata_id .= ')';
+
+$events_wi_cdata_id = str_replace(',)', ')', $events_wi_cdata_id);
 
 if($count_events == 0){
 	$events_wi_cdata_id = '';

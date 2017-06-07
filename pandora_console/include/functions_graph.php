@@ -791,7 +791,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	$only_image = false, $homeurl = '', $ttl = 1, $projection = false,
 	$adapt_key = '', $compare = false, $show_unknown = false,
 	$menu = true, $backgroundColor = 'white', $percentil = null,
-	$dashboard = false, $vconsole = false, $type_graph = 'area') {
+	$dashboard = false, $vconsole = false, $type_graph = 'area',$id_widget_dashboard = false) {
 
 	global $config;
 	global $graphic_type;
@@ -855,8 +855,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		$date, $unit, $baseline, $return_data, $show_title,
 		$projection, $adapt_key, $compare, '', '', $show_unknown,
 		$percentil, $dashboard, $vconsole,$type_graph);
-	
-	
+		
 	if ($return_data) {
 		return $data_returned;
 	}
@@ -907,6 +906,13 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		}
 		else {
 			// Color commented not to restrict serie colors
+			if($id_widget_dashboard){
+				$opcion = unserialize(db_get_value_filter('options','twidget_dashboard',array('id' => $id_widget_dashboard)));
+				$color['min']['color'] = $opcion['min'];
+				$color['sum']['color'] = $opcion['avg'];
+				$color['max']['color'] = $opcion['max'];
+			}
+			
 			return
 				area_graph($flash_chart, $chart, $width, $height, $color,
 					$legend, $long_index,
@@ -993,7 +999,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	$prediction_period = false, $background_color = 'white',
 	$name_list = array(), $unit_list = array(), $show_last = true, $show_max = true,
 	$show_min = true, $show_avg = true, $labels = array(), $dashboard = false,
-	$vconsole = false, $percentil = null, $from_interface = false) {
+	$vconsole = false, $percentil = null, $from_interface = false, $id_widget_dashboard=false) {
 	
 	global $config;
 	global $graphic_type;
@@ -1828,6 +1834,15 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	$color[15] = array('border' => '#000000',
 		'color' => COL_GRAPH13,
 		'alpha' => CHART_DEFAULT_ALPHA);
+		
+	if($id_widget_dashboard){
+		$opcion = unserialize(db_get_value_filter('options','twidget_dashboard',array('id' => $id_widget_dashboard)));
+		foreach ($module_list as $key => $value) {
+			if(!empty($opcion[$value])){
+				$color[$key]['color'] = $opcion[$value];
+			}
+		}
+	}
 	
 	$threshold_data = array();
 

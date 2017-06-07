@@ -164,7 +164,7 @@ function custom_graphs_print($id_graph, $height, $width, $period,
 	$background_color = 'white', $modules_param = array(), $homeurl = '',
 	$name_list = array(), $unit_list = array(), $show_last = true,
 	$show_max = true, $show_min = true, $show_avg = true, $ttl = 1,
-	$dashboard = false, $vconsole = false, $percentil = null, $from_interface = false) {
+	$dashboard = false, $vconsole = false, $percentil = null, $from_interface = false,$id_widget_dashboard=false) {
 	
 	global $config;
 	
@@ -260,7 +260,8 @@ function custom_graphs_print($id_graph, $height, $width, $period,
 		$dashboard,
 		$vconsole,
 		$percentil,
-		$from_interface);
+		$from_interface,
+		$id_widget_dashboard);
 	
 	if ($return)
 		return $output;

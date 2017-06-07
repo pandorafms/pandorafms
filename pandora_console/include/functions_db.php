@@ -64,6 +64,8 @@ function db_connect($host = null, $db = null, $user = null, $pass = null, $port 
 	// Something went wrong
 	if ($return === false) {
 		if ($critical) {
+			
+			$login_screen = 'error_authconfig';
 			$url = explode('/', $_SERVER['REQUEST_URI']);
 			$flag_url =0;
 			foreach ($url as $key => $value) {
@@ -71,17 +73,9 @@ function db_connect($host = null, $db = null, $user = null, $pass = null, $port 
 				    $flag_url=1;
 				    unset($url[$key]);
 				}
-				else if(strpos($value, 'enterprise') !== false || $flag_url){
-					$flag_url=1;
-				    unset($url[$key]);	
-				}
-				else if(strpos($value, '?login') !== false || $flag_url){
-					$flag_url=1;
-				    unset($url[$key]);	
-				}
 			}
 			$config["homeurl"] = rtrim(join("/", $url),"/");
-			$login_screen = 'error_authconfig';
+			
 			require($config['homedir'] . '/general/error_screen.php');
 			exit;
 		}

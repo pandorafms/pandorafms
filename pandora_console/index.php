@@ -30,23 +30,28 @@ if ($develop_bypass != 1) {
 			$login_screen = 'error_noconfig';
 			$ownDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;	
 			$config['homedir'] = $ownDir;
-			$url = explode('/', $_SERVER['REQUEST_URI']);
-			$flag_url =0;
-			foreach ($url as $key => $value) {
-				if (strpos($value, 'index.php?') !== false || $flag_url) {
-				    $flag_url=1;
-				    unset($url[$key]);
+			if (!defined('METACONSOLE')) {
+				$url = explode('/', $_SERVER['REQUEST_URI']);
+				$flag_url =0;
+				foreach ($url as $key => $value) {
+					if (strpos($value, 'index.php?') !== false || $flag_url) {
+					    $flag_url=1;
+					    unset($url[$key]);
+					}
 				}
-				else if(strpos($value, 'enterprise') !== false || $flag_url){
-					$flag_url=1;
-				    unset($url[$key]);	
-				}
-				else if(strpos($value, '?login') !== false || $flag_url){
-					$flag_url=1;
-				    unset($url[$key]);	
-				}
+				$config["homeurl"] = rtrim(join("/", $url),"/");
 			}
-			$config["homeurl"] = rtrim(join("/", $url),"/");
+			else{
+				$url = explode('/', $_SERVER['REQUEST_URI']);
+				$flag_url =0;
+				foreach ($url as $key => $value) {
+					if (strpos($value, 'enterprise') !== false || $flag_url) {
+					    $flag_url=1;
+					    unset($url[$key]);
+					}
+				}
+				$config["homeurl"] = rtrim(join("/", $url),"/");
+			}
 			$config["homeurl_static"] = $config["homeurl"];
 			require('general/error_screen.php');
 			exit;
@@ -73,23 +78,28 @@ if ($develop_bypass != 1) {
 	if (file_exists ("install.php")) {
 		$ownDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;	
 		$config['homedir'] = $ownDir;
-		$url = explode('/', $_SERVER['REQUEST_URI']);
-		$flag_url =0;
-		foreach ($url as $key => $value) {
-			if (strpos($value, 'index.php?') !== false || $flag_url) {
-			    $flag_url=1;
-			    unset($url[$key]);
+		if (!defined('METACONSOLE')) {
+			$url = explode('/', $_SERVER['REQUEST_URI']);
+			$flag_url =0;
+			foreach ($url as $key => $value) {
+				if (strpos($value, 'index.php?') !== false || $flag_url) {
+				    $flag_url=1;
+				    unset($url[$key]);
+				}
 			}
-			else if(strpos($value, 'enterprise') !== false || $flag_url){
-				$flag_url=1;
-			    unset($url[$key]);	
-			}
-			else if(strpos($value, '?login') !== false || $flag_url){
-				$flag_url=1;
-			    unset($url[$key]);	
-			}
+			$config["homeurl"] = rtrim(join("/", $url),"/");
 		}
-		$config["homeurl"] = rtrim(join("/", $url),"/");
+		else{
+			$url = explode('/', $_SERVER['REQUEST_URI']);
+			$flag_url =0;
+			foreach ($url as $key => $value) {
+				if (strpos($value, 'enterprise') !== false || $flag_url) {
+				    $flag_url=1;
+				    unset($url[$key]);
+				}
+			}
+			$config["homeurl"] = rtrim(join("/", $url),"/");
+		}
 		$config["homeurl_static"] = $config["homeurl"];
 		$login_screen = 'error_install';
 		require('general/error_screen.php');
@@ -102,23 +112,28 @@ if ($develop_bypass != 1) {
 			(substr (sprintf ('%o', fileperms('include/config.php')), -4) != "0640")) {
 			$ownDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;	
 			$config['homedir'] = $ownDir;
-			$url = explode('/', $_SERVER['REQUEST_URI']);
-			$flag_url =0;
-			foreach ($url as $key => $value) {
-				if (strpos($value, 'index.php?') !== false || $flag_url) {
-				    $flag_url=1;
-				    unset($url[$key]);
+			if (!defined('METACONSOLE')) {
+				$url = explode('/', $_SERVER['REQUEST_URI']);
+				$flag_url =0;
+				foreach ($url as $key => $value) {
+					if (strpos($value, 'index.php?') !== false || $flag_url) {
+					    $flag_url=1;
+					    unset($url[$key]);
+					}
 				}
-				else if(strpos($value, 'enterprise') !== false || $flag_url){
-					$flag_url=1;
-				    unset($url[$key]);	
-				}
-				else if(strpos($value, '?login') !== false || $flag_url){
-					$flag_url=1;
-				    unset($url[$key]);	
-				}
+				$config["homeurl"] = rtrim(join("/", $url),"/");
 			}
-			$config["homeurl"] = rtrim(join("/", $url),"/");
+			else{
+				$url = explode('/', $_SERVER['REQUEST_URI']);
+				$flag_url =0;
+				foreach ($url as $key => $value) {
+					if (strpos($value, 'enterprise') !== false || $flag_url) {
+					    $flag_url=1;
+					    unset($url[$key]);
+					}
+				}
+				$config["homeurl"] = rtrim(join("/", $url),"/");
+			}
 			$config["homeurl_static"] = $config["homeurl"];
 			$login_screen = 'error_perms';
 			require('general/error_screen.php');

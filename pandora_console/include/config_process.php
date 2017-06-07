@@ -125,24 +125,28 @@ require_once ($ownDir . 'functions.php');
 // We need a timezone BEFORE calling config_process_config. 
 // If not we will get ugly warnings. Set Europe/Madrid by default
 // Later will be replaced by the good one.
-
-$url = explode('/', $_SERVER['REQUEST_URI']);
-$flag_url =0;
-foreach ($url as $key => $value) {
-	if (strpos($value, 'index.php') !== false || $flag_url) {
-	    $flag_url=1;
-	    unset($url[$key]);
+if (!defined('METACONSOLE')) {
+	$url = explode('/', $_SERVER['REQUEST_URI']);
+	$flag_url =0;
+	foreach ($url as $key => $value) {
+		if (strpos($value, 'index.php?') !== false || $flag_url) {
+		    $flag_url=1;
+		    unset($url[$key]);
+		}
 	}
-	else if(strpos($value, 'enterprise') !== false || $flag_url){
-		$flag_url=1;
-	    unset($url[$key]);	
-	}
-	else if(strpos($value, '?login') !== false || $flag_url){
-		$flag_url=1;
-	    unset($url[$key]);	
-	}
+	$config["homeurl"] = rtrim(join("/", $url),"/");
 }
-$config["homeurl"] = rtrim(join("/", $url),"/");
+else{
+	$url = explode('/', $_SERVER['REQUEST_URI']);
+	$flag_url =0;
+	foreach ($url as $key => $value) {
+		if (strpos($value, 'enterprise') !== false || $flag_url) {
+		    $flag_url=1;
+		    unset($url[$key]);
+		}
+	}
+	$config["homeurl"] = rtrim(join("/", $url),"/");
+}
 
 if (!isset($config["homeurl_static"])) {
 	$config["homeurl_static"] = $config["homeurl"];
@@ -167,6 +171,7 @@ if (! defined ('ENTERPRISE_DIR'))
 require_once ($ownDir. 'functions_config.php');
 
 date_default_timezone_set("Europe/Madrid");
+
 
 config_process_config();
 

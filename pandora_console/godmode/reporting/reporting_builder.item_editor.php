@@ -120,6 +120,7 @@ switch ($action) {
 		$description = null;
 		$sql = null;
 		$show_in_two_columns = 0;
+		$show_in_same_row = 0;
 		$show_in_landscape = 0;
 		$hide_notinit_agents = 0;
 		$server_name = '';
@@ -158,6 +159,7 @@ switch ($action) {
 				$description = null;
 				$sql = null;
 				$show_in_two_columns = 0;
+				$show_in_same_row = 0;
 				$show_in_landscape = 0;
 				$hide_notinit_agents = 0;
 				$server_name = '';
@@ -182,6 +184,7 @@ switch ($action) {
 			
 			$style = json_decode(io_safe_output($item['style']), true);
 			
+			$show_in_same_row = $style['show_in_same_row'];
 			$show_in_two_columns = $style['show_in_two_columns'];
 			$show_in_landscape = $style['show_in_landscape'];
 			$hide_notinit_agents = $style['hide_notinit_agents'];
@@ -1480,6 +1483,20 @@ You can of course remove the warnings, that's why we include the source and do n
 			<td style="font-weight:bold;"><?php echo __('Show in two columns');?></td>
 			<td><?php html_print_checkbox('show_in_two_columns', 1, $show_in_two_columns);?></td>
 		</tr>
+
+		<tr id="row_show_in_same_row" style="" class="datos">
+			<td style="font-weight:bold;" class="datos">
+				<?php
+				echo __('Show in the same row');
+				ui_print_help_tip(__('Show one module per row with all its operations'));
+				?>
+			</td>
+			<td style="">
+				<?php
+				html_print_checkbox('show_in_same_row', '1', $show_in_same_row, false, false, '');
+				?>
+			</td>
+		</tr>
 		
 		<tr id="row_sort" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Order') . ui_print_help_tip(__('SLA items sorted by fulfillment value'), true);?></td>
@@ -2591,6 +2608,7 @@ function chooseType() {
 	$("#row_exception_condition_value").hide();
 	$("#row_exception_condition").hide();
 	$("#row_show_in_two_columns").hide();
+	$("#row_show_in_same_row").hide();
 	$("#row_historical_db_check").hide();
 	$("#row_show_in_landscape").hide();
 	$('#row_hide_notinit_agents').hide();
@@ -3025,6 +3043,7 @@ function chooseType() {
 			$("#row_order_uptodown").show();
 			$("#row_show_resume").show();
 			$("#row_show_in_two_columns").show();
+			$("#row_show_in_same_row").show();
 			
 			var checked = $("input[name='last_value']").prop("checked");
 			

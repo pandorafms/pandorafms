@@ -2639,20 +2639,24 @@ function reporting_html_general(&$table, $item) {
 					$table1->head[2] = __('Avg');
 					$table1->head[3] = __('Max');
 					$table1->head[4] = __('Min');
+					$table1->head[5] = __('Sum');
 					$table1->style[0] = 'text-align: center';
 					$table1->style[1] = 'text-align: center';
 					$table1->style[2] = 'text-align: center';
 					$table1->style[3] = 'text-align: center';
 					$table1->style[4] = 'text-align: center';
+					$table1->style[4] = 'text-align: center';
 
 					foreach ($order_data as $id_agent => $row) {
 						foreach ($row as $id_module => $row2) {
+							html_debug($row2);
 							$table1->data[] = array(
 								agents_get_alias($id_agent),
 								modules_get_agentmodule_name($id_module),
 								$row2['Rate'],
 								$row2['Maximum'],
-								$row2['Minimum']);
+								$row2['Minimum'],
+								$row2['Summatory']);
 						}
 					}
 				}

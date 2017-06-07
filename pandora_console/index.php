@@ -1093,11 +1093,11 @@ require('include/php_to_js_values.php');
 	function first_time_identification () {
 		run_identification_wizard (-1, -1, 1);
 	}
+
 	var times_fired_register_wizard = 0;
+
 	function run_identification_wizard (register, newsletter , return_button) {
-		
 		if (times_fired_register_wizard) {
-			
 			$(".ui-dialog-titlebar-close").show();
 			
 			//Reset some values				
@@ -1127,10 +1127,9 @@ require('include/php_to_js_values.php');
 			$("#login_accept_register").dialog('open');
 		}
 		else {
-			
 			$(".ui-dialog-titlebar-close").show();
 			$("#container").append('<div class="id_wizard"></div>');
-			jQuery.get ("ajax.php",
+			jQuery.post ("ajax.php",
 				{"page": "general/login_identification_wizard",
 				 "not_return": 1,
 				 "force_register": register,

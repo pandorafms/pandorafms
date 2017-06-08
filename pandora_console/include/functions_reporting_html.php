@@ -2649,7 +2649,6 @@ function reporting_html_general(&$table, $item) {
 
 					foreach ($order_data as $id_agent => $row) {
 						foreach ($row as $id_module => $row2) {
-							html_debug($row2);
 							$table1->data[] = array(
 								agents_get_alias($id_agent),
 								modules_get_agentmodule_name($id_module),

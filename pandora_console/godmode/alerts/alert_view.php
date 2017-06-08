@@ -32,7 +32,7 @@ $id_alert = get_parameter ("id_alert", 0); // ID given as parameter
 $alert = alerts_get_alert_agent_module($id_alert);
 $template = alerts_get_alert_template ($alert['id_alert_template']);
 $actions = alerts_get_alert_agent_module_actions ($id_alert);
-$agent_name = modules_get_agentmodule_agent_name ($alert['id_agent_module']);
+$agent_alias = modules_get_agentmodule_agent_alias ($alert['id_agent_module']);
 $agent = modules_get_agentmodule_agent ($alert['id_agent_module']);
 $module_name = modules_get_agentmodule_name ($alert['id_agent_module']);
 
@@ -65,7 +65,7 @@ $table_details->data[] = $data;
 
 $data[0] = __('Agent');
 $data[1] ='<a style=" font-size: 7pt;" href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$agent.
-'" title="'.$agent_name.'"><b><span style=" font-size: 7pt;">'.$agent_name.'</span></b></a>';
+'" title="'.$agent_alias.'"><b><span style=" font-size: 7pt;">'.$agent_alias.'</span></b></a>';
 $table_details->data[] = $data;
 
 $data[0] = __('Module');

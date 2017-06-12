@@ -508,7 +508,24 @@ if (empty ($traps)) {
 	// Header
 	ui_print_page_header(__("SNMP Console"), "images/op_snmp.png", false,
 		"", false, array($list, $statistics));
-	ui_print_info_message ( array('no_close'=>true, 'message'=> __('There are no SNMP traps in database') ) );
+		
+		$sql2 = "SELECT *
+			FROM ttrap
+			WHERE (
+				`source` IN (" . implode(",", $address_by_user_groups) . ") OR
+				`source`='' OR
+				`source` NOT IN (" . implode(",", $all_address_agents) . ")
+				)
+				AND status = 0
+			ORDER BY timestamp DESC";
+		$traps2 = db_get_all_rows_sql($sql2);
+		
+	if(!empty ($traps2)){
+		ui_toggle($filter, __('Toggle filter(s)'));
+		ui_print_info_message ( array('no_close'=>true, 'message'=> __('There are no SNMP traps in database that contains this filter') ) );
+	} else {
+		ui_print_info_message ( array('no_close'=>true, 'message'=> __('There are no SNMP traps in database') ) );
+	}
 	return;
 } else{
 	if($config["pure"]){

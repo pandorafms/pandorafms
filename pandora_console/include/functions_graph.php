@@ -350,15 +350,9 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 			}
 			elseif ($period < SECONDS_1MONTH) {
 				$time_format = "M \nd H\h";
-				if ($fullscale) {
-					$time_format = "M \nd H:i";
-				}
 			} 
 			elseif ($period < SECONDS_6MONTHS) {
 				$time_format = "M \nd H\h";
-				if ($fullscale) {
-					$time_format = "M \nd H:i";
-				}
 			}
 			else {
 				$time_format = "M Y";
@@ -377,15 +371,9 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 			}
 			elseif ($period < SECONDS_1MONTH) {
 				$time_format = "M d H\h";
-				if ($fullscale) {
-					$time_format = "M d H:i";
-				}
 			} 
 			elseif ($period < SECONDS_6MONTHS) {
 				$time_format = "M d H\h";
-				if ($fullscale) {
-					$time_format = "M d H:i";
-				}
 			}
 			else {
 				$time_format = "M Y";
@@ -396,7 +384,9 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 		$long_index[$timestamp_short] = date(
 			html_entity_decode($config['date_format'], ENT_QUOTES, "UTF-8"), $timestamp);
 		if (!$projection) {
-			$timestamp = $timestamp_short;
+			if (!$fullscale) {
+				$timestamp = $timestamp_short;
+			}
 		}
 		
 		// Data
@@ -575,20 +565,12 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	
 	// Get module data
 	if ($fullscale) {
-		$uncompress_data = db_uncompress_module_data((int)$agent_module_id, $datelimit, $date);
-
-		$new_data = array();
-		$index = 0;
-		foreach ($uncompress_data as $key => $u_data) {
-			foreach ($u_data['data'] as $key2 => $u_data2) {
-				if ($u_data2['datos'] != "") {
-					$new_data[$index]['datos'] = $u_data2['datos'];
-					$new_data[$index]['utimestamp'] = $u_data2['utimestamp'];
-					$index++;
-				}
-			}
-		}
-		$data = $new_data;
+		$data = db_get_all_rows_filter ('tagente_datos',
+			array ('id_agente_modulo' => (int)$agent_module_id,
+				"utimestamp > $datelimit",
+				"utimestamp < $date",
+				'order' => 'utimestamp ASC'),
+			array ('datos', 'utimestamp'), 'AND', true);
 	}
 	else {
 		$data = db_get_all_rows_filter ('tagente_datos',
@@ -683,8 +665,10 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	}
 
 	if ($fullscale) {
-		$resolution = count($data); //Number of points of the graph
-		$interval = (int) ($period / $resolution);
+		if (count($data) > $resolution) {
+			$resolution = count($data); //Number of points of the graph
+			$interval = (int) ($period / $resolution);
+		}
 	}
 	
 	// Calculate chart data
@@ -694,6 +678,60 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 		$show_events, $show_alerts, $show_unknown, $baseline, 
 		$baseline_data, $events, $series_suffix, $start_unknown,
 		$percentil, $fullscale);
+
+	if ($fullscale) {
+		if (!$flash_chart) {
+			// Set the title and time format
+			if ($period <= SECONDS_6HOURS) {
+				$time_format = 'H:i:s';
+			}
+			elseif ($period < SECONDS_1DAY) {
+				$time_format = 'H:i';
+			}
+			elseif ($period < SECONDS_15DAYS) {
+				$time_format = "M \nd H:i";
+			}
+			elseif ($period < SECONDS_1MONTH) {
+				$time_format = "M \nd H\h";
+			} 
+			elseif ($period < SECONDS_6MONTHS) {
+				$time_format = "M \nd H\h";
+			}
+			else {
+				$time_format = "M Y";
+			}
+		}
+		else {
+			// Set the title and time format
+			if ($period <= SECONDS_6HOURS) {
+				$time_format = 'H:i:s';
+			}
+			elseif ($period < SECONDS_1DAY) {
+				$time_format = 'H:i';
+			}
+			elseif ($period < SECONDS_15DAYS) {
+				$time_format = "M d H:i";
+			}
+			elseif ($period < SECONDS_1MONTH) {
+				$time_format = "M d H\h";
+			} 
+			elseif ($period < SECONDS_6MONTHS) {
+				$time_format = "M d H\h";
+			}
+			else {
+				$time_format = "M Y";
+			}
+		}
+
+		$new_chart = array();
+		foreach ($chart as $c_timestamp => $c_data) {
+			$timestamp_short = date($time_format, $c_timestamp);
+
+			$new_chart[$timestamp_short] = $c_data;
+		}
+
+		$chart = $new_chart;
+	}
 
 	// Return chart data and don't draw
 	if ($return_data == 1) {
@@ -3673,37 +3711,32 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 		}
 	}
 	
-	// Get module data
-	$data = db_get_all_rows_filter ('tagente_datos',
-		array ('id_agente_modulo' => $agent_module_id,
-			"utimestamp > $datelimit",
-			"utimestamp < $date",
-			'order' => 'utimestamp ASC'),
-		array ('datos', 'utimestamp'), 'AND', $search_in_history_db);
+	if ($fullscale) {
+		// Get module data
+		$data = db_get_all_rows_filter ('tagente_datos',
+			array ('id_agente_modulo' => $agent_module_id,
+				"utimestamp > $datelimit",
+				"utimestamp < $date",
+				'order' => 'utimestamp ASC'),
+			array ('datos', 'utimestamp'), 'AND', true);
+
+		if (count($data) > $resolution) {
+			$resolution = count($data); //Number of points of the graph
+			$interval = (int) ($period / $resolution);
+		}
+	}
+	else {
+		// Get module data
+		$data = db_get_all_rows_filter ('tagente_datos',
+			array ('id_agente_modulo' => $agent_module_id,
+				"utimestamp > $datelimit",
+				"utimestamp < $date",
+				'order' => 'utimestamp ASC'),
+			array ('datos', 'utimestamp'), 'AND', $search_in_history_db);
+	}
+	
 	if ($data === false) {
 		$data = array ();
-	}
-
-	if ($fullscale) {
-		$all_data = db_uncompress_module_data($agent_module_id, $datelimit, $date);
-		
-		$new_uncompress_data = array();
-		$index = 0;
-		foreach ($all_data as $uncompress_data) {
-			foreach ($uncompress_data['data'] as $mod_data) {
-				if ($mod_data['datos'] != "") {
-					$new_uncompress_data[$index]['datos'] = $mod_data['datos'];
-					$new_uncompress_data[$index]['utimestamp'] = $mod_data['utimestamp'];
-					$index++;
-				}
-			}
-		}
-		$new_uncompress_data[$index - 1]['id_agente_modulo'] = $agent_module_id;
-		
-		$data = $new_uncompress_data;
-
-		$resolution = count($data); //Number of points of the graph
-		$interval = (int) ($period / $resolution);
 	}
 	
 	// Uncompressed module data
@@ -3851,15 +3884,9 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 		}
 		elseif ($period < SECONDS_1MONTH) {
 			$time_format = 'M d H\h';
-			if ($fullscale) {
-				$time_format = 'M d H:i';
-			}
 		} 
 		else {
 			$time_format = 'M d H\h';
-			if ($fullscale) {
-				$time_format = 'M d H:i';
-			}
 		}
 		
 		$timestamp_short = date($time_format, $timestamp);
@@ -3967,18 +3994,12 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	}
 	elseif ($period < SECONDS_1MONTH) {
 		$time_format = 'M d H\h';
-		if ($fullscale) {
-			$time_format = 'M d H:i';
-		}
 	} 
 	elseif ($period < SECONDS_6MONTHS) {
 		$time_format = "M d H\h";
 	}
 	else {
 		$time_format = 'M d H\h';
-		if ($fullscale) {
-			$time_format = 'M d H:i';
-		}
 	}
 	
 	// Flash chart
@@ -4087,6 +4108,60 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	
 	grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 		$unit_name, $show_alerts, $avg_only, $date, '', '', $show_unknown, $fullscale);
+
+	if ($fullscale) {
+		if (!$flash_chart) {
+			// Set the title and time format
+			if ($period <= SECONDS_6HOURS) {
+				$time_format = 'H:i:s';
+			}
+			elseif ($period < SECONDS_1DAY) {
+				$time_format = 'H:i';
+			}
+			elseif ($period < SECONDS_15DAYS) {
+				$time_format = "M \nd H:i";
+			}
+			elseif ($period < SECONDS_1MONTH) {
+				$time_format = "M \nd H\h";
+			} 
+			elseif ($period < SECONDS_6MONTHS) {
+				$time_format = "M \nd H\h";
+			}
+			else {
+				$time_format = "M Y";
+			}
+		}
+		else {
+			// Set the title and time format
+			if ($period <= SECONDS_6HOURS) {
+				$time_format = 'H:i:s';
+			}
+			elseif ($period < SECONDS_1DAY) {
+				$time_format = 'H:i';
+			}
+			elseif ($period < SECONDS_15DAYS) {
+				$time_format = "M d H:i";
+			}
+			elseif ($period < SECONDS_1MONTH) {
+				$time_format = "M d H\h";
+			} 
+			elseif ($period < SECONDS_6MONTHS) {
+				$time_format = "M d H\h";
+			}
+			else {
+				$time_format = "M Y";
+			}
+		}
+
+		$new_chart = array();
+		foreach ($chart as $c_timestamp => $c_data) {
+			$timestamp_short = date($time_format, $c_timestamp);
+
+			$new_chart[$timestamp_short] = $c_data;
+		}
+
+		$chart = $new_chart;
+	}
 	
 	if ($compare === 'overlapped') {
 		$i = 0;

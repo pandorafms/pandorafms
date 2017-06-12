@@ -681,55 +681,22 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 
 	if ($fullscale) {
 		if (!$flash_chart) {
-			// Set the title and time format
-			if ($period <= SECONDS_6HOURS) {
-				$time_format = 'H:i:s';
-			}
-			elseif ($period < SECONDS_1DAY) {
-				$time_format = 'H:i';
-			}
-			elseif ($period < SECONDS_15DAYS) {
-				$time_format = "M \nd H:i";
-			}
-			elseif ($period < SECONDS_1MONTH) {
-				$time_format = "M \nd H\h";
-			} 
-			elseif ($period < SECONDS_6MONTHS) {
-				$time_format = "M \nd H\h";
-			}
-			else {
-				$time_format = "M Y";
-			}
+			$time_format = "Y M \nd H:i:s";
 		}
 		else {
-			// Set the title and time format
-			if ($period <= SECONDS_6HOURS) {
-				$time_format = 'H:i:s';
-			}
-			elseif ($period < SECONDS_1DAY) {
-				$time_format = 'H:i';
-			}
-			elseif ($period < SECONDS_15DAYS) {
-				$time_format = "M d H:i";
-			}
-			elseif ($period < SECONDS_1MONTH) {
-				$time_format = "M d H\h";
-			} 
-			elseif ($period < SECONDS_6MONTHS) {
-				$time_format = "M d H\h";
-			}
-			else {
-				$time_format = "M Y";
-			}
+			$time_format = "Y M d H:i:s";
 		}
 
 		$new_chart = array();
+		$new_long_index = array();
 		foreach ($chart as $c_timestamp => $c_data) {
 			$timestamp_short = date($time_format, $c_timestamp);
-
+			$new_long_index[$timestamp_short] = date(
+				html_entity_decode($config['date_format'], ENT_QUOTES, "UTF-8"), $c_timestamp);
 			$new_chart[$timestamp_short] = $c_data;
 		}
 
+		$long_index = $new_long_index;
 		$chart = $new_chart;
 	}
 

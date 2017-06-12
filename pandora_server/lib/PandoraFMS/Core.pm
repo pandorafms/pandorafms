@@ -1007,6 +1007,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_moduledescription_ => (defined ($module)) ? $module->{'descripcion'} : '',
 				_modulestatus_ => undef,
 				_moduletags_ => undef,
+				'_moduledata_\S+_' => undef,
 				_id_agent_ => (defined ($module)) ? $module->{'id_agente'} : '', 
 				_id_group_ => (defined ($group)) ? $group->{'id_grupo'} : '',
 				_id_alert_ => (defined ($alert->{'id_template_module'})) ? $alert->{'id_template_module'} : '',
@@ -1020,7 +1021,6 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_name_tag_ => undef,
 				_all_address_ => undef,
 				'_address_\d+_' => undef,
-				'_data_module_\S+_ ' => undef,
 				 );
 	
 	if ((defined ($extra_macros)) && (ref($extra_macros) eq "HASH")) {
@@ -3584,7 +3584,7 @@ sub on_demand_macro($$$$$$) {
 
 	# Static macro.
 	return $macros->{$macro} if (defined($macros->{$macro}));
-
+	
 	# Load on-demand macros.
 	return '' unless defined($pa_config) and defined($dbh);
 	if ($macro eq '_agentstatus_') {
@@ -3639,7 +3639,7 @@ sub on_demand_macro($$$$$$) {
 		}
 		
 		return(defined($field_value)) ? $field_value : '';
-	} elsif ($macro =~ /_data_module_(\S+)_/) {
+	} elsif ($macro =~ /_moduledata_(\S+)_/) {
 		my $field_number = $1;
 		
 		my $id_mod = get_db_value ($dbh, 'SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = ? AND nombre = ?', $module->{'id_agente'}, $field_number);

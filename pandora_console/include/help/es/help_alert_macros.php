@@ -39,6 +39,7 @@ Además de las macros de módulo definidas, las siguientes macros están disponi
 <li>_modulegroup_: Nombre del grupo del módulo.</li>
 <li>_moduledescription_: Descripcion del modulo.</li>
 <li>_modulestatus_: Estado del módulo.</li>
+<li>_moduledata_X_: Último dato del módulo X (nombre del módulo, no puede tener espacios).</li>
 <li>_alert_name_: Nombre de la alerta.</li>
 <li>_alert_priority_: Prioridad numérica de la alerta.</li>
 <li>_alert_text_severity_: Prioridad en texto de la alerta (Maintenance, Informational, Normal Minor, Warning, Major, Critical).</li>

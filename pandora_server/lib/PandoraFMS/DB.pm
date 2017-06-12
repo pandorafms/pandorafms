@@ -52,6 +52,7 @@ our @EXPORT = qw(
 		get_agent_addr_id
 		get_agent_id
 		get_agent_address
+		get_agent_alias
 		get_agent_group
 		get_agent_name
 		get_agent_module_id
@@ -283,6 +284,18 @@ sub get_agent_name ($$) {
 	my ($dbh, $agent_id) = @_;
 	
 	return get_db_value ($dbh, "SELECT nombre
+		FROM tagente
+		WHERE id_agente = ?", $agent_id);
+}
+
+########################################################################
+## SUB get_agent_alias (agent_id)
+## Return agent alias, given "agent_id"
+########################################################################
+sub get_agent_alias ($$) {
+	my ($dbh, $agent_id) = @_;
+	
+	return get_db_value ($dbh, "SELECT alias
 		FROM tagente
 		WHERE id_agente = ?", $agent_id);
 }

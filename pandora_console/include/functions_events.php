@@ -2336,7 +2336,7 @@ function events_page_general ($event) {
 	
 	$data = array();
 	$data[0] = __('Event name');
-	$event["evento"] = str_replace ( 'event_line_jump' , '<br>' , $event["evento"]);
+	$event["evento"] = str_replace ( '&#x0a;' , '<br>' , $event["evento"]);
 	$data[1] = io_safe_output($event["evento"]);
 	$table_general->data[] = $data;
 	

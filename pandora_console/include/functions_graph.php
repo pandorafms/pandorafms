@@ -256,7 +256,7 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 	for ($i = 0; $i <= $resolution; $i++) {
 		$timestamp = $datelimit + ($interval * $i);
 
-		if ($fullscale) {
+		if ($fullscale && $resolution > 250) {
 			$timestamp = $data[$i]['utimestamp'];
 		}
 

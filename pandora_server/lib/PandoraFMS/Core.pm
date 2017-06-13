@@ -2253,7 +2253,7 @@ sub pandora_reset_server ($$) {
 	
 	db_do ($dbh, 'UPDATE tserver
 		SET status = 0, threads = 0, queued_modules = 0
-		WHERE name = ?', $pa_config->{'servername'});
+		WHERE BINARY name = ?', $pa_config->{'servername'});
 }
 
 ##########################################################################
@@ -2287,7 +2287,7 @@ sub pandora_update_server ($$$$$$;$$$$) {
 	if ($server_id == 0) { 
 		
 		# Create an entry in tserver if needed
-		my $server = get_db_single_row ($dbh, 'SELECT id_server FROM tserver WHERE name = ? AND server_type = ?', $server_name, $server_type);
+		my $server = get_db_single_row ($dbh, 'SELECT id_server FROM tserver WHERE BINARY name = ? AND server_type = ?', $server_name, $server_type);
 		if (! defined ($server)) {
 			$server_id = db_insert ($dbh, 'id_server', 'INSERT INTO tserver (name, server_type, description, version, threads, queued_modules, server_keepalive)
 						VALUES (?, ?, ?, ?, ?, ?, ?)', $server_name, $server_type,
@@ -4259,7 +4259,7 @@ sub pandora_server_statistics ($$) {
 	my $lag_row;
 
 	# Get all servers with my name (each server only refresh it's own stats)
-	my @servers = get_db_rows ($dbh, 'SELECT * FROM tserver WHERE name = ?', $pa_config->{'servername'});
+	my @servers = get_db_rows ($dbh, 'SELECT * FROM tserver WHERE BINARY name = ?', $pa_config->{'servername'});
 
 	# For each server, update stats: Simple.
 	foreach my $server (@servers) {
@@ -4613,7 +4613,7 @@ sub pandora_self_monitoring ($$) {
 		$agents_unknown = 0 if (!defined($agents_unknown));
 	}
 	
-	my $queued_modules = get_db_value ($dbh, "SELECT SUM(queued_modules) FROM tserver WHERE name = '".$pa_config->{"servername"}."'");
+	my $queued_modules = get_db_value ($dbh, "SELECT SUM(queued_modules) FROM tserver WHERE BINARY name = '".$pa_config->{"servername"}."'");
 	
 	if (!defined($queued_modules)) {
 		$queued_modules = 0;

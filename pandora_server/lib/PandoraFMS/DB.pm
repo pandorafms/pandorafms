@@ -203,7 +203,7 @@ sub get_server_id ($$$) {
 	my ($dbh, $server_name, $server_type) = @_;
 
 	my $rc = get_db_value ($dbh, "SELECT id_server FROM tserver
-					WHERE name = ? AND server_type = ?",
+					WHERE BINARY name = ? AND server_type = ?",
 					$server_name, $server_type);
 	return defined ($rc) ? $rc : -1;
 }

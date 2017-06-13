@@ -267,26 +267,25 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 		$interval_min = false;
 		$interval_max = false;
 		
-		if (!$fullscale) {
-			while (isset ($data[$data_i]) && $data[$data_i]['utimestamp'] >= $timestamp && $data[$data_i]['utimestamp'] < ($timestamp + $interval)) {
-				if ($interval_min === false) {
-					$interval_min = $data[$data_i]['datos'];
-				}
-				if ($interval_max === false) {
-					$interval_max = $data[$data_i]['datos'];
-				}
-				
-				if ($data[$data_i]['datos'] > $interval_max) {
-					$interval_max = $data[$data_i]['datos'];
-				}
-				else if ($data[$data_i]['datos'] < $interval_min) {
-					$interval_min = $data[$data_i]['datos'];
-				}
-				$total += $data[$data_i]['datos'];
-				$last_known = $data[$data_i]['datos'];
-				$count++;
-				$data_i++;
+		while (isset ($data[$data_i]) && $data[$data_i]['utimestamp'] >= $timestamp && $data[$data_i]['utimestamp'] < ($timestamp + $interval)) {
+			if ($interval_min === false) {
+				$interval_min = $data[$data_i]['datos'];
 			}
+			if ($interval_max === false) {
+				$interval_max = $data[$data_i]['datos'];
+			}
+			
+			if ($data[$data_i]['datos'] > $interval_max) {
+				$interval_max = $data[$data_i]['datos'];
+			}
+			else if ($data[$data_i]['datos'] < $interval_min) {
+				$interval_min = $data[$data_i]['datos'];
+			}
+			
+			$total += $data[$data_i]['datos'];
+			$last_known = $data[$data_i]['datos'];
+			$count++;
+			$data_i++;
 		}
 		
 		if ($max_value < $interval_max) {

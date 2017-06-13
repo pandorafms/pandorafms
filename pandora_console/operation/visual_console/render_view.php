@@ -278,7 +278,7 @@ $ignored_params['refr'] = '';
 		
 		$(".overlay").removeClass("overlay").addClass("overlaydisabled");
 		
-		$('.item:not(.icon) img').each( function() {
+		$('.item:not(.icon) img:not(.b64img)').each( function() {
 			if ($(this).css('float')=='left' || $(this).css('float')=='right') {
 				$(this).css('margin-top',(parseInt($(this).parent().parent().css('height'))/2-parseInt($(this).css('height'))/2)+'px');
 				$(this).css('margin-left','');

@@ -1438,17 +1438,25 @@ function visual_map_print_item($mode = "read", $layoutData,
 			
 			
 			if(get_parameter('action') == 'edit'){
-							
-			//echo 'Data value';
-			
-			echo $io_safe_output_text;
+								//html_debug($layoutData);
+				//echo 'Data value';
+				if(strip_tags($io_safe_output_text) != '_VALUE_'){
+					echo $io_safe_output_text;
+				}
+				else{
+					echo "<img style='width:".$layoutData['width']."px;' src='images/console/signes/data_image.png'>";
+				}
 								
 				}
 			else{
-		
-			echo str_replace(array('_VALUE_','_value_'), $value, $io_safe_output_text);
-				
+				if(strip_tags($io_safe_output_text) != '_VALUE_'){
+					echo str_replace(array('_VALUE_','_value_'), $value, $io_safe_output_text);
 				}
+				else{
+					echo str_replace('>', ' style="width:'.$layoutData['width'].'px">',$value);
+				}
+				
+			}
 			
 			
 			//Restore db connection
@@ -1575,6 +1583,8 @@ function visual_map_get_simple_value_type($process_simple_value) {
 function visual_map_get_simple_value($type, $id_module, $period = SECONDS_1DAY) {
 	global $config;
 	
+	
+	
 	$unit_text = db_get_sql ('SELECT unit
 		FROM tagente_modulo WHERE id_agente_modulo = ' . $id_module);
 	$unit_text = trim(io_safe_output($unit_text));
@@ -1583,23 +1593,35 @@ function visual_map_get_simple_value($type, $id_module, $period = SECONDS_1DAY) 
 		case SIMPLE_VALUE:
 			$value = db_get_value ('datos', 'tagente_estado',
 				'id_agente_modulo', $id_module);
+				
+				
 			if ($value === false) {
 				$value = __('Unknown');
+				
+				$value = preg_replace ('/\n/i','<br>',$value);
+				$value =  preg_replace ('/\s/i','&nbsp;',$value);
 			}
 			else {
-				if ( is_numeric($value) ) {
-					if ($config['simple_module_value']) {
-						$value = remove_right_zeros(number_format($value, $config['graph_precision']));
+				if(strpos($value, 'data:image') !== false){
+					$value = '<img class="b64img" src="'.$value.'">';
+				}
+				else{
+												
+					if ( is_numeric($value) ) {
+						if ($config['simple_module_value']) {
+							$value = remove_right_zeros(number_format($value, $config['graph_precision']));
+						}
 					}
+					if (!empty($unit_text)) {
+						$value .= " " . $unit_text;
+					}
+					
+					$value = preg_replace ('/\n/i','<br>',$value);
+					$value =  preg_replace ('/\s/i','&nbsp;',$value);
+					
 				}
-				if (!empty($unit_text)) {
-					$value .= " " . $unit_text;
-				}
+				
 			}
-			
-			$value = preg_replace ('/\n/i','<br>',$value);
-			$value =  preg_replace ('/\s/i','&nbsp;',$value);
-			
 			return $value;
 			break;
 		case SIMPLE_VALUE_MAX:

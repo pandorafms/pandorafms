@@ -422,6 +422,7 @@ switch ($action) {
 					$values['type'] = visual_map_get_simple_value_type(
 						$process_simple_value);
 					$values['period'] = $period;
+					$values['width'] = $width;
 				}
 			case 'percentile_bar':
 			case 'percentile_item':
@@ -897,6 +898,7 @@ switch ($action) {
 				//This allows min, max and avg process in a simple value
 				$values['type'] = visual_map_get_simple_value_type($process_simple_value);
 				$values['period'] = $period;
+				$values['width'] = $width;
 				break;
 			case 'label':
 				$values['type'] = LABEL;

@@ -310,8 +310,8 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items['module_row']['html'] = '<td align="left">' .
 				__('Module') . '</td>
 				<td align="left">' .
-				html_print_select(array(), 'module', '', '', __('Any'), 0, true) .
-				'</td>';
+				html_print_select(array(), 'module', '', '', __('Any'), 0, true). '<div id="data_image_container" style="display:none;"><span id="data_image_check_label" style="margin-left:20px;">'.__("Data image").': </span><span id="data_image_check">Off</span><span id="data_image_width_label"> - Width: </span><input style="margin-left:5px;width:40px;" type="number" id="data_image_width" value="100"></input></div>
+				</td>';
 				
 				
 				$form_items['type_graph'] = array();

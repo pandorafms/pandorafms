@@ -63,13 +63,13 @@ if (is_ajax()) {
 	}
 	
 	if ($get_agents) {
-		$sql = "SELECT ta.id_agente, ta.nombre AS agent_name,
+		$sql = "SELECT ta.id_agente, ta.alias AS agent_alias,
 					tam.nombre AS module_name
 				FROM tagente ta
 				INNER JOIN tagente_modulo tam
 					ON ta.id_agente = tam.id_agente
 						AND tam.id_plugin = $plugin_id
-				ORDER BY ta.nombre, tam.nombre";
+				ORDER BY ta.alias, tam.nombre";
 		$result = db_get_all_rows_sql($sql);
 		if (empty($result)) $result = array();
 		
@@ -78,7 +78,7 @@ if (is_ajax()) {
 		$current_element = array();
 		foreach ($result as $key => $value) {
 			$id = (int) $value['id_agente'];
-			$name = $value['agent_name'];
+			$name = io_safe_output($value['agent_alias']);
 			$module_name = $value['module_name'];
 			
 			if (!empty($current_element) && $current_element['id'] !== $id) {

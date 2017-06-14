@@ -460,8 +460,14 @@ foreach ($fields as $field) {
 		$custom_value = '';
 	}
 	
-	$data[1] = html_print_textarea ('customvalue_'.$field['id_field'],
-		2, 65, $custom_value, 'style="min-height: 30px; width:96%;"', true);
+	if ($field['is_password_type']) {
+		$data[1] = html_print_input_text_extended ('customvalue_' . $field['id_field'], $custom_value, 'customvalue_' . $field['id_field'], '',
+			30, 100, $view_mode, '', '', true, true);
+	}
+	else {
+		$data[1] = html_print_textarea ('customvalue_'.$field['id_field'],
+			2, 65, $custom_value, 'style="min-height: 30px; width:96%;"', true);
+	}
 	
 	array_push ($table->data, $data);
 }

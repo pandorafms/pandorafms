@@ -36,6 +36,7 @@ $delete_field = (bool) get_parameter ('delete_field');
 $id_field = (int) get_parameter ('id_field', 0);
 $name = (string) get_parameter ('name', '');
 $display_on_front = (int) get_parameter ('display_on_front', 0);
+$is_password_type = (int) get_parameter ('is_password_type', 0);
 
 /* Create field */
 if ($create_field) {
@@ -48,7 +49,8 @@ if ($create_field) {
 	}
 	else {
 		$result = db_process_sql_insert('tagent_custom_fields',
-			array('name' => $name, 'display_on_front' => $display_on_front));
+			array('name' => $name, 'display_on_front' => $display_on_front, 
+			'is_password_type' => $is_password_type));
 		ui_print_success_message(__('Field successfully created'));
 	}
 }
@@ -57,7 +59,7 @@ if ($create_field) {
 if ($update_field) {
 	/*Check if name field is empty*/
 	if ( $name != "") {
-		$values = array('name' => $name, 'display_on_front' => $display_on_front);
+		$values = array('name' => $name, 'display_on_front' => $display_on_front, 'is_password_type' => $is_password_type);
 		
 		$result = db_process_sql_update('tagent_custom_fields', $values, array('id_field' => $id_field));
 	}

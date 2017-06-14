@@ -186,7 +186,11 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				</div>
 				</td>
 				<td align="left" style="">' .
-				html_print_input_text('label', '', '', 20, 200, true) . '</td>';
+				html_print_input_text('label', '', '', 20, 200, true) . '
+				<span id="advice_label" style="font-style:italic;z-index:3;display:inline;margin-top:0px;float:right;margin-right:100px;">
+				'.__("Click right mouse button to change background label editor color").'
+				</span>
+				</td>';
 			
 			
 			$form_items['image_row'] = array();

@@ -35,11 +35,15 @@ ui_toggle(
 ?>
 <script type="text/javascript">
 	$(document).ready(function() {
+		events_table(0);
+	});
+
+	function events_table(all_events_24h){
 		var parameters = {};
-		
 		parameters["table_events"] = 1;
 		parameters["id_agente"] = <?php echo $id_agente; ?>;
 		parameters["page"] = "include/ajax/events";
+		parameters["all_events_24h"] = all_events_24h;
 		
 		jQuery.ajax ({
 			data: parameters,
@@ -49,7 +53,17 @@ ui_toggle(
 			success: function (data) {
 				$("#event_list").empty();
 				$("#event_list").html(data);
+				$('#checkbox-all_events_24h').on('change',function(){
+					if( $('#checkbox-all_events_24h').is(":checked") ){
+						$('#checkbox-all_events_24h').val(1);
+					}
+					else{
+						$('#checkbox-all_events_24h').val(0);
+					}
+					all_events_24h = $('#checkbox-all_events_24h').val();
+		            events_table(all_events_24h);
+		        });
 			}
 		});
-	});
+	}
 </script>

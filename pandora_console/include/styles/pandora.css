@@ -4152,3 +4152,8 @@ div#footer_help{
 .ui-dialog-titlebar .ui-icon-closethick {
 	margin-top: -5px !important;
 }
+
+/*view-agents lastest events for this agent*/
+#div_all_events_24h{
+	padding: 4px;
+}

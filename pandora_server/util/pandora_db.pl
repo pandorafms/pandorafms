@@ -675,9 +675,13 @@ sub pandora_load_config ($) {
 	$conf->{"dynamic_warning"} = 0.10 unless defined($conf->{"dynamic_warning"});
 	$conf->{"dynamic_updates"} = 5 unless defined($conf->{"dynamic_updates"});
 
+	$conf->{'servername'} = $conf->{'servername'};
+    $conf->{'servername'} = `hostname` unless defined ($conf->{'servername'});
+	$conf->{"servername"} =~ s/\s//g;
+
 	# workaround for name unconsistency (corresponding entry at pandora_server.conf is 'errorlog_file')
-        $conf->{'errorlogfile'} = $conf->{'errorlog_file'};
-        $conf->{'errorlogfile'} = "/var/log/pandora_server.error" unless defined ($conf->{'errorlogfile'});
+	$conf->{'errorlogfile'} = $conf->{'errorlog_file'};
+	$conf->{'errorlogfile'} = "/var/log/pandora_server.error" unless defined ($conf->{'errorlogfile'});
 
 	# Read additional tokens from the DB
 	my $dbh = db_connect ($conf->{'dbengine'}, $conf->{'dbname'}, $conf->{'dbhost'}, $conf->{'dbport'}, $conf->{'dbuser'}, $conf->{'dbpass'});

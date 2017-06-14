@@ -48,7 +48,7 @@ else
 	my $onlyexclude = 1;
 
 	# Store all "ext" fstypes in @lines array
-	my @lines = split /\n/, `df -khTP | tail -n +2 | awk '{print \$1":"\$2":"\$(NF-1)":"\$NF}' | grep -i "adfs\\|affs\\|autofs\\|btrfs\\|cifs\\|coda\\|coherent\\|efs\\|ext\\|hfs\\|hfsplus\\|hpfs\\|jfs\\|minix\\|msdos\\|ncpfs\\|nfs\\|nfs4\\|ntfs\\|proc\\|qnx4\\|reiserfs\\|smbfs\\|sysv\\|ubifs\\|udf\\|ufs\\|umsdos\\|usbfs\\|vfat\\|xenix\\|xfs\\|xiafs"`;
+	my @lines = split /\n/, `df -khTP | tail -n +2 | awk '{print \$1";"\$2";"\$(NF-1)";"\$NF}' | grep -i "adfs\\|affs\\|autofs\\|btrfs\\|cifs\\|coda\\|coherent\\|efs\\|ext\\|hfs\\|hfsplus\\|hpfs\\|jfs\\|minix\\|msdos\\|ncpfs\\|nfs\\|nfs4\\|ntfs\\|proc\\|qnx4\\|reiserfs\\|smbfs\\|sysv\\|ubifs\\|udf\\|ufs\\|umsdos\\|usbfs\\|vfat\\|xenix\\|xfs\\|xiafs"`;
 
 	chomp (@lines);
 
@@ -61,7 +61,7 @@ else
 		}
 		else
 		{
-			my @linesmanual = split /\n/, `df -khTP | tail -n +2 | awk '{print \$1":"\$2":"\$(NF-1)":"\$NF}' | grep -i $fs`;
+			my @linesmanual = split /\n/, `df -khTP | tail -n +2 | awk '{print \$1";"\$2";"\$(NF-1)";"\$NF}' | grep -i $fs`;
 			
 			chomp (@linesmanual);
 
@@ -76,7 +76,7 @@ else
 
 	foreach (@lines)
 	{
-		my ($filesystem, $fstype, $used_space, $mount_point) = split /:/,$_;
+		my ($filesystem, $fstype, $used_space, $mount_point) = split /;/,$_;
 
 		if (defined ($filesystems{$mount_point}) || (!defined ($excluded_filesystems{$mount_point})))
 		{

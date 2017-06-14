@@ -1282,7 +1282,7 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 	switch ($config["dbtype"]) {
 		case "mysql":
 			$sql1 = 'SELECT name
-				FROM tserver WHERE name LIKE "' . $nameServer . '"';
+				FROM tserver WHERE BINARY name LIKE "' . $nameServer . '"';
 			break;
 		case "postgresql":
 		case "oracle":

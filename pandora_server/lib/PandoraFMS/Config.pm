@@ -1085,6 +1085,8 @@ sub pandora_start_log ($){
 
 	# Dump all errors to errorlog
 	open (STDERR, ">> " . $pa_config->{'errorlog_file'}) or die " [ERROR] Pandora FMS can't write to Errorlog. Aborting : \n $! \n";
+	my $mode = 0664;
+	chmod $mode, $pa_config->{'errorlog_file'};
 	print STDERR strftime ("%Y-%m-%d %H:%M:%S", localtime()) . ' - ' . $pa_config->{'servername'} . " Starting Pandora FMS Server. Error logging activated.\n";
 }
 

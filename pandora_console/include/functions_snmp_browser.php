@@ -116,7 +116,7 @@ function snmp_browser_print_tree ($tree, $id = 0, $depth = 0, $last = 0, $last_a
 			echo "</a>";
 		}
 		
-		echo '&nbsp;<span>' . $level . '</span>';
+		echo '&nbsp;<span>' . $level . '</span>'. html_print_checkbox("create_$sub_id", 0, false, true, false, '');;
 		if (isset ($sub_level['__VALUE__'])) {
 			echo '<span class="value" style="display: none;">&nbsp;=&nbsp;' . $sub_level['__VALUE__'] . '</span>';
 		}
@@ -618,3 +618,98 @@ function snmp_browser_print_container ($return = false, $width = '100%', $height
 }
 
 ?>
+
+<script type="text/javascript">
+	$(document).ready(function () {
+		$('input[name*=create_network_component]').click(function () {
+			var prueba = $('#ul_0').find('input').map(function(){ 
+				if(this.id.indexOf('checkbox-create_')!=-1){
+					if($(this).is(':checked')){
+						return this.id;
+					}
+					
+				} }).get();
+			var target_ip = $('#text-target_ip').val();
+			
+			
+			prueba.forEach(function(product, index) {
+				var oid = $("#"+product).siblings('a').attr('href');
+				if(oid.indexOf('javascript: snmpGet("')!=-1){
+					oid = oid.replace('javascript: snmpGet("',"");
+					oid = oid.replace('");',"");
+					var target_ip = $('#text-target_ip').val();
+					var community = $('#text-community').val();
+					var snmp_version = $('#snmp_browser_version').val();
+					var snmp3_auth_user = $('#text-snmp3_browser_auth_user').val();
+					var snmp3_security_level = $('#snmp3_browser_security_level').val();
+					var snmp3_auth_method = $('#snmp3_browser_auth_method').val();
+					var snmp3_auth_pass = $('#password-snmp3_browser_auth_pass').val();
+					var snmp3_privacy_method = $('#snmp3_browser_privacy_method').val();
+					var snmp3_privacy_pass = $('#password-snmp3_browser_privacy_pass').val();
+					var ajax_url = $('#hidden-ajax_url').val();
+					
+					var custom_action = $('#hidden-custom_action').val();
+					if (custom_action == undefined) {
+						custom_action = '';
+					}
+					
+					// Prepare the AJAX call
+					var params = [
+						"target_ip=" + target_ip,
+						"community=" + community,
+						"oid=" + oid,
+						"snmp_browser_version=" + snmp_version,
+						"snmp3_browser_auth_user=" + snmp3_auth_user,
+						"snmp3_browser_security_level=" + snmp3_security_level,
+						"snmp3_browser_auth_method=" + snmp3_auth_method,
+						"snmp3_browser_auth_pass=" + snmp3_auth_pass,
+						"snmp3_browser_privacy_method=" + snmp3_privacy_method,
+						"snmp3_browser_privacy_pass=" + snmp3_privacy_pass,
+						"action=" + "snmpget",
+						"custom_action=" + custom_action,
+						"page=include/ajax/snmp_browser.ajax"
+					];
+					
+					$.ajax({
+        				type: "GET",
+        				url: "ajax.php",
+        				data: params.join ("&"),
+						dataType: "html",
+        				success: function(data) {
+							console.log(data);
+						}
+					});
+				}
+			});
+		});
+		
+		$('input[id^=checkbox-create]').change(function () {
+			if ($(this).is(':checked') ) {
+				var id_input = $(this).attr("id");
+				id_input = id_input.split("checkbox-create_");
+				var checks = $('#ul_'+id_input[1]).find('input').map(function(){ 
+					if(this.id.indexOf('checkbox-create_')!=-1){
+						return this.id;
+					} }).get();
+				
+				checks.forEach(function(product, index) {
+					$("#"+product).prop('checked', "true");
+				});
+				
+			} else {
+				var id_input = $(this).attr("id");
+				
+				id_input = id_input.split("checkbox-create_");
+				var checks = $('#ul_'+id_input[1]).find('input').map(function(){ 
+					if(this.id.indexOf('checkbox-create_')!=-1){
+						return this.id;
+					} }).get();
+					
+				checks.forEach(function(product, index) {
+					$("#"+product).prop('checked', false);
+				});
+			}
+		});
+	});
+	
+</script>

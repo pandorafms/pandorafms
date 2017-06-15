@@ -47,6 +47,7 @@ if (is_ajax()) {
 		}
 		else {
 			snmp_browser_print_tree ($snmp_tree);
+			echo html_print_submit_button(__('Create network component'),'create_network_component', false, '', true);
 		}
 		return;
 	}

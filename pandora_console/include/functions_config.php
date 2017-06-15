@@ -1656,6 +1656,10 @@ function config_process_config () {
 		config_update_value ('command_snapshot', 1);
 	}
 	
+	if (!isset($config['custom_report_info'])) {
+		config_update_value ('custom_report_info', 1);
+	}
+	
 	// Juanma (06/05/2014) New feature: Custom front page for reports  
 	if (!isset($config['custom_report_front'])) {
 		config_update_value ('custom_report_front', 0);

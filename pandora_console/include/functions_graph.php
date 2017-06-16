@@ -256,7 +256,7 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 	for ($i = 0; $i <= $resolution; $i++) {
 		$timestamp = $datelimit + ($interval * $i);
 
-		if ($fullscale && $resolution > 250) {
+		if ($fullscale && ($resolution > ($config['graph_res'] * 50))) {
 			$timestamp = $data[$i]['utimestamp'];
 		}
 
@@ -360,7 +360,7 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 				$time_format = "M \nd H\h";
 			}
 			else {
-				$time_format = "M Y";
+				$time_format = "Y M \nd H\h";
 			}
 		}
 		else {
@@ -381,7 +381,7 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 				$time_format = "M d H\h";
 			}
 			else {
-				$time_format = "M Y";
+				$time_format = "Y M d H\h";
 			}
 		}
 		
@@ -1072,7 +1072,8 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		$time_format_2 = 'H\h';
 	}
 	else {
-		$time_format = "M Y";
+		$time_format = "Y M d";
+		$time_format_2 = 'H\h';
 	}
 	
 	// Set variables
@@ -1090,7 +1091,6 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		while ($in_range) {
 			$timestamp_f = graph_get_formatted_date($j, $time_format, $time_format_2);
 			
-			//$timestamp_f = date('d M Y H:i:s', $j);
 			$before_projection[$timestamp_f] = 0;
 			
 			if ($j > $date) {
@@ -4207,7 +4207,7 @@ function graph_netflow_aggregate_area ($data, $period, $width, $height, $unit = 
 		$chart_time_format = "M d H\h";
 	}
 	else {
-		$chart_time_format = "M Y";
+		$chart_time_format = "Y M d H\h";
 	}
 	
 	// Calculate source indexes
@@ -4336,7 +4336,7 @@ function graph_netflow_total_area ($data, $period, $width, $height, $unit = '', 
 		$chart_time_format = "M d H\h";
 	}
 	else {
-		$chart_time_format = "M Y";
+		$chart_time_format = "Y M d H\h";
 	}
 
 	// Calculate min, max and avg values
@@ -4635,7 +4635,7 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 			$time_format = "M d H\h";
 		}
 		else {
-			$time_format = "M Y";
+			$time_format = "Y M d H\h";
 		}
 		
 		$timestamp_short = date($time_format, $timestamp);
@@ -4813,7 +4813,7 @@ function graphic_module_events ($id_module, $width, $height, $period = 0, $homeu
 		$time_format = "M d H\h";
 	}
 	else {
-		$time_format = "M Y";
+		$time_format = "Y M d H\h";
 	}
 	
 	$legend = array();

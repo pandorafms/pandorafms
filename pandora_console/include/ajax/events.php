@@ -503,15 +503,27 @@ if ($table_events) {
 	require_once ("include/functions_graph.php");
 	
 	$id_agente = (int)get_parameter('id_agente', 0);
+	$all_events_24h = (int)get_parameter('all_events_24h', 0);
 	
 	// Fix: for tag functionality groups have to be all user_groups (propagate ACL funct!)
 	$groups = users_get_groups($config["id_user"]);
 	
 	$tags_condition = tags_get_acl_tags($config['id_user'],
 		array_keys($groups), 'ER', 'event_condition', 'AND');
-	
-	events_print_event_table ("estado <> 1 $tags_condition", 10, '100%',
-		false, $id_agente,true);
+	echo '<div id="div_all_events_24h">';
+		echo '<label><b>' . __('Show all Events 24h') . '</b></label>';
+		echo html_print_checkbox('all_events_24h', $all_events_24h, $all_events_24h, true, false, '', true);
+	echo '</div>';
+	$date_subtract_day = time() - (24 * 60 * 60);
+
+	if($all_events_24h){
+		events_print_event_table ("utimestamp > $date_subtract_day", 10, '100%',
+									false, $id_agente,true);
+	}
+	else{
+		events_print_event_table ("estado <> 1 $tags_condition", 10, '100%',
+									false, $id_agente,true);	
+	}
 }
 
 if ($get_list_events_agents) {

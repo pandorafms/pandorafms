@@ -1237,7 +1237,8 @@ function install_free_package_prev_step(package, version, homeurl) {
 									}
 								},
 								{
-									"Cancel": function () {
+									text:cancel_button,
+									click: function () {
 										$(this).dialog("close");
 
 										$("<div id='cancel_mr' class='dialog ui-dialog-content' title='" + mr_available + "'></div>").dialog ({

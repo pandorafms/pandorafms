@@ -1,3 +1,37 @@
+<script type="text/javascript">
+
+	function check_all_checkboxes() {
+		if ($("input[name=all_delete]").prop("checked")) {
+			$(".check_delete").prop("checked", true);
+			$('.check_delete').each(function(){
+			$('.massive_report_form_elements').prop("disabled", false);
+			});
+		}
+		else {
+			$(".check_delete").prop("checked", false);
+			$('.check_delete').each(function(){
+			$('.massive_report_form_elements').prop("disabled", true);
+			});
+		}	
+		
+	}
+	
+$( document ).ready(function() {
+	$('.check_delete').click(function(){
+		$('.check_delete').each(function(){
+			if($(this).prop( "checked" )){
+				$('#hidden-id_report_'+$(this).val()).prop("disabled", false);
+			}
+			else{
+				$('#hidden-id_report_'+$(this).val()).prop("disabled", true);
+			}	
+		});
+		
+	});
+});
+	
+</script>
+
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
@@ -564,7 +598,8 @@ switch ($action) {
 				$next++;
 				if(!defined('METACONSOLE'))
 					$table->head[$next] = '<span title="Operations">' .
-						__('Op.') . '</span>';
+						__('Op.') . '</span>'.html_print_checkbox('all_delete', 0, false, true, false,
+							'check_all_checkboxes();');
 					
 				//$table->size = array ();
 				$table->size[$next] = '10%';
@@ -703,9 +738,13 @@ switch ($action) {
 						$data[$next] .= '<form method="post" style="display:inline;" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
 						$data[$next] .= html_print_input_hidden ('id_report', $report['id_report'], true);
 						$data[$next] .= html_print_input_hidden ('action','delete_report', true);
-						$data[$next] .= html_print_input_image ('delete', 'images/cross.png', 1, '',
+						$data[$next] .= html_print_input_image ('delete', 'images/cross.png', 1, 'margin-right: 10px;',
 							true, array ('title' => __('Delete')));
+							
+						$data[$next] .= html_print_checkbox_extended ('massive_report_check', $report['id_report'], false, false, '', 'class="check_delete"', true);
+							
 						$data[$next] .= '</form>';
+						
 					}
 				}
 				
@@ -733,8 +772,19 @@ switch ($action) {
 			else
 				echo '<div class="action-buttons" style="width: 100%;">';
 			html_print_submit_button (__('Create report'), 'create', false, 'class="sub next"');
-			echo "</div>";
+			
 			echo "</form>";
+			echo '<form style="display:inline;" id="massive_report_form" method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=delete">';
+			
+			foreach ($reports as $report) {
+				echo '<input class="massive_report_form_elements" id="hidden-id_report_'.$report['id_report'].'" name="id_report[]" type="hidden" disabled value="'.$report['id_report'].'">';	
+			}
+			
+			echo '<input id="hidden-action" name="action" type="hidden" value="delete_report">';
+			html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete" style="margin-left:5px;"');
+			echo '</form>';
+			echo "</div>";
+			
 		}
 		
 		enterprise_hook('close_meta_frame');
@@ -2044,3 +2094,4 @@ switch ($activeTab) {
 
 enterprise_hook('close_meta_frame');
 ?>
+

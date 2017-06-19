@@ -18,7 +18,11 @@ global $config;
 check_login ();
 ui_require_css_file ('firts_task');
 ?>
-<?php ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no services defined yet.') ) ); ?>
+<?php ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no services defined yet.') ) );
+
+if (check_acl ($config['id_user'], 0, "UM")) {
+
+ ?>
 
 <div class="new_task">
 	<div class="image_task">
@@ -37,3 +41,6 @@ ui_require_css_file ('firts_task');
 		</form>
 	</div>
 </div>
+
+<?php } ?>
+

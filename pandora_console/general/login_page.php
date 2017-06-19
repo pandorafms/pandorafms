@@ -71,12 +71,13 @@ if (!empty($config['login_background'])) {
 echo '<div id="login_body" ' . $login_body_style . '>';
 echo '<div id="header_login">';
 	echo '<div id="icon_custom_pandora">';
-		if (defined ('PANDORA_ENTERPRISE')) {
+	
+			if (PANDORA_ENTERPRISE) {
 			if(isset ($config['custom_logo'])){
 				echo '<img src="enterprise/images/custom_logo/' . $config['custom_logo'] .'" alt="pandora_console">';
 			}
 			else{
-				echo '<img src="images/custom_logo/logo_login_consola.png" alt="pandora_console">';
+				echo '<img src="images/custom_logo/pandora_logo_head_4.png" alt="pandora_console">';
 			}
 		}
 		else{

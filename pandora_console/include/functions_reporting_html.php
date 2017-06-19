@@ -2567,10 +2567,6 @@ function reporting_html_general(&$table, $item) {
 					$table1->head[2] = __('Operation');
 				}
 				$table1->head[3] = __('Value');
-				$table1->style[0] = 'text-align: left';
-				$table1->style[1] = 'text-align: left';
-				$table1->style[2] = 'text-align: left';
-				$table1->style[3] = 'text-align: left';
 				
 				/* Begin - Order by agent */
 				

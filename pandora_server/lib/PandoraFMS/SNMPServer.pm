@@ -211,6 +211,11 @@ sub pandora_snmptrapd {
 		# Try to save as much information as possible if the trap could not be parsed
 		$oid = $type_desc if ($oid eq '' || $oid eq '.');
 
+		if (!defined($oid)) {
+			logger($pa_config, "[W] snmpTrapOID not found (Illegal SNMPv1 trap?)", 1);
+			return;
+		}
+
 	} elsif ($trap_ver eq "SNMPv2") {
 		($date, $time, $source, $data) = split(/\[\*\*\]/, $line, 4);
 		my @data = split(/\t/, $data);
@@ -441,21 +446,32 @@ sub read_snmplogfile()
 
 	return undef if (! defined($line));
 
+	my $retry_count = 0;
+
 	# More lines ?
-	while($read_ahead_line = <SNMPLOGFILE>) {
+	while(1) {
+		while($read_ahead_line = <SNMPLOGFILE>) {
 
-		# Get current file position
-		$read_ahead_pos = tell(SNMPLOGFILE);
+			# Get current file position
+			$read_ahead_pos = tell(SNMPLOGFILE);
 
-		# Get out of the loop if you find another Trap
-		last if($read_ahead_line =~ /^SNMP/ );
+			# Get out of the loop if you find another Trap
+			last if($read_ahead_line =~ /^SNMP/ );
 
-		# $read_ahead_line looks continued line...
+			# $read_ahead_line looks continued line...
 
-		# Append to the line and correct the position
-		chomp($line);
-		$line .= "$read_ahead_line";
-		$pos = $read_ahead_pos;
+			# Append to the line and correct the position
+			chomp($line);
+			$line .= "$read_ahead_line";
+			$pos = $read_ahead_pos;
+		}
+
+		# if $line looks incomplete, try to get continued line
+		# just within 10sec.  After that, giving up to complete it
+		# and flush $line as it is.
+		last if(chomp($line) > 0  || $retry_count++ >= 10);
+
+		sleep(1);
 	}
 
 	# return fetched line with file position to be saved.

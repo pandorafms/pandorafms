@@ -84,6 +84,28 @@ function visual_map_main() {
 	//Fixed to wait the load of images.
 	$(window).load(function() {
 		
+		
+		// Begin - Background label color changer
+				
+		$( "#text-label_ifr" ).contents().find( "body" ).bind("contextmenu", function(e) {
+   		e.preventDefault();
+    });
+		
+		$( "#text-label_ifr" ).contents().find( "body" ).mousedown(function(e){
+		    	if(e.which == 3) 
+        		{
+							if($( "#text-label_ifr" ).contents().find( "body" ).css('background-color') == 'rgb(211, 211, 211)'){
+								$( "#text-label_ifr" ).contents().find( "body" ).css('background-color','white');
+							}
+							else{
+								$( "#text-label_ifr" ).contents().find( "body" ).css('background-color','lightgray');
+							}
+           		
+        		}
+		});
+		
+		// End - Background label color changer
+		
 		$('#radiobtn0001').click(function(){
 			$("#custom_graph option[value=0]").prop("selected", true);
 		});
@@ -930,7 +952,8 @@ function toggle_item_palette() {
 				});
 				
 				$( "#text-label_ifr" ).contents().find( "p" ).css("line-height",$('#lineheight').val());
-					$( "#text-label_ifr" ).contents().find( "span" ).css("line-height",$('#lineheight').val());
+				$( "#text-label_ifr" ).contents().find( "span" ).css("line-height",$('#lineheight').val());
+				$( "#text-label_ifr" ).contents().find( "body" ).css("background","lightgray");
 								
 	}
 }

@@ -656,7 +656,7 @@ input.sub[disabled] {
 input.next, input.upd, input.ok, input.wand, input.delete, input.cog,
 input.target, input.search, input.copy, input.add, input.graph,
 input.percentile, input.binary, input.camera, input.config,
-input.cancel, input.default, input.filter, input.pdf {
+input.cancel, input.default, input.filter, input.pdf,input.spinn {
 	padding-right: 30px;
 	height: 23px;
 
@@ -740,6 +740,9 @@ input.pdf:disabled {
 }
 input.camera {
 	background-image: url(../../images/input_camera.png) !important;
+}
+input.spinn {
+	background-image: url(../../images/input_update.png) !important;
 }
 
 #toolbox #auto_save {

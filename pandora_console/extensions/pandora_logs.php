@@ -39,10 +39,9 @@ function view_logfile ($file_name) {
 			echo "<h2>$file_name (" . __("File is too large than PHP memory allocated in the system.") . ")</h2>";
 			echo "<h2>" . __("The preview file is imposible.") . "</h2>";
 		}
-		else if ($file_size > 512000) {
-			$data = file_get_contents ($file_name, false, NULL, $file_size - 512000);
-			echo "<h2>$file_name (".__("File is too large (> 500KB)").")</h2>";
-			
+		else if ($file_size > ($config['max_log_size'] * 1000)) {
+			$data = file_get_contents ($file_name, false, NULL, $file_size - ($config['max_log_size'] * 1000));
+			echo "<h2>$file_name (".format_numeric(filesize ($file_name)/1024)." KB) </h2>";
 			echo "<textarea style='width: 98%; float:right; height: 200px; margin-bottom:20px;' name='$file_name'>";
 			echo "... ";
 			echo $data;
@@ -68,10 +67,11 @@ function pandoralogs_extension_main () {
 		return;
 	}
 	
-	
 	ui_print_page_header (__("System logfile viewer"), "images/extensions.png", false, "", true, "" );
 	
 	echo "<p>" . __('This tool is used just to view your Pandora FMS system logfiles directly from console') . "</p>";
+
+	echo "<p>" . __('You can control the size information to show in general setup (Log size limit in view extension), actually ') . $config['max_log_size'] * 1000 . "B" . "</p>";
 	
 	$logs_directory = (!empty($config["server_log_dir"])) ? io_safe_output($config["server_log_dir"]) : "/var/log/pandora";
 

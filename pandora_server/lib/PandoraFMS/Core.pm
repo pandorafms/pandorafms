@@ -1007,6 +1007,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_moduledescription_ => (defined ($module)) ? $module->{'descripcion'} : '',
 				_modulestatus_ => undef,
 				_moduletags_ => undef,
+				'_moduledata_\S+_' => undef,
 				_id_agent_ => (defined ($module)) ? $module->{'id_agente'} : '', 
 				_id_group_ => (defined ($group)) ? $group->{'id_grupo'} : '',
 				_id_alert_ => (defined ($alert->{'id_template_module'})) ? $alert->{'id_template_module'} : '',
@@ -1019,7 +1020,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_phone_tag_ => undef,
 				_name_tag_ => undef,
 				_all_address_ => undef,
-				'_address_\d+_'  => undef,
+				'_address_\d+_' => undef,
 				 );
 	
 	if ((defined ($extra_macros)) && (ref($extra_macros) eq "HASH")) {
@@ -2252,7 +2253,7 @@ sub pandora_reset_server ($$) {
 	
 	db_do ($dbh, 'UPDATE tserver
 		SET status = 0, threads = 0, queued_modules = 0
-		WHERE name = ?', $pa_config->{'servername'});
+		WHERE BINARY name = ?', $pa_config->{'servername'});
 }
 
 ##########################################################################
@@ -2286,7 +2287,7 @@ sub pandora_update_server ($$$$$$;$$$$) {
 	if ($server_id == 0) { 
 		
 		# Create an entry in tserver if needed
-		my $server = get_db_single_row ($dbh, 'SELECT id_server FROM tserver WHERE name = ? AND server_type = ?', $server_name, $server_type);
+		my $server = get_db_single_row ($dbh, 'SELECT id_server FROM tserver WHERE BINARY name = ? AND server_type = ?', $server_name, $server_type);
 		if (! defined ($server)) {
 			$server_id = db_insert ($dbh, 'id_server', 'INSERT INTO tserver (name, server_type, description, version, threads, queued_modules, server_keepalive)
 						VALUES (?, ?, ?, ?, ?, ?, ?)', $server_name, $server_type,
@@ -3583,7 +3584,7 @@ sub on_demand_macro($$$$$$) {
 
 	# Static macro.
 	return $macros->{$macro} if (defined($macros->{$macro}));
-
+	
 	# Load on-demand macros.
 	return '' unless defined($pa_config) and defined($dbh);
 	if ($macro eq '_agentstatus_') {
@@ -3635,6 +3636,34 @@ sub on_demand_macro($$$$$$) {
 		my $field_value = $rows[$field_number]->{'ip'};
 		if($field_value == ''){
 			$field_value = 'Ip not defined';
+		}
+		
+		return(defined($field_value)) ? $field_value : '';
+	} elsif ($macro =~ /_moduledata_(\S+)_/) {
+		my $field_number = $1;
+		
+		my $id_mod = get_db_value ($dbh, 'SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = ? AND nombre = ?', $module->{'id_agente'}, $field_number);
+		my $type_mod = get_db_value ($dbh, 'SELECT id_tipo_modulo FROM tagente_modulo WHERE id_agente_modulo = ?', $id_mod);
+		my $unit_mod = get_db_value ($dbh, 'SELECT unit FROM tagente_modulo WHERE id_agente_modulo = ?', $id_mod);
+
+		my $field_value = "";
+		if ($type_mod eq 3){
+			$field_value = get_db_value($dbh, 'SELECT datos FROM tagente_datos_string where id_agente_modulo = ? order by utimestamp desc limit 1', $id_mod);
+		}
+		else{
+			$field_value = get_db_value($dbh, 'SELECT datos FROM tagente_datos where id_agente_modulo = ? order by utimestamp desc limit 1', $id_mod);
+			
+			my $data_precision = $pa_config->{'graph_precision'};
+			$field_value = sprintf("%.$data_precision" . "f", $field_value);
+			$field_value =~ s/0+$//;
+			$field_value =~ s/\.+$//;
+		}
+
+		if ($field_value eq ''){
+			$field_value = 'Module ' . $field_number . " not found";
+		}
+		elsif ($unit_mod ne '') {
+			$field_value .= $unit_mod;
 		}
 		
 		return(defined($field_value)) ? $field_value : '';
@@ -4230,7 +4259,7 @@ sub pandora_server_statistics ($$) {
 	my $lag_row;
 
 	# Get all servers with my name (each server only refresh it's own stats)
-	my @servers = get_db_rows ($dbh, 'SELECT * FROM tserver WHERE name = ?', $pa_config->{'servername'});
+	my @servers = get_db_rows ($dbh, 'SELECT * FROM tserver WHERE BINARY name = ?', $pa_config->{'servername'});
 
 	# For each server, update stats: Simple.
 	foreach my $server (@servers) {
@@ -4584,7 +4613,7 @@ sub pandora_self_monitoring ($$) {
 		$agents_unknown = 0 if (!defined($agents_unknown));
 	}
 	
-	my $queued_modules = get_db_value ($dbh, "SELECT SUM(queued_modules) FROM tserver WHERE name = '".$pa_config->{"servername"}."'");
+	my $queued_modules = get_db_value ($dbh, "SELECT SUM(queued_modules) FROM tserver WHERE BINARY name = '".$pa_config->{"servername"}."'");
 	
 	if (!defined($queued_modules)) {
 		$queued_modules = 0;

@@ -76,9 +76,33 @@ switch ($status) {
 		break;
 }
 
+
+$events_wi_cdata = db_get_all_rows_sql('SELECT id_evento,custom_data from tevento WHERE custom_data != ""');
+$count_events = 0;
+$events_wi_cdata_id = 'OR id_evento IN (';
+foreach ($events_wi_cdata as $key => $value) {
+	if(strpos(strtolower(base64_decode($value['custom_data'])),strtolower($search)) != false){
+		$events_wi_cdata_id .= $value['id_evento'];
+		$count_events++;
+	}
+	if ($value !== end($events_wi_cdata) && $count_events > 0) {
+  	$events_wi_cdata_id .= ',';
+		$events_wi_cdata_id = str_replace(',,', ',', $events_wi_cdata_id);
+	}
+}
+
+$events_wi_cdata_id .= ')';
+
+$events_wi_cdata_id = str_replace(',)', ')', $events_wi_cdata_id);
+
+if($count_events == 0){
+	$events_wi_cdata_id = '';
+}
+
+
 if ($search != "") {
 	$filter_resume['free_search'] = $search;
-	$sql_post .= " AND (evento LIKE '%". io_safe_input($search) . "%' OR id_evento LIKE '%$search%')";
+	$sql_post .= " AND (evento LIKE '%". io_safe_input($search) . "%' OR id_evento LIKE '%$search%' ".$events_wi_cdata_id.")";
 }
 
 if ($event_type != "") {

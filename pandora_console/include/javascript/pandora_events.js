@@ -46,6 +46,7 @@ function show_event_dialog(event_id, group_rep, dialog_page, result) {
 					modal: true,
 					close: function() {
 						$("#refrcounter").countdown("resume");
+						$('div.vc-countdown').countdown('resume');
 					},
 					overlay: {
 						opacity: 0.5,
@@ -55,8 +56,9 @@ function show_event_dialog(event_id, group_rep, dialog_page, result) {
 					height: 530
 				})
 				.show ();
-				
-			$("#refrcounter").countdown("pause");
+			
+			$("#refrcounter").countdown('pause');
+			$('div.vc-countdown').countdown('pause');
 				
 			switch (result) {
 				case 'comment_ok':

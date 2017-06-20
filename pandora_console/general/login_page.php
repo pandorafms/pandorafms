@@ -65,18 +65,19 @@ if (!empty ($page) && !empty ($sec)) {
 $login_body_style = '';
 // Overrides the default background with the defined by the user
 if (!empty($config['login_background'])) {
-	$background_url = "../../images/backgrounds/" . $config['login_background'];
+	$background_url = "images/backgrounds/" . $config['login_background'];
 	$login_body_style = "style=\"background-image: url('$background_url');\"";
 }
 echo '<div id="login_body" ' . $login_body_style . '>';
 echo '<div id="header_login">';
 	echo '<div id="icon_custom_pandora">';
-		if (defined ('PANDORA_ENTERPRISE')) {
+	
+			if (PANDORA_ENTERPRISE) {
 			if(isset ($config['custom_logo'])){
-				echo '<img src="images/custom_logo/' . $config['custom_logo'] .'" alt="pandora_console">';
+				echo '<img src="enterprise/images/custom_logo/' . $config['custom_logo'] .'" alt="pandora_console">';
 			}
 			else{
-				echo '<img src="images/custom_logo/logo_login_consola.png" alt="pandora_console">';
+				echo '<img src="images/custom_logo/pandora_logo_head_4.png" alt="pandora_console">';
 			}
 		}
 		else{

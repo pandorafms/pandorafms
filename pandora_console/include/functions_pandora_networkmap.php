@@ -122,7 +122,16 @@ function networkmap_process_networkmap($id = 0) {
 			null,
 			$old_mode);
 		
-		$filename_dot = sys_get_temp_dir() . "/networkmap_" . $filter;
+		switch (PHP_OS) {
+			case "WIN32":
+			case "WINNT":
+			case "Windows":
+				$filename_dot = sys_get_temp_dir() . "\\networkmap_" . $filter;
+				break;
+			default:
+				$filename_dot = sys_get_temp_dir() . "/networkmap_" . $filter;
+				break;
+		}
 		
 		if ($simple) {
 			$filename_dot .= "_simple";
@@ -133,11 +142,21 @@ function networkmap_process_networkmap($id = 0) {
 		$filename_dot .= "_" . $id . ".dot";
 		
 		file_put_contents($filename_dot, $graph);
-		
-		$filename_plain = sys_get_temp_dir() . "/plain.txt";
-		
-		$cmd = "$filter -Tplain -o " . $filename_plain . " " .
-			$filename_dot;
+
+		switch (PHP_OS) {
+			case "WIN32":
+			case "WINNT":
+			case "Windows":
+				$filename_plain = sys_get_temp_dir() . "\\plain.txt";
+				$cmd = $config['graphviz_win'] . "$filter -Tplain -o " . $filename_plain . " " .
+					$filename_dot;
+				break;
+			default:
+				$filename_plain = sys_get_temp_dir() . "/plain.txt";
+				$cmd = "$filter -Tplain -o " . $filename_plain . " " .
+					$filename_dot;
+				break;
+		}
 
 		system ($cmd);
 		
@@ -764,7 +783,7 @@ function networkmap_write_js_array($id, $nodes_and_relations = array(), $map_das
 	echo "var set_center_menu = '" . __('Set center') . "';\n";
 	echo "var refresh_menu = '" . __('Refresh') . "';\n";
 	echo "var refresh_holding_area_menu = '" . __('Refresh Holding area') . "';\n";
-	echo "var abort_relationship_interface = '" . __('Abort the action of set interface relationship') . "';\n";
+	echo "var abort_relationship_interface = '" . __('Abort the interface relationship') . "';\n";
 	echo "var abort_relationship_menu = '" . __('Abort the action of set relationship') . "';\n";
 	
 	echo "\n";

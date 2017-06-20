@@ -1255,6 +1255,7 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`id_group` INT (10) unsigned NOT NULL DEFAULT 0,
 	`id_module_group` INT (10) unsigned NOT NULL DEFAULT 0,
 	`server_name` text,
+	`historical_db` tinyint(1) UNSIGNED NOT NULL default 0,
 	PRIMARY KEY(`id_rc`),
 	FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
 		ON UPDATE CASCADE ON DELETE CASCADE
@@ -1702,6 +1703,7 @@ CREATE TABLE IF NOT EXISTS `tagent_custom_fields` (
 	`id_field` int(10) unsigned NOT NULL auto_increment,
 	`name` varchar(45) NOT NULL default '',
 	`display_on_front` tinyint(1) NOT NULL default 0,
+	`is_password_type` tinyint(1) NOT NULL default 0,
 	PRIMARY KEY  (`id_field`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -2055,6 +2057,7 @@ CREATE TABLE IF NOT EXISTS `tpolicy_modules` (
 	`max` bigint(20) default '0',
 	`min` bigint(20) default '0',
 	`module_interval` int(4) unsigned default '0',
+	`ip_target` varchar(100) default '',
 	`tcp_port` int(4) unsigned default '0',
 	`tcp_send` text default '',
 	`tcp_rcv` text default '',
@@ -2069,7 +2072,7 @@ CREATE TABLE IF NOT EXISTS `tpolicy_modules` (
 	`plugin_pass` text default '',
 	`plugin_parameter` text,
 	`id_plugin` int(10) default '0',
-	`post_process` double(24,15) default NULL,
+	`post_process` double(24,15) default 0,
 	`prediction_module` bigint(14) default '0',
 	`max_timeout` int(4) unsigned default '0',
 	`max_retries` int(4) unsigned default '0',

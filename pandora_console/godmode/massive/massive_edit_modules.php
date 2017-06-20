@@ -16,7 +16,7 @@
 // Load global vars
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "PM")) {
+if (! check_acl ($config['id_user'], 0, "AW")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access massive module update");
 	require ("general/noaccess.php");
@@ -110,6 +110,9 @@ if ($update) {
 					$success += (int)$result;
 				}
 			}
+			if ($success == 0) {
+				$error_msg = __("Error updating the modules from a module type");
+			}
 		}
 		else if ($force == 'group') {
 			$agents_ = array_keys(agents_get_group_agents($group_select, false, 'none'));
@@ -129,6 +132,9 @@ if ($update) {
 					$success += (int)$result;
 				}
 			}
+			if ($success == 0) {
+				$error_msg = __("Error updating the modules from an agent group");
+			}
 		}
 	}
 	else {
@@ -146,11 +152,14 @@ if ($update) {
 				
 			}
 		}
+		if ($success == 0) {
+			$error_msg = __("Error updating the modules (maybe there was no field to update)");
+		}
 	}
 	
 	ui_print_result_message ($success > 0,
 		__('Successfully updated') . "(" . $success . "/" . $count . ")",
-		__('Could not be updated'));
+		$error_msg);
 	
 	$info = 'Modules: ' . json_encode($modules_) . ' Agents: ' . json_encode($agents_);
 	if ($success > 0) {
@@ -303,6 +312,13 @@ $table->data['form_modules_3'][1] = html_print_select($status_list,
 	'status_module', 'selected', '', __('All'), AGENT_MODULE_STATUS_ALL, true);
 $table->data['form_modules_3'][3] = '';
 
+$tags = tags_get_user_tags();
+$table->rowstyle['form_modules_4'] = 'vertical-align: top;';
+$table->rowclass['form_modules_4'] = 'select_modules_row select_modules_row_2';
+$table->data['form_modules_4'][0] = __('Tags');
+$table->data['form_modules_4'][1] = html_print_select ($tags, 'tags[]',
+	$tags_name, false, __('Any'), -1, true, true, true);
+
 $table->rowstyle['form_modules_2'] = 'vertical-align: top;';
 $table->rowclass['form_modules_2'] = 'select_modules_row select_modules_row_2';
 $table->data['form_modules_2'][0] = __('Modules');
@@ -334,8 +350,12 @@ $table->data['form_agents_2'][1] = html_print_select($status_list,
 	'status_agents', 'selected', '', __('All'), AGENT_STATUS_ALL, true);
 $table->data['form_agents_2'][3] = '';
 
-
-
+$tags = tags_get_user_tags();
+$table->rowstyle['form_agents_4'] = 'vertical-align: top;';
+$table->rowclass['form_agents_4'] = 'select_agents_row select_agents_row_2';
+$table->data['form_agents_4'][0] = __('Tags');
+$table->data['form_agents_4'][1] = html_print_select ($tags, 'tags[]',
+	$tags_name, false, __('Any'), -1, true, true, true);
 
 $table->rowstyle['form_agents_3'] = 'vertical-align: top;';
 $table->rowclass['form_agents_3'] = 'select_agents_row select_agents_row_2';
@@ -474,8 +494,10 @@ $table->data['edit2'][3] = html_print_select(
 
 $table->data['edit3'][0] = __('Post process') .
 	ui_print_help_icon ('postprocess', true);
-$table->data['edit3'][1] = html_print_input_text ('post_process', '',
-	'', 10, 15, true);
+	
+$table->data['edit3'][1] = html_print_extended_select_for_post_process('post_process',
+	0, '', 0, '', false, true, 'width:150px;', true);
+			
 $table->data['edit3'][2] = __('SMNP community');
 $table->data['edit3'][3] = html_print_input_text ('snmp_community', '',
 	'', 10, 15, true);
@@ -668,8 +690,10 @@ $(document).ready (function () {
 	
 	clean_lists();
 	
+	
 	$(".select_modules_row").css('display', '<?php echo $modules_row?>');
 	$(".select_agents_row").css('display', '<?php echo $agents_row?>');
+	$(".select_modules_row_2").css('display', 'none');
 	
 	// Trigger change to refresh selection when change selection mode
 	$("#agents_selection_mode").change (function() {
@@ -716,7 +740,7 @@ $(document).ready (function () {
 		var params = {
 			"page" : "operation/agentes/ver_agente",
 			"get_agent_modules_json" : 1,
-			"get_distinct_name" : 1,
+			"get_id_and_name" : 1,
 			"indexed" : 0
 		};
 		
@@ -726,6 +750,13 @@ $(document).ready (function () {
 		var status_module = $('#status_module').val();
 		if (status_module != '-1')
 			params['status_module'] = status_module;
+
+		var tags_to_search = $('#tags').val();
+		if (tags_to_search != null) {
+			if (tags_to_search[0] != -1) {
+				params['tags'] = tags_to_search;
+			}
+		}
 		
 		$("#module_loading").show ();
 		$("tr#delete_table-edit1, tr#delete_table-edit0, tr#delete_table-edit2").hide ();
@@ -932,6 +963,7 @@ $(document).ready (function () {
 		else if(selector == 'modules') {
 			$(".select_agents_row").hide();
 			$(".select_modules_row").show();
+			$("#module_type").trigger("change");
 		}
 	});
 	
@@ -963,7 +995,6 @@ $(document).ready (function () {
 
 	$("#groups_select").change (
 		function () {
-			
 			if (this.value < 0) {
 				clean_lists();
 				$(".select_agents_row_2").css('display', 'none');
@@ -1047,6 +1078,14 @@ $(document).ready (function () {
 		}
 	});
 
+	$("#tags").change(function() {
+		selector = $("#form_edit input[name=selection_mode]:checked").val();
+		$("#module_type").trigger("change");
+	});
+	$("#tags1").change(function() {
+		selector = $("#form_edit input[name=selection_mode]:checked").val();
+		$("#id_agents").trigger("change");
+	});
 });
 
 function disabled_status () {

@@ -64,8 +64,23 @@ function db_connect($host = null, $db = null, $user = null, $pass = null, $port 
 	// Something went wrong
 	if ($return === false) {
 		if ($critical) {
+			$url = explode('/', $_SERVER['REQUEST_URI']);
+			$flag_url =0;
+			foreach ($url as $key => $value) {
+				if (strpos($value, 'index.php') !== false || $flag_url) {
+					$flag_url=1;
+					unset($url[$key]);
+				}
+				else if(strpos($value, 'enterprise') !== false || $flag_url){
+					$flag_url=1;
+					unset($url[$key]);
+				}
+			}
+			$config["homeurl"] = rtrim(join("/", $url),"/");
+			$config["homeurl_static"] = $config["homeurl"];
+			$ownDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;	
+			$config['homedir'] = $ownDir;
 			$login_screen = 'error_authconfig';
-			
 			require($config['homedir'] . '/general/error_screen.php');
 			exit;
 		}
@@ -569,7 +584,13 @@ function db_uncompress_module_data($id_agente_modulo, $tstart = false, $tend = f
 
 	if ((!isset($tstart)) || ($tstart === false)) {
 		// Return data from the begining
-		$tstart = 0;
+		// Get first available utimestamp in active DB
+		$query_first_man_time  = " SELECT utimestamp FROM tagente_datos ";
+		$query_first_man_time .= " WHERE id_agente_modulo = $id_agente_modulo";
+		$query_first_man_time .= " ORDER BY utimestamp ASC LIMIT 1";
+
+		$first_man_time = db_get_all_rows_sql( $query_first_man_time, false);
+		$tstart = $first_man_time[0]['utimestamp'];
 	}
 
 	if ((!isset($tend)) || ($tend === false)) {
@@ -580,7 +601,6 @@ function db_uncompress_module_data($id_agente_modulo, $tstart = false, $tend = f
 	if ($tstart > $tend) {
 		return false;
 	}
-
 
 	$search_historydb = false;
 	$table = "tagente_datos";
@@ -596,12 +616,10 @@ function db_uncompress_module_data($id_agente_modulo, $tstart = false, $tend = f
 		$table = "tagente_datos_string";
 	}
 
-
 	// Get first available utimestamp in active DB
 	$query  = " SELECT utimestamp, datos FROM $table ";
 	$query .= " WHERE id_agente_modulo=$id_agente_modulo AND utimestamp < $tstart";
 	$query .= " ORDER BY utimestamp DESC LIMIT 1";
-
 
 	$ret = db_get_all_rows_sql( $query , $search_historydb);
 
@@ -610,6 +628,10 @@ function db_uncompress_module_data($id_agente_modulo, $tstart = false, $tend = f
 		$search_historydb = true;
 
 		$ret = db_get_all_rows_sql( $query , $search_historydb);
+
+		if ($ret) {
+			$tstart = $ret[0]["utimestamp"];
+		}
 	}
 	else {
 		$first_data["utimestamp"] = $ret[0]["utimestamp"];

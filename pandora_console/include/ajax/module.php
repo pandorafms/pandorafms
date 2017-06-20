@@ -254,7 +254,9 @@ if ($get_module_detail) {
 
 	$id_type_web_content_string = db_get_value('id_tipo',
 		'ttipo_modulo', 'nombre', 'web_content_string');
-
+		
+	$post_process = db_get_value_filter('post_process','tagente_modulo',array('id_agente_modulo' => $module_id));
+	
 	foreach ($result as $row) {
 		$data = array ();
 
@@ -305,10 +307,16 @@ if ($get_module_detail) {
 					switch($row['module_type']) {
 						case 15:
 							$value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module_id);
-							if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0')
-								$data[] = human_milliseconds_to_string($row['data']);
-							else
+							if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0'){
+								if($post_process > 0){
+									$data[] = human_milliseconds_to_string($row['data'] / $post_process);
+								} else {
+									$data[] = human_milliseconds_to_string($row['data']);
+								}
+							}else{
 								$data[] = remove_right_zeros(number_format($row[$attr[0]], $config['graph_precision']));
+							}
+								
 							break;
 						default:
 							$data[] = remove_right_zeros(number_format($row[$attr[0]], $config['graph_precision']));
@@ -970,10 +978,16 @@ if ($list_modules) {
 							switch($module['id_tipo_modulo']) {
 								case 15:
 									$value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module['id_agente_modulo']);
-									if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0')
-										$salida = human_milliseconds_to_string($module['datos']);
-									else
+									if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0'){
+										if($module['post_process']>0){
+											$salida = human_milliseconds_to_string($module['datos'] / $module['post_process']);
+										} else {
+											$salida = human_milliseconds_to_string($module['datos']);
+										}
+									} else {
 										$salida = remove_right_zeros(number_format($module["datos"], $config['graph_precision']));
+									}
+										
 									break;
 								default:
 									$salida = remove_right_zeros(number_format($module["datos"], $config['graph_precision']));
@@ -986,16 +1000,20 @@ if ($list_modules) {
 					switch($module['id_tipo_modulo']) {
 						case 15:
 							$value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module['id_agente_modulo']);
-							if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0')
-								$salida = human_milliseconds_to_string($module['datos']);
-							else
+							if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0'){
+								if($module['post_process']>0){
+									$salida = human_milliseconds_to_string($module['datos'] / $module['post_process']);
+								} else {
+									$salida = human_milliseconds_to_string($module['datos']);
+								}
+							} else {
 								$salida = remove_right_zeros(number_format($module["datos"], $config['graph_precision']));
+							}
 							break;
 						default:
 							$salida = remove_right_zeros(number_format($module["datos"], $config['graph_precision']));
 							break;
 					}
-					//~ $salida = (number_format($module["datos"], $config['graph_precision']));
 				}
 				// Show units ONLY in numeric data types
 				if (isset($module["unit"])) {

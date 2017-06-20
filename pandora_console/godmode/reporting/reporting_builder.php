@@ -1124,6 +1124,7 @@ switch ($action) {
 							$values['treport_custom_sql_id'] = get_parameter('id_custom');
 							if ($values['treport_custom_sql_id'] == 0) {
 								$values['external_source'] = get_parameter('sql');
+								$values['historical_db'] = get_parameter('historical_db_check');
 							}
 						}
 						else if ($values['type'] == 'url') {
@@ -1139,6 +1140,7 @@ switch ($action) {
 						
 						$style = array();
 						$style['show_in_two_columns'] = get_parameter('show_in_two_columns', 0);
+						$style['show_in_same_row'] = get_parameter('show_in_same_row', 0);
 						$style['show_in_landscape'] = get_parameter('show_in_landscape', 0);
 						$style['hide_notinit_agents'] = get_parameter('hide_notinit_agents', 0);
 						
@@ -1444,6 +1446,7 @@ switch ($action) {
 							$values['treport_custom_sql_id'] = get_parameter('id_custom');
 							if ($values['treport_custom_sql_id'] == 0) {
 								$values['external_source'] = get_parameter('sql');
+								$values['historical_db'] = get_parameter('historical_db_check');
 							}
 						}
 						elseif ($values['type'] == 'url') {
@@ -1459,6 +1462,7 @@ switch ($action) {
 						
 						$style = array();
 						$style['show_in_two_columns'] = get_parameter('show_in_two_columns', 0);
+						$style['show_in_same_row'] = get_parameter('show_in_same_row', 0);
 						$style['show_in_landscape'] = get_parameter('show_in_landscape', 0);
 						$style['hide_notinit_agents'] = get_parameter('hide_notinit_agents', 0);
 						

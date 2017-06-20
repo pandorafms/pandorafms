@@ -194,6 +194,8 @@ function config_update_config () {
 						$error_update[] = __('Command Snapshot');
 					if (!config_update_value ('server_log_dir', get_parameter('server_log_dir')))
 						$error_update[] = __('Server logs directory');
+					if (!config_update_value ('max_log_size', get_parameter('max_log_size')))
+						$error_update[] = __('Log size limit in system logs viewer extension');
 					if (!config_update_value ('tutorial_mode', get_parameter('tutorial_mode')))
 						$error_update[] = __('Tutorial mode');
 					if (!config_update_value ('past_planned_downtimes', get_parameter('past_planned_downtimes')))
@@ -348,16 +350,6 @@ function config_update_config () {
 					if (!config_update_value ('rpandora_pass', io_input_password(get_parameter ('rpandora_pass'))))
 						$error_update[] = __('Password');
 					
-					if (!config_update_value ('rbabel_server', get_parameter ('rbabel_server')))
-						$error_update[] = __('Babel Enterprise host');
-					if (!config_update_value ('rbabel_port', get_parameter ('rbabel_port')))
-						$error_update[] = __('MySQL port');
-					if (!config_update_value ('rbabel_dbname', get_parameter ('rbabel_dbname')))
-						$error_update[] = __('Database name');
-					if (!config_update_value ('rbabel_user', get_parameter ('rbabel_user')))
-						$error_update[] = __('User');
-					if (!config_update_value ('rbabel_pass', io_input_password(get_parameter ('rbabel_pass'))))
-						$error_update[] = __('Password');
 					if (!config_update_value ('rintegria_server', get_parameter ('rintegria_server')))
 						$error_update[] = __('Integria host');
 					if (!config_update_value ('rintegria_port', get_parameter ('rintegria_port')))
@@ -1446,26 +1438,6 @@ function config_process_config () {
 		config_update_value ( 'rpandora_pass', '');
 	}
 	
-	if (!isset ($config['rbabel_server'])) {
-		config_update_value ( 'rbabel_server', 'localhost');
-	}
-	
-	if (!isset ($config['rbabel_port'])) {
-		config_update_value ( 'rbabel_port', 3306);
-	}
-	
-	if (!isset ($config['rbabel_dbname'])) {
-		config_update_value ( 'rbabel_dbname', 'babel');
-	}
-	
-	if (!isset ($config['rbabel_user'])) {
-		config_update_value ( 'rbabel_user', 'babel');
-	}
-	
-	if (!isset ($config['rbabel_pass'])) {
-		config_update_value ( 'rbabel_pass', '');
-	}
-	
 	if (!isset ($config['rintegria_server'])) {
 		config_update_value ( 'rintegria_server', 'localhost');
 	}
@@ -1626,6 +1598,10 @@ function config_process_config () {
 	
 	if (!isset($config['server_log_dir'])) {
 		config_update_value ('server_log_dir', "");
+	}
+
+	if (!isset($config['max_log_size'])) {
+		config_update_value ('max_log_size', 512);
 	}
 	
 	if (!isset($config['show_group_name'])) {

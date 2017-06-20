@@ -1381,7 +1381,7 @@ CREATE TABLE IF NOT EXISTS `tmodule` (
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tserver_export` (
 	`id` int(10) unsigned NOT NULL auto_increment,
-	`name` varchar(100) NOT NULL default '',
+	`name` varchar(600) BINARY NOT NULL default '',
 	`preffix` varchar(100) NOT NULL default '',
 	`interval` int(5) unsigned NOT NULL default '300',
 	`ip_server` varchar(100) NOT NULL default '',

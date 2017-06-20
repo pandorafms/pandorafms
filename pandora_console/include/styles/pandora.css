@@ -742,7 +742,7 @@ input.camera {
 	background-image: url(../../images/input_camera.png) !important;
 }
 input.spinn {
-	background-image: url(../../images/input_update.png) !important;
+	background-image: url(../../images/spinner.gif) !important;
 }
 
 #toolbox #auto_save {

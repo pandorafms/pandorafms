@@ -54,8 +54,8 @@ if (is_ajax()) {
 			echo "<div>";
 			echo "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
 			echo "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
-			echo "<p style='font-family:Verdana; font-size:12pt;'>".__('Error creating the following modules:')."</p>";
-			echo "<p id='prueba' style='font-family:Verdana; font-size:12pt;'></p>";
+			echo "<p style='font-family:Verdana; font-size:12pt;margin-bottom: 0px'>".__('Error creating the following modules:')."</p>";
+			echo "<p id='error_text' style='font-family:Verdana; font-size:12pt;'></p>";
 			echo "</div>";
 			echo '</div>';
 			
@@ -65,7 +65,6 @@ if (is_ajax()) {
 			echo "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_exito_mr.png'></div>";
 			echo "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>SUCCESS</strong></h3>";
 			echo "<p style='font-family:Verdana; font-size:12pt;'>".__('Modules successfully created')."</p>";
-			echo "<p id='prueba' style='font-family:Verdana; font-size:12pt;'></p>";
 			echo "</div>";
 			echo '</div>';
 		}

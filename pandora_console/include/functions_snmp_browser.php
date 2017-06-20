@@ -684,7 +684,11 @@ function snmp_browser_print_container ($return = false, $width = '100%', $height
 					$('input[name*=create_network_component]').addClass("sub add");
 					
 					if(data.length !== 0){
-						$('#prueba').text(data);
+						$('#error_text').text("");
+						data.forEach( function(valor, indice, array) {
+							console.log(valor);
+    						$('#error_text').append('<br/>'+ valor );
+						});
 						$("#dialog_error")
 							.dialog({
 								resizable: true,
@@ -703,7 +707,7 @@ function snmp_browser_print_container ($return = false, $width = '100%', $height
 								resizable: true,
 								draggable: true,
 								modal: true,
-								height: 300,
+								height: 250,
 								width: 500,
 								overlay: {
 									opacity: 0.5,

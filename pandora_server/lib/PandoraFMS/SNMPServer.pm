@@ -211,7 +211,7 @@ sub pandora_snmptrapd {
 		$oid = $type_desc if ($oid eq '' || $oid eq '.');
 
 		if (!defined($oid)) {
-			logger($pa_config, "[W] snmpTrapOID not found (Illegal SNMPv1 trap?)", 1);
+			logger($pa_config, "[W] snmpTrapOID not found (Illegal SNMPv1 trap?)", 5);
 			return;
 		}
 
@@ -223,7 +223,7 @@ sub pandora_snmptrapd {
 		$oid = shift @data;
 
 		if (!defined($oid)) {
-			logger($pa_config, "[W] snmpTrapOID not found (Illegal SNMPv2 trap?)", 1);
+			logger($pa_config, "[W] snmpTrapOID not found (Illegal SNMPv2 trap?)", 5);
 			return;
 		}
 		$oid =~ s/.* = OID: //;

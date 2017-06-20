@@ -221,8 +221,6 @@ if (($filter_group == 0) && ($filter_search == '')) {
 $table = new stdClass();
 $table->width = '100%';
 $table->class = "databox filters";
-if(defined('METACONSOLE'))
-	$table->class = "databox_filters";
 $table->rowclass[0] = '';
 $table->data[0][0] = '<b>' . __('Group') . '</b>';
 $table->data[0][1] = html_print_select_groups(false, "AR", true,
@@ -496,3 +494,10 @@ echo '</div>';
 enterprise_hook('close_meta_frame');
 
 ?>
+<script type="text/javascript">
+	$(document).ready (function () {
+		console.log('sknknan');
+		// text-filter_search
+	});
+</script>
+

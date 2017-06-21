@@ -3391,6 +3391,30 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 		if (($internal_counter + 1 >= $min_alerts) && ($times_fired + 1 <= $max_alerts)) {
 			($times_fired++, $internal_counter++);
 
+			my %agent;
+
+			my $this_agent = get_agent_from_addr ($dbh, $trap_agent);
+
+			if (defined($this_agent)){
+				%agent = ( 
+					'nombre' => $this_agent->{'nombre'},
+					'id_agente' => $this_agent->{'id_agente'},
+					'direccion' => $trap_agent,
+					'id_grupo' => $this_agent->{'id_grupo'},
+					'comentarios' => '',
+					'alias' => $this_agent->{'alias'}
+				);
+			} else {
+				%agent = (
+					'nombre' => $trap_agent,
+					'direccion' => $trap_agent,
+					'comentarios' => '',
+					'id_agente' =>  0,
+					'id_grupo' => 0,
+					'alias' => $trap_agent
+				);
+			}
+			
 			my %alert = (
 				'snmp_alert' => 1,
 				'name' => '',
@@ -3419,27 +3443,6 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 				'id' => $alert->{'id_alert'},
 				'priority' => $alert->{'priority'},
 			);
-
-			my %agent;
-
-			my $this_agent = get_agent_from_addr ($dbh, $trap_agent);
-			if (defined($this_agent)){
-				%agent = ( 
-					'nombre' => $this_agent->{'nombre'},
-					'id_agente' => $this_agent->{'id_agente'},
-					'direccion' => $trap_agent,
-					'id_grupo' => $this_agent->{'id_grupo'},
-					'comentarios' => ''
-				);
-			} else {
-				%agent = (
-					'nombre' => $trap_agent,
-					'direccion' => $trap_agent,
-					'comentarios' => '',
-					'id_agente' =>  0,
-					'id_grupo' => 0
-				);
-			}
 			
 			# Execute alert
 			my $action = get_db_single_row ($dbh, 'SELECT *
@@ -3455,7 +3458,7 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 			if ($action->{'id_alert_command'} != 3){
 				pandora_event ($pa_config, "SNMP alert fired (" . $alert->{'description'} . ")",
 					0, 0, $alert->{'priority'}, 0, 0, 'alert_fired', 0, $dbh);
-		   }
+			}
 
 			# Update alert status
 			db_do ($dbh, 'UPDATE talert_snmp SET times_fired = ?, last_fired = ?, internal_counter = ? WHERE id_as = ?',

@@ -356,7 +356,7 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 				$time_format = "M \nd H\h";
 			}
 			else {
-				$time_format = "M Y";
+				$time_format = "Y M \nd H\h";
 			}
 		}
 		else {
@@ -377,7 +377,7 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 				$time_format = "M d H\h";
 			}
 			else {
-				$time_format = "M Y";
+				$time_format = "Y M d H\h";
 			}
 		}
 		
@@ -3674,9 +3674,12 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 		}
 		elseif ($period < SECONDS_1MONTH) {
 			$time_format = 'M d H\h';
-		} 
-		else {
+		}
+		elseif ($period < SECONDS_6MONTHS) {
 			$time_format = 'M d H\h';
+		}
+		else {
+			$time_format = 'Y M d H\h';
 		}
 		
 		$timestamp_short = date($time_format, $timestamp);
@@ -3797,8 +3800,11 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	elseif ($period < SECONDS_1MONTH) {
 		$time_format = 'M d H\h';
 	} 
-	else {
+	elseif ($period < SECONDS_6MONTHS) {
 		$time_format = 'M d H\h';
+	}
+	else {
+		$time_format = 'Y M d H\h';
 	}
 	
 	// Flash chart
@@ -4016,8 +4022,11 @@ function graph_netflow_aggregate_area ($data, $period, $width, $height, $unit = 
 	elseif ($period < SECONDS_1MONTH) {
 		$chart_time_format = 'M d H\h';
 	}
-	else {
+	elseif ($period < SECONDS_6MONTHS) {
 		$chart_time_format = 'M d H\h';
+	}
+	else {
+		$chart_time_format = 'Y M d H\h';
 	}
 	
 	// Calculate source indexes
@@ -4141,8 +4150,11 @@ function graph_netflow_total_area ($data, $period, $width, $height, $unit = '', 
 	elseif ($period < SECONDS_1MONTH) {
 		$chart_time_format = 'M d H\h';
 	}
-	else { 
+	elseif ($period < SECONDS_6MONTHS) {
 		$chart_time_format = 'M d H\h';
+	}
+	else {
+		$chart_time_format = 'Y M d H\h';
 	}
 
 	// Calculate min, max and avg values
@@ -4437,8 +4449,11 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 		elseif ($period < SECONDS_1MONTH) {
 			$time_format = 'M d H\h';
 		}
-		else {
+		elseif ($period < SECONDS_6MONTHS) {
 			$time_format = 'M d H\h';
+		}
+		else {
+			$time_format = 'Y M d H\h';
 		}
 		
 		$timestamp_short = date($time_format, $timestamp);
@@ -4612,8 +4627,11 @@ function graphic_module_events ($id_module, $width, $height, $period = 0, $homeu
 	elseif ($period < SECONDS_1MONTH) {
 		$time_format = 'M d H\h';
 	}
-	else { 
+	elseif ($period < SECONDS_6MONTHS) {
 		$time_format = 'M d H\h';
+	}
+	else {
+		$time_format = 'Y M d H\h';
 	}
 	
 	$legend = array();

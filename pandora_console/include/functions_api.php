@@ -8867,12 +8867,47 @@ function api_set_create_event($id, $trash1, $other, $returnType) {
 			returnError('error_parameter', 'Group ID required.');
 			return;
 		}
-		
+		$error_msg ='';
 		if ($other['data'][2] != '') {
-			$values['id_agente'] = $other['data'][2];
+			$id_agent_exist = db_get_value('id_agente', 'tagente', 'id_agente', $other['data'][2]);
+			if($id_agent_exist){
+				$values['id_agente'] = $other['data'][2];
+			}
+			else{
+				$error_msg = 'id_not_exist';
+			}
 		}
 		else {
-			returnError('error_parameter', 'Agent ID required.');
+			if($other['data'][19] != ''){
+				$values['id_agente'] = db_get_value('id_agente', 'tagente', 'nombre', $other['data'][19]);
+				if(!$values['id_agente']){
+					if($other['data'][20] == 1){
+						$values['id_agente'] = db_process_sql_insert ('tagente', 
+												array ( 'nombre'   => $other['data'][19],
+														'id_grupo' => $other['data'][1],
+														'alias'    => $other['data'][19] )
+														);
+					}
+					else{
+						$error_msg = 'name_not_exist';
+					}
+				}
+			}
+			else {
+				$error_msg = 'none';
+			}
+		}
+
+		if($error_msg != ''){
+			if($error_msg == 'id_not_exist'){
+				returnError('error_parameter', 'Agent ID does not exist.');
+			} 
+			elseif($error_msg == 'name_not_exist'){
+				returnError('error_parameter', 'Agent Name does not exist.');	
+			} 
+			elseif($error_msg == 'none'){
+				returnError('error_parameter', 'Agent ID or name required.');
+			}
 			return;
 		}
 		
@@ -8961,7 +8996,12 @@ function api_set_create_event($id, $trash1, $other, $returnType) {
 		else {
 			$values['server_id'] = 0;
 		}
-		
+		if ($other['data'][18] != '') {
+			$values['id_extra'] = $other['data'][18];
+		}
+		else {
+			$values['id_extra'] = '';
+		}
 		$return = events_create_event(
 			$values['event'], $values['id_grupo'], $values['id_agente'], 
 			$values['status'], $values['id_usuario'],
@@ -8971,7 +9011,7 @@ function api_set_create_event($id, $trash1, $other, $returnType) {
 			$values['warning_instructions'], 
 			$values['unknown_instructions'], $values['source'],
 			$values['tags'], $values['custom_data'],
-			$values['server_id']);
+			$values['server_id'], $values['id_extra']);
 		
 		if ($other['data'][12] != '') { //user comments
 			if ($return !== false) { //event successfully created

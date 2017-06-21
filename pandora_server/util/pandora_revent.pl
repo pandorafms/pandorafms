@@ -12,6 +12,9 @@
 # Includes list
 use strict;
 use LWP::Simple;
+use MIME::Base64;
+use lib '/usr/lib/perl5';
+use PandoraFMS::Tools;
 
 # Init
 tool_api_init();
@@ -32,17 +35,17 @@ Where options:\n
 	-u <credentials>			: API credentials separated by comma: <api_pass>,<user>,<pass>
 	-name <event_name>			: Free text
 	-group <id_group>			: Group ID (use 0 for 'all') 
-	-agent					: Agent ID
+	-agent					    : Agent ID
 	
 Optional parameters:
 	
 	[-status <status>]			: 0 New, 1 Validated, 2 In process
 	[-user <id_user>]			: User comment (use in combination with -comment option)
-	[-type <event_type>]			: unknown, alert_fired, alert_recovered, alert_ceased
+	[-type <event_type>]		: unknown, alert_fired, alert_recovered, alert_ceased
 								  alert_manual_validation, system, error, new_agent
 								  configuration_change, going_unknown, going_down_critical,
 								  going_down_warning, going_up_normal
-	[-severity <severity>] 					: 0 Maintance,
+	[-severity <severity>] 		: 0 Maintance,
 								  1 Informative,
 								  2 Normal,
 								  3 Warning,
@@ -58,7 +61,10 @@ Optional parameters:
 	[-owner_user <owner event>]	: Use the login name, not the descriptive
 	[-source <source>]			: (By default 'Pandora')
 	[-tag <tags>]				: Tag (must exist in the system to be imported)
-	[-custom_data <custom_data>]: Custom data should be a base 64 encoded JSON document
+	[-custom_data <custom_data>]: Custom data should be a base 64 encoded JSON document example -custom_data \'{\"test1\" : 1, \"test2\": 2}\'
+	[-id_extra <id extra>]      : Id extra
+	[-agent_name <Agent name>]  : Agent name, Not to be confused with the alias.
+	[-force_create_agent<0 o 1>]: Force the creation of agent through an event this will create when it is 1.
 	[-server_id <server_id>]	: The pandora node server_id\n\n";
 	
 	print "Example of event generation:\n\n";
@@ -66,7 +72,7 @@ Optional parameters:
 	print "\t./pandora_revent.pl -p http://localhost/pandora_console/include/api.php -u 1234,admin,pandora \
 	\t-create_event -name \"SampleEvent\" -group 2 -agent 189 -status 0 -user \"admin\" -type \"system\" \
 	\t-severity 3 -am 0 -alert 9 -c_instructions \"Critical instructions\" -w_instructions \"Warning instructions\" \
-	\t-u_instructions \"Unknown instructions\" -source \"Commandline\" -tag \"Tags\"";
+	\t-u_instructions \"Unknown instructions\" -id_extra \"id extra\" -agent_name \"agent name\" -source \"Commandline\" -tag \"Tags\"";
 	
 	print "\n\n\nOptions to validate event: \n\n\t";
 	print "$0 -p <path_to_consoleAPI> -u <credentials> -validate_event <options> -id <id_event>\n\n";
@@ -126,6 +132,9 @@ sub tool_api_main () {
 	my $critical_instructions = '';
 	my $warning_instructions = '';
 	my $unknown_instructions = '';
+	my $id_extra = '';
+	my $agent_name = '';
+	my $force_create_agent = 0;
 	my $owner_user = '';
 	my $id_event;
 	my $option = $ARGV[4];
@@ -209,12 +218,24 @@ sub tool_api_main () {
 			}
 			if ($line eq '-c_instructions') {
 				$critical_instructions = $ARGV[$i + 1];
+				$critical_instructions = uri_encode($critical_instructions);
 			}
 			if ($line eq '-w_instructions') {
 				$warning_instructions = $ARGV[$i + 1];
+				$warning_instructions = uri_encode($warning_instructions);	
 			}
 			if ($line eq '-u_instructions') {
 				$unknown_instructions = $ARGV[$i + 1];
+				$unknown_instructions = uri_encode($unknown_instructions);
+			}
+			if ($line eq '-id_extra') {
+				$id_extra = $ARGV[$i + 1];
+			}
+			if ($line eq '-agent_name') {
+				$agent_name = $ARGV[$i + 1];
+			}
+			if ($line eq '-force_create_agent') {
+				$force_create_agent = $ARGV[$i + 1];
 			}
 			if ($line eq '-user_comment') {
 				$user_comment = $ARGV[$i + 1];
@@ -224,6 +245,7 @@ sub tool_api_main () {
 			}
 			if ($line eq '-custom_data') {
 				$custom_data = $ARGV[$i + 1];
+				$custom_data = encode_base64($custom_data, '');	
 			}
 			if ($line eq '-server_id') {
 				$server_id = $ARGV[$i + 1];
@@ -240,8 +262,8 @@ sub tool_api_main () {
 			print "[ERROR] Missing event group! Read help info:\n\n";
 			help_screen ();
 		}
-		if ($id_agent eq "") {
-			print "[ERROR] Missing id agent! Read help info:\n\n";
+		if ($id_agent eq "" && $agent_name eq "") {
+			print "[ERROR] Missing id agent! and agent_name Read help info:\n\n";
 			help_screen ();
 		}
 		
@@ -262,8 +284,11 @@ sub tool_api_main () {
 			"|" . $source .
 			"|" . $tags .
 			"|" . $custom_data .
-			"|" . $server_id;
-		
+			"|" . $server_id .
+			"|" . $id_extra .
+			"|" . $agent_name .
+			"|" . $force_create_agent;
+
 		$call_api = $api_path . '?' .
 			'op=set&' .
 			'op2=create_event&' .

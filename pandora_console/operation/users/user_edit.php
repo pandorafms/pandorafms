@@ -94,11 +94,11 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 	//save autorefresh list
 	$autorefresh_list = get_parameter_post ("autorefresh_list");
 	if(($autorefresh_list[0] === '') || ($autorefresh_list[0] === '0')){
-		db_process_sql("UPDATE tconfig SET value ='' WHERE token='autorefresh_white_list'");
-	}else{
-		db_process_sql("UPDATE tconfig SET value ='".json_encode($autorefresh_list)."' WHERE token='autorefresh_white_list'");
+		$upd_info['autorefresh_white_list'] = "";
 	}
-
+	else{
+		$upd_info['autorefresh_white_list'] = json_encode($autorefresh_list);
+	}
 
 	$is_admin = db_get_value('is_admin', 'tusuario', 'id_user', $id);
 	
@@ -382,8 +382,8 @@ $autorefresh_list_out['operation/visual_console/render_view'] = "render_view";
 $autorefresh_list_out['operation/events/events'] = "events";
 
 if(!isset($autorefresh_list)){
-	$select = db_process_sql("SELECT value FROM tconfig WHERE token='autorefresh_white_list'");
-	$autorefresh_list = json_decode($select[0]['value']);
+	$select = db_process_sql("SELECT autorefresh_white_list FROM tusuario WHERE id_user = '" . $config['id_user'] . "'");
+	$autorefresh_list = json_decode($select[0]['autorefresh_white_list']);
 	if($autorefresh_list === null){
 		$autorefresh_list[0] = __('None');
 	}else{

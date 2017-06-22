@@ -518,14 +518,21 @@ $filter .= html_print_submit_button(__('Update'), 'search', false, 'class="sub u
 $filter .= '</div>';
 $filter .= '</form>';
 
-
-
-
+$filter_resume = array();
+$filter_resume['filter_fired'] = $alerted[$filter_fired];
+$filter_resume['filter_severity'] = $severities[$filter_severity];
+$filter_resume['pagination'] = $paginations[$pagination];
+$filter_resume['free_search_string'] = $free_search_string;
+$filter_resume['filter_status'] = $status_array[$filter_status];
+$filter_resume['group_by'] = $group_by;
+$filter_resume['date_from_trap'] = $date_from_trap;
+$filter_resume['time_from_trap'] = $time_from_trap;
+$filter_resume['date_to_trap'] = $date_to_trap;
+$filter_resume['time_to_trap'] = $time_to_trap;
+$filter_resume['trap_type'] = $trap_types[$trap_type];
 
 $traps = db_get_all_rows_sql($sql);
 $trapcount = (int) db_get_value_sql($sql_count);
-
-
 
 // No traps 
 if (empty ($traps)) {
@@ -546,6 +553,9 @@ if (empty ($traps)) {
 		
 	if(!empty ($traps2)){
 		ui_toggle($filter, __('Toggle filter(s)'));
+		
+		print_snmp_tags_active_filters($filter_resume);
+
 		ui_print_info_message ( array('no_close'=>true, 'message'=> __('There are no SNMP traps in database that contains this filter') ) );
 	} else {
 		ui_print_info_message ( array('no_close'=>true, 'message'=> __('There are no SNMP traps in database') ) );
@@ -650,6 +660,8 @@ if (empty ($traps)) {
 
 ui_toggle($filter, __('Toggle filter(s)'));
 unset ($table);
+
+print_snmp_tags_active_filters($filter_resume);
 
 if (($config['dbtype'] == 'oracle') && ($traps !== false)) {
 	for ($i = 0; $i < count($traps); $i++) {

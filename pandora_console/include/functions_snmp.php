@@ -279,4 +279,111 @@ function snmp_update_translation($oid, $new_oid, $description, $post_process) {
 		}
 	}
 }
+
+/*
+ * Print the event filter tag cloud (enterprise feature)
+ * @param $filter_resume: Array with the active filters
+ * @param $filter_refs: Array of all arrays to humanize some tags
+ */
+function print_snmp_tags_active_filters ($filter_resume = array()) {
+	global $config;
+
+	$tags_set = array();
+
+	// Alert
+	if (isset($filter_resume['filter_fired'])) {
+		array_push ($tags_set, array(
+			'title' => __('Alert'),
+			'value' => $filter_resume['filter_fired']
+		));
+	}
+	// Severity
+	if (isset($filter_resume['filter_severity'])) {
+		array_push ($tags_set, array(
+			'title' => __('Severity'),
+			'value' => $filter_resume['filter_severity']
+		));
+	}
+	// Pagination
+	if ($filter_resume['pagination'] == "") {
+		$filter_resume['pagination'] = $config["block_size"];
+	}
+	array_push ($tags_set, array(
+		'title' => __('Pagination'),
+		'value' => $filter_resume['pagination']
+	));
+	// Free search
+	if (isset($filter_resume['free_search_string']) && $filter_resume['free_search_string'] != "") {
+		array_push ($tags_set, array(
+			'title' => __('Search'),
+			'value' => $filter_resume['free_search_string']
+		));
+	}
+	// Status
+	if (isset($filter_resume['filter_status']) && $filter_resume['filter_status'] != "") {
+		array_push ($tags_set, array(
+			'title' => __('Status'),
+			'value' => $filter_resume['filter_status']
+		));
+	}
+	// Group by
+	if (isset($filter_resume['group_by'])) {
+		if ($filter_resume['group_by'] == 0) {
+			array_push ($tags_set, array(
+				'title' => __('Group by Enterprise String / IP'),
+				'value' => __('No')
+			));
+		}
+		else {
+			array_push ($tags_set, array(
+				'title' => __('Group by Enterprise String / IP'),
+				'value' => __('Yes')
+			));
+		}
+	}
+	// Date from
+	if (isset($filter_resume['date_from_trap']) && $filter_resume['date_from_trap'] != "") {
+		if (isset($filter_resume['time_from_trap']) && $filter_resume['time_from_trap'] != "") {
+			array_push ($tags_set, array(
+				'title' => __('From'),
+				'value' => $filter_resume['date_from_trap'] . " " . $filter_resume['time_from_trap']
+			));
+		}
+		else {
+			array_push ($tags_set, array(
+				'title' => __('From'),
+				'value' => $filter_resume['date_from_trap']
+			));
+		}
+	}
+	// Date to
+	if (isset($filter_resume['date_to_trap']) && $filter_resume['date_to_trap'] != "") {
+		if (isset($filter_resume['time_to_trap']) && $filter_resume['time_to_trap'] != "") {
+			array_push ($tags_set, array(
+				'title' => __('To'),
+				'value' => $filter_resume['date_to_trap'] . " " . $filter_resume['time_to_trap']
+			));
+		}
+		else {
+			array_push ($tags_set, array(
+				'title' => __('To'),
+				'value' => $filter_resume['date_to_trap']
+			));
+		}
+	}
+	//  Trap type
+	if (isset($filter_resume['trap_type'])) {
+		array_push ($tags_set, array(
+			'title' => __('Trap type'),
+			'value' => $filter_resume['trap_type']
+		));
+	}
+	$title = '';
+	if(!$config['pure']){
+		$title = isset($filter_resume['title'])
+			? __('Active filter') . " (" . $filter_resume['title'] . ")"
+			: __('Active filters');
+	} 
+	if (sizeof($filter_resume) > 0) ui_print_tags_view($title, $tags_set);
+}
 ?>

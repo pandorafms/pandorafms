@@ -284,8 +284,13 @@ $ignored_params['refr'] = '';
 				$(this).css('margin-left','');
 			}
 			else {
-				$(this).css('margin-left',(parseInt($(this).parent().parent().css('width'))/2-parseInt($(this).css('width'))/2)+'px');
-				$(this).css('margin-top','');
+				if(parseInt($(this).parent().parent().css('width'))/2-parseInt($(this).css('width'))/2 < 0){
+					$(this).css('margin-left','');
+					$(this).css('margin-top','');
+				} else {
+					$(this).css('margin-left',(parseInt($(this).parent().parent().css('width'))/2-parseInt($(this).css('width'))/2)+'px');
+					$(this).css('margin-top','');
+				}
 			}
 		});
 		

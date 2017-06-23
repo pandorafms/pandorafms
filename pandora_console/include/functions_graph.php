@@ -1007,8 +1007,12 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		$time_format = 'M d';
 		$time_format_2 = 'H\h';
 	} 
-	else {
+	elseif ($temp_range < SECONDS_6MONTHS) {
 		$time_format = 'M d';
+		$time_format_2 = 'H\h';
+	} 
+	else {
+		$time_format = 'Y M d';
 		$time_format_2 = 'H\h';
 	}
 	

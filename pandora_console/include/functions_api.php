@@ -8843,7 +8843,7 @@ function api_set_create_tag ($id, $trash1, $other, $returnType) {
 
 //http://127.0.0.1/pandora_console/include/api.php?op=set&op2=create_event&id=name_event&other=2|system|3|admin|2|1|10|0|comments||Pandora||critical_inst|warning_inst|unknown_inst|other||&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
 function api_set_create_event($id, $trash1, $other, $returnType) {
-	
+
 	if ($other['type'] == 'string') {
 		returnError('error_parameter', 'Error in the parameters.');
 		return;
@@ -8998,6 +8998,13 @@ function api_set_create_event($id, $trash1, $other, $returnType) {
 		}
 		if ($other['data'][18] != '') {
 			$values['id_extra'] = $other['data'][18];
+			$sql_validation = 'SELECT id_evento FROM tevento where estado=0 and id_extra ="'. $other['data'][18] .'";';
+			$validation = db_get_all_rows_sql($sql_validation);
+			if($validation){
+				foreach ($validation as $val) {
+					api_set_validate_event_by_id($val['id_evento']);
+				}
+			}
 		}
 		else {
 			$values['id_extra'] = '';
@@ -9178,12 +9185,10 @@ function api_get_netflow_get_summary ($discard_1, $discard_2, $params) {
 //http://localhost/pandora_console/include/api.php?op=set&op2=validate_event_by_id&id=23&apipass=1234&user=admin&pass=pandora
 function api_set_validate_event_by_id ($id, $trash1, $trash2, $returnType) {
 	global $config;
-	
 	$data['type'] = 'string';
 	$check_id = db_get_value('id_evento', 'tevento', 'id_evento', $id);
 	
 	if ($check_id) { //event exists
-		
 		$status = db_get_value('estado', 'tevento', 'id_evento', $id);
 		if ($status == 1) { //event already validated
 			$data['data'] = "Event already validated";

@@ -77,7 +77,7 @@ $table->style[1] = 'font-weight: bold; vertical-align: top;';
 $table->style[2] = 'font-weight: bold; vertical-align: top;';
 
 $table->data[0][0] = __('Group');
-$table->data[0][1] = html_print_select_groups(false, $access, true, 'group', '', 'changeGroup();', '', 0, true, false, true, '', false, 'width:120px;') . '<br />' . '<br />';
+$table->data[0][1] = html_print_select_groups(false, $access, true, 'group', '', 'changeGroup();', '', 0, true, false, true, '', false, 'max-width:200px;') . '<br />' . '<br />';
 
 $table->data[0][2] = __('Type');
 $table->data[0][3] = html_print_checkbox('alert_fired', 'alert_fired', true, true, false, 'changeType();') . __('Alert fired') . '<br />' .
@@ -276,6 +276,9 @@ $(document).ready (function () {
 	setInterval("check_event()", (10 * 1000)); //10 seconds between ajax request
 	$("#table1").css("background-color", "#fff");
 	$("#table2").css("background-color", "#fff");
+
+	group_width = $("#group").width();
+	$("#id_agents").width(group_width + 9);
 });
 
 </script>

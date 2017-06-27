@@ -150,7 +150,7 @@ if (!$own_info['is_admin'] && !check_acl ($config['id_user'], 0, "AW"))
 	$return_all_group = false;
 else
 	$return_all_group = true;
-html_print_select_groups(false, "AR", $return_all_group, "ag_group", $ag_group, 'this.form.submit();', '', 0, false, false, true, '', false, 'width:100px;');
+html_print_select_groups(false, "AR", $return_all_group, "ag_group", $ag_group, 'this.form.submit();', '', 0, false, false, true, '', false);
 
 echo "<td>";
 echo __('Show Agents') . '&nbsp;';

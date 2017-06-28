@@ -3394,9 +3394,9 @@ function events_sql_events_grouped_agents($id_agent, $server_id = -1,
 			$sql_post .= " AND (utimestamp <= " . $udate_to . ")";
 		}
 	}
-
+	
 	//Search by tag
-	if (!empty($tag_with)) {
+	if (!empty($tag_with) && (io_safe_output($tag_with) != "[]") && (io_safe_output($tag_with) != "[\"0\"]")) {
 		$sql_post .= ' AND ( ';
 		$first = true;
 		foreach ($tag_with as $id_tag) {
@@ -3406,7 +3406,7 @@ function events_sql_events_grouped_agents($id_agent, $server_id = -1,
 		}
 		$sql_post .= ' ) ';
 	}
-	if (!empty($tag_without)) {
+	if (!empty($tag_without) && (io_safe_output($tag_without) != "[]") && (io_safe_output($tag_with) != "[\"0\"]")) {
 		$sql_post .= ' AND ( ';
 		$first = true;
 		foreach ($tag_without as $id_tag) {

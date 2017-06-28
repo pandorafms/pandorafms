@@ -576,7 +576,7 @@ $row++;
 
 $dirItems = scandir($config['homedir'] . '/images/custom_logo');
 foreach ($dirItems as $entryDir) {
-	if (strstr($entryDir, '.jpg') !== false) {
+	if (strstr($entryDir, '.jpg') !== false || strstr($entryDir, '.png') !== false) {
 		$customLogos['images/custom_logo/' . $entryDir] = $entryDir;
 	}
 }
@@ -599,7 +599,7 @@ $table_other->data['custom_report_front-font'][1] = html_print_select ($_fonts,
 $table_other->data['custom_report_front-logo'][0] =  __('Custom report front') . ' - ' .
 	__('Custom logo') .
 	ui_print_help_tip(
-		__("The dir of custom logos is in your www Pandora Console in \"images/custom_logo\". You can upload more files (ONLY JPEG) in upload tool in console."), true);
+		__("The dir of custom logos is in your www Pandora Console in \"images/custom_logo\". You can upload more files (ONLY JPEG AND PNG) in upload tool in console."), true);
 $table_other->data['custom_report_front-logo'][1] = html_print_select(
 	$customLogos,
 	'custom_report_front_logo',

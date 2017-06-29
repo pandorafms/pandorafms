@@ -1370,3 +1370,21 @@ CREATE TABLE IF NOT EXISTS `treset_pass` (
 UPDATE tgis_map_connection SET conection_data = '{"type":"OSM","url":"http://tile.openstreetmap.org/${z}/${x}/${y}.png"}' where id_tmap_connection = 1;
 
 ALTER TABLE tpolicy_modules MODIFY post_process double(24,15) default 0;
+
+-- ---------------------------------------------------------------------
+-- Table `tgraph_source` column 'id_server'
+-- ---------------------------------------------------------------------
+
+START TRANSACTION;
+
+SET @st_oum707 = (SELECT IF(
+    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'tgraph_source' AND table_schema = DATABASE() AND column_name = 'id_server') > 0,
+    "SELECT 1",
+	"ALTER TABLE tgraph_source ADD COLUMN id_server int(11) UNSIGNED NOT NULL default 0"
+));
+
+PREPARE pr_oum707 FROM @st_oum707;
+EXECUTE pr_oum707;
+DEALLOCATE PREPARE pr_oum707;
+
+COMMIT;

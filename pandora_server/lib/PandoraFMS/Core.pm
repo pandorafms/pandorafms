@@ -1624,40 +1624,34 @@ Start the planned downtime, the once type.
 sub pandora_planned_downtime_set_disabled_elements($$$) {
 	my ($pa_config, $dbh, $downtime) = @_;
 	
-	my @downtime_agents = get_db_rows($dbh, 'SELECT *
-		FROM tplanned_downtime_agents
-		WHERE id_downtime = ' . $downtime->{'id'});
-	
-	foreach my $downtime_agent (@downtime_agents) {
-		my $only_alerts = 0;
+	my $only_alerts = 0;
 		
-		if ($downtime->{'only_alerts'} == 0) {
-			if ($downtime->{'type_downtime'} eq 'disable_agents_alerts') {
-				$only_alerts = 1;
-			}
+	if ($downtime->{'only_alerts'} == 0) {
+		if ($downtime->{'type_downtime'} eq 'disable_agents_alerts') {
+			$only_alerts = 1;
 		}
+	}
 		
-		if ($only_alerts == 0) {
-
-			if($pa_config->{'include_agents'} == 0){
-				db_do($dbh, 'UPDATE tplanned_downtime_agents
-					SET manually_disabled = 1 WHERE id_agent IN (SELECT id_agente FROM tagente WHERE disabled = 1 AND id_agente = ?)
-					AND id_downtime = ' . $downtime->{'id'}, $downtime_agent->{'id_agent'});
-			}
-
-			db_do ($dbh, 'UPDATE tagente
-				SET disabled = 1
-				WHERE id_agente = ?', $downtime_agent->{'id_agent'});
+	if ($only_alerts == 0) {
+		db_do($dbh,'UPDATE tplanned_downtime_agents tp, tagente ta
+			SET tp.manually_disabled = ta.disabled
+			WHERE tp.id_agent = ta.id_agente AND tp.id_downtime = ?',$downtime->{'id'});
+		
+		db_do($dbh,'UPDATE tagente ta, tplanned_downtime_agents tpa
+			SET ta.disabled = 1 WHERE tpa.id_agent = ta.id_agente AND
+			tpa.id_downtime = ?',$downtime->{'id'});
+			
+	} else {
+		my @downtime_agents = get_db_rows($dbh, 'SELECT *
+			FROM tplanned_downtime_agents
+			WHERE id_downtime = ' . $downtime->{'id'});
+			
+		foreach my $downtime_agent (@downtime_agents) {
+			db_do ($dbh, 'UPDATE talert_template_modules tat, tagente_modulo tam
+				SET tat.disabled = 1
+				WHERE tat.id_agent_module = tam.id_agente_modulo 
+				AND tam.id_agente = ?', $downtime_agent->{'id_agent'});
 		}
-		else {
-			db_do ($dbh, 'UPDATE talert_template_modules
-				SET disabled = 1
-				WHERE id_agent_module IN (
-					SELECT id_agente_modulo
-					FROM tagente_modulo
-					WHERE id_agente = ?)', $downtime_agent->{'id_agent'});
-		}
-	
 	}
 }
 
@@ -1671,39 +1665,29 @@ Start the planned downtime, the once type.
 sub pandora_planned_downtime_unset_disabled_elements($$$) {
 	my ($pa_config, $dbh, $downtime) = @_;
 	
-	my @downtime_agents = get_db_rows($dbh, 'SELECT *
-		FROM tplanned_downtime_agents
-		WHERE id_downtime = ' . $downtime->{'id'});
-	
-	foreach my $downtime_agent (@downtime_agents) {
-		my $only_alerts = 0;
+	my $only_alerts = 0;
 		
-		if ($downtime->{'only_alerts'} == 0) {
-			if ($downtime->{'type_downtime'} eq 'disable_agents_alerts') {
-				$only_alerts = 1;
-			}
+	if ($downtime->{'only_alerts'} == 0) {
+		if ($downtime->{'type_downtime'} eq 'disable_agents_alerts') {
+			$only_alerts = 1;
 		}
+	}
 		
-		if ($only_alerts == 0) {
-			db_do ($dbh, 'UPDATE tagente
-				SET disabled = 0
-				WHERE id_agente = ?', $downtime_agent->{'id_agent'});
-
-			if($pa_config->{'include_agents'} == 0){
-				db_do ($dbh, 'UPDATE tagente
-					SET disabled = 1
-					WHERE id_agente IN (SELECT id_agent FROM tplanned_downtime_agents WHERE manually_disabled = 1 and id_downtime = ?)',$downtime_agent->{'id_downtime'});
-			}
+	if ($only_alerts == 0) {
+		db_do($dbh,'UPDATE tagente ta, tplanned_downtime_agents tpa
+			set ta.disabled = 0 WHERE tpa.id_agent = ta.id_agente AND
+			tpa.manually_disabled = 0 AND tpa.id_downtime = ?',$downtime->{'id'});
+	} else {
+		my @downtime_agents = get_db_rows($dbh, 'SELECT *
+			FROM tplanned_downtime_agents
+			WHERE id_downtime = ' . $downtime->{'id'});
+			
+		foreach my $downtime_agent (@downtime_agents) {
+			db_do ($dbh, 'UPDATE talert_template_modules tat, tagente_modulo tam
+				SET tat.disabled = 0
+				WHERE tat.id_agent_module = tam.id_agente_modulo 
+				AND tam.id_agente = ?', $downtime_agent->{'id_agent'});
 		}
-		else {
-			db_do ($dbh, 'UPDATE talert_template_modules
-				SET disabled = 0
-				WHERE id_agent_module IN (
-					SELECT id_agente_modulo
-					FROM tagente_modulo
-					WHERE id_agente = ?)', $downtime_agent->{'id_agent'});
-		}
-	
 	}
 }
 

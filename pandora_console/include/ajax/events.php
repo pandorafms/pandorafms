@@ -517,11 +517,11 @@ if ($table_events) {
 	$date_subtract_day = time() - (24 * 60 * 60);
 
 	if($all_events_24h){
-		events_print_event_table ("utimestamp > $date_subtract_day", 10, '100%',
+		events_print_event_table ("utimestamp > $date_subtract_day", 200, '100%',
 									false, $id_agente,true);
 	}
 	else{
-		events_print_event_table ("estado <> 1 $tags_condition", 10, '100%',
+		events_print_event_table ("estado <> 1 $tags_condition", 200, '100%',
 									false, $id_agente,true);	
 	}
 }

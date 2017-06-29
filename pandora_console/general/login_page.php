@@ -134,11 +134,6 @@ echo '<div class="login_page">';
 	switch ($login_screen) {
 		case 'logout':
 		case 'login':
-			if (!empty ($page) && !empty ($sec)) {
-				foreach ($_POST as $key => $value) {
-					html_print_input_hidden ($key, $value);
-				}
-			}
 			if ($config['auth'] == 'saml') {
 				echo '<div id="log_nick" class="login_nick" style="display: none;">';
 					echo '<div>';
@@ -190,11 +185,6 @@ echo '<div class="login_page">';
 			
 			break;
 		case 'double_auth':
-			if (!empty ($page) && !empty ($sec)) {
-				foreach ($_POST as $key => $value) {
-					html_print_input_hidden ($key, $value);
-				}
-			}
 			echo '<div class="login_nick">';
 			echo '<div>';
 				html_print_image ("/images/icono_autenticacion.png", false);

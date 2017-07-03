@@ -1518,7 +1518,6 @@ function set_static_graph_status(idElement, image, status) {
 			data: parameter,
 			success: function (data) {
 				set_static_graph_status(idElement, image, data);
-				
 				if($('#'+idElement+' table').css('float') == 'right' || $('#'+idElement+ ' table').css('float') == 'left'){
 					$('#'+idElement+ ' img').css('margin-top', parseInt($('#'+idElement).css('height'))/2 - parseInt($('#'+idElement+ ' img').css('height'))/2);	
 				}
@@ -1554,7 +1553,6 @@ function set_static_graph_status(idElement, image, status) {
 			suffix = ".png";
 			break;
 	}
-
 	set_image("image", idElement, image  + suffix);
 }
 
@@ -2025,6 +2023,10 @@ function createItem(type, values, id_data) {
 				if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
 					$image.attr('width', '70')
 						.attr('height', '70');
+				}
+				else{
+					$image.attr('width', $('#preview > img')[0].naturalWidth)
+						.attr('height', $('#preview > img')[0].naturalHeight);
 				}			
 			}
 			else {

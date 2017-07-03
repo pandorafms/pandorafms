@@ -3419,7 +3419,12 @@ function graph_custom_sql_graph ($id, $width, $height,
 	global $config;
 	
 	$report_content = db_get_row ('treport_content', 'id_rc', $id);
-	$historical_db = db_get_value_sql("SELECT historical_db from treport_content where id_rc =".$id);
+	if($id != null){
+		$historical_db = db_get_value_sql("SELECT historical_db from treport_content where id_rc =".$id);
+	}
+	else{
+		$historical_db = $content['historical_db'];
+	}
 	if ($report_content["external_source"] != "") {
 		$sql = io_safe_output ($report_content["external_source"]);
 	}

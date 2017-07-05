@@ -309,7 +309,7 @@ function networkmap_db_node_to_js_node($node, &$count, &$count_item_holding_area
 	
 	$item = array();
 	$item['id'] = $count;
-	
+
 	if (enterprise_installed()) {
 		enterprise_include_once('include/functions_pandora_networkmap.php');
 		$item['id_db'] = $node['id_in_db'];
@@ -327,6 +327,9 @@ function networkmap_db_node_to_js_node($node, &$count, &$count_item_holding_area
 		$item['type'] = 1;
 		$item['id_agent'] = (int)$node['style']['id_agent'];
 		$item['id_module'] = (int)$node['source_data'];
+	}
+	else {
+		$item['type'] = 3;
 	}
 	
 	$item['fixed'] = true;

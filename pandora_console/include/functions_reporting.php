@@ -3940,9 +3940,12 @@ function reporting_sql($report, $content) {
 			$header = explode('|', $content['header_definition']);
 			$return['header'] = $header;
 		}
-		
-		$historical_db = db_get_value_sql("SELECT historical_db from treport_content where id_rc =".$content['id_rc']);
-		
+		if($content['id_rc'] != null){
+			$historical_db = db_get_value_sql("SELECT historical_db from treport_content where id_rc =".$content['id_rc']);
+		}
+		else{
+			$historical_db = $content['historical_db'];
+		}
 		$result = db_get_all_rows_sql($sql,$historical_db);
 		if ($result !== false) {
 			

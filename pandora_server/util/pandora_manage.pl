@@ -3909,14 +3909,20 @@ sub cli_clean_conf_file() {
 		my $list_command = 'ls '.$conf->{incomingdir}.'/conf/';
 		my $out = `$list_command`;
 		my @files = split('\n',$out);
+		my $files_count = 0;
 		# TODO: FINISH OPTION! NOW ONLY SHOW FILES
 		foreach my $file (@files) {
 			# Get the md5 hash
 			my @filesplit = split('.',$file);
-			$result = enterprise_hook('pandora_clean_conf_file',[$conf,$filesplit[0]]);
+			
+			my $pos_conf = index($files[$files_count],".conf");
+			my $file_hash = substr($files[$files_count],0,$pos_conf);
+			
+			$result = enterprise_hook('pandora_clean_conf_file',[$conf,$file_hash]);
 			if($result != -1) {
-				print_log "[INFO] Conf file '".$conf->{incomingdir}.'/conf/'.$filesplit[0].".conf has been cleaned'\n\n";
+				print_log "[INFO] Conf file '".$conf->{incomingdir}.'/conf/'.$file_hash.".conf has been cleaned'\n\n";
 			}
+			$files_count++;
 		}
 	}
 }

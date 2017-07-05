@@ -613,7 +613,7 @@ $data = array();
 $data[0] = __('Group') . $jump;
 
 $data[0] .= html_print_select_groups($config["id_user"], $access, true, 
-	'id_group', $id_group, '', '', 0, true, false, false, 'w130', false, false, false, false, 'id_grupo', $strict_user). $jump;
+	'id_group', $id_group, '', '', 0, true, false, false, '', false, false, false, false, 'id_grupo', $strict_user). $jump;
 //**********************************************************************
 // TODO
 // This code is disabled for to enabled in Pandora 5.1

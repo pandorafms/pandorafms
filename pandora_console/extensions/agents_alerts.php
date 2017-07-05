@@ -93,7 +93,7 @@ function mainAgentsAlerts() {
 	$groups = users_get_groups ();
 	
 	$filter_groups .= '<b>'.__('Group').'</b>';
-	$filter_groups .= html_print_select_groups(false, "AR", true, 'group_id', $group_id, false, '', '', true, false, true, '', false , 'width: 100px; margin-right: 10px;; margin-top: 5px;');
+	$filter_groups .= html_print_select_groups(false, "AR", true, 'group_id', $group_id, false, '', '', true, false, true, '', false , 'margin-right: 10px; margin-top: 5px;');
 	
 	$check = '<b>'.__('Show modules without alerts').'</b>';
 	$check .= html_print_checkbox('slides_ids[]', $d['id'], $show_modules, true, false, '', true);

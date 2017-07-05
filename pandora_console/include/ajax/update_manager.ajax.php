@@ -112,8 +112,17 @@ if ($install_package) {
 	$package = trim($package);
 	
 	$chunks = explode("_", basename($package));
-	$chunks = explode(".", $chunks[1]);
-	$version = $chunks[0];
+	$chunks = explode(".", $chunks[1]);	
+	if(is_numeric($chunks[0])){
+		$version = $chunks[0];
+	}
+	else {
+		$current_package = db_get_value('value', 'tconfig',
+			'token', 'current_package_enterprise');
+		if (!empty($current_package)) {
+			$version = $current_package;
+		}
+	}
 	
 	// All files extracted
 	$files_total = $package . "/files.txt";

@@ -4342,6 +4342,20 @@ function reporting_advanced_sla ($id_agent_module, $time_from = null, $time_to =
 			$max_value = null;
 			$min_value = null;
 		}
+		if ( (!isset($min_value)) && (!isset($max_value)) ) {
+			if (   ($agentmodule_info["id_tipo_modulo"] == "2")      // generic_proc
+				|| ($agentmodule_info["id_tipo_modulo"] == "6")      // remote_icmp_proc
+				|| ($agentmodule_info["id_tipo_modulo"] == "9")      // remote_tcp_proc
+				|| ($agentmodule_info["id_tipo_modulo"] == "18")     // remote_snmp_proc
+				|| ($agentmodule_info["id_tipo_modulo"] == "21")     // async_proc
+				|| ($agentmodule_info["id_tipo_modulo"] == "31") ) { // web_proc
+				// Boolean values are OK if they're different from 0
+				$max_value = 0;
+				$min_value = 0;
+				$inverse_interval = 1;
+			}
+
+		}
 	}
 
 	// By default show last day

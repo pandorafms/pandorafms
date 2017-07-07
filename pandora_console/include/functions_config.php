@@ -1749,7 +1749,7 @@ function config_process_config () {
 		config_update_value('ehorus_custom_field', 'eHorusID');
 	}
 	if (!isset($config['ehorus_hostname'])) {
-		config_update_value('ehorus_hostname', 'switch.ehorus.com');
+		config_update_value('ehorus_hostname', 'portal.ehorus.com');
 	}
 	if (!isset($config['ehorus_port'])) {
 		config_update_value('ehorus_port', 18080);

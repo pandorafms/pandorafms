@@ -3565,7 +3565,7 @@ function graph_custom_sql_graph ($id, $width, $height,
  * @param string homeurl
  * @param bool return or echo the result
  */
-function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $homeurl, $return = false) {
+function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $homeurl, $return = false, $from_agent_view = false) {
 	global $config;
 	global $graphic_type;
 	
@@ -3582,13 +3582,14 @@ function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $ho
 	$data = array ();
 	$legend = array();
 	$full_legend = array();
+	$full_legend_date = array();
 	
 	$cont = 0;
 	for ($i = 0; $i < $interval; $i++) {
 		$bottom = $datelimit + ($periodtime * $i);
 		if (! $graphic_type) {
 			if ($config['flash_charts']) {
-				$name = date('H:i', $bottom);
+				$name = date('H:i:s', $bottom);
 			}
 			else {
 				$name = date('H\h', $bottom);
@@ -3602,6 +3603,11 @@ function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $ho
 		if ($cont == 0 or $cont % 2)
 			$legend[$cont] = $name;
 		
+		if ($from_agent_view) {
+			$full_date = date('Y/m/d', $bottom);
+			$full_legend_date[$cont] = $full_date;
+		}
+
 		$full_legend[$cont] = $name;
 		
 		$top = $datelimit + ($periodtime * ($i + 1));
@@ -3630,12 +3636,12 @@ function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $ho
 		}
 		$cont++;
 	}
-	
+
 	$colors = array(1 => COL_NORMAL, 2 => COL_WARNING, 3 => COL_CRITICAL, 4 => COL_UNKNOWN);
 	
 	// Draw slicebar graph
 	if ($config['flash_charts']) {
-		$out = flot_slicesbar_graph($data, $period, $width, $height, $full_legend, $colors, $config['fontpath'], $config['round_corner'], $homeurl, '', '', false, $id_agent);
+		$out = flot_slicesbar_graph($data, $period, $width, $height, $full_legend, $colors, $config['fontpath'], $config['round_corner'], $homeurl, '', '', false, $id_agent, $full_legend_date);
 	}
 	else {
 		$out = slicesbar_graph($data, $period, $width, $height, $colors, $config['fontpath'], $config['round_corner'], $homeurl);

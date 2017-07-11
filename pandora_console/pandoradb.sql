@@ -2167,6 +2167,20 @@ CREATE TABLE IF NOT EXISTS `tpolicy_agents` (
 	UNIQUE (`id_policy`, `id_agent`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
+-- -----------------------------------------------------
+-- Table `tpolicy_groups`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tpolicy_groups` (
+	`id` int(10) unsigned NOT NULL auto_increment,
+	`id_policy` int(10) unsigned default '0',
+	`id_group` int(10) unsigned default '0',
+	`policy_applied` tinyint(1) unsigned default '0',
+	`pending_delete` tinyint(1) unsigned default '0',
+	`last_apply_utimestamp` int(10) unsigned NOT NULL default 0,
+	PRIMARY KEY  (`id`),
+	UNIQUE (`id_policy`, `id_group`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
 -- ---------------------------------------------------------------------
 -- Table `tdashboard`
 -- ---------------------------------------------------------------------
@@ -2468,6 +2482,7 @@ CREATE TABLE IF NOT EXISTS `tpolicy_queue` (
 	`id` int(10) unsigned NOT NULL auto_increment,
 	`id_policy` int(10) unsigned NOT NULL default '0',
 	`id_agent` int(10) unsigned NOT NULL default '0',
+	`id_group` int(10) unsigned NOT NULL default '0',
 	`operation` varchar(15) default '',
 	`progress` int(10) unsigned NOT NULL default '0',
 	`end_utimestamp` int(10) unsigned NOT NULL default 0,

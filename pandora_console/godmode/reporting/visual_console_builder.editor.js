@@ -1346,6 +1346,9 @@ function hiddenFields(item) {
 	$("#process_value_row").css('display', 'none');
 	$("#process_value_row." + item).css('display', '');
 
+	$("#event_max_time_row").css('display', 'none');
+	$("#event_max_time_row." + item).css('display', '');
+
 	$("#background_row_1").css('display', 'none');
 	$("#background_row_1." + item).css('display', '');
 
@@ -3216,6 +3219,10 @@ function click_button_toolbox(id) {
 			break;
 		case 'module_graph':
 			toolbuttonActive = creationItem = 'module_graph';
+			toggle_item_palette();
+			break;
+		case 'auto_sla_graph':
+			toolbuttonActive = creationItem = 'auto_sla_graph';
 			toggle_item_palette();
 			break;
 		case 'simple_value':

@@ -2746,6 +2746,10 @@ function visual_map_create_internal_name_item($label = null, $type, $image, $age
 			case MODULE_GRAPH:
 				$text = __('Module graph');
 				break;
+			case 'auto_sla_graph':
+			case AUTO_SLA_GRAPH:
+				$text = __('Auto SLA Graph');
+				break;
 			case 'percentile_bar':
 			case PERCENTILE_BAR:
 				$text = __('Percentile bar');

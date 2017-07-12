@@ -185,6 +185,7 @@ define('AGENT_STATUS_WARNING',		2);
 define('STATIC_GRAPH',		0);
 define('PERCENTILE_BAR',	3);
 define('MODULE_GRAPH',		1);
+define('AUTO_SLA_GRAPH',	14);
 define('SIMPLE_VALUE',		2);
 define('LABEL',				4);
 define('ICON',				5);

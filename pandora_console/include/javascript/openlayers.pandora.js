@@ -138,6 +138,7 @@ function js_printMap(id_div, initial_zoom, center_latitude, center_longitude, ob
 	var baseLayer = null;
 	
 	map.events.on({"zoomend": EventZoomEnd});
+	map.events.on({"mouseup": EventZoomEnd});
 	
 	//Define the maps layer
 	for (var baselayerIndex in objBaseLayers) {
@@ -224,10 +225,18 @@ function js_printMap(id_div, initial_zoom, center_latitude, center_longitude, ob
 		.transform(map.displayProjection, map.getProjectionObject());
 	
 	map.setCenter (lonLat, initial_zoom);
+	
 }
 
-function EventZoomEnd (evt) {
-	var actual_zoom = (evt.object.zoom < 6) ? 6 : evt.object.zoom;
+function EventZoomEnd (evt,zoom = map.zoom) {
+	if(evt == null){
+		var actual_zoom = (zoom < 6) ? 6 : zoom;
+	}
+	else{
+		var actual_zoom = (evt.object.zoom < 6) ? 6 : evt.object.zoom;
+	}
+	
+	
 	var max_width_marker = 38;
 	var max_zoom_map = map.numZoomLevels;
 	var max_font_size = 15;
@@ -236,11 +245,11 @@ function EventZoomEnd (evt) {
 		
 	jQuery.each($("tspan"), function (i, tspan) {
 		if (actual_zoom <= 18 && actual_zoom > 13)
-			actual_font_size = (max_font_size - 3);
+			actual_font_size = (max_font_size + 5);
 		else if (actual_zoom <= 13 && actual_zoom >= 8)
-			actual_font_size = (max_font_size - 6);
+			actual_font_size = (max_font_size);
 		else if (actual_zoom <= 8)
-			actual_font_size = (max_font_size - 6);
+			actual_font_size = (max_font_size);
 		$(tspan).css('font-size', actual_font_size);
 	});
 	
@@ -258,7 +267,6 @@ function EventZoomEnd (evt) {
 				var new_width_marker = (actual_zoom * max_width_marker) / max_zoom_map;
 				var new_height_marker = (actual_zoom * max_width_marker) / max_zoom_map;
 				
-				console.log(feature);
 				feature.style.fontSize = '' + actual_font_size + ' !important';
 				feature.style.graphicHeight = new_height_marker;
 				feature.style.graphicWidth = new_width_marker;

@@ -470,6 +470,7 @@ foreach ($layoutDatas as $layoutData) {
 	switch ($layoutData['type']) {
 		case LINE_ITEM:
 		case BOX_ITEM:
+		case AUTO_SLA_GRAPH:
 			$table->data[$i + 2][4] = "";
 			break;
 		default:

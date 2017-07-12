@@ -515,9 +515,10 @@ function readFields() {
 	values['parent'] = $("select[name=parent]").val();
 	values['map_linked'] = $("select[name=map_linked]").val();
 	values['width_percentile'] = $("input[name=width_percentile]").val();
-	values['max_percentile'] = $("input[name=max_percentile]").val();
+	values['max_percentile'] = parseInt($("input[name=max_percentile]").val());
 	values['width_module_graph'] = $("input[name=width_module_graph]").val();
 	values['height_module_graph'] = $("input[name=height_module_graph]").val();
+	values['event_max_time_row'] = $("select[name=event_max_time_row]").val();
 	values['type_percentile'] = $("input[name=type_percentile]:checked").val();
 	values['value_show'] = $("input[name=value_show]:checked").val();
 	values['enable_link'] = $("input[name=enable_link]").is(':checked') ? 1 : 0;
@@ -584,6 +585,16 @@ function create_button_palette_callback() {
 			}
 			if ((values['label'] == '') && (values['image'] == '')) {
 				alert($("#message_alert_no_label_no_image").html());
+				validate = false;
+			}
+			break;
+		case 'auto_sla_graph':
+			if ((values['agent'] == '')) {
+				alert($("#message_alert_no_agent").html());
+				validate = false;
+			}
+			if ((values['module'] == 0)) {
+				alert($("#message_alert_no_module").html());
 				validate = false;
 			}
 			break;
@@ -1783,6 +1794,17 @@ function setPercentileBar(id_data, values) {
 	});
 }
 
+function setEventsBar(id_data, values) {
+	metaconsole = $("input[name='metaconsole']").val();
+
+	var url_hack_metaconsole = '';
+	if (is_metaconsole()) {
+		url_hack_metaconsole = '../../';
+	}
+
+	$("#image_" + id_data).attr('src', data);
+}
+
 function setPercentileBubble(id_data, values) {
 	metaconsole = $("input[name='metaconsole']").val();
 
@@ -2094,6 +2116,17 @@ function createItem(type, values, id_data) {
 
 			set_static_graph_status(id_data, values['image']);
 
+			break;
+		case 'auto_sla_graph':
+			var sizeStyle = '';
+			var imageSize = '';
+			item = $('<div id="' + id_data + '" class="item" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+							'<table><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+							'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" />' +
+							'</div>'
+					);
+
+			setEventsBar(id_data, values);
 			break;
 		case 'percentile_bar':
 		case 'percentile_item':

@@ -194,7 +194,7 @@ $severities = get_priorities ();
 $alerted = array (__('Not fired'), __('Fired'));
 foreach ($all_traps as $trap) {
 	$agent = agents_get_agent_with_ip ($trap['source']);
-	$agents[$trap["source"]] = $agent !== false ? $agent["nombre"] : $trap["source"];
+	$agents[$trap["source"]] = $agent !== false ? ($agent["alias"] ? $agent["alias"] : $agent["nombre"]) : $trap["source"];
 	$oid = enterprise_hook ('get_oid', array ($trap));
 	if ($oid === ENTERPRISE_NOT_HOOK) {
 		$oid = $trap["oid"];

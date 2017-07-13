@@ -16978,8 +16978,8 @@ msgid "Without protocol and port"
 msgstr "Sin protocolo y puerto"
 
 #: ../../godmode/setup/setup_ehorus.php:87
-msgid "e.g., switch.ehorus.com"
-msgstr "e.g., switch.ehorus.com"
+msgid "e.g., portal.ehorus.com"
+msgstr "e.g., portal.ehorus.com"
 
 #: ../../godmode/setup/setup_ehorus.php:92
 msgid "API Port"

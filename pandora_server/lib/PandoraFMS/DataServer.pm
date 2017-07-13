@@ -326,10 +326,12 @@ sub process_xml_data ($$$$$) {
 		}
 		
 		# Save the first address as the main address
-		$address = $address_list[0];
-		$address =~ s/^\s+|\s+$//g ;
-		shift (@address_list);
-}
+		if (defined($address_list[0])) {
+			$address = $address_list[0];
+			$address =~ s/^\s+|\s+$//g ;
+			shift (@address_list);
+		}
+	}
 	
 	# A module with No-learn mode (modo = 0) creates its modules on database only when it is created 
 	my $new_agent = 0;

@@ -1722,7 +1722,7 @@ function modules_get_agentmodule_data ($id_agent_module, $period,
 			break;
 		//log4x
 		case 24:
-			$sql = sprintf ("SELECT datos AS data, utimestamp
+			$sql = sprintf ("SELECT message AS data, utimestamp
 				FROM tagente_datos_log4x
 				WHERE id_agente_modulo = %d
 					AND utimestamp > %d AND utimestamp <= %d

@@ -351,7 +351,7 @@ if (! isset ($config['id_user'])) {
 			
 			if (($nick_in_db != false) && ((!is_user_admin($nick)
 				|| $config['enable_pass_policy_admin']))
-				&& (defined('PANDORA_ENTERPRISE'))
+				&& (file_exists (ENTERPRISE_DIR . "/load_enterprise.php"))
 				&& ($config['enable_pass_policy'])) {
 				include_once(ENTERPRISE_DIR . "/include/auth/mysql.php");
 				
@@ -523,12 +523,12 @@ if (! isset ($config['id_user'])) {
 		else { //login wrong
 			$blocked = false;
 			
-			if ((!is_user_admin($nick) || $config['enable_pass_policy_admin']) && defined('PANDORA_ENTERPRISE')) {
+			if ((!is_user_admin($nick) || $config['enable_pass_policy_admin']) && file_exists (ENTERPRISE_DIR . "/load_enterprise.php")) {
 				$blocked = login_check_blocked($nick);
 			}
 			
 			if (!$blocked) {
-				if (defined('PANDORA_ENTERPRISE')) {
+				if (file_exists (ENTERPRISE_DIR . "/load_enterprise.php")) {
 					login_check_failed($nick); //Checks failed attempts
 				}
 				$login_failed = true;

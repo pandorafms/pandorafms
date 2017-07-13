@@ -37,6 +37,12 @@ div.term-container div.terminal {
     -webkit-transform: rotate(360deg);
   }
 }
+.button-color-animate {
+  color: #337ab7;
+  -webkit-transition: color 2000ms linear;
+  -ms-transition: color 2000ms linear;
+  transition: color 2000ms linear;
+}
 @-moz-keyframes spin {
   from {
     transform: scale(1) rotate(0deg);

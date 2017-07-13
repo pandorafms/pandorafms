@@ -154,7 +154,6 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				html_print_input_text('height_module_graph', 180, '', 3, 5, true) .
 				'</td>';
 			
-			
 			$form_items['label_row'] = array();
 			$form_items['label_row']['items'] = array('label',
 				'static_graph',
@@ -163,7 +162,8 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'module_graph',
 				'simple_value',
 				'datos',
-				'group_item');
+				'group_item',
+				'auto_sla_graph');
 			$form_items['label_row']['html'] =
 				'<td align="left" valign="top" style="">' . __('Label') . '
 				
@@ -540,7 +540,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items_advance['parent_row']['items'] = array(
 				'group_item', 'static_graph',
 				'percentile_bar', 'percentile_item', 'module_graph',
-				'simple_value', 'label', 'icon', 'datos');
+				'simple_value', 'label', 'icon', 'datos', 'auto_sla_graph');
 			$form_items_advance['parent_row']['html'] = '<td align="left">' .
 				__('Parent') . '</td>
 				<td align="left">' .

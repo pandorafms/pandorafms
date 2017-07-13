@@ -156,6 +156,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 				$wimg ='70';
 				break;
 			case 3:
+			case 14:
 				if (get_parameter('action') == 'edit') {
 					$himg = '30';
 					$wimg = '150';
@@ -1066,8 +1067,6 @@ function visual_map_print_item($mode = "read", $layoutData,
 				metaconsole_restore_db();
 			}
 
-			//$img = str_replace('>', 'class="image" id="image_' . $id . '" />', $img);
-
 			break;
 		case LABEL:
 			$z_index = 4 + 1;
@@ -1096,10 +1095,30 @@ function visual_map_print_item($mode = "read", $layoutData,
 			}
 			else {
 				if ($width == 0 || $height == 0) {
-					$img = graph_graphic_agentevents ($layoutData['id_agent'], 500, 50, $layoutData['period'], '', true, $layoutData['id_agente_modulo']);
+					if ($layoutData['label_position']=='left') {
+						$img = '<div style="float:left;height:'.$himg.'px;">' . 
+							$img = graph_graphic_agentevents ($layoutData['id_agent'], 500, 50, $layoutData['period'], '', true, $layoutData['id_agente_modulo']);
+					}
+					elseif ($layoutData['label_position']=='right') {
+						$img = '<div style="float:right;height:'.$himg.'px;">' . 
+							$img = graph_graphic_agentevents ($layoutData['id_agent'], 500, 50, $layoutData['period'], '', true, $layoutData['id_agente_modulo']);
+					}
+					else {
+						$img = graph_graphic_agentevents ($layoutData['id_agent'], 500, 50, $layoutData['period'], '', true, $layoutData['id_agente_modulo']);
+					}
 				}
 				else{
-					$img = graph_graphic_agentevents ($layoutData['id_agent'], $width, $height, $layoutData['period'], '', true, $layoutData['id_agente_modulo']);
+					if ($layoutData['label_position']=='left') {
+						$img = '<div style="float:left;height:'.$himg.'px;">' . 
+							$img = graph_graphic_agentevents ($layoutData['id_agent'], $width, $height, $layoutData['period'], '', true, $layoutData['id_agente_modulo']);
+					}
+					elseif ($layoutData['label_position']=='right') {
+						$img = '<div style="float:right;height:'.$himg.'px;">' . 
+							$img = graph_graphic_agentevents ($layoutData['id_agent'], $width, $height, $layoutData['period'], '', true, $layoutData['id_agente_modulo']);
+					}
+					else {
+						$img = graph_graphic_agentevents ($layoutData['id_agent'], $width, $height, $layoutData['period'], '', true, $layoutData['id_agente_modulo']);
+					}
 				}
 			}
 		
@@ -1111,7 +1130,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 			$z_index = 2 + 1;
 			break;
 	}
-	html_debug(get_parameter('action'), true);
+	
 	$class = "item ";
 	switch ($type) {
 		case STATIC_GRAPH:
@@ -1454,7 +1473,18 @@ function visual_map_print_item($mode = "read", $layoutData,
 			}
 			break;
 		case AUTO_SLA_GRAPH:
+			if ($layoutData['label_position']=='up') {
+				echo io_safe_output($text);
+			}
+			
 			echo $img;
+			
+			if ($layoutData['label_position']=='down') {
+				echo io_safe_output($text);
+			}
+			elseif($layoutData['label_position']=='left' || $layoutData['label_position']=='right') {
+				echo io_safe_output($text);
+			}
 			break;
 		case SIMPLE_VALUE:
 		case SIMPLE_VALUE_MAX:
@@ -1484,42 +1514,12 @@ function visual_map_print_item($mode = "read", $layoutData,
 					$layoutData['id_agente_modulo'], $period);
 			
 			global $config;
-			
-			if ($type == SIMPLE_VALUE) {
-				//~ $returnValue_value = explode('&nbsp;', $value);
-				
-				//~ if ($returnValue_value[1] != "") {
-					//~ $value = remove_right_zeros(number_format($returnValue_value[0], $config['graph_precision'])) . " " . $returnValue_value[1];
-				//~ }
-				//~ else {
-					//~ $value = remove_right_zeros(number_format($returnValue_value[0], $config['graph_precision']));
-				//~ }
-				
-			}
-			else {
-				// If the value is a string, dont format it
-				if (!is_string($value)) {
-					//~ $value = remove_right_zeros(format_for_graph($value, $config['graph_precision']));
-				}
-			}
-			
-			//$io_safe_output_text = str_replace(array('_VALUE_','_value_'), $value, $io_safe_output_text);
-			
-			
-			
 			if(get_parameter('action') == 'edit'){
-							
-			//echo 'Data value';
-			
-			echo $io_safe_output_text;
-								
-				}
+				echo $io_safe_output_text;
+			}
 			else{
-		
-			echo str_replace(array('_VALUE_','_value_'), $value, $io_safe_output_text);
-				
-				}
-			
+				echo str_replace(array('_VALUE_','_value_'), $value, $io_safe_output_text);
+			}
 			
 			//Restore db connection
 			if ($layoutData['id_metaconsole'] != 0) {
@@ -2930,6 +2930,9 @@ function visual_map_type_in_js($type) {
 			break;
 		case MODULE_GRAPH:
 			return 'module_graph';
+			break;
+		case AUTO_SLA_GRAPH:
+			return 'auto_sla_graph';
 			break;
 		case SIMPLE_VALUE:
 			return 'simple_value';

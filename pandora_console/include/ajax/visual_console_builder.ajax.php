@@ -456,12 +456,14 @@ switch ($action) {
 						$process_simple_value);
 					$values['period'] = $period;
 				}
+				break;
 			case 'percentile_bar':
 			case 'percentile_item':
 			case 'static_graph':
 			case 'module_graph':
 			case 'label':
 			case 'icon':
+			case 'auto_sla_graph':
 			default:
 				if ($type == 'label') {
 					$values['type'] = LABEL;
@@ -536,6 +538,18 @@ switch ($action) {
 						$values['border_color'] = $line_color;
 						break;
 					// -------------------------------------------------
+					case 'auto_sla_graph':
+						$values['type'] = AUTO_SLA_GRAPH;
+						if ($event_max_time_row !== null) {
+							$values['period'] = $event_max_time_row;
+						}
+						if ($width !== null) {
+							$values['width'] = $width;
+						}
+						if ($height !== null) {
+							$values['height'] = $height;
+						}
+						break;
 					case 'box_item':
 						$values['border_width'] = $border_width;
 						$values['border_color'] = $border_color;
@@ -654,7 +668,7 @@ switch ($action) {
 				if (($item_in_db['parent_item'] == 0) && ($values['parent_item'] != 0)) {
 					$new_line = 1;
 				}
-
+				
 				$result = db_process_sql_update('tlayout_data', $values,
 					array('id' => $id_element));
 				
@@ -691,6 +705,7 @@ switch ($action) {
 			case 'simple_value':
 			case 'label':
 			case 'icon':
+			case 'auto_sla_graph':
 				$elementFields = db_get_row_filter('tlayout_data',
 					array('id' => $id_element));
 				
@@ -742,6 +757,8 @@ switch ($action) {
 				}
 				
 				switch ($type) {
+					case 'auto_sla_graph':
+						$elementFields['event_max_time_row'] = $elementFields['period'];
 					case 'percentile_item':
 					case 'percentile_bar':
 						$elementFields['width_percentile'] = $elementFields['width'];
@@ -1021,8 +1038,6 @@ switch ($action) {
 		
 		echo json_encode($return);
 		break;
-	
-	
 	
 	case 'delete':
 		if (db_process_sql_delete('tlayout_data', array('id' => $id_element, 'id_layout' => $id_visual_console)) === false) {

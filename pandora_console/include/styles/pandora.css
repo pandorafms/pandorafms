@@ -656,7 +656,7 @@ input.sub[disabled] {
 input.next, input.upd, input.ok, input.wand, input.delete, input.cog,
 input.target, input.search, input.copy, input.add, input.graph,
 input.percentile, input.binary, input.camera, input.config,
-input.cancel, input.default, input.filter, input.pdf {
+input.cancel, input.default, input.filter, input.pdf,input.spinn {
 	padding-right: 30px;
 	height: 23px;
 
@@ -740,6 +740,9 @@ input.pdf:disabled {
 }
 input.camera {
 	background-image: url(../../images/input_camera.png) !important;
+}
+input.spinn {
+	background-image: url(../../images/spinner_green.gif) !important;
 }
 
 #toolbox #auto_save {
@@ -4151,4 +4154,9 @@ div#footer_help{
 /*center ui dialog center*/
 .ui-dialog-titlebar .ui-icon-closethick {
 	margin-top: -5px !important;
+}
+
+/*view-agents lastest events for this agent*/
+#div_all_events_24h{
+	padding: 4px;
 }

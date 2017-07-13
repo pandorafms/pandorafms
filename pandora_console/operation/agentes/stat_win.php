@@ -150,7 +150,10 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 			$avg_only = $show_other;
 		}
 
-		$period = get_parameter ("period", SECONDS_1DAY);
+		$period = get_parameter ("period");
+		if ($period == "") {
+			$period = get_parameter ("period_select", SECONDS_1DAY);
+		}
 		$id = get_parameter ("id", 0);
 		$width = get_parameter ("width", STATWIN_DEFAULT_CHART_WIDTH);
 		$height = get_parameter ("height", STATWIN_DEFAULT_CHART_HEIGHT);
@@ -167,6 +170,7 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 		$time_compare_separated = get_parameter ("time_compare_separated", 0);
 		$time_compare_overlapped = get_parameter ("time_compare_overlapped", 0);
 		$unknown_graph = get_parameter_checkbox ("unknown_graph", 1);
+		$fullscale = get_parameter ("fullscale", 0);
 		
 		// To avoid the horizontal overflow
 		$width -= 20;
@@ -211,7 +215,7 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 					$width, $height, $label_graph, $unit, $draw_alerts,
 					$avg_only, false, $date, false, $urlImage,
 					'adapter_' . $graph_type, $time_compare,
-					$unknown_graph);
+					$unknown_graph, true, $fullscale);
 				echo '<br>';
 				if ($show_events_graph)
 					echo graphic_module_events($id, $width, $height,
@@ -226,7 +230,7 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 					'adapter_' . $graph_type, $time_compare,
 					$unknown_graph, true, 'white',
 					(($show_percentil)? $config['percentil'] : null),
-					false, false, $config['type_module_charts']);
+					false, false, $config['type_module_charts'], $fullscale);
 				echo '<br>';
 				if ($show_events_graph)
 					echo graphic_module_events($id, $width, $height,
@@ -398,6 +402,12 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 				$table->rowclass[] = '';
 				break;
 		}
+
+		$data = array();
+		$data[0] = __('Show full scale graph (TIP)');
+		$data[1] = html_print_checkbox ("fullscale", 1, (bool) $fullscale, true);
+		$table->data[] = $data;
+		$table->rowclass[] = '';
 		
 		$form_table = html_print_table($table, true);
 		

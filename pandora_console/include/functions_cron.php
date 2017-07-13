@@ -26,7 +26,13 @@ function cron_update_module_interval ($module_id, $cron) {
 		return;
 	}
 	
-	return db_process_sql ('UPDATE tagente_estado SET current_interval = ' . cron_next_execution ($cron) . ' WHERE id_agente_modulo = ' . (int) $module_id);
+	if($cron == "* * * * *"){
+		$module_interval = db_get_value_filter('module_interval','tagente_modulo',array("id_agente_modulo" => $module_id));
+		return db_process_sql ('UPDATE tagente_estado SET current_interval = ' . $module_interval . ' WHERE id_agente_modulo = ' . (int) $module_id);
+	} else {
+		return db_process_sql ('UPDATE tagente_estado SET current_interval = ' . cron_next_execution ($cron) . ' WHERE id_agente_modulo = ' . (int) $module_id);
+	}
+	
 }
 
 

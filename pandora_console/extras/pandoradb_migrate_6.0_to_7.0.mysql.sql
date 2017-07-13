@@ -710,6 +710,7 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	`module_names` TEXT,
 	`module_free_text` TEXT,
 	`each_agent` tinyint(1) default 1,
+	`historical_db` tinyint(1) UNSIGNED NOT NULL default 0,
 	PRIMARY KEY(`id_rc`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -1219,6 +1220,7 @@ ALTER TABLE tlayout_data ADD `label_position` varchar(50) NOT NULL default 'down
 -- Table `tagent_custom_fields`
 -- ---------------------------------------------------------------------
 INSERT INTO `tagent_custom_fields` (`name`) VALUES ('eHorusID');
+ALTER TABLE tagent_custom_fields ADD `is_password_type` tinyint(1) NOT NULL DEFAULT 0; 
 
 -- ---------------------------------------------------------------------
 -- Table `tagente_modulo` Fixed problems with blank space 

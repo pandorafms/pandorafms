@@ -83,7 +83,7 @@ foreach ($servers as $server) {
 	$data = array ();
 	$table->cellclass[][3] = "progress_bar";
 	$data[0] = '<span title="' . $server['version'] . '">' .
-		$server['name'] . '</span>';
+		strip_tags($server['name']) . '</span>';
 	
 	//Status
 	$data[1] = ui_print_status_image (STATUS_SERVER_OK, '', true);

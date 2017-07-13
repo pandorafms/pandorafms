@@ -16299,8 +16299,8 @@ msgid "Without protocol and port"
 msgstr "プロトコルとポート番号は含みません"
 
 #: ../../godmode/setup/setup_ehorus.php:87
-msgid "e.g., switch.ehorus.com"
-msgstr "例: switch.ehorus.com"
+msgid "e.g., portal.ehorus.com"
+msgstr "例: portal.ehorus.com"
 
 #: ../../godmode/setup/setup_ehorus.php:92
 msgid "API Port"

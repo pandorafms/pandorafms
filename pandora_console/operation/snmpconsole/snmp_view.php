@@ -98,10 +98,22 @@ if (isset ($_GET["delete"])) {
 	$id_trap = (int) get_parameter_get ("delete", 0);
 	if ($id_trap > 0 && check_acl ($config['id_user'], 0, "IM")) {
 		
-		$result = db_process_sql_delete('ttrap', array('id_trap' => $id_trap));
-		ui_print_result_message ($result,
-			__('Successfully deleted'),
-			__('Could not be deleted'));
+		if($group_by){
+			$sql_ids_traps = "SELECT id_trap FROM ttrap WHERE oid IN (SELECT oid FROM ttrap WHERE id_trap = ".$id_trap.")
+			AND source IN (SELECT source FROM ttrap WHERE id_trap = ".$id_trap.")";
+			$ids_traps = db_get_all_rows_sql($sql_ids_traps);
+
+			foreach ($ids_traps as $key => $value) {
+				$result = db_process_sql_delete('ttrap', array('id_trap' => $value['id_trap']));
+			}
+			
+		} else {
+			$result = db_process_sql_delete('ttrap', array('id_trap' => $id_trap));
+			ui_print_result_message ($result,
+				__('Successfully deleted'),
+				__('Could not be deleted'));
+		}
+		
 	}
 	else {
 		db_pandora_audit("ACL Violation",
@@ -132,8 +144,20 @@ if (isset ($_GET["check"])) {
 if (isset ($_POST["deletebt"])) {
 	$trap_ids = get_parameter_post ("snmptrapid", array ());
 	if (is_array ($trap_ids) && check_acl ($config['id_user'], 0, "IW")) {
-		foreach ($trap_ids as $id_trap) {
-			db_process_sql_delete('ttrap', array('id_trap' => $id_trap));
+		if($group_by){
+			foreach ($trap_ids as $key => $value) {
+				$sql_ids_traps = "SELECT id_trap FROM ttrap WHERE oid IN (SELECT oid FROM ttrap WHERE id_trap = ".$value.")
+				AND source IN (SELECT source FROM ttrap WHERE id_trap = ".$value.")";
+				$ids_traps = db_get_all_rows_sql($sql_ids_traps);
+				
+				foreach ($ids_traps as $key2 => $value2) {
+					$result = db_process_sql_delete('ttrap', array('id_trap' => $value2['id_trap']));
+				}
+			}
+		} else {
+			foreach ($trap_ids as $id_trap) {
+				db_process_sql_delete('ttrap', array('id_trap' => $id_trap));
+			}
 		}
 	}
 	else {
@@ -170,7 +194,7 @@ $severities = get_priorities ();
 $alerted = array (__('Not fired'), __('Fired'));
 foreach ($all_traps as $trap) {
 	$agent = agents_get_agent_with_ip ($trap['source']);
-	$agents[$trap["source"]] = $agent !== false ? $agent["nombre"] : $trap["source"];
+	$agents[$trap["source"]] = $agent !== false ? ($agent["alias"] ? $agent["alias"] : $agent["nombre"]) : $trap["source"];
 	$oid = enterprise_hook ('get_oid', array ($trap));
 	if ($oid === ENTERPRISE_NOT_HOOK) {
 		$oid = $trap["oid"];
@@ -494,21 +518,48 @@ $filter .= html_print_submit_button(__('Update'), 'search', false, 'class="sub u
 $filter .= '</div>';
 $filter .= '</form>';
 
-
-
-
+$filter_resume = array();
+$filter_resume['filter_fired'] = $alerted[$filter_fired];
+$filter_resume['filter_severity'] = $severities[$filter_severity];
+$filter_resume['pagination'] = $paginations[$pagination];
+$filter_resume['free_search_string'] = $free_search_string;
+$filter_resume['filter_status'] = $status_array[$filter_status];
+$filter_resume['group_by'] = $group_by;
+$filter_resume['date_from_trap'] = $date_from_trap;
+$filter_resume['time_from_trap'] = $time_from_trap;
+$filter_resume['date_to_trap'] = $date_to_trap;
+$filter_resume['time_to_trap'] = $time_to_trap;
+$filter_resume['trap_type'] = $trap_types[$trap_type];
 
 $traps = db_get_all_rows_sql($sql);
 $trapcount = (int) db_get_value_sql($sql_count);
-
-
 
 // No traps 
 if (empty ($traps)) {
 	// Header
 	ui_print_page_header(__("SNMP Console"), "images/op_snmp.png", false,
 		"", false, array($list, $statistics));
-	ui_print_info_message ( array('no_close'=>true, 'message'=> __('There are no SNMP traps in database') ) );
+		
+		$sql2 = "SELECT *
+			FROM ttrap
+			WHERE (
+				`source` IN (" . implode(",", $address_by_user_groups) . ") OR
+				`source`='' OR
+				`source` NOT IN (" . implode(",", $all_address_agents) . ")
+				)
+				AND status = 0
+			ORDER BY timestamp DESC";
+		$traps2 = db_get_all_rows_sql($sql2);
+		
+	if(!empty ($traps2)){
+		ui_toggle($filter, __('Toggle filter(s)'));
+		
+		print_snmp_tags_active_filters($filter_resume);
+
+		ui_print_info_message ( array('no_close'=>true, 'message'=> __('There are no SNMP traps in database that contains this filter') ) );
+	} else {
+		ui_print_info_message ( array('no_close'=>true, 'message'=> __('There are no SNMP traps in database') ) );
+	}
 	return;
 } else{
 	if($config["pure"]){
@@ -609,6 +660,8 @@ if (empty ($traps)) {
 
 ui_toggle($filter, __('Toggle filter(s)'));
 unset ($table);
+
+print_snmp_tags_active_filters($filter_resume);
 
 if (($config['dbtype'] == 'oracle') && ($traps !== false)) {
 	for ($i = 0; $i < count($traps); $i++) {
@@ -733,7 +786,7 @@ if ($traps !== false) {
 				continue;
 			}
 			$data[1] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'" title="'.__('View agent details').'">';
-			$data[1] .= '<strong>'.$agent["nombre"].ui_print_help_tip($trap['source'], true, "images/tip-blanco.png");'</strong></a>';
+			$data[1] .= '<strong>'.$agent["alias"].ui_print_help_tip($trap['source'], true, "images/tip-blanco.png");'</strong></a>';
 		}
 		
 		//OID

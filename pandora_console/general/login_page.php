@@ -72,7 +72,7 @@ echo '<div id="login_body" ' . $login_body_style . '>';
 echo '<div id="header_login">';
 	echo '<div id="icon_custom_pandora">';
 	
-			if (PANDORA_ENTERPRISE) {
+		if (file_exists (ENTERPRISE_DIR . "/load_enterprise.php")) {
 			if(isset ($config['custom_logo'])){
 				echo '<img src="enterprise/images/custom_logo/' . $config['custom_logo'] .'" alt="pandora_console">';
 			}
@@ -88,7 +88,7 @@ echo '<div id="header_login">';
 		echo '<div id="list_icon_docs_support"><ul>';
 			echo '<li><a href="http://wiki.pandorafms.com/" target="_blank"><img src="images/icono_docs.png" alt="docs pandora"></a></li>';
 			echo '<li>' . __('Docs') . '</li>';
-			if (defined ('PANDORA_ENTERPRISE')) {
+			if (file_exists (ENTERPRISE_DIR . "/load_enterprise.php")) {
 				echo '<li id="li_margin_left"><a href="https://support.artica.es" target="_blank"><img src="images/icono_support.png" alt="support pandora"></a></li>';
 			} else {
 				echo '<li id="li_margin_left"><a href="https://pandorafms.com/monitoring-services/support/" target="_blank"><img src="images/icono_support.png" alt="support pandora"></a></li>';
@@ -136,7 +136,7 @@ echo '<div class="login_page">';
 		case 'login':
 			if (!empty ($page) && !empty ($sec)) {
 				foreach ($_POST as $key => $value) {
-					html_print_input_hidden ($key, $value);
+					html_print_input_hidden (io_safe_input($key), $value);
 				}
 			}
 			if ($config['auth'] == 'saml') {
@@ -192,7 +192,7 @@ echo '<div class="login_page">';
 		case 'double_auth':
 			if (!empty ($page) && !empty ($sec)) {
 				foreach ($_POST as $key => $value) {
-					html_print_input_hidden ($key, $value);
+					html_print_input_hidden (io_safe_input($key), $value);
 				}
 			}
 			echo '<div class="login_nick">';
@@ -234,7 +234,7 @@ echo '<div class="login_page">';
 	echo '<div class="login_data">';
 		echo '<div class ="text_banner_login">';
 			echo '<div><span class="span1">';
-				if(defined ('PANDORA_ENTERPRISE')){
+				if(file_exists (ENTERPRISE_DIR . "/load_enterprise.php")){
 					if($config['custom_title1_login']){
 						echo strtoupper(io_safe_output($config['custom_title1_login']));
 					}
@@ -247,7 +247,7 @@ echo '<div class="login_page">';
 				}
 			echo '</span></div>';
 			echo '<div><span class="span2">';
-				if(defined ('PANDORA_ENTERPRISE')){
+				if(file_exists (ENTERPRISE_DIR . "/load_enterprise.php")){
 					if($config['custom_title2_login']){
 						echo strtoupper(io_safe_output($config['custom_title2_login']));
 					}
@@ -261,7 +261,7 @@ echo '<div class="login_page">';
 			echo '</span></div>';
 		echo '</div>';
 		echo '<div class ="img_banner_login">';
-			if (defined ('PANDORA_ENTERPRISE')) {
+			if (file_exists (ENTERPRISE_DIR . "/load_enterprise.php")) {
 				if(isset($config['custom_splash_login'])){
 					html_print_image ("enterprise/images/custom_splash_login/".$config['custom_splash_login'], false, array ( "alt" => "splash", "border" => 0, "title" => $splash_title), false, true);
 				}

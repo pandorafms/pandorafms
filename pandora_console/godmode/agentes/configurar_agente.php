@@ -886,7 +886,7 @@ if ($update_module || $create_module) {
 	
 	$post_process = (string) get_parameter ('post_process', 0.0);
 	if(get_parameter ('prediction_module')){
-		$prediction_module = get_parameter ('prediction_module');
+		$prediction_module = 1;
 	}
 	else{
 		$prediction_module = 0;

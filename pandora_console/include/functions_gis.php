@@ -368,6 +368,7 @@ function gis_activate_ajax_refresh($layers = null, $lastTimeOfData = null, $publ
 							}
 						}
 					}
+					EventZoomEnd(null,map.zoom);
 				}
 				});
 			}
@@ -396,7 +397,7 @@ function gis_activate_ajax_refresh($layers = null, $lastTimeOfData = null, $publ
 				}
 				?>
 			}
-			
+						
 			last_time_of_data = Math.round(new Date().getTime() / 1000); //Unixtimestamp
 			
 			//Test if the user change the refresh time.
@@ -405,11 +406,16 @@ function gis_activate_ajax_refresh($layers = null, $lastTimeOfData = null, $publ
 				idIntervalAjax = setInterval("clock_ajax_refresh()", refreshAjaxIntervalSeconds);
 				oldRefreshAjaxIntervalSeconds = refreshAjaxIntervalSeconds;
 			}
+			
+			EventZoomEnd(null,map.zoom);
+			
+			
 		}
 		
 		$(document).ready (
 			function () {
 				idIntervalAjax = setInterval("clock_ajax_refresh()", refreshAjaxIntervalSeconds);
+				EventZoomEnd(null,map.zoom);
 			}
 		);
 	</script>

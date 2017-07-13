@@ -510,7 +510,8 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items_advance['position_row'] = array();
 			$form_items_advance['position_row']['items'] = array('static_graph',
 				'percentile_bar', 'percentile_item', 'module_graph',
-				'simple_value', 'label', 'icon', 'datos', 'box_item');
+				'simple_value', 'label', 'icon', 'datos', 'box_item',
+				'auto_sla_graph');
 			$form_items_advance['position_row']['html'] = '
 				<td align="left">' . __('Position') . '</td>
 				<td align="left">(' . html_print_input_text('left', '0', '', 3, 5, true) .
@@ -521,7 +522,8 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items_advance['size_row'] = array();
 			$form_items_advance['size_row']['items'] = array(
 				'group_item', 'background',
-				'static_graph', 'icon datos');
+				'static_graph', 'icon datos',
+				'auto_sla_graph');
 			$form_items_advance['size_row']['html'] = '<td align="left">' .
 				__('Size') .
 				ui_print_help_tip (

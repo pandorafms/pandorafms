@@ -143,66 +143,36 @@ switch ($action) {
 	case 'get_module_events':
 		$data = array ();
 		
-		$resolution = $config['graph_res'] * ($event_max_time_row * 2 / 450); // Number of "slices" we want in graph
-		
-		$interval = (int) ($event_max_time_row / $resolution);
 		$date = get_system_time ();
 		$datelimit = $date - $event_max_time_row;
-		$periodtime = floor ($event_max_time_row / $interval);
-		$time = array ();
-		$data = array ();
-		$legend = array();
-		$full_legend = array();
 
-		$cont = 0;
-		for ($i = 0; $i < $interval; $i++) {
-			$bottom = $datelimit + ($periodtime * $i);
-			
-			$name = date('H:i', $bottom);
-			
-			// Show less values in legend
-			if ($cont == 0 or $cont % 2)
-				$legend[$cont] = $name;
-			
-			$full_legend[$cont] = $name;
-			
-			$top = $datelimit + ($periodtime * ($i + 1));
-			$event = db_get_row_filter ('tevento',
-				array ('id_agente' => $id_agent,
-					'id_agentmodule' => $id_module,
-					'utimestamp > '.$bottom,
-					'utimestamp < '.$top), 'criticity, utimestamp');
-			
-			if (!empty($event['utimestamp'])) {
-				$data[$cont]['utimestamp'] = $periodtime;
-				switch ($event['criticity']) {
-					case EVENT_CRIT_WARNING:
-						$data[$cont]['data'] = 2;
-						break;
-					case EVENT_CRIT_CRITICAL:
-						$data[$cont]['data'] = 3;
-						break;
-					default:
-						$data[$cont]['data'] = 1;
-						break;
+		$events = db_get_row_filter ('tevento',
+			array ('id_agente' => $id_agent,
+				'id_agentmodule' => $id_module,
+				'utimestamp > ' . $datelimit,
+				'utimestamp < ' . $date), 'criticity, utimestamp');
+		html_debug($events, true);
+
+		$return = array();
+		if (!$events) {
+			$return['no_data'] = true;
+			if (!empty($id_metaconsole)) {
+				$connection = db_get_row_filter ('tmetaconsole_setup',
+					$id_metaconsole);
+				if (metaconsole_load_external_db($connection) != NOERR) {
+					continue;
 				}
 			}
-			else {
-				$data[$cont]['utimestamp'] = $periodtime;
-				$data[$cont]['data'] = 1;
+			$return['url'] = true;
+			if (!empty($id_metaconsole)) {
+				metaconsole_restore_db();
 			}
-			$cont++;
+		}
+		else {
+			$return['no_data'] = false;
 		}
 
-		$colors = array(1 => COL_NORMAL, 2 => COL_WARNING, 3 => COL_CRITICAL, 4 => COL_UNKNOWN);
-
-		$out = flot_slicesbar_graph($data, $period, 450, 15, $full_legend, $colors, $config['fontpath'], $config['round_corner'], $homeurl, '', '', false, $id_agent);
-		html_debug($out, true);
-		if (!$out) {
-			$out = array();
-		}
-
-		echo json_encode($out);
+		echo json_encode($return);
 		break;
 	
 	case 'get_image_sparse':
@@ -935,6 +905,8 @@ switch ($action) {
 			case 'auto_sla_graph':
 				$values['type'] = AUTO_SLA_GRAPH;
 				$values['period'] = $event_max_time_row;
+				$values['width'] = $width;
+				$values['height'] = $height;
 				break;
 			case 'percentile_item':
 			case 'percentile_bar': 

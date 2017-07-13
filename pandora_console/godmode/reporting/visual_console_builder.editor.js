@@ -1795,14 +1795,46 @@ function setPercentileBar(id_data, values) {
 }
 
 function setEventsBar(id_data, values) {
-	metaconsole = $("input[name='metaconsole']").val();
-
 	var url_hack_metaconsole = '';
 	if (is_metaconsole()) {
 		url_hack_metaconsole = '../../';
 	}
 
-	$("#image_" + id_data).attr('src', data);
+	parameter = Array();
+
+	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
+	parameter.push ({name: "action", value: "get_module_events"});
+	parameter.push ({name: "id_agent", value: values['id_agent']});
+	parameter.push ({name: "id_agent_module", value: values['module']});
+	if (is_metaconsole()) {
+		parameter.push ({name: "id_metaconsole", value: id_metaconsole});
+	}
+	parameter.push ({name: "period", value: values['event_max_time_row']});
+	parameter.push ({name: "id_visual_console", value: id_visual_console});
+	jQuery.ajax({
+		url: get_url_ajax(),
+		data: parameter,
+		type: "POST",
+		dataType: 'json',
+		success: function (data) {
+			console.log(data);
+			if (data['no_data'] == true) {
+				$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/module_graph.png');
+			}
+			else {
+				$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/module_graph.png');
+				
+				if($('#text-width').val() == 0 || $('#text-height').val() == 0){
+					$("#" + id_data + " img").css('width', '300px');
+					$("#" + id_data + " img").css('height', '180px');
+				}
+				else{
+					$("#" + id_data + " img").css('width', $('#text-width').val()+'px');
+					$("#" + id_data + " img").css('height', $('#text-height').val()+'px');
+				}
+			}
+		}
+	});
 }
 
 function setPercentileBubble(id_data, values) {
@@ -2123,7 +2155,7 @@ function createItem(type, values, id_data) {
 			item = $('<div id="' + id_data + '" class="item" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
 							'<table><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
 							'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" />' +
-							'</div>'
+					'</div>'
 					);
 
 			setEventsBar(id_data, values);

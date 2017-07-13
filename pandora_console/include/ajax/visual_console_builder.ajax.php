@@ -151,7 +151,6 @@ switch ($action) {
 				'id_agentmodule' => $id_module,
 				'utimestamp > ' . $datelimit,
 				'utimestamp < ' . $date), 'criticity, utimestamp');
-		html_debug($events, true);
 
 		$return = array();
 		if (!$events) {

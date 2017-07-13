@@ -1817,7 +1817,6 @@ function setEventsBar(id_data, values) {
 		type: "POST",
 		dataType: 'json',
 		success: function (data) {
-			console.log(data);
 			if (data['no_data'] == true) {
 				$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/module_graph.png');
 			}

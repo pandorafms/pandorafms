@@ -377,6 +377,9 @@ function visual_map_print_item($mode = "read", $layoutData,
 				}
 				
 				break;
+			case AUTO_SLA_GRAPH:
+				$link = true;
+				break;
 			default:
 				if (!empty($element_enterprise)) {
 					$link = $element_enterprise['link'];
@@ -391,7 +394,6 @@ function visual_map_print_item($mode = "read", $layoutData,
 				$is_a_service = false;
 				$is_a_link_to_other_visualconsole = false;
 				
-				
 				if (enterprise_installed()) {
 					$id_service = services_service_from_module
 						($layoutData['id_agente_modulo']);
@@ -403,9 +405,6 @@ function visual_map_print_item($mode = "read", $layoutData,
 				if ($layoutData['id_layout_linked'] != 0) {
 					$is_a_link_to_other_visualconsole = true;
 				}
-				
-				
-				
 				
 				if ($is_a_service) {
 					if (empty($layoutData['id_metaconsole'])) {
@@ -458,6 +457,36 @@ function visual_map_print_item($mode = "read", $layoutData,
 				}
 				
 				
+				break;
+			case AUTO_SLA_GRAPH:
+				$e_period = $layoutData['period'];
+				$date = get_system_time ();
+				$datelimit = $date - $e_period;
+				
+				$time_format = "Y/m/d H:i:s";
+				
+				$timestamp_init = date($time_format, $datelimit);
+				$timestamp_end = date($time_format, $date);
+
+				$timestamp_init_aux = explode(" ", $timestamp_init);
+				$timestamp_end_aux = explode(" ", $timestamp_end);
+
+				$date_from = $timestamp_init_aux[0];
+				$time_from = $timestamp_init_aux[1];
+
+				$date_to = $timestamp_end_aux[0];
+				$time_to = $timestamp_end_aux[1];
+
+				if (empty($layout_data['id_metaconsole'])) {
+					$url = $config['homeurl'] . "index.php?sec=eventos&sec2=operation/events/events&id_agent=" . $layoutData['id_agent'] . 
+						"&module_search_hidden=" . $layoutData['id_agente_modulo'] . "&date_from=" . $date_from . "&time_from=" . $time_from . 
+						"&date_to=" . $date_to . "&time_to=" . $time_to . "&status=-1";
+				}
+				else {
+					$url = "index.php?sec=eventos&sec2=operation/events/events&id_agent=" . $layoutData['id_agent'] . 
+						"&module_search_hidden=" . $layoutData['id_agente_modulo'] . "&date_from=" . $date_from . "&time_from=" . $time_from . 
+						"&date_to=" . $date_to . "&time_to=" . $time_to . "&status=-1";
+				}
 				break;
 			case GROUP_ITEM:
 				$is_a_link_to_other_visualconsole = false;
@@ -1046,12 +1075,50 @@ function visual_map_print_item($mode = "read", $layoutData,
 		case BOX_ITEM:
 			$z_index = 1;
 			break;
+		case AUTO_SLA_GRAPH:
+			if ((get_parameter('action') == 'edit') || (get_parameter('operation') == 'edit_visualmap')) {
+				if($width == 0 || $height == 0){
+					if ($layoutData['id_metaconsole'] != 0) {
+						$img =  '<img src="../../images/console/signes/module_graph.png" style="width:300px;height:180px;">';
+					}
+					else{
+						$img =  '<img src="images/console/signes/module_graph.png" style="width:300px;height:180px;">';	
+					}
+				}
+				else{
+					if ($layoutData['id_metaconsole'] != 0) {
+						$img =  '<img src="../../images/console/signes/module_graph.png" style="width:'.$width.'px;height:'.	$height.'px;">';
+					}
+					else{
+						$img =  '<img src="images/console/signes/module_graph.png" style="width:'.$width.'px;height:'.	$height.'px;">';
+					}
+				}
+			}
+			else {
+				if ($width == 0 || $height == 0) {
+					$img = graph_graphic_agentevents ($layoutData['id_agent'], 500, 50, $layoutData['period'], '', true, $layoutData['id_agente_modulo']);
+				}
+				else{
+					$img = graph_graphic_agentevents ($layoutData['id_agent'], $width, $height, $layoutData['period'], '', true, $layoutData['id_agente_modulo']);
+				}
+			}
+		
+			//Restore db connection
+			if ($layoutData['id_metaconsole'] != 0) {
+				metaconsole_restore_db();
+			}
+
+			$z_index = 2 + 1;
+			break;
 	}
-	
+	html_debug(get_parameter('action'), true);
 	$class = "item ";
 	switch ($type) {
 		case STATIC_GRAPH:
 			$class .= "static_graph";
+			break;
+		case AUTO_SLA_GRAPH:
+			$class .= "auto_sla_graph";
 			break;
 		case GROUP_ITEM:
 			$class .= "group_item";
@@ -1385,6 +1452,9 @@ function visual_map_print_item($mode = "read", $layoutData,
 			elseif($layoutData['label_position']=='left' || $layoutData['label_position']=='right') {
 				echo io_safe_output($text);
 			}
+			break;
+		case AUTO_SLA_GRAPH:
+			echo $img;
 			break;
 		case SIMPLE_VALUE:
 		case SIMPLE_VALUE_MAX:

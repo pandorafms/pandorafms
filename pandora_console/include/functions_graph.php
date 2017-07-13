@@ -3565,7 +3565,7 @@ function graph_custom_sql_graph ($id, $width, $height,
  * @param string homeurl
  * @param bool return or echo the result
  */
-function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $homeurl, $return = false) {
+function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $homeurl, $return = false, $id_module = 0) {
 	global $config;
 	global $graphic_type;
 	
@@ -3605,10 +3605,19 @@ function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $ho
 		$full_legend[$cont] = $name;
 		
 		$top = $datelimit + ($periodtime * ($i + 1));
-		$event = db_get_row_filter ('tevento',
-			array ('id_agente' => $id_agent,
-				'utimestamp > '.$bottom,
-				'utimestamp < '.$top), 'criticity, utimestamp');
+		if ($id_module != 0) {
+			$event = db_get_row_filter ('tevento',
+				array ('id_agente' => $id_agent,
+					'utimestamp > '.$bottom,
+					'utimestamp < '.$top), 'criticity, utimestamp');
+		}
+		else {
+			$event = db_get_row_filter ('tevento',
+				array ('id_agente' => $id_agent,
+					'id_agentmodule' => $id_module,
+					'utimestamp > '.$bottom,
+					'utimestamp < '.$top), 'criticity, utimestamp');
+		}
 		
 		if (!empty($event['utimestamp'])) {
 			$data[$cont]['utimestamp'] = $periodtime;

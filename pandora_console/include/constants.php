@@ -467,6 +467,7 @@ define("OPTION_SINGLE_SELECT_TIME",		7);
 define("OPTION_CUSTOM_INPUT",			8);
 define("OPTION_AGENT_AUTOCOMPLETE",		9);
 define("OPTION_SELECT_MULTISELECTION",	10);
+define("OPTION_COLOR_PICKER",			11);
 
 /* Transactional map constants */
 define("NODE_TYPE", 0);

@@ -1097,27 +1097,27 @@ function visual_map_print_item($mode = "read", $layoutData,
 				if ($width == 0 || $height == 0) {
 					if ($layoutData['label_position']=='left') {
 						$img = '<div style="float:left;height:'.$himg.'px;">' . 
-							$img = graph_graphic_agentevents ($layoutData['id_agent'], 500, 50, $layoutData['period'], '', true, $layoutData['id_agente_modulo']);
+							$img = graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], 500, 50, $layoutData['period'], '', true);
 					}
 					elseif ($layoutData['label_position']=='right') {
 						$img = '<div style="float:right;height:'.$himg.'px;">' . 
-							$img = graph_graphic_agentevents ($layoutData['id_agent'], 500, 50, $layoutData['period'], '', true, $layoutData['id_agente_modulo']);
+							$img = graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], 500, 50, $layoutData['period'], '', true);
 					}
 					else {
-						$img = graph_graphic_agentevents ($layoutData['id_agent'], 500, 50, $layoutData['period'], '', true, $layoutData['id_agente_modulo']);
+						$img = graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], 500, 50, $layoutData['period'], '', true);
 					}
 				}
 				else{
 					if ($layoutData['label_position']=='left') {
 						$img = '<div style="float:left;height:'.$himg.'px;">' . 
-							$img = graph_graphic_agentevents ($layoutData['id_agent'], $width, $height, $layoutData['period'], '', true, $layoutData['id_agente_modulo']);
+							$img = graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], $width, $height, $layoutData['period'], '', true);
 					}
 					elseif ($layoutData['label_position']=='right') {
 						$img = '<div style="float:right;height:'.$himg.'px;">' . 
-							$img = graph_graphic_agentevents ($layoutData['id_agent'], $width, $height, $layoutData['period'], '', true, $layoutData['id_agente_modulo']);
+							$img = graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], $width, $height, $layoutData['period'], '', true);
 					}
 					else {
-						$img = graph_graphic_agentevents ($layoutData['id_agent'], $width, $height, $layoutData['period'], '', true, $layoutData['id_agente_modulo']);
+						$img = graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], $width, $height, $layoutData['period'], '', true);
 					}
 				}
 			}

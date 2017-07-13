@@ -245,11 +245,11 @@ function EventZoomEnd (evt,zoom = map.zoom) {
 		
 	jQuery.each($("tspan"), function (i, tspan) {
 		if (actual_zoom <= 18 && actual_zoom > 13)
-			actual_font_size = (max_font_size + 5);
+			actual_font_size = (max_font_size - 3);
 		else if (actual_zoom <= 13 && actual_zoom >= 8)
-			actual_font_size = (max_font_size);
+			actual_font_size = (max_font_size - 6);
 		else if (actual_zoom <= 8)
-			actual_font_size = (max_font_size);
+			actual_font_size = (max_font_size - 6);
 		$(tspan).css('font-size', actual_font_size);
 	});
 	
@@ -288,6 +288,7 @@ function EventZoomEnd (evt,zoom = map.zoom) {
 function changeShowStatus(newShowStatus) {
 	statusShow = newShowStatus;	
 	hideAgentsStatus();
+	EventZoomEnd(null,map.zoom);
 	js_refreshParentLines();
 }
 

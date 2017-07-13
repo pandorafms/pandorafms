@@ -786,7 +786,7 @@ if ($traps !== false) {
 				continue;
 			}
 			$data[1] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'" title="'.__('View agent details').'">';
-			$data[1] .= '<strong>'.($agent["alias"] ? $agent["alias"] : $agent["nombre"]).ui_print_help_tip($trap['source'], true, "images/tip-blanco.png");'</strong></a>';
+			$data[1] .= '<strong>'.$agent["alias"].ui_print_help_tip($trap['source'], true, "images/tip-blanco.png");'</strong></a>';
 		}
 		
 		//OID

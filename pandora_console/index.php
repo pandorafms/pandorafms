@@ -351,7 +351,7 @@ if (! isset ($config['id_user'])) {
 			
 			if (($nick_in_db != false) && ((!is_user_admin($nick)
 				|| $config['enable_pass_policy_admin']))
-				&& (defined('PANDORA_ENTERPRISE'))
+				&& (file_exists (ENTERPRISE_DIR . "/load_enterprise.php"))
 				&& ($config['enable_pass_policy'])) {
 				include_once(ENTERPRISE_DIR . "/include/auth/mysql.php");
 				
@@ -523,12 +523,12 @@ if (! isset ($config['id_user'])) {
 		else { //login wrong
 			$blocked = false;
 			
-			if ((!is_user_admin($nick) || $config['enable_pass_policy_admin']) && defined('PANDORA_ENTERPRISE')) {
+			if ((!is_user_admin($nick) || $config['enable_pass_policy_admin']) && file_exists (ENTERPRISE_DIR . "/load_enterprise.php")) {
 				$blocked = login_check_blocked($nick);
 			}
 			
 			if (!$blocked) {
-				if (defined('PANDORA_ENTERPRISE')) {
+				if (file_exists (ENTERPRISE_DIR . "/load_enterprise.php")) {
 					login_check_failed($nick); //Checks failed attempts
 				}
 				$login_failed = true;
@@ -1113,11 +1113,11 @@ require('include/php_to_js_values.php');
 	function first_time_identification () {
 		run_identification_wizard (-1, -1, 1);
 	}
+
 	var times_fired_register_wizard = 0;
+
 	function run_identification_wizard (register, newsletter , return_button) {
-		
 		if (times_fired_register_wizard) {
-			
 			$(".ui-dialog-titlebar-close").show();
 			
 			//Reset some values				
@@ -1147,10 +1147,9 @@ require('include/php_to_js_values.php');
 			$("#login_accept_register").dialog('open');
 		}
 		else {
-			
 			$(".ui-dialog-titlebar-close").show();
 			$("#container").append('<div class="id_wizard"></div>');
-			jQuery.get ("ajax.php",
+			jQuery.post ("ajax.php",
 				{"page": "general/login_identification_wizard",
 				 "not_return": 1,
 				 "force_register": register,

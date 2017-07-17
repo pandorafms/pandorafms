@@ -194,6 +194,8 @@ function config_update_config () {
 						$error_update[] = __('Command Snapshot');
 					if (!config_update_value ('server_log_dir', get_parameter('server_log_dir')))
 						$error_update[] = __('Server logs directory');
+					if (!config_update_value ('max_log_size', get_parameter('max_log_size')))
+						$error_update[] = __('Log size limit in system logs viewer extension');
 					if (!config_update_value ('tutorial_mode', get_parameter('tutorial_mode')))
 						$error_update[] = __('Tutorial mode');
 					if (!config_update_value ('past_planned_downtimes', get_parameter('past_planned_downtimes')))
@@ -1597,6 +1599,10 @@ function config_process_config () {
 	if (!isset($config['server_log_dir'])) {
 		config_update_value ('server_log_dir', "");
 	}
+
+	if (!isset($config['max_log_size'])) {
+		config_update_value ('max_log_size', 512);
+	}
 	
 	if (!isset($config['show_group_name'])) {
 		config_update_value ('show_group_name', 0);
@@ -1743,7 +1749,7 @@ function config_process_config () {
 		config_update_value('ehorus_custom_field', 'eHorusID');
 	}
 	if (!isset($config['ehorus_hostname'])) {
-		config_update_value('ehorus_hostname', 'switch.ehorus.com');
+		config_update_value('ehorus_hostname', 'portal.ehorus.com');
 	}
 	if (!isset($config['ehorus_port'])) {
 		config_update_value('ehorus_port', 18080);

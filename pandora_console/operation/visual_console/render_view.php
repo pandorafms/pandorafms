@@ -245,11 +245,12 @@ $ignored_params['refr'] = '';
 						//cb();
 						url = js_html_entity_decode( href ) + duration;
 						//$(document).attr ("location", url);
-						$.get(window.location.href.replace("render_view","pure_ajax"), function(respuestaSolicitud){
+						$.post(window.location.href.replace("refr=300","refr="+new_count), function(respuestaSolicitud){
 							$('#background_<?php echo $id_layout; ?>').html(respuestaSolicitud);
-							startCountDown(refr, false);
 						});
-					}
+						$("#main_pure").css('background-color','<?php echo $layout['background_color']; ?>');
+						
+						}
 				});
 			}
 			
@@ -260,6 +261,7 @@ $ignored_params['refr'] = '';
 			
 			$('select#refr').change(function (event) {
 				refr = Number.parseInt(event.target.value, 10);
+				new_count = event.target.value;
 				startCountDown(refr, false);
 			});
 		}
@@ -284,8 +286,13 @@ $ignored_params['refr'] = '';
 				$(this).css('margin-left','');
 			}
 			else {
-				$(this).css('margin-left',(parseInt($(this).parent().parent().css('width'))/2-parseInt($(this).css('width'))/2)+'px');
-				$(this).css('margin-top','');
+				if(parseInt($(this).parent().parent().css('width'))/2-parseInt($(this).css('width'))/2 < 0){
+					$(this).css('margin-left','');
+					$(this).css('margin-top','');
+				} else {
+					$(this).css('margin-left',(parseInt($(this).parent().parent().css('width'))/2-parseInt($(this).css('width'))/2)+'px');
+					$(this).css('margin-top','');
+				}
 			}
 		});
 		

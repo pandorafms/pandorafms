@@ -168,7 +168,7 @@ echo __('Group') . '&nbsp;';
 
 $groups = users_get_groups (false, $access);
 
-html_print_select_groups(false, $access, true, 'group_id', $group_id, 'this.form.submit()', '', '', false, false, true, '', false, 'width:150px');
+html_print_select_groups(false, $access, true, 'group_id', $group_id, 'this.form.submit()', '', '', false, false, true, '', false);
 
 echo '</td><td style="white-space:nowrap;">';
 

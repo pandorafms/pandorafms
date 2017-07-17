@@ -128,6 +128,26 @@ function reporting_make_reporting_data($report = null, $id_report,
 			$content['period'] = $period;
 		}
 		
+		if(defined('METACONSOLE')){
+			if (is_array($content['id_agent'])) {
+				$new_array = array();
+				foreach ($content['id_agent'] as $key => $value) {
+				 $meta_id = explode("|",$value);
+				 array_push($new_array,$meta_id[1]);
+				}
+			 $content['id_agent'] = $new_array;
+			}
+			else {
+				$meta_id = explode("|",$content['id_agent']);
+				if ($meta_id[1] != null) {
+					$content['id_agent'] = array();
+					$content['id_agent'] = $meta_id[1];
+				}
+			}
+			
+		 
+	 }
+	 	
 		$content['style'] = json_decode(io_safe_output($content['style']), true);
 		if(isset($content['style']['name_label'])){
 			//Add macros name
@@ -147,7 +167,18 @@ function reporting_make_reporting_data($report = null, $id_report,
 				}
 			}
 
-			$content['name'] = reporting_label_macro($items_label, $content['style']['name_label']);
+
+
+				if(sizeof($content['id_agent']) != 1){
+					$content['style']['name_label'] = str_replace("_agent_",sizeof($content['id_agent']).__(' agents'),$content['style']['name_label']);
+				}
+
+				 if(sizeof($content['id_agent_module']) != 1){
+					 $content['style']['name_label'] = str_replace("_module_",sizeof($content['id_agent_module']).__(' modules'),$content['style']['name_label']);
+				 }
+				
+				 $content['name'] = reporting_label_macro($items_label, $content['style']['name_label']);
+
 
 			if ($metaconsole_on) {
 				//Restore db connection
@@ -3940,9 +3971,12 @@ function reporting_sql($report, $content) {
 			$header = explode('|', $content['header_definition']);
 			$return['header'] = $header;
 		}
-		
-		$historical_db = db_get_value_sql("SELECT historical_db from treport_content where id_rc =".$content['id_rc']);
-		
+		if($content['id_rc'] != null){
+			$historical_db = db_get_value_sql("SELECT historical_db from treport_content where id_rc =".$content['id_rc']);
+		}
+		else{
+			$historical_db = $content['historical_db'];
+		}
 		$result = db_get_all_rows_sql($sql,$historical_db);
 		if ($result !== false) {
 			
@@ -4338,6 +4372,20 @@ function reporting_advanced_sla ($id_agent_module, $time_from = null, $time_to =
 		if ( (!(isset($max_value))) && (!(isset($min_value))) ) {
 			$max_value = null;
 			$min_value = null;
+		}
+		if ( (!isset($min_value)) && (!isset($max_value)) ) {
+			if (   ($agentmodule_info["id_tipo_modulo"] == "2")      // generic_proc
+				|| ($agentmodule_info["id_tipo_modulo"] == "6")      // remote_icmp_proc
+				|| ($agentmodule_info["id_tipo_modulo"] == "9")      // remote_tcp_proc
+				|| ($agentmodule_info["id_tipo_modulo"] == "18")     // remote_snmp_proc
+				|| ($agentmodule_info["id_tipo_modulo"] == "21")     // async_proc
+				|| ($agentmodule_info["id_tipo_modulo"] == "31") ) { // web_proc
+				// Boolean values are OK if they're different from 0
+				$max_value = 0;
+				$min_value = 0;
+				$inverse_interval = 1;
+			}
+
 		}
 	}
 
@@ -5763,17 +5811,12 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 	
 	require_once ($config["homedir"] . '/include/functions_graph.php');
 	
-	if ($type_report == 'automatic_graph') {
-		// Do none
-	}
-	else {
-		if ($config['metaconsole']) {
-			$id_meta = metaconsole_get_id_server($content["server_name"]);
-			
-			
-			$server = metaconsole_get_connection_by_id ($id_meta);
-			metaconsole_connect($server);
-		}
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
 	}
 	
 	$graph = db_get_row ("tgraph", "id_graph", $content['id_gs']);
@@ -5816,9 +5859,17 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 		
 		array_push ($weights, $graph_item["weight"]);
 		if (in_array('label',$content['style'])) {
+			if (defined('METACONSOLE')) {
+				$item = array('type' => 'custom_graph',
+							'id_agent' =>$content['id_agent'],
+							'id_agent_module'=>$graph_item['id_agent_module']);
+			}
+			else {
 			$item = array('type' => 'custom_graph',
 						'id_agent' =>modules_get_agentmodule_agent($graph_item['id_agent_module']),
 						'id_agent_module'=>$graph_item['id_agent_module']);
+			}
+			
 			$label = reporting_label_macro($item, $content['style']['label']);
 			$labels[$graph_item['id_agent_module']] = $label;
 		}
@@ -5837,6 +5888,13 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 		if(!$only_image){
 			$height = 50;
 		}
+	}
+	if (defined('METACONSOLE')) {
+		$modules_new = array();
+		foreach ($modules as $mod) {
+			$modules_new[] = $mod['module'];
+		}
+		$modules = $modules_new;
 	}
 	
 	switch ($type) {
@@ -10234,7 +10292,6 @@ function reporting_get_agentmodule_sla_working_timestamp ($period, $date_end, $w
 }
 
 function reporting_label_macro ($item, $label) {
-	
 	switch ($item['type']) {
 		case 'event_report_agent':
 		case 'alert_report_agent':
@@ -10260,6 +10317,7 @@ function reporting_label_macro ($item, $label) {
 				$label = str_replace("_address_", $agent_name, $label);
 			}
 			break;
+    		case 'automatic_graph':
 		case 'simple_graph':
 		case 'module_histogram_graph':
 		case 'custom_graph':

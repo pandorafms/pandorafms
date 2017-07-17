@@ -84,6 +84,7 @@ function visual_map_main() {
 	//Fixed to wait the load of images.
 	$(window).load(function() {
 		
+
 		$('#module').change(function(){
 			var txt = $("#module").val();
 			if(selectedItem == 'simple_value' || creationItem == 'simple_value'){
@@ -122,6 +123,27 @@ function visual_map_main() {
 		}
 		});
 		
+
+		// Begin - Background label color changer
+				
+		$( "#text-label_ifr" ).contents().find( "body" ).bind("contextmenu", function(e) {
+   		e.preventDefault();
+    });
+		
+		$( "#text-label_ifr" ).contents().find( "body" ).mousedown(function(e){
+		    	if(e.which == 3) 
+        		{
+							if($( "#text-label_ifr" ).contents().find( "body" ).css('background-color') == 'rgb(211, 211, 211)'){
+								$( "#text-label_ifr" ).contents().find( "body" ).css('background-color','white');
+							}
+							else{
+								$( "#text-label_ifr" ).contents().find( "body" ).css('background-color','lightgray');
+							}
+           		
+        		}
+		});
+		
+		// End - Background label color changer
 		
 		$('#radiobtn0001').click(function(){
 			$("#custom_graph option[value=0]").prop("selected", true);
@@ -549,6 +571,9 @@ function readFields() {
 	values['process_simple_value'] = $("select[name=process_value]").val();
 	values['background'] = $("#background_image").val();
 	values['period'] = undefined != $("#hidden-period").val() ? $("#hidden-period").val() : $("#period").val();
+	if (values['period'] == null) {
+		values['period'] = undefined != $("#hidden-period").val() ? $("#hidden-period").val() : $("#period_select").val();
+	}
 	values['width'] = $("input[name=width]").val();
 	values['width_data_image'] = $("#data_image_width").val();
 	if(values['width_data_image'] != 0){
@@ -606,14 +631,14 @@ function create_button_palette_callback() {
 	var validate = true;
 	switch (creationItem) {
 		case 'box_item':
-		if (($("input[name='width_box']").val() == '')) {
-			alert('Undefined width');
-			validate = false;
-		}
-		if (($("input[name='height_box']").val() == '')) {
-			alert('Undefined height');
-			validate = false;
-		}
+			if (($("input[name='width_box']").val() == '')) {
+				alert('Undefined width');
+				validate = false;
+			}
+			if (($("input[name='height_box']").val() == '')) {
+				alert('Undefined height');
+				validate = false;
+			}
 			break;
 		case 'group_item':
 		case 'static_graph':
@@ -673,7 +698,7 @@ function create_button_palette_callback() {
 				validate = false;
 			}
 			break;
-		case 'module_graph':		
+		case 'module_graph':
 			if (values['width_module_graph'] == '') {
 				alert('Undefined width');
 				validate = false;
@@ -996,7 +1021,8 @@ function toggle_item_palette() {
 				});
 				
 				$( "#text-label_ifr" ).contents().find( "p" ).css("line-height",$('#lineheight').val());
-					$( "#text-label_ifr" ).contents().find( "span" ).css("line-height",$('#lineheight').val());
+				$( "#text-label_ifr" ).contents().find( "span" ).css("line-height",$('#lineheight').val());
+				$( "#text-label_ifr" ).contents().find( "body" ).css("background","lightgray");
 								
 	}
 	
@@ -1569,7 +1595,6 @@ function set_static_graph_status(idElement, image, status) {
 			data: parameter,
 			success: function (data) {
 				set_static_graph_status(idElement, image, data);
-				
 				if($('#'+idElement+' table').css('float') == 'right' || $('#'+idElement+ ' table').css('float') == 'left'){
 					$('#'+idElement+ ' img').css('margin-top', parseInt($('#'+idElement).css('height'))/2 - parseInt($('#'+idElement+ ' img').css('height'))/2);	
 				}
@@ -1605,7 +1630,6 @@ function set_static_graph_status(idElement, image, status) {
 			suffix = ".png";
 			break;
 	}
-
 	set_image("image", idElement, image  + suffix);
 }
 
@@ -2079,6 +2103,10 @@ function createItem(type, values, id_data) {
 				if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
 					$image.attr('width', '70')
 						.attr('height', '70');
+				}
+				else{
+					$image.attr('width', $('#preview > img')[0].naturalWidth)
+						.attr('height', $('#preview > img')[0].naturalHeight);
 				}			
 			}
 			else {

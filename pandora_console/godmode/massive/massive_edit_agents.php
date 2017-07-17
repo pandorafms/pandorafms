@@ -139,9 +139,61 @@ if ($update_agents) {
 			    isset($values['id_grupo'])) {
 				$values['update_module_count'] = 1; // Force an update of the agent cache.
 			}
+			$group_old = false;
+			if($values['id_grupo']){
+				$group_old = db_get_sql("SELECT id_grupo FROM tagente WHERE id_agente =" .$id_agent);
+			}
+			
 			$result = db_process_sql_update ('tagente',
 				$values,
 				array ('id_agente' => $id_agent));
+				
+			if($group_old || $result){
+					$tpolicy_group_old = db_get_sql("SELECT id_policy FROM tpolicy_groups 
+						WHERE id_group = ".$group_old);
+					
+					if($tpolicy_group_old){
+						$tpolicy_agents_old= db_get_sql("SELECT * FROM tpolicy_agents 
+							WHERE id_policy = ".$tpolicy_group_old . " AND id_agent =" .$id_agent);
+							
+						if($tpolicy_agents_old){
+							$result2 = db_process_sql_update ('tpolicy_agents',
+								array('pending_delete' => 1),
+								array ('id_agent' => $id_agent, 'id_policy' => $tpolicy_group_old));
+						}
+						
+					}
+					
+					$tpolicy_group_new = db_get_sql("SELECT id_policy FROM tpolicy_groups 
+						WHERE id_group = ".$values['id_grupo']);
+						
+					if($tpolicy_group_new){
+						$tpolicy_agents_new= db_get_sql("SELECT * FROM tpolicy_agents 
+							WHERE id_policy = ".$tpolicy_group_new . " AND id_agent =" .$id_agent);
+							
+						if($tpolicy_agents_new){
+							$result3 = db_process_sql_update ('tpolicy_agents',
+								array('pending_delete' => 0),
+								array ('id_agent' => $id_agent, 'id_policy' => $tpolicy_group_new));
+						} else {
+							db_process_sql_insert ('tpolicy_agents',
+							array('id_policy' => $tpolicy_group_new, 'id_agent' => $id_agent));
+						}
+					}
+					
+			}
+			
+			// if($values['id_grupo'] || $result){
+			// 	$tpolicy_agents= db_get_sql("SELECT * FROM tpolicy_agents 
+			// 		WHERE id_policy = ".$tpolicy_group . " AND id_agent =" .$id_agente);
+			// 		
+			// 	$tpolicy_group = db_get_sql("SELECT id_policy FROM tpolicy_groups 
+			// 		WHERE id_group = ".$values['id_grupo']);
+			// 	if ($tpolicy_group){
+			// 		
+			// 	}
+			// }
+			
 		}
 		
 		// Update Custom Fields

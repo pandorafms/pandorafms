@@ -1,0 +1,1 @@
+alter table tusuario add autorefresh_white_list text not null default '';

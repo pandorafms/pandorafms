@@ -252,7 +252,7 @@ if (isset($_POST['vc_refr'])) {
 
 
 //======= Autorefresh code =============================================
-$select = db_process_sql("SELECT value FROM tconfig WHERE token='autorefresh_white_list'");
+$select = db_process_sql("SELECT autorefresh_white_list FROM tusuario WHERE id_user = '" . $config['id_user'] . "'");
 $autorefresh_list = json_decode($select[0]['value']);
 $config['autorefresh_white_list'] = array();
 $config['autorefresh_white_list'] = $autorefresh_list;

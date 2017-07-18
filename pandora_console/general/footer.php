@@ -32,13 +32,18 @@ if (!$config["MR"]) {
 
 echo '<a class="white_bold footer" target="_blank" href="' . $config["homeurl"] . $license_file. '">';
 
-if($current_package == 0){
-$build_package_version =	$build_version;
-}
-else{
-$build_package_version =	$current_package;
+if(enterprise_installed()){
+	enterprise_include_once("../include/functions_update_manager.php");
 }
 
+$current_package = update_manager_get_current_package();
+
+if($current_package == 0){
+	$build_package_version = $build_version;
+}
+else{
+	$build_package_version = $current_package;
+}
 
 echo sprintf(__('Pandora FMS %s - Build %s - MR %s', $pandora_version, $build_package_version, $config["MR"]));
 

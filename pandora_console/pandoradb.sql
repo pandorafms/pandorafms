@@ -1112,6 +1112,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
 	`id_filter`  int(10) unsigned NULL default NULL,
 	`session_time` int(10) signed NOT NULL default 0,
 	`default_event_filter` int(10) unsigned NOT NULL default 0,
+	`autorefresh_white_list` text not null default '',
 	CONSTRAINT `fk_filter_id` FOREIGN KEY (`id_filter`) REFERENCES tevent_filter (`id_filter`) ON DELETE SET NULL,
 	UNIQUE KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -1381,7 +1382,7 @@ CREATE TABLE IF NOT EXISTS `tmodule` (
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tserver_export` (
 	`id` int(10) unsigned NOT NULL auto_increment,
-	`name` varchar(100) NOT NULL default '',
+	`name` varchar(600) BINARY NOT NULL default '',
 	`preffix` varchar(100) NOT NULL default '',
 	`interval` int(5) unsigned NOT NULL default '300',
 	`ip_server` varchar(100) NOT NULL default '',

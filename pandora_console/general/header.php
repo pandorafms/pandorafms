@@ -191,7 +191,9 @@ config_check();
 					$_GET['refr'] = null;
 				}
 				
-				if ($config['autorefresh_white_list'] !== null && array_search($_GET['sec2'], $config['autorefresh_white_list']) !== false) {
+				$select = db_process_sql("SELECT autorefresh_white_list FROM tusuario WHERE id_user = '" . $config['id_user'] . "'");
+				$autorefresh_list = json_decode($select[0]['autorefresh_white_list']);
+				if ($autorefresh_list !== null && array_search($_GET['sec2'], $autorefresh_list) !== false) {
 					$autorefresh_img = html_print_image("images/header_refresh.png", true, array("class" => 'bot', "alt" => 'lightning', 'title' => __('Configure autorefresh')));
 					
 					if ($_GET['refr']) {
@@ -354,7 +356,7 @@ config_check();
 	var new_chat = <?php echo (int)$_SESSION['new_chat'];?>;
 	$(document).ready (function () {
 		<?php
-		if (($config['autorefresh_white_list'] !== null) && (array_search($_GET['sec2'], $config['autorefresh_white_list']) !== false) && (!isset($_GET["refr"]))) {
+		if (($autorefresh_list !== null) && (array_search($_GET['sec2'], $autorefresh_list) !== false) && (!isset($_GET["refr"]))) {
 		?>
 			$("a.autorefresh_txt").toggle ();
 			$("#combo_refr").toggle ();

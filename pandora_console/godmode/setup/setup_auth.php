@@ -51,7 +51,8 @@ if (is_ajax ()) {
 			$row['control'] = __('Yes').'&nbsp;'.html_print_radio_button('fallback_local_auth', 1, '', $config['fallback_local_auth'], true).'&nbsp;&nbsp;';
 			$row['control'] .= __('No').'&nbsp;'.html_print_radio_button('fallback_local_auth', 0, '', $config['fallback_local_auth'], true);
 			$table->data['fallback_local_auth'] = $row;
-
+			
+			if (enterprise_installed()) {
 			// Autocreate remote users
 			$row = array();
 			$row['name'] = __('Autocreate remote users');
@@ -59,8 +60,7 @@ if (is_ajax ()) {
 			$row['control'] .= __('No').'&nbsp;'.html_print_radio_button_extended('autocreate_remote_users', 0, '', $config['autocreate_remote_users'], false, '', '', true);
 			$table->data['autocreate_remote_users'] = $row;
 			
-			if (enterprise_installed()) {
-				add_enterprise_auth_autocreate_profiles($table, $type_auth);
+			add_enterprise_auth_autocreate_profiles($table, $type_auth);
 			}
 		}
 

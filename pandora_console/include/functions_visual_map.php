@@ -1514,11 +1514,48 @@ function visual_map_print_item($mode = "read", $layoutData,
 					$layoutData['id_agente_modulo'], $period);
 			
 			global $config;
-			if(get_parameter('action') == 'edit'){
-				echo $io_safe_output_text;
+			
+			if ($type == SIMPLE_VALUE) {
+				//~ $returnValue_value = explode('&nbsp;', $value);
+				
+				//~ if ($returnValue_value[1] != "") {
+					//~ $value = remove_right_zeros(number_format($returnValue_value[0], $config['graph_precision'])) . " " . $returnValue_value[1];
+				//~ }
+				//~ else {
+					//~ $value = remove_right_zeros(number_format($returnValue_value[0], $config['graph_precision']));
+				//~ }
+				
 			}
+			else {
+				// If the value is a string, dont format it
+				if (!is_string($value)) {
+					//~ $value = remove_right_zeros(format_for_graph($value, $config['graph_precision']));
+				}
+			}
+			
+			//$io_safe_output_text = str_replace(array('_VALUE_','_value_'), $value, $io_safe_output_text);
+			
+			
+			
+			if(get_parameter('action') == 'edit'){
+								//html_debug($layoutData);
+				//echo 'Data value';
+				if(strip_tags($io_safe_output_text) != '_VALUE_'){
+					echo $io_safe_output_text;
+				}
+				else{
+					echo "<img style='width:".$layoutData['width']."px;' src='images/console/signes/data_image.png'>";
+				}
+								
+				}
 			else{
-				echo str_replace(array('_VALUE_','_value_'), $value, $io_safe_output_text);
+				if(strip_tags($io_safe_output_text) != '_VALUE_'){
+					echo str_replace(array('_VALUE_','_value_'), $value, $io_safe_output_text);
+				}
+				else{
+					echo str_replace('>', ' style="width:'.$layoutData['width'].'px">',$value);
+				}
+				
 			}
 			
 			//Restore db connection
@@ -1655,21 +1692,31 @@ function visual_map_get_simple_value($type, $id_module, $period = SECONDS_1DAY) 
 				'id_agente_modulo', $id_module);
 			if ($value === false) {
 				$value = __('Unknown');
+				
+				$value = preg_replace ('/\n/i','<br>',$value);
+				$value =  preg_replace ('/\s/i','&nbsp;',$value);
 			}
 			else {
-				if ( is_numeric($value) ) {
-					if ($config['simple_module_value']) {
-						$value = remove_right_zeros(number_format($value, $config['graph_precision']));
+				if(strpos($value, 'data:image') !== false){
+					$value = '<img class="b64img" src="'.$value.'">';
+				}
+				else{
+												
+					if ( is_numeric($value) ) {
+						if ($config['simple_module_value']) {
+							$value = remove_right_zeros(number_format($value, $config['graph_precision']));
+						}
 					}
+					if (!empty($unit_text)) {
+						$value .= " " . $unit_text;
+					}
+					
+					$value = preg_replace ('/\n/i','<br>',$value);
+					$value =  preg_replace ('/\s/i','&nbsp;',$value);
+					
 				}
-				if (!empty($unit_text)) {
-					$value .= " " . $unit_text;
-				}
+				
 			}
-			
-			$value = preg_replace ('/\n/i','<br>',$value);
-			$value =  preg_replace ('/\s/i','&nbsp;',$value);
-			
 			return $value;
 			break;
 		case SIMPLE_VALUE_MAX:

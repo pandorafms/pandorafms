@@ -624,7 +624,7 @@ function html_print_select_from_sql ($sql, $name, $selected = '',
 function html_print_extended_select_for_post_process($name, $selected = '',
 	$script = '', $nothing = '', $nothing_value = '0', $size = false,
 	$return = false, $select_style = false, $unique_name = true,
-	$disabled = false) {
+	$disabled = false, $no_change = 0) {
 	
 	global $config;
 	
@@ -632,6 +632,10 @@ function html_print_extended_select_for_post_process($name, $selected = '',
 	
 	
 	$fields = post_process_get_custom_values();
+	if($no_change != 0){
+		$fields[-1] = __('No change');
+	}
+
 	$selected_float = (float)$selected;
 	$found = false;
 	

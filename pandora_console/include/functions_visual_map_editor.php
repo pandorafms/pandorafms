@@ -188,7 +188,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				<td align="left" style="">' .
 				html_print_input_text('label', '', '', 20, 200, true) . '
 				<span id="advice_label" style="font-style:italic;z-index:3;display:inline;margin-top:0px;float:right;margin-right:100px;">
-				'.__("Click right mouse button to change background label editor color").'
+				'.__("Click right mouse button to change the background color of the label editor").'
 				</span>
 				</td>';
 			
@@ -314,8 +314,8 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items['module_row']['html'] = '<td align="left">' .
 				__('Module') . '</td>
 				<td align="left">' .
-				html_print_select(array(), 'module', '', '', __('Any'), 0, true) .
-				'</td>';
+				html_print_select(array(), 'module', '', '', __('Any'), 0, true). '<div id="data_image_container" style="display:none;"><span id="data_image_check_label" style="margin-left:20px;">'.__("Data image").': </span><span id="data_image_check">Off</span><span id="data_image_width_label"> - Width: </span><input style="margin-left:5px;width:40px;" type="number" id="data_image_width" value="100"></input></div>
+				</td>';
 				
 				
 				$form_items['type_graph'] = array();

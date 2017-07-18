@@ -579,11 +579,46 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	}
 	else {
 		$data = db_get_all_rows_filter ('tagente_datos',
-			array ('id_agente_modulo' => (int)$agent_module_id,
-				"utimestamp > $datelimit",
-				"utimestamp < $date",
-				'order' => 'utimestamp ASC'),
-			array ('datos', 'utimestamp'), 'AND', $search_in_history_db);
+						array ('id_agente_modulo' => (int)$agent_module_id,
+								"utimestamp > $datelimit",
+								"utimestamp < $date",
+								'order' => 'utimestamp ASC'),
+						array ('datos', 'utimestamp'), 'AND', false);
+
+		if ($search_in_history_db) {
+			$cache = false;
+			$history = false;
+
+			$sql = "SELECT datos, utimestamp FROM tagente_datos WHERE id_agente_modulo = " . (int)$agent_module_id .
+					" AND utimestamp > " . $datelimit . " AND utimestamp < " . $date .
+					" ORDER BY utimestamp ASC";
+
+			// Connect to the history DB
+			if (! isset ($config['history_db_connection']) || $config['history_db_connection'] === false) {
+				$config['history_db_connection'] = db_connect($config['history_db_host'], $config['history_db_name'], $config['history_db_user'], io_output_password($config['history_db_pass']), $config['history_db_port'], false);
+			}
+			if ($config['history_db_connection'] !== false) {
+				$history = mysql_db_process_sql ($sql, 'affected_rows', $config['history_db_connection'], false);
+			}
+
+			if ($history === false) {
+				$history = array ();
+			}
+
+			$new_data = array();
+			$last_timestamp = 0;
+			foreach($history as $h) {
+				$new_data[] = $h;
+				$last_timestamp = $h['utimestamp'];
+			}
+			foreach($data as $d) {
+				if ($d['utimestamp'] > $last_timestamp) {
+					$new_data[] = $d;
+					$last_timestamp = $d['utimestamp'];
+				}
+			}
+			$data = $new_data;
+		}
 	}
 	
 	// Get module warning_min and critical_min
@@ -832,7 +867,8 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	$only_image = false, $homeurl = '', $ttl = 1, $projection = false,
 	$adapt_key = '', $compare = false, $show_unknown = false,
 	$menu = true, $backgroundColor = 'white', $percentil = null,
-	$dashboard = false, $vconsole = false, $type_graph = 'area', $fullscale = false) {
+	$dashboard = false, $vconsole = false, $type_graph = 'area', $fullscale = false,
+	$id_widget_dashboard = false) {
 	
 	global $config;
 	global $graphic_type;
@@ -897,8 +933,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		$date, $unit, $baseline, $return_data, $show_title,
 		$projection, $adapt_key, $compare, '', '', $show_unknown,
 		$percentil, $dashboard, $vconsole, $type_graph, $fullscale);
-	
-	
+
 	if ($return_data) {
 		return $data_returned;
 	}
@@ -949,6 +984,13 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		}
 		else {
 			// Color commented not to restrict serie colors
+			if($id_widget_dashboard){
+				$opcion = unserialize(db_get_value_filter('options','twidget_dashboard',array('id' => $id_widget_dashboard)));
+				$color['min']['color'] = $opcion['min'];
+				$color['sum']['color'] = $opcion['avg'];
+				$color['max']['color'] = $opcion['max'];
+			}
+			
 			return
 				area_graph($flash_chart, $chart, $width, $height, $color,
 					$legend, $long_index,
@@ -1035,7 +1077,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	$prediction_period = false, $background_color = 'white',
 	$name_list = array(), $unit_list = array(), $show_last = true, $show_max = true,
 	$show_min = true, $show_avg = true, $labels = array(), $dashboard = false,
-	$vconsole = false, $percentil = null, $from_interface = false) {
+	$vconsole = false, $percentil = null, $from_interface = false, $id_widget_dashboard=false) {
 	
 	global $config;
 	global $graphic_type;
@@ -1870,6 +1912,15 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	$color[15] = array('border' => '#000000',
 		'color' => COL_GRAPH13,
 		'alpha' => CHART_DEFAULT_ALPHA);
+		
+	if($id_widget_dashboard){
+		$opcion = unserialize(db_get_value_filter('options','twidget_dashboard',array('id' => $id_widget_dashboard)));
+		foreach ($module_list as $key => $value) {
+			if(!empty($opcion[$value])){
+				$color[$key]['color'] = $opcion[$value];
+			}
+		}
+	}
 	
 	$threshold_data = array();
 
@@ -3419,7 +3470,12 @@ function graph_custom_sql_graph ($id, $width, $height,
 	global $config;
 	
 	$report_content = db_get_row ('treport_content', 'id_rc', $id);
-	$historical_db = db_get_value_sql("SELECT historical_db from treport_content where id_rc =".$id);
+	if($id != null){
+		$historical_db = db_get_value_sql("SELECT historical_db from treport_content where id_rc =".$id);
+	}
+	else{
+		$historical_db = $content['historical_db'];
+	}
 	if ($report_content["external_source"] != "") {
 		$sql = io_safe_output ($report_content["external_source"]);
 	}
@@ -3868,7 +3924,9 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 		$timestamp_short = date($time_format, $timestamp);
 		$long_index[$timestamp_short] = date(
 			html_entity_decode($config['date_format'], ENT_QUOTES, "UTF-8"), $timestamp);
-		$timestamp = $timestamp_short;
+		if (!$fullscale) {
+			$timestamp = $timestamp_short;
+		}
 		/////////////////////////////////////////////////////////////////
 		
 		if ($total > $max_value) {

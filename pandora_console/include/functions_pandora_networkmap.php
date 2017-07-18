@@ -148,8 +148,9 @@ function networkmap_process_networkmap($id = 0) {
 			case "WINNT":
 			case "Windows":
 				$filename_plain = sys_get_temp_dir() . "\\plain.txt";
-				$cmd = $config['graphviz_win'] . "$filter -Tplain -o " . $filename_plain . " " .
-					$filename_dot;
+				
+				$cmd = io_safe_output($config['graphviz_bin_dir'] . "\\$filter.exe -Tplain -o " . $filename_plain . " " .
+					$filename_dot);
 				break;
 			default:
 				$filename_plain = sys_get_temp_dir() . "/plain.txt";
@@ -157,7 +158,7 @@ function networkmap_process_networkmap($id = 0) {
 					$filename_dot;
 				break;
 		}
-
+		
 		system ($cmd);
 		
 		unlink($filename_dot);
@@ -165,6 +166,8 @@ function networkmap_process_networkmap($id = 0) {
 		$nodes = networkmap_loadfile($id, $filename_plain,
 			$relation_nodes, $graph);
 		
+		unlink($filename_plain);
+
 		//Set the position of modules
 		foreach ($nodes as $key => $node) {
 			if ($node['type'] == 'module') {
@@ -265,8 +268,6 @@ function networkmap_process_networkmap($id = 0) {
 		db_process_sql_update('tmap',
 			array('center_x' => $networkmap['center_x'], 'center_y' => $networkmap['center_y']),
 			array('id' => $id));
-			
-		unlink($filename_plain);
 	}
 	
 	return $nodes_and_relations;

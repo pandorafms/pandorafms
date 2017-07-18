@@ -2482,7 +2482,6 @@ CREATE TABLE IF NOT EXISTS `tpolicy_queue` (
 	`id` int(10) unsigned NOT NULL auto_increment,
 	`id_policy` int(10) unsigned NOT NULL default '0',
 	`id_agent` int(10) unsigned NOT NULL default '0',
-	`id_group` int(10) unsigned NOT NULL default '0',
 	`operation` varchar(15) default '',
 	`progress` int(10) unsigned NOT NULL default '0',
 	`end_utimestamp` int(10) unsigned NOT NULL default 0,

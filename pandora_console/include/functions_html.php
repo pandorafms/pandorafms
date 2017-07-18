@@ -404,7 +404,7 @@ function html_print_select_groups($id_user = false, $privilege = "AR",
 		foreach ($include_groups as $value) {
 			$field[$value] = $fields[$value];
 		}
-		$fields = $field;
+		$fields = array_intersect($fields, $field);
 	}
 	
 	if ($strict_user) {

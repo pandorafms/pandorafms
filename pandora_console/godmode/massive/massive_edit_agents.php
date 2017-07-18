@@ -149,51 +149,41 @@ if ($update_agents) {
 				array ('id_agente' => $id_agent));
 				
 			if($group_old || $result){
-					$tpolicy_group_old = db_get_sql("SELECT id_policy FROM tpolicy_groups 
-						WHERE id_group = ".$group_old);
+				$tpolicy_group_old = db_get_all_rows_sql("SELECT id_policy FROM tpolicy_groups 
+					WHERE id_group = ".$group_old);
 					
-					if($tpolicy_group_old){
+				if($tpolicy_group_old){
+					foreach ($tpolicy_group_old as $key => $value) {
 						$tpolicy_agents_old= db_get_sql("SELECT * FROM tpolicy_agents 
-							WHERE id_policy = ".$tpolicy_group_old . " AND id_agent =" .$id_agent);
-							
+							WHERE id_policy = ".$value['id_policy'] . " AND id_agent = " .$id_agent);
+										
 						if($tpolicy_agents_old){
 							$result2 = db_process_sql_update ('tpolicy_agents',
 								array('pending_delete' => 1),
-								array ('id_agent' => $id_agent, 'id_policy' => $tpolicy_group_old));
+								array ('id_agent' => $id_agent, 'id_policy' => $value['id_policy']));
 						}
-						
 					}
-					
-					$tpolicy_group_new = db_get_sql("SELECT id_policy FROM tpolicy_groups 
-						WHERE id_group = ".$values['id_grupo']);
+				}
+				
+				$tpolicy_group_new = db_get_all_rows_sql("SELECT id_policy FROM tpolicy_groups 
+					WHERE id_group = ".$values['id_grupo']);
 						
-					if($tpolicy_group_new){
+				if($tpolicy_group_new){
+					foreach ($tpolicy_group_new as $key => $value) {
 						$tpolicy_agents_new= db_get_sql("SELECT * FROM tpolicy_agents 
-							WHERE id_policy = ".$tpolicy_group_new . " AND id_agent =" .$id_agent);
-							
-						if($tpolicy_agents_new){
+							WHERE id_policy = ".$value['id_policy'] . " AND id_agent =" .$id_agent);
+								
+						if(!$tpolicy_agents_new){
+							db_process_sql_insert ('tpolicy_agents',
+							array('id_policy' => $value['id_policy'], 'id_agent' => $id_agent));
+						} else {
 							$result3 = db_process_sql_update ('tpolicy_agents',
 								array('pending_delete' => 0),
-								array ('id_agent' => $id_agent, 'id_policy' => $tpolicy_group_new));
-						} else {
-							db_process_sql_insert ('tpolicy_agents',
-							array('id_policy' => $tpolicy_group_new, 'id_agent' => $id_agent));
+								array ('id_agent' => $id_agent, 'id_policy' => $value['id_policy']));
 						}
 					}
-					
+				}
 			}
-			
-			// if($values['id_grupo'] || $result){
-			// 	$tpolicy_agents= db_get_sql("SELECT * FROM tpolicy_agents 
-			// 		WHERE id_policy = ".$tpolicy_group . " AND id_agent =" .$id_agente);
-			// 		
-			// 	$tpolicy_group = db_get_sql("SELECT id_policy FROM tpolicy_groups 
-			// 		WHERE id_group = ".$values['id_grupo']);
-			// 	if ($tpolicy_group){
-			// 		
-			// 	}
-			// }
-			
 		}
 		
 		// Update Custom Fields

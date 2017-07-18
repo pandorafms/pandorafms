@@ -580,7 +580,7 @@ function readFields() {
 	}
 	values['width'] = $("input[name=width]").val();
 	values['width_data_image'] = $("#data_image_width").val();
-	if(values['width_data_image'] != 0){
+	if(values['width_data_image'] != 0 && values['width_data_image'] != undefined){
 		values['width'] = values['width_data_image'];
 	}
 	values['height'] = $("input[name=height]").val();

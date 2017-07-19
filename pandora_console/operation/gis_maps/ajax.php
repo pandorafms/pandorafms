@@ -246,7 +246,7 @@ switch ($opt) {
 		$row = array();
 		$row[] = __('Agent');
 		$row[] = '<a style="font-weight: bolder;" href="?sec=estado&sec2=operation/agentes/ver_agente&id_agente='
-			. $agent['id_agente'] . '">'.$agent['nombre'].'</a>';
+			. $agent['id_agente'] . '">'.$agent['alias'].'</a>';
 		$table->data[] = $row;
 
 		// Position

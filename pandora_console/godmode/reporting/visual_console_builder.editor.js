@@ -1904,10 +1904,17 @@ function setEventsBar(id_data, values) {
 		dataType: 'json',
 		success: function (data) {
 			if (data['no_data'] == true) {
-				$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/module_graph.png');
+				if (values['width'] == "0" || values['height'] == "0") {
+					$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/module-events.png');
+				}
+				else {
+					$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/module-events.png');
+					$("#" + id_data + " img").css('width', values['width'] + 'px');
+					$("#" + id_data + " img").css('height', values['height'] + 'px');
+				}
 			}
 			else {
-				$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/module_graph.png');
+				$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/module-events.png');
 				
 				if($('#text-width').val() == 0 || $('#text-height').val() == 0){
 					$("#" + id_data + " img").css('width', '300px');
@@ -2241,7 +2248,7 @@ function createItem(type, values, id_data) {
 		case 'auto_sla_graph':
 			var sizeStyle = '';
 			var imageSize = '';
-			item = $('<div id="' + id_data + '" class="item" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+			item = $('<div id="' + id_data + '" class="item auto_sla_graph" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
 							'<table><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
 							'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" />' +
 					'</div>'
@@ -2742,7 +2749,8 @@ function updateDB(type, idElement , values, event) {
 			update_user_line(type, idElement, top, left);
 			break;
 		default:
-
+			console.log(values);
+			console.log(idElement);
 			if ((typeof(values['mov_left']) != 'undefined') &&
 				(typeof(values['mov_top']) != 'undefined')) {
 				top = parseInt($("#" + idElement)

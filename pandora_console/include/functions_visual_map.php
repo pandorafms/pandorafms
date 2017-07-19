@@ -1078,18 +1078,18 @@ function visual_map_print_item($mode = "read", $layoutData,
 			if ((get_parameter('action') == 'edit') || (get_parameter('operation') == 'edit_visualmap')) {
 				if($width == 0 || $height == 0){
 					if ($layoutData['id_metaconsole'] != 0) {
-						$img =  '<img src="../../images/console/signes/module_graph.png" style="width:300px;height:180px;">';
+						$img =  '<img src="../../images/console/signes/module-events.png">';
 					}
 					else{
-						$img =  '<img src="images/console/signes/module_graph.png" style="width:300px;height:180px;">';	
+						$img =  '<img src="images/console/signes/module-events.png">';	
 					}
 				}
 				else{
 					if ($layoutData['id_metaconsole'] != 0) {
-						$img =  '<img src="../../images/console/signes/module_graph.png" style="width:'.$width.'px;height:'.	$height.'px;">';
+						$img =  '<img src="../../images/console/signes/module-events.png" style="width:'.$width.'px;height:'.	$height.'px;">';
 					}
 					else{
-						$img =  '<img src="images/console/signes/module_graph.png" style="width:'.$width.'px;height:'.	$height.'px;">';
+						$img =  '<img src="images/console/signes/module-events.png" style="width:'.$width.'px;height:'.	$height.'px;">';
 					}
 				}
 			}

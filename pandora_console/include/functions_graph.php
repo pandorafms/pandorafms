@@ -3220,11 +3220,11 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 			}
 			else {
 				if ($meta) {
-					$name = mb_substr (io_safe_output($row['agent_name']), 0, 14)." (".$row["count"].")";
+					$name = mb_substr (io_safe_output($row['agent_name']), 0, 25)." (".$row["count"].")";
 				}
 				else {
 					$alias = agents_get_alias($row["id_agente"]);
-					$name = mb_substr($alias, 0, 14)." #".$row["id_agente"]." (".$row["count"].")";
+					$name = mb_substr($alias, 0, 25)." #".$row["id_agente"]." (".$row["count"].")";
 				}
 				$data[$name] = $row["count"];
 			}

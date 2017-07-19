@@ -1195,7 +1195,11 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3) {
 	else {
 		$cascadeProtectionModule = 0;
 	}
-
+	
+	$group_old = db_get_sql("SELECT id_grupo FROM tagente WHERE id_agente =" .$id_agent);
+	$tpolicy_group_old = db_get_all_rows_sql("SELECT id_policy FROM tpolicy_groups 
+			WHERE id_group = ".$group_old);
+	
 	$return = db_process_sql_update('tagente', 
 		array('alias' => $alias,
 			'direccion' => $ip,
@@ -1215,6 +1219,40 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3) {
 	if ( $return && !empty($ip)) {
 		// register ip for this agent in 'taddress'
 		agents_add_address ($id_agent, $ip);
+	}
+	
+	if($return){
+		if($tpolicy_group_old){
+			foreach ($tpolicy_group_old as $key => $value) {
+				$tpolicy_agents_old= db_get_sql("SELECT * FROM tpolicy_agents 
+					WHERE id_policy = ".$value['id_policy'] . " AND id_agent = " .$id_agent);
+							
+				if($tpolicy_agents_old){
+					$result2 = db_process_sql_update ('tpolicy_agents',
+						array('pending_delete' => 1),
+						array ('id_agent' => $id_agent, 'id_policy' => $value['id_policy']));
+				}
+			}
+		}
+		
+		$tpolicy_group = db_get_all_rows_sql("SELECT id_policy FROM tpolicy_groups 
+			WHERE id_group = ".$idGroup);
+		
+		if($tpolicy_group){
+			foreach ($tpolicy_group as $key => $value) {
+				$tpolicy_agents= db_get_sql("SELECT * FROM tpolicy_agents 
+					WHERE id_policy = ".$value['id_policy'] . " AND id_agent =" .$id_agent);
+					
+				if(!$tpolicy_agents){
+					db_process_sql_insert ('tpolicy_agents',
+					array('id_policy' => $value['id_policy'], 'id_agent' => $id_agent));
+				} else {
+					$result3 = db_process_sql_update ('tpolicy_agents',
+						array('pending_delete' => 0),
+						array ('id_agent' => $id_agent, 'id_policy' => $value['id_policy']));
+				}
+			}
+		}
 	}
 
 	returnData('string',
@@ -1339,7 +1377,19 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 			// register ip for this agent in 'taddress'
 			agents_add_address ($idAgente, $ip);
 		}
-
+		
+		if($idGroup && !empty($idAgente)){
+			$tpolicy_group_old = db_get_all_rows_sql("SELECT id_policy FROM tpolicy_groups 
+				WHERE id_group = ".$idGroup);
+			
+			if($tpolicy_group_old){
+				foreach ($tpolicy_group_old as $key => $old_group) {
+					db_process_sql_insert ('tpolicy_agents',
+					array('id_policy' => $old_group['id_policy'], 'id_agent' => $idAgente));
+				}
+			}
+		}
+		
 		returnData('string',
 			array('type' => 'string', 'data' => $idAgente));
 	}

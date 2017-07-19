@@ -4160,3 +4160,11 @@ div#footer_help{
 #div_all_events_24h{
 	padding: 4px;
 }
+
+.service_node_odd {
+	transform: translateY(-50px);
+}
+
+.service_text_odd {
+	transform: translateY(100px);
+}

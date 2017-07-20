@@ -5852,7 +5852,7 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 						'id_agent' =>modules_get_agentmodule_agent($graph_item['id_agent_module']),
 						'id_agent_module'=>$graph_item['id_agent_module']);
 			}
-
+            $label = reporting_label_macro($item, $content['style']['label']);
 			$labels[$graph_item['id_agent_module']] = $label;
 		}
 	}

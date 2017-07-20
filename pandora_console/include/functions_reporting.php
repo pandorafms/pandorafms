@@ -128,26 +128,6 @@ function reporting_make_reporting_data($report = null, $id_report,
 			$content['period'] = $period;
 		}
 		
-		if(defined('METACONSOLE')){
-			if (is_array($content['id_agent'])) {
-				$new_array = array();
-				foreach ($content['id_agent'] as $key => $value) {
-				 $meta_id = explode("|",$value);
-				 array_push($new_array,$meta_id[1]);
-				}
-			 $content['id_agent'] = $new_array;
-			}
-			else {
-				$meta_id = explode("|",$content['id_agent']);
-				if ($meta_id[1] != null) {
-					$content['id_agent'] = array();
-					$content['id_agent'] = $meta_id[1];
-				}
-			}
-			
-		 
-	 }
-	 	
 		$content['style'] = json_decode(io_safe_output($content['style']), true);
 		if(isset($content['style']['name_label'])){
 			//Add macros name
@@ -166,19 +146,17 @@ function reporting_make_reporting_data($report = null, $id_report,
 					continue;
 				}
 			}
+			
+			
+			if(sizeof($content['id_agent']) != 1){
+				$content['style']['name_label'] = str_replace("_agent_",sizeof($content['id_agent']).__(' agents'),$content['style']['name_label']);
+			}
 
+			if(sizeof($content['id_agent_module']) != 1){
+			 	$content['style']['name_label'] = str_replace("_module_",sizeof($content['id_agent_module']).__(' modules'),$content['style']['name_label']);
+			}
 
-
-				if(sizeof($content['id_agent']) != 1){
-					$content['style']['name_label'] = str_replace("_agent_",sizeof($content['id_agent']).__(' agents'),$content['style']['name_label']);
-				}
-
-				 if(sizeof($content['id_agent_module']) != 1){
-					 $content['style']['name_label'] = str_replace("_module_",sizeof($content['id_agent_module']).__(' modules'),$content['style']['name_label']);
-				 }
-				
-				 $content['name'] = reporting_label_macro($items_label, $content['style']['name_label']);
-
+			$content['name'] = reporting_label_macro($items_label, $content['style']['name_label']);
 
 			if ($metaconsole_on) {
 				//Restore db connection
@@ -5811,12 +5789,17 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 	
 	require_once ($config["homedir"] . '/include/functions_graph.php');
 	
-	if ($config['metaconsole']) {
-		$id_meta = metaconsole_get_id_server($content["server_name"]);
-		
-		
-		$server = metaconsole_get_connection_by_id ($id_meta);
-		metaconsole_connect($server);
+	if ($type_report == 'automatic_graph') {
+		// Do none
+	}
+	else {
+		if ($config['metaconsole']) {
+			$id_meta = metaconsole_get_id_server($content["server_name"]);
+			
+			
+			$server = metaconsole_get_connection_by_id ($id_meta);
+			metaconsole_connect($server);
+		}
 	}
 	
 	$graph = db_get_row ("tgraph", "id_graph", $content['id_gs']);
@@ -5869,8 +5852,7 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 						'id_agent' =>modules_get_agentmodule_agent($graph_item['id_agent_module']),
 						'id_agent_module'=>$graph_item['id_agent_module']);
 			}
-			
-			$label = reporting_label_macro($item, $content['style']['label']);
+            $label = reporting_label_macro($item, $content['style']['label']);
 			$labels[$graph_item['id_agent_module']] = $label;
 		}
 	}
@@ -5888,13 +5870,6 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 		if(!$only_image){
 			$height = 50;
 		}
-	}
-	if (defined('METACONSOLE')) {
-		$modules_new = array();
-		foreach ($modules as $mod) {
-			$modules_new[] = $mod['module'];
-		}
-		$modules = $modules_new;
 	}
 	
 	switch ($type) {
@@ -10292,6 +10267,7 @@ function reporting_get_agentmodule_sla_working_timestamp ($period, $date_end, $w
 }
 
 function reporting_label_macro ($item, $label) {
+	
 	switch ($item['type']) {
 		case 'event_report_agent':
 		case 'alert_report_agent':
@@ -10317,7 +10293,6 @@ function reporting_label_macro ($item, $label) {
 				$label = str_replace("_address_", $agent_name, $label);
 			}
 			break;
-    		case 'automatic_graph':
 		case 'simple_graph':
 		case 'module_histogram_graph':
 		case 'custom_graph':
@@ -10337,6 +10312,7 @@ function reporting_label_macro ($item, $label) {
 		case 'TTO':
 		case 'MTBF':
 		case 'MTTR':
+		case 'automatic_graph':
 			if (preg_match("/_agent_/", $label)) {
 				$agent_name = agents_get_alias($item['id_agent']);
 				$label = str_replace("_agent_", $agent_name, $label);

@@ -660,6 +660,28 @@ function ui_print_os_icon ($id_os, $name = true, $return = false,
 	return $output;
 }
 
+function ui_print_type_agent_icon ( $id_os = false, $remote_contact = false, $contact = false, 
+						$return = false, $remote = 0, $version = ""){
+
+	if($id_os == 19){
+		//Satellite
+		$options['title'] = __('Satellite');
+		$output = html_print_image("images/op_satellite.png", true, $options, false, false, false, true);
+	}
+	else if ($remote_contact == $contact && $remote == 0 && $version == ""){
+		//Network
+		$options['title'] = __('Network');
+		$output = html_print_image("images/network.png", true, $options, false, false, false, true);
+	}
+	else{
+		//Software
+		$options['title'] = __('Software');
+		$output = html_print_image("images/data.png", true, $options, false, false, false, true);
+	}
+
+	return $output;
+}
+
 /**
  * Prints an agent name with the correct link
  * 

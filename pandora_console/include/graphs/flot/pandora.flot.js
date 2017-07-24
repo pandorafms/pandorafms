@@ -614,10 +614,10 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
 	legend = legend.split(separator);
 	acumulate_data = acumulate_data.split(separator);
 	datacolor = datacolor.split(separator);
-	if (full_legend != "") {
+	if (full_legend != false) {
 		full_legend = full_legend.split(separator);
 	}
-	console.log(full_legend);
+	
 	// Check possible adapt_keys on classes
 	check_adaptions(graph_id);
 
@@ -706,13 +706,18 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
 				var year = dateObj.getUTCFullYear();
 					newdate = year + "/" + month + "/" + day;
 			}
-			
+
 			if(!to){
 				to= '23:59';
 			}
 
 			if (full_legend != "") {
-				window.location='index.php?sec=eventos&sec2=operation/events/events&id_agent='+id_agent+'&date_from='+newdate+'&time_from='+from+'&date_to='+newdate2+'&time_to='+to+'&status=-1';
+				if (newdate2 == undefined) {
+					window.location='index.php?sec=eventos&sec2=operation/events/events&id_agent='+id_agent+'&date_from='+newdate+'&time_from='+from+'&status=-1';
+				}
+				else {
+					window.location='index.php?sec=eventos&sec2=operation/events/events&id_agent='+id_agent+'&date_from='+newdate+'&time_from='+from+'&date_to='+newdate2+'&time_to='+to+'&status=-1';
+				}
 			}
 			else {
 				window.location='index.php?sec=eventos&sec2=operation/events/events&id_agent='+id_agent+'&date_from='+newdate+'&time_from='+from+'&date_to='+newdate+'&time_to='+to+'&status=-1';

@@ -932,7 +932,6 @@ function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $
 			$acumulate += $value;
 			$c++;
 			
-			//$return .= "<div id='value_".$i."_$graph_id' class='values_$graph_id' style='color: #000; position:absolute;'>$value</div>";
 			if ($value > $max) {
 				$max = $value;
 			}
@@ -945,6 +944,9 @@ function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $
 	$legend = io_safe_output(implode($separator,$legend));
 	if (!empty($full_legend_date)) {
 		$full_legend_date = io_safe_output(implode($separator,$full_legend_date));
+	}
+	else {
+		$full_legend_date = false;
 	}
 	$acumulate_data = io_safe_output(implode($separator,$acumulate_data));
 	

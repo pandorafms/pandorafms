@@ -3780,6 +3780,7 @@ function reporting_get_event_histogram ($events, $text_header_event = false) {
 				);
 		}
 	}
+	
 	$table = new stdClass();
 	if (!$text_header_event) {
 		$table->width = '100%';
@@ -3834,6 +3835,136 @@ function reporting_get_event_histogram ($events, $text_header_event = false) {
 		$table->class='tactical_view';
 		$event_graph = '<fieldset id="event_tactical" class="tactical_set">' . 
 					html_print_table($table, true) . '</fieldset>';
+	}
+	
+	return $event_graph;
+}
+
+function reporting_get_event_histogram_meta ($width) {
+	global $config;
+	if (!defined("METACONSOLE")) {
+		include_once ($config['homedir'] .'/include/graphs/functions_gd.php');
+	}
+	else {
+		include_once ('../../include/graphs/functions_gd.php');
+	}
+
+	$period = SECONDS_1HOUR;
+
+	if (!$text_header_event) {
+		$text_header_event = __('Events info (1hr.)');
+	}
+
+	$ttl = 1;
+	$urlImage = ui_get_full_url(false, true, false, false);
+	
+	$data = array ();
+	
+	$resolution = $config['graph_res'] * ($period * 2 / $width); // Number of "slices" we want in graph
+
+	$interval = (int) ($period / $resolution);
+	$date = get_system_time ();
+	$datelimit = $date - $period;
+	$periodtime = floor ($period / $interval);
+	$time = array ();
+	$data = array ();
+	$legend = array();
+	$full_legend = array();
+	$full_legend_date = array();
+
+	$colors = array(
+		EVENT_CRIT_MAINTENANCE => COL_MAINTENANCE,
+		EVENT_CRIT_INFORMATIONAL => COL_INFORMATIONAL,
+		EVENT_CRIT_NORMAL => COL_NORMAL,
+		EVENT_CRIT_MINOR => COL_MINOR,
+		EVENT_CRIT_WARNING => COL_WARNING,
+		EVENT_CRIT_MAJOR => COL_MAJOR,
+		EVENT_CRIT_CRITICAL => COL_CRITICAL
+	);
+
+	$cont = 0;
+	for ($i = 0; $i < $interval; $i++) {
+		$bottom = $datelimit + ($periodtime * $i);
+		if (! $graphic_type) {
+			if ($config['flash_charts']) {
+				$name = date('H:i:s', $bottom);
+			}
+			else {
+				$name = date('H\h', $bottom);
+			}
+		}
+		else {
+			$name = $bottom;
+		}
+		
+		// Show less values in legend
+		if ($cont == 0 or $cont % 2)
+			$legend[$cont] = $name;
+		
+		if ($from_agent_view) {
+			$full_date = date('Y/m/d', $bottom);
+			$full_legend_date[$cont] = $full_date;
+		}
+
+		$full_legend[$cont] = $name;
+		
+		$top = $datelimit + ($periodtime * ($i + 1));
+		$event = db_get_row_filter ('tmetaconsole_event',
+			array (
+				'utimestamp > '.$bottom,
+				'utimestamp < '.$top), 
+				'criticity, utimestamp');
+		
+		if (!empty($event['utimestamp'])) {
+			$data[$cont]['utimestamp'] = $periodtime;
+			switch ($event['criticity']) {
+				case EVENT_CRIT_WARNING:
+					$data[$cont]['data'] = 2;
+					break;
+				case EVENT_CRIT_CRITICAL:
+					$data[$cont]['data'] = 3;
+					break;
+				default:
+					$data[$cont]['data'] = 1;
+					break;
+			}
+		}
+		else {
+			$data[$cont]['utimestamp'] = $periodtime;
+			$data[$cont]['data'] = 1;
+		}
+		$cont++;
+	}
+	
+	$table = new stdClass();
+
+	$table->width = '100%';
+
+	$table->data = array ();
+	$table->size = array ();
+	$table->head = array ();
+	$table->title = '<span>' . $text_header_event . '</span>';
+	$table->data[0][0] = "" ;
+	
+	if (!empty($data)) {
+		$slicebar = flot_slicesbar_graph($data, $period, "100%", 30, $full_legend, $colors, $config['fontpath'], $config['round_corner'], $url, '', '', false, 0, $full_legend_date);
+		
+		$table->data[0][0] = $slicebar;
+	}
+	else {
+		$table->data[0][0] = __('No events');
+	}
+	
+	if (!$text_header_event) {
+		$event_graph = '<fieldset class="databox tactical_set">
+					<legend>' .
+						$text_header_event .
+					'</legend>' .
+					html_print_table($table, true) . '</fieldset>';
+	}
+	else {
+		$table->class = 'noclass';
+		$event_graph = html_print_table($table, true);
 	}
 	
 	return $event_graph;

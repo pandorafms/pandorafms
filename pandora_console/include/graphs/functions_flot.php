@@ -846,7 +846,7 @@ function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $lon
 	return $return;
 }
 
-function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $colors, $fontpath, $round_corner, $homeurl, $watermark = '', $adapt_key = '', $stat_win = false, $id_agent = 0) {
+function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $colors, $fontpath, $round_corner, $homeurl, $watermark = '', $adapt_key = '', $stat_win = false, $id_agent = 0, $full_legend_date = array()) {
 	global $config;
 	
 	include_javascript_dependencies_flot_graph();
@@ -943,6 +943,9 @@ function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $
 	$labels = implode($separator,$labels);
 	$datacolor = implode($separator,$datacolor);
 	$legend = io_safe_output(implode($separator,$legend));
+	if (!empty($full_legend_date)) {
+		$full_legend_date = io_safe_output(implode($separator,$full_legend_date));
+	}
 	$acumulate_data = io_safe_output(implode($separator,$acumulate_data));
 	
 	// Store data series in javascript format
@@ -966,7 +969,7 @@ function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $
 	// Javascript code
 	$return .= "<script type='text/javascript'>";
 	$return .= "//<![CDATA[\n";
-	$return .= "pandoraFlotSlicebar('$graph_id', '$values', '$datacolor', '$labels', '$legend', '$acumulate_data', $intervaltick, false, $max, '$separator', '$separator2', '', $id_agent)";
+	$return .= "pandoraFlotSlicebar('$graph_id', '$values', '$datacolor', '$labels', '$legend', '$acumulate_data', $intervaltick, false, $max, '$separator', '$separator2', '', $id_agent, '$full_legend_date')";
 	$return .= "\n//]]>";
 	$return .= "</script>";
 	

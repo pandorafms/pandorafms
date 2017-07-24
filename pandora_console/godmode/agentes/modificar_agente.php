@@ -488,6 +488,7 @@ if ($agents !== false) {
 		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=os&sort=up&disabled=$disabled">' . html_print_image("images/sort_up.png", true, array("style" => $selectOsUp)) . '</a>' .
 		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=os&sort=down&disabled=$disabled">' . html_print_image("images/sort_down.png", true, array("style" => $selectOsDown)) . '</a>';
 	echo "</th>";
+	echo "<th>".__('Type'). "</th>";
 	echo "<th>".__('Group'). ' ' .
 			'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=group&sort=up&disabled=$disabled">' . html_print_image("images/sort_up.png", true, array("style" => $selectGroupUp)) . '</a>' .
 			'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=group&sort=down&disabled=$disabled">' . html_print_image("images/sort_down.png", true, array("style" => $selectGroupDown)) . '</a>';
@@ -606,6 +607,14 @@ if ($agents !== false) {
 		echo "<td class='$tdcolor' align='left' valign='middle'>";
 		ui_print_os_icon ($agent["id_os"], false);
 		echo "</td>";
+		
+		// Type agent (Networt, Software or Satellite)
+		echo "<td class='$tdcolor' align='left' valign='middle'>";
+		echo ui_print_type_agent_icon ($agent["id_os"], $agent['ultimo_contacto_remoto'], 
+								$agent['ultimo_contacto'], $agent['remote'], $agent['agent_version']);
+		echo "</td>";		
+
+
 		// Group icon and name
 		echo "<td class='$tdcolor' align='left' valign='middle'>" . ui_print_group_icon ($id_grupo, true)."</td>";
 		// Description

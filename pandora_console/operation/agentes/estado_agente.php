@@ -466,7 +466,10 @@ else {
 			'unknown_count',
 			'notinit_count',
 			'total_count',
-			'fired_count'),
+			'fired_count',
+			'ultimo_contacto_remoto',
+			'remote',
+			'agent_version'),
 		$access,
 		$order);
 }
@@ -498,11 +501,11 @@ $table->head[1] = __('Description'). ' ' .
 
 $table->size[1] = "16%";
 
-$table->head[9] = __('Remote'). ' ' .
+$table->head[10] = __('Remote'). ' ' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=remote&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectRemoteUp, "alt" => "up"))  . '</a>' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=remote&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectRemoteDown, "alt" => "down")) . '</a>';
 
-$table->size[9] = "9%";
+$table->size[10] = "9%";
 
 $table->head[2] = __('OS'). ' ' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=os&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectOsUp, "alt" => "up"))  . '</a>' .
@@ -517,21 +520,24 @@ $table->size[3] = "10%";
 $table->head[4] = __('Group'). ' ' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=group&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectGroupUp, "alt" => "up")) . '</a>' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=group&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectGroupDown, "alt" => "down")) . '</a>';
-$table->size[4] = "15%";
+$table->size[4] = "8%";
 
-$table->head[5] = __('Modules');
-$table->size[5] = "10%";
+$table->head[5] = __('Type');
+$table->size[5] = "8%";
 
-$table->head[6] = __('Status');
-$table->size[6] = "4%";
+$table->head[6] = __('Modules');
+$table->size[6] = "10%";
 
-$table->head[7] = __('Alerts');
+$table->head[7] = __('Status');
 $table->size[7] = "4%";
 
-$table->head[8] = __('Last contact'). ' ' .
+$table->head[8] = __('Alerts');
+$table->size[8] = "4%";
+
+$table->head[9] = __('Last contact'). ' ' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=last_contact&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectLastContactUp, "alt" => "up")) . '</a>' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=last_contact&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectLastContactDown, "alt" => "down")) . '</a>';
-$table->size[8] = "15%";
+$table->size[9] = "15%";
 
 $table->align = array ();
 
@@ -542,9 +548,9 @@ $table->align[5] = "left";
 $table->align[6] = "left";
 $table->align[7] = "left";
 $table->align[8] = "left";
+$table->align[9] = "left";
 
 $table->style = array();
-//$table->style[0] = 'width: 15%';
 
 $table->data = array ();
 
@@ -584,14 +590,14 @@ foreach ($agents as $agent) {
 	
 	$data[1] = ui_print_truncate_text($agent["description"], 'description', false, true, true, '[&hellip;]', 'font-size: 6.5pt');
 	
-	$data[9] = "";
+	$data[10] = "";
 	
 	if (enterprise_installed()) {
 		enterprise_include_once('include/functions_config_agents.php');
 		
 		if (enterprise_hook('config_agents_has_remote_configuration',array($agent["id_agente"]))) {
 	
-	$data[9] = html_print_image("images/application_edit.png", true, array("align" => 'middle', "title" => __('Remote config')));
+	$data[10] = html_print_image("images/application_edit.png", true, array("align" => 'middle', "title" => __('Remote config')));
 		
 		}
 	}
@@ -602,14 +608,18 @@ foreach ($agents as $agent) {
 	
 	$data[4] = ui_print_group_icon ($agent["id_grupo"], true);
 	$agent['not_init_count'] = $agent['notinit_count'];
-	$data[5] = reporting_tiny_stats($agent, true, 'modules', ':', $strict_user);
+
+	$data[5] = ui_print_type_agent_icon ($agent["id_os"], $agent['ultimo_contacto_remoto'], 
+											$agent['ultimo_contacto'], $agent['remote'], 
+											$agent['agent_version']);
+
+	$data[6] = reporting_tiny_stats($agent, true, 'modules', ':', $strict_user);
+
+	$data[7] = $status_img;
 	
+	$data[8] = $alert_img;
 	
-	$data[6] = $status_img;
-	
-	$data[7] = $alert_img;
-	
-	$data[8] = agents_get_interval_status ($agent);
+	$data[9] = agents_get_interval_status ($agent);
 	
 	// This old code was returning "never" on agents without modules, BAD !!
 	// And does not print outdated agents in red. WRONG !!!!

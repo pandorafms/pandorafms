@@ -3918,11 +3918,32 @@ function reporting_get_event_histogram_meta ($width) {
 		if (!empty($event['utimestamp'])) {
 			$data[$cont]['utimestamp'] = $periodtime;
 			switch ($event['criticity']) {
-				case EVENT_CRIT_WARNING:
-					$data[$cont]['data'] = 2;
+				case 0:
+					$data[$cont]['data'] = EVENT_CRIT_MAINTENANCE;
 					break;
-				case EVENT_CRIT_CRITICAL:
-					$data[$cont]['data'] = 3;
+				case 1:
+					$data[$cont]['data'] = EVENT_CRIT_INFORMATIONAL;
+					break;
+				case 2:
+					$data[$cont]['data'] = EVENT_CRIT_NORMAL;
+					break;
+				case 3:
+					$data[$cont]['data'] = EVENT_CRIT_WARNING;
+					break;
+				case 4:
+					$data[$cont]['data'] = EVENT_CRIT_CRITICAL;
+					break;
+				case 5:
+					$data[$cont]['data'] = EVENT_CRIT_MINOR;
+					break;
+				case 6:
+					$data[$cont]['data'] = EVENT_CRIT_MAJOR;
+					break;
+				case 20:
+					$data[$cont]['data'] = EVENT_CRIT_NOT_NORMAL;
+					break;
+				case 34:
+					$data[$cont]['data'] = EVENT_CRIT_WARNING_OR_CRITICAL;
 					break;
 				default:
 					$data[$cont]['data'] = 1;

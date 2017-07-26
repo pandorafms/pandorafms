@@ -1124,8 +1124,8 @@ switch ($action) {
 							$values['treport_custom_sql_id'] = get_parameter('id_custom');
 							if ($values['treport_custom_sql_id'] == 0) {
 								$values['external_source'] = get_parameter('sql');
-								$values['historical_db'] = get_parameter('historical_db_check');
 							}
+							$values['historical_db'] = get_parameter('historical_db_check');
 						}
 						else if ($values['type'] == 'url') {
 							$values['external_source'] = get_parameter('url');
@@ -1213,7 +1213,6 @@ switch ($action) {
 									}
 									break;
 							}
-							
 							
 							$resultOperationDB = db_process_sql_update(
 								'treport_content',
@@ -1446,8 +1445,8 @@ switch ($action) {
 							$values['treport_custom_sql_id'] = get_parameter('id_custom');
 							if ($values['treport_custom_sql_id'] == 0) {
 								$values['external_source'] = get_parameter('sql');
-								$values['historical_db'] = get_parameter('historical_db_check');
 							}
+							$values['historical_db'] = get_parameter('historical_db_check');
 						}
 						elseif ($values['type'] == 'url') {
 							$values['external_source'] = get_parameter('url');

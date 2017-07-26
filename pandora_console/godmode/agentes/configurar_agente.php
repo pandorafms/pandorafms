@@ -1010,14 +1010,26 @@ if ($update_module || $create_module) {
 				$new_configuration_data .= "$line\n";
 			}
 		}
+
+		$values_macros = array();
+		$values_macros['macros'] = base64_encode(json_encode($macros));
+
+		$macros_for_data = enterprise_hook(
+		'config_agents_get_macros_data_conf', array($values_macros));
+	
+		if ($macros_for_data != '') {
+			$_new_configuration_data = str_replace('module_end',
+				$macros_for_data . "module_end", $_new_configuration_data);
+		}
 		
+		/*
 		$macros_for_data = enterprise_hook('config_agents_get_macros_data_conf', array($_POST));
 		
 		if ($macros_for_data !== ENTERPRISE_NOT_HOOK && $macros_for_data != '') {
 			// Add macros to configuration file
 			$new_configuration_data = str_replace('module_end', $macros_for_data."module_end", $new_configuration_data);
 		}
-		
+		*/
 		$configuration_data = $new_configuration_data;
 	}
 	

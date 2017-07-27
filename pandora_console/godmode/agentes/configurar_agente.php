@@ -1000,7 +1000,7 @@ if ($update_module || $create_module) {
 		
 		$macros = io_json_mb_encode($macros);
 		
-		$conf_array = explode("\n",$configuration_data);
+		$conf_array = explode("\n", io_safe_output($configuration_data));
 		foreach ($conf_array as $line) {
 			if (preg_match("/^module_name\s*(.*)/", $line, $match)) {
 				$new_configuration_data .= "module_name $name\n";
@@ -1010,16 +1010,15 @@ if ($update_module || $create_module) {
 				$new_configuration_data .= "$line\n";
 			}
 		}
-
+		
 		$values_macros = array();
-		$values_macros['macros'] = base64_encode(json_encode($macros));
-
+		$values_macros['macros'] = base64_encode($macros);
+		
 		$macros_for_data = enterprise_hook(
 		'config_agents_get_macros_data_conf', array($values_macros));
-	
+
 		if ($macros_for_data != '') {
-			$_new_configuration_data = str_replace('module_end',
-				$macros_for_data . "module_end", $_new_configuration_data);
+			$new_configuration_data = str_replace('module_end', $macros_for_data . "module_end", $new_configuration_data);
 		}
 		
 		/*
@@ -1030,7 +1029,10 @@ if ($update_module || $create_module) {
 			$new_configuration_data = str_replace('module_end', $macros_for_data."module_end", $new_configuration_data);
 		}
 		*/
-		$configuration_data = $new_configuration_data;
+		$configuration_data = str_replace('\\', "&#92;",
+			io_safe_input($new_configuration_data));;
+
+		html_debug($configuration_data, true);
 	}
 	
 	// Services are an enterprise feature, 

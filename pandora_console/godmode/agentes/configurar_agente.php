@@ -1001,9 +1001,10 @@ if ($update_module || $create_module) {
 		$macros = io_json_mb_encode($macros);
 		
 		$conf_array = explode("\n", io_safe_output($configuration_data));
+		
 		foreach ($conf_array as $line) {
 			if (preg_match("/^module_name\s*(.*)/", $line, $match)) {
-				$new_configuration_data .= "module_name $name\n";
+				$new_configuration_data .= "module_name " . io_safe_output($name) . "\n";
 			}
 			// We delete from conf all the module macros starting with _field
 			else if(!preg_match("/^module_macro_field.*/", $line, $match)) {

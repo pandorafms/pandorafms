@@ -4160,3 +4160,24 @@ div#footer_help{
 #div_all_events_24h{
 	padding: 4px;
 }
+
+/*styles graph conteiner*/
+.graph_conteiner_inside > .parent_graph{
+	width: 100% !important;
+}
+
+.graph_conteiner_inside > .parent_graph > .menu_graph{
+	left: 90% !important;
+}
+
+.graph_conteiner_inside > .parent_graph > .noresizevc{
+	width: 90% !important;	
+}
+
+.graph_conteiner_inside > div > .nodata_container > .nodata_text {
+	display: none;
+}
+
+.graph_conteiner_inside > div > .nodata_container{
+	background-size: 120px 80px !important;	
+}

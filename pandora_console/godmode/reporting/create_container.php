@@ -41,7 +41,7 @@ if (is_ajax()){
         $id_agent = get_parameter('id_agent');
         $id_agent_module = get_parameter('id_agent_module');
         $time_lapse = get_parameter('time_lapse');
-        $only_avg = (int) get_parameter('only_avg');
+        $only_avg = (bool) get_parameter('only_avg');
         
         $values = array(
             'id_container' => $id_container2,
@@ -76,6 +76,7 @@ if (is_ajax()){
         $agent_alias = get_parameter('agent_alias','');
 		$module_name = get_parameter('module_name','');
 		$tag = get_parameter('tag',0);
+        $only_avg = (bool) get_parameter('only_avg');
 
 		$values = array(
     		'id_container' => $id_container2,
@@ -85,8 +86,8 @@ if (is_ajax()){
         	'id_module_group' => $module_group,
 			'agent' => $agent_alias,
 			'module' => $module_name,
-        	'id_tag' => $tag);
-		
+        	'id_tag' => $tag,
+            'only_average' => $only_avg);
 		$id_item = db_process_sql_insert('tcontainer_item', $values);
 		return;
 	}
@@ -433,7 +434,13 @@ if($edit_container){
     	$tag, '', __('Any'), 0, true, false, false);
     $table->data[] = $data;
     $table->rowclass[] = '';
-
+    
+    $data = array();
+    $data[0] =  __('Only average');
+    $data[1] = html_print_checkbox('only_avg', 1, false,true);
+    $table->data[] = $data;
+    $table->rowclass[] = '';
+     
     $data = array();
     $data[0] = "";
     $data[1] = "<input style='float:right;' type=submit name='add_dynamic' class='sub add' value='".__('Add item')."'>";
@@ -592,6 +599,7 @@ echo html_print_input_hidden('id_agent', 0);
 			var group = $("#container_id_group1").val();
 			var module_group = $("#combo_modulegroup").val();
 			var tag = $("#tag").val();
+            var only_avg = $("#checkbox-only_avg1").prop("checked");
 	        var id_container = <?php echo $id_container; ?>;
             jQuery.post ("ajax.php",
     			{"page" : "godmode/reporting/create_container",
@@ -603,6 +611,7 @@ echo html_print_input_hidden('id_agent', 0);
 				"module_name" : module_name,
 				"tag" : tag,
             	"id_container" : id_container,
+                "only_avg" : only_avg,
     			},
             	function (data, status) {
                 	var url = location.href.replace('&update_container=1', "");

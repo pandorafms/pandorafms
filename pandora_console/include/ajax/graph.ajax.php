@@ -162,12 +162,12 @@ if ($get_graphs){
 							tagente_modulo WHERE id_agente_modulo = ". $value['id_agent_module']);
 						$sql_alias = db_get_all_rows_sql("SELECT alias from tagente 
 							WHERE id_agente = ". $sql_modulo[0]['id_agente']);
-						$table .= "<div style='width: 800px'><h4>AGENT " .$sql_alias[0]['alias']." MODULE ".$sql_modulo[0]['nombre']."</h4><hr></div>";
+						$table .= "<div style='width: 90%'><h4>AGENT " .$sql_alias[0]['alias']." MODULE ".$sql_modulo[0]['nombre']."</h4><hr></div>";
 						$table .= grafico_modulo_sparse(
 							$value['id_agent_module'],
 							$value['time_lapse'],
 							0,
-							800,
+							1000,
 							300,
 							'',
 							'',
@@ -225,11 +225,11 @@ if ($get_graphs){
 						} else {
 							$height = 300;
 						}
-						$table .= "<div style='width: 800px'><h4>CUSTOM GRAPH ".$graph[0]['name']."</h4><hr></div>";
+						$table .= "<div style='width: 90%'><h4>".$graph[0]['name']."</h4><hr></div>";
 						$table .= graphic_combined_module($modules,
 							$weights,
 							$value['time_lapse'],
-							800,
+							1000,
 							$height,
 							'',
 							'',
@@ -259,8 +259,10 @@ if ($get_graphs){
 					}
 					break;
 				case 'dynamic_graph':
-					$alias = " AND alias like '%".io_safe_output($value['agent'])."%'";
-					
+					if($value['agent'] != ''){
+						$alias = " AND alias REGEXP '".$value['agent']."'";
+					}
+
 					if($value['id_group'] === '0'){
 						$id_group = "";
 					} else {
@@ -281,8 +283,10 @@ if ($get_graphs){
 						$id_tag = " AND ttag_module.id_tag = ".$value['id_tag'];
 					}
 					
-					$module_name = " AND nombre like '%".io_safe_output($value['module'])."%'";
-					
+					if($value['module'] != ''){
+						$module_name = " AND nombre REGEXP '".$value['module']."'";
+					}
+
 					$id_agent_module = db_get_all_rows_sql("SELECT tagente_modulo.id_agente_modulo FROM tagente_modulo 
 						". $tag . "WHERE  1=1" . $id_module_group  . $module_name .
 						" AND id_agente IN (SELECT id_agente FROM tagente WHERE 1=1" .$alias.$id_group.")" 
@@ -296,13 +300,13 @@ if ($get_graphs){
 							$sql_alias2 = db_get_all_rows_sql("SELECT alias from tagente 
 								WHERE id_agente = ". $sql_modulo2[0]['id_agente']);
 								
-							$table .= "<div style='width: 800px'><h4>AGENT " .$sql_alias2[0]['alias']." MODULE ".$sql_modulo2[0]['nombre']."</h4><hr></div>";
+							$table .= "<div style='width: 90%'><h4>AGENT " .$sql_alias2[0]['alias']." MODULE ".$sql_modulo2[0]['nombre']."</h4><hr></div>";
 							
 							$table .= grafico_modulo_sparse(
 								$value2['id_agente_modulo'],
 								$value['time_lapse'],
 								0,
-								800,
+								1000,
 								300,
 								'',
 								'',

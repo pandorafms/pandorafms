@@ -1351,6 +1351,16 @@ CREATE TABLE IF NOT EXISTS `tcontainer` (
 
 INSERT INTO `tcontainer` SET `name` = 'Default graph container';
 
+-- ----------------------------------------------------------------------
+-- Table `treset_pass_history`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `treset_pass_history` (
+	`id` int(10) unsigned NOT NULL auto_increment,
+	`id_user` varchar(60) NOT NULL,
+	`reset_moment` date default NULL,
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 -- ---------------------------------------------------------------------
 -- Table `tcontainer_item`
 -- ---------------------------------------------------------------------

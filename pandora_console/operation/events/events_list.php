@@ -543,8 +543,6 @@ $table_advanced->rowclass[] = '';
 $data = array();
 $data[0] = __('Date from') . $jump;
 
-//~ $user_users = users_get_user_users($config['id_user'], "ER", users_can_manage_group_all());
-
 $data[0] .= html_print_input_text ('date_from', $date_from, '', 15, 10, true);
 
 $data[1] = __('Date to') . $jump;
@@ -613,7 +611,7 @@ $data = array();
 $data[0] = __('Group') . $jump;
 
 $data[0] .= html_print_select_groups($config["id_user"], $access, true, 
-	'id_group', $id_group, '', '', 0, true, false, false, 'w130', false, false, false, false, 'id_grupo', $strict_user). $jump;
+	'id_group', $id_group, '', '', 0, true, false, false, '', false, false, false, false, 'id_grupo', $strict_user). $jump;
 //**********************************************************************
 // TODO
 // This code is disabled for to enabled in Pandora 5.1

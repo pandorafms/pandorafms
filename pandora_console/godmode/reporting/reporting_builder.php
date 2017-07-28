@@ -430,7 +430,7 @@ switch ($action) {
 		$table_aux->colspan[0][0] = 4;
 		$table_aux->data[0][0] = "<b>". __("Group") . "</b>";
 		
-		$table_aux->data[0][1] = html_print_select_groups(false, $access, true, 'id_group', $id_group, '', '', '', true, false, true, '', false, 'width:150px', false, false, 'id_grupo', $strict_user). '<br>';
+		$table_aux->data[0][1] = html_print_select_groups(false, $access, true, 'id_group', $id_group, '', '', '', true, false, true, '', false, "", false, false, 'id_grupo', $strict_user). '<br>';
 		
 		$table_aux->data[0][2] = "<b>". __("Free text for search: ") . ui_print_help_tip(
 		__('Search by report name or description, list matches.'),true) . "</b>";
@@ -1124,8 +1124,8 @@ switch ($action) {
 							$values['treport_custom_sql_id'] = get_parameter('id_custom');
 							if ($values['treport_custom_sql_id'] == 0) {
 								$values['external_source'] = get_parameter('sql');
-								$values['historical_db'] = get_parameter('historical_db_check');
 							}
+							$values['historical_db'] = get_parameter('historical_db_check');
 						}
 						else if ($values['type'] == 'url') {
 							$values['external_source'] = get_parameter('url');
@@ -1213,7 +1213,6 @@ switch ($action) {
 									}
 									break;
 							}
-							
 							
 							$resultOperationDB = db_process_sql_update(
 								'treport_content',
@@ -1446,8 +1445,8 @@ switch ($action) {
 							$values['treport_custom_sql_id'] = get_parameter('id_custom');
 							if ($values['treport_custom_sql_id'] == 0) {
 								$values['external_source'] = get_parameter('sql');
-								$values['historical_db'] = get_parameter('historical_db_check');
 							}
+							$values['historical_db'] = get_parameter('historical_db_check');
 						}
 						elseif ($values['type'] == 'url') {
 							$values['external_source'] = get_parameter('url');

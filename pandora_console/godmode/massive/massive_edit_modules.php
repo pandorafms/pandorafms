@@ -496,7 +496,7 @@ $table->data['edit3'][0] = __('Post process') .
 	ui_print_help_icon ('postprocess', true);
 	
 $table->data['edit3'][1] = html_print_extended_select_for_post_process('post_process',
-	0, '', 0, '', false, true, 'width:150px;', true);
+	-1, '','', 0, false, true, 'width:150px;', true, false, 1);
 			
 $table->data['edit3'][2] = __('SMNP community');
 $table->data['edit3'][3] = html_print_input_text ('snmp_community', '',
@@ -1151,6 +1151,11 @@ function process_manage_edit ($module_name, $agents_select = null) {
 			case 'plugin_pass':
 				if ($value != '') {
 					$values['plugin_pass'] = io_input_password($value);
+				}
+				break;
+			case 'post_process':
+				if($value !== '-1'){
+					$values['post_process'] = $value;
 				}
 				break;
 			default:

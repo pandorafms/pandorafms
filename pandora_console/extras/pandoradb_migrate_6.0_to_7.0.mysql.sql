@@ -181,6 +181,20 @@ CREATE TABLE IF NOT EXISTS `tpolicy_agents` (
 	UNIQUE (`id_policy`, `id_agent`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
+-- -----------------------------------------------------
+-- Table `tpolicy_groups`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tpolicy_groups` (
+	`id` int(10) unsigned NOT NULL auto_increment,
+	`id_policy` int(10) unsigned default '0',
+	`id_group` int(10) unsigned default '0',
+	`policy_applied` tinyint(1) unsigned default '0',
+	`pending_delete` tinyint(1) unsigned default '0',
+	`last_apply_utimestamp` int(10) unsigned NOT NULL default 0,
+	PRIMARY KEY  (`id`),
+	UNIQUE (`id_policy`, `id_group`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
 -- ---------------------------------------------------------------------
 -- Table `tdashboard`
 -- ---------------------------------------------------------------------
@@ -710,6 +724,7 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	`module_names` TEXT,
 	`module_free_text` TEXT,
 	`each_agent` tinyint(1) default 1,
+	`historical_db` tinyint(1) UNSIGNED NOT NULL default 0,
 	PRIMARY KEY(`id_rc`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -1135,10 +1150,10 @@ ALTER TABLE titem MODIFY `source_data` int(10) unsigned;
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('big_operation_step_datos_purge', '100');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('small_operation_step_datos_purge', '1000');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('days_autodisable_deletion', '30');
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 1);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 4);
 UPDATE tconfig SET value = 'https://licensing.artica.es/pandoraupdate7/server.php' WHERE token='url_update_manager';
 DELETE FROM `tconfig` WHERE `token` = 'current_package_enterprise';
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '704');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '708');
 
 -- ---------------------------------------------------------------------
 -- Table `tplanned_downtime_agents`
@@ -1167,6 +1182,7 @@ ALTER TABLE tevent_filter ADD COLUMN `date_to` date DEFAULT NULL;
 ALTER TABLE tusuario ADD COLUMN `id_filter` int(10) UNSIGNED NULL DEFAULT NULL;
 ALTER TABLE tusuario ADD CONSTRAINT `fk_id_filter` FOREIGN KEY (`id_filter`) REFERENCES tevent_filter(`id_filter`) ON DELETE SET NULL;
 ALTER TABLE tusuario ADD COLUMN `session_time` int(10) signed NOT NULL default '0';
+alter table tusuario add autorefresh_white_list text not null default '';
 
 -- ---------------------------------------------------------------------
 -- Table `tagente_modulo`
@@ -1335,6 +1351,16 @@ CREATE TABLE IF NOT EXISTS `tcontainer` (
 
 INSERT INTO `tcontainer` SET `name` = 'Default graph container';
 
+-- ----------------------------------------------------------------------
+-- Table `treset_pass_history`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `treset_pass_history` (
+	`id` int(10) unsigned NOT NULL auto_increment,
+	`id_user` varchar(60) NOT NULL,
+	`reset_moment` date default NULL,
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 -- ---------------------------------------------------------------------
 -- Table `tcontainer_item`
 -- ---------------------------------------------------------------------
@@ -1370,6 +1396,12 @@ CREATE TABLE IF NOT EXISTS `treset_pass` (
 UPDATE tgis_map_connection SET conection_data = '{"type":"OSM","url":"http://tile.openstreetmap.org/${z}/${x}/${y}.png"}' where id_tmap_connection = 1;
 
 ALTER TABLE tpolicy_modules MODIFY post_process double(24,15) default 0;
+
+-- ---------------------------------------------------------------------
+-- Table `tserver_export`
+-- ---------------------------------------------------------------------
+
+ALTER TABLE tserver_export MODIFY `name` varchar(600) BINARY NOT NULL default '';
 
 -- ---------------------------------------------------------------------
 -- Table `tgraph_source` column 'id_server'

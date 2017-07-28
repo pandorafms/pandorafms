@@ -84,7 +84,46 @@ function visual_map_main() {
 	//Fixed to wait the load of images.
 	$(window).load(function() {
 		
+
+		$('#module').change(function(){
+			var txt = $("#module").val();
+			if(selectedItem == 'simple_value' || creationItem == 'simple_value'){
+				$.ajax({
+				async:false,
+				type: "POST",
+				url: "ajax.php",
+				data: {"page" : "general/check_image_module",
+					"get_image" : txt,
+					},
+				success: function(data) {				
+					if(data == 0){
+						$("#data_image_check").html('Off');
+						$('#data_image_container').css('display','none');	
+						$('#data_image_check').css('display','none');
+						$('#data_image_check_label').css('display','none');
+						$('.block_tinymce').remove();
+						$('#process_value_row').css('display','table-row');
+						if($('#process_value').val() != '0'){
+								$('#period_row').css('display','table-row');
+						}					
+						}
+					else{
+						$('#data_image_container').css('display','inline');	
+						$('#data_image_check').css('display','inline');
+						$('#data_image_check_label').css('display','inline');
+						$("#data_image_check").html('On');
+						$('#process_value_row').css('display','none');
+						$('#period_row').css('display','none');
+						$('#text-label_ifr').contents().find('#tinymce').html('_VALUE_');
+						$('.block_tinymce').remove();
+						$('#label_row').append('<div class="block_tinymce" style="background-color:#fbfbfb;position:absolute;left:0px;height:230px;width:100%;opacity:0.7;z-index:5;"></div>');
+					}
+				}
+			});	
+		}
+		});
 		
+
 		// Begin - Background label color changer
 				
 		$( "#text-label_ifr" ).contents().find( "body" ).bind("contextmenu", function(e) {
@@ -360,10 +399,32 @@ function update_button_palette_callback() {
 			setModuleGraph(idItem);
 			break;
 		case 'simple_value':
-			$("#text_" + idItem).html(values['label']);
+		//checkpoint
+			if(($('#text-label_ifr').contents().find('#tinymce p').html() == '_VALUE_' || 
+			$('#text-label_ifr').contents().find('#tinymce').html() == '_VALUE_') 
+			&& $('#data_image_check').html() != 'On'){
+					alert('_VALUE_ exactly value is only enable for data image. Please change label text or select a data image module.');
+					return;
+			}
+			$("#" + idItem).html(values['label']);
+			if(values['label'].replace( /<.*?>/g, '' ) == '_VALUE_'){
+				$("#text_" + idItem).html('<img style="width:'+values['width_data_image']+'px;" src="images/console/signes/data_image.png">');
+				$("#" + idItem).html('<img style="width:'+values['width_data_image']+'px;" src="images/console/signes/data_image.png">');
+			}
+			else{
+				$("#text_" + idItem).html(
+					'<table><tbody><tr><td></td></tr><tr><td><span style="" id="text_21" class="text">'+values["label"]+'</span></td></tr><tr><td></td></tr></tbody></table>'
+				)
+				$("#" + idItem).html(
+					'<table><tbody><tr><td></td></tr><tr><td><span style="" id="text_21" class="text">'+values["label"]+'</span></td></tr><tr><td></td></tr></tbody></table>'
+				)
+				
+			}
+		
+			
 			//$("#simplevalue_" + idItem)
 				//.html($('<img></img>').attr('src', "images/spinner.gif"));
-			setModuleValue(idItem,values['process_simple_value'], values['period']);
+			setModuleValue(idItem,values['process_simple_value'], values['period'],values['width']);
 			break;
 		case 'label':
 			$("#text_" + idItem).html(values['label']);
@@ -510,7 +571,16 @@ function readFields() {
 	values['process_simple_value'] = $("select[name=process_value]").val();
 	values['background'] = $("#background_image").val();
 	values['period'] = undefined != $("#hidden-period").val() ? $("#hidden-period").val() : $("#period").val();
+	if (values['period'] == null) {
+		values['period'] = undefined != $("#hidden-period").val() ? $("#hidden-period").val() : $("#period_select").val();
+	}
 	values['width'] = $("input[name=width]").val();
+	values['width_data_image'] = $("#data_image_width").val();
+	if(selectedItem == 'simple_value' || creationItem == 'simple_value'){
+		if(values['width_data_image'] != 0){
+			values['width'] = values['width_data_image'];
+		}
+	}
 	values['height'] = $("input[name=height]").val();
 	values['parent'] = $("select[name=parent]").val();
 	values['map_linked'] = $("select[name=map_linked]").val();
@@ -563,14 +633,14 @@ function create_button_palette_callback() {
 	var validate = true;
 	switch (creationItem) {
 		case 'box_item':
-		if (($("input[name='width_box']").val() == '')) {
-			alert('Undefined width');
-			validate = false;
-		}
-		if (($("input[name='height_box']").val() == '')) {
-			alert('Undefined height');
-			validate = false;
-		}
+			if (($("input[name='width_box']").val() == '')) {
+				alert('Undefined width');
+				validate = false;
+			}
+			if (($("input[name='height_box']").val() == '')) {
+				alert('Undefined height');
+				validate = false;
+			}
 			break;
 		case 'group_item':
 		case 'static_graph':
@@ -630,7 +700,7 @@ function create_button_palette_callback() {
 				validate = false;
 			}
 			break;
-		case 'module_graph':		
+		case 'module_graph':
 			if (values['width_module_graph'] == '') {
 				alert('Undefined width');
 				validate = false;
@@ -678,6 +748,7 @@ function create_button_palette_callback() {
 				create_line('step_1', values);
 				break;
 			default:
+			
 				insertDB(creationItem, values);
 				break;
 		}
@@ -956,6 +1027,14 @@ function toggle_item_palette() {
 				$( "#text-label_ifr" ).contents().find( "body" ).css("background","lightgray");
 								
 	}
+	
+	if(creationItem != 'simple_value'){
+		$("#data_image_check").html('Off');
+		$("#data_image_check").css('display','none');
+		$("#data_image_check_label").css('display','none');
+		$("#data_image_container").css('display','none');	
+		$('.block_tinymce').remove();			
+	}	
 }
 
 function fill_parent_select(id_item) {
@@ -1518,7 +1597,6 @@ function set_static_graph_status(idElement, image, status) {
 			data: parameter,
 			success: function (data) {
 				set_static_graph_status(idElement, image, data);
-				
 				if($('#'+idElement+' table').css('float') == 'right' || $('#'+idElement+ ' table').css('float') == 'left'){
 					$('#'+idElement+ ' img').css('margin-top', parseInt($('#'+idElement).css('height'))/2 - parseInt($('#'+idElement+ ' img').css('height'))/2);	
 				}
@@ -1554,7 +1632,6 @@ function set_static_graph_status(idElement, image, status) {
 			suffix = ".png";
 			break;
 	}
-
 	set_image("image", idElement, image  + suffix);
 }
 
@@ -1678,12 +1755,13 @@ function setModuleGraph(id_data) {
 
 }
 
-function setModuleValue(id_data, process_simple_value, period) {
+function setModuleValue(id_data, process_simple_value, period,width_data_image) {
 	var parameter = Array();
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "get_module_value"});
 	parameter.push ({name: "id_element", value: id_data});
 	parameter.push ({name: "period", value: period});
+	parameter.push ({name: "width", value: width_data_image});
 	parameter.push ({name: "id_visual_console", value: id_visual_console});
 	if (process_simple_value != undefined) {
 		parameter.push ({name: "process_simple_value", value: process_simple_value});
@@ -1695,7 +1773,9 @@ function setModuleValue(id_data, process_simple_value, period) {
 		type: "POST",
 		dataType: 'json',
 		success: function (data) {
-			var currentValue = $("#text_" + id_data).html();
+			
+				var currentValue = $("#text_" + id_data).html();
+			
 			//currentValue = currentValue.replace(/_VALUE_/gi, data.value);
 			$("#text_" + id_data).html(currentValue);
 			//$("#text_" + id_data).html('Data value');
@@ -2025,6 +2105,10 @@ function createItem(type, values, id_data) {
 				if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
 					$image.attr('width', '70')
 						.attr('height', '70');
+				}
+				else{
+					$image.attr('width', $('#preview > img')[0].naturalWidth)
+						.attr('height', $('#preview > img')[0].naturalHeight);
 				}			
 			}
 			else {
@@ -2206,10 +2290,14 @@ function createItem(type, values, id_data) {
 		case 'simple_value':
 			sizeStyle = '';
 			imageSize = '';
+			if($('#data_image_check').html() == 'On'){
+				values['label'] = '<img style="width:'+$('#data_image_width').val()+'px;" src="images/console/signes/data_image.png">';
+							
+			}
 			item = $('<div id="' + id_data + '" class="item simple_value" style="position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
 					'<span id="text_' + id_data + '" class="text"> ' + values['label'] + '</span> ' + '</div>'
 			);
-			setModuleValue(id_data,values.process_simple_value,values.period);
+			setModuleValue(id_data,values.process_simple_value,values.period,values.width_data_image);
 			break;
 		case 'label':
 			item = $('<div id="' + id_data + '" ' +
@@ -2289,6 +2377,7 @@ function addItemSelectParents(id_data, text) {
 }
 
 function insertDB(type, values) {
+	
 	metaconsole = $("input[name='metaconsole']").val();
 
 	$("#saving_in_progress_dialog").dialog({
@@ -2421,7 +2510,7 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 			if (type == 'simple_value') {
 				setModuleValue(idElement,
 					values.process_simple_value,
-						values.period);
+						values.period,values.width_data_image);
 			}
 			
 			
@@ -2900,6 +2989,39 @@ function eventsItems(drag) {
 		if ((!is_opened_palette) && (autosave)) {
 			toggle_item_palette();
 		}
+		
+		if(selectedItem == 'simple_value'){
+			$('#data_image_width').val(event.currentTarget.clientWidth);			
+			var found = $('#'+idItem).find("img");
+					
+			if(found.length > 0){
+				$("#data_image_check").css('display','inline');
+				$("#data_image_check_label").css('display','inline');	
+				$('#data_image_container').css('display','inline');		
+				$("#data_image_check").html('On');
+				$('.block_tinymce').remove();
+				$('#label_row').append('<div class="block_tinymce" style="background-color:#fbfbfb;position:absolute;left:0px;height:230px;width:100%;opacity:0.7;z-index:5;"></div>');
+				$('#process_value_row').css('display','none');
+				$('#period_row').css('display','none');
+			}
+			else{
+				$("#data_image_check").html('Off');
+				$("#data_image_check").css('display','none');
+				$("#data_image_check_label").css('display','none');
+				$('#data_image_container').css('display','none');
+				$('.block_tinymce').remove();
+				$('#process_value_row').css('display','table-row');
+				if($('#process_value').val() != 0){
+					$('#period_row').css('display','table-row');		
+				}
+			}
+		}
+		else{
+			$("#data_image_check").css('display','none');
+			$("#data_image_check_label").css('display','none');
+			$('#data_image_container').css('display','none');
+		}	
+		
 	});
 
 	//Set the limit of draggable in the div with id "background" and set drag
@@ -3224,6 +3346,7 @@ function click_button_toolbox(id) {
 			$("#period_row." + id).css('display', 'none');
 			break;
 		case 'label':
+			$("#data_image_width").val(100);
 			toolbuttonActive = creationItem = 'label';
 			toggle_item_palette();
 			break;

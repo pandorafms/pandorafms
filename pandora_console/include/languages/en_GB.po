@@ -16547,7 +16547,7 @@ msgid "Without protocol and port"
 msgstr "Without protocol and port"
 
 #: ../../godmode/setup/setup_ehorus.php:87
-msgid "e.g., switch.ehorus.com"
+msgid "e.g., portal.ehorus.com"
 msgstr "e.g., switch.eHorus.com"
 
 #: ../../godmode/setup/setup_ehorus.php:92

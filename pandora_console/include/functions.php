@@ -1796,26 +1796,6 @@ function check_acl($id_user, $id_group, $access, $onlyOneGroup = false) {
 		$id_group = (int) $id_group;
 	}
 	
-	if($_SESSION['check_acl'] != null){
-		if (empty ($_SESSION['check_acl']))
-			return 0;
-		
-		$result = 0;
-		$acl_column = get_acl_column($access);
-		foreach ($_SESSION['check_acl'] as $row) {
-			// For each profile for this pair of group and user do...
-			if (isset($row[$acl_column])) {
-				$result += $row[$acl_column];
-			}
-		}
-		
-		if ($result >= 1) {
-			return 1;
-		}
-		
-		return 0;
-	}
-	
 	$parents_id = array($id_group);
 	if ($id_group != 0 && $onlyOneGroup !== true) {
 		$group = db_get_row_filter('tgrupo', array('id_grupo' => $id_group));
@@ -1864,12 +1844,7 @@ function check_acl($id_user, $id_group, $access, $onlyOneGroup = false) {
 				OR tusuario_perfil.id_grupo = 0)", $id_user, implode(', ', $parents_id));
 	}
 	
-	
-	
-	
 	$rowdup = db_get_all_rows_sql ($query);
-	
-	$_SESSION['check_acl'] = $rowdup;
 	
 	if (empty ($rowdup))
 		return 0;

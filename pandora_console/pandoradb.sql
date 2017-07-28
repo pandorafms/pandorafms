@@ -1144,6 +1144,16 @@ CREATE TABLE IF NOT EXISTS `tuser_double_auth` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------------------------------------------------
+-- Table `treset_pass_history`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `treset_pass_history` (
+	`id` int(10) unsigned NOT NULL auto_increment,
+	`id_user` varchar(60) NOT NULL,
+	`reset_moment` datetime not null default 0,
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
 -- Table `tnews`
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tnews` (
@@ -2166,6 +2176,20 @@ CREATE TABLE IF NOT EXISTS `tpolicy_agents` (
 	`last_apply_utimestamp` int(10) unsigned NOT NULL default 0,
 	PRIMARY KEY  (`id`),
 	UNIQUE (`id_policy`, `id_agent`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+-- -----------------------------------------------------
+-- Table `tpolicy_groups`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tpolicy_groups` (
+	`id` int(10) unsigned NOT NULL auto_increment,
+	`id_policy` int(10) unsigned default '0',
+	`id_group` int(10) unsigned default '0',
+	`policy_applied` tinyint(1) unsigned default '0',
+	`pending_delete` tinyint(1) unsigned default '0',
+	`last_apply_utimestamp` int(10) unsigned NOT NULL default 0,
+	PRIMARY KEY  (`id`),
+	UNIQUE (`id_policy`, `id_group`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- ---------------------------------------------------------------------

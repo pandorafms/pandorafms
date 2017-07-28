@@ -94,7 +94,7 @@ echo "</div>";
 				},
 			success: function(data) {
 				$("#div_"+hash).remove(); 
-				$("#tgl_div_"+hash).prepend("<div id='div_"+hash+"' style='width: 100%;padding-left: 63px; padding-top: 7px;'>"+data+"</div>");
+				$("#tgl_div_"+hash).prepend("<div id='div_"+hash+"' class='graph_conteiner_inside' style='width: 99%;padding-left: 63px; padding-top: 7px;'>"+data+"</div>");
 				
 				if($('div[class *= graph]').length == 0  && $('div[class *= bullet]').length == 0 && $('div[id *= gauge_]').length == 0){
 					$("#div_"+hash).remove();

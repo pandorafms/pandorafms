@@ -608,13 +608,16 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 	}
 }
 
-function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumulate_data, intervaltick, water_mark, maxvalue, separator, separator2, graph_javascript, id_agent) {
+function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumulate_data, intervaltick, water_mark, maxvalue, separator, separator2, graph_javascript, id_agent, full_legend) {
 	values = values.split(separator2);
 	labels = labels.split(separator);
 	legend = legend.split(separator);
 	acumulate_data = acumulate_data.split(separator);
 	datacolor = datacolor.split(separator);
-
+	if (full_legend != false) {
+		full_legend = full_legend.split(separator);
+	}
+	
 	// Check possible adapt_keys on classes
 	check_adaptions(graph_id);
 
@@ -719,25 +722,43 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
 			}
 		});
 
-		$('#'+graph_id).bind('plotclick', function(event, pos, item) {
-			if (item) {
-				//from time
-				var from = legend[item.seriesIndex];
-				//to time
-				var to = legend[item.seriesIndex+1];
-				//current date
-				var dateObj = new Date();
-				var month = dateObj.getUTCMonth() + 1; //months from 1-12
-				var day = dateObj.getUTCDate();
-				var year = dateObj.getUTCFullYear();
-					newdate = year + "/" + month + "/" + day;
-
-				if(!to){
-					to= '23:59';
-				}
-				window.location='index.php?sec=eventos&sec2=operation/events/events&id_agent='+id_agent+'&date_from='+newdate+'&time_from='+from+'&date_to='+newdate+'&time_to='+to+'&status=-1';
-			}
-		});
+    	$('#'+graph_id).bind('plotclick', function(event, pos, item) {
+    		if (item) {
+    			//from time
+    			var from = legend[item.seriesIndex];
+    			//to time
+    			var to = legend[item.seriesIndex+1];
+    			//current date
+    			var dateObj = new Date();
+    
+    			if (full_legend != "") {
+    				newdate = full_legend[item.seriesIndex];
+    				newdate2 = full_legend[item.seriesIndex+1];
+    			}
+    			else {
+    				var month = dateObj.getUTCMonth() + 1; //months from 1-12
+    				var day = dateObj.getUTCDate();
+    				var year = dateObj.getUTCFullYear();
+    					newdate = year + "/" + month + "/" + day;
+    			}
+    
+    			if(!to){
+    				to= '23:59';
+    			}
+    
+    			if (full_legend != "") {
+    				if (newdate2 == undefined) {
+    					window.location='index.php?sec=eventos&sec2=operation/events/events&id_agent='+id_agent+'&date_from='+newdate+'&time_from='+from+'&status=-1';
+    				}
+    				else {
+    					window.location='index.php?sec=eventos&sec2=operation/events/events&id_agent='+id_agent+'&date_from='+newdate+'&time_from='+from+'&date_to='+newdate2+'&time_to='+to+'&status=-1';
+    				}
+    			}
+    			else {
+    				window.location='index.php?sec=eventos&sec2=operation/events/events&id_agent='+id_agent+'&date_from='+newdate+'&time_from='+from+'&date_to='+newdate+'&time_to='+to+'&status=-1';
+    			}
+    		}
+    	});
 
 		$('#'+graph_id).bind('mouseout',resetInteractivity);
 	}

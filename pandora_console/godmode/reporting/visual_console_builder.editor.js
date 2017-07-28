@@ -580,8 +580,10 @@ function readFields() {
 	}
 	values['width'] = $("input[name=width]").val();
 	values['width_data_image'] = $("#data_image_width").val();
-	if(values['width_data_image'] != 0 && values['width_data_image'] != undefined){
-		values['width'] = values['width_data_image'];
+	if(selectedItem == 'simple_value' || creationItem == 'simple_value'){
+		if(values['width_data_image'] != 0){
+			values['width'] = values['width_data_image'];
+		}
 	}
 	values['height'] = $("input[name=height]").val();
 	values['parent'] = $("select[name=parent]").val();
@@ -3079,7 +3081,7 @@ function eventsItems(drag) {
 		}
 		
 		if(selectedItem == 'simple_value'){
-			
+			$('#data_image_width').val(event.currentTarget.clientWidth);			
 			var found = $('#'+idItem).find("img");
 					
 			if(found.length > 0){
@@ -3441,6 +3443,7 @@ function click_button_toolbox(id) {
 			$("#period_row." + id).css('display', 'none');
 			break;
 		case 'label':
+			$("#data_image_width").val(100);
 			toolbuttonActive = creationItem = 'label';
 			toggle_item_palette();
 			break;

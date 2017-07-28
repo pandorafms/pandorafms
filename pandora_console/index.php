@@ -584,6 +584,13 @@ if (! isset ($config['id_user'])) {
 				$res = update_user_password ($id_user, $pass1);
 				if ($res) {
 					$correct_reset_pass_process = __('Password changed successfully');
+
+					$values = array();
+					$values['id_user'] = $id_user;
+					$reset_pass_moment = new DateTime('now');
+					$reset_pass_moment = $reset_pass_moment->format("Y-m-d H:i:s");
+					$values['reset_moment'] = $reset_pass_moment;
+					db_process_sql_insert('treset_pass_history', $values);
 				}
 				else {
 					$process_error_message = __('Failed to change password');
@@ -641,7 +648,7 @@ if (! isset ($config['id_user'])) {
 
 								if (!$check_user) {
 									$reset = false;
-									$error = __('User doesn\'t exist in database');
+									$error = __('Error in reset password request');
 									$show_error = true;
 								}
 								else {

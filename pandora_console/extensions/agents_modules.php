@@ -528,24 +528,24 @@ function mainAgentsModules() {
 					echo '<a href="javascript:'.$link.'">';
 					switch ($status) {
 						case AGENT_MODULE_STATUS_NORMAL:
-							ui_print_status_image ('module_ok.png', modules_get_last_value($module_id), false, array('width' => '20px', 'height' => '20px'));
+							ui_print_status_image ('module_ok.png', modules_get_last_value($module_id), false);
 							break;
 						case AGENT_MODULE_STATUS_CRITICAL_BAD:
-							ui_print_status_image ('module_critical.png', modules_get_last_value($module_id), false, array('width' => '20px', 'height' => '20px'));
+							ui_print_status_image ('module_critical.png', modules_get_last_value($module_id), false);
 							break;
 						case AGENT_MODULE_STATUS_WARNING:
-							ui_print_status_image ('module_warning.png', modules_get_last_value($module_id), false, array('width' => '20px', 'height' => '20px'));
+							ui_print_status_image ('module_warning.png', modules_get_last_value($module_id), false);
 							break;
 						case AGENT_MODULE_STATUS_UNKNOWN:
-							ui_print_status_image ('module_unknown.png', modules_get_last_value($module_id), false, array('width' => '20px', 'height' => '20px'));
+							ui_print_status_image ('module_unknown.png', modules_get_last_value($module_id), false);
 							break;
 						case AGENT_MODULE_STATUS_NORMAL_ALERT:
 						case AGENT_MODULE_STATUS_WARNING_ALERT:
 						case AGENT_MODULE_STATUS_CRITICAL_ALERT:
-							ui_print_status_image ('module_alertsfired.png', modules_get_last_value($module_id), false, array('width' => '20px', 'height' => '20px'));
+							ui_print_status_image ('module_alertsfired.png', modules_get_last_value($module_id), false);
 							break;
 						case 4:
-							ui_print_status_image ('module_no_data.png', modules_get_last_value($module_id), false, array('width' => '20px', 'height' => '20px'));
+							ui_print_status_image ('module_no_data.png', modules_get_last_value($module_id), false);
 							break;
 					}
 					echo '</a>';

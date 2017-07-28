@@ -3679,6 +3679,108 @@ function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $ho
 	}
 }
 
+/**
+ * Print a static graph with event data of agents
+ * 
+ * @param integer id_agent Agent ID
+ * @param integer width pie graph width
+ * @param integer height pie graph height
+ * @param integer period time period
+ * @param string homeurl
+ * @param bool return or echo the result
+ */
+function graph_graphic_moduleevents ($id_agent, $id_module, $width, $height, $period = 0, $homeurl, $return = false) {
+	global $config;
+	global $graphic_type;
+	
+	$data = array ();
+	
+	$resolution = $config['graph_res'] * ($period * 2 / $width); // Number of "slices" we want in graph
+	$interval = (int) ($period / $resolution);
+	$date = get_system_time ();
+	$datelimit = $date - $period;
+	$periodtime = floor ($period / $interval);
+	$time = array ();
+	$data = array ();
+	$legend = array();
+	$full_legend = array();
+	
+	$cont = 0;
+	for ($i = 0; $i < $interval; $i++) {
+		$bottom = $datelimit + ($periodtime * $i);
+		if (! $graphic_type) {
+			if ($config['flash_charts']) {
+				$name = date('H:i:s', $bottom);
+			}
+			else {
+				$name = date('H\h', $bottom);
+			}
+		}
+		else {
+			$name = $bottom;
+		}
+		
+		// Show less values in legend
+		if ($cont == 0 or $cont % 2)
+			$legend[$cont] = $name;
+		
+		$full_legend[$cont] = $name;
+		
+		$top = $datelimit + ($periodtime * ($i + 1));
+
+		$event = db_get_row_filter ('tevento',
+			array ('id_agente' => $id_agent,
+				'id_agentmodule' => $id_module,
+				'utimestamp > '.$bottom,
+				'utimestamp < '.$top), 'criticity, utimestamp');
+
+		if (!empty($event['utimestamp'])) {
+			$data[$cont]['utimestamp'] = $periodtime;
+			switch ($event['criticity']) {
+				case EVENT_CRIT_WARNING:
+					$data[$cont]['data'] = 2;
+					break;
+				case EVENT_CRIT_CRITICAL:
+					$data[$cont]['data'] = 3;
+					break;
+				default:
+					$data[$cont]['data'] = 1;
+					break;
+			}
+		}
+		else {
+			$data[$cont]['utimestamp'] = $periodtime;
+			$data[$cont]['data'] = 1;
+		}
+		$cont++;
+	}
+	
+	$colors = array(1 => COL_NORMAL, 2 => COL_WARNING, 3 => COL_CRITICAL, 4 => COL_UNKNOWN);
+	
+	// Draw slicebar graph
+	if ($config['flash_charts']) {
+		$out = flot_slicesbar_graph($data, $period, $width, $height, $full_legend, $colors, $config['fontpath'], $config['round_corner'], $homeurl, '', '', false, $id_agent);
+	}
+	else {
+		$out = slicesbar_graph($data, $period, $width, $height, $colors, $config['fontpath'], $config['round_corner'], $homeurl);
+		
+		// Draw legend
+		$out .=  "<br>";
+		$out .=  "&nbsp;";
+		foreach ($legend as $hour) {
+			$out .=  "<span style='font-size: 6pt'>" . $hour . "</span>";
+			$out .=  "&nbsp;";
+		}
+	}
+	
+	if ($return) {
+		return $out;
+	}
+	else {
+		echo $out;
+	}
+}
+
 // Prints an error image
 function fs_error_image ($width = 300, $height = 110) {
 	global $config;

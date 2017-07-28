@@ -152,6 +152,11 @@ foreach ($layoutDatas as $layoutData) {
 				html_print_image('images/chart_curve.png', true,
 					array('title' => __('Module Graph')));
 			break;
+		case AUTO_SLA_GRAPH:
+			$table->data[$i + 1]['icon'] =
+				html_print_image('images/auto_sla_graph.png', true,
+					array('title' => __('Auto SLA Graph')));
+			break;
 		case SIMPLE_VALUE:
 			$table->data[$i + 1]['icon'] =
 				html_print_image('images/binary.png', true,
@@ -465,6 +470,7 @@ foreach ($layoutDatas as $layoutData) {
 	switch ($layoutData['type']) {
 		case LINE_ITEM:
 		case BOX_ITEM:
+		case AUTO_SLA_GRAPH:
 			$table->data[$i + 2][4] = "";
 			break;
 		default:

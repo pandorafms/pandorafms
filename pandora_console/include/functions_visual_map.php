@@ -156,6 +156,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 				$wimg ='70';
 				break;
 			case 3:
+			case 14:
 				if (get_parameter('action') == 'edit') {
 					$himg = '30';
 					$wimg = '150';
@@ -377,6 +378,9 @@ function visual_map_print_item($mode = "read", $layoutData,
 				}
 				
 				break;
+			case AUTO_SLA_GRAPH:
+				$link = true;
+				break;
 			default:
 				if (!empty($element_enterprise)) {
 					$link = $element_enterprise['link'];
@@ -391,7 +395,6 @@ function visual_map_print_item($mode = "read", $layoutData,
 				$is_a_service = false;
 				$is_a_link_to_other_visualconsole = false;
 				
-				
 				if (enterprise_installed()) {
 					$id_service = services_service_from_module
 						($layoutData['id_agente_modulo']);
@@ -403,9 +406,6 @@ function visual_map_print_item($mode = "read", $layoutData,
 				if ($layoutData['id_layout_linked'] != 0) {
 					$is_a_link_to_other_visualconsole = true;
 				}
-				
-				
-				
 				
 				if ($is_a_service) {
 					if (empty($layoutData['id_metaconsole'])) {
@@ -458,6 +458,36 @@ function visual_map_print_item($mode = "read", $layoutData,
 				}
 				
 				
+				break;
+			case AUTO_SLA_GRAPH:
+				$e_period = $layoutData['period'];
+				$date = get_system_time ();
+				$datelimit = $date - $e_period;
+				
+				$time_format = "Y/m/d H:i:s";
+				
+				$timestamp_init = date($time_format, $datelimit);
+				$timestamp_end = date($time_format, $date);
+
+				$timestamp_init_aux = explode(" ", $timestamp_init);
+				$timestamp_end_aux = explode(" ", $timestamp_end);
+
+				$date_from = $timestamp_init_aux[0];
+				$time_from = $timestamp_init_aux[1];
+
+				$date_to = $timestamp_end_aux[0];
+				$time_to = $timestamp_end_aux[1];
+
+				if (empty($layout_data['id_metaconsole'])) {
+					$url = $config['homeurl'] . "index.php?sec=eventos&sec2=operation/events/events&id_agent=" . $layoutData['id_agent'] . 
+						"&module_search_hidden=" . $layoutData['id_agente_modulo'] . "&date_from=" . $date_from . "&time_from=" . $time_from . 
+						"&date_to=" . $date_to . "&time_to=" . $time_to . "&status=-1";
+				}
+				else {
+					$url = "index.php?sec=eventos&sec2=operation/events/events&id_agent=" . $layoutData['id_agent'] . 
+						"&module_search_hidden=" . $layoutData['id_agente_modulo'] . "&date_from=" . $date_from . "&time_from=" . $time_from . 
+						"&date_to=" . $date_to . "&time_to=" . $time_to . "&status=-1";
+				}
 				break;
 			case GROUP_ITEM:
 				$is_a_link_to_other_visualconsole = false;
@@ -1037,8 +1067,6 @@ function visual_map_print_item($mode = "read", $layoutData,
 				metaconsole_restore_db();
 			}
 
-			//$img = str_replace('>', 'class="image" id="image_' . $id . '" />', $img);
-
 			break;
 		case LABEL:
 			$z_index = 4 + 1;
@@ -1046,12 +1074,70 @@ function visual_map_print_item($mode = "read", $layoutData,
 		case BOX_ITEM:
 			$z_index = 1;
 			break;
+		case AUTO_SLA_GRAPH:
+			if ((get_parameter('action') == 'edit') || (get_parameter('operation') == 'edit_visualmap')) {
+				if($width == 0 || $height == 0){
+					if ($layoutData['id_metaconsole'] != 0) {
+						$img =  '<img src="../../images/console/signes/module-events.png">';
+					}
+					else{
+						$img =  '<img src="images/console/signes/module-events.png">';	
+					}
+				}
+				else{
+					if ($layoutData['id_metaconsole'] != 0) {
+						$img =  '<img src="../../images/console/signes/module-events.png" style="width:'.$width.'px;height:'.	$height.'px;">';
+					}
+					else{
+						$img =  '<img src="images/console/signes/module-events.png" style="width:'.$width.'px;height:'.	$height.'px;">';
+					}
+				}
+			}
+			else {
+				if ($width == 0 || $height == 0) {
+					if ($layoutData['label_position']=='left') {
+						$img = '<div style="float:left;height:'.$himg.'px;">' . 
+							$img = graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], 500, 50, $layoutData['period'], '', true);
+					}
+					elseif ($layoutData['label_position']=='right') {
+						$img = '<div style="float:right;height:'.$himg.'px;">' . 
+							$img = graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], 500, 50, $layoutData['period'], '', true);
+					}
+					else {
+						$img = graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], 500, 50, $layoutData['period'], '', true);
+					}
+				}
+				else{
+					if ($layoutData['label_position']=='left') {
+						$img = '<div style="float:left;height:'.$himg.'px;">' . 
+							$img = graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], $width, $height, $layoutData['period'], '', true);
+					}
+					elseif ($layoutData['label_position']=='right') {
+						$img = '<div style="float:right;height:'.$himg.'px;">' . 
+							$img = graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], $width, $height, $layoutData['period'], '', true);
+					}
+					else {
+						$img = graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], $width, $height, $layoutData['period'], '', true);
+					}
+				}
+			}
+		
+			//Restore db connection
+			if ($layoutData['id_metaconsole'] != 0) {
+				metaconsole_restore_db();
+			}
+
+			$z_index = 2 + 1;
+			break;
 	}
 	
 	$class = "item ";
 	switch ($type) {
 		case STATIC_GRAPH:
 			$class .= "static_graph";
+			break;
+		case AUTO_SLA_GRAPH:
+			$class .= "auto_sla_graph";
 			break;
 		case GROUP_ITEM:
 			$class .= "group_item";
@@ -1386,6 +1472,20 @@ function visual_map_print_item($mode = "read", $layoutData,
 				echo io_safe_output($text);
 			}
 			break;
+		case AUTO_SLA_GRAPH:
+			if ($layoutData['label_position']=='up') {
+				echo io_safe_output($text);
+			}
+			
+			echo $img;
+			
+			if ($layoutData['label_position']=='down') {
+				echo io_safe_output($text);
+			}
+			elseif($layoutData['label_position']=='left' || $layoutData['label_position']=='right') {
+				echo io_safe_output($text);
+			}
+			break;
 		case SIMPLE_VALUE:
 		case SIMPLE_VALUE_MAX:
 		case SIMPLE_VALUE_MIN:
@@ -1457,7 +1557,6 @@ function visual_map_print_item($mode = "read", $layoutData,
 				}
 				
 			}
-			
 			
 			//Restore db connection
 			if ($layoutData['id_metaconsole'] != 0) {
@@ -1583,8 +1682,6 @@ function visual_map_get_simple_value_type($process_simple_value) {
 function visual_map_get_simple_value($type, $id_module, $period = SECONDS_1DAY) {
 	global $config;
 	
-	
-	
 	$unit_text = db_get_sql ('SELECT unit
 		FROM tagente_modulo WHERE id_agente_modulo = ' . $id_module);
 	$unit_text = trim(io_safe_output($unit_text));
@@ -1593,8 +1690,6 @@ function visual_map_get_simple_value($type, $id_module, $period = SECONDS_1DAY) 
 		case SIMPLE_VALUE:
 			$value = db_get_value ('datos', 'tagente_estado',
 				'id_agente_modulo', $id_module);
-				
-				
 			if ($value === false) {
 				$value = __('Unknown');
 				
@@ -2768,6 +2863,10 @@ function visual_map_create_internal_name_item($label = null, $type, $image, $age
 			case MODULE_GRAPH:
 				$text = __('Module graph');
 				break;
+			case 'auto_sla_graph':
+			case AUTO_SLA_GRAPH:
+				$text = __('Auto SLA Graph');
+				break;
 			case 'percentile_bar':
 			case PERCENTILE_BAR:
 				$text = __('Percentile bar');
@@ -2878,6 +2977,9 @@ function visual_map_type_in_js($type) {
 			break;
 		case MODULE_GRAPH:
 			return 'module_graph';
+			break;
+		case AUTO_SLA_GRAPH:
+			return 'auto_sla_graph';
 			break;
 		case SIMPLE_VALUE:
 			return 'simple_value';

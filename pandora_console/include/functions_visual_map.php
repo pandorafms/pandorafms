@@ -110,13 +110,11 @@ function visual_map_print_item($mode = "read", $layoutData,
 	$border_color = $layoutData['border_color'];
 	$fill_color = $layoutData['fill_color'];
 	$label_position = $layoutData['label_position'];
-		
+
 	$sizeStyle = '';
 	$borderStyle = '';
 	$imageSize = '';
-	
-	
-	
+
 	if (!empty($proportion)) {
 		$top = $top * $proportion['proportion_height'];
 		$left = $left * $proportion['proportion_width'];
@@ -202,7 +200,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 		$text = '<table style="float:right;height:'.$himg.'px;"><tr><td></td></tr><tr><td><span style="" id="text_' . $id . '" class="text">' . $label .'</span></td></tr><tr><td></td></tr></table>';
 	}
 	else {
-		$text = '<table style="width:'.$wimg.'px;"><tr><td></td></tr><tr><td><span style="" id="text_' . $id . '" class="text">' . $label .'</span></td></tr><tr><td></td></tr></table>';
+		$text = '<table style="text-align:center ;width:'.$wimg.'px;"><tr><td></td></tr><tr><td><span style="" id="text_' . $id . '" class="text">' . $label .'</span></td></tr><tr><td></td></tr></table>';
 	}
 	
 	

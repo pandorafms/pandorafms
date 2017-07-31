@@ -1092,25 +1092,25 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	
 	// Set the title and time format
 	if ($temp_range <= SECONDS_1DAY) {
-		$time_format = 'd.m.Y H:i:s';
+		$time_format = 'Y M d H:i:s';
 	}
 	elseif ($temp_range < SECONDS_15DAYS) {
-		$time_format = 'M d';
+		$time_format = 'Y M d';
 		$time_format_2 = 'H:i';
 		if ($projection != false) {
 			$time_format_2 = 'H\h';
 		}
 	}
 	elseif ($temp_range <= SECONDS_1MONTH) {
-		$time_format = 'M d';
+		$time_format = 'Y M d';
 		$time_format_2 = 'H\h';
 	}
 	elseif ($temp_range <= SECONDS_1MONTH) {
-		$time_format = 'M d';
+		$time_format = 'Y M d';
 		$time_format_2 = 'H\h';
-	} 
+	}
 	elseif ($period < SECONDS_6MONTHS) {
-		$time_format = 'M d';
+		$time_format = 'Y M d';
 		$time_format_2 = 'H\h';
 	}
 	else {
@@ -1382,7 +1382,8 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		
 		// Calculate chart data
 		$last_known = $previous_data;
-		for ($l = 0; $l < $resolution; $l++) {
+
+		for ($l = 0; $l <= $resolution; $l++) {
 			$countAvg ++;
 			
 			$timestamp = $datelimit + ($interval * $l);
@@ -1398,6 +1399,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			// Read data that falls in the current interval
 			$interval_min = $last_known;
 			$interval_max = $last_known;
+			
 			while (isset ($data[$j]) && $data[$j]['utimestamp'] >= $timestamp && $data[$j]['utimestamp'] < ($timestamp + $interval)) {
 				if ($data[$j]['datos'] > $interval_max) {
 					$interval_max = $data[$j]['datos'];

@@ -5846,22 +5846,6 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 						'id_agent_module'=>$graph_item['id_agent_module']);
 			}
 			
-			if($type_report == 'automatic_graph'){
-				$label = (isset($content['style']['label'])) ? $content['style']['label'] : '';
-				if (!empty($label)) {
-					if ($config['metaconsole']) {
-						$id_meta = metaconsole_get_id_server($content["server_name"]);
-						$server = metaconsole_get_connection_by_id ($id_meta);
-						metaconsole_connect($server);
-					}
-					$label = reporting_label_macro($content, $label);
-					
-					if ($config['metaconsole']) {
-						metaconsole_restore_db();
-					}
-				}
-			} 
-			
 			$labels[$graph_item['id_agent_module']] = $label;
 		}
 	}
@@ -5921,7 +5905,6 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 	if ($config['metaconsole'] && $type_report != 'automatic_graph') {
 		metaconsole_restore_db();
 	}
-	
 	
 	return reporting_check_structure_content($return);
 }

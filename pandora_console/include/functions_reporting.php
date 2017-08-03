@@ -5848,7 +5848,6 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 			
 			if($type_report == 'automatic_graph'){
 				$label = (isset($content['style']['label'])) ? $content['style']['label'] : '';
-				
 				if (!empty($label)) {
 					if ($config['metaconsole']) {
 						$id_meta = metaconsole_get_id_server($content["server_name"]);

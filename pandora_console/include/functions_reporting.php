@@ -2447,7 +2447,14 @@ function reporting_database_serialized($report, $content) {
 	$return['agent_name'] = $agent_name;
 	$return['module_name'] = $module_name;
 	
-	
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
+	}
+
 	$datelimit = $report["datetime"] - $content['period'];
 	$search_in_history_db = db_search_in_history_db($datelimit);
 	
@@ -2522,6 +2529,10 @@ function reporting_database_serialized($report, $content) {
 			
 			$data[] = $row;
 		}
+	}
+
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
 	}
 	
 	$return["data"] = $data;

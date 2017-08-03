@@ -585,18 +585,17 @@ if (! isset ($config['id_user'])) {
 				if ($res) {
 					$correct_reset_pass_process = __('Password changed successfully');
 
-					$values = array();
-					$values['id_user'] = $id_user;
-					$reset_pass_moment = new DateTime('now');
-					$reset_pass_moment = $reset_pass_moment->format("Y-m-d H:i:s");
-					$values['reset_moment'] = $reset_pass_moment;
-					db_process_sql_insert('treset_pass_history', $values);
+					register_pass_change_try($id_user, 1);
 				}
 				else {
+					register_pass_change_try($id_user, 0);
+
 					$process_error_message = __('Failed to change password');
 				}
 			}
 			else {
+				register_pass_change_try($id_user, 0);
+
 				$process_error_message = __('Passwords must be the same');
 			}
 			require_once ('general/login_page.php');
@@ -612,6 +611,7 @@ if (! isset ($config['id_user'])) {
 
 				if ($db_reset_pass_entry) {
 					if (($db_reset_pass_entry + SECONDS_2HOUR) < time()) {
+						register_pass_change_try($id_user, 0);
 						$process_error_message = __('Too much time since password change request');
 						delete_reset_pass_entry($id_user);
 						require_once ('general/login_page.php');
@@ -622,6 +622,7 @@ if (! isset ($config['id_user'])) {
 					}
 				}
 				else {
+					register_pass_change_try($id_user, 0);
 					$process_error_message = __('This user has not requested a password change');
 					require_once ('general/login_page.php');
 				}
@@ -648,6 +649,7 @@ if (! isset ($config['id_user'])) {
 
 								if (!$check_user) {
 									$reset = false;
+									register_pass_change_try($user_reset_pass, 0);
 									$error = __('Error in reset password request');
 									$show_error = true;
 								}
@@ -656,6 +658,7 @@ if (! isset ($config['id_user'])) {
 
 									if (!$check_mail) {
 										$reset = false;
+										register_pass_change_try($user_reset_pass, 0);
 										$error = __('This user doesn\'t have a valid email address');
 										$show_error = true;
 									}

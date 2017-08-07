@@ -1418,7 +1418,7 @@ CREATE TABLE IF NOT EXISTS `tserver_export_data` (
 	`id` int(20) unsigned NOT NULL auto_increment,
 	`id_export_server` int(10) unsigned default NULL,
 	`agent_name` varchar(100) NOT NULL default '',
-	`module_name` varchar(100) NOT NULL default '',
+	`module_name` varchar(600) NOT NULL default '',
 	`module_type` varchar(100) NOT NULL default '',
 	`data` varchar(255) default NULL, 
 	`timestamp` datetime NOT NULL default '1970-01-01 00:00:00',

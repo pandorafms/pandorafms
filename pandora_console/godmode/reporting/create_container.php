@@ -76,7 +76,7 @@ if (is_ajax()){
         $agent_alias = get_parameter('agent_alias','');
 		$module_name = get_parameter('module_name','');
 		$tag = get_parameter('tag',0);
-        $only_avg = (bool) get_parameter('only_avg');
+        $only_avg_dyn = get_parameter('only_avg',0);
 
 		$values = array(
     		'id_container' => $id_container2,
@@ -87,7 +87,7 @@ if (is_ajax()){
 			'agent' => $agent_alias,
 			'module' => $module_name,
         	'id_tag' => $tag,
-            'only_average' => $only_avg);
+            'only_average' => $only_avg_dyn);
 		$id_item = db_process_sql_insert('tcontainer_item', $values);
 		return;
 	}

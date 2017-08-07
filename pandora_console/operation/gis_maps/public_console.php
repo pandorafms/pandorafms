@@ -58,7 +58,7 @@ $confMap = gis_get_map_conf($idMap);
 
 // Default open map (used to overwrite unlicensed google map view)
 $confMapDefault = get_good_con();
-$confMapUrlDefault = json_decode($confMapDefault['conection_data'], true)['url'];
+$confMapUrlDefault = json_decode($confMapDefault['conection_data'], true);
 
 $num_baselayer=0;
 // Initialy there is no Gmap base layer.
@@ -77,7 +77,7 @@ if ($confMap !== false) {
 			case 'Gmap':
 				if (!isset($decodeJSON['gmap_key']) || empty($decodeJSON['gmap_key'])) {
 					// If there is not gmap_key, show the default view
-					$baselayers[$num_baselayer]['url'] = $confMapUrlDefault;
+					$baselayers[$num_baselayer]['url'] = $confMapUrlDefault['url'];
 					$baselayers[$num_baselayer]['typeBaseLayer'] = 'OSM';
 				} else {
 					$baselayers[$num_baselayer]['gmap_type'] = $decodeJSON['gmap_type'];
@@ -207,6 +207,7 @@ if ($layers != false) {
 		
 		var new_height = $(document).height();
 		$("#map").css("height", new_height - 60);
+		$("svg[id*=OpenLayers]").css("height", new_height - 60);
 		
 	});
 </script>

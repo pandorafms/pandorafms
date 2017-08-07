@@ -38,9 +38,7 @@ $get_agent_modules_json_by_name = (bool) get_parameter('get_agent_modules_json_b
 
 
 if ($get_agent_modules_json_by_name) {
-	$agent_name = get_parameter('agent_name');
-
-	$agent_id = agents_get_agent_id($agent_name);
+	$agent_id = get_parameter('id_agent');
 
 	$agent_modules = db_get_all_rows_sql("SELECT id_agente_modulo as id_module, nombre as name FROM tagente_modulo
 											WHERE id_agente = " . $agent_id);

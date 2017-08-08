@@ -531,4 +531,14 @@ ui_include_time_picker(true);
 	$(window).resize(function() {
 		$("#field_list").css('height', ($(window).height() - 160) + 'px');
 	});
+	
+	<?php
+	// If the user is not an admin, not allowed to change the time range
+	if (!users_is_admin()) {
+	?>
+		$("#period_select").attr('disabled', 'disabled');
+		
+	<?php
+	}
+	?>
 </script>

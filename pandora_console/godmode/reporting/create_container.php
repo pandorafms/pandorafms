@@ -41,8 +41,13 @@ if (is_ajax()){
         $id_agent = get_parameter('id_agent');
         $id_agent_module = get_parameter('id_agent_module');
         $time_lapse = get_parameter('time_lapse');
-        $only_avg = (bool) get_parameter('only_avg');
-        
+        $only_avg = get_parameter('only_avg');
+        if($only_avg != 'false'){
+            $only_avg = 1;
+        }
+        else{
+            $only_avg = 0;   
+        }
         $values = array(
             'id_container' => $id_container2,
             'type' => "simple_graph",
@@ -76,8 +81,13 @@ if (is_ajax()){
         $agent_alias = get_parameter('agent_alias','');
 		$module_name = get_parameter('module_name','');
 		$tag = get_parameter('tag',0);
-        $only_avg_dyn = get_parameter('only_avg',0);
-
+        $only_avg = get_parameter('only_avg');
+        if($only_avg != 'false'){
+            $only_avg = 1;
+        }
+        else{
+            $only_avg = 0;   
+        }
 		$values = array(
     		'id_container' => $id_container2,
         	'type' => "dynamic_graph",
@@ -87,7 +97,7 @@ if (is_ajax()){
 			'agent' => $agent_alias,
 			'module' => $module_name,
         	'id_tag' => $tag,
-            'only_average' => $only_avg_dyn);
+            'only_average' => $only_avg);
 		$id_item = db_process_sql_insert('tcontainer_item', $values);
 		return;
 	}
@@ -437,7 +447,7 @@ if($edit_container){
     
     $data = array();
     $data[0] =  __('Only average');
-    $data[1] = html_print_checkbox('only_avg', 1, false,true);
+    $data[1] = html_print_checkbox('only_avg_2', 1, false,true);
     $table->data[] = $data;
     $table->rowclass[] = '';
      
@@ -599,7 +609,7 @@ echo html_print_input_hidden('id_agent', 0);
 			var group = $("#container_id_group1").val();
 			var module_group = $("#combo_modulegroup").val();
 			var tag = $("#tag").val();
-            var only_avg = $("#checkbox-only_avg1").prop("checked");
+            var only_avg = $("#checkbox-only_avg_2").prop("checked");
 	        var id_container = <?php echo $id_container; ?>;
             jQuery.post ("ajax.php",
     			{"page" : "godmode/reporting/create_container",

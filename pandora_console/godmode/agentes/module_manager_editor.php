@@ -183,7 +183,7 @@ if ($id_agent_module) {
 	
 	// Security level Could be noAuthNoPriv | authNoPriv | authPriv
 	$snmp3_security_level = $module["custom_string_3"];
-	
+
 	$ip_target = $module['ip_target'];
 	$disabled = $module['disabled'];
 	$id_export = $module['id_export'];

@@ -1528,7 +1528,7 @@ if ($delete_module) { // DELETE agent module !
 		$error++;
 	
 	if (alerts_delete_alert_agent_module(false, 
-			array('id_agente_module' => $id_borrar_modulo)) === false)
+			array('id_agent_module' => $id_borrar_modulo)) === false)
 		$error++;
 	
 	$result = db_process_delete_temp('ttag_module', 'id_agente_modulo',

@@ -193,7 +193,10 @@ if ($id_agent_module) {
 	$id_plugin = $module['id_plugin'];
 	$post_process = $module['post_process'];
 	$prediction_module = $module['prediction_module'];
+	$custom_integer_1 = $module ['custom_integer_1'];
 	$custom_integer_2 = $module ['custom_integer_2'];
+	$custom_string_1 = $module ['custom_string_1'];
+	$custom_string_2 = $module ['custom_string_2'];
 	$max_timeout = $module['max_timeout'];
 	$max_retries = $module['max_retries'];
 	$custom_id = $module['custom_id'];
@@ -301,7 +304,10 @@ else {
 		$quiet_module = 0;
 		$unit = '';
 		$prediction_module = '';
+		$custom_integer_1 = 0;
 		$custom_integer_2 = 0;
+		$custom_string_1 = '';
+		$custom_string_2 = '';
 		$id_plugin = '';
 		$id_export = '';
 		$disabled = "0";
@@ -509,15 +515,18 @@ echo '<h3 id="message" class="error invisible"></h3>';
 
 // TODO: Change to the ui_print_error system
 echo '<form method="post" id="module_form">';
+
 html_print_table ($table_simple);
 
 ui_toggle(html_print_table ($table_advanced, true),
 	__('Advanced options'));
 ui_toggle(html_print_table ($table_macros, true),
 	__('Custom macros') . ui_print_help_icon ('module_macros', true));
-ui_toggle(html_print_table ($table_new_relations, true) .
-	html_print_table ($table_relations, true), __('Module relations'));
 
+if($moduletype != 13){
+	ui_toggle(html_print_table ($table_new_relations, true) .
+		html_print_table ($table_relations, true), __('Module relations'));
+}
 
 // Submit
 echo '<div class="action-buttons" style="width: '.$table_simple->width.'">';
@@ -571,6 +580,9 @@ var no_plugin_lang = "<?php echo __('No plug-in provided') ?>";
 $(document).ready (function () {
 	configure_modules_form ();
 	
+
+
+
 	$("#module_form").submit(function() {
 		if (typeof(check_remote_conf) != 'undefined') { 
 			if (check_remote_conf) {
@@ -619,6 +631,46 @@ $(document).ready (function () {
 	$("#id_module_type").change (function () {
 		checkKeepaliveModule();
 	});
+
 });
+
+function handleFileSelect() {
+	//clear texarea
+	$('#textarea_custom_string_1').empty();
+	$('#mssg_error_div').empty();
+
+	//messages error
+	err_msg_1 = "<?php echo __('The File APIs are not fully supported in this browser.'); ?>";
+	err_msg_2 = "<?php echo __('Couldn`t find the fileinput element.'); ?>";
+	err_msg_3 = "<?php echo __('This browser doesn`t seem to support the files property of file inputs.'); ?>";
+	err_msg_4 = "<?php echo __('Please select a file before clicking Load'); ?>";
+	
+    if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
+    	$('#mssg_error_div').append(err_msg_1);
+    	return;
+    }   
+
+    input = document.getElementById('file-file_html_text');
+
+    if (!input) {
+    	$('#mssg_error_div').append(err_msg_2);
+    }
+    else if (!input.files) {
+    	$('#mssg_error_div').append(err_msg_3);
+    }
+    else if (!input.files[0]) {
+    	$('#mssg_error_div').append(err_msg_4);               
+    }
+    else {
+    	file = input.files[0];
+		fr = new FileReader();
+		fr.onload = receivedText;
+		fr.readAsText(file);
+    }
+}
+
+function receivedText() {
+	document.getElementById('textarea_custom_string_1').appendChild(document.createTextNode(fr.result));
+}  
 /* ]]> */
 </script>

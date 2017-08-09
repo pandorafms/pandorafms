@@ -4187,3 +4187,8 @@ div#footer_help{
 .graph_conteiner_inside > div > .nodata_container{
 	background-size: 120px 80px !important;	
 }
+
+#mssg_error_div{
+	color: red;
+	font-size: 12px;
+}

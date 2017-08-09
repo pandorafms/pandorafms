@@ -972,10 +972,18 @@ if ($update_module || $create_module) {
 		$custom_integer_1_default = $module['custom_integer_1'];
 		$custom_integer_2_default = $module['custom_integer_2'];
 	}
-	$custom_string_1 = (string) get_parameter ('custom_string_1', $custom_string_1_default);
+	
+	if($id_module_type == MODULE_WUX){
+		$custom_string_1 = base64_encode((string) get_parameter ('custom_string_1', $custom_string_1_default));
+		$custom_integer_1 = (int) get_parameter ('custom_integer_1', $custom_integer_1_default);
+	}
+	else{
+		$custom_string_1 = (string) get_parameter ('custom_string_1', $custom_string_1_default);
+		$custom_integer_1 = (int) get_parameter ('prediction_module', $custom_integer_1_default);
+	}
+
 	$custom_string_2 = (string) get_parameter ('custom_string_2', $custom_string_2_default);
 	$custom_string_3 = (string) get_parameter ('custom_string_3', $custom_string_3_default);
-	$custom_integer_1 = (int) get_parameter ('custom_integer_1', $custom_integer_1_default);
 	$custom_integer_2 = (int) get_parameter ('custom_integer_2', $custom_integer_2_default);
 	
 	// Get macros

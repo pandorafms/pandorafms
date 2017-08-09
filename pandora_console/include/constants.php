@@ -311,6 +311,7 @@ define ('MODULE_PLUGIN',		4);
 define ('MODULE_PREDICTION',	5);
 define ('MODULE_WMI',			6);
 define ('MODULE_WEB',			7);
+define ('MODULE_WUX',           8);
 
 /* Type of Modules of Prediction */
 define ('MODULE_PREDICTION_SERVICE',	2);

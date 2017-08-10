@@ -457,7 +457,6 @@ switch ($action) {
 					$values['period'] = $period;
 					$values['width'] = $width;
 				}
-				break;
 			case 'percentile_bar':
 			case 'percentile_item':
 			case 'static_graph':

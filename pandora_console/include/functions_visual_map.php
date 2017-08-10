@@ -1538,7 +1538,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 			if(get_parameter('action') == 'edit'){
 								//html_debug($layoutData);
 				//echo 'Data value';
-				if(strip_tags($io_safe_output_text) != '_VALUE_'){
+				if( (strip_tags($io_safe_output_text) != '_VALUE_') || (strip_tags($io_safe_output_text) != '(_VALUE_)') ){
 					echo $io_safe_output_text;
 				}
 				else{

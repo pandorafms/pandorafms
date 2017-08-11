@@ -560,3 +560,12 @@ enc_dir /usr/share/pandora_server/enc/
 # Go to http://wiki.pandorafms.com/ for more information.
 dynamic_updates 5
 
+# Enable (1) or disable (0) the Pandora FMS WUX Server (PANDORA FMS ENTERPRISE ONLY).
+wuxserver 0
+
+# Host of the Selenium Grid Server.
+#wux_host localhost
+
+# Port of the Selenium Grid Server.
+#wux_port 4444
+

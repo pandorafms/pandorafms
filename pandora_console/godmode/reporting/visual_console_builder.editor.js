@@ -405,12 +405,12 @@ function update_button_palette_callback() {
 			break;
 		case 'simple_value':
 		//checkpoint
-			if(($('#text-label_ifr').contents().find('#tinymce p').html() == '_VALUE_' || 
-			$('#text-label_ifr').contents().find('#tinymce').html() == '_VALUE_') 
-			&& $('#data_image_check').html() != 'On'){
-					alert('_VALUE_ exactly value is only enable for data image. Please change label text or select a data image module.');
-					return;
-			}
+			// if(($('#text-label_ifr').contents().find('#tinymce p').html() == '_VALUE_' || 
+			// $('#text-label_ifr').contents().find('#tinymce').html() == '_VALUE_') 
+			// && $('#data_image_check').html() != 'On'){
+			// 		alert('_VALUE_ exactly value is only enable for data image. Please change label text or select a data image module.');
+			// 		return;
+			// }
 			$("#" + idItem).html(values['label']);
 			if( (values['label'].replace( /<.*?>/g, '' ) != '_VALUE_') 
 				&& (values['label'].replace( /<.*?>/g, '' ) != '(_VALUE_)') ){

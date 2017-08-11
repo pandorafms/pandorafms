@@ -1547,7 +1547,10 @@ function visual_map_print_item($mode = "read", $layoutData,
 								
 				}
 			else{
-				if(strip_tags($io_safe_output_text) != '_VALUE_'){
+				if(strip_tags($io_safe_output_text) == '_VALUE_'){
+					echo str_replace(array('_VALUE_','_value_'), $value, $io_safe_output_text);
+				}
+				elseif(strip_tags($io_safe_output_text) == '(_VALUE_)'){
 					echo str_replace(array('_VALUE_','_value_'), $value, $io_safe_output_text);
 				}
 				else{

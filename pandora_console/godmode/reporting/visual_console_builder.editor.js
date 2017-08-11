@@ -412,7 +412,9 @@ function update_button_palette_callback() {
 					return;
 			}
 			$("#" + idItem).html(values['label']);
-			if(values['label'].replace( /<.*?>/g, '' ) == '_VALUE_'){
+			if( (values['label'].replace( /<.*?>/g, '' ) != '_VALUE_') 
+				&& (values['label'].replace( /<.*?>/g, '' ) != '(_VALUE_)') ){
+
 				$("#text_" + idItem).html('<img style="width:'+values['width_data_image']+'px;" src="images/console/signes/data_image.png">');
 				$("#" + idItem).html('<img style="width:'+values['width_data_image']+'px;" src="images/console/signes/data_image.png">');
 			}
@@ -2751,8 +2753,6 @@ function updateDB(type, idElement , values, event) {
 			update_user_line(type, idElement, top, left);
 			break;
 		default:
-			console.log(values);
-			console.log(idElement);
 			if ((typeof(values['mov_left']) != 'undefined') &&
 				(typeof(values['mov_top']) != 'undefined')) {
 				top = parseInt($("#" + idElement)

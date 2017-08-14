@@ -855,9 +855,6 @@ function config_process_config () {
 		config_update_value ('status_images_set', 'default');
 	}
 
-	if(!isset ($config['autorefresh_white_list'])){
-		config_update_value ('autorefresh_white_list', '');
-	}
 	// Load user session
 	if (isset ($_SESSION['id_usuario']))
 		$config["id_user"] = $_SESSION["id_usuario"];
@@ -1654,6 +1651,10 @@ function config_process_config () {
 
 	if (!isset($config['command_snapshot'])) {
 		config_update_value ('command_snapshot', 1);
+	}
+	
+	if (!isset($config['custom_report_info'])) {
+		config_update_value ('custom_report_info', 1);
 	}
 	
 	// Juanma (06/05/2014) New feature: Custom front page for reports  

@@ -22,8 +22,8 @@
 /**
  * Pandora build version and version 
  */
-$build_version = 'PC170710';
-$pandora_version = 'v7.0NG.705';
+$build_version = 'PC170814';
+$pandora_version = 'v7.0NG.710';
 
 // Do not overwrite default timezone set if defined.
 $script_tz = @date_default_timezone_get();
@@ -252,7 +252,7 @@ if (isset($_POST['vc_refr'])) {
 
 
 //======= Autorefresh code =============================================
-$select = db_process_sql("SELECT value FROM tconfig WHERE token='autorefresh_white_list'");
+$select = db_process_sql("SELECT autorefresh_white_list FROM tusuario WHERE id_user = '" . $config['id_user'] . "'");
 $autorefresh_list = json_decode($select[0]['value']);
 $config['autorefresh_white_list'] = array();
 $config['autorefresh_white_list'] = $autorefresh_list;

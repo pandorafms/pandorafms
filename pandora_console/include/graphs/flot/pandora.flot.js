@@ -608,13 +608,16 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 	}
 }
 
-function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumulate_data, intervaltick, water_mark, maxvalue, separator, separator2, graph_javascript, id_agent) {
+function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumulate_data, intervaltick, water_mark, maxvalue, separator, separator2, graph_javascript, id_agent, full_legend) {
 	values = values.split(separator2);
 	labels = labels.split(separator);
 	legend = legend.split(separator);
 	acumulate_data = acumulate_data.split(separator);
 	datacolor = datacolor.split(separator);
-
+	if (full_legend != false) {
+		full_legend = full_legend.split(separator);
+	}
+	
 	// Check possible adapt_keys on classes
 	check_adaptions(graph_id);
 
@@ -635,7 +638,11 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
 
 	var stack = 0, bars = true, lines = false, steps = false;
 
-	var options = {
+	var regex = /visual_console/;
+	var match = regex.exec(window.location.href);
+
+	if (match == null) {
+		var options = {
 			series: {
 				stack: stack,
 				shadowSize: 0.1,
@@ -662,51 +669,99 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
 				show: false
 				}
 		};
+	}
+	else {
+		var options = {
+			series: {
+				stack: stack,
+				shadowSize: 0.1,
+				color: '#ddd'
+			},
+			grid: {
+				hoverable: false,
+				clickable: false,
+				borderWidth:1,
+				borderColor: '',
+				tickColor: '#fff'
+				},
+			xaxes: [ {
+					tickFormatter: xFormatter,
+					color: '',
+					tickSize: intervaltick,
+					tickLength: 0
+					} ],
+			yaxes: [ {
+					show: false,
+					tickLength: 0
+				}],
+			legend: {
+				show: false
+				}
+		};
+	}
 
 	var plot = $.plot($('#'+graph_id), datas, options );
 
-	// Events
-	$('#'+graph_id).bind('plothover',  function (event, pos, item) {
-		if (item) {
-			var from = legend[item.seriesIndex];
-			var to = legend[item.seriesIndex+1];
+	if (match == null) {
+		// Events
+		$('#'+graph_id).bind('plothover',  function (event, pos, item) {
+			if (item) {
+				var from = legend[item.seriesIndex];
+				var to = legend[item.seriesIndex+1];
 
-			if (to == undefined) {
-				to = '>';
+				if (to == undefined) {
+					to = '>';
+				}
+
+				$('#extra_'+graph_id).text(from+'-'+to);
+				var extra_height = parseInt($('#extra_'+graph_id).css('height').split('px')[0]);
+				var extra_width = parseInt($('#extra_'+graph_id).css('width').split('px')[0]);
+				$('#extra_'+graph_id).css('left',pos.pageX-(extra_width/4)+'px');
+				//$('#extra_'+graph_id).css('top',plot.offset().top-extra_height-5+'px');
+				$('#extra_'+graph_id).show();
 			}
+		});
 
-			$('#extra_'+graph_id).text(from+'-'+to);
-			var extra_height = parseInt($('#extra_'+graph_id).css('height').split('px')[0]);
-			var extra_width = parseInt($('#extra_'+graph_id).css('width').split('px')[0]);
-			$('#extra_'+graph_id).css('left',pos.pageX-(extra_width/4)+'px');
-			//$('#extra_'+graph_id).css('top',plot.offset().top-extra_height-5+'px');
-			$('#extra_'+graph_id).show();
-		}
-	});
+    	$('#'+graph_id).bind('plotclick', function(event, pos, item) {
+    		if (item) {
+    			//from time
+    			var from = legend[item.seriesIndex];
+    			//to time
+    			var to = legend[item.seriesIndex+1];
+    			//current date
+    			var dateObj = new Date();
+    
+    			if (full_legend != "") {
+    				newdate = full_legend[item.seriesIndex];
+    				newdate2 = full_legend[item.seriesIndex+1];
+    			}
+    			else {
+    				var month = dateObj.getUTCMonth() + 1; //months from 1-12
+    				var day = dateObj.getUTCDate();
+    				var year = dateObj.getUTCFullYear();
+    					newdate = year + "/" + month + "/" + day;
+    			}
+    
+    			if(!to){
+    				to= '23:59';
+    			}
+    
+    			if (full_legend != "") {
+    				if (newdate2 == undefined) {
+    					window.location='index.php?sec=eventos&sec2=operation/events/events&id_agent='+id_agent+'&date_from='+newdate+'&time_from='+from+'&status=-1';
+    				}
+    				else {
+    					window.location='index.php?sec=eventos&sec2=operation/events/events&id_agent='+id_agent+'&date_from='+newdate+'&time_from='+from+'&date_to='+newdate2+'&time_to='+to+'&status=-1';
+    				}
+    			}
+    			else {
+    				window.location='index.php?sec=eventos&sec2=operation/events/events&id_agent='+id_agent+'&date_from='+newdate+'&time_from='+from+'&date_to='+newdate+'&time_to='+to+'&status=-1';
+    			}
+    		}
+    	});
 
-	$('#'+graph_id).bind('plotclick', function(event, pos, item) {
-		if (item) {
-			//from time
-			var from = legend[item.seriesIndex];
-			//to time
-			var to = legend[item.seriesIndex+1];
-			//current date
-			var dateObj = new Date();
-			var month = dateObj.getUTCMonth() + 1; //months from 1-12
-			var day = dateObj.getUTCDate();
-			var year = dateObj.getUTCFullYear();
-				newdate = year + "/" + month + "/" + day;
-
-			if(!to){
-				to= '23:59';
-			}
-			window.location='index.php?sec=eventos&sec2=operation/events/events&id_agent='+id_agent+'&date_from='+newdate+'&time_from='+from+'&date_to='+newdate+'&time_to='+to+'&status=-1';
-		}
-	});
-
-
-
-	$('#'+graph_id).bind('mouseout',resetInteractivity);
+		$('#'+graph_id).bind('mouseout',resetInteractivity);
+	}
 
 	// Reset interactivity styles
 	function resetInteractivity() {
@@ -1421,7 +1476,6 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			xaxes: [{
 				axisLabelFontSizePixels: font_size,
 				axisLabelUseCanvas: false,
-				axisLabel: xaxisname,
 				tickFormatter: xFormatter,
 				labelHeight: 50,
 				color: '',

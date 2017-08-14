@@ -2754,4 +2754,14 @@ function remove_right_zeros ($value) {
 	}
 }
 
+function register_pass_change_try ($id_user, $success) {
+	$values = array();
+	$values['id_user'] = $id_user;
+	$reset_pass_moment = new DateTime('now');
+	$reset_pass_moment = $reset_pass_moment->format("Y-m-d H:i:s");
+	$values['reset_moment'] = $reset_pass_moment;
+	$values['success'] = $success;
+	db_process_sql_insert('treset_pass_history', $values);
+}
+
 ?>

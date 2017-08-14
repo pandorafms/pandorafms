@@ -239,6 +239,16 @@ if ($create_agent) {
 			
 			$agent_created_ok = true;
 			
+			$tpolicy_group_old = db_get_all_rows_sql("SELECT id_policy FROM tpolicy_groups 
+				WHERE id_group = ".$grupo);
+			
+			if($tpolicy_group_old){
+				foreach ($tpolicy_group_old as $key => $old_group) {
+					db_process_sql_insert ('tpolicy_agents',
+					array('id_policy' => $old_group['id_policy'], 'id_agent' => $id_agente));
+				}
+			}
+			
 			$info = 'Name: ' . $nombre_agente .
 				' IP: ' . $direccion_agente .
 				' Group: ' . $grupo .
@@ -774,6 +784,10 @@ if ($update_agent) { // if modified some agent paramenter
 			$values['update_module_count'] = 1; // Force an update of the agent cache.
 		}
 		
+		$group_old = db_get_sql("SELECT id_grupo FROM tagente WHERE id_agente =" .$id_agente);
+		$tpolicy_group_old = db_get_all_rows_sql("SELECT id_policy FROM tpolicy_groups 
+				WHERE id_group = ".$group_old);
+		
 		$result = db_process_sql_update ('tagente', $values, array ('id_agente' => $id_agente));
 		if ($result === false) {
 			ui_print_error_message(
@@ -786,6 +800,38 @@ if ($update_agent) { // if modified some agent paramenter
 			
 			if ($old_interval != $intervalo) {
 				enterprise_hook('config_agents_update_config_interval', array($id_agente, $intervalo));
+			}
+			
+			if($tpolicy_group_old){
+				foreach ($tpolicy_group_old as $key => $value) {
+					$tpolicy_agents_old= db_get_sql("SELECT * FROM tpolicy_agents 
+						WHERE id_policy = ".$value['id_policy'] . " AND id_agent = " .$id_agente);
+								
+					if($tpolicy_agents_old){
+						$result2 = db_process_sql_update ('tpolicy_agents',
+							array('pending_delete' => 1),
+							array ('id_agent' => $id_agente, 'id_policy' => $value['id_policy']));
+					}
+				}
+			}
+			
+			$tpolicy_group = db_get_all_rows_sql("SELECT id_policy FROM tpolicy_groups 
+				WHERE id_group = ".$grupo);
+			
+			if($tpolicy_group){
+				foreach ($tpolicy_group as $key => $value) {
+					$tpolicy_agents= db_get_sql("SELECT * FROM tpolicy_agents 
+						WHERE id_policy = ".$value['id_policy'] . " AND id_agent =" .$id_agente);
+						
+					if(!$tpolicy_agents){
+						db_process_sql_insert ('tpolicy_agents',
+						array('id_policy' => $value['id_policy'], 'id_agent' => $id_agente));
+					} else {
+						$result3 = db_process_sql_update ('tpolicy_agents',
+							array('pending_delete' => 0),
+							array ('id_agent' => $id_agente, 'id_policy' => $value['id_policy']));
+					}
+				}
 			}
 			
 			$info = 'Group: ' . $grupo . ' Interval: ' . $intervalo .
@@ -954,10 +1000,11 @@ if ($update_module || $create_module) {
 		
 		$macros = io_json_mb_encode($macros);
 		
-		$conf_array = explode("\n",$configuration_data);
+		$conf_array = explode("\n", io_safe_output($configuration_data));
+		
 		foreach ($conf_array as $line) {
 			if (preg_match("/^module_name\s*(.*)/", $line, $match)) {
-				$new_configuration_data .= "module_name $name\n";
+				$new_configuration_data .= "module_name " . io_safe_output($name) . "\n";
 			}
 			// We delete from conf all the module macros starting with _field
 			else if(!preg_match("/^module_macro_field.*/", $line, $match)) {
@@ -965,14 +1012,28 @@ if ($update_module || $create_module) {
 			}
 		}
 		
+		$values_macros = array();
+		$values_macros['macros'] = base64_encode($macros);
+		
+		$macros_for_data = enterprise_hook(
+		'config_agents_get_macros_data_conf', array($values_macros));
+
+		if ($macros_for_data != '') {
+			$new_configuration_data = str_replace('module_end', $macros_for_data . "module_end", $new_configuration_data);
+		}
+		
+		/*
 		$macros_for_data = enterprise_hook('config_agents_get_macros_data_conf', array($_POST));
 		
 		if ($macros_for_data !== ENTERPRISE_NOT_HOOK && $macros_for_data != '') {
 			// Add macros to configuration file
 			$new_configuration_data = str_replace('module_end', $macros_for_data."module_end", $new_configuration_data);
 		}
-		
-		$configuration_data = $new_configuration_data;
+		*/
+		$configuration_data = str_replace('\\', "&#92;",
+			io_safe_input($new_configuration_data));;
+
+		html_debug($configuration_data, true);
 	}
 	
 	// Services are an enterprise feature, 
@@ -1182,7 +1243,7 @@ if ($update_module) {
 		'min_ff_event_critical' => $ff_event_critical,
 		'each_ff' => $each_ff,
 		'ff_timeout' => $ff_timeout,
-		'unit' => $unit,
+		'unit' => io_safe_output($unit),
 		'macros' => $macros,
 		'quiet' => $quiet_module,
 		'critical_instructions' => $critical_instructions,
@@ -1342,7 +1403,7 @@ if ($create_module) {
 		'min_ff_event_critical' => $ff_event_critical,
 		'each_ff' => $each_ff,
 		'ff_timeout' => $ff_timeout,
-		'unit' => $unit,
+		'unit' => io_safe_output($unit),
 		'macros' => $macros,
 		'quiet' => $quiet_module,
 		'critical_instructions' => $critical_instructions,
@@ -1466,7 +1527,8 @@ if ($delete_module) { // DELETE agent module !
 	if ($result === false)
 		$error++;
 	
-	if (alerts_delete_alert_agent_module($id_borrar_modulo) === false)
+	if (alerts_delete_alert_agent_module(false, 
+			array('id_agent_module' => $id_borrar_modulo)) === false)
 		$error++;
 	
 	$result = db_process_delete_temp('ttag_module', 'id_agente_modulo',

@@ -139,9 +139,51 @@ if ($update_agents) {
 			    isset($values['id_grupo'])) {
 				$values['update_module_count'] = 1; // Force an update of the agent cache.
 			}
+			$group_old = false;
+			if($values['id_grupo']){
+				$group_old = db_get_sql("SELECT id_grupo FROM tagente WHERE id_agente =" .$id_agent);
+			}
+			
 			$result = db_process_sql_update ('tagente',
 				$values,
 				array ('id_agente' => $id_agent));
+				
+			if($group_old || $result){
+				$tpolicy_group_old = db_get_all_rows_sql("SELECT id_policy FROM tpolicy_groups 
+					WHERE id_group = ".$group_old);
+					
+				if($tpolicy_group_old){
+					foreach ($tpolicy_group_old as $key => $value) {
+						$tpolicy_agents_old= db_get_sql("SELECT * FROM tpolicy_agents 
+							WHERE id_policy = ".$value['id_policy'] . " AND id_agent = " .$id_agent);
+										
+						if($tpolicy_agents_old){
+							$result2 = db_process_sql_update ('tpolicy_agents',
+								array('pending_delete' => 1),
+								array ('id_agent' => $id_agent, 'id_policy' => $value['id_policy']));
+						}
+					}
+				}
+				
+				$tpolicy_group_new = db_get_all_rows_sql("SELECT id_policy FROM tpolicy_groups 
+					WHERE id_group = ".$values['id_grupo']);
+						
+				if($tpolicy_group_new){
+					foreach ($tpolicy_group_new as $key => $value) {
+						$tpolicy_agents_new= db_get_sql("SELECT * FROM tpolicy_agents 
+							WHERE id_policy = ".$value['id_policy'] . " AND id_agent =" .$id_agent);
+								
+						if(!$tpolicy_agents_new){
+							db_process_sql_insert ('tpolicy_agents',
+							array('id_policy' => $value['id_policy'], 'id_agent' => $id_agent));
+						} else {
+							$result3 = db_process_sql_update ('tpolicy_agents',
+								array('pending_delete' => 0),
+								array ('id_agent' => $id_agent, 'id_policy' => $value['id_policy']));
+						}
+					}
+				}
+			}
 		}
 		
 		// Update Custom Fields

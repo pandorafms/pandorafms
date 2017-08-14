@@ -830,118 +830,118 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 
 	if (!defined($alert->{'snmp_alert'})) {
 		# Regular alerts
-		$field1 = $action->{'field1'} ? $action->{'field1'} : $alert->{'field1'};
-		$field2 = $action->{'field2'} ? $action->{'field2'} : $alert->{'field2'};
-		$field3 = $action->{'field3'} ? $action->{'field3'} : $alert->{'field3'};
-		$field4 = $action->{'field4'} ? $action->{'field4'} : $alert->{'field4'};
-		$field5 = $action->{'field5'} ? $action->{'field5'} : $alert->{'field5'};
-		$field6 = $action->{'field6'} ? $action->{'field6'} : $alert->{'field6'};
-		$field7 = $action->{'field7'} ? $action->{'field7'} : $alert->{'field7'};
-		$field8 = $action->{'field8'} ? $action->{'field8'} : $alert->{'field8'};
-		$field9 = $action->{'field9'} ? $action->{'field9'} : $alert->{'field9'};
-		$field10 = $action->{'field10'} ? $action->{'field10'} : $alert->{'field10'};
-		$field11 = $action->{'field11'} ? $action->{'field11'} : $alert->{'field11'};
-		$field12 = $action->{'field12'} ? $action->{'field12'} : $alert->{'field12'};
-		$field13 = $action->{'field13'} ? $action->{'field13'} : $alert->{'field13'};
-		$field14 = $action->{'field14'} ? $action->{'field14'} : $alert->{'field14'};
-		$field15 = $action->{'field15'} ? $action->{'field15'} : $alert->{'field15'};
+		$field1  = defined($action->{'field1'})  && $action->{'field1'}  ne ""  ? $action->{'field1'}  : $alert->{'field1'};
+		$field2  = defined($action->{'field2'})  && $action->{'field2'}  ne ""  ? $action->{'field2'}  : $alert->{'field2'};
+		$field3  = defined($action->{'field3'})  && $action->{'field3'}  ne ""  ? $action->{'field3'}  : $alert->{'field3'};
+		$field4  = defined($action->{'field4'})  && $action->{'field4'}  ne ""  ? $action->{'field4'}  : $alert->{'field4'};
+		$field5  = defined($action->{'field5'})  && $action->{'field5'}  ne ""  ? $action->{'field5'}  : $alert->{'field5'};
+		$field6  = defined($action->{'field6'})  && $action->{'field6'}  ne ""  ? $action->{'field6'}  : $alert->{'field6'};
+		$field7  = defined($action->{'field7'})  && $action->{'field7'}  ne ""  ? $action->{'field7'}  : $alert->{'field7'};
+		$field8  = defined($action->{'field8'})  && $action->{'field8'}  ne ""  ? $action->{'field8'}  : $alert->{'field8'};
+		$field9  = defined($action->{'field9'})  && $action->{'field9'}  ne ""  ? $action->{'field9'}  : $alert->{'field9'};
+		$field10 = defined($action->{'field10'}) && $action->{'field10'} ne ""  ? $action->{'field10'} : $alert->{'field10'};
+		$field11 = defined($action->{'field11'}) && $action->{'field11'} ne ""  ? $action->{'field11'} : $alert->{'field11'};
+		$field12 = defined($action->{'field12'}) && $action->{'field12'} ne ""  ? $action->{'field12'} : $alert->{'field12'};
+		$field13 = defined($action->{'field13'}) && $action->{'field13'} ne ""  ? $action->{'field13'} : $alert->{'field13'};
+		$field14 = defined($action->{'field14'}) && $action->{'field14'} ne ""  ? $action->{'field14'} : $alert->{'field14'};
+		$field15 = defined($action->{'field15'}) && $action->{'field15'} ne ""  ? $action->{'field15'} : $alert->{'field15'};
 	}
 	else {
-		$field1 = $alert->{'field1'} ? $alert->{'field1'} : $action->{'field1'};
-		$field2 = $alert->{'field2'} ? $alert->{'field2'} : $action->{'field2'};
-		$field3 = $alert->{'field3'} ? $alert->{'field3'} : $action->{'field3'};
-		$field4 = $action->{'field4'} ? $action->{'field4'} : $alert->{'field4'};
-		$field5 = $action->{'field5'} ? $action->{'field5'} : $alert->{'field5'};
-		$field6 = $action->{'field6'} ? $action->{'field6'} : $alert->{'field6'};
-		$field7 = $action->{'field7'} ? $action->{'field7'} : $alert->{'field7'};
-		$field8 = $action->{'field8'} ? $action->{'field8'} : $alert->{'field8'};
-		$field9 = $action->{'field9'} ? $action->{'field9'} : $alert->{'field9'};
-		$field10 = $action->{'field10'} ? $action->{'field10'} : $alert->{'field10'};
-		$field11 = $action->{'field11'} ? $action->{'field11'} : $alert->{'field11'};
-		$field12 = $action->{'field12'} ? $action->{'field12'} : $alert->{'field12'};
-		$field13 = $action->{'field13'} ? $action->{'field13'} : $alert->{'field13'};
-		$field14 = $action->{'field14'} ? $action->{'field14'} : $alert->{'field14'};
-		$field15 = $action->{'field15'} ? $action->{'field15'} : $alert->{'field15'};
+		$field1  = defined($alert->{'field1'})   && $alert->{'field1'}   ne "" ? $alert->{'field1'}   : $action->{'field1'};
+		$field2  = defined($alert->{'field2'})   && $alert->{'field2'}   ne "" ? $alert->{'field2'}   : $action->{'field2'};
+		$field3  = defined($alert->{'field3'})   && $alert->{'field3'}   ne "" ? $alert->{'field3'}   : $action->{'field3'};
+		$field4  = defined($action->{'field4'})  && $action->{'field4'}  ne "" ? $action->{'field4'}  : $alert->{'field4'};
+		$field5  = defined($action->{'field5'})  && $action->{'field5'}  ne "" ? $action->{'field5'}  : $alert->{'field5'};
+		$field6  = defined($action->{'field6'})  && $action->{'field6'}  ne "" ? $action->{'field6'}  : $alert->{'field6'};
+		$field7  = defined($action->{'field7'})  && $action->{'field7'}  ne "" ? $action->{'field7'}  : $alert->{'field7'};
+		$field8  = defined($action->{'field8'})  && $action->{'field8'}  ne "" ? $action->{'field8'}  : $alert->{'field8'};
+		$field9  = defined($action->{'field9'})  && $action->{'field9'}  ne "" ? $action->{'field9'}  : $alert->{'field9'};
+		$field10 = defined($action->{'field10'}) && $action->{'field10'} ne "" ? $action->{'field10'} : $alert->{'field10'};
+		$field11 = defined($action->{'field11'}) && $action->{'field11'} ne "" ? $action->{'field11'} : $alert->{'field11'};
+		$field12 = defined($action->{'field12'}) && $action->{'field12'} ne "" ? $action->{'field12'} : $alert->{'field12'};
+		$field13 = defined($action->{'field13'}) && $action->{'field13'} ne "" ? $action->{'field13'} : $alert->{'field13'};
+		$field14 = defined($action->{'field14'}) && $action->{'field14'} ne "" ? $action->{'field14'} : $alert->{'field14'};
+		$field15 = defined($action->{'field15'}) && $action->{'field15'} ne "" ? $action->{'field15'} : $alert->{'field15'};
 	}
 	
 	# Recovery fields, thanks to Kato Atsushi
 	if ($alert_mode == RECOVERED_ALERT) {
 		# Field 1 is a special case where [RECOVER] prefix is not added even when it is defined
-		$field1 = $alert->{'field1_recovery'} ? $alert->{'field1_recovery'} : $field1;
-		$field1 = $action->{'field1_recovery'} ? $action->{'field1_recovery'} : $field1;
+		$field1  = defined($alert->{'field1_recovery'})   && $alert->{'field1_recovery'}   ne "" ? $alert->{'field1_recovery'}   : $field1;
+		$field1  = defined($action->{'field1_recovery'})  && $action->{'field1_recovery'}  ne "" ? $action->{'field1_recovery'}  : $field1;
 
-		$field2 = $field2 ? "[RECOVER]" . $field2 : "";
-		$field2 = $alert->{'field2_recovery'} ? $alert->{'field2_recovery'} : $field2;
-		$field2 = $action->{'field2_recovery'} ? $action->{'field2_recovery'} : $field2;
-
-		$field3 = $field3 ? "[RECOVER]" . $field3 : "";
-		$field3 = $alert->{'field3_recovery'} ? $alert->{'field3_recovery'} : $field3;
-		$field3 = $action->{'field3_recovery'} ? $action->{'field3_recovery'} : $field3;
-
-		$field4 = $field4 ? "[RECOVER]" . $field4 : "";
-		$field4 = $alert->{'field4_recovery'} ? $alert->{'field4_recovery'} : $field4;
-		$field4 = $action->{'field4_recovery'} ? $action->{'field4_recovery'} : $field4;
-
-		$field5 = $field5 ? "[RECOVER]" . $field5 : "";
-		$field5 = $alert->{'field5_recovery'} ? $alert->{'field5_recovery'} : $field5;
-		$field5 = $action->{'field5_recovery'} ? $action->{'field5_recovery'} : $field5;
-
-		$field6 = $field6 ? "[RECOVER]" . $field6 : "";
-		$field6 = $alert->{'field6_recovery'} ? $alert->{'field6_recovery'} : $field6;
-		$field6 = $action->{'field6_recovery'} ? $action->{'field6_recovery'} : $field6;
-
-		$field7 = $field7 ? "[RECOVER]" . $field7 : "";
-		$field7 = $alert->{'field7_recovery'} ? $alert->{'field7_recovery'} : $field7;
-		$field7 = $action->{'field7_recovery'} ? $action->{'field7_recovery'} : $field7;
-
-		$field8 = $field8 ? "[RECOVER]" . $field8 : "";
-		$field8 = $alert->{'field8_recovery'} ? $alert->{'field8_recovery'} : $field8;
-		$field8 = $action->{'field8_recovery'} ? $action->{'field8_recovery'} : $field8;
-
-		$field9 = $field9 ? "[RECOVER]" . $field9 : "";
-		$field9 = $alert->{'field9_recovery'} ? $alert->{'field9_recovery'} : $field9;
-		$field9 = $action->{'field9_recovery'} ? $action->{'field9_recovery'} : $field9;
-
-		$field10 = $field10 ? "[RECOVER]" . $field10 : "";
-		$field10 = $alert->{'field10_recovery'} ? $alert->{'field10_recovery'} : $field10;
-		$field10 = $action->{'field10_recovery'} ? $action->{'field10_recovery'} : $field10;
-
-		$field11 = $field11 ? "[RECOVER]" . $field11 : "";
-		$field11 = $alert->{'field11_recovery'} ? $alert->{'field11_recovery'} : $field11;
-		$field11 = $action->{'field11_recovery'} ? $action->{'field11_recovery'} : $field11;
-
-		$field12 = $field12 ? "[RECOVER]" . $field12 : "";
-		$field12 = $alert->{'field12_recovery'} ? $alert->{'field12_recovery'} : $field12;
-		$field12 = $action->{'field12_recovery'} ? $action->{'field12_recovery'} : $field12;
-
-		$field13 = $field13 ? "[RECOVER]" . $field13 : "";
-		$field13 = $alert->{'field13_recovery'} ? $alert->{'field13_recovery'} : $field13;
-		$field13 = $action->{'field13_recovery'} ? $action->{'field13_recovery'} : $field13;
-
-		$field14 = $field14 ? "[RECOVER]" . $field14 : "";
-		$field14 = $alert->{'field14_recovery'} ? $alert->{'field14_recovery'} : $field14;
-		$field14 = $action->{'field14_recovery'} ? $action->{'field14_recovery'} : $field14;
-
-		$field15 = $field15 ? "[RECOVER]" . $field15 : "";
-		$field15 = $alert->{'field15_recovery'} ? $alert->{'field15_recovery'} : $field15;
-		$field15 = $action->{'field15_recovery'} ? $action->{'field15_recovery'} : $field15;
+		$field2  = defined($field2)                       && $field2                       ne "" ? "[RECOVER]" . $field2         : "";
+		$field2  = defined($alert->{'field2_recovery'})   && $alert->{'field2_recovery'}   ne "" ? $alert->{'field2_recovery'}   : $field2;
+		$field2  = defined($action->{'field2_recovery'})  && $action->{'field2_recovery'}  ne "" ? $action->{'field2_recovery'}  : $field2;
+		
+		$field3  = defined($field3)                       && $field3                       ne "" ? "[RECOVER]" . $field3         : "";
+		$field3  = defined($alert->{'field3_recovery'})   && $alert->{'field3_recovery'}   ne "" ? $alert->{'field3_recovery'}   : $field3;
+		$field3  = defined($action->{'field3_recovery'})  && $action->{'field3_recovery'}  ne "" ? $action->{'field3_recovery'}  : $field3;
+		
+		$field4  = defined($field4)                       && $field4                       ne "" ? "[RECOVER]" . $field4         : "";
+		$field4  = defined($alert->{'field4_recovery'})   && $alert->{'field4_recovery'}   ne "" ? $alert->{'field4_recovery'}   : $field4;
+		$field4  = defined($action->{'field4_recovery'})  && $action->{'field4_recovery'}  ne "" ? $action->{'field4_recovery'}  : $field4;
+		
+		$field5  = defined($field5)                       && $field5                       ne "" ? "[RECOVER]" . $field5         : "";
+		$field5  = defined($alert->{'field5_recovery'})   && $alert->{'field5_recovery'}   ne "" ? $alert->{'field5_recovery'}   : $field5;
+		$field5  = defined($action->{'field5_recovery'})  && $action->{'field5_recovery'}  ne "" ? $action->{'field5_recovery'}  : $field5;
+		
+		$field6  = defined($field6)                       && $field6                       ne "" ? "[RECOVER]" . $field6         : "";
+		$field6  = defined($alert->{'field6_recovery'})   && $alert->{'field6_recovery'}   ne "" ? $alert->{'field6_recovery'}   : $field6;
+		$field6  = defined($action->{'field6_recovery'})  && $action->{'field6_recovery'}  ne "" ? $action->{'field6_recovery'}  : $field6;
+		
+		$field7  = defined($field7)                       && $field7                       ne "" ? "[RECOVER]" . $field7         : "";
+		$field7  = defined($alert->{'field7_recovery'})   && $alert->{'field7_recovery'}   ne "" ? $alert->{'field7_recovery'}   : $field7;
+		$field7  = defined($action->{'field7_recovery'})  && $action->{'field7_recovery'}  ne "" ? $action->{'field7_recovery'}  : $field7;
+		
+		$field8  = defined($field8)                       && $field8                       ne "" ? "[RECOVER]" . $field8         : "";
+		$field8  = defined($alert->{'field8_recovery'})   && $alert->{'field8_recovery'}   ne "" ? $alert->{'field8_recovery'}   : $field8;
+		$field8  = defined($action->{'field8_recovery'})  && $action->{'field8_recovery'}  ne "" ? $action->{'field8_recovery'}  : $field8;
+		
+		$field9  = defined($field9)                       && $field9                       ne "" ? "[RECOVER]" . $field9         : "";
+		$field9  = defined($alert->{'field9_recovery'})   && $alert->{'field9_recovery'}   ne "" ? $alert->{'field9_recovery'}   : $field9;
+		$field9  = defined($action->{'field9_recovery'})  && $action->{'field9_recovery'}  ne "" ? $action->{'field9_recovery'}  : $field9;
+		
+		$field10 = defined($field10)                      && $field10                      ne "" ? "[RECOVER]" . $field10        : "";
+		$field10 = defined($alert->{'field10_recovery'})  && $alert->{'field10_recovery'}  ne "" ? $alert->{'field10_recovery'}  : $field10;
+		$field10 = defined($action->{'field10_recovery'}) && $action->{'field10_recovery'} ne "" ? $action->{'field10_recovery'} : $field10;
+		
+		$field11 = defined($field11)                      && $field11                      ne "" ? "[RECOVER]" . $field11        : "";
+		$field11 = defined($alert->{'field11_recovery'})  && $alert->{'field11_recovery'}  ne "" ? $alert->{'field11_recovery'}  : $field11;
+		$field11 = defined($action->{'field11_recovery'}) && $action->{'field11_recovery'} ne "" ? $action->{'field11_recovery'} : $field11;
+		
+		$field12 = defined($field12)                      && $field12                      ne "" ? "[RECOVER]" . $field12        : "";
+		$field12 = defined($alert->{'field12_recovery'})  && $alert->{'field12_recovery'}  ne "" ? $alert->{'field12_recovery'}  : $field12;
+		$field12 = defined($action->{'field12_recovery'}) && $action->{'field12_recovery'} ne "" ? $action->{'field12_recovery'} : $field12;
+		
+		$field13 = defined($field13)                      && $field13                      ne "" ? "[RECOVER]" . $field13        : "";
+		$field13 = defined($alert->{'field13_recovery'})  && $alert->{'field13_recovery'}  ne "" ? $alert->{'field13_recovery'}  : $field13;
+		$field13 = defined($action->{'field13_recovery'}) && $action->{'field13_recovery'} ne "" ? $action->{'field13_recovery'} : $field13;
+		
+		$field14 = defined($field14)                      && $field14                      ne "" ? "[RECOVER]" . $field14        : "";
+		$field14 = defined($alert->{'field14_recovery'})  && $alert->{'field14_recovery'}  ne "" ? $alert->{'field14_recovery'}  : $field14;
+		$field14 = defined($action->{'field14_recovery'}) && $action->{'field14_recovery'} ne "" ? $action->{'field14_recovery'} : $field14;
+		
+		$field15 = defined($field15)                      && $field15                      ne "" ? "[RECOVER]" . $field15        : "";
+		$field15 = defined($alert->{'field15_recovery'})  && $alert->{'field15_recovery'}  ne "" ? $alert->{'field15_recovery'}  : $field15;
+		$field15 = defined($action->{'field15_recovery'}) && $action->{'field15_recovery'} ne "" ? $action->{'field15_recovery'} : $field15;
 	}
 
-	$field1 = $field1 ? decode_entities($field1) : "";
-	$field2 = $field2 ? decode_entities($field2) : "";
-	$field3 = $field3 ? decode_entities($field3) : "";
-	$field4 = $field4 ? decode_entities($field4) : "";
-	$field5 = $field5 ? decode_entities($field5) : "";
-	$field6 = $field6 ? decode_entities($field6) : "";
-	$field7 = $field7 ? decode_entities($field7) : "";
-	$field8 = $field8 ? decode_entities($field8) : "";
-	$field9 = $field9 ? decode_entities($field9) : "";
-	$field10 = $field10 ? decode_entities($field10) : "";
-	$field11 = $field11 ? decode_entities($field11) : "";
-	$field12 = $field12 ? decode_entities($field12) : "";
-	$field13 = $field13 ? decode_entities($field13) : "";
-	$field14 = $field14 ? decode_entities($field14) : "";
-	$field15 = $field15 ? decode_entities($field15) : "";
+	$field1  = defined($field1)  && $field1  ne "" ? decode_entities($field1)  : "";
+	$field2  = defined($field2)  && $field2  ne "" ? decode_entities($field2)  : "";
+	$field3  = defined($field3)  && $field3  ne "" ? decode_entities($field3)  : "";
+	$field4  = defined($field4)  && $field4  ne "" ? decode_entities($field4)  : "";
+	$field5  = defined($field5)  && $field5  ne "" ? decode_entities($field5)  : "";
+	$field6  = defined($field6)  && $field6  ne "" ? decode_entities($field6)  : "";
+	$field7  = defined($field7)  && $field7  ne "" ? decode_entities($field7)  : "";
+	$field8  = defined($field8)  && $field8  ne "" ? decode_entities($field8)  : "";
+	$field9  = defined($field9)  && $field9  ne "" ? decode_entities($field9)  : "";
+	$field10 = defined($field10) && $field10 ne "" ? decode_entities($field10) : "";
+	$field11 = defined($field11) && $field11 ne "" ? decode_entities($field11) : "";
+	$field12 = defined($field12) && $field12 ne "" ? decode_entities($field12) : "";
+	$field13 = defined($field13) && $field13 ne "" ? decode_entities($field13) : "";
+	$field14 = defined($field14) && $field14 ne "" ? decode_entities($field14) : "";
+	$field15 = defined($field15) && $field15 ne "" ? decode_entities($field15) : "";
 
 	# Get group info
 	my $group = undef;
@@ -2759,7 +2759,7 @@ sub pandora_create_module_from_hash ($$$) {
 
 	# Encrypt SNMP v3 passwords.
 	if ($parameters->{'id_tipo_modulo'} >= 15 && $parameters->{'id_tipo_modulo'} <= 18 &&
-		$parameters->{'tcp_send'} == 3) {
+		$parameters->{'tcp_send'} eq '3') {
 		$parameters->{'custom_string_2'} = pandora_input_password($pa_config, $parameters->{'custom_string_2'});
 	}
 

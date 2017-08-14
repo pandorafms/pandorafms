@@ -1476,7 +1476,6 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			xaxes: [{
 				axisLabelFontSizePixels: font_size,
 				axisLabelUseCanvas: false,
-				axisLabel: xaxisname,
 				tickFormatter: xFormatter,
 				labelHeight: 50,
 				color: '',

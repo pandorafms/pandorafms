@@ -1531,32 +1531,22 @@ function visual_map_print_item($mode = "read", $layoutData,
 				}
 			}
 			
-			//$io_safe_output_text = str_replace(array('_VALUE_','_value_'), $value, $io_safe_output_text);
-			
-			
-			
 			if(get_parameter('action') == 'edit'){
-								//html_debug($layoutData);
-				//echo 'Data value';
-				if( (strip_tags($io_safe_output_text) != '_VALUE_') || (strip_tags($io_safe_output_text) != '(_VALUE_)') ){
+				if( (strip_tags($io_safe_output_text) != '_VALUE_') || (strip_tags($io_safe_output_text) != '(_VALUE_)') ) {
 					echo $io_safe_output_text;
 				}
-				else{
+				else {
 					echo "<img style='width:".$layoutData['width']."px;' src='images/console/signes/data_image.png'>";
 				}
-								
+			} else {
+				if(strrpos(strip_tags($io_safe_output_text),'(_VALUE_)') !== false || (strip_tags($io_safe_output_text) == '(_VALUE_)')) {
+					echo str_replace(array("(_VALUE_)","(_value_)"), $value, $io_safe_output_text);
 				}
-			else{
-				if(strip_tags($io_safe_output_text) == '_VALUE_'){
+				elseif(strrpos(strip_tags($io_safe_output_text),'_VALUE_') !== false || (strip_tags($io_safe_output_text) == '_VALUE_')) {
 					echo str_replace(array('_VALUE_','_value_'), $value, $io_safe_output_text);
-				}
-				elseif(strip_tags($io_safe_output_text) == '(_VALUE_)'){
-					echo str_replace(array('_VALUE_','_value_'), $value, $io_safe_output_text);
-				}
-				else{
+				} else {
 					echo str_replace('>', ' style="width:'.$layoutData['width'].'px">',$value);
 				}
-				
 			}
 			
 			//Restore db connection

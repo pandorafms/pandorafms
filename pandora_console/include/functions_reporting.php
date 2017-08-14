@@ -5789,17 +5789,10 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 	
 	require_once ($config["homedir"] . '/include/functions_graph.php');
 	
-	if ($type_report == 'automatic_graph') {
-		// Do none
-	}
-	else {
-		if ($config['metaconsole']) {
-			$id_meta = metaconsole_get_id_server($content["server_name"]);
-			
-			
-			$server = metaconsole_get_connection_by_id ($id_meta);
-			metaconsole_connect($server);
-		}
+	if ($config['metaconsole'] && $type_report != 'automatic_graph') {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);	
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
 	}
 	
 	$graph = db_get_row ("tgraph", "id_graph", $content['id_gs']);
@@ -5851,6 +5844,25 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 			$item = array('type' => 'custom_graph',
 						'id_agent' =>modules_get_agentmodule_agent($graph_item['id_agent_module']),
 						'id_agent_module'=>$graph_item['id_agent_module']);
+			}
+			
+			if($type_report == 'automatic_graph'){
+				$label = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+				if (!empty($label)) {
+					if ($config['metaconsole']) {
+						$id_meta = metaconsole_get_id_server($content["server_name"]);
+						$server = metaconsole_get_connection_by_id ($id_meta);
+						metaconsole_connect($server);
+					}
+					$label = reporting_label_macro($content, $label);
+					
+					if ($config['metaconsole']) {
+						metaconsole_restore_db();
+					}
+				}
+			} else {
+				$label = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+				$label = reporting_label_macro($content, $label);
 			}
 			
 			$labels[$graph_item['id_agent_module']] = $label;
@@ -5909,13 +5921,8 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 			break;
 	}
 	
-	if ($type_report == 'automatic_graph') {
-		// Do none
-	}
-	else {
-		if ($config['metaconsole']) {
-			metaconsole_restore_db();
-		}
+	if ($config['metaconsole'] && $type_report != 'automatic_graph') {
+		metaconsole_restore_db();
 	}
 	
 	return reporting_check_structure_content($return);

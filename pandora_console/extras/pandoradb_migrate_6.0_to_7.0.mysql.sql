@@ -1327,7 +1327,7 @@ IF @vv1>0 THEN
 END IF;
 END;
 //
-delimiter;
+delimiter ;
 CALL addcol();
 DROP PROCEDURE addcol;
 

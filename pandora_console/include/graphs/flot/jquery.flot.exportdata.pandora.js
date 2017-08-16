@@ -34,9 +34,9 @@
 				}
 				if (dataObjects.length > 1) {
 					dataObjects.forEach(function (element) {
-						if (/^Avg.:/i.test(element.label))
+						if (/Avg.:/i.test(element.label))
 							result = element;
-						if (/^Percentil/i.test(element.label))
+						if (/Percentil/i.test(element.label))
 							result = element;
 					});
 

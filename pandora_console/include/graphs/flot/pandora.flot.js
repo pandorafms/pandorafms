@@ -457,7 +457,7 @@ function showTooltip(x, y, color, contents) {
     }).appendTo("body").fadeIn(200);
 }
 
-function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors, water_mark, maxvalue, water_mark, separator, separator2, font, font_size , from_ux) {
+function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors, water_mark, maxvalue, water_mark, separator, separator2, font, font_size , from_ux, from_wux) {
 	values = values.split(separator2);
 	legend = legend.split(separator);
 	font = font.split("/").pop().split(".").shift();
@@ -552,6 +552,17 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 		}
 	};
 	
+	if(from_wux){
+		options.series.bars.barWidth = 0.5;
+		options.grid.aboveData = true;
+		options.grid.borderWidth = 0;
+		options.grid.markings = [ { xaxis: { from: -0.25, to: -0.25 }, color: "#000" },
+										{ yaxis: { from: 0, to: 0 }, color: "#000" }];
+
+		options.xaxis.tickLength = 0;
+		options.yaxis.tickLength = 0;
+	}
+
 	if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
 		options.xaxis.labelWidth = 100;
 	

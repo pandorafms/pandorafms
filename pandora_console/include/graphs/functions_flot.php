@@ -752,7 +752,7 @@ function flot_hcolumn_chart ($graph_data, $width, $height, $water_mark, $font = 
 }
 
 // Returns a 3D column chart
-function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, $water_mark, $homedir, $font, $font_size, $from_ux) {
+function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, $water_mark, $homedir, $font, $font_size, $from_ux, $from_wux) {
 	global $config;
 	
 	include_javascript_dependencies_flot_graph();
@@ -835,10 +835,15 @@ function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $lon
 	$return .= "<script type='text/javascript'>";
 
 	if ($from_ux) {
-		$return .= "pandoraFlotVBars('$graph_id', '$values', '$labels', '$labels', '$legend', '$colors', false, $max, '$water_mark', '$separator', '$separator2','$font',$font_size, true)";
+		if($from_wux){
+			$return .= "pandoraFlotVBars('$graph_id', '$values', '$labels', '$labels', '$legend', '$colors', false, $max, '$water_mark', '$separator', '$separator2','$font',$font_size, true, true)";
+		}
+		else{
+			$return .= "pandoraFlotVBars('$graph_id', '$values', '$labels', '$labels', '$legend', '$colors', false, $max, '$water_mark', '$separator', '$separator2','$font',$font_size, true, false)";
+		}
 	}
 	else {
-		$return .= "pandoraFlotVBars('$graph_id', '$values', '$labels', '$labels', '$legend', '$colors', false, $max, '$water_mark', '$separator', '$separator2','$font',$font_size, false)";
+		$return .= "pandoraFlotVBars('$graph_id', '$values', '$labels', '$labels', '$legend', '$colors', false, $max, '$water_mark', '$separator', '$separator2','$font',$font_size, false, false)";
 	}
 
 	$return .= "</script>";

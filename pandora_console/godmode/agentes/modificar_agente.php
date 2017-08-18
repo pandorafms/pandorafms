@@ -180,8 +180,7 @@ echo "</tr></table>";
 $order_collation = "";
 switch ($config["dbtype"]) {
 	case "mysql":
-		$order_collation = "";
-		//$order_collation = "COLLATE utf8_general_ci";
+		$order_collation = "COLLATE utf8_general_ci";
 		break;
 	case "postgresql":
 	case "oracle":
@@ -275,6 +274,7 @@ switch ($sortField) {
 }
 
 $search_sql = '';
+
 if ($search != "") {
 	$sql = "SELECT DISTINCT taddress_agent.id_agent FROM taddress
 	INNER JOIN taddress_agent ON

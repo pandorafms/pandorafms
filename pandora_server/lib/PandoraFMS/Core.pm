@@ -1095,9 +1095,10 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		# Message
 		$field3 = subst_alert_macros ($field3, \%macros, $pa_config, $dbh, $agent, $module);
 		
-		# Check for _module_graph_Xh_ macros
+		# Check for _module_graph_Xh_ macros and _module_graphth_Xh_ 
 		my $module_graph_list = {};
 		my $macro_regexp = "_modulegraph_(\\d+)h_";
+		my $macro_regexp2 = "_modulegraphth_(\\d+)h_";
 		
 		# API connection
 		my $ua = new LWP::UserAgent;
@@ -1113,8 +1114,14 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		
 		my $subst_func = sub {
 			my $hours = shift;
+			my $threshold = shift;
 			my $period = $hours * 3600; # Hours to seconds
-			$params->{"other"} = $period . '%7C0';
+			if($threshold == 0){
+				$params->{"other"} = $period . '%7C0%7C0';
+			}
+			else{
+				$params->{"other"} = $period . '%7C0%7C1';
+			}
 			$params->{"other_mode"} = 'url_encode_separator_%7C';
 			my $cid = 'module_graph_' . $hours . 'h';
 			
@@ -1136,7 +1143,8 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		eval {
 			no warnings;
 			local $SIG{__DIE__};
-			$field3 =~ s/$macro_regexp/$subst_func->($1)/ige;
+			$field3 =~ s/$macro_regexp/$subst_func->($1, 0)/ige;
+			$field3 =~ s/$macro_regexp2/$subst_func->($1, 1)/ige;
 		};
 		
 		# Default content type

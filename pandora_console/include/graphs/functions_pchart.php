@@ -54,6 +54,11 @@ $graph_type = get_parameter('graph_type', '');
 
 $id_graph = get_parameter('id_graph', false);
 
+$graph_threshold = get_parameter('graph_threshold', false);
+
+$id_module = get_parameter('id_module');
+
+
 if (!$id_graph) {
 	exit;
 }
@@ -383,7 +388,7 @@ switch ($graph_type) {
 		pch_vertical_graph($graph_type, $data_keys, $data_values, $width,
 			$height, $rgb_color, $xaxisname, $yaxisname, false, $legend,
 			$font, $antialiasing, $water_mark, $font_size,
-			$backgroundColor, $unit, $series_type);
+			$backgroundColor, $unit, $series_type, $graph_threshold, $id_module);
 		break;
 	case 'threshold':
 		pch_threshold_graph($graph_type, $data_keys, $data_values, $width,
@@ -769,7 +774,8 @@ function pch_bar_graph ($graph_type, $index, $data, $width, $height, $font,
 function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	$rgb_color = false, $xaxisname = "", $yaxisname = "", $show_values = false,
 	$legend = array(), $font, $antialiasing, $water_mark = '', $font_size,
-	$backgroundColor = 'white', $unit = '', $series_type = array()) {
+	$backgroundColor = 'white', $unit = '', $series_type = array(), 
+	$graph_threshold = false, $id_module) {
 	
 	global $config;
 	
@@ -975,8 +981,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 		($height - $margin_bottom));
 	
 	/*Get minimun value to draw axis properly*/
-	$min_data = min(min($data));
-	
+	$min_data = min($data['min']);
 	$ManualScale = array();
 	$mode = SCALE_MODE_START0;
 	if ($min_data < 0) {
@@ -988,32 +993,244 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 		$mode = SCALE_MODE_MANUAL;
 	}
 	
-	/* Draw the scale */
-	$scaleSettings = array(
-		"GridR" => 200,
-		"GridG" => 200,
-		"GridB" => 200,
-		"GridAlpha" => 30,
-		"DrawSubTicks" => true,
-		"CycleBackground" => true,
-		"BackgroundAlpha1" => 35,
-		"BackgroundAlpha2" => 35,
-		"Mode" => $mode,
-		"ManualScale" => $ManualScale,
-		"LabelRotation" => 40, 
-		"XMargin" => 0, 
-		"MinDivHeight" => 15,
-		"TicksFontSize" => $font_size - 1);
-	
-	$scaleSettings['AxisR'] = '200';
-	$scaleSettings['AxisG'] = '200';
-	$scaleSettings['AxisB'] = '200';
-	$scaleSettings['TickR'] = '200';
-	$scaleSettings['TickG'] = '200';
-	$scaleSettings['TickB'] = '200';
-	
-	$myPicture->drawScale($scaleSettings);
-	
+	if($graph_threshold){
+		$sql_treshold = 'select min_critical, max_critical, min_warning, max_warning, critical_inverse, warning_inverse from tagente_modulo where id_agente_modulo =' . $id_module;
+		$treshold_position = db_get_all_rows_sql($sql_treshold);
+
+		//min, max and inverse critical and warning
+		$p_min_crit = $treshold_position[0]['min_critical'];
+		$p_max_crit = $treshold_position[0]['max_critical'];
+		$p_inv_crit = $treshold_position[0]['critical_inverse'];
+		$p_min_warn = $treshold_position[0]['min_warning'];
+		$p_max_warn = $treshold_position[0]['max_warning'];
+		$p_inv_warn = $treshold_position[0]['warning_inverse'];
+
+		//interval warning
+		$print_rectangle_warning = 1;
+		if($p_min_warn == "0.00" && $p_max_warn == "0.00" && $p_inv_warn == 0){
+			$print_rectangle_warning = 0;
+		}
+		if($print_rectangle_warning){
+			if($p_inv_warn){
+				if($p_max_warn == 0){
+					$p_max_warn = $p_min_warn;
+					$p_min_warn = "none";
+				}
+				else{
+					$p_max_warn_inv = $p_min_warn;
+					$p_min_warn_inv = $min_data + 2;
+
+					$p_min_warn = $p_max_warn;
+					if($p_max_warn > $max_data){
+						$p_max_warn = $p_max_warn + 21;	
+					}
+					else{
+						$p_max_warn = $max_data + 21;	
+					}
+				}
+			}
+			else{
+				if($p_max_warn == 0){
+					if($max_data > $p_min_warn){
+						$p_max_warn = $max_data + 21;
+					}
+					else{
+						$p_max_warn = $p_min_warn + 21;	
+					}
+				}
+			}
+		}
+
+		//interval critical
+		$print_rectangle_critical = 1;
+		if($p_min_crit == "0.00" && $p_max_crit == "0.00" && $p_inv_crit == 0){
+			$print_rectangle_critical = 0;
+		}
+
+		if($print_rectangle_critical){
+			if($p_inv_crit){
+				if($p_max_crit == 0){
+					$p_max_crit = $p_min_crit;
+					$p_min_crit = "none";
+				}
+				else{
+					$p_max_crit_inv = $p_min_crit;
+					$p_min_crit_inv = $min_data + 2;
+
+					$p_min_crit = $p_max_crit;
+					if($p_inv_warn){
+						if($p_max_crit < $p_max_warn){
+							$p_max_crit = $p_max_warn;	
+						}
+					}
+					else{
+						if($p_max_crit > $max_data){
+							$p_max_crit = $p_max_crit + 21;	
+						}
+						else{
+							$p_max_crit = $max_data + 21;	
+						}
+					}
+				}
+			}
+			else{
+				if($p_max_crit == 0){ 
+					if($p_max_warn > $p_min_crit){
+						$p_max_crit = $p_max_warn;
+					}
+					else{
+						if($max_data > $p_min_crit){
+							$p_max_crit = $max_data + 21;
+						}
+						else{
+							$p_max_crit = $p_min_crit + 21;	
+						}
+					} 
+				}
+			}
+		}
+
+		//Check size scale
+		//Which of the thresholds is higher?
+		if($p_max_crit > $p_max_warn){
+			$check_scale = $p_max_crit; 
+		}
+		else{
+			$check_scale = $p_max_warn;	
+		}
+
+		if($p_min_crit < $p_min_warn){
+			$check_scale_min = $p_min_crit; 
+		}
+		else{
+			$check_scale_min = $p_min_warn;	
+		}
+
+		//Is the threshold higher than our maximum?
+		if($max_data > $check_scale){
+			$check_scale = $max_data;	 
+		}
+		
+		if($min_data < $check_scale_min){
+			$check_scale_min = $min_data;
+		}
+
+		$ManualScale = array( 0 => array("Min" => $check_scale_min, "Max" => $check_scale) );
+		$mode = SCALE_MODE_MANUAL;
+
+		/* Draw the scale */
+		$scaleSettings = array(
+			"GridR" => 200,
+			"GridG" => 200,
+			"GridB" => 200,
+			"GridAlpha" => 30,
+			"DrawSubTicks" => true,
+			"CycleBackground" => true,
+			"BackgroundAlpha1" => 35,
+			"BackgroundAlpha2" => 35,
+			"Mode" => $mode,
+			"ManualScale" => $ManualScale,
+			"LabelRotation" => 40, 
+			"XMargin" => 0, 
+			"MinDivHeight" => 15,
+			"TicksFontSize" => $font_size - 1);
+		
+		$scaleSettings['AxisR'] = '200';
+		$scaleSettings['AxisG'] = '200';
+		$scaleSettings['AxisB'] = '200';
+		$scaleSettings['TickR'] = '200';
+		$scaleSettings['TickG'] = '200';
+		$scaleSettings['TickB'] = '200';
+		
+		$myPicture->drawScale($scaleSettings);
+
+
+		//values
+		$scale_max   = $myPicture->DataSet->Data["Axis"][0]["ScaleMax"];
+		$scale_min   = $myPicture->DataSet->Data["Axis"][0]["ScaleMin"];
+
+		$position_y1 = $myPicture->GraphAreaY1;
+		$position_y2 = $myPicture->GraphAreaY2;
+
+		$position1   = $myPicture->GraphAreaX1;
+		$position3   = $myPicture->GraphAreaX2;
+
+		$cte = ($position_y2 - $position_y1) / ($scale_max - $scale_min);
+		
+		//warning
+		if($print_rectangle_warning){
+			$RectangleSettings = array("R"=>255,"G"=>255,"B"=>000,"Dash"=>TRUE,"DashR"=>170,"DashG"=>220,"DashB"=>190);
+			if($p_min_warn == "none"){
+				$p_min_warn = $scale_min;
+			}
+
+			$position2 = ($scale_max - $p_min_warn)*$cte + $position_y1;	
+			$position4 = ($scale_max - $p_max_warn)*$cte + $position_y1;
+
+			$myPicture->drawFilledRectangle($position1, floor($position2), 
+											$position3, floor($position4),
+											$RectangleSettings);
+			if($p_inv_warn){
+				$position2 = ($scale_max - $p_min_warn_inv)*$cte + $position_y1;	
+				$position4 = ($scale_max - $p_max_warn_inv)*$cte + $position_y1;
+				$myPicture->drawFilledRectangle($position1, floor($position2), 
+												$position3, floor($position4),
+												$RectangleSettings);
+			}
+		}
+
+		//critical
+		if($print_rectangle_critical){
+			$RectangleSettings = array("R"=>248,"G"=>000,"B"=>000,"Dash"=>TRUE,"DashR"=>170,"DashG"=>220,"DashB"=>190);
+
+			if($p_min_crit == "none"){
+				$p_min_crit = $scale_min;
+			}
+
+			$position2 = ($scale_max - $p_min_crit)*$cte + $position_y1;	
+			$position4 = ($scale_max - $p_max_crit)*$cte + $position_y1;
+			$myPicture->drawFilledRectangle($position1, $position2, 
+											$position3, $position4,
+											$RectangleSettings);
+
+			if($p_inv_crit){
+				$position2 = ($scale_max - $p_min_crit_inv)*$cte + $position_y1;	
+				$position4 = ($scale_max - $p_max_crit_inv)*$cte + $position_y1;
+				$myPicture->drawFilledRectangle($position1, $position2, 
+												$position3, $position4,
+												$RectangleSettings);
+			}
+		}
+
+	}
+	else{
+		/* Draw the scale */
+		$scaleSettings = array(
+			"GridR" => 200,
+			"GridG" => 200,
+			"GridB" => 200,
+			"GridAlpha" => 30,
+			"DrawSubTicks" => true,
+			"CycleBackground" => true,
+			"BackgroundAlpha1" => 35,
+			"BackgroundAlpha2" => 35,
+			"Mode" => $mode,
+			"ManualScale" => $ManualScale,
+			"LabelRotation" => 40, 
+			"XMargin" => 0, 
+			"MinDivHeight" => 15,
+			"TicksFontSize" => $font_size - 1);
+		
+		$scaleSettings['AxisR'] = '200';
+		$scaleSettings['AxisG'] = '200';
+		$scaleSettings['AxisB'] = '200';
+		$scaleSettings['TickR'] = '200';
+		$scaleSettings['TickG'] = '200';
+		$scaleSettings['TickB'] = '200';
+		
+		$myPicture->drawScale($scaleSettings);
+	}
+
 	/* Turn on shadow computing */ 
 	//$myPicture->setShadow(TRUE,array("X"=>0,"Y"=>1,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10));
 	
@@ -1086,7 +1303,6 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 			$MyData->setSerieDrawable($id, false); //Disable the serie to paint the rest
 		}
 	}
-	
 	
 	/* Render the picture */
 	$myPicture->stroke(); 

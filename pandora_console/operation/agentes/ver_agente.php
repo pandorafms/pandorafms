@@ -1047,10 +1047,13 @@ $ux_console_tab = enterprise_hook('ux_console_tab');
 if ($ux_console_tab == -1)
 	$ux_console_tab = "";
 
-/* UX Console */
-$wux_console_tab = enterprise_hook('wux_console_tab');
-if ($wux_console_tab == -1)
-	$wux_console_tab = "";
+/* WUX Console */
+$modules_wux = enterprise_hook('get_wux_modules' , array($id_agente));
+if($modules_wux){
+	$wux_console_tab = enterprise_hook('wux_console_tab');
+	if ($wux_console_tab == -1)
+		$wux_console_tab = "";
+}
 
 /* GIS tab */
 $gistab="";

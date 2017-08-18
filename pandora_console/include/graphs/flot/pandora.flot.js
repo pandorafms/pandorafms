@@ -839,11 +839,16 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 
 	// Prepared to turn series with a checkbox
 	// var showed = new Array();
-
+	var min_check = 0;
 	for (i = 0; i < values.length; i++) {
 		var serie = values[i].split(separator);
 		var aux = new Array();
 		$.each(serie, function(i, v) {
+			if(v < 0){
+				if(min_check > parseFloat(v)){
+					min_check = v;
+				}
+			}
 			aux.push([i, v]);
 		});
 
@@ -927,7 +932,9 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 		// Prepared to turn series with a checkbox
 		// showed[i] = true;
 	}
-
+	if(min_check != 0){
+		min_check = min_check -5;
+	}
 	// If threshold and up are the same, that critical or warning is disabled
 	if (yellow_threshold == yellow_up) yellow_inverse = false;
 	if (red_threshold == red_up) red_inverse = false;
@@ -1489,6 +1496,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				position: 'left',
 				font: font,
 				reserveSpace: true,
+				min: min_check
 			}],
 			legend: {
 				position: 'se',

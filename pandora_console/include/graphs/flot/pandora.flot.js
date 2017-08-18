@@ -558,6 +558,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 		options.grid.borderWidth = 0;
 		options.grid.markings = [ { xaxis: { from: -0.25, to: -0.25 }, color: "#000" },
 										{ yaxis: { from: 0, to: 0 }, color: "#000" }];
+		options.grid.markingsLineWidth = 0.3; 		
 
 		options.xaxis.tickLength = 0;
 		options.yaxis.tickLength = 0;

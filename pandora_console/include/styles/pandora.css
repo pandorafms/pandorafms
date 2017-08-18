@@ -4209,7 +4209,7 @@ div#footer_help{
 	color:white;
 	background-color: #373737;
 	border: 1px solid #373737;
-	height: 30px;
+	height: 28px;
 }
 
 .wux_global_result_title p {
@@ -4230,14 +4230,18 @@ div#footer_help{
 
 .wux_global_result_content_left ul{
 	display: inline-flex;
-	margin-top: 23px;
+	margin-top: 15px;
 }
 
 
 .wux_global_result_content_left ul li p{
-	margin-top: 30px;
+	margin-top: 35px;
 	margin-right: 10px;
 	margin-left: 10px;
+}
+
+.wux_global_result_content_left ul li p b{
+	font-size: 16px;
 }
 
 .wux_global_result_content_right{
@@ -4247,13 +4251,18 @@ div#footer_help{
 
 .wux_global_result_content_right ul{
 	display: inline-flex;
-	margin-top: 23px;
+	margin-top: 15px;
+	margin-left:100px;
 }
 
 .wux_global_result_content_right ul li p{
-	margin-top: 30px;
+	margin-top: 40px;
 	margin-right: 10px;
 	margin-left: 10px;
+}
+
+.wux_global_result_content_right ul li p b{
+	font-size: 16px;
 }
 
 .wux_transaction_container{

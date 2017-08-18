@@ -9112,8 +9112,9 @@ function api_set_create_event($id, $trash1, $other, $returnType) {
  *   http://127.0.0.1/pandora_console/include/api.php?op=set&op2=add_event_comment&id=event_id&other=string|&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
  */
 function api_set_add_event_comment($id, $thrash2, $other, $thrash3) {
+	$meta = false;
 	if (defined ('METACONSOLE')) {
-		return;
+		$meta = true;
 	}
 	
 	if ($other['type'] == 'string') {
@@ -9122,11 +9123,9 @@ function api_set_add_event_comment($id, $thrash2, $other, $thrash3) {
 	}
 	else if ($other['type'] == 'array') {
 		$comment = io_safe_input($other['data'][0]);
-		$meta = $other['data'][1];
 		$history = $other['data'][2];
 		
-		$status = events_comment($id, $comment, 'Added comment', $meta,
-			$history);
+		$status = events_comment($id, $comment, 'Added comment', $meta, $history);
 		if (is_error($status)) {
 			returnError('error_add_event_comment',
 				__('Error adding event comment.'));

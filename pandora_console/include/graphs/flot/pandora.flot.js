@@ -210,8 +210,8 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 		$('.legend>div').css('right',($('.legend>div').height()*-1));
 		$('.legend>table').css('right',($('.legend>div').height()*-1));
 	}
-	$('.legend>table').css('border',"1px solid #E2E2E2");
-	$('.legend>table').css('background-color',"#FFF");
+	//$('.legend>table').css('border',"1px solid #E2E2E2");
+	$('.legend>table').css('background-color',"transparent");
 	
 	
 	var pielegends = $('#'+graph_id+' .pieLabelBackground');
@@ -269,6 +269,43 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 		set_watermark(graph_id, plot,
 			$('#watermark_image_' + graph_id).attr('src'));
 	}
+
+	window.onresize = function(event) {
+        $.plot($('#' + graph_id), data, conf_pie);
+        if (no_data == data.length) {
+			$('#'+graph_id+' .overlay').remove();
+			$('#'+graph_id+' .base').remove();
+			$('#'+graph_id).prepend("<img style='width:50%;' src='images/no_data_toshow.png' />");
+		}
+		var legends = $('#'+graph_id+' .legendLabel');
+		var j = 0;
+		legends.each(function () {
+			//$(this).css('width', $(this).width());
+			$(this).css('font-size', font_size+'pt');
+			$(this).removeClass("legendLabel");
+			$(this).addClass(font);
+			$(this).text(legend[j]);
+			j++;
+		});
+		
+		if ($('input[name="custom_graph"]').val()) {
+			$('.legend>div').css('right',($('.legend>div').height()*-1));
+			$('.legend>table').css('right',($('.legend>div').height()*-1));
+		}
+		//$('.legend>table').css('border',"1px solid #E2E2E2");
+		$('.legend>table').css('background-color',"transparent");
+		
+		
+		var pielegends = $('#'+graph_id+' .pieLabelBackground');
+		pielegends.each(function () {
+			$(this).css('transform', "rotate(-35deg)").css('color', 'black');
+		});
+		var labelpielegends = $('#'+graph_id+' .pieLabel');
+		labelpielegends.each(function () {
+			$(this).css('transform', "rotate(-35deg)").css('color', 'black');
+		});
+    }
+
 }
 
 function pandoraFlotHBars(graph_id, values, labels, water_mark,

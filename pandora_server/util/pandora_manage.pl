@@ -173,11 +173,11 @@ sub help_screen{
 	help_screen_line('--enable_eacl', '', 'Enable enterprise ACL system');
 	help_screen_line('--disable_double_auth', '<user_name>', 'Disable the double authentication for the specified user');
 	print "\nEVENTS:\n\n" unless $param ne '';
-	help_screen_line('--create_event', "<event> <event_type> <group_name> [<agent_name> <module_name>\n\t   <event_status> <severity> <template_name> <user_name> <comment> \n\t  <source> <id_extra> <tags> <custom_data_json>]", 'Add event');
-    help_screen_line('--validate_event', "<agent_name> <module_name> <datetime_min> <datetime_max>\n\t   <user_name> <criticity> <template_name>", 'Validate events');
-    help_screen_line('--validate_event_id', '<event_id>', 'Validate event given a event id');
-    help_screen_line('--get_event_info', '<event_id>[<csv_separator>]', 'Show info about a event given a event id');
-    help_screen_line('--add_event_comment', '<event_id> <user_name> <comment>', 'Add event\'s comment');
+	help_screen_line('--create_event', "<event> <event_type> <group_name> [<agent_name> <module_name>\n\t   <event_status> <severity> <template_name> <user_name> <comment> \n\t  <source> <id_extra> <tags> <critical_instructions> <warning_instructions> <unknown_instructions> \n\t <custom_data_json> <force_create_agent>]", 'Add event');
+  help_screen_line('--validate_event', "<agent_name> <module_name> <datetime_min> <datetime_max>\n\t   <user_name> <criticity> <template_name>", 'Validate events');
+  help_screen_line('--validate_event_id', '<event_id>', 'Validate event given a event id');
+  help_screen_line('--get_event_info', '<event_id>[<csv_separator>]', 'Show info about a event given a event id');
+  help_screen_line('--add_event_comment', '<event_id> <user_name> <comment>', 'Add event\'s comment');
 	print "\nINCIDENTS:\n\n" unless $param ne '';
 	help_screen_line('--create_incident', "<title> <description> <origin> <status> <priority 0 for Informative, \n\t  1 for Low, 2 for Medium, 3 for Serious, 4 for Very serious or 5 for Maintenance>\n\t   <group> [<owner>]", 'Create incidents');
 	print "\nPOLICIES:\n\n" unless $param ne '';
@@ -3063,14 +3063,14 @@ sub cli_delete_profile() {
 ##############################################################################
 
 sub cli_create_event() {
-	my ($event,$event_type,$group_name,$agent_name,$module_name,$event_status,$severity,$template_name, $user_name, $comment, $source, $id_extra, $tags, $custom_data) = @ARGV[2..15];
+	my ($event,$event_type,$group_name,$agent_name,$module_name,$event_status,$severity,$template_name, $user_name, $comment, $source, $id_extra, $tags, $custom_data,$force_create_agent,$c_instructions,$w_instructions,$u_instructions) = @ARGV[2..19];
 
 	$event_status = 0 unless defined($event_status);
 	$severity = 0 unless defined($severity);
 
 	my $id_user;
 	
-	if (!defined($user_name)) {
+	if (!defined($user_name) || $user_name eq '') {
 		$id_user = 0;
 	}
 	else {
@@ -3095,7 +3095,18 @@ sub cli_create_event() {
 	}
 	else {
 		$id_agent = get_agent_id($dbh,$agent_name);
-		exist_check($id_agent,'agent',$agent_name);
+		# exist_check($id_agent,'agent',$agent_name);
+		if($id_agent == -1){
+			if($force_create_agent == 1){
+				pandora_create_agent ($conf, '', $agent_name, '', '', '', '', 'Created by cli_create_event', '', $dbh);
+				print_log "[INFO] Adding agent '$agent_name' \n\n";
+				$id_agent = get_agent_id($dbh,$agent_name);
+			}
+			else{
+				exist_check($id_agent,'agent',$agent_name);
+			}
+		}
+
 	}
 	
 	my $id_agentmodule;
@@ -3129,7 +3140,7 @@ sub cli_create_event() {
 	$custom_data = encode_base64 ($custom_data);
 
 	pandora_event ($conf, $event, $id_group, $id_agent, $severity,
-		$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, $comment, $id_extra, $tags, '', '', '', $custom_data);
+		$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, $comment, $id_extra, $tags, $c_instructions, $w_instructions, $u_instructions, $custom_data);
 }
 
 ##############################################################################
@@ -4880,7 +4891,7 @@ sub pandora_manage_main ($$$) {
 			cli_delete_profile();
 		}
 		elsif ($param eq '--create_event') {
-			param_check($ltotal, 14, 11);
+			param_check($ltotal, 18, 15);
 			cli_create_event();
 		}		
 		elsif ($param eq '--validate_event') {

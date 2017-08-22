@@ -98,6 +98,9 @@ if (strstr($sec2, "enterprise/godmode/policies/policies") !== false) {
 	//the modules to show in syntetic module policy form must be the policy
 	//modules from the same policy.
 	unset($modules['predictionserver']);
+	if (enterprise_installed()){
+		unset($modules['webux']);
+	}
 }
 
 $show_creation = false;

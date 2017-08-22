@@ -67,6 +67,7 @@ Besides the defined module macros, the following macros are available:
 Returns an image encoded in base64 of a module’s graph with a period of <i>n</i> hours (eg. _modulegraph_24h_).
 A correct setup of the connection between the server and the console's API is required.
 This setup is done on the server's configuration file.</li>
+<li>_modulegraphth_<i>n</i>h_:Same operation as the previous macro only with the critical and warning thresholds of the module provided they are defined.</li>
 </ul>
 
 <p>

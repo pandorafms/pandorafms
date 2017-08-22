@@ -3991,7 +3991,7 @@ function reporting_sql($report, $content) {
 	}
 	else {
 		$return['correct'] = 0;
-		$return['error'] = __('Illegal query: Due security restrictions, there are some tokens or words you cannot use: *, delete, drop, alter, modify, union, password, pass, insert or update.');
+		$return['error'] = __('Illegal query: Due security restrictions, there are some tokens or words you cannot use: *, delete, drop, alter, modify, password, pass, insert or update.');
 	}
 	
 	if ($config['metaconsole']) {
@@ -5855,6 +5855,25 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 			$item = array('type' => 'custom_graph',
 						'id_agent' =>modules_get_agentmodule_agent($graph_item['id_agent_module']),
 						'id_agent_module'=>$graph_item['id_agent_module']);
+			}
+			
+			if($type_report == 'automatic_graph'){
+				$label = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+				if (!empty($label)) {
+					if ($config['metaconsole']) {
+						$id_meta = metaconsole_get_id_server($content["server_name"]);
+						$server = metaconsole_get_connection_by_id ($id_meta);
+						metaconsole_connect($server);
+					}
+					$label = reporting_label_macro($content, $label);
+					
+					if ($config['metaconsole']) {
+						metaconsole_restore_db();
+					}
+				}
+			} else {
+				$label = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+				$label = reporting_label_macro($content, $label);
 			}
 			
 			$labels[$graph_item['id_agent_module']] = $label;

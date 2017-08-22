@@ -112,7 +112,7 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('MR', 4),
 ('identification_reminder', 1),
 ('identification_reminder_timestamp', 0),
-('current_package_enterprise', '710'),
+('current_package_enterprise', '711'),
 ('post_process_custom_values', '{"0.00000038580247":"Seconds&#x20;to&#x20;months","0.00000165343915":"Seconds&#x20;to&#x20;weeks","0.00001157407407":"Seconds&#x20;to&#x20;days","0.01666666666667":"Seconds&#x20;to&#x20;minutes","0.00000000093132":"Bytes&#x20;to&#x20;Gigabytes","0.00000095367432":"Bytes&#x20;to&#x20;Megabytes","0.0009765625":"Bytes&#x20;to&#x20;Kilobytes","0.00000001653439":"Timeticks&#x20;to&#x20;weeks","0.00000011574074":"Timeticks&#x20;to&#x20;days"}');
 
 UNLOCK TABLES;
@@ -344,7 +344,6 @@ INSERT INTO tmodule VALUES (4,'Plugin&#x20;module');
 INSERT INTO tmodule VALUES (5,'Prediction&#x20;module');
 INSERT INTO tmodule VALUES (6,'WMI&#x20;module');
 INSERT INTO tmodule VALUES (7, 'Web&#x20;module');
-INSERT INTO tmodule VALUES (8, 'Wux&#x20;module');
 
 INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `wizard_level`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `tags`, `disabled_types_event`, `module_macros`) VALUES (1,'OS&#x20;Total&#x20;process','Total&#x20;process&#x20;in&#x20;Operating&#x20;System&#x20;&#40;UNIX&#x20;MIB&#41;',13,15,0,0,300,0,'','','public','HOST-RESOURCES-MIB::hrSystemProcesses.0 ',4,2,0,NULL,NULL,NULL,0,1,0.00,0.00,NULL,0.00,0.00,NULL,0,NULL,NULL,NULL,0,0,0.0000000000000,'basic','','','','','','');
 INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `wizard_level`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `tags`, `disabled_types_event`, `module_macros`) VALUES (2,'OS&#x20;CPU&#x20;Load&#x20;&#40;1&#x20;min&#41;','CPU&#x20;Load&#x20;in&#x20;Operating&#x20;System&#x20;&#40;UNIX&#x20;MIB&#41;',13,15,0,0,300,0,'','','public','UCD-SNMP-MIB::laLoad.1',4,2,0,NULL,NULL,NULL,0,1,0.00,0.00,NULL,0.00,0.00,NULL,0,NULL,NULL,NULL,0,0,0.0000000000000,'basic','','','','','','');

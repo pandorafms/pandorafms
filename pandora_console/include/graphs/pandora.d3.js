@@ -1331,8 +1331,8 @@ function Gauge(placeholderName, configuration, font)
 function print_phases_donut (recipient, phases) {
 	var svg = d3.select(recipient)
 		.append("svg")
-			.attr("width", 600)
-			.attr("height", 300)
+			.attr("width", 700)
+			.attr("height", 330)
 		.append("g");
 
 	svg.append("g")
@@ -1424,7 +1424,7 @@ function print_phases_donut (recipient, phases) {
 						return d.data.label;
 					})
 					.style("font-family", "Verdana")
-					.style("font-size", "10px")
+					.style("font-size", "15px")
 				.append("tspan")
 					.attr("dy", "1.4em")
 					.attr("dx", "-6em")
@@ -1432,7 +1432,7 @@ function print_phases_donut (recipient, phases) {
 						return d.data.label2 + "ms";
 					})
 					.style("font-family", "Verdana")
-					.style("font-size", "10px");
+					.style("font-size", "15px");
 		
 		function midAngle(d){
 			return d.startAngle + (d.endAngle - d.startAngle)/2;

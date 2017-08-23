@@ -976,6 +976,7 @@ CREATE TABLE IF NOT EXISTS `tserver` (
 	`my_modules` int(11) NOT NULL default 0,
 	`server_keepalive` int(11) NOT NULL default 0,
 	`stat_utimestamp` bigint(20) NOT NULL default '0',
+	`exec_proxy` tinyint(1) UNSIGNED NOT NULL default 0,
 	PRIMARY KEY  (`id_server`),
 	KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

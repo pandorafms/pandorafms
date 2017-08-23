@@ -580,11 +580,11 @@ ui_require_jquery_file('bgiframe');
 		});
 
 		$("#text-id_parent").on("autocompletechange", function () {
-			agent_id=$("#hidden-id_parent").val();
+			agent_name = $("#text-id_parent").val();
 			
 			var params = {};
 			params["get_agent_modules_json_by_name"] = 1;
-			params["id_agent"] = agent_id;
+			params["agent_name"] = agent_name;
 			params["page"] = "include/ajax/module";
 			
 			jQuery.ajax ({

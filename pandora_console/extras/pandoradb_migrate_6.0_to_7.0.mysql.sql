@@ -1327,7 +1327,7 @@ IF @vv1>0 THEN
 END IF;
 END;
 //
-delimiter ;
+delimiter;
 CALL addcol();
 DROP PROCEDURE addcol;
 
@@ -1416,3 +1416,9 @@ ALTER TABLE tgraph_source ADD COLUMN id_server int(11) UNSIGNED NOT NULL default
 -- ---------------------------------------------------------------------
 
 ALTER TABLE tserver_export_data MODIFY `module_name` varchar(600) BINARY NOT NULL default '';
+
+-- ---------------------------------------------------------------------
+-- Table `tmodule`
+-- ---------------------------------------------------------------------
+
+INSERT INTO tmodule VALUES (8, 'Wux&#x20;module');

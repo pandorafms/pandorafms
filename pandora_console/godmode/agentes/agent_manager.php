@@ -232,7 +232,7 @@ if(!$new_agent){
 	if ($id_agente) {
 		$table->data[2][2] =
 			"<a id='qr_code_agent_view' href='javascript: show_dialog_qrcode(null, \"" .
-				ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $id_agente) . "\" );'></a>";
+				ui_get_full_url('mobile/index.php?page=agent&id=' . $id_agente) . "\" );'></a>";
 	}
 	else {
 		$table->data[2][2] = __("Only it is show when<br />the agent is saved.");

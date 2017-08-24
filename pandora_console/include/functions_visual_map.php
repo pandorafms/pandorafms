@@ -2645,6 +2645,8 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 				'proportion_width' => $proportion_width);
 		}
 		
+		$layout_data['label'] = visual_map_macro($layout_data['label']);
+		
 		switch ($layout_data['type']) {
 			case LINE_ITEM:
 				visual_map_print_user_lines($layout_data, $proportion);
@@ -3006,6 +3008,12 @@ function visual_map_type_in_js($type) {
 			return 'line_item';
 			break;
 	}
+}
+
+function visual_map_macro($label){
+	$label = str_replace('_date_',strftime("%x"),$label);
+	$label = str_replace('_time_',strftime("%T"),$label);
+	return $label;
 }
 
 ?>

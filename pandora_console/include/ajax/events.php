@@ -127,40 +127,21 @@ if ($perform_event_response) {
 	$event_response = db_get_row('tevent_response','id',$response_id);
 
 	if (enterprise_installed()) {
-		if ($event_response['server_to_exec'] != 0) {
-			enterprise_include_once ('include/functions_satellite.php');
-			
-			$connection = connect_to_proxy_server('192.168.70.165');
-			
-			switch (PHP_OS) {
-				case "FreeBSD":
-					$timeout_bin = '/usr/local/bin/gtimeout';
-					break;
-				case "NetBSD":
-					$timeout_bin = '/usr/pkg/bin/gtimeout';
-					break;
-				default:
-					$timeout_bin = '/usr/bin/timeout';
-					break;
+		if ($event_response['server_to_exec'] != 0 && $event_response['type'] == 'command') {
+			$commandExclusions = array ('vi', 'vim', 'nano');
+
+    		if (in_array(strtolower($command),$commandExclusions)) {
+				echo "Only stdin/stdout commands are supported";
 			}
-
-			$stream = ssh2_exec($connection, "whoami");
-    
-			stream_set_blocking($stream, true);
-			$stream_out = ssh2_fetch_stream($stream, SSH2_STREAM_STDIO);
-
-			$exec_val = stream_get_contents($stream_out);
-
-
-
-			$stream = ssh2_exec($connection, $timeout_bin . ' 9 ' . io_safe_output($command) . ' 2>&1');
+			else {
+				enterprise_include_once ('include/functions_satellite.php');
 			
-			stream_set_blocking($stream, true);
-			$stream_out = ssh2_fetch_stream($stream, SSH2_STREAM_STDIO);
+				$connection = connect_to_proxy_server('192.168.70.165');
 
-			$exec_val = stream_get_contents($stream_out);
-			
-			echo $exec_val;
+				$exec_val = proxy_execute_command($connection, io_safe_output($command));
+				
+				echo $exec_val;
+			}
 		}
 		else {
 			switch (PHP_OS) {

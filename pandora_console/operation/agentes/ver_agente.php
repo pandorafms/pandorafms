@@ -1258,8 +1258,15 @@ foreach ($config['extensions'] as $extension) {
 	}
 }
 
+if($tab == "wux_console_tab"){
+	$help_header = "wux_console";
+}
+else{
+	$help_header = "";
+}
+
 ui_print_page_header(agents_get_alias($id_agente), $icon, false, 
-	"", false, $onheader, false, '', $config['item_title_size_text']);
+	$help_header, false, $onheader, false, '', $config['item_title_size_text']);
 
 
 switch ($tab) {

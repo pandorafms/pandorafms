@@ -59,7 +59,7 @@ if (isset($_GET["server"])) {
 	if (enterprise_installed()) {
 		$table->data[] = array (__('Type'), $server_type);
 		$table->data[] = array (__('Exec Server Enable'), $exec_server_enable);
-		$table->data[] = array (__('Check Exec Server'), '<a id="check_exec_server">' . html_print_image ("images/dot_red.disabled.png", true) . '</a>');
+		$table->data[] = array (__('Check Exec Server'), '<a id="check_exec_server">' . html_print_image ("images/dot_red.disabled.png", true) . '</a>' . '<div id="check_error_message"></div>');
 	}
 	
 	html_print_table ($table);
@@ -177,11 +177,13 @@ function check_process (id_server) {
 		"ajax.php",
 		parameters,
 		function (data) {
-			if (data) {
+			if (data['correct']) {
 				$("#check_exec_server img").attr("src", "images/dot_green.png");
 			}
 			else {
 				$("#check_exec_server img").attr("src", "images/dot_red.png");
+				$("#check_error_message").empty();
+				$("#check_error_message").append("<span>" + data['message'] + "</span>");
 			}
 		},
 		"json"

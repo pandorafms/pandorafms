@@ -122,19 +122,75 @@ if ($perform_event_response) {
 	global $config;
 	
 	$command = get_parameter('target','');
-	
-	switch (PHP_OS) {
-		case "FreeBSD":
-			$timeout_bin = '/usr/local/bin/gtimeout';
-			break;
-		case "NetBSD":
-			$timeout_bin = '/usr/pkg/bin/gtimeout';
-			break;
-		default:
-			$timeout_bin = '/usr/bin/timeout';
-			break;
+	$response_id = get_parameter ('response_id');
+
+	$event_response = db_get_row('tevent_response','id',$response_id);
+
+	if (enterprise_installed()) {
+		if ($event_response['server_to_exec'] != 0) {
+			enterprise_include_once ('include/functions_satellite.php');
+			
+			$connection = connect_to_proxy_server('192.168.70.165');
+			
+			switch (PHP_OS) {
+				case "FreeBSD":
+					$timeout_bin = '/usr/local/bin/gtimeout';
+					break;
+				case "NetBSD":
+					$timeout_bin = '/usr/pkg/bin/gtimeout';
+					break;
+				default:
+					$timeout_bin = '/usr/bin/timeout';
+					break;
+			}
+
+			$stream = ssh2_exec($connection, "whoami");
+    
+			stream_set_blocking($stream, true);
+			$stream_out = ssh2_fetch_stream($stream, SSH2_STREAM_STDIO);
+
+			$exec_val = stream_get_contents($stream_out);
+
+
+
+			$stream = ssh2_exec($connection, $timeout_bin . ' 9 ' . io_safe_output($command) . ' 2>&1');
+			
+			stream_set_blocking($stream, true);
+			$stream_out = ssh2_fetch_stream($stream, SSH2_STREAM_STDIO);
+
+			$exec_val = stream_get_contents($stream_out);
+			
+			echo $exec_val;
+		}
+		else {
+			switch (PHP_OS) {
+				case "FreeBSD":
+					$timeout_bin = '/usr/local/bin/gtimeout';
+					break;
+				case "NetBSD":
+					$timeout_bin = '/usr/pkg/bin/gtimeout';
+					break;
+				default:
+					$timeout_bin = '/usr/bin/timeout';
+					break;
+			}
+			echo system($timeout_bin . ' 9 '.io_safe_output($command).' 2>&1');
+		}
 	}
-	echo system($timeout_bin . ' 9 '.io_safe_output($command).' 2>&1');
+	else {
+		switch (PHP_OS) {
+			case "FreeBSD":
+				$timeout_bin = '/usr/local/bin/gtimeout';
+				break;
+			case "NetBSD":
+				$timeout_bin = '/usr/pkg/bin/gtimeout';
+				break;
+			default:
+				$timeout_bin = '/usr/bin/timeout';
+				break;
+		}
+		echo system($timeout_bin . ' 9 '.io_safe_output($command).' 2>&1');
+	}
 	
 	return;
 }
@@ -162,7 +218,7 @@ if ($dialogue_event_response) {
 			echo "<br><div id='response_out' style='text-align:left'></div>";
 			
 			echo "<br><div id='re_exec_command' style='display:none;'>";
-			html_print_button(__('Execute again'),'btn_str',false,'perform_response(\''.$command.'\');', "class='sub next'");
+			html_print_button(__('Execute again'),'btn_str',false,'perform_response(\''.$command.'\', ' . $response_id . ');', "class='sub next'");
 			echo "</div>";
 			break;
 		case 'url':

@@ -17,15 +17,17 @@
 </p>
 
 <p>
-	<strong>Para realizar la grabaci&oacute;n de una navegaci&oacute;n con PWR necesitaremos:</strong>
+	<b style="font-family: 'lato-bolder'; font-size: 12pt;">
+		Para realizar la grabaci&oacute;n de una navegaci&oacute;n con PWR necesitaremos:
+	</b>
 </p>
 
 <ol>
-	<li> 
+	<li style="font-family: 'lato-bolder'; font-size: 12pt;"> 
 		Navegador web Firefox versi&oacute;n 47.0.1 (descargable en: 
 		<a rel="nofollow" class="external free" href="https://ftp.mozilla.org/pub/firefox/releases/47.0.1/">https://ftp.mozilla.org/pub/firefox/releases/47.0.1/</a>).
 	.</li>
-	<li> 
+	<li style="font-family: 'lato-bolder'; font-size: 12pt;"> 
 		Extensi&oacute;n Selenium IDE (descargable en: 
 		<a rel="nofollow" class="external free" href="https://addons.mozilla.org/es/firefox/addon/selenium-ide/">https://addons.mozilla.org/es/firefox/addon/selenium-ide/</a>).
 	</li>

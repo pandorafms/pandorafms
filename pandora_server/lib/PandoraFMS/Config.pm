@@ -445,6 +445,10 @@ sub pandora_load_config {
 	$pa_config->{"warmup_unknown_interval"} = 300; # 6.1
 	$pa_config->{"warmup_unknown_on"} = 1; # 6.1
 
+	# Logstash
+	$pa_config->{"logstash_host"} = '';
+	$pa_config->{"logstash_port"} = 0;
+
 	#$pa_config->{'include_agents'} = 0; #6.1
 	#
 	# External .enc files for XML::Parser.
@@ -1029,6 +1033,12 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^dynamic_constant\s+([0-9]*)/i) {
 			$pa_config->{'dynamic_constant'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^logstash_host\s+(.*)/i) {
+			$pa_config->{'logstash_host'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^logstash_port\s+([0-9]*)/i) {
+			$pa_config->{'logstash_port'}= clean_blank($1);
 		}
 	} # end of loop for parameter #
 

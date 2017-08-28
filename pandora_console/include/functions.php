@@ -1601,7 +1601,7 @@ function get_snmpwalk($ip_target, $snmp_version, $snmp_community = '',
 	if (enterprise_installed()) {
 		if ($server_to_exec != 0) {
 			$server_data = db_get_row('tserver','id_server', $server_to_exec);
-			exec("ssh root@" . $server_data['ip_address'] . " \"" . $command_str . "\"", $output, $rc);
+			exec("ssh pandora_exec_proxy@" . $server_data['ip_address'] . " \"" . $command_str . "\"", $output, $rc);
 		}
 		else {
 			exec($command_str, $output, $rc);

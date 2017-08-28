@@ -198,7 +198,7 @@ function snmp_browser_get_tree ($target_ip, $community, $starting_oid = '.', $ve
 			else {
 				$command = $snmpwalk_bin . " -m ALL -M +" . escapeshellarg($config['homedir'] . "/attachment/mibs") . " -Cc -c " . escapeshellarg($community) . " -v " . escapeshellarg($version) . " " . escapeshellarg($target_ip) . " " . escapeshellarg($starting_oid) . " 2> " . $error_redir_dir;
 			}
-			exec("ssh root@" . $server_data['ip_address'] . " \"" . $command . "\"", $output, $rc);
+			exec("ssh pandora_exec_proxy@" . $server_data['ip_address'] . " \"" . $command . "\"", $output, $rc);
 		}
 		else {
 			$oid_tree = array('__LEAVES__' => array());

@@ -139,7 +139,7 @@ if ($perform_event_response) {
 				$return_val = array();
 				$return_val['correct'] = false;
 
-				$exec_val = system("ssh root@" . $server_data['ip_address'] . " \"" . $command . " 2>&1\"", $ret_val);
+				$exec_val = system("ssh pandora_exec_proxy@" . $server_data['ip_address'] . " \"" . $command . " 2>&1\"", $ret_val);
 
 				if ($ret_val != 0) {
 					$return_val['message'] = "Conection error";

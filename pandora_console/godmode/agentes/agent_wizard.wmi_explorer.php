@@ -57,7 +57,7 @@ if ($wmiexplore) {
 	if (enterprise_installed()) {
 		if ($server_to_exec != 0) {
 			$server_data = db_get_row('tserver','id_server', $server_to_exec);
-			exec("ssh root@" . $server_data['ip_address'] . " '" . $wmi_processes . "'", $output, $rc);
+			exec("ssh pandora_exec_proxy@" . $server_data['ip_address'] . " '" . $wmi_processes . "'", $output, $rc);
 		}
 		else {
 			exec($wmi_processes, $output);
@@ -94,7 +94,7 @@ if ($wmiexplore) {
 		if (enterprise_installed()) {
 			if ($server_to_exec != 0) {
 				$server_data = db_get_row('tserver','id_server', $server_to_exec);
-				exec("ssh root@" . $server_data['ip_address'] . " '" . $wmi_services . "'", $output, $rc);
+				exec("ssh pandora_exec_proxy@" . $server_data['ip_address'] . " '" . $wmi_services . "'", $output, $rc);
 			}
 			else {
 				exec($wmi_services, $output);
@@ -124,7 +124,7 @@ if ($wmiexplore) {
 		if (enterprise_installed()) {
 			if ($server_to_exec != 0) {
 				$server_data = db_get_row('tserver','id_server', $server_to_exec);
-				exec("ssh root@" . $server_data['ip_address'] . " '" . $wmi_disks . "'", $output, $rc);
+				exec("ssh pandora_exec_proxy@" . $server_data['ip_address'] . " '" . $wmi_disks . "'", $output, $rc);
 			}
 			else {
 				exec($wmi_disks, $output);

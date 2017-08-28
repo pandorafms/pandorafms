@@ -1422,3 +1422,9 @@ ALTER TABLE tserver_export_data MODIFY `module_name` varchar(600) BINARY NOT NUL
 -- ---------------------------------------------------------------------
 
 INSERT INTO tmodule VALUES (8, 'Wux&#x20;module');
+
+-- ---------------------------------------------------------------------
+-- Table `ttipo_modulo`
+-- ---------------------------------------------------------------------
+
+INSERT INTO tmodule VALUES (25,'web_analysis', 8, 'Web analysis data', 'module-wux.png');

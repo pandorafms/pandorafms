@@ -1327,7 +1327,7 @@ IF @vv1>0 THEN
 END IF;
 END;
 //
-delimiter;
+delimiter ;
 CALL addcol();
 DROP PROCEDURE addcol;
 
@@ -1427,4 +1427,4 @@ INSERT INTO tmodule VALUES (8, 'Wux&#x20;module');
 -- Table `ttipo_modulo`
 -- ---------------------------------------------------------------------
 
-INSERT INTO tmodule VALUES (25,'web_analysis', 8, 'Web analysis data', 'module-wux.png');
+INSERT INTO ttipo_modulo VALUES (25,'web_analysis', 8, 'Web analysis data', 'module-wux.png');

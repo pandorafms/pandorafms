@@ -973,7 +973,7 @@ if ($update_module || $create_module) {
 		$custom_integer_2_default = $module['custom_integer_2'];
 	}
 	
-	if($id_module_type == MODULE_WUX){
+	if($id_module_type == 25){ # web analysis, from MODULE_WUX
 		$custom_string_1 = base64_encode((string) get_parameter ('custom_string_1', $custom_string_1_default));
 		$custom_integer_1 = (int) get_parameter ('custom_integer_1', $custom_integer_1_default);
 	}

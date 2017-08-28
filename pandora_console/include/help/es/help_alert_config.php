@@ -65,6 +65,9 @@ Además de las macros de módulo definidas, las siguientes macros están disponi
 <li>_groupcontact_ : Información de contacto del grupo.	Se configura al crear el grupo.</li>
 <li>_groupother_ : Otra información sobre el grupo. Se configura al crear el grupo.</li>
 <li>_email_tag_ : Emails asociados a los tags de módulos.</li>
+<li>_alert_critical_instructions_: Instrucciones contenidas en el módulo para un estado CRITICAL.</li>
+<li>_alert_warning_instructions_: Instrucciones contenidas en el módulo para un estado WARNING.</li>
+<li>_alert_unknown_instructions_: Instrucciones contenidas en el módulo para un estado UNKNOWN.</li>
 <li>_modulegraph_<i>n</i>h_: (Sólo para alertas que usen el comando eMail) Devuelve una imagen codificada en base64 de una gráfica del módulo con un período de n horas (eg. _modulegraph_24h_). Requiere de una configuración correcta de la conexión del servidor a la consola vía api, la cual se realiza en el fichero de configuración del servidor.</li>
 <li>_modulegraphth_<i>n</i>h_:mismo funcionamiento que la macro anterior solo que con los umbrales critical y warning del modulo siempre que estos esten definidos</li>
 <li>_homeurl_ : Es un link de la URL pública esta debe de estar configurada en las opciones generales del setup.</li>

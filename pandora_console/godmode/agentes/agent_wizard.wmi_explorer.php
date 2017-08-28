@@ -29,6 +29,7 @@ $ip_target = (string) get_parameter ('ip_target', $ipAgent); // Host
 $plugin_user = (string) get_parameter ('plugin_user', 'Administrator'); // Username
 $plugin_pass = io_safe_output(get_parameter('plugin_pass', '')); // Password
 $tcp_send = (string) get_parameter ('tcp_send'); // Namespace
+$server_to_exec = get_parameter('server_to_exec', true);
 
 //See if id_agente is set (either POST or GET, otherwise -1
 $id_agent = $idAgent;
@@ -53,7 +54,18 @@ if ($wmiexplore) {
 	$wmi_processes = $wmi_command . ' "select Name from Win32_Process"';
 	$processes_name_field = 1;
 	
-	exec($wmi_processes, $output);
+	if (enterprise_installed()) {
+		if ($server_to_exec != 0) {
+			$server_data = db_get_row('tserver','id_server', $server_to_exec);
+			exec("ssh root@" . $server_data['ip_address'] . " '" . $wmi_processes . "'", $output, $rc);
+		}
+		else {
+			exec($wmi_processes, $output);
+		}
+	}
+	else {
+		exec($wmi_processes, $output);
+	}
 	
 	$fail = false;
 	if (preg_match('/^Failed/', $output[0])) {
@@ -79,7 +91,18 @@ if ($wmiexplore) {
 		$services_name_field = 0;
 		$services_check_field = 1;
 		
-		exec($wmi_services, $output);
+		if (enterprise_installed()) {
+			if ($server_to_exec != 0) {
+				$server_data = db_get_row('tserver','id_server', $server_to_exec);
+				exec("ssh root@" . $server_data['ip_address'] . " '" . $wmi_services . "'", $output, $rc);
+			}
+			else {
+				exec($wmi_services, $output);
+			}
+		}
+		else {
+			exec($wmi_services, $output);
+		}
 		
 		foreach ($output as $index => $row) {
 			// First and second rows are Class and column names, ignore it
@@ -98,7 +121,18 @@ if ($wmiexplore) {
 		$wmi_disks = $wmi_command . ' "Select DeviceID from Win32_LogicalDisk"';
 		$disks_name_field = 0;
 		
-		exec($wmi_disks, $output);
+		if (enterprise_installed()) {
+			if ($server_to_exec != 0) {
+				$server_data = db_get_row('tserver','id_server', $server_to_exec);
+				exec("ssh root@" . $server_data['ip_address'] . " '" . $wmi_disks . "'", $output, $rc);
+			}
+			else {
+				exec($wmi_disks, $output);
+			}
+		}
+		else {
+			exec($wmi_disks, $output);
+		}
 		
 		foreach ($output as $index => $row) {
 			// First and second rows are Class and column names, ignore it
@@ -266,6 +300,19 @@ $table->data[1][3] = html_print_input_password ('plugin_pass', $plugin_pass, '',
 
 $table->data[1][3] .= '<div id="spinner_modules" style="float: left; display: none;">' . html_print_image("images/spinner.gif", true) . '</div>';
 html_print_input_hidden('wmiexplore', 1);
+
+$servers_to_exec = array();
+$servers_to_exec[0] = __('Local console');
+if (enterprise_installed()) {
+	enterprise_include_once ('include/functions_satellite.php');
+	
+	$rows = get_proxy_servers();
+	foreach ($rows as $row) {
+		$servers_to_exec[$row['id_server']] = $row['name'];
+	}
+}
+$table->data[2][0] = '<b>' . __('Server to execute command') . '</b>';
+$table->data[2][1] = html_print_select ($servers_to_exec, 'server_to_exec', $server_to_exec, '', '', '', true);
 
 html_print_table($table);
 

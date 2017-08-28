@@ -201,14 +201,6 @@ function process_user_login_remote ($login, $pass, $api = false) {
 			}
 			break;
 		
-		// Remote Babel Enterprise
-		case 'babel':
-			if (enterprise_hook ('remote_babel_process_user_login', array ($login, $pass)) === false) {
-				$config["auth_error"] = "User not found in database or incorrect password";
-				return false;
-			}
-			break;
-		
 		// Remote Integria
 		case 'integria':
 			if (enterprise_hook ('remote_integria_process_user_login', array ($login, $pass)) === false) {
@@ -653,15 +645,26 @@ function ldap_process_user_login ($login, $password) {
 		}
 	}
 	
-	$ldap_login_attr  = isset($config["ldap_login_attr"]) ? io_safe_output($config["ldap_login_attr"]) . "=" : '';
-	$ldap_base_dn  = isset($config["ldap_base_dn"]) ? "," . io_safe_output($config["ldap_base_dn"]) : '';
+	$ldap_login_attr  = !empty($config["ldap_login_attr"]) ? io_safe_output($config["ldap_login_attr"]) . "=" : '';
+	$ldap_base_dn  = !empty($config["ldap_base_dn"]) ? "," . io_safe_output($config["ldap_base_dn"]) : '';
 	
-	if (strlen($password) == 0 || 
+	if(!empty($ldap_base_dn)){
+		if (strlen($password) == 0 || 
+		!@ldap_bind($ds, $ldap_login_attr.io_safe_output($login).$ldap_base_dn, $password) ) {
+			html_debug("entra1",true);
+			$config["auth_error"] = 'User not found in database or incorrect password';
+			@ldap_close ($ds);
+			
+			return false;
+		}
+	} else {
+		if (strlen($password) == 0 || 
 		!@ldap_bind($ds, io_safe_output($login), $password) ) {
-		$config["auth_error"] = 'User not found in database or incorrect password';
-		@ldap_close ($ds);
-		
-		return false;
+			$config["auth_error"] = 'User not found in database or incorrect password';
+			@ldap_close ($ds);
+			
+			return false;
+		}
 	}
 	
 	@ldap_close ($ds);

@@ -181,26 +181,32 @@ if (!empty($result_groups)) {
 			$groups_id = $data["_id_"];
 
 			// Calculate entire row color
-			if ($data["_monitors_alerts_fired_"] > 0) {
-				$color_class = 'group_view_alrm';
-				$status_image = ui_print_status_image ('agent_alertsfired_ball.png', "", true);
-			}
-			elseif ($data["_monitors_critical_"] > 0) {
-				$color_class = 'group_view_crit';
-				$status_image = ui_print_status_image ('agent_critical_ball.png', "", true);
-			}
-			elseif ($data["_monitors_warning_"] > 0) {
-				$color_class = 'group_view_warn';
-				$status_image = ui_print_status_image ('agent_warning_ball.png', "", true);
-			}
-			elseif ($data["_monitors_ok_"] > 0)  {
-				
-				$color_class = 'group_view_ok';
-				$status_image = ui_print_status_image ('agent_ok_ball.png', "", true);
-			}
-			elseif (($data["_monitors_unknown_"] > 0) ||  ($data["_agents_unknown_"] > 0)) {
-				$color_class = 'group_view_unk';
-				$status_image = ui_print_status_image ('agent_no_monitors_ball.png', "", true);
+			if ($groups_id != 0) {
+				if ($data["_monitors_alerts_fired_"] > 0) {
+					$color_class = 'group_view_alrm';
+					$status_image = ui_print_status_image ('agent_alertsfired_ball.png', "", true);
+				}
+				elseif ($data["_monitors_critical_"] > 0) {
+					$color_class = 'group_view_crit';
+					$status_image = ui_print_status_image ('agent_critical_ball.png', "", true);
+				}
+				elseif ($data["_monitors_warning_"] > 0) {
+					$color_class = 'group_view_warn';
+					$status_image = ui_print_status_image ('agent_warning_ball.png', "", true);
+				}
+				elseif (($data["_monitors_unknown_"] > 0) || ($data["_agents_unknown_"] > 0)) {
+					$color_class = 'group_view_unk';
+					$status_image = ui_print_status_image ('agent_no_monitors_ball.png', "", true);
+				}
+				elseif ($data["_monitors_ok_"] > 0)  {
+					
+					$color_class = 'group_view_ok';
+					$status_image = ui_print_status_image ('agent_ok_ball.png', "", true);
+				}
+				else {
+					$color_class = '';
+					$status_image = ui_print_status_image ('agent_no_data_ball.png', "", true);
+				}
 			}
 			else {
 				$color_class = '';

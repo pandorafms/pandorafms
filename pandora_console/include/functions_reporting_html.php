@@ -2578,50 +2578,88 @@ function get_agent_first_time ($agent_name) {
 }
 
 function reporting_html_general(&$table, $item) {
-	
 	if (!empty($item["data"])) {
+		$data_in_same_row = $item['show_in_same_row'];
 		switch ($item['subtype']) {
 			case REPORT_GENERAL_NOT_GROUP_BY_AGENT:
-				$table1 = new stdClass();
-				$table1->width = '99%';
-				$table1->data = array ();
-				$table1->head = array ();
-				$table1->head[0] = __('Agent');
-				$table1->head[1] = __('Module');
-				if ($item['date']['period'] != 0) {
-					$table1->head[2] = __('Operation');
-				}
-				$table1->head[3] = __('Value');
-				$table1->style[0] = 'text-align: left';
-				$table1->style[1] = 'text-align: left';
-				$table1->style[2] = 'text-align: left';
-				$table1->style[3] = 'text-align: left';
-				
-				/* Begin - Order by agent */
-				
-				foreach ($item['data'] as $key => $row) {
-    			$aux[$key] = $row['agent'];
-				}
-				
-				array_multisort($aux, SORT_ASC, $item['data']);
-				
-				/* End - Order by agent */
-				
-				foreach ($item['data'] as $row) {
+				if (!$data_in_same_row) {
+					$table1 = new stdClass();
+					$table1->width = '99%';
+					$table1->data = array ();
+					$table1->head = array ();
+					$table1->head[0] = __('Agent');
+					$table1->head[1] = __('Module');
 					if ($item['date']['period'] != 0) {
-						$table1->data[] = array(
-							$row['agent'],
-							$row['module'],
-							$row['operator'],
-							$row['formated_value']);
+						$table1->head[2] = __('Operation');
 					}
-					else {
-						$table1->data[] = array(
-							$row['agent'],
-							$row['module'],
-							$row['formated_value']);
+					$table1->head[3] = __('Value');
+					$table1->style[0] = 'text-align: left';
+					$table1->style[1] = 'text-align: left';
+					$table1->style[2] = 'text-align: left';
+					$table1->style[3] = 'text-align: left';
+					
+					/* Begin - Order by agent */
+					
+					foreach ($item['data'] as $key => $row) {
+					$aux[$key] = $row['agent'];
+					}
+					
+					array_multisort($aux, SORT_ASC, $item['data']);
+					
+					/* End - Order by agent */
+					
+					foreach ($item['data'] as $row) {
+						if ($item['date']['period'] != 0) {
+							$table1->data[] = array(
+								$row['agent'],
+								$row['module'],
+								$row['operator'],
+								$row['formated_value']);
+						}
+						else {
+							$table1->data[] = array(
+								$row['agent'],
+								$row['module'],
+								$row['formated_value']);
+						}
 					}
 				}
+				else {
+					$order_data = array();
+					foreach ($item['data'] as $row) {
+						$order_data[$row['id_agent']][$row['id_agent_module']][$row['operator']] = $row['formated_value'];
+					}
+					
+					$table1 = new stdClass();
+					$table1->width = '99%';
+					$table1->data = array ();
+					$table1->head = array ();
+					$table1->head[0] = __('Agent');
+					$table1->head[1] = __('Module');
+					$table1->head[2] = __('Avg');
+					$table1->head[3] = __('Max');
+					$table1->head[4] = __('Min');
+					$table1->head[5] = __('Sum');
+					$table1->style[0] = 'text-align: center';
+					$table1->style[1] = 'text-align: center';
+					$table1->style[2] = 'text-align: center';
+					$table1->style[3] = 'text-align: center';
+					$table1->style[4] = 'text-align: center';
+					$table1->style[4] = 'text-align: center';
+
+					foreach ($order_data as $id_agent => $row) {
+						foreach ($row as $id_module => $row2) {
+							$table1->data[] = array(
+								agents_get_alias($id_agent),
+								modules_get_agentmodule_name($id_module),
+								$row2['Rate'],
+								$row2['Maximum'],
+								$row2['Minimum'],
+								$row2['Summatory']);
+						}
+					}
+				}
+
 				break;
 			case REPORT_GENERAL_GROUP_BY_AGENT:
 				$list_modules = array();
@@ -2639,9 +2677,9 @@ function reporting_html_general(&$table, $item) {
 					$row = array();
 					
 					$row['agent'] = $agent;
-					$table1->style['agent'] = 'text-align: left;';
+					$table1->style['agent'] = 'text-align: center;';
 					foreach ($list_modules as $name) {
-						$table1->style[$name] = 'text-align: right;';
+						$table1->style[$name] = 'text-align: center;';
 						if (isset($modules[$name])) {
 							$row[$name] = $modules[$name];
 						}
@@ -3742,6 +3780,7 @@ function reporting_get_event_histogram ($events, $text_header_event = false) {
 				);
 		}
 	}
+	
 	$table = new stdClass();
 	if (!$text_header_event) {
 		$table->width = '100%';
@@ -3796,6 +3835,157 @@ function reporting_get_event_histogram ($events, $text_header_event = false) {
 		$table->class='tactical_view';
 		$event_graph = '<fieldset id="event_tactical" class="tactical_set">' . 
 					html_print_table($table, true) . '</fieldset>';
+	}
+	
+	return $event_graph;
+}
+
+function reporting_get_event_histogram_meta ($width) {
+	global $config;
+	if (!defined("METACONSOLE")) {
+		include_once ($config['homedir'] .'/include/graphs/functions_gd.php');
+	}
+	else {
+		include_once ('../../include/graphs/functions_gd.php');
+	}
+
+	$period = SECONDS_1HOUR;
+
+	if (!$text_header_event) {
+		$text_header_event = __('Events info (1hr.)');
+	}
+
+	$ttl = 1;
+	$urlImage = ui_get_full_url(false, true, false, false);
+	
+	$data = array ();
+	
+	$resolution = $config['graph_res'] * ($period * 2 / $width); // Number of "slices" we want in graph
+
+	$interval = (int) ($period / $resolution);
+	$date = get_system_time ();
+	$datelimit = $date - $period;
+	$periodtime = floor ($period / $interval);
+	$time = array ();
+	$data = array ();
+	$legend = array();
+	$full_legend = array();
+	$full_legend_date = array();
+
+	$colors = array(
+		EVENT_CRIT_MAINTENANCE => COL_MAINTENANCE,
+		EVENT_CRIT_INFORMATIONAL => COL_INFORMATIONAL,
+		EVENT_CRIT_NORMAL => COL_NORMAL,
+		EVENT_CRIT_MINOR => COL_MINOR,
+		EVENT_CRIT_WARNING => COL_WARNING,
+		EVENT_CRIT_MAJOR => COL_MAJOR,
+		EVENT_CRIT_CRITICAL => COL_CRITICAL
+	);
+
+	$cont = 0;
+	for ($i = 0; $i < $interval; $i++) {
+		$bottom = $datelimit + ($periodtime * $i);
+		if (! $graphic_type) {
+			if ($config['flash_charts']) {
+				$name = date('H:i:s', $bottom);
+			}
+			else {
+				$name = date('H\h', $bottom);
+			}
+		}
+		else {
+			$name = $bottom;
+		}
+		
+		// Show less values in legend
+		if ($cont == 0 or $cont % 2)
+			$legend[$cont] = $name;
+		
+		if ($from_agent_view) {
+			$full_date = date('Y/m/d', $bottom);
+			$full_legend_date[$cont] = $full_date;
+		}
+
+		$full_legend[$cont] = $name;
+		
+		$top = $datelimit + ($periodtime * ($i + 1));
+		$event = db_get_row_filter ('tmetaconsole_event',
+			array (
+				'utimestamp > '.$bottom,
+				'utimestamp < '.$top), 
+				'criticity, utimestamp');
+		
+		if (!empty($event['utimestamp'])) {
+			$data[$cont]['utimestamp'] = $periodtime;
+			switch ($event['criticity']) {
+				case 0:
+					$data[$cont]['data'] = EVENT_CRIT_MAINTENANCE;
+					break;
+				case 1:
+					$data[$cont]['data'] = EVENT_CRIT_INFORMATIONAL;
+					break;
+				case 2:
+					$data[$cont]['data'] = EVENT_CRIT_NORMAL;
+					break;
+				case 3:
+					$data[$cont]['data'] = EVENT_CRIT_WARNING;
+					break;
+				case 4:
+					$data[$cont]['data'] = EVENT_CRIT_CRITICAL;
+					break;
+				case 5:
+					$data[$cont]['data'] = EVENT_CRIT_MINOR;
+					break;
+				case 6:
+					$data[$cont]['data'] = EVENT_CRIT_MAJOR;
+					break;
+				case 20:
+					$data[$cont]['data'] = EVENT_CRIT_NOT_NORMAL;
+					break;
+				case 34:
+					$data[$cont]['data'] = EVENT_CRIT_WARNING_OR_CRITICAL;
+					break;
+				default:
+					$data[$cont]['data'] = 1;
+					break;
+			}
+		}
+		else {
+			$data[$cont]['utimestamp'] = $periodtime;
+			$data[$cont]['data'] = 1;
+		}
+		$cont++;
+	}
+	
+	$table = new stdClass();
+
+	$table->width = '100%';
+
+	$table->data = array ();
+	$table->size = array ();
+	$table->head = array ();
+	$table->title = '<span>' . $text_header_event . '</span>';
+	$table->data[0][0] = "" ;
+	
+	if (!empty($data)) {
+		$slicebar = flot_slicesbar_graph($data, $period, "100%", 30, $full_legend, $colors, $config['fontpath'], $config['round_corner'], $url, '', '', false, 0, $full_legend_date);
+		
+		$table->data[0][0] = $slicebar;
+	}
+	else {
+		$table->data[0][0] = __('No events');
+	}
+	
+	if (!$text_header_event) {
+		$event_graph = '<fieldset class="databox tactical_set">
+					<legend>' .
+						$text_header_event .
+					'</legend>' .
+					html_print_table($table, true) . '</fieldset>';
+	}
+	else {
+		$table->class = 'noclass';
+		$event_graph = html_print_table($table, true);
 	}
 	
 	return $event_graph;

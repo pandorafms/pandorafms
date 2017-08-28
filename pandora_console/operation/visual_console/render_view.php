@@ -198,10 +198,19 @@ if ($config['pure']) {
 		/* Avoid the main_pure container 1000px height */
 		body.pure {
 			min-height: 100px;
+			margin: 0px;
+			overflow: hidden;
+			height: 100%;
+			<?php
+			echo "background-color: ".$layout['background_color'].";";
+			?>
 		}
 		div#main_pure {
 			height: 100%;
 			margin: 0px;
+			<?php
+			echo "background-color: ".$layout['background_color'].";";
+			?>
 		}
 	</style>
 	<?php
@@ -236,21 +245,23 @@ $ignored_params['refr'] = '';
 						//cb();
 						url = js_html_entity_decode( href ) + duration;
 						//$(document).attr ("location", url);
-						$.get(window.location.href.replace("render_view","pure_ajax"), function(respuestaSolicitud){
+						$.post(window.location.href.replace("refr=300","refr="+new_count), function(respuestaSolicitud){
 							$('#background_<?php echo $id_layout; ?>').html(respuestaSolicitud);
-							startCountDown(refr, false);
 						});
-					}
+						$("#main_pure").css('background-color','<?php echo $layout['background_color']; ?>');
+						
+						}
 				});
 			}
 			
 			startCountDown(refr, false);
-			//~ // Auto hide controls
+			
 			var controls = document.getElementById('vc-controls');
 			autoHideElement(controls, 1000);
 			
 			$('select#refr').change(function (event) {
 				refr = Number.parseInt(event.target.value, 10);
+				new_count = event.target.value;
 				startCountDown(refr, false);
 			});
 		}
@@ -269,14 +280,19 @@ $ignored_params['refr'] = '';
 		
 		$(".overlay").removeClass("overlay").addClass("overlaydisabled");
 		
-		$('.item:not(.icon) img').each( function() {
+		$('.item:not(.icon) img:not(.b64img)').each( function() {
 			if ($(this).css('float')=='left' || $(this).css('float')=='right') {
 				$(this).css('margin-top',(parseInt($(this).parent().parent().css('height'))/2-parseInt($(this).css('height'))/2)+'px');
 				$(this).css('margin-left','');
 			}
 			else {
-				$(this).css('margin-left',(parseInt($(this).parent().parent().css('width'))/2-parseInt($(this).css('width'))/2)+'px');
-				$(this).css('margin-top','');
+				if(parseInt($(this).parent().parent().css('width'))/2-parseInt($(this).css('width'))/2 < 0){
+					$(this).css('margin-left','');
+					$(this).css('margin-top','');
+				} else {
+					$(this).css('margin-left',(parseInt($(this).parent().parent().css('width'))/2-parseInt($(this).css('width'))/2)+'px');
+					$(this).css('margin-top','');
+				}
 			}
 		});
 		
@@ -306,24 +322,6 @@ $ignored_params['refr'] = '';
 			height = parseInt($(this).css("height")) - 30;
 			$(this).css('height', height);
 		});
-		
-		/*
-		$('.percentile_item a > img').each(function(){
-			
-			if($(this).css('float')=='left' || $(this).css('float')=='right'){
-				
-				
-			$(this).css('margin-top',(parseInt($(this).parent().parent().css('height'))/2-parseInt($(this).css('height'))/2)+'px');
-			$(this).css('margin-left','');
-			
-			}
-			else{
-				$(this).css('margin-left',(parseInt($(this).parent().parent().css('width'))/2-parseInt($(this).css('width'))/2)+'px');
-				$(this).css('margin-top','');
-			}
-			
-		});
-		*/
 	
 	});
 </script>

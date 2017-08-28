@@ -27,6 +27,10 @@ function networkmap_delete_networkmap($id = 0) {
 	return $result;
 }
 
+function networkmap_delete_nodes($id_map) {
+	return db_process_sql_delete('titem', array('id_map' => $id_map));
+}
+
 function networkmap_process_networkmap($id = 0) {
 	global $config;
 	
@@ -118,7 +122,16 @@ function networkmap_process_networkmap($id = 0) {
 			null,
 			$old_mode);
 		
-		$filename_dot = sys_get_temp_dir() . "/networkmap_" . $filter;
+		switch (PHP_OS) {
+			case "WIN32":
+			case "WINNT":
+			case "Windows":
+				$filename_dot = sys_get_temp_dir() . "\\networkmap_" . $filter;
+				break;
+			default:
+				$filename_dot = sys_get_temp_dir() . "/networkmap_" . $filter;
+				break;
+		}
 		
 		if ($simple) {
 			$filename_dot .= "_simple";
@@ -129,12 +142,23 @@ function networkmap_process_networkmap($id = 0) {
 		$filename_dot .= "_" . $id . ".dot";
 		
 		file_put_contents($filename_dot, $graph);
-		
-		$filename_plain = sys_get_temp_dir() . "/plain.txt";
-		
-		$cmd = "$filter -Tplain -o " . $filename_plain . " " .
-			$filename_dot;
 
+		switch (PHP_OS) {
+			case "WIN32":
+			case "WINNT":
+			case "Windows":
+				$filename_plain = sys_get_temp_dir() . "\\plain.txt";
+				
+				$cmd = io_safe_output($config['graphviz_bin_dir'] . "\\$filter.exe -Tplain -o " . $filename_plain . " " .
+					$filename_dot);
+				break;
+			default:
+				$filename_plain = sys_get_temp_dir() . "/plain.txt";
+				$cmd = "$filter -Tplain -o " . $filename_plain . " " .
+					$filename_dot;
+				break;
+		}
+		
 		system ($cmd);
 		
 		unlink($filename_dot);
@@ -142,6 +166,8 @@ function networkmap_process_networkmap($id = 0) {
 		$nodes = networkmap_loadfile($id, $filename_plain,
 			$relation_nodes, $graph);
 		
+		unlink($filename_plain);
+
 		//Set the position of modules
 		foreach ($nodes as $key => $node) {
 			if ($node['type'] == 'module') {
@@ -242,8 +268,6 @@ function networkmap_process_networkmap($id = 0) {
 		db_process_sql_update('tmap',
 			array('center_x' => $networkmap['center_x'], 'center_y' => $networkmap['center_y']),
 			array('id' => $id));
-			
-		unlink($filename_plain);
 	}
 	
 	return $nodes_and_relations;
@@ -760,7 +784,7 @@ function networkmap_write_js_array($id, $nodes_and_relations = array(), $map_das
 	echo "var set_center_menu = '" . __('Set center') . "';\n";
 	echo "var refresh_menu = '" . __('Refresh') . "';\n";
 	echo "var refresh_holding_area_menu = '" . __('Refresh Holding area') . "';\n";
-	echo "var abort_relationship_interface = '" . __('Abort the action of set interface relationship') . "';\n";
+	echo "var abort_relationship_interface = '" . __('Abort the interface relationship') . "';\n";
 	echo "var abort_relationship_menu = '" . __('Abort the action of set relationship') . "';\n";
 	
 	echo "\n";

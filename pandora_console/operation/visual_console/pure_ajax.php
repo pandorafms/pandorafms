@@ -230,6 +230,11 @@ $ignored_params['refr'] = '';
 			}
 			
 		});
+		
+		$(".graph:not([class~='noresizevc'])").each(function(){
+			height = parseInt($(this).css("height")) - 30;
+			$(this).css('height', height);
+		});
 			
 	});
 </script>

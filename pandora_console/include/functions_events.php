@@ -703,7 +703,7 @@ function events_create_event ($event, $id_group, $id_agent, $status = 0,
 	$id_user = "", $event_type = "unknown", $priority = 0,
 	$id_agent_module = 0, $id_aam = 0, $critical_instructions = '',
 	$warning_instructions = '', $unknown_instructions = '',
-	$source="Pandora", $tags="", $custom_data="", $server_id = 0) {
+	$source="Pandora", $tags="", $custom_data="", $server_id = 0, $id_extra ="") {
 	
 	global $config;
 	
@@ -719,15 +719,15 @@ function events_create_event ($event, $id_group, $id_agent, $status = 0,
 						event_type, criticity, id_agentmodule, id_alert_am,
 						critical_instructions, warning_instructions,
 						unknown_instructions, source, tags, custom_data,
-						server_id) 
+						server_id, id_extra) 
 					VALUES (%d, %d, "%s", NOW(), %d, UNIX_TIMESTAMP(NOW()),
 						"%s", "%s", %d, %d, %d, "%s", "%s", "%s", "%s",
-						"%s", "%s", %d)',
+						"%s", "%s", %d, "%s")',
 					$id_agent, $id_group, $event, $status, $id_user,
 					$event_type, $priority, $id_agent_module, $id_aam,
 					$critical_instructions, $warning_instructions,
 					$unknown_instructions, $source, $tags, $custom_data,
-					$server_id);
+					$server_id, $id_extra);
 				break;
 			case "postgresql":
 				$sql = sprintf ('
@@ -736,16 +736,16 @@ function events_create_event ($event, $id_group, $id_agent, $status = 0,
 						event_type, criticity, id_agentmodule, id_alert_am,
 						critical_instructions, warning_instructions,
 						unknown_instructions, source, tags, custom_data,
-						server_id) 
+						server_id, id_extra) 
 					VALUES (%d, %d, "%s", NOW(), %d,
 						ceil(date_part(\'epoch\', CURRENT_TIMESTAMP)), "%s",
 						"%s", %d, %d, %d, "%s", "%s", "%s", "%s", "%s",
-						"%s", %d)',
+						"%s", %d, "%s")',
 					$id_agent, $id_group, $event, $status, $id_user,
 					$event_type, $priority, $id_agent_module, $id_aam,
 					$critical_instructions, $warning_instructions,
 					$unknown_instructions, $source, $tags, $custom_data,
-					$server_id);
+					$server_id, $id_extra);
 				break;
 			case "oracle":
 				$sql = sprintf ('
@@ -754,15 +754,15 @@ function events_create_event ($event, $id_group, $id_agent, $status = 0,
 						event_type, criticity, id_agentmodule, id_alert_am,
 						critical_instructions, warning_instructions,
 						unknown_instructions, source, tags, custom_data,
-						server_id) 
+						server_id, id_extra) 
 					VALUES (%d, %d, "%s", CURRENT_TIMESTAMP, %d, UNIX_TIMESTAMP,
 						"%s", "%s", %d, %d, %d, "%s", "%s", "%s", "%s",
-						"%s", "%s", %d)',
+						"%s", "%s", %d, "%s")',
 					$id_agent, $id_group, $event, $status, $id_user,
 					$event_type, $priority, $id_agent_module, $id_aam,
 					$critical_instructions, $warning_instructions,
 					$unknown_instructions, $source, $tags, $custom_data,
-					$server_id);
+					$server_id, $id_extra);
 				break;
 		}
 	}
@@ -774,13 +774,13 @@ function events_create_event ($event, $id_group, $id_agent, $status = 0,
 						timestamp, estado, utimestamp, id_usuario,
 						event_type, criticity, id_agentmodule, id_alert_am,
 						critical_instructions, warning_instructions,
-						unknown_instructions, source, tags, custom_data) 
+						unknown_instructions, source, tags, custom_data, id_extra) 
 					VALUES (%d, %d, "%s", NOW(), %d, UNIX_TIMESTAMP(NOW()),
-						"%s", "%s", %d, %d, %d, "%s", "%s", "%s", "%s", "%s", "%s")',
+						"%s", "%s", %d, %d, %d, "%s", "%s", "%s", "%s", "%s", "%s", "%s")',
 					$id_agent, $id_group, $event, $status, $id_user,
 					$event_type, $priority, $id_agent_module, $id_aam,
 					$critical_instructions, $warning_instructions,
-					$unknown_instructions, $source, $tags, $custom_data);
+					$unknown_instructions, $source, $tags, $custom_data, $id_extra);
 				break;
 			case "postgresql":
 				$sql = sprintf ('
@@ -788,14 +788,14 @@ function events_create_event ($event, $id_group, $id_agent, $status = 0,
 						timestamp, estado, utimestamp, id_usuario,
 						event_type, criticity, id_agentmodule, id_alert_am,
 						critical_instructions, warning_instructions,
-						unknown_instructions, source, tags, custom_data) 
+						unknown_instructions, source, tags, custom_data, id_extra) 
 					VALUES (%d, %d, "%s", NOW(), %d,
 						ceil(date_part(\'epoch\', CURRENT_TIMESTAMP)), "%s",
-						"%s", %d, %d, %d, "%s", "%s", "%s", "%s", "%s", "%s")',
+						"%s", %d, %d, %d, "%s", "%s", "%s", "%s", "%s", "%s", "%s")',
 					$id_agent, $id_group, $event, $status, $id_user,
 					$event_type, $priority, $id_agent_module, $id_aam,
 					$critical_instructions, $warning_instructions,
-					$unknown_instructions, $source, $tags, $custom_data);
+					$unknown_instructions, $source, $tags, $custom_data, $id_extra);
 				break;
 			case "oracle":
 				$sql = sprintf ("
@@ -803,13 +803,13 @@ function events_create_event ($event, $id_group, $id_agent, $status = 0,
 						timestamp, estado, utimestamp, id_usuario,
 						event_type, criticity, id_agentmodule, id_alert_am,
 						critical_instructions, warning_instructions,
-						unknown_instructions, source, tags, custom_data) 
+						unknown_instructions, source, tags, custom_data, id_extra) 
 					VALUES (%d, %d, '%s', CURRENT_TIMESTAMP, %d, UNIX_TIMESTAMP,
-						'%s', '%s', %d, %d, %d, '%s', '%s', '%s', '%s', '%s', '%s')",
+						'%s', '%s', %d, %d, %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
 					$id_agent, $id_group, $event, $status, $id_user,
 					$event_type, $priority, $id_agent_module, $id_aam,
 					$critical_instructions, $warning_instructions,
-					$unknown_instructions, $source, $tags, $custom_data);
+					$unknown_instructions, $source, $tags, $custom_data, $id_extra);
 				break;
 		}
 	}
@@ -2115,7 +2115,7 @@ function events_page_details ($event, $server = "") {
 					"type" => $graph_type,
 					"period" => SECONDS_1DAY,
 					"id" => $module["id_agente_modulo"],
-					"label" => rawurlencode(urlencode(base64_encode($module["nombre"]))),
+					"label" => base64_encode($module["nombre"]),
 					"refresh" => SECONDS_10MINUTES
 				);
 			
@@ -2336,7 +2336,8 @@ function events_page_general ($event) {
 	
 	$data = array();
 	$data[0] = __('Event name');
-	$data[1] = strip_tags(io_safe_output($event["evento"]));
+	$event["evento"] = str_replace ( '&#x0a;' , '<br>' , $event["evento"]);
+	$data[1] = io_safe_output($event["evento"]);
 	$table_general->data[] = $data;
 	
 	$data = array();
@@ -2348,6 +2349,8 @@ function events_page_general ($event) {
 		$data[1] = date ($config["date_format"], strtotime($event["timestamp"]));
 	}
 	$table_general->data[] = $data;
+	
+	$event["owner_user"] = $event["id_usuario"];
 	
 	$data = array();
 	$data[0] = __('Owner');
@@ -3393,9 +3396,9 @@ function events_sql_events_grouped_agents($id_agent, $server_id = -1,
 			$sql_post .= " AND (utimestamp <= " . $udate_to . ")";
 		}
 	}
-
+	
 	//Search by tag
-	if (!empty($tag_with)) {
+	if (!empty($tag_with) && (io_safe_output($tag_with) != "[]") && (io_safe_output($tag_with) != "[\"0\"]")) {
 		$sql_post .= ' AND ( ';
 		$first = true;
 		foreach ($tag_with as $id_tag) {
@@ -3405,7 +3408,7 @@ function events_sql_events_grouped_agents($id_agent, $server_id = -1,
 		}
 		$sql_post .= ' ) ';
 	}
-	if (!empty($tag_without)) {
+	if (!empty($tag_without) && (io_safe_output($tag_without) != "[]") && (io_safe_output($tag_with) != "[\"0\"]")) {
 		$sql_post .= ' AND ( ';
 		$first = true;
 		foreach ($tag_without as $id_tag) {

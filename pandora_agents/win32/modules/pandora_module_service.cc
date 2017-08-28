@@ -49,6 +49,16 @@ Pandora_Module_Service::Pandora_Module_Service (string name, string service_name
 	this->thread = 0;
 	this->watchdog = false;
 }
+/** 
+ * Destroys a Pandora_Module_Service object.
+ */
+Pandora_Module_Service::~Pandora_Module_Service () {
+
+	// Close the thread if module is async
+	if (this->thread) {
+		TerminateThread(this->thread, 0);
+	}
+}
 
 string
 Pandora_Module_Service::getServiceName () const {

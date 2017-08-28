@@ -444,7 +444,12 @@ $table->data['form_agents_1'][3] = __('Select all modules of this group') . ' ' 
 	html_print_checkbox_extended ("force_group", 'group', '', '', false,
 	'', 'style="margin-right: 40px;"', true);
 
-
+$tags = tags_get_user_tags();
+$table->rowstyle['form_modules_4'] = 'vertical-align: top;';
+$table->rowclass['form_modules_4'] = 'select_modules_row select_modules_row_2';
+$table->data['form_modules_4'][0] = __('Tags');
+$table->data['form_modules_4'][1] = html_print_select ($tags, 'tags[]',
+	$tags_name, false, __('Any'), -1, true, true, true);
 
 $table->rowclass['form_agents_2'] = 'select_agents_row';
 $table->data['form_agents_2'][0] = __('Status');
@@ -489,7 +494,12 @@ $table->data['form_modules_2'][2] .= html_print_select(
 $table->data['form_modules_2'][3] = html_print_select (array(), 'agents[]',
 	$agents_select, false, __('None'), 0, true, true, false, '', false, 'width:100%');
 
-
+$tags = tags_get_user_tags();
+$table->rowstyle['form_agents_4'] = 'vertical-align: top;';
+$table->rowclass['form_agents_4'] = 'select_agents_row select_agents_row_2';
+$table->data['form_agents_4'][0] = __('Tags');
+$table->data['form_agents_4'][1] = html_print_select ($tags, 'tags[]',
+	$tags_name, false, __('Any'), -1, true, true, true);
 
 $table->rowstyle['form_agents_3'] = 'vertical-align: top;';
 $table->rowclass['form_agents_3'] = 'select_agents_row select_agents_row_2';
@@ -544,6 +554,7 @@ $(document).ready (function () {
 		.css('display', '<?php echo $modules_row?>');
 	$(".select_agents_row")
 		.css('display', '<?php echo $agents_row?>');
+	$(".select_modules_row_2").css('display', 'none');
 	
 	// Trigger change to refresh selection when change selection mode
 	$("#agents_selection_mode").change (function() {
@@ -573,7 +584,7 @@ $(document).ready (function () {
 		var params = {
 			"page" : "operation/agentes/ver_agente",
 			"get_agent_modules_json" : 1,
-			"get_distinct_name" : 1,
+			"get_id_and_name" : 1,
 			"indexed" : 0,
 			"privilege" : "AW"
 		};
@@ -584,6 +595,13 @@ $(document).ready (function () {
 		var status_module = $('#status_module').val();
 		if (status_module != '-1')
 			params['status_module'] = status_module;
+
+		var tags_to_search = $('#tags').val();
+		if (tags_to_search != null) {
+			if (tags_to_search[0] != -1) {
+				params['tags'] = tags_to_search;
+			}
+		}
 		
 		$("#module_loading").show ();
 		$("tr#delete_table-edit1, tr#delete_table-edit2").hide ();
@@ -656,6 +674,7 @@ $(document).ready (function () {
 		else if (selector == 'modules') {
 			$(".select_agents_row").hide();
 			$(".select_modules_row").show();
+			$("#module_type").trigger("change");
 		}
 	});
 
@@ -713,6 +732,15 @@ $(document).ready (function () {
 	
 	$("#status_agents").change(function() {
 		$("#groups_select").trigger("change");
+	});
+
+	$("#tags").change(function() {
+		selector = $("#form_edit input[name=selection_mode]:checked").val();
+		$("#module_type").trigger("change");
+	});
+	$("#tags1").change(function() {
+		selector = $("#form_edit input[name=selection_mode]:checked").val();
+		$("#id_agents").trigger("change");
 	});
 	
 	$("#form_modules").submit(function() {

@@ -49,7 +49,6 @@ if (is_ajax()) {
 	$not_return = get_parameter ('not_return', 0);
 	$reset_initial_wizard = get_parameter ('reset_initial_wizard', 0);
 	
-		
 	if ($reset_initial_wizard) {
 		config_update_value ('initial_wizard', 0);
 	}

@@ -125,6 +125,7 @@ if ($searchAgents) {
 		$aux = $id[0]['id_agent'];
 		$search_sql = " t1.nombre COLLATE utf8_general_ci LIKE '%%cd " . $stringSearchSQL . "%%' OR
 						t2.nombre COLLATE utf8_general_ci LIKE '%%" . $stringSearchSQL . "%%' OR
+						t1.alias COLLATE utf8_general_ci LIKE '%%" . $stringSearchSQL . "%%' OR
 						t1.id_agente = $aux";
 
 		if (count($id) >= 2) {
@@ -180,7 +181,7 @@ if ($searchAgents) {
 	$query = $select . $sql;
 	
 	$query .= $limit;
-		
+	
 	$agents = db_process_sql($query);
 	if (empty($agents))
 		$agents = array();

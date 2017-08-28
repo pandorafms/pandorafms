@@ -191,7 +191,9 @@ config_check();
 					$_GET['refr'] = null;
 				}
 				
-				if ($config['autorefresh_white_list'] !== null && array_search($_GET['sec2'], $config['autorefresh_white_list']) !== false) {
+				$select = db_process_sql("SELECT autorefresh_white_list FROM tusuario WHERE id_user = '" . $config['id_user'] . "'");
+				$autorefresh_list = json_decode($select[0]['autorefresh_white_list']);
+				if ($autorefresh_list !== null && array_search($_GET['sec2'], $autorefresh_list) !== false) {
 					$autorefresh_img = html_print_image("images/header_refresh.png", true, array("class" => 'bot', "alt" => 'lightning', 'title' => __('Configure autorefresh')));
 					
 					if ($_GET['refr']) {
@@ -239,7 +241,9 @@ config_check();
 				$check_minor_release_available = db_check_minor_relase_available ();
 				
 				if ($check_minor_release_available) {
-					set_pandora_error_for_header('There are one or more minor releases waiting for update, there are required administrator permissions', 'minor release/s available');
+					if (users_is_admin($config['id_user'])) {
+						set_pandora_error_for_header('There are one or more minor releases waiting for update', 'minor release/s available');
+					}
 				}
 				echo '<div id="alert_messages" style="display: none"></div>';
 
@@ -352,7 +356,7 @@ config_check();
 	var new_chat = <?php echo (int)$_SESSION['new_chat'];?>;
 	$(document).ready (function () {
 		<?php
-		if (($config['autorefresh_white_list'] !== null) && (array_search($_GET['sec2'], $config['autorefresh_white_list']) !== false) && (!isset($_GET["refr"]))) {
+		if (($autorefresh_list !== null) && (array_search($_GET['sec2'], $autorefresh_list) !== false) && (!isset($_GET["refr"]))) {
 		?>
 			$("a.autorefresh_txt").toggle ();
 			$("#combo_refr").toggle ();

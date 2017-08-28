@@ -51,7 +51,7 @@ $pure = get_parameter('pure', 0);
 switch ($action) {
 	case 'new':
 		if (!defined('METACONSOLE')) {
-			echo "<form id='back' method='post' action='index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=" . $activeTab  . "' enctype='multipart/form-data'>";
+			echo "<form id='back' method='post' action='index.php?sec=network&sec2=godmode/reporting/visual_console_builder&tab=" . $activeTab  . "' enctype='multipart/form-data'>";
 			html_print_input_hidden('action', 'save');
 		}
 		else {
@@ -63,7 +63,7 @@ switch ($action) {
 	case 'update':
 	case 'save':
 		if (!defined('METACONSOLE')) {
-			echo "<form id='back' method='post' action='index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=" . $activeTab  . "&id_visual_console=" . $idVisualConsole . "' enctype='multipart/form-data'>";
+			echo "<form id='back' method='post' action='index.php?sec=network&sec2=godmode/reporting/visual_console_builder&tab=" . $activeTab  . "&id_visual_console=" . $idVisualConsole . "' enctype='multipart/form-data'>";
 			html_print_input_hidden('action', 'update');
 		}
 		else {
@@ -74,7 +74,7 @@ switch ($action) {
 		break;
 	case 'edit':
 		if (!defined('METACONSOLE')) {
-			echo "<form id='back' method='post' action='index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=" . $activeTab  . "&id_visual_console=" . $idVisualConsole . "' enctype='multipart/form-data'>";
+			echo "<form id='back' method='post' action='index.php?sec=network&sec2=godmode/reporting/visual_console_builder&tab=" . $activeTab  . "&id_visual_console=" . $idVisualConsole . "' enctype='multipart/form-data'>";
 			html_print_input_hidden('action', 'update');
 		}
 		else {
@@ -198,7 +198,7 @@ echo "</form>";
 
 <script src="include/javascript/jquery.colorpicker.js"></script>
 
-<script>
+<script type="text/javascript">
 
 $(document).ready (function () {
 		
@@ -258,6 +258,29 @@ $(document).ready (function () {
 		}
 		
 	}
+	else{
+		original_image=new Image();
+		original_image.src='images/console/background/'+$('#background').val();
+		if (parseInt(original_image.width) < 1024){
+			alert('Default width is '+original_image.width+'px, smaller than minimum -> 1024px');
+			$('input[name=width]').val('1024');
+			$('#preimagew').html(1024);			
+		}
+		else{
+			$('input[name=width]').val(original_image.height);
+			$('#preimagew').html(original_image.height);			
+		}
+		if (parseInt(original_image.height) < 768){
+			alert('Default height is '+original_image.height+'px, smaller than minimum -> 768px');	
+			$('input[name=height]').val('768');
+			$('#preimageh').html(768);
+		}
+		else{
+			$('input[name=height]').val(original_image.height);
+			$('#preimageh').html(original_image.height);
+		}
+		
+	}
 		
 	});
 	
@@ -281,6 +304,10 @@ $(document).ready (function () {
 			}
 			
 	});
+	
+	//Preload image size and activate auto image size changer when user click over a image in the selector
+	
+	var size_changer_state = false;
 
 	$("#background").change(function() {
 		$('#imagen2').attr('src','images/console/background/'+$('#background').val());
@@ -288,12 +315,21 @@ $(document).ready (function () {
 		$('#imagen2').show();		
 	});
 	
-	$("#background").mouseout(function() {		
-		$('#imagen').attr('src','images/console/background/'+$('#background').val());
-		$('input[name=width]').val($('#imagen').width());
-		$('input[name=height]').val($('#imagen').height());
-		$('#preimagew').html($('#imagen').width());
-		$('#preimageh').html($('#imagen').height());
+	$("#background").click(function(){
+		if('<?php echo (get_parameter('action')=='edit'); ?>' == false){
+			size_changer_state = true;
+			}
+	});
+	
+	$("#background").mouseout(function() {
+		if(size_changer_state){
+			$('#imagen').attr('src','images/console/background/'+$('#background').val());
+			$('input[name=width]').val($('#imagen').width());
+			$('input[name=height]').val($('#imagen').height());
+			$('#preimagew').html($('#imagen').width());
+			$('#preimageh').html($('#imagen').height());
+			size_changer_state = false;
+		}		
 	});
 
 	$("#file-background_image").change(function(){

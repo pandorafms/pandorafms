@@ -141,9 +141,29 @@ $result = db_get_all_rows_sql ($sql, true);
 
 
 if ($result === false) {
-	ui_print_empty_data( __('This agent doesn\'t have any GIS data.') );
+	
+	$sql2 = sprintf ("
+		SELECT current_longitude AS longitude, current_latitude AS latitude, current_altitude AS altitude, 
+		start_timestamp, description, number_of_packages, manual_placement
+		FROM tgis_data_status
+		WHERE tagente_id_agente = %d
+		ORDER BY start_timestamp DESC
+		LIMIT %d OFFSET %d", $agentId, $config['block_size'], (int)get_parameter ('offset'));
+		
+	$result2 = db_get_all_rows_sql ($sql2, true);
+
+	if ($result2 === false) {
+		ui_print_empty_data( __('This agent doesn\'t have any GIS data.') );
+	} else {
+		$result2[0]['end_timestamp'] = date('Y-m-d H:i:s');
+		$result = $result2;
+	}
 }
-else {
+
+if ($result !== false) {
+	if(!$countData){
+		$countData = 1;
+	}
 	ui_pagination ($countData, false) ;
 	$table->data = array();
 	foreach ($result as $key => $row) {

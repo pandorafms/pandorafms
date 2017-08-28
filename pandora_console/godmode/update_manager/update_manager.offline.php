@@ -41,11 +41,11 @@ $baseurl = ui_get_full_url(false, false, false, false);
 	var click_on_the_file_below_to_begin = "<?php echo __('Click on the file below to begin.'); ?>\n";
 	var updating = "<?php echo __('Updating'); ?>\n";
 	var package_updated_successfully = "<?php echo __('Package updated successfully.'); ?>\n";
-	var if_there_are_any_database_change = "<?php echo __('If there are any database change, it will be applied on the next login.'); ?>\n";
+	var if_there_are_any_database_change = "<?php echo __('If there are any database change, it will be applied.'); ?>\n";
 	var mr_available = "<?php echo __('Minor release available'); ?>\n";
 	var package_available = "<?php echo __('New package available'); ?>\n";
 	var mr_not_accepted = "<?php echo __('Minor release rejected. Changes will not apply.'); ?>\n";
-	var mr_not_accepted_code_yes = "<?php echo __('Minor release rejected. Package will apply.'); ?>\n";
+	var mr_not_accepted_code_yes = "<?php echo __('Minor release rejected. The database will not be updated and the package will apply.'); ?>\n";
 	var mr_cancel = "<?php echo __('Minor release rejected. Changes will not apply.'); ?>\n";
 	var package_cancel = "<?php echo __('These package changes will not apply.'); ?>\n";
 	var package_not_accepted = "<?php echo __('Package rejected. These package changes will not apply.'); ?>\n";
@@ -54,13 +54,18 @@ $baseurl = ui_get_full_url(false, false, false, false);
 	var package_success = "<?php echo __('Package updated successfully'); ?>\n";
 	var package_error = "<?php echo __('Error in package updated'); ?>\n";
 	var bad_mr_file = "<?php echo __('Database MR version is inconsistent, do you want to apply the package?'); ?>\n";
-	var text1_mr_file = "<?php echo __('There are a new database changes available to apply. Do you want to start the DB update process?'); ?>\n";
-	var text2_mr_file = "<?php echo __('We recommend launch a '); ?>\n";
+	var mr_available_header = "<?php echo __('There are db changes'); ?>\n";
+	var text1_mr_file = "<?php echo __('There are new database changes available to apply. Do you want to start the DB update process?'); ?>\n";
+	var text2_mr_file = "<?php echo __('We recommend launching '); ?>\n";
 	var text3_mr_file = "<?php echo __('planned downtime'); ?>\n";
 	var text4_mr_file = "<?php echo __(' to this process'); ?>\n";
 	var text1_package_file = "<?php echo __('There is a new update available'); ?>\n";
 	var text2_package_file = "<?php echo __('There is a new update available to apply. Do you want to start the update process?'); ?>\n";
 	var applying_mr = "<?php echo __('Applying DB MR'); ?>\n";
+	var cancel_button = "<?php echo __('Cancel'); ?>\n";
+	var ok_button = "<?php echo __('Ok'); ?>\n";
+	var apply_mr_button = "<?php echo __('Apply MR'); ?>\n";
+	var apply_button = "<?php echo __('Apply'); ?>\n";
 </script>
 
 <form id="form-offline_update" method="post" enctype="multipart/form-data" class="fileupload_form">

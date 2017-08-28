@@ -127,7 +127,7 @@ else {
 
 $disable_user = get_parameter ("disable_user", false);
 
-if (isset ($_GET["user_del"])) { //delete user
+if (isset ($_GET["user_del"]) && isset ($_GET["delete_user"])) { //delete user
 	$id_user = get_parameter ("delete_user", 0);
 	// Only allow delete user if is not the actual user
 	if ($id_user != $config['id_user']) {
@@ -197,16 +197,17 @@ elseif ($disable_user !== false) { //disable_user
 	else {
 		$result = false;
 	}
-	
-	if ($disable_user == 1) {
-		ui_print_result_message ($result, 
-			__('Successfully disabled'),
-			__('There was a problem disabling user'));
-	}
-	else {
-		ui_print_result_message ($result, 
-			__('Successfully enabled'),
-			__('There was a problem enabling user'));
+	if($result != null){
+		if ($disable_user == 1) {
+			ui_print_result_message ($result, 
+				__('Successfully disabled'),
+				__('There was a problem disabling user'));
+		}
+		else {
+			ui_print_result_message ($result, 
+				__('Successfully enabled'),
+				__('There was a problem enabling user'));
+		}
 	}
 }
 
@@ -221,8 +222,6 @@ if (($filter_group == 0) && ($filter_search == '')) {
 $table = new stdClass();
 $table->width = '100%';
 $table->class = "databox filters";
-if(defined('METACONSOLE'))
-	$table->class = "databox_filters";
 $table->rowclass[0] = '';
 $table->data[0][0] = '<b>' . __('Group') . '</b>';
 $table->data[0][1] = html_print_select_groups(false, "AR", true,
@@ -496,3 +495,10 @@ echo '</div>';
 enterprise_hook('close_meta_frame');
 
 ?>
+<script type="text/javascript">
+	$(document).ready (function () {
+		console.log('sknknan');
+		// text-filter_search
+	});
+</script>
+

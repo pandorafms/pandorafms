@@ -101,6 +101,7 @@ our @EXPORT = qw(
 	translate_obj
 	valid_regex
 	set_file_permissions
+	uri_encode
 );
 
 # ID of the different servers
@@ -1467,6 +1468,61 @@ sub is_metaconsole ($) {
 
 	return 0;
 }
+
+#######################
+# ENCODE
+#######################
+sub uri_encode {
+    # Un-reserved characters
+    my $unreserved_re = qr{ ([^a-zA-Z0-9\Q-_.~\E\%]) }x;
+    my $enc_map       = { ( map { chr($_) => sprintf( "%%%02X", $_ ) } ( 0 ... 255 ) ) };
+    my $dec_map       = { ( map { sprintf( "%02X", $_ ) => chr($_) } ( 0 ... 255 ) ) };
+
+    my ($data) = @_;
+
+    # Check for data
+    # Allow to be '0'
+    return unless defined $data;
+
+    # UTF-8 encode
+    $data = Encode::encode( 'utf-8-strict', $data );
+
+    # Encode a literal '%'
+    $data =~ s{(\%)(.*)}{uri_encode_literal_percent($1, $2, $enc_map, $dec_map)}gex;
+
+    # Percent Encode
+    $data =~ s{$unreserved_re}{uri_encode_get_encoded_char($1, $enc_map)}gex;
+
+    # Done
+  return $data;
+} ## end sub encode
+
+#######################
+# INTERNAL
+#######################
+sub uri_encode_get_encoded_char($$) {
+    my ( $char, $enc_map ) = @_;
+
+  return $enc_map->{$char} if exists $enc_map->{$char};
+  return $char;
+} ## end sub uri_encode_get_encoded_char
+
+sub uri_encode_literal_percent {
+    my ( $char, $post, $enc_map, $dec_map ) = @_;
+
+  return uri_encode_get_encoded_char($char, $enc_map) if not defined $post;
+
+    my $return_char;
+    if ( $post =~ m{^([a-fA-F0-9]{2})}x ) {
+        if ( exists $dec_map->{$1} ) {
+            $return_char = join( '', $char, $post );
+        }
+    } ## end if ( $post =~ m{^([a-fA-F0-9]{2})}x)
+
+    $return_char ||= join( '', uri_encode_get_encoded_char($char, $enc_map), $post );
+  return $return_char;
+} ## end sub uri_encode_literal_percent
+
 
 # End of function declaration
 # End of defined Code

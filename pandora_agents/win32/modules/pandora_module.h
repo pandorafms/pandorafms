@@ -238,6 +238,7 @@ namespace Pandora_Modules {
 		void         setTimeout    (int timeout);
 		int          getTimeout    ();
 		string       getSave ();
+		bool         getAsync ();
 
 		virtual string getXml      ();
 

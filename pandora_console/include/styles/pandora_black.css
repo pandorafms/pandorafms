@@ -1948,7 +1948,7 @@ div.warn {
 /* Submenus havent borders */
 .submenu_not_selected, .submenu_selected, .submenu2 {
 	border: 0px !important;
-	min-height: 0px !important;
+	min-height: 35px !important;
 }
 
 /* Pandora width style theme */
@@ -2835,6 +2835,14 @@ div#agent_wizard_subtabs {
 
 #code_license_dialog a {
 	text-decoration: underline;
+}
+
+#code_license_dialog a:hover {
+	color:red;
+}
+
+#code_license_dialog *{
+	color: #222222;
 }
 
 /* GRAPHS CSS */

@@ -45,7 +45,7 @@ else {
 	ui_meta_print_header(__('Monitor view'));
 }
 
-$ag_freestring 		= 		get_parameter ('ag_freestring');
+$ag_freestring 		= 		(string)get_parameter ('ag_freestring');
 $moduletype 		= 		(string) get_parameter ('moduletype');
 $datatype 			= 		(string) get_parameter ('datatype');
 $ag_modulename 		= 		(string) get_parameter ('ag_modulename');
@@ -160,14 +160,12 @@ if ($moduletype != '') {
 	$sql_conditions .= sprintf (' AND tagente_modulo.id_modulo =' .$moduletype);
 }
 
-
 // Freestring selector
 if ($ag_freestring != '') {
-	$sql_conditions .= sprintf (' AND (tagente.nombre LIKE \'%%%s%%\'
-		OR tagente.alias LIKE \'%%%s%%\'
-		OR tagente_modulo.nombre LIKE \'%%%s%%\'
-		OR tagente_modulo.descripcion LIKE \'%%%s%%\')',
-		$ag_freestring, $ag_freestring, $ag_freestring);
+	$sql_conditions .= ' AND (tagente.nombre COLLATE utf8_general_ci LIKE \'%%' . $ag_freestring . '%%\'
+		OR tagente.alias COLLATE utf8_general_ci LIKE \'%%' . $ag_freestring . '%%\'
+		OR tagente_modulo.nombre COLLATE utf8_general_ci LIKE \'%%' . $ag_freestring . '%%\'
+		OR tagente_modulo.descripcion COLLATE utf8_general_ci LIKE \'%%' . $ag_freestring . '%%\')';
 }
 
 // Status selector
@@ -292,7 +290,7 @@ $table->style[4] = 'font-weight: bold;';
 $table->data[0][0] = __('Group');
 $table->data[0][1] = html_print_select_groups($config['id_user'], 'AR',
 	true, 'ag_group', $ag_group, '',  '', '0', true, false, 
-		false, 'w130', false, 'width:150px;', false, false,
+		false, '', false, '', false, false,
 		'id_grupo', false);
 
 $fields = array ();

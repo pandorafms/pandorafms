@@ -75,8 +75,34 @@ $modules_others = agents_get_modules(
 			'<>21', // != async_proc
 			'<>31') // != web_proc
 		));
+
 if (empty($modules_others))
 	$modules_others = array();
+
+$modules_boolean = agents_get_modules(
+	$id_agente, false, array(
+		'id_tipo_modulo' => array(
+			'<>1',
+			'<>3',
+			'<>4',
+			'<>5',
+			'<>7',
+			'<>8',
+			'<>10',
+			'<>11',
+			'<>15',
+			'<>16',
+			'<>17',
+			'<>22',
+			'<>23',
+			'<>24',
+			'<>30',
+			'<>32',
+			'<>33',
+			'<>100')
+		));
+if (empty($modules_boolean))
+	$modules_boolean = array();
 
 //Cleaned the duplicate $modules and other things
 $modules_others = array_diff_key($modules_others,
@@ -91,10 +117,15 @@ foreach ($modules_networkmap_no_proc as $i => $m) {
 		'optgroup' => __('Modules network no proc'),
 		'name' => $m);
 }
+foreach ($modules_boolean as $i => $m) {
+	$modules_boolean[$i] = array(
+		'optgroup' => __('Modules boolean'),
+		'name' => $m);
+}
 
 
 $list_modules = $modules_networkmap_no_proc +
-	$modules_others;
+	$modules_others + $modules_boolean;
 //----------------------------------------------------------------------
 
 if (empty($modules)) {
@@ -123,7 +154,7 @@ $table->rowspan[0][1] = 7;
 $table->data[0][0] = __('Modules');
 $table->data[0][1] = html_print_select($list_modules, 'modules[]',
 	$modules, '', '', 0, true, true,
-	true, '', false, "width: 100%; height: 200px;");
+	true, '', false, "min-width:200px;max-width:460px;height: 200px;");
 
 $table->rowspan[2][0] = 7;
 $table->data[2][0] = "";

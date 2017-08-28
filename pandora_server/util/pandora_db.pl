@@ -33,7 +33,7 @@ use PandoraFMS::Tools;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG PS170417";
+my $version = "7.0NG.711 PS170828";
 
 # Pandora server configuration
 my %conf;
@@ -93,7 +93,7 @@ sub pandora_purgedb ($$) {
 	}
 
 	# Delete old inventory data
-	if ($conf->{'_inventory_purge'} > 0) {
+	if (defined($conf->{'_inventory_purge'}) && $conf->{'_inventory_purge'} > 0) {
 		if (enterprise_load (\%conf) != 0) {
 			my $ulimit_timestamp_inventory = time() - (86400 * $conf->{'_inventory_purge'});
 
@@ -675,9 +675,13 @@ sub pandora_load_config ($) {
 	$conf->{"dynamic_warning"} = 0.10 unless defined($conf->{"dynamic_warning"});
 	$conf->{"dynamic_updates"} = 5 unless defined($conf->{"dynamic_updates"});
 
+	$conf->{'servername'} = $conf->{'servername'};
+    $conf->{'servername'} = `hostname` unless defined ($conf->{'servername'});
+	$conf->{"servername"} =~ s/\s//g;
+
 	# workaround for name unconsistency (corresponding entry at pandora_server.conf is 'errorlog_file')
-        $conf->{'errorlogfile'} = $conf->{'errorlog_file'};
-        $conf->{'errorlogfile'} = "/var/log/pandora_server.error" unless defined ($conf->{'errorlogfile'});
+	$conf->{'errorlogfile'} = $conf->{'errorlog_file'};
+	$conf->{'errorlogfile'} = "/var/log/pandora_server.error" unless defined ($conf->{'errorlogfile'});
 
 	# Read additional tokens from the DB
 	my $dbh = db_connect ($conf->{'dbengine'}, $conf->{'dbname'}, $conf->{'dbhost'}, $conf->{'dbport'}, $conf->{'dbuser'}, $conf->{'dbpass'});

@@ -36,6 +36,7 @@ namespace Pandora_Modules {
 		bool   watchdog;
 	public:
 		Pandora_Module_Service (string name, string service_name);
+		~Pandora_Module_Service ();
 		
 		void   run             ();
 		string getServiceName  () const;

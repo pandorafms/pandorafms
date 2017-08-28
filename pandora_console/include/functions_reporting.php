@@ -146,6 +146,15 @@ function reporting_make_reporting_data($report = null, $id_report,
 					continue;
 				}
 			}
+			
+			
+			if(sizeof($content['id_agent']) != 1){
+				$content['style']['name_label'] = str_replace("_agent_",sizeof($content['id_agent']).__(' agents'),$content['style']['name_label']);
+			}
+
+			if(sizeof($content['id_agent_module']) != 1){
+			 	$content['style']['name_label'] = str_replace("_module_",sizeof($content['id_agent_module']).__(' modules'),$content['style']['name_label']);
+			}
 
 			$content['name'] = reporting_label_macro($items_label, $content['style']['name_label']);
 
@@ -2438,7 +2447,14 @@ function reporting_database_serialized($report, $content) {
 	$return['agent_name'] = $agent_name;
 	$return['module_name'] = $module_name;
 	
-	
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
+	}
+
 	$datelimit = $report["datetime"] - $content['period'];
 	$search_in_history_db = db_search_in_history_db($datelimit);
 	
@@ -2513,6 +2529,10 @@ function reporting_database_serialized($report, $content) {
 			
 			$data[] = $row;
 		}
+	}
+
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
 	}
 	
 	$return["data"] = $data;
@@ -3940,8 +3960,13 @@ function reporting_sql($report, $content) {
 			$header = explode('|', $content['header_definition']);
 			$return['header'] = $header;
 		}
-		
-		$result = db_get_all_rows_sql($sql);
+		if($content['id_rc'] != null){
+			$historical_db = db_get_value_sql("SELECT historical_db from treport_content where id_rc =".$content['id_rc']);
+		}
+		else{
+			$historical_db = $content['historical_db'];
+		}
+		$result = db_get_all_rows_sql($sql,$historical_db);
 		if ($result !== false) {
 			
 			foreach ($result as $row) {
@@ -3966,7 +3991,7 @@ function reporting_sql($report, $content) {
 	}
 	else {
 		$return['correct'] = 0;
-		$return['error'] = __('Illegal query: Due security restrictions, there are some tokens or words you cannot use: *, delete, drop, alter, modify, union, password, pass, insert or update.');
+		$return['error'] = __('Illegal query: Due security restrictions, there are some tokens or words you cannot use: *, delete, drop, alter, modify, password, pass, insert or update.');
 	}
 	
 	if ($config['metaconsole']) {
@@ -4336,6 +4361,20 @@ function reporting_advanced_sla ($id_agent_module, $time_from = null, $time_to =
 		if ( (!(isset($max_value))) && (!(isset($min_value))) ) {
 			$max_value = null;
 			$min_value = null;
+		}
+		if ( (!isset($min_value)) && (!isset($max_value)) ) {
+			if (   ($agentmodule_info["id_tipo_modulo"] == "2")      // generic_proc
+				|| ($agentmodule_info["id_tipo_modulo"] == "6")      // remote_icmp_proc
+				|| ($agentmodule_info["id_tipo_modulo"] == "9")      // remote_tcp_proc
+				|| ($agentmodule_info["id_tipo_modulo"] == "18")     // remote_snmp_proc
+				|| ($agentmodule_info["id_tipo_modulo"] == "21")     // async_proc
+				|| ($agentmodule_info["id_tipo_modulo"] == "31") ) { // web_proc
+				// Boolean values are OK if they're different from 0
+				$max_value = 0;
+				$min_value = 0;
+				$inverse_interval = 1;
+			}
+
 		}
 	}
 
@@ -5471,9 +5510,8 @@ function reporting_availability_graph($report, $content, $pdf=false) {
  *
  */
 function reporting_general($report, $content) {
-	
 	global $config;
-	
+
 	$return = array();
 	$return['type'] = 'general';
 	$return['subtype'] = $content['group_by_agent'];
@@ -5501,6 +5539,7 @@ function reporting_general($report, $content) {
 	$return["max"]["formated_value"] = null;
 	$return["max"]["agent"] = null;
 	$return["max"]["module"] = null;
+	$return["show_in_same_row"] = $content['style']['show_in_same_row'];
 	
 	if (empty($content['subitems'])) {
 		$generals = db_get_all_rows_filter(
@@ -5517,7 +5556,8 @@ function reporting_general($report, $content) {
 	}
 	
 	$i = 0;
-	foreach ($generals as $key => $row) {
+	$index = 0;
+	foreach ($generals as $row) {
 		//Metaconsole connection
 		$server_name = $row ['server_name'];
 		if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
@@ -5547,78 +5587,78 @@ function reporting_general($report, $content) {
 			$row['id_agent_module']);
 		
 		if ($content['period'] == 0) {
-			$data_res[$key] =
+			$data_res[$index] =
 				modules_get_last_value($row['id_agent_module']);
 		}
 		else {
 			if(is_numeric($type_mod)){
 				switch ($row['operation']) {
 					case 'sum':
-						$data_res[$key] =
+						$data_res[$index] =
 							reporting_get_agentmodule_data_sum(
 								$row['id_agent_module'], $content['period'], $report["datetime"]);
 						break;
 					case 'max':
-						$data_res[$key] =
+						$data_res[$index] =
 							reporting_get_agentmodule_data_max(
 								$row['id_agent_module'], $content['period']);
 						break;
 					case 'min':
-						$data_res[$key] =
+						$data_res[$index] =
 							reporting_get_agentmodule_data_min(
 								$row['id_agent_module'], $content['period']);
 						break;
 					case 'avg':
 					default:
-						$data_res[$key] =
+						$data_res[$index] =
 							reporting_get_agentmodule_data_average(
 								$row['id_agent_module'], $content['period']);
 						break;
 				}
 			} else {
-				$data_res[$key] = $type_mod;
+				$data_res[$index] = $type_mod;
 			}
 		}
 		
 		switch ($content['group_by_agent']) {
 			case REPORT_GENERAL_NOT_GROUP_BY_AGENT:
-				$id_agent_module[$key] = $row['id_agent_module'];
-				$agent_name[$key] = $ag_name;
-				$module_name[$key] = $mod_name;
-				$units[$key] = $unit;
-				$operations[$key] = $row['operation'];
+				$id_agent_module[$index] = $row['id_agent_module'];
+				$agent_name[$index] = $ag_name;
+				$module_name[$index] = $mod_name;
+				$units[$index] = $unit;
+				$operations[$index] = $row['operation'];
 				break;
 			case REPORT_GENERAL_GROUP_BY_AGENT:
-				if ($data_res[$key] === false) {
+				if ($data_res[$index] === false) {
 					$return["data"][$ag_name][$mod_name] = null;
 				}
 				else {
-					if (!is_numeric($data_res[$key])) {
-						$return["data"][$ag_name][$mod_name] = $data_res[$key];
+					if (!is_numeric($data_res[$index])) {
+						$return["data"][$ag_name][$mod_name] = $data_res[$index];
 					}
 					else {
 						$return["data"][$ag_name][$mod_name] =
-							format_for_graph($data_res[$key], 2) . " " . $unit;
+							format_for_graph($data_res[$index], 2) . " " . $unit;
 					}
 				}
 				break;
 		}
 		
 		// Calculate the avg, min and max
-		if (is_numeric($data_res[$key])) {
+		if (is_numeric($data_res[$index])) {
 			$change_min = false;
 			if (is_null($return["min"]["value"])) {
 				$change_min = true;
 			}
 			else {
-				if ($return["min"]["value"] > $data_res[$key]) {
+				if ($return["min"]["value"] > $data_res[$index]) {
 					$change_min = true;
 				}
 			}
 			if ($change_min) {
-				$return["min"]["value"] = $data_res[$key];
+				$return["min"]["value"] = $data_res[$index];
 				$return["min"]["formated_value"] =
-					format_for_graph($data_res[$key], 2) . " " . $unit;
+					format_for_graph($data_res[$index], 2) . " " . $unit;
 				$return["min"]["agent"] = $ag_name;
 				$return["min"]["module"] = $mod_name;
 			}
@@ -5628,30 +5668,31 @@ function reporting_general($report, $content) {
 				$change_max = true;
 			}
 			else {
-				if ($return["max"]["value"] < $data_res[$key]) {
+				if ($return["max"]["value"] < $data_res[$index]) {
 					$change_max = true;
 				}
 			}
 			
 			if ($change_max) {
-				$return["max"]["value"] = $data_res[$key];
+				$return["max"]["value"] = $data_res[$index];
 				$return["max"]["formated_value"] =
-					format_for_graph($data_res[$key], 2) . " " . $unit;
+					format_for_graph($data_res[$index], 2) . " " . $unit;
 				$return["max"]["agent"] = $ag_name;
 				$return["max"]["module"] = $mod_name;
 			}
 			
 			if ($i == 0) {
-				$return["avg_value"] = $data_res[$key];
+				$return["avg_value"] = $data_res[$index];
 			}
 			else {
 				$return["avg_value"] =
 					(($return["avg_value"] * $i) / ($i + 1))
 					+
-					($data_res[$key] / ($i + 1));
+					($data_res[$index] / ($i + 1));
 			}
 		}
-		
+
+		$index++;
 		$i++;
 		
 		//Restore dbconnection
@@ -5692,8 +5733,9 @@ function reporting_general($report, $content) {
 				$data = array();
 				$data['agent'] = $agent_name[$i];
 				$data['module'] = $module_name[$i];
-				
-				
+				$data['id_agent_module'] = $id_agent_module[$i];
+				$data['id_agent'] = agents_get_agent_id_by_module_id($id_agent_module[$i]);
+
 				$data['operator'] = "";
 				if ($content['period'] != 0) {
 					switch ($operations[$i]) {
@@ -5758,17 +5800,10 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 	
 	require_once ($config["homedir"] . '/include/functions_graph.php');
 	
-	if ($type_report == 'automatic_graph') {
-		// Do none
-	}
-	else {
-		if ($config['metaconsole']) {
-			$id_meta = metaconsole_get_id_server($content["server_name"]);
-			
-			
-			$server = metaconsole_get_connection_by_id ($id_meta);
-			metaconsole_connect($server);
-		}
+	if ($config['metaconsole'] && $type_report != 'automatic_graph') {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);	
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
 	}
 	
 	$graph = db_get_row ("tgraph", "id_graph", $content['id_gs']);
@@ -5811,10 +5846,36 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 		
 		array_push ($weights, $graph_item["weight"]);
 		if (in_array('label',$content['style'])) {
+			if (defined('METACONSOLE')) {
+				$item = array('type' => 'custom_graph',
+							'id_agent' =>$content['id_agent'],
+							'id_agent_module'=>$graph_item['id_agent_module']);
+			}
+			else {
 			$item = array('type' => 'custom_graph',
 						'id_agent' =>modules_get_agentmodule_agent($graph_item['id_agent_module']),
 						'id_agent_module'=>$graph_item['id_agent_module']);
-			$label = reporting_label_macro($item, $content['style']['label']);
+			}
+			
+			if($type_report == 'automatic_graph'){
+				$label = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+				if (!empty($label)) {
+					if ($config['metaconsole']) {
+						$id_meta = metaconsole_get_id_server($content["server_name"]);
+						$server = metaconsole_get_connection_by_id ($id_meta);
+						metaconsole_connect($server);
+					}
+					$label = reporting_label_macro($content, $label);
+					
+					if ($config['metaconsole']) {
+						metaconsole_restore_db();
+					}
+				}
+			} else {
+				$label = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+				$label = reporting_label_macro($content, $label);
+			}
+			
 			$labels[$graph_item['id_agent_module']] = $label;
 		}
 	}
@@ -5871,13 +5932,8 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 			break;
 	}
 	
-	if ($type_report == 'automatic_graph') {
-		// Do none
-	}
-	else {
-		if ($config['metaconsole']) {
-			metaconsole_restore_db();
-		}
+	if ($config['metaconsole'] && $type_report != 'automatic_graph') {
+		metaconsole_restore_db();
 	}
 	
 	return reporting_check_structure_content($return);
@@ -10274,6 +10330,7 @@ function reporting_label_macro ($item, $label) {
 		case 'TTO':
 		case 'MTBF':
 		case 'MTTR':
+		case 'automatic_graph':
 			if (preg_match("/_agent_/", $label)) {
 				$agent_name = agents_get_alias($item['id_agent']);
 				$label = str_replace("_agent_", $agent_name, $label);

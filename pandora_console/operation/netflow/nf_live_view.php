@@ -347,7 +347,7 @@ echo '<form method="post" action="' . $config['homeurl'] .
 	}
 	else {
 		echo "<td style='font-weight:bold;'>" . __('Dst Ip'). ui_print_help_tip (__("Destination IP. A comma separated list of destination ip. If we leave the field blank, will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249"), true) . "</td>";
-		echo "<td colspan='2'>" . html_print_input_text ('ip_dst', $filter['ip_dst'], false, 30, 80, true) . "</td>";
+		echo "<td>" . html_print_input_text ('ip_dst', $filter['ip_dst'], false, 30, 80, true) . "</td>";
 	}
 	
 	if ($netflow_disable_custom_lvfilters) {
@@ -356,7 +356,7 @@ echo '<form method="post" action="' . $config['homeurl'] .
 	}
 	else {
 		echo "<td style='font-weight:bold;'>" . __('Src Ip'). ui_print_help_tip (__("Source IP. A comma separated list of source ip. If we leave the field blank, will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249"), true) . "</td>";
-		echo "<td colspan='2'>" . html_print_input_text ('ip_src', $filter['ip_src'], false, 30, 80, true) . "</td>";
+		echo "<td>" . html_print_input_text ('ip_src', $filter['ip_src'], false, 30, 80, true) . "</td>";
 	}
 	
 	echo "</tr>";
@@ -368,7 +368,7 @@ echo '<form method="post" action="' . $config['homeurl'] .
 	}
 	else {
 		echo "<td style='font-weight:bold;'>" . __('Dst Port'). ui_print_help_tip (__("Destination port. A comma separated list of destination ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22"), true) . "</td>";
-		echo "<td colspan='2'>" . html_print_input_text ('dst_port', $filter['dst_port'], false, 30, 80, true) . "</td>";
+		echo "<td>" . html_print_input_text ('dst_port', $filter['dst_port'], false, 30, 80, true) . "</td>";
 	}
 	
 	if ($netflow_disable_custom_lvfilters) {
@@ -377,7 +377,7 @@ echo '<form method="post" action="' . $config['homeurl'] .
 	}
 	else {
 		echo "<td style='font-weight:bold;'>" . __('Src Port') . ui_print_help_tip (__("Source port. A comma separated list of source ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22"), true) . "</td>";
-		echo "<td colspan='2'>" . html_print_input_text ('src_port', $filter['src_port'], false, 30, 80, true) . "</td>";
+		echo "<td>" . html_print_input_text ('src_port', $filter['src_port'], false, 30, 80, true) . "</td>";
 	}
 	
 	echo "</tr>";
@@ -397,20 +397,18 @@ echo '<form method="post" action="' . $config['homeurl'] .
 	echo "<td>" . '<b>' . __('Aggregate by') . '</b>' . ui_print_help_icon ('aggregate_by', true) . "</td>";
 	$aggregate_list = array();
 	$aggregate_list = array ('none' => __('None'), 'proto' => __('Protocol'), 'srcip' =>__('Src Ip Address'), 'dstip' =>__('Dst Ip Address'), 'srcport' =>__('Src Port'), 'dstport' =>__('Dst Port') );
-	echo "<td colspan='2'>" . html_print_select ($aggregate_list, "aggregate", $filter['aggregate'], '', '', 0, true, false, true, '', false) . "</td>";
+	echo "<td>" . html_print_select ($aggregate_list, "aggregate", $filter['aggregate'], '', '', 0, true, false, true, '', false) . "</td>";
 	
 	echo "<td>" . '<b>'.__('Router ip').'</b>' . "</td>";
-	echo "<td colspan='2'>" . html_print_input_text ('router_ip', $filter['router_ip'], false, 30, 80, true) . "</td>";
+	echo "<td>" . html_print_input_text ('router_ip', $filter['router_ip'], false, 30, 80, true) . "</td>";
 
 	echo "<td>" . '<b>'.__('Output format').'</b>' . "</td>";
 	$show_output = array ('bytes' => __('Bytes'), 'bytespersecond' => __('Bytes per second'), 'kilobytes' => __('Kilobytes'), 'megabytes' => __('Megabytes'), 'kilobytespersecond' => __('Kilobytes per second'), 'megabytespersecond' => __('Megabytes per second'));
-	echo "<td colspan='2'>" . html_print_select ($show_output, 'output', $filter['output'], '', '', 0, true, false, true, '', false) . "</td>";
+	echo "<td>" . html_print_select ($show_output, 'output', $filter['output'], '', '', 0, true, false, true, '', false) . "</td>";
 	
 	echo "</tr>";
 	
 	echo "</table>";
-	
-	//echo "<br />";
 	
 	echo "<table class='' width='100%' style='border: 0px; text-align:right;'><tr><td>";
 
@@ -437,9 +435,9 @@ if ($draw != '') {
 	}
 	// Draw the netflow chart
 	else {
-	echo netflow_draw_item ($start_date, $end_date,
-		$interval_length, $chart_type, $filter,
-		$max_aggregates, $connection_name, 'HTML', $address_resolution);
+		echo netflow_draw_item ($start_date, $end_date,
+			$interval_length, $chart_type, $filter,
+			$max_aggregates, $connection_name, 'HTML', $address_resolution);
 	}
 }
 

@@ -78,7 +78,7 @@ else {
 	echo '<div id="frame_view" style="overflow: auto; margin: 0px auto; padding: 5px; ">';
 }
 echo '<div id="background" class="" style="top:0px;
-	margin: 0px auto;border: 1px lightgray solid; width: ' . $widthBackground . 'px; height: ' . $heightBackground . 'px;">';
+margin: 0px auto;border: 1px lightgray solid; width: ' . $widthBackground . 'px; height: ' . $heightBackground . 'px;background-color: '.$visualConsole["background_color"].';">';
 echo "<div id='background_grid'
 	style='position: absolute; display: none; overflow: hidden;
 	background: url(" . ui_get_full_url('images/console/background/white_boxed.jpg', false, false, false) . ");

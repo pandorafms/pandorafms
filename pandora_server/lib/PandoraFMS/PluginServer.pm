@@ -215,7 +215,7 @@ sub data_consumer ($$) {
 	}
 	
 	# Agent and module macros
-	my %macros = (_agent_ => (defined ($agent)) ? $agent->{'nombre'} : '',
+	my %macros = (_agent_ => (defined ($agent)) ? $agent->{'alias'} : '',
 				_agentdescription_ => (defined ($agent)) ? $agent->{'comentarios'} : '',
 				_agentstatus_ => undef,
 				_agentgroup_ => (defined ($group)) ? $group->{'nombre'} : '',

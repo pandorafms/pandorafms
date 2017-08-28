@@ -560,6 +560,7 @@ sub pandora_process_alert ($$$$$$$$;$) {
 
 		$alert->{'critical_instructions'} = $critical_instructions;
 		$alert->{'warning_instructions'} = $warning_instructions;
+		$alert->{'unknown_instructions'} = $unknown_instructions;
 		
 		# Generate an event
 		if ($table eq 'tevent_alert') {
@@ -769,6 +770,7 @@ sub pandora_execute_alert ($$$$$$$$$;$) {
 
 	$alert->{'critical_instructions'} = $critical_instructions;
 	$alert->{'warning_instructions'} = $warning_instructions;
+	$alert->{'unknown_instructions'} = $unknown_instructions;
 
 	# Execute actions
 	my $event_generated = 0;
@@ -828,118 +830,118 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 
 	if (!defined($alert->{'snmp_alert'})) {
 		# Regular alerts
-		$field1 = $action->{'field1'} ? $action->{'field1'} : $alert->{'field1'};
-		$field2 = $action->{'field2'} ? $action->{'field2'} : $alert->{'field2'};
-		$field3 = $action->{'field3'} ? $action->{'field3'} : $alert->{'field3'};
-		$field4 = $action->{'field4'} ? $action->{'field4'} : $alert->{'field4'};
-		$field5 = $action->{'field5'} ? $action->{'field5'} : $alert->{'field5'};
-		$field6 = $action->{'field6'} ? $action->{'field6'} : $alert->{'field6'};
-		$field7 = $action->{'field7'} ? $action->{'field7'} : $alert->{'field7'};
-		$field8 = $action->{'field8'} ? $action->{'field8'} : $alert->{'field8'};
-		$field9 = $action->{'field9'} ? $action->{'field9'} : $alert->{'field9'};
-		$field10 = $action->{'field10'} ? $action->{'field10'} : $alert->{'field10'};
-		$field11 = $action->{'field11'} ? $action->{'field11'} : $alert->{'field11'};
-		$field12 = $action->{'field12'} ? $action->{'field12'} : $alert->{'field12'};
-		$field13 = $action->{'field13'} ? $action->{'field13'} : $alert->{'field13'};
-		$field14 = $action->{'field14'} ? $action->{'field14'} : $alert->{'field14'};
-		$field15 = $action->{'field15'} ? $action->{'field15'} : $alert->{'field15'};
+		$field1  = defined($action->{'field1'})  && $action->{'field1'}  ne ""  ? $action->{'field1'}  : $alert->{'field1'};
+		$field2  = defined($action->{'field2'})  && $action->{'field2'}  ne ""  ? $action->{'field2'}  : $alert->{'field2'};
+		$field3  = defined($action->{'field3'})  && $action->{'field3'}  ne ""  ? $action->{'field3'}  : $alert->{'field3'};
+		$field4  = defined($action->{'field4'})  && $action->{'field4'}  ne ""  ? $action->{'field4'}  : $alert->{'field4'};
+		$field5  = defined($action->{'field5'})  && $action->{'field5'}  ne ""  ? $action->{'field5'}  : $alert->{'field5'};
+		$field6  = defined($action->{'field6'})  && $action->{'field6'}  ne ""  ? $action->{'field6'}  : $alert->{'field6'};
+		$field7  = defined($action->{'field7'})  && $action->{'field7'}  ne ""  ? $action->{'field7'}  : $alert->{'field7'};
+		$field8  = defined($action->{'field8'})  && $action->{'field8'}  ne ""  ? $action->{'field8'}  : $alert->{'field8'};
+		$field9  = defined($action->{'field9'})  && $action->{'field9'}  ne ""  ? $action->{'field9'}  : $alert->{'field9'};
+		$field10 = defined($action->{'field10'}) && $action->{'field10'} ne ""  ? $action->{'field10'} : $alert->{'field10'};
+		$field11 = defined($action->{'field11'}) && $action->{'field11'} ne ""  ? $action->{'field11'} : $alert->{'field11'};
+		$field12 = defined($action->{'field12'}) && $action->{'field12'} ne ""  ? $action->{'field12'} : $alert->{'field12'};
+		$field13 = defined($action->{'field13'}) && $action->{'field13'} ne ""  ? $action->{'field13'} : $alert->{'field13'};
+		$field14 = defined($action->{'field14'}) && $action->{'field14'} ne ""  ? $action->{'field14'} : $alert->{'field14'};
+		$field15 = defined($action->{'field15'}) && $action->{'field15'} ne ""  ? $action->{'field15'} : $alert->{'field15'};
 	}
 	else {
-		$field1 = $alert->{'field1'} ? $alert->{'field1'} : $action->{'field1'};
-		$field2 = $alert->{'field2'} ? $alert->{'field2'} : $action->{'field2'};
-		$field3 = $alert->{'field3'} ? $alert->{'field3'} : $action->{'field3'};
-		$field4 = $action->{'field4'} ? $action->{'field4'} : $alert->{'field4'};
-		$field5 = $action->{'field5'} ? $action->{'field5'} : $alert->{'field5'};
-		$field6 = $action->{'field6'} ? $action->{'field6'} : $alert->{'field6'};
-		$field7 = $action->{'field7'} ? $action->{'field7'} : $alert->{'field7'};
-		$field8 = $action->{'field8'} ? $action->{'field8'} : $alert->{'field8'};
-		$field9 = $action->{'field9'} ? $action->{'field9'} : $alert->{'field9'};
-		$field10 = $action->{'field10'} ? $action->{'field10'} : $alert->{'field10'};
-		$field11 = $action->{'field11'} ? $action->{'field11'} : $alert->{'field11'};
-		$field12 = $action->{'field12'} ? $action->{'field12'} : $alert->{'field12'};
-		$field13 = $action->{'field13'} ? $action->{'field13'} : $alert->{'field13'};
-		$field14 = $action->{'field14'} ? $action->{'field14'} : $alert->{'field14'};
-		$field15 = $action->{'field15'} ? $action->{'field15'} : $alert->{'field15'};
+		$field1  = defined($alert->{'field1'})   && $alert->{'field1'}   ne "" ? $alert->{'field1'}   : $action->{'field1'};
+		$field2  = defined($alert->{'field2'})   && $alert->{'field2'}   ne "" ? $alert->{'field2'}   : $action->{'field2'};
+		$field3  = defined($alert->{'field3'})   && $alert->{'field3'}   ne "" ? $alert->{'field3'}   : $action->{'field3'};
+		$field4  = defined($action->{'field4'})  && $action->{'field4'}  ne "" ? $action->{'field4'}  : $alert->{'field4'};
+		$field5  = defined($action->{'field5'})  && $action->{'field5'}  ne "" ? $action->{'field5'}  : $alert->{'field5'};
+		$field6  = defined($action->{'field6'})  && $action->{'field6'}  ne "" ? $action->{'field6'}  : $alert->{'field6'};
+		$field7  = defined($action->{'field7'})  && $action->{'field7'}  ne "" ? $action->{'field7'}  : $alert->{'field7'};
+		$field8  = defined($action->{'field8'})  && $action->{'field8'}  ne "" ? $action->{'field8'}  : $alert->{'field8'};
+		$field9  = defined($action->{'field9'})  && $action->{'field9'}  ne "" ? $action->{'field9'}  : $alert->{'field9'};
+		$field10 = defined($action->{'field10'}) && $action->{'field10'} ne "" ? $action->{'field10'} : $alert->{'field10'};
+		$field11 = defined($action->{'field11'}) && $action->{'field11'} ne "" ? $action->{'field11'} : $alert->{'field11'};
+		$field12 = defined($action->{'field12'}) && $action->{'field12'} ne "" ? $action->{'field12'} : $alert->{'field12'};
+		$field13 = defined($action->{'field13'}) && $action->{'field13'} ne "" ? $action->{'field13'} : $alert->{'field13'};
+		$field14 = defined($action->{'field14'}) && $action->{'field14'} ne "" ? $action->{'field14'} : $alert->{'field14'};
+		$field15 = defined($action->{'field15'}) && $action->{'field15'} ne "" ? $action->{'field15'} : $alert->{'field15'};
 	}
 	
 	# Recovery fields, thanks to Kato Atsushi
 	if ($alert_mode == RECOVERED_ALERT) {
 		# Field 1 is a special case where [RECOVER] prefix is not added even when it is defined
-		$field1 = $alert->{'field1_recovery'} ? $alert->{'field1_recovery'} : $field1;
-		$field1 = $action->{'field1_recovery'} ? $action->{'field1_recovery'} : $field1;
+		$field1  = defined($alert->{'field1_recovery'})   && $alert->{'field1_recovery'}   ne "" ? $alert->{'field1_recovery'}   : $field1;
+		$field1  = defined($action->{'field1_recovery'})  && $action->{'field1_recovery'}  ne "" ? $action->{'field1_recovery'}  : $field1;
 
-		$field2 = $field2 ? "[RECOVER]" . $field2 : "";
-		$field2 = $alert->{'field2_recovery'} ? $alert->{'field2_recovery'} : $field2;
-		$field2 = $action->{'field2_recovery'} ? $action->{'field2_recovery'} : $field2;
-
-		$field3 = $field3 ? "[RECOVER]" . $field3 : "";
-		$field3 = $alert->{'field3_recovery'} ? $alert->{'field3_recovery'} : $field3;
-		$field3 = $action->{'field3_recovery'} ? $action->{'field3_recovery'} : $field3;
-
-		$field4 = $field4 ? "[RECOVER]" . $field4 : "";
-		$field4 = $alert->{'field4_recovery'} ? $alert->{'field4_recovery'} : $field4;
-		$field4 = $action->{'field4_recovery'} ? $action->{'field4_recovery'} : $field4;
-
-		$field5 = $field5 ? "[RECOVER]" . $field5 : "";
-		$field5 = $alert->{'field5_recovery'} ? $alert->{'field5_recovery'} : $field5;
-		$field5 = $action->{'field5_recovery'} ? $action->{'field5_recovery'} : $field5;
-
-		$field6 = $field6 ? "[RECOVER]" . $field6 : "";
-		$field6 = $alert->{'field6_recovery'} ? $alert->{'field6_recovery'} : $field6;
-		$field6 = $action->{'field6_recovery'} ? $action->{'field6_recovery'} : $field6;
-
-		$field7 = $field7 ? "[RECOVER]" . $field7 : "";
-		$field7 = $alert->{'field7_recovery'} ? $alert->{'field7_recovery'} : $field7;
-		$field7 = $action->{'field7_recovery'} ? $action->{'field7_recovery'} : $field7;
-
-		$field8 = $field8 ? "[RECOVER]" . $field8 : "";
-		$field8 = $alert->{'field8_recovery'} ? $alert->{'field8_recovery'} : $field8;
-		$field8 = $action->{'field8_recovery'} ? $action->{'field8_recovery'} : $field8;
-
-		$field9 = $field9 ? "[RECOVER]" . $field9 : "";
-		$field9 = $alert->{'field9_recovery'} ? $alert->{'field9_recovery'} : $field9;
-		$field9 = $action->{'field9_recovery'} ? $action->{'field9_recovery'} : $field9;
-
-		$field10 = $field10 ? "[RECOVER]" . $field10 : "";
-		$field10 = $alert->{'field10_recovery'} ? $alert->{'field10_recovery'} : $field10;
-		$field10 = $action->{'field10_recovery'} ? $action->{'field10_recovery'} : $field10;
-
-		$field11 = $field11 ? "[RECOVER]" . $field11 : "";
-		$field11 = $alert->{'field11_recovery'} ? $alert->{'field11_recovery'} : $field11;
-		$field11 = $action->{'field11_recovery'} ? $action->{'field11_recovery'} : $field11;
-
-		$field12 = $field12 ? "[RECOVER]" . $field12 : "";
-		$field12 = $alert->{'field12_recovery'} ? $alert->{'field12_recovery'} : $field12;
-		$field12 = $action->{'field12_recovery'} ? $action->{'field12_recovery'} : $field12;
-
-		$field13 = $field13 ? "[RECOVER]" . $field13 : "";
-		$field13 = $alert->{'field13_recovery'} ? $alert->{'field13_recovery'} : $field13;
-		$field13 = $action->{'field13_recovery'} ? $action->{'field13_recovery'} : $field13;
-
-		$field14 = $field14 ? "[RECOVER]" . $field14 : "";
-		$field14 = $alert->{'field14_recovery'} ? $alert->{'field14_recovery'} : $field14;
-		$field14 = $action->{'field14_recovery'} ? $action->{'field14_recovery'} : $field14;
-
-		$field15 = $field15 ? "[RECOVER]" . $field15 : "";
-		$field15 = $alert->{'field15_recovery'} ? $alert->{'field15_recovery'} : $field15;
-		$field15 = $action->{'field15_recovery'} ? $action->{'field15_recovery'} : $field15;
+		$field2  = defined($field2)                       && $field2                       ne "" ? "[RECOVER]" . $field2         : "";
+		$field2  = defined($alert->{'field2_recovery'})   && $alert->{'field2_recovery'}   ne "" ? $alert->{'field2_recovery'}   : $field2;
+		$field2  = defined($action->{'field2_recovery'})  && $action->{'field2_recovery'}  ne "" ? $action->{'field2_recovery'}  : $field2;
+		
+		$field3  = defined($field3)                       && $field3                       ne "" ? "[RECOVER]" . $field3         : "";
+		$field3  = defined($alert->{'field3_recovery'})   && $alert->{'field3_recovery'}   ne "" ? $alert->{'field3_recovery'}   : $field3;
+		$field3  = defined($action->{'field3_recovery'})  && $action->{'field3_recovery'}  ne "" ? $action->{'field3_recovery'}  : $field3;
+		
+		$field4  = defined($field4)                       && $field4                       ne "" ? "[RECOVER]" . $field4         : "";
+		$field4  = defined($alert->{'field4_recovery'})   && $alert->{'field4_recovery'}   ne "" ? $alert->{'field4_recovery'}   : $field4;
+		$field4  = defined($action->{'field4_recovery'})  && $action->{'field4_recovery'}  ne "" ? $action->{'field4_recovery'}  : $field4;
+		
+		$field5  = defined($field5)                       && $field5                       ne "" ? "[RECOVER]" . $field5         : "";
+		$field5  = defined($alert->{'field5_recovery'})   && $alert->{'field5_recovery'}   ne "" ? $alert->{'field5_recovery'}   : $field5;
+		$field5  = defined($action->{'field5_recovery'})  && $action->{'field5_recovery'}  ne "" ? $action->{'field5_recovery'}  : $field5;
+		
+		$field6  = defined($field6)                       && $field6                       ne "" ? "[RECOVER]" . $field6         : "";
+		$field6  = defined($alert->{'field6_recovery'})   && $alert->{'field6_recovery'}   ne "" ? $alert->{'field6_recovery'}   : $field6;
+		$field6  = defined($action->{'field6_recovery'})  && $action->{'field6_recovery'}  ne "" ? $action->{'field6_recovery'}  : $field6;
+		
+		$field7  = defined($field7)                       && $field7                       ne "" ? "[RECOVER]" . $field7         : "";
+		$field7  = defined($alert->{'field7_recovery'})   && $alert->{'field7_recovery'}   ne "" ? $alert->{'field7_recovery'}   : $field7;
+		$field7  = defined($action->{'field7_recovery'})  && $action->{'field7_recovery'}  ne "" ? $action->{'field7_recovery'}  : $field7;
+		
+		$field8  = defined($field8)                       && $field8                       ne "" ? "[RECOVER]" . $field8         : "";
+		$field8  = defined($alert->{'field8_recovery'})   && $alert->{'field8_recovery'}   ne "" ? $alert->{'field8_recovery'}   : $field8;
+		$field8  = defined($action->{'field8_recovery'})  && $action->{'field8_recovery'}  ne "" ? $action->{'field8_recovery'}  : $field8;
+		
+		$field9  = defined($field9)                       && $field9                       ne "" ? "[RECOVER]" . $field9         : "";
+		$field9  = defined($alert->{'field9_recovery'})   && $alert->{'field9_recovery'}   ne "" ? $alert->{'field9_recovery'}   : $field9;
+		$field9  = defined($action->{'field9_recovery'})  && $action->{'field9_recovery'}  ne "" ? $action->{'field9_recovery'}  : $field9;
+		
+		$field10 = defined($field10)                      && $field10                      ne "" ? "[RECOVER]" . $field10        : "";
+		$field10 = defined($alert->{'field10_recovery'})  && $alert->{'field10_recovery'}  ne "" ? $alert->{'field10_recovery'}  : $field10;
+		$field10 = defined($action->{'field10_recovery'}) && $action->{'field10_recovery'} ne "" ? $action->{'field10_recovery'} : $field10;
+		
+		$field11 = defined($field11)                      && $field11                      ne "" ? "[RECOVER]" . $field11        : "";
+		$field11 = defined($alert->{'field11_recovery'})  && $alert->{'field11_recovery'}  ne "" ? $alert->{'field11_recovery'}  : $field11;
+		$field11 = defined($action->{'field11_recovery'}) && $action->{'field11_recovery'} ne "" ? $action->{'field11_recovery'} : $field11;
+		
+		$field12 = defined($field12)                      && $field12                      ne "" ? "[RECOVER]" . $field12        : "";
+		$field12 = defined($alert->{'field12_recovery'})  && $alert->{'field12_recovery'}  ne "" ? $alert->{'field12_recovery'}  : $field12;
+		$field12 = defined($action->{'field12_recovery'}) && $action->{'field12_recovery'} ne "" ? $action->{'field12_recovery'} : $field12;
+		
+		$field13 = defined($field13)                      && $field13                      ne "" ? "[RECOVER]" . $field13        : "";
+		$field13 = defined($alert->{'field13_recovery'})  && $alert->{'field13_recovery'}  ne "" ? $alert->{'field13_recovery'}  : $field13;
+		$field13 = defined($action->{'field13_recovery'}) && $action->{'field13_recovery'} ne "" ? $action->{'field13_recovery'} : $field13;
+		
+		$field14 = defined($field14)                      && $field14                      ne "" ? "[RECOVER]" . $field14        : "";
+		$field14 = defined($alert->{'field14_recovery'})  && $alert->{'field14_recovery'}  ne "" ? $alert->{'field14_recovery'}  : $field14;
+		$field14 = defined($action->{'field14_recovery'}) && $action->{'field14_recovery'} ne "" ? $action->{'field14_recovery'} : $field14;
+		
+		$field15 = defined($field15)                      && $field15                      ne "" ? "[RECOVER]" . $field15        : "";
+		$field15 = defined($alert->{'field15_recovery'})  && $alert->{'field15_recovery'}  ne "" ? $alert->{'field15_recovery'}  : $field15;
+		$field15 = defined($action->{'field15_recovery'}) && $action->{'field15_recovery'} ne "" ? $action->{'field15_recovery'} : $field15;
 	}
 
-	$field1 = $field1 ? decode_entities($field1) : "";
-	$field2 = $field2 ? decode_entities($field2) : "";
-	$field3 = $field3 ? decode_entities($field3) : "";
-	$field4 = $field4 ? decode_entities($field4) : "";
-	$field5 = $field5 ? decode_entities($field5) : "";
-	$field6 = $field6 ? decode_entities($field6) : "";
-	$field7 = $field7 ? decode_entities($field7) : "";
-	$field8 = $field8 ? decode_entities($field8) : "";
-	$field9 = $field9 ? decode_entities($field9) : "";
-	$field10 = $field10 ? decode_entities($field10) : "";
-	$field11 = $field11 ? decode_entities($field11) : "";
-	$field12 = $field12 ? decode_entities($field12) : "";
-	$field13 = $field13 ? decode_entities($field13) : "";
-	$field14 = $field14 ? decode_entities($field14) : "";
-	$field15 = $field15 ? decode_entities($field15) : "";
+	$field1  = defined($field1)  && $field1  ne "" ? decode_entities($field1)  : "";
+	$field2  = defined($field2)  && $field2  ne "" ? decode_entities($field2)  : "";
+	$field3  = defined($field3)  && $field3  ne "" ? decode_entities($field3)  : "";
+	$field4  = defined($field4)  && $field4  ne "" ? decode_entities($field4)  : "";
+	$field5  = defined($field5)  && $field5  ne "" ? decode_entities($field5)  : "";
+	$field6  = defined($field6)  && $field6  ne "" ? decode_entities($field6)  : "";
+	$field7  = defined($field7)  && $field7  ne "" ? decode_entities($field7)  : "";
+	$field8  = defined($field8)  && $field8  ne "" ? decode_entities($field8)  : "";
+	$field9  = defined($field9)  && $field9  ne "" ? decode_entities($field9)  : "";
+	$field10 = defined($field10) && $field10 ne "" ? decode_entities($field10) : "";
+	$field11 = defined($field11) && $field11 ne "" ? decode_entities($field11) : "";
+	$field12 = defined($field12) && $field12 ne "" ? decode_entities($field12) : "";
+	$field13 = defined($field13) && $field13 ne "" ? decode_entities($field13) : "";
+	$field14 = defined($field14) && $field14 ne "" ? decode_entities($field14) : "";
+	$field15 = defined($field15) && $field15 ne "" ? decode_entities($field15) : "";
 
 	# Get group info
 	my $group = undef;
@@ -974,12 +976,15 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_field13_ => $field13,
 				_field14_ => $field14,
 				_field15_ => $field15,
-				_agent_ => (defined ($agent)) ? $agent->{'alias'} : '',
+				_agentname_ => (defined ($agent)) ? $agent->{'nombre'} : '',
+				_agentalias_ => (defined ($agent)) ? $agent->{'alias'} : '',
+				_agent_ => (defined ($agent)) ? ($agent->{'alias'} ? $agent->{'alias'} : $agent->{'nombre'}) : '',
 				_agentcustomid_ => (defined ($agent)) ? $agent->{'custom_id'} : '',
 				'_agentcustomfield_\d+_'  => undef,
 				_agentdescription_ => (defined ($agent)) ? $agent->{'comentarios'} : '',
 				_agentgroup_ => (defined ($group)) ? $group->{'nombre'} : '',
 				_agentstatus_ => undef,
+				_agentos_ => (defined ($agent)) ? get_os_name($dbh, $agent->{'id_os'}) : '',
 				_address_ => (defined ($agent)) ? $agent->{'direccion'} : '',
 				_timestamp_ => (defined($timestamp)) ? $timestamp : strftime ("%Y-%m-%d %H:%M:%S", localtime()),
 				_timezone_ => strftime ("%Z", localtime()),
@@ -994,6 +999,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_alert_text_severity_ => get_priority_name($alert->{'priority'}),
 				_alert_critical_instructions_ => $alert->{'critical_instructions'},
 				_alert_warning_instructions_ => $alert->{'warning_instructions'},
+				_alert_unknown_instructions_ => $alert->{'unknown_instructions'},
 				_groupcontact_ => (defined ($group)) ? $group->{'contact'} : '',
 				_groupcustomid_ => (defined ($group)) ? $group->{'custom_id'} : '',
 				_groupother_ => (defined ($group)) ? $group->{'other'} : '',
@@ -1003,7 +1009,9 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_moduledescription_ => (defined ($module)) ? $module->{'descripcion'} : '',
 				_modulestatus_ => undef,
 				_moduletags_ => undef,
-				_id_agent_ => (defined ($module)) ? $module->{'id_agente'} : '', 
+				'_moduledata_\S+_' => undef,
+				_id_agent_ => (defined ($module)) ? $module->{'id_agente'} : '',
+				_id_module_ => (defined ($module)) ? $module->{'id_agente_modulo'} : '',
 				_id_group_ => (defined ($group)) ? $group->{'id_grupo'} : '',
 				_id_alert_ => (defined ($alert->{'id_template_module'})) ? $alert->{'id_template_module'} : '',
 				_interval_ => (defined ($module) && $module->{'module_interval'} != 0) ? $module->{'module_interval'} : (defined ($agent)) ? $agent->{'intervalo'} : '',
@@ -1014,6 +1022,8 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_email_tag_ => undef,
 				_phone_tag_ => undef,
 				_name_tag_ => undef,
+				_all_address_ => undef,
+				'_address_\d+_' => undef,
 				 );
 	
 	if ((defined ($extra_macros)) && (ref($extra_macros) eq "HASH")) {
@@ -1085,16 +1095,17 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		# Message
 		$field3 = subst_alert_macros ($field3, \%macros, $pa_config, $dbh, $agent, $module);
 		
-		# Check for _module_graph_Xh_ macros
+		# Check for _module_graph_Xh_ macros and _module_graphth_Xh_ 
 		my $module_graph_list = {};
 		my $macro_regexp = "_modulegraph_(\\d+)h_";
+		my $macro_regexp2 = "_modulegraphth_(\\d+)h_";
 		
 		# API connection
 		my $ua = new LWP::UserAgent;
 		my $url ||= $pa_config->{"console_api_url"};
 		
 		my $params = {};
-		$params->{"apipass"} ||= $pa_config->{"console_api_pass"};
+		$params->{"apipass"} = $pa_config->{"console_api_pass"};
 		$params->{"user"} ||= $pa_config->{"console_user"};
 		$params->{"pass"} ||= $pa_config->{"console_pass"};
 		$params->{"op"} = "get";
@@ -1103,8 +1114,14 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		
 		my $subst_func = sub {
 			my $hours = shift;
+			my $threshold = shift;
 			my $period = $hours * 3600; # Hours to seconds
-			$params->{"other"} = $period . '%7C0';
+			if($threshold == 0){
+				$params->{"other"} = $period . '%7C0%7C0';
+			}
+			else{
+				$params->{"other"} = $period . '%7C0%7C1';
+			}
 			$params->{"other_mode"} = 'url_encode_separator_%7C';
 			my $cid = 'module_graph_' . $hours . 'h';
 			
@@ -1126,7 +1143,8 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		eval {
 			no warnings;
 			local $SIG{__DIE__};
-			$field3 =~ s/$macro_regexp/$subst_func->($1)/ige;
+			$field3 =~ s/$macro_regexp/$subst_func->($1, 0)/ige;
+			$field3 =~ s/$macro_regexp2/$subst_func->($1, 1)/ige;
 		};
 		
 		# Default content type
@@ -1134,10 +1152,10 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		
 		# Check if message has non-ascii chars.
 		# non-ascii chars should be encoded in UTF-8.
-		#if ($field3 =~ /[^[:ascii:]]/o) {
-		#	$field3 = encode("UTF-8", $field3);
-		#	$content_type = 'text/plain; charset="UTF-8"';
-		#}
+		if ($field3 =~ /[^[:ascii:]]/o) {
+			$field3 = encode("UTF-8", $field3);
+			$content_type = 'text/html; charset="UTF-8"';
+		}
 		
 		# Build the mail with attached content
 		if (keys(%{$module_graph_list}) > 0) {
@@ -1209,6 +1227,9 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		}
 		$agent_name = subst_alert_macros ($agent_name, \%macros, $pa_config, $dbh, $agent, $module);
 		my $fullagent = get_agent_from_name ($dbh, $agent_name);
+		if( ! $fullagent && $macros{'_agentname_'} ) {
+			$fullagent = get_agent_from_name ($dbh, $macros{'_agentname_'} );
+		}
 		
 		# Field 5 (priority)
 		my $priority = $field5;
@@ -1612,40 +1633,34 @@ Start the planned downtime, the once type.
 sub pandora_planned_downtime_set_disabled_elements($$$) {
 	my ($pa_config, $dbh, $downtime) = @_;
 	
-	my @downtime_agents = get_db_rows($dbh, 'SELECT *
-		FROM tplanned_downtime_agents
-		WHERE id_downtime = ' . $downtime->{'id'});
-	
-	foreach my $downtime_agent (@downtime_agents) {
-		my $only_alerts = 0;
+	my $only_alerts = 0;
 		
-		if ($downtime->{'only_alerts'} == 0) {
-			if ($downtime->{'type_downtime'} eq 'disable_agents_alerts') {
-				$only_alerts = 1;
-			}
+	if ($downtime->{'only_alerts'} == 0) {
+		if ($downtime->{'type_downtime'} eq 'disable_agents_alerts') {
+			$only_alerts = 1;
 		}
+	}
 		
-		if ($only_alerts == 0) {
-
-			if($pa_config->{'include_agents'} == 0){
-				db_do($dbh, 'UPDATE tplanned_downtime_agents
-					SET manually_disabled = 1 WHERE id_agent IN (SELECT id_agente FROM tagente WHERE disabled = 1 AND id_agente = ?)
-					AND id_downtime = ' . $downtime->{'id'}, $downtime_agent->{'id_agent'});
-			}
-
-			db_do ($dbh, 'UPDATE tagente
-				SET disabled = 1
-				WHERE id_agente = ?', $downtime_agent->{'id_agent'});
+	if ($only_alerts == 0) {
+		db_do($dbh,'UPDATE tplanned_downtime_agents tp, tagente ta
+			SET tp.manually_disabled = ta.disabled
+			WHERE tp.id_agent = ta.id_agente AND tp.id_downtime = ?',$downtime->{'id'});
+		
+		db_do($dbh,'UPDATE tagente ta, tplanned_downtime_agents tpa
+			SET ta.disabled = 1 WHERE tpa.id_agent = ta.id_agente AND
+			tpa.id_downtime = ?',$downtime->{'id'});
+			
+	} else {
+		my @downtime_agents = get_db_rows($dbh, 'SELECT *
+			FROM tplanned_downtime_agents
+			WHERE id_downtime = ' . $downtime->{'id'});
+			
+		foreach my $downtime_agent (@downtime_agents) {
+			db_do ($dbh, 'UPDATE talert_template_modules tat, tagente_modulo tam
+				SET tat.disabled = 1
+				WHERE tat.id_agent_module = tam.id_agente_modulo 
+				AND tam.id_agente = ?', $downtime_agent->{'id_agent'});
 		}
-		else {
-			db_do ($dbh, 'UPDATE talert_template_modules
-				SET disabled = 1
-				WHERE id_agent_module IN (
-					SELECT id_agente_modulo
-					FROM tagente_modulo
-					WHERE id_agente = ?)', $downtime_agent->{'id_agent'});
-		}
-	
 	}
 }
 
@@ -1659,39 +1674,29 @@ Start the planned downtime, the once type.
 sub pandora_planned_downtime_unset_disabled_elements($$$) {
 	my ($pa_config, $dbh, $downtime) = @_;
 	
-	my @downtime_agents = get_db_rows($dbh, 'SELECT *
-		FROM tplanned_downtime_agents
-		WHERE id_downtime = ' . $downtime->{'id'});
-	
-	foreach my $downtime_agent (@downtime_agents) {
-		my $only_alerts = 0;
+	my $only_alerts = 0;
 		
-		if ($downtime->{'only_alerts'} == 0) {
-			if ($downtime->{'type_downtime'} eq 'disable_agents_alerts') {
-				$only_alerts = 1;
-			}
+	if ($downtime->{'only_alerts'} == 0) {
+		if ($downtime->{'type_downtime'} eq 'disable_agents_alerts') {
+			$only_alerts = 1;
 		}
+	}
 		
-		if ($only_alerts == 0) {
-			db_do ($dbh, 'UPDATE tagente
-				SET disabled = 0
-				WHERE id_agente = ?', $downtime_agent->{'id_agent'});
-
-			if($pa_config->{'include_agents'} == 0){
-				db_do ($dbh, 'UPDATE tagente
-					SET disabled = 1
-					WHERE id_agente IN (SELECT id_agent FROM tplanned_downtime_agents WHERE manually_disabled = 1 and id_downtime = ?)',$downtime_agent->{'id_downtime'});
-			}
+	if ($only_alerts == 0) {
+		db_do($dbh,'UPDATE tagente ta, tplanned_downtime_agents tpa
+			set ta.disabled = 0 WHERE tpa.id_agent = ta.id_agente AND
+			tpa.manually_disabled = 0 AND tpa.id_downtime = ?',$downtime->{'id'});
+	} else {
+		my @downtime_agents = get_db_rows($dbh, 'SELECT *
+			FROM tplanned_downtime_agents
+			WHERE id_downtime = ' . $downtime->{'id'});
+			
+		foreach my $downtime_agent (@downtime_agents) {
+			db_do ($dbh, 'UPDATE talert_template_modules tat, tagente_modulo tam
+				SET tat.disabled = 0
+				WHERE tat.id_agent_module = tam.id_agente_modulo 
+				AND tam.id_agente = ?', $downtime_agent->{'id_agent'});
 		}
-		else {
-			db_do ($dbh, 'UPDATE talert_template_modules
-				SET disabled = 0
-				WHERE id_agent_module IN (
-					SELECT id_agente_modulo
-					FROM tagente_modulo
-					WHERE id_agente = ?)', $downtime_agent->{'id_agent'});
-		}
-	
 	}
 }
 
@@ -2246,7 +2251,7 @@ sub pandora_reset_server ($$) {
 	
 	db_do ($dbh, 'UPDATE tserver
 		SET status = 0, threads = 0, queued_modules = 0
-		WHERE name = ?', $pa_config->{'servername'});
+		WHERE BINARY name = ?', $pa_config->{'servername'});
 }
 
 ##########################################################################
@@ -2280,7 +2285,7 @@ sub pandora_update_server ($$$$$$;$$$$) {
 	if ($server_id == 0) { 
 		
 		# Create an entry in tserver if needed
-		my $server = get_db_single_row ($dbh, 'SELECT id_server FROM tserver WHERE name = ? AND server_type = ?', $server_name, $server_type);
+		my $server = get_db_single_row ($dbh, 'SELECT id_server FROM tserver WHERE BINARY name = ? AND server_type = ?', $server_name, $server_type);
 		if (! defined ($server)) {
 			$server_id = db_insert ($dbh, 'id_server', 'INSERT INTO tserver (name, server_type, description, version, threads, queued_modules, server_keepalive)
 						VALUES (?, ?, ?, ?, ?, ?, ?)', $server_name, $server_type,
@@ -2680,7 +2685,7 @@ sub pandora_delete_module ($$;$) {
 	
 	my $agent_name = get_agent_name($dbh, $module->{'id_agente'});
 	
-	if ((defined($conf)) && (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf')) {
+	if ((defined($conf)) && (-e $conf->{incomingdir}.'/conf/'.md5(encode_utf8(safe_output($agent_name))).'.conf')) {
 		enterprise_hook('pandora_delete_module_from_conf', [$conf,$agent_name,$module->{'nombre'}]);
 	}
 	
@@ -2763,7 +2768,7 @@ sub pandora_create_module_from_hash ($$$) {
 
 	# Encrypt SNMP v3 passwords.
 	if ($parameters->{'id_tipo_modulo'} >= 15 && $parameters->{'id_tipo_modulo'} <= 18 &&
-		$parameters->{'tcp_send'} == 3) {
+		$parameters->{'tcp_send'} eq '3') {
 		$parameters->{'custom_string_2'} = pandora_input_password($pa_config, $parameters->{'custom_string_2'});
 	}
 
@@ -2978,12 +2983,11 @@ sub pandora_delete_agent ($$;$) {
 	
 	if (defined $conf) {
 		# Delete the conf files
-		if (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf') {
-			unlink($conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf');
-		}
-		if (-e $conf->{incomingdir}.'/md5/'.md5($agent_name).'.md5') {
-			unlink($conf->{incomingdir}.'/md5/'.md5($agent_name).'.md5');
-		}
+		my $conf_fname = $conf->{incomingdir}.'/conf/'.md5(encode_utf8(safe_output($agent_name))).'.conf';
+		unlink($conf_fname) if (-f $conf_fname);
+		
+		my $md5_fname = $conf->{incomingdir}.'/md5/'.md5(encode_utf8(safe_output($agent_name))).'.md5';
+		unlink($md5_fname) if (-f $md5_fname);
 	}
 
 	foreach my $module (@modules) {
@@ -3420,6 +3424,7 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 			if (defined($this_agent)){
 				%agent = ( 
 					'nombre' => $this_agent->{'nombre'},
+					'alias'  => $this_agent->{'alias'},
 					'id_agente' => $this_agent->{'id_agente'},
 					'direccion' => $trap_agent,
 					'id_grupo' => $this_agent->{'id_grupo'},
@@ -3578,7 +3583,7 @@ sub on_demand_macro($$$$$$) {
 
 	# Static macro.
 	return $macros->{$macro} if (defined($macros->{$macro}));
-
+	
 	# Load on-demand macros.
 	return '' unless defined($pa_config) and defined($dbh);
 	if ($macro eq '_agentstatus_') {
@@ -3610,6 +3615,57 @@ sub on_demand_macro($$$$$$) {
 		else{
 			my $field_value = get_db_value($dbh, 'SELECT datos FROM tagente_datos where id_agente_modulo = ? order by utimestamp desc limit 1 offset 1', $module->{'id_agente_modulo'});
 		}
+	}elsif ($macro eq '_all_address_') {
+		return '' unless defined ($module);
+		my @rows = get_db_rows ($dbh, 'SELECT ip FROM taddress_agent taag, taddress ta WHERE ta.id_a = taag.id_a AND id_agent = ?', $module->{'id_agente'});
+
+		my $field_value = "<pre>";
+		my $count=1;
+		foreach my $element (@rows) {
+			$field_value .= $count.": " . $element->{'ip'} . "\n";
+			$count++;
+		}
+		$field_value .= "</pre>";
+		return(defined($field_value)) ? $field_value : '';
+	} elsif ($macro =~ /_address_(\d+)_/) {
+		return '' unless defined ($module);
+		my $field_number = $1 - 1;
+		my @rows = get_db_rows ($dbh, 'SELECT ip FROM taddress_agent taag, taddress ta WHERE ta.id_a = taag.id_a AND id_agent = ?', $module->{'id_agente'});
+		
+		my $field_value = $rows[$field_number]->{'ip'};
+		if($field_value == ''){
+			$field_value = 'Ip not defined';
+		}
+		
+		return(defined($field_value)) ? $field_value : '';
+	} elsif ($macro =~ /_moduledata_(\S+)_/) {
+		my $field_number = $1;
+		
+		my $id_mod = get_db_value ($dbh, 'SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = ? AND nombre = ?', $module->{'id_agente'}, $field_number);
+		my $type_mod = get_db_value ($dbh, 'SELECT id_tipo_modulo FROM tagente_modulo WHERE id_agente_modulo = ?', $id_mod);
+		my $unit_mod = get_db_value ($dbh, 'SELECT unit FROM tagente_modulo WHERE id_agente_modulo = ?', $id_mod);
+
+		my $field_value = "";
+		if ($type_mod eq 3){
+			$field_value = get_db_value($dbh, 'SELECT datos FROM tagente_datos_string where id_agente_modulo = ? order by utimestamp desc limit 1', $id_mod);
+		}
+		else{
+			$field_value = get_db_value($dbh, 'SELECT datos FROM tagente_datos where id_agente_modulo = ? order by utimestamp desc limit 1', $id_mod);
+			
+			my $data_precision = $pa_config->{'graph_precision'};
+			$field_value = sprintf("%.$data_precision" . "f", $field_value);
+			$field_value =~ s/0+$//;
+			$field_value =~ s/\.+$//;
+		}
+
+		if ($field_value eq ''){
+			$field_value = 'Module ' . $field_number . " not found";
+		}
+		elsif ($unit_mod ne '') {
+			$field_value .= $unit_mod;
+		}
+		
+		return(defined($field_value)) ? $field_value : '';
 	}
 }
 
@@ -4069,17 +4125,29 @@ sub pandora_inhibit_alerts {
 	return 0 if ($agent->{'cascade_protection'} ne '1' || $agent->{'id_parent'} eq '0' || $depth > 1024);
 
 	# Are any of the parent's critical alerts fired?	
-	my $count = get_db_value ($dbh, 'SELECT COUNT(*) FROM tagente_modulo, talert_template_modules, talert_templates
+	my $count = 0;
+	if ($agent->{'cascade_protection_module'} != 0) {
+		$count = get_db_value ($dbh, 'SELECT COUNT(*) FROM tagente_modulo, talert_template_modules, talert_templates
+				WHERE tagente_modulo.id_agente = ?
+				AND tagente_modulo.id_agente_modulo = ?
+				AND tagente_modulo.id_agente_modulo = talert_template_modules.id_agent_module
+				AND tagente_modulo.disabled = 0
+				AND talert_template_modules.id_alert_template = talert_templates.id
+				AND talert_template_modules.times_fired > 0
+				AND talert_templates.priority = 4', $agent->{'id_parent'}, $agent->{'cascade_protection_module'});
+	}
+	else {
+		$count = get_db_value ($dbh, 'SELECT COUNT(*) FROM tagente_modulo, talert_template_modules, talert_templates
 				WHERE tagente_modulo.id_agente = ?
 				AND tagente_modulo.id_agente_modulo = talert_template_modules.id_agent_module
 				AND tagente_modulo.disabled = 0
 				AND talert_template_modules.id_alert_template = talert_templates.id
 				AND talert_template_modules.times_fired > 0
 				AND talert_templates.priority = 4', $agent->{'id_parent'});
-	return 1 if ($count > 0);
-	
-	
+	}
 
+	return 1 if (defined($count) && $count > 0);
+	
 	# Check the parent's parent next
 	$agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE id_agente = ?', $agent->{'id_parent'});
 	return 0 unless defined ($agent);
@@ -4190,7 +4258,7 @@ sub pandora_server_statistics ($$) {
 	my $lag_row;
 
 	# Get all servers with my name (each server only refresh it's own stats)
-	my @servers = get_db_rows ($dbh, 'SELECT * FROM tserver WHERE name = ?', $pa_config->{'servername'});
+	my @servers = get_db_rows ($dbh, 'SELECT * FROM tserver WHERE BINARY name = ?', $pa_config->{'servername'});
 
 	# For each server, update stats: Simple.
 	foreach my $server (@servers) {
@@ -4544,7 +4612,7 @@ sub pandora_self_monitoring ($$) {
 		$agents_unknown = 0 if (!defined($agents_unknown));
 	}
 	
-	my $queued_modules = get_db_value ($dbh, "SELECT SUM(queued_modules) FROM tserver WHERE name = '".$pa_config->{"servername"}."'");
+	my $queued_modules = get_db_value ($dbh, "SELECT SUM(queued_modules) FROM tserver WHERE BINARY name = '".$pa_config->{"servername"}."'");
 	
 	if (!defined($queued_modules)) {
 		$queued_modules = 0;

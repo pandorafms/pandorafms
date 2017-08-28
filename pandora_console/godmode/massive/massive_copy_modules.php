@@ -130,6 +130,11 @@ foreach ($agent_alerts as $alert) {
 	$alerts[$alert['id']] = $name;
 }
 
+$tags = tags_get_user_tags();
+$table->data['tags'][0] = __('Tags');
+$table->data['tags'][1] = html_print_select ($tags, 'tags[]',
+	$tags_name, false, __('Any'), -1, true, true, true);
+
 $table->data['operations'][0] = __('Operations');
 $table->data['operations'][1] = '<span class="with_modules'.(empty ($modules) ? ' invisible': '').'">';
 $table->data['operations'][1] .= html_print_checkbox ('copy_modules', 1, true, true);
@@ -282,12 +287,16 @@ $(document).ready (function () {
 		}
 	});
 	
+	$("#tags").change(function() {
+		$("#source_id_agent").trigger("change");
+	});
+
 	$("#status_agents_destiny").change(function() {
 		$("#destiny_id_group").trigger("change");
 	});
 	
 	$("#source_id_agent").change (function () {
-		var id_agent = this.value;
+		var id_agent = $("#source_id_agent").val();
 		if (id_agent == 0) {
 			$("#submit-go").attr("disabled", "disabled");
 			
@@ -302,6 +311,21 @@ $(document).ready (function () {
 			return;
 		}
 		
+		var params = {
+			"page" : "operation/agentes/ver_agente",
+			"get_agent_modules_json" : 1,
+			"get_id_and_name" : 1,
+			"disabled" : 0,
+			"id_agent" : id_agent
+		};
+
+		var tags_to_search = $('#tags').val();
+		if (tags_to_search != null) {
+			if (tags_to_search[0] != -1) {
+				params['tags'] = tags_to_search;
+			}
+		}
+
 		$("#submit-go").attr("disabled", false);
 		
 		$("#modules_loading").show ();
@@ -313,12 +337,7 @@ $(document).ready (function () {
 		var no_alerts;
 		/* Get modules */
 		jQuery.post ("ajax.php",
-			{"page" : "operation/agentes/ver_agente",
-			"get_agent_modules_json" : 1,
-			"id_agent" : this.value,
-			"disabled" : 0,
-			"get_id_and_name" : 1
-			},
+			params,
 			function (data, status) {
 				if (data.length == 0) {
 					no_modules = true;

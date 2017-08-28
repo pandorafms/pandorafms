@@ -38,7 +38,7 @@ if ($vconsoles_write || $vconsoles_manage) {
 			Within the new visual console, we've been successful in imitating the sensation and touch of a drawing application like GIMP. 
 			We've also simplified the editor by dividing it into several subject-matter tabs named 'Data', 'Preview', 'Wizard', 'List of Elements' and 'Editor'.
 			The elements the Pandora FMS Visual Map was designed to handle are 'static image', 'percentage bar', 'module graph' and 'simple value'. "); ?></p>
-		<form action="index.php?sec=reporting&amp;sec2=godmode/reporting/visual_console_builder" method="post">
+		<form action="index.php?sec=network&amp;sec2=godmode/reporting/visual_console_builder" method="post">
 			<?php html_print_input_hidden ('edit_layout', 1); ?>
 			<input type="submit" class="button_task" value="<?php echo __('Create Visual Console'); ?>" />
 		</form>

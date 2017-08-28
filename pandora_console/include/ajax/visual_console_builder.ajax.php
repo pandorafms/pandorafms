@@ -95,6 +95,7 @@ $top = get_parameter('top', null);
 $agent = get_parameter('agent', null);
 $id_module = get_parameter('module', null);
 $period = get_parameter('period', null);
+$event_max_time_row = get_parameter('event_max_time_row', null);
 $width = get_parameter('width', null);
 $height = get_parameter('height', null);
 $parent = get_parameter('parent', null);
@@ -139,7 +140,39 @@ switch ($action) {
 		echo json_encode($return);
 		break;
 	
-	
+	case 'get_module_events':
+		$data = array ();
+		
+		$date = get_system_time ();
+		$datelimit = $date - $event_max_time_row;
+
+		$events = db_get_row_filter ('tevento',
+			array ('id_agente' => $id_agent,
+				'id_agentmodule' => $id_module,
+				'utimestamp > ' . $datelimit,
+				'utimestamp < ' . $date), 'criticity, utimestamp');
+
+		$return = array();
+		if (!$events) {
+			$return['no_data'] = true;
+			if (!empty($id_metaconsole)) {
+				$connection = db_get_row_filter ('tmetaconsole_setup',
+					$id_metaconsole);
+				if (metaconsole_load_external_db($connection) != NOERR) {
+					continue;
+				}
+			}
+			$return['url'] = true;
+			if (!empty($id_metaconsole)) {
+				metaconsole_restore_db();
+			}
+		}
+		else {
+			$return['no_data'] = false;
+		}
+
+		echo json_encode($return);
+		break;
 	
 	case 'get_image_sparse':
 		//Metaconsole db connection
@@ -422,6 +455,7 @@ switch ($action) {
 					$values['type'] = visual_map_get_simple_value_type(
 						$process_simple_value);
 					$values['period'] = $period;
+					$values['width'] = $width;
 				}
 			case 'percentile_bar':
 			case 'percentile_item':
@@ -429,6 +463,7 @@ switch ($action) {
 			case 'module_graph':
 			case 'label':
 			case 'icon':
+			case 'auto_sla_graph':
 			default:
 				if ($type == 'label') {
 					$values['type'] = LABEL;
@@ -503,6 +538,18 @@ switch ($action) {
 						$values['border_color'] = $line_color;
 						break;
 					// -------------------------------------------------
+					case 'auto_sla_graph':
+						$values['type'] = AUTO_SLA_GRAPH;
+						if ($event_max_time_row !== null) {
+							$values['period'] = $event_max_time_row;
+						}
+						if ($width !== null) {
+							$values['width'] = $width;
+						}
+						if ($height !== null) {
+							$values['height'] = $height;
+						}
+						break;
 					case 'box_item':
 						$values['border_width'] = $border_width;
 						$values['border_color'] = $border_color;
@@ -616,10 +663,20 @@ switch ($action) {
 					}
 				}
 				
+				$item_in_db = db_get_row_filter ('tlayout_data', array ('id' => $id_element));
+
+				if (($item_in_db['parent_item'] == 0) && ($values['parent_item'] != 0)) {
+					$new_line = 1;
+				}
+				
 				$result = db_process_sql_update('tlayout_data', $values,
 					array('id' => $id_element));
 				
-				echo (int)$result;
+				$return_val = array();
+				$return_val['correct'] = (int)$result;
+				$return_val['new_line'] = $new_line;
+
+				echo json_encode($return_val);
 				break;
 		}
 		break;
@@ -648,6 +705,7 @@ switch ($action) {
 			case 'simple_value':
 			case 'label':
 			case 'icon':
+			case 'auto_sla_graph':
 				$elementFields = db_get_row_filter('tlayout_data',
 					array('id' => $id_element));
 				
@@ -699,6 +757,8 @@ switch ($action) {
 				}
 				
 				switch ($type) {
+					case 'auto_sla_graph':
+						$elementFields['event_max_time_row'] = $elementFields['period'];
 					case 'percentile_item':
 					case 'percentile_bar':
 						$elementFields['width_percentile'] = $elementFields['width'];
@@ -858,6 +918,12 @@ switch ($action) {
 				}
 				$values['period'] = $period;
 				break;
+			case 'auto_sla_graph':
+				$values['type'] = AUTO_SLA_GRAPH;
+				$values['period'] = $event_max_time_row;
+				$values['width'] = $width;
+				$values['height'] = $height;
+				break;
 			case 'percentile_item':
 			case 'percentile_bar': 
 				if ($type_percentile == 'percentile') {
@@ -887,6 +953,7 @@ switch ($action) {
 				//This allows min, max and avg process in a simple value
 				$values['type'] = visual_map_get_simple_value_type($process_simple_value);
 				$values['period'] = $period;
+				$values['width'] = $width;
 				break;
 			case 'label':
 				$values['type'] = LABEL;
@@ -972,8 +1039,6 @@ switch ($action) {
 		
 		echo json_encode($return);
 		break;
-	
-	
 	
 	case 'delete':
 		if (db_process_sql_delete('tlayout_data', array('id' => $id_element, 'id_layout' => $id_visual_console)) === false) {

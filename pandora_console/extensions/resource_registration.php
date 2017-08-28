@@ -868,7 +868,7 @@ function resource_registration_extension_main() {
 	echo "<form name='submit_plugin' method='post' enctype='multipart/form-data'>";
 		echo '<table class="databox" id="table1" width="98%" border="0" cellpadding="4" cellspacing="4">';
 			echo "<tr>";
-				echo "<td colspan='2' class='datos'><input type='file' name='resource_upload' />";
+				echo "<td colspan='2' class='datos'><input type='file' name='resource_upload' accept='.ptr'/>";
 				echo "<td>" . __('Group filter: ') . "</td>";
 				echo "<td>";
 					html_print_select_groups(false, "AW", true, 'group');

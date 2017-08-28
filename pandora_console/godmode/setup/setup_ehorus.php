@@ -84,7 +84,7 @@ $table_remote->data['ehorus_pass'] = $row;
 $row = array();
 $row['name'] = __('API Hostname');
 $row['control'] = html_print_input_text('ehorus_hostname', $config['ehorus_hostname'], '', 30, 100, true);
-$row['control'] .= ui_print_help_tip(__('Hostname of the eHorus API') . '. ' . __('Without protocol and port') . '. ' . __('e.g., switch.ehorus.com'), true);
+$row['control'] .= ui_print_help_tip(__('Hostname of the eHorus API') . '. ' . __('Without protocol and port') . '. ' . __('e.g., portal.ehorus.com'), true);
 $table_remote->data['ehorus_hostname'] = $row;
 
 // Directory port

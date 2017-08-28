@@ -38,7 +38,7 @@ function createXMLData($agent, $agentModule, $time, $data) {
 		io_safe_output($agent['os_version']), $agent['intervalo'],
 		io_safe_output($agent['agent_version']), $time,
 		io_safe_output($agent['nombre']),
-		io_safe_output($agent['alias']), $agent['timezone_offset'],
+		$agent['timezone_offset'],
 		io_safe_output($agentModule['nombre']), io_safe_output($agentModule['descripcion']), modules_get_type_name($agentModule['id_tipo_modulo']), $data);
 
 
@@ -167,6 +167,7 @@ function mainInsertData() {
 	$params['use_hidden_input_idagent'] = true;
 	$params['print_hidden_input_idagent'] = true;
 	$params['hidden_input_idagent_id'] = 'hidden-autocomplete_id_agent';
+	$params['hidden_input_idagent_value'] = $id_agente;
 	
 	$table->data[0][1] = ui_print_agent_autocomplete_input($params);
 	

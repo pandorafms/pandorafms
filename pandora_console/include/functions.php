@@ -1701,7 +1701,7 @@ function check_sql ($sql) {
 	
 	//Check that it not delete_ as "delete_pending" (this is a common field in pandora tables).
 	
-	if (preg_match("/\*|delete[^_]|drop|alter|modify|union|password|pass|insert|update/i", $sql)) {
+	if (preg_match("/\*|delete[^_]|drop|alter|modify|password|pass|insert|update/i", $sql)) {
 		return "";
 	}
 	return $sql;
@@ -1990,9 +1990,32 @@ function get_os_name ($id_os) {
  * @return array Dashboard name of the given user.
  */
 function get_user_dashboards ($id_user) {
-	$sql = "SELECT name
-		FROM tdashboard
-		WHERE id_user="."'".$id_user."'";
+	if (users_is_admin($id_user)) {
+		$sql = "SELECT name
+			FROM tdashboard WHERE id_user = '" . $id_user ."' OR id_user = ''";
+	}
+	else {
+		$user_can_manage_all = users_can_manage_group_all('RR');
+		if ($user_can_manage_all) {
+			$sql = "SELECT name
+				FROM tdashboard WHERE id_user = '" . $id_user ."' OR id_user = ''";
+		}
+		else {
+			$user_groups = users_get_groups($id_user, "RR", false);
+			if (empty($user_groups)) {
+				return false;
+			}
+
+			$u_groups = array();
+			foreach ($user_groups as $id => $group_name) {
+				$u_groups[] = $id;
+			}
+
+			$sql = "SELECT name
+				FROM tdashboard
+				WHERE id_group IN (" . implode(",", $u_groups) . ") AND (id_user = '" . $id_user ."' OR id_user = '')";
+		}
+	}
 	
 	return db_get_all_rows_sql ($sql);
 }
@@ -2730,4 +2753,15 @@ function remove_right_zeros ($value) {
 		return $value;
 	}
 }
+
+function register_pass_change_try ($id_user, $success) {
+	$values = array();
+	$values['id_user'] = $id_user;
+	$reset_pass_moment = new DateTime('now');
+	$reset_pass_moment = $reset_pass_moment->format("Y-m-d H:i:s");
+	$values['reset_moment'] = $reset_pass_moment;
+	$values['success'] = $success;
+	db_process_sql_insert('treset_pass_history', $values);
+}
+
 ?>

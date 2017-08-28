@@ -38,6 +38,7 @@ namespace Pandora_Modules {
 		int retry_delay;
 	public:
 		Pandora_Module_Proc    (string name, string process_name);
+		~Pandora_Module_Proc   ();
 		
 		string getProcessName  () const;
 		string getStartCommand () const;

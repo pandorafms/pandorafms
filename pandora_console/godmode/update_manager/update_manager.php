@@ -36,7 +36,7 @@ $buttons = array(
 	'offline' => array(
 		'active' => ($tab == 'offline') ? true : false,
 		'text' => '<a href="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=offline">' . 
-			html_print_image ("images/box.disabled.png", true, array ("title" => __('Offline update manager'))) .'</a>'),
+			html_print_image ("images/box.png", true, array ("title" => __('Offline update manager'))) .'</a>'),
 	'online' => array(
 		'active' => ($tab == 'online') ? true : false,
 		'text' => '<a href="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=online">' . 

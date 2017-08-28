@@ -34,10 +34,7 @@
 				}
 				if (dataObjects.length > 1) {
 					dataObjects.forEach(function (element) {
-						if (/^Avg.:/i.test(element.label))
-							result = element;
-						if (/^Percentil/i.test(element.label))
-							result = element;
+						result = element;
 					});
 
 					// If the avg set is missing, retrieve the first set
@@ -88,7 +85,10 @@
 						else if (typeof labels[index] !== 'undefined')
 							date = labels[index];
 
-						result.data.push([date, value,dataObject.label]);
+						var clean_label = dataObject.label;
+						clean_label = clean_label.replace( new RegExp("<.*?>", "g"), "");
+						clean_label = clean_label.replace( new RegExp(";", "g"), "");
+						result.data.push([date, value, clean_label]);
 					});
 				}
 				/* [
@@ -139,7 +139,7 @@
 
 			try {
 				var elements = [];
-				var custom_graph = $('input:hidden[name=custom_graph]').value;
+				var custom_graph = $('#hidden-custom_graph').val();
 
 				if (custom_graph) {
 					dataObject = retrieveDataOject(dataObjects);

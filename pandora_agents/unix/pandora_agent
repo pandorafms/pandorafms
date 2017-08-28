@@ -40,8 +40,8 @@ my $Sem = undef;
 # Semaphore used to control the number of threads
 my $ThreadSem = undef;
 
-use constant AGENT_VERSION => '7.0NG';
-use constant AGENT_BUILD => '170417';
+use constant AGENT_VERSION => '7.0NG.711';
+use constant AGENT_BUILD => '170828';
 
 # Agent log default file size maximum and instances
 use constant DEFAULT_MAX_LOG_SIZE => 600000;
@@ -135,9 +135,10 @@ my %DefaultConf = (
 	'interval' => 300,
 	'debug' => 0,		
 	'agent_name' => '',
-	'agent_alias' => hostname(),
+	'agent_alias' => '',
 	'ehorus_conf' => undef,
 	'agent_name_cmd' => '',
+	'agent_alias_cmd' => '',
 	'description' => '',
 	'group' => '',
 	'group_id' => undef,
@@ -802,6 +803,23 @@ sub read_config (;$) {
 	
 	# Module, plugin and collection definitions
 	parse_conf_modules(\@file);
+	
+	# If agent_alias_cmd is defined, agent_alias is set by command result.
+	if ($Conf{'agent_alias'} eq '') {
+		if ($Conf{'agent_alias_cmd'} ne '') {
+			my $result = `$Conf{'agent_alias_cmd'}`;
+			# Use only the first line.
+			my ($temp_agent_alias, $remain2) = split(/\n/, $result);
+			chomp ($temp_agent_alias);
+	
+			# Remove white spaces of the first and last.
+			$temp_agent_alias =~ s/^ *(.*?) *$/$1/;
+	
+			$Conf{'agent_alias'} = $temp_agent_alias if ($temp_agent_alias ne '');
+		} else {
+			$Conf{'agent_alias'} = hostname();
+		}
+	}
 
 	# If agent_name_cmd is defined, agent_name is set by command result.
 	if ($Conf{'agent_name'} eq '') {
@@ -888,14 +906,13 @@ sub fix_directory ($) {
 ################################################################################
 # Sends a file to the server.
 ################################################################################
-#sub send_file ($;$) {
+#sub send_file ($;$$$) {
 sub send_file {
-	my ($file, $secondary) = @_;
+	my ($file, $secondary, $rc_primary, $flag_always) = @_;
 	my $output;
-
 	my $pid = fork();
 	return 1 unless defined $pid;
-	
+
 	if ($pid == 0) {
 		# execute the transfer program by child process.
 		eval {
@@ -924,14 +941,14 @@ sub send_file {
 		};
 
 		if ($@) {
-			log_message ('error', "Error sending file '$file': File transfer command is not responding.");
+			log_message ('error', "Error sending file '$file' to '" . $Conf{'server_ip'} . ":" . $Conf{'server_port'}. "': File transfer command is not responding.");
 			exit 1;
 		}
 
 		# Get the errorlevel
 		my $rc = $? >> 8;
 		if ($rc != 0) {
-			log_message ('error', "Error sending file '$file': $output");
+			log_message ('error', "Error sending file '$file' to '" . $Conf{'server_ip'} . ":" . $Conf{'server_port'}. "': $output");
 		}
 		exit $rc;
 	}
@@ -940,38 +957,103 @@ sub send_file {
 	waitpid ($pid, 0);
 	my $rc = $? >> 8;
 
-	return $rc unless (defined ($secondary));
+	if( ($Conf{'secondary_mode'} eq 'always') && ( !defined($flag_always) ) ){
+		# Send the file to the secondary server
+		return $rc unless ($Conf{'secondary_mode'} eq 'always');
+		
+		if(defined ($secondary)){
+			if( ($rc != 0 && ($file =~ /\.data/))  ){
+				$rc_primary = 1;
+			}
+			swap_servers ();
+			$rc = send_file ($file, undef, $rc_primary);
+			swap_servers ();
 
-	# Send the file to the secondary server
-	return $rc unless ($Conf{'secondary_mode'} eq 'always' || ($Conf{'secondary_mode'} eq 'on_error' && $rc != 0));
-	
-	swap_servers ();
-	$rc = send_file ($file);
-	swap_servers ();
-	return $rc;
+			return $rc;
+		}
+		else{
+			my $rc_secondary = 0;
+			if( ($rc != 0) && ($file =~ /\.data/)){				
+				$rc_secondary = 1;
+			}
+
+			if (  $rc_secondary == 1 && defined($rc_primary) ){
+				return 1;
+			}
+			
+			if ( $rc_secondary == 1 ){
+				if (! -d "$Conf{'temporal'}/secondary"){
+					mkdir "$Conf{'temporal'}/secondary";
+				}
+				eval {
+					copy("$file", "$Conf{'temporal'}/secondary/");
+				};
+				if ($@) {
+					# We shouldn't reach this point...
+					die ("Cannot write on $Conf{'temporal'}/secondary/");
+				}
+				return 0;
+			}
+			
+			if ( defined($rc_primary) ){
+				if (! -d "$Conf{'temporal'}/primary"){
+					mkdir "$Conf{'temporal'}/primary";
+				}
+				eval {
+					copy("$file", "$Conf{'temporal'}/primary/");
+				};
+				if ($@) {
+					# We shouldn't reach this point...
+					die ("Cannot write on $Conf{'temporal'}/primary/");
+				}
+				return 0;
+			}
+
+			if ( $rc_secondary == 0 && !defined($rc_primary) ){
+				return 0;
+			}
+		}
+	}
+	elsif ( ($Conf{'secondary_mode'} eq 'always') && defined($flag_always) ){
+		return $rc;
+	}
+	else{
+		return $rc unless (defined ($secondary));
+
+		# Send the file to the secondary server
+		return $rc unless ($Conf{'secondary_mode'} eq 'always' || ($Conf{'secondary_mode'} eq 'on_error' && $rc != 0));
+		
+		swap_servers ();
+		$rc = send_file ($file);
+		swap_servers ();
+		return $rc;
+	}
 }
 
 ################################################################################
 # Send buffered XML files.
 ################################################################################
-sub send_buffered_xml_files () {
-
+sub send_buffered_xml_files ($;$) {
+	my ($temporal_file, $flag_always) = @_;
 	# Read XML files from the temporal directory
-	opendir(TEMPORAL, $Conf{'temporal'}) or return;
-	while (my $xml_file = readdir(TEMPORAL)) { 
-	
+	opendir(TEMPORAL, $temporal_file) or return;
+	if (defined($flag_always) && ($flag_always == 2)){
+		swap_servers ();
+	}
+	while (my $xml_file = readdir(TEMPORAL)) {
 		# Skip non data files and symlinks
-		next if ($xml_file !~ m/^$Conf{'agent_name'}\.[0-9]+\.data$/ || -l "$Conf{'temporal'}/$xml_file");
-
-		my $rc = send_file ("$Conf{'temporal'}/$xml_file", 1);
-		
+		next if ($xml_file !~ m/^$Conf{'agent_name'}\.[0-9]+\.data$/ || -l "$temporal_file/$xml_file");
+		my $rc = send_file ("$temporal_file/$xml_file", 1, undef, $flag_always); 
 		if ($rc == 0) {	
 			if ($Conf{'debug'} eq '1') {
-				rename "$Conf{'temporal'}/$xml_file", "$Conf{'temporal'}/$xml_file". "sent";
+				rename "$temporal_file/$xml_file", "$temporal_file/$xml_file". "sent";
 			} else {
-				unlink ("$Conf{'temporal'}/$xml_file");	
+				unlink ("$temporal_file/$xml_file");	
 			}
 		}
+	}
+	if (defined($flag_always) && ($flag_always == 2)){
+		swap_servers ();
 	}
 }
 
@@ -2751,7 +2833,20 @@ while (1) {
 		
 		# Send buffered XML data files
 		if ($Conf{'xml_buffer'} == 1) {
-			send_buffered_xml_files ();
+			if($Conf{'secondary_mode'} eq 'always'){
+				$Conf{'__temporal_primary'}   = "$Conf{'temporal'}/primary";
+				$Conf{'__temporal_secondary'} = "$Conf{'temporal'}/secondary";
+				if (-d "$Conf{'__temporal_primary'}"){				
+					send_buffered_xml_files ($Conf{'__temporal_primary'}, 1);
+				}				
+				if (-d "$Conf{'__temporal_secondary'}"){
+					send_buffered_xml_files ($Conf{'__temporal_secondary'}, 2);
+				}
+				send_buffered_xml_files ($Conf{'temporal'});
+			}
+			else{
+				send_buffered_xml_files ($Conf{'temporal'});	
+			}
 		}
 	}
 	

@@ -134,8 +134,11 @@ function js_printMap(id_div, initial_zoom, center_latitude, center_longitude, ob
 		maxExtent: new OpenLayers.Bounds(-20037508, -20037508, 20037508, 20037508.34)};
 	
 	map = new OpenLayers.Map(id_div, option);
-	
+	map.events.Event
 	var baseLayer = null;
+	
+	map.events.on({"zoomend": EventZoomEnd});
+	map.events.on({"mouseup": EventZoomEnd});
 	
 	//Define the maps layer
 	for (var baselayerIndex in objBaseLayers) {
@@ -222,6 +225,57 @@ function js_printMap(id_div, initial_zoom, center_latitude, center_longitude, ob
 		.transform(map.displayProjection, map.getProjectionObject());
 	
 	map.setCenter (lonLat, initial_zoom);
+	
+}
+
+function EventZoomEnd (evt,zoom = map.zoom) {
+	if(evt == null){
+		var actual_zoom = (zoom < 6) ? 6 : zoom;
+	}
+	else{
+		var actual_zoom = (evt.object.zoom < 6) ? 6 : evt.object.zoom;
+	}
+	
+	
+	var max_width_marker = 38;
+	var max_zoom_map = map.numZoomLevels;
+	var max_font_size = 15;
+	
+	var actual_font_size = (actual_zoom * max_font_size) / max_zoom_map;
+		
+	jQuery.each($("tspan"), function (i, tspan) {
+		if (actual_zoom <= 18 && actual_zoom > 13)
+			actual_font_size = (max_font_size - 3);
+		else if (actual_zoom <= 13 && actual_zoom >= 8)
+			actual_font_size = (max_font_size - 6);
+		else if (actual_zoom <= 8)
+			actual_font_size = (max_font_size - 6);
+		$(tspan).css('font-size', actual_font_size);
+	});
+	
+	var layers = map.getLayersByClass("OpenLayers.Layer.Vector");
+	
+	
+	jQuery.each(layers, function (i, layer) {
+		var features = layer.features;
+		
+		jQuery.each(features, function (j, feature) {
+			var graphicHeight = feature.style.graphicHeight || -1;
+			var graphicWidth = feature.style.graphicWidth || -1;
+			
+			if (graphicHeight > 0 && graphicWidth > 0) {
+				var new_width_marker = (actual_zoom * max_width_marker) / max_zoom_map;
+				var new_height_marker = (actual_zoom * max_width_marker) / max_zoom_map;
+				
+				feature.style.fontSize = '' + actual_font_size + ' !important';
+				feature.style.graphicHeight = new_height_marker;
+				feature.style.graphicWidth = new_width_marker;
+				feature.style.labelYOffset = (new_width_marker * -1);
+			}
+			
+		});
+		layer.redraw();
+	});
 }
 
 /**
@@ -234,6 +288,7 @@ function js_printMap(id_div, initial_zoom, center_latitude, center_longitude, ob
 function changeShowStatus(newShowStatus) {
 	statusShow = newShowStatus;	
 	hideAgentsStatus();
+	EventZoomEnd(null,map.zoom);
 	js_refreshParentLines();
 }
 

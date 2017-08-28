@@ -194,6 +194,8 @@ function config_update_config () {
 						$error_update[] = __('Command Snapshot');
 					if (!config_update_value ('server_log_dir', get_parameter('server_log_dir')))
 						$error_update[] = __('Server logs directory');
+					if (!config_update_value ('max_log_size', get_parameter('max_log_size')))
+						$error_update[] = __('Log size limit in system logs viewer extension');
 					if (!config_update_value ('tutorial_mode', get_parameter('tutorial_mode')))
 						$error_update[] = __('Tutorial mode');
 					if (!config_update_value ('past_planned_downtimes', get_parameter('past_planned_downtimes')))
@@ -249,6 +251,19 @@ function config_update_config () {
 						$inventory_changes_blacklist = get_parameter('inventory_changes_blacklist', array());
 						if (!config_update_value ('inventory_changes_blacklist', implode(',',$inventory_changes_blacklist)))
 							$error_update[] = __('Inventory changes blacklist');
+
+						if (!config_update_value ('email_from_dir', get_parameter('email_from_dir')))
+							$error_update[] = __('From dir');
+						if (!config_update_value ('email_from_name', get_parameter('email_from_name')))
+							$error_update[] = __('From name');
+						if (!config_update_value ('email_smtpServer', get_parameter('email_smtpServer')))
+							$error_update[] = __('Server SMTP');
+						if (!config_update_value ('email_smtpPort', (int)get_parameter('email_smtpPort')))
+							$error_update[] = __('Port SMTP');
+						if (!config_update_value ('email_username', get_parameter('email_username')))
+							$error_update[] = __('Email user');
+						if (!config_update_value ('email_password', get_parameter('email_password')))
+							$error_update[] = __('Email password');
 						
 					}
 					break;
@@ -277,6 +292,8 @@ function config_update_config () {
 							$error_update[] = __('Enable password history');
 						if (!config_update_value ('compare_pass', get_parameter('compare_pass')))
 							$error_update[] = __('Compare previous password');
+						if (!config_update_value ('reset_pass_option', (bool)get_parameter('reset_pass_option')))
+							$error_update[] = __('Activate reset password');
 					}
 					break;
 				case 'auth':
@@ -333,16 +350,6 @@ function config_update_config () {
 					if (!config_update_value ('rpandora_pass', io_input_password(get_parameter ('rpandora_pass'))))
 						$error_update[] = __('Password');
 					
-					if (!config_update_value ('rbabel_server', get_parameter ('rbabel_server')))
-						$error_update[] = __('Babel Enterprise host');
-					if (!config_update_value ('rbabel_port', get_parameter ('rbabel_port')))
-						$error_update[] = __('MySQL port');
-					if (!config_update_value ('rbabel_dbname', get_parameter ('rbabel_dbname')))
-						$error_update[] = __('Database name');
-					if (!config_update_value ('rbabel_user', get_parameter ('rbabel_user')))
-						$error_update[] = __('User');
-					if (!config_update_value ('rbabel_pass', io_input_password(get_parameter ('rbabel_pass'))))
-						$error_update[] = __('Password');
 					if (!config_update_value ('rintegria_server', get_parameter ('rintegria_server')))
 						$error_update[] = __('Integria host');
 					if (!config_update_value ('rintegria_port', get_parameter ('rintegria_port')))
@@ -413,6 +420,8 @@ function config_update_config () {
 						if (!config_update_value ('inventory_purge', get_parameter ('inventory_purge')))
 							$error_update[] = __('Max. days before delete inventory data');
 					}
+					if (!config_update_value ('max_graph_container', get_parameter ('max_graph_container')))
+						$error_update[] = __('Graph container - Max. Items');
 					/////////////
 					break;
 					
@@ -655,7 +664,10 @@ function config_update_config () {
 					$error_update[] = __('Custom report front') . ' - ' . __('First page');				
 				
 				if (!config_update_value ('custom_report_front_footer', get_parameter('custom_report_front_footer')))
-					$error_update[] = __('Custom report front') . ' - ' . __('Footer');				
+					$error_update[] = __('Custom report front') . ' - ' . __('Footer');	
+
+					if (!config_update_value ('csv_divider', (string) get_parameter('csv_divider', ';')))
+						$error_update[] = __('CSV divider');
 				
 				break;
 			case 'net':
@@ -843,9 +855,6 @@ function config_process_config () {
 		config_update_value ('status_images_set', 'default');
 	}
 
-	if(!isset ($config['autorefresh_white_list'])){
-		config_update_value ('autorefresh_white_list', '');
-	}
 	// Load user session
 	if (isset ($_SESSION['id_usuario']))
 		$config["id_user"] = $_SESSION["id_usuario"];
@@ -894,6 +903,10 @@ function config_process_config () {
 		if (!isset($config['inventory_purge'])) {
 			config_update_value ('inventory_purge',  21);
 		}
+	}
+	
+	if (!isset($config['max_graph_container'])) {
+		config_update_value ('max_graph_container', 10);
 	}
 
 	if (!isset($config['max_macro_fields'])) {
@@ -986,6 +999,10 @@ function config_process_config () {
 	
 	if (!isset ($config["log_collector"])) {
 		config_update_value ('log_collector', 0);
+	}
+
+	if (!isset ($config["reset_pass_option"])) {
+		config_update_value ('reset_pass_option', 0);
 	}
 
 	if (!isset ($config["include_agents"])) {
@@ -1187,7 +1204,31 @@ function config_process_config () {
 	if (!isset ($config['history_db_delay'])) {
 		config_update_value ( 'history_db_delay', 0);
 	}
-	
+
+	if (!isset ($config['email_from_dir'])) {
+		config_update_value ( 'email_from_dir', "pandora@pandorafms.org");
+	}
+
+	if (!isset ($config['email_from_name'])) {
+		config_update_value ( 'email_from_name', "Pandora FMS");
+	}
+
+	if (!isset ($config['email_smtpServer'])) {
+		config_update_value ( 'email_smtpServer', "127.0.0.1");
+	}
+
+	if (!isset ($config['email_smtpPort'])) {
+		config_update_value ( 'email_smtpPort', 25);
+	}
+
+	if (!isset ($config['email_username'])) {
+		config_update_value ( 'email_username', "");
+	}
+
+	if (!isset ($config['email_password'])) {
+		config_update_value ( 'email_password', "");
+	}
+
 	if (!isset ($config['activate_gis'])) {
 		config_update_value ( 'activate_gis', 0);
 	}
@@ -1394,26 +1435,6 @@ function config_process_config () {
 		config_update_value ( 'rpandora_pass', '');
 	}
 	
-	if (!isset ($config['rbabel_server'])) {
-		config_update_value ( 'rbabel_server', 'localhost');
-	}
-	
-	if (!isset ($config['rbabel_port'])) {
-		config_update_value ( 'rbabel_port', 3306);
-	}
-	
-	if (!isset ($config['rbabel_dbname'])) {
-		config_update_value ( 'rbabel_dbname', 'babel');
-	}
-	
-	if (!isset ($config['rbabel_user'])) {
-		config_update_value ( 'rbabel_user', 'babel');
-	}
-	
-	if (!isset ($config['rbabel_pass'])) {
-		config_update_value ( 'rbabel_pass', '');
-	}
-	
 	if (!isset ($config['rintegria_server'])) {
 		config_update_value ( 'rintegria_server', 'localhost');
 	}
@@ -1575,6 +1596,10 @@ function config_process_config () {
 	if (!isset($config['server_log_dir'])) {
 		config_update_value ('server_log_dir', "");
 	}
+
+	if (!isset($config['max_log_size'])) {
+		config_update_value ('max_log_size', 512);
+	}
 	
 	if (!isset($config['show_group_name'])) {
 		config_update_value ('show_group_name', 0);
@@ -1620,8 +1645,16 @@ function config_process_config () {
 		config_update_value ('classic_menu', 0);
 	}
 
+	if (!isset($config["csv_divider"])) {
+		config_update_value ('csv_divider', ";");
+	}
+
 	if (!isset($config['command_snapshot'])) {
 		config_update_value ('command_snapshot', 1);
+	}
+	
+	if (!isset($config['custom_report_info'])) {
+		config_update_value ('custom_report_info', 1);
 	}
 	
 	// Juanma (06/05/2014) New feature: Custom front page for reports  
@@ -1717,7 +1750,7 @@ function config_process_config () {
 		config_update_value('ehorus_custom_field', 'eHorusID');
 	}
 	if (!isset($config['ehorus_hostname'])) {
-		config_update_value('ehorus_hostname', 'switch.ehorus.com');
+		config_update_value('ehorus_hostname', 'portal.ehorus.com');
 	}
 	if (!isset($config['ehorus_port'])) {
 		config_update_value('ehorus_port', 18080);

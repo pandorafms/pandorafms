@@ -38,9 +38,7 @@ $get_agent_modules_json_by_name = (bool) get_parameter('get_agent_modules_json_b
 
 
 if ($get_agent_modules_json_by_name) {
-	$agent_name = get_parameter('agent_name');
-
-	$agent_id = agents_get_agent_id($agent_name);
+	$agent_id = get_parameter('id_agent');
 
 	$agent_modules = db_get_all_rows_sql("SELECT id_agente_modulo as id_module, nombre as name FROM tagente_modulo
 											WHERE id_agente = " . $agent_id);
@@ -254,7 +252,9 @@ if ($get_module_detail) {
 
 	$id_type_web_content_string = db_get_value('id_tipo',
 		'ttipo_modulo', 'nombre', 'web_content_string');
-
+		
+	$post_process = db_get_value_filter('post_process','tagente_modulo',array('id_agente_modulo' => $module_id));
+	
 	foreach ($result as $row) {
 		$data = array ();
 
@@ -266,21 +266,16 @@ if ($get_module_detail) {
 		foreach ($columns as $col => $attr) {
 			if ($attr[1] != "modules_format_data") {
 				$data[] = date('d F Y h:i:s A', $row['utimestamp']);
-
 			}
 			elseif (($config['command_snapshot']) && (preg_match ("/[\n]+/i", $row[$attr[0]]))) {
 				// Its a single-data, multiline data (data snapshot) ?
 
-
 				// Detect string data with \n and convert to <br>'s
 				$datos = $row[$attr[0]];
-				//$datos = preg_replace ('/\n/i','<br>',$row[$attr[0]]);
-				//$datos = preg_replace ('/\s/i','&nbsp;',$datos);
 
 				// Because this *SHIT* of print_table monster, I cannot format properly this cells
 				// so, eat this, motherfucker :))
-
-				$datos =  io_safe_input($datos);
+				$datos =  preg_replace("/\n/", "</br></br>", $datos);
 
 				// I dont why, but using index (value) method, data is automatically converted to html entities ¿?
 				$data[] = $datos;
@@ -288,7 +283,6 @@ if ($get_module_detail) {
 			elseif ($is_web_content_string) {
 				//Fixed the goliat sends the strings from web
 				//without HTML entities
-
 				$data[] = io_safe_input($row[$attr[0]]);
 			}
 			else {
@@ -299,16 +293,19 @@ if ($get_module_detail) {
 					$data[] = io_safe_input($row[$attr[0]]);
 				}
 				else if (is_numeric($row[$attr[0]]) && !modules_is_string_type($row['module_type']) ) {
-					
-					//~ $data[] = remove_right_zeros(number_format($row[$attr[0]], $config['graph_precision']));
-					//~ $data[] = (double) $row[$attr[0]];
 					switch($row['module_type']) {
 						case 15:
 							$value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module_id);
-							if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0')
-								$data[] = human_milliseconds_to_string($row['data']);
-							else
+							if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0'){
+								if($post_process > 0){
+									$data[] = human_milliseconds_to_string($row['data'] / $post_process);
+								} else {
+									$data[] = human_milliseconds_to_string($row['data']);
+								}
+							}else{
 								$data[] = remove_right_zeros(number_format($row[$attr[0]], $config['graph_precision']));
+							}
+								
 							break;
 						default:
 							$data[] = remove_right_zeros(number_format($row[$attr[0]], $config['graph_precision']));
@@ -320,17 +317,12 @@ if ($get_module_detail) {
 						$data[] = 'No data';
 					}
 					else {
-					
-					if(is_snapshot_data($row[$attr[0]])){	
-						$data[] = "<a target='_blank' href='".io_safe_input($row[$attr[0]])."'><img style='width:300px' src='".io_safe_input($row[$attr[0]])."'></a>";
-					}
-					else{
-						$data[] = $row[$attr[0]];
-					}
-						
-						
-					
-					
+						if(is_snapshot_data($row[$attr[0]])){	
+							$data[] = "<a target='_blank' href='".io_safe_input($row[$attr[0]])."'><img style='width:300px' src='".io_safe_input($row[$attr[0]])."'></a>";
+						}
+						else{
+							$data[] = $row[$attr[0]];
+						}
 					}
 				}
 			}
@@ -745,7 +737,7 @@ if ($list_modules) {
 	$table->head[5] = __('Status') . ' ' .
 		'<a href="' . $url . '&sort_field=status&amp;sort=up&refr=&filter_monitors=1&status_filter_monitor=' .$status_filter_monitor.' &status_text_monitor='. $status_text_monitor.'&status_module_group= '.$status_module_group.'">' . html_print_image("images/sort_up.png", true, array("style" => $selectStatusUp, "alt" => "up")) . '</a>' .
 		'<a href="' . $url . '&sort_field=status&amp;sort=down&refr=&filter_monitors=1&status_filter_monitor=' .$status_filter_monitor.' &status_text_monitor='. $status_text_monitor.'&status_module_group= '.$status_module_group.'">' . html_print_image("images/sort_down.png", true, array("style" => $selectStatusDown, "alt" => "down")) . '</a>';
-	$table->head[6] = __('Warn');
+	$table->head[6] = __('Thresholds');
 	$table->head[7] = __('Data');
 	$table->head[8] = __('Graph');
 	$table->head[9] = __('Last contact') . ' ' .
@@ -970,10 +962,16 @@ if ($list_modules) {
 							switch($module['id_tipo_modulo']) {
 								case 15:
 									$value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module['id_agente_modulo']);
-									if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0')
-										$salida = human_milliseconds_to_string($module['datos']);
-									else
+									if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0'){
+										if($module['post_process']>0){
+											$salida = human_milliseconds_to_string($module['datos'] / $module['post_process']);
+										} else {
+											$salida = human_milliseconds_to_string($module['datos']);
+										}
+									} else {
 										$salida = remove_right_zeros(number_format($module["datos"], $config['graph_precision']));
+									}
+										
 									break;
 								default:
 									$salida = remove_right_zeros(number_format($module["datos"], $config['graph_precision']));
@@ -986,16 +984,20 @@ if ($list_modules) {
 					switch($module['id_tipo_modulo']) {
 						case 15:
 							$value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module['id_agente_modulo']);
-							if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0')
-								$salida = human_milliseconds_to_string($module['datos']);
-							else
+							if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0'){
+								if($module['post_process']>0){
+									$salida = human_milliseconds_to_string($module['datos'] / $module['post_process']);
+								} else {
+									$salida = human_milliseconds_to_string($module['datos']);
+								}
+							} else {
 								$salida = remove_right_zeros(number_format($module["datos"], $config['graph_precision']));
+							}
 							break;
 						default:
 							$salida = remove_right_zeros(number_format($module["datos"], $config['graph_precision']));
 							break;
 					}
-					//~ $salida = (number_format($module["datos"], $config['graph_precision']));
 				}
 				// Show units ONLY in numeric data types
 				if (isset($module["unit"])) {

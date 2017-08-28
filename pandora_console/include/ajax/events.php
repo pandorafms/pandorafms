@@ -130,15 +130,29 @@ if ($perform_event_response) {
 		if ($event_response['server_to_exec'] != 0 && $event_response['type'] == 'command') {
 			$commandExclusions = array ('vi', 'vim', 'nano');
 
+			$server_data = db_get_row('tserver','id_server', $event_response['server_to_exec']);
+
     		if (in_array(strtolower($command),$commandExclusions)) {
 				echo "Only stdin/stdout commands are supported";
 			}
 			else {
-				enterprise_include_once ('include/functions_satellite.php');
-			
-				$connection = connect_to_proxy_server('192.168.70.165');
+				$return_val = array();
+				$return_val['correct'] = false;
 
-				$exec_val = proxy_execute_command($connection, io_safe_output($command));
+				$exec_val = system("ssh root@" . $server_data['ip_address'] . " '" . $command . " 2>&1'", $ret_val);
+
+				if ($ret_val != 0) {
+					$return_val['message'] = "Conection error";
+				}
+				else {
+					if ($exec_val == "root") {
+						$return_val['correct'] = true;
+					}
+					else {
+						$return_val['message'] = "User must be pandora_exec_proxy";
+					}
+				}
+				ob_clean();
 				
 				echo $exec_val;
 			}

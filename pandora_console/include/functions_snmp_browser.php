@@ -173,37 +173,32 @@ function snmp_browser_get_tree ($target_ip, $community, $starting_oid = '.', $ve
 			$error_redir_dir = '/dev/null';
 			break;
 	}
-
+	
 	if ($server_to_exec != 0) {
-		$sql = sprintf("SELECT exec_proxy: FROM tserver WHERE id_server = %d", $server_to_exec);
-		$server = db_get_row_sql($sql);
+		$sql = sprintf("SELECT ip_address FROM tserver WHERE id_server = %d", $server_to_exec);
+		$server_data = db_get_row_sql($sql);
 
-		if ($server) {
-			if (enterprise_installed()) {
-				enterprise_include_once ('include/functions_satellite.php');
+		if (enterprise_installed()) {
+			enterprise_include_once ('include/functions_satellite.php');
 
-				$oid_tree = array('__LEAVES__' => array());
-				if ($version == "3") {
-					switch ($snmp3_security_level) {
-						case "authPriv":
-							$command = $snmpwalk_bin . ' -m ALL -v 3 -u ' . escapeshellarg($snmp3_auth_user) . ' -A ' . escapeshellarg($snmp3_auth_pass) . ' -l ' . escapeshellarg($snmp3_security_level) . ' -a ' . escapeshellarg($snmp3_auth_method) . ' -x ' . escapeshellarg($snmp3_privacy_method) . ' -X ' . escapeshellarg($snmp3_privacy_pass) . ' ' . escapeshellarg($target_ip)  . ' ' . escapeshellarg($starting_oid) . ' 2> ' . $error_redir_dir;
-							break;
-						case "authNoPriv":
-							$command = $snmpwalk_bin . ' -m ALL -v 3 -u ' . escapeshellarg($snmp3_auth_user) . ' -A ' . escapeshellarg($snmp3_auth_pass) . ' -l ' . escapeshellarg($snmp3_security_level) . ' -a ' . escapeshellarg($snmp3_auth_method) . ' ' . escapeshellarg($target_ip)  . ' ' . escapeshellarg($starting_oid) . ' 2> ' . $error_redir_dir;
-							break;
-						case "noAuthNoPriv":
-							$command = $snmpwalk_bin . ' -m ALL -v 3 -u ' . escapeshellarg($snmp3_auth_user) . ' -l ' . escapeshellarg($snmp3_security_level) . ' ' . escapeshellarg($target_ip)  . ' ' . escapeshellarg($starting_oid) . ' 2> ' . $error_redir_dir;
-							break;
-					}
+			$oid_tree = array('__LEAVES__' => array());
+			if ($version == "3") {
+				switch ($snmp3_security_level) {
+					case "authPriv":
+						$command = $snmpwalk_bin . " -m ALL -v 3 -u " . escapeshellarg($snmp3_auth_user) . " -A " . escapeshellarg($snmp3_auth_pass) . " -l " . escapeshellarg($snmp3_security_level) . " -a " . escapeshellarg($snmp3_auth_method) . " -x " . escapeshellarg($snmp3_privacy_method) . " -X " . escapeshellarg($snmp3_privacy_pass) . " " . escapeshellarg($target_ip)  . " " . escapeshellarg($starting_oid) . " 2> " . $error_redir_dir;
+						break;
+					case "authNoPriv":
+						$command = $snmpwalk_bin . " -m ALL -v 3 -u " . escapeshellarg($snmp3_auth_user) . " -A " . escapeshellarg($snmp3_auth_pass) . " -l " . escapeshellarg($snmp3_security_level) . " -a " . escapeshellarg($snmp3_auth_method) . " " . escapeshellarg($target_ip)  . " " . escapeshellarg($starting_oid) . " 2> " . $error_redir_dir;
+						break;
+					case "noAuthNoPriv":
+						$command = $snmpwalk_bin . " -m ALL -v 3 -u " . escapeshellarg($snmp3_auth_user) . " -l " . escapeshellarg($snmp3_security_level) . " " . escapeshellarg($target_ip)  . ' ' . escapeshellarg($starting_oid) . " 2> " . $error_redir_dir;
+						break;
 				}
-				else {
-					$command = $snmpwalk_bin . ' -m ALL -M +' . escapeshellarg($config['homedir'] . '/attachment/mibs') . ' -Cc -c ' . escapeshellarg($community) . ' -v ' . escapeshellarg($version) . ' ' . escapeshellarg($target_ip) . ' ' . escapeshellarg($starting_oid) . ' 2> ' . $error_redir_dir;
-				}
-				
-				$connection = connect_to_proxy_server('192.168.70.165');
-
-				$output = proxy_execute_command($connection, io_safe_output($command));
 			}
+			else {
+				$command = $snmpwalk_bin . " -m ALL -M +" . escapeshellarg($config['homedir'] . "/attachment/mibs") . " -Cc -c " . escapeshellarg($community) . " -v " . escapeshellarg($version) . " " . escapeshellarg($target_ip) . " " . escapeshellarg($starting_oid) . " 2> " . $error_redir_dir;
+			}
+			exec("ssh root@" . $server_data['ip_address'] . " \"" . $command . "\"", $output, $rc);
 		}
 		else {
 			$oid_tree = array('__LEAVES__' => array());
@@ -225,7 +220,26 @@ function snmp_browser_get_tree ($target_ip, $community, $starting_oid = '.', $ve
 			}
 		}
 	}
-	
+	else {
+		$oid_tree = array('__LEAVES__' => array());
+		if ($version == "3") {
+			switch ($snmp3_security_level) {
+				case "authPriv":
+					exec ($snmpwalk_bin . ' -m ALL -v 3 -u ' . escapeshellarg($snmp3_auth_user) . ' -A ' . escapeshellarg($snmp3_auth_pass) . ' -l ' . escapeshellarg($snmp3_security_level) . ' -a ' . escapeshellarg($snmp3_auth_method) . ' -x ' . escapeshellarg($snmp3_privacy_method) . ' -X ' . escapeshellarg($snmp3_privacy_pass) . ' ' . escapeshellarg($target_ip)  . ' ' . escapeshellarg($starting_oid) . ' 2> ' . $error_redir_dir, $output, $rc);
+					break;
+				case "authNoPriv":
+					exec ($snmpwalk_bin . ' -m ALL -v 3 -u ' . escapeshellarg($snmp3_auth_user) . ' -A ' . escapeshellarg($snmp3_auth_pass) . ' -l ' . escapeshellarg($snmp3_security_level) . ' -a ' . escapeshellarg($snmp3_auth_method) . ' ' . escapeshellarg($target_ip)  . ' ' . escapeshellarg($starting_oid) . ' 2> ' . $error_redir_dir, $output, $rc);
+					break;
+				case "noAuthNoPriv":
+					exec ($snmpwalk_bin . ' -m ALL -v 3 -u ' . escapeshellarg($snmp3_auth_user) . ' -l ' . escapeshellarg($snmp3_security_level) . ' ' . escapeshellarg($target_ip)  . ' ' . escapeshellarg($starting_oid) . ' 2> ' . $error_redir_dir, $output, $rc);
+					break;
+			}
+		}
+		else {
+			exec ($snmpwalk_bin . ' -m ALL -M +' . escapeshellarg($config['homedir'] . '/attachment/mibs') . ' -Cc -c ' . escapeshellarg($community) . ' -v ' . escapeshellarg($version) . ' ' . escapeshellarg($target_ip) . ' ' . escapeshellarg($starting_oid) . ' 2> ' . $error_redir_dir, $output, $rc);
+		}
+	}
+html_debug($output, true);
 	foreach ($output as $line) {
 		
 		// Separate the OID from the value

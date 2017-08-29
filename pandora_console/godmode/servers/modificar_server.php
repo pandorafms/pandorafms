@@ -58,8 +58,12 @@ if (isset($_GET["server"])) {
 	
 	if (enterprise_installed()) {
 		$table->data[] = array (__('Type'), $server_type);
-		$table->data[] = array (__('Exec Server Enable'), $exec_server_enable);
-		$table->data[] = array (__('Check Exec Server'), '<a id="check_exec_server">' . html_print_image ("images/dot_red.disabled.png", true) . '</a>' . '<div id="check_error_message"></div>');
+		if ($row["server_type"] == 13) {
+			$table->data[] = array (__('Exec Server'), html_print_checkbox ("exec_proxy", 1, $row["exec_proxy"], true));
+			if ($row["exec_proxy"]) {
+				$table->data[] = array (__('Check Exec Server'), '<a id="check_exec_server">' . html_print_image ("images/dot_red.disabled.png", true) . '</a>' . '<div id="check_error_message"></div>');
+			}
+		}
 	}
 	
 	html_print_table ($table);
@@ -120,8 +124,9 @@ else {
 		$address = get_parameter_post ("address");
 		$description = get_parameter_post ("description");
 		$id_server = get_parameter_post ("server");
+		$exec_proxy = get_parameter_post ("exec_proxy");
 		
-		$values = array('ip_address' => $address, 'description' => $description);
+		$values = array('ip_address' => $address, 'description' => $description, 'exec_proxy' => $exec_proxy);
 		$result = db_process_sql_update('tserver', $values, array('id_server' => $id_server));
 		if ($result !== false) {
 			ui_print_success_message(__('Server updated successfully'));

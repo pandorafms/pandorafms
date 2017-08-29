@@ -136,12 +136,19 @@ if ($perform_event_response) {
 				echo "Only stdin/stdout commands are supported";
 			}
 			else {
-html_debug("ssh pandora_exec_proxy@" . $server_data['ip_address'] . " \"" . $command . " 2>&1\"", true);
-				$exec_val = system("ssh pandora_exec_proxy@" . $server_data['ip_address'] . " \"" . io_safe_output($command) . " 2>&1\"", $ret_val);
+				switch (PHP_OS) {
+					case "FreeBSD":
+						$timeout_bin = '/usr/local/bin/gtimeout';
+						break;
+					case "NetBSD":
+						$timeout_bin = '/usr/pkg/bin/gtimeout';
+						break;
+					default:
+						$timeout_bin = '/usr/bin/timeout';
+						break;
+				}
 
-				ob_clean();
-				
-				echo $exec_val;
+				echo system("ssh pandora_exec_proxy@" . $server_data['ip_address'] . " \"" . $timeout_bin . " 90 " . io_safe_output($command) . " 2>&1\"", $ret_val);
 			}
 		}
 		else {
@@ -156,7 +163,7 @@ html_debug("ssh pandora_exec_proxy@" . $server_data['ip_address'] . " \"" . $com
 					$timeout_bin = '/usr/bin/timeout';
 					break;
 			}
-			echo system($timeout_bin . ' 9 '.io_safe_output($command).' 2>&1');
+			echo system($timeout_bin . ' 90 '.io_safe_output($command).' 2>&1');
 		}
 	}
 	else {
@@ -171,7 +178,7 @@ html_debug("ssh pandora_exec_proxy@" . $server_data['ip_address'] . " \"" . $com
 				$timeout_bin = '/usr/bin/timeout';
 				break;
 		}
-		echo system($timeout_bin . ' 9 '.io_safe_output($command).' 2>&1');
+		echo system($timeout_bin . ' 90 '.io_safe_output($command).' 2>&1');
 	}
 	
 	return;

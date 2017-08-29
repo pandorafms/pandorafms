@@ -40,6 +40,17 @@ switch($action) {
 		$values['modal_height'] = get_parameter('modal_height');
 		$values['new_window'] = get_parameter('new_window');
 		$values['params'] = get_parameter('params');
+		if (enterprise_installed()) {
+			if ($values['type'] == 'command') {
+				$values['server_to_exec'] = get_parameter('server_to_exec');
+			}
+			else {
+				$values['server_to_exec'] = 0;
+			}
+		}
+		else {
+				$values['server_to_exec'] = 0;			
+		}
 		
 		if($values['new_window'] == 1) {
 			$values['modal_width'] = 0;
@@ -67,6 +78,17 @@ switch($action) {
 		$values['modal_height'] = get_parameter('modal_height');
 		$values['new_window'] = get_parameter('new_window');
 		$values['params'] = get_parameter('params');
+		if (enterprise_installed()) {
+			if ($values['type'] == 'command') {
+				$values['server_to_exec'] = get_parameter('server_to_exec');
+			}
+			else {
+				$values['server_to_exec'] = 0;
+			}
+		}
+		else {
+				$values['server_to_exec'] = 0;			
+		}
 		
 		if($values['new_window'] == 1) {
 			$values['modal_width'] = 0;

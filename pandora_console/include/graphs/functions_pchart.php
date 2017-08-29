@@ -981,7 +981,8 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 		($height - $margin_bottom));
 	
 	/*Get minimun value to draw axis properly*/
-	$min_data = min($data['min']);
+	
+	$min_data = min(min($data));
 	$ManualScale = array();
 	$mode = SCALE_MODE_START0;
 	if ($min_data < 0) {
@@ -991,6 +992,10 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	if ($max_data < 0) {
 		$ManualScale = array(0 => array("Min" => $min_data, "Max" => 0));
 		$mode = SCALE_MODE_MANUAL;
+	}
+	else if ($max_data >= 0 && $min_data <= 0){
+		$ManualScale = array(0 => array("Min" => $min_data, "Max" => $max_data));
+		$mode = SCALE_MODE_MANUAL;	
 	}
 	
 	if($graph_threshold){

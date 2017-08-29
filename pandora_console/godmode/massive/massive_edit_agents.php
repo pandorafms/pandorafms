@@ -147,10 +147,15 @@ if ($update_agents) {
 			$result = db_process_sql_update ('tagente',
 				$values,
 				array ('id_agente' => $id_agent));
-				
+			
 			if($group_old || $result){
-				$tpolicy_group_old = db_get_all_rows_sql("SELECT id_policy FROM tpolicy_groups 
-					WHERE id_group = ".$group_old);
+				if ($group_old && $group_old != null) {
+					$tpolicy_group_old = db_get_all_rows_sql("SELECT id_policy FROM tpolicy_groups 
+						WHERE id_group = ".$group_old);
+				}
+				else {
+					$tpolicy_group_old = db_get_all_rows_sql("SELECT id_policy FROM tpolicy_groups");
+				}
 					
 				if($tpolicy_group_old){
 					foreach ($tpolicy_group_old as $key => $value) {
@@ -164,9 +169,13 @@ if ($update_agents) {
 						}
 					}
 				}
-				
-				$tpolicy_group_new = db_get_all_rows_sql("SELECT id_policy FROM tpolicy_groups 
-					WHERE id_group = ".$values['id_grupo']);
+				if ($values['id_grupo'] && $values['id_grupo'] != null) {
+					$tpolicy_group_new = db_get_all_rows_sql("SELECT id_policy FROM tpolicy_groups 
+						WHERE id_group = ".$values['id_grupo']);
+				}
+				else {
+					$tpolicy_group_new = db_get_all_rows_sql("SELECT id_policy FROM tpolicy_groups");
+				}
 						
 				if($tpolicy_group_new){
 					foreach ($tpolicy_group_new as $key => $value) {

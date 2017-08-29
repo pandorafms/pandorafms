@@ -136,22 +136,9 @@ if ($perform_event_response) {
 				echo "Only stdin/stdout commands are supported";
 			}
 			else {
-				$return_val = array();
-				$return_val['correct'] = false;
+html_debug("ssh pandora_exec_proxy@" . $server_data['ip_address'] . " \"" . $command . " 2>&1\"", true);
+				$exec_val = system("ssh pandora_exec_proxy@" . $server_data['ip_address'] . " \"" . io_safe_output($command) . " 2>&1\"", $ret_val);
 
-				$exec_val = system("ssh pandora_exec_proxy@" . $server_data['ip_address'] . " \"" . $command . " 2>&1\"", $ret_val);
-
-				if ($ret_val != 0) {
-					$return_val['message'] = "Conection error";
-				}
-				else {
-					if ($exec_val == "root") {
-						$return_val['correct'] = true;
-					}
-					else {
-						$return_val['message'] = "User must be pandora_exec_proxy";
-					}
-				}
 				ob_clean();
 				
 				echo $exec_val;

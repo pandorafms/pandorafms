@@ -261,6 +261,9 @@ $params['print_hidden_input_idagent'] = true;
 $params['hidden_input_idagent_name'] = 'id_agent_parent';
 $params['hidden_input_idagent_value'] = $id_parent;
 $params['value'] = db_get_value ("alias","tagente","id_agente",$id_parent);
+$params['selectbox_id'] = 'cascade_protection_module';
+$params['javascript_is_function_select'] = true;
+
 $table->data[3][1] = ui_print_agent_autocomplete_input($params);
 
 $table->data[3][1] .= html_print_checkbox ("cascade_protection", 1, $cascade_protection, true).__('Cascade protection'). "&nbsp;" . ui_print_help_icon("cascade_protection", true);
@@ -579,37 +582,6 @@ ui_require_jquery_file('bgiframe');
 			}
 		});
 
-		$("#text-id_parent").on("autocompletechange", function () {
-			agent_id=$("#hidden-id_parent").val();
-			
-			var params = {};
-			params["get_agent_modules_json_by_name"] = 1;
-			params["id_agent"] = agent_id;
-			params["page"] = "include/ajax/module";
-			
-			jQuery.ajax ({
-				data: params,
-				dataType: "json",
-				type: "POST",
-				url: "ajax.php",
-				success: function (data) {
-					$('#cascade_protection_module').empty();
-					$('#cascade_protection_module')
-							.append ($('<option></option>')
-							.html("Any")
-							.prop("value", 0)
-							.prop("selected", 'selected'));
-					jQuery.each (data, function (i, val) {
-						$('#cascade_protection_module')
-							.append ($('<option></option>')
-							.html(val['name'])
-							.prop("value", val['id_module'])
-							.prop("selected", 'selected'));
-					});
-				}
-			});
-		});
-		
 		paint_qrcode(
 			"<?php
 			echo ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $id_agente);

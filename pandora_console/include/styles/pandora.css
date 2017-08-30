@@ -4284,3 +4284,8 @@ div#footer_help{
 	width: 33%;
 	float: left;	
 }
+
+.pagination_show_more{
+	text-align: center;
+	margin-top: 10px;
+}

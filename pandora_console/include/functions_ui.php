@@ -3041,7 +3041,6 @@ function ui_print_agent_autocomplete_input($parameters) {
 	if ($from_ux_transaction != "") {
 		$javascript_code_function_select = '
 		function function_select_' . $input_name . '(agent_name) {
-			console.log(agent_name);
 			$("#' . $selectbox_id . '").empty();
 			
 			var inputs = [];
@@ -3071,7 +3070,6 @@ function ui_print_agent_autocomplete_input($parameters) {
 	elseif ($from_wux_transaction != "") {
 		$javascript_code_function_select = '
 		function function_select_' . $input_name . '(agent_name) {
-			console.log(agent_name);
 			$("#' . $selectbox_id . '").empty();
 			
 			var inputs = [];

@@ -69,7 +69,7 @@ $label = get_parameter ("label");
 		echo "</h2>";
 		$datos = io_safe_output($row["datos"]);
 		if (is_image_data($datos)) {
-			echo '<center><img src="' . $datos . '" alt="image"/></center>';
+			echo '<center><img src="' . $datos . '" alt="image" style="width:100%"/></center>';
 		}
 		else {
 			$datos = preg_replace ('/</', '&lt;', $datos);

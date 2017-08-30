@@ -437,7 +437,15 @@ function configure_modules_form () {
 				return false;
 			}
 		}
-		
+
+		moduletype = $("#hidden-id_module_type").val ();
+		if (moduletype == 25) {
+			if ($("#custom_integer_1").val () == 0) {
+				$("#custom_integer_1").focus ();
+				$("#message").showMessage (no_execute_test_from);
+				return false;
+			}
+		}
 		module = $("#id_module_type").attr ("value");
 		
 		if (id_modules_icmp.in_array (module) || id_modules_tcp.in_array (module) || id_modules_snmp.in_array (module)) {

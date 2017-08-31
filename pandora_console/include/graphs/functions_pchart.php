@@ -961,8 +961,18 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	
 	$chart_size = ($digits_left * $font_size) + 20;
 	
-	$max_data = max(max($data));
-	
+	$min_data = 0;
+	$max_data = 0;
+	foreach ($data as $k => $v) {
+		if(min($v) < $min_data){
+			$min_data = min($v);
+		}
+		if(max($v) > $max_data){
+			$max_data = max($v);
+		}
+	}
+
+
 	$default_chart_size = 40;
 	$rest_chars = strlen($max_data) - 6;
 	$default_chart_size += $rest_chars * 5;
@@ -982,7 +992,6 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	
 	/*Get minimun value to draw axis properly*/
 	
-	$min_data = min(min($data));
 	$ManualScale = array();
 	$mode = SCALE_MODE_START0;
 	if ($min_data < 0) {

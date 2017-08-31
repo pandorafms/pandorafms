@@ -1010,7 +1010,8 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_modulestatus_ => undef,
 				_moduletags_ => undef,
 				'_moduledata_\S+_' => undef,
-				_id_agent_ => (defined ($module)) ? $module->{'id_agente'} : '', 
+				_id_agent_ => (defined ($module)) ? $module->{'id_agente'} : '',
+				_id_module_ => (defined ($module)) ? $module->{'id_agente_modulo'} : '',
 				_id_group_ => (defined ($group)) ? $group->{'id_grupo'} : '',
 				_id_alert_ => (defined ($alert->{'id_template_module'})) ? $alert->{'id_template_module'} : '',
 				_interval_ => (defined ($module) && $module->{'module_interval'} != 0) ? $module->{'module_interval'} : (defined ($agent)) ? $agent->{'intervalo'} : '',
@@ -1094,9 +1095,10 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		# Message
 		$field3 = subst_alert_macros ($field3, \%macros, $pa_config, $dbh, $agent, $module);
 		
-		# Check for _module_graph_Xh_ macros
+		# Check for _module_graph_Xh_ macros and _module_graphth_Xh_ 
 		my $module_graph_list = {};
 		my $macro_regexp = "_modulegraph_(\\d+)h_";
+		my $macro_regexp2 = "_modulegraphth_(\\d+)h_";
 		
 		# API connection
 		my $ua = new LWP::UserAgent;
@@ -1112,8 +1114,14 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		
 		my $subst_func = sub {
 			my $hours = shift;
+			my $threshold = shift;
 			my $period = $hours * 3600; # Hours to seconds
-			$params->{"other"} = $period . '%7C0';
+			if($threshold == 0){
+				$params->{"other"} = $period . '%7C0%7C0';
+			}
+			else{
+				$params->{"other"} = $period . '%7C0%7C1';
+			}
 			$params->{"other_mode"} = 'url_encode_separator_%7C';
 			my $cid = 'module_graph_' . $hours . 'h';
 			
@@ -1135,7 +1143,8 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		eval {
 			no warnings;
 			local $SIG{__DIE__};
-			$field3 =~ s/$macro_regexp/$subst_func->($1)/ige;
+			$field3 =~ s/$macro_regexp/$subst_func->($1, 0)/ige;
+			$field3 =~ s/$macro_regexp2/$subst_func->($1, 1)/ige;
 		};
 		
 		# Default content type
@@ -2759,7 +2768,7 @@ sub pandora_create_module_from_hash ($$$) {
 
 	# Encrypt SNMP v3 passwords.
 	if ($parameters->{'id_tipo_modulo'} >= 15 && $parameters->{'id_tipo_modulo'} <= 18 &&
-		$parameters->{'tcp_send'} == 3) {
+		$parameters->{'tcp_send'} eq '3') {
 		$parameters->{'custom_string_2'} = pandora_input_password($pa_config, $parameters->{'custom_string_2'});
 	}
 
@@ -5042,15 +5051,26 @@ sub pandora_set_event_storm_protection ($) {
 ##########################################################################
 sub pandora_update_agent_module_count ($$$) {
 	my ($pa_config, $dbh, $agent_id) = @_;
-	
-	db_do ($dbh, 'UPDATE tagente SET update_module_count=0,
-	normal_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=0),
-	critical_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=1),
-	warning_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=2),
-	unknown_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=3),
-	notinit_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=4),
-	total_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id .
-	') WHERE id_agente = ' . $agent_id);
+	my $total = 0;
+	my $counts = {
+		'0' => 0,
+		'1' => 0,
+		'2' => 0,
+		'3' => 0,
+		'4' => 0,
+	}; # Module counts by status.
+
+	# Retrieve and hash module status counts.
+	my @rows = get_db_rows ($dbh, 'SELECT estado, COUNT(*) AS total FROM tagente_modulo, tagente_estado WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=?GROUP BY estado', $agent_id);
+	foreach my $row (@rows) {
+		$counts->{$row->{'estado'}} = $row->{'total'};
+		$total += $row->{'total'};
+	}
+
+	# Update the agent.
+	db_do ($dbh, 'UPDATE tagente
+		SET update_module_count=0, normal_count=?, critical_count=?, warning_count=?, unknown_count=?, notinit_count=?, total_count=?
+		WHERE id_agente = ?', $counts->{'0'}, $counts->{'1'}, $counts->{'2'}, $counts->{'3'}, $counts->{'4'}, $total, $agent_id);
 
 	# Sync the agent cache every time the module count is updated.
 	enterprise_hook('update_agent_cache', [$pa_config, $dbh, $agent_id]) if ($pa_config->{'node_metaconsole'} == 1);

@@ -781,6 +781,12 @@ input.percentile_item_min {
 input.percentile_item_min[disabled] {
 	background: #fefefe url(../../images/percentile_item.disabled.png) no-repeat center !important;
 }
+input.auto_sla_graph_min {
+	background: #fefefe url(../../images/auto_sla_graph.png) no-repeat center !important;
+}
+input.auto_sla_graph_min[disabled] {
+	background: #fefefe url(../../images/auto_sla_graph.disabled.png) no-repeat center !important;
+}
 input.binary_min {
 	background: #fefefe url(../../images/binary.png) no-repeat center !important;
 }
@@ -4167,4 +4173,26 @@ div#footer_help{
 
 .service_text_odd {
 	transform: translateY(100px);
+}
+
+/*styles graph conteiner*/
+.graph_conteiner_inside > .parent_graph{
+	width: 100% !important;
+}
+
+.graph_conteiner_inside > .parent_graph > .menu_graph{
+	left: 90% !important;
+}
+
+.graph_conteiner_inside > .parent_graph > .noresizevc{
+	width: 90% !important;	
+}
+
+.graph_conteiner_inside > div > .nodata_container > .nodata_text {
+	display: none;
+}
+
+.graph_conteiner_inside > div > .nodata_container{
+	background-size: 120px 80px !important;	
+>>>>>>> pandora_console/include/styles/pandora.css
 }

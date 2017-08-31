@@ -242,6 +242,7 @@ if ($config["pure"] != 0) {
 				
 				var new_height = $(document).height();
 				$("#map").css("height", new_height - 60);
+				$("svg[id*=OpenLayers]").css("height", new_height - 60);		
 				
 			});
 		</script>

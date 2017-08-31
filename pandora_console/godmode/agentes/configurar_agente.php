@@ -789,7 +789,7 @@ if ($update_agent) { // if modified some agent paramenter
 				WHERE id_group = ".$group_old);
 		
 		$result = db_process_sql_update ('tagente', $values, array ('id_agente' => $id_agente));
-		if ($result === false) {
+		if ($result == false) {
 			ui_print_error_message(
 				__('There was a problem updating the agent'));
 		}
@@ -1000,10 +1000,11 @@ if ($update_module || $create_module) {
 		
 		$macros = io_json_mb_encode($macros);
 		
-		$conf_array = explode("\n",$configuration_data);
+		$conf_array = explode("\n", io_safe_output($configuration_data));
+		
 		foreach ($conf_array as $line) {
 			if (preg_match("/^module_name\s*(.*)/", $line, $match)) {
-				$new_configuration_data .= "module_name $name\n";
+				$new_configuration_data .= "module_name " . io_safe_output($name) . "\n";
 			}
 			// We delete from conf all the module macros starting with _field
 			else if(!preg_match("/^module_macro_field.*/", $line, $match)) {
@@ -1011,14 +1012,28 @@ if ($update_module || $create_module) {
 			}
 		}
 		
+		$values_macros = array();
+		$values_macros['macros'] = base64_encode($macros);
+		
+		$macros_for_data = enterprise_hook(
+		'config_agents_get_macros_data_conf', array($values_macros));
+
+		if ($macros_for_data != '') {
+			$new_configuration_data = str_replace('module_end', $macros_for_data . "module_end", $new_configuration_data);
+		}
+		
+		/*
 		$macros_for_data = enterprise_hook('config_agents_get_macros_data_conf', array($_POST));
 		
 		if ($macros_for_data !== ENTERPRISE_NOT_HOOK && $macros_for_data != '') {
 			// Add macros to configuration file
 			$new_configuration_data = str_replace('module_end', $macros_for_data."module_end", $new_configuration_data);
 		}
-		
-		$configuration_data = $new_configuration_data;
+		*/
+		$configuration_data = str_replace('\\', "&#92;",
+			io_safe_input($new_configuration_data));;
+
+		html_debug($configuration_data, true);
 	}
 	
 	// Services are an enterprise feature, 
@@ -1228,7 +1243,7 @@ if ($update_module) {
 		'min_ff_event_critical' => $ff_event_critical,
 		'each_ff' => $each_ff,
 		'ff_timeout' => $ff_timeout,
-		'unit' => $unit,
+		'unit' => io_safe_output($unit),
 		'macros' => $macros,
 		'quiet' => $quiet_module,
 		'critical_instructions' => $critical_instructions,
@@ -1388,7 +1403,7 @@ if ($create_module) {
 		'min_ff_event_critical' => $ff_event_critical,
 		'each_ff' => $each_ff,
 		'ff_timeout' => $ff_timeout,
-		'unit' => $unit,
+		'unit' => io_safe_output($unit),
 		'macros' => $macros,
 		'quiet' => $quiet_module,
 		'critical_instructions' => $critical_instructions,
@@ -1512,7 +1527,8 @@ if ($delete_module) { // DELETE agent module !
 	if ($result === false)
 		$error++;
 	
-	if (alerts_delete_alert_agent_module($id_borrar_modulo) === false)
+	if (alerts_delete_alert_agent_module(false, 
+			array('id_agent_module' => $id_borrar_modulo)) === false)
 		$error++;
 	
 	$result = db_process_delete_temp('ttag_module', 'id_agente_modulo',

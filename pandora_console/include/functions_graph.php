@@ -1092,25 +1092,25 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	
 	// Set the title and time format
 	if ($temp_range <= SECONDS_1DAY) {
-		$time_format = 'd.m.Y H:i:s';
+		$time_format = 'Y M d H:i:s';
 	}
 	elseif ($temp_range < SECONDS_15DAYS) {
-		$time_format = 'M d';
+		$time_format = 'Y M d';
 		$time_format_2 = 'H:i';
 		if ($projection != false) {
 			$time_format_2 = 'H\h';
 		}
 	}
 	elseif ($temp_range <= SECONDS_1MONTH) {
-		$time_format = 'M d';
+		$time_format = 'Y M d';
 		$time_format_2 = 'H\h';
 	}
 	elseif ($temp_range <= SECONDS_1MONTH) {
-		$time_format = 'M d';
+		$time_format = 'Y M d';
 		$time_format_2 = 'H\h';
-	} 
+	}
 	elseif ($period < SECONDS_6MONTHS) {
-		$time_format = 'M d';
+		$time_format = 'Y M d';
 		$time_format_2 = 'H\h';
 	}
 	else {
@@ -1382,7 +1382,8 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		
 		// Calculate chart data
 		$last_known = $previous_data;
-		for ($l = 0; $l < $resolution; $l++) {
+
+		for ($l = 0; $l <= $resolution; $l++) {
 			$countAvg ++;
 			
 			$timestamp = $datelimit + ($interval * $l);
@@ -1398,6 +1399,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			// Read data that falls in the current interval
 			$interval_min = $last_known;
 			$interval_max = $last_known;
+			
 			while (isset ($data[$j]) && $data[$j]['utimestamp'] >= $timestamp && $data[$j]['utimestamp'] < ($timestamp + $interval)) {
 				if ($data[$j]['datos'] > $interval_max) {
 					$interval_max = $data[$j]['datos'];
@@ -3220,11 +3222,11 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 			}
 			else {
 				if ($meta) {
-					$name = mb_substr (io_safe_output($row['agent_name']), 0, 14)." (".$row["count"].")";
+					$name = mb_substr (io_safe_output($row['agent_name']), 0, 25)." (".$row["count"].")";
 				}
 				else {
 					$alias = agents_get_alias($row["id_agente"]);
-					$name = mb_substr($alias, 0, 14)." #".$row["id_agente"]." (".$row["count"].")";
+					$name = mb_substr($alias, 0, 25)." #".$row["id_agente"]." (".$row["count"].")";
 				}
 				$data[$name] = $row["count"];
 			}
@@ -3581,7 +3583,7 @@ function graph_custom_sql_graph ($id, $width, $height,
  * @param string homeurl
  * @param bool return or echo the result
  */
-function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $homeurl, $return = false) {
+function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $homeurl, $return = false, $from_agent_view = false) {
 	global $config;
 	global $graphic_type;
 	
@@ -3598,13 +3600,119 @@ function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $ho
 	$data = array ();
 	$legend = array();
 	$full_legend = array();
+	$full_legend_date = array();
 	
 	$cont = 0;
 	for ($i = 0; $i < $interval; $i++) {
 		$bottom = $datelimit + ($periodtime * $i);
 		if (! $graphic_type) {
 			if ($config['flash_charts']) {
-				$name = date('H:i', $bottom);
+				$name = date('H:i:s', $bottom);
+			}
+			else {
+				$name = date('H\h', $bottom);
+			}
+		}
+		else {
+			$name = $bottom;
+		}
+		
+		// Show less values in legend
+		if ($cont == 0 or $cont % 2)
+			$legend[$cont] = $name;
+		
+		if ($from_agent_view) {
+			$full_date = date('Y/m/d', $bottom);
+			$full_legend_date[$cont] = $full_date;
+		}
+
+		$full_legend[$cont] = $name;
+		
+		$top = $datelimit + ($periodtime * ($i + 1));
+		$event = db_get_row_filter ('tevento',
+			array ('id_agente' => $id_agent,
+				'utimestamp > '.$bottom,
+				'utimestamp < '.$top), 'criticity, utimestamp');
+		
+		if (!empty($event['utimestamp'])) {
+			$data[$cont]['utimestamp'] = $periodtime;
+			switch ($event['criticity']) {
+				case EVENT_CRIT_WARNING:
+					$data[$cont]['data'] = 2;
+					break;
+				case EVENT_CRIT_CRITICAL:
+					$data[$cont]['data'] = 3;
+					break;
+				default:
+					$data[$cont]['data'] = 1;
+					break;
+			}
+		}
+		else {
+			$data[$cont]['utimestamp'] = $periodtime;
+			$data[$cont]['data'] = 1;
+		}
+		$cont++;
+	}
+
+	$colors = array(1 => COL_NORMAL, 2 => COL_WARNING, 3 => COL_CRITICAL, 4 => COL_UNKNOWN);
+	
+	// Draw slicebar graph
+	if ($config['flash_charts']) {
+		$out = flot_slicesbar_graph($data, $period, $width, $height, $full_legend, $colors, $config['fontpath'], $config['round_corner'], $homeurl, '', '', false, $id_agent, $full_legend_date);
+	}
+	else {
+		$out = slicesbar_graph($data, $period, $width, $height, $colors, $config['fontpath'], $config['round_corner'], $homeurl);
+		
+		// Draw legend
+		$out .=  "<br>";
+		$out .=  "&nbsp;";
+		foreach ($legend as $hour) {
+			$out .=  "<span style='font-size: 6pt'>" . $hour . "</span>";
+			$out .=  "&nbsp;";
+		}
+	}
+	
+	if ($return) {
+		return $out;
+	}
+	else {
+		echo $out;
+	}
+}
+
+/**
+ * Print a static graph with event data of agents
+ * 
+ * @param integer id_agent Agent ID
+ * @param integer width pie graph width
+ * @param integer height pie graph height
+ * @param integer period time period
+ * @param string homeurl
+ * @param bool return or echo the result
+ */
+function graph_graphic_moduleevents ($id_agent, $id_module, $width, $height, $period = 0, $homeurl, $return = false) {
+	global $config;
+	global $graphic_type;
+	
+	$data = array ();
+	
+	$resolution = $config['graph_res'] * ($period * 2 / $width); // Number of "slices" we want in graph
+	$interval = (int) ($period / $resolution);
+	$date = get_system_time ();
+	$datelimit = $date - $period;
+	$periodtime = floor ($period / $interval);
+	$time = array ();
+	$data = array ();
+	$legend = array();
+	$full_legend = array();
+	
+	$cont = 0;
+	for ($i = 0; $i < $interval; $i++) {
+		$bottom = $datelimit + ($periodtime * $i);
+		if (! $graphic_type) {
+			if ($config['flash_charts']) {
+				$name = date('H:i:s', $bottom);
 			}
 			else {
 				$name = date('H\h', $bottom);
@@ -3621,11 +3729,13 @@ function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $ho
 		$full_legend[$cont] = $name;
 		
 		$top = $datelimit + ($periodtime * ($i + 1));
+
 		$event = db_get_row_filter ('tevento',
 			array ('id_agente' => $id_agent,
+				'id_agentmodule' => $id_module,
 				'utimestamp > '.$bottom,
 				'utimestamp < '.$top), 'criticity, utimestamp');
-		
+
 		if (!empty($event['utimestamp'])) {
 			$data[$cont]['utimestamp'] = $periodtime;
 			switch ($event['criticity']) {

@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS `tagente` (
 	`custom_id` varchar(255) default '',
 	`server_name` varchar(100) default '',
 	`cascade_protection` tinyint(2) NOT NULL default '0',
-	`cascade_protection_module` tinyint(2) NOT NULL default '0',
+	`cascade_protection_module` int(10) unsigned NOT NULL default '0',
 	`timezone_offset` TINYINT(2) NULL DEFAULT '0' COMMENT 'nuber of hours of diference with the server timezone' ,
 	`icon_path` VARCHAR(127) NULL DEFAULT NULL COMMENT 'path in the server to the image of the icon representing the agent' ,
 	`update_gis_data` TINYINT(1) NOT NULL DEFAULT '1' COMMENT 'set it to one to update the position data (altitude, longitude, latitude) when getting information from the agent or to 0 to keep the last value and do not update it' ,
@@ -976,6 +976,7 @@ CREATE TABLE IF NOT EXISTS `tserver` (
 	`my_modules` int(11) NOT NULL default 0,
 	`server_keepalive` int(11) NOT NULL default 0,
 	`stat_utimestamp` bigint(20) NOT NULL default '0',
+	`exec_proxy` tinyint(1) UNSIGNED NOT NULL default 0,
 	PRIMARY KEY  (`id_server`),
 	KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -1141,6 +1142,17 @@ CREATE TABLE IF NOT EXISTS `tuser_double_auth` (
 	PRIMARY KEY (`id`),
 	UNIQUE (`id_user`),
 	FOREIGN KEY (`id_user`) REFERENCES tusuario(`id_user`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `treset_pass_history`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `treset_pass_history` (
+	`id` int(10) unsigned NOT NULL auto_increment,
+	`id_user` varchar(60) NOT NULL,
+	`reset_moment` datetime NOT NULL,
+	`success` tinyint(1) NOT NULL,
+	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------------------------------------------------
@@ -1407,7 +1419,7 @@ CREATE TABLE IF NOT EXISTS `tserver_export_data` (
 	`id` int(20) unsigned NOT NULL auto_increment,
 	`id_export_server` int(10) unsigned default NULL,
 	`agent_name` varchar(100) NOT NULL default '',
-	`module_name` varchar(100) NOT NULL default '',
+	`module_name` varchar(600) NOT NULL default '',
 	`module_type` varchar(100) NOT NULL default '',
 	`data` varchar(255) default NULL, 
 	`timestamp` datetime NOT NULL default '1970-01-01 00:00:00',
@@ -1833,6 +1845,7 @@ CREATE TABLE IF NOT EXISTS `tevent_response` (
 	`modal_height` INTEGER  NOT NULL DEFAULT 0,
 	`new_window` TINYINT(4)  NOT NULL DEFAULT 0,
 	`params` TEXT  NOT NULL,
+	`server_to_exec` int(10) unsigned NOT NULL DEFAULT 0,
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

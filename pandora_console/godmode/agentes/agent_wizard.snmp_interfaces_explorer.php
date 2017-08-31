@@ -30,6 +30,7 @@ check_login ();
 $ip_target = (string) get_parameter ('ip_target', $ipAgent);
 $use_agent = get_parameter ('use_agent');
 $snmp_community = (string) get_parameter ('snmp_community', 'public');
+$server_to_exec = get_parameter('server_to_exec', 0);
 $snmp_version = get_parameter('snmp_version', '1');
 $snmp3_auth_user = get_parameter('snmp3_auth_user');
 $snmp3_security_level = get_parameter('snmp3_security_level');
@@ -53,16 +54,19 @@ if ($snmpwalk) {
 	// OID Used is for SNMP MIB-2 Interfaces
 	$snmpis = get_snmpwalk($ip_target, $snmp_version, $snmp_community, $snmp3_auth_user,
 		$snmp3_security_level, $snmp3_auth_method, $snmp3_auth_pass,
-		$snmp3_privacy_method, $snmp3_privacy_pass, 0, ".1.3.6.1.2.1.2", $tcp_port);
+		$snmp3_privacy_method, $snmp3_privacy_pass, 0, ".1.3.6.1.2.1.2", $tcp_port,
+		$server_to_exec);
 	// ifXTable is also used
 	$ifxitems = get_snmpwalk($ip_target, $snmp_version, $snmp_community, $snmp3_auth_user,
 		$snmp3_security_level, $snmp3_auth_method, $snmp3_auth_pass,
-		$snmp3_privacy_method, $snmp3_privacy_pass, 0, ".1.3.6.1.2.1.31.1.1", $tcp_port);
+		$snmp3_privacy_method, $snmp3_privacy_pass, 0, ".1.3.6.1.2.1.31.1.1", $tcp_port,
+		$server_to_exec);
 
 	// Get the interfaces IPV4/IPV6
 	$snmp_int_ip = get_snmpwalk($ip_target, $snmp_version, $snmp_community, $snmp3_auth_user,
 		$snmp3_security_level, $snmp3_auth_method, $snmp3_auth_pass,
-		$snmp3_privacy_method, $snmp3_privacy_pass, 0, ".1.3.6.1.2.1.4.34.1.3", $tcp_port);
+		$snmp3_privacy_method, $snmp3_privacy_pass, 0, ".1.3.6.1.2.1.4.34.1.3", $tcp_port,
+		$server_to_exec);
 
 	// Build a [<interface id>] => [<interface ip>] array
 	if (!empty($snmp_int_ip)) {
@@ -344,6 +348,19 @@ $table->data[0][3] = html_print_input_text ('tcp_port', $tcp_port, '', 5, 20, tr
 
 $table->data[1][0] = '<b>' . __('Use agent ip') . '</b>';
 $table->data[1][1] = html_print_checkbox ('use_agent', 1, $use_agent, true);
+
+$servers_to_exec = array();
+$servers_to_exec[0] = __('Local console');
+if (enterprise_installed()) {
+	enterprise_include_once ('include/functions_satellite.php');
+	
+	$rows = get_proxy_servers();
+	foreach ($rows as $row) {
+		$servers_to_exec[$row['id_server']] = $row['name'];
+	}
+}
+$table->data[1][2] = '<b>' . __('Server to execute command') . '</b>';
+$table->data[1][3] = html_print_select ($servers_to_exec, 'server_to_exec', $server_to_exec, '', '', '', true);
 
 $snmp_versions['1'] = 'v. 1';
 $snmp_versions['2'] = 'v. 2';

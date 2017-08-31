@@ -128,26 +128,6 @@ function reporting_make_reporting_data($report = null, $id_report,
 			$content['period'] = $period;
 		}
 		
-		if(defined('METACONSOLE')){
-			if (is_array($content['id_agent'])) {
-				$new_array = array();
-				foreach ($content['id_agent'] as $key => $value) {
-				 $meta_id = explode("|",$value);
-				 array_push($new_array,$meta_id[1]);
-				}
-			 $content['id_agent'] = $new_array;
-			}
-			else {
-				$meta_id = explode("|",$content['id_agent']);
-				if ($meta_id[1] != null) {
-					$content['id_agent'] = array();
-					$content['id_agent'] = $meta_id[1];
-				}
-			}
-			
-		 
-	 }
-	 	
 		$content['style'] = json_decode(io_safe_output($content['style']), true);
 		if(isset($content['style']['name_label'])){
 			//Add macros name
@@ -166,19 +146,17 @@ function reporting_make_reporting_data($report = null, $id_report,
 					continue;
 				}
 			}
+			
+			
+			if(sizeof($content['id_agent']) != 1){
+				$content['style']['name_label'] = str_replace("_agent_",sizeof($content['id_agent']).__(' agents'),$content['style']['name_label']);
+			}
 
+			if(sizeof($content['id_agent_module']) != 1){
+			 	$content['style']['name_label'] = str_replace("_module_",sizeof($content['id_agent_module']).__(' modules'),$content['style']['name_label']);
+			}
 
-
-				if(sizeof($content['id_agent']) != 1){
-					$content['style']['name_label'] = str_replace("_agent_",sizeof($content['id_agent']).__(' agents'),$content['style']['name_label']);
-				}
-
-				 if(sizeof($content['id_agent_module']) != 1){
-					 $content['style']['name_label'] = str_replace("_module_",sizeof($content['id_agent_module']).__(' modules'),$content['style']['name_label']);
-				 }
-				
-				 $content['name'] = reporting_label_macro($items_label, $content['style']['name_label']);
-
+			$content['name'] = reporting_label_macro($items_label, $content['style']['name_label']);
 
 			if ($metaconsole_on) {
 				//Restore db connection
@@ -2469,7 +2447,14 @@ function reporting_database_serialized($report, $content) {
 	$return['agent_name'] = $agent_name;
 	$return['module_name'] = $module_name;
 	
-	
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
+	}
+
 	$datelimit = $report["datetime"] - $content['period'];
 	$search_in_history_db = db_search_in_history_db($datelimit);
 	
@@ -2544,6 +2529,10 @@ function reporting_database_serialized($report, $content) {
 			
 			$data[] = $row;
 		}
+	}
+
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
 	}
 	
 	$return["data"] = $data;
@@ -4002,7 +3991,7 @@ function reporting_sql($report, $content) {
 	}
 	else {
 		$return['correct'] = 0;
-		$return['error'] = __('Illegal query: Due security restrictions, there are some tokens or words you cannot use: *, delete, drop, alter, modify, union, password, pass, insert or update.');
+		$return['error'] = __('Illegal query: Due security restrictions, there are some tokens or words you cannot use: *, delete, drop, alter, modify, password, pass, insert or update.');
 	}
 	
 	if ($config['metaconsole']) {
@@ -5811,10 +5800,8 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 	
 	require_once ($config["homedir"] . '/include/functions_graph.php');
 	
-	if ($config['metaconsole']) {
-		$id_meta = metaconsole_get_id_server($content["server_name"]);
-		
-		
+	if ($config['metaconsole'] && $type_report != 'automatic_graph') {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);	
 		$server = metaconsole_get_connection_by_id ($id_meta);
 		metaconsole_connect($server);
 	}
@@ -5870,7 +5857,25 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 						'id_agent_module'=>$graph_item['id_agent_module']);
 			}
 			
-			$label = reporting_label_macro($item, $content['style']['label']);
+			if($type_report == 'automatic_graph'){
+				$label = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+				if (!empty($label)) {
+					if ($config['metaconsole']) {
+						$id_meta = metaconsole_get_id_server($content["server_name"]);
+						$server = metaconsole_get_connection_by_id ($id_meta);
+						metaconsole_connect($server);
+					}
+					$label = reporting_label_macro($content, $label);
+					
+					if ($config['metaconsole']) {
+						metaconsole_restore_db();
+					}
+				}
+			} else {
+				$label = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+				$label = reporting_label_macro($content, $label);
+			}
+			
 			$labels[$graph_item['id_agent_module']] = $label;
 		}
 	}
@@ -5888,13 +5893,6 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 		if(!$only_image){
 			$height = 50;
 		}
-	}
-	if (defined('METACONSOLE')) {
-		$modules_new = array();
-		foreach ($modules as $mod) {
-			$modules_new[] = $mod['module'];
-		}
-		$modules = $modules_new;
 	}
 	
 	switch ($type) {
@@ -5934,13 +5932,8 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 			break;
 	}
 	
-	if ($type_report == 'automatic_graph') {
-		// Do none
-	}
-	else {
-		if ($config['metaconsole']) {
-			metaconsole_restore_db();
-		}
+	if ($config['metaconsole'] && $type_report != 'automatic_graph') {
+		metaconsole_restore_db();
 	}
 	
 	return reporting_check_structure_content($return);
@@ -10292,6 +10285,7 @@ function reporting_get_agentmodule_sla_working_timestamp ($period, $date_end, $w
 }
 
 function reporting_label_macro ($item, $label) {
+	
 	switch ($item['type']) {
 		case 'event_report_agent':
 		case 'alert_report_agent':
@@ -10317,7 +10311,6 @@ function reporting_label_macro ($item, $label) {
 				$label = str_replace("_address_", $agent_name, $label);
 			}
 			break;
-    		case 'automatic_graph':
 		case 'simple_graph':
 		case 'module_histogram_graph':
 		case 'custom_graph':
@@ -10337,6 +10330,7 @@ function reporting_label_macro ($item, $label) {
 		case 'TTO':
 		case 'MTBF':
 		case 'MTTR':
+		case 'automatic_graph':
 			if (preg_match("/_agent_/", $label)) {
 				$agent_name = agents_get_alias($item['id_agent']);
 				$label = str_replace("_agent_", $agent_name, $label);

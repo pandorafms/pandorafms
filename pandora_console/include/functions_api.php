@@ -9112,8 +9112,9 @@ function api_set_create_event($id, $trash1, $other, $returnType) {
  *   http://127.0.0.1/pandora_console/include/api.php?op=set&op2=add_event_comment&id=event_id&other=string|&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
  */
 function api_set_add_event_comment($id, $thrash2, $other, $thrash3) {
+	$meta = false;
 	if (defined ('METACONSOLE')) {
-		return;
+		$meta = true;
 	}
 	
 	if ($other['type'] == 'string') {
@@ -9122,11 +9123,9 @@ function api_set_add_event_comment($id, $thrash2, $other, $thrash3) {
 	}
 	else if ($other['type'] == 'array') {
 		$comment = io_safe_input($other['data'][0]);
-		$meta = $other['data'][1];
 		$history = $other['data'][2];
 		
-		$status = events_comment($id, $comment, 'Added comment', $meta,
-			$history);
+		$status = events_comment($id, $comment, 'Added comment', $meta, $history);
 		if (is_error($status)) {
 			returnError('error_add_event_comment',
 				__('Error adding event comment.'));
@@ -9557,6 +9556,257 @@ function api_set_create_special_day($thrash1, $thrash2, $other, $thrash3) {
 }
 
 /**
+ * Create a service and return service id.
+ *
+ * @param $thrash1 Don't use.
+ * @param $thrash2 Don't use.
+ * @param array $other it's array, $other as param is <description>;<id_group>;<critical>; 
+ * <warning>;<id_agent>;<sla_interval>;<sla_limit>;<id_warning_module_template_alert>;
+ * <id_critical_module_template_alert>;<id_critical_module_sla_template_alert>;	
+ * in this order and separator char (after text ; ) and separator 
+ * (pass in param othermode as othermode=url_encode_separator_<separator>)
+ * @param $thrash3 Don't use
+ *
+ * example:
+ * http://127.0.0.1/pandora_console/include/api.php?op=set&op2=create_service&return_type=json
+ * &other=test1%7CDescripcion de prueba%7C12%7C1%7C0.5%7C1&other_mode=url_encode_separator_%7C&apipass=1234&user=admin&pass=pandora
+ */
+function api_set_create_service($thrash1, $thrash2, $other, $thrash3) {
+	
+	$name = $other['data'][0];
+	$description = $other['data'][1];
+	$id_group = $other['data'][2];
+	$critical = $other['data'][3];
+	$warning = $other['data'][4];
+	$mode = 0;
+	$id_agent = $other['data'][5];
+	$sla_interval = $other['data'][6];
+	$sla_limit = $other['data'][7];
+	$id_warning_module_template = $other['data'][8];
+	$id_critical_module_template = $other['data'][9];
+	$id_unknown_module_template = 0;
+	$id_critical_module_sla = $other['data'][10];
+	
+	if(empty($name)){
+		returnError('error_create_service', __('Error in creation service. No name'));
+		return;
+	}
+	if(empty($id_group)){
+		// By default applications
+		$id_group = 12;
+	}
+	if(empty($critical)){
+		$critical = 1;
+	}
+	if(empty($warning)){
+		$warning = 0.5;
+	}
+	if(empty($id_agent)){
+		returnError('error_create_service', __('Error in creation service. No agent id'));
+		return;
+	}
+	if(empty($sla_interval)){
+		// By default one month
+		$sla_interval = 2592000;
+	}
+	if(empty($sla_limit)){
+		$sla_limit = 95;
+	}
+	if(empty($id_warning_module_template)){
+		$id_warning_module_template = 0;
+	}
+	if(empty($id_critical_module_template)){
+		$id_critical_module_template = 0;
+	}
+	if(empty($id_critical_module_sla)){
+		$id_critical_module_sla = 0;
+	}
+	
+	$result = services_create_service ($name, $description, $id_group,
+		$critical, $warning, SECONDS_5MINUTES, $mode, $id_agent, $sla_interval, $sla_limit,
+		$id_warning_module_template, $id_critical_module_template,
+		$id_unknown_module_template, $id_critical_module_sla);
+		
+	if($result){
+		returnData('string', array('type' => 'string', 'data' => $result));
+	} else {
+		returnError('error_create_service', __('Error in creation service'));
+	}
+}
+
+/**
+ * Update a service.
+ *
+ * @param $thrash1 service id.
+ * @param $thrash2 Don't use.
+ * @param array $other it's array, $other as param is <name>;<description>;<id_group>;<critical>; 
+ * <warning>;<id_agent>;<sla_interval>;<sla_limit>;<id_warning_module_template_alert>;
+ * <id_critical_module_template_alert>;<id_critical_module_sla_template_alert>;	
+ * in this order and separator char (after text ; ) and separator 
+ * (pass in param othermode as othermode=url_encode_separator_<separator>)
+ * @param $thrash3 Don't use
+ *
+ * example:
+ * http://172.17.0.1/pandora_console/include/api.php?op=set&op2=update_service&return_type=json
+ * &id=4&other=test2%7CDescripcion%7C%7C%7C0.6%7C&other_mode=url_encode_separator_%7C&apipass=1234&user=admin&pass=pandora
+ *
+ */
+function api_set_update_service($thrash1, $thrash2, $other, $thrash3) {
+	
+	$id_service = $thrash1;
+	if(empty($id_service)){
+		returnError('error_update_service', __('Error in update service. No service id'));
+		return;
+	}
+	
+	$service = db_get_row('tservice',
+		'id', $id_service);
+	
+	$name = $other['data'][0];
+	if(empty($name)){
+		$name = $service['name'];
+	}
+	$description = $other['data'][1];
+	if(empty($description)){
+		$description = $service['description'];
+	}
+	$id_group = $other['data'][2];
+	if(empty($id_group)){
+		$id_group = $service['id_group'];
+	}
+	$critical = $other['data'][3];
+	if(empty($critical)){
+		$critical = $service['critical'];
+	}
+	$warning = $other['data'][4];
+	if(empty($warning)){
+		$warning = $service['warning'];
+	}
+	
+	$mode = 0;
+	
+	$id_agent = $other['data'][5];
+	if(empty($id_agent)){
+		$id_agent = $service['id_agent_module'];
+	}
+	$sla_interval = $other['data'][6];
+	if(empty($sla_interval)){
+		$sla_interval = $service['sla_interval'];
+	}
+	$sla_limit = $other['data'][7];
+	if(empty($sla_limit)){
+		$sla_limit = $service['sla_limit'];
+	}
+	$id_warning_module_template = $other['data'][8];
+	if(empty($id_warning_module_template)){
+		$id_warning_module_template = $service['id_template_alert_warning'];
+	}
+	$id_critical_module_template = $other['data'][9];
+	if(empty($id_critical_module_template)){
+		$id_critical_module_template = $service['id_template_alert_critical'];
+	}
+	
+	$id_unknown_module_template = 0;
+	
+	$id_critical_module_sla = $other['data'][10];
+	if(empty($id_critical_module_sla)){
+		$id_critical_module_sla = $service['id_template_alert_critical_sla'];
+	}
+	
+	$result = services_update_service ($id_service, $name,$description, $id_group, $critical, $warning,
+		SECONDS_5MINUTES, $mode, $id_agent,$sla_interval, $sla_limit,$id_warning_module_template,
+		$id_critical_module_template,$id_unknown_module_template,$id_critical_module_sla);
+	
+	
+	if($result){
+		returnData('string', array('type' => 'string', 'data' => $result));
+	} else {
+		returnError('error_update_service', __('Error in update service'));
+	}
+	
+}
+
+/**
+ * Add elements to service.
+ *
+ * @param $thrash1 service id.
+ * @param $thrash2 Don't use.
+ * @param array $other it's a json, $other as param is <description>;<id_group>;<critical>; 
+ * <warning>;<id_agent>;<sla_interval>;<sla_limit>;<id_warning_module_template_alert>;
+ * <id_critical_module_template_alert>;<id_critical_module_sla_template_alert>;	
+ * in this order and separator char (after text ; ) and separator 
+ * (pass in param othermode as othermode=url_encode_separator_<separator>)
+ * @param $thrash3 Don't use
+ *
+ * example:
+ * http://172.17.0.1/pandora_console/include/api.php?op=set&op2=add_element_service&return_type=json&id=1
+ * &other=W3sidHlwZSI6ImFnZW50IiwiaWQiOjIsImRlc2NyaXB0aW9uIjoiamlqaWppIiwid2VpZ2h0X2NyaXRpY2FsIjowLCJ3ZWlnaHRfd2FybmluZyI6MCwid2VpZ2h0X3Vua25vd24iOjAsIndlaWdodF9vayI6MH0seyJ0eXBlIjoibW9kdWxlIiwiaWQiOjEsImRlc2NyaXB0aW9uIjoiSG9sYSBxdWUgdGFsIiwid2VpZ2h0X2NyaXRpY2FsIjowLCJ3ZWlnaHRfd2FybmluZyI6MCwid2VpZ2h0X3Vua25vd24iOjAsIndlaWdodF9vayI6MH0seyJ0eXBlIjoic2VydmljZSIsImlkIjozLCJkZXNjcmlwdGlvbiI6ImplamVqZWplIiwid2VpZ2h0X2NyaXRpY2FsIjowLCJ3ZWlnaHRfd2FybmluZyI6MCwid2VpZ2h0X3Vua25vd24iOjAsIndlaWdodF9vayI6MH1d
+ * &other_mode=url_encode_separator_%7C&apipass=1234&user=admin&pass=pandora
+ *
+ */
+function api_set_add_element_service($thrash1, $thrash2, $other, $thrash3) {
+	
+	$id = $thrash1;
+	
+	if(empty($id)){
+		returnError('error_add_service_element', __('Error adding elements to service. No service id'));
+		return;
+	}
+	
+	$array_json = json_decode(base64_decode(io_safe_output($other['data'][0])), true);
+	if(!empty($array_json)){
+		$results = false;
+		foreach ($array_json as $key => $element) {
+			if($element['id'] == 0){
+				continue;
+			}
+			switch ($element['type']) {
+				case 'agent':
+					$id_agente_modulo = 0;
+					$id_service_child = 0;
+					$agent_id = $element['id'];
+					break;
+				
+				case 'module':
+					$agent_id = 0;
+					$id_service_child = 0;
+					$id_agente_modulo = $element['id'];
+					break;
+					
+				case 'service':
+					$agent_id = 0;
+					$id_agente_modulo = 0;
+					$id_service_child = $element['id'];
+					break;
+			}
+			
+			$values = array(
+				'id_agente_modulo' => $id_agente_modulo,
+				'description' => $element['description'],
+				'id_service' => $id,
+				'weight_critical' => $element['weight_critical'],
+				'weight_warning' => $element['weight_warning'],
+				'weight_unknown' => $element['weight_unknown'],
+				'weight_ok' => $element['weight_ok'],
+				'id_agent' => $agent_id,
+				'id_service_child' => $id_service_child,
+				'id_server_meta' => 0);
+			
+			$result = db_process_sql_insert('tservice_element',$values);
+			if($result && !$results){
+				$results = $result;
+			}
+		}
+	}
+		
+	if($results){
+		returnData('string', array('type' => 'string', 'data' => 1));
+	} else {
+		returnError('error_add_service_element', __('Error adding elements to service'));
+	}
+	
+}
+/**
  * Update a special day. And return a message with the result of the operation.
  *
  * @param string $id Id of the special day to update.
@@ -9690,7 +9940,14 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4) {
 		$other['data'][0]
 		:
 		SECONDS_1HOUR; // 1 hour by default
-	
+
+	$graph_threshold =
+		(!empty($other) && isset($other['data'][2]))
+		?
+		$other['data'][2]
+		:
+		0;
+
 	if (is_nan($graph_seconds) || $graph_seconds <= 0) {
 		// returnError('error_module_graph', __(''));
 		return;
@@ -9701,41 +9958,44 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4) {
 		$id_module, $graph_seconds, false, 600, 300, '',
 		'', false, false, true, time(), '', 0, 0, true, true,
 		ui_get_full_url(false) . '/', 1, false, '', false, true,
-		true, 'white', null, false, false, $config['type_module_charts']);
+		true, 'white', null, false, false, $config['type_module_charts'], 
+		false, false);
 		
-       $graph_image_file_encoded = false;
+        $graph_image_file_encoded = false;
         if (preg_match("/<img src='(.+)'./", $graph_html, $matches)) {
                 $file_url = $matches[1];
 
-                if (preg_match("/\?(.+)&(.+)&(.+)&(.+)/", $file_url,$parameters)) {
-                        array_shift ($parameters);
-                        foreach ($parameters as $parameter){
-                                $value = explode ("=",$parameter);
+            if (preg_match("/\?(.+)&(.+)&(.+)&(.+)/", $file_url,$parameters)) {
+                    array_shift ($parameters);
+                foreach ($parameters as $parameter){
+                        $value = explode ("=",$parameter);
 
-                                if (strcmp($value[0], "static_graph") == 0){
-                                        $static_graph = $value[1];
-                                }
-                                elseif (strcmp($value[0], "graph_type") == 0){
-                                        $graph_type = $value[1];
-                                }
-                                elseif (strcmp($value[0], "ttl") == 0){
-                                        $ttl = $value[1];
-                                }
-                                elseif (strcmp($value[0], "id_graph") == 0){
-                                        $id_graph = $value[1];
-                                }
-                        }
+                    if (strcmp($value[0], "static_graph") == 0){
+                            $static_graph = $value[1];
+                    }
+                    elseif (strcmp($value[0], "graph_type") == 0){
+                            $graph_type = $value[1];
+                    }
+                    elseif (strcmp($value[0], "ttl") == 0){
+                            $ttl = $value[1];
+                    }
+                    elseif (strcmp($value[0], "id_graph") == 0){
+                            $id_graph = $value[1];
+                    }
                 }
+            }
         }
 
         // Check values are OK
         if ( (isset ($graph_type))
         && (isset ($ttl))
         && (isset ($id_graph))) {
-                        $_GET["ttl"] = $ttl;
-                        $_GET["id_graph"] = $id_graph;
-                        $_GET["graph_type"] = $graph_type;
-                        $_GET["static_graph"] = $static_graph;
+            $_GET["ttl"]             = $ttl;
+            $_GET["id_graph"]        = $id_graph;
+            $_GET["graph_type"]      = $graph_type;
+            $_GET["static_graph"]    = $static_graph;
+            $_GET["graph_threshold"] = $graph_threshold;
+            $_GET["id_module"]       = $id_module;
         }
 
         ob_start();

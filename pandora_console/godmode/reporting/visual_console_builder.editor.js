@@ -270,14 +270,14 @@ function update_button_palette_callback() {
 			break;
 		case 'box_item':
 		
-		if($('input[name=width_box]').val() == ''){
-		alert('Undefined width');
-		return false;
-		}
-		if($('input[name=height_box]').val() == ''){
-		alert('Undefined height');
-		return false;
-		}
+			if($('input[name=width_box]').val() == ''){
+				alert('Undefined width');
+				return false;
+			}
+			if($('input[name=height_box]').val() == ''){
+				alert('Undefined height');
+				return false;
+			}
 		
 			$("#" + idItem + " div").css('background-color', values['fill_color']);
 			$("#" + idItem + " div").css('border-color', values['border_color']);
@@ -295,55 +295,53 @@ function update_button_palette_callback() {
 		case 'group_item':
 		case 'static_graph':
 		
-		if($('input[name=width]').val() == ''){
-		alert('Undefined width');
-		return false;
-		}
-		if($('input[name=height]').val() == ''){
-		alert('Undefined height');
-		return false;
-		}
-		
-		$("#text_" + idItem).html(values['label']);
-		if ((values['width'] == 0) || (values['height'] == 0)) {
-			if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
-				$("#image_" + idItem).removeAttr('width');
-				$("#image_" + idItem).removeAttr('height');
-				$("#image_" + idItem).attr('width', 70);
-				$("#image_" + idItem).attr('height', 70);
-				$("#image_" + idItem).css('width', '70px');
-				$("#image_" + idItem).css('height', '70px');
+			if($('input[name=width]').val() == ''){
+				alert('Undefined width');
+				return false;
 			}
-			else{
+			if($('input[name=height]').val() == ''){
+				alert('Undefined height');
+				return false;
+			}
+		
+			$("#text_" + idItem).html(values['label']);
+			if ((values['width'] == 0) || (values['height'] == 0)) {
+				if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+					$("#image_" + idItem).removeAttr('width');
+					$("#image_" + idItem).removeAttr('height');
+					$("#image_" + idItem).attr('width', 70);
+					$("#image_" + idItem).attr('height', 70);
+					$("#image_" + idItem).css('width', '70px');
+					$("#image_" + idItem).css('height', '70px');
+				}
+				else{
+					$("#image_" + idItem).removeAttr('width');
+					$("#image_" + idItem).removeAttr('height');
+					$("#image_" + idItem).attr('width', $('#preview > img')[0].naturalHeight);
+					$("#image_" + idItem).attr('height', $('#preview > img')[0].naturalHeight);
+					$("#image_" + idItem).css('width', $('#preview > img')[0].naturalHeight+'px');
+					$("#image_" + idItem).css('height', $('#preview > img')[0].naturalHeight+'px');	
+				}			
+			}
+			else {
 				$("#image_" + idItem).removeAttr('width');
 				$("#image_" + idItem).removeAttr('height');
-				$("#image_" + idItem).attr('width', $('#preview > img')[0].naturalHeight);
-				$("#image_" + idItem).attr('height', $('#preview > img')[0].naturalHeight);
-				$("#image_" + idItem).css('width', $('#preview > img')[0].naturalHeight+'px');
-				$("#image_" + idItem).css('height', $('#preview > img')[0].naturalHeight+'px');	
-			}			
-		}
-		else {
-			$("#image_" + idItem).removeAttr('width');
-			$("#image_" + idItem).removeAttr('height');
-			$("#image_" + idItem).attr('width', values['width']);
-			$("#image_" + idItem).attr('height', values['height']);
-			$("#image_" + idItem).css('width', values['width'] + 'px');
-			$("#image_" + idItem).css('height', values['height'] + 'px');
-		}
+				$("#image_" + idItem).attr('width', values['width']);
+				$("#image_" + idItem).attr('height', values['height']);
+				$("#image_" + idItem).css('width', values['width'] + 'px');
+				$("#image_" + idItem).css('height', values['height'] + 'px');
+			}
 			break;
 		case 'percentile_bar':
 		case 'percentile_item':
-			
-		if($('input[name=width_percentile]').val() == ''){
-		alert('Undefined width');
-		return false;
-		}
-		if($('input[name=height_percentile]').val() == ''){
-		alert('Undefined height');
-		return false;
-		}
-		
+			if($('input[name=width_percentile]').val() == ''){
+				alert('Undefined width');
+				return false;
+			}
+			if($('input[name=height_percentile]').val() == ''){
+				alert('Undefined height');
+				return false;
+			}
 		
 			$("#text_" + idItem).html(values['label']);
 			$("#image_" + idItem).attr("src", "images/spinner.gif");
@@ -354,60 +352,69 @@ function update_button_palette_callback() {
 				setPercentileBar(idItem, values);
 			}
 			
-			
-
 			break;
 		case 'module_graph':
-		
-		
-		if($('#dir_items').html() == 'horizontal'){
-			if(parseInt($('#text-left').val()) + (parseInt($('input[name=height_module_graph]').val() * $('#count_items').html())) > parseInt($('#background').css('width'))
-			|| parseInt($('#text-left').val()) + (parseInt($('input[name=width_module_graph]').val() * $('#count_items').html())) > parseInt($('#background').css('width'))){
-				
-				alert($('#count_items').html()+' joined graph items are wider than background');
-				return false;
-				
+			if($('#dir_items').html() == 'horizontal'){
+				if(parseInt($('#text-left').val()) + (parseInt($('input[name=height_module_graph]').val() * $('#count_items').html())) > parseInt($('#background').css('width'))
+				|| parseInt($('#text-left').val()) + (parseInt($('input[name=width_module_graph]').val() * $('#count_items').html())) > parseInt($('#background').css('width'))){
+					
+					alert($('#count_items').html()+' joined graph items are wider than background');
+					return false;
+					
+				}
 			}
-		}
-		
-		if($('#dir_items').html() == 'vertical'){
-			if(parseInt($('#text-top').val()) + (parseInt($('input[name=height_module_graph]').val() * $('#count_items').html())) > parseInt($('#background').css('height'))){
-				alert($('#count_items').html()+' joined graph items are higher than background');
-				return false;
-				
+			
+			if($('#dir_items').html() == 'vertical'){
+				if(parseInt($('#text-top').val()) + (parseInt($('input[name=height_module_graph]').val() * $('#count_items').html())) > parseInt($('#background').css('height'))){
+					alert($('#count_items').html()+' joined graph items are higher than background');
+					return false;
+					
+				}
 			}
-		}
-				
-		
-		if($('input[name=width_module_graph]').val() == ''){
-		alert('Undefined width');
-		return false;
-		}
-		if($('input[name=height_module_graph]').val() == ''){
-		alert('Undefined height');
-		return false;
-		}
-		if($('#custom_graph_row').css('display') != 'none' && $("#custom_graph option:selected").html() == 'None'){
+			
+			if($('input[name=width_module_graph]').val() == ''){
+				alert('Undefined width');
+				return false;
+			}
+			if($('input[name=height_module_graph]').val() == ''){
+				alert('Undefined height');
+				return false;
+			}
+			if($('#custom_graph_row').css('display') != 'none' && $("#custom_graph option:selected").html() == 'None'){
 				alert('Undefined graph');
-		return false;
-		}
-		
-		
+				return false;
+			}
 		
 			$("#text_" + idItem).html(values['label']);
 			$("#image_" + idItem).attr("src", "images/spinner.gif");
 			setModuleGraph(idItem);
 			break;
+		case 'auto_sla_graph':
+			if($('input[name=width]').val() == ''){
+				alert('Undefined width');
+				return false;
+			}
+			if($('input[name=height]').val() == ''){
+				alert('Undefined height');
+				return false;
+			}
+			$("#text_" + idItem).html(values['label']);
+			$("#image_" + idItem).attr("src", "images/spinner.gif");
+
+			setEventsBar(idItem, values);
+			break;
 		case 'simple_value':
 		//checkpoint
-			if(($('#text-label_ifr').contents().find('#tinymce p').html() == '_VALUE_' || 
-			$('#text-label_ifr').contents().find('#tinymce').html() == '_VALUE_') 
-			&& $('#data_image_check').html() != 'On'){
-					alert('_VALUE_ exactly value is only enable for data image. Please change label text or select a data image module.');
-					return;
-			}
+			// if(($('#text-label_ifr').contents().find('#tinymce p').html() == '_VALUE_' || 
+			// $('#text-label_ifr').contents().find('#tinymce').html() == '_VALUE_') 
+			// && $('#data_image_check').html() != 'On'){
+			// 		alert('_VALUE_ exactly value is only enable for data image. Please change label text or select a data image module.');
+			// 		return;
+			// }
 			$("#" + idItem).html(values['label']);
-			if(values['label'].replace( /<.*?>/g, '' ) == '_VALUE_'){
+			if( (values['label'].replace( /<.*?>/g, '' ) != '_VALUE_') 
+				&& (values['label'].replace( /<.*?>/g, '' ) != '(_VALUE_)') ){
+
 				$("#text_" + idItem).html('<img style="width:'+values['width_data_image']+'px;" src="images/console/signes/data_image.png">');
 				$("#" + idItem).html('<img style="width:'+values['width_data_image']+'px;" src="images/console/signes/data_image.png">');
 			}
@@ -430,42 +437,41 @@ function update_button_palette_callback() {
 			$("#text_" + idItem).html(values['label']);
 			break;
 		case 'icon':
-		
-		if($('input[name=width]').val() == ''){
-		alert('Undefined width');
-		return false;
-		}
-		if($('input[name=height]').val() == ''){
-		alert('Undefined height');
-		return false;
-		}
-		$("#image_" + idItem).attr('src', "images/spinner.gif");
-		if ((values['width'] == 0) || (values['height'] == 0)) {
-			if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+			if($('input[name=width]').val() == ''){
+			alert('Undefined width');
+			return false;
+			}
+			if($('input[name=height]').val() == ''){
+			alert('Undefined height');
+			return false;
+			}
+			$("#image_" + idItem).attr('src', "images/spinner.gif");
+			if ((values['width'] == 0) || (values['height'] == 0)) {
+				if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+					$("#image_" + idItem).removeAttr('width');
+					$("#image_" + idItem).removeAttr('height');
+					$("#image_" + idItem).attr('width', 70);
+					$("#image_" + idItem).attr('height', 70);
+					$("#image_" + idItem).css('width', '70px');
+					$("#image_" + idItem).css('height', '70px');
+					}
+				else{
+					$("#image_" + idItem).removeAttr('width');
+					$("#image_" + idItem).removeAttr('height');
+					$("#image_" + idItem).attr('width', $('#preview > img')[0].naturalHeight);
+					$("#image_" + idItem).attr('height', $('#preview > img')[0].naturalHeight);
+					$("#image_" + idItem).css('width', $('#preview > img')[0].naturalHeight+'px');
+					$("#image_" + idItem).css('height', $('#preview > img')[0].naturalHeight+'px');	
+				}		
+			}
+			else {
 				$("#image_" + idItem).removeAttr('width');
 				$("#image_" + idItem).removeAttr('height');
-				$("#image_" + idItem).attr('width', 70);
-				$("#image_" + idItem).attr('height', 70);
-				$("#image_" + idItem).css('width', '70px');
-				$("#image_" + idItem).css('height', '70px');
-				}
-			else{
-				$("#image_" + idItem).removeAttr('width');
-				$("#image_" + idItem).removeAttr('height');
-				$("#image_" + idItem).attr('width', $('#preview > img')[0].naturalHeight);
-				$("#image_" + idItem).attr('height', $('#preview > img')[0].naturalHeight);
-				$("#image_" + idItem).css('width', $('#preview > img')[0].naturalHeight+'px');
-				$("#image_" + idItem).css('height', $('#preview > img')[0].naturalHeight+'px');	
-			}		
-		}
-		else {
-			$("#image_" + idItem).removeAttr('width');
-			$("#image_" + idItem).removeAttr('height');
-			$("#image_" + idItem).attr('width', values['width']);
-			$("#image_" + idItem).attr('height', values['height']);
-			$("#image_" + idItem).css('width', values['width'] + 'px');
-			$("#image_" + idItem).css('height', values['height'] + 'px');	
-		}
+				$("#image_" + idItem).attr('width', values['width']);
+				$("#image_" + idItem).attr('height', values['height']);
+				$("#image_" + idItem).css('width', values['width'] + 'px');
+				$("#image_" + idItem).css('height', values['height'] + 'px');	
+			}
 			var image = values['image'] + ".png";
 			set_image("image", idItem, image);
 			break;
@@ -576,16 +582,19 @@ function readFields() {
 	}
 	values['width'] = $("input[name=width]").val();
 	values['width_data_image'] = $("#data_image_width").val();
-	if(values['width_data_image'] != 0){
-		values['width'] = values['width_data_image'];
+	if(selectedItem == 'simple_value' || creationItem == 'simple_value'){
+		if(values['width_data_image'] != 0){
+			values['width'] = values['width_data_image'];
+		}
 	}
 	values['height'] = $("input[name=height]").val();
 	values['parent'] = $("select[name=parent]").val();
 	values['map_linked'] = $("select[name=map_linked]").val();
 	values['width_percentile'] = $("input[name=width_percentile]").val();
-	values['max_percentile'] = $("input[name=max_percentile]").val();
+	values['max_percentile'] = parseInt($("input[name=max_percentile]").val());
 	values['width_module_graph'] = $("input[name=width_module_graph]").val();
 	values['height_module_graph'] = $("input[name=height_module_graph]").val();
+	values['event_max_time_row'] = $("select[name=event_max_time_row]").val();
 	values['type_percentile'] = $("input[name=type_percentile]:checked").val();
 	values['value_show'] = $("input[name=value_show]:checked").val();
 	values['enable_link'] = $("input[name=enable_link]").is(':checked') ? 1 : 0;
@@ -652,6 +661,16 @@ function create_button_palette_callback() {
 			}
 			if ((values['label'] == '') && (values['image'] == '')) {
 				alert($("#message_alert_no_label_no_image").html());
+				validate = false;
+			}
+			break;
+		case 'auto_sla_graph':
+			if ((values['agent'] == '')) {
+				alert($("#message_alert_no_agent").html());
+				validate = false;
+			}
+			if ((values['module'] == 0)) {
+				alert($("#message_alert_no_module").html());
 				validate = false;
 			}
 			break;
@@ -930,6 +949,7 @@ function toggle_item_palette() {
 		activeToolboxButton('group_item', true);
 		activeToolboxButton('box_item', true);
 		activeToolboxButton('line_item', true);
+		activeToolboxButton('auto_sla_graph', true);
 
 		if (typeof(enterprise_activeToolboxButton) == 'function') {
 			enterprise_activeToolboxButton(true);
@@ -949,6 +969,7 @@ function toggle_item_palette() {
 
 		activeToolboxButton('static_graph', false);
 		activeToolboxButton('module_graph', false);
+		activeToolboxButton('auto_sla_graph', false);
 		activeToolboxButton('simple_value', false);
 		activeToolboxButton('label', false);
 		activeToolboxButton('icon', false);
@@ -1089,6 +1110,8 @@ function loadFieldsFromDB(item) {
 			fill_parent_select(idItem);
 			
 			jQuery.each(data, function(key, val) {
+				if (key == 'event_max_time_row')
+					$("select[name=event_max_time_row]").val(val);
 				if (key == 'background')
 					$("#background_image").val(val);
 				if (key == 'width') $("input[name=width]").val(val);
@@ -1422,6 +1445,9 @@ function hiddenFields(item) {
 
 	$("#process_value_row").css('display', 'none');
 	$("#process_value_row." + item).css('display', '');
+
+	$("#event_max_time_row").css('display', 'none');
+	$("#event_max_time_row." + item).css('display', '');
 
 	$("#background_row_1").css('display', 'none');
 	$("#background_row_1." + item).css('display', '');
@@ -1858,6 +1884,55 @@ function setPercentileBar(id_data, values) {
 	});
 }
 
+function setEventsBar(id_data, values) {
+	var url_hack_metaconsole = '';
+	if (is_metaconsole()) {
+		url_hack_metaconsole = '../../';
+	}
+
+	parameter = Array();
+
+	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
+	parameter.push ({name: "action", value: "get_module_events"});
+	parameter.push ({name: "id_agent", value: values['id_agent']});
+	parameter.push ({name: "id_agent_module", value: values['module']});
+	if (is_metaconsole()) {
+		parameter.push ({name: "id_metaconsole", value: id_metaconsole});
+	}
+	parameter.push ({name: "period", value: values['event_max_time_row']});
+	parameter.push ({name: "id_visual_console", value: id_visual_console});
+	jQuery.ajax({
+		url: get_url_ajax(),
+		data: parameter,
+		type: "POST",
+		dataType: 'json',
+		success: function (data) {
+			if (data['no_data'] == true) {
+				if (values['width'] == "0" || values['height'] == "0") {
+					$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/module-events.png');
+				}
+				else {
+					$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/module-events.png');
+					$("#" + id_data + " img").css('width', values['width'] + 'px');
+					$("#" + id_data + " img").css('height', values['height'] + 'px');
+				}
+			}
+			else {
+				$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/module-events.png');
+				
+				if($('#text-width').val() == 0 || $('#text-height').val() == 0){
+					$("#" + id_data + " img").css('width', '300px');
+					$("#" + id_data + " img").css('height', '180px');
+				}
+				else{
+					$("#" + id_data + " img").css('width', $('#text-width').val()+'px');
+					$("#" + id_data + " img").css('height', $('#text-height').val()+'px');
+				}
+			}
+		}
+	});
+}
+
 function setPercentileBubble(id_data, values) {
 	metaconsole = $("input[name='metaconsole']").val();
 
@@ -2173,6 +2248,17 @@ function createItem(type, values, id_data) {
 
 			set_static_graph_status(id_data, values['image']);
 
+			break;
+		case 'auto_sla_graph':
+			var sizeStyle = '';
+			var imageSize = '';
+			item = $('<div id="' + id_data + '" class="item auto_sla_graph" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+							'<table><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+							'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" />' +
+					'</div>'
+					);
+
+			setEventsBar(id_data, values);
 			break;
 		case 'percentile_bar':
 		case 'percentile_item':
@@ -2498,13 +2584,13 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 				set_static_graph_status(idElement, values['image']);
 
 			}
+			break;
 		case 'percentile_item':
 		case 'simple_value':
 		case 'label':
 		case 'icon':
 		case 'module_graph':
-
-			
+		case 'auto_sla_graph':
 			if (type == 'simple_value') {
 				setModuleValue(idElement,
 					values.process_simple_value,
@@ -2667,7 +2753,6 @@ function updateDB(type, idElement , values, event) {
 			update_user_line(type, idElement, top, left);
 			break;
 		default:
-
 			if ((typeof(values['mov_left']) != 'undefined') &&
 				(typeof(values['mov_top']) != 'undefined')) {
 				top = parseInt($("#" + idElement)
@@ -2727,8 +2812,6 @@ function updateDB(type, idElement , values, event) {
 
 function copyDB(idItem) {
 	metaconsole = $("input[name='metaconsole']").val();
-
-
 
 	parameter = Array();
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
@@ -2900,6 +2983,15 @@ function eventsItems(drag) {
 				activeToolboxButton('delete_item', true);
 				activeToolboxButton('show_grid', false);
 			}
+			if ($(divParent).hasClass('auto_sla_graph')) {
+				creationItem = null;
+				selectedItem = 'auto_sla_graph';
+				idItem = $(divParent).attr('id');
+				activeToolboxButton('copy_item', true);
+				activeToolboxButton('edit_item', true);
+				activeToolboxButton('delete_item', true);
+				activeToolboxButton('show_grid', false);
+			}
 			if ($(divParent).hasClass('group_item')) {
 				creationItem = null;
 				selectedItem = 'group_item';
@@ -2989,7 +3081,7 @@ function eventsItems(drag) {
 		}
 		
 		if(selectedItem == 'simple_value'){
-			
+			$('#data_image_width').val(event.currentTarget.clientWidth);			
 			var found = $('#'+idItem).find("img");
 					
 			if(found.length > 0){
@@ -3039,6 +3131,9 @@ function eventsItems(drag) {
 			}
 			if ($(event.target).hasClass('static_graph')) {
 				selectedItem = 'static_graph';
+			}
+			if ($(event.target).hasClass('auto_sla_graph')) {
+				selectedItem = 'auto_sla_graph';
 			}
 			if ($(event.target).hasClass('group_item')) {
 				selectedItem = 'group_item';
@@ -3338,12 +3433,17 @@ function click_button_toolbox(id) {
 			toolbuttonActive = creationItem = 'module_graph';
 			toggle_item_palette();
 			break;
+		case 'auto_sla_graph':
+			toolbuttonActive = creationItem = 'auto_sla_graph';
+			toggle_item_palette();
+			break;
 		case 'simple_value':
 			toolbuttonActive = creationItem = 'simple_value';
 			toggle_item_palette();
 			$("#period_row." + id).css('display', 'none');
 			break;
 		case 'label':
+			$("#data_image_width").val(100);
 			toolbuttonActive = creationItem = 'label';
 			toggle_item_palette();
 			break;
@@ -3393,7 +3493,7 @@ function click_button_toolbox(id) {
 				activeToolboxButton('icon', false);
 				activeToolboxButton('service', false);
 				activeToolboxButton('group_item', false);
-
+				activeToolboxButton('auto_sla_graph', false);
 				activeToolboxButton('copy_item', false);
 				activeToolboxButton('edit_item', false);
 				activeToolboxButton('delete_item', false);
@@ -3423,6 +3523,7 @@ function click_button_toolbox(id) {
 				activeToolboxButton('label', true);
 				activeToolboxButton('icon', true);
 				activeToolboxButton('group_item', true);
+				activeToolboxButton('auto_sla_graph', true);
 			}
 			break;
 		case 'save_visualmap':

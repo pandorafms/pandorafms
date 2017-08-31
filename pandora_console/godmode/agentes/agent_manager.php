@@ -232,7 +232,7 @@ if(!$new_agent){
 	if ($id_agente) {
 		$table->data[2][2] =
 			"<a id='qr_code_agent_view' href='javascript: show_dialog_qrcode(null, \"" .
-				ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $id_agente) . "\" );'></a>";
+				ui_get_full_url('mobile/index.php?page=agent&id=' . $id_agente) . "\" );'></a>";
 	}
 	else {
 		$table->data[2][2] = __("Only it is show when<br />the agent is saved.");
@@ -580,11 +580,11 @@ ui_require_jquery_file('bgiframe');
 		});
 
 		$("#text-id_parent").on("autocompletechange", function () {
-			agent_name = $("#text-id_parent").val();
+			agent_id=$("#hidden-id_parent").val();
 			
 			var params = {};
 			params["get_agent_modules_json_by_name"] = 1;
-			params["agent_name"] = agent_name;
+			params["id_agent"] = agent_id;
 			params["page"] = "include/ajax/module";
 			
 			jQuery.ajax ({

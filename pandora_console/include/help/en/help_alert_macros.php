@@ -47,6 +47,7 @@ Besides the defined module macros, the following macros are available:
 <li>_event_id_: (Only event alerts) ID of the event that triggered the alert.</li>
 <li>_id_agent_: Agent’s ID, useful for building a direct URL that redirects to a Pandora FMS console webpage.</li>
 <li>_id_group_ : Agent group ID.</li>
+<li>_id_module_ : ID of module.</li>
 <li>_id_alert_: Alert’s numeric ID (unique), used to correlate the alert with third party software.</li>
 <li>_policy_: Name of the policy that the module belongs to (if applies).</li>
 <li>_interval_: Module’s execution interval </li>

@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS treset_pass_history (
 	success tinyint(1) NOT NULL,
 	PRIMARY KEY (id)) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
 ALTER TABLE tserver ADD COLUMN exec_proxy tinyint(1) UNSIGNED NOT NULL default 0;
 
 ALTER TABLE tevent_response ADD COLUMN server_to_exec int(10) unsigned NOT NULL DEFAULT 0;

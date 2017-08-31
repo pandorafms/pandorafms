@@ -147,10 +147,15 @@ if ($update_agents) {
 			$result = db_process_sql_update ('tagente',
 				$values,
 				array ('id_agente' => $id_agent));
-				
+			
 			if($group_old || $result){
-				$tpolicy_group_old = db_get_all_rows_sql("SELECT id_policy FROM tpolicy_groups 
-					WHERE id_group = ".$group_old);
+				if ($group_old && $group_old != null) {
+					$tpolicy_group_old = db_get_all_rows_sql("SELECT id_policy FROM tpolicy_groups 
+						WHERE id_group = ".$group_old);
+				}
+				else {
+					$tpolicy_group_old = db_get_all_rows_sql("SELECT id_policy FROM tpolicy_groups");
+				}
 					
 				if($tpolicy_group_old){
 					foreach ($tpolicy_group_old as $key => $value) {
@@ -164,9 +169,13 @@ if ($update_agents) {
 						}
 					}
 				}
-				
-				$tpolicy_group_new = db_get_all_rows_sql("SELECT id_policy FROM tpolicy_groups 
-					WHERE id_group = ".$values['id_grupo']);
+				if ($values['id_grupo'] && $values['id_grupo'] != null) {
+					$tpolicy_group_new = db_get_all_rows_sql("SELECT id_policy FROM tpolicy_groups 
+						WHERE id_group = ".$values['id_grupo']);
+				}
+				else {
+					$tpolicy_group_new = db_get_all_rows_sql("SELECT id_policy FROM tpolicy_groups");
+				}
 						
 				if($tpolicy_group_new){
 					foreach ($tpolicy_group_new as $key => $value) {
@@ -328,6 +337,8 @@ $params['print_hidden_input_idagent'] = true;
 $params['hidden_input_idagent_name'] = 'id_agent_parent';
 $params['hidden_input_idagent_value'] = $id_parent;
 $params['value'] = db_get_value ("alias","tagente","id_agente",$id_parent);
+$params['selectbox_id'] = 'cascade_protection_module';
+$params['javascript_is_function_select'] = true;
 $table->data[0][1] = ui_print_agent_autocomplete_input($params);
 
 $table->data[0][1] .= "<b>" . __('Cascade protection'). "</b>&nbsp;" .
@@ -556,38 +567,6 @@ $(document).ready (function () {
 			$("#cascade_protection_module").attr("disabled", 'disabled');
 		}
 	});
-
-	$("#text-id_parent").on("autocompletechange", function () {
-		agent_id = $("#hidden-id_parent").val();
-		
-		var params = {};
-		params["get_agent_modules_json_by_name"] = 1;
-		params["id_agent"] = agent_id;
-		params["page"] = "include/ajax/module";
-		
-		jQuery.ajax ({
-			data: params,
-			dataType: "json",
-			type: "POST",
-			url: "ajax.php",
-			success: function (data) {
-				$('#cascade_protection_module').empty();
-				$('#cascade_protection_module')
-						.append ($('<option></option>')
-						.html("Any")
-						.prop("value", 0)
-						.prop("selected", 'selected'));
-				jQuery.each (data, function (i, val) {
-					$('#cascade_protection_module')
-						.append ($('<option></option>')
-						.html(val['name'])
-						.prop("value", val['id_module'])
-						.prop("selected", 'selected'));
-				});
-			}
-		});
-	});
-
 
 	$("#form_agent").submit(function() {
 		var get_parameters_count = window.location.href.slice(

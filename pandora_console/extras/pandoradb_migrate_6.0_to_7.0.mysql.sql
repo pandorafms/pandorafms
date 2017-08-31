@@ -1416,3 +1416,13 @@ ALTER TABLE tgraph_source ADD COLUMN id_server int(11) UNSIGNED NOT NULL default
 -- ---------------------------------------------------------------------
 
 ALTER TABLE tserver_export_data MODIFY `module_name` varchar(600) BINARY NOT NULL default '';
+
+-- ---------------------------------------------------------------------
+-- Table `tserver`
+-- ---------------------------------------------------------------------
+ALTER TABLE tserver ADD COLUMN exec_proxy tinyint(1) UNSIGNED NOT NULL default 0;
+
+-- ---------------------------------------------------------------------
+-- Table `tevent_response`
+-- ---------------------------------------------------------------------
+ALTER TABLE tevent_response ADD COLUMN server_to_exec int(10) unsigned NOT NULL DEFAULT 0;

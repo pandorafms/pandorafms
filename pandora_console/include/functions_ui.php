@@ -3118,7 +3118,6 @@ function ui_print_agent_autocomplete_input($parameters) {
 							.attr("value", val["id_agente_modulo"]).text (s));
 					});
 					
-					$("#' . $selectbox_id . '").enable();
 					$("#' . $selectbox_id . '").fadeIn ("normal");
 				}
 			});

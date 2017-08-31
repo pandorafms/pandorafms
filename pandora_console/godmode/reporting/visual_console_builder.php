@@ -357,6 +357,7 @@ switch ($activeTab) {
 							break;
 						case GROUP_ITEM:
 							$values['id_group'] = get_parameter('group_' . $id, 0);
+							$values['show_statistics'] = get_parameter('show_statistics', 0);
 							break;
 					}
 					$agentName = get_parameter('agent_' .  $id, '');
@@ -410,6 +411,7 @@ switch ($activeTab) {
 				$width = (int) get_parameter ("width", 0);
 				$height = (int) get_parameter ("height", 0);
 				$period = (int) get_parameter ("period", 0);
+				$show_statistics = get_parameter ("show_statistics", 0);
 				$process_value = (int) get_parameter ("process_value", 0);
 				$percentileitem_width = (int) get_parameter ("percentileitem_width", 0);
 				$max_value = (int) get_parameter ("max_value", 0);

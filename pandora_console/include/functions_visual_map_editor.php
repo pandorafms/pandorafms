@@ -453,6 +453,13 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items['period_row']['html'] = '<td align="left">' . __('Period') . '</td>
 				<td align="left">' .  html_print_extended_select_for_time ('period', SECONDS_5MINUTES, '', '', '', false, true) . '</td>';
 			
+			$form_items['show_statistics_row'] = array();
+			$form_items['show_statistics_row']['items'] = array('group_item');
+			$form_items['show_statistics_row']['html'] = 
+				'<td align="left" style="">' . __('Show statistics') . '</td>
+				<td align="left" style="">' .
+				html_print_checkbox('show_statistics', 1, '', true) . '</td>';
+			
 			
 			$form_items['module_graph_size_row'] = array();
 			$form_items['module_graph_size_row']['items'] = array('module_graph', 'datos');

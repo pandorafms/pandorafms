@@ -4167,14 +4167,6 @@ div#footer_help{
 	padding: 4px;
 }
 
-.service_node_odd {
-	transform: translateY(-50px);
-}
-
-.service_text_odd {
-	transform: translateY(100px);
-}
-
 /*styles graph conteiner*/
 .graph_conteiner_inside > .parent_graph{
 	width: 100% !important;
@@ -4194,5 +4186,4 @@ div#footer_help{
 
 .graph_conteiner_inside > div > .nodata_container{
 	background-size: 120px 80px !important;	
->>>>>>> pandora_console/include/styles/pandora.css
 }

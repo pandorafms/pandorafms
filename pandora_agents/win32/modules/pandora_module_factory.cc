@@ -1139,11 +1139,14 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		module = new Pandora_Module_Freedisk_Percent (module_name,
 						      module_freedisk_percent);
 		// Added a description with the memory free
-		char buffer[100];
-		unsigned long memory = Pandora_Wmi::getDiskFreeSpace(module_freedisk_percent);
-		if (sprintf(buffer, "Free memory %s %dMB",
+		try {
+			char buffer[100];
+			unsigned long memory = Pandora_Wmi::getDiskFreeSpace(module_freedisk_percent);
+			if (sprintf(buffer, "Free memory %s %dMB",
 				module_freedisk_percent.c_str(), memory) > 0) {
-			module->setDescription(buffer);
+				module->setDescription(buffer);
+			}
+		} catch (Pandora_Wmi::Pandora_Wmi_Exception e) {
 		}
 	} else if (module_freememory != "") {
 		module = new Pandora_Module_Freememory (module_name);

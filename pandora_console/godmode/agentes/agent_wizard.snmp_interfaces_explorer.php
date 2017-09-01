@@ -254,6 +254,30 @@ if ($create_modules) {
 				$values['unit'] = "Bytes";
 			}
 			
+			if ($server_to_exec != 0) {
+				$sql = sprintf("SELECT server_type FROM tserver WHERE id_server = %d", $server_to_exec);
+				$row = db_get_row_sql ($sql);
+
+				if ($row['server_type'] = 13) {
+					if (preg_match ("/Status/", $name_array[1])) {
+						$module_type = 2;
+					}
+					elseif (preg_match ("/Present/", $name_array[1])) {
+						$module_type = 2;
+					}
+					elseif (preg_match("/PromiscuousMode/", $name_array[1])) {
+						$module_type = 2;
+					}	
+					// Specific counters (ends in s)
+					elseif (preg_match("/s$/", $name_array[1])) {
+						$module_type = 4;
+					}
+					else {
+						$module_type = 4;
+					}
+				}
+			}
+
 			$values['id_tipo_modulo'] = $module_type;
 			
 			if (!empty($ifPhysAddress) && isset($interfaces_ip[$id])) {
@@ -281,6 +305,26 @@ if ($create_modules) {
 				$errors[$result]++;
 			}
 			else {
+				if ($server_to_exec != 0) {
+					$sql = sprintf("SELECT server_type FROM tserver WHERE id_server = %d", $server_to_exec);
+					$row = db_get_row_sql ($sql);
+					
+					if ($row['server_type'] = 13) {
+						$module_type_name = db_get_value_filter("nombre", "ttipo_modulo", array("id_tipo" => $values['id_tipo_modulo']));
+
+						$new_module_configuration_data = "
+							module_begin
+							module_name " . io_safe_input($name) . "
+							module_description " . $values['descripcion'] . "
+							module_type " . $module_type_name . "
+							module_snmp
+							module_oid " . $values['snmp_oid'] . "
+							module_community " . $values['snmp_community'] . "
+							module_end";
+
+						config_agents_add_module_in_conf($id_agent, $new_module_configuration_data);
+					}
+				}
 				$done++;
 			}
 		}
@@ -445,6 +489,7 @@ if (!empty($interfaces_list)) {
 	html_print_input_hidden('snmp3_privacy_method', $snmp3_privacy_method);
 	html_print_input_hidden('snmp3_privacy_pass', $snmp3_privacy_pass);
 	html_print_input_hidden('snmp3_security_level', $snmp3_security_level);
+	html_print_input_hidden('server_to_exec', $server_to_exec);
 	
 	$table->width = '100%';
 	

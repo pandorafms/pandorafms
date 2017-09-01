@@ -58,7 +58,7 @@ if (isset($_GET["server"])) {
 	
 	if (enterprise_installed()) {
 		$table->data[] = array (__('Type'), $server_type);
-		if ($row["server_type"] == 13) {
+		if ($row["server_type"] == 13 || $row["server_type"] == 1) {
 			$table->data[] = array (__('Exec Server'), html_print_checkbox ("exec_proxy", 1, $row["exec_proxy"], true));
 			if ($row["exec_proxy"]) {
 				$table->data[] = array (__('Check Exec Server'), '<a id="check_exec_server">' . html_print_image ("images/dot_red.disabled.png", true) . '</a>' . '<div id="check_error_message"></div>');

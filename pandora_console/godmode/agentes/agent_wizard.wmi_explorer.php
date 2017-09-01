@@ -29,7 +29,7 @@ $ip_target = (string) get_parameter ('ip_target', $ipAgent); // Host
 $plugin_user = (string) get_parameter ('plugin_user', 'Administrator'); // Username
 $plugin_pass = io_safe_output(get_parameter('plugin_pass', '')); // Password
 $tcp_send = (string) get_parameter ('tcp_send'); // Namespace
-$server_to_exec = get_parameter('server_to_exec', true);
+$server_to_exec = get_parameter('server_to_exec', 0);
 
 //See if id_agente is set (either POST or GET, otherwise -1
 $id_agent = $idAgent;
@@ -202,16 +202,16 @@ if ($create_modules) {
 	$services_values['snmp_community'] = 'Running'; // Key string
 	$services_values['tcp_port'] = 1; // Field number (Running/Stopped)
 	$services_values['id_tipo_modulo'] = 2; // Generic boolean
-	
-	$services_result = wmi_create_wizard_modules($id_agent, $services, 'services', $services_values);
-	
+
+	$services_result = wmi_create_wizard_modules($id_agent, $services, 'services', $services_values, 0, 0, $server_to_exec);
+
 	// Create Process modules
 	$processes_values = $values;
 	
 	$processes_values['tcp_port'] = 0; // Field number (OID)
 	$processes_values['id_tipo_modulo'] = 2; // Generic boolean
 	
-	$processes_result = wmi_create_wizard_modules($id_agent, $processes, 'processes', $processes_values);
+	$processes_result = wmi_create_wizard_modules($id_agent, $processes, 'processes', $processes_values, 0, 0, $server_to_exec);
 	
 	// Create Space on disk modules
 	$disks_values = $values;
@@ -220,14 +220,14 @@ if ($create_modules) {
 	$disks_values['id_tipo_modulo'] = 1; // Generic numeric
 	$disks_values['unit'] = 'Bytes'; // Unit
 	
-	$disks_result = wmi_create_wizard_modules($id_agent, $disks, 'disks', $disks_values);
+	$disks_result = wmi_create_wizard_modules($id_agent, $disks, 'disks', $disks_values, 0, 0, $server_to_exec);
 	
 	// Create modules from component
 	$components_values = $values;
 	
 	$components_values['id_agente'] = $id_agent;
 
-	$components_result = wmi_create_module_from_components($components, $components_values);
+	$components_result = wmi_create_module_from_components($components, $components_values, 0, 0, $server_to_exec);
 	
 	
 	// Errors/Success messages
@@ -339,6 +339,7 @@ if ($wmiexplore && !$fail) {
 	html_print_input_hidden('plugin_user', $plugin_user); // User
 	html_print_input_hidden('plugin_pass', $plugin_pass); // Password
 	html_print_input_hidden('tcp_send', $tcp_send); // Namespace
+	html_print_input_hidden('server_to_exec', $server_to_exec);
 	
 	$table->width = '98%';
 	

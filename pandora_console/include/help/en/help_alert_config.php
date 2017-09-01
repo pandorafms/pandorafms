@@ -54,6 +54,7 @@ Apart from the defined module macros, the following macros are also available:
 <li>_event_id_ : (Only event alerts) Id of the event that fired the alert.</li>
 <li>_id_agent_ : Id of agent, useful to build direct URL to redirect to a Pandora FMS console webpage.</li>
 <li>_id_group_ : Id of agent group.</li>
+<li>_id_module_ : Id of module.</li>
 <li>_id_alert_ : Numerical ID of the alert (unique), used to correlate on third party software</li>
 <li>_policy_ : Name of the policy the module belongs to (if applies).</li>
 <li>_interval_ : Execution interval of the module. </li>
@@ -63,6 +64,9 @@ Apart from the defined module macros, the following macros are also available:
 <li>_groupcontact_ : Group contact information.	Configured when the group is created.</li>
 <li>_groupother_ : Other information about the group. Configured when the group is created.</li>
 <li>_email_tag_ : Emails associated to the module tags.</li>
+<li>_alert_critical_instructions_: Instructions for CRITICAL status contained in the module.</li>
+<li>_alert_warning_instructions_: Instructions for WARNING status contained in the module.</li>
+<li>_alert_unknown_instructions_: Instructions for UNKNOWN status contained in the module.</li>
 <li>_modulegraph_nh_: (Only for alerts that use the command eMail) Returns an image of a module graph with a period of n hours (eg. _modulegraph_24h_). A correct setup of the connection between the server and the console's api is required. This setup is done into the server's configuration file.</li>
 <li>_homeurl_ : It is a link of the public URL this must be configured in the general options of the setup.</li>
 </ul>

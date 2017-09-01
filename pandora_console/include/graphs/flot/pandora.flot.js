@@ -1709,6 +1709,15 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				how_bigger = "K";
 				y = y / 1000;
 			}
+			else if(y < -1000000) {
+				how_bigger = "M";
+				y = y / 1000000;
+			}
+			else if (y < -1000) {
+				console.log('entra por negativo');
+				how_bigger = "K";
+				y = y / 1000;	
+			}
 
 			if (currentRanges == null || (currentRanges.xaxis.from < j && j < currentRanges.xaxis.to)) {
 				$('#timestamp_'+graph_id).show();
@@ -2130,6 +2139,10 @@ function number_format(number, force_integer, unit) {
 	while (1) {
 		if (number >= 1000) { //as long as the number can be divided by 1000
 			pos++; //Position in array starting with 0
+			number = number / 1000;
+		}
+		else if (number <= -1000) {
+			pos++;
 			number = number / 1000;
 		}
 		else {

@@ -40,6 +40,7 @@ $agents_id = get_parameter('id_agents');
 $modules_select = get_parameter('module');
 $selection_mode = get_parameter('selection_mode', 'modules');
 $recursion = get_parameter('recursion');
+$modules_selection_mode = get_parameter('modules_selection_mode');
 
 $update = (bool) get_parameter_post ('update');
 
@@ -105,7 +106,7 @@ if ($update) {
 					$module_name = array();
 				
 				foreach ($module_name as $mod_name) {
-					$result = process_manage_edit($mod_name['nombre'], $id_agent);
+					$result = process_manage_edit($mod_name['nombre'], $id_agent, $modules_selection_mode);
 					$count++;
 					$success += (int)$result;
 				}
@@ -127,7 +128,7 @@ if ($update) {
 					$module_name = array();
 				
 				foreach($module_name as $mod_name) {
-					$result = process_manage_edit($mod_name['nombre'], $id_agent);
+					$result = process_manage_edit($mod_name['nombre'], $id_agent, $modules_selection_mode);
 					$count++;
 					$success += (int)$result;
 				}
@@ -146,7 +147,7 @@ if ($update) {
 			
 			foreach ($modules_ as $module_) {
 				
-				$result = process_manage_edit ($module_, $agent_);
+				$result = process_manage_edit ($module_, $agent_, $modules_selection_mode);
 				$count++;
 				$success += (int)$result;
 				
@@ -1112,7 +1113,7 @@ function disabled_status () {
 /* ]]> */
 </script>
 <?php
-function process_manage_edit ($module_name, $agents_select = null) {
+function process_manage_edit ($module_name, $agents_select = null, $module_status = 'all') {
 	
 	if (is_int ($module_name) && $module_name < 0) {
 		ui_print_error_message(__('No modules selected'));
@@ -1230,6 +1231,19 @@ function process_manage_edit ($module_name, $agents_select = null) {
 	
 	if ($modules === false)
 		return false;
+
+	if (($module_status == 'unknown') && ($module_name == "0")) {
+		$modules_to_delete = array();
+		foreach ($modules as $mod_id) {
+			$mod_status = (int)db_get_value_filter ('estado', 'tagente_estado', array('id_agente_modulo' => $mod_id));
+
+			// Unknown, not init and no data modules
+			if ($mod_status == 3 || $mod_status == 4 || $mod_status == 5) {
+				$modules_to_delete[$mod_id] = $mod_id;
+			}
+		}
+		$modules = $modules_to_delete;
+	}
 	
 	foreach ($modules as $module) {
 		$result = modules_update_agent_module(

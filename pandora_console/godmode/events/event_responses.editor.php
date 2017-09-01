@@ -53,6 +53,7 @@ else {
 	$event_response['modal_width'] = 0;
 	$event_response['modal_height'] = 0;
 	$event_response['params'] = '';
+	$event_response['server_to_exec'] = '';
 }
 
 $table = new stdClass();
@@ -117,11 +118,25 @@ $data[3] = html_print_select($types,'type',$event_response['type'],'','','',true
 $table->data[3] = $data;
 
 $data = array();
-$table->colspan[4][1] = 3;
 $data[0] = '<span id="command_label" class="labels">'.__('Command').'</span><span id="url_label" style="display:none;" class="labels">'.__('URL').'</span>'.ui_print_help_icon ("response_macros", true);
 $data[1] = html_print_input_text('target', $event_response['target'],
 	'', 100, 255, true);
-$types = array('url' => __('URL'), 'command' => __('Command'));
+
+$servers_to_exec = array();
+$servers_to_exec[0] = __('Local console');
+
+if (enterprise_installed()) {
+	enterprise_include_once ('include/functions_satellite.php');
+	
+	$rows = get_proxy_servers();
+	foreach ($rows as $row) {
+		$servers_to_exec[$row['id_server']] = $row['name'];
+	}
+}
+
+$data[2] = '<div id="server_to_exec_label" style="display:none;" class="labels">' . __('Server to execute command') . '</div>';
+$data[3] = '<div id="server_to_exec_value" style="display:none;">' . html_print_select($servers_to_exec, 'server_to_exec', $event_response['server_to_exec'], '', '', '', true) . '</div>';
+
 $table->data[4] = $data;
 
 if ($event_response_id == 0) {
@@ -158,9 +173,13 @@ $('#type').change(function() {
 			$('#new_window option[value="0"]')
 				.prop('selected', true);
 			$('#new_window').attr('disabled','disabled');
+			$('#server_to_exec_label').css('display','');
+			$('#server_to_exec_value').css('display','');
 			break;
 		case 'url':
 			$('#new_window').removeAttr('disabled');
+			$('#server_to_exec_label').css('display','none');
+			$('#server_to_exec_value').css('display','none');
 			break;
 	}
 });

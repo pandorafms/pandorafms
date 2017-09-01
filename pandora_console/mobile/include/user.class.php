@@ -236,7 +236,7 @@ class User {
 		$ui->contentAddHtml('<div style="text-align: center;" class="login_logo">' .
 			$logo_image . '</div>');
 		$ui->contentAddHtml('<div id="login_container">');
-		$ui->beginForm();
+		$ui->beginForm('');
 		$ui->formAddHtml(html_print_input_hidden('action', 'login', true));
 		$options = array(
 			'name' => 'user',

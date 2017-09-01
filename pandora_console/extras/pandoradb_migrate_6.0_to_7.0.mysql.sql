@@ -1215,7 +1215,7 @@ ALTER TABLE tnetwork_component ADD COLUMN `dynamic_two_tailed` tinyint(1) unsign
 -- ---------------------------------------------------------------------
 ALTER TABLE tagente ADD `transactional_agent` tinyint(1) NOT NULL default 0;
 ALTER TABLE tagente ADD `remote` tinyint(1) NOT NULL default 0;
-ALTER TABLE tagente ADD `cascade_protection_module` int(10) unsigned default '0';
+ALTER TABLE tagente ADD COLUMN `cascade_protection_module` int(10) unsigned NOT NULL default '0';
 ALTER TABLE tagente ADD COLUMN (alias varchar(600) not null default '');
 ALTER TABLE tagente ADD `alias_as_name` int(2) unsigned default '0';
 
@@ -1418,6 +1418,16 @@ ALTER TABLE tgraph_source ADD COLUMN id_server int(11) UNSIGNED NOT NULL default
 ALTER TABLE tserver_export_data MODIFY `module_name` varchar(600) BINARY NOT NULL default '';
 
 -- ---------------------------------------------------------------------
+-- Table `tserver`
+-- ---------------------------------------------------------------------
+ALTER TABLE tserver ADD COLUMN exec_proxy tinyint(1) UNSIGNED NOT NULL default 0;
+
+-- ---------------------------------------------------------------------
+-- Table `tevent_response`
+-- ---------------------------------------------------------------------
+ALTER TABLE tevent_response ADD COLUMN server_to_exec int(10) unsigned NOT NULL DEFAULT 0;
+
+-- ---------------------------------------------------------------------
 -- Table `tmodule`
 -- ---------------------------------------------------------------------
 
@@ -1428,3 +1438,4 @@ INSERT INTO tmodule VALUES (8, 'Wux&#x20;module');
 -- ---------------------------------------------------------------------
 
 INSERT INTO ttipo_modulo VALUES (25,'web_analysis', 8, 'Web analysis data', 'module-wux.png');
+

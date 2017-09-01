@@ -976,6 +976,7 @@ CREATE TABLE IF NOT EXISTS `tserver` (
 	`my_modules` int(11) NOT NULL default 0,
 	`server_keepalive` int(11) NOT NULL default 0,
 	`stat_utimestamp` bigint(20) NOT NULL default '0',
+	`exec_proxy` tinyint(1) UNSIGNED NOT NULL default 0,
 	PRIMARY KEY  (`id_server`),
 	KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -1844,6 +1845,7 @@ CREATE TABLE IF NOT EXISTS `tevent_response` (
 	`modal_height` INTEGER  NOT NULL DEFAULT 0,
 	`new_window` TINYINT(4)  NOT NULL DEFAULT 0,
 	`params` TEXT  NOT NULL,
+	`server_to_exec` int(10) unsigned NOT NULL DEFAULT 0,
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

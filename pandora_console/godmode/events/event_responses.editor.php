@@ -130,7 +130,14 @@ if (enterprise_installed()) {
 	
 	$rows = get_proxy_servers();
 	foreach ($rows as $row) {
-		$servers_to_exec[$row['id_server']] = $row['name'];
+		if ($row['server_type'] != 13) {
+			$s_type = " (Standard)";
+		}
+		else {
+			$s_type = " (Satellite)";
+		}
+
+		$servers_to_exec[$row['id_server']] = $row['name'] . $s_type;
 	}
 }
 

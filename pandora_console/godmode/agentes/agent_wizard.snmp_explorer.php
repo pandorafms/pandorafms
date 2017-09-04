@@ -716,7 +716,7 @@ $servers_to_exec[0] = __('Local console');
 if (enterprise_installed()) {
 	enterprise_include_once ('include/functions_satellite.php');
 	
-	$rows = get_proxy_servers();
+	$rows = get_proxy_servers(true);
 	foreach ($rows as $row) {
 		$servers_to_exec[$row['id_server']] = $row['name'];
 	}

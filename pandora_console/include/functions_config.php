@@ -695,6 +695,8 @@ function config_update_config () {
 					$error_update[] = __('IP ElasticSearch server');
 				if (!config_update_value ('elasticsearch_port', get_parameter('elasticsearch_port')))
 					$error_update[] = __('Port ElasticSearch server');
+				if (!config_update_value ('number_logs_viewed', (int)get_parameter('number_logs_viewed')))
+					$error_update[] = __('Number of logs viewed');
 				if (!config_update_value ('Days_purge_old_information', (int)get_parameter('Days_purge_old_information')))
 					$error_update[] = __('Days to purge old information');
 				break;
@@ -1021,6 +1023,10 @@ function config_process_config () {
 	
 	if (!isset ($config["elasticsearch_port"])) {
 		config_update_value ('elasticsearch_port', 9200);
+	}
+	
+	if (!isset ($config["number_logs_viewed"])) {
+		config_update_value ('number_logs_viewed', 50);
 	}
 	
 	if (!isset ($config["Days_purge_old_information"])) {

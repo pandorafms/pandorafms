@@ -1426,3 +1426,16 @@ ALTER TABLE tserver ADD COLUMN exec_proxy tinyint(1) UNSIGNED NOT NULL default 0
 -- Table `tevent_response`
 -- ---------------------------------------------------------------------
 ALTER TABLE tevent_response ADD COLUMN server_to_exec int(10) unsigned NOT NULL DEFAULT 0;
+
+-- ---------------------------------------------------------------------
+-- Table `tmodule`
+-- ---------------------------------------------------------------------
+
+INSERT INTO tmodule VALUES (8, 'Wux&#x20;module');
+
+-- ---------------------------------------------------------------------
+-- Table `ttipo_modulo`
+-- ---------------------------------------------------------------------
+
+INSERT INTO ttipo_modulo VALUES (25,'web_analysis', 8, 'Web analysis data', 'module-wux.png');
+

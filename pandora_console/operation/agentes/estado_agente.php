@@ -102,7 +102,34 @@ if (is_ajax ()) {
 			echo json_encode (false);
 			return;
 		}
-		echo json_encode (modules_get_last_value ($id_module));
+
+		$module_value = modules_get_last_value ($id_module);
+		if (is_numeric($row['value']) && !modules_is_string_type($module['id_tipo_modulo'])){
+			$value = $module_value;
+		}
+		else{
+			// If carriage returns present... then is a "Snapshot" data (full command output)
+			$is_snapshot = is_snapshot_data ( $module_value );
+
+			$module = modules_get_agentmodule($id_module);
+			
+			if (($config['command_snapshot']) && ($is_snapshot)){
+				$handle = "snapshot"."_".$module["id_agente_modulo"];
+				$url = 'include/procesos.php?agente='.$module["id_agente_modulo"];
+				$win_handle = dechex(crc32($handle));
+				
+				$link ="winopeng_var('operation/agentes/snapshot_view.php?id=".$module["id_agente_modulo"]."&refr=".$module["current_interval"]."&label=".$module["nombre"]."','".$win_handle."', 700,480)"; 
+				
+				$value = '<a href="javascript:'.$link.'">' . html_print_image("images/default_list.png", true, array("border" => '0', "alt" => "", "title" => __("Snapshot view"))) . '</a> &nbsp;&nbsp;';
+			}
+			else {
+				$value = ui_print_module_string_value(
+					$module_value, $module["id_agente_modulo"],
+					$module["current_interval"], $module["module_name"]);
+			}
+		}
+
+		echo json_encode ($value);
 		return;
 	}
 	

@@ -98,6 +98,9 @@ if (strstr($sec2, "enterprise/godmode/policies/policies") !== false) {
 	//the modules to show in syntetic module policy form must be the policy
 	//modules from the same policy.
 	unset($modules['predictionserver']);
+	if (enterprise_installed()){
+		unset($modules['webux']);
+	}
 }
 
 $show_creation = false;
@@ -738,10 +741,15 @@ foreach ($modules as $module) {
 	$data[6] = ui_print_status_image($status, $title, true);
 	
 	// MAX / MIN values
-	$data[7] = ui_print_module_warn_value ($module["max_warning"],
-		$module["min_warning"], $module["str_warning"],
-		$module["max_critical"], $module["min_critical"],
-		$module["str_critical"]);
+	if($module['id_tipo_modulo'] != 25){
+		$data[7] = ui_print_module_warn_value ($module["max_warning"],
+			$module["min_warning"], $module["str_warning"],
+			$module["max_critical"], $module["min_critical"],
+			$module["str_critical"]);
+	}
+	else{
+		$data[7] = "";
+	}
 	
 	if ($module['disabled']) {
 		$data[8] = "<a href='index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."&enable_module=".$module['id_agente_modulo']."'>".
@@ -753,8 +761,8 @@ foreach ($modules as $module) {
 			html_print_image('images/lightbulb.png', true,
 			array('alt' => __('Disable module'), 'title' => __('Disable module'))) ."</a>";
 	}
-	
-	if (check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
+
+	if (check_acl ($config['id_user'], $agent['id_grupo'], "AW") && $module['id_tipo_modulo'] != 25) {
 		$data[8] .= '&nbsp;<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&duplicate_module='.$module['id_agente_modulo'].'"
 			onClick="if (!confirm(\' ' . __('Are you sure?') . '\')) return false;">';
 		$data[8] .= html_print_image ('images/copy.png', true,

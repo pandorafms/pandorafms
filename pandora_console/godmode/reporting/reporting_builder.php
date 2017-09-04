@@ -539,7 +539,7 @@ switch ($action) {
 			$table->size[3] = '2%';
 			$table->size[4] = '2%';
 			$table->size[5] = '2%';
-			$table->size[6] = '4%';
+			$table->size[6] = '2%';
 			$table->size['csv'] = '5%';
 			
 			$next = 4;

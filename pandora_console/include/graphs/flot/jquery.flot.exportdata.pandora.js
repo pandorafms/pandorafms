@@ -34,7 +34,10 @@
 				}
 				if (dataObjects.length > 1) {
 					dataObjects.forEach(function (element) {
-						result = element;
+						if (/^Avg.:/i.test(element.label))
+							result = element;
+						if (/^Percentil/i.test(element.label))
+							result = element;
 					});
 
 					// If the avg set is missing, retrieve the first set

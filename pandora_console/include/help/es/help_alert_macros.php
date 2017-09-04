@@ -68,7 +68,6 @@ Además de las macros de módulo definidas, las siguientes macros están disponi
 Devuelve una imagen codificada en base64 de una gráfica del módulo con un período de <i>n</i> horas (eg. _modulegraph_24h_).
 Requiere de una configuración correcta de la conexión del servidor a la consola vía api,
 la cual se realiza en el fichero de configuración del servidor.</li>
-<li>_modulegraphth_<i>n</i>h_:mismo funcionamiento que la macro anterior solo que con los umbrales critical y warning del modulo siempre que estos esten definidos</li>
 </ul>
 
 <p>

@@ -38,7 +38,9 @@ $get_agent_modules_json_by_name = (bool) get_parameter('get_agent_modules_json_b
 
 
 if ($get_agent_modules_json_by_name) {
-	$agent_id = get_parameter('id_agent');
+	$agent_name = get_parameter('agent_name');
+
+	$agent_id = agents_get_agent_id($agent_name);
 
 	$agent_modules = db_get_all_rows_sql("SELECT id_agente_modulo as id_module, nombre as name FROM tagente_modulo
 											WHERE id_agente = " . $agent_id);
@@ -737,7 +739,7 @@ if ($list_modules) {
 	$table->head[5] = __('Status') . ' ' .
 		'<a href="' . $url . '&sort_field=status&amp;sort=up&refr=&filter_monitors=1&status_filter_monitor=' .$status_filter_monitor.' &status_text_monitor='. $status_text_monitor.'&status_module_group= '.$status_module_group.'">' . html_print_image("images/sort_up.png", true, array("style" => $selectStatusUp, "alt" => "up")) . '</a>' .
 		'<a href="' . $url . '&sort_field=status&amp;sort=down&refr=&filter_monitors=1&status_filter_monitor=' .$status_filter_monitor.' &status_text_monitor='. $status_text_monitor.'&status_module_group= '.$status_module_group.'">' . html_print_image("images/sort_down.png", true, array("style" => $selectStatusDown, "alt" => "down")) . '</a>';
-	$table->head[6] = __('Thresholds');
+	$table->head[6] = __('Warn');
 	$table->head[7] = __('Data');
 	$table->head[8] = __('Graph');
 	$table->head[9] = __('Last contact') . ' ' .
@@ -1010,8 +1012,12 @@ if ($list_modules) {
 					$module["current_interval"], $module["module_name"]);
 			}
 		}
-		
+		if($module["id_tipo_modulo"] != 25){
 		$data[6] = ui_print_module_warn_value ($module["max_warning"], $module["min_warning"], $module["str_warning"], $module["max_critical"], $module["min_critical"], $module["str_critical"]);
+		}
+		else{
+			$data[6] = "";
+		}
 		
 		$data[7] = $salida;
 		$graph_type = return_graphtype ($module["id_tipo_modulo"]);

@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS `tagente` (
 	`custom_id` varchar(255) default '',
 	`server_name` varchar(100) default '',
 	`cascade_protection` tinyint(2) NOT NULL default '0',
-	`cascade_protection_module` int(10) unsigned NOT NULL default '0',
+	`cascade_protection_module` tinyint(2) NOT NULL default '0',
 	`timezone_offset` TINYINT(2) NULL DEFAULT '0' COMMENT 'nuber of hours of diference with the server timezone' ,
 	`icon_path` VARCHAR(127) NULL DEFAULT NULL COMMENT 'path in the server to the image of the icon representing the agent' ,
 	`update_gis_data` TINYINT(1) NOT NULL DEFAULT '1' COMMENT 'set it to one to update the position data (altitude, longitude, latitude) when getting information from the agent or to 0 to keep the last value and do not update it' ,
@@ -118,7 +118,7 @@ CREATE TABLE IF NOT EXISTS `tagente_datos_inc` (
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tagente_datos_string` (
 	`id_agente_modulo` int(10) unsigned NOT NULL default '0',
-	`datos` text NOT NULL,
+	`datos` mediumtext NOT NULL,
 	`utimestamp` int(20) unsigned NOT NULL default 0,
 	KEY `data_string_index_1` (`id_agente_modulo`),
 	KEY `idx_utimestamp` USING BTREE (`utimestamp`)
@@ -146,7 +146,7 @@ CREATE TABLE IF NOT EXISTS `tagente_datos_log4x` (
 CREATE TABLE IF NOT EXISTS `tagente_estado` (
 	`id_agente_estado` int(10) unsigned NOT NULL auto_increment,
 	`id_agente_modulo` int(10) NOT NULL default '0',
-	`datos` text NOT NULL,
+	`datos` mediumtext NOT NULL,
 	`timestamp` datetime NOT NULL default '1970-01-01 00:00:00',
 	`estado` int(4) NOT NULL default '0',
 	`known_status` tinyint(4) default 0,

@@ -8,7 +8,6 @@
 
 Lista de las macros admitidas en este campo: <br />
 	<ul>
-	Solamente si seleccionas una gráfica por cada agente.<br />
     <li><b>_agent_ </b>: Nombre del agente que ha seleccionado en el elemento del informe.<li />
 	<li><b>_agentdescription_ </b>: Descripción del agente que ha seleccionado en el elemento del informe.<li />
     <li><b>_agentgroup_ </b>: Grupo del agente que ha seleccionado en el elemento del informe<li />

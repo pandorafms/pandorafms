@@ -541,7 +541,11 @@ if ($id_agente) {
 			$help_header = 'plugins_tab';
 			break;
 		case "module":
+			$type_module_t = (int) get_parameter ('moduletype', '');
 			$tab_description = '- '. __('Modules');
+			if($type_module_t == 'webux'){
+				$help_header = 'wux_console';
+			}
 			break;
 		case "alert":
 			$tab_description = '- ' . __('Alert');
@@ -789,7 +793,7 @@ if ($update_agent) { // if modified some agent paramenter
 				WHERE id_group = ".$group_old);
 		
 		$result = db_process_sql_update ('tagente', $values, array ('id_agente' => $id_agente));
-		if ($result == false) {
+		if ($result === false) {
 			ui_print_error_message(
 				__('There was a problem updating the agent'));
 		}
@@ -972,10 +976,18 @@ if ($update_module || $create_module) {
 		$custom_integer_1_default = $module['custom_integer_1'];
 		$custom_integer_2_default = $module['custom_integer_2'];
 	}
-	$custom_string_1 = (string) get_parameter ('custom_string_1', $custom_string_1_default);
+	
+	if($id_module_type == 25){ # web analysis, from MODULE_WUX
+		$custom_string_1 = base64_encode((string) get_parameter ('custom_string_1', $custom_string_1_default));
+		$custom_integer_1 = (int) get_parameter ('custom_integer_1', $custom_integer_1_default);
+	}
+	else{
+		$custom_string_1 = (string) get_parameter ('custom_string_1', $custom_string_1_default);
+		$custom_integer_1 = (int) get_parameter ('prediction_module', $custom_integer_1_default);
+	}
+
 	$custom_string_2 = (string) get_parameter ('custom_string_2', $custom_string_2_default);
 	$custom_string_3 = (string) get_parameter ('custom_string_3', $custom_string_3_default);
-	$custom_integer_1 = (int) get_parameter ('prediction_module', $custom_integer_1_default);
 	$custom_integer_2 = (int) get_parameter ('custom_integer_2', $custom_integer_2_default);
 	
 	// Get macros

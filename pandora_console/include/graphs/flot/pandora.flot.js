@@ -132,7 +132,7 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 	var color = null;
 	for (var i = 0; i < data.length; i++) {
 		if (colors != '') {
-			color = colors_data[i];
+			color = colors[i];
 		}
 		var datos = data[i];
 		data[i] = { label: labels[i], data: parseFloat(data[i]), color: color };
@@ -210,8 +210,8 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 		$('.legend>div').css('right',($('.legend>div').height()*-1));
 		$('.legend>table').css('right',($('.legend>div').height()*-1));
 	}
-	$('.legend>table').css('border',"1px solid #E2E2E2");
-	$('.legend>table').css('background-color',"#FFF");
+	//$('.legend>table').css('border',"1px solid #E2E2E2");
+	$('.legend>table').css('background-color',"transparent");
 	
 	
 	var pielegends = $('#'+graph_id+' .pieLabelBackground');
@@ -269,6 +269,43 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 		set_watermark(graph_id, plot,
 			$('#watermark_image_' + graph_id).attr('src'));
 	}
+
+	window.onresize = function(event) {
+        $.plot($('#' + graph_id), data, conf_pie);
+        if (no_data == data.length) {
+			$('#'+graph_id+' .overlay').remove();
+			$('#'+graph_id+' .base').remove();
+			$('#'+graph_id).prepend("<img style='width:50%;' src='images/no_data_toshow.png' />");
+		}
+		var legends = $('#'+graph_id+' .legendLabel');
+		var j = 0;
+		legends.each(function () {
+			//$(this).css('width', $(this).width());
+			$(this).css('font-size', font_size+'pt');
+			$(this).removeClass("legendLabel");
+			$(this).addClass(font);
+			$(this).text(legend[j]);
+			j++;
+		});
+		
+		if ($('input[name="custom_graph"]').val()) {
+			$('.legend>div').css('right',($('.legend>div').height()*-1));
+			$('.legend>table').css('right',($('.legend>div').height()*-1));
+		}
+		//$('.legend>table').css('border',"1px solid #E2E2E2");
+		$('.legend>table').css('background-color',"transparent");
+		
+		
+		var pielegends = $('#'+graph_id+' .pieLabelBackground');
+		pielegends.each(function () {
+			$(this).css('transform', "rotate(-35deg)").css('color', 'black');
+		});
+		var labelpielegends = $('#'+graph_id+' .pieLabel');
+		labelpielegends.each(function () {
+			$(this).css('transform', "rotate(-35deg)").css('color', 'black');
+		});
+    }
+
 }
 
 function pandoraFlotHBars(graph_id, values, labels, water_mark,
@@ -457,7 +494,7 @@ function showTooltip(x, y, color, contents) {
     }).appendTo("body").fadeIn(200);
 }
 
-function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors, water_mark, maxvalue, water_mark, separator, separator2, font, font_size , from_ux) {
+function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors, water_mark, maxvalue, water_mark, separator, separator2, font, font_size , from_ux, from_wux) {
 	values = values.split(separator2);
 	legend = legend.split(separator);
 	font = font.split("/").pop().split(".").shift();
@@ -552,6 +589,18 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 		}
 	};
 	
+	if(from_wux){
+		options.series.bars.barWidth = 0.5;
+		options.grid.aboveData = true;
+		options.grid.borderWidth = 0;
+		options.grid.markings = [ { xaxis: { from: -0.25, to: -0.25 }, color: "#000" },
+										{ yaxis: { from: 0, to: 0 }, color: "#000" }];
+		options.grid.markingsLineWidth = 0.3; 		
+
+		options.xaxis.tickLength = 0;
+		options.yaxis.tickLength = 0;
+	}
+
 	if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
 		options.xaxis.labelWidth = 100;
 	
@@ -560,14 +609,15 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 	$('#' + graph_id).css("margin-left","auto");
 	$('#' + graph_id).css("margin-right","auto");
 	//~ $('#' + graph_id).find('div.legend-tooltip').tooltip({ track: true });
-	
-	$('#'+graph_id+' .xAxis .tickLabel')
-		.css('transform', 'rotate(-45deg)')
-		.css('max-width','100px')
-		.find('div')
-			.css('position', 'relative')
-			.css('top', '+10px')
-			.css('left', '-30px');
+	/*
+		$('#'+graph_id+' .xAxis .tickLabel')
+			.css('transform', 'rotate(-45deg)')
+			.css('max-width','100px')
+			.find('div')
+				.css('position', 'relative')
+				.css('top', '+10px')
+				.css('left', '-30px');
+	*/
 	if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
 		$('#'+graph_id+' .xAxis .tickLabel')
 			.find('div')
@@ -588,7 +638,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 			}
 			
 			format.push([i,
-				'<div class="'+font+'" title="'+title+'" style="word-break: normal; max-width: 100px;font-size:'+font_size+'pt !important;">'
+				'<div class="'+font+'" title="'+title+'" style="word-break: normal; transform: rotate(-45deg); position:relative; top:+30px; left:-20px; max-width: 100px;font-size:'+font_size+'pt !important;">'
 				+ label
 				+ '</div>']);
 		}
@@ -839,16 +889,11 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 
 	// Prepared to turn series with a checkbox
 	// var showed = new Array();
-	var min_check = 0;
+
 	for (i = 0; i < values.length; i++) {
 		var serie = values[i].split(separator);
 		var aux = new Array();
 		$.each(serie, function(i, v) {
-			if(v < 0){
-				if(min_check > parseFloat(v)){
-					min_check = v;
-				}
-			}
 			aux.push([i, v]);
 		});
 
@@ -932,9 +977,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 		// Prepared to turn series with a checkbox
 		// showed[i] = true;
 	}
-	if(min_check != 0){
-		min_check = min_check -5;
-	}
+
 	// If threshold and up are the same, that critical or warning is disabled
 	if (yellow_threshold == yellow_up) yellow_inverse = false;
 	if (red_threshold == red_up) red_inverse = false;
@@ -1496,7 +1539,6 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				position: 'left',
 				font: font,
 				reserveSpace: true,
-				min: min_check
 			}],
 			legend: {
 				position: 'se',

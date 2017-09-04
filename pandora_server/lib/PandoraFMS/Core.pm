@@ -243,7 +243,7 @@ our @EXPORT = qw(
 
 # Some global variables
 our @DayNames = qw(sunday monday tuesday wednesday thursday friday saturday);
-our @ServerTypes = qw (dataserver networkserver snmpconsole reconserver pluginserver predictionserver wmiserver exportserver inventoryserver webserver eventserver icmpserver snmpserver satelliteserver transactionalserver mfserver syncserver);
+our @ServerTypes = qw (dataserver networkserver snmpconsole reconserver pluginserver predictionserver wmiserver exportserver inventoryserver webserver eventserver icmpserver snmpserver satelliteserver transactionalserver mfserver syncserver wuxserver);
 our @AlertStatus = ('Execute the alert', 'Do not execute the alert', 'Do not execute the alert, but increment its internal counter', 'Cease the alert', 'Recover the alert', 'Reset internal counter');
 
 # Event storm protection (no alerts or events)
@@ -1010,8 +1010,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_modulestatus_ => undef,
 				_moduletags_ => undef,
 				'_moduledata_\S+_' => undef,
-				_id_agent_ => (defined ($module)) ? $module->{'id_agente'} : '',
-				_id_module_ => (defined ($module)) ? $module->{'id_agente_modulo'} : '',
+				_id_agent_ => (defined ($module)) ? $module->{'id_agente'} : '', 
 				_id_group_ => (defined ($group)) ? $group->{'id_grupo'} : '',
 				_id_alert_ => (defined ($alert->{'id_template_module'})) ? $alert->{'id_template_module'} : '',
 				_interval_ => (defined ($module) && $module->{'module_interval'} != 0) ? $module->{'module_interval'} : (defined ($agent)) ? $agent->{'intervalo'} : '',
@@ -1088,6 +1087,21 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	
 	# Email
 	} elsif ($clean_name eq "eMail") {
+
+		my $attach_data_as_image = 0;
+
+		my $cid_data = "CID_IMAGE";
+		my $dataname = "CID_IMAGE.png";
+
+		if ($data =~ /^data:image\/png;base64, /) {
+			# macro _data_ substitution in case is image.
+			$attach_data_as_image = 1;
+			my $_cid = '<img style="height: 150px;" src="cid:' . $cid_data . '"/>';
+
+			$field3 =~ s/_data_/$_cid/g;
+		}
+
+
 		# Address
 		$field1 = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module);
 		# Subject
@@ -1095,10 +1109,9 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		# Message
 		$field3 = subst_alert_macros ($field3, \%macros, $pa_config, $dbh, $agent, $module);
 		
-		# Check for _module_graph_Xh_ macros and _module_graphth_Xh_ 
+		# Check for _module_graph_Xh_ macros
 		my $module_graph_list = {};
 		my $macro_regexp = "_modulegraph_(\\d+)h_";
-		my $macro_regexp2 = "_modulegraphth_(\\d+)h_";
 		
 		# API connection
 		my $ua = new LWP::UserAgent;
@@ -1114,14 +1127,8 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		
 		my $subst_func = sub {
 			my $hours = shift;
-			my $threshold = shift;
 			my $period = $hours * 3600; # Hours to seconds
-			if($threshold == 0){
-				$params->{"other"} = $period . '%7C0%7C0';
-			}
-			else{
-				$params->{"other"} = $period . '%7C0%7C1';
-			}
+			$params->{"other"} = $period . '%7C0';
 			$params->{"other_mode"} = 'url_encode_separator_%7C';
 			my $cid = 'module_graph_' . $hours . 'h';
 			
@@ -1135,16 +1142,15 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 					return '<img src="cid:'.$cid.'">';
 				}
 			}
-			
+		
 			return '';
 		};
-		
+
 		# Macro data may contain HTML entities
 		eval {
 			no warnings;
 			local $SIG{__DIE__};
-			$field3 =~ s/$macro_regexp/$subst_func->($1, 0)/ige;
-			$field3 =~ s/$macro_regexp2/$subst_func->($1, 1)/ige;
+			$field3 =~ s/$macro_regexp/$subst_func->($1)/ige;
 		};
 		
 		# Default content type
@@ -1157,10 +1163,14 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 			$content_type = 'text/html; charset="UTF-8"';
 		}
 		
+
+		my $boundary = "====" . time() . "====";
+		my $html_content_type = $content_type;
+
 		# Build the mail with attached content
-		if (keys(%{$module_graph_list}) > 0) {
-			my $boundary = "====" . time() . "====";
-			my $html_content_type = $content_type;
+		if ((keys(%{$module_graph_list}) > 0) && ($attach_data_as_image == 0)) {
+			# module_graph only available if data is NOT an image
+
 			$content_type = 'multipart/related; boundary="'.$boundary.'"';
 			$boundary = "--" . $boundary;
 			
@@ -1186,6 +1196,28 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 			undef %{$module_graph_list};
 			
 			$field3 .= $boundary . "--\n";
+		}
+
+		if ($attach_data_as_image == 1) {
+			# it's an image in base64!
+
+			$content_type = 'multipart/related; boundary="'.$boundary.'"';
+			$boundary = "--" . $boundary;
+
+			my $base64_data = substr($data, 23); # remove first 23 characters: 'data:image/png;base64, '
+
+			$field3 = $boundary . "\n"
+					. "Content-Type: " . $html_content_type . "\n\n"
+					#. "Content-Transfer-Encoding: quoted-printable\n\n"
+					. $field3 . "\n";
+
+			$field3 .= $boundary . "\n"
+			. "Content-Type: image/png; name=\"" . $dataname . "\"\n"
+			. "Content-Disposition: inline; filename=\"" . $dataname . "\"\n"
+			. "Content-Transfer-Encoding: base64\n"
+			. "Content-ID: <" . $cid_data . ">\n"
+			. "Content-Location: " . $dataname . "\n\n"
+			. $base64_data . "\n";
 		}
 		
 		if ($pa_config->{"mail_in_separate"} != 0){

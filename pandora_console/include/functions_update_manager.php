@@ -624,8 +624,8 @@ function update_manager_extract_package() {
 
 	$extracted = false;
 
-	// Phar and exception working fine in 5.6.0 or higher
-	if (PHP_VERSION_ID >= 50600) {
+	// Phar and exception working fine in 5.5.0 or higher
+	if (PHP_VERSION_ID >= 50505) {
 		$phar = new PharData($path_package);
 		try {
 			$result = $phar->extractTo($config['attachment_store'] . "/downloads/",null, true);

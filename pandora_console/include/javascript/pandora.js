@@ -1194,3 +1194,30 @@ function htmlEncode(value){
 function htmlDecode(value){
   return $('<div/>').html(value).text();
 }
+
+function pagination_show_more(params, message){
+	//value input hidden for save limit
+	var value_offset = $('#hidden-offset').val();
+	//For each execution offset + limit
+	var offset = parseInt(value_offset) + params['limit'];
+	//save new value innput hidden
+	$('#hidden-offset').val(offset);
+	//add array value offset
+	params['offset'] = offset;
+	
+	$.ajax({
+        type: "POST",
+        url:  "ajax.php",
+        data: params,
+        success: function(data) {
+            if(data == ''){
+            	$('#container_error').empty();
+            	$('#container_error').append('<h4>'+ message +'</h4>');
+            }
+            else{
+            	$('#container_pag').append(data);
+            }
+        },
+        datatype: "html"
+    });
+}

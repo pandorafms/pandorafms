@@ -1712,7 +1712,7 @@ function check_sql ($sql) {
 	
 	//Check that it not delete_ as "delete_pending" (this is a common field in pandora tables).
 	
-	if (preg_match("/\*|delete[^_]|drop|alter|modify|password|pass|insert|update/i", $sql)) {
+	if (preg_match("/\*|delete[^_]|drop|alter|modify|union|password|pass|insert|update/i", $sql)) {
 		return "";
 	}
 	return $sql;

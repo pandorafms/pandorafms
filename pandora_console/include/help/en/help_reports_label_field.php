@@ -8,7 +8,6 @@
 
 The following macros are also available: <br />
 	<ul>
-	Only if you select one graph for each agent.<br />
     <li><b>_agent_ </b>: Name of the agent that you selected in report item.<li />
 	<li><b>_agentdescription_ </b>: Description of the agent that you selected in report item.<li />
     <li><b>_agentgroup_ </b>: Agent group name.<li />

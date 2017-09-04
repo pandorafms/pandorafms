@@ -170,22 +170,18 @@ echo '<div class="login_page">';
 			}
 			else {
 				echo '<div class="login_nick">';
-					echo '<div style="width:15%;">';
-						html_print_image ("/images/usuario_login.png", false);
-					echo '</div>';
-					echo '<div style="width:85%;">';
-						html_print_input_text_extended ("nick", '', "nick", '', '', '' , false,
-							'', 'autocomplete="off" placeholder="'.__('User').'"');
-					echo '</div>';
+				echo '<div>';
+					html_print_image ("/images/usuario_login.png", false);
+				echo '</div>';
+				html_print_input_text_extended ("nick", '', "nick", '', '', '' , false,
+					'', 'autocomplete="off" placeholder="'.__('User').'"');
 				echo '</div>';
 				echo '<div class="login_pass">';
-					echo '<div style="width:15%;">';
-						html_print_image ("/images/candado_login.png", false);
-					echo '</div>';
-					echo '<div style="width:85%;">';
-						html_print_input_text_extended ("pass", '', "pass", '', '', '' ,false,
-							'', 'autocomplete="off" placeholder="'.__('Password').'"', false, true);
-					echo '</div>';
+				echo '<div>';
+					html_print_image ("/images/candado_login.png", false);
+				echo '</div>';
+				html_print_input_text_extended ("pass", '', "pass", '', '', '' ,false,
+					'', 'autocomplete="off" placeholder="'.__('Password').'"', false, true);
 				echo '</div>';
 				echo '<div class="login_button">';
 				html_print_submit_button(__("Login"), "login_button", false, 'class="sub next_login"');

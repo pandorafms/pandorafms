@@ -69,13 +69,12 @@ sed "s/.*post_max_size =.*/post_max_size = 100M/" /etc/php.ini > /tmp/php.ini &&
 
 cd /var/www/html/pandora_console && mv -f install.php install.php.done
 
-#Create the pandora user to run the anyterd, mainly
+#Create the pandora user
 /usr/sbin/useradd -d /home/pandora -s /bin/false -M -g 0 pandora
 
 #Rock n' roll!
 /etc/init.d/crond start &
 /etc/init.d/ntpd start &
-/etc/init.d/anytermd start &
 
 rm -rf /run/httpd/*
 exec /usr/sbin/apachectl -D FOREGROUND

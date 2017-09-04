@@ -36,7 +36,6 @@ RUN yum install -y \
 	cronie \
 	ntp \
 	openldap \
-	anytermd \
 	nfdump \
 	wget \
 	curl \
@@ -97,5 +96,5 @@ RUN yum install -y \
 	net-snmp-utils \
 	perl-Test-Simple; yum clean all;
 
-#Exposing ports for: HTTP, SNMP Traps, Anytermd (SSH), Anytermd (Telnet), Tentacle protocol
-EXPOSE 80 162/udp 8022 8023 41121
+#Exposing ports for: HTTP, SNMP Traps, Tentacle protocol
+EXPOSE 80 162/udp 41121

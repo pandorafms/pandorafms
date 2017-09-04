@@ -239,7 +239,7 @@ function snmp_browser_get_tree ($target_ip, $community, $starting_oid = '.', $ve
 			exec ($snmpwalk_bin . ' -m ALL -M +' . escapeshellarg($config['homedir'] . '/attachment/mibs') . ' -Cc -c ' . escapeshellarg($community) . ' -v ' . escapeshellarg($version) . ' ' . escapeshellarg($target_ip) . ' ' . escapeshellarg($starting_oid) . ' 2> ' . $error_redir_dir, $output, $rc);
 		}
 	}
-html_debug($output, true);
+	
 	foreach ($output as $line) {
 		
 		// Separate the OID from the value
@@ -571,9 +571,16 @@ function snmp_browser_print_container ($return = false, $width = '100%', $height
 		enterprise_include_once ('include/functions_satellite.php');
 		
 		$rows = get_proxy_servers();
-		foreach ($rows as $row) {
-			$servers_to_exec[$row['id_server']] = $row['name'];
+	foreach ($rows as $row) {
+		if ($row['server_type'] != 13) {
+			$s_type = " (Standard)";
 		}
+		else {
+			$s_type = " (Satellite)";
+		}
+
+		$servers_to_exec[$row['id_server']] = $row['name'] . $s_type;
+	}
 	}
 	$table->data[0][4] = '<strong>' . __('Server to execute') . '</strong> &nbsp;&nbsp;';
 	$table->data[0][4] .= html_print_select($servers_to_exec, 'server_to_exec', '', '', '', '', true);

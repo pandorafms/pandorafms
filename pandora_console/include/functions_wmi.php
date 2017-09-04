@@ -89,21 +89,8 @@ function wmi_create_wizard_modules($id_agent, $names, $wizard_mode, $values, $id
 					$sql = sprintf("SELECT server_type FROM tserver WHERE id_server = %d", $server_to_exec);
 					$row = db_get_row_sql ($sql);
 					
-					if ($row['server_type'] = 13) {
-						$new_module_configuration_data = "
-							module_begin
-							module_name " . $name . "
-							module_description
-							module_type generic_proc
-							module_snmp
-							module_oid " . $values['snmp_oid'] . "
-							module_community " . $values['snmp_community'] . "
-							ip_target " . $nc['ip_target'] ."
-							tcp_send " . $nc['tcp_send'] ."
-							plugin_user " . $nc['plugin_user'] ."
-							plugin_pass " . $nc['plugin_pass'] ."
-							tcp_port " . $nc['tcp_port'] . "
-							module_end";
+					if ($row['server_type'] == 13) {
+						$new_module_configuration_data = "module_begin\nmodule_name " . $name . "\nmodule_type generic_data_string\nmodule_wmi " . $values['ip_target'] . "\nmodule_wmiquery " . $wmi_query . "\nmodule_wmiauth " . $values['plugin_user'] . "%" . $values['plugin_pass'] . "\nmodule_end";
 
 						config_agents_add_module_in_conf($id_agent, $new_module_configuration_data);
 					}
@@ -186,19 +173,8 @@ function wmi_create_module_from_components($components, $values, $id_police=0, $
 						$sql = sprintf("SELECT server_type FROM tserver WHERE id_server = %d", $server_to_exec);
 						$row = db_get_row_sql ($sql);
 						
-						if ($row['server_type'] = 13) {
-							$new_module_configuration_data = "
-								module_begin
-								module_name " . $nc["nombre"] . "
-								module_description " . $nc['descripcion'] . "
-								module_type generic_data
-								ip_target " . $nc['ip_target'] ."
-								tcp_send " . $nc['tcp_send'] ."
-								plugin_user " . $nc['plugin_user'] ."
-								plugin_pass " . $nc['plugin_pass'] ."
-								unit Bytes
-								tcp_port 1
-								module_end";
+						if ($row['server_type'] == 13) {
+							$new_module_configuration_data = "module_begin\nmodule_name " . $nc['nombre'] . "\nmodule_type generic_data_string\nmodule_wmi " . $values['ip_target'] . "\nmodule_wmiquery " . $nc['snmp_oid'] . "\nmodule_wmiauth " . $values['plugin_user'] . "%" . $values['plugin_pass'] . "\nmodule_end";
 
 							config_agents_add_module_in_conf($nc["id_agente"], $new_module_configuration_data);
 						}

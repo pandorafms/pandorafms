@@ -171,6 +171,7 @@ if ($create_modules) {
 			}
 		}
 	}
+	
 	$modules = get_parameter('module', array());
 	$id_snmp = get_parameter('id_snmp');
 	
@@ -207,7 +208,7 @@ if ($create_modules) {
 			$oid_array = explode('.', $module);
 			$oid_array[count($oid_array) - 1] = $id;
 			$oid = implode('.', $oid_array);
-			
+
 			// Get the name
 			$name_array = explode('::', $oid_array[0]);
 			$name = $ifname . "_" . $name_array[1];
@@ -253,12 +254,14 @@ if ($create_modules) {
 			if (preg_match("/Octets/", $name_array[1])) {
 				$values['unit'] = "Bytes";
 			}
+
+			$module_server = 2;
 			
 			if ($server_to_exec != 0) {
-				$sql = sprintf("SELECT server_type FROM tserver WHERE id_server = %d", $server_to_exec);
+				$sql = sprintf("SELECT server_type, ip_address FROM tserver WHERE id_server = %d", $server_to_exec);
 				$row = db_get_row_sql ($sql);
 
-				if ($row['server_type'] = 13) {
+				if ($row['server_type'] == 13) {
 					if (preg_match ("/Status/", $name_array[1])) {
 						$module_type = 2;
 					}
@@ -275,6 +278,13 @@ if ($create_modules) {
 					else {
 						$module_type = 4;
 					}
+
+					$module_server = 1;
+
+					exec("ssh pandora_exec_proxy@" . $row['ip_address'] . " snmptranslate -On " . $oid, $output_oid, $rc);
+					
+					$conf_iod = $output_oid[0];
+					$oid = $conf_iod;
 				}
 			}
 
@@ -294,7 +304,7 @@ if ($create_modules) {
 			}
 			
 			$values['snmp_oid'] = $oid;
-			$values['id_modulo'] = 2;
+			$values['id_modulo'] = $module_server;
 			
 			$result = modules_create_agent_module ($id_agent, io_safe_input($name), $values);
 			
@@ -309,18 +319,10 @@ if ($create_modules) {
 					$sql = sprintf("SELECT server_type FROM tserver WHERE id_server = %d", $server_to_exec);
 					$row = db_get_row_sql ($sql);
 					
-					if ($row['server_type'] = 13) {
+					if ($row['server_type'] == 13) {
 						$module_type_name = db_get_value_filter("nombre", "ttipo_modulo", array("id_tipo" => $values['id_tipo_modulo']));
 
-						$new_module_configuration_data = "
-							module_begin
-							module_name " . io_safe_input($name) . "
-							module_description " . $values['descripcion'] . "
-							module_type " . $module_type_name . "
-							module_snmp
-							module_oid " . $values['snmp_oid'] . "
-							module_community " . $values['snmp_community'] . "
-							module_end";
+						$new_module_configuration_data = "module_begin\nmodule_name " . io_safe_input($name) . "\nmodule_description " . $values['descripcion'] . "\nmodule_type " . $module_type_name . "\nmodule_snmp\nmodule_oid " . $conf_iod . "\nmodule_community " . $values['snmp_community'] . "\nmodule_end";
 
 						config_agents_add_module_in_conf($id_agent, $new_module_configuration_data);
 					}
@@ -400,7 +402,14 @@ if (enterprise_installed()) {
 	
 	$rows = get_proxy_servers();
 	foreach ($rows as $row) {
-		$servers_to_exec[$row['id_server']] = $row['name'];
+		if ($row['server_type'] != 13) {
+			$s_type = " (Standard)";
+		}
+		else {
+			$s_type = " (Satellite)";
+		}
+
+		$servers_to_exec[$row['id_server']] = $row['name'] . $s_type;
 	}
 }
 $table->data[1][2] = '<b>' . __('Server to execute command') . '</b>';

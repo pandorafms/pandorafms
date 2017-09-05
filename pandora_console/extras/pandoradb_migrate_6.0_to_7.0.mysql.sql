@@ -1431,7 +1431,7 @@ ALTER TABLE tevent_response ADD COLUMN server_to_exec int(10) unsigned NOT NULL 
 -- Table `tmodule`
 -- ---------------------------------------------------------------------
 
-INSERT INTO tmodule VALUES (8, 'Wux&#x20;module');
+INSERT INTO tmodule VALUES (8, 'Wux module');
 
 -- ---------------------------------------------------------------------
 -- Table `ttipo_modulo`

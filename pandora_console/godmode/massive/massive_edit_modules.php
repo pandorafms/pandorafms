@@ -501,7 +501,7 @@ $table->data['edit3'][1] = html_print_extended_select_for_post_process('post_pro
 			
 $table->data['edit3'][2] = __('SMNP community');
 $table->data['edit3'][3] = html_print_input_text ('snmp_community', '',
-	'', 10, 15, true);
+	'', 10, 100, true);
 
 $target_ip_values = array();
 $target_ip_values['auto']      = __('Auto');

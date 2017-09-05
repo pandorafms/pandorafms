@@ -275,12 +275,16 @@ if ($get_module_detail) {
 				// Detect string data with \n and convert to <br>'s
 				$datos = $row[$attr[0]];
 
-				// Because this *SHIT* of print_table monster, I cannot format properly this cells
-				// so, eat this, motherfucker :))
-				$datos =  preg_replace("/\n/", "</br></br>", $datos);
+				$datos = preg_replace ('/</', '&lt;', $datos);
+				$datos = preg_replace ('/>/', '&gt;', $datos);
+				$datos = preg_replace ('/\n/i','<br>',$datos);
+				$datos = preg_replace ('/\s/i','&nbsp;',$datos);
+				$datos_format = "<div id='result_div' style='width: 100%; height: 100%; overflow: scroll; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left'>";
+				$datos_format .= $datos;
+				$datos_format .= "</div>";
 
 				// I dont why, but using index (value) method, data is automatically converted to html entities ¿?
-				$data[] = $datos;
+				$data[] = $datos_format;
 			}
 			elseif ($is_web_content_string) {
 				//Fixed the goliat sends the strings from web

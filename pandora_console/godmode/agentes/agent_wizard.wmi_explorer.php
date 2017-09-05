@@ -196,6 +196,15 @@ if ($create_modules) {
 				'plugin_pass' => $plugin_pass,
 				'id_modulo' => MODULE_WMI);
 	
+	if ($server_to_exec != 0) {
+		$sql = sprintf("SELECT server_type FROM tserver WHERE id_server = %d", $server_to_exec);
+		$row = db_get_row_sql ($sql);
+		
+		if ($row['server_type'] == 13) {
+			$values['id_modulo'] = 1;
+		}
+	}
+
 	// Create Service modules
 	$services_values = $values;
 	

@@ -691,10 +691,14 @@ function config_update_config () {
 					$error_update[] = __('Name resolution for IP address');
 				break;
 			case 'log':
-				if (!config_update_value ('log_dir', get_parameter('log_dir')))
-					$error_update[] = __('Netflow max lifetime');
-				if (!config_update_value ('log_max_lifetime', (int)get_parameter('log_max_lifetime')))
-					$error_update[] = __('Log max lifetime');
+				if (!config_update_value ('elasticsearch_ip', get_parameter('elasticsearch_ip')))
+					$error_update[] = __('IP ElasticSearch server');
+				if (!config_update_value ('elasticsearch_port', get_parameter('elasticsearch_port')))
+					$error_update[] = __('Port ElasticSearch server');
+				if (!config_update_value ('number_logs_viewed', (int)get_parameter('number_logs_viewed')))
+					$error_update[] = __('Number of logs viewed');
+				if (!config_update_value ('Days_purge_old_information', (int)get_parameter('Days_purge_old_information')))
+					$error_update[] = __('Days to purge old information');
 				break;
 			case 'hist_db':
 				if (!config_update_value ('history_db_enabled', get_parameter ('history_db_enabled')))
@@ -1013,17 +1017,20 @@ function config_process_config () {
 		config_update_value ('auditdir',"/var/www/html/pandora_console");
 	}
 
-	if (!isset ($config["log_dir"])) {
-		if ($is_windows)
-			$default = 'C:\\PandoraFMS\\Pandora_Server\\data_in\\log';
-		else
-			$default = '/var/spool/pandora/data_in/log';
-			
-		config_update_value ('log_dir', $default);
+	if (!isset ($config["elasticsearch_ip"])) {
+		config_update_value ('elasticsearch_ip', "");
 	}
 	
-	if (!isset ($config["log_max_lifetime"])) {
-		config_update_value ('log_max_lifetime', 15);
+	if (!isset ($config["elasticsearch_port"])) {
+		config_update_value ('elasticsearch_port', 9200);
+	}
+	
+	if (!isset ($config["number_logs_viewed"])) {
+		config_update_value ('number_logs_viewed', 50);
+	}
+	
+	if (!isset ($config["Days_purge_old_information"])) {
+		config_update_value ('Days_purge_old_information', 90);
 	}
 	
 	if (!isset ($config["font_size"])) {

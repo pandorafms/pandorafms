@@ -75,6 +75,9 @@ function wmi_create_wizard_modules($id_agent, $names, $wizard_mode, $values, $id
 		$values['snmp_oid'] = io_safe_input($wmi_query);
 		
 		if($id_police != 0){
+			$new_module_configuration_data = "module_begin\nmodule_name " . $name . "\nmodule_type generic_data_string\nmodule_wmi " . $values['ip_target'] . "\nmodule_wmiquery " . $wmi_query . "\nmodule_wmiauth " . $values['plugin_user'] . "%" . $values['plugin_pass'] . "\nmodule_end";
+			$values['configuration_data'] = $new_module_configuration_data;
+
 			$return = policies_create_module ($name, $id_police, $module_id, $values);
 		}
 		else{
@@ -161,6 +164,9 @@ function wmi_create_module_from_components($components, $values, $id_police=0, $
 				$id_agente_modulo = modules_create_agent_module($nc["id_agente"], $nc["nombre"], $nc);
 			}
 			else{
+				$new_module_configuration_data = "module_begin\nmodule_name " . $nc['nombre'] . "\nmodule_type generic_data_string\nmodule_wmi " . $values['ip_target'] . "\nmodule_wmiquery " . io_safe_output($nc['snmp_oid']) . "\nmodule_wmiauth " . $values['plugin_user'] . "%" . $values['plugin_pass'] . "\nmodule_end";
+				$nc['configuration_data'] = $new_module_configuration_data;
+
 				$id_agente_modulo = policies_create_module ($nc["name"], $id_police, $module_id, $nc);	
 			}
 

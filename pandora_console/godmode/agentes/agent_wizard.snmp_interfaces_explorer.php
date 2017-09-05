@@ -357,7 +357,7 @@ if ($create_modules) {
 					if ($row['server_type'] == 13) {
 						$module_type_name = db_get_value_filter("nombre", "ttipo_modulo", array("id_tipo" => $values['id_tipo_modulo']));
 
-						$new_module_configuration_data = "module_begin\nmodule_name " . io_safe_input($name) . "\nmodule_description " . $values['descripcion'] . "\nmodule_type " . $module_type_name . "\nmodule_snmp\nmodule_oid " . $conf_oid . "\nmodule_community " . $values['snmp_community'] . "\nmodule_end";
+						$new_module_configuration_data = "module_begin\nmodule_name " . io_safe_input($name) . "\nmodule_description " . io_safe_output($values['descripcion']) . "\nmodule_type " . $module_type_name . "\nmodule_snmp\nmodule_oid " . $conf_oid . "\nmodule_community " . $values['snmp_community'] . "\nmodule_end";
 
 						config_agents_add_module_in_conf($id_agent, $new_module_configuration_data);
 					}

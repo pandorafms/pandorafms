@@ -61,6 +61,7 @@ our @EXPORT = qw(
 	TRANSACTIONALSERVER
 	SYNCSERVER
 	METACONSOLE_LICENSE
+	WUXSERVER
 	$DEVNULL
 	$OS
 	$OS_VERSION
@@ -122,6 +123,7 @@ use constant SATELLITESERVER => 13;
 use constant TRANSACTIONALSERVER => 14;
 use constant MFSERVER => 15;
 use constant SYNCSERVER => 16;
+use constant WUXSERVER => 17;
 
 # Value for a metaconsole license type
 use constant METACONSOLE_LICENSE => 0x01;

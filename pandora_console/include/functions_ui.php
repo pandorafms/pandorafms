@@ -2946,7 +2946,11 @@ function ui_print_agent_autocomplete_input($parameters) {
 	if (isset($parameters['from_ux'])) {
 		$from_ux_transaction = $parameters['from_ux'];
 	}
-	
+
+	$from_wux_transaction = ''; //Default value
+	if (isset($parameters['from_wux'])) {
+		$from_wux_transaction = $parameters['from_wux'];
+	}
 	
 	$metaconsole_enabled = false; //Default value
 	if (isset($parameters['metaconsole_enabled'])) {
@@ -3037,13 +3041,41 @@ function ui_print_agent_autocomplete_input($parameters) {
 	if ($from_ux_transaction != "") {
 		$javascript_code_function_select = '
 		function function_select_' . $input_name . '(agent_name) {
-			console.log(agent_name);
 			$("#' . $selectbox_id . '").empty();
 			
 			var inputs = [];
 			inputs.push ("id_agent=" + $("#' . $hidden_input_idagent_id . '").val());
 			inputs.push ("get_agent_transactions=1");
 			inputs.push ("page=enterprise/include/ajax/ux_transaction.ajax");
+			
+			jQuery.ajax ({
+				data: inputs.join ("&"),
+				type: "POST",
+				url: action="' . $javascript_ajax_page . '",
+				dataType: "json",
+				success: function (data) {
+					if (data) {
+						$("#' . $selectbox_id . '").append ($("<option value=0>None</option>"));
+						jQuery.each (data, function (id, value) {
+							$("#' . $selectbox_id . '").append ($("<option value=" + id + ">" + value + "</option>"));
+						});
+					}
+				}
+			});
+			
+			return false;
+		}
+		';
+	}
+	elseif ($from_wux_transaction != "") {
+		$javascript_code_function_select = '
+		function function_select_' . $input_name . '(agent_name) {
+			$("#' . $selectbox_id . '").empty();
+			
+			var inputs = [];
+			inputs.push ("id_agent=" + $("#' . $hidden_input_idagent_id . '").val());
+			inputs.push ("get_agent_transactions=1");
+			inputs.push ("page=enterprise/include/ajax/wux_transaction.ajax");
 			
 			jQuery.ajax ({
 				data: inputs.join ("&"),
@@ -3118,7 +3150,6 @@ function ui_print_agent_autocomplete_input($parameters) {
 							.attr("value", val["id_agente_modulo"]).text (s));
 					});
 					
-					$("#' . $selectbox_id . '").enable();
 					$("#' . $selectbox_id . '").fadeIn ("normal");
 				}
 			});

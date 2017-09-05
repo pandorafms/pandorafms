@@ -1047,6 +1047,13 @@ $ux_console_tab = enterprise_hook('ux_console_tab');
 if ($ux_console_tab == -1)
 	$ux_console_tab = "";
 
+/* WUX Console */
+$modules_wux = enterprise_hook('get_wux_modules' , array($id_agente));
+if($modules_wux){
+	$wux_console_tab = enterprise_hook('wux_console_tab');
+	if ($wux_console_tab == -1)
+		$wux_console_tab = "";
+}
 
 /* GIS tab */
 $gistab="";
@@ -1178,7 +1185,8 @@ $onheader = array('manage' => $managetab,
 	'custom' => $custom_fields,
 	'graphs' => $graphs,
 	'policy' => $policyTab,
-	'ux_console' => $ux_console_tab);
+	'ux_console' => $ux_console_tab,
+	'wux_console' => $wux_console_tab);
 
 //Added after it exists
 // If the agent has incidents associated
@@ -1250,8 +1258,15 @@ foreach ($config['extensions'] as $extension) {
 	}
 }
 
+if($tab == "wux_console_tab"){
+	$help_header = "wux_console";
+}
+else{
+	$help_header = "";
+}
+
 ui_print_page_header(agents_get_alias($id_agente), $icon, false, 
-	"", false, $onheader, false, '', $config['item_title_size_text']);
+	$help_header, false, $onheader, false, '', $config['item_title_size_text']);
 
 
 switch ($tab) {
@@ -1290,6 +1305,9 @@ switch ($tab) {
 		break;
 	case "ux_console_tab":
 		enterprise_include ("operation/agentes/ux_console_view.php");
+		break;
+	case "wux_console_tab":
+		enterprise_include ("operation/agentes/wux_console_view.php");
 		break;
 	case "graphs";
 		require("operation/agentes/graphs.php");

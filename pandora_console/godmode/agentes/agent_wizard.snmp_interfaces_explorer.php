@@ -30,6 +30,7 @@ check_login ();
 $ip_target = (string) get_parameter ('ip_target', $ipAgent);
 $use_agent = get_parameter ('use_agent');
 $snmp_community = (string) get_parameter ('snmp_community', 'public');
+$server_to_exec = get_parameter('server_to_exec', 0);
 $snmp_version = get_parameter('snmp_version', '1');
 $snmp3_auth_user = get_parameter('snmp3_auth_user');
 $snmp3_security_level = get_parameter('snmp3_security_level');
@@ -53,16 +54,19 @@ if ($snmpwalk) {
 	// OID Used is for SNMP MIB-2 Interfaces
 	$snmpis = get_snmpwalk($ip_target, $snmp_version, $snmp_community, $snmp3_auth_user,
 		$snmp3_security_level, $snmp3_auth_method, $snmp3_auth_pass,
-		$snmp3_privacy_method, $snmp3_privacy_pass, 0, ".1.3.6.1.2.1.2", $tcp_port);
+		$snmp3_privacy_method, $snmp3_privacy_pass, 0, ".1.3.6.1.2.1.2", $tcp_port,
+		$server_to_exec);
 	// ifXTable is also used
 	$ifxitems = get_snmpwalk($ip_target, $snmp_version, $snmp_community, $snmp3_auth_user,
 		$snmp3_security_level, $snmp3_auth_method, $snmp3_auth_pass,
-		$snmp3_privacy_method, $snmp3_privacy_pass, 0, ".1.3.6.1.2.1.31.1.1", $tcp_port);
+		$snmp3_privacy_method, $snmp3_privacy_pass, 0, ".1.3.6.1.2.1.31.1.1", $tcp_port,
+		$server_to_exec);
 
 	// Get the interfaces IPV4/IPV6
 	$snmp_int_ip = get_snmpwalk($ip_target, $snmp_version, $snmp_community, $snmp3_auth_user,
 		$snmp3_security_level, $snmp3_auth_method, $snmp3_auth_pass,
-		$snmp3_privacy_method, $snmp3_privacy_pass, 0, ".1.3.6.1.2.1.4.34.1.3", $tcp_port);
+		$snmp3_privacy_method, $snmp3_privacy_pass, 0, ".1.3.6.1.2.1.4.34.1.3", $tcp_port,
+		$server_to_exec);
 
 	// Build a [<interface id>] => [<interface ip>] array
 	if (!empty($snmp_int_ip)) {
@@ -167,6 +171,7 @@ if ($create_modules) {
 			}
 		}
 	}
+	
 	$modules = get_parameter('module', array());
 	$id_snmp = get_parameter('id_snmp');
 	
@@ -203,7 +208,7 @@ if ($create_modules) {
 			$oid_array = explode('.', $module);
 			$oid_array[count($oid_array) - 1] = $id;
 			$oid = implode('.', $oid_array);
-			
+
 			// Get the name
 			$name_array = explode('::', $oid_array[0]);
 			$name = $ifname . "_" . $name_array[1];
@@ -249,7 +254,40 @@ if ($create_modules) {
 			if (preg_match("/Octets/", $name_array[1])) {
 				$values['unit'] = "Bytes";
 			}
+
+			$module_server = 2;
 			
+			if ($server_to_exec != 0) {
+				$sql = sprintf("SELECT server_type, ip_address FROM tserver WHERE id_server = %d", $server_to_exec);
+				$row = db_get_row_sql ($sql);
+
+				if ($row['server_type'] == 13) {
+					if (preg_match ("/Status/", $name_array[1])) {
+						$module_type = 2;
+					}
+					elseif (preg_match ("/Present/", $name_array[1])) {
+						$module_type = 2;
+					}
+					elseif (preg_match("/PromiscuousMode/", $name_array[1])) {
+						$module_type = 2;
+					}	
+					// Specific counters (ends in s)
+					elseif (preg_match("/s$/", $name_array[1])) {
+						$module_type = 4;
+					}
+					else {
+						$module_type = 4;
+					}
+
+					$module_server = 1;
+
+					exec("ssh pandora_exec_proxy@" . $row['ip_address'] . " snmptranslate -On " . $oid, $output_oid, $rc);
+					
+					$conf_iod = $output_oid[0];
+					$oid = $conf_iod;
+				}
+			}
+
 			$values['id_tipo_modulo'] = $module_type;
 			
 			if (!empty($ifPhysAddress) && isset($interfaces_ip[$id])) {
@@ -266,7 +304,7 @@ if ($create_modules) {
 			}
 			
 			$values['snmp_oid'] = $oid;
-			$values['id_modulo'] = 2;
+			$values['id_modulo'] = $module_server;
 			
 			$result = modules_create_agent_module ($id_agent, io_safe_input($name), $values);
 			
@@ -277,6 +315,18 @@ if ($create_modules) {
 				$errors[$result]++;
 			}
 			else {
+				if ($server_to_exec != 0) {
+					$sql = sprintf("SELECT server_type FROM tserver WHERE id_server = %d", $server_to_exec);
+					$row = db_get_row_sql ($sql);
+					
+					if ($row['server_type'] == 13) {
+						$module_type_name = db_get_value_filter("nombre", "ttipo_modulo", array("id_tipo" => $values['id_tipo_modulo']));
+
+						$new_module_configuration_data = "module_begin\nmodule_name " . io_safe_input($name) . "\nmodule_description " . $values['descripcion'] . "\nmodule_type " . $module_type_name . "\nmodule_snmp\nmodule_oid " . $conf_iod . "\nmodule_community " . $values['snmp_community'] . "\nmodule_end";
+
+						config_agents_add_module_in_conf($id_agent, $new_module_configuration_data);
+					}
+				}
 				$done++;
 			}
 		}
@@ -344,6 +394,26 @@ $table->data[0][3] = html_print_input_text ('tcp_port', $tcp_port, '', 5, 20, tr
 
 $table->data[1][0] = '<b>' . __('Use agent ip') . '</b>';
 $table->data[1][1] = html_print_checkbox ('use_agent', 1, $use_agent, true);
+
+$servers_to_exec = array();
+$servers_to_exec[0] = __('Local console');
+if (enterprise_installed()) {
+	enterprise_include_once ('include/functions_satellite.php');
+	
+	$rows = get_proxy_servers();
+	foreach ($rows as $row) {
+		if ($row['server_type'] != 13) {
+			$s_type = " (Standard)";
+		}
+		else {
+			$s_type = " (Satellite)";
+		}
+
+		$servers_to_exec[$row['id_server']] = $row['name'] . $s_type;
+	}
+}
+$table->data[1][2] = '<b>' . __('Server to execute command') . '</b>';
+$table->data[1][3] = html_print_select ($servers_to_exec, 'server_to_exec', $server_to_exec, '', '', '', true);
 
 $snmp_versions['1'] = 'v. 1';
 $snmp_versions['2'] = 'v. 2';
@@ -428,6 +498,7 @@ if (!empty($interfaces_list)) {
 	html_print_input_hidden('snmp3_privacy_method', $snmp3_privacy_method);
 	html_print_input_hidden('snmp3_privacy_pass', $snmp3_privacy_pass);
 	html_print_input_hidden('snmp3_security_level', $snmp3_security_level);
+	html_print_input_hidden('server_to_exec', $server_to_exec);
 	
 	$table->width = '100%';
 	

@@ -29,6 +29,7 @@ $ip_target = (string) get_parameter ('ip_target', $ipAgent); // Host
 $plugin_user = (string) get_parameter ('plugin_user', 'Administrator'); // Username
 $plugin_pass = io_safe_output(get_parameter('plugin_pass', '')); // Password
 $tcp_send = (string) get_parameter ('tcp_send'); // Namespace
+$server_to_exec = get_parameter('server_to_exec', 0);
 
 //See if id_agente is set (either POST or GET, otherwise -1
 $id_agent = $idAgent;
@@ -53,7 +54,18 @@ if ($wmiexplore) {
 	$wmi_processes = $wmi_command . ' "select Name from Win32_Process"';
 	$processes_name_field = 1;
 	
-	exec($wmi_processes, $output);
+	if (enterprise_installed()) {
+		if ($server_to_exec != 0) {
+			$server_data = db_get_row('tserver','id_server', $server_to_exec);
+			exec("ssh pandora_exec_proxy@" . $server_data['ip_address'] . " '" . $wmi_processes . "'", $output, $rc);
+		}
+		else {
+			exec($wmi_processes, $output);
+		}
+	}
+	else {
+		exec($wmi_processes, $output);
+	}
 	
 	$fail = false;
 	if (preg_match('/^Failed/', $output[0])) {
@@ -79,7 +91,18 @@ if ($wmiexplore) {
 		$services_name_field = 0;
 		$services_check_field = 1;
 		
-		exec($wmi_services, $output);
+		if (enterprise_installed()) {
+			if ($server_to_exec != 0) {
+				$server_data = db_get_row('tserver','id_server', $server_to_exec);
+				exec("ssh pandora_exec_proxy@" . $server_data['ip_address'] . " '" . $wmi_services . "'", $output, $rc);
+			}
+			else {
+				exec($wmi_services, $output);
+			}
+		}
+		else {
+			exec($wmi_services, $output);
+		}
 		
 		foreach ($output as $index => $row) {
 			// First and second rows are Class and column names, ignore it
@@ -98,7 +121,18 @@ if ($wmiexplore) {
 		$wmi_disks = $wmi_command . ' "Select DeviceID from Win32_LogicalDisk"';
 		$disks_name_field = 0;
 		
-		exec($wmi_disks, $output);
+		if (enterprise_installed()) {
+			if ($server_to_exec != 0) {
+				$server_data = db_get_row('tserver','id_server', $server_to_exec);
+				exec("ssh pandora_exec_proxy@" . $server_data['ip_address'] . " '" . $wmi_disks . "'", $output, $rc);
+			}
+			else {
+				exec($wmi_disks, $output);
+			}
+		}
+		else {
+			exec($wmi_disks, $output);
+		}
 		
 		foreach ($output as $index => $row) {
 			// First and second rows are Class and column names, ignore it
@@ -168,16 +202,16 @@ if ($create_modules) {
 	$services_values['snmp_community'] = 'Running'; // Key string
 	$services_values['tcp_port'] = 1; // Field number (Running/Stopped)
 	$services_values['id_tipo_modulo'] = 2; // Generic boolean
-	
-	$services_result = wmi_create_wizard_modules($id_agent, $services, 'services', $services_values);
-	
+
+	$services_result = wmi_create_wizard_modules($id_agent, $services, 'services', $services_values, 0, 0, $server_to_exec);
+
 	// Create Process modules
 	$processes_values = $values;
 	
 	$processes_values['tcp_port'] = 0; // Field number (OID)
 	$processes_values['id_tipo_modulo'] = 2; // Generic boolean
 	
-	$processes_result = wmi_create_wizard_modules($id_agent, $processes, 'processes', $processes_values);
+	$processes_result = wmi_create_wizard_modules($id_agent, $processes, 'processes', $processes_values, 0, 0, $server_to_exec);
 	
 	// Create Space on disk modules
 	$disks_values = $values;
@@ -186,14 +220,14 @@ if ($create_modules) {
 	$disks_values['id_tipo_modulo'] = 1; // Generic numeric
 	$disks_values['unit'] = 'Bytes'; // Unit
 	
-	$disks_result = wmi_create_wizard_modules($id_agent, $disks, 'disks', $disks_values);
+	$disks_result = wmi_create_wizard_modules($id_agent, $disks, 'disks', $disks_values, 0, 0, $server_to_exec);
 	
 	// Create modules from component
 	$components_values = $values;
 	
 	$components_values['id_agente'] = $id_agent;
 
-	$components_result = wmi_create_module_from_components($components, $components_values);
+	$components_result = wmi_create_module_from_components($components, $components_values, 0, 0, $server_to_exec);
 	
 	
 	// Errors/Success messages
@@ -267,6 +301,26 @@ $table->data[1][3] = html_print_input_password ('plugin_pass', $plugin_pass, '',
 $table->data[1][3] .= '<div id="spinner_modules" style="float: left; display: none;">' . html_print_image("images/spinner.gif", true) . '</div>';
 html_print_input_hidden('wmiexplore', 1);
 
+$servers_to_exec = array();
+$servers_to_exec[0] = __('Local console');
+if (enterprise_installed()) {
+	enterprise_include_once ('include/functions_satellite.php');
+	
+	$rows = get_proxy_servers();
+	foreach ($rows as $row) {
+		if ($row['server_type'] != 13) {
+			$s_type = " (Standard)";
+		}
+		else {
+			$s_type = " (Satellite)";
+		}
+
+		$servers_to_exec[$row['id_server']] = $row['name'] . $s_type;
+	}
+}
+$table->data[2][0] = '<b>' . __('Server to execute command') . '</b>';
+$table->data[2][1] = html_print_select ($servers_to_exec, 'server_to_exec', $server_to_exec, '', '', '', true);
+
 html_print_table($table);
 
 echo "<div style='text-align:right; width:".$table->width."'>";
@@ -292,6 +346,7 @@ if ($wmiexplore && !$fail) {
 	html_print_input_hidden('plugin_user', $plugin_user); // User
 	html_print_input_hidden('plugin_pass', $plugin_pass); // Password
 	html_print_input_hidden('tcp_send', $tcp_send); // Namespace
+	html_print_input_hidden('server_to_exec', $server_to_exec);
 	
 	$table->width = '98%';
 	

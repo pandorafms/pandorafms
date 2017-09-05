@@ -243,7 +243,7 @@ our @EXPORT = qw(
 
 # Some global variables
 our @DayNames = qw(sunday monday tuesday wednesday thursday friday saturday);
-our @ServerTypes = qw (dataserver networkserver snmpconsole reconserver pluginserver predictionserver wmiserver exportserver inventoryserver webserver eventserver icmpserver snmpserver satelliteserver transactionalserver mfserver syncserver);
+our @ServerTypes = qw (dataserver networkserver snmpconsole reconserver pluginserver predictionserver wmiserver exportserver inventoryserver webserver eventserver icmpserver snmpserver satelliteserver transactionalserver mfserver syncserver wuxserver);
 our @AlertStatus = ('Execute the alert', 'Do not execute the alert', 'Do not execute the alert, but increment its internal counter', 'Cease the alert', 'Recover the alert', 'Reset internal counter');
 
 # Event storm protection (no alerts or events)
@@ -1087,6 +1087,21 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	
 	# Email
 	} elsif ($clean_name eq "eMail") {
+
+		my $attach_data_as_image = 0;
+
+		my $cid_data = "CID_IMAGE";
+		my $dataname = "CID_IMAGE.png";
+
+		if ($data =~ /^data:image\/png;base64, /) {
+			# macro _data_ substitution in case is image.
+			$attach_data_as_image = 1;
+			my $_cid = '<img style="height: 150px;" src="cid:' . $cid_data . '"/>';
+
+			$field3 =~ s/_data_/$_cid/g;
+		}
+
+
 		# Address
 		$field1 = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module);
 		# Subject
@@ -1127,10 +1142,10 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 					return '<img src="cid:'.$cid.'">';
 				}
 			}
-			
+		
 			return '';
 		};
-		
+
 		# Macro data may contain HTML entities
 		eval {
 			no warnings;
@@ -1148,10 +1163,14 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 			$content_type = 'text/html; charset="UTF-8"';
 		}
 		
+
+		my $boundary = "====" . time() . "====";
+		my $html_content_type = $content_type;
+
 		# Build the mail with attached content
-		if (keys(%{$module_graph_list}) > 0) {
-			my $boundary = "====" . time() . "====";
-			my $html_content_type = $content_type;
+		if ((keys(%{$module_graph_list}) > 0) && ($attach_data_as_image == 0)) {
+			# module_graph only available if data is NOT an image
+
 			$content_type = 'multipart/related; boundary="'.$boundary.'"';
 			$boundary = "--" . $boundary;
 			
@@ -1177,6 +1196,28 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 			undef %{$module_graph_list};
 			
 			$field3 .= $boundary . "--\n";
+		}
+
+		if ($attach_data_as_image == 1) {
+			# it's an image in base64!
+
+			$content_type = 'multipart/related; boundary="'.$boundary.'"';
+			$boundary = "--" . $boundary;
+
+			my $base64_data = substr($data, 23); # remove first 23 characters: 'data:image/png;base64, '
+
+			$field3 = $boundary . "\n"
+					. "Content-Type: " . $html_content_type . "\n\n"
+					#. "Content-Transfer-Encoding: quoted-printable\n\n"
+					. $field3 . "\n";
+
+			$field3 .= $boundary . "\n"
+			. "Content-Type: image/png; name=\"" . $dataname . "\"\n"
+			. "Content-Disposition: inline; filename=\"" . $dataname . "\"\n"
+			. "Content-Transfer-Encoding: base64\n"
+			. "Content-ID: <" . $cid_data . ">\n"
+			. "Content-Location: " . $dataname . "\n\n"
+			. $base64_data . "\n";
 		}
 		
 		if ($pa_config->{"mail_in_separate"} != 0){
@@ -5044,15 +5085,26 @@ sub pandora_set_event_storm_protection ($) {
 ##########################################################################
 sub pandora_update_agent_module_count ($$$) {
 	my ($pa_config, $dbh, $agent_id) = @_;
-	
-	db_do ($dbh, 'UPDATE tagente SET update_module_count=0,
-	normal_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=0),
-	critical_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=1),
-	warning_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=2),
-	unknown_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=3),
-	notinit_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=4),
-	total_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id .
-	') WHERE id_agente = ' . $agent_id);
+	my $total = 0;
+	my $counts = {
+		'0' => 0,
+		'1' => 0,
+		'2' => 0,
+		'3' => 0,
+		'4' => 0,
+	}; # Module counts by status.
+
+	# Retrieve and hash module status counts.
+	my @rows = get_db_rows ($dbh, 'SELECT estado, COUNT(*) AS total FROM tagente_modulo, tagente_estado WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=?GROUP BY estado', $agent_id);
+	foreach my $row (@rows) {
+		$counts->{$row->{'estado'}} = $row->{'total'};
+		$total += $row->{'total'};
+	}
+
+	# Update the agent.
+	db_do ($dbh, 'UPDATE tagente
+		SET update_module_count=0, normal_count=?, critical_count=?, warning_count=?, unknown_count=?, notinit_count=?, total_count=?
+		WHERE id_agente = ?', $counts->{'0'}, $counts->{'1'}, $counts->{'2'}, $counts->{'3'}, $counts->{'4'}, $total, $agent_id);
 
 	# Sync the agent cache every time the module count is updated.
 	enterprise_hook('update_agent_cache', [$pa_config, $dbh, $agent_id]) if ($pa_config->{'node_metaconsole'} == 1);

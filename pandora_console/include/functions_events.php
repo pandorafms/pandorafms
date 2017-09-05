@@ -2350,6 +2350,8 @@ function events_page_general ($event) {
 	}
 	$table_general->data[] = $data;
 	
+	$event["owner_user"] = $event["id_usuario"];
+	
 	$data = array();
 	$data[0] = __('Owner');
 	if (empty($event["owner_user"])) {

@@ -50,7 +50,7 @@ function wmi_compose_query($wmi_client, $user, $password, $host, $namespace = ''
 }
 
 
-function wmi_create_wizard_modules($id_agent, $names, $wizard_mode, $values, $id_police=0, $module_id=0) {
+function wmi_create_wizard_modules($id_agent, $names, $wizard_mode, $values, $id_police=0, $module_id=0, $server_to_exec = 0) {
 	$results = array(ERR_GENERIC => array(), NOERR => array());
 	
 	if (empty($names)) {
@@ -84,6 +84,19 @@ function wmi_create_wizard_modules($id_agent, $names, $wizard_mode, $values, $id
 			$results[ERR_GENERIC][] = $name;
 		}
 		else {
+			if ($id_police == 0) {
+				if ($server_to_exec != 0) {
+					$sql = sprintf("SELECT server_type FROM tserver WHERE id_server = %d", $server_to_exec);
+					$row = db_get_row_sql ($sql);
+					
+					if ($row['server_type'] == 13) {
+						$new_module_configuration_data = "module_begin\nmodule_name " . $name . "\nmodule_type generic_data_string\nmodule_wmi " . $values['ip_target'] . "\nmodule_wmiquery " . $wmi_query . "\nmodule_wmiauth " . $values['plugin_user'] . "%" . $values['plugin_pass'] . "\nmodule_end";
+
+						config_agents_add_module_in_conf($id_agent, $new_module_configuration_data);
+					}
+				}
+			}
+
 			$results[NOERR][] = $name;
 		}
 	}
@@ -91,7 +104,7 @@ function wmi_create_wizard_modules($id_agent, $names, $wizard_mode, $values, $id
 	return $results;
 }
 
-function wmi_create_module_from_components($components, $values, $id_police=0, $module_id=0) {
+function wmi_create_module_from_components($components, $values, $id_police=0, $module_id=0, $server_to_exec = 0) {
 	$results = array(ERR_GENERIC => array(), NOERR => array(), ERR_EXIST => array());
 	
 	if (empty($components)) {
@@ -155,6 +168,19 @@ function wmi_create_module_from_components($components, $values, $id_police=0, $
 				$results[ERR_GENERIC][] = $nc["nombre"];
 			}
 			else {
+				if ($id_police == 0) {
+					if ($server_to_exec != 0) {
+						$sql = sprintf("SELECT server_type FROM tserver WHERE id_server = %d", $server_to_exec);
+						$row = db_get_row_sql ($sql);
+						
+						if ($row['server_type'] == 13) {
+							$new_module_configuration_data = "module_begin\nmodule_name " . $nc['nombre'] . "\nmodule_type generic_data_string\nmodule_wmi " . $values['ip_target'] . "\nmodule_wmiquery " . $nc['snmp_oid'] . "\nmodule_wmiauth " . $values['plugin_user'] . "%" . $values['plugin_pass'] . "\nmodule_end";
+
+							config_agents_add_module_in_conf($nc["id_agente"], $new_module_configuration_data);
+						}
+					}
+				}
+
 				if(!empty($tags)) {
 					// Creating tags
 					$tag_ids = array();

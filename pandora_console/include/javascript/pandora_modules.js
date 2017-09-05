@@ -437,7 +437,15 @@ function configure_modules_form () {
 				return false;
 			}
 		}
-		
+
+		moduletype = $("#hidden-id_module_type").val ();
+		if (moduletype == 25) {
+			if ($("#custom_integer_1").val () == 0) {
+				$("#custom_integer_1").focus ();
+				$("#message").showMessage (no_execute_test_from);
+				return false;
+			}
+		}
 		module = $("#id_module_type").attr ("value");
 		
 		if (id_modules_icmp.in_array (module) || id_modules_tcp.in_array (module) || id_modules_snmp.in_array (module)) {
@@ -899,3 +907,27 @@ function delete_macro_local_component(prefix) {
 	var $row2 = $('#'+prefix+nrow2).remove();
 }
 
+//Add a new module macro
+function add_macro () {
+	var macro_count = parseInt($("#hidden-module_macro_count").val());
+	var delete_icon = '<?php html_print_image ("images/cross.png", false) ?>';
+	
+	// Add inputs for the new macro
+	$("#module_macros").append('<tr id="module_macros-' + macro_count + '" class="datos2"><td style=" font-weight: bold; vertical-align: top;" class="datos2">Name</td> \
+	<td style="" class="datos2"><input type="text" name="module_macro_names[]" value="" id="text-module_macro_names[]" size="50" maxlength="60"></td> \
+	<td style="font-weight: bold; vertical-align: top;" class="datos2">Value</td> \
+	<td style="" class="datos2"><input type="text" name="module_macro_values[]" value="" id="text-module_macro_values[]" size="50" maxlength="60"></td> \
+	<td style="" class="datos2"><a href="javascript: delete_macro(' + macro_count + ');">' + delete_icon + '</a></td></tr>');
+	
+	// Update the macro count
+	$("#hidden-module_macro_count").val(macro_count + 1);
+}
+
+// Delete an existing module macro
+function delete_macro (num) {
+	if ($("#module_macros-" + num).length) {
+		$("#module_macros-" + num).remove();
+	}
+	
+	// Do not decrease the macro counter or new macros may overlap existing ones!
+}

@@ -835,7 +835,8 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	alert_ids, legend_alerts, yellow_threshold, red_threshold,
 	force_integer, separator, separator2, 
 	yellow_up, red_up, yellow_inverse, red_inverse,
-	series_suffix_str, dashboard, vconsole, xaxisname,background_color,legend_color) {
+	series_suffix_str, dashboard, vconsole, xaxisname,background_color,legend_color,
+	short_data) {
 	
 	var threshold = true;
 	var thresholded = false;
@@ -1714,7 +1715,6 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				y = y / 1000000;
 			}
 			else if (y < -1000) {
-				console.log('entra por negativo');
 				how_bigger = "K";
 				y = y / 1000;	
 			}
@@ -1880,7 +1880,12 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 
 	function yFormatter(v, axis) {
 		axis.datamin = 0;
-		var formatted = number_format(v, force_integer, "");
+		if (short_data) {
+			var formatted = number_format(v, force_integer, "");
+		}
+		else {
+			var formatted = v;
+		}
 
 		return '<div class='+font+' style="font-size:'+font_size+'pt;">'+formatted+'</div>';
 	}

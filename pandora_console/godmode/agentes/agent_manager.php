@@ -263,6 +263,7 @@ $params['hidden_input_idagent_value'] = $id_parent;
 $params['value'] = db_get_value ("alias","tagente","id_agente",$id_parent);
 $params['selectbox_id'] = 'cascade_protection_module';
 $params['javascript_is_function_select'] = true;
+$params['cascade_protection'] = true;
 
 $table->data[3][1] = ui_print_agent_autocomplete_input($params);
 

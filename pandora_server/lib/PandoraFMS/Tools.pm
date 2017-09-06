@@ -80,6 +80,7 @@ our @EXPORT = qw(
 	sqlWrap
 	is_numeric
 	is_metaconsole
+	to_number
 	clean_blank
 	pandora_sendmail
 	pandora_trash_ascii
@@ -1469,6 +1470,26 @@ sub is_metaconsole ($) {
 	}
 
 	return 0;
+}
+
+###############################################################################
+# Check if a given variable contents a number
+###############################################################################
+sub to_number($) {
+	my $n = shift;
+	if ($n =~ /[\d+,]*\d+\.\d+/) {
+		# American notation
+		$n =~ s/,//g;
+	}
+	elsif ($n =~ /[\d+\.]*\d+,\d+/) {
+		# Spanish notation
+		$n =~ s/\.//g;
+		$n =~ s/,/./g;
+	}
+	if(looks_like_number($n)) {
+		return $n;
+	}
+	return undef;
 }
 
 #######################

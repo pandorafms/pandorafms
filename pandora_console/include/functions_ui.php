@@ -2951,6 +2951,11 @@ function ui_print_agent_autocomplete_input($parameters) {
 	if (isset($parameters['from_wux'])) {
 		$from_wux_transaction = $parameters['from_wux'];
 	}
+
+	$cascade_protection = false; //Default value
+	if (isset($parameters['cascade_protection'])) {
+		$cascade_protection = $parameters['cascade_protection'];
+	}
 	
 	$metaconsole_enabled = false; //Default value
 	if (isset($parameters['metaconsole_enabled'])) {
@@ -3149,7 +3154,9 @@ function ui_print_agent_autocomplete_input($parameters) {
 							.append ($("<option></option>")
 							.attr("value", val["id_agente_modulo"]).text (s));
 					});
-					
+					if('. (int)$cascade_protection .' == 0){
+						$("#' . $selectbox_id . '").enable();
+					}
 					$("#' . $selectbox_id . '").fadeIn ("normal");
 				}
 			});

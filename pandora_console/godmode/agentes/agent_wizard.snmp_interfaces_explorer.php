@@ -204,6 +204,7 @@ if ($create_modules) {
 			$ifPhysAddress = $interfaces[$id]['ifPhysAddress']['value'];
 			$ifPhysAddress = strtoupper($ifPhysAddress);
 		}
+		
 		foreach ($modules as $module) {
 			$oid_array = explode('.', $module);
 			$oid_array[count($oid_array) - 1] = $id;
@@ -212,7 +213,7 @@ if ($create_modules) {
 			// Get the name
 			$name_array = explode('::', $oid_array[0]);
 			$name = $ifname . "_" . $name_array[1];
-			
+
 			// Clean the name
 			$name = str_replace  ( "\""  , "" , $name);
 			
@@ -262,18 +263,50 @@ if ($create_modules) {
 				$row = db_get_row_sql ($sql);
 
 				if ($row['server_type'] == 13) {
-					if (preg_match ("/Status/", $name_array[1])) {
+					if (preg_match ("/ifPhysAddress/", $name_array[1])) {
+						$module_type = 3;
+					}
+					elseif (preg_match ("/ifSpecific/", $name_array[1])) {
+						$module_type = 3;
+					}
+					elseif (preg_match("/ifType/", $name_array[1])) {
+						$module_type = 1;
+					}
+					elseif (preg_match("/ifSpeed/", $name_array[1])) {
+						$module_type = 1;
+					}
+					elseif (preg_match("/ifPromiscuousMode/", $name_array[1])) {
 						$module_type = 2;
 					}
-					elseif (preg_match ("/Present/", $name_array[1])) {
+					elseif (preg_match("/ifOutQLen/", $name_array[1])) {
+						$module_type = 1;
+					}
+					elseif (preg_match("/ifName/", $name_array[1])) {
+						$module_type = 3;
+					}
+					elseif (preg_match("/ifMtu/", $name_array[1])) {
+						$module_type = 1;
+					}
+					elseif (preg_match("/ifLinkUpDownTrapEnable/", $name_array[1])) {
+						$module_type = 1;
+					}
+					elseif (preg_match("/ifLastChange/", $name_array[1])) {
+						$module_type = 1;
+					}
+					elseif (preg_match("/ifIndex/", $name_array[1])) {
+						$module_type = 1;
+					}
+					elseif (preg_match("/ifDescr/", $name_array[1])) {
+						$module_type = 3;
+					}
+					elseif (preg_match("/ifCounterDiscontinuityTime/", $name_array[1])) {
+						$module_type = 1;
+					}
+					elseif (preg_match("/ifConnectorPresent/", $name_array[1])) {
 						$module_type = 2;
 					}
-					elseif (preg_match("/PromiscuousMode/", $name_array[1])) {
+					elseif (preg_match("/ifAdminStatus/", $name_array[1])) {
 						$module_type = 2;
-					}	
-					// Specific counters (ends in s)
-					elseif (preg_match("/s$/", $name_array[1])) {
-						$module_type = 4;
 					}
 					else {
 						$module_type = 4;
@@ -281,10 +314,12 @@ if ($create_modules) {
 
 					$module_server = 1;
 
+					$output_oid = "";
+
 					exec("ssh pandora_exec_proxy@" . $row['ip_address'] . " snmptranslate -On " . $oid, $output_oid, $rc);
 					
-					$conf_iod = $output_oid[0];
-					$oid = $conf_iod;
+					$conf_oid = $output_oid[0];
+					$oid = $conf_oid;
 				}
 			}
 
@@ -322,7 +357,7 @@ if ($create_modules) {
 					if ($row['server_type'] == 13) {
 						$module_type_name = db_get_value_filter("nombre", "ttipo_modulo", array("id_tipo" => $values['id_tipo_modulo']));
 
-						$new_module_configuration_data = "module_begin\nmodule_name " . io_safe_input($name) . "\nmodule_description " . $values['descripcion'] . "\nmodule_type " . $module_type_name . "\nmodule_snmp\nmodule_oid " . $conf_iod . "\nmodule_community " . $values['snmp_community'] . "\nmodule_end";
+						$new_module_configuration_data = "module_begin\nmodule_name " . io_safe_input($name) . "\nmodule_description " . io_safe_output($values['descripcion']) . "\nmodule_type " . $module_type_name . "\nmodule_snmp\nmodule_oid " . $conf_oid . "\nmodule_community " . $values['snmp_community'] . "\nmodule_end";
 
 						config_agents_add_module_in_conf($id_agent, $new_module_configuration_data);
 					}

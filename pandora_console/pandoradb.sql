@@ -118,7 +118,7 @@ CREATE TABLE IF NOT EXISTS `tagente_datos_inc` (
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tagente_datos_string` (
 	`id_agente_modulo` int(10) unsigned NOT NULL default '0',
-	`datos` text NOT NULL,
+	`datos` mediumtext NOT NULL,
 	`utimestamp` int(20) unsigned NOT NULL default 0,
 	KEY `data_string_index_1` (`id_agente_modulo`),
 	KEY `idx_utimestamp` USING BTREE (`utimestamp`)
@@ -146,7 +146,7 @@ CREATE TABLE IF NOT EXISTS `tagente_datos_log4x` (
 CREATE TABLE IF NOT EXISTS `tagente_estado` (
 	`id_agente_estado` int(10) unsigned NOT NULL auto_increment,
 	`id_agente_modulo` int(10) NOT NULL default '0',
-	`datos` text NOT NULL,
+	`datos` mediumtext NOT NULL,
 	`timestamp` datetime NOT NULL default '1970-01-01 00:00:00',
 	`estado` int(4) NOT NULL default '0',
 	`known_status` tinyint(4) default 0,
@@ -976,6 +976,7 @@ CREATE TABLE IF NOT EXISTS `tserver` (
 	`my_modules` int(11) NOT NULL default 0,
 	`server_keepalive` int(11) NOT NULL default 0,
 	`stat_utimestamp` bigint(20) NOT NULL default '0',
+	`exec_proxy` tinyint(1) UNSIGNED NOT NULL default 0,
 	PRIMARY KEY  (`id_server`),
 	KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -1844,6 +1845,7 @@ CREATE TABLE IF NOT EXISTS `tevent_response` (
 	`modal_height` INTEGER  NOT NULL DEFAULT 0,
 	`new_window` TINYINT(4)  NOT NULL DEFAULT 0,
 	`params` TEXT  NOT NULL,
+	`server_to_exec` int(10) unsigned NOT NULL DEFAULT 0,
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

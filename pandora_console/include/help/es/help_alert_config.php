@@ -56,6 +56,7 @@ Además de las macros de módulo definidas, las siguientes macros están disponi
 <li>_event_id_ : (Solo alertas de evento) Id del evento que disparó la alerta.</li>
 <li>_id_agent_: ID del agente, util para construir URL de acceso a la consola de Pandora.</li>
 <li>_id_group_ : Id del grupo de agente.</li>
+<li>_id_module_ : ID del módulo.</li>
 <li>_id_alert_: ID de la alerta, util para correlar la alerta en herramientas de terceros.</li>
 <li>_policy_: Nombre de la política a la que pertenece el módulo (si aplica).</li>
 <li>_interval_ : Intervalo de la ejecución del módulo. </li>
@@ -65,7 +66,11 @@ Además de las macros de módulo definidas, las siguientes macros están disponi
 <li>_groupcontact_ : Información de contacto del grupo.	Se configura al crear el grupo.</li>
 <li>_groupother_ : Otra información sobre el grupo. Se configura al crear el grupo.</li>
 <li>_email_tag_ : Emails asociados a los tags de módulos.</li>
-<li>_modulegraph_nh_: (Sólo para alertas que usen el comando eMail) Devuelve una imagen codificada en base64 de una gráfica del módulo con un período de n horas (eg. _modulegraph_24h_). Requiere de una configuración correcta de la conexión del servidor a la consola vía api, la cual se realiza en el fichero de configuración del servidor.</li>
+<li>_alert_critical_instructions_: Instrucciones contenidas en el módulo para un estado CRITICAL.</li>
+<li>_alert_warning_instructions_: Instrucciones contenidas en el módulo para un estado WARNING.</li>
+<li>_alert_unknown_instructions_: Instrucciones contenidas en el módulo para un estado UNKNOWN.</li>
+<li>_modulegraph_<i>n</i>h_: (Sólo para alertas que usen el comando eMail) Devuelve una imagen codificada en base64 de una gráfica del módulo con un período de n horas (eg. _modulegraph_24h_). Requiere de una configuración correcta de la conexión del servidor a la consola vía api, la cual se realiza en el fichero de configuración del servidor.</li>
+<li>_modulegraphth_<i>n</i>h_:mismo funcionamiento que la macro anterior solo que con los umbrales critical y warning del modulo siempre que estos esten definidos</li>
 <li>_homeurl_ : Es un link de la URL pública esta debe de estar configurada en las opciones generales del setup.</li>
 </ul>
 <p>

@@ -118,8 +118,9 @@ if (enterprise_installed()) {
 	$table_behaviour->data[$row][1] = html_print_input_text ('service_label_font_size', $config["service_label_font_size"], '', 5, 5, true);
 	$row++;
 
-	$table_behaviour->data[$row][0] = __('Space between items in Service maps');
-	$table_behaviour->data[$row][1] = html_print_input_text ('service_item_padding_size', $config["service_item_padding_size"], '', 5, 5, true);
+	$table_behaviour->data[$row][0] = __('Space between items in Service maps') . 
+		ui_print_help_tip(__('It must be bigger than 80'), true);
+	$table_behaviour->data[$row][1] = html_print_input_text ('service_item_padding_size', $config["service_item_padding_size"], '', 5, 5, true, false, false, "onChange=\"change_servicetree_nodes_padding()\"");
 	$row++;
 }
 
@@ -877,6 +878,13 @@ function change_precision() {
 	var value = $("#text-graph_precision").val();
 	if ((value < 0) || (value > 5)) {
 		$("#text-graph_precision").val(1);
+	}
+}
+
+function change_servicetree_nodes_padding () {
+	var value = $("#text-service_item_padding_size").val();
+	if (value < 80) {
+		$("#text-service_item_padding_size").val(80);
 	}
 }
 

@@ -26,6 +26,7 @@ use HTML::Entities;
 use Encode;
 use Socket qw(inet_ntoa inet_aton);
 use Sys::Syslog;
+use Scalar::Util qw(looks_like_number);
 
 # New in 3.2. Used to sendmail internally, without external scripts
 # use Module::Loaded;
@@ -61,6 +62,7 @@ our @EXPORT = qw(
 	TRANSACTIONALSERVER
 	SYNCSERVER
 	METACONSOLE_LICENSE
+	WUXSERVER
 	$DEVNULL
 	$OS
 	$OS_VERSION
@@ -79,6 +81,7 @@ our @EXPORT = qw(
 	sqlWrap
 	is_numeric
 	is_metaconsole
+	to_number
 	clean_blank
 	pandora_sendmail
 	pandora_trash_ascii
@@ -122,6 +125,7 @@ use constant SATELLITESERVER => 13;
 use constant TRANSACTIONALSERVER => 14;
 use constant MFSERVER => 15;
 use constant SYNCSERVER => 16;
+use constant WUXSERVER => 17;
 
 # Value for a metaconsole license type
 use constant METACONSOLE_LICENSE => 0x01;
@@ -1467,6 +1471,26 @@ sub is_metaconsole ($) {
 	}
 
 	return 0;
+}
+
+###############################################################################
+# Check if a given variable contents a number
+###############################################################################
+sub to_number($) {
+	my $n = shift;
+	if ($n =~ /[\d+,]*\d+\.\d+/) {
+		# American notation
+		$n =~ s/,//g;
+	}
+	elsif ($n =~ /[\d+\.]*\d+,\d+/) {
+		# Spanish notation
+		$n =~ s/\.//g;
+		$n =~ s/,/./g;
+	}
+	if(looks_like_number($n)) {
+		return $n;
+	}
+	return undef;
 }
 
 #######################

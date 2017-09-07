@@ -1012,8 +1012,12 @@ if ($list_modules) {
 					$module["current_interval"], $module["module_name"]);
 			}
 		}
-		
+		if($module["id_tipo_modulo"] != 25){
 		$data[6] = ui_print_module_warn_value ($module["max_warning"], $module["min_warning"], $module["str_warning"], $module["max_critical"], $module["min_critical"], $module["str_critical"]);
+		}
+		else{
+			$data[6] = "";
+		}
 		
 		$data[7] = $salida;
 		$graph_type = return_graphtype ($module["id_tipo_modulo"]);

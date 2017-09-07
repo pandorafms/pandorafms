@@ -3940,7 +3940,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 
 	if ($fullscale) {
 		$data2 = array();
-		$previus_datas_cont = 0;
+		$previus_datas_cont = -1;
 		$k = 0;
 		for ($i = 0; $i <= $resolution; $i++) {
 			$timestamp = $datelimit + ($interval * $i);
@@ -3952,6 +3952,8 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 				$k++;
 			}
 		}
+		html_debug($data2);
+		html_debug($data);
 		$data = array_merge($data2, $data);
 		$resolution += $previus_datas_cont;
 	}

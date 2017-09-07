@@ -3962,7 +3962,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	for ($i = 0; $i <= $resolution; $i++) {
 		$timestamp = $datelimit + ($interval * $i);
 
-		if ($fullscale) {
+		if ($fullscale && ($resolution > ($config['graph_res'] * 50))) {
 			$timestamp = $data[$i]['utimestamp'];
 		}
 		

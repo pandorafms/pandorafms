@@ -1,5 +1,5 @@
 package: pandorafms-server
-Version: 7.0NG.712-170907
+Version: 7.0NG.712-170908
 Architecture: all
 Priority: optional
 Section: admin

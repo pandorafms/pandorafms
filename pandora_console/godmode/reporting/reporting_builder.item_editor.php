@@ -69,6 +69,8 @@ $exception_condition = REPORT_EXCEPTION_CONDITION_EVERYTHING;
 $exception_condition_value = 10;
 $modulegroup = 0;
 $period = SECONDS_1DAY;
+$search = "";
+$log_number = 1000;
 // Added support for projection graphs
 $period_pg = SECONDS_5DAY;
 $projection_period = SECONDS_5DAY;
@@ -201,9 +203,12 @@ switch ($action) {
 				case 'event_report_log':
 					$period = $item['period'];
 					$description = $item['description'];
+					
 					$es = json_decode($item['external_source'], true);
 					$id_agents = $es['id_agents'];
 					$source = $es['source'];
+					$search = $es['search'];
+					$log_number = empty($es['log_number']) ? $log_number : $es['log_number'];
 					break;
 				case 'simple_graph':
 					$only_avg = isset($style['only_avg']) ? (bool) $style['only_avg'] : true;
@@ -705,6 +710,29 @@ You can of course remove the warnings, that's why we include the source and do n
 			</td>
 		</tr>
 		
+		<tr id="row_search" style="" class="datos">
+			<td style="font-weight:bold;">
+				<?php echo __('Search') ?>
+			</td>
+			<td style="">
+				<?php
+				html_print_input_text('search', $search, '', 40, 100);
+				?>
+			</td>
+		</tr>
+		
+		<tr id="row_log_number" style="" class="datos">
+			<td style="font-weight:bold;">
+				<?php echo __('Log number');
+				ui_print_help_tip(__('Warning: this parameter limits the contents of the logs and affects the performance.')); ?>
+			</td>
+			<td style="">
+				<?php
+				echo "<input name='log_number' max='10000' min='1' size='10' type='number' value='$log_number'>";
+				?>
+			</td>
+		</tr>
+		
 		<tr id="row_period" style="" class="datos">
 			<td style="font-weight:bold;">
 				<?php
@@ -1026,20 +1054,30 @@ You can of course remove the warnings, that's why we include the source and do n
 			<td style="font-weight:bold;"><?php echo __('Agents'); ?></td>
 			<td>
 				<?php 
-					$agents = agents_get_group_agents($group);
-					if ((empty($agents)) || $agents == -1) $agents = array();
+					$sql = 'SELECT id_agente, alias
+						FROM tagente, tagent_module_log
+						WHERE tagente.id_agente = tagent_module_log.id_agent';
+					$all_agent_log = db_get_all_rows_sql($sql);
+					
+					foreach ($all_agent_log as $key => $value) {
+						$agents2[$value['id_agente']] = $value['alias'];
+					}
+					
+					// $agents = agents_get_group_agents($group);
+					if ((empty($agents2)) || $agents2 == -1) $agents = array();
 					
 					$agents_select = array();
 					if (is_array($id_agents) || is_object($id_agents)){
 						foreach ($id_agents as $id) {
-							foreach ($agents as $key => $a) {
+							foreach ($agents2 as $key => $a) {
 								if ($key == (int)$id) {
 									$agents_select[$key] = $key;
 								}
 							}
 						}
 					}
-					html_print_select($agents, 'id_agents2[]', $agents_select, $script = '', "", 0, false, true, true, '', false, "min-width: 180px");
+					// html_debug($agents);
+					html_print_select($agents2, 'id_agents2[]', $agents_select, $script = '', "", 0, false, true, true, '', false, "min-width: 180px");
 				?>
 			</td>
 		</tr>
@@ -2578,6 +2616,8 @@ function chooseType() {
 	$("#row_agent").hide();
 	$("#row_module").hide();
 	$("#row_period").hide();
+	$("#row_search").hide();
+	$("#row_log_number").hide();
 	$("#row_period1").hide();
 	$("#row_estimate").hide();
 	$("#row_interval").hide();
@@ -2675,6 +2715,8 @@ function chooseType() {
 			$("#log_help_tip").css("visibility", "visible");
 			$("#row_description").show();
 			$("#row_period").show();
+			$("#row_search").show();
+			$("#row_log_number").show();
 			$("#agents_row").show();
 			$("#row_source").show();
 			$("#row_historical_db_check").hide();

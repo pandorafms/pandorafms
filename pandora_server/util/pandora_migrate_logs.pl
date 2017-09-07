@@ -1,3 +1,11 @@
+#!/usr/bin/perl
+#
+# Pandora FMS log migration tool
+#
+# Artica ST 2017
+# 2017/09/07 v1 (c) Fco de Borja Sanchez <fborja.sanchez@artica.es>
+#
+########################################################################
 use strict;
 use warnings;
 

@@ -3937,13 +3937,31 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	}
 	
 	$max_value = 0;
+
+	if ($fullscale) {
+		$data2 = array();
+		$previus_datas_cont = 0;
+		$k = 0;
+		for ($i = 0; $i <= $resolution; $i++) {
+			$timestamp = $datelimit + ($interval * $i);
+
+			if ($timestamp < $data[0]['utimestamp']) {
+				$previus_datas_cont++;
+				$data2[$k]['utimestamp'] = $timestamp;
+				$data2[$k]['datos'] = 0;
+				$k++;
+			}
+		}
+		$data = array_merge($data2, $data);
+		$resolution += $previus_datas_cont;
+	}
 	
 	// Calculate chart data
 	$last_known = $previous_data;
 	for ($i = 0; $i <= $resolution; $i++) {
 		$timestamp = $datelimit + ($interval * $i);
 
-		if ($fullscale) {
+		if ($fullscale && ($resolution > ($config['graph_res'] * 50))) {
 			$timestamp = $data[$i]['utimestamp'];
 		}
 		
@@ -4066,7 +4084,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 			//New code set 0 if there is a 0
 			//Please check the incident #665
 			//http://192.168.50.2/integria/index.php?sec=incidents&sec2=operation/incidents/incident_dashboard_detail&id=665
-			$chart[$timestamp]['sum'.$series_suffix] = 0;
+			$chart[$timestamp]['sum'.$series_suffix] = $last_known;
 		}
 		else if ($zero == 1) { // Just zeros
 			$chart[$timestamp]['sum'.$series_suffix] = 0;

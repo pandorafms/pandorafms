@@ -9,14 +9,15 @@
 use strict;
 use warnings;
 
-use lib '/usr/lib/perl5';
-
-use PandoraFMS::Config;
-use PandoraFMS::DB;
 use JSON;
 use IO::Socket::INET;
 use File::Copy;
 
+use lib '/usr/lib/perl5';
+
+use PandoraFMS::Config;
+use PandoraFMS::Tools;
+use PandoraFMS::DB;
 
 my $HELP=<<EO_HELP;
 
@@ -96,9 +97,9 @@ sub recursive_file_apply {
 		my $dh;
 		opendir($dh,$item) or die ("Cannot open directory [$item]");
 		
-		my @sorted_dirs = sort {(stat $a)[10] <=> (stat $b)[10]} readdir($dh);
+		my @dirs = readdir($dh); # no need to sort them, the timestamp is in the file name.
 
-		foreach my $object (@sorted_dirs) {
+		foreach my $object (@dirs) {
  			next if ($object =~ /^\./);
 			recursive_file_apply($pa_config, $dbh, $psub, $item . "/" . $object)
 		}
@@ -124,14 +125,11 @@ if ($#ARGV < 0) {
 	print STDERR $HELP;
 	exit 1;
 }
-
+print STDERR "Starting migration process\n";
 
 pandora_init(\%pa_config, 'Pandora FMS log migration tool');
 pandora_load_config (\%pa_config);
 
-# Start logging
-pandora_start_log (\%pa_config);
-	
 # Connect to the DB
 my $dbh = db_connect ($pa_config{'dbengine'}, $pa_config{'dbname'}, $pa_config{'dbhost'}, $pa_config{'dbport'},
 	$pa_config{'dbuser'}, $pa_config{'dbpass'});
@@ -165,5 +163,5 @@ if (  (defined($pa_config{'logstash_host'}) && $pa_config{'logstash_host'} ne ''
 $dbh->disconnect();
 
 logger(\%pa_config,"Migration completed", 1);
-
+print STDERR "Migration complete\n";
 

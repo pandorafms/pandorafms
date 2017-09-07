@@ -4084,7 +4084,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 			//New code set 0 if there is a 0
 			//Please check the incident #665
 			//http://192.168.50.2/integria/index.php?sec=incidents&sec2=operation/incidents/incident_dashboard_detail&id=665
-			$chart[$timestamp]['sum'.$series_suffix] = $last_known;
+			$chart[$timestamp]['sum'.$series_suffix] = 0;
 		}
 		else if ($zero == 1) { // Just zeros
 			$chart[$timestamp]['sum'.$series_suffix] = 0;

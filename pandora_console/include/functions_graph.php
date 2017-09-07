@@ -3952,8 +3952,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 				$k++;
 			}
 		}
-		html_debug($data2);
-		html_debug($data);
+
 		$data = array_merge($data2, $data);
 		$resolution += $previus_datas_cont;
 	}
@@ -3963,7 +3962,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	for ($i = 0; $i <= $resolution; $i++) {
 		$timestamp = $datelimit + ($interval * $i);
 
-		if ($fullscale && ($resolution > ($config['graph_res'] * 50))) {
+		if ($fullscale) {
 			$timestamp = $data[$i]['utimestamp'];
 		}
 		
@@ -4046,7 +4045,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 		}
 		elseif ($period < SECONDS_1MONTH) {
 			$time_format = 'M d H\h';
-		} 
+		}
 		else {
 			$time_format = 'M d H\h';
 		}

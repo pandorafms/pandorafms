@@ -18,6 +18,15 @@ use IO::Socket::INET;
 use File::Copy;
 
 
+my $HELP=<<EO_HELP;
+
+Pandora FMS log migration tool (c) Artica ST
+
+  Usage $0 /etc/pandora/pandora_server.conf
+	
+
+EO_HELP
+
 ########################################################################
 # Migrate log data
 ########################################################################
@@ -110,6 +119,12 @@ sub recursive_file_apply {
 #############################################################
 
 my %pa_config;
+
+if ($#ARGV < 0) {
+	print STDERR $HELP;
+	exit 1;
+}
+
 
 pandora_init(\%pa_config, 'Pandora FMS log migration tool');
 pandora_load_config (\%pa_config);

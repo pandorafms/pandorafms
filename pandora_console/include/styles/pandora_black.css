@@ -2951,6 +2951,10 @@ table#policy_modules td * {
 	border-top-right-radius: 2px;
 }
 
+.clippy_body {
+	color: black;
+}
+
 #dialog-double_auth-container {
 	width: 100%;
 	text-align: center;

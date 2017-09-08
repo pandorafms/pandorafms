@@ -126,22 +126,16 @@ function visual_map_main() {
 
 		// Begin - Background label color changer
 				
-		$( "#text-label_ifr" ).contents().find( "body" ).bind("contextmenu", function(e) {
-   		e.preventDefault();
+		$( "#text-label_ifr" ).contents().find( "body" ).bind('mousewheel', function(e){
+        e.preventDefault();
+				
+				if($( "#text-label_ifr" ).contents().find( "body" ).css('background-color') == 'rgb(211, 211, 211)'){
+					$( "#text-label_ifr" ).contents().find( "body" ).css('background-color','white');
+				}
+				else{
+					$( "#text-label_ifr" ).contents().find( "body" ).css('background-color','lightgray');
+				}
     });
-		
-		$( "#text-label_ifr" ).contents().find( "body" ).mousedown(function(e){
-		    	if(e.which == 3) 
-        		{
-							if($( "#text-label_ifr" ).contents().find( "body" ).css('background-color') == 'rgb(211, 211, 211)'){
-								$( "#text-label_ifr" ).contents().find( "body" ).css('background-color','white');
-							}
-							else{
-								$( "#text-label_ifr" ).contents().find( "body" ).css('background-color','lightgray');
-							}
-           		
-        		}
-		});
 		
 		// End - Background label color changer
 		

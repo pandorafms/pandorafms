@@ -430,7 +430,7 @@ switch ($action) {
 		$table_aux->colspan[0][0] = 4;
 		$table_aux->data[0][0] = "<b>". __("Group") . "</b>";
 		
-		$table_aux->data[0][1] = html_print_select_groups(false, $access, true, 'id_group', $id_group, '', '', '', true, false, true, '', false, 'width:150px', false, false, 'id_grupo', $strict_user). '<br>';
+		$table_aux->data[0][1] = html_print_select_groups(false, $access, true, 'id_group', $id_group, '', '', '', true, false, true, '', false, "", false, false, 'id_grupo', $strict_user). '<br>';
 		
 		$table_aux->data[0][2] = "<b>". __("Free text for search: ") . ui_print_help_tip(
 		__('Search by report name or description, list matches.'),true) . "</b>";
@@ -925,9 +925,13 @@ switch ($action) {
 							case 'event_report_log':
 								$agents_to_report = get_parameter('id_agents2');
 								$source = get_parameter('source', "");
-
+								$search = get_parameter('search', "");
+								$log_number = get_parameter('log_number', "");
+							
 								$es['source'] = $source;
 								$es['id_agents'] = $agents_to_report;
+								$es['search']=$search;
+								$es['log_number']=$log_number;
 
 								$values['external_source'] = json_encode($es);
 								$values['period'] = get_parameter('period');
@@ -1125,6 +1129,7 @@ switch ($action) {
 							if ($values['treport_custom_sql_id'] == 0) {
 								$values['external_source'] = get_parameter('sql');
 							}
+							$values['historical_db'] = get_parameter('historical_db_check');
 						}
 						else if ($values['type'] == 'url') {
 							$values['external_source'] = get_parameter('url');
@@ -1139,6 +1144,7 @@ switch ($action) {
 						
 						$style = array();
 						$style['show_in_two_columns'] = get_parameter('show_in_two_columns', 0);
+						$style['show_in_same_row'] = get_parameter('show_in_same_row', 0);
 						$style['show_in_landscape'] = get_parameter('show_in_landscape', 0);
 						$style['hide_notinit_agents'] = get_parameter('hide_notinit_agents', 0);
 						
@@ -1212,7 +1218,6 @@ switch ($action) {
 									break;
 							}
 							
-							
 							$resultOperationDB = db_process_sql_update(
 								'treport_content',
 								$values,
@@ -1280,9 +1285,13 @@ switch ($action) {
 							case 'event_report_log':
 								$agents_to_report = get_parameter('id_agents2');
 								$source = get_parameter('source', "");
-
+								$search = get_parameter('search', "");
+								$log_number = get_parameter('log_number', "");
+								
 								$es['source'] = $source;
 								$es['id_agents'] = $agents_to_report;
+								$es['search']=$search;
+								$es['log_number']=$log_number;
 
 								$values['external_source'] = json_encode($es);
 								$values['period'] = get_parameter('period');
@@ -1445,6 +1454,7 @@ switch ($action) {
 							if ($values['treport_custom_sql_id'] == 0) {
 								$values['external_source'] = get_parameter('sql');
 							}
+							$values['historical_db'] = get_parameter('historical_db_check');
 						}
 						elseif ($values['type'] == 'url') {
 							$values['external_source'] = get_parameter('url');
@@ -1459,6 +1469,7 @@ switch ($action) {
 						
 						$style = array();
 						$style['show_in_two_columns'] = get_parameter('show_in_two_columns', 0);
+						$style['show_in_same_row'] = get_parameter('show_in_same_row', 0);
 						$style['show_in_landscape'] = get_parameter('show_in_landscape', 0);
 						$style['hide_notinit_agents'] = get_parameter('hide_notinit_agents', 0);
 						

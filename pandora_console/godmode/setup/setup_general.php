@@ -188,6 +188,10 @@ $table->data[32][0] = __('Server logs directory') . ui_print_help_tip (__("Direc
 $table->data[32][1] = html_print_input_text ('server_log_dir',
 	$config["server_log_dir"], '', 50, 255, true);
 
+$table->data[33][0] = __('Log size limit in system logs viewer extension') . ui_print_help_tip (__("Maximun size to show in system log extension."), true);
+$table->data[33][1] = html_print_input_text ('max_log_size',
+	$config["max_log_size"], '', 10, 255, true) . html_print_label(" x1000", "max_log_size", true);
+
 $modes_tutorial = array(
 	'full' => __('Full mode'),
 	'on_demand' => __('On demand'),
@@ -200,23 +204,23 @@ $table->data['tutorial_mode'][1] =
 		$config["tutorial_mode"], '', '', 0, true);
 
 $config["past_planned_downtimes"] = isset($config["past_planned_downtimes"]) ? $config["past_planned_downtimes"] : 1;
-$table->data[33][0] = __('Allow create planned downtimes in the past') .
+$table->data[34][0] = __('Allow create planned downtimes in the past') .
 	ui_print_help_tip(__('The planned downtimes created in the past will affect the SLA reports'), true);
-$table->data[33][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('past_planned_downtimes', 1, '', $config["past_planned_downtimes"], true).'&nbsp;&nbsp;';
-$table->data[33][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('past_planned_downtimes', 0, '', $config["past_planned_downtimes"], true);
+$table->data[34][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('past_planned_downtimes', 1, '', $config["past_planned_downtimes"], true).'&nbsp;&nbsp;';
+$table->data[34][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('past_planned_downtimes', 0, '', $config["past_planned_downtimes"], true);
 
-$table->data[34][0] = __('Limit parameters massive') .
+$table->data[35][0] = __('Limit parameters massive') .
 	ui_print_help_tip(__('Your PHP environment is setted with %d max_input_vars. Maybe you must not set this value with upper values.', ini_get("max_input_vars")), true);
-$table->data[34][1] = html_print_input_text('limit_parameters_massive',
+$table->data[35][1] = html_print_input_text('limit_parameters_massive',
 	$config['limit_parameters_massive'], '', 10, 10, true);
 
-$table->data[35][0] = __('Include agents manually disabled');
-$table->data[35][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('include_agents', 1, '', $config["include_agents"], true).'&nbsp;&nbsp;';
-$table->data[35][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('include_agents', 0, '', $config["include_agents"], true);
+$table->data[36][0] = __('Include agents manually disabled');
+$table->data[36][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('include_agents', 1, '', $config["include_agents"], true).'&nbsp;&nbsp;';
+$table->data[36][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('include_agents', 0, '', $config["include_agents"], true);
 
-$table->data[36][0] = __('audit log directory') .
+$table->data[37][0] = __('audit log directory') .
 	ui_print_help_tip (__("Directory where audit log is stored."), true);
-$table->data[36][1] = html_print_input_text ('auditdir', io_safe_output($config["auditdir"]), '', 30, 100, true);
+$table->data[37][1] = html_print_input_text ('auditdir', io_safe_output($config["auditdir"]), '', 30, 100, true);
 
 echo '<form id="form_setup" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=general&amp;pure='.$config['pure'].'">';
 

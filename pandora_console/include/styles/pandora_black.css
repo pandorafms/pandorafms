@@ -1948,7 +1948,7 @@ div.warn {
 /* Submenus havent borders */
 .submenu_not_selected, .submenu_selected, .submenu2 {
 	border: 0px !important;
-	min-height: 0px !important;
+	min-height: 35px !important;
 }
 
 /* Pandora width style theme */
@@ -2949,6 +2949,10 @@ table#policy_modules td * {
 	margin-bottom: 10px;
 	border-top-left-radius: 2px;
 	border-top-right-radius: 2px;
+}
+
+.clippy_body {
+	color: black;
 }
 
 #dialog-double_auth-container {

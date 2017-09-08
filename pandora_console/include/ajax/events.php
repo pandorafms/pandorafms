@@ -122,19 +122,64 @@ if ($perform_event_response) {
 	global $config;
 	
 	$command = get_parameter('target','');
-	
-	switch (PHP_OS) {
-		case "FreeBSD":
-			$timeout_bin = '/usr/local/bin/gtimeout';
-			break;
-		case "NetBSD":
-			$timeout_bin = '/usr/pkg/bin/gtimeout';
-			break;
-		default:
-			$timeout_bin = '/usr/bin/timeout';
-			break;
+	$response_id = get_parameter ('response_id');
+
+	$event_response = db_get_row('tevent_response','id',$response_id);
+
+	if (enterprise_installed()) {
+		if ($event_response['server_to_exec'] != 0 && $event_response['type'] == 'command') {
+			$commandExclusions = array ('vi', 'vim', 'nano');
+
+			$server_data = db_get_row('tserver','id_server', $event_response['server_to_exec']);
+
+    		if (in_array(strtolower($command),$commandExclusions)) {
+				echo "Only stdin/stdout commands are supported";
+			}
+			else {
+				switch (PHP_OS) {
+					case "FreeBSD":
+						$timeout_bin = '/usr/local/bin/gtimeout';
+						break;
+					case "NetBSD":
+						$timeout_bin = '/usr/pkg/bin/gtimeout';
+						break;
+					default:
+						$timeout_bin = '/usr/bin/timeout';
+						break;
+				}
+
+				echo system("ssh pandora_exec_proxy@" . $server_data['ip_address'] . " \"" . $timeout_bin . " 90 " . io_safe_output($command) . " 2>&1\"", $ret_val);
+			}
+		}
+		else {
+			switch (PHP_OS) {
+				case "FreeBSD":
+					$timeout_bin = '/usr/local/bin/gtimeout';
+					break;
+				case "NetBSD":
+					$timeout_bin = '/usr/pkg/bin/gtimeout';
+					break;
+				default:
+					$timeout_bin = '/usr/bin/timeout';
+					break;
+			}
+			echo system($timeout_bin . ' 90 '.io_safe_output($command).' 2>&1');
+		}
 	}
-	echo system($timeout_bin . ' 9 '.io_safe_output($command).' 2>&1');
+	else {
+		switch (PHP_OS) {
+			case "FreeBSD":
+				$timeout_bin = '/usr/local/bin/gtimeout';
+				break;
+			case "NetBSD":
+				$timeout_bin = '/usr/pkg/bin/gtimeout';
+				break;
+			default:
+				$timeout_bin = '/usr/bin/timeout';
+				break;
+		}
+		echo system($timeout_bin . ' 90 '.io_safe_output($command).' 2>&1');
+	}
 	
 	return;
 }
@@ -162,7 +207,7 @@ if ($dialogue_event_response) {
 			echo "<br><div id='response_out' style='text-align:left'></div>";
 			
 			echo "<br><div id='re_exec_command' style='display:none;'>";
-			html_print_button(__('Execute again'),'btn_str',false,'perform_response(\''.$command.'\');', "class='sub next'");
+			html_print_button(__('Execute again'),'btn_str',false,'perform_response(\''.$command.'\', ' . $response_id . ');', "class='sub next'");
 			echo "</div>";
 			break;
 		case 'url':
@@ -302,7 +347,7 @@ if ($get_extended_event) {
 	$tabs .= "<li><a href='#extended_event_comments_page' id='link_comments'>".html_print_image('images/pencil.png',true)."<span style='position:relative;top:-6px;left:5px;margin-right:10px;'>".__('Comments')."</span></a></li>";
 
 	if (!$readonly &&
-		(tags_checks_event_acl($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags'], $childrens_ids)) || (tags_checks_event_acl($config["id_user"], $event["id_grupo"], "EW", $event['clean_tags'],$childrens_ids))) {
+		((tags_checks_event_acl($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags'], $childrens_ids)) || (tags_checks_event_acl($config["id_user"], $event["id_grupo"], "EW", $event['clean_tags'],$childrens_ids)))) {
 		$tabs .= "<li><a href='#extended_event_responses_page' id='link_responses'>".html_print_image('images/event_responses_col.png',true)."<span style='position:relative;top:-6px;left:3px;margin-right:10px;'>".__('Responses')."</span></a></li>";
 	}
 	if ($event['custom_data'] != '') {
@@ -335,9 +380,9 @@ if ($get_extended_event) {
 			$img_sev = "images/status_sets/default/severity_major.png";
 			break;
 	}
-	
+
 	if (!$readonly && 
-	(tags_checks_event_acl($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags'], $childrens_ids)) || (tags_checks_event_acl($config["id_user"], $event["id_grupo"], "EW", $event['clean_tags'],$childrens_ids))) {
+	((tags_checks_event_acl($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags'], $childrens_ids)) || (tags_checks_event_acl($config["id_user"], $event["id_grupo"], "EW", $event['clean_tags'],$childrens_ids)))) {
 		$responses = events_page_responses($event, $childrens_ids);
 	}
 	else {
@@ -503,15 +548,27 @@ if ($table_events) {
 	require_once ("include/functions_graph.php");
 	
 	$id_agente = (int)get_parameter('id_agente', 0);
+	$all_events_24h = (int)get_parameter('all_events_24h', 0);
 	
 	// Fix: for tag functionality groups have to be all user_groups (propagate ACL funct!)
 	$groups = users_get_groups($config["id_user"]);
 	
 	$tags_condition = tags_get_acl_tags($config['id_user'],
 		array_keys($groups), 'ER', 'event_condition', 'AND');
-	
-	events_print_event_table ("estado <> 1 $tags_condition", 10, '100%',
-		false, $id_agente,true);
+	echo '<div id="div_all_events_24h">';
+		echo '<label><b>' . __('Show all Events 24h') . '</b></label>';
+		echo html_print_checkbox('all_events_24h', $all_events_24h, $all_events_24h, true, false, '', true);
+	echo '</div>';
+	$date_subtract_day = time() - (24 * 60 * 60);
+
+	if($all_events_24h){
+		events_print_event_table ("utimestamp > $date_subtract_day", 200, '100%',
+									false, $id_agente,true);
+	}
+	else{
+		events_print_event_table ("estado <> 1 $tags_condition", 200, '100%',
+									false, $id_agente,true);	
+	}
 }
 
 if ($get_list_events_agents) {

@@ -1,0 +1,557 @@
+#!/bin/sh
+
+# **********************************************************************
+# Pandora FMS Agent Installer for Unix (generic installer)
+# (c) 2008-2015 Artica ST
+# (c) 2008-2010 Sancho Lerena <slerena@gmail.com>
+# 
+# This is a generic installer for all Unix-like systems.(AIX, HP-UX, SunOS, Linux, FreeBSD, NetBSD)
+# Please see http://www.pandorafms.org. This code is licensed under GPL 2.0 license.
+# **********************************************************************
+
+PI_VERSION="7.0NG"
+<<<<<<< HEAD
+PI_BUILD="170406"
+=======
+PI_BUILD="170418"
+>>>>>>> develop
+OS_NAME=`uname -s`
+
+FORCE=0
+LOG_TIMESTAMP=`date +"%Y/%m/%d %H:%M:%S"`
+
+PREFIX=/usr
+if [ "$OS_NAME" = "FreeBSD" ] || [ "$OS_NAME" = "NetBSD" ]
+then
+	PREFIX=/usr/local
+fi
+PANDORA_HOME=$PREFIX/share/pandora_agent
+PANDORA_BIN=$PREFIX/bin/pandora_agent
+PANDORA_EXEC_BIN=$PREFIX/bin/pandora_agent_exec
+PANDORA_REVENT_BIN=$PREFIX/bin/pandora_revent
+PANDORA_TEMP=/var/spool/pandora
+PANDORA_CFG=/etc/pandora
+PANDORA_LOG_DIR=/var/log/pandora
+PANDORA_LOG=pandora_agent.log
+TENTACLE=$PREFIX/bin/tentacle_client
+TENTACLE_SERVER=$PREFIX/bin/tentacle_server
+PANDORA_MAN=$PREFIX/share/man
+PANDORA_STARTUP=/etc/init.d/pandora_agent_daemon
+DAEMON_SCRIPT=pandora_agent_daemon
+PANDORA_USER="root"
+PANDORA_PERL_PATH="perl"
+WITHOUT_TENTACLE_SERVER=0
+FAKEROOT=0
+
+# defaults for each platforms
+case $OS_NAME in
+AIX)
+    PANDORA_STARTUP=/etc/rc.pandora_agent_daemon
+	;;
+HP-UX)
+	PANDORA_STARTUP=/sbin/init.d/pandora_agent_daemon
+	;;
+FreeBSD)
+	PANDORA_CFG=$PREFIX/etc/pandora
+	PANDORA_MAN=$PREFIX/man
+	PANDORA_STARTUP=$PREFIX/etc/rc.d/pandora_agent
+	DAEMON_SCRIPT=$OS_NAME/pandora_agent
+	PANDORA_PERL_PATH=/usr/local/bin/perl
+	;;
+NetBSD)
+	PANDORA_CFG=/usr/local/etc/pandora
+	PANDORA_STARTUP=/etc/rc.d/pandora_agent
+	DAEMON_SCRIPT=$OS_NAME/pandora_agent
+	PANDORA_PERL_PATH=/usr/pkg/bin/perl
+	;;
+esac
+
+MODE=$1
+
+# options
+while :
+do
+	case "$2" in 
+	"--no-tentacle-server") WITHOUT_TENTACLE_SERVER=1;;
+	"--fakeroot") FAKEROOT=1;;
+	*) break;;
+	esac
+	shift
+done
+
+PANDORA_BASE=`echo $2 | sed -e 's|/$||'`
+if [ "$3" != "" ]
+then
+	PANDORA_USER=$3
+	if [ -z "$PANDORA_BASE" ]
+	then
+		echo "When specifying a custom user the agent must be installed to a custom location where that user has write permissions!"
+		exit 1
+	fi
+fi
+
+[ "$4" ] && PANDORA_PERL_PATH=$4
+
+# Check for Perl 5.6.x or higher available
+PERL_VERSION=`$PANDORA_PERL_PATH -v | egrep 'v5.[6-9]|v5.[12][0-9]' | grep perl`
+
+if [ -z "$PERL_VERSION" ]
+then
+	echo "Perl 5.6.x or higher is not detected. This is required for Pandora FMS"
+	echo "Detected: $PERL_VERSION "
+	echo "Aborting install..."
+	exit 2
+fi
+
+if [ -z "`echo Linux HP-UX SunOS AIX Solaris Darwin BSD bsd FreeBSD NetBSD | grep \"$OS_NAME\"`" ]
+then
+	echo "This system: '$OS_NAME' is not supported by this script"
+	echo "Please make the install yourself as it's described in documentation"
+	exit 1
+fi
+
+
+# check for root to do the install
+if [ $FAKEROOT -ne 1 ] && [ -z "`id | grep \"uid=0(root)\"`" ]
+then
+	echo "You need to be root to do the install. Please made a manual install"
+	echo "if you want to install Pandora FMS agent without root"
+	echo " "
+	echo "Aborting install"
+	exit 2
+fi
+
+help () {
+	echo "Syntax":
+	echo " "
+	echo "    ./pandora_agent_installer < --mode > [ --option ] [ destination_path ] [ user_to_run_as ] [custom_perl_path]"
+	echo " "
+	echo "Modes:"
+	echo " "
+	echo "  --force-install      To force installation if already installed on system"
+	echo "  --install            To install Pandora FMS Agent on this system"
+	echo "  --uninstall          To uninstall/remove Pandora FMS Agent on this System"
+	echo " "	
+	echo "Option:"
+	echo " "
+	echo "  --no-tentacle-server  Skip tentacle server installation (by default tentalce server installed)"
+	echo "  --fakeroot            treate \"destination_path\" as root directory"
+	echo " "
+	echo "Some exaples of how to use the installer:"
+	echo " "
+	echo "   ./pandora_agent_installer --install"
+	echo "   ./pandora_agent_installer --install /opt/pandora"
+	echo "   ./pandora_agent_installer --install \"\" pandora"
+	echo "   ./pandora_agent_installer --install /opt/pandora root /opt/pandora/perl5/usr/local/bin/perl"
+	echo "   ./pandora_agent_installer --uninstall /opt/pandora"
+	echo " "
+}
+
+uninstall () {
+	if [ "$OS_NAME" = "Darwin" ]
+        then
+		launchctl remove com.pandorafms.pandorafms 
+		rm /Library/LaunchDaemons/com.pandorafms.pandorafms.plist 2> /dev/null
+	fi
+
+	echo "Removing Pandora FMS Agent..."
+	rm -Rf $PANDORA_BASE$PANDORA_BIN 2> /dev/null
+	rm -Rf $PANDORA_BASE$PANDORA_EXEC_BIN 2> /dev/null
+	rm -Rf $PANDORA_BASE$PANDORA_REVENT_BIN 2> /dev/null
+	rm -f  $DESTDIR/etc/logrotate.d/pandora_agent
+	
+	#Test if exist Pandora Server in this machine
+	if [ -d $PANDORA_BASE$PANDORA_TEMP/data_in ]
+	then
+		echo "You have a Pandora Server in this machine. Then don't delete "$PANDORA_TEMP
+		rm -Rf $PANDORA_BASE$PANDORA_TEMP/data_out 2> /dev/null
+	else
+		rm -Rf $PANDORA_BASE$PANDORA_TEMP 2> /dev/null
+		rm -Rf $PANDORA_BASE$TENTACLE_SERVER 2> /dev/null
+	fi 
+	rm -Rf $PANDORA_BASE$PANDORA_CFG/pandora_agent.conf 2> /dev/null
+	
+	rm -Rf $PANDORA_BASE/etc/init.d/pandora_agent_daemon 2> /dev/null
+	rm -Rf $PANDORA_BASE/sbin/init.d/pandora_agent_daemon 2> /dev/null
+	rm -Rf $PANDORA_BASE/etc/rc.pandora_agent_daemon 2> /dev/null
+	rm -Rf $PANDORA_BASE/etc/rc?.d/S90pandora_agent_daemon 2> /dev/null
+	rm -Rf $PANDORA_BASE/sbin/rc?.d/S90pandora_agent_daemon 2> /dev/null
+	rm -Rf $PANDORA_BASE/etc/rc?.d/S90pandora_agent 2> /dev/null
+	rm -Rf $PANDORA_BASE/sbin/rc?.d/S90pandora_agent 2> /dev/null
+	rm -Rf $PANDORA_BASE/etc/rc.d/rc?.d/S90pandora_agent_daemon 2> /dev/null
+	rm -Rf $PANDORA_BASE/etc/rc.d/rc?.d/S90pandora_agent 2> /dev/null
+	rm -Rf $PANDORA_BASE/usr/local/etc/rc.d/pandora_agent 2> /dev/null
+	if [ $FAKEROOT -ne 1 ]
+	then
+		rm -Rf /etc/init.d/pandora_agent_daemon 2> /dev/null
+		rm -Rf /sbin/init.d/pandora_agent_daemon 2> /dev/null
+		rm -Rf /etc/rc.pandora_agent_daemon 2> /dev/null
+		rm -Rf /etc/rc?.d/S90pandora_agent_daemon 2> /dev/null
+		rm -Rf /sbin/rc?.d/S90pandora_agent_daemon 2> /dev/null
+		rm -Rf /etc/rc?.d/S90pandora_agent 2> /dev/null
+		rm -Rf /sbin/rc?.d/S90pandora_agent 2> /dev/null
+		rm -Rf /etc/rc.d/rc?.d/S90pandora_agent_daemon 2> /dev/null
+		rm -Rf /etc/rc.d/rc?.d/S90pandora_agent 2> /dev/null
+		rm -Rf /usr/local/etc/rc.d/pandora_agent 2> /dev/null
+	fi
+	
+	rm -Rf $PANDORA_BASE$PANDORA_HOME 2> /dev/null
+	rm -Rf $PANDORA_BASE$PANDORA_LOG_DIR/$PANDORA_LOG 2> /dev/null
+	rm -Rf $PANDORA_BASE$TENTACLE 2> /dev/null
+
+	rm -Rf $PANDORA_BASE$PANDORA_MAN/{man1,cat1}/tentacle_client.1.gz 2> /dev/null
+	rm -Rf $PANDORA_BASE$PANDORA_MAN/{man1,cat1}/pandora_agent.1.gz 2> /dev/null
+
+	# Skip delete of /etc/pandora if exists configuration of a server or satellite
+	if [ ! -f $PANDORA_BASE/$PANDORA_CFG/pandora_server.conf -a ! -f $PANDORA_BASE/$PANDORA_CFG/satellite_server.conf ]
+	then
+		rm -Rf $PANDORA_BASE/$PANDORA_CFG 2> /dev/null
+	fi
+
+	if [ ! -z "$PANDORA_BASE" ]
+	then
+		echo "Please delete manually $PANDORA_BASE for complete uninstall"
+	fi
+
+	echo " "
+	echo "Done"
+}
+
+#
+# install_perl_script [OPTIONS] SRCFILE DESTFILE
+#	Install perl script. If PANDORA_PERL_DECODED_PATH is set, path of the perl
+#	in shebang line is replaced with PANDORA_PERL_DECODED_PATH value.
+#	OPTIONS:
+#		-o OWNER  owner of the installed script
+#		-g GROUP  group of the installed script
+#		-m PREM   mode of the installed script
+#
+install_perl_script () {
+	OWNER=""; GROUP=""; PERM=""
+	while :
+	do
+		case $1 in
+		-o) OWNER=$2;;
+		-g) GROUP=$2;;
+		-m) PERM=$2;;
+		*)  break;;
+		esac
+		shift;shift
+	done
+	SRC="$1"
+	DEST="$2"
+
+	# do install
+	if echo $PANDORA_PERL_PATH | grep "/" > /dev/null && [ "$PANDORA_PERL_PATH" != "/usr/bin/perl" ]
+	then
+		sed -e "s:^#\!.*:#\!$PANDORA_PERL_PATH:g" $SRC > $DEST
+	else
+		cp $SRC $DEST
+	fi
+
+	# set owner, group and permissions
+	[ "$OWNER" ] && chown $OWNER $DEST 2>/dev/null
+	[ "$GROUP" ] && chgrp $GROUP $DEST 2>/dev/null
+	[ "$PERM"  ] && chmod $PERM  $DEST
+}
+
+install () {
+	OS_VERSION=`uname -r`
+	OLDFILENAMETMP=`date +"%Y-%m-%d"`
+
+	echo "Detecting Unix distribution: $OS_NAME version $OS_VERSION"
+	if [ -f $PANDORA_BASE$PANDORA_HOME ] && [ "$FORCE" = "0" ]
+	then
+		echo "Seems that default dir already exists. Please use --force-install to"
+		echo "force installer to install on $PANDORA_BASE$PANDORA_HOME"
+		exit
+	else
+		echo "Checking default dir $PANDORA_BASE$PANDORA_HOME..."
+	fi
+
+	if [ -f $PANDORA_BASE$PANDORA_BIN ] && [ "$FORCE" = "0" ]
+	then
+		echo "Seems that $PANDORA_BASE$PANDORA_BIN already exists. Please use --force-install to"
+		echo "force installer to reinstall overwriting it"
+		echo " "
+		exit
+	else
+		echo "Checking Pandora FMS Agent on $PANDORA_BASE$PANDORA_BIN...."
+	fi
+
+	# Alter dynamically the daemon launcher and setup the new path 
+	# if PANDORA_BASE is customized.
+	if [ "$PANDORA_BASE" ] && [ $FAKEROOT -ne 1 ]
+	then
+		DAEMON_TEMP=pandora_agent_daemon_temp
+
+		# Backup the daemon script
+		cp -f "$DAEMON_SCRIPT" "${DAEMON_SCRIPT}.bak"
+		
+		AGENT_CFG=$OS_NAME/pandora_agent.conf
+		AGENT_CFG_TEMP=$OS_NAME/pandora_agent.conf.temp
+
+		# Backup the configuration file
+		cp -f "$AGENT_CFG" "${AGENT_CFG}.bak"
+
+		if [ "$OS_NAME" = "FreeBSD" ] || [ "$OS_NAME" = "NetBSD" ]
+		then
+			sed -e "\|^PATH=|s|=|=$PANDORA_BASE$PREFIX/bin:|" \
+				-e "s|/usr/local/etc/pandora|$PANDORA_BASE$PANDORA_CFG|g" \
+				-e "s|/usr/local/bin/pandora_agent|$PANDORA_BASE$PANDORA_BIN|g" \
+				$DAEMON_SCRIPT > $DAEMON_TEMP
+			mv $DAEMON_TEMP $DAEMON_SCRIPT
+		else
+			sed -e "\|^PATH=|s|=|=$PANDORA_BASE/usr/bin:|" \
+				-e "\|^PANDORA_PATH=|s|=|=$PANDORA_BASE|" \
+				-e "\|^LOGFILE=|s|=|=$PANDORA_BASE|" \
+				-e "\|^DAEMON=|s|=|=$PANDORA_BASE|" \
+				-e "\|^DAEMON_TENTACLE=|s|=|=$PANDORA_BASE|" \
+				-e "s/^PANDORA_USER=.*/PANDORA_USER=$PANDORA_USER/"  \
+				$DAEMON_SCRIPT > $DAEMON_TEMP
+			mv  $DAEMON_TEMP $DAEMON_SCRIPT
+		fi
+
+		sed -e "s|^temporal[ \t][ \t]*|temporal $PANDORA_BASE|" \
+			-e "s|^logfile[ \t][ \t]*|logfile $PANDORA_BASE|" \
+			$AGENT_CFG > $AGENT_CFG_TEMP
+		mv $AGENT_CFG_TEMP $AGENT_CFG
+	fi
+	echo "Creating Pandora FMS Agent home directory at $PANDORA_BASE$PANDORA_HOME"
+	if [ "$PANDORA_BASE" ]
+	then
+		mkdir -p $PANDORA_BASE 2> /dev/null
+		mkdir -p $PANDORA_BASE/var/log 2> /dev/null
+		mkdir -p $PANDORA_BASE/$PANDORA_MAN/man1 2> /dev/null
+		mkdir -p $PANDORA_BASE$PREFIX/bin 2> /dev/null
+	fi
+
+	mkdir -p $PANDORA_BASE$PANDORA_HOME 2> /dev/null
+
+	# Create directories based on PANDORA_BASE 
+
+	mkdir -p $PANDORA_BASE/tmp 2> /dev/null
+	mkdir -p $PANDORA_BASE$PANDORA_TEMP/data_out 2> /dev/null
+	mkdir -p $PANDORA_BASE$PANDORA_CFG 2> /dev/null
+	mkdir -p $PANDORA_BASE$PANDORA_LOG_DIR 2> /dev/null
+	
+	# Set the user the agent will run as
+	if [ "$PANDORA_USER" != "root" ]
+	then
+		sed -e "s/.*pandora_user .*/pandora_user $PANDORA_USER/" $AGENT_CFG > $AGENT_CFG_TEMP 2> /dev/null && \
+			mv $AGENT_CFG_TEMP $AGENT_CFG
+		chmod 755 pandora_agent_daemon
+		chown -R $PANDORA_USER $PANDORA_BASE 2>/dev/null
+	fi
+
+	# Create logfile
+	if [ ! -z "`touch $PANDORA_BASE$PANDORA_LOG_DIR/$PANDORA_LOG`" ]
+	then
+		echo "Seems to be a problem generating logfile ($PANDORA_BASE$PANDORA_LOG_DIR/$PANDORA_LOG) please check it";
+	else
+		echo "Created logfile at $PANDORA_BASE$PANDORA_LOG_DIR/$PANDORA_LOG..."
+	fi
+	echo "$LOG_TIMESTAMP Pandora FMS installer has created this file at startup" > $PANDORA_BASE$PANDORA_LOG_DIR/$PANDORA_LOG
+
+	# Copying agent and securing it
+	echo "Copying Pandora FMS Agent to $PANDORA_BASE$PANDORA_BIN..."
+	install_perl_script -m 755 -o $PANDORA_USER -g 0 pandora_agent $PANDORA_BASE$PANDORA_BIN
+	install_perl_script -m 755 -o $PANDORA_USER -g 0 pandora_agent_exec $PANDORA_BASE$PANDORA_EXEC_BIN
+	install_perl_script -m 755 -o $PANDORA_USER -g 0 pandora_revent $PANDORA_BASE$PANDORA_REVENT_BIN
+
+	echo "Copying Pandora FMS Agent configuration file to $PANDORA_BASE$PANDORA_CFG/pandora_agent.conf..."
+	if [ -f $PANDORA_BASE/$PANDORA_CFG/pandora_agent.conf ]
+	then
+		cp $PANDORA_BASE/$PANDORA_CFG/pandora_agent.conf $PANDORA_BASE/$PANDORA_CFG/pandora_agent.conf.$OLDFILENAMETMP
+		echo "Backing up old configuration file to $PANDORA_BASE/$PANDORA_CFG/pandora_agent.conf.$OLDFILENAMETMP"
+	fi
+
+	echo "Copying Pandora FMS Agent plugins to $PANDORA_BASE$PANDORA_HOME/plugins..."
+
+	[ -d $PANDORA_BASE$PANDORA_HOME/plugins ] || mkdir -p $PANDORA_BASE$PANDORA_HOME/plugins >/dev/null 2>&1
+	for PLUGIN in plugins/*
+	do
+		if grep '^#!.*/perl' $PLUGIN >/dev/null 2>&1
+		then
+			install_perl_script $PLUGIN $PANDORA_BASE$PANDORA_HOME/$PLUGIN
+		else
+			cp $PLUGIN $PANDORA_BASE$PANDORA_HOME/plugins
+		fi
+	done
+	chmod -R 700 $PANDORA_BASE$PANDORA_HOME/plugins
+
+	PANDORA_BASE_REAL="$PANDORA_BASE"
+	[ $FAKEROOT -eq 1 ] && PANDORA_BASE_REAL=""
+
+	ln -s $PANDORA_BASE_REAL$PANDORA_HOME/plugins $PANDORA_BASE$PANDORA_CFG
+
+	echo "Copying Pandora FMS Agent collections to $PANDORA_BASE$PANDORA_HOME/collections..."
+	cp -r collections $PANDORA_BASE$PANDORA_HOME
+	chmod -R 700 $PANDORA_BASE$PANDORA_HOME/collections
+	ln -s $PANDORA_BASE_REAL$PANDORA_HOME/collections $PANDORA_BASE$PANDORA_CFG
+	
+	if [ $WITHOUT_TENTACLE_SERVER -eq 0 ]
+	then
+		echo "Copying tentacle server to $PANDORA_BASE$TENTACLE_SERVER"
+		install_perl_script -m 755 -o $PANDORA_USER -g 0 tentacle_server $PANDORA_BASE$TENTACLE_SERVER
+	fi
+	
+	echo "Copying tentacle client to $PANDORA_BASE$TENTACLE"
+	install_perl_script -m 755 -o $PANDORA_USER -g 0 tentacle_client $PANDORA_BASE$TENTACLE	
+
+	echo "Installing the Pandora Agent and Tentacle Client manuals"
+	cp man/man1/tentacle_client.1.gz $PANDORA_BASE/$PANDORA_MAN/man1
+	chmod 644 $PANDORA_BASE/$PANDORA_MAN/man1/tentacle_client.1.gz
+	cp man/man1/pandora_agent.1.gz $PANDORA_BASE/$PANDORA_MAN/man1
+	chmod 644 $PANDORA_BASE/$PANDORA_MAN/man1/pandora_agent.1.gz
+
+	echo "Setting secure permissions and ownership for all Pandora FMS Agent files..."
+	chown -R $PANDORA_USER $PANDORA_BASE$PANDORA_HOME  2>/dev/null
+	chmod -R 700 $PANDORA_BASE$PANDORA_TEMP/data_out
+	chmod 711 $PANDORA_BASE$PANDORA_LOG_DIR
+	chmod 640 $PANDORA_BASE$PANDORA_LOG_DIR/$PANDORA_LOG
+	chown $PANDORA_USER:0 $PANDORA_BASE$PANDORA_LOG_DIR/$PANDORA_LOG  2>/dev/null
+	if [ "$OS_NAME" = "FreeBSD" ] || [ "$OS_NAME" = "NetBSD" ]
+	then
+		chown $PANDORA_USER:daemon $PANDORA_BASE$PANDORA_TEMP 2>/dev/null
+		chmod -R 770 $PANDORA_BASE$PANDORA_TEMP
+		chmod 775 $PANDORA_BASE$PANDORA_TEMP
+	fi
+
+	echo "Copying default agent configuration to $PANDORA_BASE$PANDORA_CFG/pandora_agent.conf"
+
+	cp $OS_NAME/pandora_agent.conf $PANDORA_BASE$PANDORA_CFG/pandora_agent.conf
+	chmod 600 $PANDORA_BASE$PANDORA_CFG/pandora_agent.conf
+	chown $PANDORA_USER $PANDORA_BASE$PANDORA_CFG/pandora_agent.conf 2>/dev/null
+
+	echo "Linking start-up daemon script '$DAEMON_SCRIPT' on $OS_NAME";
+
+	if [ "$OS_NAME" = "Darwin" ]
+	then
+		# Specific service install on Darwin/macOSX
+		launchctl load -F Darwin/com.pandorafms.pandorafms.plist
+		echo "Start Pandora FMS service with 'launchctl start com.pandorafms.pandorafms'"
+		echo "This service has been scheduled to launch on each system startup"
+	else
+		DESTDIR=""
+		[ "$PANDORA_BASE" ] && [ $FAKEROOT -eq 1 ] && DESTDIR=$PANDORA_BASE
+
+		cp $DAEMON_SCRIPT $DESTDIR$PANDORA_STARTUP
+		chmod 755 $DESTDIR$PANDORA_STARTUP
+		chown root:0 $DESTDIR$PANDORA_STARTUP 2>/dev/null
+
+		RCDIRS=""
+		MSG=""
+		if [ "$OS_NAME" = "AIX" ]
+		then
+			RCDIRS=/etc/rc.d/rc2.d
+			MSG="Pandora FMS agent has been included in $DESTDIR/etc/rc.d/rc2.d/S90pandora_agent_daemon"
+		elif [ "$OS_NAME" = "HP-UX" ]
+		then
+			RCDIRS="/sbin/rc2.d /sbin/rc3.d"
+			MSG="Pandora FMS agent has been included in $DESTDIR/sbin/rcX.d/S90pandora_agent_daemon"
+		elif [ "$OS_NAME" = "SunOS" ]
+		then
+			RCDIRS=/etc/rc2.d
+			MSG="Pandora FMS agent has been included in $DESTDIR/etc/rc2.d/S90pandora_agent_daemon"
+		elif [ "$OS_NAME" = "Linux" ]
+		then
+			if [ -d /etc/rc.d/ ]
+			then
+				RCDIRS="/etc/rc.d/rc2.d /etc/rc.d/rc3.d"
+			else
+				RCDIRS="/etc/rc2.d /etc/rc3.d"
+			fi
+		fi
+		[ "$RCDIRS" ] && for RCDIR in $RCDIRS
+		do
+			[ $FAKEROOT -eq 1 ] && [ ! -d $DESTDIR$RCDIR ] && mkdir -p $DESTDIR$RCDIR >/dev/null 2>&1
+			ln -s $PANDORA_STARTUP $DESTDIR$RCDIR/S90pandora_agent 2> /dev/null
+		done
+		[ "$MSG" ] && echo "$MSG"
+	fi
+	
+	if [ -d /etc/logrotate.d ]
+	then
+		[ -d $DESTDIR/etc/logrotate.d ] && mkdir -p $DESTDIR/etc/logrotate.d
+		echo "Creating logrotate.d entry for Pandora FMS log management"
+		sed -e "s|^/var/log/pandora/pandora_agent.log|$PANDORA_BASE_REAL$PANDORA_LOG_DIR/$PANDORA_LOG|" pandora_agent_logrotate \
+			> $DESTDIR/etc/logrotate.d/pandora_agent
+	else
+		echo "Please add a log rotation schedule manually to your log rotation daemon (if any)"
+	fi
+
+	echo "Done."
+	echo " "
+	echo "You have your startup script ready at $PANDORA_STARTUP"
+	echo " "
+	echo "Tentacle is the default transfer mode since 2.0 version."
+	echo " "
+	echo "If you want to use SSH, firstly you need to copy your public SSH keys "
+	echo " ($HOME/.ssh/id_dsa) under /home/pandora/.ssh/authorized_keys "
+	echo "on your Pandora FMS Server host"
+	echo " "
+	echo "You may need to install manually some additional required dependencies:"
+	echo "perl-Sys-Syslog"
+	echo " "
+	echo "You also need to setup your $PANDORA_BASE$PANDORA_CFG/pandora_agent.conf config file"
+	echo " "
+	if [ "$OS_NAME" = "FreeBSD" ]
+	then
+		echo "Define 'pandora_agent_enable=\"YES\"' in /etc/rc.conf to enable the daemon."
+	elif [ "$OS_NAME" = "NetBSD" ]
+	then
+		echo "Define 'pandora_agent=\"YES\"' in /etc/rc.conf to enable the daemon."
+	else
+		echo "Check your startup configuration to be sure Pandora FMS Agent is ready "
+		echo "to start automatically when system restarts":
+	fi
+
+	# Restore the daemon script
+	cp -f "$DAEMON_SCRIPT.bak" "$DAEMON_SCRIPT" >/dev/null 2>&1
+	rm -f "$DAEMON_SCRIPT.bak" >/dev/null 2>&1
+
+	# Restore the configuration file
+	cp -f "$AGENT_CFG.bak" "$AGENT_CFG" >/dev/null 2>&1
+	rm -f "$AGENT_CFG.bak" >/dev/null 2>&1
+
+}
+
+if [ ! -f "pandora_agent" ]
+then
+	echo " "
+	echo "Execute installer from the directory where you have your files. "
+	help
+	exit 1
+fi
+
+# Script banner at start
+echo " "
+echo "Pandora FMS Agent UNIX Installer $PI_VERSION $PI_BUILD (c) 2008-2015 ArticaST"
+echo "This program is licensed under GPL2 Terms. http://pandorafms.com"
+echo " "
+
+
+case "$MODE" in
+
+'--force-install')
+	FORCE=1
+	install
+	exit
+	;;
+
+'--install')
+	install
+	exit
+	;;
+
+'--uninstall')
+	uninstall
+	exit
+	;;
+
+*)
+	help
+	;;
+esac
+

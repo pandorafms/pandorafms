@@ -185,6 +185,7 @@ define('AGENT_STATUS_WARNING',		2);
 define('STATIC_GRAPH',		0);
 define('PERCENTILE_BAR',	3);
 define('MODULE_GRAPH',		1);
+define('AUTO_SLA_GRAPH',	14);
 define('SIMPLE_VALUE',		2);
 define('LABEL',				4);
 define('ICON',				5);
@@ -310,6 +311,7 @@ define ('MODULE_PLUGIN',		4);
 define ('MODULE_PREDICTION',	5);
 define ('MODULE_WMI',			6);
 define ('MODULE_WEB',			7);
+define ('MODULE_WUX',           8);
 
 /* Type of Modules of Prediction */
 define ('MODULE_PREDICTION_SERVICE',	2);
@@ -350,6 +352,7 @@ define('SERVER_TYPE_ENTERPRISE_SATELLITE',	    13);
 define('SERVER_TYPE_ENTERPRISE_TRANSACTIONAL',	14);
 define('SERVER_TYPE_MAINFRAME',	                15);
 define('SERVER_TYPE_SYNC',	                    16);
+define('SERVER_TYPE_WUX',						17);
 
 /* REPORTS */
 define('REPORT_TOP_N_MAX',	1);
@@ -467,6 +470,7 @@ define("OPTION_SINGLE_SELECT_TIME",		7);
 define("OPTION_CUSTOM_INPUT",			8);
 define("OPTION_AGENT_AUTOCOMPLETE",		9);
 define("OPTION_SELECT_MULTISELECTION",	10);
+define("OPTION_COLOR_PICKER",			11);
 
 /* Transactional map constants */
 define("NODE_TYPE", 0);

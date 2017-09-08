@@ -52,6 +52,17 @@ Pandora_Module_Proc::Pandora_Module_Proc (string name, string process_name)
 	this->retries = 3;
 	this->start_delay = 5000;
 	this->retry_delay = 2000;
+	this->thread = 0;
+}
+/** 
+ * Destroys a Pandora_Module_Service object.
+ */
+Pandora_Module_Proc::~Pandora_Module_Proc () {
+
+	// Close the thread if module is async
+	if (this->thread) {
+		TerminateThread(this->thread, 0);
+	}
 }
 
 string

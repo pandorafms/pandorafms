@@ -254,7 +254,9 @@ if ($get_module_detail) {
 
 	$id_type_web_content_string = db_get_value('id_tipo',
 		'ttipo_modulo', 'nombre', 'web_content_string');
-
+		
+	$post_process = db_get_value_filter('post_process','tagente_modulo',array('id_agente_modulo' => $module_id));
+	
 	foreach ($result as $row) {
 		$data = array ();
 
@@ -266,21 +268,16 @@ if ($get_module_detail) {
 		foreach ($columns as $col => $attr) {
 			if ($attr[1] != "modules_format_data") {
 				$data[] = date('d F Y h:i:s A', $row['utimestamp']);
-
 			}
 			elseif (($config['command_snapshot']) && (preg_match ("/[\n]+/i", $row[$attr[0]]))) {
 				// Its a single-data, multiline data (data snapshot) ?
 
-
 				// Detect string data with \n and convert to <br>'s
 				$datos = $row[$attr[0]];
-				//$datos = preg_replace ('/\n/i','<br>',$row[$attr[0]]);
-				//$datos = preg_replace ('/\s/i','&nbsp;',$datos);
 
 				// Because this *SHIT* of print_table monster, I cannot format properly this cells
 				// so, eat this, motherfucker :))
-
-				$datos =  io_safe_input($datos);
+				$datos =  preg_replace("/\n/", "</br></br>", $datos);
 
 				// I dont why, but using index (value) method, data is automatically converted to html entities ¿?
 				$data[] = $datos;
@@ -288,7 +285,6 @@ if ($get_module_detail) {
 			elseif ($is_web_content_string) {
 				//Fixed the goliat sends the strings from web
 				//without HTML entities
-
 				$data[] = io_safe_input($row[$attr[0]]);
 			}
 			else {
@@ -299,16 +295,19 @@ if ($get_module_detail) {
 					$data[] = io_safe_input($row[$attr[0]]);
 				}
 				else if (is_numeric($row[$attr[0]]) && !modules_is_string_type($row['module_type']) ) {
-					
-					//~ $data[] = remove_right_zeros(number_format($row[$attr[0]], $config['graph_precision']));
-					//~ $data[] = (double) $row[$attr[0]];
 					switch($row['module_type']) {
 						case 15:
 							$value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module_id);
-							if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0')
-								$data[] = human_milliseconds_to_string($row['data']);
-							else
+							if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0'){
+								if($post_process > 0){
+									$data[] = human_milliseconds_to_string($row['data'] / $post_process);
+								} else {
+									$data[] = human_milliseconds_to_string($row['data']);
+								}
+							}else{
 								$data[] = remove_right_zeros(number_format($row[$attr[0]], $config['graph_precision']));
+							}
+								
 							break;
 						default:
 							$data[] = remove_right_zeros(number_format($row[$attr[0]], $config['graph_precision']));
@@ -320,17 +319,12 @@ if ($get_module_detail) {
 						$data[] = 'No data';
 					}
 					else {
-					
-					if(is_snapshot_data($row[$attr[0]])){	
-						$data[] = "<a target='_blank' href='".io_safe_input($row[$attr[0]])."'><img style='width:300px' src='".io_safe_input($row[$attr[0]])."'></a>";
-					}
-					else{
-						$data[] = $row[$attr[0]];
-					}
-						
-						
-					
-					
+						if(is_snapshot_data($row[$attr[0]])){	
+							$data[] = "<a target='_blank' href='".io_safe_input($row[$attr[0]])."'><img style='width:300px' src='".io_safe_input($row[$attr[0]])."'></a>";
+						}
+						else{
+							$data[] = $row[$attr[0]];
+						}
 					}
 				}
 			}
@@ -970,10 +964,16 @@ if ($list_modules) {
 							switch($module['id_tipo_modulo']) {
 								case 15:
 									$value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module['id_agente_modulo']);
-									if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0')
-										$salida = human_milliseconds_to_string($module['datos']);
-									else
+									if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0'){
+										if($module['post_process']>0){
+											$salida = human_milliseconds_to_string($module['datos'] / $module['post_process']);
+										} else {
+											$salida = human_milliseconds_to_string($module['datos']);
+										}
+									} else {
 										$salida = remove_right_zeros(number_format($module["datos"], $config['graph_precision']));
+									}
+										
 									break;
 								default:
 									$salida = remove_right_zeros(number_format($module["datos"], $config['graph_precision']));
@@ -986,16 +986,20 @@ if ($list_modules) {
 					switch($module['id_tipo_modulo']) {
 						case 15:
 							$value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module['id_agente_modulo']);
-							if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0')
-								$salida = human_milliseconds_to_string($module['datos']);
-							else
+							if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0'){
+								if($module['post_process']>0){
+									$salida = human_milliseconds_to_string($module['datos'] / $module['post_process']);
+								} else {
+									$salida = human_milliseconds_to_string($module['datos']);
+								}
+							} else {
 								$salida = remove_right_zeros(number_format($module["datos"], $config['graph_precision']));
+							}
 							break;
 						default:
 							$salida = remove_right_zeros(number_format($module["datos"], $config['graph_precision']));
 							break;
 					}
-					//~ $salida = (number_format($module["datos"], $config['graph_precision']));
 				}
 				// Show units ONLY in numeric data types
 				if (isset($module["unit"])) {
@@ -1008,8 +1012,12 @@ if ($list_modules) {
 					$module["current_interval"], $module["module_name"]);
 			}
 		}
-		
+		if($module["id_tipo_modulo"] != 25){
 		$data[6] = ui_print_module_warn_value ($module["max_warning"], $module["min_warning"], $module["str_warning"], $module["max_critical"], $module["min_critical"], $module["str_critical"]);
+		}
+		else{
+			$data[6] = "";
+		}
 		
 		$data[7] = $salida;
 		$graph_type = return_graphtype ($module["id_tipo_modulo"]);

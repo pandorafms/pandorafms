@@ -660,6 +660,28 @@ function ui_print_os_icon ($id_os, $name = true, $return = false,
 	return $output;
 }
 
+function ui_print_type_agent_icon ( $id_os = false, $remote_contact = false, $contact = false, 
+						$return = false, $remote = 0, $version = ""){
+
+	if($id_os == 19){
+		//Satellite
+		$options['title'] = __('Satellite');
+		$output = html_print_image("images/op_satellite.png", true, $options, false, false, false, true);
+	}
+	else if ($remote_contact == $contact && $remote == 0 && $version == ""){
+		//Network
+		$options['title'] = __('Network');
+		$output = html_print_image("images/network.png", true, $options, false, false, false, true);
+	}
+	else{
+		//Software
+		$options['title'] = __('Software');
+		$output = html_print_image("images/data.png", true, $options, false, false, false, true);
+	}
+
+	return $output;
+}
+
 /**
  * Prints an agent name with the correct link
  * 
@@ -1068,6 +1090,8 @@ function ui_print_alert_template_example ($id_alert_template, $return = false, $
  * @return string The help tip
  */
 function ui_print_help_icon ($help_id, $return = false, $home_url = '', $image = "images/help.png") {
+	global $config;
+
 	if (empty($home_url))
 		$home_url = "";
 	
@@ -1078,7 +1102,7 @@ function ui_print_help_icon ($help_id, $return = false, $home_url = '', $image =
 	$output = html_print_image ($image, true,
 		array ("class" => "img_help",
 			"title" => __('Help'),
-			"onclick" => "open_help ('" . $help_id . "','" . $home_url . "')"));
+			"onclick" => "open_help ('" . $help_id . "','" . $home_url . "','" . $config['id_user'] . "')"));
 	if (!$return)
 		echo $output;
 	
@@ -1298,8 +1322,8 @@ function ui_process_page_head ($string, $bitfield) {
 			$_GET['sec2'] == 'enterprise/dashboard/main_dashboard') {
 			
 			$query = ui_get_url_refresh (false, false);
-			$output .= '<meta http-equiv="refresh" content="' .
-				$config_refr . '; URL=' . $query . '" />';
+			//$output .= '<meta http-equiv="refresh" content="' .
+				//$config_refr . '; URL=' . $query . '" />';
 			
 		}
 	}
@@ -1583,6 +1607,7 @@ function ui_process_page_body ($string, $bitfield) {
  * @param bool $return Whether to return or print this
  * @param string $offset_name The name of parameter for the offset.
  * @param bool $print_total_items Show the text with the total items. By default true.
+ * @param string $set_id Set id of div.
  *
  * @return string The pagination div or nothing if no pagination needs to be done
  */
@@ -1590,7 +1615,7 @@ function ui_pagination ($count, $url = false, $offset = 0,
 	$pagination = 0, $return = false, $offset_name = 'offset',
 	$print_total_items = true, $other_class = '',
 	$script = "",
-	$parameter_script = array('count' => '', 'offset' => 'offset_param')) {
+	$parameter_script = array('count' => '', 'offset' => 'offset_param'), $set_id = '') {
 	
 	global $config;
 	
@@ -1611,6 +1636,23 @@ function ui_pagination ($count, $url = false, $offset = 0,
 		$url = ui_get_url_refresh (array ($offset_name => false));
 	}
 	
+	if(!empty($set_id)){
+		$set_id=  " id = '$set_id'";
+	}
+
+	// Pagination links for users include delete, create and other params, now not use these params, and not retry the previous action when go to pagination link.
+	
+	$remove = array("user_del","disable_user","delete_user");
+	$url = explode("&",$url);
+	
+	$finalUrl = array();
+	foreach ($url as $key => $value) {
+		if(strpos($value, $remove[0]) === false && strpos($value, $remove[1]) === false && strpos($value, $remove[2]) === false){
+			array_push($finalUrl,$value);
+		}
+	}
+	$url = implode("&",$finalUrl);
+
 	/*
 	 URL passed render links with some parameter
 	 &offset - Offset records passed to next page
@@ -1622,7 +1664,7 @@ function ui_pagination ($count, $url = false, $offset = 0,
 	if ($count <= $pagination) {
 		
 		if ($print_total_items) {
-			$output = "<div class='pagination $other_class'>";
+			$output = "<div class='pagination $other_class' $set_id>";
 			//Show the count of items
 			$output .= sprintf(__('Total items: %s'), $count);
 			// End div and layout
@@ -1638,23 +1680,15 @@ function ui_pagination ($count, $url = false, $offset = 0,
 	}
 	
 	$number_of_pages = ceil($count / $pagination);
-	//~ html_debug_print('number_of_pages');
-	//~ html_debug_print($number_of_pages);
 	$actual_page = floor($offset / $pagination);
-	//~ html_debug_print('actual_page');
-	//~ html_debug_print($actual_page);
 	$ini_page = floor($actual_page / $block_limit) * $block_limit;
-	//~ html_debug_print('ini_page');
-	//~ html_debug_print($ini_page);
 	$end_page = $ini_page + $block_limit - 1;
 	if ($end_page > $number_of_pages) {
 		$end_page = $number_of_pages - 1;
 	}
-	//~ html_debug_print('end_page');
-	//~ html_debug_print($end_page);
 	
 	
-	$output = "<div class='pagination $other_class'>";
+	$output = "<div class='pagination $other_class' $set_id>";
 	
 	//Show the count of items
 	if ($print_total_items) {
@@ -2907,7 +2941,21 @@ function ui_print_agent_autocomplete_input($parameters) {
 	if (isset($parameters['input_id_server_value'])) {
 		$input_id_server_value = $parameters['input_id_server_value'];
 	}
-	
+
+	$from_ux_transaction = ''; //Default value
+	if (isset($parameters['from_ux'])) {
+		$from_ux_transaction = $parameters['from_ux'];
+	}
+
+	$from_wux_transaction = ''; //Default value
+	if (isset($parameters['from_wux'])) {
+		$from_wux_transaction = $parameters['from_wux'];
+	}
+
+	$cascade_protection = false; //Default value
+	if (isset($parameters['cascade_protection'])) {
+		$cascade_protection = $parameters['cascade_protection'];
+	}
 	
 	$metaconsole_enabled = false; //Default value
 	if (isset($parameters['metaconsole_enabled'])) {
@@ -2994,10 +3042,67 @@ function ui_print_agent_autocomplete_input($parameters) {
 	if (isset($parameters['javascript_name_function_select'])) {
 		$javascript_name_function_select = $parameters['javascript_name_function_select'];
 	}
-	
-	
-	
-	$javascript_code_function_select = '
+
+	if ($from_ux_transaction != "") {
+		$javascript_code_function_select = '
+		function function_select_' . $input_name . '(agent_name) {
+			$("#' . $selectbox_id . '").empty();
+			
+			var inputs = [];
+			inputs.push ("id_agent=" + $("#' . $hidden_input_idagent_id . '").val());
+			inputs.push ("get_agent_transactions=1");
+			inputs.push ("page=enterprise/include/ajax/ux_transaction.ajax");
+			
+			jQuery.ajax ({
+				data: inputs.join ("&"),
+				type: "POST",
+				url: action="' . $javascript_ajax_page . '",
+				dataType: "json",
+				success: function (data) {
+					if (data) {
+						$("#' . $selectbox_id . '").append ($("<option value=0>None</option>"));
+						jQuery.each (data, function (id, value) {
+							$("#' . $selectbox_id . '").append ($("<option value=" + id + ">" + value + "</option>"));
+						});
+					}
+				}
+			});
+			
+			return false;
+		}
+		';
+	}
+	elseif ($from_wux_transaction != "") {
+		$javascript_code_function_select = '
+		function function_select_' . $input_name . '(agent_name) {
+			$("#' . $selectbox_id . '").empty();
+			
+			var inputs = [];
+			inputs.push ("id_agent=" + $("#' . $hidden_input_idagent_id . '").val());
+			inputs.push ("get_agent_transactions=1");
+			inputs.push ("page=enterprise/include/ajax/wux_transaction.ajax");
+			
+			jQuery.ajax ({
+				data: inputs.join ("&"),
+				type: "POST",
+				url: action="' . $javascript_ajax_page . '",
+				dataType: "json",
+				success: function (data) {
+					if (data) {
+						$("#' . $selectbox_id . '").append ($("<option value=0>None</option>"));
+						jQuery.each (data, function (id, value) {
+							$("#' . $selectbox_id . '").append ($("<option value=" + id + ">" + value + "</option>"));
+						});
+					}
+				}
+			});
+			
+			return false;
+		}
+		';
+	}
+	else {
+		$javascript_code_function_select = '
 		function function_select_' . $input_name . '(agent_name) {
 			
 			$("#' . $selectbox_id . '").empty ();
@@ -3049,8 +3154,9 @@ function ui_print_agent_autocomplete_input($parameters) {
 							.append ($("<option></option>")
 							.attr("value", val["id_agente_modulo"]).text (s));
 					});
-					
-					$("#' . $selectbox_id . '").enable();
+					if('. (int)$cascade_protection .' == 0){
+						$("#' . $selectbox_id . '").enable();
+					}
 					$("#' . $selectbox_id . '").fadeIn ("normal");
 				}
 			});
@@ -3058,6 +3164,8 @@ function ui_print_agent_autocomplete_input($parameters) {
 			return false;
 		}
 		';
+	}
+	
 	if (isset($parameters['javascript_code_function_select'])) {
 		$javascript_code_function_select = $parameters['javascript_code_function_select'];
 	}
@@ -3752,20 +3860,24 @@ function ui_print_module_string_value($value, $id_agente_module,
 * Displays a tag list
 */
 function ui_print_tags_view($title = '', $tags = array()) {
-	$tv = '';
-	$tv .= '<div class="tag-wrapper">';
-	if ($title !== '') $tv .= '<h3>' . $title . '</h3>';
-		foreach ($tags as $tag) {
-			$tv .= '<div class=pandora-tag>';
-				$tv .= '<span class=pandora-tag-title>';
-					$tv .= $tag['title'];
-				$tv .= '</span>';
+	if (!empty($title)){
+		$tv .= '<div class="tag-wrapper">';
+		$tv .= '<h3>' . $title . '</h3>';
+	} else {
+		$tv .= '<div class="tag-wrapper" style="padding-top: 10px">';
+	}
+	
+	foreach ($tags as $tag) {
+		$tv .= '<div class=pandora-tag>';
+			$tv .= '<span class=pandora-tag-title>';
+				$tv .= $tag['title'];
+			$tv .= '</span>';
 				
-				$tv .= '<span class=pandora-tag-value>';
-					$tv .= $tag['value'];
-				$tv .= '</span>';
-			$tv .= '</div>';
-		}
+			$tv .= '<span class=pandora-tag-value>';
+				$tv .= $tag['value'];
+			$tv .= '</span>';
+		$tv .= '</div>';
+	}
 	$tv .= '</div>';
 	echo $tv;
 }

@@ -118,7 +118,7 @@ CREATE TABLE IF NOT EXISTS `tagente_datos_inc` (
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tagente_datos_string` (
 	`id_agente_modulo` int(10) unsigned NOT NULL default '0',
-	`datos` text NOT NULL,
+	`datos` mediumtext NOT NULL,
 	`utimestamp` int(20) unsigned NOT NULL default 0,
 	KEY `data_string_index_1` (`id_agente_modulo`),
 	KEY `idx_utimestamp` USING BTREE (`utimestamp`)
@@ -146,7 +146,7 @@ CREATE TABLE IF NOT EXISTS `tagente_datos_log4x` (
 CREATE TABLE IF NOT EXISTS `tagente_estado` (
 	`id_agente_estado` int(10) unsigned NOT NULL auto_increment,
 	`id_agente_modulo` int(10) NOT NULL default '0',
-	`datos` text NOT NULL,
+	`datos` mediumtext NOT NULL,
 	`timestamp` datetime NOT NULL default '1970-01-01 00:00:00',
 	`estado` int(4) NOT NULL default '0',
 	`known_status` tinyint(4) default 0,
@@ -572,6 +572,42 @@ CREATE TABLE IF NOT EXISTS  `tconfig_os` (
 	PRIMARY KEY  (`id_os`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- -----------------------------------------------------
+-- Table `tcontainer`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tcontainer` (
+	`id_container` mediumint(4) unsigned NOT NULL auto_increment,
+	`name` varchar(100) NOT NULL default '',
+	`parent` mediumint(4) unsigned NOT NULL default 0,
+	`disabled` tinyint(3) unsigned NOT NULL default 0,
+	`id_group` mediumint(8) unsigned NULL default 0, 
+	`description` TEXT NOT NULL,
+ 	PRIMARY KEY  (`id_container`),
+ 	KEY `parent_index` (`parent`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tcontainer_item`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tcontainer_item` (
+	`id_ci` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`id_container` mediumint(4) unsigned NOT NULL default 0,
+	`type` varchar(30) default 'simple_graph',
+	`id_agent` int(10) unsigned NOT NULL default 0,
+	`id_agent_module` bigint(14) unsigned NULL default NULL,
+	`time_lapse` int(11) NOT NULL default 0,
+	`id_graph` INTEGER UNSIGNED default 0,
+	`only_average` tinyint (1) unsigned default 0 not null,
+	`id_group` INT (10) unsigned NOT NULL DEFAULT 0,
+	`id_module_group` INT (10) unsigned NOT NULL DEFAULT 0,
+	`agent` varchar(100) NOT NULL default '',
+	`module` varchar(100) NOT NULL default '',
+	`id_tag` integer(10) unsigned NOT NULL DEFAULT 0,
+	PRIMARY KEY(`id_ci`),
+	FOREIGN KEY (`id_container`) REFERENCES tcontainer(`id_container`)
+	ON DELETE CASCADE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
 -- ---------------------------------------------------------------------
 -- Table `tevento`
 -- ---------------------------------------------------------------------
@@ -940,6 +976,7 @@ CREATE TABLE IF NOT EXISTS `tserver` (
 	`my_modules` int(11) NOT NULL default 0,
 	`server_keepalive` int(11) NOT NULL default 0,
 	`stat_utimestamp` bigint(20) NOT NULL default '0',
+	`exec_proxy` tinyint(1) UNSIGNED NOT NULL default 0,
 	PRIMARY KEY  (`id_server`),
 	KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -1075,6 +1112,8 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
 	`strict_acl` tinyint(1) unsigned NOT NULL DEFAULT 0,
 	`id_filter`  int(10) unsigned NULL default NULL,
 	`session_time` int(10) signed NOT NULL default 0,
+	`default_event_filter` int(10) unsigned NOT NULL default 0,
+	`autorefresh_white_list` text not null default '',
 	CONSTRAINT `fk_filter_id` FOREIGN KEY (`id_filter`) REFERENCES tevent_filter (`id_filter`) ON DELETE SET NULL,
 	UNIQUE KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -1103,6 +1142,17 @@ CREATE TABLE IF NOT EXISTS `tuser_double_auth` (
 	PRIMARY KEY (`id`),
 	UNIQUE (`id_user`),
 	FOREIGN KEY (`id_user`) REFERENCES tusuario(`id_user`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `treset_pass_history`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `treset_pass_history` (
+	`id` int(10) unsigned NOT NULL auto_increment,
+	`id_user` varchar(60) NOT NULL,
+	`reset_moment` datetime NOT NULL,
+	`success` tinyint(1) NOT NULL,
+	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------------------------------------------------
@@ -1218,6 +1268,7 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`id_group` INT (10) unsigned NOT NULL DEFAULT 0,
 	`id_module_group` INT (10) unsigned NOT NULL DEFAULT 0,
 	`server_name` text,
+	`historical_db` tinyint(1) UNSIGNED NOT NULL default 0,
 	PRIMARY KEY(`id_rc`),
 	FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
 		ON UPDATE CASCADE ON DELETE CASCADE
@@ -1343,7 +1394,7 @@ CREATE TABLE IF NOT EXISTS `tmodule` (
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tserver_export` (
 	`id` int(10) unsigned NOT NULL auto_increment,
-	`name` varchar(100) NOT NULL default '',
+	`name` varchar(600) BINARY NOT NULL default '',
 	`preffix` varchar(100) NOT NULL default '',
 	`interval` int(5) unsigned NOT NULL default '300',
 	`ip_server` varchar(100) NOT NULL default '',
@@ -1368,7 +1419,7 @@ CREATE TABLE IF NOT EXISTS `tserver_export_data` (
 	`id` int(20) unsigned NOT NULL auto_increment,
 	`id_export_server` int(10) unsigned default NULL,
 	`agent_name` varchar(100) NOT NULL default '',
-	`module_name` varchar(100) NOT NULL default '',
+	`module_name` varchar(600) NOT NULL default '',
 	`module_type` varchar(100) NOT NULL default '',
 	`data` varchar(255) default NULL, 
 	`timestamp` datetime NOT NULL default '1970-01-01 00:00:00',
@@ -1665,6 +1716,7 @@ CREATE TABLE IF NOT EXISTS `tagent_custom_fields` (
 	`id_field` int(10) unsigned NOT NULL auto_increment,
 	`name` varchar(45) NOT NULL default '',
 	`display_on_front` tinyint(1) NOT NULL default 0,
+	`is_password_type` tinyint(1) NOT NULL default 0,
 	PRIMARY KEY  (`id_field`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -1793,6 +1845,7 @@ CREATE TABLE IF NOT EXISTS `tevent_response` (
 	`modal_height` INTEGER  NOT NULL DEFAULT 0,
 	`new_window` TINYINT(4)  NOT NULL DEFAULT 0,
 	`params` TEXT  NOT NULL,
+	`server_to_exec` int(10) unsigned NOT NULL DEFAULT 0,
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -2018,6 +2071,7 @@ CREATE TABLE IF NOT EXISTS `tpolicy_modules` (
 	`max` bigint(20) default '0',
 	`min` bigint(20) default '0',
 	`module_interval` int(4) unsigned default '0',
+	`ip_target` varchar(100) default '',
 	`tcp_port` int(4) unsigned default '0',
 	`tcp_send` text default '',
 	`tcp_rcv` text default '',
@@ -2032,7 +2086,7 @@ CREATE TABLE IF NOT EXISTS `tpolicy_modules` (
 	`plugin_pass` text default '',
 	`plugin_parameter` text,
 	`id_plugin` int(10) default '0',
-	`post_process` double(24,15) default NULL,
+	`post_process` double(24,15) default 0,
 	`prediction_module` bigint(14) default '0',
 	`max_timeout` int(4) unsigned default '0',
 	`max_retries` int(4) unsigned default '0',
@@ -2125,6 +2179,20 @@ CREATE TABLE IF NOT EXISTS `tpolicy_agents` (
 	`last_apply_utimestamp` int(10) unsigned NOT NULL default 0,
 	PRIMARY KEY  (`id`),
 	UNIQUE (`id_policy`, `id_agent`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+-- -----------------------------------------------------
+-- Table `tpolicy_groups`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tpolicy_groups` (
+	`id` int(10) unsigned NOT NULL auto_increment,
+	`id_policy` int(10) unsigned default '0',
+	`id_group` int(10) unsigned default '0',
+	`policy_applied` tinyint(1) unsigned default '0',
+	`pending_delete` tinyint(1) unsigned default '0',
+	`last_apply_utimestamp` int(10) unsigned NOT NULL default 0,
+	PRIMARY KEY  (`id`),
+	UNIQUE (`id_policy`, `id_group`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- ---------------------------------------------------------------------
@@ -2656,6 +2724,7 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	`module_names` TEXT,
 	`module_free_text` TEXT,
 	`each_agent` tinyint(1) default 1,
+	`historical_db` tinyint(1) UNSIGNED NOT NULL default 0,
 	PRIMARY KEY(`id_rc`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -2926,3 +2995,11 @@ create table IF NOT EXISTS `tphase`(
     `timeout` int unsigned default null,
     PRIMARY KEY (`phase_id`,`transaction_id`)
 ) engine=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `treset_pass` (
+	`id` bigint(10) unsigned NOT NULL auto_increment,
+	`id_user` varchar(100) NOT NULL default '',
+	`cod_hash` varchar(100) NOT NULL default '',
+	`reset_time` int(10) unsigned NOT NULL default 0,
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

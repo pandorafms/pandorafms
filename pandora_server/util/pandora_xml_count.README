@@ -1,0 +1,17 @@
+Pandora FMS XML count tool
+==========================
+
+This is a small diagnosis tool that counts XML data files in Pandora FMS's spool directory by agent.
+
+Usage example
+-------------
+
+$ perl ./pandora_xml_count.pl /var/spool/pandora_data_in
+Number of .data files           Agent name
+---------------------           ----------
+1                               Agent80
+1                               Agent25
+42                              Agent22
+...                             ...
+41122                           Agent21
+

@@ -278,4 +278,35 @@ function d3_gauges($chart_data, $width, $height, $color, $legend,
 
 	return $output;
 }
+
+function ux_console_phases_donut ($phases, $id, $return = false) {
+	global $config;
+
+	foreach ($phases as $i => $phase) {
+		$phases[$i]['phase_name'] = io_safe_output($phase['phase_name']);
+	}
+
+	if (is_array($phases))
+		$phases = json_encode($phases);
+	
+	$recipient_name = "phases_donut_" . $id;
+	$recipient_name_to_js = "#phases_donut_" . $id;
+
+	$output = "<div id=" . $recipient_name .  " style='overflow: hidden;'></div>";
+	$output .= include_javascript_d3(true);
+	$output .= "<style type=\"text/css\">
+					path {
+						stroke: #fff;
+						fill-rule: evenodd;
+					}
+				</style>";
+	$output .= "<script language=\"javascript\" type=\"text/javascript\">
+					print_phases_donut('" . $recipient_name_to_js . "', " . $phases . ");
+				</script>";
+
+	if (!$return)
+		echo $output;
+	
+	return $output;
+}
 ?>

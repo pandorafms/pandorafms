@@ -55,12 +55,12 @@ function clippy_start_page_homepage() {
 	$return_tours['tours']['homepage']['steps'][] = array(
 		'element'=> '#clippy',
 		'intro' => 
-			'<div style="text-align: left; padding-left: 20px; padding-right: 20px;">'.
+			'<div class="clippy_body" style="text-align: left; padding-left: 20px; padding-right: 20px;">'.
 			__('Hi, can I help you?') . '<br/><br/>' .
 			__('Let me introduce my self: I am Pandorin, the annoying assistant of Pandora FMS. You can follow my steps to do basic tasks in Pandora FMS or you can close me and never see me again.') .
 			'<br /> ' .
 			'<br /> ' .
-			'<div style="font-size: 7pt;">' .
+			'<div class="clippy_body" style="font-size: 7pt;">' .
 				html_print_checkbox_extended
 					('clippy_is_annoying', 1, $clippy_is_annoying, false,
 					'set_clippy_annoying()', '', true) .

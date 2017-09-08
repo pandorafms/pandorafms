@@ -99,6 +99,7 @@ if ($agent_to_delete) {
 
 if ($enable_agent) {
 	$result = db_process_sql_update('tagente', array('disabled' => 0), array('id_agente' => $enable_agent));
+	$alias = agents_get_alias($enable_agent);
 	
 	if ($result) {
 		// Update the agent from the metaconsole cache
@@ -106,10 +107,10 @@ if ($enable_agent) {
 		$values = array('disabled' => 0);
 		enterprise_hook ('agent_update_from_cache', array($enable_agent, $values));
 		
-		db_pandora_audit("Agent management", 'Enable  ' . $enable_agent);
+		db_pandora_audit("Agent management", 'Enable  ' . $alias);
 	}
 	else {
-		db_pandora_audit("Agent management", 'Fail to enable ' . $enable_agent);
+		db_pandora_audit("Agent management", 'Fail to enable ' . $alias);
 	}
 	
 	ui_print_result_message ($result,
@@ -118,6 +119,7 @@ if ($enable_agent) {
 
 if ($disable_agent) {
 	$result = db_process_sql_update('tagente', array('disabled' => 1), array('id_agente' => $disable_agent));
+	$alias = agents_get_alias($disable_agent);
 	
 	if ($result) {
 		// Update the agent from the metaconsole cache
@@ -125,10 +127,10 @@ if ($disable_agent) {
 		$values = array('disabled' => 1);
 		enterprise_hook ('agent_update_from_cache', array($disable_agent, $values));
 		
-		db_pandora_audit("Agent management", 'Disable  ' . $disable_agent);
+		db_pandora_audit("Agent management", 'Disable  ' . $alias);
 	}
 	else {
-		db_pandora_audit("Agent management", 'Fail to disable ' . $disable_agent);
+		db_pandora_audit("Agent management", 'Fail to disable ' . $alias);
 	}
 	
 	ui_print_result_message ($result,
@@ -148,7 +150,7 @@ if (!$own_info['is_admin'] && !check_acl ($config['id_user'], 0, "AW"))
 	$return_all_group = false;
 else
 	$return_all_group = true;
-html_print_select_groups(false, "AR", $return_all_group, "ag_group", $ag_group, 'this.form.submit();', '', 0, false, false, true, '', false, 'width:100px;');
+html_print_select_groups(false, "AR", $return_all_group, "ag_group", $ag_group, 'this.form.submit();', '', 0, false, false, true, '', false);
 
 echo "<td>";
 echo __('Show Agents') . '&nbsp;';
@@ -486,6 +488,7 @@ if ($agents !== false) {
 		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=os&sort=up&disabled=$disabled">' . html_print_image("images/sort_up.png", true, array("style" => $selectOsUp)) . '</a>' .
 		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=os&sort=down&disabled=$disabled">' . html_print_image("images/sort_down.png", true, array("style" => $selectOsDown)) . '</a>';
 	echo "</th>";
+	echo "<th>".__('Type'). "</th>";
 	echo "<th>".__('Group'). ' ' .
 			'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=group&sort=up&disabled=$disabled">' . html_print_image("images/sort_up.png", true, array("style" => $selectGroupUp)) . '</a>' .
 			'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=group&sort=down&disabled=$disabled">' . html_print_image("images/sort_down.png", true, array("style" => $selectGroupDown)) . '</a>';
@@ -604,6 +607,14 @@ if ($agents !== false) {
 		echo "<td class='$tdcolor' align='left' valign='middle'>";
 		ui_print_os_icon ($agent["id_os"], false);
 		echo "</td>";
+		
+		// Type agent (Networt, Software or Satellite)
+		echo "<td class='$tdcolor' align='left' valign='middle'>";
+		echo ui_print_type_agent_icon ($agent["id_os"], $agent['ultimo_contacto_remoto'], 
+								$agent['ultimo_contacto'], $agent['remote'], $agent['agent_version']);
+		echo "</td>";		
+
+
 		// Group icon and name
 		echo "<td class='$tdcolor' align='left' valign='middle'>" . ui_print_group_icon ($id_grupo, true)."</td>";
 		// Description

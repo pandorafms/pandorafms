@@ -41,7 +41,12 @@ $pagination = (int) get_parameter ("pagination", $config["block_size"]);
 $offset = (int) get_parameter ('offset',0);
 $trap_type = (int) get_parameter ('trap_type', -1);
 $group_by = (int)get_parameter('group_by', 0);
-$refr = (int)get_parameter("refr", 0);
+$refr = (int)get_parameter("refresh");
+$default_refr = !empty($refr) ? $refr : $config['vc_refr'];
+$date_from_trap = get_parameter("date_from_trap", "");
+$date_to_trap = get_parameter("date_to_trap", "");
+$time_from_trap = get_parameter("time_from_trap", "");
+$time_to_trap = get_parameter("time_to_trap", "");
 
 $user_groups = users_get_groups ($config['id_user'], $access, false);
 
@@ -65,25 +70,26 @@ $url = "index.php?sec=estado&" .
 	"pagination=" . $pagination . "&" .
 	"offset=" . $offset . "&" .
 	"trap_type=" . $trap_type . "&" .
-	"group_by=" .$group_by;
+	"group_by=" .$group_by . "&" .
+	"date_from_trap=" . $date_from_trap . "&" .
+	"date_to_trap=" . $date_to_trap . "&" .
+	"time_from_trap=" . $time_from_trap . "&" .
+	"time_to_trap=" . $time_to_trap;
 
 $statistics['text'] = '<a href="index.php?sec=estado&sec2=operation/snmpconsole/snmp_statistics&pure=' . $config["pure"] . '&refr=' . $refr . '">' . 
 	html_print_image("images/op_reporting.png", true, array ("title" => __('Statistics'))) .'</a>';
-$list['text'] = '<a href="' . $url . '&pure=' . $config["pure"] . '&refr=' . $refr . '">' . 
+$list['text'] = '<a href="' . $url . '&pure=' . $config["pure"] . '&refresh=' . $refr . '">' . 
 	html_print_image("images/op_snmp.png", true, array ("title" => __('List'))) .'</a>';
 $list['active'] = true;
 
 if ($config["pure"]) {
-	$fullscreen['text'] = '<a target="_top" href="'.$url.'&pure=0&refr=' . $refr . '">' . html_print_image("images/normal_screen.png", true, array("title" => __('Normal screen')))  . '</a>';
+	$fullscreen['text'] = '<a target="_top" href="'.$url.'&pure=0&refresh=' . $refr . '">' . html_print_image("images/normal_screen.png", true, array("title" => __('Normal screen')))  . '</a>';
 }
 else {
 	// Fullscreen
-	$fullscreen['text'] = '<a target="_top" href="'.$url.'&pure=1&refr=' . $refr . '">' . html_print_image("images/full_screen.png", true, array("title" => __('Full screen'))) . '</a>';
+	$fullscreen['text'] = '<a target="_top" href="'.$url.'&pure=1&refresh=' . $refr . '">' . html_print_image("images/full_screen.png", true, array("title" => __('Full screen'))) . '</a>';
 }
 
-// Header
-ui_print_page_header(__("SNMP Console"), "images/op_snmp.png", false,
-	"", false, array($fullscreen, $list, $statistics));
 
 // OPERATIONS
 
@@ -92,10 +98,22 @@ if (isset ($_GET["delete"])) {
 	$id_trap = (int) get_parameter_get ("delete", 0);
 	if ($id_trap > 0 && check_acl ($config['id_user'], 0, "IM")) {
 		
-		$result = db_process_sql_delete('ttrap', array('id_trap' => $id_trap));
-		ui_print_result_message ($result,
-			__('Successfully deleted'),
-			__('Could not be deleted'));
+		if($group_by){
+			$sql_ids_traps = "SELECT id_trap FROM ttrap WHERE oid IN (SELECT oid FROM ttrap WHERE id_trap = ".$id_trap.")
+			AND source IN (SELECT source FROM ttrap WHERE id_trap = ".$id_trap.")";
+			$ids_traps = db_get_all_rows_sql($sql_ids_traps);
+
+			foreach ($ids_traps as $key => $value) {
+				$result = db_process_sql_delete('ttrap', array('id_trap' => $value['id_trap']));
+			}
+			
+		} else {
+			$result = db_process_sql_delete('ttrap', array('id_trap' => $id_trap));
+			ui_print_result_message ($result,
+				__('Successfully deleted'),
+				__('Could not be deleted'));
+		}
+		
 	}
 	else {
 		db_pandora_audit("ACL Violation",
@@ -126,8 +144,20 @@ if (isset ($_GET["check"])) {
 if (isset ($_POST["deletebt"])) {
 	$trap_ids = get_parameter_post ("snmptrapid", array ());
 	if (is_array ($trap_ids) && check_acl ($config['id_user'], 0, "IW")) {
-		foreach ($trap_ids as $id_trap) {
-			db_process_sql_delete('ttrap', array('id_trap' => $id_trap));
+		if($group_by){
+			foreach ($trap_ids as $key => $value) {
+				$sql_ids_traps = "SELECT id_trap FROM ttrap WHERE oid IN (SELECT oid FROM ttrap WHERE id_trap = ".$value.")
+				AND source IN (SELECT source FROM ttrap WHERE id_trap = ".$value.")";
+				$ids_traps = db_get_all_rows_sql($sql_ids_traps);
+				
+				foreach ($ids_traps as $key2 => $value2) {
+					$result = db_process_sql_delete('ttrap', array('id_trap' => $value2['id_trap']));
+				}
+			}
+		} else {
+			foreach ($trap_ids as $id_trap) {
+				db_process_sql_delete('ttrap', array('id_trap' => $id_trap));
+			}
 		}
 	}
 	else {
@@ -164,7 +194,7 @@ $severities = get_priorities ();
 $alerted = array (__('Not fired'), __('Fired'));
 foreach ($all_traps as $trap) {
 	$agent = agents_get_agent_with_ip ($trap['source']);
-	$agents[$trap["source"]] = $agent !== false ? $agent["nombre"] : $trap["source"];
+	$agents[$trap["source"]] = $agent !== false ? ($agent["alias"] ? $agent["alias"] : $agent["nombre"]) : $trap["source"];
 	$oid = enterprise_hook ('get_oid', array ($trap));
 	if ($oid === ENTERPRISE_NOT_HOOK) {
 		$oid = $trap["oid"];
@@ -327,6 +357,31 @@ if ($free_search_string != '') {
 	}
 }
 
+if ($date_from_trap != "") {
+	if ($time_from_trap != "") {
+		$whereSubquery .= '
+			AND (UNIX_TIMESTAMP(timestamp) > UNIX_TIMESTAMP("' . $date_from_trap . " " . $time_from_trap . '"))
+		';
+	}
+	else {
+		$whereSubquery .= '
+			AND (UNIX_TIMESTAMP(timestamp) > UNIX_TIMESTAMP("' . $date_from_trap . ' 23:59:59"))
+		';
+	}
+}
+if ($date_to_trap != "") {
+	if ($time_to_trap) {
+		$whereSubquery .= '
+			AND (UNIX_TIMESTAMP(timestamp) < UNIX_TIMESTAMP("' . $date_to_trap . " " . $time_to_trap . '"))
+		';
+	}
+	else {
+		$whereSubquery .= '
+			AND (UNIX_TIMESTAMP(timestamp) < UNIX_TIMESTAMP("' . $date_to_trap . ' 23:59:59"))
+		';
+	}
+}
+
 if ($filter_severity != -1) {
 	//Test if install the enterprise to search oid in text or oid field in ttrap.
 	if ($config['enterprise_installed'])
@@ -418,8 +473,18 @@ $table->data[2][3] = '<strong>' . __('Free search') . '</strong>' .
 $table->data[2][4] = html_print_input_text('free_search_string',
 	$free_search_string, '', 40, 0, true);
 
+$table->data[4][0] = '<strong>' . __('From (Date)') . '</strong>';
+$table->data[4][1] = html_print_input_text ('date_from_trap', $date_from_trap, '', 15, 10, true);
+$table->data[4][2] = '<strong>' . __('To (Date)') . '</strong>';
+$table->data[4][3] = html_print_input_text ('date_to_trap', $date_to_trap, '', 15, 10, true);
+
+$table->data[5][0] = '<strong>' . __('From (Time)') . '</strong>';
+$table->data[5][1] = html_print_input_text ('time_from_trap', $time_from_trap, false, 15, 10, true);
+$table->data[5][2] = '<strong>' . __('To (Time)') . '</strong>';
+$table->data[5][3] = html_print_input_text ('time_to_trap', $time_to_trap, false, 15, 10, true);
+
 // Type filter (ColdStart, WarmStart, LinkDown, LinkUp, authenticationFailure, Other)
-$table->data[4][1] = '<strong>' . __('Trap type') . '</strong>' .
+$table->data[6][1] = '<strong>' . __('Trap type') . '</strong>' .
 	ui_print_help_tip(__('Search by trap type'), true);
 $trap_types = array(
 	-1 => __('None'),
@@ -429,7 +494,7 @@ $trap_types = array(
 	3 => __('Link up (3)'),
 	4 => __('Authentication failure (4)'),
 	5 => __('Other'));
-$table->data[4][2] = html_print_select($trap_types, 'trap_type',
+$table->data[6][2] = html_print_select($trap_types, 'trap_type',
 	$trap_type, 'this.form.submit();', '', '', true, false, false);
 
 // Disable this feature (time will decide if temporarily) in Oracle cause the group by is very confictive
@@ -445,7 +510,7 @@ if ($config['dbtype'] != 'oracle') {
 $filter = '<form method="POST" action="index.php?' .
 	'sec=snmpconsole&' .
 	'sec2=operation/snmpconsole/snmp_view&' .
-	'refr=' . ((int)get_parameter('refr', 0)) . '&' .
+	'refresh=' . ((int)get_parameter('refresh', 0)) . '&' .
 	'pure=' . $config["pure"] . '">';
 $filter .= html_print_table($table, true);
 $filter .= '<div style="width: ' . $table->width . '; text-align: right;">';
@@ -453,22 +518,150 @@ $filter .= html_print_submit_button(__('Update'), 'search', false, 'class="sub u
 $filter .= '</div>';
 $filter .= '</form>';
 
-ui_toggle($filter, __('Toggle filter(s)'));
-
-unset ($table);
-
-
+$filter_resume = array();
+$filter_resume['filter_fired'] = $alerted[$filter_fired];
+$filter_resume['filter_severity'] = $severities[$filter_severity];
+$filter_resume['pagination'] = $paginations[$pagination];
+$filter_resume['free_search_string'] = $free_search_string;
+$filter_resume['filter_status'] = $status_array[$filter_status];
+$filter_resume['group_by'] = $group_by;
+$filter_resume['date_from_trap'] = $date_from_trap;
+$filter_resume['time_from_trap'] = $time_from_trap;
+$filter_resume['date_to_trap'] = $date_to_trap;
+$filter_resume['time_to_trap'] = $time_to_trap;
+$filter_resume['trap_type'] = $trap_types[$trap_type];
 
 $traps = db_get_all_rows_sql($sql);
 $trapcount = (int) db_get_value_sql($sql_count);
 
-
-
 // No traps 
 if (empty ($traps)) {
-	ui_print_info_message ( array('no_close'=>true, 'message'=> __('There are no SNMP traps in database') ) );
+	// Header
+	ui_print_page_header(__("SNMP Console"), "images/op_snmp.png", false,
+		"", false, array($list, $statistics));
+		
+		$sql2 = "SELECT *
+			FROM ttrap
+			WHERE (
+				`source` IN (" . implode(",", $address_by_user_groups) . ") OR
+				`source`='' OR
+				`source` NOT IN (" . implode(",", $all_address_agents) . ")
+				)
+				AND status = 0
+			ORDER BY timestamp DESC";
+		$traps2 = db_get_all_rows_sql($sql2);
+		
+	if(!empty ($traps2)){
+		ui_toggle($filter, __('Toggle filter(s)'));
+		
+		print_snmp_tags_active_filters($filter_resume);
+
+		ui_print_info_message ( array('no_close'=>true, 'message'=> __('There are no SNMP traps in database that contains this filter') ) );
+	} else {
+		ui_print_info_message ( array('no_close'=>true, 'message'=> __('There are no SNMP traps in database') ) );
+	}
 	return;
+} else{
+	if($config["pure"]){
+		echo '<div id="dashboard-controls">';
+
+		echo '<div id="menu_tab">';
+		echo '<ul class="mn">';
+		// Normal view button
+		echo '<li class="nomn">';
+		$normal_url = "index.php?" .
+			"sec=snmpconsole&" .
+			"sec2=operation/snmpconsole/snmp_view&" .
+			"filter_severity=" . $filter_severity . "&" .
+			"filter_fired=" . $filter_fired . "&" .
+			"filter_status=" . $filter_status . "&" .
+			"refresh=" . ((int)get_parameter('refresh', 0)) . "&" .
+			"pure=0&" .
+			"trap_type=" . $trap_type . "&" .
+			"group_by=" . $group_by . "&" .
+			"free_search_string=" . $free_search_string . "&" .
+			"date_from_trap=" . $date_from_trap . "&" .
+			"date_to_trap=" . $date_to_trap . "&" .
+			"time_from_trap=" . $time_from_trap . "&" .
+			"time_to_trap=" . $time_to_trap;
+		
+		$urlPagination = $normal_url . "&" .
+			"pagination=" . $pagination . "&" .
+			"offset=" . $offset;
+			
+		echo '<a href="' . $urlPagination . '">';
+		echo html_print_image('images/normal_screen.png', true, array('title' => __('Exit fullscreen')));
+		echo '</a>';
+		echo '</li>';
+		
+		// Auto refresh control
+		echo '<li class="nomn">';
+		echo '<div class="dashboard-refr" style="margin-top: 6px;">';
+		echo '<div class="dashboard-countdown" style="display: inline;"></div>';
+		$normal_url = "index.php?" .
+			"sec=snmpconsole&" .
+			"sec2=operation/snmpconsole/snmp_view&" .
+			"filter_severity=" . $filter_severity . "&" .
+			"filter_fired=" . $filter_fired . "&" .
+			"filter_status=" . $filter_status . "&" .
+			"refresh=" . ((int)get_parameter('refresh', 0)) . "&" .
+			"pure=1&" .
+			"trap_type=" . $trap_type . "&" .
+			"group_by=" . $group_by . "&" .
+			"free_search_string=" . $free_search_string . "&" .
+			"date_from_trap=" . $date_from_trap . "&" .
+			"date_to_trap=" . $date_to_trap . "&" .
+			"time_from_trap=" . $time_from_trap . "&" .
+			"time_to_trap=" . $time_to_trap;
+		
+		$urlPagination = $normal_url . "&" .
+			"pagination=" . $pagination . "&" .
+			"offset=" . $offset;
+		
+		
+		echo '<form id="refr-form" method="get" action="' . $urlPagination . '" style="display: inline;">';
+		echo __('Refresh every') . ':';
+		echo html_print_select(get_refresh_time_array(), 'refresh', $refr, '', '', 0, true, false, false);
+		echo '</form>';
+		echo '</li>';
+		
+		html_print_input_hidden('sec', 'snmpconsole');
+		html_print_input_hidden('sec2', 'operation/snmpconsole/snmp_view');
+		html_print_input_hidden('pure', 1);
+		html_print_input_hidden('refresh', ($refr > 0 ? $refr : $default_refr));
+		
+		// Dashboard name
+		echo '<li class="nomn">';
+		echo '<div class="dashboard-title">' . __('SNMP Traps') . '</div>';
+		echo '</li>';
+
+		echo '</ul>';
+		echo '</div>';
+
+		echo '</div>';
+		
+		ui_require_css_file('pandora_enterprise', ENTERPRISE_DIR . '/include/styles/');
+		ui_require_css_file('pandora_dashboard', ENTERPRISE_DIR . '/include/styles/');
+		ui_require_css_file('cluetip');
+
+		ui_require_jquery_file('countdown');
+		ui_require_javascript_file('pandora_dashboard', ENTERPRISE_DIR.'/include/javascript/');
+		ui_require_javascript_file('wz_jsgraphics');
+		ui_require_javascript_file('pandora_visual_console');
+
+		
+	} else {
+		// Header
+		ui_print_page_header(__("SNMP Console"), "images/op_snmp.png", false,
+			"", false, array($fullscreen, $list, $statistics));
+	}
+	
 }
+
+ui_toggle($filter, __('Toggle filter(s)'));
+unset ($table);
+
+print_snmp_tags_active_filters($filter_resume);
 
 if (($config['dbtype'] == 'oracle') && ($traps !== false)) {
 	for ($i = 0; $i < count($traps); $i++) {
@@ -482,11 +675,15 @@ $url_snmp = "index.php?" .
 	"filter_severity=" . $filter_severity . "&" .
 	"filter_fired=" . $filter_fired . "&" .
 	"filter_status=" . $filter_status . "&" .
-	"refr=" . ((int)get_parameter('refr', 0)) . "&" .
+	"refresh=" . ((int)get_parameter('refresh', 0)) . "&" .
 	"pure=" . $config["pure"] . "&" .
 	"trap_type=" . $trap_type . "&" .
 	"group_by=" . $group_by . "&" .
-	"free_search_string=" . $free_search_string;
+	"free_search_string=" . $free_search_string . "&" .
+	"date_from_trap=" . $date_from_trap . "&" .
+	"date_to_trap=" . $date_to_trap . "&" .
+	"time_from_trap=" . $time_from_trap . "&" .
+	"time_to_trap=" . $time_to_trap;
 
 $urlPagination = $url_snmp . "&" .
 	"pagination=" . $pagination . "&" .
@@ -589,7 +786,7 @@ if ($traps !== false) {
 				continue;
 			}
 			$data[1] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'" title="'.__('View agent details').'">';
-			$data[1] .= '<strong>'.$agent["nombre"].ui_print_help_tip($trap['source'], true);'</strong></a>';
+			$data[1] .= '<strong>'.$agent["alias"].ui_print_help_tip($trap['source'], true, "images/tip-blanco.png");'</strong></a>';
 		}
 		
 		//OID
@@ -688,10 +885,14 @@ if ($traps !== false) {
 			"filter_severity=" . $filter_severity . "&" .
 			"filter_fired=" . $filter_fired . "&" .
 			"filter_status=" . $filter_status . "&" .
-			"refr=" . ((int)get_parameter('refr', 0)) . "&" .
+			"refresh=" . ((int)get_parameter('refresh', 0)) . "&" .
 			"pure=" . $config["pure"] . "&" .
 			"group_by=0&" .
-			"free_search_string=" . $free_search_string;
+			"free_search_string=" . $free_search_string . "&" .
+			"date_from_trap=" . $date_from_trap . "&" .
+			"date_to_trap=" . $date_to_trap . "&" .
+			"time_from_trap=" . $time_from_trap . "&" .
+			"time_to_trap=" . $time_to_trap;
 			
 			$string .= '<a href='.$new_url.'>'.__('See more details').'</a>';
 		}
@@ -851,11 +1052,94 @@ foreach (get_priorities () as $num => $name) {
 echo '</div>';
 echo '<div style="clear:both;">&nbsp;</div>';
 
-
+ui_include_time_picker();
 ?>
 
 <script language="JavaScript" type="text/javascript">
-	<!--
+
+	$(document).ready( function() {
+		var $startDate = $("#text-date_from_trap");
+		var $startTime = $("#text-time_from_trap");
+		var $endDate = $("#text-date_to_trap");
+		var $endTime = $("#text-time_to_trap");
+
+		$startDate.datepicker({
+			dateFormat: "<?php echo DATE_FORMAT_JS; ?>",
+			onClose: function(selectedDate) {
+				$endDate.datepicker("option", "minDate", selectedDate);
+			}
+		});
+		$endDate.datepicker({
+			dateFormat: "<?php echo DATE_FORMAT_JS; ?>",
+			onClose: function(selectedDate) {
+				$startDate.datepicker("option", "maxDate", selectedDate);
+			}
+		});
+		
+		$startTime.timepicker({
+			showSecond: true,
+			timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
+			timeOnlyTitle: '<?php echo __('Choose time');?>',
+			timeText: '<?php echo __('Time');?>',
+			hourText: '<?php echo __('Hour');?>',
+			minuteText: '<?php echo __('Minute');?>',
+			secondText: '<?php echo __('Second');?>',
+			currentText: '<?php echo __('Now');?>',
+			closeText: '<?php echo __('Close');?>'
+		});
+
+		$endTime.timepicker({
+			showSecond: true,
+			timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
+			timeOnlyTitle: '<?php echo __('Choose time');?>',
+			timeText: '<?php echo __('Time');?>',
+			hourText: '<?php echo __('Hour');?>',
+			minuteText: '<?php echo __('Minute');?>',
+			secondText: '<?php echo __('Second');?>',
+			currentText: '<?php echo __('Now');?>',
+			closeText: '<?php echo __('Close');?>'
+		});
+
+		var controls = document.getElementById('dashboard-controls');
+		autoHideElement(controls, 1000);
+		
+		var startCountDown = function (duration, cb) {
+			$('div.dashboard-countdown').countdown('destroy');
+			if (!duration) return;
+			var t = new Date();
+			t.setTime(t.getTime() + duration * 1000);
+			$('div.dashboard-countdown').countdown({
+				until: t,
+				format: 'MS',
+				layout: '(%M%nn%M:%S%nn%S <?php echo __('Until next'); ?>) ',
+				alwaysExpire: true,
+				onExpiry: function () {
+					$('div.dashboard-countdown').countdown('destroy');
+					cb();
+				}
+			});
+		}
+		
+		// Auto refresh select
+		$('form#refr-form').submit(function (event) {
+			event.preventDefault();
+		});
+		
+		var handleRefrChange = function (event) {
+			event.preventDefault();
+			var url = $('form#refr-form').prop('action');
+			var refr = Number.parseInt(event.target.value, 10);
+			
+			startCountDown(refr, function () {
+				window.location = url + '&refresh=' + refr;
+			});
+		}
+		
+		$('form#refr-form select').change(handleRefrChange).change();
+		
+		
+	});
+	
 	function CheckAll() {
 		for (var i = 0; i < document.eventtable.elements.length; i++) {
 			var e = document.eventtable.elements[i];
@@ -883,5 +1167,5 @@ echo '<div style="clear:both;">&nbsp;</div>';
 			$('.trap_info_' + id_trap).css('display', '');
 		}
 	}
-	//-->
+
 </script>

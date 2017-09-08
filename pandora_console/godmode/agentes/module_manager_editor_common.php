@@ -148,7 +148,7 @@ $table_simple->colspan[6][1] = 3;
 
 $table_simple->data[0][0] = __('Name');
 $table_simple->data[0][1] = html_print_input_text_extended ('name',
-	io_safe_output($name), 'text-name', '', 45, 100, $disabledBecauseInPolicy, '', $largeClassDisabledBecauseInPolicy, true);
+	io_safe_input(html_entity_decode($name)), 'text-name', '', 45, 100, $disabledBecauseInPolicy, '', $largeClassDisabledBecauseInPolicy, true);
 //$table_simple->data[0][1] = html_print_input_text ('name',
 //	io_safe_output($name), '', 45, 100, true, $disabledBecauseInPolicy);
 
@@ -273,7 +273,6 @@ $table_simple->data[3][2] .= html_print_input_text ('dynamic_max', $dynamic_max,
 													$disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
 $table_simple->data[3][3] = '<span><em>'.__('Dynamic Threshold Two Tailed: ').'</em>';
 $table_simple->data[3][3] .= html_print_checkbox ("dynamic_two_tailed", 1, $dynamic_two_tailed, true, $disabledBecauseInPolicy);
-
 
 $table_simple->data[4][0] = __('Warning status').' ' . ui_print_help_icon ('warning_status', true);
 if (!modules_is_string_type($id_module_type) || $edit) {
@@ -882,6 +881,9 @@ $(document).ready (function () {
 	$('#dynamic_interval_select').change (function() {
 		disabled_status(disabledBecauseInPolicy);
 	});
+	$('#dynamic_interval').change (function() {
+		disabled_status(disabledBecauseInPolicy);
+	});
 
 	disabled_two_tailed(disabledBecauseInPolicy);
 	$('#checkbox-dynamic_two_tailed').change (function() {
@@ -929,7 +931,7 @@ $(document).ready (function () {
 
 //readonly and add class input
 function disabled_status (disabledBecauseInPolicy) {
-	if($('#dynamic_interval_select').val() != 0){
+	if($('#dynamic_interval_select').val() != 0 && $('#dynamic_interval').val() != 0){
 		$('#text-min_warning').prop('readonly', true);
 		$('#text-min_warning').addClass('readonly');
 		$('#text-max_warning').prop('readonly', true);
@@ -975,32 +977,6 @@ function advanced_option_dynamic() {
 		
 	}
 }
-
-//Add a new module macro
-function add_macro () {
-	var macro_count = parseInt($("#hidden-module_macro_count").val());
-	var delete_icon = '<?php html_print_image ("images/cross.png", false) ?>';
-	
-	// Add inputs for the new macro
-	$("#module_macros").append('<tr id="module_macros-' + macro_count + '" class="datos2"><td style=" font-weight: bold; vertical-align: top;" class="datos2">Name</td> \
-	<td style="" class="datos2"><input type="text" name="module_macro_names[]" value="" id="text-module_macro_names[]" size="50" maxlength="60"></td> \
-	<td style="font-weight: bold; vertical-align: top;" class="datos2">Value</td> \
-	<td style="" class="datos2"><input type="text" name="module_macro_values[]" value="" id="text-module_macro_values[]" size="50" maxlength="60"></td> \
-	<td style="" class="datos2"><a href="javascript: delete_macro(' + macro_count + ');">' + delete_icon + '</a></td></tr>');
-	
-	// Update the macro count
-	$("#hidden-module_macro_count").val(macro_count + 1);
-}
-
-// Delete an existing module macro
-function delete_macro (num) {
-	if ($("#module_macros-" + num).length) {
-		$("#module_macros-" + num).remove();
-	}
-	
-	// Do not decrease the macro counter or new macros may overlap existing ones!
-}
-
 
 /* Relationship javascript */
 
@@ -1206,18 +1182,19 @@ function validate_post_process() {
 //function paint graph
 function paint_graph_values(){
 	//Parse integrer
-	var min_w = parseInt($('#text-min_warning').val());
+	var min_w = parseFloat($('#text-min_warning').val());
 		if(min_w == '0.00'){ min_w = 0; }
-	var max_w = parseInt($('#text-max_warning').val());
+	var max_w = parseFloat($('#text-max_warning').val());
 		if(max_w == '0.00'){ max_w = 0; }
-	var min_c = parseInt($('#text-min_critical').val());
+	var min_c = parseFloat($('#text-min_critical').val());
 		if(min_c =='0.00'){ min_c = 0; }
-	var max_c = parseInt($('#text-max_critical').val());
+	var max_c = parseFloat($('#text-max_critical').val());
 		if(max_c =='0.00'){ max_c = 0; }
 	var inverse_w = $('input:checkbox[name=warning_inverse]:checked').val();
 		if(!inverse_w){ inverse_w = 0; }
 	var inverse_c = $('input:checkbox[name=critical_inverse]:checked').val();
 		if(!inverse_c){ inverse_c = 0; }
+
 	//inicialiced error
 	var error_w = 0;
 	var error_c = 0;
@@ -1257,10 +1234,10 @@ function paint_graph_status(min_w, max_w, min_c, max_c, inverse_w, inverse_c, er
 	//if haven't errors
 	if (error_w == 0 && error_c == 0){
 		//parse element
-		min_w = parseInt(min_w);
-		min_c = parseInt(min_c);
-		max_w = parseInt(max_w);
-		max_c = parseInt(max_c);
+		min_w = parseFloat(min_w);
+		min_c = parseFloat(min_c);
+		max_w = parseFloat(max_w);
+		max_c = parseFloat(max_c);
 		
 		//inicialize var
 		var range_min = 0;

@@ -891,4 +891,5 @@ function users_get_strict_mode_groups($id_user, $return_group_all) {
 	
 	return $return_user_groups;
 }
+
 ?>

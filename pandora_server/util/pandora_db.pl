@@ -33,7 +33,7 @@ use PandoraFMS::Tools;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG PS170411";
+my $version = "7.0NG.712 PS170908";
 
 # Pandora server configuration
 my %conf;
@@ -407,36 +407,15 @@ sub pandora_purgedb ($$) {
 	
 	# Delete old log data
 	log_message ('PURGE', "Deleting old log data.");
-	if (! defined ($conf->{'_log_dir'}) || ! -d $conf->{'_log_dir'}) {
-		log_message ('!', "Log data directory does not exist, skipping.");
+	if (!defined ($conf->{'logstash_host'}) || $conf->{'logstash_host'} eq '') {
+		log_message ('!', "Log collection disabled.");
 	}
-	elsif ($conf->{'_log_max_lifetime'} > 0) {
-		log_message ('PURGE', 'Deleting log data older than ' . $conf->{'_log_max_lifetime'} . ' days.');
-		
-		# Calculate the limit date
-		my ($sec,$min,$hour,$mday,$mon,$year) = localtime(time() - $conf->{'_log_max_lifetime'} * 86400); 
-		
-		# Fix the year
-		$year += 1900;
-		
-		# Fix the month
-		$mon += 1;
-		$mon = sprintf("%02d", $mon);
-		
-		# Fix the day
-		$mday = sprintf("%02d", $mday);
-		
-		# Fix the hour
-		$hour = sprintf("%02d", $hour);
-		
-		# Set the per-depth limits
-		my $limits = [$year, $mon, $mday, $hour];
-		
-		# Purge the log dir
-		pandora_purge_log_dir ($conf->{'_log_dir'}, $limits);
+	elsif (defined($conf->{'_days_purge_old_information'}) && $conf->{'_days_purge_old_information'} > 0) {
+		log_message ('PURGE', 'Deleting log data older than ' . $conf->{'_days_purge_old_information'} . ' days.');
+    	enterprise_hook ('pandora_purge_logs', [$dbh, $conf]);
 	}
 	else {
-		log_message ('PURGE', 'log_max_lifetime is set to 0. Old log data will not be deleted.');
+		log_message ('PURGE', 'days_purge_old_data is set to 0. Old log data will not be deleted.');
 	}
 
 	# Delete old special days
@@ -452,45 +431,6 @@ sub pandora_purgedb ($$) {
 				WHERE date < CURDATE() - $conf->{'_num_past_special_days'} AND date > '0001-01-01'");
 		}
 	}
-}
-
-########################################################################
-# Recursively delete old log files by sub directory.
-########################################################################
-sub pandora_purge_log_dir ($$;$) {
-	my ($dir, $limits, $depth) = @_;
-	
-	# Initial call
-	if (! defined ($depth)) {
-		$depth = 0;
-	}
-
-	# No limit for this depth
-	if (! defined ($limits->[$depth])) {
-		return;
-	}
-
-	# Open the dir
-	my $dir_dh;
-	if (! opendir($dir_dh, $dir)) {
-		return;
-	}
-
-	# Purge sub dirs
-	while (my $sub_dir = readdir ($dir_dh)) {
-
-		next if ($sub_dir eq '.' || $sub_dir eq '..' || ! -d $dir . '/' . $sub_dir);
-				
-		# Sub dirs have names that represent a year, month, day or hour
-		if ($sub_dir < $limits->[$depth]) {
-			rmtree ($dir . '/' . $sub_dir);
-		} elsif ($sub_dir == $limits->[$depth]) {
-			&pandora_purge_log_dir ($dir . '/' . $sub_dir, $limits, $depth + 1)
-		}
-	}
-	
-	# Close the dir
-	closedir ($dir_dh);
 }
 
 ###############################################################################
@@ -676,9 +616,13 @@ sub pandora_load_config ($) {
 	$conf->{"dynamic_warning"} = 0.10 unless defined($conf->{"dynamic_warning"});
 	$conf->{"dynamic_updates"} = 5 unless defined($conf->{"dynamic_updates"});
 
+	$conf->{'servername'} = $conf->{'servername'};
+    $conf->{'servername'} = `hostname` unless defined ($conf->{'servername'});
+	$conf->{"servername"} =~ s/\s//g;
+
 	# workaround for name unconsistency (corresponding entry at pandora_server.conf is 'errorlog_file')
-        $conf->{'errorlogfile'} = $conf->{'errorlog_file'};
-        $conf->{'errorlogfile'} = "/var/log/pandora_server.error" unless defined ($conf->{'errorlogfile'});
+	$conf->{'errorlogfile'} = $conf->{'errorlog_file'};
+	$conf->{'errorlogfile'} = "/var/log/pandora_server.error" unless defined ($conf->{'errorlogfile'});
 
 	# Read additional tokens from the DB
 	my $dbh = db_connect ($conf->{'dbengine'}, $conf->{'dbname'}, $conf->{'dbhost'}, $conf->{'dbport'}, $conf->{'dbuser'}, $conf->{'dbpass'});
@@ -712,13 +656,14 @@ sub pandora_load_config ($) {
 	$conf->{'_netflow_max_lifetime'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'netflow_max_lifetime'");
 	$conf->{'_netflow_nfexpire'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'netflow_nfexpire'");
    	$conf->{'_netflow_path'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'netflow_path'");
-   	$conf->{'_log_dir'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'log_dir'");
-   	$conf->{'_log_max_lifetime'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'log_max_lifetime'");
 	$conf->{'_delete_notinit'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'delete_notinit'");
 
 	$conf->{'_big_operation_step_datos_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'big_operation_step_datos_purge'");
 	$conf->{'_small_operation_step_datos_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'small_operation_step_datos_purge'");
 	$conf->{'_days_autodisable_deletion'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'days_autodisable_deletion'");
+	$conf->{'_days_purge_old_information'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'Days_purge_old_information'");
+	$conf->{'_elasticsearch_ip'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'elasticsearch_ip'");
+	$conf->{'_elasticsearch_port'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'elasticsearch_port'");
 
 	$BIG_OPERATION_STEP = $conf->{'_big_operation_step_datos_purge'}
 					if ( $conf->{'_big_operation_step_datos_purge'} );

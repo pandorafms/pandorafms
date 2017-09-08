@@ -146,7 +146,7 @@ if (is_ajax ()) {
 				if (preg_match ("/^_html_editor_$/i", $field_value)) {
 					
 					$editor_type_chkbx = "<div style=\"padding: 4px 0px;\"><b><small>";
-					$editor_type_chkbx .= __('Basic') . "&nbsp;&nbsp;";
+					$editor_type_chkbx .= __('Basic') . ui_print_help_tip (__("For sending emails, text must be HTML format, if you want to use plain text, type it between the following labels: <pre></pre>"), true);
 					$editor_type_chkbx .= html_print_radio_button_extended ('editor_type_value_'.$i, 0, '', false, false, "removeTinyMCE('textarea_field".$i."_value')", '', true);
 					$editor_type_chkbx .= "&nbsp;&nbsp;&nbsp;&nbsp;";
 					$editor_type_chkbx .= __('Advanced') . "&nbsp;&nbsp;";

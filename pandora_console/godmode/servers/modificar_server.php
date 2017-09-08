@@ -33,21 +33,40 @@ if (isset($_GET["server"])) {
 	$id_server= get_parameter_get ("server");
 	// Headers
 	ui_print_page_header (__('Update Server'), "images/gm_servers.png", false, "servers", true);
-	$sql = sprintf("SELECT name, ip_address, description FROM tserver WHERE id_server = %d",$id_server);
+	$sql = sprintf("SELECT name, ip_address, description, server_type, exec_proxy FROM tserver WHERE id_server = %d",$id_server);
 	$row = db_get_row_sql ($sql);
 	echo '<form name="servers" method="POST" action="index.php?sec=gservers&sec2=godmode/servers/modificar_server&update=1">';
 	html_print_input_hidden ("server",$id_server);
+
+	$server_type = __('Standard');
+	if ($row["server_type"] == 13) {
+		$server_type = __('Satellite');
+	}
+	$exec_server_enable = __("No");
+	if ($row["exec_proxy"] == 1) {
+		$exec_server_enable = __('Yes');
+	}
 	
 	$table->cellpadding=4;
 	$table->cellspacing=4;
 	$table->width='100%';
 	$table->class="databox filters";
 	
-	$table->data[] = array (__('Name'),$row["name"]);
-	$table->data[] = array (__('IP Address'),html_print_input_text ('address',$row["ip_address"],'',50,0,true));
-	$table->data[] = array (__('Description'),html_print_input_text ('description',$row["description"],'',50,0,true));
-	html_print_table ($table);
+	$table->data[] = array (__('Name'), $row["name"]);
+	$table->data[] = array (__('IP Address'), html_print_input_text ('address',$row["ip_address"],'',50,0,true));
+	$table->data[] = array (__('Description'), html_print_input_text ('description',$row["description"],'',50,0,true));
 	
+	if (enterprise_installed()) {
+		$table->data[] = array (__('Type'), $server_type);
+		if ($row["server_type"] == 13 || $row["server_type"] == 1) {
+			$table->data[] = array (__('Exec Server'), html_print_checkbox ("exec_proxy", 1, $row["exec_proxy"], true));
+			if ($row["exec_proxy"]) {
+				$table->data[] = array (__('Check Exec Server'), '<a id="check_exec_server">' . html_print_image ("images/dot_red.disabled.png", true) . '</a>' . '<div id="check_error_message"></div>');
+			}
+		}
+	}
+	
+	html_print_table ($table);
 	
 	echo '<div class="action-buttons" style="width: 100%">';
 	echo '<input type="submit" class="sub upd" value="'.__('Update').'">';
@@ -55,12 +74,12 @@ if (isset($_GET["server"])) {
 
 }
 elseif (isset($_GET["server_remote"])) {
-	
 	// Headers
 	$id_server= get_parameter_get ("server_remote");
+	$ext = get_parameter ("ext", '');
 	ui_print_page_header (__('Remote Configuration'), "images/gm_servers.png", false, "servers", true);
 	enterprise_include("godmode/servers/server_disk_conf_editor.php");
-	}
+}
 else {
 	// Header
 	ui_print_page_header (__('Pandora servers'), "images/gm_servers.png", false, "servers", true);
@@ -105,8 +124,9 @@ else {
 		$address = get_parameter_post ("address");
 		$description = get_parameter_post ("description");
 		$id_server = get_parameter_post ("server");
+		$exec_proxy = get_parameter_post ("exec_proxy");
 		
-		$values = array('ip_address' => $address, 'description' => $description);
+		$values = array('ip_address' => $address, 'description' => $description, 'exec_proxy' => $exec_proxy);
 		$result = db_process_sql_update('tserver', $values, array('id_server' => $id_server));
 		if ($result !== false) {
 			ui_print_success_message(__('Server updated successfully'));
@@ -119,7 +139,8 @@ else {
 		
 		$correct = false;
 		$id_server = get_parameter ("id_server");
-		$server_md5 = md5(io_safe_output(servers_get_name ($id_server,'none')), FALSE);
+		$ext = get_parameter ("ext", '');
+		$server_md5 = md5(io_safe_output(servers_get_name ($id_server,'none') . $ext), FALSE);
 		
 		if (file_exists ($config["remote_config"] . "/md5/" . $server_md5 . ".srv.md5")) {
 			// Server remote configuration editor
@@ -140,3 +161,38 @@ else {
 	require($config['homedir'] . '/godmode/servers/servers.build_table.php');
 }
 ?>
+
+<script language="javascript" type="text/javascript">
+
+$(document).ready (function () {
+	$("#check_exec_server img").on("click", function () {
+		$("#check_exec_server img").attr("src", "images/spinner.gif");
+
+		check_process("<?php echo $id_server;?>");
+	});
+});
+
+function check_process (id_server) {
+	var parameters = {};
+	parameters['page'] = 'enterprise/include/ajax/servers.ajax';
+	parameters['check_exec_server'] = 1;
+	parameters['id_server'] = id_server;
+	
+	jQuery.post(
+		"ajax.php",
+		parameters,
+		function (data) {
+			if (data['correct']) {
+				$("#check_exec_server img").attr("src", "images/dot_green.png");
+			}
+			else {
+				$("#check_exec_server img").attr("src", "images/dot_red.png");
+				$("#check_error_message").empty();
+				$("#check_error_message").append("<span>" + data['message'] + "</span>");
+			}
+		},
+		"json"
+	);
+}
+
+</script>

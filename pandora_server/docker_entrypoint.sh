@@ -35,10 +35,10 @@ if [ -z "$PANDORA_DB_PASSWORD" ]; then
 	exit 1
 fi
 
-#Create the pandora user to run the anyterd, mainly
+#Create the pandora user, mainly
 /usr/sbin/useradd -d /home/pandora -s /bin/false -M -g 0 pandora
 
-cd /tmp/pandorafms/pandora_server && chmod +x pandora_server_installer && sync && ./pandora_server_installer --install
+cd /tmp/pandorafms/pandora_server && ./pandora_server_installer --install
 
 #Configure the Pandora FMS Server to connect to the database
 sed -i "s/dbname pandora/dbname $PANDORA_DB_NAME/g" /etc/pandora/pandora_server.conf
@@ -49,7 +49,6 @@ sed -i "s/dbhost 127.0.0.1/dbhost $PANDORA_DB_HOST/g" /etc/pandora/pandora_serve
 #Rock n' roll!
 /etc/init.d/crond start &
 /etc/init.d/ntpd start &
-/etc/init.d/anytermd start &
 /etc/init.d/postfix start &
 /etc/init.d/tentacle_serverd start &
 /usr/bin/pandora_server /etc/pandora/pandora_server.conf

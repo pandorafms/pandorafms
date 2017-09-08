@@ -152,6 +152,11 @@ foreach ($layoutDatas as $layoutData) {
 				html_print_image('images/chart_curve.png', true,
 					array('title' => __('Module Graph')));
 			break;
+		case AUTO_SLA_GRAPH:
+			$table->data[$i + 1]['icon'] =
+				html_print_image('images/auto_sla_graph.png', true,
+					array('title' => __('Auto SLA Graph')));
+			break;
 		case SIMPLE_VALUE:
 			$table->data[$i + 1]['icon'] =
 				html_print_image('images/binary.png', true,
@@ -291,7 +296,7 @@ foreach ($layoutDatas as $layoutData) {
 	//Delete row button
 	if (!defined('METACONSOLE')) {
 		$url_delete = "index.php?" .
-			"sec=reporting&" .
+			"sec=network&" .
 			"sec2=godmode/reporting/visual_console_builder&" .
 			"tab=" . $activeTab  . "&" .
 			"action=delete&" .
@@ -465,6 +470,7 @@ foreach ($layoutDatas as $layoutData) {
 	switch ($layoutData['type']) {
 		case LINE_ITEM:
 		case BOX_ITEM:
+		case AUTO_SLA_GRAPH:
 			$table->data[$i + 2][4] = "";
 			break;
 		default:
@@ -496,7 +502,7 @@ foreach ($layoutDatas as $layoutData) {
 $pure = get_parameter('pure', 0);
 
 if (!defined('METACONSOLE')) {
-	echo '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=' . $activeTab  . '&id_visual_console=' . $visualConsole["id"] . '">';
+	echo '<form method="post" action="index.php?sec=network&sec2=godmode/reporting/visual_console_builder&tab=' . $activeTab  . '&id_visual_console=' . $visualConsole["id"] . '">';
 }
 else {
 	echo "<form method='post' action='index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure=0&tab=list_elements&id_visual_console=" . $idVisualConsole . "'>";
@@ -522,7 +528,7 @@ echo '</form>';
 // Form for multiple delete
 if (!defined('METACONSOLE')) {
 	$url_multiple_delete = "index.php?" .
-		"sec=reporting&" .
+		"sec=network&" .
 		"sec2=godmode/reporting/visual_console_builder&" .
 		"tab=" . $activeTab  . "&" .
 		"id_visual_console=" . $visualConsole["id"];

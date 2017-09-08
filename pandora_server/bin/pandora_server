@@ -102,8 +102,7 @@ sub pandora_startup () {
 	$Config{"encryption_key"} = enterprise_hook('pandora_get_encryption_key', [\%Config, $Config{"encryption_passphrase"}]);
 
 	# Update the agent cache.
-	enterprise_hook('update_agent_cache', [\%Config, $DBH]) if ($Config{'node_metaconsole'} == 1);
-
+	threads->create('enterprise_hook', ('update_agent_cache', [\%Config]))->detach() if ($Config{'node_metaconsole'} == 1);
 	pandora_audit (\%Config, 'Pandora FMS Server Daemon starting', 'SYSTEM', 'System', $DBH);
 	
 	# Load servers
@@ -608,13 +607,7 @@ sub main() {
 				$server->update();
 			}
 	
-			# Update fallen servers 
-			my @servers_db = get_db_rows ($DBH, "SELECT id_server, server_keepalive FROM tserver");
-			for (@servers_db) {
-				my %server_db = %$_;
-				my $expected_update = strftime ("%Y-%m-%d %H:%M:%S", localtime(time() - $server_db{'server_keepalive'} * 2));
-				db_do ($DBH, "UPDATE tserver SET status = 0 WHERE keepalive < ? AND id_server = ?", $expected_update, $server_db{'id_server'});
-			}
+			db_do ($DBH, "UPDATE tserver SET status = 0 WHERE now()-keepalive > 2*server_keepalive");
 
 			# Set the master server
 			pandora_set_master(\%Config, $DBH);

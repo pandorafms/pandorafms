@@ -46,6 +46,7 @@ function show_event_dialog(event_id, group_rep, dialog_page, result) {
 					modal: true,
 					close: function() {
 						$("#refrcounter").countdown("resume");
+						$('div.vc-countdown').countdown('resume');
 					},
 					overlay: {
 						opacity: 0.5,
@@ -55,8 +56,9 @@ function show_event_dialog(event_id, group_rep, dialog_page, result) {
 					height: 530
 				})
 				.show ();
-				
-			$("#refrcounter").countdown("pause");
+			
+			$("#refrcounter").countdown('pause');
+			$('div.vc-countdown').countdown('pause');
 				
 			switch (result) {
 				case 'comment_ok':
@@ -175,7 +177,7 @@ function show_response_dialog(event_id, response_id, response) {
 					draggable: true,
 					modal: false,
 					open: function(event, ui) {
-						perform_response(response['target']);
+						perform_response(response['target'], response_id);
 					},
 					width: response['modal_width'], 
 					height: response['modal_height']
@@ -334,7 +336,7 @@ function get_response_target(event_id, response_id, server_id) {
 }
 
 // Perform a response and put the output into a div
-function perform_response(target) {
+function perform_response(target, response_id) {
 	var ajax_file = $('#hidden-ajax_file').val();
 	
 	$('#re_exec_command').hide();
@@ -349,6 +351,7 @@ function perform_response(target) {
 	params.push("page=include/ajax/events");
 	params.push("perform_event_response=1");
 	params.push("target="+target);
+	params.push("response_id="+response_id)
 	
 	jQuery.ajax ({
 		data: params.join ("&"),

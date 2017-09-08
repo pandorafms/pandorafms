@@ -15,7 +15,7 @@ if(!enterprise_installed()){
 	$open=true; 
 }
 
-$tipo = $_GET['message'];
+$tipo = $_POST['message'];
 
 echo "
 <div class='modalheader'>
@@ -185,7 +185,7 @@ echo "
 </div>";
 if($open){
 echo "<div class='modalgobutton gopandora'>
-<span class='modalokbuttontext'>About Enterprise</span>
+<span class='modalgobuttontext'>About Enterprise</span>
 </div>";
 }
 

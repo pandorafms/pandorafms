@@ -51,7 +51,7 @@ else {
 
 // List
 $list = array();
-$list['text'] = '<a href="index.php?sec=estado&sec2=operation/snmpconsole/snmp_view&pure=' . $config["pure"] . '&refr=' . $refr . '">' . 
+$list['text'] = '<a href="index.php?sec=estado&sec2=operation/snmpconsole/snmp_view&pure=' . $config["pure"] . '&refresh=' . $refr . '">' . 
 	html_print_image("images/op_snmp.png", true, array ("title" => __('List'))) .'</a>';
 
 // Statistics (This file)

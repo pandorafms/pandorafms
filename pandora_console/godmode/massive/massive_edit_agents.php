@@ -139,9 +139,60 @@ if ($update_agents) {
 			    isset($values['id_grupo'])) {
 				$values['update_module_count'] = 1; // Force an update of the agent cache.
 			}
+			$group_old = false;
+			if($values['id_grupo']){
+				$group_old = db_get_sql("SELECT id_grupo FROM tagente WHERE id_agente =" .$id_agent);
+			}
+			
 			$result = db_process_sql_update ('tagente',
 				$values,
 				array ('id_agente' => $id_agent));
+			
+			if($group_old || $result){
+				if ($group_old && $group_old != null) {
+					$tpolicy_group_old = db_get_all_rows_sql("SELECT id_policy FROM tpolicy_groups 
+						WHERE id_group = ".$group_old);
+				}
+				else {
+					$tpolicy_group_old = db_get_all_rows_sql("SELECT id_policy FROM tpolicy_groups");
+				}
+					
+				if($tpolicy_group_old){
+					foreach ($tpolicy_group_old as $key => $value) {
+						$tpolicy_agents_old= db_get_sql("SELECT * FROM tpolicy_agents 
+							WHERE id_policy = ".$value['id_policy'] . " AND id_agent = " .$id_agent);
+										
+						if($tpolicy_agents_old){
+							$result2 = db_process_sql_update ('tpolicy_agents',
+								array('pending_delete' => 1),
+								array ('id_agent' => $id_agent, 'id_policy' => $value['id_policy']));
+						}
+					}
+				}
+				if ($values['id_grupo'] && $values['id_grupo'] != null) {
+					$tpolicy_group_new = db_get_all_rows_sql("SELECT id_policy FROM tpolicy_groups 
+						WHERE id_group = ".$values['id_grupo']);
+				}
+				else {
+					$tpolicy_group_new = db_get_all_rows_sql("SELECT id_policy FROM tpolicy_groups");
+				}
+						
+				if($tpolicy_group_new){
+					foreach ($tpolicy_group_new as $key => $value) {
+						$tpolicy_agents_new= db_get_sql("SELECT * FROM tpolicy_agents 
+							WHERE id_policy = ".$value['id_policy'] . " AND id_agent =" .$id_agent);
+								
+						if(!$tpolicy_agents_new){
+							db_process_sql_insert ('tpolicy_agents',
+							array('id_policy' => $value['id_policy'], 'id_agent' => $id_agent));
+						} else {
+							$result3 = db_process_sql_update ('tpolicy_agents',
+								array('pending_delete' => 0),
+								array ('id_agent' => $id_agent, 'id_policy' => $value['id_policy']));
+						}
+					}
+				}
+			}
 		}
 		
 		// Update Custom Fields
@@ -183,7 +234,7 @@ if ($update_agents) {
 	
 	ui_print_result_message ($result !== false,
 		__('Agents updated successfully') . '(' . $n_edited . ')',
-		__('Agents cannot be updated'));
+		__('Agents cannot be updated (maybe there was no field to update)'));
 }
 $id_group = 0;
 
@@ -286,6 +337,8 @@ $params['print_hidden_input_idagent'] = true;
 $params['hidden_input_idagent_name'] = 'id_agent_parent';
 $params['hidden_input_idagent_value'] = $id_parent;
 $params['value'] = db_get_value ("alias","tagente","id_agente",$id_parent);
+$params['selectbox_id'] = 'cascade_protection_module';
+$params['javascript_is_function_select'] = true;
 $table->data[0][1] = ui_print_agent_autocomplete_input($params);
 
 $table->data[0][1] .= "<b>" . __('Cascade protection'). "</b>&nbsp;" .
@@ -456,7 +509,13 @@ foreach ($fields as $field) {
 		$custom_value = '';
 	}
 	
-	$data[1] = html_print_textarea ('customvalue_'.$field['id_field'], 2, 65, $custom_value, 'style="min-height: 30px;"', true);
+	if ($field['is_password_type']) {
+		$data[1] = html_print_input_text_extended ('customvalue_' . $field['id_field'], $custom_value, 'customvalue_' . $field['id_field'], '',
+			30, 100, $view_mode, '', '', true, true);
+	}
+	else {
+		$data[1] = html_print_textarea ('customvalue_'.$field['id_field'], 2, 65, $custom_value, 'style="min-height: 30px;"', true);
+	}
 	
 	array_push ($table->data, $data);
 }
@@ -508,38 +567,6 @@ $(document).ready (function () {
 			$("#cascade_protection_module").attr("disabled", 'disabled');
 		}
 	});
-
-	$("#text-id_parent").on("autocompletechange", function () {
-		agent_name = $("#text-id_parent").val();
-		
-		var params = {};
-		params["get_agent_modules_json_by_name"] = 1;
-		params["agent_name"] = agent_name;
-		params["page"] = "include/ajax/module";
-		
-		jQuery.ajax ({
-			data: params,
-			dataType: "json",
-			type: "POST",
-			url: "ajax.php",
-			success: function (data) {
-				$('#cascade_protection_module').empty();
-				$('#cascade_protection_module')
-						.append ($('<option></option>')
-						.html("Any")
-						.prop("value", 0)
-						.prop("selected", 'selected'));
-				jQuery.each (data, function (i, val) {
-					$('#cascade_protection_module')
-						.append ($('<option></option>')
-						.html(val['name'])
-						.prop("value", val['id_module'])
-						.prop("selected", 'selected'));
-				});
-			}
-		});
-	});
-
 
 	$("#form_agent").submit(function() {
 		var get_parameters_count = window.location.href.slice(

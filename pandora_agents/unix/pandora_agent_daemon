@@ -69,6 +69,9 @@ pidof_pandora () {
 				break
 			fi
 		done
+	elif [ "$OS_NAME" = "AIX" ]; then
+		# AIX
+		PANDORA_PID=`ps -ef | grep "$DAEMON $PANDORA_PATH" | grep -v grep | awk '{ print $2 }'`
 	else
 		PANDORA_PID=`ps -Afw | grep "$DAEMON $PANDORA_PATH" | grep -v grep | awk '{ print $2 }'`
 	fi

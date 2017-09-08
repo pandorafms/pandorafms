@@ -82,7 +82,7 @@ echo "<span class='loading' style='font-size:18pt;'>";
 echo "<img src='images/wait.gif' />";
 echo "</span><br><br>";
 
-echo "<div><b>" . __('The last version of package installed is:') . "</b></div><br>";
+echo "<div><b>" . __('The latest version of package installed is:') . "</b></div><br>";
 echo "<div id='pkg_version' style='color:#82b92e;font-size:40pt;font-weight:bold;'>" . $current_package . "</div>";
 
 	echo "<div class='checking_package' style='font-size:18pt;width:100%; text-align: center; display: none;'>";
@@ -147,7 +147,7 @@ var open = "<?php echo $open;?>";
 if(open){
 	$(document).ready(function() {
 	$('body').append( "<div id='opacidad' style='position:fixed;background:black;opacity:0.6;z-index:1'></div>" );
-	jQuery.get ("ajax.php",
+	jQuery.post ("ajax.php",
 		{
 	"page": "general/alert_enterprise",
 	"message":"infomodal"},

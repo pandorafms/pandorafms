@@ -1506,7 +1506,7 @@ function get_snmpwalk($ip_target, $snmp_version, $snmp_community = '',
 	$snmp3_auth_user = '', $snmp3_security_level = '',
 	$snmp3_auth_method = '', $snmp3_auth_pass = '',
 	$snmp3_privacy_method = '', $snmp3_privacy_pass = '',
-	$quick_print = 0, $base_oid = "", $snmp_port = '') {
+	$quick_print = 0, $base_oid = "", $snmp_port = '', $server_to_exec = 0) {
 	
 	global $config;
 	
@@ -1598,7 +1598,18 @@ function get_snmpwalk($ip_target, $snmp_version, $snmp_community = '',
 			break;
 	}
 	
-	exec($command_str, $output, $rc);
+	if (enterprise_installed()) {
+		if ($server_to_exec != 0) {
+			$server_data = db_get_row('tserver','id_server', $server_to_exec);
+			exec("ssh pandora_exec_proxy@" . $server_data['ip_address'] . " \"" . $command_str . "\"", $output, $rc);
+		}
+		else {
+			exec($command_str, $output, $rc);
+		}
+	}
+	else {
+		exec($command_str, $output, $rc);
+	}
 	
 	// Parse the output of snmpwalk
 	$snmpwalk = array();
@@ -1990,9 +2001,32 @@ function get_os_name ($id_os) {
  * @return array Dashboard name of the given user.
  */
 function get_user_dashboards ($id_user) {
-	$sql = "SELECT name
-		FROM tdashboard
-		WHERE id_user="."'".$id_user."'";
+	if (users_is_admin($id_user)) {
+		$sql = "SELECT name
+			FROM tdashboard WHERE id_user = '" . $id_user ."' OR id_user = ''";
+	}
+	else {
+		$user_can_manage_all = users_can_manage_group_all('RR');
+		if ($user_can_manage_all) {
+			$sql = "SELECT name
+				FROM tdashboard WHERE id_user = '" . $id_user ."' OR id_user = ''";
+		}
+		else {
+			$user_groups = users_get_groups($id_user, "RR", false);
+			if (empty($user_groups)) {
+				return false;
+			}
+
+			$u_groups = array();
+			foreach ($user_groups as $id => $group_name) {
+				$u_groups[] = $id;
+			}
+
+			$sql = "SELECT name
+				FROM tdashboard
+				WHERE id_group IN (" . implode(",", $u_groups) . ") AND (id_user = '" . $id_user ."' OR id_user = '')";
+		}
+	}
 	
 	return db_get_all_rows_sql ($sql);
 }
@@ -2730,4 +2764,15 @@ function remove_right_zeros ($value) {
 		return $value;
 	}
 }
+
+function register_pass_change_try ($id_user, $success) {
+	$values = array();
+	$values['id_user'] = $id_user;
+	$reset_pass_moment = new DateTime('now');
+	$reset_pass_moment = $reset_pass_moment->format("Y-m-d H:i:s");
+	$values['reset_moment'] = $reset_pass_moment;
+	$values['success'] = $success;
+	db_process_sql_insert('treset_pass_history', $values);
+}
+
 ?>

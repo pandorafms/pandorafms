@@ -16,7 +16,7 @@
 // Load global vars
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "PM")) {
+if (! check_acl ($config['id_user'], 0, "AW")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access massive module update");
 	require ("general/noaccess.php");
@@ -40,6 +40,7 @@ $agents_id = get_parameter('id_agents');
 $modules_select = get_parameter('module');
 $selection_mode = get_parameter('selection_mode', 'modules');
 $recursion = get_parameter('recursion');
+$modules_selection_mode = get_parameter('modules_selection_mode');
 
 $update = (bool) get_parameter_post ('update');
 
@@ -105,10 +106,13 @@ if ($update) {
 					$module_name = array();
 				
 				foreach ($module_name as $mod_name) {
-					$result = process_manage_edit($mod_name['nombre'], $id_agent);
+					$result = process_manage_edit($mod_name['nombre'], $id_agent, $modules_selection_mode);
 					$count++;
 					$success += (int)$result;
 				}
+			}
+			if ($success == 0) {
+				$error_msg = __("Error updating the modules from a module type");
 			}
 		}
 		else if ($force == 'group') {
@@ -124,10 +128,13 @@ if ($update) {
 					$module_name = array();
 				
 				foreach($module_name as $mod_name) {
-					$result = process_manage_edit($mod_name['nombre'], $id_agent);
+					$result = process_manage_edit($mod_name['nombre'], $id_agent, $modules_selection_mode);
 					$count++;
 					$success += (int)$result;
 				}
+			}
+			if ($success == 0) {
+				$error_msg = __("Error updating the modules from an agent group");
 			}
 		}
 	}
@@ -140,17 +147,20 @@ if ($update) {
 			
 			foreach ($modules_ as $module_) {
 				
-				$result = process_manage_edit ($module_, $agent_);
+				$result = process_manage_edit ($module_, $agent_, $modules_selection_mode);
 				$count++;
 				$success += (int)$result;
 				
 			}
 		}
+		if ($success == 0) {
+			$error_msg = __("Error updating the modules (maybe there was no field to update)");
+		}
 	}
 	
 	ui_print_result_message ($success > 0,
 		__('Successfully updated') . "(" . $success . "/" . $count . ")",
-		__('Could not be updated'));
+		$error_msg);
 	
 	$info = 'Modules: ' . json_encode($modules_) . ' Agents: ' . json_encode($agents_);
 	if ($success > 0) {
@@ -303,6 +313,13 @@ $table->data['form_modules_3'][1] = html_print_select($status_list,
 	'status_module', 'selected', '', __('All'), AGENT_MODULE_STATUS_ALL, true);
 $table->data['form_modules_3'][3] = '';
 
+$tags = tags_get_user_tags();
+$table->rowstyle['form_modules_4'] = 'vertical-align: top;';
+$table->rowclass['form_modules_4'] = 'select_modules_row select_modules_row_2';
+$table->data['form_modules_4'][0] = __('Tags');
+$table->data['form_modules_4'][1] = html_print_select ($tags, 'tags[]',
+	$tags_name, false, __('Any'), -1, true, true, true);
+
 $table->rowstyle['form_modules_2'] = 'vertical-align: top;';
 $table->rowclass['form_modules_2'] = 'select_modules_row select_modules_row_2';
 $table->data['form_modules_2'][0] = __('Modules');
@@ -334,8 +351,12 @@ $table->data['form_agents_2'][1] = html_print_select($status_list,
 	'status_agents', 'selected', '', __('All'), AGENT_STATUS_ALL, true);
 $table->data['form_agents_2'][3] = '';
 
-
-
+$tags = tags_get_user_tags();
+$table->rowstyle['form_agents_4'] = 'vertical-align: top;';
+$table->rowclass['form_agents_4'] = 'select_agents_row select_agents_row_2';
+$table->data['form_agents_4'][0] = __('Tags');
+$table->data['form_agents_4'][1] = html_print_select ($tags, 'tags[]',
+	$tags_name, false, __('Any'), -1, true, true, true);
 
 $table->rowstyle['form_agents_3'] = 'vertical-align: top;';
 $table->rowclass['form_agents_3'] = 'select_agents_row select_agents_row_2';
@@ -474,8 +495,10 @@ $table->data['edit2'][3] = html_print_select(
 
 $table->data['edit3'][0] = __('Post process') .
 	ui_print_help_icon ('postprocess', true);
-$table->data['edit3'][1] = html_print_input_text ('post_process', '',
-	'', 10, 15, true);
+	
+$table->data['edit3'][1] = html_print_extended_select_for_post_process('post_process',
+	-1, '','', 0, false, true, 'width:150px;', true, false, 1);
+			
 $table->data['edit3'][2] = __('SMNP community');
 $table->data['edit3'][3] = html_print_input_text ('snmp_community', '',
 	'', 10, 15, true);
@@ -533,7 +556,13 @@ $table->data['edit6'][0] = __('Export target');
 $targets2 = db_get_all_rows_sql ("SELECT id, name FROM tserver_export ORDER by name");
 if ($targets2 === false)
 	$targets2 = array();
-$targets =  array_merge(array(0 => __('None')), $targets2 );
+
+$targets = array();
+$targets[0] = __('None');
+foreach ($targets2 as $t) {
+        $targets[$t['id']] = $t['name'];
+}
+
 $table->data['edit6'][1] = html_print_select ($targets, 'id_export', '','', __('No change'), '', true, false, false);
 $table->data['edit6'][2] = __('Unit');
 $table->data['edit6'][3] = html_print_input_text ('unit', '', '', 15, 60, true);
@@ -662,8 +691,10 @@ $(document).ready (function () {
 	
 	clean_lists();
 	
+	
 	$(".select_modules_row").css('display', '<?php echo $modules_row?>');
 	$(".select_agents_row").css('display', '<?php echo $agents_row?>');
+	$(".select_modules_row_2").css('display', 'none');
 	
 	// Trigger change to refresh selection when change selection mode
 	$("#agents_selection_mode").change (function() {
@@ -710,7 +741,7 @@ $(document).ready (function () {
 		var params = {
 			"page" : "operation/agentes/ver_agente",
 			"get_agent_modules_json" : 1,
-			"get_distinct_name" : 1,
+			"get_id_and_name" : 1,
 			"indexed" : 0
 		};
 		
@@ -720,6 +751,13 @@ $(document).ready (function () {
 		var status_module = $('#status_module').val();
 		if (status_module != '-1')
 			params['status_module'] = status_module;
+
+		var tags_to_search = $('#tags').val();
+		if (tags_to_search != null) {
+			if (tags_to_search[0] != -1) {
+				params['tags'] = tags_to_search;
+			}
+		}
 		
 		$("#module_loading").show ();
 		$("tr#delete_table-edit1, tr#delete_table-edit0, tr#delete_table-edit2").hide ();
@@ -926,6 +964,7 @@ $(document).ready (function () {
 		else if(selector == 'modules') {
 			$(".select_agents_row").hide();
 			$(".select_modules_row").show();
+			$("#module_type").trigger("change");
 		}
 	});
 	
@@ -957,7 +996,6 @@ $(document).ready (function () {
 
 	$("#groups_select").change (
 		function () {
-			
 			if (this.value < 0) {
 				clean_lists();
 				$(".select_agents_row_2").css('display', 'none');
@@ -1041,6 +1079,14 @@ $(document).ready (function () {
 		}
 	});
 
+	$("#tags").change(function() {
+		selector = $("#form_edit input[name=selection_mode]:checked").val();
+		$("#module_type").trigger("change");
+	});
+	$("#tags1").change(function() {
+		selector = $("#form_edit input[name=selection_mode]:checked").val();
+		$("#id_agents").trigger("change");
+	});
 });
 
 function disabled_status () {
@@ -1067,7 +1113,7 @@ function disabled_status () {
 /* ]]> */
 </script>
 <?php
-function process_manage_edit ($module_name, $agents_select = null) {
+function process_manage_edit ($module_name, $agents_select = null, $module_status = 'all') {
 	
 	if (is_int ($module_name) && $module_name < 0) {
 		ui_print_error_message(__('No modules selected'));
@@ -1106,6 +1152,11 @@ function process_manage_edit ($module_name, $agents_select = null) {
 			case 'plugin_pass':
 				if ($value != '') {
 					$values['plugin_pass'] = io_input_password($value);
+				}
+				break;
+			case 'post_process':
+				if($value !== '-1'){
+					$values['post_process'] = $value;
 				}
 				break;
 			default:
@@ -1180,6 +1231,19 @@ function process_manage_edit ($module_name, $agents_select = null) {
 	
 	if ($modules === false)
 		return false;
+
+	if (($module_status == 'unknown') && ($module_name == "0")) {
+		$modules_to_delete = array();
+		foreach ($modules as $mod_id) {
+			$mod_status = (int)db_get_value_filter ('estado', 'tagente_estado', array('id_agente_modulo' => $mod_id));
+
+			// Unknown, not init and no data modules
+			if ($mod_status == 3 || $mod_status == 4 || $mod_status == 5) {
+				$modules_to_delete[$mod_id] = $mod_id;
+			}
+		}
+		$modules = $modules_to_delete;
+	}
 	
 	foreach ($modules as $module) {
 		$result = modules_update_agent_module(

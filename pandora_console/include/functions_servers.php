@@ -444,6 +444,11 @@ function servers_get_info ($id_server = -1) {
 				$server["type"] = "sync";
 				$id_modulo = 0;
 				break;
+			case SERVER_TYPE_WUX:
+				$server["img"] = html_print_image ("images/icono-wux.png", true, array ("title" => __('Wux server')));
+				$server["type"] = "wux";
+				$id_modulo = 0;
+				break;
 			default:
 				$server["img"] = '';
 				$server["type"] = "unknown";
@@ -758,6 +763,9 @@ function servers_show_type ($id) {
 			break;
 		case 7:
 			return html_print_image("images/server_web.png", true, array("title" => "Pandora FMS WEB server"));
+			break;
+		case 8:
+			return html_print_image("images/module-wux.png", true, array("title" => "Pandora FMS WUX server"));
 			break;
 		default:
 			return "--";

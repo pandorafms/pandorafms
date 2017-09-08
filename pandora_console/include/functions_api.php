@@ -1195,7 +1195,11 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3) {
 	else {
 		$cascadeProtectionModule = 0;
 	}
-
+	
+	$group_old = db_get_sql("SELECT id_grupo FROM tagente WHERE id_agente =" .$id_agent);
+	$tpolicy_group_old = db_get_all_rows_sql("SELECT id_policy FROM tpolicy_groups 
+			WHERE id_group = ".$group_old);
+	
 	$return = db_process_sql_update('tagente', 
 		array('alias' => $alias,
 			'direccion' => $ip,
@@ -1215,6 +1219,40 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3) {
 	if ( $return && !empty($ip)) {
 		// register ip for this agent in 'taddress'
 		agents_add_address ($id_agent, $ip);
+	}
+	
+	if($return){
+		if($tpolicy_group_old){
+			foreach ($tpolicy_group_old as $key => $value) {
+				$tpolicy_agents_old= db_get_sql("SELECT * FROM tpolicy_agents 
+					WHERE id_policy = ".$value['id_policy'] . " AND id_agent = " .$id_agent);
+							
+				if($tpolicy_agents_old){
+					$result2 = db_process_sql_update ('tpolicy_agents',
+						array('pending_delete' => 1),
+						array ('id_agent' => $id_agent, 'id_policy' => $value['id_policy']));
+				}
+			}
+		}
+		
+		$tpolicy_group = db_get_all_rows_sql("SELECT id_policy FROM tpolicy_groups 
+			WHERE id_group = ".$idGroup);
+		
+		if($tpolicy_group){
+			foreach ($tpolicy_group as $key => $value) {
+				$tpolicy_agents= db_get_sql("SELECT * FROM tpolicy_agents 
+					WHERE id_policy = ".$value['id_policy'] . " AND id_agent =" .$id_agent);
+					
+				if(!$tpolicy_agents){
+					db_process_sql_insert ('tpolicy_agents',
+					array('id_policy' => $value['id_policy'], 'id_agent' => $id_agent));
+				} else {
+					$result3 = db_process_sql_update ('tpolicy_agents',
+						array('pending_delete' => 0),
+						array ('id_agent' => $id_agent, 'id_policy' => $value['id_policy']));
+				}
+			}
+		}
 	}
 
 	returnData('string',
@@ -1282,7 +1320,7 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 	switch ($config["dbtype"]) {
 		case "mysql":
 			$sql1 = 'SELECT name
-				FROM tserver WHERE name LIKE "' . $nameServer . '"';
+				FROM tserver WHERE BINARY name LIKE "' . $nameServer . '"';
 			break;
 		case "postgresql":
 		case "oracle":
@@ -1339,7 +1377,19 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 			// register ip for this agent in 'taddress'
 			agents_add_address ($idAgente, $ip);
 		}
-
+		
+		if($idGroup && !empty($idAgente)){
+			$tpolicy_group_old = db_get_all_rows_sql("SELECT id_policy FROM tpolicy_groups 
+				WHERE id_group = ".$idGroup);
+			
+			if($tpolicy_group_old){
+				foreach ($tpolicy_group_old as $key => $old_group) {
+					db_process_sql_insert ('tpolicy_agents',
+					array('id_policy' => $old_group['id_policy'], 'id_agent' => $idAgente));
+				}
+			}
+		}
+		
 		returnData('string',
 			array('type' => 'string', 'data' => $idAgente));
 	}
@@ -1382,9 +1432,20 @@ function api_set_create_custom_field($t1, $t2, $other, $returnType) {
 			returnError('error_parameter', 'Custom field display flag required');
 			return;
 		}
+
+		$is_password_type = 0;
+		
+		if ($other['data'][2] != '') {
+			$is_password_type = $other['data'][2];
+		}
+		else {
+			returnError('error_parameter', 'Custom field is password type required');
+			return;
+		}
 		
 		$result = db_process_sql_insert('tagent_custom_fields',
-			array('name' => $name, 'display_on_front' => $display_front));
+			array('name' => $name, 'display_on_front' => $display_front,
+			'is_password_type' => $is_password_type));
 		
 		$data['type'] = "string";
 		$data["data"] = $result;
@@ -8832,7 +8893,7 @@ function api_set_create_tag ($id, $trash1, $other, $returnType) {
 
 //http://127.0.0.1/pandora_console/include/api.php?op=set&op2=create_event&id=name_event&other=2|system|3|admin|2|1|10|0|comments||Pandora||critical_inst|warning_inst|unknown_inst|other||&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
 function api_set_create_event($id, $trash1, $other, $returnType) {
-	
+
 	if ($other['type'] == 'string') {
 		returnError('error_parameter', 'Error in the parameters.');
 		return;
@@ -8856,12 +8917,47 @@ function api_set_create_event($id, $trash1, $other, $returnType) {
 			returnError('error_parameter', 'Group ID required.');
 			return;
 		}
-		
+		$error_msg ='';
 		if ($other['data'][2] != '') {
-			$values['id_agente'] = $other['data'][2];
+			$id_agent_exist = db_get_value('id_agente', 'tagente', 'id_agente', $other['data'][2]);
+			if($id_agent_exist){
+				$values['id_agente'] = $other['data'][2];
+			}
+			else{
+				$error_msg = 'id_not_exist';
+			}
 		}
 		else {
-			returnError('error_parameter', 'Agent ID required.');
+			if($other['data'][19] != ''){
+				$values['id_agente'] = db_get_value('id_agente', 'tagente', 'nombre', $other['data'][19]);
+				if(!$values['id_agente']){
+					if($other['data'][20] == 1){
+						$values['id_agente'] = db_process_sql_insert ('tagente', 
+												array ( 'nombre'   => $other['data'][19],
+														'id_grupo' => $other['data'][1],
+														'alias'    => $other['data'][19] )
+														);
+					}
+					else{
+						$error_msg = 'name_not_exist';
+					}
+				}
+			}
+			else {
+				$error_msg = 'none';
+			}
+		}
+
+		if($error_msg != ''){
+			if($error_msg == 'id_not_exist'){
+				returnError('error_parameter', 'Agent ID does not exist.');
+			} 
+			elseif($error_msg == 'name_not_exist'){
+				returnError('error_parameter', 'Agent Name does not exist.');	
+			} 
+			elseif($error_msg == 'none'){
+				returnError('error_parameter', 'Agent ID or name required.');
+			}
 			return;
 		}
 		
@@ -8950,7 +9046,19 @@ function api_set_create_event($id, $trash1, $other, $returnType) {
 		else {
 			$values['server_id'] = 0;
 		}
-		
+		if ($other['data'][18] != '') {
+			$values['id_extra'] = $other['data'][18];
+			$sql_validation = 'SELECT id_evento FROM tevento where estado=0 and id_extra ="'. $other['data'][18] .'";';
+			$validation = db_get_all_rows_sql($sql_validation);
+			if($validation){
+				foreach ($validation as $val) {
+					api_set_validate_event_by_id($val['id_evento']);
+				}
+			}
+		}
+		else {
+			$values['id_extra'] = '';
+		}
 		$return = events_create_event(
 			$values['event'], $values['id_grupo'], $values['id_agente'], 
 			$values['status'], $values['id_usuario'],
@@ -8960,7 +9068,7 @@ function api_set_create_event($id, $trash1, $other, $returnType) {
 			$values['warning_instructions'], 
 			$values['unknown_instructions'], $values['source'],
 			$values['tags'], $values['custom_data'],
-			$values['server_id']);
+			$values['server_id'], $values['id_extra']);
 		
 		if ($other['data'][12] != '') { //user comments
 			if ($return !== false) { //event successfully created
@@ -9127,12 +9235,10 @@ function api_get_netflow_get_summary ($discard_1, $discard_2, $params) {
 //http://localhost/pandora_console/include/api.php?op=set&op2=validate_event_by_id&id=23&apipass=1234&user=admin&pass=pandora
 function api_set_validate_event_by_id ($id, $trash1, $trash2, $returnType) {
 	global $config;
-	
 	$data['type'] = 'string';
 	$check_id = db_get_value('id_evento', 'tevento', 'id_evento', $id);
 	
 	if ($check_id) { //event exists
-		
 		$status = db_get_value('estado', 'tevento', 'id_evento', $id);
 		if ($status == 1) { //event already validated
 			$data['data'] = "Event already validated";
@@ -9450,6 +9556,257 @@ function api_set_create_special_day($thrash1, $thrash2, $other, $thrash3) {
 	}
 }
 
+/**
+ * Create a service and return service id.
+ *
+ * @param $thrash1 Don't use.
+ * @param $thrash2 Don't use.
+ * @param array $other it's array, $other as param is <description>;<id_group>;<critical>; 
+ * <warning>;<id_agent>;<sla_interval>;<sla_limit>;<id_warning_module_template_alert>;
+ * <id_critical_module_template_alert>;<id_critical_module_sla_template_alert>;	
+ * in this order and separator char (after text ; ) and separator 
+ * (pass in param othermode as othermode=url_encode_separator_<separator>)
+ * @param $thrash3 Don't use
+ *
+ * example:
+ * http://127.0.0.1/pandora_console/include/api.php?op=set&op2=create_service&return_type=json
+ * &other=test1%7CDescripcion de prueba%7C12%7C1%7C0.5%7C1&other_mode=url_encode_separator_%7C&apipass=1234&user=admin&pass=pandora
+ */
+function api_set_create_service($thrash1, $thrash2, $other, $thrash3) {
+	
+	$name = $other['data'][0];
+	$description = $other['data'][1];
+	$id_group = $other['data'][2];
+	$critical = $other['data'][3];
+	$warning = $other['data'][4];
+	$mode = 0;
+	$id_agent = $other['data'][5];
+	$sla_interval = $other['data'][6];
+	$sla_limit = $other['data'][7];
+	$id_warning_module_template = $other['data'][8];
+	$id_critical_module_template = $other['data'][9];
+	$id_unknown_module_template = 0;
+	$id_critical_module_sla = $other['data'][10];
+	
+	if(empty($name)){
+		returnError('error_create_service', __('Error in creation service. No name'));
+		return;
+	}
+	if(empty($id_group)){
+		// By default applications
+		$id_group = 12;
+	}
+	if(empty($critical)){
+		$critical = 1;
+	}
+	if(empty($warning)){
+		$warning = 0.5;
+	}
+	if(empty($id_agent)){
+		returnError('error_create_service', __('Error in creation service. No agent id'));
+		return;
+	}
+	if(empty($sla_interval)){
+		// By default one month
+		$sla_interval = 2592000;
+	}
+	if(empty($sla_limit)){
+		$sla_limit = 95;
+	}
+	if(empty($id_warning_module_template)){
+		$id_warning_module_template = 0;
+	}
+	if(empty($id_critical_module_template)){
+		$id_critical_module_template = 0;
+	}
+	if(empty($id_critical_module_sla)){
+		$id_critical_module_sla = 0;
+	}
+	
+	$result = services_create_service ($name, $description, $id_group,
+		$critical, $warning, SECONDS_5MINUTES, $mode, $id_agent, $sla_interval, $sla_limit,
+		$id_warning_module_template, $id_critical_module_template,
+		$id_unknown_module_template, $id_critical_module_sla);
+		
+	if($result){
+		returnData('string', array('type' => 'string', 'data' => $result));
+	} else {
+		returnError('error_create_service', __('Error in creation service'));
+	}
+}
+
+/**
+ * Update a service.
+ *
+ * @param $thrash1 service id.
+ * @param $thrash2 Don't use.
+ * @param array $other it's array, $other as param is <name>;<description>;<id_group>;<critical>; 
+ * <warning>;<id_agent>;<sla_interval>;<sla_limit>;<id_warning_module_template_alert>;
+ * <id_critical_module_template_alert>;<id_critical_module_sla_template_alert>;	
+ * in this order and separator char (after text ; ) and separator 
+ * (pass in param othermode as othermode=url_encode_separator_<separator>)
+ * @param $thrash3 Don't use
+ *
+ * example:
+ * http://172.17.0.1/pandora_console/include/api.php?op=set&op2=update_service&return_type=json
+ * &id=4&other=test2%7CDescripcion%7C%7C%7C0.6%7C&other_mode=url_encode_separator_%7C&apipass=1234&user=admin&pass=pandora
+ *
+ */
+function api_set_update_service($thrash1, $thrash2, $other, $thrash3) {
+	
+	$id_service = $thrash1;
+	if(empty($id_service)){
+		returnError('error_update_service', __('Error in update service. No service id'));
+		return;
+	}
+	
+	$service = db_get_row('tservice',
+		'id', $id_service);
+	
+	$name = $other['data'][0];
+	if(empty($name)){
+		$name = $service['name'];
+	}
+	$description = $other['data'][1];
+	if(empty($description)){
+		$description = $service['description'];
+	}
+	$id_group = $other['data'][2];
+	if(empty($id_group)){
+		$id_group = $service['id_group'];
+	}
+	$critical = $other['data'][3];
+	if(empty($critical)){
+		$critical = $service['critical'];
+	}
+	$warning = $other['data'][4];
+	if(empty($warning)){
+		$warning = $service['warning'];
+	}
+	
+	$mode = 0;
+	
+	$id_agent = $other['data'][5];
+	if(empty($id_agent)){
+		$id_agent = $service['id_agent_module'];
+	}
+	$sla_interval = $other['data'][6];
+	if(empty($sla_interval)){
+		$sla_interval = $service['sla_interval'];
+	}
+	$sla_limit = $other['data'][7];
+	if(empty($sla_limit)){
+		$sla_limit = $service['sla_limit'];
+	}
+	$id_warning_module_template = $other['data'][8];
+	if(empty($id_warning_module_template)){
+		$id_warning_module_template = $service['id_template_alert_warning'];
+	}
+	$id_critical_module_template = $other['data'][9];
+	if(empty($id_critical_module_template)){
+		$id_critical_module_template = $service['id_template_alert_critical'];
+	}
+	
+	$id_unknown_module_template = 0;
+	
+	$id_critical_module_sla = $other['data'][10];
+	if(empty($id_critical_module_sla)){
+		$id_critical_module_sla = $service['id_template_alert_critical_sla'];
+	}
+	
+	$result = services_update_service ($id_service, $name,$description, $id_group, $critical, $warning,
+		SECONDS_5MINUTES, $mode, $id_agent,$sla_interval, $sla_limit,$id_warning_module_template,
+		$id_critical_module_template,$id_unknown_module_template,$id_critical_module_sla);
+	
+	
+	if($result){
+		returnData('string', array('type' => 'string', 'data' => $result));
+	} else {
+		returnError('error_update_service', __('Error in update service'));
+	}
+	
+}
+
+/**
+ * Add elements to service.
+ *
+ * @param $thrash1 service id.
+ * @param $thrash2 Don't use.
+ * @param array $other it's a json, $other as param is <description>;<id_group>;<critical>; 
+ * <warning>;<id_agent>;<sla_interval>;<sla_limit>;<id_warning_module_template_alert>;
+ * <id_critical_module_template_alert>;<id_critical_module_sla_template_alert>;	
+ * in this order and separator char (after text ; ) and separator 
+ * (pass in param othermode as othermode=url_encode_separator_<separator>)
+ * @param $thrash3 Don't use
+ *
+ * example:
+ * http://172.17.0.1/pandora_console/include/api.php?op=set&op2=add_element_service&return_type=json&id=1
+ * &other=W3sidHlwZSI6ImFnZW50IiwiaWQiOjIsImRlc2NyaXB0aW9uIjoiamlqaWppIiwid2VpZ2h0X2NyaXRpY2FsIjowLCJ3ZWlnaHRfd2FybmluZyI6MCwid2VpZ2h0X3Vua25vd24iOjAsIndlaWdodF9vayI6MH0seyJ0eXBlIjoibW9kdWxlIiwiaWQiOjEsImRlc2NyaXB0aW9uIjoiSG9sYSBxdWUgdGFsIiwid2VpZ2h0X2NyaXRpY2FsIjowLCJ3ZWlnaHRfd2FybmluZyI6MCwid2VpZ2h0X3Vua25vd24iOjAsIndlaWdodF9vayI6MH0seyJ0eXBlIjoic2VydmljZSIsImlkIjozLCJkZXNjcmlwdGlvbiI6ImplamVqZWplIiwid2VpZ2h0X2NyaXRpY2FsIjowLCJ3ZWlnaHRfd2FybmluZyI6MCwid2VpZ2h0X3Vua25vd24iOjAsIndlaWdodF9vayI6MH1d
+ * &other_mode=url_encode_separator_%7C&apipass=1234&user=admin&pass=pandora
+ *
+ */
+function api_set_add_element_service($thrash1, $thrash2, $other, $thrash3) {
+	
+	$id = $thrash1;
+	
+	if(empty($id)){
+		returnError('error_add_service_element', __('Error adding elements to service. No service id'));
+		return;
+	}
+	
+	$array_json = json_decode(base64_decode(io_safe_output($other['data'][0])), true);
+	if(!empty($array_json)){
+		$results = false;
+		foreach ($array_json as $key => $element) {
+			if($element['id'] == 0){
+				continue;
+			}
+			switch ($element['type']) {
+				case 'agent':
+					$id_agente_modulo = 0;
+					$id_service_child = 0;
+					$agent_id = $element['id'];
+					break;
+				
+				case 'module':
+					$agent_id = 0;
+					$id_service_child = 0;
+					$id_agente_modulo = $element['id'];
+					break;
+					
+				case 'service':
+					$agent_id = 0;
+					$id_agente_modulo = 0;
+					$id_service_child = $element['id'];
+					break;
+			}
+			
+			$values = array(
+				'id_agente_modulo' => $id_agente_modulo,
+				'description' => $element['description'],
+				'id_service' => $id,
+				'weight_critical' => $element['weight_critical'],
+				'weight_warning' => $element['weight_warning'],
+				'weight_unknown' => $element['weight_unknown'],
+				'weight_ok' => $element['weight_ok'],
+				'id_agent' => $agent_id,
+				'id_service_child' => $id_service_child,
+				'id_server_meta' => 0);
+			
+			$result = db_process_sql_insert('tservice_element',$values);
+			if($result && !$results){
+				$results = $result;
+			}
+		}
+	}
+		
+	if($results){
+		returnData('string', array('type' => 'string', 'data' => 1));
+	} else {
+		returnError('error_add_service_element', __('Error adding elements to service'));
+	}
+	
+}
 /**
  * Update a special day. And return a message with the result of the operation.
  *

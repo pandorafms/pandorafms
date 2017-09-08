@@ -42,8 +42,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG";
-my $pandora_build = "170411";
+my $pandora_version = "7.0NG.712";
+my $pandora_build = "170908";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -223,6 +223,7 @@ sub pandora_load_config {
 	$pa_config->{"exportserver"} = 1; # default
 	$pa_config->{"inventoryserver"} = 1; # default
 	$pa_config->{"webserver"} = 1; # 3.0
+	$pa_config->{"web_timeout"} = 60; # 6.0SP5
 	$pa_config->{"transactionalserver"} = 0; # Default 0, introduced on 6.1
 	$pa_config->{"transactional_threads"} = 1; # Default 1, introduced on 6.1
 	$pa_config->{"transactional_threshold"} = 2; # Default 2, introduced on 6.1
@@ -444,6 +445,16 @@ sub pandora_load_config {
 	$pa_config->{"warmup_unknown_interval"} = 300; # 6.1
 	$pa_config->{"warmup_unknown_on"} = 1; # 6.1
 
+	# Logstash
+	$pa_config->{"logstash_host"} = '';
+	$pa_config->{"logstash_port"} = 0;
+
+	$pa_config->{"wuxserver"} = 1; # 7.0
+	$pa_config->{"wux_host"} = undef; # 7.0
+	$pa_config->{"wux_port"} = 4444; # 7.0
+	$pa_config->{"wux_browser"} = "*firefox"; # 7.0
+
+
 	#$pa_config->{'include_agents'} = 0; #6.1
 	#
 	# External .enc files for XML::Parser.
@@ -636,6 +647,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^webserver\s+([0-9]*)/i) {
 			$pa_config->{'webserver'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^web_timeout\s+([0-9]*)/i) {
+			$pa_config->{'web_timeout'}= clean_blank($1); 
 		}
 		elsif ($parametro =~ m/^transactionalserver\s+([0-9]*)/i) {
 			$pa_config->{'transactionalserver'}= clean_blank($1);
@@ -1026,6 +1040,25 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^dynamic_constant\s+([0-9]*)/i) {
 			$pa_config->{'dynamic_constant'}= clean_blank($1);
 		}
+
+		elsif ($parametro =~ m/^logstash_host\s+(.*)/i) {
+			$pa_config->{'logstash_host'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^logstash_port\s+([0-9]*)/i) {
+			$pa_config->{'logstash_port'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^wuxserver\s+([0-1]*)/i) {
+			$pa_config->{"wuxserver"} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^wux_host\s+(.*)/i) {
+			$pa_config->{'wux_host'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^wux_port\s+([0-9]*)/i) {
+			$pa_config->{'wux_port'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^wux_browser\s+(.*)/i) {
+			$pa_config->{'wux_browser'}= clean_blank($1);
+		}
 	} # end of loop for parameter #
 
 	# Set to RDBMS' standard port
@@ -1081,6 +1114,8 @@ sub pandora_start_log ($){
 
 	# Dump all errors to errorlog
 	open (STDERR, ">> " . $pa_config->{'errorlog_file'}) or die " [ERROR] Pandora FMS can't write to Errorlog. Aborting : \n $! \n";
+	my $mode = 0664;
+	chmod $mode, $pa_config->{'errorlog_file'};
 	print STDERR strftime ("%Y-%m-%d %H:%M:%S", localtime()) . ' - ' . $pa_config->{'servername'} . " Starting Pandora FMS Server. Error logging activated.\n";
 }
 

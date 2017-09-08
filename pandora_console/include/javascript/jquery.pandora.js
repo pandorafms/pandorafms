@@ -33,7 +33,7 @@
 
 $(document).ready (function () {
 	$("a#show_messages_dialog").click (function () {
-		jQuery.get ("ajax.php",
+		jQuery.post ("ajax.php",
 			{"page": "operation/messages/message_list"},
 			function (data, status) {
 				$("#dialog_messages").hide ()
@@ -60,7 +60,7 @@ $(document).ready (function () {
 
 	$("a.show_systemalert_dialog").click (function () {
 		$('body').append( "<div id='opacidad' style='position:fixed;background:black;opacity:0.6;z-index:1'></div>" );
-		jQuery.get ("ajax.php",
+		jQuery.post ("ajax.php",
 			{"page": "operation/system_alert"},
 				function (data, status) {
 					$("#alert_messages").hide ()
@@ -75,9 +75,11 @@ $(document).ready (function () {
 	
 	$("a.modalpopup").click (function () {
 		$('body').append( "<div id='opacidad' style='position:fixed;background:black;opacity:0.6;z-index:1'></div>" );
-			jQuery.get ("ajax.php",
-			{"page": "general/alert_enterprise",
-			 "message":$(this).attr("id")},
+			jQuery.post ("ajax.php",
+				{
+					"page": "general/alert_enterprise",
+					"message": $(this).attr("id")
+				},
 				function (data, status) {
 					$("#alert_messages").hide ()
 						.empty ()
@@ -93,10 +95,11 @@ $(document).ready (function () {
 
 	$(".publienterprise").click (function () {
 		$('body').append( "<div id='opacidad' style='position:fixed;background:black;opacity:0.6;z-index:1'></div>" );
-		jQuery.get ("ajax.php",
+		jQuery.post ("ajax.php",
 			{
-		"page": "general/alert_enterprise",
-		"message":$(this).attr("id")},
+				"page": "general/alert_enterprise",
+				"message": $(this).attr("id")
+			},
 			function (data, status) {
 				$("#alert_messages").hide ()
 					.empty ()
@@ -112,10 +115,11 @@ $(document).ready (function () {
 	
 	$(".publienterprisehide").click (function () {
 		$('body').append( "<div id='opacidad' style='position:fixed;background:black;opacity:0.6;z-index:1'></div>" );
-		jQuery.get ("ajax.php",
+		jQuery.post ("ajax.php",
 			{
-		"page": "general/alert_enterprise",
-		"message":$(this).attr("id")},
+				"page": "general/alert_enterprise",
+				"message": $(this).attr("id")
+			},
 			function (data, status) {
 				$("#alert_messages").hide ()
 					.empty ()

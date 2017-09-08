@@ -633,8 +633,6 @@ echo '</form>';
 if ($id_downtime > 0) {
 	
 	echo "<td valign=top style='width:300px;padding-left:20px;'>";
-	// Show available agents to include into downtime
-	echo '<h4>' . __('Available agents') . ':</h4>';
 	
 	$filter_group = (int) get_parameter("filter_group", 0);
 	
@@ -700,14 +698,15 @@ if ($id_downtime > 0) {
 	
 	
 	echo "<form method=post action='index.php?sec=estado&sec2=godmode/agentes/planned_downtime.editor&id_downtime=$id_downtime'>";
-	html_print_select_groups(false, $access, true, 'filter_group', $filter_group, '', '', '', false, false, true, '', false, 'min-width:180px;width:180px;max-width:180px;margin-right:15px;');
+	html_print_select_groups(false, $access, true, 'filter_group', $filter_group, '', '', '', false, false, true, '', false, 'min-width:180px;margin-right:15px;');
 	
 	html_print_checkbox ("recursion", 1, $recursion, false, false, '');
 	echo __('Recursion') . '&nbsp;';
 	echo "<br /><br />";
 	html_print_submit_button (__('Filter by group'), '', false, 'class="sub next"',false);
 	echo "</form>";
-	
+	// Show available agents to include into downtime
+	echo '<h4>' . __('Available agents') . ':</h4>';
 	echo "<form method=post action='index.php?sec=estado&sec2=godmode/agentes/planned_downtime.editor&insert_downtime_agent=1&id_downtime=$id_downtime'>";
 	
 	echo html_print_select ($agents, "id_agents[]", -1, '', _("Any"), -2, false, true, true, '', false, 'width: 180px;');
@@ -1173,7 +1172,7 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 			secondText: '<?php echo __('Second');?>',
 			currentText: '<?php echo __('Now');?>',
 			closeText: '<?php echo __('Close');?>'});
-		$("#text-once_date_from, #text-once_date_to").datepicker({dateFormat: "<?php echo DATE_FORMAT_JS; ?>"});
+		$("#text-once_date_from, #text-once_date_to").datepicker({dateFormat: "<?php echo DATE_FORMAT_JS; ?>", showButtonPanel: true});
 		
 		$.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
 		

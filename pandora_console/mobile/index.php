@@ -191,6 +191,11 @@ switch ($action) {
 					$l10n = new gettext_reader (new CachedFileReader('../include/languages/'.$user_language.'.mo'));
 					$l10n->load_tables();
 				}
+				
+				if($_GET['page'] != ''){
+					header('refresh:0; url=http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
+				}
+				
 				if (class_exists("HomeEnterprise"))
 					$home = new HomeEnterprise();
 				else
@@ -211,6 +216,11 @@ switch ($action) {
 					$l10n = new gettext_reader (new CachedFileReader('../include/languages/'.$user_language.'.mo'));
 					$l10n->load_tables();
 				}
+				
+				if($_GET['page'] != ''){
+					header('refresh:0; url=http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
+				}
+				
 				if (class_exists("HomeEnterprise"))
 					$home = new HomeEnterprise();
 				else

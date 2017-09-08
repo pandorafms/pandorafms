@@ -265,7 +265,7 @@ $(document).ready (function () {
 			name: "id",
 			value: this.value});
 		
-		jQuery.get (<?php echo "'" . ui_get_full_url("ajax.php", false, false, false) . "'"; ?>,
+		jQuery.post (<?php echo "'" . ui_get_full_url("ajax.php", false, false, false) . "'"; ?>,
 			values,
 			function (data, status) {
 				original_command = js_html_entity_decode (data["command"]);
@@ -274,6 +274,7 @@ $(document).ready (function () {
 				render_command_description(command_description);
 				
 				var max_fields = parseInt('<?php echo $config["max_macro_fields"]; ?>');
+				
 				for (i = 1; i <= max_fields; i++) {
 					var old_value = '';
 					var old_recovery_value = '';

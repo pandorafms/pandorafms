@@ -35,7 +35,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG PS170411";
+my $version = "7.0NG.712 PS170908";
 
 # save program name for logging
 my $progname = basename($0);
@@ -129,7 +129,7 @@ sub help_screen{
 	help_screen_line('--create_data_module', "<module_name> <module_type> <agent_name> [<description> <module_group> \n\t  <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> \n\t <history_data> <definition_file> <warning_str> <critical_str>\n\t  <unknown_events> <ff_threshold> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <ff_timeout> <warning_inverse> <critical_inverse>\n\t <critical_instructions> <warning_instructions> <unknown_instructions>]", 'Add data server module to agent');
 	help_screen_line('--create_web_module', "<module_name> <module_type> <agent_name> [<description> <module_group> \n\t  <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> \n\t <history_data> <definition_file> <warning_str> <critical_str>\n\t  <unknown_events> <ff_threshold> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <ff_timeout> <warning_inverse> <critical_inverse>\n\t <critical_instructions> <warning_instructions> <unknown_instructions>].\n\t The valid data types are web_data, web_proc, web_content_data or web_content_string", 'Add web server module to agent');
 	help_screen_line('--create_network_module', "<module_name> <module_type> <agent_name> <module_address> \n\t  [<module_port> <description> <module_group> <min> <max> <post_process> <interval> \n\t  <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold>\n\t  <warning_str> <critical_str> <unknown_events> <each_ff>\n\t  <ff_threshold_normal> <ff_threshold_warning> <ff_threshold_critical> <timeout> <retries>\n\t <critical_instructions> <warning_instructions> <unknown_instructions>\n\t <warning_inverse> <critical_inverse>]", 'Add not snmp network module to agent');
-	help_screen_line('--create_snmp_module', "<module_name> <module_type> <agent_name> <module_address> <module_port>\n\t  <version> [<community> <oid> <description> <module_group> <min> <max> <post_process> <interval>\n\t   <warning_min> <warning_max> <critical_min> <critical_max> <history_data> \n\t  <snmp3_priv_method> <snmp3_priv_pass> <snmp3_sec_level> <snmp3_auth_method> \n\t  <snmp3_auth_user> <snmp3_priv_pass> <ff_threshold> <warning_str> \n\t  <critical_str> <unknown_events> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <timeout> <retries>
+	help_screen_line('--create_snmp_module', "<module_name> <module_type> <agent_name> <module_address> <module_port>\n\t  <version> [<community> <oid> <description> <module_group> <min> <max> <post_process> <interval>\n\t   <warning_min> <warning_max> <critical_min> <critical_max> <history_data> \n\t  <snmp3_priv_method> <snmp3_priv_pass> <snmp3_sec_level> <snmp3_auth_method> \n\t  <snmp3_auth_user> <snmp3_auth_pass> <ff_threshold> <warning_str> \n\t  <critical_str> <unknown_events> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <timeout> <retries>
 	\n\t <critical_instructions> <warning_instructions> <unknown_instructions>\n\t <warning_inverse> <critical_inverse>]", 'Add snmp network module to agent');
 	help_screen_line('--create_plugin_module', "<module_name> <module_type> <agent_name> <module_address> \n\t  <module_port> <plugin_name> <user> <password> <parameters> [<description> \n\t  <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> \n\t  <critical_max> <history_data> <ff_threshold> <warning_str> <critical_str>\n\t  <unknown_events> <each_ff> <ff_threshold_normal> <ff_threshold_warning>\n\t  <ff_threshold_critical> <timeout> \n\t <critical_instructions> <warning_instructions> <unknown_instructions>\n\t <warning_inverse> <critical_inverse>]", 'Add plug-in module to agent');
     help_screen_line('--create_module_group', '<module_group_name>');
@@ -173,11 +173,11 @@ sub help_screen{
 	help_screen_line('--enable_eacl', '', 'Enable enterprise ACL system');
 	help_screen_line('--disable_double_auth', '<user_name>', 'Disable the double authentication for the specified user');
 	print "\nEVENTS:\n\n" unless $param ne '';
-	help_screen_line('--create_event', "<event> <event_type> <group_name> [<agent_name> <module_name>\n\t   <event_status> <severity> <template_name> <user_name> <comment> \n\t  <source> <id_extra> <tags> <custom_data_json>]", 'Add event');
-    help_screen_line('--validate_event', "<agent_name> <module_name> <datetime_min> <datetime_max>\n\t   <user_name> <criticity> <template_name>", 'Validate events');
-    help_screen_line('--validate_event_id', '<event_id>', 'Validate event given a event id');
-    help_screen_line('--get_event_info', '<event_id>[<csv_separator>]', 'Show info about a event given a event id');
-    help_screen_line('--add_event_comment', '<event_id> <user_name> <comment>', 'Add event\'s comment');
+	help_screen_line('--create_event', "<event> <event_type> <group_name> [<agent_name> <module_name>\n\t   <event_status> <severity> <template_name> <user_name> <comment> \n\t  <source> <id_extra> <tags> <critical_instructions> <warning_instructions> <unknown_instructions> \n\t <custom_data_json> <force_create_agent>]", 'Add event');
+  help_screen_line('--validate_event', "<agent_name> <module_name> <datetime_min> <datetime_max>\n\t   <user_name> <criticity> <template_name>", 'Validate events');
+  help_screen_line('--validate_event_id', '<event_id>', 'Validate event given a event id');
+  help_screen_line('--get_event_info', '<event_id>[<csv_separator>]', 'Show info about a event given a event id');
+  help_screen_line('--add_event_comment', '<event_id> <user_name> <comment>', 'Add event\'s comment');
 	print "\nINCIDENTS:\n\n" unless $param ne '';
 	help_screen_line('--create_incident', "<title> <description> <origin> <status> <priority 0 for Informative, \n\t  1 for Low, 2 for Medium, 3 for Serious, 4 for Very serious or 5 for Maintenance>\n\t   <group> [<owner>]", 'Create incidents');
 	print "\nPOLICIES:\n\n" unless $param ne '';
@@ -1220,7 +1220,7 @@ sub cli_create_data_module($) {
 		open (FILE, $definition_file);
 		while (<FILE>) {
 			chomp;
-			my ($key, $val) = split / /;
+			my ($key, $val) = split / /,2;
 			if ($key eq 'module_name') {
 				$module_name_def =  $val;
 			}
@@ -3063,14 +3063,14 @@ sub cli_delete_profile() {
 ##############################################################################
 
 sub cli_create_event() {
-	my ($event,$event_type,$group_name,$agent_name,$module_name,$event_status,$severity,$template_name, $user_name, $comment, $source, $id_extra, $tags, $custom_data) = @ARGV[2..15];
+	my ($event,$event_type,$group_name,$agent_name,$module_name,$event_status,$severity,$template_name, $user_name, $comment, $source, $id_extra, $tags, $custom_data,$force_create_agent,$c_instructions,$w_instructions,$u_instructions) = @ARGV[2..19];
 
 	$event_status = 0 unless defined($event_status);
 	$severity = 0 unless defined($severity);
 
 	my $id_user;
 	
-	if (!defined($user_name)) {
+	if (!defined($user_name) || $user_name eq '') {
 		$id_user = 0;
 	}
 	else {
@@ -3095,7 +3095,18 @@ sub cli_create_event() {
 	}
 	else {
 		$id_agent = get_agent_id($dbh,$agent_name);
-		exist_check($id_agent,'agent',$agent_name);
+		# exist_check($id_agent,'agent',$agent_name);
+		if($id_agent == -1){
+			if($force_create_agent == 1){
+				pandora_create_agent ($conf, '', $agent_name, '', '', '', '', 'Created by cli_create_event', '', $dbh);
+				print_log "[INFO] Adding agent '$agent_name' \n\n";
+				$id_agent = get_agent_id($dbh,$agent_name);
+			}
+			else{
+				exist_check($id_agent,'agent',$agent_name);
+			}
+		}
+
 	}
 	
 	my $id_agentmodule;
@@ -3129,7 +3140,7 @@ sub cli_create_event() {
 	$custom_data = encode_base64 ($custom_data);
 
 	pandora_event ($conf, $event, $id_group, $id_agent, $severity,
-		$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, $comment, $id_extra, $tags, '', '', '', $custom_data);
+		$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, $source, $user_name, $comment, $id_extra, $tags, $c_instructions, $w_instructions, $u_instructions, $custom_data);
 }
 
 ##############################################################################
@@ -3212,8 +3223,13 @@ sub cli_get_event_info () {
 	exist_check($event_name,'event',$id_event);
 	
 	$csv_separator = '|' unless defined($csv_separator);
+
+	my $event_table = "tevento";
+	if (is_metaconsole($conf) == 1) {
+		$event_table = "tmetaconsole_event";
+	}
 	
-	my $query = "SELECT * FROM tevento where id_evento=".$id_event;
+	my $query = "SELECT * FROM " . $event_table . " where id_evento=" . $id_event;
 
 	my $header = "Event ID".$csv_separator."Event name".$csv_separator."Agent ID".$csv_separator."User ID".$csv_separator.
 				"Group ID".$csv_separator."Status".$csv_separator."Timestamp".$csv_separator."Event type".$csv_separator.
@@ -4560,7 +4576,12 @@ sub cli_set_event_storm_protection () {
 sub pandora_get_event_name($$) {
 	my ($dbh,$id_event) = @_;
 	
-	my $event_name = get_db_value($dbh, 'SELECT evento FROM tevento WHERE id_evento = ?',$id_event);
+	my $event_table = "tevento";
+	if (is_metaconsole($conf) == 1) {
+		$event_table = "tmetaconsole_event";
+	}
+
+	my $event_name = get_db_value($dbh, 'SELECT evento FROM ' . $event_table . ' WHERE id_evento = ?',$id_event);
 	
 	return defined ($event_name) ? $event_name : -1;
 }
@@ -4571,7 +4592,12 @@ sub pandora_get_event_name($$) {
 sub pandora_update_event_from_hash ($$$$) {
 	my ($parameters, $where_column, $where_value, $dbh) = @_;
 	
-	my $event_id = db_process_update($dbh, 'tevento', $parameters, {$where_column => $where_value});
+	my $event_table = "tevento";
+	if (is_metaconsole($conf) == 1) {
+		$event_table = "tmetaconsole_event";
+	}
+
+	my $event_id = db_process_update($dbh, $event_table, $parameters, {$where_column => $where_value});
 	return $event_id;
 }
 
@@ -4582,7 +4608,12 @@ sub pandora_update_event_from_hash ($$$$) {
 sub pandora_get_event_comment($$) {
 	my ($dbh,$id_event) = @_;
 
-	my $event_name = get_db_value($dbh, 'SELECT user_comment FROM tevento WHERE id_evento = ?',$id_event);
+	my $event_table = "tevento";
+	if (is_metaconsole($conf) == 1) {
+		$event_table = "tmetaconsole_event";
+	}
+
+	my $event_name = get_db_value($dbh, 'SELECT user_comment FROM ' . $event_table . ' WHERE id_evento = ?',$id_event);
 
 	return defined ($event_name) ? $event_name : -1;
 }
@@ -4860,7 +4891,7 @@ sub pandora_manage_main ($$$) {
 			cli_delete_profile();
 		}
 		elsif ($param eq '--create_event') {
-			param_check($ltotal, 14, 11);
+			param_check($ltotal, 18, 15);
 			cli_create_event();
 		}		
 		elsif ($param eq '--validate_event') {

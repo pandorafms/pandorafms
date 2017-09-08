@@ -3851,13 +3851,27 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	
 	if ($fullscale) {
 		// Get module data
-		$data = db_get_all_rows_filter ('tagente_datos',
-			array ('id_agente_modulo' => $agent_module_id,
-				"utimestamp > $datelimit",
-				"utimestamp < $date",
-				'order' => 'utimestamp ASC'),
-			array ('datos', 'utimestamp'), 'AND', true);
-
+		
+		$data_uncompress = db_uncompress_module_data($agent_module_id, $datelimit, $date);
+	
+		$i = 0;
+		$j = 0;
+		$array_unknown = array();
+		$data = array();
+		if(is_array($data_uncompress)){
+			foreach ($data_uncompress as $value) {
+				foreach ($value['data'] as $key => $value) {
+					$data[$i]['datos'] = $value['datos'];
+					if(empty($value['datos'])){
+						$events[$j]['utimestamp'] = $value['utimestamp'];
+						$j++;
+					}
+					$data[$i]['utimestamp'] = $value['utimestamp'];	
+					$i++;
+				}
+			}
+		}
+	
 		if (count($data) > $resolution) {
 			$resolution = count($data); //Number of points of the graph
 			$interval = (int) ($period / $resolution);
@@ -3937,25 +3951,6 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	}
 	
 	$max_value = 0;
-
-	if ($fullscale) {
-		$data2 = array();
-		$previus_datas_cont = -1;
-		$k = 0;
-		for ($i = 0; $i <= $resolution; $i++) {
-			$timestamp = $datelimit + ($interval * $i);
-
-			if ($timestamp < $data[0]['utimestamp']) {
-				$previus_datas_cont++;
-				$data2[$k]['utimestamp'] = $timestamp;
-				$data2[$k]['datos'] = 0;
-				$k++;
-			}
-		}
-
-		$data = array_merge($data2, $data);
-		$resolution += $previus_datas_cont;
-	}
 	
 	// Calculate chart data
 	$last_known = $previous_data;
@@ -4013,19 +4008,12 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 				$alert_ids[] = $events[$k]['id_evento'];
 			}
 			if ($show_unknown) {
-				if ($events[$k]['event_type'] == 'going_unknown') {
-					if ($is_unknown == false) {
-						$first_unknown = true;
-					}
-					$is_unknown = true;
-				}
-				else if (substr ($events[$k]['event_type'], 0, 5) == 'going') {
-					$is_unknown = false;
-				}
+				$first_unknown = true;
+				$is_unknown = true;
 			}
 			$k++;
 		}
-		
+
 		// In some cases, can be marked as known because a recovery event
 		// was found in same interval. For this cases first_unknown is 
 		// checked too

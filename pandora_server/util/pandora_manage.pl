@@ -213,6 +213,15 @@ sub help_screen{
     help_screen_line('--create_tag', '<tag_name> <tag_description> [<tag_url>] [<tag_email>]', 'Create a new tag');
     help_screen_line('--add_tag_to_user_profile', '<user_id> <tag_name> <group_name> <profile_name>', 'Add a tag to the given user profile');
     help_screen_line('--add_tag_to_module', '<agent_name> <module_name> <tag_name>', 'Add a tag to the given module');
+
+	print "\nVISUAL CONSOLES\n\n" unless $param ne '';
+	help_screen_line('--create_visual_console', '<name> <background> <width> <height> <group> [<background_color>] [<elements>]', 'Create a new visual console');
+	help_screen_line('--edit_visual_console', '<id> <name> <background> <width> <height> <group> [<background_color>] [<elements>]', 'Edit a visual console');
+	help_screen_line('--delete_visual_console', '<id>', 'Delete a visual console');
+	help_screen_line('--delete_visual_console_objects', '<id> <mode> <id_mode>', 'Delete a visual console elements');
+	help_screen_line('--duplicate_visual_console', '<id> <times> [<prefix>]', 'Duplicate a visual console');
+	help_screen_line('--export_json_visual_console', '<id>', 'Creates a json with the visual console elements information');
+
 	
 	print "\n";
 	exit;
@@ -4753,6 +4762,76 @@ sub cli_delete_special_day() {
 	exist_check($result,'special day',$special_day);
 }
 
+##############################################################################
+# Creates a new visual console.
+# Related option: --create_visual_console
+##############################################################################
+
+sub cli_create_visual_console() {
+	my ($name,$background,$width,$height,$group,$background_color,$elements) = @ARGV[2..8];
+
+	if($name eq '') {
+		print_log "[ERROR] Name field cannot be empty.\n\n";
+		exit 1;
+	}
+	elsif ($background eq '') {
+		print_log "[ERROR] Background field cannot be empty.\n\n";
+		exit 1;
+	}
+	elsif (($width eq '') || ($height eq '')) {
+		print_log "[ERROR] Please specify size.\n\n";
+		exit 1;
+	}
+	elsif ($group eq '') {
+		print_log "[ERROR] Group field cannot be empty.\n\n";
+		exit 1;
+	}
+
+	if ($background_color eq '') {
+		$background_color = '#FFF';
+	}
+
+	print_log "[INFO] Creating visual console '$name' \n\n";
+
+	my $vc_id = db_insert ($dbh, 'id', 'INSERT INTO tlayout (name, id_group, background, width, height, background_color)
+                         VALUES (?, ?, ?, ?, ?, ?)', safe_input($name), $group, $background, $width, $height, $background_color);
+
+	print_log "[INFO] The visual console id is '$vc_id' \n\n";
+
+	if ($elements ne '') {
+		my @elements_in_array = json_decoce($elements);
+
+		foreach my $elem (@elements_in_array) {
+			print_log $elem . "\n\n";
+		}
+	}
+}
+
+##############################################################################
+# Delete a visual console.
+# Related option: --delete_visual_console
+##############################################################################
+
+sub cli_delete_visual_console() {
+	my ($id) = @ARGV[2];
+
+	if($id eq '') {
+		print_log "[ERROR] ID field cannot be empty.\n\n";
+		exit 1;
+	}
+
+	print_log "[INFO] Delete visual console with ID '$id' \n\n";
+
+	my $delete_layout = db_do($dbh, 'DELETE FROM tlayout WHERE id = ?', $id);
+
+	if ($delete_layout eq 1) {
+		db_do($dbh, 'DELETE FROM tlayout_data WHERE id_layout = ?', $id);
+	}
+	else {
+		print_log "[ERROR] Error at remove the visual console.\n\n";
+		exit 1;
+	}
+}
 
 ###############################################################################
 ###############################################################################
@@ -5183,7 +5262,31 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--locate_agent') {
 			param_check($ltotal, 1);
 			cli_locate_agent();
-		} 
+		}
+		elsif ($param eq '--create_visual_console') {
+			param_check($ltotal, 7, 2);
+			cli_create_visual_console();
+		}
+		elsif ($param eq '--edit_visual_console') {
+			param_check($ltotal, 6, 2);
+			cli_edit_visual_console();
+		}
+		elsif ($param eq '--delete_visual_console') {
+			param_check($ltotal, 1);
+			cli_delete_visual_console();
+		}
+		elsif ($param eq '--delete_visual_console_objects') {
+			param_check($ltotal, 3);
+			cli_delete_visual_console_objects();
+		}
+		elsif ($param eq '--duplicate_visual_console') {
+			param_check($ltotal, 2, 1);
+			cli_duplicate_visual_console();
+		}
+		elsif ($param eq '--export_json_visual_console') {
+			param_check($ltotal, 1);
+			cli_export_visual_console();
+		}
 		else {
 			print_log "[ERROR] Invalid option '$param'.\n\n";
 			$param = '';

@@ -1808,6 +1808,26 @@ function networkmap_get_new_nodes_from_ip_mask($ip_mask,
 	return $agents;
 }
 
+function modules_get_all_interfaces($id_agent) {
+	$return = array();
+	
+	$modules = db_get_all_rows_filter('tagente_modulo',
+		array('id_agente' => $id_agent));
+	
+	if (empty($modules))
+		$modules = array();
+	
+	foreach ($modules as $module) {
+		if (preg_match ("/(.+)_ifOperStatus$/" , (string)$module['nombre'], $matches)) {
+			if ($matches[1]) {
+				$return[] = $module;
+			}
+		}
+	}
+	
+	return $return;
+}
+
 ?>
 <script language="javascript" type="text/javascript">
 	$(document).ready (function () {

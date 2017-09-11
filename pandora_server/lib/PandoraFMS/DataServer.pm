@@ -312,7 +312,7 @@ sub process_xml_data ($$$$$) {
 	
 	# Check some variables
 	$interval = 300 if (! defined ($interval) || $interval eq '');
-	$os_version = 'N/A' if (! defined ($os_version) || $os_version eq '');
+	$os_version = undef if (! defined ($os_version) || $os_version eq '');
 	
 	# Get agent address from the XML if available
 	my $address = '' ;

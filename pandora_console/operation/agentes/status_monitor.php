@@ -561,9 +561,8 @@ $selectDataDown = '';
 $selectTimestampUp = '';
 $selectTimestampDown = '';
 $order = null;
-
 switch ($sortField) {
-	case 'agent_name':
+	case 'agent_alias':
 		switch ($sort) {
 			case 'up':
 				$selectAgentNameUp = $selected;

@@ -1058,8 +1058,9 @@ if($modules_wux){
 $url_route_analyzer = enterprise_hook('get_url_route_analyzer_modules', array($id_agente));
 if ($url_route_analyzer) {
 	$url_route_analyzer_tab = enterprise_hook('url_route_analyzer_tab');
-	if ($url_route_analyzer_tab == -1)
+	if ($url_route_analyzer_tab == -1) {
 		$url_route_analyzer_tab = "";
+	}
 }
 
 /* GIS tab */

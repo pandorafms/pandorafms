@@ -303,34 +303,64 @@ function update_button_palette_callback() {
 				alert('Undefined height');
 				return false;
 			}
-		
+			
 			$("#text_" + idItem).html(values['label']);
-			if ((values['width'] == 0) || (values['height'] == 0)) {
-				if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
-					$("#image_" + idItem).removeAttr('width');
-					$("#image_" + idItem).removeAttr('height');
-					$("#image_" + idItem).attr('width', 70);
-					$("#image_" + idItem).attr('height', 70);
-					$("#image_" + idItem).css('width', '70px');
-					$("#image_" + idItem).css('height', '70px');
+			
+			if(values['show_statistics'] == 1){
+				
+				
+				if ((values['width'] == 0) || (values['height'] == 0)) {
+						$("#image_" + idItem).removeAttr('width');
+						$("#image_" + idItem).removeAttr('height');
+						$("#image_" + idItem).attr('width', 450);
+						$("#image_" + idItem).attr('height', 80);
+						$("#image_" + idItem).css('width', '450px');
+						$("#image_" + idItem).css('height', '80px');
+						$("#image_" + idItem).attr('src', 'images/console/signes/group_status.png');
+							
 				}
-				else{
+				else {
 					$("#image_" + idItem).removeAttr('width');
 					$("#image_" + idItem).removeAttr('height');
-					$("#image_" + idItem).attr('width', $('#preview > img')[0].naturalHeight);
-					$("#image_" + idItem).attr('height', $('#preview > img')[0].naturalHeight);
-					$("#image_" + idItem).css('width', $('#preview > img')[0].naturalHeight+'px');
-					$("#image_" + idItem).css('height', $('#preview > img')[0].naturalHeight+'px');	
-				}			
+					$("#image_" + idItem).attr('width', values['width']);
+					$("#image_" + idItem).attr('height', values['height']);
+					$("#image_" + idItem).css('width', values['width'] + 'px');
+					$("#image_" + idItem).css('height', values['height'] + 'px');
+					$("#image_" + idItem).attr('src', 'images/console/signes/group_status.png');
+				}				
+				
 			}
-			else {
-				$("#image_" + idItem).removeAttr('width');
-				$("#image_" + idItem).removeAttr('height');
-				$("#image_" + idItem).attr('width', values['width']);
-				$("#image_" + idItem).attr('height', values['height']);
-				$("#image_" + idItem).css('width', values['width'] + 'px');
-				$("#image_" + idItem).css('height', values['height'] + 'px');
+			else{
+				
+				if ((values['width'] == 0) || (values['height'] == 0)) {
+					if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+						$("#image_" + idItem).removeAttr('width');
+						$("#image_" + idItem).removeAttr('height');
+						$("#image_" + idItem).attr('width', 70);
+						$("#image_" + idItem).attr('height', 70);
+						$("#image_" + idItem).css('width', '70px');
+						$("#image_" + idItem).css('height', '70px');
+					}
+					else{
+						$("#image_" + idItem).removeAttr('width');
+						$("#image_" + idItem).removeAttr('height');
+						$("#image_" + idItem).attr('width', $('#preview > img')[0].naturalHeight);
+						$("#image_" + idItem).attr('height', $('#preview > img')[0].naturalHeight);
+						$("#image_" + idItem).css('width', $('#preview > img')[0].naturalHeight+'px');
+						$("#image_" + idItem).css('height', $('#preview > img')[0].naturalHeight+'px');	
+					}			
+				}
+				else {
+					$("#image_" + idItem).removeAttr('width');
+					$("#image_" + idItem).removeAttr('height');
+					$("#image_" + idItem).attr('width', values['width']);
+					$("#image_" + idItem).attr('height', values['height']);
+					$("#image_" + idItem).css('width', values['width'] + 'px');
+					$("#image_" + idItem).css('height', values['height'] + 'px');
+				}
+				
 			}
+			
 			break;
 		case 'percentile_bar':
 		case 'percentile_item':
@@ -613,6 +643,7 @@ function readFields() {
 		$("input[name='line_width']").val());
 	values['line_color'] = $("input[name='line_color']").val();
 	values['label_position'] = $(".labelpos[sel=yes]").attr('position');
+	values['show_statistics'] = $("input[name=show_statistics]").is(':checked') ? 1 : 0;
 	
 	if (is_metaconsole()) {
 		values['metaconsole'] = 1;
@@ -1140,6 +1171,17 @@ function loadFieldsFromDB(item) {
 					}
 				}
 				
+				if (key == 'show_statistics') {
+					if (val == "1") {
+						$("input[name=show_statistics]")
+							.prop("checked", true);
+					}
+					else {
+						$("input[name=show_statistics]")
+							.prop("checked", false);
+					}
+				}
+				
 				if (key == 'type_graph') {
 					$("select[name=type_graph]").val(val);
 				}
@@ -1427,6 +1469,9 @@ function hiddenFields(item) {
 
 	$("#enable_link_row").css('display', 'none');
 	$("#enable_link_row." + item).css('display', '');
+	
+	$("#show_statistics_row").css('display', 'none');
+	$("#show_statistics_row." + item).css('display', '');
 
 	$("#preview_row").css('display', 'none');
 	$("#preview_row." + item).css('display', '');
@@ -1621,11 +1666,13 @@ function set_static_graph_status(idElement, image, status) {
 			data: parameter,
 			success: function (data) {
 				set_static_graph_status(idElement, image, data);
-				if($('#'+idElement+' table').css('float') == 'right' || $('#'+idElement+ ' table').css('float') == 'left'){
-					$('#'+idElement+ ' img').css('margin-top', parseInt($('#'+idElement).css('height'))/2 - parseInt($('#'+idElement+ ' img').css('height'))/2);	
-				}
-				else{
-					$('#'+idElement+ ' img').css('margin-left', parseInt($('#'+idElement).css('width'))/2 - parseInt($('#'+idElement+ ' img').css('width'))/2);
+				if(values['show_statistics'] == 1){
+					if($('#'+idElement+' table').css('float') == 'right' || $('#'+idElement+ ' table').css('float') == 'left'){
+						$('#'+idElement+ ' img').css('margin-top', parseInt($('#'+idElement).css('height'))/2 - parseInt($('#'+idElement+ ' img').css('height'))/2);	
+					}
+					else{
+						$('#'+idElement+ ' img').css('margin-left', parseInt($('#'+idElement).css('width'))/2 - parseInt($('#'+idElement+ ' img').css('width'))/2);
+					}
 				}
 			}
 		});
@@ -1660,15 +1707,25 @@ function set_static_graph_status(idElement, image, status) {
 }
 
 function set_image(type, idElement, image) {
-	if (type == "image") {
+	
+	if(image == 'show_statistics_bad.png' || image == 'show_statistics_ok.png' || image == 'show_statistics_warning.png' || image == 'show_statistics.png'){
 		item = "#image_" + idElement;
-		img_src = "images/console/icons/" + image;
+		img_src = "images/console/signes/group_status.png";
 	}
-	else if (type == "background") {
-		item = "#background_img";
-		img_src = "images/console/background/" + image;
+	else{
+			
+		if (type == "image") {
+			item = "#image_" + idElement;
+			img_src = "images/console/icons/" + image;
+		}
+		else if (type == "background") {
+			item = "#background_img";
+			img_src = "images/console/background/" + image;
+		}
+			
 	}
-
+	
+	
 	var params = [];
 	params.push("get_image_path=1");
 	params.push("img_src=" + img_src);
@@ -1682,6 +1739,12 @@ function set_image(type, idElement, image) {
 		url: get_url_ajax(),
 		success: function (data) {
 			$(item).attr('src', data);
+			
+			if(image == 'show_statistics_bad.png' || image == 'show_statistics_ok.png' || image == 'show_statistics_warning.png' || image == 'show_statistics.png'){
+				$(item).attr('width', 450);
+				$(item).attr('height', 80);
+			}
+			
 		}
 	});
 }
@@ -2173,21 +2236,28 @@ function createItem(type, values, id_data) {
 				
 			}
 				
-			if ((values['width'] == 0) || (values['height'] == 0)) {
-				// Do none
-				if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
-					$image.attr('width', '70')
-						.attr('height', '70');
+			if(values['show_statistics'] != 1){
+				
+					if ((values['width'] == 0) || (values['height'] == 0)) {
+						// Do none
+						if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+							$image.attr('width', '70')
+								.attr('height', '70');
+						}
+						else{
+							$image.attr('width', $('#preview > img')[0].naturalWidth)
+								.attr('height', $('#preview > img')[0].naturalHeight);
+						}			
+					}
+					else {
+						$image.attr('width', values['width'])
+							.attr('height', values['height']);
+					}
 				}
-				else{
-					$image.attr('width', $('#preview > img')[0].naturalWidth)
-						.attr('height', $('#preview > img')[0].naturalHeight);
-				}			
-			}
-			else {
-				$image.attr('width', values['width'])
-					.attr('height', values['height']);
-			}
+				// else{
+				// 	$('#image_'+id_data).css('width', values['width']+'px');
+				// 	$('#image_'+id_data).css('height', values['height']+'px');
+				// }
 /*
 			var $span = $('<span></span>')
 				.attr('id', 'text_' + id_data)
@@ -2245,8 +2315,32 @@ function createItem(type, values, id_data) {
 					.append($image)
 					.append($input);				
 			}
-
-			set_static_graph_status(id_data, values['image']);
+			
+			if(values['show_statistics'] != 1){
+				set_static_graph_status(id_data, values['image']);
+			}
+			else{
+				set_static_graph_status(id_data, 'show_statistics');
+			}
+			
+			if(values['show_statistics'] != 1){
+				
+					if ((values['width'] == 0) || (values['height'] == 0)) {
+						// Do none
+						if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+							$image.attr('width', '70')
+								.attr('height', '70');
+						}
+						else{
+							$image.attr('width', $('#preview > img')[0].naturalWidth)
+								.attr('height', $('#preview > img')[0].naturalHeight);
+						}			
+					}
+					else {
+						$image.attr('width', values['width'])
+							.attr('height', values['height']);
+					}
+				}
 
 			break;
 		case 'auto_sla_graph':
@@ -2580,9 +2674,9 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 		case 'static_graph':
 			if ((event != 'resizestop') && (event != 'show_grid')
 				&& (event != 'dragstop')) {
-
-				set_static_graph_status(idElement, values['image']);
-
+					if(values['show_statistics'] != 1){
+							set_static_graph_status(idElement, values['image']);
+					}
 			}
 			break;
 		case 'percentile_item':
@@ -2811,6 +2905,9 @@ function updateDB(type, idElement , values, event) {
 }
 
 function copyDB(idItem) {
+	
+	console.log(idItem);
+	
 	metaconsole = $("input[name='metaconsole']").val();
 
 	parameter = Array();

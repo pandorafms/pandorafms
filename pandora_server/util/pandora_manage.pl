@@ -21,6 +21,7 @@ use JSON qw(decode_json encode_json);
 use MIME::Base64;
 use Encode qw(decode encode_utf8);
 use LWP::Simple;
+use Data::Dumper;
 
 # Default lib dir for RPM and DEB packages
 use lib '/usr/lib/perl5';
@@ -4799,10 +4800,33 @@ sub cli_create_visual_console() {
 	print_log "[INFO] The visual console id is '$vc_id' \n\n";
 
 	if ($elements ne '') {
-		my @elements_in_array = json_decoce($elements);
+		my $elements_in_array = decode_json($elements);
 
-		foreach my $elem (@elements_in_array) {
-			print_log $elem . "\n\n";
+		foreach my $elem (@$elements_in_array) {
+			my $pos_x = $elem->{'pos_x'};
+			my $pos_y = $elem->{'pos_y'};
+			my $width = $elem->{'width'};
+			my $height = $elem->{'height'};
+			my $label = $elem->{'label'};
+			my $image = $elem->{'image'};
+			my $type = $elem->{'type'};
+			my $period = $elem->{'period'};
+			my $id_agente_modulo = $elem->{'id_agente_modulo'};
+			my $id_agent = $elem->{'id_agent'};
+			my $id_layout_linked = $elem->{'id_layout_linked'};
+			my $parent_item = $elem->{'parent_item'};
+			my $enable_link = $elem->{'enable_link'};
+			my $id_metaconsole = $elem->{'id_metaconsole'};
+			my $id_group = $elem->{'id_group'};
+			my $id_custom_graph = $elem->{'id_custom_graph'};
+			my $border_width = $elem->{'border_width'};
+			my $type_graph = $elem->{'type_graph'};
+			my $label_position = $elem->{'label_position'};
+			my $border_color = $elem->{'border_color'};
+			my $fill_color = $elem->{'fill_color'};
+
+			db_insert ($dbh, 'id', 'INSERT INTO tlayout_data (id_layout, pos_x, pos_y, height, width, label, image, type, period, id_agente_modulo, id_agent, id_layout_linked, parent_item, enable_link, id_metaconsole, id_group, id_custom_graph, border_width, type_graph, label_position, border_color, fill_color, show_statistics)
+                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $vc_id, $pos_x, $pos_y, $height, $width, $label, $image, $type, $period, $id_agente_modulo, $id_agent, $id_layout_linked, $parent_item, $enable_link, $id_metaconsole, $id_group, $id_custom_graph, $border_width, $type_graph, $label_position, $border_color, $fill_color, 0);
 		}
 	}
 }

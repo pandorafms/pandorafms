@@ -561,10 +561,23 @@ if ($agents !== false) {
 			'<span style="font-size: 7pt" title="' . $agent["nombre"] . '">'.$agent["alias"].'</span>' .
 			"</a>";
 		echo "</strong>";
+
+		$in_planned_downtime = db_get_value_filter('id', 'tplanned_downtime_agents', array('id_agent' => $agent["id_agente"]));
+
 		if ($agent["disabled"]) {
 			ui_print_help_tip(__('Disabled'));
+
+			if (!$in_planned_downtime) {
+				echo "</em>";
+			}
+		}
+
+		if ($in_planned_downtime) {
+			ui_print_help_tip (__('Agent in planned downtime'), false, 'images/minireloj-16.png');
+
 			echo "</em>";
 		}
+
 		echo '</span><div class="left actions" style="visibility: hidden; clear: left">';
 		if (check_acl ($config["id_user"], $agent["id_grupo"], "AW")) {
 			echo '<a href="index.php?sec=gagente&

@@ -15,6 +15,7 @@ var creationItem = null;
 var is_opened_palette = false;
 var idItem = 0;
 var selectedItem = null;
+var selectedItems = null;
 var lines = Array();
 var user_lines = Array();
 var toolbuttonActive = null;
@@ -3028,10 +3029,19 @@ function activeToolboxButton(id, active) {
 }
 
 function click_delete_item_callback() {
-	activeToolboxButton('edit_item', false);
-	deleteDB(idItem);
-	idItem = 0;
-	selectedItem = null;
+	if(selectedItems == null){
+		activeToolboxButton('edit_item', false);
+		deleteDB(idItem);
+		idItem = 0;
+		selectedItem = null;
+	}
+	else{
+		idItem = 0;
+		selectedItem = null;
+		selectedItems.forEach( function(valor, indice, array) {
+			deleteDB(valor);
+		});
+	}
 }
 
 /**
@@ -3050,6 +3060,7 @@ function eventsItems(drag) {
 	//$(".item").resizable(); //Disable but run in ff and in the waste (aka micro$oft IE) show ungly borders
 
 	$('.item').bind('click', function(event, ui) {
+		
 		event.stopPropagation();
 		if (!is_opened_palette) {
 			var divParent = $(event.target);
@@ -3167,6 +3178,62 @@ function eventsItems(drag) {
 				enterprise_click_item_callback(divParent);
 			}
 		}
+		
+		
+		
+		if(!event.ctrlKey){
+			firstItem = event.currentTarget.id;
+			selectedItems = null;
+			selectedItems = Array();
+			selectedItems.push(event.currentTarget.id);
+
+		}
+		else{
+			
+			selectedItem = null;
+			
+			unselectAll();
+			
+			if(selectedItems.indexOf(event.currentTarget.id) > -1){
+					
+						$('#'+event.currentTarget.id).css('left', '+=1');
+						$('#'+event.currentTarget.id).css('top', '+=1');
+						$('#'+event.currentTarget.id).css('border', '');
+						$('#'+event.currentTarget.id).attr('withborder') == 'false';
+				
+				
+				selectedItems.splice(selectedItems.indexOf(event.currentTarget.id),1);
+			}
+			else{
+						$('#'+event.currentTarget.id).css('left', '-=1');
+						$('#'+event.currentTarget.id).css('top', '-=1');
+						$('#'+event.currentTarget.id).css('border', '1px dotted rgb(0, 0, 255)');
+						$('#'+event.currentTarget.id).attr('withborder') == 'true';
+				
+				
+				selectedItems.push(event.currentTarget.id);
+			}
+			
+			
+			selectedItems.forEach( function(valor, indice, array) {
+				if(selectedItems.indexOf(valor) > -1 && $('#'+valor).css('border') != '1px dotted rgb(0, 0, 255)'){
+					// $('#'+valor).css('left', '-=1');
+					// $('#'+valor).css('top', '-=1');
+					$('#'+valor).css('border', '1px dotted rgb(0, 0, 255)');
+					$('#'+valor).attr('withborder') == 'true';
+				}
+			});
+			
+			$('#'+firstItem).css('left', '-=1');
+			$('#'+firstItem).css('top', '-=1');
+			
+			firstItem = null;
+			
+	}
+	
+	
+	
+	
 	});
 
 	//Double click in the item
@@ -3216,8 +3283,9 @@ function eventsItems(drag) {
 	$(".item").draggable({containment: "#background", grid: drag});
 
 	$('.item').bind('dragstart', function(event, ui) {
-
-		event.stopPropagation();
+		
+		if(selectedItems == null || selectedItems.length < 2){
+			event.stopPropagation();
 		if (!is_opened_palette) {
 			unselectAll();
 			$(event.target).css('border', '1px blue dotted');
@@ -3286,6 +3354,7 @@ function eventsItems(drag) {
 						break;
 					default:
 						idItem = $(event.target).attr('id');
+						
 						break;
 				}
 				activeToolboxButton('copy_item', true);
@@ -3293,10 +3362,17 @@ function eventsItems(drag) {
 				activeToolboxButton('delete_item', true);
 			}
 		}
+		}
+		else{
+			console.log('Dragstart');
+			
+			multiDragStart(event);
+			
+		}
 	});
 
 	$('.item').bind('dragstop', function(event, ui) {
-
+		if(selectedItems == null || selectedItems.length < 2){
 		event.stopPropagation();
 
 		var values = {};
@@ -3304,9 +3380,16 @@ function eventsItems(drag) {
 		values['mov_top'] = ui.position.top;
 
 		updateDB(selectedItem, idItem, values, 'dragstop');
+		}
+		else{
+			
+				console.log('Dragstop');
+			multidragStop(event);
+		}
 	});
 
 	$('.item').bind('drag', function(event, ui) {
+		if(selectedItems == null || selectedItems.length < 2){
 		if ($(event.target).hasClass('handler_start')) {
 			selectedItem = 'handler_start';
 		}
@@ -3387,6 +3470,11 @@ function eventsItems(drag) {
 				draw_user_lines("", 0, 0, 0 , 0, 0, true);
 				break;
 		}
+	}
+	else{
+		console.log('Drag');
+		
+	}
 	});
 }
 
@@ -3452,6 +3540,8 @@ function eventsBackground() {
 
 	// Event click for background
 	$("#background").click(function(event) {
+		selectedItems = null;
+		selectedItems = Array();
 		event.stopPropagation();
 		if (!is_opened_palette) {
 			unselectAll();
@@ -3827,4 +3917,50 @@ function showGrid() {
 
 		eventsItems();
 	}
+}
+
+function multiDragStart(event){
+	multiDragMouse(event);
+	
+}
+
+function multidragStop(event){
+	$('#background').off("mousemove");
+	values = [];
+	selectedItems.forEach( function(valor, indice, array) {
+		$('#'+valor).css('left','+=1');
+		$('#'+valor).css('top','+=1');
+		classItem =  $('#'+valor).attr('class').replace(/item|ui-draggable|ui-draggable-dragging|-dragging/g, '').trim();
+		values['mov_left'] = parseInt($('#'+valor).css('left'));
+		values['mov_top'] = parseInt($('#'+valor).css('top'));
+		updateDB(classItem, valor, values,'dragstop');
+	});
+	
+}
+
+
+
+function multiDragMouse(eventDrag){
+	var preX  = [];
+	var preY  = [];
+	
+	selectedItems.forEach( function(valor, indice, array) {
+		preX[indice]  = $('#'+valor).css('left');
+		preY[indice]  =	$('#'+valor).css('top');
+	});
+	
+	$('#background').on('mousemove',function(event){
+		var moveDiffX =  event.clientX - eventDrag.clientX;
+		var moveDiffY = event.clientY - eventDrag.clientY;
+		selectedItems.forEach( function(valor, indice, array) {
+			if(!(parseInt($('#'+valor).css('left')) < 0 && parseInt(moveDiffX)+parseInt(preX[indice]) < 0) && 
+			!(parseInt($('#'+valor).css('left')) + parseInt($('#'+valor).css('width')) > parseInt($('#background').css('width')) && parseInt(moveDiffX+preX[indice]) > 0)){
+				$('#'+valor).css('left',parseInt(moveDiffX)+parseInt(preX[indice])+'px');
+			}
+			if(!(parseInt($('#'+valor).css('top')) < 0 && parseInt(moveDiffY)+parseInt(preY[indice]) < 0) && 
+			!(parseInt($('#'+valor).css('top')) + parseInt($('#'+valor).css('height')) > parseInt($('#background').css('height')) && parseInt(moveDiffY+preY[indice]) > 0)){
+				$('#'+valor).css('top',parseInt(moveDiffY)+parseInt(preY[indice])+'px');
+			}
+		});
+	});
 }

@@ -3881,7 +3881,21 @@ function reporting_get_event_histogram_meta ($width) {
 		EVENT_CRIT_MAJOR => COL_MAJOR,
 		EVENT_CRIT_CRITICAL => COL_CRITICAL
 	);
+	
+	$user_groups = users_get_groups($config['id_user'], 'ER');
+	$user_groups_ids = array_keys($user_groups);
+	
+	if (empty($user_groups)) {
+		$groups_condition = ' 1 = 0 ';
+	}
+	else {
+		$groups_condition = ' id_grupo IN (' . implode(',', $user_groups_ids) . ') ';
+	}
 
+	if (!check_acl ($config['id_user'], 0, "PM")) {
+		$groups_condition .= " AND id_grupo != 0";
+	}
+	
 	$cont = 0;
 	for ($i = 0; $i < $interval; $i++) {
 		$bottom = $datelimit + ($periodtime * $i);
@@ -3912,7 +3926,8 @@ function reporting_get_event_histogram_meta ($width) {
 		$event = db_get_row_filter ('tmetaconsole_event',
 			array (
 				'utimestamp > '.$bottom,
-				'utimestamp < '.$top), 
+				'utimestamp < '.$top,
+				$groups_condition), 
 				'criticity, utimestamp');
 		
 		if (!empty($event['utimestamp'])) {

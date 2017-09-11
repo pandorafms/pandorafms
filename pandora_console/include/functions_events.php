@@ -126,7 +126,7 @@ function events_get_events_no_grouped($sql_post, $offset = 0,
 
 function events_get_events_grouped($sql_post, $offset = 0,
 	$pagination = 1, $meta = false, $history = false, $total = false, 
-	$history_db = false, $order = "ASC") {
+	$history_db = false, $order = "DESC") {
 	
 	global $config; 
 	

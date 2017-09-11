@@ -431,6 +431,9 @@ sub pandora_purgedb ($$) {
 				WHERE date < CURDATE() - $conf->{'_num_past_special_days'} AND date > '0001-01-01'");
 		}
 	}
+	
+	# Delete old tgraph_source data
+	db_do ($dbh,"DELETE FROM tgraph_source WHERE id_graph NOT IN (SELECT id_graph FROM tgraph)");
 }
 
 ###############################################################################

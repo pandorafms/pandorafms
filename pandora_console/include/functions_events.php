@@ -126,7 +126,7 @@ function events_get_events_no_grouped($sql_post, $offset = 0,
 
 function events_get_events_grouped($sql_post, $offset = 0,
 	$pagination = 1, $meta = false, $history = false, $total = false, 
-	$history_db = false, $order = "ASC") {
+	$history_db = false, $order = "DESC") {
 	
 	global $config; 
 	
@@ -2115,7 +2115,7 @@ function events_page_details ($event, $server = "") {
 					"type" => $graph_type,
 					"period" => SECONDS_1DAY,
 					"id" => $module["id_agente_modulo"],
-					"label" => rawurlencode(urlencode(base64_encode($module["nombre"]))),
+					"label" => base64_encode($module["nombre"]),
 					"refresh" => SECONDS_10MINUTES
 				);
 			
@@ -2349,6 +2349,8 @@ function events_page_general ($event) {
 		$data[1] = date ($config["date_format"], strtotime($event["timestamp"]));
 	}
 	$table_general->data[] = $data;
+	
+	$event["owner_user"] = $event["id_usuario"];
 	
 	$data = array();
 	$data[0] = __('Owner');

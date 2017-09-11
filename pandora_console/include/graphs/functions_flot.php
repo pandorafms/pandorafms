@@ -489,6 +489,16 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 	// Trick to get translated string from javascript
 	$return .= html_print_input_hidden('unknown_text', __('Unknown'),
 		true);
+
+	if (!isset($config["short_module_graph_data"]))
+		$config["short_module_graph_data"] = true;
+	
+	if ($config["short_module_graph_data"]) {
+		$short_data = true;
+	}
+	else {
+		$short_data = false;
+	}
 	
 	// Javascript code
 	$return .= "<script type='text/javascript'>";
@@ -530,7 +540,8 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 		" . json_encode($vconsole) . ",\n" .
 		"'$xaxisname', \n" .
 		"'$background_color', \n" .
-		"'$legend_color'
+		"'$legend_color', \n" .
+		"'$short_data'
 	);";
 	$return .= "});";
 	$return .= "</script>";
@@ -752,7 +763,7 @@ function flot_hcolumn_chart ($graph_data, $width, $height, $water_mark, $font = 
 }
 
 // Returns a 3D column chart
-function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, $water_mark, $homedir, $font, $font_size, $from_ux) {
+function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, $water_mark, $homedir, $font, $font_size, $from_ux, $from_wux) {
 	global $config;
 	
 	include_javascript_dependencies_flot_graph();
@@ -835,10 +846,15 @@ function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $lon
 	$return .= "<script type='text/javascript'>";
 
 	if ($from_ux) {
-		$return .= "pandoraFlotVBars('$graph_id', '$values', '$labels', '$labels', '$legend', '$colors', false, $max, '$water_mark', '$separator', '$separator2','$font',$font_size, true)";
+		if($from_wux){
+			$return .= "pandoraFlotVBars('$graph_id', '$values', '$labels', '$labels', '$legend', '$colors', false, $max, '$water_mark', '$separator', '$separator2','$font',$font_size, true, true)";
+		}
+		else{
+			$return .= "pandoraFlotVBars('$graph_id', '$values', '$labels', '$labels', '$legend', '$colors', false, $max, '$water_mark', '$separator', '$separator2','$font',$font_size, true, false)";
+		}
 	}
 	else {
-		$return .= "pandoraFlotVBars('$graph_id', '$values', '$labels', '$labels', '$legend', '$colors', false, $max, '$water_mark', '$separator', '$separator2','$font',$font_size, false)";
+		$return .= "pandoraFlotVBars('$graph_id', '$values', '$labels', '$labels', '$legend', '$colors', false, $max, '$water_mark', '$separator', '$separator2','$font',$font_size, false, false)";
 	}
 
 	$return .= "</script>";
@@ -846,7 +862,7 @@ function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $lon
 	return $return;
 }
 
-function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $colors, $fontpath, $round_corner, $homeurl, $watermark = '', $adapt_key = '', $stat_win = false, $id_agent = 0) {
+function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $colors, $fontpath, $round_corner, $homeurl, $watermark = '', $adapt_key = '', $stat_win = false, $id_agent = 0, $full_legend_date = array()) {
 	global $config;
 	
 	include_javascript_dependencies_flot_graph();
@@ -932,7 +948,6 @@ function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $
 			$acumulate += $value;
 			$c++;
 			
-			//$return .= "<div id='value_".$i."_$graph_id' class='values_$graph_id' style='color: #000; position:absolute;'>$value</div>";
 			if ($value > $max) {
 				$max = $value;
 			}
@@ -943,6 +958,12 @@ function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $
 	$labels = implode($separator,$labels);
 	$datacolor = implode($separator,$datacolor);
 	$legend = io_safe_output(implode($separator,$legend));
+	if (!empty($full_legend_date)) {
+		$full_legend_date = io_safe_output(implode($separator,$full_legend_date));
+	}
+	else {
+		$full_legend_date = false;
+	}
 	$acumulate_data = io_safe_output(implode($separator,$acumulate_data));
 	
 	// Store data series in javascript format
@@ -966,7 +987,7 @@ function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $
 	// Javascript code
 	$return .= "<script type='text/javascript'>";
 	$return .= "//<![CDATA[\n";
-	$return .= "pandoraFlotSlicebar('$graph_id', '$values', '$datacolor', '$labels', '$legend', '$acumulate_data', $intervaltick, false, $max, '$separator', '$separator2', '', $id_agent)";
+	$return .= "pandoraFlotSlicebar('$graph_id', '$values', '$datacolor', '$labels', '$legend', '$acumulate_data', $intervaltick, false, $max, '$separator', '$separator2', '', $id_agent, '$full_legend_date')";
 	$return .= "\n//]]>";
 	$return .= "</script>";
 	

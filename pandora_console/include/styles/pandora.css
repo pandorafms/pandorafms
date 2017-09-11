@@ -656,7 +656,7 @@ input.sub[disabled] {
 input.next, input.upd, input.ok, input.wand, input.delete, input.cog,
 input.target, input.search, input.copy, input.add, input.graph,
 input.percentile, input.binary, input.camera, input.config,
-input.cancel, input.default, input.filter, input.pdf {
+input.cancel, input.default, input.filter, input.pdf,input.spinn {
 	padding-right: 30px;
 	height: 23px;
 
@@ -741,6 +741,9 @@ input.pdf:disabled {
 input.camera {
 	background-image: url(../../images/input_camera.png) !important;
 }
+input.spinn {
+	background-image: url(../../images/spinner_green.gif) !important;
+}
 
 #toolbox #auto_save {
 	padding-top: 5px;
@@ -777,6 +780,12 @@ input.percentile_item_min {
 }
 input.percentile_item_min[disabled] {
 	background: #fefefe url(../../images/percentile_item.disabled.png) no-repeat center !important;
+}
+input.auto_sla_graph_min {
+	background: #fefefe url(../../images/auto_sla_graph.png) no-repeat center !important;
+}
+input.auto_sla_graph_min[disabled] {
+	background: #fefefe url(../../images/auto_sla_graph.disabled.png) no-repeat center !important;
 }
 input.binary_min {
 	background: #fefefe url(../../images/binary.png) no-repeat center !important;
@@ -4130,6 +4139,8 @@ div#main_help_new_content {
     padding-top: 10px;
     background: white;
     height: 100%;
+		font-size: 12pt;
+		font-family: 'lato-bolder';
 }
 
 div#main_help_new_content h1 {
@@ -4138,6 +4149,15 @@ div#main_help_new_content h1 {
 }
 
 div#main_help_new_content p {
+	font-family: 'lato-bolder';
+	font-size: 12pt;
+}
+div#main_help_new_content b {
+	font-family: 'lato-bolder';
+	font-size: 12pt;
+}
+
+div#main_help_new_content li {
 	font-family: 'lato-bolder';
 	font-size: 12pt;
 }
@@ -4156,4 +4176,127 @@ div#footer_help{
 /*view-agents lastest events for this agent*/
 #div_all_events_24h{
 	padding: 4px;
+}
+
+/*styles graph conteiner*/
+.graph_conteiner_inside > .parent_graph{
+	width: 100% !important;
+}
+
+.graph_conteiner_inside > .parent_graph > .menu_graph{
+	left: 90% !important;
+}
+
+.graph_conteiner_inside > .parent_graph > .noresizevc{
+	width: 90% !important;	
+}
+
+.graph_conteiner_inside > div > .nodata_container > .nodata_text {
+	display: none;
+}
+
+.graph_conteiner_inside > div > .nodata_container{
+	background-size: 120px 80px !important;	
+}
+
+#mssg_error_div{
+	color: red;
+	font-size: 12px;
+}
+
+/*
+* View WUX
+*/
+
+.wux_global_result_container{
+	width: 100%;
+	margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.wux_global_result_title{
+	width: 100%;
+	text-align: center;
+	color:white;
+	background-color: #373737;
+	border: 1px solid #373737;
+	height: 28px;
+}
+
+.wux_global_result_title p {
+	margin: 8px;
+}
+
+.wux_global_result_content{
+	width: 100%;
+	border: 1px solid #e2e2e2;
+	height: 120px; 
+}
+
+.wux_global_result_content_left{
+	float:left;
+	width: 40%;
+	text-align: center;
+}
+
+.wux_global_result_content_left ul{
+	display: inline-flex;
+	margin-top: 15px;
+}
+
+
+.wux_global_result_content_left ul li p{
+	margin-top: 35px;
+	margin-right: 10px;
+	margin-left: 10px;
+}
+
+.wux_global_result_content_left ul li p b{
+	font-size: 16px;
+}
+
+.wux_global_result_content_right{
+	float:right;
+	width: 60%;
+}
+
+.wux_global_result_content_right ul{
+	display: inline-flex;
+	margin-top: 15px;
+	margin-left:100px;
+}
+
+.wux_global_result_content_right ul li p{
+	margin-top: 36px;
+	margin-right: 10px;
+	margin-left: 10px;
+}
+
+.wux_global_result_content_right ul li p b{
+	font-size: 16px;
+}
+
+.wux_transaction_container{
+	width: 100%;
+    margin-bottom: 30px;
+}
+
+.wux_result_transaction{
+	width: 33%;
+	float: left;
+}
+
+.wux_transaction_graphs{
+	width: 33%;
+	float: left;
+}
+
+.wux_transaction_graphs_pie{
+	width: 33%;
+	float: left;	
+}
+
+.pagination_show_more{
+	text-align: center;
+	margin-top: 10px;
 }

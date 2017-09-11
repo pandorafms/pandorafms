@@ -14,3 +14,4 @@ if [ -x `command -v systemctl` ]; then
 else
   update-rc.d -f pandora_agent_daemon remove
 fi
+exit 0

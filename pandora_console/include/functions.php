@@ -1506,7 +1506,7 @@ function get_snmpwalk($ip_target, $snmp_version, $snmp_community = '',
 	$snmp3_auth_user = '', $snmp3_security_level = '',
 	$snmp3_auth_method = '', $snmp3_auth_pass = '',
 	$snmp3_privacy_method = '', $snmp3_privacy_pass = '',
-	$quick_print = 0, $base_oid = "", $snmp_port = '') {
+	$quick_print = 0, $base_oid = "", $snmp_port = '', $server_to_exec = 0) {
 	
 	global $config;
 	
@@ -1598,7 +1598,18 @@ function get_snmpwalk($ip_target, $snmp_version, $snmp_community = '',
 			break;
 	}
 	
-	exec($command_str, $output, $rc);
+	if (enterprise_installed()) {
+		if ($server_to_exec != 0) {
+			$server_data = db_get_row('tserver','id_server', $server_to_exec);
+			exec("ssh pandora_exec_proxy@" . $server_data['ip_address'] . " \"" . $command_str . "\"", $output, $rc);
+		}
+		else {
+			exec($command_str, $output, $rc);
+		}
+	}
+	else {
+		exec($command_str, $output, $rc);
+	}
 	
 	// Parse the output of snmpwalk
 	$snmpwalk = array();
@@ -2752,6 +2763,16 @@ function remove_right_zeros ($value) {
 	else {
 		return $value;
 	}
+}
+
+function register_pass_change_try ($id_user, $success) {
+	$values = array();
+	$values['id_user'] = $id_user;
+	$reset_pass_moment = new DateTime('now');
+	$reset_pass_moment = $reset_pass_moment->format("Y-m-d H:i:s");
+	$values['reset_moment'] = $reset_pass_moment;
+	$values['success'] = $success;
+	db_process_sql_insert('treset_pass_history', $values);
 }
 
 ?>

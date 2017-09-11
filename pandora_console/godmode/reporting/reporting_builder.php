@@ -925,9 +925,13 @@ switch ($action) {
 							case 'event_report_log':
 								$agents_to_report = get_parameter('id_agents2');
 								$source = get_parameter('source', "");
-
+								$search = get_parameter('search', "");
+								$log_number = get_parameter('log_number', "");
+							
 								$es['source'] = $source;
 								$es['id_agents'] = $agents_to_report;
+								$es['search']=$search;
+								$es['log_number']=$log_number;
 
 								$values['external_source'] = json_encode($es);
 								$values['period'] = get_parameter('period');
@@ -1124,8 +1128,8 @@ switch ($action) {
 							$values['treport_custom_sql_id'] = get_parameter('id_custom');
 							if ($values['treport_custom_sql_id'] == 0) {
 								$values['external_source'] = get_parameter('sql');
-								$values['historical_db'] = get_parameter('historical_db_check');
 							}
+							$values['historical_db'] = get_parameter('historical_db_check');
 						}
 						else if ($values['type'] == 'url') {
 							$values['external_source'] = get_parameter('url');
@@ -1214,7 +1218,6 @@ switch ($action) {
 									break;
 							}
 							
-							
 							$resultOperationDB = db_process_sql_update(
 								'treport_content',
 								$values,
@@ -1282,9 +1285,13 @@ switch ($action) {
 							case 'event_report_log':
 								$agents_to_report = get_parameter('id_agents2');
 								$source = get_parameter('source', "");
-
+								$search = get_parameter('search', "");
+								$log_number = get_parameter('log_number', "");
+								
 								$es['source'] = $source;
 								$es['id_agents'] = $agents_to_report;
+								$es['search']=$search;
+								$es['log_number']=$log_number;
 
 								$values['external_source'] = json_encode($es);
 								$values['period'] = get_parameter('period');
@@ -1446,8 +1453,8 @@ switch ($action) {
 							$values['treport_custom_sql_id'] = get_parameter('id_custom');
 							if ($values['treport_custom_sql_id'] == 0) {
 								$values['external_source'] = get_parameter('sql');
-								$values['historical_db'] = get_parameter('historical_db_check');
 							}
+							$values['historical_db'] = get_parameter('historical_db_check');
 						}
 						elseif ($values['type'] == 'url') {
 							$values['external_source'] = get_parameter('url');

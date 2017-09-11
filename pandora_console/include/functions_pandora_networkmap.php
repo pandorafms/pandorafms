@@ -69,6 +69,7 @@ function networkmap_process_networkmap($id = 0) {
 			$layout = "spring2";
 			break;
 	}
+
 	$simple = 0;
 	$font_size = 12;
 	$nooverlap = false;
@@ -85,7 +86,7 @@ function networkmap_process_networkmap($id = 0) {
 		case 1:
 			$recon_task = db_get_row_filter('trecon_task',
 				array('id_rt' => $networkmap['source_data']));
-				
+			
 			$ip_mask = $recon_task['subnet'];
 			break;
 		case 2:
@@ -140,7 +141,7 @@ function networkmap_process_networkmap($id = 0) {
 			$filename_dot .= "_nooverlap";
 		}
 		$filename_dot .= "_" . $id . ".dot";
-		
+
 		file_put_contents($filename_dot, $graph);
 
 		switch (PHP_OS) {
@@ -148,11 +149,13 @@ function networkmap_process_networkmap($id = 0) {
 			case "WINNT":
 			case "Windows":
 				$filename_plain = sys_get_temp_dir() . "\\plain.txt";
-				$cmd = $config['graphviz_bin_dir'] . "\\$filter -Tplain -o " . $filename_plain . " " .
-					$filename_dot;
+				
+				$cmd = io_safe_output($config['graphviz_bin_dir'] . "\\$filter.exe -Tplain -o " . $filename_plain . " " .
+					$filename_dot);
 				break;
 			default:
 				$filename_plain = sys_get_temp_dir() . "/plain.txt";
+
 				$cmd = "$filter -Tplain -o " . $filename_plain . " " .
 					$filename_dot;
 				break;
@@ -165,6 +168,8 @@ function networkmap_process_networkmap($id = 0) {
 		$nodes = networkmap_loadfile($id, $filename_plain,
 			$relation_nodes, $graph);
 		
+		unlink($filename_plain);
+
 		//Set the position of modules
 		foreach ($nodes as $key => $node) {
 			if ($node['type'] == 'module') {
@@ -265,8 +270,6 @@ function networkmap_process_networkmap($id = 0) {
 		db_process_sql_update('tmap',
 			array('center_x' => $networkmap['center_x'], 'center_y' => $networkmap['center_y']),
 			array('id' => $id));
-			
-		unlink($filename_plain);
 	}
 	
 	return $nodes_and_relations;
@@ -309,7 +312,7 @@ function networkmap_db_node_to_js_node($node, &$count, &$count_item_holding_area
 	
 	$item = array();
 	$item['id'] = $count;
-	
+
 	if (enterprise_installed()) {
 		enterprise_include_once('include/functions_pandora_networkmap.php');
 		$item['id_db'] = $node['id_in_db'];
@@ -327,6 +330,9 @@ function networkmap_db_node_to_js_node($node, &$count, &$count_item_holding_area
 		$item['type'] = 1;
 		$item['id_agent'] = (int)$node['style']['id_agent'];
 		$item['id_module'] = (int)$node['source_data'];
+	}
+	else {
+		$item['type'] = 3;
 	}
 	
 	$item['fixed'] = true;

@@ -660,6 +660,28 @@ function ui_print_os_icon ($id_os, $name = true, $return = false,
 	return $output;
 }
 
+function ui_print_type_agent_icon ( $id_os = false, $remote_contact = false, $contact = false, 
+						$return = false, $remote = 0, $version = ""){
+
+	if($id_os == 19){
+		//Satellite
+		$options['title'] = __('Satellite');
+		$output = html_print_image("images/op_satellite.png", true, $options, false, false, false, true);
+	}
+	else if ($remote_contact == $contact && $remote == 0 && $version == ""){
+		//Network
+		$options['title'] = __('Network');
+		$output = html_print_image("images/network.png", true, $options, false, false, false, true);
+	}
+	else{
+		//Software
+		$options['title'] = __('Software');
+		$output = html_print_image("images/data.png", true, $options, false, false, false, true);
+	}
+
+	return $output;
+}
+
 /**
  * Prints an agent name with the correct link
  * 
@@ -2924,7 +2946,16 @@ function ui_print_agent_autocomplete_input($parameters) {
 	if (isset($parameters['from_ux'])) {
 		$from_ux_transaction = $parameters['from_ux'];
 	}
-	
+
+	$from_wux_transaction = ''; //Default value
+	if (isset($parameters['from_wux'])) {
+		$from_wux_transaction = $parameters['from_wux'];
+	}
+
+	$cascade_protection = false; //Default value
+	if (isset($parameters['cascade_protection'])) {
+		$cascade_protection = $parameters['cascade_protection'];
+	}
 	
 	$metaconsole_enabled = false; //Default value
 	if (isset($parameters['metaconsole_enabled'])) {
@@ -3015,13 +3046,41 @@ function ui_print_agent_autocomplete_input($parameters) {
 	if ($from_ux_transaction != "") {
 		$javascript_code_function_select = '
 		function function_select_' . $input_name . '(agent_name) {
-			console.log(agent_name);
 			$("#' . $selectbox_id . '").empty();
 			
 			var inputs = [];
 			inputs.push ("id_agent=" + $("#' . $hidden_input_idagent_id . '").val());
 			inputs.push ("get_agent_transactions=1");
 			inputs.push ("page=enterprise/include/ajax/ux_transaction.ajax");
+			
+			jQuery.ajax ({
+				data: inputs.join ("&"),
+				type: "POST",
+				url: action="' . $javascript_ajax_page . '",
+				dataType: "json",
+				success: function (data) {
+					if (data) {
+						$("#' . $selectbox_id . '").append ($("<option value=0>None</option>"));
+						jQuery.each (data, function (id, value) {
+							$("#' . $selectbox_id . '").append ($("<option value=" + id + ">" + value + "</option>"));
+						});
+					}
+				}
+			});
+			
+			return false;
+		}
+		';
+	}
+	elseif ($from_wux_transaction != "") {
+		$javascript_code_function_select = '
+		function function_select_' . $input_name . '(agent_name) {
+			$("#' . $selectbox_id . '").empty();
+			
+			var inputs = [];
+			inputs.push ("id_agent=" + $("#' . $hidden_input_idagent_id . '").val());
+			inputs.push ("get_agent_transactions=1");
+			inputs.push ("page=enterprise/include/ajax/wux_transaction.ajax");
 			
 			jQuery.ajax ({
 				data: inputs.join ("&"),
@@ -3095,8 +3154,9 @@ function ui_print_agent_autocomplete_input($parameters) {
 							.append ($("<option></option>")
 							.attr("value", val["id_agente_modulo"]).text (s));
 					});
-					
-					$("#' . $selectbox_id . '").enable();
+					if('. (int)$cascade_protection .' == 0){
+						$("#' . $selectbox_id . '").enable();
+					}
 					$("#' . $selectbox_id . '").fadeIn ("normal");
 				}
 			});

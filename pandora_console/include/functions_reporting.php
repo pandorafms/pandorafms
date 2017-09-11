@@ -146,6 +146,15 @@ function reporting_make_reporting_data($report = null, $id_report,
 					continue;
 				}
 			}
+			
+			
+			if(sizeof($content['id_agent']) != 1){
+				$content['style']['name_label'] = str_replace("_agent_",sizeof($content['id_agent']).__(' agents'),$content['style']['name_label']);
+			}
+
+			if(sizeof($content['id_agent_module']) != 1){
+			 	$content['style']['name_label'] = str_replace("_module_",sizeof($content['id_agent_module']).__(' modules'),$content['style']['name_label']);
+			}
 
 			$content['name'] = reporting_label_macro($items_label, $content['style']['name_label']);
 
@@ -2438,7 +2447,14 @@ function reporting_database_serialized($report, $content) {
 	$return['agent_name'] = $agent_name;
 	$return['module_name'] = $module_name;
 	
-	
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
+	}
+
 	$datelimit = $report["datetime"] - $content['period'];
 	$search_in_history_db = db_search_in_history_db($datelimit);
 	
@@ -2513,6 +2529,10 @@ function reporting_database_serialized($report, $content) {
 			
 			$data[] = $row;
 		}
+	}
+
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
 	}
 	
 	$return["data"] = $data;
@@ -4342,6 +4362,20 @@ function reporting_advanced_sla ($id_agent_module, $time_from = null, $time_to =
 			$max_value = null;
 			$min_value = null;
 		}
+		if ( (!isset($min_value)) && (!isset($max_value)) ) {
+			if (   ($agentmodule_info["id_tipo_modulo"] == "2")      // generic_proc
+				|| ($agentmodule_info["id_tipo_modulo"] == "6")      // remote_icmp_proc
+				|| ($agentmodule_info["id_tipo_modulo"] == "9")      // remote_tcp_proc
+				|| ($agentmodule_info["id_tipo_modulo"] == "18")     // remote_snmp_proc
+				|| ($agentmodule_info["id_tipo_modulo"] == "21")     // async_proc
+				|| ($agentmodule_info["id_tipo_modulo"] == "31") ) { // web_proc
+				// Boolean values are OK if they're different from 0
+				$max_value = 0;
+				$min_value = 0;
+				$inverse_interval = 1;
+			}
+
+		}
 	}
 
 	// By default show last day
@@ -5766,17 +5800,10 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 	
 	require_once ($config["homedir"] . '/include/functions_graph.php');
 	
-	if ($type_report == 'automatic_graph') {
-		// Do none
-	}
-	else {
-		if ($config['metaconsole']) {
-			$id_meta = metaconsole_get_id_server($content["server_name"]);
-			
-			
-			$server = metaconsole_get_connection_by_id ($id_meta);
-			metaconsole_connect($server);
-		}
+	if ($config['metaconsole'] && $type_report != 'automatic_graph') {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);	
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
 	}
 	
 	$graph = db_get_row ("tgraph", "id_graph", $content['id_gs']);
@@ -5819,10 +5846,17 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 		
 		array_push ($weights, $graph_item["weight"]);
 		if (in_array('label',$content['style'])) {
+			if (defined('METACONSOLE')) {
+				$item = array('type' => 'custom_graph',
+							'id_agent' =>$content['id_agent'],
+							'id_agent_module'=>$graph_item['id_agent_module']);
+			}
+			else {
 			$item = array('type' => 'custom_graph',
 						'id_agent' =>modules_get_agentmodule_agent($graph_item['id_agent_module']),
 						'id_agent_module'=>$graph_item['id_agent_module']);
-			$label = reporting_label_macro($item, $content['style']['label']);
+			}
+			
 			$labels[$graph_item['id_agent_module']] = $label;
 		}
 	}
@@ -5879,13 +5913,8 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 			break;
 	}
 	
-	if ($type_report == 'automatic_graph') {
-		// Do none
-	}
-	else {
-		if ($config['metaconsole']) {
-			metaconsole_restore_db();
-		}
+	if ($config['metaconsole'] && $type_report != 'automatic_graph') {
+		metaconsole_restore_db();
 	}
 	
 	return reporting_check_structure_content($return);
@@ -10282,6 +10311,7 @@ function reporting_label_macro ($item, $label) {
 		case 'TTO':
 		case 'MTBF':
 		case 'MTTR':
+		case 'automatic_graph':
 			if (preg_match("/_agent_/", $label)) {
 				$agent_name = agents_get_alias($item['id_agent']);
 				$label = str_replace("_agent_", $agent_name, $label);

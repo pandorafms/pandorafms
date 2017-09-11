@@ -127,7 +127,7 @@ function extension_db_status_execute_checks($db_user, $db_password, $db_host, $d
 				ui_print_error_message(
 					__('Unsuccessful installed tables into the testing DB'));
 			}
-			else {
+			else {/*
 				if (enterprise_installed()) {
 					$install_tables_enterprise =
 						extension_db_status_execute_sql_file(
@@ -139,7 +139,7 @@ function extension_db_status_execute_checks($db_user, $db_password, $db_host, $d
 							__('Unsuccessful installed enterprise tables into the testing DB'));
 					}
 				}
-				
+				*/
 				extension_db_check_tables_differences(
 					$connection_test,
 					$connection_system,
@@ -159,6 +159,7 @@ function extension_db_check_tables_differences($connection_test,
 	
 	global $config;
 	
+	
 	// --------- Check the tables --------------------------------------
 	mysql_select_db($db_name_test, $connection_test);
 	$result = mysql_query("SHOW TABLES", $connection_test);
@@ -170,9 +171,8 @@ function extension_db_check_tables_differences($connection_test,
 	//~ $tables_test = array_merge($tables_test,
 		//~ extension_db_status_extension_tables());
 	
-	
-	mysql_select_db($db_name_system, $connection_system);
-	$result = mysql_query("SHOW TABLES", $connection_system);
+	mysql_select_db($db_name_system, $connection_test);
+	$result = mysql_query("SHOW TABLES", $connection_test);
 	$tables_system = array();
 	while ($row = mysql_fetch_array ($result)) {
 		$tables_system[] = $row[0];
@@ -227,8 +227,8 @@ function extension_db_check_tables_differences($connection_test,
 		
 		
 		
-		mysql_select_db($db_name_system, $connection_system);
-		$result = mysql_query("EXPLAIN " . $table, $connection_system);
+		mysql_select_db($db_name_system, $connection_test);
+		$result = mysql_query("EXPLAIN " . $table, $connection_test);
 		$fields_system = array();
 		if (!empty($result)) {
 			while ($row = mysql_fetch_array ($result)) {

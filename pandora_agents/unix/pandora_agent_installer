@@ -9,8 +9,8 @@
 # Please see http://www.pandorafms.org. This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
-PI_VERSION="7.0NG.705"
-PI_BUILD="170705"
+PI_VERSION="7.0NG.712"
+PI_BUILD="170911"
 OS_NAME=`uname -s`
 
 FORCE=0
@@ -148,6 +148,13 @@ uninstall () {
         then
 		launchctl remove com.pandorafms.pandorafms 
 		rm /Library/LaunchDaemons/com.pandorafms.pandorafms.plist 2> /dev/null
+	fi
+
+	# Stops the agent on uninstall
+	if [ -f $PANDORA_BASE/etc/init.d/pandora_agent_daemon ]; then
+		$PANDORA_BASE/etc/init.d/pandora_agent_daemon stop 12> /dev/null
+	else
+		echo "$PANDORA_BASE/etc/init.d/pandora_agent_daemon not found to stop agent"
 	fi
 
 	echo "Removing Pandora FMS Agent..."

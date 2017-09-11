@@ -48,7 +48,7 @@ if (is_ajax ()) {
 	return;
 }
 
-function process_manage_delete ($module_name, $id_agents) {
+function process_manage_delete ($module_name, $id_agents, $module_status = 'all') {
 
 	global $config;
 
@@ -217,6 +217,20 @@ function process_manage_delete ($module_name, $id_agents) {
 		}
 	}
 	
+	if (($module_status == 'unknown') && ($module_name[0] == "0") && (is_array($module_name)) && (count($module_name) == 1)) {
+		$modules_to_delete = array();
+		foreach ($modules as $mod_id) {
+			$mod_status = (int)db_get_value_filter ('estado', 'tagente_estado', array('id_agente_modulo' => $mod_id));
+
+			// Unknown, not init and no data modules
+			if ($mod_status == 3 || $mod_status == 4 || $mod_status == 5) {
+				$modules_to_delete[$mod_id] = $mod_id;
+			}
+		}
+
+		$modules = $modules_to_delete;
+	}
+	
 	$count_deleted_modules = count($modules);
 	if ($config['dbtype'] == "oracle") {
 		$success = db_process_sql(sprintf("DELETE FROM tagente_modulo WHERE id_agente_modulo IN (%s)", implode(",", $modules)));
@@ -251,6 +265,7 @@ $agents_id = get_parameter('id_agents');
 $modules_select = get_parameter('module');
 $selection_mode = get_parameter('selection_mode', 'modules');
 $recursion = get_parameter('recursion');
+$modules_selection_mode = get_parameter('modules_selection_mode');
 
 if ($delete) {
 	switch ($selection_mode) {
@@ -299,7 +314,7 @@ if ($delete) {
 					$module_name = array();
 				}
 				foreach ($module_name as $mod_name) {
-					$result = process_manage_delete ($mod_name['nombre'], $id_agent['id_agente']);
+					$result = process_manage_delete ($mod_name['nombre'], $id_agent['id_agente'], $modules_selection_mode);
 					$count ++;
 					$success += (int)$result;
 				}
@@ -319,7 +334,7 @@ if ($delete) {
 					$module_name = array();
 				}
 				else {
-					$result = process_manage_delete (array(0 => 0), $id_agent);
+					$result = process_manage_delete (array(0 => 0), $id_agent, $modules_selection_mode);
 				}
 				$success += (int)$result;
 			}
@@ -330,7 +345,8 @@ if ($delete) {
 	}
 	
 	if (!$force) {
-		$result = process_manage_delete ($modules_, $agents_);
+		$result = false;
+		$result = process_manage_delete ($modules_, $agents_, $modules_selection_mode);
 	}
 	
 	if ($result) {

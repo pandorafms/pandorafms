@@ -27,6 +27,7 @@ if (is_ajax()) {
 	$target_ip = (string) get_parameter ("target_ip", '');
 	$community = (string) get_parameter ("community", '');
 	$snmp_version = (string) get_parameter ("snmp_browser_version", '');
+	$server_to_exec = (int) get_parameter ("server_to_exec", 0);
 	$snmp3_auth_user = get_parameter('snmp3_browser_auth_user');
 	$snmp3_security_level = get_parameter('snmp3_browser_security_level');
 	$snmp3_auth_method = get_parameter('snmp3_browser_auth_method');
@@ -41,12 +42,33 @@ if (is_ajax()) {
 		$snmp_tree = snmp_browser_get_tree(
 			$target_ip, $community, $starting_oid, $snmp_version,
 			$snmp3_auth_user, $snmp3_security_level, $snmp3_auth_method,
-			$snmp3_auth_pass, $snmp3_privacy_method, $snmp3_privacy_pass);
+			$snmp3_auth_pass, $snmp3_privacy_method, $snmp3_privacy_pass,
+			$server_to_exec);
 		if (! is_array ($snmp_tree)) {
 			echo $snmp_tree;
 		}
 		else {
 			snmp_browser_print_tree ($snmp_tree);
+			echo html_print_submit_button(__('Create network components'),'create_network_component', 
+				false, array('style' => 'display: none', 'class' => 'sub add'), true);
+				
+			echo '<div id="dialog_error" style="display: none" title="Network components">';
+			echo "<div>";
+			echo "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
+			echo "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
+			echo "<p style='font-family:Verdana; font-size:12pt;margin-bottom: 0px'>".__('Error creating the following modules:')."</p>";
+			echo "<p id='error_text' style='font-family:Verdana; font-size:12pt;'></p>";
+			echo "</div>";
+			echo '</div>';
+			
+			
+			echo '<div id="dialog_success" style="display: none" title="Network components">';
+			echo "<div>";
+			echo "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_exito_mr.png'></div>";
+			echo "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>SUCCESS</strong></h3>";
+			echo "<p style='font-family:Verdana; font-size:12pt;'>".__('Modules successfully created')."</p>";
+			echo "</div>";
+			echo '</div>';
 		}
 		return;
 	}

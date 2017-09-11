@@ -207,12 +207,14 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
 		
 		$recon_task_id = (int) get_parameter(
 			'recon_task_id', 0);
-			
+		
 		$source = (string)get_parameter('source', 'group');
 		
 		$values = array();
 		$values['name'] = $name;
 		$values['id_group'] = $id_group;
+
+		/*
 		if ($source == 'group') {
 			$values['source'] = 0;
 			$values['source_data'] = $id_group;
@@ -225,6 +227,32 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
 			$values['source'] = 2;
 			$values['source_data'] = $ip_mask;
 		}
+		*/
+
+		switch ($method) {
+			case 'twopi':
+				$values['generation_method'] = 2;
+				break;
+			case 'dot':
+				$values['generation_method'] = 1;
+				break;
+			case 'circo':
+				$values['generation_method'] = 0;
+				break;
+			case 'neato':
+				$values['generation_method'] = 3;
+				break;
+			case 'fdp':
+				$values['generation_method'] = 4;
+				break;
+			case 'radial_dinamic':
+				$values['generation_method'] = 6;
+				break;
+			default:
+				$values['generation_method'] = 2;
+				break;
+		}
+
 		$description = get_parameter('description', '');
 		$values['description'] = $description;
 		

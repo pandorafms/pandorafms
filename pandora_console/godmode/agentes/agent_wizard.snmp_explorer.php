@@ -34,6 +34,7 @@ $ip_target = (string) get_parameter ('ip_target', $ipAgent);
 $use_agent = get_parameter ('use_agent');
 $snmp_community = (string) get_parameter ('snmp_community', 'public');
 $snmp_version = get_parameter('snmp_version', '1');
+$server_to_exec = get_parameter('server_to_exec', 0);
 $snmp3_auth_user = get_parameter('snmp3_auth_user');
 $snmp3_security_level = get_parameter('snmp3_security_level');
 $snmp3_auth_method = get_parameter('snmp3_auth_method');
@@ -87,7 +88,8 @@ if ($snmpwalk) {
 	// OID Used is for DISKS
 	$snmpis = get_snmpwalk($ip_target, $snmp_version, $snmp_community, $snmp3_auth_user,
 		$snmp3_security_level, $snmp3_auth_method, $snmp3_auth_pass,
-		$snmp3_privacy_method, $snmp3_privacy_pass, 0, ".1.3.6.1.2.1.25.2.3.1.3", $tcp_port);
+		$snmp3_privacy_method, $snmp3_privacy_pass, 0, ".1.3.6.1.2.1.25.2.3.1.3", $tcp_port,
+		$server_to_exec);
 	
 	if (empty($snmpis)) {
 		$fail = true;
@@ -120,7 +122,8 @@ if ($snmpwalk) {
 		// OID Used is for PROCESSES
 		$snmpis = get_snmpwalk($ip_target, $snmp_version, $snmp_community, $snmp3_auth_user,
 			$snmp3_security_level, $snmp3_auth_method, $snmp3_auth_pass,
-			$snmp3_privacy_method, $snmp3_privacy_pass, 0, ".1.3.6.1.2.1.25.4.2.1.2", $tcp_port);
+			$snmp3_privacy_method, $snmp3_privacy_pass, 0, ".1.3.6.1.2.1.25.4.2.1.2", $tcp_port,
+			$server_to_exec);
 		
 		if ($snmpis === false) {
 			$snmpis = array();
@@ -158,7 +161,8 @@ if ($snmpwalk) {
 		// OID Used is for SENSOR TEMPERATURES
 		$snmpis = get_snmpwalk($ip_target, $snmp_version, $snmp_community, $snmp3_auth_user,
 			$snmp3_security_level, $snmp3_auth_method, $snmp3_auth_pass,
-			$snmp3_privacy_method, $snmp3_privacy_pass, 0, ".1.3.6.1.4.1.2021.13.16.2.1", $tcp_port);
+			$snmp3_privacy_method, $snmp3_privacy_pass, 0, ".1.3.6.1.4.1.2021.13.16.2.1", $tcp_port,
+			$server_to_exec);
 		
 		if ($snmpis === false) {
 			$snmpis = array();
@@ -196,7 +200,8 @@ if ($snmpwalk) {
 		// OID Used is for DEVICES
 		$snmpis = get_snmpwalk($ip_target, $snmp_version, $snmp_community, $snmp3_auth_user,
 			$snmp3_security_level, $snmp3_auth_method, $snmp3_auth_pass,
-			$snmp3_privacy_method, $snmp3_privacy_pass, 0, ".1.3.6.1.4.1.2021.13.15.1.1", $tcp_port);
+			$snmp3_privacy_method, $snmp3_privacy_pass, 0, ".1.3.6.1.4.1.2021.13.15.1.1", $tcp_port,
+			$server_to_exec);
 		
 		if ($snmpis === false) {
 			$snmpis = array();
@@ -705,6 +710,26 @@ $table->data[0][3] = html_print_input_text ('tcp_port', $tcp_port, '', 5, 20, tr
 
 $table->data[1][0] = '<b>' . __('Use agent ip') . '</b>';
 $table->data[1][1] = html_print_checkbox ('use_agent', 1, $use_agent, true);
+
+$servers_to_exec = array();
+$servers_to_exec[0] = __('Local console');
+if (enterprise_installed()) {
+	enterprise_include_once ('include/functions_satellite.php');
+	
+	$rows = get_proxy_servers(true);
+	foreach ($rows as $row) {
+		if ($row['server_type'] != 13) {
+			$s_type = " (Standard)";
+		}
+		else {
+			$s_type = " (Satellite)";
+		}
+
+		$servers_to_exec[$row['id_server']] = $row['name'] . $s_type;
+	}
+}
+$table->data[1][2] = '<b>' . __('Server to execute command') . '</b>';
+$table->data[1][3] = html_print_select ($servers_to_exec, 'server_to_exec', $server_to_exec, '', '', '', true);
 
 $snmp_versions['1'] = 'v. 1';
 $snmp_versions['2'] = 'v. 2';

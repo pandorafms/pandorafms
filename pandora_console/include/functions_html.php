@@ -385,13 +385,28 @@ function html_print_select_groups($id_user = false, $privilege = "AR",
 	$nothing = '', $nothing_value = 0, $return = false,
 	$multiple = false, $sort = true, $class = '', $disabled = false,
 	$style = false, $option_style = false, $id_group = false,
-	$keys_field = 'id_grupo', $strict_user = false) {
+	$keys_field = 'id_grupo', $strict_user = false, $delete_groups = false , $include_groups = false) {
 	
 	global $config;
 
 	$fields = users_get_groups_for_select($id_user, $privilege,
 		$returnAllGroup, true, $id_group, $keys_field);
+	
+	if ($delete_groups && is_array($delete_groups)){
+		foreach ($delete_groups as $value) {
+			unset($fields[$value]);
+		}
+	}
+	
+	if (is_array($include_groups)){
 
+		$field = array();
+		foreach ($include_groups as $value) {
+			$field[$value] = $fields[$value];
+		}
+		$fields = array_intersect($fields, $field);
+	}
+	
 	if ($strict_user) {
 		$fields = users_get_strict_mode_groups($config['id_user'], $returnAllGroup);
 	}
@@ -609,7 +624,7 @@ function html_print_select_from_sql ($sql, $name, $selected = '',
 function html_print_extended_select_for_post_process($name, $selected = '',
 	$script = '', $nothing = '', $nothing_value = '0', $size = false,
 	$return = false, $select_style = false, $unique_name = true,
-	$disabled = false) {
+	$disabled = false, $no_change = 0) {
 	
 	global $config;
 	
@@ -617,6 +632,10 @@ function html_print_extended_select_for_post_process($name, $selected = '',
 	
 	
 	$fields = post_process_get_custom_values();
+	if($no_change != 0){
+		$fields[-1] = __('No change');
+	}
+
 	$selected_float = (float)$selected;
 	$found = false;
 	

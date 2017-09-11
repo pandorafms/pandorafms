@@ -116,7 +116,7 @@ function snmp_browser_print_tree ($tree, $id = 0, $depth = 0, $last = 0, $last_a
 			echo "</a>";
 		}
 		
-		echo '&nbsp;<span>' . $level . '</span>';
+		echo html_print_checkbox("create_$sub_id", 0, false, true, false, '') .'&nbsp;<span>' . $level . '</span>';
 		if (isset ($sub_level['__VALUE__'])) {
 			echo '<span class="value" style="display: none;">&nbsp;=&nbsp;' . $sub_level['__VALUE__'] . '</span>';
 		}
@@ -138,7 +138,7 @@ function snmp_browser_print_tree ($tree, $id = 0, $depth = 0, $last = 0, $last_a
  *
  * @return array The SNMP tree.
  */
-function snmp_browser_get_tree ($target_ip, $community, $starting_oid = '.', $version = '2c', $snmp3_auth_user = '', $snmp3_security_level = '', $snmp3_auth_method = '', $snmp3_auth_pass = '', $snmp3_privacy_method = '', $snmp3_privacy_pass = '') {
+function snmp_browser_get_tree ($target_ip, $community, $starting_oid = '.', $version = '2c', $snmp3_auth_user = '', $snmp3_security_level = '', $snmp3_auth_method = '', $snmp3_auth_pass = '', $snmp3_privacy_method = '', $snmp3_privacy_pass = '', $server_to_exec = 0) {
 	global $config;
 	
 	if ($target_ip == '') {
@@ -173,27 +173,73 @@ function snmp_browser_get_tree ($target_ip, $community, $starting_oid = '.', $ve
 			$error_redir_dir = '/dev/null';
 			break;
 	}
+	
+	if ($server_to_exec != 0) {
+		$sql = sprintf("SELECT ip_address FROM tserver WHERE id_server = %d", $server_to_exec);
+		$server_data = db_get_row_sql($sql);
 
-	$oid_tree = array('__LEAVES__' => array());
-	if ($version == "3") {
-		switch ($snmp3_security_level) {
-			case "authPriv":
-				exec ($snmpwalk_bin . ' -m ALL -v 3 -u ' . escapeshellarg($snmp3_auth_user) . ' -A ' . escapeshellarg($snmp3_auth_pass) . ' -l ' . escapeshellarg($snmp3_security_level) . ' -a ' . escapeshellarg($snmp3_auth_method) . ' -x ' . escapeshellarg($snmp3_privacy_method) . ' -X ' . escapeshellarg($snmp3_privacy_pass) . ' ' . escapeshellarg($target_ip)  . ' ' . escapeshellarg($starting_oid) . ' 2> ' . $error_redir_dir, $output, $rc);
-				break;
-			case "authNoPriv":
-				exec ($snmpwalk_bin . ' -m ALL -v 3 -u ' . escapeshellarg($snmp3_auth_user) . ' -A ' . escapeshellarg($snmp3_auth_pass) . ' -l ' . escapeshellarg($snmp3_security_level) . ' -a ' . escapeshellarg($snmp3_auth_method) . ' ' . escapeshellarg($target_ip)  . ' ' . escapeshellarg($starting_oid) . ' 2> ' . $error_redir_dir, $output, $rc);
-				break;
-			case "noAuthNoPriv":
-				exec ($snmpwalk_bin . ' -m ALL -v 3 -u ' . escapeshellarg($snmp3_auth_user) . ' -l ' . escapeshellarg($snmp3_security_level) . ' ' . escapeshellarg($target_ip)  . ' ' . escapeshellarg($starting_oid) . ' 2> ' . $error_redir_dir, $output, $rc);
-				break;
+		if (enterprise_installed()) {
+			enterprise_include_once ('include/functions_satellite.php');
+
+			$oid_tree = array('__LEAVES__' => array());
+			if ($version == "3") {
+				switch ($snmp3_security_level) {
+					case "authPriv":
+						$command = $snmpwalk_bin . " -m ALL -v 3 -u " . escapeshellarg($snmp3_auth_user) . " -A " . escapeshellarg($snmp3_auth_pass) . " -l " . escapeshellarg($snmp3_security_level) . " -a " . escapeshellarg($snmp3_auth_method) . " -x " . escapeshellarg($snmp3_privacy_method) . " -X " . escapeshellarg($snmp3_privacy_pass) . " " . escapeshellarg($target_ip)  . " " . escapeshellarg($starting_oid) . " 2> " . $error_redir_dir;
+						break;
+					case "authNoPriv":
+						$command = $snmpwalk_bin . " -m ALL -v 3 -u " . escapeshellarg($snmp3_auth_user) . " -A " . escapeshellarg($snmp3_auth_pass) . " -l " . escapeshellarg($snmp3_security_level) . " -a " . escapeshellarg($snmp3_auth_method) . " " . escapeshellarg($target_ip)  . " " . escapeshellarg($starting_oid) . " 2> " . $error_redir_dir;
+						break;
+					case "noAuthNoPriv":
+						$command = $snmpwalk_bin . " -m ALL -v 3 -u " . escapeshellarg($snmp3_auth_user) . " -l " . escapeshellarg($snmp3_security_level) . " " . escapeshellarg($target_ip)  . ' ' . escapeshellarg($starting_oid) . " 2> " . $error_redir_dir;
+						break;
+				}
+			}
+			else {
+				$command = $snmpwalk_bin . " -m ALL -M +" . escapeshellarg($config['homedir'] . "/attachment/mibs") . " -Cc -c " . escapeshellarg($community) . " -v " . escapeshellarg($version) . " " . escapeshellarg($target_ip) . " " . escapeshellarg($starting_oid) . " 2> " . $error_redir_dir;
+			}
+			exec("ssh pandora_exec_proxy@" . $server_data['ip_address'] . " \"" . $command . "\"", $output, $rc);
+		}
+		else {
+			$oid_tree = array('__LEAVES__' => array());
+			if ($version == "3") {
+				switch ($snmp3_security_level) {
+					case "authPriv":
+						exec ($snmpwalk_bin . ' -m ALL -v 3 -u ' . escapeshellarg($snmp3_auth_user) . ' -A ' . escapeshellarg($snmp3_auth_pass) . ' -l ' . escapeshellarg($snmp3_security_level) . ' -a ' . escapeshellarg($snmp3_auth_method) . ' -x ' . escapeshellarg($snmp3_privacy_method) . ' -X ' . escapeshellarg($snmp3_privacy_pass) . ' ' . escapeshellarg($target_ip)  . ' ' . escapeshellarg($starting_oid) . ' 2> ' . $error_redir_dir, $output, $rc);
+						break;
+					case "authNoPriv":
+						exec ($snmpwalk_bin . ' -m ALL -v 3 -u ' . escapeshellarg($snmp3_auth_user) . ' -A ' . escapeshellarg($snmp3_auth_pass) . ' -l ' . escapeshellarg($snmp3_security_level) . ' -a ' . escapeshellarg($snmp3_auth_method) . ' ' . escapeshellarg($target_ip)  . ' ' . escapeshellarg($starting_oid) . ' 2> ' . $error_redir_dir, $output, $rc);
+						break;
+					case "noAuthNoPriv":
+						exec ($snmpwalk_bin . ' -m ALL -v 3 -u ' . escapeshellarg($snmp3_auth_user) . ' -l ' . escapeshellarg($snmp3_security_level) . ' ' . escapeshellarg($target_ip)  . ' ' . escapeshellarg($starting_oid) . ' 2> ' . $error_redir_dir, $output, $rc);
+						break;
+				}
+			}
+			else {
+				exec ($snmpwalk_bin . ' -m ALL -M +' . escapeshellarg($config['homedir'] . '/attachment/mibs') . ' -Cc -c ' . escapeshellarg($community) . ' -v ' . escapeshellarg($version) . ' ' . escapeshellarg($target_ip) . ' ' . escapeshellarg($starting_oid) . ' 2> ' . $error_redir_dir, $output, $rc);
+			}
 		}
 	}
 	else {
-		exec ($snmpwalk_bin . ' -m ALL -M +' . escapeshellarg($config['homedir'] . '/attachment/mibs') . ' -Cc -c ' . escapeshellarg($community) . ' -v ' . escapeshellarg($version) . ' ' . escapeshellarg($target_ip) . ' ' . escapeshellarg($starting_oid) . ' 2> ' . $error_redir_dir, $output, $rc);
+		$oid_tree = array('__LEAVES__' => array());
+		if ($version == "3") {
+			switch ($snmp3_security_level) {
+				case "authPriv":
+					exec ($snmpwalk_bin . ' -m ALL -v 3 -u ' . escapeshellarg($snmp3_auth_user) . ' -A ' . escapeshellarg($snmp3_auth_pass) . ' -l ' . escapeshellarg($snmp3_security_level) . ' -a ' . escapeshellarg($snmp3_auth_method) . ' -x ' . escapeshellarg($snmp3_privacy_method) . ' -X ' . escapeshellarg($snmp3_privacy_pass) . ' ' . escapeshellarg($target_ip)  . ' ' . escapeshellarg($starting_oid) . ' 2> ' . $error_redir_dir, $output, $rc);
+					break;
+				case "authNoPriv":
+					exec ($snmpwalk_bin . ' -m ALL -v 3 -u ' . escapeshellarg($snmp3_auth_user) . ' -A ' . escapeshellarg($snmp3_auth_pass) . ' -l ' . escapeshellarg($snmp3_security_level) . ' -a ' . escapeshellarg($snmp3_auth_method) . ' ' . escapeshellarg($target_ip)  . ' ' . escapeshellarg($starting_oid) . ' 2> ' . $error_redir_dir, $output, $rc);
+					break;
+				case "noAuthNoPriv":
+					exec ($snmpwalk_bin . ' -m ALL -v 3 -u ' . escapeshellarg($snmp3_auth_user) . ' -l ' . escapeshellarg($snmp3_security_level) . ' ' . escapeshellarg($target_ip)  . ' ' . escapeshellarg($starting_oid) . ' 2> ' . $error_redir_dir, $output, $rc);
+					break;
+			}
+		}
+		else {
+			exec ($snmpwalk_bin . ' -m ALL -M +' . escapeshellarg($config['homedir'] . '/attachment/mibs') . ' -Cc -c ' . escapeshellarg($community) . ' -v ' . escapeshellarg($version) . ' ' . escapeshellarg($target_ip) . ' ' . escapeshellarg($starting_oid) . ' 2> ' . $error_redir_dir, $output, $rc);
+		}
 	}
-	//if ($rc != 0) {
-	//	return __('No data');
-	//}
+	
 	foreach ($output as $line) {
 		
 		// Separate the OID from the value
@@ -518,7 +564,28 @@ function snmp_browser_print_container ($return = false, $width = '100%', $height
 			'3' => 'v. 3'),
 		'snmp_browser_version', '', 'checkSNMPVersion();', '', '', true, false, false, '');
 	
-	$table->data[0][4] = html_print_button(__('Browse'), 'browse', false, 'snmpBrowse()', 'class="sub search" style="margin-top:0px;"', true);
+	$servers_to_exec = array();
+	$servers_to_exec[0] = __('Local console');
+
+	if (enterprise_installed()) {
+		enterprise_include_once ('include/functions_satellite.php');
+		
+		$rows = get_proxy_servers();
+	foreach ($rows as $row) {
+		if ($row['server_type'] != 13) {
+			$s_type = " (Standard)";
+		}
+		else {
+			$s_type = " (Satellite)";
+		}
+
+		$servers_to_exec[$row['id_server']] = $row['name'] . $s_type;
+	}
+	}
+	$table->data[0][4] = '<strong>' . __('Server to execute') . '</strong> &nbsp;&nbsp;';
+	$table->data[0][4] .= html_print_select($servers_to_exec, 'server_to_exec', '', '', '', '', true);
+
+	$table->data[0][5] = html_print_button(__('Browse'), 'browse', false, 'snmpBrowse()', 'class="sub search" style="margin-top:0px;"', true);
 	
 	// SNMP v3 options
 	$table3 = new stdClass();
@@ -618,3 +685,137 @@ function snmp_browser_print_container ($return = false, $width = '100%', $height
 }
 
 ?>
+
+<script type="text/javascript">
+	$(document).ready(function () {
+		$('input[name*=create_network_component]').click(function () {
+			var id_check = $('#ul_0').find('input').map(function(){ 
+				if(this.id.indexOf('checkbox-create_')!=-1){
+					if($(this).is(':checked')){
+						return this.id;
+					}
+					
+				} }).get();
+			$('input[name*=create_network_component]').removeClass("sub add");
+			$('input[name*=create_network_component]').addClass("sub spinn");
+			
+			var target_ip = $('#text-target_ip').val();
+			var community = $('#text-community').val();
+			var snmp_version = $('#snmp_browser_version').val();
+			var snmp3_auth_user = $('#text-snmp3_browser_auth_user').val();
+			var snmp3_security_level = $('#snmp3_browser_security_level').val();
+			var snmp3_auth_method = $('#snmp3_browser_auth_method').val();
+			var snmp3_auth_pass = $('#password-snmp3_browser_auth_pass').val();
+			var snmp3_privacy_method = $('#snmp3_browser_privacy_method').val();
+			var snmp3_privacy_pass = $('#password-snmp3_browser_privacy_pass').val();
+			
+			var custom_action = $('#hidden-custom_action').val();
+			if (custom_action == undefined) {
+				custom_action = '';
+			}
+			
+			var oids = [];
+			id_check.forEach(function(product, index) {
+				var oid = $("#"+product).siblings('a').attr('href');
+				if(oid.indexOf('javascript: snmpGet("')!=-1) {
+					oid = oid.replace('javascript: snmpGet("',"");
+					oid = oid.replace('");',"");
+					oids.push(oid);	
+				}
+				
+			});
+			// Prepare the AJAX call
+			var params = [
+				"target_ip=" + target_ip,
+				"community=" + community,
+				"oids=" + oids,
+				"snmp_browser_version=" + snmp_version,
+				"snmp3_browser_auth_user=" + snmp3_auth_user,
+				"snmp3_browser_security_level=" + snmp3_security_level,
+				"snmp3_browser_auth_method=" + snmp3_auth_method,
+				"snmp3_browser_auth_pass=" + snmp3_auth_pass,
+				"snmp3_browser_privacy_method=" + snmp3_privacy_method,
+				"snmp3_browser_privacy_pass=" + snmp3_privacy_pass,
+				"action=" + "create_modules_snmp",
+				"custom_action=" + custom_action,
+				"page=include/ajax/snmp_browser.ajax"
+			];
+			
+			$.ajax({
+				type: "GET",
+				url: "ajax.php",
+				data: params.join ("&"),
+				dataType: "json",
+				success: function(data) {
+					$('input[name*=create_network_component]').removeClass("sub spinn");
+					$('input[name*=create_network_component]').addClass("sub add");
+					
+					if(data.length !== 0){
+						$('#error_text').text("");
+						data.forEach( function(valor, indice, array) {
+							console.log(valor);
+    						$('#error_text').append('<br/>'+ valor );
+						});
+						$("#dialog_error")
+							.dialog({
+								resizable: true,
+								draggable: true,
+								modal: true,
+								height: 300,
+								width: 500,
+								overlay: {
+									opacity: 0.5,
+									background: "black"
+								}
+							});
+					} else {
+						$("#dialog_success")
+							.dialog({
+								resizable: true,
+								draggable: true,
+								modal: true,
+								height: 250,
+								width: 500,
+								overlay: {
+									opacity: 0.5,
+									background: "black"
+								}
+							});
+					}
+					
+					
+				}
+			});
+		});
+		
+		$('input[id^=checkbox-create]').change(function () {
+			if ($(this).is(':checked') ) {
+				$('input[name*=create_network_component]').show();
+				var id_input = $(this).attr("id");
+				id_input = id_input.split("checkbox-create_");
+				var checks = $('#ul_'+id_input[1]).find('input').map(function(){ 
+					if(this.id.indexOf('checkbox-create_')!=-1){
+						return this.id;
+					} }).get();
+				
+				checks.forEach(function(product, index) {
+					$("#"+product).prop('checked', "true");
+				});
+				
+			} else {
+				var id_input = $(this).attr("id");
+				
+				id_input = id_input.split("checkbox-create_");
+				var checks = $('#ul_'+id_input[1]).find('input').map(function(){ 
+					if(this.id.indexOf('checkbox-create_')!=-1){
+						return this.id;
+					} }).get();
+					
+				checks.forEach(function(product, index) {
+					$("#"+product).prop('checked', false);
+				});
+			}
+		});
+	});
+	
+</script>

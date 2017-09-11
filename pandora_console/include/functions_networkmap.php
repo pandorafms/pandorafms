@@ -1447,7 +1447,7 @@ function networkmap_open_graph ($layout, $nooverlap, $pure, $zoom,
 	$head .= "size=\"$size\";";
 	
 	$head .= "\n";
-	
+
 	return $head;
 }
 

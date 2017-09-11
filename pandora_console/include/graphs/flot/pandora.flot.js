@@ -891,10 +891,17 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	// Prepared to turn series with a checkbox
 	// var showed = new Array();
 
+	var min_check = 0;
 	for (i = 0; i < values.length; i++) {
 		var serie = values[i].split(separator);
 		var aux = new Array();
 		$.each(serie, function(i, v) {
+			if(v < 0){
+				if(min_check > parseFloat(v)){
+					min_check = v;
+				}
+			}
+
 			aux.push([i, v]);
 		});
 
@@ -977,6 +984,10 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 
 		// Prepared to turn series with a checkbox
 		// showed[i] = true;
+	}
+
+	if(min_check != 0){
+		min_check = min_check -5;
 	}
 
 	// If threshold and up are the same, that critical or warning is disabled
@@ -1540,6 +1551,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				position: 'left',
 				font: font,
 				reserveSpace: true,
+				min: min_check
 			}],
 			legend: {
 				position: 'se',
@@ -2144,6 +2156,10 @@ function number_format(number, force_integer, unit) {
 	while (1) {
 		if (number >= 1000) { //as long as the number can be divided by 1000
 			pos++; //Position in array starting with 0
+			number = number / 1000;
+		}
+		else if (number <= -1000) {
+			pos++;
 			number = number / 1000;
 		}
 		else if (number <= -1000) {

@@ -2031,7 +2031,8 @@ function events_page_details ($event, $server = "") {
 		
 		$data = array();
 		$data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('OS').'</div>';
-		$data[1] = ui_print_os_icon ($agent["id_os"], true, true).' ('.$agent["os_version"].')';
+		$data[1] = ui_print_os_icon ($agent["id_os"], true, true);
+		if (!empty($agent["os_version"])) $data[1] .= ' ('.$agent["os_version"].')';
 		$table_details->data[] = $data;
 		
 		$data = array();

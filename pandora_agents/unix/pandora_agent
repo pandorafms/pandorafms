@@ -149,6 +149,7 @@ my %DefaultConf = (
 	'encoding' => 'UTF-8',
 	'server_port' => 41121,
 	'transfer_mode' => 'tentacle',
+	'transfer_mode_user' => 'apache',
 	'transfer_timeout' => 30,
 	'server_user' => 'pandora',
 	'server_pwd' => '',
@@ -942,7 +943,7 @@ sub send_file {
 				quit
 				FEOF1`
 			} elsif ($Conf{'transfer_mode'} eq 'local') {
-				$output = `cp "$file" "$remote_dir" 2>&1 >$DevNull`;
+				$output = `cp -p "$file" "$remote_dir" 2>&1 >$DevNull`;
 		 	}
 			alarm (0);
 		};
@@ -1165,6 +1166,11 @@ sub check_remote_config () {
 		print MD5_FILE $conf_md5;
 		close (MD5_FILE);
 		copy ("$ConfDir/$ConfFile", "$Conf{'temporal'}/$RemoteConfFile");
+		if ($Conf{'transfer_mode'} eq 'local') {
+			my (undef, undef, $uid, $gid) = getpwnam($Conf{'transfer_mode_user'});
+			chown ($uid, $gid, "$Conf{'temporal'}/$RemoteMD5File");
+			chown ($uid, $gid, "$Conf{'temporal'}/$RemoteConfFile");
+		}
 		send_file ("$Conf{'temporal'}/$RemoteConfFile", undef, undef, undef, $Conf{'server_path_conf'});
 		send_file ("$Conf{'temporal'}/$RemoteMD5File", undef, undef, undef, $Conf{'server_path_md5'});
 		unlink ("$Conf{'temporal'}/$RemoteConfFile");

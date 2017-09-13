@@ -1213,7 +1213,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 			break;
 		case STATIC_GRAPH:
 		case GROUP_ITEM:
-			if ($layoutData['image'] != null) {
+			if ($layoutData['image'] != null || $layoutData['show_statistics'] == 1) {
 						
 				
 				$img_style_title = strip_tags($label);

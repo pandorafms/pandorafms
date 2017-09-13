@@ -691,7 +691,7 @@ function create_button_palette_callback() {
 				alert('Undefined height');
 				validate = false;
 			}
-			if ((values['label'] == '') && (values['image'] == '')) {
+			if ((values['label'] == '') && (values['image'] == '') && (values['show_statistics']) == false) {
 				alert($("#message_alert_no_label_no_image").html());
 				validate = false;
 			}

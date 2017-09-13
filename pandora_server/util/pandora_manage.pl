@@ -216,7 +216,7 @@ sub help_screen{
     help_screen_line('--add_tag_to_module', '<agent_name> <module_name> <tag_name>', 'Add a tag to the given module');
 
 	print "\nVISUAL CONSOLES\n\n" unless $param ne '';
-	help_screen_line('--create_visual_console', '<name> <background> <width> <height> <group> [<background_color>] [<elements>]', 'Create a new visual console');
+	help_screen_line('--create_visual_console', '<name> <background> <width> <height> <group> <mode> [<position_to_locate_elements>] [<background_color>] [<elements>]', 'Create a new visual console');
 	help_screen_line('--edit_visual_console', '<id> <name> <background> <width> <height> <group> [<background_color>] [<elements>]', 'Edit a visual console');
 	help_screen_line('--delete_visual_console', '<id>', 'Delete a visual console');
 	help_screen_line('--delete_visual_console_objects', '<id> <mode> <id_mode>', 'Delete a visual console elements');
@@ -4769,7 +4769,7 @@ sub cli_delete_special_day() {
 ##############################################################################
 
 sub cli_create_visual_console() {
-	my ($name,$background,$width,$height,$group,$background_color,$elements) = @ARGV[2..8];
+	my ($name,$background,$width,$height,$group,$mode,$element_square_positions,$background_color,$elements) = @ARGV[2..10];
 
 	if($name eq '') {
 		print_log "[ERROR] Name field cannot be empty.\n\n";
@@ -4787,6 +4787,10 @@ sub cli_create_visual_console() {
 		print_log "[ERROR] Group field cannot be empty.\n\n";
 		exit 1;
 	}
+	elsif ($mode eq '') {
+		print_log "[ERROR] Mode parameter must be 'static_objects' or 'auto_creation'.\n\n";
+		exit 1;
+	}
 
 	if ($background_color eq '') {
 		$background_color = '#FFF';
@@ -4802,31 +4806,120 @@ sub cli_create_visual_console() {
 	if ($elements ne '') {
 		my $elements_in_array = decode_json($elements);
 
-		foreach my $elem (@$elements_in_array) {
-			my $pos_x = $elem->{'pos_x'};
-			my $pos_y = $elem->{'pos_y'};
-			my $width = $elem->{'width'};
-			my $height = $elem->{'height'};
-			my $label = $elem->{'label'};
-			my $image = $elem->{'image'};
-			my $type = $elem->{'type'};
-			my $period = $elem->{'period'};
-			my $id_agente_modulo = $elem->{'id_agente_modulo'};
-			my $id_agent = $elem->{'id_agent'};
-			my $id_layout_linked = $elem->{'id_layout_linked'};
-			my $parent_item = $elem->{'parent_item'};
-			my $enable_link = $elem->{'enable_link'};
-			my $id_metaconsole = $elem->{'id_metaconsole'};
-			my $id_group = $elem->{'id_group'};
-			my $id_custom_graph = $elem->{'id_custom_graph'};
-			my $border_width = $elem->{'border_width'};
-			my $type_graph = $elem->{'type_graph'};
-			my $label_position = $elem->{'label_position'};
-			my $border_color = $elem->{'border_color'};
-			my $fill_color = $elem->{'fill_color'};
+		if ($mode eq 'static_objects') {
+			my $elem_count = 1;
 
-			db_insert ($dbh, 'id', 'INSERT INTO tlayout_data (id_layout, pos_x, pos_y, height, width, label, image, type, period, id_agente_modulo, id_agent, id_layout_linked, parent_item, enable_link, id_metaconsole, id_group, id_custom_graph, border_width, type_graph, label_position, border_color, fill_color, show_statistics)
-                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $vc_id, $pos_x, $pos_y, $height, $width, $label, $image, $type, $period, $id_agente_modulo, $id_agent, $id_layout_linked, $parent_item, $enable_link, $id_metaconsole, $id_group, $id_custom_graph, $border_width, $type_graph, $label_position, $border_color, $fill_color, 0);
+			foreach my $elem (@$elements_in_array) {
+				my $pos_x = $elem->{'pos_x'};
+				my $pos_y = $elem->{'pos_y'};
+				my $width = $elem->{'width'};
+				my $height = $elem->{'height'};
+				my $label = $elem->{'label'};
+				my $image = $elem->{'image'};
+				my $type = $elem->{'type'};
+				my $period = $elem->{'period'};
+				my $id_agente_modulo = $elem->{'id_agente_modulo'};
+				my $id_agent = $elem->{'id_agent'};
+				my $id_layout_linked = $elem->{'id_layout_linked'};
+				my $parent_item = $elem->{'parent_item'};
+				my $enable_link = $elem->{'enable_link'};
+				my $id_metaconsole = $elem->{'id_metaconsole'};
+				my $id_group = $elem->{'id_group'};
+				my $id_custom_graph = $elem->{'id_custom_graph'};
+				my $border_width = $elem->{'border_width'};
+				my $type_graph = $elem->{'type_graph'};
+				my $label_position = $elem->{'label_position'};
+				my $border_color = $elem->{'border_color'};
+				my $fill_color = $elem->{'fill_color'};
+
+				my $elem_id = db_insert ($dbh, 'id', 'INSERT INTO tlayout_data (id_layout, pos_x, pos_y, height, width, label, image, type, period, id_agente_modulo, id_agent, id_layout_linked, parent_item, enable_link, id_metaconsole, id_group, id_custom_graph, border_width, type_graph, label_position, border_color, fill_color, show_statistics)
+							VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $vc_id, $pos_x, $pos_y, $height, $width, $label, $image, $type, $period, $id_agente_modulo, $id_agent, $id_layout_linked, $parent_item, $enable_link, $id_metaconsole, $id_group, $id_custom_graph, $border_width, $type_graph, $label_position, $border_color, $fill_color, 0);
+
+				print_log "[INFO] The element id in position $elem_count is '$elem_id' \n\n";
+
+				$elem_count++;
+			}
+		}
+		elsif ($mode eq 'auto_creation') {
+			if ($element_square_positions eq '') {
+				print_log "[ERROR] With this mode, square positions is obligatory'.\n\n";
+				exit 1;
+			}
+			else {
+				my $positions = decode_json($element_square_positions);
+
+				my $pos1X = $positions->{'pos1x'};
+				my $pos1Y = $positions->{'pos1y'};
+				my $pos2X = $positions->{'pos2x'};
+				my $pos2Y = $positions->{'pos2y'};
+
+				my $number_of_elements = scalar(@$elements_in_array);
+				
+				my $x_divider = 4;
+				my $y_divider = 1;
+
+				for (my $i = 1; $i <= 1000; $i++) {
+					if (($i * 4) < $number_of_elements) {
+						$y_divider++;
+					}
+					else {
+						last;
+					}
+				}
+
+				my $elem_width = ($pos2X - $pos1X) / $x_divider;
+				my $elem_height = ($pos2Y - $pos1Y) / $y_divider;
+
+				if ($number_of_elements < 4) {
+					$elem_height = ($pos2Y - $pos1Y) / 3;
+				}
+
+				my $elem_count = 1;
+				my $pos_helper_x = 0;
+				my $pos_helper_y = 0;
+				foreach my $elem (@$elements_in_array) {
+					my $pos_x = $pos_helper_x * $elem_width;
+					my $pos_y = $pos_helper_y * $elem_height;
+					my $width = $elem_width;
+					my $height = $elem_height;
+					my $label = $elem->{'label'};
+					my $image = $elem->{'image'};
+					my $type = $elem->{'type'};
+					my $period = $elem->{'period'};
+					my $id_agente_modulo = $elem->{'id_agente_modulo'};
+					my $id_agent = $elem->{'id_agent'};
+					my $id_layout_linked = $elem->{'id_layout_linked'};
+					my $parent_item = $elem->{'parent_item'};
+					my $enable_link = $elem->{'enable_link'};
+					my $id_metaconsole = $elem->{'id_metaconsole'};
+					my $id_group = $elem->{'id_group'};
+					my $id_custom_graph = $elem->{'id_custom_graph'};
+					my $border_width = $elem->{'border_width'};
+					my $type_graph = $elem->{'type_graph'};
+					my $label_position = $elem->{'label_position'};
+					my $border_color = $elem->{'border_color'};
+					my $fill_color = $elem->{'fill_color'};
+
+					my $elem_id = db_insert ($dbh, 'id', 'INSERT INTO tlayout_data (id_layout, pos_x, pos_y, height, width, label, image, type, period, id_agente_modulo, id_agent, id_layout_linked, parent_item, enable_link, id_metaconsole, id_group, id_custom_graph, border_width, type_graph, label_position, border_color, fill_color, show_statistics)
+								VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $vc_id, $pos_x, $pos_y, $height, $width, $label, $image, $type, $period, $id_agente_modulo, $id_agent, $id_layout_linked, $parent_item, $enable_link, $id_metaconsole, $id_group, $id_custom_graph, $border_width, $type_graph, $label_position, $border_color, $fill_color, 0);
+
+					print_log "[INFO] The element id in position $elem_count is '$elem_id' \n\n";
+
+					$elem_count++;
+
+					if ($pos_helper_x == 3) {
+						$pos_helper_x = 0;
+						$pos_helper_y++;
+					}
+					else {
+						$pos_helper_x++;
+					}
+				}
+			}
+		}
+		else {
+			print_log "[ERROR] Mode parameter must be 'static_objects' or 'auto_creation'.\n\n";
+			exit 1;
 		}
 	}
 }
@@ -4850,6 +4943,8 @@ sub cli_delete_visual_console() {
 
 	if ($delete_layout eq 1) {
 		db_do($dbh, 'DELETE FROM tlayout_data WHERE id_layout = ?', $id);
+
+		print_log "[INFO] Delete visual console elements with console ID '$id' \n\n";
 	}
 	else {
 		print_log "[ERROR] Error at remove the visual console.\n\n";
@@ -5288,7 +5383,7 @@ sub pandora_manage_main ($$$) {
 			cli_locate_agent();
 		}
 		elsif ($param eq '--create_visual_console') {
-			param_check($ltotal, 7, 2);
+			param_check($ltotal, 9, 3);
 			cli_create_visual_console();
 		}
 		elsif ($param eq '--edit_visual_console') {

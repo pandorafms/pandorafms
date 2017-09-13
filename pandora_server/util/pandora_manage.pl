@@ -4952,6 +4952,39 @@ sub cli_delete_visual_console() {
 	}
 }
 
+##############################################################################
+# Delete a visual console objects.
+# Related option: --delete_visual_console_objects
+##############################################################################
+
+sub cli_delete_visual_console_objects() {
+	my ($id_console,$mode,$id_mode) = @ARGV[2..4];
+
+	if($id_console eq '') {
+		print_log "[ERROR] Console ID field cannot be empty.\n\n";
+		exit 1;
+	}
+	elsif ($mode eq '') {
+		print_log "[ERROR] Mode field cannot be empty.\n\n";
+		exit 1;
+	}
+	elsif ($id_mode eq '') {
+		print_log "[ERROR] Mode index field cannot be empty.\n\n";
+		exit 1;
+	}
+
+	if (($mode eq 'type') || ($mode eq 'image') || ($mode eq 'id_agent') || 
+		($mode eq 'id_agente_modulo') || ($mode eq 'id_group') || ($mode eq 'type_graph')) {
+		print_log "[INFO] Removind objects with mode '$mode' and id '$id_mode' \n\n";
+		
+		db_do($dbh, 'DELETE FROM tlayout_data WHERE id_layout = ' . $id_console . ' AND ' . $mode . ' = "' . $id_mode . '"');
+	}
+	else {
+		print_log "[ERROR] Mode is not correct.\n\n";
+		exit 1;
+	}
+}
+
 ###############################################################################
 ###############################################################################
 # MAIN

@@ -4985,6 +4985,11 @@ sub cli_delete_visual_console_objects() {
 	}
 }
 
+##############################################################################
+# Duplicate a visual console.
+# Related option: --duplicate_visual_console
+##############################################################################
+
 sub cli_duplicate_visual_console () {
 	my ($id_console,$prefix) = @ARGV[2..3];
 
@@ -5057,6 +5062,87 @@ sub cli_duplicate_visual_console () {
 	
 		print_log "[INFO] Element with ID " . $element->{"id"} . " has been duplicated to the new console \n\n";
 	}
+}
+
+##############################################################################
+# Export a visual console elements to json.
+# Related option: --export_json_visual_console
+##############################################################################
+
+sub cli_export_visual_console() {
+	my ($id) = @ARGV[2];
+
+	if($id eq '') {
+		print_log "[ERROR] ID field cannot be empty.\n\n";
+		exit 1;
+	}
+
+	print_log "[INFO] Exporting visual console elements with ID '$id' \n\n";
+
+	my @console_elements = get_db_rows ($dbh, "SELECT * 
+			FROM tlayout_data 
+			WHERE id_layout = $id");
+
+	my $data_to_json = '[';
+	my $first = 1;
+
+	foreach my $element (@console_elements) {
+		my $pos_x = $element->{'pos_x'};
+		my $pos_y = $element->{'pos_y'};
+		my $width = $element->{'width'};
+		my $height = $element->{'height'};
+		my $label = $element->{'label'};
+		my $image = $element->{'image'};
+		my $type = $element->{'type'};
+		my $period = $element->{'period'};
+		my $id_agente_modulo = $element->{'id_agente_modulo'};
+		my $id_agent = $element->{'id_agent'};
+		my $id_layout_linked = $element->{'id_layout_linked'};
+		my $parent_item = $element->{'parent_item'};
+		my $enable_link = $element->{'enable_link'};
+		my $id_metaconsole = $element->{'id_metaconsole'};
+		my $id_group = $element->{'id_group'};
+		my $id_custom_graph = $element->{'id_custom_graph'};
+		my $border_width = $element->{'border_width'};
+		my $type_graph = $element->{'type_graph'};
+		my $label_position = $element->{'label_position'};
+		my $border_color = $element->{'border_color'};
+		my $fill_color = $element->{'fill_color'};
+
+		if ($first == 0) {
+			$data_to_json .= ','
+		}
+		else {
+			$first = 0;
+		}
+
+		$data_to_json .= '{"image":"' . $image . '"';
+		$data_to_json .= ',"pos_y":' . $pos_y;
+		$data_to_json .= ',"pos_x":' . $pos_x;
+		$data_to_json .= ',"width":' . $width;
+		$data_to_json .= ',"height":' . $height;
+		$data_to_json .= ',"label":"' . $label . '"';
+		$data_to_json .= ',"type":' . $type;
+		$data_to_json .= ',"period":' . $period;
+		$data_to_json .= ',"id_agente_modulo":' . $id_agente_modulo;
+		$data_to_json .= ',"id_agent":' . $id_agent;
+		$data_to_json .= ',"id_layout_linked":' . $id_layout_linked;
+		$data_to_json .= ',"parent_item":' . $parent_item;
+		$data_to_json .= ',"enable_link":' . $enable_link;
+		$data_to_json .= ',"id_metaconsole":' . $id_metaconsole;
+		$data_to_json .= ',"id_group":' . $id_group;
+		$data_to_json .= ',"id_custom_graph":' . $id_custom_graph;
+		$data_to_json .= ',"border_width":' . $border_width;
+		$data_to_json .= ',"type_graph":"' . $type_graph . '"';
+		$data_to_json .= ',"label_position":"' . $label_position . '"';
+		$data_to_json .= ',"border_color":"' . $border_color . '"';
+		$data_to_json .= ',"fill_color":"' . $fill_color . '"';
+		$data_to_json .= '}';
+	}
+
+	$data_to_json .= ']';
+
+	print_log "[INFO] JSON file now contents: \n" . $data_to_json . "\n\n";
 }
 
 ###############################################################################

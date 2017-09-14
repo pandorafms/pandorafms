@@ -702,6 +702,9 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	
 	if (empty($unit)) {
 		$unit = modules_get_unit($agent_module_id);
+		if(modules_is_unit_macro($unit)){
+			$unit = "";		
+		}
 	}
 
 	if ($fullscale) {
@@ -812,7 +815,9 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 		'alpha' => CHART_DEFAULT_ALPHA);
 
 	$color['unit'.$series_suffix] = array('border' => null, 'color' => '#0097BC', 'alpha' => 10);		
-	
+	if(modules_is_unit_macro($unit)){
+		$unit = "";		
+	}
 	if ($show_events) {
 		$legend['event'.$series_suffix_str] = __('Events').$series_suffix_str;
 		$chart_extra_data['legend_events'] = $legend['event'].$series_suffix_str;

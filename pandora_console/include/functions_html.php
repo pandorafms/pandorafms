@@ -621,6 +621,85 @@ function html_print_select_from_sql ($sql, $name, $selected = '',
 		$disabled, $style,'', $size);
 }
 
+function html_print_extended_select_for_unit($name, $selected = '',
+	$script = '', $nothing = '', $nothing_value = '0', $size = false,
+	$return = false, $select_style = false, $unique_name = true,
+	$disabled = false, $no_change = 0) {
+	
+	global $config;
+	
+	
+	// $fields = post_process_get_custom_values();
+	$fields['_timeticks_'] = 'timeticks';
+	$fields['none'] = __('none');
+	
+	if($no_change != 0){
+		$fields[-1] = __('No change');
+	}
+
+	// $selected_float = (float)$selected;
+	// $found = false;
+	// 
+	// if (array_key_exists($selected, $fields))
+	// 	$found = true;
+	// 
+	// if (!$found) {
+	// 	$fields[$selected] = floatval($selected);
+	// }
+	
+	if ($unique_name === true) {
+		$uniq_name = uniqid($name);
+	}
+	else {
+		$uniq_name = $name;
+	}
+	html_debug($selected);
+	ob_start();
+	
+	echo '<div id="' . $uniq_name . '_default" style="width:100%;display:inline;">';
+		html_print_select ($fields, $uniq_name . '_select', $selected,
+			"" . $script, $nothing, $nothing_value, false, false, false,
+			'', $disabled, 'font-size: xx-small;' . $select_style);
+		echo ' <a href="javascript:">' .
+			html_print_image('images/pencil.png', true,
+				array('class' => $uniq_name . '_toggler',
+					'alt' => __('Custom'),
+					'title' => __('Custom'),
+					'style' => 'width: 18px;')) .
+			'</a>';
+	echo '</div>';
+	
+	echo '<div id="' . $uniq_name . '_manual" style="width:100%;display:inline;">';
+		html_print_input_text ($uniq_name . '_text', $selected, '', 20);
+		
+		html_print_input_hidden($name, $selected, false, $uniq_name);
+		echo ' <a href="javascript:">' .
+			html_print_image('images/default_list.png', true,
+				array('class' => $uniq_name . '_toggler',
+					'alt' => __('List'),
+					'title' => __('List'),
+					'style' => 'width: 18px;')) . '</a>';
+	echo '</div>';
+	
+	echo "<script type='text/javascript'>
+		$(document).ready (function () {
+			post_process_select_init_unit('$uniq_name','$selected');
+			post_process_select_events_unit('$uniq_name','$selected');
+		});
+		
+	</script>";
+	
+	$returnString = ob_get_clean();
+	
+	
+	
+	
+	if ($return)
+		return $returnString;
+	else
+		echo $returnString;
+}
+
 function html_print_extended_select_for_post_process($name, $selected = '',
 	$script = '', $nothing = '', $nothing_value = '0', $size = false,
 	$return = false, $select_style = false, $unique_name = true,

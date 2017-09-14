@@ -1043,9 +1043,7 @@ if ($update_module || $create_module) {
 		}
 		*/
 		$configuration_data = str_replace('\\', "&#92;",
-			io_safe_input($new_configuration_data));;
-
-		html_debug($configuration_data, true);
+			io_safe_input($new_configuration_data));
 	}
 	
 	// Services are an enterprise feature, 
@@ -1110,7 +1108,11 @@ if ($update_module || $create_module) {
 	$ff_event_critical = (int) get_parameter ('ff_event_critical');
 	$each_ff = (int) get_parameter ('each_ff');
 	$ff_timeout = (int) get_parameter ('ff_timeout');
-	$unit = (string) get_parameter('unit');
+	$unit = (string) get_parameter('unit_select');
+	if($unit == "none"){
+		$unit = (string) get_parameter('unit_text');
+	}
+	
 	$id_tag = (array) get_parameter('id_tag_selected');
 	$serialize_ops = (string) get_parameter('serialize_ops');
 	$critical_instructions = (string) get_parameter('critical_instructions');

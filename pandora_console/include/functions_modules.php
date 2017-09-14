@@ -1598,6 +1598,35 @@ function modules_get_agentmodule_last_status($id_agentmodule = 0) {
 }
 
 /**
+ * Get the data by applying the macro.
+ *
+ * @param string macro unit.
+ *
+ * @return false or data with applied macro.
+ */
+function modules_get_unit_macro($data,$macro) {
+	if(modules_is_unit_macro($macro)){
+		$data = human_milliseconds_to_string($data);
+		return $data;
+	}
+	return false;
+}
+
+/**
+ * Check if it's a unit macro.
+ *
+ * @param string macro unit.
+ *
+ * @return false or true.
+ */
+function modules_is_unit_macro($macro) {
+	if($macro == "_timeticks_"){
+		return true;
+	}
+	return false;
+}
+
+/**
  * Get the current value of an agent module.
  *
  * @param int Agent module id.

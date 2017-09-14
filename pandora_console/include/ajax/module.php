@@ -256,7 +256,7 @@ if ($get_module_detail) {
 		'ttipo_modulo', 'nombre', 'web_content_string');
 		
 	$post_process = db_get_value_filter('post_process','tagente_modulo',array('id_agente_modulo' => $module_id));
-	
+	$unit = db_get_value_filter('unit','tagente_modulo',array('id_agente_modulo' =>$module_id));
 	foreach ($result as $row) {
 		$data = array ();
 
@@ -314,7 +314,12 @@ if ($get_module_detail) {
 								
 							break;
 						default:
-							$data[] = remove_right_zeros(number_format($row[$attr[0]], $config['graph_precision']));
+							$data_macro = modules_get_unit_macro($row[$attr[0]],$unit);
+							if($data_macro){
+								$data[] = $data_macro;
+							} else {
+								$data[] = remove_right_zeros(number_format($row[$attr[0]], $config['graph_precision']));
+							}
 							break;
 					}
 				}
@@ -327,7 +332,12 @@ if ($get_module_detail) {
 							$data[] = "<a target='_blank' href='".io_safe_input($row[$attr[0]])."'><img style='width:300px' src='".io_safe_input($row[$attr[0]])."'></a>";
 						}
 						else{
-							$data[] = $row[$attr[0]];
+							$data_macro = modules_get_unit_macro($row[$attr[0]],$unit);
+							if($data_macro){
+								$data[] = $data_macro;
+							} else {
+								$data[] = $row[$attr[0]];
+							}
 						}
 					}
 				}
@@ -1007,13 +1017,24 @@ if ($list_modules) {
 				}
 				// Show units ONLY in numeric data types
 				if (isset($module["unit"])) {
-					$salida .= "&nbsp;" . '<i>'. io_safe_output($module["unit"]) . '</i>';
+					$data_macro = modules_get_unit_macro($module["datos"],$module["unit"]);
+					if($data_macro){
+						$salida = $data_macro;
+					} else {
+						$salida .= "&nbsp;" . '<i>'. io_safe_output($module["unit"]) . '</i>';
+					}
+					
 				}
 			}
 			else {
-				$salida = ui_print_module_string_value(
-					$module["datos"], $module["id_agente_modulo"],
-					$module["current_interval"], $module["module_name"]);
+				$data_macro = modules_get_unit_macro($module["datos"],$module["unit"]);
+				if($data_macro){
+					$salida = $data_macro;
+				} else {
+					$salida = ui_print_module_string_value(
+						$module["datos"], $module["id_agente_modulo"],
+						$module["current_interval"], $module["module_name"]);
+				}
 			}
 		}
 		if($module["id_tipo_modulo"] != 25){

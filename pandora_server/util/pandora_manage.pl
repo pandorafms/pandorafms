@@ -217,7 +217,7 @@ sub help_screen{
 
 	print "\nVISUAL CONSOLES\n\n" unless $param ne '';
 	help_screen_line('--create_visual_console', '<name> <background> <width> <height> <group> <mode> [<position_to_locate_elements>] [<background_color>] [<elements>]', 'Create a new visual console');
-	help_screen_line('--edit_visual_console', '<id> <name> <background> <width> <height> <group> [<background_color>] [<elements>]', 'Edit a visual console');
+	help_screen_line('--edit_visual_console', '<id> [<name>] [<background>] [<width>] [<height>] [<group>] [<mode>] [<position_to_locate_elements>] [<background_color>] [<elements>]', 'Edit a visual console');
 	help_screen_line('--delete_visual_console', '<id>', 'Delete a visual console');
 	help_screen_line('--delete_visual_console_objects', '<id> <mode> <id_mode>', 'Delete a visual console elements');
 	help_screen_line('--duplicate_visual_console', '<id> <times> [<prefix>]', 'Duplicate a visual console');
@@ -4925,6 +4925,277 @@ sub cli_create_visual_console() {
 }
 
 ##############################################################################
+# Edit a visual console.
+# Related option: --edit_visual_console
+##############################################################################
+
+sub cli_edit_visual_console() {
+	my ($id,$name,$background,$width,$height,$group,$mode,$element_square_positions,$background_color,$elements) = @ARGV[2..11];
+
+	if($id eq '') {
+		print_log "[ERROR] ID field cannot be empty.\n\n";
+		exit 1;
+	}
+
+	my $console = get_db_single_row ($dbh, "SELECT * 
+			FROM tlayout 
+			WHERE id = $id");
+
+	my $new_name = $console->{'name'};
+	my $new_background = $console->{'background'};
+	my $new_console_width = $console->{'width'};
+	my $new_console_height = $console->{'height'};
+	my $new_console_id_group = $console->{'id_group'};
+	my $new_background_color = $console->{'background_color'};
+
+	if($name ne '') {
+		$new_name = $name;
+	}
+	if ($background ne '') {
+		$new_background = $background;
+	}
+	if ($width ne '') {
+		$new_console_width = $width;
+	}
+	if ($height ne '') {
+		$new_console_height = $height;
+	}
+	if ($group ne '') {
+		$new_console_id_group = $group;
+	}
+	if ($background_color ne '') {
+		$new_background_color = $background_color;
+	}
+
+	print_log "[INFO] The visual console with id $id is updated \n\n";
+
+	db_update ($dbh, "UPDATE tlayout SET name = '" . $new_name . "', background = '" . $new_background . "', width = " . $new_console_width . ", height = " . $new_console_height . ", id_group = " . $new_console_id_group . ", background_color = '" . $new_background_color . "' WHERE id = " . $id);
+
+	if ($elements ne '') {
+		my $elements_in_array = decode_json($elements);
+
+		if ($mode eq 'static_objects') {
+			foreach my $elem (@$elements_in_array) {
+				if (defined($elem->{'id'})) {
+
+					print_log "[INFO] Edit element with id " . $elem->{'id'} . " \n\n";
+
+					my $element_in_db = get_db_single_row ($dbh, "SELECT * 
+						FROM tlayout_data 
+						WHERE id = " . $elem->{'id'});
+
+					my $new_pos_x = $element_in_db->{'pos_x'};
+					my $new_pos_y = $element_in_db->{'pos_y'};
+					my $new_width = $element_in_db->{'width'};
+					my $new_height = $element_in_db->{'height'};
+					my $new_label = $element_in_db->{'label'};
+					my $new_image = $element_in_db->{'image'};
+					my $new_type = $element_in_db->{'type'};
+					my $new_period = $element_in_db->{'period'};
+					my $new_id_agente_modulo = $element_in_db->{'id_agente_modulo'};
+					my $new_id_agent = $element_in_db->{'id_agent'};
+					my $new_id_layout_linked = $element_in_db->{'id_layout_linked'};
+					my $new_parent_item = $element_in_db->{'parent_item'};
+					my $new_enable_link = $element_in_db->{'enable_link'};
+					my $new_id_metaconsole = $element_in_db->{'id_metaconsole'};
+					my $new_id_group = $element_in_db->{'id_group'};
+					my $new_id_custom_graph = $element_in_db->{'id_custom_graph'};
+					my $new_border_width = $element_in_db->{'border_width'};
+					my $new_type_graph = $element_in_db->{'type_graph'};
+					my $new_label_position = $element_in_db->{'label_position'};
+					my $new_border_color = $element_in_db->{'border_color'};
+					my $new_fill_color = $element_in_db->{'fill_color'};
+
+					if(defined($elem->{'pos_x'})) {
+						$new_pos_x = $elem->{'pos_x'};
+					}
+					if(defined($elem->{'pos_y'})) {
+						$new_pos_y = $elem->{'pos_y'};
+					}
+					if(defined($elem->{'width'})) {
+						$new_width = $elem->{'width'};
+					}
+					if(defined($elem->{'height'})) {
+						$new_height = $elem->{'height'};
+					}
+					if(defined($elem->{'label'})) {
+						$new_label = $elem->{'label'};
+					}
+					if(defined($elem->{'image'})) {
+						$new_image = $elem->{'image'};
+					}
+					if(defined($elem->{'type'})) {
+						$new_type = $elem->{'type'};
+					}
+					if(defined($elem->{'period'})) {
+						$new_period = $elem->{'period'};
+					}
+					if(defined($elem->{'id_agente_modulo'})) {
+						$new_id_agente_modulo = $elem->{'id_agente_modulo'};
+					}
+					if(defined($elem->{'id_agent'})) {
+						$new_id_agent = $elem->{'id_agent'};
+					}
+					if(defined($elem->{'id_layout_linked'})) {
+						$new_id_layout_linked = $elem->{'id_layout_linked'};
+					}
+					if(defined($elem->{'parent_item'})) {
+						$new_parent_item = $elem->{'parent_item'};
+					}
+					if(defined($elem->{'enable_link'})) {
+						$new_enable_link = $elem->{'enable_link'};
+					}
+					if(defined($elem->{'id_metaconsole'})) {
+						$new_id_metaconsole = $elem->{'id_metaconsole'};
+					}
+					if(defined($elem->{'id_group'})) {
+						$new_id_group = $elem->{'id_group'};
+					}
+					if(defined($elem->{'id_custom_graph'})) {
+						$new_id_custom_graph = $elem->{'id_custom_graph'};
+					}
+					if(defined($elem->{'border_width'})) {
+						$new_border_width = $elem->{'border_width'};
+					}
+					if(defined($elem->{'type_graph'})) {
+						$new_type_graph = $elem->{'type_graph'};
+					}
+					if(defined($elem->{'label_position'})) {
+						$new_label_position = $elem->{'label_position'};
+					}
+					if(defined($elem->{'border_color'})) {
+						$new_border_color = $elem->{'border_color'};
+					}
+					if(defined($elem->{'fill_color'})) {
+						$new_fill_color = $elem->{'fill_color'};
+					}
+
+					db_update ($dbh, "UPDATE tlayout_data SET pos_x = " . $new_pos_x . ", pos_y = " . $new_pos_y . ", width = " . $new_width . 
+						", height = " . $new_height . ", label = '" . $new_label . "', image = '" . $new_image . 
+						"', type = " . $new_type . ", period = " . $new_period . ", id_agente_modulo = " . $new_id_agente_modulo . 
+						", id_agent = " . $new_id_agent . ", id_layout_linked = " . $new_id_layout_linked . ", parent_item = " . $new_parent_item . 
+						", enable_link = " . $new_enable_link . ", id_metaconsole = " . $new_id_metaconsole . ", id_group = " . $new_id_group . 
+						", id_custom_graph = " . $new_id_custom_graph . ", border_width = " . $new_border_width . ", type_graph = '" . $new_type_graph . 
+						"', label_position = '" . $new_label_position . "', border_color = '" . $new_border_color . "', fill_color = '" . $new_fill_color . 
+						"' WHERE id = " . $elem->{'id'});
+					
+					print_log "[INFO] Element with id " . $elem->{'id'} . " has been updated \n\n";
+				}
+				else {
+					my $pos_x = $elem->{'pos_x'};
+					my $pos_y = $elem->{'pos_y'};
+					my $width = $elem->{'width'};
+					my $height = $elem->{'height'};
+					my $label = $elem->{'label'};
+					my $image = $elem->{'image'};
+					my $type = $elem->{'type'};
+					my $period = $elem->{'period'};
+					my $id_agente_modulo = $elem->{'id_agente_modulo'};
+					my $id_agent = $elem->{'id_agent'};
+					my $id_layout_linked = $elem->{'id_layout_linked'};
+					my $parent_item = $elem->{'parent_item'};
+					my $enable_link = $elem->{'enable_link'};
+					my $id_metaconsole = $elem->{'id_metaconsole'};
+					my $id_group = $elem->{'id_group'};
+					my $id_custom_graph = $elem->{'id_custom_graph'};
+					my $border_width = $elem->{'border_width'};
+					my $type_graph = $elem->{'type_graph'};
+					my $label_position = $elem->{'label_position'};
+					my $border_color = $elem->{'border_color'};
+					my $fill_color = $elem->{'fill_color'};
+
+					my $new_elem_id = db_insert ($dbh, 'id', 'INSERT INTO tlayout_data (id_layout, pos_x, pos_y, height, width, label, image, type, period, id_agente_modulo, id_agent, id_layout_linked, parent_item, enable_link, id_metaconsole, id_group, id_custom_graph, border_width, type_graph, label_position, border_color, fill_color, show_statistics)
+						VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id, $pos_x, $pos_y, $height, $width, $label, $image, $type, $period, $id_agente_modulo, $id_agent, $id_layout_linked, $parent_item, $enable_link, $id_metaconsole, $id_group, $id_custom_graph, $border_width, $type_graph, $label_position, $border_color, $fill_color, 0);
+				
+					print_log "[INFO] New element with id $new_elem_id has been created \n\n";
+				}
+			}
+		}
+		elsif ($mode eq 'auto_creation') {
+			if ($element_square_positions eq '') {
+				print_log "[ERROR] With this mode, square positions is obligatory'.\n\n";
+				exit 1;
+			}
+			else {
+				my $positions = decode_json($element_square_positions);
+
+				my $pos1X = $positions->{'pos1x'};
+				my $pos1Y = $positions->{'pos1y'};
+				my $pos2X = $positions->{'pos2x'};
+				my $pos2Y = $positions->{'pos2y'};
+
+				my $number_of_elements = scalar(@$elements_in_array);
+				
+				my $x_divider = 4;
+				my $y_divider = 1;
+
+				for (my $i = 1; $i <= 1000; $i++) {
+					if (($i * 4) < $number_of_elements) {
+						$y_divider++;
+					}
+					else {
+						last;
+					}
+				}
+
+				my $elem_width = ($pos2X - $pos1X) / $x_divider;
+				my $elem_height = ($pos2Y - $pos1Y) / $y_divider;
+
+				if ($number_of_elements < 4) {
+					$elem_height = ($pos2Y - $pos1Y) / 3;
+				}
+
+				my $elem_count = 1;
+				my $pos_helper_x = 0;
+				my $pos_helper_y = 0;
+				foreach my $elem (@$elements_in_array) {
+					my $pos_x = $pos_helper_x * $elem_width;
+					my $pos_y = $pos_helper_y * $elem_height;
+					my $width = $elem_width;
+					my $height = $elem_height;
+					my $label = $elem->{'label'};
+					my $image = $elem->{'image'};
+					my $type = $elem->{'type'};
+					my $period = $elem->{'period'};
+					my $id_agente_modulo = $elem->{'id_agente_modulo'};
+					my $id_agent = $elem->{'id_agent'};
+					my $id_layout_linked = $elem->{'id_layout_linked'};
+					my $parent_item = $elem->{'parent_item'};
+					my $enable_link = $elem->{'enable_link'};
+					my $id_metaconsole = $elem->{'id_metaconsole'};
+					my $id_group = $elem->{'id_group'};
+					my $id_custom_graph = $elem->{'id_custom_graph'};
+					my $border_width = $elem->{'border_width'};
+					my $type_graph = $elem->{'type_graph'};
+					my $label_position = $elem->{'label_position'};
+					my $border_color = $elem->{'border_color'};
+					my $fill_color = $elem->{'fill_color'};
+
+					my $elem_id = db_insert ($dbh, 'id', 'INSERT INTO tlayout_data (id_layout, pos_x, pos_y, height, width, label, image, type, period, id_agente_modulo, id_agent, id_layout_linked, parent_item, enable_link, id_metaconsole, id_group, id_custom_graph, border_width, type_graph, label_position, border_color, fill_color, show_statistics)
+								VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id, $pos_x, $pos_y, $height, $width, $label, $image, $type, $period, $id_agente_modulo, $id_agent, $id_layout_linked, $parent_item, $enable_link, $id_metaconsole, $id_group, $id_custom_graph, $border_width, $type_graph, $label_position, $border_color, $fill_color, 0);
+
+					print_log "[INFO] The element id in position $elem_count is '$elem_id' \n\n";
+
+					$elem_count++;
+
+					if ($pos_helper_x == 3) {
+						$pos_helper_x = 0;
+						$pos_helper_y++;
+					}
+					else {
+						$pos_helper_x++;
+					}
+				}
+			}
+		}
+		else {
+			print_log "[ERROR] Mode parameter must be 'static_objects' or 'auto_creation'.\n\n";
+			exit 1;
+		}
+	}
+}
+
+##############################################################################
 # Delete a visual console.
 # Related option: --delete_visual_console
 ##############################################################################
@@ -5589,7 +5860,7 @@ sub pandora_manage_main ($$$) {
 			cli_create_visual_console();
 		}
 		elsif ($param eq '--edit_visual_console') {
-			param_check($ltotal, 6, 2);
+			param_check($ltotal, 10, 9);
 			cli_edit_visual_console();
 		}
 		elsif ($param eq '--delete_visual_console') {

@@ -221,7 +221,7 @@ sub help_screen{
 	help_screen_line('--delete_visual_console', '<id>', 'Delete a visual console');
 	help_screen_line('--delete_visual_console_objects', '<id> <mode> <id_mode>', 'Delete a visual console elements');
 	help_screen_line('--duplicate_visual_console', '<id> <times> [<prefix>]', 'Duplicate a visual console');
-	help_screen_line('--export_json_visual_console', '<id>', 'Creates a json with the visual console elements information');
+	help_screen_line('--export_json_visual_console', '<id> [<path>]', 'Creates a json with the visual console elements information');
 
 	
 	print "\n";
@@ -5070,7 +5070,7 @@ sub cli_duplicate_visual_console () {
 ##############################################################################
 
 sub cli_export_visual_console() {
-	my ($id) = @ARGV[2];
+	my ($id,$path) = @ARGV[2..3];
 
 	if($id eq '') {
 		print_log "[ERROR] ID field cannot be empty.\n\n";
@@ -5141,6 +5141,15 @@ sub cli_export_visual_console() {
 	}
 
 	$data_to_json .= ']';
+
+	if ($path eq '') {
+		open(FicheroJSON, ">console_" . $id . "_elements");
+	}
+	else {
+		open(FicheroJSON, ">" . $path . "/console_" . $id . "_elements");
+	}
+
+	print FicheroJSON $data_to_json;
 
 	print_log "[INFO] JSON file now contents: \n" . $data_to_json . "\n\n";
 }
@@ -5596,7 +5605,7 @@ sub pandora_manage_main ($$$) {
 			cli_duplicate_visual_console();
 		}
 		elsif ($param eq '--export_json_visual_console') {
-			param_check($ltotal, 1);
+			param_check($ltotal, 2, 1);
 			cli_export_visual_console();
 		}
 		else {

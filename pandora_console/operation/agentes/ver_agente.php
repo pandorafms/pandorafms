@@ -97,7 +97,7 @@ if (is_ajax ()) {
 				$filter[] = "(notinit_count = total_count)";
 				break;
 		}
-		$filter['order'] = "nombre ASC";
+		$filter['order'] = "alias ASC";
 		
 		// Build fields
 		$fields = array('id_agente', 'alias');

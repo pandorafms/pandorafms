@@ -149,15 +149,10 @@ function reporting_make_reporting_data($report = null, $id_report,
 			}
 
 			if (in_array('label', $content['style'])) {
-				if (defined('METACONSOLE')) {
-					array_push ($agents_to_macro, $content['id_agent']);
-				}
-				else {
-					array_push ($agents_to_macro, modules_get_agentmodule_agent($graph_item['id_agent_module']));
-				}
+				array_push ($agents_to_macro, modules_get_agentmodule_agent($graph_item['id_agent_module']));
 			}
 		}
-
+		
 		$agents_to_macro_aux = array();
 		foreach ($agents_to_macro as $ag) {
 			if (!in_array($ag, $agents_to_macro_aux)) {
@@ -5885,17 +5880,11 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 		
 		array_push ($weights, $graph_item["weight"]);
 		if (in_array('label',$content['style'])) {
-			if (defined('METACONSOLE')) {
-				$item = array('type' => 'custom_graph',
-							'id_agent' =>$content['id_agent'],
-							'id_agent_module'=>$graph_item['id_agent_module']);
-			}
-			else {
-				$item = array('type' => 'custom_graph',
-							'id_agent' =>modules_get_agentmodule_agent($graph_item['id_agent_module']),
-							'id_agent_module'=>$graph_item['id_agent_module']);
-			}
+			$item = array('type' => 'custom_graph',
+						'id_agent' =>modules_get_agentmodule_agent($graph_item['id_agent_module']),
+						'id_agent_module'=>$graph_item['id_agent_module']);
 			
+			//html_debug($item);
 			$label = reporting_label_macro($item, $content['style']['label']);
 			$labels[$graph_item['id_agent_module']] = $label;
 		}

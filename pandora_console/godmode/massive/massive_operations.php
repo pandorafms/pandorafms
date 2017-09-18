@@ -212,7 +212,7 @@ You can of course remove the warnings, that's why we include the source and do n
 */
 
 ui_print_page_header(
-	__('Massive operations') . ' &raquo; '. $options[$option],
+	__('Bulk operations') . ' &raquo; '. $options[$option],
 	"images/gm_massive_operations.png", false, "", true, $onheader,true, "massivemodal");
 
 // Checks if the PHP configuration is correctly

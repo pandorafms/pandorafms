@@ -1562,6 +1562,9 @@ sub guess_os_version ($) {
 	# AIX
 	} elsif ($os eq 'aix') {
 		$os_version = "$2.$1" if (`uname -rv` =~ /\s*(\d)\s+(\d)\s*/);
+	# Darwin
+	} elsif ($os eq 'darwin') {
+		$os_version = `defaults read loginwindow SystemVersionStampAsString`;
 	# Windows
 	} elsif ($os =~ /win/i) {
 		$os_version = `ver`;

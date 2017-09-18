@@ -129,12 +129,46 @@ function reporting_make_reporting_data($report = null, $id_report,
 		}
 		
 		$content['style'] = json_decode(io_safe_output($content['style']), true);
+
+		$graphs_to_macro = db_get_all_rows_field_filter ("tgraph_source",
+			"id_graph", $content['id_gs']);
+		
+		if ($graphs_to_macro === false)
+			$graphs_to_macro = array();
+
+		$modules_to_macro = array ();
+		$agents_to_macro = array();
+		foreach ($graphs_to_macro as $graph_item) {
+			if ($type == 'automatic_graph') {
+				array_push ($modules_to_macro, array(
+					'module' => $graph_item['id_agent_module'],
+					'server' => $graph_item['id_server']));
+			}
+			else {
+				array_push ($modules_to_macro, $graph_item['id_agent_module']);
+			}
+
+			if (in_array('label', $content['style'])) {
+				array_push ($agents_to_macro, modules_get_agentmodule_agent($graph_item['id_agent_module']));
+			}
+		}
+		
+		$agents_to_macro_aux = array();
+		foreach ($agents_to_macro as $ag) {
+			if (!in_array($ag, $agents_to_macro_aux)) {
+				$agents_to_macro_aux[$ag] = $ag;
+			}
+		}
+		$agents_to_macro = $agents_to_macro_aux;
+
 		if(isset($content['style']['name_label'])){
 			//Add macros name
 			$items_label = array();
 			$items_label['type'] = $content['type'];
 			$items_label['id_agent'] = $content['id_agent'];
 			$items_label['id_agent_module'] = $content['id_agent_module'];
+			$items_label['modules'] = $modules_to_macro;
+			$items_label['agents'] = $agents_to_macro;
 			$metaconsole_on = is_metaconsole();
 			$server_name = $content['server_name'];
 			
@@ -5846,17 +5880,12 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 		
 		array_push ($weights, $graph_item["weight"]);
 		if (in_array('label',$content['style'])) {
-			if (defined('METACONSOLE')) {
-				$item = array('type' => 'custom_graph',
-							'id_agent' =>$content['id_agent'],
-							'id_agent_module'=>$graph_item['id_agent_module']);
-			}
-			else {
 			$item = array('type' => 'custom_graph',
 						'id_agent' =>modules_get_agentmodule_agent($graph_item['id_agent_module']),
 						'id_agent_module'=>$graph_item['id_agent_module']);
-			}
 			
+			//html_debug($item);
+			$label = reporting_label_macro($item, $content['style']['label']);
 			$labels[$graph_item['id_agent_module']] = $label;
 		}
 	}
@@ -10313,32 +10342,65 @@ function reporting_label_macro ($item, $label) {
 		case 'MTTR':
 		case 'automatic_graph':
 			if (preg_match("/_agent_/", $label)) {
-				$agent_name = agents_get_alias($item['id_agent']);
+				if (count($item['agents']) > 1) {
+					$agent_name = count($item['agents']) . __(' agents');
+				}
+				else {
+					$agent_name = agents_get_alias($item['id_agent']);
+				}
+				
 				$label = str_replace("_agent_", $agent_name, $label);
 			}
 			
 			if (preg_match("/_agentdescription_/", $label)) {
-				$agent_name = agents_get_description($item['id_agent']);
+				if (count($item['agents']) > 1) {
+					$agent_name = "";
+				}
+				else {
+					$agent_name = agents_get_description($item['id_agent']);
+				}
 				$label = str_replace("_agentdescription_", $agent_name, $label);
 			}
 			
 			if (preg_match("/_agentgroup_/", $label)) {
-				$agent_name = groups_get_name(agents_get_agent_group($item['id_agent']),true);
+				if (count($item['agents']) > 1) {
+					$agent_name = "";
+				}
+				else {
+					$agent_name = groups_get_name(agents_get_agent_group($item['id_agent']),true);
+				}
 				$label = str_replace("_agentgroup_", $agent_name, $label);
 			}
 			
 			if (preg_match("/_address_/", $label)) {
-				$agent_name = agents_get_address($item['id_agent']);
+				if (count($item['agents']) > 1) {
+					$agent_name = "";
+				}
+				else {
+					$agent_name = agents_get_address($item['id_agent']);
+				}
 				$label = str_replace("_address_", $agent_name, $label);
 			}
 			
 			if (preg_match("/_module_/", $label)) {
-				$module_name = modules_get_agentmodule_name($item['id_agent_module']);
+				if (count($item['modules']) > 1) {
+					$module_name = count($item['modules']) . __(' modules');
+				}
+				else {
+					$module_name = modules_get_agentmodule_name($item['id_agent_module']);
+				}
+				
 				$label = str_replace("_module_", $module_name, $label);
 			}
 			
 			if (preg_match("/_moduledescription_/", $label)) {
-				$module_description = modules_get_agentmodule_descripcion($item['id_agent_module']);
+				if (count($item['modules']) > 1) {
+					$module_description = "";
+				}
+				else {
+					$module_description = modules_get_agentmodule_descripcion($item['id_agent_module']);
+				}
+
 				$label = str_replace("_moduledescription_", $module_description, $label);
 			}
 			break;

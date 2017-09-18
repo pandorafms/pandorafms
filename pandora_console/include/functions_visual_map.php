@@ -1277,7 +1277,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 								
 						if ($width == 0 || $height == 0) {
 							
-						 echo '<img id="image_'.$id.'" src="images/console/signes/group_status.png" style="width:450px;height:80px;'.$imgpos.'">';
+						 echo '<img id="image_'.$id.'" src="images/console/signes/group_status.png" style="width:520px;height:80px;'.$imgpos.'">';
 						}
 						else{
 						 echo '<img id="image_'.$id.'" src="images/console/signes/group_status.png" style="width:'.$width.'px;height:'.$height.'px;'.$imgpos.'">';
@@ -1318,7 +1318,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 						 $stat_agent_un = $agents_unknown[0]['total']/$total_agents*100;
 							
 							if($width == 0 || $height == 0){
-								$dyn_width = 450;			
+								$dyn_width = 520;			
 								$dyn_height = 80;
 							}
 							else{
@@ -1344,14 +1344,14 @@ function visual_map_print_item($mode = "read", $layoutData,
 								echo "</tr>";
 								echo "<tr style='background-color:whitesmoke;height:90%;'>";
 									echo "<td>";
-										echo "<div style='margin-left:2%;color: #FFF;font-size: 15px;display:inline;background-color:#FC4444;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>". remove_right_zeros(number_format($stat_agent_cr, 2)) ."%</div>";
-										echo "<div style='background-color:white;color: black ;font-size: 15px;display:inline;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>Critical</div>";
-										echo "<div style='margin-left:2%;color: #FFF;font-size: 15px;display:inline;background-color:#f8db3f;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>". remove_right_zeros(number_format($stat_agent_wa, 2)) ."%</div>";
-										echo "<div style='background-color:white;color: black ;font-size: 15px;display:inline;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>Warning</div>";
-										echo "<div style='margin-left:2%;color: #FFF;font-size: 15px;display:inline;background-color:#84b83c;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>". remove_right_zeros(number_format($stat_agent_ok, 2)) ."%</div>";
-										echo "<div style='background-color:white;color: black ;font-size: 15px;display:inline;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>Normal</div>";
-										echo "<div style='margin-left:2%;color: #FFF;font-size: 15px;display:inline;background-color:#9d9ea0;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>". remove_right_zeros(number_format($stat_agent_un, 2)) ."%</div>";
-										echo "<div style='background-color:white;color: black ;font-size: 15px;display:inline;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>Unknown</div>";
+									echo "<div style='margin-left:2%;color: #FFF;font-size: 12px;display:inline;background-color:#FC4444;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>". remove_right_zeros(number_format($stat_agent_cr, 2)) ."%</div>";
+									echo "<div style='background-color:white;color: black ;font-size: 12px;display:inline;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>Critical</div>";
+									echo "<div style='margin-left:2%;color: #FFF;font-size: 12px;display:inline;background-color:#f8db3f;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>". remove_right_zeros(number_format($stat_agent_wa, 2)) ."%</div>";
+									echo "<div style='background-color:white;color: black ;font-size: 12px;display:inline;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>Warning</div>";
+									echo "<div style='margin-left:2%;color: #FFF;font-size: 12px;display:inline;background-color:#84b83c;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>". remove_right_zeros(number_format($stat_agent_ok, 2)) ."%</div>";
+									echo "<div style='background-color:white;color: black ;font-size: 12px;display:inline;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>Normal</div>";
+									echo "<div style='margin-left:2%;color: #FFF;font-size: 12px;display:inline;background-color:#9d9ea0;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>". remove_right_zeros(number_format($stat_agent_un, 2)) ."%</div>";
+									echo "<div style='background-color:white;color: black ;font-size: 12px;display:inline;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>Unknown</div>";
 									
 									echo "</td>";
 								echo "</tr>";

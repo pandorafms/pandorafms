@@ -93,7 +93,7 @@ sub pandora_purgedb ($$) {
 	}
 
 	# Delete old inventory data
-	if (defined($conf->{'_inventory_purge'}) && $conf->{'_inventory_purge'} > 0) {
+	if (defined ($conf->{'_inventory_purge'}) && $conf->{'_inventory_purge'} > 0) {
 		if (enterprise_load (\%conf) != 0) {
 			my $ulimit_timestamp_inventory = time() - (86400 * $conf->{'_inventory_purge'});
 
@@ -612,6 +612,7 @@ sub pandora_load_config ($) {
 	$conf->{'dbengine'} = 'mysql' unless defined ($conf->{'dbengine'});
 	$conf->{'dbport'} = '3306' unless defined ($conf->{'dbport'});
 	$conf->{'claim_back_snmp_modules'} = '1' unless defined ($conf->{'claim_back_snmp_modules'});
+    $conf->{'verbosity'} = '3' unless defined ($conf->{'verbosity'});
 
     # Dynamic interval configuration.                                                                                                                             
 	$conf->{"dynamic_constant"} = 0.10 unless defined($conf->{"dynamic_constant"});
@@ -787,10 +788,10 @@ sub pandora_checkdb_consistency {
 		log_message ('CHECKDB', "Ignoring not-init data.");
 	}
 	
-	log_message ('CHECKDB',
-		"Deleting unknown data (More than " . $conf{'_days_delete_unknown'} . " days).");
-	
 	if (defined($conf{'_days_delete_unknown'}) && $conf{'_days_delete_unknown'} > 0) {
+	    log_message ('CHECKDB',
+		    "Deleting unknown data (More than " . $conf{'_days_delete_unknown'} . " days).");
+	
 		my @modules = get_db_rows($dbh,
 			'SELECT tagente_modulo.id_agente_modulo, tagente_modulo.id_agente
 			FROM tagente_modulo, tagente_estado

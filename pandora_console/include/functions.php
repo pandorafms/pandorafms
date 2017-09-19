@@ -1806,7 +1806,18 @@ function check_acl($id_user, $id_group, $access, $onlyOneGroup = false) {
 	else {
 		$id_group = (int) $id_group;
 	}
-	
+
+	$three_eyes_crow_groups = db_get_all_rows_sql("SELECT tperfil.*, tusuario_perfil.id_perfil FROM tperfil, tusuario_perfil WHERE tusuario_perfil.id_usuario = '" . 
+													$id_user . "' AND tusuario_perfil.id_grupo = 0 AND tusuario_perfil.id_perfil = tperfil.id_perfil");
+	if ($three_eyes_crow_groups && !empty($three_eyes_crow_groups)) {
+		$acl_column = get_acl_column($access);
+		foreach ($three_eyes_crow_groups as $three_eyes_crow_group) {
+			if (isset($three_eyes_crow_group[$acl_column])) {
+				return 1;
+			}
+		}
+	}
+
 	$parents_id = array($id_group);
 	if ($id_group != 0 && $onlyOneGroup !== true) {
 		$group = db_get_row_filter('tgrupo', array('id_grupo' => $id_group));

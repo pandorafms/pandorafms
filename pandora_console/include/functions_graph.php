@@ -3794,7 +3794,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	$unit_name, $show_alerts, $avg_only = 0,
 	$date = 0, $series_suffix = '', $series_suffix_str = '', $show_unknown = false,
 	$fullscale = false) {
-	
+
 	global $config;
 	global $chart;
 	global $color;
@@ -3851,22 +3851,65 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	
 	if ($fullscale) {
 		// Get module data
+		$events = db_get_all_rows_filter('tevento',
+			array ('id_agentmodule' => $agent_module_id,
+				"utimestamp > $datelimit",
+				"utimestamp < $date",
+				'order' => 'utimestamp ASC'),
+			array ('evento', 'utimestamp', 'event_type', 'id_evento'));
+
+		$table = "tagente_datos";
+		$module_type_str = modules_get_type_name ($agent_module_id);
+		if (strstr ($module_type_str, 'string') !== false) {
+			$table = "tagente_datos_string";
+		}
+
+		$query  = " SELECT utimestamp, datos FROM $table ";
+		$query .= " WHERE id_agente_modulo=$agent_module_id ";
+		$query .= " ORDER BY utimestamp ASC LIMIT 1";
+
+		$ret = db_get_all_rows_sql( $query , true);
+		
+		$first_data = $ret[0]['utimestamp'];
+		/*
+		// Get the last event after inverval to know if graph start on unknown
+		$prev_event = db_get_row_filter ('tevento',
+			array ('id_agentmodule' => $agent_module_id,
+				"utimestamp <= $datelimit",
+				'order' => 'utimestamp DESC'));
+		if (isset($prev_event['event_type']) && $prev_event['event_type'] == 'going_unknown') {
+			$start_unknown = true;
+		}
+		*/
+		if ($events === false) {
+			$events = array ();
+		}
 		
 		$data_uncompress = db_uncompress_module_data($agent_module_id, $datelimit, $date);
-	
+
 		$i = 0;
-		$j = 0;
-		$array_unknown = array();
 		$data = array();
 		if(is_array($data_uncompress)){
 			foreach ($data_uncompress as $value) {
 				foreach ($value['data'] as $key => $value) {
 					$data[$i]['datos'] = $value['datos'];
 					if(empty($value['datos'])){
-						$events[$j]['utimestamp'] = $value['utimestamp'];
-						$j++;
+						if($value['utimestamp'] < $first_data){
+							$data[$i]['unknown']    = 0;
+							$data[$i]['not_init']   = 1;
+							$data[$i]['utimestamp'] = $value['utimestamp'];
+						}
+						else{
+							$data[$i]['not_init']   = 0;
+							$data[$i]['unknown']    = 1;
+							$data[$i]['utimestamp'] = $value['utimestamp'];
+						}
 					}
-					$data[$i]['utimestamp'] = $value['utimestamp'];	
+					else{
+						$data[$i]['not_init']   = 0;
+						$data[$i]['unknown']    = 0;
+					}
+					$data[$i]['utimestamp'] = $value['utimestamp'];
 					$i++;
 				}
 			}
@@ -3964,7 +4007,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 		$zero = 0;
 		$total = 0;
 		$count = 0;
-		
+		$is_unknown = false;
 		// Read data that falls in the current interval
 		while (isset ($data[$j]) &&
 			$data[$j]['utimestamp'] >= $timestamp &&
@@ -3978,6 +4021,10 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 			}
 			
 			$last_known = $data[$j]['datos'];
+
+			if ($show_unknown && $data[$j]['unknown']){
+				$is_unknown = true;
+			}
 			$j++;
 		}
 		
@@ -3990,7 +4037,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 		$event_value = 0;
 		$alert_value = 0;
 		$unknown_value = 0;
-		$is_unknown = false;
+		
 		// Is the first point of a unknown interval
 		$first_unknown = false;
 		
@@ -4008,8 +4055,15 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 				$alert_ids[] = $events[$k]['id_evento'];
 			}
 			if ($show_unknown) {
-				$first_unknown = true;
-				$is_unknown = true;
+				if ($events[$k]['event_type'] == 'going_unknown') {
+					if ($is_unknown == false) {
+						$first_unknown = true;
+					}
+					$is_unknown = true;
+				}
+				else if (substr ($events[$k]['event_type'], 0, 5) == 'going') {
+					$is_unknown = false;
+				}
 			}
 			$k++;
 		}
@@ -4094,7 +4148,6 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 			if (!isset($chart[$timestamp]['unknown'.$series_suffix])) {
 				$chart[$timestamp]['unknown'.$series_suffix] = 0;
 			}
-			
 			$chart[$timestamp]['unknown'.$series_suffix] = $unknown_value;
 			$series_type['unknown'.$series_suffix] = 'area';
 		}

@@ -570,12 +570,14 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	
 	// Get module data
 	if ($fullscale) {
-		$data = db_get_all_rows_filter ('tagente_datos',
-			array ('id_agente_modulo' => (int)$agent_module_id,
-				"utimestamp > $datelimit",
-				"utimestamp < $date",
-				'order' => 'utimestamp ASC'),
-			array ('datos', 'utimestamp'), 'AND', true);
+		fullscale_data( $chart, $chart_data_extra, $long_index, $series_type,
+						$agent_module_id, $datelimit, $date, $events, 
+						$show_events, $show_unknown, $show_alerts, 
+						$series_suffix, $percentil);
+		if (count($chart) > $resolution) {
+			$resolution = count($chart); //Number of points of the graph
+			$interval = (int) ($period / $resolution);
+		}
 	}
 	else {
 		$data = db_get_all_rows_filter ('tagente_datos',
@@ -619,73 +621,68 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 			}
 			$data = $new_data;
 		}
-	}
 	
-	// Get module warning_min and critical_min
-	$warning_min = db_get_value('min_warning','tagente_modulo','id_agente_modulo',$agent_module_id);
-	$critical_min = db_get_value('min_critical','tagente_modulo','id_agente_modulo',$agent_module_id);
-	
-	if ($data === false) {
-		$data = array ();
-	}
-	
-	
-	if ($uncompressed_module) {
-		// Uncompressed module data
 		
-		$min_necessary = 1;
-	}
-	else {
-		// Compressed module data
 		
-		// Get previous data
-		$previous_data = modules_get_previous_data ($agent_module_id, $datelimit);
-		if ($previous_data !== false) {
-			$previous_data['utimestamp'] = $datelimit;
-			array_unshift ($data, $previous_data);
+		if ($data === false) {
+			$data = array ();
 		}
 		
-		// Get next data
-		$nextData = modules_get_next_data ($agent_module_id, $date);
-		if ($nextData !== false) {
-			array_push ($data, $nextData);
+		if ($uncompressed_module) {
+			// Uncompressed module data	
+			$min_necessary = 1;
 		}
-		else if (count ($data) > 0) {
-			// Propagate the last known data to the end of the interval
-			$nextData = array_pop ($data);
-			array_push ($data, $nextData);
-			$nextData['utimestamp'] = $date;
-			array_push ($data, $nextData);
+		else {
+			// Compressed module data
+			
+			// Get previous data
+			$previous_data = modules_get_previous_data ($agent_module_id, $datelimit);
+			if ($previous_data !== false) {
+				$previous_data['utimestamp'] = $datelimit;
+				array_unshift ($data, $previous_data);
+			}
+			
+			// Get next data
+			$nextData = modules_get_next_data ($agent_module_id, $date);
+			if ($nextData !== false) {
+				array_push ($data, $nextData);
+			}
+			else if (count ($data) > 0) {
+				// Propagate the last known data to the end of the interval
+				$nextData = array_pop ($data);
+				array_push ($data, $nextData);
+				$nextData['utimestamp'] = $date;
+				array_push ($data, $nextData);
+			}
+			$min_necessary = 2;
 		}
-		
-		$min_necessary = 2;
-	}
 
-	// Check available data
-	if (count ($data) < $min_necessary) {
-		if (!$graphic_type) {
-			if (!$projection) {
-				return fs_error_image ();
+		// Check available data
+		if (count ($data) < $min_necessary) {
+			if (!$graphic_type) {
+				if (!$projection) {
+					return fs_error_image ();
+				}
+				else {
+					return fs_error_image ();
+				}
 			}
-			else {
-				return fs_error_image ();
-			}
+			graphic_error ();
 		}
-		graphic_error ();
+		
+
+		// Data iterator
+		$data_i = 0;
+		
+		// Set initial conditions
+		if ($data[0]['utimestamp'] == $datelimit) {
+			$previous_data = $data[0]['datos'];
+			$data_i++;
+		}
+		else {
+			$previous_data = 0;
+		}
 	}
-	
-	// Data iterator
-	$data_i = 0;
-	
-	// Set initial conditions
-	if ($data[0]['utimestamp'] == $datelimit) {
-		$previous_data = $data[0]['datos'];
-		$data_i++;
-	}
-	else {
-		$previous_data = 0;
-	}
-	
 	// Get baseline data
 	$baseline_data = array();
 	if ($baseline) {
@@ -704,49 +701,29 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 		$unit = modules_get_unit($agent_module_id);
 	}
 
-	if ($fullscale) {
-		if (count($data) > $resolution) {
-			$resolution = count($data); //Number of points of the graph
-			$interval = (int) ($period / $resolution);
-		}
+	// Get module warning_min and critical_min
+	$warning_min  = db_get_value('min_warning','tagente_modulo','id_agente_modulo',$agent_module_id);
+	$critical_min = db_get_value('min_critical','tagente_modulo','id_agente_modulo',$agent_module_id);
+
+	// Calculate chart data
+	if($fullscale){
+		$avg_only = 1;
+	}
+	else{
+		grafico_modulo_sparse_data_chart ($chart, $chart_data_extra, $long_index, 
+			$data, $data_i, $previous_data, $resolution, $interval, $period, $datelimit, 
+			$projection, $avg_only, $uncompressed_module, 
+			$show_events, $show_alerts, $show_unknown, $baseline, 
+			$baseline_data, $events, $series_suffix, $start_unknown,
+			$percentil, $fullscale);
 	}
 	
-	// Calculate chart data
-	grafico_modulo_sparse_data_chart ($chart, $chart_data_extra, $long_index, 
-		$data, $data_i, $previous_data, $resolution, $interval, $period, $datelimit, 
-		$projection, $avg_only, $uncompressed_module, 
-		$show_events, $show_alerts, $show_unknown, $baseline, 
-		$baseline_data, $events, $series_suffix, $start_unknown,
-		$percentil, $fullscale);
-
-	if ($fullscale) {
-		if (!$flash_chart) {
-			$time_format = "Y M \nd H:i:s";
-		}
-		else {
-			$time_format = "Y M d H:i:s";
-		}
-
-		$new_chart = array();
-		$new_long_index = array();
-		foreach ($chart as $c_timestamp => $c_data) {
-			$timestamp_short = date($time_format, $c_timestamp);
-			$new_long_index[$timestamp_short] = date(
-				html_entity_decode($time_format, ENT_QUOTES, "UTF-8"), $c_timestamp);
-			$new_chart[$timestamp_short] = $c_data;
-		}
-
-		$long_index = $new_long_index;
-		$chart = $new_chart;
-	}
-
 	// Return chart data and don't draw
 	if ($return_data == 1) {
 		return $chart;
 	}
 	
 	$graph_stats = get_statwin_graph_statistics($chart, $series_suffix);
-	
 	// Fix event and alert scale
 	if ($max_value > 0) {
 		$event_max = 2 + (float)$max_value * 1.05;
@@ -811,11 +788,11 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 		'border' => '#000000', 'color' => $config['graph_color1'],
 		'alpha' => CHART_DEFAULT_ALPHA);
 
-	$color['unit'.$series_suffix] = array('border' => null, 'color' => '#0097BC', 'alpha' => 10);		
+	$color['unit'.$series_suffix] = array('border' => null, 'color' => '#0097BC', 'alpha' => 10);
 	
 	if ($show_events) {
 		$legend['event'.$series_suffix_str] = __('Events').$series_suffix_str;
-		$chart_extra_data['legend_events'] = $legend['event'].$series_suffix_str;
+		$chart_extra_data['legend_events'] = $legend['event'.$series_suffix_str];
 	}
 	if ($show_alerts) {
 		$legend['alert'.$series_suffix] = __('Alerts').$series_suffix_str;
@@ -837,10 +814,13 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 			__('Last') . ': ' . remove_right_zeros(number_format($graph_stats['sum']['last'], $config['graph_precision'])) . ($unit ? ' ' . $unit : '') . ' ; '
 			. __('Avg') . ': ' . remove_right_zeros(number_format($graph_stats['sum']['avg'], $config['graph_precision'])) . ($unit ? ' ' . $unit : '');
 	}
-	else if (!$avg_only) {
+	else if (!$avg_only && !$fullscale) {
 		$legend['max'.$series_suffix] = __('Max').$series_suffix_str.': '.__('Avg').': '.remove_right_zeros(number_format($graph_stats['max']['avg'], $config['graph_precision'])).' '.$unit.' ; '.__('Max').': '.remove_right_zeros(number_format($graph_stats['max']['max'], $config['graph_precision'])).' '.$unit.' ; '.__('Min').': '.remove_right_zeros(number_format($graph_stats['max']['min'], $config['graph_precision'])).' '.$unit;
 		$legend['sum'.$series_suffix] = __('Avg').$series_suffix_str.': '.__('Avg').': '.remove_right_zeros(number_format($graph_stats['sum']['avg'], $config['graph_precision'])).' '.$unit.' ; '.__('Max').': '.remove_right_zeros(number_format($graph_stats['sum']['max'], $config['graph_precision'])).' '.$unit.' ; '.__('Min').': '.remove_right_zeros(number_format($graph_stats['sum']['min'], $config['graph_precision'])).' '.$unit;
 		$legend['min'.$series_suffix] = __('Min').$series_suffix_str.': '.__('Avg').': '.remove_right_zeros(number_format($graph_stats['min']['avg'], $config['graph_precision'])).' '.$unit.' ; '.__('Max').': '.remove_right_zeros(number_format($graph_stats['min']['max'], $config['graph_precision'])).' '.$unit.' ; '.__('Min').': '.remove_right_zeros(number_format($graph_stats['min']['min'], $config['graph_precision'])).' '.$unit;
+	}
+	else if ($fullscale){
+		$legend['sum'.$series_suffix] = __('Data').$series_suffix_str.': ';
 	}
 	else {
 		$legend['sum'.$series_suffix] = __('Avg').$series_suffix_str.': '.__('Avg').': '.remove_right_zeros(number_format($graph_stats['sum']['avg'], $config['graph_precision'])).' '.$unit.' ; '.__('Max').': '.remove_right_zeros(number_format($graph_stats['sum']['max'], $config['graph_precision'])).' '.$unit.' ; '.__('Min').': '.remove_right_zeros(number_format($graph_stats['sum']['min'], $config['graph_precision'])).' '.$unit;
@@ -850,7 +830,7 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 		$legend['unknown'.$series_suffix] = __('Unknown').$series_suffix_str;
 		$chart_extra_data['legend_unknown'] = $legend['unknown'.$series_suffix_str];
 	}
-	
+
 	if (!is_null($percentil) && $percentil) {
 		$first_data = reset($chart);
 		$percentil_value = format_for_graph($first_data['percentil'], 2);
@@ -933,11 +913,9 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		$date, $unit, $baseline, $return_data, $show_title,
 		$projection, $adapt_key, $compare, '', '', $show_unknown,
 		$percentil, $dashboard, $vconsole, $type_graph, $fullscale);
-
 	if ($return_data) {
 		return $data_returned;
 	}
-	
 	if ($compare === 'overlapped') {
 		$i = 0;
 		foreach ($chart as $k=>$v) {
@@ -3850,75 +3828,15 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	}
 	
 	if ($fullscale) {
-		// Get module data
-		$events = db_get_all_rows_filter('tevento',
-			array ('id_agentmodule' => $agent_module_id,
-				"utimestamp > $datelimit",
-				"utimestamp < $date",
-				'order' => 'utimestamp ASC'),
-			array ('evento', 'utimestamp', 'event_type', 'id_evento'));
-
-		$table = "tagente_datos";
-		$module_type_str = modules_get_type_name ($agent_module_id);
-		if (strstr ($module_type_str, 'string') !== false) {
-			$table = "tagente_datos_string";
-		}
-
-		$query  = " SELECT utimestamp, datos FROM $table ";
-		$query .= " WHERE id_agente_modulo=$agent_module_id ";
-		$query .= " ORDER BY utimestamp ASC LIMIT 1";
-
-		$ret = db_get_all_rows_sql( $query , true);
-		
-		$first_data = $ret[0]['utimestamp'];
-		/*
-		// Get the last event after inverval to know if graph start on unknown
-		$prev_event = db_get_row_filter ('tevento',
-			array ('id_agentmodule' => $agent_module_id,
-				"utimestamp <= $datelimit",
-				'order' => 'utimestamp DESC'));
-		if (isset($prev_event['event_type']) && $prev_event['event_type'] == 'going_unknown') {
-			$start_unknown = true;
-		}
-		*/
-		if ($events === false) {
-			$events = array ();
-		}
-		
-		$data_uncompress = db_uncompress_module_data($agent_module_id, $datelimit, $date);
-
-		$i = 0;
-		$data = array();
-		if(is_array($data_uncompress)){
-			foreach ($data_uncompress as $value) {
-				foreach ($value['data'] as $key => $value) {
-					$data[$i]['datos'] = $value['datos'];
-					if(empty($value['datos'])){
-						if($value['utimestamp'] < $first_data){
-							$data[$i]['unknown']    = 0;
-							$data[$i]['not_init']   = 1;
-							$data[$i]['utimestamp'] = $value['utimestamp'];
-						}
-						else{
-							$data[$i]['not_init']   = 0;
-							$data[$i]['unknown']    = 1;
-							$data[$i]['utimestamp'] = $value['utimestamp'];
-						}
-					}
-					else{
-						$data[$i]['not_init']   = 0;
-						$data[$i]['unknown']    = 0;
-					}
-					$data[$i]['utimestamp'] = $value['utimestamp'];
-					$i++;
-				}
-			}
-		}
-	
-		if (count($data) > $resolution) {
-			$resolution = count($data); //Number of points of the graph
+		fullscale_data( $chart, $chart_data_extra, $long_index, $series_type,
+						$agent_module_id, $datelimit, $date, $events, 
+						$show_events, $show_unknown, $show_alerts, 
+						$series_suffix);
+		if (count($chart) > $resolution) {
+			$resolution = count($chart); //Number of points of the graph
 			$interval = (int) ($period / $resolution);
 		}
+		$max_value=1;
 	}
 	else {
 		// Get module data
@@ -3928,241 +3846,241 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 				"utimestamp < $date",
 				'order' => 'utimestamp ASC'),
 			array ('datos', 'utimestamp'), 'AND', $search_in_history_db);
-	}
 	
-	if ($data === false) {
-		$data = array ();
-	}
 	
-	// Uncompressed module data
-	if ($uncompressed_module) {
-		$min_necessary = 1;
-	
-	// Compressed module data
-	}
-	else {
-		// Get previous data
-		$previous_data = modules_get_previous_data ($agent_module_id, $datelimit);
-		if ($previous_data !== false) {
-			$previous_data['utimestamp'] = $datelimit;
-			array_unshift ($data, $previous_data);
+		if ($data === false) {
+			$data = array ();
 		}
 		
-		// Get next data
-		$nextData = modules_get_next_data ($agent_module_id, $date);
-		if ($nextData !== false) {
-			array_push ($data, $nextData);
+		// Uncompressed module data
+		if ($uncompressed_module) {
+			$min_necessary = 1;
+		
+		// Compressed module data
 		}
-		else if (count ($data) > 0) {
-			// Propagate the last known data to the end of the interval
-			$nextData = array_pop ($data);
-			array_push ($data, $nextData);
-			$nextData['utimestamp'] = $date;
-			array_push ($data, $nextData);
+		else {
+			// Get previous data
+			$previous_data = modules_get_previous_data ($agent_module_id, $datelimit);
+			if ($previous_data !== false) {
+				$previous_data['utimestamp'] = $datelimit;
+				array_unshift ($data, $previous_data);
+			}
+			
+			// Get next data
+			$nextData = modules_get_next_data ($agent_module_id, $date);
+			if ($nextData !== false) {
+				array_push ($data, $nextData);
+			}
+			else if (count ($data) > 0) {
+				// Propagate the last known data to the end of the interval
+				$nextData = array_pop ($data);
+				array_push ($data, $nextData);
+				$nextData['utimestamp'] = $date;
+				array_push ($data, $nextData);
+			}
+			
+			$min_necessary = 2;
 		}
 		
-		$min_necessary = 2;
-	}
-	
-	// Check available data
-	if (count ($data) < $min_necessary) {
-		if (!$graphic_type) {
-			return fs_error_image ();
+		// Check available data
+		if (count ($data) < $min_necessary) {
+			if (!$graphic_type) {
+				return fs_error_image ();
+			}
+			graphic_error ();
 		}
-		graphic_error ();
+		
+		
+		
+		// Data iterator
+		$j = 0;
+		
+		// Event iterator
+		$k = 0;
+		
+		// Set initial conditions
+		if ($data[0]['utimestamp'] == $datelimit) {
+			$previous_data = $data[0]['datos'];
+			$j++;
+		}
+		else {
+			$previous_data = 0;
+		}
+		
+		$max_value = 0;
+		
+		// Calculate chart data
+		$last_known = $previous_data;
+		for ($i = 0; $i <= $resolution; $i++) {
+			$timestamp = $datelimit + ($interval * $i);
+
+			/*
+			if ($fullscale && ($resolution > ($config['graph_res'] * 50))) {
+				$timestamp = $data[$i]['utimestamp'];
+			}
+			*/
+			$zero = 0;
+			$total = 0;
+			$count = 0;
+			$is_unknown = false;
+			// Read data that falls in the current interval
+			while (isset ($data[$j]) &&
+				$data[$j]['utimestamp'] >= $timestamp &&
+				$data[$j]['utimestamp'] <= ($timestamp + $interval)) {
+				if ($data[$j]['datos'] == 0) {
+					$zero = 1;
+				}
+				else {
+					$total += $data[$j]['datos'];
+					$count++;
+				}
+				
+				$last_known = $data[$j]['datos'];
+
+				if ($show_unknown && $data[$j]['unknown']){
+					$is_unknown = true;
+				}
+				$j++;
+			}
+			
+			// Average
+			if ($count > 0) {
+				$total /= $count;
+			}
+			
+			// Read events and alerts that fall in the current interval
+			$event_value = 0;
+			$alert_value = 0;
+			$unknown_value = 0;
+			
+			// Is the first point of a unknown interval
+			$first_unknown = false;
+			
+			$event_ids = array();
+			$alert_ids = array();
+			while (isset ($events[$k]) &&
+				$events[$k]['utimestamp'] >= $timestamp &&
+				$events[$k]['utimestamp'] < ($timestamp + $interval)) {
+				if ($show_events == 1) {
+					$event_value++;
+					$event_ids[] = $events[$k]['id_evento'];
+				}
+				if ($show_alerts == 1 && substr ($events[$k]['event_type'], 0, 5) == 'alert') {
+					$alert_value++;
+					$alert_ids[] = $events[$k]['id_evento'];
+				}
+				if ($show_unknown) {
+					if ($events[$k]['event_type'] == 'going_unknown') {
+						if ($is_unknown == false) {
+							$first_unknown = true;
+						}
+						$is_unknown = true;
+					}
+					else if (substr ($events[$k]['event_type'], 0, 5) == 'going') {
+						$is_unknown = false;
+					}
+				}
+				$k++;
+			}
+
+			// In some cases, can be marked as known because a recovery event
+			// was found in same interval. For this cases first_unknown is 
+			// checked too
+			if ($is_unknown || $first_unknown) {
+				$unknown_value++;
+			}
+			
+			// Set the title and time format
+			if ($period <= SECONDS_6HOURS) {
+				$time_format = 'H:i:s';
+			}
+			elseif ($period < SECONDS_1DAY) {
+				$time_format = 'H:i';
+			}
+			elseif ($period < SECONDS_15DAYS) {
+				$time_format = 'M d H:i';
+			}
+			elseif ($period < SECONDS_1MONTH) {
+				$time_format = 'M d H\h';
+			}
+			else {
+				$time_format = 'M d H\h';
+			}
+			
+			$timestamp_short = date($time_format, $timestamp);
+			$long_index[$timestamp_short] = date(
+				html_entity_decode($config['date_format'], ENT_QUOTES, "UTF-8"), $timestamp);
+			if (!$fullscale) {
+				$timestamp = $timestamp_short;
+			}
+			/////////////////////////////////////////////////////////////////
+			
+			if ($total > $max_value) {
+				$max_value = $total;
+			}
+			
+			if ($show_events) {
+				if (!isset($chart[$timestamp]['event'.$series_suffix])) {
+					$chart[$timestamp]['event'.$series_suffix] = 0;
+				}
+				
+				$chart[$timestamp]['event'.$series_suffix] += $event_value;
+				$series_type['event'.$series_suffix] = 'points';
+			}
+			if ($show_alerts) {
+				if (!isset($chart[$timestamp]['alert'.$series_suffix])) {
+					$chart[$timestamp]['alert'.$series_suffix] = 0;
+				}
+				
+				$chart[$timestamp]['alert'.$series_suffix] += $alert_value;
+				$series_type['alert'.$series_suffix] = 'points';
+			}
+			
+			// Data and zeroes (draw a step)
+			if ($zero == 1 && $count > 0) {
+				$chart[$timestamp]['sum'.$series_suffix] = 0;
+			}
+			else if ($zero == 1) { // Just zeros
+				$chart[$timestamp]['sum'.$series_suffix] = 0;
+			}
+			else if ($count > 0) { // No zeros
+				$chart[$timestamp]['sum'.$series_suffix] = $total;
+			}
+			else { // Compressed data
+				if ($uncompressed_module || ($timestamp > time ()) || $is_unknown) {
+					$chart[$timestamp]['sum'.$series_suffix] = 0;
+				}
+				else {
+					$chart[$timestamp]['sum'.$series_suffix] = $last_known;
+				}
+			}
+			
+			if ($show_unknown) {
+				if (!isset($chart[$timestamp]['unknown'.$series_suffix])) {
+					$chart[$timestamp]['unknown'.$series_suffix] = 0;
+				}
+				$chart[$timestamp]['unknown'.$series_suffix] = $unknown_value;
+				$series_type['unknown'.$series_suffix] = 'area';
+			}
+			
+			$series_type['sum' . $series_suffix] = 'boolean';
+			
+			if (!empty($event_ids)) {
+				$chart_extra_data[count($chart)-1]['events'] = implode(',',$event_ids);
+			}
+			if (!empty($alert_ids)) {
+				$chart_extra_data[count($chart)-1]['alerts'] = implode(',',$alert_ids);
+			}
+			
+		}
 	}
-	
+
 	if (empty($unit_name)) {
 		$unit = modules_get_unit($agent_module_id);
 	}
 	else
 		$unit = $unit_name;
-	
-	// Data iterator
-	$j = 0;
-	
-	// Event iterator
-	$k = 0;
-	
-	// Set initial conditions
-	if ($data[0]['utimestamp'] == $datelimit) {
-		$previous_data = $data[0]['datos'];
-		$j++;
-	}
-	else {
-		$previous_data = 0;
-	}
-	
-	$max_value = 0;
-	
-	// Calculate chart data
-	$last_known = $previous_data;
-	for ($i = 0; $i <= $resolution; $i++) {
-		$timestamp = $datelimit + ($interval * $i);
 
-		if ($fullscale && ($resolution > ($config['graph_res'] * 50))) {
-			$timestamp = $data[$i]['utimestamp'];
-		}
-		
-		$zero = 0;
-		$total = 0;
-		$count = 0;
-		$is_unknown = false;
-		// Read data that falls in the current interval
-		while (isset ($data[$j]) &&
-			$data[$j]['utimestamp'] >= $timestamp &&
-			$data[$j]['utimestamp'] <= ($timestamp + $interval)) {
-			if ($data[$j]['datos'] == 0) {
-				$zero = 1;
-			}
-			else {
-				$total += $data[$j]['datos'];
-				$count++;
-			}
-			
-			$last_known = $data[$j]['datos'];
-
-			if ($show_unknown && $data[$j]['unknown']){
-				$is_unknown = true;
-			}
-			$j++;
-		}
-		
-		// Average
-		if ($count > 0) {
-			$total /= $count;
-		}
-		
-		// Read events and alerts that fall in the current interval
-		$event_value = 0;
-		$alert_value = 0;
-		$unknown_value = 0;
-		
-		// Is the first point of a unknown interval
-		$first_unknown = false;
-		
-		$event_ids = array();
-		$alert_ids = array();
-		while (isset ($events[$k]) &&
-			$events[$k]['utimestamp'] >= $timestamp &&
-			$events[$k]['utimestamp'] < ($timestamp + $interval)) {
-			if ($show_events == 1) {
-				$event_value++;
-				$event_ids[] = $events[$k]['id_evento'];
-			}
-			if ($show_alerts == 1 && substr ($events[$k]['event_type'], 0, 5) == 'alert') {
-				$alert_value++;
-				$alert_ids[] = $events[$k]['id_evento'];
-			}
-			if ($show_unknown) {
-				if ($events[$k]['event_type'] == 'going_unknown') {
-					if ($is_unknown == false) {
-						$first_unknown = true;
-					}
-					$is_unknown = true;
-				}
-				else if (substr ($events[$k]['event_type'], 0, 5) == 'going') {
-					$is_unknown = false;
-				}
-			}
-			$k++;
-		}
-
-		// In some cases, can be marked as known because a recovery event
-		// was found in same interval. For this cases first_unknown is 
-		// checked too
-		if ($is_unknown || $first_unknown) {
-			$unknown_value++;
-		}
-		
-		// Set the title and time format
-		if ($period <= SECONDS_6HOURS) {
-			$time_format = 'H:i:s';
-		}
-		elseif ($period < SECONDS_1DAY) {
-			$time_format = 'H:i';
-		}
-		elseif ($period < SECONDS_15DAYS) {
-			$time_format = 'M d H:i';
-		}
-		elseif ($period < SECONDS_1MONTH) {
-			$time_format = 'M d H\h';
-		}
-		else {
-			$time_format = 'M d H\h';
-		}
-		
-		$timestamp_short = date($time_format, $timestamp);
-		$long_index[$timestamp_short] = date(
-			html_entity_decode($config['date_format'], ENT_QUOTES, "UTF-8"), $timestamp);
-		if (!$fullscale) {
-			$timestamp = $timestamp_short;
-		}
-		/////////////////////////////////////////////////////////////////
-		
-		if ($total > $max_value) {
-			$max_value = $total;
-		}
-		
-		if ($show_events) {
-			if (!isset($chart[$timestamp]['event'.$series_suffix])) {
-				$chart[$timestamp]['event'.$series_suffix] = 0;
-			}
-			
-			$chart[$timestamp]['event'.$series_suffix] += $event_value;
-			$series_type['event'.$series_suffix] = 'points';
-		}
-		if ($show_alerts) {
-			if (!isset($chart[$timestamp]['alert'.$series_suffix])) {
-				$chart[$timestamp]['alert'.$series_suffix] = 0;
-			}
-			
-			$chart[$timestamp]['alert'.$series_suffix] += $alert_value;
-			$series_type['alert'.$series_suffix] = 'points';
-		}
-		
-		// Data and zeroes (draw a step)
-		if ($zero == 1 && $count > 0) {
-			
-			//New code set 0 if there is a 0
-			//Please check the incident #665
-			//http://192.168.50.2/integria/index.php?sec=incidents&sec2=operation/incidents/incident_dashboard_detail&id=665
-			$chart[$timestamp]['sum'.$series_suffix] = 0;
-		}
-		else if ($zero == 1) { // Just zeros
-			$chart[$timestamp]['sum'.$series_suffix] = 0;
-		}
-		else if ($count > 0) { // No zeros
-			$chart[$timestamp]['sum'.$series_suffix] = $total;
-		}
-		else { // Compressed data
-			if ($uncompressed_module || ($timestamp > time ()) || $is_unknown) {
-				$chart[$timestamp]['sum'.$series_suffix] = 0;
-			}
-			else {
-				$chart[$timestamp]['sum'.$series_suffix] = $last_known;
-			}
-		}
-		
-		if ($show_unknown) {
-			if (!isset($chart[$timestamp]['unknown'.$series_suffix])) {
-				$chart[$timestamp]['unknown'.$series_suffix] = 0;
-			}
-			$chart[$timestamp]['unknown'.$series_suffix] = $unknown_value;
-			$series_type['unknown'.$series_suffix] = 'area';
-		}
-		
-		$series_type['sum' . $series_suffix] = 'boolean';
-		
-		if (!empty($event_ids)) {
-			$chart_extra_data[count($chart)-1]['events'] = implode(',',$event_ids);
-		}
-		if (!empty($alert_ids)) {
-			$chart_extra_data[count($chart)-1]['alerts'] = implode(',',$alert_ids);
-		}
-		
-	}
-	
 	// Get min, max and avg (less efficient but centralized for all modules and reports)
 	$graph_stats = get_statwin_graph_statistics($chart, $series_suffix);
 	
@@ -4186,26 +4104,27 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	}
 	
 	///////////////////////////////////////////////////
-	// Set the title and time format
-	if ($period <= SECONDS_6HOURS) {
-		$time_format = 'H:i:s';
+	if(!$fullscale){
+		// Set the title and time format
+		if ($period <= SECONDS_6HOURS) {
+			$time_format = 'H:i:s';
+		}
+		elseif ($period < SECONDS_1DAY) {
+			$time_format = 'H:i';
+		}
+		elseif ($period < SECONDS_15DAYS) {
+			$time_format = 'M d H:i';
+		}
+		elseif ($period < SECONDS_1MONTH) {
+			$time_format = 'M d H\h';
+		} 
+		elseif ($period < SECONDS_6MONTHS) {
+			$time_format = "M d H\h";
+		}
+		else {
+			$time_format = 'M d H\h';
+		}
 	}
-	elseif ($period < SECONDS_1DAY) {
-		$time_format = 'H:i';
-	}
-	elseif ($period < SECONDS_15DAYS) {
-		$time_format = 'M d H:i';
-	}
-	elseif ($period < SECONDS_1MONTH) {
-		$time_format = 'M d H\h';
-	} 
-	elseif ($period < SECONDS_6MONTHS) {
-		$time_format = "M d H\h";
-	}
-	else {
-		$time_format = 'M d H\h';
-	}
-	
 	// Flash chart
 	$caption = __('Max. Value').$series_suffix_str . ': ' . $graph_stats['sum']['max'] . '    ' . __('Avg. Value').$series_suffix_str . 
 	': ' . $graph_stats['sum']['avg'] . '    ' . __('Min. Value').$series_suffix_str . ': ' . $graph_stats['sum']['min'] . '   ' . __('Units').$series_suffix_str . ': ' . $unit;
@@ -4252,6 +4171,167 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 			array('border' => '#999999', 'color' => '#999999',
 				'alpha' => CHART_DEFAULT_ALPHA);
 	}
+}
+
+function fullscale_data ( &$chart_data, &$chart_extra_data, &$long_index, 
+						  $series_type, $agent_module_id, $datelimit, $date, 
+						  $events = false, $show_events = false, 
+						  $show_unknown = false, $show_alerts = false, 
+						  $series_suffix = '', $percentil = false ){
+
+	global $config;
+	global $max_value;
+	global $min_value;
+	global $series_type;
+	global $chart_extra_data;
+	
+	$ranges_unknown = db_get_module_ranges_unknown($agent_module_id, $datelimit, $date);
+
+	$table = "tagente_datos";
+	$module_type_str = modules_get_type_name ($agent_module_id);
+	if (strstr ($module_type_str, 'string') !== false) {
+		$table = "tagente_datos_string";
+	}
+
+	$query  = " SELECT utimestamp, datos FROM $table ";
+	$query .= " WHERE id_agente_modulo=$agent_module_id ";
+	$query .= " ORDER BY utimestamp ASC LIMIT 1";
+
+	$ret = db_get_all_rows_sql( $query , true);
+	
+	$first_data = $ret[0]['utimestamp'];
+	$data_uncompress = db_uncompress_module_data($agent_module_id, $datelimit, $date);
+	$i         = 0;
+	$max_value = 0;
+	$min_value = 0;
+	$timestamp_second = 0;
+	if(is_array($data_uncompress)){
+		foreach ($data_uncompress as $v) {
+			foreach ($v['data'] as $key => $value) {
+				$real_date = date("Y M d H:i:s", $value['utimestamp']);
+
+				// Read events and alerts that fall in the current interval
+				$event_value   = 0;
+				$alert_value   = 0;
+				$unknown_value = 0;
+				$event_i       = 0;
+				// Is the first point of a unknown interval
+				$first_unknown = false;
+				
+				$event_ids = array();
+				$alert_ids = array();
+				
+				//
+				if($timestamp_second == 0){
+					$timestamp_second = $value['utimestamp']; 
+				}
+				$timestamp_first  = $timestamp_second;
+				$timestamp_second = $value['utimestamp'];
+				
+				foreach ($events as $key => $val) {
+					if( $val['utimestamp'] >= $timestamp_first && 
+						$val['utimestamp'] <= $timestamp_second ){
+						if ($show_events == 1) {
+							$event_ids[] = $val['id_evento'];
+							$event_value++;
+						}
+						if ($show_alerts == 1 && substr ($val['event_type'], 0, 5) == 'alert') {
+							$alert_ids[] = $val['id_evento'];
+							$alert_value++;
+						}
+						if ($show_unknown) {
+							if ($val['event_type'] == 'going_unknown') {
+								if ($is_unknown == false) {
+									$first_unknown = true;
+								}
+								$is_unknown = true;
+							}
+							else if (substr ($val['event_type'], 0, 5) == 'going') {
+								$is_unknown = false;
+							}
+						}
+					}
+				}
+
+				if(empty($value['datos'])){
+					if($value['utimestamp'] < $first_data){
+						//$chart_data[$real_date]['unknown'.$series_suffix] = 0;
+						$is_unknown = false;
+					}
+					else{
+						//$chart_data[$real_date]['unknown'.$series_suffix] = 1;
+						$first_unknown = true;
+					}
+				}
+
+				$timestamp_short = date("Y M d H:i:s", $value['utimestamp']);
+				$long_index[$timestamp_short] = date(
+					html_entity_decode($config['date_format'], ENT_QUOTES, "UTF-8"), $value['utimestamp']);
+				// In some cases, can be marked as known because a recovery event
+				// was found in same interval. For this cases first_unknown is 
+				// checked too
+				if ($is_unknown || $first_unknown) {
+					$unknown_value++;
+				}
+
+				// Data
+				if ($show_events) {
+					if (!isset($chart_data[$real_date]['event'.$series_suffix])) {
+						$chart_data[$real_date]['event'.$series_suffix] = 0;
+					}
+					
+					$chart_data[$real_date]['event'.$series_suffix] += $event_value;
+					
+					$series_type['event'.$series_suffix] = 'points';
+				}
+
+				if ($show_alerts) {
+					if (!isset($chart_data[$real_date]['alert'.$series_suffix])) {
+						$chart_data[$real_date]['alert'.$series_suffix] = 0;
+					}
+					
+					$chart_data[$real_date]['alert'.$series_suffix] += $alert_value;
+					
+					$series_type['alert'.$series_suffix] = 'points';
+				}
+
+				$chart_data[$real_date]['sum'.$series_suffix] = $value['datos'];
+				
+				if($value['datos'] > $max_value){
+					$max_value = $value['datos'];
+				}
+
+				if($value['datos'] < $min_value){
+					$min_value = $value['datos'];
+				}
+				
+				if ($show_unknown) {
+					if (!isset($chart_data[$real_date]['unknown'.$series_suffix])) {
+						$chart_data[$real_date]['unknown'.$series_suffix] = 0;
+					}	
+					$chart_data[$real_date]['unknown'.$series_suffix] = $unknown_value;
+					$series_type['unknown'.$series_suffix] = 'area';	
+				}
+				
+				if (!empty($event_ids)) {
+					$chart_extra_data[count($chart_data)-1]['events'] = implode(',',$event_ids);
+				}
+				if (!empty($alert_ids)) {
+					$chart_extra_data[count($chart_data)-1]['alerts'] = implode(',',$alert_ids);
+				}
+			}
+		}
+	
+		if (!is_null($percentil) && $percentil) {
+			$avg = array_map(function($item) { return $item['sum']; }, $chart_data);
+			$percentil_result = get_percentile($percentil, $avg);
+			//Fill the data of chart
+			array_walk($chart_data, function(&$item) use ($percentil_result, $series_suffix) {
+				$item['percentil' . $series_suffix] = $percentil_result; });
+			$series_type['percentil' . $series_suffix] = 'line';
+		}
+	}
+	//html_debug_print($chart_data);
 }
 
 function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
@@ -4313,26 +4393,6 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 		$unit_name, $show_alerts, $avg_only, $date, '', '', $show_unknown, $fullscale);
 
-	if ($fullscale) {
-		if (!$flash_chart) {
-			$time_format = "Y M \nd H:i:s";
-		}
-		else {
-			$time_format = "Y M d H:i:s";
-		}
-
-		$new_chart = array();
-		$new_long_index = array();
-		foreach ($chart as $c_timestamp => $c_data) {
-			$timestamp_short = date($time_format, $c_timestamp);
-			$new_long_index[$timestamp_short] = date(
-				html_entity_decode($time_format, ENT_QUOTES, "UTF-8"), $c_timestamp);
-			$new_chart[$timestamp_short] = $c_data;
-		}
-
-		$long_index = $new_long_index;
-		$chart = $new_chart;
-	}
 	
 	if ($compare === 'overlapped') {
 		$i = 0;

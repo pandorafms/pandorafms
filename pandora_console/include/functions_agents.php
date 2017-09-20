@@ -853,11 +853,13 @@ function agents_get_group_agents ($id_group = 0, $search = false,
 		//No added search. Show both disabled and non-disabled
 	}
 	else if (is_array ($search)) {
-		$filter['disabled'] = 0;
-		if (isset ($search["disabled"])) {
-			$filter['disabled'] = (int) $search["disabled"];
-			
-			unset ($search["disabled"]);
+		if (!$search['all_agents']) {
+			$filter['disabled'] = 0;
+			if (isset ($search["disabled"])) {
+				$filter['disabled'] = (int) $search["disabled"];
+				
+				unset ($search["disabled"]);
+			}
 		}
 		
 		if (isset ($search["string"])) {

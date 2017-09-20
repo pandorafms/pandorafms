@@ -132,6 +132,7 @@ $get_element_status = get_parameter('get_element_status', 0);
 $enable_link = get_parameter('enable_link', 1);
 $type_graph = get_parameter('type_graph', 'area');
 $label_position = get_parameter('label_position', 'down');
+$show_statistics = get_parameter('show_statistics', 0);
 
 switch ($action) {
 	case 'get_font':
@@ -569,6 +570,9 @@ switch ($action) {
 						if ($height !== null) {
 							$values['height'] = $height;
 						}
+						if ($show_statistics !== null) {
+							$values['show_statistics'] = $show_statistics;
+						}
 						break;
 					case 'module_graph':
 						if ($height_module_graph !== null) {
@@ -640,6 +644,7 @@ switch ($action) {
 					switch ($type) {
 						case 'group_item':
 							unset($values['id_group']);
+							unset($values['show_statistics']);
 							break;
 						case 'module_graph':
 							unset($values['image']);
@@ -948,6 +953,7 @@ switch ($action) {
 				$values['width'] = $width;
 				$values['height'] = $height;
 				$values['id_group'] = $id_group;
+				$values['show_statistics'] = $show_statistics;
 				breaK;
 			case 'simple_value':
 				//This allows min, max and avg process in a simple value

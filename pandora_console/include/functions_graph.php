@@ -3794,7 +3794,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	$unit_name, $show_alerts, $avg_only = 0,
 	$date = 0, $series_suffix = '', $series_suffix_str = '', $show_unknown = false,
 	$fullscale = false) {
-	
+
 	global $config;
 	global $chart;
 	global $color;
@@ -3851,13 +3851,70 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	
 	if ($fullscale) {
 		// Get module data
-		$data = db_get_all_rows_filter ('tagente_datos',
-			array ('id_agente_modulo' => $agent_module_id,
+		$events = db_get_all_rows_filter('tevento',
+			array ('id_agentmodule' => $agent_module_id,
 				"utimestamp > $datelimit",
 				"utimestamp < $date",
 				'order' => 'utimestamp ASC'),
-			array ('datos', 'utimestamp'), 'AND', true);
+			array ('evento', 'utimestamp', 'event_type', 'id_evento'));
 
+		$table = "tagente_datos";
+		$module_type_str = modules_get_type_name ($agent_module_id);
+		if (strstr ($module_type_str, 'string') !== false) {
+			$table = "tagente_datos_string";
+		}
+
+		$query  = " SELECT utimestamp, datos FROM $table ";
+		$query .= " WHERE id_agente_modulo=$agent_module_id ";
+		$query .= " ORDER BY utimestamp ASC LIMIT 1";
+
+		$ret = db_get_all_rows_sql( $query , true);
+		
+		$first_data = $ret[0]['utimestamp'];
+		/*
+		// Get the last event after inverval to know if graph start on unknown
+		$prev_event = db_get_row_filter ('tevento',
+			array ('id_agentmodule' => $agent_module_id,
+				"utimestamp <= $datelimit",
+				'order' => 'utimestamp DESC'));
+		if (isset($prev_event['event_type']) && $prev_event['event_type'] == 'going_unknown') {
+			$start_unknown = true;
+		}
+		*/
+		if ($events === false) {
+			$events = array ();
+		}
+		
+		$data_uncompress = db_uncompress_module_data($agent_module_id, $datelimit, $date);
+
+		$i = 0;
+		$data = array();
+		if(is_array($data_uncompress)){
+			foreach ($data_uncompress as $value) {
+				foreach ($value['data'] as $key => $value) {
+					$data[$i]['datos'] = $value['datos'];
+					if(empty($value['datos'])){
+						if($value['utimestamp'] < $first_data){
+							$data[$i]['unknown']    = 0;
+							$data[$i]['not_init']   = 1;
+							$data[$i]['utimestamp'] = $value['utimestamp'];
+						}
+						else{
+							$data[$i]['not_init']   = 0;
+							$data[$i]['unknown']    = 1;
+							$data[$i]['utimestamp'] = $value['utimestamp'];
+						}
+					}
+					else{
+						$data[$i]['not_init']   = 0;
+						$data[$i]['unknown']    = 0;
+					}
+					$data[$i]['utimestamp'] = $value['utimestamp'];
+					$i++;
+				}
+			}
+		}
+	
 		if (count($data) > $resolution) {
 			$resolution = count($data); //Number of points of the graph
 			$interval = (int) ($period / $resolution);
@@ -3937,26 +3994,6 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	}
 	
 	$max_value = 0;
-
-	if ($fullscale) {
-		$data2 = array();
-		$previus_datas_cont = -1;
-		$k = 0;
-		for ($i = 0; $i <= $resolution; $i++) {
-			$timestamp = $datelimit + ($interval * $i);
-
-			if ($timestamp < $data[0]['utimestamp']) {
-				$previus_datas_cont++;
-				$data2[$k]['utimestamp'] = $timestamp;
-				$data2[$k]['datos'] = 0;
-				$k++;
-			}
-		}
-		html_debug($data2);
-		html_debug($data);
-		$data = array_merge($data2, $data);
-		$resolution += $previus_datas_cont;
-	}
 	
 	// Calculate chart data
 	$last_known = $previous_data;
@@ -3970,7 +4007,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 		$zero = 0;
 		$total = 0;
 		$count = 0;
-		
+		$is_unknown = false;
 		// Read data that falls in the current interval
 		while (isset ($data[$j]) &&
 			$data[$j]['utimestamp'] >= $timestamp &&
@@ -3984,6 +4021,10 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 			}
 			
 			$last_known = $data[$j]['datos'];
+
+			if ($show_unknown && $data[$j]['unknown']){
+				$is_unknown = true;
+			}
 			$j++;
 		}
 		
@@ -3996,7 +4037,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 		$event_value = 0;
 		$alert_value = 0;
 		$unknown_value = 0;
-		$is_unknown = false;
+		
 		// Is the first point of a unknown interval
 		$first_unknown = false;
 		
@@ -4026,7 +4067,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 			}
 			$k++;
 		}
-		
+
 		// In some cases, can be marked as known because a recovery event
 		// was found in same interval. For this cases first_unknown is 
 		// checked too
@@ -4046,7 +4087,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 		}
 		elseif ($period < SECONDS_1MONTH) {
 			$time_format = 'M d H\h';
-		} 
+		}
 		else {
 			$time_format = 'M d H\h';
 		}
@@ -4107,7 +4148,6 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 			if (!isset($chart[$timestamp]['unknown'.$series_suffix])) {
 				$chart[$timestamp]['unknown'.$series_suffix] = 0;
 			}
-			
 			$chart[$timestamp]['unknown'.$series_suffix] = $unknown_value;
 			$series_type['unknown'.$series_suffix] = 'area';
 		}

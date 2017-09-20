@@ -250,7 +250,7 @@ function tactical_get_data ($id_user = false, $user_strict = false, $acltags, $r
 			SUM(ta.warning_count) as warning,SUM(ta.unknown_count) as unknown,
 			SUM(ta.notinit_count) as not_init, SUM(fired_count) as alerts_fired
 			FROM tagente ta
-			WHERE id_grupo IN ($user_groups_ids)");
+			WHERE disabled = 0 AND id_grupo IN ($user_groups_ids)");
 		
 		$list['_agents_unknown_'] = $group_stat[0]["unknown"];
 		$list['_monitors_alerts_fired_'] = $group_stat[0]["alerts_fired"];		

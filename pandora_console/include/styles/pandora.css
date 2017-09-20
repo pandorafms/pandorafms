@@ -4139,6 +4139,8 @@ div#main_help_new_content {
     padding-top: 10px;
     background: white;
     height: 100%;
+		font-size: 12pt;
+		font-family: 'lato-bolder';
 }
 
 div#main_help_new_content h1 {
@@ -4147,6 +4149,15 @@ div#main_help_new_content h1 {
 }
 
 div#main_help_new_content p {
+	font-family: 'lato-bolder';
+	font-size: 12pt;
+}
+div#main_help_new_content b {
+	font-family: 'lato-bolder';
+	font-size: 12pt;
+}
+
+div#main_help_new_content li {
 	font-family: 'lato-bolder';
 	font-size: 12pt;
 }

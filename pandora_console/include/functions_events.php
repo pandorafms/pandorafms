@@ -126,7 +126,7 @@ function events_get_events_no_grouped($sql_post, $offset = 0,
 
 function events_get_events_grouped($sql_post, $offset = 0,
 	$pagination = 1, $meta = false, $history = false, $total = false, 
-	$history_db = false, $order = "ASC") {
+	$history_db = false, $order = "DESC") {
 	
 	global $config; 
 	
@@ -2031,7 +2031,8 @@ function events_page_details ($event, $server = "") {
 		
 		$data = array();
 		$data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('OS').'</div>';
-		$data[1] = ui_print_os_icon ($agent["id_os"], true, true).' ('.$agent["os_version"].')';
+		$data[1] = ui_print_os_icon ($agent["id_os"], true, true);
+		if (!empty($agent["os_version"])) $data[1] .= ' ('.$agent["os_version"].')';
 		$table_details->data[] = $data;
 		
 		$data = array();

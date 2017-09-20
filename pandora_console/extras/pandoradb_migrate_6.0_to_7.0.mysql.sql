@@ -1230,6 +1230,7 @@ ALTER TABLE tlayout ADD `background_color` varchar(50) NOT NULL default '#FFF';
 -- ---------------------------------------------------------------------
 ALTER TABLE tlayout_data ADD `type_graph` varchar(50) NOT NULL default 'area';
 ALTER TABLE tlayout_data ADD `label_position` varchar(50) NOT NULL default 'down';
+ALTER TABLE tlayout_data ADD COLUMN `show_statistics` tinyint(2) NOT NULL default '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tagent_custom_fields`

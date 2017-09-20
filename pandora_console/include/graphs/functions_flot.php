@@ -489,6 +489,16 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 	// Trick to get translated string from javascript
 	$return .= html_print_input_hidden('unknown_text', __('Unknown'),
 		true);
+
+	if (!isset($config["short_module_graph_data"]))
+		$config["short_module_graph_data"] = true;
+	
+	if ($config["short_module_graph_data"]) {
+		$short_data = true;
+	}
+	else {
+		$short_data = false;
+	}
 	
 	// Javascript code
 	$return .= "<script type='text/javascript'>";
@@ -530,7 +540,8 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 		" . json_encode($vconsole) . ",\n" .
 		"'$xaxisname', \n" .
 		"'$background_color', \n" .
-		"'$legend_color'
+		"'$legend_color', \n" .
+		"'$short_data'
 	);";
 	$return .= "});";
 	$return .= "</script>";

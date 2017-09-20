@@ -607,7 +607,10 @@ sub main() {
 				$server->update();
 			}
 	
-			db_do ($DBH, "UPDATE tserver SET status = 0 WHERE now()-keepalive > 2*server_keepalive");
+			db_do ($DBH,
+				"UPDATE tserver SET status = 0
+				WHERE UNIX_TIMESTAMP(now())-UNIX_TIMESTAMP(keepalive) > 2*server_keepalive"
+			);
 
 			# Set the master server
 			pandora_set_master(\%Config, $DBH);

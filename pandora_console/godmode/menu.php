@@ -196,7 +196,7 @@ if (!empty($sub)) {
 }
 
 
-if (check_acl ($config['id_user'], 0, "AW") || check_acl ($config['id_user'], 0, "PM")) {
+if (check_acl ($config['id_user'], 0, "AW") || check_acl ($config['id_user'], 0, "PM") || check_acl ($config['id_user'], 0, "RR")) {
 	// Servers
 	$menu_godmode["gservers"]["text"] = __('Servers');
 	$menu_godmode["gservers"]["sec2"] = "godmode/servers/modificar_server";

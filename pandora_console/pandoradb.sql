@@ -1355,6 +1355,7 @@ CREATE TABLE IF NOT EXISTS `tlayout_data` (
 	`label_position` varchar(50) NOT NULL default 'down',
 	`border_color` varchar(200) DEFAULT "",
 	`fill_color` varchar(200) DEFAULT "",
+	`show_statistics` tinyint(2) NOT NULL default '0',
 	PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

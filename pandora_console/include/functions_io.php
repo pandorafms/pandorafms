@@ -102,14 +102,15 @@ function io_safe_input($value) {
 	// Replace ( for the html entitie
 	$valueHtmlEncode = str_replace(')', "&#41;", $valueHtmlEncode);
 	
-	$valueHtmlEncode = str_replace(')', "&#41;", $valueHtmlEncode);
-	
 	
 	// Fixed the º character, because the Perl in the Pandora Server
 	// use the hex value instead the human readble.
 	// TICKET: #1495
 	$valueHtmlEncode = str_replace('&ordm;', "&#xba;", $valueHtmlEncode);
 	
+	// Fixed the ° character.
+	// TICKET: 1223
+	$valueHtmlEncode = str_replace('&deg;', "&#176;", $valueHtmlEncode);
 	
 	
 	//Replace some characteres for html entities

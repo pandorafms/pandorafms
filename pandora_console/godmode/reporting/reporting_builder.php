@@ -925,9 +925,13 @@ switch ($action) {
 							case 'event_report_log':
 								$agents_to_report = get_parameter('id_agents2');
 								$source = get_parameter('source', "");
-
+								$search = get_parameter('search', "");
+								$log_number = get_parameter('log_number', "");
+							
 								$es['source'] = $source;
 								$es['id_agents'] = $agents_to_report;
+								$es['search']=$search;
+								$es['log_number']=$log_number;
 
 								$values['external_source'] = json_encode($es);
 								$values['period'] = get_parameter('period');
@@ -1281,9 +1285,13 @@ switch ($action) {
 							case 'event_report_log':
 								$agents_to_report = get_parameter('id_agents2');
 								$source = get_parameter('source', "");
-
+								$search = get_parameter('search', "");
+								$log_number = get_parameter('log_number', "");
+								
 								$es['source'] = $source;
 								$es['id_agents'] = $agents_to_report;
+								$es['search']=$search;
+								$es['log_number']=$log_number;
 
 								$values['external_source'] = json_encode($es);
 								$values['period'] = get_parameter('period');

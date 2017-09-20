@@ -122,6 +122,8 @@ function reporting_make_reporting_data($report = null, $id_report,
 	if (empty($contents)) {
 		return reporting_check_structure_report($report);
 	}
+
+	$metaconsole_on = is_metaconsole();
 	
 	foreach ($contents as $content) {
 		if (!empty($period)) {
@@ -129,13 +131,53 @@ function reporting_make_reporting_data($report = null, $id_report,
 		}
 		
 		$content['style'] = json_decode(io_safe_output($content['style']), true);
+
+		$graphs_to_macro = db_get_all_rows_field_filter ("tgraph_source",
+			"id_graph", $content['id_gs']);
+		
+		if ($graphs_to_macro === false)
+			$graphs_to_macro = array();
+
+		$modules_to_macro = 0;
+		$agents_to_macro = array();
+		foreach ($graphs_to_macro as $graph_item) {
+			$modules_to_macro++;
+
+			if (in_array('label', $content['style'])) {
+				if ($content['id_agent'] == 0) {
+					//Metaconsole connection
+					if ($metaconsole_on && $server_name != '') {
+						$connection = metaconsole_get_connection($server_name);
+						if (!metaconsole_load_external_db($connection)) {
+							//ui_print_error_message ("Error connecting to ".$server_name);
+							continue;
+						}
+					}
+					array_push ($agents_to_macro, modules_get_agentmodule_agent($graph_item['id_agent_module']));
+					if ($metaconsole_on) {
+						//Restore db connection
+						metaconsole_restore_db();
+					}
+				}
+			}
+		}
+		
+		$agents_to_macro_aux = array();
+		foreach ($agents_to_macro as $ag) {
+			if (!in_array($ag, $agents_to_macro_aux)) {
+				$agents_to_macro_aux[$ag] = $ag;
+			}
+		}
+		$agents_to_macro = $agents_to_macro_aux;
+
 		if(isset($content['style']['name_label'])){
 			//Add macros name
 			$items_label = array();
 			$items_label['type'] = $content['type'];
 			$items_label['id_agent'] = $content['id_agent'];
 			$items_label['id_agent_module'] = $content['id_agent_module'];
-			$metaconsole_on = is_metaconsole();
+			$items_label['modules'] = $modules_to_macro;
+			$items_label['agents'] = $agents_to_macro;
 			$server_name = $content['server_name'];
 			
 			//Metaconsole connection
@@ -146,7 +188,6 @@ function reporting_make_reporting_data($report = null, $id_report,
 					continue;
 				}
 			}
-			
 			
 			if(sizeof($content['id_agent']) != 1){
 				$content['style']['name_label'] = str_replace("_agent_",sizeof($content['id_agent']).__(' agents'),$content['style']['name_label']);
@@ -5800,12 +5841,6 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 	
 	require_once ($config["homedir"] . '/include/functions_graph.php');
 	
-	if ($config['metaconsole'] && $type_report != 'automatic_graph') {
-		$id_meta = metaconsole_get_id_server($content["server_name"]);	
-		$server = metaconsole_get_connection_by_id ($id_meta);
-		metaconsole_connect($server);
-	}
-	
 	$graph = db_get_row ("tgraph", "id_graph", $content['id_gs']);
 	$return = array();
 	$return['type'] = 'custom_graph';
@@ -5844,23 +5879,42 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 			array_push ($modules, $graph_item['id_agent_module']);
 		}
 		
-		array_push ($weights, $graph_item["weight"]);
 		if (in_array('label',$content['style'])) {
 			if (defined('METACONSOLE')) {
+				$server_name = $content['server_name'];
+				$connection = metaconsole_get_connection($server_name);
+				if (!metaconsole_load_external_db($connection)) {
+					//ui_print_error_message ("Error connecting to ".$server_name);
+					continue;
+				}
 				$item = array('type' => 'custom_graph',
-							'id_agent' =>$content['id_agent'],
-							'id_agent_module'=>$graph_item['id_agent_module']);
+						'id_agent' =>modules_get_agentmodule_agent($graph_item['id_agent_module']),
+						'id_agent_module'=>$graph_item['id_agent_module']);
 			}
 			else {
-			$item = array('type' => 'custom_graph',
+				$item = array('type' => 'custom_graph',
 						'id_agent' =>modules_get_agentmodule_agent($graph_item['id_agent_module']),
 						'id_agent_module'=>$graph_item['id_agent_module']);
 			}
 			
+			$label = reporting_label_macro($item, $content['style']['label']);
+
 			$labels[$graph_item['id_agent_module']] = $label;
+			if (defined('METACONSOLE')) {
+				//Restore db connection
+				metaconsole_restore_db();
+			}
 		}
+
+		array_push ($weights, $graph_item["weight"]);
 	}
 	
+	if ($config['metaconsole'] && $type_report != 'automatic_graph') {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);	
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
+	}
+
 	$return['chart'] = '';
 	// Get chart
 	reporting_set_conf_charts($width, $height, $only_image, $type,
@@ -10313,32 +10367,65 @@ function reporting_label_macro ($item, $label) {
 		case 'MTTR':
 		case 'automatic_graph':
 			if (preg_match("/_agent_/", $label)) {
-				$agent_name = agents_get_alias($item['id_agent']);
+				if (count($item['agents']) > 1) {
+					$agent_name = count($item['agents']) . __(' agents');
+				}
+				else {
+					$agent_name = agents_get_alias($item['id_agent']);
+				}
+				
 				$label = str_replace("_agent_", $agent_name, $label);
 			}
 			
 			if (preg_match("/_agentdescription_/", $label)) {
-				$agent_name = agents_get_description($item['id_agent']);
+				if (count($item['agents']) > 1) {
+					$agent_name = "";
+				}
+				else {
+					$agent_name = agents_get_description($item['id_agent']);
+				}
 				$label = str_replace("_agentdescription_", $agent_name, $label);
 			}
 			
 			if (preg_match("/_agentgroup_/", $label)) {
-				$agent_name = groups_get_name(agents_get_agent_group($item['id_agent']),true);
+				if (count($item['agents']) > 1) {
+					$agent_name = "";
+				}
+				else {
+					$agent_name = groups_get_name(agents_get_agent_group($item['id_agent']),true);
+				}
 				$label = str_replace("_agentgroup_", $agent_name, $label);
 			}
 			
 			if (preg_match("/_address_/", $label)) {
-				$agent_name = agents_get_address($item['id_agent']);
+				if (count($item['agents']) > 1) {
+					$agent_name = "";
+				}
+				else {
+					$agent_name = agents_get_address($item['id_agent']);
+				}
 				$label = str_replace("_address_", $agent_name, $label);
 			}
 			
 			if (preg_match("/_module_/", $label)) {
-				$module_name = modules_get_agentmodule_name($item['id_agent_module']);
+				if ($item['modules'] > 1) {
+					$module_name = $item['modules'] . __(' modules');
+				}
+				else {
+					$module_name = modules_get_agentmodule_name($item['id_agent_module']);
+				}
+				
 				$label = str_replace("_module_", $module_name, $label);
 			}
 			
 			if (preg_match("/_moduledescription_/", $label)) {
-				$module_description = modules_get_agentmodule_descripcion($item['id_agent_module']);
+				if ($item['modules'] > 1) {
+					$module_description = "";
+				}
+				else {
+					$module_description = modules_get_agentmodule_descripcion($item['id_agent_module']);
+				}
+
 				$label = str_replace("_moduledescription_", $module_description, $label);
 			}
 			break;

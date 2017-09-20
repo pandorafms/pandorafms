@@ -1589,8 +1589,14 @@ function show_menu(item, data) {
 					name: interface_link_add,
 					icon: "interface_link_children",
 					disabled : function() {
+						console.log(data);
 						if (enterprise_installed) {
-							return false;
+							if (data.type == 3) {
+								return true;
+							}
+							else {
+								return false;
+							}
 						}
 						else {
 							return true;
@@ -1657,7 +1663,12 @@ function show_menu(item, data) {
 						icon: "interface_link_parent",
 						disabled : function() {
 							if (enterprise_installed) {
-								return false;
+								if (data.type == 3) {
+									return true;
+								}
+								else {
+									return false;
+								}
 							}
 							else {
 								return true;
@@ -1681,7 +1692,12 @@ function show_menu(item, data) {
 					icon: "interface_link_cancel",
 					disabled : function() {
 						if (enterprise_installed) {
-							return false;
+							if (data.type == 3) {
+								return true;
+							}
+							else {
+								return false;
+							}
 						}
 						else {
 							return true;

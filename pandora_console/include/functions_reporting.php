@@ -103,6 +103,8 @@ function reporting_make_reporting_data($report = null, $id_report,
 	
 	global $config;
 	
+	enterprise_include_once('include/functions_metaconsole.php');
+
 	$return = array();
 	
 	if (!empty($report)) {
@@ -127,6 +129,8 @@ function reporting_make_reporting_data($report = null, $id_report,
 	$metaconsole_on = is_metaconsole();
 	
 	foreach ($contents as $content) {
+		$server_name = $content['server_name'];
+		
 		if (!empty($period)) {
 			$content['period'] = $period;
 		}
@@ -154,6 +158,7 @@ function reporting_make_reporting_data($report = null, $id_report,
 							continue;
 						}
 					}
+					
 					array_push ($agents_to_macro, modules_get_agentmodule_agent($graph_item['id_agent_module']));
 					if ($metaconsole_on) {
 						//Restore db connection
@@ -161,10 +166,6 @@ function reporting_make_reporting_data($report = null, $id_report,
 					}
 				}
 			}
-		}
-
-		if (!empty($report) && $from_template) { 
-			$agents_to_macro = $content['id_agent'];
 		}
 		
 		$agents_to_macro_aux = array();
@@ -175,6 +176,10 @@ function reporting_make_reporting_data($report = null, $id_report,
 		}
 		$agents_to_macro = $agents_to_macro_aux;
 
+		if (!empty($report) && $from_template) { 
+			$agents_to_macro = $content['id_agent'];
+		}
+
 		if(isset($content['style']['name_label'])){
 			//Add macros name
 			$items_label = array();
@@ -183,7 +188,6 @@ function reporting_make_reporting_data($report = null, $id_report,
 			$items_label['id_agent_module'] = $content['id_agent_module'];
 			$items_label['modules'] = $modules_to_macro;
 			$items_label['agents'] = $agents_to_macro;
-			$server_name = $content['server_name'];
 			
 			//Metaconsole connection
 			if ($metaconsole_on && $server_name != '') {

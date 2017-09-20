@@ -98,7 +98,8 @@ function reporting_get_name($id_report) {
 
 function reporting_make_reporting_data($report = null, $id_report,
 	$date, $time, $period = null, $type = 'dinamic',
-	$force_width_chart = null, $force_height_chart = null, $pdf= false) {
+	$force_width_chart = null, $force_height_chart = null, $pdf= false,
+	$from_template = false) {
 	
 	global $config;
 	
@@ -160,6 +161,10 @@ function reporting_make_reporting_data($report = null, $id_report,
 					}
 				}
 			}
+		}
+
+		if (!empty($report) && $from_template) { 
+			$agents_to_macro = $content['id_agent'];
 		}
 		
 		$agents_to_macro_aux = array();
@@ -10320,7 +10325,6 @@ function reporting_get_agentmodule_sla_working_timestamp ($period, $date_end, $w
 }
 
 function reporting_label_macro ($item, $label) {
-	
 	switch ($item['type']) {
 		case 'event_report_agent':
 		case 'alert_report_agent':

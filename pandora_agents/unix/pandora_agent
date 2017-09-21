@@ -128,9 +128,9 @@ my @BrokerPid;
 my %DefaultConf = (
 	'server_ip' => 'localhost',
 	'server_path' => '/var/spool/pandora/data_in',
-	'server_path_md5' => 'md5',
-	'server_path_conf' => 'conf',
-	'server_path_zip' => 'collections',
+	'server_path_md5' => 'md5', #undocumented
+	'server_path_conf' => 'conf', #undocumented
+	'server_path_zip' => 'collections', #undocumented
 	'logfile' =>'/var/log/pandora/pandora_agent.log',
 	'logsize' => DEFAULT_MAX_LOG_SIZE,
 	'logrotate' => DEFAULT_LOG_ROTATE,

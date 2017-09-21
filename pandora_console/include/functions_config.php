@@ -319,11 +319,14 @@ function config_update_config () {
 						$error_update[] = __('Start TLS');
 					if (!config_update_value ('ad_advanced_config', get_parameter ('ad_advanced_config')))
 						$error_update[] = __('Advanced Config AD');
+					if (!config_update_value ('ldap_advanced_config', get_parameter ('ldap_advanced_config')))
+						$error_update[] = __('Advanced Config LDAP');
 					if (!config_update_value ('ad_domain', get_parameter ('ad_domain')))
 						$error_update[] = __('Domain');
 					if (!config_update_value ('ad_adv_perms', get_parameter ('ad_adv_perms')))
 						$error_update[] = __('Advanced Permisions AD');
-					
+					if (!config_update_value ('ldap_adv_perms', get_parameter ('ldap_adv_perms')))
+						$error_update[] = __('Advanced Permisions LDAP');
 					if (!config_update_value ('ldap_server', get_parameter ('ldap_server')))
 						$error_update[] = __('LDAP server');
 					if (!config_update_value ('ldap_port', get_parameter ('ldap_port')))
@@ -1349,6 +1352,10 @@ function config_process_config () {
 	if (!isset ($config['ad_advanced_config'])) {
 		config_update_value ( 'ad_advanced_config', 0);
 	}
+
+	if (!isset ($config['ldap_advanced_config'])) {
+		config_update_value ( 'ldap_advanced_config', 0);
+	}
 	
 	if (!isset ($config['ad_adv_user_node'])) {
 		config_update_value ( 'ad_adv_user_node', 1);
@@ -1419,6 +1426,70 @@ function config_process_config () {
 				}
 			}
 			config_update_value ('ad_adv_perms', $temp_ad_adv_perms);
+		}
+	}
+
+	if (!isset ($config['ldap_adv_perms'])) {
+		config_update_value ('ldap_adv_perms', '');
+	}
+	else {
+		if (!json_decode(io_safe_output($config['ldap_adv_perms']))) {
+			$temp_ldap_adv_perms = array();
+			if ($config['ldap_adv_perms'] != '') {
+				$perms = explode(';', io_safe_output($config['ldap_adv_perms']));
+				foreach ($perms as $ad_adv_perm) {
+					if (preg_match('/[\[\]]/',$ad_adv_perm)) {
+						$all_data =  explode (",", io_safe_output($ad_adv_perm));
+						$profile = $all_data[0];
+						$group_pnd = $all_data[1];
+						$groups_ad = str_replace(array("[","]"), "", $all_data[2]);
+						$tags = str_replace(array("[","]"), "", $all_data[3]);
+						$groups_ad = explode('|', $groups_ad);
+						$tags_name = explode('|', $tags);
+						$tags_ids = array();
+						foreach ($tags_name as $tag) {
+							$tags_ids[] = tags_get_id($tag);
+						}
+						$profile = profile_get_profiles(
+						array(
+							"name" => io_safe_input($profile)));
+						if (!$profile)
+							continue;
+						$profile_id = array_keys($profile);
+						$id_grupo = groups_get_id (io_safe_input($group_pnd), false);
+						$new_ldap_adv_perms[] =
+							array('profile' => $profile_id[0],
+								'group' => array($id_grupo),
+								'tags' => $tags_ids,
+								'groups_ldap' => $groups_ldap);
+					}
+					else {
+						$all_data =  explode (",", io_safe_output($ad_adv_perm));
+						$profile = $all_data[0];
+						$group_pnd = $all_data[1];
+						$groups_ad = $all_data[2];
+						$tags = $all_data[3];
+						$profile = profile_get_profiles(
+						array(
+							"name" => io_safe_input($profile)));
+						if (!$profile)
+							continue;
+						$profile_id = array_keys($profile);
+						$id_grupo = groups_get_id (io_safe_input($group_pnd), false);
+						
+						$new_ldap_adv_perms[] =
+							array('profile' => $profile_id[0],
+								'group' => array($id_grupo),
+								'tags' => array($tags),
+								'groups_ldap' => array($groups_ldap));
+					}
+				}
+				
+				if (!empty($new_ldap_adv_perms)) {
+					$temp_ldap_adv_perms = json_encode($new_ldap_adv_perms);
+				}
+			}
+			config_update_value ('ldap_adv_perms', $temp_ldap_adv_perms);
 		}
 	}
 	

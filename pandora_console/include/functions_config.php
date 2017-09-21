@@ -1360,6 +1360,10 @@ function config_process_config () {
 	if (!isset ($config['ad_adv_user_node'])) {
 		config_update_value ( 'ad_adv_user_node', 1);
 	}
+
+	if (!isset ($config['ldap_adv_user_node'])) {
+		config_update_value ( 'ldap_adv_user_node', 1);
+	}
 	
 	if (!isset ($config['ad_domain'])) {
 		config_update_value ( 'ad_domain', '');

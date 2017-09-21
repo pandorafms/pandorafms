@@ -315,7 +315,6 @@ function process_user_login_remote ($login, $pass, $api = false) {
 	elseif ($config["auth"] === 'ldap' && 
 		(isset($config['ldap_advanced_config']) && 
 			$config['ldap_advanced_config'])) {
-
 		if ( defined('METACONSOLE') ) {
 			enterprise_include_once('include/functions_metaconsole.php');
 			enterprise_include_once ('meta/include/functions_groups_meta.php');
@@ -695,10 +694,9 @@ function ldap_process_user_login ($login, $password) {
 			return false;
 		}
 	}
-	
+
 	$ldap_login_attr  = !empty($config["ldap_login_attr"]) ? io_safe_output($config["ldap_login_attr"]) . "=" : '';
 	$ldap_base_dn  = !empty($config["ldap_base_dn"]) ? "," . io_safe_output($config["ldap_base_dn"]) : '';
-	
 	if(!empty($ldap_base_dn)){
 		if (strlen($password) == 0 || !@ldap_bind($ds, $ldap_login_attr.io_safe_output($login).$ldap_base_dn, $password) ) {
 			$config["auth_error"] = 'User not found in database or incorrect password';

@@ -128,6 +128,9 @@ my @BrokerPid;
 my %DefaultConf = (
 	'server_ip' => 'localhost',
 	'server_path' => '/var/spool/pandora/data_in',
+	'server_path_md5' => 'md5', #undocumented
+	'server_path_conf' => 'conf', #undocumented
+	'server_path_zip' => 'collections', #undocumented
 	'logfile' =>'/var/log/pandora/pandora_agent.log',
 	'logsize' => DEFAULT_MAX_LOG_SIZE,
 	'logrotate' => DEFAULT_LOG_ROTATE,
@@ -146,6 +149,7 @@ my %DefaultConf = (
 	'encoding' => 'UTF-8',
 	'server_port' => 41121,
 	'transfer_mode' => 'tentacle',
+	'transfer_mode_user' => 'apache',
 	'transfer_timeout' => 30,
 	'server_user' => 'pandora',
 	'server_pwd' => '',
@@ -906,12 +910,16 @@ sub fix_directory ($) {
 ################################################################################
 # Sends a file to the server.
 ################################################################################
-#sub send_file ($;$$$) {
 sub send_file {
-	my ($file, $secondary, $rc_primary, $flag_always) = @_;
+	my ($file, $secondary, $rc_primary, $flag_always, $relative) = @_;
+
 	my $output;
 	my $pid = fork();
 	return 1 unless defined $pid;
+
+	# Fix remote dir to some transfer mode
+	my $remote_dir = $Conf{'server_path'} . "/";
+	$remote_dir .= fix_directory($relative) . '/' if defined($relative);
 
 	if ($pid == 0) {
 		# execute the transfer program by child process.
@@ -935,7 +943,7 @@ sub send_file {
 				quit
 				FEOF1`
 			} elsif ($Conf{'transfer_mode'} eq 'local') {
-				$output = `cp "$file" "$Conf{'server_path'}/" 2>&1 >$DevNull`;
+				$output = `cp -p "$file" "$remote_dir" 2>&1 >$DevNull`;
 		 	}
 			alarm (0);
 		};
@@ -966,7 +974,7 @@ sub send_file {
 				$rc_primary = 1;
 			}
 			swap_servers ();
-			$rc = send_file ($file, undef, $rc_primary);
+			$rc = send_file ($file, undef, $rc_primary, undef, $relative);
 			swap_servers ();
 
 			return $rc;
@@ -1024,7 +1032,7 @@ sub send_file {
 		return $rc unless ($Conf{'secondary_mode'} eq 'always' || ($Conf{'secondary_mode'} eq 'on_error' && $rc != 0));
 		
 		swap_servers ();
-		$rc = send_file ($file);
+		$rc = send_file ($file, undef, undef, undef, $relative);
 		swap_servers ();
 		return $rc;
 	}
@@ -1075,12 +1083,16 @@ sub swap_servers () {
 ################################################################################
 # Receive a file from the server.
 ################################################################################
-sub recv_file ($) {
-	my $file = shift;
+sub recv_file {
+	my ($file, $relative) = @_;
 	my $output;
-
+	
 	my $pid = fork();
-        return 1 unless defined $pid;
+    return 1 unless defined $pid;
+
+	# Fix remote dir to some transfer mode
+	my $remote_dir = $Conf{'server_path'};
+	$remote_dir .= "/" . fix_directory($relative) if defined($relative);
 
 	if ($pid == 0) {
 		# execute the transfer program by child process.
@@ -1104,7 +1116,7 @@ sub recv_file ($) {
 				quit
 				FEOF1`
 			} elsif ($Conf{'transfer_mode'} eq 'local') {
-				$output = `cp $Conf{'server_path'}/$file $Conf{'temporal'} 2>&1 >$DevNull`;
+				$output = `cp "$remote_dir/$file" $Conf{'temporal'} 2>&1 >$DevNull`;
 			}
 			alarm (0);
 		};
@@ -1148,14 +1160,19 @@ sub check_remote_config () {
 	}
 
 	# Get the remote MD5 file
-	if (recv_file ($RemoteMD5File) != 0) {
+	if (recv_file ($RemoteMD5File, $Conf{'server_path_md5'}) != 0) {
+		log_message ('remote config', 'Uploading configuration for the first time.');
 		open (MD5_FILE, "> $Conf{'temporal'}/$RemoteMD5File") || error ("Could not open file '$ConfDir/$RemoteMD5File' for writing: $!.");
 		print MD5_FILE $conf_md5;
 		close (MD5_FILE);
 		copy ("$ConfDir/$ConfFile", "$Conf{'temporal'}/$RemoteConfFile");
-		send_file ("$Conf{'temporal'}/$RemoteConfFile");
-		send_file ("$Conf{'temporal'}/$RemoteMD5File");
-		log_message ('remote config', 'Uploading configuration for the first time.');
+		if ($Conf{'transfer_mode'} eq 'local') {
+			my (undef, undef, $uid, $gid) = getpwnam($Conf{'transfer_mode_user'});
+			chown ($uid, $gid, "$Conf{'temporal'}/$RemoteMD5File");
+			chown ($uid, $gid, "$Conf{'temporal'}/$RemoteConfFile");
+		}
+		send_file ("$Conf{'temporal'}/$RemoteConfFile", undef, undef, undef, $Conf{'server_path_conf'});
+		send_file ("$Conf{'temporal'}/$RemoteMD5File", undef, undef, undef, $Conf{'server_path_md5'});
 		unlink ("$Conf{'temporal'}/$RemoteConfFile");
 		unlink ("$Conf{'temporal'}/$RemoteMD5File");
 		return;
@@ -1169,7 +1186,7 @@ sub check_remote_config () {
 	return if ($remote_conf_md5 eq $conf_md5);
 	
 	# Get the new configuration file
-	return if (recv_file ($RemoteConfFile) != 0);
+	return if (recv_file ($RemoteConfFile, $Conf{'server_path_conf'}) != 0);
 	log_message ('remote config', 'Configuration has changed!');
 
 	# Save the new configuration
@@ -1255,7 +1272,7 @@ sub check_collections () {
 
 		# Get remote md5
  		error ("File '$Conf{'temporal'}/$collection_md5_file' already exists as a symlink and could not be removed: $!.") if (-l "$Conf{'temporal'}/$collection_md5_file" && !unlink("$Conf{'temporal'}/$collection_md5_file"));
-		next unless (recv_file ($collection_md5_file) == 0);
+		next unless (recv_file ($collection_md5_file, $Conf{'server_path_md5'}) == 0);
 		open (MD5_FILE, "< $Conf{'temporal'}/$collection_md5_file") || error ("Could not open file '$Conf{'temporal'}/$collection_md5_file' for reading: $!.");
 		my $remote_collection_md5 = <MD5_FILE>;
 		close (MD5_FILE);
@@ -1273,7 +1290,7 @@ sub check_collections () {
 		next if ($local_collection_md5 eq $remote_collection_md5);
 		
 		# Download and unzip
-		next unless (recv_file ($collection_file) == 0);
+		next unless (recv_file ($collection_file, $Conf{'server_path_zip'}) == 0);
 		rmrf ("$ConfDir/collections/$collection");
 		`unzip -d "$ConfDir/collections/$collection" "$Conf{'temporal'}/$collection_file" 2>$DevNull`;
 		unlink ("$Conf{'temporal'}/$collection_file");		

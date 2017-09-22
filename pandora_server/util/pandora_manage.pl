@@ -5520,6 +5520,8 @@ sub cli_export_visual_console() {
 			$first = 0;
 		}
 
+		$label =~ s/"/\\"/g;
+
 		$data_to_json .= '{"image":"' . $image . '"';
 		$data_to_json .= ',"pos_y":' . $pos_y;
 		$data_to_json .= ',"pos_x":' . $pos_x;

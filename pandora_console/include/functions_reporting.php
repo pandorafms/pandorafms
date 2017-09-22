@@ -6034,12 +6034,14 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 	if (isset($content['style']['only_avg'])) {
 		$only_avg = (bool) $content['style']['only_avg'];
 	}
+
+	if (isset($content['style']['fullscale'])) {
+		$fullscale = (bool) $content['style']['fullscale'];
+	}
 	
 	$moduletype_name = modules_get_moduletype_name(
 		modules_get_agentmodule_type(
 			$content['id_agent_module']));
-	
-	
 	
 	$return['chart'] = '';
 	// Get chart
@@ -6114,7 +6116,8 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 					($content['style']['percentil'] == 1) ? $config['percentil'] : null,
 					false,
 					false,
-					$config['type_module_charts']);
+					$config['type_module_charts'],
+					$fullscale);
 			}
 			break;
 		case 'data':

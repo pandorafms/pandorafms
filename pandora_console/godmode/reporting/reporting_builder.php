@@ -1172,8 +1172,9 @@ switch ($action) {
 							case 'simple_graph':
 								// Warning. We are using this column to hold this value to avoid
 								// the modification of the database for compatibility reasons.
-								$style['only_avg'] = (int) get_parameter('only_avg');
+								$style['only_avg']  = (int) get_parameter('only_avg');
 								$style['percentil'] = (int) get_parameter('percentil');
+								$style['fullscale'] = (int) get_parameter('fullscale');
 								if ($label != '')
 									$style['label'] = $label;
 								else
@@ -1516,8 +1517,9 @@ switch ($action) {
 							case 'simple_graph':
 								// Warning. We are using this column to hold this value to avoid
 								// the modification of the database for compatibility reasons.
-								$style['only_avg'] = (int) get_parameter('only_avg');
+								$style['only_avg']  = (int) get_parameter('only_avg');
 								$style['percentil'] = (int) get_parameter('percentil');
+								$style['fullscale'] = (int) get_parameter('fullscale');
 								if ($label != '')
 									$style['label'] = $label;
 								else

@@ -94,6 +94,7 @@ $inventory_modules = array();
 $date = null;
 // Only avg is selected by default for the simple graphs
 $only_avg = true;
+$fullscale = false;
 $percentil = false;
 $time_compare_overlapped = false;
 
@@ -212,6 +213,7 @@ switch ($action) {
 					break;
 				case 'simple_graph':
 					$only_avg = isset($style['only_avg']) ? (bool) $style['only_avg'] : true;
+					$fullscale = isset($style['fullscale']) ? (bool) $style['fullscale'] : 0;
 					$percentil = isset($style['percentil']) ? $config['percentil'] : 0;
 					// The break hasn't be forgotten.
 				case 'simple_baseline_graph':
@@ -1352,6 +1354,10 @@ You can of course remove the warnings, that's why we include the source and do n
 		<tr id="row_only_avg" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Only average');?></td>
 			<td><?php html_print_checkbox('only_avg', 1, $only_avg);?></td>
+		</tr>
+		<tr id="row_fullscale" style="" class="datos">
+			<td style="font-weight:bold;"><?php echo __('Full resolution graph (TIP)');?></td>
+			<td><?php html_print_checkbox('fullscale', 1, $fullscale);?></td>
 		</tr>
 		<tr id="row_percentil" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Percentil');?></td>
@@ -2643,6 +2649,7 @@ function chooseType() {
 	$("#row_show_graph").hide();
 	$("#row_max_min_avg").hide();
 	$("#row_only_avg").hide();
+	$("#row_fullscale").hide();
 	$("#row_time_compare_overlapped").hide();
 	$("#row_quantity").hide();
 	$("#row_exception_condition_value").hide();
@@ -2725,6 +2732,7 @@ function chooseType() {
 		case 'simple_graph':
 			$("#row_time_compare_overlapped").show();
 			$("#row_only_avg").show();
+			$("#row_fullscale").show();
 			if ($("#checkbox-percentil").prop("checked"))
 				$("#row_percentil").show();
 			// The break hasn't be forgotten, this element

@@ -697,28 +697,35 @@ function ldap_process_user_login ($login, $password) {
 
 	$ldap_login_attr  = !empty($config["ldap_login_attr"]) ? io_safe_output($config["ldap_login_attr"]) . "=" : '';
 	$ldap_base_dn  = !empty($config["ldap_base_dn"]) ? "," . io_safe_output($config["ldap_base_dn"]) : '';
-	if(!empty($ldap_base_dn)){
-		if (strlen($password) == 0 || !@ldap_bind($ds, $ldap_login_attr.io_safe_output($login).$ldap_base_dn, $password) ) {
-			$config["auth_error"] = 'User not found in database or incorrect password';
-			@ldap_close ($ds);
-			
-			return false;
+	
+	$ldap_adv_perms = json_decode(io_safe_output($config['ldap_adv_perms']), true);
+	$correct = false;
+	foreach ($ldap_adv_perms as $perm) {
+		$groups = $perm['groups_ldap'];
+		$groups = "cn=" . implode(",cn=", $groups);
+		
+		if(!empty($ldap_base_dn)) {
+			if (strlen($password) != 0 && @ldap_bind($ds, $ldap_login_attr.io_safe_output($login).",".$groups.$ldap_base_dn, $password) ) {
+				$correct = true;
+			}
 		}
-	}
-	else {
-		if (strlen($password) == 0 || 
-		!@ldap_bind($ds, io_safe_output($login), $password) ) {
-
-		$config["auth_error"] = 'User not found in database or incorrect password';
-			@ldap_close ($ds);
-			
-			return false;
+		else {
+			if (strlen($password) != 0 && @ldap_bind($ds, io_safe_output($login), $password) ) {
+				$correct = true;
+			}
 		}
 	}
 	
 	@ldap_close ($ds);
 	
-	return true;
+	if ($correct) {
+		return true;
+	}
+	else {
+		$config["auth_error"] = 'User not found in database or incorrect password';
+		
+		return false;
+	}
 }
 
 /**

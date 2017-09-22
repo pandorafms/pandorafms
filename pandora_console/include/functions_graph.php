@@ -2125,6 +2125,7 @@ function fullscale_data_combined($module_list, $period, $date){
 
 	$data_prev = array(); 
 
+	ksort($data_all);
 	foreach ($data_all as $key => $value) {
 		foreach ($module_list as $key_module => $value_module) {
 			if(!isset($value[$key_module])){
@@ -4287,7 +4288,7 @@ function fullscale_data ( &$chart_data, &$chart_extra_data, &$long_index,
 				$timestamp_second = $value['utimestamp'];
 				
 				foreach ($events as $key => $val) {
-					if( $val['utimestamp'] >= $timestamp_first && 
+					if( $val['utimestamp'] > $timestamp_first && 
 						$val['utimestamp'] <= $timestamp_second ){
 						if ($show_events == 1) {
 							$event_ids[] = $val['id_evento'];

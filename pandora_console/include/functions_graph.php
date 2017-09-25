@@ -502,7 +502,7 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	$baseline = 0, $return_data = 0, $show_title = true, $projection = false, 
 	$adapt_key = '', $compare = false, $series_suffix = '', $series_suffix_str = '', 
 	$show_unknown = false, $percentil = null, $dashboard = false, $vconsole = false,
-	$type_graph='area', $fullscale = false) {
+	$type_graph='area', $fullscale = false, $flash_chart = false) {
 	
 	global $config;
 	global $chart;
@@ -573,7 +573,7 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 		fullscale_data( $chart, $chart_data_extra, $long_index, $series_type,
 						$agent_module_id, $datelimit, $date, $events, 
 						$show_events, $show_unknown, $show_alerts, 
-						$series_suffix, $percentil);
+						$series_suffix, $percentil, $flash_chart);
 		if (count($chart) > $resolution) {
 			$resolution = count($chart); //Number of points of the graph
 			$interval = (int) ($period / $resolution);
@@ -879,7 +879,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 			$return_data, $show_title, $projection, $adapt_key,
 			$compare, $series_suffix, $series_suffix_str,
 			$show_unknown, $percentil, $dashboard, $vconsole,$type_graph, 
-			$fullscale);
+			$fullscale, $flash_chart);
 		
 		switch ($compare) {
 			case 'separated':
@@ -912,7 +912,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		$show_alerts, $avg_only,
 		$date, $unit, $baseline, $return_data, $show_title,
 		$projection, $adapt_key, $compare, '', '', $show_unknown,
-		$percentil, $dashboard, $vconsole, $type_graph, $fullscale);
+		$percentil, $dashboard, $vconsole, $type_graph, $fullscale, $flash_chart);
 	if ($return_data) {
 		return $data_returned;
 	}
@@ -3830,7 +3830,7 @@ function fs_error_image ($width = 300, $height = 110) {
 function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	$unit_name, $show_alerts, $avg_only = 0,
 	$date = 0, $series_suffix = '', $series_suffix_str = '', $show_unknown = false,
-	$fullscale = false) {
+	$fullscale = false, $flash_chart = true) {
 
 	global $config;
 	global $chart;
@@ -3890,7 +3890,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 		fullscale_data( $chart, $chart_data_extra, $long_index, $series_type,
 						$agent_module_id, $datelimit, $date, $events, 
 						$show_events, $show_unknown, $show_alerts, 
-						$series_suffix);
+						$series_suffix, $percentil, $flash_chart);
 		if (count($chart) > $resolution) {
 			$resolution = count($chart); //Number of points of the graph
 			$interval = (int) ($period / $resolution);
@@ -4236,7 +4236,8 @@ function fullscale_data ( &$chart_data, &$chart_extra_data, &$long_index,
 						  $series_type, $agent_module_id, $datelimit, $date, 
 						  $events = false, $show_events = false, 
 						  $show_unknown = false, $show_alerts = false, 
-						  $series_suffix = '', $percentil = false ){
+						  $series_suffix = '', $percentil = false, 
+						  $flash_chart = true ){
 
 	global $config;
 	global $max_value;
@@ -4268,7 +4269,11 @@ function fullscale_data ( &$chart_data, &$chart_extra_data, &$long_index,
 		foreach ($data_uncompress as $v) {
 			foreach ($v['data'] as $key => $value) {
 				$real_date = date("Y M d H:i:s", $value['utimestamp']);
-
+				if(!$flash_chart){
+					$real_date = date("Y/M/d", $value['utimestamp']);
+					$real_date .= "\n";
+					$real_date .= date("   H:i:s", $value['utimestamp']);
+				}
 				// Read events and alerts that fall in the current interval
 				$event_value   = 0;
 				$alert_value   = 0;
@@ -4324,6 +4329,14 @@ function fullscale_data ( &$chart_data, &$chart_extra_data, &$long_index,
 				}
 
 				$timestamp_short = date("Y M d H:i:s", $value['utimestamp']);
+
+				if(!$flash_chart){
+					$timestamp_short = date("Y/M/d", $value['utimestamp']);
+					$timestamp_short .= "\n";
+					$timestamp_short .= date("   H:i:s", $value['utimestamp']);
+				}
+
+
 				$long_index[$timestamp_short] = date(
 					html_entity_decode($config['date_format'], ENT_QUOTES, "UTF-8"), $value['utimestamp']);
 				// In some cases, can be marked as known because a recovery event
@@ -4423,7 +4436,7 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 		// Build the data of the previous period
 		grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 			$unit_name, $show_alerts, $avg_only, $date-$period, $series_suffix, 
-			$series_suffix_str, $show_unknown, $fullscale);
+			$series_suffix_str, $show_unknown, $fullscale, $flash_chart);
 		switch ($compare) {
 			case 'separated':
 				// Store the chart calculated
@@ -4449,7 +4462,7 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	}
 	
 	grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
-		$unit_name, $show_alerts, $avg_only, $date, '', '', $show_unknown, $fullscale);
+		$unit_name, $show_alerts, $avg_only, $date, '', '', $show_unknown, $fullscale, $flash_chart);
 
 	
 	if ($compare === 'overlapped') {

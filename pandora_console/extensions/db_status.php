@@ -184,7 +184,7 @@ function extension_db_check_tables_differences($connection_test,
 	ui_print_result_message(
 		empty($diff_tables),
 		__('Successful the DB Pandora has all tables'),
-		__('Unsuccessful the DB Pandora has not all tables. The tables lost are (%s)',
+		__('Unsuccessful the DB Pandora has not all tables. The missing tables are (%s)',
 			implode(", ", $diff_tables)));
 	
 	if (!empty($diff_tables)) {
@@ -233,16 +233,15 @@ function extension_db_check_tables_differences($connection_test,
 		if (!empty($result)) {
 			while ($row = mysql_fetch_array ($result)) {
 				$fields_system[$row[0]] = array(
-					'field ' => $row[0],
-					'type' => $row[1],
-					'null' => $row[2],
-					'key' => $row[3],
+					'field '  => $row[0],
+					'type'    => $row[1],
+					'null'    => $row[2],
+					'key'     => $row[3],
 					'default' => $row[4],
-					'extra' => $row[5]);
+					'extra'   => $row[5]);
 			}
 			mysql_free_result ($result);
 		}
-		
 		foreach ($fields_test as $name_field => $field_test) {
 			if (!isset($fields_system[$name_field])) {
 				$correct_fields = false;
@@ -262,7 +261,6 @@ function extension_db_check_tables_differences($connection_test,
 				$field_system = $fields_system[$name_field];
 				
 				$diff = array_diff($field_test, $field_system);
-				
 				if (!empty($diff)) {
 					foreach ($diff as $config_field => $value) {
 						switch ($config_field) {
@@ -279,13 +277,14 @@ function extension_db_check_tables_differences($connection_test,
 								break;
 							case 'null':
 								ui_print_error_message(
-									__('Unsuccessful the field %s in the table %s must be setted the null values with %s.',
+									__('Unsuccessful the field %s in the table %s must be null: (%s).',
 									$name_field, $table, $value));
-								if ($value == "no") {
+								
+								if ($value == "YES") {
 									ui_print_info_message(
 										__('You can execute this SQL query for to fix.') . "<br />" .
 										'<pre>' .
-											"ALTER TABLE " . $table . " MODIFY COLUMN " . $name_field . "INT NULL;" .
+											"ALTER TABLE " . $table . " MODIFY COLUMN " . $name_field . " "  . $field_test['type'] . " NULL;" .
 										'</pre>'
 									);
 								}
@@ -293,7 +292,7 @@ function extension_db_check_tables_differences($connection_test,
 									ui_print_info_message(
 										__('You can execute this SQL query for to fix.') . "<br />" .
 										'<pre>' .
-											"ALTER TABLE " . $table . " MODIFY COLUMN " . $name_field . "INT NOT NULL;" .
+											"ALTER TABLE " . $table . " MODIFY COLUMN " . $name_field . " " . $field_test['type'] . " NOT NULL;" .
 										'</pre>'
 									);
 								}
@@ -307,11 +306,21 @@ function extension_db_check_tables_differences($connection_test,
 									__('Please check the SQL file for to know the kind of key needed.'));
 								break;
 							case 'default':
+								if($field_test['null'] == "YES" || !isset($field_test['null']) || $field_test['null'] == ""){
+									$null_defect = " NULL";
+								}
+								else{
+									$null_defect = " NOT NULL";
+								}
 								ui_print_error_message(
-									__('Unsuccessful the field %s in the table %s must be setted the default value as %s.',
+									__('Unsuccessful the field %s in the table %s must be setted %s as default value.',
 									$name_field, $table, $value));
 								ui_print_info_message(
-									__('Please check the SQL file for to know the kind of default value needed.'));
+										__('You can execute this SQL query for to fix.') . "<br />" .
+										'<pre>' .
+											"ALTER TABLE " . $table . " MODIFY COLUMN " . $name_field . " "  . $field_test['type'] . $null_defect . " DEFAULT " . $value . ";" .
+										'</pre>'
+									);
 								break;
 							case 'extra':
 								ui_print_error_message(

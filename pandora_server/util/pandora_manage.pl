@@ -21,6 +21,7 @@ use JSON qw(decode_json encode_json);
 use MIME::Base64;
 use Encode qw(decode encode_utf8);
 use LWP::Simple;
+use Data::Dumper;
 
 # Default lib dir for RPM and DEB packages
 use lib '/usr/lib/perl5';
@@ -35,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.712 PS170914";
+my $version = "7.0NG.712 PS170925";
 
 # save program name for logging
 my $progname = basename($0);
@@ -213,6 +214,15 @@ sub help_screen{
     help_screen_line('--create_tag', '<tag_name> <tag_description> [<tag_url>] [<tag_email>]', 'Create a new tag');
     help_screen_line('--add_tag_to_user_profile', '<user_id> <tag_name> <group_name> <profile_name>', 'Add a tag to the given user profile');
     help_screen_line('--add_tag_to_module', '<agent_name> <module_name> <tag_name>', 'Add a tag to the given module');
+
+	print "\nVISUAL CONSOLES\n\n" unless $param ne '';
+	help_screen_line('--create_visual_console', '<name> <background> <width> <height> <group> <mode> [<position_to_locate_elements>] [<background_color>] [<elements>]', 'Create a new visual console');
+	help_screen_line('--edit_visual_console', '<id> [<name>] [<background>] [<width>] [<height>] [<group>] [<mode>] [<position_to_locate_elements>] [<background_color>] [<elements>]', 'Edit a visual console');
+	help_screen_line('--delete_visual_console', '<id>', 'Delete a visual console');
+	help_screen_line('--delete_visual_console_objects', '<id> <mode> <id_mode>', 'Delete a visual console elements');
+	help_screen_line('--duplicate_visual_console', '<id> <times> [<prefix>]', 'Duplicate a visual console');
+	help_screen_line('--export_json_visual_console', '<id> [<path>]', 'Creates a json with the visual console elements information');
+
 	
 	print "\n";
 	exit;
@@ -4753,6 +4763,802 @@ sub cli_delete_special_day() {
 	exist_check($result,'special day',$special_day);
 }
 
+##############################################################################
+# Creates a new visual console.
+# Related option: --create_visual_console
+##############################################################################
+
+sub cli_create_visual_console() {
+	my ($name,$background,$width,$height,$group,$mode,$element_square_positions,$background_color,$elements) = @ARGV[2..10];
+
+	if($name eq '') {
+		print_log "[ERROR] Name field cannot be empty.\n\n";
+		exit 1;
+	}
+	elsif ($background eq '') {
+		print_log "[ERROR] Background field cannot be empty.\n\n";
+		exit 1;
+	}
+	elsif (($width eq '') || ($height eq '')) {
+		print_log "[ERROR] Please specify size.\n\n";
+		exit 1;
+	}
+	elsif ($group eq '') {
+		print_log "[ERROR] Group field cannot be empty.\n\n";
+		exit 1;
+	}
+	elsif ($mode eq '') {
+		print_log "[ERROR] Mode parameter must be 'static_objects' or 'auto_creation'.\n\n";
+		exit 1;
+	}
+
+	if ($background_color eq '') {
+		$background_color = '#FFF';
+	}
+
+	print_log "[INFO] Creating visual console '$name' \n\n";
+
+	my $vc_id = db_insert ($dbh, 'id', 'INSERT INTO tlayout (name, id_group, background, width, height, background_color)
+                         VALUES (?, ?, ?, ?, ?, ?)', safe_input($name), $group, $background, $width, $height, $background_color);
+
+	print_log "[INFO] The visual console id is '$vc_id' \n\n";
+
+	if ($elements ne '') {
+		my $elements_in_array = decode_json($elements);
+
+		if ($mode eq 'static_objects') {
+			my $elem_count = 1;
+
+			foreach my $elem (@$elements_in_array) {
+				my $pos_x = $elem->{'pos_x'};
+				my $pos_y = $elem->{'pos_y'};
+				my $width = $elem->{'width'};
+				my $height = $elem->{'height'};
+				my $label = $elem->{'label'};
+				my $image = $elem->{'image'};
+				my $type = $elem->{'type'};
+				my $period = $elem->{'period'};
+				my $id_agente_modulo = $elem->{'id_agente_modulo'};
+				my $id_agent = $elem->{'id_agent'};
+				my $id_layout_linked = $elem->{'id_layout_linked'};
+				my $parent_item = $elem->{'parent_item'};
+				my $enable_link = $elem->{'enable_link'};
+				my $id_metaconsole = $elem->{'id_metaconsole'};
+				my $id_group = $elem->{'id_group'};
+				my $id_custom_graph = $elem->{'id_custom_graph'};
+				my $border_width = $elem->{'border_width'};
+				my $type_graph = $elem->{'type_graph'};
+				my $label_position = $elem->{'label_position'};
+				my $border_color = $elem->{'border_color'};
+				my $fill_color = $elem->{'fill_color'};
+
+				my $elem_id = db_insert ($dbh, 'id', 'INSERT INTO tlayout_data (id_layout, pos_x, pos_y, height, width, label, image, type, period, id_agente_modulo, id_agent, id_layout_linked, parent_item, enable_link, id_metaconsole, id_group, id_custom_graph, border_width, type_graph, label_position, border_color, fill_color, show_statistics)
+							VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $vc_id, $pos_x, $pos_y, $height, $width, $label, $image, $type, $period, $id_agente_modulo, $id_agent, $id_layout_linked, $parent_item, $enable_link, $id_metaconsole, $id_group, $id_custom_graph, $border_width, $type_graph, $label_position, $border_color, $fill_color, 0);
+
+				print_log "[INFO] The element id in position $elem_count is '$elem_id' \n\n";
+
+				$elem_count++;
+			}
+		}
+		elsif ($mode eq 'auto_creation') {
+			if ($element_square_positions eq '') {
+				print_log "[ERROR] With this mode, square positions is obligatory'.\n\n";
+				exit 1;
+			}
+			else {
+				my $positions = decode_json($element_square_positions);
+
+				my $pos1X = $positions->{'pos1x'};
+				my $pos1Y = $positions->{'pos1y'};
+				my $pos2X = $positions->{'pos2x'};
+				my $pos2Y = $positions->{'pos2y'};
+
+				my $number_of_elements = scalar(@$elements_in_array);
+				
+				my $x_divider = 4;
+				my $y_divider = 1;
+
+				for (my $i = 1; $i <= 1000; $i++) {
+					if (($i * 4) < $number_of_elements) {
+						$y_divider++;
+					}
+					else {
+						last;
+					}
+				}
+
+				my $elem_width = ($pos2X - $pos1X) / $x_divider;
+				my $elem_height = ($pos2Y - $pos1Y) / $y_divider;
+
+				if ($number_of_elements < 4) {
+					$elem_height = ($pos2Y - $pos1Y) / 3;
+				}
+
+				my $elem_count = 1;
+				my $pos_helper_x = 0;
+				my $pos_helper_y = 0;
+				foreach my $elem (@$elements_in_array) {
+					my $pos_x = $pos_helper_x * $elem_width;
+					my $pos_y = $pos_helper_y * $elem_height;
+					my $width = $elem_width;
+					my $height = $elem_height;
+					my $label = $elem->{'label'};
+					my $image = $elem->{'image'};
+					my $type = $elem->{'type'};
+					my $period = $elem->{'period'};
+					my $id_agente_modulo = $elem->{'id_agente_modulo'};
+					my $id_agent = $elem->{'id_agent'};
+					my $id_layout_linked = $elem->{'id_layout_linked'};
+					my $parent_item = $elem->{'parent_item'};
+					my $enable_link = $elem->{'enable_link'};
+					my $id_metaconsole = $elem->{'id_metaconsole'};
+					my $id_group = $elem->{'id_group'};
+					my $id_custom_graph = $elem->{'id_custom_graph'};
+					my $border_width = $elem->{'border_width'};
+					my $type_graph = $elem->{'type_graph'};
+					my $label_position = $elem->{'label_position'};
+					my $border_color = $elem->{'border_color'};
+					my $fill_color = $elem->{'fill_color'};
+
+					my $elem_id = db_insert ($dbh, 'id', 'INSERT INTO tlayout_data (id_layout, pos_x, pos_y, height, width, label, image, type, period, id_agente_modulo, id_agent, id_layout_linked, parent_item, enable_link, id_metaconsole, id_group, id_custom_graph, border_width, type_graph, label_position, border_color, fill_color, show_statistics)
+								VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $vc_id, $pos_x, $pos_y, $height, $width, $label, $image, $type, $period, $id_agente_modulo, $id_agent, $id_layout_linked, $parent_item, $enable_link, $id_metaconsole, $id_group, $id_custom_graph, $border_width, $type_graph, $label_position, $border_color, $fill_color, 0);
+
+					print_log "[INFO] The element id in position $elem_count is '$elem_id' \n\n";
+
+					$elem_count++;
+
+					if ($pos_helper_x == 3) {
+						$pos_helper_x = 0;
+						$pos_helper_y++;
+					}
+					else {
+						$pos_helper_x++;
+					}
+				}
+			}
+		}
+		else {
+			print_log "[ERROR] Mode parameter must be 'static_objects' or 'auto_creation'.\n\n";
+			exit 1;
+		}
+	}
+}
+
+##############################################################################
+# Edit a visual console.
+# Related option: --edit_visual_console
+##############################################################################
+
+sub cli_edit_visual_console() {
+	my ($id,$name,$background,$width,$height,$group,$mode,$element_square_positions,$background_color,$elements) = @ARGV[2..11];
+
+	if($id eq '') {
+		print_log "[ERROR] ID field cannot be empty.\n\n";
+		exit 1;
+	}
+
+	my $console = get_db_single_row ($dbh, "SELECT * 
+			FROM tlayout 
+			WHERE id = $id");
+
+	my $new_name = $console->{'name'};
+	my $new_background = $console->{'background'};
+	my $new_console_width = $console->{'width'};
+	my $new_console_height = $console->{'height'};
+	my $new_console_id_group = $console->{'id_group'};
+	my $new_background_color = $console->{'background_color'};
+
+	if($name ne '') {
+		$new_name = $name;
+	}
+	if ($background ne '') {
+		$new_background = $background;
+	}
+	if ($width ne '') {
+		$new_console_width = $width;
+	}
+	if ($height ne '') {
+		$new_console_height = $height;
+	}
+	if ($group ne '') {
+		$new_console_id_group = $group;
+	}
+	if ($background_color ne '') {
+		$new_background_color = $background_color;
+	}
+
+	print_log "[INFO] The visual console with id $id is updated \n\n";
+
+	db_update ($dbh, "UPDATE tlayout SET name = '" . $new_name . "', background = '" . $new_background . "', width = " . $new_console_width . ", height = " . $new_console_height . ", id_group = " . $new_console_id_group . ", background_color = '" . $new_background_color . "' WHERE id = " . $id);
+
+	if ($elements ne '') {
+		my $elements_in_array = decode_json($elements);
+
+		if ($mode eq 'static_objects') {
+			foreach my $elem (@$elements_in_array) {
+				if (defined($elem->{'id'})) {
+
+					print_log "[INFO] Edit element with id " . $elem->{'id'} . " \n\n";
+
+					my $element_in_db = get_db_single_row ($dbh, "SELECT * 
+						FROM tlayout_data 
+						WHERE id = " . $elem->{'id'});
+
+					my $new_pos_x = $element_in_db->{'pos_x'};
+					my $new_pos_y = $element_in_db->{'pos_y'};
+					my $new_width = $element_in_db->{'width'};
+					my $new_height = $element_in_db->{'height'};
+					my $new_label = $element_in_db->{'label'};
+					my $new_image = $element_in_db->{'image'};
+					my $new_type = $element_in_db->{'type'};
+					my $new_period = $element_in_db->{'period'};
+					my $new_id_agente_modulo = $element_in_db->{'id_agente_modulo'};
+					my $new_id_agent = $element_in_db->{'id_agent'};
+					my $new_id_layout_linked = $element_in_db->{'id_layout_linked'};
+					my $new_parent_item = $element_in_db->{'parent_item'};
+					my $new_enable_link = $element_in_db->{'enable_link'};
+					my $new_id_metaconsole = $element_in_db->{'id_metaconsole'};
+					my $new_id_group = $element_in_db->{'id_group'};
+					my $new_id_custom_graph = $element_in_db->{'id_custom_graph'};
+					my $new_border_width = $element_in_db->{'border_width'};
+					my $new_type_graph = $element_in_db->{'type_graph'};
+					my $new_label_position = $element_in_db->{'label_position'};
+					my $new_border_color = $element_in_db->{'border_color'};
+					my $new_fill_color = $element_in_db->{'fill_color'};
+
+					if(defined($elem->{'pos_x'})) {
+						$new_pos_x = $elem->{'pos_x'};
+					}
+					if(defined($elem->{'pos_y'})) {
+						$new_pos_y = $elem->{'pos_y'};
+					}
+					if(defined($elem->{'width'})) {
+						$new_width = $elem->{'width'};
+					}
+					if(defined($elem->{'height'})) {
+						$new_height = $elem->{'height'};
+					}
+					if(defined($elem->{'label'})) {
+						$new_label = $elem->{'label'};
+					}
+					if(defined($elem->{'image'})) {
+						$new_image = $elem->{'image'};
+					}
+					if(defined($elem->{'type'})) {
+						$new_type = $elem->{'type'};
+					}
+					if(defined($elem->{'period'})) {
+						$new_period = $elem->{'period'};
+					}
+					if(defined($elem->{'id_agente_modulo'})) {
+						$new_id_agente_modulo = $elem->{'id_agente_modulo'};
+					}
+					if(defined($elem->{'id_agent'})) {
+						$new_id_agent = $elem->{'id_agent'};
+					}
+					if(defined($elem->{'id_layout_linked'})) {
+						$new_id_layout_linked = $elem->{'id_layout_linked'};
+					}
+					if(defined($elem->{'parent_item'})) {
+						$new_parent_item = $elem->{'parent_item'};
+					}
+					if(defined($elem->{'enable_link'})) {
+						$new_enable_link = $elem->{'enable_link'};
+					}
+					if(defined($elem->{'id_metaconsole'})) {
+						$new_id_metaconsole = $elem->{'id_metaconsole'};
+					}
+					if(defined($elem->{'id_group'})) {
+						$new_id_group = $elem->{'id_group'};
+					}
+					if(defined($elem->{'id_custom_graph'})) {
+						$new_id_custom_graph = $elem->{'id_custom_graph'};
+					}
+					if(defined($elem->{'border_width'})) {
+						$new_border_width = $elem->{'border_width'};
+					}
+					if(defined($elem->{'type_graph'})) {
+						$new_type_graph = $elem->{'type_graph'};
+					}
+					if(defined($elem->{'label_position'})) {
+						$new_label_position = $elem->{'label_position'};
+					}
+					if(defined($elem->{'border_color'})) {
+						$new_border_color = $elem->{'border_color'};
+					}
+					if(defined($elem->{'fill_color'})) {
+						$new_fill_color = $elem->{'fill_color'};
+					}
+
+					db_update ($dbh, "UPDATE tlayout_data SET pos_x = " . $new_pos_x . ", pos_y = " . $new_pos_y . ", width = " . $new_width . 
+						", height = " . $new_height . ", label = '" . $new_label . "', image = '" . $new_image . 
+						"', type = " . $new_type . ", period = " . $new_period . ", id_agente_modulo = " . $new_id_agente_modulo . 
+						", id_agent = " . $new_id_agent . ", id_layout_linked = " . $new_id_layout_linked . ", parent_item = " . $new_parent_item . 
+						", enable_link = " . $new_enable_link . ", id_metaconsole = " . $new_id_metaconsole . ", id_group = " . $new_id_group . 
+						", id_custom_graph = " . $new_id_custom_graph . ", border_width = " . $new_border_width . ", type_graph = '" . $new_type_graph . 
+						"', label_position = '" . $new_label_position . "', border_color = '" . $new_border_color . "', fill_color = '" . $new_fill_color . 
+						"' WHERE id = " . $elem->{'id'});
+					
+					print_log "[INFO] Element with id " . $elem->{'id'} . " has been updated \n\n";
+				}
+				else {
+					my $pos_x = $elem->{'pos_x'};
+					my $pos_y = $elem->{'pos_y'};
+					my $width = $elem->{'width'};
+					my $height = $elem->{'height'};
+					my $label = $elem->{'label'};
+					my $image = $elem->{'image'};
+					my $type = $elem->{'type'};
+					my $period = $elem->{'period'};
+					my $id_agente_modulo = $elem->{'id_agente_modulo'};
+					my $id_agent = $elem->{'id_agent'};
+					my $id_layout_linked = $elem->{'id_layout_linked'};
+					my $parent_item = $elem->{'parent_item'};
+					my $enable_link = $elem->{'enable_link'};
+					my $id_metaconsole = $elem->{'id_metaconsole'};
+					my $id_group = $elem->{'id_group'};
+					my $id_custom_graph = $elem->{'id_custom_graph'};
+					my $border_width = $elem->{'border_width'};
+					my $type_graph = $elem->{'type_graph'};
+					my $label_position = $elem->{'label_position'};
+					my $border_color = $elem->{'border_color'};
+					my $fill_color = $elem->{'fill_color'};
+
+					my $new_elem_id = db_insert ($dbh, 'id', 'INSERT INTO tlayout_data (id_layout, pos_x, pos_y, height, width, label, image, type, period, id_agente_modulo, id_agent, id_layout_linked, parent_item, enable_link, id_metaconsole, id_group, id_custom_graph, border_width, type_graph, label_position, border_color, fill_color, show_statistics)
+						VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id, $pos_x, $pos_y, $height, $width, $label, $image, $type, $period, $id_agente_modulo, $id_agent, $id_layout_linked, $parent_item, $enable_link, $id_metaconsole, $id_group, $id_custom_graph, $border_width, $type_graph, $label_position, $border_color, $fill_color, 0);
+				
+					print_log "[INFO] New element with id $new_elem_id has been created \n\n";
+				}
+			}
+		}
+		elsif ($mode eq 'auto_creation') {
+			if ($element_square_positions eq '') {
+				print_log "[ERROR] With this mode, square positions is obligatory'.\n\n";
+				exit 1;
+			}
+			else {
+				foreach my $elem (@$elements_in_array) {
+					if (defined($elem->{'id'})) {
+						print_log "[INFO] Edit element with id " . $elem->{'id'} . " \n\n";
+
+						my $element_in_db = get_db_single_row ($dbh, "SELECT * 
+							FROM tlayout_data 
+							WHERE id = " . $elem->{'id'});
+
+						my $new_pos_x = $element_in_db->{'pos_x'};
+						my $new_pos_y = $element_in_db->{'pos_y'};
+						my $new_width = $element_in_db->{'width'};
+						my $new_height = $element_in_db->{'height'};
+						my $new_label = $element_in_db->{'label'};
+						my $new_image = $element_in_db->{'image'};
+						my $new_type = $element_in_db->{'type'};
+						my $new_period = $element_in_db->{'period'};
+						my $new_id_agente_modulo = $element_in_db->{'id_agente_modulo'};
+						my $new_id_agent = $element_in_db->{'id_agent'};
+						my $new_id_layout_linked = $element_in_db->{'id_layout_linked'};
+						my $new_parent_item = $element_in_db->{'parent_item'};
+						my $new_enable_link = $element_in_db->{'enable_link'};
+						my $new_id_metaconsole = $element_in_db->{'id_metaconsole'};
+						my $new_id_group = $element_in_db->{'id_group'};
+						my $new_id_custom_graph = $element_in_db->{'id_custom_graph'};
+						my $new_border_width = $element_in_db->{'border_width'};
+						my $new_type_graph = $element_in_db->{'type_graph'};
+						my $new_label_position = $element_in_db->{'label_position'};
+						my $new_border_color = $element_in_db->{'border_color'};
+						my $new_fill_color = $element_in_db->{'fill_color'};
+
+						if(defined($elem->{'width'})) {
+							$new_width = $elem->{'width'};
+						}
+						if(defined($elem->{'height'})) {
+							$new_height = $elem->{'height'};
+						}
+						if(defined($elem->{'label'})) {
+							$new_label = $elem->{'label'};
+						}
+						if(defined($elem->{'image'})) {
+							$new_image = $elem->{'image'};
+						}
+						if(defined($elem->{'type'})) {
+							$new_type = $elem->{'type'};
+						}
+						if(defined($elem->{'period'})) {
+							$new_period = $elem->{'period'};
+						}
+						if(defined($elem->{'id_agente_modulo'})) {
+							$new_id_agente_modulo = $elem->{'id_agente_modulo'};
+						}
+						if(defined($elem->{'id_agent'})) {
+							$new_id_agent = $elem->{'id_agent'};
+						}
+						if(defined($elem->{'id_layout_linked'})) {
+							$new_id_layout_linked = $elem->{'id_layout_linked'};
+						}
+						if(defined($elem->{'parent_item'})) {
+							$new_parent_item = $elem->{'parent_item'};
+						}
+						if(defined($elem->{'enable_link'})) {
+							$new_enable_link = $elem->{'enable_link'};
+						}
+						if(defined($elem->{'id_metaconsole'})) {
+							$new_id_metaconsole = $elem->{'id_metaconsole'};
+						}
+						if(defined($elem->{'id_group'})) {
+							$new_id_group = $elem->{'id_group'};
+						}
+						if(defined($elem->{'id_custom_graph'})) {
+							$new_id_custom_graph = $elem->{'id_custom_graph'};
+						}
+						if(defined($elem->{'border_width'})) {
+							$new_border_width = $elem->{'border_width'};
+						}
+						if(defined($elem->{'type_graph'})) {
+							$new_type_graph = $elem->{'type_graph'};
+						}
+						if(defined($elem->{'label_position'})) {
+							$new_label_position = $elem->{'label_position'};
+						}
+						if(defined($elem->{'border_color'})) {
+							$new_border_color = $elem->{'border_color'};
+						}
+						if(defined($elem->{'fill_color'})) {
+							$new_fill_color = $elem->{'fill_color'};
+						}
+
+						db_update ($dbh, "UPDATE tlayout_data SET pos_x = " . $new_pos_x . ", pos_y = " . $new_pos_y . ", width = " . $new_width . 
+							", height = " . $new_height . ", label = '" . $new_label . "', image = '" . $new_image . 
+							"', type = " . $new_type . ", period = " . $new_period . ", id_agente_modulo = " . $new_id_agente_modulo . 
+							", id_agent = " . $new_id_agent . ", id_layout_linked = " . $new_id_layout_linked . ", parent_item = " . $new_parent_item . 
+							", enable_link = " . $new_enable_link . ", id_metaconsole = " . $new_id_metaconsole . ", id_group = " . $new_id_group . 
+							", id_custom_graph = " . $new_id_custom_graph . ", border_width = " . $new_border_width . ", type_graph = '" . $new_type_graph . 
+							"', label_position = '" . $new_label_position . "', border_color = '" . $new_border_color . "', fill_color = '" . $new_fill_color . 
+							"' WHERE id = " . $elem->{'id'});
+						
+						print_log "[INFO] Element with id " . $elem->{'id'} . " has been updated \n\n";
+					}
+					else {
+						my $pos_x = 0;
+						my $pos_y = 0;
+						my $width = $elem->{'width'};
+						my $height = $elem->{'height'};
+						my $label = $elem->{'label'};
+						my $image = $elem->{'image'};
+						my $type = $elem->{'type'};
+						my $period = $elem->{'period'};
+						my $id_agente_modulo = $elem->{'id_agente_modulo'};
+						my $id_agent = $elem->{'id_agent'};
+						my $id_layout_linked = $elem->{'id_layout_linked'};
+						my $parent_item = $elem->{'parent_item'};
+						my $enable_link = $elem->{'enable_link'};
+						my $id_metaconsole = $elem->{'id_metaconsole'};
+						my $id_group = $elem->{'id_group'};
+						my $id_custom_graph = $elem->{'id_custom_graph'};
+						my $border_width = $elem->{'border_width'};
+						my $type_graph = $elem->{'type_graph'};
+						my $label_position = $elem->{'label_position'};
+						my $border_color = $elem->{'border_color'};
+						my $fill_color = $elem->{'fill_color'};
+
+						my $new_elem_id = db_insert ($dbh, 'id', 'INSERT INTO tlayout_data (id_layout, pos_x, pos_y, height, width, label, image, type, period, id_agente_modulo, id_agent, id_layout_linked, parent_item, enable_link, id_metaconsole, id_group, id_custom_graph, border_width, type_graph, label_position, border_color, fill_color, show_statistics)
+							VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id, $pos_x, $pos_y, $height, $width, $label, $image, $type, $period, $id_agente_modulo, $id_agent, $id_layout_linked, $parent_item, $enable_link, $id_metaconsole, $id_group, $id_custom_graph, $border_width, $type_graph, $label_position, $border_color, $fill_color, 0);
+					
+						print_log "[INFO] New element with id $new_elem_id has been created \n\n";
+					}
+				}
+
+				my $positions = decode_json($element_square_positions);
+
+				my $pos1X = $positions->{'pos1x'};
+				my $pos1Y = $positions->{'pos1y'};
+				my $pos2X = $positions->{'pos2x'};
+				my $pos2Y = $positions->{'pos2y'};
+
+				my @console_elements = get_db_rows ($dbh, "SELECT * 
+						FROM tlayout_data 
+						WHERE id_layout = $id");
+
+				my $number_of_elements = scalar(@console_elements);
+
+				my $x_divider = 4;
+				my $y_divider = 1;
+
+				for (my $i = 1; $i <= 1000; $i++) {
+					if (($i * 4) < $number_of_elements) {
+						$y_divider++;
+					}
+					else {
+						last;
+					}
+				}
+
+				my $elem_width = ($pos2X - $pos1X) / $x_divider;
+				my $elem_height = ($pos2Y - $pos1Y) / $y_divider;
+
+				if ($number_of_elements < 4) {
+					$elem_height = ($pos2Y - $pos1Y) / 3;
+				}
+
+				my $elem_count = 1;
+				my $pos_helper_x = 0;
+				my $pos_helper_y = 0;
+				foreach my $elem (@console_elements) {
+					my $new_pos_x = $pos_helper_x * $elem_width;
+					my $new_pos_y = $pos_helper_y * $elem_height;
+					my $new_elem_width = $elem_width;
+					my $new_elem_height = $elem_height;
+
+					db_update ($dbh, "UPDATE tlayout_data SET pos_x = " . $new_pos_x . ", pos_y = " . $new_pos_y . 
+							", width = " . $new_elem_width . ", height = " . $new_elem_height . 
+							" WHERE id = " . $elem->{'id'});
+
+					print_log "[INFO] Recolocate element with id " . $elem->{'id'} . " \n\n";
+
+					$elem_count++;
+
+					if ($pos_helper_x == 3) {
+						$pos_helper_x = 0;
+						$pos_helper_y++;
+					}
+					else {
+						$pos_helper_x++;
+					}
+				}
+			}
+		}
+		else {
+			print_log "[ERROR] Mode parameter must be 'static_objects' or 'auto_creation'.\n\n";
+			exit 1;
+		}
+	}
+}
+
+##############################################################################
+# Delete a visual console.
+# Related option: --delete_visual_console
+##############################################################################
+
+sub cli_delete_visual_console() {
+	my ($id) = @ARGV[2];
+
+	if($id eq '') {
+		print_log "[ERROR] ID field cannot be empty.\n\n";
+		exit 1;
+	}
+
+	print_log "[INFO] Delete visual console with ID '$id' \n\n";
+
+	my $delete_layout = db_do($dbh, 'DELETE FROM tlayout WHERE id = ?', $id);
+
+	if ($delete_layout eq 1) {
+		db_do($dbh, 'DELETE FROM tlayout_data WHERE id_layout = ?', $id);
+
+		print_log "[INFO] Delete visual console elements with console ID '$id' \n\n";
+	}
+	else {
+		print_log "[ERROR] Error at remove the visual console.\n\n";
+		exit 1;
+	}
+}
+
+##############################################################################
+# Delete a visual console objects.
+# Related option: --delete_visual_console_objects
+##############################################################################
+
+sub cli_delete_visual_console_objects() {
+	my ($id_console,$mode,$id_mode) = @ARGV[2..4];
+
+	if($id_console eq '') {
+		print_log "[ERROR] Console ID field cannot be empty.\n\n";
+		exit 1;
+	}
+	elsif ($mode eq '') {
+		print_log "[ERROR] Mode field cannot be empty.\n\n";
+		exit 1;
+	}
+	elsif ($id_mode eq '') {
+		print_log "[ERROR] Mode index field cannot be empty.\n\n";
+		exit 1;
+	}
+
+	if (($mode eq 'type') || ($mode eq 'image') || ($mode eq 'id_agent') || 
+		($mode eq 'id_agente_modulo') || ($mode eq 'id_group') || ($mode eq 'type_graph')) {
+		print_log "[INFO] Removind objects with mode '$mode' and id '$id_mode' \n\n";
+		
+		db_do($dbh, 'DELETE FROM tlayout_data WHERE id_layout = ' . $id_console . ' AND ' . $mode . ' = "' . $id_mode . '"');
+	}
+	else {
+		print_log "[ERROR] Mode is not correct.\n\n";
+		exit 1;
+	}
+}
+
+##############################################################################
+# Duplicate a visual console.
+# Related option: --duplicate_visual_console
+##############################################################################
+
+sub cli_duplicate_visual_console () {
+	my ($id_console,$times,$prefix) = @ARGV[2..4];
+
+	if($id_console eq '') {
+		print_log "[ERROR] Console ID field cannot be empty.\n\n";
+		exit 1;
+	}
+
+	my $console = get_db_single_row ($dbh, "SELECT * 
+			FROM tlayout 
+			WHERE id = $id_console");
+
+	my $name_to_compare = $console->{'name'};
+	my $new_name = $console->{'name'} . "_1";
+	my $name_count = 2;
+
+	if ($prefix ne '') {
+		$new_name = $prefix;
+		$name_to_compare = $prefix;
+		$name_count = 1;
+	}
+
+	for (my $iteration = 0; $iteration < $times; $iteration++) {
+		my $exist = 1;
+		while ($exist == 1) {
+			my $name_in_db = get_db_single_row ($dbh, "SELECT name FROM tlayout WHERE name = '$new_name'");
+			
+			if (defined($name_in_db->{'name'}) && ($name_in_db->{'name'} eq $new_name)) {
+				$new_name = $name_to_compare . "_" . $name_count;
+				$name_count++;
+			}
+			else {
+				$exist = 0;
+			}
+		}
+
+		my $new_console_id = db_insert ($dbh, 'id', 'INSERT INTO tlayout (name, id_group, background, width, height, background_color)
+							VALUES (?, ?, ?, ?, ?, ?)', $new_name, $console->{'id_group'}, $console->{'background'}, $console->{'width'}, $console->{'height'}, $console->{'background_color'});
+		
+		print_log "[INFO] The new visual console '$new_name' has been created. The new ID is '$new_console_id' \n\n";
+
+		my @console_elements = get_db_rows ($dbh, "SELECT * 
+				FROM tlayout_data 
+				WHERE id_layout = $id_console");
+
+		foreach my $element (@console_elements) {
+			my $pos_x = $element->{'pos_x'};
+			my $pos_y = $element->{'pos_y'};
+			my $width = $element->{'width'};
+			my $height = $element->{'height'};
+			my $label = $element->{'label'};
+			my $image = $element->{'image'};
+			my $type = $element->{'type'};
+			my $period = $element->{'period'};
+			my $id_agente_modulo = $element->{'id_agente_modulo'};
+			my $id_agent = $element->{'id_agent'};
+			my $id_layout_linked = $element->{'id_layout_linked'};
+			my $parent_item = $element->{'parent_item'};
+			my $enable_link = $element->{'enable_link'};
+			my $id_metaconsole = $element->{'id_metaconsole'};
+			my $id_group = $element->{'id_group'};
+			my $id_custom_graph = $element->{'id_custom_graph'};
+			my $border_width = $element->{'border_width'};
+			my $type_graph = $element->{'type_graph'};
+			my $label_position = $element->{'label_position'};
+			my $border_color = $element->{'border_color'};
+			my $fill_color = $element->{'fill_color'};
+
+			my $element_id = db_insert ($dbh, 'id', 'INSERT INTO tlayout_data (id_layout, pos_x, pos_y, height, width, label, image, type, period, id_agente_modulo, id_agent, id_layout_linked, parent_item, enable_link, id_metaconsole, id_group, id_custom_graph, border_width, type_graph, label_position, border_color, fill_color, show_statistics)
+						VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $new_console_id, $pos_x, $pos_y, $height, $width, $label, $image, $type, $period, $id_agente_modulo, $id_agent, $id_layout_linked, $parent_item, $enable_link, $id_metaconsole, $id_group, $id_custom_graph, $border_width, $type_graph, $label_position, $border_color, $fill_color, 0);
+		
+			print_log "[INFO] Element with ID " . $element->{"id"} . " has been duplicated to the new console \n\n";
+		}
+	}
+}
+
+##############################################################################
+# Export a visual console elements to json.
+# Related option: --export_json_visual_console
+##############################################################################
+
+sub cli_export_visual_console() {
+	my ($id,$path) = @ARGV[2..3];
+
+	if($id eq '') {
+		print_log "[ERROR] ID field cannot be empty.\n\n";
+		exit 1;
+	}
+
+	my $data_to_json = '';
+	my $first = 1;
+
+	print_log "[INFO] Exporting visual console elements with ID '$id' \n\n";
+
+	my $console = get_db_single_row ($dbh, "SELECT * 
+			FROM tlayout 
+			WHERE id = $id");
+
+	$data_to_json .= '"' . safe_output($console->{'name'}) . '"';
+	$data_to_json .= ' "' . $console->{'background'} . '"';
+	$data_to_json .= ' ' . $console->{'width'};
+	$data_to_json .= ' ' . $console->{'height'};
+	$data_to_json .= ' ' . $console->{'id_group'};
+	$data_to_json .= ' "static_objects"';
+	$data_to_json .= ' ""';
+	$data_to_json .= ' "' . $console->{'background_color'} . '" ';
+
+	my @console_elements = get_db_rows ($dbh, "SELECT * 
+			FROM tlayout_data 
+			WHERE id_layout = $id");
+
+	$data_to_json .= '[';
+	foreach my $element (@console_elements) {
+		my $pos_x = $element->{'pos_x'};
+		my $pos_y = $element->{'pos_y'};
+		my $width = $element->{'width'};
+		my $height = $element->{'height'};
+		my $label = $element->{'label'};
+		my $image = $element->{'image'};
+		my $type = $element->{'type'};
+		my $period = $element->{'period'};
+		my $id_agente_modulo = $element->{'id_agente_modulo'};
+		my $id_agent = $element->{'id_agent'};
+		my $id_layout_linked = $element->{'id_layout_linked'};
+		my $parent_item = $element->{'parent_item'};
+		my $enable_link = $element->{'enable_link'};
+		my $id_metaconsole = $element->{'id_metaconsole'};
+		my $id_group = $element->{'id_group'};
+		my $id_custom_graph = $element->{'id_custom_graph'};
+		my $border_width = $element->{'border_width'};
+		my $type_graph = $element->{'type_graph'};
+		my $label_position = $element->{'label_position'};
+		my $border_color = $element->{'border_color'};
+		my $fill_color = $element->{'fill_color'};
+
+		if ($first == 0) {
+			$data_to_json .= ','
+		}
+		else {
+			$first = 0;
+		}
+
+		$label =~ s/"/\\"/g;
+
+		$data_to_json .= '{"image":"' . $image . '"';
+		$data_to_json .= ',"pos_y":' . $pos_y;
+		$data_to_json .= ',"pos_x":' . $pos_x;
+		$data_to_json .= ',"width":' . $width;
+		$data_to_json .= ',"height":' . $height;
+		$data_to_json .= ',"label":"' . $label . '"';
+		$data_to_json .= ',"type":' . $type;
+		$data_to_json .= ',"period":' . $period;
+		$data_to_json .= ',"id_agente_modulo":' . $id_agente_modulo;
+		$data_to_json .= ',"id_agent":' . $id_agent;
+		$data_to_json .= ',"id_layout_linked":' . $id_layout_linked;
+		$data_to_json .= ',"parent_item":' . $parent_item;
+		$data_to_json .= ',"enable_link":' . $enable_link;
+		$data_to_json .= ',"id_metaconsole":' . $id_metaconsole;
+		$data_to_json .= ',"id_group":' . $id_group;
+		$data_to_json .= ',"id_custom_graph":' . $id_custom_graph;
+		$data_to_json .= ',"border_width":' . $border_width;
+		$data_to_json .= ',"type_graph":"' . $type_graph . '"';
+		$data_to_json .= ',"label_position":"' . $label_position . '"';
+		$data_to_json .= ',"border_color":"' . $border_color . '"';
+		$data_to_json .= ',"fill_color":"' . $fill_color . '"';
+		$data_to_json .= '}';
+	}
+
+	$data_to_json .= ']';
+
+	if ($path eq '') {
+		open(FicheroJSON, ">console_" . $id . "_elements");
+	}
+	else {
+		open(FicheroJSON, ">" . $path . "/console_" . $id . "_elements");
+	}
+
+	print FicheroJSON $data_to_json;
+
+	print_log "[INFO] JSON file now contents: \n" . $data_to_json . "\n\n";
+}
 
 ###############################################################################
 ###############################################################################
@@ -5183,7 +5989,31 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--locate_agent') {
 			param_check($ltotal, 1);
 			cli_locate_agent();
-		} 
+		}
+		elsif ($param eq '--create_visual_console') {
+			param_check($ltotal, 9, 3);
+			cli_create_visual_console();
+		}
+		elsif ($param eq '--edit_visual_console') {
+			param_check($ltotal, 10, 9);
+			cli_edit_visual_console();
+		}
+		elsif ($param eq '--delete_visual_console') {
+			param_check($ltotal, 1);
+			cli_delete_visual_console();
+		}
+		elsif ($param eq '--delete_visual_console_objects') {
+			param_check($ltotal, 3);
+			cli_delete_visual_console_objects();
+		}
+		elsif ($param eq '--duplicate_visual_console') {
+			param_check($ltotal, 3, 2);
+			cli_duplicate_visual_console();
+		}
+		elsif ($param eq '--export_json_visual_console') {
+			param_check($ltotal, 2, 1);
+			cli_export_visual_console();
+		}
 		else {
 			print_log "[ERROR] Invalid option '$param'.\n\n";
 			$param = '';

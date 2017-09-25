@@ -793,7 +793,7 @@ if ($update_agent) { // if modified some agent paramenter
 				WHERE id_group = ".$group_old);
 		
 		$result = db_process_sql_update ('tagente', $values, array ('id_agente' => $id_agente));
-		if ($result === false) {
+		if ($result == false) {
 			ui_print_error_message(
 				__('There was a problem updating the agent'));
 		}

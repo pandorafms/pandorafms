@@ -313,9 +313,9 @@ function update_button_palette_callback() {
 				if ((values['width'] == 0) || (values['height'] == 0)) {
 						$("#image_" + idItem).removeAttr('width');
 						$("#image_" + idItem).removeAttr('height');
-						$("#image_" + idItem).attr('width', 450);
+						$("#image_" + idItem).attr('width', 520);
 						$("#image_" + idItem).attr('height', 80);
-						$("#image_" + idItem).css('width', '450px');
+						$("#image_" + idItem).css('width', '520px');
 						$("#image_" + idItem).css('height', '80px');
 						$("#image_" + idItem).attr('src', 'images/console/signes/group_status.png');
 							
@@ -1742,7 +1742,7 @@ function set_image(type, idElement, image) {
 			$(item).attr('src', data);
 			
 			if(image == 'show_statistics_bad.png' || image == 'show_statistics_ok.png' || image == 'show_statistics_warning.png' || image == 'show_statistics.png'){
-				$(item).attr('width', 450);
+				$(item).attr('width', 520);
 				$(item).attr('height', 80);
 			}
 			

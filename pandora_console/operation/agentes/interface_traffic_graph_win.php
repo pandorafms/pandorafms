@@ -150,6 +150,7 @@ $interface_traffic_modules = array(
 		$zoom = (int) get_parameter ("zoom", 1);
 		$baseline = get_parameter ("baseline", 0);
 		$show_percentil = get_parameter ("show_percentil", 0);
+		$fullscale = get_parameter("fullscale", 0);
 		
 		if ($zoom > 1) {
 			$height = $height * ($zoom / 2.1);
@@ -200,7 +201,9 @@ $interface_traffic_modules = array(
 			false,
 			false,
 			(($show_percentil)? $config['percentil'] : null),
-			true);
+			true,
+			false,
+			$fullscale);
 		
 		echo '</div>';
 		
@@ -256,6 +259,12 @@ $interface_traffic_modules = array(
 		$data = array();
 		$data[0] = __('Show percentil');
 		$data[1] = html_print_checkbox ("show_percentil", 1, (bool) $show_percentil, true);
+		$table->data[] = $data;
+		$table->rowclass[] ='';
+
+		$data = array();
+		$data[0] = __('Show full scale graph (TIP)');
+		$data[1] = html_print_checkbox ("fullscale", 1, (bool) $fullscale, true);
 		$table->data[] = $data;
 		$table->rowclass[] ='';
 		

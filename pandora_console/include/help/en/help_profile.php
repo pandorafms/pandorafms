@@ -51,7 +51,7 @@
 <tr><td>Group Management<td>PM
 <tr><td>Creating inventory modules<td>PM
 <tr><td>Module Management (includes all suboptions)<td>PM
-<tr><td>Massive Management Operations	<td>AW
+<tr><td>Bulk Management Operations	<td>AW
 <tr><td>Creating agents<td>AW
 <tr><td>Duplicating remote configurations<td>AW
 <tr><td>Downtime Management<td>AW

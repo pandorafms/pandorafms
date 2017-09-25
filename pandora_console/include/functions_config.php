@@ -201,7 +201,7 @@ function config_update_config () {
 					if (!config_update_value ('past_planned_downtimes', get_parameter('past_planned_downtimes')))
 						$error_update[] = __('Allow create planned downtimes in the past');
 					if (!config_update_value ('limit_parameters_massive', get_parameter('limit_parameters_massive')))
-						$error_update[] = __('Limit parameters massive');
+						$error_update[] = __('Limit parameters bulk');
 					if (!config_update_value ('identification_reminder', get_parameter('identification_reminder')))
 						$error_update[] = __('Identification_reminder');
 					if (!config_update_value ('include_agents', (bool)get_parameter('include_agents')))

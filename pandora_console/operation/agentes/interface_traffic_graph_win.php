@@ -263,7 +263,7 @@ $interface_traffic_modules = array(
 		$table->rowclass[] ='';
 
 		$data = array();
-		$data[0] = __('Full scale');
+		$data[0] = __('Show full scale graph (TIP)');
 		$data[1] = html_print_checkbox ("fullscale", 1, (bool) $fullscale, true);
 		$table->data[] = $data;
 		$table->rowclass[] ='';

@@ -482,6 +482,7 @@ switch ($action) {
 					$description = $item['description'];
 					$group = $item['id_group'];
 					$period = $item['period'];
+					$fullscale = isset($style['fullscale']) ? (bool) $style['fullscale'] : 0;
 					break;
 				case 'top_n':
 					$description = $item['description'];
@@ -1356,7 +1357,8 @@ You can of course remove the warnings, that's why we include the source and do n
 			<td><?php html_print_checkbox('only_avg', 1, $only_avg);?></td>
 		</tr>
 		<tr id="row_fullscale" style="" class="datos">
-			<td style="font-weight:bold;"><?php echo __('Full resolution graph (TIP)');?></td>
+			<td style="font-weight:bold;"><?php echo __('Full resolution graph (TIP)').
+					ui_print_help_tip(__('This option may cause performance issues.'), true);?></td>
 			<td><?php html_print_checkbox('fullscale', 1, $fullscale);?></td>
 		</tr>
 		<tr id="row_percentil" style="" class="datos">
@@ -3130,6 +3132,7 @@ function chooseType() {
 			$("#row_description").show();
 			$("#row_period").show();
 			$("#row_historical_db_check").hide();
+			$("#row_fullscale").show();
 			break;
 		
 		case 'top_n':

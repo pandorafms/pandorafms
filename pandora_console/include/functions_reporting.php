@@ -2674,6 +2674,10 @@ function reporting_network_interfaces_report($report, $content, $type = 'dinamic
 	if (empty($content['name'])) {
 		$content['name'] = __('Network interfaces report');
 	}
+
+	if (isset($content['style']['fullscale'])) {
+		$fullscale = (bool) $content['style']['fullscale'];
+	}
 	
 	$group_name = groups_get_name($content['id_group']);
 	
@@ -2745,7 +2749,13 @@ function reporting_network_interfaces_report($report, $content, $type = 'dinamic
 								true,
 								true,
 								true,
-								1);
+								1,
+								false,
+								false,
+								null,
+								false,
+								false,
+								$fullscale);
 							}
 						break;
 					case 'data':
@@ -2768,7 +2778,13 @@ function reporting_network_interfaces_report($report, $content, $type = 'dinamic
 								true,
 								true,
 								true,
-								2);
+								2,
+								false,
+								false,
+								null,
+								false,
+								false,
+								$fullscale);
 							}
 						break;
 				}

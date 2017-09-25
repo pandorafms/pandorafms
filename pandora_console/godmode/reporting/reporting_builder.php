@@ -1180,6 +1180,9 @@ switch ($action) {
 								else
 									$style['label'] = '';
 								break;
+							case 'network_interfaces_report':
+								$style['fullscale'] = (int) get_parameter('fullscale');
+								break;
 							case 'module_histogram_graph':
 							case 'agent_configuration':
 							case 'alert_report_agent':
@@ -1524,6 +1527,9 @@ switch ($action) {
 									$style['label'] = $label;
 								else
 									$style['label'] = '';
+								break;
+							case 'network_interfaces_report':
+								$style['fullscale'] = (int) get_parameter('fullscale');
 								break;
 							case 'module_histogram_graph':
 							case 'agent_configuration':

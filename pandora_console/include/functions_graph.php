@@ -1834,13 +1834,28 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		}
 	}
 	else{
-		$temp = fullscale_data_combined($module_list, $period, $date);
+		$flash_charts = true;
+		if($ttl>1 || !$config['flash_charts']){
+			$flash_charts = false;
+		}
+
+		$temp = fullscale_data_combined($module_list, $period, $date, $flash_charts);
 
 		$resolution = count($temp); //Number of points of the graph
 		$interval = (int) ($period / $resolution);
 		$module_name_list = array();
-		$flash_charts = true;
 		
+		if($ttl>1 || !$config['flash_charts']){
+			$temp2 = array();
+			foreach ($temp as $key => $value) {
+				$real_date = date("Y/M/d", $key);
+				$real_date .= "\n";
+				$real_date .= date("   H:i:s", $key);
+				$temp2[$real_date] = $value;
+			}
+			$temp = $temp2;
+		}
+
 		foreach ($module_list as $key => $value) {
 			$agent_name  = io_safe_output( modules_get_agentmodule_agent_name ($value) );
 			$alias       = db_get_value ("alias","tagente","nombre",$agent_name);
@@ -1856,7 +1871,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	}
 	
 	$graph_values = $temp;
-	
+
 	if($config["fixed_graph"] == false){
 		$water_mark = array(
 			'file' => $config['homedir'] .  "/images/logo_vertical_water.png",
@@ -2104,7 +2119,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	}
 }
 
-function fullscale_data_combined($module_list, $period, $date){
+function fullscale_data_combined($module_list, $period, $date, $flash_charts){
 
 	// Set variables
 	if ($date == 0){
@@ -2117,7 +2132,12 @@ function fullscale_data_combined($module_list, $period, $date){
 		$data_uncompress = db_uncompress_module_data($value_module, $datelimit, $date);
 		foreach ($data_uncompress as $key_data => $value_data) {
 			foreach ($value_data['data'] as $k => $v) {
-				$real_date = date("Y M d H:i:s", $v['utimestamp']);
+				if($flash_charts) {
+					$real_date = date("Y M d H:i:s", $v['utimestamp']);
+				}
+				else{
+					$real_date = $v['utimestamp'];
+				}
 				$data_all[$real_date][$key_module] = $v['datos'];
 			}
 		}

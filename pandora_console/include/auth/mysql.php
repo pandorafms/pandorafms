@@ -695,34 +695,42 @@ function ldap_process_user_login ($login, $password) {
 		}
 	}
 
-	$ldap_login_attr  = !empty($config["ldap_login_attr"]) ? io_safe_output($config["ldap_login_attr"]) . "=" : '';
+	$dc = $config["ldap_base_dn"];
+	
+	#Search group of this user it belong.
+	$filter="(cn=" . io_safe_output($login) . ")";
+	$justthese = array("objectclass=group");
+	
+	$sr = ldap_search($ds, $dc, $filter, $justthese);
+	
+	$memberof = ldap_get_entries($ds, $sr);
+	
+	if ($memberof["count"] == 0 && !isset($memberof[0]["memberof"])) {
+		@ldap_close ($ds);
+		return false;
+	}
+	else {
+		$memberof = $memberof[0];
+	}
+	
+	unset($memberof["count"]);
+
 	$ldap_base_dn  = !empty($config["ldap_base_dn"]) ? "," . io_safe_output($config["ldap_base_dn"]) : '';
 	
-	$ldap_adv_perms = json_decode(io_safe_output($config['ldap_adv_perms']), true);
 	$correct = false;
-	foreach ($ldap_adv_perms as $perm) {
-		$groups = $perm['groups_ldap'];
-		if ($groups[0] == '') {
-			$groups = "";
+	if(!empty($ldap_base_dn)) {
+		if (strlen($password) != 0 && @ldap_bind($ds, $memberof['dn'], $password) ) {
+			$correct = true;
 		}
-		else {
-			$groups = ",cn=" . str_replace(",", ",cn=", $groups[0]);
-		}
-		
-		if(!empty($ldap_base_dn)) {
-			if (strlen($password) != 0 && @ldap_bind($ds, $ldap_login_attr.io_safe_output($login).$groups.$ldap_base_dn, $password) ) {
-				$correct = true;
-			}
-		}
-		else {
-			if (strlen($password) != 0 && @ldap_bind($ds, io_safe_output($login), $password) ) {
-				$correct = true;
-			}
+	}
+	else {
+		if (strlen($password) != 0 && @ldap_bind($ds, io_safe_output($login), $password) ) {
+			$correct = true;
 		}
 	}
 	
 	@ldap_close ($ds);
-	
+
 	if ($correct) {
 		return true;
 	}

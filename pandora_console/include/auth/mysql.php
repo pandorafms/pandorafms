@@ -702,10 +702,15 @@ function ldap_process_user_login ($login, $password) {
 	$correct = false;
 	foreach ($ldap_adv_perms as $perm) {
 		$groups = $perm['groups_ldap'];
-		$groups = "cn=" . implode(",cn=", $groups);
+		if ($groups[0] == '') {
+			$groups = "";
+		}
+		else {
+			$groups = ",cn=" . str_replace(",", ",cn=", $groups[0]);
+		}
 		
 		if(!empty($ldap_base_dn)) {
-			if (strlen($password) != 0 && @ldap_bind($ds, $ldap_login_attr.io_safe_output($login).",".$groups.$ldap_base_dn, $password) ) {
+			if (strlen($password) != 0 && @ldap_bind($ds, $ldap_login_attr.io_safe_output($login).$groups.$ldap_base_dn, $password) ) {
 				$correct = true;
 			}
 		}

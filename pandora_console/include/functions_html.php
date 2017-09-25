@@ -630,7 +630,7 @@ function html_print_extended_select_for_unit($name, $selected = '',
 	
 	
 	// $fields = post_process_get_custom_values();
-	$fields['_timeticks_'] = 'timeticks';
+	$fields['_timeticks_'] = 'Timeticks';
 	$fields['none'] = __('none');
 	
 	if($no_change != 0){
@@ -653,7 +653,7 @@ function html_print_extended_select_for_unit($name, $selected = '',
 	else {
 		$uniq_name = $name;
 	}
-	html_debug($selected);
+	
 	ob_start();
 	
 	echo '<div id="' . $uniq_name . '_default" style="width:100%;display:inline;">';

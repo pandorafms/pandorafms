@@ -565,7 +565,7 @@ foreach ($targets2 as $t) {
 
 $table->data['edit6'][1] = html_print_select ($targets, 'id_export', '','', __('No change'), '', true, false, false);
 $table->data['edit6'][2] = __('Unit');
-$table->data['edit6'][3] = html_print_input_text ('unit', '', '', 15, 60, true);
+$table->data['edit6'][3] =  html_print_extended_select_for_unit('unit','', '', '', '0', '15', true, false, false);
 
 
 /* FF stands for Flip-flop */
@@ -1127,7 +1127,7 @@ function process_manage_edit ($module_name, $agents_select = null, $module_statu
 	/* List of fields which can be updated */
 	$fields = array ('dynamic_interval', 'dynamic_max', 'dynamic_min', 'dynamic_two_tailed', 'min_warning', 'max_warning', 'str_warning',
 		'min_critical', 'max_critical', 'str_critical', 'min_ff_event',
-		'module_interval', 'disabled', 'post_process', 'unit',
+		'module_interval', 'disabled', 'post_process', 'unit_select',
 		'snmp_community', 'tcp_send', 'custom_string_1',
 		'plugin_parameter', 'custom_string_2', 'custom_string_3', 'min',
 		'max', 'id_module_group', 'plugin_user', 'plugin_pass',
@@ -1157,6 +1157,13 @@ function process_manage_edit ($module_name, $agents_select = null, $module_statu
 			case 'post_process':
 				if($value !== '-1'){
 					$values['post_process'] = $value;
+				}
+				break;
+			case 'unit_select':
+				if($value == "none"){
+					$values['unit'] = (string) get_parameter('unit_text');
+				} else {
+					$values['unit'] = $value;
 				}
 				break;
 			default:

@@ -74,15 +74,28 @@ $table_agent->data = array();
 $data = array();
 
 $agent_name = ui_print_agent_name($agent["id_agente"], true, 500, "font-size: medium;font-weight:bold", true);
+$in_planned_downtime = db_get_value_filter('id', 'tplanned_downtime_agents', array('id_agent' => $agent["id_agente"]));
 
 if ($agent['disabled']) {
-	$agent_name = "<em>" . $agent_name . "</em>" . ui_print_help_tip(__('Disabled'), true);
+	if ($in_planned_downtime) {
+		$agent_name = "<em>" . $agent_name . ui_print_help_tip(__('Disabled'), true);
+	}
+	else {
+		$agent_name = "<em>" . $agent_name . "</em>" . ui_print_help_tip(__('Disabled'), true);
+	}
 }
 else if ($agent['quiet']) {
 	$agent_name = "<em'>" . $agent_name . "&nbsp;" . html_print_image("images/dot_green.disabled.png", true, array("border" => '0', "title" => __('Quiet'), "alt" => "")) . "</em>";
 }
 else {
 	$agent_name = $agent_name;
+}
+
+if ($in_planned_downtime && !$agent['disabled']) {
+	$agent_name .= "<em>" . "&nbsp;" . ui_print_help_tip(__('Agent in planned downtime'), true, 'images/minireloj-16.png') . "</em>";
+}
+else if ($in_planned_downtime) {
+	$agent_name .= "&nbsp;" . ui_print_help_tip(__('Agent in planned downtime'), true, 'images/minireloj-16.png') . "</em>";
 }
 
 if (!$config["show_group_name"])

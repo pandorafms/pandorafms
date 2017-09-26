@@ -191,6 +191,22 @@ function vbar_graph($flash_chart, $chart_data, $width, $height,
 			$homedir,$font,$font_size, $from_ux, $from_wux);
 	}
 	else {
+		foreach ($chart_data as $key => $value) {
+			if(strlen($key) > 25){
+				
+					if(strpos($key, ' - ') != -1){
+						$key_temp = explode(" - ",$key);
+						$key_temp[0] = $key_temp[0]."   \n";
+						$key_temp[1]= '...'.substr($key_temp[1],-15);
+						$key2 = $key_temp[0].$key_temp[1];
+						io_safe_output($key2);
+					}
+				$chart_data[$key2]['g'] = $chart_data[$key]['g'];
+				unset($chart_data[$key]);
+			}
+			
+		}
+				
 		$graph = array();
 		$graph['data'] = $chart_data;
 		$graph['width'] = $width;
@@ -639,6 +655,22 @@ function hbar_graph($flash_chart, $chart_data, $width, $height,
 			$chart_data, $width, $height, $water_mark_url, $font, $font_size);
 	}
 	else {
+		
+		foreach ($chart_data as $key => $value) {
+			if(strlen($key) > 40){
+					if(strpos($key, ' - ') != -1){
+						$key_temp = explode(" - ",$key);
+						$key_temp[0] = $key_temp[0]."   \n";
+						$key_temp[1]= '...'.substr($key_temp[1],-20);
+						$key2 = $key_temp[0].$key_temp[1];
+						io_safe_output($key2);
+					}
+				$chart_data[$key2]['g'] = $chart_data[$key]['g'];
+				unset($chart_data[$key]);
+			}
+		}
+		
+		
 		$graph = array();
 		$graph['data'] = $chart_data;
 		$graph['width'] = $width;

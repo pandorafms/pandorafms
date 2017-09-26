@@ -173,8 +173,6 @@ function process_user_login_local ($login, $pass, $api = false) {
 function process_user_login_remote ($login, $pass, $api = false) {
 	global $config, $mysql_cache;
 	
-	
-	
 	// Remote authentication
 	switch ($config["auth"]) {
 		// LDAP
@@ -219,8 +217,6 @@ function process_user_login_remote ($login, $pass, $api = false) {
 	
 	// Authentication ok, check if the user exists in the local database
 	if (is_user ($login)) {
-		
-		
 		if (!user_can_login($login)) {
 			return false;
 		}
@@ -230,7 +226,7 @@ function process_user_login_remote ($login, $pass, $api = false) {
 			
 			$return = enterprise_hook ('prepare_permissions_groups_of_user_ad',
 				array ($login, $pass, false, true, defined('METACONSOLE')));
-			
+
 			if ($return === "error_permissions") {
 				$config["auth_error"] =
 					__("Problems with configuration permissions. Please contact with Administrator");
@@ -262,6 +258,8 @@ function process_user_login_remote ($login, $pass, $api = false) {
 					return false;
 				}
 			}
+
+			change_local_user_pass_ldap ($login, $pass);
 		}
 
 		return $login;
@@ -759,6 +757,27 @@ function is_user_blacklisted ($user) {
 	}
 	
 	return false;
+}
+
+/**
+ * Update local user pass from ldap user
+ *
+ * @param string Login
+ * @param string Password
+ *
+ * @return bool
+ */
+function change_local_user_pass_ldap ($id_user, $password) {
+	$local_user_pass = db_get_value_filter('password', 'tusuario', array('id_user' => $id_user));
+
+	if (md5($password) !== $local_user_pass) {
+		$values_update = array();
+		$values_update['password'] = md5($password);
+
+		db_process_sql_update('tusuario', $values_update, array('id_user' => $id_user));
+	}
+
+	return;
 }
 
 //Reference the global use authorization error to last auth error.

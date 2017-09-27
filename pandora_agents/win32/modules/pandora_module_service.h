@@ -23,6 +23,7 @@
 #define	__PANDORA_MODULE_SERVICE_H__
 
 #include "pandora_module.h"
+#include "pandora_module_list.h"
 
 namespace Pandora_Modules {
 	/**
@@ -41,6 +42,7 @@ namespace Pandora_Modules {
 		void   run             ();
 		string getServiceName  () const;
 		bool   isWatchdog      () const;
+		void   execute_async_service (string &prev_res, Pandora_Module_Service *module, Pandora_Module_List *modules);
 		
 		void   setWatchdog     (bool watchdog);
 	};

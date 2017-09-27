@@ -20,12 +20,12 @@
 */
 
 #include "pandora_module_service.h"
-#include "pandora_module_list.h"
 #include "../windows/pandora_wmi.h"
 #include "../pandora_strutils.h"
 #include "../pandora_windows_service.h"
 #include <algorithm>
 #include <cctype>
+#include <sys/stat.h>
 
 using namespace Pandora;
 using namespace Pandora_Modules;
@@ -83,8 +83,6 @@ async_run (Pandora_Module_Service *module) {
 	HANDLE               event_log;
 	HANDLE               event;
 	DWORD                result;
-	int                  res;
-	string               str_res;
 	BYTE                 buffer[BUFFER_SIZE];
 	EVENTLOGRECORD      *record;
 	DWORD                read;
@@ -93,10 +91,17 @@ async_run (Pandora_Module_Service *module) {
 	bool                 service_event;
 	string               prev_res;
 	Pandora_Module_List *modules;
+	bool                 polling;
 	
 	prev_res = module->getLatestOutput ();
 	modules = new Pandora_Module_List ();
 	modules->addModule (module);
+
+	struct stat st;
+	// Use polling if there is not local politics and events
+	// do not emit logs. It is a way to check if there is a
+	// Home Edition Windows distribution
+	polling = (stat("C:\\Windows\\System32\\gpedit.msc", &st) != 0);
 	
 	while (1) {
 		event_log = OpenEventLog (NULL, "Service Control Manager");
@@ -113,6 +118,12 @@ async_run (Pandora_Module_Service *module) {
 		if (result != WAIT_OBJECT_0) {
 			CloseHandle (event);
 			CloseEventLog (event_log);
+			// If time out and polling,
+			// check the service status actively
+			if (result == WAIT_TIMEOUT && polling) {
+				pandoraLog("Timeout. Polling");
+				module->execute_async_service(prev_res, module, modules);
+			}
 			continue;
 		}
 		
@@ -138,22 +149,37 @@ async_run (Pandora_Module_Service *module) {
 		
 		/* A start/stop action was thrown */
 		if (service_event) {
-			res = Pandora_Wmi::isServiceRunning (module->getServiceName ());
-			str_res = inttostr (res);
-			if (str_res != prev_res) {
-				module->setOutput (str_res);
-				prev_res = str_res;
-				Pandora_Windows_Service::getInstance ()->sendXml (modules);
-			}
-			
-			if (res == 0 && module->isWatchdog ()) {
-				Pandora_Wmi::startService (module->getServiceName ());
-			}
+			module->execute_async_service(prev_res, module, modules);
 		}
 		CloseHandle (event);
 		CloseEventLog (event_log);
 	}
 	delete modules;
+}
+
+/*
+ *	Execute the service async task
+ */
+
+void
+Pandora_Module_Service::execute_async_service(
+	string &prev_res, Pandora_Module_Service *module, Pandora_Module_List *modules
+) {
+	string               str_res;
+	int					 res;
+
+	res = Pandora_Wmi::isServiceRunning (module->getServiceName ());
+	str_res = inttostr (res);
+	if (str_res != prev_res) {
+		module->setOutput (str_res);
+		prev_res = str_res;
+		Pandora_Windows_Service::getInstance ()->sendXml (modules);
+	}
+			
+	if (res == 0 && module->isWatchdog ()) {
+		pandoraLog("Starting service");
+		Pandora_Wmi::startService (module->getServiceName ());
+	}
 }
 
 void

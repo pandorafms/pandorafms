@@ -305,8 +305,33 @@ $(document).ready (function () {
 					// Replace the old column with the new
 					$table_macros_field.replaceWith(field_row);
 					if (old_value != '' || old_recovery_value != '') {
-						$("[name=field" + i + "_value]").val(old_value);
-						$("[name=field" + i + "_recovery_value]").val(old_recovery_value);
+						var inputType = $("[name=field" + i + "_value]").attr('type')
+						if (inputType == 'radio') {
+							if(old_value == 'text/plain'){
+								if ($("[name=field" + i + "_value]").val() == 'text/plain') {
+									$("[name=field" + i + "_value]").attr('checked','checked');
+								}
+							}
+							else{
+								if($("[name=field" + i + "_value]").val() == 'text/html') {
+									$("[name=field" + i + "_value]").attr('checked','checked');
+								}
+							}
+							if(old_recovery_value == 'text/plain'){
+								if ($("[name=field" + i + "_recovery_value]").val() == 'text/plain') {
+									$("[name=field" + i + "_recovery_value]").attr('checked','checked');
+								}
+							}
+							else{
+								if ($("[name=field" + i + "_recovery_value]").val() == 'text/html') {
+									$("[name=field" + i + "_recovery_value]").attr('checked','checked');
+								}
+							}
+						}
+						else {
+							$("[name=field" + i + "_value]").val(old_value);
+							$("[name=field" + i + "_recovery_value]").val(old_recovery_value);
+						}
 					}
 					else {
 						$("[name=field" + i + "_value]")

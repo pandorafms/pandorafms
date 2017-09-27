@@ -5489,7 +5489,7 @@ sub cli_export_visual_console() {
 			FROM tlayout_data 
 			WHERE id_layout = $id");
 
-	$data_to_json .= '[';
+	$data_to_json .= "'[";
 	foreach my $element (@console_elements) {
 		my $pos_x = $element->{'pos_x'};
 		my $pos_y = $element->{'pos_y'};
@@ -5546,7 +5546,7 @@ sub cli_export_visual_console() {
 		$data_to_json .= '}';
 	}
 
-	$data_to_json .= ']';
+	$data_to_json .= "]'";
 
 	if ($path eq '') {
 		open(FicheroJSON, ">console_" . $id . "_elements");

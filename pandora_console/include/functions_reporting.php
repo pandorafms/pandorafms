@@ -2674,6 +2674,10 @@ function reporting_network_interfaces_report($report, $content, $type = 'dinamic
 	if (empty($content['name'])) {
 		$content['name'] = __('Network interfaces report');
 	}
+
+	if (isset($content['style']['fullscale'])) {
+		$fullscale = (bool) $content['style']['fullscale'];
+	}
 	
 	$group_name = groups_get_name($content['id_group']);
 	
@@ -2745,7 +2749,13 @@ function reporting_network_interfaces_report($report, $content, $type = 'dinamic
 								true,
 								true,
 								true,
-								1);
+								1,
+								false,
+								false,
+								null,
+								false,
+								false,
+								$fullscale);
 							}
 						break;
 					case 'data':
@@ -2768,7 +2778,13 @@ function reporting_network_interfaces_report($report, $content, $type = 'dinamic
 								true,
 								true,
 								true,
-								2);
+								2,
+								false,
+								false,
+								null,
+								false,
+								false,
+								$fullscale);
 							}
 						break;
 				}
@@ -6034,12 +6050,14 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 	if (isset($content['style']['only_avg'])) {
 		$only_avg = (bool) $content['style']['only_avg'];
 	}
+
+	if (isset($content['style']['fullscale'])) {
+		$fullscale = (bool) $content['style']['fullscale'];
+	}
 	
 	$moduletype_name = modules_get_moduletype_name(
 		modules_get_agentmodule_type(
 			$content['id_agent_module']));
-	
-	
 	
 	$return['chart'] = '';
 	// Get chart
@@ -6114,7 +6132,8 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 					($content['style']['percentil'] == 1) ? $config['percentil'] : null,
 					false,
 					false,
-					$config['type_module_charts']);
+					$config['type_module_charts'],
+					$fullscale);
 			}
 			break;
 		case 'data':

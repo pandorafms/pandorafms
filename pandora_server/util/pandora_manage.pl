@@ -221,7 +221,7 @@ sub help_screen{
 	help_screen_line('--delete_visual_console', '<id>', 'Delete a visual console');
 	help_screen_line('--delete_visual_console_objects', '<id> <mode> <id_mode>', 'Delete a visual console elements');
 	help_screen_line('--duplicate_visual_console', '<id> <times> [<prefix>]', 'Duplicate a visual console');
-	help_screen_line('--export_json_visual_console', '<id> [<path>]', 'Creates a json with the visual console elements information');
+	help_screen_line('--export_json_visual_console', '<id> [<path>] [<with_element_id>]', 'Creates a json with the visual console elements information');
 
 	
 	print "\n";
@@ -4870,16 +4870,17 @@ sub cli_create_visual_console() {
 				my $elem_width = ($pos2X - $pos1X) / $x_divider;
 				my $elem_height = ($pos2Y - $pos1Y) / $y_divider;
 
-				if ($number_of_elements < 4) {
+				if ($number_of_elements <= 4) {
 					$elem_height = ($pos2Y - $pos1Y) / 3;
 				}
 
 				my $elem_count = 1;
-				my $pos_helper_x = 0;
-				my $pos_helper_y = 0;
+				my $pos_aux_count = 0;
+				my $pos_helper_x = $pos1X;
+				my $pos_helper_y = $pos1Y;
 				foreach my $elem (@$elements_in_array) {
-					my $pos_x = $pos_helper_x * $elem_width;
-					my $pos_y = $pos_helper_y * $elem_height;
+					my $pos_x = $pos_helper_x;
+					my $pos_y = $pos_helper_y;
 					my $width = $elem_width;
 					my $height = $elem_height;
 					my $label = $elem->{'label'};
@@ -4907,12 +4908,14 @@ sub cli_create_visual_console() {
 
 					$elem_count++;
 
-					if ($pos_helper_x == 3) {
-						$pos_helper_x = 0;
-						$pos_helper_y++;
+					if ($pos_aux_count == 3) {
+						$pos_helper_x = $pos1X;
+						$pos_helper_y += $elem_height;
+						$pos_aux_count = 0;
 					}
 					else {
-						$pos_helper_x++;
+						$pos_aux_count++;
+						$pos_helper_x += $elem_width;
 					}
 				}
 			}
@@ -5460,7 +5463,7 @@ sub cli_duplicate_visual_console () {
 ##############################################################################
 
 sub cli_export_visual_console() {
-	my ($id,$path) = @ARGV[2..3];
+	my ($id,$path,$with_id) = @ARGV[2..4];
 
 	if($id eq '') {
 		print_log "[ERROR] ID field cannot be empty.\n\n";
@@ -5491,6 +5494,7 @@ sub cli_export_visual_console() {
 
 	$data_to_json .= "'[";
 	foreach my $element (@console_elements) {
+		my $id_layout_data = $element->{'id'};
 		my $pos_x = $element->{'pos_x'};
 		my $pos_y = $element->{'pos_y'};
 		my $width = $element->{'width'};
@@ -5522,7 +5526,13 @@ sub cli_export_visual_console() {
 
 		$label =~ s/"/\\"/g;
 
-		$data_to_json .= '{"image":"' . $image . '"';
+		if ($with_id == 1) {
+			$data_to_json .= '{"id":' . $id_layout_data;
+			$data_to_json .= ',"image":"' . $image . '"';
+		}
+		else {
+			$data_to_json .= '{"image":"' . $image . '"';
+		}
 		$data_to_json .= ',"pos_y":' . $pos_y;
 		$data_to_json .= ',"pos_x":' . $pos_x;
 		$data_to_json .= ',"width":' . $width;
@@ -6011,7 +6021,7 @@ sub pandora_manage_main ($$$) {
 			cli_duplicate_visual_console();
 		}
 		elsif ($param eq '--export_json_visual_console') {
-			param_check($ltotal, 2, 1);
+			param_check($ltotal, 3, 2);
 			cli_export_visual_console();
 		}
 		else {

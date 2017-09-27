@@ -4821,7 +4821,7 @@ sub cli_create_visual_console() {
 				my $id_agente_modulo = $elem->{'id_agente_modulo'};
 				my $id_agent = $elem->{'id_agent'};
 				my $id_layout_linked = $elem->{'id_layout_linked'};
-				my $parent_item = $elem->{'parent_item'};
+				my $parent_item = 0;
 				my $enable_link = $elem->{'enable_link'};
 				my $id_metaconsole = $elem->{'id_metaconsole'};
 				my $id_group = $elem->{'id_group'};
@@ -5489,7 +5489,7 @@ sub cli_export_visual_console() {
 			FROM tlayout_data 
 			WHERE id_layout = $id");
 
-	$data_to_json .= '[';
+	$data_to_json .= "'[";
 	foreach my $element (@console_elements) {
 		my $pos_x = $element->{'pos_x'};
 		my $pos_y = $element->{'pos_y'};
@@ -5546,7 +5546,7 @@ sub cli_export_visual_console() {
 		$data_to_json .= '}';
 	}
 
-	$data_to_json .= ']';
+	$data_to_json .= "]'";
 
 	if ($path eq '') {
 		open(FicheroJSON, ">console_" . $id . "_elements");

@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.712 PS170919";
+my $version = "7.0NG.712 PS170928";
 
 # save program name for logging
 my $progname = basename($0);
@@ -221,7 +221,7 @@ sub help_screen{
 	help_screen_line('--delete_visual_console', '<id>', 'Delete a visual console');
 	help_screen_line('--delete_visual_console_objects', '<id> <mode> <id_mode>', 'Delete a visual console elements');
 	help_screen_line('--duplicate_visual_console', '<id> <times> [<prefix>]', 'Duplicate a visual console');
-	help_screen_line('--export_json_visual_console', '<id> [<path>]', 'Creates a json with the visual console elements information');
+	help_screen_line('--export_json_visual_console', '<id> [<path>] [<with_element_id>]', 'Creates a json with the visual console elements information');
 
 	
 	print "\n";
@@ -4821,7 +4821,7 @@ sub cli_create_visual_console() {
 				my $id_agente_modulo = $elem->{'id_agente_modulo'};
 				my $id_agent = $elem->{'id_agent'};
 				my $id_layout_linked = $elem->{'id_layout_linked'};
-				my $parent_item = $elem->{'parent_item'};
+				my $parent_item = 0;
 				my $enable_link = $elem->{'enable_link'};
 				my $id_metaconsole = $elem->{'id_metaconsole'};
 				my $id_group = $elem->{'id_group'};
@@ -4855,11 +4855,11 @@ sub cli_create_visual_console() {
 
 				my $number_of_elements = scalar(@$elements_in_array);
 				
-				my $x_divider = 4;
+				my $x_divider = 8;
 				my $y_divider = 1;
 
 				for (my $i = 1; $i <= 1000; $i++) {
-					if (($i * 4) < $number_of_elements) {
+					if (($i * 8) < $number_of_elements) {
 						$y_divider++;
 					}
 					else {
@@ -4870,16 +4870,17 @@ sub cli_create_visual_console() {
 				my $elem_width = ($pos2X - $pos1X) / $x_divider;
 				my $elem_height = ($pos2Y - $pos1Y) / $y_divider;
 
-				if ($number_of_elements < 4) {
-					$elem_height = ($pos2Y - $pos1Y) / 3;
+				if ($number_of_elements <= 8) {
+					$elem_height = ($pos2Y - $pos1Y) / 4;
 				}
 
 				my $elem_count = 1;
-				my $pos_helper_x = 0;
-				my $pos_helper_y = 0;
+				my $pos_aux_count = 0;
+				my $pos_helper_x = $pos1X;
+				my $pos_helper_y = $pos1Y;
 				foreach my $elem (@$elements_in_array) {
-					my $pos_x = $pos_helper_x * $elem_width;
-					my $pos_y = $pos_helper_y * $elem_height;
+					my $pos_x = $pos_helper_x;
+					my $pos_y = $pos_helper_y;
 					my $width = $elem_width;
 					my $height = $elem_height;
 					my $label = $elem->{'label'};
@@ -4907,12 +4908,14 @@ sub cli_create_visual_console() {
 
 					$elem_count++;
 
-					if ($pos_helper_x == 3) {
-						$pos_helper_x = 0;
-						$pos_helper_y++;
+					if ($pos_aux_count == 7) {
+						$pos_helper_x = $pos1X;
+						$pos_helper_y += $elem_height;
+						$pos_aux_count = 0;
 					}
 					else {
-						$pos_helper_x++;
+						$pos_aux_count++;
+						$pos_helper_x += $elem_width;
 					}
 				}
 			}
@@ -5379,7 +5382,7 @@ sub cli_delete_visual_console_objects() {
 ##############################################################################
 
 sub cli_duplicate_visual_console () {
-	my ($id_console,$prefix) = @ARGV[2..3];
+	my ($id_console,$times,$prefix) = @ARGV[2..4];
 
 	if($id_console eq '') {
 		print_log "[ERROR] Console ID field cannot be empty.\n\n";
@@ -5400,55 +5403,57 @@ sub cli_duplicate_visual_console () {
 		$name_count = 1;
 	}
 
-	my $exist = 1;
-	while ($exist == 1) {
-		my $name_in_db = get_db_single_row ($dbh, "SELECT name FROM tlayout WHERE name = '$new_name'");
+	for (my $iteration = 0; $iteration < $times; $iteration++) {
+		my $exist = 1;
+		while ($exist == 1) {
+			my $name_in_db = get_db_single_row ($dbh, "SELECT name FROM tlayout WHERE name = '$new_name'");
+			
+			if (defined($name_in_db->{'name'}) && ($name_in_db->{'name'} eq $new_name)) {
+				$new_name = $name_to_compare . "_" . $name_count;
+				$name_count++;
+			}
+			else {
+				$exist = 0;
+			}
+		}
+
+		my $new_console_id = db_insert ($dbh, 'id', 'INSERT INTO tlayout (name, id_group, background, width, height, background_color)
+							VALUES (?, ?, ?, ?, ?, ?)', $new_name, $console->{'id_group'}, $console->{'background'}, $console->{'width'}, $console->{'height'}, $console->{'background_color'});
 		
-		if (defined($name_in_db->{'name'}) && ($name_in_db->{'name'} eq $new_name)) {
-			$new_name = $name_to_compare . "_" . $name_count;
-			$name_count++;
+		print_log "[INFO] The new visual console '$new_name' has been created. The new ID is '$new_console_id' \n\n";
+
+		my @console_elements = get_db_rows ($dbh, "SELECT * 
+				FROM tlayout_data 
+				WHERE id_layout = $id_console");
+
+		foreach my $element (@console_elements) {
+			my $pos_x = $element->{'pos_x'};
+			my $pos_y = $element->{'pos_y'};
+			my $width = $element->{'width'};
+			my $height = $element->{'height'};
+			my $label = $element->{'label'};
+			my $image = $element->{'image'};
+			my $type = $element->{'type'};
+			my $period = $element->{'period'};
+			my $id_agente_modulo = $element->{'id_agente_modulo'};
+			my $id_agent = $element->{'id_agent'};
+			my $id_layout_linked = $element->{'id_layout_linked'};
+			my $parent_item = $element->{'parent_item'};
+			my $enable_link = $element->{'enable_link'};
+			my $id_metaconsole = $element->{'id_metaconsole'};
+			my $id_group = $element->{'id_group'};
+			my $id_custom_graph = $element->{'id_custom_graph'};
+			my $border_width = $element->{'border_width'};
+			my $type_graph = $element->{'type_graph'};
+			my $label_position = $element->{'label_position'};
+			my $border_color = $element->{'border_color'};
+			my $fill_color = $element->{'fill_color'};
+
+			my $element_id = db_insert ($dbh, 'id', 'INSERT INTO tlayout_data (id_layout, pos_x, pos_y, height, width, label, image, type, period, id_agente_modulo, id_agent, id_layout_linked, parent_item, enable_link, id_metaconsole, id_group, id_custom_graph, border_width, type_graph, label_position, border_color, fill_color, show_statistics)
+						VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $new_console_id, $pos_x, $pos_y, $height, $width, $label, $image, $type, $period, $id_agente_modulo, $id_agent, $id_layout_linked, $parent_item, $enable_link, $id_metaconsole, $id_group, $id_custom_graph, $border_width, $type_graph, $label_position, $border_color, $fill_color, 0);
+		
+			print_log "[INFO] Element with ID " . $element->{"id"} . " has been duplicated to the new console \n\n";
 		}
-		else {
-			$exist = 0;
-		}
-	}
-
-	my $new_console_id = db_insert ($dbh, 'id', 'INSERT INTO tlayout (name, id_group, background, width, height, background_color)
-                         VALUES (?, ?, ?, ?, ?, ?)', $new_name, $console->{'id_group'}, $console->{'background'}, $console->{'width'}, $console->{'height'}, $console->{'background_color'});
-	
-	print_log "[INFO] The new visual console '$new_name' has been created. The new ID is '$new_console_id' \n\n";
-
-	my @console_elements = get_db_rows ($dbh, "SELECT * 
-			FROM tlayout_data 
-			WHERE id_layout = $id_console");
-
-	foreach my $element (@console_elements) {
-		my $pos_x = $element->{'pos_x'};
-		my $pos_y = $element->{'pos_y'};
-		my $width = $element->{'width'};
-		my $height = $element->{'height'};
-		my $label = $element->{'label'};
-		my $image = $element->{'image'};
-		my $type = $element->{'type'};
-		my $period = $element->{'period'};
-		my $id_agente_modulo = $element->{'id_agente_modulo'};
-		my $id_agent = $element->{'id_agent'};
-		my $id_layout_linked = $element->{'id_layout_linked'};
-		my $parent_item = $element->{'parent_item'};
-		my $enable_link = $element->{'enable_link'};
-		my $id_metaconsole = $element->{'id_metaconsole'};
-		my $id_group = $element->{'id_group'};
-		my $id_custom_graph = $element->{'id_custom_graph'};
-		my $border_width = $element->{'border_width'};
-		my $type_graph = $element->{'type_graph'};
-		my $label_position = $element->{'label_position'};
-		my $border_color = $element->{'border_color'};
-		my $fill_color = $element->{'fill_color'};
-
-		my $element_id = db_insert ($dbh, 'id', 'INSERT INTO tlayout_data (id_layout, pos_x, pos_y, height, width, label, image, type, period, id_agente_modulo, id_agent, id_layout_linked, parent_item, enable_link, id_metaconsole, id_group, id_custom_graph, border_width, type_graph, label_position, border_color, fill_color, show_statistics)
-					VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $new_console_id, $pos_x, $pos_y, $height, $width, $label, $image, $type, $period, $id_agente_modulo, $id_agent, $id_layout_linked, $parent_item, $enable_link, $id_metaconsole, $id_group, $id_custom_graph, $border_width, $type_graph, $label_position, $border_color, $fill_color, 0);
-	
-		print_log "[INFO] Element with ID " . $element->{"id"} . " has been duplicated to the new console \n\n";
 	}
 }
 
@@ -5458,23 +5463,38 @@ sub cli_duplicate_visual_console () {
 ##############################################################################
 
 sub cli_export_visual_console() {
-	my ($id,$path) = @ARGV[2..3];
+	my ($id,$path,$with_id) = @ARGV[2..4];
 
 	if($id eq '') {
 		print_log "[ERROR] ID field cannot be empty.\n\n";
 		exit 1;
 	}
 
+	my $data_to_json = '';
+	my $first = 1;
+
 	print_log "[INFO] Exporting visual console elements with ID '$id' \n\n";
+
+	my $console = get_db_single_row ($dbh, "SELECT * 
+			FROM tlayout 
+			WHERE id = $id");
+
+	$data_to_json .= '"' . safe_output($console->{'name'}) . '"';
+	$data_to_json .= ' "' . $console->{'background'} . '"';
+	$data_to_json .= ' ' . $console->{'width'};
+	$data_to_json .= ' ' . $console->{'height'};
+	$data_to_json .= ' ' . $console->{'id_group'};
+	$data_to_json .= ' "static_objects"';
+	$data_to_json .= ' ""';
+	$data_to_json .= ' "' . $console->{'background_color'} . '" ';
 
 	my @console_elements = get_db_rows ($dbh, "SELECT * 
 			FROM tlayout_data 
 			WHERE id_layout = $id");
 
-	my $data_to_json = '[';
-	my $first = 1;
-
+	$data_to_json .= "'[";
 	foreach my $element (@console_elements) {
+		my $id_layout_data = $element->{'id'};
 		my $pos_x = $element->{'pos_x'};
 		my $pos_y = $element->{'pos_y'};
 		my $width = $element->{'width'};
@@ -5504,7 +5524,15 @@ sub cli_export_visual_console() {
 			$first = 0;
 		}
 
-		$data_to_json .= '{"image":"' . $image . '"';
+		$label =~ s/"/\\"/g;
+
+		if ($with_id == 1) {
+			$data_to_json .= '{"id":' . $id_layout_data;
+			$data_to_json .= ',"image":"' . $image . '"';
+		}
+		else {
+			$data_to_json .= '{"image":"' . $image . '"';
+		}
 		$data_to_json .= ',"pos_y":' . $pos_y;
 		$data_to_json .= ',"pos_x":' . $pos_x;
 		$data_to_json .= ',"width":' . $width;
@@ -5528,7 +5556,7 @@ sub cli_export_visual_console() {
 		$data_to_json .= '}';
 	}
 
-	$data_to_json .= ']';
+	$data_to_json .= "]'";
 
 	if ($path eq '') {
 		open(FicheroJSON, ">console_" . $id . "_elements");
@@ -5989,11 +6017,11 @@ sub pandora_manage_main ($$$) {
 			cli_delete_visual_console_objects();
 		}
 		elsif ($param eq '--duplicate_visual_console') {
-			param_check($ltotal, 2, 1);
+			param_check($ltotal, 3, 2);
 			cli_duplicate_visual_console();
 		}
 		elsif ($param eq '--export_json_visual_console') {
-			param_check($ltotal, 2, 1);
+			param_check($ltotal, 3, 2);
 			cli_export_visual_console();
 		}
 		else {

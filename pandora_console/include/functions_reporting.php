@@ -98,10 +98,13 @@ function reporting_get_name($id_report) {
 
 function reporting_make_reporting_data($report = null, $id_report,
 	$date, $time, $period = null, $type = 'dinamic',
-	$force_width_chart = null, $force_height_chart = null, $pdf= false) {
+	$force_width_chart = null, $force_height_chart = null, $pdf= false,
+	$from_template = false) {
 	
 	global $config;
 	
+	enterprise_include_once('include/functions_metaconsole.php');
+
 	$return = array();
 	
 	if (!empty($report)) {
@@ -126,6 +129,8 @@ function reporting_make_reporting_data($report = null, $id_report,
 	$metaconsole_on = is_metaconsole();
 	
 	foreach ($contents as $content) {
+		$server_name = $content['server_name'];
+		
 		if (!empty($period)) {
 			$content['period'] = $period;
 		}
@@ -153,6 +158,7 @@ function reporting_make_reporting_data($report = null, $id_report,
 							continue;
 						}
 					}
+					
 					array_push ($agents_to_macro, modules_get_agentmodule_agent($graph_item['id_agent_module']));
 					if ($metaconsole_on) {
 						//Restore db connection
@@ -170,6 +176,10 @@ function reporting_make_reporting_data($report = null, $id_report,
 		}
 		$agents_to_macro = $agents_to_macro_aux;
 
+		if (!empty($report) && $from_template) { 
+			$agents_to_macro = $content['id_agent'];
+		}
+
 		if(isset($content['style']['name_label'])){
 			//Add macros name
 			$items_label = array();
@@ -178,7 +188,6 @@ function reporting_make_reporting_data($report = null, $id_report,
 			$items_label['id_agent_module'] = $content['id_agent_module'];
 			$items_label['modules'] = $modules_to_macro;
 			$items_label['agents'] = $agents_to_macro;
-			$server_name = $content['server_name'];
 			
 			//Metaconsole connection
 			if ($metaconsole_on && $server_name != '') {
@@ -2665,6 +2674,10 @@ function reporting_network_interfaces_report($report, $content, $type = 'dinamic
 	if (empty($content['name'])) {
 		$content['name'] = __('Network interfaces report');
 	}
+
+	if (isset($content['style']['fullscale'])) {
+		$fullscale = (bool) $content['style']['fullscale'];
+	}
 	
 	$group_name = groups_get_name($content['id_group']);
 	
@@ -2736,7 +2749,13 @@ function reporting_network_interfaces_report($report, $content, $type = 'dinamic
 								true,
 								true,
 								true,
-								1);
+								1,
+								false,
+								false,
+								null,
+								false,
+								false,
+								$fullscale);
 							}
 						break;
 					case 'data':
@@ -2759,7 +2778,13 @@ function reporting_network_interfaces_report($report, $content, $type = 'dinamic
 								true,
 								true,
 								true,
-								2);
+								2,
+								false,
+								false,
+								null,
+								false,
+								false,
+								$fullscale);
 							}
 						break;
 				}
@@ -6025,12 +6050,14 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 	if (isset($content['style']['only_avg'])) {
 		$only_avg = (bool) $content['style']['only_avg'];
 	}
+
+	if (isset($content['style']['fullscale'])) {
+		$fullscale = (bool) $content['style']['fullscale'];
+	}
 	
 	$moduletype_name = modules_get_moduletype_name(
 		modules_get_agentmodule_type(
 			$content['id_agent_module']));
-	
-	
 	
 	$return['chart'] = '';
 	// Get chart
@@ -6105,7 +6132,8 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 					($content['style']['percentil'] == 1) ? $config['percentil'] : null,
 					false,
 					false,
-					$config['type_module_charts']);
+					$config['type_module_charts'],
+					$fullscale);
 			}
 			break;
 		case 'data':
@@ -10320,7 +10348,6 @@ function reporting_get_agentmodule_sla_working_timestamp ($period, $date_end, $w
 }
 
 function reporting_label_macro ($item, $label) {
-	
 	switch ($item['type']) {
 		case 'event_report_agent':
 		case 'alert_report_agent':

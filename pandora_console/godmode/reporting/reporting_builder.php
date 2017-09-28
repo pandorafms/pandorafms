@@ -1172,12 +1172,16 @@ switch ($action) {
 							case 'simple_graph':
 								// Warning. We are using this column to hold this value to avoid
 								// the modification of the database for compatibility reasons.
-								$style['only_avg'] = (int) get_parameter('only_avg');
+								$style['only_avg']  = (int) get_parameter('only_avg');
 								$style['percentil'] = (int) get_parameter('percentil');
+								$style['fullscale'] = (int) get_parameter('fullscale');
 								if ($label != '')
 									$style['label'] = $label;
 								else
 									$style['label'] = '';
+								break;
+							case 'network_interfaces_report':
+								$style['fullscale'] = (int) get_parameter('fullscale');
 								break;
 							case 'module_histogram_graph':
 							case 'agent_configuration':
@@ -1516,12 +1520,16 @@ switch ($action) {
 							case 'simple_graph':
 								// Warning. We are using this column to hold this value to avoid
 								// the modification of the database for compatibility reasons.
-								$style['only_avg'] = (int) get_parameter('only_avg');
+								$style['only_avg']  = (int) get_parameter('only_avg');
 								$style['percentil'] = (int) get_parameter('percentil');
+								$style['fullscale'] = (int) get_parameter('fullscale');
 								if ($label != '')
 									$style['label'] = $label;
 								else
 									$style['label'] = '';
+								break;
+							case 'network_interfaces_report':
+								$style['fullscale'] = (int) get_parameter('fullscale');
 								break;
 							case 'module_histogram_graph':
 							case 'agent_configuration':

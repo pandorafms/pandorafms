@@ -4855,11 +4855,11 @@ sub cli_create_visual_console() {
 
 				my $number_of_elements = scalar(@$elements_in_array);
 				
-				my $x_divider = 4;
+				my $x_divider = 8;
 				my $y_divider = 1;
 
 				for (my $i = 1; $i <= 1000; $i++) {
-					if (($i * 4) < $number_of_elements) {
+					if (($i * 8) < $number_of_elements) {
 						$y_divider++;
 					}
 					else {
@@ -4870,8 +4870,8 @@ sub cli_create_visual_console() {
 				my $elem_width = ($pos2X - $pos1X) / $x_divider;
 				my $elem_height = ($pos2Y - $pos1Y) / $y_divider;
 
-				if ($number_of_elements <= 4) {
-					$elem_height = ($pos2Y - $pos1Y) / 3;
+				if ($number_of_elements <= 8) {
+					$elem_height = ($pos2Y - $pos1Y) / 4;
 				}
 
 				my $elem_count = 1;
@@ -4908,7 +4908,7 @@ sub cli_create_visual_console() {
 
 					$elem_count++;
 
-					if ($pos_aux_count == 3) {
+					if ($pos_aux_count == 7) {
 						$pos_helper_x = $pos1X;
 						$pos_helper_y += $elem_height;
 						$pos_aux_count = 0;

@@ -73,26 +73,8 @@ sub new ($$;$) {
 	my $self = $class->SUPER::new($config, DATASERVER, \&PandoraFMS::DataServer::data_producer, \&PandoraFMS::DataServer::data_consumer, $dbh);
 
 	# Load external .enc files for XML::Parser.
-	if ($config->{'enc_dir'} ne '') {
-		if (opendir(my $dh, $config->{'enc_dir'})) {
-			while (my $enc_file = readdir($dh)) {
-
-				# Ignore unknown files.
-				next unless ($enc_file =~ m/.enc$/);
-
-				# Load the .enc file.
-				eval {
-					local $SIG{__DIE__} = {};
-					XML::Parser::Expat::load_encoding($config->{'enc_dir'} . '/' . $enc_file);
-				};
-				if ($@) {
-					print_message ($config, " [WARNING] Error loading encoding file: $enc_file", 1);
-				}
-			}
-			closedir($dh);
-		} else {
-			print_message($config, " [WARNING] Error opening directory " . $config->{'enc_dir'} . ": $!", 1);
-		}
+	if ($config->{'enc_dir'} ne '' && !grep {$_ eq $config->{'enc_dir'}} @XML::Parser::Expat::Encoding_Path) {
+		push(@XML::Parser::Expat::Encoding_Path, $config->{'enc_dir'});
 	}
 
 	bless $self, $class;

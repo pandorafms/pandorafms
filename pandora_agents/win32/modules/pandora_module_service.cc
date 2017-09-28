@@ -102,6 +102,9 @@ async_run (Pandora_Module_Service *module) {
 	// do not emit logs. It is a way to check if there is a
 	// Home Edition Windows distribution
 	polling = (stat("C:\\Windows\\System32\\gpedit.msc", &st) != 0);
+	if (polling) {
+		pandoraLog("Async polling service %s for this Windows edition", module->getServiceName().c_str());
+	}
 	
 	while (1) {
 		event_log = OpenEventLog (NULL, "Service Control Manager");

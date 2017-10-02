@@ -725,6 +725,9 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	`module_free_text` TEXT,
 	`each_agent` tinyint(1) default 1,
 	`historical_db` tinyint(1) UNSIGNED NOT NULL default 0,
+	`lapse_calc` tinyint(1) UNSIGNED NOT NULL default '0',
+	`lapse` int(11) UNSIGNED NOT NULL default '300',
+	`visual_format` UNSIGNED NOT NULL tinyint(1) default '0',
 	PRIMARY KEY(`id_rc`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -1269,6 +1272,9 @@ UPDATE treport_custom_sql SET `sql` = 'select&#x20;t1.alias&#x20;as&#x20;agent_n
 -- ---------------------------------------------------------------------
 	
 ALTER TABLE treport_content ADD COLUMN `historical_db` tinyint(1) NOT NULL DEFAULT '0';
+ALTER TABLE treport_content ADD COLUMN `lapse_calc` tinyint(1) default '0';
+ALTER TABLE treport_content ADD COLUMN `lapse` int(11) default '300';
+ALTER TABLE treport_content ADD COLUMN `visual_format` tinyint(1) default '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tmodule_relationship`

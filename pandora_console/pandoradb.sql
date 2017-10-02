@@ -1269,6 +1269,9 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`id_module_group` INT (10) unsigned NOT NULL DEFAULT 0,
 	`server_name` text,
 	`historical_db` tinyint(1) UNSIGNED NOT NULL default 0,
+	`lapse_calc` tinyint(1) UNSIGNED NOT NULL default '0',
+	`lapse` int(11) UNSIGNED NOT NULL default '300',
+	`visual_format` UNSIGNED NOT NULL tinyint(1) default '0',
 	PRIMARY KEY(`id_rc`),
 	FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
 		ON UPDATE CASCADE ON DELETE CASCADE
@@ -2726,6 +2729,9 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	`module_free_text` TEXT,
 	`each_agent` tinyint(1) default 1,
 	`historical_db` tinyint(1) UNSIGNED NOT NULL default 0,
+	`lapse_calc` tinyint(1) UNSIGNED NOT NULL default '0',
+	`lapse` int(11) UNSIGNED NOT NULL default '300',
+	`visual_format` UNSIGNED NOT NULL tinyint(1) default '0',
 	PRIMARY KEY(`id_rc`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

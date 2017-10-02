@@ -260,6 +260,8 @@ function config_update_config () {
 							$error_update[] = __('Server SMTP');
 						if (!config_update_value ('email_smtpPort', (int)get_parameter('email_smtpPort')))
 							$error_update[] = __('Port SMTP');
+						if (!config_update_value ('email_encryption', get_parameter('email_encryption')))
+							$error_update[] = __('Encryption');
 						if (!config_update_value ('email_username', get_parameter('email_username')))
 							$error_update[] = __('Email user');
 						if (!config_update_value ('email_password', get_parameter('email_password')))
@@ -1226,6 +1228,10 @@ function config_process_config () {
 
 	if (!isset ($config['email_smtpPort'])) {
 		config_update_value ( 'email_smtpPort', 25);
+	}
+	
+	if (!isset ($config['email_encryption'])) {
+		config_update_value ( 'email_encryption', 0);
 	}
 
 	if (!isset ($config['email_username'])) {

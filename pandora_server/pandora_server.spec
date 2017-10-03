@@ -99,6 +99,11 @@ exit 0
 chkconfig pandora_server on 
 chkconfig tentacle_serverd on 
 
+# Enable the services on SystemD
+systemctl enable tentacle_serverd.service
+systemctl enable pandora_server.service
+
+
 echo "/usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf" > /etc/cron.hourly/pandora_db
 chmod 750 /etc/cron.hourly/pandora_db
 cp -aRf /usr/share/pandora_server/util/pandora_server_logrotate /etc/logrotate.d/pandora_server

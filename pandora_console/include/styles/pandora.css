@@ -4300,3 +4300,27 @@ div#footer_help{
 	text-align: center;
 	margin-top: 10px;
 }
+
+.dashed{
+	stroke-dasharray: 10;
+
+}
+.path {
+	stroke-dasharray: 500;
+	stroke-dashoffset: 500;
+	animation: dash 15s linear;
+}
+
+@keyframes dash {
+	from {
+		stroke-dashoffset: 500;
+	}
+	to {
+		stroke-dashoffset: 0;
+	}
+}
+
+.route {
+	fill: none;
+	transition: all 4s ease-in-out;
+}

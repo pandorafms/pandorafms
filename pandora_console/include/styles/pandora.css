@@ -2399,17 +2399,39 @@ span#plugin_description {
 	font-size: 14pt !important;
 	line-height: 14pt;
 }
+.visual_font_size_18pt, .visual_font_size_18pt > em , .visual_font_size_18pt > strong, .visual_font_size_18pt > strong > span, .visual_font_size_18pt > span, .visual_font_size_18pt > strong > em, .visual_font_size_18pt > em > strong, .visual_font_size_18pt em span, .visual_font_size_18pt span em    {
+	font-size: 18pt !important;
+	line-height: 18pt;
+}
+
 .visual_font_size_24pt, .visual_font_size_24pt > em, .visual_font_size_24pt > strong, .visual_font_size_24pt > strong > span , .visual_font_size_24pt > span, .visual_font_size_24pt > strong > em, .visual_font_size_24pt > em > strong, .visual_font_size_24pt em span, .visual_font_size_24pt span em   {
 	font-size: 24pt !important;
 	line-height: 24pt;
+}
+.visual_font_size_28pt, .visual_font_size_28pt > em, .visual_font_size_28pt > strong, .visual_font_size_28pt > strong > span , .visual_font_size_28pt > span, .visual_font_size_28pt > strong > em, .visual_font_size_28pt > em > strong, .visual_font_size_28pt em span, .visual_font_size_28pt span em   {
+	font-size: 28pt !important;
+	line-height: 28pt;
 }
 .visual_font_size_36pt, .visual_font_size_36pt > em, .visual_font_size_36pt > strong, .visual_font_size_36pt > strong > span, .visual_font_size_36pt > span, .visual_font_size_36pt > strong > em, .visual_font_size_36pt > em > strong, .visual_font_size_36pt em span, .visual_font_size_36pt span em   {
 	font-size: 36pt !important;
 	line-height: 36pt;
 }
+.visual_font_size_48pt, .visual_font_size_48pt > em, .visual_font_size_48pt > strong, .visual_font_size_48pt > strong > span, .visual_font_size_48pt > span, .visual_font_size_48pt > strong > em, .visual_font_size_48pt > em > strong, .visual_font_size_48pt em span, .visual_font_size_48pt span em   {
+	font-size: 48pt !important;
+	line-height: 48pt;
+}
+.visual_font_size_60pt, .visual_font_size_60pt > em, .visual_font_size_60pt > strong, .visual_font_size_60pt > strong > span, .visual_font_size_60pt > span, .visual_font_size_60pt > strong > em, .visual_font_size_60pt > em > strong, .visual_font_size_60pt em span, .visual_font_size_60pt span em   {
+	font-size: 60pt !important;
+	line-height: 60pt;
+}
 .visual_font_size_72pt, .visual_font_size_72pt > em, .visual_font_size_72pt > strong, .visual_font_size_72pt > strong > span, .visual_font_size_72pt > span, .visual_font_size_72pt > strong > em, .visual_font_size_72pt > em > strong, .visual_font_size_72pt em span, .visual_font_size_72pt span em   {
 	font-size: 72pt !important;
 	line-height: 72pt;
+}
+
+.visual_font_size_84pt, .visual_font_size_84pt > em, .visual_font_size_84pt > strong, .visual_font_size_84pt > strong > span, .visual_font_size_84pt > span, .visual_font_size_84pt > strong > em, .visual_font_size_84pt > em > strong, .visual_font_size_84pt em span, .visual_font_size_84pt span em   {
+	font-size: 84pt !important;
+	line-height: 84pt;
 }
 
 .visual_font_size_96pt, .visual_font_size_96pt > em, .visual_font_size_96pt > strong, .visual_font_size_96pt > strong > span, .visual_font_size_96pt > span, .visual_font_size_96pt > strong > em, .visual_font_size_96pt > em > strong, .visual_font_size_96pt em span, .visual_font_size_96pt span em   {
@@ -2417,9 +2439,19 @@ span#plugin_description {
 	line-height: 96pt;
 }
 
+.visual_font_size_116pt, .visual_font_size_116pt > em, .visual_font_size_116pt > strong, .visual_font_size_116pt > strong > span, .visual_font_size_116pt > span, .visual_font_size_116pt > strong > em, .visual_font_size_116pt > em > strong, .visual_font_size_116pt em span, .visual_font_size_116pt span em   {
+	font-size: 116pt !important;
+	line-height: 116pt;
+}
+
 .visual_font_size_128pt, .visual_font_size_128pt > em, .visual_font_size_128pt > strong, .visual_font_size_128pt > strong > span, .visual_font_size_128pt > span, .visual_font_size_128pt > strong > em, .visual_font_size_128pt > em > strong, .visual_font_size_128pt em span, .visual_font_size_128pt span em   {
 	font-size: 128pt !important;
 	line-height: 128pt;
+}
+
+.visual_font_size_140pt, .visual_font_size_140pt > em, .visual_font_size_140pt > strong, .visual_font_size_140pt > strong > span, .visual_font_size_140pt > span, .visual_font_size_140pt > strong > em, .visual_font_size_140pt > em > strong, .visual_font_size_140pt em span, .visual_font_size_140pt span em   {
+	font-size: 140pt !important;
+	line-height: 140pt;
 }
 
 .visual_font_size_154pt, .visual_font_size_154pt > em, .visual_font_size_154pt > strong, .visual_font_size_154pt > strong > span, .visual_font_size_154pt > span, .visual_font_size_154pt > strong > em, .visual_font_size_154pt > em > strong, .visual_font_size_154pt em span, .visual_font_size_154pt span em   {

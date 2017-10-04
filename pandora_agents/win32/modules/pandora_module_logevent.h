@@ -69,7 +69,8 @@ namespace Pandora_Modules {
 
         HANDLE openLogEvent ();
         void closeLogEvent ();
-        int getLogEvents (list<string> &event_list, unsigned char discard);
+        int getLogEvents (list<string> &event_list);
+        int seekAtTop (list<string> &event_list);
         void timestampToSystemtime (string timestamp, SYSTEMTIME *system_time);
         void getEventDescription (PEVENTLOGRECORD pevlr, char *message, DWORD flags);
 		string getEventDescriptionXPATH (PEVENTLOGRECORD pevlr);

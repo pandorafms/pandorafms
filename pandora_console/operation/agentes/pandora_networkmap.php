@@ -495,7 +495,12 @@ switch ($tab) {
 					$count = 0;
 				
 				if (($count == 0) && ($network_map['source'] != 'empty')) {
-					$data['nodes'] = __('Pending to generate');
+					if (enterprise_installed() && ($network_map['generated'])) {
+						$data['nodes'] = __('Empty map');
+					}
+					else {
+						$data['nodes'] = __('Pending to generate');
+					}
 				}
 				else {
 					$data['nodes'] = $count - 1; //PandoraFMS node is not an agent

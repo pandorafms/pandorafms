@@ -1087,6 +1087,39 @@ $(document).ready (function () {
 		selector = $("#form_edit input[name=selection_mode]:checked").val();
 		$("#id_agents").trigger("change");
 	});
+	
+	$('#agents').change(function(e){
+				for(var i=0;i<document.forms["form_edit"].agents.length;i++)	{
+					
+					if(document.forms["form_edit"].agents[0].selected == true){
+						var any = true;
+					}
+					if(i != 0 && document.forms["form_edit"].agents[i].selected){
+							var others = true;
+					}
+					if(any && others){
+							document.forms["form_edit"].agents[i].selected = false;
+							document.forms["form_edit"].agents[0].selected = false;
+					}	
+				}
+	});
+	
+	$('#module').change(function(e){
+				for(var i=0;i<document.forms["form_edit"].module.length;i++)	{
+					
+					if(document.forms["form_edit"].module[0].selected == true){
+						var any = true;
+					}
+					if(i != 0 && document.forms["form_edit"].module[i].selected){
+							var others = true;
+					}
+					if(any && others){
+							document.forms["form_edit"].module[i].selected = false;
+							document.forms["form_edit"].module[0].selected = false;
+					}	
+				}
+	});
+	
 });
 
 function disabled_status () {

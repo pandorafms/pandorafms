@@ -146,7 +146,7 @@ function events_get_events_grouped($sql_post, $offset = 0,
 				$sql = "SELECT COUNT(*) FROM (SELECT *
 					FROM $table te
 					WHERE 1=1 " . $sql_post . "
-					GROUP BY estado, evento, id_agentmodule" . $groupby_extra . ") AS t";
+					GROUP BY estado, evento, id_agente, id_agentmodule" . $groupby_extra . ") AS t";
 			}
 			else {
 				$sql = "SELECT *, MAX(id_evento) AS id_evento,
@@ -161,7 +161,7 @@ function events_get_events_grouped($sql_post, $offset = 0,
 					(SELECT ack_utimestamp FROM $table WHERE id_evento = MAX(te.id_evento)) AS ack_utimestamp
 				FROM $table te
 				WHERE 1=1 " . $sql_post . "
-				GROUP BY estado, evento, id_agentmodule" . $groupby_extra . "
+				GROUP BY estado, evento, id_agente, id_agentmodule" . $groupby_extra . "
 				ORDER BY timestamp_rep " . $order . " LIMIT " . $offset . "," . $pagination;
 			}
 			break;

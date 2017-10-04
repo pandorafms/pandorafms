@@ -54,6 +54,7 @@ if (enterprise_include_once('include/functions_reporting.php') !== ENTERPRISE_NO
 	$enterpriseEnable = true;
 }
 
+html_print_input_hidden ('custom_graph', 1);
 if ($enterpriseEnable) {
 	$buttons = reporting_enterprise_add_template_graph_tabs($buttons);
 }

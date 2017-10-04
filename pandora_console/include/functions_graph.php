@@ -5654,13 +5654,13 @@ function graph_nodata_image($width = 300, $height = 110, $type = 'area', $text =
 	$image = ui_get_full_url('images/image_problem_' . $type . '.png',
 		false, false, false); 
 	
-	if ($text == '') {
-		$text = __('No data to show');
-	}
+	// if ($text == '') {
+	// 	$text = __('No data to show');
+	// }
 	
 	$text_div = '<div class="nodata_text">' . $text . '</div>';
 	
-	$image_div = '<div class="nodata_container" style="background-image: url(\'' . $image . '\');">' .
+	$image_div = '<div class="nodata_container" style="width:80%;height:80%;background-size: 80% 80%;background-image: url(\'' . $image . '\');">' .
 		$text_div . '</div>';
 	
 	$div = '<div style="width:' . $width . 'px; height:' . $height . 'px; border: 1px dotted #ddd; background-color: white; margin: 0 auto;">' .

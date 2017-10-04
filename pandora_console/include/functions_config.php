@@ -206,6 +206,8 @@ function config_update_config () {
 						$error_update[] = __('Identification_reminder');
 					if (!config_update_value ('include_agents', (bool)get_parameter('include_agents')))
 						$error_update[] = __('Include_agents');
+						if (!config_update_value ('alias_as_name', get_parameter('alias_as_name')))
+							$error_update[] = __('alias_as_name');
 					if (!config_update_value ('auditdir', get_parameter('auditdir')))
 						$error_update[] = __('Audit log directory');
 					break;
@@ -1014,6 +1016,10 @@ function config_process_config () {
 
 	if (!isset ($config["include_agents"])) {
 		config_update_value ('include_agents', 0);
+	}
+	
+	if (!isset ($config["alias_as_name"])) {
+		config_update_value ('alias_as_name', 0);
 	}
 
 	if (!isset ($config["auditdir"])) {

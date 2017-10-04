@@ -240,9 +240,9 @@ if (!empty($tag_with)) {
 		$sql_post .= " OR ";
 		$sql_post .= "tags LIKE '" . tags_get_name($id_tag) . ",%'";
 		$sql_post .= " OR ";
-		$sql_post .= "tags LIKE '%, " . tags_get_name($id_tag) . "'";
+		$sql_post .= "tags LIKE '%," . tags_get_name($id_tag) . "'";
 		$sql_post .= " OR ";
-		$sql_post .= "tags LIKE '%, " . tags_get_name($id_tag) . ",%'";
+		$sql_post .= "tags LIKE '%," . tags_get_name($id_tag) . ",%'";
 	}
 	$sql_post .= ' ) ';
 }

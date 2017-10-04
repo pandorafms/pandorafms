@@ -38,9 +38,10 @@ function render_row ($data, $label) {
 	}
 	else { 
 		echo "<tr>";
-		echo "<td>" . $label;
-		echo "<td>" . $data;
-		echo "</td>";
+		echo "<td style='padding:2px;border:0px;' width='60%'><div style='padding:5px;background-color:#f2f2f2;border-radius:2px;text-align:left;border:0px;'>" . $label;
+		echo "</div></td>";
+		echo "<td style='font-weight:bold;padding:2px;border:0px;' width='40%'><div style='padding:5px;background-color:#f2f2f2;border-radius:2px;text-align:left;border:0px;'>" . $data;
+		echo "</div></td>";
 		echo "</tr>";
 	}
 }
@@ -89,35 +90,154 @@ else {
 	// Header
 	ui_print_page_header (__('Pandora FMS Diagnostic tool'), "", false, "", true);
 
-	echo "<table with='100%' class='databox data' cellpadding='4' cellspacing='4'>";
-	echo "<tr><th align=left>".__("Item")."</th>";
-	echo "<th>".__("Data value")."</th></tr>";
+	echo "<table width='1000px' border='0' style='border:0px;' class='databox data' cellpadding='4' cellspacing='4'>";
+	echo "<tr><th style='background-color:#b1b1b1;font-weight:bold;font-style:italic;border-radius:2px;' align=center colspan='2'>".__("Pandora status info")."</th></tr>";
 }
 
 render_row ($build_version, "Pandora FMS Build");
 render_row ($pandora_version, "Pandora FMS Version");
+render_info_data ("SELECT value FROM tconfig where token ='MR'","Minor Release");
 render_row ($config["homedir"], "Homedir");
 render_row ($config["homeurl"], "HomeUrl");
+render_info_data ("SELECT `value`
+	FROM tconfig
+	WHERE `token` = 'enterprise_installed'", "Enterprise installed");
+	
+	$full_key = db_get_sql("SELECT value
+		FROM tupdate_settings
+		WHERE `key` = 'customer_key'");
+		
+	$compressed_key = substr($full_key, 0,5).'...'.substr($full_key, -5);
+		
+	render_row ($compressed_key,"Update Key");
+	
+	render_info_data ("SELECT value
+		FROM tupdate_settings
+		WHERE `key` = 'updating_code_path'", "Updating code path");
+		
+	render_info_data ("SELECT value
+		FROM tupdate_settings
+		WHERE `key` = 'current_update'", "Current Update #");
+
+
+echo "<tr><th style='background-color:#b1b1b1;font-weight:bold;font-style:italic;border-radius:2px;' align=center colspan='2'>".__("PHP setup")."</th></tr>";
+
+
 render_row (phpversion(), "PHP Version");
 
-render_info ("tagente");
-render_info ("tagent_access");
-render_info ("tagente_datos");
-render_info ("tagente_datos_string");
-render_info ("tagente_estado");
-render_info ("tagente_modulo");
-render_info ("talert_actions");
-render_info ("talert_commands");
-render_info ("talert_template_modules");
-render_info ("tevento");
-render_info ("tlayout");
+render_row (ini_get('max_execution_time'), "PHP Max ejecution time");
+
+render_row (ini_get('max_input_time'), "PHP Max input time");
+
+render_row (ini_get('memory_limit'), "PHP Memory limit");
+
+render_row (ini_get('session.cookie_lifetime'), "Session cookie lifetime");
+
+echo "<tr><th style='background-color:#b1b1b1;font-weight:bold;font-style:italic;border-radius:2px;' align=center colspan='2'>".__("Database size stats")."</th></tr>";
+
+render_info_data ("SELECT COUNT(*) FROM tagente","Total agents");
+render_info_data ("SELECT COUNT(*) FROM tagente_modulo","Total modules");
+render_info_data ("SELECT COUNT(*) FROM tgrupo","Total groups");
+render_info_data ("SELECT COUNT(*) FROM tagente_datos","Total module data records");
+// render_info_data ("SELECT COUNT(*) FROM tagente_datos_string","Total module string data records");
+// render_info_data ("SELECT COUNT(*) FROM tagente_datos_log4x","Total module log4x data records");
+render_info_data ("SELECT COUNT(*) FROM tagent_access","Total agent access record");
+// render_info ("tagente_estado");
+// render_info ("talert_template_modules");
+render_info_data ("SELECT COUNT(*) FROM tevento","Total events");
+
 if($config['enterprise_installed'])
-	render_info ("tlocal_component");
-render_info ("tserver");
-render_info ("treport");
-render_info ("ttrap");
-render_info ("tusuario");
-render_info ("tsesion");
+render_info_data ("SELECT COUNT(*) FROM ttrap","Total traps");
+render_info_data ("SELECT COUNT(*) FROM tusuario","Total users");
+render_info_data ("SELECT COUNT(*) FROM tsesion","Total sessions");
+
+echo "<tr><th style='background-color:#b1b1b1;font-weight:bold;font-style:italic;border-radius:2px;' align=center colspan='2'>".__("Database sanity")."</th></tr>";
+
+render_info_data ("SELECT COUNT( DISTINCT tagente.id_agente)
+	FROM tagente_estado, tagente, tagente_modulo
+	WHERE tagente.disabled = 0
+		AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+		AND tagente_modulo.disabled = 0
+		AND tagente_estado.id_agente = tagente.id_agente
+		AND tagente_estado.estado = 3","Total unknown agents");
+		
+render_info_data ("SELECT COUNT( DISTINCT tagente.id_agente)
+	FROM tagente_estado, tagente, tagente_modulo
+	WHERE tagente.disabled = 0
+		AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+		AND tagente_modulo.disabled = 0
+		AND tagente_estado.id_agente = tagente.id_agente
+		AND tagente_estado.estado = 4","Total not-init modules");
+
+
+$last_run_difference = '';
+
+$diferencia = time() - date (
+	db_get_sql ("SELECT `value`
+		FROM tconfig
+		WHERE `token` = 'db_maintance'"));
+
+$last_run_difference_months = 0;
+$last_run_difference_weeks = 0;
+$last_run_difference_days = 0;
+$last_run_difference_minutos = 0;
+$last_run_difference_seconds = 0;
+
+while($diferencia >= 2419200){
+	$diferencia -= 2419200;
+	$last_run_difference_months++;
+}
+
+while($diferencia >= 604800){
+	$diferencia -= 604800;
+	$last_run_difference_weeks++;
+}
+
+while($diferencia >= 86400){
+	$diferencia -= 86400;
+	$last_run_difference_days++;
+}
+
+while($diferencia >= 3600){
+	$diferencia -= 3600;
+	$last_run_difference_hours++;
+}
+
+while($diferencia >= 60){
+	$diferencia -= 60;
+	$last_run_difference_minutes++;
+}
+
+$last_run_difference_seconds = $diferencia;
+
+if($last_run_difference_months > 0){
+	$last_run_difference .= $last_run_difference_months.'month/s ';
+}
+
+if ($last_run_difference_weeks > 0) {
+	$last_run_difference .= $last_run_difference_weeks.' week/s ';
+}
+
+if ($last_run_difference_days > 0) {
+	$last_run_difference .= $last_run_difference_days.' day/s ';
+}
+
+if ($last_run_difference_hours > 0) {
+	$last_run_difference .= $last_run_difference_hours.' hour/s ';
+}
+
+if ($last_run_difference_minutes > 0) {
+	$last_run_difference .= $last_run_difference_minutes.' minute/s ';
+}
+
+$last_run_difference .= $last_run_difference_seconds.' second/s ago';
+									
+render_row ( date ("Y/m/d H:i:s",
+db_get_sql ("SELECT `value`
+	FROM tconfig
+	WHERE `token` = 'db_maintance'")).' ('.$last_run_difference.')'.' *', "PandoraDB Last run");
+
+echo "<tr><th style='background-color:#b1b1b1;font-weight:bold;font-style:italic;border-radius:2px;' align=center colspan='2'>".__("Database status info")."</th></tr>";
 
 switch ($config["dbtype"]) {
 	case "mysql":
@@ -130,23 +250,22 @@ switch ($config["dbtype"]) {
 		render_info_data ("SELECT `value`
 			FROM tconfig
 			WHERE `token` = 'db_scheme_build'", "DB Schema Build");
-		render_info_data ("SELECT `value`
-			FROM tconfig
-			WHERE `token` = 'enterprise_installed'", "Enterprise installed");
-		render_row ( date ("Y/m/d H:i:s",
-			db_get_sql ("SELECT `value`
-				FROM tconfig
-				WHERE `token` = 'db_maintance'")), "PandoraDB Last run");
+				
+		if(strpos($_SERVER['HTTP_USER_AGENT'],'Windows') == false){
 		
-		render_info_data ("SELECT value
-			FROM tupdate_settings
-			WHERE `key` = 'customer_key';", "Update Key");
-		render_info_data ("SELECT value
-			FROM tupdate_settings
-			WHERE `key` = 'updating_code_path'", "Updating code path");
-		render_info_data ("SELECT value
-			FROM tupdate_settings
-			WHERE `key` = 'current_update'", "Current Update #");
+		echo "<tr><th style='background-color:#b1b1b1;font-weight:bold;font-style:italic;border-radius:2px;' align=center colspan='2'>".__("System info")."</th></tr>";
+				
+		$output = 'cat /proc/cpuinfo  | grep "model name" | tail -1 | cut -f 2 -d ":"';
+		$output2 = 'cat /proc/cpuinfo  | grep "processor" | wc -l';
+		
+		render_row(exec($output).' x '.exec($output2),'CPU');
+		
+		$output = 'cat /proc/meminfo  | grep "MemTotal"';
+		
+		render_row(exec($output),'RAM');
+		
+		}
+		
 		break;
 	case "postgresql":
 		render_info_data ("SELECT \"value\"
@@ -201,4 +320,12 @@ switch ($config["dbtype"]) {
 if ($console_mode == 0) {
 	echo "</table>";
 }
+
+echo "<hr color='#b1b1b1' size=1 width=1000 align=left>";
+
+echo "<span>".__('(*) Please check your Pandora Server setup and be sure that database maintenance daemon is running. It\' very important to 
+keep up-to-date database to get the best performance and results in Pandora')."</span><br><br><br>";
+
+
+
 ?>

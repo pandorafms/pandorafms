@@ -31,8 +31,6 @@ function extension_db_status_extension_tables() {
 function extension_db_status() {
 	global $config;
 	
-	
-	
 	$db_user = get_parameter('db_user', '');
 	$db_password = get_parameter('db_password', '');
 	$db_host = get_parameter('db_host', '');
@@ -40,11 +38,11 @@ function extension_db_status() {
 	$db_status_execute = (bool)get_parameter('db_status_execute', false);
 	
 	
-	ui_print_page_header (__("DB Status"),
+	ui_print_page_header (__("DB Schema check"),
 		"images/extensions.png", false, "", true, "");
 	
 	
-	if (! check_acl ($config['id_user'], 0, "DM")) {
+	if (!is_user_admin($config['id_user'])) {
 		db_pandora_audit("ACL Violation",
 			"Trying to access db status");
 		require ("general/noaccess.php");
@@ -367,5 +365,5 @@ function extension_db_status_execute_sql_file($url, $connection) {
 }
 
 extensions_add_godmode_function('extension_db_status');
-extensions_add_godmode_menu_option(__('DB Status'), 'DM', 'gextensions', null, "v1r1", 'gdbman');
+extensions_add_godmode_menu_option(__('DB Schema check'), 'DM', 'gextensions', null, "v1r1", 'gdbman');
 ?>

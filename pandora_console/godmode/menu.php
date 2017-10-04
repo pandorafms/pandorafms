@@ -285,6 +285,7 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 }
 
 if (check_acl ($config['id_user'], 0, "PM") || check_acl ($config['id_user'], 0, "DM")) {
+	
 	$menu_godmode["gextensions"]["text"] = __('Admin tools');
 	$menu_godmode["gextensions"]["sec2"] = "godmode/extensions";
 	$menu_godmode["gextensions"]["id"] = "god-extensions";
@@ -305,18 +306,13 @@ if (check_acl ($config['id_user'], 0, "PM") || check_acl ($config['id_user'], 0,
 		$sub["godmode/setup/file_manager"]["id"] = 'File manager';
 	}
 	
-	if (check_acl ($config['id_user'], 0, "DM") || check_acl ($config['id_user'], 0, "PM")) {
-		$sub["gdbman"]["text"] = __('DB maintenance');
+	if (is_user_admin($config['id_user'])) {
+		$sub["gdbman"]["text"] = __('Admin tools');
 		$sub["gdbman"]["id"] = 'DB maintenance';
 		$sub["gdbman"]["type"] = "direct";
 		$sub["gdbman"]["subtype"] = "nolink";
 		
 		$sub2 = array ();
-		$sub2["godmode/db/db_info"]["text"] = __('DB information');
-		$sub2["godmode/db/db_purge"]["text"] = __('Database purge');
-		$sub2["godmode/db/db_refine"]["text"] = __('Database debug');
-		$sub2["godmode/db/db_audit"]["text"] = __('Database audit');
-		$sub2["godmode/db/db_event"]["text"] = __('Database event');
 		
 		$sub["gdbman"]["sub2"] = $sub2;
 	}
@@ -330,14 +326,24 @@ if (is_array ($config['extensions'])) {
 	$sub2 = array ();
 	
 	foreach ($config['extensions'] as $extension) {
+		// html_debug($extension);
+		
 		//If no godmode_menu is a operation extension
 		if ($extension['godmode_menu'] == '') {
 			continue;
 		}
 		
+		if ($extension['godmode_menu']['name'] == 'System Info') {
+			continue;
+		}
+		
 		$extmenu = $extension['godmode_menu'];
 		
-		if ($extmenu["name"] == 'DB interface' && !check_acl ($config['id_user'], 0, "DM")) {
+		if ($extmenu["name"] == 'DB interface' && !is_user_admin($config['id_user'])) {
+			continue;
+		}
+		
+		if ($extmenu["name"] == 'DB Schema check' && !is_user_admin($config['id_user'])) {
 			continue;
 		}
 		

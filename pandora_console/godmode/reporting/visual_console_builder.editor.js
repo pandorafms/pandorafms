@@ -388,7 +388,6 @@ function update_button_palette_callback() {
 			else {
 				setPercentileBar(idItem, values);
 			}
-			
 			break;
 		case 'module_graph':
 			if($('#dir_items').html() == 'horizontal'){
@@ -634,7 +633,8 @@ function readFields() {
 	values['event_max_time_row'] = $("select[name=event_max_time_row]").val();
 	values['type_percentile'] = $("select[name=type_percentile]").val();
 	values['percentile_color'] = $("input[name='percentile_color']").val();
-	values['value_show'] = $("input[name=value_show]:checked").val();
+	values['value_show'] = $("select[name=value_show]").val();
+	
 	values['enable_link'] = $("input[name=enable_link]").is(':checked') ? 1 : 0;
 	values['id_group'] = $("select[name=group]").val();
 	values['id_custom_graph'] = parseInt(
@@ -1291,14 +1291,7 @@ function loadFieldsFromDB(item) {
 				}
 
 				if (key == 'value_show') {
-					if (val == 'percent') {
-						$("input[name=value_show][value=percent]")
-							.attr("checked", "checked");
-					}
-					else {
-						$("input[name=value_show][value=value]")
-							.attr("checked", "checked");
-					}
+					$("select[name=value_show]").val(val);
 				}
 
 				if (key == 'id_group') {
@@ -3114,9 +3107,6 @@ function updateDB(type, idElement , values, event) {
 }
 
 function copyDB(idItem) {
-	
-	console.log(idItem);
-	
 	metaconsole = $("input[name='metaconsole']").val();
 
 	parameter = Array();
@@ -3572,8 +3562,6 @@ function eventsItems(drag) {
 		}
 		}
 		else{
-			console.log('Dragstart');
-			
 			multiDragStart(event);
 			
 		}
@@ -3590,8 +3578,6 @@ function eventsItems(drag) {
 		updateDB(selectedItem, idItem, values, 'dragstop');
 		}
 		else{
-			
-				console.log('Dragstop');
 			multidragStop(event);
 		}
 	});
@@ -3678,10 +3664,6 @@ function eventsItems(drag) {
 				draw_user_lines("", 0, 0, 0 , 0, 0, true);
 				break;
 		}
-	}
-	else{
-		console.log('Drag');
-		
 	}
 	});
 }

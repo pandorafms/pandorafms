@@ -1494,7 +1494,7 @@ function print_phases_donut (recipient, phases) {
 	}
 }
 
-function print_circular_progress_bar (recipient, percentile, width, height, color) {
+function print_circular_progress_bar (recipient, percentile, width, height, color, unit) {
 	var twoPi = Math.PI * 2;
 	var radius = (width / 2) - 10;
 	var border = 20;
@@ -1556,7 +1556,7 @@ function print_circular_progress_bar (recipient, percentile, width, height, colo
 		.style("font-family", "arial")
 		.style("font-weight", "bold")
 		.style("font-size", 16)
-		.text("%")
+		.text(unit)
 		.attr('text-anchor', 'middle')
 		.attr('dy', '40');
 
@@ -1579,7 +1579,7 @@ function print_circular_progress_bar (recipient, percentile, width, height, colo
 	})();
 }
 
-function print_interior_circular_progress_bar (recipient, percentile, width, height, color) {
+function print_interior_circular_progress_bar (recipient, percentile, width, height, color, unit) {
 	var twoPi = Math.PI * 2;
 	var radius = (width / 2) - 30;
 	var radius2 = (width / 2) - 10;
@@ -1655,7 +1655,7 @@ function print_interior_circular_progress_bar (recipient, percentile, width, hei
 		.style("font-family", "arial")
 		.style("font-weight", "bold")
 		.style("font-size", 16)
-		.text("%")
+		.text(unit)
 		.attr('text-anchor', 'middle')
 		.attr('dy', '40');
 

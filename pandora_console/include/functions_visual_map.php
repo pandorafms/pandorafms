@@ -1590,11 +1590,23 @@ function visual_map_print_item($mode = "read", $layoutData,
 				}
 			}
 			else {
-				if($width == 0){
-					$img = progress_circular_bar($id, $percentile, 100,100, $border_color);
+				if (($layoutData['image'] == 'value') && ($value_text !== false)) {
+					$unit_text = db_get_sql ('SELECT unit
+						FROM tagente_modulo
+						WHERE id_agente_modulo = ' . $id_module);
+					$unit_text = trim(io_safe_output($unit_text));
+
+					$percentile = $value_text;
+				}
+				else {
+					$unit_text = "%";
+				}
+
+				if($width < 200){
+					$img = progress_circular_bar($id, $percentile, 200,200, $border_color, $unit_text);
 				}
 				else{
-					$img = progress_circular_bar($id, $percentile, $width, $width, $border_color);
+					$img = progress_circular_bar($id, $percentile, $width, $width, $border_color, $unit_text);
 				}
 			}
 
@@ -1648,15 +1660,25 @@ function visual_map_print_item($mode = "read", $layoutData,
 					$img =  '<img src="images/console/signes/circular-progress-bar-interior.png" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';	
 				}
 			}
-			else{
-				if ($type == CIRCULAR_INTERIOR_PROGRESS_BAR) {
-					if($width == 0){
-						$img = progress_circular_bar_interior($id, $percentile, 100,100, $border_color);
-					
-					}
-					else{
-						$img = progress_circular_bar_interior($id, $percentile, $width, $width, $border_color);
-					}
+			else {
+				if (($layoutData['image'] == 'value') && ($value_text !== false)) {
+					$unit_text = db_get_sql ('SELECT unit
+						FROM tagente_modulo
+						WHERE id_agente_modulo = ' . $id_module);
+					$unit_text = trim(io_safe_output($unit_text));
+
+					$percentile = $value_text;
+				}
+				else {
+					$unit_text = "%";
+				}
+
+				if($width < 200){
+					$img = progress_circular_bar_interior($id, $percentile, 200,200, $border_color);
+				
+				}
+				else{
+					$img = progress_circular_bar_interior($id, $percentile, $width, $width, $border_color);
 				}
 			}
 			

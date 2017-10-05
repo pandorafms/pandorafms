@@ -309,4 +309,12 @@ function ux_console_phases_donut ($phases, $id, $return = false) {
 	
 	return $output;
 }
+
+function progress_circular_bar ($percentile, $width, $height, $color) {
+
+}
+
+function progress_circular_bar_interior ($percentile, $width, $height, $color) {
+
+}
 ?>

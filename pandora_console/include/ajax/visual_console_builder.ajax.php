@@ -796,7 +796,7 @@ switch ($action) {
 						elseif ($elementFields['type'] == CIRCULAR_INTERIOR_PROGRESS_BAR) {
 							$elementFields['type_percentile'] = 'interior_circular_progress_bar';
 						}
-						$elementFields['percentile_color'] = $elementFields['percentile_color'];
+						$elementFields['percentile_color'] = $elementFields['border_color'];
 						break;
 					
 					case 'module_graph':
@@ -1054,8 +1054,16 @@ switch ($action) {
 					$return['values']['height_box'] = $values['height'];
 					break;
 					
-				case PERCENTILE_BUBBLE:
+				case CIRCULAR_PROGRESS_BAR:
 					$return['values']['type_percentile'] = 'bubble';
+					break;
+
+				case CIRCULAR_INTERIOR_PROGRESS_BAR:
+					$return['values']['type_percentile'] = 'circular_progress_bar';
+					break;
+
+				case PERCENTILE_BUBBLE:
+					$return['values']['type_percentile'] = 'interior_circular_progress_bar';
 					break;
 					
 				case PERCENTILE_BAR:

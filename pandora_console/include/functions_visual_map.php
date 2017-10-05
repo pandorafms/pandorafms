@@ -31,6 +31,7 @@ require_once ($config['homedir'].'/include/functions_agents.php');
 require_once ($config['homedir'].'/include/functions_modules.php');
 require_once ($config['homedir'].'/include/functions_users.php');
 require_once ($config['homedir'].'/include/functions.php');
+require_once ($config['homedir'].'/include/graphs/functions_d3.php');
 
 function visual_map_print_item_toolbox($idDiv, $text, $float) {
 	if ($float == 'left') {
@@ -303,6 +304,8 @@ function visual_map_print_item($mode = "read", $layoutData,
 				break;
 			case PERCENTILE_BAR:
 			case PERCENTILE_BUBBLE:
+			case CIRCULAR_PROGRESS_BAR:
+			case CIRCULAR_INTERIOR_PROGRESS_BAR:
 				if (!empty($layoutData['id_agent'])
 					&& empty($layoutData['id_layout_linked'])) {
 					
@@ -592,6 +595,8 @@ function visual_map_print_item($mode = "read", $layoutData,
 				break;
 			case PERCENTILE_BAR:
 			case PERCENTILE_BUBBLE:
+			case CIRCULAR_PROGRESS_BAR:
+			case CIRCULAR_INTERIOR_PROGRESS_BAR:
 				if (!empty($layoutData['id_agent'])) {
 					
 					//Extract id service if it is a prediction module.
@@ -811,6 +816,8 @@ function visual_map_print_item($mode = "read", $layoutData,
 			break;
 		case PERCENTILE_BAR:
 		case PERCENTILE_BUBBLE:
+		case CIRCULAR_PROGRESS_BAR:
+		case CIRCULAR_INTERIOR_PROGRESS_BAR:
 			//Metaconsole db connection
 			if ($layoutData['id_metaconsole'] != 0) {
 				$connection = db_get_row_filter ('tmetaconsole_setup',
@@ -1138,6 +1145,8 @@ function visual_map_print_item($mode = "read", $layoutData,
 			break;
 		case PERCENTILE_BAR:
 		case PERCENTILE_BUBBLE:
+		case CIRCULAR_PROGRESS_BAR:
+		case CIRCULAR_INTERIOR_PROGRESS_BAR:
 			$class .= "percentile_item";
 			break;
 		case MODULE_GRAPH:
@@ -1409,7 +1418,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 		
 		case PERCENTILE_BAR:
 			$imgpos = '';
-							
+
 			if($layoutData['label_position']=='left'){
 				$imgpos = 'float:right;';
 			}
@@ -1464,17 +1473,15 @@ function visual_map_print_item($mode = "read", $layoutData,
 			
 			if($layoutData['label_position']=='down'){
 				echo io_safe_output($text);
-			}			
+			}
 			else if($layoutData['label_position']=='left' || $layoutData['label_position']=='right'){
 				echo io_safe_output($text);
-			}	
+			}
 		
 		break;
-		
 		case PERCENTILE_BUBBLE:
-		
 			$imgpos = '';
-									
+
 			if($layoutData['label_position']=='left'){
 				$imgpos = 'float:right;';
 			}
@@ -1501,8 +1508,8 @@ function visual_map_print_item($mode = "read", $layoutData,
 			}
 			
 			if($layoutData['label_position']=='up'){
-			echo io_safe_output($text);
-		}
+				echo io_safe_output($text);
+			}
 			
 			ob_start();
 			if ($type == PERCENTILE_BUBBLE) {
@@ -1517,36 +1524,171 @@ function visual_map_print_item($mode = "read", $layoutData,
 			else {
 				echo progress_bar($percentile, $width, $progress_bar_heigh, '', 1, $value_text, $colorStatus);
 			}
+
 			$img = ob_get_clean();
 			
-			
 			if(get_parameter('action') == 'edit'){
-			
-			if($width == 0){
-			$img =  '<img src="images/console/signes/percentil_bubble.png" style="width:130px;height:130px;'.$imgpos.'">';	
+				if($width == 0){
+					$img =  '<img src="images/console/signes/percentil_bubble.png" style="width:130px;height:130px;'.$imgpos.'">';	
+				}
+				else{
+					$img =  '<img src="images/console/signes/percentil_bubble.png" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';	
+				}
 			}
 			else{
-			$img =  '<img src="images/console/signes/percentil_bubble.png" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';	
-			}
-						
-			}
-			else{
-				
-			$img = str_replace('>', 'class="image" style="width:'.$wimg.'px;height:'.$himg.'px;'.$imgpos.'" id="image_' . $id . '" />', $img);
-			
+				$img = str_replace('>', 'class="image" style="width:'.$wimg.'px;height:'.$himg.'px;'.$imgpos.'" id="image_' . $id . '" />', $img);
 			}
 			
-			echo $img;			
+			echo $img;
 			
 			if($layoutData['label_position']=='down'){
-			echo io_safe_output($text);
-		}			
-		else if($layoutData['label_position']=='left' || $layoutData['label_position']=='right'){
-			echo io_safe_output($text);
-		}
+				echo io_safe_output($text);
+			}			
+			else if($layoutData['label_position']=='left' || $layoutData['label_position']=='right'){
+				echo io_safe_output($text);
+			}
 			
 			break;
+		case CIRCULAR_PROGRESS_BAR:
+			$imgpos = '';
+
+			if($layoutData['label_position']=='left'){
+				$imgpos = 'float:right;';
+			}
+			else if($layoutData['label_position']=='right'){
+				$imgpos = 'float:left;';
+			}
 		
+		 	$progress_bar_heigh = 15;
+			if (!empty($proportion)) {
+				if ($width != 0) {
+					$width = (integer)($proportion['proportion_width'] * $width);
+				}
+				else {
+					$width = (integer)($proportion['proportion_width'] * $infoImage[0]);
+				}
+
+				if ($height != 0) {
+					$height = (integer)($proportion['proportion_height'] * $height);
+					$progress_bar_heigh = $progress_bar_heigh * $proportion['proportion_height'];
+				}
+				else {
+					$height = (integer)($proportion['proportion_height'] * $infoImage[1]);
+				}
+			}
+			
+			if($layoutData['label_position']=='up'){
+				echo io_safe_output($text);
+			}
+			
+			ob_start();
+			if ($type == CIRCULAR_PROGRESS_BAR) {
+				if($width == 0){
+					echo progress_circular_bar($percentile, 100,100, $border_color);
+				
+				}
+				else{
+					echo progress_circular_bar($percentile, $width, $width, $border_color);
+				}
+			}
+			else {
+				echo progress_bar($percentile, $width, $progress_bar_heigh, '', 1, $value_text, $colorStatus);
+			}
+
+			$img = ob_get_clean();
+			
+			if(get_parameter('action') == 'edit'){
+				if($width == 0){
+					$img =  '<img src="images/console/signes/circular-progress-bar.png" style="width:130px;height:130px;'.$imgpos.'">';	
+				}
+				else{
+					$img =  '<img src="images/console/signes/circular-progress-bar.png" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';	
+				}
+			}
+			else{
+				$img = str_replace('>', 'class="image" style="width:'.$wimg.'px;height:'.$himg.'px;'.$imgpos.'" id="image_' . $id . '" />', $img);
+			}
+			
+			echo $img;
+			
+			if($layoutData['label_position']=='down'){
+				echo io_safe_output($text);
+			}			
+			else if($layoutData['label_position']=='left' || $layoutData['label_position']=='right'){
+				echo io_safe_output($text);
+			}
+			
+			break;
+		case CIRCULAR_INTERIOR_PROGRESS_BAR:
+			$imgpos = '';
+
+			if($layoutData['label_position']=='left'){
+				$imgpos = 'float:right;';
+			}
+			else if($layoutData['label_position']=='right'){
+				$imgpos = 'float:left;';
+			}
+		
+		 	$progress_bar_heigh = 15;
+			if (!empty($proportion)) {
+				if ($width != 0) {
+					$width = (integer)($proportion['proportion_width'] * $width);
+				}
+				else {
+					$width = (integer)($proportion['proportion_width'] * $infoImage[0]);
+				}
+
+				if ($height != 0) {
+					$height = (integer)($proportion['proportion_height'] * $height);
+					$progress_bar_heigh = $progress_bar_heigh * $proportion['proportion_height'];
+				}
+				else {
+					$height = (integer)($proportion['proportion_height'] * $infoImage[1]);
+				}
+			}
+			
+			if($layoutData['label_position']=='up'){
+				echo io_safe_output($text);
+			}
+			
+			ob_start();
+			if ($type == CIRCULAR_INTERIOR_PROGRESS_BAR) {
+				if($width == 0){
+					echo progress_circular_bar_interior($percentile, 100,100, $border_color);
+				
+				}
+				else{
+					echo progress_circular_bar_interior($percentile, $width, $width, $border_color);
+				}
+			}
+			else {
+				echo progress_bar($percentile, $width, $progress_bar_heigh, '', 1, $value_text, $colorStatus);
+			}
+
+			$img = ob_get_clean();
+			
+			if(get_parameter('action') == 'edit'){
+				if($width == 0){
+					$img =  '<img src="images/console/signes/circular-progress-bar-interior.png" style="width:130px;height:130px;'.$imgpos.'">';	
+				}
+				else{
+					$img =  '<img src="images/console/signes/circular-progress-bar-interior.png" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';	
+				}
+			}
+			else{
+				$img = str_replace('>', 'class="image" style="width:'.$wimg.'px;height:'.$himg.'px;'.$imgpos.'" id="image_' . $id . '" />', $img);
+			}
+			
+			echo $img;
+			
+			if($layoutData['label_position']=='down'){
+				echo io_safe_output($text);
+			}			
+			else if($layoutData['label_position']=='left' || $layoutData['label_position']=='right'){
+				echo io_safe_output($text);
+			}
+			
+			break;
 		case MODULE_GRAPH:
 			if ($layoutData['label_position']=='up') {
 				echo io_safe_output($text);
@@ -1889,10 +2031,18 @@ function visual_map_process_wizard_add ($id_agents, $image, $id_layout, $range,
 		switch ($type) {
 			case PERCENTILE_BAR:
 			case PERCENTILE_BUBBLE:
+			case CIRCULAR_PROGRESS_BAR:
+			case CIRCULAR_INTERIOR_PROGRESS_BAR:
 				$value_height = $max_value;
 				$value_image = $value_show;
 				if ($type_percentile == 'percentile') {
 					$value_type = PERCENTILE_BAR;
+				}
+				elseif ($type_percentile == 'interior_circular_progress_bar') {
+					$value_type = CIRCULAR_INTERIOR_PROGRESS_BAR;
+				}
+				elseif ($type_percentile == 'circular_progress_bar') {
+					$value_type = CIRCULAR_PROGRESS_BAR;
 				}
 				else {
 					$value_type = PERCENTILE_BUBBLE;
@@ -2015,11 +2165,19 @@ function visual_map_process_wizard_add_modules ($id_modules, $image,
 		switch ($type) {
 			case PERCENTILE_BAR:
 			case PERCENTILE_BUBBLE:
+			case CIRCULAR_PROGRESS_BAR:
+			case CIRCULAR_INTERIOR_PROGRESS_BAR:
 				$value_height = $max_value;
 				$value_width = $percentileitem_width;
 				$value_image = $value_show;
 				if ($type_percentile == 'percentile') {
 					$value_type = PERCENTILE_BAR;
+				}
+				elseif ($type_percentile == 'interior_circular_progress_bar') {
+					$value_type = CIRCULAR_INTERIOR_PROGRESS_BAR;
+				}
+				elseif ($type_percentile == 'circular_progress_bar') {
+					$value_type = CIRCULAR_PROGRESS_BAR;
 				}
 				else {
 					$value_type = PERCENTILE_BUBBLE;
@@ -2143,11 +2301,19 @@ function visual_map_process_wizard_add_agents ($id_agents, $image,
 		switch ($type) {
 			case PERCENTILE_BAR:
 			case PERCENTILE_BUBBLE:
+			case CIRCULAR_PROGRESS_BAR:
+			case CIRCULAR_INTERIOR_PROGRESS_BAR:
 				$value_height = $max_value;
 				$value_width = $percentileitem_width;
 				$value_image = $value_show;
 				if ($type_percentile == 'percentile') {
 					$value_type = PERCENTILE_BAR;
+				}
+				elseif ($type_percentile == 'interior_circular_progress_bar') {
+					$value_type = CIRCULAR_INTERIOR_PROGRESS_BAR;
+				}
+				elseif ($type_percentile == 'circular_progress_bar') {
+					$value_type = CIRCULAR_PROGRESS_BAR;
 				}
 				else {
 					$value_type = PERCENTILE_BUBBLE;
@@ -2455,6 +2621,8 @@ function visual_map_get_status_element($layoutData) {
 
 			case PERCENTILE_BAR:
 			case PERCENTILE_BUBBLE:
+			case CIRCULAR_PROGRESS_BAR:
+			case CIRCULAR_INTERIOR_PROGRESS_BAR:
 			
 				if (empty($module_value) || $module_value == '') {
 					return VISUAL_MAP_STATUS_UNKNOWN;
@@ -2955,6 +3123,14 @@ function visual_map_create_internal_name_item($label = null, $type, $image, $age
 			case PERCENTILE_BAR:
 				$text = __('Percentile bar');
 				break;
+			case 'circular_progress_bar':
+			case CIRCULAR_PROGRESS_BAR:
+				$text = __('Circular progress bar');
+				break;
+			case 'interior_circular_progress_bar':
+			case CIRCULAR_INTERIOR_PROGRESS_BAR:
+				$text = __('Circular progress bar (interior)');
+				break;
 			case 'static_graph':
 			case STATIC_GRAPH:
 				$text = __('Static graph') . " - " .
@@ -3057,6 +3233,12 @@ function visual_map_type_in_js($type) {
 			return 'static_graph';
 			break;
 		case PERCENTILE_BAR:
+			return 'percentile_item';
+			break;
+		case CIRCULAR_PROGRESS_BAR:
+			return 'percentile_item';
+			break;
+		case CIRCULAR_INTERIOR_PROGRESS_BAR:
 			return 'percentile_item';
 			break;
 		case MODULE_GRAPH:

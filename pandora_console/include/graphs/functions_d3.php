@@ -310,11 +310,37 @@ function ux_console_phases_donut ($phases, $id, $return = false) {
 	return $output;
 }
 
-function progress_circular_bar ($percentile, $width, $height, $color) {
+function progress_circular_bar ($id, $percentile, $width, $height, $color) {
+	global $config;
 
+	$recipient_name = "circular_progress_bar_" . $id;
+	$recipient_name_to_js = "#circular_progress_bar_" . $id;
+
+	$output = "";
+
+	$output .= "<div id=" . $recipient_name . " style='overflow: hidden;'></div>";
+	$output .= include_javascript_d3(true);
+	$output .= "<script language=\"javascript\" type=\"text/javascript\">
+					print_circular_progress_bar('" . $recipient_name_to_js . "', " . (int)$percentile . ", " . (int)$width . ", " . (int)$height . ", '" . $color . "');
+				</script>";
+
+	return $output;
 }
 
-function progress_circular_bar_interior ($percentile, $width, $height, $color) {
+function progress_circular_bar_interior ($id, $percentile, $width, $height, $color) {
+	global $config;
+	
+	$recipient_name = "circular_progress_bar_interior_" . $id;
+	$recipient_name_to_js = "#circular_progress_bar_interior_" . $id;
 
+	$output = "";
+
+	$output .= "<div id=" . $recipient_name .  " style='overflow: hidden;'></div>";
+	$output .= include_javascript_d3(true);
+	$output .= "<script language=\"javascript\" type=\"text/javascript\">
+					print_interior_circular_progress_bar('" . $recipient_name_to_js . "', " . (int)$percentile . ", " . (int)$width . ", " . (int)$height . ", '" . $color . "');
+				</script>";
+
+	return $output;
 }
 ?>

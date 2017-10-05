@@ -1493,3 +1493,187 @@ function print_phases_donut (recipient, phases) {
 			.remove();
 	}
 }
+
+function print_circular_progress_bar (recipient, percentile, width, height, color) {
+	var twoPi = Math.PI * 2;
+	var radius = (width / 2) - 10;
+	var border = 20;
+	var startPercent = 0;
+	var endPercent = parseInt(percentile) / 100;
+	var count = Math.abs((endPercent - startPercent) / 0.01);
+	var step = endPercent < startPercent ? -0.01 : 0.01;
+	var formatPercent = d3.format('.2f');
+
+	var arc = d3.svg.arc()
+		.startAngle(0)
+		.innerRadius(radius)
+		.outerRadius(radius - border);
+
+	var circle = d3.select(recipient)
+		.append("svg")
+			.attr("width", width)
+			.attr("height", height)
+			.append("g")
+				.attr("transform", "translate(" + (width/2) + ", " + (height/2) + ")");
+
+	var meter = circle.append("g")
+		.attr('class', 'progress-meter');
+
+	meter.append("path")
+		.attr('fill', '#000000')
+		.attr('fill-opacity', 0.5)
+		.attr('d', arc.endAngle(twoPi));
+
+	var foreground = circle.append("path")
+		.attr('fill', color)
+		.attr('fill-opacity', 1)
+		.attr('stroke', color)
+		.attr('stroke-opacity', 1);
+	
+	var front = circle.append("path")
+		.attr('fill', color)
+		.attr('fill-opacity', 1);
+
+	var numberText = circle.append("text")
+		.attr('fill', '#000000')
+		.style("font-family", "arial")
+		.style("font-weight", "bold")
+		.style("font-size", 20)
+		.text("YES")
+		.attr('text-anchor', 'middle')
+		.attr('dy', '-25');
+
+	var numberText = circle.append("text")
+		.attr('fill', '#000000')
+		.style("font-family", "arial")
+		.style("font-weight", "bold")
+		.style("font-size", 32)
+		.attr('text-anchor', 'middle')
+		.attr('dy', '10');
+
+	var percentText = circle.append("text")
+		.attr('fill', '#000000')
+		.style("font-family", "arial")
+		.style("font-weight", "bold")
+		.style("font-size", 16)
+		.text("%")
+		.attr('text-anchor', 'middle')
+		.attr('dy', '40');
+
+	function updateProgress(progress) {
+		foreground.attr('d', arc.endAngle(twoPi * progress));
+		front.attr('d', arc.endAngle(twoPi * progress));
+		numberText.text(formatPercent(progress * 100));
+	}
+
+	var progress = startPercent;
+
+	(function loops() {
+		updateProgress(progress);
+
+		if (count > 0) {
+			count--;
+			progress += step;
+			setTimeout(loops, 30);
+		}
+	})();
+}
+
+function print_interior_circular_progress_bar (recipient, percentile, width, height, color) {
+	var twoPi = Math.PI * 2;
+	var radius = (width / 2) - 30;
+	var radius2 = (width / 2) - 10;
+	var border = 20;
+	var startPercent = 0;
+	var endPercent = parseInt(percentile) / 100;
+	var count = Math.abs((endPercent - startPercent) / 0.01);
+	var step = endPercent < startPercent ? -0.01 : 0.01;
+	var formatPercent = d3.format('.2f');
+
+	var arc = d3.svg.arc()
+		.startAngle(0)
+		.innerRadius(radius)
+		.outerRadius(radius - border);
+
+	var arc2 = d3.svg.arc()
+		.startAngle(0)
+		.innerRadius(radius2)
+		.outerRadius(radius2 - border);
+
+	var circle = d3.select(recipient)
+		.append("svg")
+			.attr("width", width)
+			.attr("height", height)
+			.append("g")
+				.attr("transform", "translate(" + (width/2) + ", " + (height/2) + ")");
+
+	var meter = circle.append("g")
+		.attr('class', 'progress-meter');
+
+	meter.append("path")
+		.attr('fill', '#000000')
+		.attr('fill-opacity', 0.5)
+		.attr('d', arc.endAngle(twoPi));
+
+	var meter = circle.append("g")
+		.attr('class', 'progress-meter');
+
+	meter.append("path")
+		.attr('fill', color)
+		.attr('fill-opacity', 1)
+		.attr('d', arc2.endAngle(twoPi));
+
+	var foreground = circle.append("path")
+		.attr('fill', color)
+		.attr('fill-opacity', 1)
+		.attr('stroke', color)
+		.attr('stroke-opacity', 1);
+	
+	var front = circle.append("path")
+		.attr('fill', color)
+		.attr('fill-opacity', 1);
+
+	var numberText = circle.append("text")
+		.attr('fill', '#000000')
+		.style("font-family", "arial")
+		.style("font-weight", "bold")
+		.style("font-size", 20)
+		.text("YES")
+		.attr('text-anchor', 'middle')
+		.attr('dy', '-25');
+
+	var numberText = circle.append("text")
+		.attr('fill', '#000000')
+		.style("font-family", "arial")
+		.style("font-weight", "bold")
+		.style("font-size", 32)
+		.attr('text-anchor', 'middle')
+		.attr('dy', '10');
+
+	var percentText = circle.append("text")
+		.attr('fill', '#000000')
+		.style("font-family", "arial")
+		.style("font-weight", "bold")
+		.style("font-size", 16)
+		.text("%")
+		.attr('text-anchor', 'middle')
+		.attr('dy', '40');
+
+	function updateProgress(progress) {
+		foreground.attr('d', arc.endAngle(twoPi * progress));
+		front.attr('d', arc.endAngle(twoPi * progress));
+		numberText.text(formatPercent(progress * 100));
+	}
+
+	var progress = startPercent;
+
+	(function loops() {
+		updateProgress(progress);
+
+		if (count > 0) {
+			count--;
+			progress += step;
+			setTimeout(loops, 30);
+		}
+	})();
+}

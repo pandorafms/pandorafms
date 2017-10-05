@@ -1581,22 +1581,6 @@ function visual_map_print_item($mode = "read", $layoutData,
 				echo io_safe_output($text);
 			}
 			
-			ob_start();
-			if ($type == CIRCULAR_PROGRESS_BAR) {
-				if($width == 0){
-					echo progress_circular_bar($percentile, 100,100, $border_color);
-				
-				}
-				else{
-					echo progress_circular_bar($percentile, $width, $width, $border_color);
-				}
-			}
-			else {
-				echo progress_bar($percentile, $width, $progress_bar_heigh, '', 1, $value_text, $colorStatus);
-			}
-
-			$img = ob_get_clean();
-			
 			if(get_parameter('action') == 'edit'){
 				if($width == 0){
 					$img =  '<img src="images/console/signes/circular-progress-bar.png" style="width:130px;height:130px;'.$imgpos.'">';	
@@ -1605,10 +1589,15 @@ function visual_map_print_item($mode = "read", $layoutData,
 					$img =  '<img src="images/console/signes/circular-progress-bar.png" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';	
 				}
 			}
-			else{
-				$img = str_replace('>', 'class="image" style="width:'.$wimg.'px;height:'.$himg.'px;'.$imgpos.'" id="image_' . $id . '" />', $img);
+			else {
+				if($width == 0){
+					$img = progress_circular_bar($id, $percentile, 100,100, $border_color);
+				}
+				else{
+					$img = progress_circular_bar($id, $percentile, $width, $width, $border_color);
+				}
 			}
-			
+
 			echo $img;
 			
 			if($layoutData['label_position']=='down'){
@@ -1651,22 +1640,6 @@ function visual_map_print_item($mode = "read", $layoutData,
 				echo io_safe_output($text);
 			}
 			
-			ob_start();
-			if ($type == CIRCULAR_INTERIOR_PROGRESS_BAR) {
-				if($width == 0){
-					echo progress_circular_bar_interior($percentile, 100,100, $border_color);
-				
-				}
-				else{
-					echo progress_circular_bar_interior($percentile, $width, $width, $border_color);
-				}
-			}
-			else {
-				echo progress_bar($percentile, $width, $progress_bar_heigh, '', 1, $value_text, $colorStatus);
-			}
-
-			$img = ob_get_clean();
-			
 			if(get_parameter('action') == 'edit'){
 				if($width == 0){
 					$img =  '<img src="images/console/signes/circular-progress-bar-interior.png" style="width:130px;height:130px;'.$imgpos.'">';	
@@ -1676,7 +1649,15 @@ function visual_map_print_item($mode = "read", $layoutData,
 				}
 			}
 			else{
-				$img = str_replace('>', 'class="image" style="width:'.$wimg.'px;height:'.$himg.'px;'.$imgpos.'" id="image_' . $id . '" />', $img);
+				if ($type == CIRCULAR_INTERIOR_PROGRESS_BAR) {
+					if($width == 0){
+						$img = progress_circular_bar_interior($id, $percentile, 100,100, $border_color);
+					
+					}
+					else{
+						$img = progress_circular_bar_interior($id, $percentile, $width, $width, $border_color);
+					}
+				}
 			}
 			
 			echo $img;

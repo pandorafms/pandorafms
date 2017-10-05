@@ -50,7 +50,7 @@ if ($#ARGV == -1 ) {
 	print "-p, --process=STRING\n";
 	print "\tProcess or service name (only in process module)\n";
 	
-	print "-v, --version=NUMBER\n";
+	print "-v, --version=STRING\n";
 	print "\tVersion of protocol\n";
 	
 	print "-u, --user=STRING\n";
@@ -122,7 +122,7 @@ sub options {
 	# process
 	$opts{"p"} = 0				unless ( exists( $opts{"p"} ) );
 	# version
-	$opts{"v"} = 2				unless ( exists( $opts{"v"} ) );
+	$opts{"v"} = "2c"			unless ( exists( $opts{"v"} ) );
 	# user
 	$opts{"u"} = ""				unless ( exists( $opts{"u"} ) );
 	# auth_pass
@@ -158,19 +158,19 @@ if ($module eq "memuse") {
 	my $memuse = 0;
 	my $command_line_parammeters;
 	
-	if ($version == 3) {
+	if ($version == "3") {
 		if ($auth_method eq 'authNoPriv') {
-			$command_line_parammeters = "-v 3 -u $user -a $auth_method -A $pass -l $security_level $host";
+			$command_line_parammeters = "-v $version -u $user -a $auth_method -A $pass -l $security_level $host";
 		}
 		elsif  ($auth_method eq "noAuthNoPriv") {
-			$command_line_parammeters = "-v 3 -u $user -l $security_level $host";
+			$command_line_parammeters = "-v $version -u $user -l $security_level $host";
 		}
 		else {
-			$command_line_parammeters = "-v 3 -u $user -a $auth_method -A $pass -l $security_level -x $privacy_method -X $privacy_pass $host";
+			$command_line_parammeters = "-v $version -u $user -a $auth_method -A $pass -l $security_level -x $privacy_method -X $privacy_pass $host";
 		}
 	}
 	else {
-		$command_line_parammeters = "-v 1 -c $community $host";
+		$command_line_parammeters = "-v $version -c $community $host";
 	}
 	
 	my $memid = `snmpwalk -On $command_line_parammeters  .1.3.6.1.2.1.25.2.3.1.3 | grep Physical | head -1 | gawk '{print \$1}' | gawk -F "." '{print \$13}' | tr -d "\r"`;
@@ -191,30 +191,33 @@ if ($module eq "diskuse") {
 	my $diskuse = 0;
 	my $command_line_parammeters;
 	
-	if ($version == 3) {
+	if ($version == "3") {
 		if ($auth_method eq 'authNoPriv') {
-			$command_line_parammeters = "-v 3 -u $user -a $auth_method -A $pass -l $security_level $host";
+			$command_line_parammeters = "-v $version -u $user -a $auth_method -A $pass -l $security_level $host";
 		}
 		elsif  ($auth_method eq "noAuthNoPriv") {
-			$command_line_parammeters = "-v 3 -u $user -l $security_level $host";
+			$command_line_parammeters = "-v $version -u $user -l $security_level $host";
 		}
 		else {
-			$command_line_parammeters = "-v 3 -u $user -a $auth_method -A $pass -l $security_level -x $privacy_method -X $privacy_pass $host";
+			$command_line_parammeters = "-v $version -u $user -a $auth_method -A $pass -l $security_level -x $privacy_method -X $privacy_pass $host";
 		}
 	}
 	else {
-		$command_line_parammeters = "-v 1 -c $community $host";
+		$command_line_parammeters = "-v $version -c $community $host";
 	}
-	
-	my $diskid = `snmpwalk -On $command_line_parammeters .1.3.6.1.2.1.25.2.3.1.3 | grep "$disk" | head -1 | gawk '{print \$1}' | gawk -F "." '{print \$13}' | tr -d "\r"`;
-	my $disktot = `snmpget $command_line_parammeters .1.3.6.1.2.1.25.2.3.1.5.$diskid ` ;
+
+	if ($disk =~ /\\/) {
+        	$disk =~ s/\\/\\\\/g;
+        }
+	my $diskid = `snmpwalk -r 2 -On $command_line_parammeters .1.3.6.1.2.1.25.2.3.1.3 | grep -F '$disk' | head -1 | gawk '{print \$1}' | gawk -F "." '{print \$13}' | tr -d "\r"`;
+	my $disktot = `snmpget -r 2 $command_line_parammeters .1.3.6.1.2.1.25.2.3.1.5.$diskid ` ;
 	my $disktot2 = `echo "$disktot" | gawk '{print \$4}'`;
 	
 	if ($disktot2 == 0) {
 		$diskuse = 0;
 	}
 	else {
-		my $diskfree = `snmpget $command_line_parammeters .1.3.6.1.2.1.25.2.3.1.6.$diskid` ;
+		my $diskfree = `snmpget -r 2 $command_line_parammeters .1.3.6.1.2.1.25.2.3.1.6.$diskid` ;
 		my $diskfree2 = `echo "$diskfree" | gawk '{print \$4}'`;
 		
 		$diskuse = ($disktot2 - $diskfree2) * 100 / $disktot2;
@@ -230,19 +233,19 @@ if ($module eq "process") {
 	my $status = 0;
 	my $command_line_parammeters;
 	
-	if ($version == 3) {
+	if ($version == "3") {
 		if ($auth_method eq 'authNoPriv') {
-			$command_line_parammeters = "-v 3 -u $user -a $auth_method -A $pass -l $security_level $host";
+			$command_line_parammeters = "-v $version -u $user -a $auth_method -A $pass -l $security_level $host";
 		}
 		elsif  ($auth_method eq "noAuthNoPriv") {
-			$command_line_parammeters = "-v 3 -u $user -l $security_level $host";
+			$command_line_parammeters = "-v $version -u $user -l $security_level $host";
 		}
 		else {
-			$command_line_parammeters = "-v 3 -u $user -a $auth_method -A $pass -l $security_level -x $privacy_method -X $privacy_pass $host";
+			$command_line_parammeters = "-v $version -u $user -a $auth_method -A $pass -l $security_level -x $privacy_method -X $privacy_pass $host";
 		}
 	}
 	else {
-		$command_line_parammeters = "-v 2c -c $community $host";
+		$command_line_parammeters = "-v $version -c $community $host";
 	}
 	
 	$status = `snmpwalk $command_line_parammeters  1.3.6.1.2.1.25.4.2.1.2 | grep "$process" | head -1 | wc -l`;
@@ -257,19 +260,19 @@ if ($module eq "cpuload") {
 	my $cputotal = 0;
 	my $command_line_parammeters;
 	
-	if ($version == 3) {
+	if ($version == "3") {
 		if ($auth_method eq 'authNoPriv') {
-			$command_line_parammeters = "-v 3 -u $user -a $auth_method -A $pass -l $security_level $host";
+			$command_line_parammeters = "-v $version -u $user -a $auth_method -A $pass -l $security_level $host";
 		}
 		elsif  ($auth_method eq "noAuthNoPriv") {
-			$command_line_parammeters = "-v 3 -u $user -l $security_level $host";
+			$command_line_parammeters = "-v $version -u $user -l $security_level $host";
 		}
 		else {
-			$command_line_parammeters = "-v 3 -u $user -a $auth_method -A $pass -l $security_level -x $privacy_method -X $privacy_pass $host";
+			$command_line_parammeters = "-v $version -u $user -a $auth_method -A $pass -l $security_level -x $privacy_method -X $privacy_pass $host";
 		}
 	}
 	else {
-		$command_line_parammeters = "-v 1 -c $community $host";
+		$command_line_parammeters = "-v $version -c $community $host";
 	}
 	
 	my $cpuload = `snmpwalk $command_line_parammeters .1.3.6.1.2.1.25.3.3.1.2 | gawk '{print \$4}' `;

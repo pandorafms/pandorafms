@@ -222,7 +222,7 @@ $table->data[37][0] = __('audit log directory') .
 	ui_print_help_tip (__("Directory where audit log is stored."), true);
 $table->data[37][1] = html_print_input_text ('auditdir', io_safe_output($config["auditdir"]), '', 30, 100, true);
 
-$table->data[38][0] = __('To use alias as name when creating agent');
+$table->data[38][0] = __('Set alias as name by default in agent creation');
 $table->data[38][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('alias_as_name', 1, '', $config["alias_as_name"], true).'&nbsp;&nbsp;';
 $table->data[38][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('alias_as_name', 0, '', $config["alias_as_name"], true);
 

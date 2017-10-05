@@ -408,23 +408,22 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				__('Max value') . '</td>
 				<td align="left">' . html_print_input_text('max_percentile', 0, '', 3, 5, true) . '</td>';
 
+			$percentile_type = array('percentile' => __('Percentile'), 'bubble' => __('Bubble'), 'circular_progress_bar' => __('Circular porgress bar'), 'interior_circular_progress_bar' => __('Circular progress bar (interior)'));
+			$percentile_value = array('percent' => __('Percent'), 'value' => __('Value'));
 			if (is_metaconsole()){
 				$form_items['percentile_item_row_3'] = array();
 				$form_items['percentile_item_row_3']['items'] = array('percentile_bar', 'percentile_item', 'datos');
 				$form_items['percentile_item_row_3']['html'] = '<td align="left">' .
 					__('Type') . '</td>
 					<td align="left">' .
-					html_print_radio_button_extended('type_percentile', 'percentile', ('Percentile'), 'percentile', false, '', 'style="float: left;"', true) .
-					html_print_radio_button_extended('type_percentile', 'bubble', ('Bubble'), 'percentile', false, '', 'style="float: left;"', true) .
+					html_print_select($percentile_type, 'type_percentile', 'percentile', '', '', '', true, false, false, '', false, 'style="float: left;"') .
 					'</td>';
-
 
 				$form_items['percentile_item_row_4'] = array();
 				$form_items['percentile_item_row_4']['items'] = array('percentile_bar', 'percentile_item', 'datos');
 				$form_items['percentile_item_row_4']['html'] = '<td align="left">' . __('Value to show') . '</td>
 					<td align="left">' .
-					html_print_radio_button_extended('value_show', 'percent', ('Percent'), 'value', false, '', 'style="float: left;"', true) .
-					html_print_radio_button_extended('value_show', 'value', ('Value'), 'value', false, '', 'style="float: left;"', true) .
+					html_print_select($percentile_value, 'value_show', 'percent', '', '', '', true, false, false, '', false, 'style="float: left;"') .
 					'</td>';
 			}
 			else{
@@ -433,20 +432,26 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				$form_items['percentile_item_row_3']['html'] = '<td align="left">' .
 					__('Type') . '</td>
 					<td align="left">' .
-					html_print_radio_button_extended('type_percentile', 'percentile', ('Percentile'), 'percentile', false, '', '', true) .
-					html_print_radio_button_extended('type_percentile', 'bubble', ('Bubble'), 'percentile', false, '', '', true) .
+					html_print_select($percentile_type, 'type_percentile', 'percentile', '', '', '', true) .
 					'</td>';
-
 
 				$form_items['percentile_item_row_4'] = array();
 				$form_items['percentile_item_row_4']['items'] = array('percentile_bar', 'percentile_item', 'datos');
 				$form_items['percentile_item_row_4']['html'] = '<td align="left">' . __('Value to show') . '</td>
 					<td align="left">' .
-					html_print_radio_button_extended('value_show', 'percent', ('Percent'), 'value', false, '', '', true) .
-					html_print_radio_button_extended('value_show', 'value', ('Value'), 'value', false, '', '', true) .
+					html_print_select($percentile_value, 'value_show', 'percent', '', '', '', true) .
 					'</td>';
 			}
 
+			$form_items['percentile_item_row_5'] = array();
+			$form_items['percentile_item_row_5']['items'] = array('percentile_bar', 'percentile_item', 'datos');
+			$form_items['percentile_item_row_5']['html'] = '<td align="left">' . __('Color') . ui_print_help_tip (
+					__("Only for circular percentile items."), true) . '</td>
+				<td align="left">' .
+				html_print_input_text_extended ('percentile_color', '#ffffff',
+					'text-percentile_color', '', 7, 7, false, '',
+					'class="percentile_color"', true) .
+				'</td>';
 
 			$form_items['period_row'] = array();
 			$form_items['period_row']['items'] = array('module_graph', 'simple_value', 'datos');
@@ -614,6 +619,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$(".border_color").attachColorPicker();
 			$(".fill_color").attachColorPicker();
 			$(".line_color").attachColorPicker();
+			$(".percentile_color").attachColorPicker();
 			
 			$("input[name=radio_choice]").change(function(){
 				$('#count_items').html(1);

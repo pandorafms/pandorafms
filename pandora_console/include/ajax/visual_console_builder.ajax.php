@@ -118,6 +118,7 @@ $id_custom_graph = get_parameter('id_custom_graph', null);
 $border_width = (int)get_parameter('border_width', 0);
 $border_color = get_parameter('border_color', '');
 $fill_color = get_parameter('fill_color', '');
+$percentile_color = get_parameter('percentile_color', '');
 $width_box = (int)get_parameter('width_box', 0);
 $height_box = (int)get_parameter('height_box', 0);
 $line_start_x = (int)get_parameter('line_start_x', 0);
@@ -602,6 +603,12 @@ switch ($action) {
 							if ($type_percentile == 'percentile') {
 								$values['type'] = PERCENTILE_BAR;
 							}
+							elseif ($type_percentile == 'circular_progress_bar') {
+								$values['type'] = CIRCULAR_PROGRESS_BAR;
+							}
+							elseif ($type_percentile == 'interior_circular_progress_bar') {
+								$values['type'] = CIRCULAR_INTERIOR_PROGRESS_BAR;
+							}
 							elseif ($type_percentile == 'bubble') {
 								$values['type'] = PERCENTILE_BUBBLE;
 							}
@@ -611,6 +618,8 @@ switch ($action) {
 							if (($value_show == 'percent') ||
 								($value_show == 'value'))
 								$values['image'] = $value_show;
+
+							$values['border_color'] = $percentile_color;
 						}
 						break;
 					case 'icon':
@@ -781,6 +790,13 @@ switch ($action) {
 						elseif ($elementFields['type'] == PERCENTILE_BUBBLE) {
 							$elementFields['type_percentile'] = 'bubble';
 						}
+						elseif ($elementFields['type'] == CIRCULAR_PROGRESS_BAR) {
+							$elementFields['type_percentile'] = 'circular_progress_bar';
+						}
+						elseif ($elementFields['type'] == CIRCULAR_INTERIOR_PROGRESS_BAR) {
+							$elementFields['type_percentile'] = 'interior_circular_progress_bar';
+						}
+						$elementFields['percentile_color'] = $elementFields['percentile_color'];
 						break;
 					
 					case 'module_graph':
@@ -934,9 +950,16 @@ switch ($action) {
 				if ($type_percentile == 'percentile') {
 					$values['type'] = PERCENTILE_BAR;
 				}
+				elseif ($type_percentile == 'circular_progress_bar') {
+					$values['type'] = CIRCULAR_PROGRESS_BAR;
+				}
+				elseif ($type_percentile == 'interior_circular_progress_bar') {
+					$values['type'] = CIRCULAR_INTERIOR_PROGRESS_BAR;
+				}
 				else {
 					$values['type'] = PERCENTILE_BUBBLE;
 				}
+				$values['border_color'] = $percentile_color;
 				$values['image'] = $value_show; //Hack to save it show percent o value.
 				$values['width'] = $width_percentile;
 				$values['height'] = $max_percentile;
@@ -977,7 +1000,7 @@ switch ($action) {
 				}
 				break;
 		}
-		
+
 		$idData = db_process_sql_insert('tlayout_data', $values);
 		
 		$return = array();

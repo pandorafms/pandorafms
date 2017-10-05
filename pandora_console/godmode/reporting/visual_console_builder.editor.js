@@ -379,6 +379,12 @@ function update_button_palette_callback() {
 			if (values['type_percentile'] == 'bubble') {
 				setPercentileBubble(idItem, values);
 			}
+			else if (values['type_percentile'] == 'circular_progress_bar') {
+				setPercentileCircular(idItem, values);
+			}
+			else if (values['type_percentile'] == 'interior_circular_progress_bar') {
+				setPercentileInteriorCircular(idItem, values);
+			}
 			else {
 				setPercentileBar(idItem, values);
 			}
@@ -626,7 +632,8 @@ function readFields() {
 	values['width_module_graph'] = $("input[name=width_module_graph]").val();
 	values['height_module_graph'] = $("input[name=height_module_graph]").val();
 	values['event_max_time_row'] = $("select[name=event_max_time_row]").val();
-	values['type_percentile'] = $("input[name=type_percentile]:checked").val();
+	values['type_percentile'] = $("select[name=type_percentile]").val();
+	values['percentile_color'] = $("input[name='percentile_color']").val();
 	values['value_show'] = $("input[name=value_show]:checked").val();
 	values['enable_link'] = $("input[name=enable_link]").is(':checked') ? 1 : 0;
 	values['id_group'] = $("select[name=group]").val();
@@ -1274,16 +1281,13 @@ function loadFieldsFromDB(item) {
 					$("input[name=width_module_graph]").val(val);
 				if (key == 'height_module_graph')
 					$("input[name=height_module_graph]").val(val);
+				if (key == 'type_percentile') 
+					$("select[name=type_percentile]").val(val);
 
-				if (key == 'type_percentile') {
-					if (val == 'percentile') {
-						$("input[name=type_percentile][value=percentile]")
-							.attr("checked", "checked");
-					}
-					else {
-						$("input[name=type_percentile][value=bubble]")
-							.attr("checked", "checked");
-					}
+				if (key == 'percentile_color') {
+					$("input[name='percentile_color']").val(val);
+					$("#percentile_item_row_5 .ColorPickerDivSample")
+						.css('background-color', val);
 				}
 
 				if (key == 'value_show') {
@@ -1948,6 +1952,142 @@ function setPercentileBar(id_data, values) {
 	});
 }
 
+function setPercentileCircular (id_data, values) {
+	metaconsole = $("input[name='metaconsole']").val();
+
+	var url_hack_metaconsole = '';
+	if (is_metaconsole()) {
+		url_hack_metaconsole = '../../';
+	}
+
+	max_percentile = values['max_percentile'];
+	width_percentile = values['width_percentile'];
+
+	var parameter = Array();
+
+	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
+	parameter.push ({name: "action", value: "get_module_value"});
+	parameter.push ({name: "id_element", value: id_data});
+	parameter.push ({name: "value_show", value: values['value_show']});
+	parameter.push ({name: "id_visual_console",
+		value: id_visual_console});
+	jQuery.ajax({
+		url: get_url_ajax(),
+		data: parameter,
+		type: "POST",
+		dataType: 'json',
+		success: function (data) {
+			module_value = data['value'];
+			max_percentile = data['max_percentile'];
+			width_percentile = data['width_percentile'];
+			unit_text = false;
+
+			if ((data['unit_text'] != false) || typeof(data['unit_text']) != 'boolean') {
+				unit_text = data['unit_text'];
+			}
+
+			colorRGB = data['colorRGB'];
+
+			if ( max_percentile > 0)
+				var percentile = Math.round(module_value / max_percentile * 100);
+			else
+				var percentile = 100;
+
+			if (unit_text == false && typeof(unit_text) == 'boolean') {
+				value_text = percentile + "%";
+			}
+			else {
+				value_text = module_value + " " + unit_text;
+			}
+			
+			$("#" + id_data + " img").attr('src', 'images/console/signes/circular-progress-bar.png');
+			if($('#text-width_percentile').val() == 0){
+				$("#" + id_data + " img").css('width', '130px');
+				$("#" + id_data + " img").css('height', '130px');
+			}
+			else{
+				$("#" + id_data + " img").css('width', $('#text-width_percentile').val()+'px');
+				$("#" + id_data + " img").css('height', $('#text-width_percentile').val()+'px');
+			}
+			
+			if($('#'+id_data+' table').css('float') == 'right' || $('#'+id_data+ ' table').css('float') == 'left'){
+				$('#'+id_data+ ' img').css('margin-top', 	parseInt($('#'+id_data).css('height'))/2 - parseInt($('#'+id_data+ ' img').css('height'))/2);	
+			}
+			else{
+				$('#'+id_data+ ' img').css('margin-left',parseInt($('#'+id_data).css('width'))/2 - parseInt($('#'+id_data+ ' img').css('width'))/2);		
+			}
+		}
+	});
+}
+
+function setPercentileInteriorCircular (id_data, values) {
+	metaconsole = $("input[name='metaconsole']").val();
+
+	var url_hack_metaconsole = '';
+	if (is_metaconsole()) {
+		url_hack_metaconsole = '../../';
+	}
+
+	max_percentile = values['max_percentile'];
+	width_percentile = values['width_percentile'];
+
+	var parameter = Array();
+
+	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
+	parameter.push ({name: "action", value: "get_module_value"});
+	parameter.push ({name: "id_element", value: id_data});
+	parameter.push ({name: "value_show", value: values['value_show']});
+	parameter.push ({name: "id_visual_console",
+		value: id_visual_console});
+	jQuery.ajax({
+		url: get_url_ajax(),
+		data: parameter,
+		type: "POST",
+		dataType: 'json',
+		success: function (data) {
+			module_value = data['value'];
+			max_percentile = data['max_percentile'];
+			width_percentile = data['width_percentile'];
+			unit_text = false;
+
+			if ((data['unit_text'] != false) || typeof(data['unit_text']) != 'boolean') {
+				unit_text = data['unit_text'];
+			}
+
+			colorRGB = data['colorRGB'];
+
+			if ( max_percentile > 0)
+				var percentile = Math.round(module_value / max_percentile * 100);
+			else
+				var percentile = 100;
+
+			if (unit_text == false && typeof(unit_text) == 'boolean') {
+				value_text = percentile + "%";
+			}
+			else {
+				value_text = module_value + " " + unit_text;
+			}
+			
+			$("#" + id_data + " img").attr('src', 'images/console/signes/circular-progress-bar-interior.png');
+			if($('#text-width_percentile').val() == 0){
+				$("#" + id_data + " img").css('width', '130px');
+				$("#" + id_data + " img").css('height', '130px');
+			}
+			else{
+				$("#" + id_data + " img").css('width', $('#text-width_percentile').val()+'px');
+				$("#" + id_data + " img").css('height', $('#text-width_percentile').val()+'px');
+			}
+			
+			if($('#'+id_data+' table').css('float') == 'right' || $('#'+id_data+ ' table').css('float') == 'left'){
+				$('#'+id_data+ ' img').css('margin-top', 	parseInt($('#'+id_data).css('height'))/2 - parseInt($('#'+id_data+ ' img').css('height'))/2);	
+			}
+			else{
+				$('#'+id_data+ ' img').css('margin-left',parseInt($('#'+id_data).css('width'))/2 - parseInt($('#'+id_data+ ' img').css('width'))/2);		
+			}
+		}
+	});
+}
+
 function setEventsBar(id_data, values) {
 	var url_hack_metaconsole = '';
 	if (is_metaconsole()) {
@@ -2396,9 +2536,77 @@ function createItem(type, values, id_data) {
 				
 				setPercentileBar(id_data, values);
 			}
+			else if (values['type_percentile'] == 'circular_progress_bar') {
+				if(values['label_position'] == 'up'){
+					item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+							'<table><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+							'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" />' +
+							'</div>'
+					);
+				}
+				else if(values['label_position'] == 'down'){
+					item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+							'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" />' + 					
+							'<table><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+							'</div>'
+					);
+					
+				}
+				else if(values['label_position'] == 'right'){
+					item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+							'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" style="float:left;" />' + 					
+							'<table style="float:left;height:'+values['height']+'px"><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+							'</div>'
+					);
+					
+				}
+				else if(values['label_position'] == 'left'){
+					item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+							'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" style="float:right;"/>' + 					
+							'<table style="float:left;height:'+values['height']+'px"><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+							'</div>'
+					);
+					
+				}
+				
+				setPercentileCircular(id_data, values);
+			}
+			else if (values['type_percentile'] == 'interior_circular_progress_bar') {
+				if(values['label_position'] == 'up'){
+					item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+							'<table><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+							'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" />' +
+							'</div>'
+					);
+				}
+				else if(values['label_position'] == 'down'){
+					item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+							'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" />' + 					
+							'<table><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+							'</div>'
+					);
+					
+				}
+				else if(values['label_position'] == 'right'){
+					item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+							'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" style="float:left;" />' + 					
+							'<table style="float:left;height:'+values['height']+'px"><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+							'</div>'
+					);
+					
+				}
+				else if(values['label_position'] == 'left'){
+					item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+							'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" style="float:right;"/>' + 					
+							'<table style="float:left;height:'+values['height']+'px"><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+							'</div>'
+					);
+					
+				}
+				
+				setPercentileInteriorCircular(id_data, values);
+			}
 			else {
-				
-				
 				if(values['label_position'] == 'up'){
 					item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
 							'<table><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +

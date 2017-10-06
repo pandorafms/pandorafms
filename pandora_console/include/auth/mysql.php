@@ -173,8 +173,6 @@ function process_user_login_local ($login, $pass, $api = false) {
 function process_user_login_remote ($login, $pass, $api = false) {
 	global $config, $mysql_cache;
 	
-	
-	
 	// Remote authentication
 	switch ($config["auth"]) {
 		// LDAP
@@ -219,8 +217,6 @@ function process_user_login_remote ($login, $pass, $api = false) {
 	
 	// Authentication ok, check if the user exists in the local database
 	if (is_user ($login)) {
-		
-		
 		if (!user_can_login($login)) {
 			return false;
 		}
@@ -228,9 +224,26 @@ function process_user_login_remote ($login, $pass, $api = false) {
 		if (($config["auth"] === 'ad') &&
 			(isset($config['ad_advanced_config']) && $config['ad_advanced_config'])) {
 			
-			
-			
 			$return = enterprise_hook ('prepare_permissions_groups_of_user_ad',
+				array ($login, $pass, false, true, defined('METACONSOLE')));
+
+			if ($return === "error_permissions") {
+				$config["auth_error"] =
+					__("Problems with configuration permissions. Please contact with Administrator");
+				return false;
+			}
+			else {
+				if ($return === "permissions_changed") {
+					$config["auth_error"] =
+						__("Your permissions have changed. Please, login again.");
+					return false;
+				}
+			}
+		}
+		elseif (($config["auth"] === 'ldap') &&
+			(isset($config['ldap_advanced_config']) && $config['ldap_advanced_config'])) {
+
+			$return = enterprise_hook ('prepare_permissions_groups_of_user_ldap',
 				array ($login, $pass, false, true, defined('METACONSOLE')));
 			
 			if ($return === "error_permissions") {
@@ -245,12 +258,12 @@ function process_user_login_remote ($login, $pass, $api = false) {
 					return false;
 				}
 			}
+
+			change_local_user_pass_ldap ($login, $pass);
 		}
+
 		return $login;
 	}
-	
-	
-	
 	
 	// The user does not exist and can not be created
 	if ($config['autocreate_remote_users'] == 0 || is_user_blacklisted ($login)) {
@@ -285,6 +298,41 @@ function process_user_login_remote ($login, $pass, $api = false) {
 		
 		// Create the user
 		if (enterprise_hook ('prepare_permissions_groups_of_user_ad',
+				array($login,
+					$pass,
+					array ('fullname' => $login, 
+						'comments' => 'Imported from ' . $config['auth']),
+					false, defined('METACONSOLE'))) === false) {
+			
+			$config["auth_error"] = __("User not found in database 
+					or incorrect password");
+					
+			return false;
+		}
+	}
+	elseif ($config["auth"] === 'ldap' && 
+		(isset($config['ldap_advanced_config']) && 
+			$config['ldap_advanced_config'])) {
+		if ( defined('METACONSOLE') ) {
+			enterprise_include_once('include/functions_metaconsole.php');
+			enterprise_include_once ('meta/include/functions_groups_meta.php');
+			
+			$return = groups_meta_synchronizing();
+			
+			if ($return["group_create_err"] > 0  || $return["group_update_err"] > 0) {
+				$config["auth_error"] = __('Fail the group synchronizing');
+				return false;
+			}
+			
+			$return = meta_tags_synchronizing();
+			if ($return['tag_create_err'] > 0 || $return['tag_update_err'] > 0) {
+				$config["auth_error"] = __('Fail the tag synchronizing');
+				return false;
+			}
+		}
+		
+		// Create the user
+		if (enterprise_hook ('prepare_permissions_groups_of_user_ldap',
 				array($login,
 					$pass,
 					array ('fullname' => $login, 
@@ -644,33 +692,51 @@ function ldap_process_user_login ($login, $password) {
 			return false;
 		}
 	}
+
+	$dc = $config["ldap_base_dn"];
 	
-	$ldap_login_attr  = !empty($config["ldap_login_attr"]) ? io_safe_output($config["ldap_login_attr"]) . "=" : '';
+	#Search group of this user it belong.
+	$filter="(cn=" . io_safe_output($login) . ")";
+	$justthese = array("objectclass=group");
+	
+	$sr = ldap_search($ds, $dc, $filter, $justthese);
+	
+	$memberof = ldap_get_entries($ds, $sr);
+	
+	if ($memberof["count"] == 0 && !isset($memberof[0]["memberof"])) {
+		@ldap_close ($ds);
+		return false;
+	}
+	else {
+		$memberof = $memberof[0];
+	}
+	
+	unset($memberof["count"]);
 
 	$ldap_base_dn  = !empty($config["ldap_base_dn"]) ? "," . io_safe_output($config["ldap_base_dn"]) : '';
-
-	if(!empty($ldap_base_dn)){
-		if (strlen($password) == 0 || 
-			!@ldap_bind($ds, $ldap_login_attr.io_safe_output($login).$ldap_base_dn, $password) ) {
-				$config["auth_error"] = 'User not found in database or incorrect password';
-				@ldap_close ($ds);
-
-				return false;
-
+	
+	$correct = false;
+	if(!empty($ldap_base_dn)) {
+		if (strlen($password) != 0 && @ldap_bind($ds, $memberof['dn'], $password) ) {
+			$correct = true;
 		}
-	} else {
-		if (strlen($password) == 0 || 
-			!@ldap_bind($ds, io_safe_output($login), $password) ) {
-			$config["auth_error"] = 'User not found in database or incorrect password';
-			@ldap_close ($ds);
-			
-			return false;
+	}
+	else {
+		if (strlen($password) != 0 && @ldap_bind($ds, io_safe_output($login), $password) ) {
+			$correct = true;
 		}
 	}
 	
 	@ldap_close ($ds);
-	
-	return true;
+
+	if ($correct) {
+		return true;
+	}
+	else {
+		$config["auth_error"] = 'User not found in database or incorrect password';
+		
+		return false;
+	}
 }
 
 /**
@@ -691,6 +757,27 @@ function is_user_blacklisted ($user) {
 	}
 	
 	return false;
+}
+
+/**
+ * Update local user pass from ldap user
+ *
+ * @param string Login
+ * @param string Password
+ *
+ * @return bool
+ */
+function change_local_user_pass_ldap ($id_user, $password) {
+	$local_user_pass = db_get_value_filter('password', 'tusuario', array('id_user' => $id_user));
+
+	if (md5($password) !== $local_user_pass) {
+		$values_update = array();
+		$values_update['password'] = md5($password);
+
+		db_process_sql_update('tusuario', $values_update, array('id_user' => $id_user));
+	}
+
+	return;
 }
 
 //Reference the global use authorization error to last auth error.

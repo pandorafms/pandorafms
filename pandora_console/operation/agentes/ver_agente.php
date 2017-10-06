@@ -1043,9 +1043,13 @@ if ($policyTab == -1)
 	$policyTab = "";
 
 /* UX Console */
-$ux_console_tab = enterprise_hook('ux_console_tab');
-if ($ux_console_tab == -1)
-	$ux_console_tab = "";
+enterprise_include_once('/include/functions_ux_console.php');
+$active_ux = get_ux_transactions($id_agente);
+if(!empty($active_ux)){
+	$ux_console_tab = enterprise_hook('ux_console_tab');
+	if ($ux_console_tab == -1)
+		$ux_console_tab = "";
+}
 
 /* WUX Console */
 $modules_wux = enterprise_hook('get_wux_modules' , array($id_agente));
@@ -1053,6 +1057,14 @@ if($modules_wux){
 	$wux_console_tab = enterprise_hook('wux_console_tab');
 	if ($wux_console_tab == -1)
 		$wux_console_tab = "";
+}
+
+$url_route_analyzer = enterprise_hook('get_url_route_analyzer_modules', array($id_agente));
+if ($url_route_analyzer) {
+	$url_route_analyzer_tab = enterprise_hook('url_route_analyzer_tab');
+	if ($url_route_analyzer_tab == -1) {
+		$url_route_analyzer_tab = "";
+	}
 }
 
 /* GIS tab */
@@ -1186,7 +1198,8 @@ $onheader = array('manage' => $managetab,
 	'graphs' => $graphs,
 	'policy' => $policyTab,
 	'ux_console' => $ux_console_tab,
-	'wux_console' => $wux_console_tab);
+	'wux_console' => $wux_console_tab,
+	'url_route_analyzer' => $url_route_analyzer_tab);
 
 //Added after it exists
 // If the agent has incidents associated
@@ -1307,7 +1320,10 @@ switch ($tab) {
 		enterprise_include ("operation/agentes/ux_console_view.php");
 		break;
 	case "wux_console_tab":
-		enterprise_include ("operation/agentes/wux_console_view.php");
+		enterprise_include ("operation/agentes/wux_console_vpiew.php");
+		break;
+	case "url_route_analyzer_tab":
+		enterprise_include ("operation/agentes/url_route_analyzer.php");
 		break;
 	case "graphs";
 		require("operation/agentes/graphs.php");

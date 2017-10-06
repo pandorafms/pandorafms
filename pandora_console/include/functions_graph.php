@@ -699,6 +699,9 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	
 	if (empty($unit)) {
 		$unit = modules_get_unit($agent_module_id);
+		if(modules_is_unit_macro($unit)){
+			$unit = "";		
+		}
 	}
 
 	// Get module warning_min and critical_min
@@ -788,8 +791,10 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 		'border' => '#000000', 'color' => $config['graph_color1'],
 		'alpha' => CHART_DEFAULT_ALPHA);
 
-	$color['unit'.$series_suffix] = array('border' => null, 'color' => '#0097BC', 'alpha' => 10);
-	
+	$color['unit'.$series_suffix] = array('border' => null, 'color' => '#0097BC', 'alpha' => 10);		
+	if(modules_is_unit_macro($unit)){
+		$unit = "";		
+	}
 	if ($show_events) {
 		$legend['event'.$series_suffix_str] = __('Events').$series_suffix_str;
 		$chart_extra_data['legend_events'] = $legend['event'.$series_suffix_str];
@@ -5654,13 +5659,13 @@ function graph_nodata_image($width = 300, $height = 110, $type = 'area', $text =
 	$image = ui_get_full_url('images/image_problem_' . $type . '.png',
 		false, false, false); 
 	
-	if ($text == '') {
-		$text = __('No data to show');
-	}
+	// if ($text == '') {
+	// 	$text = __('No data to show');
+	// }
 	
 	$text_div = '<div class="nodata_text">' . $text . '</div>';
 	
-	$image_div = '<div class="nodata_container" style="background-image: url(\'' . $image . '\');">' .
+	$image_div = '<div class="nodata_container" style="width:80%;height:80%;background-size: 80% 80%;background-image: url(\'' . $image . '\');">' .
 		$text_div . '</div>';
 	
 	$div = '<div style="width:' . $width . 'px; height:' . $height . 'px; border: 1px dotted #ddd; background-color: white; margin: 0 auto;">' .

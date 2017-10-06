@@ -170,7 +170,26 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 		$time_compare_separated = get_parameter ("time_compare_separated", 0);
 		$time_compare_overlapped = get_parameter ("time_compare_overlapped", 0);
 		$unknown_graph = get_parameter_checkbox ("unknown_graph", 1);
-		$fullscale = get_parameter ("fullscale", 0);
+	
+		if(!isset($config['full_scale_option']) || $config['full_scale_option'] == 0){
+			$fullscale = 0;
+		}
+		elseif($config['full_scale_option'] == 1){
+			$fullscale = 1;
+		}
+		elseif($config['full_scale_option'] == 2){
+			if($graph_type == 'boolean'){
+				$fullscale = 1;	
+			}else{
+				$fullscale = 0;
+			}
+		}
+
+		$fullscale_other = get_parameter ("fullscale_other", $fullscale);
+
+		if(isset($fullscale_other)){
+			$fullscale = $fullscale_other;
+		}
 		
 		// To avoid the horizontal overflow
 		$width -= 20;
@@ -404,8 +423,9 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 		}
 
 		$data = array();
-		$data[0] = __('Show full scale graph (TIP)') . ui_print_help_tip(__('This option may cause performance issues'), true);
-		$data[1] = html_print_checkbox ("fullscale", 1, (bool) $fullscale, true);
+		$data[0] = __('Show full scale graph (TIP)');
+		$data[1] = html_print_checkbox ("fullscale", 1, (bool) $fullscale, true, false,'fullscal_other()');
+		$data[1] .= html_print_input_hidden('fullscale_other', 0, true);
 		$table->data[] = $data;
 		$table->rowclass[] = '';
 		

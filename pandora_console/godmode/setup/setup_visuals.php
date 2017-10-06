@@ -535,6 +535,26 @@ $table_chars->data[$row][0] .= ui_print_help_tip(__('Show percentile 95 in graph
 $table_chars->data[$row][1] = html_print_input_text ('percentil', $config['percentil'], '', 20, 20, true);
 $row++;
 
+$table_chars->data[$row][0] = __('Graph TIP view:');
+$table_chars->data[$row][0] .= ui_print_help_tip(__('This option may cause performance issues'), true);
+
+$options_full_escale    = array();
+$options_full_escale[0] = __('None');
+$options_full_escale[1] = __('All');
+$options_full_escale[2] = __('On Boolean graphs');
+
+$table_chars->data[$row][1] = html_print_select($options_full_escale, 'full_scale_option', $config["full_scale_option"], '', '', 0, true, false, false);
+$row++;
+
+/*
+	$table_font->data[$row][0] = __('Font path');
+$fonts = load_fonts();
+$table_font->data[$row][1] = html_print_select($fonts, 'fontpath',
+	io_safe_output($config["fontpath"]), '', '', 0, true);
+
+$row++;
+*/
+
 echo "<fieldset>";
 echo "<legend>" . __('Charts configuration') . "</legend>";
 html_print_table ($table_chars);

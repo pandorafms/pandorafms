@@ -119,6 +119,8 @@ $border_width = (int)get_parameter('border_width', 0);
 $border_color = get_parameter('border_color', '');
 $fill_color = get_parameter('fill_color', '');
 $percentile_color = get_parameter('percentile_color', '');
+$percentile_label = get_parameter('percentile_label', '');
+$percentile_label_color = get_parameter('percentile_label_color', '');
 $width_box = (int)get_parameter('width_box', 0);
 $height_box = (int)get_parameter('height_box', 0);
 $line_start_x = (int)get_parameter('line_start_x', 0);
@@ -620,6 +622,8 @@ switch ($action) {
 								$values['image'] = $value_show;
 
 							$values['border_color'] = $percentile_color;
+							$values['fill_color'] = $percentile_label_color;
+							$values['label'] = $percentile_label;
 						}
 						break;
 					case 'icon':
@@ -797,6 +801,8 @@ switch ($action) {
 							$elementFields['type_percentile'] = 'interior_circular_progress_bar';
 						}
 						$elementFields['percentile_color'] = $elementFields['border_color'];
+						$elementFields['percentile_label_color'] = $elementFields['fill_color'];
+						$elementFields['percentile_label'] = $elementFields['label'];
 						break;
 					
 					case 'module_graph':
@@ -963,6 +969,8 @@ switch ($action) {
 				$values['image'] = $value_show; //Hack to save it show percent o value.
 				$values['width'] = $width_percentile;
 				$values['height'] = $max_percentile;
+				$values['fill_color'] = $percentile_label_color;
+				$values['label'] = $percentile_label;
 				break;
 			case 'static_graph':
 				$values['type'] = STATIC_GRAPH;

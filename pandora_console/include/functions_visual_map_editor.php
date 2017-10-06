@@ -157,8 +157,6 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items['label_row'] = array();
 			$form_items['label_row']['items'] = array('label',
 				'static_graph',
-				'percentile_bar',
-				'percentile_item',
 				'module_graph',
 				'simple_value',
 				'datos',
@@ -445,13 +443,27 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 
 			$form_items['percentile_item_row_5'] = array();
 			$form_items['percentile_item_row_5']['items'] = array('percentile_bar', 'percentile_item', 'datos');
-			$form_items['percentile_item_row_5']['html'] = '<td align="left">' . __('Color') . ui_print_help_tip (
-					__("Only for circular percentile items."), true) . '</td>
+			$form_items['percentile_item_row_5']['html'] = '<td align="left">' . __('Element color') . '</td>
 				<td align="left">' .
 				html_print_input_text_extended ('percentile_color', '#ffffff',
 					'text-percentile_color', '', 7, 7, false, '',
 					'class="percentile_color"', true) .
 				'</td>';
+
+			$form_items['percentile_item_row_6'] = array();
+			$form_items['percentile_item_row_6']['items'] = array('percentile_bar', 'percentile_item', 'datos');
+			$form_items['percentile_item_row_6']['html'] = '<td align="left">' . __('Label color') . '</td>
+				<td align="left">' .
+				html_print_input_text_extended ('percentile_label_color', '#ffffff',
+					'text-percentile_label_color', '', 7, 7, false, '',
+					'class="percentile_label_color"', true) .
+				'</td>';
+
+			$form_items['percentile_bar_row_7'] = array();
+			$form_items['percentile_bar_row_7']['items'] = array('percentile_bar', 'percentile_item', 'datos');
+			$form_items['percentile_bar_row_7']['html'] = '<td align="left">' .
+				__('Label') . '</td>
+				<td align="left">' . html_print_input_text('percentile_label', '', '', 30, 100, true) . '</td>';
 
 			$form_items['period_row'] = array();
 			$form_items['period_row']['items'] = array('module_graph', 'simple_value', 'datos');
@@ -620,6 +632,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$(".fill_color").attachColorPicker();
 			$(".line_color").attachColorPicker();
 			$(".percentile_color").attachColorPicker();
+			$(".percentile_label_color").attachColorPicker();
 			
 			$("input[name=radio_choice]").change(function(){
 				$('#count_items').html(1);

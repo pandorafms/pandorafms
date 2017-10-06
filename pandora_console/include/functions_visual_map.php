@@ -1417,45 +1417,17 @@ function visual_map_print_item($mode = "read", $layoutData,
 			break;
 		
 		case PERCENTILE_BAR:
-			$imgpos = '';
+			if (($layoutData['image'] == 'value') && ($value_text !== false)) {
+				$unit_text = db_get_sql ('SELECT unit
+					FROM tagente_modulo
+					WHERE id_agente_modulo = ' . $id_module);
+				$unit_text = trim(io_safe_output($unit_text));
 
-			if($layoutData['label_position']=='left'){
-				$imgpos = 'float:right;';
-			}
-			else if($layoutData['label_position']=='right'){
-				$imgpos = 'float:left;';
-			}
-			
-			$progress_bar_heigh = 15;
-			if (!empty($proportion)) {
-				if ($width != 0) {
-					$width = (integer)($proportion['proportion_width'] * $width);
-				}
-				else {
-					$width = (integer)($proportion['proportion_width'] * $infoImage[0]);
-				}
-
-				if ($height != 0) {
-					$height = (integer)($proportion['proportion_height'] * $height);
-					$progress_bar_heigh = $progress_bar_heigh * $proportion['proportion_height'];
-				}
-				else {
-					$height = (integer)($proportion['proportion_height'] * $infoImage[1]);
-				}
-			}
-			
-			if($layoutData['label_position']=='up'){
-				echo io_safe_output($text);
-			}
-			
-			ob_start();
-			if ($type == PERCENTILE_BUBBLE) {
-				echo progress_bubble($percentile, $width, $width, '', 1, $value_text, $colorStatus,$imgpos);
+				$percentile = $value_text;
 			}
 			else {
-				echo progress_bar($percentile, $width, $progress_bar_heigh, '', 1, $value_text, $colorStatus,$imgpos);
+				$unit_text = "%";
 			}
-			$img = ob_get_clean();
 			
 			if (get_parameter('action') == 'edit') {
 				if ($width == 0) {
@@ -1466,67 +1438,25 @@ function visual_map_print_item($mode = "read", $layoutData,
 				}
 			}
 			else{
-				$img = str_replace('>', 'class="image" style="height:'.$himg.'px;width:'.$wimg.'px;'.$imgpos.'" id="image_' . $id . '" />', $img);
+				$img = d3_progress_bar($id, $percentile, $width, 50, $border_color, $unit_text, $label, $fill_color);
 			}
 			
-			echo $img;		
+			echo $img;
 			
-			if($layoutData['label_position']=='down'){
-				echo io_safe_output($text);
-			}
-			else if($layoutData['label_position']=='left' || $layoutData['label_position']=='right'){
-				echo io_safe_output($text);
-			}
-		
 		break;
 		case PERCENTILE_BUBBLE:
-			$imgpos = '';
+			if (($layoutData['image'] == 'value') && ($value_text !== false)) {
+				$unit_text = db_get_sql ('SELECT unit
+					FROM tagente_modulo
+					WHERE id_agente_modulo = ' . $id_module);
+				$unit_text = trim(io_safe_output($unit_text));
 
-			if($layoutData['label_position']=='left'){
-				$imgpos = 'float:right;';
-			}
-			else if($layoutData['label_position']=='right'){
-				$imgpos = 'float:left;';
-			}
-		
-		 	$progress_bar_heigh = 15;
-			if (!empty($proportion)) {
-				if ($width != 0) {
-					$width = (integer)($proportion['proportion_width'] * $width);
-				}
-				else {
-					$width = (integer)($proportion['proportion_width'] * $infoImage[0]);
-				}
-
-				if ($height != 0) {
-					$height = (integer)($proportion['proportion_height'] * $height);
-					$progress_bar_heigh = $progress_bar_heigh * $proportion['proportion_height'];
-				}
-				else {
-					$height = (integer)($proportion['proportion_height'] * $infoImage[1]);
-				}
-			}
-			
-			if($layoutData['label_position']=='up'){
-				echo io_safe_output($text);
-			}
-			
-			ob_start();
-			if ($type == PERCENTILE_BUBBLE) {
-				if($width == 0){
-					echo progress_bubble($percentile, 100,100, '', 1, $value_text, $colorStatus,$s);
-				
-				}
-				else{
-					echo progress_bubble($percentile, $width,$width, '', 1, $value_text, $colorStatus);
-				}
+				$percentile = $value_text;
 			}
 			else {
-				echo progress_bar($percentile, $width, $progress_bar_heigh, '', 1, $value_text, $colorStatus);
+				$unit_text = "%";
 			}
 
-			$img = ob_get_clean();
-			
 			if(get_parameter('action') == 'edit'){
 				if($width == 0){
 					$img =  '<img src="images/console/signes/percentil_bubble.png" style="width:130px;height:130px;'.$imgpos.'">';	
@@ -1536,51 +1466,18 @@ function visual_map_print_item($mode = "read", $layoutData,
 				}
 			}
 			else{
-				$img = str_replace('>', 'class="image" style="width:'.$wimg.'px;height:'.$himg.'px;'.$imgpos.'" id="image_' . $id . '" />', $img);
+				if($width == 0){
+					$img = d3_progress_bubble($id, $percentile, 200,200, $border_color, $unit_text, $label, $fill_color);
+				}
+				else{
+					$img = d3_progress_bubble($id, $percentile, $width, $width, $border_color, $unit_text, $label, $fill_color);
+				}
 			}
 			
 			echo $img;
 			
-			if($layoutData['label_position']=='down'){
-				echo io_safe_output($text);
-			}			
-			else if($layoutData['label_position']=='left' || $layoutData['label_position']=='right'){
-				echo io_safe_output($text);
-			}
-			
 			break;
 		case CIRCULAR_PROGRESS_BAR:
-			$imgpos = '';
-
-			if($layoutData['label_position']=='left'){
-				$imgpos = 'float:right;';
-			}
-			else if($layoutData['label_position']=='right'){
-				$imgpos = 'float:left;';
-			}
-		
-		 	$progress_bar_heigh = 15;
-			if (!empty($proportion)) {
-				if ($width != 0) {
-					$width = (integer)($proportion['proportion_width'] * $width);
-				}
-				else {
-					$width = (integer)($proportion['proportion_width'] * $infoImage[0]);
-				}
-
-				if ($height != 0) {
-					$height = (integer)($proportion['proportion_height'] * $height);
-					$progress_bar_heigh = $progress_bar_heigh * $proportion['proportion_height'];
-				}
-				else {
-					$height = (integer)($proportion['proportion_height'] * $infoImage[1]);
-				}
-			}
-			
-			if($layoutData['label_position']=='up'){
-				echo io_safe_output($text);
-			}
-			
 			if(get_parameter('action') == 'edit'){
 				if($width == 0){
 					$img =  '<img src="images/console/signes/circular-progress-bar.png" style="width:130px;height:130px;'.$imgpos.'">';	
@@ -1602,56 +1499,18 @@ function visual_map_print_item($mode = "read", $layoutData,
 					$unit_text = "%";
 				}
 
-				if($width < 200){
-					$img = progress_circular_bar($id, $percentile, 200,200, $border_color, $unit_text);
+				if($width == 0){
+					$img = progress_circular_bar($id, $percentile, 200,200, $border_color, $unit_text, $label, $fill_color);
 				}
 				else{
-					$img = progress_circular_bar($id, $percentile, $width, $width, $border_color, $unit_text);
+					$img = progress_circular_bar($id, $percentile, $width, $width, $border_color, $unit_text, $label, $fill_color);
 				}
 			}
 
 			echo $img;
 			
-			if($layoutData['label_position']=='down'){
-				echo io_safe_output($text);
-			}			
-			else if($layoutData['label_position']=='left' || $layoutData['label_position']=='right'){
-				echo io_safe_output($text);
-			}
-			
 			break;
 		case CIRCULAR_INTERIOR_PROGRESS_BAR:
-			$imgpos = '';
-
-			if($layoutData['label_position']=='left'){
-				$imgpos = 'float:right;';
-			}
-			else if($layoutData['label_position']=='right'){
-				$imgpos = 'float:left;';
-			}
-		
-		 	$progress_bar_heigh = 15;
-			if (!empty($proportion)) {
-				if ($width != 0) {
-					$width = (integer)($proportion['proportion_width'] * $width);
-				}
-				else {
-					$width = (integer)($proportion['proportion_width'] * $infoImage[0]);
-				}
-
-				if ($height != 0) {
-					$height = (integer)($proportion['proportion_height'] * $height);
-					$progress_bar_heigh = $progress_bar_heigh * $proportion['proportion_height'];
-				}
-				else {
-					$height = (integer)($proportion['proportion_height'] * $infoImage[1]);
-				}
-			}
-			
-			if($layoutData['label_position']=='up'){
-				echo io_safe_output($text);
-			}
-			
 			if(get_parameter('action') == 'edit'){
 				if($width == 0){
 					$img =  '<img src="images/console/signes/circular-progress-bar-interior.png" style="width:130px;height:130px;'.$imgpos.'">';	
@@ -1673,23 +1532,16 @@ function visual_map_print_item($mode = "read", $layoutData,
 					$unit_text = "%";
 				}
 
-				if($width < 200){
-					$img = progress_circular_bar_interior($id, $percentile, 200,200, $border_color);
+				if($width == 0){
+					$img = progress_circular_bar_interior($id, $percentile, 200,200, $border_color, $unit_text, $label, $fill_color);
 				
 				}
 				else{
-					$img = progress_circular_bar_interior($id, $percentile, $width, $width, $border_color);
+					$img = progress_circular_bar_interior($id, $percentile, $width, $width, $border_color, $unit_text, $label, $fill_color);
 				}
 			}
 			
 			echo $img;
-			
-			if($layoutData['label_position']=='down'){
-				echo io_safe_output($text);
-			}			
-			else if($layoutData['label_position']=='left' || $layoutData['label_position']=='right'){
-				echo io_safe_output($text);
-			}
 			
 			break;
 		case MODULE_GRAPH:

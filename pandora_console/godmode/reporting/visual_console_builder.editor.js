@@ -632,7 +632,9 @@ function readFields() {
 	values['height_module_graph'] = $("input[name=height_module_graph]").val();
 	values['event_max_time_row'] = $("select[name=event_max_time_row]").val();
 	values['type_percentile'] = $("select[name=type_percentile]").val();
-	values['percentile_color'] = $("input[name='percentile_color']").val();
+	values['percentile_color'] = $("input[name=percentile_color]").val();
+	values['percentile_label_color'] = $("input[name=percentile_label_color]").val();
+	values['percentile_label'] = $("input[name=percentile_label]").val();
 	values['value_show'] = $("select[name=value_show]").val();
 	
 	values['enable_link'] = $("input[name=enable_link]").is(':checked') ? 1 : 0;
@@ -1283,10 +1285,16 @@ function loadFieldsFromDB(item) {
 					$("input[name=height_module_graph]").val(val);
 				if (key == 'type_percentile') 
 					$("select[name=type_percentile]").val(val);
-
+				if (key == 'percentile_label') 
+					$("input[name=percentile_label]").val(val);
 				if (key == 'percentile_color') {
-					$("input[name='percentile_color']").val(val);
+					$("input[name=percentile_color]").val(val);
 					$("#percentile_item_row_5 .ColorPickerDivSample")
+						.css('background-color', val);
+				}
+				if (key == 'percentile_label_color') {
+					$("input[name=percentile_label_color]").val(val);
+					$("#percentile_item_row_6 .ColorPickerDivSample")
 						.css('background-color', val);
 				}
 

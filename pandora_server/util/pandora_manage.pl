@@ -4535,13 +4535,6 @@ sub cli_module_get_data () {
 			AND utimestamp > (UNIX_TIMESTAMP(NOW()) - $interval) 
 			ORDER BY utimestamp DESC");
 	}
-	elsif ($module_type =~ m/_inc$/) {
-		@data = get_db_rows ($dbh, "SELECT utimestamp, datos 
-			FROM tagente_datos_inc 
-			WHERE id_agente_modulo = $id_agent_module 
-			AND utimestamp > (UNIX_TIMESTAMP(NOW()) - $interval) 
-			ORDER BY utimestamp DESC");
-	}
 	else {
 		@data = get_db_rows ($dbh, "SELECT utimestamp, datos 
 			FROM tagente_datos 

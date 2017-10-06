@@ -1573,10 +1573,12 @@ function progress_bubble_d3 (recipient, percentile, width, height, color, unit, 
 	var unitSize = 0;
 	var yPosText = 0;
 	var yPosUnit = 0;
+	var yPosNumber = 0;
 	if (width >= 500) {
 		numberSize = 100;
 		textSize = 50;
 		unitSize = 50;
+		yPosNumber = '15';
 		yPosText = '-100';
 		yPosUnit = '100';
 	}
@@ -1584,6 +1586,7 @@ function progress_bubble_d3 (recipient, percentile, width, height, color, unit, 
 		numberSize = 80;
 		textSize = 40;
 		unitSize = 40;
+		yPosNumber = '15';
 		yPosText = '-80';
 		yPosUnit = '80';
 	}
@@ -1591,20 +1594,23 @@ function progress_bubble_d3 (recipient, percentile, width, height, color, unit, 
 		numberSize = 60;
 		textSize = 30;
 		unitSize = 30;
-		yPosText = '-60';
+		yPosNumber = '15';
+		yPosText = '-45';
 		yPosUnit = '60';
 	}
 	else if (width >= 200) {
 		numberSize = 40;
 		textSize = 20;
 		unitSize = 20;
-		yPosText = '-40';
-		yPosUnit = '40';
+		yPosNumber = '10';
+		yPosText = '-30';
+		yPosUnit = '45';
 	}
 	else if (width >= 100) {
 		numberSize = 20;
 		textSize = 10;
 		unitSize = 10;
+		yPosNumber = '5';
 		yPosText = '-20';
 		yPosUnit = '25';
 	}
@@ -1612,8 +1618,9 @@ function progress_bubble_d3 (recipient, percentile, width, height, color, unit, 
 		numberSize = 10;
 		textSize = 8;
 		unitSize = 8;
+		yPosNumber = '5';
 		yPosText = '-10';
-		yPosUnit = '10';
+		yPosUnit = '15';
 	}
 
 	var circle = d3.select(recipient)
@@ -1650,7 +1657,7 @@ function progress_bubble_d3 (recipient, percentile, width, height, color, unit, 
 		.style("font-weight", "bold")
 		.style("font-size", numberSize)
 		.attr('text-anchor', 'middle')
-		.attr('dy', '5');
+		.attr('dy', yPosNumber);
 
 	var unitText = circle.append("text")
 		.attr("transform", "translate(" + (width/2) + ", " + (height/2) + ")")
@@ -1695,10 +1702,12 @@ function print_circular_progress_bar (recipient, percentile, width, height, colo
 	var unitSize = 0;
 	var yPosText = 0;
 	var yPosUnit = 0;
+	var yPosNumber = 0;
 	if (width >= 500) {
 		numberSize = 100;
 		textSize = 50;
 		unitSize = 50;
+		yPosNumber = '15';
 		yPosText = '-100';
 		yPosUnit = '100';
 	}
@@ -1706,6 +1715,7 @@ function print_circular_progress_bar (recipient, percentile, width, height, colo
 		numberSize = 80;
 		textSize = 40;
 		unitSize = 40;
+		yPosNumber = '15';
 		yPosText = '-80';
 		yPosUnit = '80';
 	}
@@ -1713,13 +1723,15 @@ function print_circular_progress_bar (recipient, percentile, width, height, colo
 		numberSize = 60;
 		textSize = 30;
 		unitSize = 30;
-		yPosText = '-60';
+		yPosNumber = '15';
+		yPosText = '-45';
 		yPosUnit = '60';
 	}
 	else if (width >= 200) {
 		numberSize = 40;
 		textSize = 20;
 		unitSize = 20;
+		yPosNumber = '10';
 		yPosText = '-30';
 		yPosUnit = '40';
 	}
@@ -1727,15 +1739,17 @@ function print_circular_progress_bar (recipient, percentile, width, height, colo
 		numberSize = 20;
 		textSize = 10;
 		unitSize = 10;
-		yPosText = '-10';
-		yPosUnit = '25';
+		yPosNumber = '5';
+		yPosText = '-15';
+		yPosUnit = '20';
 	}
 	else {
-		numberSize = 2;
-		textSize = 1;
-		unitSize = 1;
-		yPosText = '-1';
-		yPosUnit = '2';
+		numberSize = 8;
+		textSize = 4;
+		unitSize = 4;
+		yPosNumber = '2';
+		yPosText = '-5';
+		yPosUnit = '5';
 	}
 
 	var arc = d3.svg.arc()
@@ -1783,7 +1797,7 @@ function print_circular_progress_bar (recipient, percentile, width, height, colo
 		.style("font-weight", "bold")
 		.style("font-size", numberSize)
 		.attr('text-anchor', 'middle')
-		.attr('dy', '10');
+		.attr('dy', yPosNumber);
 
 	var percentText = circle.append("text")
 		.attr('fill', '#000000')
@@ -1829,10 +1843,12 @@ function print_interior_circular_progress_bar (recipient, percentile, width, hei
 	var unitSize = 0;
 	var yPosText = 0;
 	var yPosUnit = 0;
+	var yPosNumber = 0;
 	if (width >= 500) {
 		numberSize = 100;
 		textSize = 50;
 		unitSize = 50;
+		yPosNumber = '15';
 		yPosText = '-100';
 		yPosUnit = '100';
 	}
@@ -1840,6 +1856,7 @@ function print_interior_circular_progress_bar (recipient, percentile, width, hei
 		numberSize = 80;
 		textSize = 40;
 		unitSize = 40;
+		yPosNumber = '15';
 		yPosText = '-80';
 		yPosUnit = '80';
 	}
@@ -1847,13 +1864,15 @@ function print_interior_circular_progress_bar (recipient, percentile, width, hei
 		numberSize = 60;
 		textSize = 30;
 		unitSize = 30;
-		yPosText = '-60';
+		yPosNumber = '15';
+		yPosText = '-45';
 		yPosUnit = '60';
 	}
 	else if (width >= 200) {
 		numberSize = 40;
 		textSize = 20;
 		unitSize = 20;
+		yPosNumber = '10';
 		yPosText = '-30';
 		yPosUnit = '40';
 	}
@@ -1861,15 +1880,17 @@ function print_interior_circular_progress_bar (recipient, percentile, width, hei
 		numberSize = 20;
 		textSize = 10;
 		unitSize = 10;
-		yPosText = '-10';
-		yPosUnit = '25';
+		yPosNumber = '5';
+		yPosText = '-15';
+		yPosUnit = '20';
 	}
 	else {
-		numberSize = 2;
-		textSize = 1;
-		unitSize = 1;
-		yPosText = '-1';
-		yPosUnit = '2';
+		numberSize = 8;
+		textSize = 4;
+		unitSize = 4;
+		yPosNumber = '2';
+		yPosText = '-5';
+		yPosUnit = '5';
 	}
 
 	var arc = d3.svg.arc()
@@ -1930,7 +1951,7 @@ function print_interior_circular_progress_bar (recipient, percentile, width, hei
 		.style("font-weight", "bold")
 		.style("font-size", numberSize)
 		.attr('text-anchor', 'middle')
-		.attr('dy', '10');
+		.attr('dy', yPosNumber);
 
 	var percentText = circle.append("text")
 		.attr('fill', '#000000')

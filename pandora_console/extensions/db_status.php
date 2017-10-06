@@ -182,7 +182,7 @@ function extension_db_check_tables_differences($connection_test,
 	ui_print_result_message(
 		empty($diff_tables),
 		__('Successful the DB Pandora has all tables'),
-		__('Unsuccessful the DB Pandora has not all tables. The missing tables are (%s)',
+		__('Pandora DB could not retrieve all tables. The missing tables are (%s)',
 			implode(", ", $diff_tables)));
 	
 	if (!empty($diff_tables)) {
@@ -264,7 +264,7 @@ function extension_db_check_tables_differences($connection_test,
 						switch ($config_field) {
 							case 'type':
 								ui_print_error_message(
-									__('Unsuccessful the field %s in the table %s must be setted the type with %s.',
+									__('Unsuccessful the field %s in the table %s must be set the type with %s.',
 									$name_field, $table, $value));
 								ui_print_info_message(
 									__('You can execute this SQL query for to fix.') . "<br />" .
@@ -298,7 +298,7 @@ function extension_db_check_tables_differences($connection_test,
 								break;
 							case 'key':
 								ui_print_error_message(
-									__('Unsuccessful the field %s in the table %s must be setted the key as defined in the SQL file.',
+									__('Unsuccessful the field %s in the table %s must be set the key as defined in the SQL file.',
 									$name_field, $table));
 								ui_print_info_message(
 									__('Please check the SQL file for to know the kind of key needed.'));
@@ -311,7 +311,7 @@ function extension_db_check_tables_differences($connection_test,
 									$null_defect = " NOT NULL";
 								}
 								ui_print_error_message(
-									__('Unsuccessful the field %s in the table %s must be setted %s as default value.',
+									__('Unsuccessful the field %s in the table %s must be set %s as default value.',
 									$name_field, $table, $value));
 								ui_print_info_message(
 										__('You can execute this SQL query for to fix.') . "<br />" .
@@ -322,7 +322,7 @@ function extension_db_check_tables_differences($connection_test,
 								break;
 							case 'extra':
 								ui_print_error_message(
-									__('Unsuccessful the field %s in the table %s must be setted as defined in the SQL file.',
+									__('Unsuccessful the field %s in the table %s must be set as defined in the SQL file.',
 									$name_field, $table));
 								ui_print_info_message(
 									__('Please check the SQL file for to know the kind of extra config needed.'));

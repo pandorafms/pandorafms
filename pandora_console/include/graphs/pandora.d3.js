@@ -1499,7 +1499,6 @@ function progress_bar_d3 (recipient, percentile, width, height, color, unit, lab
 	var endPercent = parseInt(percentile) / 100;
 	var count = Math.abs((endPercent - startPercent) / 0.01);
 	var step = endPercent < startPercent ? -0.01 : 0.01;
-	var formatPercent = d3.format('.2f');
 
 	var circle = d3.select(recipient)
 		.append("svg")
@@ -1544,7 +1543,8 @@ function progress_bar_d3 (recipient, percentile, width, height, color, unit, lab
 		.attr('dy', '-10');
 
 	function updateProgress(bar_progress) {
-		numberText.text(formatPercent(bar_progress * 100) + " " + unit);
+		var percent_value = Number(bar_progress * 100);
+		numberText.text(percent_value.toFixed());
 		progress_front.attr('width', (width * bar_progress));
 	}
 
@@ -1566,13 +1566,11 @@ function progress_bubble_d3 (recipient, percentile, width, height, color, unit, 
 	var endPercent = parseInt(percentile) / 100;
 	var count = Math.abs((endPercent - startPercent) / 0.01);
 	var step = endPercent < startPercent ? -0.01 : 0.01;
-	var formatPercent = d3.format('.2f');
 
 	var numberSize = 0;
 	var textSize = 0;
 	var unitSize = 0;
 	var yPosText = 0;
-	var yPosUnit = 0;
 	var yPosNumber = 0;
 	if (width >= 500) {
 		numberSize = 100;
@@ -1580,7 +1578,6 @@ function progress_bubble_d3 (recipient, percentile, width, height, color, unit, 
 		unitSize = 50;
 		yPosNumber = '15';
 		yPosText = '-100';
-		yPosUnit = '100';
 	}
 	else if (width >= 400) {
 		numberSize = 80;
@@ -1588,7 +1585,6 @@ function progress_bubble_d3 (recipient, percentile, width, height, color, unit, 
 		unitSize = 40;
 		yPosNumber = '15';
 		yPosText = '-80';
-		yPosUnit = '80';
 	}
 	else if (width >= 300) {
 		numberSize = 60;
@@ -1596,15 +1592,13 @@ function progress_bubble_d3 (recipient, percentile, width, height, color, unit, 
 		unitSize = 30;
 		yPosNumber = '15';
 		yPosText = '-45';
-		yPosUnit = '60';
 	}
 	else if (width >= 200) {
 		numberSize = 40;
 		textSize = 20;
 		unitSize = 20;
-		yPosNumber = '10';
+		yPosNumber = '50';
 		yPosText = '-30';
-		yPosUnit = '45';
 	}
 	else if (width >= 100) {
 		numberSize = 20;
@@ -1612,7 +1606,6 @@ function progress_bubble_d3 (recipient, percentile, width, height, color, unit, 
 		unitSize = 10;
 		yPosNumber = '5';
 		yPosText = '-20';
-		yPosUnit = '25';
 	}
 	else {
 		numberSize = 10;
@@ -1620,7 +1613,6 @@ function progress_bubble_d3 (recipient, percentile, width, height, color, unit, 
 		unitSize = 8;
 		yPosNumber = '5';
 		yPosText = '-10';
-		yPosUnit = '15';
 	}
 
 	var circle = d3.select(recipient)
@@ -1631,7 +1623,7 @@ function progress_bubble_d3 (recipient, percentile, width, height, color, unit, 
 	var progress_back = circle.append('circle')
 		.attr("transform", "translate(" + (width/2) + ", " + (height/2) + ")")
 		.attr('fill', '#000000')
-		.attr('fill-opacity', 0.5)
+		.attr('fill-opacity', 0)
 		.attr('r', width/2);
 
 	var progress_front = circle.append('circle')
@@ -1647,30 +1639,21 @@ function progress_bubble_d3 (recipient, percentile, width, height, color, unit, 
 		.style("font-weight", "bold")
 		.style("font-size", textSize)
 		.html(label)
-		.attr('dy', yPosText)
+		.attr('dy', -(width/3))
 		.attr('text-anchor', 'middle');
 
 	var numberText = circle.append("text")
 		.attr("transform", "translate(" + (width/2) + ", " + (height/2) + ")")
-		.attr('fill', '#FFFFFF')
+		.attr('fill', label_color)
 		.style("font-family", "arial")
 		.style("font-weight", "bold")
 		.style("font-size", numberSize)
 		.attr('text-anchor', 'middle')
-		.attr('dy', yPosNumber);
-
-	var unitText = circle.append("text")
-		.attr("transform", "translate(" + (width/2) + ", " + (height/2) + ")")
-		.attr('fill', '#FFFFFF')
-		.style("font-family", "arial")
-		.style("font-weight", "bold")
-		.text(unit)
-		.style("font-size", unitSize)
-		.attr('text-anchor', 'middle')
-		.attr('dy', yPosUnit);
+		.attr('dy', width/2);
 
 	function updateProgress(bar_progress) {
-		numberText.text(formatPercent(bar_progress * 100));
+		var percent_value = Number(bar_progress * 100);
+		numberText.text(percent_value.toFixed() + " %");
 		progress_front.attr('r', ((width/2) * bar_progress));
 	}
 
@@ -1695,7 +1678,6 @@ function print_circular_progress_bar (recipient, percentile, width, height, colo
 	var endPercent = parseInt(percentile) / 100;
 	var count = Math.abs((endPercent - startPercent) / 0.01);
 	var step = endPercent < startPercent ? -0.01 : 0.01;
-	var formatPercent = d3.format('.2f');
 
 	var numberSize = 0;
 	var textSize = 0;
@@ -1811,7 +1793,8 @@ function print_circular_progress_bar (recipient, percentile, width, height, colo
 	function updateProgress(progress) {
 		foreground.attr('d', arc.endAngle(twoPi * progress));
 		front.attr('d', arc.endAngle(twoPi * progress));
-		numberText.text(formatPercent(progress * 100));
+		var percent_value = Number(progress * 100);
+		numberText.text(percent_value.toFixed());
 	}
 
 	var progress = startPercent;
@@ -1836,7 +1819,6 @@ function print_interior_circular_progress_bar (recipient, percentile, width, hei
 	var endPercent = parseInt(percentile) / 100;
 	var count = Math.abs((endPercent - startPercent) / 0.01);
 	var step = endPercent < startPercent ? -0.01 : 0.01;
-	var formatPercent = d3.format('.2f');
 
 	var numberSize = 0;
 	var textSize = 0;
@@ -1965,7 +1947,8 @@ function print_interior_circular_progress_bar (recipient, percentile, width, hei
 	function updateProgress(progress) {
 		foreground.attr('d', arc.endAngle(twoPi * progress));
 		front.attr('d', arc.endAngle(twoPi * progress));
-		numberText.text(formatPercent(progress * 100));
+		var percent_value = Number(progress * 100);
+		numberText.text(percent_value.toFixed());
 	}
 
 	var progress = startPercent;

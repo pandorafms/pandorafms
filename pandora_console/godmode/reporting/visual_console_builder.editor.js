@@ -1930,7 +1930,7 @@ function setPercentileBar(id_data, values) {
 
 			$("#"+  id_data).attr('src', img);
 			
-			$("#" + id_data + " img").attr('src', 'images/console/signes/percentil.png');
+			$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/percentil.png');
 			if($('#text-width_percentile').val() == 0){
 			$("#" + id_data + " img").css('width', '130px');
 			}
@@ -2001,7 +2001,7 @@ function setPercentileCircular (id_data, values) {
 				value_text = module_value + " " + unit_text;
 			}
 			
-			$("#" + id_data + " img").attr('src', 'images/console/signes/circular-progress-bar.png');
+			$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/circular-progress-bar.png');
 			if($('#text-width_percentile').val() == 0){
 				$("#" + id_data + " img").css('width', '130px');
 				$("#" + id_data + " img").css('height', '130px');
@@ -2069,7 +2069,7 @@ function setPercentileInteriorCircular (id_data, values) {
 				value_text = module_value + " " + unit_text;
 			}
 			
-			$("#" + id_data + " img").attr('src', 'images/console/signes/circular-progress-bar-interior.png');
+			$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/circular-progress-bar-interior.png');
 			if($('#text-width_percentile').val() == 0){
 				$("#" + id_data + " img").css('width', '130px');
 				$("#" + id_data + " img").css('height', '130px');
@@ -2189,7 +2189,7 @@ function setPercentileBubble(id_data, values) {
 
 			$("#image_" + id_data).attr('src', img);
 			
-			$("#" + id_data + " img").attr('src', 'images/console/signes/percentil_bubble.png');
+			$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/percentil_bubble.png');
 			
 			
 			if($('#text-width_percentile').val() == 0){

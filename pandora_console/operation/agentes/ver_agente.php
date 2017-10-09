@@ -1320,7 +1320,7 @@ switch ($tab) {
 		enterprise_include ("operation/agentes/ux_console_view.php");
 		break;
 	case "wux_console_tab":
-		enterprise_include ("operation/agentes/wux_console_vpiew.php");
+		enterprise_include ("operation/agentes/wux_console_view.php");
 		break;
 	case "url_route_analyzer_tab":
 		enterprise_include ("operation/agentes/url_route_analyzer.php");

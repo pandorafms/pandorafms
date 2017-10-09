@@ -836,22 +836,6 @@ function html_print_extended_select_for_time ($name, $selected = '',
 		SECONDS_1MONTH => __('months'),
 		SECONDS_1YEAR => __('years'));
 	
-	// The advanced control is only for admins
-	if (!is_user_admin($config['id_user'])) {
-		unset($fields[-1]);
-		
-		$returnString = html_print_select ($fields, $name . '_select', $selected,"" . $script,
-			$nothing, $nothing_value, true, false, false, '', false, 'font-size: xx-small;'.$select_style);
-		
-		if ($return) {
-			return $returnString;
-		}
-		else {
-			echo $returnString;
-			return;
-		}
-	}
-	
 	if ($unique_name === true) {
 		$uniq_name = uniqid($name);
 	}
@@ -868,13 +852,16 @@ function html_print_extended_select_for_time ($name, $selected = '',
 	echo '<div id="'.$uniq_name.'_default" style="width:100%;display:inline;">';
 		html_print_select ($fields, $uniq_name . '_select', $selected,"" . $script,
 			$nothing, $nothing_value, false, false, false, $class, $readonly, 'font-size: xx-small;'.$select_style);
-		echo ' <a href="javascript:">' .
-			html_print_image('images/pencil.png', true,
-				array('class' => $uniq_name . '_toggler',
+		// The advanced control is only for admins
+		if (is_user_admin($config['id_user'])) {	
+			echo ' <a href="javascript:">' .
+				html_print_image('images/pencil.png', true,
+					array('class' => $uniq_name . '_toggler',
 					'alt' => __('Custom'),
 					'title' => __('Custom'),
 					'style' => 'width: 18px;'.$style_icon), false, false, true) .
-			'</a>';
+				'</a>';
+		}
 	echo '</div>';
 	
 	echo '<div id="'.$uniq_name.'_manual" style="width:100%;display:inline;">';

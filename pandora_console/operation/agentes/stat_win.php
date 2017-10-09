@@ -151,9 +151,6 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 		}
 
 		$period = get_parameter ("period");
-		if ($period == "") {
-			$period = get_parameter ("period_select", SECONDS_1DAY);
-		}
 		$id = get_parameter ("id", 0);
 		$width = get_parameter ("width", STATWIN_DEFAULT_CHART_WIDTH);
 		$height = get_parameter ("height", STATWIN_DEFAULT_CHART_HEIGHT);

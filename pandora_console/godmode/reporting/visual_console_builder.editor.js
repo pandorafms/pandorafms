@@ -608,9 +608,6 @@ function readFields() {
 	values['process_simple_value'] = $("select[name=process_value]").val();
 	values['background'] = $("#background_image").val();
 	values['period'] = undefined != $("#hidden-period").val() ? $("#hidden-period").val() : $("#period").val();
-	if (values['period'] == null) {
-		values['period'] = undefined != $("#hidden-period").val() ? $("#hidden-period").val() : $("#period_select").val();
-	}
 	values['width'] = $("input[name=width]").val();
 	values['width_data_image'] = $("#data_image_width").val();
 	if(selectedItem == 'simple_value' || creationItem == 'simple_value'){

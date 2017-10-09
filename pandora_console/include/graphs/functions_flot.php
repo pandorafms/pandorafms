@@ -666,7 +666,7 @@ function flot_custom_pie_chart ($flash_charts, $graph_values,
 	
 	$return .= "pandoraFlotPieCustom('$graph_id', '$values', '$labels',
 			'$width', $font_size, '$fontpath', $water_mark,
-			'$separator', '$legend_position', '$height', '$colors','$legend')";
+			'$separator', '$legend_position', '$height', '$colors','$legend','$background_color')";
 	
 	$return .= "</script>";
 	

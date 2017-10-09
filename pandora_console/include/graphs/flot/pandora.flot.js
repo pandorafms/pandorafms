@@ -119,7 +119,8 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 
 function pandoraFlotPieCustom(graph_id, values, labels, width,
 			font_size, font, water_mark, separator, legend_position, height,
-				colors,legend) {
+				colors,legend,background_color) {
+										
 	font = font.split("/").pop().split(".").shift();
 	var labels = labels.split(separator);
 	var legend = legend.split(separator);
@@ -211,8 +212,24 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 		$('.legend>table').css('right',($('.legend>div').height()*-1));
 	}
 	//$('.legend>table').css('border',"1px solid #E2E2E2");
-	$('.legend>table').css('background-color',"transparent");
 	
+	if(background_color == 'transparent'){
+		$('.legend>table').css('background-color',"");
+		$('.legend>div').css('background-color',"");
+		$('.legend>table').css('color',"#aaa");
+	}
+	else if (background_color == 'white') {
+		$('.legend>table').css('background-color',"white");
+		$('.legend>table').css('color',"black");
+	}
+	else if (background_color == 'black') {
+		$('.legend>table').css('background-color',"black");
+		$('.legend>table').css('color',"#aaa");
+	}
+	
+	$('.legend').over(function(){
+		return false;
+	});
 	
 	var pielegends = $('#'+graph_id+' .pieLabelBackground');
 	pielegends.each(function () {

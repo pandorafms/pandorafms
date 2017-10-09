@@ -1079,7 +1079,6 @@ You can of course remove the warnings, that's why we include the source and do n
 							}
 						}
 					}
-					// html_debug($agents);
 					html_print_select($agents2, 'id_agents2[]', $agents_select, $script = '', "", 0, false, true, true, '', false, "min-width: 180px");
 				?>
 			</td>

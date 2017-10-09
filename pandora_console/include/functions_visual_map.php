@@ -1429,12 +1429,22 @@ function visual_map_print_item($mode = "read", $layoutData,
 				$unit_text = "%";
 			}
 			
-			if (get_parameter('action') == 'edit') {
-				if ($width == 0) {
-					$img = '<img src="images/console/signes/percentil.png" style="width:130px;height:30px;'.$imgpos.'">';	
+			if (get_parameter('action') == 'edit' || (get_parameter('operation') == 'edit_visualmap')) {
+				if($width == 0){
+					if ($layoutData['id_metaconsole'] != 0) {
+						$img =  '<img src="' . '../../' . 'images/console/signes/percentil.png" style="width:130px;height:30px;'.$imgpos.'">';	
+					}
+					else{
+						$img =  '<img src="images/console/signes/percentil.png" style="width:130px;height:30px;'.$imgpos.'">';	
+					}
 				}
-				else {
-					$img = '<img src="images/console/signes/percentil.png" style="width:'.$width.'px;height:30px;'.$imgpos.'">';	
+				else{
+					if ($layoutData['id_metaconsole'] != 0) {
+						$img =  '<img src="' . '../../' . '/images/console/signes/percentil.png" style="width:'.$width.'px;height:30px;'.$imgpos.'">';	
+					}
+					else{
+						$img =  '<img src="images/console/signes/percentil.png"  style="width:'.$width.'px;height:30px;'.$imgpos.'">';	
+					}	
 				}
 			}
 			else{
@@ -1457,12 +1467,22 @@ function visual_map_print_item($mode = "read", $layoutData,
 				$unit_text = "%";
 			}
 
-			if(get_parameter('action') == 'edit'){
+			if(get_parameter('action') == 'edit' || (get_parameter('operation') == 'edit_visualmap')){
 				if($width == 0){
-					$img =  '<img src="images/console/signes/percentil_bubble.png" style="width:130px;height:130px;'.$imgpos.'">';	
+					if ($layoutData['id_metaconsole'] != 0) {
+						$img =  '<img src="' . '../../' . 'images/console/signes/percentil_bubble.png">';
+					}
+					else{
+						$img =  '<img src="images/console/signes/percentil_bubble.png">';	
+					}
 				}
 				else{
-					$img =  '<img src="images/console/signes/percentil_bubble.png" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';	
+					if ($layoutData['id_metaconsole'] != 0) {
+						$img =  '<img src="' . '../../' . '/images/console/signes/percentil_bubble.png" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';
+					}
+					else{
+						$img =  '<img src="images/console/signes/percentil_bubble.png"  style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';	
+					}	
 				}
 			}
 			else{
@@ -1478,12 +1498,22 @@ function visual_map_print_item($mode = "read", $layoutData,
 			
 			break;
 		case CIRCULAR_PROGRESS_BAR:
-			if(get_parameter('action') == 'edit'){
+			if(get_parameter('action') == 'edit' || (get_parameter('operation') == 'edit_visualmap')){
 				if($width == 0){
-					$img =  '<img src="images/console/signes/circular-progress-bar.png" style="width:130px;height:130px;'.$imgpos.'">';	
+					if ($layoutData['id_metaconsole'] != 0) {
+						$img =  '<img src="' . '../../' . 'images/console/signes/circular-progress-bar.png">';
+					}
+					else{
+						$img =  '<img src="images/console/signes/circular-progress-bar.png">';	
+					}
 				}
 				else{
-					$img =  '<img src="images/console/signes/circular-progress-bar.png" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';	
+					if ($layoutData['id_metaconsole'] != 0) {
+						$img =  '<img src="' . '../../' . '/images/console/signes/circular-progress-bar.png" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';
+					}
+					else{
+						$img =  '<img src="images/console/signes/circular-progress-bar.png"  style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';	
+					}	
 				}
 			}
 			else {
@@ -1511,12 +1541,22 @@ function visual_map_print_item($mode = "read", $layoutData,
 			
 			break;
 		case CIRCULAR_INTERIOR_PROGRESS_BAR:
-			if(get_parameter('action') == 'edit'){
+			if(get_parameter('action') == 'edit' || (get_parameter('operation') == 'edit_visualmap')){
 				if($width == 0){
-					$img =  '<img src="images/console/signes/circular-progress-bar-interior.png" style="width:130px;height:130px;'.$imgpos.'">';	
+					if ($layoutData['id_metaconsole'] != 0) {
+						$img =  '<img src="' . '../../' . 'images/console/signes/circular-progress-bar-interior.png">';
+					}
+					else{
+						$img =  '<img src="images/console/signes/circular-progress-bar-interior.png">';	
+					}
 				}
 				else{
-					$img =  '<img src="images/console/signes/circular-progress-bar-interior.png" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';	
+					if ($layoutData['id_metaconsole'] != 0) {
+						$img = '<img src="' . '../../' . '/images/console/signes/circular-progress-bar-interior.png" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';
+					}
+					else{
+						$img =  '<img src="images/console/signes/circular-progress-bar-interior.png"  style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';	
+					}
 				}
 			}
 			else {

@@ -48,6 +48,7 @@ function toggle_advance_options_palette(close) {
 }
 
 // Main function, execute in event documentReady
+
 function visual_map_main() {
 	img_handler_start = "images/dot_red.png";
 	img_handler_end = "images/dot_green.png";
@@ -304,7 +305,11 @@ function update_button_palette_callback() {
 				alert('Undefined height');
 				return false;
 			}
-			
+			if(((values['image'] == '') && (values['show_statistics']) == false)){
+				alert('Undefined image');
+				return false;
+			}
+
 			$("#text_" + idItem).html(values['label']);
 			
 			if(values['show_statistics'] == 1){
@@ -474,6 +479,10 @@ function update_button_palette_callback() {
 			}
 			if($('input[name=height]').val() == ''){
 			alert('Undefined height');
+			return false;
+			}
+			if(values['image'] == ''){
+			alert('Undefined image');
 			return false;
 			}
 			$("#image_" + idItem).attr('src', "images/spinner.gif");
@@ -688,10 +697,11 @@ function create_button_palette_callback() {
 				alert('Undefined height');
 				validate = false;
 			}
-			if ((values['label'] == '') && (values['image'] == '') && (values['show_statistics']) == false) {
-				alert($("#message_alert_no_label_no_image").html());
+			if((values['image'] == '') && (values['show_statistics']) == false){
+				alert('Undefined image');
 				validate = false;
 			}
+
 			break;
 		case 'auto_sla_graph':
 			if ((values['agent'] == '')) {
@@ -3791,7 +3801,17 @@ function showPreviewStaticGraph(staticGraph) {
 		.css('text-align', 'right')
 		.append($spinner);
 
-	if (staticGraph != '') {
+	if(staticGraph == ''){
+		
+		if (is_metaconsole()) {
+			$spinner.prop("src", "../../images/image_problem_area.png");
+		}
+		else{
+			$spinner.prop("src", "images/image_problem_area.png");
+		}
+		$('#preview > img').css({'max-width':'100px','max-height':'100px'});
+	}
+	else{
 		imgBase = "images/console/icons/" + staticGraph;
 
 		var parameter = Array();
@@ -3836,7 +3856,17 @@ function showPreviewIcon(icon) {
 		.css('text-align', 'left')
 		.append($spinner);
 
-	if (icon != '') {
+
+	if (icon == '') {
+		if (is_metaconsole()) {
+			$spinner.prop("src", "../../images/image_problem_area.png");
+		}
+		else{
+			$spinner.prop("src", "images/image_problem_area.png");
+		}
+		$('#preview > img').css({'max-width':'100px','max-height':'100px'});
+	}
+	else{
 		imgBase = "images/console/icons/" + icon;
 
 		var params = [];

@@ -562,10 +562,14 @@ sub process_xml_data ($$$$$) {
 
 		# No parent module defined
 		my $parent_module_name = get_tag_value ($module_data, 'module_parent', undef);
-		next if (! defined ($parent_module_name));
+		my $parent_module_unlink = get_tag_value ($module_data, 'module_parent_unlink', undef);
+
+		next if ( (! defined ($parent_module_name)) && (! defined($parent_module_unlink)));
 		
-		link_modules($pa_config, $dbh, $agent_id, $module_name, $parent_module_name);
+		link_modules($pa_config, $dbh, $agent_id, $module_name, $parent_module_name) if (defined($parent_module_name) && ($parent_module_name ne ''));
+		unlink_modules($pa_config, $dbh, $agent_id, $module_name) if (defined($parent_module_unlink) && ($parent_module_unlink eq '1'));
 	}
+
 
 	# Process inventory modules
 	enterprise_hook('process_inventory_data', [$pa_config, $data, $server_id, $agent_name,
@@ -918,6 +922,22 @@ sub link_modules {
 	# Link them.
     logger($pa_config, "Linking module $child_name to module $parent_name for agent ID $agent_id", 10);
 	db_do($dbh, "UPDATE tagente_modulo SET parent_module_id = ? WHERE id_agente_modulo = ?", $parent_id, $child_id);
+}
+
+
+###############################################################################
+# Unlink module from parent
+###############################################################################
+sub unlink_modules {
+	my ($pa_config, $dbh, $agent_id, $child_name) = @_;
+
+	# Get the child module ID.
+	my $child_id = get_agent_module_id ($dbh, $child_name, $agent_id);
+	return unless ($child_id != -1);
+
+	# Link them.
+    logger($pa_config, "Unlinking parent from module $child_name agent ID $agent_id", 10);
+	db_do($dbh, "UPDATE tagente_modulo SET parent_module_id = 0 WHERE id_agente_modulo = ?", $child_id);
 }
 
 1;

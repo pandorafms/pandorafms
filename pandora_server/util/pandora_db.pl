@@ -178,7 +178,7 @@ sub pandora_purgedb ($$) {
 
 	if ($conf->{'_string_purge'} > 0) {
 		$ulimit_access_timestamp = time() - 86400;
-		$ulimit_timestamp = time() - (86400 * $conf->{'_days_purge'});
+		$ulimit_timestamp = time() - (86400 * $conf->{'_string_purge'});
 		pandora_delete_old_module_data ($dbh, 'tagente_datos_string', $ulimit_access_timestamp, $ulimit_timestamp);
 	}
 	else {

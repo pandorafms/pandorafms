@@ -799,7 +799,6 @@ $(document).ready (function () {
 							var others = true;
 					}
 					if(any && others){
-							document.forms["form_modules"].agents[i].selected = false;
 							document.forms["form_modules"].agents[0].selected = false;
 					}	
 				}
@@ -815,7 +814,6 @@ $(document).ready (function () {
 							var others = true;
 					}
 					if(any && others){
-							document.forms["form_modules"].module[i].selected = false;
 							document.forms["form_modules"].module[0].selected = false;
 					}	
 				}

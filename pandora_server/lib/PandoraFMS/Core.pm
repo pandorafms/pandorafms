@@ -1478,7 +1478,10 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	# Calculate the current interval
 	my $current_interval;
 	if (defined ($module->{'cron_interval'}) && $module->{'cron_interval'} ne '' && $module->{'cron_interval'} ne '* * * * *') {
-		$current_interval = cron_next_execution ($module->{'cron_interval'});
+		$current_interval = cron_next_execution (
+			$module->{'cron_interval'},
+			$module->{'module_interval'} == 0 ? $agent->{'intervalo'} : $module->{'module_interval'}
+		);
 	}
 	elsif ($module->{'module_interval'} == 0) {
 		$current_interval = $agent->{'intervalo'};
@@ -3174,7 +3177,10 @@ sub pandora_update_module_on_error ($$$) {
 	# Set tagente_estado.current_interval to make sure it is not 0
 	my $current_interval;
 	if (defined($module->{'cron_interval'}) && $module->{'cron_interval'} ne '' && $module->{'cron_interval'} ne '* * * * *') {
-		$current_interval = cron_next_execution ($module->{'cron_interval'});
+		$current_interval = cron_next_execution (
+			$module->{'cron_interval'},
+			$module->{'module_interval'} == 0 ? 300 : $module->{'module_interval'}
+		);
 	}
 	elsif ($module->{'module_interval'} == 0) {
 		$current_interval = 300;

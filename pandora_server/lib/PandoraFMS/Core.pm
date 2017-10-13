@@ -4553,6 +4553,7 @@ sub pandora_group_statistics ($$) {
 
 	# Get all groups
 	my @groups = get_db_rows ($dbh, 'SELECT id_grupo FROM tgrupo');
+	my $table = is_metaconsole($pa_config) ? 'tmetaconsole_agent' : 'tagente';
 
 	# For each valid group get the stats: Simple uh?
 	foreach my $group_row (@groups) {
@@ -4561,50 +4562,46 @@ sub pandora_group_statistics ($$) {
 
 		# NOTICE - Calculations done here MUST BE the same than used in PHP code to have
 		# the same criteria. PLEASE, double check any changes here and in functions_groups.php
-		$agents_unknown = get_db_value ($dbh, "SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count>0 AND id_grupo=?", $group);
+		$agents_unknown = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count>0 AND id_grupo=?", $group);
 		$agents_unknown = 0 unless defined ($agents_unknown);
 
-		$agents = get_db_value ($dbh, "SELECT COUNT(*) FROM tagente WHERE id_grupo = $group AND disabled = 0");
+		$agents = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE id_grupo = $group AND disabled=0");
 		$agents = 0 unless defined ($agents);
 
-		$modules = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0");
+		$modules = get_db_value ($dbh, "SELECT SUM(total_count) FROM $table WHERE disabled=0 AND id_grupo=?", $group);
 		$modules = 0 unless defined ($modules);
 		
-		$normal = get_db_value ($dbh, "SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND normal_count=total_count AND id_grupo=?", $group);
+		$normal = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count=0 AND normal_count>0 AND id_grupo=?", $group);
 		$normal = 0 unless defined ($normal);
 		
-		$critical = get_db_value ($dbh, "SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND critical_count>0 AND id_grupo=?", $group);
+		$critical = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE disabled=0 AND critical_count>0 AND id_grupo=?", $group);
 		$critical = 0 unless defined ($critical);
 		
-		$warning = get_db_value ($dbh, "SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND critical_count=0 AND warning_count>0 AND id_grupo=?", $group);
+		$warning = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE disabled=0 AND critical_count=0 AND warning_count>0 AND id_grupo=?", $group);
 		$warning = 0 unless defined ($warning);
 	
-		$unknown = get_db_value ($dbh, "SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count>0 AND id_grupo=?", $group);	
+		$unknown = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count>0 AND id_grupo=?", $group);	
 		$unknown = 0 unless defined ($unknown);
 		
-		$non_init = get_db_value ($dbh, "SELECT COUNT(*) FROM tagente WHERE disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count=0 AND notinit_count>0 AND id_grupo=?", $group);
+		$non_init = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE disabled=0 AND total_count=notinit_count AND id_grupo=?", $group);
 		$non_init = 0 unless defined ($non_init);
 		
-		$alerts = get_db_value ($dbh, "SELECT COUNT(talert_template_modules.id)
-				FROM talert_template_modules, tagente_modulo, tagente
-				WHERE tagente.id_grupo = $group AND tagente_modulo.id_agente = tagente.id_agente
-					AND tagente_modulo.disabled = 0 AND tagente.disabled = 0  			
-					AND	talert_template_modules.disabled = 0 
-					AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo");
+		# Total alert count not available on the meta console.
+		if ($table eq 'tagente') {
+			$alerts = get_db_value ($dbh, "SELECT COUNT(talert_template_modules.id)
+					FROM talert_template_modules, tagente_modulo, tagente
+					WHERE tagente.id_grupo = $group AND tagente_modulo.id_agente = tagente.id_agente
+						AND tagente_modulo.disabled = 0 AND tagente.disabled = 0  			
+						AND	talert_template_modules.disabled = 0 
+						AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo");
+		}
 		$alerts = 0 unless defined ($alerts);
 		
-		$alerts_fired = get_db_value ($dbh, "SELECT COUNT(talert_template_modules.id)
-				FROM talert_template_modules, tagente_modulo, tagente
-				WHERE tagente.id_grupo = $group AND tagente_modulo.id_agente = tagente.id_agente
-					AND tagente_modulo.disabled = 0 AND tagente.disabled = 0 
-					AND talert_template_modules.disabled = 0 
-					AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo 
-					AND times_fired > 0");
+		$alerts_fired = get_db_value ($dbh, "SELECT SUM(fired_count) FROM $table WHERE disabled=0 AND id_grupo=?", $group);
 		$alerts_fired = 0 unless defined ($alerts_fired);
 		
 		# Update the record.
-		db_do ($dbh, "DELETE FROM tgroup_stat WHERE id_group = $group");
-		db_do ($dbh, "INSERT INTO tgroup_stat (id_group, modules, normal, critical, warning, unknown, " . $PandoraFMS::DB::RDBMS_QUOTE . 'non-init' . $PandoraFMS::DB::RDBMS_QUOTE . ", alerts, alerts_fired, agents, agents_unknown, utimestamp) VALUES ($group, $modules, $normal, $critical, $warning, $unknown, $non_init, $alerts, $alerts_fired, $agents, $agents_unknown, UNIX_TIMESTAMP())");
+		db_do ($dbh, "REPLACE INTO tgroup_stat (id_group, modules, normal, critical, warning, unknown, " . $PandoraFMS::DB::RDBMS_QUOTE . 'non-init' . $PandoraFMS::DB::RDBMS_QUOTE . ", alerts, alerts_fired, agents, agents_unknown, utimestamp) VALUES ($group, $modules, $normal, $critical, $warning, $unknown, $non_init, $alerts, $alerts_fired, $agents, $agents_unknown, UNIX_TIMESTAMP())");
 
 	}
 

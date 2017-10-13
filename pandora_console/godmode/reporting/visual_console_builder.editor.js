@@ -698,10 +698,6 @@ function create_button_palette_callback() {
 				alert($("#message_alert_no_agent").html());
 				validate = false;
 			}
-			if ((values['module'] == 0)) {
-				alert($("#message_alert_no_module").html());
-				validate = false;
-			}
 			break;
 		case 'label':
 			if ((values['label'] == '')) {

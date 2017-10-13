@@ -171,7 +171,6 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 		$time_compare_overlapped = get_parameter ("time_compare_overlapped", 0);
 		$unknown_graph = get_parameter_checkbox ("unknown_graph", 1);
 
-
 		//$type_module == 'predictionserver';
 		$fullscale_sent = get_parameter ("fullscale_sent", 0);
 		if(!$fullscale_sent){
@@ -183,10 +182,8 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 			}
 			elseif($config['full_scale_option'] == 2){
 				if($graph_type == 'boolean'){
-	html_debug_print('entra1');
 					$fullscale = 1;	
 				}else{
-	html_debug_print('entra2');
 					$fullscale = 0;
 				}
 			}
@@ -194,9 +191,6 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 		else{
 			$fullscale = get_parameter('fullscale', 0);
 		}
-html_debug_print($fullscale);
-		
-
 
 		// To avoid the horizontal overflow
 		$width -= 20;

@@ -3792,11 +3792,13 @@ function graph_graphic_moduleevents ($id_agent, $id_module, $width, $height, $pe
 		
 		$top = $datelimit + ($periodtime * ($i + 1));
 
-		$event = db_get_row_filter ('tevento',
-			array ('id_agente' => $id_agent,
-				'id_agentmodule' => $id_module,
-				'utimestamp > '.$bottom,
-				'utimestamp < '.$top), 'criticity, utimestamp');
+		$event_filter = array ('id_agente' => $id_agent,
+			'utimestamp > '.$bottom,
+			'utimestamp < '.$top);
+		if ((int)$id_module !== 0) {
+			$event_filter['id_agentmodule'] = $id_module;
+		}
+		$event = db_get_row_filter ('tevento', $event_filter, 'criticity, utimestamp');
 
 		if (!empty($event['utimestamp'])) {
 			$data[$cont]['utimestamp'] = $periodtime;

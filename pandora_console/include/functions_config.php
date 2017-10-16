@@ -330,7 +330,7 @@ function config_update_config () {
 					if (!config_update_value ('ad_adv_perms', get_parameter ('ad_adv_perms')))
 						$error_update[] = __('Advanced Permisions AD');
 					if (!config_update_value ('ldap_adv_perms', get_parameter ('ldap_adv_perms')))
-						$error_update[] = __('Advanced Permisions LDAP');
+						$error_update[] = __('Advanced Permissions LDAP');
 					if (!config_update_value ('ldap_server', get_parameter ('ldap_server')))
 						$error_update[] = __('LDAP server');
 					if (!config_update_value ('ldap_port', get_parameter ('ldap_port')))

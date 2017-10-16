@@ -76,7 +76,12 @@ sub new ($$$$$$) {
 	$Sem = Thread::Semaphore->new;
 	$TaskSem = Thread::Semaphore->new (0);
 	
-	db_do ($dbh, 'UPDATE trecon_task  SET utimestamp = 0 WHERE id_recon_server = ? AND status <> -1',
+	# Restart automatic recon tasks.
+	db_do ($dbh, 'UPDATE trecon_task  SET utimestamp = 0 WHERE id_recon_server = ? AND status <> -1 AND interval_sweep > 0',
+	       get_server_id ($dbh, $config->{'servername'}, RECONSERVER));
+
+	# Reset (but do not restart) manual recon tasks.
+	db_do ($dbh, 'UPDATE trecon_task  SET status = -1 WHERE id_recon_server = ? AND status <> -1 AND interval_sweep = 0',
 	       get_server_id ($dbh, $config->{'servername'}, RECONSERVER));
 
 	# Call the constructor of the parent class

@@ -1108,12 +1108,6 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		$field2 = subst_alert_macros ($field2, \%macros, $pa_config, $dbh, $agent, $module);
 		# Message
 		$field3 = subst_alert_macros ($field3, \%macros, $pa_config, $dbh, $agent, $module);
-		# Content
-		$field4 = subst_alert_macros ($field4, \%macros, $pa_config, $dbh, $agent, $module);
-
-		if($field4 eq ""){
-			$field4 = "text/html";
-		}
 		
 		# Check for _module_graph_Xh_ macros
 		# Check for _module_graph_Xh_ macros and _module_graphth_Xh_ 
@@ -1171,13 +1165,13 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		};
 		
 		# Default content type
-		my $content_type = $field4 . '; charset="iso-8859-1"';
+		my $content_type = 'text/html; charset="iso-8859-1"';
 		
 		# Check if message has non-ascii chars.
 		# non-ascii chars should be encoded in UTF-8.
 		if ($field3 =~ /[^[:ascii:]]/o) {
 			$field3 = encode("UTF-8", $field3);
-			$content_type = $field4 . '; charset="UTF-8"';
+			$content_type = 'text/html; charset="UTF-8"';
 		}
 		
 

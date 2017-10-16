@@ -434,6 +434,19 @@ function update_button_palette_callback() {
 
 			setEventsBar(idItem, values);
 			break;
+		case 'donut_graph':
+			if($('input[name=width]').val() == ''){
+				alert('Undefined width');
+				return false;
+			}
+			if($('input[name=height]').val() == ''){
+				alert('Undefined height');
+				return false;
+			}
+			$("#image_" + idItem).attr("src", "images/spinner.gif");
+
+			setDonutsGraph(idItem, values);
+			break;
 		case 'simple_value':
 		//checkpoint
 			// if(($('#text-label_ifr').contents().find('#tinymce p').html() == '_VALUE_' || 
@@ -694,6 +707,12 @@ function create_button_palette_callback() {
 			}
 			break;
 		case 'auto_sla_graph':
+			if ((values['agent'] == '')) {
+				alert($("#message_alert_no_agent").html());
+				validate = false;
+			}
+			break;
+		case 'donut_graph':
 			if ((values['agent'] == '')) {
 				alert($("#message_alert_no_agent").html());
 				validate = false;
@@ -975,6 +994,7 @@ function toggle_item_palette() {
 		activeToolboxButton('box_item', true);
 		activeToolboxButton('line_item', true);
 		activeToolboxButton('auto_sla_graph', true);
+		activeToolboxButton('donut_graph', true);
 
 		if (typeof(enterprise_activeToolboxButton) == 'function') {
 			enterprise_activeToolboxButton(true);
@@ -995,6 +1015,7 @@ function toggle_item_palette() {
 		activeToolboxButton('static_graph', false);
 		activeToolboxButton('module_graph', false);
 		activeToolboxButton('auto_sla_graph', false);
+		activeToolboxButton('donut_graph', false);
 		activeToolboxButton('simple_value', false);
 		activeToolboxButton('label', false);
 		activeToolboxButton('icon', false);
@@ -2348,6 +2369,17 @@ function createItem(type, values, id_data) {
 
 			setEventsBar(id_data, values);
 			break;
+		case 'donut_graph':
+			var sizeStyle = '';
+			var imageSize = '';
+			item = $('<div id="' + id_data + '" class="item donut_graph" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+							'<table><tr><td></td></tr><tr><td></td></tr><tr><td></td></tr></table>' +
+							'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" />' +
+					'</div>'
+					);
+
+			setDonutsGraph(id_data, values);
+			break;
 		case 'percentile_bar':
 		case 'percentile_item':
 			var sizeStyle = '';
@@ -2679,6 +2711,7 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 		case 'icon':
 		case 'module_graph':
 		case 'auto_sla_graph':
+		case 'donut_graph':
 			if (type == 'simple_value') {
 				setModuleValue(idElement,
 					values.process_simple_value,
@@ -3093,6 +3126,15 @@ function eventsItems(drag) {
 				activeToolboxButton('delete_item', true);
 				activeToolboxButton('show_grid', false);
 			}
+			if ($(divParent).hasClass('donut_graph')) {
+				creationItem = null;
+				selectedItem = 'donut_graph';
+				idItem = $(divParent).attr('id');
+				activeToolboxButton('copy_item', true);
+				activeToolboxButton('edit_item', true);
+				activeToolboxButton('delete_item', true);
+				activeToolboxButton('show_grid', false);
+			}
 			if ($(divParent).hasClass('group_item')) {
 				creationItem = null;
 				selectedItem = 'group_item';
@@ -3292,6 +3334,9 @@ function eventsItems(drag) {
 			}
 			if ($(event.target).hasClass('auto_sla_graph')) {
 				selectedItem = 'auto_sla_graph';
+			}
+			if ($(event.target).hasClass('donut_graph')) {
+				selectedItem = 'donut_graph';
 			}
 			if ($(event.target).hasClass('group_item')) {
 				selectedItem = 'group_item';
@@ -3617,6 +3662,10 @@ function click_button_toolbox(id) {
 			toolbuttonActive = creationItem = 'auto_sla_graph';
 			toggle_item_palette();
 			break;
+		case 'donut_graph':
+			toolbuttonActive = creationItem = 'donut_graph';
+			toggle_item_palette();
+			break;
 		case 'simple_value':
 			toolbuttonActive = creationItem = 'simple_value';
 			toggle_item_palette();
@@ -3674,6 +3723,7 @@ function click_button_toolbox(id) {
 				activeToolboxButton('service', false);
 				activeToolboxButton('group_item', false);
 				activeToolboxButton('auto_sla_graph', false);
+				activeToolboxButton('donut_graph', false);
 				activeToolboxButton('copy_item', false);
 				activeToolboxButton('edit_item', false);
 				activeToolboxButton('delete_item', false);
@@ -3704,6 +3754,7 @@ function click_button_toolbox(id) {
 				activeToolboxButton('icon', true);
 				activeToolboxButton('group_item', true);
 				activeToolboxButton('auto_sla_graph', true);
+				activeToolboxButton('donut_graph', true);
 			}
 			break;
 		case 'save_visualmap':

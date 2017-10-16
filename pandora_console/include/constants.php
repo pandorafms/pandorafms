@@ -197,6 +197,7 @@ define('SERVICE',			10); //Enterprise Item.
 define('GROUP_ITEM',		11);
 define('BOX_ITEM',			12);
 define('LINE_ITEM',			13);
+define('DONUT_GRAPH',		17);
 //Some styles
 define('MIN_WIDTH',			300);
 define('MIN_HEIGHT',		120);

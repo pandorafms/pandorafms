@@ -309,4 +309,32 @@ function ux_console_phases_donut ($phases, $id, $return = false) {
 	
 	return $output;
 }
+
+function d3_donut_graph ($id, $width, $height, $module_data) {
+	global $config;
+
+	$module_data = json_encode($module_data);
+
+	$recipient_name = "donut_graph_" . $id;
+	$recipient_name_to_js = "#donut_graph_" . $id;
+
+	$output = "<div id=" . $recipient_name .  " style='overflow: hidden;'></div>";
+	$output .= include_javascript_d3(true);
+	$output .= "<style type=\"text/css\">
+					path {
+						stroke: #fff;
+						fill-rule: evenodd;
+					}
+				</style>";
+
+	$output .= "<script language=\"javascript\" type=\"text/javascript\">
+					print_donut_graph('" . $recipient_name_to_js . "', " . $width . ", " . $height . ", " . $module_data . ");
+				</script>";
+
+	if (!$return)
+		echo $output;
+	
+	return $output;
+}
+
 ?>

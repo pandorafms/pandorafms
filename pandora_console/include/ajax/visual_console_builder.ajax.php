@@ -141,6 +141,36 @@ switch ($action) {
 		echo json_encode($return);
 		break;
 	
+	case 'get_module_type_string':
+		$data = array ();
+
+		if (!empty($id_metaconsole)) {
+			$connection = db_get_row_filter ('tmetaconsole_setup', $id_metaconsole);
+			if (metaconsole_load_external_db($connection) != NOERR) {
+				continue;
+			}
+		}
+
+		$is_string = db_get_value_filter ('id_tipo_modulo', 'tagente_modulo',
+			array ('id_agente' => $id_agent,
+				'id_agente_modulo' => $id_module));
+		
+		if (!empty($id_metaconsole)) {
+			metaconsole_restore_db();
+		}
+
+		$return = array();
+		if (($is_string == 17) || ($is_string == 23) || ($is_string == 3) ||
+			($is_string == 10) || ($is_string == 33)) {
+			$return['no_data'] = false;
+		}
+		else {
+			$return['no_data'] = true;
+		}
+
+		echo json_encode($return);
+		break;
+
 	case 'get_module_events':
 		$data = array ();
 		
@@ -465,6 +495,7 @@ switch ($action) {
 			case 'label':
 			case 'icon':
 			case 'auto_sla_graph':
+			case 'donut_graph':
 			default:
 				if ($type == 'label') {
 					$values['type'] = LABEL;
@@ -544,6 +575,15 @@ switch ($action) {
 						if ($event_max_time_row !== null) {
 							$values['period'] = $event_max_time_row;
 						}
+						if ($width !== null) {
+							$values['width'] = $width;
+						}
+						if ($height !== null) {
+							$values['height'] = $height;
+						}
+						break;
+					case 'donut_graph':
+						$values['type'] = DONUT_GRAPH;
 						if ($width !== null) {
 							$values['width'] = $width;
 						}
@@ -711,6 +751,7 @@ switch ($action) {
 			case 'label':
 			case 'icon':
 			case 'auto_sla_graph':
+			case 'donut_graph':
 				$elementFields = db_get_row_filter('tlayout_data',
 					array('id' => $id_element));
 				
@@ -926,6 +967,11 @@ switch ($action) {
 			case 'auto_sla_graph':
 				$values['type'] = AUTO_SLA_GRAPH;
 				$values['period'] = $event_max_time_row;
+				$values['width'] = $width;
+				$values['height'] = $height;
+				break;
+			case 'donut_graph':
+				$values['type'] = DONUT_GRAPH;
 				$values['width'] = $width;
 				$values['height'] = $height;
 				break;

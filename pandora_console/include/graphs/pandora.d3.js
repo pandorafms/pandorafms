@@ -1493,3 +1493,50 @@ function print_phases_donut (recipient, phases) {
 			.remove();
 	}
 }
+
+function print_donut_graph (recipient, width, height, module_data) {
+	var svg = d3.select(recipient)
+		.append("svg")
+			.attr("width", width)
+			.attr("height", height)
+		.append("g");
+
+	var radius = Math.min(width, height) / 2;
+
+	var pie = d3.layout.pie()
+		.sort(null)
+		.value(function(d) {
+			return parseFloat(d.label2);
+		});
+
+	svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+	/* ------- PIE SLICES -------*/
+	var slice = svg.select(".slices").selectAll("path.slice")
+		.data(module_data);
+
+	slice.enter()
+		.insert("path")
+		.style("fill", function(d) {
+			if (d.data.value == 0) {
+				return "#80BA27";
+			}
+			else {
+				return "#FC4444";
+			}
+		})
+		.attr("class", "slice");
+
+	slice.transition()
+			.duration(0)
+			.attrTween("d", function(d) {
+				this._current = this._current || d;
+				var interpolate = d3.interpolate(this._current, d);
+				this._current = interpolate(0);
+				return function(t) {
+					return arc(interpolate(t));
+				};
+			});
+
+	slice.exit().remove();
+}

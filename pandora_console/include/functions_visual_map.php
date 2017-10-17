@@ -379,6 +379,9 @@ function visual_map_print_item($mode = "read", $layoutData,
 			case AUTO_SLA_GRAPH:
 				$link = true;
 				break;
+			case DONUT_GRAPH:
+				$link = true;
+				break;
 			default:
 				if (!empty($element_enterprise)) {
 					$link = $element_enterprise['link'];
@@ -487,6 +490,18 @@ function visual_map_print_item($mode = "read", $layoutData,
 						"&date_to=" . $date_to . "&time_to=" . $time_to . "&status=-1";
 				}
 				break;
+
+			case DONUT_GRAPH:
+				if (empty($layout_data['id_metaconsole'])) {
+					$url = $config['homeurl'] . "index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=" . $layoutData['id_agent'] . 
+						"&tab=module&edit_module=1&id_agent_module=" . $layoutData['id_agente_modulo'];
+				}
+				else {
+					$url = "index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=" . $layoutData['id_agent'] . 
+						"&tab=module&edit_module=1&id_agent_module=" . $layoutData['id_agente_modulo'];
+				}
+				break;
+
 			case GROUP_ITEM:
 				$is_a_link_to_other_visualconsole = false;
 				if ($layoutData['id_layout_linked'] != 0) {
@@ -1123,6 +1138,44 @@ function visual_map_print_item($mode = "read", $layoutData,
 
 			$z_index = 2 + 1;
 			break;
+		
+		case DONUT_GRAPH:
+			$donut_data = get_donut_module_data($layoutData['id_agent'], $layoutData['id_agente_modulo']);
+
+			if ((get_parameter('action') == 'edit') || (get_parameter('operation') == 'edit_visualmap')) {
+				if($width == 0 || $height == 0){
+					if ($layoutData['id_metaconsole'] != 0) {
+						$img =  '<img src="../../images/console/signes/module-events.png">';
+					}
+					else{
+						$img =  '<img src="images/console/signes/module-events.png">';	
+					}
+				}
+				else{
+					if ($layoutData['id_metaconsole'] != 0) {
+						$img =  '<img src="../../images/console/signes/module-events.png" style="width:'.$width.'px;height:'. $height.'px;">';
+					}
+					else{
+						$img =  '<img src="images/console/signes/module-events.png" style="width:'.$width.'px;height:'. $height.'px;">';
+					}
+				}
+			}
+			else {
+				if ($width == 0 || $height == 0) {
+					$img = d3_donut_graph ($layoutData['id'], 200, 400, $donut_data);
+				}
+				else{
+					$img = d3_donut_graph ($layoutData['id'], $width, $height, $donut_data);
+				}
+			}
+		
+			//Restore db connection
+			if ($layoutData['id_metaconsole'] != 0) {
+				metaconsole_restore_db();
+			}
+
+			$z_index = 2 + 1;
+			break;
 	}
 	
 	$class = "item ";
@@ -1132,6 +1185,9 @@ function visual_map_print_item($mode = "read", $layoutData,
 			break;
 		case AUTO_SLA_GRAPH:
 			$class .= "auto_sla_graph";
+			break;
+		case DONUT_GRAPH:
+			$class .= "donut_graph";
 			break;
 		case GROUP_ITEM:
 			$class .= "group_item";
@@ -1575,6 +1631,9 @@ function visual_map_print_item($mode = "read", $layoutData,
 				echo io_safe_output($text);
 			}
 			break;
+		case DONUT_GRAPH:
+			echo $img;
+			break;
 		case SIMPLE_VALUE:
 		case SIMPLE_VALUE_MAX:
 		case SIMPLE_VALUE_MIN:
@@ -1724,6 +1783,10 @@ function visual_map_print_item($mode = "read", $layoutData,
 		});';
 		echo '</script>';
 	}
+}
+
+function get_donut_module_data ($id_agent, $id_module) {
+	
 }
 
 /**

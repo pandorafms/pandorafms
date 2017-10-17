@@ -448,13 +448,6 @@ function update_button_palette_callback() {
 			setDonutsGraph(idItem, values);
 			break;
 		case 'simple_value':
-		//checkpoint
-			// if(($('#text-label_ifr').contents().find('#tinymce p').html() == '_VALUE_' || 
-			// $('#text-label_ifr').contents().find('#tinymce').html() == '_VALUE_') 
-			// && $('#data_image_check').html() != 'On'){
-			// 		alert('_VALUE_ exactly value is only enable for data image. Please change label text or select a data image module.');
-			// 		return;
-			// }
 			$("#" + idItem).html(values['label']);
 			if( (values['label'].replace( /<.*?>/g, '' ) != '_VALUE_') 
 				&& (values['label'].replace( /<.*?>/g, '' ) != '(_VALUE_)') ){
@@ -469,12 +462,7 @@ function update_button_palette_callback() {
 				$("#" + idItem).html(
 					'<table><tbody><tr><td></td></tr><tr><td><span style="" id="text_21" class="text">'+values["label"]+'</span></td></tr><tr><td></td></tr></tbody></table>'
 				)
-				
 			}
-		
-			
-			//$("#simplevalue_" + idItem)
-				//.html($('<img></img>').attr('src', "images/spinner.gif"));
 			setModuleValue(idItem,values['process_simple_value'], values['period'],values['width']);
 			break;
 		case 'label':
@@ -2011,6 +1999,53 @@ function setEventsBar(id_data, values) {
 	});
 }
 
+function setDonutsGraph (id_data, values) {
+	var url_hack_metaconsole = '';
+	if (is_metaconsole()) {
+		url_hack_metaconsole = '../../';
+	}
+
+	parameter = Array();
+
+	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
+	parameter.push ({name: "action", value: "get_module_type_string"});
+	parameter.push ({name: "id_agent", value: values['id_agent']});
+	parameter.push ({name: "id_agent_module", value: values['module']});
+	if (is_metaconsole()) {
+		parameter.push ({name: "id_metaconsole", value: id_metaconsole});
+	}
+	parameter.push ({name: "id_visual_console", value: id_visual_console});
+	jQuery.ajax({
+		url: get_url_ajax(),
+		data: parameter,
+		type: "POST",
+		dataType: 'json',
+		success: function (data) {
+			if (data['no_data'] == true) {
+				if (values['width'] == "0" || values['height'] == "0") {
+					$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/module-events.png');
+				}
+				else {
+					$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/module-events.png');
+					$("#" + id_data + " img").css('width', values['width'] + 'px');
+					$("#" + id_data + " img").css('height', values['height'] + 'px');
+				}
+			}
+			else {
+				$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/module-events.png');
+				
+				if($('#text-width').val() == 0 || $('#text-height').val() == 0){
+					// Image size
+				}
+				else{
+					$("#" + id_data + " img").css('width', $('#text-width').val()+'px');
+					$("#" + id_data + " img").css('height', $('#text-height').val()+'px');
+				}
+			}
+		}
+	});
+}
+
 function setPercentileBubble(id_data, values) {
 	metaconsole = $("input[name='metaconsole']").val();
 
@@ -2373,7 +2408,6 @@ function createItem(type, values, id_data) {
 			var sizeStyle = '';
 			var imageSize = '';
 			item = $('<div id="' + id_data + '" class="item donut_graph" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
-							'<table><tr><td></td></tr><tr><td></td></tr><tr><td></td></tr></table>' +
 							'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" />' +
 					'</div>'
 					);

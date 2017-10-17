@@ -85,6 +85,7 @@ CREATE TABLE IF NOT EXISTS `tagente` (
 	`alias` varchar(600) BINARY NOT NULL default '',
 	`transactional_agent` tinyint(1) NOT NULL default '0',
 	`alias_as_name` tinyint(2) NOT NULL default '0',
+	`safe_mode_module` int(10) unsigned NOT NULL default '0',
 	PRIMARY KEY  (`id_agente`),
 	KEY `nombre` (`nombre`(255)),
 	KEY `direccion` (`direccion`),

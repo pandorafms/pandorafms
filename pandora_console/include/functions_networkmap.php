@@ -1811,6 +1811,7 @@ function networkmap_get_new_nodes_from_ip_mask($ip_mask,
 function modules_get_all_interfaces($id_agent) {
 	$return = array();
 	
+	$fields = $fields_param;
 	$modules = db_get_all_rows_filter('tagente_modulo',
 		array('id_agente' => $id_agent));
 	

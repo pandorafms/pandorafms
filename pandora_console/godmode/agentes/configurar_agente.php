@@ -228,7 +228,7 @@ if ($create_agent) {
 		if ($id_agente !== false) {
 			// Create custom fields for this agent
 			foreach ($field_values as $key => $value) {
-				db_process_sql_insert ('tagent_custom_data',
+				$update_custom = db_process_sql_insert ('tagent_custom_data',
 				 array('id_field' => $key, 'id_agent' => $id_agente,
 					'description' => $value));
 			}
@@ -730,13 +730,17 @@ if ($update_agent) { // if modified some agent paramenter
 		
 		if ($old_value === false) {
 			// Create custom field if not exist
-			db_process_sql_insert ('tagent_custom_data',
+			$update_custom = db_process_sql_insert ('tagent_custom_data',
 				array('id_field' => $key,'id_agent' => $id_agente, 'description' => $value));
 		}
 		else {
-			db_process_sql_update ('tagent_custom_data',
+			$update_custom = db_process_sql_update ('tagent_custom_data',
 				array('description' => $value),
 				array('id_field' => $key,'id_agent' => $id_agente));
+				
+				if($update_custom == 1){
+						$update_custom_result = 1;
+				}
 		}
 	}
 	
@@ -793,7 +797,9 @@ if ($update_agent) { // if modified some agent paramenter
 				WHERE id_group = ".$group_old);
 		
 		$result = db_process_sql_update ('tagente', $values, array ('id_agente' => $id_agente));
-		if ($result == false) {
+		
+		
+		if ($result == false && $update_custom_result == false) {
 			ui_print_error_message(
 				__('There was a problem updating the agent'));
 		}

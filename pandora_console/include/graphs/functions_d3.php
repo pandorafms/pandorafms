@@ -331,9 +331,6 @@ function d3_donut_graph ($id, $width, $height, $module_data) {
 					print_donut_graph('" . $recipient_name_to_js . "', " . $width . ", " . $height . ", " . $module_data . ");
 				</script>";
 
-	if (!$return)
-		echo $output;
-	
 	return $output;
 }
 

@@ -1495,6 +1495,8 @@ function print_phases_donut (recipient, phases) {
 }
 
 function print_donut_graph (recipient, width, height, module_data) {
+	console.log(module_data);
+
 	var svg = d3.select(recipient)
 		.append("svg")
 			.attr("width", width)
@@ -1511,7 +1513,6 @@ function print_donut_graph (recipient, width, height, module_data) {
 
 	svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
-	/* ------- PIE SLICES -------*/
 	var slice = svg.select(".slices").selectAll("path.slice")
 		.data(module_data);
 
@@ -1539,4 +1540,5 @@ function print_donut_graph (recipient, width, height, module_data) {
 			});
 
 	slice.exit().remove();
+
 }

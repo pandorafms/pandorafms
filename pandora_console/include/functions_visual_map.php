@@ -31,6 +31,7 @@ require_once ($config['homedir'].'/include/functions_agents.php');
 require_once ($config['homedir'].'/include/functions_modules.php');
 require_once ($config['homedir'].'/include/functions_users.php');
 require_once ($config['homedir'].'/include/functions.php');
+require_once ($config['homedir'].'/include/graphs/functions_d3.php');
 
 function visual_map_print_item_toolbox($idDiv, $text, $float) {
 	if ($float == 'left') {
@@ -1140,7 +1141,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 			break;
 		
 		case DONUT_GRAPH:
-			$donut_data = get_donut_module_data($layoutData['id_agent'], $layoutData['id_agente_modulo']);
+			$donut_data = get_donut_module_data($layoutData['id_agente_modulo']);
 
 			if ((get_parameter('action') == 'edit') || (get_parameter('operation') == 'edit_visualmap')) {
 				if($width == 0 || $height == 0){
@@ -1168,7 +1169,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 					$img = d3_donut_graph ($layoutData['id'], $width, $height, $donut_data);
 				}
 			}
-		
+
 			//Restore db connection
 			if ($layoutData['id_metaconsole'] != 0) {
 				metaconsole_restore_db();
@@ -1632,6 +1633,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 			}
 			break;
 		case DONUT_GRAPH:
+			html_debug($img, true);
 			echo $img;
 			break;
 		case SIMPLE_VALUE:
@@ -1785,8 +1787,23 @@ function visual_map_print_item($mode = "read", $layoutData,
 	}
 }
 
-function get_donut_module_data ($id_agent, $id_module) {
-	
+function get_donut_module_data ($id_module) {
+	$mod_values = db_get_value_filter('datos', 'tagente_estado', array('id_agente_modulo' => $id_module));
+
+	$values = explode(";", $mod_values);
+
+	$values_to_return = array();
+	$index = 0;
+	$total = 0;
+	foreach ($values as $val) {
+		$data = explode(":", $val);
+		$values_to_return[$index]['tag'] = $data[0];
+		$values_to_return[$index]['value'] = $data[1];
+		$index++;
+	}
+	$values_to_return['total'] = count($values_to_return);
+
+	return $values_to_return;
 }
 
 /**

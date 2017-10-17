@@ -166,6 +166,8 @@ if ($create_agent) {
 	$id_os = (int) get_parameter_post ("id_os");
 	$disabled = (int) get_parameter_post ("disabled");
 	$custom_id = (string) get_parameter_post ("custom_id",'');
+	$cascade_protection = (int) get_parameter_post ("cascade_protection", 0);
+	$cascade_protection_module = (int) get_parameter_post("cascade_protection_module", 0);
 	$safe_mode = (int) get_parameter_post ("safe_mode", 0);
 	$safe_mode_module = (int) get_parameter_post ("safe_mode_module", 0);
 	$icon_path = (string) get_parameter_post ("icon_path",'');

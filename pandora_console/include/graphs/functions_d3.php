@@ -326,7 +326,7 @@ function d3_donut_graph ($id, $width, $height, $module_data) {
 						fill-rule: evenodd;
 					}
 				</style>";
-
+	
 	$output .= "<script language=\"javascript\" type=\"text/javascript\">
 					print_donut_graph('" . $recipient_name_to_js . "', " . $width . ", " . $height . ", " . $module_data . ");
 				</script>";

@@ -1495,50 +1495,80 @@ function print_phases_donut (recipient, phases) {
 }
 
 function print_donut_graph (recipient, width, height, module_data) {
-	console.log(module_data);
-
 	var svg = d3.select(recipient)
 		.append("svg")
 			.attr("width", width)
 			.attr("height", height)
 		.append("g");
 
-	var radius = Math.min(width, height) / 2;
+	svg.append("g")
+		.attr("class", "slices");
+
+	var radius = 100;
+
+	var arc = d3.svg.arc()
+		.outerRadius(radius * 0.8)
+		.innerRadius(radius * 0.4);
+
+	var key = function(d){ return d.data.label; };
 
 	var pie = d3.layout.pie()
 		.sort(null)
 		.value(function(d) {
-			return parseFloat(d.label2);
+			return parseFloat(d.percent);
 		});
 
-	svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+	var increment_y = 0;
+	jQuery.each(module_data, function (key, m_d) {
+		svg.append("g")
+			.append("text")
+				.append("tspan")
+					.attr("dy", increment_y + ".8em")
+					.attr("dx", ".1em")
+					.text(m_d.tag_name + ", ")
+					.style("font-family", "Verdana")
+					.style("font-size", "15px")
+				.append("tspan")
+					.attr("dx", ".2em")
+					.text(m_d.value)
+					.style("font-family", "Verdana")
+					.style("font-size", "15px");
+		
+		increment_y += 1;
+	});
 
-	var slice = svg.select(".slices").selectAll("path.slice")
-		.data(module_data);
+	function donutData (){
+		return module_data.map(function(m_data){
+			return { label: m_data.tag_name, value: m_data.value , percent: m_data.percent, color : m_data.color}
+		});
+	}
 
-	slice.enter()
-		.insert("path")
-		.style("fill", function(d) {
-			if (d.data.value == 0) {
-				return "#80BA27";
-			}
-			else {
-				return "#FC4444";
-			}
-		})
-		.attr("class", "slice");
+	print_phases(donutData());
 
-	slice.transition()
-			.duration(0)
-			.attrTween("d", function(d) {
-				this._current = this._current || d;
-				var interpolate = d3.interpolate(this._current, d);
-				this._current = interpolate(0);
-				return function(t) {
-					return arc(interpolate(t));
-				};
-			});
+	function print_phases(data) {
+		var slice = svg.select(".slices").selectAll("path.slice")
+			.data(pie(data), key);
 
-	slice.exit().remove();
+		slice.enter()
+			.insert("path")
+			.style("fill", function(d) {
+				console.log(d);
+					return d.data.color;
+			})
+			.attr("class", "slice")
+			.attr("transform", "translate(" + width / 2 + "," + (height - radius) + ")");
 
+		slice.transition()
+				.duration(0)
+				.attrTween("d", function(d) {
+					this._current = this._current || d;
+					var interpolate = d3.interpolate(this._current, d);
+					this._current = interpolate(0);
+					return function(t) {
+						return arc(interpolate(t));
+					};
+				});
+ 
+		slice.exit().remove();
+	}
 }

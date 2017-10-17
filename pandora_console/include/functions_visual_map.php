@@ -1163,7 +1163,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 			}
 			else {
 				if ($width == 0 || $height == 0) {
-					$img = d3_donut_graph ($layoutData['id'], 200, 400, $donut_data);
+					$img = d3_donut_graph ($layoutData['id'], 200, 300, $donut_data);
 				}
 				else{
 					$img = d3_donut_graph ($layoutData['id'], $width, $height, $donut_data);
@@ -1633,7 +1633,6 @@ function visual_map_print_item($mode = "read", $layoutData,
 			}
 			break;
 		case DONUT_GRAPH:
-			html_debug($img, true);
 			echo $img;
 			break;
 		case SIMPLE_VALUE:
@@ -1792,16 +1791,41 @@ function get_donut_module_data ($id_module) {
 
 	$values = explode(";", $mod_values);
 
+	$colors = array();
+	$colors[] = "#aa3333";
+	$colors[] = "#045FB4";
+	$colors[] = "#8181F7";
+	$colors[] = "#F78181";
+	$colors[] = "#D0A9F5";
+	$colors[] = "#BDBDBD";
+	$colors[] = "#6AB277";
+
 	$values_to_return = array();
 	$index = 0;
 	$total = 0;
+	$max_elements = 6;
+	
 	foreach ($values as $val) {
-		$data = explode(":", $val);
-		$values_to_return[$index]['tag'] = $data[0];
-		$values_to_return[$index]['value'] = $data[1];
-		$index++;
+		if ($index < $max_elements) {
+			$data = explode(":", $val);
+			$values_to_return[$index]['tag_name'] = $data[0];
+			$values_to_return[$index]['color'] = $colors[$index];
+			$values_to_return[$index]['value'] = (int)$data[1];
+			$total += (int)$data[1];
+			$index++;
+		}
+		else {
+			$data = explode(":", $val);
+			$values_to_return[$index]['tag_name'] = __('Others');
+			$values_to_return[$index]['color'] = $colors[$index];
+			$values_to_return[$index]['value'] += (int)$data[1];
+			$total += (int)$data[1];
+		}
 	}
-	$values_to_return['total'] = count($values_to_return);
+
+	foreach ($values_to_return as $ind => $donut_data) {
+		$values_to_return[$ind]['percent'] = ($donut_data['value'] * 100) / $total;
+	}
 
 	return $values_to_return;
 }

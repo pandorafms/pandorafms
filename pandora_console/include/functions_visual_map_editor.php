@@ -397,7 +397,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			
 			
 			$form_items['percentile_bar_row_1'] = array();
-			$form_items['percentile_bar_row_1']['items'] = array('percentile_bar', 'percentile_item', 'datos');
+			$form_items['percentile_bar_row_1']['items'] = array('percentile_bar', 'percentile_item', 'datos', 'donut_graph');
 			$form_items['percentile_bar_row_1']['html'] = '<td align="left">' .
 				__('Width') . '</td>
 				<td align="left">' . html_print_input_text('width_percentile', 0, '', 3, 5, true) . '</td>';
@@ -525,7 +525,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items_advance['size_row']['items'] = array(
 				'group_item', 'background',
 				'static_graph', 'icon datos',
-				'auto_sla_graph', 'donut_graph');
+				'auto_sla_graph');
 			$form_items_advance['size_row']['html'] = '<td align="left">' .
 				__('Size') .
 				ui_print_help_tip (

@@ -435,14 +435,6 @@ function update_button_palette_callback() {
 			setEventsBar(idItem, values);
 			break;
 		case 'donut_graph':
-			if($('input[name=width]').val() == ''){
-				alert('Undefined width');
-				return false;
-			}
-			if($('input[name=height]').val() == ''){
-				alert('Undefined height');
-				return false;
-			}
 			$("#image_" + idItem).attr("src", "images/spinner.gif");
 
 			setDonutsGraph(idItem, values);
@@ -2005,6 +1997,8 @@ function setDonutsGraph (id_data, values) {
 		url_hack_metaconsole = '../../';
 	}
 
+	width_percentile = values['width_percentile'];
+
 	parameter = Array();
 
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
@@ -2021,25 +2015,26 @@ function setDonutsGraph (id_data, values) {
 		type: "POST",
 		dataType: 'json',
 		success: function (data) {
+			console.log(data);
 			if (data['no_data'] == true) {
-				if (values['width'] == "0" || values['height'] == "0") {
-					$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/module-events.png');
+				if (values['width'] == "0") {
+					$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/wrong_donut_graph.png');
 				}
 				else {
-					$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/module-events.png');
-					$("#" + id_data + " img").css('width', values['width'] + 'px');
-					$("#" + id_data + " img").css('height', values['height'] + 'px');
+					$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/wrong_donut_graph.png');
+					$("#" + id_data + " img").css('width', width_percentile + 'px');
+					$("#" + id_data + " img").css('height', width_percentile + 'px');
 				}
 			}
 			else {
-				$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/module-events.png');
+				$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/donut-graph.png');
 				
 				if($('#text-width').val() == 0 || $('#text-height').val() == 0){
 					// Image size
 				}
 				else{
-					$("#" + id_data + " img").css('width', $('#text-width').val()+'px');
-					$("#" + id_data + " img").css('height', $('#text-height').val()+'px');
+					$("#" + id_data + " img").css('width', $('#text-width_percentile').val()+'px');
+					$("#" + id_data + " img").css('height', $('#text-width_percentile').val()+'px');
 				}
 			}
 		}

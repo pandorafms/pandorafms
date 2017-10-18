@@ -1141,34 +1141,78 @@ function visual_map_print_item($mode = "read", $layoutData,
 			break;
 		
 		case DONUT_GRAPH:
-			$donut_data = get_donut_module_data($layoutData['id_agente_modulo']);
+			if (!empty($id_metaconsole)) {
+				$connection = db_get_row_filter ('tmetaconsole_setup', $id_metaconsole);
+				if (metaconsole_load_external_db($connection) != NOERR) {
+					continue;
+				}
+			}
 
-			if ((get_parameter('action') == 'edit') || (get_parameter('operation') == 'edit_visualmap')) {
-				if($width == 0 || $height == 0){
+			$is_string = db_get_value_filter ('id_tipo_modulo', 'tagente_modulo',
+				array ('id_agente' => $layoutData['id_agent'],
+					'id_agente_modulo' => $id_module));
+			
+			if (!empty($id_metaconsole)) {
+				metaconsole_restore_db();
+			}
+
+			if (($is_string == 17) || ($is_string == 23) || ($is_string == 3) ||
+				($is_string == 10) || ($is_string == 33)) {
+				$no_data = false;
+			}
+			else {
+				$no_data = true;
+			}
+
+			if ($no_data) {
+				if($width == 0){
 					if ($layoutData['id_metaconsole'] != 0) {
-						$img =  '<img src="../../images/console/signes/module-events.png">';
+						$img =  '<img src="../../images/console/signes/wrong_donut_graph.png">';
 					}
 					else{
-						$img =  '<img src="images/console/signes/module-events.png">';	
+						$img =  '<img src="images/console/signes/wrong_donut_graph.png">';	
 					}
 				}
 				else{
 					if ($layoutData['id_metaconsole'] != 0) {
-						$img =  '<img src="../../images/console/signes/module-events.png" style="width:'.$width.'px;height:'. $height.'px;">';
+						$img =  '<img src="../../images/console/signes/wrong_donut_graph.png" style="width:'.$width.'px;height:'. $height.'px;">';
 					}
 					else{
-						$img =  '<img src="images/console/signes/module-events.png" style="width:'.$width.'px;height:'. $height.'px;">';
+						$img =  '<img src="images/console/signes/wrong_donut_graph.png" style="width:'.$width.'px;height:'. $height.'px;">';
 					}
 				}
 			}
 			else {
-				if ($width == 0 || $height == 0) {
-					$img = d3_donut_graph ($layoutData['id'], 200, 300, $donut_data);
+				$donut_data = get_donut_module_data($layoutData['id_agente_modulo']);
+
+				if ((get_parameter('action') == 'edit') || (get_parameter('operation') == 'edit_visualmap')) {
+					if($width == 0){
+						if ($layoutData['id_metaconsole'] != 0) {
+							$img =  '<img src="../../images/console/signes/donut-graph.png">';
+						}
+						else{
+							$img =  '<img src="images/console/signes/donut-graph.png">';	
+						}
+					}
+					else{
+						if ($layoutData['id_metaconsole'] != 0) {
+							$img =  '<img src="../../images/console/signes/donut-graph.png" style="width:'.$width.'px;height:'. $height.'px;">';
+						}
+						else{
+							$img =  '<img src="images/console/signes/donut-graph.png" style="width:'.$width.'px;height:'. $height.'px;">';
+						}
+					}
 				}
-				else{
-					$img = d3_donut_graph ($layoutData['id'], $width, $height, $donut_data);
+				else {
+					if ($width == 0) {
+						$img = d3_donut_graph ($layoutData['id'], 400, 400, $donut_data);
+					}
+					else{
+						$img = d3_donut_graph ($layoutData['id'], $width, $width, $donut_data);
+					}
 				}
 			}
+			
 
 			//Restore db connection
 			if ($layoutData['id_metaconsole'] != 0) {
@@ -1808,7 +1852,7 @@ function get_donut_module_data ($id_module) {
 	foreach ($values as $val) {
 		if ($index < $max_elements) {
 			$data = explode(":", $val);
-			$values_to_return[$index]['tag_name'] = $data[0];
+			$values_to_return[$index]['tag_name'] = $data[0] . ", " . $data[1];
 			$values_to_return[$index]['color'] = $colors[$index];
 			$values_to_return[$index]['value'] = (int)$data[1];
 			$total += (int)$data[1];
@@ -1816,7 +1860,7 @@ function get_donut_module_data ($id_module) {
 		}
 		else {
 			$data = explode(":", $val);
-			$values_to_return[$index]['tag_name'] = __('Others');
+			$values_to_return[$index]['tag_name'] = __('Others') . ", " . $data[1];
 			$values_to_return[$index]['color'] = $colors[$index];
 			$values_to_return[$index]['value'] += (int)$data[1];
 			$total += (int)$data[1];

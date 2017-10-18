@@ -153,12 +153,12 @@ switch ($action) {
 
 		$is_string = db_get_value_filter ('id_tipo_modulo', 'tagente_modulo',
 			array ('id_agente' => $id_agent,
-				'id_agente_modulo' => $id_module));
+				'id_agente_modulo' => $id_agent_module));
 		
 		if (!empty($id_metaconsole)) {
 			metaconsole_restore_db();
 		}
-
+		
 		$return = array();
 		if (($is_string == 17) || ($is_string == 23) || ($is_string == 3) ||
 			($is_string == 10) || ($is_string == 33)) {
@@ -583,13 +583,11 @@ switch ($action) {
 						}
 						break;
 					case 'donut_graph':
+						if ($width_percentile !== null) {
+							$values['width'] = $width_percentile;
+							$values['height'] = $width_percentile;
+						}
 						$values['type'] = DONUT_GRAPH;
-						if ($width !== null) {
-							$values['width'] = $width;
-						}
-						if ($height !== null) {
-							$values['height'] = $height;
-						}
 						break;
 					case 'box_item':
 						$values['border_width'] = $border_width;
@@ -823,7 +821,9 @@ switch ($action) {
 							$elementFields['type_percentile'] = 'bubble';
 						}
 						break;
-					
+					case 'donut_graph':
+						$elementFields['width_percentile'] = $elementFields['width'];
+						break;
 					case 'module_graph':
 						$elementFields['width_module_graph'] = $elementFields['width'];
 						$elementFields['height_module_graph'] = $elementFields['height'];

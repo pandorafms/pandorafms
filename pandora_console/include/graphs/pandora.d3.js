@@ -1504,7 +1504,53 @@ function print_donut_graph (recipient, width, height, module_data) {
 	svg.append("g")
 		.attr("class", "slices");
 
-	var radius = 100;
+	var radius = 120;
+	var increment_y = 60;
+	var increment_y_padding = 25;
+	var text_size = 15;
+	var decrement_x_padding = 150;
+	if (width >= 500) {
+		radius = 160;
+		increment_y = 60;
+		text_size = 25;
+		increment_y_padding = 25;
+		decrement_x_padding = 75;
+	}
+	else if (width >= 400) {
+		radius = 120;
+		increment_y = 60;
+		text_size = 22;
+		increment_y_padding = 25;
+		decrement_x_padding = 75;
+	}
+	else if (width >= 300) {
+		radius = 80;
+		increment_y = 40;
+		text_size = 14;
+		increment_y_padding = 20;
+		decrement_x_padding = 60;
+	}
+	else if (width >= 200) {
+		radius = 50;
+		increment_y = 40;
+		text_size = 14;
+		increment_y_padding = 15;
+		decrement_x_padding = 45;
+	}
+	else if (width >= 100) {
+		radius = 20;
+		increment_y = 20;
+		text_size = 10;
+		increment_y_padding = 8;
+		decrement_x_padding = 25;
+	}
+	else {
+		radius = 10;
+		increment_y = 10;
+		text_size = 4;
+		increment_y_padding = 3;
+		decrement_x_padding = 5;
+	}
 
 	var arc = d3.svg.arc()
 		.outerRadius(radius * 0.8)
@@ -1518,28 +1564,20 @@ function print_donut_graph (recipient, width, height, module_data) {
 			return parseFloat(d.percent);
 		});
 
-	var increment_y = 0;
 	jQuery.each(module_data, function (key, m_d) {
 		svg.append("g")
 			.append("text")
-				.append("tspan")
-					.attr("dy", increment_y + ".8em")
-					.attr("dx", ".1em")
-					.text(m_d.tag_name + ", ")
-					.style("font-family", "Verdana")
-					.style("font-size", "15px")
-				.append("tspan")
-					.attr("dx", ".2em")
-					.text(m_d.value)
-					.style("font-family", "Verdana")
-					.style("font-size", "15px");
+				.attr("transform", "translate(" + (((width / 2) - (radius + decrement_x_padding))) + "," + (((height / 2) - radius) - increment_y) + ")")
+				.text(m_d.tag_name)
+				.style("font-family", "Verdana")
+				.style("font-size", text_size + "px");
 		
-		increment_y += 1;
+		increment_y -= increment_y_padding;
 	});
 
 	function donutData (){
 		return module_data.map(function(m_data){
-			return { label: m_data.tag_name, value: m_data.value , percent: m_data.percent, color : m_data.color}
+			return { label: m_data.tag_name, percent: m_data.percent, color : m_data.color}
 		});
 	}
 

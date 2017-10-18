@@ -127,7 +127,7 @@ function reporting_make_reporting_data($report = null, $id_report,
 	}
 
 	$metaconsole_on = is_metaconsole();
-	
+	$index_content = 0;
 	foreach ($contents as $content) {
 		$server_name = $content['server_name'];
 		
@@ -508,29 +508,41 @@ function reporting_make_reporting_data($report = null, $id_report,
 				break;
 			case 'agent_detailed_event':
 			case 'event_report_agent':
-				$report['contents'][] = reporting_event_report_agent(
+				$report_control = reporting_event_report_agent(
 					$report,
 					$content,
 					$type,
 					$force_width_chart,
 					$force_height_chart);
+					if($report_control['total_events'] == 0 && $content['hide_no_data'] == 1){
+						continue;
+					}
+					$report['contents'][] = $report_control;
 				break;
 			case 'event_report_module':
-				$report['contents'][] = reporting_event_report_module(
+				$report_control = reporting_event_report_module(
 					$report,
 					$content,
 					$type,
 					$force_width_chart,
 					$force_height_chart,
 					$pdf);
+					if($report_control['total_events'] == 0 && $content['hide_no_data'] == 1){
+						continue;
+					}
+					$report['contents'][] = $report_control;
 				break;
 			case 'event_report_group':
-				$report['contents'][] = reporting_event_report_group(
+				$report_control = reporting_event_report_group(
 					$report,
 					$content,
 					$type,
 					$force_width_chart,
 					$force_height_chart);
+					if($report_control['total_events'] == 0 && $content['hide_no_data'] == 1){
+						continue;
+					}
+					$report['contents'][] = $report_control;
 				break;
 			case 'top_n':
 				$report['contents'][] = reporting_event_top_n(
@@ -578,6 +590,7 @@ function reporting_make_reporting_data($report = null, $id_report,
 					$pdf);
 				break;
 		}
+		$index_content++;
 	}
 	
 	return reporting_check_structure_report($report);

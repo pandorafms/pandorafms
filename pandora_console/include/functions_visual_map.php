@@ -1141,8 +1141,8 @@ function visual_map_print_item($mode = "read", $layoutData,
 			break;
 		
 		case DONUT_GRAPH:
-			if (!empty($id_metaconsole)) {
-				$connection = db_get_row_filter ('tmetaconsole_setup', $id_metaconsole);
+			if ($layoutData['id_metaconsole'] != 0) {
+				$connection = db_get_row_filter ('tmetaconsole_setup', $layoutData['id_metaconsole']);
 				if (metaconsole_load_external_db($connection) != NOERR) {
 					continue;
 				}
@@ -1151,10 +1151,6 @@ function visual_map_print_item($mode = "read", $layoutData,
 			$is_string = db_get_value_filter ('id_tipo_modulo', 'tagente_modulo',
 				array ('id_agente' => $layoutData['id_agent'],
 					'id_agente_modulo' => $id_module));
-			
-			if (!empty($id_metaconsole)) {
-				metaconsole_restore_db();
-			}
 
 			if (($is_string == 17) || ($is_string == 23) || ($is_string == 3) ||
 				($is_string == 10) || ($is_string == 33)) {
@@ -1831,6 +1827,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 }
 
 function get_donut_module_data ($id_module) {
+
 	$mod_values = db_get_value_filter('datos', 'tagente_estado', array('id_agente_modulo' => $id_module));
 
 	$values = explode(";", $mod_values);

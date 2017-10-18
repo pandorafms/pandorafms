@@ -1590,7 +1590,6 @@ function print_donut_graph (recipient, width, height, module_data) {
 		slice.enter()
 			.insert("path")
 			.style("fill", function(d) {
-				console.log(d);
 					return d.data.color;
 			})
 			.attr("class", "slice")

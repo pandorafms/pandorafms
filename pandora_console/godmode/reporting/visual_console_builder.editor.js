@@ -2005,9 +2005,7 @@ function setDonutsGraph (id_data, values) {
 	parameter.push ({name: "action", value: "get_module_type_string"});
 	parameter.push ({name: "id_agent", value: values['id_agent']});
 	parameter.push ({name: "id_agent_module", value: values['module']});
-	if (is_metaconsole()) {
-		parameter.push ({name: "id_metaconsole", value: id_metaconsole});
-	}
+	parameter.push ({name: "id_element", value: id_data});
 	parameter.push ({name: "id_visual_console", value: id_visual_console});
 	jQuery.ajax({
 		url: get_url_ajax(),
@@ -2015,7 +2013,6 @@ function setDonutsGraph (id_data, values) {
 		type: "POST",
 		dataType: 'json',
 		success: function (data) {
-			console.log(data);
 			if (data['no_data'] == true) {
 				if (values['width'] == "0") {
 					$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/wrong_donut_graph.png');

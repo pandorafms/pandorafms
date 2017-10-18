@@ -144,8 +144,10 @@ switch ($action) {
 	case 'get_module_type_string':
 		$data = array ();
 
-		if (!empty($id_metaconsole)) {
-			$connection = db_get_row_filter ('tmetaconsole_setup', $id_metaconsole);
+		$layoutData = db_get_row_filter('tlayout_data', array('id' => $id_element));
+
+		if ($layoutData['id_metaconsole'] != 0) {
+			$connection = db_get_row_filter ('tmetaconsole_setup', $layoutData['id_metaconsole']);
 			if (metaconsole_load_external_db($connection) != NOERR) {
 				continue;
 			}
@@ -155,7 +157,7 @@ switch ($action) {
 			array ('id_agente' => $id_agent,
 				'id_agente_modulo' => $id_agent_module));
 		
-		if (!empty($id_metaconsole)) {
+		if ($layoutData['id_metaconsole'] != 0) {
 			metaconsole_restore_db();
 		}
 		

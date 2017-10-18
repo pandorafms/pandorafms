@@ -304,7 +304,7 @@ function update_button_palette_callback() {
 				alert('Undefined height');
 				return false;
 			}
-			
+
 			$("#text_" + idItem).html(values['label']);
 			
 			if(values['show_statistics'] == 1){
@@ -2899,9 +2899,6 @@ function updateDB(type, idElement , values, event) {
 }
 
 function copyDB(idItem) {
-	
-	console.log(idItem);
-	
 	metaconsole = $("input[name='metaconsole']").val();
 
 	parameter = Array();
@@ -3357,8 +3354,6 @@ function eventsItems(drag) {
 		}
 		}
 		else{
-			console.log('Dragstart');
-			
 			multiDragStart(event);
 			
 		}
@@ -3375,8 +3370,6 @@ function eventsItems(drag) {
 		updateDB(selectedItem, idItem, values, 'dragstop');
 		}
 		else{
-			
-				console.log('Dragstop');
 			multidragStop(event);
 		}
 	});
@@ -3463,10 +3456,6 @@ function eventsItems(drag) {
 				draw_user_lines("", 0, 0, 0 , 0, 0, true);
 				break;
 		}
-	}
-	else{
-		console.log('Drag');
-		
 	}
 	});
 }

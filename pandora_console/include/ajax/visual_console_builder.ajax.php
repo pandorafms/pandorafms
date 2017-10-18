@@ -515,11 +515,11 @@ switch ($action) {
 						$values['id_agent'] = $id_agent;
 					}
 				}
-				else if (!empty($id_agent)) {
-					$values['id_agent'] = $id_agent;
-				}
 				else if ($agent !== null) {
 					$id_agent = agents_get_agent_id($agent);
+					$values['id_agent'] = $id_agent;
+				}
+				else {
 					$values['id_agent'] = $id_agent;
 				}
 				if ($id_module !== null) {

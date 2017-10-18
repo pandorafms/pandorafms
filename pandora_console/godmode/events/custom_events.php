@@ -30,15 +30,15 @@ $default = (int) get_parameter('default', 0);
 
 
 if ($default != 0) {
-	$event_fields = io_safe_input('evento,id_agente,estado,timestamp');
-	$fields_selected = explode (',', $event_fields);
+	//$event_fields = io_safe_input('evento,id_agente,estado,timestamp');
+	$fields_selected = explode (',', $config['event_fields']);
 }
 else if ($update != '') {
 	$fields_selected = (array)get_parameter('fields_selected');
 	
 	if ($fields_selected[0] == '') {
-		$event_fields = io_safe_input('evento,id_agente,estado,timestamp');
-		$fields_selected = explode (',', $event_fields);
+		//$event_fields = io_safe_input('evento,id_agente,estado,timestamp');
+		$fields_selected = explode (',', $config['event_fields']);
 	}
 	else {
 		$event_fields = implode (',', $fields_selected);
@@ -130,7 +130,7 @@ $event = array();
 
 echo '<h3>'.__('Show event fields');
 echo '&nbsp;<a href="index.php?sec=geventos&sec2=godmode/events/events&section=fields&default=1">';
-html_print_image ('images/clean.png', false, array ('title' => __('Load default event fields'), 'onclick' => "if (! confirm ('" . __('Default event fields will be loaded. Do you want to continue?') ."')) return false"));
+html_print_image ('images/clean.png', false, array ('title' => __('Load the fields from previous events'), 'onclick' => "if (! confirm ('" . __('Event fields will be loaded. Do you want to continue?') ."')) return false"));
 echo '</a></h3>';
 
 $table = new stdClass();

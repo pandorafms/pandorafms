@@ -1834,7 +1834,12 @@ function get_donut_module_data ($id_module) {
 	$mod_values = db_get_value_filter('datos', 'tagente_estado', array('id_agente_modulo' => $id_module));
 
 	$values = explode(";", $mod_values);
-
+	if (preg_match("/\r\n/", $mod_values)) {
+		$values = explode("\r\n", $mod_values);
+	}
+	elseif (preg_match("/\n/", $mod_values)) {
+		$values = explode("\n", $mod_values);
+	}
 	$colors = array();
 	$colors[] = "#aa3333";
 	$colors[] = "#045FB4";

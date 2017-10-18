@@ -805,25 +805,20 @@ sub db_delete_limit ($$$$;@) {
 sub db_insert ($$$;@) {
 	my ($dbh, $index, $query, @values) = @_;
 	my $insert_id = undef;
-	
-	
-	# MySQL
-	if ($RDBMS eq 'mysql') {
+
+	eval {	
 		$dbh->do($query, undef, @values);
 		$insert_id = $dbh->{'mysql_insertid'};
-	}
-	# PostgreSQL
-	elsif ($RDBMS eq 'postgresql') {
-		$insert_id = get_db_value ($dbh, $query . ' RETURNING ' . $RDBMS_QUOTE . $index . $RDBMS_QUOTE, @values); 
-	}
-	# Oracle
-	elsif ($RDBMS eq 'oracle') {
-		my $sth = $dbh->prepare($query . ' RETURNING ' . $RDBMS_QUOTE . (uc ($index)) . $RDBMS_QUOTE . ' INTO ?');
-		for (my $i = 0; $i <= $#values; $i++) {
-			$sth->bind_param ($i+1, $values[$i]);
+	};
+	if ($@) {
+		my $exception = @_;
+		if ($DBI::err == 1213) {
+			$dbh->do($query, undef, @values);
+			$insert_id = $dbh->{'mysql_insertid'};
 		}
-		$sth->bind_param_inout($#values + 2, \$insert_id, 99);
-		$sth->execute ();
+		else {
+			die($exception);
+		}
 	}
 	
 	return $insert_id;
@@ -834,8 +829,20 @@ sub db_insert ($$$;@) {
 ##########################################################################
 sub db_update ($$;@) {
 	my ($dbh, $query, @values) = @_;
-	
-	my $rows = $dbh->do($query, undef, @values);
+	my $rows;
+
+	eval {
+		$rows = $dbh->do($query, undef, @values);
+	};
+	if ($@) {
+		my $exception = @_;
+		if ($DBI::err == 1213) {
+			$rows = $dbh->do($query, undef, @values);
+		}
+		else {
+			die($exception);
+		}
+	}
 	
 	return $rows;
 }
@@ -1016,7 +1023,18 @@ sub db_do ($$;@) {
 	my ($dbh, $query, @values) = @_;
 	
 	#DBI->trace( 3, '/tmp/dbitrace.log' );
-	$dbh->do($query, undef, @values);
+	eval {
+		$dbh->do($query, undef, @values);
+	};
+	if ($@) {
+		my $exception = @_;
+		if ($DBI::err == 1213) {
+			$dbh->do($query, undef, @values);
+		}
+		else {
+			die($exception);
+		}
+	}
 }
 
 ########################################################################

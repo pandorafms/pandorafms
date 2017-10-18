@@ -70,13 +70,13 @@ else {
 	
 	$table->align = array ();
 	$table->align[0] = "left";
-	$table->align[1] = "center";
-	$table->align[2] = "center";
-	$table->align[3] = "center";
-	$table->align[4] = "center";
-	$table->align[5] = "center";
-	$table->align[6] = "center";
-	$table->align[7] = "right";
+	$table->align[1] = "left";
+	$table->align[2] = "left";
+	$table->align[3] = "left";
+	$table->align[4] = "left";
+	$table->align[5] = "left";
+	$table->align[6] = "left";
+	$table->align[7] = "left";
 	$table->align[8] = "center";
 	
 	$table->data = array ();
@@ -93,6 +93,22 @@ else {
 		else {
 			$cellName = '<a style href=index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].' title='.$agent["nombre"].'><b>'.
 			'<span style>'.$agent["alias"].'</span></b></a>';
+		}
+		
+		if ($agent['quiet']) {
+			$cellName .= "&nbsp;";
+			$cellName .= html_print_image("images/dot_green.disabled.png", true, array("border" => '0', "title" => __('Quiet'), "alt" => ""));
+		}
+		
+		$in_planned_downtime = db_get_sql('SELECT executed FROM tplanned_downtime 
+			INNER JOIN tplanned_downtime_agents 
+			ON tplanned_downtime.id = tplanned_downtime_agents.id_downtime
+			WHERE tplanned_downtime_agents.id_agent = '. $agent["id_agente"] . 
+			' AND tplanned_downtime.executed = 1');
+		
+		if ($in_planned_downtime) {
+			$cellName .= "<em>".ui_print_help_tip (__('Agent in planned downtime'), true, 'images/minireloj-16.png');
+			$cellName .= "</em>";
 		}
 		
 		$last_time = strtotime ($agent["ultimo_contacto"]);

@@ -1,0 +1,4 @@
+
+START TRANSACTION;
+ALTER TABLE `tdashboard` ADD COLUMN `cells_slideshow` TINYINT(1) NOT NULL default 0;
+COMMIT;

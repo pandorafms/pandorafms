@@ -1440,3 +1440,7 @@ INSERT INTO tmodule VALUES (8, 'Wux module');
 
 INSERT INTO ttipo_modulo VALUES (25,'web_analysis', 8, 'Web analysis data', 'module-wux.png');
 
+-- ---------------------------------------------------------------------
+-- Table `tdashboard`
+-- ---------------------------------------------------------------------
+ALTER TABLE `tdashboard` ADD COLUMN `cells_slideshow` TINYINT(1) NOT NULL default 0;

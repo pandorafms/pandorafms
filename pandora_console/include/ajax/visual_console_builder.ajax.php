@@ -639,7 +639,8 @@ switch ($action) {
 					// Don't change the label because only change the positions
 					unset($values['label']);
 					unset($values['label_position']);
-					// Don't change background color in graphs when move
+					// Don't change this values when move
+					unset($values['enable_link']);
 					
 					switch ($type) {
 						case 'group_item':

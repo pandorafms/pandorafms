@@ -104,6 +104,7 @@ $width_percentile = get_parameter('width_percentile', null);
 $max_percentile = get_parameter('max_percentile', null);
 $height_module_graph = get_parameter('height_module_graph', null);
 $width_module_graph = get_parameter('width_module_graph', null);
+$bars_graph_type = get_parameter('bars_graph_type', null);
 $id_agent_module = get_parameter('id_agent_module', 0);
 $process_simple_value = get_parameter('process_simple_value', PROCESS_VALUE_NONE);
 $type_percentile = get_parameter('type_percentile', 'percentile');
@@ -498,6 +499,7 @@ switch ($action) {
 			case 'label':
 			case 'icon':
 			case 'auto_sla_graph':
+			case 'bars_graph':
 			default:
 				if ($type == 'label') {
 					$values['type'] = LABEL;
@@ -621,6 +623,20 @@ switch ($action) {
 							$values['id_custom_graph'] = $id_custom_graph;
 						}
 						break;
+					case 'bars_graph':
+						if ($height_module_graph !== null) {
+							$values['height'] = $height_module_graph;
+						}
+						if ($width_module_graph !== null) {
+							$values['width'] = $width_module_graph;
+						}
+						if ($bars_graph_type !== null) {
+							$values['type_graph'] = $id_custom_graph;
+						}
+						if ($background_color !== null) {
+							$values['image'] = $background_color;
+						}
+						break;
 					case 'percentile_item':
 					case 'percentile_bar':
 						if ($action == 'update') {
@@ -683,6 +699,10 @@ switch ($action) {
 							unset($values['image']);
 							unset($values['type_graph']);
 							break;
+						case 'bars_graph':
+							unset($values['image']);
+							unset($values['type_graph']);
+							break;
 						case 'box_item':
 							unset($values['border_width']);
 							unset($values['border_color']);
@@ -740,6 +760,7 @@ switch ($action) {
 			case 'static_graph':
 			case 'group_item':
 			case 'module_graph':
+			case 'bars_graph':
 			case 'simple_value':
 			case 'label':
 			case 'icon':
@@ -819,6 +840,11 @@ switch ($action) {
 					case 'module_graph':
 						$elementFields['width_module_graph'] = $elementFields['width'];
 						$elementFields['height_module_graph'] = $elementFields['height'];
+						break;
+					case 'bars_graph':
+						$elementFields['width_module_graph'] = $elementFields['width'];
+						$elementFields['height_module_graph'] = $elementFields['height'];
+						$elementFields['bars_graph_type'] = $elementFields['type_graph'];
 						break;
 					case 'box_item':
 						$elementFields['width_box'] = $elementFields['width'];
@@ -955,6 +981,13 @@ switch ($action) {
 					$values['width'] = $width_module_graph;
 				}
 				$values['period'] = $period;
+				break;
+			case 'bars_graph':
+				$values['type'] = BARS_GRAPH;
+				$values['height'] = $height_module_graph;
+				$values['width'] = $width_module_graph;
+				$values['type_graph'] = $bars_graph_type;
+				$values['image'] = $background_color;
 				break;
 			case 'auto_sla_graph':
 				$values['type'] = AUTO_SLA_GRAPH;

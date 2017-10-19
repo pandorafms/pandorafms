@@ -376,6 +376,9 @@ function visual_map_print_item($mode = "read", $layoutData,
 				}
 				
 				break;
+			case BARS_GRAPH:
+				$link = true;
+				break;
 			case AUTO_SLA_GRAPH:
 				$link = true;
 				break;
@@ -485,6 +488,17 @@ function visual_map_print_item($mode = "read", $layoutData,
 					$url = "index.php?sec=eventos&sec2=operation/events/events&id_agent=" . $layoutData['id_agent'] . 
 						"&module_search_hidden=" . $layoutData['id_agente_modulo'] . "&date_from=" . $date_from . "&time_from=" . $time_from . 
 						"&date_to=" . $date_to . "&time_to=" . $time_to . "&status=-1";
+				}
+				break;
+
+			case BARS_GRAPH:
+				if (empty($layout_data['id_metaconsole'])) {
+					$url = $config['homeurl'] . "index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=" . $layoutData['id_agent'] . 
+						"&tab=module&edit_module=1&id_agent_module=" . $layoutData['id_agente_modulo'];
+				}
+				else {
+					$url = "index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=" . $layoutData['id_agent'] . 
+						"&tab=module&edit_module=1&id_agent_module=" . $layoutData['id_agente_modulo'];
 				}
 				break;
 			case GROUP_ITEM:
@@ -1143,6 +1157,9 @@ function visual_map_print_item($mode = "read", $layoutData,
 		case MODULE_GRAPH:
 			$class .= "module_graph";
 			break;
+		case MODULE_GRAPH:
+			$class .= "bars_graph";
+			break;
 		case SIMPLE_VALUE:
 		case SIMPLE_VALUE_MAX:
 		case SIMPLE_VALUE_MIN:
@@ -1548,6 +1565,20 @@ function visual_map_print_item($mode = "read", $layoutData,
 			break;
 		
 		case MODULE_GRAPH:
+			if ($layoutData['label_position']=='up') {
+				echo io_safe_output($text);
+			}
+			
+			echo $img;
+			
+			if ($layoutData['label_position']=='down') {
+				echo io_safe_output($text);
+			}	
+			elseif($layoutData['label_position']=='left' || $layoutData['label_position']=='right') {
+				echo io_safe_output($text);
+			}
+			break;
+		case BARS_GRAPH:
 			if ($layoutData['label_position']=='up') {
 				echo io_safe_output($text);
 			}
@@ -2947,6 +2978,10 @@ function visual_map_create_internal_name_item($label = null, $type, $image, $age
 			case MODULE_GRAPH:
 				$text = __('Module graph');
 				break;
+			case 'bars_graph':
+			case BARS_GRAPH:
+				$text = __('Bars graph');
+				break;
 			case 'auto_sla_graph':
 			case AUTO_SLA_GRAPH:
 				$text = __('Auto SLA Graph');
@@ -3061,6 +3096,9 @@ function visual_map_type_in_js($type) {
 			break;
 		case MODULE_GRAPH:
 			return 'module_graph';
+			break;
+		case BARS_GRAPH:
+			return 'bars_graph';
 			break;
 		case AUTO_SLA_GRAPH:
 			return 'auto_sla_graph';

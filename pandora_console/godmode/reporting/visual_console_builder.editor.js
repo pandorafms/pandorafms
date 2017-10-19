@@ -1826,16 +1826,16 @@ function setBarsGraph(id_data, values) {
 		success: function (data) {
 			if (data['no_data'] == true) {
 				if (values['width'] == "0" || values['height'] == "0") {
-					$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/module-events.png');
+					$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/barras-no.png');
 				}
 				else {
-					$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/module-events.png');
+					$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/barras-no.png');
 					$("#" + id_data + " img").css('width', values['width'] + 'px');
 					$("#" + id_data + " img").css('height', values['height'] + 'px');
 				}
 			}
 			else {
-				$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/module-events.png');
+				$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/barras.png');
 				
 				if($('#text-width').val() == 0 || $('#text-height').val() == 0){
 					// Image size

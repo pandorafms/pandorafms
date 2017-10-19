@@ -769,6 +769,12 @@ input.graph_min {
 input.graph_min[disabled] {
 	background: #fefefe url(../../images/chart_curve.disabled.png) no-repeat center !important;
 }
+input.bars_graph_min {
+	background: #fefefe url(../../images/chart_curve.png) no-repeat center !important;
+}
+input.bars_graph_min[disabled] {
+	background: #fefefe url(../../images/chart_curve.disabled.png) no-repeat center !important;
+}
 input.percentile_min {
 	background: #fefefe url(../../images/chart_bar.png) no-repeat center !important;
 }

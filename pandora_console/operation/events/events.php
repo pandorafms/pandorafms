@@ -165,7 +165,7 @@ if (is_ajax ()) {
 			$module_name = modules_get_agentmodule_name($event['id_agentmodule']);
 			$agent_name = agents_get_alias($event['id_agente']);
 
-			$return['message'] = $agent_name . " - " . __('Alert fired in module ') . io_safe_output($module_name) . 
+			$return['message'] = io_safe_output($agent_name) . " - " . __('Alert fired in module ') . io_safe_output($module_name) . 
 				" - " . $event['timestamp'];
 		}
 		else if ($resultCritical) {
@@ -176,7 +176,7 @@ if (is_ajax ()) {
 			$module_name = modules_get_agentmodule_name($event['id_agentmodule']);
 			$agent_name = agents_get_alias($event['id_agente']);
 
-			$return['message'] = $agent_name . " - " . __('Module ') . io_safe_output($module_name) . __(' is going to critical') . 
+			$return['message'] = io_safe_output($agent_name) . " - " . __('Module ') . io_safe_output($module_name) . __(' is going to critical') . 
 				" - " . $event['timestamp'];
 		}
 		else if ($resultWarning) {
@@ -187,7 +187,7 @@ if (is_ajax ()) {
 			$module_name = modules_get_agentmodule_name($event['id_agentmodule']);
 			$agent_name = agents_get_alias($event['id_agente']);
 
-			$return['message'] = $agent_name . " - " . __('Module ') . io_safe_output($module_name) . __(' is going to warning') . 
+			$return['message'] = io_safe_output($agent_name) . " - " . __('Module ') . io_safe_output($module_name) . __(' is going to warning') . 
 				" - " . $event['timestamp'];
 		}
 		else if ($resultUnknown) {
@@ -198,7 +198,7 @@ if (is_ajax ()) {
 			$module_name = modules_get_agentmodule_name($event['id_agentmodule']);
 			$agent_name = agents_get_alias($event['id_agente']);
 
-			$return['message'] = $agent_name . " - " . __('Module ') . io_safe_output($module_name) . __(' is going to unknown') . 
+			$return['message'] = io_safe_output($agent_name) . " - " . __('Module ') . io_safe_output($module_name) . __(' is going to unknown') . 
 				" - " . $event['timestamp'];
 		}
 		else {

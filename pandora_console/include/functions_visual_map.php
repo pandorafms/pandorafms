@@ -1268,8 +1268,11 @@ function visual_map_print_item($mode = "read", $layoutData,
 					$imgpos = 'float:left';
 				}
 				
+				if ($layoutData['id_metaconsole'] != 0) {
+					$img = "../../" . $img;
+				}
+
 				$varsize = getimagesize($img);
-				
 				
 				if($layoutData['show_statistics'] == 1){
 					
@@ -1364,34 +1367,35 @@ function visual_map_print_item($mode = "read", $layoutData,
 				else{
 				
 					if ($width == 0 || $height == 0) {
+
 						if($varsize[0] > 150 || $varsize[1] > 150){
 							echo html_print_image($img, true,
-							array("class" => "image",
-							"id" => "image_" . $id,
-							"width" => "70px",
-							"height" => "70px",
-							"title" => $img_style_title,
-							"style" => $borderStyle.$imgpos), false,
-							false, false, $isExternalLink);
+								array("class" => "image",
+								"id" => "image_" . $id,
+								"width" => "70px",
+								"height" => "70px",
+								"title" => $img_style_title,
+								"style" => $borderStyle.$imgpos), false,
+								false, false, $isExternalLink);
 						}
 						else{
 							echo html_print_image($img, true,
-							array("class" => "image",
-							"id" => "image_" . $id,
-							"title" => $img_style_title,
-							"style" => $borderStyle.$imgpos), false,
-							false, false, $isExternalLink);
+								array("class" => "image",
+								"id" => "image_" . $id,
+								"title" => $img_style_title,
+								"style" => $borderStyle.$imgpos), false,
+								false, false, $isExternalLink);
 						}
 					}
 					else{
-					echo html_print_image($img, true,
-						array("class" => "image",
-							"id" => "image_" . $id,
-							"width" => $width,
-							"height" => $height,
-							"title" => $img_style_title,
-							"style" => $borderStyle.$imgpos), false,
-							false, false, $isExternalLink);
+						echo html_print_image($img, true,
+							array("class" => "image",
+								"id" => "image_" . $id,
+								"width" => $width,
+								"height" => $height,
+								"title" => $img_style_title,
+								"style" => $borderStyle.$imgpos), false,
+								false, false, $isExternalLink);
 					}
 			
 				}

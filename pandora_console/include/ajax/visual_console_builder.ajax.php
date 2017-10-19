@@ -140,6 +140,39 @@ switch ($action) {
 		$return['font'] = $config['fontpath'];
 		echo json_encode($return);
 		break;
+
+	case 'get_module_type_string':
+		$data = array ();
+
+		$layoutData = db_get_row_filter('tlayout_data', array('id' => $id_element));
+
+		if ($layoutData['id_metaconsole'] != 0) {
+			$connection = db_get_row_filter ('tmetaconsole_setup', $layoutData['id_metaconsole']);
+
+			if (metaconsole_load_external_db($connection) != NOERR) {
+				continue;
+			}
+		}
+
+		$is_string = db_get_value_filter ('id_tipo_modulo', 'tagente_modulo',
+			array ('id_agente' => $id_agent,
+				'id_agente_modulo' => $id_module));
+		
+		if ($layoutData['id_metaconsole'] != 0) {
+			metaconsole_restore_db();
+		}
+
+		$return = array();
+		if (($is_string == 17) || ($is_string == 23) || ($is_string == 3) ||
+			($is_string == 10) || ($is_string == 33)) {
+			$return['no_data'] = false;
+		}
+		else {
+			$return['no_data'] = true;
+		}
+
+		echo json_encode($return);
+		break;
 	
 	case 'get_module_events':
 		$data = array ();

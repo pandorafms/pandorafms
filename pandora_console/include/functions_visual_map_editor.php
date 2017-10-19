@@ -280,7 +280,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items['agent_row'] = array();
 			$form_items['agent_row']['items'] = array('static_graph',
 				'percentile_bar', 'percentile_item', 'module_graph',
-				'simple_value', 'datos', 'auto_sla_graph');
+				'simple_value', 'datos', 'auto_sla_graph', 'bars_graph');
 			$form_items['agent_row']['html'] = '<td align="left">' .
 				__('Agent') . '</td>';			
 			$params = array();
@@ -313,7 +313,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items['module_row'] = array();
 			$form_items['module_row']['items'] = array('static_graph',
 				'percentile_bar', 'percentile_item', 'module_graph',
-				'simple_value', 'datos', 'auto_sla_graph');
+				'simple_value', 'datos', 'auto_sla_graph', 'bars_graph');
 			$form_items['module_row']['html'] = '<td align="left">' .
 				__('Module') . '</td>
 				<td align="left">' .
@@ -452,7 +452,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 
 
 			$form_items['period_row'] = array();
-			$form_items['period_row']['items'] = array('module_graph', 'simple_value', 'datos', 'bars_graph');
+			$form_items['period_row']['items'] = array('module_graph', 'simple_value', 'datos');
 			$form_items['period_row']['html'] = '<td align="left">' . __('Period') . '</td>
 				<td align="left">' .  html_print_extended_select_for_time ('period', SECONDS_5MINUTES, '', '', '', false, true) . '</td>';
 			
@@ -475,6 +475,13 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'<span id="count_items">1</span> '.
 				'<span id="dir_items"></span> item/s				
 				</td>';
+
+			$bars_graph_types = array('vertical' => __('Vertical'), 'horizontal' => __('Horizontal'));
+			$form_items['bars_graph_type'] = array();
+			$form_items['bars_graph_type']['items'] = array('bars_graph');
+			$form_items['bars_graph_type']['html'] = '<td align="left">' .
+				__('Type') . '</td>
+				<td align="left">' . html_print_select($bars_graph_types, 'bars_graph_type', 'vertical', '', '', '', true) . '</td>';
 			
 			
 			//Insert and modify before the buttons to create or update.
@@ -497,14 +504,6 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				html_print_button(__('Cancel'), 'cancel_button', false, 'cancel_button_palette_callback();', 'class="sub cancel"', true)  . '<span ="margin-right:10px;">&nbsp</span>' .
 				html_print_button(__('Create'), 'create_button', false, 'create_button_palette_callback();', 'class="sub wand"', true) . 
 				'</td>';
-
-			
-			$bars_graph_types = array('vertical' => __('Vertical'), 'horizontal' => __('Horizontal'));
-			$form_items['bars_graph_type'] = array();
-			$form_items['bars_graph_type']['items'] = array('bars_graph');
-			$form_items['bars_graph_type']['html'] = '<td align="left">' .
-				__('Background') . '</td>
-				<td align="left">' . html_print_select($bars_graph_types, 'bars_graph_type', 'vertical', '', '', '', true) . '</td>';
 			
 			
 			foreach ($form_items as $item => $item_options) {

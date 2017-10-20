@@ -946,6 +946,9 @@ switch ($action) {
 				$values['image'] = $image;
 				$values['width'] = $width;
 				$values['height'] = $height;
+				if(defined('METACONSOLE') && $values['id_agent'] == 0){
+					$values['id_metaconsole'] = 1;
+				}
 				break;
 			case 'group_item':
 				$values['type'] = GROUP_ITEM;

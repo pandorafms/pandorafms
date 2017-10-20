@@ -421,7 +421,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 					}
 				}
 				else if ($is_a_link_to_other_visualconsole) {
-					if (empty($layout_data['id_metaconsole'])) {
+					if (empty($layoutData['id_metaconsole'])) {
 						$url = $config['homeurl'] . "index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure=" . $config["pure"] . "&amp;id=" . $layoutData["id_layout_linked"];
 					}
 					else {

@@ -46,6 +46,9 @@ $delete_layout = (bool) get_parameter ('delete_layout');
 $refr = (int) get_parameter('refr', $config['vc_refr']);
 $offset = (int) get_parameter('offset', 0);
 $pagination = (int) get_parameter ("pagination", $config["block_size"]);
+$search = (string) get_parameter("search","");
+$ag_group = (int)get_parameter("ag_group",0);
+$recursion = get_parameter("recursion",0);
 
 if ($delete_layout || $copy_layout) {
 	// Visual console required
@@ -199,6 +202,50 @@ if ($delete_layout || $copy_layout) {
 	}
 }
 
+if ($ag_group > 0) {
+	
+	$ag_groups = array();
+	$ag_groups = (array)$ag_group;
+	if ($recursion) {
+		$ag_groups = groups_get_id_recursive($ag_group, true);
+	}
+}
+
+echo "<table class='databox filters' width='100%' style='font-weight: bold; margin-bottom: 10px;'>
+	<tr>";
+if(!is_metaconsole()){
+	echo "<form method='post'
+		action='index.php?sec=network&amp;sec2=godmode/reporting/map_builder'>";
+} else {
+	echo "<form method='post'
+		action='index.php?sec=screen&sec2=screens/screens&action=visualmap'>";
+}
+
+echo "<td style='width:33%;'>";
+echo __('Search') . '&nbsp;';
+html_print_input_text ("search", $search, '', 50);
+
+echo "</td>";
+echo "<td style='width:25%;'>";
+
+echo __('Group') . '&nbsp;';
+$own_info = get_user_info($config['id_user']);
+if (!$own_info['is_admin'] && !check_acl ($config['id_user'], 0, "AW"))
+	$return_all_group = false;
+else
+	$return_all_group = true;
+html_print_select_groups(false, "AR", $return_all_group, "ag_group", $ag_group, 'this.form.submit();', '', 0, false, false, true, '', false);
+
+echo "<td style='width:25%;'>";
+echo __('Group Recursion') . '&nbsp;';
+html_print_checkbox ("recursion", 1, $recursion, false, false, 'this.form.submit()');
+
+echo "</td><td style='width:22%;'>";
+echo "<input name='search_visual_console' type='submit' class='sub search' value='".__('Search')."'>";
+echo "</form>";
+echo "</td>";
+echo "</tr></table>";
+
 $table = new stdClass();
 $table->width = '100%';
 $table->class = 'databox data';
@@ -228,31 +275,69 @@ $table->align[4] = 'left';
 // or has "VR" privileges, otherwise show only maps of user group
 $filters['offset'] = $offset;
 $filters['limit'] = $pagination;
+if(!empty($search)){
+	$filters['name'] = io_safe_input($search);
+}
+
+if($ag_group){
+	$filters['group'] = array_flip($ag_groups);
+}
+
 $own_info = get_user_info ($config['id_user']);
 if (!defined('METACONSOLE')) {
-	$url = 'index.php?sec=network&amp;sec2=godmode/reporting/map_builder&pagination='.$pagination;
+	$url = 'index.php?sec=network&amp;sec2=godmode/reporting/map_builder&recursion='.$recursion.'&ag_group='.$ag_group.'&search='.$search.'&pagination='.$pagination;
 }
 else {
-	$url = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&pagination='.$pagination;
+	$url = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&recursion='.$recursion.'&ag_group='.$ag_group.'&search='.$search.'&pagination='.$pagination;
 }
 if ($own_info['is_admin'] || $vconsoles_read) {
-	$maps = visual_map_get_user_layouts (0,false,$filters);
-	$total_maps = count(visual_map_get_user_layouts());
+	if($ag_group){
+		$maps = visual_map_get_user_layouts (0,false,$filters,false);
+		unset($filters['offset']);
+		unset($filters['limit']);
+		$total_maps = count(visual_map_get_user_layouts(0,false,$filters,false));
+	}else{
+		$maps = visual_map_get_user_layouts (0,false,$filters);
+		unset($filters['offset']);
+		unset($filters['limit']);
+		$total_maps = count(visual_map_get_user_layouts(0,false,$filters));
+	}
 }
 else {
 	$maps = visual_map_get_user_layouts ($config['id_user'], false,
 		$filters, false);
+	unset($filters['offset']);
+	unset($filters['limit']);
 	$total_maps = count(visual_map_get_user_layouts ($config['id_user'], false,
-		false, false));
+		$filters, false));
 }
 if (!$maps && !is_metaconsole()) {
-	require_once ($config['homedir'] . "/general/firts_task/map_builder.php");
+	$total = count(visual_map_get_user_layouts ($config['id_user'], false,
+		false, false));
+	if(!$total){
+		require_once ($config['homedir'] . "/general/firts_task/map_builder.php");
+	} else {
+		ui_print_info_message(
+			array(
+				'no_close'=>false,
+				'message'=>  __('No available data to show')));
+	}
 }
 elseif (!$maps && is_metaconsole()) {
-	ui_print_info_message(
-		array(
-			'no_close'=>true,
-			'message'=>  __('There are no visual console defined yet.')));
+	$total = count(visual_map_get_user_layouts ($config['id_user'], false,
+		false, false));
+	if(!$total){
+		ui_print_info_message(
+			array(
+				'no_close'=>true,
+				'message'=>  __('There are no visual console defined yet.')));
+	}else{
+		ui_print_info_message(
+			array(
+				'no_close'=>false,
+				'message'=>  __('No available data to show')));
+	}
+	
 }
 else {
 	ui_pagination ($total_maps, $url, $offset, $pagination);

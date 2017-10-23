@@ -222,7 +222,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items['enable_link_row']['html'] =
 				'<td align="left" style="">' . __('Enable link') . '</td>
 				<td align="left" style="">' .
-				html_print_checkbox('enable_link', '', !is_metaconsole(), true) . '</td>';
+				html_print_checkbox('enable_link', '', 1, true) . '</td>';
 			
 			
 			$form_items['preview_row'] = array();

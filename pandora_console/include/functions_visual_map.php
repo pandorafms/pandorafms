@@ -421,7 +421,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 					}
 				}
 				else if ($is_a_link_to_other_visualconsole) {
-					if (empty($layout_data['id_metaconsole'])) {
+					if (empty($layoutData['id_metaconsole'])) {
 						$url = $config['homeurl'] . "index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure=" . $config["pure"] . "&amp;id=" . $layoutData["id_layout_linked"];
 					}
 					else {
@@ -1268,8 +1268,11 @@ function visual_map_print_item($mode = "read", $layoutData,
 					$imgpos = 'float:left';
 				}
 				
+				if ($layoutData['id_metaconsole'] != 0) {
+					$img = "../../" . $img;
+				}
+
 				$varsize = getimagesize($img);
-				
 				
 				if($layoutData['show_statistics'] == 1){
 					
@@ -1364,34 +1367,35 @@ function visual_map_print_item($mode = "read", $layoutData,
 				else{
 				
 					if ($width == 0 || $height == 0) {
+
 						if($varsize[0] > 150 || $varsize[1] > 150){
 							echo html_print_image($img, true,
-							array("class" => "image",
-							"id" => "image_" . $id,
-							"width" => "70px",
-							"height" => "70px",
-							"title" => $img_style_title,
-							"style" => $borderStyle.$imgpos), false,
-							false, false, $isExternalLink);
+								array("class" => "image",
+								"id" => "image_" . $id,
+								"width" => "70px",
+								"height" => "70px",
+								"title" => $img_style_title,
+								"style" => $borderStyle.$imgpos), false,
+								false, false, $isExternalLink);
 						}
 						else{
 							echo html_print_image($img, true,
-							array("class" => "image",
-							"id" => "image_" . $id,
-							"title" => $img_style_title,
-							"style" => $borderStyle.$imgpos), false,
-							false, false, $isExternalLink);
+								array("class" => "image",
+								"id" => "image_" . $id,
+								"title" => $img_style_title,
+								"style" => $borderStyle.$imgpos), false,
+								false, false, $isExternalLink);
 						}
 					}
 					else{
-					echo html_print_image($img, true,
-						array("class" => "image",
-							"id" => "image_" . $id,
-							"width" => $width,
-							"height" => $height,
-							"title" => $img_style_title,
-							"style" => $borderStyle.$imgpos), false,
-							false, false, $isExternalLink);
+						echo html_print_image($img, true,
+							array("class" => "image",
+								"id" => "image_" . $id,
+								"width" => $width,
+								"height" => $height,
+								"title" => $img_style_title,
+								"style" => $borderStyle.$imgpos), false,
+								false, false, $isExternalLink);
 					}
 			
 				}
@@ -1646,6 +1650,13 @@ function visual_map_print_item($mode = "read", $layoutData,
 			}
 			break;
 		case LABEL:
+			if (get_parameter('action') == 'edit' || get_parameter('operation') == 'edit_visualmap') {
+				$aux_text1 = explode("<a href=\"", $text);
+				$aux_text2 = explode("\">", $aux_text1[1]);
+				$aux_text3 = explode("</a>", $aux_text2[1]);
+				
+				$text = $aux_text1[0].$aux_text3[0].$aux_text3[1];
+			}
 			echo io_safe_output($text);
 			break;
 		case ICON:
@@ -2678,9 +2689,10 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 		$mapWidth = $layout["width"];
 		$mapHeight = $layout["height"];
 		$backgroundImage = '';
-		if ($layout["background"] != 'None.png' )
+		if ($layout["background"] != 'None.png' ){
 			$backgroundImage = $metaconsole_hack . 'images/console/background/' .
 				$layout["background"];
+		}
 	}
 	
 	if (defined('METACONSOLE')) {

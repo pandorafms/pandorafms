@@ -2800,7 +2800,11 @@ function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter
 		$groups = users_get_groups ($id_user, 'VR');
 	} else {
 		if(!empty($filter['group'])){
-			$groups = $filter['group'];
+			$permissions_group = users_get_groups ($id_user, 'VR', false);
+			if(empty($permissions_group)){
+				$permissions_group = users_get_groups ($id_user, 'VM', false);
+			}
+			$groups = array_intersect_key($filter['group'], $permissions_group);
 			unset($filter['group']);
 		} else {
 			$groups = users_get_groups ($id_user, 'VR', false);

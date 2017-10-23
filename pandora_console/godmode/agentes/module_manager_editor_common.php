@@ -291,7 +291,7 @@ if (modules_is_string_type($id_module_type) || $edit) {
 	$table_simple->data[4][1] .= '<br /><em>'.__('Inverse interval').'</em>';
 	$table_simple->data[4][1] .= html_print_checkbox ("warning_inverse", 1, $warning_inverse, true, $disabledBecauseInPolicy);
 if (!modules_is_string_type($id_module_type) || $edit) {
-	$table_simple->data[4][2] = '<svg id="svg_dinamic" width="350" height="200" style="padding:40px; padding-left: 100px; margin-bottom: 60px;"> </svg>';
+	$table_simple->data[4][2] = '<svg id="svg_dinamic" width="800" height="300"> </svg>';
 	$table_simple->colspan[4][2] = 2;
 	$table_simple->rowspan[4][2] = 3;
 }
@@ -1202,291 +1202,32 @@ function paint_graph_values(){
 	//inicialiced error
 	var error_w = 0;
 	var error_c = 0;
-	//if haven't error
-	if(max_w == 0 || max_w > min_w){
-		if(max_c == 0 || max_c > min_c){
-			paint_graph_status(min_w, max_w, min_c, max_c, inverse_w, inverse_c, error_w, error_c);
-		} else {
-			error_c = 1;
-			paint_graph_status(0,0,0,0,0,0, error_w, error_c);
-		}
-	} else {
-		error_w = 1;
-		paint_graph_status(0,0,0,0,0,0, error_w, error_c);
-	}
-}
-
-//function use d3.js for paint graph
-function paint_graph_status(min_w, max_w, min_c, max_c, inverse_w, inverse_c, error_w, error_c) {
-	
-	//Check if they are numbers
-	if(isNaN(min_w)){ min_w = 0; };
-	if(isNaN(max_w)){ max_w = 0; };
-	if(isNaN(min_c)){ min_c = 0; };
-	if(isNaN(max_c)){ max_c = 0; };
-
 	//messages legend
 	var legend_normal = '<?php echo __("Normal Status");?>';
 	var legend_warning = '<?php echo __("Warning Status");?>';
 	var legend_critical = '<?php echo __("Critical Status");?>';
-
-	//remove elements
-	d3.select("#svg_dinamic rect").remove();
-	$("#text-max_warning").removeClass("input_error");
-	$("#text-max_critical").removeClass("input_error");
-
-	//if haven't errors
-	if (error_w == 0 && error_c == 0){
-		//parse element
-		min_w = parseFloat(min_w);
-		min_c = parseFloat(min_c);
-		max_w = parseFloat(max_w);
-		max_c = parseFloat(max_c);
-		
-		//inicialize var
-		var range_min = 0;
-		var range_max = 0;
-		var range_max_min = 0;
-		var range_max_min = 0;
-		
-		//Find the lowest possible value
-		if(min_w < 0 || min_c < 0){
-			if(min_w < min_c){
-				range_min = min_w - 100;
-			} else {
-				range_min = min_c - 100;	
-			}
-		} else if (min_w > 0 || min_c > 0) {
-			if(min_w > min_c){
-				range_max_min = min_w;
-			} else {
-				range_max_min = min_c;	
-			}
+	//messages error
+	var message_error_warning = '<?php echo __("Please introduce a maximum warning higher than the minimun warning") ?>';
+	var message_error_critical = '<?php echo __("Please introduce a maximum critical higher than the minimun critical") ?>';
+	
+	//if haven't error
+	if(max_w == 0 || max_w > min_w){
+		if(max_c == 0 || max_c > min_c){
+			paint_graph_status(min_w, max_w, min_c, max_c, inverse_w, 
+								inverse_c, error_w, error_c,
+								legend_normal, legend_warning, legend_critical,
+								message_error_warning, message_error_critical);
 		} else {
-			if(min_w < min_c){
-				range_min = min_w - 100;
-			} else {
-				range_min = min_c - 100;	
-			}
+			error_c = 1;
+			paint_graph_status(0,0,0,0,0,0, error_w, error_c,
+							legend_normal, legend_warning, legend_critical,
+							message_error_warning, message_error_critical);
 		}
-
-		//Find the maximum possible value
-		if(max_w > max_c){
-			range_max = max_w + 100 + range_max_min;
-		} else {
-			range_max = max_c + 100 + range_max_min;
-		}
-		
-		//Controls whether the maximum = 0 is infinite
-		if((max_w == 0 || max_w == 0.00) && min_w != 0){
-			max_w = range_max;
-		}
-		if((max_c == 0 || max_c == 0.00) && min_c != 0){
-			max_c = range_max;
-		}
-		
-		//Scale according to the position
-		position = 200 / (range_max-range_min);
-		
-		//axes
-		var yScale = d3.scale.linear()
-		    .domain([range_min, range_max])
-		    .range([100, -100]);
-
-	    var yAxis = d3.svg.axis()
-	            .orient("left")
-	            .scale(yScale);
-
-	    //create svg
-		var svg = d3.select("#svg_dinamic");
-		//delete elements
-		svg.selectAll("g").remove();
-		svg.selectAll("rect").remove();
-		svg.selectAll("text").remove();
-		svg.append("g")
-			.attr("transform", "translate(0, 100)")
-			.call(yAxis);
-		
-		//legend Normal text
-		svg.append("text")
-				.attr("x", 0)
-				.attr("y", -20)
-				.attr("fill", 'black')
-				.style("font-family", "arial")
-				.style("font-weight", "bold")
-				.style("font-size", 10)
-				.html(legend_normal)
-				.style("text-anchor", "first");
-
-		//legend Normal rect
-		svg.append("rect")
-			.attr("id", "legend_normal")
-	       	.attr("x", 72)
-	       	.attr("y", -30)
-	       	.attr("width", 10)
-	       	.attr("height", 10)
-	  		.style("fill", "#82B92E");
-
-	  	//legend Warning text
-		svg.append("text")
-				.attr("x", 91)
-				.attr("y", -20)
-				.attr("fill", 'black')
-				.style("font-family", "arial")
-				.style("font-weight", "bold")
-				.style("font-size", 10)
-				.html(legend_warning)
-				.style("text-anchor", "first");
-
-		//legend Warning rect
-		svg.append("rect")
-			.attr("id", "legend_warning")
-	       	.attr("x", 168)
-	       	.attr("y", -30)
-	       	.attr("width", 10)
-	       	.attr("height", 10)
-	  		.style("fill", "#ffd731");
-
-	  	//legend Critical text
-		svg.append("text")
-				.attr("x", 187)
-				.attr("y", -20)
-				.attr("fill", 'black')
-				.style("font-family", "arial")
-				.style("font-weight", "bold")
-				.style("font-size", 10)
-				.html(legend_critical)
-				.style("text-anchor", "first");
-
-		//legend critical rect
-		svg.append("rect")
-			.attr("id", "legend_critical")
-	       	.attr("x", 258)
-	       	.attr("y", -30)
-	       	.attr("width", 10)
-	       	.attr("height", 10)
-	  		.style("fill", "#fc4444");
-
-		//styles for number and axes
-	    svg.selectAll("g .domain")
-	    	.style("stroke-width",  2)
-	    	.style("fill",  "none")
-	    	.style("stroke", "black");
-
-	    svg.selectAll("g .tick text")
-	    	.style("font-size", "9pt")
-			.style("font-weight", "initial");
-
-	    //estatus normal
-		svg.append("rect")
-			.attr("id", "warning_rect")
-	       	.attr("x", 3)
-	       	.attr("y", 0)
-	       	.attr("width", 300)
-	       	.attr("height", 200)
-	  		.style("fill", "#82B92E");
-	  	
-	  	//controls the inverse warning
-	  	if(inverse_w == 0){
-			svg.append("rect").transition()
-				.duration(600)
-				.attr("id", "warning_rect")
-		       	.attr("x", 3)
-		       	.attr("y", ((range_max - min_w) * position) - ((max_w - min_w) * position))
-		       	.attr("width", 300)
-		       	.attr("height", ((max_w - min_w) * position))
-		  		.style("fill", "#ffd731");
-	  	}
-	  	else {
-	  		svg.append("rect").transition()
-	  			.duration(600)
-				.attr("id", "warning_rect")
-		       	.attr("x", 3)
-		       	.attr("y", 200 - ((min_w -range_min) * position))
-		       	.attr("width", 300)
-		       	.attr("height", (min_w -range_min) * position)
-		  		.style("fill", "#ffd731");
-		  	
-		  	svg.append("rect").transition()
-		  		.duration(600)
-				.attr("id", "warning_inverse_rect")
-		       	.attr("x", 3)
-		       	.attr("y",  0)
-		       	.attr("width", 300)
-		       	.attr("height", ((range_max - min_w) * position) - ((max_w - min_w) * position))
-		  		.style("fill", "#ffd731");
-		  	
-	  	}
-	  	//controls the inverse critical
-	  	if(inverse_c == 0){
-		    svg.append("rect").transition()
-		    	.duration(600)
-		    	.attr("id", "critical_rect")
-		       	.attr("x", 3)
-		       	.attr("y", ((range_max - min_c) * position) - ((max_c - min_c) * position))
-		       	.attr("width", 300)
-		       	.attr("height", ((max_c - min_c) * position))
-		  		.style("fill", "#fc4444");
-	  	}
-	  	else {
-	  		svg.append("rect").transition()
-				.duration(600)
-				.attr("id", "critical_rect")
-		       	.attr("x", 3)
-		       	.attr("y", 200 - ((min_c -range_min) * position))
-		       	.attr("width", 300)
-		       	.attr("height", (min_c -range_min) * position)
-		  		.style("fill", "#fc4444");
-		  	
-		  	svg.append("rect").transition()
-				.duration(600)
-				.attr("id", "critical_inverse_rect")
-		       	.attr("x", 3)
-		       	.attr("y", 0)
-		       	.attr("width", 300)
-		       	.attr("height", ((range_max - min_c) * position) - ((max_c - min_c) * position))
-		  		.style("fill", "#fc4444");
-	  	}
-	}
-	else {
-		var message_error_warning = '<?php echo __("Please introduce a maximum warning higher than the minimun warning") ?>';
-		var message_error_critical = '<?php echo __("Please introduce a maximum critical higher than the minimun critical") ?>';
-
-		d3.select("#svg_dinamic rect").remove();
-		//create svg
-		var svg = d3.select("#svg_dinamic");
-		svg.selectAll("g").remove();
-		svg.selectAll("rect").remove();
-		svg.selectAll("text").remove();
-		//message error warning
-		if (error_w == 1) {
-			$("#text-max_warning").addClass("input_error");
-			svg.append("text")
-				.attr("x", -90)
-				.attr("y", 10)
-				.attr("fill", 'black')
-				.style("font-family", "arial")
-				.style("font-weight", "bold")
-				.style("font-size", 14)
-				.style("fill", "red")
-				.html(message_error_warning)
-				.style("text-anchor", "first");
-		}
-		//message error critical
-		if (error_c == 1) {
-			$("#text-max_critical").addClass("input_error");
-			svg.append("text")
-				.attr("x", -90)
-				.attr("y", 105)
-				.attr("fill", 'black')
-				.style("font-family", "arial")
-				.style("font-weight", "bold")
-				.style("font-size", 14)
-				.style("fill", "red")
-				.html(message_error_critical)
-				.style("text-anchor", "first");	
-		}
-
+	} else {
+		error_w = 1;
+		paint_graph_status(0,0,0,0,0,0, error_w, error_c, 
+							legend_normal, legend_warning, legend_critical,
+							message_error_warning, message_error_critical);
 	}
 }
 

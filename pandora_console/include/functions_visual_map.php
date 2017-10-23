@@ -1650,6 +1650,13 @@ function visual_map_print_item($mode = "read", $layoutData,
 			}
 			break;
 		case LABEL:
+			if (get_parameter('action') == 'edit' || get_parameter('operation') == 'edit_visualmap') {
+				$aux_text1 = explode("<a href=\"", $text);
+				$aux_text2 = explode("\">", $aux_text1[1]);
+				$aux_text3 = explode("</a>", $aux_text2[1]);
+				
+				$text = $aux_text1[0].$aux_text3[0].$aux_text3[1];
+			}
 			echo io_safe_output($text);
 			break;
 		case ICON:
@@ -2682,9 +2689,10 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 		$mapWidth = $layout["width"];
 		$mapHeight = $layout["height"];
 		$backgroundImage = '';
-		if ($layout["background"] != 'None.png' )
+		if ($layout["background"] != 'None.png' ){
 			$backgroundImage = $metaconsole_hack . 'images/console/background/' .
 				$layout["background"];
+		}
 	}
 	
 	if (defined('METACONSOLE')) {

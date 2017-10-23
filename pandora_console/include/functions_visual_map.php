@@ -1080,6 +1080,120 @@ function visual_map_print_item($mode = "read", $layoutData,
 			}
 
 			break;
+		
+		case BARS_GRAPH:
+		
+			$imgpos = '';
+						
+			if($layoutData['label_position']=='left'){
+				$imgpos = 'float:right';
+			}
+			else if($layoutData['label_position']=='right'){
+				$imgpos = 'float:left';
+			}
+		
+			if (!empty($proportion)) {
+				$width =
+					((integer)($proportion['proportion_width'] * $width));
+				$height =
+					((integer)($proportion['proportion_height'] * $height));
+			}
+			//Metaconsole db connection
+			if ($layoutData['id_metaconsole'] != 0) {
+				$connection = db_get_row_filter ('tmetaconsole_setup',
+					array('id' => $layoutData['id_metaconsole']));
+				if (metaconsole_load_external_db($connection) != NOERR) {
+					continue;
+				}
+			}
+			
+			if ($isExternalLink)
+				$homeurl = $config['homeurl'];
+			else
+				$homeurl = '';
+			
+			if ( (get_parameter('action') == 'edit') || (get_parameter('operation') == 'edit_visualmap') ) {
+				if($width == 0){
+					if ($layoutData['id_metaconsole'] != 0) {
+						$img =  '<img src="../../images/console/signes/barras.png" style="width:400px;height:400px;'.$imgpos.'">';
+					}
+					else{
+						$img =  '<img src="images/console/signes/barras.png" style="width:400px;height:400px;'.$imgpos.'">';	
+					}
+				}
+				else{
+					if ($layoutData['id_metaconsole'] != 0) {
+						$img =  '<img src="../../images/console/signes/barras.png" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';
+					}
+					else{
+						$img =  '<img src="images/console/signes/barras.png" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';
+					}
+				}
+			}
+			else {
+				if ($width == 0) {
+					if ($layoutData['label_position']=='left') {
+						$img =  '<div style="float:right;height:'.$himg.'px;">'.
+						grafico_modulo_sparse($id_module, $period, 
+						0, 300, 180, modules_get_agentmodule_name($id_module),null, false, 1, false, 0, 
+						modules_get_unit($id_module), 0, 0, true, $only_image, '', 1, false, '', 
+						false, false, false, $layoutData['image'], 
+						null, true, false, $type_graph) . '</div>';
+					}
+					elseif($layoutData['label_position']=='right') {
+						$img =  '<div style="float:left;height:'.$himg.'px;">' . 
+							grafico_modulo_sparse($id_module, 
+							$period, 0, 300, 180, modules_get_agentmodule_name($id_module),null, false, 
+							1, false, 0, modules_get_unit($id_module), 0, 0, true, $only_image, '', 
+							1, false, '', false, false, false, 
+							$layoutData['image'], null, true, 
+							false, $type_graph) . '</div>';
+					}
+					else {
+						$img =  grafico_modulo_sparse($id_module, 
+						$period, 0, 300, 180, modules_get_agentmodule_name($id_module),null, false, 1, 
+						false, 0, modules_get_unit($id_module), 0, 0, true, $only_image, '', 
+						1, false, '', false, false, false, 
+						$layoutData['image'], null, true, false, $type_graph);
+					}
+				}
+				else{
+					if ($layoutData['label_position']=='left') {
+						$img =  '<div style="float:right;height:'.$himg.'px;">' . 
+							grafico_modulo_sparse($id_module, $period, 
+						0, $width, $height, modules_get_agentmodule_name($id_module), null, false, 1, 
+						false, 0, modules_get_unit($id_module), 0, 0, true, $only_image, '', 
+						1, false, '', false, false, false, 
+						$layoutData['image'], null, true, 
+						false, $type_graph) . '</div>';
+					}
+					elseif ($layoutData['label_position']=='right') {
+						$img =  '<div style="float:left;height:'.$himg.'px;">' . 
+							grafico_modulo_sparse($id_module, $period, 
+							0, $width, $height, modules_get_agentmodule_name($id_module), null, false, 1, 
+							false, 0, modules_get_unit($id_module), 0, 0, true, $only_image, 
+							'', 1, false, modules_get_unit($id_module), false, false, false, 
+							$layoutData['image'], null, true, 
+							false, $type_graph) . '</div>';
+					}
+					else {
+						$img =  grafico_modulo_sparse($id_module, 
+							$period, 0, $width, $height, modules_get_agentmodule_name($id_module), null, 
+							false, 1, false, 0, modules_get_unit($id_module), 0, 0, true, 
+							$only_image, '', 1, false, '', false, 
+							false, false, $layoutData['image'], 
+							null, false, true, $type_graph);
+					}
+				}
+			}
+			
+			//Restore db connection
+			if ($layoutData['id_metaconsole'] != 0) {
+				metaconsole_restore_db();
+			}
+
+			break;
+
 		case LABEL:
 			$z_index = 4 + 1;
 			break;
@@ -1157,7 +1271,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 		case MODULE_GRAPH:
 			$class .= "module_graph";
 			break;
-		case MODULE_GRAPH:
+		case BARS_GRAPH:
 			$class .= "bars_graph";
 			break;
 		case SIMPLE_VALUE:

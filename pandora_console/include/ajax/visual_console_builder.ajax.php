@@ -624,11 +624,8 @@ switch ($action) {
 						}
 						break;
 					case 'bars_graph':
-						if ($height_module_graph !== null) {
-							$values['height'] = $height_module_graph;
-						}
-						if ($width_module_graph !== null) {
-							$values['width'] = $width_module_graph;
+						if ($width_percentile !== null) {
+							$values['width'] = $width_percentile;
 						}
 						if ($bars_graph_type !== null) {
 							$values['type_graph'] = $id_custom_graph;
@@ -842,8 +839,7 @@ switch ($action) {
 						$elementFields['height_module_graph'] = $elementFields['height'];
 						break;
 					case 'bars_graph':
-						$elementFields['width_module_graph'] = $elementFields['width'];
-						$elementFields['height_module_graph'] = $elementFields['height'];
+						$elementFields['width_percentile'] = $elementFields['width'];
 						$elementFields['bars_graph_type'] = $elementFields['type_graph'];
 						break;
 					case 'box_item':
@@ -984,8 +980,12 @@ switch ($action) {
 				break;
 			case 'bars_graph':
 				$values['type'] = BARS_GRAPH;
-				$values['height'] = $height_module_graph;
-				$values['width'] = $width_module_graph;
+				if ($width_percentile == null) {
+					$values['width'] = 0;
+				}
+				else {
+					$values['width'] = $width_percentile;
+				}
 				$values['type_graph'] = $bars_graph_type;
 				$values['image'] = $background_color;
 				break;

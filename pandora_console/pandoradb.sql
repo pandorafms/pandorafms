@@ -99,7 +99,7 @@ CREATE TABLE IF NOT EXISTS `tagente_datos` (
 	`id_agente_modulo` int(10) unsigned NOT NULL default '0',
 	`datos` double(22,5) default NULL,
 	`utimestamp` bigint(20) default '0',
-	KEY `data_index1` (`id_agente_modulo`),
+	KEY `data_index1` (`id_agente_modulo`, `utimestamp`),
 	KEY `idx_utimestamp` USING BTREE (`utimestamp`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
 
@@ -120,7 +120,7 @@ CREATE TABLE IF NOT EXISTS `tagente_datos_string` (
 	`id_agente_modulo` int(10) unsigned NOT NULL default '0',
 	`datos` mediumtext NOT NULL,
 	`utimestamp` int(20) unsigned NOT NULL default 0,
-	KEY `data_string_index_1` (`id_agente_modulo`),
+	KEY `data_string_index_1` (`id_agente_modulo`, `utimestamp`),
 	KEY `idx_utimestamp` USING BTREE (`utimestamp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

@@ -144,7 +144,7 @@ switch ($action) {
 
 	case 'get_module_type_string':
 		$data = array ();
-
+		
 		$layoutData = db_get_row_filter('tlayout_data', array('id' => $id_element));
 
 		if ($layoutData['id_metaconsole'] != 0) {
@@ -158,7 +158,7 @@ switch ($action) {
 		$is_string = db_get_value_filter ('id_tipo_modulo', 'tagente_modulo',
 			array ('id_agente' => $id_agent,
 				'id_agente_modulo' => $id_module));
-		
+		html_debug($is_string, true);
 		if ($layoutData['id_metaconsole'] != 0) {
 			metaconsole_restore_db();
 		}

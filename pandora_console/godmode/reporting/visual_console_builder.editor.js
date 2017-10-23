@@ -1785,7 +1785,7 @@ function setBarsGraph(id_data, values) {
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "get_module_type_string"});
 	parameter.push ({name: "id_agent", value: values['id_agent']});
-	parameter.push ({name: "id_agent_module", value: values['module']});
+	parameter.push ({name: "module", value: values['module']});
 	parameter.push ({name: "id_visual_console", value: id_visual_console});
 	jQuery.ajax({
 		url: get_url_ajax(),

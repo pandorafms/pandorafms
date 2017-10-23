@@ -3495,7 +3495,7 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 
 			# Generate an event, ONLY if our alert action is different from generate an event.
 			if ($action->{'id_alert_command'} != 3){
-				pandora_event ($pa_config, "SNMP alert fired (" . $alert->{'description'} . ")",
+				pandora_event ($pa_config, "SNMP alert fired (" . safe_output($alert->{'description'}) . ")",
 					0, 0, $alert->{'priority'}, 0, 0, 'alert_fired', 0, $dbh);
 		   }
 
@@ -3549,7 +3549,7 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 					
 				# Generate an event, ONLY if our alert action is different from generate an event.
 				if ($other_action->{'id_alert_command'} != 3){
-					pandora_event ($pa_config, "SNMP alert fired (" . $alert->{'description'} . ")",
+					pandora_event ($pa_config, "SNMP alert fired (" . safe_output($alert->{'description'}) . ")",
 						0, 0, $alert->{'priority'}, 0, 0, 'alert_fired', 0, $dbh);
 				}
 

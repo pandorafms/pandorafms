@@ -1794,7 +1794,7 @@ function setBarsGraph(id_data, values) {
 		dataType: 'json',
 		success: function (data) {
 			if (data['no_data'] == true) {
-				if (values['width'] == "0") {
+				if (values['width_percentile'] == "0") {
 					$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/barras-no.png');
 				}
 				else {
@@ -1806,20 +1806,20 @@ function setBarsGraph(id_data, values) {
 			else {
 				$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/barras.png');
 				
-				if($('#text-width').val() == 0){
+				if (values['width_percentile'] == "0") {
 					// Image size
 				}
 				else{
-					$("#" + id_data + " img").css('width', $('#text-width_percentile').val()+'px');
-					$("#" + id_data + " img").css('height', $('#text-width_percentile').val()+'px');
+					$("#" + id_data + " img").css('width', width_percentile+'px');
+					$("#" + id_data + " img").css('height', width_percentile+'px');
 				}
 			}
 
 			if($('#'+id_data+' table').css('float') == 'right' || $('#'+id_data+ ' table').css('float') == 'left'){
-				$('#'+id_data+ ' img').css('margin-top', 	parseInt($('#'+id_data).css('height'))/2 - parseInt($('#'+id_data+ ' img').css('height'))/2);	
+				$('#'+id_data+ ' img').css('margin-top', parseInt($('#'+id_data).css('height'))/2 - parseInt($('#'+id_data+ ' img').css('height'))/2);	
 			}
 			else{
-				$('#'+id_data+ ' img').css('margin-left',parseInt($('#'+id_data).css('width'))/2 - parseInt($('#'+id_data+ ' img').css('width'))/2);		
+				$('#'+id_data+ ' img').css('margin-left', parseInt($('#'+id_data).css('width'))/2 - parseInt($('#'+id_data+ ' img').css('width'))/2);		
 			}
 		}
 	});

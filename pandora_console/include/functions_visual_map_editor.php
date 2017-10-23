@@ -459,7 +459,13 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'<td align="left" style="">' . __('Show statistics') . '</td>
 				<td align="left" style="">' .
 				html_print_checkbox('show_statistics', 1, '', true) . '</td>';
-			
+				
+			$form_items['show_on_top_row'] = array();
+			$form_items['show_on_top_row']['items'] = array('group_item');
+			$form_items['show_on_top_row']['html'] = 
+				'<td align="left" style="">' . __('Always show on top') . '</td>
+				<td align="left" style="">' .
+				html_print_checkbox('show_on_top', 1, '', true) . '</td>';
 			
 			$form_items['module_graph_size_row'] = array();
 			$form_items['module_graph_size_row']['items'] = array('module_graph', 'datos');

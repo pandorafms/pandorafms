@@ -642,6 +642,7 @@ function readFields() {
 	values['line_color'] = $("input[name='line_color']").val();
 	values['label_position'] = $(".labelpos[sel=yes]").attr('position');
 	values['show_statistics'] = $("input[name=show_statistics]").is(':checked') ? 1 : 0;
+	values['show_on_top'] = $("input[name=show_on_top]").is(':checked') ? 1 : 0;
 	
 	if (is_metaconsole()) {
 		values['metaconsole'] = 1;
@@ -1047,6 +1048,9 @@ function toggle_item_palette() {
 		}
 
 		hiddenFields(item);
+		
+		$("#show_on_top_row").css('display', 'table-row');
+		$("#show_on_top." + item).css('display', 'block');
 
 		$("#properties_panel").show("fast");
 		
@@ -1172,6 +1176,17 @@ function loadFieldsFromDB(item) {
 					}
 					else {
 						$("input[name=show_statistics]")
+							.prop("checked", false);
+					}
+				}
+				
+				if (key == 'show_on_top') {
+					if (val == "1") {
+						$("input[name=show_on_top]")
+							.prop("checked", true);
+					}
+					else {
+						$("input[name=show_on_top]")
 							.prop("checked", false);
 					}
 				}
@@ -1601,6 +1616,7 @@ function cleanFields(item) {
 	$("input[name='fill_color']").val('#ffffff');
 	$("input[name='line_width']").val(3);
 	$("input[name='line_color']").val('#000000');
+	$("input[name=show_on_top]").prop("checked", false);
 
 
 	$("#preview").empty();
@@ -2517,8 +2533,6 @@ function createItem(type, values, id_data) {
 	}
 
 	$("#background").append(item);
-	$(".item").css('z-index', '2');
-	$(".box_item").css('z-index', '1');
 
 	if (values['parent'] != 0) {
 		var line = {"id": id_data,
@@ -2539,6 +2553,14 @@ function createItem(type, values, id_data) {
 	}
 	else if(values['label_position'] == 'left'){
 		$('#text_'+id_data).css({'display':'block','float':'left'});
+	}
+	
+	if(values['show_on_top'] == 1){
+		$("#" + id_data).css('z-index', '10');
+	}
+	
+	if(values['show_on_top'] == 0){
+		$("#" + id_data).css('z-index', '5');
 	}
 	
 }
@@ -2747,6 +2769,15 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 	
 	refresh_lines(lines, 'background', true);
 	draw_user_lines("", 0, 0, 0 , 0, 0, true);
+	
+	if(values['show_on_top'] == 1){
+		$("#" + idElement).css('z-index',10);
+	}
+	
+	if(values['show_on_top'] == 0){
+		$("#" + idElement).css('z-index',5);
+	}
+
 }
 
 function updateDB(type, idElement , values, event) {
@@ -3544,6 +3575,8 @@ function eventsBackground() {
 		if ((!is_opened_palette) && (autosave)) {
 			toggle_item_palette();
 		}
+		$("#show_on_top_row").css('display', 'none');
+		$("#show_on_top." + item).css('display', '');
 	});
 }
 

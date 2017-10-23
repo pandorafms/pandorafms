@@ -146,7 +146,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'</td>';
 			
 			$form_items['module_graph_size_row'] = array();
-			$form_items['module_graph_size_row']['items'] = array('module_graph', 'datos', 'bars_graph');
+			$form_items['module_graph_size_row']['items'] = array('module_graph', 'datos');
 			$form_items['module_graph_size_row']['html'] = '<td align="left">' . __('Size') . '</td>
 				<td align="left">' .
 				html_print_input_text('width_module_graph', 300, '', 3, 5, true) . 
@@ -465,7 +465,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			
 			
 			$form_items['module_graph_size_row'] = array();
-			$form_items['module_graph_size_row']['items'] = array('module_graph', 'datos', 'bars_graph');
+			$form_items['module_graph_size_row']['items'] = array('module_graph', 'datos');
 			$form_items['module_graph_size_row']['html'] = '<td align="left">' . __('Size') . '</td>
 				<td align="left">' .
 				html_print_input_text('width_module_graph', 300, '', 3, 5, true) . 

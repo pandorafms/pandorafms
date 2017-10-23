@@ -1160,60 +1160,164 @@ function visual_map_print_item($mode = "read", $layoutData,
 				if (($is_string == 17) || ($is_string == 23) || ($is_string == 3) ||
 				($is_string == 10) || ($is_string == 33)) {
 
+					$color = array();
+	
+					$color[0] = array('border' => '#000000',
+						'color' => $config['graph_color1'],
+						'alpha' => CHART_DEFAULT_ALPHA);
+					$color[1] = array('border' => '#000000',
+						'color' => $config['graph_color2'],
+						'alpha' => CHART_DEFAULT_ALPHA);
+					$color[2] = array('border' => '#000000',
+						'color' => $config['graph_color3'],
+						'alpha' => CHART_DEFAULT_ALPHA);
+					$color[3] = array('border' => '#000000',
+						'color' => $config['graph_color4'],
+						'alpha' => CHART_DEFAULT_ALPHA);
+					$color[4] = array('border' => '#000000',
+						'color' => $config['graph_color5'],
+						'alpha' => CHART_DEFAULT_ALPHA);
+					$color[5] = array('border' => '#000000',
+						'color' => $config['graph_color6'],
+						'alpha' => CHART_DEFAULT_ALPHA);
+					$color[6] = array('border' => '#000000',
+						'color' => $config['graph_color7'],
+						'alpha' => CHART_DEFAULT_ALPHA);
+					$color[7] = array('border' => '#000000',
+						'color' => $config['graph_color8'],
+						'alpha' => CHART_DEFAULT_ALPHA);
+					$color[8] = array('border' => '#000000',
+						'color' => $config['graph_color9'],
+						'alpha' => CHART_DEFAULT_ALPHA);
+					$color[9] = array('border' => '#000000',
+						'color' => $config['graph_color10'],
+						'alpha' => CHART_DEFAULT_ALPHA);
+					$color[11] = array('border' => '#000000',
+						'color' => COL_GRAPH9,
+						'alpha' => CHART_DEFAULT_ALPHA);
+					$color[12] = array('border' => '#000000',
+						'color' => COL_GRAPH10,
+						'alpha' => CHART_DEFAULT_ALPHA);
+					$color[13] = array('border' => '#000000',
+						'color' => COL_GRAPH11,
+						'alpha' => CHART_DEFAULT_ALPHA);
+					$color[14] = array('border' => '#000000',
+						'color' => COL_GRAPH12,
+						'alpha' => CHART_DEFAULT_ALPHA);
+					$color[15] = array('border' => '#000000',
+						'color' => COL_GRAPH13,
+						'alpha' => CHART_DEFAULT_ALPHA);
+
 					$module_data = get_bars_module_data($id_module);
-html_debug($module_data, true);
+					$water_mark = array('file' => '/var/www/html/pandora_console/images/logo_vertical_water.png', 
+										'url' => 'http://localhost/pandora_console/images/logo_vertical_water.png');
+					
 					if ($width == 0) {
 						if ($layoutData['label_position']=='left') {
-							$img =  '<div style="float:right;height:'.$himg.'px;">'.
-							grafico_modulo_sparse($id_module, $period, 
-							0, 300, 180, modules_get_agentmodule_name($id_module),null, false, 1, false, 0, 
-							modules_get_unit($id_module), 0, 0, true, $only_image, '', 1, false, '', 
-							false, false, false, $layoutData['image'], 
-							null, true, false, $type_graph) . '</div>';
+							if ($layoutData['type_graph'] == 'horizontal') {
+								$img = '<div style="float:right;height:'.$himg.'px;">'.
+									hbar_graph(true, $module_data,
+									400, 400, $color, array(), array(),
+									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+									"", "", $water_mark, $config['fontpath'], 6,
+									"", 0, $config['homeurl'], $layoutData['image']) . '</div>';
+							}
+							else {
+								$img = '<div style="float:right;height:'.$himg.'px;">'. 
+									vbar_graph(true, $module_data,
+									400, 400, $color, array(), array(),
+									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+									"", "", $water_mark, $config['fontpath'], 6,
+									"", 0, $config['homeurl'], $layoutData['image'], true) . '</div>';
+							}
 						}
 						elseif($layoutData['label_position']=='right') {
-							$img =  '<div style="float:left;height:'.$himg.'px;">' . 
-								grafico_modulo_sparse($id_module, 
-								$period, 0, 300, 180, modules_get_agentmodule_name($id_module),null, false, 
-								1, false, 0, modules_get_unit($id_module), 0, 0, true, $only_image, '', 
-								1, false, '', false, false, false, 
-								$layoutData['image'], null, true, 
-								false, $type_graph) . '</div>';
+							if ($layoutData['type_graph'] == 'horizontal') {
+								$img = '<div style="float:left;height:'.$himg.'px;">'.
+									hbar_graph(true, $module_data,
+									400, 400, $color, array(), array(),
+									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+									"", "", $water_mark, $config['fontpath'], 6,
+									"", 0, $config['homeurl'], $layoutData['image']) . '</div>';
+							}
+							else {
+								$img = '<div style="float:left;height:'.$himg.'px;">'. 
+									vbar_graph(true, $module_data,
+									400, 400, $color, array(), array(),
+									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+									"", "", $water_mark, $config['fontpath'], 6,
+									"", 0, $config['homeurl'], $layoutData['image'], true) . '</div>';
+							}
 						}
 						else {
-							$img =  grafico_modulo_sparse($id_module, 
-							$period, 0, 300, 180, modules_get_agentmodule_name($id_module),null, false, 1, 
-							false, 0, modules_get_unit($id_module), 0, 0, true, $only_image, '', 
-							1, false, '', false, false, false, 
-							$layoutData['image'], null, true, false, $type_graph);
+							if ($layoutData['type_graph'] == 'horizontal') {
+								$img = hbar_graph(true, $module_data,
+									400, 400, $color, array(), array(),
+									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+									"", "", $water_mark, $config['fontpath'], 6,
+									"", 0, $config['homeurl'], $layoutData['image']);
+							}
+							else {
+								$img = vbar_graph(true, $module_data,
+									400, 400, $color, array(), array(),
+									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+									"", "", $water_mark, $config['fontpath'], 6,
+									"", 0, $config['homeurl'], $layoutData['image'], true);
+							}
 						}
 					}
 					else{
 						if ($layoutData['label_position']=='left') {
-							$img =  '<div style="float:right;height:'.$himg.'px;">' . 
-								grafico_modulo_sparse($id_module, $period, 
-							0, $width, $height, modules_get_agentmodule_name($id_module), null, false, 1, 
-							false, 0, modules_get_unit($id_module), 0, 0, true, $only_image, '', 
-							1, false, '', false, false, false, 
-							$layoutData['image'], null, true, 
-							false, $type_graph) . '</div>';
+							if ($layoutData['type_graph'] == 'horizontal') {
+								$img = '<div style="float:right;height:'.$himg.'px;">'.
+									hbar_graph(true, $module_data,
+									$width, $width, $color, array(), array(),
+									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+									"", "", $water_mark, $config['fontpath'], 6,
+									"", 0, $config['homeurl'], $layoutData['image']) . '</div>';
+							}
+							else {
+								$img = '<div style="float:right;height:'.$himg.'px;">'. 
+									vbar_graph(true, $module_data,
+									$width, $width, $color, array(), array(),
+									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+									"", "", $water_mark, $config['fontpath'], 6,
+									"", 0, $config['homeurl'], $layoutData['image'], true) . '</div>';
+							}
 						}
-						elseif ($layoutData['label_position']=='right') {
-							$img =  '<div style="float:left;height:'.$himg.'px;">' . 
-								grafico_modulo_sparse($id_module, $period, 
-								0, $width, $height, modules_get_agentmodule_name($id_module), null, false, 1, 
-								false, 0, modules_get_unit($id_module), 0, 0, true, $only_image, 
-								'', 1, false, modules_get_unit($id_module), false, false, false, 
-								$layoutData['image'], null, true, 
-								false, $type_graph) . '</div>';
+						elseif($layoutData['label_position']=='right') {
+							if ($layoutData['type_graph'] == 'horizontal') {
+								$img = '<div style="float:left;height:'.$himg.'px;">'.
+									hbar_graph(true, $module_data,
+									$width, $width, $color, array(), array(),
+									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+									"", "", $water_mark, $config['fontpath'], 6,
+									"", 0, $config['homeurl'], $layoutData['image']) . '</div>';
+							}
+							else {
+								$img = '<div style="float:left;height:'.$himg.'px;">'. 
+									vbar_graph(true, $module_data,
+									$width, $width, $color, array(), array(),
+									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+									"", "", $water_mark, $config['fontpath'], 6,
+									"", 0, $config['homeurl'], $layoutData['image'], true) . '</div>';
+							}
 						}
 						else {
-							$img =  grafico_modulo_sparse($id_module, 
-								$period, 0, $width, $height, modules_get_agentmodule_name($id_module), null, 
-								false, 1, false, 0, modules_get_unit($id_module), 0, 0, true, 
-								$only_image, '', 1, false, '', false, 
-								false, false, $layoutData['image'], 
-								null, false, true, $type_graph);
+							if ($layoutData['type_graph'] == 'horizontal') {
+								$img = hbar_graph(true, $module_data,
+									$width, $width, $color, array(), array(),
+									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+									"", "", $water_mark, $config['fontpath'], 6,
+									"", 0, $config['homeurl'], $layoutData['image']);
+							}
+							else {
+								$img = vbar_graph(true, $module_data,
+									$width, $width, $color, array(), array(),
+									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+									"", "", $water_mark, $config['fontpath'], 6,
+									"", 0, $config['homeurl'], $layoutData['image'], true);
+							}
 						}
 					}
 				}
@@ -1931,34 +2035,13 @@ function get_bars_module_data ($id_module) {
 		$values = explode("\n", $mod_values);
 	}
 
-	$colors = array();
-	$colors[] = "#aa3333";
-	$colors[] = "#045FB4";
-	$colors[] = "#8181F7";
-	$colors[] = "#F78181";
-	$colors[] = "#D0A9F5";
-	$colors[] = "#BDBDBD";
-	$colors[] = "#6AB277";
-
 	$values_to_return = array();
 	$index = 0;
 	$color_index = 0;
 	$total = 0;
 	foreach ($values as $val) {
 		$data = explode(":", $val);
-		$values_to_return[$index]['tag_name'] = $data[0] . ", " . $data[1];
-		if ($color_index == 6) {
-			$color_index = 0;
-		}
-		$values_to_return[$index]['color'] = $colors[$color_index];
-		$values_to_return[$index]['value'] = (int)$data[1];
-		$total += (int)$data[1];
-		$index++;
-		$color_index++;
-	}
-
-	foreach ($values_to_return as $ind => $bar_data) {
-		$values_to_return[$ind]['percent'] = ($bar_data['value'] * 100) / $total;
+		$values_to_return[$data[0]] = array('g' =>$data[1]);
 	}
 
 	return $values_to_return;

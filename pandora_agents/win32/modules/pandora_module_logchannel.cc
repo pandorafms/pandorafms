@@ -176,8 +176,8 @@ Pandora_Module_Logchannel::Pandora_Module_Logchannel (string name, string source
 
 void
 Pandora_Module_Logchannel::run () {
-	list<string> event_list;
-	list<string>::iterator event;
+	list<LogChannelList> event_list;
+	list<LogChannelList>::iterator event;
 	SYSTEMTIME system_time;
 	
 	// Run
@@ -198,7 +198,7 @@ Pandora_Module_Logchannel::run () {
 
 	for (event = event_list.begin (); event != event_list.end(); ++event) {
 		// Store the data
-		this->setOutput (*event);
+		this->setOutput (event->message, &(event->timestamp));
 	}
 }
 
@@ -322,7 +322,7 @@ Pandora_Module_Logchannel::cleanBookmark () {
  * Reads available events from the event log.
  */
 void
-Pandora_Module_Logchannel::getLogEvents (list<string> &event_list) {
+Pandora_Module_Logchannel::getLogEvents (list<LogChannelList> &event_list) {
 	EVT_HANDLE hResults = NULL;
 	EVT_HANDLE hBookmark = NULL;
 	EVT_HANDLE hEvents[1];
@@ -330,13 +330,15 @@ Pandora_Module_Logchannel::getLogEvents (list<string> &event_list) {
 	PEVT_VARIANT pRenderedValues = NULL;
 	EVT_HANDLE hProviderMetadata = NULL;
 	LPWSTR pwsMessage = NULL;
-	LPWSTR ppValues[] = {L"Event/System/Provider/@Name"};
+	LPWSTR ppValues[] = {L"Event/System/Provider/@Name", L"Event/System/TimeCreated/@SystemTime"};
 	DWORD count = sizeof(ppValues)/sizeof(LPWSTR);
 	DWORD dwReturned = 0;
 	DWORD dwBufferSize = 0;
 	DWORD dwBufferUsed = 0;
 	DWORD dwPropertyCount = 0;
 	DWORD status = ERROR_SUCCESS;
+	SYSTEMTIME eventTime;
+	FILETIME lft, ft;
 	wstring filter = L"*";
 	//wstring filter = L"*[System[TimeCreated[@SystemTime>='2017-10-19T00:00:00']]]";
 	bool update_bookmark = false;
@@ -419,6 +421,17 @@ Pandora_Module_Logchannel::getLogEvents (list<string> &event_list) {
 			}
 		}
 
+		// Get the SYSTEMTIME of log
+		ULONGLONG ullTimeStamp = pRenderedValues[1].FileTimeVal;
+		ft.dwHighDateTime = (DWORD)((ullTimeStamp >> 32) & 0xFFFFFFFF);
+		ft.dwLowDateTime  = (DWORD)(ullTimeStamp & 0xFFFFFFFF);
+		// Time format conversions
+		if (!FileTimeToLocalFileTime(&ft, &lft)){
+			pandoraDebug("UTC FILETIME to LOCAL FILETIME error: %d.", GetLastError());
+		} else if (!FileTimeToSystemTime(&lft, &eventTime)){
+			pandoraDebug("FILETIME to SYSTEMTIME error: %d.", GetLastError());
+		}
+
 		// Get the handle to the provider's metadata that contains the message strings
 		hProviderMetadata = EvtOpenPublisherMetadataF(NULL, pRenderedValues[0].StringVal, NULL, 0, 0);
 		if (hProviderMetadata == NULL) {
@@ -447,7 +460,10 @@ Pandora_Module_Logchannel::getLogEvents (list<string> &event_list) {
 
 		// Save the event message
 		pandoraLog("Message: %S.", pwsMessage);
-		event_list.push_back (strUnicodeToAnsi(pwsMessage));
+		LogChannelList event_item;
+		event_item.message = strUnicodeToAnsi(pwsMessage);
+		event_item.timestamp= eventTime;
+		event_list.push_back (event_item);
 		
 		// Clean up some used vars
 		EvtCloseF(hContext);

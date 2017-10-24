@@ -59,6 +59,10 @@ namespace Pandora_Modules {
 	 */
 
 	class Pandora_Module_Logchannel : public Pandora_Module {
+    struct LogChannelList {
+        string message;
+        SYSTEMTIME timestamp;
+    };
 	private:
 		regex_t regexp;
 		unsigned long id;
@@ -72,7 +76,7 @@ namespace Pandora_Modules {
 
         void initializeLogChannel ();
         bool updateBookmarkXML (EVT_HANDLE hBookmark);
-        void getLogEvents (list<string> &event_list);
+        void getLogEvents (list<LogChannelList> &event_list);
         void cleanBookmark ();
 		LPWSTR GetMessageString(EVT_HANDLE hMetadata, EVT_HANDLE hEvent, EVT_FORMAT_MESSAGE_FLAGS FormatId);
 

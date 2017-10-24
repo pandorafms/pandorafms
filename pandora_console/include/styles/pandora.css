@@ -767,13 +767,13 @@ input.graph_min {
 	background: #fefefe url(../../images/chart_curve.png) no-repeat center !important;
 }
 input.graph_min[disabled] {
-	background: #fefefe url(../../images/icono-barras-arriba.disabled.png) no-repeat center !important;
+	background: #fefefe url(../../images/chart_curve.disabled.png) no-repeat center !important;
 }
 input.bars_graph_min {
 	background: #fefefe url(../../images/icono-barras-arriba.png) no-repeat center !important;
 }
 input.bars_graph_min[disabled] {
-	background: #fefefe url(../../images/chart_curve.disabled.png) no-repeat center !important;
+	background: #fefefe url(../../images/icono-barras-arriba.disabled.png) no-repeat center !important;
 }
 input.percentile_min {
 	background: #fefefe url(../../images/chart_bar.png) no-repeat center !important;

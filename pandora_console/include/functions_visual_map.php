@@ -510,15 +510,20 @@ function visual_map_print_item($mode = "read", $layoutData,
 			case LABEL:
 				if ($layoutData['id_layout_linked'] != 0) {
 					// Link to a map
-					$url = $config['homeurl'] .
-						'index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layoutData["id_layout_linked"];
+					if ($layoutData['id_metaconsole'] == 0) {
+						$url = $config['homeurl'] .
+							'index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layoutData["id_layout_linked"];
+					}
+					else{
+						$url = "index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=0&id_visualmap=" . $layoutData["id_layout_linked"] . "&refr=0";
+					}
 				}
 				break;
 			case ICON:
 				$url_icon = "";
 				if ($layoutData['id_layout_linked'] != 0) {
 					// Link to a map
-					if (empty($layoutData['id_metaconsole'])) {
+					if ($layoutData['id_metaconsole'] == 0) {
 						$url = 'index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layoutData["id_layout_linked"];
 					}
 					else {

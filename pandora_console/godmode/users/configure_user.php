@@ -565,7 +565,7 @@ $values = array (
 	'Tactical view'=>__('Tactical view'),
 	'Alert detail' => __('Alert detail'),
 	'Other'=>__('Other'));
-if (enterprise_installed()) {
+if (enterprise_installed() && !is_metaconsole()) {
 	$values['Dashboard'] = __('Dashboard');
 }
 $table->data[12][1] = html_print_select($values, 'section', io_safe_output($user_info["section"]), 'show_data_section();', '', -1, true, false, false);	

@@ -754,6 +754,12 @@ function get_interface_data_to_table(node_selected, selected_links) {
 			}
 			else {
 				jQuery.each(data, function (j, interface) {
+					if (interface['graph'] == "") {
+						var interf_graph = "--";
+					}
+					else {
+						var interf_graph = interface['graph'];
+					}
 					$("#interface_information").find('tbody')
 						.append($('<tr>')
 							.append($('<td>')
@@ -763,7 +769,7 @@ function get_interface_data_to_table(node_selected, selected_links) {
 								.html(interface['status'])
 							)
 							.append($('<td>')
-								.html(interface['graph'])
+								.html(interf_graph)
 							)
 							.append($('<td>')
 								.html(interface['ip'])

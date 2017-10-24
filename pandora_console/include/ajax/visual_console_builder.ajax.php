@@ -967,12 +967,18 @@ switch ($action) {
 			case 'label':
 				$values['type'] = LABEL;
 				$values['label'] = $label;
+				if(defined('METACONSOLE') && $values['id_agent'] == 0){
+					$values['id_metaconsole'] = 1;
+				}
 				break;
 			case 'icon':
 				$values['type'] = ICON;
 				$values['image'] = $image;
 				$values['width'] = $width;
 				$values['height'] = $height;
+				if(defined('METACONSOLE') && $values['id_agent'] == 0){
+					$values['id_metaconsole'] = 1;
+				}
 				break;
 			default:
 				if (enterprise_installed()) {

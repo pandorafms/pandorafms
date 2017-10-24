@@ -485,11 +485,14 @@ Pandora_Module_Logchannel::getLogEvents (list<LogChannelList> &event_list) {
 			return;
 		}
 
-		// Save the event message
-		LogChannelList event_item;
-		event_item.message = strUnicodeToAnsi(pwsMessage);
-		event_item.timestamp= eventTime;
-		event_list.push_back (event_item);
+		// Check the regex and save the message if pass the regex
+		if (this->pattern.empty () || regexec (&this->regexp, strUnicodeToAnsi(pwsMessage).c_str (), 0, NULL, 0) == 0){
+			// Save the event message
+			LogChannelList event_item;
+			event_item.message = strUnicodeToAnsi(pwsMessage);
+			event_item.timestamp= eventTime;
+			event_list.push_back (event_item);
+		}
 		
 		// Clean up some used vars
 		EvtCloseF(hContext);

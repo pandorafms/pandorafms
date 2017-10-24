@@ -556,7 +556,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'</td>';
 			
 			$form_items_advance['map_linked_row'] = array();
-			$form_items_advance['map_linked_row']['items'] = array('static_graph', 'label');
+			$form_items_advance['map_linked_row']['items'] = array('static_graph', 'label', 'icon');
 			$form_items_advance['map_linked_row']['html'] = '<td align="left">'.
 				__('Map linked') . ui_print_help_tip (
 					__("If a parent visual console is selected here, an agent or module cannot be selected and will be removed if a previous selection was done."), true) .

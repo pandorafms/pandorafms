@@ -53,7 +53,7 @@ static EvtUpdateBookmarkT EvtUpdateBookmarkF = NULL;
  * @param name Module name.
  * @param service_name Service internal name to check.
  */
-Pandora_Module_Logchannel::Pandora_Module_Logchannel (string name, string source, string type, string id, string pattern, string application)
+Pandora_Module_Logchannel::Pandora_Module_Logchannel (string name, string source, string type, string id, string pattern)
 	: Pandora_Module (name) {
     int i;
 	vector<wstring> query;

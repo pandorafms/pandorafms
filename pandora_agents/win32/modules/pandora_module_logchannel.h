@@ -29,16 +29,6 @@
 // Log event read buffer size
 #define	BUFFER_SIZE 1024
 
-// Length of a timestamp string YYYY-MM-DD HH:MM:SS
-#define	TIMESTAMP_LEN 19
-
-// The EventID property equals the InstanceId with the top two bits masked off.
-// See: http://msdn.microsoft.com/en-us/library/system.diagnostics.eventlogentry.eventid.aspx
-//#define EVENT_ID_MASK 0x3FFFFFFF
-
-// The Windows Event Log Viewer seems to ignore the most significant 16 bits.
-#define EVENT_ID_MASK 0x0000FFFF
-
 // Types for pointers to Wevtapi.dll functions
 typedef EVT_HANDLE WINAPI (*EvtQueryT) (EVT_HANDLE Session, LPCWSTR Path, LPCWSTR Query, DWORD Flags);
 typedef WINBOOL WINAPI (*EvtNextT) (EVT_HANDLE ResultSet, DWORD EventArraySize, EVT_HANDLE* EventArray, DWORD Timeout, DWORD Flags, PDWORD Returned);
@@ -78,7 +68,7 @@ namespace Pandora_Modules {
 		LPWSTR GetMessageString(EVT_HANDLE hMetadata, EVT_HANDLE hEvent, EVT_FORMAT_MESSAGE_FLAGS FormatId);
 
 	public:
-		Pandora_Module_Logchannel (string name, string source, string type, string id, string pattern, string application);
+		Pandora_Module_Logchannel (string name, string source, string type, string id, string pattern);
 		void run ();
 	};
 }

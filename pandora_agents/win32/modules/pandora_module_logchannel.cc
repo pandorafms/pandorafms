@@ -56,6 +56,8 @@ static EvtUpdateBookmarkT EvtUpdateBookmarkF = NULL;
 Pandora_Module_Logchannel::Pandora_Module_Logchannel (string name, string source, string type, string id, string pattern, string application)
 	: Pandora_Module (name) {
     int i;
+	vector<wstring> query;
+	vector<wstring>::iterator query_it;
     string upper_type = type;
 
     // Convert the type string to uppercase
@@ -64,21 +66,50 @@ Pandora_Module_Logchannel::Pandora_Module_Logchannel (string name, string source
     }
 
     // Set the type filter 
+	int type_number = -1;
 	if (upper_type.compare("ERROR") == 0) {
-        this->type = EVENTLOG_ERROR_TYPE;
+        type_number = EVENTLOG_ERROR_TYPE;
 	} else if (upper_type.compare("WARNING") == 0) {
-        this->type = EVENTLOG_WARNING_TYPE;
+        type_number = EVENTLOG_WARNING_TYPE;
 	} else if (upper_type.compare("INFORMATION") == 0) {
-        this->type = EVENTLOG_INFORMATION_TYPE;
+        type_number = EVENTLOG_INFORMATION_TYPE;
 	} else if (upper_type.compare("AUDIT SUCCESS") == 0) {
-        this->type = EVENTLOG_AUDIT_SUCCESS;
+        type_number = EVENTLOG_AUDIT_SUCCESS;
 	} else if (upper_type.compare("AUDIT FAILURE") == 0) {
-        this->type = EVENTLOG_AUDIT_FAILURE;
-    } else {
-        this->type = -1;
+        type_number = EVENTLOG_AUDIT_FAILURE;
     }
+	// Append type to log query
+	if (type_number != -1) {
+		wstringstream ss;
+		ss << L"*[System[Level='" << type_number << L"']]";
+		query.push_back(ss.str());
+	}
 
-	this->id = strtoul (id.c_str (), NULL, 0);
+	// Set the id
+	int id_number = strtoul (id.c_str (), NULL, 0);
+	if (id_number != 0) {
+		wstringstream ss;
+		ss << L"*[System[EventID='" << id_number << L"']]";
+		query.push_back(ss.str());
+	}
+
+	// Fill the filter
+	if (query.size() == 0) {
+		this->filter = L"*";
+	} else {
+		int i = 0;
+		// Add filters with and
+		wstring item_query;
+		while (query.size() > 1) {
+			item_query = query.back();
+			query.pop_back();
+			this->filter += item_query + L" and ";
+		}
+		// Append the last value without the and
+		item_query = query.back();
+		this->filter += item_query;
+	}
+
 	this->source = source;
 	this->pattern = pattern;
 	if (! pattern.empty ()) {
@@ -87,7 +118,6 @@ Pandora_Module_Logchannel::Pandora_Module_Logchannel (string name, string source
 			pandoraLog ("Invalid regular expression %s", pattern.c_str ());
 		}
 	}
-	this->application = application;
 	this->bookmark_xml = L"";
 	this->setKind (module_logchannel_str);
 
@@ -211,7 +241,6 @@ Pandora_Module_Logchannel::initializeLogChannel () {
 	EVT_HANDLE hResults;
 	EVT_HANDLE hBookmark;
 	DWORD dwReturned = 0;
-	string filter = "*";
 
     // Check whether the first bookmark is set
     if (!this->bookmark_xml.empty()) return;
@@ -220,7 +249,7 @@ Pandora_Module_Logchannel::initializeLogChannel () {
 	hResults = EvtQueryF (
 		NULL,
 		strAnsiToUnicode (this->source.c_str()).c_str(),
-		strAnsiToUnicode (filter.c_str()).c_str(),
+		this->filter.c_str(),
 		EvtOpenChannelPath | EvtQueryForwardDirection
 	);
     if (hResults == NULL) {
@@ -339,8 +368,6 @@ Pandora_Module_Logchannel::getLogEvents (list<LogChannelList> &event_list) {
 	DWORD status = ERROR_SUCCESS;
 	SYSTEMTIME eventTime;
 	FILETIME lft, ft;
-	wstring filter = L"*";
-	//wstring filter = L"*[System[TimeCreated[@SystemTime>='2017-10-19T00:00:00']]]";
 	bool update_bookmark = false;
 	
 	// An empty bookmark XML means that log cannot be open 
@@ -350,7 +377,7 @@ Pandora_Module_Logchannel::getLogEvents (list<LogChannelList> &event_list) {
 	hResults = EvtQueryF (
 		NULL,
 		strAnsiToUnicode (this->source.c_str()).c_str(),
-		filter.c_str(),
+		this->filter.c_str(),
 		EvtOpenChannelPath | EvtQueryForwardDirection
 	);
     if (hResults == NULL) {
@@ -459,7 +486,6 @@ Pandora_Module_Logchannel::getLogEvents (list<LogChannelList> &event_list) {
 		}
 
 		// Save the event message
-		pandoraLog("Message: %S.", pwsMessage);
 		LogChannelList event_item;
 		event_item.message = strUnicodeToAnsi(pwsMessage);
 		event_item.timestamp= eventTime;

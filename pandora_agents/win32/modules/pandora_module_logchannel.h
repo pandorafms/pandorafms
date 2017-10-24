@@ -65,12 +65,9 @@ namespace Pandora_Modules {
     };
 	private:
 		regex_t regexp;
-		unsigned long id;
-		int type;
-		unsigned char first_run;
 		string source;
-		string application;
 		string pattern;
+        wstring filter;
         wstring bookmark_xml;
 		HANDLE messages_dll;
 

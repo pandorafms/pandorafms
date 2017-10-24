@@ -70,8 +70,8 @@
 	<body>
 		<div style='height: 10px'>
 			<?php
-$version = '7.0NG.713';
-$build = '171004';
+$version = '7.0NG.714';
+$build = '171024';
 			$banner = "v$version Build $build";
 			
 			error_reporting(0);
@@ -379,7 +379,7 @@ function install_step1() {
 
 		if ($writable == 0) {
 			echo "<div style='text-align:right; width:100%;'>";
-			echo "<a id='step11' href='install.php?step=11'><button type='submit' class='btn_install_next'>Next</button></a>";
+			echo "<a id='step11' href='install.php?step=11'><button type='submit' class='btn_install_next'><span class='btn_install_next_text'>Next</span></button></a>";
 			echo "</div>";
 		}
 		else {
@@ -419,7 +419,7 @@ function install_step1_licence() {
 		echo file_get_contents ("COPYING");
 		echo "</textarea>";
 		echo "<p>";
-		echo "<div style='text-align: right;'><button id='btn_accept' class='btn_install_next' type='submit'>Yes, I accept licence terms</button></div>";
+		echo "<div style='text-align: right;'><button id='btn_accept' class='btn_install_next' type='submit'><span class='btn_install_next_text'>Yes, I accept licence terms</span></button></div>";
 	}
 	echo "</div>";
 		
@@ -490,13 +490,13 @@ function install_step2() {
 					modules.
 				</div>
 				<div style='text-align:right; width:100%;'>
-				Ignore it. <a id='step3' href='install.php?step=3' style='font-weight: bolder;'><button class='btn_install_next' type='submit'>Force install Step #3</button></a>
+				Ignore it. <a id='step3' href='install.php?step=3' style='font-weight: bolder;'><button class='btn_install_next' type='submit'><span class='btn_install_next_text'>Force install Step #3</span></button></a>
 				</div>";
 			}
 			else {
 				echo "<div style='text-align:right; width:100%;'>";
 				echo "<a id='step3' href='install.php?step=3'>
-				<button class='btn_install_next' type='submit'>Next</button></a>";
+				<button class='btn_install_next' type='submit'><span class='btn_install_next_text'>Next</span></button></a>";
 				echo "</div>";
 			}
 			echo "</div>";
@@ -637,7 +637,7 @@ function install_step3() {
 	if (!$error) {
 		echo "<div style='text-align:right; width:100%;'>";
 		echo "<a id='step4' href='install.php?step=4'>
-				<button class='btn_install_next' type='submit'>Next</button></a>";
+				<button class='btn_install_next' type='submit'><span class='btn_install_next_text'>Next</span></button></a>";
 		echo "</div>";
 	}
 
@@ -898,7 +898,7 @@ function install_step4() {
 			if ($everything_ok == 1) {
 				echo "<div style='text-align:right; width:100%;'>";
 				echo "<a id='step5' href='install.php?step=5'>
-				<button class='btn_install_next' type='submit'>Next</button></a>";
+				<button class='btn_install_next' type='submit'><span class='btn_install_next_text'>Next</span></button></a>";
 				echo "</div>";
 			}
 			else {
@@ -966,10 +966,10 @@ function install_step5() {
 			for updates.
 			<p>Select if you want to rename '<i>install.php</i>'.</p>
 			<form method='post' action='index.php'>
-				<button class='btn_install_next' type='submit' name='rn_file'>Yes, rename the file</button>
+				<button class='btn_install_next' type='submit' name='rn_file'><span class='btn_install_next_text'>Yes, rename the file</span></button>
 				<input type='hidden' name='rename_file' value='1'>
 			</form>
-			<p><br><b><a id='access_pandora' href='index.php'><button class='btn_install_next' type='submit'>Click here to access to your Pandora FMS console</button></a>.</b>
+			<p><br><b><a id='access_pandora' href='index.php'><button class='btn_install_next' type='submit'><span class='btn_install_next_text'>Click here to access to your Pandora FMS console</span></button></a>.</b>
 			</p>
 		</div>";
 

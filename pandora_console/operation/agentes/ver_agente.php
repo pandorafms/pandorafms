@@ -1043,9 +1043,13 @@ if ($policyTab == -1)
 	$policyTab = "";
 
 /* UX Console */
-$ux_console_tab = enterprise_hook('ux_console_tab');
-if ($ux_console_tab == -1)
-	$ux_console_tab = "";
+enterprise_include_once('/include/functions_ux_console.php');
+$active_ux = get_ux_transactions($id_agente);
+if(!empty($active_ux)){
+	$ux_console_tab = enterprise_hook('ux_console_tab');
+	if ($ux_console_tab == -1)
+		$ux_console_tab = "";
+}
 
 /* WUX Console */
 $modules_wux = enterprise_hook('get_wux_modules' , array($id_agente));
@@ -1316,7 +1320,7 @@ switch ($tab) {
 		enterprise_include ("operation/agentes/ux_console_view.php");
 		break;
 	case "wux_console_tab":
-		enterprise_include ("operation/agentes/wux_console_vpiew.php");
+		enterprise_include ("operation/agentes/wux_console_view.php");
 		break;
 	case "url_route_analyzer_tab":
 		enterprise_include ("operation/agentes/url_route_analyzer.php");

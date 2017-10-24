@@ -1320,8 +1320,13 @@ if (!empty($result)) {
 			
 			// Show units ONLY in numeric data types
 			if (isset($row['unit'])) {
-				$salida .= '&nbsp;' . '<i>' . io_safe_output($row['unit']) . '</i>';
-				$salida = ui_print_truncate_text($salida, 'agent_small', true, true, false, '[&hellip;]', 'font-size:7.5pt;');
+				$data_macro = modules_get_unit_macro($row['datos'],$row['unit']);
+				if($data_macro) {
+					$salida = $data_macro;
+				} else {
+					$salida .= '&nbsp;' . '<i>' . io_safe_output($row['unit']) . '</i>';
+					$salida = ui_print_truncate_text($salida, 'agent_small', true, true, false, '[&hellip;]', 'font-size:7.5pt;');
+				}
 			}
 		}
 		else {
@@ -1374,7 +1379,12 @@ if (!empty($result)) {
 						$salida = 0;
 					}
 					else {
-						$salida = $row['datos'];
+						$data_macro = modules_get_unit_macro($row['datos'],$row['unit']);
+						if($data_macro) {
+							$salida = $data_macro;
+						} else {
+							$salida = $row['datos'];
+						}
 					}
 				}
 				else {

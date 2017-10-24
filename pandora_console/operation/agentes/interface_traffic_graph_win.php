@@ -140,9 +140,6 @@ $interface_traffic_modules = array(
 		
 		// Get input parameters
 		$period = get_parameter ("period");
-		if ($period == "") {
-			$period = get_parameter ("period_select", SECONDS_1DAY);
-		}
 		$width = (int) get_parameter("width", 555);
 		$height = (int) get_parameter("height", 245);
 		$start_date = (string) get_parameter("start_date", date("Y-m-d"));
@@ -150,8 +147,19 @@ $interface_traffic_modules = array(
 		$zoom = (int) get_parameter ("zoom", 1);
 		$baseline = get_parameter ("baseline", 0);
 		$show_percentil = get_parameter ("show_percentil", 0);
-		$fullscale = get_parameter("fullscale", 0);
+		$fullscale = get_parameter("fullscale");
 		
+		if(!isset($_GET["fullscale_sent"]) ){
+			if(!isset($config['full_scale_option']) || 
+				$config['full_scale_option'] == 0   || 
+				$config['full_scale_option'] == 2 ){
+				$fullscale = 0;
+			}
+			else{
+				$fullscale = 1;
+			}
+		}
+
 		if ($zoom > 1) {
 			$height = $height * ($zoom / 2.1);
 			$width = $width * ($zoom / 1.4);

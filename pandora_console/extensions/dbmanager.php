@@ -114,7 +114,7 @@ function dbmgr_extension_main () {
 	
 	global $config;
 	
-	if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
+	if (!is_user_admin($config['id_user'])) {
 		db_pandora_audit("ACL Violation", "Trying to access Setup Management");
 		require ("general/noaccess.php");
 		return;

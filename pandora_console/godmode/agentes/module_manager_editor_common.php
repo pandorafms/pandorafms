@@ -363,8 +363,12 @@ $table_advanced->data[1][1] = html_print_input_text ('custom_id', $custom_id, ''
 							 $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
 
 $table_advanced->data[1][3] = __('Unit');
-$table_advanced->data[1][4] = html_print_input_text ('unit', $unit, '', 20, 65, true,
-							 $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
+// $table_advanced->data[1][4] = html_print_input_text ('unit', $unit, '', 20, 65, true,
+// 							 $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
+// $table_advanced->colspan[1][4] = 3;
+$table_advanced->data[1][4] =
+	html_print_extended_select_for_unit('unit',
+		$unit, '', '', '0', false, true, false, false);
 $table_advanced->colspan[1][4] = 3;
 
 $module_id_policy_module = 0;

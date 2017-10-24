@@ -699,6 +699,9 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	
 	if (empty($unit)) {
 		$unit = modules_get_unit($agent_module_id);
+		if(modules_is_unit_macro($unit)){
+			$unit = "";		
+		}
 	}
 
 	// Get module warning_min and critical_min
@@ -788,8 +791,10 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 		'border' => '#000000', 'color' => $config['graph_color1'],
 		'alpha' => CHART_DEFAULT_ALPHA);
 
-	$color['unit'.$series_suffix] = array('border' => null, 'color' => '#0097BC', 'alpha' => 10);
-	
+	$color['unit'.$series_suffix] = array('border' => null, 'color' => '#0097BC', 'alpha' => 10);		
+	if(modules_is_unit_macro($unit)){
+		$unit = "";		
+	}
 	if ($show_events) {
 		$legend['event'.$series_suffix_str] = __('Events').$series_suffix_str;
 		$chart_extra_data['legend_events'] = $legend['event'.$series_suffix_str];
@@ -3787,11 +3792,13 @@ function graph_graphic_moduleevents ($id_agent, $id_module, $width, $height, $pe
 		
 		$top = $datelimit + ($periodtime * ($i + 1));
 
-		$event = db_get_row_filter ('tevento',
-			array ('id_agente' => $id_agent,
-				'id_agentmodule' => $id_module,
-				'utimestamp > '.$bottom,
-				'utimestamp < '.$top), 'criticity, utimestamp');
+		$event_filter = array ('id_agente' => $id_agent,
+			'utimestamp > '.$bottom,
+			'utimestamp < '.$top);
+		if ((int)$id_module !== 0) {
+			$event_filter['id_agentmodule'] = $id_module;
+		}
+		$event = db_get_row_filter ('tevento', $event_filter, 'criticity, utimestamp');
 
 		if (!empty($event['utimestamp'])) {
 			$data[$cont]['utimestamp'] = $periodtime;
@@ -4218,8 +4225,13 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 		$chart_extra_data['legend_alerts'] = $legend['alert'.$series_suffix];
 	}
 	
-	$legend['sum'.$series_suffix] = __('Avg').$series_suffix_str.': '.__('Last').': '.remove_right_zeros(number_format($graph_stats['sum']['last'], $config['graph_precision'])).' '.$unit.' ; '.__('Avg').': '.remove_right_zeros(number_format($graph_stats['sum']['avg'], $config['graph_precision'])).' '.$unit.' ; '.__('Max').': '.remove_right_zeros(number_format($graph_stats['sum']['max'], $config['graph_precision'])).' '.$unit.' ; '.__('Min').': '.remove_right_zeros(number_format($graph_stats['sum']['min'], $config['graph_precision'])).' '.$unit;
-	
+	if(!$fullscale){
+		$legend['sum'.$series_suffix] = __('Avg').$series_suffix_str.': '.__('Last').': '.remove_right_zeros(number_format($graph_stats['sum']['last'], $config['graph_precision'])).' '.$unit.' ; '.__('Avg').': '.remove_right_zeros(number_format($graph_stats['sum']['avg'], $config['graph_precision'])).' '.$unit.' ; '.__('Max').': '.remove_right_zeros(number_format($graph_stats['sum']['max'], $config['graph_precision'])).' '.$unit.' ; '.__('Min').': '.remove_right_zeros(number_format($graph_stats['sum']['min'], $config['graph_precision'])).' '.$unit;
+	}
+	else{
+		$legend['sum'.$series_suffix] = __('Data');
+	}
+
 	if ($show_unknown) {
 		$legend['unknown'.$series_suffix] = __('Unknown').$series_suffix_str;
 		$chart_extra_data['legend_unknown'] = $legend['unknown'.$series_suffix];
@@ -5654,13 +5666,13 @@ function graph_nodata_image($width = 300, $height = 110, $type = 'area', $text =
 	$image = ui_get_full_url('images/image_problem_' . $type . '.png',
 		false, false, false); 
 	
-	if ($text == '') {
-		$text = __('No data to show');
-	}
+	// if ($text == '') {
+	// 	$text = __('No data to show');
+	// }
 	
 	$text_div = '<div class="nodata_text">' . $text . '</div>';
 	
-	$image_div = '<div class="nodata_container" style="background-image: url(\'' . $image . '\');">' .
+	$image_div = '<div class="nodata_container" style="width:80%;height:80%;background-size: 80% 80%;background-image: url(\'' . $image . '\');">' .
 		$text_div . '</div>';
 	
 	$div = '<div style="width:' . $width . 'px; height:' . $height . 'px; border: 1px dotted #ddd; background-color: white; margin: 0 auto;">' .

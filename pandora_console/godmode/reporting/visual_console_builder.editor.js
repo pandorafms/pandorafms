@@ -304,7 +304,7 @@ function update_button_palette_callback() {
 				alert('Undefined height');
 				return false;
 			}
-			
+
 			$("#text_" + idItem).html(values['label']);
 			
 			if(values['show_statistics'] == 1){
@@ -608,9 +608,6 @@ function readFields() {
 	values['process_simple_value'] = $("select[name=process_value]").val();
 	values['background'] = $("#background_image").val();
 	values['period'] = undefined != $("#hidden-period").val() ? $("#hidden-period").val() : $("#period").val();
-	if (values['period'] == null) {
-		values['period'] = undefined != $("#hidden-period").val() ? $("#hidden-period").val() : $("#period_select").val();
-	}
 	values['width'] = $("input[name=width]").val();
 	values['width_data_image'] = $("#data_image_width").val();
 	if(selectedItem == 'simple_value' || creationItem == 'simple_value'){
@@ -699,10 +696,6 @@ function create_button_palette_callback() {
 		case 'auto_sla_graph':
 			if ((values['agent'] == '')) {
 				alert($("#message_alert_no_agent").html());
-				validate = false;
-			}
-			if ((values['module'] == 0)) {
-				alert($("#message_alert_no_module").html());
 				validate = false;
 			}
 			break;
@@ -2906,9 +2899,6 @@ function updateDB(type, idElement , values, event) {
 }
 
 function copyDB(idItem) {
-	
-	console.log(idItem);
-	
 	metaconsole = $("input[name='metaconsole']").val();
 
 	parameter = Array();
@@ -3364,8 +3354,6 @@ function eventsItems(drag) {
 		}
 		}
 		else{
-			console.log('Dragstart');
-			
 			multiDragStart(event);
 			
 		}
@@ -3382,8 +3370,6 @@ function eventsItems(drag) {
 		updateDB(selectedItem, idItem, values, 'dragstop');
 		}
 		else{
-			
-				console.log('Dragstop');
 			multidragStop(event);
 		}
 	});
@@ -3470,10 +3456,6 @@ function eventsItems(drag) {
 				draw_user_lines("", 0, 0, 0 , 0, 0, true);
 				break;
 		}
-	}
-	else{
-		console.log('Drag');
-		
 	}
 	});
 }

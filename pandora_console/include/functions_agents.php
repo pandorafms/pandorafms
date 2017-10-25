@@ -314,6 +314,13 @@ function agents_get_agents ($filter = false, $fields = false,
 		$search = '';
 	}
 	
+	if (isset($filter['search_custom'])) {
+		$search_custom = $filter['search_custom'];
+		unset($filter['search_custom']);
+	} else {
+		$search_custom = '';
+	}
+	
 	if (isset($filter['offset'])) {
 		$offset = $filter['offset'];
 		unset($filter['offset']);
@@ -450,8 +457,8 @@ function agents_get_agents ($filter = false, $fields = false,
 			$sql_extra, $where, $where_nogroup, $status_sql, $search, $disabled);	
 	}
 	else {
-		$where = sprintf('%s AND %s AND (%s) %s AND %s',
-			$where, $where_nogroup, $status_sql, $search, $disabled);
+		$where = sprintf('%s AND %s AND (%s) %s AND %s %s',
+			$where, $where_nogroup, $status_sql, $search, $disabled, $search_custom);
 	}
 	$sql = sprintf('SELECT %s
 		FROM tagente
@@ -1297,6 +1304,24 @@ function agents_get_agent_id ($agent_name, $io_safe_input = false) {
 		$agent_name = io_safe_input($agent_name);
 	}
 	return (int) db_get_value ('id_agente', 'tagente', 'nombre', $agent_name);
+}
+
+/**
+ * Get agents id from an agent alias.
+ *
+ * @param string $agent_alias Agent alias to get its id.
+ * @param boolean $io_safe_input If it is true transform to safe string, by default false.
+ *
+ * @return int Id from the agent of the given alias.
+ */
+function agents_get_agent_id_by_alias ($alias, $io_safe_input = false) {
+	if ($io_safe_input) {
+		$alias = io_safe_input($alias);
+	}
+	$sql = sprintf("SELECT tagente.id_agente FROM tagente WHERE alias LIKE  '%s' ",$alias);
+	$agent_id = db_get_all_rows_sql($sql);
+	
+	return $agent_id;
 }
 
 /**

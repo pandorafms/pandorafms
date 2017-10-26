@@ -168,7 +168,7 @@ if ($searchAgents) {
 			)
 	";
 
-	$select = "SELECT t1.id_agente, t1.ultimo_contacto, t1.nombre, t1.id_os, t1.intervalo, t1.id_grupo, t1.disabled, t1.alias";
+	$select = "SELECT t1.id_agente, t1.ultimo_contacto, t1.nombre, t1.id_os, t1.intervalo, t1.id_grupo, t1.disabled, t1.alias, t1.quiet";
 	if ($only_count) {
 		$limit = " ORDER BY " . $order['field'] . " " . $order['order'] . 
 			" LIMIT " . $config["block_size"] . " OFFSET 0";

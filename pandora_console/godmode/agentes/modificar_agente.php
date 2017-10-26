@@ -540,10 +540,6 @@ if ($agents !== false) {
 		}
 		echo '<span class="left">';
 		echo "<strong>";
-		if ($agent['quiet']) {
-			html_print_image("images/dot_green.disabled.png", false, array("border" => '0', "title" => __('Quiet'), "alt" => ""));
-			echo "&nbsp;";
-		}
 		
 		if (check_acl ($config["id_user"], $agent["id_grupo"], "AW")) {
 			$main_tab = 'main';
@@ -562,14 +558,21 @@ if ($agents !== false) {
 			"</a>";
 		echo "</strong>";
 
-		$in_planned_downtime = db_get_value_filter('id', 'tplanned_downtime_agents', array('id_agent' => $agent["id_agente"]));
-
+		$in_planned_downtime = db_get_sql('SELECT executed FROM tplanned_downtime 
+			INNER JOIN tplanned_downtime_agents ON tplanned_downtime.id = tplanned_downtime_agents.id_downtime
+			WHERE tplanned_downtime_agents.id_agent = '. $agent["id_agente"] . ' AND tplanned_downtime.executed = 1');
+			
 		if ($agent["disabled"]) {
 			ui_print_help_tip(__('Disabled'));
 
 			if (!$in_planned_downtime) {
 				echo "</em>";
 			}
+		}
+		
+		if ($agent['quiet']) {
+			echo "&nbsp;";
+			html_print_image("images/dot_green.disabled.png", false, array("border" => '0', "title" => __('Quiet'), "alt" => ""));
 		}
 
 		if ($in_planned_downtime) {

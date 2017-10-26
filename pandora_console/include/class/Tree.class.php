@@ -1133,7 +1133,8 @@ class Tree {
 		if (empty($data))
 			return array();
 
-		if ($this->type == 'agent') {
+		// [26/10/2017] It seems the module hierarchy should be only available into the tree by group
+		if ($this->rootType == 'group' && $this->type == 'agent') {
 			$data = $this->getProcessedModules($data);
 		}
 

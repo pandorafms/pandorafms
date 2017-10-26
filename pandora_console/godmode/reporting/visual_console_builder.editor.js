@@ -445,14 +445,12 @@ function update_button_palette_callback() {
 
 			setEventsBar(idItem, values);
 			break;
+		case 'donut_graph':
+			$("#image_" + idItem).attr("src", "images/spinner.gif");
+
+			setDonutsGraph(idItem, values);
+			break;
 		case 'simple_value':
-		//checkpoint
-			// if(($('#text-label_ifr').contents().find('#tinymce p').html() == '_VALUE_' || 
-			// $('#text-label_ifr').contents().find('#tinymce').html() == '_VALUE_') 
-			// && $('#data_image_check').html() != 'On'){
-			// 		alert('_VALUE_ exactly value is only enable for data image. Please change label text or select a data image module.');
-			// 		return;
-			// }
 			$("#" + idItem).html(values['label']);
 			if( (values['label'].replace( /<.*?>/g, '' ) != '_VALUE_') 
 				&& (values['label'].replace( /<.*?>/g, '' ) != '(_VALUE_)') ){
@@ -467,12 +465,7 @@ function update_button_palette_callback() {
 				$("#" + idItem).html(
 					'<table><tbody><tr><td></td></tr><tr><td><span style="" id="text_21" class="text">'+values["label"]+'</span></td></tr><tr><td></td></tr></tbody></table>'
 				)
-				
 			}
-		
-			
-			//$("#simplevalue_" + idItem)
-				//.html($('<img></img>').attr('src', "images/spinner.gif"));
 			setModuleValue(idItem,values['process_simple_value'], values['period'],values['width']);
 			break;
 		case 'label':
@@ -706,6 +699,12 @@ console.log(values);
 			}
 			break;
 		case 'auto_sla_graph':
+			if ((values['agent'] == '')) {
+				alert($("#message_alert_no_agent").html());
+				validate = false;
+			}
+			break;
+		case 'donut_graph':
 			if ((values['agent'] == '')) {
 				alert($("#message_alert_no_agent").html());
 				validate = false;
@@ -998,6 +997,7 @@ function toggle_item_palette() {
 		activeToolboxButton('box_item', true);
 		activeToolboxButton('line_item', true);
 		activeToolboxButton('auto_sla_graph', true);
+		activeToolboxButton('donut_graph', true);
 
 		if (typeof(enterprise_activeToolboxButton) == 'function') {
 			enterprise_activeToolboxButton(true);
@@ -1019,6 +1019,7 @@ function toggle_item_palette() {
 		activeToolboxButton('module_graph', false);
 		activeToolboxButton('bars_graph', false);
 		activeToolboxButton('auto_sla_graph', false);
+		activeToolboxButton('donut_graph', false);
 		activeToolboxButton('simple_value', false);
 		activeToolboxButton('label', false);
 		activeToolboxButton('icon', false);
@@ -2075,6 +2076,53 @@ function setEventsBar(id_data, values) {
 	});
 }
 
+function setDonutsGraph (id_data, values) {
+	var url_hack_metaconsole = '';
+	if (is_metaconsole()) {
+		url_hack_metaconsole = '../../';
+	}
+
+	width_percentile = values['width_percentile'];
+
+	parameter = Array();
+
+	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
+	parameter.push ({name: "action", value: "get_module_type_string"});
+	parameter.push ({name: "id_agent", value: values['id_agent']});
+	parameter.push ({name: "id_agent_module", value: values['module']});
+	parameter.push ({name: "id_element", value: id_data});
+	parameter.push ({name: "id_visual_console", value: id_visual_console});
+	jQuery.ajax({
+		url: get_url_ajax(),
+		data: parameter,
+		type: "POST",
+		dataType: 'json',
+		success: function (data) {
+			if (data['no_data'] == true) {
+				if (values['width'] == "0") {
+					$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/wrong_donut_graph.png');
+				}
+				else {
+					$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/wrong_donut_graph.png');
+					$("#" + id_data + " img").css('width', width_percentile + 'px');
+					$("#" + id_data + " img").css('height', width_percentile + 'px');
+				}
+			}
+			else {
+				$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/donut-graph.png');
+				
+				if($('#text-width').val() == 0 || $('#text-height').val() == 0){
+					// Image size
+				}
+				else{
+					$("#" + id_data + " img").css('width', $('#text-width_percentile').val()+'px');
+					$("#" + id_data + " img").css('height', $('#text-width_percentile').val()+'px');
+				}
+			}
+		}
+	});
+}
+
 function setPercentileBubble(id_data, values) {
 	metaconsole = $("input[name='metaconsole']").val();
 
@@ -2421,6 +2469,16 @@ function createItem(type, values, id_data) {
 					);
 
 			setEventsBar(id_data, values);
+			break;
+		case 'donut_graph':
+			var sizeStyle = '';
+			var imageSize = '';
+			item = $('<div id="' + id_data + '" class="item donut_graph" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+							'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" />' +
+					'</div>'
+					);
+
+			setDonutsGraph(id_data, values);
 			break;
 		case 'percentile_bar':
 		case 'percentile_item':
@@ -2790,6 +2848,7 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 		case 'module_graph':
 		case 'bars_graph':
 		case 'auto_sla_graph':
+		case 'donut_graph':
 			if (type == 'simple_value') {
 				setModuleValue(idElement,
 					values.process_simple_value,
@@ -3201,6 +3260,15 @@ function eventsItems(drag) {
 				activeToolboxButton('delete_item', true);
 				activeToolboxButton('show_grid', false);
 			}
+			if ($(divParent).hasClass('donut_graph')) {
+				creationItem = null;
+				selectedItem = 'donut_graph';
+				idItem = $(divParent).attr('id');
+				activeToolboxButton('copy_item', true);
+				activeToolboxButton('edit_item', true);
+				activeToolboxButton('delete_item', true);
+				activeToolboxButton('show_grid', false);
+			}
 			if ($(divParent).hasClass('group_item')) {
 				creationItem = null;
 				selectedItem = 'group_item';
@@ -3409,6 +3477,9 @@ function eventsItems(drag) {
 			}
 			if ($(event.target).hasClass('auto_sla_graph')) {
 				selectedItem = 'auto_sla_graph';
+			}
+			if ($(event.target).hasClass('donut_graph')) {
+				selectedItem = 'donut_graph';
 			}
 			if ($(event.target).hasClass('group_item')) {
 				selectedItem = 'group_item';
@@ -3733,6 +3804,10 @@ function click_button_toolbox(id) {
 			toolbuttonActive = creationItem = 'auto_sla_graph';
 			toggle_item_palette();
 			break;
+		case 'donut_graph':
+			toolbuttonActive = creationItem = 'donut_graph';
+			toggle_item_palette();
+			break;
 		case 'simple_value':
 			toolbuttonActive = creationItem = 'simple_value';
 			toggle_item_palette();
@@ -3791,6 +3866,7 @@ function click_button_toolbox(id) {
 				activeToolboxButton('service', false);
 				activeToolboxButton('group_item', false);
 				activeToolboxButton('auto_sla_graph', false);
+				activeToolboxButton('donut_graph', false);
 				activeToolboxButton('copy_item', false);
 				activeToolboxButton('edit_item', false);
 				activeToolboxButton('delete_item', false);
@@ -3822,6 +3898,7 @@ function click_button_toolbox(id) {
 				activeToolboxButton('icon', true);
 				activeToolboxButton('group_item', true);
 				activeToolboxButton('auto_sla_graph', true);
+				activeToolboxButton('donut_graph', true);
 			}
 			break;
 		case 'save_visualmap':

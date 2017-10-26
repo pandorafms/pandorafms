@@ -793,6 +793,12 @@ input.auto_sla_graph_min {
 input.auto_sla_graph_min[disabled] {
 	background: #fefefe url(../../images/auto_sla_graph.disabled.png) no-repeat center !important;
 }
+input.donut_graph_min {
+	background: #fefefe url(../../images/icono-quesito.png) no-repeat center !important;
+}
+input.donut_graph_min[disabled] {
+	background: #fefefe url(../../images/icono-quesito.disabled.png) no-repeat center !important;
+}
 input.binary_min {
 	background: #fefefe url(../../images/binary.png) no-repeat center !important;
 }

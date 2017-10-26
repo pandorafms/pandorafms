@@ -163,8 +163,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'simple_value',
 				'datos',
 				'group_item',
-				'auto_sla_graph',
-				'bars_graph');
+				'auto_sla_graph');
 			$form_items['label_row']['html'] =
 				'<td align="left" valign="top" style="">' . __('Label') . '
 				
@@ -215,8 +214,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'module_graph',
 				'simple_value',
 				'datos',
-				'icon',
-				'bars_graph');
+				'icon');
 				
 			if (!is_metaconsole())
 				$form_items['enable_link_row']['items'][] = 'group_item';
@@ -224,7 +222,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items['enable_link_row']['html'] =
 				'<td align="left" style="">' . __('Enable link') . '</td>
 				<td align="left" style="">' .
-				html_print_checkbox('enable_link', '', 1, true) . '</td>';
+				html_print_checkbox('enable_link', '', !is_metaconsole(), true) . '</td>';
 			
 			
 			$form_items['preview_row'] = array();
@@ -239,8 +237,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items['background_color'] = array();
 			$form_items['background_color']['items'] = array(
 				'module_graph',
-				'datos',
-				'bars_graph');
+				'datos');
 			$form_items['background_color']['html'] = '<td align="left"><span>' .
 				__('Background color') . '</span></td>
 				<td align="left">'. html_print_select (
@@ -280,7 +277,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items['agent_row'] = array();
 			$form_items['agent_row']['items'] = array('static_graph',
 				'percentile_bar', 'percentile_item', 'module_graph',
-				'simple_value', 'datos', 'auto_sla_graph', 'bars_graph');
+				'simple_value', 'datos', 'auto_sla_graph', 'bars_graph', 'donut_graph');
 			$form_items['agent_row']['html'] = '<td align="left">' .
 				__('Agent') . '</td>';			
 			$params = array();
@@ -313,7 +310,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items['module_row'] = array();
 			$form_items['module_row']['items'] = array('static_graph',
 				'percentile_bar', 'percentile_item', 'module_graph',
-				'simple_value', 'datos', 'auto_sla_graph', 'bars_graph');
+				'simple_value', 'datos', 'auto_sla_graph', 'donut_graph', 'bars_graph');
 			$form_items['module_row']['html'] = '<td align="left">' .
 				__('Module') . '</td>
 				<td align="left">' .
@@ -399,7 +396,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			
 			
 			$form_items['percentile_bar_row_1'] = array();
-			$form_items['percentile_bar_row_1']['items'] = array('percentile_bar', 'percentile_item', 'datos', 'bars_graph');
+			$form_items['percentile_bar_row_1']['items'] = array('percentile_bar', 'percentile_item', 'datos', 'donut_graph', 'bars_graph');
 			$form_items['percentile_bar_row_1']['html'] = '<td align="left">' .
 				__('Width') . '</td>
 				<td align="left">' . html_print_input_text('width_percentile', 0, '', 3, 5, true) . '</td>';
@@ -475,13 +472,6 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'<span id="count_items">1</span> '.
 				'<span id="dir_items"></span> item/s				
 				</td>';
-
-			$bars_graph_types = array('vertical' => __('Vertical'), 'horizontal' => __('Horizontal'));
-			$form_items['bars_graph_type'] = array();
-			$form_items['bars_graph_type']['items'] = array('bars_graph');
-			$form_items['bars_graph_type']['html'] = '<td align="left">' .
-				__('Type') . '</td>
-				<td align="left">' . html_print_select($bars_graph_types, 'bars_graph_type', 'vertical', '', '', '', true) . '</td>';
 			
 			
 			//Insert and modify before the buttons to create or update.
@@ -528,7 +518,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items_advance['position_row']['items'] = array('static_graph',
 				'percentile_bar', 'percentile_item', 'module_graph',
 				'simple_value', 'label', 'icon', 'datos', 'box_item',
-				'auto_sla_graph', 'bars_graph');
+				'auto_sla_graph');
 			$form_items_advance['position_row']['html'] = '
 				<td align="left">' . __('Position') . '</td>
 				<td align="left">(' . html_print_input_text('left', '0', '', 3, 5, true) .
@@ -557,8 +547,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items_advance['parent_row']['items'] = array(
 				'group_item', 'static_graph',
 				'percentile_bar', 'percentile_item', 'module_graph',
-				'simple_value', 'label', 'icon', 'datos', 'auto_sla_graph',
-				'bars_graph');
+				'simple_value', 'label', 'icon', 'datos', 'auto_sla_graph');
 			$form_items_advance['parent_row']['html'] = '<td align="left">' .
 				__('Parent') . '</td>
 				<td align="left">' .
@@ -567,11 +556,12 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'</td>';
 			
 			$form_items_advance['map_linked_row'] = array();
-			$form_items_advance['map_linked_row']['items'] = array('static_graph', 'label', 'icon');
+			$form_items_advance['map_linked_row']['items'] = array(
+				'group_item', 'static_graph', 'percentile_bar',
+				'percentile_item', 'module_graph', 'simple_value',
+				'icon', 'label', 'datos');
 			$form_items_advance['map_linked_row']['html'] = '<td align="left">'.
-				__('Map linked') . ui_print_help_tip (
-					__("If a parent visual console is selected here, an agent or module cannot be selected and will be removed if a previous selection was done."), true) .
-					'</td>' .
+				__('Map linked') . '</td>' .
 				'<td align="left">' . html_print_select_from_sql (
 				'SELECT id, name
 				FROM tlayout
@@ -581,6 +571,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items_advance['line_case']['items'] = array('line_item');
 			$form_items_advance['line_case']['html'] = '
 				<td align="left">' . __('Lines haven\'t advanced options') . '</td>';
+
 
 			//Insert and modify before the buttons to create or update.
 			if (enterprise_installed()) {
@@ -683,6 +674,7 @@ function visual_map_editor_print_toolbox() {
 		visual_map_print_button_editor('static_graph', __('Static Graph'), 'left', false, 'camera_min', true);
 		visual_map_print_button_editor('percentile_item', __('Percentile Item'), 'left', false, 'percentile_item_min', true);
 		visual_map_print_button_editor('module_graph', __('Module Graph'), 'left', false, 'graph_min', true);
+		visual_map_print_button_editor('donut_graph', __('Donut Graph'), 'left', false, 'donut_graph_min', true);
 		visual_map_print_button_editor('bars_graph', __('Bars Graph'), 'left', false, 'bars_graph_min', true);
 		visual_map_print_button_editor('auto_sla_graph', __('Auto SLA Graph'), 'left', false, 'auto_sla_graph_min', true);
 		visual_map_print_button_editor('simple_value', __('Simple Value'), 'left', false, 'binary_min', true);
@@ -758,17 +750,3 @@ function visual_map_editor_print_hack_translate_strings() {
 		__('Could not be save') .'</span>';
 }
 ?>
-
-<script type="text/javascript">
-$(document).ready (function () {
-	$("#map_linked").change(function () {
-		$("#text-agent").val("");
-		$("input[name=id_agent]").val(0);
-		$("#module").empty();
-		$("#module")
-			.append($("<option>")
-				.attr("value", 0)
-				.html("<?php echo __('Any'); ?>"));
-	})
-});
-</script>

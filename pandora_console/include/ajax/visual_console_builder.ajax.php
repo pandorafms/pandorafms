@@ -104,7 +104,6 @@ $width_percentile = get_parameter('width_percentile', null);
 $max_percentile = get_parameter('max_percentile', null);
 $height_module_graph = get_parameter('height_module_graph', null);
 $width_module_graph = get_parameter('width_module_graph', null);
-$bars_graph_type = get_parameter('bars_graph_type', null);
 $id_agent_module = get_parameter('id_agent_module', 0);
 $process_simple_value = get_parameter('process_simple_value', PROCESS_VALUE_NONE);
 $type_percentile = get_parameter('type_percentile', 'percentile');
@@ -139,39 +138,6 @@ switch ($action) {
 	case 'get_font':
 		$return = array();
 		$return['font'] = $config['fontpath'];
-		echo json_encode($return);
-		break;
-
-	case 'get_module_type_string':
-		$data = array ();
-
-		$layoutData = db_get_row_filter('tlayout_data', array('id' => $id_element));
-
-		if ($layoutData['id_metaconsole'] != 0) {
-			$connection = db_get_row_filter ('tmetaconsole_setup', $layoutData['id_metaconsole']);
-
-			if (metaconsole_load_external_db($connection) != NOERR) {
-				continue;
-			}
-		}
-
-		$is_string = db_get_value_filter ('id_tipo_modulo', 'tagente_modulo',
-			array ('id_agente' => $id_agent,
-				'id_agente_modulo' => $id_module));
-		
-		if ($layoutData['id_metaconsole'] != 0) {
-			metaconsole_restore_db();
-		}
-
-		$return = array();
-		if (($is_string == 17) || ($is_string == 23) || ($is_string == 3) ||
-			($is_string == 10) || ($is_string == 33)) {
-			$return['no_data'] = false;
-		}
-		else {
-			$return['no_data'] = true;
-		}
-
 		echo json_encode($return);
 		break;
 	
@@ -500,6 +466,7 @@ switch ($action) {
 			case 'icon':
 			case 'auto_sla_graph':
 			case 'bars_graph':
+			case 'donut_graph':
 			default:
 				if ($type == 'label') {
 					$values['type'] = LABEL;
@@ -550,11 +517,11 @@ switch ($action) {
 						$values['id_agent'] = $id_agent;
 					}
 				}
-				else if ($agent !== null) {
-					$id_agent = agents_get_agent_id($agent);
+				else if (!empty($id_agent)) {
 					$values['id_agent'] = $id_agent;
 				}
-				else {
+				else if ($agent !== null) {
+					$id_agent = agents_get_agent_id($agent);
 					$values['id_agent'] = $id_agent;
 				}
 				if ($id_module !== null) {
@@ -623,17 +590,6 @@ switch ($action) {
 							$values['id_custom_graph'] = $id_custom_graph;
 						}
 						break;
-					case 'bars_graph':
-						if ($width_percentile !== null) {
-							$values['width'] = $width_percentile;
-						}
-						if ($bars_graph_type !== null) {
-							$values['type_graph'] = $bars_graph_type;
-						}
-						if ($background_color !== null) {
-							$values['image'] = $background_color;
-						}
-						break;
 					case 'percentile_item':
 					case 'percentile_bar':
 						if ($action == 'update') {
@@ -696,10 +652,6 @@ switch ($action) {
 							unset($values['image']);
 							unset($values['type_graph']);
 							break;
-						case 'bars_graph':
-							unset($values['image']);
-							unset($values['type_graph']);
-							break;
 						case 'box_item':
 							unset($values['border_width']);
 							unset($values['border_color']);
@@ -757,7 +709,6 @@ switch ($action) {
 			case 'static_graph':
 			case 'group_item':
 			case 'module_graph':
-			case 'bars_graph':
 			case 'simple_value':
 			case 'label':
 			case 'icon':
@@ -837,10 +788,6 @@ switch ($action) {
 					case 'module_graph':
 						$elementFields['width_module_graph'] = $elementFields['width'];
 						$elementFields['height_module_graph'] = $elementFields['height'];
-						break;
-					case 'bars_graph':
-						$elementFields['width_percentile'] = $elementFields['width'];
-						$elementFields['bars_graph_type'] = $elementFields['type_graph'];
 						break;
 					case 'box_item':
 						$elementFields['width_box'] = $elementFields['width'];
@@ -978,17 +925,6 @@ switch ($action) {
 				}
 				$values['period'] = $period;
 				break;
-			case 'bars_graph':
-				$values['type'] = BARS_GRAPH;
-				if ($width_percentile == null) {
-					$values['width'] = 0;
-				}
-				else {
-					$values['width'] = $width_percentile;
-				}
-				$values['type_graph'] = $bars_graph_type;
-				$values['image'] = $background_color;
-				break;
 			case 'auto_sla_graph':
 				$values['type'] = AUTO_SLA_GRAPH;
 				$values['period'] = $event_max_time_row;
@@ -1012,9 +948,6 @@ switch ($action) {
 				$values['image'] = $image;
 				$values['width'] = $width;
 				$values['height'] = $height;
-				if(defined('METACONSOLE') && $values['id_agent'] == 0){
-					$values['id_metaconsole'] = 1;
-				}
 				break;
 			case 'group_item':
 				$values['type'] = GROUP_ITEM;
@@ -1033,18 +966,12 @@ switch ($action) {
 			case 'label':
 				$values['type'] = LABEL;
 				$values['label'] = $label;
-				if(defined('METACONSOLE') && $values['id_agent'] == 0){
-					$values['id_metaconsole'] = 1;
-				}
 				break;
 			case 'icon':
 				$values['type'] = ICON;
 				$values['image'] = $image;
 				$values['width'] = $width;
 				$values['height'] = $height;
-				if(defined('METACONSOLE') && $values['id_agent'] == 0){
-					$values['id_metaconsole'] = 1;
-				}
 				break;
 			default:
 				if (enterprise_installed()) {

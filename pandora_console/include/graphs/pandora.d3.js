@@ -1493,3 +1493,119 @@ function print_phases_donut (recipient, phases) {
 			.remove();
 	}
 }
+
+function print_donut_graph (recipient, width, height, module_data) {
+	var svg = d3.select(recipient)
+		.append("svg")
+			.attr("width", width)
+			.attr("height", height)
+		.append("g");
+
+	svg.append("g")
+		.attr("class", "slices");
+
+	var radius = 120;
+	var increment_y = 60;
+	var increment_y_padding = 25;
+	var text_size = 15;
+	var decrement_x_padding = 150;
+	if (width >= 500) {
+		radius = 160;
+		increment_y = 60;
+		text_size = 25;
+		increment_y_padding = 25;
+		decrement_x_padding = 75;
+	}
+	else if (width >= 400) {
+		radius = 120;
+		increment_y = 60;
+		text_size = 22;
+		increment_y_padding = 25;
+		decrement_x_padding = 75;
+	}
+	else if (width >= 300) {
+		radius = 80;
+		increment_y = 40;
+		text_size = 14;
+		increment_y_padding = 20;
+		decrement_x_padding = 60;
+	}
+	else if (width >= 200) {
+		radius = 50;
+		increment_y = 40;
+		text_size = 14;
+		increment_y_padding = 15;
+		decrement_x_padding = 45;
+	}
+	else if (width >= 100) {
+		radius = 20;
+		increment_y = 20;
+		text_size = 10;
+		increment_y_padding = 8;
+		decrement_x_padding = 25;
+	}
+	else {
+		radius = 10;
+		increment_y = 10;
+		text_size = 4;
+		increment_y_padding = 3;
+		decrement_x_padding = 5;
+	}
+
+	var arc = d3.svg.arc()
+		.outerRadius(radius * 0.8)
+		.innerRadius(radius * 0.4);
+
+	var key = function(d){ return d.data.label; };
+
+	var pie = d3.layout.pie()
+		.sort(null)
+		.value(function(d) {
+			return parseFloat(d.percent);
+		});
+
+	jQuery.each(module_data, function (key, m_d) {
+		svg.append("g")
+			.append("text")
+				.attr("transform", "translate(" + (((width / 2) - (radius + decrement_x_padding))) + "," + (((height / 2) - radius) - increment_y) + ")")
+				.text(m_d.tag_name)
+				.style("font-family", "Verdana")
+				.style("font-size", text_size + "px");
+		
+		increment_y -= increment_y_padding;
+	});
+
+	function donutData (){
+		return module_data.map(function(m_data){
+			return { label: m_data.tag_name, percent: m_data.percent, color : m_data.color}
+		});
+	}
+
+	print_phases(donutData());
+
+	function print_phases(data) {
+		var slice = svg.select(".slices").selectAll("path.slice")
+			.data(pie(data), key);
+
+		slice.enter()
+			.insert("path")
+			.style("fill", function(d) {
+					return d.data.color;
+			})
+			.attr("class", "slice")
+			.attr("transform", "translate(" + width / 2 + "," + (height - radius) + ")");
+
+		slice.transition()
+				.duration(0)
+				.attrTween("d", function(d) {
+					this._current = this._current || d;
+					var interpolate = d3.interpolate(this._current, d);
+					this._current = interpolate(0);
+					return function(t) {
+						return arc(interpolate(t));
+					};
+				});
+ 
+		slice.exit().remove();
+	}
+}

@@ -31,7 +31,6 @@ require_once ($config['homedir'].'/include/functions_agents.php');
 require_once ($config['homedir'].'/include/functions_modules.php');
 require_once ($config['homedir'].'/include/functions_users.php');
 require_once ($config['homedir'].'/include/functions.php');
-require_once ($config['homedir'].'/include/graphs/functions_d3.php');
 
 function visual_map_print_item_toolbox($idDiv, $text, $float) {
 	if ($float == 'left') {
@@ -380,9 +379,6 @@ function visual_map_print_item($mode = "read", $layoutData,
 			case AUTO_SLA_GRAPH:
 				$link = true;
 				break;
-			case DONUT_GRAPH:
-				$link = true;
-				break;
 			default:
 				if (!empty($element_enterprise)) {
 					$link = $element_enterprise['link'];
@@ -491,8 +487,19 @@ function visual_map_print_item($mode = "read", $layoutData,
 						"&date_to=" . $date_to . "&time_to=" . $time_to . "&status=-1";
 				}
 				break;
-
+			
 			case DONUT_GRAPH:
+				if (empty($layout_data['id_metaconsole'])) {
+					$url = $config['homeurl'] . "index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=" . $layoutData['id_agent'] . 
+						"&tab=module&edit_module=1&id_agent_module=" . $layoutData['id_agente_modulo'];
+				}
+				else {
+					$url = "index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=" . $layoutData['id_agent'] . 
+						"&tab=module&edit_module=1&id_agent_module=" . $layoutData['id_agente_modulo'];
+				}
+				break;
+
+			case BARS_GRAPH:
 				if (empty($layout_data['id_metaconsole'])) {
 					$url = $config['homeurl'] . "index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=" . $layoutData['id_agent'] . 
 						"&tab=module&edit_module=1&id_agent_module=" . $layoutData['id_agente_modulo'];
@@ -1139,84 +1146,6 @@ function visual_map_print_item($mode = "read", $layoutData,
 
 			$z_index = 2 + 1;
 			break;
-		
-		case DONUT_GRAPH:
-			if ($layoutData['id_metaconsole'] != 0) {
-				$connection = db_get_row_filter ('tmetaconsole_setup', $layoutData['id_metaconsole']);
-				if (metaconsole_load_external_db($connection) != NOERR) {
-					continue;
-				}
-			}
-
-			$is_string = db_get_value_filter ('id_tipo_modulo', 'tagente_modulo',
-				array ('id_agente' => $layoutData['id_agent'],
-					'id_agente_modulo' => $id_module));
-
-			if (($is_string == 17) || ($is_string == 23) || ($is_string == 3) ||
-				($is_string == 10) || ($is_string == 33)) {
-				$no_data = false;
-			}
-			else {
-				$no_data = true;
-			}
-
-			if ($no_data) {
-				if($width == 0){
-					if ($layoutData['id_metaconsole'] != 0) {
-						$img =  '<img src="../../images/console/signes/wrong_donut_graph.png">';
-					}
-					else{
-						$img =  '<img src="images/console/signes/wrong_donut_graph.png">';	
-					}
-				}
-				else{
-					if ($layoutData['id_metaconsole'] != 0) {
-						$img =  '<img src="../../images/console/signes/wrong_donut_graph.png" style="width:'.$width.'px;height:'. $height.'px;">';
-					}
-					else{
-						$img =  '<img src="images/console/signes/wrong_donut_graph.png" style="width:'.$width.'px;height:'. $height.'px;">';
-					}
-				}
-			}
-			else {
-				$donut_data = get_donut_module_data($layoutData['id_agente_modulo']);
-
-				if ((get_parameter('action') == 'edit') || (get_parameter('operation') == 'edit_visualmap')) {
-					if($width == 0){
-						if ($layoutData['id_metaconsole'] != 0) {
-							$img =  '<img src="../../images/console/signes/donut-graph.png">';
-						}
-						else{
-							$img =  '<img src="images/console/signes/donut-graph.png">';	
-						}
-					}
-					else{
-						if ($layoutData['id_metaconsole'] != 0) {
-							$img =  '<img src="../../images/console/signes/donut-graph.png" style="width:'.$width.'px;height:'. $height.'px;">';
-						}
-						else{
-							$img =  '<img src="images/console/signes/donut-graph.png" style="width:'.$width.'px;height:'. $height.'px;">';
-						}
-					}
-				}
-				else {
-					if ($width == 0) {
-						$img = d3_donut_graph ($layoutData['id'], 400, 400, $donut_data);
-					}
-					else{
-						$img = d3_donut_graph ($layoutData['id'], $width, $width, $donut_data);
-					}
-				}
-			}
-			
-
-			//Restore db connection
-			if ($layoutData['id_metaconsole'] != 0) {
-				metaconsole_restore_db();
-			}
-
-			$z_index = 2 + 1;
-			break;
 	}
 	
 	$class = "item ";
@@ -1226,9 +1155,6 @@ function visual_map_print_item($mode = "read", $layoutData,
 			break;
 		case AUTO_SLA_GRAPH:
 			$class .= "auto_sla_graph";
-			break;
-		case DONUT_GRAPH:
-			$class .= "donut_graph";
 			break;
 		case GROUP_ITEM:
 			$class .= "group_item";
@@ -1672,9 +1598,6 @@ function visual_map_print_item($mode = "read", $layoutData,
 				echo io_safe_output($text);
 			}
 			break;
-		case DONUT_GRAPH:
-			echo $img;
-			break;
 		case SIMPLE_VALUE:
 		case SIMPLE_VALUE_MAX:
 		case SIMPLE_VALUE_MIN:
@@ -1824,56 +1747,6 @@ function visual_map_print_item($mode = "read", $layoutData,
 		});';
 		echo '</script>';
 	}
-}
-
-function get_donut_module_data ($id_module) {
-
-	$mod_values = db_get_value_filter('datos', 'tagente_estado', array('id_agente_modulo' => $id_module));
-
-	$values = explode(";", $mod_values);
-	if (preg_match("/\r\n/", $mod_values)) {
-		$values = explode("\r\n", $mod_values);
-	}
-	elseif (preg_match("/\n/", $mod_values)) {
-		$values = explode("\n", $mod_values);
-	}
-	$colors = array();
-	$colors[] = "#aa3333";
-	$colors[] = "#045FB4";
-	$colors[] = "#8181F7";
-	$colors[] = "#F78181";
-	$colors[] = "#D0A9F5";
-	$colors[] = "#BDBDBD";
-	$colors[] = "#6AB277";
-
-	$values_to_return = array();
-	$index = 0;
-	$total = 0;
-	$max_elements = 6;
-	
-	foreach ($values as $val) {
-		if ($index < $max_elements) {
-			$data = explode(":", $val);
-			$values_to_return[$index]['tag_name'] = $data[0] . ", " . $data[1];
-			$values_to_return[$index]['color'] = $colors[$index];
-			$values_to_return[$index]['value'] = (int)$data[1];
-			$total += (int)$data[1];
-			$index++;
-		}
-		else {
-			$data = explode(":", $val);
-			$values_to_return[$index]['tag_name'] = __('Others') . ", " . $data[1];
-			$values_to_return[$index]['color'] = $colors[$index];
-			$values_to_return[$index]['value'] += (int)$data[1];
-			$total += (int)$data[1];
-		}
-	}
-
-	foreach ($values_to_return as $ind => $donut_data) {
-		$values_to_return[$ind]['percent'] = ($donut_data['value'] * 100) / $total;
-	}
-
-	return $values_to_return;
 }
 
 /**

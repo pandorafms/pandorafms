@@ -2811,13 +2811,13 @@ function reporting_get_stats_summary($data, $graph_width, $graph_height) {
 		$tdata[0] = '<div style="margin: auto; width: ' . $graph_width . 'px;">' . graph_agent_status (false, $graph_width, $graph_height, true, true) . '</div>';
 	}
 	else {
-		$tdata[2] = html_print_image('images/image_problem.png', true, array('width' => $graph_width));
+		$tdata[2] = html_print_image('images/image_problem_area_small.png', true, array('width' => $graph_width));
 	}
 	if ($data["monitor_alerts"] > 0) {
 		$tdata[2] = '<div style="margin: auto; width: ' . $graph_width . 'px;">' . graph_alert_status ($data["monitor_alerts"], $data["monitor_alerts_fired"], $graph_width, $graph_height, true, true) . '</div>';
 	}
 	else {
-		$tdata[2] = html_print_image('images/image_problem.png', true, array('width' => $graph_width));
+		$tdata[2] = html_print_image('images/image_problem_area_small.png', true, array('width' => $graph_width));
 	}
 		$table_sum->rowclass[] = '';
 		$table_sum->data[] = $tdata;

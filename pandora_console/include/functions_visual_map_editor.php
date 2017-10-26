@@ -54,7 +54,6 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'static_graph' => __('Static Graph'),
 				'percentile_item' => __('Percentile Item'),
 				'module_graph' => __('Graph'),
-				'donut_graph' => __('Donut graph'),
 				'auto_sla_graph' => __('Auto SLA Graph'),
 				'simple_value' => __('Simple value') . ui_print_help_tip(__("To use 'label'field, you should write
 					a text to replace '(_VALUE_)' and the value of the module will be printed at the end."), true),
@@ -278,7 +277,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items['agent_row'] = array();
 			$form_items['agent_row']['items'] = array('static_graph',
 				'percentile_bar', 'percentile_item', 'module_graph',
-				'simple_value', 'datos', 'auto_sla_graph', 'donut_graph');
+				'simple_value', 'datos', 'auto_sla_graph', 'bars_graph', 'donut_graph');
 			$form_items['agent_row']['html'] = '<td align="left">' .
 				__('Agent') . '</td>';			
 			$params = array();
@@ -311,7 +310,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items['module_row'] = array();
 			$form_items['module_row']['items'] = array('static_graph',
 				'percentile_bar', 'percentile_item', 'module_graph',
-				'simple_value', 'datos', 'auto_sla_graph', 'donut_graph');
+				'simple_value', 'datos', 'auto_sla_graph', 'donut_graph', 'bars_graph');
 			$form_items['module_row']['html'] = '<td align="left">' .
 				__('Module') . '</td>
 				<td align="left">' .
@@ -397,7 +396,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			
 			
 			$form_items['percentile_bar_row_1'] = array();
-			$form_items['percentile_bar_row_1']['items'] = array('percentile_bar', 'percentile_item', 'datos', 'donut_graph');
+			$form_items['percentile_bar_row_1']['items'] = array('percentile_bar', 'percentile_item', 'datos', 'donut_graph', 'bars_graph');
 			$form_items['percentile_bar_row_1']['html'] = '<td align="left">' .
 				__('Width') . '</td>
 				<td align="left">' . html_print_input_text('width_percentile', 0, '', 3, 5, true) . '</td>';
@@ -447,6 +446,12 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 					html_print_radio_button_extended('value_show', 'value', ('Value'), 'value', false, '', '', true) .
 					'</td>';
 			}
+
+
+			$form_items['period_row'] = array();
+			$form_items['period_row']['items'] = array('module_graph', 'simple_value', 'datos');
+			$form_items['period_row']['html'] = '<td align="left">' . __('Period') . '</td>
+				<td align="left">' .  html_print_extended_select_for_time ('period', SECONDS_5MINUTES, '', '', '', false, true) . '</td>';
 			
 			$form_items['show_statistics_row'] = array();
 			$form_items['show_statistics_row']['items'] = array('group_item');
@@ -670,6 +675,7 @@ function visual_map_editor_print_toolbox() {
 		visual_map_print_button_editor('percentile_item', __('Percentile Item'), 'left', false, 'percentile_item_min', true);
 		visual_map_print_button_editor('module_graph', __('Module Graph'), 'left', false, 'graph_min', true);
 		visual_map_print_button_editor('donut_graph', __('Donut Graph'), 'left', false, 'donut_graph_min', true);
+		visual_map_print_button_editor('bars_graph', __('Bars Graph'), 'left', false, 'bars_graph_min', true);
 		visual_map_print_button_editor('auto_sla_graph', __('Auto SLA Graph'), 'left', false, 'auto_sla_graph_min', true);
 		visual_map_print_button_editor('simple_value', __('Simple Value'), 'left', false, 'binary_min', true);
 		visual_map_print_button_editor('label', __('Label'), 'left', false, 'label_min', true);

@@ -62,6 +62,8 @@ email アクションを設定するには、_field1_ (送信先アドレス)、
 <li>_target_ip_ : モジュールの対象IPアドレス</li>
 <li>_target_port_ : モジュールの対象ポート</li>
 <li>_plugin_parameters_ : モジュールのプラグインパラメータ</li>
+<li>_server_ip_ : Ip of server assigned to agent. </li>
+<li>_server_name_ : Name of server assigned to agent. </li>
 <li>_groupcontact_ : グループコンタクト情報。グループの作成時に設定されます。</li>
 <li>_groupother_ : グループに関するその他情報。グループの作成時に設定されます。</li>
 <li>_email_tag_ : モジュールタグに関連付けられた Email。</li>

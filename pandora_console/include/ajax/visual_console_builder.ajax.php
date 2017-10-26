@@ -141,38 +141,6 @@ switch ($action) {
 		echo json_encode($return);
 		break;
 	
-	case 'get_module_type_string':
-		$data = array ();
-
-		$layoutData = db_get_row_filter('tlayout_data', array('id' => $id_element));
-
-		if ($layoutData['id_metaconsole'] != 0) {
-			$connection = db_get_row_filter ('tmetaconsole_setup', $layoutData['id_metaconsole']);
-			if (metaconsole_load_external_db($connection) != NOERR) {
-				continue;
-			}
-		}
-
-		$is_string = db_get_value_filter ('id_tipo_modulo', 'tagente_modulo',
-			array ('id_agente' => $id_agent,
-				'id_agente_modulo' => $id_agent_module));
-		
-		if ($layoutData['id_metaconsole'] != 0) {
-			metaconsole_restore_db();
-		}
-		
-		$return = array();
-		if (($is_string == 17) || ($is_string == 23) || ($is_string == 3) ||
-			($is_string == 10) || ($is_string == 33)) {
-			$return['no_data'] = false;
-		}
-		else {
-			$return['no_data'] = true;
-		}
-
-		echo json_encode($return);
-		break;
-
 	case 'get_module_events':
 		$data = array ();
 		
@@ -497,6 +465,7 @@ switch ($action) {
 			case 'label':
 			case 'icon':
 			case 'auto_sla_graph':
+			case 'bars_graph':
 			case 'donut_graph':
 			default:
 				if ($type == 'label') {
@@ -583,13 +552,6 @@ switch ($action) {
 						if ($height !== null) {
 							$values['height'] = $height;
 						}
-						break;
-					case 'donut_graph':
-						if ($width_percentile !== null) {
-							$values['width'] = $width_percentile;
-							$values['height'] = $width_percentile;
-						}
-						$values['type'] = DONUT_GRAPH;
 						break;
 					case 'box_item':
 						$values['border_width'] = $border_width;
@@ -751,7 +713,6 @@ switch ($action) {
 			case 'label':
 			case 'icon':
 			case 'auto_sla_graph':
-			case 'donut_graph':
 				$elementFields = db_get_row_filter('tlayout_data',
 					array('id' => $id_element));
 				
@@ -823,9 +784,7 @@ switch ($action) {
 							$elementFields['type_percentile'] = 'bubble';
 						}
 						break;
-					case 'donut_graph':
-						$elementFields['width_percentile'] = $elementFields['width'];
-						break;
+					
 					case 'module_graph':
 						$elementFields['width_module_graph'] = $elementFields['width'];
 						$elementFields['height_module_graph'] = $elementFields['height'];
@@ -969,11 +928,6 @@ switch ($action) {
 			case 'auto_sla_graph':
 				$values['type'] = AUTO_SLA_GRAPH;
 				$values['period'] = $event_max_time_row;
-				$values['width'] = $width;
-				$values['height'] = $height;
-				break;
-			case 'donut_graph':
-				$values['type'] = DONUT_GRAPH;
 				$values['width'] = $width;
 				$values['height'] = $height;
 				break;

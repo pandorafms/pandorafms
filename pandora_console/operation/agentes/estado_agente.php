@@ -597,22 +597,38 @@ foreach ($agents as $agent) {
 		$agent["warning_count"], $agent["unknown_count"], $agent["total_count"], 
 		$agent["notinit_count"]);
 	
+	$in_planned_downtime = db_get_sql('SELECT executed FROM tplanned_downtime 
+		INNER JOIN tplanned_downtime_agents 
+		ON tplanned_downtime.id = tplanned_downtime_agents.id_downtime
+		WHERE tplanned_downtime_agents.id_agent = '. $agent["id_agente"] . 
+		' AND tplanned_downtime.executed = 1');
+			
 	$data = array ();
 	
 	$data[0] = '<div class="left_' . $agent["id_agente"] . '">';
 	$data[0] .= '<span>';
-	if ($agent['quiet']) {
-		$data[0] .= html_print_image("images/dot_green.disabled.png", true, array("border" => '0', "title" => __('Quiet'), "alt" => "")) . "&nbsp;";
-	}
 	
 	$data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'"> <span style="font-size: 7pt;font-weight:bold" title ="' . $agent["nombre"]. '">'.$agent["alias"].'</span></a>';
 	$data[0] .= '</span>';
+	
+	if ($agent['quiet']) {
+		$data[0] .= "&nbsp;";
+		$data[0] .= html_print_image("images/dot_green.disabled.png", true, array("border" => '0', "title" => __('Quiet'), "alt" => ""));
+	}
+
+	if ($in_planned_downtime) {
+		$data[0] .= ui_print_help_tip (__('Agent in planned downtime'), true, 'images/minireloj-16.png');
+		$data[0] .= "</em>";
+	}
+	
 	$data[0] .= '<div class="agentleft_' . $agent["id_agente"] . '" style="visibility: hidden; clear: left;">';
 	$data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'">'.__('View').'</a>';
+	
 	if (check_acl ($config['id_user'], $agent["id_grupo"], "AW")) {
 		$data[0] .= ' | ';
 		$data[0] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$agent["id_agente"].'">'.__('Edit').'</a>';
 	}
+	
 	$data[0] .= '</div></div>';
 	
 	$data[1] = ui_print_truncate_text($agent["description"], 'description', false, true, true, '[&hellip;]', 'font-size: 6.5pt');

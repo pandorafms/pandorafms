@@ -1069,6 +1069,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	if(!$fullscale){
 		$time_format_2 = '';
 		$temp_range = $period;
+		$unit_list_aux = array();
 	
 		if ($projection != false) {
 			if ($period < $prediction_period)
@@ -1317,6 +1318,10 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				
 				$agent_id = agents_get_agent_id ($agent_name);
 				
+				if(empty($unit_list)){
+					$unit_aux = modules_get_unit($agent_module_id);
+					array_push($unit_list_aux,$unit_aux);
+				}
 				//Get and process module name
 				$module_name = io_safe_output(
 					modules_get_agentmodule_name ($agent_module_id));
@@ -1500,6 +1505,8 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			
 			if (!empty($unit_list) && $units_number == $module_number && isset($unit_list[$i])) {
 				$unit = $unit_list[$i];
+			}else{
+				$unit = $unit_list_aux[$i];
 			}
 			
 			if ($projection == false or ($projection != false and $i == 0)) {

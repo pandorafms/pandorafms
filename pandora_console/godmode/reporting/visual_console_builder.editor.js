@@ -2194,8 +2194,6 @@ function setEventsBar(id_data, values) {
 			if (data['no_data'] == true) {
 				if (values['width'] == "0" || values['height'] == "0") {
 					$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/module-events.png');
-					$("#" + id_data + " img").css('width', '500px');
-					$("#" + id_data + " img").css('height', '40px');
 				}
 				else {
 					$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/module-events.png');
@@ -2207,8 +2205,8 @@ function setEventsBar(id_data, values) {
 				$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/module-events.png');
 				
 				if($('#text-width').val() == 0 || $('#text-height').val() == 0){
-					$("#" + id_data + " img").css('width', '500px');
-					$("#" + id_data + " img").css('height', '40px');
+					$("#" + id_data + " img").css('width', '300px');
+					$("#" + id_data + " img").css('height', '180px');
 				}
 				else{
 					$("#" + id_data + " img").css('width', $('#text-width').val()+'px');

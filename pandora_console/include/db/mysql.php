@@ -1319,70 +1319,74 @@ function mysql_db_process_file ($path, $handle_error = true) {
 // --------------------------------------------------------------- 
 
 function db_run_sql_file ($location) {
-	global $config;
-	
-	// Load file
-	$commands = file_get_contents($location);
-	// Delete comments
-	$lines = explode("\n", $commands);
-	$commands = '';
-	foreach ($lines as $line) {
-		$line = trim($line);
-		if ($line && !preg_match('/^--/', $line) && !preg_match('/^\/\*/', $line)) {
-			$commands .= $line;
-		}
-	}
-	
-	// Convert to array
-	$commands = explode(";", $commands);
-	
-	if ($config['mysqli']) {
-		$mysqli = new mysqli($config["dbhost"], $config["dbuser"], $config["dbpass"], $config["dbname"], $config["dbport"]);
+    global $config;
 
-		// Run commands
-		$mysqli->query($config['dbconnection'], 'SET AUTOCOMMIT = 0');
-		$mysqli->query($config['dbconnection'], 'START TRANSACTION');
-	}
-	else {
-		// Run commands
-		mysql_db_process_sql_begin(); // Begin transaction
-	}
-	
-	foreach ($commands as $command) {
-		if (trim($command)) {
-			if ($config['mysqli']) {
-				$result = $mysqli->query($command);
-			}
-			else {
-				$result = mysql_query($command);
-			}
-			
-			if (!$result) {
-				break; // Error
-			}
-		}
-	}
+    // Load file
+    $commands = file_get_contents($location);
+    // Delete comments
+    $lines = explode("\n", $commands);
+    $commands = '';
+    foreach ($lines as $line) {
+        $line = trim($line);
+        if ($line && !preg_match('/^--/', $line) && !preg_match('/^\/\*/', $line)) {
 
-	if ($result) {
-		if ($config['mysqli']) {
-			$mysqli->query($config['dbconnection'], 'COMMIT');
-			$mysqli->query($config['dbconnection'], 'SET AUTOCOMMIT = 1');
-		}
-		else {
-			mysql_db_process_sql_commit(); // Save results
-		}
-		return true;
-	}
-	else {
-		if ($config['mysqli']) {
-			$mysqli->query($config['dbconnection'], 'ROLLBACK ');
-			$mysqli->query($config['dbconnection'], 'SET AUTOCOMMIT = 1');
-		}
-		else {
-			mysql_db_process_sql_rollback(); // Undo results
-		}
-		return false;
-	}
+            $line = preg_replace('/;$/',"__;__", $line);
+            $commands .= $line;
+        }
+    }
+
+    // Convert to array
+    $commands = explode("__;__", $commands);
+
+    if ($config['mysqli']) {
+        $mysqli = new mysqli($config["dbhost"], $config["dbuser"], $config["dbpass"], $config["dbname"], $config["dbport"]);
+
+        // Run commands
+        $mysqli->query($config['dbconnection'], 'SET AUTOCOMMIT = 0');
+        $mysqli->query($config['dbconnection'], 'START TRANSACTION');
+    }
+    else {
+        // Run commands
+        mysql_db_process_sql_begin(); // Begin transaction
+    }
+
+    foreach ($commands as $command) {
+        if (trim($command)) {
+            $command .= ";";
+
+            if ($config['mysqli']) {
+                $result = $mysqli->query($command);
+            }
+            else {
+                $result = mysql_query($command);
+            }
+
+            if (!$result) {
+                break; // Error
+            }
+        }
+    }
+
+    if ($result) {
+        if ($config['mysqli']) {
+            $mysqli->query($config['dbconnection'], 'COMMIT');
+            $mysqli->query($config['dbconnection'], 'SET AUTOCOMMIT = 1');
+        }
+        else {
+            mysql_db_process_sql_commit(); // Save results
+        }
+        return true;
+    }
+    else {
+        if ($config['mysqli']) {
+            $mysqli->query($config['dbconnection'], 'ROLLBACK ');
+            $mysqli->query($config['dbconnection'], 'SET AUTOCOMMIT = 1');
+        }
+        else {
+            mysql_db_process_sql_rollback(); // Undo results
+        }
+        return false;
+    }
 }
 
 ?>

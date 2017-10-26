@@ -328,8 +328,13 @@ if ($get_module_detail) {
 						$data[] = 'No data';
 					}
 					else {
-						if(is_snapshot_data($row[$attr[0]])){	
-							$data[] = "<a target='_blank' href='".io_safe_input($row[$attr[0]])."'><img style='width:300px' src='".io_safe_input($row[$attr[0]])."'></a>";
+						if(is_snapshot_data($row[$attr[0]])){
+							if($config['command_snapshot']){
+								$data[] = "<a target='_blank' href='".io_safe_input($row[$attr[0]])."'><img style='width:300px' src='".io_safe_input($row[$attr[0]])."'></a>";
+							}
+							else{
+								$data[] = "<span>".wordwrap(io_safe_input($row[$attr[0]]),60,"<br>\n",true)."</span>";
+							}
 						}
 						else{
 							$data_macro = modules_get_unit_macro($row[$attr[0]],$unit);

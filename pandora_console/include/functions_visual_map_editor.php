@@ -220,7 +220,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items['enable_link_row']['html'] =
 				'<td align="left" style="">' . __('Enable link') . '</td>
 				<td align="left" style="">' .
-				html_print_checkbox('enable_link', '', !is_metaconsole(), true) . '</td>';
+				html_print_checkbox('enable_link', '', 1, true) . '</td>';
 			
 			
 			$form_items['preview_row'] = array();
@@ -573,12 +573,11 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'</td>';
 			
 			$form_items_advance['map_linked_row'] = array();
-			$form_items_advance['map_linked_row']['items'] = array(
-				'group_item', 'static_graph', 'percentile_bar',
-				'percentile_item', 'module_graph', 'simple_value',
-				'icon', 'label', 'datos');
+			$form_items_advance['map_linked_row']['items'] = array('static_graph', 'label', 'icon');
 			$form_items_advance['map_linked_row']['html'] = '<td align="left">'.
-				__('Map linked') . '</td>' .
+				__('Map linked') . ui_print_help_tip (
+					__("If a parent visual console is selected here, an agent or module cannot be selected and will be removed if a previous selection was done."), true) .
+					'</td>' .
 				'<td align="left">' . html_print_select_from_sql (
 				'SELECT id, name
 				FROM tlayout
@@ -767,3 +766,17 @@ function visual_map_editor_print_hack_translate_strings() {
 		__('Could not be save') .'</span>';
 }
 ?>
+
+<script type="text/javascript">
+$(document).ready (function () {
+	$("#map_linked").change(function () {
+		$("#text-agent").val("");
+		$("input[name=id_agent]").val(0);
+		$("#module").empty();
+		$("#module")
+			.append($("<option>")
+				.attr("value", 0)
+				.html("<?php echo __('Any'); ?>"));
+	})
+});
+</script>

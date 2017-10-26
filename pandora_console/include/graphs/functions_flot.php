@@ -866,9 +866,7 @@ function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $
 	global $config;
 	
 	include_javascript_dependencies_flot_graph();
-	
-	$height+= 20;
-	
+		
 	$stacked_str = 'stack: stack,';
 	
 	// Get a unique identifier to graph
@@ -876,10 +874,10 @@ function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $
 	
 	// Set some containers to legend, graph, timestamp tooltip, etc.
 	if ($stat_win) {
-		$return = "<div id='$graph_id' class='graph $adapt_key' style='width: ".$width."px; height: ".$height."px; display: inline-block;'></div>";
+		$return = "<div id='$graph_id' class='noresizevc graph $adapt_key' style='width: ".$width."px; height: ".$height."px; display: inline-block;'></div>";
 	}
 	else {
-		$return = "<div id='$graph_id' class='graph $adapt_key' style='width: ".$width."px; height: ".$height."px;'></div>";
+		$return = "<div id='$graph_id' class='noresizevc graph $adapt_key' style='width: ".$width."px; height: ".$height."px;'></div>";
 	}
 	$return .= "<div id='value_$graph_id' style='display:none; position:absolute; background:#fff; border: solid 1px #aaa; padding: 2px'></div>";
 	

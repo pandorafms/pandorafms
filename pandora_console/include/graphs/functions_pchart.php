@@ -695,8 +695,11 @@ function pch_bar_graph ($graph_type, $index, $data, $width, $height, $font,
 	$MyData->setSerieDescription("Xaxis", $xaxisname);
 	$MyData->setAbscissa("Xaxis");
 	
+	
 	/* Create the pChart object */
 	$myPicture = new pImage($width,$height,$MyData);
+	
+	
 	
 	/* Turn of Antialiasing */
 	$myPicture->Antialias = $antialiasing;
@@ -705,7 +708,15 @@ function pch_bar_graph ($graph_type, $index, $data, $width, $height, $font,
 	//$myPicture->drawRectangle(0,0,$width,$height,array("R"=>0,"G"=>0,"B"=>0));
 	
 	/* Turn on shadow computing */ 
-	$myPicture->setShadow(TRUE,array("X"=>1,"Y"=>1,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10)); 
+	$myPicture->setShadow(TRUE,array("X"=>1,"Y"=>1,"R"=>120,"G"=>120,"B"=>120,"Alpha"=>10)); 
+	
+	$pdf = get_parameter('pdf',false);
+	
+	if($pdf == true){
+		$font_size = $font_size+1;
+	}
+	
+	
 	
 	/* Set the default font */
 	$myPicture->setFontProperties(array("FontName"=>$font,"FontSize"=>$font_size));
@@ -721,15 +732,15 @@ function pch_bar_graph ($graph_type, $index, $data, $width, $height, $font,
 	switch($graph_type) {
 		case "vbar":
 			$scaleSettings = array("AvoidTickWhenEmpty" => FALSE, "AvoidGridWhenEmpty" => FALSE, 
-				"GridR"=>200,"GridG"=>200,"GridB"=>200,"DrawSubTicks"=>TRUE,"CycleBackground"=>TRUE, 
-				"Mode"=>SCALE_MODE_START0, "LabelRotation" => 60);
-			$margin_left = 40;
-			$margin_right = 0;
+				"GridR"=>1000,"GridG"=>1000,"GridB"=>1000,"DrawSubTicks"=>TRUE,"CycleBackground"=>TRUE, 
+				"Mode"=>SCALE_MODE_START0, "LabelRotation" => 45);
+			$margin_left = 40+50;
+			$margin_right = 90;
 			$margin_top = 10;
-			$margin_bottom = 3 * $max_chars;
+			$margin_bottom = (3 * $max_chars)+40;
 			break;
 		case "hbar":
-			$scaleSettings = array("GridR"=>200,"GridG"=>200,"GridB"=>200,"DrawSubTicks"=>TRUE,
+			$scaleSettings = array("GridR"=>1000,"GridG"=>1000,"GridB"=>1000,"DrawSubTicks"=>TRUE,
 				"CycleBackground"=>TRUE, "Mode"=>SCALE_MODE_START0, "Pos"=>SCALE_POS_TOPBOTTOM, 
 				"LabelValuesRotation" => 30);
 			$margin_left = $font_size * $max_chars;
@@ -753,9 +764,108 @@ function pch_bar_graph ($graph_type, $index, $data, $width, $height, $font,
 	/* Turn on shadow computing */ 
 	$myPicture->setShadow(TRUE,array("X"=>0,"Y"=>1,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10));
 	
-	/* Draw the chart */
-	$settings = array("ForceTransparency"=>"-1", "Gradient"=>TRUE,"GradientMode"=>GRADIENT_EFFECT_CAN,"DisplayValues"=>$show_values,"DisplayZeroValues"=>FALSE,"DisplayR"=>100,"DisplayG"=>100,"DisplayB"=>100,"DisplayShadow"=>TRUE,"Surrounding"=>5,"AroundZero"=>FALSE, "OverrideColors"=>$overridePalette);
 	
+	/* Draw the chart */
+	$settings = array("ForceTransparency"=>"-1", "Gradient"=>FALSE,"GradientMode"=>GRADIENT_EFFECT_CAN,"DisplayValues"=>$show_values,"DisplayZeroValues"=>FALSE,"DisplayR"=>100,"DisplayG"=>100,"DisplayB"=>100,"DisplayShadow"=>TRUE,"Surrounding"=>5,"AroundZero"=>FALSE, "OverrideColors"=>$overridePalette);
+	
+	/* goes through a series of colors and assigns them to the bars, when it ends it starts from the beginning */
+	
+	for ($i=0,$j=1; $i < count($settings['OverrideColors']); $i++) { 
+		
+		switch ($j) {
+			case 1:
+				$settings['OverrideColors'][$i]['R'] = 43;
+				$settings['OverrideColors'][$i]['G'] = 98;
+				$settings['OverrideColors'][$i]['B'] = 201;
+				$j++;
+				break;
+				
+			case 2:
+				$settings['OverrideColors'][$i]['R'] = 243;
+				$settings['OverrideColors'][$i]['G'] = 86;
+				$settings['OverrideColors'][$i]['B'] = 157;
+				$j++;
+				break;
+					
+			case 3:
+				$settings['OverrideColors'][$i]['R'] = 191;
+				$settings['OverrideColors'][$i]['G'] = 191;
+				$settings['OverrideColors'][$i]['B'] = 191;
+				$j++;
+				break;
+						
+			case 4:
+				$settings['OverrideColors'][$i]['R'] = 251;
+				$settings['OverrideColors'][$i]['G'] = 183;
+				$settings['OverrideColors'][$i]['B'] = 50;
+				$j++;
+				break;
+							
+			case 5:
+				$settings['OverrideColors'][$i]['R'] = 157;
+				$settings['OverrideColors'][$i]['G'] = 117;
+				$settings['OverrideColors'][$i]['B'] = 177;
+				$j++;
+				break;
+								
+			case 6:
+				$settings['OverrideColors'][$i]['R'] = 39;
+				$settings['OverrideColors'][$i]['G'] = 172;
+				$settings['OverrideColors'][$i]['B'] = 151;
+				$j++;
+				break;
+									
+			case 7:
+				$settings['OverrideColors'][$i]['R'] = 171;
+				$settings['OverrideColors'][$i]['G'] = 42;
+				$settings['OverrideColors'][$i]['B'] = 46;
+				$j++;
+				break;
+				
+			case 8:
+				$settings['OverrideColors'][$i]['R'] = 185;
+				$settings['OverrideColors'][$i]['G'] = 218;
+				$settings['OverrideColors'][$i]['B'] = 87;
+				$j++;
+				break;
+				
+			case 9:
+				$settings['OverrideColors'][$i]['R'] = 60;
+				$settings['OverrideColors'][$i]['G'] = 182;
+				$settings['OverrideColors'][$i]['B'] = 203;
+				$j++;
+				break;
+					
+			case 10:
+				$settings['OverrideColors'][$i]['R'] = 105;
+				$settings['OverrideColors'][$i]['G'] = 65;
+				$settings['OverrideColors'][$i]['B'] = 179;
+				$j++;
+				break;
+						
+			case 11:
+				$settings['OverrideColors'][$i]['R'] = 228;
+				$settings['OverrideColors'][$i]['G'] = 35;
+				$settings['OverrideColors'][$i]['B'] = 102;
+				$j++;
+				break;
+				
+			case 12:
+				$settings['OverrideColors'][$i]['R'] = 252;
+				$settings['OverrideColors'][$i]['G'] = 130;
+				$settings['OverrideColors'][$i]['B'] = 53;
+				$j = 1;
+				break;
+					
+								
+			default:
+					
+				break;
+		
+		}
+				
+	}
+		
 	$myPicture->drawBarChart($settings);
 	
 	// Paint the water mark at the last moment to show it in front

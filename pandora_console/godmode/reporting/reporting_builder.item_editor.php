@@ -911,6 +911,9 @@ You can of course remove the warnings, that's why we include the source and do n
 				elseif(check_acl ($config['id_user'], 0, "RM"))
 					html_print_select_groups($config['id_user'],
 						"RM", true, 'combo_group', $group, '');
+				
+				echo "&nbsp;&nbsp;&nbsp;".__('Recursion').html_print_checkbox('recursion', 1, 0, true);
+						
 				?>
 			</td>
 		</tr>
@@ -1079,7 +1082,6 @@ You can of course remove the warnings, that's why we include the source and do n
 							}
 						}
 					}
-					// html_debug($agents);
 					html_print_select($agents2, 'id_agents2[]', $agents_select, $script = '', "", 0, false, true, true, '', false, "min-width: 180px");
 				?>
 			</td>
@@ -2002,7 +2004,38 @@ $(document).ready (function () {
 					"get_agents_group_json" : 1,
 					"id_group" : this.value,
 					"privilege" : "AW",
-					"keys_prefix" : "_"
+					"keys_prefix" : "_",
+					"recursion" : $('#checkbox-recursion').is(':checked')
+				},
+				function (data, status) {
+					$("#id_agents").html('');
+					$("#id_agents2").html('');
+					$("#module").html('');
+					jQuery.each (data, function (id, value) {
+						// Remove keys_prefix from the index
+						id = id.substring(1);
+						
+						option = $("<option></option>")
+							.attr ("value", value["id_agente"])
+							.html (value["alias"]);
+						$("#id_agents").append (option);
+						$("#id_agents2").append (option);
+					});
+				},
+				"json"
+			);
+		}
+	);
+	
+	$("#checkbox-recursion").change (
+		function () {
+			jQuery.post ("ajax.php",
+				{"page" : "operation/agentes/ver_agente",
+					"get_agents_group_json" : 1,
+					"id_group" : $("#combo_group").val(),
+					"privilege" : "AW",
+					"keys_prefix" : "_",
+					"recursion" : $('#checkbox-recursion').is(':checked')
 				},
 				function (data, status) {
 					$("#id_agents").html('');

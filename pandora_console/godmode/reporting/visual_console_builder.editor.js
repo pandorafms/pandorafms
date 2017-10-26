@@ -304,7 +304,7 @@ function update_button_palette_callback() {
 				alert('Undefined height');
 				return false;
 			}
-			
+
 			$("#text_" + idItem).html(values['label']);
 			
 			if(values['show_statistics'] == 1){
@@ -613,9 +613,6 @@ function readFields() {
 	values['process_simple_value'] = $("select[name=process_value]").val();
 	values['background'] = $("#background_image").val();
 	values['period'] = undefined != $("#hidden-period").val() ? $("#hidden-period").val() : $("#period").val();
-	if (values['period'] == null) {
-		values['period'] = undefined != $("#hidden-period").val() ? $("#hidden-period").val() : $("#period_select").val();
-	}
 	values['width'] = $("input[name=width]").val();
 	values['width_data_image'] = $("#data_image_width").val();
 	if(selectedItem == 'simple_value' || creationItem == 'simple_value'){
@@ -708,10 +705,6 @@ function create_button_palette_callback() {
 		case 'auto_sla_graph':
 			if ((values['agent'] == '')) {
 				alert($("#message_alert_no_agent").html());
-				validate = false;
-			}
-			if ((values['module'] == 0)) {
-				alert($("#message_alert_no_module").html());
 				validate = false;
 			}
 			break;
@@ -2115,6 +2108,8 @@ function setEventsBar(id_data, values) {
 			if (data['no_data'] == true) {
 				if (values['width'] == "0" || values['height'] == "0") {
 					$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/module-events.png');
+					$("#" + id_data + " img").css('width', '500px');
+					$("#" + id_data + " img").css('height', '40px');
 				}
 				else {
 					$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/module-events.png');
@@ -2126,8 +2121,8 @@ function setEventsBar(id_data, values) {
 				$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/module-events.png');
 				
 				if($('#text-width').val() == 0 || $('#text-height').val() == 0){
-					$("#" + id_data + " img").css('width', '300px');
-					$("#" + id_data + " img").css('height', '180px');
+					$("#" + id_data + " img").css('width', '500px');
+					$("#" + id_data + " img").css('height', '40px');
 				}
 				else{
 					$("#" + id_data + " img").css('width', $('#text-width').val()+'px');

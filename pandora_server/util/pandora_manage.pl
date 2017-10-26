@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.713 PS171005";
+my $version = "7.0NG.714 PS171026";
 
 # save program name for logging
 my $progname = basename($0);
@@ -4531,13 +4531,6 @@ sub cli_module_get_data () {
 		print("aaaa\n");
 		@data = get_db_rows ($dbh, "SELECT utimestamp, datos 
 			FROM tagente_datos_string 
-			WHERE id_agente_modulo = $id_agent_module 
-			AND utimestamp > (UNIX_TIMESTAMP(NOW()) - $interval) 
-			ORDER BY utimestamp DESC");
-	}
-	elsif ($module_type =~ m/_inc$/) {
-		@data = get_db_rows ($dbh, "SELECT utimestamp, datos 
-			FROM tagente_datos_inc 
 			WHERE id_agente_modulo = $id_agent_module 
 			AND utimestamp > (UNIX_TIMESTAMP(NOW()) - $interval) 
 			ORDER BY utimestamp DESC");

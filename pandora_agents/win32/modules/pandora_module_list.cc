@@ -30,6 +30,7 @@
 #include "pandora_module_cpuusage.h"
 #include "pandora_module_inventory.h"
 #include "pandora_module_logevent.h"
+#include "pandora_module_logchannel.h"
 #include "pandora_module_wmiquery.h"
 #include "pandora_module_perfcounter.h"
 #include "pandora_module_tcpcheck.h"
@@ -226,6 +227,7 @@ Pandora_Modules::Pandora_Module_List::parseModuleDefinition (string definition) 
 	Pandora_Module_Freememory *module_freememory;
 	Pandora_Module_Freememory_Percent *module_freememory_percent;
 	Pandora_Module_Logevent   *module_logevent;	
+	Pandora_Module_Logchannel *module_logchannel;	
 	Pandora_Module_WMIQuery   *module_wmiquery;	
 	Pandora_Module_Perfcounter *module_perfcounter;	
 	Pandora_Module_Tcpcheck   *module_tcpcheck;	
@@ -287,6 +289,10 @@ Pandora_Modules::Pandora_Module_List::parseModuleDefinition (string definition) 
 		case MODULE_LOGEVENT:
 			module_logevent = (Pandora_Module_Logevent *) module;
 			modules->push_back (module_logevent);
+			break;
+		case MODULE_LOGCHANNEL:
+			module_logchannel = (Pandora_Module_Logchannel *) module;
+			modules->push_back (module_logchannel);
 			break;
 		case MODULE_WMIQUERY:
 			module_wmiquery = (Pandora_Module_WMIQuery *) module;

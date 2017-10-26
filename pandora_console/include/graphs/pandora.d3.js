@@ -1037,18 +1037,18 @@ function createGauges(data, width, height, font_size, no_data_image, font) {
 		label = label.replace(/&#40;/g,'\(');
 		label = label.replace(/&#41;/g,'\)');
 		
-		minimun_warning 	= Math.round(parseFloat( data[key].min_warning ),2);
-		maximun_warning 	= Math.round(parseFloat( data[key].max_warning ),2);
-		minimun_critical	= Math.round(parseFloat( data[key].min_critical ),2);
-		maximun_critical 	= Math.round(parseFloat( data[key].max_critical ),2);
+		minimun_warning 	= parseFloat( data[key].min_warning );
+		maximun_warning 	= parseFloat( data[key].max_warning );
+		minimun_critical	= parseFloat( data[key].min_critical );
+		maximun_critical 	= parseFloat( data[key].max_critical );
 
-		mininum = Math.round(parseFloat(data[key].min),2);
-		maxinum = Math.round(parseFloat(data[key].max),2);
+		mininum = parseFloat(data[key].min);
+		maxinum = parseFloat(data[key].max);
 	
 		critical_inverse = parseInt(data[key].critical_inverse);
 		warning_inverse  = parseInt(data[key].warning_inverse);
 
-		valor = Math.round(parseFloat(data[key].value),2);
+		valor = parseFloat(data[key].value);
 		
 		if (isNaN(valor)) 
 			valor = null;

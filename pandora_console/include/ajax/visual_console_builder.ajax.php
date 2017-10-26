@@ -518,11 +518,11 @@ switch ($action) {
 						$values['id_agent'] = $id_agent;
 					}
 				}
-				else if (!empty($id_agent)) {
-					$values['id_agent'] = $id_agent;
-				}
 				else if ($agent !== null) {
 					$id_agent = agents_get_agent_id($agent);
+					$values['id_agent'] = $id_agent;
+				}
+				else {
 					$values['id_agent'] = $id_agent;
 				}
 				if ($id_module !== null) {
@@ -977,6 +977,9 @@ switch ($action) {
 				$values['image'] = $image;
 				$values['width'] = $width;
 				$values['height'] = $height;
+				if(defined('METACONSOLE') && $values['id_agent'] == 0){
+					$values['id_metaconsole'] = 1;
+				}
 				break;
 			case 'group_item':
 				$values['type'] = GROUP_ITEM;
@@ -995,12 +998,18 @@ switch ($action) {
 			case 'label':
 				$values['type'] = LABEL;
 				$values['label'] = $label;
+				if(defined('METACONSOLE') && $values['id_agent'] == 0){
+					$values['id_metaconsole'] = 1;
+				}
 				break;
 			case 'icon':
 				$values['type'] = ICON;
 				$values['image'] = $image;
 				$values['width'] = $width;
 				$values['height'] = $height;
+				if(defined('METACONSOLE') && $values['id_agent'] == 0){
+					$values['id_metaconsole'] = 1;
+				}
 				break;
 			default:
 				if (enterprise_installed()) {

@@ -196,10 +196,10 @@ sub pandora_snmptrapd {
 	my ($pa_config, $line, $server_id, $dbh) = @_;
 
 	(my $trap_ver, $line) = split(/\[\*\*\]/, $line, 2);
-
+print STDERR "ANTES";
 	# Process SNMP filter
 	next if (matches_filter ($dbh, $pa_config, $line) == 1);
-
+print STDERR "DESPUES";
 	logger($pa_config, "Reading trap '$line'", 10);
 	my ($date, $time, $source, $oid, $type, $type_desc, $value, $data) = ('', '', '', '', '', '', '', '');
 
@@ -344,18 +344,13 @@ sub pandora_snmptrapd {
 ########################################################################################
 sub matches_filter ($$$) {
 	my ($dbh, $pa_config, $string) = @_;
-	use Data::Dumper;
-	$Data::Dumper::Sortkeys = 1;
+	
 	my @filter_unique_functions = get_db_rows ($dbh, 'SELECT DISTINCT(unified_filters_id) FROM tsnmp_filter ORDER BY unified_filters_id');
-	Dumper("++++++++++++++++++++++");
-	Dumper(@filter_unique_functions);
-	Dumper("++++++++++++++++++++++");
+	
 	foreach my $filter_unique_func (@filter_unique_functions) {
 		# Get filters
 		my @filters = get_db_rows ($dbh, 'SELECT filter FROM tsnmp_filter WHERE unified_filters_id = ' . $filter_unique_func->{'unified_filters_id'});
-		Dumper("-----------------------");
-		Dumper(@filters);
-		Dumper("-----------------------");
+		
 		my $eval_acum = 1;
 		foreach my $filter (@filters) {
 			my $regexp = safe_output($filter->{'filter'}) ;

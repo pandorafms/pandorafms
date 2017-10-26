@@ -201,7 +201,23 @@ echo "</form>";
 <script type="text/javascript">
 
 $(document).ready (function () {
-		
+	
+	var metaconsole = null;
+	function is_metaconsole() {
+		if (metaconsole === null)
+			metaconsole = $("input[name='metaconsole']").val();
+
+		if (metaconsole != 0)
+			return true;
+		else
+			return false;
+	}
+
+	var url_hack_metaconsole = '';
+	if (is_metaconsole()) {
+		url_hack_metaconsole = '../../';
+	}
+
 	$("#modsize").click(function(event){
 		event.preventDefault();
 		
@@ -260,7 +276,7 @@ $(document).ready (function () {
 	}
 	else{
 		original_image=new Image();
-		original_image.src='images/console/background/'+$('#background').val();
+		original_image.src= url_hack_metaconsole + 'images/console/background/'+$('#background').val();
 		if (parseInt(original_image.width) < 1024){
 			alert('Default width is '+original_image.width+'px, smaller than minimum -> 1024px');
 			$('input[name=width]').val('1024');
@@ -310,7 +326,7 @@ $(document).ready (function () {
 	var size_changer_state = false;
 
 	$("#background").change(function() {
-		$('#imagen2').attr('src','images/console/background/'+$('#background').val());
+		$('#imagen2').attr('src', url_hack_metaconsole + 'images/console/background/'+$('#background').val());
 		$('#imagen2').width(230);
 		$('#imagen2').show();		
 	});
@@ -323,7 +339,7 @@ $(document).ready (function () {
 	
 	$("#background").mouseout(function() {
 		if(size_changer_state){
-			$('#imagen').attr('src','images/console/background/'+$('#background').val());
+			$('#imagen').attr('src',url_hack_metaconsole + 'images/console/background/'+$('#background').val());
 			$('input[name=width]').val($('#imagen').width());
 			$('input[name=height]').val($('#imagen').height());
 			$('#preimagew').html($('#imagen').width());

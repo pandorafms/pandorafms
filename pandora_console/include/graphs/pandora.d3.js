@@ -1494,118 +1494,472 @@ function print_phases_donut (recipient, phases) {
 	}
 }
 
-function print_donut_graph (recipient, width, height, module_data) {
-	var svg = d3.select(recipient)
+function progress_bar_d3 (recipient, percentile, width, height, color, unit, label, label_color) {
+	var startPercent = 0;
+	var endPercent = parseInt(percentile) / 100;
+	var count = Math.abs((endPercent - startPercent) / 0.01);
+	var step = endPercent < startPercent ? -0.01 : 0.01;
+
+	var circle = d3.select(recipient)
 		.append("svg")
 			.attr("width", width)
-			.attr("height", height)
-		.append("g");
+			.attr("height", height);
 
-	svg.append("g")
-		.attr("class", "slices");
+	var progress_back = circle.append('rect')
+		.attr('fill', '#000000')
+		.attr('fill-opacity', 0.5)
+		.attr('height', 20)
+		.attr('width', width)
+		.attr('rx', 10)
+		.attr('ry', 10)
+		.attr('x', 0);
 
-	var radius = 120;
-	var increment_y = 60;
-	var increment_y_padding = 25;
-	var text_size = 15;
-	var decrement_x_padding = 150;
+	var progress_front = circle.append('rect')
+		.attr('fill', color)
+		.attr('fill-opacity', 1)
+		.attr('height', 20)
+		.attr('width', 0)
+		.attr('rx', 10)
+		.attr('ry', 10)
+		.attr('x', 0);
+
+	var labelText = circle.append("text")
+		.attr("transform", "translate(" + (width/2) + ", " + (height/2) + ")")
+		.attr('fill', label_color)
+		.style("font-family", "arial")
+		.style("font-weight", "bold")
+		.style("font-size", 20)
+		.html(label)
+		.attr('dy', '15')
+		.attr('text-anchor', 'middle');
+
+	var numberText = circle.append("text")
+		.attr("transform", "translate(" + (width/2) + ", " + (height/2) + ")")
+		.attr('fill', '#FFFFFF')
+		.style("font-family", "arial")
+		.style("font-weight", "bold")
+		.style("font-size", 14)
+		.attr('text-anchor', 'middle')
+		.attr('dy', '-10');
+
+	function updateProgress(bar_progress) {
+		var percent_value = Number(bar_progress * 100);
+		numberText.text(percent_value.toFixed());
+		progress_front.attr('width', (width * bar_progress));
+	}
+
+	var bar_progress = startPercent;
+
+	(function loops() {
+		updateProgress(bar_progress);
+
+		if (count > 0) {
+			count--;
+			bar_progress += step;
+			setTimeout(loops, 30);
+		}
+	})();
+}
+
+function progress_bubble_d3 (recipient, percentile, width, height, color, unit, label, label_color) {
+	var startPercent = 0;
+	var endPercent = parseInt(percentile) / 100;
+	var count = Math.abs((endPercent - startPercent) / 0.01);
+	var step = endPercent < startPercent ? -0.01 : 0.01;
+
+	var numberSize = 0;
+	var textSize = 0;
+	var unitSize = 0;
+	var yPosText = 0;
+	var yPosNumber = 0;
 	if (width >= 500) {
-		radius = 160;
-		increment_y = 60;
-		text_size = 25;
-		increment_y_padding = 25;
-		decrement_x_padding = 75;
+		numberSize = 100;
+		textSize = 50;
+		unitSize = 50;
+		yPosNumber = '15';
+		yPosText = '-100';
 	}
 	else if (width >= 400) {
-		radius = 120;
-		increment_y = 60;
-		text_size = 22;
-		increment_y_padding = 25;
-		decrement_x_padding = 75;
+		numberSize = 80;
+		textSize = 40;
+		unitSize = 40;
+		yPosNumber = '15';
+		yPosText = '-80';
 	}
 	else if (width >= 300) {
-		radius = 80;
-		increment_y = 40;
-		text_size = 14;
-		increment_y_padding = 20;
-		decrement_x_padding = 60;
+		numberSize = 60;
+		textSize = 30;
+		unitSize = 30;
+		yPosNumber = '15';
+		yPosText = '-45';
 	}
 	else if (width >= 200) {
-		radius = 50;
-		increment_y = 40;
-		text_size = 14;
-		increment_y_padding = 15;
-		decrement_x_padding = 45;
+		numberSize = 40;
+		textSize = 20;
+		unitSize = 20;
+		yPosNumber = '50';
+		yPosText = '-30';
 	}
 	else if (width >= 100) {
-		radius = 20;
-		increment_y = 20;
-		text_size = 10;
-		increment_y_padding = 8;
-		decrement_x_padding = 25;
+		numberSize = 20;
+		textSize = 10;
+		unitSize = 10;
+		yPosNumber = '5';
+		yPosText = '-20';
 	}
 	else {
-		radius = 10;
-		increment_y = 10;
-		text_size = 4;
-		increment_y_padding = 3;
-		decrement_x_padding = 5;
+		numberSize = 10;
+		textSize = 8;
+		unitSize = 8;
+		yPosNumber = '5';
+		yPosText = '-10';
+	}
+
+	var circle = d3.select(recipient)
+		.append("svg")
+			.attr("width", width)
+			.attr("height", height);
+
+	var progress_back = circle.append('circle')
+		.attr("transform", "translate(" + (width/2) + ", " + (height/2) + ")")
+		.attr('fill', '#000000')
+		.attr('fill-opacity', 0)
+		.attr('r', width/2);
+
+	var progress_front = circle.append('circle')
+		.attr("transform", "translate(" + (width/2) + ", " + (height/2) + ")")
+		.attr('fill', color)
+		.attr('fill-opacity', 1)
+		.attr('r', 0);
+
+	var labelText = circle.append("text")
+		.attr("transform", "translate(" + (width/2) + ", " + (height/2) + ")")
+		.attr('fill', label_color)
+		.style("font-family", "arial")
+		.style("font-weight", "bold")
+		.style("font-size", textSize)
+		.html(label)
+		.attr('dy', -(width/3))
+		.attr('text-anchor', 'middle');
+
+	var numberText = circle.append("text")
+		.attr("transform", "translate(" + (width/2) + ", " + (height/2) + ")")
+		.attr('fill', label_color)
+		.style("font-family", "arial")
+		.style("font-weight", "bold")
+		.style("font-size", numberSize)
+		.attr('text-anchor', 'middle')
+		.attr('dy', width/2);
+
+	function updateProgress(bar_progress) {
+		var percent_value = Number(bar_progress * 100);
+		numberText.text(percent_value.toFixed() + " %");
+		progress_front.attr('r', ((width/2) * bar_progress));
+	}
+
+	var bar_progress = startPercent;
+
+	(function loops() {
+		updateProgress(bar_progress);
+
+		if (count > 0) {
+			count--;
+			bar_progress += step;
+			setTimeout(loops, 30);
+		}
+	})();
+}
+
+function print_circular_progress_bar (recipient, percentile, width, height, color, unit, label, label_color) {
+	var twoPi = Math.PI * 2;
+	var radius = (width / 2);
+	var border = 20;
+	var startPercent = 0;
+	var endPercent = parseInt(percentile) / 100;
+	var count = Math.abs((endPercent - startPercent) / 0.01);
+	var step = endPercent < startPercent ? -0.01 : 0.01;
+
+	var numberSize = 0;
+	var textSize = 0;
+	var unitSize = 0;
+	var yPosText = 0;
+	var yPosUnit = 0;
+	var yPosNumber = 0;
+	if (width >= 500) {
+		numberSize = 100;
+		textSize = 50;
+		unitSize = 50;
+		yPosNumber = '15';
+		yPosText = '-100';
+		yPosUnit = '100';
+	}
+	else if (width >= 400) {
+		numberSize = 80;
+		textSize = 40;
+		unitSize = 40;
+		yPosNumber = '15';
+		yPosText = '-80';
+		yPosUnit = '80';
+	}
+	else if (width >= 300) {
+		numberSize = 60;
+		textSize = 30;
+		unitSize = 30;
+		yPosNumber = '15';
+		yPosText = '-45';
+		yPosUnit = '60';
+	}
+	else if (width >= 200) {
+		numberSize = 40;
+		textSize = 20;
+		unitSize = 20;
+		yPosNumber = '10';
+		yPosText = '-30';
+		yPosUnit = '40';
+	}
+	else if (width >= 100) {
+		numberSize = 20;
+		textSize = 10;
+		unitSize = 10;
+		yPosNumber = '5';
+		yPosText = '-15';
+		yPosUnit = '20';
+	}
+	else {
+		numberSize = 8;
+		textSize = 4;
+		unitSize = 4;
+		yPosNumber = '2';
+		yPosText = '-5';
+		yPosUnit = '5';
 	}
 
 	var arc = d3.svg.arc()
-		.outerRadius(radius * 0.8)
-		.innerRadius(radius * 0.4);
+		.startAngle(0)
+		.innerRadius(radius)
+		.outerRadius(radius - border);
 
-	var key = function(d){ return d.data.label; };
+	var circle = d3.select(recipient)
+		.append("svg")
+			.attr("width", width)
+			.attr("height", height)
+			.append("g")
+				.attr("transform", "translate(" + (width/2) + ", " + (height/2) + ")");
 
-	var pie = d3.layout.pie()
-		.sort(null)
-		.value(function(d) {
-			return parseFloat(d.percent);
-		});
+	var meter = circle.append("g")
+		.attr('class', 'progress-meter');
 
-	jQuery.each(module_data, function (key, m_d) {
-		svg.append("g")
-			.append("text")
-				.attr("transform", "translate(" + (((width / 2) - (radius + decrement_x_padding))) + "," + (((height / 2) - radius) - increment_y) + ")")
-				.text(m_d.tag_name)
-				.style("font-family", "Verdana")
-				.style("font-size", text_size + "px");
-		
-		increment_y -= increment_y_padding;
-	});
+	meter.append("path")
+		.attr('fill', '#000000')
+		.attr('fill-opacity', 0.5)
+		.attr('d', arc.endAngle(twoPi));
 
-	function donutData (){
-		return module_data.map(function(m_data){
-			return { label: m_data.tag_name, percent: m_data.percent, color : m_data.color}
-		});
+	var foreground = circle.append("path")
+		.attr('fill', color)
+		.attr('fill-opacity', 1)
+		.attr('stroke', color)
+		.attr('stroke-opacity', 1);
+	
+	var front = circle.append("path")
+		.attr('fill', color)
+		.attr('fill-opacity', 1);
+
+	var labelText = circle.append("text")
+		.attr('fill', label_color)
+		.style("font-family", "arial")
+		.style("font-weight", "bold")
+		.style("font-size", textSize)
+		.html(label)
+		.attr('text-anchor', 'middle')
+		.attr('dy', yPosText);
+
+	var numberText = circle.append("text")
+		.attr('fill', '#000000')
+		.style("font-family", "arial")
+		.style("font-weight", "bold")
+		.style("font-size", numberSize)
+		.attr('text-anchor', 'middle')
+		.attr('dy', yPosNumber);
+
+	var percentText = circle.append("text")
+		.attr('fill', '#000000')
+		.style("font-family", "arial")
+		.style("font-weight", "bold")
+		.style("font-size", unitSize)
+		.text(unit)
+		.attr('text-anchor', 'middle')
+		.attr('dy', yPosUnit);
+
+	function updateProgress(progress) {
+		foreground.attr('d', arc.endAngle(twoPi * progress));
+		front.attr('d', arc.endAngle(twoPi * progress));
+		var percent_value = Number(progress * 100);
+		numberText.text(percent_value.toFixed());
 	}
 
-	print_phases(donutData());
+	var progress = startPercent;
 
-	function print_phases(data) {
-		var slice = svg.select(".slices").selectAll("path.slice")
-			.data(pie(data), key);
+	(function loops() {
+		updateProgress(progress);
 
-		slice.enter()
-			.insert("path")
-			.style("fill", function(d) {
-					return d.data.color;
-			})
-			.attr("class", "slice")
-			.attr("transform", "translate(" + width / 2 + "," + (height - radius) + ")");
+		if (count > 0) {
+			count--;
+			progress += step;
+			setTimeout(loops, 30);
+		}
+	})();
+}
 
-		slice.transition()
-				.duration(0)
-				.attrTween("d", function(d) {
-					this._current = this._current || d;
-					var interpolate = d3.interpolate(this._current, d);
-					this._current = interpolate(0);
-					return function(t) {
-						return arc(interpolate(t));
-					};
-				});
- 
-		slice.exit().remove();
+function print_interior_circular_progress_bar (recipient, percentile, width, height, color, unit, label, label_color) {
+	var twoPi = Math.PI * 2;
+	var radius = (width / 2) - 20;
+	var radius2 = (width / 2);
+	var border = 20;
+	var startPercent = 0;
+	var endPercent = parseInt(percentile) / 100;
+	var count = Math.abs((endPercent - startPercent) / 0.01);
+	var step = endPercent < startPercent ? -0.01 : 0.01;
+
+	var numberSize = 0;
+	var textSize = 0;
+	var unitSize = 0;
+	var yPosText = 0;
+	var yPosUnit = 0;
+	var yPosNumber = 0;
+	if (width >= 500) {
+		numberSize = 100;
+		textSize = 50;
+		unitSize = 50;
+		yPosNumber = '15';
+		yPosText = '-100';
+		yPosUnit = '100';
 	}
+	else if (width >= 400) {
+		numberSize = 80;
+		textSize = 40;
+		unitSize = 40;
+		yPosNumber = '15';
+		yPosText = '-80';
+		yPosUnit = '80';
+	}
+	else if (width >= 300) {
+		numberSize = 60;
+		textSize = 30;
+		unitSize = 30;
+		yPosNumber = '15';
+		yPosText = '-45';
+		yPosUnit = '60';
+	}
+	else if (width >= 200) {
+		numberSize = 40;
+		textSize = 20;
+		unitSize = 20;
+		yPosNumber = '10';
+		yPosText = '-30';
+		yPosUnit = '40';
+	}
+	else if (width >= 100) {
+		numberSize = 20;
+		textSize = 10;
+		unitSize = 10;
+		yPosNumber = '5';
+		yPosText = '-15';
+		yPosUnit = '20';
+	}
+	else {
+		numberSize = 8;
+		textSize = 4;
+		unitSize = 4;
+		yPosNumber = '2';
+		yPosText = '-5';
+		yPosUnit = '5';
+	}
+
+	var arc = d3.svg.arc()
+		.startAngle(0)
+		.innerRadius(radius)
+		.outerRadius(radius - border);
+
+	var arc2 = d3.svg.arc()
+		.startAngle(0)
+		.innerRadius(radius2)
+		.outerRadius(radius2 - border);
+
+	var circle = d3.select(recipient)
+		.append("svg")
+			.attr("width", width)
+			.attr("height", height)
+			.append("g")
+				.attr("transform", "translate(" + (width/2) + ", " + (height/2) + ")");
+
+	var meter = circle.append("g")
+		.attr('class', 'progress-meter');
+
+	meter.append("path")
+		.attr('fill', '#000000')
+		.attr('fill-opacity', 0.5)
+		.attr('d', arc.endAngle(twoPi));
+
+	var meter = circle.append("g")
+		.attr('class', 'progress-meter');
+
+	meter.append("path")
+		.attr('fill', color)
+		.attr('fill-opacity', 1)
+		.attr('d', arc2.endAngle(twoPi));
+
+	var foreground = circle.append("path")
+		.attr('fill', color)
+		.attr('fill-opacity', 1)
+		.attr('stroke', color)
+		.attr('stroke-opacity', 1);
+	
+	var front = circle.append("path")
+		.attr('fill', color)
+		.attr('fill-opacity', 1);
+
+	var labelText = circle.append("text")
+		.attr('fill', label_color)
+		.style("font-family", "arial")
+		.style("font-weight", "bold")
+		.style("font-size", textSize)
+		.html(label)
+		.attr('text-anchor', 'middle')
+		.attr('dy', yPosText);
+
+	var numberText = circle.append("text")
+		.attr('fill', '#000000')
+		.style("font-family", "arial")
+		.style("font-weight", "bold")
+		.style("font-size", numberSize)
+		.attr('text-anchor', 'middle')
+		.attr('dy', yPosNumber);
+
+	var percentText = circle.append("text")
+		.attr('fill', '#000000')
+		.style("font-family", "arial")
+		.style("font-weight", "bold")
+		.style("font-size", unitSize)
+		.text(unit)
+		.attr('text-anchor', 'middle')
+		.attr('dy', yPosUnit);
+
+	function updateProgress(progress) {
+		foreground.attr('d', arc.endAngle(twoPi * progress));
+		front.attr('d', arc.endAngle(twoPi * progress));
+		var percent_value = Number(progress * 100);
+		numberText.text(percent_value.toFixed());
+	}
+
+	var progress = startPercent;
+
+	(function loops() {
+		updateProgress(progress);
+
+		if (count > 0) {
+			count--;
+			progress += step;
+			setTimeout(loops, 30);
+		}
+	})();
 }

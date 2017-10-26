@@ -197,6 +197,8 @@ define('SERVICE',			10); //Enterprise Item.
 define('GROUP_ITEM',		11);
 define('BOX_ITEM',			12);
 define('LINE_ITEM',			13);
+define('CIRCULAR_PROGRESS_BAR', 15);
+define('CIRCULAR_INTERIOR_PROGRESS_BAR', 16);
 define('DONUT_GRAPH',		17);
 define('BARS_GRAPH',		18);
 //Some styles

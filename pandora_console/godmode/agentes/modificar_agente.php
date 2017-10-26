@@ -181,7 +181,7 @@ $order_collation = "";
 switch ($config["dbtype"]) {
 	case "mysql":
 		$order_collation = "";
-		//$order_collation = "COLLATE utf8_general_ci";
+		$order_collation = "COLLATE utf8_general_ci";
 		break;
 	case "postgresql":
 	case "oracle":

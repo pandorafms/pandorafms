@@ -123,6 +123,7 @@ using namespace Pandora_Strutils;
 #define TOKEN_MACRO ("module_macro")
 #define TOKEN_NATIVE_ENCODING ("module_native_encoding")
 #define TOKEN_ALERT_TEMPLATE ("module_alert_template")
+#define TOKEN_USER_SESSION ("module_user_session ")
 	
 string
 parseLine (string line, string token) {
@@ -161,7 +162,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	string                 module_logevent, module_source, module_eventtype, module_eventcode;
 	string                 module_logchannel;
 	string                 module_pattern, module_application, module_async;
-	string                 module_watchdog, module_start_command;
+	string                 module_watchdog, module_start_command, module_user_session;
 	string                 module_wmiquery, module_wmicolumn;
 	string                 module_retries, module_startdelay, module_retrydelay;
 	string                 module_perfcounter, module_tcpcheck;
@@ -257,6 +258,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	module_ff_interval   = "";
 	module_native_encoding	 = "";
 	module_alert_template	 = "";
+	module_user_session	 = "";
 	macro   = "";
     
 	stringtok (tokens, definition, "\n");
@@ -514,6 +516,10 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		if (module_alert_template == "") {
 			module_alert_template = parseLine (line, TOKEN_ALERT_TEMPLATE);
 			module_alert_template.erase (0,1);
+		}		
+		
+		if (module_user_session == "") {
+			module_user_session = parseLine (line, TOKEN_USER_SESSION);
 		}
 		
 		if (macro == "") {
@@ -1099,6 +1105,13 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 						module_alert_template.replace(pos_macro, macro_name.size(), macro_value);
 					}
 				}
+
+				if (module_user_session != "") {
+					pos_macro = module_user_session.find(macro_name);
+					if (pos_macro != string::npos){
+						module_user_session.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
 			}
 		}
 	}
@@ -1135,6 +1148,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 				module_proc->setRetries (atoi(module_retries.c_str ()));
 				module_proc->setStartDelay (atoi(module_startdelay.c_str ()));
 				module_proc->setRetryDelay (atoi(module_retrydelay.c_str ()));
+				module_proc->setUserSession (is_enabled(module_user_session));
 			}
 		}
 	} else if (module_service != "") {

@@ -3284,11 +3284,11 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 			}
 			else {
 				if ($meta) {
-					$name = mb_substr (io_safe_output($row['agent_name']), 0, 14)." (".$row["count"].")";
+					$name = mb_substr (io_safe_output($row['agent_name']), 0, 25)." (".$row["count"].")";
 				}
 				else {
 					$alias = agents_get_alias($row["id_agente"]);
-					$name = mb_substr($alias, 0, 14)." #".$row["id_agente"]." (".$row["count"].")";
+					$name = mb_substr($alias, 0, 25)." #".$row["id_agente"]." (".$row["count"].")";
 				}
 				$data[$name] = $row["count"];
 			}
@@ -5754,7 +5754,7 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 
 	if (!empty($data_groups)) {
 		$filter = array('id_grupo' => array_keys($data_groups));
-		$fields = array('id_agente', 'id_parent', 'id_grupo', 'nombre');
+		$fields = array('id_agente', 'id_parent', 'id_grupo', 'alias');
 		$agents = agents_get_agents($filter, $fields);
 
 		if (!empty($agents)) {
@@ -5787,7 +5787,7 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 					if (!isset($data_agents[$agent_id])) {
 						$data_agents[$agent_id] = array();
 						$data_agents[$agent_id]['id'] = $agent_id;
-						$data_agents[$agent_id]['name'] = io_safe_output($agents[$agent_id]['nombre']);
+						$data_agents[$agent_id]['name'] = io_safe_output($agents[$agent_id]['alias']);
 						$data_agents[$agent_id]['group'] = (int) $agents[$agent_id]['id_grupo'];
 						$data_agents[$agent_id]['type'] = 'agent';
 						$data_agents[$agent_id]['size'] = 30;
@@ -5960,7 +5960,7 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 				if (!isset($data_agents[$id])) {
 					$data_agents[$id] = array();
 					$data_agents[$id]['id'] = (int) $id;
-					$data_agents[$id]['name'] = io_safe_output($agent['nombre']);
+					$data_agents[$id]['name'] = io_safe_output($agent['alias']);
 					$data_agents[$id]['type'] = 'agent';
 					$data_agents[$id]['color'] = COL_NOTINIT;
 				}

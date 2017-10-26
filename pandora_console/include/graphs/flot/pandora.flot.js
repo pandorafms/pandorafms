@@ -309,7 +309,7 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 }
 
 function pandoraFlotHBars(graph_id, values, labels, water_mark,
-	maxvalue, water_mark, separator, separator2, font, font_size) {
+	maxvalue, water_mark, separator, separator2, font, font_size, background_color) {
 
 	var colors_data = ['#FC4444','#FFA631','#FAD403','#5BB6E5','#F2919D','#80BA27'];
 	values = values.split(separator2);
@@ -355,7 +355,7 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 			grid: {
 				hoverable: true,
 				borderWidth: 1,
-				backgroundColor: { colors: ["#FFF", "#FFF"] }
+				backgroundColor: { colors: [background_color, background_color] }
 				},
 			xaxis: {
 				axisLabelUseCanvas: true,
@@ -494,7 +494,7 @@ function showTooltip(x, y, color, contents) {
     }).appendTo("body").fadeIn(200);
 }
 
-function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors, water_mark, maxvalue, water_mark, separator, separator2, font, font_size , from_ux, from_wux) {
+function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors, water_mark, maxvalue, water_mark, separator, separator2, font, font_size , from_ux, from_wux, background_color) {
 	values = values.split(separator2);
 	legend = legend.split(separator);
 	font = font.split("/").pop().split(".").shift();
@@ -585,7 +585,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 		grid: {
 			hoverable: true,
 			borderWidth: 1,
-			backgroundColor: { colors: ["#FFF", "#FFF"] }
+			backgroundColor: { colors: [background_color, background_color] }
 		}
 	};
 	
@@ -608,16 +608,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 	$('#' + graph_id).VUseTooltip();
 	$('#' + graph_id).css("margin-left","auto");
 	$('#' + graph_id).css("margin-right","auto");
-	//~ $('#' + graph_id).find('div.legend-tooltip').tooltip({ track: true });
-	/*
-		$('#'+graph_id+' .xAxis .tickLabel')
-			.css('transform', 'rotate(-45deg)')
-			.css('max-width','100px')
-			.find('div')
-				.css('position', 'relative')
-				.css('top', '+10px')
-				.css('left', '-30px');
-	*/
+	
 	if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
 		$('#'+graph_id+' .xAxis .tickLabel')
 			.find('div')
@@ -638,7 +629,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 			}
 			
 			format.push([i,
-				'<div class="'+font+'" title="'+title+'" style="word-break: normal; transform: rotate(-45deg); position:relative; top:+30px; left:-20px; max-width: 100px;font-size:'+font_size+'pt !important;">'
+				'<div class="'+font+'" title="'+title+'" style="word-break: normal; transform: rotate(-45deg); position:relative; top:+30px; left:0px; max-width: 100px;font-size:'+font_size+'pt !important;">'
 				+ label
 				+ '</div>']);
 		}

@@ -188,7 +188,7 @@ function vbar_graph($flash_chart, $chart_data, $width, $height,
 	if ($flash_chart) {
 		return flot_vcolumn_chart ($chart_data, $width, $height, $color,
 			$legend, $long_index, $homeurl, $unit, $water_mark_url,
-			$homedir,$font,$font_size, $from_ux, $from_wux);
+			$homedir,$font,$font_size, $from_ux, $from_wux, $backgroundColor);
 	}
 	else {
 		foreach ($chart_data as $key => $value) {
@@ -652,7 +652,7 @@ function hbar_graph($flash_chart, $chart_data, $width, $height,
 	
 	if ($flash_chart) {
 		return flot_hcolumn_chart(
-			$chart_data, $width, $height, $water_mark_url, $font, $font_size);
+			$chart_data, $width, $height, $water_mark_url, $font, $font_size, $backgroundColor);
 	}
 	else {
 		

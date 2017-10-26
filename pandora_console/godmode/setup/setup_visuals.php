@@ -313,7 +313,7 @@ foreach ($listIcons as $index => $value)
 $table_gis->data[$row][0] = __('Default icon in GIS') .
 	ui_print_help_tip(__('Agent icon for GIS Maps. If set to "none", group icon will be used'), true);
 $table_gis->data[$row][1] = html_print_select($arraySelectIcon,
-	"gis_default_icon", $config["gis_default_icon"], "", __('None'),
+	"gis_default_icon", $config["gis_default_icon"], "", __('Agent icon group'),
 		'', true);
 $table_gis->data[$row][1] .= "&nbsp;" .
 	html_print_button(__("View"), 'gis_icon_preview', false, '', '', true);

@@ -388,6 +388,7 @@ function update_button_palette_callback() {
 			else {
 				setPercentileBar(idItem, values);
 			}
+			
 			break;
 		case 'module_graph':
 			if($('#dir_items').html() == 'horizontal'){
@@ -1292,7 +1293,14 @@ function loadFieldsFromDB(item) {
 				}
 
 				if (key == 'value_show') {
-					$("select[name=value_show]").val(val);
+					if (val == 'percent') {
+						$("input[name=value_show][value=percent]")
+							.attr("checked", "checked");
+					}
+					else {
+						$("input[name=value_show][value=value]")
+							.attr("checked", "checked");
+					}
 				}
 
 				if (key == 'id_group') {

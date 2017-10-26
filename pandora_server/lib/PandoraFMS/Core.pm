@@ -1014,6 +1014,8 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_id_group_ => (defined ($group)) ? $group->{'id_grupo'} : '',
 				_id_alert_ => (defined ($alert->{'id_template_module'})) ? $alert->{'id_template_module'} : '',
 				_interval_ => (defined ($module) && $module->{'module_interval'} != 0) ? $module->{'module_interval'} : (defined ($agent)) ? $agent->{'intervalo'} : '',
+				_server_ip_ => (defined ($agent)) ? get_db_value($dbh, "SELECT ip_address FROM tserver WHERE name = ?", $agent->{'server_name'}) : '',
+				_server_name_ => (defined ($agent)) ? $agent->{'server_name'} : '',
 				_target_ip_ => (defined ($module)) ? $module->{'ip_target'} : '', 
 				_target_port_ => (defined ($module)) ? $module->{'tcp_port'} : '', 
 				_policy_ => undef,

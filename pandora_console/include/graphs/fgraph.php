@@ -188,7 +188,7 @@ function vbar_graph($flash_chart, $chart_data, $width, $height,
 	if ($flash_chart) {
 		return flot_vcolumn_chart ($chart_data, $width, $height, $color,
 			$legend, $long_index, $homeurl, $unit, $water_mark_url,
-			$homedir,$font,$font_size, $from_ux, $from_wux);
+			$homedir,$font,$font_size, $from_ux, $from_wux, $backgroundColor);
 	}
 	else {
 		foreach ($chart_data as $key => $value) {
@@ -652,7 +652,7 @@ function hbar_graph($flash_chart, $chart_data, $width, $height,
 	
 	if ($flash_chart) {
 		return flot_hcolumn_chart(
-			$chart_data, $width, $height, $water_mark_url, $font, $font_size);
+			$chart_data, $width, $height, $water_mark_url, $font, $font_size, $backgroundColor);
 	}
 	else {
 		
@@ -784,7 +784,7 @@ function pie_graph($graph_type, $flash_chart, $chart_data, $width,
 function ring_graph($flash_chart, $chart_data, $width,
 	$height, $others_str = "other", $homedir="", $water_mark = "",
 	$font = '', $font_size = '', $ttl = 1, $legend_position = false,
-	$colors = '', $hide_labels = false) {
+	$colors = '', $hide_labels = false,$background_color = 'white') {
 	
 	if (empty($chart_data)) {
 		return graph_nodata_image($width, $height, 'pie');
@@ -800,7 +800,7 @@ function ring_graph($flash_chart, $chart_data, $width,
 		return flot_custom_pie_chart ($flash_chart, $chart_data,
 		$width, $height, $colors, $module_name_list, $long_index,
 		$no_data, false, '', $water_mark, $font, $font_size,
-		$unit, $ttl, $homeurl, $background_color, $legend_position);
+		$unit, $ttl, $homeurl, $background_color, $legend_position,$background_color);
 	}
 	else {
 		$total_modules = $chart_data['total_modules'];

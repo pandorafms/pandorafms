@@ -424,7 +424,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 					}
 				}
 				else if ($is_a_link_to_other_visualconsole) {
-					if (empty($layoutData['id_metaconsole'])) {
+					if (empty($layout_data['id_metaconsole'])) {
 						$url = $config['homeurl'] . "index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure=" . $config["pure"] . "&amp;id=" . $layoutData["id_layout_linked"];
 					}
 					else {
@@ -490,6 +490,29 @@ function visual_map_print_item($mode = "read", $layoutData,
 						"&date_to=" . $date_to . "&time_to=" . $time_to . "&status=-1";
 				}
 				break;
+			
+			case DONUT_GRAPH:
+				if (empty($layout_data['id_metaconsole'])) {
+					$url = $config['homeurl'] . "index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=" . $layoutData['id_agent'] . 
+						"&tab=module&edit_module=1&id_agent_module=" . $layoutData['id_agente_modulo'];
+				}
+				else {
+					$url = "index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=" . $layoutData['id_agent'] . 
+						"&tab=module&edit_module=1&id_agent_module=" . $layoutData['id_agente_modulo'];
+				}
+				break;
+
+			case BARS_GRAPH:
+				if (empty($layout_data['id_metaconsole'])) {
+					$url = $config['homeurl'] . "index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=" . $layoutData['id_agent'] . 
+						"&tab=module&edit_module=1&id_agent_module=" . $layoutData['id_agente_modulo'];
+				}
+				else {
+					$url = "index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=" . $layoutData['id_agent'] . 
+						"&tab=module&edit_module=1&id_agent_module=" . $layoutData['id_agente_modulo'];
+				}
+				break;
+
 			case GROUP_ITEM:
 				$is_a_link_to_other_visualconsole = false;
 				if ($layoutData['id_layout_linked'] != 0) {
@@ -513,20 +536,15 @@ function visual_map_print_item($mode = "read", $layoutData,
 			case LABEL:
 				if ($layoutData['id_layout_linked'] != 0) {
 					// Link to a map
-					if ($layoutData['id_metaconsole'] == 0) {
-						$url = $config['homeurl'] .
-							'index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layoutData["id_layout_linked"];
-					}
-					else{
-						$url = "index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=0&id_visualmap=" . $layoutData["id_layout_linked"] . "&refr=0";
-					}
+					$url = $config['homeurl'] .
+						'index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layoutData["id_layout_linked"];
 				}
 				break;
 			case ICON:
 				$url_icon = "";
 				if ($layoutData['id_layout_linked'] != 0) {
 					// Link to a map
-					if ($layoutData['id_metaconsole'] == 0) {
+					if (empty($layoutData['id_metaconsole'])) {
 						$url = 'index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layoutData["id_layout_linked"];
 					}
 					else {
@@ -1088,10 +1106,10 @@ function visual_map_print_item($mode = "read", $layoutData,
 			if ((get_parameter('action') == 'edit') || (get_parameter('operation') == 'edit_visualmap')) {
 				if($width == 0 || $height == 0){
 					if ($layoutData['id_metaconsole'] != 0) {
-						$img =  '<img src="../../images/console/signes/module-events.png" style="width:500px;height:40px;">';
+						$img =  '<img src="../../images/console/signes/module-events.png">';
 					}
 					else{
-						$img =  '<img src="images/console/signes/module-events.png" style="width:500px;height:40px;">';	
+						$img =  '<img src="images/console/signes/module-events.png">';	
 					}
 				}
 				else{
@@ -1189,12 +1207,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 	if ($link) {
 		echo "<a href=\"$url\">";
 	}
-
-	//for clean link text from bbdd
-	if (get_parameter('action') == 'edit' || get_parameter('operation') == 'edit_visualmap') {
-		$text = preg_replace("/<\/*a.*?>/", '', $text);
-	}
-
+	
 	switch ($type) {
 		case BOX_ITEM:
 			if ($width == 0 || $width == 0) {
@@ -1287,11 +1300,8 @@ function visual_map_print_item($mode = "read", $layoutData,
 					$imgpos = 'float:left';
 				}
 				
-				if ($layoutData['id_metaconsole'] != 0) {
-					$img = "../../" . $img;
-				}
-
 				$varsize = getimagesize($img);
+				
 				
 				if($layoutData['show_statistics'] == 1){
 					
@@ -1386,35 +1396,34 @@ function visual_map_print_item($mode = "read", $layoutData,
 				else{
 				
 					if ($width == 0 || $height == 0) {
-
 						if($varsize[0] > 150 || $varsize[1] > 150){
 							echo html_print_image($img, true,
-								array("class" => "image",
-								"id" => "image_" . $id,
-								"width" => "70px",
-								"height" => "70px",
-								"title" => $img_style_title,
-								"style" => $borderStyle.$imgpos), false,
-								false, false, $isExternalLink);
+							array("class" => "image",
+							"id" => "image_" . $id,
+							"width" => "70px",
+							"height" => "70px",
+							"title" => $img_style_title,
+							"style" => $borderStyle.$imgpos), false,
+							false, false, $isExternalLink);
 						}
 						else{
 							echo html_print_image($img, true,
-								array("class" => "image",
-								"id" => "image_" . $id,
-								"title" => $img_style_title,
-								"style" => $borderStyle.$imgpos), false,
-								false, false, $isExternalLink);
+							array("class" => "image",
+							"id" => "image_" . $id,
+							"title" => $img_style_title,
+							"style" => $borderStyle.$imgpos), false,
+							false, false, $isExternalLink);
 						}
 					}
 					else{
-						echo html_print_image($img, true,
-							array("class" => "image",
-								"id" => "image_" . $id,
-								"width" => $width,
-								"height" => $height,
-								"title" => $img_style_title,
-								"style" => $borderStyle.$imgpos), false,
-								false, false, $isExternalLink);
+					echo html_print_image($img, true,
+						array("class" => "image",
+							"id" => "image_" . $id,
+							"width" => $width,
+							"height" => $height,
+							"title" => $img_style_title,
+							"style" => $borderStyle.$imgpos), false,
+							false, false, $isExternalLink);
 					}
 			
 				}
@@ -2755,10 +2764,9 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 		$mapWidth = $layout["width"];
 		$mapHeight = $layout["height"];
 		$backgroundImage = '';
-		if ($layout["background"] != 'None.png' ){
+		if ($layout["background"] != 'None.png' )
 			$backgroundImage = $metaconsole_hack . 'images/console/background/' .
 				$layout["background"];
-		}
 	}
 	
 	if (defined('METACONSOLE')) {
@@ -2853,33 +2861,14 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
  * @return array A list of layouts the user can see.
  */
 function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter = false, $returnAllGroup = true) {
-	if (! is_array ($filter)){
+	if (! is_array ($filter))
 		$filter = array ();
-	} else {
-		if(!empty($filter['name'])){
-			$where .= "name LIKE '%".io_safe_output($filter['name'])."%'";
-			unset($filter['name']);
-		}
-	}
-		
-	if ($returnAllGroup){
+	
+	if ($returnAllGroup)
 		$groups = users_get_groups ($id_user, 'VR');
-	} else {
-		if(!empty($filter['group'])){
-			$permissions_group = users_get_groups ($id_user, 'VR', false);
-			if(empty($permissions_group)){
-				$permissions_group = users_get_groups ($id_user, 'VM', false);
-			}
-			$groups = array_intersect_key($filter['group'], $permissions_group);
-			unset($filter['group']);
-		} else {
-			$groups = users_get_groups ($id_user, 'VR', false);
-			if(empty($groups)){
-				$groups = users_get_groups ($id_user, 'VM', false);
-			}
-		}
-	}
-		
+	else
+		$groups = users_get_groups ($id_user, 'VR', false);
+	
 	if (!empty($groups)) {
 		if (empty($where))
 			$where = "";

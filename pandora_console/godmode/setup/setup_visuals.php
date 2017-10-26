@@ -934,6 +934,23 @@ tinyMCE.init({
 });
 
 $(document).ready (function () {
+	
+	var comfort = 0;
+	
+	if(comfort == 0){
+		$(':input,:radio,:checkbox,:file').change(function(){
+			$('#submit-update_button').css({'position':'fixed','right':'80px','bottom':'55px'});
+			var comfort = 1;
+		});
+		
+		$("*").keydown(function(){
+			$('#submit-update_button').css({'position':'fixed','right':'80px','bottom':'55px'});
+			var comfort = 1;
+		});
+		
+		$('#form_setup').after('<br>');	
+		}
+	
 	$("#form_setup #text-graph_color1").attachColorPicker();
 	$("#form_setup #text-graph_color2").attachColorPicker();
 	$("#form_setup #text-graph_color3").attachColorPicker();

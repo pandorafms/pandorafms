@@ -54,6 +54,8 @@ Besides the defined module macros, the following macros are available:
 <li>_target_ip_: IP address for the module’s target.</li>
 <li>_target_port_: Port number for the module’s target.</li>
 <li>_plugin_parameters_: Module’s Plugin parameters.</li>
+<li>_server_ip_ : Ip of server assigned to agent. </li>
+<li>_server_name_ : Name of server assigned to agent. </li>
 <li>_groupcontact_: Group’s contact information. Configured when the group is created.</li>
 <li>_groupcustomid_: Group’s custom ID.</li>
 <li>_groupother_: Other information about the group. Configured when the group is created.</li>

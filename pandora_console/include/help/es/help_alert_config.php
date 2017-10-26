@@ -63,6 +63,8 @@ Además de las macros de módulo definidas, las siguientes macros están disponi
 <li>_target_ip_ : Dirección IP del objetivo del módulo.</li>
 <li>_target_port_ : Puerto del objetivo del módulo.</li>
 <li>_plugin_parameters_ : Parámetros del Plug-in del módulo.</li>
+<li>_server_ip_ : Ip del servidor al que el agente está asignado. </li>
+<li>_server_name_ : Nombre del servidor al que el agente está asignado. </li>
 <li>_groupcontact_ : Información de contacto del grupo.	Se configura al crear el grupo.</li>
 <li>_groupother_ : Otra información sobre el grupo. Se configura al crear el grupo.</li>
 <li>_email_tag_ : Emails asociados a los tags de módulos.</li>

@@ -144,7 +144,7 @@ $table->data["staticgraph_modulegraph"][1] .= '&nbsp;&nbsp;&nbsp;' .
 			 'leaguegothic' => 'League Gothic'
 	 	 );
 		 
-		 $fonts = array('4pt' => '4pt','6pt' => '6pt','8pt' => '8pt','10pt' => '10pt','12pt' => '12pt','14pt' => '14pt','24pt' => '24pt','36pt' => '36pt','72pt' => '72pt','96pt' => '96pt','128pt' => '128pt','154pt' => '154pt','196pt' => '196pt');
+		 $fonts = array('4pt' => '4pt','6pt' => '6pt','8pt' => '8pt','10pt' => '10pt','12pt' => '12pt','14pt' => '14pt','18pt' => '18pt','24pt' => '24pt','28pt' => '28pt','36pt' => '36pt','48pt' => '48pt','60pt' => '60pt','72pt' => '72pt','84pt' => '84pt','96pt' => '96pt','116pt' => '116pt','128pt' => '128pt','140pt' => '140pt','154pt' => '154pt','196pt' => '196pt');
 		 
 	/*	 
 		 $fontf = array('andale mono,times' => 'Andale Mono',

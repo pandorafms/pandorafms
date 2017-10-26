@@ -20,6 +20,7 @@ require_once("include/functions_snmp.php");
 $save_snmp_translation = (bool)get_parameter('save_snmp_translation', 0);
 $delete_snmp_translation = (bool)get_parameter('delete_snmp_translation', 0);
 $update_snmp_translation = (bool)get_parameter('update_snmp_translation', 0);
+$delete_snmp_filter = (bool)get_parameter('delete_snmp_filter', 0);
 
 /* skins image checks */
 if ($save_snmp_translation) {
@@ -54,6 +55,14 @@ if ($update_snmp_translation) {
 	
 	echo json_encode(array('correct' => $result));
 	
+	return;
+}
+
+if ($delete_snmp_filter) {
+	$filter_id = get_parameter('filter_id');
+html_debug($filter_id, true);
+	db_process_sql_delete('tsnmp_filter', array('id_snmp_filter' => $filter_id));
+
 	return;
 }
 ?>

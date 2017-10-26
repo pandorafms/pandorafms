@@ -45,31 +45,27 @@ else {// Overview header
 
 // Create/update filter
 if ($update_filter > -2) {
+	// UPDATE
 	if ($update_filter > -1) {
 		$new_unified_id = (db_get_value_sql("SELECT unified_filters_id FROM tsnmp_filter WHERE id_snmp_filter = " . $update_filter));
 		$elements = get_parameter('elements', array());
 		
-		if ($index_post == 1) {
-			$filter = get_parameter('filter_' . $update_filter);
+		$elements = explode(",", $elements);
+		foreach ($elements as $e) {
+			$filter = get_parameter('filter_' . $e);
 			$values = array('description' => $description, 'filter' => $filter, 'unified_filters_id' => $new_unified_id);
-			$result = db_process_sql_update('tsnmp_filter', $values, array('id_snmp_filter' => $update_filter));
+			$result = db_process_sql_update('tsnmp_filter', $values, array('id_snmp_filter' => $e));
 		}
-		else {
-			$elements = explode(",", $elements);
-			foreach ($elements as $e) {
-				$filter = get_parameter('filter_' . $e);
-				$values = array('description' => $description, 'filter' => $filter, 'unified_filters_id' => $new_unified_id);
-				$result = db_process_sql_update('tsnmp_filter', $values, array('id_snmp_filter' => $e));
-			}
-			if (count($elements) == 1) {
-				$new_unified_id = (db_get_value_sql("SELECT MAX(unified_filters_id) FROM tsnmp_filter")) + 1;
+		if (count($elements) == 1) {
+			$new_unified_id = (db_get_value_sql("SELECT MAX(unified_filters_id) FROM tsnmp_filter")) + 1;
 
-				$filter = get_parameter('filter_' . $elements[0]);
-				$values = array('description' => $description, 'filter' => $filter, 'unified_filters_id' => $new_unified_id);
-				$result = db_process_sql_update('tsnmp_filter', $values, array('id_snmp_filter' => $elements[0]));
-			}
-			for ($i = 1; $i < $index_post; $i++) {
-				$filter = get_parameter('filter_' . $i);
+			$filter = get_parameter('filter_' . $elements[0]);
+			$values = array('description' => $description, 'filter' => $filter, 'unified_filters_id' => $new_unified_id);
+			$result = db_process_sql_update('tsnmp_filter', $values, array('id_snmp_filter' => $elements[0]));
+		}
+		for ($i = 1; $i < $index_post; $i++) {
+			$filter = get_parameter('filter_' . $i);
+			if ($filter != "") {
 				$values = array(
 					'description' => $description,
 					'filter' => $filter,
@@ -77,6 +73,7 @@ if ($update_filter > -2) {
 				$result = db_process_sql_insert('tsnmp_filter', $values);
 			}
 		}
+		
 		if ($result === false) {
 			ui_print_error_message (__('There was a problem updating the filter'));
 		}
@@ -84,6 +81,7 @@ if ($update_filter > -2) {
 			ui_print_success_message (__('Successfully updated'));
 		}
 	}
+	// CREATE
 	else {
 		$new_unified_id = (db_get_value_sql("SELECT MAX(unified_filters_id) FROM tsnmp_filter")) + 1;
 
@@ -115,17 +113,15 @@ if ($update_filter > -2) {
 	}
 }
 else if ($delete_filter > -1) { // Delete
-	$filters_to_upd = db_get_all_rows_sql("SELECT * FROM tsnmp_filter WHERE unified_filters_id = (SELECT unified_filters_id FROM tsnmp_filter WHERE id_snmp_filter = " . $delete_filter . ")");
-	if (count($filters_to_upd) == 2) {
-		foreach ($filters_to_upd as $fil) {
-			if ($fil['id_snmp_filter'] != $delete_filter) {
-				$values = array('description' => $fil['description'], 'filter' => $fil['filter'], 'unified_filters_id' => 0);
-				db_process_sql_update('tsnmp_filter', $values, array('id_snmp_filter' => $fil['id_snmp_filter']));
-			}
-		}
-		
+	$unified_id_to_delete = (db_get_value_sql("SELECT unified_filters_id FROM tsnmp_filter WHERE id_snmp_filter = " . $delete_filter));
+	
+	if ($unified_id_to_delete == 0) {
+		$result = db_process_sql_delete('tsnmp_filter', array('id_snmp_filter' => $delete_filter));
 	}
-	$result = db_process_sql_delete('tsnmp_filter', array('id_snmp_filter' => $delete_filter));
+	else {
+		$result = db_process_sql_delete('tsnmp_filter', array('unified_filters_id' => $unified_id_to_delete));
+	}
+
 	if ($result === false) {
 		ui_print_error_message (__('There was a problem deleting the filter'));
 	}
@@ -164,7 +160,11 @@ if ($edit_filter > -2) {
 			if ($j == 1) {
 				$table->data[$j][1] .= ui_print_help_tip (__("This field contains a substring, could be part of a IP address, a numeric OID, or a plain substring") . SEPARATOR_COLUMN, true);
 			}
+			else {
+				$table->data[$j][1] .= html_print_image('images/cross.png', true, array('id' => 'delete_filter_' . $f['id_snmp_filter'], 'alt' => __('Click to add new filter'), 'title' => __('Click to add new filter')));
+			}
 			$j++;
+			$index++;
 		}
 	}
 	else {
@@ -196,13 +196,13 @@ if ($edit_filter > -2) {
 // Overview
 }
 else {
-	$result = db_get_all_rows_sql("SELECT * FROM tsnmp_filter ORDER BY unified_filters_id ASC");
-	if ($result === false) {
-		$result = array ();
-		require_once ($config['homedir'] . "/general/firts_task/snmp_filters.php");
-		return;
+	$result_unified = db_get_all_rows_sql("SELECT DISTINCT(unified_filters_id) FROM tsnmp_filter ORDER BY unified_filters_id ASC");
+
+	$aglomerate_result = array();
+	foreach ($result_unified as $res) {
+		$aglomerate_result[$res['unified_filters_id']] = db_get_all_rows_sql("SELECT * FROM tsnmp_filter WHERE unified_filters_id = " . $res['unified_filters_id'] . " ORDER BY id_snmp_filter ASC");
 	}
-	
+
 	$table->data = array ();
 	$table->head = array ();
 	$table->size = array ();
@@ -214,26 +214,46 @@ else {
 	
 	$table->head[0] = __('Description');
 	$table->head[1] = __('Filter');
-	$table->head[2] = __('Function');
-	$table->head[3] = __('Action');
-	$table->size[3] = "50px";
-	$table->align[3] = 'center';
-	
-	foreach ($result as $row) {
-		$data = array ();
-		$data[0] = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$row['id_snmp_filter'].'">' . $row['description'] . '</a>';
-		$data[1] = $row['filter'];
-		if ($row['unified_filters_id'] == 0) {
-			$data[2] = "OR";
+	$table->head[2] = __('Action');
+	$table->size[2] = "50px";
+	$table->align[2] = 'center';
+
+	foreach ($aglomerate_result as $ind => $row) {
+		if ($ind == 0) {
+			foreach ($row as $r) {
+				$data = array ();
+				$data[0] = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$r['id_snmp_filter'].'">' . $r['description'] . '</a>';
+				$data[1] = $r['filter'];
+				$data[2] = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$r['id_snmp_filter'].'">' .
+					html_print_image("images/config.png", true, array("border" => '0', "alt" => __('Update'))) . '</a>' .
+					'&nbsp;&nbsp;<a onclick="if (confirm(\'' . __('Are you sure?') . '\')) return true; else return false;" href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&delete_filter='.$r['id_snmp_filter'].'">' .
+					html_print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete'))) . '</a>';
+				array_push ($table->data, $data);
+			}
 		}
 		else {
-			$data[2] = "AND (" . $row['unified_filters_id'] . ")";
+			$ind2 = 0;
+			$compose_filter = array();
+			$compose_id = "";
+			$compose_action = "";
+			foreach ($row as $i => $r) {
+				if ($ind2 == 0) {
+					$compose_id = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$r['id_snmp_filter'].'">' . $r['description'] . '</a>';
+					$compose_action = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$r['id_snmp_filter'].'">' .
+						html_print_image("images/config.png", true, array("border" => '0', "alt" => __('Update'))) . '</a>' .
+						'&nbsp;&nbsp;<a onclick="if (confirm(\'' . __('Are you sure?') . '\')) return true; else return false;" href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&delete_filter='.$r['id_snmp_filter'].'">' .
+						html_print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete'))) . '</a>';
+					$ind2++;
+				}
+				$compose_filter[] = $r['filter'];
+			}
+			$data = array ();
+			$data[0] = $compose_id;
+			$data[1] = implode(" AND ", $compose_filter);
+			$data[2] = $compose_action;
+			array_push ($table->data, $data);
 		}
-		$data[3] = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$row['id_snmp_filter'].'">' .
-			html_print_image("images/config.png", true, array("border" => '0', "alt" => __('Update'))) . '</a>' .
-			'&nbsp;&nbsp;<a onclick="if (confirm(\'' . __('Are you sure?') . '\')) return true; else return false;" href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&delete_filter='.$row['id_snmp_filter'].'">' .
-			html_print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete'))) . '</a>';
-		array_push ($table->data, $data);
+		
 	}
 	
 	if (!empty ($table->data)) {
@@ -254,11 +274,38 @@ else {
 
 	$(document).ready (function () {
 		$('#add_filter').click(function(e) {
-			$('#filter_table').append('<tr id="filter_table-' + id + '" style="" class="datos"><td id="filter_table-' + id + '-0" style="" class="datos "></td><td id="filter_table-' + id + '-1" style="" class="datos "><input type="text" name="filter_' + id + '" value="" id="text-filter_' + id + '" size="60" maxlength="100"></td></tr>');
+			$('#filter_table').append('<tr id="filter_table-' + id + '" style="" class="datos"><td id="filter_table-' + id + '-0" style="" class="datos "></td><td id="filter_table-' + id + '-1" style="" class="datos "><input type="text" name="filter_' + id + '" value="" id="text-filter_' + id + '" size="60" maxlength="100"><img src="http://localhost/pandora_console/images/cross.png" onclick="delete_this_row(' + id + ');" data-title="Click to delete the filter" data-use_title_for_force_title="1" class="forced_title" alt="Click to delete the filter"></td></tr>');
 			
 			id++;
 
 			$('#hidden-index_post').val(id);
 		});
+
+		$('[id^=delete_filter_]').click(function(e) {
+			var elem_id = this.id;
+			var id_array = elem_id.split("delete_filter_");
+			var id = id_array[1];
+
+			params = {};
+			params['page'] = "include/ajax/snmp.ajax";
+			params['delete_snmp_filter'] = 1;
+			params['filter_id'] = id;
+			
+			jQuery.ajax ({
+				data: params,
+				type: "POST",
+				url: "ajax.php",
+				dataType: "html",
+				success: function(data){
+					var elem = $('#hidden-elements').val();
+					$('#hidden-elements').val(elem - 1);
+					$('#' + elem_id).parent().parent().remove();
+				}
+			});
+		});
 	});
+	
+	function delete_this_row (id_row) {
+		$('#filter_table-' + id_row).remove();
+	}
 </script>

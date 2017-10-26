@@ -1081,10 +1081,10 @@ function visual_map_print_item($mode = "read", $layoutData,
 			if ((get_parameter('action') == 'edit') || (get_parameter('operation') == 'edit_visualmap')) {
 				if($width == 0 || $height == 0){
 					if ($layoutData['id_metaconsole'] != 0) {
-						$img =  '<img src="../../images/console/signes/module-events.png">';
+						$img =  '<img src="../../images/console/signes/module-events.png" style="width:500px;height:40px;">';
 					}
 					else{
-						$img =  '<img src="images/console/signes/module-events.png">';	
+						$img =  '<img src="images/console/signes/module-events.png" style="width:500px;height:40px;">';	
 					}
 				}
 				else{

@@ -590,6 +590,14 @@ switch ($action) {
 							$values['height'] = $height;
 						}
 						break;
+					case 'donut_graph':
+						if ($width_percentile !== null) {
+							$values['width'] = $width_percentile;
+							$values['height'] = $width_percentile;
+						}
+						$values['type'] = DONUT_GRAPH;
+
+						break;
 					case 'box_item':
 						$values['border_width'] = $border_width;
 						$values['border_color'] = $border_color;
@@ -776,6 +784,7 @@ switch ($action) {
 			case 'label':
 			case 'icon':
 			case 'auto_sla_graph':
+			case 'donut_graph':
 				$elementFields = db_get_row_filter('tlayout_data',
 					array('id' => $id_element));
 				
@@ -855,6 +864,9 @@ switch ($action) {
 						$elementFields['percentile_color'] = $elementFields['border_color'];
 						$elementFields['percentile_label_color'] = $elementFields['fill_color'];
 						$elementFields['percentile_label'] = $elementFields['label'];
+						break;
+					case 'donut_graph':
+						$elementFields['width_percentile'] = $elementFields['width'];
 						break;
 					
 					case 'module_graph':
@@ -968,6 +980,11 @@ switch ($action) {
 				$values['period'] = $period;
 				$values['width'] = $width_box;
 				$values['height'] = $height_box;
+				break;
+			case 'donut_graph':
+				$values['type'] = DONUT_GRAPH;
+				$values['width'] = $width;
+				$values['height'] = $height;
 				break;
 			case 'module_graph':
 				$values['type'] = MODULE_GRAPH;

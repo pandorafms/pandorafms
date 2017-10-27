@@ -1546,6 +1546,15 @@ function hiddenFields(item) {
 	$("#percentile_item_row_4").css('display', 'none');
 	$("#percentile_item_row_4." + item).css('display', '');
 
+	$("#percentile_item_row_5").css('display', 'none');
+	$("#percentile_item_row_5." + item).css('display', '');
+
+	$("#percentile_item_row_6").css('display', 'none');
+	$("#percentile_item_row_6." + item).css('display', '');
+
+	$("#percentile_bar_row_7").css('display', 'none');
+	$("#percentile_bar_row_7." + item).css('display', '');
+
 	$("#period_row").css('display', 'none');
 	$("#period_row." + item).css('display', '');
 
@@ -1638,6 +1647,11 @@ function cleanFields(item) {
 	$("input[name='fill_color']").val('#ffffff');
 	$("input[name='line_width']").val(3);
 	$("input[name='line_color']").val('#000000');
+	$("select[name=type_percentile]").val('');
+	$("input[name=percentile_color]").val('');
+	$("input[name=percentile_label_color]").val('');
+	$("input[name=percentile_label]").val('');
+	$(".ColorPickerDivSample").css('background-color', '#FFF');
 
 
 	$("#preview").empty();
@@ -2230,7 +2244,7 @@ function setDonutsGraph (id_data, values) {
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "get_module_type_string"});
 	parameter.push ({name: "id_agent", value: values['id_agent']});
-	parameter.push ({name: "id_agent_module", value: values['module']});
+	parameter.push ({name: "module", value: values['module']});
 	parameter.push ({name: "id_element", value: id_data});
 	parameter.push ({name: "id_visual_console", value: id_visual_console});
 	jQuery.ajax({

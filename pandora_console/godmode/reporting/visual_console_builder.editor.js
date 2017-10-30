@@ -32,8 +32,6 @@ var SIZE_GRID = 16; //Const the size (for width and height) of grid.
 var img_handler_start;
 var img_handler_end;
 
-var font;
-
 function toggle_advance_options_palette(close) {
 	if ($("#advance_options").css('display') == 'none') {
 		$("#advance_options").css('display', '');
@@ -56,23 +54,6 @@ function visual_map_main() {
 	});
 	get_image_url(img_handler_end).success(function (data) {
 		img_handler_end = data;
-	});
-
-	//Get the actual system font.
-	parameter = Array();
-	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
-	parameter.push ({name: "action", value: "get_font"});
-	parameter.push ({name: "id_visual_console",
-		value: id_visual_console});
-	jQuery.ajax({
-		url: get_url_ajax(),
-		data: parameter,
-		type: "POST",
-		dataType: 'json',
-		success: function (data)
-		{
-			font = data['font'];
-		}
 	});
 
 	//Get the list of posible parents
@@ -1912,9 +1893,9 @@ function setPercentileBar(id_data, values) {
 				value_text = module_value + " " + unit_text;
 			}
 
-			var img = url_hack_metaconsole + 'include/graphs/fgraph.php?homeurl=../../&graph_type=progressbar&height=15&' +
+			var img = url_hack_metaconsole + 'include/graphs/fgraph.php?graph_type=progressbar&height=15&' +
 				'width=' + width_percentile + '&mode=1&progress=' + percentile +
-				'&font=' + font + '&value_text=' + value_text + '&colorRGB=' + colorRGB;
+				'&value_text=' + value_text + '&colorRGB=' + colorRGB;
 
 			$("#"+  id_data).attr('src', img);
 			
@@ -2035,9 +2016,9 @@ function setPercentileBubble(id_data, values) {
 				value_text = module_value + " " + unit_text;
 			}
 
-			var img = url_hack_metaconsole + 'include/graphs/fgraph.php?homeurl=../../&graph_type=progressbubble&height=' + width_percentile + '&' +
+			var img = url_hack_metaconsole + 'include/graphs/fgraph.php?graph_type=progressbubble&height=' + width_percentile + '&' +
 				'width=' + width_percentile + '&mode=1&progress=' + percentile +
-				'&font=' + font + '&value_text=' + value_text + '&colorRGB=' + colorRGB;
+				'&value_text=' + value_text + '&colorRGB=' + colorRGB;
 
 			$("#image_" + id_data).attr('src', img);
 			

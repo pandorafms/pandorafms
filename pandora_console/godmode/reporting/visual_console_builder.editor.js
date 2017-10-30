@@ -298,7 +298,11 @@ function update_button_palette_callback() {
 				alert('Undefined height');
 				return false;
 			}
-
+			if(values['image'] == ''){
+				alert('Undefined image');
+				return false;
+			}
+			
 			$("#text_" + idItem).html(values['label']);
 			
 			if(values['show_statistics'] == 1){
@@ -696,6 +700,10 @@ function create_button_palette_callback() {
 			if ((values['height'] == '')) {
 				alert('Undefined height');
 				validate = false;
+			}
+			if(values['image'] == ''){
+				alert('Undefined image');
+				return false;
 			}
 			if ((values['label'] == '') && (values['image'] == '') && (values['show_statistics']) == false) {
 				alert($("#message_alert_no_label_no_image").html());

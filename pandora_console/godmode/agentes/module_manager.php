@@ -45,10 +45,10 @@ echo "<tr><td class='datos' style='width:20%; font-weight: bold;'>";
 echo __('Search') . ' ' .
 	html_print_input_text ('search_string', $search_string, '', 15, 255, true);
 echo "</td>";
-echo "<td class='datos' style='width:20%'>";
+echo "<td class='datos' style='width:10%'>";
 html_print_submit_button (__('Filter'), 'filter', false, 'class="sub search"');
 echo "</td>";
-echo "<td class='datos' style='width:20%'></td>";
+echo "<td class='datos' style='width:10%'></td>";
 echo '</form>';
 // Check if there is at least one server of each type available to assign that
 // kind of modules. If not, do not show server type in combo
@@ -98,6 +98,9 @@ if (strstr($sec2, "enterprise/godmode/policies/policies") !== false) {
 	//the modules to show in syntetic module policy form must be the policy
 	//modules from the same policy.
 	unset($modules['predictionserver']);
+	if (enterprise_installed()){
+		unset($modules['webux']);
+	}
 }
 
 $show_creation = false;
@@ -116,7 +119,7 @@ if (($policy_page) || (isset($agent))) {
 		// Create module/type combo
 		echo '<form id="create_module_type" method="post" action="'.$url.'">';
 		if (!$policy_page) {
-			echo '<td class="datos" style="font-weight: bold;">';
+			echo '<td class="datos" style="font-weight: bold; width:20%;">';
 			echo __('Show in hierachy mode');
 			if ($checked == "true") {
 				$checked = true;
@@ -127,12 +130,12 @@ if (($policy_page) || (isset($agent))) {
 			html_print_checkbox ('status_hierachy_mode', "", $checked, false, false, "onChange=change_mod_filter();");
 			echo '</td>';
 		}
-		echo '<td class="datos" style="font-weight: bold;">';
+		echo '<td class="datos" style="font-weight: bold; width:20%;">';
 		echo __("Type");
 		html_print_select ($modules, 'moduletype', '', '', '', '', false, false, false, '', false, 'max-width:300px;' );
 		html_print_input_hidden ('edit_module', 1);
 		echo '</td>';
-		echo '<td class="datos">';
+		echo '<td class="datos" style="width:10%;">';
 		echo '<input align="right" name="updbutton" type="submit" class="sub next" value="'.__('Create').'">';
 		echo '</td>';
 		echo '</tr>';
@@ -738,10 +741,15 @@ foreach ($modules as $module) {
 	$data[6] = ui_print_status_image($status, $title, true);
 	
 	// MAX / MIN values
-	$data[7] = ui_print_module_warn_value ($module["max_warning"],
-		$module["min_warning"], $module["str_warning"],
-		$module["max_critical"], $module["min_critical"],
-		$module["str_critical"]);
+	if($module['id_tipo_modulo'] != 25){
+		$data[7] = ui_print_module_warn_value ($module["max_warning"],
+			$module["min_warning"], $module["str_warning"],
+			$module["max_critical"], $module["min_critical"],
+			$module["str_critical"]);
+	}
+	else{
+		$data[7] = "";
+	}
 	
 	if ($module['disabled']) {
 		$data[8] = "<a href='index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."&enable_module=".$module['id_agente_modulo']."'>".
@@ -753,8 +761,8 @@ foreach ($modules as $module) {
 			html_print_image('images/lightbulb.png', true,
 			array('alt' => __('Disable module'), 'title' => __('Disable module'))) ."</a>";
 	}
-	
-	if (check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
+
+	if (check_acl ($config['id_user'], $agent['id_grupo'], "AW") && $module['id_tipo_modulo'] != 25) {
 		$data[8] .= '&nbsp;<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&duplicate_module='.$module['id_agente_modulo'].'"
 			onClick="if (!confirm(\' ' . __('Are you sure?') . '\')) return false;">';
 		$data[8] .= html_print_image ('images/copy.png', true,

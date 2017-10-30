@@ -282,7 +282,12 @@ $ignored_params['refr'] = '';
 		
 		$('.item:not(.icon) img:not(.b64img)').each( function() {
 			if ($(this).css('float')=='left' || $(this).css('float')=='right') {
-				$(this).css('margin-top',(parseInt($(this).parent().parent().css('height'))/2-parseInt($(this).css('height'))/2)+'px');
+				if(	$(this).parent()[0].tagName == 'DIV'){
+					$(this).css('margin-top',(parseInt($(this).parent().css('height'))/2-parseInt($(this).css('height'))/2)+'px');
+				}
+				else if (	$(this).parent()[0].tagName == 'A') {
+					$(this).css('margin-top',(parseInt($(this).parent().parent().css('height'))/2-parseInt($(this).css('height'))/2)+'px');
+				}
 				$(this).css('margin-left','');
 			}
 			else {
@@ -290,7 +295,12 @@ $ignored_params['refr'] = '';
 					$(this).css('margin-left','');
 					$(this).css('margin-top','');
 				} else {
-					$(this).css('margin-left',(parseInt($(this).parent().parent().css('width'))/2-parseInt($(this).css('width'))/2)+'px');
+					if(	$(this).parent()[0].tagName == 'DIV'){
+						$(this).css('margin-left',(parseInt($(this).parent().css('width'))/2-parseInt($(this).css('width'))/2)+'px');
+					}
+					else if (	$(this).parent()[0].tagName == 'A') {
+						$(this).css('margin-left',(parseInt($(this).parent().parent().css('width'))/2-parseInt($(this).css('width'))/2)+'px');
+					}
 					$(this).css('margin-top','');
 				}
 			}

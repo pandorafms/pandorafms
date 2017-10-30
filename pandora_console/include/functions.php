@@ -1506,7 +1506,7 @@ function get_snmpwalk($ip_target, $snmp_version, $snmp_community = '',
 	$snmp3_auth_user = '', $snmp3_security_level = '',
 	$snmp3_auth_method = '', $snmp3_auth_pass = '',
 	$snmp3_privacy_method = '', $snmp3_privacy_pass = '',
-	$quick_print = 0, $base_oid = "", $snmp_port = '') {
+	$quick_print = 0, $base_oid = "", $snmp_port = '', $server_to_exec = 0) {
 	
 	global $config;
 	
@@ -1598,7 +1598,18 @@ function get_snmpwalk($ip_target, $snmp_version, $snmp_community = '',
 			break;
 	}
 	
-	exec($command_str, $output, $rc);
+	if (enterprise_installed()) {
+		if ($server_to_exec != 0) {
+			$server_data = db_get_row('tserver','id_server', $server_to_exec);
+			exec("ssh pandora_exec_proxy@" . $server_data['ip_address'] . " \"" . $command_str . "\"", $output, $rc);
+		}
+		else {
+			exec($command_str, $output, $rc);
+		}
+	}
+	else {
+		exec($command_str, $output, $rc);
+	}
 	
 	// Parse the output of snmpwalk
 	$snmpwalk = array();
@@ -1701,7 +1712,7 @@ function check_sql ($sql) {
 	
 	//Check that it not delete_ as "delete_pending" (this is a common field in pandora tables).
 	
-	if (preg_match("/\*|delete[^_]|drop|alter|modify|password|pass|insert|update/i", $sql)) {
+	if (preg_match("/\*|delete[^_]|drop|alter|modify|union|password|pass|insert|update/i", $sql)) {
 		return "";
 	}
 	return $sql;
@@ -1795,7 +1806,20 @@ function check_acl($id_user, $id_group, $access, $onlyOneGroup = false) {
 	else {
 		$id_group = (int) $id_group;
 	}
-	
+
+	$three_eyes_crow_groups = db_get_all_rows_sql("SELECT tperfil.*, tusuario_perfil.id_perfil FROM tperfil, tusuario_perfil WHERE tusuario_perfil.id_usuario = '" . 
+													$id_user . "' AND tusuario_perfil.id_grupo = 0 AND tusuario_perfil.id_perfil = tperfil.id_perfil");
+
+	if ($three_eyes_crow_groups && !empty($three_eyes_crow_groups)) {
+		$acl_column = get_acl_column($access);
+		
+		foreach ($three_eyes_crow_groups as $three_eyes_crow_group) {
+			if (isset($three_eyes_crow_group[$acl_column]) && $three_eyes_crow_group[$acl_column] == 1) {
+				return 1;
+			}
+		}
+	}
+
 	$parents_id = array($id_group);
 	if ($id_group != 0 && $onlyOneGroup !== true) {
 		$group = db_get_row_filter('tgrupo', array('id_grupo' => $id_group));

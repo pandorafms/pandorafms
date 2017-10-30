@@ -191,34 +191,53 @@ config_check();
 					$_GET['refr'] = null;
 				}
 				
-				$select = db_process_sql("SELECT autorefresh_white_list FROM tusuario WHERE id_user = '" . $config['id_user'] . "'");
+				$select = db_process_sql("SELECT autorefresh_white_list,time_autorefresh FROM tusuario WHERE id_user = '" . $config['id_user'] . "'");
 				$autorefresh_list = json_decode($select[0]['autorefresh_white_list']);
+				
 				if ($autorefresh_list !== null && array_search($_GET['sec2'], $autorefresh_list) !== false) {
-					$autorefresh_img = html_print_image("images/header_refresh.png", true, array("class" => 'bot', "alt" => 'lightning', 'title' => __('Configure autorefresh')));
-					
-					if ($_GET['refr']) {
-						$autorefresh_txt .= ' (<span id="refrcounter">'.date ("i:s", $config["refr"]).'</span>)';
+					$do_refresh = true;
+					if ($_GET['sec2'] == 'operation/agentes/pandora_networkmap') {
+						if ((!isset($_GET['tab'])) || ($_GET['tab'] != 'view')) {
+							$do_refresh = false;
+						}
 					}
+
+					if ($do_refresh) {
+						$autorefresh_img = html_print_image("images/header_refresh.png", true, array("class" => 'bot', "alt" => 'lightning', 'title' => __('Configure autorefresh')));
 					
-					$ignored_params['refr'] = '';
-					$values = get_refresh_time_array();
-					$autorefresh_additional = '<span id="combo_refr" style="display: none;">';
-					$autorefresh_additional .= html_print_select ($values, 'ref', '', '', __('Select'), '0', true, false, false);
-					$autorefresh_additional .= '</span>';
-					unset ($values);
-					
-					$autorefresh_link_open_img =
-						'<a class="white autorefresh" href="' . ui_get_url_refresh ($ignored_params) . '">';
-					
-					if ($_GET['refr']) {
-						$autorefresh_link_open_txt =
-							'<a class="white autorefresh autorefresh_txt" href="' . ui_get_url_refresh ($ignored_params) . '">';
+						if ($_GET['refr']) {
+							$autorefresh_txt .= ' (<span id="refrcounter">'.date ("i:s", $config["refr"]).'</span>)';
+						}
+						
+						$ignored_params['refr'] = '';
+						$values = get_refresh_time_array();
+						$autorefresh_additional = '<span id="combo_refr" style="display: none;">';
+						$autorefresh_additional .= html_print_select ($values, 'ref', '', '', __('Select'), '0', true, false, false);
+						$autorefresh_additional .= '</span>';
+						unset ($values);
+						
+						$autorefresh_link_open_img =
+							'<a class="white autorefresh" href="' . ui_get_url_refresh ($ignored_params) . '">';
+						
+						if ($_GET['refr']) {
+							$autorefresh_link_open_txt =
+								'<a class="white autorefresh autorefresh_txt" href="' . ui_get_url_refresh ($ignored_params) . '">';
+						}
+						else {
+							$autorefresh_link_open_txt = '<a>';
+						}
+						
+						$autorefresh_link_close = '</a>';
 					}
 					else {
-						$autorefresh_link_open_txt = '<a>';
-					}
+						$autorefresh_img = html_print_image("images/header_refresh_disabled.png", true, array("class" => 'bot autorefresh_disabled', "alt" => 'lightning', 'title' => __('Disabled autorefresh')));
 					
-					$autorefresh_link_close = '</a>';
+						$ignored_params['refr'] = false;
+						
+						$autorefresh_link_open_img = '';
+						$autorefresh_link_open_txt = '';
+						$autorefresh_link_close = '';
+					}
 				}
 				else {
 					$autorefresh_img = html_print_image("images/header_refresh_disabled.png", true, array("class" => 'bot autorefresh_disabled', "alt" => 'lightning', 'title' => __('Disabled autorefresh')));
@@ -357,16 +376,32 @@ config_check();
 	$(document).ready (function () {
 		<?php
 		if (($autorefresh_list !== null) && (array_search($_GET['sec2'], $autorefresh_list) !== false) && (!isset($_GET["refr"]))) {
+			$do_refresh = true;
+			if ($_GET['sec2'] == 'operation/agentes/pandora_networkmap') {
+				if ((!isset($_GET['tab'])) || ($_GET['tab'] != 'view')) {
+					$do_refresh = false;
+				}
+			}
+
+			if ($do_refresh) {
 		?>
-			$("a.autorefresh_txt").toggle ();
-			$("#combo_refr").toggle ();
-			$("#combo_refr").css('padding-right', '9px');
-			href = $("a.autorefresh").attr ("href");
-			$(document).attr ("location", href + "30");
+				$("a.autorefresh_txt").toggle ();
+				$("#combo_refr").toggle ();
+				$("#combo_refr").css('padding-right', '9px');
+				href = $("a.autorefresh").attr ("href");
+				<?php
+				if($select[0]['time_autorefresh']){
+				?>
+					var refresh = '<?php echo $select[0]["time_autorefresh"] ?>';
+					$(document).attr ("location", href + refresh);
+				<?php 
+				}
+				?>
+				
 		<?php
+			}
 		}
 		?>
-
 
 		if (fixed_header) {
 			$('div#head').addClass('fixed_header');

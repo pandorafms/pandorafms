@@ -243,7 +243,7 @@ our @EXPORT = qw(
 
 # Some global variables
 our @DayNames = qw(sunday monday tuesday wednesday thursday friday saturday);
-our @ServerTypes = qw (dataserver networkserver snmpconsole reconserver pluginserver predictionserver wmiserver exportserver inventoryserver webserver eventserver icmpserver snmpserver satelliteserver transactionalserver mfserver syncserver);
+our @ServerTypes = qw (dataserver networkserver snmpconsole reconserver pluginserver predictionserver wmiserver exportserver inventoryserver webserver eventserver icmpserver snmpserver satelliteserver transactionalserver mfserver syncserver wuxserver);
 our @AlertStatus = ('Execute the alert', 'Do not execute the alert', 'Do not execute the alert, but increment its internal counter', 'Cease the alert', 'Recover the alert', 'Reset internal counter');
 
 # Event storm protection (no alerts or events)
@@ -1010,11 +1010,12 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_modulestatus_ => undef,
 				_moduletags_ => undef,
 				'_moduledata_\S+_' => undef,
-				_id_agent_ => (defined ($module)) ? $module->{'id_agente'} : '',
-				_id_module_ => (defined ($module)) ? $module->{'id_agente_modulo'} : '',
+				_id_agent_ => (defined ($module)) ? $module->{'id_agente'} : '', 
 				_id_group_ => (defined ($group)) ? $group->{'id_grupo'} : '',
 				_id_alert_ => (defined ($alert->{'id_template_module'})) ? $alert->{'id_template_module'} : '',
 				_interval_ => (defined ($module) && $module->{'module_interval'} != 0) ? $module->{'module_interval'} : (defined ($agent)) ? $agent->{'intervalo'} : '',
+				_server_ip_ => (defined ($agent)) ? get_db_value($dbh, "SELECT ip_address FROM tserver WHERE name = ?", $agent->{'server_name'}) : '',
+				_server_name_ => (defined ($agent)) ? $agent->{'server_name'} : '',
 				_target_ip_ => (defined ($module)) ? $module->{'ip_target'} : '', 
 				_target_port_ => (defined ($module)) ? $module->{'tcp_port'} : '', 
 				_policy_ => undef,
@@ -1088,6 +1089,21 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	
 	# Email
 	} elsif ($clean_name eq "eMail") {
+
+		my $attach_data_as_image = 0;
+
+		my $cid_data = "CID_IMAGE";
+		my $dataname = "CID_IMAGE.png";
+
+		if ($data =~ /^data:image\/png;base64, /) {
+			# macro _data_ substitution in case is image.
+			$attach_data_as_image = 1;
+			my $_cid = '<img style="height: 150px;" src="cid:' . $cid_data . '"/>';
+
+			$field3 =~ s/_data_/$_cid/g;
+		}
+
+
 		# Address
 		$field1 = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module);
 		# Subject
@@ -1095,6 +1111,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		# Message
 		$field3 = subst_alert_macros ($field3, \%macros, $pa_config, $dbh, $agent, $module);
 		
+		# Check for _module_graph_Xh_ macros
 		# Check for _module_graph_Xh_ macros and _module_graphth_Xh_ 
 		my $module_graph_list = {};
 		my $macro_regexp = "_modulegraph_(\\d+)h_";
@@ -1111,19 +1128,21 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		$params->{"op"} = "get";
 		$params->{"op2"} = "module_graph";
 		$params->{"id"} = $module->{'id_agente_modulo'};
-		
+		my $cid ='';
 		my $subst_func = sub {
 			my $hours = shift;
 			my $threshold = shift;
 			my $period = $hours * 3600; # Hours to seconds
 			if($threshold == 0){
 				$params->{"other"} = $period . '%7C0%7C0';
+				$cid = 'module_graph_' . $hours . 'h';
 			}
 			else{
 				$params->{"other"} = $period . '%7C0%7C1';
+				$cid = 'module_graphth_' . $hours . 'h';
 			}
+
 			$params->{"other_mode"} = 'url_encode_separator_%7C';
-			my $cid = 'module_graph_' . $hours . 'h';
 			
 			if (! exists($module_graph_list->{$cid}) && defined $url) {
 				# Get the module graph image in base 64
@@ -1135,10 +1154,10 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 					return '<img src="cid:'.$cid.'">';
 				}
 			}
-			
+		
 			return '';
 		};
-		
+
 		# Macro data may contain HTML entities
 		eval {
 			no warnings;
@@ -1157,10 +1176,14 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 			$content_type = 'text/html; charset="UTF-8"';
 		}
 		
+
+		my $boundary = "====" . time() . "====";
+		my $html_content_type = $content_type;
+
 		# Build the mail with attached content
-		if (keys(%{$module_graph_list}) > 0) {
-			my $boundary = "====" . time() . "====";
-			my $html_content_type = $content_type;
+		if ((keys(%{$module_graph_list}) > 0) && ($attach_data_as_image == 0)) {
+			# module_graph only available if data is NOT an image
+
 			$content_type = 'multipart/related; boundary="'.$boundary.'"';
 			$boundary = "--" . $boundary;
 			
@@ -1186,6 +1209,28 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 			undef %{$module_graph_list};
 			
 			$field3 .= $boundary . "--\n";
+		}
+
+		if ($attach_data_as_image == 1) {
+			# it's an image in base64!
+
+			$content_type = 'multipart/related; boundary="'.$boundary.'"';
+			$boundary = "--" . $boundary;
+
+			my $base64_data = substr($data, 23); # remove first 23 characters: 'data:image/png;base64, '
+
+			$field3 = $boundary . "\n"
+					. "Content-Type: " . $html_content_type . "\n\n"
+					#. "Content-Transfer-Encoding: quoted-printable\n\n"
+					. $field3 . "\n";
+
+			$field3 .= $boundary . "\n"
+			. "Content-Type: image/png; name=\"" . $dataname . "\"\n"
+			. "Content-Disposition: inline; filename=\"" . $dataname . "\"\n"
+			. "Content-Transfer-Encoding: base64\n"
+			. "Content-ID: <" . $cid_data . ">\n"
+			. "Content-Location: " . $dataname . "\n\n"
+			. $base64_data . "\n";
 		}
 		
 		if ($pa_config->{"mail_in_separate"} != 0){
@@ -1429,7 +1474,10 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	# Calculate the current interval
 	my $current_interval;
 	if (defined ($module->{'cron_interval'}) && $module->{'cron_interval'} ne '' && $module->{'cron_interval'} ne '* * * * *') {
-		$current_interval = cron_next_execution ($module->{'cron_interval'});
+		$current_interval = cron_next_execution (
+			$module->{'cron_interval'},
+			$module->{'module_interval'} == 0 ? $agent->{'intervalo'} : $module->{'module_interval'}
+		);
 	}
 	elsif ($module->{'module_interval'} == 0) {
 		$current_interval = $agent->{'intervalo'};
@@ -3125,7 +3173,10 @@ sub pandora_update_module_on_error ($$$) {
 	# Set tagente_estado.current_interval to make sure it is not 0
 	my $current_interval;
 	if (defined($module->{'cron_interval'}) && $module->{'cron_interval'} ne '' && $module->{'cron_interval'} ne '* * * * *') {
-		$current_interval = cron_next_execution ($module->{'cron_interval'});
+		$current_interval = cron_next_execution (
+			$module->{'cron_interval'},
+			$module->{'module_interval'} == 0 ? 300 : $module->{'module_interval'}
+		);
 	}
 	elsif ($module->{'module_interval'} == 0) {
 		$current_interval = 300;
@@ -3452,7 +3503,7 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 
 			# Generate an event, ONLY if our alert action is different from generate an event.
 			if ($action->{'id_alert_command'} != 3){
-				pandora_event ($pa_config, "SNMP alert fired (" . $alert->{'description'} . ")",
+				pandora_event ($pa_config, "SNMP alert fired (" . safe_output($alert->{'description'}) . ")",
 					0, 0, $alert->{'priority'}, 0, 0, 'alert_fired', 0, $dbh);
 		   }
 
@@ -3506,7 +3557,7 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 					
 				# Generate an event, ONLY if our alert action is different from generate an event.
 				if ($other_action->{'id_alert_command'} != 3){
-					pandora_event ($pa_config, "SNMP alert fired (" . $alert->{'description'} . ")",
+					pandora_event ($pa_config, "SNMP alert fired (" . safe_output($alert->{'description'}) . ")",
 						0, 0, $alert->{'priority'}, 0, 0, 'alert_fired', 0, $dbh);
 				}
 
@@ -4510,6 +4561,7 @@ sub pandora_group_statistics ($$) {
 
 	# Get all groups
 	my @groups = get_db_rows ($dbh, 'SELECT id_grupo FROM tgrupo');
+	my $table = is_metaconsole($pa_config) ? 'tmetaconsole_agent' : 'tagente';
 
 	# For each valid group get the stats: Simple uh?
 	foreach my $group_row (@groups) {
@@ -4518,50 +4570,46 @@ sub pandora_group_statistics ($$) {
 
 		# NOTICE - Calculations done here MUST BE the same than used in PHP code to have
 		# the same criteria. PLEASE, double check any changes here and in functions_groups.php
-		$agents_unknown = get_db_value ($dbh, "SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count>0 AND id_grupo=?", $group);
+		$agents_unknown = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count>0 AND id_grupo=?", $group);
 		$agents_unknown = 0 unless defined ($agents_unknown);
 
-		$agents = get_db_value ($dbh, "SELECT COUNT(*) FROM tagente WHERE id_grupo = $group AND disabled = 0");
+		$agents = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE id_grupo = $group AND disabled=0");
 		$agents = 0 unless defined ($agents);
 
-		$modules = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0");
+		$modules = get_db_value ($dbh, "SELECT SUM(total_count) FROM $table WHERE disabled=0 AND id_grupo=?", $group);
 		$modules = 0 unless defined ($modules);
 		
-		$normal = get_db_value ($dbh, "SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND normal_count=total_count AND id_grupo=?", $group);
+		$normal = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count=0 AND normal_count>0 AND id_grupo=?", $group);
 		$normal = 0 unless defined ($normal);
 		
-		$critical = get_db_value ($dbh, "SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND critical_count>0 AND id_grupo=?", $group);
+		$critical = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE disabled=0 AND critical_count>0 AND id_grupo=?", $group);
 		$critical = 0 unless defined ($critical);
 		
-		$warning = get_db_value ($dbh, "SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND critical_count=0 AND warning_count>0 AND id_grupo=?", $group);
+		$warning = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE disabled=0 AND critical_count=0 AND warning_count>0 AND id_grupo=?", $group);
 		$warning = 0 unless defined ($warning);
 	
-		$unknown = get_db_value ($dbh, "SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count>0 AND id_grupo=?", $group);	
+		$unknown = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count>0 AND id_grupo=?", $group);	
 		$unknown = 0 unless defined ($unknown);
 		
-		$non_init = get_db_value ($dbh, "SELECT COUNT(*) FROM tagente WHERE disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count=0 AND notinit_count>0 AND id_grupo=?", $group);
+		$non_init = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE disabled=0 AND total_count=notinit_count AND id_grupo=?", $group);
 		$non_init = 0 unless defined ($non_init);
 		
-		$alerts = get_db_value ($dbh, "SELECT COUNT(talert_template_modules.id)
-				FROM talert_template_modules, tagente_modulo, tagente
-				WHERE tagente.id_grupo = $group AND tagente_modulo.id_agente = tagente.id_agente
-					AND tagente_modulo.disabled = 0 AND tagente.disabled = 0  			
-					AND	talert_template_modules.disabled = 0 
-					AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo");
+		# Total alert count not available on the meta console.
+		if ($table eq 'tagente') {
+			$alerts = get_db_value ($dbh, "SELECT COUNT(talert_template_modules.id)
+					FROM talert_template_modules, tagente_modulo, tagente
+					WHERE tagente.id_grupo = $group AND tagente_modulo.id_agente = tagente.id_agente
+						AND tagente_modulo.disabled = 0 AND tagente.disabled = 0  			
+						AND	talert_template_modules.disabled = 0 
+						AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo");
+		}
 		$alerts = 0 unless defined ($alerts);
 		
-		$alerts_fired = get_db_value ($dbh, "SELECT COUNT(talert_template_modules.id)
-				FROM talert_template_modules, tagente_modulo, tagente
-				WHERE tagente.id_grupo = $group AND tagente_modulo.id_agente = tagente.id_agente
-					AND tagente_modulo.disabled = 0 AND tagente.disabled = 0 
-					AND talert_template_modules.disabled = 0 
-					AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo 
-					AND times_fired > 0");
+		$alerts_fired = get_db_value ($dbh, "SELECT SUM(fired_count) FROM $table WHERE disabled=0 AND id_grupo=?", $group);
 		$alerts_fired = 0 unless defined ($alerts_fired);
 		
 		# Update the record.
-		db_do ($dbh, "DELETE FROM tgroup_stat WHERE id_group = $group");
-		db_do ($dbh, "INSERT INTO tgroup_stat (id_group, modules, normal, critical, warning, unknown, " . $PandoraFMS::DB::RDBMS_QUOTE . 'non-init' . $PandoraFMS::DB::RDBMS_QUOTE . ", alerts, alerts_fired, agents, agents_unknown, utimestamp) VALUES ($group, $modules, $normal, $critical, $warning, $unknown, $non_init, $alerts, $alerts_fired, $agents, $agents_unknown, UNIX_TIMESTAMP())");
+		db_do ($dbh, "REPLACE INTO tgroup_stat (id_group, modules, normal, critical, warning, unknown, " . $PandoraFMS::DB::RDBMS_QUOTE . 'non-init' . $PandoraFMS::DB::RDBMS_QUOTE . ", alerts, alerts_fired, agents, agents_unknown, utimestamp) VALUES ($group, $modules, $normal, $critical, $warning, $unknown, $non_init, $alerts, $alerts_fired, $agents, $agents_unknown, UNIX_TIMESTAMP())");
 
 	}
 
@@ -4638,6 +4686,8 @@ sub pandora_self_monitoring ($$) {
 			FROM tconfig
 			WHERE token = 'db_maintance' AND value > UNIX_TIMESTAMP() - 86400");
 	}
+
+	$xml_output .= enterprise_hook("elasticsearch_performance", [$pa_config, $dbh]);
 	
 	$xml_output .=" <module>";
 	$xml_output .=" <name>Database Maintenance</name>";
@@ -5051,15 +5101,26 @@ sub pandora_set_event_storm_protection ($) {
 ##########################################################################
 sub pandora_update_agent_module_count ($$$) {
 	my ($pa_config, $dbh, $agent_id) = @_;
-	
-	db_do ($dbh, 'UPDATE tagente SET update_module_count=0,
-	normal_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=0),
-	critical_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=1),
-	warning_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=2),
-	unknown_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=3),
-	notinit_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=4),
-	total_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id .
-	') WHERE id_agente = ' . $agent_id);
+	my $total = 0;
+	my $counts = {
+		'0' => 0,
+		'1' => 0,
+		'2' => 0,
+		'3' => 0,
+		'4' => 0,
+	}; # Module counts by status.
+
+	# Retrieve and hash module status counts.
+	my @rows = get_db_rows ($dbh, 'SELECT estado, COUNT(*) AS total FROM tagente_modulo, tagente_estado WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=?GROUP BY estado', $agent_id);
+	foreach my $row (@rows) {
+		$counts->{$row->{'estado'}} = $row->{'total'};
+		$total += $row->{'total'};
+	}
+
+	# Update the agent.
+	db_do ($dbh, 'UPDATE tagente
+		SET update_module_count=0, normal_count=?, critical_count=?, warning_count=?, unknown_count=?, notinit_count=?, total_count=?
+		WHERE id_agente = ?', $counts->{'0'}, $counts->{'1'}, $counts->{'2'}, $counts->{'3'}, $counts->{'4'}, $total, $agent_id);
 
 	# Sync the agent cache every time the module count is updated.
 	enterprise_hook('update_agent_cache', [$pa_config, $dbh, $agent_id]) if ($pa_config->{'node_metaconsole'} == 1);
@@ -5423,3 +5484,4 @@ L<DBI>, L<XML::Simple>, L<HTML::Entities>, L<Time::Local>, L<POSIX>, L<PandoraFM
 Copyright (c) 2005-2011 Artica Soluciones Tecnologicas S.L
 
 =cut
+

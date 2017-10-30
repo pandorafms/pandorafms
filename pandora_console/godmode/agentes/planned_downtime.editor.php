@@ -88,6 +88,8 @@ $id_agent 				= (int) get_parameter ('id_agent');
 $insert_downtime_agent 	= (int) get_parameter ('insert_downtime_agent');
 $delete_downtime_agent 	= (int) get_parameter ('delete_downtime_agent');
 
+$modules_selection_mode = (string) get_parameter('modules_selection_mode');
+
 // User groups with AD or AW permission for ACL checks
 $user_groups_ad = array_keys(users_get_groups($config['id_user'], $access));
 
@@ -116,7 +118,20 @@ if ($insert_downtime_agent === 1) {
 	}
 	else {
 		foreach ($agents as $agent_id) {
-			
+			//check module belongs to the agent
+			if($modules_selection_mode == 'all'){
+				$check = false;
+				foreach ($module_names as $module_name) {
+					$check_module = modules_get_agentmodule_id($module_name, $agent_id);
+					if (!empty($check_module)){
+						$check = true;
+					}
+				}
+
+				if (!$check){
+					continue;
+				}
+			}
 			// Check AD permission on agent
 			$agent_group = db_get_value('id_grupo', 'tagente', 'id_agente', $agent_id);
 			
@@ -710,13 +725,25 @@ if ($id_downtime > 0) {
 	echo "<form method=post action='index.php?sec=estado&sec2=godmode/agentes/planned_downtime.editor&insert_downtime_agent=1&id_downtime=$id_downtime'>";
 	
 	echo html_print_select ($agents, "id_agents[]", -1, '', _("Any"), -2, false, true, true, '', false, 'width: 180px;');
+	
+	if ($type_downtime != 'quiet'){
+		echo '<div id="available_modules_selection_mode" style="padding-top:20px;display: none;">';
+	} else {
+		echo '<div id="available_modules_selection_mode" style="padding-top:20px">';
+	}
+	echo html_print_select (array('common' => __('Show common modules'), 'all' => __('Show all modules')), 'modules_selection_mode',
+			'common', false, '', '', true,false,true,'',false,'min-width:180px;');
+	echo '</div>';
+		
 	echo '<h4>' . __('Available modules:') . 
 		ui_print_help_tip (__('Only for type Quiet for downtimes.'), true) . '</h4>';
 	
-	if ($type_downtime != 'quiet')
+	if ($type_downtime != 'quiet'){
 		echo '<div id="available_modules" style="display: none;">';
-	else
+	} else {
 		echo '<div id="available_modules" style="">';
+	}
+	
 	echo html_print_select (array(), "module[]", '', '', '', 0, false, true, true, '', false, 'width: 180px;');
 	echo "</div>";
 	echo "<br /><br /><br />";
@@ -904,8 +931,10 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 			case 'disable_agents_alerts':
 			case 'disable_agents':
 				$("#available_modules").hide();
+				$("#available_modules_selection_mode").hide();
 				break;
 			case 'quiet':
+				$("#available_modules_selection_mode").show();
 				$("#available_modules").show();
 				break;
 		}

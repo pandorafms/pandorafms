@@ -178,7 +178,7 @@ function vbar_graph($flash_chart, $chart_data, $width, $height,
 	$color, $legend, $long_index, $no_data_image, $xaxisname = "",
 	$yaxisname = "", $water_mark = "", $font = '', $font_size = '',
 	$unit = '', $ttl = 1, $homeurl = '', $backgroundColor = 'white',
-	$from_ux = false) {
+	$from_ux = false, $from_wux = false) {
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 	
 	if (empty($chart_data)) {
@@ -188,9 +188,25 @@ function vbar_graph($flash_chart, $chart_data, $width, $height,
 	if ($flash_chart) {
 		return flot_vcolumn_chart ($chart_data, $width, $height, $color,
 			$legend, $long_index, $homeurl, $unit, $water_mark_url,
-			$homedir,$font,$font_size, $from_ux);
+			$homedir,$font,$font_size, $from_ux, $from_wux, $backgroundColor);
 	}
 	else {
+		foreach ($chart_data as $key => $value) {
+			if(strlen($key) > 25){
+				
+					if(strpos($key, ' - ') != -1){
+						$key_temp = explode(" - ",$key);
+						$key_temp[0] = $key_temp[0]."   \n";
+						$key_temp[1]= '...'.substr($key_temp[1],-15);
+						$key2 = $key_temp[0].$key_temp[1];
+						io_safe_output($key2);
+					}
+				$chart_data[$key2]['g'] = $chart_data[$key]['g'];
+				unset($chart_data[$key]);
+			}
+			
+		}
+				
 		$graph = array();
 		$graph['data'] = $chart_data;
 		$graph['width'] = $width;
@@ -636,9 +652,25 @@ function hbar_graph($flash_chart, $chart_data, $width, $height,
 	
 	if ($flash_chart) {
 		return flot_hcolumn_chart(
-			$chart_data, $width, $height, $water_mark_url, $font, $font_size);
+			$chart_data, $width, $height, $water_mark_url, $font, $font_size, $backgroundColor);
 	}
 	else {
+		
+		foreach ($chart_data as $key => $value) {
+			if(strlen($key) > 40){
+					if(strpos($key, ' - ') != -1){
+						$key_temp = explode(" - ",$key);
+						$key_temp[0] = $key_temp[0]."   \n";
+						$key_temp[1]= '...'.substr($key_temp[1],-20);
+						$key2 = $key_temp[0].$key_temp[1];
+						io_safe_output($key2);
+					}
+				$chart_data[$key2]['g'] = $chart_data[$key]['g'];
+				unset($chart_data[$key]);
+			}
+		}
+		
+		
 		$graph = array();
 		$graph['data'] = $chart_data;
 		$graph['width'] = $width;
@@ -752,7 +784,7 @@ function pie_graph($graph_type, $flash_chart, $chart_data, $width,
 function ring_graph($flash_chart, $chart_data, $width,
 	$height, $others_str = "other", $homedir="", $water_mark = "",
 	$font = '', $font_size = '', $ttl = 1, $legend_position = false,
-	$colors = '', $hide_labels = false) {
+	$colors = '', $hide_labels = false,$background_color = 'white') {
 	
 	if (empty($chart_data)) {
 		return graph_nodata_image($width, $height, 'pie');
@@ -768,7 +800,7 @@ function ring_graph($flash_chart, $chart_data, $width,
 		return flot_custom_pie_chart ($flash_chart, $chart_data,
 		$width, $height, $colors, $module_name_list, $long_index,
 		$no_data, false, '', $water_mark, $font, $font_size,
-		$unit, $ttl, $homeurl, $background_color, $legend_position);
+		$unit, $ttl, $homeurl, $background_color, $legend_position,$background_color);
 	}
 	else {
 		$total_modules = $chart_data['total_modules'];

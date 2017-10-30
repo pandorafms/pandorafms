@@ -26,6 +26,7 @@ use HTML::Entities;
 use Encode;
 use Socket qw(inet_ntoa inet_aton);
 use Sys::Syslog;
+use Scalar::Util qw(looks_like_number);
 
 # New in 3.2. Used to sendmail internally, without external scripts
 # use Module::Loaded;
@@ -61,6 +62,7 @@ our @EXPORT = qw(
 	TRANSACTIONALSERVER
 	SYNCSERVER
 	METACONSOLE_LICENSE
+	WUXSERVER
 	$DEVNULL
 	$OS
 	$OS_VERSION
@@ -79,6 +81,7 @@ our @EXPORT = qw(
 	sqlWrap
 	is_numeric
 	is_metaconsole
+	to_number
 	clean_blank
 	pandora_sendmail
 	pandora_trash_ascii
@@ -122,6 +125,7 @@ use constant SATELLITESERVER => 13;
 use constant TRANSACTIONALSERVER => 14;
 use constant MFSERVER => 15;
 use constant SYNCSERVER => 16;
+use constant WUXSERVER => 17;
 
 # Value for a metaconsole license type
 use constant METACONSOLE_LICENSE => 0x01;
@@ -1250,12 +1254,12 @@ sub translate_obj ($$$) {
 ###############################################################################
 # Get the number of seconds left to the next execution of the given cron entry.
 ###############################################################################
-sub cron_next_execution ($) {
-	my ($cron) = @_;
+sub cron_next_execution {
+	my ($cron, $interval) = @_;
 
 	# Check cron conf format
 	if ($cron !~ /^((\*|(\d+(-\d+){0,1}))\s*){5}$/) {
-		return 300;
+		return $interval;
 	}
 
 	# Get day of the week and month from cron config
@@ -1267,7 +1271,7 @@ sub cron_next_execution ($) {
 
 	# Any day of the week
 	if ($wday eq '*') {
-		my $nex_time = cron_next_execution_date ($cron,  $cur_time);
+		my $nex_time = cron_next_execution_date ($cron,  $cur_time, $interval);
 		return $nex_time - time();
 	}
 	# A range?
@@ -1279,7 +1283,7 @@ sub cron_next_execution ($) {
 	my $count = 0;
 	my $nex_time = $cur_time;
 	do {
-		$nex_time = cron_next_execution_date ($cron, $nex_time);
+		$nex_time = cron_next_execution_date ($cron, $nex_time, $interval);
 		my $nex_time_wd = $nex_time;
 		my ($nex_mon, $nex_wday) = (localtime ($nex_time_wd))[4, 6];
 		my $nex_mon_wd;
@@ -1297,7 +1301,7 @@ sub cron_next_execution ($) {
 	} while ($count < 60);
 
 	# Something went wrong, default to 5 minutes
-	return 300;
+	return $interval;
 }
 ###############################################################################
 # Get the number of seconds left to the next execution of the given cron entry.
@@ -1311,8 +1315,8 @@ sub cron_check_syntax ($) {
 ###############################################################################
 # Get the next execution date for the given cron entry in seconds since epoch.
 ###############################################################################
-sub cron_next_execution_date ($$) {
-	my ($cron, $cur_time) = @_;
+sub cron_next_execution_date {
+	my ($cron, $cur_time, $interval) = @_;
 
 	# Get cron configuration
 	my ($min, $hour, $mday, $mon, $wday) = split (/\s/, $cron);
@@ -1326,16 +1330,24 @@ sub cron_next_execution_date ($$) {
 	if (! defined ($cur_time)) {
 		$cur_time = time();
 	}
-	my ($cur_min, $cur_hour, $cur_mday, $cur_mon, $cur_year) = (localtime ($cur_time))[1, 2, 3, 4, 5];
+	# Check if current time + interval is on cron too
+	my $nex_time = $cur_time + $interval;
+	my ($cur_min, $cur_hour, $cur_mday, $cur_mon, $cur_year) 
+		= (localtime ($nex_time))[1, 2, 3, 4, 5];
+	
+	my @cron_array = ($min, $hour, $mday, $mon);
+	my @curr_time_array = ($cur_min, $cur_hour, $cur_mday, $cur_mon);
+	return ($nex_time) if cron_is_in_cron(\@cron_array, \@curr_time_array) == 1;
 	
 	# Parse intervals
-	$min = cron_get_closest_in_range ($cur_min, $min);
-	$hour = cron_get_closest_in_range ($cur_hour, $hour);
-	$mday = cron_get_closest_in_range ($cur_mday, $mday);
-	$mon = cron_get_closest_in_range ($cur_mon, $mon);
+	($min, undef) = cron_get_interval ($min);
+	($hour, undef) = cron_get_interval ($hour);
+	($mday, undef) = cron_get_interval ($mday);
+	($mon, undef) = cron_get_interval ($mon);
 
 	# Get first next date candidate from cron configuration
-	my ($nex_min, $nex_hour, $nex_mday, $nex_mon, $nex_year) = ($min, $hour, $mday, $mon, $cur_year);
+	my ($nex_min, $nex_hour, $nex_mday, $nex_mon, $nex_year)
+		= ($min, $hour, $mday, $mon, $cur_year);
 
 	# Replace wildcards
 	if ($min eq '*') {
@@ -1396,9 +1408,51 @@ sub cron_next_execution_date ($$) {
 	} while ($count < 60);
 	
 	# Something went wrong, default to 5 minutes
-	return $cur_time + 300;
+	return $nex_time;
 }
+###############################################################################
+# Returns if a date is in a cron. Recursive.
+# Needs the cron like an array reference and
+# current time in cron format to works properly
+###############################################################################
+sub cron_is_in_cron {
+	my ($elems_cron, $elems_curr_time) = @_;
+	
+	my $elem_cron = shift(@$elems_cron);
+	my $elem_curr_time = shift (@$elems_curr_time);
 
+	#If there is no elements means that is in cron
+	return 1 unless (defined($elem_cron) || defined($elem_curr_time));
+
+	# Go to last element if current is a wild card
+	if ($elem_cron ne '*') {
+		my ($down, $up) = cron_get_interval($elem_cron);
+		# Check if there is no a range
+		return 0 if (!defined($up) && ($down != $cron));
+		# Check if there is on the range
+		if ($down < $up) {
+			return 0 if ($elem_curr_time < $down || $elem_curr_time > $up);
+		} else {
+			return 0 if ($elem_curr_time > $down || $elem_curr_time < $up);
+		}
+	}
+	return cron_is_in_cron($elems_cron, $elems_curr_time);
+}
+###############################################################################
+# Returns the interval of a cron element. If there is not a range,
+# returns an array with the first element in the first place of array
+# and the second place undefined.
+###############################################################################
+sub cron_get_interval {
+	my ($element) = @_;
+
+	# Not a range
+	if ($element !~ /(\d+)\-(\d+)/) {
+		return ($element, undef);
+	}
+	
+	return ($1, $2);
+}
 ###############################################################################
 # Returns the closest number to the target inside the given range (including
 # the target itself).
@@ -1467,6 +1521,26 @@ sub is_metaconsole ($) {
 	}
 
 	return 0;
+}
+
+###############################################################################
+# Check if a given variable contents a number
+###############################################################################
+sub to_number($) {
+	my $n = shift;
+	if ($n =~ /[\d+,]*\d+\.\d+/) {
+		# American notation
+		$n =~ s/,//g;
+	}
+	elsif ($n =~ /[\d+\.]*\d+,\d+/) {
+		# Spanish notation
+		$n =~ s/\.//g;
+		$n =~ s/,/./g;
+	}
+	if(looks_like_number($n)) {
+		return $n;
+	}
+	return undef;
 }
 
 #######################

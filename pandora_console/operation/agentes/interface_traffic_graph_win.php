@@ -140,9 +140,6 @@ $interface_traffic_modules = array(
 		
 		// Get input parameters
 		$period = get_parameter ("period");
-		if ($period == "") {
-			$period = get_parameter ("period_select", SECONDS_1DAY);
-		}
 		$width = (int) get_parameter("width", 555);
 		$height = (int) get_parameter("height", 245);
 		$start_date = (string) get_parameter("start_date", date("Y-m-d"));
@@ -150,7 +147,19 @@ $interface_traffic_modules = array(
 		$zoom = (int) get_parameter ("zoom", 1);
 		$baseline = get_parameter ("baseline", 0);
 		$show_percentil = get_parameter ("show_percentil", 0);
+		$fullscale = get_parameter("fullscale");
 		
+		if(!isset($_GET["fullscale_sent"]) ){
+			if(!isset($config['full_scale_option']) || 
+				$config['full_scale_option'] == 0   || 
+				$config['full_scale_option'] == 2 ){
+				$fullscale = 0;
+			}
+			else{
+				$fullscale = 1;
+			}
+		}
+
 		if ($zoom > 1) {
 			$height = $height * ($zoom / 2.1);
 			$width = $width * ($zoom / 1.4);
@@ -200,7 +209,9 @@ $interface_traffic_modules = array(
 			false,
 			false,
 			(($show_percentil)? $config['percentil'] : null),
-			true);
+			true,
+			false,
+			$fullscale);
 		
 		echo '</div>';
 		
@@ -256,6 +267,12 @@ $interface_traffic_modules = array(
 		$data = array();
 		$data[0] = __('Show percentil');
 		$data[1] = html_print_checkbox ("show_percentil", 1, (bool) $show_percentil, true);
+		$table->data[] = $data;
+		$table->rowclass[] ='';
+
+		$data = array();
+		$data[0] = __('Show full scale graph (TIP)') . ui_print_help_tip(__('This option may cause performance issues'), true);
+		$data[1] = html_print_checkbox ("fullscale", 1, (bool) $fullscale, true);
 		$table->data[] = $data;
 		$table->rowclass[] ='';
 		

@@ -314,9 +314,6 @@ sub pandora_server_tasks ($) {
 					
 					# Check if an autodisabled agent needs to be autodisable
 					pandora_disable_autodisable_agents ($pa_config, $dbh); 
-					
-					# Set event storm protection
-					pandora_set_event_storm_protection (pandora_get_tconfig_token ($dbh, 'event_storm_protection', 0));
 				}
 				
 				# TASKS EXECUTED EVERY 60 SECONDS (High latency tasks)
@@ -355,6 +352,9 @@ sub pandora_server_tasks ($) {
 			# Rotate Log File
 			if (($counter % 30) == 0) {
 				pandora_rotate_logfile($pa_config);
+				
+				# Set event storm protection
+				pandora_set_event_storm_protection (pandora_get_tconfig_token ($dbh, 'event_storm_protection', 0));
 			}
 			# Pandora self monitoring
 			if (defined($pa_config->{"self_monitoring"}) 
@@ -607,7 +607,10 @@ sub main() {
 				$server->update();
 			}
 	
-			db_do ($DBH, "UPDATE tserver SET status = 0 WHERE now()-keepalive > 2*server_keepalive");
+			db_do ($DBH,
+				"UPDATE tserver SET status = 0
+				WHERE UNIX_TIMESTAMP(now())-UNIX_TIMESTAMP(keepalive) > 2*server_keepalive"
+			);
 
 			# Set the master server
 			pandora_set_master(\%Config, $DBH);

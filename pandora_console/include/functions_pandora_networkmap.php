@@ -69,6 +69,7 @@ function networkmap_process_networkmap($id = 0) {
 			$layout = "spring2";
 			break;
 	}
+
 	$simple = 0;
 	$font_size = 12;
 	$nooverlap = false;
@@ -85,7 +86,7 @@ function networkmap_process_networkmap($id = 0) {
 		case 1:
 			$recon_task = db_get_row_filter('trecon_task',
 				array('id_rt' => $networkmap['source_data']));
-				
+			
 			$ip_mask = $recon_task['subnet'];
 			break;
 		case 2:
@@ -140,7 +141,7 @@ function networkmap_process_networkmap($id = 0) {
 			$filename_dot .= "_nooverlap";
 		}
 		$filename_dot .= "_" . $id . ".dot";
-		
+
 		file_put_contents($filename_dot, $graph);
 
 		switch (PHP_OS) {
@@ -154,11 +155,12 @@ function networkmap_process_networkmap($id = 0) {
 				break;
 			default:
 				$filename_plain = sys_get_temp_dir() . "/plain.txt";
+
 				$cmd = "$filter -Tplain -o " . $filename_plain . " " .
 					$filename_dot;
 				break;
 		}
-		
+
 		system ($cmd);
 		
 		unlink($filename_dot);
@@ -310,7 +312,7 @@ function networkmap_db_node_to_js_node($node, &$count, &$count_item_holding_area
 	
 	$item = array();
 	$item['id'] = $count;
-	
+
 	if (enterprise_installed()) {
 		enterprise_include_once('include/functions_pandora_networkmap.php');
 		$item['id_db'] = $node['id_in_db'];
@@ -328,6 +330,9 @@ function networkmap_db_node_to_js_node($node, &$count, &$count_item_holding_area
 		$item['type'] = 1;
 		$item['id_agent'] = (int)$node['style']['id_agent'];
 		$item['id_module'] = (int)$node['source_data'];
+	}
+	else {
+		$item['type'] = 3;
 	}
 	
 	$item['fixed'] = true;

@@ -197,6 +197,10 @@ define('SERVICE',			10); //Enterprise Item.
 define('GROUP_ITEM',		11);
 define('BOX_ITEM',			12);
 define('LINE_ITEM',			13);
+define('CIRCULAR_PROGRESS_BAR', 15);
+define('CIRCULAR_INTERIOR_PROGRESS_BAR', 16);
+define('DONUT_GRAPH',		17);
+define('BARS_GRAPH',		18);
 //Some styles
 define('MIN_WIDTH',			300);
 define('MIN_HEIGHT',		120);
@@ -311,6 +315,7 @@ define ('MODULE_PLUGIN',		4);
 define ('MODULE_PREDICTION',	5);
 define ('MODULE_WMI',			6);
 define ('MODULE_WEB',			7);
+define ('MODULE_WUX',           8);
 
 /* Type of Modules of Prediction */
 define ('MODULE_PREDICTION_SERVICE',	2);
@@ -351,6 +356,7 @@ define('SERVER_TYPE_ENTERPRISE_SATELLITE',	    13);
 define('SERVER_TYPE_ENTERPRISE_TRANSACTIONAL',	14);
 define('SERVER_TYPE_MAINFRAME',	                15);
 define('SERVER_TYPE_SYNC',	                    16);
+define('SERVER_TYPE_WUX',						17);
 
 /* REPORTS */
 define('REPORT_TOP_N_MAX',	1);

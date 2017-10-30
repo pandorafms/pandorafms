@@ -291,7 +291,7 @@ if (modules_is_string_type($id_module_type) || $edit) {
 	$table_simple->data[4][1] .= '<br /><em>'.__('Inverse interval').'</em>';
 	$table_simple->data[4][1] .= html_print_checkbox ("warning_inverse", 1, $warning_inverse, true, $disabledBecauseInPolicy);
 if (!modules_is_string_type($id_module_type) || $edit) {
-	$table_simple->data[4][2] = '<svg id="svg_dinamic" width="350" height="200" style="padding:40px; padding-left: 100px; margin-bottom: 60px;"> </svg>';
+	$table_simple->data[4][2] = '<svg id="svg_dinamic" width="350px" height="200px" style="padding:40px; padding-left: 100px; margin-bottom: 60px;"></svg>';
 	$table_simple->colspan[4][2] = 2;
 	$table_simple->rowspan[4][2] = 3;
 }
@@ -363,8 +363,12 @@ $table_advanced->data[1][1] = html_print_input_text ('custom_id', $custom_id, ''
 							 $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
 
 $table_advanced->data[1][3] = __('Unit');
-$table_advanced->data[1][4] = html_print_input_text ('unit', $unit, '', 20, 65, true,
-							 $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
+// $table_advanced->data[1][4] = html_print_input_text ('unit', $unit, '', 20, 65, true,
+// 							 $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
+// $table_advanced->colspan[1][4] = 3;
+$table_advanced->data[1][4] =
+	html_print_extended_select_for_unit('unit',
+		$unit, '', '', '0', false, true, false, false);
 $table_advanced->colspan[1][4] = 3;
 
 $module_id_policy_module = 0;
@@ -978,32 +982,6 @@ function advanced_option_dynamic() {
 	}
 }
 
-//Add a new module macro
-function add_macro () {
-	var macro_count = parseInt($("#hidden-module_macro_count").val());
-	var delete_icon = '<?php html_print_image ("images/cross.png", false) ?>';
-	
-	// Add inputs for the new macro
-	$("#module_macros").append('<tr id="module_macros-' + macro_count + '" class="datos2"><td style=" font-weight: bold; vertical-align: top;" class="datos2">Name</td> \
-	<td style="" class="datos2"><input type="text" name="module_macro_names[]" value="" id="text-module_macro_names[]" size="50" maxlength="60"></td> \
-	<td style="font-weight: bold; vertical-align: top;" class="datos2">Value</td> \
-	<td style="" class="datos2"><input type="text" name="module_macro_values[]" value="" id="text-module_macro_values[]" size="50" maxlength="60"></td> \
-	<td style="" class="datos2"><a href="javascript: delete_macro(' + macro_count + ');">' + delete_icon + '</a></td></tr>');
-	
-	// Update the macro count
-	$("#hidden-module_macro_count").val(macro_count + 1);
-}
-
-// Delete an existing module macro
-function delete_macro (num) {
-	if ($("#module_macros-" + num).length) {
-		$("#module_macros-" + num).remove();
-	}
-	
-	// Do not decrease the macro counter or new macros may overlap existing ones!
-}
-
-
 /* Relationship javascript */
 
 // Change the modules autocomplete input depending on the result of the agents autocomplete input
@@ -1345,8 +1323,8 @@ function paint_graph_status(min_w, max_w, min_c, max_c, inverse_w, inverse_c, er
 			.attr("id", "legend_normal")
 	       	.attr("x", 72)
 	       	.attr("y", -30)
-	       	.attr("width", 10)
-	       	.attr("height", 10)
+	       	.attr("width", '10px')
+	       	.attr("height", '10px')
 	  		.style("fill", "#82B92E");
 
 	  	//legend Warning text
@@ -1365,8 +1343,8 @@ function paint_graph_status(min_w, max_w, min_c, max_c, inverse_w, inverse_c, er
 			.attr("id", "legend_warning")
 	       	.attr("x", 168)
 	       	.attr("y", -30)
-	       	.attr("width", 10)
-	       	.attr("height", 10)
+	       	.attr("width", '10px')
+	       	.attr("height", '10px')
 	  		.style("fill", "#ffd731");
 
 	  	//legend Critical text
@@ -1385,8 +1363,8 @@ function paint_graph_status(min_w, max_w, min_c, max_c, inverse_w, inverse_c, er
 			.attr("id", "legend_critical")
 	       	.attr("x", 258)
 	       	.attr("y", -30)
-	       	.attr("width", 10)
-	       	.attr("height", 10)
+	       	.attr("width", '10px')
+	       	.attr("height", '10px')
 	  		.style("fill", "#fc4444");
 
 		//styles for number and axes
@@ -1404,8 +1382,8 @@ function paint_graph_status(min_w, max_w, min_c, max_c, inverse_w, inverse_c, er
 			.attr("id", "warning_rect")
 	       	.attr("x", 3)
 	       	.attr("y", 0)
-	       	.attr("width", 300)
-	       	.attr("height", 200)
+	       	.attr("width", '300px')
+	       	.attr("height", '200px')
 	  		.style("fill", "#82B92E");
 	  	
 	  	//controls the inverse warning

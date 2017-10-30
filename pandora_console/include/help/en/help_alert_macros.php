@@ -47,12 +47,15 @@ Besides the defined module macros, the following macros are available:
 <li>_event_id_: (Only event alerts) ID of the event that triggered the alert.</li>
 <li>_id_agent_: Agent’s ID, useful for building a direct URL that redirects to a Pandora FMS console webpage.</li>
 <li>_id_group_ : Agent group ID.</li>
+<li>_id_module_ : ID of module.</li>
 <li>_id_alert_: Alert’s numeric ID (unique), used to correlate the alert with third party software.</li>
 <li>_policy_: Name of the policy that the module belongs to (if applies).</li>
 <li>_interval_: Module’s execution interval </li>
 <li>_target_ip_: IP address for the module’s target.</li>
 <li>_target_port_: Port number for the module’s target.</li>
 <li>_plugin_parameters_: Module’s Plugin parameters.</li>
+<li>_server_ip_ : Ip of server assigned to agent. </li>
+<li>_server_name_ : Name of server assigned to agent. </li>
 <li>_groupcontact_: Group’s contact information. Configured when the group is created.</li>
 <li>_groupcustomid_: Group’s custom ID.</li>
 <li>_groupother_: Other information about the group. Configured when the group is created.</li>
@@ -67,7 +70,6 @@ Besides the defined module macros, the following macros are available:
 Returns an image encoded in base64 of a module’s graph with a period of <i>n</i> hours (eg. _modulegraph_24h_).
 A correct setup of the connection between the server and the console's API is required.
 This setup is done on the server's configuration file.</li>
-<li>_modulegraphth_<i>n</i>h_:Same operation as the previous macro only with the critical and warning thresholds of the module provided they are defined.</li>
 </ul>
 
 <p>

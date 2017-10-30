@@ -104,6 +104,7 @@ $width_percentile = get_parameter('width_percentile', null);
 $max_percentile = get_parameter('max_percentile', null);
 $height_module_graph = get_parameter('height_module_graph', null);
 $width_module_graph = get_parameter('width_module_graph', null);
+$bars_graph_type = get_parameter('bars_graph_type', null);
 $id_agent_module = get_parameter('id_agent_module', 0);
 $process_simple_value = get_parameter('process_simple_value', PROCESS_VALUE_NONE);
 $type_percentile = get_parameter('type_percentile', 'percentile');
@@ -118,6 +119,9 @@ $id_custom_graph = get_parameter('id_custom_graph', null);
 $border_width = (int)get_parameter('border_width', 0);
 $border_color = get_parameter('border_color', '');
 $fill_color = get_parameter('fill_color', '');
+$percentile_color = get_parameter('percentile_color', '');
+$percentile_label = get_parameter('percentile_label', '');
+$percentile_label_color = get_parameter('percentile_label_color', '');
 $width_box = (int)get_parameter('width_box', 0);
 $height_box = (int)get_parameter('height_box', 0);
 $line_start_x = (int)get_parameter('line_start_x', 0);
@@ -132,11 +136,45 @@ $get_element_status = get_parameter('get_element_status', 0);
 $enable_link = get_parameter('enable_link', 1);
 $type_graph = get_parameter('type_graph', 'area');
 $label_position = get_parameter('label_position', 'down');
+$show_statistics = get_parameter('show_statistics', 0);
 
 switch ($action) {
 	case 'get_font':
 		$return = array();
 		$return['font'] = $config['fontpath'];
+		echo json_encode($return);
+		break;
+
+	case 'get_module_type_string':
+		$data = array ();
+
+		$layoutData = db_get_row_filter('tlayout_data', array('id' => $id_element));
+
+		if ($layoutData['id_metaconsole'] != 0) {
+			$connection = db_get_row_filter ('tmetaconsole_setup', $layoutData['id_metaconsole']);
+
+			if (metaconsole_load_external_db($connection) != NOERR) {
+				continue;
+			}
+		}
+
+		$is_string = db_get_value_filter ('id_tipo_modulo', 'tagente_modulo',
+			array ('id_agente' => $id_agent,
+				'id_agente_modulo' => $id_module));
+		
+		if ($layoutData['id_metaconsole'] != 0) {
+			metaconsole_restore_db();
+		}
+
+		$return = array();
+		if (($is_string == 17) || ($is_string == 23) || ($is_string == 3) ||
+			($is_string == 10) || ($is_string == 33)) {
+			$return['no_data'] = false;
+		}
+		else {
+			$return['no_data'] = true;
+		}
+
 		echo json_encode($return);
 		break;
 	
@@ -464,6 +502,8 @@ switch ($action) {
 			case 'label':
 			case 'icon':
 			case 'auto_sla_graph':
+			case 'bars_graph':
+			case 'donut_graph':
 			default:
 				if ($type == 'label') {
 					$values['type'] = LABEL;
@@ -550,6 +590,14 @@ switch ($action) {
 							$values['height'] = $height;
 						}
 						break;
+					case 'donut_graph':
+						if ($width_percentile !== null) {
+							$values['width'] = $width_percentile;
+							$values['height'] = $width_percentile;
+						}
+						$values['type'] = DONUT_GRAPH;
+
+						break;
 					case 'box_item':
 						$values['border_width'] = $border_width;
 						$values['border_color'] = $border_color;
@@ -569,6 +617,9 @@ switch ($action) {
 						if ($height !== null) {
 							$values['height'] = $height;
 						}
+						if ($show_statistics !== null) {
+							$values['show_statistics'] = $show_statistics;
+						}
 						break;
 					case 'module_graph':
 						if ($height_module_graph !== null) {
@@ -582,6 +633,17 @@ switch ($action) {
 						}
 						if ($id_custom_graph !== null) {
 							$values['id_custom_graph'] = $id_custom_graph;
+						}
+						break;
+					case 'bars_graph':
+						if ($width_percentile !== null) {
+							$values['width'] = $width_percentile;
+						}
+						if ($bars_graph_type !== null) {
+							$values['type_graph'] = $bars_graph_type;
+						}
+						if ($background_color !== null) {
+							$values['image'] = $background_color;
 						}
 						break;
 					case 'percentile_item':
@@ -598,6 +660,12 @@ switch ($action) {
 							if ($type_percentile == 'percentile') {
 								$values['type'] = PERCENTILE_BAR;
 							}
+							elseif ($type_percentile == 'circular_progress_bar') {
+								$values['type'] = CIRCULAR_PROGRESS_BAR;
+							}
+							elseif ($type_percentile == 'interior_circular_progress_bar') {
+								$values['type'] = CIRCULAR_INTERIOR_PROGRESS_BAR;
+							}
 							elseif ($type_percentile == 'bubble') {
 								$values['type'] = PERCENTILE_BUBBLE;
 							}
@@ -607,6 +675,10 @@ switch ($action) {
 							if (($value_show == 'percent') ||
 								($value_show == 'value'))
 								$values['image'] = $value_show;
+
+							$values['border_color'] = $percentile_color;
+							$values['fill_color'] = $percentile_label_color;
+							$values['label'] = $percentile_label;
 						}
 						break;
 					case 'icon':
@@ -640,8 +712,13 @@ switch ($action) {
 					switch ($type) {
 						case 'group_item':
 							unset($values['id_group']);
+							unset($values['show_statistics']);
 							break;
 						case 'module_graph':
+							unset($values['image']);
+							unset($values['type_graph']);
+							break;
+						case 'bars_graph':
 							unset($values['image']);
 							unset($values['type_graph']);
 							break;
@@ -702,10 +779,12 @@ switch ($action) {
 			case 'static_graph':
 			case 'group_item':
 			case 'module_graph':
+			case 'bars_graph':
 			case 'simple_value':
 			case 'label':
 			case 'icon':
 			case 'auto_sla_graph':
+			case 'donut_graph':
 				$elementFields = db_get_row_filter('tlayout_data',
 					array('id' => $id_element));
 				
@@ -776,11 +855,27 @@ switch ($action) {
 						elseif ($elementFields['type'] == PERCENTILE_BUBBLE) {
 							$elementFields['type_percentile'] = 'bubble';
 						}
+						elseif ($elementFields['type'] == CIRCULAR_PROGRESS_BAR) {
+							$elementFields['type_percentile'] = 'circular_progress_bar';
+						}
+						elseif ($elementFields['type'] == CIRCULAR_INTERIOR_PROGRESS_BAR) {
+							$elementFields['type_percentile'] = 'interior_circular_progress_bar';
+						}
+						$elementFields['percentile_color'] = $elementFields['border_color'];
+						$elementFields['percentile_label_color'] = $elementFields['fill_color'];
+						$elementFields['percentile_label'] = $elementFields['label'];
+						break;
+					case 'donut_graph':
+						$elementFields['width_percentile'] = $elementFields['width'];
 						break;
 					
 					case 'module_graph':
 						$elementFields['width_module_graph'] = $elementFields['width'];
 						$elementFields['height_module_graph'] = $elementFields['height'];
+						break;
+					case 'bars_graph':
+						$elementFields['width_percentile'] = $elementFields['width'];
+						$elementFields['bars_graph_type'] = $elementFields['type_graph'];
 						break;
 					case 'box_item':
 						$elementFields['width_box'] = $elementFields['width'];
@@ -886,6 +981,11 @@ switch ($action) {
 				$values['width'] = $width_box;
 				$values['height'] = $height_box;
 				break;
+			case 'donut_graph':
+				$values['type'] = DONUT_GRAPH;
+				$values['width'] = $width;
+				$values['height'] = $height;
+				break;
 			case 'module_graph':
 				$values['type'] = MODULE_GRAPH;
 				
@@ -918,6 +1018,17 @@ switch ($action) {
 				}
 				$values['period'] = $period;
 				break;
+			case 'bars_graph':
+				$values['type'] = BARS_GRAPH;
+				if ($width_percentile == null) {
+					$values['width'] = 0;
+				}
+				else {
+					$values['width'] = $width_percentile;
+				}
+				$values['type_graph'] = $bars_graph_type;
+				$values['image'] = $background_color;
+				break;
 			case 'auto_sla_graph':
 				$values['type'] = AUTO_SLA_GRAPH;
 				$values['period'] = $event_max_time_row;
@@ -929,12 +1040,21 @@ switch ($action) {
 				if ($type_percentile == 'percentile') {
 					$values['type'] = PERCENTILE_BAR;
 				}
+				elseif ($type_percentile == 'circular_progress_bar') {
+					$values['type'] = CIRCULAR_PROGRESS_BAR;
+				}
+				elseif ($type_percentile == 'interior_circular_progress_bar') {
+					$values['type'] = CIRCULAR_INTERIOR_PROGRESS_BAR;
+				}
 				else {
 					$values['type'] = PERCENTILE_BUBBLE;
 				}
+				$values['border_color'] = $percentile_color;
 				$values['image'] = $value_show; //Hack to save it show percent o value.
 				$values['width'] = $width_percentile;
 				$values['height'] = $max_percentile;
+				$values['fill_color'] = $percentile_label_color;
+				$values['label'] = $percentile_label;
 				break;
 			case 'static_graph':
 				$values['type'] = STATIC_GRAPH;
@@ -948,6 +1068,7 @@ switch ($action) {
 				$values['width'] = $width;
 				$values['height'] = $height;
 				$values['id_group'] = $id_group;
+				$values['show_statistics'] = $show_statistics;
 				breaK;
 			case 'simple_value':
 				//This allows min, max and avg process in a simple value
@@ -971,7 +1092,7 @@ switch ($action) {
 				}
 				break;
 		}
-		
+
 		$idData = db_process_sql_insert('tlayout_data', $values);
 		
 		$return = array();
@@ -1025,8 +1146,16 @@ switch ($action) {
 					$return['values']['height_box'] = $values['height'];
 					break;
 					
-				case PERCENTILE_BUBBLE:
+				case CIRCULAR_PROGRESS_BAR:
 					$return['values']['type_percentile'] = 'bubble';
+					break;
+
+				case CIRCULAR_INTERIOR_PROGRESS_BAR:
+					$return['values']['type_percentile'] = 'circular_progress_bar';
+					break;
+
+				case PERCENTILE_BUBBLE:
+					$return['values']['type_percentile'] = 'interior_circular_progress_bar';
 					break;
 					
 				case PERCENTILE_BAR:

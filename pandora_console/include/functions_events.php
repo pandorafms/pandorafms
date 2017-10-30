@@ -126,7 +126,7 @@ function events_get_events_no_grouped($sql_post, $offset = 0,
 
 function events_get_events_grouped($sql_post, $offset = 0,
 	$pagination = 1, $meta = false, $history = false, $total = false, 
-	$history_db = false, $order = "ASC") {
+	$history_db = false, $order = "DESC") {
 	
 	global $config; 
 	
@@ -146,7 +146,7 @@ function events_get_events_grouped($sql_post, $offset = 0,
 				$sql = "SELECT COUNT(*) FROM (SELECT *
 					FROM $table te
 					WHERE 1=1 " . $sql_post . "
-					GROUP BY estado, evento, id_agentmodule" . $groupby_extra . ") AS t";
+					GROUP BY estado, evento, id_agente, id_agentmodule" . $groupby_extra . ") AS t";
 			}
 			else {
 				$sql = "SELECT *, MAX(id_evento) AS id_evento,
@@ -161,7 +161,7 @@ function events_get_events_grouped($sql_post, $offset = 0,
 					(SELECT ack_utimestamp FROM $table WHERE id_evento = MAX(te.id_evento)) AS ack_utimestamp
 				FROM $table te
 				WHERE 1=1 " . $sql_post . "
-				GROUP BY estado, evento, id_agentmodule" . $groupby_extra . "
+				GROUP BY estado, evento, id_agente, id_agentmodule" . $groupby_extra . "
 				ORDER BY timestamp_rep " . $order . " LIMIT " . $offset . "," . $pagination;
 			}
 			break;
@@ -2031,7 +2031,8 @@ function events_page_details ($event, $server = "") {
 		
 		$data = array();
 		$data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('OS').'</div>';
-		$data[1] = ui_print_os_icon ($agent["id_os"], true, true).' ('.$agent["os_version"].')';
+		$data[1] = ui_print_os_icon ($agent["id_os"], true, true);
+		if (!empty($agent["os_version"])) $data[1] .= ' ('.$agent["os_version"].')';
 		$table_details->data[] = $data;
 		
 		$data = array();
@@ -2349,6 +2350,8 @@ function events_page_general ($event) {
 		$data[1] = date ($config["date_format"], strtotime($event["timestamp"]));
 	}
 	$table_general->data[] = $data;
+	
+	$event["owner_user"] = $event["id_usuario"];
 	
 	$data = array();
 	$data[0] = __('Owner');

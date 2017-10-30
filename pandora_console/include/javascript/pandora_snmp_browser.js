@@ -19,6 +19,7 @@ function snmpBrowse () {
 	var community = $('#text-community').val();
 	var starting_oid = $('#text-starting_oid').val();
 	var snmp_version = $('#snmp_browser_version').val();
+	var server_to_exec = $('#server_to_exec').val();
 	var snmp3_auth_user = $('#text-snmp3_browser_auth_user').val();
 	var snmp3_security_level = $('#snmp3_browser_security_level').val();
 	var snmp3_auth_method = $('#snmp3_browser_auth_method').val();
@@ -33,6 +34,7 @@ function snmpBrowse () {
 		"community=" + community,
 		"starting_oid=" + starting_oid,
 		"snmp_browser_version=" + snmp_version,
+		"server_to_exec=" + server_to_exec,
 		"snmp3_browser_auth_user=" + snmp3_auth_user,
 		"snmp3_browser_security_level=" + snmp3_security_level,
 		"snmp3_browser_auth_method=" + snmp3_auth_method,

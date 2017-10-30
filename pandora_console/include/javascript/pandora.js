@@ -607,6 +607,51 @@ function post_process_select_init(name) {
 	$('#' + name + '_default').show();
 }
 
+function post_process_select_init_unit(name,selected) {
+	// Manual mode is hidden by default
+	
+	$('#' + name + '_manual').hide();
+	$('#' + name + '_default').show();
+	
+	if(selected != "") {
+		var select_or_text = false;
+		$('#' + name + '_select option').each(function(i,item) {
+			if ($(item).val() == selected) {
+				select_or_text = true;
+				return false;
+			}
+		});
+		
+		console.log(select_or_text);
+		if(select_or_text) {
+			$('#' + name + '_select option[value='+ selected +']').attr("selected",true);
+			$('#text-' + name + '_text').val("");
+		} else {
+			$('#' + name + '_select option[value=none]').attr("selected",true);
+			$('#' + name + '_default').hide();
+			$('#' + name + '_manual').show();
+		}
+	} else {
+		$('#' + name + '_select option[value=none]').attr("selected",true);
+	}
+	
+	$('#' + name + '_select').change(function() {
+		var value = $('#' + name + '_select').val();
+		$('#' + name + '_select option[value='+ value +']').attr("selected",true);
+		console.log(value);
+	});
+	
+}
+
+function post_process_select_events_unit(name,selected) {
+	
+	$('.' + name + '_toggler').click(function() {
+		$('#' + name + '_select option[value=none]').attr("selected",true);
+		$('#text-' + name + '_text').val("");
+		toggleBoth(name);
+	});
+}
+
 function post_process_select_events(name) {
 	$('.' + name + '_toggler').click(function() {
 		var value = $('#text-' + name + '_text').val();
@@ -1193,4 +1238,31 @@ function htmlEncode(value){
 
 function htmlDecode(value){
   return $('<div/>').html(value).text();
+}
+
+function pagination_show_more(params, message){
+	//value input hidden for save limit
+	var value_offset = $('#hidden-offset').val();
+	//For each execution offset + limit
+	var offset = parseInt(value_offset) + params['limit'];
+	//save new value innput hidden
+	$('#hidden-offset').val(offset);
+	//add array value offset
+	params['offset'] = offset;
+	
+	$.ajax({
+        type: "POST",
+        url:  "ajax.php",
+        data: params,
+        success: function(data) {
+            if(data == ''){
+            	$('#container_error').empty();
+            	$('#container_error').append('<h4>'+ message +'</h4>');
+            }
+            else{
+            	$('#container_pag').append(data);
+            }
+        },
+        datatype: "html"
+    });
 }

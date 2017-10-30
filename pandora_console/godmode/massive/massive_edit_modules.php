@@ -40,6 +40,7 @@ $agents_id = get_parameter('id_agents');
 $modules_select = get_parameter('module');
 $selection_mode = get_parameter('selection_mode', 'modules');
 $recursion = get_parameter('recursion');
+$modules_selection_mode = get_parameter('modules_selection_mode');
 
 $update = (bool) get_parameter_post ('update');
 
@@ -105,7 +106,7 @@ if ($update) {
 					$module_name = array();
 				
 				foreach ($module_name as $mod_name) {
-					$result = process_manage_edit($mod_name['nombre'], $id_agent);
+					$result = process_manage_edit($mod_name['nombre'], $id_agent, $modules_selection_mode);
 					$count++;
 					$success += (int)$result;
 				}
@@ -127,7 +128,7 @@ if ($update) {
 					$module_name = array();
 				
 				foreach($module_name as $mod_name) {
-					$result = process_manage_edit($mod_name['nombre'], $id_agent);
+					$result = process_manage_edit($mod_name['nombre'], $id_agent, $modules_selection_mode);
 					$count++;
 					$success += (int)$result;
 				}
@@ -146,7 +147,7 @@ if ($update) {
 			
 			foreach ($modules_ as $module_) {
 				
-				$result = process_manage_edit ($module_, $agent_);
+				$result = process_manage_edit ($module_, $agent_, $modules_selection_mode);
 				$count++;
 				$success += (int)$result;
 				
@@ -500,7 +501,7 @@ $table->data['edit3'][1] = html_print_extended_select_for_post_process('post_pro
 			
 $table->data['edit3'][2] = __('SMNP community');
 $table->data['edit3'][3] = html_print_input_text ('snmp_community', '',
-	'', 10, 15, true);
+	'', 10, 100, true);
 
 $target_ip_values = array();
 $target_ip_values['auto']      = __('Auto');
@@ -564,7 +565,7 @@ foreach ($targets2 as $t) {
 
 $table->data['edit6'][1] = html_print_select ($targets, 'id_export', '','', __('No change'), '', true, false, false);
 $table->data['edit6'][2] = __('Unit');
-$table->data['edit6'][3] = html_print_input_text ('unit', '', '', 15, 60, true);
+$table->data['edit6'][3] =  html_print_extended_select_for_unit('unit','', '', '', '0', '15', true, false, false);
 
 
 /* FF stands for Flip-flop */
@@ -740,7 +741,7 @@ $(document).ready (function () {
 		var params = {
 			"page" : "operation/agentes/ver_agente",
 			"get_agent_modules_json" : 1,
-			"get_id_and_name" : 1,
+			"get_distinct_name" : 1,
 			"indexed" : 0
 		};
 		
@@ -1086,6 +1087,37 @@ $(document).ready (function () {
 		selector = $("#form_edit input[name=selection_mode]:checked").val();
 		$("#id_agents").trigger("change");
 	});
+	
+	$('#agents').change(function(e){
+				for(var i=0;i<document.forms["form_edit"].agents.length;i++)	{
+					
+					if(document.forms["form_edit"].agents[0].selected == true){
+						var any = true;
+					}
+					if(i != 0 && document.forms["form_edit"].agents[i].selected){
+							var others = true;
+					}
+					if(any && others){
+							document.forms["form_edit"].agents[0].selected = false;
+					}	
+				}
+	});
+	
+	$('#module').change(function(e){
+				for(var i=0;i<document.forms["form_edit"].module.length;i++)	{
+					
+					if(document.forms["form_edit"].module[0].selected == true){
+						var any = true;
+					}
+					if(i != 0 && document.forms["form_edit"].module[i].selected){
+							var others = true;
+					}
+					if(any && others){
+							document.forms["form_edit"].module[0].selected = false;
+					}	
+				}
+	});
+	
 });
 
 function disabled_status () {
@@ -1112,7 +1144,7 @@ function disabled_status () {
 /* ]]> */
 </script>
 <?php
-function process_manage_edit ($module_name, $agents_select = null) {
+function process_manage_edit ($module_name, $agents_select = null, $module_status = 'all') {
 	
 	if (is_int ($module_name) && $module_name < 0) {
 		ui_print_error_message(__('No modules selected'));
@@ -1126,7 +1158,7 @@ function process_manage_edit ($module_name, $agents_select = null) {
 	/* List of fields which can be updated */
 	$fields = array ('dynamic_interval', 'dynamic_max', 'dynamic_min', 'dynamic_two_tailed', 'min_warning', 'max_warning', 'str_warning',
 		'min_critical', 'max_critical', 'str_critical', 'min_ff_event',
-		'module_interval', 'disabled', 'post_process', 'unit',
+		'module_interval', 'disabled', 'post_process', 'unit_select',
 		'snmp_community', 'tcp_send', 'custom_string_1',
 		'plugin_parameter', 'custom_string_2', 'custom_string_3', 'min',
 		'max', 'id_module_group', 'plugin_user', 'plugin_pass',
@@ -1156,6 +1188,13 @@ function process_manage_edit ($module_name, $agents_select = null) {
 			case 'post_process':
 				if($value !== '-1'){
 					$values['post_process'] = $value;
+				}
+				break;
+			case 'unit_select':
+				if($value == "none"){
+					$values['unit'] = (string) get_parameter('unit_text');
+				} else {
+					$values['unit'] = $value;
 				}
 				break;
 			default:
@@ -1230,6 +1269,19 @@ function process_manage_edit ($module_name, $agents_select = null) {
 	
 	if ($modules === false)
 		return false;
+
+	if (($module_status == 'unknown') && ($module_name == "0")) {
+		$modules_to_delete = array();
+		foreach ($modules as $mod_id) {
+			$mod_status = (int)db_get_value_filter ('estado', 'tagente_estado', array('id_agente_modulo' => $mod_id));
+
+			// Unknown, not init and no data modules
+			if ($mod_status == 3 || $mod_status == 4 || $mod_status == 5) {
+				$modules_to_delete[$mod_id] = $mod_id;
+			}
+		}
+		$modules = $modules_to_delete;
+	}
 	
 	foreach ($modules as $module) {
 		$result = modules_update_agent_module(

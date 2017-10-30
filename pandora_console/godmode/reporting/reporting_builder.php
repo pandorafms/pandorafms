@@ -1,3 +1,37 @@
+<script type="text/javascript">
+
+	function check_all_checkboxes() {
+		if ($("input[name=all_delete]").prop("checked")) {
+			$(".check_delete").prop("checked", true);
+			$('.check_delete').each(function(){
+			$('.massive_report_form_elements').prop("disabled", false);
+			});
+		}
+		else {
+			$(".check_delete").prop("checked", false);
+			$('.check_delete').each(function(){
+			$('.massive_report_form_elements').prop("disabled", true);
+			});
+		}	
+		
+	}
+	
+$( document ).ready(function() {
+	$('.check_delete').click(function(){
+		$('.check_delete').each(function(){
+			if($(this).prop( "checked" )){
+				$('#hidden-id_report_'+$(this).val()).prop("disabled", false);
+			}
+			else{
+				$('#hidden-id_report_'+$(this).val()).prop("disabled", true);
+			}	
+		});
+		
+	});
+});
+	
+</script>
+
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
@@ -539,7 +573,7 @@ switch ($action) {
 			$table->size[3] = '2%';
 			$table->size[4] = '2%';
 			$table->size[5] = '2%';
-			$table->size[6] = '4%';
+			$table->size[6] = '2%';
 			$table->size['csv'] = '5%';
 			
 			$next = 4;
@@ -564,7 +598,8 @@ switch ($action) {
 				$next++;
 				if(!defined('METACONSOLE'))
 					$table->head[$next] = '<span title="Operations">' .
-						__('Op.') . '</span>';
+						__('Op.') . '</span>'.html_print_checkbox('all_delete', 0, false, true, false,
+							'check_all_checkboxes();');
 					
 				//$table->size = array ();
 				$table->size[$next] = '10%';
@@ -703,9 +738,13 @@ switch ($action) {
 						$data[$next] .= '<form method="post" style="display:inline;" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
 						$data[$next] .= html_print_input_hidden ('id_report', $report['id_report'], true);
 						$data[$next] .= html_print_input_hidden ('action','delete_report', true);
-						$data[$next] .= html_print_input_image ('delete', 'images/cross.png', 1, '',
+						$data[$next] .= html_print_input_image ('delete', 'images/cross.png', 1, 'margin-right: 10px;',
 							true, array ('title' => __('Delete')));
+							
+						$data[$next] .= html_print_checkbox_extended ('massive_report_check', $report['id_report'], false, false, '', 'class="check_delete"', true);
+							
 						$data[$next] .= '</form>';
+						
 					}
 				}
 				
@@ -733,8 +772,19 @@ switch ($action) {
 			else
 				echo '<div class="action-buttons" style="width: 100%;">';
 			html_print_submit_button (__('Create report'), 'create', false, 'class="sub next"');
-			echo "</div>";
+			
 			echo "</form>";
+			echo '<form style="display:inline;" id="massive_report_form" method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=delete">';
+			
+			foreach ($reports as $report) {
+				echo '<input class="massive_report_form_elements" id="hidden-id_report_'.$report['id_report'].'" name="id_report[]" type="hidden" disabled value="'.$report['id_report'].'">';	
+			}
+			
+			echo '<input id="hidden-action" name="action" type="hidden" value="delete_report">';
+			html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete" style="margin-left:5px;"');
+			echo '</form>';
+			echo "</div>";
+			
 		}
 		
 		enterprise_hook('close_meta_frame');
@@ -925,9 +975,13 @@ switch ($action) {
 							case 'event_report_log':
 								$agents_to_report = get_parameter('id_agents2');
 								$source = get_parameter('source', "");
-
+								$search = get_parameter('search', "");
+								$log_number = get_parameter('log_number', "");
+							
 								$es['source'] = $source;
 								$es['id_agents'] = $agents_to_report;
+								$es['search']=$search;
+								$es['log_number']=$log_number;
 
 								$values['external_source'] = json_encode($es);
 								$values['period'] = get_parameter('period');
@@ -1168,12 +1222,16 @@ switch ($action) {
 							case 'simple_graph':
 								// Warning. We are using this column to hold this value to avoid
 								// the modification of the database for compatibility reasons.
-								$style['only_avg'] = (int) get_parameter('only_avg');
+								$style['only_avg']  = (int) get_parameter('only_avg');
 								$style['percentil'] = (int) get_parameter('percentil');
+								$style['fullscale'] = (int) get_parameter('fullscale');
 								if ($label != '')
 									$style['label'] = $label;
 								else
 									$style['label'] = '';
+								break;
+							case 'network_interfaces_report':
+								$style['fullscale'] = (int) get_parameter('fullscale');
 								break;
 							case 'module_histogram_graph':
 							case 'agent_configuration':
@@ -1281,9 +1339,13 @@ switch ($action) {
 							case 'event_report_log':
 								$agents_to_report = get_parameter('id_agents2');
 								$source = get_parameter('source', "");
-
+								$search = get_parameter('search', "");
+								$log_number = get_parameter('log_number', "");
+								
 								$es['source'] = $source;
 								$es['id_agents'] = $agents_to_report;
+								$es['search']=$search;
+								$es['log_number']=$log_number;
 
 								$values['external_source'] = json_encode($es);
 								$values['period'] = get_parameter('period');
@@ -1508,12 +1570,16 @@ switch ($action) {
 							case 'simple_graph':
 								// Warning. We are using this column to hold this value to avoid
 								// the modification of the database for compatibility reasons.
-								$style['only_avg'] = (int) get_parameter('only_avg');
+								$style['only_avg']  = (int) get_parameter('only_avg');
 								$style['percentil'] = (int) get_parameter('percentil');
+								$style['fullscale'] = (int) get_parameter('fullscale');
 								if ($label != '')
 									$style['label'] = $label;
 								else
 									$style['label'] = '';
+								break;
+							case 'network_interfaces_report':
+								$style['fullscale'] = (int) get_parameter('fullscale');
 								break;
 							case 'module_histogram_graph':
 							case 'agent_configuration':
@@ -2043,3 +2109,4 @@ switch ($activeTab) {
 
 enterprise_hook('close_meta_frame');
 ?>
+

@@ -31,6 +31,7 @@ require_once ($config['homedir'].'/include/functions_agents.php');
 require_once ($config['homedir'].'/include/functions_modules.php');
 require_once ($config['homedir'].'/include/functions_users.php');
 require_once ($config['homedir'].'/include/functions.php');
+require_once ($config['homedir'].'/include/graphs/functions_d3.php');
 
 function visual_map_print_item_toolbox($idDiv, $text, $float) {
 	if ($float == 'left') {
@@ -303,6 +304,8 @@ function visual_map_print_item($mode = "read", $layoutData,
 				break;
 			case PERCENTILE_BAR:
 			case PERCENTILE_BUBBLE:
+			case CIRCULAR_PROGRESS_BAR:
+			case CIRCULAR_INTERIOR_PROGRESS_BAR:
 				if (!empty($layoutData['id_agent'])
 					&& empty($layoutData['id_layout_linked'])) {
 					
@@ -376,7 +379,13 @@ function visual_map_print_item($mode = "read", $layoutData,
 				}
 				
 				break;
+			case BARS_GRAPH:
+				$link = true;
+				break;
 			case AUTO_SLA_GRAPH:
+				$link = true;
+				break;
+			case DONUT_GRAPH:
 				$link = true;
 				break;
 			default:
@@ -487,6 +496,29 @@ function visual_map_print_item($mode = "read", $layoutData,
 						"&date_to=" . $date_to . "&time_to=" . $time_to . "&status=-1";
 				}
 				break;
+			
+			case DONUT_GRAPH:
+				if (empty($layout_data['id_metaconsole'])) {
+					$url = $config['homeurl'] . "index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=" . $layoutData['id_agent'] . 
+						"&tab=module&edit_module=1&id_agent_module=" . $layoutData['id_agente_modulo'];
+				}
+				else {
+					$url = "index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=" . $layoutData['id_agent'] . 
+						"&tab=module&edit_module=1&id_agent_module=" . $layoutData['id_agente_modulo'];
+				}
+				break;
+
+			case BARS_GRAPH:
+				if (empty($layout_data['id_metaconsole'])) {
+					$url = $config['homeurl'] . "index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=" . $layoutData['id_agent'] . 
+						"&tab=module&edit_module=1&id_agent_module=" . $layoutData['id_agente_modulo'];
+				}
+				else {
+					$url = "index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=" . $layoutData['id_agent'] . 
+						"&tab=module&edit_module=1&id_agent_module=" . $layoutData['id_agente_modulo'];
+				}
+				break;
+
 			case GROUP_ITEM:
 				$is_a_link_to_other_visualconsole = false;
 				if ($layoutData['id_layout_linked'] != 0) {
@@ -592,6 +624,8 @@ function visual_map_print_item($mode = "read", $layoutData,
 				break;
 			case PERCENTILE_BAR:
 			case PERCENTILE_BUBBLE:
+			case CIRCULAR_PROGRESS_BAR:
+			case CIRCULAR_INTERIOR_PROGRESS_BAR:
 				if (!empty($layoutData['id_agent'])) {
 					
 					//Extract id service if it is a prediction module.
@@ -811,6 +845,8 @@ function visual_map_print_item($mode = "read", $layoutData,
 			break;
 		case PERCENTILE_BAR:
 		case PERCENTILE_BUBBLE:
+		case CIRCULAR_PROGRESS_BAR:
+		case CIRCULAR_INTERIOR_PROGRESS_BAR:
 			//Metaconsole db connection
 			if ($layoutData['id_metaconsole'] != 0) {
 				$connection = db_get_row_filter ('tmetaconsole_setup',
@@ -1066,6 +1102,356 @@ function visual_map_print_item($mode = "read", $layoutData,
 			}
 
 			break;
+		
+		case BARS_GRAPH:
+		
+			$imgpos = '';
+						
+			if($layoutData['label_position']=='left'){
+				$imgpos = 'float:right';
+			}
+			else if($layoutData['label_position']=='right'){
+				$imgpos = 'float:left';
+			}
+		
+			if (!empty($proportion)) {
+				$width =
+					((integer)($proportion['proportion_width'] * $width));
+				$height =
+					((integer)($proportion['proportion_height'] * $height));
+			}
+			//Metaconsole db connection
+			if ($layoutData['id_metaconsole'] != 0) {
+				$connection = db_get_row_filter ('tmetaconsole_setup',
+					array('id' => $layoutData['id_metaconsole']));
+				if (metaconsole_load_external_db($connection) != NOERR) {
+					continue;
+				}
+			}
+			
+			if ($isExternalLink)
+				$homeurl = $config['homeurl'];
+			else
+				$homeurl = '';
+			
+			$is_string = db_get_value_filter ('id_tipo_modulo', 'tagente_modulo',
+				array ('id_agente' => $layoutData['id_agent'],
+					'id_agente_modulo' => $id_module));
+
+			if ( (get_parameter('action') == 'edit') || (get_parameter('operation') == 'edit_visualmap') ) {
+				if($width == 0){
+					if (($is_string == 17) || ($is_string == 23) || ($is_string == 3) ||
+					($is_string == 10) || ($is_string == 33)) {
+						if ($layoutData['id_metaconsole'] != 0) {
+							$img =  '<img src="../../images/console/signes/barras.png" style="width:400px;height:400px;'.$imgpos.'">';
+						}
+						else{
+							$img =  '<img src="images/console/signes/barras.png" style="width:400px;height:400px;'.$imgpos.'">';	
+						}
+					}
+					else {
+						if ($layoutData['id_metaconsole'] != 0) {
+							$img =  '<img src="../../images/console/signes/barras-no.png" style="width:400px;height:400px;'.$imgpos.'">';
+						}
+						else{
+							$img =  '<img src="images/console/signes/barras-no.png" style="width:400px;height:400px;'.$imgpos.'">';	
+						}
+					}
+				}
+				else{
+					if (($is_string == 17) || ($is_string == 23) || ($is_string == 3) ||
+					($is_string == 10) || ($is_string == 33)) {
+						if ($layoutData['id_metaconsole'] != 0) {
+							$img =  '<img src="../../images/console/signes/barras.png" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';
+						}
+						else{
+							$img =  '<img src="images/console/signes/barras.png" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';
+						}
+					}
+					else {
+						if ($layoutData['id_metaconsole'] != 0) {
+							$img =  '<img src="../../images/console/signes/barras-no.png" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';
+						}
+						else{
+							$img =  '<img src="images/console/signes/barras-no.png" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';
+						}
+					}
+				}
+			}
+			else {
+				if (($is_string == 17) || ($is_string == 23) || ($is_string == 3) ||
+				($is_string == 10) || ($is_string == 33)) {
+
+					$color = array();
+	
+					$color[0] = array('border' => '#000000',
+						'color' => $config['graph_color1'],
+						'alpha' => CHART_DEFAULT_ALPHA);
+					$color[1] = array('border' => '#000000',
+						'color' => $config['graph_color2'],
+						'alpha' => CHART_DEFAULT_ALPHA);
+					$color[2] = array('border' => '#000000',
+						'color' => $config['graph_color3'],
+						'alpha' => CHART_DEFAULT_ALPHA);
+					$color[3] = array('border' => '#000000',
+						'color' => $config['graph_color4'],
+						'alpha' => CHART_DEFAULT_ALPHA);
+					$color[4] = array('border' => '#000000',
+						'color' => $config['graph_color5'],
+						'alpha' => CHART_DEFAULT_ALPHA);
+					$color[5] = array('border' => '#000000',
+						'color' => $config['graph_color6'],
+						'alpha' => CHART_DEFAULT_ALPHA);
+					$color[6] = array('border' => '#000000',
+						'color' => $config['graph_color7'],
+						'alpha' => CHART_DEFAULT_ALPHA);
+					$color[7] = array('border' => '#000000',
+						'color' => $config['graph_color8'],
+						'alpha' => CHART_DEFAULT_ALPHA);
+					$color[8] = array('border' => '#000000',
+						'color' => $config['graph_color9'],
+						'alpha' => CHART_DEFAULT_ALPHA);
+					$color[9] = array('border' => '#000000',
+						'color' => $config['graph_color10'],
+						'alpha' => CHART_DEFAULT_ALPHA);
+					$color[11] = array('border' => '#000000',
+						'color' => COL_GRAPH9,
+						'alpha' => CHART_DEFAULT_ALPHA);
+					$color[12] = array('border' => '#000000',
+						'color' => COL_GRAPH10,
+						'alpha' => CHART_DEFAULT_ALPHA);
+					$color[13] = array('border' => '#000000',
+						'color' => COL_GRAPH11,
+						'alpha' => CHART_DEFAULT_ALPHA);
+					$color[14] = array('border' => '#000000',
+						'color' => COL_GRAPH12,
+						'alpha' => CHART_DEFAULT_ALPHA);
+					$color[15] = array('border' => '#000000',
+						'color' => COL_GRAPH13,
+						'alpha' => CHART_DEFAULT_ALPHA);
+
+					$module_data = get_bars_module_data($id_module);
+					$water_mark = array('file' => '/var/www/html/pandora_console/images/logo_vertical_water.png', 
+										'url' => 'http://localhost/pandora_console/images/logo_vertical_water.png');
+					
+					if ($width == 0) {
+						if ($layoutData['label_position']=='left') {
+							if ($layoutData['type_graph'] == 'horizontal') {
+								$img = '<div style="float:right;height:'.$himg.'px;">'.
+									hbar_graph(true, $module_data,
+									400, 400, $color, array(), array(),
+									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+									"", "", $water_mark, $config['fontpath'], 6,
+									"", 0, $config['homeurl'], $layoutData['image']) . '</div>';
+							}
+							else {
+								$img = '<div style="float:right;height:'.$himg.'px;">'. 
+									vbar_graph(true, $module_data,
+									400, 400, $color, array(), array(),
+									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+									"", "", $water_mark, $config['fontpath'], 6,
+									"", 0, $config['homeurl'], $layoutData['image'], true) . '</div>';
+							}
+						}
+						elseif($layoutData['label_position']=='right') {
+							if ($layoutData['type_graph'] == 'horizontal') {
+								$img = '<div style="float:left;height:'.$himg.'px;">'.
+									hbar_graph(true, $module_data,
+									400, 400, $color, array(), array(),
+									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+									"", "", $water_mark, $config['fontpath'], 6,
+									"", 0, $config['homeurl'], $layoutData['image']) . '</div>';
+							}
+							else {
+								$img = '<div style="float:left;height:'.$himg.'px;">'. 
+									vbar_graph(true, $module_data,
+									400, 400, $color, array(), array(),
+									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+									"", "", $water_mark, $config['fontpath'], 6,
+									"", 0, $config['homeurl'], $layoutData['image'], true) . '</div>';
+							}
+						}
+						else {
+							if ($layoutData['type_graph'] == 'horizontal') {
+								$img = hbar_graph(true, $module_data,
+									400, 400, $color, array(), array(),
+									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+									"", "", $water_mark, $config['fontpath'], 6,
+									"", 0, $config['homeurl'], $layoutData['image']);
+							}
+							else {
+								$img = vbar_graph(true, $module_data,
+									400, 400, $color, array(), array(),
+									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+									"", "", $water_mark, $config['fontpath'], 6,
+									"", 0, $config['homeurl'], $layoutData['image'], true);
+							}
+						}
+					}
+					else{
+						if ($layoutData['label_position']=='left') {
+							if ($layoutData['type_graph'] == 'horizontal') {
+								$img = '<div style="float:right;height:'.$himg.'px;">'.
+									hbar_graph(true, $module_data,
+									$width, $width, $color, array(), array(),
+									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+									"", "", $water_mark, $config['fontpath'], 6,
+									"", 0, $config['homeurl'], $layoutData['image']) . '</div>';
+							}
+							else {
+								$img = '<div style="float:right;height:'.$himg.'px;">'. 
+									vbar_graph(true, $module_data,
+									$width, $width, $color, array(), array(),
+									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+									"", "", $water_mark, $config['fontpath'], 6,
+									"", 0, $config['homeurl'], $layoutData['image'], true) . '</div>';
+							}
+						}
+						elseif($layoutData['label_position']=='right') {
+							if ($layoutData['type_graph'] == 'horizontal') {
+								$img = '<div style="float:left;height:'.$himg.'px;">'.
+									hbar_graph(true, $module_data,
+									$width, $width, $color, array(), array(),
+									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+									"", "", $water_mark, $config['fontpath'], 6,
+									"", 0, $config['homeurl'], $layoutData['image']) . '</div>';
+							}
+							else {
+								$img = '<div style="float:left;height:'.$himg.'px;">'. 
+									vbar_graph(true, $module_data,
+									$width, $width, $color, array(), array(),
+									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+									"", "", $water_mark, $config['fontpath'], 6,
+									"", 0, $config['homeurl'], $layoutData['image'], true) . '</div>';
+							}
+						}
+						else {
+							if ($layoutData['type_graph'] == 'horizontal') {
+								$img = hbar_graph(true, $module_data,
+									$width, $width, $color, array(), array(),
+									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+									"", "", $water_mark, $config['fontpath'], 6,
+									"", 0, $config['homeurl'], $layoutData['image']);
+							}
+							else {
+								$img = vbar_graph(true, $module_data,
+									$width, $width, $color, array(), array(),
+									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+									"", "", $water_mark, $config['fontpath'], 6,
+									"", 0, $config['homeurl'], $layoutData['image'], true);
+							}
+						}
+					}
+				}
+				else {
+					if($width == 0){
+						if ($layoutData['id_metaconsole'] != 0) {
+							$img =  '<img src="../../images/console/signes/barras-no.png" style="width:400px;height:400px;'.$imgpos.'">';
+						}
+						else{
+							$img =  '<img src="images/console/signes/barras-no.png" style="width:400px;height:400px;'.$imgpos.'">';	
+						}
+					}
+					else{
+						if ($layoutData['id_metaconsole'] != 0) {
+							$img =  '<img src="../../images/console/signes/barras-no.png" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';
+						}
+						else{
+							$img =  '<img src="images/console/signes/barras-no.png" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';
+						}
+					}
+				}
+			}
+			
+			//Restore db connection
+			if ($layoutData['id_metaconsole'] != 0) {
+				metaconsole_restore_db();
+			}
+
+			break;
+
+		case DONUT_GRAPH:
+			if (!empty($id_metaconsole)) {
+				$connection = db_get_row_filter ('tmetaconsole_setup', $id_metaconsole);
+				if (metaconsole_load_external_db($connection) != NOERR) {
+					continue;
+				}
+			}
+
+
+			$is_string = db_get_value_filter ('id_tipo_modulo', 'tagente_modulo',
+				array ('id_agente' => $layoutData['id_agent'],
+					'id_agente_modulo' => $id_module));
+			
+			if (!empty($id_metaconsole)) {
+				metaconsole_restore_db();
+			}
+
+			if (($is_string == 17) || ($is_string == 23) || ($is_string == 3) ||
+				($is_string == 10) || ($is_string == 33)) {
+				$no_data = false;
+			}
+			else {
+				$no_data = true;
+			}
+
+			if ($no_data) {
+				if($width == 0){
+					if ($layoutData['id_metaconsole'] != 0) {
+						$img =  '<img src="../../images/console/signes/wrong_donut_graph.png">';
+					}
+					else{
+						$img =  '<img src="images/console/signes/wrong_donut_graph.png">';
+					}
+				}
+				else{
+					if ($layoutData['id_metaconsole'] != 0) {
+						$img =  '<img src="../../images/console/signes/wrong_donut_graph.png" style="width:'.$width.'px;height:'. $height.'px;">';
+					}
+					else{
+						$img =  '<img src="images/console/signes/wrong_donut_graph.png" style="width:'.$width.'px;height:'. $height.'px;">';
+					}
+				}
+			}
+			else {
+				$donut_data = get_donut_module_data($layoutData['id_agente_modulo']);
+
+				if ((get_parameter('action') == 'edit') || (get_parameter('operation') == 'edit_visualmap')) {
+					if($width == 0){
+						if ($layoutData['id_metaconsole'] != 0) {
+							$img =  '<img src="../../images/console/signes/donut-graph.png">';
+						}
+						else{
+							$img =  '<img src="images/console/signes/donut-graph.png">';	
+						}
+					}
+					else{
+						if ($layoutData['id_metaconsole'] != 0) {
+							$img =  '<img src="../../images/console/signes/donut-graph.png" style="width:'.$width.'px;height:'. $height.'px;">';
+						}
+						else{
+							$img =  '<img src="images/console/signes/donut-graph.png" style="width:'.$width.'px;height:'. $height.'px;">';
+						}
+					}
+				}
+				else {
+					if ($width == 0) {
+						$img = d3_donut_graph ($layoutData['id'], 400, 400, $donut_data);
+					}
+					else{
+						$img = d3_donut_graph ($layoutData['id'], $width, $width, $donut_data);
+					}
+				}
+			}
+		
+			//Restore db connection
+			if ($layoutData['id_metaconsole'] != 0) {
+				metaconsole_restore_db();
+			}
+
+			$z_index = 2 + 1;
+			break;
+
 		case LABEL:
 			$z_index = 4 + 1;
 			break;
@@ -1094,12 +1480,10 @@ function visual_map_print_item($mode = "read", $layoutData,
 			else {
 				if ($width == 0 || $height == 0) {
 					if ($layoutData['label_position']=='left') {
-						$img = '<div style="float:left;height:'.$himg.'px;">' . 
-							$img = graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], 500, 50, $layoutData['period'], '', true);
+						$img = '<div style="float:left;height:'.$himg.'px;">' .graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], 500, 50, $layoutData['period'], '', true).'</div>';
 					}
 					elseif ($layoutData['label_position']=='right') {
-						$img = '<div style="float:right;height:'.$himg.'px;">' . 
-							$img = graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], 500, 50, $layoutData['period'], '', true);
+						$img = '<div style="float:right;height:'.$himg.'px;">' . graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], 500, 50, $layoutData['period'], '', true).'</div>';
 					}
 					else {
 						$img = graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], 500, 50, $layoutData['period'], '', true);
@@ -1107,12 +1491,10 @@ function visual_map_print_item($mode = "read", $layoutData,
 				}
 				else{
 					if ($layoutData['label_position']=='left') {
-						$img = '<div style="float:left;height:'.$himg.'px;">' . 
-							$img = graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], $width, $height, $layoutData['period'], '', true);
+						$img = '<div style="float:left;height:'.$himg.'px;">' . graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], $width, $height, $layoutData['period'], '', true).'</div>';
 					}
 					elseif ($layoutData['label_position']=='right') {
-						$img = '<div style="float:right;height:'.$himg.'px;">' . 
-							$img = graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], $width, $height, $layoutData['period'], '', true);
+						$img = '<div style="float:right;height:'.$himg.'px;">' .graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], $width, $height, $layoutData['period'], '', true).'</div>';
 					}
 					else {
 						$img = graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], $width, $height, $layoutData['period'], '', true);
@@ -1140,12 +1522,20 @@ function visual_map_print_item($mode = "read", $layoutData,
 		case GROUP_ITEM:
 			$class .= "group_item";
 			break;
+		case DONUT_GRAPH:
+			$class .= "donut_graph";
+			break;
 		case PERCENTILE_BAR:
 		case PERCENTILE_BUBBLE:
+		case CIRCULAR_PROGRESS_BAR:
+		case CIRCULAR_INTERIOR_PROGRESS_BAR:
 			$class .= "percentile_item";
 			break;
 		case MODULE_GRAPH:
 			$class .= "module_graph";
+			break;
+		case BARS_GRAPH:
+			$class .= "bars_graph";
 			break;
 		case SIMPLE_VALUE:
 		case SIMPLE_VALUE_MAX:
@@ -1217,7 +1607,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 			break;
 		case STATIC_GRAPH:
 		case GROUP_ITEM:
-			if ($layoutData['image'] != null) {
+			if ($layoutData['image'] != null || $layoutData['show_statistics'] == 1) {
 						
 				
 				$img_style_title = strip_tags($label);
@@ -1274,35 +1664,130 @@ function visual_map_print_item($mode = "read", $layoutData,
 				
 				$varsize = getimagesize($img);
 				
-				if ($width == 0 || $height == 0) {
-					if($varsize[0] > 150 || $varsize[1] > 150){
-						echo html_print_image($img, true,
-						array("class" => "image",
-						"id" => "image_" . $id,
-						"width" => "70px",
-						"height" => "70px",
-						"title" => $img_style_title,
-						"style" => $borderStyle.$imgpos), false,
-						false, false, $isExternalLink);
+				
+				if($layoutData['show_statistics'] == 1){
+					
+					if (get_parameter('action') == 'edit') {
+								
+						if ($width == 0 || $height == 0) {
+							
+						 echo '<img id="image_'.$id.'" src="images/console/signes/group_status.png" style="width:520px;height:80px;'.$imgpos.'">';
+						}
+						else{
+						 echo '<img id="image_'.$id.'" src="images/console/signes/group_status.png" style="width:'.$width.'px;height:'.$height.'px;'.$imgpos.'">';
+						}
+						
 					}
 					else{
-						echo html_print_image($img, true,
-						array("class" => "image",
-						"id" => "image_" . $id,
-						"title" => $img_style_title,
-						"style" => $borderStyle.$imgpos), false,
-						false, false, $isExternalLink);
+						
+							$agents_critical = agents_get_agents(array (
+										'disabled' => 0,
+										'id_grupo' => $layoutData['id_group'],
+										'status' => AGENT_STATUS_CRITICAL),
+										array ('COUNT(*) as total'), 'AR', false);
+						
+							$agents_warning = agents_get_agents(array (
+										'disabled' => 0,
+										'id_grupo' => $layoutData['id_group'],
+										'status' => AGENT_STATUS_WARNING),
+										array ('COUNT(*) as total'), 'AR', false);
+										
+							$agents_unknown = agents_get_agents(array (
+											'disabled' => 0,
+											'id_grupo' => $layoutData['id_group'],
+											'status' => AGENT_STATUS_UNKNOWN),
+											array ('COUNT(*) as total'), 'AR', false);
+														
+							$agents_ok = agents_get_agents(array (
+											'disabled' => 0,
+											'id_grupo' => $layoutData['id_group'],
+											'status' => AGENT_STATUS_OK),
+											array ('COUNT(*) as total'), 'AR', false);
+											
+						 $total_agents = $agents_critical[0]['total'] + $agents_warning[0]['total'] + $agents_unknown[0]['total'] + $agents_ok[0]['total'];
+						 
+						 $stat_agent_ok = $agents_ok[0]['total']/$total_agents*100;
+						 $stat_agent_wa = $agents_warning[0]['total']/$total_agents*100;
+						 $stat_agent_cr = $agents_critical[0]['total']/$total_agents*100;
+						 $stat_agent_un = $agents_unknown[0]['total']/$total_agents*100;
+							
+							if($width == 0 || $height == 0){
+								$dyn_width = 520;			
+								$dyn_height = 80;
+							}
+							else{
+								$dyn_width = $width;			
+								$dyn_height = $height;
+							}
+							
+							
+							echo '<table cellpadding="0" cellspacing="0" border="0" class="databox" style="width:'.$dyn_width.'px;height:'.$dyn_height.'px;text-align:center;';
+							
+							if($layoutData['label_position'] == 'left'){
+								echo "float:right;";
+							}
+							elseif ($layoutData['label_position'] == 'right') {
+								echo "float:left;";
+							}
+							
+							echo '">';
+								
+								echo "<tr style='height:10%;'>";
+									echo "<th style='text-align:center;background-color:#9d9ea0;color:black;font-weight:bold;'>" .groups_get_name($layoutData['id_group'],true) . "</th>";
+								
+								echo "</tr>";
+								echo "<tr style='background-color:whitesmoke;height:90%;'>";
+									echo "<td>";
+									echo "<div style='margin-left:2%;color: #FFF;font-size: 12px;display:inline;background-color:#FC4444;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>". remove_right_zeros(number_format($stat_agent_cr, 2)) ."%</div>";
+									echo "<div style='background-color:white;color: black ;font-size: 12px;display:inline;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>Critical</div>";
+									echo "<div style='margin-left:2%;color: #FFF;font-size: 12px;display:inline;background-color:#f8db3f;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>". remove_right_zeros(number_format($stat_agent_wa, 2)) ."%</div>";
+									echo "<div style='background-color:white;color: black ;font-size: 12px;display:inline;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>Warning</div>";
+									echo "<div style='margin-left:2%;color: #FFF;font-size: 12px;display:inline;background-color:#84b83c;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>". remove_right_zeros(number_format($stat_agent_ok, 2)) ."%</div>";
+									echo "<div style='background-color:white;color: black ;font-size: 12px;display:inline;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>Normal</div>";
+									echo "<div style='margin-left:2%;color: #FFF;font-size: 12px;display:inline;background-color:#9d9ea0;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>". remove_right_zeros(number_format($stat_agent_un, 2)) ."%</div>";
+									echo "<div style='background-color:white;color: black ;font-size: 12px;display:inline;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>Unknown</div>";
+									
+									echo "</td>";
+								echo "</tr>";
+							echo "</table>";
+						
+						
 					}
+		
 				}
 				else{
-				echo html_print_image($img, true,
-					array("class" => "image",
-						"id" => "image_" . $id,
-						"width" => $width,
-						"height" => $height,
-						"title" => $img_style_title,
-						"style" => $borderStyle.$imgpos), false,
-						false, false, $isExternalLink);
+				
+					if ($width == 0 || $height == 0) {
+						if($varsize[0] > 150 || $varsize[1] > 150){
+							echo html_print_image($img, true,
+							array("class" => "image",
+							"id" => "image_" . $id,
+							"width" => "70px",
+							"height" => "70px",
+							"title" => $img_style_title,
+							"style" => $borderStyle.$imgpos), false,
+							false, false, $isExternalLink);
+						}
+						else{
+							echo html_print_image($img, true,
+							array("class" => "image",
+							"id" => "image_" . $id,
+							"title" => $img_style_title,
+							"style" => $borderStyle.$imgpos), false,
+							false, false, $isExternalLink);
+						}
+					}
+					else{
+					echo html_print_image($img, true,
+						array("class" => "image",
+							"id" => "image_" . $id,
+							"width" => $width,
+							"height" => $height,
+							"title" => $img_style_title,
+							"style" => $borderStyle.$imgpos), false,
+							false, false, $isExternalLink);
+					}
+			
 				}
 					
 			}
@@ -1317,146 +1802,188 @@ function visual_map_print_item($mode = "read", $layoutData,
 			break;
 		
 		case PERCENTILE_BAR:
-			$imgpos = '';
-							
-			if($layoutData['label_position']=='left'){
-				$imgpos = 'float:right;';
-			}
-			else if($layoutData['label_position']=='right'){
-				$imgpos = 'float:left;';
-			}
-			
-			$progress_bar_heigh = 15;
-			if (!empty($proportion)) {
-				if ($width != 0) {
-					$width = (integer)($proportion['proportion_width'] * $width);
-				}
-				else {
-					$width = (integer)($proportion['proportion_width'] * $infoImage[0]);
-				}
+			if (($layoutData['image'] == 'value') && ($value_text !== false)) {
+				$unit_text = db_get_sql ('SELECT unit
+					FROM tagente_modulo
+					WHERE id_agente_modulo = ' . $id_module);
+				$unit_text = trim(io_safe_output($unit_text));
 
-				if ($height != 0) {
-					$height = (integer)($proportion['proportion_height'] * $height);
-					$progress_bar_heigh = $progress_bar_heigh * $proportion['proportion_height'];
-				}
-				else {
-					$height = (integer)($proportion['proportion_height'] * $infoImage[1]);
-				}
-			}
-			
-			if($layoutData['label_position']=='up'){
-				echo io_safe_output($text);
-			}
-			
-			ob_start();
-			if ($type == PERCENTILE_BUBBLE) {
-				echo progress_bubble($percentile, $width, $width, '', 1, $value_text, $colorStatus,$imgpos);
+				$percentile = $value_text;
 			}
 			else {
-				echo progress_bar($percentile, $width, $progress_bar_heigh, '', 1, $value_text, $colorStatus,$imgpos);
+				$unit_text = "%";
 			}
-			$img = ob_get_clean();
 			
-			if (get_parameter('action') == 'edit') {
-				if ($width == 0) {
-					$img = '<img src="images/console/signes/percentil.png" style="width:130px;height:30px;'.$imgpos.'">';	
+			if (get_parameter('action') == 'edit' || (get_parameter('operation') == 'edit_visualmap')) {
+				if($width == 0){
+					if ($layoutData['id_metaconsole'] != 0) {
+						$img =  '<img src="' . '../../' . 'images/console/signes/percentil.png" style="width:130px;height:30px;'.$imgpos.'">';	
+					}
+					else{
+						$img =  '<img src="images/console/signes/percentil.png" style="width:130px;height:30px;'.$imgpos.'">';	
+					}
 				}
-				else {
-					$img = '<img src="images/console/signes/percentil.png" style="width:'.$width.'px;height:30px;'.$imgpos.'">';	
+				else{
+					if ($layoutData['id_metaconsole'] != 0) {
+						$img =  '<img src="' . '../../' . '/images/console/signes/percentil.png" style="width:'.$width.'px;height:30px;'.$imgpos.'">';	
+					}
+					else{
+						$img =  '<img src="images/console/signes/percentil.png"  style="width:'.$width.'px;height:30px;'.$imgpos.'">';	
+					}	
 				}
 			}
 			else{
-				$img = str_replace('>', 'class="image" style="height:'.$himg.'px;width:'.$wimg.'px;'.$imgpos.'" id="image_' . $id . '" />', $img);
+				$img = d3_progress_bar($id, $percentile, $width, 50, $border_color, $unit_text, $label, $fill_color);
 			}
 			
-			echo $img;		
+			echo $img;
 			
-			if($layoutData['label_position']=='down'){
-				echo io_safe_output($text);
-			}			
-			else if($layoutData['label_position']=='left' || $layoutData['label_position']=='right'){
-				echo io_safe_output($text);
-			}	
-		
 		break;
-		
 		case PERCENTILE_BUBBLE:
-		
-			$imgpos = '';
-									
-			if($layoutData['label_position']=='left'){
-				$imgpos = 'float:right;';
+			if (($layoutData['image'] == 'value') && ($value_text !== false)) {
+				$unit_text = db_get_sql ('SELECT unit
+					FROM tagente_modulo
+					WHERE id_agente_modulo = ' . $id_module);
+				$unit_text = trim(io_safe_output($unit_text));
+
+				$percentile = $value_text;
 			}
-			else if($layoutData['label_position']=='right'){
-				$imgpos = 'float:left;';
+			else {
+				$unit_text = "%";
 			}
-		
-		 	$progress_bar_heigh = 15;
-			if (!empty($proportion)) {
-				if ($width != 0) {
-					$width = (integer)($proportion['proportion_width'] * $width);
+
+			if(get_parameter('action') == 'edit' || (get_parameter('operation') == 'edit_visualmap')){
+				if($width == 0){
+					if ($layoutData['id_metaconsole'] != 0) {
+						$img =  '<img src="' . '../../' . 'images/console/signes/percentil_bubble.png">';
+					}
+					else{
+						$img =  '<img src="images/console/signes/percentil_bubble.png">';	
+					}
+				}
+				else{
+					if ($layoutData['id_metaconsole'] != 0) {
+						$img =  '<img src="' . '../../' . '/images/console/signes/percentil_bubble.png" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';
+					}
+					else{
+						$img =  '<img src="images/console/signes/percentil_bubble.png"  style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';	
+					}	
+				}
+			}
+			else{
+				if($width == 0){
+					$img = d3_progress_bubble($id, $percentile, 200,200, $border_color, $unit_text, $label, $fill_color);
+				}
+				else{
+					$img = d3_progress_bubble($id, $percentile, $width, $width, $border_color, $unit_text, $label, $fill_color);
+				}
+			}
+			
+			echo $img;
+			
+			break;
+		case CIRCULAR_PROGRESS_BAR:
+			if(get_parameter('action') == 'edit' || (get_parameter('operation') == 'edit_visualmap')){
+				if($width == 0){
+					if ($layoutData['id_metaconsole'] != 0) {
+						$img =  '<img src="' . '../../' . 'images/console/signes/circular-progress-bar.png">';
+					}
+					else{
+						$img =  '<img src="images/console/signes/circular-progress-bar.png">';	
+					}
+				}
+				else{
+					if ($layoutData['id_metaconsole'] != 0) {
+						$img =  '<img src="' . '../../' . '/images/console/signes/circular-progress-bar.png" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';
+					}
+					else{
+						$img =  '<img src="images/console/signes/circular-progress-bar.png"  style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';	
+					}	
+				}
+			}
+			else {
+				if (($layoutData['image'] == 'value') && ($value_text !== false)) {
+					$unit_text = db_get_sql ('SELECT unit
+						FROM tagente_modulo
+						WHERE id_agente_modulo = ' . $id_module);
+					$unit_text = trim(io_safe_output($unit_text));
+
+					$percentile = $value_text;
 				}
 				else {
-					$width = (integer)($proportion['proportion_width'] * $infoImage[0]);
+					$unit_text = "%";
 				}
 
-				if ($height != 0) {
-					$height = (integer)($proportion['proportion_height'] * $height);
-					$progress_bar_heigh = $progress_bar_heigh * $proportion['proportion_height'];
+				if($width == 0){
+					$img = progress_circular_bar($id, $percentile, 200,200, $border_color, $unit_text, $label, $fill_color);
 				}
-				else {
-					$height = (integer)($proportion['proportion_height'] * $infoImage[1]);
+				else{
+					$img = progress_circular_bar($id, $percentile, $width, $width, $border_color, $unit_text, $label, $fill_color);
 				}
 			}
+
+			echo $img;
 			
-			if($layoutData['label_position']=='up'){
-			echo io_safe_output($text);
-		}
-			
-			ob_start();
-			if ($type == PERCENTILE_BUBBLE) {
+			break;
+		case CIRCULAR_INTERIOR_PROGRESS_BAR:
+			if(get_parameter('action') == 'edit' || (get_parameter('operation') == 'edit_visualmap')){
 				if($width == 0){
-					echo progress_bubble($percentile, 100,100, '', 1, $value_text, $colorStatus,$s);
+					if ($layoutData['id_metaconsole'] != 0) {
+						$img =  '<img src="' . '../../' . 'images/console/signes/circular-progress-bar-interior.png">';
+					}
+					else{
+						$img =  '<img src="images/console/signes/circular-progress-bar-interior.png">';	
+					}
+				}
+				else{
+					if ($layoutData['id_metaconsole'] != 0) {
+						$img = '<img src="' . '../../' . '/images/console/signes/circular-progress-bar-interior.png" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';
+					}
+					else{
+						$img =  '<img src="images/console/signes/circular-progress-bar-interior.png"  style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';	
+					}
+				}
+			}
+			else {
+				if (($layoutData['image'] == 'value') && ($value_text !== false)) {
+					$unit_text = db_get_sql ('SELECT unit
+						FROM tagente_modulo
+						WHERE id_agente_modulo = ' . $id_module);
+					$unit_text = trim(io_safe_output($unit_text));
+
+					$percentile = $value_text;
+				}
+				else {
+					$unit_text = "%";
+				}
+
+				if($width == 0){
+					$img = progress_circular_bar_interior($id, $percentile, 200,200, $border_color, $unit_text, $label, $fill_color);
 				
 				}
 				else{
-					echo progress_bubble($percentile, $width,$width, '', 1, $value_text, $colorStatus);
+					$img = progress_circular_bar_interior($id, $percentile, $width, $width, $border_color, $unit_text, $label, $fill_color);
 				}
 			}
-			else {
-				echo progress_bar($percentile, $width, $progress_bar_heigh, '', 1, $value_text, $colorStatus);
-			}
-			$img = ob_get_clean();
 			
-			
-			if(get_parameter('action') == 'edit'){
-			
-			if($width == 0){
-			$img =  '<img src="images/console/signes/percentil_bubble.png" style="width:130px;height:130px;'.$imgpos.'">';	
-			}
-			else{
-			$img =  '<img src="images/console/signes/percentil_bubble.png" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';	
-			}
-						
-			}
-			else{
-				
-			$img = str_replace('>', 'class="image" style="width:'.$wimg.'px;height:'.$himg.'px;'.$imgpos.'" id="image_' . $id . '" />', $img);
-			
-			}
-			
-			echo $img;			
-			
-			if($layoutData['label_position']=='down'){
-			echo io_safe_output($text);
-		}			
-		else if($layoutData['label_position']=='left' || $layoutData['label_position']=='right'){
-			echo io_safe_output($text);
-		}
+			echo $img;
 			
 			break;
-		
 		case MODULE_GRAPH:
+			if ($layoutData['label_position']=='up') {
+				echo io_safe_output($text);
+			}
+			
+			echo $img;
+			
+			if ($layoutData['label_position']=='down') {
+				echo io_safe_output($text);
+			}	
+			elseif($layoutData['label_position']=='left' || $layoutData['label_position']=='right') {
+				echo io_safe_output($text);
+			}
+			break;
+		case BARS_GRAPH:
 			if ($layoutData['label_position']=='up') {
 				echo io_safe_output($text);
 			}
@@ -1484,6 +2011,10 @@ function visual_map_print_item($mode = "read", $layoutData,
 				echo io_safe_output($text);
 			}
 			break;
+		case DONUT_GRAPH:
+			echo $img;
+			break;
+
 		case SIMPLE_VALUE:
 		case SIMPLE_VALUE_MAX:
 		case SIMPLE_VALUE_MIN:
@@ -1634,6 +2165,29 @@ function visual_map_print_item($mode = "read", $layoutData,
 		echo '</script>';
 	}
 }
+
+function get_bars_module_data ($id_module) {
+	$mod_values = db_get_value_filter('datos', 'tagente_estado', array('id_agente_modulo' => $id_module));
+
+	if (preg_match("/\r\n/", $mod_values)) {
+		$values = explode("\r\n", $mod_values);
+	}
+	elseif (preg_match("/\n/", $mod_values)) {
+		$values = explode("\n", $mod_values);
+	}
+
+	$values_to_return = array();
+	$index = 0;
+	$color_index = 0;
+	$total = 0;
+	foreach ($values as $val) {
+		$data = explode(":", $val);
+		$values_to_return[$data[0]] = array('g' =>$data[1]);
+	}
+
+	return $values_to_return;
+}
+
 
 /**
  * The function to get simple value type from the value of process type in the form
@@ -1798,10 +2352,18 @@ function visual_map_process_wizard_add ($id_agents, $image, $id_layout, $range,
 		switch ($type) {
 			case PERCENTILE_BAR:
 			case PERCENTILE_BUBBLE:
+			case CIRCULAR_PROGRESS_BAR:
+			case CIRCULAR_INTERIOR_PROGRESS_BAR:
 				$value_height = $max_value;
 				$value_image = $value_show;
 				if ($type_percentile == 'percentile') {
 					$value_type = PERCENTILE_BAR;
+				}
+				elseif ($type_percentile == 'interior_circular_progress_bar') {
+					$value_type = CIRCULAR_INTERIOR_PROGRESS_BAR;
+				}
+				elseif ($type_percentile == 'circular_progress_bar') {
+					$value_type = CIRCULAR_PROGRESS_BAR;
 				}
 				else {
 					$value_type = PERCENTILE_BUBBLE;
@@ -1924,11 +2486,19 @@ function visual_map_process_wizard_add_modules ($id_modules, $image,
 		switch ($type) {
 			case PERCENTILE_BAR:
 			case PERCENTILE_BUBBLE:
+			case CIRCULAR_PROGRESS_BAR:
+			case CIRCULAR_INTERIOR_PROGRESS_BAR:
 				$value_height = $max_value;
 				$value_width = $percentileitem_width;
 				$value_image = $value_show;
 				if ($type_percentile == 'percentile') {
 					$value_type = PERCENTILE_BAR;
+				}
+				elseif ($type_percentile == 'interior_circular_progress_bar') {
+					$value_type = CIRCULAR_INTERIOR_PROGRESS_BAR;
+				}
+				elseif ($type_percentile == 'circular_progress_bar') {
+					$value_type = CIRCULAR_PROGRESS_BAR;
 				}
 				else {
 					$value_type = PERCENTILE_BUBBLE;
@@ -1986,6 +2556,55 @@ function visual_map_process_wizard_add_modules ($id_modules, $image,
 	
 	return $return;
 }
+
+function get_donut_module_data ($id_module) {
+	$mod_values = db_get_value_filter('datos', 'tagente_estado', array('id_agente_modulo' => $id_module));
+
+	if (preg_match("/\r\n/", $mod_values)) {
+		$values = explode("\r\n", $mod_values);
+	}
+	elseif (preg_match("/\n/", $mod_values)) {
+		$values = explode("\n", $mod_values);
+	}
+
+	$colors = array();
+	$colors[] = "#aa3333";
+	$colors[] = "#045FB4";
+	$colors[] = "#8181F7";
+	$colors[] = "#F78181";
+	$colors[] = "#D0A9F5";
+	$colors[] = "#BDBDBD";
+	$colors[] = "#6AB277";
+
+	$max_elements = 6;
+	$values_to_return = array();
+	$index = 0;
+	$total = 0;
+	foreach ($values as $val) {
+		if ($index < $max_elements) {
+			$data = explode(":", $val);
+			$values_to_return[$index]['tag_name'] = $data[0] . ", " . $data[1];
+			$values_to_return[$index]['color'] = $colors[$index];
+			$values_to_return[$index]['value'] = (int)$data[1];
+			$total += (int)$data[1];
+			$index++;
+		}
+		else {
+			$data = explode(":", $val);
+			$values_to_return[$index]['tag_name'] = __('Others') . ", " . $data[1];
+			$values_to_return[$index]['color'] = $colors[$index];
+			$values_to_return[$index]['value'] += (int)$data[1];
+			$total += (int)$data[1];
+		}
+	}
+
+	foreach ($values_to_return as $ind => $donut_data) {
+		$values_to_return[$ind]['percent'] = ($donut_data['value'] * 100) / $total;
+	}
+
+	return $values_to_return;
+}
+
 
 /**
  * The function to save the new elements of agents make as wizard.
@@ -2052,11 +2671,19 @@ function visual_map_process_wizard_add_agents ($id_agents, $image,
 		switch ($type) {
 			case PERCENTILE_BAR:
 			case PERCENTILE_BUBBLE:
+			case CIRCULAR_PROGRESS_BAR:
+			case CIRCULAR_INTERIOR_PROGRESS_BAR:
 				$value_height = $max_value;
 				$value_width = $percentileitem_width;
 				$value_image = $value_show;
 				if ($type_percentile == 'percentile') {
 					$value_type = PERCENTILE_BAR;
+				}
+				elseif ($type_percentile == 'interior_circular_progress_bar') {
+					$value_type = CIRCULAR_INTERIOR_PROGRESS_BAR;
+				}
+				elseif ($type_percentile == 'circular_progress_bar') {
+					$value_type = CIRCULAR_PROGRESS_BAR;
 				}
 				else {
 					$value_type = PERCENTILE_BUBBLE;
@@ -2364,6 +2991,8 @@ function visual_map_get_status_element($layoutData) {
 
 			case PERCENTILE_BAR:
 			case PERCENTILE_BUBBLE:
+			case CIRCULAR_PROGRESS_BAR:
+			case CIRCULAR_INTERIOR_PROGRESS_BAR:
 			
 				if (empty($module_value) || $module_value == '') {
 					return VISUAL_MAP_STATUS_UNKNOWN;
@@ -2645,6 +3274,8 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 				'proportion_width' => $proportion_width);
 		}
 		
+		$layout_data['label'] = visual_map_macro($layout_data['label']);
+		
 		switch ($layout_data['type']) {
 			case LINE_ITEM:
 				visual_map_print_user_lines($layout_data, $proportion);
@@ -2854,6 +3485,10 @@ function visual_map_create_internal_name_item($label = null, $type, $image, $age
 			case MODULE_GRAPH:
 				$text = __('Module graph');
 				break;
+			case 'bars_graph':
+			case BARS_GRAPH:
+				$text = __('Bars graph');
+				break;
 			case 'auto_sla_graph':
 			case AUTO_SLA_GRAPH:
 				$text = __('Auto SLA Graph');
@@ -2861,6 +3496,14 @@ function visual_map_create_internal_name_item($label = null, $type, $image, $age
 			case 'percentile_bar':
 			case PERCENTILE_BAR:
 				$text = __('Percentile bar');
+				break;
+			case 'circular_progress_bar':
+			case CIRCULAR_PROGRESS_BAR:
+				$text = __('Circular progress bar');
+				break;
+			case 'interior_circular_progress_bar':
+			case CIRCULAR_INTERIOR_PROGRESS_BAR:
+				$text = __('Circular progress bar (interior)');
 				break;
 			case 'static_graph':
 			case STATIC_GRAPH:
@@ -2966,8 +3609,17 @@ function visual_map_type_in_js($type) {
 		case PERCENTILE_BAR:
 			return 'percentile_item';
 			break;
+		case CIRCULAR_PROGRESS_BAR:
+			return 'percentile_item';
+			break;
+		case CIRCULAR_INTERIOR_PROGRESS_BAR:
+			return 'percentile_item';
+			break;
 		case MODULE_GRAPH:
 			return 'module_graph';
+			break;
+		case BARS_GRAPH:
+			return 'bars_graph';
 			break;
 		case AUTO_SLA_GRAPH:
 			return 'auto_sla_graph';
@@ -3006,6 +3658,12 @@ function visual_map_type_in_js($type) {
 			return 'line_item';
 			break;
 	}
+}
+
+function visual_map_macro($label){
+	$label = str_replace('_date_',strftime("%x"),$label);
+	$label = str_replace('_time_',strftime("%T"),$label);
+	return $label;
 }
 
 ?>

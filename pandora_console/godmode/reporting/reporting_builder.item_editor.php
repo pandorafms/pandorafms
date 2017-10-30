@@ -69,6 +69,8 @@ $exception_condition = REPORT_EXCEPTION_CONDITION_EVERYTHING;
 $exception_condition_value = 10;
 $modulegroup = 0;
 $period = SECONDS_1DAY;
+$search = "";
+$log_number = 1000;
 // Added support for projection graphs
 $period_pg = SECONDS_5DAY;
 $projection_period = SECONDS_5DAY;
@@ -92,6 +94,7 @@ $inventory_modules = array();
 $date = null;
 // Only avg is selected by default for the simple graphs
 $only_avg = true;
+$fullscale = false;
 $percentil = false;
 $time_compare_overlapped = false;
 
@@ -201,12 +204,16 @@ switch ($action) {
 				case 'event_report_log':
 					$period = $item['period'];
 					$description = $item['description'];
+					
 					$es = json_decode($item['external_source'], true);
 					$id_agents = $es['id_agents'];
 					$source = $es['source'];
+					$search = $es['search'];
+					$log_number = empty($es['log_number']) ? $log_number : $es['log_number'];
 					break;
 				case 'simple_graph':
 					$only_avg = isset($style['only_avg']) ? (bool) $style['only_avg'] : true;
+					$fullscale = isset($style['fullscale']) ? (bool) $style['fullscale'] : 0;
 					$percentil = isset($style['percentil']) ? $config['percentil'] : 0;
 					// The break hasn't be forgotten.
 				case 'simple_baseline_graph':
@@ -475,6 +482,7 @@ switch ($action) {
 					$description = $item['description'];
 					$group = $item['id_group'];
 					$period = $item['period'];
+					$fullscale = isset($style['fullscale']) ? (bool) $style['fullscale'] : 0;
 					break;
 				case 'top_n':
 					$description = $item['description'];
@@ -705,6 +713,29 @@ You can of course remove the warnings, that's why we include the source and do n
 			</td>
 		</tr>
 		
+		<tr id="row_search" style="" class="datos">
+			<td style="font-weight:bold;">
+				<?php echo __('Search') ?>
+			</td>
+			<td style="">
+				<?php
+				html_print_input_text('search', $search, '', 40, 100);
+				?>
+			</td>
+		</tr>
+		
+		<tr id="row_log_number" style="" class="datos">
+			<td style="font-weight:bold;">
+				<?php echo __('Log number');
+				ui_print_help_tip(__('Warning: this parameter limits the contents of the logs and affects the performance.')); ?>
+			</td>
+			<td style="">
+				<?php
+				echo "<input name='log_number' max='10000' min='1' size='10' type='number' value='$log_number'>";
+				?>
+			</td>
+		</tr>
+		
 		<tr id="row_period" style="" class="datos">
 			<td style="font-weight:bold;">
 				<?php
@@ -880,6 +911,9 @@ You can of course remove the warnings, that's why we include the source and do n
 				elseif(check_acl ($config['id_user'], 0, "RM"))
 					html_print_select_groups($config['id_user'],
 						"RM", true, 'combo_group', $group, '');
+				
+				echo "&nbsp;&nbsp;&nbsp;".__('Recursion').html_print_checkbox('recursion', 1, 0, true);
+						
 				?>
 			</td>
 		</tr>
@@ -1026,20 +1060,29 @@ You can of course remove the warnings, that's why we include the source and do n
 			<td style="font-weight:bold;"><?php echo __('Agents'); ?></td>
 			<td>
 				<?php 
-					$agents = agents_get_group_agents($group);
-					if ((empty($agents)) || $agents == -1) $agents = array();
+					$sql = 'SELECT id_agente, alias
+						FROM tagente, tagent_module_log
+						WHERE tagente.id_agente = tagent_module_log.id_agent';
+					$all_agent_log = db_get_all_rows_sql($sql);
+					
+					foreach ($all_agent_log as $key => $value) {
+						$agents2[$value['id_agente']] = $value['alias'];
+					}
+					
+					// $agents = agents_get_group_agents($group);
+					if ((empty($agents2)) || $agents2 == -1) $agents = array();
 					
 					$agents_select = array();
 					if (is_array($id_agents) || is_object($id_agents)){
 						foreach ($id_agents as $id) {
-							foreach ($agents as $key => $a) {
+							foreach ($agents2 as $key => $a) {
 								if ($key == (int)$id) {
 									$agents_select[$key] = $key;
 								}
 							}
 						}
 					}
-					html_print_select($agents, 'id_agents2[]', $agents_select, $script = '', "", 0, false, true, true, '', false, "min-width: 180px");
+					html_print_select($agents2, 'id_agents2[]', $agents_select, $script = '', "", 0, false, true, true, '', false, "min-width: 180px");
 				?>
 			</td>
 		</tr>
@@ -1314,6 +1357,11 @@ You can of course remove the warnings, that's why we include the source and do n
 		<tr id="row_only_avg" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Only average');?></td>
 			<td><?php html_print_checkbox('only_avg', 1, $only_avg);?></td>
+		</tr>
+		<tr id="row_fullscale" style="" class="datos">
+			<td style="font-weight:bold;"><?php echo __('Full resolution graph (TIP)').
+					ui_print_help_tip(__('This option may cause performance issues.'), true);?></td>
+			<td><?php html_print_checkbox('fullscale', 1, $fullscale);?></td>
 		</tr>
 		<tr id="row_percentil" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Percentil');?></td>
@@ -1956,7 +2004,38 @@ $(document).ready (function () {
 					"get_agents_group_json" : 1,
 					"id_group" : this.value,
 					"privilege" : "AW",
-					"keys_prefix" : "_"
+					"keys_prefix" : "_",
+					"recursion" : $('#checkbox-recursion').is(':checked')
+				},
+				function (data, status) {
+					$("#id_agents").html('');
+					$("#id_agents2").html('');
+					$("#module").html('');
+					jQuery.each (data, function (id, value) {
+						// Remove keys_prefix from the index
+						id = id.substring(1);
+						
+						option = $("<option></option>")
+							.attr ("value", value["id_agente"])
+							.html (value["alias"]);
+						$("#id_agents").append (option);
+						$("#id_agents2").append (option);
+					});
+				},
+				"json"
+			);
+		}
+	);
+	
+	$("#checkbox-recursion").change (
+		function () {
+			jQuery.post ("ajax.php",
+				{"page" : "operation/agentes/ver_agente",
+					"get_agents_group_json" : 1,
+					"id_group" : $("#combo_group").val(),
+					"privilege" : "AW",
+					"keys_prefix" : "_",
+					"recursion" : $('#checkbox-recursion').is(':checked')
 				},
 				function (data, status) {
 					$("#id_agents").html('');
@@ -2578,6 +2657,8 @@ function chooseType() {
 	$("#row_agent").hide();
 	$("#row_module").hide();
 	$("#row_period").hide();
+	$("#row_search").hide();
+	$("#row_log_number").hide();
 	$("#row_period1").hide();
 	$("#row_estimate").hide();
 	$("#row_interval").hide();
@@ -2603,6 +2684,7 @@ function chooseType() {
 	$("#row_show_graph").hide();
 	$("#row_max_min_avg").hide();
 	$("#row_only_avg").hide();
+	$("#row_fullscale").hide();
 	$("#row_time_compare_overlapped").hide();
 	$("#row_quantity").hide();
 	$("#row_exception_condition_value").hide();
@@ -2675,6 +2757,8 @@ function chooseType() {
 			$("#log_help_tip").css("visibility", "visible");
 			$("#row_description").show();
 			$("#row_period").show();
+			$("#row_search").show();
+			$("#row_log_number").show();
 			$("#agents_row").show();
 			$("#row_source").show();
 			$("#row_historical_db_check").hide();
@@ -2683,6 +2767,7 @@ function chooseType() {
 		case 'simple_graph':
 			$("#row_time_compare_overlapped").show();
 			$("#row_only_avg").show();
+			$("#row_fullscale").show();
 			if ($("#checkbox-percentil").prop("checked"))
 				$("#row_percentil").show();
 			// The break hasn't be forgotten, this element
@@ -3080,6 +3165,7 @@ function chooseType() {
 			$("#row_description").show();
 			$("#row_period").show();
 			$("#row_historical_db_check").hide();
+			$("#row_fullscale").show();
 			break;
 		
 		case 'top_n':

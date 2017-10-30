@@ -149,6 +149,7 @@ $table->data = array();
 
 $fields_available = array();
 
+$fields_available['id_evento'] = __('Event id');
 $fields_available['evento'] = __('Event name');
 $fields_available['id_agente'] = __('Agent name');
 $fields_available['id_usuario'] = __('User');

@@ -119,7 +119,8 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 
 function pandoraFlotPieCustom(graph_id, values, labels, width,
 			font_size, font, water_mark, separator, legend_position, height,
-				colors,legend) {
+				colors,legend,background_color) {
+										
 	font = font.split("/").pop().split(".").shift();
 	var labels = labels.split(separator);
 	var legend = legend.split(separator);
@@ -132,7 +133,7 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 	var color = null;
 	for (var i = 0; i < data.length; i++) {
 		if (colors != '') {
-			color = colors_data[i];
+			color = colors[i];
 		}
 		var datos = data[i];
 		data[i] = { label: labels[i], data: parseFloat(data[i]), color: color };
@@ -210,9 +211,25 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 		$('.legend>div').css('right',($('.legend>div').height()*-1));
 		$('.legend>table').css('right',($('.legend>div').height()*-1));
 	}
-	$('.legend>table').css('border',"1px solid #E2E2E2");
-	$('.legend>table').css('background-color',"#FFF");
+	//$('.legend>table').css('border',"1px solid #E2E2E2");
 	
+	if(background_color == 'transparent'){
+		$('.legend>table').css('background-color',"");
+		$('.legend>div').css('background-color',"");
+		$('.legend>table').css('color',"#aaa");
+	}
+	else if (background_color == 'white') {
+		$('.legend>table').css('background-color',"white");
+		$('.legend>table').css('color',"black");
+	}
+	else if (background_color == 'black') {
+		$('.legend>table').css('background-color',"black");
+		$('.legend>table').css('color',"#aaa");
+	}
+	
+	$('.legend').over(function(){
+		return false;
+	});
 	
 	var pielegends = $('#'+graph_id+' .pieLabelBackground');
 	pielegends.each(function () {
@@ -269,10 +286,47 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 		set_watermark(graph_id, plot,
 			$('#watermark_image_' + graph_id).attr('src'));
 	}
+
+	window.onresize = function(event) {
+        $.plot($('#' + graph_id), data, conf_pie);
+        if (no_data == data.length) {
+			$('#'+graph_id+' .overlay').remove();
+			$('#'+graph_id+' .base').remove();
+			$('#'+graph_id).prepend("<img style='width:50%;' src='images/no_data_toshow.png' />");
+		}
+		var legends = $('#'+graph_id+' .legendLabel');
+		var j = 0;
+		legends.each(function () {
+			//$(this).css('width', $(this).width());
+			$(this).css('font-size', font_size+'pt');
+			$(this).removeClass("legendLabel");
+			$(this).addClass(font);
+			$(this).text(legend[j]);
+			j++;
+		});
+		
+		if ($('input[name="custom_graph"]').val()) {
+			$('.legend>div').css('right',($('.legend>div').height()*-1));
+			$('.legend>table').css('right',($('.legend>div').height()*-1));
+		}
+		//$('.legend>table').css('border',"1px solid #E2E2E2");
+		$('.legend>table').css('background-color',"transparent");
+		
+		
+		var pielegends = $('#'+graph_id+' .pieLabelBackground');
+		pielegends.each(function () {
+			$(this).css('transform', "rotate(-35deg)").css('color', 'black');
+		});
+		var labelpielegends = $('#'+graph_id+' .pieLabel');
+		labelpielegends.each(function () {
+			$(this).css('transform', "rotate(-35deg)").css('color', 'black');
+		});
+    }
+
 }
 
 function pandoraFlotHBars(graph_id, values, labels, water_mark,
-	maxvalue, water_mark, separator, separator2, font, font_size) {
+	maxvalue, water_mark, separator, separator2, font, font_size, background_color) {
 
 	var colors_data = ['#FC4444','#FFA631','#FAD403','#5BB6E5','#F2919D','#80BA27'];
 	values = values.split(separator2);
@@ -318,7 +372,7 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 			grid: {
 				hoverable: true,
 				borderWidth: 1,
-				backgroundColor: { colors: ["#FFF", "#FFF"] }
+				backgroundColor: { colors: [background_color, background_color] }
 				},
 			xaxis: {
 				axisLabelUseCanvas: true,
@@ -457,7 +511,7 @@ function showTooltip(x, y, color, contents) {
     }).appendTo("body").fadeIn(200);
 }
 
-function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors, water_mark, maxvalue, water_mark, separator, separator2, font, font_size , from_ux) {
+function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors, water_mark, maxvalue, water_mark, separator, separator2, font, font_size , from_ux, from_wux, background_color) {
 	values = values.split(separator2);
 	legend = legend.split(separator);
 	font = font.split("/").pop().split(".").shift();
@@ -548,10 +602,22 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 		grid: {
 			hoverable: true,
 			borderWidth: 1,
-			backgroundColor: { colors: ["#FFF", "#FFF"] }
+			backgroundColor: { colors: [background_color, background_color] }
 		}
 	};
 	
+	if(from_wux){
+		options.series.bars.barWidth = 0.5;
+		options.grid.aboveData = true;
+		options.grid.borderWidth = 0;
+		options.grid.markings = [ { xaxis: { from: -0.25, to: -0.25 }, color: "#000" },
+										{ yaxis: { from: 0, to: 0 }, color: "#000" }];
+		options.grid.markingsLineWidth = 0.3; 		
+
+		options.xaxis.tickLength = 0;
+		options.yaxis.tickLength = 0;
+	}
+
 	if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
 		options.xaxis.labelWidth = 100;
 	
@@ -559,15 +625,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 	$('#' + graph_id).VUseTooltip();
 	$('#' + graph_id).css("margin-left","auto");
 	$('#' + graph_id).css("margin-right","auto");
-	//~ $('#' + graph_id).find('div.legend-tooltip').tooltip({ track: true });
 	
-	$('#'+graph_id+' .xAxis .tickLabel')
-		.css('transform', 'rotate(-45deg)')
-		.css('max-width','100px')
-		.find('div')
-			.css('position', 'relative')
-			.css('top', '+10px')
-			.css('left', '-30px');
 	if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
 		$('#'+graph_id+' .xAxis .tickLabel')
 			.find('div')
@@ -588,7 +646,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 			}
 			
 			format.push([i,
-				'<div class="'+font+'" title="'+title+'" style="word-break: normal; max-width: 100px;font-size:'+font_size+'pt !important;">'
+				'<div class="'+font+'" title="'+title+'" style="word-break: normal; transform: rotate(-45deg); position:relative; top:+30px; left:0px; max-width: 100px;font-size:'+font_size+'pt !important;">'
 				+ label
 				+ '</div>']);
 		}
@@ -785,7 +843,8 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	alert_ids, legend_alerts, yellow_threshold, red_threshold,
 	force_integer, separator, separator2, 
 	yellow_up, red_up, yellow_inverse, red_inverse,
-	series_suffix_str, dashboard, vconsole, xaxisname,background_color,legend_color) {
+	series_suffix_str, dashboard, vconsole, xaxisname,background_color,legend_color,
+	short_data) {
 	
 	var threshold = true;
 	var thresholded = false;
@@ -839,6 +898,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 
 	// Prepared to turn series with a checkbox
 	// var showed = new Array();
+
 	var min_check = 0;
 	for (i = 0; i < values.length; i++) {
 		var serie = values[i].split(separator);
@@ -849,6 +909,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 					min_check = v;
 				}
 			}
+
 			aux.push([i, v]);
 		});
 
@@ -932,9 +993,11 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 		// Prepared to turn series with a checkbox
 		// showed[i] = true;
 	}
+
 	if(min_check != 0){
 		min_check = min_check -5;
 	}
+
 	// If threshold and up are the same, that critical or warning is disabled
 	if (yellow_threshold == yellow_up) yellow_inverse = false;
 	if (red_threshold == red_up) red_inverse = false;
@@ -1667,6 +1730,14 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				how_bigger = "K";
 				y = y / 1000;
 			}
+			else if(y < -1000000) {
+				how_bigger = "M";
+				y = y / 1000000;
+			}
+			else if (y < -1000) {
+				how_bigger = "K";
+				y = y / 1000;	
+			}
 
 			if (currentRanges == null || (currentRanges.xaxis.from < j && j < currentRanges.xaxis.to)) {
 				$('#timestamp_'+graph_id).show();
@@ -1829,7 +1900,12 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 
 	function yFormatter(v, axis) {
 		axis.datamin = 0;
-		var formatted = number_format(v, force_integer, "");
+		if (short_data) {
+			var formatted = number_format(v, force_integer, "");
+		}
+		else {
+			var formatted = v;
+		}
 
 		return '<div class='+font+' style="font-size:'+font_size+'pt;">'+formatted+'</div>';
 	}
@@ -2088,6 +2164,14 @@ function number_format(number, force_integer, unit) {
 	while (1) {
 		if (number >= 1000) { //as long as the number can be divided by 1000
 			pos++; //Position in array starting with 0
+			number = number / 1000;
+		}
+		else if (number <= -1000) {
+			pos++;
+			number = number / 1000;
+		}
+		else if (number <= -1000) {
+			pos++;
 			number = number / 1000;
 		}
 		else {

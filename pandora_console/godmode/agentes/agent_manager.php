@@ -205,7 +205,7 @@ if (!$new_agent) {
 $table->data[1][0] = __('Alias');
 $table->data[1][1] = html_print_input_text ('alias', $alias, '', 50, 100, true);
 if($new_agent){
-	$table->data[1][1] .= html_print_checkbox ("alias_as_name", 1, $alias_as_name, true).__('Use alias as name');
+	$table->data[1][1] .= html_print_checkbox ("alias_as_name", 1, $config['alias_as_name'], true).__('Use alias as name');
 }
 
 $table->data[2][0] = __('IP Address');
@@ -232,7 +232,7 @@ if(!$new_agent){
 	if ($id_agente) {
 		$table->data[2][2] =
 			"<a id='qr_code_agent_view' href='javascript: show_dialog_qrcode(null, \"" .
-				ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $id_agente) . "\" );'></a>";
+				ui_get_full_url('mobile/index.php?page=agent&id=' . $id_agente) . "\" );'></a>";
 	}
 	else {
 		$table->data[2][2] = __("Only it is show when<br />the agent is saved.");
@@ -261,6 +261,10 @@ $params['print_hidden_input_idagent'] = true;
 $params['hidden_input_idagent_name'] = 'id_agent_parent';
 $params['hidden_input_idagent_value'] = $id_parent;
 $params['value'] = db_get_value ("alias","tagente","id_agente",$id_parent);
+$params['selectbox_id'] = 'cascade_protection_module';
+$params['javascript_is_function_select'] = true;
+$params['cascade_protection'] = true;
+
 $table->data[3][1] = ui_print_agent_autocomplete_input($params);
 
 $table->data[3][1] .= html_print_checkbox ("cascade_protection", 1, $cascade_protection, true).__('Cascade protection'). "&nbsp;" . ui_print_help_icon("cascade_protection", true);
@@ -579,40 +583,9 @@ ui_require_jquery_file('bgiframe');
 			}
 		});
 
-		$("#text-id_parent").on("autocompletechange", function () {
-			agent_id=$("#hidden-id_parent").val();
-			
-			var params = {};
-			params["get_agent_modules_json_by_name"] = 1;
-			params["id_agent"] = agent_id;
-			params["page"] = "include/ajax/module";
-			
-			jQuery.ajax ({
-				data: params,
-				dataType: "json",
-				type: "POST",
-				url: "ajax.php",
-				success: function (data) {
-					$('#cascade_protection_module').empty();
-					$('#cascade_protection_module')
-							.append ($('<option></option>')
-							.html("Any")
-							.prop("value", 0)
-							.prop("selected", 'selected'));
-					jQuery.each (data, function (i, val) {
-						$('#cascade_protection_module')
-							.append ($('<option></option>')
-							.html(val['name'])
-							.prop("value", val['id_module'])
-							.prop("selected", 'selected'));
-					});
-				}
-			});
-		});
-		
 		paint_qrcode(
 			"<?php
-			echo ui_get_full_url('index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $id_agente);
+			echo ui_get_full_url('mobile/index.php?page=agent&id=' . $id_agente);
 			?>",
 			"#qr_code_agent_view", 128, 128);
 		$("#text-agente").prop('disabled', true);

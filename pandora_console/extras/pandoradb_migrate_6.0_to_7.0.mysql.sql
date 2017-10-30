@@ -1150,10 +1150,10 @@ ALTER TABLE titem MODIFY `source_data` int(10) unsigned;
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('big_operation_step_datos_purge', '100');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('small_operation_step_datos_purge', '1000');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('days_autodisable_deletion', '30');
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 4);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 7);
 UPDATE tconfig SET value = 'https://licensing.artica.es/pandoraupdate7/server.php' WHERE token='url_update_manager';
 DELETE FROM `tconfig` WHERE `token` = 'current_package_enterprise';
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '708');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '714');
 
 -- ---------------------------------------------------------------------
 -- Table `tplanned_downtime_agents`
@@ -1183,6 +1183,7 @@ ALTER TABLE tusuario ADD COLUMN `id_filter` int(10) UNSIGNED NULL DEFAULT NULL;
 ALTER TABLE tusuario ADD CONSTRAINT `fk_id_filter` FOREIGN KEY (`id_filter`) REFERENCES tevent_filter(`id_filter`) ON DELETE SET NULL;
 ALTER TABLE tusuario ADD COLUMN `session_time` int(10) signed NOT NULL default '0';
 alter table tusuario add autorefresh_white_list text not null default '';
+ALTER TABLE tusuario ADD COLUMN `time_autorefresh` int(5) unsigned NOT NULL default '30';
 
 -- ---------------------------------------------------------------------
 -- Table `tagente_modulo`
@@ -1230,6 +1231,7 @@ ALTER TABLE tlayout ADD `background_color` varchar(50) NOT NULL default '#FFF';
 -- ---------------------------------------------------------------------
 ALTER TABLE tlayout_data ADD `type_graph` varchar(50) NOT NULL default 'area';
 ALTER TABLE tlayout_data ADD `label_position` varchar(50) NOT NULL default 'down';
+ALTER TABLE tlayout_data ADD COLUMN `show_statistics` tinyint(2) NOT NULL default '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tagent_custom_fields`
@@ -1416,3 +1418,26 @@ ALTER TABLE tgraph_source ADD COLUMN id_server int(11) UNSIGNED NOT NULL default
 -- ---------------------------------------------------------------------
 
 ALTER TABLE tserver_export_data MODIFY `module_name` varchar(600) BINARY NOT NULL default '';
+
+-- ---------------------------------------------------------------------
+-- Table `tserver`
+-- ---------------------------------------------------------------------
+ALTER TABLE tserver ADD COLUMN exec_proxy tinyint(1) UNSIGNED NOT NULL default 0;
+
+-- ---------------------------------------------------------------------
+-- Table `tevent_response`
+-- ---------------------------------------------------------------------
+ALTER TABLE tevent_response ADD COLUMN server_to_exec int(10) unsigned NOT NULL DEFAULT 0;
+
+-- ---------------------------------------------------------------------
+-- Table `tmodule`
+-- ---------------------------------------------------------------------
+
+INSERT INTO tmodule VALUES (8, 'Wux module');
+
+-- ---------------------------------------------------------------------
+-- Table `ttipo_modulo`
+-- ---------------------------------------------------------------------
+
+INSERT INTO ttipo_modulo VALUES (25,'web_analysis', 8, 'Web analysis data', 'module-wux.png');
+

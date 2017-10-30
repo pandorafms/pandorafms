@@ -63,9 +63,7 @@ class User {
 			$user = $system->getRequest('user', null);
 			$password = $system->getRequest('password', null);
 			
-			$nick = $system->safeInput($user);
-			$pass = $system->safeInput($password);
-			$this->login($nick, $pass);
+			$this->login($user, $password);
 		}
 		
 		return $this->logged;
@@ -78,7 +76,6 @@ class User {
 			$user = $system->getRequest('user', null);
 			$user = $system->safeInput($user);
 			$password = $system->getRequest('password', null);
-			$password = $system->safeInput($password);
 		}
 		
 		if (!empty($user) && !empty($password)) {
@@ -239,7 +236,7 @@ class User {
 		$ui->contentAddHtml('<div style="text-align: center;" class="login_logo">' .
 			$logo_image . '</div>');
 		$ui->contentAddHtml('<div id="login_container">');
-		$ui->beginForm();
+		$ui->beginForm('');
 		$ui->formAddHtml(html_print_input_hidden('action', 'login', true));
 		$options = array(
 			'name' => 'user',

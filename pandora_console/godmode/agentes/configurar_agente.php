@@ -541,7 +541,11 @@ if ($id_agente) {
 			$help_header = 'plugins_tab';
 			break;
 		case "module":
+			$type_module_t = (int) get_parameter ('moduletype', '');
 			$tab_description = '- '. __('Modules');
+			if($type_module_t == 'webux'){
+				$help_header = 'wux_console';
+			}
 			break;
 		case "alert":
 			$tab_description = '- ' . __('Alert');
@@ -972,10 +976,18 @@ if ($update_module || $create_module) {
 		$custom_integer_1_default = $module['custom_integer_1'];
 		$custom_integer_2_default = $module['custom_integer_2'];
 	}
-	$custom_string_1 = (string) get_parameter ('custom_string_1', $custom_string_1_default);
+	
+	if($id_module_type == 25){ # web analysis, from MODULE_WUX
+		$custom_string_1 = base64_encode((string) get_parameter ('custom_string_1', $custom_string_1_default));
+		$custom_integer_1 = (int) get_parameter ('custom_integer_1', $custom_integer_1_default);
+	}
+	else{
+		$custom_string_1 = (string) get_parameter ('custom_string_1', $custom_string_1_default);
+		$custom_integer_1 = (int) get_parameter ('prediction_module', $custom_integer_1_default);
+	}
+
 	$custom_string_2 = (string) get_parameter ('custom_string_2', $custom_string_2_default);
 	$custom_string_3 = (string) get_parameter ('custom_string_3', $custom_string_3_default);
-	$custom_integer_1 = (int) get_parameter ('prediction_module', $custom_integer_1_default);
 	$custom_integer_2 = (int) get_parameter ('custom_integer_2', $custom_integer_2_default);
 	
 	// Get macros
@@ -1031,9 +1043,7 @@ if ($update_module || $create_module) {
 		}
 		*/
 		$configuration_data = str_replace('\\', "&#92;",
-			io_safe_input($new_configuration_data));;
-
-		html_debug($configuration_data, true);
+			io_safe_input($new_configuration_data));
 	}
 	
 	// Services are an enterprise feature, 
@@ -1098,7 +1108,11 @@ if ($update_module || $create_module) {
 	$ff_event_critical = (int) get_parameter ('ff_event_critical');
 	$each_ff = (int) get_parameter ('each_ff');
 	$ff_timeout = (int) get_parameter ('ff_timeout');
-	$unit = (string) get_parameter('unit');
+	$unit = (string) get_parameter('unit_select');
+	if($unit == "none"){
+		$unit = (string) get_parameter('unit_text');
+	}
+	
 	$id_tag = (array) get_parameter('id_tag_selected');
 	$serialize_ops = (string) get_parameter('serialize_ops');
 	$critical_instructions = (string) get_parameter('critical_instructions');

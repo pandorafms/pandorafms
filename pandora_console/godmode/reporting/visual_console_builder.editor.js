@@ -15,6 +15,7 @@ var creationItem = null;
 var is_opened_palette = false;
 var idItem = 0;
 var selectedItem = null;
+var selectedItems = null;
 var lines = Array();
 var user_lines = Array();
 var toolbuttonActive = null;
@@ -126,22 +127,16 @@ function visual_map_main() {
 
 		// Begin - Background label color changer
 				
-		$( "#text-label_ifr" ).contents().find( "body" ).bind("contextmenu", function(e) {
-   		e.preventDefault();
+		$( "#text-label_ifr" ).contents().find( "body" ).bind('mousewheel', function(e){
+        e.preventDefault();
+				
+				if($( "#text-label_ifr" ).contents().find( "body" ).css('background-color') == 'rgb(211, 211, 211)'){
+					$( "#text-label_ifr" ).contents().find( "body" ).css('background-color','white');
+				}
+				else{
+					$( "#text-label_ifr" ).contents().find( "body" ).css('background-color','lightgray');
+				}
     });
-		
-		$( "#text-label_ifr" ).contents().find( "body" ).mousedown(function(e){
-		    	if(e.which == 3) 
-        		{
-							if($( "#text-label_ifr" ).contents().find( "body" ).css('background-color') == 'rgb(211, 211, 211)'){
-								$( "#text-label_ifr" ).contents().find( "body" ).css('background-color','white');
-							}
-							else{
-								$( "#text-label_ifr" ).contents().find( "body" ).css('background-color','lightgray');
-							}
-           		
-        		}
-		});
 		
 		// End - Background label color changer
 		
@@ -303,34 +298,64 @@ function update_button_palette_callback() {
 				alert('Undefined height');
 				return false;
 			}
-		
+
 			$("#text_" + idItem).html(values['label']);
-			if ((values['width'] == 0) || (values['height'] == 0)) {
-				if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
-					$("#image_" + idItem).removeAttr('width');
-					$("#image_" + idItem).removeAttr('height');
-					$("#image_" + idItem).attr('width', 70);
-					$("#image_" + idItem).attr('height', 70);
-					$("#image_" + idItem).css('width', '70px');
-					$("#image_" + idItem).css('height', '70px');
+			
+			if(values['show_statistics'] == 1){
+				
+				
+				if ((values['width'] == 0) || (values['height'] == 0)) {
+						$("#image_" + idItem).removeAttr('width');
+						$("#image_" + idItem).removeAttr('height');
+						$("#image_" + idItem).attr('width', 520);
+						$("#image_" + idItem).attr('height', 80);
+						$("#image_" + idItem).css('width', '520px');
+						$("#image_" + idItem).css('height', '80px');
+						$("#image_" + idItem).attr('src', 'images/console/signes/group_status.png');
+							
 				}
-				else{
+				else {
 					$("#image_" + idItem).removeAttr('width');
 					$("#image_" + idItem).removeAttr('height');
-					$("#image_" + idItem).attr('width', $('#preview > img')[0].naturalHeight);
-					$("#image_" + idItem).attr('height', $('#preview > img')[0].naturalHeight);
-					$("#image_" + idItem).css('width', $('#preview > img')[0].naturalHeight+'px');
-					$("#image_" + idItem).css('height', $('#preview > img')[0].naturalHeight+'px');	
-				}			
+					$("#image_" + idItem).attr('width', values['width']);
+					$("#image_" + idItem).attr('height', values['height']);
+					$("#image_" + idItem).css('width', values['width'] + 'px');
+					$("#image_" + idItem).css('height', values['height'] + 'px');
+					$("#image_" + idItem).attr('src', 'images/console/signes/group_status.png');
+				}				
+				
 			}
-			else {
-				$("#image_" + idItem).removeAttr('width');
-				$("#image_" + idItem).removeAttr('height');
-				$("#image_" + idItem).attr('width', values['width']);
-				$("#image_" + idItem).attr('height', values['height']);
-				$("#image_" + idItem).css('width', values['width'] + 'px');
-				$("#image_" + idItem).css('height', values['height'] + 'px');
+			else{
+				
+				if ((values['width'] == 0) || (values['height'] == 0)) {
+					if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+						$("#image_" + idItem).removeAttr('width');
+						$("#image_" + idItem).removeAttr('height');
+						$("#image_" + idItem).attr('width', 70);
+						$("#image_" + idItem).attr('height', 70);
+						$("#image_" + idItem).css('width', '70px');
+						$("#image_" + idItem).css('height', '70px');
+					}
+					else{
+						$("#image_" + idItem).removeAttr('width');
+						$("#image_" + idItem).removeAttr('height');
+						$("#image_" + idItem).attr('width', $('#preview > img')[0].naturalHeight);
+						$("#image_" + idItem).attr('height', $('#preview > img')[0].naturalHeight);
+						$("#image_" + idItem).css('width', $('#preview > img')[0].naturalHeight+'px');
+						$("#image_" + idItem).css('height', $('#preview > img')[0].naturalHeight+'px');	
+					}			
+				}
+				else {
+					$("#image_" + idItem).removeAttr('width');
+					$("#image_" + idItem).removeAttr('height');
+					$("#image_" + idItem).attr('width', values['width']);
+					$("#image_" + idItem).attr('height', values['height']);
+					$("#image_" + idItem).css('width', values['width'] + 'px');
+					$("#image_" + idItem).css('height', values['height'] + 'px');
+				}
+				
 			}
+			
 			break;
 		case 'percentile_bar':
 		case 'percentile_item':
@@ -347,6 +372,12 @@ function update_button_palette_callback() {
 			$("#image_" + idItem).attr("src", "images/spinner.gif");
 			if (values['type_percentile'] == 'bubble') {
 				setPercentileBubble(idItem, values);
+			}
+			else if (values['type_percentile'] == 'circular_progress_bar') {
+				setPercentileCircular(idItem, values);
+			}
+			else if (values['type_percentile'] == 'interior_circular_progress_bar') {
+				setPercentileInteriorCircular(idItem, values);
 			}
 			else {
 				setPercentileBar(idItem, values);
@@ -389,6 +420,17 @@ function update_button_palette_callback() {
 			$("#image_" + idItem).attr("src", "images/spinner.gif");
 			setModuleGraph(idItem);
 			break;
+		case 'bars_graph':
+			if($('input[name=width_percentile]').val() == ''){
+				alert('Undefined width');
+				return false;
+			}
+		
+			$("#text_" + idItem).html(values['label']);
+			$("#image_" + idItem).attr("src", "images/spinner.gif");
+			
+			setBarsGraph(idItem, values);
+			break;
 		case 'auto_sla_graph':
 			if($('input[name=width]').val() == ''){
 				alert('Undefined width');
@@ -403,14 +445,12 @@ function update_button_palette_callback() {
 
 			setEventsBar(idItem, values);
 			break;
+		case 'donut_graph':
+			$("#image_" + idItem).attr("src", "images/spinner.gif");
+
+			setDonutsGraph(idItem, values);
+			break;
 		case 'simple_value':
-		//checkpoint
-			// if(($('#text-label_ifr').contents().find('#tinymce p').html() == '_VALUE_' || 
-			// $('#text-label_ifr').contents().find('#tinymce').html() == '_VALUE_') 
-			// && $('#data_image_check').html() != 'On'){
-			// 		alert('_VALUE_ exactly value is only enable for data image. Please change label text or select a data image module.');
-			// 		return;
-			// }
 			$("#" + idItem).html(values['label']);
 			if( (values['label'].replace( /<.*?>/g, '' ) != '_VALUE_') 
 				&& (values['label'].replace( /<.*?>/g, '' ) != '(_VALUE_)') ){
@@ -425,12 +465,7 @@ function update_button_palette_callback() {
 				$("#" + idItem).html(
 					'<table><tbody><tr><td></td></tr><tr><td><span style="" id="text_21" class="text">'+values["label"]+'</span></td></tr><tr><td></td></tr></tbody></table>'
 				)
-				
 			}
-		
-			
-			//$("#simplevalue_" + idItem)
-				//.html($('<img></img>').attr('src', "images/spinner.gif"));
 			setModuleValue(idItem,values['process_simple_value'], values['period'],values['width']);
 			break;
 		case 'label':
@@ -577,9 +612,6 @@ function readFields() {
 	values['process_simple_value'] = $("select[name=process_value]").val();
 	values['background'] = $("#background_image").val();
 	values['period'] = undefined != $("#hidden-period").val() ? $("#hidden-period").val() : $("#period").val();
-	if (values['period'] == null) {
-		values['period'] = undefined != $("#hidden-period").val() ? $("#hidden-period").val() : $("#period_select").val();
-	}
 	values['width'] = $("input[name=width]").val();
 	values['width_data_image'] = $("#data_image_width").val();
 	if(selectedItem == 'simple_value' || creationItem == 'simple_value'){
@@ -588,6 +620,7 @@ function readFields() {
 		}
 	}
 	values['height'] = $("input[name=height]").val();
+	values['bars_graph_type'] = $("select[name=bars_graph_type]").val();
 	values['parent'] = $("select[name=parent]").val();
 	values['map_linked'] = $("select[name=map_linked]").val();
 	values['width_percentile'] = $("input[name=width_percentile]").val();
@@ -595,8 +628,12 @@ function readFields() {
 	values['width_module_graph'] = $("input[name=width_module_graph]").val();
 	values['height_module_graph'] = $("input[name=height_module_graph]").val();
 	values['event_max_time_row'] = $("select[name=event_max_time_row]").val();
-	values['type_percentile'] = $("input[name=type_percentile]:checked").val();
-	values['value_show'] = $("input[name=value_show]:checked").val();
+	values['type_percentile'] = $("select[name=type_percentile]").val();
+	values['percentile_color'] = $("input[name=percentile_color]").val();
+	values['percentile_label_color'] = $("input[name=percentile_label_color]").val();
+	values['percentile_label'] = $("input[name=percentile_label]").val();
+	values['value_show'] = $("select[name=value_show]").val();
+	
 	values['enable_link'] = $("input[name=enable_link]").is(':checked') ? 1 : 0;
 	values['id_group'] = $("select[name=group]").val();
 	values['id_custom_graph'] = parseInt(
@@ -613,6 +650,7 @@ function readFields() {
 		$("input[name='line_width']").val());
 	values['line_color'] = $("input[name='line_color']").val();
 	values['label_position'] = $(".labelpos[sel=yes]").attr('position');
+	values['show_statistics'] = $("input[name=show_statistics]").is(':checked') ? 1 : 0;
 	
 	if (is_metaconsole()) {
 		values['metaconsole'] = 1;
@@ -659,7 +697,7 @@ function create_button_palette_callback() {
 				alert('Undefined height');
 				validate = false;
 			}
-			if ((values['label'] == '') && (values['image'] == '')) {
+			if ((values['label'] == '') && (values['image'] == '') && (values['show_statistics']) == false) {
 				alert($("#message_alert_no_label_no_image").html());
 				validate = false;
 			}
@@ -669,8 +707,10 @@ function create_button_palette_callback() {
 				alert($("#message_alert_no_agent").html());
 				validate = false;
 			}
-			if ((values['module'] == 0)) {
-				alert($("#message_alert_no_module").html());
+			break;
+		case 'donut_graph':
+			if ((values['agent'] == '')) {
+				alert($("#message_alert_no_agent").html());
 				validate = false;
 			}
 			break;
@@ -739,6 +779,16 @@ function create_button_palette_callback() {
 					alert($("#message_alert_no_period").html());
 					validate = false;
 				}
+			}
+			break;
+		case 'bars_graph':
+			if ((values['agent'] == '')) {
+				alert($("#message_alert_no_agent").html());
+				validate = false;
+			}
+			if ((values['module'] == 0)) {
+				alert($("#message_alert_no_module").html());
+				validate = false;
 			}
 			break;
 		case 'simple_value':
@@ -942,6 +992,7 @@ function toggle_item_palette() {
 
 		activeToolboxButton('static_graph', true);
 		activeToolboxButton('module_graph', true);
+		activeToolboxButton('bars_graph', true);
 		activeToolboxButton('simple_value', true);
 		activeToolboxButton('label', true);
 		activeToolboxButton('icon', true);
@@ -950,6 +1001,7 @@ function toggle_item_palette() {
 		activeToolboxButton('box_item', true);
 		activeToolboxButton('line_item', true);
 		activeToolboxButton('auto_sla_graph', true);
+		activeToolboxButton('donut_graph', true);
 
 		if (typeof(enterprise_activeToolboxButton) == 'function') {
 			enterprise_activeToolboxButton(true);
@@ -969,7 +1021,9 @@ function toggle_item_palette() {
 
 		activeToolboxButton('static_graph', false);
 		activeToolboxButton('module_graph', false);
+		activeToolboxButton('bars_graph', false);
 		activeToolboxButton('auto_sla_graph', false);
+		activeToolboxButton('donut_graph', false);
 		activeToolboxButton('simple_value', false);
 		activeToolboxButton('label', false);
 		activeToolboxButton('icon', false);
@@ -1140,6 +1194,17 @@ function loadFieldsFromDB(item) {
 					}
 				}
 				
+				if (key == 'show_statistics') {
+					if (val == "1") {
+						$("input[name=show_statistics]")
+							.prop("checked", true);
+					}
+					else {
+						$("input[name=show_statistics]")
+							.prop("checked", false);
+					}
+				}
+				
 				if (key == 'type_graph') {
 					$("select[name=type_graph]").val(val);
 				}
@@ -1231,16 +1296,21 @@ function loadFieldsFromDB(item) {
 					$("input[name=width_module_graph]").val(val);
 				if (key == 'height_module_graph')
 					$("input[name=height_module_graph]").val(val);
-
-				if (key == 'type_percentile') {
-					if (val == 'percentile') {
-						$("input[name=type_percentile][value=percentile]")
-							.attr("checked", "checked");
-					}
-					else {
-						$("input[name=type_percentile][value=bubble]")
-							.attr("checked", "checked");
-					}
+				if (key == 'bars_graph_type')
+					$("select[name=bars_graph_type]").val(val);
+				if (key == 'type_percentile') 
+					$("select[name=type_percentile]").val(val);
+				if (key == 'percentile_label') 
+					$("input[name=percentile_label]").val(val);
+				if (key == 'percentile_color') {
+					$("input[name=percentile_color]").val(val);
+					$("#percentile_item_row_5 .ColorPickerDivSample")
+						.css('background-color', val);
+				}
+				if (key == 'percentile_label_color') {
+					$("input[name=percentile_label_color]").val(val);
+					$("#percentile_item_row_6 .ColorPickerDivSample")
+						.css('background-color', val);
 				}
 
 				if (key == 'value_show') {
@@ -1427,6 +1497,9 @@ function hiddenFields(item) {
 
 	$("#enable_link_row").css('display', 'none');
 	$("#enable_link_row." + item).css('display', '');
+	
+	$("#show_statistics_row").css('display', 'none');
+	$("#show_statistics_row." + item).css('display', '');
 
 	$("#preview_row").css('display', 'none');
 	$("#preview_row." + item).css('display', '');
@@ -1473,6 +1546,15 @@ function hiddenFields(item) {
 	$("#percentile_item_row_4").css('display', 'none');
 	$("#percentile_item_row_4." + item).css('display', '');
 
+	$("#percentile_item_row_5").css('display', 'none');
+	$("#percentile_item_row_5." + item).css('display', '');
+
+	$("#percentile_item_row_6").css('display', 'none');
+	$("#percentile_item_row_6." + item).css('display', '');
+
+	$("#percentile_bar_row_7").css('display', 'none');
+	$("#percentile_bar_row_7." + item).css('display', '');
+
 	$("#period_row").css('display', 'none');
 	$("#period_row." + item).css('display', '');
 
@@ -1487,6 +1569,9 @@ function hiddenFields(item) {
 
 	$("#module_graph_size_row").css('display', 'none');
 	$("#module_graph_size_row." + item).css('display', '');
+
+	$("#bars_graph_type").css('display', 'none');
+	$("#bars_graph_type." + item).css('display', '');
 
 	$("#background_color").css('display', 'none');
 	$("#background_color." + item).css('display', '');
@@ -1562,6 +1647,11 @@ function cleanFields(item) {
 	$("input[name='fill_color']").val('#ffffff');
 	$("input[name='line_width']").val(3);
 	$("input[name='line_color']").val('#000000');
+	$("select[name=type_percentile]").val('');
+	$("input[name=percentile_color]").val('');
+	$("input[name=percentile_label_color]").val('');
+	$("input[name=percentile_label]").val('');
+	$(".ColorPickerDivSample").css('background-color', '#FFF');
 
 
 	$("#preview").empty();
@@ -1621,11 +1711,13 @@ function set_static_graph_status(idElement, image, status) {
 			data: parameter,
 			success: function (data) {
 				set_static_graph_status(idElement, image, data);
-				if($('#'+idElement+' table').css('float') == 'right' || $('#'+idElement+ ' table').css('float') == 'left'){
-					$('#'+idElement+ ' img').css('margin-top', parseInt($('#'+idElement).css('height'))/2 - parseInt($('#'+idElement+ ' img').css('height'))/2);	
-				}
-				else{
-					$('#'+idElement+ ' img').css('margin-left', parseInt($('#'+idElement).css('width'))/2 - parseInt($('#'+idElement+ ' img').css('width'))/2);
+				if(values['show_statistics'] == 1){
+					if($('#'+idElement+' table').css('float') == 'right' || $('#'+idElement+ ' table').css('float') == 'left'){
+						$('#'+idElement+ ' img').css('margin-top', parseInt($('#'+idElement).css('height'))/2 - parseInt($('#'+idElement+ ' img').css('height'))/2);	
+					}
+					else{
+						$('#'+idElement+ ' img').css('margin-left', parseInt($('#'+idElement).css('width'))/2 - parseInt($('#'+idElement+ ' img').css('width'))/2);
+					}
 				}
 			}
 		});
@@ -1660,15 +1752,25 @@ function set_static_graph_status(idElement, image, status) {
 }
 
 function set_image(type, idElement, image) {
-	if (type == "image") {
+	
+	if(image == 'show_statistics_bad.png' || image == 'show_statistics_ok.png' || image == 'show_statistics_warning.png' || image == 'show_statistics.png'){
 		item = "#image_" + idElement;
-		img_src = "images/console/icons/" + image;
+		img_src = "images/console/signes/group_status.png";
 	}
-	else if (type == "background") {
-		item = "#background_img";
-		img_src = "images/console/background/" + image;
+	else{
+			
+		if (type == "image") {
+			item = "#image_" + idElement;
+			img_src = "images/console/icons/" + image;
+		}
+		else if (type == "background") {
+			item = "#background_img";
+			img_src = "images/console/background/" + image;
+		}
+			
 	}
-
+	
+	
 	var params = [];
 	params.push("get_image_path=1");
 	params.push("img_src=" + img_src);
@@ -1682,6 +1784,66 @@ function set_image(type, idElement, image) {
 		url: get_url_ajax(),
 		success: function (data) {
 			$(item).attr('src', data);
+			
+			if(image == 'show_statistics_bad.png' || image == 'show_statistics_ok.png' || image == 'show_statistics_warning.png' || image == 'show_statistics.png'){
+				$(item).attr('width', 520);
+				$(item).attr('height', 80);
+			}
+			
+		}
+	});
+}
+
+function setBarsGraph(id_data, values) {
+	var url_hack_metaconsole = '';
+	if (is_metaconsole()) {
+		url_hack_metaconsole = '../../';
+	}
+
+	width_percentile = values['width_percentile'];
+
+	parameter = Array();
+	
+	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
+	parameter.push ({name: "action", value: "get_module_type_string"});
+	parameter.push ({name: "id_agent", value: values['id_agent']});
+	parameter.push ({name: "module", value: values['module']});
+	parameter.push ({name: "id_element", value: id_data});
+	parameter.push ({name: "id_visual_console", value: id_visual_console});
+	jQuery.ajax({
+		url: get_url_ajax(),
+		data: parameter,
+		type: "POST",
+		dataType: 'json',
+		success: function (data) {
+			if (data['no_data'] == true) {
+				if (values['width_percentile'] == "0") {
+					$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/barras-no.png');
+				}
+				else {
+					$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/barras-no.png');
+					$("#" + id_data + " img").css('width', width_percentile + 'px');
+					$("#" + id_data + " img").css('height', width_percentile + 'px');
+				}
+			}
+			else {
+				$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/barras.png');
+				
+				if (values['width_percentile'] == "0") {
+					// Image size
+				}
+				else{
+					$("#" + id_data + " img").css('width', width_percentile+'px');
+					$("#" + id_data + " img").css('height', width_percentile+'px');
+				}
+			}
+
+			if($('#'+id_data+' table').css('float') == 'right' || $('#'+id_data+ ' table').css('float') == 'left'){
+				$('#'+id_data+ ' img').css('margin-top', parseInt($('#'+id_data).css('height'))/2 - parseInt($('#'+id_data+ ' img').css('height'))/2);	
+			}
+			else{
+				$('#'+id_data+ ' img').css('margin-left', parseInt($('#'+id_data).css('width'))/2 - parseInt($('#'+id_data+ ' img').css('width'))/2);		
+			}
 		}
 	});
 }
@@ -1861,7 +2023,7 @@ function setPercentileBar(id_data, values) {
 
 			$("#"+  id_data).attr('src', img);
 			
-			$("#" + id_data + " img").attr('src', 'images/console/signes/percentil.png');
+			$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/percentil.png');
 			if($('#text-width_percentile').val() == 0){
 			$("#" + id_data + " img").css('width', '130px');
 			}
@@ -1880,6 +2042,142 @@ function setPercentileBar(id_data, values) {
 			}
 			
 			
+		}
+	});
+}
+
+function setPercentileCircular (id_data, values) {
+	metaconsole = $("input[name='metaconsole']").val();
+
+	var url_hack_metaconsole = '';
+	if (is_metaconsole()) {
+		url_hack_metaconsole = '../../';
+	}
+
+	max_percentile = values['max_percentile'];
+	width_percentile = values['width_percentile'];
+
+	var parameter = Array();
+
+	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
+	parameter.push ({name: "action", value: "get_module_value"});
+	parameter.push ({name: "id_element", value: id_data});
+	parameter.push ({name: "value_show", value: values['value_show']});
+	parameter.push ({name: "id_visual_console",
+		value: id_visual_console});
+	jQuery.ajax({
+		url: get_url_ajax(),
+		data: parameter,
+		type: "POST",
+		dataType: 'json',
+		success: function (data) {
+			module_value = data['value'];
+			max_percentile = data['max_percentile'];
+			width_percentile = data['width_percentile'];
+			unit_text = false;
+
+			if ((data['unit_text'] != false) || typeof(data['unit_text']) != 'boolean') {
+				unit_text = data['unit_text'];
+			}
+
+			colorRGB = data['colorRGB'];
+
+			if ( max_percentile > 0)
+				var percentile = Math.round(module_value / max_percentile * 100);
+			else
+				var percentile = 100;
+
+			if (unit_text == false && typeof(unit_text) == 'boolean') {
+				value_text = percentile + "%";
+			}
+			else {
+				value_text = module_value + " " + unit_text;
+			}
+			
+			$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/circular-progress-bar.png');
+			if($('#text-width_percentile').val() == 0){
+				$("#" + id_data + " img").css('width', '130px');
+				$("#" + id_data + " img").css('height', '130px');
+			}
+			else{
+				$("#" + id_data + " img").css('width', $('#text-width_percentile').val()+'px');
+				$("#" + id_data + " img").css('height', $('#text-width_percentile').val()+'px');
+			}
+			
+			if($('#'+id_data+' table').css('float') == 'right' || $('#'+id_data+ ' table').css('float') == 'left'){
+				$('#'+id_data+ ' img').css('margin-top', 	parseInt($('#'+id_data).css('height'))/2 - parseInt($('#'+id_data+ ' img').css('height'))/2);	
+			}
+			else{
+				$('#'+id_data+ ' img').css('margin-left',parseInt($('#'+id_data).css('width'))/2 - parseInt($('#'+id_data+ ' img').css('width'))/2);		
+			}
+		}
+	});
+}
+
+function setPercentileInteriorCircular (id_data, values) {
+	metaconsole = $("input[name='metaconsole']").val();
+
+	var url_hack_metaconsole = '';
+	if (is_metaconsole()) {
+		url_hack_metaconsole = '../../';
+	}
+
+	max_percentile = values['max_percentile'];
+	width_percentile = values['width_percentile'];
+
+	var parameter = Array();
+
+	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
+	parameter.push ({name: "action", value: "get_module_value"});
+	parameter.push ({name: "id_element", value: id_data});
+	parameter.push ({name: "value_show", value: values['value_show']});
+	parameter.push ({name: "id_visual_console",
+		value: id_visual_console});
+	jQuery.ajax({
+		url: get_url_ajax(),
+		data: parameter,
+		type: "POST",
+		dataType: 'json',
+		success: function (data) {
+			module_value = data['value'];
+			max_percentile = data['max_percentile'];
+			width_percentile = data['width_percentile'];
+			unit_text = false;
+
+			if ((data['unit_text'] != false) || typeof(data['unit_text']) != 'boolean') {
+				unit_text = data['unit_text'];
+			}
+
+			colorRGB = data['colorRGB'];
+
+			if ( max_percentile > 0)
+				var percentile = Math.round(module_value / max_percentile * 100);
+			else
+				var percentile = 100;
+
+			if (unit_text == false && typeof(unit_text) == 'boolean') {
+				value_text = percentile + "%";
+			}
+			else {
+				value_text = module_value + " " + unit_text;
+			}
+			
+			$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/circular-progress-bar-interior.png');
+			if($('#text-width_percentile').val() == 0){
+				$("#" + id_data + " img").css('width', '130px');
+				$("#" + id_data + " img").css('height', '130px');
+			}
+			else{
+				$("#" + id_data + " img").css('width', $('#text-width_percentile').val()+'px');
+				$("#" + id_data + " img").css('height', $('#text-width_percentile').val()+'px');
+			}
+			
+			if($('#'+id_data+' table').css('float') == 'right' || $('#'+id_data+ ' table').css('float') == 'left'){
+				$('#'+id_data+ ' img').css('margin-top', 	parseInt($('#'+id_data).css('height'))/2 - parseInt($('#'+id_data+ ' img').css('height'))/2);	
+			}
+			else{
+				$('#'+id_data+ ' img').css('margin-left',parseInt($('#'+id_data).css('width'))/2 - parseInt($('#'+id_data+ ' img').css('width'))/2);		
+			}
 		}
 	});
 }
@@ -1927,6 +2225,53 @@ function setEventsBar(id_data, values) {
 				else{
 					$("#" + id_data + " img").css('width', $('#text-width').val()+'px');
 					$("#" + id_data + " img").css('height', $('#text-height').val()+'px');
+				}
+			}
+		}
+	});
+}
+
+function setDonutsGraph (id_data, values) {
+	var url_hack_metaconsole = '';
+	if (is_metaconsole()) {
+		url_hack_metaconsole = '../../';
+	}
+
+	width_percentile = values['width_percentile'];
+
+	parameter = Array();
+
+	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
+	parameter.push ({name: "action", value: "get_module_type_string"});
+	parameter.push ({name: "id_agent", value: values['id_agent']});
+	parameter.push ({name: "module", value: values['module']});
+	parameter.push ({name: "id_element", value: id_data});
+	parameter.push ({name: "id_visual_console", value: id_visual_console});
+	jQuery.ajax({
+		url: get_url_ajax(),
+		data: parameter,
+		type: "POST",
+		dataType: 'json',
+		success: function (data) {
+			if (data['no_data'] == true) {
+				if (values['width'] == "0") {
+					$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/wrong_donut_graph.png');
+				}
+				else {
+					$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/wrong_donut_graph.png');
+					$("#" + id_data + " img").css('width', width_percentile + 'px');
+					$("#" + id_data + " img").css('height', width_percentile + 'px');
+				}
+			}
+			else {
+				$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/donut-graph.png');
+				
+				if($('#text-width').val() == 0 || $('#text-height').val() == 0){
+					// Image size
+				}
+				else{
+					$("#" + id_data + " img").css('width', $('#text-width_percentile').val()+'px');
+					$("#" + id_data + " img").css('height', $('#text-width_percentile').val()+'px');
 				}
 			}
 		}
@@ -1984,7 +2329,7 @@ function setPercentileBubble(id_data, values) {
 
 			$("#image_" + id_data).attr('src', img);
 			
-			$("#" + id_data + " img").attr('src', 'images/console/signes/percentil_bubble.png');
+			$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/percentil_bubble.png');
 			
 			
 			if($('#text-width_percentile').val() == 0){
@@ -2173,21 +2518,28 @@ function createItem(type, values, id_data) {
 				
 			}
 				
-			if ((values['width'] == 0) || (values['height'] == 0)) {
-				// Do none
-				if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
-					$image.attr('width', '70')
-						.attr('height', '70');
+			if(values['show_statistics'] != 1){
+				
+					if ((values['width'] == 0) || (values['height'] == 0)) {
+						// Do none
+						if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+							$image.attr('width', '70')
+								.attr('height', '70');
+						}
+						else{
+							$image.attr('width', $('#preview > img')[0].naturalWidth)
+								.attr('height', $('#preview > img')[0].naturalHeight);
+						}			
+					}
+					else {
+						$image.attr('width', values['width'])
+							.attr('height', values['height']);
+					}
 				}
-				else{
-					$image.attr('width', $('#preview > img')[0].naturalWidth)
-						.attr('height', $('#preview > img')[0].naturalHeight);
-				}			
-			}
-			else {
-				$image.attr('width', values['width'])
-					.attr('height', values['height']);
-			}
+				// else{
+				// 	$('#image_'+id_data).css('width', values['width']+'px');
+				// 	$('#image_'+id_data).css('height', values['height']+'px');
+				// }
 /*
 			var $span = $('<span></span>')
 				.attr('id', 'text_' + id_data)
@@ -2245,8 +2597,32 @@ function createItem(type, values, id_data) {
 					.append($image)
 					.append($input);				
 			}
-
-			set_static_graph_status(id_data, values['image']);
+			
+			if(values['show_statistics'] != 1){
+				set_static_graph_status(id_data, values['image']);
+			}
+			else{
+				set_static_graph_status(id_data, 'show_statistics');
+			}
+			
+			if(values['show_statistics'] != 1){
+				
+					if ((values['width'] == 0) || (values['height'] == 0)) {
+						// Do none
+						if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+							$image.attr('width', '70')
+								.attr('height', '70');
+						}
+						else{
+							$image.attr('width', $('#preview > img')[0].naturalWidth)
+								.attr('height', $('#preview > img')[0].naturalHeight);
+						}			
+					}
+					else {
+						$image.attr('width', values['width'])
+							.attr('height', values['height']);
+					}
+				}
 
 			break;
 		case 'auto_sla_graph':
@@ -2259,6 +2635,16 @@ function createItem(type, values, id_data) {
 					);
 
 			setEventsBar(id_data, values);
+			break;
+		case 'donut_graph':
+			var sizeStyle = '';
+			var imageSize = '';
+			item = $('<div id="' + id_data + '" class="item donut_graph" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+							'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" />' +
+					'</div>'
+					);
+
+			setDonutsGraph(id_data, values);
 			break;
 		case 'percentile_bar':
 		case 'percentile_item':
@@ -2301,9 +2687,77 @@ function createItem(type, values, id_data) {
 				
 				setPercentileBar(id_data, values);
 			}
+			else if (values['type_percentile'] == 'circular_progress_bar') {
+				if(values['label_position'] == 'up'){
+					item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+							'<table><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+							'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" />' +
+							'</div>'
+					);
+				}
+				else if(values['label_position'] == 'down'){
+					item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+							'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" />' + 					
+							'<table><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+							'</div>'
+					);
+					
+				}
+				else if(values['label_position'] == 'right'){
+					item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+							'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" style="float:left;" />' + 					
+							'<table style="float:left;height:'+values['height']+'px"><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+							'</div>'
+					);
+					
+				}
+				else if(values['label_position'] == 'left'){
+					item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+							'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" style="float:right;"/>' + 					
+							'<table style="float:left;height:'+values['height']+'px"><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+							'</div>'
+					);
+					
+				}
+				
+				setPercentileCircular(id_data, values);
+			}
+			else if (values['type_percentile'] == 'interior_circular_progress_bar') {
+				if(values['label_position'] == 'up'){
+					item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+							'<table><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+							'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" />' +
+							'</div>'
+					);
+				}
+				else if(values['label_position'] == 'down'){
+					item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+							'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" />' + 					
+							'<table><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+							'</div>'
+					);
+					
+				}
+				else if(values['label_position'] == 'right'){
+					item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+							'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" style="float:left;" />' + 					
+							'<table style="float:left;height:'+values['height']+'px"><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+							'</div>'
+					);
+					
+				}
+				else if(values['label_position'] == 'left'){
+					item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+							'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" style="float:right;"/>' + 					
+							'<table style="float:left;height:'+values['height']+'px"><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+							'</div>'
+					);
+					
+				}
+				
+				setPercentileInteriorCircular(id_data, values);
+			}
 			else {
-				
-				
 				if(values['label_position'] == 'up'){
 					item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
 							'<table><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
@@ -2370,6 +2824,42 @@ function createItem(type, values, id_data) {
 
 			
 			setModuleGraph(id_data);
+			break;
+		case 'bars_graph':
+			sizeStyle = '';
+			imageSize = '';
+
+			if(values['label_position'] == 'up'){
+				item = $('<div id="' + id_data + '" class="item module_graph" style="text-align: left; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+						'<table><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+						'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" />' +
+					'</div>'
+				);				
+			}
+			else if(values['label_position'] == 'down'){
+				item = $('<div id="' + id_data + '" class="item module_graph" style="text-align: left; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+						'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" />' +
+						'<table><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+					'</div>'
+				);				
+			}
+			else if(values['label_position'] == 'left'){
+				item = $('<div id="' + id_data + '" class="item module_graph" style="text-align: left; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+						'<img style="float:right" class="image" id="image_' + id_data + '" src="images/spinner.gif" />' +
+						'<table style="float:left;height:'+values['height_module_graph']+'px;"><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+					'</div>'
+				);				
+			}
+			else if(values['label_position'] == 'right'){
+				item = $('<div id="' + id_data + '" class="item module_graph" style="text-align: left; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+						'<img style="float:left" class="image" id="image_' + id_data + '" src="images/spinner.gif" />' +
+						'<table style="float:right;height:'+values['height_module_graph']+'px;"><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+					'</div>'
+				);				
+			}
+
+			
+			setBarsGraph(id_data, values);
 			break;
 		case 'simple_value':
 			sizeStyle = '';
@@ -2580,9 +3070,9 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 		case 'static_graph':
 			if ((event != 'resizestop') && (event != 'show_grid')
 				&& (event != 'dragstop')) {
-
-				set_static_graph_status(idElement, values['image']);
-
+					if(values['show_statistics'] != 1){
+							set_static_graph_status(idElement, values['image']);
+					}
 			}
 			break;
 		case 'percentile_item':
@@ -2590,7 +3080,9 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 		case 'label':
 		case 'icon':
 		case 'module_graph':
+		case 'bars_graph':
 		case 'auto_sla_graph':
+		case 'donut_graph':
 			if (type == 'simple_value') {
 				setModuleValue(idElement,
 					values.process_simple_value,
@@ -2931,10 +3423,19 @@ function activeToolboxButton(id, active) {
 }
 
 function click_delete_item_callback() {
-	activeToolboxButton('edit_item', false);
-	deleteDB(idItem);
-	idItem = 0;
-	selectedItem = null;
+	if(selectedItems == null){
+		activeToolboxButton('edit_item', false);
+		deleteDB(idItem);
+		idItem = 0;
+		selectedItem = null;
+	}
+	else{
+		idItem = 0;
+		selectedItem = null;
+		selectedItems.forEach( function(valor, indice, array) {
+			deleteDB(valor);
+		});
+	}
 }
 
 /**
@@ -2953,6 +3454,7 @@ function eventsItems(drag) {
 	//$(".item").resizable(); //Disable but run in ff and in the waste (aka micro$oft IE) show ungly borders
 
 	$('.item').bind('click', function(event, ui) {
+		
 		event.stopPropagation();
 		if (!is_opened_palette) {
 			var divParent = $(event.target);
@@ -2992,6 +3494,15 @@ function eventsItems(drag) {
 				activeToolboxButton('delete_item', true);
 				activeToolboxButton('show_grid', false);
 			}
+			if ($(divParent).hasClass('donut_graph')) {
+				creationItem = null;
+				selectedItem = 'donut_graph';
+				idItem = $(divParent).attr('id');
+				activeToolboxButton('copy_item', true);
+				activeToolboxButton('edit_item', true);
+				activeToolboxButton('delete_item', true);
+				activeToolboxButton('show_grid', false);
+			}
 			if ($(divParent).hasClass('group_item')) {
 				creationItem = null;
 				selectedItem = 'group_item';
@@ -3013,6 +3524,15 @@ function eventsItems(drag) {
 			if ($(divParent).hasClass('module_graph')) {
 				creationItem = null;
 				selectedItem = 'module_graph';
+				idItem = $(divParent).attr('id');
+				activeToolboxButton('copy_item', true);
+				activeToolboxButton('edit_item', true);
+				activeToolboxButton('delete_item', true);
+				activeToolboxButton('show_grid', false);
+			}
+			if ($(divParent).hasClass('bars_graph')) {
+				creationItem = null;
+				selectedItem = 'bars_graph';
 				idItem = $(divParent).attr('id');
 				activeToolboxButton('copy_item', true);
 				activeToolboxButton('edit_item', true);
@@ -3070,6 +3590,62 @@ function eventsItems(drag) {
 				enterprise_click_item_callback(divParent);
 			}
 		}
+		
+		
+		
+		if(!event.ctrlKey){
+			firstItem = event.currentTarget.id;
+			selectedItems = null;
+			selectedItems = Array();
+			selectedItems.push(event.currentTarget.id);
+
+		}
+		else{
+			
+			selectedItem = null;
+			
+			unselectAll();
+			
+			if(selectedItems.indexOf(event.currentTarget.id) > -1){
+					
+						$('#'+event.currentTarget.id).css('left', '+=1');
+						$('#'+event.currentTarget.id).css('top', '+=1');
+						$('#'+event.currentTarget.id).css('border', '');
+						$('#'+event.currentTarget.id).attr('withborder') == 'false';
+				
+				
+				selectedItems.splice(selectedItems.indexOf(event.currentTarget.id),1);
+			}
+			else{
+						$('#'+event.currentTarget.id).css('left', '-=1');
+						$('#'+event.currentTarget.id).css('top', '-=1');
+						$('#'+event.currentTarget.id).css('border', '1px dotted rgb(0, 0, 255)');
+						$('#'+event.currentTarget.id).attr('withborder') == 'true';
+				
+				
+				selectedItems.push(event.currentTarget.id);
+			}
+			
+			
+			selectedItems.forEach( function(valor, indice, array) {
+				if(selectedItems.indexOf(valor) > -1 && $('#'+valor).css('border') != '1px dotted rgb(0, 0, 255)'){
+					// $('#'+valor).css('left', '-=1');
+					// $('#'+valor).css('top', '-=1');
+					$('#'+valor).css('border', '1px dotted rgb(0, 0, 255)');
+					$('#'+valor).attr('withborder') == 'true';
+				}
+			});
+			
+			$('#'+firstItem).css('left', '-=1');
+			$('#'+firstItem).css('top', '-=1');
+			
+			firstItem = null;
+			
+	}
+	
+	
+	
+	
 	});
 
 	//Double click in the item
@@ -3119,8 +3695,9 @@ function eventsItems(drag) {
 	$(".item").draggable({containment: "#background", grid: drag});
 
 	$('.item').bind('dragstart', function(event, ui) {
-
-		event.stopPropagation();
+		
+		if(selectedItems == null || selectedItems.length < 2){
+			event.stopPropagation();
 		if (!is_opened_palette) {
 			unselectAll();
 			$(event.target).css('border', '1px blue dotted');
@@ -3135,6 +3712,9 @@ function eventsItems(drag) {
 			if ($(event.target).hasClass('auto_sla_graph')) {
 				selectedItem = 'auto_sla_graph';
 			}
+			if ($(event.target).hasClass('donut_graph')) {
+				selectedItem = 'donut_graph';
+			}
 			if ($(event.target).hasClass('group_item')) {
 				selectedItem = 'group_item';
 			}
@@ -3143,6 +3723,9 @@ function eventsItems(drag) {
 			}
 			if ($(event.target).hasClass('module_graph')) {
 				selectedItem = 'module_graph';
+			}
+			if ($(event.target).hasClass('bars_graph')) {
+				selectedItem = 'bars_graph';
 			}
 			if ($(event.target).hasClass('simple_value')) {
 				selectedItem = 'simple_value';
@@ -3189,6 +3772,7 @@ function eventsItems(drag) {
 						break;
 					default:
 						idItem = $(event.target).attr('id');
+						
 						break;
 				}
 				activeToolboxButton('copy_item', true);
@@ -3196,10 +3780,15 @@ function eventsItems(drag) {
 				activeToolboxButton('delete_item', true);
 			}
 		}
+		}
+		else{
+			multiDragStart(event);
+			
+		}
 	});
 
 	$('.item').bind('dragstop', function(event, ui) {
-
+		if(selectedItems == null || selectedItems.length < 2){
 		event.stopPropagation();
 
 		var values = {};
@@ -3207,9 +3796,14 @@ function eventsItems(drag) {
 		values['mov_top'] = ui.position.top;
 
 		updateDB(selectedItem, idItem, values, 'dragstop');
+		}
+		else{
+			multidragStop(event);
+		}
 	});
 
 	$('.item').bind('drag', function(event, ui) {
+		if(selectedItems == null || selectedItems.length < 2){
 		if ($(event.target).hasClass('handler_start')) {
 			selectedItem = 'handler_start';
 		}
@@ -3290,6 +3884,7 @@ function eventsItems(drag) {
 				draw_user_lines("", 0, 0, 0 , 0, 0, true);
 				break;
 		}
+	}
 	});
 }
 
@@ -3355,6 +3950,8 @@ function eventsBackground() {
 
 	// Event click for background
 	$("#background").click(function(event) {
+		selectedItems = null;
+		selectedItems = Array();
 		event.stopPropagation();
 		if (!is_opened_palette) {
 			unselectAll();
@@ -3433,8 +4030,16 @@ function click_button_toolbox(id) {
 			toolbuttonActive = creationItem = 'module_graph';
 			toggle_item_palette();
 			break;
+		case 'bars_graph':
+			toolbuttonActive = creationItem = 'bars_graph';
+			toggle_item_palette();
+			break;
 		case 'auto_sla_graph':
 			toolbuttonActive = creationItem = 'auto_sla_graph';
+			toggle_item_palette();
+			break;
+		case 'donut_graph':
+			toolbuttonActive = creationItem = 'donut_graph';
 			toggle_item_palette();
 			break;
 		case 'simple_value':
@@ -3488,12 +4093,14 @@ function click_button_toolbox(id) {
 				activeToolboxButton('static_graph', false);
 				activeToolboxButton('percentile_item', false);
 				activeToolboxButton('module_graph', false);
+				activeToolboxButton('bars_graph', false);
 				activeToolboxButton('simple_value', false);
 				activeToolboxButton('label', false);
 				activeToolboxButton('icon', false);
 				activeToolboxButton('service', false);
 				activeToolboxButton('group_item', false);
 				activeToolboxButton('auto_sla_graph', false);
+				activeToolboxButton('donut_graph', false);
 				activeToolboxButton('copy_item', false);
 				activeToolboxButton('edit_item', false);
 				activeToolboxButton('delete_item', false);
@@ -3519,11 +4126,13 @@ function click_button_toolbox(id) {
 				activeToolboxButton('static_graph', true);
 				activeToolboxButton('percentile_item', true);
 				activeToolboxButton('module_graph', true);
+				activeToolboxButton('bars_graph', true);
 				activeToolboxButton('simple_value', true);
 				activeToolboxButton('label', true);
 				activeToolboxButton('icon', true);
 				activeToolboxButton('group_item', true);
 				activeToolboxButton('auto_sla_graph', true);
+				activeToolboxButton('donut_graph', true);
 			}
 			break;
 		case 'save_visualmap':
@@ -3730,4 +4339,50 @@ function showGrid() {
 
 		eventsItems();
 	}
+}
+
+function multiDragStart(event){
+	multiDragMouse(event);
+	
+}
+
+function multidragStop(event){
+	$('#background').off("mousemove");
+	values = [];
+	selectedItems.forEach( function(valor, indice, array) {
+		$('#'+valor).css('left','+=1');
+		$('#'+valor).css('top','+=1');
+		classItem =  $('#'+valor).attr('class').replace(/item|ui-draggable|ui-draggable-dragging|-dragging/g, '').trim();
+		values['mov_left'] = parseInt($('#'+valor).css('left'));
+		values['mov_top'] = parseInt($('#'+valor).css('top'));
+		updateDB(classItem, valor, values,'dragstop');
+	});
+	
+}
+
+
+
+function multiDragMouse(eventDrag){
+	var preX  = [];
+	var preY  = [];
+	
+	selectedItems.forEach( function(valor, indice, array) {
+		preX[indice]  = $('#'+valor).css('left');
+		preY[indice]  =	$('#'+valor).css('top');
+	});
+	
+	$('#background').on('mousemove',function(event){
+		var moveDiffX =  event.clientX - eventDrag.clientX;
+		var moveDiffY = event.clientY - eventDrag.clientY;
+		selectedItems.forEach( function(valor, indice, array) {
+			if(!(parseInt($('#'+valor).css('left')) < 0 && parseInt(moveDiffX)+parseInt(preX[indice]) < 0) && 
+			!(parseInt($('#'+valor).css('left')) + parseInt($('#'+valor).css('width')) > parseInt($('#background').css('width')) && parseInt(moveDiffX+preX[indice]) > 0)){
+				$('#'+valor).css('left',parseInt(moveDiffX)+parseInt(preX[indice])+'px');
+			}
+			if(!(parseInt($('#'+valor).css('top')) < 0 && parseInt(moveDiffY)+parseInt(preY[indice]) < 0) && 
+			!(parseInt($('#'+valor).css('top')) + parseInt($('#'+valor).css('height')) > parseInt($('#background').css('height')) && parseInt(moveDiffY+preY[indice]) > 0)){
+				$('#'+valor).css('top',parseInt(moveDiffY)+parseInt(preY[indice])+'px');
+			}
+		});
+	});
 }

@@ -118,8 +118,9 @@ if (enterprise_installed()) {
 	$table_behaviour->data[$row][1] = html_print_input_text ('service_label_font_size', $config["service_label_font_size"], '', 5, 5, true);
 	$row++;
 
-	$table_behaviour->data[$row][0] = __('Space between items in Service maps');
-	$table_behaviour->data[$row][1] = html_print_input_text ('service_item_padding_size', $config["service_item_padding_size"], '', 5, 5, true);
+	$table_behaviour->data[$row][0] = __('Space between items in Service maps') . 
+		ui_print_help_tip(__('It must be bigger than 80'), true);
+	$table_behaviour->data[$row][1] = html_print_input_text ('service_item_padding_size', $config["service_item_padding_size"], '', 5, 5, true, false, false, "onChange=\"change_servicetree_nodes_padding()\"");
 	$row++;
 }
 
@@ -312,7 +313,7 @@ foreach ($listIcons as $index => $value)
 $table_gis->data[$row][0] = __('Default icon in GIS') .
 	ui_print_help_tip(__('Agent icon for GIS Maps. If set to "none", group icon will be used'), true);
 $table_gis->data[$row][1] = html_print_select($arraySelectIcon,
-	"gis_default_icon", $config["gis_default_icon"], "", __('None'),
+	"gis_default_icon", $config["gis_default_icon"], "", __('Agent icon group'),
 		'', true);
 $table_gis->data[$row][1] .= "&nbsp;" .
 	html_print_button(__("View"), 'gis_icon_preview', false, '', '', true);
@@ -534,6 +535,26 @@ $table_chars->data[$row][0] .= ui_print_help_tip(__('Show percentile 95 in graph
 $table_chars->data[$row][1] = html_print_input_text ('percentil', $config['percentil'], '', 20, 20, true);
 $row++;
 
+$table_chars->data[$row][0] = __('Graph TIP view:');
+$table_chars->data[$row][0] .= ui_print_help_tip(__('This option may cause performance issues'), true);
+
+$options_full_escale    = array();
+$options_full_escale[0] = __('None');
+$options_full_escale[1] = __('All');
+$options_full_escale[2] = __('On Boolean graphs');
+
+$table_chars->data[$row][1] = html_print_select($options_full_escale, 'full_scale_option', $config["full_scale_option"], '', '', 0, true, false, false);
+$row++;
+
+/*
+	$table_font->data[$row][0] = __('Font path');
+$fonts = load_fonts();
+$table_font->data[$row][1] = html_print_select($fonts, 'fontpath',
+	io_safe_output($config["fontpath"]), '', '', 0, true);
+
+$row++;
+*/
+
 echo "<fieldset>";
 echo "<legend>" . __('Charts configuration') . "</legend>";
 html_print_table ($table_chars);
@@ -576,7 +597,7 @@ $row++;
 
 $dirItems = scandir($config['homedir'] . '/images/custom_logo');
 foreach ($dirItems as $entryDir) {
-	if (strstr($entryDir, '.jpg') !== false) {
+	if (strstr($entryDir, '.jpg') !== false || strstr($entryDir, '.png') !== false) {
 		$customLogos['images/custom_logo/' . $entryDir] = $entryDir;
 	}
 }
@@ -599,7 +620,7 @@ $table_other->data['custom_report_front-font'][1] = html_print_select ($_fonts,
 $table_other->data['custom_report_front-logo'][0] =  __('Custom report front') . ' - ' .
 	__('Custom logo') .
 	ui_print_help_tip(
-		__("The dir of custom logos is in your www Pandora Console in \"images/custom_logo\". You can upload more files (ONLY JPEG) in upload tool in console."), true);
+		__("The dir of custom logos is in your www Pandora Console in \"images/custom_logo\". You can upload more files (ONLY JPEG AND PNG) in upload tool in console."), true);
 $table_other->data['custom_report_front-logo'][1] = html_print_select(
 	$customLogos,
 	'custom_report_front_logo',
@@ -880,6 +901,13 @@ function change_precision() {
 	}
 }
 
+function change_servicetree_nodes_padding () {
+	var value = $("#text-service_item_padding_size").val();
+	if (value < 80) {
+		$("#text-service_item_padding_size").val(80);
+	}
+}
+
 tinyMCE.init({
 	mode : "exact",
 	elements: "textarea_custom_report_front_header, textarea_custom_report_front_footer",
@@ -906,6 +934,23 @@ tinyMCE.init({
 });
 
 $(document).ready (function () {
+	
+	var comfort = 0;
+	
+	if(comfort == 0){
+		$(':input,:radio,:checkbox,:file').change(function(){
+			$('#submit-update_button').css({'position':'fixed','right':'80px','bottom':'55px'});
+			var comfort = 1;
+		});
+		
+		$("*").keydown(function(){
+			$('#submit-update_button').css({'position':'fixed','right':'80px','bottom':'55px'});
+			var comfort = 1;
+		});
+		
+		$('#form_setup').after('<br>');	
+		}
+	
 	$("#form_setup #text-graph_color1").attachColorPicker();
 	$("#form_setup #text-graph_color2").attachColorPicker();
 	$("#form_setup #text-graph_color3").attachColorPicker();

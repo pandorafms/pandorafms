@@ -74,15 +74,38 @@ $table_agent->data = array();
 $data = array();
 
 $agent_name = ui_print_agent_name($agent["id_agente"], true, 500, "font-size: medium;font-weight:bold", true);
+$in_planned_downtime = db_get_sql('SELECT executed FROM tplanned_downtime 
+	INNER JOIN tplanned_downtime_agents 
+	ON tplanned_downtime.id = tplanned_downtime_agents.id_downtime
+	WHERE tplanned_downtime_agents.id_agent = '. $agent["id_agente"] . 
+	' AND tplanned_downtime.executed = 1');
+
 
 if ($agent['disabled']) {
-	$agent_name = "<em>" . $agent_name . "</em>" . ui_print_help_tip(__('Disabled'), true);
+	if ($in_planned_downtime) {
+		$agent_name = "<em>" . $agent_name . ui_print_help_tip(__('Disabled'), true);
+	}
+	else {
+		$agent_name = "<em>" . $agent_name . "</em>" . ui_print_help_tip(__('Disabled'), true);
+	}
 }
 else if ($agent['quiet']) {
-	$agent_name = "<em'>" . $agent_name . "&nbsp;" . html_print_image("images/dot_green.disabled.png", true, array("border" => '0', "title" => __('Quiet'), "alt" => "")) . "</em>";
+	if ($in_planned_downtime) {
+		$agent_name = "<em'>" . $agent_name . "&nbsp;" . html_print_image("images/dot_green.disabled.png", true, array("border" => '0', "title" => __('Quiet'), "alt" => ""));
+	}
+	else {
+		$agent_name = "<em'>" . $agent_name . "&nbsp;" . html_print_image("images/dot_green.disabled.png", true, array("border" => '0', "title" => __('Quiet'), "alt" => "")) . "</em>";
+	}
 }
 else {
 	$agent_name = $agent_name;
+}
+
+if ($in_planned_downtime && !$agent['disabled'] && !$agent['quiet']) {
+	$agent_name .= "<em>" . "&nbsp;" . ui_print_help_tip(__('Agent in planned downtime'), true, 'images/minireloj-16.png') . "</em>";
+}
+else if (($in_planned_downtime  && !$agent['disabled']) || ($in_planned_downtime  && !$agent['quiet'])) {
+	$agent_name .= "&nbsp;" . ui_print_help_tip(__('Agent in planned downtime'), true, 'images/minireloj-16.png') . "</em>";
 }
 
 if (!$config["show_group_name"])
@@ -601,7 +624,7 @@ $data[0][0] .=
 		<tr><th>' .
 			__('Events (24h)') .
 		'</th></tr>' .
-		'<tr><td style="text-align:center;"><br />' .
+		'<tr><td style="text-align:center;padding-left:20px;padding-right:20px;"><br />' .
 		graph_graphic_agentevents ($id_agente, 450, 15, SECONDS_1DAY, '', true, true) . 
 		'<br /></td></tr>' . 
 	'</table>';

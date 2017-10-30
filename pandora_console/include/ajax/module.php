@@ -38,7 +38,9 @@ $get_agent_modules_json_by_name = (bool) get_parameter('get_agent_modules_json_b
 
 
 if ($get_agent_modules_json_by_name) {
-	$agent_id = get_parameter('id_agent');
+	$agent_name = get_parameter('agent_name');
+
+	$agent_id = agents_get_agent_id($agent_name);
 
 	$agent_modules = db_get_all_rows_sql("SELECT id_agente_modulo as id_module, nombre as name FROM tagente_modulo
 											WHERE id_agente = " . $agent_id);
@@ -254,7 +256,7 @@ if ($get_module_detail) {
 		'ttipo_modulo', 'nombre', 'web_content_string');
 		
 	$post_process = db_get_value_filter('post_process','tagente_modulo',array('id_agente_modulo' => $module_id));
-	
+	$unit = db_get_value_filter('unit','tagente_modulo',array('id_agente_modulo' =>$module_id));
 	foreach ($result as $row) {
 		$data = array ();
 
@@ -273,12 +275,16 @@ if ($get_module_detail) {
 				// Detect string data with \n and convert to <br>'s
 				$datos = $row[$attr[0]];
 
-				// Because this *SHIT* of print_table monster, I cannot format properly this cells
-				// so, eat this, motherfucker :))
-				$datos =  preg_replace("/\n/", "</br></br>", $datos);
+				$datos = preg_replace ('/</', '&lt;', $datos);
+				$datos = preg_replace ('/>/', '&gt;', $datos);
+				$datos = preg_replace ('/\n/i','<br>',$datos);
+				$datos = preg_replace ('/\s/i','&nbsp;',$datos);
+				$datos_format = "<div id='result_div' style='width: 100%; height: 100%; overflow: scroll; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left'>";
+				$datos_format .= $datos;
+				$datos_format .= "</div>";
 
 				// I dont why, but using index (value) method, data is automatically converted to html entities ¿?
-				$data[] = $datos;
+				$data[] = $datos_format;
 			}
 			elseif ($is_web_content_string) {
 				//Fixed the goliat sends the strings from web
@@ -308,7 +314,12 @@ if ($get_module_detail) {
 								
 							break;
 						default:
-							$data[] = remove_right_zeros(number_format($row[$attr[0]], $config['graph_precision']));
+							$data_macro = modules_get_unit_macro($row[$attr[0]],$unit);
+							if($data_macro){
+								$data[] = $data_macro;
+							} else {
+								$data[] = remove_right_zeros(number_format($row[$attr[0]], $config['graph_precision']));
+							}
 							break;
 					}
 				}
@@ -317,11 +328,21 @@ if ($get_module_detail) {
 						$data[] = 'No data';
 					}
 					else {
-						if(is_snapshot_data($row[$attr[0]])){	
-							$data[] = "<a target='_blank' href='".io_safe_input($row[$attr[0]])."'><img style='width:300px' src='".io_safe_input($row[$attr[0]])."'></a>";
+						if(is_snapshot_data($row[$attr[0]])){
+							if($config['command_snapshot']){
+								$data[] = "<a target='_blank' href='".io_safe_input($row[$attr[0]])."'><img style='width:300px' src='".io_safe_input($row[$attr[0]])."'></a>";
+							}
+							else{
+								$data[] = "<span>".wordwrap(io_safe_input($row[$attr[0]]),60,"<br>\n",true)."</span>";
+							}
 						}
 						else{
-							$data[] = $row[$attr[0]];
+							$data_macro = modules_get_unit_macro($row[$attr[0]],$unit);
+							if($data_macro){
+								$data[] = $data_macro;
+							} else {
+								$data[] = $row[$attr[0]];
+							}
 						}
 					}
 				}
@@ -737,7 +758,7 @@ if ($list_modules) {
 	$table->head[5] = __('Status') . ' ' .
 		'<a href="' . $url . '&sort_field=status&amp;sort=up&refr=&filter_monitors=1&status_filter_monitor=' .$status_filter_monitor.' &status_text_monitor='. $status_text_monitor.'&status_module_group= '.$status_module_group.'">' . html_print_image("images/sort_up.png", true, array("style" => $selectStatusUp, "alt" => "up")) . '</a>' .
 		'<a href="' . $url . '&sort_field=status&amp;sort=down&refr=&filter_monitors=1&status_filter_monitor=' .$status_filter_monitor.' &status_text_monitor='. $status_text_monitor.'&status_module_group= '.$status_module_group.'">' . html_print_image("images/sort_down.png", true, array("style" => $selectStatusDown, "alt" => "down")) . '</a>';
-	$table->head[6] = __('Thresholds');
+	$table->head[6] = __('Warn');
 	$table->head[7] = __('Data');
 	$table->head[8] = __('Graph');
 	$table->head[9] = __('Last contact') . ' ' .
@@ -1001,17 +1022,32 @@ if ($list_modules) {
 				}
 				// Show units ONLY in numeric data types
 				if (isset($module["unit"])) {
-					$salida .= "&nbsp;" . '<i>'. io_safe_output($module["unit"]) . '</i>';
+					$data_macro = modules_get_unit_macro($module["datos"],$module["unit"]);
+					if($data_macro){
+						$salida = $data_macro;
+					} else {
+						$salida .= "&nbsp;" . '<i>'. io_safe_output($module["unit"]) . '</i>';
+					}
+					
 				}
 			}
 			else {
-				$salida = ui_print_module_string_value(
-					$module["datos"], $module["id_agente_modulo"],
-					$module["current_interval"], $module["module_name"]);
+				$data_macro = modules_get_unit_macro($module["datos"],$module["unit"]);
+				if($data_macro){
+					$salida = $data_macro;
+				} else {
+					$salida = ui_print_module_string_value(
+						$module["datos"], $module["id_agente_modulo"],
+						$module["current_interval"], $module["module_name"]);
+				}
 			}
 		}
-		
+		if($module["id_tipo_modulo"] != 25){
 		$data[6] = ui_print_module_warn_value ($module["max_warning"], $module["min_warning"], $module["str_warning"], $module["max_critical"], $module["min_critical"], $module["str_critical"]);
+		}
+		else{
+			$data[6] = "";
+		}
 		
 		$data[7] = $salida;
 		$graph_type = return_graphtype ($module["id_tipo_modulo"]);

@@ -209,7 +209,7 @@ $table->data[34][0] = __('Allow create planned downtimes in the past') .
 $table->data[34][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('past_planned_downtimes', 1, '', $config["past_planned_downtimes"], true).'&nbsp;&nbsp;';
 $table->data[34][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('past_planned_downtimes', 0, '', $config["past_planned_downtimes"], true);
 
-$table->data[35][0] = __('Limit parameters massive') .
+$table->data[35][0] = __('Limit parameters bulk') .
 	ui_print_help_tip(__('Your PHP environment is setted with %d max_input_vars. Maybe you must not set this value with upper values.', ini_get("max_input_vars")), true);
 $table->data[35][1] = html_print_input_text('limit_parameters_massive',
 	$config['limit_parameters_massive'], '', 10, 10, true);
@@ -221,6 +221,10 @@ $table->data[36][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('i
 $table->data[37][0] = __('audit log directory') .
 	ui_print_help_tip (__("Directory where audit log is stored."), true);
 $table->data[37][1] = html_print_input_text ('auditdir', io_safe_output($config["auditdir"]), '', 30, 100, true);
+
+$table->data[38][0] = __('Set alias as name by default in agent creation');
+$table->data[38][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('alias_as_name', 1, '', $config["alias_as_name"], true).'&nbsp;&nbsp;';
+$table->data[38][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('alias_as_name', 0, '', $config["alias_as_name"], true);
 
 echo '<form id="form_setup" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=general&amp;pure='.$config['pure'].'">';
 

@@ -102,7 +102,34 @@ if (is_ajax ()) {
 			echo json_encode (false);
 			return;
 		}
-		echo json_encode (modules_get_last_value ($id_module));
+
+		$module_value = modules_get_last_value ($id_module);
+		if (is_numeric($row['value']) && !modules_is_string_type($module['id_tipo_modulo'])){
+			$value = $module_value;
+		}
+		else{
+			// If carriage returns present... then is a "Snapshot" data (full command output)
+			$is_snapshot = is_snapshot_data ( $module_value );
+
+			$module = modules_get_agentmodule($id_module);
+			
+			if (($config['command_snapshot']) && ($is_snapshot)){
+				$handle = "snapshot"."_".$module["id_agente_modulo"];
+				$url = 'include/procesos.php?agente='.$module["id_agente_modulo"];
+				$win_handle = dechex(crc32($handle));
+				
+				$link ="winopeng_var('operation/agentes/snapshot_view.php?id=".$module["id_agente_modulo"]."&refr=".$module["current_interval"]."&label=".$module["nombre"]."','".$win_handle."', 700,480)"; 
+				
+				$value = '<a href="javascript:'.$link.'">' . html_print_image("images/default_list.png", true, array("border" => '0', "alt" => "", "title" => __("Snapshot view"))) . '</a> &nbsp;&nbsp;';
+			}
+			else {
+				$value = ui_print_module_string_value(
+					$module_value, $module["id_agente_modulo"],
+					$module["current_interval"], $module["module_name"]);
+			}
+		}
+
+		echo json_encode ($value);
 		return;
 	}
 	
@@ -570,22 +597,38 @@ foreach ($agents as $agent) {
 		$agent["warning_count"], $agent["unknown_count"], $agent["total_count"], 
 		$agent["notinit_count"]);
 	
+	$in_planned_downtime = db_get_sql('SELECT executed FROM tplanned_downtime 
+		INNER JOIN tplanned_downtime_agents 
+		ON tplanned_downtime.id = tplanned_downtime_agents.id_downtime
+		WHERE tplanned_downtime_agents.id_agent = '. $agent["id_agente"] . 
+		' AND tplanned_downtime.executed = 1');
+			
 	$data = array ();
 	
 	$data[0] = '<div class="left_' . $agent["id_agente"] . '">';
 	$data[0] .= '<span>';
-	if ($agent['quiet']) {
-		$data[0] .= html_print_image("images/dot_green.disabled.png", true, array("border" => '0', "title" => __('Quiet'), "alt" => "")) . "&nbsp;";
-	}
 	
 	$data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'"> <span style="font-size: 7pt;font-weight:bold" title ="' . $agent["nombre"]. '">'.$agent["alias"].'</span></a>';
 	$data[0] .= '</span>';
+	
+	if ($agent['quiet']) {
+		$data[0] .= "&nbsp;";
+		$data[0] .= html_print_image("images/dot_green.disabled.png", true, array("border" => '0', "title" => __('Quiet'), "alt" => ""));
+	}
+
+	if ($in_planned_downtime) {
+		$data[0] .= ui_print_help_tip (__('Agent in planned downtime'), true, 'images/minireloj-16.png');
+		$data[0] .= "</em>";
+	}
+	
 	$data[0] .= '<div class="agentleft_' . $agent["id_agente"] . '" style="visibility: hidden; clear: left;">';
 	$data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'">'.__('View').'</a>';
+	
 	if (check_acl ($config['id_user'], $agent["id_grupo"], "AW")) {
 		$data[0] .= ' | ';
 		$data[0] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$agent["id_agente"].'">'.__('Edit').'</a>';
 	}
+	
 	$data[0] .= '</div></div>';
 	
 	$data[1] = ui_print_truncate_text($agent["description"], 'description', false, true, true, '[&hellip;]', 'font-size: 6.5pt');
@@ -594,11 +637,8 @@ foreach ($agents as $agent) {
 	
 	if (enterprise_installed()) {
 		enterprise_include_once('include/functions_config_agents.php');
-		
 		if (enterprise_hook('config_agents_has_remote_configuration',array($agent["id_agente"]))) {
-	
-	$data[10] = html_print_image("images/application_edit.png", true, array("align" => 'middle', "title" => __('Remote config')));
-		
+			$data[10] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=remote_configuration&id_agente='.$agent["id_agente"].'&disk_conf=1">'.html_print_image("images/application_edit.png", true, array("align" => 'middle', "title" => __('Remote config'))).'</a>';
 		}
 	}
 	

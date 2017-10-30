@@ -1720,7 +1720,8 @@ function modules_get_next_data ($id_agent_module, $utimestamp = 0, $string = 0) 
  * @return array The module value and the timestamp
  */
 function modules_get_agentmodule_data ($id_agent_module, $period,
-	$date = 0, $trash=false, $conexion = false, $order = 'ASC') {
+	$date = 0, $trash=false, $conexion = false, $order = 'ASC',
+	$freesearch = '') {
 	global $config;
 	
 	$module = db_get_row('tagente_modulo', 'id_agente_modulo',
@@ -1742,12 +1743,17 @@ function modules_get_agentmodule_data ($id_agent_module, $period,
 		case 17:
 		//async_string
 		case 23:
-			$sql = sprintf ("SELECT datos AS data, utimestamp
-				FROM tagente_datos_string
-				WHERE id_agente_modulo = %d
-					AND utimestamp > %d AND utimestamp <= %d
-				ORDER BY utimestamp %s",
-				$id_agent_module, $datelimit, $date, $order);
+			$sql = sprintf (
+				"SELECT datos AS data, utimestamp FROM tagente_datos_string
+					WHERE id_agente_modulo = %d
+					%s
+					AND utimestamp > %d	AND utimestamp <= %d
+					ORDER BY utimestamp %s",
+				$id_agent_module,
+				!empty($freesearch) ? " AND datos REGEXP '" . $freesearch . "' " : "",
+				$datelimit,	$date,
+				$order
+			);
 			break;
 		//log4x
 		case 24:

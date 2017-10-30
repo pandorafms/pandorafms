@@ -123,11 +123,15 @@ if ($get_module_detail) {
 	$time_from = (string) get_parameter ('time_from', date ('h:iA'));
 	$date_to = (string) get_parameter ('date_to', date ('Y-m-j'));
 	$time_to = (string) get_parameter ('time_to', date ('h:iA'));
+	$freesearch = (string) get_parameter ('freesearch', '');
 
 	$formtable->width = '98%';
 	$formtable->class = "databox";
 	$formtable->data = array ();
 	$formtable->size = array ();
+
+	$moduletype_name = modules_get_moduletype_name(
+		modules_get_agentmodule_type($module_id));
 
 	$periods = array(SECONDS_5MINUTES =>__('5 minutes'),
 		SECONDS_30MINUTES =>__('30 minutes'),
@@ -148,13 +152,18 @@ if ($get_module_detail) {
 		"selection_mode", 'fromnow', '', $selection_mode, false, '',
 		'style="margin-right: 15px;"', true) . __("Choose a time from now");
 	$formtable->data[0][1] = html_print_select ($periods, 'period', $period, '', '', 0, true, false, false);
-	$formtable->data[0][2] = '';
+	if (preg_match("/_string/", $moduletype_name)) {
+		$formtable->data[0][2] = __('Free search') . ' ';
+		$formtable->data[0][2] .= html_print_input_text ('freesearch', $freesearch, '', 25, null, true);
+	} else {
+		$freesearch = '';
+		$formtable->data[0][2] = '';
+	}
+	$formtable->cellstyle[0][3] = 'vertical-align: middle;';
 	$formtable->data[0][3] = "<a href='javascript: show_module_detail_dialog(" . $module_id .", ".  $agentId.", \"" . $server_name .
 					"\", 0, -1,\"" . modules_get_agentmodule_name( $module_id ) . "\")'>" .
 					html_print_image ("images/refresh.png", true, array ("style" => 'vertical-align: middle;', "border" => "0" )) .
 					"</a>";
-	$formtable->rowspan[0][3] = 2;
-	$formtable->cellstyle[0][3] = 'vertical-align: middle;';
 
 	$formtable->data[1][0] = html_print_radio_button_extended(
 		"selection_mode", 'range','', $selection_mode, false, '',
@@ -176,9 +185,6 @@ if ($get_module_detail) {
 		'', 9, 7, true);
 
 	html_print_table($formtable);
-
-	$moduletype_name = modules_get_moduletype_name(
-		modules_get_agentmodule_type($module_id));
 
 	$offset = (int) get_parameter("offset");
 	$block_size = (int) $config["block_size"];
@@ -222,10 +228,10 @@ if ($get_module_detail) {
 	}
 
 	$count = modules_get_agentmodule_data ($module_id, $period,
-		$date, true, $conexion);
+		$date, true, $conexion, 'ASC', $freesearch);
 
 	$module_data = modules_get_agentmodule_data ($module_id, $period,
-		$date, false, $conexion, 'DESC');
+		$date, false, $conexion, 'DESC', $freesearch);
 
 	if (empty($module_data)) {
 		$result = array();

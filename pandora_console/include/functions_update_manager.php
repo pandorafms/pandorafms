@@ -358,7 +358,14 @@ function update_manager_check_online_free_packages ($is_ajax=true) {
 					var text1_mr_file = "<?php echo __('There are new database changes available to apply. Do you want to start the DB update process?'); ?>\n";
 					var text2_mr_file = "<?php echo __('We recommend launching '); ?>\n";
 					var text3_mr_file = "<?php echo __('planned downtime'); ?>\n";
-					var text4_mr_file = "<?php echo __(' to this process'); ?>\n";
+					var text4_mr_file = "<?php 
+					if($config['language'] == 'es'){
+						echo __(' to this process').'<br><br><a style=\"font-size:10pt;font-style:italic;\" target=\"blank\" href=\"http://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Actualizacion#Versi.C3.B3n_7.0NG_.28_Rolling_Release_.29\">'.__('About minor release update').'</a>';
+					}
+					else{
+						echo __(' to this process').'<br><br><a style=\"font-size:10pt;font-style:italic;\" target=\"blank\" href=\"http://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Anexo_Upgrade#Version_7.0NG_.28_Rolling_Release_.29\">'.__('About minor release update').'</a>';
+					}
+					?>";
 					var text1_package_file = "<?php echo __('There is a new update available'); ?>\n";
 					var text2_package_file = "<?php echo __('There is a new update available to apply. Do you want to start the update process?'); ?>\n";
 					var applying_mr = "<?php echo __('Applying DB MR'); ?>\n";

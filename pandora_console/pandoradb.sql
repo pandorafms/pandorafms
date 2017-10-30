@@ -99,7 +99,7 @@ CREATE TABLE IF NOT EXISTS `tagente_datos` (
 	`id_agente_modulo` int(10) unsigned NOT NULL default '0',
 	`datos` double(22,5) default NULL,
 	`utimestamp` bigint(20) default '0',
-	KEY `data_index1` (`id_agente_modulo`),
+	KEY `data_index1` (`id_agente_modulo`, `utimestamp`),
 	KEY `idx_utimestamp` USING BTREE (`utimestamp`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
 
@@ -120,7 +120,7 @@ CREATE TABLE IF NOT EXISTS `tagente_datos_string` (
 	`id_agente_modulo` int(10) unsigned NOT NULL default '0',
 	`datos` mediumtext NOT NULL,
 	`utimestamp` int(20) unsigned NOT NULL default 0,
-	KEY `data_string_index_1` (`id_agente_modulo`),
+	KEY `data_string_index_1` (`id_agente_modulo`, `utimestamp`),
 	KEY `idx_utimestamp` USING BTREE (`utimestamp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -1114,6 +1114,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
 	`session_time` int(10) signed NOT NULL default 0,
 	`default_event_filter` int(10) unsigned NOT NULL default 0,
 	`autorefresh_white_list` text not null default '',
+	`time_autorefresh` int(5) unsigned NOT NULL default '30',
 	CONSTRAINT `fk_filter_id` FOREIGN KEY (`id_filter`) REFERENCES tevent_filter (`id_filter`) ON DELETE SET NULL,
 	UNIQUE KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

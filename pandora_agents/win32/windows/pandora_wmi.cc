@@ -501,7 +501,7 @@ Pandora_Wmi::getSystemName () {
  * @param flags Process creation flags
  */
 bool
-Pandora_Wmi::runProgram (string command, DWORD flags) {
+Pandora_Wmi::runProgram (string command, DWORD flags, BOOL user_session) {
 	PROCESS_INFORMATION process_info;
 	STARTUPINFO         startup_info;
 	bool                success;
@@ -514,11 +514,75 @@ Pandora_Wmi::runProgram (string command, DWORD flags) {
 	startup_info.cb = sizeof (startup_info);
 	ZeroMemory (&process_info, sizeof (process_info));
 	
-	pandoraDebug ("Start process \"%s\".", command.c_str ());
-	cmd = strdup (command.c_str ());
-	success = CreateProcess (NULL, cmd, NULL, NULL, FALSE, flags,
-				 NULL, NULL, &startup_info, &process_info);
-	pandoraFree (cmd);
+	if (user_session) {
+		DWORD sessionId = WTSGetActiveConsoleSessionId();
+		startup_info.cb = sizeof(STARTUPINFO);
+		startup_info.hStdError = 0;
+		startup_info.hStdInput = 0;
+		startup_info.hStdOutput = 0;
+		if (
+			startup_info.hStdError != 0
+			|| startup_info.hStdInput != 0
+			|| startup_info.hStdOutput != 0
+		) {
+			startup_info.dwFlags |= STARTF_USESTDHANDLES;
+		}
+
+		HANDLE procHandle = GetCurrentProcess();
+		HANDLE token, userToken;
+
+		// Tray to open the process
+		if (OpenProcessToken(procHandle, TOKEN_DUPLICATE, &token) == 0) {
+			pandoraDebug ("Open Process Token fails with error %d.", GetLastError());
+			return false;
+		}
+
+		// Duplicate token
+		if (DuplicateTokenEx(token,
+			MAXIMUM_ALLOWED,
+			0,
+			SecurityImpersonation,
+			TokenPrimary,
+			&userToken) == 0) {
+			pandoraDebug ("Duplicate token fails with error %d.", GetLastError());
+			return false;
+		}
+
+		// Set Token Information
+		if (SetTokenInformation(userToken,
+			(TOKEN_INFORMATION_CLASS)TokenSessionId,
+			&sessionId,
+			sizeof(sessionId)) == 0) {
+			// Error 1314 will be thrown if agent is not running as service.
+			if (GetLastError() != 1314) {
+				pandoraDebug ("Set token information fails with error %d.", GetLastError());
+				return false;
+			}
+		}
+
+		LPSTR command_exec = (LPSTR)command.c_str();
+
+		// Create Process As User
+		// Changed inherit and command
+		success = CreateProcessAsUser(
+				userToken,
+				0,
+				command_exec,
+				0,
+				0,
+				FALSE,
+				flags,
+				0,
+				NULL,
+				&startup_info,
+				&process_info);
+	} else {
+		pandoraDebug ("Start process \"%s\".", command.c_str ());
+		cmd = strdup (command.c_str ());
+		success = CreateProcess (NULL, cmd, NULL, NULL, FALSE, flags,
+					NULL, NULL, &startup_info, &process_info);
+		pandoraFree (cmd);
+	}
 	
 	if (success) {
 		pandoraDebug ("The process \"%s\" was started.", command.c_str ());

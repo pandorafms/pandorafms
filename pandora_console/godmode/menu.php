@@ -304,17 +304,16 @@ if (check_acl ($config['id_user'], 0, "PM") || check_acl ($config['id_user'], 0,
 		$sub["godmode/setup/news"]["id"] = 'Site news';
 		$sub["godmode/setup/file_manager"]["text"] = __('File manager');
 		$sub["godmode/setup/file_manager"]["id"] = 'File manager';
-	}
-	
-	if (is_user_admin($config['id_user'])) {
-		$sub["gdbman"]["text"] = __('Admin tools');
-		$sub["gdbman"]["id"] = 'DB maintenance';
-		$sub["gdbman"]["type"] = "direct";
-		$sub["gdbman"]["subtype"] = "nolink";
 		
-		$sub2 = array ();
+		if(is_user_admin($config['id_user'])){
+			$sub["extensions/db_status"]["text"] = __('DB Schema Check');
+			$sub["extensions/db_status"]["id"] = 'DB Schema Check';
+			$sub["extensions/db_status"]["sec"] = "gbman";
+			$sub["extensions/dbmanager"]["text"] = __('DB Interface');
+			$sub["extensions/dbmanager"]["id"] = 'DB Interface';
+			$sub["extensions/dbmanager"]["sec"] = "gbman";	
+		}
 		
-		$sub["gdbman"]["sub2"] = $sub2;
 	}
 	
 	$menu_godmode["gextensions"]["sub"] = $sub;
@@ -337,14 +336,10 @@ if (is_array ($config['extensions'])) {
 			continue;
 		}
 		
-		$extmenu = $extension['godmode_menu'];
 		
-		if ($extmenu["name"] == 'DB interface' && !is_user_admin($config['id_user'])) {
-			continue;
-		}
 		
-		if ($extmenu["name"] == 'DB Schema check' && !is_user_admin($config['id_user'])) {
-			continue;
+		if($extension['godmode_menu']['name'] != 'DB Schema check' && $extension['godmode_menu']['name'] != 'DB interface'){
+			$extmenu = $extension['godmode_menu'];
 		}
 		
 		//Check the ACL for this user
@@ -363,6 +358,9 @@ if (is_array ($config['extensions'])) {
 				if (strlen($extmenu['fatherId']) > 0) {
 					if (array_key_exists('subfatherId',$extmenu)) {
 						if (strlen($extmenu['subfatherId']) > 0) {
+							if($extmenu['name'] = "DB schema check"){
+								
+							}
 							$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['subfatherId']]['sub2'][$extmenu['sec2']]["text"] = __($extmenu['name']);
 							$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['subfatherId']]['sub2'][$extmenu['sec2']]["id"] = $extmenu['name'];
 							$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['subfatherId']]['sub2'][$extmenu['sec2']]["refr"] = 0;

@@ -124,7 +124,6 @@ async_run (Pandora_Module_Service *module) {
 			// If time out and polling,
 			// check the service status actively
 			if (result == WAIT_TIMEOUT && polling) {
-				pandoraLog("Timeout. Polling");
 				module->execute_async_service(prev_res, module, modules);
 			}
 			continue;

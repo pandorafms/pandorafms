@@ -66,6 +66,7 @@ RUN yum install -y \
 	cronie \
 	ntp \
 	wget \
+	nano \
 	curl \
 	xterm \
 	postfix \
@@ -95,6 +96,10 @@ RUN yum install -y \
 	net-snmp \
 	net-snmp-utils \
 	perl-Test-Simple; yum clean all;
+
+RUN wget http://rpmfind.net/linux/centos/6.9/os/i386/Packages/gettext-0.17-18.el6.i686.rpm; \
+	yum localinstall -y gettext-0.17-18.el6.i686.rpm; \
+	rm -rf gettext-0.17-18.el6.i686.rpm;
 
 #Exposing ports for: HTTP, SNMP Traps, Tentacle protocol
 EXPOSE 80 162/udp 41121

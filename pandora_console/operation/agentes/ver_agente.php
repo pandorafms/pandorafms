@@ -47,7 +47,7 @@ if (is_ajax ()) {
 	$id_group = (int) get_parameter('id_group');
 	if ($get_agents_group_json) {
 		$id_group = (int) get_parameter('id_group');
-		$recursion = (int) get_parameter ('recursion', 0);
+		$recursion = get_parameter ('recursion');
 		$id_os = get_parameter('id_os', '');
 		$agent_name = get_parameter('name', '');
 		$privilege = (string) get_parameter ('privilege', "AR");
@@ -58,7 +58,7 @@ if (is_ajax ()) {
 		
 		if ($id_group > 0) {
 			$groups = array($id_group);
-			if ($recursion) {
+			if ($recursion === 'true') {
 				$groups = array_merge($groups,
 					groups_get_id_recursive($id_group, true));
 			}
@@ -97,7 +97,7 @@ if (is_ajax ()) {
 				$filter[] = "(notinit_count = total_count)";
 				break;
 		}
-		$filter['order'] = "nombre ASC";
+		$filter['order'] = "alias ASC";
 		
 		// Build fields
 		$fields = array('id_agente', 'alias');

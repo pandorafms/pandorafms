@@ -562,10 +562,14 @@ sub process_xml_data ($$$$$) {
 
 		# No parent module defined
 		my $parent_module_name = get_tag_value ($module_data, 'module_parent', undef);
-		next if (! defined ($parent_module_name));
+		my $parent_module_unlink = get_tag_value ($module_data, 'module_parent_unlink', undef);
+
+		next if ( (! defined ($parent_module_name)) && (! defined($parent_module_unlink)));
 		
-		link_modules($pa_config, $dbh, $agent_id, $module_name, $parent_module_name);
+		link_modules($pa_config, $dbh, $agent_id, $module_name, $parent_module_name) if (defined($parent_module_name) && ($parent_module_name ne ''));
+		unlink_modules($pa_config, $dbh, $agent_id, $module_name) if (defined($parent_module_unlink) && ($parent_module_unlink eq '1'));
 	}
+
 
 	# Process inventory modules
 	enterprise_hook('process_inventory_data', [$pa_config, $data, $server_id, $agent_name,
@@ -602,7 +606,8 @@ sub process_module_data ($$$$$$$$$$) {
 	            'str_warning' => '', 'str_critical' => '', 'critical_instructions' => '', 'warning_instructions' => '',
 	            'unknown_instructions' => '', 'tags' => '', 'critical_inverse' => 0, 'warning_inverse' => 0, 'quiet' => 0,
 				'module_ff_interval' => 0, 'alert_template' => '', 'crontab' =>	'', 'min_ff_event_normal' => 0,
-				'min_ff_event_warning' => 0, 'min_ff_event_critical' => 0, 'ff_timeout' => 0, 'each_ff' => 0, 'module_parent' => 0};
+				'min_ff_event_warning' => 0, 'min_ff_event_critical' => 0, 'ff_timeout' => 0, 'each_ff' => 0, 'module_parent' => 0,
+				'module_parent_unlink' => 0};
 	
 	# Other tags will be saved here
 	$module_conf->{'extended_info'} = '';
@@ -714,11 +719,18 @@ sub process_module_data ($$$$$$$$$$) {
 		my $module_parent = $module_conf->{'module_parent'};
 		delete $module_conf->{'module_parent'};
 
+		# module_parent_unlink is a special case. It is not stored in the DB, but we will need it later.
+		my $module_parent_unlink = $module_conf->{'module_parent_unlink'};
+		delete $module_conf->{'module_parent_unlink'};
+
 		# Create the module
 		my $module_id = pandora_create_module_from_hash ($pa_config, $module_conf, $dbh);
 		
 		# Restore module_parent.
 		$module_conf->{'module_parent'} = $module_parent;
+
+		# Restore module_parent_unlink.
+		$module_conf->{'module_parent_unlink'} = $module_parent_unlink;
 
 		$module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND ' . db_text('nombre') . ' = ?', $agent->{'id_agente'}, safe_input($module_name));
 		if (! defined ($module)) {
@@ -918,6 +930,22 @@ sub link_modules {
 	# Link them.
     logger($pa_config, "Linking module $child_name to module $parent_name for agent ID $agent_id", 10);
 	db_do($dbh, "UPDATE tagente_modulo SET parent_module_id = ? WHERE id_agente_modulo = ?", $parent_id, $child_id);
+}
+
+
+###############################################################################
+# Unlink module from parent
+###############################################################################
+sub unlink_modules {
+	my ($pa_config, $dbh, $agent_id, $child_name) = @_;
+
+	# Get the child module ID.
+	my $child_id = get_agent_module_id ($dbh, $child_name, $agent_id);
+	return unless ($child_id != -1);
+
+	# Link them.
+    logger($pa_config, "Unlinking parent from module $child_name agent ID $agent_id", 10);
+	db_do($dbh, "UPDATE tagente_modulo SET parent_module_id = 0 WHERE id_agente_modulo = ?", $child_id);
 }
 
 1;

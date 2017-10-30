@@ -325,10 +325,21 @@ class Tree {
 				$user_groups_str = "-1";
 				$group_acl =  "";
 				if (!$this->strictACL) {
-					if (!empty($this->userGroups)) {
-						$user_groups_str = implode(",", array_keys($this->userGroups));
+					if (empty($this->userGroups)) {
+						return;
 					}
-					$group_acl = "AND ta.id_grupo IN ($user_groups_str)";
+
+					// Asking for a specific group.
+					if ($item_for_count !== false) {
+						if (!isset($this->userGroups[$item_for_count])) {
+							return;
+						}
+					}
+					// Asking for all groups.
+					else {
+						$user_groups_str = implode(",", array_keys($this->userGroups));
+						$group_acl = "AND ta.id_grupo IN ($user_groups_str)";
+					}
 				}
 				else {
 					if (!empty($this->acltags)) {
@@ -1142,7 +1153,7 @@ class Tree {
 		}
 
 		// If user have not permissions in parent, set parent node to 0 (all)
-		$user_groups_with_privileges = users_get_groups($config['id_user']);
+		$user_groups_with_privileges = $this->userGroups;
 		foreach ($groups as $id => $group) {
 			if (!in_array($groups[$id]['parent'], array_keys($user_groups_with_privileges))) {
 				$groups[$id]['parent'] = 0;
@@ -1306,7 +1317,7 @@ class Tree {
 
 		// Get the counters of the group (special case)
 		if ($processed_item['type'] == 'group') {
-			$counters = $this->getCounters($item['id']);
+			$counters = $this->getGroupCounters($item['id']);
 			if (!empty($counters)) {
 				foreach ($counters as $type => $value) {
 					$item[$type] = $value;
@@ -2606,6 +2617,50 @@ class Tree {
 		}
 		
 		return $tree_modules;
+	}
+
+	protected function getGroupCounters($group_id) {
+		global $config;
+		static $group_stats = false;
+
+		# Do not use the group stat cache when using tags or real time group stats.
+		if ($config['realtimestats'] == 1 || (isset($this->userGroups[$group_id]['tags']) && $this->userGroups[$group_id]['tags'] != "")) {
+			return $this->getCounters($group_id);
+		}
+
+		# Update the group stat cache.
+		if ( $group_stats === false) {
+			$group_stats = array();
+			$stats = db_get_all_rows_sql('SELECT * FROM tgroup_stat');
+				
+			foreach ($stats as $group) {
+				if ($group['modules'] > 0) {
+					$group_stats[$group['id_group']]['total_count'] = $group['modules'] > 0 ? $group['agents'] : 0;
+					$group_stats[$group['id_group']]['total_critical_count'] = $group['critical'];
+					$group_stats[$group['id_group']]['total_unknown_count'] = $group['unknown'];
+					$group_stats[$group['id_group']]['total_warning_count'] = $group['warning'];
+					$group_stats[$group['id_group']]['total_not_init_count'] = $group['non-init'];
+					$group_stats[$group['id_group']]['total_normal_count'] = $group['normal'];
+					$group_stats[$group['id_group']]['total_fired_count'] = $group['alerts_fired'];
+				}
+				# Skip groups without modules.
+				else {
+					$group_stats[$group['id_group']]['total_count'] = 0;
+					$group_stats[$group['id_group']]['total_critical_count'] = 0;
+					$group_stats[$group['id_group']]['total_unknown_count'] = 0;
+					$group_stats[$group['id_group']]['total_warning_count'] = 0;
+					$group_stats[$group['id_group']]['total_not_init_count'] = 0;
+					$group_stats[$group['id_group']]['total_normal_count'] = 0;
+					$group_stats[$group['id_group']]['total_fired_count'] = 0;
+				}
+			}
+		}
+
+		if ($group_stats !== false && isset($group_stats[$group_id])) {
+			return $group_stats[$group_id];
+		}
+
+		return $this->getCounters($group_id);
 	}
 
 	static function recursive_modules_tree_view (&$new_modules, &$new_modules_child, $i, $child) {

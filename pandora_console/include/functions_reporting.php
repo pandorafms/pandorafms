@@ -131,7 +131,9 @@ function reporting_make_reporting_data($report = null, $id_report,
 	foreach ($contents as $content) {
 		$server_name = $content['server_name'];
 		
-		if (!empty($period)) {
+		// General reports with 0 period means last value
+		// Avoid to overwrite it by template value
+		if (!empty($period) && ($content['type'] !== 'general' && $content['period'] != 0)) {
 			$content['period'] = $period;
 		}
 		
@@ -2164,7 +2166,7 @@ function reporting_exception($report, $content, $type = 'dinamic',
 					'color' => array(),
 					'legend' => array(),
 					'long_index' => array(),
-					'no_data_image' => ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+					'no_data_image' => ui_get_full_url("images/image_problem_area_small.png", false, false, false),
 					'xaxisname' => "",
 					'yaxisname' => "",
 					'water_mark' => ui_get_full_url(false, false, false, false) .  "/images/logo_vertical_water.png",
@@ -5623,6 +5625,7 @@ function reporting_general($report, $content) {
 	
 	$i = 0;
 	$index = 0;
+	$is_string = array();
 	foreach ($generals as $row) {
 		//Metaconsole connection
 		$server_name = $row ['server_name'];
@@ -5648,6 +5651,7 @@ function reporting_general($report, $content) {
 		$mod_name = modules_get_agentmodule_name ($row['id_agent_module']);
 		$ag_name = modules_get_agentmodule_agent_alias ($row['id_agent_module']);
 		$type_mod = modules_get_last_value($row['id_agent_module']);
+		$is_string[$index] = modules_is_string($row['id_agent_module']);
 		$unit = db_get_value('unit', 'tagente_modulo',
 			'id_agente_modulo',
 			$row['id_agent_module']);
@@ -5657,7 +5661,7 @@ function reporting_general($report, $content) {
 				modules_get_last_value($row['id_agent_module']);
 		}
 		else {
-			if(is_numeric($type_mod)){
+			if(is_numeric($type_mod) && !$is_string[$index]) {
 				switch ($row['operation']) {
 					case 'sum':
 						$data_res[$index] =
@@ -5711,7 +5715,7 @@ function reporting_general($report, $content) {
 		}
 		
 		// Calculate the avg, min and max
-		if (is_numeric($data_res[$index])) {
+		if (is_numeric($data_res[$index]) && !$is_string[$index]) {
 			$change_min = false;
 			if (is_null($return["min"]["value"])) {
 				$change_min = true;
@@ -5837,7 +5841,7 @@ function reporting_general($report, $content) {
 							break;
 					}
 					
-					if (!is_numeric($d)) {
+					if (!is_numeric($d) || $is_string[$i]) {
 						$data['value'] = $d;
 						// to see the chains on the table
 						$data['formated_value'] = $d;

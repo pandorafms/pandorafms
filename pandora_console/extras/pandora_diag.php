@@ -125,7 +125,7 @@ echo "<tr><th style='background-color:#b1b1b1;font-weight:bold;font-style:italic
 
 render_row (phpversion(), "PHP Version");
 
-render_row (ini_get('max_execution_time'), "PHP Max ejecution time");
+render_row (ini_get('max_execution_time'), "PHP Max execution time");
 
 render_row (ini_get('max_input_time'), "PHP Max input time");
 
@@ -161,13 +161,9 @@ render_info_data ("SELECT COUNT( DISTINCT tagente.id_agente)
 		AND tagente_estado.id_agente = tagente.id_agente
 		AND tagente_estado.estado = 3","Total unknown agents");
 		
-render_info_data ("SELECT COUNT( DISTINCT tagente.id_agente)
-	FROM tagente_estado, tagente, tagente_modulo
-	WHERE tagente.disabled = 0
-		AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-		AND tagente_modulo.disabled = 0
-		AND tagente_estado.id_agente = tagente.id_agente
-		AND tagente_estado.estado = 4","Total not-init modules");
+render_info_data ("SELECT COUNT(tagente_estado.estado)
+	FROM tagente_estado
+	WHERE tagente_estado.estado = 4","Total not-init modules");
 
 
 $last_run_difference = '';

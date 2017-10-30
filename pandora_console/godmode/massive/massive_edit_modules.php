@@ -741,7 +741,7 @@ $(document).ready (function () {
 		var params = {
 			"page" : "operation/agentes/ver_agente",
 			"get_agent_modules_json" : 1,
-			"get_id_and_name" : 1,
+			"get_distinct_name" : 1,
 			"indexed" : 0
 		};
 		
@@ -1098,7 +1098,6 @@ $(document).ready (function () {
 							var others = true;
 					}
 					if(any && others){
-							document.forms["form_edit"].agents[i].selected = false;
 							document.forms["form_edit"].agents[0].selected = false;
 					}	
 				}
@@ -1114,7 +1113,6 @@ $(document).ready (function () {
 							var others = true;
 					}
 					if(any && others){
-							document.forms["form_edit"].module[i].selected = false;
 							document.forms["form_edit"].module[0].selected = false;
 					}	
 				}

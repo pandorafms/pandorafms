@@ -111,6 +111,9 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 		$id = (int) get_parameter ("id", 0);
 		// Agent id
 		$agent_id = (int) modules_get_agentmodule_agent($id);
+		// Kind module
+		$type_module = modules_get_agentmodule_kind($id);
+		
 		if (empty($id) || empty($agent_id)) {
 			ui_print_error_message(__('There was a problem locating the source of the graph'));
 			exit;
@@ -151,9 +154,6 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 		}
 
 		$period = get_parameter ("period");
-		if ($period == "") {
-			$period = get_parameter ("period_select", SECONDS_1DAY);
-		}
 		$id = get_parameter ("id", 0);
 		$width = get_parameter ("width", STATWIN_DEFAULT_CHART_WIDTH);
 		$height = get_parameter ("height", STATWIN_DEFAULT_CHART_HEIGHT);
@@ -170,27 +170,28 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 		$time_compare_separated = get_parameter ("time_compare_separated", 0);
 		$time_compare_overlapped = get_parameter ("time_compare_overlapped", 0);
 		$unknown_graph = get_parameter_checkbox ("unknown_graph", 1);
-	
-		if(!isset($config['full_scale_option']) || $config['full_scale_option'] == 0){
-			$fullscale = 0;
-		}
-		elseif($config['full_scale_option'] == 1){
-			$fullscale = 1;
-		}
-		elseif($config['full_scale_option'] == 2){
-			if($graph_type == 'boolean'){
-				$fullscale = 1;	
-			}else{
+
+		//$type_module == 'predictionserver';
+		$fullscale_sent = get_parameter ("fullscale_sent", 0);
+		if(!$fullscale_sent){
+			if(!isset($config['full_scale_option']) || $config['full_scale_option'] == 0){
 				$fullscale = 0;
 			}
+			elseif($config['full_scale_option'] == 1){
+				$fullscale = 1;
+			}
+			elseif($config['full_scale_option'] == 2){
+				if($graph_type == 'boolean'){
+					$fullscale = 1;	
+				}else{
+					$fullscale = 0;
+				}
+			}
+		}
+		else{
+			$fullscale = get_parameter('fullscale', 0);
 		}
 
-		$fullscale_other = get_parameter ("fullscale_other", $fullscale);
-
-		if(isset($fullscale_other)){
-			$fullscale = $fullscale_other;
-		}
-		
 		// To avoid the horizontal overflow
 		$width -= 20;
 		
@@ -422,12 +423,14 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 				break;
 		}
 
-		$data = array();
-		$data[0] = __('Show full scale graph (TIP)');
-		$data[1] = html_print_checkbox ("fullscale", 1, (bool) $fullscale, true, false,'fullscal_other()');
-		$data[1] .= html_print_input_hidden('fullscale_other', 0, true);
-		$table->data[] = $data;
-		$table->rowclass[] = '';
+		if($type_module != 'predictionserver'){
+			$data = array();
+			$data[0] = __('Show full scale graph (TIP)');
+			$data[1] = html_print_checkbox ("fullscale", 1, (bool) $fullscale, 
+									true, false);
+			$table->data[] = $data;
+			$table->rowclass[] = '';
+		}
 		
 		$form_table = html_print_table($table, true);
 		

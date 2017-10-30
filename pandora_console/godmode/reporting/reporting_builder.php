@@ -1069,15 +1069,6 @@ switch ($action) {
 								$values['period'] = get_parameter('period');
 								$good_format = true;
 								break;
-							case 'min_value':
-							case 'max_value':
-							case 'avg_value':
-								$values['period'] = get_parameter('period');
-								$values['lapse_calc'] = get_parameter('lapse_calc');
-								$values['lapse'] = get_parameter('lapse');
-								$values['visual_format'] = get_parameter('visual_format');
-								$good_format = true;
-								break;
 							default:
 								$values['period'] = get_parameter('period');
 								$values['top_n'] = get_parameter('radiobutton_max_min_avg',0);
@@ -1411,15 +1402,6 @@ switch ($action) {
 								$values['show_graph'] =
 									(int)get_parameter('time_compare_overlapped');
 								$values['period'] = get_parameter('period');
-								$good_format = true;
-								break;
-							case 'min_value':
-							case 'max_value':
-							case 'avg_value':
-								$values['period'] = get_parameter('period');
-								$values['lapse_calc'] = get_parameter('lapse_calc');
-								$values['lapse'] = get_parameter('lapse');
-								$values['visual_format'] = get_parameter('visual_format');
 								$good_format = true;
 								break;
 							default:

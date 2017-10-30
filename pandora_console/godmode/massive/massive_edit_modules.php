@@ -503,6 +503,10 @@ $table->data['edit3'][2] = __('SMNP community');
 $table->data['edit3'][3] = html_print_input_text ('snmp_community', '',
 	'', 10, 100, true);
 
+$table->data['edit15'][2] = __('SNMP OID');
+$table->data['edit15'][3] = html_print_input_text ('snmp_oid', '',
+	'', 80, 80, true);
+
 $target_ip_values = array();
 $target_ip_values['auto']      = __('Auto');
 $target_ip_values['force_pri'] = __('Force primary key');
@@ -736,7 +740,8 @@ $(document).ready (function () {
 			"tr#delete_table-edit11, " +
 			"tr#delete_table-edit12, " +
 			"tr#delete_table-edit13, " +
-			"tr#delete_table-edit14").hide ();
+			"tr#delete_table-edit14, " +
+			"tr#delete_table-edit15").hide ();
 		
 		var params = {
 			"page" : "operation/agentes/ver_agente",
@@ -800,7 +805,8 @@ $(document).ready (function () {
 			"tr#delete_table-edit11, " +
 			"tr#delete_table-edit12, " +
 			"tr#delete_table-edit13, " +
-			"tr#delete_table-edit14").show ();
+			"tr#delete_table-edit14, " +
+			"tr#delete_table-edit15").show ();
 	}
 	
 	function clean_lists() {
@@ -829,7 +835,8 @@ $(document).ready (function () {
 			"tr#delete_table-edit11, " +
 			"tr#delete_table-edit12, " +
 			"tr#delete_table-edit13, " +
-			"tr#delete_table-edit14").hide ();
+			"tr#delete_table-edit14, " +
+			"tr#delete_table-edit15").hide ();
 		$('input[type=checkbox]').attr('checked', false);
 		$('input[type=checkbox]').attr('disabled', true);
 		
@@ -877,7 +884,8 @@ $(document).ready (function () {
 							"tr#delete_table-edit11, " +
 							"tr#delete_table-edit12, " +
 							"tr#delete_table-edit13, " +
-							"tr#delete_table-edit14").hide ();
+							"tr#delete_table-edit14, " +
+							"tr#delete_table-edit15").hide ();
 					}
 				}
 			}
@@ -919,7 +927,8 @@ $(document).ready (function () {
 						"tr#delete_table-edit11, " +
 						"tr#delete_table-edit12, " +
 						"tr#delete_table-edit13, " +
-						"tr#delete_table-edit14").show ();
+						"tr#delete_table-edit14, " +
+						"tr#delete_table-edit15").show ();
 				}
 				else {
 					$(".select_agents_row_2").css('display', '');
@@ -942,7 +951,8 @@ $(document).ready (function () {
 							"tr#delete_table-edit11, " +
 							"tr#delete_table-edit12, " +
 							"tr#delete_table-edit13, " +
-							"tr#delete_table-edit14").hide ();
+							"tr#delete_table-edit14, " +
+							"tr#delete_table-edit15").hide ();
 					}
 				}
 			}
@@ -1026,7 +1036,8 @@ $(document).ready (function () {
 				"tr#delete_table-edit11, " +
 				"tr#delete_table-edit12, " +
 				"tr#delete_table-edit13, " +
-				"tr#delete_table-edit14").hide ();
+				"tr#delete_table-edit14, " +
+				"tr#delete_table-edit15").hide ();
 			
 			jQuery.post ("ajax.php",
 				{"page" : "operation/agentes/ver_agente",
@@ -1158,8 +1169,8 @@ function process_manage_edit ($module_name, $agents_select = null, $module_statu
 	/* List of fields which can be updated */
 	$fields = array ('dynamic_interval', 'dynamic_max', 'dynamic_min', 'dynamic_two_tailed', 'min_warning', 'max_warning', 'str_warning',
 		'min_critical', 'max_critical', 'str_critical', 'min_ff_event',
-		'module_interval', 'disabled', 'post_process', 'unit_select',
-		'snmp_community', 'tcp_send', 'custom_string_1',
+		'module_interval', 'disabled', 'post_process', 'unit',
+		'snmp_community','snmp_oid','tcp_send', 'custom_string_1',
 		'plugin_parameter', 'custom_string_2', 'custom_string_3', 'min',
 		'max', 'id_module_group', 'plugin_user', 'plugin_pass',
 		'id_export', 'history_data', 'critical_inverse',

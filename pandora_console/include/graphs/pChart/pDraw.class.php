@@ -2801,6 +2801,22 @@
         return(round($Value/1000,$Format)."K".$Unit);
 
       }
+     // ARTICA-PANDORA HACK BEGIN
+     if ( $Mode == AXIS_FORMAT_TWO_SIGNIFICANT )
+      {
+       // Display only two significant numbers
+       if ($Value != 0) {
+        $multiplier = floor(log(abs($Value), 10)) - 1;
+        $Value = round($Value/pow(10, $multiplier), 0) * pow(10, $multiplier);
+       }
+       if (abs($Value) >= 1000000000)
+        return(round($Value/1000000000,$Format)."G".$Unit);
+       if (abs($Value) >= 1000000)
+        return(round($Value/1000000,$Format)."M".$Unit);
+       elseif (abs($Value) >= 1000)
+        return(round($Value/1000,$Format)."K".$Unit);
+      }
+      // ARTICA-PANDORA HACK END
      return($Value.$Unit);
     }
 

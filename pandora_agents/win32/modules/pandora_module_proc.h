@@ -32,6 +32,7 @@ namespace Pandora_Modules {
 		string process_name;
 		HANDLE thread;
 		bool   watchdog;
+		bool   user_session;
 		string start_command;
 		int retries;
 		int start_delay;
@@ -46,12 +47,14 @@ namespace Pandora_Modules {
 		int    getRetries      () const;
 		int    getStartDelay   () const;
 		int    getRetryDelay   () const;
+		bool   getUserSession  () const;
 		
 		void   setWatchdog     (bool watchdog);
 		void   setStartCommand (string command);
 		void   setRetries      (int retries);
 		void   setStartDelay   (int mseconds);
 		void   setRetryDelay   (int mseconds);
+		void   setUserSession  (bool usession);
 		
 		void   run             ();
 	};

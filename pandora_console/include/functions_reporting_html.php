@@ -2811,13 +2811,13 @@ function reporting_get_stats_summary($data, $graph_width, $graph_height) {
 		$tdata[0] = '<div style="margin: auto; width: ' . $graph_width . 'px;">' . graph_agent_status (false, $graph_width, $graph_height, true, true) . '</div>';
 	}
 	else {
-		$tdata[2] = html_print_image('images/image_problem.png', true, array('width' => $graph_width));
+		$tdata[2] = html_print_image('images/image_problem_area_small.png', true, array('width' => $graph_width));
 	}
 	if ($data["monitor_alerts"] > 0) {
 		$tdata[2] = '<div style="margin: auto; width: ' . $graph_width . 'px;">' . graph_alert_status ($data["monitor_alerts"], $data["monitor_alerts_fired"], $graph_width, $graph_height, true, true) . '</div>';
 	}
 	else {
-		$tdata[2] = html_print_image('images/image_problem.png', true, array('width' => $graph_width));
+		$tdata[2] = html_print_image('images/image_problem_area_small.png', true, array('width' => $graph_width));
 	}
 		$table_sum->rowclass[] = '';
 		$table_sum->data[] = $tdata;
@@ -3881,7 +3881,22 @@ function reporting_get_event_histogram_meta ($width) {
 		EVENT_CRIT_MAJOR => COL_MAJOR,
 		EVENT_CRIT_CRITICAL => COL_CRITICAL
 	);
+	
+	$user_groups = users_get_groups($config['id_user'], 'ER');
+	$user_groups_ids = array_keys($user_groups);
+	
+	if (empty($user_groups)) {
+		$groups_condition = ' AND 1 = 0 ';
+	}
+	else {
+		$groups_condition = ' AND id_grupo IN (' . implode(',', $user_groups_ids) . ') ';
+	}
 
+	if (!check_acl ($config['id_user'], 0, "PM")) {
+		$groups_condition .= " AND id_grupo != 0";
+	}
+	$status_condition = " AND estado = 0 ";
+	
 	$cont = 0;
 	for ($i = 0; $i < $interval; $i++) {
 		$bottom = $datelimit + ($periodtime * $i);
@@ -3909,48 +3924,45 @@ function reporting_get_event_histogram_meta ($width) {
 		$full_legend[$cont] = $name;
 		
 		$top = $datelimit + ($periodtime * ($i + 1));
-		$event = db_get_row_filter ('tmetaconsole_event',
-			array (
-				'utimestamp > '.$bottom,
-				'utimestamp < '.$top), 
-				'criticity, utimestamp');
 		
-		if (!empty($event['utimestamp'])) {
-			$data[$cont]['utimestamp'] = $periodtime;
-			switch ($event['criticity']) {
-				case 0:
-					$data[$cont]['data'] = EVENT_CRIT_MAINTENANCE;
-					break;
-				case 1:
-					$data[$cont]['data'] = EVENT_CRIT_INFORMATIONAL;
-					break;
-				case 2:
-					$data[$cont]['data'] = EVENT_CRIT_NORMAL;
-					break;
-				case 3:
-					$data[$cont]['data'] = EVENT_CRIT_WARNING;
-					break;
-				case 4:
-					$data[$cont]['data'] = EVENT_CRIT_CRITICAL;
-					break;
-				case 5:
-					$data[$cont]['data'] = EVENT_CRIT_MINOR;
-					break;
-				case 6:
-					$data[$cont]['data'] = EVENT_CRIT_MAJOR;
-					break;
-				case 20:
-					$data[$cont]['data'] = EVENT_CRIT_NOT_NORMAL;
-					break;
-				case 34:
-					$data[$cont]['data'] = EVENT_CRIT_WARNING_OR_CRITICAL;
-					break;
-				default:
-					$data[$cont]['data'] = 1;
-					break;
-			}
+		$time_condition = 'utimestamp > '.$bottom . ' AND utimestamp < '.$top; 
+		$sql = sprintf('SELECT criticity,utimestamp
+			FROM tmetaconsole_event
+			WHERE %s %s %s
+			ORDER BY criticity DESC',
+			$time_condition, $groups_condition, $status_condition);
+		
+		$events = db_get_all_rows_sql($sql);
+		
+		$events_criticity = array();
+		foreach ($events as $key => $value) {
+			array_push($events_criticity,$value['criticity']);
 		}
-		else {
+		
+		if (!empty($events)) {
+			if(array_search('4',$events_criticity) !== false){
+				$data[$cont]['data'] = EVENT_CRIT_CRITICAL;
+			}else if (array_search('3',$events_criticity) !== false){
+				$data[$cont]['data'] = EVENT_CRIT_WARNING;
+			}else if(array_search('6',$events_criticity) !== false){
+				$data[$cont]['data'] = EVENT_CRIT_MAJOR;
+			}else if(array_search('5',$events_criticity) !== false){
+				$data[$cont]['data'] = EVENT_CRIT_MINOR;
+			}else if(array_search('20',$events_criticity) !== false){
+				$data[$cont]['data'] = EVENT_CRIT_NOT_NORMAL;
+			}else if(array_search('34',$events_criticity) !== false){
+				$data[$cont]['data'] = EVENT_CRIT_WARNING_OR_CRITICAL;
+			}else if(array_search('2',$events_criticity) !== false){
+				$data[$cont]['data'] = EVENT_CRIT_NORMAL;
+			}else if(array_search('0',$events_criticity) !== false){
+				$data[$cont]['data'] = EVENT_CRIT_MAINTENANCE;
+			}else {
+				$data[$cont]['data'] = EVENT_CRIT_INFORMATIONAL;
+			}
+			
+			$data[$cont]['utimestamp'] = $periodtime;
+			
+		} else {
 			$data[$cont]['utimestamp'] = $periodtime;
 			$data[$cont]['data'] = 1;
 		}

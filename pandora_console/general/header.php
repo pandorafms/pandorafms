@@ -191,7 +191,7 @@ config_check();
 					$_GET['refr'] = null;
 				}
 				
-				$select = db_process_sql("SELECT autorefresh_white_list FROM tusuario WHERE id_user = '" . $config['id_user'] . "'");
+				$select = db_process_sql("SELECT autorefresh_white_list,time_autorefresh FROM tusuario WHERE id_user = '" . $config['id_user'] . "'");
 				$autorefresh_list = json_decode($select[0]['autorefresh_white_list']);
 				
 				if ($autorefresh_list !== null && array_search($_GET['sec2'], $autorefresh_list) !== false) {
@@ -389,7 +389,15 @@ config_check();
 				$("#combo_refr").toggle ();
 				$("#combo_refr").css('padding-right', '9px');
 				href = $("a.autorefresh").attr ("href");
-				$(document).attr ("location", href + "30");
+				<?php
+				if($select[0]['time_autorefresh']){
+				?>
+					var refresh = '<?php echo $select[0]["time_autorefresh"] ?>';
+					$(document).attr ("location", href + refresh);
+				<?php 
+				}
+				?>
+				
 		<?php
 			}
 		}

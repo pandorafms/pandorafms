@@ -2,8 +2,8 @@
 # Pandora FMS Server 
 #
 %define name        pandorafms_server
-%define version     7.0NG.712
-%define release     170908
+%define version     7.0NG.714
+%define release     171030
 
 Summary:            Pandora FMS Server
 Name:               %{name}
@@ -98,6 +98,11 @@ exit 0
 %post
 chkconfig pandora_server on 
 chkconfig tentacle_serverd on 
+
+# Enable the services on SystemD
+systemctl enable tentacle_serverd.service
+systemctl enable pandora_server.service
+
 
 echo "/usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf" > /etc/cron.hourly/pandora_db
 chmod 750 /etc/cron.hourly/pandora_db

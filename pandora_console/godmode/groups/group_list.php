@@ -35,6 +35,7 @@ if (is_ajax ()) {
 	
 	$get_group_json = (bool) get_parameter ('get_group_json');
 	$get_group_agents = (bool) get_parameter ('get_group_agents');
+	$get_is_disabled = (bool) get_parameter ('get_is_disabled');
 	
 	if ($get_group_json) {
 		$id_group = (int) get_parameter ('id_group');
@@ -70,6 +71,7 @@ if (is_ajax ()) {
 		$search = (string) get_parameter ('search', '');
 		$recursion = (int) get_parameter ('recursion', 0);
 		$privilege = (string) get_parameter ('privilege', '');
+		$all_agents = (int) get_parameter ('all_agents', 0);
 		// Is is possible add keys prefix to avoid auto sorting in js object conversion
 		$keys_prefix = (string) get_parameter ('keys_prefix', '');
 		// This attr is for the operation "bulk alert accions add", it controls the query that take the agents
@@ -96,7 +98,12 @@ if (is_ajax ()) {
 			$filter['id_agente'] = json_decode(io_safe_output($filter_agents_json), true);
 		}
 		
-		$filter['disabled'] = $disabled;
+		if ($all_agents) {
+			$filter['all_agents'] = true;
+		}
+		else {
+			$filter['disabled'] = $disabled;
+		}
 		
 		if ($search != '') {
 			$filter['string'] = $search;
@@ -126,15 +133,40 @@ if (is_ajax ()) {
 				false, $recursion, false, '|', $add_alert_bulk_op);
 		}
 		
+		$agents_disabled = array();
 		// Add keys prefix
 		if ($keys_prefix !== "") {
 			foreach($agents as $k => $v) {
 				$agents[$keys_prefix . $k] = $v;
 				unset($agents[$k]);
+				if ($all_agents) {
+					$agent_disabled = db_get_value_filter('disabled', 'tagente', array('id_agente' => $k));
+					$agents_disabled[$keys_prefix . $k] = $agent_disabled;
+				}
 			}
+		}
+
+		if ($all_agents) {
+			$all_agents_array = array();
+			$all_agents_array['agents'] = $agents;
+			$all_agents_array['agents_disabled'] = $agents_disabled;
+
+			$agents = $all_agents_array;
 		}
 		
 		echo json_encode ($agents);
+		return;
+	}
+
+	if ($get_is_disabled) {
+		$index = get_parameter('id_agent');
+
+		$agent_disabled = db_get_value_filter('disabled', 'tagente', array('id_agente' => $index));
+
+		$return['disabled'] = $agent_disabled;
+		$return['id_agent'] = $index;
+
+		echo json_encode($return);
 		return;
 	}
 	

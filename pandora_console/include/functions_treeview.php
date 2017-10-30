@@ -247,8 +247,21 @@ function treeview_printModuleTable($id_module, $server_data = false, $no_head = 
 		$last_data_str = $data;
 
 		if ($module['unit'] != '') {
-			$last_data_str .= "&nbsp;";
-			$last_data_str .= '('.$module['unit'].')';
+			$data_macro = modules_get_unit_macro($last_data["datos"],$module['unit']);
+			if($data_macro){
+				if (is_numeric($data_macro))
+					$last_data_str = "<span style='height: 20px; display: inline-table; vertical-align: top;'>" . 
+						remove_right_zeros(number_format($data_macro, $config['graph_precision'])) . "</span>";
+				else
+					$last_data_str = ui_print_truncate_text(io_safe_output($data_macro),
+						GENERIC_SIZE_TEXT, true, true, true, 
+							'...', 'white-space: nowrap;');
+			} else {
+				$last_data_str .= "&nbsp;";
+				$last_data_str .= '('.$module['unit'].')';
+			}
+			
+			
 		}
 
 		$last_data_str .= "&nbsp;";

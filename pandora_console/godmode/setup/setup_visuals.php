@@ -313,7 +313,7 @@ foreach ($listIcons as $index => $value)
 $table_gis->data[$row][0] = __('Default icon in GIS') .
 	ui_print_help_tip(__('Agent icon for GIS Maps. If set to "none", group icon will be used'), true);
 $table_gis->data[$row][1] = html_print_select($arraySelectIcon,
-	"gis_default_icon", $config["gis_default_icon"], "", __('None'),
+	"gis_default_icon", $config["gis_default_icon"], "", __('Agent icon group'),
 		'', true);
 $table_gis->data[$row][1] .= "&nbsp;" .
 	html_print_button(__("View"), 'gis_icon_preview', false, '', '', true);
@@ -534,6 +534,26 @@ $table_chars->data[$row][0] = __('Percentile');
 $table_chars->data[$row][0] .= ui_print_help_tip(__('Show percentile 95 in graphs'), true);
 $table_chars->data[$row][1] = html_print_input_text ('percentil', $config['percentil'], '', 20, 20, true);
 $row++;
+
+$table_chars->data[$row][0] = __('Graph TIP view:');
+$table_chars->data[$row][0] .= ui_print_help_tip(__('This option may cause performance issues'), true);
+
+$options_full_escale    = array();
+$options_full_escale[0] = __('None');
+$options_full_escale[1] = __('All');
+$options_full_escale[2] = __('On Boolean graphs');
+
+$table_chars->data[$row][1] = html_print_select($options_full_escale, 'full_scale_option', $config["full_scale_option"], '', '', 0, true, false, false);
+$row++;
+
+/*
+	$table_font->data[$row][0] = __('Font path');
+$fonts = load_fonts();
+$table_font->data[$row][1] = html_print_select($fonts, 'fontpath',
+	io_safe_output($config["fontpath"]), '', '', 0, true);
+
+$row++;
+*/
 
 echo "<fieldset>";
 echo "<legend>" . __('Charts configuration') . "</legend>";
@@ -914,6 +934,23 @@ tinyMCE.init({
 });
 
 $(document).ready (function () {
+	
+	var comfort = 0;
+	
+	if(comfort == 0){
+		$(':input,:radio,:checkbox,:file').change(function(){
+			$('#submit-update_button').css({'position':'fixed','right':'80px','bottom':'55px'});
+			var comfort = 1;
+		});
+		
+		$("*").keydown(function(){
+			$('#submit-update_button').css({'position':'fixed','right':'80px','bottom':'55px'});
+			var comfort = 1;
+		});
+		
+		$('#form_setup').after('<br>');	
+		}
+	
 	$("#form_setup #text-graph_color1").attachColorPicker();
 	$("#form_setup #text-graph_color2").attachColorPicker();
 	$("#form_setup #text-graph_color3").attachColorPicker();

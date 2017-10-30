@@ -30,6 +30,7 @@
 <li>_timestamp_ : アラートが発生した日時 (yy-mm-dd hh:mm:ss).</li>
 <li>_timezone_: _timestamp_ で使用されるタイムゾーン名.</li>
 <li>_data_ : アラート発生時のモジュールのデータ(値)</li>
+<li>_prevdata_ : アラート発生前のモジュールデータ</li>
 <li>_alert_description_ : アラートの説明</li>
 <li>_alert_threshold_ : アラートのしきい値</li>
 <li>_alert_times_fired_ : アラートが発生した回数</li>
@@ -38,6 +39,7 @@
 <li>_modulegroup_ : モジュールグループ名</li>
 <li>_moduledescription_ : アラートが発生したモジュールの説明</li>
 <li>_modulestatus_ : モジュールの状態</li>
+<li>_moduledata_X_: モジュール X の最新データ (モジュール名にスペースを含めることはできません)</li>
 <li>_alert_name_ : アラート名</li>
 <li>_alert_priority_ : アラート優先順位(数値)</li>
 <li>_alert_text_severity_ : テキストでのアラートの重要度 (Maintenance, Informational, Normal Minor, Warning, Major, Critical)</li>
@@ -45,12 +47,15 @@
 <li>_event_id_ : (イベントアラートのみ) アラート発生元のイベントID</li>
 <li>_id_agent_ : エージェントのID / Webコンソールへのリンクを生成するのに便利です</li>
 <li>_id_group_ : エージェントグループのID</li>
+<li>_id_module_ : モジュール ID</li>
 <li>_id_alert_ : アラートの(ユニークな)ID / 他のソフトウエアパッケージとの連携に利用できます</li>
 <li>_policy_ : モジュールが属するポリシー名 (存在する場合)</li>
 <li>_interval_ : モジュールの実行間隔</li>
 <li>_target_ip_ : モジュールの対象IPアドレス</li>
 <li>_target_port_ : モジュールの対象ポート</li>
 <li>_plugin_parameters_ : モジュールのプラグインパラメータ</li>
+<li>_server_ip_ : Ip of server assigned to agent. </li>
+<li>_server_name_ : Name of server assigned to agent. </li>
 <li>_groupcontact_ : グループコンタクト情報。グループの作成時に設定されます。</li>
 <li>_groupcustomid_: グループカスタムID</li>
 <li>_groupother_ : グループに関するその他情報。グループの作成時に設定されます。</li>
@@ -63,6 +68,7 @@
 <li>_alert_unknown_instructions_: モジュールの不明状態時手順。</li>
 <li>_modulegraph_<i>n</i>h_: (>=6.0) (<i>eMail</i>コマンドを使うアラートのみ)
 n で示す期間の base64 でエンコードされたモジュールグラフを返します。(例: _modulegraph_24h_) サーバとコンソールの API の設定が正しくできている必要があります。この設定は、サーバの設定ファイルで行います。 </li>
+<li>_modulegraphth_<i>n</i>h_: 上記のマクロと同じですが、モジュールに定義さっれた障害および警告閾値を含みます。</li>
 </ul>
 
 <p>

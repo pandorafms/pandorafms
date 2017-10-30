@@ -169,7 +169,7 @@ Pandora_Module_Logevent::run () {
 	this->openLogEvent();
     
 	// Read events
-	this->getLogEvents (event_list, 0);
+	this->getLogEvents (event_list);
 
 	// No data
 	if (event_list.size () < 1) {
@@ -215,7 +215,7 @@ Pandora_Module_Logevent::openLogEvent () {
     if (this->first_run == 1) {
 		this->first_run = 0;
 		if (Pandora::getPandoraDebug() == false) {
-			this->getLogEvents (event_list, 1);
+			this->seekAtTop (event_list);
 		}
     }
 
@@ -238,10 +238,85 @@ Pandora_Module_Logevent::closeLogEvent () {
 }
 
 /** 
+ * Puts the event handler on top of event list
+ * avoiding the use of EVENTLOG_SEEK_READ because it is buggy
+ */
+int
+Pandora_Module_Logevent::seekAtTop (list<string> &event_list) {
+	BYTE *buffer = NULL, *new_buffer = NULL;
+	DWORD to_read, read, needed;
+	EVENTLOGRECORD *pevlr = NULL;
+	bool rc = false;
+	DWORD last_error;
+	DWORD direction = EVENTLOG_BACKWARDS_READ;
+	
+	if (this->log_event == NULL) {
+	    return -1;
+	}
+	
+	// Initialize the event record buffer
+	to_read = BUFFER_SIZE;
+	buffer = (BYTE *) malloc (sizeof (BYTE) * BUFFER_SIZE);
+	if (buffer == NULL) {
+	    	return -1;
+	}
+	pevlr = (EVENTLOGRECORD *) buffer;
+
+	// Read events
+	while (1) {
+
+		rc = ReadEventLog (this->log_event, direction | EVENTLOG_SEQUENTIAL_READ, 0, pevlr, to_read, &read, &needed);
+		direction = EVENTLOG_FORWARDS_READ;
+		if (!rc) {
+
+			// Get error details
+			last_error = GetLastError();
+
+			// Not enough space in the buffer
+			if(last_error == ERROR_INSUFFICIENT_BUFFER) {
+
+				// Initialize the new event record buffer
+				to_read = needed;
+				new_buffer = (BYTE *) realloc (buffer, sizeof (BYTE) * needed);
+				if (new_buffer == NULL) {
+					free ((void *) buffer);
+					return -1;
+				}
+				
+				buffer = new_buffer;
+				pevlr = (EVENTLOGRECORD *) buffer;
+
+				// Try to read the event again
+				continue;
+			// File corrupted or cleared
+			} else if (last_error == ERROR_EVENTLOG_FILE_CORRUPT || last_error == ERROR_EVENTLOG_FILE_CHANGED) {
+				closeLogEvent ();
+				free ((void *) buffer);
+				return -1;
+			}
+			// Unknown error
+			else {
+				free ((void *) buffer);
+				return -1;
+			}
+		}
+		
+		// No more events
+		if (read == 0) {
+			free ((void *) buffer);
+			return 0;
+		}
+	}
+
+	free ((void *) buffer);
+	return 0;
+}
+
+/** 
  * Reads available events from the event log.
  */
 int
-Pandora_Module_Logevent::getLogEvents (list<string> &event_list, unsigned char discard) {
+Pandora_Module_Logevent::getLogEvents (list<string> &event_list) {
 	char message[BUFFER_SIZE], timestamp[TIMESTAMP_LEN + 1];
 	struct tm *time_info = NULL;
 	time_t epoch;
@@ -312,11 +387,6 @@ Pandora_Module_Logevent::getLogEvents (list<string> &event_list, unsigned char d
 		if (read == 0) {
 			free ((void *) buffer);
 			return 0;
-		}
-		
-		// Discard existing events
-		if (discard == 1) {
-			continue;
 		}
 
 		// Process read events

@@ -291,7 +291,7 @@ if (modules_is_string_type($id_module_type) || $edit) {
 	$table_simple->data[4][1] .= '<br /><em>'.__('Inverse interval').'</em>';
 	$table_simple->data[4][1] .= html_print_checkbox ("warning_inverse", 1, $warning_inverse, true, $disabledBecauseInPolicy);
 if (!modules_is_string_type($id_module_type) || $edit) {
-	$table_simple->data[4][2] = '<svg id="svg_dinamic" width="350" height="200" style="padding:40px; padding-left: 100px; margin-bottom: 60px;"> </svg>';
+	$table_simple->data[4][2] = '<svg id="svg_dinamic" width="350px" height="200px" style="padding:40px; padding-left: 100px; margin-bottom: 60px;"></svg>';
 	$table_simple->colspan[4][2] = 2;
 	$table_simple->rowspan[4][2] = 3;
 }
@@ -363,8 +363,12 @@ $table_advanced->data[1][1] = html_print_input_text ('custom_id', $custom_id, ''
 							 $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
 
 $table_advanced->data[1][3] = __('Unit');
-$table_advanced->data[1][4] = html_print_input_text ('unit', $unit, '', 20, 65, true,
-							 $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
+// $table_advanced->data[1][4] = html_print_input_text ('unit', $unit, '', 20, 65, true,
+// 							 $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
+// $table_advanced->colspan[1][4] = 3;
+$table_advanced->data[1][4] =
+	html_print_extended_select_for_unit('unit',
+		$unit, '', '', '0', false, true, false, false);
 $table_advanced->colspan[1][4] = 3;
 
 $module_id_policy_module = 0;
@@ -1319,8 +1323,8 @@ function paint_graph_status(min_w, max_w, min_c, max_c, inverse_w, inverse_c, er
 			.attr("id", "legend_normal")
 	       	.attr("x", 72)
 	       	.attr("y", -30)
-	       	.attr("width", 10)
-	       	.attr("height", 10)
+	       	.attr("width", '10px')
+	       	.attr("height", '10px')
 	  		.style("fill", "#82B92E");
 
 	  	//legend Warning text
@@ -1339,8 +1343,8 @@ function paint_graph_status(min_w, max_w, min_c, max_c, inverse_w, inverse_c, er
 			.attr("id", "legend_warning")
 	       	.attr("x", 168)
 	       	.attr("y", -30)
-	       	.attr("width", 10)
-	       	.attr("height", 10)
+	       	.attr("width", '10px')
+	       	.attr("height", '10px')
 	  		.style("fill", "#ffd731");
 
 	  	//legend Critical text
@@ -1359,8 +1363,8 @@ function paint_graph_status(min_w, max_w, min_c, max_c, inverse_w, inverse_c, er
 			.attr("id", "legend_critical")
 	       	.attr("x", 258)
 	       	.attr("y", -30)
-	       	.attr("width", 10)
-	       	.attr("height", 10)
+	       	.attr("width", '10px')
+	       	.attr("height", '10px')
 	  		.style("fill", "#fc4444");
 
 		//styles for number and axes
@@ -1378,8 +1382,8 @@ function paint_graph_status(min_w, max_w, min_c, max_c, inverse_w, inverse_c, er
 			.attr("id", "warning_rect")
 	       	.attr("x", 3)
 	       	.attr("y", 0)
-	       	.attr("width", 300)
-	       	.attr("height", 200)
+	       	.attr("width", '300px')
+	       	.attr("height", '200px')
 	  		.style("fill", "#82B92E");
 	  	
 	  	//controls the inverse warning

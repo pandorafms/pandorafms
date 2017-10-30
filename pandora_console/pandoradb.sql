@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS `tagente` (
 	`custom_id` varchar(255) default '',
 	`server_name` varchar(100) default '',
 	`cascade_protection` tinyint(2) NOT NULL default '0',
-	`cascade_protection_module` tinyint(2) NOT NULL default '0',
+	`cascade_protection_module` int(10) unsigned NOT NULL default '0',
 	`timezone_offset` TINYINT(2) NULL DEFAULT '0' COMMENT 'nuber of hours of diference with the server timezone' ,
 	`icon_path` VARCHAR(127) NULL DEFAULT NULL COMMENT 'path in the server to the image of the icon representing the agent' ,
 	`update_gis_data` TINYINT(1) NOT NULL DEFAULT '1' COMMENT 'set it to one to update the position data (altitude, longitude, latitude) when getting information from the agent or to 0 to keep the last value and do not update it' ,
@@ -99,7 +99,7 @@ CREATE TABLE IF NOT EXISTS `tagente_datos` (
 	`id_agente_modulo` int(10) unsigned NOT NULL default '0',
 	`datos` double(22,5) default NULL,
 	`utimestamp` bigint(20) default '0',
-	KEY `data_index1` (`id_agente_modulo`),
+	KEY `data_index1` (`id_agente_modulo`, `utimestamp`),
 	KEY `idx_utimestamp` USING BTREE (`utimestamp`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
 
@@ -120,7 +120,7 @@ CREATE TABLE IF NOT EXISTS `tagente_datos_string` (
 	`id_agente_modulo` int(10) unsigned NOT NULL default '0',
 	`datos` mediumtext NOT NULL,
 	`utimestamp` int(20) unsigned NOT NULL default 0,
-	KEY `data_string_index_1` (`id_agente_modulo`),
+	KEY `data_string_index_1` (`id_agente_modulo`, `utimestamp`),
 	KEY `idx_utimestamp` USING BTREE (`utimestamp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -1114,6 +1114,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
 	`session_time` int(10) signed NOT NULL default 0,
 	`default_event_filter` int(10) unsigned NOT NULL default 0,
 	`autorefresh_white_list` text not null default '',
+	`time_autorefresh` int(5) unsigned NOT NULL default '30',
 	CONSTRAINT `fk_filter_id` FOREIGN KEY (`id_filter`) REFERENCES tevent_filter (`id_filter`) ON DELETE SET NULL,
 	UNIQUE KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -1355,6 +1356,7 @@ CREATE TABLE IF NOT EXISTS `tlayout_data` (
 	`label_position` varchar(50) NOT NULL default 'down',
 	`border_color` varchar(200) DEFAULT "",
 	`fill_color` varchar(200) DEFAULT "",
+	`show_statistics` tinyint(2) NOT NULL default '0',
 	PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

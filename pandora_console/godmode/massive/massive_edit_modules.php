@@ -501,7 +501,7 @@ $table->data['edit3'][1] = html_print_extended_select_for_post_process('post_pro
 			
 $table->data['edit3'][2] = __('SMNP community');
 $table->data['edit3'][3] = html_print_input_text ('snmp_community', '',
-	'', 10, 15, true);
+	'', 10, 100, true);
 
 $table->data['edit15'][2] = __('SNMP OID');
 $table->data['edit15'][3] = html_print_input_text ('snmp_oid', '',
@@ -569,7 +569,7 @@ foreach ($targets2 as $t) {
 
 $table->data['edit6'][1] = html_print_select ($targets, 'id_export', '','', __('No change'), '', true, false, false);
 $table->data['edit6'][2] = __('Unit');
-$table->data['edit6'][3] = html_print_input_text ('unit', '', '', 15, 60, true);
+$table->data['edit6'][3] =  html_print_extended_select_for_unit('unit','', '', '', '0', '15', true, false, false);
 
 
 /* FF stands for Flip-flop */
@@ -746,7 +746,7 @@ $(document).ready (function () {
 		var params = {
 			"page" : "operation/agentes/ver_agente",
 			"get_agent_modules_json" : 1,
-			"get_id_and_name" : 1,
+			"get_distinct_name" : 1,
 			"indexed" : 0
 		};
 		
@@ -1098,6 +1098,37 @@ $(document).ready (function () {
 		selector = $("#form_edit input[name=selection_mode]:checked").val();
 		$("#id_agents").trigger("change");
 	});
+	
+	$('#agents').change(function(e){
+				for(var i=0;i<document.forms["form_edit"].agents.length;i++)	{
+					
+					if(document.forms["form_edit"].agents[0].selected == true){
+						var any = true;
+					}
+					if(i != 0 && document.forms["form_edit"].agents[i].selected){
+							var others = true;
+					}
+					if(any && others){
+							document.forms["form_edit"].agents[0].selected = false;
+					}	
+				}
+	});
+	
+	$('#module').change(function(e){
+				for(var i=0;i<document.forms["form_edit"].module.length;i++)	{
+					
+					if(document.forms["form_edit"].module[0].selected == true){
+						var any = true;
+					}
+					if(i != 0 && document.forms["form_edit"].module[i].selected){
+							var others = true;
+					}
+					if(any && others){
+							document.forms["form_edit"].module[0].selected = false;
+					}	
+				}
+	});
+	
 });
 
 function disabled_status () {
@@ -1168,6 +1199,13 @@ function process_manage_edit ($module_name, $agents_select = null, $module_statu
 			case 'post_process':
 				if($value !== '-1'){
 					$values['post_process'] = $value;
+				}
+				break;
+			case 'unit_select':
+				if($value == "none"){
+					$values['unit'] = (string) get_parameter('unit_text');
+				} else {
+					$values['unit'] = $value;
 				}
 				break;
 			default:

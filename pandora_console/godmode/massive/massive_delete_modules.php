@@ -600,7 +600,7 @@ $(document).ready (function () {
 		var params = {
 			"page" : "operation/agentes/ver_agente",
 			"get_agent_modules_json" : 1,
-			"get_id_and_name" : 1,
+			"get_distinct_name" : 1,
 			"indexed" : 0,
 			"privilege" : "AW"
 		};
@@ -788,6 +788,37 @@ $(document).ready (function () {
 			$("#module_type").trigger("change");
 		}
 	});
+	
+	$('#agents').change(function(e){
+				for(var i=0;i<document.forms["form_modules"].agents.length;i++)	{
+					
+					if(document.forms["form_modules"].agents[0].selected == true){
+						var any = true;
+					}
+					if(i != 0 && document.forms["form_modules"].agents[i].selected){
+							var others = true;
+					}
+					if(any && others){
+							document.forms["form_modules"].agents[0].selected = false;
+					}	
+				}
+	});
+	
+	$('#module').change(function(e){
+				for(var i=0;i<document.forms["form_modules"].module.length;i++)	{
+					
+					if(document.forms["form_modules"].module[0].selected == true){
+						var any = true;
+					}
+					if(i != 0 && document.forms["form_modules"].module[i].selected){
+							var others = true;
+					}
+					if(any && others){
+							document.forms["form_modules"].module[0].selected = false;
+					}	
+				}
+	});
+		
 });
 /* ]]> */
 </script>

@@ -756,6 +756,7 @@ else {
 	}
 	
 	$nodes_and_relations = networkmap_process_networkmap($id);
+	
 	show_networkmap($id, $user_readonly, $nodes_and_relations, $dash_mode, $map_dash_details);
 }
 ?>

@@ -1037,19 +1037,19 @@ function createGauges(data, width, height, font_size, no_data_image, font) {
 		label = label.replace(/&#40;/g,'\(');
 		label = label.replace(/&#41;/g,'\)');
 		
-		minimun_warning 	= parseFloat( data[key].min_warning );
-		maximun_warning 	= parseFloat( data[key].max_warning );
-		minimun_critical	= parseFloat( data[key].min_critical );
-		maximun_critical 	= parseFloat( data[key].max_critical );
+		minimun_warning 	= round_with_decimals(parseFloat( data[key].min_warning ));
+		maximun_warning 	= round_with_decimals(parseFloat( data[key].max_warning ));
+		minimun_critical	= round_with_decimals(parseFloat( data[key].min_critical ));
+		maximun_critical 	= round_with_decimals(parseFloat( data[key].max_critical ));
 
-		mininum = parseFloat(data[key].min);
-		maxinum = parseFloat(data[key].max);
+		mininum = round_with_decimals(parseFloat(data[key].min));
+		maxinum = round_with_decimals(parseFloat(data[key].max));
 	
 		critical_inverse = parseInt(data[key].critical_inverse);
 		warning_inverse  = parseInt(data[key].warning_inverse);
 
-		valor = parseFloat(data[key].value);
-		
+		valor = round_with_decimals(data[key].value);
+
 		if (isNaN(valor)) 
 			valor = null;
 		createGauge(nombre, label, valor, mininum, maxinum, 
@@ -1281,7 +1281,7 @@ function Gauge(placeholderName, configuration, font)
 	{
 		var pointerContainer = this.body.select(".pointerContainer");
 		
-		pointerContainer.selectAll("text").text(Math.round(value));
+		pointerContainer.selectAll("text").text(round_with_decimals(value));
 		
 		var pointer = pointerContainer.selectAll("path");
 		pointer.transition()
@@ -1492,6 +1492,14 @@ function print_phases_donut (recipient, phases) {
 		polyline.exit()
 			.remove();
 	}
+}
+
+function round_with_decimals (value, multiplier = 1) {
+	if ((value * multiplier) == 0) return 0;
+	if ((value * multiplier) >= 1) {
+		return Math.round(value * multiplier) / multiplier;
+	}
+	return round_with_decimals (value, multiplier * 10);
 }
 
 function progress_bar_d3 (recipient, percentile, width, height, color, unit, label, label_color) {

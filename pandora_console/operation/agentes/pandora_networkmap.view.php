@@ -681,6 +681,8 @@ $id = (int) get_parameter('id_networkmap', 0);
 $dash_mode = 0;
 $map_dash_details = array();
 
+$networkmap = db_get_row('tmap', 'id', $id);
+
 if (enterprise_installed()) {
 	include_once("enterprise/dashboard/widgets/network_map.php");
 	if ($id_networkmap) {
@@ -693,9 +695,13 @@ if (enterprise_installed()) {
 		$map_dash_details['y_offs'] = $y_offs;
 		$map_dash_details['z_dash'] = $z_dash;
 	}
+	else {
+		$networkmap_filter = json_decode($networkmap['filter'], true);
+		$map_dash_details['x_offs'] = $networkmap_filter['x_offs'];
+		$map_dash_details['y_offs'] = $networkmap_filter['y_offs'];
+		$map_dash_details['z_dash'] = $networkmap_filter['z_dash'];
+	}
 }
-
-$networkmap = db_get_row('tmap', 'id', $id);
 
 if ($networkmap === false) {
 	ui_print_page_header(__('Networkmap'),

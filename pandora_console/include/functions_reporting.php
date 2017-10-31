@@ -232,6 +232,12 @@ function reporting_make_reporting_data($report = null, $id_report,
 						$report,
 						$content);
 				break;
+			case 'increment':
+				$report['contents'][] =
+					reporting_increment(
+						$report,
+						$content);
+				break;
 			case 'general':
 				$report['contents'][] =
 					reporting_general(
@@ -5568,6 +5574,101 @@ function reporting_availability_graph($report, $content, $pdf=false) {
 			}
 		}
 	}
+	return reporting_check_structure_content($return);
+}
+
+/**
+ * reporting_increment
+ *
+ *  Generates a structure the report.
+ *
+ */
+function reporting_increment ($report, $content) {
+	global $config;
+
+	$return = array();
+	$return['type'] = 'increment';
+	if (empty($content['name'])) {
+		$content['name'] = __('Increment');
+	}
+	
+	$return['title'] = $content['name'];
+	$return["description"] = $content["description"];
+	$return["id_agent_module"] = $content["id_agent_module"];
+	$return["id_agent"] = $content["id_agent"];
+
+	$id_agent_module = $content['id_agent_module'];
+	$period = (int)$content['period'];
+
+	$return["from"] = time() - $period;
+	$return["to"] = time();
+
+	$return["data"] = array();
+
+	if (defined('METACONSOLE')) {
+		$sql1 = 'SELECT datos FROM tagente_datos WHERE id_agente_modulo = ' . $id_agent_module . ' 
+									 AND utimestamp <= ' . (time() - $period) . ' ORDER BY utimestamp DESC';
+		$sql2 = 'SELECT datos FROM tagente_datos WHERE id_agente_modulo = ' . $id_agent_module . ' ORDER BY utimestamp DESC';
+
+		$servers = db_get_all_rows_sql ('SELECT *
+		FROM tmetaconsole_setup
+		WHERE disabled = 0');
+
+		if ($servers === false)
+			$servers = array();
+		
+		$result = array();
+		$count_modules = 0;
+		foreach ($servers as $server) {
+			// If connection was good then retrieve all data server
+			if (metaconsole_connect($server) == NOERR)
+				$connection = true;
+			else
+				$connection = false;
+			
+			$old_data = db_get_value_sql ($sql1);
+
+			$last_data = db_get_value_sql ($sql2);
+		}
+	}
+	else {
+		$old_data = db_get_value_sql('SELECT datos FROM tagente_datos WHERE id_agente_modulo = ' . $id_agent_module . ' 
+									 AND utimestamp <= ' . (time() - $period) . ' ORDER BY utimestamp DESC');
+
+		$last_data = db_get_value_sql('SELECT datos FROM tagente_datos WHERE id_agente_modulo = ' . $id_agent_module . ' ORDER BY utimestamp DESC');
+	}
+
+	if (!defined('METACONSOLE')) {
+
+	}
+
+	if ($old_data === false || $last_data === false) {
+		$return["data"]['message'] = __('The monitor have no data in this range of dates or monitor type is not numeric');
+		$return["data"]['error'] = true;
+	}
+	else if (is_numeric($old_data) && is_numeric($last_data)) {
+		$return["data"]['old'] = $old_data;
+		$return["data"]['now'] = $last_data;
+		$increment = $old_data - $last_data;
+		
+		if ($increment < 0) {
+			$return["data"]['inc'] = 'positive';
+			$return["data"]["inc_data"] = $last_data - $old_data;
+		}
+		else if ($increment == 0) {
+			$return["data"]['inc'] = 'neutral';
+			$return["data"]["inc_data"] = 0;
+		}
+		else {
+			$return["data"]['inc'] = 'negative';
+			$return["data"]["inc_data"] = $old_data - $last_data;
+		}
+	}
+	else {
+		$return["data"]['message'] = __('The monitor type is not numeric');
+		$return["data"]['error'] = true;
+	}
+
 	return reporting_check_structure_content($return);
 }
 

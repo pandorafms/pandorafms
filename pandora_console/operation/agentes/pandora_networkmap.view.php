@@ -13,8 +13,10 @@
 // Load global variables
 global $config;
 
-// Check user credentials
-check_login();
+// Public dashboards have not user. Try to get from URL
+if (!isset($config['id_user'])) {
+	$config['id_user'] = get_parameter('id_user');
+}
 
 require_once ('include/functions_pandora_networkmap.php');
 enterprise_include_once('include/functions_policies.php');

@@ -15,7 +15,10 @@
 // Login check
 global $config;
 
-check_login ();
+// Public dashboards have not user. Try to get from URL
+if (!isset($config['id_user'])) {
+	$config['id_user'] = get_parameter('id_user');
+}
 
 // Fix: IW was the old ACL to check for report editing, now is RW
 if (! check_acl ($config['id_user'], 0, "VR")) {

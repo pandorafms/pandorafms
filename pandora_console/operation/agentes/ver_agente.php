@@ -702,6 +702,18 @@ if (is_ajax ()) {
 		foreach ($agent_modules as $key => $module) {
 			$agent_modules[$key]['nombre'] = io_safe_output($module['nombre']);
 		}
+
+		$get_order_json = (bool)get_parameter('get_order_json', false);
+		if ($get_order_json) {
+			$new_elements = array();
+			$index = 0;
+			foreach ($agent_modules as $key => $module) {
+				$new_elements[$index]['id_agente_modulo'] = $module['id_agente_modulo'];
+				$new_elements[$index]['nombre'] = io_safe_output($module['nombre']);
+				$index++;
+			}
+			$agent_modules = $new_elements;
+		}
 		
 		echo json_encode ($agent_modules);
 		

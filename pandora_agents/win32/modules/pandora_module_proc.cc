@@ -48,6 +48,7 @@ Pandora_Module_Proc::Pandora_Module_Proc (string name, string process_name)
 	this->setKind (module_proc_str);
 	
 	this->watchdog = false;
+	this->user_session = false;
 	this->start_command = "";
 	this->retries = 3;
 	this->start_delay = 5000;
@@ -95,6 +96,11 @@ Pandora_Module_Proc::getRetryDelay () const {
 	return this->retry_delay;
 }
 
+bool
+Pandora_Module_Proc::getUserSession () const {
+	return this->user_session;
+}
+
 void
 Pandora_Module_Proc::setWatchdog (bool watchdog) {
 	this->watchdog = watchdog;
@@ -132,6 +138,11 @@ Pandora_Module_Proc::setRetryDelay (int mseconds) {
 }
 
 void
+Pandora_Module_Proc::setUserSession (bool usession) {
+	this->user_session = usession;
+}
+
+void
 async_run (Pandora_Module_Proc *module) {
 	HANDLE              *processes = NULL;
 	int                  nprocess;
@@ -156,7 +167,7 @@ async_run (Pandora_Module_Proc *module) {
 				}
 
                 Sleep (module->getRetryDelay ());
-				Pandora_Wmi::runProgram (module->getStartCommand ());
+				Pandora_Wmi::runProgram (module->getStartCommand (), NULL, module->getUserSession());
                 Sleep (module->getStartDelay ());
 				counter++;
 				continue;

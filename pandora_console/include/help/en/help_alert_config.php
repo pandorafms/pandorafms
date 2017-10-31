@@ -58,6 +58,8 @@ Apart from the defined module macros, the following macros are also available:
 <li>_id_alert_ : Numerical ID of the alert (unique), used to correlate on third party software</li>
 <li>_policy_ : Name of the policy the module belongs to (if applies).</li>
 <li>_interval_ : Execution interval of the module. </li>
+<li>_server_ip_ : Ip of server assigned to agent. </li>
+<li>_server_name_ : Name of server assigned to agent. </li>
 <li>_target_ip_ : IP address of the target of the module.</li>
 <li>_target_port_ : Port number of the target of the module.</li>
 <li>_plugin_parameters_ : Plug-in Parameters of the module.</li>

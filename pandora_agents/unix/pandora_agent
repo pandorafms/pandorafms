@@ -41,7 +41,7 @@ my $Sem = undef;
 my $ThreadSem = undef;
 
 use constant AGENT_VERSION => '7.0NG.714';
-use constant AGENT_BUILD => '171025';
+use constant AGENT_BUILD => '171031';
 
 # Agent log default file size maximum and instances
 use constant DEFAULT_MAX_LOG_SIZE => 600000;
@@ -1579,6 +1579,9 @@ sub guess_os_version ($) {
 	# AIX
 	} elsif ($os eq 'aix') {
 		$os_version = "$2.$1" if (`uname -rv` =~ /\s*(\d)\s+(\d)\s*/);
+	# Darwin
+	} elsif ($os eq 'darwin') {
+		$os_version = `defaults read loginwindow SystemVersionStampAsString`;
 	# Windows
 	} elsif ($os =~ /win/i) {
 		$os_version = `ver`;

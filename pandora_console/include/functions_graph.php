@@ -1061,11 +1061,11 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	$name_list = array(), $unit_list = array(), $show_last = true, $show_max = true,
 	$show_min = true, $show_avg = true, $labels = array(), $dashboard = false,
 	$vconsole = false, $percentil = null, $from_interface = false, 
-	$id_widget_dashboard=false, $fullscale = false) {
+	$id_widget_dashboard=false, $fullscale = false, $summatory = 0, $average = 0) {
 	
 	global $config;
 	global $graphic_type;
-
+	
 	if(!$fullscale){
 		$time_format_2 = '';
 		$temp_range = $period;
@@ -1151,7 +1151,8 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				$weight_list[$i] = 1;
 			}
 		}
-		
+
+		$aux_array = array();
 		// Set data containers
 		for ($i = 0; $i < $resolution; $i++) {
 			$timestamp = $datelimit + ($interval * $i);/*
@@ -1203,12 +1204,12 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			
 			// If its a projection graph,
 			// first module will be data and second will be the projection
+			
 			if ($projection != false && $i != 0) {
 				if ($automatic_custom_graph_meta)
 					$agent_module_id = $module_list[0]['module'];
 				else
 					$agent_module_id = $module_list[0];
-				
 				$id_module_type = modules_get_agentmodule_type ($agent_module_id);
 				$module_type = modules_get_moduletype_name ($id_module_type);
 				$uncompressed_module = is_module_uncompressed ($module_type);
@@ -1218,7 +1219,6 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 					$agent_module_id = $module_list[$i]['module'];
 				else
 					$agent_module_id = $module_list[$i];
-				
 				
 				$id_module_type = modules_get_agentmodule_type ($agent_module_id);
 				$module_type = modules_get_moduletype_name ($id_module_type);
@@ -1292,6 +1292,21 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				continue;
 			}
 			
+			// if(empty($aux_array)){
+			// 	foreach ($data as $key => $value) {
+			// 		$aux_array[$value['utimestamp']] = $value['datos'];
+			// 	}
+			// } else {
+				// foreach ($data as $key => $value) {
+				// 	if(array_key_exists($value['utimestamp'],$aux_array)){
+				// 		$aux_array[$value['utimestamp']] = $aux_array[$value['utimestamp']] + $value['datos'];
+				// 	} else {
+				// 		$aux_array[$value['utimestamp']] = $value['datos'];
+				// 	}
+				// }
+			// }
+			
+			// html_debug($aux_array);
 			if (!empty($name_list) && $names_number == $module_number && isset($name_list[$i])) {
 				if ($labels[$agent_module_id] != '')
 					$module_name_list[$i] = $labels[$agent_module_id];
@@ -2054,7 +2069,37 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			$threshold_data['red_inverse'] = (bool)$red_inverse;
 		}
 	}
-
+	
+	//summatory and average series
+	if($stacked == CUSTOM_GRAPH_AREA  || $stacked == CUSTOM_GRAPH_LINE) {
+		if($summatory && $average){
+			foreach ($graph_values as $key => $value) {
+				$cont = count($value);
+				$summ = array_sum($value);
+				array_push($value,$summ);
+				array_push($value,$summ/$cont);
+				$graph_values[$key] = $value;
+			}
+			array_push($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
+			array_push($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
+			
+		} elseif($summatory) {
+			foreach ($graph_values as $key => $value) {
+				array_push($value,array_sum($value));
+				$graph_values[$key] = $value;
+			}
+			array_push($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
+			
+		} elseif($average) {
+			foreach ($graph_values as $key => $value) {
+				$summ = array_sum($value) / count($value);
+				array_push($value,$summ);
+				$graph_values[$key] = $value;
+			}
+			array_push($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
+		}
+	}
+	
 	switch ($stacked) {
 		case CUSTOM_GRAPH_AREA:
 			return area_graph($flash_charts, $graph_values, $width,

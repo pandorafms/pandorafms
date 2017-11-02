@@ -776,8 +776,8 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 			}
 
 			$data = array();
-			$data['agent']        = modules_get_agentmodule_agent_alias($sla['id_agent_module']);
-			$data['module']       = modules_get_agentmodule_name($sla['id_agent_module']);
+			$data['agent']        = io_safe_output(modules_get_agentmodule_agent_alias($sla['id_agent_module']));
+			$data['module']       = io_safe_output(modules_get_agentmodule_name($sla['id_agent_module']));
 			$data['max']          = $sla['sla_max'];
 			$data['min']          = $sla['sla_min'];
 			$data['sla_limit']    = $sla['sla_limit'];
@@ -886,8 +886,8 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 			// Slice graphs calculation
 			if ($show_graphs) {
 				$dataslice = array();
-				$dataslice['agent'] = modules_get_agentmodule_agent_alias ($sla['id_agent_module']);
-				$dataslice['module'] = modules_get_agentmodule_name ($sla['id_agent_module']);
+				$dataslice['agent'] = io_safe_output(modules_get_agentmodule_agent_alias ($sla['id_agent_module']));
+				$dataslice['module'] = io_safe_output(modules_get_agentmodule_name ($sla['id_agent_module']));
 				$dataslice['sla_value'] = $data['sla_value'];
 				$dataslice['order'] = $data['sla_value'];
 

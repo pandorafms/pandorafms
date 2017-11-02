@@ -184,7 +184,7 @@ if ($get_module_detail) {
 	if (preg_match("/_string/", $moduletype_name)) {
 		$formtable->data[2][0] = __('Free search') . ' ';
 		$formtable->data[2][1] = html_print_input_text ('freesearch', $freesearch, '', 20, null, true);
-		$formtable->data[2][2] = html_print_checkbox('free_checkbox', 1, $free_checkbox, true) .
+		$formtable->data[2][2] = html_print_checkbox('free_checkbox', 1, $free_checkbox, true);
 		$formtable->data[2][2] .= ' ' . __('Exact phrase');
 		$freesearch_object = json_encode( array(
 			'value' => io_safe_output($freesearch),

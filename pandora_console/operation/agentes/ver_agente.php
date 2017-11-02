@@ -1044,7 +1044,7 @@ if ($policyTab == -1)
 
 /* UX Console */
 enterprise_include_once('/include/functions_ux_console.php');
-$active_ux = get_ux_transactions($id_agente);
+$active_ux = enterprise_hook('get_ux_transactions', array($id_agente));
 if(!empty($active_ux)){
 	$ux_console_tab = enterprise_hook('ux_console_tab');
 	if ($ux_console_tab == -1)

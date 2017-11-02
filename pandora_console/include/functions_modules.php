@@ -1716,6 +1716,13 @@ function modules_get_next_data ($id_agent_module, $utimestamp = 0, $string = 0) 
  * @param int Agent module id
  * @param int Period of time to check (in seconds)
  * @param int Top date to check the values. Default current time.
+ * @param 
+ * @param 
+ * @param string 'ASC' od 'DESC'
+ * @param string with a json with parameters to filter data
+ * 	string object:
+ *		value: Text to search
+ *		exact: Boolean. True if search exact phrase or false to content
  *
  * @return array The module value and the timestamp
  */
@@ -1743,6 +1750,17 @@ function modules_get_agentmodule_data ($id_agent_module, $period,
 		case 17:
 		//async_string
 		case 23:
+			// Free search is a json with value and exact modifier
+			$freesearch = json_decode($freesearch, true);
+			$freesearch_sql = '';
+			if (isset($freesearch['value']) && !empty($freesearch['value'])) {
+				$freesearch_sql = " AND datos ";
+				if ($freesearch['exact']){
+					$freesearch_sql .= "='" . $freesearch['value'] . "' ";
+				} else {
+					$freesearch_sql .= " LIKE '%" . $freesearch['value'] . "%' ";
+				}
+			}
 			$sql = sprintf (
 				"SELECT datos AS data, utimestamp FROM tagente_datos_string
 					WHERE id_agente_modulo = %d
@@ -1750,7 +1768,7 @@ function modules_get_agentmodule_data ($id_agent_module, $period,
 					AND utimestamp > %d	AND utimestamp <= %d
 					ORDER BY utimestamp %s",
 				$id_agent_module,
-				!empty($freesearch) ? " AND datos REGEXP '" . $freesearch . "' " : "",
+				$freesearch_sql,
 				$datelimit,	$date,
 				$order
 			);

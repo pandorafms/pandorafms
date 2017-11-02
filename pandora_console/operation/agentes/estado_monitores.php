@@ -367,8 +367,15 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 
 		// Get the free text in both options
 		var freesearch = $('#text-freesearch').val();
-		if (freesearch == null) freesearch = '';
-		extra_parameters += '&freesearch=' + freesearch;
+		if (freesearch != null && freesearch !== '') {
+			var free_checkbox = $('input[name=free_checkbox]:checked').val();
+			extra_parameters += '&freesearch=' + freesearch;
+			if (free_checkbox == 1) {
+				extra_parameters += '&free_checkbox=1';
+			} else {
+				extra_parameters += '&free_checkbox=0';
+			}
+		}
 		
 		title = <?php echo "\"" . __("Module: ") . "\"" ?>;
 		$.ajax({

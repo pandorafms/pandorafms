@@ -201,7 +201,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items['image_row']['html'] =
 				'<td align="left">' . __('Image') . '</td>
 				<td align="left">' .
-				html_print_select ($images_list, 'image', '', 'showPreview(this.value);', 'None', '', true) .
+				html_print_select ($images_list, 'image', '', 'showPreview(this.value);', 'None', 'none', true) .
 				'</td>';
 			
 			

@@ -785,8 +785,8 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 			}
 
 			$data = array();
-			$data['agent']        = modules_get_agentmodule_agent_alias($sla['id_agent_module']);
-			$data['module']       = modules_get_agentmodule_name($sla['id_agent_module']);
+			$data['agent']        = io_safe_output(modules_get_agentmodule_agent_alias($sla['id_agent_module']));
+			$data['module']       = io_safe_output(modules_get_agentmodule_name($sla['id_agent_module']));
 			$data['max']          = $sla['sla_max'];
 			$data['min']          = $sla['sla_min'];
 			$data['sla_limit']    = $sla['sla_limit'];
@@ -895,8 +895,8 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 			// Slice graphs calculation
 			if ($show_graphs) {
 				$dataslice = array();
-				$dataslice['agent'] = modules_get_agentmodule_agent_alias ($sla['id_agent_module']);
-				$dataslice['module'] = modules_get_agentmodule_name ($sla['id_agent_module']);
+				$dataslice['agent'] = io_safe_output(modules_get_agentmodule_agent_alias ($sla['id_agent_module']));
+				$dataslice['module'] = io_safe_output(modules_get_agentmodule_name ($sla['id_agent_module']));
 				$dataslice['sla_value'] = $data['sla_value'];
 				$dataslice['order'] = $data['sla_value'];
 
@@ -7761,19 +7761,19 @@ function reporting_get_stats_modules_status($data, $graph_width = 250, $graph_he
 	if ($links === false) {
 		$urls = array();
 		$urls['monitor_critical'] = "index.php?" .
-			"sec=estado&amp;sec2=operation/agentes/status_monitor&amp;" .
+			"sec=view&amp;sec2=operation/agentes/status_monitor&amp;" .
 			"refr=60&amp;status=" . AGENT_MODULE_STATUS_CRITICAL_BAD . "&pure=" . $config['pure'];
 		$urls['monitor_warning'] = "index.php?" .
-			"sec=estado&amp;sec2=operation/agentes/status_monitor&amp;" .
+			"sec=view&amp;sec2=operation/agentes/status_monitor&amp;" .
 			"refr=60&amp;status=" . AGENT_MODULE_STATUS_WARNING . "&pure=" . $config['pure'];
 		$urls['monitor_ok'] = "index.php?" .
-			"sec=estado&amp;sec2=operation/agentes/status_monitor&amp;" .
+			"sec=view&amp;sec2=operation/agentes/status_monitor&amp;" .
 			"refr=60&amp;status=" . AGENT_MODULE_STATUS_NORMAL . "&pure=" . $config['pure'];
 		$urls['monitor_unknown'] = "index.php?" .
-			"sec=estado&amp;sec2=operation/agentes/status_monitor&amp;" .
+			"sec=view&amp;sec2=operation/agentes/status_monitor&amp;" .
 			"refr=60&amp;status=" . AGENT_MODULE_STATUS_UNKNOWN . "&pure=" . $config['pure'];
 		$urls['monitor_not_init'] = "index.php?" .
-			"sec=estado&amp;sec2=operation/agentes/status_monitor&amp;" .
+			"sec=view&amp;sec2=operation/agentes/status_monitor&amp;" .
 			"refr=60&amp;status=" . AGENT_MODULE_STATUS_NOT_INIT . "&pure=" . $config['pure'];
 	}
 	else {
@@ -7873,7 +7873,7 @@ function reporting_get_stats_agents_monitors($data) {
 	else {
 		$urls = array();
 		$urls['total_agents'] = "index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60";
-		$urls['monitor_checks'] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=-1";
+		$urls['monitor_checks'] = "index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=-1";
 	}
 	
 	// Agents and modules table

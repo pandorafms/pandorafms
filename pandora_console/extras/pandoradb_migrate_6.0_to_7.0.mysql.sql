@@ -1252,6 +1252,8 @@ UPDATE tagente_modulo SET cron_interval = '' WHERE cron_interval LIKE '%    %';
 -- Table `tgraph`
 -- ---------------------------------------------------------------------
 ALTER TABLE tgraph ADD COLUMN `percentil` int(4) unsigned default '0';
+ALTER TABLE tgraph ADD COLUMN `summatory_series` tinyint(1) UNSIGNED NOT NULL default '0';
+ALTER TABLE tgraph ADD COLUMN `average_series`  tinyint(1) UNSIGNED NOT NULL default '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tnetflow_filter`

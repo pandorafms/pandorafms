@@ -152,6 +152,8 @@ function users_get_groups_for_select($id_user,  $privilege = "AR", $returnAllGro
  * @return array A list of the groups the user has certain privileges.
  */
 function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup = true, $returnAllColumns = false, $id_groups = null, $keys_field = 'id_grupo') {
+    static $group_cache = array();
+
 	if (empty ($id_user)) {
 		global $config;
 	

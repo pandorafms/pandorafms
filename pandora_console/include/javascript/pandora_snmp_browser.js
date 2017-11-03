@@ -29,25 +29,25 @@ function snmpBrowse () {
 	var ajax_url = $('#hidden-ajax_url').val();
 	
 	// Prepare the AJAX call
-	var params = [
-		"target_ip=" + target_ip,
-		"community=" + community,
-		"starting_oid=" + starting_oid,
-		"snmp_browser_version=" + snmp_version,
-		"server_to_exec=" + server_to_exec,
-		"snmp3_browser_auth_user=" + snmp3_auth_user,
-		"snmp3_browser_security_level=" + snmp3_security_level,
-		"snmp3_browser_auth_method=" + snmp3_auth_method,
-		"snmp3_browser_auth_pass=" + snmp3_auth_pass,
-		"snmp3_browser_privacy_method=" + snmp3_privacy_method,
-		"snmp3_browser_privacy_pass=" + snmp3_privacy_pass,
-		"action=" + "snmptree",
-		"page=operation/snmpconsole/snmp_browser"
-	];
+	
+	var params = {};
+	params["target_ip"] = target_ip;
+	params["community"] = community;
+	params["starting_oid"] = starting_oid;
+	params["snmp_browser_version"] = snmp_version;
+	params["server_to_exec"] = server_to_exec;
+	params["snmp3_browser_auth_user"] = snmp3_auth_user;
+	params["snmp3_browser_security_level"] = snmp3_security_level;
+	params["snmp3_browser_auth_method"] = snmp3_auth_method;
+	params["snmp3_browser_auth_pass"] = snmp3_auth_pass;
+	params["snmp3_browser_privacy_method"] = snmp3_privacy_method;
+	params["snmp3_browser_privacy_pass"] = snmp3_privacy_pass;
+	params["action"] = "snmptree";
+	params["page"] = "operation/snmpconsole/snmp_browser";
 	
 	// Browse!
 	jQuery.ajax ({
-		data: params.join ("&"),
+		data: params,
 		type: 'POST',
 		url: action= ajax_url,
 		async: true,

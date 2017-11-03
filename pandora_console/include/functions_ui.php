@@ -3029,7 +3029,10 @@ function ui_print_agent_autocomplete_input($parameters) {
 		$javascript = $parameters['javascript'];
 	}
 	
-	
+	$get_order_json = false;
+	if (isset($parameters['get_order_json'])) {
+		$get_order_json = true;
+	}
 	
 	$javascript_is_function_select = false; //Default value
 	if (isset($parameters['javascript_is_function_select'])) {
@@ -3115,6 +3118,10 @@ function ui_print_agent_autocomplete_input($parameters) {
 			
 			if (' . ((int) !$metaconsole_enabled) . ') {
 				inputs.push ("force_local_modules=1");
+			}
+
+			if (' . ((int) $get_order_json) . ') {
+				inputs.push ("get_order_json=1");
 			}
 			
 			if (' . ((int)$metaconsole_enabled) . ') {

@@ -3973,7 +3973,7 @@ function reporting_value($report, $content, $type,$pdf) {
 								$value .= '<tr><td style="padding:5px;">'. date("Y-m-d H:i:s", ($i-$content["lapse"]+1)).' to '.date("Y-m-d H:i:s",$i).'</td><td>';
 								
 								if($i>$time_begin['utimestamp']){
-									$value .= format_for_graph(reporting_get_agentmodule_data_min(
+									$value .= format_for_graph(reporting_get_agentmodule_data_max(
 									$content['id_agent_module'], $content["lapse"], $i), $config['graph_precision']) . ' ' . $unit.'</td></tr>';
 								}
 								else{

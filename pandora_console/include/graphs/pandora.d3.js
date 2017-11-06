@@ -1782,7 +1782,7 @@ function print_circular_progress_bar (recipient, percentile, width, height, colo
 		.attr('dy', yPosText);
 
 	var numberText = circle.append("text")
-		.attr('fill', '#000000')
+		.attr('fill', label_color)
 		.style("font-family", "arial")
 		.style("font-weight", "bold")
 		.style("font-size", numberSize)
@@ -1790,7 +1790,7 @@ function print_circular_progress_bar (recipient, percentile, width, height, colo
 		.attr('dy', yPosNumber);
 
 	var percentText = circle.append("text")
-		.attr('fill', '#000000')
+		.attr('fill', label_color)
 		.style("font-family", "arial")
 		.style("font-weight", "bold")
 		.style("font-size", unitSize)
@@ -1936,7 +1936,7 @@ function print_interior_circular_progress_bar (recipient, percentile, width, hei
 		.attr('dy', yPosText);
 
 	var numberText = circle.append("text")
-		.attr('fill', '#000000')
+		.attr('fill', label_color)
 		.style("font-family", "arial")
 		.style("font-weight", "bold")
 		.style("font-size", numberSize)
@@ -1944,7 +1944,7 @@ function print_interior_circular_progress_bar (recipient, percentile, width, hei
 		.attr('dy', yPosNumber);
 
 	var percentText = circle.append("text")
-		.attr('fill', '#000000')
+		.attr('fill', label_color)
 		.style("font-family", "arial")
 		.style("font-weight", "bold")
 		.style("font-size", unitSize)

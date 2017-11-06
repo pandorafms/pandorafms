@@ -1834,7 +1834,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 				}
 			}
 			else{
-				$img = d3_progress_bar($id, $percentile, $width, 50, $border_color, $unit_text, $label, $fill_color);
+				$img = d3_progress_bar($id, $percentile, $width, 50, $border_color, $unit_text, io_safe_output($label), $fill_color);
 			}
 			
 			echo $img;
@@ -1873,10 +1873,10 @@ function visual_map_print_item($mode = "read", $layoutData,
 			}
 			else{
 				if($width == 0){
-					$img = d3_progress_bubble($id, $percentile, 200,200, $border_color, $unit_text, $label, $fill_color);
+					$img = d3_progress_bubble($id, $percentile, 200,200, $border_color, $unit_text, io_safe_output($label), $fill_color);
 				}
 				else{
-					$img = d3_progress_bubble($id, $percentile, $width, $width, $border_color, $unit_text, $label, $fill_color);
+					$img = d3_progress_bubble($id, $percentile, $width, $width, $border_color, $unit_text, io_safe_output($label), $fill_color);
 				}
 			}
 			
@@ -1916,10 +1916,10 @@ function visual_map_print_item($mode = "read", $layoutData,
 				}
 
 				if($width == 0){
-					$img = progress_circular_bar($id, $percentile, 200,200, $border_color, $unit_text, $label, $fill_color);
+					$img = progress_circular_bar($id, $percentile, 200,200, $border_color, $unit_text, io_safe_output($label), $fill_color);
 				}
 				else{
-					$img = progress_circular_bar($id, $percentile, $width, $width, $border_color, $unit_text, $label, $fill_color);
+					$img = progress_circular_bar($id, $percentile, $width, $width, $border_color, $unit_text, io_safe_output($label), $fill_color);
 				}
 			}
 
@@ -1959,11 +1959,11 @@ function visual_map_print_item($mode = "read", $layoutData,
 				}
 
 				if($width == 0){
-					$img = progress_circular_bar_interior($id, $percentile, 200,200, $border_color, $unit_text, $label, $fill_color);
+					$img = progress_circular_bar_interior($id, $percentile, 200,200, $border_color, $unit_text, io_safe_output($label), $fill_color);
 				
 				}
 				else{
-					$img = progress_circular_bar_interior($id, $percentile, $width, $width, $border_color, $unit_text, $label, $fill_color);
+					$img = progress_circular_bar_interior($id, $percentile, $width, $width, $border_color, $unit_text, io_safe_output($label), $fill_color);
 				}
 			}
 			

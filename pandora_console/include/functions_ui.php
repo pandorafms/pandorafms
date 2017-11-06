@@ -97,7 +97,7 @@ function ui_print_truncate_text($text, $numChars = GENERIC_SIZE_TEXT, $showTextI
 	$text_html_decoded = io_safe_output($text);
 	$text_has_entities = $text != $text_html_decoded;
 	
-	if (mb_strlen($text, "UTF-8") > ($numChars)) {
+	if (mb_strlen($text_html_decoded, "UTF-8") > ($numChars)) {
 		// '/2' because [...] is in the middle of the word.
 		$half_length = intval(($numChars - 3) / 2);
 		

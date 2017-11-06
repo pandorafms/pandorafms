@@ -724,12 +724,13 @@ function sunburst (recipient, data, width, height) {
 		.on("mousemove", move_tooltip);
 
 	function computeTextRotation(d) {
-		var angle = x(d.x + d.dx / 2) - Math.PI / 2;
-		return angle / Math.PI * 180;
+		var ang = (x(d.x + d.dx / 2) - Math.PI / 2) / Math.PI * 180;
+        return (ang > 90) ? 180 + ang : ang;
 	}
 
 	var text = g.append("text")
-		.attr("x", function(d) { return y(d.y); })
+		.attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")rotate(" + computeTextRotation(d) + ")"; })
+		.attr("x", function (d) { return computeTextRotation(d) > 180 ? -40 : -30; })
 		.attr("dx", "6") // margin
 		.attr("dy", ".35em") // vertical-align
 		.attr("opacity", function(d) {
@@ -741,7 +742,6 @@ function sunburst (recipient, data, width, height) {
 		.text(function(d) {
 			return d.name;
 		})
-		.attr("transform", function(d) { return "rotate(" + computeTextRotation(d) + ")"; })
 		.style("font-size", "10px")
 		 // Makes svg elements invisible to events
 		.style("pointer-events", "none");
@@ -768,8 +768,8 @@ function sunburst (recipient, data, width, height) {
 						var arcText = d3.select(this.parentNode).select("text");
 						// fade in the text element and recalculate positions
 						arcText
-							.attr("transform", function() { return "rotate(" + computeTextRotation(e) + ")" })
-							.attr("x", function(d) { return y(d.y); })
+							.attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")rotate(" + computeTextRotation(d) + ")"; })
+							.attr("x", function (d) { return computeTextRotation(d) > 180 ? -40 : -30; })
 							.transition().duration(250)
 								.attr("opacity", 1);
 		 			}

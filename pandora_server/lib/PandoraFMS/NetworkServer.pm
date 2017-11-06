@@ -400,17 +400,17 @@ sub pandora_query_snmp ($$$$) {
 		
 		# SNMP v3 no authentication and no privacy
 		if ($snmp3_security_level eq "noAuthNoPriv"){
-			$snmp3_extra = " -u $snmp3_auth_user ";
+			$snmp3_extra = " -u '$snmp3_auth_user' ";
 		}
 		
 		# SNMP v3 authentication only
 		if ($snmp3_security_level eq "authNoPriv"){
-			$snmp3_extra = " -a $snmp3_auth_method -u $snmp3_auth_user -A $snmp3_auth_pass ";
+			$snmp3_extra = " -a $snmp3_auth_method -u '$snmp3_auth_user' -A '$snmp3_auth_pass' ";
 		}
 
 		# SNMP v3 privacy AND authentication
 		if ($snmp3_security_level eq "authPriv"){
-			$snmp3_extra = " -a $snmp3_auth_method -u $snmp3_auth_user -A $snmp3_auth_pass -x $snmp3_privacy_method -X $snmp3_privacy_pass ";
+			$snmp3_extra = " -a $snmp3_auth_method -u '$snmp3_auth_user' -A '$snmp3_auth_pass' -x $snmp3_privacy_method -X '$snmp3_privacy_pass' ";
 		}
        
 		$output = pandora_snmp_get_command ($snmpget_cmd, $snmp_version, $snmp_retries, $snmp_timeout, $snmp_community, $snmp_target, $snmp_oid, $snmp3_security_level, $snmp3_extra, $snmp_port, $pa_config);

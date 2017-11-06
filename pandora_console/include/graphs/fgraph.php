@@ -192,12 +192,12 @@ function vbar_graph($flash_chart, $chart_data, $width, $height,
 	}
 	else {
 		foreach ($chart_data as $key => $value) {
-			if(strlen($key) > 25){
+			if(strlen($key) > 20){
 				
 					if(strpos($key, ' - ') != -1){
 						$key_temp = explode(" - ",$key);
 						$key_temp[0] = $key_temp[0]."   \n";
-						$key_temp[1]= '...'.substr($key_temp[1],-15);
+						$key_temp[1]= '...'.substr($key_temp[1],-10);
 						$key2 = $key_temp[0].$key_temp[1];
 						io_safe_output($key2);
 					}

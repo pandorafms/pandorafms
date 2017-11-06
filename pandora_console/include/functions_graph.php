@@ -2555,10 +2555,10 @@ function progress_bar($progress, $width, $height, $title = '', $mode = 1, $value
 	require_once("include_graph_dependencies.php");
 	include_graphs_dependencies($config['homedir'].'/');
 	$src = ui_get_full_url(
-		"/include/graphs/fgraph.php?homeurl=../../&graph_type=progressbar" .
-		"&width=".$width."&homedir=".$config['homedir']."&height=".$height."&progress=".$progress.
+		"/include/graphs/fgraph.php?graph_type=progressbar" .
+		"&width=".$width."&height=".$height."&progress=".$progress.
 		"&mode=" . $mode . "&out_of_lim_str=".$out_of_lim_str .
-		"&title=".$title."&font=".$config['fontpath']."&value_text=". $value_text . 
+		"&title=".$title."&value_text=". $value_text . 
 		"&colorRGB=". $colorRGB, false, false, false
 		);
 	
@@ -2590,10 +2590,10 @@ function progress_bubble($progress, $width, $height, $title = '', $mode = 1, $va
 	include_graphs_dependencies($config['homedir'].'/');
 	
 	return "<img title='" . $title . "' alt='" . $title . "'" .
-		" src='" . $config['homeurl'] . $hack_metaconsole . "/include/graphs/fgraph.php?homeurl=../../&graph_type=progressbubble" .
+		" src='" . $config['homeurl'] . $hack_metaconsole . "/include/graphs/fgraph.php?graph_type=progressbubble" .
 		"&width=".$width."&height=".$height."&progress=".$progress.
 		"&mode=" . $mode . "&out_of_lim_str=".$out_of_lim_str .
-		"&title=".$title."&font=".$config['fontpath']."&value_text=". $value_text . 
+		"&title=".$title."&value_text=". $value_text . 
 		"&colorRGB=". $colorRGB . "' />";
 }
 

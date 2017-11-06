@@ -94,22 +94,27 @@ function ui_print_truncate_text($text, $numChars = GENERIC_SIZE_TEXT, $showTextI
 		}
 	}
 	
-	$text = io_safe_output($text);
-	if (mb_strlen($text, "UTF-8") > ($numChars)) {
+	$text_html_decoded = io_safe_output($text);
+	$text_has_entities = $text != $text_html_decoded;
+	
+	if (mb_strlen($text_html_decoded, "UTF-8") > ($numChars)) {
 		// '/2' because [...] is in the middle of the word.
 		$half_length = intval(($numChars - 3) / 2);
 		
 		// Depending on the strange behavior of mb_strimwidth() itself,
 		// the 3rd parameter is not to be $numChars but the length of
 		// original text (just means 'large enough').
-		$truncateText2 = mb_strimwidth($text,
-			(mb_strlen($text, "UTF-8") - $half_length),
-			mb_strlen($text, "UTF-8"), "", "UTF-8" );
+		$truncateText2 = mb_strimwidth($text_html_decoded,
+			(mb_strlen($text_html_decoded, "UTF-8") - $half_length),
+			mb_strlen($text_html_decoded, "UTF-8"), "", "UTF-8" );
 		
-		$truncateText = mb_strimwidth($text, 0,
-			($numChars - $half_length), "", "UTF-8") . $suffix;
+		$truncateText = mb_strimwidth($text_html_decoded, 0,
+			($numChars - $half_length), "", "UTF-8");
 		
-		$truncateText = $truncateText . $truncateText2;
+		// Recover the html entities to avoid XSS attacks
+		$truncateText = ($text_has_entities)
+			? io_safe_input($truncateText) . $suffix . io_safe_input($truncateText2)
+			: $truncateText . $suffix . $truncateText2;
 		
 		if ($showTextInTitle) {
 			if ($style === null) {

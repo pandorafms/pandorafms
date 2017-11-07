@@ -63,8 +63,22 @@
             android:layout_weight="0"
             android:padding="0dp"
             android:src="@drawable/filter_icon_button"
+            android:background="@null" />
+
+        <LinearLayout
+            android:layout_width="2px"
+            android:layout_height="fill_parent"
+            android:background="#6D9624" />
+
+        <ImageButton
+            android:id="@+id/settings_icon_button_list"
+            android:layout_width="58dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0"
             android:background="@null"
-            />
+            android:tint="@android:color/white"
+            android:src="@android:drawable/ic_menu_preferences" />
+
     </LinearLayout>
 
     <LinearLayout

@@ -1552,7 +1552,7 @@ function progress_bar_d3 (recipient, percentile, width, height, color, unit, lab
 
 	function updateProgress(bar_progress) {
 		var percent_value = Number(bar_progress * 100);
-		numberText.text(percent_value.toFixed());
+		numberText.text(percent_value.toFixed() + " " + unit);
 		progress_front.attr('width', (width * bar_progress));
 	}
 
@@ -1657,11 +1657,11 @@ function progress_bubble_d3 (recipient, percentile, width, height, color, unit, 
 		.style("font-weight", "bold")
 		.style("font-size", numberSize)
 		.attr('text-anchor', 'middle')
-		.attr('dy', width/2);
+		.attr('dy', width/3);
 
 	function updateProgress(bar_progress) {
 		var percent_value = Number(bar_progress * 100);
-		numberText.text(percent_value.toFixed() + " %");
+		numberText.text(percent_value.toFixed() + " " + unit);
 		progress_front.attr('r', ((width/2) * bar_progress));
 	}
 

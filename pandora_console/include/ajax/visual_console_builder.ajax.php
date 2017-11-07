@@ -682,11 +682,7 @@ switch ($action) {
 								$values['type'] = PERCENTILE_BUBBLE;
 							}
 							
-							//Check the field's value for back compatibility
-							$values['image'] = 'percent';
-							if (($value_show == 'percent') ||
-								($value_show == 'value'))
-								$values['image'] = $value_show;
+							$values['image'] = $value_show;
 
 							$values['border_color'] = $percentile_color;
 							$values['fill_color'] = $percentile_label_color;
@@ -863,11 +859,8 @@ switch ($action) {
 					case 'percentile_bar':
 						$elementFields['width_percentile'] = $elementFields['width'];
 						$elementFields['max_percentile'] = $elementFields['height'];
-						//Check the field's value for back compatibility
-						$elementFields['value_show'] = 'percent';
-						if (($elementFields['image'] == 'percent') ||
-							($elementFields['image'] == 'value'))
-							$elementFields['value_show'] = $elementFields['image'];
+
+						$elementFields['value_show'] = $elementFields['image'];
 						
 						$elementFields['type_percentile'] = 'percentile';
 						if ($elementFields['type'] == PERCENTILE_BAR) {
@@ -885,6 +878,7 @@ switch ($action) {
 						$elementFields['percentile_color'] = $elementFields['border_color'];
 						$elementFields['percentile_label_color'] = $elementFields['fill_color'];
 						$elementFields['percentile_label'] = $elementFields['label'];
+						html_debug($elementFields, true);
 						break;
 					case 'donut_graph':
 						$elementFields['width_percentile'] = $elementFields['width'];

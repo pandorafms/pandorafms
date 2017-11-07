@@ -1513,14 +1513,7 @@ function loadFieldsFromDB(item) {
 				}
 
 				if (key == 'value_show') {
-					if (val == 'percent') {
-						$("input[name=value_show][value=percent]")
-							.attr("checked", "checked");
-					}
-					else {
-						$("input[name=value_show][value=value]")
-							.attr("checked", "checked");
-					}
+					$("select[name=value_show]").val(val);
 				}
 
 				if (key == 'id_group') {

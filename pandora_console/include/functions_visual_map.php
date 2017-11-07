@@ -2045,39 +2045,25 @@ function visual_map_print_item($mode = "read", $layoutData,
 			
 			global $config;
 			
-			if ($type == SIMPLE_VALUE) {
-				//~ $returnValue_value = explode('&nbsp;', $value);
-				
-				//~ if ($returnValue_value[1] != "") {
-					//~ $value = remove_right_zeros(number_format($returnValue_value[0], $config['graph_precision'])) . " " . $returnValue_value[1];
-				//~ }
-				//~ else {
-					//~ $value = remove_right_zeros(number_format($returnValue_value[0], $config['graph_precision']));
-				//~ }
-				
-			}
-			else {
-				// If the value is a string, dont format it
-				if (!is_string($value)) {
-					//~ $value = remove_right_zeros(format_for_graph($value, $config['graph_precision']));
-				}
-			}
-			
-			if(get_parameter('action') == 'edit'){
-				if( (strip_tags($io_safe_output_text) != '_VALUE_') || (strip_tags($io_safe_output_text) != '(_VALUE_)') ) {
+			$is_image = get_if_module_is_image($layoutData['id_agente_modulo']);
+			if(get_parameter('action') == 'edit') {
+				if(!$is_image) {
 					echo $io_safe_output_text;
 				}
 				else {
 					echo "<img style='width:".$layoutData['width']."px;' src='images/console/signes/data_image.png'>";
 				}
-			} else {
-				if(strrpos(strip_tags($io_safe_output_text),'(_VALUE_)') !== false || (strip_tags($io_safe_output_text) == '(_VALUE_)')) {
-					echo str_replace(array("(_VALUE_)","(_value_)"), $value, $io_safe_output_text);
+			}
+			else {
+				if(!$is_image) {
+					$new_text = str_replace(array("(_VALUE_)","(_value_)"), $value, $io_safe_output_text);
+					$new_text = str_replace(array('_VALUE_','_value_'), $value, $new_text);
+
+					echo $new_text;
 				}
-				elseif(strrpos(strip_tags($io_safe_output_text),'_VALUE_') !== false || (strip_tags($io_safe_output_text) == '_VALUE_')) {
-					echo str_replace(array('_VALUE_','_value_'), $value, $io_safe_output_text);
-				} else {
-					echo str_replace('>', ' style="width:'.$layoutData['width'].'px">',$value);
+				else {
+					$simple_value_img = str_replace('>', ' style="width:'.$layoutData['width'].'px">', $value);
+					echo $simple_value_img;
 				}
 			}
 			
@@ -2164,6 +2150,20 @@ function visual_map_print_item($mode = "read", $layoutData,
 			lines.push({"id": "' . $id . '" , "node_begin":"' . $layoutData['parent_item'] . '","node_end":"' . $id . '","color":"' . visual_map_get_color_line_status($parent) . '","thickness":"' . (empty($config["vc_line_thickness"]) ? 2 : $config["vc_line_thickness"]) . '"});
 		});';
 		echo '</script>';
+	}
+}
+
+function get_if_module_is_image ($id_module) {
+	$sql = 'SELECT datos FROM tagente_estado WHERE id_agente_modulo = ' . $id_module;
+		
+	$result = db_get_sql($sql);
+	$image = strpos($result, 'data:image');
+
+	if($image === false){
+		return false;
+	}
+	else{
+		return true;
 	}
 }
 

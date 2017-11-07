@@ -145,6 +145,24 @@ switch ($action) {
 		echo json_encode($return);
 		break;
 
+	case 'get_image_from_module':
+		$layoutData = db_get_row_filter('tlayout_data', array('id' => $id_element));
+		$sql = 'SELECT datos FROM tagente_estado WHERE id_agente_modulo = '.$layoutData['id_agente_modulo'];
+		ob_clean();
+		$result = db_get_sql($sql);
+		$image = strpos($result, 'data:image');
+
+		if($image === false){
+			$return['correct'] = false;
+		}
+		else{
+			$return['correct'] = true;
+		}
+		
+		echo json_encode($return);
+		
+		break;
+
 	case 'get_module_type_string':
 		$data = array ();
 
@@ -489,12 +507,6 @@ switch ($action) {
 				echo (int)$result;
 				break;
 			case 'simple_value':
-				if ($action == 'update') {
-					$values['type'] = visual_map_get_simple_value_type(
-						$process_simple_value);
-					$values['period'] = $period;
-					$values['width'] = $width;
-				}
 			case 'percentile_bar':
 			case 'percentile_item':
 			case 'static_graph':
@@ -692,6 +704,15 @@ switch ($action) {
 						if ($height !== null) {
 							$values['height'] = $height;
 						}
+						break;
+					case 'simple_value':
+						if ($action == 'update') {
+							$values['type'] = visual_map_get_simple_value_type(
+								$process_simple_value);
+							$values['period'] = $period;
+							$values['width'] = $width;
+						}
+						
 						break;
 					default:
 						if (enterprise_installed()) {

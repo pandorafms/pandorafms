@@ -175,7 +175,7 @@ function vbar_graph($flash_chart, $chart_data, $width, $height,
 					if(strpos($key, ' - ') != -1){
 						$key_temp = explode(" - ",$key);
 						$key_temp[0] = $key_temp[0]."   \n";
-						$key_temp[1]= '...'.substr($key_temp[1],-10);
+						$key_temp[1]= '...'.substr($key_temp[1],-15);
 						$key2 = $key_temp[0].$key_temp[1];
 						io_safe_output($key2);
 					}

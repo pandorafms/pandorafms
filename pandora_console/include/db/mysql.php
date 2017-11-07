@@ -738,7 +738,7 @@ function mysql_db_get_row_sql ($sql, $search_history_db = false) {
  *
  * @return mixed Array of the row or false in case of error.
  */
-function mysql_db_get_row_filter ($table, $filter, $fields = false, $where_join = 'AND') {
+function mysql_db_get_row_filter ($table, $filter, $fields = false, $where_join = 'AND', $historydb = false) {
 	if (empty ($fields)) {
 		$fields = '*';
 	}
@@ -758,7 +758,7 @@ function mysql_db_get_row_filter ($table, $filter, $fields = false, $where_join 
 	
 	$sql = sprintf ('SELECT %s FROM %s %s', $fields, $table, $filter);
 	
-	return db_get_row_sql ($sql);
+	return db_get_row_sql ($sql, $historydb);
 }
 
 /**

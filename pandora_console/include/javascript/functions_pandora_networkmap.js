@@ -1900,6 +1900,21 @@ function show_menu(item, data) {
 					refresh_holding_area();
 				}
 			};
+			items_list["restart_map"] = {
+				name: restart_map_menu,
+				icon: "restart_map",
+				disabled: function () {
+					if (enterprise_installed) {
+						return false;
+					}
+					else {
+						return true;
+					}
+				},
+				"callback": function (key, options) {
+					restart_map(networkmap_id);
+				}
+			};
 
 			if (flag_setting_relationship_running) {
 				items_list["cancel_set_parent"] = {
@@ -2208,6 +2223,123 @@ function refresh_holding_area() {
 			}
 		});
 	}
+}
+
+function restart_map (map_id) {
+	$("<div id='restart_map_confirm' class='dialog ui-dialog-content' title='" + restart_map_menu + "'></div>").dialog ({
+		resizable: true,
+		draggable: true,
+		modal: true,
+		overlay: {
+			opacity: 0.5,
+			background: 'black'
+		},
+		width: 600,
+		height: 250,
+		buttons: [
+			{
+				text: ok_button,
+				click: function () {
+					$(this).dialog("close");
+					proceed_to_restart_map(map_id);
+				}
+			},
+			{
+				text:cancel_button,
+				click: function () {
+					$(this).dialog("close");
+				}
+			}
+		]
+	});
+
+	var dialog_confirm_text = "<div>";
+	dialog_confirm_text = dialog_confirm_text + "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_info_mr.png'></div>";
+	dialog_confirm_text = dialog_confirm_text + "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>" + warning_message + "</strong></h3>";
+	dialog_confirm_text = dialog_confirm_text + "<p style='font-family:Verdana; font-size:12pt;'>" + message_to_confirm + "</p></div>";
+	dialog_confirm_text = dialog_confirm_text + "</div>";
+	
+	$('#restart_map_confirm').html(dialog_confirm_text);
+	$('#restart_map_confirm').dialog('open');
+}
+
+function proceed_to_restart_map (map_id) {
+	$("<div id='restart_map_form' class='dialog ui-dialog-content' title='" + restart_map_menu + "'></div>").dialog ({
+		resizable: true,
+		draggable: true,
+		modal: true,
+		overlay: {
+			opacity: 0.5,
+			background: 'black'
+		},
+		width: 600,
+		height: 450,
+		buttons: [
+			{
+				text: ok_button,
+				click: function () {
+					$(this).dialog("close");
+					var new_elements = [];
+					new_elements[0] = $("#text-name").val();
+					new_elements[1] = $("#id_group").val();
+					new_elements[2] = $("#text-node_radius").val();
+					new_elements[3] = $("#textarea_description").val();
+					new_elements[4] = $("input[name=source]:checked").val();
+					if (new_elements[4] == 'group') {
+						new_elements[5] = $("#checkbox-dont_show_subgroups").is(':checked');
+					}
+					else if (new_elements[4] == 'recon_task') {
+						new_elements[5] = $("#recon_task_id").val();
+					}
+					else {
+						new_elements[5] = $("#text-ip_mask").val();
+					}
+					new_elements[6] = $("#method").val();
+					reset_map_from_form(map_id, new_elements);
+				}
+			},
+			{
+				text:cancel_button,
+				click: function () {
+					$(this).dialog("close");
+				}
+			}
+		]
+	});
+
+	var params = [];
+	params.push("get_reset_map_form=1");
+	params.push("map_id=" + map_id);
+	params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
+	jQuery.ajax({
+		data: params.join("&"),
+		dataType: 'html',
+		type: 'POST',
+		url: action = "ajax.php",
+		success: function (data) {
+			$('#restart_map_form').html(data);
+			$('#restart_map_form').dialog('open');
+		}
+	});
+}
+
+function reset_map_from_form (map_id, new_elements) {
+	var params = [];
+	params.push("reset_map=1");
+	params.push("map_id=" + map_id);
+	params.push("elems[]=" + new_elements)
+	params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
+	jQuery.ajax({
+		data: params.join("&"),
+		dataType: 'json',
+		type: 'POST',
+		url: action = "ajax.php",
+		success: function (data) {
+			if (!data['error']) {
+				location.reload(true);
+			}
+		}
+	});
 }
 
 function set_parent(parent_data) {

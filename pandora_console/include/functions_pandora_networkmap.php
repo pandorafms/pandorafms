@@ -790,6 +790,12 @@ function networkmap_write_js_array($id, $nodes_and_relations = array(), $map_das
 	echo "var set_center_menu = '" . __('Set center') . "';\n";
 	echo "var refresh_menu = '" . __('Refresh') . "';\n";
 	echo "var refresh_holding_area_menu = '" . __('Refresh Holding area') . "';\n";
+	echo "var ok_button = '" . __('Proceed') . "';\n";
+	echo "var message_to_confirm = '" . __('Resetting the map will delete all customizations you have done, including manual relationships between elements, new items, etc.') . "';\n";
+	echo "var warning_message = '" . __('WARNING') . "';\n";
+	echo "var ok_button = '" . __('Proceed') . "';\n";
+	echo "var cancel_button = '" . __('Cancel') . "';\n";
+	echo "var restart_map_menu = '" . __('Restart map') . "';\n";
 	echo "var abort_relationship_interface = '" . __('Abort the interface relationship') . "';\n";
 	echo "var abort_relationship_menu = '" . __('Abort the action of set relationship') . "';\n";
 	

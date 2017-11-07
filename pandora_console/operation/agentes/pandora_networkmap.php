@@ -153,8 +153,10 @@ if ($new_networkmap || $save_networkmap) {
 			__('Succesfully created'), __('Could not be created'), '',
 			true);
 		
-		// Force the tab = 'list'
-		$tab = "list";
+		$id = $result;
+
+		// Force the tab = 'view'
+		$tab = "view";
 	}
 }
 // The networkmap exists

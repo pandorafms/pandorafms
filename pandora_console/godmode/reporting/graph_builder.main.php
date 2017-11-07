@@ -68,6 +68,7 @@ if ($edit_graph) {
 	$percentil = $graphInTgraph['percentil'];
 	$summatory_series = $graphInTgraph['summatory_series'];
 	$average_series = $graphInTgraph['average_series'];
+	$modules_series = $graphInTgraph['modules_series'];
 
 	if ($stacked == CUSTOM_GRAPH_BULLET_CHART_THRESHOLD){
 		$stacked = CUSTOM_GRAPH_BULLET_CHART;
@@ -88,6 +89,7 @@ else {
 	$percentil = 0;
 	$summatory_series = 0;
 	$average_series = 0;
+	$modules_series = 0;
 }
 
 
@@ -178,18 +180,19 @@ echo "</div>";
 
 echo "</div></td>";
 
-echo "<tr><td class='datos2'><b>".__('Add summatory series')."</b>" .
-	ui_print_help_tip (__("This will add a synthetic series to the graph, 
-	using all series to give a SUM or an average of all present series values 
-	in each interval. This feature could be used instead synthetic modules 
-	if you only want to see a graph"), true)."</td>";
+// echo "<tr><td class='datos2'><b>".__('Add summatory series')."</b>" .
+// 	ui_print_help_tip (__("This will add a synthetic series to the graph, 
+// 	using all series to give a SUM or an average of all present series values 
+// 	in each interval. This feature could be used instead synthetic modules 
+// 	if you only want to see a graph"), true)."</td>";
+echo "<tr><td class='datos2'><b>".__('Percentil')."</b></td>";
+echo "<td class='datos2'>" . html_print_checkbox ("percentil", 1, $percentil, true) . "</td></tr>";
+echo "<tr><td class='datos2'><b>".__('Add summatory series')."</b></td>";
 echo "<td class='datos2'>" . html_print_checkbox ("summatory_series", 1, $summatory_series, true) . "</td>
 <td class='datos2'><b>".__('Add average series')."</b></td>";
 echo "<td class='datos2'>" . html_print_checkbox ("average_series", 1, $average_series, true) . "</td></tr>";
-
-echo "<tr><td class='datos2'><b>".__('Percentil')."</b></td>";
-echo "<td class='datos2'>" . html_print_checkbox ("percentil", 1, $percentil, true) . "</td></tr>";
-
+echo "<tr><td class='datos2'><b>".__('Modules and series')."</b></td>";
+echo "<td class='datos2'>" . html_print_checkbox ("modules_series", 1, $modules_series, true) . "</td></tr>";
 echo "</table>";
 
 if ($edit_graph) {
@@ -208,6 +211,12 @@ echo '<script type="text/javascript">
 		}else{
 			$("#thresholdDiv").hide();
 		}
+		
+		if(!$("#checkbox-summatory_series").is(":checked") && !$("#checkbox-average_series").is(":checked")){
+			$("#checkbox-modules_series").attr("disabled", true);
+			$("#checkbox-modules_series").attr("checked", false);
+		}
+		
 	});
 
 	$("#stacked").change(function(){
@@ -225,6 +234,24 @@ echo '<script type="text/javascript">
 			$(".stacked").show();
 			$("input[name=\'width\']").show();
 			$("#thresholdDiv").hide();
+		}
+	});
+	
+	$("#checkbox-summatory_series").change(function() {
+		if($("#checkbox-summatory_series").is(":checked") && $("#checkbox-modules_series").is(":disabled")) {
+			$("#checkbox-modules_series").removeAttr("disabled");
+		} else if(!$("#checkbox-average_series").is(":checked")) {
+			$("#checkbox-modules_series").attr("disabled", true);
+			$("#checkbox-modules_series").attr("checked", false);
+		}
+	});
+	
+	$("#checkbox-average_series").change(function() {
+		if($("#checkbox-average_series").is(":checked") && $("#checkbox-modules_series").is(":disabled")) {
+			$("#checkbox-modules_series").removeAttr("disabled");
+		} else if(!$("#checkbox-summatory_series").is(":checked")) {
+			$("#checkbox-modules_series").attr("disabled", true);
+			$("#checkbox-modules_series").attr("checked", false);
 		}
 	});
 

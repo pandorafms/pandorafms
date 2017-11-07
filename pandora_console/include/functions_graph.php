@@ -1114,7 +1114,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	$name_list = array(), $unit_list = array(), $show_last = true, $show_max = true,
 	$show_min = true, $show_avg = true, $labels = array(), $dashboard = false,
 	$vconsole = false, $percentil = null, $from_interface = false, 
-	$id_widget_dashboard=false, $fullscale = false, $summatory = 0, $average = 0) {
+	$id_widget_dashboard=false, $fullscale = false, $summatory = 0, $average = 0, $modules_series = 0) {
 	
 	global $config;
 	global $graphic_type;
@@ -2131,7 +2131,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	}
 	
 	//summatory and average series
-	if($stacked == CUSTOM_GRAPH_AREA  || $stacked == CUSTOM_GRAPH_LINE) {
+	if($stacked == CUSTOM_GRAPH_AREA  || $stacked == CUSTOM_GRAPH_LINE && $modules_series) {
 		if($summatory && $average){
 			foreach ($graph_values as $key => $value) {
 				$cont = count($value);

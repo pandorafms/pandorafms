@@ -326,7 +326,7 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 }
 
 function pandoraFlotHBars(graph_id, values, labels, water_mark,
-	maxvalue, water_mark, separator, separator2, font, font_size, background_color) {
+	maxvalue, water_mark, separator, separator2, font, font_size, background_color, min, max) {
 
 	var colors_data = ['#FC4444','#FFA631','#FAD403','#5BB6E5','#F2919D','#80BA27'];
 	values = values.split(separator2);
@@ -401,7 +401,13 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 		// with all 0 values.
 		options['yaxis']['tickDecimals'] = 0;
 	}
-
+	
+	if (max) {
+		options['xaxis']['max'] = max;
+	}
+	if (min) {
+		options['xaxis']['min'] = min;
+	}
 
 	var plot = $.plot($('#' + graph_id), datas, options );
 	

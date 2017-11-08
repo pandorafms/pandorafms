@@ -642,7 +642,7 @@ function polar_graph($flash_chart, $chart_data, $width, $height,
 function hbar_graph($flash_chart, $chart_data, $width, $height,
 	$color, $legend, $long_index, $no_data_image, $xaxisname = "",
 	$yaxisname = "", $water_mark = "", $font = '', $font_size = '',
-	$unit = '', $ttl = 1, $homeurl = '', $backgroundColor = 'white') {
+	$unit = '', $ttl = 1, $homeurl = '', $backgroundColor = 'white', $val_min=null, $val_max=null) {
 	
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 	
@@ -652,7 +652,7 @@ function hbar_graph($flash_chart, $chart_data, $width, $height,
 	
 	if ($flash_chart) {
 		return flot_hcolumn_chart(
-			$chart_data, $width, $height, $water_mark_url, $font, $font_size, $backgroundColor);
+			$chart_data, $width, $height, $water_mark_url, $font, $font_size, $backgroundColor, $val_min, $val_max);
 	}
 	else {
 		

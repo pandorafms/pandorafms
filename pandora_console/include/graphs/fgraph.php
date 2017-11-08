@@ -156,7 +156,7 @@ function vbar_graph($flash_chart, $chart_data, $width, $height,
 	$color, $legend, $long_index, $no_data_image, $xaxisname = "",
 	$yaxisname = "", $water_mark = "", $font = '', $font_size = '',
 	$unit = '', $ttl = 1, $homeurl = '', $backgroundColor = 'white',
-	$from_ux = false, $from_wux = false) {
+	$from_ux = false, $from_wux = false, $tick_color = 'white') {
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 	
 	if (empty($chart_data)) {
@@ -166,7 +166,8 @@ function vbar_graph($flash_chart, $chart_data, $width, $height,
 	if ($flash_chart) {
 		return flot_vcolumn_chart ($chart_data, $width, $height, $color,
 			$legend, $long_index, $homeurl, $unit, $water_mark_url,
-			$homedir,$font,$font_size, $from_ux, $from_wux, $backgroundColor);
+			$homedir,$font,$font_size, $from_ux, $from_wux, $backgroundColor,
+			$tick_color);
 	}
 	else {
 		foreach ($chart_data as $key => $value) {
@@ -620,7 +621,8 @@ function polar_graph($flash_chart, $chart_data, $width, $height,
 function hbar_graph($flash_chart, $chart_data, $width, $height,
 	$color, $legend, $long_index, $no_data_image, $xaxisname = "",
 	$yaxisname = "", $water_mark = "", $font = '', $font_size = '',
-	$unit = '', $ttl = 1, $homeurl = '', $backgroundColor = 'white') {
+	$unit = '', $ttl = 1, $homeurl = '', $backgroundColor = 'white',
+	$tick_color = "white") {
 	
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 	
@@ -630,7 +632,7 @@ function hbar_graph($flash_chart, $chart_data, $width, $height,
 	
 	if ($flash_chart) {
 		return flot_hcolumn_chart(
-			$chart_data, $width, $height, $water_mark_url, $font, $font_size, $backgroundColor);
+			$chart_data, $width, $height, $water_mark_url, $font, $font_size, $backgroundColor, $tick_color);
 	}
 	else {
 		

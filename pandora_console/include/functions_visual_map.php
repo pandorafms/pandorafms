@@ -1436,10 +1436,10 @@ function visual_map_print_item($mode = "read", $layoutData,
 				}
 				else {
 					if ($width == 0) {
-						$img = d3_donut_graph ($layoutData['id'], 400, 400, $donut_data);
+						$img = d3_donut_graph ($layoutData['id'], 400, 400, $donut_data, $layoutData['border_color']);
 					}
 					else{
-						$img = d3_donut_graph ($layoutData['id'], $width, $width, $donut_data);
+						$img = d3_donut_graph ($layoutData['id'], $width, $width, $donut_data, $layoutData['border_color']);
 					}
 				}
 			}

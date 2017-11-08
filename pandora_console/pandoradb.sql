@@ -1362,6 +1362,7 @@ CREATE TABLE IF NOT EXISTS `tlayout_data` (
 	`border_color` varchar(200) DEFAULT "",
 	`fill_color` varchar(200) DEFAULT "",
 	`show_statistics` tinyint(2) NOT NULL default '0',
+	`id_layout_linked_weight` int(10) NOT NULL default '0',
 	PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

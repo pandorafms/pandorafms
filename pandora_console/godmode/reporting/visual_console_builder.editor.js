@@ -815,6 +815,7 @@ function readFields() {
 	values['bars_graph_type'] = $("select[name=bars_graph_type]").val();
 	values['parent'] = $("select[name=parent]").val();
 	values['map_linked'] = $("select[name=map_linked]").val();
+	values['map_linked_weight'] = $("select[name=map_linked_weight]").val();
 	values['width_percentile'] = $("input[name=width_percentile]").val();
 	values['max_percentile'] = parseInt($("input[name=max_percentile]").val());
 	values['width_module_graph'] = $("input[name=width_module_graph]").val();
@@ -1489,6 +1490,8 @@ function loadFieldsFromDB(item) {
 					$("select[name=parent]").val(val);
 				if (key == 'id_layout_linked')
 					$("select[name=map_linked]").val(val);
+				if (key == 'id_layout_linked_weight')
+					$("select[name=map_linked_weight]").val(val);
 				if (key == 'width_percentile')
 					$("input[name=width_percentile]").val(val);
 				if (key == 'max_percentile')
@@ -1771,6 +1774,9 @@ function hiddenFields(item) {
 	$("#map_linked_row").css('display', 'none');
 	$("#map_linked_row." + item).css('display', '');
 
+	$("#map_linked_weight").css('display', 'none');
+	$("#map_linked_weight." + item).css('display', '');
+
 	$("#module_graph_size_row").css('display', 'none');
 	$("#module_graph_size_row." + item).css('display', '');
 
@@ -1848,6 +1854,7 @@ function cleanFields(item) {
 	$("input[name=height]").val(0);
 	$("select[name=parent]").val('');
 	$("select[name=map_linked]").val('');
+	$("select[name=map_linked_weight]").val('');
 	$("input[name=width_module_graph]").val(300);
 	$("input[name=height_module_graph]").val(180);
 	$("input[name='width_box']").val(300);

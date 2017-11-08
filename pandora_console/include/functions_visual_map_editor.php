@@ -246,6 +246,18 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 					'black' => __('Black'),
 					'transparent' => __('Transparent')),
 					'background_color', '', '', 0, 'white', true, false, false) . '</td>';
+
+			$form_items['grid_color_row'] = array();
+			$form_items['grid_color_row']['items'] = array('bars_graph');
+			$form_items['grid_color_row']['html'] = 
+				'<td align="left" valign="top" style="">' .
+					__('Grid color') .
+				'</td>' .
+				'<td align="left" style="">' .
+					html_print_input_text_extended ('grid_color',
+						'#000000', 'text-grid_color', '', 7, 7, false,
+						'', 'class="grid_color"', true) .
+				'</td>';
 					
 			$form_items['radio_choice_graph'] = array();
 			$form_items['radio_choice_graph']['items'] = array(
@@ -658,6 +670,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$(".percentile_color").attachColorPicker();
 			$(".percentile_label_color").attachColorPicker();
 			$(".resume_color").attachColorPicker();
+			$(".grid_color").attachColorPicker();
 			
 			$("input[name=radio_choice]").change(function(){
 				$('#count_items').html(1);

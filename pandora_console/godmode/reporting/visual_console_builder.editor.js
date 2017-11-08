@@ -836,6 +836,7 @@ function readFields() {
 		$("input[name='height_box']").val());
 	values['border_color'] = $("input[name='border_color']").val();
 	values['resume_color'] = $("input[name='resume_color']").val();
+	values['grid_color'] = $("input[name='grid_color']").val();
 	values['border_width'] = parseInt(
 		$("input[name='border_width']").val());
 	values['fill_color'] = $("input[name='fill_color']").val();
@@ -1540,6 +1541,11 @@ function loadFieldsFromDB(item) {
 					$("#border_color_row .ColorPickerDivSample")
 						.css('background-color', val);
 				}
+				if (key == 'grid_color') {
+					$("input[name='grid_color']").val(val);
+					$("#grid_color_row .ColorPickerDivSample")
+						.css('background-color', val);
+				}
 				if (key == 'resume_color') {
 					$("input[name='resume_color']").val(val);
 					$("#resume_color_row .ColorPickerDivSample")
@@ -1789,6 +1795,9 @@ function hiddenFields(item) {
 	$("#border_color_row").css('display', 'none');
 	$("#border_color_row." + item).css('display', '');
 
+	$("#grid_color_row").css('display', 'none');
+	$("#grid_color_row." + item).css('display', '');
+
 	$("#resume_color_row").css('display', 'none');
 	$("#resume_color_row." + item).css('display', '');
 
@@ -1844,6 +1853,7 @@ function cleanFields(item) {
 	$("input[name='width_box']").val(300);
 	$("input[name='height_box']").val(180);
 	$("input[name='border_color']").val('#000000');
+	$("input[name='grid_color']").val('#000000');
 	$("input[name='resume_color']").val('#000000');
 	$("input[name='border_width']").val(3);
 	$("input[name='fill_color']").val('#ffffff');

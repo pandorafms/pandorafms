@@ -1242,7 +1242,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 									400, 400, $color, array(), array(),
 									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 									"", "", $water_mark, $config['fontpath'], 6,
-									"", 0, $config['homeurl'], $layoutData['image']) . '</div>';
+									"", 0, $config['homeurl'], $layoutData['image'], $layoutData['border_color']) . '</div>';
 							}
 							else {
 								$img = '<div style="float:right;height:'.$himg.'px;">'. 
@@ -1250,7 +1250,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 									400, 400, $color, array(), array(),
 									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 									"", "", $water_mark, $config['fontpath'], 6,
-									"", 0, $config['homeurl'], $layoutData['image'], true) . '</div>';
+									"", 0, $config['homeurl'], $layoutData['image'], true, false, $layoutData['border_color']) . '</div>';
 							}
 						}
 						elseif($layoutData['label_position']=='right') {
@@ -1260,7 +1260,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 									400, 400, $color, array(), array(),
 									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 									"", "", $water_mark, $config['fontpath'], 6,
-									"", 0, $config['homeurl'], $layoutData['image']) . '</div>';
+									"", 0, $config['homeurl'], $layoutData['image'], $layoutData['border_color']) . '</div>';
 							}
 							else {
 								$img = '<div style="float:left;height:'.$himg.'px;">'. 
@@ -1268,7 +1268,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 									400, 400, $color, array(), array(),
 									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 									"", "", $water_mark, $config['fontpath'], 6,
-									"", 0, $config['homeurl'], $layoutData['image'], true) . '</div>';
+									"", 0, $config['homeurl'], $layoutData['image'], true, false, $layoutData['border_color']) . '</div>';
 							}
 						}
 						else {
@@ -1277,14 +1277,14 @@ function visual_map_print_item($mode = "read", $layoutData,
 									400, 400, $color, array(), array(),
 									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 									"", "", $water_mark, $config['fontpath'], 6,
-									"", 0, $config['homeurl'], $layoutData['image']);
+									"", 0, $config['homeurl'], $layoutData['image'], $layoutData['border_color']);
 							}
 							else {
 								$img = vbar_graph(true, $module_data,
 									400, 400, $color, array(), array(),
 									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 									"", "", $water_mark, $config['fontpath'], 6,
-									"", 0, $config['homeurl'], $layoutData['image'], true);
+									"", 0, $config['homeurl'], $layoutData['image'], true, false, $layoutData['border_color']);
 							}
 						}
 					}
@@ -1296,7 +1296,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 									$width, $width, $color, array(), array(),
 									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 									"", "", $water_mark, $config['fontpath'], 6,
-									"", 0, $config['homeurl'], $layoutData['image']) . '</div>';
+									"", 0, $config['homeurl'], $layoutData['image'], $layoutData['border_color']) . '</div>';
 							}
 							else {
 								$img = '<div style="float:right;height:'.$himg.'px;">'. 
@@ -1304,7 +1304,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 									$width, $width, $color, array(), array(),
 									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 									"", "", $water_mark, $config['fontpath'], 6,
-									"", 0, $config['homeurl'], $layoutData['image'], true) . '</div>';
+									"", 0, $config['homeurl'], $layoutData['image'], true, false, $layoutData['border_color']) . '</div>';
 							}
 						}
 						elseif($layoutData['label_position']=='right') {
@@ -1314,7 +1314,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 									$width, $width, $color, array(), array(),
 									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 									"", "", $water_mark, $config['fontpath'], 6,
-									"", 0, $config['homeurl'], $layoutData['image']) . '</div>';
+									"", 0, $config['homeurl'], $layoutData['image'], $layoutData['border_color']) . '</div>';
 							}
 							else {
 								$img = '<div style="float:left;height:'.$himg.'px;">'. 
@@ -1322,7 +1322,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 									$width, $width, $color, array(), array(),
 									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 									"", "", $water_mark, $config['fontpath'], 6,
-									"", 0, $config['homeurl'], $layoutData['image'], true) . '</div>';
+									"", 0, $config['homeurl'], $layoutData['image'], true, false, $layoutData['border_color']) . '</div>';
 							}
 						}
 						else {
@@ -1331,14 +1331,14 @@ function visual_map_print_item($mode = "read", $layoutData,
 									$width, $width, $color, array(), array(),
 									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 									"", "", $water_mark, $config['fontpath'], 6,
-									"", 0, $config['homeurl'], $layoutData['image']);
+									"", 0, $config['homeurl'], $layoutData['image'], $layoutData['border_color']);
 							}
 							else {
 								$img = vbar_graph(true, $module_data,
 									$width, $width, $color, array(), array(),
 									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 									"", "", $water_mark, $config['fontpath'], 6,
-									"", 0, $config['homeurl'], $layoutData['image'], true);
+									"", 0, $config['homeurl'], $layoutData['image'], true, false, $layoutData['border_color']);
 							}
 						}
 					}

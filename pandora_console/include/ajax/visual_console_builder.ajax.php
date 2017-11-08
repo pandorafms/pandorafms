@@ -118,6 +118,7 @@ $id_group = (int)get_parameter('id_group', 0);
 $id_custom_graph = get_parameter('id_custom_graph', null);
 $border_width = (int)get_parameter('border_width', 0);
 $border_color = get_parameter('border_color', '');
+$grid_color = get_parameter('grid_color', '');
 $resume_color = get_parameter('resume_color', '');
 $fill_color = get_parameter('fill_color', '');
 $percentile_color = get_parameter('percentile_color', '');
@@ -659,6 +660,9 @@ switch ($action) {
 						if ($background_color !== null) {
 							$values['image'] = $background_color;
 						}
+						if ($grid_color !== null) {
+							$values['border_color'] = $grid_color;
+						}
 						break;
 					case 'percentile_item':
 					case 'percentile_bar':
@@ -740,6 +744,7 @@ switch ($action) {
 						case 'bars_graph':
 							unset($values['image']);
 							unset($values['type_graph']);
+							unset($values['border_color']);
 							break;
 						case 'donut_graph':
 							unset($values['border_color']);
@@ -884,7 +889,6 @@ switch ($action) {
 						$elementFields['percentile_color'] = $elementFields['border_color'];
 						$elementFields['percentile_label_color'] = $elementFields['fill_color'];
 						$elementFields['percentile_label'] = $elementFields['label'];
-						html_debug($elementFields, true);
 						break;
 					case 'donut_graph':
 						$elementFields['width_percentile'] = $elementFields['width'];
@@ -898,6 +902,7 @@ switch ($action) {
 					case 'bars_graph':
 						$elementFields['width_percentile'] = $elementFields['width'];
 						$elementFields['bars_graph_type'] = $elementFields['type_graph'];
+						$elementFields['grid_color'] = $elementFields['border_color'];
 						break;
 					case 'box_item':
 						$elementFields['width_box'] = $elementFields['width'];
@@ -1051,6 +1056,7 @@ switch ($action) {
 				}
 				$values['type_graph'] = $bars_graph_type;
 				$values['image'] = $background_color;
+				$values['border_color'] = $grid_color;
 				break;
 			case 'auto_sla_graph':
 				$values['type'] = AUTO_SLA_GRAPH;

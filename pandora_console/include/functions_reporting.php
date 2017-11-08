@@ -1304,7 +1304,9 @@ function reporting_event_top_n($report, $content, $type = 'dinamic',
 					$config['font_size'],
 					true,
 					$ttl,
-					$config['homeurl']);
+					$config['homeurl'],
+					'white',
+					'black');
 			}
 			
 			$return['resume'] = null;

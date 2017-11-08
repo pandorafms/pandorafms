@@ -3248,6 +3248,11 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 	
 	
 	foreach ($layout_datas as $layout_data) {
+		$layout_group = $layout_data['element_group'];
+		if (!check_acl ($config['id_user'], $layout_group, "VR")) {
+			continue;
+		}
+
 		//Check the items are from disabled or pending delete modules
 		if ($layout_data['id_agente_modulo'] != 0 &&
 			(($layout_data['type'] != LABEL)

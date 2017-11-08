@@ -100,6 +100,7 @@ $width = get_parameter('width', null);
 $height = get_parameter('height', null);
 $parent = get_parameter('parent', null);
 $map_linked = get_parameter('map_linked', null);
+$element_group = get_parameter('element_group', null);
 $width_percentile = get_parameter('width_percentile', null);
 $max_percentile = get_parameter('max_percentile', null);
 $height_module_graph = get_parameter('height_module_graph', null);
@@ -584,6 +585,9 @@ switch ($action) {
 				if ($map_linked !== null) {
 					$values['id_layout_linked'] = $map_linked;
 				}
+				if ($element_group !== null) {
+					$values['element_group'] = $element_group;
+				}
 				switch ($type) {
 					// -- line_item ------------------------------------
 					case 'handler_start':
@@ -982,6 +986,7 @@ switch ($action) {
 		}
 		$values['id_agente_modulo'] = $id_module;
 		$values['id_layout_linked'] = $map_linked;
+		$values['element_group'] = $element_group;
 		$values['parent_item'] = $parent;
 		$values['enable_link'] = $enable_link;
 		$values['image'] = $background_color;

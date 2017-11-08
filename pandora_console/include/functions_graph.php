@@ -2199,14 +2199,14 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				$width, $height, $color, $module_name_list, $long_index,
 				ui_get_full_url("images/image_problem_area_small.png", false, false, false),
 				"", "", $water_mark, $config['fontpath'], $fixed_font_size,
-				"", $ttl, $homeurl, $background_color);
+				"", $ttl, $homeurl, $background_color, 'black');
 			break;
 		case CUSTOM_GRAPH_VBARS:
 			return vbar_graph($flash_charts, $graph_values,
 				$width, $height, $color, $module_name_list, $long_index,
 				ui_get_full_url("images/image_problem_area_small.png", false, false, false),
 				"", "", $water_mark, $config['fontpath'], $fixed_font_size,
-				"", $ttl, $homeurl, $background_color, true);
+				"", $ttl, $homeurl, $background_color, true, false, "black");
 			break;
 		case CUSTOM_GRAPH_PIE:
 			return ring_graph($flash_charts, $graph_values, $width, $height,
@@ -2871,7 +2871,9 @@ function grafico_db_agentes_paquetes($width = 380, $height = 300) {
 	
 	return hbar_graph($config['flash_charts'], $data, $width, $height, array(),
 		$legend, "", "", true, "", $water_mark,
-		$config['fontpath'], $config['font_size'], false);
+		$config['fontpath'], $config['font_size'], false, 1, $config['homeurl'],
+					'white',
+					'black');
 }
 
 /**
@@ -2938,7 +2940,9 @@ function graph_db_agentes_modulos($width, $height) {
 		$data, $width, $height, array(),
 		array(), "", "", true, "",
 		$water_mark,
-		$config['fontpath'], $config['font_size'], false);
+		$config['fontpath'], $config['font_size'], false, 1, $config['homeurl'],
+					'white',
+					'black');
 }
 
 /**
@@ -3713,12 +3717,14 @@ function graph_custom_sql_graph ($id, $width, $height,
 		case 'sql_graph_vbar': // vertical bar
 			return vbar_graph($flash_charts, $data, $width, $height, array(),
 				array(), "", "", $homeurl, $water_mark,
-				$config['fontpath'], $config['font_size'], false, $ttl);
+				$config['fontpath'], $config['font_size'], false, $ttl, "", "white", false, false, "black");
 			break;
 		case 'sql_graph_hbar': // horizontal bar
 			return hbar_graph($flash_charts, $data, $width, $height, array(),
 				array(), "", "", true, $homeurl, $water_mark,
-				$config['fontpath'], $config['font_size'], false, $ttl);
+				$config['fontpath'], $config['font_size'], false, $ttl,$config['homeurl'],
+					'white',
+					'black');
 			break;
 		case 'sql_graph_pie': // Pie
 			return pie3d_graph($flash_charts, $data, $width, $height, __("other"), $homeurl,

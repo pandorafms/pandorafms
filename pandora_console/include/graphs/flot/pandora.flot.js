@@ -326,7 +326,8 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 }
 
 function pandoraFlotHBars(graph_id, values, labels, water_mark,
-	maxvalue, water_mark, separator, separator2, font, font_size, background_color) {
+	maxvalue, water_mark, separator, separator2, font, font_size, background_color,
+	tick_color) {
 
 	var colors_data = ['#FC4444','#FFA631','#FAD403','#5BB6E5','#F2919D','#80BA27'];
 	values = values.split(separator2);
@@ -346,8 +347,6 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 			});
 		};
 	}
-
-
 
 	var labels_total=new Array();
 	labels = labels.split(separator);
@@ -372,20 +371,22 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 			grid: {
 				hoverable: true,
 				borderWidth: 1,
+				tickColor: tick_color,
 				backgroundColor: { colors: [background_color, background_color] }
 				},
 			xaxis: {
+				color: tick_color,
 				axisLabelUseCanvas: true,
 				axisLabelFontSizePixels: font_size,
 				axisLabelFontFamily: font+'Font',
 				tickFormatter: xFormatter,
 			},
 			yaxis:  {
+				color: tick_color,
 				axisLabelUseCanvas: true,
 				axisLabelFontSizePixels: font_size,
 				axisLabelFontFamily: font+'Font',
 				ticks: yFormatter,
-				color: '',
 			},
 			legend: {
 				show: false
@@ -511,7 +512,7 @@ function showTooltip(x, y, color, contents) {
     }).appendTo("body").fadeIn(200);
 }
 
-function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors, water_mark, maxvalue, water_mark, separator, separator2, font, font_size , from_ux, from_wux, background_color) {
+function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors, water_mark, maxvalue, water_mark, separator, separator2, font, font_size , from_ux, from_wux, background_color, tick_color) {
 	values = values.split(separator2);
 	legend = legend.split(separator);
 	font = font.split("/").pop().split(".").shift();
@@ -565,6 +566,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 			}
 		},
 		xaxis: {
+			color:tick_color,
 			axisLabelUseCanvas: true,
 			axisLabelFontSizePixels: font_size,
 			axisLabelFontFamily: font+'Font',
@@ -574,6 +576,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 			labelHeight: 50,
 		},
 		yaxis: {
+			color:tick_color,
 			axisLabelUseCanvas: true,
 			axisLabelFontSizePixels: font_size,
 			axisLabelFontFamily: font+'Font',
@@ -602,6 +605,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 		grid: {
 			hoverable: true,
 			borderWidth: 1,
+			tickColor: tick_color,
 			backgroundColor: { colors: [background_color, background_color] }
 		}
 	};

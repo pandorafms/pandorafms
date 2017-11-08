@@ -1972,7 +1972,7 @@ function print_interior_circular_progress_bar (recipient, percentile, width, hei
 	})();
 }
 
-function print_donut_graph (recipient, width, height, module_data) {
+function print_donut_graph (recipient, width, height, module_data, resume_color) {
 	var svg = d3.select(recipient)
 		.append("svg")
 			.attr("width", width)
@@ -2041,10 +2041,11 @@ function print_donut_graph (recipient, width, height, module_data) {
 		.value(function(d) {
 			return parseFloat(d.percent);
 		});
-
+console.log(resume_color);
 	jQuery.each(module_data, function (key, m_d) {
 		svg.append("g")
 			.append("text")
+				.attr('fill', resume_color)
 				.attr("transform", "translate(" + (((width / 2) - (radius + decrement_x_padding))) + "," + (((height / 2) - radius) - increment_y) + ")")
 				.text(m_d.tag_name)
 				.style("font-family", "Verdana")

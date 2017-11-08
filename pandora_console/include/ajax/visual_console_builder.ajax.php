@@ -118,6 +118,7 @@ $id_group = (int)get_parameter('id_group', 0);
 $id_custom_graph = get_parameter('id_custom_graph', null);
 $border_width = (int)get_parameter('border_width', 0);
 $border_color = get_parameter('border_color', '');
+$resume_color = get_parameter('resume_color', '');
 $fill_color = get_parameter('fill_color', '');
 $percentile_color = get_parameter('percentile_color', '');
 $percentile_label = io_safe_output(get_parameter('percentile_label', ''));
@@ -607,6 +608,7 @@ switch ($action) {
 							$values['width'] = $width_percentile;
 							$values['height'] = $width_percentile;
 						}
+						$values['border_color'] = $resume_color;
 						$values['type'] = DONUT_GRAPH;
 
 						break;
@@ -738,6 +740,10 @@ switch ($action) {
 						case 'bars_graph':
 							unset($values['image']);
 							unset($values['type_graph']);
+							break;
+						case 'donut_graph':
+							unset($values['border_color']);
+							unset($values['width']);
 							break;
 						case 'box_item':
 							unset($values['border_width']);
@@ -882,6 +888,7 @@ switch ($action) {
 						break;
 					case 'donut_graph':
 						$elementFields['width_percentile'] = $elementFields['width'];
+						$elementFields['resume_color'] = $elementFields['border_color'];
 						break;
 					
 					case 'module_graph':
@@ -1000,6 +1007,7 @@ switch ($action) {
 				$values['type'] = DONUT_GRAPH;
 				$values['width'] = $width;
 				$values['height'] = $height;
+				$values['border_color'] = $resume_color;
 				break;
 			case 'module_graph':
 				$values['type'] = MODULE_GRAPH;

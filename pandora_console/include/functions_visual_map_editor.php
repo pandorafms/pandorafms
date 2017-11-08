@@ -319,6 +319,18 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				html_print_select(array(), 'module', '', '', __('Any'), 0, true) . '<div id="data_image_container" style="display:none;"><span id="data_image_check_label" style="margin-left:20px;">'.__("Data image").': </span><span id="data_image_check">Off</span><span id="data_image_width_label"> - Width: </span><input style="margin-left:5px;width:40px;" type="number" min="0" id="data_image_width" value="100"></input></div>
 				</td>';
 
+			$form_items['resume_color_row'] = array();
+			$form_items['resume_color_row']['items'] = array('donut_graph');
+			$form_items['resume_color_row']['html'] = 
+				'<td align="left" valign="top" style="">' .
+					__('Resume data color') .
+				'</td>' .
+				'<td align="left" style="">' .
+					html_print_input_text_extended ('resume_color',
+						'#000000', 'text-resume_color', '', 7, 7, false,
+						'', 'class="resume_color"', true) .
+				'</td>';
+
 			$event_times = array(86400 => __('24h'),
 								28800 => __('8h'),
 								7200 => __('2h'),
@@ -645,6 +657,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$(".line_color").attachColorPicker();
 			$(".percentile_color").attachColorPicker();
 			$(".percentile_label_color").attachColorPicker();
+			$(".resume_color").attachColorPicker();
 			
 			$("input[name=radio_choice]").change(function(){
 				$('#count_items').html(1);

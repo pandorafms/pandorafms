@@ -384,7 +384,7 @@ function progress_circular_bar_interior ($id, $percentile, $width, $height, $col
 	return $output;
 }
 
-function d3_donut_graph ($id, $width, $height, $module_data) {
+function d3_donut_graph ($id, $width, $height, $module_data, $resume_color) {
 	global $config;
 
 	$module_data = json_encode($module_data);
@@ -402,7 +402,7 @@ function d3_donut_graph ($id, $width, $height, $module_data) {
 				</style>";
 	
 	$output .= "<script language=\"javascript\" type=\"text/javascript\">
-					print_donut_graph('" . $recipient_name_to_js . "', " . $width . ", " . $height . ", " . $module_data . ");
+					print_donut_graph('" . $recipient_name_to_js . "', " . $width . ", " . $height . ", " . $module_data . ", '" . $resume_color . "');
 				</script>";
 
 	return $output;

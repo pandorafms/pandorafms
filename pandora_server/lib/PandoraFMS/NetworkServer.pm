@@ -344,10 +344,10 @@ sub pandora_query_snmp ($$$$) {
 
 	my $snmp_version = $module->{"tcp_send"}; # (1, 2, 2c or 3)
 	my $snmp3_privacy_method = $module->{"custom_string_1"}; # DES/AES
-	my $snmp3_privacy_pass = pandora_output_password($pa_config, $module->{"custom_string_2"});
+	my $snmp3_privacy_pass = safe_output(pandora_output_password($pa_config, $module->{"custom_string_2"}));
 	my $snmp3_security_level = $module->{"custom_string_3"}; # noAuthNoPriv|authNoPriv|authPriv
-	my $snmp3_auth_user = $module->{"plugin_user"};
-	my $snmp3_auth_pass = pandora_output_password($pa_config, $module->{"plugin_pass"});
+	my $snmp3_auth_user = safe_output($module->{"plugin_user"});
+	my $snmp3_auth_pass = safe_output(pandora_output_password($pa_config, $module->{"plugin_pass"}));
 	my $snmp3_auth_method = $module->{"plugin_parameter"}; #MD5/SHA1
 	my $snmp_community = $module->{"snmp_community"};
 	my $snmp_target = $ip_target;
@@ -412,7 +412,7 @@ sub pandora_query_snmp ($$$$) {
 		if ($snmp3_security_level eq "authPriv"){
 			$snmp3_extra = " -a $snmp3_auth_method -u '$snmp3_auth_user' -A '$snmp3_auth_pass' -x $snmp3_privacy_method -X '$snmp3_privacy_pass' ";
 		}
-       
+		
 		$output = pandora_snmp_get_command ($snmpget_cmd, $snmp_version, $snmp_retries, $snmp_timeout, $snmp_community, $snmp_target, $snmp_oid, $snmp3_security_level, $snmp3_extra, $snmp_port, $pa_config);
 		if (defined ($output) && $output ne ""){
 			$module_result = 0;

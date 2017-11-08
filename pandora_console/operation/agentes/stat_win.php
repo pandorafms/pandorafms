@@ -139,15 +139,15 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 		
 		$draw_alerts = get_parameter("draw_alerts", 0);
 
-		if(isset($config['only_average'])){
+		if(isset($config['only_average']) && $config['only_average']){
 			$avg_only = 1;
 		} 
 		else {
 			$avg_only = 0;
 		}
-
+		
 		$show_other = get_parameter('show_other');
-		if (isset($show_other)) {
+		if (isset($show_other) && $show_other) {
 			$avg_only = $show_other;
 		}
 

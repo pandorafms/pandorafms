@@ -481,6 +481,9 @@ function db_get_all_rows_sql($sql, $search_history_db = false, $cache = true, $d
 	}
 }
 
+
+
+
 /**
  * 
  * Returns the time the module is in unknown status (by events)
@@ -511,6 +514,7 @@ function db_get_module_ranges_unknown($id_agente_modulo, $tstart = false, $tend 
 		return false;
 	}
 
+
 	// Retrieve going unknown events in range
 	$query  = "SELECT utimestamp,event_type FROM tevento WHERE id_agentmodule = " . $id_agente_modulo;
 	$query .= " AND event_type like 'going_%' ";
@@ -523,7 +527,7 @@ function db_get_module_ranges_unknown($id_agente_modulo, $tstart = false, $tend 
 		return false;
 	}
 
-	$last_status = $events[0]["event_type"] != "going_unknown" ? 1:0;
+	$last_status = 0; // normal
 	$return = array();
 	$i=0;
 	foreach ($events as $event) {
@@ -551,9 +555,6 @@ function db_get_module_ranges_unknown($id_agente_modulo, $tstart = false, $tend 
 			}
 		}
 	}
-	if(!isset($return[0])){
-		return false;
-	}
 
 	return $return;
 }
@@ -572,16 +573,6 @@ function db_get_module_ranges_unknown($id_agente_modulo, $tstart = false, $tend 
  * 
  * Note: All "unknown" data are marked as NULL
  * Warning: Be careful with the amount of data, check your RAM size available
- * We'll return a bidimensional array
- * Structure returned: schema:
- * 
- * uncompressed_data =>
- *      pool_id (int)
- *          utimestamp (start of current slice)
- *          data
- *              array
- *                  datos
- *                  utimestamp
  * 
  */
 function db_uncompress_module_data($id_agente_modulo, $tstart = false, $tend = false) {
@@ -628,7 +619,6 @@ function db_uncompress_module_data($id_agente_modulo, $tstart = false, $tend = f
 		$query .= " AND utimestamp=" . $first_utimestamp;
 
 		$data = db_get_all_rows_sql($query,$search_historydb);
-
 		if ($data === false) {
 			// first utimestamp not found in active database
 			// SEARCH HISTORY DB
@@ -653,9 +643,7 @@ function db_uncompress_module_data($id_agente_modulo, $tstart = false, $tend = f
 	// Retrieve all data from module in given range
 	$raw_data = db_get_all_rows_sql($query, $search_historydb);
 
-	$module_interval = modules_get_interval ($id_agente_modulo);
-
-	if (($raw_data === false) && ( ($first_utimestamp < $tstart - (SECONDS_1DAY + 2*$module_interval)) ) ) {
+	if (($raw_data === false) && ($first_utimestamp === $tstart)) {
 		// No data
 		return false;
 	}
@@ -663,45 +651,28 @@ function db_uncompress_module_data($id_agente_modulo, $tstart = false, $tend = f
 	// Retrieve going unknown events in range
 	$unknown_events = db_get_module_ranges_unknown($id_agente_modulo, $tstart, $tend, $search_historydb);
 
-	$previous_unknown_events = db_get_module_ranges_unknown(
-		$id_agente_modulo, 
-		$tstart - (SECONDS_1DAY + 2*$module_interval), 
-		$tstart, 
-		$search_historydb
-	);
-
-	//don't show graph if graph is inside unknown
-	if( $previous_unknown_events && 
-		!isset($previous_unknown_events[count($previous_unknown_events) -1]['time_to']) && 
-		$unknown_events === false && $raw_data === false){
-		return false;
-	}
-
-	//if time to is missing in last event force time to outside range time
-	if( $unknown_events && !isset($unknown_events[count($unknown_events) -1]['time_to']) ){
-		$unknown_events[count($unknown_events) -1]['time_to'] = $tend + $module_interval;
-	}
-
-	//if time to is missing in first event force time to outside range time
-	if ($first_data["datos"] === false) {
-		$last_inserted_value = false;
-	}elseif( $unknown_events && !isset($unknown_events[0]['time_from']) ||
-		$first_utimestamp < $tstart - (SECONDS_1DAY + 2*$module_interval) ){
-		$last_inserted_value = null;
-	}
-	else{
-		$last_inserted_value = $first_data["datos"];
-	}
-
 	// Retrieve module_interval to build the template
+	$module_interval = modules_get_interval ($id_agente_modulo);
 	$slice_size = $module_interval;
+
+	// We'll return a bidimensional array
+	// Structure returned: schema:
+	// 
+	// uncompressed_data =>
+	//      pool_id (int)
+	//          utimestamp (start of current slice)
+	//          data
+	//              array
+	//                  utimestamp
+	//                  datos
 
 	$return = array();
 
 	// Point current_timestamp to begin of the set and initialize flags
 	$current_timestamp   = $tstart;
+	$last_inserted_value = $first_data["datos"];
 	$last_timestamp      = $first_data["utimestamp"];
-	$last_value          = $first_data["datos"];
+	$last_value    		 = $first_data["datos"];
 
 	// Build template
 	$pool_id = 0;
@@ -761,7 +732,7 @@ function db_uncompress_module_data($id_agente_modulo, $tstart = false, $tend = f
 			  	    ($current_timestamp_end >= $current_unknown['time_from']) ) || 
 				  ($current_timestamp_end >= $current_unknown['time_to']) ) ) {
 				
-			if( ( $current_timestamp <= $current_unknown['time_from']) && 
+			if( ( $current_timestamp < $current_unknown['time_from']) && 
 				( $current_timestamp_end >= $current_unknown['time_from'] ) ){
 				// Add unknown state detected
 				$tmp_data["utimestamp"] = $current_unknown["time_from"];

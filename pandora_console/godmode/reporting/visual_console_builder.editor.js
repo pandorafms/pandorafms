@@ -800,6 +800,8 @@ function readFields() {
 	values['top'] = $("input[name=top]").val();
 	values['agent'] = $("input[name=agent]").val();
 	values['id_agent'] = $("input[name=id_agent]").val();
+	values['agent_string'] = $("input[name=agent_string]").val();
+	values['id_agent_string'] = $("input[name=id_agent_string]").val();
 	values['module'] = $("select[name=module]").val();
 	values['process_simple_value'] = $("select[name=process_value]").val();
 	values['background'] = $("#background_image").val();
@@ -910,7 +912,7 @@ function create_button_palette_callback() {
 			}
 			break;
 		case 'donut_graph':
-			if ((values['agent'] == '')) {
+			if ((values['agent_string'] == '')) {
 				alert($("#message_alert_no_agent").html());
 				validate = false;
 			}
@@ -1442,10 +1444,15 @@ function loadFieldsFromDB(item) {
 				if (key == 'pos_y') $("input[name=top]").val(val);
 				if (key == 'agent_name') {
 					$("input[name=agent]").val(val);
+					$("input[name=agent_string]").val(val);
 					//Reload no-sincrone the select of modules
 				}
+				
 				if (key == 'id_agent') {
 					$("input[name=id_agent]").val(val);
+				}
+				if (key == 'id_agent_string') {
+					$("input[name=id_agent_string]").val(val);
 				}
 				if (key == 'modules_html') {
 					$("select[name=module]").empty().html(val);
@@ -1714,6 +1721,9 @@ function hiddenFields(item) {
 	$("#agent_row").css('display', 'none');
 	$("#agent_row." + item).css('display', '');
 
+	$("#agent_row_string").css('display', 'none');
+	$("#agent_row_string." + item).css('display', '');
+
 	$("#module_row").css('display', 'none');
 	$("#module_row." + item).css('display', '');
 
@@ -1838,6 +1848,7 @@ function cleanFields(item) {
 	$("input[name=left]").val(0);
 	$("input[name=top]").val(0);
 	$("input[name=agent]").val('');
+	$("input[name=agent_string]").val('');
 	$("select[name=module]").val('');
 	$("select[name=process_value]").val(0);
 	$("select[name=background_image]").val('');
@@ -2452,7 +2463,7 @@ function setDonutsGraph (id_data, values) {
 
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "get_module_type_string"});
-	parameter.push ({name: "id_agent", value: values['id_agent']});
+	parameter.push ({name: "id_agent", value: values['id_agent_string']});
 	parameter.push ({name: "module", value: values['module']});
 	parameter.push ({name: "id_element", value: id_data});
 	parameter.push ({name: "id_visual_console", value: id_visual_console});

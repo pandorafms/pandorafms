@@ -113,6 +113,7 @@ $metaconsole = get_parameter('metaconsole', 0);
 $server_name = get_parameter('server_name', null);
 $server_id = (int)get_parameter('server_id', 0);
 $id_agent = get_parameter('id_agent', null);
+$id_agent_string = get_parameter('id_agent_string', null);
 $id_metaconsole = get_parameter('id_metaconsole', null);
 $id_group = (int)get_parameter('id_group', 0);
 $id_custom_graph = get_parameter('id_custom_graph', null);
@@ -179,7 +180,7 @@ switch ($action) {
 		}
 
 		$is_string = db_get_value_filter ('id_tipo_modulo', 'tagente_modulo',
-			array ('id_agente' => $id_agent,
+			array ('id_agente' => _string,
 				'id_agente_modulo' => $id_module));
 		
 		if ($layoutData['id_metaconsole'] != 0) {
@@ -611,6 +612,7 @@ switch ($action) {
 						}
 						$values['border_color'] = $resume_color;
 						$values['type'] = DONUT_GRAPH;
+						$values['id_agent'] = $id_agent_string;
 
 						break;
 					case 'box_item':
@@ -1013,6 +1015,7 @@ switch ($action) {
 				$values['width'] = $width;
 				$values['height'] = $height;
 				$values['border_color'] = $resume_color;
+				$values['id_agent'] = $id_agent_string;
 				break;
 			case 'module_graph':
 				$values['type'] = MODULE_GRAPH;

@@ -3063,6 +3063,7 @@ function draw_elements_graph() {
 				"id_module_start_" + d.id_module_start + " " +
 				"id_module_end_" + d.id_module_end;
 		})
+		.attr("stroke", function (d) { return d.link_color; })
 		.attr("stroke-width", 3)
 		.attr("d", null)
 		.attr('marker-start', function (d) {

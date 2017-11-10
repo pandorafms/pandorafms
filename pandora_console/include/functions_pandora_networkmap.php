@@ -518,6 +518,7 @@ function networkmap_links_to_js_links($relations, $nodes_graph) {
 		$item['id_agent_start'] = (int)$id_source_agent;
 		$item['id_module_end'] = 0;
 		$item['id_agent_end'] = (int)$id_target_agent;
+		$item['link_color'] = "#999";
 		$item['target'] = -1;
 		$item['source'] = -1;
 		
@@ -572,14 +573,42 @@ function networkmap_links_to_js_links($relations, $nodes_graph) {
 		$agent2 = 0;
 		
 		if (($relation['parent_type'] == 1) && ($relation['child_type'] == 1)) {
+			$mod1_status = db_get_value_filter('estado', 'tagente_estado', array('id_agente_modulo' => $relation['id_parent_source_data']));
+			$mod2_status = db_get_value_filter('estado', 'tagente_estado', array('id_agente_modulo' => $relation['id_child_source_data']));
+
+			if (($mod1_status == AGENT_MODULE_STATUS_CRITICAL_BAD) || ($mod2_status == AGENT_MODULE_STATUS_CRITICAL_BAD)) {
+				$item['link_color'] = "#FC4444";
+			}
+			else if (($mod1_status == AGENT_MODULE_STATUS_WARNING) || ($mod2_status == AGENT_MODULE_STATUS_WARNING)) {
+				$item['link_color'] = "#FAD403";
+			}
+
 			$agent = agents_get_agent_id_by_module_id($relation['id_parent_source_data']);
 			$agent2 = agents_get_agent_id_by_module_id($relation['id_child_source_data']);
 		}
 		else if ($relation['child_type'] == 1) {
+			$mod1_status = db_get_value_filter('estado', 'tagente_estado', array('id_agente_modulo' => $relation['id_child_source_data']));
+
+			if ($mod1_status == AGENT_MODULE_STATUS_CRITICAL_BAD) {
+				$item['link_color'] = "#FC4444";
+			}
+			else if ($mod1_status == AGENT_MODULE_STATUS_WARNING) {
+				$item['link_color'] = "#FAD403";
+			}
+
 			$agent = $relation['id_parent_source_data'];
 			$agent2 = agents_get_agent_id_by_module_id($relation['id_child_source_data']);
 		}
 		else if ($relation['parent_type'] == 1) {
+			$mod1_status = db_get_value_filter('estado', 'tagente_estado', array('id_agente_modulo' => $relation['id_parent_source_data']));
+
+			if ($mod1_status == AGENT_MODULE_STATUS_CRITICAL_BAD) {
+				$item['link_color'] = "#FC4444";
+			}
+			else if ($mod1_status == AGENT_MODULE_STATUS_WARNING) {
+				$item['link_color'] = "#FAD403";
+			}
+
 			$agent = agents_get_agent_id_by_module_id($relation['id_parent_source_data']);
 			$agent2 = $relation['id_child_source_data'];
 		}
@@ -1335,7 +1364,6 @@ function show_networkmap($id = 0, $user_readonly = false, $nodes_and_relations =
 	}
 	
 	.link {
-		stroke: #999;
 		stroke-opacity: .6;
 	}
 	

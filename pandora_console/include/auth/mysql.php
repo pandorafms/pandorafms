@@ -693,10 +693,10 @@ function ldap_process_user_login ($login, $password) {
 		}
 	}
 
-	$dc = $config["ldap_base_dn"];
+	$dc = io_safe_output($config["ldap_base_dn"]);
 	
 	#Search group of this user it belong.
-	$filter="(" . $config['ldap_login_attr'] . io_safe_output($login) . ")";
+	$filter="(" . $config['ldap_login_attr'] . "=" .  io_safe_output($login) . ")";
 	$justthese = array("objectclass=group");
 	
 	$sr = ldap_search($ds, $dc, $filter, $justthese);

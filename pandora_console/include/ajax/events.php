@@ -478,13 +478,10 @@ if ($get_extended_event) {
 
 if ($get_events_details) {
 	$event_ids = explode(',',get_parameter ('event_ids'));
-	$events = db_get_all_rows_filter (
-		'tevento',
-		array ('id_evento' => $event_ids,'order' => 'utimestamp ASC'),
-		array ('evento', 'utimestamp', 'estado', 'criticity', 'id_usuario'), 
-		'AND', 
-		true
-	);
+	$events = db_get_all_rows_filter ('tevento',
+		array ('id_evento' => $event_ids,
+			'order' => 'utimestamp ASC'),
+			array ('evento', 'utimestamp', 'estado', 'criticity', 'id_usuario'));
 	
 	$out = '<table class="eventtable" style="width:100%;height:100%;padding:0px 0px 0px 0px; border-spacing: 0px; margin: 0px 0px 0px 0px;">';
 	$out .= '<tr style="font-size:0px; heigth: 0px; background: #ccc;"><td></td><td></td></tr>';

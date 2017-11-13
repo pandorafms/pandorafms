@@ -1140,224 +1140,180 @@ function visual_map_print_item($mode = "read", $layoutData,
 
 			if ( (get_parameter('action') == 'edit') || (get_parameter('operation') == 'edit_visualmap') ) {
 				if($width == 0){
-					if (($is_string == 17) || ($is_string == 23) || ($is_string == 3) ||
-					($is_string == 10) || ($is_string == 33)) {
-						if ($layoutData['id_metaconsole'] != 0) {
-							$img =  '<img src="../../images/console/signes/barras.png" style="width:400px;height:400px;'.$imgpos.'">';
-						}
-						else{
-							$img =  '<img src="images/console/signes/barras.png" style="width:400px;height:400px;'.$imgpos.'">';	
-						}
+					if ($layoutData['id_metaconsole'] != 0) {
+						$img =  '<img src="../../images/console/signes/barras.png" style="width:400px;height:400px;'.$imgpos.'">';
 					}
-					else {
-						if ($layoutData['id_metaconsole'] != 0) {
-							$img =  '<img src="../../images/console/signes/barras-no.png" style="width:400px;height:400px;'.$imgpos.'">';
-						}
-						else{
-							$img =  '<img src="images/console/signes/barras-no.png" style="width:400px;height:400px;'.$imgpos.'">';	
-						}
+					else{
+						$img =  '<img src="images/console/signes/barras.png" style="width:400px;height:400px;'.$imgpos.'">';	
 					}
 				}
 				else{
-					if (($is_string == 17) || ($is_string == 23) || ($is_string == 3) ||
-					($is_string == 10) || ($is_string == 33)) {
-						if ($layoutData['id_metaconsole'] != 0) {
-							$img =  '<img src="../../images/console/signes/barras.png" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';
-						}
-						else{
-							$img =  '<img src="images/console/signes/barras.png" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';
-						}
+					if ($layoutData['id_metaconsole'] != 0) {
+						$img =  '<img src="../../images/console/signes/barras.png" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';
 					}
-					else {
-						if ($layoutData['id_metaconsole'] != 0) {
-							$img =  '<img src="../../images/console/signes/barras-no.png" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';
-						}
-						else{
-							$img =  '<img src="images/console/signes/barras-no.png" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';
-						}
+					else{
+						$img =  '<img src="images/console/signes/barras.png" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';
 					}
 				}
 			}
 			else {
-				if (($is_string == 17) || ($is_string == 23) || ($is_string == 3) ||
-				($is_string == 10) || ($is_string == 33)) {
+				$color = array();
 
-					$color = array();
-	
-					$color[0] = array('border' => '#000000',
-						'color' => $config['graph_color1'],
-						'alpha' => CHART_DEFAULT_ALPHA);
-					$color[1] = array('border' => '#000000',
-						'color' => $config['graph_color2'],
-						'alpha' => CHART_DEFAULT_ALPHA);
-					$color[2] = array('border' => '#000000',
-						'color' => $config['graph_color3'],
-						'alpha' => CHART_DEFAULT_ALPHA);
-					$color[3] = array('border' => '#000000',
-						'color' => $config['graph_color4'],
-						'alpha' => CHART_DEFAULT_ALPHA);
-					$color[4] = array('border' => '#000000',
-						'color' => $config['graph_color5'],
-						'alpha' => CHART_DEFAULT_ALPHA);
-					$color[5] = array('border' => '#000000',
-						'color' => $config['graph_color6'],
-						'alpha' => CHART_DEFAULT_ALPHA);
-					$color[6] = array('border' => '#000000',
-						'color' => $config['graph_color7'],
-						'alpha' => CHART_DEFAULT_ALPHA);
-					$color[7] = array('border' => '#000000',
-						'color' => $config['graph_color8'],
-						'alpha' => CHART_DEFAULT_ALPHA);
-					$color[8] = array('border' => '#000000',
-						'color' => $config['graph_color9'],
-						'alpha' => CHART_DEFAULT_ALPHA);
-					$color[9] = array('border' => '#000000',
-						'color' => $config['graph_color10'],
-						'alpha' => CHART_DEFAULT_ALPHA);
-					$color[11] = array('border' => '#000000',
-						'color' => COL_GRAPH9,
-						'alpha' => CHART_DEFAULT_ALPHA);
-					$color[12] = array('border' => '#000000',
-						'color' => COL_GRAPH10,
-						'alpha' => CHART_DEFAULT_ALPHA);
-					$color[13] = array('border' => '#000000',
-						'color' => COL_GRAPH11,
-						'alpha' => CHART_DEFAULT_ALPHA);
-					$color[14] = array('border' => '#000000',
-						'color' => COL_GRAPH12,
-						'alpha' => CHART_DEFAULT_ALPHA);
-					$color[15] = array('border' => '#000000',
-						'color' => COL_GRAPH13,
-						'alpha' => CHART_DEFAULT_ALPHA);
+				$color[0] = array('border' => '#000000',
+					'color' => $config['graph_color1'],
+					'alpha' => CHART_DEFAULT_ALPHA);
+				$color[1] = array('border' => '#000000',
+					'color' => $config['graph_color2'],
+					'alpha' => CHART_DEFAULT_ALPHA);
+				$color[2] = array('border' => '#000000',
+					'color' => $config['graph_color3'],
+					'alpha' => CHART_DEFAULT_ALPHA);
+				$color[3] = array('border' => '#000000',
+					'color' => $config['graph_color4'],
+					'alpha' => CHART_DEFAULT_ALPHA);
+				$color[4] = array('border' => '#000000',
+					'color' => $config['graph_color5'],
+					'alpha' => CHART_DEFAULT_ALPHA);
+				$color[5] = array('border' => '#000000',
+					'color' => $config['graph_color6'],
+					'alpha' => CHART_DEFAULT_ALPHA);
+				$color[6] = array('border' => '#000000',
+					'color' => $config['graph_color7'],
+					'alpha' => CHART_DEFAULT_ALPHA);
+				$color[7] = array('border' => '#000000',
+					'color' => $config['graph_color8'],
+					'alpha' => CHART_DEFAULT_ALPHA);
+				$color[8] = array('border' => '#000000',
+					'color' => $config['graph_color9'],
+					'alpha' => CHART_DEFAULT_ALPHA);
+				$color[9] = array('border' => '#000000',
+					'color' => $config['graph_color10'],
+					'alpha' => CHART_DEFAULT_ALPHA);
+				$color[11] = array('border' => '#000000',
+					'color' => COL_GRAPH9,
+					'alpha' => CHART_DEFAULT_ALPHA);
+				$color[12] = array('border' => '#000000',
+					'color' => COL_GRAPH10,
+					'alpha' => CHART_DEFAULT_ALPHA);
+				$color[13] = array('border' => '#000000',
+					'color' => COL_GRAPH11,
+					'alpha' => CHART_DEFAULT_ALPHA);
+				$color[14] = array('border' => '#000000',
+					'color' => COL_GRAPH12,
+					'alpha' => CHART_DEFAULT_ALPHA);
+				$color[15] = array('border' => '#000000',
+					'color' => COL_GRAPH13,
+					'alpha' => CHART_DEFAULT_ALPHA);
 
-					$module_data = get_bars_module_data($id_module);
-					$water_mark = array('file' => '/var/www/html/pandora_console/images/logo_vertical_water.png', 
-										'url' => 'http://localhost/pandora_console/images/logo_vertical_water.png');
-					
-					if ($width == 0) {
-						if ($layoutData['label_position']=='left') {
-							if ($layoutData['type_graph'] == 'horizontal') {
-								$img = '<div style="float:right;height:'.$himg.'px;">'.
-									hbar_graph(true, $module_data,
-									400, 400, $color, array(), array(),
-									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
-									"", "", $water_mark, $config['fontpath'], 6,
-									"", 0, $config['homeurl'], $layoutData['image'], $layoutData['border_color']) . '</div>';
-							}
-							else {
-								$img = '<div style="float:right;height:'.$himg.'px;">'. 
-									vbar_graph(true, $module_data,
-									400, 400, $color, array(), array(),
-									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
-									"", "", $water_mark, $config['fontpath'], 6,
-									"", 0, $config['homeurl'], $layoutData['image'], true, false, $layoutData['border_color']) . '</div>';
-							}
-						}
-						elseif($layoutData['label_position']=='right') {
-							if ($layoutData['type_graph'] == 'horizontal') {
-								$img = '<div style="float:left;height:'.$himg.'px;">'.
-									hbar_graph(true, $module_data,
-									400, 400, $color, array(), array(),
-									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
-									"", "", $water_mark, $config['fontpath'], 6,
-									"", 0, $config['homeurl'], $layoutData['image'], $layoutData['border_color']) . '</div>';
-							}
-							else {
-								$img = '<div style="float:left;height:'.$himg.'px;">'. 
-									vbar_graph(true, $module_data,
-									400, 400, $color, array(), array(),
-									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
-									"", "", $water_mark, $config['fontpath'], 6,
-									"", 0, $config['homeurl'], $layoutData['image'], true, false, $layoutData['border_color']) . '</div>';
-							}
+				$module_data = get_bars_module_data($id_module);
+				$water_mark = array('file' => '/var/www/html/pandora_console/images/logo_vertical_water.png', 
+									'url' => 'http://localhost/pandora_console/images/logo_vertical_water.png');
+				
+				if ($width == 0) {
+					if ($layoutData['label_position']=='left') {
+						if ($layoutData['type_graph'] == 'horizontal') {
+							$img = '<div style="float:right;height:'.$himg.'px;">'.
+								hbar_graph(true, $module_data,
+								400, 400, $color, array(), array(),
+								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+								"", "", $water_mark, $config['fontpath'], 6,
+								"", 0, $config['homeurl'], $layoutData['image'], $layoutData['border_color']) . '</div>';
 						}
 						else {
-							if ($layoutData['type_graph'] == 'horizontal') {
-								$img = hbar_graph(true, $module_data,
-									400, 400, $color, array(), array(),
-									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
-									"", "", $water_mark, $config['fontpath'], 6,
-									"", 0, $config['homeurl'], $layoutData['image'], $layoutData['border_color']);
-							}
-							else {
-								$img = vbar_graph(true, $module_data,
-									400, 400, $color, array(), array(),
-									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
-									"", "", $water_mark, $config['fontpath'], 6,
-									"", 0, $config['homeurl'], $layoutData['image'], true, false, $layoutData['border_color']);
-							}
+							$img = '<div style="float:right;height:'.$himg.'px;">'. 
+								vbar_graph(true, $module_data,
+								400, 400, $color, array(), array(),
+								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+								"", "", $water_mark, $config['fontpath'], 6,
+								"", 0, $config['homeurl'], $layoutData['image'], true, false, $layoutData['border_color']) . '</div>';
 						}
 					}
-					else{
-						if ($layoutData['label_position']=='left') {
-							if ($layoutData['type_graph'] == 'horizontal') {
-								$img = '<div style="float:right;height:'.$himg.'px;">'.
-									hbar_graph(true, $module_data,
-									$width, $width, $color, array(), array(),
-									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
-									"", "", $water_mark, $config['fontpath'], 6,
-									"", 0, $config['homeurl'], $layoutData['image'], $layoutData['border_color']) . '</div>';
-							}
-							else {
-								$img = '<div style="float:right;height:'.$himg.'px;">'. 
-									vbar_graph(true, $module_data,
-									$width, $width, $color, array(), array(),
-									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
-									"", "", $water_mark, $config['fontpath'], 6,
-									"", 0, $config['homeurl'], $layoutData['image'], true, false, $layoutData['border_color']) . '</div>';
-							}
-						}
-						elseif($layoutData['label_position']=='right') {
-							if ($layoutData['type_graph'] == 'horizontal') {
-								$img = '<div style="float:left;height:'.$himg.'px;">'.
-									hbar_graph(true, $module_data,
-									$width, $width, $color, array(), array(),
-									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
-									"", "", $water_mark, $config['fontpath'], 6,
-									"", 0, $config['homeurl'], $layoutData['image'], $layoutData['border_color']) . '</div>';
-							}
-							else {
-								$img = '<div style="float:left;height:'.$himg.'px;">'. 
-									vbar_graph(true, $module_data,
-									$width, $width, $color, array(), array(),
-									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
-									"", "", $water_mark, $config['fontpath'], 6,
-									"", 0, $config['homeurl'], $layoutData['image'], true, false, $layoutData['border_color']) . '</div>';
-							}
+					elseif($layoutData['label_position']=='right') {
+						if ($layoutData['type_graph'] == 'horizontal') {
+							$img = '<div style="float:left;height:'.$himg.'px;">'.
+								hbar_graph(true, $module_data,
+								400, 400, $color, array(), array(),
+								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+								"", "", $water_mark, $config['fontpath'], 6,
+								"", 0, $config['homeurl'], $layoutData['image'], $layoutData['border_color']) . '</div>';
 						}
 						else {
-							if ($layoutData['type_graph'] == 'horizontal') {
-								$img = hbar_graph(true, $module_data,
-									$width, $width, $color, array(), array(),
-									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
-									"", "", $water_mark, $config['fontpath'], 6,
-									"", 0, $config['homeurl'], $layoutData['image'], $layoutData['border_color']);
-							}
-							else {
-								$img = vbar_graph(true, $module_data,
-									$width, $width, $color, array(), array(),
-									ui_get_full_url("images/image_problem.opaque.png", false, false, false),
-									"", "", $water_mark, $config['fontpath'], 6,
-									"", 0, $config['homeurl'], $layoutData['image'], true, false, $layoutData['border_color']);
-							}
+							$img = '<div style="float:left;height:'.$himg.'px;">'. 
+								vbar_graph(true, $module_data,
+								400, 400, $color, array(), array(),
+								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+								"", "", $water_mark, $config['fontpath'], 6,
+								"", 0, $config['homeurl'], $layoutData['image'], true, false, $layoutData['border_color']) . '</div>';
+						}
+					}
+					else {
+						if ($layoutData['type_graph'] == 'horizontal') {
+							$img = hbar_graph(true, $module_data,
+								400, 400, $color, array(), array(),
+								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+								"", "", $water_mark, $config['fontpath'], 6,
+								"", 0, $config['homeurl'], $layoutData['image'], $layoutData['border_color']);
+						}
+						else {
+							$img = vbar_graph(true, $module_data,
+								400, 400, $color, array(), array(),
+								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+								"", "", $water_mark, $config['fontpath'], 6,
+								"", 0, $config['homeurl'], $layoutData['image'], true, false, $layoutData['border_color']);
 						}
 					}
 				}
-				else {
-					if($width == 0){
-						if ($layoutData['id_metaconsole'] != 0) {
-							$img =  '<img src="../../images/console/signes/barras-no.png" style="width:400px;height:400px;'.$imgpos.'">';
+				else{
+					if ($layoutData['label_position']=='left') {
+						if ($layoutData['type_graph'] == 'horizontal') {
+							$img = '<div style="float:right;height:'.$himg.'px;">'.
+								hbar_graph(true, $module_data,
+								$width, $width, $color, array(), array(),
+								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+								"", "", $water_mark, $config['fontpath'], 6,
+								"", 0, $config['homeurl'], $layoutData['image'], $layoutData['border_color']) . '</div>';
 						}
-						else{
-							$img =  '<img src="images/console/signes/barras-no.png" style="width:400px;height:400px;'.$imgpos.'">';	
+						else {
+							$img = '<div style="float:right;height:'.$himg.'px;">'. 
+								vbar_graph(true, $module_data,
+								$width, $width, $color, array(), array(),
+								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+								"", "", $water_mark, $config['fontpath'], 6,
+								"", 0, $config['homeurl'], $layoutData['image'], true, false, $layoutData['border_color']) . '</div>';
 						}
 					}
-					else{
-						if ($layoutData['id_metaconsole'] != 0) {
-							$img =  '<img src="../../images/console/signes/barras-no.png" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';
+					elseif($layoutData['label_position']=='right') {
+						if ($layoutData['type_graph'] == 'horizontal') {
+							$img = '<div style="float:left;height:'.$himg.'px;">'.
+								hbar_graph(true, $module_data,
+								$width, $width, $color, array(), array(),
+								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+								"", "", $water_mark, $config['fontpath'], 6,
+								"", 0, $config['homeurl'], $layoutData['image'], $layoutData['border_color']) . '</div>';
 						}
-						else{
-							$img =  '<img src="images/console/signes/barras-no.png" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';
+						else {
+							$img = '<div style="float:left;height:'.$himg.'px;">'. 
+								vbar_graph(true, $module_data,
+								$width, $width, $color, array(), array(),
+								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+								"", "", $water_mark, $config['fontpath'], 6,
+								"", 0, $config['homeurl'], $layoutData['image'], true, false, $layoutData['border_color']) . '</div>';
+						}
+					}
+					else {
+						if ($layoutData['type_graph'] == 'horizontal') {
+							$img = hbar_graph(true, $module_data,
+								$width, $width, $color, array(), array(),
+								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+								"", "", $water_mark, $config['fontpath'], 6,
+								"", 0, $config['homeurl'], $layoutData['image'], $layoutData['border_color']);
+						}
+						else {
+							$img = vbar_graph(true, $module_data,
+								$width, $width, $color, array(), array(),
+								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+								"", "", $water_mark, $config['fontpath'], 6,
+								"", 0, $config['homeurl'], $layoutData['image'], true, false, $layoutData['border_color']);
 						}
 					}
 				}
@@ -2182,7 +2138,7 @@ function get_bars_module_data ($id_module) {
 	$color_index = 0;
 	$total = 0;
 	foreach ($values as $val) {
-		$data = explode(":", $val);
+		$data = explode(",", $val);
 		$values_to_return[$data[0]] = array('g' =>$data[1]);
 	}
 

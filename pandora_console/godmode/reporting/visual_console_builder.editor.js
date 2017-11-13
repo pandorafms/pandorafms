@@ -2486,7 +2486,7 @@ function setDonutsGraph (id_data, values) {
 			else {
 				$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/donut-graph.png');
 				
-				if($('#text-width').val() == 0 || $('#text-height').val() == 0){
+				if($('#text-width_percentile').val() == 0){
 					// Image size
 				}
 				else{

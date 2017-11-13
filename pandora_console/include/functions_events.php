@@ -2080,7 +2080,7 @@ function events_page_details ($event, $server = "") {
 		}
 		else {
 			$module_group = db_get_value('name', 'tmodule_group', 'id_mg', $id_module_group);
-			$data[1] = '<a href="'.$serverstring . 'index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;status=-1&amp;modulegroup=' . $id_module_group . $hashstring.'">';
+			$data[1] = '<a href="'.$serverstring . 'index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;status=-1&amp;modulegroup=' . $id_module_group . $hashstring.'">';
 			$data[1] .= $module_group;
 			$data[1] .= '</a>';
 		}

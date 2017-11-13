@@ -3848,6 +3848,9 @@ function reporting_value($report, $content, $type,$pdf) {
 	$return['agent_name'] = $agent_name;
 	$return['module_name'] = $module_name;
 	
+	html_debug($pdf,true);
+	html_debug($only_image,true);
+	
 	if($pdf){
 		$only_image = 1;
 	}

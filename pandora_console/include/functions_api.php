@@ -10019,4 +10019,32 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4) {
         }
 }
 
+function api_set_metaconsole_synch($keys) {
+	
+	if (defined('METACONSOLE')) {
+		$data['keys'] = array('customer_key'=>$keys);
+		foreach ($data['keys'] as $key => $value) {
+			db_process_sql_update(
+				'tupdate_settings',
+				array(db_escape_key_identifier('value') => $value),
+				array(db_escape_key_identifier('key') => $key));
+		}
+		
+		// Validate update the license in nodes:
+		enterprise_include_once('include/functions_metaconsole.php');
+		list ($nodes_failed, $total_nodes) = metaconsole_update_all_nodes_license();
+		if ($nodes_failed === 0) {
+			echo __('Metaconsole and all nodes license updated');
+		}
+		else {
+			echo __('Metaconsole license updated but %d of %d node synchronization failed', $nodes_failed, $total_nodes);
+		}
+	}
+	else{
+		echo __('This function is only for metaconsole');
+	}
+
+	
+}
+
 ?>

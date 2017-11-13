@@ -985,7 +985,7 @@ function create_button_palette_callback() {
 			}
 			break;
 		case 'bars_graph':
-			if ((values['agent'] == '')) {
+			if ((values['agent_string'] == '')) {
 				alert($("#message_alert_no_agent").html());
 				validate = false;
 			}
@@ -2029,7 +2029,7 @@ function setBarsGraph(id_data, values) {
 	
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "get_module_type_string"});
-	parameter.push ({name: "id_agent", value: values['id_agent']});
+	parameter.push ({name: "id_agent", value: values['id_agent_string']});
 	parameter.push ({name: "module", value: values['module']});
 	parameter.push ({name: "id_element", value: id_data});
 	parameter.push ({name: "id_visual_console", value: id_visual_console});
@@ -2039,28 +2039,16 @@ function setBarsGraph(id_data, values) {
 		type: "POST",
 		dataType: 'json',
 		success: function (data) {
-			if (data['no_data'] == true) {
-				if (values['width_percentile'] == "0") {
-					$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/barras-no.png');
-				}
-				else {
-					$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/barras-no.png');
-					$("#" + id_data + " img").css('width', width_percentile + 'px');
-					$("#" + id_data + " img").css('height', width_percentile + 'px');
-				}
+			$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/barras.png');
+			
+			if (values['width_percentile'] == "0") {
+				// Image size
 			}
-			else {
-				$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/barras.png');
-				
-				if (values['width_percentile'] == "0") {
-					// Image size
-				}
-				else{
-					$("#" + id_data + " img").css('width', width_percentile+'px');
-					$("#" + id_data + " img").css('height', width_percentile+'px');
-				}
+			else{
+				$("#" + id_data + " img").css('width', width_percentile+'px');
+				$("#" + id_data + " img").css('height', width_percentile+'px');
 			}
-
+			
 			if($('#'+id_data+' table').css('float') == 'right' || $('#'+id_data+ ' table').css('float') == 'left'){
 				$('#'+id_data+ ' img').css('margin-top', parseInt($('#'+id_data).css('height'))/2 - parseInt($('#'+id_data+ ' img').css('height'))/2);	
 			}

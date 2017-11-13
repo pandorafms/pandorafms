@@ -290,7 +290,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items['agent_row'] = array();
 			$form_items['agent_row']['items'] = array('static_graph',
 				'percentile_bar', 'percentile_item', 'module_graph',
-				'simple_value', 'datos', 'auto_sla_graph', 'bars_graph');
+				'simple_value', 'datos', 'auto_sla_graph');
 			$form_items['agent_row']['html'] = '<td align="left">' .
 				__('Agent') . '</td>';			
 			$params = array();
@@ -322,7 +322,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'</td>';
 
 			$form_items['agent_row_string'] = array();
-			$form_items['agent_row_string']['items'] = array('donut_graph');
+			$form_items['agent_row_string']['items'] = array('donut_graph', 'bars_graph');
 			$form_items['agent_row_string']['html'] = '<td align="left">' .
 				__('Agent') . '</td>';			
 			$params = array();

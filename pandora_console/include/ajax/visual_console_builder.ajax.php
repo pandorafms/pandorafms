@@ -664,6 +664,7 @@ switch ($action) {
 						if ($grid_color !== null) {
 							$values['border_color'] = $grid_color;
 						}
+						$values['id_agent'] = $id_agent_string;
 						break;
 					case 'percentile_item':
 					case 'percentile_bar':
@@ -746,6 +747,8 @@ switch ($action) {
 							unset($values['image']);
 							unset($values['type_graph']);
 							unset($values['border_color']);
+							unset($values['width']);
+							unset($values['id_agent']);
 							break;
 						case 'donut_graph':
 							unset($values['border_color']);
@@ -919,6 +922,20 @@ switch ($action) {
 						$elementFields['width_percentile'] = $elementFields['width'];
 						$elementFields['bars_graph_type'] = $elementFields['type_graph'];
 						$elementFields['grid_color'] = $elementFields['border_color'];
+						$elementFields['id_agent_string'] = $elementFields['id_agent'];
+						if (($elementFields['id_agent_string'] != 0)
+							&& ($elementFields['id_layout_linked'] == 0)) {
+							$modules = agents_get_modules(
+								$elementFields['id_agent'], false,
+								array('disabled' => 0,
+									'id_agente' => $elementFields['id_agent'],
+									'tagente_modulo.id_tipo_modulo IN' => "(17,23,3,10,33)"));
+							
+							$elementFields['modules_html'] = '<option value="0">--</option>';
+							foreach ($modules as $id => $name) {
+								$elementFields['modules_html'] .= '<option value="' . $id . '">' . io_safe_output($name) . '</option>';
+							}
+						}
 						break;
 					case 'box_item':
 						$elementFields['width_box'] = $elementFields['width'];
@@ -1074,6 +1091,7 @@ switch ($action) {
 				$values['type_graph'] = $bars_graph_type;
 				$values['image'] = $background_color;
 				$values['border_color'] = $grid_color;
+				$values['id_agent'] = $id_agent_string;
 				break;
 			case 'auto_sla_graph':
 				$values['type'] = AUTO_SLA_GRAPH;

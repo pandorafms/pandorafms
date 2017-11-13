@@ -1392,7 +1392,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 				}
 				else {
 					if ($width == 0) {
-						$img = d3_donut_graph ($layoutData['id'], 400, 400, $donut_data, $layoutData['border_color']);
+						$img = d3_donut_graph ($layoutData['id'], 300, 300, $donut_data, $layoutData['border_color']);
 					}
 					else{
 						$img = d3_donut_graph ($layoutData['id'], $width, $width, $donut_data, $layoutData['border_color']);
@@ -2540,15 +2540,21 @@ function get_donut_module_data ($id_module) {
 	foreach ($values as $val) {
 		if ($index < $max_elements) {
 			$data = explode(",", $val);
-			$values_to_return[$index]['tag_name'] = $data[0] . ", " . $data[1];
+			if ($data[1] == 0) {
+				$data[1] = __('No data');
+			}
+			$values_to_return[$index]['tag_name'] = $data[0] . ": " . $data[1];
 			$values_to_return[$index]['color'] = $colors[$index];
 			$values_to_return[$index]['value'] = (int)$data[1];
 			$total += (int)$data[1];
 			$index++;
 		}
 		else {
+			if ($data[1] == 0) {
+				$data[1] = __('No data');
+			}
 			$data = explode(",", $val);
-			$values_to_return[$index]['tag_name'] = __('Others') . ", " . $data[1];
+			$values_to_return[$index]['tag_name'] = __('Others') . ": " . $data[1];
 			$values_to_return[$index]['color'] = $colors[$index];
 			$values_to_return[$index]['value'] += (int)$data[1];
 			$total += (int)$data[1];
@@ -2558,7 +2564,34 @@ function get_donut_module_data ($id_module) {
 	foreach ($values_to_return as $ind => $donut_data) {
 		$values_to_return[$ind]['percent'] = ($donut_data['value'] * 100) / $total;
 	}
-	
+
+	$new_values_to_return = array();
+	while (!empty($values_to_return)) {
+		$first = true;
+		$max_elem = 0;
+		$max_elem_array = array();
+		$index_to_del = 0;
+		foreach ($values_to_return as $i => $val) {
+			if ($first) {
+				$max_elem = $val['value'];
+				$max_elem_array = $val;
+				$index_to_del = $i;
+				$first = false;
+			}
+			else {
+				if ($val['value'] > $max_elem) {
+					$max_elem = $val['value'];
+					$max_elem_array = $val;
+					$index_to_del = $i;
+				}
+			}
+		}
+
+		$new_values_to_return[] = $max_elem_array;
+		unset($values_to_return[$index_to_del]);
+	}
+	$values_to_return = $new_values_to_return;
+
 	return $values_to_return;
 }
 

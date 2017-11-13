@@ -290,7 +290,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items['agent_row'] = array();
 			$form_items['agent_row']['items'] = array('static_graph',
 				'percentile_bar', 'percentile_item', 'module_graph',
-				'simple_value', 'datos', 'auto_sla_graph', 'bars_graph', 'donut_graph');
+				'simple_value', 'datos', 'auto_sla_graph', 'bars_graph');
 			$form_items['agent_row']['html'] = '<td align="left">' .
 				__('Agent') . '</td>';			
 			$params = array();
@@ -318,6 +318,39 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				$params['print_hidden_input_idagent'] = true;
 			}
 			$form_items['agent_row']['html'] .= '<td align="left">' .
+					ui_print_agent_autocomplete_input($params) .
+				'</td>';
+
+			$form_items['agent_row_string'] = array();
+			$form_items['agent_row_string']['items'] = array('donut_graph');
+			$form_items['agent_row_string']['html'] = '<td align="left">' .
+				__('Agent') . '</td>';			
+			$params = array();
+			$params['return'] = true;
+			$params['show_helptip'] = true;
+			$params['input_name'] = 'agent_string';
+			$params['size'] = 30;
+			$params['selectbox_id'] = 'module';
+			$params['javascript_is_function_select'] = true;
+			$params['use_hidden_input_idagent'] = true;
+			$params['print_hidden_input_idagent'] = true;
+			$params['hidden_input_idagent_name'] = 'id_agent_string';
+			$params['get_order_json'] = true;
+			$params['get_only_string_modules'] = true;
+			if (defined('METACONSOLE')) {
+				$params['javascript_ajax_page'] = '../../ajax.php';
+				$params['disabled_javascript_on_blur_function'] = true;
+				
+				$params['print_input_server'] = true;
+				$params['print_input_id_server'] = true;
+				$params['input_server_id'] = 'id_server_name';
+				$params['input_id_server_name'] = 'id_server_metaconsole';
+				$params['input_server_value'] = '';
+				$params['use_input_id_server'] = true;
+				$params['metaconsole_enabled'] = true;
+				$params['print_hidden_input_idagent'] = true;
+			}
+			$form_items['agent_row_string']['html'] .= '<td align="left">' .
 					ui_print_agent_autocomplete_input($params) .
 				'</td>';
 			
@@ -731,7 +764,7 @@ function visual_map_editor_print_toolbox() {
 		visual_map_print_button_editor('static_graph', __('Static Graph'), 'left', false, 'camera_min', true);
 		visual_map_print_button_editor('percentile_item', __('Percentile Item'), 'left', false, 'percentile_item_min', true);
 		visual_map_print_button_editor('module_graph', __('Module Graph'), 'left', false, 'graph_min', true);
-		visual_map_print_button_editor('donut_graph', __('Donut Graph'), 'left', false, 'donut_graph_min', true);
+		visual_map_print_button_editor('donut_graph', __('Serialized pie graph'), 'left', false, 'donut_graph_min', true);
 		visual_map_print_button_editor('bars_graph', __('Bars Graph'), 'left', false, 'bars_graph_min', true);
 		visual_map_print_button_editor('auto_sla_graph', __('Auto SLA Graph'), 'left', false, 'auto_sla_graph_min', true);
 		visual_map_print_button_editor('simple_value', __('Simple Value'), 'left', false, 'binary_min', true);

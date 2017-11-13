@@ -2973,6 +2973,11 @@ function ui_print_agent_autocomplete_input($parameters) {
 		else
 			$metaconsole_enabled = false;
 	}
+
+	$get_only_string_modules = false;
+	if (isset($parameters['get_only_string_modules'])) {
+		$get_only_string_modules = true;
+	}
 	
 	$spinner_image = html_print_image('images/spinner.gif', true, false, true);
 	if (isset($parameters['spinner_image'])) {
@@ -3127,6 +3132,10 @@ function ui_print_agent_autocomplete_input($parameters) {
 
 			if (' . ((int) $get_order_json) . ') {
 				inputs.push ("get_order_json=1");
+			}
+
+			if (' . ((int) $get_only_string_modules) . ') {
+				inputs.push ("get_only_string_modules=1");
 			}
 			
 			if (' . ((int)$metaconsole_enabled) . ') {

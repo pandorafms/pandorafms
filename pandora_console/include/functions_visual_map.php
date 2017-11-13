@@ -2583,7 +2583,7 @@ function get_donut_module_data ($id_module) {
 	$total = 0;
 	foreach ($values as $val) {
 		if ($index < $max_elements) {
-			$data = explode(":", $val);
+			$data = explode(",", $val);
 			$values_to_return[$index]['tag_name'] = $data[0] . ", " . $data[1];
 			$values_to_return[$index]['color'] = $colors[$index];
 			$values_to_return[$index]['value'] = (int)$data[1];
@@ -2591,7 +2591,7 @@ function get_donut_module_data ($id_module) {
 			$index++;
 		}
 		else {
-			$data = explode(":", $val);
+			$data = explode(",", $val);
 			$values_to_return[$index]['tag_name'] = __('Others') . ", " . $data[1];
 			$values_to_return[$index]['color'] = $colors[$index];
 			$values_to_return[$index]['value'] += (int)$data[1];
@@ -2602,7 +2602,7 @@ function get_donut_module_data ($id_module) {
 	foreach ($values_to_return as $ind => $donut_data) {
 		$values_to_return[$ind]['percent'] = ($donut_data['value'] * 100) / $total;
 	}
-
+	
 	return $values_to_return;
 }
 

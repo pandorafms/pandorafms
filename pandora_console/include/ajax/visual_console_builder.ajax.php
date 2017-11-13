@@ -113,6 +113,7 @@ $metaconsole = get_parameter('metaconsole', 0);
 $server_name = get_parameter('server_name', null);
 $server_id = (int)get_parameter('server_id', 0);
 $id_agent = get_parameter('id_agent', null);
+$id_agent_string = get_parameter('id_agent_string', null);
 $id_metaconsole = get_parameter('id_metaconsole', null);
 $id_group = (int)get_parameter('id_group', 0);
 $id_custom_graph = get_parameter('id_custom_graph', null);
@@ -611,7 +612,7 @@ switch ($action) {
 						}
 						$values['border_color'] = $resume_color;
 						$values['type'] = DONUT_GRAPH;
-
+						$values['id_agent'] = $id_agent_string;
 						break;
 					case 'box_item':
 						$values['border_width'] = $border_width;
@@ -749,6 +750,7 @@ switch ($action) {
 						case 'donut_graph':
 							unset($values['border_color']);
 							unset($values['width']);
+							unset($values['id_agent']);
 							break;
 						case 'box_item':
 							unset($values['border_width']);
@@ -893,6 +895,20 @@ switch ($action) {
 					case 'donut_graph':
 						$elementFields['width_percentile'] = $elementFields['width'];
 						$elementFields['resume_color'] = $elementFields['border_color'];
+						$elementFields['id_agent_string'] = $elementFields['id_agent'];
+						if (($elementFields['id_agent_string'] != 0)
+							&& ($elementFields['id_layout_linked'] == 0)) {
+							$modules = agents_get_modules(
+								$elementFields['id_agent'], false,
+								array('disabled' => 0,
+									'id_agente' => $elementFields['id_agent'],
+									'tagente_modulo.id_tipo_modulo IN' => "(17,23,3,10,33)"));
+							
+							$elementFields['modules_html'] = '<option value="0">--</option>';
+							foreach ($modules as $id => $name) {
+								$elementFields['modules_html'] .= '<option value="' . $id . '">' . io_safe_output($name) . '</option>';
+							}
+						}
 						break;
 					
 					case 'module_graph':
@@ -1010,9 +1026,10 @@ switch ($action) {
 				break;
 			case 'donut_graph':
 				$values['type'] = DONUT_GRAPH;
-				$values['width'] = $width;
-				$values['height'] = $height;
+				$values['width'] = $width_percentile;
+				$values['height'] = $width_percentile;
 				$values['border_color'] = $resume_color;
+				$values['id_agent'] = $id_agent_string;
 				break;
 			case 'module_graph':
 				$values['type'] = MODULE_GRAPH;

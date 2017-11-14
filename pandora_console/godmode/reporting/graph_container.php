@@ -102,7 +102,7 @@ echo "</div>";
 				}
 				
 				$('div[class *= bullet]').css('margin-left','0');
-				$('div[class *= graph]').css('margin-left','0');
+				$('div[class = graph]').css('margin-left','0');
 				$('div[id *= gauge_]').css('width','100%');
 
 				$('select[id *= period_container_'+hash+']').change(function() {

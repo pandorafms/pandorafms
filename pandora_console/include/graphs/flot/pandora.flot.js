@@ -1601,6 +1601,12 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	
 	// Adjust the overview plot to the width and position of the main plot
 	adjust_left_width_canvas(graph_id, 'overview_'+graph_id);
+	update_left_width_canvas(graph_id); 
+
+	// Adjust overview when main chart is resized
+	$('#'+graph_id).resize(function(){
+		update_left_width_canvas(graph_id);
+	});
 
 	// Adjust linked graph to the width and position of the main plot
 
@@ -2137,6 +2143,12 @@ function adjust_left_width_canvas(adapter_id, adapted_id) {
 	
 	$('#'+adapted_id).width(new_adapted_width);
 	$('#'+adapted_id).css('margin-left', adapter_left_margin);
+}
+
+
+function update_left_width_canvas(graph_id) {
+	$('#overview_'+graph_id).width($('#'+graph_id).width() - 30);
+	$('#overview_'+graph_id).css('margin-left', $('#'+graph_id+' .yAxis .tickLabel').width());
 }
 
 function check_adaptions(graph_id) {

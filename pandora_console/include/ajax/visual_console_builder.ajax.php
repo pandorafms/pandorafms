@@ -101,6 +101,7 @@ $height = get_parameter('height', null);
 $parent = get_parameter('parent', null);
 $map_linked = get_parameter('map_linked', null);
 $width_percentile = get_parameter('width_percentile', null);
+$bars_graph_height = get_parameter('bars_graph_height', null);
 $max_percentile = get_parameter('max_percentile', null);
 $height_module_graph = get_parameter('height_module_graph', null);
 $width_module_graph = get_parameter('width_module_graph', null);
@@ -655,6 +656,9 @@ switch ($action) {
 						if ($width_percentile !== null) {
 							$values['width'] = $width_percentile;
 						}
+						if ($bars_graph_height !== null) {
+							$values['height'] = $bars_graph_height;
+						}
 						if ($bars_graph_type !== null) {
 							$values['type_graph'] = $bars_graph_type;
 						}
@@ -749,6 +753,7 @@ switch ($action) {
 							unset($values['border_color']);
 							unset($values['width']);
 							unset($values['id_agent']);
+							unset($values['height']);
 							break;
 						case 'donut_graph':
 							unset($values['border_color']);
@@ -920,6 +925,7 @@ switch ($action) {
 						break;
 					case 'bars_graph':
 						$elementFields['width_percentile'] = $elementFields['width'];
+						$elementFields['bars_graph_height'] = $elementFields['height'];
 						$elementFields['bars_graph_type'] = $elementFields['type_graph'];
 						$elementFields['grid_color'] = $elementFields['border_color'];
 						$elementFields['id_agent_string'] = $elementFields['id_agent'];
@@ -1082,12 +1088,8 @@ switch ($action) {
 				break;
 			case 'bars_graph':
 				$values['type'] = BARS_GRAPH;
-				if ($width_percentile == null) {
-					$values['width'] = 0;
-				}
-				else {
-					$values['width'] = $width_percentile;
-				}
+				$values['width'] = $width_percentile;
+				$values['height'] = $bars_graph_height;
 				$values['type_graph'] = $bars_graph_type;
 				$values['image'] = $background_color;
 				$values['border_color'] = $grid_color;

@@ -615,6 +615,11 @@ function update_button_palette_callback() {
 				alert('Undefined width');
 				return false;
 			}
+
+			if($('input[name=bars_graph_height]').val() == ''){
+				alert('Undefined height');
+				return false;
+			}
 		
 			$("#text_" + idItem).html(values['label']);
 			$("#image_" + idItem).attr("src", "images/spinner.gif");
@@ -818,6 +823,7 @@ function readFields() {
 	values['parent'] = $("select[name=parent]").val();
 	values['map_linked'] = $("select[name=map_linked]").val();
 	values['width_percentile'] = $("input[name=width_percentile]").val();
+	values['bars_graph_height'] = $("input[name=bars_graph_height]").val();
 	values['max_percentile'] = parseInt($("input[name=max_percentile]").val());
 	values['width_module_graph'] = $("input[name=width_module_graph]").val();
 	values['height_module_graph'] = $("input[name=height_module_graph]").val();
@@ -991,6 +997,14 @@ function create_button_palette_callback() {
 			}
 			if ((values['module'] == 0)) {
 				alert($("#message_alert_no_module").html());
+				validate = false;
+			}
+			if ((values['width_percentile'] == '')) {
+				alert($("#message_alert_no_width_percentile").html());
+				validate = false;
+			}
+			if ((values['bars_graph_height'] == '')) {
+				alert($("#message_alert_no_bars_graph_height").html());
 				validate = false;
 			}
 			break;
@@ -1498,6 +1512,8 @@ function loadFieldsFromDB(item) {
 					$("select[name=map_linked]").val(val);
 				if (key == 'width_percentile')
 					$("input[name=width_percentile]").val(val);
+				if (key == 'bars_graph_height')
+					$("input[name=bars_graph_height]").val(val);
 				if (key == 'max_percentile')
 					$("input[name=max_percentile]").val(val);
 				if (key == 'width_module_graph')
@@ -1751,6 +1767,9 @@ function hiddenFields(item) {
 	$("#percentile_bar_row_1").css('display', 'none');
 	$("#percentile_bar_row_1." + item).css('display', '');
 
+	$("#height_bars_graph_row").css('display', 'none');
+	$("#height_bars_graph_row." + item).css('display', '');
+
 	$("#percentile_bar_row_2").css('display', 'none');
 	$("#percentile_bar_row_2." + item).css('display', '');
 
@@ -1853,6 +1872,7 @@ function cleanFields(item) {
 	$("select[name=process_value]").val(0);
 	$("select[name=background_image]").val('');
 	$("input[name=width_percentile]").val('');
+	$("input[name=bars_graph_height]").val('');
 	$("input[name=max_percentile]").val('');
 	$("select[name=period]").val('');
 	$("input[name=width]").val(0);
@@ -2024,6 +2044,7 @@ function setBarsGraph(id_data, values) {
 	}
 
 	width_percentile = values['width_percentile'];
+	bars_graph_height = values['bars_graph_height'];
 
 	parameter = Array();
 	
@@ -2041,12 +2062,12 @@ function setBarsGraph(id_data, values) {
 		success: function (data) {
 			$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/barras.png');
 			
-			if (values['width_percentile'] == "0") {
+			if (values['width_percentile'] == "0" && values["bars_graph_height"] == "0") {
 				// Image size
 			}
 			else{
-				$("#" + id_data + " img").css('width', width_percentile+'px');
-				$("#" + id_data + " img").css('height', width_percentile+'px');
+				$("#" + id_data + " img").css('width', width_percentile + 'px');
+				$("#" + id_data + " img").css('height', bars_graph_height + 'px');
 			}
 			
 			if($('#'+id_data+' table').css('float') == 'right' || $('#'+id_data+ ' table').css('float') == 'left'){

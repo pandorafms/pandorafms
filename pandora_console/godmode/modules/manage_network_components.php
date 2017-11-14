@@ -129,7 +129,7 @@ else {
 }
 
 $snmp_version = (string) get_parameter('snmp_version');
-$snmp3_auth_user = (string) get_parameter('snmp3_auth_user');
+$snmp3_auth_user = (string) io_safe_output(get_parameter('snmp3_auth_user'));
 $snmp3_auth_pass = io_input_password((string) get_parameter('snmp3_auth_pass'));
 $snmp3_auth_method = (string) get_parameter('snmp3_auth_method');
 $snmp3_privacy_method = (string) get_parameter('snmp3_privacy_method');

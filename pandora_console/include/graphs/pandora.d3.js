@@ -724,12 +724,13 @@ function sunburst (recipient, data, width, height) {
 		.on("mousemove", move_tooltip);
 
 	function computeTextRotation(d) {
-		var angle = x(d.x + d.dx / 2) - Math.PI / 2;
-		return angle / Math.PI * 180;
+		var ang = (x(d.x + d.dx / 2) - Math.PI / 2) / Math.PI * 180;
+        return (ang > 90) ? 180 + ang : ang;
 	}
 
 	var text = g.append("text")
-		.attr("x", function(d) { return y(d.y); })
+		.attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")rotate(" + computeTextRotation(d) + ")"; })
+		.attr("x", function (d) { return computeTextRotation(d) > 180 ? -40 : -30; })
 		.attr("dx", "6") // margin
 		.attr("dy", ".35em") // vertical-align
 		.attr("opacity", function(d) {
@@ -741,7 +742,6 @@ function sunburst (recipient, data, width, height) {
 		.text(function(d) {
 			return d.name;
 		})
-		.attr("transform", function(d) { return "rotate(" + computeTextRotation(d) + ")"; })
 		.style("font-size", "10px")
 		 // Makes svg elements invisible to events
 		.style("pointer-events", "none");
@@ -768,8 +768,8 @@ function sunburst (recipient, data, width, height) {
 						var arcText = d3.select(this.parentNode).select("text");
 						// fade in the text element and recalculate positions
 						arcText
-							.attr("transform", function() { return "rotate(" + computeTextRotation(e) + ")" })
-							.attr("x", function(d) { return y(d.y); })
+							.attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")rotate(" + computeTextRotation(d) + ")"; })
+							.attr("x", function (d) { return computeTextRotation(d) > 180 ? -40 : -30; })
 							.transition().duration(250)
 								.attr("opacity", 1);
 		 			}
@@ -1552,7 +1552,7 @@ function progress_bar_d3 (recipient, percentile, width, height, color, unit, lab
 
 	function updateProgress(bar_progress) {
 		var percent_value = Number(bar_progress * 100);
-		numberText.text(percent_value.toFixed());
+		numberText.text(percent_value.toFixed() + " " + unit);
 		progress_front.attr('width', (width * bar_progress));
 	}
 
@@ -1657,11 +1657,11 @@ function progress_bubble_d3 (recipient, percentile, width, height, color, unit, 
 		.style("font-weight", "bold")
 		.style("font-size", numberSize)
 		.attr('text-anchor', 'middle')
-		.attr('dy', width/2);
+		.attr('dy', width/3);
 
 	function updateProgress(bar_progress) {
 		var percent_value = Number(bar_progress * 100);
-		numberText.text(percent_value.toFixed() + " %");
+		numberText.text(percent_value.toFixed() + " " + unit);
 		progress_front.attr('r', ((width/2) * bar_progress));
 	}
 
@@ -1782,7 +1782,7 @@ function print_circular_progress_bar (recipient, percentile, width, height, colo
 		.attr('dy', yPosText);
 
 	var numberText = circle.append("text")
-		.attr('fill', '#000000')
+		.attr('fill', label_color)
 		.style("font-family", "arial")
 		.style("font-weight", "bold")
 		.style("font-size", numberSize)
@@ -1790,7 +1790,7 @@ function print_circular_progress_bar (recipient, percentile, width, height, colo
 		.attr('dy', yPosNumber);
 
 	var percentText = circle.append("text")
-		.attr('fill', '#000000')
+		.attr('fill', label_color)
 		.style("font-family", "arial")
 		.style("font-weight", "bold")
 		.style("font-size", unitSize)
@@ -1936,7 +1936,7 @@ function print_interior_circular_progress_bar (recipient, percentile, width, hei
 		.attr('dy', yPosText);
 
 	var numberText = circle.append("text")
-		.attr('fill', '#000000')
+		.attr('fill', label_color)
 		.style("font-family", "arial")
 		.style("font-weight", "bold")
 		.style("font-size", numberSize)
@@ -1944,7 +1944,7 @@ function print_interior_circular_progress_bar (recipient, percentile, width, hei
 		.attr('dy', yPosNumber);
 
 	var percentText = circle.append("text")
-		.attr('fill', '#000000')
+		.attr('fill', label_color)
 		.style("font-family", "arial")
 		.style("font-weight", "bold")
 		.style("font-size", unitSize)
@@ -1972,7 +1972,7 @@ function print_interior_circular_progress_bar (recipient, percentile, width, hei
 	})();
 }
 
-function print_donut_graph (recipient, width, height, module_data) {
+function print_donut_graph (recipient, width, height, module_data, resume_color) {
 	var svg = d3.select(recipient)
 		.append("svg")
 			.attr("width", width)
@@ -1985,47 +1985,40 @@ function print_donut_graph (recipient, width, height, module_data) {
 	var radius = 120;
 	var increment_y = 60;
 	var increment_y_padding = 25;
-	var text_size = 15;
 	var decrement_x_padding = 150;
 	if (width >= 500) {
-		radius = 160;
+		radius = 180;
 		increment_y = 60;
-		text_size = 25;
-		increment_y_padding = 25;
-		decrement_x_padding = 75;
+		increment_y_padding = 20;
+		decrement_x_padding = 40;
 	}
 	else if (width >= 400) {
-		radius = 120;
-		increment_y = 60;
-		text_size = 22;
-		increment_y_padding = 25;
-		decrement_x_padding = 75;
+		radius = 140;
+		increment_y = 40;
+		increment_y_padding = 20;
+		decrement_x_padding = 40;
 	}
 	else if (width >= 300) {
-		radius = 80;
+		radius = 100;
 		increment_y = 40;
-		text_size = 14;
-		increment_y_padding = 20;
-		decrement_x_padding = 60;
+		increment_y_padding = 15;
+		decrement_x_padding = 40;
 	}
 	else if (width >= 200) {
 		radius = 50;
 		increment_y = 40;
-		text_size = 14;
 		increment_y_padding = 15;
-		decrement_x_padding = 45;
+		decrement_x_padding = 25;
 	}
 	else if (width >= 100) {
 		radius = 20;
 		increment_y = 20;
-		text_size = 10;
 		increment_y_padding = 8;
 		decrement_x_padding = 25;
 	}
 	else {
 		radius = 10;
 		increment_y = 10;
-		text_size = 4;
 		increment_y_padding = 3;
 		decrement_x_padding = 5;
 	}
@@ -2044,11 +2037,21 @@ function print_donut_graph (recipient, width, height, module_data) {
 
 	jQuery.each(module_data, function (key, m_d) {
 		svg.append("g")
-			.append("text")
+			.append("rect")
 				.attr("transform", "translate(" + (((width / 2) - (radius + decrement_x_padding))) + "," + (((height / 2) - radius) - increment_y) + ")")
+				.attr('fill', m_d.color)
+				.attr('x', -20)
+				.attr('y', -10)
+				.attr('width', 20)
+				.attr('height', 10);
+
+		svg.append("g")
+			.append("text")
+				.attr('fill', resume_color)
+				.attr("transform", "translate(" + (((width / 2) - (radius + decrement_x_padding)) + 10) + "," + (((height / 2) - radius) - increment_y) + ")")
 				.text(m_d.tag_name)
-				.style("font-family", "Verdana")
-				.style("font-size", text_size + "px");
+				.style("font-family", "smallfontFont")
+				.style("font-size", "7pt");
 		
 		increment_y -= increment_y_padding;
 	});

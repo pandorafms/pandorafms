@@ -785,8 +785,8 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 			}
 
 			$data = array();
-			$data['agent']        = modules_get_agentmodule_agent_alias($sla['id_agent_module']);
-			$data['module']       = modules_get_agentmodule_name($sla['id_agent_module']);
+			$data['agent']        = io_safe_output(modules_get_agentmodule_agent_alias($sla['id_agent_module']));
+			$data['module']       = io_safe_output(modules_get_agentmodule_name($sla['id_agent_module']));
 			$data['max']          = $sla['sla_max'];
 			$data['min']          = $sla['sla_min'];
 			$data['sla_limit']    = $sla['sla_limit'];
@@ -895,8 +895,8 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 			// Slice graphs calculation
 			if ($show_graphs) {
 				$dataslice = array();
-				$dataslice['agent'] = modules_get_agentmodule_agent_alias ($sla['id_agent_module']);
-				$dataslice['module'] = modules_get_agentmodule_name ($sla['id_agent_module']);
+				$dataslice['agent'] = io_safe_output(modules_get_agentmodule_agent_alias ($sla['id_agent_module']));
+				$dataslice['module'] = io_safe_output(modules_get_agentmodule_name ($sla['id_agent_module']));
 				$dataslice['sla_value'] = $data['sla_value'];
 				$dataslice['order'] = $data['sla_value'];
 
@@ -1304,7 +1304,9 @@ function reporting_event_top_n($report, $content, $type = 'dinamic',
 					$config['font_size'],
 					true,
 					$ttl,
-					$config['homeurl']);
+					$config['homeurl'],
+					'white',
+					'black');
 			}
 			
 			$return['resume'] = null;
@@ -3976,7 +3978,7 @@ function reporting_value($report, $content, $type,$pdf) {
 								$value .= '<tr><td style="padding:5px;">'. date("Y-m-d H:i:s", ($i-$content["lapse"]+1)).' to '.date("Y-m-d H:i:s",$i).'</td><td>';
 								
 								if($i>$time_begin['utimestamp']){
-									$value .= format_for_graph(reporting_get_agentmodule_data_min(
+									$value .= format_for_graph(reporting_get_agentmodule_data_max(
 									$content['id_agent_module'], $content["lapse"], $i), $config['graph_precision']) . ' ' . $unit.'</td></tr>';
 								}
 								else{

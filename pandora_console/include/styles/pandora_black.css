@@ -3471,10 +3471,10 @@ color:#82b92e;font-family:Nunito;font-size:10pt;position:relative;top:6px;
 }
 
 .rowPair:hover, .rowOdd:hover{
-	background-color: #3f3f3f;
+	background-color: #6E6E6E;
 }
 .databox.data > tbody > tr:hover{
-	background-color: #3f3f3f;
+	background-color: #6E6E6E;
 }
 .checkselected{
 	background-color: #eee;
@@ -3546,9 +3546,12 @@ div.icon_message_alert img{
 }
 
 div.content_message_alert{
-	
 	width: 75%;
 	float: right;
+}
+
+div.content_message_alert *{
+	color: black;
 }
 
 div.text_message_alert{
@@ -3837,9 +3840,17 @@ div.img_banner_login img{
  	}
 }
 
-.new_task p, .new_task h3, .new_task h2, .new_task a{
+.new_task p, .new_task h3, .new_task h2, .new_task a, .new_task strong{
 	color: #222222;
 }
 .item p {
 	color: #222222;
+}
+
+.item span {
+	color: #222222;
+}
+
+.widget_config_advice, .widget_config_advice *{
+	color: black;
 }

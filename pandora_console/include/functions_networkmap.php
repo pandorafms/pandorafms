@@ -1060,8 +1060,8 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cu
 	}
 	
 	// Short name
-	$name = io_safe_output($agent["nombre"]);
-	if ((strlen ($name) > 16) && ($cut_names)) {
+	$name = $agent["nombre"];
+	if ($cut_names) {
 		$name = ui_print_truncate_text($name, 16, false, true, false);
 	}
 	
@@ -1111,7 +1111,7 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cu
 		}
 		
 		$node = "\n" . $agent['id_node'].' [ parent="' . $agent['id_parent'] . '", color="'.$status_color.'", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.40, height=0.40, label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>' . $img_node . '</TD></TR>
-		 <TR><TD>'.io_safe_output($name).'</TD></TR></TABLE>>,
+		 <TR><TD>'.$name.'</TD></TR></TABLE>>,
 		 shape="doublecircle", URL="'.$url.'",
 		 tooltip="' . $url_tooltip . '"];' . "\n";
 	}
@@ -1174,7 +1174,7 @@ function networkmap_create_module_group_node ($module_group, $simple = 0, $font_
 			'", fontsize='.$font_size.', style="filled", ' .
 			'fixedsize=true, width=0.30, height=0.30, ' .
 			'label=<<TABLE data-id_agent="' . $module_group['id_agent'] . '" data-status="' . $module_group['status'] . '" CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>' .
-			io_safe_output($module_group['name']) . '</TD></TR></TABLE>>,
+			$module_group['name'] . '</TD></TR></TABLE>>,
 			shape="square", URL="' . $url . '",
 			tooltip="' . $url_tooltip . '"];';
 	}
@@ -1268,7 +1268,7 @@ function networkmap_create_module_node ($module, $simple = 0, $font_size = 10, $
 			'fixedsize=true, width=0.30, height=0.30, ' .
 			'label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>' .
 			$img_node . '</TD></TR>
-			<TR><TD>' . io_safe_output($module['nombre']) . '</TD></TR></TABLE>>,
+			<TR><TD>' . $module['nombre'] . '</TD></TR></TABLE>>,
 			shape="circle", URL="' . $url . '",
 			tooltip="' . $url_tooltip . '"];';
 	}

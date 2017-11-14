@@ -325,8 +325,6 @@ function config_update_config () {
 						$error_update[] = __('Advanced Config AD');
 					if (!config_update_value ('ldap_advanced_config', get_parameter ('ldap_advanced_config')))
 						$error_update[] = __('Advanced Config LDAP');
-					if (!config_update_value ('ldap_no_create_password', get_parameter ('ldap_no_create_password')))
-						$error_update[] = __('Save Password');
 					if (!config_update_value ('ad_domain', get_parameter ('ad_domain')))
 						$error_update[] = __('Domain');
 					if (!config_update_value ('ad_adv_perms', get_parameter ('ad_adv_perms')))
@@ -347,7 +345,15 @@ function config_update_config () {
 						$error_update[] = __('Login attribute');
 					if (!config_update_value ('fallback_local_auth', get_parameter ('fallback_local_auth')))
 						$error_update[] = __('Fallback to local authentication');
-					
+						
+					if (isset($config['fallback_local_auth']) && $config['fallback_local_auth'] == 0) {
+						if (!config_update_value ('ldap_no_create_password', get_parameter ('ldap_no_create_password')))
+							$error_update[] = __('Save Password');
+					}
+					else if (isset($config['fallback_local_auth']) && $config['fallback_local_auth'] == 1) {
+						config_update_value ('ldap_no_create_password', 0);
+					}
+
 					if (!config_update_value ('rpandora_server', get_parameter ('rpandora_server')))
 						$error_update[] = __('MySQL host');
 					if (!config_update_value ('rpandora_port', get_parameter ('rpandora_port')))

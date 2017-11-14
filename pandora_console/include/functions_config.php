@@ -326,7 +326,7 @@ function config_update_config () {
 					if (!config_update_value ('ldap_advanced_config', get_parameter ('ldap_advanced_config')))
 						$error_update[] = __('Advanced Config LDAP');
 					if (!config_update_value ('ldap_no_create_password', get_parameter ('ldap_no_create_password')))
-						$error_update[] = __('No create password LDAP');
+						$error_update[] = __('Save Password');
 					if (!config_update_value ('ad_domain', get_parameter ('ad_domain')))
 						$error_update[] = __('Domain');
 					if (!config_update_value ('ad_adv_perms', get_parameter ('ad_adv_perms')))

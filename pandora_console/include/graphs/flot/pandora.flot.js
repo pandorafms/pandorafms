@@ -326,7 +326,7 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 }
 
 function pandoraFlotHBars(graph_id, values, labels, water_mark,
-	maxvalue, water_mark, separator, separator2, font, font_size, background_color, tick_color, background_color, min, max) {
+	maxvalue, water_mark, separator, separator2, font, font_size, background_color, tick_color, min, max) {
 
 	var colors_data = ['#FC4444','#FFA631','#FAD403','#5BB6E5','#F2919D','#80BA27'];
 	values = values.split(separator2);

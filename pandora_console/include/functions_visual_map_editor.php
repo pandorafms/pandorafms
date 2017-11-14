@@ -459,7 +459,12 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items['percentile_bar_row_1']['html'] = '<td align="left">' .
 				__('Width') . '</td>
 				<td align="left">' . html_print_input_text('width_percentile', 0, '', 3, 5, true) . '</td>';
-			
+
+			$form_items['height_bars_graph_row'] = array();
+			$form_items['height_bars_graph_row']['items'] = array('bars_graph');
+			$form_items['height_bars_graph_row']['html'] = '<td align="left">' .
+				__('Height') . '</td>
+				<td align="left">' . html_print_input_text('bars_graph_height', 0, '', 3, 5, true) . '</td>';
 			
 			$form_items['percentile_bar_row_2'] = array();
 			$form_items['percentile_bar_row_2']['items'] = array('percentile_bar', 'percentile_item', 'datos');
@@ -827,6 +832,8 @@ function visual_map_editor_print_hack_translate_strings() {
 		__('No Max value defined.') .'</span>';
 	echo '<span style="display: none" id="message_alert_no_width_percentile">' .
 		__('No width defined.') .'</span>';
+	echo '<span style="display: none" id="message_alert_no_bars_graph_height">' .
+		__('No height defined.') .'</span>';
 	echo '<span style="display: none" id="message_alert_no_period">' .
 		__('No period defined.') .'</span>';
 	echo '<span style="display: none" id="message_alert_no_agent">' .

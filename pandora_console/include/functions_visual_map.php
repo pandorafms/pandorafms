@@ -1149,10 +1149,10 @@ function visual_map_print_item($mode = "read", $layoutData,
 				}
 				else{
 					if ($layoutData['id_metaconsole'] != 0) {
-						$img =  '<img src="../../images/console/signes/barras.png" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';
+						$img =  '<img src="../../images/console/signes/barras.png" style="width:'.$width.'px;height:'.$height.'px;'.$imgpos.'">';
 					}
 					else{
-						$img =  '<img src="images/console/signes/barras.png" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';
+						$img =  '<img src="images/console/signes/barras.png" style="width:'.$width.'px;height:'.$height.'px;'.$imgpos.'">';
 					}
 				}
 			}
@@ -1209,7 +1209,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 				$water_mark = array('file' => '/var/www/html/pandora_console/images/logo_vertical_water.png', 
 									'url' => 'http://localhost/pandora_console/images/logo_vertical_water.png');
 				
-				if ($width == 0) {
+				if ($width == 0 && $height == 0) {
 					if ($layoutData['label_position']=='left') {
 						if ($layoutData['type_graph'] == 'horizontal') {
 							$img = '<div style="float:right;height:'.$himg.'px;">'.
@@ -1268,7 +1268,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 						if ($layoutData['type_graph'] == 'horizontal') {
 							$img = '<div style="float:right;height:'.$himg.'px;">'.
 								hbar_graph(true, $module_data,
-								$width, $width, $color, array(), array(),
+								$width, $height, $color, array(), array(),
 								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
 								"", 0, $config['homeurl'], $layoutData['image'], $layoutData['border_color']) . '</div>';
@@ -1276,7 +1276,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 						else {
 							$img = '<div style="float:right;height:'.$himg.'px;">'. 
 								vbar_graph(true, $module_data,
-								$width, $width, $color, array(), array(),
+								$width, $height, $color, array(), array(),
 								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
 								"", 0, $config['homeurl'], $layoutData['image'], true, false, $layoutData['border_color']) . '</div>';
@@ -1286,7 +1286,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 						if ($layoutData['type_graph'] == 'horizontal') {
 							$img = '<div style="float:left;height:'.$himg.'px;">'.
 								hbar_graph(true, $module_data,
-								$width, $width, $color, array(), array(),
+								$width, $height, $color, array(), array(),
 								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
 								"", 0, $config['homeurl'], $layoutData['image'], $layoutData['border_color']) . '</div>';
@@ -1294,7 +1294,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 						else {
 							$img = '<div style="float:left;height:'.$himg.'px;">'. 
 								vbar_graph(true, $module_data,
-								$width, $width, $color, array(), array(),
+								$width, $height, $color, array(), array(),
 								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
 								"", 0, $config['homeurl'], $layoutData['image'], true, false, $layoutData['border_color']) . '</div>';
@@ -1303,14 +1303,14 @@ function visual_map_print_item($mode = "read", $layoutData,
 					else {
 						if ($layoutData['type_graph'] == 'horizontal') {
 							$img = hbar_graph(true, $module_data,
-								$width, $width, $color, array(), array(),
+								$width, $height, $color, array(), array(),
 								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
 								"", 0, $config['homeurl'], $layoutData['image'], $layoutData['border_color']);
 						}
 						else {
 							$img = vbar_graph(true, $module_data,
-								$width, $width, $color, array(), array(),
+								$width, $height, $color, array(), array(),
 								ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 								"", "", $water_mark, $config['fontpath'], 6,
 								"", 0, $config['homeurl'], $layoutData['image'], true, false, $layoutData['border_color']);

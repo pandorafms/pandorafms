@@ -1,0 +1,13 @@
+#!/usr/bin/env bash 
+# This script passes the service dependent SERVICE_HOME to the common service script to run the command
+                                                                                                                          
+# Check AWS_CLOUDWATCH_HOME 
+if [ -z "${AWS_CLOUDWATCH_HOME}" ]; then
+        echo AWS_CLOUDWATCH_HOME is not set
+        exit 1
+fi
+                                                                                                                          
+export SERVICE_HOME=${AWS_CLOUDWATCH_HOME}
+                                                                                                                          
+exec "${AWS_CLOUDWATCH_HOME}/bin/service" "$@"
+

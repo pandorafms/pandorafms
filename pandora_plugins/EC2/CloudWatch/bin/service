@@ -1,0 +1,29 @@
+#!/usr/bin/env bash 
+# This script "concentrates" all of our Java invocations into a single location
+# for maintainability.
+
+# Verify SERVICE_HOME
+if [ -z "${SERVICE_HOME}" ]; then
+    echo 'This command is not intended to be run directly. Please see documentation on using service commands.'
+	exit 1 
+fi
+
+# Check our Java env
+if [ -n "${JAVA_HOME:+x}" ]; then
+	JAVA_COMMAND=${JAVA_HOME}/bin/java
+else
+        echo JAVA_HOME is not set
+        exit 1 
+fi
+
+LIBDIR=${SERVICE_HOME}/lib
+# If a classpath exists preserve it
+CP=$CLASSPATH
+
+# Check for cygwin bash so we use the correct path separator
+
+for jar in $(ls $LIBDIR/*.jar) ; do
+	CP=${CP}:$jar
+done
+
+exec ${JAVA_COMMAND} ${SERVICE_JVM_ARGS} -classpath "${CP}" com.amazon.webservices.Cli "$@"

@@ -240,26 +240,19 @@ function process_user_login_remote ($login, $pass, $api = false) {
 				}
 			}
 		}
-		elseif (($config["auth"] === 'ldap') &&
-			(isset($config['ldap_advanced_config']) && $config['ldap_advanced_config'])) {
+		elseif ($config["auth"] === 'ldap') {
+			if ($config['ldap_save_password']) {
+				$update_credentials = change_local_user_pass_ldap ($login, $pass);
 
-			$return = enterprise_hook ('prepare_permissions_groups_of_user_ldap',
-				array ($login, $pass, false, true, defined('METACONSOLE')));
-			
-			if ($return === "error_permissions") {
-				$config["auth_error"] =
-					__("Problems with configuration permissions. Please contact with Administrator");
-				return false;
-			}
-			else {
-				if ($return === "permissions_changed") {
+				if ($update_credentials) {
 					$config["auth_error"] =
 						__("Your permissions have changed. Please, login again.");
 					return false;
 				}
 			}
-
-			change_local_user_pass_ldap ($login, $pass);
+			else {
+				delete_user_pass_ldap ($login);
+			}
 		}
 
 		return $login;
@@ -310,9 +303,7 @@ function process_user_login_remote ($login, $pass, $api = false) {
 			return false;
 		}
 	}
-	elseif ($config["auth"] === 'ldap' && 
-		(isset($config['ldap_advanced_config']) && 
-			$config['ldap_advanced_config'])) {
+	elseif ($config["auth"] === 'ldap') {
 		if ( defined('METACONSOLE') ) {
 			enterprise_include_once('include/functions_metaconsole.php');
 			enterprise_include_once ('meta/include/functions_groups_meta.php');
@@ -717,7 +708,7 @@ function ldap_process_user_login ($login, $password) {
 	
 	$correct = false;
 	if(!empty($ldap_base_dn)) {
-		if (strlen($password) != 0 && @ldap_bind($ds, $memberof['dn'], $password) ) {
+		if (strlen($password) != 0 && @ldap_bind($ds, io_safe_output($memberof['dn']), $password) ) {
 			$correct = true;
 		}
 	}
@@ -770,12 +761,22 @@ function is_user_blacklisted ($user) {
 function change_local_user_pass_ldap ($id_user, $password) {
 	$local_user_pass = db_get_value_filter('password', 'tusuario', array('id_user' => $id_user));
 
+	$return = false;
 	if (md5($password) !== $local_user_pass) {
 		$values_update = array();
 		$values_update['password'] = md5($password);
 
-		db_process_sql_update('tusuario', $values_update, array('id_user' => $id_user));
+		$return = db_process_sql_update('tusuario', $values_update, array('id_user' => $id_user));
 	}
+
+	return $return;
+}
+
+function delete_user_pass_ldap ($id_user) {
+	$values_update = array();
+	$values_update['password'] = null;
+
+	$return = db_process_sql_update('tusuario', $values_update, array('id_user' => $id_user));
 
 	return;
 }

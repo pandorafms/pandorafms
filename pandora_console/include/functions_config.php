@@ -347,11 +347,11 @@ function config_update_config () {
 						$error_update[] = __('Fallback to local authentication');
 						
 					if (isset($config['fallback_local_auth']) && $config['fallback_local_auth'] == 0) {
-						if (!config_update_value ('ldap_no_create_password', get_parameter ('ldap_no_create_password')))
+						if (!config_update_value ('ldap_save_password', get_parameter ('ldap_save_password')))
 							$error_update[] = __('Save Password');
 					}
 					else if (isset($config['fallback_local_auth']) && $config['fallback_local_auth'] == 1) {
-						config_update_value ('ldap_no_create_password', 0);
+						config_update_value ('ldap_save_password', 1);
 					}
 
 					if (!config_update_value ('rpandora_server', get_parameter ('rpandora_server')))

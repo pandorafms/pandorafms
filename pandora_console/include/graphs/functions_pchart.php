@@ -737,7 +737,7 @@ function pch_bar_graph ($graph_type, $index, $data, $width, $height, $font,
 			$margin_left = 40+50;
 			$margin_right = 90;
 			$margin_top = 10;
-			$margin_bottom = (3 * $max_chars)+40;
+			$margin_bottom = (3 * $max_chars)+80;
 			break;
 		case "hbar":
 			$scaleSettings = array("GridR"=>1000,"GridG"=>1000,"GridB"=>1000,"DrawSubTicks"=>TRUE,

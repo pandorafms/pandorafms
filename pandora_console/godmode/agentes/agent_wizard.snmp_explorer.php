@@ -35,12 +35,12 @@ $use_agent = get_parameter ('use_agent');
 $snmp_community = (string) get_parameter ('snmp_community', 'public');
 $snmp_version = get_parameter('snmp_version', '1');
 $server_to_exec = get_parameter('server_to_exec', 0);
-$snmp3_auth_user = get_parameter('snmp3_auth_user');
+$snmp3_auth_user = io_safe_output(get_parameter('snmp3_auth_user'));
 $snmp3_security_level = get_parameter('snmp3_security_level');
 $snmp3_auth_method = get_parameter('snmp3_auth_method');
-$snmp3_auth_pass = get_parameter('snmp3_auth_pass');
+$snmp3_auth_pass = io_safe_output(get_parameter('snmp3_auth_pass'));
 $snmp3_privacy_method = get_parameter('snmp3_privacy_method');
-$snmp3_privacy_pass = get_parameter('snmp3_privacy_pass');
+$snmp3_privacy_pass = io_safe_output(get_parameter('snmp3_privacy_pass'));
 $tcp_port = (string) get_parameter ('tcp_port');
 
 //See if id_agente is set (either POST or GET, otherwise -1

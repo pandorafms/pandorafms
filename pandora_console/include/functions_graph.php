@@ -232,8 +232,8 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 				$projection, $avg_only = false, $uncompressed_module = false, 
 				$show_events = false, $show_alerts = false, $show_unknown = false, $baseline = false, 
 				$baseline_data = array(), $events = array(), $series_suffix = '', $start_unknown = false,
-				$percentil = null, $fullscale = false) {
-	
+				$percentil = null, $fullscale = false, $force_interval = false,$time_interval = 300,
+				$max_only = 0, $min_only = 0) {
 	global $config;
 	global $chart_extra_data;
 	global $series_type;
@@ -413,10 +413,17 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 		}
 		
 		if ($count > 0) {
+			
 			if ($avg_only) {
 				$chart[$timestamp]['sum'.$series_suffix] = $total;
 			}
-			else {
+			else if($max_only){
+				$chart[$timestamp]['max'.$series_suffix] = $interval_max;
+			}
+			else if($min_only){
+				$chart[$timestamp]['min'.$series_suffix] = $interval_min;
+			}
+			else{
 				$chart[$timestamp]['max'.$series_suffix] = $interval_max;
 				$chart[$timestamp]['sum'.$series_suffix] = $total;
 				$chart[$timestamp]['min'.$series_suffix] = $interval_min;
@@ -428,7 +435,13 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 				if ($avg_only) {
 					$chart[$timestamp]['sum'.$series_suffix] = 0;
 				}
-				else {
+				else if($max_only){
+					$chart[$timestamp]['max'.$series_suffix] = 0;
+				}
+				else if($min_only){
+					$chart[$timestamp]['min'.$series_suffix] = 0;
+				}
+				else{
 					$chart[$timestamp]['max'.$series_suffix] = 0;
 					$chart[$timestamp]['sum'.$series_suffix] = 0;
 					$chart[$timestamp]['min'.$series_suffix] = 0;
@@ -437,6 +450,12 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 			else {
 				if ($avg_only) {
 					$chart[$timestamp]['sum'.$series_suffix] = $last_known;
+				}
+				else if ($max_only) {
+					$chart[$timestamp]['max'.$series_suffix] = $last_known;
+				}
+				else if ($min_only) {
+					$chart[$timestamp]['min'.$series_suffix] = $last_known;
 				}
 				else {
 					$chart[$timestamp]['max'.$series_suffix] = $last_known;
@@ -502,8 +521,9 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	$baseline = 0, $return_data = 0, $show_title = true, $projection = false, 
 	$adapt_key = '', $compare = false, $series_suffix = '', $series_suffix_str = '', 
 	$show_unknown = false, $percentil = null, $dashboard = false, $vconsole = false,
-	$type_graph='area', $fullscale = false, $flash_chart = false) {
-	
+	$type_graph='area', $fullscale = false, $flash_chart = false, $force_interval = false,$time_interval = 300,
+	$max_only = 0, $min_only = 0) {
+		
 	global $config;
 	global $chart;
 	global $color;
@@ -529,8 +549,23 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	if ($date == 0) $date = get_system_time();
 	$datelimit = $date - $period;
 	$search_in_history_db = db_search_in_history_db($datelimit);
-	$resolution = $config['graph_res'] * 50; //Number of points of the graph
-	$interval = (int) ($period / $resolution);
+	
+	
+	
+	if($force_interval){
+			$resolution = $period/$time_interval;
+	}
+	else{
+		$resolution = $config['graph_res'] * 50; //Number of points of the graph
+	}
+	
+	if($force_interval){
+		$interval = $time_interval;
+	}
+	else{
+		$interval = (int) ($period / $resolution);
+	}
+	
 	$agent_name = modules_get_agentmodule_agent_name ($agent_module_id);
 	$agent_id = agents_get_agent_id ($agent_name);
 	$module_name = modules_get_agentmodule_name ($agent_module_id);
@@ -718,7 +753,8 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 			$projection, $avg_only, $uncompressed_module, 
 			$show_events, $show_alerts, $show_unknown, $baseline, 
 			$baseline_data, $events, $series_suffix, $start_unknown,
-			$percentil, $fullscale);
+			$percentil, $fullscale, $force_interval, $time_interval, 
+			$max_only, $min_only);
 	}
 	
 	// Return chart data and don't draw
@@ -843,6 +879,19 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 		$legend['percentil'.$series_suffix] = __('Percentile %dº', $percentil)  .$series_suffix_str . " (" . $percentil_value . " " . $unit . ") ";
 		$chart_extra_data['legend_percentil'] = $legend['percentil'.$series_suffix_str];
 	}
+	
+	if($force_interval){
+		$legend = array();
+		if($avg_only){
+			$legend['sum'.$series_suffix] = __('Avg');
+		}
+		elseif ($max_only) {
+			$legend['min'.$series_suffix] = __('Max');
+		}
+		elseif ($min_only) {
+			$legend['max'.$series_suffix] = __('Min');	
+		}	
+	}
 }
 
 function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
@@ -853,8 +902,10 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	$adapt_key = '', $compare = false, $show_unknown = false,
 	$menu = true, $backgroundColor = 'white', $percentil = null,
 	$dashboard = false, $vconsole = false, $type_graph = 'area', $fullscale = false,
-	$id_widget_dashboard = false) {
-	
+	$id_widget_dashboard = false,$force_interval = 0,$time_interval = 300,
+	$max_only = 0, $min_only = 0) {
+				
+				
 	global $config;
 	global $graphic_type;
 
@@ -884,7 +935,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 			$return_data, $show_title, $projection, $adapt_key,
 			$compare, $series_suffix, $series_suffix_str,
 			$show_unknown, $percentil, $dashboard, $vconsole,$type_graph, 
-			$fullscale, $flash_chart);
+			$fullscale, $flash_chart,$force_interval,$time_interval,$max_only,$min_only);
 		
 		switch ($compare) {
 			case 'separated':
@@ -917,7 +968,9 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		$show_alerts, $avg_only,
 		$date, $unit, $baseline, $return_data, $show_title,
 		$projection, $adapt_key, $compare, '', '', $show_unknown,
-		$percentil, $dashboard, $vconsole, $type_graph, $fullscale, $flash_chart);
+		$percentil, $dashboard, $vconsole, $type_graph, $fullscale,$flash_chart,
+		$force_interval,$time_interval,$max_only,$min_only);
+
 	if ($return_data) {
 		return $data_returned;
 	}
@@ -2107,14 +2160,14 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				$width, $height, $color, $module_name_list, $long_index,
 				ui_get_full_url("images/image_problem_area_small.png", false, false, false),
 				"", "", $water_mark, $config['fontpath'], $fixed_font_size,
-				"", $ttl, $homeurl, $background_color);
+				"", $ttl, $homeurl, $background_color, 'black');
 			break;
 		case CUSTOM_GRAPH_VBARS:
 			return vbar_graph($flash_charts, $graph_values,
 				$width, $height, $color, $module_name_list, $long_index,
 				ui_get_full_url("images/image_problem_area_small.png", false, false, false),
 				"", "", $water_mark, $config['fontpath'], $fixed_font_size,
-				"", $ttl, $homeurl, $background_color, true);
+				"", $ttl, $homeurl, $background_color, true, false, "black");
 			break;
 		case CUSTOM_GRAPH_PIE:
 			return ring_graph($flash_charts, $graph_values, $width, $height,
@@ -2457,10 +2510,10 @@ function progress_bar($progress, $width, $height, $title = '', $mode = 1, $value
 	require_once("include_graph_dependencies.php");
 	include_graphs_dependencies($config['homedir'].'/');
 	$src = ui_get_full_url(
-		"/include/graphs/fgraph.php?homeurl=../../&graph_type=progressbar" .
-		"&width=".$width."&homedir=".$config['homedir']."&height=".$height."&progress=".$progress.
+		"/include/graphs/fgraph.php?graph_type=progressbar" .
+		"&width=".$width."&height=".$height."&progress=".$progress.
 		"&mode=" . $mode . "&out_of_lim_str=".$out_of_lim_str .
-		"&title=".$title."&font=".$config['fontpath']."&value_text=". $value_text . 
+		"&title=".$title."&value_text=". $value_text . 
 		"&colorRGB=". $colorRGB, false, false, false
 		);
 	
@@ -2492,10 +2545,10 @@ function progress_bubble($progress, $width, $height, $title = '', $mode = 1, $va
 	include_graphs_dependencies($config['homedir'].'/');
 	
 	return "<img title='" . $title . "' alt='" . $title . "'" .
-		" src='" . $config['homeurl'] . $hack_metaconsole . "/include/graphs/fgraph.php?homeurl=../../&graph_type=progressbubble" .
+		" src='" . $config['homeurl'] . $hack_metaconsole . "/include/graphs/fgraph.php?graph_type=progressbubble" .
 		"&width=".$width."&height=".$height."&progress=".$progress.
 		"&mode=" . $mode . "&out_of_lim_str=".$out_of_lim_str .
-		"&title=".$title."&font=".$config['fontpath']."&value_text=". $value_text . 
+		"&title=".$title."&value_text=". $value_text . 
 		"&colorRGB=". $colorRGB . "' />";
 }
 
@@ -2779,7 +2832,9 @@ function grafico_db_agentes_paquetes($width = 380, $height = 300) {
 	
 	return hbar_graph($config['flash_charts'], $data, $width, $height, array(),
 		$legend, "", "", true, "", $water_mark,
-		$config['fontpath'], $config['font_size'], false);
+		$config['fontpath'], $config['font_size'], false, 1, $config['homeurl'],
+					'white',
+					'black');
 }
 
 /**
@@ -2846,7 +2901,9 @@ function graph_db_agentes_modulos($width, $height) {
 		$data, $width, $height, array(),
 		array(), "", "", true, "",
 		$water_mark,
-		$config['fontpath'], $config['font_size'], false);
+		$config['fontpath'], $config['font_size'], false, 1, $config['homeurl'],
+					'white',
+					'black');
 }
 
 /**
@@ -3621,12 +3678,14 @@ function graph_custom_sql_graph ($id, $width, $height,
 		case 'sql_graph_vbar': // vertical bar
 			return vbar_graph($flash_charts, $data, $width, $height, array(),
 				array(), "", "", $homeurl, $water_mark,
-				$config['fontpath'], $config['font_size'], false, $ttl);
+				$config['fontpath'], $config['font_size'], false, $ttl, "", "white", false, false, "black");
 			break;
 		case 'sql_graph_hbar': // horizontal bar
 			return hbar_graph($flash_charts, $data, $width, $height, array(),
 				array(), "", "", true, $homeurl, $water_mark,
-				$config['fontpath'], $config['font_size'], false, $ttl);
+				$config['fontpath'], $config['font_size'], false, $ttl,$config['homeurl'],
+					'white',
+					'black');
 			break;
 		case 'sql_graph_pie': // Pie
 			return pie3d_graph($flash_charts, $data, $width, $height, __("other"), $homeurl,

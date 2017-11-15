@@ -201,13 +201,13 @@ switch ($sortField) {
 		switch ($sort) {
 			case 'up':
 				$selectRemoteUp = $selected;
-				$order = array('field' => 'remote ' . $order_collation,
+				$order = array('field' => 'remote ',
 					'field2' => 'nombre ' . $order_collation,
 					'order' => 'ASC');
 				break;
 			case 'down':
 				$selectRemoteDown = $selected;
-				$order = array('field' => 'remote ' . $order_collation,
+				$order = array('field' => 'remote ',
 					'field2' => 'nombre ' . $order_collation,
 					'order' => 'DESC');
 				break;

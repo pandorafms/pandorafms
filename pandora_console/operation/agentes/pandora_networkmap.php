@@ -84,6 +84,10 @@ if ($new_networkmap || $save_networkmap) {
 		$dont_show_subgroups = (int)get_parameter('dont_show_subgroups', 0);
 		$node_radius = (int)get_parameter('node_radius', 40);
 		$description = get_parameter('description', '');
+
+		$offset_x = get_parameter('pos_x');
+		$offset_y = get_parameter('pos_y');
+		$scale_z = get_parameter('scale_z', 0.5);
 		
 		$values = array();
 		$values['name'] = $name;
@@ -141,6 +145,9 @@ if ($new_networkmap || $save_networkmap) {
 		$filter = array();
 		$filter['dont_show_subgroups'] = $dont_show_subgroups;
 		$filter['node_radius'] = $node_radius;
+		$filter['x_offs'] = $offset_x;
+		$filter['y_offs'] = $offset_y;
+		$filter['z_dash'] = $scale_z;
 		$values['filter'] = json_encode($filter);
 		
 		$result = false;
@@ -209,25 +216,14 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
 			'recon_task_id', 0);
 		
 		$source = (string)get_parameter('source', 'group');
+
+		$offset_x = get_parameter('pos_x');
+		$offset_y = get_parameter('pos_y');
+		$scale_z = get_parameter('scale_z', 0.5);
 		
 		$values = array();
 		$values['name'] = $name;
 		$values['id_group'] = $id_group;
-
-		/*
-		if ($source == 'group') {
-			$values['source'] = 0;
-			$values['source_data'] = $id_group;
-		}
-		else if ($source == 'recon_task') {
-			$values['source'] = 1;
-			$values['source_data'] = $recon_task_id;
-		}
-		else if ($source == 'ip_mask') {
-			$values['source'] = 2;
-			$values['source_data'] = $ip_mask;
-		}
-		*/
 
 		switch ($method) {
 			case 'twopi':
@@ -262,6 +258,9 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
 		$filter = json_decode($row['filter'], true);
 		$filter['dont_show_subgroups'] = $dont_show_subgroups;
 		$filter['node_radius'] = $node_radius;
+		$filter['x_offs'] = $offset_x;
+		$filter['y_offs'] = $offset_y;
+		$filter['z_dash'] = $scale_z;
 		
 		$values['filter'] = json_encode($filter);
 		

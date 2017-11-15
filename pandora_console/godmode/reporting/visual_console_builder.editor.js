@@ -1616,6 +1616,11 @@ function cleanFields(item) {
 	$("input[name='fill_color']").val('#ffffff');
 	$("input[name='line_width']").val(3);
 	$("input[name='line_color']").val('#000000');
+	$("select[name=type_percentile]").val('');
+	$("input[name=percentile_color]").val('');
+	$("input[name=percentile_label_color]").val('');
+	$("input[name=percentile_label]").val('');
+	$(".ColorPickerDivSample").css('background-color', '#FFF');
 	$("input[name=show_on_top]").prop("checked", false);
 
 

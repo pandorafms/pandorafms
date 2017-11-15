@@ -140,6 +140,7 @@ $line_color = get_parameter('line_color', '');
 $get_element_status = get_parameter('get_element_status', 0);
 
 $enable_link = get_parameter('enable_link', 1);
+$show_on_top = get_parameter('show_on_top', 0);
 $type_graph = get_parameter('type_graph', 'area');
 $label_position = get_parameter('label_position', 'down');
 $show_statistics = get_parameter('show_statistics', 0);
@@ -492,6 +493,7 @@ switch ($action) {
 		$values = array();
 		
 		$values['label_position'] = $label_position;
+		$values['show_on_top'] = $show_on_top;
 		
 		// In Graphs, background color is stored in column image (sorry)
 		if ($type == 'module_graph') {
@@ -530,6 +532,9 @@ switch ($action) {
 				
 				if ($enable_link !== null) {
 					$values['enable_link'] = $enable_link;
+				}
+				if ($show_on_top !== null) {
+					$values['show_on_top'] = $show_on_top;
 				}
 				if ($label !== null) {
 					$values['label'] = $label;
@@ -745,6 +750,7 @@ switch ($action) {
 					// Don't change the label because only change the positions
 					unset($values['label']);
 					unset($values['label_position']);
+					unset($values['show_on_top']);
 					// Don't change background color in graphs when move
 					
 					switch ($type) {
@@ -1034,6 +1040,7 @@ switch ($action) {
 		$values['id_layout_linked_weight'] = $map_linked_weight;
 		$values['parent_item'] = $parent;
 		$values['enable_link'] = $enable_link;
+		$values['show_on_top'] = $show_on_top;
 		$values['image'] = $background_color;
 		$values['type_graph'] = $type_graph;
 		

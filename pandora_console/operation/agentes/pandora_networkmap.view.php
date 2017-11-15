@@ -699,9 +699,24 @@ if (enterprise_installed()) {
 	}
 	else {
 		$networkmap_filter = json_decode($networkmap['filter'], true);
-		$map_dash_details['x_offs'] = $networkmap_filter['x_offs'];
-		$map_dash_details['y_offs'] = $networkmap_filter['y_offs'];
-		$map_dash_details['z_dash'] = $networkmap_filter['z_dash'];
+		if ($networkmap_filter['x_offs'] != null) {
+			$map_dash_details['x_offs'] = $networkmap_filter['x_offs'];
+		}
+		else {
+			$map_dash_details['x_offs'] = 0;
+		}
+		if ($networkmap_filter['y_offs'] != null) {
+			$map_dash_details['y_offs'] = $networkmap_filter['y_offs'];
+		}
+		else {
+			$map_dash_details['y_offs'] = 0;
+		}
+		if ($networkmap_filter['z_dash'] != null) {
+			$map_dash_details['z_dash'] = $networkmap_filter['z_dash'];
+		}
+		else {
+			$map_dash_details['z_dash'] = 0;
+		}
 	}
 }
 

@@ -659,10 +659,36 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				WHERE id != ' . $visualConsole_id, 'map_linked', '', '', 'None', '0', true) .
 				'</td>';
 
+			$form_items_advance['map_linked_weight'] = array();
+			$form_items_advance['map_linked_weight']['items'] = array('static_graph');
+			$form_items_advance['map_linked_weight']['html'] = '<td align="left">'.
+				__('Map linked weight') . '</td>' .
+				'<td align="left">' . html_print_select(array('10' => '10%',
+															'20' => '20%',
+															'30' => '30%',
+															'40' => '40%',
+															'50' => '50%',
+															'60' => '60%',
+															'70' => '70%',
+															'80' => '80%',
+															'90' => '90%',
+															'100' => '100%'), 
+				'map_linked_weight', '', '', __('By default'), 0, true) . 
+				ui_print_help_tip (
+					__("This percentage value specifies the number of items that must be present in the visual 
+						console for it to transmit its status to the icon linked here. For example, if 20% is 
+						specified and there are five elements in the console, it would be enough if you were in 
+						WARNING or CRITICAL to pass that value to the icon. If it were 40%, you would need at 
+						least two elements to be in CRITICAL or WARNING to go into that status. If it had one 
+						element in critical and another in warning, it would not forward any status to the icon 
+						associated with the visual console. If we had three in warning and one in critical, 
+						it would only convey the warning status. If there were two in warning and two in critical, 
+						it would show the CRITICAL because it is more serious. The same applies to unknown status."), true) .
+				'</td>';
+
 			$form_items_advance['line_case']['items'] = array('line_item');
 			$form_items_advance['line_case']['html'] = '
 				<td align="left">' . __('Lines haven\'t advanced options') . '</td>';
-
 
 			//Insert and modify before the buttons to create or update.
 			if (enterprise_installed()) {
@@ -847,3 +873,17 @@ function visual_map_editor_print_hack_translate_strings() {
 		__('Could not be save') .'</span>';
 }
 ?>
+
+<script type="text/javascript">
+$(document).ready (function () {
+	$("#map_linked").change(function () {
+		$("#text-agent").val("");
+		$("input[name=id_agent]").val(0);
+		$("#module").empty();
+		$("#module")
+			.append($("<option>")
+				.attr("value", 0)
+				.html("<?php echo __('Any'); ?>"));
+	})
+});
+</script>

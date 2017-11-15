@@ -3283,7 +3283,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 				'proportion_width' => $proportion_width);
 		}
 		
-		$layout_data['label'] = visual_map_macro($layout_data['label']);
+		$layout_data['label'] = visual_map_macro($layout_data['label'],$layout_data["id_agente_modulo"]);
 		
 		switch ($layout_data['type']) {
 			case LINE_ITEM:
@@ -3701,9 +3701,14 @@ function visual_map_type_in_js($type) {
 	}
 }
 
-function visual_map_macro($label){
+function visual_map_macro($label,$module){
 	$label = str_replace('_date_',strftime("%x"),$label);
 	$label = str_replace('_time_',strftime("%T"),$label);
+	$label = str_replace('_agent_',agents_get_alias(modules_get_agentmodule_agent($module)),$label);
+	$label = str_replace('_module_',modules_get_agentmodule_name($module),$label);
+	$label = str_replace('_agentdescription_',agents_get_description(modules_get_agentmodule_agent($module)),$label);
+	$label = str_replace('_address_',agents_get_address(modules_get_agentmodule_agent($module)),$label);
+	$label = str_replace('_moduledescription_',modules_get_agentmodule_descripcion($module),$label);
 	return $label;
 }
 

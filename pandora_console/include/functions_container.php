@@ -215,8 +215,6 @@ function ui_toggle_container($code, $name, $title = '', $hidden_default = true, 
   $report_m = check_acl ($config['id_user'], 0, "RM");
   $access = ($report_r == true) ? 'RR' : (($report_w == true) ? 'RW' : (($report_m == true) ? 'RM' : 'RR'));
   
-  html_debug($report_w);
-  
   // Generate unique Id
 	$uniqid = uniqid('');
 	

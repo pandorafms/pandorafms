@@ -45,10 +45,10 @@ echo "<tr><td class='datos' style='width:20%; font-weight: bold;'>";
 echo __('Search') . ' ' .
 	html_print_input_text ('search_string', $search_string, '', 15, 255, true);
 echo "</td>";
-echo "<td class='datos' style='width:20%'>";
+echo "<td class='datos' style='width:10%'>";
 html_print_submit_button (__('Filter'), 'filter', false, 'class="sub search"');
 echo "</td>";
-echo "<td class='datos' style='width:20%'></td>";
+echo "<td class='datos' style='width:10%'></td>";
 echo '</form>';
 // Check if there is at least one server of each type available to assign that
 // kind of modules. If not, do not show server type in combo
@@ -119,7 +119,7 @@ if (($policy_page) || (isset($agent))) {
 		// Create module/type combo
 		echo '<form id="create_module_type" method="post" action="'.$url.'">';
 		if (!$policy_page) {
-			echo '<td class="datos" style="font-weight: bold;">';
+			echo '<td class="datos" style="font-weight: bold; width:20%;">';
 			echo __('Show in hierachy mode');
 			if ($checked == "true") {
 				$checked = true;
@@ -130,12 +130,12 @@ if (($policy_page) || (isset($agent))) {
 			html_print_checkbox ('status_hierachy_mode', "", $checked, false, false, "onChange=change_mod_filter();");
 			echo '</td>';
 		}
-		echo '<td class="datos" style="font-weight: bold;">';
+		echo '<td class="datos" style="font-weight: bold; width:20%;">';
 		echo __("Type");
 		html_print_select ($modules, 'moduletype', '', '', '', '', false, false, false, '', false, 'max-width:300px;' );
 		html_print_input_hidden ('edit_module', 1);
 		echo '</td>';
-		echo '<td class="datos">';
+		echo '<td class="datos" style="width:10%;">';
 		echo '<input align="right" name="updbutton" type="submit" class="sub next" value="'.__('Create').'">';
 		echo '</td>';
 		echo '</tr>';

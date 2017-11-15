@@ -32,8 +32,6 @@ var SIZE_GRID = 16; //Const the size (for width and height) of grid.
 var img_handler_start;
 var img_handler_end;
 
-var font;
-
 function toggle_advance_options_palette(close) {
 	if ($("#advance_options").css('display') == 'none') {
 		$("#advance_options").css('display', '');
@@ -48,6 +46,7 @@ function toggle_advance_options_palette(close) {
 }
 
 // Main function, execute in event documentReady
+
 function visual_map_main() {
 	img_handler_start = "images/dot_red.png";
 	img_handler_end = "images/dot_green.png";
@@ -56,23 +55,6 @@ function visual_map_main() {
 	});
 	get_image_url(img_handler_end).success(function (data) {
 		img_handler_end = data;
-	});
-
-	//Get the actual system font.
-	parameter = Array();
-	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
-	parameter.push ({name: "action", value: "get_font"});
-	parameter.push ({name: "id_visual_console",
-		value: id_visual_console});
-	jQuery.ajax({
-		url: get_url_ajax(),
-		data: parameter,
-		type: "POST",
-		dataType: 'json',
-		success: function (data)
-		{
-			font = data['font'];
-		}
 	});
 
 	//Get the list of posible parents
@@ -107,7 +89,7 @@ function visual_map_main() {
 						if($('#process_value').val() != '0'){
 								$('#period_row').css('display','table-row');
 						}					
-						}
+					}
 					else{
 						$('#data_image_container').css('display','inline');	
 						$('#data_image_check').css('display','inline');
@@ -127,22 +109,16 @@ function visual_map_main() {
 
 		// Begin - Background label color changer
 				
-		$( "#text-label_ifr" ).contents().find( "body" ).bind("contextmenu", function(e) {
-   		e.preventDefault();
+		$( "#text-label_ifr" ).contents().find( "body" ).bind('mousewheel', function(e){
+        e.preventDefault();
+				
+				if($( "#text-label_ifr" ).contents().find( "body" ).css('background-color') == 'rgb(211, 211, 211)'){
+					$( "#text-label_ifr" ).contents().find( "body" ).css('background-color','white');
+				}
+				else{
+					$( "#text-label_ifr" ).contents().find( "body" ).css('background-color','lightgray');
+				}
     });
-		
-		$( "#text-label_ifr" ).contents().find( "body" ).mousedown(function(e){
-		    	if(e.which == 3) 
-        		{
-							if($( "#text-label_ifr" ).contents().find( "body" ).css('background-color') == 'rgb(211, 211, 211)'){
-								$( "#text-label_ifr" ).contents().find( "body" ).css('background-color','white');
-							}
-							else{
-								$( "#text-label_ifr" ).contents().find( "body" ).css('background-color','lightgray');
-							}
-           		
-        		}
-		});
 		
 		// End - Background label color changer
 		
@@ -294,6 +270,157 @@ function update_button_palette_callback() {
 			}
 			break;
 		case 'group_item':
+			if((values['image'] == '' || values['image'] == 'none') && (values['label'] == '') && (values['show_statistics'] == false)){
+				alert('Undefined image');
+				return false;
+			}
+			
+			$("#text_" + idItem).html(values['label']);
+			
+			if(values['show_statistics'] == 1){
+				
+				if (!$('#image_'+idItem).length) {
+					
+					if(values['label_position'] == 'left'){
+					
+						var $image = $('<img></img>')
+							.attr('id', 'image_' + idItem)
+							.attr('class', 'image')
+							.attr('src', 'images/console/icons/'+values["image"]+".png")
+							.attr('style','float:right;');
+					
+					}
+					else if(values['label_position'] == 'right'){
+					
+						var $image = $('<img></img>')
+							.attr('id', 'image_' + idItem)
+							.attr('class', 'image')
+							.attr('src', 'images/console/icons/'+values["image"]+".png")
+							.attr('style','float:left;');
+					
+					}
+					else{
+						
+						var $image = $('<img></img>')
+							.attr('id', 'image_' + idItem)
+							.attr('class', 'image')
+							.attr('src', 'images/console/icons/'+values["image"]+".png");
+						
+					}
+					
+					
+					$('#'+idItem).append($image);
+					
+				}
+				
+				if ((values['width'] == 0) || (values['height'] == 0)) {
+						$("#image_" + idItem).removeAttr('width');
+						$("#image_" + idItem).removeAttr('height');
+						$("#image_" + idItem).attr('width', 520);
+						$("#image_" + idItem).attr('height', 80);
+						$("#image_" + idItem).css('width', '520px');
+						$("#image_" + idItem).css('height', '80px');
+						$("#image_" + idItem).attr('src', 'images/console/signes/group_status.png');
+							
+				}
+				else {
+					$("#image_" + idItem).removeAttr('width');
+					$("#image_" + idItem).removeAttr('height');
+					$("#image_" + idItem).attr('width', values['width']);
+					$("#image_" + idItem).attr('height', values['height']);
+					$("#image_" + idItem).css('width', values['width'] + 'px');
+					$("#image_" + idItem).css('height', values['height'] + 'px');
+					$("#image_" + idItem).attr('src', 'images/console/signes/group_status.png');
+				}				
+				
+			}
+			else{
+				
+				if ((values['width'] == 0) || (values['height'] == 0)) {
+					
+					if(values['image'] != '' && values['image'] != 'none'){
+						
+						if (!$('#image_'+idItem).length) {
+  						
+							if(values['label_position'] == 'left'){
+							
+								var $image = $('<img></img>')
+									.attr('id', 'image_' + idItem)
+									.attr('class', 'image')
+									.attr('src', 'images/console/icons/'+values["image"]+".png")
+									.attr('style','float:right;');
+							
+							}
+							else if(values['label_position'] == 'right'){
+							
+								var $image = $('<img></img>')
+									.attr('id', 'image_' + idItem)
+									.attr('class', 'image')
+									.attr('src', 'images/console/icons/'+values["image"]+".png")
+									.attr('style','float:left;');
+							
+							}
+							else{
+								
+								var $image = $('<img></img>')
+									.attr('id', 'image_' + idItem)
+									.attr('class', 'image')
+									.attr('src', 'images/console/icons/'+values["image"]+".png");
+								
+							}
+							
+							
+							$('#'+idItem).append($image);
+							
+						}
+						
+						
+						if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+							$("#image_" + idItem).removeAttr('width');
+							$("#image_" + idItem).removeAttr('height');
+							$("#image_" + idItem).attr('width', 70);
+							$("#image_" + idItem).attr('height', 70);
+							$("#image_" + idItem).css('width', '70px');
+							$("#image_" + idItem).css('height', '70px');
+						}
+						else{
+							$("#image_" + idItem).removeAttr('width');
+							$("#image_" + idItem).removeAttr('height');
+							
+							$("#image_" + idItem).attr('width', $('#preview > img')[0].naturalHeight);
+							$("#image_" + idItem).attr('height', $('#preview > img')[0].naturalHeight);
+							$("#image_" + idItem).css('width', $('#preview > img')[0].naturalHeight+'px');
+							$("#image_" + idItem).css('height', $('#preview > img')[0].naturalHeight+'px');	
+							
+							
+						}
+						
+					}
+					else{
+						$("#image_" + idItem).removeAttr('width');
+						$("#image_" + idItem).removeAttr('height');
+						$("#image_" + idItem).attr('width', 70);
+						$("#image_" + idItem).attr('height', 70);
+						$("#image_" + idItem).css('width', '70px');
+						$("#image_" + idItem).css('height', '70px');
+						$("#image_" + idItem).remove();
+					}
+						
+				}
+				else {
+					$("#image_" + idItem).removeAttr('width');
+					$("#image_" + idItem).removeAttr('height');
+					$("#image_" + idItem).attr('width', values['width']);
+					$("#image_" + idItem).attr('height', values['height']);
+					$("#image_" + idItem).css('width', values['width'] + 'px');
+					$("#image_" + idItem).css('height', values['height'] + 'px');
+				}
+				
+			}
+			
+			
+			
+			break;
 		case 'static_graph':
 		
 			if($('input[name=width]').val() == ''){
@@ -304,7 +431,11 @@ function update_button_palette_callback() {
 				alert('Undefined height');
 				return false;
 			}
-			
+			if(((values['image'] == '' || values['image'] == 'none') && (values['label'] == ''))){
+				alert('Undefined image');
+				return false;
+			}
+
 			$("#text_" + idItem).html(values['label']);
 			
 			if(values['show_statistics'] == 1){
@@ -334,22 +465,75 @@ function update_button_palette_callback() {
 			else{
 				
 				if ((values['width'] == 0) || (values['height'] == 0)) {
-					if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+					
+					if(values['image'] != '' && values['image'] != 'none'){
+						
+						if (!$('#image_'+idItem).length) {
+  						
+							if(values['label_position'] == 'left'){
+							
+								var $image = $('<img></img>')
+									.attr('id', 'image_' + idItem)
+									.attr('class', 'image')
+									.attr('src', 'images/console/icons/'+values["image"]+".png")
+									.attr('style','float:right;');
+							
+							}
+							else if(values['label_position'] == 'right'){
+							
+								var $image = $('<img></img>')
+									.attr('id', 'image_' + idItem)
+									.attr('class', 'image')
+									.attr('src', 'images/console/icons/'+values["image"]+".png")
+									.attr('style','float:left;');
+							
+							}
+							else{
+								
+								var $image = $('<img></img>')
+									.attr('id', 'image_' + idItem)
+									.attr('class', 'image')
+									.attr('src', 'images/console/icons/'+values["image"]+".png");
+								
+							}
+							
+							
+							$('#'+idItem).append($image);
+							
+						}
+						
+						
+						if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+							$("#image_" + idItem).removeAttr('width');
+							$("#image_" + idItem).removeAttr('height');
+							$("#image_" + idItem).attr('width', 70);
+							$("#image_" + idItem).attr('height', 70);
+							$("#image_" + idItem).css('width', '70px');
+							$("#image_" + idItem).css('height', '70px');
+						}
+						else{
+							$("#image_" + idItem).removeAttr('width');
+							$("#image_" + idItem).removeAttr('height');
+							
+							$("#image_" + idItem).attr('width', $('#preview > img')[0].naturalHeight);
+							$("#image_" + idItem).attr('height', $('#preview > img')[0].naturalHeight);
+							$("#image_" + idItem).css('width', $('#preview > img')[0].naturalHeight+'px');
+							$("#image_" + idItem).css('height', $('#preview > img')[0].naturalHeight+'px');	
+							
+							
+						}
+						
+					}
+					else{
 						$("#image_" + idItem).removeAttr('width');
 						$("#image_" + idItem).removeAttr('height');
 						$("#image_" + idItem).attr('width', 70);
 						$("#image_" + idItem).attr('height', 70);
 						$("#image_" + idItem).css('width', '70px');
 						$("#image_" + idItem).css('height', '70px');
+						$("#image_" + idItem).remove();
 					}
-					else{
-						$("#image_" + idItem).removeAttr('width');
-						$("#image_" + idItem).removeAttr('height');
-						$("#image_" + idItem).attr('width', $('#preview > img')[0].naturalHeight);
-						$("#image_" + idItem).attr('height', $('#preview > img')[0].naturalHeight);
-						$("#image_" + idItem).css('width', $('#preview > img')[0].naturalHeight+'px');
-						$("#image_" + idItem).css('height', $('#preview > img')[0].naturalHeight+'px');	
-					}			
+						
 				}
 				else {
 					$("#image_" + idItem).removeAttr('width');
@@ -378,6 +562,12 @@ function update_button_palette_callback() {
 			$("#image_" + idItem).attr("src", "images/spinner.gif");
 			if (values['type_percentile'] == 'bubble') {
 				setPercentileBubble(idItem, values);
+			}
+			else if (values['type_percentile'] == 'circular_progress_bar') {
+				setPercentileCircular(idItem, values);
+			}
+			else if (values['type_percentile'] == 'interior_circular_progress_bar') {
+				setPercentileInteriorCircular(idItem, values);
 			}
 			else {
 				setPercentileBar(idItem, values);
@@ -420,6 +610,22 @@ function update_button_palette_callback() {
 			$("#image_" + idItem).attr("src", "images/spinner.gif");
 			setModuleGraph(idItem);
 			break;
+		case 'bars_graph':
+			if($('input[name=width_percentile]').val() == ''){
+				alert('Undefined width');
+				return false;
+			}
+
+			if($('input[name=bars_graph_height]').val() == ''){
+				alert('Undefined height');
+				return false;
+			}
+		
+			$("#text_" + idItem).html(values['label']);
+			$("#image_" + idItem).attr("src", "images/spinner.gif");
+			
+			setBarsGraph(idItem, values);
+			break;
 		case 'auto_sla_graph':
 			if($('input[name=width]').val() == ''){
 				alert('Undefined width');
@@ -434,35 +640,26 @@ function update_button_palette_callback() {
 
 			setEventsBar(idItem, values);
 			break;
-		case 'simple_value':
-		//checkpoint
-			// if(($('#text-label_ifr').contents().find('#tinymce p').html() == '_VALUE_' || 
-			// $('#text-label_ifr').contents().find('#tinymce').html() == '_VALUE_') 
-			// && $('#data_image_check').html() != 'On'){
-			// 		alert('_VALUE_ exactly value is only enable for data image. Please change label text or select a data image module.');
-			// 		return;
-			// }
-			$("#" + idItem).html(values['label']);
-			if( (values['label'].replace( /<.*?>/g, '' ) != '_VALUE_') 
-				&& (values['label'].replace( /<.*?>/g, '' ) != '(_VALUE_)') ){
+		case 'donut_graph':
+			$("#image_" + idItem).attr("src", "images/spinner.gif");
 
+			setDonutsGraph(idItem, values);
+			break;
+		case 'simple_value':
+			$("#" + idItem).html(values['label']);
+			
+			if($("#data_image_check").html() == "On"){
 				$("#text_" + idItem).html('<img style="width:'+values['width_data_image']+'px;" src="images/console/signes/data_image.png">');
 				$("#" + idItem).html('<img style="width:'+values['width_data_image']+'px;" src="images/console/signes/data_image.png">');
 			}
 			else{
 				$("#text_" + idItem).html(
-					'<table><tbody><tr><td></td></tr><tr><td><span style="" id="text_21" class="text">'+values["label"]+'</span></td></tr><tr><td></td></tr></tbody></table>'
+					'<table><tbody><tr><td></td></tr><tr><td><span style="width:'+values['width_data_image']+'px;" id="text_' + idItem + '" class="text">'+values["label"]+'</span></td></tr><tr><td></td></tr></tbody></table>'
 				)
 				$("#" + idItem).html(
-					'<table><tbody><tr><td></td></tr><tr><td><span style="" id="text_21" class="text">'+values["label"]+'</span></td></tr><tr><td></td></tr></tbody></table>'
+					'<table><tbody><tr><td></td></tr><tr><td><span style="width:'+values['width_data_image']+'px;" id="text_' + idItem + '" class="text">'+values["label"]+'</span></td></tr><tr><td></td></tr></tbody></table>'
 				)
-				
 			}
-		
-			
-			//$("#simplevalue_" + idItem)
-				//.html($('<img></img>').attr('src', "images/spinner.gif"));
-			setModuleValue(idItem,values['process_simple_value'], values['period'],values['width']);
 			break;
 		case 'label':
 			$("#text_" + idItem).html(values['label']);
@@ -474,6 +671,10 @@ function update_button_palette_callback() {
 			}
 			if($('input[name=height]').val() == ''){
 			alert('Undefined height');
+			return false;
+			}
+			if(values['image'] == '' || values['image'] == 'none'){
+			alert('Undefined image');
 			return false;
 			}
 			$("#image_" + idItem).attr('src', "images/spinner.gif");
@@ -546,7 +747,6 @@ function update_button_palette_callback() {
 		$("#" + idItem + ' img').css('margin-top',(parseInt($("#" + idItem).css('height'))/2)-(parseInt($("#" + idItem + " img").css('height'))/2)+'px');
 		$("#" + idItem + ' > p').remove();
 	}
-	
 	else if(values['label_position']=='down'){
 		$("#" + idItem + ' table').css('float','');			
 		$("#" + idItem + ' img').css('float','');	
@@ -554,15 +754,16 @@ function update_button_palette_callback() {
 		$('#' + idItem + ' table').remove();
 		$('#' + idItem).append(tempoimg);
 		$("#" + idItem + ' table').css('height','');
-		$("#" + idItem + ' table').css('width','70');
-		$("#" + idItem + ' span').css('width','70');
+		if (selectedItem != 'simple_value') {
+			$("#" + idItem + ' table').css('width','70');
+			$("#" + idItem + ' span').css('width','70');
+		}
+		else {
+			$("#" + idItem + ' table').css('width','');
+			$("#" + idItem + ' table').css('text-align','center');
+			$("#" + idItem + ' span').css('width','');
+		}
 		$("#" + idItem + ' img').css('margin-top','');
-		//if(parseInt($("#" + idItem).css('width'))-parseInt($("#" + idItem + " img").css('width'))/2 == 0 || values['height'] == 0 || values['width'] == 0){
-			//$("#" + idItem + ' img').css('margin-left',(parseInt($("#" + idItem).css('width'))/2)-(parseInt($("#" + idItem + " img").css('width'))/2)+'px');
-		//}
-		//else{
-			//$("#" + idItem + ' img').css('margin-left','');
-		//}
 		
 		$("#" + idItem + ' > p').remove();
 	}
@@ -573,19 +774,19 @@ function update_button_palette_callback() {
 		$('#' + idItem + ' img').remove();
 		$('#' + idItem).append(tempoimg);
 		$("#" + idItem + ' table').css('height','');
-		$("#" + idItem + ' table').css('width','70');
-		$("#" + idItem + ' span').css('width','70');
+		if (selectedItem != 'simple_value') {
+			$("#" + idItem + ' table').css('width','70');
+			$("#" + idItem + ' span').css('width','70');
+		}
+		else {
+			$("#" + idItem + ' table').css('width','');
+			$("#" + idItem + ' table').css('text-align','center');
+			$("#" + idItem + ' span').css('width','');
+		}
 		$("#" + idItem + ' img').css('margin-top','');
-		//if(parseInt($("#" + idItem).css('width'))-parseInt($("#" + idItem + " img").css('width'))/2 == 0 || values['height'] == 0 || values['width'] == 0){
-			//$("#" + idItem + ' img').css('margin-left','');
-			
-		//}
-		//else{
-			//$("#" + idItem + ' img').css('margin-left',(parseInt($("#" + idItem).css('width'))/2)-(parseInt($("#" + idItem + " img").css('width'))/2)+'px');
-		//}
+
 		$("#" + idItem + ' > p').remove();
 	}
-		
 }
 
 function readFields() {
@@ -604,6 +805,8 @@ function readFields() {
 	values['top'] = $("input[name=top]").val();
 	values['agent'] = $("input[name=agent]").val();
 	values['id_agent'] = $("input[name=id_agent]").val();
+	values['agent_string'] = $("input[name=agent_string]").val();
+	values['id_agent_string'] = $("input[name=id_agent_string]").val();
 	values['module'] = $("select[name=module]").val();
 	values['process_simple_value'] = $("select[name=process_value]").val();
 	values['background'] = $("#background_image").val();
@@ -616,15 +819,22 @@ function readFields() {
 		}
 	}
 	values['height'] = $("input[name=height]").val();
+	values['bars_graph_type'] = $("select[name=bars_graph_type]").val();
 	values['parent'] = $("select[name=parent]").val();
 	values['map_linked'] = $("select[name=map_linked]").val();
+	values['map_linked_weight'] = $("select[name=map_linked_weight]").val();
 	values['width_percentile'] = $("input[name=width_percentile]").val();
+	values['bars_graph_height'] = $("input[name=bars_graph_height]").val();
 	values['max_percentile'] = parseInt($("input[name=max_percentile]").val());
 	values['width_module_graph'] = $("input[name=width_module_graph]").val();
 	values['height_module_graph'] = $("input[name=height_module_graph]").val();
 	values['event_max_time_row'] = $("select[name=event_max_time_row]").val();
-	values['type_percentile'] = $("input[name=type_percentile]:checked").val();
-	values['value_show'] = $("input[name=value_show]:checked").val();
+	values['type_percentile'] = $("select[name=type_percentile]").val();
+	values['percentile_color'] = $("input[name=percentile_color]").val();
+	values['percentile_label_color'] = $("input[name=percentile_label_color]").val();
+	values['percentile_label'] = $("input[name=percentile_label]").val();
+	values['value_show'] = $("select[name=value_show]").val();
+	
 	values['enable_link'] = $("input[name=enable_link]").is(':checked') ? 1 : 0;
 	values['id_group'] = $("select[name=group]").val();
 	values['id_custom_graph'] = parseInt(
@@ -634,6 +844,8 @@ function readFields() {
 	values['height_box'] = parseInt(
 		$("input[name='height_box']").val());
 	values['border_color'] = $("input[name='border_color']").val();
+	values['resume_color'] = $("input[name='resume_color']").val();
+	values['grid_color'] = $("input[name='grid_color']").val();
 	values['border_width'] = parseInt(
 		$("input[name='border_width']").val());
 	values['fill_color'] = $("input[name='fill_color']").val();
@@ -679,6 +891,11 @@ function create_button_palette_callback() {
 			}
 			break;
 		case 'group_item':
+			if((values['image'] == '' || values['image'] == 'none') && (values['label'] == '') && (values['show_statistics'] == false)){
+				alert('Undefined images');
+				validate = false;
+			}
+			break;
 		case 'static_graph':
 			if ((values['width'] == '')) {
 				alert('Undefined width');
@@ -688,13 +905,21 @@ function create_button_palette_callback() {
 				alert('Undefined height');
 				validate = false;
 			}
-			if ((values['label'] == '') && (values['image'] == '') && (values['show_statistics']) == false) {
-				alert($("#message_alert_no_label_no_image").html());
+			if((values['image'] == '' || values['image'] == 'none') && (values['label']) == false){
+				alert('Undefined image');
 				validate = false;
 			}
+			
+
 			break;
 		case 'auto_sla_graph':
 			if ((values['agent'] == '')) {
+				alert($("#message_alert_no_agent").html());
+				validate = false;
+			}
+			break;
+		case 'donut_graph':
+			if ((values['agent_string'] == '')) {
 				alert($("#message_alert_no_agent").html());
 				validate = false;
 			}
@@ -714,7 +939,7 @@ function create_button_palette_callback() {
 				alert('Undefined height');
 				validate = false;
 			}
-			if ((values['image'] == '')) {
+			if ((values['image'] == '' || values['image'] == 'none')) {
 				alert($("#message_alert_no_image").html());
 				validate = false;
 			}
@@ -764,6 +989,24 @@ function create_button_palette_callback() {
 					alert($("#message_alert_no_period").html());
 					validate = false;
 				}
+			}
+			break;
+		case 'bars_graph':
+			if ((values['agent_string'] == '')) {
+				alert($("#message_alert_no_agent").html());
+				validate = false;
+			}
+			if ((values['module'] == 0)) {
+				alert($("#message_alert_no_module").html());
+				validate = false;
+			}
+			if ((values['width_percentile'] == '')) {
+				alert($("#message_alert_no_width_percentile").html());
+				validate = false;
+			}
+			if ((values['bars_graph_height'] == '')) {
+				alert($("#message_alert_no_bars_graph_height").html());
+				validate = false;
 			}
 			break;
 		case 'simple_value':
@@ -967,6 +1210,7 @@ function toggle_item_palette() {
 
 		activeToolboxButton('static_graph', true);
 		activeToolboxButton('module_graph', true);
+		activeToolboxButton('bars_graph', true);
 		activeToolboxButton('simple_value', true);
 		activeToolboxButton('label', true);
 		activeToolboxButton('icon', true);
@@ -975,6 +1219,7 @@ function toggle_item_palette() {
 		activeToolboxButton('box_item', true);
 		activeToolboxButton('line_item', true);
 		activeToolboxButton('auto_sla_graph', true);
+		activeToolboxButton('donut_graph', true);
 
 		if (typeof(enterprise_activeToolboxButton) == 'function') {
 			enterprise_activeToolboxButton(true);
@@ -994,7 +1239,9 @@ function toggle_item_palette() {
 
 		activeToolboxButton('static_graph', false);
 		activeToolboxButton('module_graph', false);
+		activeToolboxButton('bars_graph', false);
 		activeToolboxButton('auto_sla_graph', false);
+		activeToolboxButton('donut_graph', false);
 		activeToolboxButton('simple_value', false);
 		activeToolboxButton('label', false);
 		activeToolboxButton('icon', false);
@@ -1212,10 +1459,15 @@ function loadFieldsFromDB(item) {
 				if (key == 'pos_y') $("input[name=top]").val(val);
 				if (key == 'agent_name') {
 					$("input[name=agent]").val(val);
+					$("input[name=agent_string]").val(val);
 					//Reload no-sincrone the select of modules
 				}
+				
 				if (key == 'id_agent') {
 					$("input[name=id_agent]").val(val);
+				}
+				if (key == 'id_agent_string') {
+					$("input[name=id_agent_string]").val(val);
 				}
 				if (key == 'modules_html') {
 					$("select[name=module]").empty().html(val);
@@ -1259,35 +1511,37 @@ function loadFieldsFromDB(item) {
 					$("select[name=parent]").val(val);
 				if (key == 'id_layout_linked')
 					$("select[name=map_linked]").val(val);
+				if (key == 'id_layout_linked_weight')
+					$("select[name=map_linked_weight]").val(val);
 				if (key == 'width_percentile')
 					$("input[name=width_percentile]").val(val);
+				if (key == 'bars_graph_height')
+					$("input[name=bars_graph_height]").val(val);
 				if (key == 'max_percentile')
 					$("input[name=max_percentile]").val(val);
 				if (key == 'width_module_graph')
 					$("input[name=width_module_graph]").val(val);
 				if (key == 'height_module_graph')
 					$("input[name=height_module_graph]").val(val);
-
-				if (key == 'type_percentile') {
-					if (val == 'percentile') {
-						$("input[name=type_percentile][value=percentile]")
-							.attr("checked", "checked");
-					}
-					else {
-						$("input[name=type_percentile][value=bubble]")
-							.attr("checked", "checked");
-					}
+				if (key == 'bars_graph_type')
+					$("select[name=bars_graph_type]").val(val);
+				if (key == 'type_percentile') 
+					$("select[name=type_percentile]").val(val);
+				if (key == 'percentile_label') 
+					$("input[name=percentile_label]").val(val);
+				if (key == 'percentile_color') {
+					$("input[name=percentile_color]").val(val);
+					$("#percentile_item_row_5 .ColorPickerDivSample")
+						.css('background-color', val);
+				}
+				if (key == 'percentile_label_color') {
+					$("input[name=percentile_label_color]").val(val);
+					$("#percentile_item_row_6 .ColorPickerDivSample")
+						.css('background-color', val);
 				}
 
 				if (key == 'value_show') {
-					if (val == 'percent') {
-						$("input[name=value_show][value=percent]")
-							.attr("checked", "checked");
-					}
-					else {
-						$("input[name=value_show][value=value]")
-							.attr("checked", "checked");
-					}
+					$("select[name=value_show]").val(val);
 				}
 
 				if (key == 'id_group') {
@@ -1311,6 +1565,16 @@ function loadFieldsFromDB(item) {
 				if (key == 'border_color') {
 					$("input[name='border_color']").val(val);
 					$("#border_color_row .ColorPickerDivSample")
+						.css('background-color', val);
+				}
+				if (key == 'grid_color') {
+					$("input[name='grid_color']").val(val);
+					$("#grid_color_row .ColorPickerDivSample")
+						.css('background-color', val);
+				}
+				if (key == 'resume_color') {
+					$("input[name='resume_color']").val(val);
+					$("#resume_color_row .ColorPickerDivSample")
 						.css('background-color', val);
 				}
 				if (key == 'border_width')
@@ -1476,6 +1740,9 @@ function hiddenFields(item) {
 	$("#agent_row").css('display', 'none');
 	$("#agent_row." + item).css('display', '');
 
+	$("#agent_row_string").css('display', 'none');
+	$("#agent_row_string." + item).css('display', '');
+
 	$("#module_row").css('display', 'none');
 	$("#module_row." + item).css('display', '');
 
@@ -1503,6 +1770,9 @@ function hiddenFields(item) {
 	$("#percentile_bar_row_1").css('display', 'none');
 	$("#percentile_bar_row_1." + item).css('display', '');
 
+	$("#height_bars_graph_row").css('display', 'none');
+	$("#height_bars_graph_row." + item).css('display', '');
+
 	$("#percentile_bar_row_2").css('display', 'none');
 	$("#percentile_bar_row_2." + item).css('display', '');
 
@@ -1511,6 +1781,15 @@ function hiddenFields(item) {
 
 	$("#percentile_item_row_4").css('display', 'none');
 	$("#percentile_item_row_4." + item).css('display', '');
+
+	$("#percentile_item_row_5").css('display', 'none');
+	$("#percentile_item_row_5." + item).css('display', '');
+
+	$("#percentile_item_row_6").css('display', 'none');
+	$("#percentile_item_row_6." + item).css('display', '');
+
+	$("#percentile_bar_row_7").css('display', 'none');
+	$("#percentile_bar_row_7." + item).css('display', '');
 
 	$("#period_row").css('display', 'none');
 	$("#period_row." + item).css('display', '');
@@ -1524,8 +1803,14 @@ function hiddenFields(item) {
 	$("#map_linked_row").css('display', 'none');
 	$("#map_linked_row." + item).css('display', '');
 
+	$("#map_linked_weight").css('display', 'none');
+	$("#map_linked_weight." + item).css('display', '');
+
 	$("#module_graph_size_row").css('display', 'none');
 	$("#module_graph_size_row." + item).css('display', '');
+
+	$("#bars_graph_type").css('display', 'none');
+	$("#bars_graph_type." + item).css('display', '');
 
 	$("#background_color").css('display', 'none');
 	$("#background_color." + item).css('display', '');
@@ -1544,6 +1829,12 @@ function hiddenFields(item) {
 
 	$("#border_color_row").css('display', 'none');
 	$("#border_color_row." + item).css('display', '');
+
+	$("#grid_color_row").css('display', 'none');
+	$("#grid_color_row." + item).css('display', '');
+
+	$("#resume_color_row").css('display', 'none');
+	$("#resume_color_row." + item).css('display', '');
 
 	$("#border_width_row").css('display', 'none');
 	$("#border_width_row." + item).css('display', '');
@@ -1582,25 +1873,35 @@ function cleanFields(item) {
 	$("input[name=left]").val(0);
 	$("input[name=top]").val(0);
 	$("input[name=agent]").val('');
+	$("input[name=agent_string]").val('');
 	$("select[name=module]").val('');
 	$("select[name=process_value]").val(0);
 	$("select[name=background_image]").val('');
 	$("input[name=width_percentile]").val('');
+	$("input[name=bars_graph_height]").val('');
 	$("input[name=max_percentile]").val('');
 	$("select[name=period]").val('');
 	$("input[name=width]").val(0);
 	$("input[name=height]").val(0);
 	$("select[name=parent]").val('');
 	$("select[name=map_linked]").val('');
+	$("select[name=map_linked_weight]").val('');
 	$("input[name=width_module_graph]").val(300);
 	$("input[name=height_module_graph]").val(180);
 	$("input[name='width_box']").val(300);
 	$("input[name='height_box']").val(180);
 	$("input[name='border_color']").val('#000000');
+	$("input[name='grid_color']").val('#000000');
+	$("input[name='resume_color']").val('#000000');
 	$("input[name='border_width']").val(3);
 	$("input[name='fill_color']").val('#ffffff');
 	$("input[name='line_width']").val(3);
 	$("input[name='line_color']").val('#000000');
+	$("select[name=type_percentile]").val('');
+	$("input[name=percentile_color]").val('');
+	$("input[name=percentile_label_color]").val('');
+	$("input[name=percentile_label]").val('');
+	$(".ColorPickerDivSample").css('background-color', '#FFF');
 
 
 	$("#preview").empty();
@@ -1743,6 +2044,49 @@ function set_image(type, idElement, image) {
 	});
 }
 
+function setBarsGraph(id_data, values) {
+	var url_hack_metaconsole = '';
+	if (is_metaconsole()) {
+		url_hack_metaconsole = '../../';
+	}
+
+	width_percentile = values['width_percentile'];
+	bars_graph_height = values['bars_graph_height'];
+
+	parameter = Array();
+	
+	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
+	parameter.push ({name: "action", value: "get_module_type_string"});
+	parameter.push ({name: "id_agent", value: values['id_agent_string']});
+	parameter.push ({name: "module", value: values['module']});
+	parameter.push ({name: "id_element", value: id_data});
+	parameter.push ({name: "id_visual_console", value: id_visual_console});
+	jQuery.ajax({
+		url: get_url_ajax(),
+		data: parameter,
+		type: "POST",
+		dataType: 'json',
+		success: function (data) {
+			$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/barras.png');
+			
+			if (values['width_percentile'] == "0" && values["bars_graph_height"] == "0") {
+				// Image size
+			}
+			else{
+				$("#" + id_data + " img").css('width', width_percentile + 'px');
+				$("#" + id_data + " img").css('height', bars_graph_height + 'px');
+			}
+			
+			if($('#'+id_data+' table').css('float') == 'right' || $('#'+id_data+ ' table').css('float') == 'left'){
+				$('#'+id_data+ ' img').css('margin-top', parseInt($('#'+id_data).css('height'))/2 - parseInt($('#'+id_data+ ' img').css('height'))/2);	
+			}
+			else{
+				$('#'+id_data+ ' img').css('margin-left', parseInt($('#'+id_data).css('width'))/2 - parseInt($('#'+id_data+ ' img').css('width'))/2);		
+			}
+		}
+	});
+}
+
 function setModuleGraph(id_data) {
 	var parameter = Array();
 
@@ -1836,7 +2180,7 @@ function setModuleGraph(id_data) {
 
 }
 
-function setModuleValue(id_data, process_simple_value, period,width_data_image) {
+function setModuleValue(id_data, process_simple_value, period, width_data_image) {
 	var parameter = Array();
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "get_module_value"});
@@ -1854,12 +2198,9 @@ function setModuleValue(id_data, process_simple_value, period,width_data_image) 
 		type: "POST",
 		dataType: 'json',
 		success: function (data) {
+			var currentValue = $("#text_" + id_data).html();
 			
-				var currentValue = $("#text_" + id_data).html();
-			
-			//currentValue = currentValue.replace(/_VALUE_/gi, data.value);
 			$("#text_" + id_data).html(currentValue);
-			//$("#text_" + id_data).html('Data value');
 		}
 	});
 }
@@ -1912,13 +2253,13 @@ function setPercentileBar(id_data, values) {
 				value_text = module_value + " " + unit_text;
 			}
 
-			var img = url_hack_metaconsole + 'include/graphs/fgraph.php?homeurl=../../&graph_type=progressbar&height=15&' +
+			var img = url_hack_metaconsole + 'include/graphs/fgraph.php?graph_type=progressbar&height=15&' +
 				'width=' + width_percentile + '&mode=1&progress=' + percentile +
-				'&font=' + font + '&value_text=' + value_text + '&colorRGB=' + colorRGB;
+				'&value_text=' + value_text + '&colorRGB=' + colorRGB;
 
 			$("#"+  id_data).attr('src', img);
 			
-			$("#" + id_data + " img").attr('src', 'images/console/signes/percentil.png');
+			$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/percentil.png');
 			if($('#text-width_percentile').val() == 0){
 			$("#" + id_data + " img").css('width', '130px');
 			}
@@ -1937,6 +2278,142 @@ function setPercentileBar(id_data, values) {
 			}
 			
 			
+		}
+	});
+}
+
+function setPercentileCircular (id_data, values) {
+	metaconsole = $("input[name='metaconsole']").val();
+
+	var url_hack_metaconsole = '';
+	if (is_metaconsole()) {
+		url_hack_metaconsole = '../../';
+	}
+
+	max_percentile = values['max_percentile'];
+	width_percentile = values['width_percentile'];
+
+	var parameter = Array();
+
+	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
+	parameter.push ({name: "action", value: "get_module_value"});
+	parameter.push ({name: "id_element", value: id_data});
+	parameter.push ({name: "value_show", value: values['value_show']});
+	parameter.push ({name: "id_visual_console",
+		value: id_visual_console});
+	jQuery.ajax({
+		url: get_url_ajax(),
+		data: parameter,
+		type: "POST",
+		dataType: 'json',
+		success: function (data) {
+			module_value = data['value'];
+			max_percentile = data['max_percentile'];
+			width_percentile = data['width_percentile'];
+			unit_text = false;
+
+			if ((data['unit_text'] != false) || typeof(data['unit_text']) != 'boolean') {
+				unit_text = data['unit_text'];
+			}
+
+			colorRGB = data['colorRGB'];
+
+			if ( max_percentile > 0)
+				var percentile = Math.round(module_value / max_percentile * 100);
+			else
+				var percentile = 100;
+
+			if (unit_text == false && typeof(unit_text) == 'boolean') {
+				value_text = percentile + "%";
+			}
+			else {
+				value_text = module_value + " " + unit_text;
+			}
+			
+			$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/circular-progress-bar.png');
+			if($('#text-width_percentile').val() == 0){
+				$("#" + id_data + " img").css('width', '130px');
+				$("#" + id_data + " img").css('height', '130px');
+			}
+			else{
+				$("#" + id_data + " img").css('width', $('#text-width_percentile').val()+'px');
+				$("#" + id_data + " img").css('height', $('#text-width_percentile').val()+'px');
+			}
+			
+			if($('#'+id_data+' table').css('float') == 'right' || $('#'+id_data+ ' table').css('float') == 'left'){
+				$('#'+id_data+ ' img').css('margin-top', 	parseInt($('#'+id_data).css('height'))/2 - parseInt($('#'+id_data+ ' img').css('height'))/2);	
+			}
+			else{
+				$('#'+id_data+ ' img').css('margin-left',parseInt($('#'+id_data).css('width'))/2 - parseInt($('#'+id_data+ ' img').css('width'))/2);		
+			}
+		}
+	});
+}
+
+function setPercentileInteriorCircular (id_data, values) {
+	metaconsole = $("input[name='metaconsole']").val();
+
+	var url_hack_metaconsole = '';
+	if (is_metaconsole()) {
+		url_hack_metaconsole = '../../';
+	}
+
+	max_percentile = values['max_percentile'];
+	width_percentile = values['width_percentile'];
+
+	var parameter = Array();
+
+	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
+	parameter.push ({name: "action", value: "get_module_value"});
+	parameter.push ({name: "id_element", value: id_data});
+	parameter.push ({name: "value_show", value: values['value_show']});
+	parameter.push ({name: "id_visual_console",
+		value: id_visual_console});
+	jQuery.ajax({
+		url: get_url_ajax(),
+		data: parameter,
+		type: "POST",
+		dataType: 'json',
+		success: function (data) {
+			module_value = data['value'];
+			max_percentile = data['max_percentile'];
+			width_percentile = data['width_percentile'];
+			unit_text = false;
+
+			if ((data['unit_text'] != false) || typeof(data['unit_text']) != 'boolean') {
+				unit_text = data['unit_text'];
+			}
+
+			colorRGB = data['colorRGB'];
+
+			if ( max_percentile > 0)
+				var percentile = Math.round(module_value / max_percentile * 100);
+			else
+				var percentile = 100;
+
+			if (unit_text == false && typeof(unit_text) == 'boolean') {
+				value_text = percentile + "%";
+			}
+			else {
+				value_text = module_value + " " + unit_text;
+			}
+			
+			$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/circular-progress-bar-interior.png');
+			if($('#text-width_percentile').val() == 0){
+				$("#" + id_data + " img").css('width', '130px');
+				$("#" + id_data + " img").css('height', '130px');
+			}
+			else{
+				$("#" + id_data + " img").css('width', $('#text-width_percentile').val()+'px');
+				$("#" + id_data + " img").css('height', $('#text-width_percentile').val()+'px');
+			}
+			
+			if($('#'+id_data+' table').css('float') == 'right' || $('#'+id_data+ ' table').css('float') == 'left'){
+				$('#'+id_data+ ' img').css('margin-top', 	parseInt($('#'+id_data).css('height'))/2 - parseInt($('#'+id_data+ ' img').css('height'))/2);	
+			}
+			else{
+				$('#'+id_data+ ' img').css('margin-left',parseInt($('#'+id_data).css('width'))/2 - parseInt($('#'+id_data+ ' img').css('width'))/2);		
+			}
 		}
 	});
 }
@@ -1990,6 +2467,53 @@ function setEventsBar(id_data, values) {
 	});
 }
 
+function setDonutsGraph (id_data, values) {
+	var url_hack_metaconsole = '';
+	if (is_metaconsole()) {
+		url_hack_metaconsole = '../../';
+	}
+
+	width_percentile = values['width_percentile'];
+
+	parameter = Array();
+
+	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
+	parameter.push ({name: "action", value: "get_module_type_string"});
+	parameter.push ({name: "id_agent", value: values['id_agent_string']});
+	parameter.push ({name: "module", value: values['module']});
+	parameter.push ({name: "id_element", value: id_data});
+	parameter.push ({name: "id_visual_console", value: id_visual_console});
+	jQuery.ajax({
+		url: get_url_ajax(),
+		data: parameter,
+		type: "POST",
+		dataType: 'json',
+		success: function (data) {
+			if (data['no_data'] == true) {
+				if (values['width'] == "0") {
+					$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/wrong_donut_graph.png');
+				}
+				else {
+					$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/wrong_donut_graph.png');
+					$("#" + id_data + " img").css('width', width_percentile + 'px');
+					$("#" + id_data + " img").css('height', width_percentile + 'px');
+				}
+			}
+			else {
+				$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/donut-graph.png');
+				
+				if($('#text-width_percentile').val() == 0){
+					// Image size
+				}
+				else{
+					$("#" + id_data + " img").css('width', $('#text-width_percentile').val()+'px');
+					$("#" + id_data + " img").css('height', $('#text-width_percentile').val()+'px');
+				}
+			}
+		}
+	});
+}
+
 function setPercentileBubble(id_data, values) {
 	metaconsole = $("input[name='metaconsole']").val();
 
@@ -2035,13 +2559,13 @@ function setPercentileBubble(id_data, values) {
 				value_text = module_value + " " + unit_text;
 			}
 
-			var img = url_hack_metaconsole + 'include/graphs/fgraph.php?homeurl=../../&graph_type=progressbubble&height=' + width_percentile + '&' +
+			var img = url_hack_metaconsole + 'include/graphs/fgraph.php?graph_type=progressbubble&height=' + width_percentile + '&' +
 				'width=' + width_percentile + '&mode=1&progress=' + percentile +
-				'&font=' + font + '&value_text=' + value_text + '&colorRGB=' + colorRGB;
+				'&value_text=' + value_text + '&colorRGB=' + colorRGB;
 
 			$("#image_" + id_data).attr('src', img);
 			
-			$("#" + id_data + " img").attr('src', 'images/console/signes/percentil_bubble.png');
+			$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/percentil_bubble.png');
 			
 			
 			if($('#text-width_percentile').val() == 0){
@@ -2180,6 +2704,262 @@ function createItem(type, values, id_data) {
 			
 			break;
 		case 'group_item':
+		
+		switch (type) {
+			case 'group_item':
+				class_type = "group_item";
+				break;
+			case 'static_graph':
+				class_type = "static_graph";
+				break;
+		}
+
+		img_src = "images/spinner.gif";
+
+		item = $('<div></div>')
+			.attr('id', id_data)
+			.attr('class', 'item ' + class_type)
+			.css('text-align', 'left')
+			.css('position', 'absolute')
+			.css('display', 'inline-block')
+			.css('top', values['top'] + 'px')
+			.css('left', values['left'] + 'px');
+			
+			
+			
+			if(values['show_statistics'] != 1){
+				if(values['label_position'] == 'left'){
+				
+					var $image = $('<img></img>')
+						.attr('id', 'image_' + id_data)
+						.attr('class', 'image')
+						.attr('src', 'images/console/signes/group_status.png')
+						.attr('style','float:right;');
+				
+				}
+				else if(values['label_position'] == 'right'){
+				
+					var $image = $('<img></img>')
+						.attr('id', 'image_' + id_data)
+						.attr('class', 'image')
+						.attr('src', 'images/console/signes/group_status.png')
+						.attr('style','float:left;');
+				
+				}
+				else{
+					
+					var $image = $('<img></img>')
+						.attr('id', 'image_' + id_data)
+						.attr('class', 'image')
+						.attr('src', 'images/console/signes/group_status.png');
+					
+				}
+			}
+			else{
+				if(values['label_position'] == 'left'){
+				
+					var $image = $('<img></img>')
+						.attr('id', 'image_' + id_data)
+						.attr('class', 'image')
+						.attr('src', img_src)
+						.attr('style','float:right;');
+				
+				}
+				else if(values['label_position'] == 'right'){
+				
+					var $image = $('<img></img>')
+						.attr('id', 'image_' + id_data)
+						.attr('class', 'image')
+						.attr('src', img_src)
+						.attr('style','float:left;');
+				
+				}
+				else{
+					
+					var $image = $('<img></img>')
+						.attr('id', 'image_' + id_data)
+						.attr('class', 'image')
+						.attr('src', img_src);
+					
+				}
+			}
+			
+		
+			
+		if(values['show_statistics'] != 1){
+			
+				if ((values['width'] == 0) || (values['height'] == 0)) {
+					// Do none
+						if(values['image'] != '' && values['image'] != 'none'){
+					
+					if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+						$image.attr('width', '70')
+							.attr('height', '70');
+					}
+					else{
+						$image.attr('width', $('#preview > img')[0].naturalWidth)
+							.attr('height', $('#preview > img')[0].naturalHeight);
+					}	
+					
+				
+				}
+				else{
+					$image.attr('width', '70')
+						.attr('height', '70');
+				}
+				
+						
+				}
+				else {
+					$image.attr('width', values['width'])
+						.attr('height', values['height']);
+				}
+			}
+			
+		var $input = $('<input></input>')
+			.attr('id', 'hidden-status_' + id_data)
+			.attr('type', 'hidden')
+			.attr('value', -1)
+			.attr('name', 'status_' + id_data);
+
+		if(values['label_position'] == 'up'){
+			
+			if(values['image'] == '' || values['image'] == 'none'){
+				item
+					.append('<table style="width:70px"><tr><td></td></tr><tr><td><span id="text_'+id_data+'" class="text">'+values['label']+'</span></td></tr><tr><td></td></tr></table>')
+					.append($input);
+			}
+			else{
+				item
+					.append('<table style="width:70px"><tr><td></td></tr><tr><td><span id="text_'+id_data+'" class="text">'+values['label']+'</span></td></tr><tr><td></td></tr></table>')
+					.append($image)
+					.append($image)
+					.append($input);
+			}
+			
+		}
+		else if(values['label_position'] == 'down'){
+
+			if(values['image'] == '' || values['image'] == 'none'){
+				item
+					.append('<table style="width:70px"><tr><td></td></tr><tr><td><span id="text_'+id_data+'" class="text">'+values['label']+'</span></td></tr><tr><td></td></tr></table>')
+					.append($input);
+				
+			}
+			else{
+				item
+					.append($image)
+					.append($image)
+					.append('<table style="width:70px"><tr><td></td></tr><tr><td><span id="text_'+id_data+'" class="text">'+values['label']+'</span></td></tr><tr><td></td></tr></table>')
+					.append($input);	
+			}
+				
+		}
+		else if(values['label_position'] == 'left'){
+			
+			if(values['height'] == 0){
+				item
+					.append('<table style="float:left;height:70px"><tr><td></td></tr><tr><td><span id="text_'+id_data+'" class="text">'+values['label']+'</span></td></tr><tr><td></td></tr></table>');
+			}
+			else{
+				item
+					.append('<table style="float:left;height:'+values['height']+'px"><tr><td></td></tr><tr><td><span id="text_'+id_data+'" class="text">'+values['label']+'</span></td></tr><tr><td></td></tr></table>')
+			}
+			
+			if(values['image'] == '' || values['image'] == 'none'){
+				item
+				.append($input);
+			}
+			else{
+				item
+				.append($image)
+				.append($image)
+				.append($input);
+			}
+				
+							
+		}
+		else if(values['label_position'] == 'right'){
+			if(values['height'] == 0){
+				item
+					.append('<table style="float:right;height:70px"><tr><td></td></tr><tr><td><span id="text_'+id_data+'" class="text">'+values['label']+'</span></td></tr><tr><td></td></tr></table>');
+			}
+			else{
+				item
+					.append('<table style="float:right;height:'+values['height']+'px"><tr><td></td></tr><tr><td><span id="text_'+id_data+'" class="text">'+values['label']+'</span></td></tr><tr><td></td></tr></table>')
+			}
+			
+			if(values['image'] == '' || values['image'] == 'none'){
+				item
+				.append($input);
+			}
+			else{
+				item
+				.append($image)
+				.append($image)
+				.append($input);
+			}
+				
+				
+				
+		}
+		
+		if(values['show_statistics'] != 1){
+			set_static_graph_status(id_data, values['image']);
+		}
+		else{
+			set_static_graph_status(id_data, 'show_statistics');
+		}
+		
+		if(values['show_statistics'] != 1){
+			
+				if ((values['width'] == 0) || (values['height'] == 0)) {
+					
+					if(values['image'] != '' && values['image'] != 'none'){
+					// Do none
+						if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+							$image.attr('width', '70')
+								.attr('height', '70');
+						}
+						else{
+							$image.attr('width', $('#preview > img')[0].naturalWidth)
+								.attr('height', $('#preview > img')[0].naturalHeight);
+						}	
+					}
+					else{
+						$image.attr('width', '70')
+							.attr('height', '70');
+					}		
+				}
+				else {
+					$image.attr('width', values['width'])
+						.attr('height', values['height']);
+				}
+			}
+			else{
+				if ((values['width'] == 0) || (values['height'] == 0)) {
+						$("#image_" + idItem).removeAttr('width');
+						$("#image_" + idItem).removeAttr('height');
+						$("#image_" + idItem).attr('width', 520);
+						$("#image_" + idItem).attr('height', 80);
+						$("#image_" + idItem).css('width', '520px');
+						$("#image_" + idItem).css('height', '80px');
+						$("#image_" + idItem).attr('src', 'images/console/signes/group_status.png');
+							
+				}
+				else {
+					$("#image_" + idItem).removeAttr('width');
+					$("#image_" + idItem).removeAttr('height');
+					$("#image_" + idItem).attr('width', values['width']);
+					$("#image_" + idItem).attr('height', values['height']);
+					$("#image_" + idItem).css('width', values['width'] + 'px');
+					$("#image_" + idItem).css('height', values['height'] + 'px');
+					$("#image_" + idItem).attr('src', 'images/console/signes/group_status.png');
+				}			
+			}
+
+		break;
+		
 		case 'static_graph':
 			switch (type) {
 				case 'group_item':
@@ -2234,6 +3014,8 @@ function createItem(type, values, id_data) {
 				
 					if ((values['width'] == 0) || (values['height'] == 0)) {
 						// Do none
+							if(values['image'] != '' && values['image'] != 'none'){
+						
 						if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
 							$image.attr('width', '70')
 								.attr('height', '70');
@@ -2241,7 +3023,16 @@ function createItem(type, values, id_data) {
 						else{
 							$image.attr('width', $('#preview > img')[0].naturalWidth)
 								.attr('height', $('#preview > img')[0].naturalHeight);
-						}			
+						}	
+						
+					
+					}
+					else{
+						$image.attr('width', '70')
+							.attr('height', '70');
+					}
+					
+							
 					}
 					else {
 						$image.attr('width', values['width'])
@@ -2266,19 +3057,37 @@ function createItem(type, values, id_data) {
 				.attr('name', 'status_' + id_data);
 
 			if(values['label_position'] == 'up'){
-				item
-					.append('<table style="width:70px"><tr><td></td></tr><tr><td><span id="text_'+id_data+'" class="text">'+values['label']+'</span></td></tr><tr><td></td></tr></table>')
-					.append($image)
-					.append($image)
-					.append($input);
+				
+				if(values['image'] == '' || values['image'] == 'none'){
+					item
+						.append('<table style="width:70px"><tr><td></td></tr><tr><td><span id="text_'+id_data+'" class="text">'+values['label']+'</span></td></tr><tr><td></td></tr></table>')
+						.append($input);
+				}
+				else{
+					item
+						.append('<table style="width:70px"><tr><td></td></tr><tr><td><span id="text_'+id_data+'" class="text">'+values['label']+'</span></td></tr><tr><td></td></tr></table>')
+						.append($image)
+						.append($image)
+						.append($input);
+				}
 				
 			}
 			else if(values['label_position'] == 'down'){
-				item
-					.append($image)
-					.append($image)
-					.append('<table style="width:70px"><tr><td></td></tr><tr><td><span id="text_'+id_data+'" class="text">'+values['label']+'</span></td></tr><tr><td></td></tr></table>')
-					.append($input);				
+				
+				if(values['image'] == '' || values['image'] == 'none'){
+					item
+						.append('<table style="width:70px"><tr><td></td></tr><tr><td><span id="text_'+id_data+'" class="text">'+values['label']+'</span></td></tr><tr><td></td></tr></table>')
+						.append($input);
+					
+				}
+				else{
+					item
+						.append($image)
+						.append($image)
+						.append('<table style="width:70px"><tr><td></td></tr><tr><td><span id="text_'+id_data+'" class="text">'+values['label']+'</span></td></tr><tr><td></td></tr></table>')
+						.append($input);	
+				}
+					
 			}
 			else if(values['label_position'] == 'left'){
 				
@@ -2290,10 +3099,19 @@ function createItem(type, values, id_data) {
 					item
 						.append('<table style="float:left;height:'+values['height']+'px"><tr><td></td></tr><tr><td><span id="text_'+id_data+'" class="text">'+values['label']+'</span></td></tr><tr><td></td></tr></table>')
 				}
+				
+				if(values['image'] == '' || values['image'] == 'none'){
+					item
+					.append($input);
+				}
+				else{
 					item
 					.append($image)
 					.append($image)
-					.append($input);				
+					.append($input);
+				}
+					
+								
 			}
 			else if(values['label_position'] == 'right'){
 				if(values['height'] == 0){
@@ -2304,10 +3122,20 @@ function createItem(type, values, id_data) {
 					item
 						.append('<table style="float:right;height:'+values['height']+'px"><tr><td></td></tr><tr><td><span id="text_'+id_data+'" class="text">'+values['label']+'</span></td></tr><tr><td></td></tr></table>')
 				}
+				
+				if(values['image'] == '' || values['image'] == 'none'){
+					item
+					.append($input);
+				}
+				else{
 					item
 					.append($image)
 					.append($image)
-					.append($input);				
+					.append($input);
+				}
+					
+					
+					
 			}
 			
 			if(values['show_statistics'] != 1){
@@ -2320,15 +3148,22 @@ function createItem(type, values, id_data) {
 			if(values['show_statistics'] != 1){
 				
 					if ((values['width'] == 0) || (values['height'] == 0)) {
+						
+						if(values['image'] != '' && values['image'] != 'none'){
 						// Do none
-						if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
-							$image.attr('width', '70')
-								.attr('height', '70');
+							if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+								$image.attr('width', '70')
+									.attr('height', '70');
+							}
+							else{
+								$image.attr('width', $('#preview > img')[0].naturalWidth)
+									.attr('height', $('#preview > img')[0].naturalHeight);
+							}	
 						}
 						else{
-							$image.attr('width', $('#preview > img')[0].naturalWidth)
-								.attr('height', $('#preview > img')[0].naturalHeight);
-						}			
+							$image.attr('width', '70')
+								.attr('height', '70');
+						}		
 					}
 					else {
 						$image.attr('width', values['width'])
@@ -2347,6 +3182,16 @@ function createItem(type, values, id_data) {
 					);
 
 			setEventsBar(id_data, values);
+			break;
+		case 'donut_graph':
+			var sizeStyle = '';
+			var imageSize = '';
+			item = $('<div id="' + id_data + '" class="item donut_graph" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+							'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" />' +
+					'</div>'
+					);
+
+			setDonutsGraph(id_data, values);
 			break;
 		case 'percentile_bar':
 		case 'percentile_item':
@@ -2389,9 +3234,77 @@ function createItem(type, values, id_data) {
 				
 				setPercentileBar(id_data, values);
 			}
+			else if (values['type_percentile'] == 'circular_progress_bar') {
+				if(values['label_position'] == 'up'){
+					item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+							'<table><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+							'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" />' +
+							'</div>'
+					);
+				}
+				else if(values['label_position'] == 'down'){
+					item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+							'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" />' + 					
+							'<table><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+							'</div>'
+					);
+					
+				}
+				else if(values['label_position'] == 'right'){
+					item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+							'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" style="float:left;" />' + 					
+							'<table style="float:left;height:'+values['height']+'px"><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+							'</div>'
+					);
+					
+				}
+				else if(values['label_position'] == 'left'){
+					item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+							'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" style="float:right;"/>' + 					
+							'<table style="float:left;height:'+values['height']+'px"><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+							'</div>'
+					);
+					
+				}
+				
+				setPercentileCircular(id_data, values);
+			}
+			else if (values['type_percentile'] == 'interior_circular_progress_bar') {
+				if(values['label_position'] == 'up'){
+					item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+							'<table><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+							'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" />' +
+							'</div>'
+					);
+				}
+				else if(values['label_position'] == 'down'){
+					item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+							'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" />' + 					
+							'<table><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+							'</div>'
+					);
+					
+				}
+				else if(values['label_position'] == 'right'){
+					item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+							'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" style="float:left;" />' + 					
+							'<table style="float:left;height:'+values['height']+'px"><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+							'</div>'
+					);
+					
+				}
+				else if(values['label_position'] == 'left'){
+					item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+							'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" style="float:right;"/>' + 					
+							'<table style="float:left;height:'+values['height']+'px"><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+							'</div>'
+					);
+					
+				}
+				
+				setPercentileInteriorCircular(id_data, values);
+			}
 			else {
-				
-				
 				if(values['label_position'] == 'up'){
 					item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: left; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
 							'<table><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
@@ -2459,6 +3372,42 @@ function createItem(type, values, id_data) {
 			
 			setModuleGraph(id_data);
 			break;
+		case 'bars_graph':
+			sizeStyle = '';
+			imageSize = '';
+
+			if(values['label_position'] == 'up'){
+				item = $('<div id="' + id_data + '" class="item module_graph" style="text-align: left; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+						'<table><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+						'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" />' +
+					'</div>'
+				);				
+			}
+			else if(values['label_position'] == 'down'){
+				item = $('<div id="' + id_data + '" class="item module_graph" style="text-align: left; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+						'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" />' +
+						'<table><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+					'</div>'
+				);				
+			}
+			else if(values['label_position'] == 'left'){
+				item = $('<div id="' + id_data + '" class="item module_graph" style="text-align: left; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+						'<img style="float:right" class="image" id="image_' + id_data + '" src="images/spinner.gif" />' +
+						'<table style="float:left;height:'+values['height_module_graph']+'px;"><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+					'</div>'
+				);				
+			}
+			else if(values['label_position'] == 'right'){
+				item = $('<div id="' + id_data + '" class="item module_graph" style="text-align: left; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+						'<img style="float:left" class="image" id="image_' + id_data + '" src="images/spinner.gif" />' +
+						'<table style="float:right;height:'+values['height_module_graph']+'px;"><tr><td></td></tr><tr><td><span id="text_' + id_data + '" class="text">' + values['label'] + '</span></td></tr><tr><td></td></tr></table>' +
+					'</div>'
+				);				
+			}
+
+			
+			setBarsGraph(id_data, values);
+			break;
 		case 'simple_value':
 			sizeStyle = '';
 			imageSize = '';
@@ -2469,7 +3418,6 @@ function createItem(type, values, id_data) {
 			item = $('<div id="' + id_data + '" class="item simple_value" style="position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
 					'<span id="text_' + id_data + '" class="text"> ' + values['label'] + '</span> ' + '</div>'
 			);
-			setModuleValue(id_data,values.process_simple_value,values.period,values.width_data_image);
 			break;
 		case 'label':
 			item = $('<div id="' + id_data + '" ' +
@@ -2678,13 +3626,9 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 		case 'label':
 		case 'icon':
 		case 'module_graph':
+		case 'bars_graph':
 		case 'auto_sla_graph':
-			if (type == 'simple_value') {
-				setModuleValue(idElement,
-					values.process_simple_value,
-						values.period,values.width_data_image);
-			}
-			
+		case 'donut_graph':
 			
 			if ((typeof(values['mov_left']) != 'undefined') &&
 					(typeof(values['mov_top']) != 'undefined')) {
@@ -2899,9 +3843,6 @@ function updateDB(type, idElement , values, event) {
 }
 
 function copyDB(idItem) {
-	
-	console.log(idItem);
-	
 	metaconsole = $("input[name='metaconsole']").val();
 
 	parameter = Array();
@@ -3093,6 +4034,15 @@ function eventsItems(drag) {
 				activeToolboxButton('delete_item', true);
 				activeToolboxButton('show_grid', false);
 			}
+			if ($(divParent).hasClass('donut_graph')) {
+				creationItem = null;
+				selectedItem = 'donut_graph';
+				idItem = $(divParent).attr('id');
+				activeToolboxButton('copy_item', true);
+				activeToolboxButton('edit_item', true);
+				activeToolboxButton('delete_item', true);
+				activeToolboxButton('show_grid', false);
+			}
 			if ($(divParent).hasClass('group_item')) {
 				creationItem = null;
 				selectedItem = 'group_item';
@@ -3114,6 +4064,15 @@ function eventsItems(drag) {
 			if ($(divParent).hasClass('module_graph')) {
 				creationItem = null;
 				selectedItem = 'module_graph';
+				idItem = $(divParent).attr('id');
+				activeToolboxButton('copy_item', true);
+				activeToolboxButton('edit_item', true);
+				activeToolboxButton('delete_item', true);
+				activeToolboxButton('show_grid', false);
+			}
+			if ($(divParent).hasClass('bars_graph')) {
+				creationItem = null;
+				selectedItem = 'bars_graph';
 				idItem = $(divParent).attr('id');
 				activeToolboxButton('copy_item', true);
 				activeToolboxButton('edit_item', true);
@@ -3239,29 +4198,43 @@ function eventsItems(drag) {
 		
 		if(selectedItem == 'simple_value'){
 			$('#data_image_width').val(event.currentTarget.clientWidth);			
-			var found = $('#'+idItem).find("img");
-					
-			if(found.length > 0){
-				$("#data_image_check").css('display','inline');
-				$("#data_image_check_label").css('display','inline');	
-				$('#data_image_container').css('display','inline');		
-				$("#data_image_check").html('On');
-				$('.block_tinymce').remove();
-				$('#label_row').append('<div class="block_tinymce" style="background-color:#fbfbfb;position:absolute;left:0px;height:230px;width:100%;opacity:0.7;z-index:5;"></div>');
-				$('#process_value_row').css('display','none');
-				$('#period_row').css('display','none');
-			}
-			else{
-				$("#data_image_check").html('Off');
-				$("#data_image_check").css('display','none');
-				$("#data_image_check_label").css('display','none');
-				$('#data_image_container').css('display','none');
-				$('.block_tinymce').remove();
-				$('#process_value_row').css('display','table-row');
-				if($('#process_value').val() != 0){
-					$('#period_row').css('display','table-row');		
+			
+			parameter = Array();
+			parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
+			parameter.push ({name: "action", value: "get_image_from_module"});
+			parameter.push ({name: "id_element", value: idItem});
+			parameter.push ({name: "id_visual_console", value: id_visual_console});
+
+			jQuery.ajax({
+				url: "ajax.php",
+				data: parameter,
+				type: "POST",
+				dataType: "json",
+				success: function(data) {
+					if(!data['correct']){
+						$("#data_image_check").html('Off');
+						$('#data_image_container').css('display','none');	
+						$('#data_image_check').css('display','none');
+						$('#data_image_check_label').css('display','none');
+						$('.block_tinymce').remove();
+						$('#process_value_row').css('display','table-row');
+						if($('#process_value').val() != '0'){
+								$('#period_row').css('display','table-row');
+						}					
+					}
+					else{
+						$('#data_image_container').css('display','inline');	
+						$('#data_image_check').css('display','inline');
+						$('#data_image_check_label').css('display','inline');
+						$("#data_image_check").html('On');
+						$('#process_value_row').css('display','none');
+						$('#period_row').css('display','none');
+						$('#text-label_ifr').contents().find('#tinymce').html('_VALUE_');
+						$('.block_tinymce').remove();
+						$('#label_row').append('<div class="block_tinymce" style="background-color:#fbfbfb;position:absolute;left:0px;height:230px;width:100%;opacity:0.7;z-index:5;"></div>');
+					}
 				}
-			}
+			});
 		}
 		else{
 			$("#data_image_check").css('display','none');
@@ -3293,6 +4266,9 @@ function eventsItems(drag) {
 			if ($(event.target).hasClass('auto_sla_graph')) {
 				selectedItem = 'auto_sla_graph';
 			}
+			if ($(event.target).hasClass('donut_graph')) {
+				selectedItem = 'donut_graph';
+			}
 			if ($(event.target).hasClass('group_item')) {
 				selectedItem = 'group_item';
 			}
@@ -3301,6 +4277,9 @@ function eventsItems(drag) {
 			}
 			if ($(event.target).hasClass('module_graph')) {
 				selectedItem = 'module_graph';
+			}
+			if ($(event.target).hasClass('bars_graph')) {
+				selectedItem = 'bars_graph';
 			}
 			if ($(event.target).hasClass('simple_value')) {
 				selectedItem = 'simple_value';
@@ -3357,8 +4336,6 @@ function eventsItems(drag) {
 		}
 		}
 		else{
-			console.log('Dragstart');
-			
 			multiDragStart(event);
 			
 		}
@@ -3375,8 +4352,6 @@ function eventsItems(drag) {
 		updateDB(selectedItem, idItem, values, 'dragstop');
 		}
 		else{
-			
-				console.log('Dragstop');
 			multidragStop(event);
 		}
 	});
@@ -3463,10 +4438,6 @@ function eventsItems(drag) {
 				draw_user_lines("", 0, 0, 0 , 0, 0, true);
 				break;
 		}
-	}
-	else{
-		console.log('Drag');
-		
 	}
 	});
 }
@@ -3613,8 +4584,16 @@ function click_button_toolbox(id) {
 			toolbuttonActive = creationItem = 'module_graph';
 			toggle_item_palette();
 			break;
+		case 'bars_graph':
+			toolbuttonActive = creationItem = 'bars_graph';
+			toggle_item_palette();
+			break;
 		case 'auto_sla_graph':
 			toolbuttonActive = creationItem = 'auto_sla_graph';
+			toggle_item_palette();
+			break;
+		case 'donut_graph':
+			toolbuttonActive = creationItem = 'donut_graph';
 			toggle_item_palette();
 			break;
 		case 'simple_value':
@@ -3668,12 +4647,14 @@ function click_button_toolbox(id) {
 				activeToolboxButton('static_graph', false);
 				activeToolboxButton('percentile_item', false);
 				activeToolboxButton('module_graph', false);
+				activeToolboxButton('bars_graph', false);
 				activeToolboxButton('simple_value', false);
 				activeToolboxButton('label', false);
 				activeToolboxButton('icon', false);
 				activeToolboxButton('service', false);
 				activeToolboxButton('group_item', false);
 				activeToolboxButton('auto_sla_graph', false);
+				activeToolboxButton('donut_graph', false);
 				activeToolboxButton('copy_item', false);
 				activeToolboxButton('edit_item', false);
 				activeToolboxButton('delete_item', false);
@@ -3699,11 +4680,13 @@ function click_button_toolbox(id) {
 				activeToolboxButton('static_graph', true);
 				activeToolboxButton('percentile_item', true);
 				activeToolboxButton('module_graph', true);
+				activeToolboxButton('bars_graph', true);
 				activeToolboxButton('simple_value', true);
 				activeToolboxButton('label', true);
 				activeToolboxButton('icon', true);
 				activeToolboxButton('group_item', true);
 				activeToolboxButton('auto_sla_graph', true);
+				activeToolboxButton('donut_graph', true);
 			}
 			break;
 		case 'save_visualmap':
@@ -3787,7 +4770,17 @@ function showPreviewStaticGraph(staticGraph) {
 		.css('text-align', 'right')
 		.append($spinner);
 
-	if (staticGraph != '') {
+	if(staticGraph == '' || staticGraph == 'none'){
+		
+		if (is_metaconsole()) {
+			$spinner.prop("src", "../../images/image_problem_area.png");
+		}
+		else{
+			$spinner.prop("src", "images/image_problem_area.png");
+		}
+		$('#preview > img').css({'max-width':'100px','max-height':'100px'});
+	}
+	else{
 		imgBase = "images/console/icons/" + staticGraph;
 
 		var parameter = Array();
@@ -3832,7 +4825,17 @@ function showPreviewIcon(icon) {
 		.css('text-align', 'left')
 		.append($spinner);
 
-	if (icon != '') {
+
+	if (icon == '' || icon == 'none') {
+		if (is_metaconsole()) {
+			$spinner.prop("src", "../../images/image_problem_area.png");
+		}
+		else{
+			$spinner.prop("src", "images/image_problem_area.png");
+		}
+		$('#preview > img').css({'max-width':'100px','max-height':'100px'});
+	}
+	else{
 		imgBase = "images/console/icons/" + icon;
 
 		var params = [];

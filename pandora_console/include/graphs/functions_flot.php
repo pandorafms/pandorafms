@@ -666,7 +666,7 @@ function flot_custom_pie_chart ($flash_charts, $graph_values,
 	
 	$return .= "pandoraFlotPieCustom('$graph_id', '$values', '$labels',
 			'$width', $font_size, '$fontpath', $water_mark,
-			'$separator', '$legend_position', '$height', '$colors','$legend')";
+			'$separator', '$legend_position', '$height', '$colors','$legend','$background_color')";
 	
 	$return .= "</script>";
 	
@@ -674,7 +674,7 @@ function flot_custom_pie_chart ($flash_charts, $graph_values,
 }
 
 // Returns a 3D column chart
-function flot_hcolumn_chart ($graph_data, $width, $height, $water_mark, $font = '', $font_size = 7) {
+function flot_hcolumn_chart ($graph_data, $width, $height, $water_mark, $font = '', $font_size = 7, $background_color = "white", $tick_color = "white") {
 	global $config;
 	
 	include_javascript_dependencies_flot_graph();
@@ -755,7 +755,7 @@ function flot_hcolumn_chart ($graph_data, $width, $height, $water_mark, $font = 
 	$return .= "<script type='text/javascript'>";
 	
 	$return .= "pandoraFlotHBars('$graph_id', '$values', '$labels',
-		false, $max, '$water_mark', '$separator', '$separator2', '$font', $font_size)";
+		false, $max, '$water_mark', '$separator', '$separator2', '$font', $font_size, '$background_color', '$tick_color')";
 
 	$return .= "</script>";
 	
@@ -763,7 +763,7 @@ function flot_hcolumn_chart ($graph_data, $width, $height, $water_mark, $font = 
 }
 
 // Returns a 3D column chart
-function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, $water_mark, $homedir, $font, $font_size, $from_ux, $from_wux) {
+function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, $water_mark, $homedir, $font, $font_size, $from_ux, $from_wux, $background_color = 'white', $tick_color = 'white') {
 	global $config;
 	
 	include_javascript_dependencies_flot_graph();
@@ -847,14 +847,14 @@ function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $lon
 
 	if ($from_ux) {
 		if($from_wux){
-			$return .= "pandoraFlotVBars('$graph_id', '$values', '$labels', '$labels', '$legend', '$colors', false, $max, '$water_mark', '$separator', '$separator2','$font',$font_size, true, true)";
+			$return .= "pandoraFlotVBars('$graph_id', '$values', '$labels', '$labels', '$legend', '$colors', false, $max, '$water_mark', '$separator', '$separator2','$font',$font_size, true, true, '$background_color', '$tick_color')";
 		}
 		else{
-			$return .= "pandoraFlotVBars('$graph_id', '$values', '$labels', '$labels', '$legend', '$colors', false, $max, '$water_mark', '$separator', '$separator2','$font',$font_size, true, false)";
+			$return .= "pandoraFlotVBars('$graph_id', '$values', '$labels', '$labels', '$legend', '$colors', false, $max, '$water_mark', '$separator', '$separator2','$font',$font_size, true, false, '$background_color', '$tick_color')";
 		}
 	}
 	else {
-		$return .= "pandoraFlotVBars('$graph_id', '$values', '$labels', '$labels', '$legend', '$colors', false, $max, '$water_mark', '$separator', '$separator2','$font',$font_size, false, false)";
+		$return .= "pandoraFlotVBars('$graph_id', '$values', '$labels', '$labels', '$legend', '$colors', false, $max, '$water_mark', '$separator', '$separator2','$font',$font_size, false, false, '$background_color', '$tick_color')";
 	}
 
 	$return .= "</script>";
@@ -866,9 +866,7 @@ function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $
 	global $config;
 	
 	include_javascript_dependencies_flot_graph();
-	
-	$height+= 20;
-	
+		
 	$stacked_str = 'stack: stack,';
 	
 	// Get a unique identifier to graph
@@ -876,10 +874,10 @@ function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $
 	
 	// Set some containers to legend, graph, timestamp tooltip, etc.
 	if ($stat_win) {
-		$return = "<div id='$graph_id' class='graph $adapt_key' style='width: ".$width."px; height: ".$height."px; display: inline-block;'></div>";
+		$return = "<div id='$graph_id' class='noresizevc graph $adapt_key' style='width: ".$width."px; height: ".$height."px; display: inline-block;'></div>";
 	}
 	else {
-		$return = "<div id='$graph_id' class='graph $adapt_key' style='width: ".$width."px; height: ".$height."px;'></div>";
+		$return = "<div id='$graph_id' class='noresizevc graph $adapt_key' style='width: ".$width."px; height: ".$height."px;'></div>";
 	}
 	$return .= "<div id='value_$graph_id' style='display:none; position:absolute; background:#fff; border: solid 1px #aaa; padding: 2px'></div>";
 	

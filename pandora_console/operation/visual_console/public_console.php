@@ -208,51 +208,57 @@ $ignored_params['refr'] = '';
 
 		$(".overlay").removeClass("overlay").addClass("overlaydisabled");
 		
-		$('.item:not(.icon) img').each(function(){
-			
-			
-			if($(this).css('float')=='left' || $(this).css('float')=='right'){
-			
-				
-			$(this).css('margin-top',(parseInt($(this).parent().parent().css('height'))/2-parseInt($(this).css('height'))/2)+'px');
-			$(this).css('margin-left','');
-			
+		// Start the map fetch
+		//~ fetchMap();
+	});
+	
+	$(window).load (function () {
+		$('.item:not(.icon) img:not(.b64img)').each( function() {
+			if ($(this).css('float')=='left' || $(this).css('float')=='right') {
+				if(	$(this).parent()[0].tagName == 'DIV'){
+					$(this).css('margin-top',(parseInt($(this).parent().css('height'))/2-parseInt($(this).css('height'))/2)+'px');
+				}
+				else if (	$(this).parent()[0].tagName == 'A') {
+					$(this).css('margin-top',(parseInt($(this).parent().parent().css('height'))/2-parseInt($(this).css('height'))/2)+'px');
+				}
+				$(this).css('margin-left','');
 			}
-			else{
-				$(this).css('margin-left',(parseInt($(this).parent().parent().css('width'))/2-parseInt($(this).css('width'))/2)+'px');
-				$(this).css('margin-top','');
+			else {
+				if(parseInt($(this).parent().parent().css('width'))/2-parseInt($(this).css('width'))/2 < 0){
+					$(this).css('margin-left','');
+					$(this).css('margin-top','');
+				} else {
+					if(	$(this).parent()[0].tagName == 'DIV'){
+						$(this).css('margin-left',(parseInt($(this).parent().css('width'))/2-parseInt($(this).css('width'))/2)+'px');
+					}
+					else if (	$(this).parent()[0].tagName == 'A') {
+						$(this).css('margin-left',(parseInt($(this).parent().parent().css('width'))/2-parseInt($(this).css('width'))/2)+'px');
+					}
+					$(this).css('margin-top','');
+				}
 			}
-			
 		});
 		
-		$('.item > div').each(function(){
-			if($(this).css('float')=='left' || $(this).css('float')=='right'){
-			
-				
-			$(this).css('margin-top',(parseInt($(this).parent().css('height'))/2-parseInt($(this).css('height'))/2-15)+'px');
-			$(this).css('margin-left','');
-			
+		$('.item > div').each( function() {
+			if ($(this).css('float')=='left' || $(this).css('float')=='right') {
+				$(this).css('margin-top',(parseInt($(this).parent().css('height'))/2-parseInt($(this).css('height'))/2-15)+'px');
+				$(this).css('margin-left','');
 			}
-			else{
+			else {
 				$(this).css('margin-left',(parseInt($(this).parent().css('width'))/2-parseInt($(this).css('width'))/2)+'px');
 				$(this).css('margin-top','');
 			}
-			
 		});
 		
-		$('.item > a > div').each(function(){
-			if($(this).css('float')=='left' || $(this).css('float')=='right'){
-			
-				
-			$(this).css('margin-top',(parseInt($(this).parent().parent().css('height'))/2-parseInt($(this).css('height'))/2-5)+'px');
-			$(this).css('margin-left','');
-			
+		$('.item > a > div').each( function() {
+			if ($(this).css('float')=='left' || $(this).css('float')=='right') {
+				$(this).css('margin-top',(parseInt($(this).parent().parent().css('height'))/2-parseInt($(this).css('height'))/2-5)+'px');
+				$(this).css('margin-left','');
 			}
-			else{
+			else {
 				$(this).css('margin-left',(parseInt($(this).parent().parent().css('width'))/2-parseInt($(this).css('width'))/2)+'px');
 				$(this).css('margin-top','');
 			}
-			
 		});
 		
 		$(".graph:not([class~='noresizevc'])").each(function(){

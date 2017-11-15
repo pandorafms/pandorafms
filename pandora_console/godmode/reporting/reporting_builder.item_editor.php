@@ -112,6 +112,10 @@ $netflow_filter = 0;
 $max_values = 0;
 $resolution = 0;
 
+$lapse_calc = 0;
+$lapse = 300;
+$visual_format = 0;
+
 //Others
 $filter_search = "";
 
@@ -148,6 +152,7 @@ switch ($action) {
 			case 'network_interfaces_report':
 			case 'availability':
 			case 'event_report_log':
+			case 'increment':
 			case 'availability_graph':
 			case 'agent_module':
 				$get_data_editor = true;
@@ -195,12 +200,6 @@ switch ($action) {
 			$name = $item['name'];
 			
 			switch ($type) {
-				case 'avg_value':
-					$period = $item['period'];
-					$description = $item['description'];
-					$idAgentModule = $item['id_agent_module'];
-					$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
-					break;
 				case 'event_report_log':
 					$period = $item['period'];
 					$description = $item['description'];
@@ -282,6 +281,13 @@ switch ($action) {
 					$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
 					break;
 
+				case 'increment':
+					$description = $item['description'];
+					$idAgentModule = $item['id_agent_module'];
+					$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+					$period = $item['period'];
+					break;
+
 				case 'SLA_services':
 					$description = $item['description'];
 					$period = $item['period'];
@@ -312,6 +318,9 @@ switch ($action) {
 					$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
 					$idAgentModule = $item['id_agent_module'];
 					$period = $item['period'];
+					$lapse = $item['lapse'];
+					$lapse_calc = $item['lapse_calc'];
+					$visual_format = $item['visual_format'];
 					break;
 				case 'max_value':
 					$description = $item['description'];
@@ -319,6 +328,9 @@ switch ($action) {
 					$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
 					$idAgentModule = $item['id_agent_module'];
 					$period = $item['period'];
+					$lapse = $item['lapse'];
+					$lapse_calc = $item['lapse_calc'];
+					$visual_format = $item['visual_format'];
 					break;
 				case 'min_value':
 					$description = $item['description'];
@@ -326,6 +338,9 @@ switch ($action) {
 					$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
 					$idAgentModule = $item['id_agent_module'];
 					$period = $item['period'];
+					$lapse = $item['lapse'];
+					$lapse_calc = $item['lapse_calc'];
+					$visual_format = $item['visual_format'];
 					break;
 				case 'sumatory':
 					$description = $item['description'];
@@ -593,6 +608,7 @@ switch ($action) {
 				case 'MTTR':
 				case 'simple_baseline_graph':
 				case 'event_report_log':
+				case 'increment':
 					$label = (isset($style['label'])) ? $style['label'] : '';
 					break;
 				default:
@@ -911,6 +927,9 @@ You can of course remove the warnings, that's why we include the source and do n
 				elseif(check_acl ($config['id_user'], 0, "RM"))
 					html_print_select_groups($config['id_user'],
 						"RM", true, 'combo_group', $group, '');
+				
+				echo "&nbsp;&nbsp;&nbsp;".__('Recursion').html_print_checkbox('recursion', 1, 0, true);
+						
 				?>
 			</td>
 		</tr>
@@ -1577,6 +1596,78 @@ You can of course remove the warnings, that's why we include the source and do n
 				?>
 			</td>
 		</tr>
+		
+		<!-- advanced elements -->
+		
+		<!-- <tr id="advanced_expansion">
+			
+				<td colspan="2" style="cursor:pointer;" onclick="if($('.advanced_elements').css('display') == 'none'){$('.advanced_elements').css('display','table-row');}else{$('.advanced_elements').css('display','none');}">
+					+ ADVANCED
+				</td>
+				
+		</tr> -->
+					
+		<tr id="row_lapse_calc" style="" class="datos advanced_elements">
+			<td style="font-weight:bold;">
+				<?php echo __('Calculate for custom intervals'); ?>
+			</td>
+			<td style="">
+				<?php
+				html_print_checkbox('lapse_calc',1,$lapse_calc);?>
+			</td>
+		</tr>
+		
+		<tr id="row_lapse" style="" class="datos advanced_elements">
+			<td style="font-weight:bold;">
+				<?php
+				echo __('Time lapse intervals');
+				ui_print_help_tip(__('Lapses of time in which the period is divided to make more precise calculations
+'));
+				?>
+			</td>
+			<td style="">
+				<?php
+				html_print_extended_select_for_time('lapse', $lapse,
+					'', '', '0', 10,'','','','',!$lapse_calc);
+				?>
+			</td>
+		</tr>
+		
+		<tr id="row_visual_format" style="" class="datos advanced_elements">
+			<td style="font-weight:bold;" colspan="2">
+				<?php
+				
+				if($visual_format == 1){
+					$visual_format_table = true;
+					$visual_format_graph = false;
+					$visual_format_both = false;
+				}
+				elseif ($visual_format == 2) {
+					$visual_format_table = false;
+					$visual_format_graph = true;
+					$visual_format_both = false;
+				}
+				elseif ($visual_format == 3) {
+					$visual_format_table = false;
+					$visual_format_graph = false;
+					$visual_format_both = true;
+				}
+				
+				echo __('Table only').'<span style="margin-left:10px;"></span>';
+				html_print_radio_button ('visual_format', 1, '', $visual_format_table,'',!$lapse_calc);
+				echo ('<span style="margin:30px;"></span>');
+				echo __('Graph only').'<span style="margin-left:10px;"></span>';
+				html_print_radio_button ('visual_format', 2, '', $visual_format_graph,'',!$lapse_calc);
+				echo ('<span style="margin:30px;"></span>');
+				echo __('Graph and table').'<span style="margin-left:10px;"></span>';
+				html_print_radio_button ('visual_format', 3, '', $visual_format_both,'',!$lapse_calc);
+				
+				?>
+			</td>
+	
+	</tr>
+				
+		
 	</tbody>
 </table>
 
@@ -2001,7 +2092,38 @@ $(document).ready (function () {
 					"get_agents_group_json" : 1,
 					"id_group" : this.value,
 					"privilege" : "AW",
-					"keys_prefix" : "_"
+					"keys_prefix" : "_",
+					"recursion" : $('#checkbox-recursion').is(':checked')
+				},
+				function (data, status) {
+					$("#id_agents").html('');
+					$("#id_agents2").html('');
+					$("#module").html('');
+					jQuery.each (data, function (id, value) {
+						// Remove keys_prefix from the index
+						id = id.substring(1);
+						
+						option = $("<option></option>")
+							.attr ("value", value["id_agente"])
+							.html (value["alias"]);
+						$("#id_agents").append (option);
+						$("#id_agents2").append (option);
+					});
+				},
+				"json"
+			);
+		}
+	);
+	
+	$("#checkbox-recursion").change (
+		function () {
+			jQuery.post ("ajax.php",
+				{"page" : "operation/agentes/ver_agente",
+					"get_agents_group_json" : 1,
+					"id_group" : $("#combo_group").val(),
+					"privilege" : "AW",
+					"keys_prefix" : "_",
+					"recursion" : $('#checkbox-recursion').is(':checked')
 				},
 				function (data, status) {
 					$("#id_agents").html('');
@@ -2175,6 +2297,19 @@ $(document).ready (function () {
 			default:
 				break;
 		}
+	});
+	
+	$("#checkbox-lapse_calc").change(function () {
+		
+		if($(this).is(":checked")){
+			$( "#lapse_select" ).prop( "disabled", false );
+			$("[name=visual_format]").prop( "disabled", false );
+		}
+		else{
+			$( "#lapse_select" ).prop( "disabled", true );
+			$("[name=visual_format]").prop( "disabled", true );
+		}
+	
 	});
 	
 });
@@ -2658,6 +2793,9 @@ function chooseType() {
 	$("#row_show_in_two_columns").hide();
 	$("#row_show_in_same_row").hide();
 	$("#row_historical_db_check").hide();
+	$("#row_lapse_calc").hide();
+	$("#row_lapse").hide();
+	$("#row_visual_format").hide();	
 	$("#row_show_in_landscape").hide();
 	$('#row_hide_notinit_agents').hide();
 	$("#row_module_group").hide();
@@ -2728,6 +2866,13 @@ function chooseType() {
 			$("#agents_row").show();
 			$("#row_source").show();
 			$("#row_historical_db_check").hide();
+			break;
+
+		case 'increment':
+			$("#row_description").show();
+			$("#row_agent").show();
+			$("#row_module").show();
+			$("#row_period").show();
 			break;
 		
 		case 'simple_graph':
@@ -2850,6 +2995,9 @@ function chooseType() {
 			$("#row_module").show();
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
+			$("#row_lapse_calc").show();
+			$("#row_lapse").show();
+			$("#row_visual_format").show();
 			$("#row_historical_db_check").hide();
 			break;
 		
@@ -2859,6 +3007,9 @@ function chooseType() {
 			$("#row_module").show();
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
+			$("#row_lapse_calc").show();
+			$("#row_lapse").show();
+			$("#row_visual_format").show();
 			$("#row_historical_db_check").hide();
 			break;
 		
@@ -2868,6 +3019,9 @@ function chooseType() {
 			$("#row_module").show();
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
+			$("#row_lapse_calc").show();
+			$("#row_lapse").show();
+			$("#row_visual_format").show();
 			$("#row_historical_db_check").hide();
 			break;
 		

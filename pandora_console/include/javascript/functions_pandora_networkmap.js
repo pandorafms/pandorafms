@@ -240,10 +240,11 @@ function update_node_name(id_db_node) {
 
 					jQuery.each(graph.nodes, function (i, element) {
 						if (element.id_db == id_db_node) {
-							graph.nodes[i].text = name;
+							graph.nodes[i]['text'] = data['text'];
+							graph.nodes[i]['raw_text'] = data['raw_text'];
 
-							$("#id_node_" + i + networkmap_id + " title").html(name);
-							$("#id_node_" + i + networkmap_id + " tspan").html(name);
+							$("#id_node_" + i + networkmap_id + " title").html(data['raw_text']);
+							$("#id_node_" + i + networkmap_id + " tspan").html(data['raw_text']);
 						}
 					});
 
@@ -307,7 +308,12 @@ function change_shape(id_db_node) {
 									})
 									.on("click", selected_node)
 									.on("dblclick", function (d) {
-										edit_node(d, true);
+										if (d.type == 3) {
+											move_to_networkmap(d);
+										}
+										else {
+											edit_node(d, true);
+										}
 									})
 									.on("contextmenu", function (d) { show_menu("node", d); });
 
@@ -342,7 +348,13 @@ function change_shape(id_db_node) {
 									})
 									.on("click", selected_node)
 									.on("dblclick", function (d) {
-										edit_node(d, true);
+										if (d.type == 3) {
+											move_to_networkmap(d);
+										}
+										else {
+											edit_node(d, true);
+										}
+
 									})
 									.on("contextmenu", function (d) { show_menu("node", d); });
 
@@ -365,7 +377,13 @@ function change_shape(id_db_node) {
 									})
 									.on("click", selected_node)
 									.on("dblclick", function (d) {
-										edit_node(d, true);
+										if (d.type == 3) {
+											move_to_networkmap(d);
+										}
+										else {
+											edit_node(d, true);
+										}
+
 									})
 									.on("contextmenu", function (d) { show_menu("node", d); });
 
@@ -400,7 +418,13 @@ function change_shape(id_db_node) {
 									})
 									.on("click", selected_node)
 									.on("dblclick", function (d) {
-										edit_node(d, true);
+										if (d.type == 3) {
+											move_to_networkmap(d);
+										}
+										else {
+											edit_node(d, true);
+										}
+
 									})
 									.on("contextmenu", function (d) { show_menu("node", d); });
 
@@ -425,7 +449,13 @@ function change_shape(id_db_node) {
 									})
 									.on("click", selected_node)
 									.on("dblclick", function (d) {
-										edit_node(d, true);
+										if (d.type == 3) {
+											move_to_networkmap(d);
+										}
+										else {
+											edit_node(d, true);
+										}
+
 									})
 									.on("contextmenu", function (d) { show_menu("node", d); });
 
@@ -460,7 +490,13 @@ function change_shape(id_db_node) {
 									})
 									.on("click", selected_node)
 									.on("dblclick", function (d) {
-										edit_node(d, true);
+										if (d.type == 3) {
+											move_to_networkmap(d);
+										}
+										else {
+											edit_node(d, true);
+										}
+
 									})
 									.on("contextmenu", function (d) { show_menu("node", d); });
 							}
@@ -618,6 +654,30 @@ function add_new_link(new_link) {
 	graph.links.push(new_link);
 }
 
+function move_to_networkmap (node) {
+	var params = [];
+	params.push("get_networkmap_from_fictional=1");
+	params.push("id=" + node.id_db);
+	params.push("id_map=" + node.map_id);
+	params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
+
+	jQuery.ajax ({
+		data: params.join ("&"),
+		dataType: 'json',
+		type: 'POST',
+		url: action="ajax.php",
+		success: function (data) {
+			if (data['correct']) {
+				window.location="index.php?sec=network&sec2=operation/agentes/pandora_networkmap&tab=view&id_networkmap=" + data['id_networkmap'];
+			}
+			else {
+				edit_node(node, true);
+			}
+		}
+	});
+}
+
+
 function edit_node(data_node, dblClick) {
 	if (enterprise_installed) {
 		var flag_edit_node = true;
@@ -664,7 +724,6 @@ function edit_node(data_node, dblClick) {
 			$("#node_options-node_name-2 input")
 				.attr("onclick", "update_node_name(" + node_selected.id_db + ");");
 
-			$("#node_details-0-1").html('<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' + node_selected["id_agent"] + '">' + node_selected["text"] + '</a>');
 			var params = [];
 			params.push("get_agent_info=1");
 			params.push("id_agent=" + node_selected["id_agent"]);
@@ -676,11 +735,19 @@ function edit_node(data_node, dblClick) {
 				type: 'POST',
 				url: action = "ajax.php",
 				success: function (data) {
-					var adressess = "";
-					for (adress in data['adressess']) {
-						adressess += adress + "<br>";
+					$("#node_details-0-1").html('<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' + node_selected["id_agent"] + '">' + data['alias'] + '</a>');
+					
+					var addresses = "";
+					if (data['adressess'] instanceof Array) {
+						for (var i; i < data['adressess'].length; i++) {
+							addresses += data['adressess'][i] + "<br>";
+						}
+					} else {
+						for (address in data['adressess']) {
+							addresses += address + "<br>";
+						}
 					}
-					$("#node_details-1-1").html(adressess);
+					$("#node_details-1-1").html(addresses);
 					$("#node_details-2-1").html(data["os"]);
 					$("#node_details-3-1").html(data["group"]);
 
@@ -693,7 +760,7 @@ function edit_node(data_node, dblClick) {
 
 			$("#dialog_node_edit")
 				.dialog("option", "title",
-				dialog_node_edit_title.replace("%s", node_selected.text));
+				dialog_node_edit_title.replace("%s", node_selected['text'])); // It doesn't eval the possible XSS so it's ok
 			$("#dialog_node_edit").dialog("open");
 
 			if (node_selected.id_agent == undefined || node_selected.id_agent == -2) {
@@ -701,7 +768,7 @@ function edit_node(data_node, dblClick) {
 				$("#node_options-fictional_node_name")
 					.css("display", "");
 				$("input[name='edit_name_fictional_node']")
-					.val(node_selected.text);
+					.val(node_selected.text); // It doesn't eval the possible XSS so it's ok
 				$("#node_options-fictional_node_networkmap_link")
 					.css("display", "");
 				$("#edit_networkmap_to_link")
@@ -715,7 +782,7 @@ function edit_node(data_node, dblClick) {
 			}
 			else {
 				$("input[name='edit_name_node']")
-					.val(node_selected.text);
+					.val(node_selected.text); // It doesn't eval the possible XSS so it's ok
 				$("#node_options-fictional_node_name")
 					.css("display", "none");
 				$("#node_options-fictional_node_networkmap_link")
@@ -866,9 +933,9 @@ function load_interfaces(selected_links) {
 		});
 
 		$("#relations_table-template_row-node_source", template_relation_row)
-			.html(link_each.source.text);
+			.html(link_each.source['raw_text']);
 		$("#relations_table-template_row-node_target", template_relation_row)
-			.html(link_each.target.text);
+			.html(link_each.target['raw_text']);
 		$("#relations_table-template_row-edit", template_relation_row)
 			.attr("align", "center");
 		$("#relations_table-template_row-edit .delete_icon", template_relation_row)
@@ -3173,7 +3240,13 @@ function draw_elements_graph() {
 		})
 		.on("click", selected_node)
 		.on("dblclick", function (d) {
-			edit_node(d, true);
+			if (d.type == 3) {
+				move_to_networkmap(d);
+			}
+			else {
+				edit_node(d, true);
+			}
+
 		})
 		.on("contextmenu", function (d) { show_menu("node", d); });
 
@@ -3207,7 +3280,13 @@ function draw_elements_graph() {
 		})
 		.on("click", selected_node)
 		.on("dblclick", function (d) {
-			edit_node(d, true);
+			if (d.type == 3) {
+				move_to_networkmap(d);
+			}
+			else {
+				edit_node(d, true);
+			}
+
 		})
 		.on("contextmenu", function (d) { show_menu("node", d); });
 
@@ -3235,7 +3314,13 @@ function draw_elements_graph() {
 		})
 		.on("click", selected_node)
 		.on("dblclick", function (d) {
-			edit_node(d, true);
+			if (d.type == 3) {
+				move_to_networkmap(d);
+			}
+			else {
+				edit_node(d, true);
+			}
+
 		})
 		.on("contextmenu", function (d) { show_menu("node", d); });
 
@@ -3273,7 +3358,13 @@ function draw_elements_graph() {
 		})
 		.on("click", selected_node)
 		.on("dblclick", function (d) {
-			edit_node(d, true);
+			if (d.type == 3) {
+				move_to_networkmap(d);
+			}
+			else {
+				edit_node(d, true);
+			}
+
 		})
 		.on("contextmenu", function (d) { show_menu("node", d); });
 
@@ -3303,7 +3394,13 @@ function draw_elements_graph() {
 		})
 		.on("click", selected_node)
 		.on("dblclick", function (d) {
-			edit_node(d, true);
+			if (d.type == 3) {
+				move_to_networkmap(d);
+			}
+			else {
+				edit_node(d, true);
+			}
+
 		})
 		.on("contextmenu", function (d) { show_menu("node", d); });
 
@@ -3341,7 +3438,13 @@ function draw_elements_graph() {
 		})
 		.on("click", selected_node)
 		.on("dblclick", function (d) {
-			edit_node(d, true);
+			if (d.type == 3) {
+				move_to_networkmap(d);
+			}
+			else {
+				edit_node(d, true);
+			}
+
 		})
 		.on("contextmenu", function (d) { show_menu("node", d); });
 

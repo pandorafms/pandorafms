@@ -38,6 +38,9 @@ if ($new_networkmap) {
 	$source = 'group';
 	$ip_mask = '';
 	$dont_show_subgroups = false;
+	$offset_x = "";
+	$offset_y = "";
+	$scale_z = 0.5;
 }
 
 $disabled_generation_method_select = false;
@@ -75,6 +78,10 @@ if ($edit_networkmap) {
 		$description = $values['description'];
 		
 		$filter = json_decode($values['filter'], true);
+
+		$offset_x = $filter['x_offs'];
+		$offset_y = $filter['y_offs'];
+		$scale_z = $filter['z_dash'];
 		
 		$node_radius = $filter['node_radius'];
 		
@@ -190,6 +197,17 @@ else {
 		
 	$table->data[3][0] = __('Description');
 	$table->data[3][1] = html_print_textarea ('description', 7, 25, $description, '', true);
+
+	$table->data[4][0] = __('Position X');
+	$table->data[4][1] = html_print_input_text ('pos_x', $offset_x, '', 2, 10,true);
+	$table->data[5][0] = __('Position Y');
+	$table->data[5][1] = html_print_input_text ('pos_y', $offset_y, '', 2, 10,true);
+
+	$table->data[6][0] = __('Zoom scale');
+	if ($scale_z == "") {
+		$scale_z = 0.5;
+	}
+	$table->data[6][1] = html_print_input_text ('scale_z', $scale_z, '', 2, 10,true) . ui_print_help_tip (__('Introduce zoom level. 1 = Highest resolution. Figures may include decimals'), true);
 	
 	$table->data['source'][0] = __('Source');
 	$table->data['source'][1] =
@@ -222,8 +240,8 @@ else {
 		'radial_dinamic' => 'radial dinamic'
 		);
 	
-	$table->data[4][0] = __('Method generation networkmap');
-	$table->data[4][1] = html_print_select($methods, 'method', $method,
+	$table->data[7][0] = __('Method generation networkmap');
+	$table->data[7][1] = html_print_select($methods, 'method', $method,
 		'', '', 'twopi', true, false, true, '',
 		$disabled_generation_method_select);
 	

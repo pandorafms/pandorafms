@@ -24,10 +24,16 @@ function include_javascript_d3 ($return = false) {
 	if (!$is_include_javascript) {
 		$is_include_javascript = true;
 
-		$output .= '<script type="text/javascript" src="' . $config['homeurl'] . 'include/javascript/d3.3.5.14.js" charset="utf-8"></script>';
-		$output .= '<script type="text/javascript" src="' . $config['homeurl'] . 'include/graphs/pandora.d3.js" charset="utf-8"></script>';
-
+		if (is_metaconsole()) {
+			$output .= '<script type="text/javascript" src="' . '../../' . 'include/javascript/d3.3.5.14.js" charset="utf-8"></script>';
+			$output .= '<script type="text/javascript" src="' . '../../' . 'include/graphs/pandora.d3.js" charset="utf-8"></script>';
+		}
+		else {
+			$output .= '<script type="text/javascript" src="' . $config['homeurl'] . 'include/javascript/d3.3.5.14.js" charset="utf-8"></script>';
+			$output .= '<script type="text/javascript" src="' . $config['homeurl'] . 'include/graphs/pandora.d3.js" charset="utf-8"></script>';
+		}
 	}
+
 	if (!$return)
 		echo $output;
 	
@@ -309,4 +315,97 @@ function ux_console_phases_donut ($phases, $id, $return = false) {
 	
 	return $output;
 }
+
+function d3_progress_bar ($id, $percentile, $width, $height, $color, $unit = "%", $text = "", $fill_color = "#FFFFFF") {
+	global $config;
+
+	$recipient_name = "progress_bar_" . $id;
+	$recipient_name_to_js = "#progress_bar_" . $id;
+
+	$output = "";
+
+	$output .= "<div id=" . $recipient_name . " style='overflow: hidden;'></div>";
+	$output .= include_javascript_d3(true);
+	$output .= "<script language=\"javascript\" type=\"text/javascript\">
+					progress_bar_d3('" . $recipient_name_to_js . "', " . (int)$percentile . ", " . (int)$width . ", " . (int)$height . ", '" . $color . "', '" . $unit . "', '" . $text . "', '" . $fill_color . "');
+				</script>";
+
+	return $output;
+}
+
+function d3_progress_bubble ($id, $percentile, $width, $height, $color, $unit = "%", $text = "", $fill_color = "#FFFFFF") {
+	global $config;
+
+	$recipient_name = "progress_bubble_" . $id;
+	$recipient_name_to_js = "#progress_bubble_" . $id;
+
+	$output = "";
+
+	$output .= "<div id=" . $recipient_name . " style='overflow: hidden;'></div>";
+	$output .= include_javascript_d3(true);
+	$output .= "<script language=\"javascript\" type=\"text/javascript\">
+					progress_bubble_d3('" . $recipient_name_to_js . "', " . (int)$percentile . ", " . (int)$width . ", " . (int)$height . ", '" . $color . "', '" . $unit . "', '" . $text . "', '" . $fill_color . "');
+				</script>";
+
+	return $output;
+}
+
+function progress_circular_bar ($id, $percentile, $width, $height, $color, $unit = "%", $text = "", $fill_color = "#FFFFFF") {
+	global $config;
+
+	$recipient_name = "circular_progress_bar_" . $id;
+	$recipient_name_to_js = "#circular_progress_bar_" . $id;
+
+	$output = "";
+
+	$output .= "<div id=" . $recipient_name . " style='overflow: hidden;'></div>";
+	$output .= include_javascript_d3(true);
+	$output .= "<script language=\"javascript\" type=\"text/javascript\">
+					print_circular_progress_bar('" . $recipient_name_to_js . "', " . (int)$percentile . ", " . (int)$width . ", " . (int)$height . ", '" . $color . "', '" . $unit . "', '" . $text . "', '" . $fill_color . "');
+				</script>";
+
+	return $output;
+}
+
+function progress_circular_bar_interior ($id, $percentile, $width, $height, $color, $unit = "%", $text = "", $fill_color = "#FFFFFF") {
+	global $config;
+	
+	$recipient_name = "circular_progress_bar_interior_" . $id;
+	$recipient_name_to_js = "#circular_progress_bar_interior_" . $id;
+
+	$output = "";
+
+	$output .= "<div id=" . $recipient_name .  " style='overflow: hidden;'></div>";
+	$output .= include_javascript_d3(true);
+	$output .= "<script language=\"javascript\" type=\"text/javascript\">
+					print_interior_circular_progress_bar('" . $recipient_name_to_js . "', " . (int)$percentile . ", " . (int)$width . ", " . (int)$height . ", '" . $color . "', '" . $unit . "', '" . $text . "', '" . $fill_color . "');
+				</script>";
+
+	return $output;
+}
+
+function d3_donut_graph ($id, $width, $height, $module_data, $resume_color) {
+	global $config;
+
+	$module_data = json_encode($module_data);
+
+	$recipient_name = "donut_graph_" . $id;
+	$recipient_name_to_js = "#donut_graph_" . $id;
+
+	$output = "<div id=" . $recipient_name .  " style='overflow: hidden;'></div>";
+	$output .= include_javascript_d3(true);
+	$output .= "<style type=\"text/css\">
+					path {
+						stroke: #fff;
+						fill-rule: evenodd;
+					}
+				</style>";
+	
+	$output .= "<script language=\"javascript\" type=\"text/javascript\">
+					print_donut_graph('" . $recipient_name_to_js . "', " . $width . ", " . $height . ", " . $module_data . ", '" . $resume_color . "');
+				</script>";
+
+	return $output;
+}
+
 ?>

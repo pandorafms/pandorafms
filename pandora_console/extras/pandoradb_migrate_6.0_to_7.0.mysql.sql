@@ -725,6 +725,9 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	`module_free_text` TEXT,
 	`each_agent` tinyint(1) default 1,
 	`historical_db` tinyint(1) UNSIGNED NOT NULL default 0,
+	`lapse_calc` tinyint(1) UNSIGNED NOT NULL default '0',
+	`lapse` int(11) UNSIGNED NOT NULL default '300',
+	`visual_format` tinyint(1) UNSIGNED NOT NULL default '0',
 	PRIMARY KEY(`id_rc`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -1134,6 +1137,10 @@ ALTER TABLE talert_actions ADD COLUMN `field15_recovery` TEXT NOT NULL DEFAULT "
 -- ---------------------------------------------------------------------
 UPDATE `talert_commands` SET `fields_descriptions` = '[\"Integria&#x20;IMS&#x20;API&#x20;path\",\"Integria&#x20;IMS&#x20;API&#x20;pass\",\"Integria&#x20;IMS&#x20;user\",\"Integria&#x20;IMS&#x20;user&#x20;pass\",\"Ticket&#x20;title\",\"Ticket&#x20;group&#x20;ID\",\"Ticket&#x20;priority\",\"Email&#x20;copy\",\"Ticket&#x20;owner\",\"Ticket&#x20;description\"]', `fields_values` = '[\"\",\"\",\"\",\"\",\"\",\"\",\"10,Maintenance;0,Informative;1,Low;2,Medium;3,Serious;4,Very&#x20;Serious\",\"\",\"\",\"\"]' WHERE `id` = 11 AND `name` = 'Integria&#x20;IMS&#x20;Ticket';
 
+UPDATE `talert_commands` SET `description` = 'This&#x20;alert&#x20;send&#x20;an&#x20;email&#x20;using&#x20;internal&#x20;Pandora&#x20;FMS&#x20;Server&#x20;SMTP&#x20;capabilities&#x20;&#40;defined&#x20;in&#x20;each&#x20;server,&#x20;using:&#x0d;&#x0a;_field1_&#x20;as&#x20;destination&#x20;email&#x20;address,&#x20;and&#x0d;&#x0a;_field2_&#x20;as&#x20;subject&#x20;for&#x20;message.&#x20;&#x0d;&#x0a;_field3_&#x20;as&#x20;text&#x20;of&#x20;message.&#x20;&#x0d;&#x0a;_field4_&#x20;as&#x20;content&#x20;type&#x20;&#40;text/plain&#x20;or&#x20;html/text&#41;.', `fields_descriptions` = '[\"Destination&#x20;address\",\"Subject\",\"Text\",\"Content&#x20;Type\",\"\",\"\",\"\",\"\",\"\",\"\"]', `fields_values` = '[\"\",\"\",\"_html_editor_\",\"_content_type_\",\"\",\"\",\"\",\"\",\"\",\"\"]' WHERE id=1;
+
+UPDATE `talert_actions` SET `field4` = 'text/html', `field4_recovery` = 'text/html' WHERE id = 1;
+
 -- ---------------------------------------------------------------------
 -- Table `tmap`
 -- ---------------------------------------------------------------------
@@ -1150,10 +1157,10 @@ ALTER TABLE titem MODIFY `source_data` int(10) unsigned;
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('big_operation_step_datos_purge', '100');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('small_operation_step_datos_purge', '1000');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('days_autodisable_deletion', '30');
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 4);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 8);
 UPDATE tconfig SET value = 'https://licensing.artica.es/pandoraupdate7/server.php' WHERE token='url_update_manager';
 DELETE FROM `tconfig` WHERE `token` = 'current_package_enterprise';
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '708');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '714');
 
 -- ---------------------------------------------------------------------
 -- Table `tplanned_downtime_agents`
@@ -1183,6 +1190,7 @@ ALTER TABLE tusuario ADD COLUMN `id_filter` int(10) UNSIGNED NULL DEFAULT NULL;
 ALTER TABLE tusuario ADD CONSTRAINT `fk_id_filter` FOREIGN KEY (`id_filter`) REFERENCES tevent_filter(`id_filter`) ON DELETE SET NULL;
 ALTER TABLE tusuario ADD COLUMN `session_time` int(10) signed NOT NULL default '0';
 alter table tusuario add autorefresh_white_list text not null default '';
+ALTER TABLE tusuario ADD COLUMN `time_autorefresh` int(5) unsigned NOT NULL default '30';
 
 -- ---------------------------------------------------------------------
 -- Table `tagente_modulo`
@@ -1218,6 +1226,7 @@ ALTER TABLE tagente ADD `remote` tinyint(1) NOT NULL default 0;
 ALTER TABLE tagente ADD COLUMN `cascade_protection_module` int(10) unsigned NOT NULL default '0';
 ALTER TABLE tagente ADD COLUMN (alias varchar(600) not null default '');
 ALTER TABLE tagente ADD `alias_as_name` int(2) unsigned default '0';
+ALTER TABLE tagente ADD COLUMN `safe_mode_module` int(10) unsigned NOT NULL default '0';
 
 UPDATE tagente SET tagente.alias = tagente.nombre;
 -- ---------------------------------------------------------------------
@@ -1231,6 +1240,7 @@ ALTER TABLE tlayout ADD `background_color` varchar(50) NOT NULL default '#FFF';
 ALTER TABLE tlayout_data ADD `type_graph` varchar(50) NOT NULL default 'area';
 ALTER TABLE tlayout_data ADD `label_position` varchar(50) NOT NULL default 'down';
 ALTER TABLE tlayout_data ADD COLUMN `show_statistics` tinyint(2) NOT NULL default '0';
+ALTER TABLE tlayout_data ADD COLUMN `id_layout_linked_weight` int(10) NOT NULL default '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tagent_custom_fields`
@@ -1269,6 +1279,9 @@ UPDATE treport_custom_sql SET `sql` = 'select&#x20;t1.alias&#x20;as&#x20;agent_n
 -- ---------------------------------------------------------------------
 	
 ALTER TABLE treport_content ADD COLUMN `historical_db` tinyint(1) NOT NULL DEFAULT '0';
+ALTER TABLE treport_content ADD COLUMN `lapse_calc` tinyint(1) default '0';
+ALTER TABLE treport_content ADD COLUMN `lapse` int(11) default '300';
+ALTER TABLE treport_content ADD COLUMN `visual_format` tinyint(1) default '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tmodule_relationship`
@@ -1325,6 +1338,10 @@ BEGIN
 SET @vv1 = (SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = 'tbackup');
 IF @vv1>0 THEN
 	ALTER TABLE tbackup ADD COLUMN `filepath` varchar(512) NOT NULL DEFAULT "";
+END IF;
+SET @vv2 = (SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = 'tuser_task_scheduled');
+IF @vv2>0 THEN
+	ALTER TABLE tuser_task_scheduled MODIFY args TEXT NOT NULL;
 END IF;
 END;
 //

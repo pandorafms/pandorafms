@@ -86,6 +86,7 @@ namespace Pandora_Modules {
 		MODULE_FREEMEMORY_PERCENT, /**< The module checks the amount of 
 				   *   freememory in the system        */
 		MODULE_LOGEVENT,       /**< The module checks for log events */	
+		MODULE_LOGCHANNEL,     /**< The module checks for log events on channel using XML functions*/	
 		MODULE_WMIQUERY,       /**< The module runs WQL queries */		
 		MODULE_PERFCOUNTER,    /**< The module reads performance counters */
 		MODULE_TCPCHECK,       /**< The module checks whether a tcp port is open */
@@ -126,6 +127,7 @@ namespace Pandora_Modules {
 	const string module_cpuusage_str   = "module_cpuusage";
 	const string module_inventory_str  = "module_inventory";
 	const string module_logevent_str   = "module_logevent";	
+	const string module_logchannel_str   = "module_logchannel";
 	const string module_wmiquery_str   = "module_wmiquery";	
 	const string module_perfcounter_str = "module_perfcounter";
 	const string module_tcpcheck_str   = "module_tcpcheck";	

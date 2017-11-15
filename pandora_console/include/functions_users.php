@@ -152,6 +152,8 @@ function users_get_groups_for_select($id_user,  $privilege = "AR", $returnAllGro
  * @return array A list of the groups the user has certain privileges.
  */
 function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup = true, $returnAllColumns = false, $id_groups = null, $keys_field = 'id_grupo') {
+    static $group_cache = array();
+
 	if (empty ($id_user)) {
 		global $config;
 	
@@ -161,57 +163,95 @@ function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup 
 		}
 	}
 
-	if (isset($id_groups)) {
-		//Get recursive id groups
-		$list_id_groups = array();
-		foreach ((array)$id_groups as $id_group) {
-			$list_id_groups = array_merge($list_id_groups, groups_get_id_recursive($id_group));
+	// Check the group cache first.
+	if (array_key_exists($id_user, $group_cache)) {
+		$groups = $group_cache[$id_user];
+	} else {
+		// Admin.
+		if (is_user_admin($id_user)) {
+			$groups = db_get_all_rows_sql ("SELECT * FROM tgrupo");
+	 	}
+		// Per-group permissions.
+		else {
+			$query = sprintf("SELECT tgrupo.*, tperfil.*, tusuario_perfil.tags FROM tgrupo, tusuario_perfil, tperfil
+			        WHERE (tgrupo.id_grupo = tusuario_perfil.id_grupo OR tusuario_perfil.id_grupo = 0)
+					AND tusuario_perfil.id_perfil = tperfil.id_perfil
+					AND tusuario_perfil.id_usuario = '%s'", $id_user);
+			$groups = db_get_all_rows_sql ($query);
+
+			// Get children groups.
+			$parent_ids = array();
+			$parents = $groups;
+			$seen = array();
+			while (!empty($parents)) {
+				$children = array();
+				foreach ($parents as $parent) {
+					// Do not process the same parent twice.
+					if (array_key_exists($parent['id_grupo'], $seen)) {
+						continue;
+					}
+					$seen[$parent['id_grupo']] = 1;
+	
+					// Does this group propagate ACLs?
+					if ($parent['propagate'] == '0') {
+						continue;
+					}
+
+					// Save a list of parents in the tree to search for user profiles, including the current parent!
+					$parent_ids[$parent['id_grupo']] = isset($parent_ids[$parent['parent']]) ? array_merge(array($parent['id_grupo']), $parent_ids[$parent['parent']]) : array($parent['id_grupo']);
+
+					// Get children groups from the DB.
+					$query = sprintf("SELECT tgrupo.*, tperfil.*, tusuario_perfil.tags FROM tgrupo, tusuario_perfil, tperfil
+			    	    WHERE tgrupo.parent = %d
+						AND tusuario_perfil.id_grupo IN (%s)
+						AND tusuario_perfil.id_perfil = tperfil.id_perfil
+						AND tusuario_perfil.id_usuario = '%s'", $parent['id_grupo'], join(',', $parent_ids[$parent['id_grupo']]), $id_user);
+					$local_children = db_get_all_rows_sql ($query);
+					if (!empty($local_children)) {
+						$children = array_merge($children, $local_children);
+					}
+				}
+	
+				if (!empty($children)) {
+					$groups = array_merge($groups, $children);
+				}
+	
+				// Move down in the hierarchy.
+				$parents = $children;
+			}
 		}
-		
-		$list_id_groups = array_unique($list_id_groups);
-		
-		$groups = db_get_all_rows_filter('tgrupo', array('id_grupo' => $list_id_groups, 'order' => 'parent, nombre'));
-	}
-	else {
-		$groups = db_get_all_rows_in_table ('tgrupo', 'parent, nombre');
+
+		// Update the group cache.
+		$group_cache[$id_user] = $groups;
 	}
 
 	$user_groups = array ();
-	
 	if (!$groups) {
 		return $user_groups;
 	}
 	
 	if ($returnAllGroup) { //All group
-		if ($returnAllColumns) {
-			$groupall = array('id_grupo' => 0, 'nombre' => __('All'),
-				'icon' => 'world', 'parent' => 0, 'disabled' => 0,
-				'custom_id' => null, 'description' => '', 'propagate' => 0); 
-		}
-		else {
-			$groupall = array('id_grupo' => 0, 'nombre' => __("All"));
-		}
+		$groupall = array('id_grupo' => 0, 'nombre' => __('All'),
+			'icon' => 'world', 'parent' => 0, 'disabled' => 0,
+			'custom_id' => null, 'description' => '', 'propagate' => 0); 
 		
 		// Add the All group to the beginning to be always the first
 		array_unshift($groups, $groupall);
 	}
 
+	$acl_column = get_acl_column($privilege);
 	foreach ($groups as $group) {
-		if ($privilege === false) {
-			if ($returnAllColumns) {
-				$user_groups[$group[$keys_field]] = $group;
-			}
-			else {
-				$user_groups[$group[$keys_field]] = $group['nombre'];
-			}
+
+		# Check the specific permission column. acl_column is undefined for admins.
+		if (defined($group[$acl_column]) && $group[$acl_column] != '1') {
+			continue;
 		}
-		else if (check_acl($id_user, $group["id_grupo"], $privilege)) {
-			if ($returnAllColumns) {
-				$user_groups[$group[$keys_field]] = $group;
-			}
-			else {
-				$user_groups[$group[$keys_field]] = $group['nombre'];
-			}
+
+		if ($returnAllColumns) {
+			$user_groups[$group[$keys_field]] = $group;
+		}
+		else {
+			$user_groups[$group[$keys_field]] = $group['nombre'];
 		}
 	}
 

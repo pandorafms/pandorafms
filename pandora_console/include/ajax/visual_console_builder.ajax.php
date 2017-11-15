@@ -100,10 +100,13 @@ $width = get_parameter('width', null);
 $height = get_parameter('height', null);
 $parent = get_parameter('parent', null);
 $map_linked = get_parameter('map_linked', null);
+$map_linked_weight = get_parameter('map_linked_weight', null);
 $width_percentile = get_parameter('width_percentile', null);
+$bars_graph_height = get_parameter('bars_graph_height', null);
 $max_percentile = get_parameter('max_percentile', null);
 $height_module_graph = get_parameter('height_module_graph', null);
 $width_module_graph = get_parameter('width_module_graph', null);
+$bars_graph_type = get_parameter('bars_graph_type', null);
 $id_agent_module = get_parameter('id_agent_module', 0);
 $process_simple_value = get_parameter('process_simple_value', PROCESS_VALUE_NONE);
 $type_percentile = get_parameter('type_percentile', 'percentile');
@@ -112,12 +115,18 @@ $metaconsole = get_parameter('metaconsole', 0);
 $server_name = get_parameter('server_name', null);
 $server_id = (int)get_parameter('server_id', 0);
 $id_agent = get_parameter('id_agent', null);
+$id_agent_string = get_parameter('id_agent_string', null);
 $id_metaconsole = get_parameter('id_metaconsole', null);
 $id_group = (int)get_parameter('id_group', 0);
 $id_custom_graph = get_parameter('id_custom_graph', null);
 $border_width = (int)get_parameter('border_width', 0);
 $border_color = get_parameter('border_color', '');
+$grid_color = get_parameter('grid_color', '');
+$resume_color = get_parameter('resume_color', '');
 $fill_color = get_parameter('fill_color', '');
+$percentile_color = get_parameter('percentile_color', '');
+$percentile_label = io_safe_output(get_parameter('percentile_label', ''));
+$percentile_label_color = get_parameter('percentile_label_color', '');
 $width_box = (int)get_parameter('width_box', 0);
 $height_box = (int)get_parameter('height_box', 0);
 $line_start_x = (int)get_parameter('line_start_x', 0);
@@ -138,6 +147,57 @@ switch ($action) {
 	case 'get_font':
 		$return = array();
 		$return['font'] = $config['fontpath'];
+		echo json_encode($return);
+		break;
+
+	case 'get_image_from_module':
+		$layoutData = db_get_row_filter('tlayout_data', array('id' => $id_element));
+		$sql = 'SELECT datos FROM tagente_estado WHERE id_agente_modulo = '.$layoutData['id_agente_modulo'];
+		ob_clean();
+		$result = db_get_sql($sql);
+		$image = strpos($result, 'data:image');
+
+		if($image === false){
+			$return['correct'] = false;
+		}
+		else{
+			$return['correct'] = true;
+		}
+		
+		echo json_encode($return);
+		
+		break;
+
+	case 'get_module_type_string':
+		$data = array ();
+
+		$layoutData = db_get_row_filter('tlayout_data', array('id' => $id_element));
+
+		if ($layoutData['id_metaconsole'] != 0) {
+			$connection = db_get_row_filter ('tmetaconsole_setup', $layoutData['id_metaconsole']);
+
+			if (metaconsole_load_external_db($connection) != NOERR) {
+				continue;
+			}
+		}
+
+		$is_string = db_get_value_filter ('id_tipo_modulo', 'tagente_modulo',
+			array ('id_agente' => $id_agent,
+				'id_agente_modulo' => $id_module));
+		
+		if ($layoutData['id_metaconsole'] != 0) {
+			metaconsole_restore_db();
+		}
+
+		$return = array();
+		if (($is_string == 17) || ($is_string == 23) || ($is_string == 3) ||
+			($is_string == 10) || ($is_string == 33)) {
+			$return['no_data'] = false;
+		}
+		else {
+			$return['no_data'] = true;
+		}
+
 		echo json_encode($return);
 		break;
 	
@@ -321,7 +381,7 @@ switch ($action) {
 		
 		// Linked to other layout ?? - Only if not module defined
 		if ($layoutData['id_layout_linked'] != 0) {
-			$status = visual_map_get_layout_status ($layoutData['id_layout_linked']);
+			$status = visual_map_get_layout_status ($layoutData['id_layout_linked'], $layoutData['id_layout_linked_weight']);
 		
 		// Single object
 		}
@@ -452,12 +512,6 @@ switch ($action) {
 				echo (int)$result;
 				break;
 			case 'simple_value':
-				if ($action == 'update') {
-					$values['type'] = visual_map_get_simple_value_type(
-						$process_simple_value);
-					$values['period'] = $period;
-					$values['width'] = $width;
-				}
 			case 'percentile_bar':
 			case 'percentile_item':
 			case 'static_graph':
@@ -465,6 +519,8 @@ switch ($action) {
 			case 'label':
 			case 'icon':
 			case 'auto_sla_graph':
+			case 'bars_graph':
+			case 'donut_graph':
 			default:
 				if ($type == 'label') {
 					$values['type'] = LABEL;
@@ -499,8 +555,6 @@ switch ($action) {
 						break;
 				}
 				
-				
-				
 				if (defined('METACONSOLE') && $metaconsole) {
 					if ($server_name !== null) {
 						$values['id_metaconsole'] = db_get_value('id',
@@ -515,11 +569,14 @@ switch ($action) {
 						$values['id_agent'] = $id_agent;
 					}
 				}
-				else if ($agent !== null) {
-					$id_agent = agents_get_agent_id($agent);
+				else if ($id_agent == 0) {
+					$values['id_agent'] = 0;
+				}
+				else if (!empty($id_agent)) {
 					$values['id_agent'] = $id_agent;
 				}
-				else {
+				else if ($agent !== null) {
+					$id_agent = agents_get_agent_id($agent);
 					$values['id_agent'] = $id_agent;
 				}
 				if ($id_module !== null) {
@@ -530,6 +587,9 @@ switch ($action) {
 				}
 				if ($map_linked !== null) {
 					$values['id_layout_linked'] = $map_linked;
+				}
+				if ($map_linked_weight !== null) {
+					$values['id_layout_linked_weight'] = $map_linked_weight;
 				}
 				switch ($type) {
 					// -- line_item ------------------------------------
@@ -550,6 +610,15 @@ switch ($action) {
 						if ($height !== null) {
 							$values['height'] = $height;
 						}
+						break;
+					case 'donut_graph':
+						if ($width_percentile !== null) {
+							$values['width'] = $width_percentile;
+							$values['height'] = $width_percentile;
+						}
+						$values['border_color'] = $resume_color;
+						$values['type'] = DONUT_GRAPH;
+						$values['id_agent'] = $id_agent_string;
 						break;
 					case 'box_item':
 						$values['border_width'] = $border_width;
@@ -588,6 +657,24 @@ switch ($action) {
 							$values['id_custom_graph'] = $id_custom_graph;
 						}
 						break;
+					case 'bars_graph':
+						if ($width_percentile !== null) {
+							$values['width'] = $width_percentile;
+						}
+						if ($bars_graph_height !== null) {
+							$values['height'] = $bars_graph_height;
+						}
+						if ($bars_graph_type !== null) {
+							$values['type_graph'] = $bars_graph_type;
+						}
+						if ($background_color !== null) {
+							$values['image'] = $background_color;
+						}
+						if ($grid_color !== null) {
+							$values['border_color'] = $grid_color;
+						}
+						$values['id_agent'] = $id_agent_string;
+						break;
 					case 'percentile_item':
 					case 'percentile_bar':
 						if ($action == 'update') {
@@ -602,15 +689,21 @@ switch ($action) {
 							if ($type_percentile == 'percentile') {
 								$values['type'] = PERCENTILE_BAR;
 							}
+							elseif ($type_percentile == 'circular_progress_bar') {
+								$values['type'] = CIRCULAR_PROGRESS_BAR;
+							}
+							elseif ($type_percentile == 'interior_circular_progress_bar') {
+								$values['type'] = CIRCULAR_INTERIOR_PROGRESS_BAR;
+							}
 							elseif ($type_percentile == 'bubble') {
 								$values['type'] = PERCENTILE_BUBBLE;
 							}
 							
-							//Check the field's value for back compatibility
-							$values['image'] = 'percent';
-							if (($value_show == 'percent') ||
-								($value_show == 'value'))
-								$values['image'] = $value_show;
+							$values['image'] = $value_show;
+
+							$values['border_color'] = $percentile_color;
+							$values['fill_color'] = $percentile_label_color;
+							$values['label'] = $percentile_label;
 						}
 						break;
 					case 'icon':
@@ -624,6 +717,15 @@ switch ($action) {
 						if ($height !== null) {
 							$values['height'] = $height;
 						}
+						break;
+					case 'simple_value':
+						if ($action == 'update') {
+							$values['type'] = visual_map_get_simple_value_type(
+								$process_simple_value);
+							$values['period'] = $period;
+							$values['width'] = $width;
+						}
+						
 						break;
 					default:
 						if (enterprise_installed()) {
@@ -649,6 +751,19 @@ switch ($action) {
 						case 'module_graph':
 							unset($values['image']);
 							unset($values['type_graph']);
+							break;
+						case 'bars_graph':
+							unset($values['image']);
+							unset($values['type_graph']);
+							unset($values['border_color']);
+							unset($values['width']);
+							unset($values['id_agent']);
+							unset($values['height']);
+							break;
+						case 'donut_graph':
+							unset($values['border_color']);
+							unset($values['width']);
+							unset($values['id_agent']);
 							break;
 						case 'box_item':
 							unset($values['border_width']);
@@ -707,10 +822,12 @@ switch ($action) {
 			case 'static_graph':
 			case 'group_item':
 			case 'module_graph':
+			case 'bars_graph':
 			case 'simple_value':
 			case 'label':
 			case 'icon':
 			case 'auto_sla_graph':
+			case 'donut_graph':
 				$elementFields = db_get_row_filter('tlayout_data',
 					array('id' => $id_element));
 				
@@ -768,11 +885,8 @@ switch ($action) {
 					case 'percentile_bar':
 						$elementFields['width_percentile'] = $elementFields['width'];
 						$elementFields['max_percentile'] = $elementFields['height'];
-						//Check the field's value for back compatibility
-						$elementFields['value_show'] = 'percent';
-						if (($elementFields['image'] == 'percent') ||
-							($elementFields['image'] == 'value'))
-							$elementFields['value_show'] = $elementFields['image'];
+
+						$elementFields['value_show'] = $elementFields['image'];
 						
 						$elementFields['type_percentile'] = 'percentile';
 						if ($elementFields['type'] == PERCENTILE_BAR) {
@@ -781,11 +895,58 @@ switch ($action) {
 						elseif ($elementFields['type'] == PERCENTILE_BUBBLE) {
 							$elementFields['type_percentile'] = 'bubble';
 						}
+						elseif ($elementFields['type'] == CIRCULAR_PROGRESS_BAR) {
+							$elementFields['type_percentile'] = 'circular_progress_bar';
+						}
+						elseif ($elementFields['type'] == CIRCULAR_INTERIOR_PROGRESS_BAR) {
+							$elementFields['type_percentile'] = 'interior_circular_progress_bar';
+						}
+						$elementFields['percentile_color'] = $elementFields['border_color'];
+						$elementFields['percentile_label_color'] = $elementFields['fill_color'];
+						$elementFields['percentile_label'] = $elementFields['label'];
+						break;
+					case 'donut_graph':
+						$elementFields['width_percentile'] = $elementFields['width'];
+						$elementFields['resume_color'] = $elementFields['border_color'];
+						$elementFields['id_agent_string'] = $elementFields['id_agent'];
+						if (($elementFields['id_agent_string'] != 0)
+							&& ($elementFields['id_layout_linked'] == 0)) {
+							$modules = agents_get_modules(
+								$elementFields['id_agent'], false,
+								array('disabled' => 0,
+									'id_agente' => $elementFields['id_agent'],
+									'tagente_modulo.id_tipo_modulo IN' => "(17,23,3,10,33)"));
+							
+							$elementFields['modules_html'] = '<option value="0">--</option>';
+							foreach ($modules as $id => $name) {
+								$elementFields['modules_html'] .= '<option value="' . $id . '">' . io_safe_output($name) . '</option>';
+							}
+						}
 						break;
 					
 					case 'module_graph':
 						$elementFields['width_module_graph'] = $elementFields['width'];
 						$elementFields['height_module_graph'] = $elementFields['height'];
+						break;
+					case 'bars_graph':
+						$elementFields['width_percentile'] = $elementFields['width'];
+						$elementFields['bars_graph_height'] = $elementFields['height'];
+						$elementFields['bars_graph_type'] = $elementFields['type_graph'];
+						$elementFields['grid_color'] = $elementFields['border_color'];
+						$elementFields['id_agent_string'] = $elementFields['id_agent'];
+						if (($elementFields['id_agent_string'] != 0)
+							&& ($elementFields['id_layout_linked'] == 0)) {
+							$modules = agents_get_modules(
+								$elementFields['id_agent'], false,
+								array('disabled' => 0,
+									'id_agente' => $elementFields['id_agent'],
+									'tagente_modulo.id_tipo_modulo IN' => "(17,23,3,10,33)"));
+							
+							$elementFields['modules_html'] = '<option value="0">--</option>';
+							foreach ($modules as $id => $name) {
+								$elementFields['modules_html'] .= '<option value="' . $id . '">' . io_safe_output($name) . '</option>';
+							}
+						}
 						break;
 					case 'box_item':
 						$elementFields['width_box'] = $elementFields['width'];
@@ -865,6 +1026,7 @@ switch ($action) {
 		}
 		$values['id_agente_modulo'] = $id_module;
 		$values['id_layout_linked'] = $map_linked;
+		$values['id_layout_linked_weight'] = $map_linked_weight;
 		$values['parent_item'] = $parent;
 		$values['enable_link'] = $enable_link;
 		$values['image'] = $background_color;
@@ -890,6 +1052,13 @@ switch ($action) {
 				$values['period'] = $period;
 				$values['width'] = $width_box;
 				$values['height'] = $height_box;
+				break;
+			case 'donut_graph':
+				$values['type'] = DONUT_GRAPH;
+				$values['width'] = $width_percentile;
+				$values['height'] = $width_percentile;
+				$values['border_color'] = $resume_color;
+				$values['id_agent'] = $id_agent_string;
 				break;
 			case 'module_graph':
 				$values['type'] = MODULE_GRAPH;
@@ -923,6 +1092,15 @@ switch ($action) {
 				}
 				$values['period'] = $period;
 				break;
+			case 'bars_graph':
+				$values['type'] = BARS_GRAPH;
+				$values['width'] = $width_percentile;
+				$values['height'] = $bars_graph_height;
+				$values['type_graph'] = $bars_graph_type;
+				$values['image'] = $background_color;
+				$values['border_color'] = $grid_color;
+				$values['id_agent'] = $id_agent_string;
+				break;
 			case 'auto_sla_graph':
 				$values['type'] = AUTO_SLA_GRAPH;
 				$values['period'] = $event_max_time_row;
@@ -934,21 +1112,27 @@ switch ($action) {
 				if ($type_percentile == 'percentile') {
 					$values['type'] = PERCENTILE_BAR;
 				}
+				elseif ($type_percentile == 'circular_progress_bar') {
+					$values['type'] = CIRCULAR_PROGRESS_BAR;
+				}
+				elseif ($type_percentile == 'interior_circular_progress_bar') {
+					$values['type'] = CIRCULAR_INTERIOR_PROGRESS_BAR;
+				}
 				else {
 					$values['type'] = PERCENTILE_BUBBLE;
 				}
+				$values['border_color'] = $percentile_color;
 				$values['image'] = $value_show; //Hack to save it show percent o value.
 				$values['width'] = $width_percentile;
 				$values['height'] = $max_percentile;
+				$values['fill_color'] = $percentile_label_color;
+				$values['label'] = $percentile_label;
 				break;
 			case 'static_graph':
 				$values['type'] = STATIC_GRAPH;
 				$values['image'] = $image;
 				$values['width'] = $width;
 				$values['height'] = $height;
-				if(defined('METACONSOLE') && $values['id_agent'] == 0){
-					$values['id_metaconsole'] = 1;
-				}
 				break;
 			case 'group_item':
 				$values['type'] = GROUP_ITEM;
@@ -980,7 +1164,7 @@ switch ($action) {
 				}
 				break;
 		}
-		
+
 		$idData = db_process_sql_insert('tlayout_data', $values);
 		
 		$return = array();
@@ -1034,8 +1218,16 @@ switch ($action) {
 					$return['values']['height_box'] = $values['height'];
 					break;
 					
-				case PERCENTILE_BUBBLE:
+				case CIRCULAR_PROGRESS_BAR:
 					$return['values']['type_percentile'] = 'bubble';
+					break;
+
+				case CIRCULAR_INTERIOR_PROGRESS_BAR:
+					$return['values']['type_percentile'] = 'circular_progress_bar';
+					break;
+
+				case PERCENTILE_BUBBLE:
+					$return['values']['type_percentile'] = 'interior_circular_progress_bar';
 					break;
 					
 				case PERCENTILE_BAR:

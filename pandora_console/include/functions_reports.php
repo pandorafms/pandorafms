@@ -574,7 +574,8 @@ function reports_get_report_types ($template = false, $not_editor = false) {
 		'name' => __('Summatory'));
 	$types['historical_data'] = array('optgroup' => __('Modules'),
 		'name' => __('Historical Data'));
-	
+	$types['increment'] = array('optgroup' => __('Modules'),
+		'name' => __('Increment'));
 	
 	
 	$types['general'] = array('optgroup' => __('Grouped'),

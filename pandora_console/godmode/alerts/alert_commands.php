@@ -165,8 +165,26 @@ if (is_ajax ()) {
 					$rfield = $editor_type_chkbx;
 					$rfield .= html_print_textarea ('field'.$i.'_recovery_value', 1, 1, '', 'class="fields_recovery"', true);
 				}
+				elseif(preg_match ("/^_content_type_$/i", $field_value)){
+					$editor_type_chkbx = "<div style=\"padding: 4px 0px;\"><b><small>";
+					$editor_type_chkbx .= __('Text/plain') . ui_print_help_tip (__("For sending emails only text plain"), true);
+					$editor_type_chkbx .= html_print_radio_button_extended ('field'.$i.'_value', 'text/plain', '', '', false, '', '', true);
+					$editor_type_chkbx .= "&nbsp;&nbsp;&nbsp;&nbsp;";
+					$editor_type_chkbx .= __('Text/html') . "&nbsp;&nbsp;";
+					$editor_type_chkbx .= html_print_radio_button_extended ('field'.$i.'_value', 'text/html', '', 'text/html', false, '', '', true);
+					$editor_type_chkbx .= "</small></b></div>";
+					$ffield = $editor_type_chkbx;
+
+					$editor_type_chkbx = "<div style=\"padding: 4px 0px;\"><b><small>";
+					$editor_type_chkbx .= __('Text/plain') . ui_print_help_tip (__("For sending emails only text plain"), true);
+					$editor_type_chkbx .= html_print_radio_button_extended ('field'.$i.'_recovery_value', 'text/plain', '', '', false, '', '', true);
+					$editor_type_chkbx .= "&nbsp;&nbsp;&nbsp;&nbsp;";
+					$editor_type_chkbx .= __('Text/html') . "&nbsp;&nbsp;";
+					$editor_type_chkbx .= html_print_radio_button_extended ('field'.$i.'_recovery_value', 'text/html', '', 'text/html', false, '', '', true);
+					$editor_type_chkbx .= "</small></b></div>";
+					$rfield = $editor_type_chkbx;
 				// Select type
-				else {
+				}else {
 					$fields_value_select = array();
 					$fv = explode(';', $field_value);
 					

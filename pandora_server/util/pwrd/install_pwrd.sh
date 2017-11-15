@@ -45,7 +45,7 @@ ln -s $PWR_FIREFOX_INSTALLDIR/firefox/firefox /usr/bin/firefox
 
 # Generate logrotate configuration
 
-echo <<EO_LROTATE > /etc/logrotate.d/pwrd
+cat > /etc/logrotate.d/pwrd <<EO_LROTATE
 /var/log/pwr/pwr_std.log
 /var/log/pwr/pwr_error.log {
 	weekly

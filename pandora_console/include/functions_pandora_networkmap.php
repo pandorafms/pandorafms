@@ -668,7 +668,7 @@ function networkmap_links_to_js_links($relations, $nodes_graph) {
 			$item['arrow_end'] = 'module';
 			$item['status_end'] = modules_get_agentmodule_status((int)$id_target_module, false, false, null);
 			$item['id_module_end'] = (int)$id_target_module;
-			$text_end = io_safe_output(modules_get_agentmodule_name((int)$id_target_module));
+			$text_end = modules_get_agentmodule_name((int)$id_target_module);
 			if (preg_match ("/(.+)_ifOperStatus$/" , (string)$text_end, $matches)) {
 				if ($matches[1]) {
 					$item['text_end'] = $matches[1];
@@ -679,7 +679,7 @@ function networkmap_links_to_js_links($relations, $nodes_graph) {
 			$item['arrow_start'] = 'module';
 			$item['status_start'] = modules_get_agentmodule_status((int)$id_source_module, false, false, null);
 			$item['id_module_start'] = (int)$id_source_module;
-			$text_start = io_safe_output(modules_get_agentmodule_name((int)$id_source_module));
+			$text_start = modules_get_agentmodule_name((int)$id_source_module);
 			if (preg_match ("/(.+)_ifOperStatus$/" , (string)$text_start, $matches)) {
 				if ($matches[1]) {
 					$item['text_start'] = $matches[1];
@@ -994,7 +994,6 @@ function networkmap_loadfile($id = 0, $file = '',
 								modules_get_agentmodule_agent($ids[$node_id]['id_module']);
 							
 							$text = modules_get_agentmodule_name($data['id_module']);
-							$text = io_safe_output($text);
 							$text = ui_print_truncate_text($text,
 								'agent_medium', false, true, false,
 								'...', false);
@@ -1005,7 +1004,6 @@ function networkmap_loadfile($id = 0, $file = '',
 							$data['id_agent'] = $ids[$node_id]['id_agent'];
 							
 							$text = agents_get_alias($ids[$node_id]['id_agent']);
-							$text = io_safe_output($text);
 							$text = ui_print_truncate_text($text,
 								'agent_medium', false, true, false,
 								'...', false);
@@ -1095,7 +1093,7 @@ function duplicate_networkmap($id) {
 	$values = db_get_row('tmap', 'id', $id);
 	unset($values['id']);
 	$free_name = false;
-	$values['name'] = io_safe_input(__('Copy of ') . io_safe_output($values['name']));
+	$values['name'] = io_safe_input(__('Copy of ')) . $values['name'];
 	$count = 1;
 	while (!$free_name) {
 		$exist = db_get_row_filter('tmap', array('name' => $values['name']));

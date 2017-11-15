@@ -1240,6 +1240,7 @@ ALTER TABLE tlayout ADD `background_color` varchar(50) NOT NULL default '#FFF';
 ALTER TABLE tlayout_data ADD `type_graph` varchar(50) NOT NULL default 'area';
 ALTER TABLE tlayout_data ADD `label_position` varchar(50) NOT NULL default 'down';
 ALTER TABLE tlayout_data ADD COLUMN `show_statistics` tinyint(2) NOT NULL default '0';
+ALTER TABLE tlayout_data ADD COLUMN `element_group` int(10) NOT NULL default '0';
 ALTER TABLE tlayout_data ADD COLUMN `id_layout_linked_weight` int(10) NOT NULL default '0';
 
 -- ---------------------------------------------------------------------
@@ -1258,6 +1259,8 @@ UPDATE tagente_modulo SET cron_interval = '' WHERE cron_interval LIKE '%    %';
 -- Table `tgraph`
 -- ---------------------------------------------------------------------
 ALTER TABLE tgraph ADD COLUMN `percentil` int(4) unsigned default '0';
+ALTER TABLE tgraph ADD COLUMN `summatory_series` tinyint(1) UNSIGNED NOT NULL default '0';
+ALTER TABLE tgraph ADD COLUMN `average_series`  tinyint(1) UNSIGNED NOT NULL default '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tnetflow_filter`

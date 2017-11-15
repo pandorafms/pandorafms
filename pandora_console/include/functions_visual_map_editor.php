@@ -690,6 +690,17 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items_advance['line_case']['html'] = '
 				<td align="left">' . __('Lines haven\'t advanced options') . '</td>';
 
+			$user_groups = users_get_groups($config['id_user']);
+			$form_items_advance['element_group_row'] = array();
+			$form_items_advance['element_group_row']['items'] = array(
+				'group_item', 'static_graph', 'percentile_bar',
+				'percentile_item', 'module_graph', 'simple_value',
+				'icon', 'label', 'datos');
+			$form_items_advance['element_group_row']['html'] = '<td align="left">'.
+				__('Element group') . '</td>' .
+				'<td align="left">' . html_print_select($user_groups, 'element_group', '', '', '', 0, true) .
+				'</td>';
+
 			//Insert and modify before the buttons to create or update.
 			if (enterprise_installed()) {
 				enterprise_visual_map_editor_modify_form_items_advance_palette($form_items_advance);

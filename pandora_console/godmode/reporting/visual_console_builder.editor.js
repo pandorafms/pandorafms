@@ -822,6 +822,7 @@ function readFields() {
 	values['bars_graph_type'] = $("select[name=bars_graph_type]").val();
 	values['parent'] = $("select[name=parent]").val();
 	values['map_linked'] = $("select[name=map_linked]").val();
+	values['element_group'] = $("select[name=element_group]").val();
 	values['map_linked_weight'] = $("select[name=map_linked_weight]").val();
 	values['width_percentile'] = $("input[name=width_percentile]").val();
 	values['bars_graph_height'] = $("input[name=bars_graph_height]").val();
@@ -1513,6 +1514,8 @@ function loadFieldsFromDB(item) {
 					$("select[name=map_linked]").val(val);
 				if (key == 'id_layout_linked_weight')
 					$("select[name=map_linked_weight]").val(val);
+				if (key == 'element_group')
+					$("select[name=element_group]").val(val);
 				if (key == 'width_percentile')
 					$("input[name=width_percentile]").val(val);
 				if (key == 'bars_graph_height')
@@ -1803,6 +1806,9 @@ function hiddenFields(item) {
 	$("#map_linked_row").css('display', 'none');
 	$("#map_linked_row." + item).css('display', '');
 
+	$("#element_group_row").css('display', 'none');
+	$("#element_group_row." + item).css('display', '');
+
 	$("#map_linked_weight").css('display', 'none');
 	$("#map_linked_weight." + item).css('display', '');
 
@@ -1856,14 +1862,6 @@ function hiddenFields(item) {
 	if (typeof(enterprise_hiddenFields) == 'function') {
 		enterprise_hiddenFields(item);
 	}
-
-	//~ var code_control = tinyMCE.activeEditor.controlManager.controls['text-label_code'];
-	//~ if (item == 'label') {
-		//~ code_control.setDisabled(false);
-	//~ }
-	//~ else {
-		//~ code_control.setDisabled(true);
-	//~ }
 }
 
 function cleanFields(item) {
@@ -1885,6 +1883,7 @@ function cleanFields(item) {
 	$("input[name=height]").val(0);
 	$("select[name=parent]").val('');
 	$("select[name=map_linked]").val('');
+	$("select[name=element_group]").val('');
 	$("select[name=map_linked_weight]").val('');
 	$("input[name=width_module_graph]").val(300);
 	$("input[name=height_module_graph]").val(180);

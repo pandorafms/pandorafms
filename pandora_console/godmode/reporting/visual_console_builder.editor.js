@@ -615,6 +615,11 @@ function update_button_palette_callback() {
 				alert('Undefined width');
 				return false;
 			}
+
+			if($('input[name=bars_graph_height]').val() == ''){
+				alert('Undefined height');
+				return false;
+			}
 		
 			$("#text_" + idItem).html(values['label']);
 			$("#image_" + idItem).attr("src", "images/spinner.gif");
@@ -800,6 +805,8 @@ function readFields() {
 	values['top'] = $("input[name=top]").val();
 	values['agent'] = $("input[name=agent]").val();
 	values['id_agent'] = $("input[name=id_agent]").val();
+	values['agent_string'] = $("input[name=agent_string]").val();
+	values['id_agent_string'] = $("input[name=id_agent_string]").val();
 	values['module'] = $("select[name=module]").val();
 	values['process_simple_value'] = $("select[name=process_value]").val();
 	values['background'] = $("#background_image").val();
@@ -816,7 +823,9 @@ function readFields() {
 	values['parent'] = $("select[name=parent]").val();
 	values['map_linked'] = $("select[name=map_linked]").val();
 	values['element_group'] = $("select[name=element_group]").val();
+	values['map_linked_weight'] = $("select[name=map_linked_weight]").val();
 	values['width_percentile'] = $("input[name=width_percentile]").val();
+	values['bars_graph_height'] = $("input[name=bars_graph_height]").val();
 	values['max_percentile'] = parseInt($("input[name=max_percentile]").val());
 	values['width_module_graph'] = $("input[name=width_module_graph]").val();
 	values['height_module_graph'] = $("input[name=height_module_graph]").val();
@@ -911,7 +920,7 @@ function create_button_palette_callback() {
 			}
 			break;
 		case 'donut_graph':
-			if ((values['agent'] == '')) {
+			if ((values['agent_string'] == '')) {
 				alert($("#message_alert_no_agent").html());
 				validate = false;
 			}
@@ -984,12 +993,20 @@ function create_button_palette_callback() {
 			}
 			break;
 		case 'bars_graph':
-			if ((values['agent'] == '')) {
+			if ((values['agent_string'] == '')) {
 				alert($("#message_alert_no_agent").html());
 				validate = false;
 			}
 			if ((values['module'] == 0)) {
 				alert($("#message_alert_no_module").html());
+				validate = false;
+			}
+			if ((values['width_percentile'] == '')) {
+				alert($("#message_alert_no_width_percentile").html());
+				validate = false;
+			}
+			if ((values['bars_graph_height'] == '')) {
+				alert($("#message_alert_no_bars_graph_height").html());
 				validate = false;
 			}
 			break;
@@ -1443,10 +1460,15 @@ function loadFieldsFromDB(item) {
 				if (key == 'pos_y') $("input[name=top]").val(val);
 				if (key == 'agent_name') {
 					$("input[name=agent]").val(val);
+					$("input[name=agent_string]").val(val);
 					//Reload no-sincrone the select of modules
 				}
+				
 				if (key == 'id_agent') {
 					$("input[name=id_agent]").val(val);
+				}
+				if (key == 'id_agent_string') {
+					$("input[name=id_agent_string]").val(val);
 				}
 				if (key == 'modules_html') {
 					$("select[name=module]").empty().html(val);
@@ -1490,10 +1512,14 @@ function loadFieldsFromDB(item) {
 					$("select[name=parent]").val(val);
 				if (key == 'id_layout_linked')
 					$("select[name=map_linked]").val(val);
+				if (key == 'id_layout_linked_weight')
+					$("select[name=map_linked_weight]").val(val);
 				if (key == 'element_group')
 					$("select[name=element_group]").val(val);
 				if (key == 'width_percentile')
 					$("input[name=width_percentile]").val(val);
+				if (key == 'bars_graph_height')
+					$("input[name=bars_graph_height]").val(val);
 				if (key == 'max_percentile')
 					$("input[name=max_percentile]").val(val);
 				if (key == 'width_module_graph')
@@ -1717,6 +1743,9 @@ function hiddenFields(item) {
 	$("#agent_row").css('display', 'none');
 	$("#agent_row." + item).css('display', '');
 
+	$("#agent_row_string").css('display', 'none');
+	$("#agent_row_string." + item).css('display', '');
+
 	$("#module_row").css('display', 'none');
 	$("#module_row." + item).css('display', '');
 
@@ -1743,6 +1772,9 @@ function hiddenFields(item) {
 
 	$("#percentile_bar_row_1").css('display', 'none');
 	$("#percentile_bar_row_1." + item).css('display', '');
+
+	$("#height_bars_graph_row").css('display', 'none');
+	$("#height_bars_graph_row." + item).css('display', '');
 
 	$("#percentile_bar_row_2").css('display', 'none');
 	$("#percentile_bar_row_2." + item).css('display', '');
@@ -1776,6 +1808,9 @@ function hiddenFields(item) {
 
 	$("#element_group_row").css('display', 'none');
 	$("#element_group_row." + item).css('display', '');
+
+	$("#map_linked_weight").css('display', 'none');
+	$("#map_linked_weight." + item).css('display', '');
 
 	$("#module_graph_size_row").css('display', 'none');
 	$("#module_graph_size_row." + item).css('display', '');
@@ -1836,10 +1871,12 @@ function cleanFields(item) {
 	$("input[name=left]").val(0);
 	$("input[name=top]").val(0);
 	$("input[name=agent]").val('');
+	$("input[name=agent_string]").val('');
 	$("select[name=module]").val('');
 	$("select[name=process_value]").val(0);
 	$("select[name=background_image]").val('');
 	$("input[name=width_percentile]").val('');
+	$("input[name=bars_graph_height]").val('');
 	$("input[name=max_percentile]").val('');
 	$("select[name=period]").val('');
 	$("input[name=width]").val(0);
@@ -1847,6 +1884,7 @@ function cleanFields(item) {
 	$("select[name=parent]").val('');
 	$("select[name=map_linked]").val('');
 	$("select[name=element_group]").val('');
+	$("select[name=map_linked_weight]").val('');
 	$("input[name=width_module_graph]").val(300);
 	$("input[name=height_module_graph]").val(180);
 	$("input[name='width_box']").val(300);
@@ -2012,12 +2050,13 @@ function setBarsGraph(id_data, values) {
 	}
 
 	width_percentile = values['width_percentile'];
+	bars_graph_height = values['bars_graph_height'];
 
 	parameter = Array();
 	
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "get_module_type_string"});
-	parameter.push ({name: "id_agent", value: values['id_agent']});
+	parameter.push ({name: "id_agent", value: values['id_agent_string']});
 	parameter.push ({name: "module", value: values['module']});
 	parameter.push ({name: "id_element", value: id_data});
 	parameter.push ({name: "id_visual_console", value: id_visual_console});
@@ -2027,28 +2066,16 @@ function setBarsGraph(id_data, values) {
 		type: "POST",
 		dataType: 'json',
 		success: function (data) {
-			if (data['no_data'] == true) {
-				if (values['width_percentile'] == "0") {
-					$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/barras-no.png');
-				}
-				else {
-					$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/barras-no.png');
-					$("#" + id_data + " img").css('width', width_percentile + 'px');
-					$("#" + id_data + " img").css('height', width_percentile + 'px');
-				}
+			$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/barras.png');
+			
+			if (values['width_percentile'] == "0" && values["bars_graph_height"] == "0") {
+				// Image size
 			}
-			else {
-				$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/barras.png');
-				
-				if (values['width_percentile'] == "0") {
-					// Image size
-				}
-				else{
-					$("#" + id_data + " img").css('width', width_percentile+'px');
-					$("#" + id_data + " img").css('height', width_percentile+'px');
-				}
+			else{
+				$("#" + id_data + " img").css('width', width_percentile + 'px');
+				$("#" + id_data + " img").css('height', bars_graph_height + 'px');
 			}
-
+			
 			if($('#'+id_data+' table').css('float') == 'right' || $('#'+id_data+ ' table').css('float') == 'left'){
 				$('#'+id_data+ ' img').css('margin-top', parseInt($('#'+id_data).css('height'))/2 - parseInt($('#'+id_data+ ' img').css('height'))/2);	
 			}
@@ -2451,7 +2478,7 @@ function setDonutsGraph (id_data, values) {
 
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "get_module_type_string"});
-	parameter.push ({name: "id_agent", value: values['id_agent']});
+	parameter.push ({name: "id_agent", value: values['id_agent_string']});
 	parameter.push ({name: "module", value: values['module']});
 	parameter.push ({name: "id_element", value: id_data});
 	parameter.push ({name: "id_visual_console", value: id_visual_console});
@@ -2474,7 +2501,7 @@ function setDonutsGraph (id_data, values) {
 			else {
 				$("#" + id_data + " img").attr('src', url_hack_metaconsole + 'images/console/signes/donut-graph.png');
 				
-				if($('#text-width').val() == 0 || $('#text-height').val() == 0){
+				if($('#text-width_percentile').val() == 0){
 					// Image size
 				}
 				else{

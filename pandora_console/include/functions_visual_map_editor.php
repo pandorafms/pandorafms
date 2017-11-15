@@ -290,7 +290,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items['agent_row'] = array();
 			$form_items['agent_row']['items'] = array('static_graph',
 				'percentile_bar', 'percentile_item', 'module_graph',
-				'simple_value', 'datos', 'auto_sla_graph', 'bars_graph', 'donut_graph');
+				'simple_value', 'datos', 'auto_sla_graph');
 			$form_items['agent_row']['html'] = '<td align="left">' .
 				__('Agent') . '</td>';			
 			$params = array();
@@ -318,6 +318,39 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				$params['print_hidden_input_idagent'] = true;
 			}
 			$form_items['agent_row']['html'] .= '<td align="left">' .
+					ui_print_agent_autocomplete_input($params) .
+				'</td>';
+
+			$form_items['agent_row_string'] = array();
+			$form_items['agent_row_string']['items'] = array('donut_graph', 'bars_graph');
+			$form_items['agent_row_string']['html'] = '<td align="left">' .
+				__('Agent') . '</td>';			
+			$params = array();
+			$params['return'] = true;
+			$params['show_helptip'] = true;
+			$params['input_name'] = 'agent_string';
+			$params['size'] = 30;
+			$params['selectbox_id'] = 'module';
+			$params['javascript_is_function_select'] = true;
+			$params['use_hidden_input_idagent'] = true;
+			$params['print_hidden_input_idagent'] = true;
+			$params['hidden_input_idagent_name'] = 'id_agent_string';
+			$params['get_order_json'] = true;
+			$params['get_only_string_modules'] = true;
+			if (defined('METACONSOLE')) {
+				$params['javascript_ajax_page'] = '../../ajax.php';
+				$params['disabled_javascript_on_blur_function'] = true;
+				
+				$params['print_input_server'] = true;
+				$params['print_input_id_server'] = true;
+				$params['input_server_id'] = 'id_server_name';
+				$params['input_id_server_name'] = 'id_server_metaconsole';
+				$params['input_server_value'] = '';
+				$params['use_input_id_server'] = true;
+				$params['metaconsole_enabled'] = true;
+				$params['print_hidden_input_idagent'] = true;
+			}
+			$form_items['agent_row_string']['html'] .= '<td align="left">' .
 					ui_print_agent_autocomplete_input($params) .
 				'</td>';
 			
@@ -426,7 +459,12 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items['percentile_bar_row_1']['html'] = '<td align="left">' .
 				__('Width') . '</td>
 				<td align="left">' . html_print_input_text('width_percentile', 0, '', 3, 5, true) . '</td>';
-			
+
+			$form_items['height_bars_graph_row'] = array();
+			$form_items['height_bars_graph_row']['items'] = array('bars_graph');
+			$form_items['height_bars_graph_row']['html'] = '<td align="left">' .
+				__('Height') . '</td>
+				<td align="left">' . html_print_input_text('bars_graph_height', 0, '', 3, 5, true) . '</td>';
 			
 			$form_items['percentile_bar_row_2'] = array();
 			$form_items['percentile_bar_row_2']['items'] = array('percentile_bar', 'percentile_item', 'datos');
@@ -621,6 +659,33 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				WHERE id != ' . $visualConsole_id, 'map_linked', '', '', 'None', '0', true) .
 				'</td>';
 
+			$form_items_advance['map_linked_weight'] = array();
+			$form_items_advance['map_linked_weight']['items'] = array('static_graph');
+			$form_items_advance['map_linked_weight']['html'] = '<td align="left">'.
+				__('Map linked weight') . '</td>' .
+				'<td align="left">' . html_print_select(array('10' => '10%',
+															'20' => '20%',
+															'30' => '30%',
+															'40' => '40%',
+															'50' => '50%',
+															'60' => '60%',
+															'70' => '70%',
+															'80' => '80%',
+															'90' => '90%',
+															'100' => '100%'), 
+				'map_linked_weight', '', '', __('By default'), 0, true) . 
+				ui_print_help_tip (
+					__("This percentage value specifies the number of items that must be present in the visual 
+						console for it to transmit its status to the icon linked here. For example, if 20% is 
+						specified and there are five elements in the console, it would be enough if you were in 
+						WARNING or CRITICAL to pass that value to the icon. If it were 40%, you would need at 
+						least two elements to be in CRITICAL or WARNING to go into that status. If it had one 
+						element in critical and another in warning, it would not forward any status to the icon 
+						associated with the visual console. If we had three in warning and one in critical, 
+						it would only convey the warning status. If there were two in warning and two in critical, 
+						it would show the CRITICAL because it is more serious. The same applies to unknown status."), true) .
+				'</td>';
+
 			$form_items_advance['line_case']['items'] = array('line_item');
 			$form_items_advance['line_case']['html'] = '
 				<td align="left">' . __('Lines haven\'t advanced options') . '</td>';
@@ -741,7 +806,7 @@ function visual_map_editor_print_toolbox() {
 		visual_map_print_button_editor('static_graph', __('Static Graph'), 'left', false, 'camera_min', true);
 		visual_map_print_button_editor('percentile_item', __('Percentile Item'), 'left', false, 'percentile_item_min', true);
 		visual_map_print_button_editor('module_graph', __('Module Graph'), 'left', false, 'graph_min', true);
-		visual_map_print_button_editor('donut_graph', __('Donut Graph'), 'left', false, 'donut_graph_min', true);
+		visual_map_print_button_editor('donut_graph', __('Serialized pie graph'), 'left', false, 'donut_graph_min', true);
 		visual_map_print_button_editor('bars_graph', __('Bars Graph'), 'left', false, 'bars_graph_min', true);
 		visual_map_print_button_editor('auto_sla_graph', __('Auto SLA Graph'), 'left', false, 'auto_sla_graph_min', true);
 		visual_map_print_button_editor('simple_value', __('Simple Value'), 'left', false, 'binary_min', true);
@@ -804,6 +869,8 @@ function visual_map_editor_print_hack_translate_strings() {
 		__('No Max value defined.') .'</span>';
 	echo '<span style="display: none" id="message_alert_no_width_percentile">' .
 		__('No width defined.') .'</span>';
+	echo '<span style="display: none" id="message_alert_no_bars_graph_height">' .
+		__('No height defined.') .'</span>';
 	echo '<span style="display: none" id="message_alert_no_period">' .
 		__('No period defined.') .'</span>';
 	echo '<span style="display: none" id="message_alert_no_agent">' .
@@ -817,3 +884,17 @@ function visual_map_editor_print_hack_translate_strings() {
 		__('Could not be save') .'</span>';
 }
 ?>
+
+<script type="text/javascript">
+$(document).ready (function () {
+	$("#map_linked").change(function () {
+		$("#text-agent").val("");
+		$("input[name=id_agent]").val(0);
+		$("#module").empty();
+		$("#module")
+			.append($("<option>")
+				.attr("value", 0)
+				.html("<?php echo __('Any'); ?>"));
+	})
+});
+</script>

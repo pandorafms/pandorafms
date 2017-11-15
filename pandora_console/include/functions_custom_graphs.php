@@ -202,10 +202,6 @@ function custom_graphs_print($id_graph, $height, $width, $period,
 		$sources = db_get_all_rows_field_filter('tgraph_source', 'id_graph',
 			$id_graph);
 		
-		$series = db_get_all_rows_sql('SELECT summatory_series,average_series FROM tgraph WHERE id_graph = '.$id_graph);
-		$summatory = $series[0]['summatory_series'];
-		$average = $series[0]['average_series'];
-		
 		$modules = array ();
 		$weights = array ();
 		$labels = array ();
@@ -266,9 +262,7 @@ function custom_graphs_print($id_graph, $height, $width, $period,
 		$percentil,
 		$from_interface,
 		$id_widget_dashboard,
-		$fullscale,
-		$summatory,
-		$average);	
+		$fullscale);
 	
 	if ($return)
 		return $output;

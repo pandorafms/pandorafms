@@ -3848,6 +3848,9 @@ function reporting_value($report, $content, $type,$pdf) {
 	$return['agent_name'] = $agent_name;
 	$return['module_name'] = $module_name;
 	
+	html_debug($pdf,true);
+	html_debug($only_image,true);
+	
 	if($pdf){
 		$only_image = 1;
 	}
@@ -7760,19 +7763,19 @@ function reporting_get_stats_modules_status($data, $graph_width = 250, $graph_he
 	if ($links === false) {
 		$urls = array();
 		$urls['monitor_critical'] = "index.php?" .
-			"sec=view&amp;sec2=operation/agentes/status_monitor&amp;" .
+			"sec=estado&amp;sec2=operation/agentes/status_monitor&amp;" .
 			"refr=60&amp;status=" . AGENT_MODULE_STATUS_CRITICAL_BAD . "&pure=" . $config['pure'];
 		$urls['monitor_warning'] = "index.php?" .
-			"sec=view&amp;sec2=operation/agentes/status_monitor&amp;" .
+			"sec=estado&amp;sec2=operation/agentes/status_monitor&amp;" .
 			"refr=60&amp;status=" . AGENT_MODULE_STATUS_WARNING . "&pure=" . $config['pure'];
 		$urls['monitor_ok'] = "index.php?" .
-			"sec=view&amp;sec2=operation/agentes/status_monitor&amp;" .
+			"sec=estado&amp;sec2=operation/agentes/status_monitor&amp;" .
 			"refr=60&amp;status=" . AGENT_MODULE_STATUS_NORMAL . "&pure=" . $config['pure'];
 		$urls['monitor_unknown'] = "index.php?" .
-			"sec=view&amp;sec2=operation/agentes/status_monitor&amp;" .
+			"sec=estado&amp;sec2=operation/agentes/status_monitor&amp;" .
 			"refr=60&amp;status=" . AGENT_MODULE_STATUS_UNKNOWN . "&pure=" . $config['pure'];
 		$urls['monitor_not_init'] = "index.php?" .
-			"sec=view&amp;sec2=operation/agentes/status_monitor&amp;" .
+			"sec=estado&amp;sec2=operation/agentes/status_monitor&amp;" .
 			"refr=60&amp;status=" . AGENT_MODULE_STATUS_NOT_INIT . "&pure=" . $config['pure'];
 	}
 	else {
@@ -7872,7 +7875,7 @@ function reporting_get_stats_agents_monitors($data) {
 	else {
 		$urls = array();
 		$urls['total_agents'] = "index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60";
-		$urls['monitor_checks'] = "index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=-1";
+		$urls['monitor_checks'] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=-1";
 	}
 	
 	// Agents and modules table

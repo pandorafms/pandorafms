@@ -589,6 +589,11 @@ if (is_ajax ()) {
 		if (empty($filter))
 			$filter = false;
 		
+		$get_only_string_modules = get_parameter('get_only_string_modules', false);
+		if ($get_only_string_modules) {
+			$filter['tagente_modulo.id_tipo_modulo IN'] = "(17,23,3,10,33)";
+		}
+
 		// Status selector
 		if ($status_modulo == AGENT_MODULE_STATUS_NORMAL) { //Normal
 			$sql_conditions .= ' estado = 0 AND utimestamp > 0 ) 

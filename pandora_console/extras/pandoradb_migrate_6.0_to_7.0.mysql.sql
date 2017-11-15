@@ -1226,6 +1226,7 @@ ALTER TABLE tagente ADD `remote` tinyint(1) NOT NULL default 0;
 ALTER TABLE tagente ADD COLUMN `cascade_protection_module` int(10) unsigned NOT NULL default '0';
 ALTER TABLE tagente ADD COLUMN (alias varchar(600) not null default '');
 ALTER TABLE tagente ADD `alias_as_name` int(2) unsigned default '0';
+ALTER TABLE tagente ADD COLUMN `safe_mode_module` int(10) unsigned NOT NULL default '0';
 
 UPDATE tagente SET tagente.alias = tagente.nombre;
 -- ---------------------------------------------------------------------
@@ -1240,6 +1241,7 @@ ALTER TABLE tlayout_data ADD `type_graph` varchar(50) NOT NULL default 'area';
 ALTER TABLE tlayout_data ADD `label_position` varchar(50) NOT NULL default 'down';
 ALTER TABLE tlayout_data ADD COLUMN `show_statistics` tinyint(2) NOT NULL default '0';
 ALTER TABLE tlayout_data ADD COLUMN `element_group` int(10) NOT NULL default '0';
+ALTER TABLE tlayout_data ADD COLUMN `id_layout_linked_weight` int(10) NOT NULL default '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tagent_custom_fields`

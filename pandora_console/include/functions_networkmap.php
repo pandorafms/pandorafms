@@ -1111,7 +1111,7 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cu
 		}
 		
 		$node = "\n" . $agent['id_node'].' [ parent="' . $agent['id_parent'] . '", color="'.$status_color.'", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.40, height=0.40, label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>' . $img_node . '</TD></TR>
-		 <TR><TD>'.io_safe_output($name).'</TD></TR></TABLE>>,
+		 <TR><TD>'.io_safe_input($name).'</TD></TR></TABLE>>,
 		 shape="doublecircle", URL="'.$url.'",
 		 tooltip="' . $url_tooltip . '"];' . "\n";
 	}

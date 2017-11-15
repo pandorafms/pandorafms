@@ -421,7 +421,7 @@ sub PandoraFMS::Recon::Base::create_agent($$) {
 
 		$agent_id = pandora_create_agent($self->{'pa_config'}, $self->{'pa_config'}->{'servername'}, $host_name, $device, $self->{'group_id'}, 0, $id_os, '', 300, $self->{'dbh'});
 		return undef unless defined ($agent_id) and ($agent_id > 0);
-		pandora_event($self->{'pa_config'}, "[RECON] New " . $self->get_device_type($device) . " found (" . join(',', $self->get_addresses($device)) . ").", $self->{'group_id'}, $agent_id, 2, 0, 0, 'recon_host_detected', 0, $self->{'dbh'});
+		pandora_event($self->{'pa_config'}, "[RECON] New " . safe_output($self->get_device_type($device)) . " found (" . join(',', safe_output($self->get_addresses($device))) . ").", $self->{'group_id'}, $agent_id, 2, 0, 0, 'recon_host_detected', 0, $self->{'dbh'});
 		$agent_learning = 1;
 
 		# Create network profile modules for the agent

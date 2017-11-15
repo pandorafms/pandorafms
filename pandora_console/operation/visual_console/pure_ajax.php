@@ -183,7 +183,10 @@ $ignored_params['refr'] = '';
 		});			
 
 		$(".overlay").removeClass("overlay").addClass("overlaydisabled");
-		
+			
+	});
+	
+	$(window).load (function () {
 		$('.item:not(.icon) img').each(function(){
 			
 			

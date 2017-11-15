@@ -261,7 +261,13 @@ config_check();
 				
 				if ($check_minor_release_available) {
 					if (users_is_admin($config['id_user'])) {
-						set_pandora_error_for_header('There are one or more minor releases waiting for update', 'minor release/s available');
+						
+						if($config['language'] == 'es'){
+							set_pandora_error_for_header('Hay una o mas revisiones menores en espera para ser actualizadas. <a style="font-size:8pt;font-style:italic;" target="blank" href="http://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Actualizacion#Versi.C3.B3n_7.0NG_.28_Rolling_Release_.29">'.__('Sobre actualización de revisión menor').'</a>', 'Revisión/es menor/es disponible/s');
+				}
+				else{
+							set_pandora_error_for_header('There are one or more minor releases waiting for update. <a style="font-size:8pt;font-style:italic;" target="blank" href="http://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Anexo_Upgrade#Version_7.0NG_.28_Rolling_Release_.29">'.__('About minor release update').'</a>', 'minor release/s available');
+				}				
 					}
 				}
 				echo '<div id="alert_messages" style="display: none"></div>';

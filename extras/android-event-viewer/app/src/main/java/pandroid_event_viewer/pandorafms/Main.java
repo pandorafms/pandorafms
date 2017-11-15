@@ -96,10 +96,29 @@ public class Main extends Activity {
 			Activity.MODE_PRIVATE);
 
 		setContentView(R.layout.main);
+		final ImageButton btnSettings = (ImageButton) findViewById(R.id.settings_icon_button_main);
+		final ImageButton btnFilter = (ImageButton) findViewById(R.id.filter_icon_button_main);
 		final Button buttonSetAsFilterWatcher = (Button) findViewById(R.id.button_set_as_filter_watcher);
 		final ImageButton buttonSearch = (ImageButton) findViewById(R.id.refresh_icon_button_main);
 		final ImageButton buttonDeleteProfile = (ImageButton) findViewById(R.id.button_delete_profile);
 		final ImageButton buttonSaveProfile = (ImageButton) findViewById(R.id.button_save_profile);
+
+		// Open the settings
+		btnSettings.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				startActivity(new Intent(v.getContext(), Options.class));
+			}
+		});
+
+		// Go to the events list
+		btnFilter.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				Activity a = (Activity) v.getContext();
+				TabActivity ta = (TabActivity) a.getParent();
+				ta.getTabHost().setCurrentTab(1);
+			}
+		});
+
 		// Check if the user preferences it is set.
 		if (object.user.length() == 0 || object.password.length() == 0
 				|| object.url.length() == 0) {

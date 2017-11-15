@@ -196,6 +196,7 @@ function networkmap_process_networkmap($id = 0) {
 				$style['width'] = $node['width'];
 				$style['height'] = $node['height'];
 				$style['label'] = $node['text'];
+				$style['id_networkmap'] = $node['networkmap'];
 				$nodes_and_relations['nodes'][$index]['style'] = json_encode($style);
 				
 				$index++;
@@ -485,6 +486,7 @@ function networkmap_db_node_to_js_node($node, &$count, &$count_item_holding_area
 		$item['image_width'] = (int)$image_size[0];
 		$item['image_height'] = (int)$image_size[1];
 	}
+	$item['raw_text'] = $node['style']['label'];
 	$item['text'] = io_safe_output($node['style']['label']);
 	$item['shape'] = $node['style']['shape'];
 	switch ($node['type']) {
@@ -508,6 +510,13 @@ function networkmap_db_node_to_js_node($node, &$count, &$count_item_holding_area
 	$item['map_id'] = 0;
 	if (isset($node['id_map'])) {
 		$item['map_id'] = $node['id_map'];
+	}
+
+	if (!isset($node['style']['id_networkmap']) || $node['style']['id_networkmap'] == '' || $node['style']['id_networkmap'] == 0) {
+		$item['networkmap_id'] = 0;
+	}
+	else {
+		$item['networkmap_id'] = $node['style']['id_networkmap'];
 	}
 	
 	$count++;

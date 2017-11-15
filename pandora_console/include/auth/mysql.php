@@ -215,6 +215,13 @@ function process_user_login_remote ($login, $pass, $api = false) {
 			break;
 	}
 	
+	if ($config["auth"] === 'ldap') {
+		$login_user_attribute = $login;
+		if (($config['ldap_login_user_attr'] != 'name') && ($config['ldap_login_user_attr'] != null)) {
+			$login = get_ldap_login_attr($login);
+		}
+	}
+	
 	// Authentication ok, check if the user exists in the local database
 	if (is_user ($login)) {
 		if (!user_can_login($login)) {
@@ -323,13 +330,11 @@ function process_user_login_remote ($login, $pass, $api = false) {
 		}
 		
 		// Create the user
-		if (enterprise_hook ('prepare_permissions_groups_of_user_ldap',
-				array($login,
-					$pass,
-					array ('fullname' => $login, 
-						'comments' => 'Imported from ' . $config['auth']),
-					false, defined('METACONSOLE'))) === false) {
-			
+		$prepare_perms = prepare_permissions_groups_of_user_ldap($login_user_attribute, $pass, 
+			array ('fullname' => $login_user_attribute, 'comments' => 'Imported from ' . $config['auth']),
+			false, defined('METACONSOLE'));
+		
+		if (!$prepare_perms) {
 			$config["auth_error"] = __("User not found in database 
 					or incorrect password");
 					
@@ -730,6 +735,67 @@ function ldap_process_user_login ($login, $password) {
 	}
 }
 
+function get_ldap_login_attr ($login) {
+	global $config;
+
+	if (! function_exists ("ldap_connect")) {
+		$config["auth_error"] = __('Your installation of PHP does not support LDAP');
+		
+		return false;
+	}
+
+	// Connect to the LDAP server
+	$ds = @ldap_connect ($config["ldap_server"], $config["ldap_port"]);
+	
+	if (!$ds) {
+		$config["auth_error"] = 'Error connecting to LDAP server';
+		
+		return false;
+	}
+
+	// Set the LDAP version
+	ldap_set_option ($ds, LDAP_OPT_PROTOCOL_VERSION, $config["ldap_version"]);
+	
+	if ($config["ldap_start_tls"]) {
+		if (!@ldap_start_tls ($ds)) { 
+			$config["auth_error"] = 'Could not start TLS for LDAP connection';
+			@ldap_close ($ds);
+			
+			return false;
+		}
+	}
+
+	$id_user = $login;
+
+	switch ($config['ldap_login_user_attr']) {
+		case 'email':
+			$dc = io_safe_output($config["ldap_base_dn"]);
+	
+			$filter="(" . $config['ldap_login_attr'] . "=" . io_safe_output($id_user) . ")";
+			$justthese = array("mail");
+			
+			$sr = ldap_search($ds, $dc, $filter, $justthese);
+			
+			$info = ldap_get_entries($ds, $sr);
+
+			if ($info["count"] == 0 && !isset($info[0]["mail"])) {
+				@ldap_close ($ds);
+				return $id_user;
+			}
+			else {
+				$info = $info[0];
+			}
+
+			$id_user = $info['mail'][0];
+
+			@ldap_close ($ds);
+
+			break;
+	}
+
+	return $id_user;
+}
+
 /**
  * Checks if a user is in the autocreate blacklist.
  *
@@ -748,6 +814,458 @@ function is_user_blacklisted ($user) {
 	}
 	
 	return false;
+}
+
+/**
+ * Check permissions in LDAP for prepare to create user in Pandora.
+ *
+ * @param string Login
+ * @param string Password
+ * @param string User Info
+ * @param string check_permissions Check if change permissions
+ *
+ * @return bool True if the login succeeds, false otherwise
+ */
+function prepare_permissions_groups_of_user_ldap ($id_user, $password,
+	$user_info, $check_permissions = false, $syncronize = false) {
+	
+	global $config;
+	include_once($config['homedir'] . "/include/functions_html.php");
+	
+	if (! function_exists ("ldap_connect")) {
+		return false;
+	}
+	
+	// Do not allow blank passwords
+	if ($password == "") {
+		return false;
+	}
+	
+	// Connect to the LDAP server
+	$ds = @ldap_connect ($config["ldap_server"], $config["ldap_port"]);
+	if (!$ds) {
+		return false;
+	}
+	
+	// Set the LDAP version
+	ldap_set_option ($ds, LDAP_OPT_PROTOCOL_VERSION, $config["ldap_version"]);
+	
+	if ($config["ldap_start_tls"]) {
+		if (!@ldap_start_tls ($ds)) {
+			@ldap_close ($ds);
+			return false;
+		}
+	}
+	
+	$dc = io_safe_output($config["ldap_base_dn"]);
+	
+	#Search group of this user it belong.
+	$filter="(" . $config['ldap_login_attr'] . "=" . io_safe_output($id_user) . ")";
+	$justthese = array("objectclass=group");
+	
+	$sr = ldap_search($ds, $dc, $filter, $justthese);
+	
+	$memberof = ldap_get_entries($ds, $sr);
+	
+	if ($memberof["count"] == 0 && !isset($memberof[0]["memberof"])) {
+		@ldap_close ($ds);
+		return false;
+	}
+	else {
+		$memberof = $memberof[0];
+	}
+	
+	unset($memberof["count"]);
+
+	$ldap_base_dn  = !empty($config["ldap_base_dn"]) ? "," . io_safe_output($config["ldap_base_dn"]) : '';
+	
+	$correct = false;
+	if(!empty($ldap_base_dn)) {
+		if (strlen($password) != 0 && @ldap_bind($ds, $memberof['dn'], $password) ) {
+			$correct = true;
+		}
+	}
+	else {
+		if (strlen($password) != 0 && @ldap_bind($ds, io_safe_output($login), $password) ) {
+			$correct = true;
+		}
+	}
+	
+	if (!$correct) {
+		@ldap_close ($ds);
+
+		return false;
+	}
+	
+	$permissions = array();
+	$i = 0;
+	$count_total = 0;
+
+	$ldap_adv_perms = json_decode(io_safe_output($config['ldap_adv_perms']), true);
+	
+	foreach ($ldap_adv_perms as $ldap_adv_perm) {
+		$groups = $ldap_adv_perm['groups_ldap'];
+		
+		if ($groups[0] == '') {
+			$groups = array();
+		}
+		else {
+			$groups = $groups[0];
+		}
+
+		$count_ad_adv_perms = count(explode(",", $groups));
+		
+		$tags_ids = array();
+		$tags = implode(",", $tags);
+		if ($tags == null) {
+			$tags = "";
+		} 
+
+		foreach ($memberof as $member) {
+			$member_to_compare = str_replace($config['ldap_login_attr'] . "=", "", $member);
+			$member_to_compare = str_replace($id_user . ",", "", $member_to_compare);
+			$member_to_compare = str_replace("," . $dc, "", $member_to_compare);
+			
+			if (($member_to_compare == $dc) && (empty($groups))) {
+				$count_total++;
+			}
+			else {
+				$member_to_compare = explode(",", $member_to_compare);
+				$groups = explode(",", $groups);
+				foreach ($groups as $g) {
+					if ($member_to_compare[0] == $g) {
+						$count_total++;
+					}
+				}
+			}
+		}
+
+		if ($count_total > 0) {
+			$profile_id = $ldap_adv_perm['profile'];
+			$id_grupos = $ldap_adv_perm['group'];
+			
+			if (empty($profile_id)) {
+				@ldap_close ($ds);
+				return false;
+			}
+			
+			$permissions[$i]["profile"] = $profile_id;
+			$permissions[$i]["groups"] = $id_grupos;
+			$permissions[$i]["tags"] = $tags;
+		}
+		$i++;
+		$count_total = 0;
+		$count_ad_adv_perms = 0;
+	}
+	
+	if ( $check_permissions ) {
+		$result = check_permission_ldap ($id_user, $password, $user_info, $permissions, $syncronize);
+		@ldap_close ($ds);
+		
+		return $result;
+	}
+	
+	if (!is_user ($id_user)) {
+		if (($config['ldap_login_user_attr'] != 'name') && ($config['ldap_login_user_attr'] != null)) {
+			switch ($config['ldap_login_user_attr']) {
+				case 'email':
+					$filter="(" . $config['ldap_login_attr'] . "=" . io_safe_output($id_user) . ")";
+					$justthese = array("mail");
+					
+					$sr = ldap_search($ds, $dc, $filter, $justthese);
+					
+					$info = ldap_get_entries($ds, $sr);
+
+					if ($info["count"] == 0 && !isset($info[0]["mail"])) {
+						@ldap_close ($ds);
+						return false;
+					}
+					else {
+						$info = $info[0];
+					}
+
+					$id_user = $info['mail'][0];
+					$user_info['fullname'] = $id_user;
+
+					break;
+			}
+		}
+		
+		$create_user = create_user_and_permisions_ldap($id_user, $password, $user_info, $permissions, $syncronize);
+	}
+	
+	@ldap_close ($ds);
+
+	return $create_user;
+}
+
+/**
+ * Create progile with data obtaint from AD
+ *
+ * @param string Login
+ * @param string Password
+ * @param array user_info
+ * @param array permiisons
+ *
+ * @return bool
+ */
+function create_user_and_permisions_ldap ($id_user, $password, $user_info,
+			$permissions, $syncronize = false) {
+	global $config;
+	
+	$values = $user_info;
+	$values["id_user"] = $id_user;
+	
+	if ($config['ldap_save_password']) {
+		$values["password"] = md5 ($password);
+	}
+	$values["last_connect"] = 0;
+	$values["registered"] = get_system_time ();
+	if ( defined("METACONSOLE") && $syncronize )
+		$values['metaconsole_access_node'] = $config['ldap_adv_user_node'];
+	$user = (@db_process_sql_insert ("tusuario", $values)) !== false;
+	
+	if ($user) {
+		if (!empty($permissions)) {
+			foreach ($permissions as $permission) {
+				$id_profile = $permission["profile"];
+				$id_groups = $permission["groups"];
+				$tags = $permission["tags"];
+				
+				foreach ($id_groups as $id_group) {
+					$profile = profile_create_user_profile(
+						$id_user, $id_profile, $id_group, false, $tags);
+				}
+				
+				if ( defined("METACONSOLE") && $syncronize ) {
+					enterprise_include_once('include/functions_metaconsole.php');
+					
+					unset($values['metaconsole_access_node']);
+					$values['not_login'] = (int) !$config['ldap_adv_user_node'];
+					
+					$servers = metaconsole_get_servers();
+					foreach ($servers as $server) {
+						$perfil_maestro = db_get_row('tperfil',
+							'id_perfil', $permission["profile"]);
+
+						if (metaconsole_connect($server) == NOERR ) {
+							
+							if (!profile_exist($perfil_maestro['name'])) {
+								unset($perfil_maestro['id_perfil']);
+								$id_profile = db_process_sql_insert('tperfil', $perfil_maestro);
+							}
+							else {
+								$id_profile = db_get_value('id_perfil', 'tperfil', 'name', $perfil_maestro['name']);
+							}
+							
+							db_process_sql_insert ("tusuario", $values);
+							foreach ($id_groups as $id_group) {
+								$profile = profile_create_user_profile ($id_user,
+									$id_profile, $id_group, false, $tags);
+							}
+						}
+						
+						metaconsole_restore_db();
+					}
+				}
+				
+				if (!$profile)
+					return false;
+			}
+		}
+		else {
+			$profile = profile_create_user_profile(
+						$id_user, $config['default_remote_profile'], $config['default_remote_group'], false, $config['default_assign_tags']);
+
+			if (!$profile)
+					return false;
+		}
+	}
+	return true;
+}
+
+/**
+ * Check if user have right permission in pandora. This
+ * permission depend of ldap.
+ *
+ * @param string Login
+ * @param string Password
+ *
+ * @return string
+ */
+function check_permission_ldap ($id_user, $password, $user_info,
+			$permissions, $syncronize = false) {
+	
+	global $config;
+	include_once($config['homedir'] . "/enterprise/include/functions_metaconsole.php");
+	
+	$result_user = users_get_user_by_id($id_user);
+	$filter = array("id_usuario" => $id_user);
+	$profiles_user = array();
+	$user_profiles =
+			db_get_all_rows_filter ("tusuario_perfil", $filter);
+	
+	foreach ($user_profiles as $user_profile) {
+		$profiles_user[$user_profile["id_up"]] =
+				$user_profile["id_perfil"];
+	}
+	
+	$profiles_user_nodes = array();
+	$permissions_nodes = array();
+	if ( is_metaconsole() && $syncronize ) {
+		$servers = metaconsole_get_servers();
+		foreach ($servers as $server) {
+			if ( metaconsole_connect($server) == NOERR ) {
+				$user_profiles_nodes =
+					db_get_all_rows_filter ("tusuario_perfil", $filter);
+				foreach ($user_profiles_nodes as $user_profile_node) {
+					$profiles_user_nodes[$server['server_name']][$user_profile_node["id_up"]] =
+							$user_profile_node["id_perfil"];
+				}
+			}
+			metaconsole_restore_db();
+		}
+		
+		foreach ($permissions as $key => $permission) {
+			$perfil_maestro = db_get_row('tperfil',
+					'id_perfil', $permission['profile']);
+			foreach ($servers as $server) {
+				if (metaconsole_connect($server) == NOERR ) {
+					if (profile_exist($perfil_maestro['name'])) {
+						$id_profile = db_get_value('id_perfil', 'tperfil', 'name', $perfil_maestro['name']);
+						$permissions_nodes[$server['server_name']][$key] = $permission;
+						$permissions_nodes[$server['server_name']][$key]['profile'] = $id_profile;
+					}
+				}
+				metaconsole_restore_db();
+			}
+		}
+	}
+	
+	$no_found = array();
+	if ($result_user) {
+		foreach ($permissions as $permission) {
+			$id_profile = $permission["profile"];
+			$id_groups = $permission["groups"];
+			$tags = $permission["tags"];
+
+			foreach ($id_groups as $id_group) {
+				$filter = array("id_usuario" => $id_user,
+								"id_perfil"=>$id_profile,
+								"id_grupo" => $id_group);
+				//~ Find perfil with advance permissions in 
+				//~ authentication menu. This data depends on 
+				//~ groups where this user it belong.
+				$result_profiles =
+						db_get_row_filter ("tusuario_perfil", $filter);
+				if (!$result_profiles) {
+					#If not found save in array.
+					$no_found[] = array("id_perfil"=>$id_profile,
+							"id_grupo" => $id_group, "tags" =>$tags);
+				}
+				else {
+					#if profile is find, delete from array.
+					db_process_sql_update("tusuario_perfil",
+						array("tags" =>$tags),
+						array('id_usuario' => $id_user,
+							'id_up' => $profiles_user[$id_profile]));
+					
+					unset($profiles_user[$result_profiles["id_up"]]);
+				}
+			}
+		}
+
+		if (is_metaconsole() && $syncronize) {
+			$servers = metaconsole_get_servers();
+			foreach ($servers as $server) {
+				foreach ($permissions_nodes[$server['server_name']] as $permission_node) {
+					
+					$id_profile = $permission_node["profile"];
+					$id_groups = $permission_node["groups"];
+					$tags = $permission_node["tags"];
+					
+					foreach ($id_groups as $id_group) {
+
+						$filter = array("id_usuario" => $id_user,
+										"id_perfil"=>$id_profile,
+										"id_grupo" => $id_group);
+						
+						if (metaconsole_connect($server) == NOERR ) {
+							$result_profiles =
+							db_get_row_filter ("tusuario_perfil", $filter);
+							
+							if (!$result_profiles) {
+								#If not found save in array.
+								$no_found_server[$server['server_name']][] = array("id_perfil" => $id_profile,
+								"id_grupo" => $id_group, "tags" => $tags);
+							}
+							else {
+								#if profile is find, delete from array.
+								db_process_sql_update("tusuario_perfil",
+								array("tags" =>$tags),
+								array('id_usuario' => $id_user,
+								'id_up' => $profiles_user_nodes[$server_name][$id_profile]));
+
+								unset($profiles_user_nodes[$server_name][$result_profiles["id_up"]]);
+							}
+						}
+					}
+				}
+				metaconsole_restore_db();
+			}
+		}
+		
+		if ( empty($profiles_user) && empty($no_found) ) {
+			#The permmisions of user not changed
+			return true;
+		}
+		else {
+			foreach ($profiles_user as $key => $profile_user) {
+				#The other profiles are deleted
+				profile_delete_user_profile ($id_user, $key);
+			}
+
+			if ( is_metaconsole() && $syncronize ) {
+				foreach ($profiles_user_nodes as $server_name => $profile_users) {
+					$server = metaconsole_get_connection($server_name);
+					foreach ($profile_users as $key => $profile_user) {	
+						if ( metaconsole_connect($server) == NOERR ) {
+							profile_delete_user_profile ($id_user, $key);
+						}
+					}
+					metaconsole_restore_db();
+				}
+			}
+
+			foreach ($no_found as $new_profiles) {
+				#Add the missing permissions
+				profile_create_user_profile ($id_user,
+				$new_profiles["id_perfil"],
+				$new_profiles["id_grupo"], false,
+				$new_profiles["tags"]);
+			}
+			
+			if ( is_metaconsole() && $syncronize ) {
+				$servers = metaconsole_get_servers();
+				foreach ($servers as $server) {
+					if ( metaconsole_connect($server) == NOERR ) {
+					foreach ($no_found_server[$server['server_name']] as $new_profiles) {
+						profile_create_user_profile ($id_user,
+							$new_profiles["id_perfil"],
+							$new_profiles["id_grupo"], false,
+							$new_profiles["tags"]);
+					}
+				}
+				metaconsole_restore_db();
+				}
+			}
+
+			return "permissions_changed";
+		}
+	}
+	else {
+		return "error_permissions";
+	}
 }
 
 /**

@@ -38,8 +38,8 @@ $start_date = get_parameter ("start_date", date("Y-m-d"));
 $draw_events = get_parameter ("draw_events", 0);
 $modules = get_parameter('modules', array());
 $filter = get_parameter('filter', 0);
-$combined = (bool)get_parameter('combined', 1);
-
+$combined = get_parameter('combined', 1);
+$option_type = get_parameter('option_type', 0);
 
 //----------------------------------------------------------------------
 // Get modules of agent sorted as:
@@ -159,7 +159,6 @@ $table->data[0][1] = html_print_select($list_modules, 'modules[]',
 $table->rowspan[2][0] = 7;
 $table->data[2][0] = "";
 
-
 $table->data[2][1] = __('Begin date');
 $table->data[2][2] = html_print_input_text ("start_date", substr ($start_date, 0, 10),'', 10, 40, true);
 $table->data[2][2] .= html_print_image ("images/calendar_view_day.png", true, array ("onclick" => "scwShow(scwID('text-start_date'),this);"));
@@ -174,12 +173,17 @@ $table->data[5][2] = __('Show alerts') .
 	ui_print_help_tip(__('the combined graph does not show the alerts into this graph'), true);
 $table->data[5][3] = html_print_checkbox ("draw_alerts", 1, (bool) $draw_alerts, true);
 $table->data[6][2] = __('Show as one combined graph');
-$table->data[6][3] = 
-	html_print_radio_button('combined', 1, __('one combined graph'),
-		$combined, true);
-$table->data[6][3] .= 
-	html_print_radio_button('combined', 0, __('several graphs for each module'),
-		$combined, true);
+$graph_option_one_or_several = array(0 => __('several graphs for each module'), 1 => __('One combined graph'));
+$table->data[6][3] = html_print_select($graph_option_one_or_several, 'combined', $combined, '', '', 1, true);
+
+$table->data[7][2] = __('Chart type');
+if ($combined == 1) {
+	$graph_option_type = array(0 => __('Area'), 1 => __('Area stack'), 2 => __('Line'), 3 => __('Line stack'));
+}
+else {
+	$graph_option_type = array(0 => __('Area'), 2 => __('Line'));
+}
+$table->data[7][3] = html_print_select($graph_option_type, 'option_type', $option_type, '', '', 1, true);
 
 $htmlForm = '<form method="post" action="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=graphs&id_agente=' . $id_agente . '" >';
 $htmlForm .= html_print_table($table, true);
@@ -321,6 +325,39 @@ echo "</div>";
 	
 	// Load graphs
 	$(document).ready(function() {
+		$('#combined').change(function () {
+			if ($('#combined').val() == 1) {
+				$('#option_type').empty();
+				$('#option_type').append($('<option>', {
+					value: 0,
+					text: "<?php echo __('Area'); ?>"
+				}));
+				$('#option_type').append($('<option>', {
+					value: 1,
+					text: "<?php echo __('Area stack'); ?>"
+				}));
+				$('#option_type').append($('<option>', {
+					value: 2,
+					text: "<?php echo __('Line'); ?>"
+				}));
+				$('#option_type').append($('<option>', {
+					value: 3,
+					text: "<?php echo __('Line stack'); ?>"
+				}));
+			}
+			else {
+				$('#option_type').empty();
+				$('#option_type').append($('<option>', {
+					value: 0,
+					text: "<?php echo __('Area'); ?>"
+				}));
+				$('#option_type').append($('<option>', {
+					value: 2,
+					text: "<?php echo __('Line'); ?>"
+				}));
+			}
+		});
+
 		var getModulesPHP = function () {
 			return <?php echo json_encode($modules); ?>;
 		}
@@ -353,7 +390,7 @@ echo "</div>";
 			});
 		}
 		
-		var requestSparseGraph = function (moduleId, period, showEvents, width, height, title, showAlerts, avgOnly, date, unit) {
+		var requestSparseGraph = function (moduleId, period, showEvents, width, height, title, showAlerts, avgOnly, date, unit, type_g) {
 			return requestGraph('sparse', {
 				page: 'include/ajax/graph.ajax',
 				print_sparse_graph: 1,
@@ -366,7 +403,8 @@ echo "</div>";
 				show_alerts: showAlerts,
 				avg_only: avgOnly,
 				date: date,
-				unit: unit
+				unit: unit,
+				type_g: type_g
 			});
 		}
 		
@@ -380,15 +418,23 @@ echo "</div>";
 			var $container = $(element);
 			var $errorMessage = $('div#graph-error-message');
 			var period = $container.data('period');
-			var conf_stacked = '<?php echo $config['type_module_charts']; ?>';
+			var conf_stacked = parseInt($("#option_type").val());
+			
 			switch (conf_stacked) {
-				case 'area':
+				case 0:
 					var stacked = 0;
 					break;
-				case 'line':
+				case 1:
+					var stacked = 1;
+					break;
+				case 2:
 					var stacked = 2;
 					break;
+				case 3:
+					var stacked = 3;
+					break;
 			}
+
 			var date = $container.data('date');
 			var height = $container.data('height');
 			
@@ -426,6 +472,16 @@ echo "</div>";
 			var unit = $container.data('unit');
 			var date = $container.data('date');
 			var height = $container.data('height');
+			var conf_stacked = parseInt($("#option_type").val());
+			
+			switch (conf_stacked) {
+				case 0:
+					var type_g = 'area';
+					break;
+				case 2:
+					var type_g = 'line';
+					break;
+			}
 			
 			var width = $container.width() - 20;
 			
@@ -435,8 +491,8 @@ echo "</div>";
 			var handleError = function (xhr, textStatus, errorThrown) {
 				$container.html($errorMessage.html());
 			}
-			
-			requestSparseGraph(moduleId, period, showEvents, width, height, title, showAlerts, avgOnly, date, unit)
+
+			requestSparseGraph(moduleId, period, showEvents, width, height, title, showAlerts, avgOnly, date, unit, type_g)
 				.done(handleSuccess)
 				.fail(handleError);
 		}

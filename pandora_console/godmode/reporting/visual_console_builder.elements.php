@@ -602,11 +602,18 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 				"10pt=.visual_font_size_10pt, " +
 				"12pt=.visual_font_size_12pt, " +
 				"14pt=.visual_font_size_14pt, " +
+				"18pt=.visual_font_size_18pt, " +
 				"24pt=.visual_font_size_24pt, " +
+				"28pt=.visual_font_size_28pt, " +
 				"36pt=.visual_font_size_36pt, " +
+				"48pt=.visual_font_size_48pt, " +
+				"60pt=.visual_font_size_60pt, " +
 				"72pt=.visual_font_size_72pt, " +
+				"84pt=.visual_font_size_84pt, " +
 				"96pt=.visual_font_size_96pt, " +
+				"116pt=.visual_font_size_116pt, " +
 				"128pt=.visual_font_size_128pt, " +
+				"140pt=.visual_font_size_140pt, " +
 				"154pt=.visual_font_size_154pt, " +
 				"196pt=.visual_font_size_196pt",
 			theme_advanced_toolbar_location : "top",

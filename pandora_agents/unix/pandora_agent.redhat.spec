@@ -2,8 +2,8 @@
 #Pandora FMS Linux Agent
 #
 %define name        pandorafms_agent_unix
-%define version     7.0NG.714
-%define release     1
+%define version     7.0NG.715
+%define release     171115
 
 Summary:            Pandora FMS Linux agent, PERL version
 Name:               %{name}
@@ -24,7 +24,7 @@ Requires(preun):    chkconfig /bin/rm /usr/sbin/userdel
 Requires:           fileutils textutils unzip
 Requires:           util-linux procps grep
 Requires:           /sbin/ip /bin/awk
-Requires:           perl perl(Sys::Syslog) perl(IO::Socket::SSL)
+Requires:           perl perl(Sys::Syslog)
 # Required by plugins
 #Requires:           sh-utils sed passwd net-tools rpm
 AutoReq:            0

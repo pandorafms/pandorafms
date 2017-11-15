@@ -94,22 +94,27 @@ function ui_print_truncate_text($text, $numChars = GENERIC_SIZE_TEXT, $showTextI
 		}
 	}
 	
-	$text = io_safe_output($text);
-	if (mb_strlen($text, "UTF-8") > ($numChars)) {
+	$text_html_decoded = io_safe_output($text);
+	$text_has_entities = $text != $text_html_decoded;
+	
+	if (mb_strlen($text_html_decoded, "UTF-8") > ($numChars)) {
 		// '/2' because [...] is in the middle of the word.
 		$half_length = intval(($numChars - 3) / 2);
 		
 		// Depending on the strange behavior of mb_strimwidth() itself,
 		// the 3rd parameter is not to be $numChars but the length of
 		// original text (just means 'large enough').
-		$truncateText2 = mb_strimwidth($text,
-			(mb_strlen($text, "UTF-8") - $half_length),
-			mb_strlen($text, "UTF-8"), "", "UTF-8" );
+		$truncateText2 = mb_strimwidth($text_html_decoded,
+			(mb_strlen($text_html_decoded, "UTF-8") - $half_length),
+			mb_strlen($text_html_decoded, "UTF-8"), "", "UTF-8" );
 		
-		$truncateText = mb_strimwidth($text, 0,
-			($numChars - $half_length), "", "UTF-8") . $suffix;
+		$truncateText = mb_strimwidth($text_html_decoded, 0,
+			($numChars - $half_length), "", "UTF-8");
 		
-		$truncateText = $truncateText . $truncateText2;
+		// Recover the html entities to avoid XSS attacks
+		$truncateText = ($text_has_entities)
+			? io_safe_input($truncateText) . $suffix . io_safe_input($truncateText2)
+			: $truncateText . $suffix . $truncateText2;
 		
 		if ($showTextInTitle) {
 			if ($style === null) {
@@ -2968,6 +2973,11 @@ function ui_print_agent_autocomplete_input($parameters) {
 		else
 			$metaconsole_enabled = false;
 	}
+
+	$get_only_string_modules = false;
+	if (isset($parameters['get_only_string_modules'])) {
+		$get_only_string_modules = true;
+	}
 	
 	$spinner_image = html_print_image('images/spinner.gif', true, false, true);
 	if (isset($parameters['spinner_image'])) {
@@ -3029,7 +3039,10 @@ function ui_print_agent_autocomplete_input($parameters) {
 		$javascript = $parameters['javascript'];
 	}
 	
-	
+	$get_order_json = false;
+	if (isset($parameters['get_order_json'])) {
+		$get_order_json = true;
+	}
 	
 	$javascript_is_function_select = false; //Default value
 	if (isset($parameters['javascript_is_function_select'])) {
@@ -3115,6 +3128,14 @@ function ui_print_agent_autocomplete_input($parameters) {
 			
 			if (' . ((int) !$metaconsole_enabled) . ') {
 				inputs.push ("force_local_modules=1");
+			}
+
+			if (' . ((int) $get_order_json) . ') {
+				inputs.push ("get_order_json=1");
+			}
+
+			if (' . ((int) $get_only_string_modules) . ') {
+				inputs.push ("get_only_string_modules=1");
 			}
 			
 			if (' . ((int)$metaconsole_enabled) . ') {

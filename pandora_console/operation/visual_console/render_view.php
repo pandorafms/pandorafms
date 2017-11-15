@@ -279,7 +279,10 @@ $ignored_params['refr'] = '';
 		});
 		
 		$(".overlay").removeClass("overlay").addClass("overlaydisabled");
-		
+	
+	});
+	
+	$(window).load (function () {
 		$('.item:not(.icon) img:not(.b64img)').each( function() {
 			if ($(this).css('float')=='left' || $(this).css('float')=='right') {
 				if(	$(this).parent()[0].tagName == 'DIV'){
@@ -332,6 +335,6 @@ $ignored_params['refr'] = '';
 			height = parseInt($(this).css("height")) - 30;
 			$(this).css('height', height);
 		});
-	
+		
 	});
 </script>

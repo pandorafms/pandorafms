@@ -398,12 +398,12 @@ function snmpBrowserWindow () {
 	$('#text-target_ip').val($('#text-ip_target').val());
 	$('#text-community').val($('#text-snmp_community').val());
 	$('#snmp_browser_version').val($('#snmp_version').val());
-	$('#snmp3_browser_auth_user').val($('#snmp3_auth_user').val());
+	$('#text-snmp3_browser_auth_user').val($('#text-snmp3_auth_user').val());
 	$('#snmp3_browser_security_level').val($('#snmp3_security_level').val());
 	$('#snmp3_browser_auth_method').val($('#snmp3_auth_method').val());
-	$('#snmp3_browser_auth_pass').val($('#snmp3_auth_pass').val());
+	$('#password-snmp3_browser_auth_pass').val($('#password-snmp3_auth_pass').val());
 	$('#snmp3_browser_privacy_method').val($('#snmp3_privacy_method').val());
-	$('#snmp3_browser_privacy_pass').val($('#snmp3_privacy_pass').val());
+	$('#password-snmp3_browser_privacy_pass').val($('#password-snmp3_privacy_pass').val());
 	
 	$("#snmp_browser_container").show().dialog ({
 		title: '',

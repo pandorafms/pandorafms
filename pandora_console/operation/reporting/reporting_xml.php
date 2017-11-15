@@ -17,6 +17,7 @@ include_once("include/functions_modules.php");
 include_once("include/functions_events.php");
 include_once ('include/functions_groups.php');
 include_once ('include/functions_netflow.php');
+include_once ('include/functions_reporting_xml.php');
 enterprise_include_once ('include/functions_metaconsole.php');
 
 
@@ -127,38 +128,7 @@ switch ($date_mode) {
 $report = reporting_make_reporting_data(null, $id_report, $date, $time,
 	$period, 'static');
 
-//------- Removed the unused fields ------------------------------------
-unset($report['header']);
-unset($report['first_page']);
-unset($report['footer']);
-unset($report['custom_font']);
-unset($report['id_template']);
-unset($report['id_group_edit']);
-unset($report['metaconsole']);
-unset($report['private']);
-unset($report['custom_logo']);
-//----------------------------------------------------------------------
-
-//change agent name
-if(count($report['contents']) > 0){
-    for($i = 0;$i < count($report['contents']); $i++){
-        $aux = explode("-",$report['contents'][$i]['subtitle']);
-        $report['contents'][$i]['subtitle'] = db_get_value ("alias","tagente","nombre",$report['contents'][$i]['agent_name']) .' -'. $aux[1];
-    }
-}
-
-$xml = null;
-$xml = array2XML($report, "report", $xml);
-$xml = preg_replace("/(<[^>]+>)(<[^>]+>)(<[^>]+>)/", "$1\n$2\n$3", $xml);
-$xml = preg_replace("/(<[^>]+>)(<[^>]+>)/", "$1\n$2", $xml);
-
-header ('Content-Type: application/xml; charset=UTF-8');
-header ('Content-Disposition: attachment; filename="'.$filename.'.xml"');
-
-// Clean the output buffer
-ob_clean();
-
-echo $xml;
+reporting_xml_get_report($report, $filename);
 
 exit;
 ?>

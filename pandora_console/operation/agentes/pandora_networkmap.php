@@ -161,7 +161,7 @@ if ($new_networkmap || $save_networkmap) {
 			true);
 		
 		$id = $result;
-
+		define("_id_", $id);
 		// Force the tab = 'view'
 		$tab = "view";
 	}

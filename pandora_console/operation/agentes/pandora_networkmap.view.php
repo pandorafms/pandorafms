@@ -677,9 +677,13 @@ if (is_ajax ()) {
 	}
 }
 //--------------END AJAX------------------------------------------------
-if ($id == 0) {
+if (_id_ != "_id_") {
+	$id = _id_;
+}
+else {
 	$id = (int) get_parameter('id_networkmap', 0);
 }
+
 $dash_mode = 0;
 $map_dash_details = array();
 

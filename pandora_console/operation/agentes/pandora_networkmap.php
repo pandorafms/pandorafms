@@ -112,8 +112,10 @@ if (enterprise_installed()) {
 			__('Succesfully created'), __('Could not be created'), '',
 			true);
 		
-		// Force the tab = 'list'
-		$tab = "list";
+		$id = $result;
+		define("_id_", $id);
+
+		$tab = "view";
 	}
 	else if ($update_empty_networkmap) {
 		$id_group = (int) get_parameter('id_group', 0);
@@ -290,8 +292,13 @@ if ($new_networkmap || $save_networkmap) {
 		
 		$id = $result;
 		define("_id_", $id);
-		// Force the tab = 'view'
+
 		$tab = "view";
+
+		if ($values['generation_method'] == 6) {
+			$tab = "r_dinamic";
+			define("_activeTab_", 'radial_dynamic');
+		}
 	}
 }
 // The networkmap exists
@@ -433,6 +440,9 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
 }
 
 switch ($tab) {
+	case 'r_dinamic':
+		require('networkmap.dinamic.php');
+		break;
 	case 'edit':
 		require('pandora_networkmap.editor.php');
 		break;

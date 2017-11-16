@@ -473,8 +473,8 @@ $next_row++;
 				.attr("id", "legend_normal")
 		       	.attr("x", 72)
 		       	.attr("y", -30)
-		       	.attr("width", 10)
-		       	.attr("height", 10)
+		       	.attr("width", '10px')
+		       	.attr("height", '10px')
 		  		.style("fill", "#82B92E");
 
 		  	//legend Warning text

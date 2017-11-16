@@ -43,7 +43,7 @@ function networkmap_process_networkmap($id = 0) {
 	
 	$networkmap = db_get_row_filter('tmap',
 		array('id' => $id));
-	$filter = json_decode($networkmap['filter'], true);
+	$map_filter = json_decode($networkmap['filter'], true);
 	
 	$pure = (int)get_parameter('pure', 0);
 	
@@ -95,181 +95,293 @@ function networkmap_process_networkmap($id = 0) {
 	}
 	
 	$nodes_and_relations = array();
-	
+
 	if (enterprise_installed() && ($numNodes > 0)) {
 		$nodes_and_relations = get_structure_nodes($id);
 	}
 	else {
-		// Generate dot file
-		$graph = networkmap_generate_dot (__('Pandora FMS'),
-			$id_group,
-			$simple,
-			$font_size,
-			$layout,
-			$nooverlap,
-			$zoom,
-			$ranksep,
-			$center,
-			$regen,
-			$pure,
-			$id,
-			$show_snmp_modules,
-			false, //cut_names
-			true, // relative
-			'',
-			$ip_mask,
-			$dont_show_subgroups,
-			false,
-			null,
-			$old_mode);
-		
-		switch (PHP_OS) {
-			case "WIN32":
-			case "WINNT":
-			case "Windows":
-				$filename_dot = sys_get_temp_dir() . "\\networkmap_" . $filter;
-				break;
-			default:
-				$filename_dot = sys_get_temp_dir() . "/networkmap_" . $filter;
-				break;
-		}
-		
-		if ($simple) {
-			$filename_dot .= "_simple";
-		}
-		if ($nooverlap) {
-			$filename_dot .= "_nooverlap";
-		}
-		$filename_dot .= "_" . $id . ".dot";
+		if ($map_filter['empty_map']) {
+			// Open Graph
+			$graph = networkmap_open_graph ($layout, $nooverlap, $pure, $zoom,
+				$ranksep, $font_size, null);
+			$graph .= networkmap_create_pandora_node (__('Pandora FMS'), $font_size, $simple);
+			$graph .= networkmap_close_graph ();
 
-		file_put_contents($filename_dot, $graph);
+			switch (PHP_OS) {
+				case "WIN32":
+				case "WINNT":
+				case "Windows":
+					$filename_dot = sys_get_temp_dir() . "\\networkmap_" . $filter;
+					break;
+				default:
+					$filename_dot = sys_get_temp_dir() . "/networkmap_" . $filter;
+					break;
+			}
+			
+			if ($simple) {
+				$filename_dot .= "_simple";
+			}
+			if ($nooverlap) {
+				$filename_dot .= "_nooverlap";
+			}
+			$filename_dot .= "_" . $id . ".dot";
 
-		switch (PHP_OS) {
-			case "WIN32":
-			case "WINNT":
-			case "Windows":
-				$filename_plain = sys_get_temp_dir() . "\\plain.txt";
-				
-				$cmd = io_safe_output($config['graphviz_bin_dir'] . "\\$filter.exe -Tplain -o " . $filename_plain . " " .
-					$filename_dot);
-				break;
-			default:
-				$filename_plain = sys_get_temp_dir() . "/plain.txt";
+			file_put_contents($filename_dot, $graph);
 
-				$cmd = "$filter -Tplain -o " . $filename_plain . " " .
-					$filename_dot;
-				break;
-		}
+			switch (PHP_OS) {
+				case "WIN32":
+				case "WINNT":
+				case "Windows":
+					$filename_plain = sys_get_temp_dir() . "\\plain.txt";
+					
+					$cmd = io_safe_output($config['graphviz_bin_dir'] . "\\$filter.exe -Tplain -o " . $filename_plain . " " .
+						$filename_dot);
+					break;
+				default:
+					$filename_plain = sys_get_temp_dir() . "/plain.txt";
 
-		system ($cmd);
-		
-		unlink($filename_dot);
-		
-		$nodes = networkmap_loadfile($id, $filename_plain,
-			$relation_nodes, $graph);
-		
-		unlink($filename_plain);
+					$cmd = "$filter -Tplain -o " . $filename_plain . " " .
+						$filename_dot;
+					break;
+			}
 
-		//Set the position of modules
-		foreach ($nodes as $key => $node) {
-			if ($node['type'] == 'module') {
-				//Search the agent of this module for to get the
-				//position
-				foreach ($nodes as $key2 => $node2) {
-					if ($node2['id_agent'] != 0 && $node2['type'] == 'agent') {
-						if ($node2['id_agent'] == $node['id_agent']) {
-							$nodes[$key]['coords'][0] =
-								$nodes[$key2]['coords'][0] + $node['height'] / 2;
-							$nodes[$key]['coords'][1] =
-								$nodes[$key2]['coords'][1] + $node['width'] / 2;
+			system ($cmd);
+			
+			unlink($filename_dot);
+			
+			$nodes = networkmap_loadfile($id, $filename_plain,
+				$relation_nodes, $graph);
+			
+			unlink($filename_plain);
+
+			//Set the position of modules
+			foreach ($nodes as $key => $node) {
+				if ($node['type'] == 'module') {
+					//Search the agent of this module for to get the
+					//position
+					foreach ($nodes as $key2 => $node2) {
+						if ($node2['id_agent'] != 0 && $node2['type'] == 'agent') {
+							if ($node2['id_agent'] == $node['id_agent']) {
+								$nodes[$key]['coords'][0] =
+									$nodes[$key2]['coords'][0] + $node['height'] / 2;
+								$nodes[$key]['coords'][1] =
+									$nodes[$key2]['coords'][1] + $node['width'] / 2;
+							}
 						}
 					}
 				}
 			}
+			
+			$nodes_and_relations['nodes'] = array();
+			$index = 0;
+			foreach ($nodes as $key => $node) {
+				$nodes_and_relations['nodes'][$index]['id_map'] = $id;
+				
+				$nodes_and_relations['nodes'][$index]['x'] = (int)$node['coords'][0];
+				$nodes_and_relations['nodes'][$index]['y'] = (int)$node['coords'][1];
+				
+				if (($node['type'] == 'agent') || ($node['type'] == '')) {
+					$nodes_and_relations['nodes'][$index]['source_data'] = $node['id_agent'];
+					$nodes_and_relations['nodes'][$index]['type'] = 0;
+				}
+				else {
+					$nodes_and_relations['nodes'][$index]['source_data'] = $node['id_module'];
+					$nodes_and_relations['nodes'][$index]['id_agent'] = $node['id_agent'];
+					$nodes_and_relations['nodes'][$index]['type'] = 1;
+				}
+				
+				$style = array();
+				$style['shape'] = 'circle';
+				$style['image'] = $node['image'];
+				$style['width'] = $node['width'];
+				$style['height'] = $node['height'];
+				$style['label'] = $node['text'];
+				$style['id_networkmap'] = $node['networkmap'];
+				$nodes_and_relations['nodes'][$index]['style'] = json_encode($style);
+				
+				$index++;
+			}
+
+			$nodes_and_relations['relations'] = array();
+
+			if (enterprise_installed()) {
+				enterprise_include_once("include/functions_pandora_networkmap.php");
+				save_generate_nodes($id, $nodes_and_relations);
+			}
+		}
+		else {
+			// Generate dot file
+			$graph = networkmap_generate_dot (__('Pandora FMS'),
+				$id_group,
+				$simple,
+				$font_size,
+				$layout,
+				$nooverlap,
+				$zoom,
+				$ranksep,
+				$center,
+				$regen,
+				$pure,
+				$id,
+				$show_snmp_modules,
+				false, //cut_names
+				true, // relative
+				'',
+				$ip_mask,
+				$dont_show_subgroups,
+				false,
+				null,
+				$old_mode);
+			
+			switch (PHP_OS) {
+				case "WIN32":
+				case "WINNT":
+				case "Windows":
+					$filename_dot = sys_get_temp_dir() . "\\networkmap_" . $filter;
+					break;
+				default:
+					$filename_dot = sys_get_temp_dir() . "/networkmap_" . $filter;
+					break;
+			}
+			
+			if ($simple) {
+				$filename_dot .= "_simple";
+			}
+			if ($nooverlap) {
+				$filename_dot .= "_nooverlap";
+			}
+			$filename_dot .= "_" . $id . ".dot";
+
+			file_put_contents($filename_dot, $graph);
+
+			switch (PHP_OS) {
+				case "WIN32":
+				case "WINNT":
+				case "Windows":
+					$filename_plain = sys_get_temp_dir() . "\\plain.txt";
+					
+					$cmd = io_safe_output($config['graphviz_bin_dir'] . "\\$filter.exe -Tplain -o " . $filename_plain . " " .
+						$filename_dot);
+					break;
+				default:
+					$filename_plain = sys_get_temp_dir() . "/plain.txt";
+
+					$cmd = "$filter -Tplain -o " . $filename_plain . " " .
+						$filename_dot;
+					break;
+			}
+
+			system ($cmd);
+			
+			unlink($filename_dot);
+			
+			$nodes = networkmap_loadfile($id, $filename_plain,
+				$relation_nodes, $graph);
+			
+			unlink($filename_plain);
+
+			//Set the position of modules
+			foreach ($nodes as $key => $node) {
+				if ($node['type'] == 'module') {
+					//Search the agent of this module for to get the
+					//position
+					foreach ($nodes as $key2 => $node2) {
+						if ($node2['id_agent'] != 0 && $node2['type'] == 'agent') {
+							if ($node2['id_agent'] == $node['id_agent']) {
+								$nodes[$key]['coords'][0] =
+									$nodes[$key2]['coords'][0] + $node['height'] / 2;
+								$nodes[$key]['coords'][1] =
+									$nodes[$key2]['coords'][1] + $node['width'] / 2;
+							}
+						}
+					}
+				}
+			}
+			
+			$nodes_and_relations['nodes'] = array();
+			$index = 0;
+			foreach ($nodes as $key => $node) {
+				$nodes_and_relations['nodes'][$index]['id_map'] = $id;
+				
+				$nodes_and_relations['nodes'][$index]['x'] = (int)$node['coords'][0];
+				$nodes_and_relations['nodes'][$index]['y'] = (int)$node['coords'][1];
+				
+				if (($node['type'] == 'agent') || ($node['type'] == '')) {
+					$nodes_and_relations['nodes'][$index]['source_data'] = $node['id_agent'];
+					$nodes_and_relations['nodes'][$index]['type'] = 0;
+				}
+				else {
+					$nodes_and_relations['nodes'][$index]['source_data'] = $node['id_module'];
+					$nodes_and_relations['nodes'][$index]['id_agent'] = $node['id_agent'];
+					$nodes_and_relations['nodes'][$index]['type'] = 1;
+				}
+				
+				$style = array();
+				$style['shape'] = 'circle';
+				$style['image'] = $node['image'];
+				$style['width'] = $node['width'];
+				$style['height'] = $node['height'];
+				$style['label'] = $node['text'];
+				$nodes_and_relations['nodes'][$index]['style'] = json_encode($style);
+				
+				$index++;
+			}
+			
+			$nodes_and_relations['relations'] = array();
+			$index = 0;
+			foreach ($relation_nodes as $relation) {
+				$nodes_and_relations['relations'][$index]['id_map'] = $id;
+				
+				if (($relation['parent_type'] == 'agent') || ($relation['parent_type'] == '')) {
+					$nodes_and_relations['relations'][$index]['id_parent'] = $relation['id_parent'];
+					$nodes_and_relations['relations'][$index]['id_parent_source_data'] = $nodes[$relation['id_parent']]['id_agent'];
+					$nodes_and_relations['relations'][$index]['parent_type'] = 0;
+				}
+				else if ($relation['parent_type'] == 'module') {
+					$nodes_and_relations['relations'][$index]['id_parent'] = $relation['id_parent'];
+					$nodes_and_relations['relations'][$index]['id_parent_source_data'] = $nodes[$relation['id_parent']]['id_module'];
+					$nodes_and_relations['relations'][$index]['parent_type'] = 1;
+				}
+				else {
+					$nodes_and_relations['relations'][$index]['id_parent'] = $relation['id_parent'];
+					$nodes_and_relations['relations'][$index]['id_child_source_data'] = -2;
+					$nodes_and_relations['relations'][$index]['parent_type'] = 3;
+				}
+				
+				if (($relation['child_type'] == 'agent') || ($relation['child_type'] == '')) {
+					$nodes_and_relations['relations'][$index]['id_child'] = $relation['id_child'];
+					$nodes_and_relations['relations'][$index]['id_child_source_data'] = $nodes[$relation['id_child']]['id_agent'];
+					$nodes_and_relations['relations'][$index]['child_type'] = 0; 
+				}
+				else if ($relation['child_type'] == 'module') {
+					$nodes_and_relations['relations'][$index]['id_child'] = $relation['id_child'];
+					$nodes_and_relations['relations'][$index]['id_child_source_data'] = $nodes[$relation['id_child']]['id_module'];
+					$nodes_and_relations['relations'][$index]['child_type'] = 1; 
+				}
+				else {
+					$nodes_and_relations['relations'][$index]['id_child'] = $relation['id_child'];
+					$nodes_and_relations['relations'][$index]['id_child_source_data'] = -2;
+					$nodes_and_relations['relations'][$index]['child_type'] = 3;
+				}
+				
+				$index++;
+			}
+			
+			if (enterprise_installed()) {
+				enterprise_include_once("include/functions_pandora_networkmap.php");
+				save_generate_nodes($id, $nodes_and_relations);
+			}
+			
+			$pandorafms_node = $nodes_and_relations['nodes'][0];
+			$center = array('x' => $pandorafms_node['x'], 'y' => $pandorafms_node['y']);
+			
+			$networkmap['center_x'] = $center['x'];
+			$networkmap['center_y'] = $center['y'];
+			db_process_sql_update('tmap',
+				array('center_x' => $networkmap['center_x'], 'center_y' => $networkmap['center_y']),
+				array('id' => $id));
 		}
 		
-		$nodes_and_relations['nodes'] = array();
-		$index = 0;
-		foreach ($nodes as $key => $node) {
-			$nodes_and_relations['nodes'][$index]['id_map'] = $id;
-			
-			$nodes_and_relations['nodes'][$index]['x'] = (int)$node['coords'][0];
-			$nodes_and_relations['nodes'][$index]['y'] = (int)$node['coords'][1];
-			
-			if (($node['type'] == 'agent') || ($node['type'] == '')) {
-				$nodes_and_relations['nodes'][$index]['source_data'] = $node['id_agent'];
-				$nodes_and_relations['nodes'][$index]['type'] = 0;
-			}
-			else {
-				$nodes_and_relations['nodes'][$index]['source_data'] = $node['id_module'];
-				$nodes_and_relations['nodes'][$index]['id_agent'] = $node['id_agent'];
-				$nodes_and_relations['nodes'][$index]['type'] = 1;
-			}
-			
-			$style = array();
-			$style['shape'] = 'circle';
-			$style['image'] = $node['image'];
-			$style['width'] = $node['width'];
-			$style['height'] = $node['height'];
-			$style['label'] = $node['text'];
-			$nodes_and_relations['nodes'][$index]['style'] = json_encode($style);
-			
-			$index++;
-		}
-		
-		$nodes_and_relations['relations'] = array();
-		$index = 0;
-		foreach ($relation_nodes as $relation) {
-			$nodes_and_relations['relations'][$index]['id_map'] = $id;
-			
-			if (($relation['parent_type'] == 'agent') || ($relation['parent_type'] == '')) {
-				$nodes_and_relations['relations'][$index]['id_parent'] = $relation['id_parent'];
-				$nodes_and_relations['relations'][$index]['id_parent_source_data'] = $nodes[$relation['id_parent']]['id_agent'];
-				$nodes_and_relations['relations'][$index]['parent_type'] = 0;
-			}
-			else if ($relation['parent_type'] == 'module') {
-				$nodes_and_relations['relations'][$index]['id_parent'] = $relation['id_parent'];
-				$nodes_and_relations['relations'][$index]['id_parent_source_data'] = $nodes[$relation['id_parent']]['id_module'];
-				$nodes_and_relations['relations'][$index]['parent_type'] = 1;
-			}
-			else {
-				$nodes_and_relations['relations'][$index]['id_parent'] = $relation['id_parent'];
-				$nodes_and_relations['relations'][$index]['id_child_source_data'] = -2;
-				$nodes_and_relations['relations'][$index]['parent_type'] = 3;
-			}
-			
-			if (($relation['child_type'] == 'agent') || ($relation['child_type'] == '')) {
-				$nodes_and_relations['relations'][$index]['id_child'] = $relation['id_child'];
-				$nodes_and_relations['relations'][$index]['id_child_source_data'] = $nodes[$relation['id_child']]['id_agent'];
-				$nodes_and_relations['relations'][$index]['child_type'] = 0; 
-			}
-			else if ($relation['child_type'] == 'module') {
-				$nodes_and_relations['relations'][$index]['id_child'] = $relation['id_child'];
-				$nodes_and_relations['relations'][$index]['id_child_source_data'] = $nodes[$relation['id_child']]['id_module'];
-				$nodes_and_relations['relations'][$index]['child_type'] = 1; 
-			}
-			else {
-				$nodes_and_relations['relations'][$index]['id_child'] = $relation['id_child'];
-				$nodes_and_relations['relations'][$index]['id_child_source_data'] = -2;
-				$nodes_and_relations['relations'][$index]['child_type'] = 3;
-			}
-			
-			$index++;
-		}
-		
-		if (enterprise_installed()) {
-			enterprise_include_once("include/functions_pandora_networkmap.php");
-			save_generate_nodes($id, $nodes_and_relations);
-		}
-		
-		$pandorafms_node = $nodes_and_relations['nodes'][0];
-		$center = array('x' => $pandorafms_node['x'], 'y' => $pandorafms_node['y']);
-		
-		$networkmap['center_x'] = $center['x'];
-		$networkmap['center_y'] = $center['y'];
-		db_process_sql_update('tmap',
-			array('center_x' => $networkmap['center_x'], 'center_y' => $networkmap['center_y']),
-			array('id' => $id));
 	}
 	
 	return $nodes_and_relations;
@@ -374,6 +486,7 @@ function networkmap_db_node_to_js_node($node, &$count, &$count_item_holding_area
 		$item['image_width'] = (int)$image_size[0];
 		$item['image_height'] = (int)$image_size[1];
 	}
+	$item['raw_text'] = $node['style']['label'];
 	$item['text'] = io_safe_output($node['style']['label']);
 	$item['shape'] = $node['style']['shape'];
 	switch ($node['type']) {
@@ -397,6 +510,13 @@ function networkmap_db_node_to_js_node($node, &$count, &$count_item_holding_area
 	$item['map_id'] = 0;
 	if (isset($node['id_map'])) {
 		$item['map_id'] = $node['id_map'];
+	}
+
+	if (!isset($node['style']['id_networkmap']) || $node['style']['id_networkmap'] == '' || $node['style']['id_networkmap'] == 0) {
+		$item['networkmap_id'] = 0;
+	}
+	else {
+		$item['networkmap_id'] = $node['style']['id_networkmap'];
 	}
 	
 	$count++;
@@ -548,7 +668,7 @@ function networkmap_links_to_js_links($relations, $nodes_graph) {
 			$item['arrow_end'] = 'module';
 			$item['status_end'] = modules_get_agentmodule_status((int)$id_target_module, false, false, null);
 			$item['id_module_end'] = (int)$id_target_module;
-			$text_end = io_safe_output(modules_get_agentmodule_name((int)$id_target_module));
+			$text_end = modules_get_agentmodule_name((int)$id_target_module);
 			if (preg_match ("/(.+)_ifOperStatus$/" , (string)$text_end, $matches)) {
 				if ($matches[1]) {
 					$item['text_end'] = $matches[1];
@@ -559,7 +679,7 @@ function networkmap_links_to_js_links($relations, $nodes_graph) {
 			$item['arrow_start'] = 'module';
 			$item['status_start'] = modules_get_agentmodule_status((int)$id_source_module, false, false, null);
 			$item['id_module_start'] = (int)$id_source_module;
-			$text_start = io_safe_output(modules_get_agentmodule_name((int)$id_source_module));
+			$text_start = modules_get_agentmodule_name((int)$id_source_module);
 			if (preg_match ("/(.+)_ifOperStatus$/" , (string)$text_start, $matches)) {
 				if ($matches[1]) {
 					$item['text_start'] = $matches[1];
@@ -874,7 +994,6 @@ function networkmap_loadfile($id = 0, $file = '',
 								modules_get_agentmodule_agent($ids[$node_id]['id_module']);
 							
 							$text = modules_get_agentmodule_name($data['id_module']);
-							$text = io_safe_output($text);
 							$text = ui_print_truncate_text($text,
 								'agent_medium', false, true, false,
 								'...', false);
@@ -885,7 +1004,6 @@ function networkmap_loadfile($id = 0, $file = '',
 							$data['id_agent'] = $ids[$node_id]['id_agent'];
 							
 							$text = agents_get_alias($ids[$node_id]['id_agent']);
-							$text = io_safe_output($text);
 							$text = ui_print_truncate_text($text,
 								'agent_medium', false, true, false,
 								'...', false);
@@ -975,7 +1093,7 @@ function duplicate_networkmap($id) {
 	$values = db_get_row('tmap', 'id', $id);
 	unset($values['id']);
 	$free_name = false;
-	$values['name'] = io_safe_input(__('Copy of ') . io_safe_output($values['name']));
+	$values['name'] = io_safe_input(__('Copy of ')) . $values['name'];
 	$count = 1;
 	while (!$free_name) {
 		$exist = db_get_row_filter('tmap', array('name' => $values['name']));

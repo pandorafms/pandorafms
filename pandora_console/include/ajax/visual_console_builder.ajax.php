@@ -751,8 +751,12 @@ switch ($action) {
 					unset($values['label']);
 					unset($values['label_position']);
 					unset($values['id_agent']);
+					unset($values['id_agente_modulo']);
 					unset($values['enable_link']);
 					unset($values['show_on_top']);
+					unset($values['id_layout_linked']);
+					unset($values['element_group']);
+					unset($values['id_layout_linked_weight']);
 					// Don't change background color in graphs when move
 					
 					switch ($type) {

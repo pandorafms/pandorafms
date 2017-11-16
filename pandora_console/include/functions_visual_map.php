@@ -2907,6 +2907,8 @@ function visual_map_get_image_status_element($layoutData, $status = false) {
  * @return integer 
  */
 function visual_map_get_status_element($layoutData) {
+	global $config;
+
 	enterprise_include_once('include/functions_visual_map.php');
 	if (enterprise_installed()) {
 		$status = enterprise_visual_map_get_status_element($layoutData);
@@ -2933,7 +2935,15 @@ function visual_map_get_status_element($layoutData) {
 		$status = visual_map_get_layout_status ($layoutData['id_layout_linked'], 0, 0, $calculate_weight);
 
 		if ($layoutData['id_layout_linked_weight'] > 0) {
-			$elements_to_compare = db_get_all_rows_sql("SELECT id FROM tlayout_data WHERE type = 0 AND id_layout = " . $layoutData['id_layout_linked']);
+			$elements_to_compare = db_get_all_rows_sql("SELECT id, element_group FROM tlayout_data WHERE type = 0 AND id_layout = " . $layoutData['id_layout_linked']);
+			
+			$childs_group_acl = array();
+			foreach ($elements_to_compare as $c) {
+				if (check_acl ($config['id_user'], $c['element_group'], "VR")) {
+					$childs_group_acl[] = $c['id'];
+				}
+			}
+			$elements_to_compare = $childs_group_acl;
 			
 			$aux_weight = ($status['elements_in_critical'] / count($elements_to_compare)) * 100;
 			
@@ -3393,6 +3403,8 @@ function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter
  * @return bool The status of the given layout. True if it's OK, false if not.
  */
 function visual_map_get_layout_status ($id_layout = 0, $depth = 0, $elements_in_critical = 0, $calculate_weight = false) {
+	global $config;
+
 	$temp_status = VISUAL_MAP_STATUS_NORMAL;
 	$temp_total = VISUAL_MAP_STATUS_NORMAL;
 	$depth++; // For recursion depth checking
@@ -3415,11 +3427,17 @@ function visual_map_get_layout_status ($id_layout = 0, $depth = 0, $elements_in_
 			'type',
 			'id_layout_linked_weight',
 			'id',
-			'id_layout'));
+			'id_layout',
+			'element_group'));
 	if ($result === false)
 		return VISUAL_MAP_STATUS_NORMAL;
 	
 	foreach ($result as $data) {
+		$layout_group = $data['element_group'];
+		if (!check_acl ($config['id_user'], $layout_group, "VR")) {
+			continue;
+		}
+		
 		switch ($data['type']) {
 			case GROUP_ITEM:
 				if ($data["id_layout_linked"] == 0) {
@@ -3465,7 +3483,17 @@ function visual_map_get_layout_status ($id_layout = 0, $depth = 0, $elements_in_
 					}
 					$status = visual_map_get_layout_status($data["id_layout_linked"], $depth, 0, $calculate_weight_c);
 
-					$elements_in_child = db_get_all_rows_sql("SELECT id FROM tlayout_data WHERE type = 0 AND id_layout = " . $data['id_layout_linked']);
+					$elements_in_child = db_get_all_rows_sql("SELECT id, element_group FROM tlayout_data WHERE type = 0 AND id_layout = " . $data['id_layout_linked']);
+					$layout_group = $data['element_group'];
+					
+					$childs_group_acl = array();
+					foreach ($elements_in_child as $c) {
+						if (check_acl ($config['id_user'], $c['element_group'], "VR")) {
+							$childs_group_acl[] = $c['id'];
+						}
+					}
+					$elements_in_child = $childs_group_acl;
+					
 					if ($calculate_weight_c) {
 						$aux_weight = ($status['elements_in_critical'] / count($elements_in_child)) * 100;
 						
@@ -3504,7 +3532,15 @@ function visual_map_get_layout_status ($id_layout = 0, $depth = 0, $elements_in_
 			}
 		
 		}
-		if ($status > $temp_total) {
+		if ($calculate_weight) {
+			if ($status == VISUAL_MAP_STATUS_CRITICAL_BAD) {
+				$temp_total = VISUAL_MAP_STATUS_CRITICAL_BAD;
+			}
+			else if ($status == VISUAL_MAP_STATUS_WARNING && $temp_total != VISUAL_MAP_STATUS_CRITICAL_BAD) {
+				$temp_total = VISUAL_MAP_STATUS_WARNING;
+			}
+		}
+		else if ($status > $temp_total) {
 			$temp_total = $status;
 		}
 	}

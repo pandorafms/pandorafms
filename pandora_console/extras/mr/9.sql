@@ -16,4 +16,6 @@ alter table tlayout_data add column element_group int(10) not null default 0;
 
 alter table tlayout_data add column id_layout_linked_weight int(10) not null default 0;
 
+ALTER TABLE tlayout_data ADD COLUMN show_on_top tinyint(1) default 0;
+
 COMMIT;

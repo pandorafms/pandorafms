@@ -2216,6 +2216,7 @@ CREATE TABLE IF NOT EXISTS `tdashboard` (
 	`id_group` int(10) NOT NULL default 0,
 	`active` tinyint(1) NOT NULL default 0,
 	`cells` int(10) unsigned default 0,
+	`cells_slideshow` TINYINT(1) NOT NULL default 0,
 	PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

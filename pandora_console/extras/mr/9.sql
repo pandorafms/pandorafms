@@ -18,4 +18,6 @@ alter table tlayout_data add column id_layout_linked_weight int(10) not null def
 
 ALTER TABLE tlayout_data ADD COLUMN show_on_top tinyint(1) default 0;
 
+ALTER TABLE `tdashboard` ADD COLUMN `cells_slideshow` TINYINT(1) NOT NULL default 0;
+
 COMMIT;

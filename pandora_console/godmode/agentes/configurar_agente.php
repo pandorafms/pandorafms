@@ -996,7 +996,7 @@ if ($update_module || $create_module) {
 
 	$custom_string_2 = (string) get_parameter ('custom_string_2', $custom_string_2_default);
 	$custom_string_3 = (string) get_parameter ('custom_string_3', $custom_string_3_default);
-	$custom_integer_2 = (int) get_parameter ('custom_integer_2', $custom_integer_2_default);
+	$custom_integer_2 = (int) get_parameter ('custom_integer_2', 0);
 	
 	// Get macros
 	$macros = (string) get_parameter ('macros');

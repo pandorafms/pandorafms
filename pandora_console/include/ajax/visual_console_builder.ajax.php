@@ -745,6 +745,8 @@ switch ($action) {
 					// Don't change the label because only change the positions
 					unset($values['label']);
 					unset($values['label_position']);
+					unset($values['id_agent']);
+					unset($values['enable_link']);
 					// Don't change background color in graphs when move
 					
 					switch ($type) {

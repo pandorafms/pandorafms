@@ -39,6 +39,8 @@ our %EXPORT_TAGS = ( 'all' => [ qw() ] );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 
 our @EXPORT = qw(
+	api_available
+	api_create_custom_field
 	api_create_tag
 	api_create_group
 	call_url
@@ -758,7 +760,7 @@ sub call_url {
 	if ($response->is_success){
 		return $response->decoded_content;
 	}
-	return undef;	
+	return undef;
 }
 
 ################################################################################
@@ -1140,43 +1142,257 @@ sub process_performance {
 }
 
 #########################################################################################
-# Pandora API create tag
+# Check api availability
 #########################################################################################
-sub api_create_tag {
-	my ($conf, $api_url, $tag, $api_pass, $api_user, $api_user_pass, $icon) = @_;
+sub api_available($) {
+	my ($conf, $apidata) = @_;
+	my ($api_url, $api_pass, $api_user, $api_user_pass) = ('','','','','');
+	if (ref $apidata eq "ARRAY") {
+	 	($api_url, $api_pass, $api_user, $api_user_pass) = @{$apidata};
+	}
 
-	my $op = "set";
-	my $op2 = "create_tag";
+	$api_url       = $conf->{'api_url'}       unless empty($api_url);
+	$api_pass      = $conf->{'api_pass'}      unless empty($api_pass);
+	$api_user      = $conf->{'api_user'}      unless empty($api_user);
+	$api_user_pass = $conf->{'api_user_pass'} unless empty($api_user_pass);
+
+	my $op = "get";
+	my $op2 = "test";
 
 	my $call = $api_url . "?";
 	$call .= "op=" . $op . "&op2=" . $op2;
-	$call .= "&other=" . $tag . "%7CCreated by PluginTools&other_mode=url_encode_separator=%7C&";
+	$call .= "&apipass=" . $api_pass . "&user=" . $api_user . "&pass=" . $api_user_pass;
+
+	my $rs = call_url($conf, $call);
+
+	if (ref $rs eq "HASH") {
+		return {
+			rs => 1,
+			error => $rs->{error}
+		};
+	}
+	else {
+		return {
+			rs => (empty($rs)?1:0),
+			error => (empty($rs)?"Empty response.":undef),
+			id => (empty($rs)?undef:trim($rs))
+		}
+	}
+
+}
+
+#########################################################################################
+# Pandora API create custom field
+#########################################################################################
+sub api_create_custom_field {
+	my ($conf, $apidata, $name, $display, $password) = @_;
+	my ($api_url, $api_pass, $api_user, $api_user_pass) = ('','','','','');
+	if (ref $apidata eq "ARRAY") {
+	 	($api_url, $api_pass, $api_user, $api_user_pass) = @{$apidata};
+	}
+
+	$api_url       = $conf->{'api_url'}       unless empty($api_url);
+	$api_pass      = $conf->{'api_pass'}      unless empty($api_pass);
+	$api_user      = $conf->{'api_user'}      unless empty($api_user);
+	$api_user_pass = $conf->{'api_user_pass'} unless empty($api_user_pass);
+
+
+
+	$display  = 0 unless defined ($display);
+	$password = 0 unless defined ($password);
+
+	my $call;
+
+	# 1st try to get previous custom field id
+	my $op = "get";
+	my $op2 = "custom_field";
+
+	$call = $api_url . "?";
+	$call .= "op=" . $op . "&op2=" . $op2;
+
+	# Extra arguments
+	if (!empty($name)) {
+		$call .= "&other=" . $name;
+	}
+	if (!empty($display)) {
+		$call .= "%7C" . $display;
+	}
+	if (!empty($password)) {
+		$call .= "%7C" . $password;
+	}
+	
+	$call .= "&other_mode=url_encode_separator=%7C&";
 	$call .= "apipass=" . $api_pass . "&user=" . $api_user . "&pass=" . $api_user_pass;
 
-	return call_url($conf, $call);
+	my $rs = call_url($conf, "$call");
+
+	if (ref($rs) ne "HASH") {
+		$rs = trim($rs);
+	}
+	else {
+		# Failed to reach API, return with error
+		return {
+			rs => 1,
+			error => 'Failed to reach API'
+		};
+	}
+	
+	if (empty($rs) || ($rs !~ /^\d+$/ || $rs eq "0")) {
+		# Custom field is not defined
+		
+		# 2nd create only if the custom field does not exist
+		$op = "set";
+		$op2 = "create_custom_field";
+		
+
+
+		$call = $api_url . "?";
+		$call .= "op=" . $op . "&op2=" . $op2;
+		$call .= "&other=" . $name . "%7C" . $display . "%7C" . $password;
+		$call .= "&other_mode=url_encode_separator=%7C&";
+		$call .= "apipass=" . $api_pass . "&user=" . $api_user . "&pass=" . $api_user_pass;
+
+		$rs = call_url($conf, "$call");
+	}
+
+	if (ref($rs) ne "HASH") {
+		$rs = trim($rs);
+	}
+	else {
+		# Failed to reach API, return with error
+		return {
+			rs => 1,
+			error => 'Failed to reach API while creating custom field [' . $name . ']'
+		};
+	}
+
+	if (empty($rs) || ($rs !~ /^\d+$/ || $rs eq "0")) {
+		return {
+			rs => 1,
+			error => 'Failed while creating custom field [' . $name . '] => [' . $rs . ']'
+		};
+	}
+
+	# Return the valid id
+	return {
+		rs => 0,
+		id => $rs
+	};
+}
+
+#########################################################################################
+# Pandora API create tag
+#########################################################################################
+sub api_create_tag {
+	my ($conf, $apidata, $tag, $desc, $url, $email) = @_;
+	my ($api_url, $api_pass, $api_user, $api_user_pass) = ('','','','','');
+	if (ref $apidata eq "ARRAY") {
+	 	($api_url, $api_pass, $api_user, $api_user_pass) = @{$apidata};
+	}
+
+	$api_url       = $conf->{'api_url'}       unless empty($api_url);
+	$api_pass      = $conf->{'api_pass'}      unless empty($api_pass);
+	$api_user      = $conf->{'api_user'}      unless empty($api_user);
+	$api_user_pass = $conf->{'api_user_pass'} unless empty($api_user_pass);
+
+	my $op = "set";
+	my $op2 = "create_tag";
+	$desc = 'Created by PluginTools' unless defined $desc;
+
+	my $call = $api_url . "?";
+	$call .= "op=" . $op . "&op2=" . $op2;
+	$call .= "&other=";
+	if (!empty($tag)) {
+		$call .= $tag . "%7C";
+	}
+	if (!empty($desc)) {
+		$call .= $desc . "%7C";
+	}
+	if (!empty($url)) {
+		$call .= $url . "%7C";
+	}
+	if (!empty($email)) {
+		$call .= $email;
+	}
+
+	$call .= "&other_mode=url_encode_separator=%7C&";
+	$call .= "apipass=" . $api_pass . "&user=" . $api_user . "&pass=" . $api_user_pass;
+
+	my $rs = call_url($conf, $call);
+
+	if (ref $rs eq "HASH") {
+		return {
+			rs => 1,
+			error => $rs->{error}
+		};
+	}
+	else {
+		return {
+			rs => (empty($rs)?1:0),
+			error => (empty($rs)?"Empty response.":undef),
+			id => (empty($rs)?undef:trim($rs))
+		}
+	}
 }
 
 #########################################################################################
 # Pandora API create group
 #########################################################################################
 sub api_create_group($;$){
-	my ($api_url, $group_name, $api_pass, $api_user, $api_user_pass, $icon) = @_;
-	my $op = "set";
-	my $op2 = "create_group";
+	my ($conf, $apidata, $group_name, $group_config, $email) = @_;
+	my ($api_url, $api_pass, $api_user, $api_user_pass);
+	if (ref $apidata eq "ARRAY") {
+	 	($api_url, $api_pass, $api_user, $api_user_pass) = @{$apidata};
+	}
 
-	if(empty ($icon)) {
+
+	if(empty ($group_config->{icon})) {
 		return {
+			rs => 1,
 			error => "No icon set"
 		};
 	}
+	# Group config:
+	
+	my $other = '';
+	$other .= $group_config->{icon} . '%7C&';
+	$other .= (empty($group_config->{parent})?'':$group_config->{parent}.'%7C&');
+	$other .= (empty($group_config->{desc})?'':$group_config->{desc}.'%7C&');
+	$other .= (empty($group_config->{propagate})?'':$group_config->{propagate}.'%7C&');
+	$other .= (empty($group_config->{disabled})?'':$group_config->{disabled}.'%7C&');
+	$other .= (empty($group_config->{custom_id})?'':$group_config->{custom_id}.'%7C&');
+	$other .= (empty($group_config->{contact})?'':$group_config->{contact}.'%7C&');
+	$other .= (empty($group_config->{other})?'':$group_config->{other}.'%7C&');
+
+	$api_url       = $conf->{'api_url'}       unless defined $api_url;
+	$api_pass      = $conf->{'api_pass'}      unless defined $api_pass;
+	$api_user      = $conf->{'api_user'}      unless defined $api_user;
+	$api_user_pass = $conf->{'api_user_pass'} unless defined $api_user_pass;
+
+	my $op = "set";
+	my $op2 = "create_group";
 
 	my $call = $api_url . "?";
 	$call .= "op=" . $op . "&op2=" . $op2;
 	$call .= "&id=" . $group_name;
-	$call .= "&other=" . $icon . "&other_mode=url_encode_separator=%7C&";
+	$call .= "&other=" . $other . "&other_mode=url_encode_separator=%7C&";
 	$call .= "apipass=" . $api_pass . "&user=" . $api_user . "&pass=" . $api_user_pass;
 
-	return call_url($call);
+	my $rs = call_url($conf, $call);
+	
+	if (ref $rs eq "HASH") {
+		return {
+			rs => 1,
+			error => $rs->{error}
+		};
+	}
+	else {
+		return {
+			rs => (empty($rs)?1:0),
+			error => (empty($rs)?"Empty response.":undef),
+			id => (empty($rs)?undef:trim($rs))
+		}
+	}
 }
 
 ################################################################################

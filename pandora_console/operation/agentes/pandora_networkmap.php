@@ -112,8 +112,10 @@ if (enterprise_installed()) {
 			__('Succesfully created'), __('Could not be created'), '',
 			true);
 		
-		// Force the tab = 'list'
-		$tab = "list";
+		$id = $result;
+		define("_id_", $id);
+
+		$tab = "view";
 	}
 	else if ($update_empty_networkmap) {
 		$id_group = (int) get_parameter('id_group', 0);

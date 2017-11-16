@@ -111,6 +111,14 @@ function visual_map_print_item($mode = "read", $layoutData,
 	$border_color = $layoutData['border_color'];
 	$fill_color = $layoutData['fill_color'];
 	$label_position = $layoutData['label_position'];
+	$show_on_top = $layoutData['show_on_top'];
+
+	if($show_on_top){
+		$show_on_top_index = 10;
+	}
+	else{
+		$show_on_top_index = '';
+	}
 
 	$sizeStyle = '';
 	$borderStyle = '';
@@ -961,14 +969,14 @@ function visual_map_print_item($mode = "read", $layoutData,
 				else {
 					if ($width == 0 || $height == 0) {
 						if ($layoutData['label_position']=='left') {
-							$img = '<div style="float:right;height:'.$himg.'px;">'.custom_graphs_print(
+							$img = '<div style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;">'.custom_graphs_print(
 							$layoutData['id_custom_graph'], 180, 480,
 							$period, null, true, 0, $only_image, $layoutData['image'],
 							array(), '', array(), array(), true,
 							false, false, true, 1, false, true).'</div>';
 						}
 						elseif ($layoutData['label_position']=='right') {
-						$img = '<div style="float:left;height:'.$himg.'px;">'.custom_graphs_print(
+						$img = '<div style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;">'.custom_graphs_print(
 							$layoutData['id_custom_graph'], 180, 480,
 							$period, null, true, 0, $only_image, $layoutData['image'],
 							array(), '', array(), array(), true,
@@ -988,14 +996,14 @@ function visual_map_print_item($mode = "read", $layoutData,
 						}
 						else {
 							if ($layoutData['label_position']=='left') {
-								$img = '<div style="float:right;height:'.$himg.'px;">'.custom_graphs_print(
+								$img = '<div style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;">'.custom_graphs_print(
 								$layoutData['id_custom_graph'], $height, $width,
 								$period, null, true, 0, $only_image, $layoutData['image'],
 								array(), '', array(), array(), true,
 								false, false, true, 1, false, true).'</div>';
 							}
 							elseif($layoutData['label_position']=='right') {
-								$img = '<div style="float:left;height:'.$himg.'px;">'.custom_graphs_print(
+								$img = '<div style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;">'.custom_graphs_print(
 								$layoutData['id_custom_graph'], $height, $width,
 								$period, null, true, 0, $only_image, $layoutData['image'],
 								array(), '', array(), array(), true,
@@ -1041,7 +1049,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 					if ($width == 0 || $height == 0) {
 						
 						if ($layoutData['label_position']=='left') {
-							$img =  '<div style="float:right;height:'.$himg.'px;">'.
+							$img =  '<div style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;">'.
 							grafico_modulo_sparse($id_module, $period, 
 							0, 300, 180, modules_get_agentmodule_name($id_module),null, false, 1, false, 0, 
 							modules_get_unit($id_module), 0, 0, true, $only_image, '', 1, false, '', 
@@ -1049,7 +1057,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 							null, true, false, $type_graph) . '</div>';
 						}
 						elseif($layoutData['label_position']=='right') {
-							$img =  '<div style="float:left;height:'.$himg.'px;">' . 
+							$img =  '<div style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;">' . 
 								grafico_modulo_sparse($id_module, 
 								$period, 0, 300, 180, modules_get_agentmodule_name($id_module),null, false, 
 								1, false, 0, modules_get_unit($id_module), 0, 0, true, $only_image, '', 
@@ -1067,7 +1075,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 					}
 					else{
 						if ($layoutData['label_position']=='left') {
-							$img =  '<div style="float:right;height:'.$himg.'px;">' . 
+							$img =  '<div style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;">' . 
 								grafico_modulo_sparse($id_module, $period, 
 							0, $width, $height, modules_get_agentmodule_name($id_module), null, false, 1, 
 							false, 0, modules_get_unit($id_module), 0, 0, true, $only_image, '', 
@@ -1076,7 +1084,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 							false, $type_graph) . '</div>';
 						}
 						elseif ($layoutData['label_position']=='right') {
-							$img =  '<div style="float:left;height:'.$himg.'px;">' . 
+							$img =  '<div style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;">' . 
 								grafico_modulo_sparse($id_module, $period, 
 								0, $width, $height, modules_get_agentmodule_name($id_module), null, false, 1, 
 								false, 0, modules_get_unit($id_module), 0, 0, true, $only_image, 
@@ -1436,10 +1444,10 @@ function visual_map_print_item($mode = "read", $layoutData,
 			else {
 				if ($width == 0 || $height == 0) {
 					if ($layoutData['label_position']=='left') {
-						$img = '<div style="float:left;height:'.$himg.'px;">' .graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], 500, 50, $layoutData['period'], '', true).'</div>';
+						$img = '<div style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;">' .graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], 500, 50, $layoutData['period'], '', true).'</div>';
 					}
 					elseif ($layoutData['label_position']=='right') {
-						$img = '<div style="float:right;height:'.$himg.'px;">' . graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], 500, 50, $layoutData['period'], '', true).'</div>';
+						$img = '<div style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;">' . graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], 500, 50, $layoutData['period'], '', true).'</div>';
 					}
 					else {
 						$img = graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], 500, 50, $layoutData['period'], '', true);
@@ -1447,10 +1455,10 @@ function visual_map_print_item($mode = "read", $layoutData,
 				}
 				else{
 					if ($layoutData['label_position']=='left') {
-						$img = '<div style="float:left;height:'.$himg.'px;">' . graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], $width, $height, $layoutData['period'], '', true).'</div>';
+						$img = '<div style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;">' . graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], $width, $height, $layoutData['period'], '', true).'</div>';
 					}
 					elseif ($layoutData['label_position']=='right') {
-						$img = '<div style="float:right;height:'.$himg.'px;">' .graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], $width, $height, $layoutData['period'], '', true).'</div>';
+						$img = '<div style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;">' .graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], $width, $height, $layoutData['period'], '', true).'</div>';
 					}
 					else {
 						$img = graph_graphic_moduleevents ($layoutData['id_agent'], $layoutData['id_agente_modulo'], $width, $height, $layoutData['period'], '', true);
@@ -1515,6 +1523,10 @@ function visual_map_print_item($mode = "read", $layoutData,
 			break;
 	}
 	
+	if($show_on_top){
+		$z_index = 10;
+	}
+	
 	echo '<div id="' . $id . '" class="' . $class . '" ' .
 		'style="z-index: ' .$z_index . ';' .
 			'position: absolute; ' .
@@ -1536,7 +1548,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 				$style .= "border-width: " . $border_width . "px; ";
 				$style .= "border-color: " . $border_color . "; ";
 				$style .= "background-color: " . $fill_color . "; ";
-				echo "<div style='" . $style . "'></div>";
+				echo "<div style='z-index:".$show_on_top_index.";" . $style . "'></div>";
 			}
 			else {
 				if (!empty($proportion)) {
@@ -1547,7 +1559,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 					$style .= "border-width: " . $border_width . "px; ";
 					$style .= "border-color: " . $border_color . "; ";
 					$style .= "background-color: " . $fill_color . "; ";
-					echo "<div style='" . $style . "'></div>";
+					echo "<div style='z-index:".$show_on_top_index.";" . $style . "'></div>";
 				}
 				else {
 					$style = "";
@@ -1557,7 +1569,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 					$style .= "border-width: " . $border_width . "px; ";
 					$style .= "border-color: " . $border_color . "; ";
 					$style .= "background-color: " . $fill_color . "; ";
-					echo "<div style='" . $style . "'></div>";
+					echo "<div style='z-index:".$show_on_top_index.";" . $style . "'></div>";
 				}
 			}
 			break;

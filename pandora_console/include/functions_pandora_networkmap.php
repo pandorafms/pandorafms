@@ -300,9 +300,31 @@ function networkmap_process_networkmap($id = 0) {
 			
 			$nodes_and_relations['nodes'] = array();
 			$index = 0;
+			$node_center = array();
 			foreach ($nodes as $key => $node) {
 				$nodes_and_relations['nodes'][$index]['id_map'] = $id;
 				
+				$children_count = 0;
+				foreach ($relation_nodes as $relation) {
+					if (($relation['parent_type'] == 'agent') || ($relation['parent_type'] == '')) {
+						if ($nodes[$relation['id_parent']]['id_agent'] == $node['id_agent']) {
+							$children_count++;
+						}
+					}
+					else if ($relation['parent_type'] == 'module') {
+						if ($nodes[$relation['id_parent']]['id_module'] == $node['id_module']) {
+							$children_count++;
+						}
+					}
+					
+				}
+
+				if (empty($node_center) || $node_center['counter'] < $children_count) {
+					$node_center['x'] = (int)$node['coords'][0];
+					$node_center['y'] = (int)$node['coords'][1];
+					$node_center['counter'] = $children_count;
+				}
+
 				$nodes_and_relations['nodes'][$index]['x'] = (int)$node['coords'][0];
 				$nodes_and_relations['nodes'][$index]['y'] = (int)$node['coords'][1];
 				
@@ -373,7 +395,7 @@ function networkmap_process_networkmap($id = 0) {
 			}
 			
 			$pandorafms_node = $nodes_and_relations['nodes'][0];
-			$center = array('x' => $pandorafms_node['x'], 'y' => $pandorafms_node['y']);
+			$center = array('x' => $node_center['x'], 'y' => $node_center['y']);
 			
 			$networkmap['center_x'] = $center['x'];
 			$networkmap['center_y'] = $center['y'];

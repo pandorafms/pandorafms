@@ -467,7 +467,7 @@ if (!empty($network_interfaces)) {
 	$options = array(
 		"class" => "closed",
 		"style" => "vertical-align:righ; cursor:pointer;");
-	$table_interface->head[0] = html_print_image("images/go.png", true, $options) . "&nbsp;&nbsp;";
+	$table_interface->head[0] = html_print_image("images/graphmenu_arrow.png", true, $options) . "&nbsp;&nbsp;";
 	$table_interface->head[0] .= '<span style="vertical-align: middle;">' . __('Interface information') .' (SNMP)</span>';
 	$table_interface->head_colspan = array();
 	$table_interface->head_colspan[0] = 8;
@@ -593,11 +593,11 @@ if (!empty($network_interfaces)) {
 					var arrow = $("#agent_interface_info").find("thead").find("img");
 					if (arrow.hasClass("closed")) {
 						arrow.removeClass("closed");
-						arrow.prop("src", "images/down.png");
+						arrow.prop("src", "images/arrow-down-white.png");
 						$("#agent_interface_info").find("tbody").show();
 					} else {
 						arrow.addClass("closed");
-						arrow.prop("src", "images/go.png");
+						arrow.prop("src", "images/graphmenu_arrow.png");
 						$("#agent_interface_info").find("tbody").hide();
 					}
 				})

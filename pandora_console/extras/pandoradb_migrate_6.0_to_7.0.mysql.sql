@@ -1312,6 +1312,7 @@ ALTER TABLE tmetaconsole_agent ADD COLUMN `cascade_protection_module` int(10) de
 ALTER TABLE tmetaconsole_agent ADD COLUMN `transactional_agent` tinyint(1) NOT NULL default '0';
 ALTER TABLE tmetaconsole_agent ADD COLUMN `alias` VARCHAR(600) not null DEFAULT '';
 ALTER TABLE tmetaconsole_agent ADD COLUMN `alias_as_name` int(2) unsigned default '0';
+ALTER TABLE tmetaconsole_agent ADD COLUMN `safe_mode_module` int(10) unsigned NOT NULL default '0';
 
 UPDATE `tmetaconsole_agent` SET tmetaconsole_agent.alias = tmetaconsole_agent.nombre;
 -- ---------------------------------------------------------------------

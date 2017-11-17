@@ -1979,6 +1979,13 @@ function events_get_response_target($event_id, $response_id, $server_id, $histor
 		$event_st = events_display_status($event['estado']);
 		$target = str_replace('_event_status_',	$event_st["title"],	$target);
 	}
+	// Parse the event custom data
+	if (!empty($event['custom_data'])){
+		$custom_data = json_decode (base64_decode ($event['custom_data']));
+		foreach ($custom_data as $key => $value) {
+			$target = str_replace('_customdata_' . $key . '_', $value, $target);
+		}
+	}
 	return $target;
 }
 

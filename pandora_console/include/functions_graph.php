@@ -3728,7 +3728,7 @@ function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $ho
 		$bottom = $datelimit + ($periodtime * $i);
 		if (! $graphic_type) {
 			if ($config['flash_charts']) {
-				$name = date('H:i:s', $bottom);
+				$name = date('H:i', $bottom);
 			}
 			else {
 				$name = date('H\h', $bottom);

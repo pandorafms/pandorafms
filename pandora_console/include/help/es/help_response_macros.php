@@ -21,7 +21,7 @@ Las macros aceptadas son las siguientes:
 <li><b>Id de la criticidad del evento:</b> _event_severity_id_</li>
 <li><b>Gravedad del evento (traducido por la consola de Pandora):</b> _event_severity_text_</li>
 <li><b>Procedencia del evento:</b> _event_source_</li>
-<li><b>Estado del evento (Nuevo, validado o evento en proceso :</b> _event_status_</li>
+<li><b>Estado del evento (Nuevo, validado o evento en proceso):</b> _event_status_</li>
 <li><b>Etiquetas del evento separadas por comas:</b> _event_tags_</li>
 <li><b>Texto completo del evento:</b> _event_text_</li>
 <li><b>Tipo del evento (Sistema, Cambiando a estado desconocido...):</b> _event_type_</li>

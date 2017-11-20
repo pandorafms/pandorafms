@@ -1428,7 +1428,7 @@ sub cron_is_in_cron {
 	if ($elem_cron ne '*') {
 		my ($down, $up) = cron_get_interval($elem_cron);
 		# Check if there is no a range
-		return 0 if (!defined($up) && ($down != $cron));
+		return 0 if (!defined($up) && ($down != $elem_curr_time));
 		# Check if there is on the range
 		if ($down < $up) {
 			return 0 if ($elem_curr_time < $down || $elem_curr_time > $up);

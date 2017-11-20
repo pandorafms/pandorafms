@@ -1837,8 +1837,6 @@ function events_get_response_target($event_id, $response_id, $server_id, $histor
 	
 	$event = db_get_row($event_table,'id_evento', $event_id);
 	
-	$macros = array_keys(events_get_macros());
-	
 	$target = io_safe_output($event_response['target']);
 	
 	// Substitute each macro

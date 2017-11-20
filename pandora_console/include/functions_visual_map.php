@@ -3354,13 +3354,32 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
  * @return array A list of layouts the user can see.
  */
 function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter = false, $returnAllGroup = true) {
-	if (! is_array ($filter))
+	if (! is_array ($filter)){
 		$filter = array ();
-	
-	if ($returnAllGroup)
+	} else {
+		if(!empty($filter['name'])){
+			$where .= "name LIKE '%".io_safe_output($filter['name'])."%'";
+			unset($filter['name']);
+		}
+	}
+			
+	if ($returnAllGroup) {
 		$groups = users_get_groups ($id_user, 'VR');
-	else
-		$groups = users_get_groups ($id_user, 'VR', false);
+	} else {
+		if(!empty($filter['group'])) {
+			$permissions_group = users_get_groups ($id_user, 'VR', false);
+			if(empty($permissions_group)){
+				$permissions_group = users_get_groups ($id_user, 'VM', false);
+			}
+			$groups = array_intersect_key($filter['group'], $permissions_group);
+		} else {
+			$groups = users_get_groups ($id_user, 'VR', false);
+			if(empty($groups)) {
+				$groups = users_get_groups ($id_user, 'VM', false);
+			}
+		}
+		unset($filter['group']);
+	}
 	
 	if (!empty($groups)) {
 		if (empty($where))

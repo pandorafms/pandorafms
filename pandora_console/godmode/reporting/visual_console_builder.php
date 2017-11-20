@@ -296,7 +296,7 @@ switch ($activeTab) {
 					'flag' => true,
 					'message' => ui_print_result_message($result,
 						__('Successfully multiple delete.'),
-						__('Unsuccessfull multiple delete.'), '', true));
+						__('Unsuccessful multiple delete.'), '', true));
 				break;
 			case 'update':
 				//Update background

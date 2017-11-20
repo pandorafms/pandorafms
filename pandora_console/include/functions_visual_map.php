@@ -1537,7 +1537,12 @@ function visual_map_print_item($mode = "read", $layoutData,
 	if ($link) {
 		echo "<a href=\"$url\">";
 	}
-	
+
+	//for clean link text from bbdd only edit_visualmap
+    if (get_parameter('action') == 'edit' || get_parameter('operation') == 'edit_visualmap') {
+        $text = preg_replace("/<\/*a.*?>/", '', $text);
+    }
+
 	switch ($type) {
 		case BOX_ITEM:
 			if ($width == 0 || $width == 0) {

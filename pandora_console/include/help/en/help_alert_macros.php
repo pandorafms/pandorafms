@@ -45,6 +45,7 @@ Besides the defined module macros, the following macros are available:
 <li>_alert_text_severity_: Priority level, in text, for the alert (Maintenance, Informational, Normal Minor, Major, Critical).</li>
 <li>_event_text_severity_: (Only event alerts) Text event (which triggered the alert) severity (Maintenance, Informational, Normal Minor, Warning, Major, Critical).</li>
 <li>_event_id_: (Only event alerts) ID of the event that triggered the alert.</li>
+<li>_event_extra_id_: (Only event alerts) Extra id.</li>
 <li>_id_agent_: Agent’s ID, useful for building a direct URL that redirects to a Pandora FMS console webpage.</li>
 <li>_id_group_ : Agent group ID.</li>
 <li>_id_module_ : ID of module.</li>

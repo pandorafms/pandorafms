@@ -1530,6 +1530,11 @@ sub pandora_process_module ($$$$$$$$$;$) {
 
 		# Update module status count.
 		$mark_for_update = 1;
+
+		# Safe mode execution.
+		if ($agent->{'safe_mode_module'} != 0) {
+			safe_mode($pa_config, $agent, $module, $new_status, $known_status, $dbh);
+		}
 	}
 	# Set not-init modules to normal status even if min_ff_event is not matched the first time they receive data.
 	# if critical or warning status, just pass through here and wait the time min_ff_event will be matched.
@@ -5471,6 +5476,30 @@ sub pandora_output_password($$) {
 	return $password unless defined($decrypted_password);
 
 	return $decrypted_password;
+}
+
+##########################################################################
+=head2 C<< safe_mode (I<$pa_config>, I<$agent>, I<$module>, I<$new_status>, I<$known_status>, I<$dbh>) >> 
+
+Execute safe mode for the given agent based on the status of the given module.
+
+=cut
+##########################################################################
+sub safe_mode($$$$$$) {
+	my ($pa_config, $agent, $module, $new_status, $known_status, $dbh) = @_;
+
+	return unless $agent->{'safe_mode_module'} > 0;
+
+	# Going to critical. Disable the rest of the modules.
+	if ($new_status == MODULE_CRITICAL) {
+		logger($pa_config, "Enabling safe mode for agent " . $agent->{'nombre'}, 10);
+		db_do($dbh, 'UPDATE tagente_modulo SET disabled=1 WHERE id_agente=? AND id_agente_modulo!=?', $agent->{'id_agente'}, $module->{'id_agente_modulo'});
+	}
+	# Coming back from critical. Enable the rest of the modules.
+	elsif ($known_status == MODULE_CRITICAL) {
+		logger($pa_config, "Disabling safe mode for agent " . $agent->{'nombre'}, 10);
+		db_do($dbh, 'UPDATE tagente_modulo SET disabled=0 WHERE id_agente=? AND id_agente_modulo!=?', $agent->{'id_agente'}, $module->{'id_agente_modulo'});
+	}
 }
 
 # End of function declaration

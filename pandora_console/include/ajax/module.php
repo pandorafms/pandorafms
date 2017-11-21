@@ -269,7 +269,7 @@ if ($get_module_detail) {
 			if ($attr[1] != "modules_format_data") {
 				$data[] = date('d F Y h:i:s A', $row['utimestamp']);
 			}
-			elseif (($config['command_snapshot']) && (preg_match ("/[\n]+/i", $row[$attr[0]]))) {
+			elseif (($config['command_snapshot'] == '0') && (preg_match ("/[\n]+/i", $row[$attr[0]]))) {
 				// Its a single-data, multiline data (data snapshot) ?
 
 				// Detect string data with \n and convert to <br>'s

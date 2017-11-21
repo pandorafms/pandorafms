@@ -17,8 +17,25 @@
 if (is_ajax ()) {
 	global $config;
 	
-	// Login check
-	check_login ();
+	enterprise_include_once("include/functions_dashboard.php");
+
+	$public_hash = get_parameter('hash', 0);
+
+	// Try to authenticate by hash on public dashboards
+	if ($public_hash != 0) {
+		// Login check
+		check_login();
+	} else {
+		$validate_hash = enterprise_hook(
+			'dasboard_validate_public_hash',
+			array($public_hash, 'tree_view')
+		);
+		if ($validate_hash === false || $validate_hash === ENTERPRISE_NOT_HOOK) {
+			db_pandora_audit("Invalid public hash",	"Trying to access report builder");
+			require ("general/noaccess.php");
+			exit;
+		}
+	}
 	
 	require_once($config['homedir'] . "/include/class/Tree.class.php");
 	enterprise_include_once("include/class/Tree.class.php");
@@ -36,6 +53,10 @@ if (is_ajax ()) {
 		$rootID = get_parameter('rootID', -1);
 		$serverID = get_parameter('serverID', false);
 		$childrenMethod = get_parameter('childrenMethod', 'on_demand');
+		$hash = get_parameter('hash', false);
+		if ($hash !== false) {
+			enterprise_hook('dasboard_validate_public_hash', array($hash, 'tree_view'));
+		}
 
 		$default_filters = array(
 				'searchAgent' => '',

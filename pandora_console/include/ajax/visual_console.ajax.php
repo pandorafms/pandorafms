@@ -12,12 +12,29 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-// Login check
 global $config;
 
-// Public dashboards have not user. Try to get from URL
-if (!isset($config['id_user'])) {
-	$config['id_user'] = get_parameter('id_user');
+enterprise_include_once ('include/functions_dashboard.php');
+require_once('include/functions_visual_map.php');
+enterprise_include_once('include/functions_visual_map.php');
+
+$public_hash = get_parameter('hash', false);
+$id_visual_console = get_parameter('id_visual_console', null);
+
+// Try to authenticate by hash on public dashboards
+if ($public_hash === false) {
+	// Login check
+	check_login();
+} else {
+	$validate_hash = enterprise_hook(
+		'dasboard_validate_public_hash',
+		array($public_hash, $id_visual_console, 'visual_console')
+	);
+	if ($validate_hash === false || $validate_hash === ENTERPRISE_NOT_HOOK) {
+		db_pandora_audit("Invalid public hash",	"Trying to access report builder");
+		require ("general/noaccess.php");
+		exit;
+	}
 }
 
 // Fix: IW was the old ACL to check for report editing, now is RW
@@ -31,12 +48,6 @@ if (! check_acl ($config['id_user'], 0, "VR")) {
 
 //Fix ajax to avoid include the file, 'functions_graph.php'.
 $ajax = true;
-
-
-require_once('include/functions_visual_map.php');
-enterprise_include_once('include/functions_visual_map.php');
-
-$id_visual_console = get_parameter('id_visual_console', null);
 
 $render_map = (bool)get_parameter('render_map', false);
 $graph_javascript = (bool)get_parameter('graph_javascript', false);

@@ -136,11 +136,12 @@ if ($activeTab == "radial_dynamic") {
 	echo "<div style='width: auto; text-align: center;'>";
 	
 	$filter = array();
-	if (!empty($group))
-		$filter['group'] = $group;
+	if ($networkmap['source'] == 0) {
+		$filter['group'] = $networkmap['source_data'];
+	}
 	if (!empty($module_group))
 		$filter['module_group'] = $module_group;
-	
+	html_debug($filter, true);
 	echo graph_monitor_wheel($width, $height, $filter, $strict_user);
 	
 	echo "</div>";

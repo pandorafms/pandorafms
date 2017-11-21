@@ -5802,17 +5802,34 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 
 	$filter_module_group = (!empty($filter) && !empty($filter['module_group'])) ? $filter['module_group'] : false;
 
-	$groups = users_get_groups(false, "AR", false, true, (!empty($filter) && isset($filter['group']) ? $filter['group'] : null));
+	if ($filter['group'] != 0) {
+		$groups = db_get_row_sql ("SELECT * FROM tgrupo where id_grupo = " . $filter['group']);
 
+		$groups_ax = array($groups['id_grupo'] => $groups);
+
+		$groups = $groups_ax;
+	}
+	else {
+		$groups = users_get_groups(false, "AR", false, true, (!empty($filter) && isset($filter['group']) ? $filter['group'] : null));
+	}
 	$data_groups = array();
 	if (!empty($groups)) {
 		$groups_aux = $groups;
-		$data_groups = groups_get_tree($groups);
+		
+		if ($filter['group'] != 0) {
+			$data_groups[$filter['group']] = $groups[$filter['group']];
+			groups_get_all_hierarchy_group_to_childrens($groups[$filter['group']], $filter['group'], $data_groups);
+		}
+		else {
+			groups_get_all_hierarchy_groups_to_childrens($groups, $data_groups);
+		}
+		
 		$groups_aux = null;
 	}
 
 	if (!empty($data_groups)) {
 		$filter = array('id_grupo' => array_keys($data_groups));
+
 		$fields = array('id_agente', 'id_parent', 'id_grupo', 'alias');
 		$agents = agents_get_agents($filter, $fields);
 
@@ -6029,7 +6046,6 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 	}
 
 	function iterate_group_array ($groups, &$data_agents) {
-		
 		$data = array();
 
 		foreach ($groups as $id => $group) {
@@ -6068,6 +6084,7 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 
 			if (!isset($group['children']))
 				$group_aux['children'] = array();
+			
 			if (!empty($group['children']))
 				$group_aux['children'] = iterate_group_array($group['children'], $data_agents);
 

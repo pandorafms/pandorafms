@@ -680,16 +680,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 															'90' => '90%',
 															'100' => '100%'), 
 				'map_linked_weight', '', '', __('By default'), 0, true) . 
-				ui_print_help_tip (
-					__("This percentage value specifies the number of items that must be present in the visual 
-						console for it to transmit its status to the icon linked here. For example, if 20% is 
-						specified and there are five elements in the console, it would be enough if you were in 
-						WARNING or CRITICAL to pass that value to the icon. If it were 40%, you would need at 
-						least two elements to be in CRITICAL or WARNING to go into that status. If it had one 
-						element in critical and another in warning, it would not forward any status to the icon 
-						associated with the visual console. If we had three in warning and one in critical, 
-						it would only convey the warning status. If there were two in warning and two in critical, 
-						it would show the CRITICAL because it is more serious. The same applies to unknown status."), true) .
+				ui_print_help_icon ("linked_map_weight", true) .
 				'</td>';
 
 			$form_items_advance['line_case']['items'] = array('line_item');
@@ -703,8 +694,10 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'percentile_item', 'module_graph', 'simple_value',
 				'icon', 'label', 'datos');
 			$form_items_advance['element_group_row']['html'] = '<td align="left">'.
-				__('Element group') . '</td>' .
-				'<td align="left">' . html_print_select($user_groups, 'element_group', '', '', '', 0, true) .
+				__('Restrict access to group') . '</td>' .
+				'<td align="left">' . html_print_select($user_groups, 'element_group', '', '', '', 0, true) . 
+				ui_print_help_tip (
+					__("If selected, restrict visualization of this item in the visual console to users who have access to selected group. This is also used on calculating child visual consoles."), true) . 
 				'</td>';
 
 			//Insert and modify before the buttons to create or update.

@@ -1412,21 +1412,11 @@ function networkmap_open_graph ($layout, $nooverlap, $pure, $zoom,
 		$size = '';
 	}
 	
-	
-	if ($layout == 'radial') {
-		$overlap = 'true';
-	}
-	
-	if ($layout == 'flat' || $layout == 'radial' || $layout == 'spring1' || $layout == "spring2") {
-		if ($nooverlap != '') {
-			$overlap = 'scalexy';
-		}
-	}
-	
 	if ($zoom > 0) {
 		$size_x *= $zoom;
 		$size_y *= $zoom;
 	}
+
 	$size = $size_x . ',' . $size_y;
 	
 	if (!is_null($size_canvas)) {
@@ -1436,18 +1426,21 @@ function networkmap_open_graph ($layout, $nooverlap, $pure, $zoom,
 	// BEWARE: graphwiz DONT use single ('), you need double (")
 	$head = "graph networkmap { dpi=100; bgcolor=\"transparent\"; labeljust=l; margin=0; pad=\"0.75,0.75\";";
 	if ($nooverlap != '') {
-		$head .= "overlap=\"$overlap\";";
-		$head .= "ranksep=\"$ranksep\";";
+		$head .= "ranksep=\"4\";";
 		$head .= "outputorder=edgesfirst;";
+	}
+	if ($layout == 'flat' || $layout == 'spring1' || $layout == "spring2") {
+		if ($nooverlap != '') {
+			$head .= "overlap=\"scalexy\";";
+		}
 	}
 	
 	$head .= "ratio=fill;";
 	$head .= "root=0;";
-	$head .= "nodesep=\"0.02\";";
+	$head .= "nodesep=\"0.=2\";";
 	$head .= "size=\"$size\";";
 	
 	$head .= "\n";
-
 	return $head;
 }
 

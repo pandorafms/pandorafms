@@ -1157,10 +1157,10 @@ ALTER TABLE titem MODIFY `source_data` int(10) unsigned;
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('big_operation_step_datos_purge', '100');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('small_operation_step_datos_purge', '1000');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('days_autodisable_deletion', '30');
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 8);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 9);
 UPDATE tconfig SET value = 'https://licensing.artica.es/pandoraupdate7/server.php' WHERE token='url_update_manager';
 DELETE FROM `tconfig` WHERE `token` = 'current_package_enterprise';
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '714');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '716');
 
 -- ---------------------------------------------------------------------
 -- Table `tplanned_downtime_agents`
@@ -1226,6 +1226,7 @@ ALTER TABLE tagente ADD `remote` tinyint(1) NOT NULL default 0;
 ALTER TABLE tagente ADD COLUMN `cascade_protection_module` int(10) unsigned NOT NULL default '0';
 ALTER TABLE tagente ADD COLUMN (alias varchar(600) not null default '');
 ALTER TABLE tagente ADD `alias_as_name` int(2) unsigned default '0';
+ALTER TABLE tagente ADD COLUMN `safe_mode_module` int(10) unsigned NOT NULL default '0';
 
 UPDATE tagente SET tagente.alias = tagente.nombre;
 -- ---------------------------------------------------------------------
@@ -1239,6 +1240,9 @@ ALTER TABLE tlayout ADD `background_color` varchar(50) NOT NULL default '#FFF';
 ALTER TABLE tlayout_data ADD `type_graph` varchar(50) NOT NULL default 'area';
 ALTER TABLE tlayout_data ADD `label_position` varchar(50) NOT NULL default 'down';
 ALTER TABLE tlayout_data ADD COLUMN `show_statistics` tinyint(2) NOT NULL default '0';
+ALTER TABLE tlayout_data ADD COLUMN `element_group` int(10) NOT NULL default '0';
+ALTER TABLE tlayout_data ADD COLUMN `id_layout_linked_weight` int(10) NOT NULL default '0';
+ALTER TABLE tlayout_data ADD COLUMN `show_on_top` tinyint(1) NOT NULL default '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tagent_custom_fields`
@@ -1256,6 +1260,8 @@ UPDATE tagente_modulo SET cron_interval = '' WHERE cron_interval LIKE '%    %';
 -- Table `tgraph`
 -- ---------------------------------------------------------------------
 ALTER TABLE tgraph ADD COLUMN `percentil` int(4) unsigned default '0';
+ALTER TABLE tgraph ADD COLUMN `summatory_series` tinyint(1) UNSIGNED NOT NULL default '0';
+ALTER TABLE tgraph ADD COLUMN `average_series`  tinyint(1) UNSIGNED NOT NULL default '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tnetflow_filter`
@@ -1306,6 +1312,7 @@ ALTER TABLE tmetaconsole_agent ADD COLUMN `cascade_protection_module` int(10) de
 ALTER TABLE tmetaconsole_agent ADD COLUMN `transactional_agent` tinyint(1) NOT NULL default '0';
 ALTER TABLE tmetaconsole_agent ADD COLUMN `alias` VARCHAR(600) not null DEFAULT '';
 ALTER TABLE tmetaconsole_agent ADD COLUMN `alias_as_name` int(2) unsigned default '0';
+ALTER TABLE tmetaconsole_agent ADD COLUMN `safe_mode_module` int(10) unsigned NOT NULL default '0';
 
 UPDATE `tmetaconsole_agent` SET tmetaconsole_agent.alias = tmetaconsole_agent.nombre;
 -- ---------------------------------------------------------------------
@@ -1336,6 +1343,10 @@ BEGIN
 SET @vv1 = (SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = 'tbackup');
 IF @vv1>0 THEN
 	ALTER TABLE tbackup ADD COLUMN `filepath` varchar(512) NOT NULL DEFAULT "";
+END IF;
+SET @vv2 = (SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = 'tuser_task_scheduled');
+IF @vv2>0 THEN
+	ALTER TABLE tuser_task_scheduled MODIFY args TEXT NOT NULL;
 END IF;
 END;
 //
@@ -1451,3 +1462,7 @@ INSERT INTO tmodule VALUES (8, 'Wux module');
 
 INSERT INTO ttipo_modulo VALUES (25,'web_analysis', 8, 'Web analysis data', 'module-wux.png');
 
+-- ---------------------------------------------------------------------
+-- Table `tdashboard`
+-- ---------------------------------------------------------------------
+ALTER TABLE `tdashboard` ADD COLUMN `cells_slideshow` TINYINT(1) NOT NULL default 0;

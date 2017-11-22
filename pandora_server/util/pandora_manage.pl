@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.715 PS171114";
+my $version = "7.0NG.715 PS171122";
 
 # save program name for logging
 my $progname = basename($0);
@@ -4824,9 +4824,13 @@ sub cli_create_visual_console() {
 				my $label_position = $elem->{'label_position'};
 				my $border_color = $elem->{'border_color'};
 				my $fill_color = $elem->{'fill_color'};
+				my $show_statistics = $elem->{'fill_color'};
+				my $id_layout_linked_weight = $elem->{'id_layout_linked_weight'};
+				my $element_group = $elem->{'element_group'};
+				my $show_on_top = $elem->{'show_on_top'};
 
-				my $elem_id = db_insert ($dbh, 'id', 'INSERT INTO tlayout_data (id_layout, pos_x, pos_y, height, width, label, image, type, period, id_agente_modulo, id_agent, id_layout_linked, parent_item, enable_link, id_metaconsole, id_group, id_custom_graph, border_width, type_graph, label_position, border_color, fill_color, show_statistics)
-							VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $vc_id, $pos_x, $pos_y, $height, $width, $label, $image, $type, $period, $id_agente_modulo, $id_agent, $id_layout_linked, $parent_item, $enable_link, $id_metaconsole, $id_group, $id_custom_graph, $border_width, $type_graph, $label_position, $border_color, $fill_color, 0);
+				my $elem_id = db_insert ($dbh, 'id', 'INSERT INTO tlayout_data (id_layout, pos_x, pos_y, height, width, label, image, type, period, id_agente_modulo, id_agent, id_layout_linked, parent_item, enable_link, id_metaconsole, id_group, id_custom_graph, border_width, type_graph, label_position, border_color, fill_color, show_statistics, id_layout_linked_weight, element_group, show_on_top)
+							VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $vc_id, $pos_x, $pos_y, $height, $width, $label, $image, $type, $period, $id_agente_modulo, $id_agent, $id_layout_linked, $parent_item, $enable_link, $id_metaconsole, $id_group, $id_custom_graph, $border_width, $type_graph, $label_position, $border_color, $fill_color, 0, $id_layout_linked_weight, $element_group, $show_on_top);
 
 				print_log "[INFO] The element id in position $elem_count is '$elem_id' \n\n";
 
@@ -4893,9 +4897,13 @@ sub cli_create_visual_console() {
 					my $label_position = $elem->{'label_position'};
 					my $border_color = $elem->{'border_color'};
 					my $fill_color = $elem->{'fill_color'};
+					my $id_layout_linked_weight = $elem->{'id_layout_linked_weight'};
+					my $element_group = $elem->{'element_group'};
+					my $show_on_top = $elem->{'show_on_top'};
+					
 
-					my $elem_id = db_insert ($dbh, 'id', 'INSERT INTO tlayout_data (id_layout, pos_x, pos_y, height, width, label, image, type, period, id_agente_modulo, id_agent, id_layout_linked, parent_item, enable_link, id_metaconsole, id_group, id_custom_graph, border_width, type_graph, label_position, border_color, fill_color, show_statistics)
-								VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $vc_id, $pos_x, $pos_y, $height, $width, $label, $image, $type, $period, $id_agente_modulo, $id_agent, $id_layout_linked, $parent_item, $enable_link, $id_metaconsole, $id_group, $id_custom_graph, $border_width, $type_graph, $label_position, $border_color, $fill_color, 0);
+					my $elem_id = db_insert ($dbh, 'id', 'INSERT INTO tlayout_data (id_layout, pos_x, pos_y, height, width, label, image, type, period, id_agente_modulo, id_agent, id_layout_linked, parent_item, enable_link, id_metaconsole, id_group, id_custom_graph, border_width, type_graph, label_position, border_color, fill_color, show_statistics, id_layout_linked_weight, element_group, show_on_top)
+								VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $vc_id, $pos_x, $pos_y, $height, $width, $label, $image, $type, $period, $id_agente_modulo, $id_agent, $id_layout_linked, $parent_item, $enable_link, $id_metaconsole, $id_group, $id_custom_graph, $border_width, $type_graph, $label_position, $border_color, $fill_color, 0, $id_layout_linked_weight, $element_group, $show_on_top);
 
 					print_log "[INFO] The element id in position $elem_count is '$elem_id' \n\n";
 
@@ -5001,6 +5009,9 @@ sub cli_edit_visual_console() {
 					my $new_label_position = $element_in_db->{'label_position'};
 					my $new_border_color = $element_in_db->{'border_color'};
 					my $new_fill_color = $element_in_db->{'fill_color'};
+					my $new_id_layout_linked_weight = $elem->{'id_layout_linked_weight'};
+					my $new_element_group = $elem->{'element_group'};
+					my $new_show_on_top = $elem->{'show_on_top'};
 
 					if(defined($elem->{'pos_x'})) {
 						$new_pos_x = $elem->{'pos_x'};
@@ -5065,6 +5076,15 @@ sub cli_edit_visual_console() {
 					if(defined($elem->{'fill_color'})) {
 						$new_fill_color = $elem->{'fill_color'};
 					}
+					if(defined($elem->{'id_layout_linked_weight'})) {
+						$new_id_layout_linked_weight = $elem->{'id_layout_linked_weight'};
+					}
+					if(defined($elem->{'element_group'})) {
+						$new_element_group = $elem->{'element_group'};
+					}
+					if(defined($elem->{'show_on_top'})) {
+						$new_show_on_top = $elem->{'show_on_top'};
+					}
 
 					db_update ($dbh, "UPDATE tlayout_data SET pos_x = " . $new_pos_x . ", pos_y = " . $new_pos_y . ", width = " . $new_width . 
 						", height = " . $new_height . ", label = '" . $new_label . "', image = '" . $new_image . 
@@ -5073,6 +5093,7 @@ sub cli_edit_visual_console() {
 						", enable_link = " . $new_enable_link . ", id_metaconsole = " . $new_id_metaconsole . ", id_group = " . $new_id_group . 
 						", id_custom_graph = " . $new_id_custom_graph . ", border_width = " . $new_border_width . ", type_graph = '" . $new_type_graph . 
 						"', label_position = '" . $new_label_position . "', border_color = '" . $new_border_color . "', fill_color = '" . $new_fill_color . 
+						"', id_layout_linked_weight = '" . $new_id_layout_linked_weight . "', element_group = '" . $new_element_group . "', show_on_top = '" . $new_show_on_top . 
 						"' WHERE id = " . $elem->{'id'});
 					
 					print_log "[INFO] Element with id " . $elem->{'id'} . " has been updated \n\n";
@@ -5099,9 +5120,12 @@ sub cli_edit_visual_console() {
 					my $label_position = $elem->{'label_position'};
 					my $border_color = $elem->{'border_color'};
 					my $fill_color = $elem->{'fill_color'};
+					my $id_layout_linked_weight = $elem->{'id_layout_linked_weight'};
+					my $element_group = $elem->{'element_group'};
+					my $show_on_top = $elem->{'show_on_top'};
 
-					my $new_elem_id = db_insert ($dbh, 'id', 'INSERT INTO tlayout_data (id_layout, pos_x, pos_y, height, width, label, image, type, period, id_agente_modulo, id_agent, id_layout_linked, parent_item, enable_link, id_metaconsole, id_group, id_custom_graph, border_width, type_graph, label_position, border_color, fill_color, show_statistics)
-						VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id, $pos_x, $pos_y, $height, $width, $label, $image, $type, $period, $id_agente_modulo, $id_agent, $id_layout_linked, $parent_item, $enable_link, $id_metaconsole, $id_group, $id_custom_graph, $border_width, $type_graph, $label_position, $border_color, $fill_color, 0);
+					my $new_elem_id = db_insert ($dbh, 'id', 'INSERT INTO tlayout_data (id_layout, pos_x, pos_y, height, width, label, image, type, period, id_agente_modulo, id_agent, id_layout_linked, parent_item, enable_link, id_metaconsole, id_group, id_custom_graph, border_width, type_graph, label_position, border_color, fill_color, show_statistics, id_layout_linked_weight, element_group, show_on_top)
+						VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id, $pos_x, $pos_y, $height, $width, $label, $image, $type, $period, $id_agente_modulo, $id_agent, $id_layout_linked, $parent_item, $enable_link, $id_metaconsole, $id_group, $id_custom_graph, $border_width, $type_graph, $label_position, $border_color, $fill_color, 0, $id_layout_linked_weight, $element_group, $show_on_top);
 				
 					print_log "[INFO] New element with id $new_elem_id has been created \n\n";
 				}
@@ -5142,6 +5166,9 @@ sub cli_edit_visual_console() {
 						my $new_label_position = $element_in_db->{'label_position'};
 						my $new_border_color = $element_in_db->{'border_color'};
 						my $new_fill_color = $element_in_db->{'fill_color'};
+						my $new_id_layout_linked_weight = $elem->{'id_layout_linked_weight'};
+						my $new_element_group = $elem->{'element_group'};
+						my $new_show_on_top = $elem->{'show_on_top'};
 
 						if(defined($elem->{'width'})) {
 							$new_width = $elem->{'width'};
@@ -5200,6 +5227,15 @@ sub cli_edit_visual_console() {
 						if(defined($elem->{'fill_color'})) {
 							$new_fill_color = $elem->{'fill_color'};
 						}
+						if(defined($elem->{'id_layout_linked_weight'})) {
+							$new_id_layout_linked_weight = $elem->{'id_layout_linked_weight'};
+						}
+						if(defined($elem->{'element_group'})) {
+							$new_element_group = $elem->{'element_group'};
+						}
+						if(defined($elem->{'show_on_top'})) {
+							$new_show_on_top = $elem->{'show_on_top'};
+						}
 
 						db_update ($dbh, "UPDATE tlayout_data SET pos_x = " . $new_pos_x . ", pos_y = " . $new_pos_y . ", width = " . $new_width . 
 							", height = " . $new_height . ", label = '" . $new_label . "', image = '" . $new_image . 
@@ -5208,6 +5244,7 @@ sub cli_edit_visual_console() {
 							", enable_link = " . $new_enable_link . ", id_metaconsole = " . $new_id_metaconsole . ", id_group = " . $new_id_group . 
 							", id_custom_graph = " . $new_id_custom_graph . ", border_width = " . $new_border_width . ", type_graph = '" . $new_type_graph . 
 							"', label_position = '" . $new_label_position . "', border_color = '" . $new_border_color . "', fill_color = '" . $new_fill_color . 
+							"', id_layout_linked_weight = '" . $new_id_layout_linked_weight . "', element_group = '" . $new_element_group . "', show_on_top = '" . $new_show_on_top . 
 							"' WHERE id = " . $elem->{'id'});
 						
 						print_log "[INFO] Element with id " . $elem->{'id'} . " has been updated \n\n";
@@ -5234,9 +5271,12 @@ sub cli_edit_visual_console() {
 						my $label_position = $elem->{'label_position'};
 						my $border_color = $elem->{'border_color'};
 						my $fill_color = $elem->{'fill_color'};
+						my $id_layout_linked_weight = $elem->{'id_layout_linked_weight'};
+						my $element_group = $elem->{'element_group'};
+						my $show_on_top = $elem->{'show_on_top'};
 
-						my $new_elem_id = db_insert ($dbh, 'id', 'INSERT INTO tlayout_data (id_layout, pos_x, pos_y, height, width, label, image, type, period, id_agente_modulo, id_agent, id_layout_linked, parent_item, enable_link, id_metaconsole, id_group, id_custom_graph, border_width, type_graph, label_position, border_color, fill_color, show_statistics)
-							VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id, $pos_x, $pos_y, $height, $width, $label, $image, $type, $period, $id_agente_modulo, $id_agent, $id_layout_linked, $parent_item, $enable_link, $id_metaconsole, $id_group, $id_custom_graph, $border_width, $type_graph, $label_position, $border_color, $fill_color, 0);
+						my $new_elem_id = db_insert ($dbh, 'id', 'INSERT INTO tlayout_data (id_layout, pos_x, pos_y, height, width, label, image, type, period, id_agente_modulo, id_agent, id_layout_linked, parent_item, enable_link, id_metaconsole, id_group, id_custom_graph, border_width, type_graph, label_position, border_color, fill_color, show_statistics, id_layout_linked_weight, element_group, show_on_top)
+							VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id, $pos_x, $pos_y, $height, $width, $label, $image, $type, $period, $id_agente_modulo, $id_agent, $id_layout_linked, $parent_item, $enable_link, $id_metaconsole, $id_group, $id_custom_graph, $border_width, $type_graph, $label_position, $border_color, $fill_color, 0, $id_layout_linked_weight, $element_group, $show_on_top);
 					
 						print_log "[INFO] New element with id $new_elem_id has been created \n\n";
 					}
@@ -5441,9 +5481,12 @@ sub cli_duplicate_visual_console () {
 			my $label_position = $element->{'label_position'};
 			my $border_color = $element->{'border_color'};
 			my $fill_color = $element->{'fill_color'};
+			my $id_layout_linked_weight = $element->{'id_layout_linked_weight'};
+			my $element_group = $element->{'element_group'};
+			my $show_on_top = $element->{'show_on_top'};
 
-			my $element_id = db_insert ($dbh, 'id', 'INSERT INTO tlayout_data (id_layout, pos_x, pos_y, height, width, label, image, type, period, id_agente_modulo, id_agent, id_layout_linked, parent_item, enable_link, id_metaconsole, id_group, id_custom_graph, border_width, type_graph, label_position, border_color, fill_color, show_statistics)
-						VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $new_console_id, $pos_x, $pos_y, $height, $width, $label, $image, $type, $period, $id_agente_modulo, $id_agent, $id_layout_linked, $parent_item, $enable_link, $id_metaconsole, $id_group, $id_custom_graph, $border_width, $type_graph, $label_position, $border_color, $fill_color, 0);
+			my $element_id = db_insert ($dbh, 'id', 'INSERT INTO tlayout_data (id_layout, pos_x, pos_y, height, width, label, image, type, period, id_agente_modulo, id_agent, id_layout_linked, parent_item, enable_link, id_metaconsole, id_group, id_custom_graph, border_width, type_graph, label_position, border_color, fill_color, show_statistics, id_layout_linked_weight, element_group, show_on_top)
+						VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $new_console_id, $pos_x, $pos_y, $height, $width, $label, $image, $type, $period, $id_agente_modulo, $id_agent, $id_layout_linked, $parent_item, $enable_link, $id_metaconsole, $id_group, $id_custom_graph, $border_width, $type_graph, $label_position, $border_color, $fill_color, 0, $id_layout_linked_weight, $element_group, $show_on_top);
 		
 			print_log "[INFO] Element with ID " . $element->{"id"} . " has been duplicated to the new console \n\n";
 		}
@@ -5509,6 +5552,9 @@ sub cli_export_visual_console() {
 		my $label_position = $element->{'label_position'};
 		my $border_color = $element->{'border_color'};
 		my $fill_color = $element->{'fill_color'};
+		my $id_layout_linked_weight = $element->{'id_layout_linked_weight'};
+		my $element_group = $element->{'element_group'};
+		my $show_on_top = $element->{'show_on_top'};
 
 		if ($first == 0) {
 			$data_to_json .= ','
@@ -5546,6 +5592,9 @@ sub cli_export_visual_console() {
 		$data_to_json .= ',"label_position":"' . $label_position . '"';
 		$data_to_json .= ',"border_color":"' . $border_color . '"';
 		$data_to_json .= ',"fill_color":"' . $fill_color . '"';
+		$data_to_json .= ',"id_layout_linked_weight":' . $id_layout_linked_weight;
+		$data_to_json .= ',"element_group":' . $element_group;
+		$data_to_json .= ',"show_on_top":' . $show_on_top;
 		$data_to_json .= '}';
 	}
 

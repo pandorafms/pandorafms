@@ -822,6 +822,8 @@ function readFields() {
 	values['bars_graph_type'] = $("select[name=bars_graph_type]").val();
 	values['parent'] = $("select[name=parent]").val();
 	values['map_linked'] = $("select[name=map_linked]").val();
+	values['element_group'] = $("select[name=element_group]").val();
+	values['map_linked_weight'] = $("select[name=map_linked_weight]").val();
 	values['width_percentile'] = $("input[name=width_percentile]").val();
 	values['bars_graph_height'] = $("input[name=bars_graph_height]").val();
 	values['max_percentile'] = parseInt($("input[name=max_percentile]").val());
@@ -853,6 +855,7 @@ function readFields() {
 	values['line_color'] = $("input[name='line_color']").val();
 	values['label_position'] = $(".labelpos[sel=yes]").attr('position');
 	values['show_statistics'] = $("input[name=show_statistics]").is(':checked') ? 1 : 0;
+	values['show_on_top'] = $("input[name=show_on_top]").is(':checked') ? 1 : 0;
 	
 	if (is_metaconsole()) {
 		values['metaconsole'] = 1;
@@ -1293,6 +1296,9 @@ function toggle_item_palette() {
 		}
 
 		hiddenFields(item);
+		
+		$("#show_on_top_row").css('display', 'table-row');
+		$("#show_on_top." + item).css('display', 'block');
 
 		$("#properties_panel").show("fast");
 		
@@ -1422,6 +1428,17 @@ function loadFieldsFromDB(item) {
 					}
 				}
 				
+				if (key == 'show_on_top') {
+					if (val == "1") {
+						$("input[name=show_on_top]")
+							.prop("checked", true);
+					}
+					else {
+						$("input[name=show_on_top]")
+							.prop("checked", false);
+					}
+				}
+				
 				if (key == 'type_graph') {
 					$("select[name=type_graph]").val(val);
 				}
@@ -1510,6 +1527,10 @@ function loadFieldsFromDB(item) {
 					$("select[name=parent]").val(val);
 				if (key == 'id_layout_linked')
 					$("select[name=map_linked]").val(val);
+				if (key == 'id_layout_linked_weight')
+					$("select[name=map_linked_weight]").val(val);
+				if (key == 'element_group')
+					$("select[name=element_group]").val(val);
 				if (key == 'width_percentile')
 					$("input[name=width_percentile]").val(val);
 				if (key == 'bars_graph_height')
@@ -1800,6 +1821,12 @@ function hiddenFields(item) {
 	$("#map_linked_row").css('display', 'none');
 	$("#map_linked_row." + item).css('display', '');
 
+	$("#element_group_row").css('display', 'none');
+	$("#element_group_row." + item).css('display', '');
+
+	$("#map_linked_weight").css('display', 'none');
+	$("#map_linked_weight." + item).css('display', '');
+
 	$("#module_graph_size_row").css('display', 'none');
 	$("#module_graph_size_row." + item).css('display', '');
 
@@ -1850,14 +1877,6 @@ function hiddenFields(item) {
 	if (typeof(enterprise_hiddenFields) == 'function') {
 		enterprise_hiddenFields(item);
 	}
-
-	//~ var code_control = tinyMCE.activeEditor.controlManager.controls['text-label_code'];
-	//~ if (item == 'label') {
-		//~ code_control.setDisabled(false);
-	//~ }
-	//~ else {
-		//~ code_control.setDisabled(true);
-	//~ }
 }
 
 function cleanFields(item) {
@@ -1879,6 +1898,8 @@ function cleanFields(item) {
 	$("input[name=height]").val(0);
 	$("select[name=parent]").val('');
 	$("select[name=map_linked]").val('');
+	$("select[name=element_group]").val('');
+	$("select[name=map_linked_weight]").val('');
 	$("input[name=width_module_graph]").val(300);
 	$("input[name=height_module_graph]").val(180);
 	$("input[name='width_box']").val(300);
@@ -1895,6 +1916,7 @@ function cleanFields(item) {
 	$("input[name=percentile_label_color]").val('');
 	$("input[name=percentile_label]").val('');
 	$(".ColorPickerDivSample").css('background-color', '#FFF');
+	$("input[name=show_on_top]").prop("checked", false);
 
 
 	$("#preview").empty();
@@ -3458,8 +3480,6 @@ function createItem(type, values, id_data) {
 	}
 
 	$("#background").append(item);
-	$(".item").css('z-index', '2');
-	$(".box_item").css('z-index', '1');
 
 	if (values['parent'] != 0) {
 		var line = {"id": id_data,
@@ -3480,6 +3500,14 @@ function createItem(type, values, id_data) {
 	}
 	else if(values['label_position'] == 'left'){
 		$('#text_'+id_data).css({'display':'block','float':'left'});
+	}
+	
+	if(values['show_on_top'] == 1){
+		$("#" + id_data).css('z-index', '10');
+	}
+	
+	if(values['show_on_top'] == 0){
+		$("#" + id_data).css('z-index', '5');
 	}
 	
 }
@@ -3684,6 +3712,15 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 	
 	refresh_lines(lines, 'background', true);
 	draw_user_lines("", 0, 0, 0 , 0, 0, true);
+	
+	if(values['show_on_top'] == 1){
+		$("#" + idElement).css('z-index',10);
+	}
+	
+	if(values['show_on_top'] == 0){
+		$("#" + idElement).css('z-index',5);
+	}
+
 }
 
 function updateDB(type, idElement , values, event) {
@@ -4519,6 +4556,8 @@ function eventsBackground() {
 		if ((!is_opened_palette) && (autosave)) {
 			toggle_item_palette();
 		}
+		$("#show_on_top_row").css('display', 'none');
+		$("#show_on_top." + item).css('display', '');
 	});
 }
 

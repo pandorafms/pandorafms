@@ -68,6 +68,11 @@ our @EXPORT = qw(
 	$OS_VERSION
 	RECOVERED_ALERT
 	FIRED_ALERT
+	MODULE_NORMAL
+	MODULE_CRITICAL
+	MODULE_WARNING
+	MODULE_UNKNOWN
+	MODULE_NOTINIT
     cron_get_closest_in_range
 	cron_next_execution
 	cron_next_execution_date
@@ -126,6 +131,13 @@ use constant TRANSACTIONALSERVER => 14;
 use constant MFSERVER => 15;
 use constant SYNCSERVER => 16;
 use constant WUXSERVER => 17;
+
+# Module status
+use constant MODULE_NORMAL => 0;
+use constant MODULE_CRITICAL => 1;
+use constant MODULE_WARNING => 2;
+use constant MODULE_UNKNOWN => 3;
+use constant MODULE_NOTINIT => 4;
 
 # Value for a metaconsole license type
 use constant METACONSOLE_LICENSE => 0x01;
@@ -1428,7 +1440,7 @@ sub cron_is_in_cron {
 	if ($elem_cron ne '*') {
 		my ($down, $up) = cron_get_interval($elem_cron);
 		# Check if there is no a range
-		return 0 if (!defined($up) && ($down != $cron));
+		return 0 if (!defined($up) && ($down != $elem_curr_time));
 		# Check if there is on the range
 		if ($down < $up) {
 			return 0 if ($elem_curr_time < $down || $elem_curr_time > $up);

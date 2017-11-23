@@ -1,5 +1,5 @@
 package: pandorafms-agent-unix
-Version: 5.1SP4-171123
+Version: 5.1SP4-171124
 Architecture: all
 Priority: optional
 Section: admin

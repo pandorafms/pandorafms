@@ -4231,7 +4231,7 @@ div#footer_help{
 	left: 90% !important;
 }
 
-.graph_conteiner_inside > .parent_graph > .noresizevc{
+.graph_conteiner_inside > .parent_graph > .graph{
 	width: 90% !important;	
 }
 

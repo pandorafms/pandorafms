@@ -604,6 +604,7 @@ CREATE TABLE IF NOT EXISTS `tcontainer_item` (
 	`agent` varchar(100) NOT NULL default '',
 	`module` varchar(100) NOT NULL default '',
 	`id_tag` integer(10) unsigned NOT NULL DEFAULT 0,
+	`type_graph` tinyint(1) unsigned NOT NULL DEFAULT 0,
 	PRIMARY KEY(`id_ci`),
 	FOREIGN KEY (`id_container`) REFERENCES tcontainer(`id_container`)
 	ON DELETE CASCADE

@@ -22,7 +22,7 @@ if (is_ajax ()) {
 	$public_hash = get_parameter('hash', 0);
 
 	// Try to authenticate by hash on public dashboards
-	if ($public_hash != 0) {
+	if ($public_hash == 0) {
 		// Login check
 		check_login();
 	} else {

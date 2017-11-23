@@ -13,12 +13,28 @@
 // Load global variables
 global $config;
 
-// Check user credentials
-check_login();
-
 require_once ('include/functions_pandora_networkmap.php');
 enterprise_include_once('include/functions_policies.php');
+enterprise_include_once('include/functions_dashboard.php');
 require_once ('include/functions_modules.php');
+
+$public_hash = get_parameter('hash', false);
+
+// Try to authenticate by hash on public dashboards
+if ($public_hash === false) {
+	// Login check
+	check_login();
+} else {
+	$validate_hash = enterprise_hook(
+		'dasboard_validate_public_hash',
+		array($public_hash, get_parameter('networkmap_id'), 'network_map')
+	);
+	if ($validate_hash === false || $validate_hash === ENTERPRISE_NOT_HOOK) {
+		db_pandora_audit("Invalid public hash",	"Trying to access report builder");
+		require ("general/noaccess.php");
+		exit;
+	}
+}
 
 //--------------INIT AJAX-----------------------------------------------
 if (is_ajax ()) {	

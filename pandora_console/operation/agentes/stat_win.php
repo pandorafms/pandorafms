@@ -504,9 +504,9 @@ ui_include_time_picker(true);
 		var show_overview = false;
 		var height_window;
 		var width_window;
-		$(document).ready(function() {
-			height_window = $(window).height();
-			width_window = $(window).width();
+		$(window).ready(function() {
+			height_window = window.innerHeight;
+			width_window = window.innerWidth;
 		});
 		
 		$("*").filter(function() {
@@ -516,13 +516,12 @@ ui_include_time_picker(true);
 				return false;
 			}).click(function() {
 				if (show_overview) {
-					window.resizeTo(width_window + 25, height_window);
+					window.resizeTo(width_window, height_window);
 				}
 				else {
-					window.resizeTo(width_window + 25, height_window + 120);
+					window.resizeTo(width_window, height_window + 150);
 				}
 				show_overview = !show_overview;
-				
 			});
 	<?php
 	}

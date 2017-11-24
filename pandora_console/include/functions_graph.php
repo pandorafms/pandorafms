@@ -5812,23 +5812,20 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 	else {
 		$groups = users_get_groups(false, "AR", false, true, (!empty($filter) && isset($filter['group']) ? $filter['group'] : null));
 	}
+	
 	$data_groups = array();
 	if (!empty($groups)) {
 		$groups_aux = $groups;
-		
-		if ($filter['group'] != 0) {
-			$data_groups[$filter['group']] = $groups[$filter['group']];
-			groups_get_all_hierarchy_group_to_childrens($groups[$filter['group']], $filter['group'], $data_groups);
-		}
-		else {
-			groups_get_all_hierarchy_groups_to_childrens($groups, $data_groups);
-		}
-		
+
+		$data_groups = groups_get_tree($groups);
+		$data_groups_keys = array();
+		groups_get_tree_keys($data_groups, $data_groups_keys);
+
 		$groups_aux = null;
 	}
 
 	if (!empty($data_groups)) {
-		$filter = array('id_grupo' => array_keys($data_groups));
+		$filter = array('id_grupo' => array_keys($data_groups_keys));
 
 		$fields = array('id_agente', 'id_parent', 'id_grupo', 'alias');
 		$agents = agents_get_agents($filter, $fields);
@@ -6082,8 +6079,7 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 			$tooltip_content = html_print_image("images/groups_small/" . $group['icon'] . ".png", true) . "&nbsp;" . __('Group') . ": <b>" . $group_aux['name'] . "</b>";
 			$group_aux['tooltip_content'] = $tooltip_content;
 
-			if (!isset($group['children']))
-				$group_aux['children'] = array();
+			$group_aux['children'] = array();
 			
 			if (!empty($group['children']))
 				$group_aux['children'] = iterate_group_array($group['children'], $data_agents);
@@ -6092,7 +6088,7 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 
 			if (!empty($agents))
 				$group_aux['children'] = array_merge($group_aux['children'], $agents);
-			
+
 			$data[] = $group_aux;
 		}
 
@@ -6107,6 +6103,7 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 				unset($agents[$id]);
 			}
 		}
+		
 		if (!empty($valid_agents))
 			return $valid_agents;
 		else
@@ -6114,7 +6111,7 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 	}
 
 	$graph_data = array('name' => __('Main node'), 'children' => iterate_group_array($data_groups, $data_agents), 'color' => '#3F3F3F');
-	
+
 	if (empty($graph_data['children']))
 		return fs_error_image();
 

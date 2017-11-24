@@ -141,7 +141,7 @@ if ($activeTab == "radial_dynamic") {
 	}
 	if (!empty($module_group))
 		$filter['module_group'] = $module_group;
-	html_debug($filter, true);
+	
 	echo graph_monitor_wheel($width, $height, $filter, $strict_user);
 	
 	echo "</div>";

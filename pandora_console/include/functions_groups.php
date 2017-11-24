@@ -2265,6 +2265,15 @@ function groups_get_tree(&$groups, $parent = false) {
 	return $return;
 }
 
+function groups_get_tree_keys ($groups, &$group_keys) {
+	foreach ($groups as $id => $group) {
+		$group_keys[$id] = $id;
+		if (isset($group['children'])) {
+			groups_get_tree_keys($groups[$id]['children'], $group_keys);
+		}
+	}
+}
+
 function groups_get_all_hierarchy_group ($id_group, $hierarchy = array()) {
 	global $config;
 	
@@ -2296,36 +2305,7 @@ function groups_get_all_hierarchy_group ($id_group, $hierarchy = array()) {
 	return $hierarchy;
 }
 
-function groups_get_all_hierarchy_group_to_childrens ($group, $parent, &$hierachy) {
-	$childrens = db_get_all_rows_sql("SELECT * FROM tgrupo WHERE parent = " . $group['id_grupo']);
-	if ($childrens) {
-		foreach ($childrens as $child) {
-			$hierachy[$parent]['children'][$child['id_grupo']] = $child;
-			groups_get_all_hierarchy_group_to_childrens($child, $child['id_grupo'], $hierachy);
-		}
-	}
-	else {
-		$hierachy[$parent]['children'] = array();
-	}
-}
 
-function groups_get_all_hierarchy_groups_to_childrens ($groups, &$hierachy, $is_children = false) {
-	foreach ($groups as $id => $group) {
-		if (!$is_children) {
-			$hierachy[$group['id_grupo']] = $group;
-		}
-		
-		$childrens = db_get_all_rows_sql("SELECT * FROM tgrupo WHERE parent = " . $group['id_grupo']);
-		if ($childrens) {
-			foreach ($childrens as $child) {
-				$hierachy[$group['id_grupo']]['children'][$child['id_grupo']] = $child;
-				
-				unset($hierachy[$child['id_grupo']]);
-				groups_get_all_hierarchy_groups_to_childrens($childrens, $hierachy, true);
-			}
-		}
-	}
-}
 
 function group_get_data ($id_user = false, $user_strict = false, $acltags, $returnAllGroup = false, $mode = 'group', $agent_filter = array(), $module_filter = array()) {
 	global $config;
@@ -3074,4 +3054,5 @@ function groups_get_group_deep ($id_group) {
 	
 	return $deep;
 }
+
 ?>

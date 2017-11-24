@@ -693,7 +693,8 @@ function networkmap_links_to_js_links($relations, $nodes_graph) {
 			$text_end = modules_get_agentmodule_name((int)$id_target_module);
 			if (preg_match ("/(.+)_ifOperStatus$/" , (string)$text_end, $matches)) {
 				if ($matches[1]) {
-					$item['text_end'] = $matches[1];
+					// It's ok to safe_output as it inlo goint to be user into the map line
+					$item['text_end'] = io_safe_output($matches[1]);
 				}
 			}
 		}
@@ -704,7 +705,8 @@ function networkmap_links_to_js_links($relations, $nodes_graph) {
 			$text_start = modules_get_agentmodule_name((int)$id_source_module);
 			if (preg_match ("/(.+)_ifOperStatus$/" , (string)$text_start, $matches)) {
 				if ($matches[1]) {
-					$item['text_start'] = $matches[1];
+					// It's ok to safe_output as it inlo goint to be user into the map line
+					$item['text_start'] = io_safe_output($matches[1]);
 				}
 			}
 		}

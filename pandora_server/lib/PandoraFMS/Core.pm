@@ -1532,7 +1532,7 @@ sub pandora_process_module ($$$$$$$$$;$) {
 		$mark_for_update = 1;
 
 		# Safe mode execution.
-		if ($agent->{'safe_mode_module'} != 0) {
+		if ($agent->{'safe_mode_module'} == $module->{'id_agente_modulo'}) {
 			safe_mode($pa_config, $agent, $module, $new_status, $known_status, $dbh);
 		}
 	}

@@ -4368,3 +4368,8 @@ div#footer_help{
 	fill: none;
 	transition: all 2s ease-in-out;
 }
+
+.limit_scroll{
+	max-width: 800px;
+	overflow-x:scroll;
+}

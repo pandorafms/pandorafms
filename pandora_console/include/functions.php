@@ -2788,4 +2788,9 @@ function register_pass_change_try ($id_user, $success) {
 	db_process_sql_insert('treset_pass_history', $values);
 }
 
+function isJson($string) {
+ json_decode($string);
+ return (json_last_error() == JSON_ERROR_NONE);
+}
+
 ?>

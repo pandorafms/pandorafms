@@ -2265,6 +2265,45 @@ function groups_get_tree(&$groups, $parent = false) {
 	return $return;
 }
 
+function groups_get_tree_good (&$groups, $parent = false, &$childs) {
+	$return = array();
+	
+	foreach ($groups as $id => $group) {
+		if ($group['parent'] != 0) {
+			$childs[$id] = $id;
+		}
+		if ($parent === false && (!isset($group['parent']) || $group['parent'] == 0 || !in_array($group['parent'], $groups))) {
+			$return[$id] = $group;
+			//unset($groups[$id]);
+			$children = groups_get_tree_good($groups, $id);
+			
+			if (!empty($children)) {
+				$return[$id]['children'] = $children;
+			}
+			else {
+				$return[$id]['children'] = array();
+			}
+		}
+		else if ($parent && isset($group['parent']) && $group['parent'] == $parent) {
+			$return[$id] = $group;
+			//unset($groups[$id]);
+			$children = groups_get_tree_good($groups, $id);
+			
+			if (!empty($children)) {
+				$return[$id]['children'] = $children;
+			}
+			else {
+				$return[$id]['children'] = array();
+			}
+		}
+		else {
+			continue;
+		}
+	}
+	
+	return $return;
+}
+
 function groups_get_tree_keys ($groups, &$group_keys) {
 	foreach ($groups as $id => $group) {
 		$group_keys[$id] = $id;

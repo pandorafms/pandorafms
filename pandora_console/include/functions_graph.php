@@ -5803,10 +5803,13 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 	$filter_module_group = (!empty($filter) && !empty($filter['module_group'])) ? $filter['module_group'] : false;
 
 	if ($filter['group'] != 0) {
-		$groups = db_get_row_sql ("SELECT * FROM tgrupo where id_grupo = " . $filter['group']);
+		$groups = db_get_all_rows_sql ("SELECT * FROM tgrupo where id_grupo = " . $filter['group'] . " || parent = " . $filter['group']);
 
-		$groups_ax = array($groups['id_grupo'] => $groups);
-
+		$groups_ax = array();
+		foreach ($groups as $g) {
+			$groups_ax[$g['id_grupo']] = $g;
+		}
+		
 		$groups = $groups_ax;
 	}
 	else {
@@ -5817,7 +5820,13 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 	if (!empty($groups)) {
 		$groups_aux = $groups;
 
-		$data_groups = groups_get_tree($groups);
+		//$data_groups = groups_get_tree($groups);
+		
+		$childrens = array();
+		$data_groups = groups_get_tree_good($groups, false, $childrens);
+		foreach ($childrens as $id_c) {
+			unset($data_groups[$id_c]);
+		}
 		$data_groups_keys = array();
 		groups_get_tree_keys($data_groups, $data_groups_keys);
 

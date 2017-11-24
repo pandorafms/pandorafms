@@ -1162,6 +1162,9 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		$datelimit = $date - $period;
 		
 		$resolution = $config['graph_res'] * 50; //Number of points of the graph
+		if($resolution > $period){
+			$resolution = $period;
+		}
 		$interval = (int) ($period / $resolution);
 		
 		// If projection graph, fill with zero previous data to projection interval	

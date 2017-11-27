@@ -1,29 +1,27 @@
-var timer = null;
-var allEvents=new Array();
-var newEvents=new Array();
-var oldEvents=new Array();
-var api_div_numbers=21;
-
+var refreshTimer = null;
+var isFetching = null;
+var storedEvents=new Array();
 
 $(window).load(function() {
 	initilise();
-	if(timer) {
-		clearTimeout(timer);
-	}
-	timer =setTimeout(main , 100 );
+	// Wait some ms to throw main function
+	var delay = setTimeout(main, 100);
+	resetInterval();
 });
 
-
-
-function fetchEvents(){
-	return oldEvents;
+function fetchEvents() {
+	return storedEvents;
 }
 
 
 function main() {
-	var url=localStorage["ip_address"]+'/include/api.php?op=get&op2=events&return_type=csv&apipass='+localStorage["api_pass"]+'&user='+localStorage["user_name"]+'&pass='+localStorage["pass"];
-	var feedUrl = url;
-	localStorage["data_check"]="true";
+
+	chrome.runtime.sendMessage({text: "FETCH_EVENTS"});
+	// Do not fetch if is fetching now
+	if (isFetching) return;
+	isFetching = true;
+
+	var feedUrl = localStorage["ip_address"]+'/include/api.php?op=get&op2=events&return_type=csv&apipass='+localStorage["api_pass"]+'&user='+localStorage["user_name"]+'&pass='+localStorage["pass"];
 	req = new XMLHttpRequest();
 	req.onload = handleResponse;
 	req.onerror = handleError;
@@ -32,96 +30,68 @@ function main() {
 }
 
 function handleError() {
-	localStorage["data_check"]="false";
-		if(timer) {
-			clearTimeout(timer);
-		}
-		timer =setTimeout(main , 1000);
+	chrome.runtime.sendMessage({text: "FETCH_EVENTS_URL_ERROR"});
+	isFetching = false;
 }
 
 function handleResponse() {
 	var doc = req.responseText;
 	if (doc=="auth error") {
-		localStorage["data_check"]="false";
-		if(timer) {
-			clearTimeout(timer);
-		}
-		timer =setTimeout(main , 1000);
-	}
-	else{
-		var n=doc.search("404 Not Found");
-		if(n>0){
-			localStorage["data_check"]="false";
-			if(timer) {
-				clearTimeout(timer);
-			}
-			timer =setTimeout(main , 1000);
-		}
-		
-		else{
-			localStorage["data_check"]="true"
+		chrome.runtime.sendMessage({text: "FETCH_EVENTS_URL_ERROR"});
+	} else {
+		var n = doc.search("404 Not Found");
+		if (n>0) {
+			chrome.runtime.sendMessage({text: "FETCH_EVENTS_DATA_ERROR"});
+		} else {
 			getEvents(doc);
+			chrome.runtime.sendMessage({text: "FETCH_EVENTS_SUCCESS"});
 		}
 	}
+	isFetching = false;
 }
 
 function getEvents(reply){
-	if(check()){
-		all_event_array=reply.split("\n");
-		allEvents=divideArray(all_event_array);
-		if(oldEvents.length==0){
-			oldEvents=allEvents;
+	var fetchedEvents = parseReplyEvents(reply);
+
+	// If there is no events requested, mark all as visited
+	if (storedEvents.length == 0) {
+		for(var k=0;k<fetchedEvents.length;k++){
+			fetchedEvents[k]['visited'] = true;
 		}
-		newEvents=fetchNewEvents(allEvents,oldEvents);
-		if(newEvents.length!=0){
-			for(var k=0;k<newEvents.length;k++){
-				 localStorage["new_events"]++;
-				showNotification(k);
-			}
-		}
-		oldEvents=allEvents;
-		if(localStorage["new_events"]!=0){
-				showBadge(localStorage["new_events"]);
-		}
-		else{
-				hideBadge();    
-		}
-		
-		
-		if(timer) {
-			clearTimeout(timer);
-		}
-		timer =setTimeout(main , localStorage["refresh"]*1000 );
+		storedEvents = fetchedEvents;
+		return;
+	}
+
+	// Discriminate the new events
+	newEvents=fetchNewEvents(fetchedEvents,storedEvents);
+	
+	// Display the notifications
+	for(var k=0;k<newEvents.length;k++){
+		localStorage["new_events"]++;
+		displayNotification (newEvents[k])
+		alertsSound(newEvents[k]);
+	}
+
+	storedEvents = fetchedEvents;
+
+	updateBadge();
+}
+
+function updateBadge() {
+	if (localStorage["new_events"] != 0) {
+		chrome.browserAction.setBadgeBackgroundColor({color:[0,200,0,255]});
+		chrome.browserAction.setBadgeText({ text: localStorage["new_events"] });
+	} else {
+		chrome.browserAction.setBadgeText({ text: "" });
 	}
 }
-
-function showBadge(txt) {
-chrome.browserAction.setBadgeBackgroundColor({color:[0,200,0,255]});
-chrome.browserAction.setBadgeText({ text: txt });
-}
-function hideBadge() {
-chrome.browserAction.setBadgeText({ text: "" });
-}
-function divideArray(e_array){
-	var Events=new Array();
-	for(var i=0;i<e_array.length;i++){
-		var event=e_array[i].split(";");
-		Events.push(event); 
-	}
-	return Events;
-}
-
-function hideNotification(){
-
-}
-
 
 function fetchNewEvents(A,B){
 	var arrDiff = new Array();
 	for(var i = 0; i < A.length; i++) {
 		var id = false;
 		for(var j = 0; j < B.length; j++) {
-			if(A[i][0] == B[j][0]) {
+			if(A[i]['id'] == B[j]['id']) {
 				id = true;
 				break;
 			}
@@ -134,115 +104,182 @@ function fetchNewEvents(A,B){
 }
 
 
-function showNotification(eventId){
-	var Severity;
-	if(localStorage["sound_alert"]=="on"){
-		if(newEvents[eventId][19]=="Critical"){
+function parseReplyEvents (reply) {
+
+	// Split the API request
+	var e_array = reply.split("\n");
+
+	// Form a properly object
+	var fetchedEvents=new Array();
+	for(var i=0;i<e_array.length;i++){
+		// Avoid to parse empty lines
+		if (e_array[i].length == 0) continue;
+		var event=e_array[i].split(";");
+		fetchedEvents.push({
+			'id' : event[0],
+			'title' : event[6],
+			'date' : event[5],
+			'agent' : event[2],
+			'agent_name' : event[1],
+			'module' : event[9],
+			'type' : event[14],
+			'source' : event[17],
+			'severity' : event[19],
+			'visited' : false
+		});
+	}
+	// Return the events
+	return fetchedEvents;
+}
+
+function alertsSound(pEvent){
+	if(localStorage["sound_alert"]!="on"){
+		return;
+	}
+
+	switch (pEvent['severity']) {
+		case "Critical":
 			playSound(localStorage["critical"]);
-		}
-		if(newEvents[eventId][19]=="Informational"){
-			playSound(localStorage["informational"]);
-		}
-		if(newEvents[eventId][19]=="Maintenance"){
+			break;
+		case "Informational":
+			playSound(localStorage["critical"]);
+			break;
+		case "Maintenance":
 			playSound(localStorage["maintenance"]);
-		}
-		if(newEvents[eventId][19]=="Normal"){
+			break;
+		case "Normal":
 			playSound(localStorage["normal"]);
-		}
-		if(newEvents[eventId][19]=="Warning"){
+			break;
+		case "Warning":
 			playSound(localStorage["warning"]);
-		}
+			break;
 	}
-	var notification = webkitNotifications.createHTMLNotification(
-	"notification.html?event="+eventId  
-);
-	notification.show();
 }
 
-function getNotification(eventId){
-	var title=newEvents[eventId][6];
-	var id;
-	if(newEvents[eventId][9]==0){
-		id=".";
+function displayNotification (pEvent) {
+
+	// Check if the user is okay to get some notification
+	if (Notification.permission === "granted") {
+		// If it's okay create a notification
+		getNotification(pEvent);
 	}
-	else {
-		id= " in the module with Id "+ newEvents[eventId][9] + ".";
-	}
-			   
-	var event = newEvents[eventId][14]+" : "+newEvents[eventId][17]+". Event occured at "+ newEvents[eventId][5]+id;
-	return '<a>' + title + '</a> <br/> <span style="font-size:80%">' + event + '</span>';
 	
+	// Otherwise, we need to ask the user for permission
+	// Note, Chrome does not implement the permission static property
+	// So we have to check for NOT 'denied' instead of 'default'
+	else if (Notification.permission !== 'denied') {
+		Notification.requestPermission(function (permission) {
+			// Whatever the user answers, we make sure we store the information
+			if(!('permission' in Notification)) {
+				Notification.permission = permission;
+			}
+	
+			// If the user is okay, let's create a notification
+			if (permission === "granted") getNotification(pEvent);
+		});
+	}
 }
 
-function check(){
-	if (localStorage["data_check"]=="true" && localStorage["ip_address"] != null && localStorage["api_pass"] != null &&localStorage["user_name"]!=null &&localStorage["pass"]!=null && localStorage["ip_address"] != "" && localStorage["api_pass"] != "" &&localStorage["user_name"]!="" &&localStorage["pass"]!=""){
-		return true;
+function getNotification(pEvent){
+	
+	// Build the event text
+	var even = pEvent['type'];
+	if (pEvent['source'] != '')	even += " : " + pEvent['source'];
+	even += ". Event occured at " + pEvent['date'];
+	if(pEvent['module'] != 0) even += " in the module with Id "+ pEvent['module'];
+	even += ".";
+
+	var url = (pEvent['agent']=="")
+		? localStorage["ip_address"]+"/index.php?sec=eventos&sec2=operation/events/events"
+		: localStorage["ip_address"]+"/index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=" + pEvent['agent'];
+
+	var notification = new Notification(
+		pEvent['title'],
+		{
+			body: even,
+			icon: "images/icon.png"
+		}
+	);
+
+	// Add the link
+	notification.onclick = function (event) {
+		event.preventDefault();
+		window.open(url, '_blank');
 	}
-	else 
-		return false;
+
+	// Close notification after 10 secs
+	setTimeout(function() {notification.close()}, 10000);
+}
+
+function resetInterval () {
+	if (refreshTimer) clearInterval(refreshTimer);
+	refreshTimer = setInterval(main, localStorage["refresh"]*1000);
 }
 
 function initilise(){
 
-		if(localStorage["ip_address"]==undefined){
-			localStorage["ip_address"]="http://firefly.artica.es/pandora_demo";
-					
-		}
-		
-		if(localStorage["api_pass"]==undefined){
-			localStorage["api_pass"]="doreik0";
-		}
-		
-		if(localStorage["user_name"]==undefined){
-			localStorage["user_name"]="demo";
-		}
-		
-		if(localStorage["pass"]==undefined){
-			localStorage["pass"]="demo";
-		}
-		if(localStorage["critical"]==null){
-			localStorage["critical"]="11";
-		}
-		if(localStorage["informational"]==null){
-			localStorage["informational"]="1";
-		}
-		if(localStorage["maintenance"]==null){
-			localStorage["maintenance"]="10";
-		}
-		if(localStorage["normal"]==null){
-			localStorage["normal"]="6";
-		}
-		if(localStorage["warning"]==null){
-			localStorage["warning"]="2";
-		}
-		if(localStorage["events"]==null){
-			localStorage["events"]=20;
-		}
-		if(localStorage["refresh"]==null){
-			localStorage["refresh"]="10";
-		}
-		if(localStorage["ip_address"]==null){
-			localStorage["ip_address"]="http://firefly.artica.es/pandora_demo";
-		}
-		
-		if(localStorage["api_pass"]==null){
-			localStorage["api_pass"]="doreik0";
-		}
-		
-		if(localStorage["user_name"]==null){
-			localStorage["user_name"]="demo";
-		}
-		
-		if(localStorage["pass"]==null){
-			localStorage["pass"]="demo";
-		}
-		if(localStorage["sound_alert"]==null){
-			localStorage["sound_alert"]="on";
-		}
-		if(localStorage["changed"]==null){
-			localStorage["changed"]="false";
-		}
-		if(localStorage["new_events"]==null){
-			localStorage["new_events"]=parseInt(localStorage["events"]);
-		}
+	if (isFetching == null) isFetching = false;
+	if(localStorage["ip_address"]==undefined){
+		localStorage["ip_address"]="http://firefly.artica.es/pandora_demo";
+	}
+	
+	if(localStorage["api_pass"]==undefined){
+		localStorage["api_pass"]="doreik0";
+	}
+	
+	if(localStorage["user_name"]==undefined){
+		localStorage["user_name"]="demo";
+	}
+	
+	if(localStorage["pass"]==undefined){
+		localStorage["pass"]="demo";
+	}
+	if(localStorage["critical"]==null){
+		localStorage["critical"]="11";
+	}
+	if(localStorage["informational"]==null){
+		localStorage["informational"]="1";
+	}
+	if(localStorage["maintenance"]==null){
+		localStorage["maintenance"]="10";
+	}
+	if(localStorage["normal"]==null){
+		localStorage["normal"]="6";
+	}
+	if(localStorage["warning"]==null){
+		localStorage["warning"]="2";
+	}
+	if(localStorage["events"]==null){
+		localStorage["events"]=20;
+	}
+	if(localStorage["refresh"]==null){
+		localStorage["refresh"]="10";
+	}
+	if(localStorage["ip_address"]==null){
+		localStorage["ip_address"]="http://firefly.artica.es/pandora_demo";
+	}
+	
+	if(localStorage["api_pass"]==null){
+		localStorage["api_pass"]="doreik0";
+	}
+	
+	if(localStorage["user_name"]==null){
+		localStorage["user_name"]="demo";
+	}
+	
+	if(localStorage["pass"]==null){
+		localStorage["pass"]="demo";
+	}
+	if(localStorage["sound_alert"]==null){
+		localStorage["sound_alert"]="on";
+	}
+	if(localStorage["changed"]==null){
+		localStorage["changed"]="false";
+	}
+	if(localStorage["new_events"]==null){
+		localStorage["new_events"]=parseInt(localStorage["events"]);
+	}
+	if(localStorage["error"]==null) {
+		localStorage["error"] = true;
+	}
 }

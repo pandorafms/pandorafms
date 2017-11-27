@@ -342,6 +342,7 @@ function networkmap_db_node_to_js_node($node, &$count, &$count_item_holding_area
 	$item['py'] = (int)$node['y'];
 	$item['z'] = (int)$node['z'];
 	$item['state'] = $node['state'];
+	$item['deleted'] = $node['deleted'];
 	if ($item['state'] == 'holding_area') {
 		//40 = DEFAULT NODE RADIUS
 		//30 = for to align
@@ -520,6 +521,7 @@ function networkmap_links_to_js_links($relations, $nodes_graph) {
 		$item['id_agent_end'] = (int)$id_target_agent;
 		$item['target'] = -1;
 		$item['source'] = -1;
+		$item['deleted'] = $relation['deleted'];
 		
 		if (enterprise_installed()) {
 			$target_and_source = array();
@@ -717,7 +719,9 @@ function networkmap_write_js_array($id, $nodes_and_relations = array(), $map_das
 		
 		$item = networkmap_db_node_to_js_node(
 			$node, $count, $count_item_holding_area);
-		
+		if ($item['deleted']) {
+			continue;
+		}
 		echo "networkmap.nodes.push(" . json_encode($item) . ");\n";
 		$nodes_graph[$item['id']] = $item;
 	}
@@ -733,6 +737,9 @@ function networkmap_write_js_array($id, $nodes_and_relations = array(), $map_das
 	$links_js = networkmap_links_to_js_links($relations, $nodes_graph);
 	
 	foreach ($links_js as $link_js) {
+		if ($link_js['deleted']) {
+			continue;
+		}
 		if ($link_js['target'] == -1)
 			continue;
 		if ($link_js['source'] == -1)

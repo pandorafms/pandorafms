@@ -2155,6 +2155,7 @@ function refresh_holding_area() {
 						temp_node['image_url'] = node['image_url'];
 						temp_node['image_width'] = node['image_width'];
 						temp_node['image_height'] = node['image_width'];
+						temp_node['deleted'] = false;
 
 						graph.nodes.push(temp_node);
 					});
@@ -3149,9 +3150,18 @@ function myMouseoutRhombusFunction(node_id) {
 }
 
 function draw_elements_graph() {
-	link = link.data(force.links(), function (d) {
-		return d.source.id + networkmap_id + "-" + d.target.id + networkmap_id + Math.random();
+	link = link.data(force.links().filter(function(d, i) {
+			if (d['deleted']) {
+				return false;
+			}
+			else {
+				return true;
+			}
+		}), 
+		function (d) {
+			return d.source.id + networkmap_id + "-" + d.target.id + networkmap_id + Math.random();
 	});
+	
 
 	link_temp = link.enter()
 		.append("g")
@@ -3333,7 +3343,14 @@ function draw_elements_graph() {
 			return (Array(25).join(" ")) + text_link;
 		});
 
-	node = node.data(force.nodes(), function (d) { return d.id; });
+	node = node.data(force.nodes().filter(function(d, i) {
+			if (d['deleted']) {
+				return false;
+			}
+			else {
+				return true;
+			}
+		}), function (d) { return d.id; });
 
 	node_temp = node.enter()
 		.append("g")

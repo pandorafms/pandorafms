@@ -62,22 +62,22 @@ function showError(text){
 }
 
 function showEvents(){
+
 	clearError();
-	var wrapper = document.getElementById('event');
+	console.log("showEvents!!");
+	$('#events').empty();
 	var e_refr = document.getElementById('event_temp');
 	if(e_refr){
 			wrapper.removeChild(e_refr);
 	}
-	var allEvents=bg.fetchEvents();
-	var r = document.getElementById('e'); 
-	var res=document.createDocumentFragment();               
+	var allEvents=bg.fetchEvents();            
 	var eve=document.createElement('div');
 	eve.id="event_temp";
 	eve.setAttribute("class","b");
 	
 	var i=0;
 	if(allEvents.length>0){
-		while(i<max_events && i<allEvents.length){     
+		while(i<max_events && i<allEvents.length){
 			var eve_title=document.createElement('div');
 			var img = document.createElement('img');
 			img.src = 'images/plus.gif';
@@ -139,13 +139,12 @@ function showEvents(){
 			i++;
 		}
 	
-		res.appendChild(eve);
-		r.parentNode.insertBefore(res,r);
+		$('#events').append(eve);
 
 		$('img.pm').click(showHide);
 		$('div.b').show();
 	} else {
-		showDataError();
+		showError("Error in fetching data!! Check your internet connection");
 	}
 	
 	localStorage["new_events"]=0;

@@ -20,7 +20,6 @@ function initialise(){
 		disable(true);
 		document.getElementById('sound_alert_f').checked=true;
 	}
-                
 }
             
 function change(value, id){
@@ -52,10 +51,7 @@ function change_o(value, id){
 }
 
 function change_global(value,id){
-	console.log("value => "+value);
-	console.log("id => "+id);
 	bg=chrome.extension.getBackgroundPage();
-	bg.location.reload();
 	if(id=="ip_address"){
 		localStorage["ip_address"]=value;
 	}

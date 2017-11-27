@@ -1747,7 +1747,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				$('#timestamp_'+graph_id).show();
 				// If no legend, the timestamp labels are short and with value
 				if (legend.length == 0) {
-					$('#timestamp_'+graph_id).text(labels[j] + ' (' + parseFloat(y).toFixed(2) + ')');
+					$('#timestamp_'+graph_id).text(labels[j] + ' (' + (short_data ? parseFloat(y).toFixed(2) : parseFloat(y)) + ')');
 				}
 				else {
 					$('#timestamp_'+graph_id).text(labels_long[j]);
@@ -1781,7 +1781,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			// The graphs of points type and unknown graphs will dont be updated
 			if (serie_types[i] != 'points' && series.label != $('#hidden-unknown_text').val()) {
 				$('#legend_' + graph_id + ' .legendLabel')
-					.eq(i).html(label_aux +	'= ' + parseFloat(y).toFixed(2) + how_bigger + ' ' + unit);
+					.eq(i).html(label_aux +	'= ' + (short_data ? parseFloat(y).toFixed(2) : parseFloat(y)) + how_bigger + ' ' + unit);
 			}
 
 			$('#legend_' + graph_id + ' .legendLabel')

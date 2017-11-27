@@ -159,7 +159,8 @@ $table->data[26][1] .= ' <a href="javascript: toggleButton(\'warning\');">' . ht
 $table->data[26][1] .= '<div id="layer_sound_warning"></div>';
 
 $table->data[28][0] = __('Public URL');
-$table->data[28][0] .= ui_print_help_tip(__('Set this value when your PandoraFMS across inverse proxy or for example with mod_proxy of Apache.'), true);
+$table->data[28][0] .= ui_print_help_tip(__('Set this value when your PandoraFMS across inverse proxy or for example with mod_proxy of Apache.') .
+	' '.__('Without the index.php such as http://domain/pandora_url/'), true);
 $table->data[28][1] = html_print_input_text ('public_url', $config['public_url'], '', 40, 255, true);
 
 $table->data[29][0] = __('Referer security');

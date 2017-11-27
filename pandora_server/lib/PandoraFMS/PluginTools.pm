@@ -84,7 +84,7 @@ our @EXPORT = qw(
 ################################################################################
 # Get current time (milis)
 ################################################################################
-sub getCurrentUTimeMilis(){
+sub getCurrentUTimeMilis {
 	#return trim (`date +"%s%3N"`); # returns 1449681679712
 	return floor(time*1000);
 }
@@ -104,7 +104,7 @@ sub merge_hashes {
 ################################################################################
 # Regex based tail command
 ################################################################################
-sub tail($$;$){
+sub tail {
 	my $string = shift;
 	my $n = shift;
 	my $reverse_flag = shift;
@@ -128,7 +128,7 @@ sub tail($$;$){
 ################################################################################
 # Regex based head command
 ################################################################################
-sub head($$;$){
+sub head {
 	my $string = shift;
 	my $n = shift;
 	my $reverse_flag = shift;
@@ -151,7 +151,7 @@ sub head($$;$){
 ################################################################################
 # Check if a given variable contents a number
 ################################################################################
-sub to_number($) {
+sub to_number {
 	my $n = shift;
 
 	if(empty($n)) {
@@ -176,7 +176,7 @@ sub to_number($) {
 ################################################################################
 # Erase blank spaces before and after the string 
 ################################################################################
-sub trim($){
+sub trim {
 	my $string = shift;
 	if (empty ($string)){
 		return "";
@@ -194,7 +194,7 @@ sub trim($){
 ################################################################################
 # Empty
 ################################################################################
-sub empty($){
+sub empty {
 	my $str = shift;
 
 	if (! (defined ($str)) ){
@@ -223,7 +223,7 @@ sub empty($){
 ################################################################################
 # Check if a value is in an array
 ################################################################################
-sub in_array($$){
+sub in_array {
 	my ($array, $value) = @_;
 
 	if (empty($value)) {
@@ -240,7 +240,7 @@ sub in_array($$){
 ################################################################################
 # Get unit
 ################################################################################
-sub get_unit($){
+sub get_unit {
 	my $str = shift;
 	$str =~ s/[\d\.\,]//g;
 	return $str;
@@ -249,8 +249,8 @@ sub get_unit($){
 ################################################################################
 ## Decodes a json strin into an hash
 ################################################################################
-sub simple_decode_json($);
-sub simple_decode_json($){
+sub simple_decode_json;
+sub simple_decode_json {
      my $json = shift;
      my $hash_reference;
 
@@ -517,11 +517,10 @@ sub print_module {
 ################################################################################
 # transfer_xml
 ################################################################################
-sub transfer_xml($$;$) {
+sub transfer_xml {
 	my ($conf, $xml, $name) = @_;
 	my $file_name;
 	my $file_path;
-
 
 	if (! (empty ($name))) {
 		$file_name = $name . "_" . time() . ".data";
@@ -539,7 +538,6 @@ sub transfer_xml($$;$) {
 		$file_name .=  "_" . time() . ".data";
 	}
 
-
 	$file_path = $conf->{temp} . "/" . $file_name;
 	
 	#Creating XML file in temp directory
@@ -550,7 +548,7 @@ sub transfer_xml($$;$) {
 		$file_path = $conf->{temp} . "/" . $file_name;
 	}
 
-	open (FD, ">>", $file_path);
+	open (FD, ">>", $file_path) or print_stderror($conf, "Cannot write to [" . $file_path . "]");
 	
 	my $bin_opts = ':raw:encoding(UTF8)';
 	
@@ -563,6 +561,14 @@ sub transfer_xml($$;$) {
 	print FD $xml;
 
 	close (FD);
+
+	if (!defined($conf->{mode} && (defined($conf->{transfer_mode})))) {
+		$conf->{mode} = $conf->{transfer_mode};
+	}
+	else {
+		print_stderror($conf, "Transfer mode not defined in configuration.");
+		return undef;
+	}
 
 	#Transfering XML file
 	if ($conf->{mode} eq "tentacle") {
@@ -729,7 +735,7 @@ sub logger {
 ################################################################################
 # is Enabled 
 ################################################################################
-sub is_enabled($){
+sub is_enabled {
 	my $value = shift;
 	
 	if ((defined ($value)) && ($value > 0)){
@@ -788,7 +794,7 @@ sub post_url {
 ################################################################################
 # initialize plugin (advanced - hashed configuration)
 ################################################################################
-sub init(;$) {
+sub init {
 	my $options = shift;
 	my $conf;
 
@@ -874,7 +880,7 @@ sub get_sys_environment {
 ################################################################################
 # General arguments parser
 ################################################################################
-sub parse_arguments($) {
+sub parse_arguments {
 	my $raw = shift;
 	my @args;
 	if (defined($raw)){
@@ -902,7 +908,7 @@ sub parse_arguments($) {
 # log=/PATH/TO/LOG/FILE
 #
 ################################################################################
-sub parse_configuration($;$$){
+sub parse_configuration {
 	my $conf_file = shift;
 	my $separator;
 	$separator = shift or $separator = "=";
@@ -970,7 +976,7 @@ sub parse_configuration($;$$){
 # log=/PATH/TO/LOG/FILE
 #
 ################################################################################
-sub parse_php_configuration($;$){
+sub parse_php_configuration {
 	my $conf_file = shift;
 	my $separator = shift;
 
@@ -1144,7 +1150,7 @@ sub process_performance {
 #########################################################################################
 # Check api availability
 #########################################################################################
-sub api_available($) {
+sub api_available {
 	my ($conf, $apidata) = @_;
 	my ($api_url, $api_pass, $api_user, $api_user_pass) = ('','','','','');
 	if (ref $apidata eq "ARRAY") {
@@ -1338,7 +1344,7 @@ sub api_create_tag {
 #########################################################################################
 # Pandora API create group
 #########################################################################################
-sub api_create_group($;$){
+sub api_create_group {
 	my ($conf, $apidata, $group_name, $group_config, $email) = @_;
 	my ($api_url, $api_pass, $api_user, $api_user_pass);
 	if (ref $apidata eq "ARRAY") {
@@ -1417,7 +1423,7 @@ sub api_create_group($;$){
 #   $snmp{privProtocol}
 #   $snmp{privKey}
 ################################################################################
-sub snmp_walk($) {
+sub snmp_walk {
 	my $snmp = shift;
 	my $cmd;
 	my $timeout = 2;
@@ -1523,7 +1529,7 @@ sub snmp_walk($) {
 #   $snmp{privProtocol}
 #   $snmp{privKey}
 ################################################################################
-sub snmp_get($) {
+sub snmp_get {
 	my $snmp = shift;
 	my $cmd;
 	my $timeout = 2;
@@ -1615,7 +1621,7 @@ sub snmp_get($) {
 ################################################################################
 # returns a hash with [type->datatype][data->value]
 ################################################################################
-sub snmp_data_switcher ($){
+sub snmp_data_switcher {
 	my @st_data = split /\: /, $_[0];
 	my %data;
 
@@ -1686,7 +1692,7 @@ sub snmp_data_switcher ($){
 #  $1 => string to be encrypted
 #  $2 => salt to use (default default_salt)
 ################################################################################
-sub encrypt($;$$){
+sub encrypt {
 	my ($str,$salt,$iv) = @_;
 
 	return undef unless (load_perl_modules('Crypt::CBC', 'Crypt::OpenSSL::AES','Digest::SHA') == 1);
@@ -1721,7 +1727,7 @@ sub encrypt($;$$){
 #  $1 => string to be decrypted
 #  $2 => salt to use (default default_salt)
 ################################################################################
-sub decrypt($;$$){
+sub decrypt {
 	my ($encrypted_str,$salt,$iv) = @_;
 
 	return undef unless (load_perl_modules('Crypt::CBC', 'Crypt::OpenSSL::AES','Digest::SHA') == 1);

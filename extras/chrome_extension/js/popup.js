@@ -64,7 +64,6 @@ function showError(text){
 function showEvents(){
 
 	clearError();
-	console.log("showEvents!!");
 	$('#events').empty();
 	var e_refr = document.getElementById('event_temp');
 	if(e_refr){

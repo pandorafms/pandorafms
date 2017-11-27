@@ -92,12 +92,6 @@ function disable(state){
 	}
 }
 
-function windowClose() {
-	//window.close();
-	console.log("close");
-}
-
-
 //Add callbacks to elements
 $(document).ready (function () {
 	
@@ -167,5 +161,4 @@ $(document).ready (function () {
 	$("#close").click (function () {
 		window.close();
 	});
-	
 });

@@ -65,11 +65,16 @@ function getEvents(reply){
 	// Discriminate the new events
 	newEvents=fetchNewEvents(fetchedEvents,storedEvents);
 	
-	// Display the notifications
-	for(var k=0;k<newEvents.length;k++){
-		localStorage["new_events"]++;
-		displayNotification (newEvents[k])
-		alertsSound(newEvents[k]);
+	// Display the notifications only if popup is not showing
+	var views = chrome.extension.getViews({ type: "popup" });
+	if (views.length == 0) {
+		for(var k=0;k<newEvents.length;k++){
+			localStorage["new_events"]++;
+			displayNotification (newEvents[k])
+			alertsSound(newEvents[k]);
+		}
+	} else {
+		localStorage["new_events"] = 0;
 	}
 
 	storedEvents = fetchedEvents;
@@ -114,6 +119,7 @@ function parseReplyEvents (reply) {
 	for(var i=0;i<e_array.length;i++){
 		// Avoid to parse empty lines
 		if (e_array[i].length == 0) continue;
+
 		var event=e_array[i].split(";");
 		fetchedEvents.push({
 			'id' : event[0],

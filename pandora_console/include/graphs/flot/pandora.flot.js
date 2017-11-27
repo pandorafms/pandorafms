@@ -2158,9 +2158,8 @@ function number_format(number, force_integer, unit) {
 		}
 	}
 	else {
-		var decimals = 2;
-		var factor = 10 * decimals;
-		number = Math.round(number*factor)/factor;
+		// Round to 2 decimals
+		number = Math.round(number * 100) / 100;
 	}
 
 	var shorts = ["", "K", "M", "G", "T", "P", "E", "Z", "Y"];
@@ -2168,10 +2167,6 @@ function number_format(number, force_integer, unit) {
 	while (1) {
 		if (number >= 1000) { //as long as the number can be divided by 1000
 			pos++; //Position in array starting with 0
-			number = number / 1000;
-		}
-		else if (number <= -1000) {
-			pos++;
 			number = number / 1000;
 		}
 		else if (number <= -1000) {

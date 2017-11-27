@@ -244,10 +244,11 @@ $ignored_params['refr'] = '';
 						$('div.vc-countdown').countdown('destroy');
 						//cb();
 						url = js_html_entity_decode( href ) + duration;
-						//$(document).attr ("location", url);
-						$.post(window.location.href.replace("refr=300","refr="+new_count), function(respuestaSolicitud){
+						$(document).attr ("location", url);
+						/*$.post(window.location.href.replace("refr=300","refr="+new_count), function(respuestaSolicitud){
 							$('#background_<?php echo $id_layout; ?>').html(respuestaSolicitud);
 						});
+						*/
 						$("#main_pure").css('background-color','<?php echo $layout['background_color']; ?>');
 						
 						}

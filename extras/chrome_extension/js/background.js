@@ -106,7 +106,7 @@ function fetchNewEvents(A,B){
 
 function parseReplyEvents (reply) {
 
-	// Split the API request
+	// Split the API response
 	var e_array = reply.split("\n");
 
 	// Form a properly object
@@ -117,14 +117,14 @@ function parseReplyEvents (reply) {
 		var event=e_array[i].split(";");
 		fetchedEvents.push({
 			'id' : event[0],
-			'title' : event[6],
-			'date' : event[5],
-			'agent' : event[2],
 			'agent_name' : event[1],
+			'agent' : event[2],
+			'date' : event[5],
+			'title' : event[6],
 			'module' : event[9],
 			'type' : event[14],
 			'source' : event[17],
-			'severity' : event[19],
+			'severity' : event[28],
 			'visited' : false
 		});
 	}
@@ -142,7 +142,7 @@ function alertsSound(pEvent){
 			playSound(localStorage["critical"]);
 			break;
 		case "Informational":
-			playSound(localStorage["critical"]);
+			playSound(localStorage["informational"]);
 			break;
 		case "Maintenance":
 			playSound(localStorage["maintenance"]);

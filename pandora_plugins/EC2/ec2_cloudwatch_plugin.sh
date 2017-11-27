@@ -260,10 +260,20 @@ case "$NAMESPACE" in
 	fi
 	;;
   *)
-	DIMENSIONS=${arg_dimensions:-"InstanceId=$INSTANCE"} ;;
+	DIMENSIONS=
+  #${arg_dimensions:-"InstanceId=$INSTANCE"}
+  ;;
 esac
 
-${AWS_CLOUDWATCH_HOME}/bin/mon-get-stats ${METRIC} --namespace $NAMESPACE \
-	${OPT_REGION} ${OPT_ACCESS_KEY} ${OPT_SECRET_KEY} -s Average --period 300 \
-	--dimensions "$DIMENSIONS" | tail -1 |
-	awk '$3 ~ /^[-]?[0-9]+[.][0-9]+[Ee][+-]?[0-9]+$/{$3 = sprintf("%.3f",$3)} {print $3}'
+if [ "$DIMENSIONS" == "" ]; then
+  ${AWS_CLOUDWATCH_HOME}/bin/mon-get-stats ${METRIC} --namespace $NAMESPACE \
+    ${OPT_REGION} ${OPT_ACCESS_KEY} ${OPT_SECRET_KEY} -s Average --period 300 | \
+    tail -1 | \
+    awk '$3 ~ /^[-]?[0-9]+[.][0-9]+[Ee][+-]?[0-9]+$/{$3 = sprintf("%.3f",$3)} {print $3}'
+else
+  ${AWS_CLOUDWATCH_HOME}/bin/mon-get-stats ${METRIC} --namespace $NAMESPACE \
+  	${OPT_REGION} ${OPT_ACCESS_KEY} ${OPT_SECRET_KEY} -s Average --period 300 \
+  	--dimensions "$DIMENSIONS" | tail -1 | \
+  	awk '$3 ~ /^[-]?[0-9]+[.][0-9]+[Ee][+-]?[0-9]+$/{$3 = sprintf("%.3f",$3)} {print $3}'
+fi
+

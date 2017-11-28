@@ -69,7 +69,8 @@ function showEvents(){
 	if(e_refr){
 			wrapper.removeChild(e_refr);
 	}
-	var allEvents=bg.fetchEvents();            
+	var allEvents = bg.fetchEvents();
+	var notVisitedEvents = bg.fetchNotVisited();
 	var eve=document.createElement('div');
 	eve.id="event_temp";
 	eve.setAttribute("class","b");
@@ -83,7 +84,7 @@ function showEvents(){
 			img.width = '9';
 			img.height='9';
 			img.className ='pm';
-			img.id='i_' + i;
+			img.id='i_' + i  + '_' + allEvents[i]['id'];
 			eve_title.appendChild(img);
 			var a = document.createElement('a');
 			var temp_style;
@@ -116,6 +117,10 @@ function showEvents(){
 				case "Maintenance":
 					eve_title.setAttribute("style","background:#BABDB6; margin-bottom:-12px;"+temp_style);
 					break;
+			}
+
+			if (notVisitedEvents[allEvents[i]['id']] === true) {
+				eve_title.style.fontWeight = 600;
 			}
 			
 			eve_title.appendChild(a);
@@ -152,8 +157,17 @@ function showEvents(){
 
 function showHide() {
 	var id = $(this).attr('id');
-	var num = id.split("_")[1];
-	var pid = "p_" + num;
+	// Image id has the form i_<position>_<eventId>
+	var nums = id.split('_');
+	var pid = "p_" + nums[1];
+
+	// Mark as visited if visited
+	if($(this).parent().css('font-weight') == '600') {
+		bg.removeNotVisited(nums[2]);
+		$(this).parent().css('font-weight', '');
+	}
+
+	// Toggle information
 	if($('#' + pid).css('display') == 'none') {
 		$('#' + pid).slideDown("fast");
 		$(this).attr({src: 'images/minus.gif'});

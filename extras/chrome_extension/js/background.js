@@ -1,6 +1,7 @@
 var refreshTimer = null;
 var isFetching = null;
-var storedEvents=new Array();
+var storedEvents = new Array();
+var notVisited = {};
 
 $(window).load(function() {
 	initilise();
@@ -13,6 +14,13 @@ function fetchEvents() {
 	return storedEvents;
 }
 
+function fetchNotVisited() {
+	return notVisited;
+}
+
+function removeNotVisited(eventId) {
+	if (notVisited[eventId] === true) delete notVisited[eventId];
+}
 
 function main() {
 
@@ -55,31 +63,43 @@ function getEvents(reply){
 
 	// If there is no events requested, mark all as visited
 	if (storedEvents.length == 0) {
-		for(var k=0;k<fetchedEvents.length;k++){
-			fetchedEvents[k]['visited'] = true;
-		}
+		notVisited = {};
 		storedEvents = fetchedEvents;
 		return;
 	}
 
 	// Discriminate the new events
 	newEvents=fetchNewEvents(fetchedEvents,storedEvents);
+	var newNotVisited = {};
+	var notVisitedCount = 0;
 	
-	// Display the notifications only if popup is not showing
+	// Check if popup is displayed to make some actions
 	var views = chrome.extension.getViews({ type: "popup" });
-	if (views.length == 0) {
-		for(var k=0;k<newEvents.length;k++){
-			localStorage["new_events"]++;
+	for(var k=0;k<newEvents.length;k++){
+		newNotVisited[newEvents[k]['id']] = true;
+		if (views.length == 0) {
+			notVisitedCount++;
 			displayNotification (newEvents[k])
 			alertsSound(newEvents[k]);
 		}
-	} else {
-		localStorage["new_events"] = 0;
 	}
 
-	storedEvents = fetchedEvents;
+	// Make that the old events marked as not visited remains with the
+	// same status
+	for(var k=0;k<fetchedEvents.length;k++){
+		if (notVisited[fetchedEvents[k]['id']] === true) {
+			newNotVisited[fetchedEvents[k]['id']] = true;
+			notVisitedCount++;
+		}
+	}
+	notVisited = newNotVisited;
 
+	// Update the number
+	localStorage["new_events"] = (views.length == 0) ? notVisitedCount : 0;
 	updateBadge();
+
+	// Store the requested events
+	storedEvents = fetchedEvents;
 }
 
 function updateBadge() {

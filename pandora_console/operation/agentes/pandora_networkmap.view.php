@@ -702,7 +702,7 @@ else {
 
 $dash_mode = 0;
 $map_dash_details = array();
-
+$networkmap = db_get_row('tmap', 'id', $id);
 if (enterprise_installed()) {
 	include_once("enterprise/dashboard/widgets/network_map.php");
 	if ($id_networkmap) {
@@ -718,8 +718,6 @@ if (enterprise_installed()) {
 		$networkmap = db_get_row('tmap', 'id', $id);
 	}
 	else {
-		$networkmap = db_get_row('tmap', 'id', $id);
-
 		$networkmap_filter = json_decode($networkmap['filter'], true);
 		if ($networkmap_filter['x_offs'] != null) {
 			$map_dash_details['x_offs'] = $networkmap_filter['x_offs'];

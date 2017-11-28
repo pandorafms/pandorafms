@@ -4,12 +4,17 @@
  */
 ?>
 <h1>Definición de módulo</h1>
-
-<p>
-Existen dos modos para un agente:
-</p>
+<p>Los agentes pueden configurarse desde la consola en tres modos de trabajo:</p>
 <ul>
-    <li><i>Modo aprendizaje:</i> todos los módulos enviados por el agente se aceptan. Si los módulos no están definidos, el sistema los creará automáticamente. Se recomienda activar los agentes en este modo y cambiarlo una vez que se el operador se ha familiarizado con Pandora FMS. A partir de la versión 4.0.3, en este modo Pandora recogerá en consola toda la configuración indicada por el fichero de configuración del agente la primera vez y a partir de entonces todas las modificaciones se deberán realizar a través de consola, no cogerá cambios en el fichero de configuración.</li>
+    <li>
+        <b>Modo aprendizaje:</b> Si el XML recibido del agente software contiene nuevos módulos, éstos serán automáticamente creados. Este es el comportamiento por defecto.
+    </li>
 <br>
-    <li><i>Modo normal:</i> los módulos en este modo se deben configurar manualmente. No se permite la definición automática en este modo.</li>
+    <li>
+        <b>Modo normal:</b> No se crearán nuevos módulos que lleguen en el XML si no han sido declarados previamente en la consola.
+    </li>
+<br>
+    <li>
+        <b>Modo autodeshabilitado:</b> Similar al modo aprendizaje, en este modo, además, si todos los módulos pasan a estado desconocido el agente se deshabilitará automáticamente, pasando a habilitarse de nuevo si recibe nueva información.
+    </li>
 </ul>

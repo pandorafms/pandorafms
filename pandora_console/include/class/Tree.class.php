@@ -23,6 +23,7 @@ class Tree {
 	protected $filter = array();
 	protected $childrenMethod = "on_demand";
 
+	protected $userGroupsACL;
 	protected $userGroups;
 
 	protected $strictACL = false;
@@ -36,43 +37,52 @@ class Tree {
 		$this->id = $id;
 		$this->rootID = !empty($rootID) ? $rootID : $id;
 		$this->serverID = $serverID;
-		$this->childrenMethod = $childrenMethod;		
-		$this->access = $access;		
-		
-		$userGroups = users_get_groups(false, $this->access);
+		$this->childrenMethod = $childrenMethod;
+		$this->access = $access;
 
-		if (empty($userGroups))
-			$this->userGroups = false;
-		else
-			$this->userGroups = $userGroups;
+		$userGroupsACL = users_get_groups(false, $this->access);
+		$this->userGroupsACL = empty($userGroupsACL) ? false : $userGroupsACL;
+		$this->userGroups = $this->userGroupsACL;
 
 		global $config;
 		include_once($config['homedir']."/include/functions_servers.php");
 		include_once($config['homedir']."/include/functions_modules.php");
 		require_once($config['homedir']."/include/functions_tags.php");
 
-		if (is_metaconsole())
-			enterprise_include_once("meta/include/functions_ui_meta.php");
+		if (is_metaconsole()) enterprise_include_once("meta/include/functions_ui_meta.php");
 
 		$this->strictACL = (bool) db_get_value("strict_acl", "tusuario", "id_user", $config['id_user']);
 		
 		$this->acltags = tags_get_user_module_and_tags($config['id_user'], $this->access);
 	}
 
-	public function setType($type) {
-		$this->type = $type;
-	}
-
 	public function setFilter($filter) {
+		// Filter the user groups
+		if (!empty($filter['groupID'])) {
+			$group_id = $filter['groupID'];
+			$this->userGroups = isset($this->userGroupsACL[$group_id])
+				? array($group_id => $this->userGroupsACL[$group_id])
+				: array();
+		}
+		else if (!empty($filter['searchGroup'])) {
+			$groups = db_get_all_rows_filter('tgrupo', array('nombre' => '%' . $filter['searchGroup'] . '%'));
+			
+			// Save the groups which intersect
+			$userGroupsACL = $this->userGroupsACL;
+			$this->userGroups = array_reduce($groups, function ($userGroups, $group) use ($userGroupsACL) {
+				$group_id = $group['id_grupo'];
+				if (isset($userGroupsACL[$group_id])) {
+					$userGroups[$group_id] = $userGroupsACL[$group_id];
+				}
+				
+				return $userGroups;
+			}, array());
+		}
+		else {
+			$this->userGroups = $this->userGroupsACL;
+		}
+		
 		$this->filter = $filter;
-	}
-
-	public function isStrict () {
-		return $this->strictACL;
-	}
-
-	public function setStrict ($value) {
-		$this->strictACL = (bool) $value;
 	}
 
 	protected function getAgentStatusFilter ($status = -1) {
@@ -323,7 +333,7 @@ class Tree {
 			case 'group':
 				// ACL Group
 				$user_groups_str = "-1";
-				$group_acl =  "";
+				$group_filter =  "";
 				if (!$this->strictACL) {
 					if (empty($this->userGroups)) {
 						return;
@@ -338,7 +348,7 @@ class Tree {
 					// Asking for all groups.
 					else {
 						$user_groups_str = implode(",", array_keys($this->userGroups));
-						$group_acl = "AND ta.id_grupo IN ($user_groups_str)";
+						$group_filter = "AND ta.id_grupo IN ($user_groups_str)";
 					}
 				}
 				else {
@@ -356,7 +366,7 @@ class Tree {
 							}
 						}
 					}
-					$group_acl = "AND ta.id_grupo IN ($user_groups_str)";
+					$group_filter = "AND ta.id_grupo IN ($user_groups_str)";
 				}
 
 				switch ($type) {
@@ -390,7 +400,7 @@ class Tree {
 													$module_status_join
 													WHERE ta.disabled = 0
 														AND ta.id_grupo = $item_for_count
-														$group_acl
+														$group_filter
 														$agent_search_filter
 														$agent_status_filter";
 									$sql = $this->getAgentCountersSql($agent_table);
@@ -411,7 +421,7 @@ class Tree {
 													FROM tmetaconsole_agent ta
 													WHERE ta.disabled = 0
 														AND ta.id_grupo = $item_for_count
-														$group_acl
+														$group_filter
 														$agent_search_filter
 														$agent_status_filter";
 									$sql = $this->getAgentCountersSql($agent_table);
@@ -439,7 +449,7 @@ class Tree {
 										$module_status_join
 										WHERE ta.disabled = 0
 											AND ta.id_grupo = $rootID
-											$group_acl
+											$group_filter
 											$agent_search_filter
 											$agent_status_filter
 										GROUP BY $group_by_fields
@@ -456,7 +466,7 @@ class Tree {
 										FROM tmetaconsole_agent ta
 										WHERE ta.disabled = 0
 											AND ta.id_grupo = $rootID
-											$group_acl
+											$group_filter
 											$agent_search_filter
 											$agent_status_filter
 										ORDER BY $order_fields";
@@ -498,7 +508,7 @@ class Tree {
 									ON ta.disabled = 0
 										AND tam.id_agente = ta.id_agente
 										AND ta.id_grupo = $rootID
-										$group_acl
+										$group_filter
 										$agent_search_filter
 										$agent_status_filter
 								WHERE tam.disabled = 0

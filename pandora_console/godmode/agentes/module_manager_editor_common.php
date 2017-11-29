@@ -291,7 +291,7 @@ if (modules_is_string_type($id_module_type) || $edit) {
 	$table_simple->data[4][1] .= '<br /><em>'.__('Inverse interval').'</em>';
 	$table_simple->data[4][1] .= html_print_checkbox ("warning_inverse", 1, $warning_inverse, true, $disabledBecauseInPolicy);
 if (!modules_is_string_type($id_module_type) || $edit) {
-	$table_simple->data[4][2] = '<svg id="svg_dinamic" width="350" height="200" style="padding:40px; padding-left: 100px; margin-bottom: 60px;"> </svg>';
+	$table_simple->data[4][2] = '<svg id="svg_dinamic" width="350px" height="200px" style="padding:40px; padding-left: 100px; margin-bottom: 60px;"></svg>';
 	$table_simple->colspan[4][2] = 2;
 	$table_simple->rowspan[4][2] = 3;
 }
@@ -590,8 +590,7 @@ $table_advanced->colspan[10][1] = 6;
 if (isset($id_agente) && $moduletype == MODULE_DATA) {
 	$has_remote_conf = enterprise_hook('config_agents_has_remote_configuration',array($agent["id_agente"]));
 	if ($has_remote_conf) {
-		$table_advanced->data[11][0] = __('Cron from') .
-			ui_print_help_tip (__('If cron is set the module interval is ignored and the module runs on the specified date and time'), true);
+		$table_advanced->data[11][0] = __('Cron from') . ui_print_help_icon ('cron', true);
 		$table_advanced->data[11][1] = html_print_extended_select_for_cron ($hour_from, $minute_from, $mday_from, $month_from, $wday_from, true, $disabledBecauseInPolicy);
 		$table_advanced->colspan[11][1] = 6;
 
@@ -600,8 +599,7 @@ if (isset($id_agente) && $moduletype == MODULE_DATA) {
 		$table_advanced->colspan[12][1] = 6;
 	}
 	else {
-		$table_advanced->data[11][0] = __('Cron from') .
-			ui_print_help_tip (__('If cron is set the module interval is ignored and the module runs on the specified date and time'), true);
+		$table_advanced->data[11][0] = __('Cron from') . ui_print_help_icon ('cron', true);
 		$table_advanced->data[11][1] = html_print_extended_select_for_cron ($hour_from, $minute_from, $mday_from, $month_from, $wday_from, true, true);
 		$table_advanced->colspan[11][1] = 6;
 
@@ -611,8 +609,7 @@ if (isset($id_agente) && $moduletype == MODULE_DATA) {
 	}
 }
 else {
-	$table_advanced->data[11][0] = __('Cron from') .
-		ui_print_help_tip (__('If cron is set the module interval is ignored and the module runs on the specified date and time'), true);
+	$table_advanced->data[11][0] = __('Cron from') . ui_print_help_icon ('cron', true);
 	$table_advanced->data[11][1] = html_print_extended_select_for_cron ($hour_from, $minute_from, $mday_from, $month_from, $wday_from, true, $disabledBecauseInPolicy);
 	$table_advanced->colspan[11][1] = 6;
 
@@ -1323,8 +1320,8 @@ function paint_graph_status(min_w, max_w, min_c, max_c, inverse_w, inverse_c, er
 			.attr("id", "legend_normal")
 	       	.attr("x", 72)
 	       	.attr("y", -30)
-	       	.attr("width", 10)
-	       	.attr("height", 10)
+	       	.attr("width", '10px')
+	       	.attr("height", '10px')
 	  		.style("fill", "#82B92E");
 
 	  	//legend Warning text
@@ -1343,8 +1340,8 @@ function paint_graph_status(min_w, max_w, min_c, max_c, inverse_w, inverse_c, er
 			.attr("id", "legend_warning")
 	       	.attr("x", 168)
 	       	.attr("y", -30)
-	       	.attr("width", 10)
-	       	.attr("height", 10)
+	       	.attr("width", '10px')
+	       	.attr("height", '10px')
 	  		.style("fill", "#ffd731");
 
 	  	//legend Critical text
@@ -1363,8 +1360,8 @@ function paint_graph_status(min_w, max_w, min_c, max_c, inverse_w, inverse_c, er
 			.attr("id", "legend_critical")
 	       	.attr("x", 258)
 	       	.attr("y", -30)
-	       	.attr("width", 10)
-	       	.attr("height", 10)
+	       	.attr("width", '10px')
+	       	.attr("height", '10px')
 	  		.style("fill", "#fc4444");
 
 		//styles for number and axes
@@ -1382,8 +1379,8 @@ function paint_graph_status(min_w, max_w, min_c, max_c, inverse_w, inverse_c, er
 			.attr("id", "warning_rect")
 	       	.attr("x", 3)
 	       	.attr("y", 0)
-	       	.attr("width", 300)
-	       	.attr("height", 200)
+	       	.attr("width", '300px')
+	       	.attr("height", '200px')
 	  		.style("fill", "#82B92E");
 	  	
 	  	//controls the inverse warning

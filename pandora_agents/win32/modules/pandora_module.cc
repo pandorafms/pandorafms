@@ -248,7 +248,9 @@ Pandora_Module::parseModuleKindFromString (string kind) {
 	} else if (kind == module_inventory_str) {
 		return MODULE_INVENTORY;
 	} else if (kind == module_logevent_str) {
-		return MODULE_LOGEVENT;  
+		return MODULE_LOGEVENT;
+	} else if (kind == module_logchannel_str) {
+		return MODULE_LOGCHANNEL;  
 	} else if (kind == module_wmiquery_str) {
 		return MODULE_WMIQUERY;               
 	} else if (kind == module_perfcounter_str) {

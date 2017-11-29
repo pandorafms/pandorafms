@@ -74,7 +74,12 @@ $table_agent->data = array();
 $data = array();
 
 $agent_name = ui_print_agent_name($agent["id_agente"], true, 500, "font-size: medium;font-weight:bold", true);
-$in_planned_downtime = db_get_value_filter('id', 'tplanned_downtime_agents', array('id_agent' => $agent["id_agente"]));
+$in_planned_downtime = db_get_sql('SELECT executed FROM tplanned_downtime 
+	INNER JOIN tplanned_downtime_agents 
+	ON tplanned_downtime.id = tplanned_downtime_agents.id_downtime
+	WHERE tplanned_downtime_agents.id_agent = '. $agent["id_agente"] . 
+	' AND tplanned_downtime.executed = 1');
+
 
 if ($agent['disabled']) {
 	if ($in_planned_downtime) {
@@ -620,7 +625,7 @@ $data[0][0] .=
 			__('Events (24h)') .
 		'</th></tr>' .
 		'<tr><td style="text-align:center;padding-left:20px;padding-right:20px;"><br />' .
-		graph_graphic_agentevents ($id_agente, 450, 15, SECONDS_1DAY, '', true, true) . 
+		graph_graphic_agentevents ($id_agente, 450, 40, SECONDS_1DAY, '', true, true) . 
 		'<br /></td></tr>' . 
 	'</table>';
 

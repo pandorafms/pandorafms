@@ -68,6 +68,11 @@ our @EXPORT = qw(
 	$OS_VERSION
 	RECOVERED_ALERT
 	FIRED_ALERT
+	MODULE_NORMAL
+	MODULE_CRITICAL
+	MODULE_WARNING
+	MODULE_UNKNOWN
+	MODULE_NOTINIT
     cron_get_closest_in_range
 	cron_next_execution
 	cron_next_execution_date
@@ -126,6 +131,13 @@ use constant TRANSACTIONALSERVER => 14;
 use constant MFSERVER => 15;
 use constant SYNCSERVER => 16;
 use constant WUXSERVER => 17;
+
+# Module status
+use constant MODULE_NORMAL => 0;
+use constant MODULE_CRITICAL => 1;
+use constant MODULE_WARNING => 2;
+use constant MODULE_UNKNOWN => 3;
+use constant MODULE_NOTINIT => 4;
 
 # Value for a metaconsole license type
 use constant METACONSOLE_LICENSE => 0x01;
@@ -1254,12 +1266,12 @@ sub translate_obj ($$$) {
 ###############################################################################
 # Get the number of seconds left to the next execution of the given cron entry.
 ###############################################################################
-sub cron_next_execution ($) {
-	my ($cron) = @_;
+sub cron_next_execution {
+	my ($cron, $interval) = @_;
 
 	# Check cron conf format
 	if ($cron !~ /^((\*|(\d+(-\d+){0,1}))\s*){5}$/) {
-		return 300;
+		return $interval;
 	}
 
 	# Get day of the week and month from cron config
@@ -1271,7 +1283,7 @@ sub cron_next_execution ($) {
 
 	# Any day of the week
 	if ($wday eq '*') {
-		my $nex_time = cron_next_execution_date ($cron,  $cur_time);
+		my $nex_time = cron_next_execution_date ($cron,  $cur_time, $interval);
 		return $nex_time - time();
 	}
 	# A range?
@@ -1283,7 +1295,7 @@ sub cron_next_execution ($) {
 	my $count = 0;
 	my $nex_time = $cur_time;
 	do {
-		$nex_time = cron_next_execution_date ($cron, $nex_time);
+		$nex_time = cron_next_execution_date ($cron, $nex_time, $interval);
 		my $nex_time_wd = $nex_time;
 		my ($nex_mon, $nex_wday) = (localtime ($nex_time_wd))[4, 6];
 		my $nex_mon_wd;
@@ -1301,7 +1313,7 @@ sub cron_next_execution ($) {
 	} while ($count < 60);
 
 	# Something went wrong, default to 5 minutes
-	return 300;
+	return $interval;
 }
 ###############################################################################
 # Get the number of seconds left to the next execution of the given cron entry.
@@ -1315,94 +1327,191 @@ sub cron_check_syntax ($) {
 ###############################################################################
 # Get the next execution date for the given cron entry in seconds since epoch.
 ###############################################################################
-sub cron_next_execution_date ($$) {
-	my ($cron, $cur_time) = @_;
+sub cron_next_execution_date {
+	my ($cron, $cur_time, $interval) = @_;
 
 	# Get cron configuration
 	my ($min, $hour, $mday, $mon, $wday) = split (/\s/, $cron);
 
 	# Months start from 0
 	if($mon ne '*') {
-		$mon -= 1;
+		my ($mon_down, $mon_up) = cron_get_interval ($mon);
+		if (defined($mon_up)) {
+			$mon = $mon_down - 1 . "-" . $mon_up - 1;
+		} else {
+			$mon = $mon_down - 1;
+		}
 	}
 
 	# Get current time
 	if (! defined ($cur_time)) {
 		$cur_time = time();
 	}
-	my ($cur_min, $cur_hour, $cur_mday, $cur_mon, $cur_year) = (localtime ($cur_time))[1, 2, 3, 4, 5];
+	# Check if current time + interval is on cron too
+	my $nex_time = $cur_time + $interval;
+	my ($cur_min, $cur_hour, $cur_mday, $cur_mon, $cur_year) 
+		= (localtime ($nex_time))[1, 2, 3, 4, 5];
 	
-	# Parse intervals
-	$min = cron_get_closest_in_range ($cur_min, $min);
-	$hour = cron_get_closest_in_range ($cur_hour, $hour);
-	$mday = cron_get_closest_in_range ($cur_mday, $mday);
-	$mon = cron_get_closest_in_range ($cur_mon, $mon);
+	my @cron_array = ($min, $hour, $mday, $mon);
+	my @curr_time_array = ($cur_min, $cur_hour, $cur_mday, $cur_mon);
+	return ($nex_time) if cron_is_in_cron(\@cron_array, \@curr_time_array) == 1;
 
-	# Get first next date candidate from cron configuration
-	my ($nex_min, $nex_hour, $nex_mday, $nex_mon, $nex_year) = ($min, $hour, $mday, $mon, $cur_year);
+	# Get first next date candidate from next cron configuration
+	# Initialize some vars
+	my @nex_time_array = @curr_time_array;
+	my $prev_ovfl = 0;
 
-	# Replace wildcards
-	if ($min eq '*') {
-		if ($hour ne '*' || $mday ne '*' || $wday ne '*' || $mon ne '*') {
-			$nex_min = 0;
-		}
-		else {
-			$nex_min = $cur_min;
-		}
-	}
-	if ($hour eq '*') {
-		if ($mday ne '*' || $wday ne '*' ||$mon ne '*') {
-			$nex_hour = 0;
-		}
-		else {
-			$nex_hour = $cur_hour;
-		}
-	}
-	if ($mday eq '*') {
-		if ($mon ne '*') {
-			$nex_mday = 1;
-		}
-		else {
-			$nex_mday = $cur_mday;
-		}
-	}
-	if ($mon eq '*') {
-		$nex_mon = $cur_mon;
+	# Update minutes
+	my ($min_down, undef) = cron_get_interval ($min);
+	$nex_time_array[0] = ($min_down eq '*') ? 0 : $min_down;
+
+	$nex_time = cron_valid_date(@nex_time_array, $cur_year);
+	if ($nex_time >= $cur_time) {
+		return $nex_time if cron_is_in_cron(\@cron_array, \@nex_time_array);
 	}
 
-	# Find the next execution date
-	my $count = 0;
-	do {
-		my $next_time = timelocal(0, $nex_min, $nex_hour, $nex_mday, $nex_mon, $nex_year);
-		if ($next_time > $cur_time) {
-			return $next_time;
-		}
-		if ($min eq '*' && $hour eq '*' && $wday eq '*' && $mday eq '*' && $mon eq '*') {
-			($nex_min, $nex_hour, $nex_mday, $nex_mon, $nex_year) = (localtime ($next_time + 60))[1, 2, 3, 4, 5];
-		}
-		elsif ($hour eq '*' && $wday eq '*' && $mday eq '*' && $mon eq '*') {
-			($nex_min, $nex_hour, $nex_mday, $nex_mon, $nex_year) = (localtime ($next_time + 3600))[1, 2, 3, 4, 5];
-		}
-		elsif ($mday eq '*' && $mon eq '*') {
-			($nex_min, $nex_hour, $nex_mday, $nex_mon, $nex_year) = (localtime ($next_time + 86400))[1, 2, 3, 4, 5];
-		}
-		elsif ($mon eq '*') {
-			$nex_mon = $nex_mon + 1;
-			if ($nex_mon > 11) {
-				$nex_mon = 0;
-				$nex_year++;
+	# Check if next hour is in cron
+	$nex_time_array[1]++;
+	$nex_time = cron_valid_date(@nex_time_array, $cur_year);
+
+	if ($nex_time == 0) {
+		#Update the month day if overflow
+		$prev_ovfl = 1;
+		$nex_time_array[1] = 0;
+		$nex_time_array[2]++;
+		$nex_time = cron_valid_date(@nex_time_array, $cur_year);
+		if ($nex_time == 0) {
+			#Update the month if overflow
+			$nex_time_array[2] = 1;
+			$nex_time_array[3]++;
+			$nex_time = cron_valid_date(@nex_time_array, $cur_year);
+			if ($nex_time == 0) {
+				#Update the year if overflow
+				$cur_year++;
+				$nex_time_array[3] = 0;
+				$nex_time = cron_valid_date(@nex_time_array, $cur_year);
 			}
 		}
-		else {
-			$nex_year++;
-		}
-		$count++;
-	} while ($count < 60);
-	
-	# Something went wrong, default to 5 minutes
-	return $cur_time + 300;
-}
+	}
+	#Check the hour
+	return $nex_time if cron_is_in_cron(\@cron_array, \@nex_time_array);
 
+	#Update the hour if fails
+	my ($hour_down, undef) = cron_get_interval ($hour);
+	$nex_time_array[1] = ($hour_down eq '*') ? 0 : $hour_down;
+
+	# When an overflow is passed check the hour update again
+	if ($prev_ovfl) {
+		$nex_time = cron_valid_date(@nex_time_array, $cur_year);
+		return $nex_time if cron_is_in_cron(\@cron_array, \@nex_time_array);
+	}
+	$prev_ovfl = 0;
+
+	# Check if next day is in cron
+	$nex_time_array[2]++;
+	$nex_time = cron_valid_date(@nex_time_array, $cur_year);
+	if ($nex_time == 0) {
+		#Update the month if overflow
+		$prev_ovfl = 1;
+		$nex_time_array[2] = 1;
+		$nex_time_array[3]++;
+		$nex_time = cron_valid_date(@nex_time_array, $cur_year);
+		if ($nex_time == 0) {
+			#Update the year if overflow
+			$nex_time_array[3] = 0;
+			$cur_year++;
+			$nex_time = cron_valid_date(@nex_time_array, $cur_year);
+		}
+	}
+	#Check the day
+	return $nex_time if cron_is_in_cron(\@cron_array, \@nex_time_array);
+	
+	#Update the day if fails
+	my ($mday_down, undef) = cron_get_interval ($mday);
+	$nex_time_array[2] = ($mday_down eq '*') ? 1 : $mday_down;
+
+	# When an overflow is passed check the hour update in the next execution
+	if ($prev_ovfl) {
+		$nex_time = cron_valid_date(@nex_time_array, $cur_year);
+		return $nex_time if cron_is_in_cron(\@cron_array, \@nex_time_array);
+	}
+	$prev_ovfl = 0;
+
+	# Check if next month is in cron
+	$nex_time_array[3]++;
+	$nex_time = cron_valid_date(@nex_time_array, $cur_year);
+	if ($nex_time == 0) {
+		#Update the year if overflow
+		$prev_ovfl = 1;
+		$cur_year++;
+		$nex_time = cron_valid_date(@nex_time_array, $cur_year);
+	}
+
+	#Check the month
+	return $nex_time if cron_is_in_cron(\@cron_array, \@nex_time_array);
+
+	#Update the month if fails
+	my ($mon_down, undef) = cron_get_interval ($mon);
+	$nex_time_array[3] = ($mday_down eq '*') ? 0 : $mday_down;
+
+	# When an overflow is passed check the hour update in the next execution
+	if ($prev_ovfl) {
+		$nex_time = cron_valid_date(@nex_time_array, $cur_year);
+		return $nex_time if cron_is_in_cron(\@cron_array, \@nex_time_array);
+	}
+
+	$nex_time = cron_valid_date(@nex_time_array, $cur_year + 1);
+
+	return $nex_time;
+}
+###############################################################################
+# Returns if a date is in a cron. Recursive.
+# Needs the cron like an array reference and
+# current time in cron format to works properly
+###############################################################################
+sub cron_is_in_cron {
+	my ($elems_cron, $elems_curr_time) = @_;
+
+	my @deref_elems_cron = @$elems_cron;
+	my @deref_elems_curr_time = @$elems_curr_time;
+	
+	my $elem_cron = shift(@deref_elems_cron);
+	my $elem_curr_time = shift (@deref_elems_curr_time);
+
+	#If there is no elements means that is in cron
+	return 1 unless (defined($elem_cron) || defined($elem_curr_time));
+
+	# Go to last element if current is a wild card
+	if ($elem_cron ne '*') {
+		my ($down, $up) = cron_get_interval($elem_cron);
+		# Check if there is no a range
+		return 0 if (!defined($up) && ($down != $elem_curr_time));
+		# Check if there is on the range
+		if (defined($up)) {
+			if ($down < $up) {
+				return 0 if ($elem_curr_time < $down || $elem_curr_time > $up);
+			} else {
+				return 0 if ($elem_curr_time > $down || $elem_curr_time < $up);
+			}
+		}
+	}
+	return cron_is_in_cron(\@deref_elems_cron, \@deref_elems_curr_time);
+}
+###############################################################################
+# Returns the interval of a cron element. If there is not a range,
+# returns an array with the first element in the first place of array
+# and the second place undefined.
+###############################################################################
+sub cron_get_interval {
+	my ($element) = @_;
+
+	# Not a range
+	if ($element !~ /(\d+)\-(\d+)/) {
+		return ($element, undef);
+	}
+	
+	return ($1, $2);
+}
 ###############################################################################
 # Returns the closest number to the target inside the given range (including
 # the target itself).
@@ -1426,6 +1535,22 @@ sub cron_get_closest_in_range ($$) {
 	
 	# Inside the range
 	return $target;
+}
+
+###############################################################################
+# Check if a date is valid to get timelocal
+###############################################################################
+sub cron_valid_date {
+	my ($min, $hour, $mday, $month, $year) = @_;
+	my $utime;
+	eval {
+		local $SIG{__DIE__} = sub {};
+		$utime = timelocal(0, $min, $hour, $mday, $month, $year);
+	};
+	if ($@) {
+		return 0;
+	}
+	return $utime;
 }
 
 ###############################################################################

@@ -1,0 +1,780 @@
+#!/usr/bin/perl
+#
+# Dynamic route parser
+#  Combines MTR and Ping features
+#
+#
+
+use strict;
+use warnings;
+use POSIX qw(strftime);
+use Scalar::Util qw(looks_like_number);
+use Socket;
+
+my $HELP=<<EO_HELP;
+Pandora FMS plugin for route parse
+   Usage: $0 -t target [options]
+
+   OPTIONS
+   -c n            number of tests (n)
+   --no-ping 1     disable ping mode
+   --no-mtr 1      disable mtr mode
+   -s 1            symmetric routing (1) *default
+                   asymmetric routing (0)
+
+   *Warning* in ping mode, the maximum number of steps detected is 9
+
+EO_HELP
+
+################################################################################
+# Imported methods
+################################################################################
+
+################################################################################
+# Mix hashses
+################################################################################
+sub merge_hashes {
+	my $_h1 = shift;
+	my $_h2 = shift;
+
+	my %ret = (%{$_h1}, %{$_h2});
+
+	return \%ret;
+}
+
+################################################################################
+# Check if a value is in an array
+################################################################################
+sub in_array($$){
+	my ($array, $value) = @_;
+
+	if (empty($value)) {
+		return 0;
+	}
+
+	my %params = map { $_ => 1 } @{$array};
+	if (exists($params{$value})) {
+		return 1;
+	}
+	return 0;
+}
+
+################################################################################
+# Check if a given variable contents a number
+################################################################################
+sub to_number($) {
+	my $n = shift;
+
+	if(empty($n)) {
+		return undef;
+	}
+
+	if ($n =~ /[\d+,]*\d+\.\d+/) {
+		# American notation
+		$n =~ s/,//g;
+	}
+	elsif ($n =~ /[\d+\.]*\d+,\d+/) {
+		# Spanish notation
+		$n =~ s/\.//g;
+		$n =~ s/,/./g;
+	}
+	if(looks_like_number($n)) {
+		return $n;
+	}
+	return undef;
+}
+
+################################################################################
+# Erase blank spaces before and after the string 
+################################################################################
+sub trim($){
+	my $string = shift;
+	if (empty ($string)){
+		return "";
+	}
+
+	$string =~ s/\r//g;
+
+	chomp ($string);
+	$string =~ s/^\s+//g;
+	$string =~ s/\s+$//g;
+
+	return $string;
+}
+
+################################################################################
+# Empty
+################################################################################
+sub empty($){
+	my $str = shift;
+
+	if (! (defined ($str)) ){
+		return 1;
+	}
+
+	if(looks_like_number($str)){
+		return 0;
+	}
+
+	if (ref ($str) eq "ARRAY") {
+		return (($#{$str}<0)?1:0);
+	}
+
+	if (ref ($str) eq "HASH") {
+		my @tmp = keys %{$str};
+		return (($#tmp<0)?1:0);
+	}
+
+	if ($str =~ /^\ *[\n\r]{0,2}\ *$/) {
+		return 1;
+	}
+	return 0;
+}
+
+################################################################################
+# is Enabled 
+################################################################################
+sub is_enabled($){
+	my $value = shift;
+	
+	if ((defined ($value)) && ($value > 0)){
+		# return true
+		return 1;
+	}
+	#return false
+	return 0;
+
+}
+
+################################################################################
+# print_module
+################################################################################
+sub print_module ($$;$){
+	my $config = shift;
+	my $data = shift;
+	my $not_print_flag = shift;
+
+	if ((ref($data) ne "HASH") || (!defined $data->{name})) {
+		return undef;
+	}
+	
+	my $xml_module = "";
+	# If not a string type, remove all blank spaces!    
+	if ($data->{type} !~ m/string/){
+		$data->{value} = trim($data->{value});
+	}
+
+	$data->{tags}  = $data->{tags}?$data->{tags}:($config->{MODULE_TAG_LIST}?$config->{MODULE_TAG_LIST}:undef);
+	$data->{interval}     = $data->{interval}?$data->{interval}:($config->{MODULE_INTERVAL}?$config->{MODULE_INTERVAL}:undef);
+	$data->{module_group} = $data->{module_group}?$data->{module_group}:($config->{MODULE_GROUP}?$config->{MODULE_GROUP}:undef);
+
+	# Global instructions (if defined)
+	$data->{unknown_instructions}  = $config->{unknown_instructions}  unless (defined($data->{unknown_instructions})  || (!defined($config->{unknown_instructions})));
+	$data->{warning_instructions}  = $config->{warning_instructions}  unless (defined($data->{warning_instructions})  || (!defined($config->{warning_instructions})));
+	$data->{critical_instructions} = $config->{critical_instructions} unless (defined($data->{critical_instructions}) || (!defined($config->{critical_instructions})));
+
+	$xml_module .= "<module>\n";
+	$xml_module .= "\t<name><![CDATA[" . $data->{name} . "]]></name>\n";
+	$xml_module .= "\t<type>" . $data->{type} . "</type>\n";
+
+	if (ref ($data->{value}) eq "ARRAY") {
+		$xml_module .= "\t<datalist>\n";
+		foreach (@{$data->{value}}) {
+			$xml_module .= "\t<data><![CDATA[" . $data->{value} . "]]></data>\n";
+		}
+		$xml_module .= "\t</datalist>\n";
+	}
+	else {
+		$xml_module .= "\t<data><![CDATA[" . $data->{value} . "]]></data>\n";
+	}
+
+	if ( !(empty($data->{desc}))) {
+		$xml_module .= "\t<description><![CDATA[" . $data->{desc} . "]]></description>\n";
+	}
+	if ( !(empty ($data->{unit})) ) {
+		$xml_module .= "\t<unit><![CDATA[" . $data->{unit} . "]]></unit>\n";
+	}
+	if (! (empty($data->{interval})) ) {
+		$xml_module .= "\t<module_interval><![CDATA[" . $data->{interval} . "]]></module_interval>\n";
+	}
+	if (! (empty($data->{tags})) ) {
+		$xml_module .= "\t<tags>" . $data->{tags} . "</tags>\n";
+	}
+	if (! (empty($data->{module_group})) ) {
+		$xml_module .= "\t<module_group>" . $data->{module_group} . "</module_group>\n";
+	}
+	if (! (empty($data->{module_parent})) ) {
+		$xml_module .= "\t<module_parent>" . $data->{module_parent} . "</module_parent>\n";
+	}
+	if (! (empty($data->{wmin})) ) {
+		$xml_module .= "\t<min_warning><![CDATA[" . $data->{wmin} . "]]></min_warning>\n";
+	}
+	if (! (empty($data->{wmax})) ) {
+		$xml_module .= "\t<max_warning><![CDATA[" . $data->{wmax} . "]]></max_warning>\n";
+	}
+	if (! (empty ($data->{cmin})) ) {
+		$xml_module .= "\t<min_critical><![CDATA[" . $data->{cmin} . "]]></min_critical>\n";
+	}
+	if (! (empty ($data->{cmax})) ){
+		$xml_module .= "\t<max_critical><![CDATA[" . $data->{cmax} . "]]></max_critical>\n";
+	}
+	if (! (empty ($data->{wstr}))) {
+		$xml_module .= "\t<str_warning><![CDATA[" . $data->{wstr} . "]]></str_warning>\n";
+	}
+	if (! (empty ($data->{cstr}))) {
+		$xml_module .= "\t<str_critical><![CDATA[" . $data->{cstr} . "]]></str_critical>\n";
+	}
+	if (! (empty ($data->{cinv}))) {
+		$xml_module .= "\t<critical_inverse><![CDATA[" . $data->{cinv} . "]]></critical_inverse>\n";
+	}
+	if (! (empty ($data->{winv}))) {
+		$xml_module .= "\t<warning_inverse><![CDATA[" . $data->{winv} . "]]></warning_inverse>\n";
+	}
+	if (! (empty ($data->{max}))) {
+		$xml_module .= "\t<max><![CDATA[" . $data->{max} . "]]></max>\n";
+	}
+	if (! (empty ($data->{min}))) {
+		$xml_module .= "\t<min><![CDATA[" . $data->{min} . "]]></min>\n";
+	}
+	if (! (empty ($data->{post_process}))) {
+		$xml_module .= "\t<post_process><![CDATA[" . $data->{post_process} . "]]></post_process>\n";
+	}
+	if (! (empty ($data->{disabled}))) {
+		$xml_module .= "\t<disabled><![CDATA[" . $data->{disabled} . "]]></disabled>\n";
+	}
+	if (! (empty ($data->{min_ff_event}))) {
+		$xml_module .= "\t<min_ff_event><![CDATA[" . $data->{min_ff_event} . "]]></min_ff_event>\n";
+	}
+	if (! (empty ($data->{status}))) {
+		$xml_module .= "\t<status><![CDATA[" . $data->{status} . "]]></status>\n";
+	}
+	if (! (empty ($data->{timestamp}))) {
+		$xml_module .= "\t<timestamp><![CDATA[" . $data->{timestamp} . "]]></timestamp>\n";
+	}
+	if (! (empty ($data->{custom_id}))) {
+		$xml_module .= "\t<custom_id><![CDATA[" . $data->{custom_id} . "]]></custom_id>\n";
+	}
+	if (! (empty ($data->{critical_instructions}))) {
+		$xml_module .= "\t<critical_instructions><![CDATA[" . $data->{critical_instructions} . "]]></critical_instructions>\n";
+	}
+	if (! (empty ($data->{warning_instructions}))) {
+		$xml_module .= "\t<warning_instructions><![CDATA[" . $data->{warning_instructions} . "]]></warning_instructions>\n";
+	}
+	if (! (empty ($data->{unknown_instructions}))) {
+		$xml_module .= "\t<unknown_instructions><![CDATA[" . $data->{unknown_instructions} . "]]></unknown_instructions>\n";
+	}
+	if (! (empty ($data->{quiet}))) {
+		$xml_module .= "\t<quiet><![CDATA[" . $data->{quiet} . "]]></quiet>\n";
+	}
+	if (! (empty ($data->{module_ff_interval}))) {
+		$xml_module .= "\t<module_ff_interval><![CDATA[" . $data->{module_ff_interval} . "]]></module_ff_interval>\n";
+	}
+	if (! (empty ($data->{crontab}))) {
+		$xml_module .= "\t<crontab><![CDATA[" . $data->{crontab} . "]]></crontab>\n";
+	}
+	if (! (empty ($data->{min_ff_event_normal}))) {
+		$xml_module .= "\t<min_ff_event_normal><![CDATA[" . $data->{min_ff_event_normal} . "]]></min_ff_event_normal>\n";
+	}
+	if (! (empty ($data->{min_ff_event_warning}))) {
+		$xml_module .= "\t<min_ff_event_warning><![CDATA[" . $data->{min_ff_event_warning} . "]]></min_ff_event_warning>\n";
+	}
+	if (! (empty ($data->{min_ff_event_critical}))) {
+		$xml_module .= "\t<min_ff_event_critical><![CDATA[" . $data->{min_ff_event_critical} . "]]></min_ff_event_critical>\n";
+	}
+	if (! (empty ($data->{ff_timeout}))) {
+		$xml_module .= "\t<ff_timeout><![CDATA[" . $data->{ff_timeout} . "]]></ff_timeout>\n";
+	}
+	if (! (empty ($data->{each_ff}))) {
+		$xml_module .= "\t<each_ff><![CDATA[" . $data->{each_ff} . "]]></each_ff>\n";
+	}
+	if (! (empty ($data->{parent_unlink}))) {
+		$xml_module .= "\t<module_parent_unlink><![CDATA[" . $data->{parent_unlink} . "]]></module_parent_unlink>\n";
+	}
+	if (! (empty ($data->{alerts}))) {
+		foreach my $alert (@{$data->{alerts}}){
+			$xml_module .= "\t<alert_template><![CDATA[" . $alert . "]]></alert_template>\n";
+		}
+	}
+	if (defined ($config->{global_alerts})){
+		foreach my $alert (@{$config->{global_alerts}}){
+			$xml_module .= "\t<alert_template><![CDATA[" . $alert . "]]></alert_template>\n";
+		}
+	}
+
+	$xml_module .= "</module>\n";
+
+	if (empty ($not_print_flag)) {
+		print $xml_module;	
+	}
+
+	return $xml_module;
+}
+
+################################################################################
+# General arguments parser
+################################################################################
+sub parse_arguments($) {
+	my $raw = shift;
+	my @args;
+	if (defined($raw)){
+		@args = @{$raw};
+	}
+	else {
+		return {};
+	}
+	
+	my %data;
+	for (my $i = 0; $i < $#args; $i+=2) {
+		my $key = trim($args[$i]);
+
+		$key =~  s/^-//;
+		$data{$key} = trim($args[$i+1]);
+	}
+
+	return \%data;
+
+}
+
+################################################################################
+# General configuration file parser
+#
+# log=/PATH/TO/LOG/FILE
+#
+################################################################################
+sub parse_configuration($;$$){
+	my $conf_file = shift;
+	my $separator;
+	$separator = shift or $separator = "=";
+	my $custom_eval = shift;
+	my $_CFILE;
+
+	my $_config;
+
+	if (empty($conf_file)) {
+		return {
+			error => "Configuration file not specified"
+		};
+	}
+
+	if( !open ($_CFILE,"<", "$conf_file")) {
+		return {
+			error => "Cannot open configuration file"
+		};
+	}
+
+	while (my $line = <$_CFILE>){
+		if (($line =~ /^ *\r*\n*$/)
+		 || ($line =~ /^#/ )){
+		 	# skip blank lines and comments
+			next;
+		}
+		my @parsed = split /$separator/, $line, 2;
+		if ($line =~ /^\s*global_alerts/){
+			push (@{$_config->{global_alerts}}, trim($parsed[1]));
+			next;
+		}
+		if (ref ($custom_eval) eq "ARRAY") {
+			my $f = 0;
+			foreach my $item (@{$custom_eval}) {
+				if ($line =~ /$item->{exp}/) {
+					$f = 1;
+					my $aux;
+					eval {
+						$aux = $item->{target}->($item->{exp},$line);
+					};
+
+					if (empty($_config)) {
+						$_config = $aux;
+					}
+					elsif (!empty($aux)  && (ref ($aux) eq "HASH")) {
+						$_config = merge_hashes($_config, $aux);
+					}
+				}
+			}
+
+			if (is_enabled($f)){
+				next;
+			}
+		}
+		$_config->{trim($parsed[0])} = trim($parsed[1]);
+	}
+	close ($_CFILE);
+
+	return $_config;
+}
+
+################################################################################
+# End of import
+################################################################################
+
+
+##########################################################################
+# Show a message to STDERR
+##########################################################################
+sub msg {
+	my $msg = shift;
+	print STDERR strftime ("%Y-%m-%d %H:%M:%S", localtime()) . ": $msg\n";
+}
+
+
+sub get_next {
+	my ($route, $step) = @_;
+	return $route->{'next'}->{$step};
+}
+
+##########################################################################
+# Extract route steps & timming from mtr output
+##########################################################################
+sub get_steps {
+	my ($conf) = @_;
+	my $target = $conf->{'t'};
+
+	return [] if empty($target);
+
+	my $mtr_r = "";
+	my $ping_r = "";
+
+	my @route_raw;
+	my @ping_raw;
+
+
+	if ($^O =~ /win/i){
+		$ping_r = trim(`ping -r 9 $target -n 1 | tr "Routea:->-" " " | gawk "/^[0-9\. ]*\$/ {if (\$1 != \\"\\"){ print \$1\";\"0}}"`) unless is_enabled($conf->{'-no-ping'});
+
+		@ping_raw  = split /\n/, $ping_r;
+
+		if ($#ping_raw < 0) {
+			$mtr_r  = trim(`mtr -n -o A -c $conf->{'c'} -r $target 2>/NUL | gawk "{print \$2";"\$3}"`) unless is_enabled($conf->{'-no-mtr'});
+		}
+	}
+	else {
+		$ping_r = trim(`for x in \$(ping -n -c 1 -R $target 2>/dev/null | tr -s "R:" " " | awk '/^[0-9\. \t]*\$/ {if (\$1 != ""){print \$1}}'); do echo -n \$x";"; ping -c $conf->{'c'} \$x 2>/dev/null | grep rtt |awk '{print \$4}'| cut -f2 -d"/"; done`) unless is_enabled($conf->{'-no-ping'});
+
+		@ping_raw  = split /\n/, $ping_r;
+
+		if ($#ping_raw < 0) {
+			$mtr_r  = trim(`mtr -n -c $conf->{'c'} -r $target -o A 2>/dev/null | awk '/^[0-9\\|\\-\\. \\t]*\$/ {print \$2\";\"\$3}'`) unless is_enabled($conf->{'-no-mtr'});
+		}
+		
+	}
+
+	@route_raw = split /\n/, $mtr_r;
+	
+	my @modules;
+	my @steps;
+	my $route;
+
+	if ($#ping_raw >= 0) {
+		# PING mode
+
+		my $rng = scalar @ping_raw;
+		my $checked;
+		my $j;
+
+		if (is_enabled($conf->{'s'})) {
+			# Symmetric routing
+
+			if ($^O =~ /win/i){
+				$j = 1;
+			}
+			else {
+				$j = 0;
+			}
+
+			for (my $i=0; $i< ($rng/2); $i++) {
+				my ($step,$time) = split /;/, $ping_raw[$i];
+				my $_r;
+
+				if (defined($checked->{$step})) {
+					$j-=2;
+					next;
+				}
+				$checked->{$step} = 1;
+
+				$_r->{'step'} = $step;
+				if ($^O =~ /win/i) {
+					$_r->{'time'} = trim(`ping -n $conf->{'c'} $_r->{'step'} | grep -e "Av" -e "Me" | gawk "{print \$NF}" | tr -d "ms"`) unless ((!defined($_r->{'step'}) || ($_r->{'step'} eq "")));
+				}
+				else {
+					$_r->{'time'} = $time;
+				}
+				
+				if ((!defined($_r->{'step'}) || ($_r->{'step'} eq ""))) {
+					$_r->{'step'} = "???";
+				}
+
+				$steps[$j] = $_r;
+				$j+=2;
+			}
+
+			if ($^O =~ /win/i){
+				$j = 0;
+			}
+			else {
+				$j = 1;
+			}
+			for (my $i=$rng-1; $i>= ($rng/2); $i--) {
+				my ($step,$time) = split /;/, $ping_raw[$i];
+				my $_r;
+
+				if (defined($checked->{$step})) {
+					$j-=2 if $j>2;
+					next;
+				}
+
+				$_r->{'step'} = $step;
+				if ($^O =~ /win/i) {
+					$_r->{'time'} = trim(`ping -n $conf->{'c'} $_r->{'step'} | grep -e "Av" -e "Me" | gawk "{print \$NF}" | tr -d "ms"`) unless ((!defined($_r->{'step'}) || ($_r->{'step'} eq "")));
+				}
+				else {
+					$_r->{'time'} = $time;
+				}
+				
+
+				if ((!defined($_r->{'step'}) || ($_r->{'step'} eq ""))) {
+					$_r->{'step'} = "???";
+				}
+				
+				$steps[$j] = $_r;
+				$j+=2;
+			}
+		}
+		else {
+			# Asymmetric routing
+
+			for (my $i=0; $i< $rng; $i++) {
+				my ($step,$time) = split /;/, $ping_raw[$i];
+				my $_r;
+
+				if (defined($checked->{$step})) {
+					# target reached
+					last;
+				}
+
+				$checked->{$step} = 1;
+
+				$_r->{'step'} = $step;
+				if ($^O =~ /win/i) {
+					$_r->{'time'} = trim(`ping -n $conf->{'c'} $_r->{'step'} | grep -e "Av" -e "Me" | gawk "{print \$NF}" | tr -d "ms"`) unless ((!defined($_r->{'step'}) || ($_r->{'step'} eq "")));
+				}
+				else {
+					$_r->{'time'} = $time;
+				}
+				
+				if ((!defined($_r->{'step'}) || ($_r->{'step'} eq ""))) {
+					$_r->{'step'} = "???";
+				}
+
+				$steps[$i] = $_r;
+			}
+		}
+
+		my $__origin;
+
+		if ($^O !~ /win/i){
+			$__origin = shift @steps;
+		}
+
+		my $gw;
+
+		if ($^O =~ /win/i) {
+			($gw->{'step'},$__origin->{'step'}) = split /;/, trim(`route print -4 | gawk "BEGIN {min=10000} /^\\ *0.0.0.0/ {met=\$NF;if(met<min){min=met; gw=\$3\\\";\\\"\$4}} END {print gw}"`);
+			$gw->{'time'} = trim(`ping -n $conf->{'c'} $gw->{'step'} 2>/NUL | grep ms | grep -v TTL | gawk "{print \$NF}" | tr -d "ms"`);
+			$__origin->{'time'} = 0;
+		}
+		else {
+			$gw->{'step'} = trim(`route -n | awk 'BEGIN {min=100000} /^0/ {met=\$5; if(min>met){gw=\$2;min=met} } END { print gw}'`);
+			$gw->{'time'} = trim(`ping -c $conf->{'c'} $gw->{'step'} 2>/dev/null | grep rtt |awk '{print \$4}'| cut -f2 -d"/"`);
+		}
+
+		unshift (@steps,($__origin,$gw));
+	
+		my $unknown_count = 0;
+		my $previous = undef;
+
+		for(my $i=0; $i <= $#steps; $i++) {
+			my $host = $steps[$i]->{'step'};
+			my $time = to_number($steps[$i]->{'time'});
+			my $preffix = 'RouteStep_';
+			my $desc = '';
+
+			if (!defined($time)) {
+				next;
+			}
+
+			if ($host eq "???") {
+				$host = "Hidden_" . (++$unknown_count);
+			}
+			if (($i == $#steps) && in_array($conf->{'target_ip'},$host)) {
+				$preffix = 'RouteStepTarget_';
+			}
+			elsif($i == $#steps) {
+				$desc = 'Step unreachable';
+			}
+
+			push @modules, {
+				name => $preffix . $host,
+				type => "generic_data",
+				value => $time,
+				unit => 'ms',
+				desc => $desc,
+				module_parent => $previous,
+				parent_unlink => (empty($previous)?'1':undef)
+			};
+
+			$previous = $preffix . $host;
+		}
+
+		return \@modules;
+	}
+	else {
+		# MTR mode
+	
+		if ($#route_raw < 0) {
+			# Empty output
+			msg("Failed to analyze [$target]");
+			return [];
+	
+		}
+	
+		for (my $i=0; $i <= $#route_raw; $i++) {
+			my $line = $route_raw[$i];
+			if (trim($line) =~ /(.*?);(.*)/) {
+				my $host = $1;
+				my $time = to_number($2);
+				my $preffix = 'RouteStep_';
+				my $desc = '';
+				my $item;
+				my $_r;
+	
+				if (!defined($time)) {
+					next;
+				}
+
+				$_r->{'step'} = $host;
+				$_r->{'time'} = $time;
+
+				push @steps, $_r;
+			}
+		}
+
+		my $__origin;
+
+		if ($^O !~ /win/i){
+			$__origin = shift @steps;
+		}
+
+		my $gw;
+
+		if ($^O =~ /win/i) {
+			($gw->{'step'},$__origin->{'step'}) = split /;/, trim(`route print -4 | gawk "BEGIN {min=10000} /^\\ *0.0.0.0/ {met=\$NF;if(met<min){min=met; gw=\$3\\\";\\\"\$4}} END {print gw}"`);
+			$gw->{'time'} = trim(`ping -n $conf->{'c'} $gw->{'step'} 2>/NUL | grep ms | grep -v TTL | gawk "{print \$NF}" | tr -d "ms"`);
+			$__origin->{'time'} = 0;
+		}
+		else {
+			$gw->{'step'} = trim(`route -n | awk 'BEGIN {min=100000} /^0/ {met=\$5; if(min>met){gw=\$2;min=met} } END { print gw}'`);
+			$gw->{'time'} = trim(`ping -c $conf->{'c'} $gw->{'step'} 2>/dev/null | grep rtt |awk '{print \$4}'| cut -f2 -d"/"`);
+
+			my $__xorigin = trim(`ip a show dev \`route -n | awk 'BEGIN {min=100000} /^0/ {met=\$5; if(min>met){iface=\$NF;min=met} } END { print iface}'\` | grep -w inet | awk '{print \$2}' | cut -d'/' -f1`);
+
+			if ($__xorigin ne $__origin->{'step'}) {
+				unshift(@steps, $__origin);
+				$__origin = {};
+				$__origin->{'step'} = $__xorigin;
+				$__origin->{'time'} = 0;
+			}
+		}
+
+		unshift (@steps,($__origin,$gw));
+
+		my $unknown_count = 0;
+		my $previous = undef;
+
+		for(my $i=0; $i <= $#steps; $i++) {
+			my $host = $steps[$i]->{'step'};
+			my $time = to_number($steps[$i]->{'time'});
+			my $preffix = 'RouteStep_';
+			my $desc = '';
+
+			if (!defined($time)) {
+				next;
+			}
+
+			if ($host eq "???") {
+				$host = "Hidden_" . (++$unknown_count);
+			}
+			if (($i == $#steps) && in_array($conf->{'target_ip'},$host)) {
+				$preffix = 'RouteStepTarget_';
+			}
+			elsif($i == $#steps) {
+				$desc = 'Step unreachable';
+			}
+
+			push @modules, {
+				name => $preffix . $host,
+				type => "generic_data",
+				value => $time,
+				unit => 'ms',
+				desc => $desc,
+				module_parent => $previous,
+				parent_unlink => (empty($previous)?'1':undef)
+			};
+
+			$previous = $preffix . $host;
+		}
+	}
+
+	return \@modules;
+}
+
+
+##########################################################################
+##########################################################################
+# MAIN
+##########################################################################
+##########################################################################
+
+if ($#ARGV < 0) {
+	print STDERR $HELP;
+	exit 1;
+}
+
+my $conf;
+my $file_conf = {};
+my $args_conf = {};
+
+if (-e $ARGV[0]) {
+	$file_conf = parse_configuration($ARGV[0]);
+	shift @ARGV;	
+}
+
+$args_conf = parse_arguments(\@ARGV);
+$conf = merge_hashes($file_conf,$args_conf);
+
+if (!defined $conf->{'t'}) {
+	print STDERR $HELP;
+	exit 1;
+}
+
+my @targets = gethostbyname($conf->{'t'});
+@targets = map { inet_ntoa($_) } @targets[4 .. $#targets];
+if (empty(\@targets)) {
+	print STDERR "Cannot resolve $conf->{'t'} \n";
+	exit 2;
+}
+
+
+$conf->{'target_ip'} = \@targets;
+
+$conf->{'c'} = 4 unless looks_like_number($conf->{'c'});
+$conf->{'s'} = 1 unless looks_like_number($conf->{'s'});
+
+
+my $results = get_steps($conf);
+
+foreach (@{$results}) {
+	print_module($conf, $_);
+}
+
+
+

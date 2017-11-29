@@ -159,8 +159,14 @@ public class EventList extends ListActivity {
 			}
 		});
 
-		
-		
+		ImageButton btnSettings = (ImageButton) findViewById(R.id.settings_icon_button_list);
+		// Open the settings
+		btnSettings.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				startActivity(new Intent(v.getContext(), Options.class));
+			}
+		});
+
 		registerReceiver(onBroadcast, new IntentFilter("eventlist.java"));
 
 		this.toggleLoadingLayout();

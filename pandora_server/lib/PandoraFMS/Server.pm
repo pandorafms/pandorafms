@@ -254,7 +254,7 @@ sub restartEvent ($$) {
 
 	return unless defined ($self->{'_dbh'});
 	eval {
-		pandora_event ($self->{'_pa_config'}, $self->{'_pa_config'}->{'servername'} .
+		pandora_event ($self->{'_pa_config'}, $self->{'_pa_config'}->{'servername'} . ' ' .
 				       $ServerTypes[$self->{'_server_type'}] . " RESTARTING" . ($msg ne '' ? " ($msg)" : ''),
 	                   0, 0, 4, 0, 0, 'system', 0, $self->{'_dbh'});
 	};

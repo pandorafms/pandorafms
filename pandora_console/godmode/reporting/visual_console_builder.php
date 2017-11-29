@@ -205,11 +205,7 @@ switch ($activeTab) {
 					
 				// If the background is changed the size is reseted
 				$background_now = $visualConsole['background'];
-				/*if ($background_now != $background && $background) {
-					$sizeBackground = getimagesize($config['homedir'] . '/images/console/background/' . $background);
-					$values['width'] = $sizeBackground[0];
-					$values['height'] = $sizeBackground[1];
-				}*/
+			
 				$values['width'] = $width;
 				$values['height'] = $height;
 				switch ($action) {
@@ -237,33 +233,31 @@ switch ($activeTab) {
 						break;
 					
 					case 'save':
-						if (!defined('METACONSOLE')) {
-							if ($values['name'] != "" && $values['background'])
-								$idVisualConsole = db_process_sql_insert('tlayout', $values);
-							else
-								$idVisualConsole = false;
+						if ($values['name'] != "" && $values['background'])
+							$idVisualConsole = db_process_sql_insert('tlayout', $values);
+						else
+							$idVisualConsole = false;
+						
+						if ($idVisualConsole !== false) {
+							db_pandora_audit( "Visual console builder", "Create visual console #$idVisualConsole");
+							$action = 'edit';
+							$statusProcessInDB = array('flag' => true,
+								'message' => ui_print_success_message(__('Successfully created.'), '', true));
 							
-							if ($idVisualConsole !== false) {
-								db_pandora_audit( "Visual console builder", "Create visual console #$idVisualConsole");
-								$action = 'edit';
-								$statusProcessInDB = array('flag' => true,
-									'message' => ui_print_success_message(__('Successfully created.'), '', true));
-								
-								// Return the updated visual console
-								$visualConsole = db_get_row_filter('tlayout',
-									array('id' => $idVisualConsole));
-								// Update the ACL
-								//$vconsole_read = $vconsole_read_new;
-								$vconsole_write = $vconsole_write_new;
-								$vconsole_manage = $vconsole_manage_new;
-							}
-							else {
-								db_pandora_audit( "Visual console builder", "Fail try to create visual console");
-								$statusProcessInDB = array('flag' => false,
-									'message' => ui_print_error_message(__('Could not be created.'), '', true));
-							}
+							// Return the updated visual console
+							$visualConsole = db_get_row_filter('tlayout',
+								array('id' => $idVisualConsole));
+							// Update the ACL
+							//$vconsole_read = $vconsole_read_new;
+							$vconsole_write = $vconsole_write_new;
+							$vconsole_manage = $vconsole_manage_new;
 						}
-						break;
+						else {
+							db_pandora_audit( "Visual console builder", "Fail try to create visual console");
+							$statusProcessInDB = array('flag' => false,
+								'message' => ui_print_error_message(__('Could not be created.'), '', true));
+						}
+					break;
 				}
 				break;
 			
@@ -419,6 +413,8 @@ switch ($activeTab) {
 				$value_show = get_parameter ("value_show", 'percent');
 				$label_type = get_parameter ("label_type", 'agent_module');
 				$enable_link = get_parameter ("enable_link", 'enable_link');
+				$show_on_top = get_parameter ("show_on_top", 0);
+				
 				// This var switch between creation of items, item_per_agent = 0 => item per module; item_per_agent <> 0  => item per agent
 				$item_per_agent = get_parameter ("item_per_agent", 0);
 				$id_server = (int)get_parameter('servers', 0);

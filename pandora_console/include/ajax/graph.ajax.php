@@ -64,7 +64,7 @@ if ($print_custom_graph) {
 	$ttl = (int) get_parameter('ttl', 1);
 	$dashboard = (bool) get_parameter('dashboard');
 	$vconsole = (bool) get_parameter('vconsole');
-	
+
 	echo custom_graphs_print($id_graph, $height, $width, $period, $stacked,
 		true, $date, $only_image, $background_color, $modules_param,
 		$homeurl, $name_list, $unit_list, $show_last, $show_max,
@@ -102,13 +102,14 @@ if ($print_sparse_graph) {
 	$percentil = get_parameter('percentil', null);
 	$dashboard = (bool) get_parameter('dashboard');
 	$vconsole = (bool) get_parameter('vconsole');
+	$type_g = get_parameter('type_g', $config['type_module_charts']);
 	
 	echo grafico_modulo_sparse($agent_module_id, $period, $show_events,
 		$width, $height , $title, $unit_name, $show_alerts, $avg_only,
 		$pure, $date, $unit, $baseline, $return_data, $show_title,
 		$only_image, $homeurl, $ttl, $projection, $adapt_key, $compare,
 		$show_unknown, $menu, $backgroundColor, $percentil,
-		$dashboard, $vconsole, $config['type_module_charts']);
+		$dashboard, $vconsole, $type_g);
 	return;
 }
 

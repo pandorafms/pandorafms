@@ -4724,23 +4724,29 @@ sub pandora_self_monitoring ($$) {
 	$xml_output .=" <data>$agents_unknown</data>";
 	$xml_output .=" </module>";
 	
-	$xml_output .=" <module>";
-	$xml_output .=" <name>System_Load_AVG</name>";
-	$xml_output .=" <type>generic_data</type>";
-	$xml_output .=" <data>$load_average</data>";
-	$xml_output .=" </module>";
+	if (defined($load_average)) {
+		$xml_output .=" <module>";
+		$xml_output .=" <name>System_Load_AVG</name>";
+		$xml_output .=" <type>generic_data</type>";
+		$xml_output .=" <data>$load_average</data>";
+		$xml_output .=" </module>";
+	}
 	
-	$xml_output .=" <module>";
-	$xml_output .=" <name>Free_RAM</name>";
-	$xml_output .=" <type>generic_data</type>";
-	$xml_output .=" <data>$free_mem</data>";
-	$xml_output .=" </module>";
+	if (defined($free_mem)) {
+		$xml_output .=" <module>";
+		$xml_output .=" <name>Free_RAM</name>";
+		$xml_output .=" <type>generic_data</type>";
+		$xml_output .=" <data>$free_mem</data>";
+		$xml_output .=" </module>";
+	}
 	
-	$xml_output .=" <module>";
-	$xml_output .=" <name>FreeDisk_SpoolDir</name>";
-	$xml_output .=" <type>generic_data</type>";
-	$xml_output .=" <data>$free_disk_spool</data>";
-	$xml_output .=" </module>";
+	if (defined($free_disk_spool)) {
+		$xml_output .=" <module>";
+		$xml_output .=" <name>FreeDisk_SpoolDir</name>";
+		$xml_output .=" <type>generic_data</type>";
+		$xml_output .=" <data>$free_disk_spool</data>";
+		$xml_output .=" </module>";
+	}
 	
 	$xml_output .= "</agent_data>";
 	

@@ -873,6 +873,24 @@ sub dateTimeToTimestamp {
 sub disk_free ($) {
 	my $target = $_[0];
 
+	my $OSNAME = $^O;
+
+	# Get the free disk on data_in folder unit
+	if ($OSNAME eq "MSWin32") {
+		# Check relative path
+		my $unit;
+		if ($target =~ m/^([a-zA-Z]):/gi) {
+			$unit = $1/(1024*1024);
+		} else {
+			return;
+		}
+		# Get the free space of unit found
+		my $all_disk_info = `wmic logicaldisk get caption, freespace`;
+		if ($all_disk_info =~ m/$unit:\D*(\d+)/gmi){
+			return $1;
+		}
+		return;
+	}
 	# Try to use df command with Posix parameters... 
 	my $command = "df -k -P ".$target." | tail -1 | awk '{ print \$4/1024}'";
 	my $output = `$command`;
@@ -886,6 +904,9 @@ sub load_average {
 
 	if ($OSNAME eq "freebsd"){
 		$load_average = ((split(/\s+/, `/sbin/sysctl -n vm.loadavg`))[1]);
+	} elsif ($OSNAME eq "MSWin32") {
+		# Windows hasn't got load average.
+		$load_average = undef;
 	}
 	# by default LINUX calls
 	else {
@@ -907,6 +928,14 @@ sub free_mem {
 	}
 	elsif ($OSNAME eq "netbsd"){
 		$free_mem = `cat /proc/meminfo | grep MemFree | awk '{ print \$2 }'`;
+	}
+	elsif ($OSNAME eq "MSWin32"){
+		$free_mem = `wmic OS get FreePhysicalMemory /Value`;
+		if ($free_mem =~ m/=(.*)$/gm) {
+			$free_mem = $1;
+		} else {
+			$free_mem = undef;
+		}
 	}
 	# by default LINUX calls
 	else {

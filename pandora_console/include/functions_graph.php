@@ -5802,17 +5802,40 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 
 	$filter_module_group = (!empty($filter) && !empty($filter['module_group'])) ? $filter['module_group'] : false;
 
-	$groups = users_get_groups(false, "AR", false, true, (!empty($filter) && isset($filter['group']) ? $filter['group'] : null));
+	if ($filter['group'] != 0) {
+		$groups = db_get_all_rows_sql ("SELECT * FROM tgrupo where id_grupo = " . $filter['group'] . " || parent = " . $filter['group']);
 
+		$groups_ax = array();
+		foreach ($groups as $g) {
+			$groups_ax[$g['id_grupo']] = $g;
+		}
+		
+		$groups = $groups_ax;
+	}
+	else {
+		$groups = users_get_groups(false, "AR", false, true, (!empty($filter) && isset($filter['group']) ? $filter['group'] : null));
+	}
+	
 	$data_groups = array();
 	if (!empty($groups)) {
 		$groups_aux = $groups;
-		$data_groups = groups_get_tree($groups);
+
+		//$data_groups = groups_get_tree($groups);
+		
+		$childrens = array();
+		$data_groups = groups_get_tree_good($groups, false, $childrens);
+		foreach ($childrens as $id_c) {
+			unset($data_groups[$id_c]);
+		}
+		$data_groups_keys = array();
+		groups_get_tree_keys($data_groups, $data_groups_keys);
+
 		$groups_aux = null;
 	}
 
 	if (!empty($data_groups)) {
-		$filter = array('id_grupo' => array_keys($data_groups));
+		$filter = array('id_grupo' => array_keys($data_groups_keys));
+
 		$fields = array('id_agente', 'id_parent', 'id_grupo', 'alias');
 		$agents = agents_get_agents($filter, $fields);
 
@@ -6029,7 +6052,6 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 	}
 
 	function iterate_group_array ($groups, &$data_agents) {
-		
 		$data = array();
 
 		foreach ($groups as $id => $group) {
@@ -6066,8 +6088,8 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 			$tooltip_content = html_print_image("images/groups_small/" . $group['icon'] . ".png", true) . "&nbsp;" . __('Group') . ": <b>" . $group_aux['name'] . "</b>";
 			$group_aux['tooltip_content'] = $tooltip_content;
 
-			if (!isset($group['children']))
-				$group_aux['children'] = array();
+			$group_aux['children'] = array();
+			
 			if (!empty($group['children']))
 				$group_aux['children'] = iterate_group_array($group['children'], $data_agents);
 
@@ -6075,7 +6097,7 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 
 			if (!empty($agents))
 				$group_aux['children'] = array_merge($group_aux['children'], $agents);
-			
+
 			$data[] = $group_aux;
 		}
 
@@ -6090,6 +6112,7 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 				unset($agents[$id]);
 			}
 		}
+		
 		if (!empty($valid_agents))
 			return $valid_agents;
 		else
@@ -6097,7 +6120,7 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 	}
 
 	$graph_data = array('name' => __('Main node'), 'children' => iterate_group_array($data_groups, $data_agents), 'color' => '#3F3F3F');
-	
+
 	if (empty($graph_data['children']))
 		return fs_error_image();
 

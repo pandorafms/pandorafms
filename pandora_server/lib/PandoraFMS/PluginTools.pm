@@ -104,6 +104,18 @@ sub merge_hashes {
 	my $_h1 = shift;
 	my $_h2 = shift;
 
+	if (ref($_h1) ne "HASH") {
+		return \%{$_h2} if (ref($_h2) eq "HASH");
+	}
+
+	if (ref($_h2) ne "HASH") {
+		return \%{$_h1} if (ref($_h1) eq "HASH");
+	}
+
+	if ((ref($_h1) ne "HASH") && (ref($_h2) ne "HASH")) {
+		return {};
+	}
+
 	my %ret = (%{$_h1}, %{$_h2});
 
 	return \%ret;
@@ -1066,9 +1078,16 @@ sub process_performance {
 	my $runit = "%";
 	my $cunit = "%";
 
-	$mod_name = $process if (empty($mod_name));
+	$mod_name = $process if empty($mod_name);
 	
-	if ($^O =~ /win/i) {
+	if (empty($process)) {
+		$process  = "" if empty($process);
+		$mod_name = "" if empty($mod_name);
+		$cpu = 0;
+		$mem = 0;
+		$instances = 0;
+	}
+	elsif ($^O =~ /win/i) {
 		my $out = trim(`(FOR /F \"skip=2 tokens=2 delims=,\" %P IN ('typeperf \"\\Proceso($process)\\% de tiempo de procesador\" -sc 1') DO \@echo %P) | find /V /I \"...\"  2> $_PluginTools_system->{devnull}`);
 
 		if ( ($out =~ /member/i) 
@@ -1104,7 +1123,7 @@ sub process_performance {
     }
 	elsif ($^O =~ /linux/i ){
 		$cpu = trim(`$_PluginTools_system->{ps} | $_PluginTools_system->{grep} -w "$process" | $_PluginTools_system->{grep} -v grep | awk 'BEGIN {sum=0} {sum+=\$2} END{print sum}'`);
-		$mem = trim(`$_PluginTools_system->{ps} | $_PluginTools_system->{grep} -w "$process" | $_PluginTools_system->{grep} -v grep | awk 'BEGIN {sum=0} {sum+=\$3} END{print sum}'`);
+		$mem = trim(`$_PluginTools_system->{ps} | $_PluginTools_system->{grep} -w "$process" | $_PluginTools_system->{grep} -v grep | awk 'BEGIN {sum=0} {sum+=\$1} END{print sum}'`);
 		$instances = trim(`$_PluginTools_system->{ps} | $_PluginTools_system->{grep} -w "$process" | $_PluginTools_system->{grep} -v grep | $_PluginTools_system->{wcl}`);
 	}
 	elsif ($^O =~ /hpux/ ) {
@@ -1157,7 +1176,11 @@ sub process_performance {
 		}, $only_text_flag);
 	}
 
-	return \[$cpu,$mem,$instances];
+	return {
+		cpu => $cpu,
+		mem => $mem,
+		instances => $instances
+	};
 }
 
 #########################################################################################

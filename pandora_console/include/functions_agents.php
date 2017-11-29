@@ -56,6 +56,17 @@ function agents_get_agent_id_by_module_id ($id_agente_modulo) {
 }
 
 /**
+ * Get agent id from an agent alias.
+ *
+ * @param string $alias Agent alias.
+ *
+ * @return int Id from the agent.
+ */
+function agents_get_agent_id_by_alias ($alias) {
+	return db_get_all_rows_sql ("SELECT id_agente FROM tagente WHERE upper(alias) LIKE upper('%$alias%')");
+}
+
+/**
  * Creates an agent
  *
  * @param string Agent name.

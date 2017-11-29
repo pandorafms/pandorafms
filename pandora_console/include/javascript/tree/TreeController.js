@@ -572,6 +572,12 @@ var TreeController = {
 							});
 						}
 					}
+					// Get hash and user.
+					var public_hash = $("#hidden-publi_dash_tree_view_hash" ).val();
+					if (typeof(public_hash) === 'undefined') public_hash = 0;
+					var public_user = $("#hidden-publi_dash_tree_view_id_user" ).val();
+					if (typeof(public_user) === 'undefined') public_user = 0;
+
 					if (typeof element.searchChildren != 'undefined' && element.searchChildren) {
 						$node
 							.removeClass("leaf-empty")
@@ -598,7 +604,9 @@ var TreeController = {
 										rootID: element.rootID,
 										serverID: element.serverID,
 										rootType: element.rootType,
-										filter: controller.filter
+										filter: controller.filter,
+										hash: public_hash,
+										id_user: public_user
 									},
 									complete: function(xhr, textStatus) {
 										$node.removeClass("leaf-loading");

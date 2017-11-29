@@ -13,12 +13,28 @@
 // Load global variables
 global $config;
 
-// Check user credentials
-check_login();
-
 require_once ('include/functions_pandora_networkmap.php');
 enterprise_include_once('include/functions_policies.php');
+enterprise_include_once('include/functions_dashboard.php');
 require_once ('include/functions_modules.php');
+
+$public_hash = get_parameter('hash', false);
+
+// Try to authenticate by hash on public dashboards
+if ($public_hash === false) {
+	// Login check
+	check_login();
+} else {
+	$validate_hash = enterprise_hook(
+		'dasboard_validate_public_hash',
+		array($public_hash, get_parameter('networkmap_id'), 'network_map')
+	);
+	if ($validate_hash === false || $validate_hash === ENTERPRISE_NOT_HOOK) {
+		db_pandora_audit("Invalid public hash",	"Trying to access report builder");
+		require ("general/noaccess.php");
+		exit;
+	}
+}
 
 //--------------INIT AJAX-----------------------------------------------
 if (is_ajax ()) {	
@@ -72,7 +88,7 @@ if (is_ajax ()) {
 	
 	if ($update_fictional_point) {
 		$id_node = (int)get_parameter('id_node', 0);
-		$name = io_safe_output(get_parameter('name', ''));
+		$name = get_parameter('name', '');
 		$shape = get_parameter('shape', 0);
 		$radious = (int)get_parameter('radious', 20);
 		$color = get_parameter('color', 0);
@@ -123,7 +139,7 @@ if (is_ajax ()) {
 		$id = (int)get_parameter('id', 0);
 		$x = (int)get_parameter('x', 0);
 		$y = (int)get_parameter('y', 0);
-		$id_agents = io_safe_output(get_parameter('id_agents', ''));
+		$id_agents = get_parameter('id_agents', '');
 		
 		$id_agents = json_decode($id_agents, true);
 		if ($id_agents === null)
@@ -426,7 +442,7 @@ if (is_ajax ()) {
 	
 	if ($get_agent_pos_search) {
 		$id = (int)get_parameter('id', 0);
-		$name = io_safe_output((string)get_parameter('name', 0));
+		$name = (string)get_parameter('name');
 		
 		$return = array();
 		$return['correct'] = true;
@@ -447,7 +463,7 @@ if (is_ajax ()) {
 		
 		$id = (int)get_parameter('id', 0);
 		/* q is what autocomplete plugin gives */
-		$string = io_safe_output((string) get_parameter ('q'));
+		$string = (string) get_parameter('q');
 		
 		$agents = db_get_all_rows_filter('titem',
 			array('id_map' => $id,
@@ -459,7 +475,7 @@ if (is_ajax ()) {
 		$data = array();
 		foreach ($agents as $agent) {
 			$style = json_decode($agent['style'], true);
-			$data[] = array('name' => io_safe_output($style['label']));
+			$data[] = array('name' => $style['label']);
 		}
 		
 		echo json_encode($data);
@@ -677,7 +693,13 @@ if (is_ajax ()) {
 	}
 }
 //--------------END AJAX------------------------------------------------
-$id = (int) get_parameter('id_networkmap', 0);
+if (_id_ != "_id_") {
+	$id = _id_;
+}
+else {
+	$id = (int) get_parameter('id_networkmap', 0);
+}
+
 $dash_mode = 0;
 $map_dash_details = array();
 
@@ -692,10 +714,33 @@ if (enterprise_installed()) {
 		$map_dash_details['x_offs'] = $x_offs;
 		$map_dash_details['y_offs'] = $y_offs;
 		$map_dash_details['z_dash'] = $z_dash;
+
+		$networkmap = db_get_row('tmap', 'id', $id);
+	}
+	else {
+		$networkmap = db_get_row('tmap', 'id', $id);
+
+		$networkmap_filter = json_decode($networkmap['filter'], true);
+		if ($networkmap_filter['x_offs'] != null) {
+			$map_dash_details['x_offs'] = $networkmap_filter['x_offs'];
+		}
+		else {
+			$map_dash_details['x_offs'] = 0;
+		}
+		if ($networkmap_filter['y_offs'] != null) {
+			$map_dash_details['y_offs'] = $networkmap_filter['y_offs'];
+		}
+		else {
+			$map_dash_details['y_offs'] = 0;
+		}
+		if ($networkmap_filter['z_dash'] != null) {
+			$map_dash_details['z_dash'] = $networkmap_filter['z_dash'];
+		}
+		else {
+			$map_dash_details['z_dash'] = 0;
+		}
 	}
 }
-
-$networkmap = db_get_row('tmap', 'id', $id);
 
 if ($networkmap === false) {
 	ui_print_page_header(__('Networkmap'),
@@ -750,7 +795,7 @@ else {
 	}
 	
 	if (!$dash_mode) {
-		ui_print_page_header(io_safe_output($networkmap['name']), 
+		ui_print_page_header($networkmap['name'], 
 			"images/bricks.png", false, "network_map_enterprise", 
 			false, $buttons, false, '', $config['item_title_size_text']);
 	}

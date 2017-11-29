@@ -413,6 +413,8 @@ switch ($activeTab) {
 				$value_show = get_parameter ("value_show", 'percent');
 				$label_type = get_parameter ("label_type", 'agent_module');
 				$enable_link = get_parameter ("enable_link", 'enable_link');
+				$show_on_top = get_parameter ("show_on_top", 0);
+				
 				// This var switch between creation of items, item_per_agent = 0 => item per module; item_per_agent <> 0  => item per agent
 				$item_per_agent = get_parameter ("item_per_agent", 0);
 				$id_server = (int)get_parameter('servers', 0);

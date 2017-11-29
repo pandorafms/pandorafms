@@ -307,9 +307,7 @@ users_get_groups ($config["id_user"], "ER");
 
 $ids = (array) get_parameter ("eventid", -1);
 
-
-
-$params = "search=" . rawurlencode(io_safe_input($search)) . 
+$params = "search=" . io_safe_input($search) . 
 	"&amp;event_type=" . $event_type .
 	"&amp;severity=" . $severity . 
 	"&amp;status=" . $status . 

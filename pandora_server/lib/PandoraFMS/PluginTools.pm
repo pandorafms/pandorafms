@@ -1714,7 +1714,7 @@ sub encrypt {
 		$salt = "default_salt";
 	}
 
-	my $processed_salt = substr(hmac_sha256_base64($salt,''), 0, 16);
+	my $processed_salt = substr(Digest::SHA::hmac_sha256_base64($salt,''), 0, 16);
 
 	if (empty($iv)) {
 		$iv = "0000000000000000";
@@ -1749,7 +1749,7 @@ sub decrypt {
 		$salt = "default_salt";
 	}
 
-	my $processed_salt = substr(hmac_sha256_base64($salt,''), 0, 16);
+	my $processed_salt = substr(Digest::SHA::hmac_sha256_base64($salt,''), 0, 16);
 
 	if (empty($iv)) {
 		$iv = "0000000000000000";

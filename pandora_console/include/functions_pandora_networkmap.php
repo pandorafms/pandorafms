@@ -231,7 +231,8 @@ function networkmap_process_networkmap($id = 0) {
 				$dont_show_subgroups,
 				false,
 				null,
-				$old_mode);
+				$old_mode,
+				$map_filter);
 			
 			switch (PHP_OS) {
 				case "WIN32":

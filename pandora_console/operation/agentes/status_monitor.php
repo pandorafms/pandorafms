@@ -365,6 +365,9 @@ else {
   $prediction_available = db_get_sql ("SELECT count(*)
     FROM tserver
     WHERE server_type = 5"); //POSTGRESQL AND ORACLE COMPATIBLE
+  $wux_available = db_get_sql ("SELECT count(*)
+    FROM tserver
+    WHERE server_type = 17"); //POSTGRESQL AND ORACLE COMPATIBLE
 
   // Development mode to use all servers
   if ($develop_bypass) {
@@ -386,6 +389,9 @@ else {
     $typemodules[5] = __('Prediction server module');
   if (enterprise_installed()) {
       $typemodules[7] = __('Web server module');
+	  if ($wux_available) {
+		  $typemodules[8] = __('Wux server module');
+	  }
     }
     
 
@@ -442,6 +448,11 @@ else {
 			$sql = sprintf ('SELECT id_tipo, descripcion
 				FROM ttipo_modulo
 				WHERE categoria = 0');
+				break;
+			case 8:
+			$sql = sprintf ('SELECT id_tipo, descripcion
+				FROM ttipo_modulo
+				WHERE nombre = \'web_analysis\'');
 				break;
 			case '':
 				$sql = sprintf ('SELECT id_tipo, descripcion

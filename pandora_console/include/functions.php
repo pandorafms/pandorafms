@@ -1594,7 +1594,7 @@ function get_snmpwalk($ip_target, $snmp_version, $snmp_community = '',
 		case '2c':
 		case '1':
 		default:
-			$command_str = $snmpwalk_bin . ' -m ALL -Oa -v ' . escapeshellarg($snmp_version) . ' -c ' . escapeshellarg($snmp_community) . ' ' . escapeshellarg($ip_target)  . ' ' . $base_oid . ' 2> ' . $error_redir_dir;
+			$command_str = $snmpwalk_bin . ' -m ALL -Oa -v ' . escapeshellarg($snmp_version) . ' -c ' . escapeshellarg(io_safe_output($snmp_community)) . ' ' . escapeshellarg($ip_target)  . ' ' . $base_oid . ' 2> ' . $error_redir_dir;
 			break;
 	}
 	

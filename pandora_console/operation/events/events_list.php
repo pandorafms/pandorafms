@@ -13,7 +13,6 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-
 // Load global vars
 global $config;
 
@@ -671,8 +670,6 @@ if ($event_w || $event_m) {
 
 $data[0] .= '<a href="javascript:" onclick="show_load_filter_dialog();">' . 
 				html_print_image("images/load.png", true, array("border" => '0', "title" => __('Load filter'), "alt" => __('Load filter'))) . '</a> &nbsp;';
-$data[0] .= '<a id="events_graph_link" href="javascript: show_events_graph_dialog()">' . 
-				html_print_image('images/chart_curve.png', true, array('title' => __('Show events graph'))) . '</a> <br />';
 $data[0] .= '</div>';
 
 
@@ -787,8 +784,6 @@ elseif ($group_rep == 2) {
 		$history);	
 }
 
-
-
 // Active filter tag view call (only enterprise version)
 // It is required to pass some references to enterprise function 
 // to translate the active filters
@@ -802,87 +797,6 @@ enterprise_hook('print_event_tags_active_filters',
 			'groups' => users_get_groups_for_select($config["id_user"], $access, true, true, false))
 	)
 );
-
-if (!empty($result)) {
-	if ($group_rep == 0) {
-		$sql = "SELECT COUNT(id_evento)
-			FROM $event_table
-			WHERE 1=1 " . $sql_post;
-	}
-	elseif ($group_rep == 1) {
-		switch ($config["dbtype"]) {
-			case "mysql":
-			case "postgresql":
-				$sql = "SELECT COUNT(1)
-						FROM (SELECT 1
-							FROM $event_table
-							WHERE 1=1 " . $sql_post . "
-							GROUP BY evento, id_agentmodule) t";
-				break;
-			case "oracle":
-				$sql = "SELECT COUNT(1)
-						FROM (SELECT 1
-							FROM $event_table
-							WHERE 1=1 " . $sql_post . "
-							GROUP BY to_char(evento), id_agentmodule) t";
-				break;
-		}
-	}
-	elseif ($group_rep == 2) {
-		
-	}
-	$limit = (int) db_get_sql ($sql);
-	
-	if ($group_rep == 0) {
-		switch ($config["dbtype"]) {
-			case "mysql":
-				$sql = "SELECT *, 1 event_rep
-					FROM $event_table
-					WHERE 1=1 " . $sql_post . "
-					ORDER BY utimestamp DESC LIMIT 0,".$limit;
-				break;
-			case "postgresql":
-				$sql = "SELECT *, 1 event_rep
-					FROM $event_table
-					WHERE 1=1 " . $sql_post . "
-					ORDER BY utimestamp DESC LIMIT ".$limit." OFFSET 0";
-				break;
-			case "oracle":
-				$set = array();
-				$set['limit'] = $pagination;
-				$set['offset'] = $offset;
-				$sql = "SELECT $event_table.*, 1 event_rep
-					FROM $event_table
-					WHERE 1=1 " . $sql_post . "
-					ORDER BY utimestamp DESC"; 
-				$sql = oracle_recode_query ($sql, $set);
-				break;
-		}
-		
-		//Extract the events by filter (or not) from db
-		$results_graph = db_get_all_rows_sql ($sql);
-	}
-	elseif ($group_rep == 1)  {
-		$results_graph = events_get_events_grouped($sql_post,
-											0,
-											$limit,
-											$meta,
-											$history);
-	}
-	elseif ($group_rep == 2) {
-		
-	}
-	
-	if (($group_rep == 1) OR ($group_rep == 0)) {
-		$graph = '<div style="width: 350px; margin: 0 auto;">' .
-			grafico_eventos_agente(350, 185,
-				$results_graph, $meta, $history, $tags_acls_condition,$limit) .
-			'</div>';
-		html_print_div(array('id' => 'events_graph',
-			'hidden' => true, 'content' => $graph));
-	}
-}
-
 
 if (!empty($result)) {
 	//~ Checking the event tags exactly. The event query filters approximated tags to keep events
@@ -985,11 +899,6 @@ $(document).ready( function() {
 	$(id_hidden2).val(Base64.encode(jQuery.toJSON(value_store2)));
 
 	$("#text-date_from, #text-date_to").datepicker({dateFormat: "<?php echo DATE_FORMAT_JS; ?>"});
-	
-	// If the events are not charged, dont show graphs link
-	if ($('#events_graph').val() == undefined) {
-		$('#events_graph_link').hide();
-	}
 	
 	// Don't collapse filter if update button has been pushed
 	if ($("#hidden-open_filter").val() == 'true') {
@@ -1658,23 +1567,6 @@ function reorder_tags_inputs() {
 	}
 }
 
-// Show the modal window of an module
-function show_events_graph_dialog() {
-	$("#events_graph").hide ()
-			.dialog ({
-				resizable: true,
-				draggable: true,
-				title: '<?php echo __('Events generated -by agent-'); ?>',
-				modal: true,
-				overlay: {
-					opacity: 0.5,
-					background: "black"
-				},
-				width: 450,
-				height: 380
-			})
-			.show ();
-}
 /* ]]> */
 
 //function datetime 

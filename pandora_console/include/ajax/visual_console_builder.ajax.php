@@ -100,6 +100,8 @@ $width = get_parameter('width', null);
 $height = get_parameter('height', null);
 $parent = get_parameter('parent', null);
 $map_linked = get_parameter('map_linked', null);
+$map_linked_weight = get_parameter('map_linked_weight', null);
+$element_group = get_parameter('element_group', null);
 $width_percentile = get_parameter('width_percentile', null);
 $bars_graph_height = get_parameter('bars_graph_height', null);
 $max_percentile = get_parameter('max_percentile', null);
@@ -138,6 +140,7 @@ $line_color = get_parameter('line_color', '');
 $get_element_status = get_parameter('get_element_status', 0);
 
 $enable_link = get_parameter('enable_link', 1);
+$show_on_top = get_parameter('show_on_top', 0);
 $type_graph = get_parameter('type_graph', 'area');
 $label_position = get_parameter('label_position', 'down');
 $show_statistics = get_parameter('show_statistics', 0);
@@ -380,7 +383,7 @@ switch ($action) {
 		
 		// Linked to other layout ?? - Only if not module defined
 		if ($layoutData['id_layout_linked'] != 0) {
-			$status = visual_map_get_layout_status ($layoutData['id_layout_linked']);
+			$status = visual_map_get_layout_status ($layoutData['id_layout_linked'], $layoutData['id_layout_linked_weight']);
 		
 		// Single object
 		}
@@ -490,6 +493,7 @@ switch ($action) {
 		$values = array();
 		
 		$values['label_position'] = $label_position;
+		$values['show_on_top'] = $show_on_top;
 		
 		// In Graphs, background color is stored in column image (sorry)
 		if ($type == 'module_graph') {
@@ -529,6 +533,9 @@ switch ($action) {
 				if ($enable_link !== null) {
 					$values['enable_link'] = $enable_link;
 				}
+				if ($show_on_top !== null) {
+					$values['show_on_top'] = $show_on_top;
+				}
 				if ($label !== null) {
 					$values['label'] = $label;
 				}
@@ -554,8 +561,6 @@ switch ($action) {
 						break;
 				}
 				
-				
-				
 				if (defined('METACONSOLE') && $metaconsole) {
 					if ($server_name !== null) {
 						$values['id_metaconsole'] = db_get_value('id',
@@ -569,6 +574,9 @@ switch ($action) {
 					if ($id_agent !== null) {
 						$values['id_agent'] = $id_agent;
 					}
+				}
+				else if ($id_agent == 0) {
+					$values['id_agent'] = 0;
 				}
 				else if (!empty($id_agent)) {
 					$values['id_agent'] = $id_agent;
@@ -585,6 +593,12 @@ switch ($action) {
 				}
 				if ($map_linked !== null) {
 					$values['id_layout_linked'] = $map_linked;
+				}
+				if ($element_group !== null) {
+					$values['element_group'] = $element_group;
+				}
+				if ($map_linked_weight !== null) {
+					$values['id_layout_linked_weight'] = $map_linked_weight;
 				}
 				switch ($type) {
 					// -- line_item ------------------------------------
@@ -736,6 +750,13 @@ switch ($action) {
 					// Don't change the label because only change the positions
 					unset($values['label']);
 					unset($values['label_position']);
+					unset($values['id_agent']);
+					unset($values['id_agente_modulo']);
+					unset($values['enable_link']);
+					unset($values['show_on_top']);
+					unset($values['id_layout_linked']);
+					unset($values['element_group']);
+					unset($values['id_layout_linked_weight']);
 					// Don't change background color in graphs when move
 					
 					switch ($type) {
@@ -1021,8 +1042,11 @@ switch ($action) {
 		}
 		$values['id_agente_modulo'] = $id_module;
 		$values['id_layout_linked'] = $map_linked;
+		$values['element_group'] = $element_group;
+		$values['id_layout_linked_weight'] = $map_linked_weight;
 		$values['parent_item'] = $parent;
 		$values['enable_link'] = $enable_link;
+		$values['show_on_top'] = $show_on_top;
 		$values['image'] = $background_color;
 		$values['type_graph'] = $type_graph;
 		

@@ -252,25 +252,6 @@ foreach ($modules as $m) {
 	$modules_values[$m['id_module']] = $m['name'];
 }
 
-$table->data[3][0] = __('Parent');
-$params = array();
-$params['return'] = true;
-$params['show_helptip'] = true;
-$params['input_name'] = 'id_parent';
-$params['print_hidden_input_idagent'] = true;
-$params['hidden_input_idagent_name'] = 'id_agent_parent';
-$params['hidden_input_idagent_value'] = $id_parent;
-$params['value'] = db_get_value ("alias","tagente","id_agente",$id_parent);
-$params['selectbox_id'] = 'cascade_protection_module';
-$params['javascript_is_function_select'] = true;
-$params['cascade_protection'] = true;
-
-$table->data[3][1] = ui_print_agent_autocomplete_input($params);
-
-$table->data[3][1] .= html_print_checkbox ("cascade_protection", 1, $cascade_protection, true).__('Cascade protection'). "&nbsp;" . ui_print_help_icon("cascade_protection", true);
-
-$table->data[3][1] .= "&nbsp;&nbsp;" .  __('Module') . "&nbsp;" . html_print_select ($modules_values, "cascade_protection_module", $cascade_protection_module, "", "", 0, true);
-
 $table->data[4][0] = __('Group');
 $table->data[4][1] = html_print_select_groups(false, "AR", false, 'grupo', $grupo, '', '', 0, true);
 $table->data[4][1] .= ' <span id="group_preview">';
@@ -320,52 +301,87 @@ $table->class = "databox filters";
 $table->head = array ();
 $table->style = array ();
 $table->style[0] = 'font-weight: bold; ';
-$table->style[2] = 'font-weight: bold;';
+$table->style[4] = 'font-weight: bold;';
 $table->data = array ();
 
 // Custom ID
 $table->data[0][0] = __('Custom ID');
 $table->data[0][1] = html_print_input_text ('custom_id', $custom_id, '', 16, 255, true);
 
+$table->data[1][0] = __('Parent');
+$params = array();
+$params['return'] = true;
+$params['show_helptip'] = true;
+$params['input_name'] = 'id_parent';
+$params['print_hidden_input_idagent'] = true;
+$params['hidden_input_idagent_name'] = 'id_agent_parent';
+$params['hidden_input_idagent_value'] = $id_parent;
+$params['value'] = db_get_value ("alias","tagente","id_agente",$id_parent);
+$params['selectbox_id'] = 'cascade_protection_module';
+$params['javascript_is_function_select'] = true;
+$params['cascade_protection'] = true;
+
+$table->data[1][1] = ui_print_agent_autocomplete_input($params);
+$table->data[1][1] .= html_print_checkbox ("cascade_protection", 1, $cascade_protection, true).__('Cascade protection'). "&nbsp;" . ui_print_help_icon("cascade_protection", true);
+$table->data[1][1] .= "&nbsp;&nbsp;" .  __('Module') . "&nbsp;" . html_print_select ($modules_values, "cascade_protection_module", $cascade_protection_module, "", "", 0, true);
+
+//safe operation mode
+if($id_agente){
+	$sql_modules = db_get_all_rows_sql("SELECT id_agente_modulo as id_module, nombre as name FROM tagente_modulo 
+									WHERE id_agente = " . $id_agente);
+	$safe_mode_modules = array();
+	$safe_mode_modules[0] = __('Any');
+	foreach ($sql_modules as $m) {
+		$safe_mode_modules[$m['id_module']] = $m['name'];
+	}
+
+	$table->data[2][0] = __('Safe operation mode')
+		. ui_print_help_tip(__('This mode allow Pandora FMS to disable all modules 
+		of this agent while the selected module is on CRITICAL status'), true);
+	$table->data[2][1] = html_print_checkbox('safe_mode', 1, $safe_mode, true);
+	$table->data[2][1] .= "&nbsp;&nbsp;" .  __('Module') . "&nbsp;" . html_print_select ($safe_mode_modules, "safe_mode_module", $safe_mode_module, "", "", 0, true);
+}
+
+
 // Learn mode / Normal mode
-$table->data[1][0] = __('Module definition') .
+$table->data[3][0] = __('Module definition') .
 	ui_print_help_icon("module_definition", true);
-$table->data[1][1] = __('Learning mode') . ' ' .
+$table->data[3][1] = __('Learning mode') . ' ' .
 	html_print_radio_button_extended ("modo", 1, '', $modo, false, 'show_modules_not_learning_mode_context_help();',
 		'style="margin-right: 40px;"', true);
-$table->data[1][1] .= __('Normal mode') . ' ' .
+$table->data[3][1] .= __('Normal mode') . ' ' .
 	html_print_radio_button_extended ("modo", 0, '', $modo, false, 'show_modules_not_learning_mode_context_help();',
 		'style="margin-right: 40px;"', true);
-$table->data[1][1] .= __('Autodisable mode') . ' ' .
+$table->data[3][1] .= __('Autodisable mode') . ' ' .
 	html_print_radio_button_extended ("modo", 2, '', $modo, false, 'show_modules_not_learning_mode_context_help();',
 		'style="margin-right: 40px;"', true);
 
 // Status (Disabled / Enabled)
-$table->data[2][0] = __('Status');
-$table->data[2][1] = __('Disabled') . ' ' .
+$table->data[4][0] = __('Status');
+$table->data[4][1] = __('Disabled') . ' ' .
 	html_print_radio_button_extended ("disabled", 1, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
-$table->data[2][1] .= __('Active') . ' ' .
+$table->data[4][1] .= __('Active') . ' ' .
 	html_print_radio_button_extended ("disabled", 0, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
 
 // Remote configuration
-$table->data[3][0] = __('Remote configuration');
+$table->data[5][0] = __('Remote configuration');
 
 if (!$new_agent) {
-	$table->data[3][1] = '<em>' . __('Not available') . '</em>';
+	$table->data[5][1] = '<em>' . __('Not available') . '</em>';
 	if (isset($filename)) {
 		if (file_exists ($filename['md5'])) {
-			$table->data[3][1] = date ("F d Y H:i:s", fileatime ($filename['md5']));
+			$table->data[5][1] = date ("F d Y H:i:s", fileatime ($filename['md5']));
 			// Delete remote configuration
-			$table->data[3][1] .= '<a href="index.php?' .
+			$table->data[5][1] .= '<a href="index.php?' .
 				'sec=gagente&amp;' .
 				'sec2=godmode/agentes/configurar_agente&amp;' .
 				'tab=main&amp;' .
 				'disk_conf_delete=1&amp;' .
 				'id_agente=' . $id_agente . '">';
-			$table->data[3][1] .= html_print_image(
+			$table->data[5][1] .= html_print_image(
 				"images/cross.png", true,
 				array ('title' => __('Delete remote configuration file'), 'style' => 'vertical-align: middle;')).'</a>';
-			$table->data[3][1] .= '</a>' .
+			$table->data[5][1] .= '</a>' .
 				ui_print_help_tip(
 					__('Delete this conf file implies that for restore you must reactive remote config in the local agent.'),
 					true);
@@ -373,7 +389,7 @@ if (!$new_agent) {
 	}
 }
 else
-	$table->data[3][1] = '<em>' . __('Not available') . '</em>';
+	$table->data[5][1] = '<em>' . __('Not available') . '</em>';
 
 $listIcons = gis_get_array_list_icons();
 
@@ -411,23 +427,23 @@ $table->data[0][3] = html_print_select($arraySelectIcon, "icon_path",
 		array("id" => "icon_warning", "style" => "display:".$display_icons.";"));
 
 if ($config['activate_gis']) {
-	$table->data[1][2] = __('Ignore new GIS data:');
-	$table->data[1][3] = __('Yes') . ' ' .
+	$table->data[3][2] = __('Ignore new GIS data:');
+	$table->data[3][3] = __('Yes') . ' ' .
 		html_print_radio_button_extended ("update_gis_data", 0, '',
 			$update_gis_data, false, '', 'style="margin-right: 40px;"', true);
-	$table->data[1][3] .= __('No') . ' ' .
+	$table->data[3][3] .= __('No') . ' ' .
 		html_print_radio_button_extended ("update_gis_data", 1, '',
 			$update_gis_data, false, '', 'style="margin-right: 40px;"', true);
 }
 
-$table->data[2][2] = __('Url address');
-$table->data[2][3] = html_print_input_text ('url_description',
+$table->data[4][2] = __('Url address');
+$table->data[4][3] = html_print_input_text ('url_description',
 	$url_description, '', 45, 255, true);
 
-$table->data[3][2] = __('Quiet');
-$table->data[3][3] = ui_print_help_tip(
+$table->data[5][2] = __('Quiet');
+$table->data[5][3] = ui_print_help_tip(
 	__('The agent still runs but the alerts and events will be stop'), true);
-$table->data[3][3] .= html_print_checkbox('quiet', 1, $quiet, true);
+$table->data[5][3] .= html_print_checkbox('quiet', 1, $quiet, true);
 
 ui_toggle(html_print_table ($table, true), __('Advanced options'));
 unset($table);
@@ -580,6 +596,26 @@ ui_require_jquery_file('bgiframe');
 			else {
 				$("#cascade_protection_module").val(0);
 				$("#cascade_protection_module").attr("disabled", 'disabled');
+			}
+		});
+		
+		var safe_mode_checked = $("#checkbox-safe_mode").is(":checked");
+		if (safe_mode_checked) {
+			$("#safe_mode_module").removeAttr("disabled");
+		}
+		else {
+			$("#safe_mode_module").attr("disabled", 'disabled');
+		}
+		
+		$("#checkbox-safe_mode").change(function () {
+			var safe_mode_checked = $("#checkbox-safe_mode").is(":checked");
+	
+			if (safe_mode_checked) {
+				$("#safe_mode_module").removeAttr("disabled");
+			}
+			else {
+				$("#safe_mode_module").val(0);
+				$("#safe_mode_module").attr("disabled", 'disabled');
 			}
 		});
 

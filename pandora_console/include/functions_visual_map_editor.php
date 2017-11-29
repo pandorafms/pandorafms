@@ -542,7 +542,13 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'<td align="left" style="">' . __('Show statistics') . '</td>
 				<td align="left" style="">' .
 				html_print_checkbox('show_statistics', 1, '', true) . '</td>';
-			
+				
+			$form_items['show_on_top_row'] = array();
+			$form_items['show_on_top_row']['items'] = array('group_item');
+			$form_items['show_on_top_row']['html'] = 
+				'<td align="left" style="">' . __('Always show on top') . '</td>
+				<td align="left" style="">' .
+				html_print_checkbox('show_on_top', 1, '', true) . '</td>';
 			
 			$form_items['module_graph_size_row'] = array();
 			$form_items['module_graph_size_row']['items'] = array('module_graph', 'datos');
@@ -659,10 +665,40 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				WHERE id != ' . $visualConsole_id, 'map_linked', '', '', 'None', '0', true) .
 				'</td>';
 
+			$form_items_advance['map_linked_weight'] = array();
+			$form_items_advance['map_linked_weight']['items'] = array('static_graph');
+			$form_items_advance['map_linked_weight']['html'] = '<td align="left">'.
+				__('Map linked weight') . '</td>' .
+				'<td align="left">' . html_print_select(array('10' => '10%',
+															'20' => '20%',
+															'30' => '30%',
+															'40' => '40%',
+															'50' => '50%',
+															'60' => '60%',
+															'70' => '70%',
+															'80' => '80%',
+															'90' => '90%',
+															'100' => '100%'), 
+				'map_linked_weight', '', '', __('By default'), 0, true) . 
+				ui_print_help_icon ("linked_map_weight", true) .
+				'</td>';
+
 			$form_items_advance['line_case']['items'] = array('line_item');
 			$form_items_advance['line_case']['html'] = '
 				<td align="left">' . __('Lines haven\'t advanced options') . '</td>';
 
+			$user_groups = users_get_groups($config['id_user']);
+			$form_items_advance['element_group_row'] = array();
+			$form_items_advance['element_group_row']['items'] = array(
+				'group_item', 'static_graph', 'percentile_bar',
+				'percentile_item', 'module_graph', 'simple_value',
+				'icon', 'label', 'datos');
+			$form_items_advance['element_group_row']['html'] = '<td align="left">'.
+				__('Restrict access to group') . '</td>' .
+				'<td align="left">' . html_print_select($user_groups, 'element_group', '', '', '', 0, true) . 
+				ui_print_help_tip (
+					__("If selected, restrict visualization of this item in the visual console to users who have access to selected group. This is also used on calculating child visual consoles."), true) . 
+				'</td>';
 
 			//Insert and modify before the buttons to create or update.
 			if (enterprise_installed()) {
@@ -847,3 +883,17 @@ function visual_map_editor_print_hack_translate_strings() {
 		__('Could not be save') .'</span>';
 }
 ?>
+
+<script type="text/javascript">
+$(document).ready (function () {
+	$("#map_linked").change(function () {
+		$("#text-agent").val("");
+		$("input[name=id_agent]").val(0);
+		$("#module").empty();
+		$("#module")
+			.append($("<option>")
+				.attr("value", 0)
+				.html("<?php echo __('Any'); ?>"));
+	})
+});
+</script>

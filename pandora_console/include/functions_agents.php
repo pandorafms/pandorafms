@@ -1318,24 +1318,6 @@ function agents_get_agent_id ($agent_name, $io_safe_input = false) {
 }
 
 /**
- * Get agents id from an agent alias.
- *
- * @param string $agent_alias Agent alias to get its id.
- * @param boolean $io_safe_input If it is true transform to safe string, by default false.
- *
- * @return int Id from the agent of the given alias.
- */
-function agents_get_agent_id_by_alias ($alias, $io_safe_input = false) {
-	if ($io_safe_input) {
-		$alias = io_safe_input($alias);
-	}
-	$sql = sprintf("SELECT tagente.id_agente FROM tagente WHERE alias LIKE  '%s' ",$alias);
-	$agent_id = db_get_all_rows_sql($sql);
-	
-	return $agent_id;
-}
-
-/**
  * Get name of an agent.
  *
  * @param int $id_agent Agent id.

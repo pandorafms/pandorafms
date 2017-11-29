@@ -259,7 +259,7 @@ $table->data[0][0] = __('Group');
 $table->data[0][1] = html_print_select_groups(false, "AW", true,
 	'id_group', $id_group, false, '', '', true);
 $table->data[0][2] = __('Group recursion');
-$table->data[0][3] = html_print_checkbox ("recursion", 1, $recursion,
+$table->data[0][3] = html_print_checkbox ("recursion2", 1, $recursion,
 	true, false);
 
 
@@ -625,7 +625,7 @@ $(document).ready (function () {
 	$("select#id_os").pandoraSelectOS ();
 	
 	var recursion;
-	$("#checkbox-recursion").click(function () {
+	$("#checkbox-recursion2").click(function () {
 		recursion = this.checked ? 1 : 0;
 		$("#id_group").trigger("change");
 	});

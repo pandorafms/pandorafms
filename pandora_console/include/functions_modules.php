@@ -987,6 +987,28 @@ function modules_is_string($id_agentmodule) {
 	return modules_is_string_type($id_type);
 }
 
+
+/**
+ * Know if a module type is a boolean or not
+ *
+ * @param int $id_type Type id
+ *
+ * @return bool true if boolean. false if not
+ */
+function modules_is_boolean_type ($id_type) {
+	$type_name = modules_get_type_name($id_type);
+	
+	return (bool)preg_match('/_proc$/', $type_name);
+}
+
+function modules_is_boolean($id_agentmodule) {
+	$id_type = db_get_value('id_tipo_modulo',
+		'tagente_modulo', 'id_agente_modulo',
+		(int) $id_agentmodule);
+	
+	return modules_is_boolean_type($id_type);
+}
+
 /**
  * Get the icon of a module type
  *

@@ -1600,8 +1600,12 @@ function visual_map_print_item($mode = "read", $layoutData,
 						if (!empty($unit_text))
 							$value .= " " . $unit_text;
 						
-						$img_style_title .= " <br>" . __("Last value: ") .
-							$value;
+						// Hide value on boolean modules
+						if (!modules_is_boolean($layoutData['id_agente_modulo'])) {
+							$img_style_title .=
+								" <br>" . __("Last value: ")
+								. $value;
+						}
 					}
 					
 					if(get_parameter('action') == 'edit'){

@@ -33,8 +33,6 @@ if(is_ajax()){
 	$snmp3_privacy_pass = io_safe_output(get_parameter('snmp3_browser_privacy_pass'));
 	
 	$targets_oids = get_parameter ("oids", "");
-	$targets_oids = explode(",", $targets_oids);
-	
 	
 	$custom_action = get_parameter ("custom_action", "");
 	if ($custom_action != "") {

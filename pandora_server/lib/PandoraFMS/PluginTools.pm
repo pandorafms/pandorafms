@@ -582,11 +582,9 @@ sub transfer_xml {
 
 	close (FD);
 
-	if (!defined($conf->{mode} && (defined($conf->{transfer_mode})))) {
-		$conf->{mode} = $conf->{transfer_mode};
-	}
-	else {
-		print_stderror($conf, "Transfer mode not defined in configuration.");
+	$conf->{mode} = $conf->{transfer_mode} if empty($conf->{mode});
+	if (empty ($conf->{mode}) ) {
+		print_stderror($conf, "[ERROR] Nor \"mode\" nor \"transfer_mode\" defined in configuration.");
 		return undef;
 	}
 
@@ -607,7 +605,7 @@ sub transfer_xml {
 		if (! $?) {
 			unlink ($file_path);
 			} else {
-				print STDERR "There was a problem sending file [$file_path] using tentacle\n";
+				print_stderror($conf, "[ERROR] There was a problem sending file [$file_path] using tentacle");
 				return undef;
 			}	
 		} 
@@ -619,7 +617,7 @@ sub transfer_xml {
 
 		#If there was no error, delete file
 		if ($rc == 0) {
-			print STDERR "There was a problem copying local file to $dest_dir: $!\n";
+			print_stderror($conf, "[ERROR] There was a problem copying local file to $dest_dir: $!");
 			return undef;
 		} 
 		else {
@@ -710,7 +708,7 @@ sub print_stderror {
 	my ($conf, $msg, $always_show) = @_;
 
 	if(is_enabled($conf->{debug}) || (is_enabled($always_show))) {
-		print STDERR strftime ("%Y-%m-%d %H:%M:%S", localtime()) . ": " . $msg;
+		print STDERR strftime ("%Y-%m-%d %H:%M:%S", localtime()) . ": " . $msg . "\n";
 	}
 }
 

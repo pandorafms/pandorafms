@@ -47,6 +47,7 @@ our @EXPORT = qw(
 	decrypt
 	empty
 	encrypt
+	get_lib_version
 	get_unit
 	get_unix_time
 	get_sys_environment
@@ -79,6 +80,13 @@ our @EXPORT = qw(
 	transfer_xml
 	trim
 );
+
+################################################################################
+#
+################################################################################
+sub get_lib_version {
+	return $VERSION;
+}
 
 
 ################################################################################
@@ -850,14 +858,19 @@ sub init_system {
 		$system{devnull} = "/dev/null";
 		$system{cat}     = "cat";
 		$system{os}      = "Linux";
-		$system{ps}      = "ps -eo comm,pmem,pcpu";
+		$system{ps}      = "ps -eo pmem,pcpu,comm";
 		$system{grep}    = "grep";
 		$system{echo}    = "echo";
 		$system{wcl}     = "wc -l";
 
 		if ($^O =~ /hpux/i) {
 			$system{os}      = "HPUX";
-			$system{ps}      = "ps -eo comm,pmem,pcpu";
+			$system{ps}      = "ps -eo pmem,pcpu,comm";
+		}
+
+		if ($^O =~ /solaris/i ) {
+			$system{os}      = "solaris";
+			$system{ps}      = "ps -eo pmem,pcpu,comm";
 		}
 	}
 

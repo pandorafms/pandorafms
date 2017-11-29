@@ -1976,7 +1976,7 @@ function set_static_graph_status(idElement, image, status) {
 			data: parameter,
 			success: function (data) {
 				set_static_graph_status(idElement, image, data);
-				if(values['show_statistics'] == 1){
+				if(data['show_statistics'] == 1){
 					if($('#'+idElement+' table').css('float') == 'right' || $('#'+idElement+ ' table').css('float') == 'left'){
 						$('#'+idElement+ ' img').css('margin-top', parseInt($('#'+idElement).css('height'))/2 - parseInt($('#'+idElement+ ' img').css('height'))/2);	
 					}

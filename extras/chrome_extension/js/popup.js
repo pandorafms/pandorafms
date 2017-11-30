@@ -10,6 +10,7 @@ $(document).ready(function(){
 	// Display the information
 	if (bg.fetchEvents().length == 0) {
 		showError("Error in fetching data!! Check your internet connection");
+		$('#events_title').hide();
 	} else {
 		showEvents();
 	}
@@ -54,11 +55,13 @@ function unsetSpinner() {
 function clearError() {
 	$('.error').hide();
 	$('.error a').text("");
+	$('.result').css('height', null);
 }
 
 function showError(text){
 	$('.error a').text(text);
 	$('.error').show();
+	$('.result').height(420);
 }
 
 function showEvents(){
@@ -77,6 +80,7 @@ function showEvents(){
 	
 	var i=0;
 	if(allEvents.length>0){
+		$('#events_title').show();
 		while(i<max_events && i<allEvents.length){
 			var eve_title=document.createElement('div');
 			var img = document.createElement('img');
@@ -89,35 +93,18 @@ function showEvents(){
 			var a = document.createElement('a');
 			var temp_style;
 			
-			var agent_url;
-			if (allEvents[i]["agent_name"] == 0) {
-					agent_url=localStorage["ip_address"]+"/index.php?sec=eventos&sec2=operation/events/events"; 
-			} else {
-					agent_url=localStorage["ip_address"]+"/index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente="+allEvents[i]['agent_name'];
-			}
+			var agent_url = (allEvents[i]["agent_name"] == 0)
+				? localStorage["ip_address"]
+					+ "/index.php?sec=eventos&sec2=operation/events/events"
+				: localStorage["ip_address"]
+					+ "/index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente="
+					+ allEvents[i]['agent_name'];
 			a.setAttribute("href",agent_url);
 			a.target="_blank";
 			
 			
 			a.innerText = allEvents[i]['title'];			
-			
-			switch (allEvents[i]['severity']){
-				case "Warning":
-					eve_title.setAttribute("style","background:#FCED7E; margin-bottom:-12px;"+temp_style);
-					break;
-				case "Critical":
-					eve_title.setAttribute("style","background:#FA7A7A; margin-bottom:-12px;"+temp_style);
-					break;
-				case "Informational":
-					eve_title.setAttribute("style","background:#7FB9FA; margin-bottom:-12px;"+temp_style);
-					break;
-				case "Normal":
-					eve_title.setAttribute("style","background:#A8D96C; margin-bottom:-12px;"+temp_style);
-					break;
-				case "Maintenance":
-					eve_title.setAttribute("style","background:#BABDB6; margin-bottom:-12px;"+temp_style);
-					break;
-			}
+			eve_title.setAttribute("class","event sev-" + allEvents[i]['severity']);
 
 			if (notVisitedEvents[allEvents[i]['id']] === true) {
 				eve_title.style.fontWeight = 600;
@@ -125,8 +112,6 @@ function showEvents(){
 			
 			eve_title.appendChild(a);
 			eve.appendChild(eve_title);
-			var b = document.createElement('br');
-			eve.appendChild(b);
 			
 			var time=allEvents[i]['date'].split(" ");
 			var time_text = time[0]+" "+time[1];
@@ -139,7 +124,7 @@ function showEvents(){
 		   
 			p.innerText = allEvents[i]['type']+" : "+allEvents[i]['source']+". Event occured at "+ time_text+id;
 			p.id = 'p_' + i;
-			eve.appendChild(p);
+			eve_title.appendChild(p);
 			i++;
 		}
 	
@@ -169,17 +154,18 @@ function showHide() {
 
 	// Toggle information
 	if($('#' + pid).css('display') == 'none') {
-		$('#' + pid).slideDown("fast");
+		$('#' + pid).slideDown();
 		$(this).attr({src: 'images/minus.gif'});
 	}
 	else {
-		$('#' + pid).slideUp("fast");
+		$('#' + pid).slideUp();
 		$(this).attr({src: 'images/plus.gif'});
 	}
 }
 
 function mrefresh(){
 	localStorage["new_events"]=0;
+	if (bg.fetchEvents().length == 0) $('#events_title').hide();
 	bg.updateBadge();
 	clearError();
 	bg.resetInterval();

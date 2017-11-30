@@ -24,6 +24,7 @@ $sortField = get_parameter('sort_field');
 $sort = get_parameter('sort', 'none');
 $recursion = (bool) get_parameter('recursion',false);
 $disabled = get_parameter('disabled', 0);
+$os = get_parameter('os', 0);
 
 if ($ag_group == -1 )
 	$ag_group = (int) get_parameter ("ag_group", -1);
@@ -164,12 +165,28 @@ html_print_select($fields,"disabled",$disabled,'this.form.submit()');
 echo "</td>";
 
 echo "<td>";
+echo __('Operative System') . '&nbsp;';
+
+$pre_fields = db_get_all_rows_sql('select distinct(tagente.id_os),tconfig_os.description from tagente,tconfig_os where tagente.id_os = tconfig_os.id_os');
+$fields = array();
+
+foreach ($pre_fields as $key => $value) {
+		$fields[$value['id_os']] =  $value['description'];
+}
+
+html_print_select($fields,"os",$os,'this.form.submit()','All',0);
+
+echo "</td>";
+
+echo "<td>";
 echo __('Recursion') . '&nbsp;';
 html_print_checkbox ("recursion", 1, $recursion, false, false, 'this.form.submit()');
 
 echo "</td><td>";
 echo __('Search') . '&nbsp;';
 html_print_input_text ("search", $search, '', 12);
+
+echo ui_print_help_tip(__('Search filter by alias, name, description, IP address or custom fields content'), true);
 
 echo "</td><td>";
 echo "<input name='srcbutton' type='submit' class='sub search' value='".__('Search')."'>";
@@ -181,7 +198,7 @@ $order_collation = "";
 switch ($config["dbtype"]) {
 	case "mysql":
 		$order_collation = "";
-		//$order_collation = "COLLATE utf8_general_ci";
+		$order_collation = "COLLATE utf8_general_ci";
 		break;
 	case "postgresql":
 	case "oracle":
@@ -201,13 +218,13 @@ switch ($sortField) {
 		switch ($sort) {
 			case 'up':
 				$selectRemoteUp = $selected;
-				$order = array('field' => 'remote ' . $order_collation,
+				$order = array('field' => 'remote ',
 					'field2' => 'nombre ' . $order_collation,
 					'order' => 'ASC');
 				break;
 			case 'down':
 				$selectRemoteDown = $selected;
-				$order = array('field' => 'remote ' . $order_collation,
+				$order = array('field' => 'remote ',
 					'field2' => 'nombre ' . $order_collation,
 					'order' => 'DESC');
 				break;
@@ -296,18 +313,24 @@ if ($search != "") {
 	}else{
 		$search_sql = " AND ( nombre " . $order_collation . "
 			LIKE LOWER('%$search%') OR alias " . $order_collation . "
-			LIKE LOWER('%$search%')) ";
+			LIKE LOWER('%$search%') OR comentarios " . $order_collation . " LIKE LOWER('%$search%') 
+			OR EXISTS (SELECT * FROM tagent_custom_data 
+			WHERE id_agent = id_agente AND description LIKE '%$search%'))";
 	}
 }
 
 if ($disabled == 1)
 { 
-	$search_sql = " AND disabled = ". $disabled . $search_sql;
+	$search_sql .= " AND disabled = ". $disabled . $search_sql;
 }
 else {
 	if ($disabled == 0) {
-		$search_sql = " AND disabled = 0" . $search_sql;
+		$search_sql .= " AND disabled = 0" . $search_sql;
 	}
+}
+
+if($os != 0){
+	$search_sql .= " AND id_os = " . $os;
 }
 
 // Show only selected groups
@@ -540,10 +563,6 @@ if ($agents !== false) {
 		}
 		echo '<span class="left">';
 		echo "<strong>";
-		if ($agent['quiet']) {
-			html_print_image("images/dot_green.disabled.png", false, array("border" => '0', "title" => __('Quiet'), "alt" => ""));
-			echo "&nbsp;";
-		}
 		
 		if (check_acl ($config["id_user"], $agent["id_grupo"], "AW")) {
 			$main_tab = 'main';
@@ -562,14 +581,21 @@ if ($agents !== false) {
 			"</a>";
 		echo "</strong>";
 
-		$in_planned_downtime = db_get_value_filter('id', 'tplanned_downtime_agents', array('id_agent' => $agent["id_agente"]));
-
+		$in_planned_downtime = db_get_sql('SELECT executed FROM tplanned_downtime 
+			INNER JOIN tplanned_downtime_agents ON tplanned_downtime.id = tplanned_downtime_agents.id_downtime
+			WHERE tplanned_downtime_agents.id_agent = '. $agent["id_agente"] . ' AND tplanned_downtime.executed = 1');
+			
 		if ($agent["disabled"]) {
 			ui_print_help_tip(__('Disabled'));
 
 			if (!$in_planned_downtime) {
 				echo "</em>";
 			}
+		}
+		
+		if ($agent['quiet']) {
+			echo "&nbsp;";
+			html_print_image("images/dot_green.disabled.png", false, array("border" => '0', "title" => __('Quiet'), "alt" => ""));
 		}
 
 		if ($in_planned_downtime) {

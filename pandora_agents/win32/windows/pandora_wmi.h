@@ -53,7 +53,7 @@ namespace Pandora_Wmi {
 	string        getOSBuild            ();
 	string        getSystemName         ();	
 	string        getSystemAddress      ();	
-	bool          runProgram            (string command, DWORD flags = 0);
+	bool          runProgram            (string command, DWORD flags = 0, BOOL user_session = false);
 	bool          startService          (string service_name);
 	bool          stopService           (string service_name);
  	void          runWMIQuery       (string wmi_query,

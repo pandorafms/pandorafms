@@ -8531,7 +8531,7 @@ function api_set_enable_module ($agent_name, $module_name, $thrast3, $thrash4) {
  * @param string $template_name Name of the alert template (for example, "Warning event")
  * @param $thrash4 Don't use.
 
-// http://localhost/pandora_console/include/api.php?op=set&op2=disable_alert&id=garfio&id2=Status&other=Warning%20condition
+// http://localhost/pandora_console/include/api.php?op=set&op2=disable_alert&id=c2cea5860613e363e25f4ba185b54fe28f869ff8a5e8bb46343288337c903531&id2=Status&other=Warning%20condition
  */
 
 function api_set_disable_alert ($agent_name, $module_name, $template_name, $thrash4) {
@@ -8543,11 +8543,53 @@ function api_set_disable_alert ($agent_name, $module_name, $template_name, $thra
 	$id_agent_module = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('id_agente' => $id_agent, 'nombre' => $module_name));
 	$id_template = db_get_value_filter('id', 'talert_templates', array('name' => $template_name["data"]));
 	
-	db_process_sql("UPDATE talert_template_modules
+	$result = db_process_sql("UPDATE talert_template_modules
 		SET disabled = 1
 		WHERE id_agent_module = $id_agent_module AND id_alert_template = $id_template");
 	
-	returnData('string', array('type' => 'string', 'data' => "Correct alert disable"));
+	if ($result) {
+		returnData('string', array('type' => 'string', 'data' => "Correct alert disable"));
+	} else {
+		returnData('string', array('type' => 'string', 'data' => __('Error alert disable')));
+	}
+}
+
+
+/**
+ * Disable an alert with alias
+ * 
+ * @param string $agent_alias Alias of agent (for example "myagent")
+ * @param string $module_name Name of the module (for example "Host alive")
+ * @param string $template_name Name of the alert template (for example, "Warning event")
+ * @param $thrash4 Don't use.
+
+// http://localhost/pandora_console/include/api.php?op=set&op2=disable_alert_alias&id=garfio&id2=Status&other=Warning%20condition
+ */
+
+function api_set_disable_alert_alias ($agent_alias, $module_name, $template_name, $thrash4) {
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+	
+	$agent_id = agents_get_agent_id_by_alias($agent_alias);
+	$result = false;
+	foreach ($agent_id as $key => $id_agent) {
+		$id_agent_module = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('id_agente' => $id_agent['id_agente'], 'nombre' => $module_name));
+		$id_template = db_get_value_filter('id', 'talert_templates', array('name' => $template_name["data"]));
+		
+		$result = db_process_sql("UPDATE talert_template_modules
+			SET disabled = 1
+			WHERE id_agent_module = $id_agent_module AND id_alert_template = $id_template");
+		
+		if ($result) {
+			returnData('string', array('type' => 'string', 'data' => "Correct alert disable"));
+			return;
+		}
+	}
+	
+	if(!$result){
+		returnData('string', array('type' => 'string', 'data' => __('Error alert disable')));
+	}
 }
 
 /**

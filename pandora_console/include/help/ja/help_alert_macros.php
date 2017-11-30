@@ -45,6 +45,7 @@
 <li>_alert_text_severity_ : テキストでのアラートの重要度 (Maintenance, Informational, Normal Minor, Warning, Major, Critical)</li>
 <li>_event_text_severity_ : (イベントアラートのみ) イベント(アラートの発生元)のテキストでの重要度 (Maintenance, Informational, Normal Minor, Warning, Major, Critical)</li>
 <li>_event_id_ : (イベントアラートのみ) アラート発生元のイベントID</li>
+<li>_event_cfX_ : (Only event alerts) Key of the event custom field that fired the alert.</li>
 <li>_id_agent_ : エージェントのID / Webコンソールへのリンクを生成するのに便利です</li>
 <li>_id_group_ : エージェントグループのID</li>
 <li>_id_module_ : モジュール ID</li>
@@ -54,6 +55,8 @@
 <li>_target_ip_ : モジュールの対象IPアドレス</li>
 <li>_target_port_ : モジュールの対象ポート</li>
 <li>_plugin_parameters_ : モジュールのプラグインパラメータ</li>
+<li>_server_ip_ : Ip of server assigned to agent. </li>
+<li>_server_name_ : Name of server assigned to agent. </li>
 <li>_groupcontact_ : グループコンタクト情報。グループの作成時に設定されます。</li>
 <li>_groupcustomid_: グループカスタムID</li>
 <li>_groupother_ : グループに関するその他情報。グループの作成時に設定されます。</li>

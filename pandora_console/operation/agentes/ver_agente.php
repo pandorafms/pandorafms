@@ -47,7 +47,7 @@ if (is_ajax ()) {
 	$id_group = (int) get_parameter('id_group');
 	if ($get_agents_group_json) {
 		$id_group = (int) get_parameter('id_group');
-		$recursion = (int) get_parameter ('recursion', 0);
+		$recursion = get_parameter ('recursion');
 		$id_os = get_parameter('id_os', '');
 		$agent_name = get_parameter('name', '');
 		$privilege = (string) get_parameter ('privilege', "AR");
@@ -58,7 +58,7 @@ if (is_ajax ()) {
 		
 		if ($id_group > 0) {
 			$groups = array($id_group);
-			if ($recursion) {
+			if ($recursion === 'true') {
 				$groups = array_merge($groups,
 					groups_get_id_recursive($id_group, true));
 			}
@@ -97,7 +97,7 @@ if (is_ajax ()) {
 				$filter[] = "(notinit_count = total_count)";
 				break;
 		}
-		$filter['order'] = "nombre ASC";
+		$filter['order'] = "alias ASC";
 		
 		// Build fields
 		$fields = array('id_agente', 'alias');
@@ -589,6 +589,11 @@ if (is_ajax ()) {
 		if (empty($filter))
 			$filter = false;
 		
+		$get_only_string_modules = get_parameter('get_only_string_modules', false);
+		if ($get_only_string_modules) {
+			$filter['tagente_modulo.id_tipo_modulo IN'] = "(17,23,3,10,33)";
+		}
+
 		// Status selector
 		if ($status_modulo == AGENT_MODULE_STATUS_NORMAL) { //Normal
 			$sql_conditions .= ' estado = 0 AND utimestamp > 0 ) 
@@ -701,6 +706,18 @@ if (is_ajax ()) {
 		
 		foreach ($agent_modules as $key => $module) {
 			$agent_modules[$key]['nombre'] = io_safe_output($module['nombre']);
+		}
+
+		$get_order_json = (bool)get_parameter('get_order_json', false);
+		if ($get_order_json) {
+			$new_elements = array();
+			$index = 0;
+			foreach ($agent_modules as $key => $module) {
+				$new_elements[$index]['id_agente_modulo'] = $module['id_agente_modulo'];
+				$new_elements[$index]['nombre'] = io_safe_output($module['nombre']);
+				$index++;
+			}
+			$agent_modules = $new_elements;
 		}
 		
 		echo json_encode ($agent_modules);
@@ -1044,7 +1061,7 @@ if ($policyTab == -1)
 
 /* UX Console */
 enterprise_include_once('/include/functions_ux_console.php');
-$active_ux = get_ux_transactions($id_agente);
+$active_ux = enterprise_hook('get_ux_transactions', array($id_agente));
 if(!empty($active_ux)){
 	$ux_console_tab = enterprise_hook('ux_console_tab');
 	if ($ux_console_tab == -1)

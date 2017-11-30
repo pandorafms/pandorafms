@@ -151,7 +151,7 @@ if ($upload_file) {
 	
 	check_login ();
 	
-	if (! check_acl ($config['id_user'], 0, "PM")) {
+	if (! check_acl ($config['id_user'], 0, "AW")) {
 		db_pandora_audit("ACL Violation", "Trying to access File manager");
 		require ("general/noaccess.php");
 		return;
@@ -219,7 +219,7 @@ if ($create_text_file) {
 	
 	check_login ();
 	
-	if (! check_acl ($config['id_user'], 0, "PM")) {
+	if (! check_acl ($config['id_user'], 0, "AW")) {
 		db_pandora_audit("ACL Violation", "Trying to access File manager");
 		require ("general/noaccess.php");
 		return;
@@ -279,7 +279,7 @@ if ($upload_zip) {
 	
 	check_login ();
 	
-	if (! check_acl ($config['id_user'], 0, "PM")) {
+	if (! check_acl ($config['id_user'], 0, "AW")) {
 		db_pandora_audit("ACL Violation", "Trying to access File manager");
 		require ("general/noaccess.php");
 		return;
@@ -720,6 +720,17 @@ function filemanager_file_explorer($real_directory, $relative_directory,
 			$hash = md5($relative_path . $config['dbpass']);
 			$data[1] = '<a href="' . $hack_metaconsole . 'include/get_file.php?file='.urlencode(base64_encode($relative_path)).'&hash=' . $hash . '">'.$fileinfo['name'].'</a>';
 		}
+		
+		// Notice that uploaded php files could be dangerous
+		if (pathinfo($fileinfo['realpath'], PATHINFO_EXTENSION) == 'php' &&
+				(is_readable($fileinfo['realpath']) || is_executable($fileinfo['realpath']))) {
+			$error_message = __('This file could be executed by any user');
+			$error_message .= '. ' . __('Make sure it can\'t perform dangerous tasks');
+			$data[1] = '<span class="error forced_title" data-title="' . $error_message . '" data-use_title_for_force_title="1">'
+				. $data[1]
+				. '</span>';
+		}
+		
 		$data[2] = ui_print_timestamp ($fileinfo['last_modified'], true,
 			array ('prominent' => true));
 		if ($fileinfo['is_dir']) {

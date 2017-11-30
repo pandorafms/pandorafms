@@ -85,6 +85,7 @@ CREATE TABLE IF NOT EXISTS `tagente` (
 	`alias` varchar(600) BINARY NOT NULL default '',
 	`transactional_agent` tinyint(1) NOT NULL default '0',
 	`alias_as_name` tinyint(2) NOT NULL default '0',
+	`safe_mode_module` int(10) unsigned NOT NULL default '0',
 	PRIMARY KEY  (`id_agente`),
 	KEY `nombre` (`nombre`(255)),
 	KEY `direccion` (`direccion`),
@@ -99,7 +100,7 @@ CREATE TABLE IF NOT EXISTS `tagente_datos` (
 	`id_agente_modulo` int(10) unsigned NOT NULL default '0',
 	`datos` double(22,5) default NULL,
 	`utimestamp` bigint(20) default '0',
-	KEY `data_index1` (`id_agente_modulo`),
+	KEY `data_index1` (`id_agente_modulo`, `utimestamp`),
 	KEY `idx_utimestamp` USING BTREE (`utimestamp`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
 
@@ -120,7 +121,7 @@ CREATE TABLE IF NOT EXISTS `tagente_datos_string` (
 	`id_agente_modulo` int(10) unsigned NOT NULL default '0',
 	`datos` mediumtext NOT NULL,
 	`utimestamp` int(20) unsigned NOT NULL default 0,
-	KEY `data_string_index_1` (`id_agente_modulo`),
+	KEY `data_string_index_1` (`id_agente_modulo`, `utimestamp`),
 	KEY `idx_utimestamp` USING BTREE (`utimestamp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -1114,6 +1115,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
 	`session_time` int(10) signed NOT NULL default 0,
 	`default_event_filter` int(10) unsigned NOT NULL default 0,
 	`autorefresh_white_list` text not null default '',
+	`time_autorefresh` int(5) unsigned NOT NULL default '30',
 	CONSTRAINT `fk_filter_id` FOREIGN KEY (`id_filter`) REFERENCES tevent_filter (`id_filter`) ON DELETE SET NULL,
 	UNIQUE KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -1188,6 +1190,8 @@ CREATE TABLE IF NOT EXISTS `tgraph` (
 	`id_group` mediumint(8) unsigned NULL default 0,
 	`id_graph_template` int(11) NOT NULL default 0,
 	`percentil` tinyint(1) UNSIGNED NOT NULL default 0,
+	`summatory_series` tinyint(1) UNSIGNED NOT NULL default 0,
+	`average_series` tinyint(1) UNSIGNED NOT NULL default 0,
 	PRIMARY KEY(`id_graph`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -1269,6 +1273,9 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`id_module_group` INT (10) unsigned NOT NULL DEFAULT 0,
 	`server_name` text,
 	`historical_db` tinyint(1) UNSIGNED NOT NULL default 0,
+	`lapse_calc` tinyint(1) UNSIGNED NOT NULL default '0',
+	`lapse` int(11) UNSIGNED NOT NULL default '300',
+	`visual_format` tinyint(1) UNSIGNED NOT NULL default '0',
 	PRIMARY KEY(`id_rc`),
 	FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
 		ON UPDATE CASCADE ON DELETE CASCADE
@@ -1356,6 +1363,9 @@ CREATE TABLE IF NOT EXISTS `tlayout_data` (
 	`border_color` varchar(200) DEFAULT "",
 	`fill_color` varchar(200) DEFAULT "",
 	`show_statistics` tinyint(2) NOT NULL default '0',
+	`id_layout_linked_weight` int(10) NOT NULL default '0',
+	`element_group` int(10) NOT NULL default '0',
+	`show_on_top` tinyint(1) NOT NULL default '0',
 	PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -1707,6 +1717,7 @@ CREATE TABLE IF NOT EXISTS `tsnmp_filter` (
 	`id_snmp_filter` int(10) unsigned NOT NULL auto_increment,
 	`description` varchar(255) default '',
 	`filter` varchar(255) default '',
+	`unified_filters_id` int(10) not null default 0,
 	PRIMARY KEY  (`id_snmp_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -2206,6 +2217,7 @@ CREATE TABLE IF NOT EXISTS `tdashboard` (
 	`id_group` int(10) NOT NULL default 0,
 	`active` tinyint(1) NOT NULL default 0,
 	`cells` int(10) unsigned default 0,
+	`cells_slideshow` TINYINT(1) NOT NULL default 0,
 	PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -2727,6 +2739,9 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	`each_agent` tinyint(1) default 1,
 	`historical_db` tinyint(1) UNSIGNED NOT NULL default 0,
 	`hide_no_data` tinyint(1) default 0,
+	`lapse_calc` tinyint(1) UNSIGNED NOT NULL default '0',
+	`lapse` int(11) UNSIGNED NOT NULL default '300',
+	`visual_format` tinyint(1) UNSIGNED NOT NULL default '0',
 	PRIMARY KEY(`id_rc`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -2958,6 +2973,7 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_agent` (
 	`transactional_agent` tinyint(1) NOT NULL default '0',
 	`alias` varchar(600) BINARY NOT NULL default '',
 	`alias_as_name` tinyint(2) NOT NULL default '0',
+	`safe_mode_module` int(10) unsigned NOT NULL default '0',
 	PRIMARY KEY  (`id_agente`),
 	KEY `nombre` (`nombre`(255)),
 	KEY `direccion` (`direccion`),

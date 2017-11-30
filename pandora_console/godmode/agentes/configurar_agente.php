@@ -135,6 +135,8 @@ $id_os = 9; // Windows
 $custom_id = "";
 $cascade_protection = 0;
 $cascade_protection_modules = 0;
+$safe_mode = 0;
+$safe_mode_module = 0;
 $icon_path = '';
 $update_gis_data = 0;
 $unit = "";
@@ -166,6 +168,8 @@ if ($create_agent) {
 	$custom_id = (string) get_parameter_post ("custom_id",'');
 	$cascade_protection = (int) get_parameter_post ("cascade_protection", 0);
 	$cascade_protection_module = (int) get_parameter_post("cascade_protection_module", 0);
+	$safe_mode = (int) get_parameter_post ("safe_mode", 0);
+	$safe_mode_module = (int) get_parameter_post ("safe_mode_module", 0);
 	$icon_path = (string) get_parameter_post ("icon_path",'');
 	$update_gis_data = (int) get_parameter_post("update_gis_data", 0);
 	$url_description = (string) get_parameter("url_description");
@@ -228,7 +232,7 @@ if ($create_agent) {
 		if ($id_agente !== false) {
 			// Create custom fields for this agent
 			foreach ($field_values as $key => $value) {
-				db_process_sql_insert ('tagent_custom_data',
+				$update_custom = db_process_sql_insert ('tagent_custom_data',
 				 array('id_field' => $key, 'id_agent' => $id_agente,
 					'description' => $value));
 			}
@@ -707,6 +711,7 @@ if ($update_agent) { // if modified some agent paramenter
 	$custom_id = (string) get_parameter_post ("custom_id", "");
 	$cascade_protection = (int) get_parameter_post ("cascade_protection", 0);
 	$cascade_protection_module = (int) get_parameter ("cascade_protection_module", 0);
+	$safe_mode_module = (int) get_parameter ("safe_mode_module", 0);
 	$icon_path = (string) get_parameter_post ("icon_path",'');
 	$update_gis_data = (int) get_parameter_post("update_gis_data", 0);
 	$url_description = (string) get_parameter("url_description");
@@ -730,13 +735,17 @@ if ($update_agent) { // if modified some agent paramenter
 		
 		if ($old_value === false) {
 			// Create custom field if not exist
-			db_process_sql_insert ('tagent_custom_data',
+			$update_custom = db_process_sql_insert ('tagent_custom_data',
 				array('id_field' => $key,'id_agent' => $id_agente, 'description' => $value));
 		}
 		else {
-			db_process_sql_update ('tagent_custom_data',
+			$update_custom = db_process_sql_update ('tagent_custom_data',
 				array('description' => $value),
 				array('id_field' => $key,'id_agent' => $id_agente));
+				
+				if($update_custom == 1){
+						$update_custom_result = 1;
+				}
 		}
 	}
 	
@@ -782,7 +791,8 @@ if ($update_agent) { // if modified some agent paramenter
 				'update_gis_data' => $update_gis_data,
 				'url_address' => $url_description,
 				'url_address' => $url_description,
-				'quiet' => $quiet);
+				'quiet' => $quiet,
+				'safe_mode_module' => $safe_mode_module);
 		
 		if ($config['metaconsole_agent_cache'] == 1) {
 			$values['update_module_count'] = 1; // Force an update of the agent cache.
@@ -793,7 +803,9 @@ if ($update_agent) { // if modified some agent paramenter
 				WHERE id_group = ".$group_old);
 		
 		$result = db_process_sql_update ('tagente', $values, array ('id_agente' => $id_agente));
-		if ($result == false) {
+		
+		
+		if ($result == false && $update_custom_result == false) {
 			ui_print_error_message(
 				__('There was a problem updating the agent'));
 		}
@@ -900,6 +912,8 @@ if ($id_agente) {
 	$update_gis_data = $agent["update_gis_data"];
 	$url_description = $agent["url_address"];
 	$quiet = $agent["quiet"];
+	$safe_mode_module = $agent["safe_mode_module"];
+	$safe_mode = ($safe_mode_module) ? 1 :  0;
 }
 
 $update_module = (bool) get_parameter ('update_module');

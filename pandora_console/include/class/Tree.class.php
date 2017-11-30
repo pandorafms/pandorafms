@@ -23,6 +23,7 @@ class Tree {
 	protected $filter = array();
 	protected $childrenMethod = "on_demand";
 
+	protected $userGroupsACL;
 	protected $userGroups;
 
 	protected $strictACL = false;
@@ -36,43 +37,52 @@ class Tree {
 		$this->id = $id;
 		$this->rootID = !empty($rootID) ? $rootID : $id;
 		$this->serverID = $serverID;
-		$this->childrenMethod = $childrenMethod;		
-		$this->access = $access;		
-		
-		$userGroups = users_get_groups(false, $this->access);
+		$this->childrenMethod = $childrenMethod;
+		$this->access = $access;
 
-		if (empty($userGroups))
-			$this->userGroups = false;
-		else
-			$this->userGroups = $userGroups;
+		$userGroupsACL = users_get_groups(false, $this->access);
+		$this->userGroupsACL = empty($userGroupsACL) ? false : $userGroupsACL;
+		$this->userGroups = $this->userGroupsACL;
 
 		global $config;
 		include_once($config['homedir']."/include/functions_servers.php");
 		include_once($config['homedir']."/include/functions_modules.php");
 		require_once($config['homedir']."/include/functions_tags.php");
 
-		if (is_metaconsole())
-			enterprise_include_once("meta/include/functions_ui_meta.php");
+		if (is_metaconsole()) enterprise_include_once("meta/include/functions_ui_meta.php");
 
 		$this->strictACL = (bool) db_get_value("strict_acl", "tusuario", "id_user", $config['id_user']);
 		
 		$this->acltags = tags_get_user_module_and_tags($config['id_user'], $this->access);
 	}
 
-	public function setType($type) {
-		$this->type = $type;
-	}
-
 	public function setFilter($filter) {
+		// Filter the user groups
+		if (!empty($filter['groupID'])) {
+			$group_id = $filter['groupID'];
+			$this->userGroups = isset($this->userGroupsACL[$group_id])
+				? array($group_id => $this->userGroupsACL[$group_id])
+				: array();
+		}
+		else if (!empty($filter['searchGroup'])) {
+			$groups = db_get_all_rows_filter('tgrupo', array('nombre' => '%' . $filter['searchGroup'] . '%'));
+			
+			// Save the groups which intersect
+			$userGroupsACL = $this->userGroupsACL;
+			$this->userGroups = array_reduce($groups, function ($userGroups, $group) use ($userGroupsACL) {
+				$group_id = $group['id_grupo'];
+				if (isset($userGroupsACL[$group_id])) {
+					$userGroups[$group_id] = $userGroupsACL[$group_id];
+				}
+				
+				return $userGroups;
+			}, array());
+		}
+		else {
+			$this->userGroups = $this->userGroupsACL;
+		}
+		
 		$this->filter = $filter;
-	}
-
-	public function isStrict () {
-		return $this->strictACL;
-	}
-
-	public function setStrict ($value) {
-		$this->strictACL = (bool) $value;
 	}
 
 	protected function getAgentStatusFilter ($status = -1) {
@@ -323,12 +333,23 @@ class Tree {
 			case 'group':
 				// ACL Group
 				$user_groups_str = "-1";
-				$group_acl =  "";
+				$group_filter =  "";
 				if (!$this->strictACL) {
-					if (!empty($this->userGroups)) {
-						$user_groups_str = implode(",", array_keys($this->userGroups));
+					if (empty($this->userGroups)) {
+						return;
 					}
-					$group_acl = "AND ta.id_grupo IN ($user_groups_str)";
+
+					// Asking for a specific group.
+					if ($item_for_count !== false) {
+						if (!isset($this->userGroups[$item_for_count])) {
+							return;
+						}
+					}
+					// Asking for all groups.
+					else {
+						$user_groups_str = implode(",", array_keys($this->userGroups));
+						$group_filter = "AND ta.id_grupo IN ($user_groups_str)";
+					}
 				}
 				else {
 					if (!empty($this->acltags)) {
@@ -345,7 +366,7 @@ class Tree {
 							}
 						}
 					}
-					$group_acl = "AND ta.id_grupo IN ($user_groups_str)";
+					$group_filter = "AND ta.id_grupo IN ($user_groups_str)";
 				}
 
 				switch ($type) {
@@ -379,7 +400,7 @@ class Tree {
 													$module_status_join
 													WHERE ta.disabled = 0
 														AND ta.id_grupo = $item_for_count
-														$group_acl
+														$group_filter
 														$agent_search_filter
 														$agent_status_filter";
 									$sql = $this->getAgentCountersSql($agent_table);
@@ -400,7 +421,7 @@ class Tree {
 													FROM tmetaconsole_agent ta
 													WHERE ta.disabled = 0
 														AND ta.id_grupo = $item_for_count
-														$group_acl
+														$group_filter
 														$agent_search_filter
 														$agent_status_filter";
 									$sql = $this->getAgentCountersSql($agent_table);
@@ -428,7 +449,7 @@ class Tree {
 										$module_status_join
 										WHERE ta.disabled = 0
 											AND ta.id_grupo = $rootID
-											$group_acl
+											$group_filter
 											$agent_search_filter
 											$agent_status_filter
 										GROUP BY $group_by_fields
@@ -445,7 +466,7 @@ class Tree {
 										FROM tmetaconsole_agent ta
 										WHERE ta.disabled = 0
 											AND ta.id_grupo = $rootID
-											$group_acl
+											$group_filter
 											$agent_search_filter
 											$agent_status_filter
 										ORDER BY $order_fields";
@@ -487,7 +508,7 @@ class Tree {
 									ON ta.disabled = 0
 										AND tam.id_agente = ta.id_agente
 										AND ta.id_grupo = $rootID
-										$group_acl
+										$group_filter
 										$agent_search_filter
 										$agent_status_filter
 								WHERE tam.disabled = 0
@@ -1112,7 +1133,8 @@ class Tree {
 		if (empty($data))
 			return array();
 
-		if ($this->type == 'agent') {
+		// [26/10/2017] It seems the module hierarchy should be only available into the tree by group
+		if ($this->rootType == 'group' && $this->type == 'agent') {
 			$data = $this->getProcessedModules($data);
 		}
 
@@ -1142,7 +1164,7 @@ class Tree {
 		}
 
 		// If user have not permissions in parent, set parent node to 0 (all)
-		$user_groups_with_privileges = users_get_groups($config['id_user']);
+		$user_groups_with_privileges = $this->userGroups;
 		foreach ($groups as $id => $group) {
 			if (!in_array($groups[$id]['parent'], array_keys($user_groups_with_privileges))) {
 				$groups[$id]['parent'] = 0;
@@ -1306,7 +1328,7 @@ class Tree {
 
 		// Get the counters of the group (special case)
 		if ($processed_item['type'] == 'group') {
-			$counters = $this->getCounters($item['id']);
+			$counters = $this->getGroupCounters($item['id']);
 			if (!empty($counters)) {
 				foreach ($counters as $type => $value) {
 					$item[$type] = $value;
@@ -2606,6 +2628,50 @@ class Tree {
 		}
 		
 		return $tree_modules;
+	}
+
+	protected function getGroupCounters($group_id) {
+		global $config;
+		static $group_stats = false;
+
+		# Do not use the group stat cache when using tags or real time group stats.
+		if ($config['realtimestats'] == 1 || (isset($this->userGroups[$group_id]['tags']) && $this->userGroups[$group_id]['tags'] != "")) {
+			return $this->getCounters($group_id);
+		}
+
+		# Update the group stat cache.
+		if ( $group_stats === false) {
+			$group_stats = array();
+			$stats = db_get_all_rows_sql('SELECT * FROM tgroup_stat');
+				
+			foreach ($stats as $group) {
+				if ($group['modules'] > 0) {
+					$group_stats[$group['id_group']]['total_count'] = $group['modules'] > 0 ? $group['agents'] : 0;
+					$group_stats[$group['id_group']]['total_critical_count'] = $group['critical'];
+					$group_stats[$group['id_group']]['total_unknown_count'] = $group['unknown'];
+					$group_stats[$group['id_group']]['total_warning_count'] = $group['warning'];
+					$group_stats[$group['id_group']]['total_not_init_count'] = $group['non-init'];
+					$group_stats[$group['id_group']]['total_normal_count'] = $group['normal'];
+					$group_stats[$group['id_group']]['total_fired_count'] = $group['alerts_fired'];
+				}
+				# Skip groups without modules.
+				else {
+					$group_stats[$group['id_group']]['total_count'] = 0;
+					$group_stats[$group['id_group']]['total_critical_count'] = 0;
+					$group_stats[$group['id_group']]['total_unknown_count'] = 0;
+					$group_stats[$group['id_group']]['total_warning_count'] = 0;
+					$group_stats[$group['id_group']]['total_not_init_count'] = 0;
+					$group_stats[$group['id_group']]['total_normal_count'] = 0;
+					$group_stats[$group['id_group']]['total_fired_count'] = 0;
+				}
+			}
+		}
+
+		if ($group_stats !== false && isset($group_stats[$group_id])) {
+			return $group_stats[$group_id];
+		}
+
+		return $this->getCounters($group_id);
 	}
 
 	static function recursive_modules_tree_view (&$new_modules, &$new_modules_child, $i, $child) {

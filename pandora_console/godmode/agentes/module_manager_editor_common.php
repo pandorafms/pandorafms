@@ -291,7 +291,7 @@ if (modules_is_string_type($id_module_type) || $edit) {
 	$table_simple->data[4][1] .= '<br /><em>'.__('Inverse interval').'</em>';
 	$table_simple->data[4][1] .= html_print_checkbox ("warning_inverse", 1, $warning_inverse, true, $disabledBecauseInPolicy);
 if (!modules_is_string_type($id_module_type) || $edit) {
-	$table_simple->data[4][2] = '<svg id="svg_dinamic" width="350px" height="200px" style="padding:40px; padding-left: 100px; margin-bottom: 60px;"></svg>';
+	$table_simple->data[4][2] = '<svg id="svg_dinamic" width="800" height="300"> </svg>';
 	$table_simple->colspan[4][2] = 2;
 	$table_simple->rowspan[4][2] = 3;
 }
@@ -1199,17 +1199,32 @@ function paint_graph_values(){
 	//inicialiced error
 	var error_w = 0;
 	var error_c = 0;
+	//messages legend
+	var legend_normal = '<?php echo __("Normal Status");?>';
+	var legend_warning = '<?php echo __("Warning Status");?>';
+	var legend_critical = '<?php echo __("Critical Status");?>';
+	//messages error
+	var message_error_warning = '<?php echo __("Please introduce a maximum warning higher than the minimun warning") ?>';
+	var message_error_critical = '<?php echo __("Please introduce a maximum critical higher than the minimun critical") ?>';
+	
 	//if haven't error
 	if(max_w == 0 || max_w > min_w){
 		if(max_c == 0 || max_c > min_c){
-			paint_graph_status(min_w, max_w, min_c, max_c, inverse_w, inverse_c, error_w, error_c);
+			paint_graph_status(min_w, max_w, min_c, max_c, inverse_w, 
+								inverse_c, error_w, error_c,
+								legend_normal, legend_warning, legend_critical,
+								message_error_warning, message_error_critical);
 		} else {
 			error_c = 1;
-			paint_graph_status(0,0,0,0,0,0, error_w, error_c);
+			paint_graph_status(0,0,0,0,0,0, error_w, error_c,
+							legend_normal, legend_warning, legend_critical,
+							message_error_warning, message_error_critical);
 		}
 	} else {
 		error_w = 1;
-		paint_graph_status(0,0,0,0,0,0, error_w, error_c);
+		paint_graph_status(0,0,0,0,0,0, error_w, error_c, 
+							legend_normal, legend_warning, legend_critical,
+							message_error_warning, message_error_critical);
 	}
 }
 

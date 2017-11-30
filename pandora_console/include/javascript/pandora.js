@@ -622,7 +622,6 @@ function post_process_select_init_unit(name,selected) {
 			}
 		});
 		
-		console.log(select_or_text);
 		if(select_or_text) {
 			$('#' + name + '_select option[value='+ selected +']').attr("selected",true);
 			$('#text-' + name + '_text').val("");
@@ -1265,4 +1264,288 @@ function pagination_show_more(params, message){
         },
         datatype: "html"
     });
+}
+/*
+*function use d3.js for paint graph
+*/
+function paint_graph_status(min_w, max_w, min_c, max_c, inverse_w, inverse_c, error_w, error_c,
+							legend_normal, legend_warning, legend_critical, 
+							message_error_warning, message_error_critical) {
+	
+	//Check if they are numbers
+	if(isNaN(min_w)){ min_w = 0; };
+	if(isNaN(max_w)){ max_w = 0; };
+	if(isNaN(min_c)){ min_c = 0; };
+	if(isNaN(max_c)){ max_c = 0; };
+
+	//if haven't errors
+	if (error_w == 0 && error_c == 0){
+		//parse element
+		min_w = parseFloat(min_w);
+		min_c = parseFloat(min_c);
+		max_w = parseFloat(max_w);
+		max_c = parseFloat(max_c);
+		
+		//inicialize var
+		var range_min = 0;
+		var range_max = 0;
+		var range_max_min = 0;
+		var range_max_min = 0;
+		
+		//Find the lowest possible value
+		if(min_w < 0 || min_c < 0){
+			if(min_w < min_c){
+				range_min = min_w - 100;
+			} else {
+				range_min = min_c - 100;	
+			}
+		} else if (min_w > 0 || min_c > 0) {
+			if(min_w > min_c){
+				range_max_min = min_w;
+			} else {
+				range_max_min = min_c;	
+			}
+		} else {
+			if(min_w < min_c){
+				range_min = min_w - 100;
+			} else {
+				range_min = min_c - 100;	
+			}
+		}
+
+		//Find the maximum possible value
+		if(max_w > max_c){
+			range_max = max_w + 100 + range_max_min;
+		} else {
+			range_max = max_c + 100 + range_max_min;
+		}
+		
+		//Controls whether the maximum = 0 is infinite
+		if((max_w == 0 || max_w == 0.00) && min_w != 0){
+			max_w = range_max;
+		}
+		if((max_c == 0 || max_c == 0.00) && min_c != 0){
+			max_c = range_max;
+		}
+		
+		//Scale according to the position
+		position = 200 / (range_max-range_min);
+		
+		//axes
+		var yScale = d3.scale.linear()
+		    .domain([range_min, range_max])
+		    .range([100, -100]);
+
+	    var yAxis = d3.svg.axis()
+	    		.scale(yScale)
+	            .orient("left");
+
+	    //create svg
+		var svg = d3.select("#svg_dinamic");
+		//delete elements
+		svg.selectAll("g").remove();
+
+		width_x = 201;
+		height_x = 50;
+
+		svg.append("g")
+			.attr("transform", "translate(200, 150)")
+			.call(yAxis);
+				
+		//legend Normal text
+		svg.append("g")
+			.attr("width", 300)
+			.attr("height", 300)
+			.append("text")
+				.attr("x", width_x)
+				.attr("y", height_x - 20)
+				.attr("fill", 'black')
+				.style("font-family", "arial")
+				.style("font-weight", "bold")
+				.style("font-size", '8pt')
+				.html(legend_normal)
+				.style("text-anchor", "first")
+				.attr("width", 300)
+				.attr("height", 300);
+
+		//legend Normal rect
+		svg.append("g")
+			.append("rect")
+				.attr("id", "legend_normal")
+		       	.attr("x", width_x + 80)
+		       	.attr("y", height_x - 30)
+		       	.attr("width", 10)
+		       	.attr("height", 10)
+		  		.style("fill", "#82B92E");
+
+	  	//legend Warning text
+	  	svg.append("g")
+			.append("text")
+				.attr("x", width_x + 100)
+				.attr("y", height_x - 20)
+				.attr("fill", 'black')
+				.style("font-family", "arial")
+				.style("font-weight", "bold")
+				.style("font-size", '8pt')
+				.html(legend_warning)
+				.style("text-anchor", "first");
+
+		//legend Warning rect
+		svg.append("g")
+			.append("rect")
+				.attr("id", "legend_warning")
+		       	.attr("x", width_x + 185)
+		       	.attr("y", height_x - 30)
+		       	.attr("width", 10)
+		       	.attr("height", 10)
+		  		.style("fill", "#ffd731");
+
+	  	//legend Critical text
+	  	svg.append("g")
+			.append("text")
+				.attr("x", width_x + 205)
+				.attr("y", height_x - 20)
+				.attr("fill", 'black')
+				.style("font-family", "arial")
+				.style("font-weight", "bold")
+				.style("font-size", '8pt')
+				.html(legend_critical)
+				.style("text-anchor", "first");
+
+		//legend critical rect
+		svg.append("g")
+			.append("rect")
+				.attr("id", "legend_critical")
+		       	.attr("x", width_x + 285)
+		       	.attr("y", height_x - 30)
+		       	.attr("width", 10)
+		       	.attr("height", 10)
+		  		.style("fill", "#fc4444");
+
+		//styles for number and axes
+	    svg.selectAll("g .domain")
+	    	.style("stroke-width",  2)
+	    	.style("fill",  "none")
+	    	.style("stroke", "black");
+
+	    svg.selectAll("g .tick text")
+	    	.style("font-size", "9pt")
+			.style("font-weight", "initial");
+
+	    //estatus normal
+	    svg.append("g")
+			.append("rect")
+				.attr("id", "status_rect")
+		       	.attr("x", width_x)
+		       	.attr("y", height_x)
+		       	.attr("width", 300)
+		       	.attr("height", 200)
+		  		.style("fill", "#82B92E");
+	  	
+	  	//controls the inverse warning
+	  	if(inverse_w == 0){
+	  		svg.append("g")
+				.append("rect").transition()
+					.duration(600)
+					.attr("id", "warning_rect")
+			       	.attr("x", width_x)
+			       	.attr("y", (height_x +(range_max - min_w) * position) - ((max_w - min_w) * position))
+			       	.attr("width", 300)
+			       	.attr("height", ((max_w - min_w) * position))
+			  		.style("fill", "#ffd731");
+	  	}
+	  	else {
+	  		svg.append("g")
+	  			.append("rect").transition()
+		  			.duration(600)
+					.attr("id", "warning_rect")
+			       	.attr("x", width_x)
+			       	.attr("y", height_x + 200 - ((min_w -range_min) * position))
+			       	.attr("width", 300)
+			       	.attr("height", (min_w -range_min) * position)
+			  		.style("fill", "#ffd731");
+		  	
+		  	svg.append("g")
+		  		.append("rect").transition()
+			  		.duration(600)
+					.attr("id", "warning_inverse_rect")
+			       	.attr("x", width_x)
+			       	.attr("y", height_x)
+			       	.attr("width", 300)
+			       	.attr("height", ((range_max - min_w) * position) - ((max_w - min_w) * position))
+			  		.style("fill", "#ffd731");
+		  	
+	  	}
+	  	//controls the inverse critical
+	  	if(inverse_c == 0){
+	  		svg.append("g")
+		    	.append("rect").transition()
+			    	.duration(600)
+			    	.attr("id", "critical_rect")
+			       	.attr("x", width_x)
+			       	.attr("y", (height_x + (range_max - min_c) * position) - ((max_c - min_c) * position))
+			       	.attr("width", 300)
+			       	.attr("height", ((max_c - min_c) * position))
+			  		.style("fill", "#fc4444");
+	  	}
+	  	else {
+	  		svg.append("g")
+	  			.append("rect").transition()
+					.duration(600)
+					.attr("id", "critical_rect")
+			       	.attr("x", width_x)
+			       	.attr("y", height_x + 200 - ((min_c -range_min) * position))
+			       	.attr("width", 300)
+			       	.attr("height", (min_c -range_min) * position)
+			  		.style("fill", "#fc4444");
+		  	svg.append("g")
+			  	.append("rect").transition()
+					.duration(600)
+					.attr("id", "critical_inverse_rect")
+			       	.attr("x", width_x)
+			       	.attr("y", height_x)
+			       	.attr("width", 300)
+			       	.attr("height", ((range_max - min_c) * position) - ((max_c - min_c) * position))
+			  		.style("fill", "#fc4444");
+	  	}
+	  	
+	}
+	else {
+		d3.select("#svg_dinamic rect").remove();
+		//create svg
+		var svg = d3.select("#svg_dinamic");
+		svg.selectAll("g").remove();
+		
+		//message error warning
+		if (error_w == 1) {
+			$("#text-max_warning").addClass("input_error");
+			svg.append("g")
+				.append("text")
+					.attr("x", width_x)
+					.attr("y", height_x)
+					.attr("fill", 'black')
+					.style("font-family", "arial")
+					.style("font-weight", "bold")
+					.style("font-size", 14)
+					.style("fill", "red")
+					.html(message_error_warning)
+					.style("text-anchor", "first");
+		}
+		//message error critical
+		if (error_c == 1) {
+			$("#text-max_critical").addClass("input_error");
+			svg.append("g")
+				.append("text")
+					.attr("x", width_x)
+					.attr("y", height_x)
+					.attr("fill", 'black')
+					.style("font-family", "arial")
+					.style("font-weight", "bold")
+					.style("font-size", 14)
+					.style("fill", "red")
+					.html(message_error_critical)
+					.style("text-anchor", "first");	
+		}
+
+	}
 }

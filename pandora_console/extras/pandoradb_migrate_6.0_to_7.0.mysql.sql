@@ -728,6 +728,7 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	`lapse_calc` tinyint(1) UNSIGNED NOT NULL default '0',
 	`lapse` int(11) UNSIGNED NOT NULL default '300',
 	`visual_format` tinyint(1) UNSIGNED NOT NULL default '0',
+	`hide_no_data` tinyint(1) default 0,
 	PRIMARY KEY(`id_rc`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

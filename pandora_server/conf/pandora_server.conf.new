@@ -569,3 +569,15 @@ wuxserver 0
 # Port of the Selenium Grid Server.
 #wux_port 4444
 
+# Enable (1) or disable (0) the Pandora FMS Syslog Server (PANDORA FMS ENTERPRISE ONLY).
+syslogserver 1
+
+# Full path to syslog's output file (PANDORA FMS ENTERPRISE ONLY).
+syslog_file /var/log/messages
+
+# Number of threads for the Syslog Server (PANDORA FMS ENTERPRISE ONLY).
+syslog_threads 2
+
+# Maximum number of lines queued by the Syslog Server's producer on each run (PANDORA FMS ENTERPRISE ONLY).
+syslog_max 65535
+

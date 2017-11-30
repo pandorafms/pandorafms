@@ -229,6 +229,7 @@ our @EXPORT = qw(
 	pandora_self_monitoring
 	pandora_process_policy_queue
 	subst_alert_macros
+	get_agent_from_alias
 	get_agent_from_addr
 	get_agent_from_name
 	load_module_macros
@@ -243,7 +244,7 @@ our @EXPORT = qw(
 
 # Some global variables
 our @DayNames = qw(sunday monday tuesday wednesday thursday friday saturday);
-our @ServerTypes = qw (dataserver networkserver snmpconsole reconserver pluginserver predictionserver wmiserver exportserver inventoryserver webserver eventserver icmpserver snmpserver satelliteserver transactionalserver mfserver syncserver wuxserver);
+our @ServerTypes = qw (dataserver networkserver snmpconsole reconserver pluginserver predictionserver wmiserver exportserver inventoryserver webserver eventserver icmpserver snmpserver satelliteserver transactionalserver mfserver syncserver wuxserver syslogserver);
 our @AlertStatus = ('Execute the alert', 'Do not execute the alert', 'Do not execute the alert, but increment its internal counter', 'Cease the alert', 'Recover the alert', 'Reset internal counter');
 
 # Event storm protection (no alerts or events)
@@ -251,6 +252,17 @@ our $EventStormProtection :shared = 0;
 
 # Current master server
 my $Master :shared = 0;
+
+##########################################################################
+# Return the agent given the agent name.
+##########################################################################
+sub get_agent_from_alias ($$) {
+	my ($dbh, $alias) = @_;
+	
+	return undef if (! defined ($alias) || $alias eq '');
+	
+	return get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE tagente.alias = ?', safe_input($alias));
+}
 
 ##########################################################################
 # Return the agent given the IP address.

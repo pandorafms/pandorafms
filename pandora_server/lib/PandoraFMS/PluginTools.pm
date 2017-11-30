@@ -4,6 +4,12 @@ package PandoraFMS::PluginTools;
 # Pandora FMS Plugin functions library
 #
 #  (c) Fco de Borja Sanchez <fborja.sanchez@artica.es>
+# 
+# Requirements:
+#  Library              Centos package
+#  -------              --------------
+#  LWP::UserAgent       perl-libwww-perl
+#  
 #
 #
 # Version   Date
@@ -47,6 +53,7 @@ our @EXPORT = qw(
 	decrypt
 	empty
 	encrypt
+	extract_key_map
 	get_lib_version
 	get_unit
 	get_unix_time
@@ -71,6 +78,7 @@ our @EXPORT = qw(
 	print_module
 	print_warning
 	print_stderror
+	read_configuration
 	simple_decode_json
 	snmp_data_switcher
 	snmp_get
@@ -238,6 +246,25 @@ sub empty {
 		return 1;
 	}
 	return 0;
+}
+
+################################################################################
+# Assing a value to a string key as subkeys in a hash map
+################################################################################
+sub extract_key_map;
+sub extract_key_map {
+	my ($hash, $string, $value) = @_;
+
+	my ($key, $str) = split /\./, $string, 2;
+	if (empty($str)) {
+		$hash->{$key} = $value;
+
+		return $hash;
+	}
+
+	$hash->{$key} = extract_key_map($hash->{$key}, $str, $value);
+
+	return $hash;
 }
 
 ################################################################################
@@ -901,6 +928,20 @@ sub get_sys_environment {
 }
 
 ################################################################################
+# Parses any configuration, from file (1st arg to program) or direct arguments 
+################################################################################
+sub read_configuration {
+	my ($config, $separator, $custom_eval) = @_;
+
+	if ((!empty(@ARGV)) && (-f $ARGV[0])) {
+	    $config = merge_hashes($config, parse_configuration(shift @ARGV, $separator, $custom_eval));
+	}
+	$config = merge_hashes($config, parse_arguments(\@ARGV));
+
+	return $config;
+}
+
+################################################################################
 # General arguments parser
 ################################################################################
 sub parse_arguments {
@@ -970,7 +1011,7 @@ sub parse_configuration {
 					$f = 1;
 					my $aux;
 					eval {
-						$aux = $item->{target}->($item->{exp},$line);
+						$aux = $item->{target}->($_config, $item->{exp}, $line);
 					};
 
 					if (empty($_config)) {

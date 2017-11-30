@@ -100,7 +100,10 @@ $width = get_parameter('width', null);
 $height = get_parameter('height', null);
 $parent = get_parameter('parent', null);
 $map_linked = get_parameter('map_linked', null);
+$map_linked_weight = get_parameter('map_linked_weight', null);
+$element_group = get_parameter('element_group', null);
 $width_percentile = get_parameter('width_percentile', null);
+$bars_graph_height = get_parameter('bars_graph_height', null);
 $max_percentile = get_parameter('max_percentile', null);
 $height_module_graph = get_parameter('height_module_graph', null);
 $width_module_graph = get_parameter('width_module_graph', null);
@@ -113,6 +116,7 @@ $metaconsole = get_parameter('metaconsole', 0);
 $server_name = get_parameter('server_name', null);
 $server_id = (int)get_parameter('server_id', 0);
 $id_agent = get_parameter('id_agent', null);
+$id_agent_string = get_parameter('id_agent_string', null);
 $id_metaconsole = get_parameter('id_metaconsole', null);
 $id_group = (int)get_parameter('id_group', 0);
 $id_custom_graph = get_parameter('id_custom_graph', null);
@@ -136,6 +140,7 @@ $line_color = get_parameter('line_color', '');
 $get_element_status = get_parameter('get_element_status', 0);
 
 $enable_link = get_parameter('enable_link', 1);
+$show_on_top = get_parameter('show_on_top', 0);
 $type_graph = get_parameter('type_graph', 'area');
 $label_position = get_parameter('label_position', 'down');
 $show_statistics = get_parameter('show_statistics', 0);
@@ -378,7 +383,7 @@ switch ($action) {
 		
 		// Linked to other layout ?? - Only if not module defined
 		if ($layoutData['id_layout_linked'] != 0) {
-			$status = visual_map_get_layout_status ($layoutData['id_layout_linked']);
+			$status = visual_map_get_layout_status ($layoutData['id_layout_linked'], $layoutData['id_layout_linked_weight']);
 		
 		// Single object
 		}
@@ -488,6 +493,7 @@ switch ($action) {
 		$values = array();
 		
 		$values['label_position'] = $label_position;
+		$values['show_on_top'] = $show_on_top;
 		
 		// In Graphs, background color is stored in column image (sorry)
 		if ($type == 'module_graph') {
@@ -527,6 +533,9 @@ switch ($action) {
 				if ($enable_link !== null) {
 					$values['enable_link'] = $enable_link;
 				}
+				if ($show_on_top !== null) {
+					$values['show_on_top'] = $show_on_top;
+				}
 				if ($label !== null) {
 					$values['label'] = $label;
 				}
@@ -552,8 +561,6 @@ switch ($action) {
 						break;
 				}
 				
-				
-				
 				if (defined('METACONSOLE') && $metaconsole) {
 					if ($server_name !== null) {
 						$values['id_metaconsole'] = db_get_value('id',
@@ -567,6 +574,9 @@ switch ($action) {
 					if ($id_agent !== null) {
 						$values['id_agent'] = $id_agent;
 					}
+				}
+				else if ($id_agent == 0) {
+					$values['id_agent'] = 0;
 				}
 				else if (!empty($id_agent)) {
 					$values['id_agent'] = $id_agent;
@@ -583,6 +593,12 @@ switch ($action) {
 				}
 				if ($map_linked !== null) {
 					$values['id_layout_linked'] = $map_linked;
+				}
+				if ($element_group !== null) {
+					$values['element_group'] = $element_group;
+				}
+				if ($map_linked_weight !== null) {
+					$values['id_layout_linked_weight'] = $map_linked_weight;
 				}
 				switch ($type) {
 					// -- line_item ------------------------------------
@@ -611,7 +627,7 @@ switch ($action) {
 						}
 						$values['border_color'] = $resume_color;
 						$values['type'] = DONUT_GRAPH;
-
+						$values['id_agent'] = $id_agent_string;
 						break;
 					case 'box_item':
 						$values['border_width'] = $border_width;
@@ -654,6 +670,9 @@ switch ($action) {
 						if ($width_percentile !== null) {
 							$values['width'] = $width_percentile;
 						}
+						if ($bars_graph_height !== null) {
+							$values['height'] = $bars_graph_height;
+						}
 						if ($bars_graph_type !== null) {
 							$values['type_graph'] = $bars_graph_type;
 						}
@@ -663,6 +682,7 @@ switch ($action) {
 						if ($grid_color !== null) {
 							$values['border_color'] = $grid_color;
 						}
+						$values['id_agent'] = $id_agent_string;
 						break;
 					case 'percentile_item':
 					case 'percentile_bar':
@@ -730,6 +750,14 @@ switch ($action) {
 					// Don't change the label because only change the positions
 					unset($values['label']);
 					unset($values['label_position']);
+					// Don't change this values when move
+					unset($values['id_agent']);
+					unset($values['id_agente_modulo']);
+					unset($values['enable_link']);
+					unset($values['show_on_top']);
+					unset($values['id_layout_linked']);
+					unset($values['element_group']);
+					unset($values['id_layout_linked_weight']);
 					// Don't change background color in graphs when move
 					
 					switch ($type) {
@@ -745,10 +773,14 @@ switch ($action) {
 							unset($values['image']);
 							unset($values['type_graph']);
 							unset($values['border_color']);
+							unset($values['width']);
+							unset($values['id_agent']);
+							unset($values['height']);
 							break;
 						case 'donut_graph':
 							unset($values['border_color']);
 							unset($values['width']);
+							unset($values['id_agent']);
 							break;
 						case 'box_item':
 							unset($values['border_width']);
@@ -893,6 +925,20 @@ switch ($action) {
 					case 'donut_graph':
 						$elementFields['width_percentile'] = $elementFields['width'];
 						$elementFields['resume_color'] = $elementFields['border_color'];
+						$elementFields['id_agent_string'] = $elementFields['id_agent'];
+						if (($elementFields['id_agent_string'] != 0)
+							&& ($elementFields['id_layout_linked'] == 0)) {
+							$modules = agents_get_modules(
+								$elementFields['id_agent'], false,
+								array('disabled' => 0,
+									'id_agente' => $elementFields['id_agent'],
+									'tagente_modulo.id_tipo_modulo IN' => "(17,23,3,10,33)"));
+							
+							$elementFields['modules_html'] = '<option value="0">--</option>';
+							foreach ($modules as $id => $name) {
+								$elementFields['modules_html'] .= '<option value="' . $id . '">' . io_safe_output($name) . '</option>';
+							}
+						}
 						break;
 					
 					case 'module_graph':
@@ -901,8 +947,23 @@ switch ($action) {
 						break;
 					case 'bars_graph':
 						$elementFields['width_percentile'] = $elementFields['width'];
+						$elementFields['bars_graph_height'] = $elementFields['height'];
 						$elementFields['bars_graph_type'] = $elementFields['type_graph'];
 						$elementFields['grid_color'] = $elementFields['border_color'];
+						$elementFields['id_agent_string'] = $elementFields['id_agent'];
+						if (($elementFields['id_agent_string'] != 0)
+							&& ($elementFields['id_layout_linked'] == 0)) {
+							$modules = agents_get_modules(
+								$elementFields['id_agent'], false,
+								array('disabled' => 0,
+									'id_agente' => $elementFields['id_agent'],
+									'tagente_modulo.id_tipo_modulo IN' => "(17,23,3,10,33)"));
+							
+							$elementFields['modules_html'] = '<option value="0">--</option>';
+							foreach ($modules as $id => $name) {
+								$elementFields['modules_html'] .= '<option value="' . $id . '">' . io_safe_output($name) . '</option>';
+							}
+						}
 						break;
 					case 'box_item':
 						$elementFields['width_box'] = $elementFields['width'];
@@ -982,8 +1043,11 @@ switch ($action) {
 		}
 		$values['id_agente_modulo'] = $id_module;
 		$values['id_layout_linked'] = $map_linked;
+		$values['element_group'] = $element_group;
+		$values['id_layout_linked_weight'] = $map_linked_weight;
 		$values['parent_item'] = $parent;
 		$values['enable_link'] = $enable_link;
+		$values['show_on_top'] = $show_on_top;
 		$values['image'] = $background_color;
 		$values['type_graph'] = $type_graph;
 		
@@ -1010,9 +1074,10 @@ switch ($action) {
 				break;
 			case 'donut_graph':
 				$values['type'] = DONUT_GRAPH;
-				$values['width'] = $width;
-				$values['height'] = $height;
+				$values['width'] = $width_percentile;
+				$values['height'] = $width_percentile;
 				$values['border_color'] = $resume_color;
+				$values['id_agent'] = $id_agent_string;
 				break;
 			case 'module_graph':
 				$values['type'] = MODULE_GRAPH;
@@ -1048,15 +1113,12 @@ switch ($action) {
 				break;
 			case 'bars_graph':
 				$values['type'] = BARS_GRAPH;
-				if ($width_percentile == null) {
-					$values['width'] = 0;
-				}
-				else {
-					$values['width'] = $width_percentile;
-				}
+				$values['width'] = $width_percentile;
+				$values['height'] = $bars_graph_height;
 				$values['type_graph'] = $bars_graph_type;
 				$values['image'] = $background_color;
 				$values['border_color'] = $grid_color;
+				$values['id_agent'] = $id_agent_string;
 				break;
 			case 'auto_sla_graph':
 				$values['type'] = AUTO_SLA_GRAPH;

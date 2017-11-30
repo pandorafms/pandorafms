@@ -254,7 +254,7 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 	$id_networkmap = 0, $show_snmp_modules = 0, $cut_names = true,
 	$relative = false, $text_filter = '', $ip_mask = null,
 	$dont_show_subgroups = false, $strict_user = false, $size_canvas = null,
-	$old_mode = false) {
+	$old_mode = false, $map_filter = array()) {
 	
 	global $config;
 	$nooverlap = 1;
@@ -361,7 +361,7 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 	
 	// Open Graph
 	$graph = networkmap_open_graph ($layout, $nooverlap, $pure, $zoom,
-		$ranksep, $font_size, $size_canvas);
+		$ranksep, $font_size, $size_canvas, $map_filter);
 	
 	// Parse agents
 	$nodes = array ();
@@ -1060,8 +1060,8 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cu
 	}
 	
 	// Short name
-	$name = $agent["nombre"];
-	if ($cut_names) {
+	$name = io_safe_output($agent["nombre"]);
+	if ((strlen ($name) > 16) && ($cut_names)) {
 		$name = ui_print_truncate_text($name, 16, false, true, false);
 	}
 	
@@ -1111,7 +1111,7 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cu
 		}
 		
 		$node = "\n" . $agent['id_node'].' [ parent="' . $agent['id_parent'] . '", color="'.$status_color.'", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.40, height=0.40, label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>' . $img_node . '</TD></TR>
-		 <TR><TD>'.$name.'</TD></TR></TABLE>>,
+		 <TR><TD>'.io_safe_input($name).'</TD></TR></TABLE>>,
 		 shape="doublecircle", URL="'.$url.'",
 		 tooltip="' . $url_tooltip . '"];' . "\n";
 	}
@@ -1174,7 +1174,7 @@ function networkmap_create_module_group_node ($module_group, $simple = 0, $font_
 			'", fontsize='.$font_size.', style="filled", ' .
 			'fixedsize=true, width=0.30, height=0.30, ' .
 			'label=<<TABLE data-id_agent="' . $module_group['id_agent'] . '" data-status="' . $module_group['status'] . '" CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>' .
-			$module_group['name'] . '</TD></TR></TABLE>>,
+			io_safe_output($module_group['name']) . '</TD></TR></TABLE>>,
 			shape="square", URL="' . $url . '",
 			tooltip="' . $url_tooltip . '"];';
 	}
@@ -1268,7 +1268,7 @@ function networkmap_create_module_node ($module, $simple = 0, $font_size = 10, $
 			'fixedsize=true, width=0.30, height=0.30, ' .
 			'label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>' .
 			$img_node . '</TD></TR>
-			<TR><TD>' . $module['nombre'] . '</TD></TR></TABLE>>,
+			<TR><TD>' . io_safe_output($module['nombre']) . '</TD></TR></TABLE>>,
 			shape="circle", URL="' . $url . '",
 			tooltip="' . $url_tooltip . '"];';
 	}
@@ -1396,7 +1396,7 @@ function networkmap_close_group () {
 
 // Opens a graph definition
 function networkmap_open_graph ($layout, $nooverlap, $pure, $zoom,
-	$ranksep, $font_size, $size_canvas) {
+	$ranksep, $font_size, $size_canvas, $map_filter = array()) {
 	
 	global $config;
 	
@@ -1412,42 +1412,79 @@ function networkmap_open_graph ($layout, $nooverlap, $pure, $zoom,
 		$size = '';
 	}
 	
-	
-	if ($layout == 'radial') {
-		$overlap = 'true';
-	}
-	
-	if ($layout == 'flat' || $layout == 'radial' || $layout == 'spring1' || $layout == "spring2") {
-		if ($nooverlap != '') {
-			$overlap = 'scalexy';
-		}
-	}
-	
 	if ($zoom > 0) {
 		$size_x *= $zoom;
 		$size_y *= $zoom;
 	}
+
 	$size = $size_x . ',' . $size_y;
 	
 	if (!is_null($size_canvas)) {
 		$size = ($size_canvas['x'] / 100) . "," . ($size_canvas['y'] / 100);
 	}
-	
+
+	// Graphviz custom values
+	if (isset($map_filter['node_sep'])) {
+		$node_sep = $map_filter['node_sep'];
+	}
+	else {
+		$node_sep = 0.25;
+	}
+	if (isset($map_filter['rank_sep'])) {
+		$rank_sep = $map_filter['rank_sep'];
+	}
+	else {
+		if ($layout == "radial") {
+			$rank_sep = 1.0;
+		}
+		else {
+			$rank_sep = 0.5;
+		}
+	}
+	if (isset($map_filter['mindist'])) {
+		$mindist = $map_filter['mindist'];
+	}
+	else {
+		$mindist = 1.0;
+	}
+	if (isset($map_filter['kval'])) {
+		$kval = $map_filter['kval'];
+	}
+	else {
+		$kval = 0.3;
+	}
+
 	// BEWARE: graphwiz DONT use single ('), you need double (")
 	$head = "graph networkmap { dpi=100; bgcolor=\"transparent\"; labeljust=l; margin=0; pad=\"0.75,0.75\";";
 	if ($nooverlap != '') {
-		$head .= "overlap=\"$overlap\";";
-		$head .= "ranksep=\"$ranksep\";";
+		$head .= "overlap=\"false\";";
 		$head .= "outputorder=edgesfirst;";
+	}
+
+	if ($layout == 'flat' || $layout == 'spring1' || $layout == "spring2") {
+		if ($nooverlap != '') {
+			$head .= "overlap=\"scalexy\";";
+		}
+		if ($layout == 'flat') {
+			$head .= "ranksep=\"$rank_sep\";";
+		}
+		if ($layout == 'spring2') {
+			$head .= "K=\"$kval\";";
+		}
+	}
+	if ($layout == 'radial') {
+		$head .= "ranksep=\"$rank_sep\";";
+	}
+	if ($layout == 'circular') {
+		$head .= "mindist=\"$mindist\";";
 	}
 	
 	$head .= "ratio=fill;";
 	$head .= "root=0;";
-	$head .= "nodesep=\"0.02\";";
+	$head .= "nodesep=\"$node_sep\";";
 	$head .= "size=\"$size\";";
 	
 	$head .= "\n";
-
 	return $head;
 }
 

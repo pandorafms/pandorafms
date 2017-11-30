@@ -85,6 +85,7 @@ CREATE TABLE IF NOT EXISTS `tagente` (
 	`alias` varchar(600) BINARY NOT NULL default '',
 	`transactional_agent` tinyint(1) NOT NULL default '0',
 	`alias_as_name` tinyint(2) NOT NULL default '0',
+	`safe_mode_module` int(10) unsigned NOT NULL default '0',
 	PRIMARY KEY  (`id_agente`),
 	KEY `nombre` (`nombre`(255)),
 	KEY `direccion` (`direccion`),
@@ -1204,6 +1205,7 @@ CREATE TABLE IF NOT EXISTS `tgraph_source` (
 	`id_agent_module` int(11) NOT NULL default 0,
 	`weight` float(8,3) NOT NULL DEFAULT 0,
 	`label` varchar(150) DEFAULT '',
+	`order` int(10) DEFAULT 0,
 	PRIMARY KEY(`id_gs`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -1362,6 +1364,9 @@ CREATE TABLE IF NOT EXISTS `tlayout_data` (
 	`border_color` varchar(200) DEFAULT "",
 	`fill_color` varchar(200) DEFAULT "",
 	`show_statistics` tinyint(2) NOT NULL default '0',
+	`id_layout_linked_weight` int(10) NOT NULL default '0',
+	`element_group` int(10) NOT NULL default '0',
+	`show_on_top` tinyint(1) NOT NULL default '0',
 	PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -1713,6 +1718,7 @@ CREATE TABLE IF NOT EXISTS `tsnmp_filter` (
 	`id_snmp_filter` int(10) unsigned NOT NULL auto_increment,
 	`description` varchar(255) default '',
 	`filter` varchar(255) default '',
+	`unified_filters_id` int(10) not null default 0,
 	PRIMARY KEY  (`id_snmp_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -2212,6 +2218,7 @@ CREATE TABLE IF NOT EXISTS `tdashboard` (
 	`id_group` int(10) NOT NULL default 0,
 	`active` tinyint(1) NOT NULL default 0,
 	`cells` int(10) unsigned default 0,
+	`cells_slideshow` TINYINT(1) NOT NULL default 0,
 	PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -2966,6 +2973,7 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_agent` (
 	`transactional_agent` tinyint(1) NOT NULL default '0',
 	`alias` varchar(600) BINARY NOT NULL default '',
 	`alias_as_name` tinyint(2) NOT NULL default '0',
+	`safe_mode_module` int(10) unsigned NOT NULL default '0',
 	PRIMARY KEY  (`id_agente`),
 	KEY `nombre` (`nombre`(255)),
 	KEY `direccion` (`direccion`),

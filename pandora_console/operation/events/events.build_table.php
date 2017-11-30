@@ -36,7 +36,7 @@ if ($group_rep == 2) {
 	$table->head[1] = __('Agent');
 	$table->head[5] = __('More detail');
 	
-	$params = "search=" . rawurlencode(io_safe_input($search)) . 
+	$params = "search=" . io_safe_input($search) . 
 		"&amp;severity=" . $severity . 
 		"&amp;status=" . $status . 
 		"&amp;id_group=" . $id_group . 

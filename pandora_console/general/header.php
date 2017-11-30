@@ -388,6 +388,12 @@ config_check();
 					$do_refresh = false;
 				}
 			}
+			
+			$new_dashboard = get_parameter('new_dashboard',0);
+			
+			if ($_GET['sec2'] == 'enterprise/dashboard/main_dashboard' && $new_dashboard) {
+				$do_refresh = false;
+			}
 
 			if ($do_refresh) {
 		?>

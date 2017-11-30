@@ -1985,47 +1985,40 @@ function print_donut_graph (recipient, width, height, module_data, resume_color)
 	var radius = 120;
 	var increment_y = 60;
 	var increment_y_padding = 25;
-	var text_size = 15;
 	var decrement_x_padding = 150;
 	if (width >= 500) {
-		radius = 160;
+		radius = 180;
 		increment_y = 60;
-		text_size = 25;
-		increment_y_padding = 25;
-		decrement_x_padding = 75;
+		increment_y_padding = 20;
+		decrement_x_padding = 40;
 	}
 	else if (width >= 400) {
-		radius = 120;
-		increment_y = 60;
-		text_size = 22;
-		increment_y_padding = 25;
-		decrement_x_padding = 75;
+		radius = 140;
+		increment_y = 40;
+		increment_y_padding = 20;
+		decrement_x_padding = 40;
 	}
 	else if (width >= 300) {
-		radius = 80;
+		radius = 100;
 		increment_y = 40;
-		text_size = 14;
-		increment_y_padding = 20;
-		decrement_x_padding = 60;
+		increment_y_padding = 15;
+		decrement_x_padding = 40;
 	}
 	else if (width >= 200) {
 		radius = 50;
 		increment_y = 40;
-		text_size = 14;
 		increment_y_padding = 15;
-		decrement_x_padding = 45;
+		decrement_x_padding = 25;
 	}
 	else if (width >= 100) {
 		radius = 20;
 		increment_y = 20;
-		text_size = 10;
 		increment_y_padding = 8;
 		decrement_x_padding = 25;
 	}
 	else {
 		radius = 10;
 		increment_y = 10;
-		text_size = 4;
 		increment_y_padding = 3;
 		decrement_x_padding = 5;
 	}
@@ -2041,15 +2034,24 @@ function print_donut_graph (recipient, width, height, module_data, resume_color)
 		.value(function(d) {
 			return parseFloat(d.percent);
 		});
-console.log(resume_color);
+
 	jQuery.each(module_data, function (key, m_d) {
+		svg.append("g")
+			.append("rect")
+				.attr("transform", "translate(" + (((width / 2) - (radius + decrement_x_padding))) + "," + (((height / 2) - radius) - increment_y) + ")")
+				.attr('fill', m_d.color)
+				.attr('x', -20)
+				.attr('y', -10)
+				.attr('width', 20)
+				.attr('height', 10);
+
 		svg.append("g")
 			.append("text")
 				.attr('fill', resume_color)
-				.attr("transform", "translate(" + (((width / 2) - (radius + decrement_x_padding))) + "," + (((height / 2) - radius) - increment_y) + ")")
+				.attr("transform", "translate(" + (((width / 2) - (radius + decrement_x_padding)) + 10) + "," + (((height / 2) - radius) - increment_y) + ")")
 				.text(m_d.tag_name)
-				.style("font-family", "Verdana")
-				.style("font-size", text_size + "px");
+				.style("font-family", "smallfontFont")
+				.style("font-size", "7pt");
 		
 		increment_y -= increment_y_padding;
 	});

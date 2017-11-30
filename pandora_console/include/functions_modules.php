@@ -987,6 +987,28 @@ function modules_is_string($id_agentmodule) {
 	return modules_is_string_type($id_type);
 }
 
+
+/**
+ * Know if a module type is a boolean or not
+ *
+ * @param int $id_type Type id
+ *
+ * @return bool true if boolean. false if not
+ */
+function modules_is_boolean_type ($id_type) {
+	$type_name = modules_get_type_name($id_type);
+	
+	return (bool)preg_match('/_proc$/', $type_name);
+}
+
+function modules_is_boolean($id_agentmodule) {
+	$id_type = db_get_value('id_tipo_modulo',
+		'tagente_modulo', 'id_agente_modulo',
+		(int) $id_agentmodule);
+	
+	return modules_is_boolean_type($id_type);
+}
+
 /**
  * Get the icon of a module type
  *
@@ -1716,11 +1738,19 @@ function modules_get_next_data ($id_agent_module, $utimestamp = 0, $string = 0) 
  * @param int Agent module id
  * @param int Period of time to check (in seconds)
  * @param int Top date to check the values. Default current time.
+ * @param 
+ * @param 
+ * @param string 'ASC' od 'DESC'
+ * @param string with a json with parameters to filter data
+ * 	string object:
+ *		value: Text to search
+ *		exact: Boolean. True if search exact phrase or false to content
  *
  * @return array The module value and the timestamp
  */
 function modules_get_agentmodule_data ($id_agent_module, $period,
-	$date = 0, $trash=false, $conexion = false, $order = 'ASC') {
+	$date = 0, $trash=false, $conexion = false, $order = 'ASC',
+	$freesearch = '') {
 	global $config;
 	
 	$module = db_get_row('tagente_modulo', 'id_agente_modulo',
@@ -1742,12 +1772,28 @@ function modules_get_agentmodule_data ($id_agent_module, $period,
 		case 17:
 		//async_string
 		case 23:
-			$sql = sprintf ("SELECT datos AS data, utimestamp
-				FROM tagente_datos_string
-				WHERE id_agente_modulo = %d
-					AND utimestamp > %d AND utimestamp <= %d
-				ORDER BY utimestamp %s",
-				$id_agent_module, $datelimit, $date, $order);
+			// Free search is a json with value and exact modifier
+			$freesearch = json_decode($freesearch, true);
+			$freesearch_sql = '';
+			if (isset($freesearch['value']) && !empty($freesearch['value'])) {
+				$freesearch_sql = " AND datos ";
+				if ($freesearch['exact']){
+					$freesearch_sql .= "='" . $freesearch['value'] . "' ";
+				} else {
+					$freesearch_sql .= " LIKE '%" . $freesearch['value'] . "%' ";
+				}
+			}
+			$sql = sprintf (
+				"SELECT datos AS data, utimestamp FROM tagente_datos_string
+					WHERE id_agente_modulo = %d
+					%s
+					AND utimestamp > %d	AND utimestamp <= %d
+					ORDER BY utimestamp %s",
+				$id_agent_module,
+				$freesearch_sql,
+				$datelimit,	$date,
+				$order
+			);
 			break;
 		//log4x
 		case 24:
@@ -2261,53 +2307,50 @@ function modules_change_relation_lock ($id_relation) {
 	return ($result !== false ? $new_value : $old_value);
 }
 
-/*
- * @return utimestamp with the first contact of the module or first contact before datelimit, false if not-init
- */
-function modules_get_first_date($id_agent_module, $datelimit = 0) {
+
+
+function modules_get_count_datas($id_agent_module, $date_init, $date_end) {
+	$interval = modules_get_interval ($id_agent_module);
+	
+	// TODO REMOVE THE TIME IN PLANNED DOWNTIME
+	
+	if (!is_numeric($date_init)) {
+		$date_init = strtotime($date_init);
+	}
+	
+	if (!is_numeric($date_end)) {
+		$date_end = strtotime($date_end);
+	}
+	
+	
+	
+	$first_date = modules_get_first_contact_date($id_agent_module);
+	
+	
+	
+	if ($date_init < $first_date) {
+		$date_init = $first_date;
+	}
+	
+	$diff = $date_end - $date_init;
+	
+	
+	return ($diff / $interval);
+}
+
+
+function modules_get_first_contact_date($id_agent_module) {
 	global $config;
 	
-	//check datatype string or normal
-	$table = "tagente_datos";
-	$module_type_str = modules_get_type_name ($id_agent_module);
-	if (strstr ($module_type_str, 'string') !== false) {
-		$table = "tagente_datos_string";
-	}
-
-	$search_historydb = false;
-
-	// tagente_estado.first_utimestamp is not valid or is not updated. Scan DBs for first utimestamp
-	if ($datelimit > 0) {
-		// get last data before datelimit
-		$query  = " SELECT max(utimestamp) as utimestamp FROM $table ";
-		$query .= " WHERE id_agente_modulo=$id_agent_module ";
-		$query .= " AND utimestamp < $datelimit ";
+	// TODO REMOVE THE TIME IN PLANNED DOWNTIME
 	
-	}
-	else {
-		// get first utimestamp
-		$query  = " SELECT min(utimestamp) as utimestamp FROM $table ";
-		$query .= " WHERE id_agente_modulo=$id_agent_module ";
-	}
+	// TODO FOR OTHER KIND OF DATA
 	
-
-	// SEARCH ACTIVE DB
-	$data = db_get_all_rows_sql($query,$search_historydb);
-	if (($data === false) || ($data[0]["utimestamp"] === NULL) || ($data[0]["utimestamp"] <= 0)) {
-		// first utimestamp not found in active database
-		// SEARCH HISTORY DB
-		$search_historydb = true;
-		$data = db_get_all_rows_sql($query,$search_historydb);
-	}
-
-	if (($data === false) || ($data[0]["utimestamp"] === NULL) || ($data[0]["utimestamp"] <= 0)) {
-		// Nor active DB nor history DB have the data, the module is not-init
-		return array ("first_utimestamp" => false, "search_historydb" => $search_historydb);
-	}
-
-	// The data has been found
-	return array ("first_utimestamp" => $data[0]["utimestamp"], "search_historydb" => $search_historydb);
-
+	$first_date = db_get_value('utimestamp', 'tagente_datos',
+		'id_agente_modulo', $id_agent_module,
+		$config['history_db_enabled']);
+	
+	return $first_date;
 }
 
 /**

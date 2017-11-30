@@ -550,6 +550,8 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	$datelimit = $date - $period;
 	$search_in_history_db = db_search_in_history_db($datelimit);
 	
+	
+	
 	if($force_interval){
 			$resolution = $period/$time_interval;
 	}
@@ -580,29 +582,18 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	// Get event data (contains alert data too)
 	$events = array();
 	if ($show_unknown == 1 || $show_events == 1 || $show_alerts == 1) {
-		$events = db_get_all_rows_filter (
-			'tevento',
+		$events = db_get_all_rows_filter ('tevento',
 			array ('id_agentmodule' => $agent_module_id,
 				"utimestamp > $datelimit",
 				"utimestamp < $date",
 				'order' => 'utimestamp ASC'),
-			array ('id_evento', 'evento', 'utimestamp', 'event_type'), 
-			'AND', 
-			$search_in_history_db
-		);
+			array ('id_evento', 'evento', 'utimestamp', 'event_type'));
 		
 		// Get the last event after inverval to know if graph start on unknown
-		$prev_event = db_get_row_filter (
-			'tevento',
+		$prev_event = db_get_row_filter ('tevento',
 			array ('id_agentmodule' => $agent_module_id,
 				"utimestamp <= $datelimit",
-				'order' => 'utimestamp DESC'
-			),
-			false,
-			'AND',
-			$search_in_history_db	
-		);
-
+				'order' => 'utimestamp DESC'));
 		if (isset($prev_event['event_type']) && $prev_event['event_type'] == 'going_unknown') {
 			$start_unknown = true;
 		}
@@ -1123,7 +1114,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	$name_list = array(), $unit_list = array(), $show_last = true, $show_max = true,
 	$show_min = true, $show_avg = true, $labels = array(), $dashboard = false,
 	$vconsole = false, $percentil = null, $from_interface = false, 
-	$id_widget_dashboard=false, $fullscale = false, $summatory = 0, $average = 0) {
+	$id_widget_dashboard=false, $fullscale = false) {
 	
 	global $config;
 	global $graphic_type;
@@ -1131,6 +1122,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	if(!$fullscale){
 		$time_format_2 = '';
 		$temp_range = $period;
+		$unit_list_aux = array();
 	
 		if ($projection != false) {
 			if ($period < $prediction_period)
@@ -1213,8 +1205,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				$weight_list[$i] = 1;
 			}
 		}
-
-		$aux_array = array();
+		
 		// Set data containers
 		for ($i = 0; $i < $resolution; $i++) {
 			$timestamp = $datelimit + ($interval * $i);/*
@@ -1266,12 +1257,12 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			
 			// If its a projection graph,
 			// first module will be data and second will be the projection
-			
 			if ($projection != false && $i != 0) {
 				if ($automatic_custom_graph_meta)
 					$agent_module_id = $module_list[0]['module'];
 				else
 					$agent_module_id = $module_list[0];
+				
 				$id_module_type = modules_get_agentmodule_type ($agent_module_id);
 				$module_type = modules_get_moduletype_name ($id_module_type);
 				$uncompressed_module = is_module_uncompressed ($module_type);
@@ -1281,6 +1272,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 					$agent_module_id = $module_list[$i]['module'];
 				else
 					$agent_module_id = $module_list[$i];
+				
 				
 				$id_module_type = modules_get_agentmodule_type ($agent_module_id);
 				$module_type = modules_get_moduletype_name ($id_module_type);
@@ -1379,6 +1371,10 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				
 				$agent_id = agents_get_agent_id ($agent_name);
 				
+				if(empty($unit_list)){
+					$unit_aux = modules_get_unit($agent_module_id);
+					array_push($unit_list_aux,$unit_aux);
+				}
 				//Get and process module name
 				$module_name = io_safe_output(
 					modules_get_agentmodule_name ($agent_module_id));
@@ -1562,6 +1558,8 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			
 			if (!empty($unit_list) && $units_number == $module_number && isset($unit_list[$i])) {
 				$unit = $unit_list[$i];
+			}else{
+				$unit = $unit_list_aux[$i];
 			}
 			
 			if ($projection == false or ($projection != false and $i == 0)) {
@@ -2116,37 +2114,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			$threshold_data['red_inverse'] = (bool)$red_inverse;
 		}
 	}
-	
-	//summatory and average series
-	if($stacked == CUSTOM_GRAPH_AREA  || $stacked == CUSTOM_GRAPH_LINE) {
-		if($summatory && $average){
-			foreach ($graph_values as $key => $value) {
-				$cont = count($value);
-				$summ = array_sum($value);
-				array_push($value,$summ);
-				array_push($value,$summ/$cont);
-				$graph_values[$key] = $value;
-			}
-			array_push($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
-			array_push($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
-			
-		} elseif($summatory) {
-			foreach ($graph_values as $key => $value) {
-				array_push($value,array_sum($value));
-				$graph_values[$key] = $value;
-			}
-			array_push($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
-			
-		} elseif($average) {
-			foreach ($graph_values as $key => $value) {
-				$summ = array_sum($value) / count($value);
-				array_push($value,$summ);
-				$graph_values[$key] = $value;
-			}
-			array_push($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
-		}
-	}
-	
+
 	switch ($stacked) {
 		case CUSTOM_GRAPH_AREA:
 			return area_graph($flash_charts, $graph_values, $width,
@@ -3986,33 +3954,22 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	if ($uncompressed_module) {
 		$avg_only = 1;
 	}
+	$search_in_history_db = db_search_in_history_db($datelimit);
 	
 	// Get event data (contains alert data too)
 	if ($show_unknown == 1 || $show_events == 1 || $show_alerts == 1) {
-		$events = db_get_all_rows_filter(
-			'tevento',
+		$events = db_get_all_rows_filter('tevento',
 			array ('id_agentmodule' => $agent_module_id,
 				"utimestamp > $datelimit",
 				"utimestamp < $date",
-				'order' => 'utimestamp ASC'
-			),
-			array ('evento', 'utimestamp', 'event_type', 'id_evento'), 
-			'AND', 
-			$search_in_history_db
-		);
+				'order' => 'utimestamp ASC'),
+			array ('evento', 'utimestamp', 'event_type', 'id_evento'));
 		
 		// Get the last event after inverval to know if graph start on unknown
-		$prev_event = db_get_row_filter (
-			'tevento',
+		$prev_event = db_get_row_filter ('tevento',
 			array ('id_agentmodule' => $agent_module_id,
 				"utimestamp <= $datelimit",
-				'order' => 'utimestamp DESC'
-			),
-			false,
-			'AND',
-			$search_in_history_db
-		);
-
+				'order' => 'utimestamp DESC'));
 		if (isset($prev_event['event_type']) && $prev_event['event_type'] == 'going_unknown') {
 			$start_unknown = true;
 		}
@@ -4117,7 +4074,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 			$zero = 0;
 			$total = 0;
 			$count = 0;
-			
+			$is_unknown = false;
 			// Read data that falls in the current interval
 			while (isset ($data[$j]) &&
 				$data[$j]['utimestamp'] >= $timestamp &&
@@ -4150,7 +4107,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 			
 			// Is the first point of a unknown interval
 			$first_unknown = false;
-			$check_unknown = false;
+			
 			$event_ids = array();
 			$alert_ids = array();
 			while (isset ($events[$k]) &&
@@ -4169,15 +4126,10 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 						if ($is_unknown == false) {
 							$first_unknown = true;
 						}
-						else{
-							$first_unknown = false;	
-						}
-						$check_unknown = true;
 						$is_unknown = true;
 					}
 					else if (substr ($events[$k]['event_type'], 0, 5) == 'going') {
 						$is_unknown = false;
-						$first_unknown = false;
 					}
 				}
 				$k++;
@@ -4260,12 +4212,6 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 					$chart[$timestamp]['unknown'.$series_suffix] = 0;
 				}
 				$chart[$timestamp]['unknown'.$series_suffix] = $unknown_value;
-				
-				if($unknown_value == 0 && $check_unknown == true){
-					$chart[$timestamp]['unknown'.$series_suffix] = 1;
-					$check_unknown = false;
-				}
-				
 				$series_type['unknown'.$series_suffix] = 'area';
 			}
 			
@@ -4396,138 +4342,165 @@ function fullscale_data ( &$chart_data, &$chart_extra_data, &$long_index,
 	global $min_value;
 	global $series_type;
 	global $chart_extra_data;
+	
+	$ranges_unknown = db_get_module_ranges_unknown($agent_module_id, $datelimit, $date);
 
-	$first_data = 0;
+	$table = "tagente_datos";
+	$module_type_str = modules_get_type_name ($agent_module_id);
+	if (strstr ($module_type_str, 'string') !== false) {
+		$table = "tagente_datos_string";
+	}
 
+	$query  = " SELECT utimestamp, datos FROM $table ";
+	$query .= " WHERE id_agente_modulo=$agent_module_id ";
+	$query .= " ORDER BY utimestamp ASC LIMIT 1";
+
+	$ret = db_get_all_rows_sql( $query , true);
+	
+	$first_data = $ret[0]['utimestamp'];
 	$data_uncompress = db_uncompress_module_data($agent_module_id, $datelimit, $date);
-
-	$chart_data = array();
-	
-	$min_value = PHP_INT_MAX-1;
-	$max_value = PHP_INT_MIN+1;
-	$previous_data = $first_data;
-	$previous_unknown = 0;
-	
-	$i=0;
-	$current_event = $events[0];
-	$prueba = array();
-	foreach ($data_uncompress as $k) {
-		foreach ($k["data"] as $v) {
-			$real_date = date("Y M d H:i:s", $v['utimestamp']);
-
-			if(!$flash_chart){
-				$real_date = date("Y/M/d", $v['utimestamp']);
-				$real_date .= "\n";
-				$real_date .= date("   H:i:s", $v['utimestamp']);
-			}
-
-			$event_ids = array();
-			$alert_ids = array();
-			while (isset($current_event) && ($v['utimestamp'] >= $current_event["utimestamp"]) ) {
-				$event_date = date("Y M d H:i:s", $current_event['utimestamp']);
+	$i         = 0;
+	$max_value = 0;
+	$min_value = 0;
+	$timestamp_second = 0;
+	if(is_array($data_uncompress)){
+		foreach ($data_uncompress as $v) {
+			foreach ($v['data'] as $key => $value) {
+				$real_date = date("Y M d H:i:s", $value['utimestamp']);
 				if(!$flash_chart){
-					$event_date = date("Y/M/d", $current_event['utimestamp']);
-					$event_date .= "\n";
-					$event_date .= date("   H:i:s", $current_event['utimestamp']);
+					$real_date = date("Y/M/d", $value['utimestamp']);
+					$real_date .= "\n";
+					$real_date .= date("   H:i:s", $value['utimestamp']);
 				}
-	
-				if ($show_events && (strpos($current_event["event_type"], "going") !== false)) {
-					$event_ids[$event_date][] = $current_event["id_evento"];
-	
-					$chart_data[$event_date]["event" . $series_suffix] = 1;
-					$chart_data[$event_date]["alert" . $series_suffix] = NULL;
-					$chart_extra_data[count($chart_data)-1]['events'] = implode (',', $event_ids[$event_date]);
+				// Read events and alerts that fall in the current interval
+				$event_value   = 0;
+				$alert_value   = 0;
+				$unknown_value = 0;
+				$event_i       = 0;
+				// Is the first point of a unknown interval
+				$first_unknown = false;
+				
+				$event_ids = array();
+				$alert_ids = array();
+				
+				//
+				if($timestamp_second == 0){
+					$timestamp_second = $value['utimestamp']; 
 				}
-				elseif ($show_alerts && (strpos($current_event["event_type"], "alert") !== false)) {
-					$alert_ids[$event_date][] = $current_event["id_evento"];
-	
-					$chart_data[$event_date]["event" . $series_suffix] = NULL;
-					$chart_data[$event_date]["alert" . $series_suffix] = 1;
-					$chart_extra_data[count($chart_data)-1]['alerts'] = implode (',', $alert_ids[$event_date]);
+				$timestamp_first  = $timestamp_second;
+				$timestamp_second = $value['utimestamp'];
+				
+				foreach ($events as $key => $val) {
+					if( $val['utimestamp'] > $timestamp_first && 
+						$val['utimestamp'] <= $timestamp_second ){
+						if ($show_events == 1) {
+							$event_ids[] = $val['id_evento'];
+							$event_value++;
+						}
+						if ($show_alerts == 1 && substr ($val['event_type'], 0, 5) == 'alert') {
+							$alert_ids[] = $val['id_evento'];
+							$alert_value++;
+						}
+						if ($show_unknown) {
+							if ($val['event_type'] == 'going_unknown') {
+								if ($is_unknown == false) {
+									$first_unknown = true;
+								}
+								$is_unknown = true;
+							}
+							else if (substr ($val['event_type'], 0, 5) == 'going') {
+								$is_unknown = false;
+							}
+						}
+					}
+				}
+
+				if(empty($value['datos'])){
+					if($value['utimestamp'] < $first_data){
+						//$chart_data[$real_date]['unknown'.$series_suffix] = 0;
+						$is_unknown = false;
+					}
+					else{
+						//$chart_data[$real_date]['unknown'.$series_suffix] = 1;
+						$first_unknown = true;
+					}
+				}
+
+				$timestamp_short = date("Y M d H:i:s", $value['utimestamp']);
+
+				if(!$flash_chart){
+					$timestamp_short = date("Y/M/d", $value['utimestamp']);
+					$timestamp_short .= "\n";
+					$timestamp_short .= date("   H:i:s", $value['utimestamp']);
+				}
+
+
+				$long_index[$timestamp_short] = date(
+					html_entity_decode($config['date_format'], ENT_QUOTES, "UTF-8"), $value['utimestamp']);
+				// In some cases, can be marked as known because a recovery event
+				// was found in same interval. For this cases first_unknown is 
+				// checked too
+				if ($is_unknown || $first_unknown) {
+					$unknown_value++;
+				}
+
+				// Data
+				if ($show_events) {
+					if (!isset($chart_data[$real_date]['event'.$series_suffix])) {
+						$chart_data[$real_date]['event'.$series_suffix] = 0;
+					}
+					
+					$chart_data[$real_date]['event'.$series_suffix] += $event_value;
+					
+					$series_type['event'.$series_suffix] = 'points';
+				}
+
+				if ($show_alerts) {
+					if (!isset($chart_data[$real_date]['alert'.$series_suffix])) {
+						$chart_data[$real_date]['alert'.$series_suffix] = 0;
+					}
+					
+					$chart_data[$real_date]['alert'.$series_suffix] += $alert_value;
+					
+					$series_type['alert'.$series_suffix] = 'points';
+				}
+
+				$chart_data[$real_date]['sum'.$series_suffix] = $value['datos'];
+				
+				if($value['datos'] > $max_value){
+					$max_value = $value['datos'];
+				}
+
+				if($value['datos'] < $min_value){
+					$min_value = $value['datos'];
 				}
 				
-				$chart_data[$event_date]["sum" . $series_suffix] = $previous_data;
-				if($show_unknown) {
-					$chart_data[$event_date]["unknown" . $series_suffix] = $previous_unknown;
+				if ($show_unknown) {
+					if (!isset($chart_data[$real_date]['unknown'.$series_suffix])) {
+						$chart_data[$real_date]['unknown'.$series_suffix] = 0;
+					}	
+					$chart_data[$real_date]['unknown'.$series_suffix] = $unknown_value;
+					$series_type['unknown'.$series_suffix] = 'area';	
 				}
-				$current_event = $events[$i++];
-			}			
-
-			if ($v["datos"] === NULL) {
-				// Unknown
-				if (!isset($chart_data[$real_date]["event" . $series_suffix])) {
-					if($show_events) {
-						$chart_data[$real_date]["event" . $series_suffix] = NULL;
-					}
-					if($show_alerts) {
-						$chart_data[$real_date]["alert" . $series_suffix] = NULL;
-					}
+				
+				if (!empty($event_ids)) {
+					$chart_extra_data[count($chart_data)-1]['events'] = implode(',',$event_ids);
 				}
-	
-				$chart_data[$real_date]["sum" . $series_suffix] = $previous_data;
-				if($show_unknown) {
-					$chart_data[$real_date]["unknown" . $series_suffix] = "1";
+				if (!empty($alert_ids)) {
+					$chart_extra_data[count($chart_data)-1]['alerts'] = implode(',',$alert_ids);
 				}
-				$previous_unknown = "1";
 			}
-			elseif($v["datos"] === false) {
-				// Not Init
-				$previous_data = $v["datos"];
-				if (!isset($chart_data[$real_date]["event" . $series_suffix])) {
-					if ($show_events) {
-						$chart_data[$real_date]["event" . $series_suffix] = NULL;
-					}
-					if ($show_alerts) {
-						$chart_data[$real_date]["alert" . $series_suffix] = NULL;
-					}
-				}
-				
-				$chart_data[$real_date]["sum" . $series_suffix] = $v["datos"];
-
-				if($v['datos'] >= $max_value){
-					$max_value = $v['datos'];
-				}
-
-				if($v['datos'] <= $min_value){
-					$min_value = $v['datos'];
-				}
-
-				if($show_unknown) {
-					$chart_data[$real_date]["unknown" . $series_suffix] = NULL;
-					$previous_unknown = NULL;
-				}
-			}
-			else {
-				$previous_data = $v["datos"];
-				if (!isset($chart_data[$real_date]["event" . $series_suffix])) {
-					if ($show_events) {
-						$chart_data[$real_date]["event" . $series_suffix] = NULL;
-					}
-					if ($show_alerts) {
-						$chart_data[$real_date]["alert" . $series_suffix] = NULL;
-					}
-				}
-				
-				$chart_data[$real_date]["sum" . $series_suffix] = $v["datos"];
-
-				if($v['datos'] >= $max_value){
-					$max_value = $v['datos'];
-				}
-
-				if($v['datos'] <= $min_value){
-					$min_value = $v['datos'];
-				}
-
-				if($show_unknown) {
-					$chart_data[$real_date]["unknown" . $series_suffix] = NULL;
-					$previous_unknown = NULL;
-				}
-			}	
+		}
+	
+		if (!is_null($percentil) && $percentil) {
+			$avg = array_map(function($item) { return $item['sum']; }, $chart_data);
+			$percentil_result = get_percentile($percentil, $avg);
+			//Fill the data of chart
+			array_walk($chart_data, function(&$item) use ($percentil_result, $series_suffix) {
+				$item['percentil' . $series_suffix] = $percentil_result; });
+			$series_type['percentil' . $series_suffix] = 'line';
 		}
 	}
-	$series_type['event'.$series_suffix] = 'points';
-	$series_type['alert'.$series_suffix] = 'points';
-	$series_type['unknown'.$series_suffix] = 'area';
 }
 
 function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
@@ -5836,17 +5809,40 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 
 	$filter_module_group = (!empty($filter) && !empty($filter['module_group'])) ? $filter['module_group'] : false;
 
-	$groups = users_get_groups(false, "AR", false, true, (!empty($filter) && isset($filter['group']) ? $filter['group'] : null));
+	if ($filter['group'] != 0) {
+		$groups = db_get_all_rows_sql ("SELECT * FROM tgrupo where id_grupo = " . $filter['group'] . " || parent = " . $filter['group']);
 
+		$groups_ax = array();
+		foreach ($groups as $g) {
+			$groups_ax[$g['id_grupo']] = $g;
+		}
+		
+		$groups = $groups_ax;
+	}
+	else {
+		$groups = users_get_groups(false, "AR", false, true, (!empty($filter) && isset($filter['group']) ? $filter['group'] : null));
+	}
+	
 	$data_groups = array();
 	if (!empty($groups)) {
 		$groups_aux = $groups;
-		$data_groups = groups_get_tree($groups);
+
+		//$data_groups = groups_get_tree($groups);
+		
+		$childrens = array();
+		$data_groups = groups_get_tree_good($groups, false, $childrens);
+		foreach ($childrens as $id_c) {
+			unset($data_groups[$id_c]);
+		}
+		$data_groups_keys = array();
+		groups_get_tree_keys($data_groups, $data_groups_keys);
+
 		$groups_aux = null;
 	}
 
 	if (!empty($data_groups)) {
-		$filter = array('id_grupo' => array_keys($data_groups));
+		$filter = array('id_grupo' => array_keys($data_groups_keys));
+
 		$fields = array('id_agente', 'id_parent', 'id_grupo', 'alias');
 		$agents = agents_get_agents($filter, $fields);
 
@@ -6063,7 +6059,6 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 	}
 
 	function iterate_group_array ($groups, &$data_agents) {
-		
 		$data = array();
 
 		foreach ($groups as $id => $group) {
@@ -6100,8 +6095,8 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 			$tooltip_content = html_print_image("images/groups_small/" . $group['icon'] . ".png", true) . "&nbsp;" . __('Group') . ": <b>" . $group_aux['name'] . "</b>";
 			$group_aux['tooltip_content'] = $tooltip_content;
 
-			if (!isset($group['children']))
-				$group_aux['children'] = array();
+			$group_aux['children'] = array();
+			
 			if (!empty($group['children']))
 				$group_aux['children'] = iterate_group_array($group['children'], $data_agents);
 
@@ -6109,7 +6104,7 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 
 			if (!empty($agents))
 				$group_aux['children'] = array_merge($group_aux['children'], $agents);
-			
+
 			$data[] = $group_aux;
 		}
 
@@ -6124,6 +6119,7 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 				unset($agents[$id]);
 			}
 		}
+		
 		if (!empty($valid_agents))
 			return $valid_agents;
 		else
@@ -6131,7 +6127,7 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 	}
 
 	$graph_data = array('name' => __('Main node'), 'children' => iterate_group_array($data_groups, $data_agents), 'color' => '#3F3F3F');
-	
+
 	if (empty($graph_data['children']))
 		return fs_error_image();
 

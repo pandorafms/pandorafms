@@ -66,8 +66,6 @@ if ($edit_graph) {
 	$height = $graphInTgraph['height'];
 	$check = false;
 	$percentil = $graphInTgraph['percentil'];
-	$summatory_series = $graphInTgraph['summatory_series'];
-	$average_series = $graphInTgraph['average_series'];
 
 	if ($stacked == CUSTOM_GRAPH_BULLET_CHART_THRESHOLD){
 		$stacked = CUSTOM_GRAPH_BULLET_CHART;
@@ -86,8 +84,6 @@ else {
 	$stacked = 4;
 	$check = false;
 	$percentil = 0;
-	$summatory_series = 0;
-	$average_series = 0;
 }
 
 
@@ -177,15 +173,6 @@ html_print_checkbox('threshold', CUSTOM_GRAPH_BULLET_CHART_THRESHOLD, $check, fa
 echo "</div>";
 
 echo "</div></td>";
-
-echo "<tr><td class='datos2'><b>".__('Add summatory series')."</b>" .
-	ui_print_help_tip (__("This will add a synthetic series to the graph, 
-	using all series to give a SUM or an average of all present series values 
-	in each interval. This feature could be used instead synthetic modules 
-	if you only want to see a graph"), true)."</td>";
-echo "<td class='datos2'>" . html_print_checkbox ("summatory_series", 1, $summatory_series, true) . "</td>
-<td class='datos2'><b>".__('Add average series')."</b></td>";
-echo "<td class='datos2'>" . html_print_checkbox ("average_series", 1, $average_series, true) . "</td></tr>";
 
 echo "<tr><td class='datos2'><b>".__('Percentil')."</b></td>";
 echo "<td class='datos2'>" . html_print_checkbox ("percentil", 1, $percentil, true) . "</td></tr>";

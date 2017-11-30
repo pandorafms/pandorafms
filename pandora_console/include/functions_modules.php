@@ -987,6 +987,28 @@ function modules_is_string($id_agentmodule) {
 	return modules_is_string_type($id_type);
 }
 
+
+/**
+ * Know if a module type is a boolean or not
+ *
+ * @param int $id_type Type id
+ *
+ * @return bool true if boolean. false if not
+ */
+function modules_is_boolean_type ($id_type) {
+	$type_name = modules_get_type_name($id_type);
+	
+	return (bool)preg_match('/_proc$/', $type_name);
+}
+
+function modules_is_boolean($id_agentmodule) {
+	$id_type = db_get_value('id_tipo_modulo',
+		'tagente_modulo', 'id_agente_modulo',
+		(int) $id_agentmodule);
+	
+	return modules_is_boolean_type($id_type);
+}
+
 /**
  * Get the icon of a module type
  *
@@ -1716,11 +1738,19 @@ function modules_get_next_data ($id_agent_module, $utimestamp = 0, $string = 0) 
  * @param int Agent module id
  * @param int Period of time to check (in seconds)
  * @param int Top date to check the values. Default current time.
+ * @param 
+ * @param 
+ * @param string 'ASC' od 'DESC'
+ * @param string with a json with parameters to filter data
+ * 	string object:
+ *		value: Text to search
+ *		exact: Boolean. True if search exact phrase or false to content
  *
  * @return array The module value and the timestamp
  */
 function modules_get_agentmodule_data ($id_agent_module, $period,
-	$date = 0, $trash=false, $conexion = false, $order = 'ASC') {
+	$date = 0, $trash=false, $conexion = false, $order = 'ASC',
+	$freesearch = '') {
 	global $config;
 	
 	$module = db_get_row('tagente_modulo', 'id_agente_modulo',
@@ -1742,12 +1772,28 @@ function modules_get_agentmodule_data ($id_agent_module, $period,
 		case 17:
 		//async_string
 		case 23:
-			$sql = sprintf ("SELECT datos AS data, utimestamp
-				FROM tagente_datos_string
-				WHERE id_agente_modulo = %d
-					AND utimestamp > %d AND utimestamp <= %d
-				ORDER BY utimestamp %s",
-				$id_agent_module, $datelimit, $date, $order);
+			// Free search is a json with value and exact modifier
+			$freesearch = json_decode($freesearch, true);
+			$freesearch_sql = '';
+			if (isset($freesearch['value']) && !empty($freesearch['value'])) {
+				$freesearch_sql = " AND datos ";
+				if ($freesearch['exact']){
+					$freesearch_sql .= "='" . $freesearch['value'] . "' ";
+				} else {
+					$freesearch_sql .= " LIKE '%" . $freesearch['value'] . "%' ";
+				}
+			}
+			$sql = sprintf (
+				"SELECT datos AS data, utimestamp FROM tagente_datos_string
+					WHERE id_agente_modulo = %d
+					%s
+					AND utimestamp > %d	AND utimestamp <= %d
+					ORDER BY utimestamp %s",
+				$id_agent_module,
+				$freesearch_sql,
+				$datelimit,	$date,
+				$order
+			);
 			break;
 		//log4x
 		case 24:

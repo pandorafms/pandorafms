@@ -54,6 +54,7 @@ Además de las macros de módulo definidas, las siguientes macros están disponi
 <li>_alert_text_severity_: Prioridad en texto de la alerta. (Maintenance, Informational, Normal Minor, Warning, Major, Critical)</li>
 <li>_eventt_text_severity_: (Solo alertas de evento) Prioridad en texto de el evento que dispara la alerta. (Maintenance, Informational, Normal Minor, Warning, Major, Critical)</li>
 <li>_event_id_ : (Solo alertas de evento) Id del evento que disparó la alerta.</li>
+<li>_event_cfX_ : (Solo alertas de evento) Clave del campo personalizado del evento que disparó la alerta.</li>
 <li>_id_agent_: ID del agente, util para construir URL de acceso a la consola de Pandora.</li>
 <li>_id_group_ : Id del grupo de agente.</li>
 <li>_id_module_ : ID del módulo.</li>
@@ -63,6 +64,8 @@ Además de las macros de módulo definidas, las siguientes macros están disponi
 <li>_target_ip_ : Dirección IP del objetivo del módulo.</li>
 <li>_target_port_ : Puerto del objetivo del módulo.</li>
 <li>_plugin_parameters_ : Parámetros del Plug-in del módulo.</li>
+<li>_server_ip_ : Ip del servidor al que el agente está asignado. </li>
+<li>_server_name_ : Nombre del servidor al que el agente está asignado. </li>
 <li>_groupcontact_ : Información de contacto del grupo.	Se configura al crear el grupo.</li>
 <li>_groupother_ : Otra información sobre el grupo. Se configura al crear el grupo.</li>
 <li>_email_tag_ : Emails asociados a los tags de módulos.</li>

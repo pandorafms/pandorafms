@@ -232,8 +232,8 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 				$projection, $avg_only = false, $uncompressed_module = false, 
 				$show_events = false, $show_alerts = false, $show_unknown = false, $baseline = false, 
 				$baseline_data = array(), $events = array(), $series_suffix = '', $start_unknown = false,
-				$percentil = null, $fullscale = false) {
-	
+				$percentil = null, $fullscale = false, $force_interval = false,$time_interval = 300,
+				$max_only = 0, $min_only = 0) {
 	global $config;
 	global $chart_extra_data;
 	global $series_type;
@@ -413,10 +413,17 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 		}
 		
 		if ($count > 0) {
+			
 			if ($avg_only) {
 				$chart[$timestamp]['sum'.$series_suffix] = $total;
 			}
-			else {
+			else if($max_only){
+				$chart[$timestamp]['max'.$series_suffix] = $interval_max;
+			}
+			else if($min_only){
+				$chart[$timestamp]['min'.$series_suffix] = $interval_min;
+			}
+			else{
 				$chart[$timestamp]['max'.$series_suffix] = $interval_max;
 				$chart[$timestamp]['sum'.$series_suffix] = $total;
 				$chart[$timestamp]['min'.$series_suffix] = $interval_min;
@@ -428,7 +435,13 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 				if ($avg_only) {
 					$chart[$timestamp]['sum'.$series_suffix] = 0;
 				}
-				else {
+				else if($max_only){
+					$chart[$timestamp]['max'.$series_suffix] = 0;
+				}
+				else if($min_only){
+					$chart[$timestamp]['min'.$series_suffix] = 0;
+				}
+				else{
 					$chart[$timestamp]['max'.$series_suffix] = 0;
 					$chart[$timestamp]['sum'.$series_suffix] = 0;
 					$chart[$timestamp]['min'.$series_suffix] = 0;
@@ -437,6 +450,12 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 			else {
 				if ($avg_only) {
 					$chart[$timestamp]['sum'.$series_suffix] = $last_known;
+				}
+				else if ($max_only) {
+					$chart[$timestamp]['max'.$series_suffix] = $last_known;
+				}
+				else if ($min_only) {
+					$chart[$timestamp]['min'.$series_suffix] = $last_known;
 				}
 				else {
 					$chart[$timestamp]['max'.$series_suffix] = $last_known;
@@ -502,8 +521,9 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	$baseline = 0, $return_data = 0, $show_title = true, $projection = false, 
 	$adapt_key = '', $compare = false, $series_suffix = '', $series_suffix_str = '', 
 	$show_unknown = false, $percentil = null, $dashboard = false, $vconsole = false,
-	$type_graph='area', $fullscale = false, $flash_chart = false) {
-	
+	$type_graph='area', $fullscale = false, $flash_chart = false, $force_interval = false,$time_interval = 300,
+	$max_only = 0, $min_only = 0) {
+		
 	global $config;
 	global $chart;
 	global $color;
@@ -529,8 +549,23 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	if ($date == 0) $date = get_system_time();
 	$datelimit = $date - $period;
 	$search_in_history_db = db_search_in_history_db($datelimit);
-	$resolution = $config['graph_res'] * 50; //Number of points of the graph
-	$interval = (int) ($period / $resolution);
+	
+	
+	
+	if($force_interval){
+			$resolution = $period/$time_interval;
+	}
+	else{
+		$resolution = $config['graph_res'] * 50; //Number of points of the graph
+	}
+	
+	if($force_interval){
+		$interval = $time_interval;
+	}
+	else{
+		$interval = (int) ($period / $resolution);
+	}
+	
 	$agent_name = modules_get_agentmodule_agent_name ($agent_module_id);
 	$agent_id = agents_get_agent_id ($agent_name);
 	$module_name = modules_get_agentmodule_name ($agent_module_id);
@@ -718,7 +753,8 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 			$projection, $avg_only, $uncompressed_module, 
 			$show_events, $show_alerts, $show_unknown, $baseline, 
 			$baseline_data, $events, $series_suffix, $start_unknown,
-			$percentil, $fullscale);
+			$percentil, $fullscale, $force_interval, $time_interval, 
+			$max_only, $min_only);
 	}
 	
 	// Return chart data and don't draw
@@ -843,6 +879,19 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 		$legend['percentil'.$series_suffix] = __('Percentile %dº', $percentil)  .$series_suffix_str . " (" . $percentil_value . " " . $unit . ") ";
 		$chart_extra_data['legend_percentil'] = $legend['percentil'.$series_suffix_str];
 	}
+	
+	if($force_interval){
+		$legend = array();
+		if($avg_only){
+			$legend['sum'.$series_suffix] = __('Avg');
+		}
+		elseif ($max_only) {
+			$legend['min'.$series_suffix] = __('Max');
+		}
+		elseif ($min_only) {
+			$legend['max'.$series_suffix] = __('Min');	
+		}	
+	}
 }
 
 function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
@@ -853,8 +902,10 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	$adapt_key = '', $compare = false, $show_unknown = false,
 	$menu = true, $backgroundColor = 'white', $percentil = null,
 	$dashboard = false, $vconsole = false, $type_graph = 'area', $fullscale = false,
-	$id_widget_dashboard = false) {
-	
+	$id_widget_dashboard = false,$force_interval = 0,$time_interval = 300,
+	$max_only = 0, $min_only = 0) {
+				
+				
 	global $config;
 	global $graphic_type;
 
@@ -884,7 +935,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 			$return_data, $show_title, $projection, $adapt_key,
 			$compare, $series_suffix, $series_suffix_str,
 			$show_unknown, $percentil, $dashboard, $vconsole,$type_graph, 
-			$fullscale, $flash_chart);
+			$fullscale, $flash_chart,$force_interval,$time_interval,$max_only,$min_only);
 		
 		switch ($compare) {
 			case 'separated':
@@ -917,7 +968,9 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		$show_alerts, $avg_only,
 		$date, $unit, $baseline, $return_data, $show_title,
 		$projection, $adapt_key, $compare, '', '', $show_unknown,
-		$percentil, $dashboard, $vconsole, $type_graph, $fullscale, $flash_chart);
+		$percentil, $dashboard, $vconsole, $type_graph, $fullscale,$flash_chart,
+		$force_interval,$time_interval,$max_only,$min_only);
+
 	if ($return_data) {
 		return $data_returned;
 	}
@@ -949,7 +1002,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 			return
 				area_graph($flash_chart, $chart, $width, $height/2, $color,
 					$legend, $long_index,
-					ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+					ui_get_full_url("images/image_problem_area_small.png", false, false, false),
 					$title, $unit, $homeurl, $water_mark, $config['fontpath'],
 					$config['font_size'], $unit, $ttl, $series_type,
 					$chart_extra_data, $warning_min, $critical_min,
@@ -958,7 +1011,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 				'<br>'.
 				area_graph($flash_chart, $chart_prev, $width, $height/2,
 					$color_prev, $legend_prev, $long_index_prev,
-					ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+					ui_get_full_url("images/image_problem_area_small.png", false, false, false),
 					$title, $unit, $homeurl, $water_mark, $config['fontpath'],
 					$config['font_size'], $unit, $ttl, $series_type_prev,
 					$chart_extra_data, $warning_min, $critical_min,
@@ -977,7 +1030,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 			return
 				area_graph($flash_chart, $chart, $width, $height, $color,
 					$legend, $long_index,
-					ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+					ui_get_full_url("images/image_problem_area_small.png", false, false, false),
 					$title, $unit, $homeurl, $water_mark, $config['fontpath'],
 					$config['font_size'], $unit, $ttl, $series_type,
 					$chart_extra_data, $warning_min, $critical_min,
@@ -990,13 +1043,13 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 			return
 				line_graph($flash_chart, $chart, $width, $height/2, $color,
 					$legend, $long_index,
-					ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+					ui_get_full_url("images/image_problem_area_small.png", false, false, false),
 					$title, $unit, $water_mark, $config['fontpath'],
 					$config['font_size'], $unit, $ttl, $homeurl, $backgroundColor).
 				'<br>'.
 				line_graph($flash_chart, $chart_prev, $width, $height/2, $color,
 					$legend, $long_index,
-					ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+					ui_get_full_url("images/image_problem_area_small.png", false, false, false),
 					$title, $unit, $water_mark, $config['fontpath'],
 					$config['font_size'], $unit, $ttl, $homeurl, $backgroundColor);
 		}
@@ -1005,7 +1058,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 			return
 				line_graph($flash_chart, $chart, $width, $height, $color,
 					$legend, $long_index,
-					ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+					ui_get_full_url("images/image_problem_area_small.png", false, false, false),
 					$title, $unit, $water_mark, $config['fontpath'],
 					$config['font_size'], $unit, $ttl, $homeurl, $backgroundColor);
 		}
@@ -1069,6 +1122,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	if(!$fullscale){
 		$time_format_2 = '';
 		$temp_range = $period;
+		$unit_list_aux = array();
 	
 		if ($projection != false) {
 			if ($period < $prediction_period)
@@ -1317,6 +1371,10 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				
 				$agent_id = agents_get_agent_id ($agent_name);
 				
+				if(empty($unit_list)){
+					$unit_aux = modules_get_unit($agent_module_id);
+					array_push($unit_list_aux,$unit_aux);
+				}
 				//Get and process module name
 				$module_name = io_safe_output(
 					modules_get_agentmodule_name ($agent_module_id));
@@ -1500,6 +1558,8 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			
 			if (!empty($unit_list) && $units_number == $module_number && isset($unit_list[$i])) {
 				$unit = $unit_list[$i];
+			}else{
+				$unit = $unit_list_aux[$i];
 			}
 			
 			if ($projection == false or ($projection != false and $i == 0)) {
@@ -2059,7 +2119,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		case CUSTOM_GRAPH_AREA:
 			return area_graph($flash_charts, $graph_values, $width,
 				$height, $color, $module_name_list, $long_index,
-				ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+				ui_get_full_url("images/image_problem_area_small.png", false, false, false),
 				$title, "", $homeurl, $water_mark, $config['fontpath'],
 				$fixed_font_size, $unit, $ttl, array(), array(), $yellow_threshold, $red_threshold,  '',
 				false, '', true, $background_color,$dashboard, $vconsole, 0, $percentil_result, $threshold_data);
@@ -2068,14 +2128,14 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		case CUSTOM_GRAPH_STACKED_AREA: 
 			return stacked_area_graph($flash_charts, $graph_values,
 				$width, $height, $color, $module_name_list, $long_index,
-				ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+				ui_get_full_url("images/image_problem_area_small.png", false, false, false),
 				$title, "", $water_mark, $config['fontpath'], $fixed_font_size,
 				"", $ttl, $homeurl, $background_color,$dashboard, $vconsole);
 			break;
 		case CUSTOM_GRAPH_LINE:  
 			return line_graph($flash_charts, $graph_values, $width,
 				$height, $color, $module_name_list, $long_index,
-				ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+				ui_get_full_url("images/image_problem_area_small.png", false, false, false),
 				$title, "", $water_mark, $config['fontpath'], $fixed_font_size,
 				$unit, $ttl, $homeurl, $background_color, $dashboard, 
 				$vconsole, $series_type, $percentil_result, $yellow_threshold, $red_threshold, $threshold_data); 
@@ -2083,7 +2143,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		case CUSTOM_GRAPH_STACKED_LINE:
 			return stacked_line_graph($flash_charts, $graph_values,
 				$width, $height, $color, $module_name_list, $long_index,
-				ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+				ui_get_full_url("images/image_problem_area_small.png", false, false, false),
 				"", "", $water_mark, $config['fontpath'], $fixed_font_size,
 				"", $ttl, $homeurl, $background_color, $dashboard, $vconsole);
 			break;
@@ -2091,35 +2151,35 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		case CUSTOM_GRAPH_BULLET_CHART:
 			return stacked_bullet_chart($flash_charts, $graph_values,
 				$width, $height, $color, $module_name_list, $long_index,
-				ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+				ui_get_full_url("images/image_problem_area_small.png", false, false, false),
 				"", "", $water_mark, $config['fontpath'], ($config['font_size']+1),
 				"", $ttl, $homeurl, $background_color);
 			break;
 		case CUSTOM_GRAPH_GAUGE:
 			return stacked_gauge($flash_charts, $graph_values,
 				$width, $height, $color, $module_name_list, $long_index,
-				ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+				ui_get_full_url("images/image_problem_area_small.png", false, false, false),
 				"", "", $water_mark, $config['fontpath'], $fixed_font_size,
 				"", $ttl, $homeurl, $background_color);
 			break;
 		case CUSTOM_GRAPH_HBARS:
 			return hbar_graph($flash_charts, $graph_values,
 				$width, $height, $color, $module_name_list, $long_index,
-				ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+				ui_get_full_url("images/image_problem_area_small.png", false, false, false),
 				"", "", $water_mark, $config['fontpath'], $fixed_font_size,
-				"", $ttl, $homeurl, $background_color);
+				"", $ttl, $homeurl, $background_color, 'black');
 			break;
 		case CUSTOM_GRAPH_VBARS:
 			return vbar_graph($flash_charts, $graph_values,
 				$width, $height, $color, $module_name_list, $long_index,
-				ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+				ui_get_full_url("images/image_problem_area_small.png", false, false, false),
 				"", "", $water_mark, $config['fontpath'], $fixed_font_size,
-				"", $ttl, $homeurl, $background_color, true);
+				"", $ttl, $homeurl, $background_color, true, false, "black");
 			break;
 		case CUSTOM_GRAPH_PIE:
 			return ring_graph($flash_charts, $graph_values, $width, $height,
 				$others_str, $homeurl, $water_mark, $config['fontpath'],
-				($config['font_size']+1), $ttl, false, $color, false);
+				($config['font_size']+1), $ttl, false, $color, false,$background_color);
 			break;
 	}
 }
@@ -2235,7 +2295,7 @@ function graphic_agentaccess ($id_agent, $width, $height, $period = 0, $return =
 	}
 	else {
 		$out = area_graph($config['flash_charts'], $data, $width, $height, null, null, null,
-			ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+			ui_get_full_url("images/image_problem_area_small.png", false, false, false),
 			"", "", ui_get_full_url(false, false, false, false), $water_mark,
 			$config['fontpath'], $config['font_size'], "", 1, array(), array(), 0, 0, '', false, '', false);
 	}
@@ -2457,10 +2517,10 @@ function progress_bar($progress, $width, $height, $title = '', $mode = 1, $value
 	require_once("include_graph_dependencies.php");
 	include_graphs_dependencies($config['homedir'].'/');
 	$src = ui_get_full_url(
-		"/include/graphs/fgraph.php?homeurl=../../&graph_type=progressbar" .
-		"&width=".$width."&homedir=".$config['homedir']."&height=".$height."&progress=".$progress.
+		"/include/graphs/fgraph.php?graph_type=progressbar" .
+		"&width=".$width."&height=".$height."&progress=".$progress.
 		"&mode=" . $mode . "&out_of_lim_str=".$out_of_lim_str .
-		"&title=".$title."&font=".$config['fontpath']."&value_text=". $value_text . 
+		"&title=".$title."&value_text=". $value_text . 
 		"&colorRGB=". $colorRGB, false, false, false
 		);
 	
@@ -2492,10 +2552,10 @@ function progress_bubble($progress, $width, $height, $title = '', $mode = 1, $va
 	include_graphs_dependencies($config['homedir'].'/');
 	
 	return "<img title='" . $title . "' alt='" . $title . "'" .
-		" src='" . $config['homeurl'] . $hack_metaconsole . "/include/graphs/fgraph.php?homeurl=../../&graph_type=progressbubble" .
+		" src='" . $config['homeurl'] . $hack_metaconsole . "/include/graphs/fgraph.php?graph_type=progressbubble" .
 		"&width=".$width."&height=".$height."&progress=".$progress.
 		"&mode=" . $mode . "&out_of_lim_str=".$out_of_lim_str .
-		"&title=".$title."&font=".$config['fontpath']."&value_text=". $value_text . 
+		"&title=".$title."&value_text=". $value_text . 
 		"&colorRGB=". $colorRGB . "' />";
 }
 
@@ -2704,7 +2764,7 @@ function grafico_db_agentes_purge ($id_agent, $width = 380, $height = 300) {
 			|| (empty($num_1day) && empty($num_1week) && empty($num_1month)
 				&& empty($num_3months) && empty($num_all) 
 				&& ($config['history_db_enabled'] == 1 && empty($num_all_w_history)))) {
-		return html_print_image('images/image_problem.png', true);
+		return html_print_image('images/image_problem_area_small.png', true);
 	}
 
 	// Data indexes
@@ -2779,7 +2839,9 @@ function grafico_db_agentes_paquetes($width = 380, $height = 300) {
 	
 	return hbar_graph($config['flash_charts'], $data, $width, $height, array(),
 		$legend, "", "", true, "", $water_mark,
-		$config['fontpath'], $config['font_size'], false);
+		$config['fontpath'], $config['font_size'], false, 1, $config['homeurl'],
+					'white',
+					'black');
 }
 
 /**
@@ -2846,7 +2908,9 @@ function graph_db_agentes_modulos($width, $height) {
 		$data, $width, $height, array(),
 		array(), "", "", true, "",
 		$water_mark,
-		$config['fontpath'], $config['font_size'], false);
+		$config['fontpath'], $config['font_size'], false, 1, $config['homeurl'],
+					'white',
+					'black');
 }
 
 /**
@@ -3284,11 +3348,11 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 			}
 			else {
 				if ($meta) {
-					$name = mb_substr (io_safe_output($row['agent_name']), 0, 14)." (".$row["count"].")";
+					$name = mb_substr (io_safe_output($row['agent_name']), 0, 25)." (".$row["count"].")";
 				}
 				else {
 					$alias = agents_get_alias($row["id_agente"]);
-					$name = mb_substr($alias, 0, 14)." #".$row["id_agente"]." (".$row["count"].")";
+					$name = mb_substr($alias, 0, 25)." #".$row["id_agente"]." (".$row["count"].")";
 				}
 				$data[$name] = $row["count"];
 			}
@@ -3621,12 +3685,14 @@ function graph_custom_sql_graph ($id, $width, $height,
 		case 'sql_graph_vbar': // vertical bar
 			return vbar_graph($flash_charts, $data, $width, $height, array(),
 				array(), "", "", $homeurl, $water_mark,
-				$config['fontpath'], $config['font_size'], false, $ttl);
+				$config['fontpath'], $config['font_size'], false, $ttl, "", "white", false, false, "black");
 			break;
 		case 'sql_graph_hbar': // horizontal bar
 			return hbar_graph($flash_charts, $data, $width, $height, array(),
 				array(), "", "", true, $homeurl, $water_mark,
-				$config['fontpath'], $config['font_size'], false, $ttl);
+				$config['fontpath'], $config['font_size'], false, $ttl,$config['homeurl'],
+					'white',
+					'black');
 			break;
 		case 'sql_graph_pie': // Pie
 			return pie3d_graph($flash_charts, $data, $width, $height, __("other"), $homeurl,
@@ -4521,20 +4587,20 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	if ($type_graph === 'area') {
 		if ($compare === 'separated') {
 			return area_graph($flash_chart, $chart, $width, $height/2, $color, $legend,
-				$long_index, ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+				$long_index, ui_get_full_url("images/image_problem_area_small.png", false, false, false),
 				"", $unit, $homeurl, $water_mark,
 				$config['fontpath'], $config['font_size'], $unit, 1, $series_type, 
 				$chart_extra_data, 0, 0, $adapt_key, false, $series_suffix_str, $menu).
 				'<br>'.
 				area_graph($flash_chart, $chart_prev, $width, $height/2, $color_prev, $legend_prev,
-				$long_index_prev, ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+				$long_index_prev, ui_get_full_url("images/image_problem_area_small.png", false, false, false),
 				"", $unit, $homeurl, $water_mark,
 				$config['fontpath'], $config['font_size'], $unit, 1, $series_type_prev, 
 				$chart_extra_data_prev, 0, 0, $adapt_key, false, $series_suffix_str, $menu);
 		}
 		else {
 			return area_graph($flash_chart, $chart, $width, $height, $color, $legend,
-				$long_index, ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+				$long_index, ui_get_full_url("images/image_problem_area_small.png", false, false, false),
 				$title, $unit, $homeurl, $water_mark,
 				$config['fontpath'], $config['font_size'], $unit, 1, $series_type, 
 				$chart_extra_data, 0, 0, $adapt_key, false, $series_suffix_str, $menu);
@@ -4545,13 +4611,13 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 			return
 				line_graph($flash_chart, $chart, $width, $height/2, $color,
 					$legend, $long_index,
-					ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+					ui_get_full_url("images/image_problem_area_small.png", false, false, false),
 					"", $unit, $water_mark, $config['fontpath'],
 					$config['font_size'], $unit, $ttl, $homeurl, $backgroundColor).
 				'<br>'.
 				line_graph($flash_chart, $chart_prev, $width, $height/2, $color,
 					$legend, $long_index,
-					ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+					ui_get_full_url("images/image_problem_area_small.png", false, false, false),
 					"", $unit, $water_mark, $config['fontpath'],
 					$config['font_size'], $unit, $ttl, $homeurl, $backgroundColor);
 		}
@@ -4560,7 +4626,7 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 			return
 				line_graph($flash_chart, $chart, $width, $height, $color,
 					$legend, $long_index,
-					ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+					ui_get_full_url("images/image_problem_area_small.png", false, false, false),
 					$title, $unit, $water_mark, $config['fontpath'],
 					$config['font_size'], $unit, $ttl, $homeurl, $backgroundColor);
 		}
@@ -4691,7 +4757,7 @@ function graph_netflow_aggregate_area ($data, $period, $width, $height, $unit = 
 	
 	
 	return area_graph($flash_chart, $chart, $width, $height, $color, 
-		$sources, array (), ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+		$sources, array (), ui_get_full_url("images/image_problem_area_small.png", false, false, false),
 		"", $unit, $homeurl,
 		$config['homedir'] .  "/images/logo_vertical_water.png",
 		$config['fontpath'], $config['font_size'], $unit, $ttl);
@@ -4776,7 +4842,7 @@ function graph_netflow_total_area ($data, $period, $width, $height, $unit = '', 
 	
 	$legend = array (__('Max.') . ' ' . format_numeric($max) . ' ' . __('Min.') . ' ' . format_numeric($min) . ' ' . __('Avg.') . ' ' . format_numeric ($avg));
 	return area_graph($flash_chart, $chart, $width, $height, array (), $legend,
-		array (), ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+		array (), ui_get_full_url("images/image_problem_area_small.png", false, false, false),
 		"", "", $homeurl, $water_mark,
 		$config['fontpath'], $config['font_size'], $unit, $ttl);
 }
@@ -5152,7 +5218,7 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 		return
 			line_graph($flash_chart, $chart, $width, $height, $color,
 				$legend, $long_index,
-				ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+				ui_get_full_url("images/image_problem_area_small.png", false, false, false),
 				$title, $unit, $water_mark, $config['fontpath'],
 				$config['font_size'], $unit, $ttl, $homeurl, $backgroundColor);
 	}
@@ -5663,7 +5729,7 @@ function grafico_modulo_log4x_format_y_axis ( $number , $decimals=2, $dec_point=
 }
 
 function graph_nodata_image($width = 300, $height = 110, $type = 'area', $text = '') {
-	$image = ui_get_full_url('images/image_problem_' . $type . '.png',
+	$image = ui_get_full_url('images/image_problem_area_small.png',
 		false, false, false); 
 	
 	// if ($text == '') {
@@ -5743,18 +5809,41 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 
 	$filter_module_group = (!empty($filter) && !empty($filter['module_group'])) ? $filter['module_group'] : false;
 
-	$groups = users_get_groups(false, "AR", false, true, (!empty($filter) && isset($filter['group']) ? $filter['group'] : null));
+	if ($filter['group'] != 0) {
+		$groups = db_get_all_rows_sql ("SELECT * FROM tgrupo where id_grupo = " . $filter['group'] . " || parent = " . $filter['group']);
 
+		$groups_ax = array();
+		foreach ($groups as $g) {
+			$groups_ax[$g['id_grupo']] = $g;
+		}
+		
+		$groups = $groups_ax;
+	}
+	else {
+		$groups = users_get_groups(false, "AR", false, true, (!empty($filter) && isset($filter['group']) ? $filter['group'] : null));
+	}
+	
 	$data_groups = array();
 	if (!empty($groups)) {
 		$groups_aux = $groups;
-		$data_groups = groups_get_tree($groups);
+
+		//$data_groups = groups_get_tree($groups);
+		
+		$childrens = array();
+		$data_groups = groups_get_tree_good($groups, false, $childrens);
+		foreach ($childrens as $id_c) {
+			unset($data_groups[$id_c]);
+		}
+		$data_groups_keys = array();
+		groups_get_tree_keys($data_groups, $data_groups_keys);
+
 		$groups_aux = null;
 	}
 
 	if (!empty($data_groups)) {
-		$filter = array('id_grupo' => array_keys($data_groups));
-		$fields = array('id_agente', 'id_parent', 'id_grupo', 'nombre');
+		$filter = array('id_grupo' => array_keys($data_groups_keys));
+
+		$fields = array('id_agente', 'id_parent', 'id_grupo', 'alias');
 		$agents = agents_get_agents($filter, $fields);
 
 		if (!empty($agents)) {
@@ -5787,7 +5876,7 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 					if (!isset($data_agents[$agent_id])) {
 						$data_agents[$agent_id] = array();
 						$data_agents[$agent_id]['id'] = $agent_id;
-						$data_agents[$agent_id]['name'] = io_safe_output($agents[$agent_id]['nombre']);
+						$data_agents[$agent_id]['name'] = io_safe_output($agents[$agent_id]['alias']);
 						$data_agents[$agent_id]['group'] = (int) $agents[$agent_id]['id_grupo'];
 						$data_agents[$agent_id]['type'] = 'agent';
 						$data_agents[$agent_id]['size'] = 30;
@@ -5960,7 +6049,7 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 				if (!isset($data_agents[$id])) {
 					$data_agents[$id] = array();
 					$data_agents[$id]['id'] = (int) $id;
-					$data_agents[$id]['name'] = io_safe_output($agent['nombre']);
+					$data_agents[$id]['name'] = io_safe_output($agent['alias']);
 					$data_agents[$id]['type'] = 'agent';
 					$data_agents[$id]['color'] = COL_NOTINIT;
 				}
@@ -5970,7 +6059,6 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 	}
 
 	function iterate_group_array ($groups, &$data_agents) {
-		
 		$data = array();
 
 		foreach ($groups as $id => $group) {
@@ -6007,8 +6095,8 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 			$tooltip_content = html_print_image("images/groups_small/" . $group['icon'] . ".png", true) . "&nbsp;" . __('Group') . ": <b>" . $group_aux['name'] . "</b>";
 			$group_aux['tooltip_content'] = $tooltip_content;
 
-			if (!isset($group['children']))
-				$group_aux['children'] = array();
+			$group_aux['children'] = array();
+			
 			if (!empty($group['children']))
 				$group_aux['children'] = iterate_group_array($group['children'], $data_agents);
 
@@ -6016,7 +6104,7 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 
 			if (!empty($agents))
 				$group_aux['children'] = array_merge($group_aux['children'], $agents);
-			
+
 			$data[] = $group_aux;
 		}
 
@@ -6031,6 +6119,7 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 				unset($agents[$id]);
 			}
 		}
+		
 		if (!empty($valid_agents))
 			return $valid_agents;
 		else
@@ -6038,7 +6127,7 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 	}
 
 	$graph_data = array('name' => __('Main node'), 'children' => iterate_group_array($data_groups, $data_agents), 'color' => '#3F3F3F');
-	
+
 	if (empty($graph_data['children']))
 		return fs_error_image();
 

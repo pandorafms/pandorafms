@@ -45,6 +45,7 @@ Besides the defined module macros, the following macros are available:
 <li>_alert_text_severity_: Priority level, in text, for the alert (Maintenance, Informational, Normal Minor, Major, Critical).</li>
 <li>_event_text_severity_: (Only event alerts) Text event (which triggered the alert) severity (Maintenance, Informational, Normal Minor, Warning, Major, Critical).</li>
 <li>_event_id_: (Only event alerts) ID of the event that triggered the alert.</li>
+<li>_event_cfX_ : (Only event alerts) Key of the event custom field that fired the alert.</li>
 <li>_id_agent_: Agent’s ID, useful for building a direct URL that redirects to a Pandora FMS console webpage.</li>
 <li>_id_group_ : Agent group ID.</li>
 <li>_id_module_ : ID of module.</li>
@@ -54,6 +55,8 @@ Besides the defined module macros, the following macros are available:
 <li>_target_ip_: IP address for the module’s target.</li>
 <li>_target_port_: Port number for the module’s target.</li>
 <li>_plugin_parameters_: Module’s Plugin parameters.</li>
+<li>_server_ip_ : Ip of server assigned to agent. </li>
+<li>_server_name_ : Name of server assigned to agent. </li>
 <li>_groupcontact_: Group’s contact information. Configured when the group is created.</li>
 <li>_groupcustomid_: Group’s custom ID.</li>
 <li>_groupother_: Other information about the group. Configured when the group is created.</li>

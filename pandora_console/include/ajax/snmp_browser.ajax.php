@@ -25,16 +25,14 @@ if(is_ajax()){
 	$target_ip = (string) get_parameter ("target_ip", '');
 	$community = (string) get_parameter ("community", '');
 	$snmp_version = (string) get_parameter ("snmp_browser_version", '');
-	$snmp3_auth_user = get_parameter('snmp3_browser_auth_user');
+	$snmp3_auth_user = io_safe_output(get_parameter('snmp3_browser_auth_user'));
 	$snmp3_security_level = get_parameter('snmp3_browser_security_level');
 	$snmp3_auth_method = get_parameter('snmp3_browser_auth_method');
-	$snmp3_auth_pass = get_parameter('snmp3_browser_auth_pass');
+	$snmp3_auth_pass = io_safe_output(get_parameter('snmp3_browser_auth_pass'));
 	$snmp3_privacy_method = get_parameter('snmp3_browser_privacy_method');
-	$snmp3_privacy_pass = get_parameter('snmp3_browser_privacy_pass');
+	$snmp3_privacy_pass = io_safe_output(get_parameter('snmp3_browser_privacy_pass'));
 	
 	$targets_oids = get_parameter ("oids", "");
-	$targets_oids = explode(",", $targets_oids);
-	
 	
 	$custom_action = get_parameter ("custom_action", "");
 	if ($custom_action != "") {

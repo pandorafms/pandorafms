@@ -1039,14 +1039,16 @@ function alerts_delete_alert_agent_module ($id_alert_agent_module, $filter = fal
 		$filter = array ();
 	if ($id_alert_agent_module)
 		$filter['id'] = $id_alert_agent_module;
-	
-	// Get the modules of the fired alerts that will be deleted to update counts
-	$filter_get = $filter;
-	
-	$filter_get['group'] = 'id_agent_module';
-	$filter_get['times_fired'] = '>0';
-	
-	$fired_alert_modules = db_get_all_rows_filter('talert_template_modules', $filter_get, array('id_agent_module', 'COUNT(*) alerts'));
+
+	// Get the id agent to update the fired alert counts
+	$agent_id = false;
+	if (isset ($filter['id_agent_module'])){
+		$agent_id = modules_get_agentmodule_agent ($filter["id_agent_module"]);
+	}
+	else if (isset ($filter['id'])){
+		$alert = alerts_get_alert_agent_module($id_alert_agent_module);
+		$agent_id = modules_get_agentmodule_agent ($alert["id_agent_module"]);
+	}
 	
 	/*
 	The deletion of actions from talert_template_module_actions,
@@ -1054,6 +1056,11 @@ function alerts_delete_alert_agent_module ($id_alert_agent_module, $filter = fal
 	a foreing key and delete on cascade.
 	*/
 	if (@db_process_sql_delete ('talert_template_modules', $filter) !== false) {	
+		// Update fired alert count on the agent
+		// It will only occur if is specified the alert id or the id_agent_module
+		if ($agent_id !== false) {
+			db_process_sql(sprintf('UPDATE tagente SET update_alert_count=1 WHERE id_agente = %d', $agent_id));
+		}
 		return true;
 	}
 	

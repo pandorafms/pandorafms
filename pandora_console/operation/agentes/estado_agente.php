@@ -141,6 +141,7 @@ ob_end_clean();
 // Take some parameters (GET)
 $group_id = (int) get_parameter ("group_id", 0);
 $search = trim(get_parameter ("search", ""));
+$search_custom = trim(get_parameter ("search_custom", ""));
 $offset = (int)get_parameter('offset', 0);
 $refr = get_parameter('refr', 0);
 $recursion = get_parameter('recursion', 0);
@@ -205,7 +206,7 @@ html_print_checkbox ("recursion", 1, $recursion, false, false, 'this.form.submit
 echo '</td><td style="white-space:nowrap;">';
 
 echo __('Search') . '&nbsp;';
-html_print_input_text ("search", $search, '', 12);
+html_print_input_text ("search", $search, '', 15);
 
 echo '</td><td style="white-space:nowrap;">';
 
@@ -219,6 +220,11 @@ $fields[AGENT_STATUS_NOT_INIT] = __('Not init');
 
 echo __('Status') . '&nbsp;';
 html_print_select ($fields, "status", $status, 'this.form.submit()', __('All'), AGENT_STATUS_ALL, false, false, true, '', false, 'width: 90px;');
+
+echo '</td><td style="white-space:nowrap;">';
+
+echo __('Search in custom fields') . '&nbsp;';
+html_print_input_text ("search_custom", $search_custom, '', 15);
 
 echo '</td><td style="white-space:nowrap;">';
 
@@ -384,7 +390,6 @@ switch ($sortField) {
 
 $search_sql = '';
 if ($search != "") {
-	//$search_sql = " AND ( nombre " . $order_collation . " LIKE '%$search%' OR direccion LIKE '%$search%' OR comentarios LIKE '%$search%') ";
 	$sql = "SELECT DISTINCT taddress_agent.id_agent FROM taddress
 	INNER JOIN taddress_agent ON
 	taddress.id_a = taddress_agent.id_a
@@ -407,6 +412,14 @@ if ($search != "") {
 		$search_sql = " AND ( nombre " . $order_collation . "
 			COLLATE utf8_general_ci LIKE '%$search%' OR alias ".$order_collation." COLLATE utf8_general_ci LIKE '%$search%') ";
 	}
+}
+
+
+if(!empty($search_custom)){
+	$search_sql_custom = " AND EXISTS (SELECT * FROM tagent_custom_data 
+		WHERE id_agent = id_agente AND description LIKE '%$search_custom%')";
+} else {
+	$search_sql_custom = "";
 }
 
 // Show only selected groups
@@ -464,6 +477,7 @@ else {
 		'disabled' => 0,
 		'id_grupo' => $groups,
 		'search' => $search_sql,
+		'search_custom' => $search_sql_custom,
 		'status' => $status),
 		array ('COUNT(*) as total'), $access, false);
 	$total_agents = isset ($total_agents[0]['total']) ?
@@ -474,6 +488,7 @@ else {
 		'id_grupo' => $groups,
 		'disabled' => 0,
 		'status' => $status,
+		'search_custom' => $search_sql_custom,
 		'search' => $search_sql,
 		'offset' => (int) get_parameter ('offset'),
 		'limit' => (int) $config['block_size']),
@@ -597,22 +612,38 @@ foreach ($agents as $agent) {
 		$agent["warning_count"], $agent["unknown_count"], $agent["total_count"], 
 		$agent["notinit_count"]);
 	
+	$in_planned_downtime = db_get_sql('SELECT executed FROM tplanned_downtime 
+		INNER JOIN tplanned_downtime_agents 
+		ON tplanned_downtime.id = tplanned_downtime_agents.id_downtime
+		WHERE tplanned_downtime_agents.id_agent = '. $agent["id_agente"] . 
+		' AND tplanned_downtime.executed = 1');
+			
 	$data = array ();
 	
 	$data[0] = '<div class="left_' . $agent["id_agente"] . '">';
 	$data[0] .= '<span>';
-	if ($agent['quiet']) {
-		$data[0] .= html_print_image("images/dot_green.disabled.png", true, array("border" => '0', "title" => __('Quiet'), "alt" => "")) . "&nbsp;";
-	}
 	
 	$data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'"> <span style="font-size: 7pt;font-weight:bold" title ="' . $agent["nombre"]. '">'.$agent["alias"].'</span></a>';
 	$data[0] .= '</span>';
+	
+	if ($agent['quiet']) {
+		$data[0] .= "&nbsp;";
+		$data[0] .= html_print_image("images/dot_green.disabled.png", true, array("border" => '0', "title" => __('Quiet'), "alt" => ""));
+	}
+
+	if ($in_planned_downtime) {
+		$data[0] .= ui_print_help_tip (__('Agent in planned downtime'), true, 'images/minireloj-16.png');
+		$data[0] .= "</em>";
+	}
+	
 	$data[0] .= '<div class="agentleft_' . $agent["id_agente"] . '" style="visibility: hidden; clear: left;">';
 	$data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'">'.__('View').'</a>';
+	
 	if (check_acl ($config['id_user'], $agent["id_grupo"], "AW")) {
 		$data[0] .= ' | ';
 		$data[0] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$agent["id_agente"].'">'.__('Edit').'</a>';
 	}
+	
 	$data[0] .= '</div></div>';
 	
 	$data[1] = ui_print_truncate_text($agent["description"], 'description', false, true, true, '[&hellip;]', 'font-size: 6.5pt');

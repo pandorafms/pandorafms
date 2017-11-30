@@ -66,11 +66,14 @@ function mainAgentsModules() {
 	$modulegroup = get_parameter('modulegroup', 0);
 	$refr = get_parameter('refresh', 0); // By default 30 seconds
 	
+	$recursion = get_parameter('recursion', 0);
 	$group_id = (int)get_parameter('group_id', 0);
 	$offset = (int)get_parameter('offset', 0);
 	$hor_offset = (int)get_parameter('hor_offset', 0);
 	$block = $config['block_size'];
-	$agents_id = (array)get_parameter('id_agents2', -1);
+	if(get_parameter('modulegroup') != null){
+		$agents_id = (array)get_parameter('id_agents2', -1);	
+	}
 	$selection_a_m = (int)get_parameter('selection_agent_module');
 	$modules_selected = (array)get_parameter('module', 0);
 	$update_item = (string)get_parameter('edit_item','');
@@ -139,6 +142,8 @@ function mainAgentsModules() {
 	$filter_groups_label = '<b>'.__('Group').'</b>';
 	$filter_groups = html_print_select_groups(false, "AR", true, 'group_id', $group_id, '', '', '', true, false, true, '', false , 'width: auto;');
 	
+	$filter_recursion_label = '<b>'.__('Recursion').'</b>';
+	$filter_recursion = html_print_checkbox('recursion', 1, 0, true);
 	//groups module
 	$filter_module_groups_label = '<b>'.__('Module group').'</b>';
 	$filter_module_groups = html_print_select_from_sql ("SELECT * FROM tmodule_group ORDER BY name",
@@ -245,12 +250,12 @@ function mainAgentsModules() {
 	
 	if($config['pure'] != 1){
 		echo '<form method="post" action="' 
-		. ui_get_url_refresh (array ('offset' => $offset, 'hor_offset' => $offset,'group_id' => $group_id, 'modulegroup' => $modulegroup)).'">';
+		. ui_get_url_refresh (array ('offset' => $offset, 'hor_offset' => $offset, 'group_id' => $group_id, 'modulegroup' => $modulegroup)).'">';
 		
 		echo '<table class="databox filters" cellpadding="0" cellspacing="0" border="0" style="width:100%;">';
 			echo "<tr>";
 				echo "<td>" . $filter_groups_label . "</td>";
-				echo "<td>" . $filter_groups       . "</td>";
+				echo "<td>" . $filter_groups       ."&nbsp;&nbsp;&nbsp;". $filter_recursion_label . $filter_recursion. "</td>";
 				echo "<td></td>";
 				echo "<td></td>";
 				echo "<td>" . $filter_module_groups_label . "</td>";
@@ -375,9 +380,14 @@ function mainAgentsModules() {
 	}
 
 	if ($group_id > 0) {
-		$filter_groups['id_grupo'] = $group_id;
+		if($recursion){
+			$filter_groups['id_grupo'] = array_merge($group_id,
+				groups_get_id_recursive($group_id, true));
+		}
+		else{
+			$filter_groups['id_grupo'] = $group_id;	
+		}
 	}
-	
 	$agents = agents_get_agents ($filter_groups);
 	$nagents = count($agents);
 
@@ -675,12 +685,14 @@ $ignored_params['refresh']='';
 		}
 		
 		$("#group_id").change (function () {
+			
 			jQuery.post ("ajax.php",
 				{"page" : "operation/agentes/ver_agente",
 					"get_agents_group_json" : 1,
 					"id_group" : this.value,
 					"privilege" : "AW",
-					"keys_prefix" : "_"
+					"keys_prefix" : "_",
+					"recursion" : $('#checkbox-recursion').is(':checked')
 				},
 				function (data, status) {
 					$("#id_agents2").html('');
@@ -699,7 +711,34 @@ $ignored_params['refresh']='';
 				"json"
 			);
 		});
-
+		
+		$("#checkbox-recursion").change (function () {
+			jQuery.post ("ajax.php",
+				{"page" : "operation/agentes/ver_agente",
+					"get_agents_group_json" : 1,
+					"id_group" : 	$("#group_id").val(),
+					"privilege" : "AW",
+					"keys_prefix" : "_",
+					"recursion" : $('#checkbox-recursion').is(':checked')
+				},
+				function (data, status) {
+					$("#id_agents2").html('');
+					$("#module").html('');
+					jQuery.each (data, function (id, value) {
+						// Remove keys_prefix from the index
+						id = id.substring(1);
+						
+						option = $("<option></option>")
+							.attr ("value", value["id_agente"])
+							.html (value["alias"]);
+						$("#id_agents").append (option);
+						$("#id_agents2").append (option);
+					});
+				},
+				"json"
+			);
+		});
+		
 		$("#modulegroup").change (function () {
 			jQuery.post ("ajax.php",
 				{"page" : "operation/agentes/ver_agente",

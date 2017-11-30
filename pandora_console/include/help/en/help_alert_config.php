@@ -52,12 +52,15 @@ Apart from the defined module macros, the following macros are also available:
 <li>_alert_text_severity_ : Text alert severity (Maintenance, Informational, Normal Minor, Warning, Major, Critical).</li>
 <li>_event_text_severity_ : (Only event alerts) Text event (who fire the alert) severity (Maintenance, Informational, Normal Minor, Warning, Major, Critical).</li>
 <li>_event_id_ : (Only event alerts) Id of the event that fired the alert.</li>
+<li>_event_cfX_ : (Only event alerts) Key of the event custom field that fired the alert.</li>
 <li>_id_agent_ : Id of agent, useful to build direct URL to redirect to a Pandora FMS console webpage.</li>
 <li>_id_group_ : Id of agent group.</li>
 <li>_id_module_ : Id of module.</li>
 <li>_id_alert_ : Numerical ID of the alert (unique), used to correlate on third party software</li>
 <li>_policy_ : Name of the policy the module belongs to (if applies).</li>
 <li>_interval_ : Execution interval of the module. </li>
+<li>_server_ip_ : Ip of server assigned to agent. </li>
+<li>_server_name_ : Name of server assigned to agent. </li>
 <li>_target_ip_ : IP address of the target of the module.</li>
 <li>_target_port_ : Port number of the target of the module.</li>
 <li>_plugin_parameters_ : Plug-in Parameters of the module.</li>

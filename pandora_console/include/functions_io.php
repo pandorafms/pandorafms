@@ -235,12 +235,6 @@ function io_safe_output($value, $utf8 = true)
 	//Replace the html entitie of > for the char
 	$value = str_replace("&gt;", '>', $value);
 	
-	//Revert html entities to chars
-	for ($i = 0; $i < 33; $i++) {
-		$value = str_ireplace("&#x" . dechex($i) . ";",
-			io_html_to_ascii(dechex($i)), $value);
-	}
-	
 	if ($utf8) {
 		$value =  html_entity_decode ($value, ENT_QUOTES, "UTF-8");
 	}

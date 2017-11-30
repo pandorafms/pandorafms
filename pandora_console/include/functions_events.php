@@ -1687,7 +1687,7 @@ function events_page_responses ($event, $childrens_ids = array()) {
 			$users[0]['id_user'] = $config['id_user'];
 			$users[0]['fullname'] = $user_name;
 		} else {
-			$users = groups_get_users($_user_groups, array('id_perfil' => $profiles_view_events), true, true);
+			$users = groups_get_users($_user_groups, array('id_perfil' => $profiles_view_events), true);
 		}
 	
 		foreach($users as $u) {

@@ -99,6 +99,8 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 	else{
 		$upd_info['autorefresh_white_list'] = json_encode($autorefresh_list);
 	}
+	
+	$upd_info['time_autorefresh'] = (int) get_parameter ("time_autorefresh", 0);
 
 	$is_admin = db_get_value('is_admin', 'tusuario', 'id_user', $id);
 	
@@ -439,10 +441,13 @@ $table_ichanges = '<table style="position:relative;left:160px;">
 	</table>';
 $data[0] .= $table_ichanges;
 
+//time autorefresh
+$times = get_refresh_time_array();
+$data[1] = '<span style="width:40%;float:left;">'.__('Time autorefresh').'</span>';
+$data[1] .= $jump . '<span style="width:20%;float:left;">'. html_print_select ($times, 'time_autorefresh', $user_info["time_autorefresh"], '', '', '', true,false,false).'</span>';
 
 $table->rowclass[] = '';
-$table->colspan[count($table->data)][0] = 3;
-$table->rowstyle[] = 'font-weight: bold;';
+$table->rowstyle[] = 'font-weight: bold;vertical-align: top';
 $table->data[] = $data;
 
 $data = array();

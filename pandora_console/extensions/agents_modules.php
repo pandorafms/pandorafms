@@ -72,7 +72,7 @@ function mainAgentsModules() {
 	$hor_offset = (int)get_parameter('hor_offset', 0);
 	$block = $config['block_size'];
 	if(get_parameter('modulegroup') != null){
-	$agents_id = (array)get_parameter('id_agents2', -1);
+		$agents_id = (array)get_parameter('id_agents2', -1);	
 	}
 	$selection_a_m = (int)get_parameter('selection_agent_module');
 	$modules_selected = (array)get_parameter('module', 0);

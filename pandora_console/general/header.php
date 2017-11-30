@@ -191,7 +191,7 @@ config_check();
 					$_GET['refr'] = null;
 				}
 				
-				$select = db_process_sql("SELECT autorefresh_white_list FROM tusuario WHERE id_user = '" . $config['id_user'] . "'");
+				$select = db_process_sql("SELECT autorefresh_white_list,time_autorefresh FROM tusuario WHERE id_user = '" . $config['id_user'] . "'");
 				$autorefresh_list = json_decode($select[0]['autorefresh_white_list']);
 				
 				if ($autorefresh_list !== null && array_search($_GET['sec2'], $autorefresh_list) !== false) {
@@ -261,7 +261,13 @@ config_check();
 				
 				if ($check_minor_release_available) {
 					if (users_is_admin($config['id_user'])) {
-						set_pandora_error_for_header('There are one or more minor releases waiting for update', 'minor release/s available');
+						
+						if($config['language'] == 'es'){
+							set_pandora_error_for_header('Hay una o mas revisiones menores en espera para ser actualizadas. <a style="font-size:8pt;font-style:italic;" target="blank" href="http://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Actualizacion#Versi.C3.B3n_7.0NG_.28_Rolling_Release_.29">'.__('Sobre actualización de revisión menor').'</a>', 'Revisión/es menor/es disponible/s');
+				}
+				else{
+							set_pandora_error_for_header('There are one or more minor releases waiting for update. <a style="font-size:8pt;font-style:italic;" target="blank" href="http://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Anexo_Upgrade#Version_7.0NG_.28_Rolling_Release_.29">'.__('About minor release update').'</a>', 'minor release/s available');
+				}				
 					}
 				}
 				echo '<div id="alert_messages" style="display: none"></div>';
@@ -382,6 +388,12 @@ config_check();
 					$do_refresh = false;
 				}
 			}
+			
+			$new_dashboard = get_parameter('new_dashboard',0);
+			
+			if ($_GET['sec2'] == 'enterprise/dashboard/main_dashboard' && $new_dashboard) {
+				$do_refresh = false;
+			}
 
 			if ($do_refresh) {
 		?>
@@ -389,7 +401,15 @@ config_check();
 				$("#combo_refr").toggle ();
 				$("#combo_refr").css('padding-right', '9px');
 				href = $("a.autorefresh").attr ("href");
-				$(document).attr ("location", href + "30");
+				<?php
+				if($select[0]['time_autorefresh']){
+				?>
+					var refresh = '<?php echo $select[0]["time_autorefresh"] ?>';
+					$(document).attr ("location", href + refresh);
+				<?php 
+				}
+				?>
+				
 		<?php
 			}
 		}

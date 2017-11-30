@@ -737,7 +737,7 @@ function pch_bar_graph ($graph_type, $index, $data, $width, $height, $font,
 			$margin_left = 40+50;
 			$margin_right = 90;
 			$margin_top = 10;
-			$margin_bottom = (3 * $max_chars)+40;
+			$margin_bottom = (3 * $max_chars)+80;
 			break;
 		case "hbar":
 			$scaleSettings = array("GridR"=>1000,"GridG"=>1000,"GridB"=>1000,"DrawSubTicks"=>TRUE,
@@ -754,13 +754,7 @@ function pch_bar_graph ($graph_type, $index, $data, $width, $height, $font,
 	$myPicture->setGraphArea($margin_left, $margin_top, $width - $margin_right, $height - $margin_bottom);
 	
 	$myPicture->drawScale($scaleSettings);
-	/*
-	if (isset($legend)) {
-		/* Write the chart legend 
-		$size = $myPicture->getLegendSize(array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_HORIZONTAL));
-		$myPicture->drawLegend($width-$size['Width'],0,array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_HORIZONTAL, "BoxWidth"=>10, "BoxHeight"=>10));
-	}
-	*/
+	
 	/* Turn on shadow computing */ 
 	$myPicture->setShadow(TRUE,array("X"=>0,"Y"=>1,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10));
 	

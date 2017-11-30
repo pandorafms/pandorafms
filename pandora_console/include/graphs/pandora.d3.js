@@ -724,12 +724,13 @@ function sunburst (recipient, data, width, height) {
 		.on("mousemove", move_tooltip);
 
 	function computeTextRotation(d) {
-		var angle = x(d.x + d.dx / 2) - Math.PI / 2;
-		return angle / Math.PI * 180;
+		var ang = (x(d.x + d.dx / 2) - Math.PI / 2) / Math.PI * 180;
+        return (ang > 90) ? 180 + ang : ang;
 	}
 
 	var text = g.append("text")
-		.attr("x", function(d) { return y(d.y); })
+		.attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")rotate(" + computeTextRotation(d) + ")"; })
+		.attr("x", function (d) { return computeTextRotation(d) > 180 ? -40 : -30; })
 		.attr("dx", "6") // margin
 		.attr("dy", ".35em") // vertical-align
 		.attr("opacity", function(d) {
@@ -741,7 +742,6 @@ function sunburst (recipient, data, width, height) {
 		.text(function(d) {
 			return d.name;
 		})
-		.attr("transform", function(d) { return "rotate(" + computeTextRotation(d) + ")"; })
 		.style("font-size", "10px")
 		 // Makes svg elements invisible to events
 		.style("pointer-events", "none");
@@ -768,8 +768,8 @@ function sunburst (recipient, data, width, height) {
 						var arcText = d3.select(this.parentNode).select("text");
 						// fade in the text element and recalculate positions
 						arcText
-							.attr("transform", function() { return "rotate(" + computeTextRotation(e) + ")" })
-							.attr("x", function(d) { return y(d.y); })
+							.attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")rotate(" + computeTextRotation(d) + ")"; })
+							.attr("x", function (d) { return computeTextRotation(d) > 180 ? -40 : -30; })
 							.transition().duration(250)
 								.attr("opacity", 1);
 		 			}
@@ -1037,19 +1037,19 @@ function createGauges(data, width, height, font_size, no_data_image, font) {
 		label = label.replace(/&#40;/g,'\(');
 		label = label.replace(/&#41;/g,'\)');
 		
-		minimun_warning 	= parseFloat( data[key].min_warning );
-		maximun_warning 	= parseFloat( data[key].max_warning );
-		minimun_critical	= parseFloat( data[key].min_critical );
-		maximun_critical 	= parseFloat( data[key].max_critical );
+		minimun_warning 	= round_with_decimals(parseFloat( data[key].min_warning ));
+		maximun_warning 	= round_with_decimals(parseFloat( data[key].max_warning ));
+		minimun_critical	= round_with_decimals(parseFloat( data[key].min_critical ));
+		maximun_critical 	= round_with_decimals(parseFloat( data[key].max_critical ));
 
-		mininum = parseFloat(data[key].min);
-		maxinum = parseFloat(data[key].max);
+		mininum = round_with_decimals(parseFloat(data[key].min));
+		maxinum = round_with_decimals(parseFloat(data[key].max));
 	
 		critical_inverse = parseInt(data[key].critical_inverse);
 		warning_inverse  = parseInt(data[key].warning_inverse);
 
-		valor = parseFloat(data[key].value);
-		
+		valor = round_with_decimals(data[key].value);
+
 		if (isNaN(valor)) 
 			valor = null;
 		createGauge(nombre, label, valor, mininum, maxinum, 
@@ -1281,7 +1281,7 @@ function Gauge(placeholderName, configuration, font)
 	{
 		var pointerContainer = this.body.select(".pointerContainer");
 		
-		pointerContainer.selectAll("text").text(Math.round(value));
+		pointerContainer.selectAll("text").text(round_with_decimals(value));
 		
 		var pointer = pointerContainer.selectAll("path");
 		pointer.transition()
@@ -1491,5 +1491,602 @@ function print_phases_donut (recipient, phases) {
 		
 		polyline.exit()
 			.remove();
+	}
+}
+
+function round_with_decimals (value, multiplier = 1) {
+	if ((value * multiplier) == 0) return 0;
+	if ((value * multiplier) >= 1) {
+		return Math.round(value * multiplier) / multiplier;
+	}
+	return round_with_decimals (value, multiplier * 10);
+}
+
+function progress_bar_d3 (recipient, percentile, width, height, color, unit, label, label_color) {
+	var startPercent = 0;
+	var endPercent = parseInt(percentile) / 100;
+	var count = Math.abs((endPercent - startPercent) / 0.01);
+	var step = endPercent < startPercent ? -0.01 : 0.01;
+
+	var circle = d3.select(recipient)
+		.append("svg")
+			.attr("width", width)
+			.attr("height", height);
+
+	var progress_back = circle.append('rect')
+		.attr('fill', '#000000')
+		.attr('fill-opacity', 0.5)
+		.attr('height', 20)
+		.attr('width', width)
+		.attr('rx', 10)
+		.attr('ry', 10)
+		.attr('x', 0);
+
+	var progress_front = circle.append('rect')
+		.attr('fill', color)
+		.attr('fill-opacity', 1)
+		.attr('height', 20)
+		.attr('width', 0)
+		.attr('rx', 10)
+		.attr('ry', 10)
+		.attr('x', 0);
+
+	var labelText = circle.append("text")
+		.attr("transform", "translate(" + (width/2) + ", " + (height/2) + ")")
+		.attr('fill', label_color)
+		.style("font-family", "arial")
+		.style("font-weight", "bold")
+		.style("font-size", 20)
+		.html(label)
+		.attr('dy', '15')
+		.attr('text-anchor', 'middle');
+
+	var numberText = circle.append("text")
+		.attr("transform", "translate(" + (width/2) + ", " + (height/2) + ")")
+		.attr('fill', '#FFFFFF')
+		.style("font-family", "arial")
+		.style("font-weight", "bold")
+		.style("font-size", 14)
+		.attr('text-anchor', 'middle')
+		.attr('dy', '-10');
+
+	function updateProgress(bar_progress) {
+		var percent_value = Number(bar_progress * 100);
+		numberText.text(percent_value.toFixed() + " " + unit);
+		progress_front.attr('width', (width * bar_progress));
+	}
+
+	var bar_progress = startPercent;
+
+	(function loops() {
+		updateProgress(bar_progress);
+
+		if (count > 0) {
+			count--;
+			bar_progress += step;
+			setTimeout(loops, 30);
+		}
+	})();
+}
+
+function progress_bubble_d3 (recipient, percentile, width, height, color, unit, label, label_color) {
+	var startPercent = 0;
+	var endPercent = parseInt(percentile) / 100;
+	var count = Math.abs((endPercent - startPercent) / 0.01);
+	var step = endPercent < startPercent ? -0.01 : 0.01;
+
+	var numberSize = 0;
+	var textSize = 0;
+	var unitSize = 0;
+	var yPosText = 0;
+	var yPosNumber = 0;
+	if (width >= 500) {
+		numberSize = 100;
+		textSize = 50;
+		unitSize = 50;
+		yPosNumber = '15';
+		yPosText = '-100';
+	}
+	else if (width >= 400) {
+		numberSize = 80;
+		textSize = 40;
+		unitSize = 40;
+		yPosNumber = '15';
+		yPosText = '-80';
+	}
+	else if (width >= 300) {
+		numberSize = 60;
+		textSize = 30;
+		unitSize = 30;
+		yPosNumber = '15';
+		yPosText = '-45';
+	}
+	else if (width >= 200) {
+		numberSize = 40;
+		textSize = 20;
+		unitSize = 20;
+		yPosNumber = '50';
+		yPosText = '-30';
+	}
+	else if (width >= 100) {
+		numberSize = 20;
+		textSize = 10;
+		unitSize = 10;
+		yPosNumber = '5';
+		yPosText = '-20';
+	}
+	else {
+		numberSize = 10;
+		textSize = 8;
+		unitSize = 8;
+		yPosNumber = '5';
+		yPosText = '-10';
+	}
+
+	var circle = d3.select(recipient)
+		.append("svg")
+			.attr("width", width)
+			.attr("height", height);
+
+	var progress_back = circle.append('circle')
+		.attr("transform", "translate(" + (width/2) + ", " + (height/2) + ")")
+		.attr('fill', '#000000')
+		.attr('fill-opacity', 0)
+		.attr('r', width/2);
+
+	var progress_front = circle.append('circle')
+		.attr("transform", "translate(" + (width/2) + ", " + (height/2) + ")")
+		.attr('fill', color)
+		.attr('fill-opacity', 1)
+		.attr('r', 0);
+
+	var labelText = circle.append("text")
+		.attr("transform", "translate(" + (width/2) + ", " + (height/2) + ")")
+		.attr('fill', label_color)
+		.style("font-family", "arial")
+		.style("font-weight", "bold")
+		.style("font-size", textSize)
+		.html(label)
+		.attr('dy', -(width/3))
+		.attr('text-anchor', 'middle');
+
+	var numberText = circle.append("text")
+		.attr("transform", "translate(" + (width/2) + ", " + (height/2) + ")")
+		.attr('fill', label_color)
+		.style("font-family", "arial")
+		.style("font-weight", "bold")
+		.style("font-size", numberSize)
+		.attr('text-anchor', 'middle')
+		.attr('dy', width/3);
+
+	function updateProgress(bar_progress) {
+		var percent_value = Number(bar_progress * 100);
+		numberText.text(percent_value.toFixed() + " " + unit);
+		progress_front.attr('r', ((width/2) * bar_progress));
+	}
+
+	var bar_progress = startPercent;
+
+	(function loops() {
+		updateProgress(bar_progress);
+
+		if (count > 0) {
+			count--;
+			bar_progress += step;
+			setTimeout(loops, 30);
+		}
+	})();
+}
+
+function print_circular_progress_bar (recipient, percentile, width, height, color, unit, label, label_color) {
+	var twoPi = Math.PI * 2;
+	var radius = (width / 2);
+	var border = 20;
+	var startPercent = 0;
+	var endPercent = parseInt(percentile) / 100;
+	var count = Math.abs((endPercent - startPercent) / 0.01);
+	var step = endPercent < startPercent ? -0.01 : 0.01;
+
+	var numberSize = 0;
+	var textSize = 0;
+	var unitSize = 0;
+	var yPosText = 0;
+	var yPosUnit = 0;
+	var yPosNumber = 0;
+	if (width >= 500) {
+		numberSize = 100;
+		textSize = 50;
+		unitSize = 50;
+		yPosNumber = '15';
+		yPosText = '-100';
+		yPosUnit = '100';
+	}
+	else if (width >= 400) {
+		numberSize = 80;
+		textSize = 40;
+		unitSize = 40;
+		yPosNumber = '15';
+		yPosText = '-80';
+		yPosUnit = '80';
+	}
+	else if (width >= 300) {
+		numberSize = 60;
+		textSize = 30;
+		unitSize = 30;
+		yPosNumber = '15';
+		yPosText = '-45';
+		yPosUnit = '60';
+	}
+	else if (width >= 200) {
+		numberSize = 40;
+		textSize = 20;
+		unitSize = 20;
+		yPosNumber = '10';
+		yPosText = '-30';
+		yPosUnit = '40';
+	}
+	else if (width >= 100) {
+		numberSize = 20;
+		textSize = 10;
+		unitSize = 10;
+		yPosNumber = '5';
+		yPosText = '-15';
+		yPosUnit = '20';
+	}
+	else {
+		numberSize = 8;
+		textSize = 4;
+		unitSize = 4;
+		yPosNumber = '2';
+		yPosText = '-5';
+		yPosUnit = '5';
+	}
+
+	var arc = d3.svg.arc()
+		.startAngle(0)
+		.innerRadius(radius)
+		.outerRadius(radius - border);
+
+	var circle = d3.select(recipient)
+		.append("svg")
+			.attr("width", width)
+			.attr("height", height)
+			.append("g")
+				.attr("transform", "translate(" + (width/2) + ", " + (height/2) + ")");
+
+	var meter = circle.append("g")
+		.attr('class', 'progress-meter');
+
+	meter.append("path")
+		.attr('fill', '#000000')
+		.attr('fill-opacity', 0.5)
+		.attr('d', arc.endAngle(twoPi));
+
+	var foreground = circle.append("path")
+		.attr('fill', color)
+		.attr('fill-opacity', 1)
+		.attr('stroke', color)
+		.attr('stroke-opacity', 1);
+	
+	var front = circle.append("path")
+		.attr('fill', color)
+		.attr('fill-opacity', 1);
+
+	var labelText = circle.append("text")
+		.attr('fill', label_color)
+		.style("font-family", "arial")
+		.style("font-weight", "bold")
+		.style("font-size", textSize)
+		.html(label)
+		.attr('text-anchor', 'middle')
+		.attr('dy', yPosText);
+
+	var numberText = circle.append("text")
+		.attr('fill', label_color)
+		.style("font-family", "arial")
+		.style("font-weight", "bold")
+		.style("font-size", numberSize)
+		.attr('text-anchor', 'middle')
+		.attr('dy', yPosNumber);
+
+	var percentText = circle.append("text")
+		.attr('fill', label_color)
+		.style("font-family", "arial")
+		.style("font-weight", "bold")
+		.style("font-size", unitSize)
+		.text(unit)
+		.attr('text-anchor', 'middle')
+		.attr('dy', yPosUnit);
+
+	function updateProgress(progress) {
+		foreground.attr('d', arc.endAngle(twoPi * progress));
+		front.attr('d', arc.endAngle(twoPi * progress));
+		var percent_value = Number(progress * 100);
+		numberText.text(percent_value.toFixed());
+	}
+
+	var progress = startPercent;
+
+	(function loops() {
+		updateProgress(progress);
+
+		if (count > 0) {
+			count--;
+			progress += step;
+			setTimeout(loops, 30);
+		}
+	})();
+}
+
+function print_interior_circular_progress_bar (recipient, percentile, width, height, color, unit, label, label_color) {
+	var twoPi = Math.PI * 2;
+	var radius = (width / 2) - 20;
+	var radius2 = (width / 2);
+	var border = 20;
+	var startPercent = 0;
+	var endPercent = parseInt(percentile) / 100;
+	var count = Math.abs((endPercent - startPercent) / 0.01);
+	var step = endPercent < startPercent ? -0.01 : 0.01;
+
+	var numberSize = 0;
+	var textSize = 0;
+	var unitSize = 0;
+	var yPosText = 0;
+	var yPosUnit = 0;
+	var yPosNumber = 0;
+	if (width >= 500) {
+		numberSize = 100;
+		textSize = 50;
+		unitSize = 50;
+		yPosNumber = '15';
+		yPosText = '-100';
+		yPosUnit = '100';
+	}
+	else if (width >= 400) {
+		numberSize = 80;
+		textSize = 40;
+		unitSize = 40;
+		yPosNumber = '15';
+		yPosText = '-80';
+		yPosUnit = '80';
+	}
+	else if (width >= 300) {
+		numberSize = 60;
+		textSize = 30;
+		unitSize = 30;
+		yPosNumber = '15';
+		yPosText = '-45';
+		yPosUnit = '60';
+	}
+	else if (width >= 200) {
+		numberSize = 40;
+		textSize = 20;
+		unitSize = 20;
+		yPosNumber = '10';
+		yPosText = '-30';
+		yPosUnit = '40';
+	}
+	else if (width >= 100) {
+		numberSize = 20;
+		textSize = 10;
+		unitSize = 10;
+		yPosNumber = '5';
+		yPosText = '-15';
+		yPosUnit = '20';
+	}
+	else {
+		numberSize = 8;
+		textSize = 4;
+		unitSize = 4;
+		yPosNumber = '2';
+		yPosText = '-5';
+		yPosUnit = '5';
+	}
+
+	var arc = d3.svg.arc()
+		.startAngle(0)
+		.innerRadius(radius)
+		.outerRadius(radius - border);
+
+	var arc2 = d3.svg.arc()
+		.startAngle(0)
+		.innerRadius(radius2)
+		.outerRadius(radius2 - border);
+
+	var circle = d3.select(recipient)
+		.append("svg")
+			.attr("width", width)
+			.attr("height", height)
+			.append("g")
+				.attr("transform", "translate(" + (width/2) + ", " + (height/2) + ")");
+
+	var meter = circle.append("g")
+		.attr('class', 'progress-meter');
+
+	meter.append("path")
+		.attr('fill', '#000000')
+		.attr('fill-opacity', 0.5)
+		.attr('d', arc.endAngle(twoPi));
+
+	var meter = circle.append("g")
+		.attr('class', 'progress-meter');
+
+	meter.append("path")
+		.attr('fill', color)
+		.attr('fill-opacity', 1)
+		.attr('d', arc2.endAngle(twoPi));
+
+	var foreground = circle.append("path")
+		.attr('fill', color)
+		.attr('fill-opacity', 1)
+		.attr('stroke', color)
+		.attr('stroke-opacity', 1);
+	
+	var front = circle.append("path")
+		.attr('fill', color)
+		.attr('fill-opacity', 1);
+
+	var labelText = circle.append("text")
+		.attr('fill', label_color)
+		.style("font-family", "arial")
+		.style("font-weight", "bold")
+		.style("font-size", textSize)
+		.html(label)
+		.attr('text-anchor', 'middle')
+		.attr('dy', yPosText);
+
+	var numberText = circle.append("text")
+		.attr('fill', label_color)
+		.style("font-family", "arial")
+		.style("font-weight", "bold")
+		.style("font-size", numberSize)
+		.attr('text-anchor', 'middle')
+		.attr('dy', yPosNumber);
+
+	var percentText = circle.append("text")
+		.attr('fill', label_color)
+		.style("font-family", "arial")
+		.style("font-weight", "bold")
+		.style("font-size", unitSize)
+		.text(unit)
+		.attr('text-anchor', 'middle')
+		.attr('dy', yPosUnit);
+
+	function updateProgress(progress) {
+		foreground.attr('d', arc.endAngle(twoPi * progress));
+		front.attr('d', arc.endAngle(twoPi * progress));
+		var percent_value = Number(progress * 100);
+		numberText.text(percent_value.toFixed());
+	}
+
+	var progress = startPercent;
+
+	(function loops() {
+		updateProgress(progress);
+
+		if (count > 0) {
+			count--;
+			progress += step;
+			setTimeout(loops, 30);
+		}
+	})();
+}
+
+function print_donut_graph (recipient, width, height, module_data, resume_color) {
+	var svg = d3.select(recipient)
+		.append("svg")
+			.attr("width", width)
+			.attr("height", height)
+		.append("g");
+
+	svg.append("g")
+		.attr("class", "slices");
+
+	var radius = 120;
+	var increment_y = 60;
+	var increment_y_padding = 25;
+	var decrement_x_padding = 150;
+	if (width >= 500) {
+		radius = 180;
+		increment_y = 60;
+		increment_y_padding = 20;
+		decrement_x_padding = 40;
+	}
+	else if (width >= 400) {
+		radius = 140;
+		increment_y = 40;
+		increment_y_padding = 20;
+		decrement_x_padding = 40;
+	}
+	else if (width >= 300) {
+		radius = 100;
+		increment_y = 40;
+		increment_y_padding = 15;
+		decrement_x_padding = 40;
+	}
+	else if (width >= 200) {
+		radius = 50;
+		increment_y = 40;
+		increment_y_padding = 15;
+		decrement_x_padding = 25;
+	}
+	else if (width >= 100) {
+		radius = 20;
+		increment_y = 20;
+		increment_y_padding = 8;
+		decrement_x_padding = 25;
+	}
+	else {
+		radius = 10;
+		increment_y = 10;
+		increment_y_padding = 3;
+		decrement_x_padding = 5;
+	}
+
+	var arc = d3.svg.arc()
+		.outerRadius(radius * 0.8)
+		.innerRadius(radius * 0.4);
+
+	var key = function(d){ return d.data.label; };
+
+	var pie = d3.layout.pie()
+		.sort(null)
+		.value(function(d) {
+			return parseFloat(d.percent);
+		});
+
+	jQuery.each(module_data, function (key, m_d) {
+		svg.append("g")
+			.append("rect")
+				.attr("transform", "translate(" + (((width / 2) - (radius + decrement_x_padding))) + "," + (((height / 2) - radius) - increment_y) + ")")
+				.attr('fill', m_d.color)
+				.attr('x', -20)
+				.attr('y', -10)
+				.attr('width', 20)
+				.attr('height', 10);
+
+		svg.append("g")
+			.append("text")
+				.attr('fill', resume_color)
+				.attr("transform", "translate(" + (((width / 2) - (radius + decrement_x_padding)) + 10) + "," + (((height / 2) - radius) - increment_y) + ")")
+				.text(m_d.tag_name)
+				.style("font-family", "smallfontFont")
+				.style("font-size", "7pt");
+		
+		increment_y -= increment_y_padding;
+	});
+
+	function donutData (){
+		return module_data.map(function(m_data){
+			return { label: m_data.tag_name, percent: m_data.percent, color : m_data.color}
+		});
+	}
+
+	print_phases(donutData());
+
+	function print_phases(data) {
+		var slice = svg.select(".slices").selectAll("path.slice")
+			.data(pie(data), key);
+
+		slice.enter()
+			.insert("path")
+			.style("fill", function(d) {
+					return d.data.color;
+			})
+			.attr("class", "slice")
+			.attr("transform", "translate(" + width / 2 + "," + (height - radius) + ")");
+
+		slice.transition()
+				.duration(0)
+				.attrTween("d", function(d) {
+					this._current = this._current || d;
+					var interpolate = d3.interpolate(this._current, d);
+					this._current = interpolate(0);
+					return function(t) {
+						return arc(interpolate(t));
+					};
+				});
+ 
+		slice.exit().remove();
 	}
 }

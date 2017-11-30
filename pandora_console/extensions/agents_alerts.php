@@ -546,9 +546,11 @@ ui_require_jquery_file('pandora');
 		});
 		
 		$('#group_id').change(function(){
-			var regx = /&group_id=\d*/g;
-			var url = location.href.replace(regx, "");
-			location.href = url+"&group_id="+$("#group_id").val();
+			if(location.href.indexOf("extensions/agents_modules") == -1){
+				var regx = /&group_id=\d*/g;
+				var url = location.href.replace(regx, "");
+				location.href = url+"&group_id="+$("#group_id").val();
+			}
 		});
 
 	});

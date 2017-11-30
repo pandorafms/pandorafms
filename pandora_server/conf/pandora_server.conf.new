@@ -1,7 +1,7 @@
 #############################################################################
 # Pandora FMS Server Parameters
 # Pandora FMS, the Flexible Monitoring System.
-# Version 7.0NG.714
+# Version 7.0NG.716
 # Licensed under GPL license v2,
 # (c) 2003-2017 Artica Soluciones Tecnologicas
 # http://www.pandorafms.com
@@ -161,10 +161,10 @@ network_threads 4
 # that ping should be 1 to report 1. Setting this to 1 will make all icmp montioring faster but
 # with more probability of failure. 
 
-icmp_checks 3
+icmp_checks 1
 
 # Number of ICMP packets to send per request.
-icmp_packets 1
+icmp_packets 2
 
 # tcp specific options :
 # tcp_checks: number of tcp retries if first attempt fails.

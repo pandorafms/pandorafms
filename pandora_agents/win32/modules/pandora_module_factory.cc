@@ -1170,7 +1170,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		try {
 			char buffer[100];
 			unsigned long memory = Pandora_Wmi::getDiskFreeSpace(module_freedisk_percent);
-			if (sprintf(buffer, "Free memory %s %dMB",
+			if (sprintf(buffer, "Free space on drive %s %dMB",
 				module_freedisk_percent.c_str(), memory) > 0) {
 				module->setDescription(buffer);
 			}

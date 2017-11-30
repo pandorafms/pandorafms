@@ -10,7 +10,6 @@ $(document).ready(function(){
 	// Display the information
 	if (bg.fetchEvents().length == 0) {
 		showError("Error in fetching data!! Check your internet connection");
-		$('#events_title').hide();
 	} else {
 		showEvents();
 	}
@@ -80,16 +79,15 @@ function showEvents(){
 	
 	var i=0;
 	if(allEvents.length>0){
-		$('#events_title').show();
 		while(i<max_events && i<allEvents.length){
 			var eve_title=document.createElement('div');
+			eve_title.id = 'e_' + i  + '_' + allEvents[i]['id'];
 			var img = document.createElement('img');
-			img.src = 'images/plus.gif';
-			img.width = '9';
-			img.height='9';
+			img.src = 'images/plus.png';
 			img.className ='pm';
 			img.id='i_' + i  + '_' + allEvents[i]['id'];
 			eve_title.appendChild(img);
+			var div_empty = document.createElement('img');
 			var a = document.createElement('a');
 			var temp_style;
 			
@@ -100,7 +98,8 @@ function showEvents(){
 					+ "/index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente="
 					+ allEvents[i]['agent_name'];
 			a.setAttribute("href",agent_url);
-			a.target="_blank";
+			a.target = "_blank";
+			a.className = 'a_2_mo';
 			
 			
 			a.innerText = allEvents[i]['title'];			
@@ -115,7 +114,6 @@ function showEvents(){
 			
 			var time=allEvents[i]['date'].split(" ");
 			var time_text = time[0]+" "+time[1];
-			
 			
 			var p = document.createElement('p');
 			var id = (allEvents[i]['module']==0)
@@ -155,17 +153,16 @@ function showHide() {
 	// Toggle information
 	if($('#' + pid).css('display') == 'none') {
 		$('#' + pid).slideDown();
-		$(this).attr({src: 'images/minus.gif'});
+		$(this).attr({src: 'images/minus.png'});
 	}
 	else {
 		$('#' + pid).slideUp();
-		$(this).attr({src: 'images/plus.gif'});
+		$(this).attr({src: 'images/plus.png'});
 	}
 }
 
 function mrefresh(){
 	localStorage["new_events"]=0;
-	if (bg.fetchEvents().length == 0) $('#events_title').hide();
 	bg.updateBadge();
 	clearError();
 	bg.resetInterval();

@@ -12,7 +12,7 @@ body {
 h1 {
     font-weight: bold;
     font-size: 14px;
-    margin: 12px 0px 2px 0px;
+    margin: 2px 0px 2px 0px;
 }
 h2 {
     color : black;
@@ -42,7 +42,8 @@ span.res {
 img.pm {
     margin-right: 3px;
     cursor: pointer;
-    margin-top: 0px;
+    margin-top: 2px;
+    float: right;
 }
 div.main {
     background-color: white;
@@ -64,16 +65,8 @@ div.b {
 div.b p a {
     font-size: 10pt;
 }
-div.b p {
-    margin: 0 0 0 12px;
-    padding-top: 2px;
-    display: none;
-    color: #333;
-    font-size: 8pt;
-}
 div.b div.items p {
     margin: 2px 0px 8px 0px;
-    color: #333;
     width: 355px;
     float: left;
     display: block;
@@ -141,6 +134,7 @@ div.options_footer {
     background: #f6f6f6;
     padding: 10px;
     margin: 10px;
+    margin-top: 35px;
 }
 
 .error_text {
@@ -149,25 +143,56 @@ div.options_footer {
 
 .result {
     margin: 10px;
-    height: 520;
+    height: 500;
     overflow-y: auto;
 }
 
 #events_title {
-    border: 1px solid #e5e5e5;
-    text-align: center;
     padding: 5px 0;
     margin: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e5e5e5;
 }
 
 .event {
     border: solid 1px #e5e5e5;
     border-top: 0;
-    padding: 3px 0;
+    padding: 5px 6px;
+    color: white;
 }
 
-.sev-Warning { background: #FCED7E;}
-.sev-Critical { background: #FA7A7A;}
-.sev-Informational { background: #7FB9FA;}
-.sev-Normal { background: #A8D96C;}
-.sev-Maintenance { background: #BABDB6;}
+.event a {
+    margin-left: 5px;
+    color: white;
+    font-size: 9pt;
+}
+
+.sev-Warning a {
+    margin-left: 5px;
+    color: #333;
+}
+
+
+.event p {
+    margin: 0 0 0 6px;
+    padding-top: 2px;
+    display: none;
+    font-size: 8pt;
+}
+
+.sev-Warning {
+    background: #FDDD30;
+    color: #333;
+}
+.sev-Critical {
+    background: #F84348;
+}
+.sev-Informational {
+    background: #4CA8E0;
+}
+.sev-Normal {
+    background: #84B839;
+}
+.sev-Maintenance {
+    background: #A8A8A8;
+}

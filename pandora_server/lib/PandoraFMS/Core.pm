@@ -229,6 +229,7 @@ our @EXPORT = qw(
 	pandora_self_monitoring
 	pandora_process_policy_queue
 	subst_alert_macros
+	get_agent_from_alias
 	get_agent_from_addr
 	get_agent_from_name
 	load_module_macros
@@ -243,7 +244,7 @@ our @EXPORT = qw(
 
 # Some global variables
 our @DayNames = qw(sunday monday tuesday wednesday thursday friday saturday);
-our @ServerTypes = qw (dataserver networkserver snmpconsole reconserver pluginserver predictionserver wmiserver exportserver inventoryserver webserver eventserver icmpserver snmpserver satelliteserver transactionalserver mfserver syncserver wuxserver);
+our @ServerTypes = qw (dataserver networkserver snmpconsole reconserver pluginserver predictionserver wmiserver exportserver inventoryserver webserver eventserver icmpserver snmpserver satelliteserver transactionalserver mfserver syncserver wuxserver syslogserver);
 our @AlertStatus = ('Execute the alert', 'Do not execute the alert', 'Do not execute the alert, but increment its internal counter', 'Cease the alert', 'Recover the alert', 'Reset internal counter');
 
 # Event storm protection (no alerts or events)
@@ -251,6 +252,17 @@ our $EventStormProtection :shared = 0;
 
 # Current master server
 my $Master :shared = 0;
+
+##########################################################################
+# Return the agent given the agent name.
+##########################################################################
+sub get_agent_from_alias ($$) {
+	my ($dbh, $alias) = @_;
+	
+	return undef if (! defined ($alias) || $alias eq '');
+	
+	return get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE tagente.alias = ?', safe_input($alias));
+}
 
 ##########################################################################
 # Return the agent given the IP address.
@@ -525,7 +537,7 @@ Process an alert given the status returned by pandora_evaluate_alert.
 ##########################################################################
 sub pandora_process_alert ($$$$$$$$;$) {
 	my ($pa_config, $data, $agent, $module, $alert, $rc, $dbh, $timestamp, $extra_macros) = @_;
-	
+
 	if (defined ($agent)) {
 		logger ($pa_config, "Processing alert '" . safe_output($alert->{'name'}) . "' for agent '" . safe_output($agent->{'nombre'}) . "': " . (defined ($AlertStatus[$rc]) ? $AlertStatus[$rc] : 'Unknown status') . ".", 10);
 	}
@@ -565,12 +577,12 @@ sub pandora_process_alert ($$$$$$$$;$) {
 		# Generate an event
 		if ($table eq 'tevent_alert') {
 			pandora_event ($pa_config, "Alert ceased (" .
-				$alert->{'name'} . ")", 0, 0, $alert->{'priority'}, $id,
+				safe_output($alert->{'name'}) . ")", 0, 0, $alert->{'priority'}, $id,
 				(defined ($alert->{'id_agent_module'}) ? $alert->{'id_agent_module'} : 0), 
 				"alert_ceased", 0, $dbh, 'Pandora', '', '', '', '', $critical_instructions, $warning_instructions, $unknown_instructions);
 		}  else {
 			pandora_event ($pa_config, "Alert ceased (" .
-					$alert->{'name'} . ")", $agent->{'id_grupo'},
+					safe_output($alert->{'name'}) . ")", $agent->{'id_grupo'},
 					$agent->{'id_agente'}, $alert->{'priority'}, $id,
 					(defined ($alert->{'id_agent_module'}) ? $alert->{'id_agent_module'} : 0),
 					"alert_ceased", 0, $dbh, 'Pandora', '', '', '', '', $critical_instructions, $warning_instructions, $unknown_instructions);
@@ -1014,6 +1026,8 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_id_group_ => (defined ($group)) ? $group->{'id_grupo'} : '',
 				_id_alert_ => (defined ($alert->{'id_template_module'})) ? $alert->{'id_template_module'} : '',
 				_interval_ => (defined ($module) && $module->{'module_interval'} != 0) ? $module->{'module_interval'} : (defined ($agent)) ? $agent->{'intervalo'} : '',
+				_server_ip_ => (defined ($agent)) ? get_db_value($dbh, "SELECT ip_address FROM tserver WHERE name = ?", $agent->{'server_name'}) : '',
+				_server_name_ => (defined ($agent)) ? $agent->{'server_name'} : '',
 				_target_ip_ => (defined ($module)) ? $module->{'ip_target'} : '', 
 				_target_port_ => (defined ($module)) ? $module->{'tcp_port'} : '', 
 				_policy_ => undef,
@@ -1108,6 +1122,12 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		$field2 = subst_alert_macros ($field2, \%macros, $pa_config, $dbh, $agent, $module);
 		# Message
 		$field3 = subst_alert_macros ($field3, \%macros, $pa_config, $dbh, $agent, $module);
+		# Content
+		$field4 = subst_alert_macros ($field4, \%macros, $pa_config, $dbh, $agent, $module);
+
+		if($field4 eq ""){
+			$field4 = "text/html";
+		}
 		
 		# Check for _module_graph_Xh_ macros
 		# Check for _module_graph_Xh_ macros and _module_graphth_Xh_ 
@@ -1165,13 +1185,13 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		};
 		
 		# Default content type
-		my $content_type = 'text/html; charset="iso-8859-1"';
+		my $content_type = $field4 . '; charset="iso-8859-1"';
 		
 		# Check if message has non-ascii chars.
 		# non-ascii chars should be encoded in UTF-8.
 		if ($field3 =~ /[^[:ascii:]]/o) {
 			$field3 = encode("UTF-8", $field3);
-			$content_type = 'text/html; charset="UTF-8"';
+			$content_type = $field4 . '; charset="UTF-8"';
 		}
 		
 
@@ -1472,7 +1492,10 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	# Calculate the current interval
 	my $current_interval;
 	if (defined ($module->{'cron_interval'}) && $module->{'cron_interval'} ne '' && $module->{'cron_interval'} ne '* * * * *') {
-		$current_interval = cron_next_execution ($module->{'cron_interval'});
+		$current_interval = cron_next_execution (
+			$module->{'cron_interval'},
+			$module->{'module_interval'} == 0 ? $agent->{'intervalo'} : $module->{'module_interval'}
+		);
 	}
 	elsif ($module->{'module_interval'} == 0) {
 		$current_interval = $agent->{'intervalo'};
@@ -1519,6 +1542,11 @@ sub pandora_process_module ($$$$$$$$$;$) {
 
 		# Update module status count.
 		$mark_for_update = 1;
+
+		# Safe mode execution.
+		if ($agent->{'safe_mode_module'} == $module->{'id_agente_modulo'}) {
+			safe_mode($pa_config, $agent, $module, $new_status, $known_status, $dbh);
+		}
 	}
 	# Set not-init modules to normal status even if min_ff_event is not matched the first time they receive data.
 	# if critical or warning status, just pass through here and wait the time min_ff_event will be matched.
@@ -1611,9 +1639,8 @@ sub pandora_planned_downtime_disabled_once_stop($$) {
 		db_do($dbh, 'UPDATE tplanned_downtime
 			SET executed = 0
 			WHERE id = ?', $downtime->{'id'});
-		
 		pandora_event ($pa_config,
-			'(Created by ' . $downtime->{'id_user'} . ') Server ' . $pa_config->{'servername'} . ' stopped planned downtime: ' . $downtime->{'name'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
+			'(Created by ' . $downtime->{'id_user'} . ') Server ' . $pa_config->{'servername'} . ' stopped planned downtime: ' . safe_output($downtime->{'name'}), 0, 0, 1, 0, 0, 'system', 0, $dbh);
 		
 		pandora_planned_downtime_unset_disabled_elements($pa_config,
 			$dbh, $downtime);
@@ -1658,8 +1685,9 @@ sub pandora_planned_downtime_disabled_once_start($$) {
 			SET executed = 1
 			WHERE id = ?', $downtime->{'id'});
 		
+		print"pandora_planned_downtime_disabled_once_start\n";
 		pandora_event ($pa_config,
-			"(Created by " . $downtime->{'id_user'} . ") Server ".$pa_config->{'servername'}." started planned downtime: ".$downtime->{'name'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
+			"(Created by " . $downtime->{'id_user'} . ") Server ".$pa_config->{'servername'}." started planned downtime: ".safe_output($downtime->{'name'}), 0, 0, 1, 0, 0, 'system', 0, $dbh);
 		
 		pandora_planned_downtime_set_disabled_elements($pa_config,
 			$dbh, $downtime);
@@ -1849,7 +1877,7 @@ sub pandora_planned_downtime_quiet_once_stop($$) {
 			SET executed = 0
 			WHERE id = ?', $downtime->{'id'});
 		pandora_event ($pa_config,
-			"(Created by " . $downtime->{'id_user'} . ") Server ".$pa_config->{'servername'}." stopped planned downtime: ".$downtime->{'name'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
+			"(Created by " . $downtime->{'id_user'} . ") Server ".$pa_config->{'servername'}." stopped planned downtime: ".safe_output($downtime->{'name'}), 0, 0, 1, 0, 0, 'system', 0, $dbh);
 		
 		pandora_planned_downtime_unset_quiet_elements($pa_config,
 			$dbh, $downtime->{'id'});
@@ -1890,8 +1918,9 @@ sub pandora_planned_downtime_quiet_once_start($$) {
 		db_do($dbh, 'UPDATE tplanned_downtime
 			SET executed = 1
 			WHERE id = ?', $downtime->{'id'});
+		print"pandora_planned_downtime_quiet_once_start\n";
 		pandora_event ($pa_config,
-			"(Created by " . $downtime->{'id_user'} . ") Server ".$pa_config->{'servername'}." started planned downtime: ".$downtime->{'name'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
+			"(Created by " . $downtime->{'id_user'} . ") Server ".$pa_config->{'servername'}." started planned downtime: ".safe_output($downtime->{'name'}), 0, 0, 1, 0, 0, 'system', 0, $dbh);
 		
 		pandora_planned_downtime_set_quiet_elements($pa_config,
 			$dbh, $downtime->{'id'});
@@ -1944,8 +1973,9 @@ sub pandora_planned_downtime_monthly_start($$) {
 		db_do($dbh, 'UPDATE tplanned_downtime
 					SET executed = 1
 					WHERE id = ?', $downtime->{'id'});
+		print"pandora_planned_downtime_monthly_start\n";
 		pandora_event ($pa_config,
-			"Server ".$pa_config->{'servername'}." started planned downtime: ".$downtime->{'name'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
+			"Server ".$pa_config->{'servername'}." started planned downtime: ".safe_output($downtime->{'name'}), 0, 0, 1, 0, 0, 'system', 0, $dbh);
 		
 		
 		if ($downtime->{'type_downtime'} eq "quiet") {
@@ -2020,8 +2050,9 @@ sub pandora_planned_downtime_monthly_stop($$) {
 		db_do($dbh, 'UPDATE tplanned_downtime
 					SET executed = 0
 					WHERE id = ?', $downtime->{'id'});
+		print"pandora_planned_downtime_monthly_stop\n";
 		pandora_event ($pa_config,
-			"Server ".$pa_config->{'servername'}." stopped planned downtime: ".$downtime->{'name'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
+			"Server ".$pa_config->{'servername'}." stopped planned downtime: ".safe_output($downtime->{'name'}), 0, 0, 1, 0, 0, 'system', 0, $dbh);
 		
 		if ($downtime->{'type_downtime'} eq "quiet") {
 			pandora_planned_downtime_unset_quiet_elements($pa_config,
@@ -2129,8 +2160,9 @@ sub pandora_planned_downtime_weekly_start($$) {
 			db_do($dbh, 'UPDATE tplanned_downtime
 				SET executed = 1
 				WHERE id = ?', $downtime->{'id'});
+			print"pandora_planned_downtime_weekly_start\n";
 			pandora_event ($pa_config,
-				"Server ".$pa_config->{'servername'}." started planned downtime: ".$downtime->{'name'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
+				"Server ".$pa_config->{'servername'}." started planned downtime: ".safe_output($downtime->{'name'}), 0, 0, 1, 0, 0, 'system', 0, $dbh);
 				
 			if ($downtime->{'type_downtime'} eq "quiet") {
 				pandora_planned_downtime_set_quiet_elements($pa_config,
@@ -2243,8 +2275,10 @@ sub pandora_planned_downtime_weekly_stop($$) {
 			db_do($dbh, 'UPDATE tplanned_downtime
 				SET executed = 0
 				WHERE id = ?', $downtime->{'id'});
+
+			print"pandora_planned_downtime_weekly_stop\n";
 			pandora_event ($pa_config,
-				"Server ".$pa_config->{'servername'}." stopped planned downtime: ".$downtime->{'name'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
+				"Server ".$pa_config->{'servername'}." stopped planned downtime: ".safe_output($downtime->{'name'}), 0, 0, 1, 0, 0, 'system', 0, $dbh);
 			
 			if ($downtime->{'type_downtime'} eq "quiet") {
 				pandora_planned_downtime_unset_quiet_elements($pa_config,
@@ -2974,7 +3008,7 @@ sub pandora_create_agent ($$$$$$$$$$;$$$$$$$$$) {
 	}
 	
 	logger ($pa_config, "Server '$server_name' CREATED agent '$agent_name' address '$address'.", 10);
-	pandora_event ($pa_config, "Agent [$alias] created by $server_name", $group_id, $agent_id, 2, 0, 0, 'new_agent', 0, $dbh);
+	pandora_event ($pa_config, "Agent [" . safe_output($alias) . "] created by $server_name", $group_id, $agent_id, 2, 0, 0, 'new_agent', 0, $dbh);
 	return $agent_id;
 }
 
@@ -3168,7 +3202,10 @@ sub pandora_update_module_on_error ($$$) {
 	# Set tagente_estado.current_interval to make sure it is not 0
 	my $current_interval;
 	if (defined($module->{'cron_interval'}) && $module->{'cron_interval'} ne '' && $module->{'cron_interval'} ne '* * * * *') {
-		$current_interval = cron_next_execution ($module->{'cron_interval'});
+		$current_interval = cron_next_execution (
+			$module->{'cron_interval'},
+			$module->{'module_interval'} == 0 ? 300 : $module->{'module_interval'}
+		);
 	}
 	elsif ($module->{'module_interval'} == 0) {
 		$current_interval = 300;
@@ -3495,7 +3532,7 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 
 			# Generate an event, ONLY if our alert action is different from generate an event.
 			if ($action->{'id_alert_command'} != 3){
-				pandora_event ($pa_config, "SNMP alert fired (" . $alert->{'description'} . ")",
+				pandora_event ($pa_config, "SNMP alert fired (" . safe_output($alert->{'description'}) . ")",
 					0, 0, $alert->{'priority'}, 0, 0, 'alert_fired', 0, $dbh);
 		   }
 
@@ -3549,7 +3586,7 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 					
 				# Generate an event, ONLY if our alert action is different from generate an event.
 				if ($other_action->{'id_alert_command'} != 3){
-					pandora_event ($pa_config, "SNMP alert fired (" . $alert->{'description'} . ")",
+					pandora_event ($pa_config, "SNMP alert fired (" . safe_output($alert->{'description'}) . ")",
 						0, 0, $alert->{'priority'}, 0, 0, 'alert_fired', 0, $dbh);
 				}
 
@@ -4553,6 +4590,7 @@ sub pandora_group_statistics ($$) {
 
 	# Get all groups
 	my @groups = get_db_rows ($dbh, 'SELECT id_grupo FROM tgrupo');
+	my $table = is_metaconsole($pa_config) ? 'tmetaconsole_agent' : 'tagente';
 
 	# For each valid group get the stats: Simple uh?
 	foreach my $group_row (@groups) {
@@ -4561,50 +4599,46 @@ sub pandora_group_statistics ($$) {
 
 		# NOTICE - Calculations done here MUST BE the same than used in PHP code to have
 		# the same criteria. PLEASE, double check any changes here and in functions_groups.php
-		$agents_unknown = get_db_value ($dbh, "SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count>0 AND id_grupo=?", $group);
+		$agents_unknown = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count>0 AND id_grupo=?", $group);
 		$agents_unknown = 0 unless defined ($agents_unknown);
 
-		$agents = get_db_value ($dbh, "SELECT COUNT(*) FROM tagente WHERE id_grupo = $group AND disabled = 0");
+		$agents = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE id_grupo = $group AND disabled=0");
 		$agents = 0 unless defined ($agents);
 
-		$modules = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0");
+		$modules = get_db_value ($dbh, "SELECT SUM(total_count) FROM $table WHERE disabled=0 AND id_grupo=?", $group);
 		$modules = 0 unless defined ($modules);
 		
-		$normal = get_db_value ($dbh, "SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND normal_count=total_count AND id_grupo=?", $group);
+		$normal = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count=0 AND normal_count>0 AND id_grupo=?", $group);
 		$normal = 0 unless defined ($normal);
 		
-		$critical = get_db_value ($dbh, "SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND critical_count>0 AND id_grupo=?", $group);
+		$critical = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE disabled=0 AND critical_count>0 AND id_grupo=?", $group);
 		$critical = 0 unless defined ($critical);
 		
-		$warning = get_db_value ($dbh, "SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND critical_count=0 AND warning_count>0 AND id_grupo=?", $group);
+		$warning = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE disabled=0 AND critical_count=0 AND warning_count>0 AND id_grupo=?", $group);
 		$warning = 0 unless defined ($warning);
 	
-		$unknown = get_db_value ($dbh, "SELECT COUNT(*) FROM tagente WHERE tagente.disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count>0 AND id_grupo=?", $group);	
+		$unknown = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count>0 AND id_grupo=?", $group);	
 		$unknown = 0 unless defined ($unknown);
 		
-		$non_init = get_db_value ($dbh, "SELECT COUNT(*) FROM tagente WHERE disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count=0 AND notinit_count>0 AND id_grupo=?", $group);
+		$non_init = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE disabled=0 AND total_count=notinit_count AND id_grupo=?", $group);
 		$non_init = 0 unless defined ($non_init);
 		
-		$alerts = get_db_value ($dbh, "SELECT COUNT(talert_template_modules.id)
-				FROM talert_template_modules, tagente_modulo, tagente
-				WHERE tagente.id_grupo = $group AND tagente_modulo.id_agente = tagente.id_agente
-					AND tagente_modulo.disabled = 0 AND tagente.disabled = 0  			
-					AND	talert_template_modules.disabled = 0 
-					AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo");
+		# Total alert count not available on the meta console.
+		if ($table eq 'tagente') {
+			$alerts = get_db_value ($dbh, "SELECT COUNT(talert_template_modules.id)
+					FROM talert_template_modules, tagente_modulo, tagente
+					WHERE tagente.id_grupo = $group AND tagente_modulo.id_agente = tagente.id_agente
+						AND tagente_modulo.disabled = 0 AND tagente.disabled = 0  			
+						AND	talert_template_modules.disabled = 0 
+						AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo");
+		}
 		$alerts = 0 unless defined ($alerts);
 		
-		$alerts_fired = get_db_value ($dbh, "SELECT COUNT(talert_template_modules.id)
-				FROM talert_template_modules, tagente_modulo, tagente
-				WHERE tagente.id_grupo = $group AND tagente_modulo.id_agente = tagente.id_agente
-					AND tagente_modulo.disabled = 0 AND tagente.disabled = 0 
-					AND talert_template_modules.disabled = 0 
-					AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo 
-					AND times_fired > 0");
+		$alerts_fired = get_db_value ($dbh, "SELECT SUM(fired_count) FROM $table WHERE disabled=0 AND id_grupo=?", $group);
 		$alerts_fired = 0 unless defined ($alerts_fired);
 		
 		# Update the record.
-		db_do ($dbh, "DELETE FROM tgroup_stat WHERE id_group = $group");
-		db_do ($dbh, "INSERT INTO tgroup_stat (id_group, modules, normal, critical, warning, unknown, " . $PandoraFMS::DB::RDBMS_QUOTE . 'non-init' . $PandoraFMS::DB::RDBMS_QUOTE . ", alerts, alerts_fired, agents, agents_unknown, utimestamp) VALUES ($group, $modules, $normal, $critical, $warning, $unknown, $non_init, $alerts, $alerts_fired, $agents, $agents_unknown, UNIX_TIMESTAMP())");
+		db_do ($dbh, "REPLACE INTO tgroup_stat (id_group, modules, normal, critical, warning, unknown, " . $PandoraFMS::DB::RDBMS_QUOTE . 'non-init' . $PandoraFMS::DB::RDBMS_QUOTE . ", alerts, alerts_fired, agents, agents_unknown, utimestamp) VALUES ($group, $modules, $normal, $critical, $warning, $unknown, $non_init, $alerts, $alerts_fired, $agents, $agents_unknown, UNIX_TIMESTAMP())");
 
 	}
 
@@ -4702,23 +4736,29 @@ sub pandora_self_monitoring ($$) {
 	$xml_output .=" <data>$agents_unknown</data>";
 	$xml_output .=" </module>";
 	
-	$xml_output .=" <module>";
-	$xml_output .=" <name>System_Load_AVG</name>";
-	$xml_output .=" <type>generic_data</type>";
-	$xml_output .=" <data>$load_average</data>";
-	$xml_output .=" </module>";
+	if (defined($load_average)) {
+		$xml_output .=" <module>";
+		$xml_output .=" <name>System_Load_AVG</name>";
+		$xml_output .=" <type>generic_data</type>";
+		$xml_output .=" <data>$load_average</data>";
+		$xml_output .=" </module>";
+	}
 	
-	$xml_output .=" <module>";
-	$xml_output .=" <name>Free_RAM</name>";
-	$xml_output .=" <type>generic_data</type>";
-	$xml_output .=" <data>$free_mem</data>";
-	$xml_output .=" </module>";
+	if (defined($free_mem)) {
+		$xml_output .=" <module>";
+		$xml_output .=" <name>Free_RAM</name>";
+		$xml_output .=" <type>generic_data</type>";
+		$xml_output .=" <data>$free_mem</data>";
+		$xml_output .=" </module>";
+	}
 	
-	$xml_output .=" <module>";
-	$xml_output .=" <name>FreeDisk_SpoolDir</name>";
-	$xml_output .=" <type>generic_data</type>";
-	$xml_output .=" <data>$free_disk_spool</data>";
-	$xml_output .=" </module>";
+	if (defined($free_disk_spool)) {
+		$xml_output .=" <module>";
+		$xml_output .=" <name>FreeDisk_SpoolDir</name>";
+		$xml_output .=" <type>generic_data</type>";
+		$xml_output .=" <data>$free_disk_spool</data>";
+		$xml_output .=" </module>";
+	}
 	
 	$xml_output .= "</agent_data>";
 	
@@ -5454,6 +5494,30 @@ sub pandora_output_password($$) {
 	return $password unless defined($decrypted_password);
 
 	return $decrypted_password;
+}
+
+##########################################################################
+=head2 C<< safe_mode (I<$pa_config>, I<$agent>, I<$module>, I<$new_status>, I<$known_status>, I<$dbh>) >> 
+
+Execute safe mode for the given agent based on the status of the given module.
+
+=cut
+##########################################################################
+sub safe_mode($$$$$$) {
+	my ($pa_config, $agent, $module, $new_status, $known_status, $dbh) = @_;
+
+	return unless $agent->{'safe_mode_module'} > 0;
+
+	# Going to critical. Disable the rest of the modules.
+	if ($new_status == MODULE_CRITICAL) {
+		logger($pa_config, "Enabling safe mode for agent " . $agent->{'nombre'}, 10);
+		db_do($dbh, 'UPDATE tagente_modulo SET disabled=1 WHERE id_agente=? AND id_agente_modulo!=?', $agent->{'id_agente'}, $module->{'id_agente_modulo'});
+	}
+	# Coming back from critical. Enable the rest of the modules.
+	elsif ($known_status == MODULE_CRITICAL) {
+		logger($pa_config, "Disabling safe mode for agent " . $agent->{'nombre'}, 10);
+		db_do($dbh, 'UPDATE tagente_modulo SET disabled=0 WHERE id_agente=? AND id_agente_modulo!=?', $agent->{'id_agente'}, $module->{'id_agente_modulo'});
+	}
 }
 
 # End of function declaration

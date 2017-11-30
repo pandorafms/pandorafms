@@ -18,7 +18,13 @@
 global $config;
 
 check_login ();
-$id = get_parameter('id_networkmap', true);
+if (_id_ != "_id_") {
+	$id = _id_;
+}
+else {
+	$id = get_parameter('id_networkmap', true);
+}
+
 $activeTab = get_parameter('activeTab', true);
 
 if (enterprise_installed()) {
@@ -29,6 +35,11 @@ if (enterprise_installed()) {
 	if ($tab) {
 		$activeTab = $tab;
 	}
+}
+
+if (_activeTab_ != "_activeTab_") {
+	$activeTab = _activeTab_;
+	$tab = $activeTab;
 }
 
 // Networkmap id required
@@ -69,8 +80,48 @@ require_once ('include/functions_networkmap.php');
 
 $strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
 
+$networkmap = db_get_row('tmap', 'id', $id);
+$pure = (int) get_parameter ('pure', 0);
+	
+/* Main code */
+if ($pure == 1) {
+	$buttons['screen'] = array('active' => false,
+		'text' => '<a href="index.php?sec=network&amp;' .
+			'sec2=operation/agentes/networkmap.dinamic&amp;' .
+			'activeTab=radial_dynamic&amp;id_networkmap=' . $id . '">' . 
+			html_print_image("images/normal_screen.png", true,
+				array ('title' => __('Normal screen'))) .
+			'</a>');
+}
+else {
+	if (!$dash_mode) {
+		$buttons['screen'] = array('active' => false,
+			'text' => '<a href="index.php?sec=network&amp;' .
+				'sec2=operation/agentes/networkmap.dinamic&amp;' .
+				'pure=1&amp;activeTab=radial_dynamic&amp;id_networkmap=' . $id . '">' . 
+				html_print_image("images/full_screen.png", true,
+					array ('title' => __('Full screen'))) .
+				'</a>');
+		$buttons['list'] = array('active' => false,
+			'text' => '<a href="index.php?sec=networkmapconsole&amp;' .
+				'sec2=operation/agentes/pandora_networkmap">' . 
+				html_print_image("images/list.png", true,
+					array ('title' => __('List of networkmap'))) .
+				'</a>');
+	}
+}
+
+ui_print_page_header(io_safe_output($networkmap['name']), 
+			"images/bricks.png", false, "network_map_enterprise", 
+			false, $buttons, false, '', $config['item_title_size_text']);
+
 global $width;
 global $height;
+
+if (_id_ != "_id_") {
+	$width = array();
+	$height = array();
+}
 
 if (empty($width)) {
 	$width = 600;
@@ -85,8 +136,9 @@ if ($activeTab == "radial_dynamic") {
 	echo "<div style='width: auto; text-align: center;'>";
 	
 	$filter = array();
-	if (!empty($group))
-		$filter['group'] = $group;
+	if ($networkmap['source'] == 0) {
+		$filter['group'] = $networkmap['source_data'];
+	}
 	if (!empty($module_group))
 		$filter['module_group'] = $module_group;
 	

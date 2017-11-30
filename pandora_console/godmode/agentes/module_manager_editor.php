@@ -111,12 +111,12 @@ if (is_ajax ()) {
 		else
 			$snmp_community = (string) get_parameter ('snmp_community');
 		$snmp_version = get_parameter('snmp_version');
-		$snmp3_auth_user = get_parameter('snmp3_auth_user');
+		$snmp3_auth_user = io_safe_output(get_parameter('snmp3_auth_user'));
 		$snmp3_security_level = get_parameter('snmp3_security_level');
 		$snmp3_auth_method = get_parameter('snmp3_auth_method');
-		$snmp3_auth_pass = get_parameter('snmp3_auth_pass');
+		$snmp3_auth_pass = io_safe_output(get_parameter('snmp3_auth_pass'));
 		$snmp3_privacy_method = get_parameter('snmp3_privacy_method');
-		$snmp3_privacy_pass = get_parameter('snmp3_privacy_pass');
+		$snmp3_privacy_pass = io_safe_output(get_parameter('snmp3_privacy_pass'));
 		$snmp_port = get_parameter('snmp_port');
 		
 		$snmpwalk = get_snmpwalk($ip_target, $snmp_version, $snmp_community,

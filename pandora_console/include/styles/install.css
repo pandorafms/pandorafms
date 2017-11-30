@@ -192,6 +192,7 @@ div.installation_step {
   -o-transition-property: background-color, color;
   -o-transition-duration: 1s;
   color:#82b92e;
+	font-family: Sans, Arial, sans;
 }
 .btn_install_next:hover .btn_install_next_text {
   transition-property: background-color, color;

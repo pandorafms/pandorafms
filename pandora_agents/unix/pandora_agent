@@ -40,8 +40,8 @@ my $Sem = undef;
 # Semaphore used to control the number of threads
 my $ThreadSem = undef;
 
-use constant AGENT_VERSION => '7.0NG.713';
-use constant AGENT_BUILD => '171023';
+use constant AGENT_VERSION => '7.0NG.716';
+use constant AGENT_BUILD => '171130';
 
 # Agent log default file size maximum and instances
 use constant DEFAULT_MAX_LOG_SIZE => 600000;
@@ -1244,7 +1244,11 @@ sub check_collections () {
 
 	# Delete old collections if there are no broker agents
 	if ($BrokerEnabled == 0) {
-		opendir (DIR, "$ConfDir/collections") || return;
+		if(!opendir (DIR, "$ConfDir/collections")){
+			log_message ('Collection', "Could not open dir $ConfDir/collections");
+			return;
+		}
+
  		while (defined (my $file_name = readdir(DIR))) {
 			next if ($file_name eq '.' || $file_name eq '..');
 
@@ -1252,8 +1256,14 @@ sub check_collections () {
 			$file_name =~ s/\.md5$//;
 
 			if (! defined ($Collections{$file_name})) {
-				rmrf ("$ConfDir/collections/$file_name");
-				unlink ("$ConfDir/collections/$file_name.md5");
+				if(opendir (DIR_check, "$ConfDir/collections/$file_name")){
+					closedir (DIR_check);
+					rmrf ("$ConfDir/collections/$file_name");
+					unlink ("$ConfDir/collections/$file_name.md5");	
+				}
+				else {
+					log_message ('Collection', "Could not open dir $ConfDir/collections/$file_name");
+				}
 			}
 		}
 		closedir (DIR);
@@ -1272,7 +1282,11 @@ sub check_collections () {
 
 		# Get remote md5
  		error ("File '$Conf{'temporal'}/$collection_md5_file' already exists as a symlink and could not be removed: $!.") if (-l "$Conf{'temporal'}/$collection_md5_file" && !unlink("$Conf{'temporal'}/$collection_md5_file"));
-		next unless (recv_file ($collection_md5_file, $Conf{'server_path_md5'}) == 0);
+		if(recv_file ($collection_md5_file, $Conf{'server_path_md5'}) != 0){
+			log_message ('Collection', "Could not write $collection_md5_file on " . $Conf{'server_path_md5'});
+			next;	
+		}
+
 		open (MD5_FILE, "< $Conf{'temporal'}/$collection_md5_file") || error ("Could not open file '$Conf{'temporal'}/$collection_md5_file' for reading: $!.");
 		my $remote_collection_md5 = <MD5_FILE>;
 		close (MD5_FILE);
@@ -1284,13 +1298,20 @@ sub check_collections () {
 			$local_collection_md5 = <MD5_FILE>;
 			close MD5_FILE;
 		}
+		else{
+			log_message ('Collection', "Could not open dir $ConfDir/collections/$collection_md5_file");
+			next;
+		}
 
 		# Check for changes
 		$local_collection_md5 = $remote_collection_md5 unless defined ($local_collection_md5);
 		next if ($local_collection_md5 eq $remote_collection_md5);
 		
 		# Download and unzip
-		next unless (recv_file ($collection_file, $Conf{'server_path_zip'}) == 0);
+		if(recv_file ($collection_md5_file, $Conf{'server_path_md5'}) != 0){
+			log_message ('Collection', "Could not write $collection_file on " . $Conf{'server_path_zip'});
+			next;	
+		}
 		rmrf ("$ConfDir/collections/$collection");
 		`unzip -d "$ConfDir/collections/$collection" "$Conf{'temporal'}/$collection_file" 2>$DevNull`;
 		unlink ("$Conf{'temporal'}/$collection_file");		
@@ -1579,6 +1600,9 @@ sub guess_os_version ($) {
 	# AIX
 	} elsif ($os eq 'aix') {
 		$os_version = "$2.$1" if (`uname -rv` =~ /\s*(\d)\s+(\d)\s*/);
+	# Darwin
+	} elsif ($os eq 'darwin') {
+		$os_version = `defaults read loginwindow SystemVersionStampAsString`;
 	# Windows
 	} elsif ($os =~ /win/i) {
 		$os_version = `ver`;

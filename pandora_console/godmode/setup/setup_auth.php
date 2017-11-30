@@ -106,6 +106,18 @@ if (is_ajax ()) {
 				$row['name'] = __('Login attribute');
 				$row['control'] = html_print_input_text ('ldap_login_attr', $config['ldap_login_attr'], '', 60, 100, true);
 				$table->data['ldap_login_attr'] = $row;
+
+				// Admin LDAP login
+				$row = array();
+				$row['name'] = __('Admin LDAP login');
+				$row['control'] = html_print_input_text ('ldap_admin_login', $config['ldap_admin_login'], '', 60, 100, true);
+				$table->data['ldap_admin_login'] = $row;
+
+				// Admin LDAP password
+				$row = array();
+				$row['name'] = __('Admin LDAP password');
+				$row['control'] = html_print_input_password ('ldap_admin_pass', $config['ldap_admin_pass'], $alt = '', 60, 100, true);
+				$table->data['ldap_admin_pass'] = $row;
 			break;
 
 			case 'pandora':

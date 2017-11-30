@@ -1918,7 +1918,7 @@ function show_menu(item, data) {
 					}
 				},
 				"callback": function (key, options) {
-					restart_map(networkmap_id);
+					restart_map();
 				}
 			};
 
@@ -2232,7 +2232,7 @@ function refresh_holding_area() {
 	}
 }
 
-function restart_map (map_id) {
+function restart_map () {
 	$("<div id='restart_map_confirm' class='dialog ui-dialog-content' title='" + restart_map_menu + "'></div>").dialog ({
 		resizable: true,
 		draggable: true,
@@ -2248,7 +2248,7 @@ function restart_map (map_id) {
 				text: ok_button,
 				click: function () {
 					$(this).dialog("close");
-					proceed_to_restart_map(map_id);
+					proceed_to_restart_map();
 				}
 			},
 			{
@@ -2270,7 +2270,7 @@ function restart_map (map_id) {
 	$('#restart_map_confirm').dialog('open');
 }
 
-function proceed_to_restart_map (map_id) {
+function proceed_to_restart_map () {
 	$("<div id='restart_map_form' class='dialog ui-dialog-content' title='" + restart_map_menu + "'></div>").dialog ({
 		resizable: true,
 		draggable: true,
@@ -2302,7 +2302,14 @@ function proceed_to_restart_map (map_id) {
 						new_elements[5] = $("#text-ip_mask").val();
 					}
 					new_elements[6] = $("#method").val();
-					reset_map_from_form(map_id, new_elements);
+					new_elements[7] = $("#text-pos_x").val();
+					new_elements[8] = $("#text-pos_y").val();
+					new_elements[9] = $("#text-scale_z").val();
+					new_elements[10] = $("#text-node_sep").val();
+					new_elements[11] = $("#text-mindist").val();
+					new_elements[12] = $("#text-rank_sep").val();
+					new_elements[13] = $("#text-kval").val();
+					reset_map_from_form(new_elements);
 				}
 			},
 			{
@@ -2316,7 +2323,7 @@ function proceed_to_restart_map (map_id) {
 
 	var params = [];
 	params.push("get_reset_map_form=1");
-	params.push("map_id=" + map_id);
+	params.push("map_id=" + networkmap_id);
 	params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
 	jQuery.ajax({
 		data: params.join("&"),
@@ -2330,10 +2337,10 @@ function proceed_to_restart_map (map_id) {
 	});
 }
 
-function reset_map_from_form (map_id, new_elements) {
+function reset_map_from_form (new_elements) {
 	var params = [];
 	params.push("reset_map=1");
-	params.push("map_id=" + map_id);
+	params.push("map_id=" + networkmap_id);
 	params.push("elems[]=" + new_elements)
 	params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
 	jQuery.ajax({
@@ -2343,7 +2350,7 @@ function reset_map_from_form (map_id, new_elements) {
 		url: action = "ajax.php",
 		success: function (data) {
 			if (!data['error']) {
-				location.reload(true);
+				window.location = "index.php?sec=network&sec2=operation/agentes/pandora_networkmap&tab=view&id_networkmap=" + networkmap_id;
 			}
 		}
 	});

@@ -161,7 +161,7 @@ if ($edit_filter > -2) {
 				$table->data[$j][1] .= ui_print_help_tip (__("This field contains a substring, could be part of a IP address, a numeric OID, or a plain substring") . SEPARATOR_COLUMN, true);
 			}
 			else {
-				$table->data[$j][1] .= html_print_image('images/cross.png', true, array('id' => 'delete_filter_' . $f['id_snmp_filter'], 'alt' => __('Click to add new filter'), 'title' => __('Click to add new filter')));
+				$table->data[$j][1] .= html_print_image('images/cross.png', true, array('id' => 'delete_filter_' . $f['id_snmp_filter'], 'alt' => __('Click to remove the filter')));
 			}
 			$j++;
 			$index++;

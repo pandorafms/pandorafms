@@ -362,7 +362,6 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
 		}
 		
 		$name = (string) get_parameter('name', '');
-		$method = (string) get_parameter('method', 'fdp');
 		
 		$recon_task_id = (int) get_parameter(
 			'recon_task_id', 0);
@@ -376,30 +375,6 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
 		$values = array();
 		$values['name'] = $name;
 		$values['id_group'] = $id_group;
-
-		switch ($method) {
-			case 'twopi':
-				$values['generation_method'] = 2;
-				break;
-			case 'dot':
-				$values['generation_method'] = 1;
-				break;
-			case 'circo':
-				$values['generation_method'] = 0;
-				break;
-			case 'neato':
-				$values['generation_method'] = 3;
-				break;
-			case 'fdp':
-				$values['generation_method'] = 4;
-				break;
-			case 'radial_dinamic':
-				$values['generation_method'] = 6;
-				break;
-			default:
-				$values['generation_method'] = 2;
-				break;
-		}
 
 		$description = get_parameter('description', '');
 		$values['description'] = $description;

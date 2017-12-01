@@ -569,6 +569,9 @@ wuxserver 0
 # Port of the Selenium Grid Server.
 #wux_port 4444
 
+# Maximum timeout to connect to a target web site, also for communications with a Selenium Grid server.
+#wux_webagent_timeout 15
+
 # Enable (1) or disable (0) the Pandora FMS Syslog Server (PANDORA FMS ENTERPRISE ONLY).
 syslogserver 1
 

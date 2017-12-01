@@ -271,10 +271,11 @@ else {
 
 <script type="text/javascript">
 	var id = "<?php echo $index; ?>";
+	var homeurl = "<?php echo $config['homeurl']; ?>";
 
 	$(document).ready (function () {
 		$('#add_filter').click(function(e) {
-			$('#filter_table').append('<tr id="filter_table-' + id + '" style="" class="datos"><td id="filter_table-' + id + '-0" style="" class="datos "></td><td id="filter_table-' + id + '-1" style="" class="datos "><input type="text" name="filter_' + id + '" value="" id="text-filter_' + id + '" size="60" maxlength="100"><img src="http://localhost/pandora_console/images/cross.png" onclick="delete_this_row(' + id + ');" data-title="Click to delete the filter" data-use_title_for_force_title="1" class="forced_title" alt="Click to delete the filter"></td></tr>');
+			$('#filter_table').append('<tr id="filter_table-' + id + '" style="" class="datos"><td id="filter_table-' + id + '-0" style="" class="datos "></td><td id="filter_table-' + id + '-1" style="" class="datos "><input type="text" name="filter_' + id + '" value="" id="text-filter_' + id + '" size="60" maxlength="100"><img src="' + homeurl + 'images/cross.png" onclick="delete_this_row(' + id + ');" data-title="Click to delete the filter" data-use_title_for_force_title="1" class="forced_title" alt="Click to delete the filter"></td></tr>');
 			
 			id++;
 

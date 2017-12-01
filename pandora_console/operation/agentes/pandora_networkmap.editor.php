@@ -279,17 +279,21 @@ else {
 		'', '', 'twopi', true, false, true, '',
 		$disabled_generation_method_select);
 
+	$itemClass = "";
+	if ($disabled_source) {
+		$itemClass = "disabled";
+	}
 	$table->data['nodesep'][0] = __('Node separation');
-	$table->data['nodesep'][1] = html_print_input_text ('node_sep', $node_sep, '', 5, 10,true, $disabled_source) . ui_print_help_tip (__('Separation between nodes. By default 0.25'), true);
+	$table->data['nodesep'][1] = html_print_input_text ('node_sep', $node_sep, '', 5, 10,true, $disabled_source, false, $itemClass) . ui_print_help_tip (__('Separation between nodes. By default 0.25'), true);
 	
 	$table->data['ranksep'][0] = __('Rank separation');
-	$table->data['ranksep'][1] = html_print_input_text ('rank_sep', $rank_sep, '', 5, 10,true, $disabled_source) . ui_print_help_tip (__('Only flat and radial. Separation between arrows. By default 0.5 in flat and 1.0 in radial'), true);
+	$table->data['ranksep'][1] = html_print_input_text ('rank_sep', $rank_sep, '', 5, 10,true, $disabled_source, false, $itemClass) . ui_print_help_tip (__('Only flat and radial. Separation between arrows. By default 0.5 in flat and 1.0 in radial'), true);
 	
 	$table->data['mindist'][0] = __('Min nodes dist');
-	$table->data['mindist'][1] = html_print_input_text ('mindist', $mindist, '', 5, 10,true, $disabled_source) . ui_print_help_tip (__('Only circular. Minimum separation between all nodes. By default 1.0'), true);
+	$table->data['mindist'][1] = html_print_input_text ('mindist', $mindist, '', 5, 10,true, $disabled_source, false, $itemClass) . ui_print_help_tip (__('Only circular. Minimum separation between all nodes. By default 1.0'), true);
 
 	$table->data['kval'][0] = __('Default ideal node separation');
-	$table->data['kval'][1] = html_print_input_text ('kval', $kval, '', 5, 10,true, $disabled_source) . ui_print_help_tip (__('Only fdp. Default ideal node separation in the layout. By default 0.3'), true);
+	$table->data['kval'][1] = html_print_input_text ('kval', $kval, '', 5, 10,true, $disabled_source, false, $itemClass) . ui_print_help_tip (__('Only fdp. Default ideal node separation in the layout. By default 0.3'), true);
 
 	echo '<form method="post" action="index.php?sec=network&amp;sec2=operation/agentes/pandora_networkmap">';
 	

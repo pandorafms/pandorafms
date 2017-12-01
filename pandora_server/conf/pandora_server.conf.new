@@ -581,3 +581,7 @@ syslog_threads 2
 # Maximum number of lines queued by the Syslog Server's producer on each run (PANDORA FMS ENTERPRISE ONLY).
 syslog_max 65535
 
+# Target LogStash server, to allow Dataserver and SyslogServer store log information in ElasticSearch
+#logstash_host ip
+#logstash_port 10514
+

@@ -112,6 +112,9 @@ function visual_map_print_item($mode = "read", $layoutData,
 	$fill_color = $layoutData['fill_color'];
 	$label_position = $layoutData['label_position'];
 	$show_on_top = $layoutData['show_on_top'];
+	$clock_animation = $layoutData['clock_animation'];
+	$time_format = $layoutData['time_format'];
+	$timezone = $layoutData['timezone'];
 
 	if($show_on_top){
 		$show_on_top_index = 10;
@@ -153,6 +156,35 @@ function visual_map_print_item($mode = "read", $layoutData,
 	}
 	else {
 		$tableheight0 = $height;
+	}
+	
+	if ($layoutData['width'] == 0){
+		switch($type) {
+			case 19:
+				if($layoutData['clock_animation'] == 'analogic_1'){
+					$himg = '200';
+					$wimg ='200';
+				}
+				else{
+					$himg = '60';
+					$wimg ='200';
+				}
+				break;
+		}
+	}
+	else{
+		switch($type) {
+			case 19:
+				if($layoutData['clock_animation'] == 'analogic_1'){
+					$himg = $width;
+					$wimg = $width;
+				}
+				else{
+					$himg = $width/3.9;
+					$wimg = $width;
+				}
+				break;
+		}
 	}
 
 	if ($layoutData['width'] == 0 || $layoutData['height'] == 0) {
@@ -1422,6 +1454,125 @@ function visual_map_print_item($mode = "read", $layoutData,
 		case BOX_ITEM:
 			$z_index = 1;
 			break;
+		case CLOCK:
+			if ((get_parameter('action') == 'edit') || (get_parameter('operation') == 'edit_visualmap')) {
+				if($width == 0){
+					if ($layoutData['id_metaconsole'] != 0) {
+						if($layoutData['clock_animation'] == 'analogic_1'){
+							$img =  '<img src="../../images/console/signes/clock.png" style="width:200px;height:240px;">';
+						}
+						else{
+							
+							if($layoutData['time_format'] = 'time'){
+								$img =  '<img src="../../images/console/signes/digital-clock.png" style="width:200px;height:71px;">';
+							}
+							else{
+								$img =  '<img src="../../images/console/signes/digital-clock.png" style="width:200px;height:91px;">';
+							}
+						}
+					}
+					else{
+						if($layoutData['clock_animation'] == 'analogic_1'){
+							$img =  '<img src="images/console/signes/clock.png" style="width:200px;height:240px;">';	
+						}
+						else{
+							
+							if($layoutData['time_format'] == 'time'){
+								$img =  '<img src="images/console/signes/digital-clock.png" style="width:200px;height:71px">';		
+							}
+							else{
+								$img =  '<img src="images/console/signes/digital-clock.png" style="width:200px;height:91px">';	
+							}
+						}
+					}
+				}
+				else{
+					if ($layoutData['id_metaconsole'] != 0) {
+						
+						if($layoutData['clock_animation'] == 'analogic_1'){
+							$img =  '<img src="../../images/console/signes/clock.png" style="width:'.$width.'px;height:'.	($width+40).'px;">';
+						}
+						else{
+							
+							if($layoutData['time_format'] == 'time'){
+								$img =  '<img src="../../images/console/signes/digital-clock.png" style="width:'.$width.'px;height:'.	(($width/3.9)+20).'px;">';
+							}
+							else{
+								$img =  '<img src="../../images/console/signes/digital-clock.png" style="width:'.$width.'px;height:'.	(($width/3.9)+40).'px;">';
+							}
+						
+						}
+						
+					}
+					else{
+						if($layoutData['clock_animation'] == 'analogic_1'){
+							$img =  '<img src="images/console/signes/clock.png" style="width:'.$width.'px;height:'.	($width+40).'px;">';
+						}
+						else{							
+								if($layoutData['time_format'] == 'time'){
+									$img =  '<img src="images/console/signes/digital-clock.png" style="width:'.$width.'px;height:'.	(($width/3.9)+20).'px;">';
+								}
+								else{
+									$img =  '<img src="images/console/signes/digital-clock.png" style="width:'.$width.'px;height:'.	(($width/3.9)+40).'px;">';
+								}
+						}
+					}
+				}
+			}
+			else{
+				if($layoutData['clock_animation'] == 'analogic_1'){
+					
+					if ($width == 0) {
+						if ($layoutData['label_position']=='left') {
+							$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;">' .print_clock_analogic_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
+						}
+						elseif ($layoutData['label_position']=='right') {
+							$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;">' . print_clock_analogic_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
+						}
+						else {
+							$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';height:'.$himg.'px;">' . print_clock_analogic_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
+						}
+					}
+					else{
+						if ($layoutData['label_position']=='left') {
+							$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;">' . print_clock_analogic_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
+						}
+						elseif ($layoutData['label_position']=='right') {
+							$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;">' .print_clock_analogic_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
+						}
+						else {
+							$img ='<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';height:'.$himg.'px;">' .  print_clock_analogic_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
+						}
+					}
+					
+				}
+				elseif($layoutData['clock_animation'] == 'digital_1'){
+					
+					if ($width == 0) {
+						if ($layoutData['label_position']=='left') {
+							$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;">' .print_clock_digital_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
+						}
+						elseif ($layoutData['label_position']=='right') {
+							$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;">' . print_clock_digital_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
+						}
+						else {
+							$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';height:'.$himg.'px;">' . print_clock_digital_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
+						}
+					}
+					else{
+						if ($layoutData['label_position']=='left') {
+							$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;">' . print_clock_digital_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
+						}
+						elseif ($layoutData['label_position']=='right') {
+							$img = '<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;">' .print_clock_digital_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
+						}
+						else {
+							$img ='<div id="clock_'.$layoutData['id'].'" style="z-index:'.$show_on_top_index.';height:'.$himg.'px;">' .  print_clock_digital_1 ($layoutData['time_format'], $layoutData['timezone'],$layoutData['clock_animation'],$layoutData['width'],$layoutData['height'],$layoutData['id'],$layoutData['fill_color']).'</div>';
+						}
+					}
+				}
+			}
+		break;
 		case AUTO_SLA_GRAPH:
 			if ((get_parameter('action') == 'edit') || (get_parameter('operation') == 'edit_visualmap')) {
 				if($width == 0 || $height == 0){
@@ -1512,6 +1663,9 @@ function visual_map_print_item($mode = "read", $layoutData,
 			break;
 		case ICON:
 			$class .= "icon";
+			break;
+		case CLOCK:
+			$class .= "clock";
 			break;
 		case BOX_ITEM:
 			$class .= "box_item";
@@ -1952,6 +2106,19 @@ function visual_map_print_item($mode = "read", $layoutData,
 				echo io_safe_output($text);
 			}
 			
+			echo $img;
+			
+			if ($layoutData['label_position']=='down') {
+				echo io_safe_output($text);
+			}	
+			elseif($layoutData['label_position']=='left' || $layoutData['label_position']=='right') {
+				echo io_safe_output($text);
+			}
+			break;
+		case CLOCK:
+			if ($layoutData['label_position']=='up') {
+				echo io_safe_output($text);
+			}
 			echo $img;
 			
 			if ($layoutData['label_position']=='down') {
@@ -3607,6 +3774,10 @@ function visual_map_create_internal_name_item($label = null, $type, $image, $age
 			case MODULE_GRAPH:
 				$text = __('Module graph');
 				break;
+			case 'clock':
+			case CLOCK:
+				$text = __('Clock');
+				break;
 			case 'bars_graph':
 			case BARS_GRAPH:
 				$text = __('Bars graph');
@@ -3754,6 +3925,9 @@ function visual_map_type_in_js($type) {
 			break;
 		case ICON:
 			return 'icon';
+			break;
+		case CLOCK:
+			return 'clock';
 			break;
 		case SIMPLE_VALUE_MAX:
 			return 'simple_value';

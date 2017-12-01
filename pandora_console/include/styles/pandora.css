@@ -829,6 +829,12 @@ input.icon_min {
 input.icon_min[disabled] {
 	background: #fefefe url(../../images/photo.disabled.png) no-repeat center !important;
 }
+input.clock_min {
+	background: #fefefe url(../../images/clock-tab.png) no-repeat center !important;
+}
+input.clock_min[disabled] {
+	background: #fefefe url(../../images/clock-tab.disabled.png) no-repeat center !important;
+}
 input.box_item {
 	background: #fefefe url(../../images/box_item.png) no-repeat center !important;
 }

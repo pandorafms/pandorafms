@@ -102,7 +102,7 @@ $parent = get_parameter('parent', null);
 $map_linked = get_parameter('map_linked', null);
 $map_linked_weight = get_parameter('map_linked_weight', null);
 $element_group = get_parameter('element_group', null);
-$width_percentile = get_parameter('width_percentile', null);
+$width_percentile = get_parameter('width_percentile', 0);
 $bars_graph_height = get_parameter('bars_graph_height', null);
 $max_percentile = get_parameter('max_percentile', null);
 $height_module_graph = get_parameter('height_module_graph', null);
@@ -144,6 +144,10 @@ $show_on_top = get_parameter('show_on_top', 0);
 $type_graph = get_parameter('type_graph', 'area');
 $label_position = get_parameter('label_position', 'down');
 $show_statistics = get_parameter('show_statistics', 0);
+
+$clock_animation = get_parameter('clock_animation', 'analogic_1');
+$time_format = get_parameter('time_format', 'time');
+$timezone = get_parameter('timezone', 'Europe/Madrid');
 
 switch ($action) {
 	case 'get_font':
@@ -736,6 +740,23 @@ switch ($action) {
 						}
 						
 						break;
+					case 'clock':
+						if ($clock_animation !== null) {
+							$values['clock_animation'] = $clock_animation;
+						}
+						if ($time_format !== null) {
+							$values['time_format'] = $time_format;
+						}
+						if ($timezone !== null) {
+							$values['timezone'] = $timezone;
+						}
+						if ($width !== null) {
+							$values['width'] = $width_percentile;
+						}
+						if ($fill_color !== null) {
+							$values['fill_color'] = $fill_color;
+						}
+						break;
 					default:
 						if (enterprise_installed()) {
 							if ($image !== null) {
@@ -781,6 +802,13 @@ switch ($action) {
 							unset($values['border_color']);
 							unset($values['width']);
 							unset($values['id_agent']);
+							break;
+						case 'clock':
+							unset($values['clock_animation']);
+							unset($values['time_format']);
+							unset($values['timezone']);
+							unset($values['fill_color']);
+							unset($values['width']);
 							break;
 						case 'box_item':
 							unset($values['border_width']);
@@ -843,6 +871,7 @@ switch ($action) {
 			case 'simple_value':
 			case 'label':
 			case 'icon':
+			case 'clock':
 			case 'auto_sla_graph':
 			case 'donut_graph':
 				$elementFields = db_get_row_filter('tlayout_data',
@@ -944,6 +973,9 @@ switch ($action) {
 					case 'module_graph':
 						$elementFields['width_module_graph'] = $elementFields['width'];
 						$elementFields['height_module_graph'] = $elementFields['height'];
+						break;
+					case 'clock':
+						$elementFields['width_percentile'] = $elementFields['width'];
 						break;
 					case 'bars_graph':
 						$elementFields['width_percentile'] = $elementFields['width'];
@@ -1120,6 +1152,14 @@ switch ($action) {
 				$values['border_color'] = $grid_color;
 				$values['id_agent'] = $id_agent_string;
 				break;
+			case 'clock':
+				$values['type'] = CLOCK;
+				$values['width'] = $width_percentile;
+				$values['clock_animation'] = $clock_animation;
+				$values['fill_color'] = $fill_color;
+				$values['time_format'] = $time_format;
+				$values['timezone'] = $timezone;				
+				break;
 			case 'auto_sla_graph':
 				$values['type'] = AUTO_SLA_GRAPH;
 				$values['period'] = $event_max_time_row;
@@ -1183,7 +1223,7 @@ switch ($action) {
 				}
 				break;
 		}
-
+		
 		$idData = db_process_sql_insert('tlayout_data', $values);
 		
 		$return = array();

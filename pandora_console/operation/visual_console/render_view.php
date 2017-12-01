@@ -312,7 +312,12 @@ $ignored_params['refr'] = '';
 		
 		$('.item > div').each( function() {
 			if ($(this).css('float')=='left' || $(this).css('float')=='right') {
-				$(this).css('margin-top',(parseInt($(this).parent().css('height'))/2-parseInt($(this).css('height'))/2-15)+'px');
+				if($(this).attr('id').indexOf('clock') || $(this).attr('id').indexOf('overlay')){
+					$(this).css('margin-top',(parseInt($(this).parent().css('height'))/2-parseInt($(this).css('height'))/2)+'px');
+				}
+				else{
+					$(this).css('margin-top',(parseInt($(this).parent().css('height'))/2-parseInt($(this).css('height'))/2-15)+'px');
+				}
 				$(this).css('margin-left','');
 			}
 			else {

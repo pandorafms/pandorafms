@@ -59,6 +59,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 					a text to replace '(_VALUE_)' and the value of the module will be printed at the end."), true),
 				'label' => __('Label'),
 				'icon' => __('Icon'),
+				'clock' => __('Clock'),
 				'group_item' => __('Group'),
 				'box_item' => __('Box'),
 				'line_item' => __('Line'));
@@ -136,11 +137,11 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			
 			
 			$form_items['fill_color_row'] = array();
-			$form_items['fill_color_row']['items'] = array('datos', 'box_item');
+			$form_items['fill_color_row']['items'] = array('datos', 'box_item','clock');
 			$form_items['fill_color_row']['html'] = 
 				'<td align="left" valign="top" style="">' . __('Fill color') . '</td>' .
 				'<td align="left" style="">' .
-				html_print_input_text_extended ('fill_color', '#ffffff',
+				html_print_input_text_extended ('fill_color', '#000000',
 					'text-fill_color', '', 7, 7, false, '',
 					'class="fill_color"', true) .
 				'</td>';
@@ -162,7 +163,8 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'datos',
 				'group_item',
 				'auto_sla_graph',
-				'bars_graph');
+				'bars_graph',
+				'clock');
 			$form_items['label_row']['html'] =
 				'<td align="left" valign="top" style="">' . __('Label') . '
 				
@@ -203,6 +205,45 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				<td align="left">' .
 				html_print_select ($images_list, 'image', '', 'showPreview(this.value);', 'None', 'none', true) .
 				'</td>';
+				
+			$form_items['clock_animation_row'] = array();
+			$form_items['clock_animation_row']['items'] =	array('clock');
+			$form_items['clock_animation_row']['html'] = '<td align="left"><span>' .
+				__('Clock animation') . '</span></td>
+				<td align="left">'. html_print_select (
+					array ('analogic_1' => __('Simple analogic'), 
+					'digital_1' => __('Simple digital')),
+					'clock_animation', '', '', 0, 'analogic_1', true, false, false) . '</td>';
+				
+			$form_items['timeformat_row'] = array();
+			$form_items['timeformat_row']['items'] =	array('clock');
+			$form_items['timeformat_row']['html'] = '<td align="left"><span>' .
+				__('Time format') . '</span></td>
+				<td align="left">'. html_print_select (
+					array ('time' => __('Only time'),
+					'timedate' => __('Time and date')),
+					'time_format', '', '', 0, 'time', true, false, false) . '</td>';
+			
+			$zone_name = array('Africa' => __('Africa'), 'America' => __('America'), 'Antarctica' => __('Antarctica'), 'Arctic' => __('Arctic'), 'Asia' => __('Asia'), 'Atlantic' => __('Atlantic'), 'Australia' => __('Australia'), 'Europe' => __('Europe'), 'Indian' => __('Indian'), 'Pacific' => __('Pacific'), 'UTC' => __('UTC'));
+			$zone_selected = 'Europe';
+			
+			$timezones = timezone_identifiers_list();
+			foreach ($timezones as $timezone) {
+				if (strpos($timezone, $zone_selected) !== false) { 
+					$timezone_n[$timezone] = $timezone;
+				}
+			}
+
+			
+			$form_items['timezone_row'] = array();
+			$form_items['timezone_row']['items'] =	array('clock');
+			$form_items['timezone_row']['html'] = '<td align="left"><span>' .
+				__('Time zone') . '</span></td>
+				<td align="left">'.
+				html_print_select($zone_name, 'zone', $zone_selected, 'show_timezone();', '', '', true).
+				"&nbsp;&nbsp;". html_print_select($timezone_n, 'timezone','', '', '', '', true).
+				'</td>';
+			
 			
 			
 			$form_items['enable_link_row'] = array();
@@ -455,7 +496,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			
 			
 			$form_items['percentile_bar_row_1'] = array();
-			$form_items['percentile_bar_row_1']['items'] = array('percentile_bar', 'percentile_item', 'datos', 'donut_graph', 'bars_graph');
+			$form_items['percentile_bar_row_1']['items'] = array('percentile_bar', 'percentile_item', 'datos', 'donut_graph', 'bars_graph','clock');
 			$form_items['percentile_bar_row_1']['html'] = '<td align="left">' .
 				__('Width') . '</td>
 				<td align="left">' . html_print_input_text('width_percentile', 0, '', 3, 5, true) . '</td>';
@@ -614,7 +655,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items_advance['position_row']['items'] = array('static_graph',
 				'percentile_bar', 'percentile_item', 'module_graph',
 				'simple_value', 'label', 'icon', 'datos', 'box_item',
-				'auto_sla_graph', 'bars_graph');
+				'auto_sla_graph', 'bars_graph','clock');
 			$form_items_advance['position_row']['html'] = '
 				<td align="left">' . __('Position') . '</td>
 				<td align="left">(' . html_print_input_text('left', '0', '', 3, 5, true) .
@@ -789,6 +830,25 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			
 			
 		});
+		
+		function show_timezone () {
+			zone = $("#zone").val();
+			
+			$.ajax({
+				type: "POST",
+				url: "ajax.php",
+				data: "page=godmode/setup/setup&select_timezone=1&zone=" + zone,
+				dataType: "json",
+				success: function(data) {
+					$("#timezone").empty();
+					jQuery.each (data, function (id, value) {
+						timezone = value;
+						var timezone_country = timezone.replace (/^.*\//g, "");
+						$("select[name='timezone']").append($("<option>").val(timezone).html(timezone_country));
+					});
+				}
+			});
+		}		
 	</script>
 	<?php
 }
@@ -811,6 +871,7 @@ function visual_map_editor_print_toolbox() {
 		visual_map_print_button_editor('simple_value', __('Simple Value'), 'left', false, 'binary_min', true);
 		visual_map_print_button_editor('label', __('Label'), 'left', false, 'label_min', true);
 		visual_map_print_button_editor('icon', __('Icon'), 'left', false, 'icon_min', true);
+		visual_map_print_button_editor('clock', __('Clock'), 'left', false, 'clock_min', true);
 		visual_map_print_button_editor('group_item', __('Group'), 'left', false, 'group_item_min', true);
 		visual_map_print_button_editor('box_item', __('Box'), 'left', false, 'box_item_min', true);
 		visual_map_print_button_editor('line_item', __('Line'), 'left', false, 'line_item_min', true);

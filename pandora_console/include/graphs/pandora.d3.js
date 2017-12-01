@@ -2090,3 +2090,253 @@ function print_donut_graph (recipient, width, height, module_data, resume_color)
 		slice.exit().remove();
 	}
 }
+
+function printClockAnalogic1 (time_format, timezone, clock_animation,width,height,id_element,color) {
+		
+	if(width != 0){
+		width = width-20;
+		height = width-20;
+	}
+	
+	
+	if(width == 0){
+		width = 180;
+		height = 180;
+	}	
+	
+var radians = 0.0174532925, 
+	clockRadius = width/2,
+	margin = 10,
+		width = (clockRadius+margin)*2,
+    height = (clockRadius+margin)*2,
+    hourHandLength = 2*clockRadius/3,
+    minuteHandLength = clockRadius,
+    secondHandLength = clockRadius-12,
+    secondHandBalance = 30,
+    secondTickStart = clockRadius;
+    secondTickLength = -10,
+    hourTickStart = clockRadius,
+    hourTickLength = -18,
+    secondLabelRadius = clockRadius + 16,
+    secondLabelYOffset = 5,
+    hourLabelRadius = clockRadius - 40,
+    hourLabelYOffset = 7;
+
+var hourScale = d3.scale.linear()
+	.range([0,330])
+	.domain([0,11]);
+
+var minuteScale = secondScale = d3.scale.linear()
+	.range([0,354])
+	.domain([0,59]);
+
+var handData = [
+	{
+		type:'hour',
+		value:0,
+		length:-hourHandLength,
+		scale:hourScale
+	},
+	{
+		type:'minute',
+		value:0,
+		length:-minuteHandLength,
+		scale:minuteScale
+	},
+	{
+		type:'second',
+		value:0,
+		length:-secondHandLength,
+		scale:secondScale,
+		balance:secondHandBalance
+	}
+];
+
+function drawClock(){ //create all the clock elements
+	updateData(timezone);	//draw them in the correct starting position
+	var svg = d3.select("#clock_"+id_element).append("svg")
+	    .attr("width", width)
+	    .attr("height", height);
+
+	var face = svg.append('g')
+		.attr('id','clock-face')
+		.attr('transform','translate(' + (clockRadius + margin) + ',' + (clockRadius + margin) + ')');
+
+	//add marks for seconds
+	face.selectAll('.second-tick')
+		.data(d3.range(0,60)).enter()
+			.append('line')
+			.attr('class', 'second-tick')
+			.attr('x1',0)
+			.attr('x2',0)
+			.attr('y1',secondTickStart)
+			.attr('y2',secondTickStart + secondTickLength)
+			.attr('stroke',color)
+			.attr('transform',function(d){
+				return 'rotate(' + secondScale(d) + ')';
+			});
+	//and labels
+
+	// face.selectAll('.second-label')
+	// 	.data(d3.range(5,61,5))
+	// 		.enter()
+	// 		.append('text')
+	// 		.attr('class', 'second-label')
+	// 		.attr('text-anchor','middle')
+	// 		.attr('x',function(d){
+	// 			return secondLabelRadius*Math.sin(secondScale(d)*radians);
+	// 		})
+	// 		.attr('y',function(d){
+	// 			return -secondLabelRadius*Math.cos(secondScale(d)*radians) + secondLabelYOffset;
+	// 		})
+	// 		.text(function(d){
+	// 			return d;
+	// 		});
+
+	//... and hours
+	face.selectAll('.hour-tick')
+		.data(d3.range(0,12)).enter()
+			.append('line')
+			.attr('class', 'hour-tick')
+			.attr('x1',0)
+			.attr('x2',0)
+			.attr('y1',hourTickStart)
+			.attr('y2',hourTickStart + hourTickLength)
+			.attr('stroke',color)
+			.attr('transform',function(d){
+				return 'rotate(' + hourScale(d) + ')';
+			});
+
+	face.selectAll('.hour-label')
+		.data(d3.range(3,13,3))
+			.enter()
+			.append('text')
+			.attr('class', 'hour-label')
+			.attr('text-anchor','middle')
+			.attr('stroke',color)
+			.attr('x',function(d){
+				return hourLabelRadius*Math.sin(hourScale(d)*radians);
+			})
+			.attr('y',function(d){
+				return -hourLabelRadius*Math.cos(hourScale(d)*radians) + hourLabelYOffset;
+			})
+			.text(function(d){
+				return d;
+			});
+
+
+	var hands = face.append('g').attr('id','clock-hands');
+
+	face.append('g').attr('id','face-overlay')
+		.append('circle').attr('class','hands-cover')
+			.attr('stroke',color)
+			.attr('x',0)
+			.attr('y',0)
+			.attr('r',clockRadius/20);
+
+	hands.selectAll('line')
+		.data(handData)
+			.enter()
+			.append('line')
+			.attr('stroke',color)
+			.attr('class', function(d){
+				return d.type + '-hand';
+			})
+			.attr('x1',0)
+			.attr('y1',function(d){
+				return d.balance ? d.balance : 0;
+			})
+			.attr('x2',0)
+			.attr('y2',function(d){
+				return d.length;
+			})
+			.attr('transform',function(d){
+				return 'rotate('+ d.scale(d.value) +')';
+			});
+}
+
+function moveHands(){
+	d3.select("#clock_"+id_element+' #clock-hands').selectAll('line')
+	.data(handData)
+		.transition()
+		.attr('transform',function(d){
+			return 'rotate('+ d.scale(d.value) +')';
+		});
+}
+
+function updateData(tz){
+	
+		var d = new Date();
+		var dt = d.getTime();
+    os = d.getTimezoneOffset();
+		tz = parseInt(tz) + parseInt(os * 60);
+		var t = new Date((dt + (tz * 1000)));
+	
+	handData[0].value = (t.getHours() % 12) + t.getMinutes()/60 ;
+	handData[1].value = t.getMinutes();
+	handData[2].value = t.getSeconds();
+}
+
+drawClock();
+
+setInterval(function(){
+	updateData(timezone);
+	moveHands();
+}, 1000);
+
+d3.select(self.frameElement).style("height", height + "px");
+
+$('#clock_'+id_element).css('margin-top','0');
+	
+}
+
+function printClockDigital1 (time_format, timezone, clock_animation,width,height,id_element,color) {
+	
+var svgUnderlay = d3.select("#clock_"+id_element+" svg"),
+    svgOverlay = d3.select("#clock_"+id_element),
+    svg = d3.selectAll("#clock_"+id_element+" svg");
+
+svgUnderlay.attr("id", "underlay_"+id_element);
+svgOverlay.attr("id", "overlay_"+id_element);
+
+var digit = svg.selectAll(".digit"),
+    separator = svg.selectAll(".separator circle");
+
+var digitPattern = [
+  [1,0,1,1,0,1,1,1,1,1],
+  [1,0,0,0,1,1,1,0,1,1],
+  [1,1,1,1,1,0,0,1,1,1],
+  [0,0,1,1,1,1,1,0,1,1],
+  [1,0,1,0,0,0,1,0,1,0],
+  [1,1,0,1,1,1,1,1,1,1],
+  [1,0,1,1,0,1,1,0,1,1]
+];
+
+(function tick() {
+	
+	var tz = timezone;
+	var d = new Date();
+	var dt = d.getTime();
+	os = d.getTimezoneOffset();
+	tz = parseInt(tz) + parseInt(os * 60);
+	var t = new Date((dt + (tz * 1000)));
+
+  var now = new Date,
+      hours = t.getHours(),
+      minutes = t.getMinutes(),
+      seconds = t.getSeconds();
+
+  digit = digit.data([hours / 10 | 0, hours % 10, minutes / 10 | 0, minutes % 10, seconds / 10 | 0, seconds % 10]);
+  digit.select("path:nth-child(1)").classed("lit", function(d) { return digitPattern[0][d]; });
+  digit.select("path:nth-child(2)").classed("lit", function(d) { return digitPattern[1][d]; });
+  digit.select("path:nth-child(3)").classed("lit", function(d) { return digitPattern[2][d]; });
+  digit.select("path:nth-child(4)").classed("lit", function(d) { return digitPattern[3][d]; });
+  digit.select("path:nth-child(5)").classed("lit", function(d) { return digitPattern[4][d]; });
+  digit.select("path:nth-child(6)").classed("lit", function(d) { return digitPattern[5][d]; });
+  digit.select("path:nth-child(7)").classed("lit", function(d) { return digitPattern[6][d]; });
+  separator.classed("lit", seconds & 1);
+
+  setTimeout(tick, 1000 - now % 1000);
+})();
+	
+}

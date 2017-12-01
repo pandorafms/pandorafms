@@ -5810,29 +5810,36 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 	$filter_module_group = (!empty($filter) && !empty($filter['module_group'])) ? $filter['module_group'] : false;
 
 	if ($filter['group'] != 0) {
-		$groups = db_get_all_rows_sql ("SELECT * FROM tgrupo where id_grupo = " . $filter['group'] . " || parent = " . $filter['group']);
+		$filter_subgroups = "";
+		if (!$filter['dont_show_subgroups']) {
+			$filter_subgroups = " || parent = " . $filter['group'];
+		}
+
+		$groups = db_get_all_rows_sql ("SELECT * FROM tgrupo where id_grupo = " . $filter['group'] . $filter_subgroups);
 
 		$groups_ax = array();
 		foreach ($groups as $g) {
 			$groups_ax[$g['id_grupo']] = $g;
 		}
-		
+
 		$groups = $groups_ax;
 	}
 	else {
 		$groups = users_get_groups(false, "AR", false, true, (!empty($filter) && isset($filter['group']) ? $filter['group'] : null));
 	}
-	
+
 	$data_groups = array();
 	if (!empty($groups)) {
 		$groups_aux = $groups;
-
-		//$data_groups = groups_get_tree($groups);
 		
 		$childrens = array();
 		$data_groups = groups_get_tree_good($groups, false, $childrens);
-		foreach ($childrens as $id_c) {
-			unset($data_groups[$id_c]);
+
+		// When i want only one group
+		if (count($data_groups) > 1) {
+			foreach ($childrens as $id_c) {
+				unset($data_groups[$id_c]);
+			}
 		}
 		$data_groups_keys = array();
 		groups_get_tree_keys($data_groups, $data_groups_keys);
@@ -5880,6 +5887,7 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 						$data_agents[$agent_id]['group'] = (int) $agents[$agent_id]['id_grupo'];
 						$data_agents[$agent_id]['type'] = 'agent';
 						$data_agents[$agent_id]['size'] = 30;
+						$data_agents[$agent_id]['show_name'] = true;
 						$data_agents[$agent_id]['children'] = array();
 
 						$tooltip_content = __('Agent') . ": <b>" . $data_agents[$agent_id]['name'] . "</b>";
@@ -6052,6 +6060,7 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 					$data_agents[$id]['name'] = io_safe_output($agent['alias']);
 					$data_agents[$id]['type'] = 'agent';
 					$data_agents[$id]['color'] = COL_NOTINIT;
+					$data_agents[$id]['show_name'] = true;
 				}
 			}
 			$agents = null;
@@ -6126,7 +6135,7 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 			return false;
 	}
 
-	$graph_data = array('name' => __('Main node'), 'children' => iterate_group_array($data_groups, $data_agents), 'color' => '#3F3F3F');
+	$graph_data = array('name' => __('Main node'), 'type' => 'center_node', 'children' => iterate_group_array($data_groups, $data_agents), 'color' => '#3F3F3F');
 
 	if (empty($graph_data['children']))
 		return fs_error_image();

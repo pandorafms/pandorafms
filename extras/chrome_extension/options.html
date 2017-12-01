@@ -3,6 +3,7 @@
 	<head>
         <title>Pandora FMS extension</title>
         <link rel="stylesheet" href="css/popup.css" type="text/css" /> 
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,500,600' rel='stylesheet' type='text/css'>
         <script src="js/jquery-1.7.2.min.js"></script>
         <script src="js/sound.js"></script>
         <script src="js/options.js"></script>
@@ -35,23 +36,18 @@
                     <td> <input type="password" size=50px name="pass" id="pass"> </td>
                 </tr>
             </table>
-	</div>
-	<div class="options_textarea">
+            <br/>
             <table width=450px>
                 <caption><h3>Event Alert Sounds Configuration</h3></caption>
                 <tr>
-                    <td title="All sound alerts of notifications on/off" style="cursor:help">Sound Alerts </td>
-                    <td>
+                    <td style='padding-bottom: 15px;' title="All sound alerts of notifications on/off" style="cursor:help">Sound Alerts </td>
+                    <td style='padding-bottom: 15px;'>
                         <input type="radio" id="sound_alert_o" name="sound_alert" value="on" /> On
                         <input type="radio" id="sound_alert_f" name="sound_alert" value="off" /> Off
 
                     </td>
                 </tr>
-                <tr>
-                    <td><b>Severity</b></td>
-                    <td ><b>Sound Type</b></td>
-                </tr>
-                <tr>
+                <tr class="sound_selector">
                     <td>Critical</td>
                     <td>
                         <select id="critical">
@@ -69,7 +65,7 @@
                         </select>
                     </td>
                 </tr>
-                <tr>
+                <tr class="sound_selector">
                     <td>Informational</td>
                     <td>
                         <select id="informational">
@@ -87,7 +83,7 @@
                         </select>
                     </td>
                 </tr>
-                <tr>
+                <tr class="sound_selector">
                     <td>Maintenance</td>
                     <td>
                         <select id="maintenance">
@@ -105,7 +101,7 @@
                         </select>
                     </td>
                 </tr>
-                <tr>
+                <tr class="sound_selector">
                     <td>Normal</td>
                     <td>
                         <select id="normal">
@@ -123,7 +119,7 @@
                         </select>
                     </td>
                 </tr>
-                <tr>
+                <tr class="sound_selector">
                     <td>Warning</td>
                     <td>
                         <select id="warning">
@@ -142,8 +138,8 @@
                     </td>
                 </tr>
                 <tr>
-                    <td title="Automatic Refresh time to fetch new events" style="cursor:help">Auto Refresh Time</td>
-                    <td>
+                    <td style='padding-top: 15px;' title="Automatic Refresh time to fetch new events" style="cursor:help">Auto Refresh Time</td>
+                    <td style='padding-top: 15px;'>
                         <select id="refresh">
                             <option value="5">5 seconds</option>
                             <option value="10">10 seconds</option>
@@ -161,7 +157,7 @@
                 <tr>
                     <td title="Number of events to be displayed in pop up window" style="cursor:help">Number of events</td>
                     <td>
-                        <select id="events">
+                        <select id="number_events">
                             <option value="5">5</option>
                             <option value="10">10</option>
                             <option value="12">12</option>
@@ -173,10 +169,11 @@
                     </td>
                 </tr>
             </table>
+
+			<button id="close" type="button"><h3>Close</h3></button>
         </div>
         <div class="options_footer">
-			<button id="close" type="button"><h3>Close</h3></button>
-			<p style="font-family:arial;font-style:italic;color:black;font-size:11px;">Author Information : R.Hareesan (rharishan@gmail.com)</p>
+			<p style="display: none;font-family:arial;font-style:italic;color:black;font-size:11px;">Author Information : R.Hareesan (rharishan@gmail.com)</p>
         </div>
     </body>
     </html>

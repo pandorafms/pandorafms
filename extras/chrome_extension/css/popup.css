@@ -15,7 +15,7 @@ h1 {
     margin: 2px 0px 2px 0px;
 }
 h2 {
-    color : black;
+    color : #333;
 }
 p {
     font-size: 20px;
@@ -81,28 +81,81 @@ div.options_header {
 }
 
 div.options_divider {
-    width: 100%;
-    background-color: #C8C8C8;
+    width: 627px;
+    margin-top: 30px;
 }
 
-div.optionsG_textarea {
-    background-color: green;
-    width: 450px;
-    margin: 5px, 10px;
+div.options_divider h2{
+    margin: 20px 20px 0;
+    padding: 5px;
+    font-weight: 500;
+    border: 2px solid #82b92e;
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
+    color: white;
+    text-align: center;
+    background: #82b92e;
+    font-size: 14px;
+    font-weight: 600;
 }
+
 div.options_textarea {
-    background-color: #ebebeb;
+    background-color: #f6f6f6;
     width: 550px;
-    margin: 10px 10px;
-    padding: 10px;
-	-webkit-border-radius: 10px;    
-    border: 2px solid #c8c8c8;
+    margin: 0 20px;
+    padding: 10px 10px 25px 25px;
+    border-bottom-left-radius: 2px;
+    border-bottom-right-radius: 2px;
+    border: 1px solid #e4e4e4;
+    border-top: 0;
 }
 
 div.options_footer {
     width: 550px;
     margin: 10px 10px;
     padding: 10px;
+}
+
+select {
+    background: white;
+    border: 1px solid #888;
+    font-size: smaller;
+    padding: 2px 1px;
+    width: 250px;
+}
+
+.sound_selector td:first-child {
+    padding-left: 25px;
+    width: 39%;
+}
+
+.options_textarea button {
+    background-color: #82b92e;
+    border: 1px solid #82b92e;
+    color: white;
+    padding: 6px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12px;
+    border-radius: 2px;
+    margin: 25px 0px 0px 422px;
+}
+
+.options_textarea button:hover {
+    background-color: transparent;
+    color: #82b92e;
+    cursor: pointer;
+}
+
+.options_textarea h3 {
+    text-align: left;
+    font-size: 11.4pt;
+}
+
+button h3 {
+    margin: 0;
+    font-size: 10pt !important;
 }
 
 .tooltip {
@@ -171,7 +224,6 @@ div.options_footer {
     margin-left: 5px;
     color: #333;
 }
-
 
 .event p {
     margin: 0 0 0 6px;

@@ -11,7 +11,7 @@ function initialise(){
 	document.getElementById('normal').value = localStorage["normal"]; 
 	document.getElementById('warning').value = localStorage["warning"];
 	document.getElementById('refresh').value = localStorage["refresh"];
-	document.getElementById('events').value = localStorage["events"];
+	document.getElementById('number_events').value = localStorage["events"];
 	if(localStorage["sound_alert"]=="on"){
 		disable(false);
 		document.getElementById('sound_alert_o').checked=true;
@@ -45,7 +45,7 @@ function change_o(value, id){
 	if(id=="refresh"){
 		localStorage["refresh"]=value;
 	}
-	if(id=="events"){
+	if(id=="number_events"){
 		localStorage["events"]=value;
 	}
 }
@@ -153,8 +153,8 @@ $(document).ready (function () {
 		change_o($(this).val(), "refresh");
 	});
 	
-	$("#events").change(function () {
-		change_o($(this).val(), "events");
+	$("#number_events").change(function () {
+		change_o($(this).val(), "number_events");
 	});
 		
 	//Close button

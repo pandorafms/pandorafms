@@ -782,7 +782,7 @@ function get_ldap_login_attr ($login) {
 	$id_user = $login;
 
 	switch ($config['ldap_login_user_attr']) {
-		case 'email':
+		case 'mail':
 			$dc = io_safe_output($config["ldap_base_dn"]);
 
 			$correct_admin_bind = true;
@@ -1010,7 +1010,7 @@ function prepare_permissions_groups_of_user_ldap ($id_user, $password,
 	if (!is_user ($id_user)) {
 		if (($config['ldap_login_user_attr'] != 'name') && ($config['ldap_login_user_attr'] != null)) {
 			switch ($config['ldap_login_user_attr']) {
-				case 'email':
+				case 'mail':
 					$filter="(" . $config['ldap_login_attr'] . "=" . io_safe_output($id_user) . ")";
 					$justthese = array("mail");
 					

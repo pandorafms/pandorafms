@@ -67,6 +67,14 @@ $agent_to_delete = (int)get_parameter('borrar_agente');
 $enable_agent = (int)get_parameter('enable_agent');
 $disable_agent = (int)get_parameter('disable_agent');
 
+if($disable_agent != 0){
+	$server_name = db_get_row_sql('select server_name from tagente where id_agente = '.$disable_agent);	
+}
+elseif ($enable_agent != 0) {
+	$server_name = db_get_row_sql('select server_name from tagente where id_agente = '.$enable_agent);	
+}
+
+
 $result = null;
 
 if ($agent_to_delete) {
@@ -106,7 +114,7 @@ if ($enable_agent) {
 		// Update the agent from the metaconsole cache
 		enterprise_include_once('include/functions_agents.php');
 		$values = array('disabled' => 0);
-		enterprise_hook ('agent_update_from_cache', array($enable_agent, $values));
+		enterprise_hook ('agent_update_from_cache', array($enable_agent, $values,$server_name));
 		
 		db_pandora_audit("Agent management", 'Enable  ' . $alias);
 	}
@@ -126,7 +134,7 @@ if ($disable_agent) {
 		// Update the agent from the metaconsole cache
 		enterprise_include_once('include/functions_agents.php');
 		$values = array('disabled' => 1);
-		enterprise_hook ('agent_update_from_cache', array($disable_agent, $values));
+		enterprise_hook ('agent_update_from_cache', array($disable_agent, $values,$server_name));
 		
 		db_pandora_audit("Agent management", 'Disable  ' . $alias);
 	}

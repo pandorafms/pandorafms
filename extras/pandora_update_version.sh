@@ -127,7 +127,7 @@ done
 
 # Perl plugins files
 for file in $PERL_PLUGIN_FILES; do
-	echo "Updating installer file $file..."
+	echo "Updating plugin file $file..."
 	update_perl_version $file
 done
 

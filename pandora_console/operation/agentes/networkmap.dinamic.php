@@ -136,11 +136,20 @@ if ($activeTab == "radial_dynamic") {
 	echo "<div style='width: auto; text-align: center;'>";
 	
 	$filter = array();
-	if (!empty($group))
-		$filter['group'] = $group;
-	if (!empty($module_group))
+	if ($networkmap['source'] == 0) {
+		$filter['group'] = $networkmap['source_data'];
+	}
+	$map_filter = json_decode($networkmap['filter'], true);
+	if (isset($map_filter['dont_show_subgroups']) && $map_filter['dont_show_subgroups']) {
+		$filter['dont_show_subgroups'] = true;
+	}
+	else {
+		$filter['dont_show_subgroups'] = false;
+	}
+	if (!empty($module_group)) {
 		$filter['module_group'] = $module_group;
-	
+	}
+
 	echo graph_monitor_wheel($width, $height, $filter, $strict_user);
 	
 	echo "</div>";

@@ -1687,7 +1687,7 @@ function events_page_responses ($event, $childrens_ids = array()) {
 			$users[0]['id_user'] = $config['id_user'];
 			$users[0]['fullname'] = $user_name;
 		} else {
-			$users = groups_get_users($_user_groups, array('id_perfil' => $profiles_view_events), true, true);
+			$users = groups_get_users($_user_groups, array('id_perfil' => $profiles_view_events), true);
 		}
 	
 		foreach($users as $u) {
@@ -2080,7 +2080,7 @@ function events_page_details ($event, $server = "") {
 		}
 		else {
 			$module_group = db_get_value('name', 'tmodule_group', 'id_mg', $id_module_group);
-			$data[1] = '<a href="'.$serverstring . 'index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;status=-1&amp;modulegroup=' . $id_module_group . $hashstring.'">';
+			$data[1] = '<a href="'.$serverstring . 'index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;status=-1&amp;modulegroup=' . $id_module_group . $hashstring.'">';
 			$data[1] .= $module_group;
 			$data[1] .= '</a>';
 		}

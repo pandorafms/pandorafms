@@ -888,21 +888,24 @@ function users_get_user_users($id_user = false, $privilege = "AR",
 	global $config;
 	
 	$user_groups = users_get_groups($id_user, $privilege, $returnAllGroup);
-	
+
 	$user_users = array();
+	$array_user_group = array();
+	
 	foreach ($user_groups as $id_user_group => $name_user_group) {
-		$group_users = groups_get_users($id_user_group, false, $returnAllGroup);
+		$array_user_group[] = $id_user_group;
+	}
+
+	$group_users = groups_get_users($array_user_group, false, $returnAllGroup);
 		
-		
-		foreach ($group_users as $gu) {
-			if (empty($fields)) {
-				$user_users[$gu['id_user']] = $gu['id_user'];
-			}
-			else {
-				$fields = (array)$fields;
-				foreach ($fields as $field) {
-					$user_users[$gu['id_user']][$field] = $gu[$field];
-				}
+	foreach ($group_users as $gu) {
+		if (empty($fields)) {
+			$user_users[$gu['id_user']] = $gu['id_user'];
+		}
+		else {
+			$fields = (array)$fields;
+			foreach ($fields as $field) {
+				$user_users[$gu['id_user']][$field] = $gu[$field];
 			}
 		}
 	}

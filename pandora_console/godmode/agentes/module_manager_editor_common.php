@@ -291,7 +291,7 @@ if (modules_is_string_type($id_module_type) || $edit) {
 	$table_simple->data[4][1] .= '<br /><em>'.__('Inverse interval').'</em>';
 	$table_simple->data[4][1] .= html_print_checkbox ("warning_inverse", 1, $warning_inverse, true, $disabledBecauseInPolicy);
 if (!modules_is_string_type($id_module_type) || $edit) {
-	$table_simple->data[4][2] = '<svg id="svg_dinamic" width="350px" height="200px" style="padding:40px; padding-left: 100px; margin-bottom: 60px;"></svg>';
+	$table_simple->data[4][2] = '<svg id="svg_dinamic" width="800" height="300"> </svg>';
 	$table_simple->colspan[4][2] = 2;
 	$table_simple->rowspan[4][2] = 3;
 }
@@ -590,8 +590,7 @@ $table_advanced->colspan[10][1] = 6;
 if (isset($id_agente) && $moduletype == MODULE_DATA) {
 	$has_remote_conf = enterprise_hook('config_agents_has_remote_configuration',array($agent["id_agente"]));
 	if ($has_remote_conf) {
-		$table_advanced->data[11][0] = __('Cron from') .
-			ui_print_help_tip (__('If cron is set the module interval is ignored and the module runs on the specified date and time'), true);
+		$table_advanced->data[11][0] = __('Cron from') . ui_print_help_icon ('cron', true);
 		$table_advanced->data[11][1] = html_print_extended_select_for_cron ($hour_from, $minute_from, $mday_from, $month_from, $wday_from, true, $disabledBecauseInPolicy);
 		$table_advanced->colspan[11][1] = 6;
 
@@ -600,8 +599,7 @@ if (isset($id_agente) && $moduletype == MODULE_DATA) {
 		$table_advanced->colspan[12][1] = 6;
 	}
 	else {
-		$table_advanced->data[11][0] = __('Cron from') .
-			ui_print_help_tip (__('If cron is set the module interval is ignored and the module runs on the specified date and time'), true);
+		$table_advanced->data[11][0] = __('Cron from') . ui_print_help_icon ('cron', true);
 		$table_advanced->data[11][1] = html_print_extended_select_for_cron ($hour_from, $minute_from, $mday_from, $month_from, $wday_from, true, true);
 		$table_advanced->colspan[11][1] = 6;
 
@@ -611,8 +609,7 @@ if (isset($id_agente) && $moduletype == MODULE_DATA) {
 	}
 }
 else {
-	$table_advanced->data[11][0] = __('Cron from') .
-		ui_print_help_tip (__('If cron is set the module interval is ignored and the module runs on the specified date and time'), true);
+	$table_advanced->data[11][0] = __('Cron from') . ui_print_help_icon ('cron', true);
 	$table_advanced->data[11][1] = html_print_extended_select_for_cron ($hour_from, $minute_from, $mday_from, $month_from, $wday_from, true, $disabledBecauseInPolicy);
 	$table_advanced->colspan[11][1] = 6;
 
@@ -1202,17 +1199,32 @@ function paint_graph_values(){
 	//inicialiced error
 	var error_w = 0;
 	var error_c = 0;
+	//messages legend
+	var legend_normal = '<?php echo __("Normal Status");?>';
+	var legend_warning = '<?php echo __("Warning Status");?>';
+	var legend_critical = '<?php echo __("Critical Status");?>';
+	//messages error
+	var message_error_warning = '<?php echo __("Please introduce a maximum warning higher than the minimun warning") ?>';
+	var message_error_critical = '<?php echo __("Please introduce a maximum critical higher than the minimun critical") ?>';
+	
 	//if haven't error
 	if(max_w == 0 || max_w > min_w){
 		if(max_c == 0 || max_c > min_c){
-			paint_graph_status(min_w, max_w, min_c, max_c, inverse_w, inverse_c, error_w, error_c);
+			paint_graph_status(min_w, max_w, min_c, max_c, inverse_w, 
+								inverse_c, error_w, error_c,
+								legend_normal, legend_warning, legend_critical,
+								message_error_warning, message_error_critical);
 		} else {
 			error_c = 1;
-			paint_graph_status(0,0,0,0,0,0, error_w, error_c);
+			paint_graph_status(0,0,0,0,0,0, error_w, error_c,
+							legend_normal, legend_warning, legend_critical,
+							message_error_warning, message_error_critical);
 		}
 	} else {
 		error_w = 1;
-		paint_graph_status(0,0,0,0,0,0, error_w, error_c);
+		paint_graph_status(0,0,0,0,0,0, error_w, error_c, 
+							legend_normal, legend_warning, legend_critical,
+							message_error_warning, message_error_critical);
 	}
 }
 

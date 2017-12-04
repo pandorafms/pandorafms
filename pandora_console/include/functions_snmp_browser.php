@@ -725,35 +725,38 @@ function snmp_browser_print_container ($return = false, $width = '100%', $height
 				
 			});
 			// Prepare the AJAX call
-			var params = [
-				"target_ip=" + target_ip,
-				"community=" + community,
-				"oids=" + oids,
-				"snmp_browser_version=" + snmp_version,
-				"snmp3_browser_auth_user=" + snmp3_auth_user,
-				"snmp3_browser_security_level=" + snmp3_security_level,
-				"snmp3_browser_auth_method=" + snmp3_auth_method,
-				"snmp3_browser_auth_pass=" + snmp3_auth_pass,
-				"snmp3_browser_privacy_method=" + snmp3_privacy_method,
-				"snmp3_browser_privacy_pass=" + snmp3_privacy_pass,
-				"action=" + "create_modules_snmp",
-				"custom_action=" + custom_action,
-				"page=include/ajax/snmp_browser.ajax"
-			];
+			var params = {};
+			params["target_ip"] = target_ip;
+			params["community"] = community;
+			params["oids"] = oids;
+			params["snmp_browser_version"] = snmp_version;
+			params["snmp3_browser_auth_user"] = snmp3_auth_user;
+			params["snmp3_browser_security_level"] = snmp3_security_level;
+			params["snmp3_browser_auth_method"] = snmp3_auth_method;
+			params["snmp3_browser_auth_pass"] = snmp3_auth_pass;
+			params["snmp3_browser_privacy_method"] = snmp3_privacy_method;
+			params["snmp3_browser_privacy_pass"] = snmp3_privacy_pass;
+			params["action"] = "create_modules_snmp";
+			params["custom_action"] = custom_action;
+			params["page"] = "include/ajax/snmp_browser.ajax";
 			
 			$.ajax({
 				type: "GET",
 				url: "ajax.php",
-				data: params.join ("&"),
-				dataType: "json",
+				data: params,
+				dataType: "html",
 				success: function(data) {
+					
+					var dato = data.replace(/[^]+(?=\[)/,"");
 					$('input[name*=create_network_component]').removeClass("sub spinn");
 					$('input[name*=create_network_component]').addClass("sub add");
 					
-					if(data.length !== 0){
+					dato = JSON.parse(dato);
+					
+					if(dato.length !== 0){
 						$('#error_text').text("");
-						data.forEach( function(valor, indice, array) {
-							console.log(valor);
+						
+						dato.forEach( function(valor, indice, array) {
     						$('#error_text').append('<br/>'+ valor );
 						});
 						$("#dialog_error")

@@ -450,7 +450,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 						// Link to an module
 						if (empty($layoutData['id_metaconsole'])) {
 							$url = $config['homeurl'] .
-								'index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;id_module=' . $layoutData['id_agente_modulo'];
+								'index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;id_module=' . $layoutData['id_agente_modulo'];
 						}
 						else {
 							$url = ui_meta_get_url_console_child(
@@ -621,7 +621,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 						// Link to an module
 						if (empty($layoutData['id_metaconsole'])) {
 							$url = $config['homeurl'] .
-								'index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;id_module=' . $layoutData['id_agente_modulo'];
+								'index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;id_module=' . $layoutData['id_agente_modulo'];
 						}
 						else {
 							$url = ui_meta_get_url_console_child(
@@ -670,11 +670,11 @@ function visual_map_print_item($mode = "read", $layoutData,
 							
 							$url =
 								$server["server_url"] .
-								'/index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;id_module=' . $layoutData['id_agente_modulo'];
+								'/index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;id_module=' . $layoutData['id_agente_modulo'];
 						}
 						else {
 							$url =
-								$config['homeurl'].'/index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;id_module=' . $layoutData['id_agente_modulo'];
+								$config['homeurl'].'/index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;id_module=' . $layoutData['id_agente_modulo'];
 						}
 					}
 					else {
@@ -738,7 +738,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 						else {
 							if (empty($layoutData['id_metaconsole'])) {
 								$url = $config['homeurl'] .
-									'/index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;id_module=' . $layoutData['id_agente_modulo'];
+									'/index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;id_module=' . $layoutData['id_agente_modulo'];
 							}
 							else {
 								$url = ui_meta_get_url_console_child(
@@ -1600,8 +1600,12 @@ function visual_map_print_item($mode = "read", $layoutData,
 						if (!empty($unit_text))
 							$value .= " " . $unit_text;
 						
-						$img_style_title .= " <br>" . __("Last value: ") .
-							$value;
+						// Hide value on boolean modules
+						if (!modules_is_boolean($layoutData['id_agente_modulo'])) {
+							$img_style_title .=
+								" <br>" . __("Last value: ")
+								. $value;
+						}
 					}
 					
 					if(get_parameter('action') == 'edit'){

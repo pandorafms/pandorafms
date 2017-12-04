@@ -689,6 +689,20 @@ function ldap_process_user_login ($login, $password) {
 		}
 	}
 
+	$correct_admin_bind = true;
+	if ($config['ldap_admin_login'] != "" && $config['ldap_admin_pass'] != "") {
+		if (!@ldap_bind($ds, io_safe_output($config['ldap_admin_login']), $config['ldap_admin_pass'])) {
+			$correct_admin_bind = false;
+		}
+	}
+
+	if (!$correct_admin_bind) {
+		$config["auth_error"] = 'Admin ldap connection fail';
+		@ldap_close ($ds);
+		
+		return false;
+	}
+
 	$dc = io_safe_output($config["ldap_base_dn"]);
 	
 	#Search group of this user it belong.
@@ -768,8 +782,22 @@ function get_ldap_login_attr ($login) {
 	$id_user = $login;
 
 	switch ($config['ldap_login_user_attr']) {
-		case 'email':
+		case 'mail':
 			$dc = io_safe_output($config["ldap_base_dn"]);
+
+			$correct_admin_bind = true;
+			if ($config['ldap_admin_login'] != "" && $config['ldap_admin_pass'] != "") {
+				if (!@ldap_bind($ds, io_safe_output($config['ldap_admin_login']), $config['ldap_admin_pass'])) {
+					$correct_admin_bind = false;
+				}
+			}
+
+			if (!$correct_admin_bind) {
+				$config["auth_error"] = 'Admin ldap connection fail';
+				@ldap_close ($ds);
+				
+				return false;
+			}
 	
 			$filter="(" . $config['ldap_login_attr'] . "=" . io_safe_output($id_user) . ")";
 			$justthese = array("mail");
@@ -859,6 +887,20 @@ function prepare_permissions_groups_of_user_ldap ($id_user, $password,
 	
 	$dc = io_safe_output($config["ldap_base_dn"]);
 	
+	$correct_admin_bind = true;
+	if ($config['ldap_admin_login'] != "" && $config['ldap_admin_pass'] != "") {
+		if (!@ldap_bind($ds, io_safe_output($config['ldap_admin_login']), $config['ldap_admin_pass'])) {
+			$correct_admin_bind = false;
+		}
+	}
+
+	if (!$correct_admin_bind) {
+		$config["auth_error"] = 'Admin ldap connection fail';
+		@ldap_close ($ds);
+		
+		return false;
+	}
+
 	#Search group of this user it belong.
 	$filter="(" . $config['ldap_login_attr'] . "=" . io_safe_output($id_user) . ")";
 	$justthese = array("objectclass=group");
@@ -968,7 +1010,7 @@ function prepare_permissions_groups_of_user_ldap ($id_user, $password,
 	if (!is_user ($id_user)) {
 		if (($config['ldap_login_user_attr'] != 'name') && ($config['ldap_login_user_attr'] != null)) {
 			switch ($config['ldap_login_user_attr']) {
-				case 'email':
+				case 'mail':
 					$filter="(" . $config['ldap_login_attr'] . "=" . io_safe_output($id_user) . ")";
 					$justthese = array("mail");
 					

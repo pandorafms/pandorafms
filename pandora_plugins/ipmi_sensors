@@ -1,0 +1,322 @@
+#!/usr/bin/perl
+# --------------------------------------------------------------
+# IPMI Sensors parser for Unix
+# Used as Plugin in Pandora FMS Monitoring System
+# Written by Robert Nelson <robertn@the-nelsons.org> 2015
+# Licensed under BSD Licence
+# --------------------------------------------------------------
+
+use strict;
+use warnings;
+
+use Getopt::Std;
+use File::Copy;
+
+
+$Getopt::Std::STANDARD_HELP_VERSION = 1;
+$Getopt::Std::OUTPUT_HELP_VERSION = \*STDERR;
+
+my $TMP_DIR = "/tmp";
+
+our $VERSION = "0.9.0";
+
+sub VERSION_MESSAGE($) {
+	my ($fh) = @_;
+
+	print $fh "$0 Version $VERSION\n";
+}
+
+sub HELP_MESSAGE($) {
+	my ($fh) = @_;
+
+	print $fh "usage: $0 (-l | -h <hostname> -u <username> -p <password>) [-g <modulegroup>] [-a <agent_name> -d <pool_path>]\n";
+	print $fh "\nThis agent plugin can be used for local or remote IPMI monitoring\n";
+	print $fh "For local monitoring:\n";
+	print $fh "-l\n";
+	print $fh "For remote monitoring:\n";
+	print $fh "-h\tIPMI host name or IP address\n";
+	print $fh "-u\tIPMI user name\n";
+	print $fh "-p\tIPMI password\n";
+	print $fh "In either case the module can be assigned to a module group using:\n";
+	print $fh "-g\tModule group (must already exist in PandoraFMS)\n\n";
+	print $fh "-a\tAgent name, requires also -d option\n";
+	print $fh "-d\tLocal directory pool for agent data files\n";
+	print $fh "-D\tdriver to be used\n";
+}
+
+sub exec_program($) {
+	use IPC::Open3;
+	use IO::Select;
+
+	my $cmd = shift;
+	
+	my $pid = open3(\*CHILD_STDIN, \*CHILD_STDOUT, \*CHILD_STDERR, $cmd);
+
+	close(CHILD_STDIN);
+
+	my $sel = new IO::Select(\*CHILD_STDOUT, \*CHILD_STDERR);
+
+	my ($child_stdout, $child_stderr) = ('', '');
+
+	while (my @ready = $sel->can_read(60)) {
+		foreach my $h (@ready)
+		{
+			my ($buf, $count);
+			if ($h eq \*CHILD_STDERR)
+			{
+				$count = sysread(CHILD_STDERR, $buf, 4096);
+				if ($count > 0) {
+					$child_stderr .= $buf;
+				} else {
+					$sel->remove(\*CHILD_STDERR);
+				}
+			} else {
+				$count = sysread(CHILD_STDOUT, $buf, 4096);
+				if ($count > 0) {
+					$child_stdout .= $buf;
+				} else {
+					$sel->remove(\*CHILD_STDOUT);
+				}
+			}
+		}
+		my @active_handles = $sel->handles;
+		if ($#active_handles < 0) {
+			last;
+		}
+	}
+
+	waitpid($pid, 1);
+
+	my $retval = $? >> 8;
+
+	return ($retval, $child_stdout, $child_stderr);
+}
+
+my %options;
+
+if (!getopts('lh:u:p:g:a:d:', \%options)) {
+	exit 1;
+}
+
+if (defined $options{'l'}) {
+	if (defined $options{'h'} || defined $options{'u'} || defined $options{'p'} || defined $options{'v'}) {
+		print STDERR "Option -l can't be used with -h, -u, -p or -v\n";
+		HELP_MESSAGE(\*STDERR);
+		exit 1;
+	}
+} elsif (!defined $options{'h'} || !defined $options{'u'} || !defined $options{'p'}) {
+	print STDERR "Either -l or all of -h, -u and -p must be specified\n";
+	HELP_MESSAGE(\*STDERR);
+	exit 1;
+}
+if ( ( defined $options{'a'} && !defined $options{'d'} ) || ( !defined $options{'a'} && defined $options{'d'} ) ) {
+	print STDERR "Arguments -a and -d must be specified together\n";
+	HELP_MESSAGE(\*STDERR);
+	exit 1;
+}
+
+my $host_name     = $options{'h'};
+my $user_name     = $options{'u'};
+my $user_password = $options{'p'};
+my $module_group  = $options{'g'};
+my $agent_name    = $options{'a'};
+my $dest_dir      = $options{'d'};
+my $driver        = $options{'D'};
+
+
+# Map Sensor type to module type and thresholds
+# 0 = numeric, record has thresholds
+# 1 = simple flag, 0 normal, > 0 critical
+# 2 = complex flags, for now ignore alert settings
+# 3 = string or unknown
+
+my %sensor_types = (
+	'Temperature' => 0,
+	'Voltage' => 0,
+	'Current' => 0,
+	'Fan' => 0,
+	'Physical Security' => 1,
+	'Platform Security Violation Attempt' => 1,
+	'Processor' => 2,
+	'Power Supply' => 2,
+	'Power Unit' => 2,
+	'Cooling Device' => 0,
+	'Other Units Based Sensor' => 0,
+	'Memory' => 2,
+	'Drive Slot' => 3,
+	'POST Memory Resize' => 3,
+	'System Firmware Progress' => 1,
+	'Event Logging Disabled' => 2,
+	'Watchdog 1' => 2,
+	'System Event' => 2,
+	'Critical Interrupt' => 1,
+	'Button Switch' => 2,
+	'Module Board' => 3,
+	'Microcontroller Coprocessor' => 3,
+	'Add In Card' => 3,
+	'Chassis' => 3,
+	'Chip Set' => 3,
+	'Other Fru' => 3,
+	'Cable Interconnect' => 3,
+	'Terminator' => 3,
+	'System Boot Initiated' => 2,
+	'Boot Error' => 1,
+	'OS Boot' => 2,
+	'OS Critical Stop' => 1,
+	'Slot Connector' => 2,
+	'System ACPI Power State' => 2,
+	'Watchdog 2' => 2,
+	'Platform Alert' => 2,
+	'Entity Presence' => 2,
+	'Monitor ASIC IC' => 3,
+	'LAN' => 2,
+	'Management Subsystem Health' => 1,
+	'Battery' => 2,
+	'Session Audit' => 3,
+	'Version Change' => 3,
+	'FRU State' => 3,
+	'OEM Reserved' => 3
+);
+
+my $command = 'ipmi-sensors';
+if (defined $driver){
+	$command .= " -D $driver "
+}
+if (defined $host_name) {
+	$command .= " -h $host_name -u $user_name -p $user_password -l user";
+}
+$command .= ' --ignore-not-available-sensors --no-header-output --comma-separated-output --non-abbreviated-units --output-sensor-thresholds --output-event-bitmask';
+
+my ($retval, $stdout, $stderr) = exec_program($command);
+
+
+my $module_list = "";
+
+if ($retval == 0) {
+	my ($module_name, $module_type, $module_warn_min, $module_warn_max, $module_warn_invert, $module_critical_min, $module_critical_max, $module_critical_invert);
+
+	foreach my $line (split(/\n/, $stdout)) {
+		my ($sensor, $name, $type, $value, $units, $lowerNR, $lowerC, $lowerNC, $upperNC, $upperC, $upperNR, $eventmask) = split(/,/, $line);
+
+		$module_name = "$type: $name";
+
+		my ($module_warn_min, $module_warn_max, $module_warn_invert, $module_critical_min, $module_critical_max, $module_critical_invert);
+
+		my $sensor_type = $sensor_types{$type};
+		if ($sensor_type == 0) {
+			$module_type = 'generic_data';
+			if ($lowerC ne 'N/A' and $upperC ne 'N/A') {
+				if ($lowerC <= $upperC) {
+					$module_critical_min = $lowerC;
+					$module_critical_max = $upperC;
+				} else {
+					$module_critical_min = $upperC;
+					$module_critical_max = $lowerC;
+				}
+				$module_critical_invert = '1';
+			}
+			if ($lowerNC ne 'N/A' and $upperNC ne 'N/A') {
+				if ($lowerNC <= $upperNC) {
+					$module_warn_min = $lowerNC;
+					$module_warn_max = $upperNC;
+				} else {
+					$module_warn_min = $upperNC;
+					$module_warn_max = $lowerNC;
+				}
+				$module_warn_invert = '1';
+			}
+		} elsif ($sensor_type == 1) {
+			$module_type = 'generic_data';
+			$module_critical_min = '1';
+			$module_critical_max = '0';
+		} elsif ($sensor_type == 2) {
+			$module_type = 'generic_data';
+		} elsif ($sensor_type == 3) {
+			$module_type = 'generic_data_string';
+		} else {
+			$module_type = 'generic_data_string';
+		}
+
+		$module_list .= "<module>\n";
+		$module_list .= "	<name><![CDATA[$module_name]]></name>\n";
+		$module_list .= "	<type><![CDATA[$module_type]]></type>\n";
+		$module_list .= "	<module_group><![CDATA[$module_group]]></module_group>\n" if defined $module_group;
+		if ($value eq 'N/A') {
+			if ($eventmask =~ /([0-9A-Fa-f]+)h/) {
+				$value = hex $1;
+			} else {
+				$value = $eventmask;
+			}
+		}
+		$module_list .= "	<data><![CDATA[$value]]></data>\n";
+		$module_list .= "	<unit><![CDATA[$units]]></unit>\n" if ($units ne 'N/A');
+		$module_list .= "	<min_warning>$module_warn_min</min_warning>\n" if defined $module_warn_min;
+		$module_list .= "	<max_warning>$module_warn_max</max_warning>\n" if defined $module_warn_max;
+		$module_list .= "	<warning_inverse>$module_warn_invert</warning_inverse>\n" if defined $module_warn_invert;
+		$module_list .= "	<min_critical>$module_critical_min</min_critical>\n" if defined $module_critical_min;
+		$module_list .= "	<max_critical>$module_critical_max</max_critical>\n" if defined $module_critical_max;
+		$module_list .= "	<critical_inverse>$module_critical_invert</critical_inverse>\n" if defined $module_critical_invert;
+		$module_list .= "</module>\n";
+	}
+
+	if (defined ($agent_name)){
+
+		my $xml = "<?xml version='1.0' encoding='UTF-8'?>\n";
+
+		# print header
+		$xml .= "<agent_data ";
+		$xml .= "agent_name='" . $agent_name . "'";
+		$xml .= ">\n";
+
+		# add content
+		$xml .= $module_list;
+
+		# print tail
+		$xml .= "</agent_data>\n";
+
+		# dump xml content to file
+		my $file_name = $agent_name."_".time().".data";
+		my $file_path = $TMP_DIR . "/" . $file_name;
+		#Creating XML file in temp directory
+		
+		if ( -e $file_path ) {
+			sleep (1);
+			$file_name = $agent_name . "_" . time().".data";
+			$file_path = $TMP_DIR . "/" . $file_name;
+		}
+
+		open (FD, ">>", $file_path);
+		
+		my $bin_opts = ':raw:encoding(UTF8)';
+		
+		if ($^O eq "Windows") {
+			$bin_opts .= ':crlf';
+		}
+		
+		binmode(FD, $bin_opts);
+
+		print FD $xml;
+
+		close (FD);
+
+		# transfer file
+		my $rc = copy($file_path, $dest_dir);
+
+		#If there was no error, delete file
+		if ($rc == 0) {
+			print STDERR "There was a problem copying local file to $dest_dir: $!\n";
+		} else {
+			unlink ($file_path);
+		}
+
+
+	}
+	else {
+		print $module_list;
+	}
+
+} else {
+	print STDERR "ipmi_sensors: Error Executing - $command\n";
+	print STDERR $stderr;
+	exit 1;
+}

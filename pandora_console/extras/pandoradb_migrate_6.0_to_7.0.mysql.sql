@@ -728,6 +728,7 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	`lapse_calc` tinyint(1) UNSIGNED NOT NULL default '0',
 	`lapse` int(11) UNSIGNED NOT NULL default '300',
 	`visual_format` tinyint(1) UNSIGNED NOT NULL default '0',
+	`hide_no_data` tinyint(1) default 0,
 	PRIMARY KEY(`id_rc`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -1433,6 +1434,7 @@ ALTER TABLE tserver_export MODIFY `name` varchar(600) BINARY NOT NULL default ''
 -- ---------------------------------------------------------------------
 
 ALTER TABLE tgraph_source ADD COLUMN id_server int(11) UNSIGNED NOT NULL default 0;
+ALTER TABLE tgraph_source ADD COLUMN `order` int(10) NOT NULL default 0;
 
 -- ---------------------------------------------------------------------
 -- Table `tserver_export_data`

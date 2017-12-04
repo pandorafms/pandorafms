@@ -364,6 +364,19 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 			
 			extra_parameters = '&selection_mode=' + selection_mode + '&date_from=' + date_from + '&date_to=' + date_to + '&time_from=' + time_from + '&time_to=' + time_to;
 		}
+
+		// Get the free text in both options
+		var freesearch = $('#text-freesearch').val();
+		if (freesearch != null && freesearch !== '') {
+			var free_checkbox = $('input[name=free_checkbox]:checked').val();
+			extra_parameters += '&freesearch=' + freesearch;
+			if (free_checkbox == 1) {
+				extra_parameters += '&free_checkbox=1';
+			} else {
+				extra_parameters += '&free_checkbox=0';
+			}
+		}
+		
 		title = <?php echo "\"" . __("Module: ") . "\"" ?>;
 		$.ajax({
 			type: "POST",

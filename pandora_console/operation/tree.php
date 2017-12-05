@@ -135,11 +135,13 @@ $agent_status_arr[AGENT_STATUS_CRITICAL] = __('Critical');
 $agent_status_arr[AGENT_STATUS_UNKNOWN] = __('Unknown');
 $agent_status_arr[AGENT_STATUS_NOT_INIT] = __('Not init');
 
-$row = array();
-$row[] = __('Search group');
-$row[] = html_print_input_text("search_group", $search_group, '', is_metaconsole() ? 70 : 40, 30, true);
+if ($tab == 'group' || is_metaconsole()) {
+	$row = array();
+	$row[] = __('Search group');
+	$row[] = html_print_input_text("search_group", $search_group, '', is_metaconsole() ? 70 : 40, 30, true);
 
-$table->data[] = $row;
+	$table->data[] = $row;
+}
 
 $row = array();
 $row[] = __('Search agent');

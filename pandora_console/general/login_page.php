@@ -236,7 +236,7 @@ echo '<div class="login_page">';
 			echo '<div><span class="span1">';
 				if(file_exists (ENTERPRISE_DIR . "/load_enterprise.php")){
 					if($config['custom_title1_login']){
-						echo strtoupper(io_safe_output($config['custom_title1_login']));
+						echo io_safe_output($config['custom_title1_login']);
 					}
 					else{
 						echo __('WELCOME TO PANDORA FMS');
@@ -249,7 +249,7 @@ echo '<div class="login_page">';
 			echo '<div><span class="span2">';
 				if(file_exists (ENTERPRISE_DIR . "/load_enterprise.php")){
 					if($config['custom_title2_login']){
-						echo strtoupper(io_safe_output($config['custom_title2_login']));
+						echo io_safe_output($config['custom_title2_login']);
 					}
 					else{
 						echo __('NEXT GENERATION');

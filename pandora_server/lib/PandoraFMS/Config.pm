@@ -468,6 +468,8 @@ sub pandora_load_config {
 	# Enable (1) or disable (0) events related to the unknown status.
 	$pa_config->{"unknown_events"} = 1; # > 6.0SP4
 
+	$pa_config->{"thread_log"} = 0; # 7.0.717
+
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
 		if ($> == 0){
@@ -1075,6 +1077,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^syslog_threads\s+([0-9]*)/i) {
 			$pa_config->{'syslog_threads'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^thread_log\s+([0-1])/i) {
+			$pa_config->{'thread_log'}= clean_blank($1);
 		}
 	} # end of loop for parameter #
 

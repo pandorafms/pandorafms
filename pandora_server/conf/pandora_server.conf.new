@@ -149,6 +149,10 @@ network_timeout 4
 
 server_keepalive 45
 
+# Log server thread status to disk (always set to 0, except when debugging).
+
+thread_log 0
+
 # Server Threshold: defines number of seconds of main loop (in sec)
 
 server_threshold 5

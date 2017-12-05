@@ -1277,6 +1277,7 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`lapse_calc` tinyint(1) UNSIGNED NOT NULL default '0',
 	`lapse` int(11) UNSIGNED NOT NULL default '300',
 	`visual_format` tinyint(1) UNSIGNED NOT NULL default '0',
+	`hide_no_data` tinyint(1) default 0,
 	PRIMARY KEY(`id_rc`),
 	FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
 		ON UPDATE CASCADE ON DELETE CASCADE

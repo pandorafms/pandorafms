@@ -583,6 +583,10 @@ if (! isset ($config['id_user'])) {
 			if ($pass1 == $pass2) {
 				$res = update_user_password ($id_user, $pass1);
 				if ($res) {
+					
+					db_process_sql_insert ('tsesion', array('id_sesion' => '','id_usuario' => $id_user,'ip_origen' => $_SERVER['REMOTE_ADDR'],'accion' => 'Reset&#x20;change',
+					'descripcion' => 'Successful reset password process ','fecha' => date("Y-m-d H:i:s"),'utimestamp' => time()));
+					
 					$correct_reset_pass_process = __('Password changed successfully');
 
 					register_pass_change_try($id_user, 1);
@@ -675,6 +679,7 @@ if (! isset ($config['id_user'])) {
 							}
 						}
 						else {
+							
 							$cod_hash = $user_reset_pass . "::::" . md5(rand(10, 1000000) . rand(10, 1000000) . rand(10, 1000000));
 
 							$subject = '[Pandora] '.__('Reset password');

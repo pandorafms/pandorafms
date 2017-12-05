@@ -57,31 +57,6 @@ class Tree {
 	}
 
 	public function setFilter($filter) {
-		// Filter the user groups
-		if (!empty($filter['groupID'])) {
-			$group_id = $filter['groupID'];
-			$this->userGroups = isset($this->userGroupsACL[$group_id])
-				? array($group_id => $this->userGroupsACL[$group_id])
-				: array();
-		}
-		else if (!empty($filter['searchGroup'])) {
-			$groups = db_get_all_rows_filter('tgrupo', array('nombre' => '%' . $filter['searchGroup'] . '%'));
-			
-			// Save the groups which intersect
-			$userGroupsACL = $this->userGroupsACL;
-			$this->userGroups = array_reduce($groups, function ($userGroups, $group) use ($userGroupsACL) {
-				$group_id = $group['id_grupo'];
-				if (isset($userGroupsACL[$group_id])) {
-					$userGroups[$group_id] = $userGroupsACL[$group_id];
-				}
-				
-				return $userGroups;
-			}, array());
-		}
-		else {
-			$this->userGroups = $this->userGroupsACL;
-		}
-		
 		$this->filter = $filter;
 	}
 
@@ -1877,6 +1852,25 @@ class Tree {
 		}
 	}
 
+	private static function extractGroupsWithIDs ($groups, $ids_hash) {
+		$result_groups = array();
+		foreach ($groups as $group) {
+			if (isset($ids_hash[$group['id']])) {
+				$result_groups[] = $group;
+			}
+			else if (!empty($group['children'])) {
+				$result = self::extractGroupsWithIDs($group['children'], $ids_hash);
+
+				// Item found on children
+				if (!empty($result)) {
+					$result_groups = array_merge($result_groups, $result);
+				}
+			}
+		}
+
+		return $result_groups;
+	}
+
 	private static function extractItemWithID ($items, $item_id, $item_type = "group", $strictACL = false) {
 		foreach ($items as $item) {
 			if ($item["type"] != $item_type)
@@ -2166,14 +2160,33 @@ class Tree {
 
 			$processed_items = $this->getProcessedGroups($items, true);
 
-			// groupID filter. To access the view from tactical views f.e.
-			if (!empty($processed_items) && !empty($this->filter['groupID'])) {
-				$result = self::extractItemWithID($processed_items, $this->filter['groupID'], "group", $this->strictACL);
+			if (!empty($processed_items)) {
+				// Filter by group name. This should be done after rerieving the items cause we need the possible items descendants
+				if (!empty($this->filter['searchGroup'])) {
+					// Save the groups which intersect with the user groups
+					$groups = db_get_all_rows_filter('tgrupo', array('nombre' => '%' . $this->filter['searchGroup'] . '%'));
+					if ($groups == false) $groups = array();
+					$userGroupsACL = $this->userGroupsACL;
+					$ids_hash = array_reduce($groups, function ($userGroups, $group) use ($userGroupsACL) {
+						$group_id = $group['id_grupo'];
+						if (isset($userGroupsACL[$group_id])) {
+							$userGroups[$group_id] = $userGroupsACL[$group_id];
+						}
+						
+						return $userGroups;
+					}, array());
+					
+					$result = self::extractGroupsWithIDs($processed_items, $ids_hash);
+					
+					$processed_items = ($result === false) ? array() : $result;
+				}
+				
+				// groupID filter. To access the view from tactical views f.e.
+				if (!empty($this->filter['groupID'])) {
+					$result = self::extractItemWithID($processed_items, $this->filter['groupID'], "group", $this->strictACL);
 
-				if ($result === false)
-					$processed_items = array();
-				else
-					$processed_items = array($result);
+					$processed_items = ($result === false) ? array() : array($result);
+				}
 			}
 		}
 		// Agents

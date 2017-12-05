@@ -167,6 +167,7 @@ function servers_get_performance () {
 				case SERVER_TYPE_INVENTORY:
 				case SERVER_TYPE_EVENT:
 				case SERVER_TYPE_RECON:
+				case SERVER_TYPE_SYSLOG:
 					break;
 			}
 			
@@ -447,6 +448,11 @@ function servers_get_info ($id_server = -1) {
 			case SERVER_TYPE_WUX:
 				$server["img"] = html_print_image ("images/icono-wux.png", true, array ("title" => __('Wux server')));
 				$server["type"] = "wux";
+				$id_modulo = 0;
+				break;
+			case SERVER_TYPE_SYSLOG:
+				$server["img"] = html_print_image ("images/syslog.png", true, array ("title" => __('Syslog server')));
+				$server["type"] = "syslog";
 				$id_modulo = 0;
 				break;
 			default:

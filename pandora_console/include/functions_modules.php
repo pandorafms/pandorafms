@@ -998,6 +998,7 @@ function modules_is_string($id_agentmodule) {
 function modules_is_boolean_type ($id_type) {
 	$type_name = modules_get_type_name($id_type);
 	
+	if ($type_name === "keep_alive") return true;
 	return (bool)preg_match('/_proc$/', $type_name);
 }
 

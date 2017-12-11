@@ -719,6 +719,29 @@ if (! isset ($config['id_user'])) {
 	}
 }
 else {
+	
+	if ( ($_GET["loginhash_data"])  && ($_GET["loginhash_data"])) {
+
+        $loginhash_data = get_parameter("loginhash_data", "");
+        $loginhash_user = str_rot13(get_parameter("loginhash_user", ""));
+        $iduser = $_SESSION["id_usuario"];
+        //logoff_db ($iduser, $_SERVER["REMOTE_ADDR"]); check why is not available
+        unset($_SESSION["id_usuario"]);
+        unset($iduser);
+
+        if ($config["loginhash_pwd"] != "" && $loginhash_data == md5($loginhash_user.io_output_password($config["loginhash_pwd"]))) {
+            db_logon ($loginhash_user, $_SERVER['REMOTE_ADDR']);
+            $_SESSION['id_usuario'] = $loginhash_user;
+            $config["id_user"] = $loginhash_user;
+        }
+        else {
+            require_once ('general/login_page.php');
+            db_pandora_audit("Logon Failed (loginhash", "", "system");
+            while (@ob_end_flush ());
+            exit ("</html>");
+        }
+    }
+
 	$user_in_db = db_get_row_filter('tusuario', 
 		array('id_user' => $config['id_user']), '*');
 	if ($user_in_db == false) {

@@ -2131,32 +2131,50 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	}
 	
 	//summatory and average series
-	if($stacked == CUSTOM_GRAPH_AREA  || $stacked == CUSTOM_GRAPH_LINE && $modules_series) {
-		if($summatory && $average){
+	if($stacked == CUSTOM_GRAPH_AREA  || $stacked == CUSTOM_GRAPH_LINE) {
+		if($summatory && $average) {
 			foreach ($graph_values as $key => $value) {
 				$cont = count($value);
 				$summ = array_sum($value);
 				array_push($value,$summ);
 				array_push($value,$summ/$cont);
 				$graph_values[$key] = $value;
+				if(!$modules_series) {
+					array_splice($graph_values[$key],0,count($graph_values[$key])-2);
+				}
 			}
 			array_push($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
 			array_push($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
+			if(!$modules_series){
+				array_splice($module_name_list,0,count($module_name_list)-2);
+			}
 			
 		} elseif($summatory) {
 			foreach ($graph_values as $key => $value) {
 				array_push($value,array_sum($value));
 				$graph_values[$key] = $value;
+				if(!$modules_series){
+					array_splice($graph_values[$key],0,count($graph_values[$key])-1);
+				}
 			}
 			array_push($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
+			if(!$modules_series){
+				array_splice($module_name_list,0,count($module_name_list)-1);
+			}
 			
 		} elseif($average) {
 			foreach ($graph_values as $key => $value) {
 				$summ = array_sum($value) / count($value);
 				array_push($value,$summ);
 				$graph_values[$key] = $value;
+				if(!$modules_series){
+					array_splice($graph_values[$key],0,count($graph_values[$key])-1);
+				}
 			}
 			array_push($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
+			if(!$modules_series){
+				array_splice($module_name_list,0,count($module_name_list)-1);
+			}
 		}
 	}
 	

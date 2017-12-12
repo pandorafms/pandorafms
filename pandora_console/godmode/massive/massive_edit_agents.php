@@ -135,8 +135,7 @@ if ($update_agents) {
 	$result = false;
 	foreach ($id_agents as $id_agent) {
 		if (!empty($values)) {
-			if ($config['metaconsole_agent_cache'] == 1 &&
-			    isset($values['id_grupo'])) {
+			if ($config['metaconsole_agent_cache'] == 1) {
 				$values['update_module_count'] = 1; // Force an update of the agent cache.
 			}
 			$group_old = false;

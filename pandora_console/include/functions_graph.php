@@ -2143,10 +2143,24 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 					array_splice($graph_values[$key],0,count($graph_values[$key])-2);
 				}
 			}
-			array_push($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
-			array_push($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
-			if(!$modules_series){
-				array_splice($module_name_list,0,count($module_name_list)-2);
+			
+			if(!$modules_series) {
+				if(is_null($percentil)) {
+					array_splice($module_name_list,0,count($module_name_list));
+				} else {
+					array_splice($module_name_list,0,count($module_name_list)-(count($module_name_list)/2));
+				}
+				array_unshift($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
+				array_unshift($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
+			} else {
+				if(is_null($percentil)) {
+					array_push($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
+					array_push($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
+				} else {
+					array_splice($module_name_list,(count($module_name_list)/2),0,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
+					array_splice($module_name_list,(count($module_name_list)/2),0,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
+				}
+				
 			}
 			
 		} elseif($summatory) {
@@ -2157,9 +2171,20 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 					array_splice($graph_values[$key],0,count($graph_values[$key])-1);
 				}
 			}
-			array_push($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
-			if(!$modules_series){
-				array_splice($module_name_list,0,count($module_name_list)-1);
+
+			if(!$modules_series) {
+				if(is_null($percentil)) {
+					array_splice($module_name_list,0,count($module_name_list));
+				} else {
+					array_splice($module_name_list,0,count($module_name_list)-(count($module_name_list)/2));
+				}
+				array_unshift($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
+			} else {
+				if(is_null($percentil)) {
+					array_push($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
+				} else {
+					array_splice($module_name_list,(count($module_name_list)/2),0,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
+				}
 			}
 			
 		} elseif($average) {
@@ -2171,9 +2196,20 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 					array_splice($graph_values[$key],0,count($graph_values[$key])-1);
 				}
 			}
-			array_push($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
-			if(!$modules_series){
-				array_splice($module_name_list,0,count($module_name_list)-1);
+			
+			if(!$modules_series) {
+				if(is_null($percentil)) {
+					array_splice($module_name_list,0,count($module_name_list));
+				} else {
+					array_splice($module_name_list,0,count($module_name_list)-(count($module_name_list)/2));
+				}
+				array_unshift($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
+			} else {
+				if(is_null($percentil)) {
+					array_push($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
+				} else {
+					array_splice($module_name_list,(count($module_name_list)/2),0,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
+				}
 			}
 		}
 	}

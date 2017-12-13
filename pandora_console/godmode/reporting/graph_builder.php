@@ -191,10 +191,14 @@ if ($add_module) {
 		implode("','", $id_modules).
 		"')");
 	
-	if (count($id_agent_modules) > 0 && $id_agent_modules != '') {
-		foreach($id_agent_modules as $id_agent_module)
-			$result = db_process_sql_insert('tgraph_source', array('id_graph' => $id_graph, 'id_agent_module' => $id_agent_module['id_agente_modulo'], 'weight' => $weight));
-		}
+		if (count($id_agent_modules) > 0 && $id_agent_modules != '') {
+			$order = db_get_row_sql("SELECT `field_order` from tgraph_source ORDER BY `field_order` DESC");
+			$order = $order['field_order'];
+				foreach($id_agent_modules as $id_agent_module){
+					$order++;
+					$result = db_process_sql_insert('tgraph_source', array('id_graph' => $id_graph, 'id_agent_module' => $id_agent_module['id_agente_modulo'], 'weight' => $weight, 'field_order' => $order));
+				}
+			}
 	else
 		$result = false;
 }

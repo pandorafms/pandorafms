@@ -185,7 +185,6 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 	include_javascript_dependencies_flot_graph();
 
 	$menu = (int)$menu;
-	html_debug($legend);
 	// Get a unique identifier to graph
 	$graph_id = uniqid('graph_');
 	

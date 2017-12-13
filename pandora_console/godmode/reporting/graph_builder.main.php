@@ -180,18 +180,18 @@ echo "</div>";
 
 echo "</div></td>";
 
-// echo "<tr><td class='datos2'><b>".__('Add summatory series')."</b>" .
-// 	ui_print_help_tip (__("This will add a synthetic series to the graph, 
-// 	using all series to give a SUM or an average of all present series values 
-// 	in each interval. This feature could be used instead synthetic modules 
-// 	if you only want to see a graph"), true)."</td>";
 echo "<tr><td class='datos2'><b>".__('Percentil')."</b></td>";
 echo "<td class='datos2'>" . html_print_checkbox ("percentil", 1, $percentil, true) . "</td></tr>";
-echo "<tr><td class='datos2'><b>".__('Add summatory series')."</b></td>";
+
+echo "<tr><td class='datos2'><b>".__('Add summatory series') . 
+	ui_print_help_tip (__("Adds synthetic series to the graph, using all module 
+	values to calculate the summation and/or average in each time interval. 
+	This feature could be used instead of synthetic modules if you only want to see a graph."), true) . "</b></td>";
 echo "<td class='datos2'>" . html_print_checkbox ("summatory_series", 1, $summatory_series, true) . "</td>
 <td class='datos2'><b>".__('Add average series')."</b></td>";
 echo "<td class='datos2'>" . html_print_checkbox ("average_series", 1, $average_series, true) . "</td></tr>";
 echo "<tr><td class='datos2'><b>".__('Modules and series')."</b></td>";
+
 echo "<td class='datos2'>" . html_print_checkbox ("modules_series", 1, $modules_series, true) . "</td></tr>";
 echo "</table>";
 

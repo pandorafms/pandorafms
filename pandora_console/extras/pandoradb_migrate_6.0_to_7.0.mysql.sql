@@ -1435,7 +1435,7 @@ ALTER TABLE tserver_export MODIFY `name` varchar(600) BINARY NOT NULL default ''
 -- ---------------------------------------------------------------------
 
 ALTER TABLE tgraph_source ADD COLUMN id_server int(11) UNSIGNED NOT NULL default 0;
-ALTER TABLE tgraph_source ADD COLUMN `order` int(10) NOT NULL default 0;
+ALTER TABLE tgraph_source ADD COLUMN `field_order` int(10) NOT NULL default 0;
 
 -- ---------------------------------------------------------------------
 -- Table `tserver_export_data`

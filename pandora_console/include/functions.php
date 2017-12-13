@@ -2580,7 +2580,7 @@ function get_percentile($percentile, $array) {
 	$index = ($percentile / 100) * count($array);
 	
 	if (floor($index) == $index) {
-		 $result = ($array[$index-1] + $array[$index]) / 2;
+		$result = ($array[$index-1] + $array[$index]) / 2;
 	}
 	else {
 		$result = $array[floor($index)];

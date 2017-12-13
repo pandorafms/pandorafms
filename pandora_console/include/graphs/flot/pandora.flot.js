@@ -942,6 +942,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				filled = false;
 				steps_chart = false
 				break;
+			case 'unknown':
 			case 'boolean':
 				line_show = true;
 				points_show = false;

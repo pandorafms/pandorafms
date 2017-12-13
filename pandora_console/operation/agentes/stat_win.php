@@ -106,7 +106,7 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 	</head>
 	<body bgcolor="#ffffff" style='background:#ffffff;'>
 		<?php
-		
+
 		// Module id
 		$id = (int) get_parameter ("id", 0);
 		// Agent id
@@ -286,7 +286,7 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 		$params = array();
 		// TOP TEXT
 		//Use the no_meta parameter because this image is only in the base console
-		$params['top_text'] = "<div style='color: white; width: 100%; text-align: center; font-weight: bold; vertical-align: top;'>" . html_print_image('images/wrench_blanco.png', true, array('width' => '16px'), false, false, true) . ' ' . __('Pandora FMS Graph configuration menu') . "</div>";
+		$params['top_text'] =  "<div style='color: white; width: 100%; text-align: center; font-weight: bold; vertical-align: top;'>" . html_print_image('images/wrench_blanco.png', true, array('width' => '16px'), false, false, true) . ' ' . __('Pandora FMS Graph configuration menu') . ui_print_help_icon ("graphs",true, $config["homeurl"], "images/help_w.png") . "</div>";
 		$params['body_text'] = "<div class='menu_sidebar_outer'>";
 		$params['body_text'] .=__('Please, make your changes and apply with the <i>Reload</i> button');
 		

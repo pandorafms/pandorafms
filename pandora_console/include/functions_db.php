@@ -610,8 +610,17 @@ function db_uncompress_module_data($id_agente_modulo, $tstart = false, $tend = f
 	}
 	$module_type = $module['id_tipo_modulo'];
 	$module_type_str = modules_get_type_name ($module_type);
+	
 	if (strstr ($module_type_str, 'string') !== false) {
 		$table = "tagente_datos_string";
+	}
+	
+	$flag_async = false;
+	if(strstr ($module_type_str, 'async_data') !== false) {
+		$flag_async = true;
+	}
+	if(strstr ($module_type_str, 'async_proc') !== false) {
+		$flag_async = true;
 	}
 
 	$result = modules_get_first_date($id_agente_modulo,$tstart);
@@ -663,18 +672,23 @@ function db_uncompress_module_data($id_agente_modulo, $tstart = false, $tend = f
 	// Retrieve going unknown events in range
 	$unknown_events = db_get_module_ranges_unknown($id_agente_modulo, $tstart, $tend, $search_historydb);
 
-	$previous_unknown_events = db_get_module_ranges_unknown(
-		$id_agente_modulo, 
-		$tstart - (SECONDS_1DAY + 2*$module_interval), 
-		$tstart, 
+	// Get the last event after inverval to know if graph start on unknown
+	$previous_unknown_events = db_get_row_filter (
+		'tevento',
+		array ('id_agentmodule' => $id_agente_modulo,
+			"utimestamp <= $tstart",
+			'order' => 'utimestamp DESC'
+		),
+		false,
+		'AND',
 		$search_historydb
 	);
 
-	//don't show graph if graph is inside unknown
-	if( $previous_unknown_events && 
-		!isset($previous_unknown_events[count($previous_unknown_events) -1]['time_to']) && 
+	//show graph if graph is inside unknown	
+	if( $previous_unknown_events && $previous_unknown_events['event_type'] == 'going_unknown' && 
 		$unknown_events === false && $raw_data === false){
-		return false;
+		$last_inserted_value = $first_data["datos"];
+		$unknown_events[0]['time_from'] = $tstart+0.1;
 	}
 
 	//if time to is missing in last event force time to outside range time
@@ -683,11 +697,14 @@ function db_uncompress_module_data($id_agente_modulo, $tstart = false, $tend = f
 	}
 
 	//if time to is missing in first event force time to outside range time
-	if ($first_data["datos"] === false) {
+	if ($first_data["datos"] === false && !$flag_async) {
 		$last_inserted_value = false;
-	}elseif( $unknown_events && !isset($unknown_events[0]['time_from']) ||
-		$first_utimestamp < $tstart - (SECONDS_1DAY + 2*$module_interval) ){
-		$last_inserted_value = null;
+	}elseif( ($unknown_events && !isset($unknown_events[0]['time_from']) &&  
+			 $previous_unknown_events && $previous_unknown_events['event_type'] == 'going_unknown' && !$flag_async) ||
+			 ($first_utimestamp < $tstart - (SECONDS_1DAY + 2*$module_interval) && !$flag_async) ){
+		//$last_inserted_value = null;
+		$last_inserted_value = $first_data["datos"];
+		$unknown_events[0]['time_from'] = $tstart+0.1;
 	}
 	else{
 		$last_inserted_value = $first_data["datos"];
@@ -703,25 +720,45 @@ function db_uncompress_module_data($id_agente_modulo, $tstart = false, $tend = f
 	$last_timestamp      = $first_data["utimestamp"];
 	$last_value          = $first_data["datos"];
 
+	//reverse array data optimization
+	$raw_data = array_reverse($raw_data);
+
 	// Build template
 	$pool_id = 0;
 	$now = time();
 
-	$current_unknown  = array_shift($unknown_events);
-	$current_raw_data = array_shift($raw_data);
+	if($unknown_events){
+		$current_unknown  = array_shift($unknown_events);
+	}
+	else{
+		$current_unknown = null;
+	}
+	
+	if($raw_data){
+		$current_raw_data = array_pop($raw_data);
+	}
+	else{
+		$current_raw_data = null;
+	}
 
 	while ( $current_timestamp < $tend ) {
 		$return[$pool_id]["data"] = array();
 		$tmp_data   = array();
 		$current_timestamp_end = $current_timestamp + $slice_size;
 
-		if ( ( $current_timestamp > $now) || 
-			 ( ($current_timestamp_end - $last_timestamp) > 
-			   (SECONDS_1DAY + 2*$module_interval) ) ) {
-			$tmp_data["utimestamp"] = $last_timestamp + SECONDS_1DAY + 2*$module_interval;
+		if (( $current_timestamp > $now) || 
+			( ($current_timestamp_end - $last_timestamp) > 
+				(SECONDS_1DAY + 2 * $module_interval) ) ) {
+					
+			$tmp_data["utimestamp"] = $last_timestamp + SECONDS_1DAY + 2 * $module_interval;
 			
 			//check not init
 			$tmp_data["datos"] = $last_value === false ? false : null;
+			
+			//async not unknown
+			if($flag_async &&  $tmp_data["datos"] === null){
+				$tmp_data["datos"] = $last_inserted_value;
+			}
 			
 			// debug purpose
 			//$tmp_data["obs"] = "unknown extra";
@@ -751,49 +788,60 @@ function db_uncompress_module_data($id_agente_modulo, $tstart = false, $tend = f
 
 			$last_value = $current_raw_data["datos"];
 			$last_timestamp = $current_raw_data["utimestamp"];
-			$current_raw_data = array_shift($raw_data);
+			if($raw_data){
+				$current_raw_data = array_pop($raw_data);
+			}
+			else{
+				$current_raw_data = null;
+			}
 		}
-
+		
 		//unknown
 		$data_slices = $return[$pool_id]["data"];
-		while ( ($current_unknown != null) &&
-			  	( ( ($current_unknown['time_from'] != null) &&
-			  	    ($current_timestamp_end >= $current_unknown['time_from']) ) || 
-				  ($current_timestamp_end >= $current_unknown['time_to']) ) ) {
-				
-			if( ( $current_timestamp <= $current_unknown['time_from']) && 
-				( $current_timestamp_end >= $current_unknown['time_from'] ) ){
-				// Add unknown state detected
-				$tmp_data["utimestamp"] = $current_unknown["time_from"];
-				$tmp_data["datos"]      = null;
-				// debug purpose
-				//$tmp_data["obs"] = "event data unknown from";
-				array_push($return[$pool_id]["data"], $tmp_data);
-				$current_unknown["time_from"] = null;
-			}
-
-			if( ($current_timestamp < $current_unknown['time_to']) && 
-				($current_timestamp_end >= $current_unknown['time_to'] ) ){
-				$tmp_data["utimestamp"] = $current_unknown["time_to"];
-				$i = count($data_slices) - 1;
-				while ($i >= 0) {
-					if($data_slices[$i]['utimestamp'] <= $current_unknown["time_to"]){
-						$tmp_data["datos"] = 
-							$data_slices[$i]['datos'] == null
-							? $last_value
-							: $data_slices[$i]['datos'];
-						break;
-					}
-					$i--;
+		if(!$flag_async){
+			while ( ($current_unknown != null) &&
+					( ( ($current_unknown['time_from'] != null) &&
+						($current_timestamp_end >= $current_unknown['time_from']) ) || 
+					($current_timestamp_end >= $current_unknown['time_to']) ) ) {
+			
+				if( ( $current_timestamp <= $current_unknown['time_from']) && 
+					( $current_timestamp_end >= $current_unknown['time_from'] ) ){
+					// Add unknown state detected
+					$tmp_data["utimestamp"] = $current_unknown["time_from"];
+					$tmp_data["datos"]      = null;
+					// debug purpose
+					//$tmp_data["obs"] = "event data unknown from";
+					array_push($return[$pool_id]["data"], $tmp_data);
+					$current_unknown["time_from"] = null;
 				}
-				
-				// debug purpose
-				//$tmp_data["obs"] = "event data unknown to";
-				array_push($return[$pool_id]["data"], $tmp_data);
-				$current_unknown = array_shift($unknown_events);
+
+				if( ($current_timestamp <= $current_unknown['time_to']) && 
+					($current_timestamp_end >= $current_unknown['time_to'] ) ){
+					$tmp_data["utimestamp"] = $current_unknown["time_to"];
+					$i = count($data_slices) - 1;
+					while ($i >= 0) {
+						if($data_slices[$i]['utimestamp'] <= $current_unknown["time_to"]){
+							$tmp_data["datos"] = 
+								$data_slices[$i]['datos'] == null
+								? $last_value
+								: $data_slices[$i]['datos'];
+							break;
+						}
+						$i--;
+					}
+					
+					// debug purpose
+					//$tmp_data["obs"] = "event data unknown to";
+					array_push($return[$pool_id]["data"], $tmp_data);
+					if($unknown_events){
+						$current_unknown = array_shift($unknown_events);
+					}
+					else{
+						$current_unknown = null;
+					}
+				}
 			}
 		}
-
 		//sort current slice 
 		usort(
 			$return[$pool_id]['data'],
@@ -809,6 +857,15 @@ function db_uncompress_module_data($id_agente_modulo, $tstart = false, $tend = f
 		//increment
 		$pool_id++;
 		$current_timestamp = $current_timestamp_end;
+	}
+
+	//slice to the end.
+	if($pool_id == 1){
+		$end_array = array();
+		$end_array['data'][0]['utimestamp'] = $tend;
+		$end_array['data'][0]['datos']      = $last_inserted_value;
+		//$end_array['data'][0]['obs']        = 'virtual data END';
+		array_push($return, $end_array);
 	}
 	return $return;
 }

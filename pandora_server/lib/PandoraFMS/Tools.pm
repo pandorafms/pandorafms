@@ -887,14 +887,14 @@ sub disk_free ($) {
 		# Check relative path
 		my $unit;
 		if ($target =~ m/^([a-zA-Z]):/gi) {
-			$unit = $1/(1024*1024);
+			$unit = $1;
 		} else {
 			return;
 		}
 		# Get the free space of unit found
 		my $all_disk_info = `wmic logicaldisk get caption, freespace`;
 		if ($all_disk_info =~ m/$unit:\D*(\d+)/gmi){
-			return $1;
+			return $1/(1024*1024);
 		}
 		return;
 	}

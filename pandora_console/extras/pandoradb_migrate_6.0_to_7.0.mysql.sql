@@ -1263,6 +1263,7 @@ UPDATE tagente_modulo SET cron_interval = '' WHERE cron_interval LIKE '%    %';
 ALTER TABLE tgraph ADD COLUMN `percentil` int(4) unsigned default '0';
 ALTER TABLE tgraph ADD COLUMN `summatory_series` tinyint(1) UNSIGNED NOT NULL default '0';
 ALTER TABLE tgraph ADD COLUMN `average_series`  tinyint(1) UNSIGNED NOT NULL default '0';
+ALTER TABLE tgraph ADD COLUMN `modules_series`  tinyint(1) UNSIGNED NOT NULL default '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tnetflow_filter`
@@ -1434,7 +1435,7 @@ ALTER TABLE tserver_export MODIFY `name` varchar(600) BINARY NOT NULL default ''
 -- ---------------------------------------------------------------------
 
 ALTER TABLE tgraph_source ADD COLUMN id_server int(11) UNSIGNED NOT NULL default 0;
-ALTER TABLE tgraph_source ADD COLUMN `order` int(10) NOT NULL default 0;
+ALTER TABLE tgraph_source ADD COLUMN `field_order` int(10) NOT NULL default 0;
 
 -- ---------------------------------------------------------------------
 -- Table `tserver_export_data`

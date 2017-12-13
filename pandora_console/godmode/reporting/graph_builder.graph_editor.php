@@ -61,10 +61,10 @@ switch ($action) {
 					switch ($config["dbtype"]) {
 						case "mysql":
 							$items = db_get_all_rows_sql('
-								SELECT id_gs, `order`
+								SELECT id_gs, `field_order`
 								FROM tgraph_source
 								WHERE id_graph = ' . $id_graph . '
-								ORDER BY `order`');
+								ORDER BY `field_order`');
 							break;
 					}
 					
@@ -77,7 +77,7 @@ switch ($action) {
 						switch ($config["dbtype"]) {
 							case "mysql":
 								db_process_sql_update('tgraph_source',
-									array('`order`' => $order_temp),
+									array('`field_order`' => $order_temp),
 									array('id_gs' => $item['id_rc']));
 								break;
 						}
@@ -89,10 +89,10 @@ switch ($action) {
 					switch ($config["dbtype"]) {
 						case "mysql":
 							$items = db_get_all_rows_sql('
-								SELECT id_gs, `order`
+								SELECT id_gs, `field_order`
 								FROM tgraph_source
 								WHERE id_graph = ' . $id_graph . '
-								ORDER BY `order`');
+								ORDER BY `field_order`');
 							break;
 					}
 					
@@ -106,7 +106,7 @@ switch ($action) {
 					foreach ($items as $item) {
 						//Remove the contents from the block to sort
 						if (array_search($item['id_gs'], $ids) === false) {
-							$temp[$item['order']] = $item['id_gs'];
+							$temp[$item['field_order']] = $item['id_gs'];
 						}
 					}
 					$items = $temp;
@@ -142,7 +142,7 @@ switch ($action) {
 							case "mysql":
 							
 								db_process_sql_update('tgraph_source',
-									array('`order`' => ($order + 1)),
+									array('`field_order`' => ($order + 1)),
 									array('id_gs' => $id));
 								break;
 						}
@@ -166,7 +166,7 @@ if ($editGraph) {
 					WHERE t2.id_agente_modulo = t1.id_agent_module)) 
 		AS agent_name
 		FROM tgraph_source t1
-		WHERE t1.id_graph = " . $id_graph . " order by `order`");
+		WHERE t1.id_graph = " . $id_graph . " order by `field_order`");
 	$position_array = array();
 	$module_array = array();
 	$weight_array = array();
@@ -183,7 +183,7 @@ if ($editGraph) {
 		$weight_array[] = $graphRow['weight'];
 		$label_array[] = $graphRow['label'];
 		$agent_array[] = $graphRow['agent_name'];
-		$position_array[] = $graphRow['order'];
+		$position_array[] = $graphRow['field_order'];
 	}
 	
 	$graphInTgraph = db_get_row_sql("SELECT * FROM tgraph WHERE id_graph = " . $id_graph);
@@ -280,9 +280,9 @@ if (defined("METACONSOLE")) {
 else {
 	$table->data[0][0] = "<b>". __("Sort items") . "</b>";
 }
-$table->data[1][0] = __('Sort selected items from position: ');
+$table->data[1][0] = __('Sort selected items');
 $table->data[1][1] = html_print_select_style(
-	array('before' => __('Move before to'), 'after' => __('Move after to')), 'move_to',
+	array('before' => __('before to'), 'after' => __('after to')), 'move_to',
 	'', '', '', '', 0, true);
 $table->data[1][2] = html_print_input_text_extended('position_to_sort', 1,
 	'text-position_to_sort', '', 3, 10, false, "only_numbers('position_to_sort');", '', true);

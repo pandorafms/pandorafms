@@ -17,8 +17,8 @@ function help {
 	echo " "
 	echo "This plugin is used to check performance of Volumes and Instances in the EC2 Cloud"
 	echo "Syntax:" 
-	echo -e "\t\t-A Access KEY ID, p.e AKIAILTVJ3S26GTKLD4A"
-	echo -e "\t\t-S Secret Access Key, p.e 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"
+	echo -e "\t\t-A Access KEY ID, p.e AKIAILTVCAS26GTKLD4A"
+	echo -e "\t\t-S Secret Access Key, p.e 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"
 	echo -e "\t\t-R Region, p.e us-east-1"
 	echo -e "\t\t-m Metric to gather (see doc for a metric list) "
 	echo -e "\t\t-n Namespace (p.e: AWS/EC2, AWS/EBS) "
@@ -27,7 +27,7 @@ function help {
 	echo -e "\t\t-z Show default metrics "
 	echo -e "\t\t-h Show this messages "
 	echo "Samples:"
-	echo "   ./ec2_plugin.sh -A AKIAILTVJ3S26GTKLD4A -S CgmQ6DxUWES05txfe+juJLoM57acDudHogkLotWk -i i-9d0b4af1 -n AWS/EC2 -m CPUUtilization"
+	echo "   ./ec2_plugin.sh -A AKIAILTVCAS26GTKLD4A -S CgmQ6DxUWES05txju+alJLoM57acDudHogkLotWk -i i-9d0b4af1 -n AWS/EC2 -m CPUUtilization"
 	echo 
 
 	exit 0

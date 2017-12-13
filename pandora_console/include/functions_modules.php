@@ -2308,50 +2308,53 @@ function modules_change_relation_lock ($id_relation) {
 	return ($result !== false ? $new_value : $old_value);
 }
 
-
-
-function modules_get_count_datas($id_agent_module, $date_init, $date_end) {
-	$interval = modules_get_interval ($id_agent_module);
-	
-	// TODO REMOVE THE TIME IN PLANNED DOWNTIME
-	
-	if (!is_numeric($date_init)) {
-		$date_init = strtotime($date_init);
-	}
-	
-	if (!is_numeric($date_end)) {
-		$date_end = strtotime($date_end);
-	}
-	
-	
-	
-	$first_date = modules_get_first_contact_date($id_agent_module);
-	
-	
-	
-	if ($date_init < $first_date) {
-		$date_init = $first_date;
-	}
-	
-	$diff = $date_end - $date_init;
-	
-	
-	return ($diff / $interval);
-}
-
-
-function modules_get_first_contact_date($id_agent_module) {
+/*
+ * @return utimestamp with the first contact of the module or first contact before datelimit, false if not-init
+ */
+function modules_get_first_date($id_agent_module, $datelimit = 0) {
 	global $config;
 	
-	// TODO REMOVE THE TIME IN PLANNED DOWNTIME
+	//check datatype string or normal
+	$table = "tagente_datos";
+	$module_type_str = modules_get_type_name ($id_agent_module);
+	if (strstr ($module_type_str, 'string') !== false) {
+		$table = "tagente_datos_string";
+	}
+
+	$search_historydb = false;
+
+	// tagente_estado.first_utimestamp is not valid or is not updated. Scan DBs for first utimestamp
+	if ($datelimit > 0) {
+		// get last data before datelimit
+		$query  = " SELECT max(utimestamp) as utimestamp FROM $table ";
+		$query .= " WHERE id_agente_modulo=$id_agent_module ";
+		$query .= " AND utimestamp < $datelimit ";
 	
-	// TODO FOR OTHER KIND OF DATA
+	}
+	else {
+		// get first utimestamp
+		$query  = " SELECT min(utimestamp) as utimestamp FROM $table ";
+		$query .= " WHERE id_agente_modulo=$id_agent_module ";
+	}
 	
-	$first_date = db_get_value('utimestamp', 'tagente_datos',
-		'id_agente_modulo', $id_agent_module,
-		$config['history_db_enabled']);
-	
-	return $first_date;
+
+	// SEARCH ACTIVE DB
+	$data = db_get_all_rows_sql($query,$search_historydb);
+	if (($data === false) || ($data[0]["utimestamp"] === NULL) || ($data[0]["utimestamp"] <= 0)) {
+		// first utimestamp not found in active database
+		// SEARCH HISTORY DB
+		$search_historydb = true;
+		$data = db_get_all_rows_sql($query,$search_historydb);
+	}
+
+	if (($data === false) || ($data[0]["utimestamp"] === NULL) || ($data[0]["utimestamp"] <= 0)) {
+		// Nor active DB nor history DB have the data, the module is not-init
+		return array ("first_utimestamp" => false, "search_historydb" => $search_historydb);
+	}
+
+	// The data has been found
+	return array ("first_utimestamp" => $data[0]["utimestamp"], "search_historydb" => $search_historydb);
+
 }
 
 /**

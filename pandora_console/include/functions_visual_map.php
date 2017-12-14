@@ -3464,13 +3464,16 @@ function visual_map_get_layout_status ($id_layout = 0, $depth = 0, $elements_in_
 		return VISUAL_MAP_STATUS_NORMAL;
 		
 	$stcount = 0;
-		
+	$stcount_u = 0;
 	foreach ($result as $data) {
 		if ($data['type'] == 0) {
 			$stcount++;
+			if ($data["id_layout_linked"] == 0 && $data["id_agente_modulo"] == 0 && $data["id_agent"] == 0) {
+      	$stcount_u++;
+      }
 		}
 	}
-	if ($stcount == 0) {
+	if ($stcount == 0 || $stcount_u == $stcount) {
 		return VISUAL_MAP_STATUS_UNKNOWN;
 	}
 

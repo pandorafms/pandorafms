@@ -2961,6 +2961,9 @@ function visual_map_get_status_element($layoutData) {
 			}
 			else {
 				$status = VISUAL_MAP_STATUS_NORMAL;
+				if (count($elements_to_compare) == 0) {
+       		$status = VISUAL_MAP_STATUS_UNKNOWN;
+        }
 			}
 		}
 	}
@@ -3459,7 +3462,18 @@ function visual_map_get_layout_status ($id_layout = 0, $depth = 0, $elements_in_
 			'element_group'));
 	if ($result === false)
 		return VISUAL_MAP_STATUS_NORMAL;
-	
+		
+	$stcount = 0;
+		
+	foreach ($result as $data) {
+		if ($data['type'] == 0) {
+			$stcount++;
+		}
+	}
+	if ($stcount == 0) {
+		return VISUAL_MAP_STATUS_UNKNOWN;
+	}
+
 	foreach ($result as $data) {
 		$layout_group = $data['element_group'];
 		if (!check_acl ($config['id_user'], $layout_group, "VR")) {
@@ -3498,8 +3512,12 @@ function visual_map_get_layout_status ($id_layout = 0, $depth = 0, $elements_in_
 				if (($data["id_layout_linked"] == 0 &&
 					$data["id_agente_modulo"] == 0 &&
 					$data["id_agent"] == 0) ||
-					$data['type'] != 0)
-				continue;
+					$data['type'] != 0){
+						if($data['type'] == 0){
+                    $temp_total = VISUAL_MAP_STATUS_UNKNOWN;
+            }
+						continue;
+					}
 				
 				// Other Layout (Recursive!)
 				if (($data["id_layout_linked"] != 0) && ($data["id_agente_modulo"] == 0)) {
@@ -3530,12 +3548,18 @@ function visual_map_get_layout_status ($id_layout = 0, $depth = 0, $elements_in_
 						}
 						else {
 							$status = VISUAL_MAP_STATUS_NORMAL;
+							 if (count($elements_in_child) == 0) {
+								 $status = VISUAL_MAP_STATUS_UNKNOWN;
+							 }
 						}
 					}
 				}
 				// Module
 				elseif ($data["id_agente_modulo"] != 0) {
 					$status = modules_get_agentmodule_status($data["id_agente_modulo"]);
+					if ($status == 4){
+						$status = 3;
+					}
 				}
 				// Agent
 				else {

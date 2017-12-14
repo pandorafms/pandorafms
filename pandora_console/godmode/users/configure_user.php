@@ -180,7 +180,7 @@ if ($create_user) {
 		$values["data_section"] = $dashboard;
 	} else if (io_safe_output($values['section']) == 'Visual console') {
 		$values["data_section"] = $visual_console;
-	} else if ($values['section'] == 'Other'){
+	} else if ($values['section'] == 'Other' || io_safe_output($values['section']) == 'External link'){
 		$values["data_section"] = get_parameter ('data_section');
 	}
 	
@@ -304,7 +304,7 @@ if ($update_user) {
 		$values["data_section"] = $dashboard;
 	} else if (io_safe_output($values['section']) == 'Visual console') {
 		$values["data_section"] = $visual_console;
-	} else if ($values['section'] == 'Other'){
+	} else if ($values['section'] == 'Other' || io_safe_output($values['section']) == 'External link'){
 		$values["data_section"] = get_parameter ('data_section');
 	}
 	
@@ -570,6 +570,7 @@ $values = array (
 	'Group view'=>__('Group view'),
 	'Tactical view'=>__('Tactical view'),
 	'Alert detail' => __('Alert detail'),
+	'External link' => __('External link'),
 	'Other'=>__('Other'));
 if (enterprise_installed() && !is_metaconsole()) {
 	$values['Dashboard'] = __('Dashboard');
@@ -867,6 +868,11 @@ function show_data_section () {
 			break;
 		case <?php echo "'" . 'Alert detail' . "'"; ?>:
 			$("#text-data_section").css("display", "none");
+			$("#dashboard").css("display", "none");
+			$("#visual_console").css("display", "none");
+			break;
+		case <?php echo "'" . 'External link' . "'"; ?>:
+			$("#text-data_section").css("display", "");
 			$("#dashboard").css("display", "none");
 			$("#visual_console").css("display", "none");
 			break;

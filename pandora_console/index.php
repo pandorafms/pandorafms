@@ -544,6 +544,7 @@ if (! isset ($config['id_user'])) {
 				exit ("</html>");
 			}
 		}
+			header("Location: ".$config['homeurl']."index.php?sec=".$_GET["sec"]."&sec2=".$_GET["sec2"]);
 	}
 	// Hash login process
 	elseif (isset ($_GET["loginhash"])) {

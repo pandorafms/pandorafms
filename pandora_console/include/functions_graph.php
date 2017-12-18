@@ -2168,6 +2168,9 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	
 	//summatory and average series
 	if($stacked == CUSTOM_GRAPH_AREA  || $stacked == CUSTOM_GRAPH_LINE) {
+		//Fix pdf label
+		$static_pdf = strpos($module_name_list[0], '<span style');
+		
 		if($summatory && $average) {
 			foreach ($graph_values as $key => $value) {
 				$cont = count($value);
@@ -2186,15 +2189,33 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				} else {
 					array_splice($module_name_list,0,count($module_name_list)-(count($module_name_list)/2));
 				}
-				array_unshift($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
-				array_unshift($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
+				if($static_pdf === 0) {
+					array_unshift($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
+					array_unshift($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
+				} else {
+					array_unshift($module_name_list, __('summatory'));
+					array_unshift($module_name_list, __('average'));
+				}
+				
 			} else {
 				if(empty($percentil)) {
-					array_push($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
-					array_push($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
+					if($static_pdf === 0) {
+						array_push($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
+						array_push($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
+					} else {
+						array_push($module_name_list, __('summatory'));
+						array_push($module_name_list, __('average'));
+					}
+					
 				} else {
-					array_splice($module_name_list,(count($module_name_list)/2),0,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
-					array_splice($module_name_list,(count($module_name_list)/2),0,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
+					if($static_pdf === 0) {
+						array_splice($module_name_list,(count($module_name_list)/2),0,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
+						array_splice($module_name_list,(count($module_name_list)/2),0,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
+					} else {
+						array_splice($module_name_list,(count($module_name_list)/2),0, __('average'));
+						array_splice($module_name_list,(count($module_name_list)/2),0,__('summatory'));
+					}
+					
 				}
 				
 			}
@@ -2214,12 +2235,27 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				} else {
 					array_splice($module_name_list,0,count($module_name_list)-(count($module_name_list)/2));
 				}
-				array_unshift($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
+				if($static_pdf === 0) {
+					array_unshift($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
+				} else {
+					array_unshift($module_name_list, __('summatory'));
+				}
+				
 			} else {
 				if(empty($percentil)) {
-					array_push($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
+					if($static_pdf === 0) {
+						array_push($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
+					} else {
+						array_push($module_name_list,__('summatory'));
+					}
+					
 				} else {
-					array_splice($module_name_list,(count($module_name_list)/2),0,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
+					if($static_pdf === 0) {
+						array_splice($module_name_list,(count($module_name_list)/2),0,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
+					} else {
+						array_splice($module_name_list,(count($module_name_list)/2),0,__('summatory'));
+					}
+					
 				}
 			}
 			
@@ -2239,12 +2275,27 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				} else {
 					array_splice($module_name_list,0,count($module_name_list)-(count($module_name_list)/2));
 				}
-				array_unshift($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
+				if($static_pdf === 0) {
+					array_unshift($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
+				} else {
+					array_unshift($module_name_list,__('average'));
+				}
+				
 			} else {
 				if(empty($percentil)) {
-					array_push($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
+					if($static_pdf === 0) {
+						array_push($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
+					} else {
+						array_push($module_name_list,__('average'));
+					}
+					
 				} else {
-					array_splice($module_name_list,(count($module_name_list)/2),0,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
+					if($static_pdf === 0) {
+						array_splice($module_name_list,(count($module_name_list)/2),0,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
+					} else {
+						array_splice($module_name_list,(count($module_name_list)/2),0,__('average'));
+					}
+					
 				}
 			}
 		}

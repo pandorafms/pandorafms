@@ -2181,7 +2181,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			}
 			
 			if(!$modules_series) {
-				if(is_null($percentil)) {
+				if(empty($percentil)) {
 					array_splice($module_name_list,0,count($module_name_list));
 				} else {
 					array_splice($module_name_list,0,count($module_name_list)-(count($module_name_list)/2));
@@ -2189,7 +2189,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				array_unshift($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
 				array_unshift($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
 			} else {
-				if(is_null($percentil)) {
+				if(empty($percentil)) {
 					array_push($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
 					array_push($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
 				} else {
@@ -2209,14 +2209,14 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			}
 
 			if(!$modules_series) {
-				if(is_null($percentil)) {
+				if(empty($percentil)) {
 					array_splice($module_name_list,0,count($module_name_list));
 				} else {
 					array_splice($module_name_list,0,count($module_name_list)-(count($module_name_list)/2));
 				}
 				array_unshift($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
 			} else {
-				if(is_null($percentil)) {
+				if(empty($percentil)) {
 					array_push($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
 				} else {
 					array_splice($module_name_list,(count($module_name_list)/2),0,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
@@ -2234,14 +2234,14 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			}
 			
 			if(!$modules_series) {
-				if(is_null($percentil)) {
+				if(empty($percentil)) {
 					array_splice($module_name_list,0,count($module_name_list));
 				} else {
 					array_splice($module_name_list,0,count($module_name_list)-(count($module_name_list)/2));
 				}
 				array_unshift($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
 			} else {
-				if(is_null($percentil)) {
+				if(empty($percentil)) {
 					array_push($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
 				} else {
 					array_splice($module_name_list,(count($module_name_list)/2),0,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');

@@ -6513,7 +6513,13 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 				$labels,
 				false,
 				false,
-				$graph["percentil"]
+				$graph["percentil"],
+				false,
+				false,
+				false,
+				$graph["summatory_series"],
+				$graph["average_series"],
+				$graph["modules_series"]
 			);
 			break;
 		case 'data':

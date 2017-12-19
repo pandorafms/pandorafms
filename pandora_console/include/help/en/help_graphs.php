@@ -48,7 +48,7 @@ div.img_title {
 </style>
 
 <body class="hlp_graphs">
-<h1>INTERPRETING GHRAPHS IN PANDORA FMS</h1>
+<h1>INTERPRETING GRAPHS IN PANDORA FMS</h1>
 
 
 <p>In Pandora FMS, graphs represent the values a module has had during a given period.</p>

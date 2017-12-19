@@ -36,6 +36,17 @@ my $STRESS_AGENT_XML = {        # Hash representing data coming from an XML data
           'agent_alias' => $STRESS_AGENT_NAME,
           'module' => []
 };
+my $DUMP_CNF_ONLY = 0;
+my $HELP=<<EO_HELP;
+
+Pandora FMS tool for MySQL testing and optimization.
+
+  Usage $0 /etc/pandora/pandora_server.conf [options]
+
+  where options could be:
+  -g      Generate optimized my.cnf (dumped to stdout)
+
+EO_HELP
 
 my $STRESS_CPU_OPS = 100000; # Number of CPU iterations.
 
@@ -231,6 +242,67 @@ sub table_stats {
 	return $stats;
 }
 
+sub generate_optimized_my_cnf {
+	my $pool_size=`cat /proc/meminfo | grep -i total | head -1 | awk '{print \$(NF-1)*0.4/1024}' | sed 's/\\..*\$/M/' `;
+	chomp($pool_size);
+
+	my $out = '';
+
+	$out .= "# Percona Server template configuration\n";
+	$out .= "\n";
+	$out .= "[mysqld]\n";
+	$out .= "datadir=/var/lib/mysql\n";
+	$out .= "socket=/var/lib/mysql/mysql.sock\n";
+	$out .= "\n";
+	$out .= "# Disabling symbolic-links is recommended to prevent assorted security risks\n";
+	$out .= "symbolic-links=0\n";
+	$out .= "\n";
+	$out .= "# Recommended in standard MySQL setup\n";
+	$out .= "sql_mode=\"\"\n";
+	$out .= "max_allowed_packet=64M\n";
+	$out .= "max_connections=100\n";
+	$out .= "\n";
+	$out .= "#InnoDB\n";
+	$out .= "innodb_file_per_table\n";
+	$out .= "innodb_buffer_pool_size=" . $pool_size . "\n";
+	$out .= "innodb_additional_mem_pool_size=32M\n";
+	$out .= "innodb_lock_wait_timeout=120\n";
+	$out .= "innodb_flush_log_at_trx_commit=0\n";
+	$out .= "innodb_flush_method=O_DIRECT\n";
+	$out .= "innodb_log_file_size=32M\n";
+	$out .= "innodb_log_buffer_size=128M\n";
+	$out .= "#innodb_io_capacity=150\n";
+	$out .= "\n";
+	$out .= "#Threading\n";
+	$out .= "thread_stack=256K\n";
+	$out .= "thread_cache_size=16\n";
+	$out .= "\n";
+	$out .= "#Buffers\n";
+	$out .= "sort_buffer_size=8M\n";
+	$out .= "join_buffer_size=8M\n";
+	$out .= "key_buffer_size=32M\n";
+	$out .= "read_buffer_size=128K\n";
+	$out .= "read_rnd_buffer_size=128K\n";
+	$out .= "\n";
+	$out .= "#Cache\n";
+	$out .= "query_cache_type=1\n";
+	$out .= "query_cache_size=8M\n";
+	$out .= "query_cache_limit=32M\n";
+	$out .= "\n";
+	$out .= "#Default values\n";
+	$out .= "tmp_table_size=64M\n";
+	$out .= "bind_address=0.0.0.0\n";
+	$out .= "\n";
+	$out .= "\n";
+	$out .= "[mysqld_safe]\n";
+	$out .= "log-error=/var/log/mysqld.log\n";
+	$out .= "pid-file=/var/run/mysqld/mysqld.pid\n";
+	$out .= "\n";
+
+	return $out;
+
+}
+
 ################################################################################
 # Add recommendations based on the given table stats.
 ################################################################################
@@ -280,14 +352,61 @@ sub table_comments {
 	return $comments;
 }
 
+############################################################################
+# Close STDOUT, avoid output
+############################################################################
+my $OLD_STDOUT;
+sub close_stdout {
+	open $OLD_STDOUT, ">&STDOUT";
+	close STDOUT;
+	open STDOUT, '>', '/dev/null';
+}
+
+############################################################################
+# Restore STDOUT, recover output
+############################################################################
+sub restore_stdout {
+	close STDOUT;
+	open STDOUT, '>&', $OLD_STDOUT;
+}
+
 ################################################################################
+#
 # Main.
+#
 ################################################################################
 my %conf;
 
-# Connect to the DB.
+
+if ($#ARGV < 0) {
+	print $HELP;
+	exit 0;
+}
+
+if ((defined($ARGV[1])) && ($ARGV[1] =~ /-g/i)) {
+	$DUMP_CNF_ONLY = 1;
+}
+
+
+if ($DUMP_CNF_ONLY == 1) {
+
+	print generate_optimized_my_cnf();
+
+	exit 0;
+}
+
+
+# close STDOUT
+close_stdout();
+
+# Init Pandora FMS libs
 pandora_init(\%conf,"Pandora FMS Performance Report Tool");
 pandora_load_config(\%conf);
+
+# close STDOUT
+restore_stdout();
+
+# Connect to the DB.
 my $dbh = db_connect($conf{'dbengine'}, $conf{'dbname'}, $conf{'dbhost'}, $conf{'dbport'}, $conf{'dbuser'}, $conf{'dbpass'});
 
 # Do not show server messages when running the stress tests.

@@ -4550,11 +4550,11 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 }
 
 function fullscale_data ( &$chart_data, &$chart_extra_data, &$long_index, 
-						  $series_type, $agent_module_id, $datelimit, $date, 
-						  $events = false, $show_events = false, 
-						  $show_unknown = false, $show_alerts = false, 
-						  $series_suffix = '', $percentil = false, 
-						  $flash_chart = true, $boolean_graph = false){
+						$series_type, $agent_module_id, $datelimit, $date, 
+						$events = false, $show_events = false, 
+						$show_unknown = false, $show_alerts = false, 
+						$series_suffix = '', $percentil = false, 
+						$flash_chart = true, $boolean_graph = false){
 
 	global $config;
 	global $max_value;
@@ -4609,6 +4609,10 @@ function fullscale_data ( &$chart_data, &$chart_extra_data, &$long_index,
 					$chart_data[$event_date]["event" . $series_suffix] = NULL;
 					$chart_data[$event_date]["alert" . $series_suffix] = 1;
 					$chart_extra_data[count($chart_data)-1]['alerts'] = implode (',', $alert_ids[$event_date]);
+				}
+				else{
+					$chart_data[$event_date]["event" . $series_suffix] = NULL;
+					$chart_data[$event_date]["alert" . $series_suffix] = NULL;
 				}
 				
 				$chart_data[$event_date]["sum" . $series_suffix] = $previous_data;

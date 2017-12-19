@@ -339,11 +339,11 @@ Memory: $mem
 Metric                              Value             Reference value for small/medium/large systems (*)
 ------                              -----             --------------------------------------------------
 
-CPU ops/ms                     $cpu_score             (NA/NA/NA)
-DB INSERT/s                    $db_scores->{'insert_score'}             (NA/NA/NA)
-DB UPDATE/s                    $db_scores->{'update_score'}             (NA/NA/NA)
-DB SELECT/s                    $db_scores->{'select_score'}             (NA/NA/NA)
-DB DELETE/s                    $db_scores->{'delete_score'}             (NA/NA/NA)
+CPU ops/ms                     $cpu_score             (1624.84/2347.42/3102.42)
+DB INSERT/s                    $db_scores->{'insert_score'}             (2884.42/7026.07/8728.54)
+DB UPDATE/s                    $db_scores->{'update_score'}             (2820.54/6954.10/8580.51)
+DB SELECT/s                    $db_scores->{'select_score'}             (4632.42/7194.24/10051.32)
+DB DELETE/s                    $db_scores->{'delete_score'}             (3192.37/6657.79/8933.77)
 
 (*) small ~ 250 agents | medium ~ 1000 agents | large > 5000 agents
 

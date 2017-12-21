@@ -100,13 +100,16 @@ class Agent {
 		if ($this->id != 0) {
 			$agent_alias = (string) $this->agent['alias'];
 			
+			$agents_filter = (string) $system->getRequest('agents_filter');
+			$agents_filter_q_param = empty($agents_filter) ? '' : '&agents_filter=' . $agents_filter;
+			
 			$ui->createDefaultHeader(
 				sprintf('%s', $agent_alias),
 				$ui->createHeaderButton(
 					array('icon' => 'back',
 						'pos' => 'left',
 						'text' => __('Back'),
-						'href' => 'index.php?page=agents')));
+						'href' => 'index.php?page=agents' . $agents_filter_q_param)));
 		}
 		else {
 			$ui->createDefaultHeader(__("PandoraFMS: Agents"));

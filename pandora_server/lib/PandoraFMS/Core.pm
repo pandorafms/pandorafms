@@ -229,6 +229,7 @@ our @EXPORT = qw(
 	pandora_self_monitoring
 	pandora_process_policy_queue
 	subst_alert_macros
+	get_agent_from_alias
 	get_agent_from_addr
 	get_agent_from_name
 	load_module_macros
@@ -243,7 +244,7 @@ our @EXPORT = qw(
 
 # Some global variables
 our @DayNames = qw(sunday monday tuesday wednesday thursday friday saturday);
-our @ServerTypes = qw (dataserver networkserver snmpconsole reconserver pluginserver predictionserver wmiserver exportserver inventoryserver webserver eventserver icmpserver snmpserver satelliteserver transactionalserver mfserver syncserver wuxserver);
+our @ServerTypes = qw (dataserver networkserver snmpconsole reconserver pluginserver predictionserver wmiserver exportserver inventoryserver webserver eventserver icmpserver snmpserver satelliteserver transactionalserver mfserver syncserver wuxserver syslogserver);
 our @AlertStatus = ('Execute the alert', 'Do not execute the alert', 'Do not execute the alert, but increment its internal counter', 'Cease the alert', 'Recover the alert', 'Reset internal counter');
 
 # Event storm protection (no alerts or events)
@@ -251,6 +252,17 @@ our $EventStormProtection :shared = 0;
 
 # Current master server
 my $Master :shared = 0;
+
+##########################################################################
+# Return the agent given the agent name.
+##########################################################################
+sub get_agent_from_alias ($$) {
+	my ($dbh, $alias) = @_;
+	
+	return undef if (! defined ($alias) || $alias eq '');
+	
+	return get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE tagente.alias = ?', safe_input($alias));
+}
 
 ##########################################################################
 # Return the agent given the IP address.
@@ -1530,6 +1542,11 @@ sub pandora_process_module ($$$$$$$$$;$) {
 
 		# Update module status count.
 		$mark_for_update = 1;
+
+		# Safe mode execution.
+		if ($agent->{'safe_mode_module'} == $module->{'id_agente_modulo'}) {
+			safe_mode($pa_config, $agent, $module, $new_status, $known_status, $dbh);
+		}
 	}
 	# Set not-init modules to normal status even if min_ff_event is not matched the first time they receive data.
 	# if critical or warning status, just pass through here and wait the time min_ff_event will be matched.
@@ -4719,23 +4736,29 @@ sub pandora_self_monitoring ($$) {
 	$xml_output .=" <data>$agents_unknown</data>";
 	$xml_output .=" </module>";
 	
-	$xml_output .=" <module>";
-	$xml_output .=" <name>System_Load_AVG</name>";
-	$xml_output .=" <type>generic_data</type>";
-	$xml_output .=" <data>$load_average</data>";
-	$xml_output .=" </module>";
+	if (defined($load_average)) {
+		$xml_output .=" <module>";
+		$xml_output .=" <name>System_Load_AVG</name>";
+		$xml_output .=" <type>generic_data</type>";
+		$xml_output .=" <data>$load_average</data>";
+		$xml_output .=" </module>";
+	}
 	
-	$xml_output .=" <module>";
-	$xml_output .=" <name>Free_RAM</name>";
-	$xml_output .=" <type>generic_data</type>";
-	$xml_output .=" <data>$free_mem</data>";
-	$xml_output .=" </module>";
+	if (defined($free_mem)) {
+		$xml_output .=" <module>";
+		$xml_output .=" <name>Free_RAM</name>";
+		$xml_output .=" <type>generic_data</type>";
+		$xml_output .=" <data>$free_mem</data>";
+		$xml_output .=" </module>";
+	}
 	
-	$xml_output .=" <module>";
-	$xml_output .=" <name>FreeDisk_SpoolDir</name>";
-	$xml_output .=" <type>generic_data</type>";
-	$xml_output .=" <data>$free_disk_spool</data>";
-	$xml_output .=" </module>";
+	if (defined($free_disk_spool)) {
+		$xml_output .=" <module>";
+		$xml_output .=" <name>FreeDisk_SpoolDir</name>";
+		$xml_output .=" <type>generic_data</type>";
+		$xml_output .=" <data>$free_disk_spool</data>";
+		$xml_output .=" </module>";
+	}
 	
 	$xml_output .= "</agent_data>";
 	
@@ -5471,6 +5494,30 @@ sub pandora_output_password($$) {
 	return $password unless defined($decrypted_password);
 
 	return $decrypted_password;
+}
+
+##########################################################################
+=head2 C<< safe_mode (I<$pa_config>, I<$agent>, I<$module>, I<$new_status>, I<$known_status>, I<$dbh>) >> 
+
+Execute safe mode for the given agent based on the status of the given module.
+
+=cut
+##########################################################################
+sub safe_mode($$$$$$) {
+	my ($pa_config, $agent, $module, $new_status, $known_status, $dbh) = @_;
+
+	return unless $agent->{'safe_mode_module'} > 0;
+
+	# Going to critical. Disable the rest of the modules.
+	if ($new_status == MODULE_CRITICAL) {
+		logger($pa_config, "Enabling safe mode for agent " . $agent->{'nombre'}, 10);
+		db_do($dbh, 'UPDATE tagente_modulo SET disabled=1 WHERE id_agente=? AND id_agente_modulo!=?', $agent->{'id_agente'}, $module->{'id_agente_modulo'});
+	}
+	# Coming back from critical. Enable the rest of the modules.
+	elsif ($known_status == MODULE_CRITICAL) {
+		logger($pa_config, "Disabling safe mode for agent " . $agent->{'nombre'}, 10);
+		db_do($dbh, 'UPDATE tagente_modulo SET disabled=0 WHERE id_agente=? AND id_agente_modulo!=?', $agent->{'id_agente'}, $module->{'id_agente_modulo'});
+	}
 }
 
 # End of function declaration

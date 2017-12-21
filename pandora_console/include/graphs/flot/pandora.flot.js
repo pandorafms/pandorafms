@@ -326,8 +326,7 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 }
 
 function pandoraFlotHBars(graph_id, values, labels, water_mark,
-	maxvalue, water_mark, separator, separator2, font, font_size, background_color,
-	tick_color) {
+	maxvalue, water_mark, separator, separator2, font, font_size, background_color, tick_color, min, max) {
 
 	var colors_data = ['#FC4444','#FFA631','#FAD403','#5BB6E5','#F2919D','#80BA27'];
 	values = values.split(separator2);
@@ -402,7 +401,13 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 		// with all 0 values.
 		options['yaxis']['tickDecimals'] = 0;
 	}
-
+	
+	if (max) {
+		options['xaxis']['max'] = max;
+	}
+	if (min) {
+		options['xaxis']['min'] = min;
+	}
 
 	var plot = $.plot($('#' + graph_id), datas, options );
 	
@@ -937,6 +942,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				filled = false;
 				steps_chart = false
 				break;
+			case 'unknown':
 			case 'boolean':
 				line_show = true;
 				points_show = false;
@@ -1767,9 +1773,11 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 
 				if (timesize+timenewpos > canvaslimit) {
 					$('#timestamp_'+graph_id).css('left', timenewpos - timesize);
+					$('#timestamp_'+graph_id).css('top', 50);
 				}
 				else {
 					$('#timestamp_'+graph_id).css('left', timenewpos);
+					$('#timestamp_'+graph_id).css('top', 50);
 				}
 			}
 			else {
@@ -1812,24 +1820,16 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 		plot.unhighlight();
 		if (item && item.series.label != '' && (item.series.label == legend_events || item.series.label == legend_events+series_suffix_str || item.series.label == legend_alerts || item.series.label == legend_alerts+series_suffix_str)) {
 			plot.unhighlight();
-			var canvaslimit = parseInt(plot.offset().left + plot.width());
 			var dataset  = plot.getData();
-			var timenewpos = parseInt(dataset[0].xaxis.p2c(pos.x)+plot.offset().left);
-			var extrasize = parseInt($('#extra_'+graph_id).css('width').split('px')[0]);
-
-			var left_pos;
-			if (extrasize+timenewpos > canvaslimit) {
-				left_pos = timenewpos - extrasize - 20;
-			}
-			else {
-				left_pos = timenewpos - (extrasize / 2);
-			}
 
 			var extra_info = '<i>No info to show</i>';
 			var extra_show = false;
 
-			$('#extra_'+graph_id).css('left',left_pos);
-			$('#extra_'+graph_id).css('top',plot.offset().top + 25);
+			var coord_x = (item.dataIndex/item.series.xaxis.datamax)* (event.target.clientWidth - event.target.offsetLeft + 1) + event.target.offsetLeft;
+
+
+			$('#extra_'+graph_id).css('left',coord_x);
+			$('#extra_'+graph_id).css('top', event.target.offsetTop + 55 );
 
 			switch(item.series.label) {
 				case legend_alerts+series_suffix_str:

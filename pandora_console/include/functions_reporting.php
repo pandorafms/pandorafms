@@ -127,7 +127,7 @@ function reporting_make_reporting_data($report = null, $id_report,
 	}
 
 	$metaconsole_on = is_metaconsole();
-	
+	$index_content = 0;
 	foreach ($contents as $content) {
 		$server_name = $content['server_name'];
 		
@@ -519,29 +519,41 @@ function reporting_make_reporting_data($report = null, $id_report,
 				break;
 			case 'agent_detailed_event':
 			case 'event_report_agent':
-				$report['contents'][] = reporting_event_report_agent(
+				$report_control = reporting_event_report_agent(
 					$report,
 					$content,
 					$type,
 					$force_width_chart,
 					$force_height_chart);
+					if($report_control['total_events'] == 0 && $content['hide_no_data'] == 1){
+						continue;
+					}
+					$report['contents'][] = $report_control;
 				break;
 			case 'event_report_module':
-				$report['contents'][] = reporting_event_report_module(
+				$report_control = reporting_event_report_module(
 					$report,
 					$content,
 					$type,
 					$force_width_chart,
 					$force_height_chart,
 					$pdf);
+					if($report_control['total_events'] == 0 && $content['hide_no_data'] == 1){
+						continue;
+					}
+					$report['contents'][] = $report_control;
 				break;
 			case 'event_report_group':
-				$report['contents'][] = reporting_event_report_group(
+				$report_control = reporting_event_report_group(
 					$report,
 					$content,
 					$type,
 					$force_width_chart,
 					$force_height_chart);
+					if($report_control['total_events'] == 0 && $content['hide_no_data'] == 1){
+						continue;
+					}
+					$report['contents'][] = $report_control;
 				break;
 			case 'top_n':
 				$report['contents'][] = reporting_event_top_n(
@@ -589,6 +601,7 @@ function reporting_make_reporting_data($report = null, $id_report,
 					$pdf);
 				break;
 		}
+		$index_content++;
 	}
 	
 	return reporting_check_structure_report($report);
@@ -3847,9 +3860,6 @@ function reporting_value($report, $content, $type,$pdf) {
 	
 	$return['agent_name'] = $agent_name;
 	$return['module_name'] = $module_name;
-	
-	html_debug($pdf,true);
-	html_debug($only_image,true);
 	
 	if($pdf){
 		$only_image = 1;
@@ -7763,19 +7773,19 @@ function reporting_get_stats_modules_status($data, $graph_width = 250, $graph_he
 	if ($links === false) {
 		$urls = array();
 		$urls['monitor_critical'] = "index.php?" .
-			"sec=estado&amp;sec2=operation/agentes/status_monitor&amp;" .
+			"sec=view&amp;sec2=operation/agentes/status_monitor&amp;" .
 			"refr=60&amp;status=" . AGENT_MODULE_STATUS_CRITICAL_BAD . "&pure=" . $config['pure'];
 		$urls['monitor_warning'] = "index.php?" .
-			"sec=estado&amp;sec2=operation/agentes/status_monitor&amp;" .
+			"sec=view&amp;sec2=operation/agentes/status_monitor&amp;" .
 			"refr=60&amp;status=" . AGENT_MODULE_STATUS_WARNING . "&pure=" . $config['pure'];
 		$urls['monitor_ok'] = "index.php?" .
-			"sec=estado&amp;sec2=operation/agentes/status_monitor&amp;" .
+			"sec=view&amp;sec2=operation/agentes/status_monitor&amp;" .
 			"refr=60&amp;status=" . AGENT_MODULE_STATUS_NORMAL . "&pure=" . $config['pure'];
 		$urls['monitor_unknown'] = "index.php?" .
-			"sec=estado&amp;sec2=operation/agentes/status_monitor&amp;" .
+			"sec=view&amp;sec2=operation/agentes/status_monitor&amp;" .
 			"refr=60&amp;status=" . AGENT_MODULE_STATUS_UNKNOWN . "&pure=" . $config['pure'];
 		$urls['monitor_not_init'] = "index.php?" .
-			"sec=estado&amp;sec2=operation/agentes/status_monitor&amp;" .
+			"sec=view&amp;sec2=operation/agentes/status_monitor&amp;" .
 			"refr=60&amp;status=" . AGENT_MODULE_STATUS_NOT_INIT . "&pure=" . $config['pure'];
 	}
 	else {
@@ -7875,7 +7885,7 @@ function reporting_get_stats_agents_monitors($data) {
 	else {
 		$urls = array();
 		$urls['total_agents'] = "index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60";
-		$urls['monitor_checks'] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=-1";
+		$urls['monitor_checks'] = "index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=-1";
 	}
 	
 	// Agents and modules table

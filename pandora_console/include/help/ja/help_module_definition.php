@@ -11,4 +11,6 @@
 </li>
 <br>
     <li><i>通常モード:</i> このモードでは、モジュール設定を手動で実施する必要があります。自動設定は行われません。</li>
+<br>
+    <li><i>Autodisable mode:</i> In terms of creating agents and modules it behaves exactly the same as an agent in learning mode: when the first XML reaches it, the first agent is created and, on each report, if there are new modules they can also be added automatically. Nevertheless, when all modules from an agent that are in autodisable mode are also marked as unknown, the agent is automatically disabled. In any case, if the agent reports again, it gets enabled again on its own.</li>
 </ul>

@@ -18,12 +18,18 @@ global $config;
 // Check user credentials
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "RW")) {
+if (! check_acl ($config['id_user'], 0, "RR")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access Inventory Module Management");
 	require ("general/noaccess.php");
 	return;
 }
+
+$report_r = check_acl ($config['id_user'], 0, "RR");
+$report_w = check_acl ($config['id_user'], 0, "RW");
+$report_m = check_acl ($config['id_user'], 0, "RM");
+$access = ($report_r == true) ? 'RR' : (($report_w == true) ? 'RW' : (($report_m == true) ? 'RM' : 'RR'));
+
 require_once ('include/functions_container.php');
 
 $delete_container = get_parameter('delete_container',0);
@@ -72,13 +78,13 @@ $container = folder_get_folders();
 
 $tree = folder_get_folders_tree_recursive($container);
 echo folder_togge_tree_folders($tree);
-
-echo "<div style='float: right;'>";
-		echo '<form method="post" style="float:right;" action="index.php?sec=reporting&sec2=godmode/reporting/create_container">';
-			html_print_submit_button (__('Create container'), 'create', false, 'class="sub next" style="margin-right:5px;margin-top: 15px;"');
-		echo "</form>";
-echo "</div>";
-
+if($report_r && $report_w){
+	echo "<div style='float: right;'>";
+			echo '<form method="post" style="float:right;" action="index.php?sec=reporting&sec2=godmode/reporting/create_container">';
+				html_print_submit_button (__('Create container'), 'create', false, 'class="sub next" style="margin-right:5px;margin-top: 15px;"');
+			echo "</form>";
+	echo "</div>";
+}
 ?>
 
 <script type="text/javascript">

@@ -1461,6 +1461,8 @@ function return_graphtype ($id_module_type) {
 		case 21:
 		case 18:
 		case 9:
+		case 31:
+		case 100:
 			return "boolean";
 			break;
 		case 24:

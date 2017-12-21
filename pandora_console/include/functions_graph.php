@@ -2168,6 +2168,9 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	
 	//summatory and average series
 	if($stacked == CUSTOM_GRAPH_AREA  || $stacked == CUSTOM_GRAPH_LINE) {
+		//Fix pdf label
+		$static_pdf = strpos($module_name_list[0], '<span style');
+		
 		if($summatory && $average) {
 			foreach ($graph_values as $key => $value) {
 				$cont = count($value);
@@ -2181,20 +2184,38 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			}
 			
 			if(!$modules_series) {
-				if(is_null($percentil)) {
+				if(empty($percentil)) {
 					array_splice($module_name_list,0,count($module_name_list));
 				} else {
 					array_splice($module_name_list,0,count($module_name_list)-(count($module_name_list)/2));
 				}
-				array_unshift($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
-				array_unshift($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
-			} else {
-				if(is_null($percentil)) {
-					array_push($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
-					array_push($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
+				if($static_pdf === 0) {
+					array_unshift($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
+					array_unshift($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
 				} else {
-					array_splice($module_name_list,(count($module_name_list)/2),0,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
-					array_splice($module_name_list,(count($module_name_list)/2),0,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
+					array_unshift($module_name_list, __('summatory'));
+					array_unshift($module_name_list, __('average'));
+				}
+				
+			} else {
+				if(empty($percentil)) {
+					if($static_pdf === 0) {
+						array_push($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
+						array_push($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
+					} else {
+						array_push($module_name_list, __('summatory'));
+						array_push($module_name_list, __('average'));
+					}
+					
+				} else {
+					if($static_pdf === 0) {
+						array_splice($module_name_list,(count($module_name_list)/2),0,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
+						array_splice($module_name_list,(count($module_name_list)/2),0,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
+					} else {
+						array_splice($module_name_list,(count($module_name_list)/2),0, __('average'));
+						array_splice($module_name_list,(count($module_name_list)/2),0,__('summatory'));
+					}
+					
 				}
 				
 			}
@@ -2209,17 +2230,32 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			}
 
 			if(!$modules_series) {
-				if(is_null($percentil)) {
+				if(empty($percentil)) {
 					array_splice($module_name_list,0,count($module_name_list));
 				} else {
 					array_splice($module_name_list,0,count($module_name_list)-(count($module_name_list)/2));
 				}
-				array_unshift($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
-			} else {
-				if(is_null($percentil)) {
-					array_push($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
+				if($static_pdf === 0) {
+					array_unshift($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
 				} else {
-					array_splice($module_name_list,(count($module_name_list)/2),0,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
+					array_unshift($module_name_list, __('summatory'));
+				}
+				
+			} else {
+				if(empty($percentil)) {
+					if($static_pdf === 0) {
+						array_push($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
+					} else {
+						array_push($module_name_list,__('summatory'));
+					}
+					
+				} else {
+					if($static_pdf === 0) {
+						array_splice($module_name_list,(count($module_name_list)/2),0,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('summatory'). '</span>');
+					} else {
+						array_splice($module_name_list,(count($module_name_list)/2),0,__('summatory'));
+					}
+					
 				}
 			}
 			
@@ -2234,17 +2270,32 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			}
 			
 			if(!$modules_series) {
-				if(is_null($percentil)) {
+				if(empty($percentil)) {
 					array_splice($module_name_list,0,count($module_name_list));
 				} else {
 					array_splice($module_name_list,0,count($module_name_list)-(count($module_name_list)/2));
 				}
-				array_unshift($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
-			} else {
-				if(is_null($percentil)) {
-					array_push($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
+				if($static_pdf === 0) {
+					array_unshift($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
 				} else {
-					array_splice($module_name_list,(count($module_name_list)/2),0,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
+					array_unshift($module_name_list,__('average'));
+				}
+				
+			} else {
+				if(empty($percentil)) {
+					if($static_pdf === 0) {
+						array_push($module_name_list,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
+					} else {
+						array_push($module_name_list,__('average'));
+					}
+					
+				} else {
+					if($static_pdf === 0) {
+						array_splice($module_name_list,(count($module_name_list)/2),0,'<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . __('average'). '</span>');
+					} else {
+						array_splice($module_name_list,(count($module_name_list)/2),0,__('average'));
+					}
+					
 				}
 			}
 		}
@@ -3888,7 +3939,7 @@ function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $ho
 		$bottom = $datelimit + ($periodtime * $i);
 		if (! $graphic_type) {
 			if ($config['flash_charts']) {
-				$name = date('H:i:s', $bottom);
+				$name = date('H:i', $bottom);
 			}
 			else {
 				$name = date('H\h', $bottom);
@@ -4499,11 +4550,11 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 }
 
 function fullscale_data ( &$chart_data, &$chart_extra_data, &$long_index, 
-						  $series_type, $agent_module_id, $datelimit, $date, 
-						  $events = false, $show_events = false, 
-						  $show_unknown = false, $show_alerts = false, 
-						  $series_suffix = '', $percentil = false, 
-						  $flash_chart = true, $boolean_graph = false){
+						$series_type, $agent_module_id, $datelimit, $date, 
+						$events = false, $show_events = false, 
+						$show_unknown = false, $show_alerts = false, 
+						$series_suffix = '', $percentil = false, 
+						$flash_chart = true, $boolean_graph = false){
 
 	global $config;
 	global $max_value;
@@ -4558,6 +4609,10 @@ function fullscale_data ( &$chart_data, &$chart_extra_data, &$long_index,
 					$chart_data[$event_date]["event" . $series_suffix] = NULL;
 					$chart_data[$event_date]["alert" . $series_suffix] = 1;
 					$chart_extra_data[count($chart_data)-1]['alerts'] = implode (',', $alert_ids[$event_date]);
+				}
+				else{
+					$chart_data[$event_date]["event" . $series_suffix] = NULL;
+					$chart_data[$event_date]["alert" . $series_suffix] = NULL;
 				}
 				
 				$chart_data[$event_date]["sum" . $series_suffix] = $previous_data;

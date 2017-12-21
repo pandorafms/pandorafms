@@ -100,7 +100,7 @@ echo '<ul class="mn">';
 // QR code
 echo '<li class="nomn">';
 echo '<a href="javascript: show_dialog_qrcode();">';
-echo '<img class="vc-qr" src="../../images/qrcode_icon.jpg"/>';
+echo '<img class="vc-qr" src="../../images/qrcode_icon_2.jpg"/>';
 echo '</a>';
 echo '</li>';
 

@@ -84,7 +84,8 @@ if (!is_object($user) && gettype($user) == 'object') {
 
 $user->saveLogin();
 
-$page = $system->getRequest('page', 'home');
+$default_page = 'home';
+$page = $system->getRequest('page');
 $action = $system->getRequest('action');
 
 // The logout action has priority
@@ -242,7 +243,7 @@ switch ($action) {
 	default:
 		if (class_exists("Enterprise")) {
 			$enterprise = Enterprise::getInstance();
-			if ($page != "home") {
+			if (!empty($page) && $page != $default_page) {
 				$permission = $enterprise->checkEnterpriseACL($page);
 
 				if (!$permission) {
@@ -257,6 +258,36 @@ switch ($action) {
 
 					return;
 				}
+			}
+		}
+		
+		if (empty($page)) {
+			$user_info = $user->getInfo();
+			$home_page = $system->safeOutput($user_info['section']);
+			$section_data = $user_info['data_section'];
+
+			switch ($home_page) {
+				case 'Event list':
+					$page = 'events';
+					break;
+				case 'Group view':
+					break;
+				case 'Alert detail':
+					$page = 'alerts';
+					break;
+				case 'Tactical view':
+					$page = 'tactical';
+					break;
+				case 'Dashboard':
+					$page = 'dashboard';
+					$id_dashboard = (int) db_get_value('id', 'tdashboard', 'name', $section_data);
+					$_GET['id_dashboard'] = $id_dashboard;
+					break;
+				case 'Visual console':
+					$page = 'visualmap';
+					$id_map = (int) db_get_value('id', 'tlayout', 'name', $section_data);
+					$_GET['id'] = $id_map;
+					break;
 			}
 		}
 

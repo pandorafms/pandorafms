@@ -1572,14 +1572,18 @@ function reporting_event_report_module($report, $content,
 	$event_graph_by_user_validator        = $event_filter['event_graph_by_user_validator'];
 	$event_graph_by_criticity             = $event_filter['event_graph_by_criticity'];
 	$event_graph_validated_vs_unvalidated = $event_filter['event_graph_validated_vs_unvalidated'];
-
+	
+	$id_server = false;
+	if(is_metaconsole()){
+		$id_server = metaconsole_get_id_server($content["server_name"]);
+	}
 	//data events
 	$data = reporting_get_module_detailed_event (
 		$content['id_agent_module'], $content['period'], $report["datetime"], 
 		$show_summary_group, $filter_event_severity, $filter_event_type, 
 		$filter_event_status, $filter_event_filter_search, $force_width_chart,
 		$event_graph_by_user_validator, $event_graph_by_criticity, 
-		$event_graph_validated_vs_unvalidated, $ttl);
+		$event_graph_validated_vs_unvalidated, $ttl, $id_server);
 
 	if (empty($data)) {
 		$return['failed'] = __('No events');
@@ -6809,7 +6813,7 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0,
 	$filter_event_type = false, $filter_event_status = false, 
 	$filter_event_filter_search = false, $force_width_chart = false,
 	$event_graph_by_user_validator = false, $event_graph_by_criticity = false, 
-	$event_graph_validated_vs_unvalidated = false, $ttl = 1) {
+	$event_graph_validated_vs_unvalidated = false, $ttl = 1, $id_server = false) {
 	
 	global $config;
 	
@@ -6832,8 +6836,8 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0,
 		$event['data'] = events_get_agent (false, (int) $period, (int) $date, 
 			$history, $show_summary_group, $filter_event_severity, 
 			$filter_event_type, $filter_event_status, $filter_event_filter_search, 
-			false, false, $id_module, true);
-
+			false, false, $id_module, true , $id_server);
+			
 		//total_events
 		if(isset($event['data'])){
 			$event['total_events'] = count($event['data']);

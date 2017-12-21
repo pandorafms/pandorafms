@@ -1261,7 +1261,7 @@ function events_get_group_events_steps ($begin, &$result, $id_group, $period, $d
 function events_get_agent ($id_agent, $period, $date = 0, 
 	$history = false, $show_summary_group = false, $filter_event_severity = false,
 	$filter_event_type = false, $filter_event_status = false, $filter_event_filter_search=false, 
-	$id_group = false, $events_group = false, $id_agent_module = false, $events_module = false) {
+	$id_group = false, $events_group = false, $id_agent_module = false, $events_module = false, $id_server = false) {
 	global $config;
 
 	if (!is_numeric ($date)) {
@@ -1364,7 +1364,11 @@ function events_get_agent ($id_agent, $period, $date = 0,
 		$sql_where .= sprintf(' AND id_agente = %d AND utimestamp > %d
 			AND utimestamp <= %d ', $id_agent, $datelimit, $date);
 	}
-
+	
+	if(is_metaconsole() && $id_server){
+		$sql_where.= " AND server_id = ".$id_server;
+	}
+	
 	if($show_summary_group){
 		return events_get_events_grouped($sql_where, 0, 1000, 
 				is_metaconsole(), false, false, $history);

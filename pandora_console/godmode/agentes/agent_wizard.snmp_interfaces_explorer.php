@@ -67,7 +67,7 @@ if ($snmpwalk) {
 		$snmp3_security_level, $snmp3_auth_method, $snmp3_auth_pass,
 		$snmp3_privacy_method, $snmp3_privacy_pass, 0, ".1.3.6.1.2.1.4.34.1.3", $tcp_port,
 		$server_to_exec);
-
+	
 	// Build a [<interface id>] => [<interface ip>] array
 	if (!empty($snmp_int_ip)) {
 		foreach ($snmp_int_ip as $key => $value) {
@@ -92,7 +92,7 @@ if ($snmpwalk) {
 	$snmpis = array_merge(($snmpis === false ? array() : $snmpis), ($ifxitems === false ? array() : $ifxitems));
 	
 	$interfaces = array();
-
+	
 	// We get here only the interface part of the MIB, not full mib
 	foreach($snmpis as $key => $snmp) {
 		
@@ -106,10 +106,17 @@ if ($snmpwalk) {
 		}
 		
 		if (array_key_exists(1,$data)) {
-			$interfaces[$keydata2[1]][$keydata2[0]]['type'] = $data[0];
-			$interfaces[$keydata2[1]][$keydata2[0]]['value'] = $data[1];
-		}
-		else {
+			// Fixed for switch dell powerconnect
+			if(count($data) > 2) {
+				$interfaces[$keydata2[1]][$keydata2[0]]['type'] = $data[0];
+				unset($data[0]);
+				$interfaces[$keydata2[1]][$keydata2[0]]['value'] = implode(": ",$data);
+			} else {
+				$interfaces[$keydata2[1]][$keydata2[0]]['type'] = $data[0];
+				$interfaces[$keydata2[1]][$keydata2[0]]['value'] = $data[1];
+			}
+			
+		} else {
 			$interfaces[$keydata2[1]][$keydata2[0]]['type'] = '';
 			$interfaces[$keydata2[1]][$keydata2[0]]['value'] = $data[0];
 		}

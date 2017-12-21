@@ -100,13 +100,16 @@ class Agent {
 		if ($this->id != 0) {
 			$agent_alias = (string) $this->agent['alias'];
 			
+			$agents_filter = (string) $system->getRequest('agents_filter');
+			$agents_filter_q_param = empty($agents_filter) ? '' : '&agents_filter=' . $agents_filter;
+			
 			$ui->createDefaultHeader(
 				sprintf('%s', $agent_alias),
 				$ui->createHeaderButton(
 					array('icon' => 'back',
 						'pos' => 'left',
 						'text' => __('Back'),
-						'href' => 'index.php?page=agents')));
+						'href' => 'index.php?page=agents' . $agents_filter_q_param)));
 		}
 		else {
 			$ui->createDefaultHeader(__("PandoraFMS: Agents"));
@@ -195,10 +198,16 @@ class Agent {
 				$ui->contentGridAddCell($html, 'agent_details');
 				
 				ob_start();
+
+				// Fixed width non interactive charts
+				$status_chart_width = $config["flash_charts"] == false ? 100 : 160;
+				$graph_width = $config["flash_charts"] == false ? 200 : 160;
 				
 				$html = '<div class="agent_graphs">';
 				$html .= "<b>" . __('Modules by status') . "</b>";
-				$html .= graph_agent_status ($this->id, 160, 160, true);
+				$html .= '<div id="status_pie" style="margin: auto; width: ' . $status_chart_width . 'px;">';
+				$html .= graph_agent_status ($this->id, $graph_width, 160, true);
+				$html .= '</div>';
 				$graph_js = ob_get_clean();
 				$html = $graph_js . $html;
 				

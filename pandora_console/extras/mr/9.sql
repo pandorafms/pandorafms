@@ -11,6 +11,7 @@ EXECUTE pr_oum708;
 DEALLOCATE PREPARE pr_oum708;
 
 ALTER TABLE tagente ADD COLUMN `safe_mode_module` int(10) unsigned NOT NULL default '0';
+ALTER TABLE tmetaconsole_agent ADD COLUMN `safe_mode_module` int(10) unsigned NOT NULL default '0';
 
 alter table tlayout_data add column element_group int(10) not null default 0;
 

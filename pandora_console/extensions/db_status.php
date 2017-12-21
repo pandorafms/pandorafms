@@ -259,80 +259,60 @@ function extension_db_check_tables_differences($connection_test,
 				$field_system = $fields_system[$name_field];
 				
 				$diff = array_diff($field_test, $field_system);
+				
 				if (!empty($diff)) {
-					foreach ($diff as $config_field => $value) {
-						switch ($config_field) {
-							case 'type':
-								ui_print_error_message(
-									__('Unsuccessful the field %s in the table %s must be set the type with %s.',
-									$name_field, $table, $value));
-								ui_print_info_message(
-									__('You can execute this SQL query for to fix.') . "<br />" .
-									'<pre>' .
-										"ALTER TABLE " . $table . " MODIFY COLUMN " . $name_field . " " . $value . ";" .
-									'</pre>'
-								);
-								break;
-							case 'null':
-								ui_print_error_message(
-									__('Unsuccessful the field %s in the table %s must be null: (%s).',
-									$name_field, $table, $value));
+						$info_message = "";
+						$error_message = "";
+							if($diff['type']){
+								$error_message .= "Unsuccessful the field ".$name_field." in the table ".$table." must be set the type with ".$diff['type']."<br>";
+							}
+							
+							if($diff['null']){
+								$error_message .= "Unsuccessful the field $name_field in the table $table must be null: (".$diff['null'].").<br>";
+							}
+							
+							if($diff['default']){
+								$error_message .= "Unsuccessful the field $name_field in the table $table must be set ".$diff['default']." as default value.<br>";	
+							}
+							
+							if($field_test['null'] == "YES" || !isset($field_test['null']) || $field_test['null'] == ""){
+								$null_defect = " NULL";
+							}
+							else{
+								$null_defect = " NOT NULL";
+							}
+							
+							if(!isset($field_test['default']) || $field_test['default'] == ""){
+								$default_value = "";
+							}
+							else{
+								$default_value = " DEFAULT ".$field_test['default'];
+							}
+							
+							if($diff['type'] || $diff['null'] || $diff['default']){
+								$info_message .= "ALTER TABLE " . $table . " MODIFY COLUMN " . $name_field . " "  . $field_test['type'] . $null_defect . $default_value.";";
+							}
+							
+							if($diff['key']){
+								$error_message .= "Unsuccessful the field $name_field in the table $table must be set the key as defined in the SQL file.<br>";
+								$info_message .= "<br><br>Please check the SQL file for to know the kind of key needed.";
+							}
+							
+							if($diff['extra']){	
+								$error_message .= "Unsuccessful the field $name_field in the table $table must be set as defined in the SQL file.<br>";
+								$info_message .= "<br><br>Please check the SQL file for to know the kind of extra config needed.";
+							}
+					
+							ui_print_error_message(
+								__($error_message));
 								
-								if ($value == "YES") {
-									ui_print_info_message(
-										__('You can execute this SQL query for to fix.') . "<br />" .
-										'<pre>' .
-											"ALTER TABLE " . $table . " MODIFY COLUMN " . $name_field . " "  . $field_test['type'] . " NULL;" .
-										'</pre>'
-									);
-								}
-								else {
-									ui_print_info_message(
-										__('You can execute this SQL query for to fix.') . "<br />" .
-										'<pre>' .
-											"ALTER TABLE " . $table . " MODIFY COLUMN " . $name_field . " " . $field_test['type'] . " NOT NULL;" .
-										'</pre>'
-									);
-								}
+							ui_print_info_message(
+								__($info_message));
 								
-								break;
-							case 'key':
-								ui_print_error_message(
-									__('Unsuccessful the field %s in the table %s must be set the key as defined in the SQL file.',
-									$name_field, $table));
-								ui_print_info_message(
-									__('Please check the SQL file for to know the kind of key needed.'));
-								break;
-							case 'default':
-								if($field_test['null'] == "YES" || !isset($field_test['null']) || $field_test['null'] == ""){
-									$null_defect = " NULL";
-								}
-								else{
-									$null_defect = " NOT NULL";
-								}
-								ui_print_error_message(
-									__('Unsuccessful the field %s in the table %s must be set %s as default value.',
-									$name_field, $table, $value));
-								ui_print_info_message(
-										__('You can execute this SQL query for to fix.') . "<br />" .
-										'<pre>' .
-											"ALTER TABLE " . $table . " MODIFY COLUMN " . $name_field . " "  . $field_test['type'] . $null_defect . " DEFAULT " . $value . ";" .
-										'</pre>'
-									);
-								break;
-							case 'extra':
-								ui_print_error_message(
-									__('Unsuccessful the field %s in the table %s must be set as defined in the SQL file.',
-									$name_field, $table));
-								ui_print_info_message(
-									__('Please check the SQL file for to know the kind of extra config needed.'));
-								break;
 						}
 					}
 				}
 			}
-		}
-	}
 	
 	if ($correct_fields) {
 		ui_print_success_message(

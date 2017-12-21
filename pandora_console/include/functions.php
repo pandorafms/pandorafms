@@ -1461,6 +1461,8 @@ function return_graphtype ($id_module_type) {
 		case 21:
 		case 18:
 		case 9:
+		case 31:
+		case 100:
 			return "boolean";
 			break;
 		case 24:
@@ -2580,7 +2582,7 @@ function get_percentile($percentile, $array) {
 	$index = ($percentile / 100) * count($array);
 	
 	if (floor($index) == $index) {
-		 $result = ($array[$index-1] + $array[$index]) / 2;
+		$result = ($array[$index-1] + $array[$index]) / 2;
 	}
 	else {
 		$result = $array[floor($index)];

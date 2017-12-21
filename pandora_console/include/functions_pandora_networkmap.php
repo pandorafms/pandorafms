@@ -231,7 +231,8 @@ function networkmap_process_networkmap($id = 0) {
 				$dont_show_subgroups,
 				false,
 				null,
-				$old_mode);
+				$old_mode,
+				$map_filter);
 			
 			switch (PHP_OS) {
 				case "WIN32":
@@ -300,9 +301,31 @@ function networkmap_process_networkmap($id = 0) {
 			
 			$nodes_and_relations['nodes'] = array();
 			$index = 0;
+			$node_center = array();
 			foreach ($nodes as $key => $node) {
 				$nodes_and_relations['nodes'][$index]['id_map'] = $id;
 				
+				$children_count = 0;
+				foreach ($relation_nodes as $relation) {
+					if (($relation['parent_type'] == 'agent') || ($relation['parent_type'] == '')) {
+						if ($nodes[$relation['id_parent']]['id_agent'] == $node['id_agent']) {
+							$children_count++;
+						}
+					}
+					else if ($relation['parent_type'] == 'module') {
+						if ($nodes[$relation['id_parent']]['id_module'] == $node['id_module']) {
+							$children_count++;
+						}
+					}
+					
+				}
+
+				if (empty($node_center) || $node_center['counter'] < $children_count) {
+					$node_center['x'] = (int)$node['coords'][0];
+					$node_center['y'] = (int)$node['coords'][1];
+					$node_center['counter'] = $children_count;
+				}
+
 				$nodes_and_relations['nodes'][$index]['x'] = (int)$node['coords'][0];
 				$nodes_and_relations['nodes'][$index]['y'] = (int)$node['coords'][1];
 				
@@ -373,7 +396,7 @@ function networkmap_process_networkmap($id = 0) {
 			}
 			
 			$pandorafms_node = $nodes_and_relations['nodes'][0];
-			$center = array('x' => $pandorafms_node['x'], 'y' => $pandorafms_node['y']);
+			$center = array('x' => $node_center['x'], 'y' => $node_center['y']);
 			
 			$networkmap['center_x'] = $center['x'];
 			$networkmap['center_y'] = $center['y'];
@@ -454,6 +477,7 @@ function networkmap_db_node_to_js_node($node, &$count, &$count_item_holding_area
 	$item['py'] = (int)$node['y'];
 	$item['z'] = (int)$node['z'];
 	$item['state'] = $node['state'];
+	$item['deleted'] = $node['deleted'];
 	if ($item['state'] == 'holding_area') {
 		//40 = DEFAULT NODE RADIUS
 		//30 = for to align
@@ -637,8 +661,10 @@ function networkmap_links_to_js_links($relations, $nodes_graph) {
 		$item['id_agent_start'] = (int)$id_source_agent;
 		$item['id_module_end'] = 0;
 		$item['id_agent_end'] = (int)$id_target_agent;
+		$item['link_color'] = "#999";
 		$item['target'] = -1;
 		$item['source'] = -1;
+		$item['deleted'] = $relation['deleted'];
 		
 		if (enterprise_installed()) {
 			$target_and_source = array();
@@ -691,14 +717,42 @@ function networkmap_links_to_js_links($relations, $nodes_graph) {
 		$agent2 = 0;
 		
 		if (($relation['parent_type'] == 1) && ($relation['child_type'] == 1)) {
+			$mod1_status = db_get_value_filter('estado', 'tagente_estado', array('id_agente_modulo' => $relation['id_parent_source_data']));
+			$mod2_status = db_get_value_filter('estado', 'tagente_estado', array('id_agente_modulo' => $relation['id_child_source_data']));
+
+			if (($mod1_status == AGENT_MODULE_STATUS_CRITICAL_BAD) || ($mod2_status == AGENT_MODULE_STATUS_CRITICAL_BAD)) {
+				$item['link_color'] = "#FC4444";
+			}
+			else if (($mod1_status == AGENT_MODULE_STATUS_WARNING) || ($mod2_status == AGENT_MODULE_STATUS_WARNING)) {
+				$item['link_color'] = "#FAD403";
+			}
+
 			$agent = agents_get_agent_id_by_module_id($relation['id_parent_source_data']);
 			$agent2 = agents_get_agent_id_by_module_id($relation['id_child_source_data']);
 		}
 		else if ($relation['child_type'] == 1) {
+			$mod1_status = db_get_value_filter('estado', 'tagente_estado', array('id_agente_modulo' => $relation['id_child_source_data']));
+
+			if ($mod1_status == AGENT_MODULE_STATUS_CRITICAL_BAD) {
+				$item['link_color'] = "#FC4444";
+			}
+			else if ($mod1_status == AGENT_MODULE_STATUS_WARNING) {
+				$item['link_color'] = "#FAD403";
+			}
+
 			$agent = $relation['id_parent_source_data'];
 			$agent2 = agents_get_agent_id_by_module_id($relation['id_child_source_data']);
 		}
 		else if ($relation['parent_type'] == 1) {
+			$mod1_status = db_get_value_filter('estado', 'tagente_estado', array('id_agente_modulo' => $relation['id_parent_source_data']));
+
+			if ($mod1_status == AGENT_MODULE_STATUS_CRITICAL_BAD) {
+				$item['link_color'] = "#FC4444";
+			}
+			else if ($mod1_status == AGENT_MODULE_STATUS_WARNING) {
+				$item['link_color'] = "#FAD403";
+			}
+
 			$agent = agents_get_agent_id_by_module_id($relation['id_parent_source_data']);
 			$agent2 = $relation['id_child_source_data'];
 		}
@@ -836,7 +890,9 @@ function networkmap_write_js_array($id, $nodes_and_relations = array(), $map_das
 		
 		$item = networkmap_db_node_to_js_node(
 			$node, $count, $count_item_holding_area);
-		
+		if ($item['deleted']) {
+			continue;
+		}
 		echo "networkmap.nodes.push(" . json_encode($item) . ");\n";
 		$nodes_graph[$item['id']] = $item;
 	}
@@ -852,6 +908,9 @@ function networkmap_write_js_array($id, $nodes_and_relations = array(), $map_das
 	$links_js = networkmap_links_to_js_links($relations, $nodes_graph);
 	
 	foreach ($links_js as $link_js) {
+		if ($link_js['deleted']) {
+			continue;
+		}
 		if ($link_js['target'] == -1)
 			continue;
 		if ($link_js['source'] == -1)
@@ -909,6 +968,12 @@ function networkmap_write_js_array($id, $nodes_and_relations = array(), $map_das
 	echo "var set_center_menu = '" . __('Set center') . "';\n";
 	echo "var refresh_menu = '" . __('Refresh') . "';\n";
 	echo "var refresh_holding_area_menu = '" . __('Refresh Holding area') . "';\n";
+	echo "var ok_button = '" . __('Proceed') . "';\n";
+	echo "var message_to_confirm = '" . __('Resetting the map will delete all customizations you have done, including manual relationships between elements, new items, etc.') . "';\n";
+	echo "var warning_message = '" . __('WARNING') . "';\n";
+	echo "var ok_button = '" . __('Proceed') . "';\n";
+	echo "var cancel_button = '" . __('Cancel') . "';\n";
+	echo "var restart_map_menu = '" . __('Restart map') . "';\n";
 	echo "var abort_relationship_interface = '" . __('Abort the interface relationship') . "';\n";
 	echo "var abort_relationship_menu = '" . __('Abort the action of set relationship') . "';\n";
 	
@@ -1454,7 +1519,6 @@ function show_networkmap($id = 0, $user_readonly = false, $nodes_and_relations =
 	}
 	
 	.link {
-		stroke: #999;
 		stroke-opacity: .6;
 	}
 	

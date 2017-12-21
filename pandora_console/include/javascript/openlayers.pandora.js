@@ -286,7 +286,7 @@ function EventZoomEnd (evt,zoom = map.zoom) {
  * @return none
  */
 function changeShowStatus(newShowStatus) {
-	statusShow = newShowStatus;	
+	statusShow = newShowStatus;
 	hideAgentsStatus();
 	EventZoomEnd(null,map.zoom);
 	js_refreshParentLines();
@@ -305,19 +305,19 @@ function hideFeatureByStatus(feature, status) {
 	
 	switch (statusShow) {
 		case 'bad':
-			if ((status == 1) || (status == 4))
+			if ((status == 1) || (status == 4) || (status == 100))
 				feature.style.display = '';
 			break;
 		case 'warning':
-			if (status == 2)
+			if ((status == 2) || (status == 200))
 				feature.style.display = '';
 			break;
 		case 'ok':
-			if (status == 0)
+			if ((status == 0) || (status == 300))
 				feature.style.display = '';
 			break;
 		case 'default':
-			if ((status != 1) && (status != 4) && (status != 2) && (status != 0))
+			if ((status != 1) && (status != 4) && (status != 2) && (status != 0) && (status != 100) && (status != 200) && (status != 300))
 				feature.style.display = '';
 			break;
 		case 'all':
@@ -337,19 +337,19 @@ function isHideFeatureByStatus(status) {
 	
 	switch (statusShow) {
 		case 'bad':
-			if ((status == 1) || (status == 4))
+			if ((status == 1) || (status == 4) || (status == 100))
 				returnVar = false;
 			break;
 		case 'warning':
-			if (status == 2)
+			if ((status == 2) || (status == 200))
 				returnVar = false;
 			break;
 		case 'ok':
-			if (status == 0)
+			if ((status == 0) || (status == 300))
 				returnVar = false;
 			break;
 		case 'default':
-			if ((status != 1) && (status != 4) && (status != 2) && (status != 0))
+			if ((status != 1) && (status != 4) && (status != 2) && (status != 0) && (status != 100) && (status != 200) && (status != 300))
 				returnVar = false;
 			break;
 		case 'all':

@@ -18,6 +18,7 @@ global $config;
 
 $pure = get_parameter('pure', 0);
 $tab = get_parameter('tab', 'group');
+$search_group = get_parameter('searchGroup', '');
 $search_agent = get_parameter('searchAgent', '');
 $status_agent = get_parameter('statusAgent', AGENT_STATUS_ALL);
 $search_module = get_parameter('searchModule', '');
@@ -134,14 +135,19 @@ $agent_status_arr[AGENT_STATUS_CRITICAL] = __('Critical');
 $agent_status_arr[AGENT_STATUS_UNKNOWN] = __('Unknown');
 $agent_status_arr[AGENT_STATUS_NOT_INIT] = __('Not init');
 
+if ($tab == 'group' || is_metaconsole()) {
+	$row = array();
+	$row[] = __('Search group');
+	$row[] = html_print_input_text("search_group", $search_group, '', is_metaconsole() ? 70 : 40, 30, true);
+
+	$table->data[] = $row;
+}
+
 $row = array();
+$row[] = __('Search agent');
+$row[] = html_print_input_text("search_agent", $search_agent, '', is_metaconsole() ? 70 : 40, 30, true);
 $row[] = __('Agent status');
 $row[] = html_print_select($agent_status_arr, "status_agent", $status_agent, '', '', 0, true);
-$row[] = __('Search agent');
-if (is_metaconsole())
-	$row[] = html_print_input_text("search_agent", $search_agent, '', 70, 30, true);
-else
-	$row[] = html_print_input_text("search_agent", $search_agent, '', 40, 30, true);
 
 // Button
 $row[] = html_print_submit_button(__('Filter'), "uptbutton", false, 'class="sub search"', true);
@@ -160,10 +166,10 @@ if (!is_metaconsole()) {
 	$module_status_arr[AGENT_MODULE_STATUS_NOT_INIT] = __('Not init');
 	
 	$row = array();
-	$row[] = __('Module status');
-	$row[] = html_print_select($module_status_arr, "status_module", $status_module, '', '', 0, true);
 	$row[] = __('Search module');
 	$row[] = html_print_input_text("search_module", $search_module, '', 40, 30, true);
+	$row[] = __('Module status');
+	$row[] = html_print_select($module_status_arr, "status_module", $status_module, '', '', 0, true);
 	
 	$table->data[] = $row;
 }
@@ -240,8 +246,9 @@ enterprise_hook('close_meta_frame');
 		var parameters = {};
 		parameters['page'] = "include/ajax/tree.ajax";
 		parameters['getChildren'] = 1;
-		parameters['filter'] = {};
 		parameters['type'] = "<?php echo $tab; ?>";
+		parameters['filter'] = {};
+		parameters['filter']['searchGroup'] = $("input#text-search_group").val();
 		parameters['filter']['searchAgent'] = $("input#text-search_agent").val();
 		parameters['filter']['statusAgent'] = $("select#status_agent").val();
 		parameters['filter']['searchModule'] = $("input#text-search_module").val();

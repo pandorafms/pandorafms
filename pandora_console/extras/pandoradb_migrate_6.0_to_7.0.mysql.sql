@@ -728,6 +728,7 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	`lapse_calc` tinyint(1) UNSIGNED NOT NULL default '0',
 	`lapse` int(11) UNSIGNED NOT NULL default '300',
 	`visual_format` tinyint(1) UNSIGNED NOT NULL default '0',
+	`hide_no_data` tinyint(1) default 0,
 	PRIMARY KEY(`id_rc`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -1262,6 +1263,7 @@ UPDATE tagente_modulo SET cron_interval = '' WHERE cron_interval LIKE '%    %';
 ALTER TABLE tgraph ADD COLUMN `percentil` int(4) unsigned default '0';
 ALTER TABLE tgraph ADD COLUMN `summatory_series` tinyint(1) UNSIGNED NOT NULL default '0';
 ALTER TABLE tgraph ADD COLUMN `average_series`  tinyint(1) UNSIGNED NOT NULL default '0';
+ALTER TABLE tgraph ADD COLUMN `modules_series`  tinyint(1) UNSIGNED NOT NULL default '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tnetflow_filter`
@@ -1312,6 +1314,7 @@ ALTER TABLE tmetaconsole_agent ADD COLUMN `cascade_protection_module` int(10) de
 ALTER TABLE tmetaconsole_agent ADD COLUMN `transactional_agent` tinyint(1) NOT NULL default '0';
 ALTER TABLE tmetaconsole_agent ADD COLUMN `alias` VARCHAR(600) not null DEFAULT '';
 ALTER TABLE tmetaconsole_agent ADD COLUMN `alias_as_name` int(2) unsigned default '0';
+ALTER TABLE tmetaconsole_agent ADD COLUMN `safe_mode_module` int(10) unsigned NOT NULL default '0';
 
 UPDATE `tmetaconsole_agent` SET tmetaconsole_agent.alias = tmetaconsole_agent.nombre;
 -- ---------------------------------------------------------------------
@@ -1432,6 +1435,7 @@ ALTER TABLE tserver_export MODIFY `name` varchar(600) BINARY NOT NULL default ''
 -- ---------------------------------------------------------------------
 
 ALTER TABLE tgraph_source ADD COLUMN id_server int(11) UNSIGNED NOT NULL default 0;
+ALTER TABLE tgraph_source ADD COLUMN `field_order` int(10) NOT NULL default 0;
 
 -- ---------------------------------------------------------------------
 -- Table `tserver_export_data`

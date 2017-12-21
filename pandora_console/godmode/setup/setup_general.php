@@ -188,7 +188,7 @@ $table->data[32][0] = __('Server logs directory') . ui_print_help_tip (__("Direc
 $table->data[32][1] = html_print_input_text ('server_log_dir',
 	$config["server_log_dir"], '', 50, 255, true);
 
-$table->data[33][0] = __('Log size limit in system logs viewer extension') . ui_print_help_tip (__("Maximun size to show in system log extension."), true);
+$table->data[33][0] = __('Log size limit in system logs viewer extension') . ui_print_help_tip (__("Max size (in bytes) for the logs to be shown."), true);
 $table->data[33][1] = html_print_input_text ('max_log_size',
 	$config["max_log_size"], '', 10, 255, true) . html_print_label(" x1000", "max_log_size", true);
 
@@ -209,8 +209,8 @@ $table->data[34][0] = __('Allow create planned downtimes in the past') .
 $table->data[34][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('past_planned_downtimes', 1, '', $config["past_planned_downtimes"], true).'&nbsp;&nbsp;';
 $table->data[34][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('past_planned_downtimes', 0, '', $config["past_planned_downtimes"], true);
 
-$table->data[35][0] = __('Limit parameters bulk') .
-	ui_print_help_tip(__('Your PHP environment is setted with %d max_input_vars. Maybe you must not set this value with upper values.', ini_get("max_input_vars")), true);
+$table->data[35][0] = __('Limit for bulk operations') .
+	ui_print_help_tip(__('Your PHP environment is set to 1000 max_input_vars. This parameter should have the same value or lower.', ini_get("max_input_vars")), true);
 $table->data[35][1] = html_print_input_text('limit_parameters_massive',
 	$config['limit_parameters_massive'], '', 10, 10, true);
 

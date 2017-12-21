@@ -67,7 +67,7 @@ if ($snmpwalk) {
 		$snmp3_security_level, $snmp3_auth_method, $snmp3_auth_pass,
 		$snmp3_privacy_method, $snmp3_privacy_pass, 0, ".1.3.6.1.2.1.4.34.1.3", $tcp_port,
 		$server_to_exec);
-
+	
 	// Build a [<interface id>] => [<interface ip>] array
 	if (!empty($snmp_int_ip)) {
 		foreach ($snmp_int_ip as $key => $value) {
@@ -92,7 +92,7 @@ if ($snmpwalk) {
 	$snmpis = array_merge(($snmpis === false ? array() : $snmpis), ($ifxitems === false ? array() : $ifxitems));
 	
 	$interfaces = array();
-
+	
 	// We get here only the interface part of the MIB, not full mib
 	foreach($snmpis as $key => $snmp) {
 		
@@ -106,10 +106,17 @@ if ($snmpwalk) {
 		}
 		
 		if (array_key_exists(1,$data)) {
-			$interfaces[$keydata2[1]][$keydata2[0]]['type'] = $data[0];
-			$interfaces[$keydata2[1]][$keydata2[0]]['value'] = $data[1];
-		}
-		else {
+			// Fixed for switch dell powerconnect
+			if(count($data) > 2) {
+				$interfaces[$keydata2[1]][$keydata2[0]]['type'] = $data[0];
+				unset($data[0]);
+				$interfaces[$keydata2[1]][$keydata2[0]]['value'] = implode(": ",$data);
+			} else {
+				$interfaces[$keydata2[1]][$keydata2[0]]['type'] = $data[0];
+				$interfaces[$keydata2[1]][$keydata2[0]]['value'] = $data[1];
+			}
+			
+		} else {
 			$interfaces[$keydata2[1]][$keydata2[0]]['type'] = '';
 			$interfaces[$keydata2[1]][$keydata2[0]]['value'] = $data[0];
 		}
@@ -542,7 +549,7 @@ if (!empty($interfaces_list)) {
 	$table->data[0][1] = '';
 	$table->data[0][2] = '<b>'.__('Modules').'</b>';
 	
-	$table->data[1][0] = html_print_select ($interfaces_list, 'id_snmp[]', 0, false, '', '', true, true, true, '', false, 'width:200px;');
+	$table->data[1][0] = html_print_select ($interfaces_list, 'id_snmp[]', 0, false, '', '', true, true, true, '', false, 'width:500px;');
 	$table->data[1][1] = html_print_image('images/darrowright.png', true);
 	$table->data[1][2] = html_print_select (array (), 'module[]', 0, false, '', 0, true, true, true, '', false, 'width:200px;');
 	$table->data[1][2] .= html_print_input_hidden('agent', $id_agent, true);

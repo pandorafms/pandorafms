@@ -106,13 +106,11 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 	</head>
 	<body bgcolor="#ffffff" style='background:#ffffff;'>
 		<?php
-		
+
 		// Module id
 		$id = (int) get_parameter ("id", 0);
 		// Agent id
 		$agent_id = (int) modules_get_agentmodule_agent($id);
-		// Kind module
-		$type_module = modules_get_agentmodule_kind($id);
 		
 		if (empty($id) || empty($agent_id)) {
 			ui_print_error_message(__('There was a problem locating the source of the graph'));
@@ -141,15 +139,15 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 		
 		$draw_alerts = get_parameter("draw_alerts", 0);
 
-		if(isset($config['only_average'])){
+		if(isset($config['only_average']) && $config['only_average']){
 			$avg_only = 1;
 		} 
 		else {
 			$avg_only = 0;
 		}
-
+		
 		$show_other = get_parameter('show_other');
-		if (isset($show_other)) {
+		if (isset($show_other) && $show_other) {
 			$avg_only = $show_other;
 		}
 
@@ -171,7 +169,6 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 		$time_compare_overlapped = get_parameter ("time_compare_overlapped", 0);
 		$unknown_graph = get_parameter_checkbox ("unknown_graph", 1);
 
-		//$type_module == 'predictionserver';
 		$fullscale_sent = get_parameter ("fullscale_sent", 0);
 		if(!$fullscale_sent){
 			if(!isset($config['full_scale_option']) || $config['full_scale_option'] == 0){
@@ -289,7 +286,7 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 		$params = array();
 		// TOP TEXT
 		//Use the no_meta parameter because this image is only in the base console
-		$params['top_text'] = "<div style='color: white; width: 100%; text-align: center; font-weight: bold; vertical-align: top;'>" . html_print_image('images/wrench_blanco.png', true, array('width' => '16px'), false, false, true) . ' ' . __('Pandora FMS Graph configuration menu') . "</div>";
+		$params['top_text'] =  "<div style='color: white; width: 100%; text-align: center; font-weight: bold; vertical-align: top;'>" . html_print_image('images/wrench_blanco.png', true, array('width' => '16px'), false, false, true) . ' ' . __('Pandora FMS Graph configuration menu') . ui_print_help_icon ("graphs",true, $config["homeurl"], "images/help_w.png") . "</div>";
 		$params['body_text'] = "<div class='menu_sidebar_outer'>";
 		$params['body_text'] .=__('Please, make your changes and apply with the <i>Reload</i> button');
 		
@@ -423,14 +420,12 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 				break;
 		}
 
-		if($type_module != 'predictionserver'){
-			$data = array();
-			$data[0] = __('Show full scale graph (TIP)');
-			$data[1] = html_print_checkbox ("fullscale", 1, (bool) $fullscale, 
-									true, false);
-			$table->data[] = $data;
-			$table->rowclass[] = '';
-		}
+		$data = array();
+		$data[0] = __('Show full scale graph (TIP)');
+		$data[1] = html_print_checkbox ("fullscale", 1, (bool) $fullscale, 
+								true, false);
+		$table->data[] = $data;
+		$table->rowclass[] = '';
 		
 		$form_table = html_print_table($table, true);
 		

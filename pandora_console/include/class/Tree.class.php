@@ -23,6 +23,7 @@ class Tree {
 	protected $filter = array();
 	protected $childrenMethod = "on_demand";
 
+	protected $userGroupsACL;
 	protected $userGroups;
 
 	protected $strictACL = false;
@@ -36,43 +37,27 @@ class Tree {
 		$this->id = $id;
 		$this->rootID = !empty($rootID) ? $rootID : $id;
 		$this->serverID = $serverID;
-		$this->childrenMethod = $childrenMethod;		
-		$this->access = $access;		
-		
-		$userGroups = users_get_groups(false, $this->access);
+		$this->childrenMethod = $childrenMethod;
+		$this->access = $access;
 
-		if (empty($userGroups))
-			$this->userGroups = false;
-		else
-			$this->userGroups = $userGroups;
+		$userGroupsACL = users_get_groups(false, $this->access);
+		$this->userGroupsACL = empty($userGroupsACL) ? false : $userGroupsACL;
+		$this->userGroups = $this->userGroupsACL;
 
 		global $config;
 		include_once($config['homedir']."/include/functions_servers.php");
 		include_once($config['homedir']."/include/functions_modules.php");
 		require_once($config['homedir']."/include/functions_tags.php");
 
-		if (is_metaconsole())
-			enterprise_include_once("meta/include/functions_ui_meta.php");
+		if (is_metaconsole()) enterprise_include_once("meta/include/functions_ui_meta.php");
 
 		$this->strictACL = (bool) db_get_value("strict_acl", "tusuario", "id_user", $config['id_user']);
 		
 		$this->acltags = tags_get_user_module_and_tags($config['id_user'], $this->access);
 	}
 
-	public function setType($type) {
-		$this->type = $type;
-	}
-
 	public function setFilter($filter) {
 		$this->filter = $filter;
-	}
-
-	public function isStrict () {
-		return $this->strictACL;
-	}
-
-	public function setStrict ($value) {
-		$this->strictACL = (bool) $value;
 	}
 
 	protected function getAgentStatusFilter ($status = -1) {
@@ -323,7 +308,7 @@ class Tree {
 			case 'group':
 				// ACL Group
 				$user_groups_str = "-1";
-				$group_acl =  "";
+				$group_filter =  "";
 				if (!$this->strictACL) {
 					if (empty($this->userGroups)) {
 						return;
@@ -338,7 +323,7 @@ class Tree {
 					// Asking for all groups.
 					else {
 						$user_groups_str = implode(",", array_keys($this->userGroups));
-						$group_acl = "AND ta.id_grupo IN ($user_groups_str)";
+						$group_filter = "AND ta.id_grupo IN ($user_groups_str)";
 					}
 				}
 				else {
@@ -356,7 +341,7 @@ class Tree {
 							}
 						}
 					}
-					$group_acl = "AND ta.id_grupo IN ($user_groups_str)";
+					$group_filter = "AND ta.id_grupo IN ($user_groups_str)";
 				}
 
 				switch ($type) {
@@ -390,7 +375,7 @@ class Tree {
 													$module_status_join
 													WHERE ta.disabled = 0
 														AND ta.id_grupo = $item_for_count
-														$group_acl
+														$group_filter
 														$agent_search_filter
 														$agent_status_filter";
 									$sql = $this->getAgentCountersSql($agent_table);
@@ -411,7 +396,7 @@ class Tree {
 													FROM tmetaconsole_agent ta
 													WHERE ta.disabled = 0
 														AND ta.id_grupo = $item_for_count
-														$group_acl
+														$group_filter
 														$agent_search_filter
 														$agent_status_filter";
 									$sql = $this->getAgentCountersSql($agent_table);
@@ -439,7 +424,7 @@ class Tree {
 										$module_status_join
 										WHERE ta.disabled = 0
 											AND ta.id_grupo = $rootID
-											$group_acl
+											$group_filter
 											$agent_search_filter
 											$agent_status_filter
 										GROUP BY $group_by_fields
@@ -456,7 +441,7 @@ class Tree {
 										FROM tmetaconsole_agent ta
 										WHERE ta.disabled = 0
 											AND ta.id_grupo = $rootID
-											$group_acl
+											$group_filter
 											$agent_search_filter
 											$agent_status_filter
 										ORDER BY $order_fields";
@@ -498,7 +483,7 @@ class Tree {
 									ON ta.disabled = 0
 										AND tam.id_agente = ta.id_agente
 										AND ta.id_grupo = $rootID
-										$group_acl
+										$group_filter
 										$agent_search_filter
 										$agent_status_filter
 								WHERE tam.disabled = 0
@@ -1123,7 +1108,8 @@ class Tree {
 		if (empty($data))
 			return array();
 
-		if ($this->type == 'agent') {
+		// [26/10/2017] It seems the module hierarchy should be only available into the tree by group
+		if ($this->rootType == 'group' && $this->type == 'agent') {
 			$data = $this->getProcessedModules($data);
 		}
 
@@ -1866,6 +1852,25 @@ class Tree {
 		}
 	}
 
+	private static function extractGroupsWithIDs ($groups, $ids_hash) {
+		$result_groups = array();
+		foreach ($groups as $group) {
+			if (isset($ids_hash[$group['id']])) {
+				$result_groups[] = $group;
+			}
+			else if (!empty($group['children'])) {
+				$result = self::extractGroupsWithIDs($group['children'], $ids_hash);
+
+				// Item found on children
+				if (!empty($result)) {
+					$result_groups = array_merge($result_groups, $result);
+				}
+			}
+		}
+
+		return $result_groups;
+	}
+
 	private static function extractItemWithID ($items, $item_id, $item_type = "group", $strictACL = false) {
 		foreach ($items as $item) {
 			if ($item["type"] != $item_type)
@@ -2155,14 +2160,33 @@ class Tree {
 
 			$processed_items = $this->getProcessedGroups($items, true);
 
-			// groupID filter. To access the view from tactical views f.e.
-			if (!empty($processed_items) && !empty($this->filter['groupID'])) {
-				$result = self::extractItemWithID($processed_items, $this->filter['groupID'], "group", $this->strictACL);
+			if (!empty($processed_items)) {
+				// Filter by group name. This should be done after rerieving the items cause we need the possible items descendants
+				if (!empty($this->filter['searchGroup'])) {
+					// Save the groups which intersect with the user groups
+					$groups = db_get_all_rows_filter('tgrupo', array('nombre' => '%' . $this->filter['searchGroup'] . '%'));
+					if ($groups == false) $groups = array();
+					$userGroupsACL = $this->userGroupsACL;
+					$ids_hash = array_reduce($groups, function ($userGroups, $group) use ($userGroupsACL) {
+						$group_id = $group['id_grupo'];
+						if (isset($userGroupsACL[$group_id])) {
+							$userGroups[$group_id] = $userGroupsACL[$group_id];
+						}
+						
+						return $userGroups;
+					}, array());
+					
+					$result = self::extractGroupsWithIDs($processed_items, $ids_hash);
+					
+					$processed_items = ($result === false) ? array() : $result;
+				}
+				
+				// groupID filter. To access the view from tactical views f.e.
+				if (!empty($this->filter['groupID'])) {
+					$result = self::extractItemWithID($processed_items, $this->filter['groupID'], "group", $this->strictACL);
 
-				if ($result === false)
-					$processed_items = array();
-				else
-					$processed_items = array($result);
+					$processed_items = ($result === false) ? array() : array($result);
+				}
 			}
 		}
 		// Agents

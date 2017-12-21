@@ -1192,6 +1192,7 @@ CREATE TABLE IF NOT EXISTS `tgraph` (
 	`percentil` tinyint(1) UNSIGNED NOT NULL default 0,
 	`summatory_series` tinyint(1) UNSIGNED NOT NULL default 0,
 	`average_series` tinyint(1) UNSIGNED NOT NULL default 0,
+	`modules_series` tinyint(1) UNSIGNED NOT NULL default 0,
 	PRIMARY KEY(`id_graph`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -1205,6 +1206,7 @@ CREATE TABLE IF NOT EXISTS `tgraph_source` (
 	`id_agent_module` int(11) NOT NULL default 0,
 	`weight` float(8,3) NOT NULL DEFAULT 0,
 	`label` varchar(150) DEFAULT '',
+	`field_order` int(10) DEFAULT 0,
 	PRIMARY KEY(`id_gs`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -1717,6 +1719,7 @@ CREATE TABLE IF NOT EXISTS `tsnmp_filter` (
 	`id_snmp_filter` int(10) unsigned NOT NULL auto_increment,
 	`description` varchar(255) default '',
 	`filter` varchar(255) default '',
+	`unified_filters_id` int(10) not null default 0,
 	PRIMARY KEY  (`id_snmp_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -2740,6 +2743,7 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	`lapse_calc` tinyint(1) UNSIGNED NOT NULL default '0',
 	`lapse` int(11) UNSIGNED NOT NULL default '300',
 	`visual_format` tinyint(1) UNSIGNED NOT NULL default '0',
+	`hide_no_data` tinyint(1) default 0,
 	PRIMARY KEY(`id_rc`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -2971,6 +2975,7 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_agent` (
 	`transactional_agent` tinyint(1) NOT NULL default '0',
 	`alias` varchar(600) BINARY NOT NULL default '',
 	`alias_as_name` tinyint(2) NOT NULL default '0',
+	`safe_mode_module` int(10) unsigned NOT NULL default '0',
 	PRIMARY KEY  (`id_agente`),
 	KEY `nombre` (`nombre`(255)),
 	KEY `direccion` (`direccion`),

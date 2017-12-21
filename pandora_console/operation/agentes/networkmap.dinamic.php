@@ -18,7 +18,13 @@
 global $config;
 
 check_login ();
-$id = get_parameter('id_networkmap', true);
+if (_id_ != "_id_") {
+	$id = _id_;
+}
+else {
+	$id = get_parameter('id_networkmap', true);
+}
+
 $activeTab = get_parameter('activeTab', true);
 
 if (enterprise_installed()) {
@@ -29,6 +35,11 @@ if (enterprise_installed()) {
 	if ($tab) {
 		$activeTab = $tab;
 	}
+}
+
+if (_activeTab_ != "_activeTab_") {
+	$activeTab = _activeTab_;
+	$tab = $activeTab;
 }
 
 // Networkmap id required
@@ -107,6 +118,11 @@ ui_print_page_header(io_safe_output($networkmap['name']),
 global $width;
 global $height;
 
+if (_id_ != "_id_") {
+	$width = array();
+	$height = array();
+}
+
 if (empty($width)) {
 	$width = 600;
 }
@@ -120,11 +136,20 @@ if ($activeTab == "radial_dynamic") {
 	echo "<div style='width: auto; text-align: center;'>";
 	
 	$filter = array();
-	if (!empty($group))
-		$filter['group'] = $group;
-	if (!empty($module_group))
+	if ($networkmap['source'] == 0) {
+		$filter['group'] = $networkmap['source_data'];
+	}
+	$map_filter = json_decode($networkmap['filter'], true);
+	if (isset($map_filter['dont_show_subgroups']) && $map_filter['dont_show_subgroups']) {
+		$filter['dont_show_subgroups'] = true;
+	}
+	else {
+		$filter['dont_show_subgroups'] = false;
+	}
+	if (!empty($module_group)) {
 		$filter['module_group'] = $module_group;
-	
+	}
+
 	echo graph_monitor_wheel($width, $height, $filter, $strict_user);
 	
 	echo "</div>";

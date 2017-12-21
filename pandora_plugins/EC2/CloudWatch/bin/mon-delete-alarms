@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+if [ -n "${AWS_CLOUDWATCH_HOME:+x}" ]; then
+        ${AWS_CLOUDWATCH_HOME}/bin/mon-cmd mon-delete-alarms "$@"
+else
+        echo AWS_CLOUDWATCH_HOME is not set
+        exit 1
+fi

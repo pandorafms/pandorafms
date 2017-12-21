@@ -2104,7 +2104,7 @@ if ($resultOperationDB !== null) {
 			$err.='';
 			break;
 	}
-	ui_print_result_message ($resultOperationDB, __('Successfull action'), __('Unsuccessfull action<br><br>'.$err));
+	ui_print_result_message ($resultOperationDB, __('Successfull action'), __('Unsuccessful action<br><br>'.$err));
 }
 
 switch ($activeTab) {

@@ -112,8 +112,10 @@ if (enterprise_installed()) {
 			__('Succesfully created'), __('Could not be created'), '',
 			true);
 		
-		// Force the tab = 'list'
-		$tab = "list";
+		$id = $result;
+		define("_id_", $id);
+
+		$tab = "view";
 	}
 	else if ($update_empty_networkmap) {
 		$id_group = (int) get_parameter('id_group', 0);
@@ -216,6 +218,16 @@ if ($new_networkmap || $save_networkmap) {
 		$offset_x = get_parameter('pos_x');
 		$offset_y = get_parameter('pos_y');
 		$scale_z = get_parameter('scale_z', 0.5);
+
+		$node_sep = get_parameter('node_sep', "0.25");
+		if ($method == "twopi") {
+			$rank_sep = get_parameter('rank_sep', "1.0");
+		}
+		else {
+			$rank_sep = get_parameter('rank_sep', "0.5");
+		}
+		$mindist = get_parameter('mindist', "1.0");
+		$kval = get_parameter('kval', "0.3");
 		
 		$values = array();
 		$values['name'] = $name;
@@ -276,6 +288,11 @@ if ($new_networkmap || $save_networkmap) {
 		$filter['x_offs'] = $offset_x;
 		$filter['y_offs'] = $offset_y;
 		$filter['z_dash'] = $scale_z;
+		$filter['node_sep'] = $node_sep;
+		$filter['rank_sep'] = $rank_sep;
+		$filter['mindist'] = $mindist;
+		$filter['kval'] = $kval;
+
 		$values['filter'] = json_encode($filter);
 		
 		$result = false;
@@ -290,8 +307,13 @@ if ($new_networkmap || $save_networkmap) {
 		
 		$id = $result;
 		define("_id_", $id);
-		// Force the tab = 'view'
+
 		$tab = "view";
+
+		if ($values['generation_method'] == 6) {
+			$tab = "r_dinamic";
+			define("_activeTab_", 'radial_dynamic');
+		}
 	}
 }
 // The networkmap exists
@@ -340,7 +362,6 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
 		}
 		
 		$name = (string) get_parameter('name', '');
-		$method = (string) get_parameter('method', 'fdp');
 		
 		$recon_task_id = (int) get_parameter(
 			'recon_task_id', 0);
@@ -354,30 +375,6 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
 		$values = array();
 		$values['name'] = $name;
 		$values['id_group'] = $id_group;
-
-		switch ($method) {
-			case 'twopi':
-				$values['generation_method'] = 2;
-				break;
-			case 'dot':
-				$values['generation_method'] = 1;
-				break;
-			case 'circo':
-				$values['generation_method'] = 0;
-				break;
-			case 'neato':
-				$values['generation_method'] = 3;
-				break;
-			case 'fdp':
-				$values['generation_method'] = 4;
-				break;
-			case 'radial_dinamic':
-				$values['generation_method'] = 6;
-				break;
-			default:
-				$values['generation_method'] = 2;
-				break;
-		}
 
 		$description = get_parameter('description', '');
 		$values['description'] = $description;
@@ -433,6 +430,9 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
 }
 
 switch ($tab) {
+	case 'r_dinamic':
+		require('networkmap.dinamic.php');
+		break;
 	case 'edit':
 		require('pandora_networkmap.editor.php');
 		break;

@@ -204,10 +204,11 @@ $(document).ready (function () {
 	
 	var metaconsole = null;
 	function is_metaconsole() {
+		
 		if (metaconsole === null)
 			metaconsole = $("input[name='metaconsole']").val();
 
-		if (metaconsole != 0)
+		if (metaconsole != 0 && metaconsole != undefined)
 			return true;
 		else
 			return false;
@@ -326,7 +327,9 @@ $(document).ready (function () {
 	var size_changer_state = false;
 
 	$("#background").change(function() {
+		
 		$('#imagen2').attr('src', url_hack_metaconsole + 'images/console/background/'+$('#background').val());
+		
 		$('#imagen2').width(230);
 		$('#imagen2').show();		
 	});

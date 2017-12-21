@@ -196,10 +196,10 @@ sub pandora_snmptrapd {
 	my ($pa_config, $line, $server_id, $dbh) = @_;
 
 	(my $trap_ver, $line) = split(/\[\*\*\]/, $line, 2);
-
+print STDERR "ANTES";
 	# Process SNMP filter
 	next if (matches_filter ($dbh, $pa_config, $line) == 1);
-
+print STDERR "DESPUES";
 	logger($pa_config, "Reading trap '$line'", 10);
 	my ($date, $time, $source, $oid, $type, $type_desc, $value, $data) = ('', '', '', '', '', '', '', '');
 
@@ -345,22 +345,34 @@ sub pandora_snmptrapd {
 sub matches_filter ($$$) {
 	my ($dbh, $pa_config, $string) = @_;
 	
-	# Get filters
-	my @filters = get_db_rows ($dbh, 'SELECT filter FROM tsnmp_filter');
-	foreach my $filter (@filters) {
-		my $regexp = safe_output($filter->{'filter'}) ;
-		my $eval_result;
+	my @filter_unique_functions = get_db_rows ($dbh, 'SELECT DISTINCT(unified_filters_id) FROM tsnmp_filter ORDER BY unified_filters_id');
+	
+	foreach my $filter_unique_func (@filter_unique_functions) {
+		# Get filters
+		my @filters = get_db_rows ($dbh, 'SELECT filter FROM tsnmp_filter WHERE unified_filters_id = ' . $filter_unique_func->{'unified_filters_id'});
+		
+		my $eval_acum = 1;
+		foreach my $filter (@filters) {
+			my $regexp = safe_output($filter->{'filter'}) ;
+			my $eval_result;
 
-		# eval protects against server down (by invalid regular expressions)
-	    $eval_result = eval {
-		     $string =~ m/$regexp/i ;
-     	        };
+			# eval protects against server down (by invalid regular expressions)
+			$eval_result = eval {
+				$string =~ m/$regexp/i ;
+			};
 
-	    if ($eval_result) {
-		logger($pa_config, "Trap '$string' matches filter '$regexp'. Discarding...", 10);
-		return 1;
-	    }
-
+			if ($eval_result && $eval_acum) {
+				$eval_acum = 1;
+			}
+			else {
+				$eval_acum = 0;
+				last;
+			}
+		}
+		
+		if ($eval_acum) {
+			return 1;
+		}
 	}
 	
 	return 0;

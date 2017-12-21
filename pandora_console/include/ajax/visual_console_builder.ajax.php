@@ -750,6 +750,7 @@ switch ($action) {
 					// Don't change the label because only change the positions
 					unset($values['label']);
 					unset($values['label_position']);
+					// Don't change this values when move
 					unset($values['id_agent']);
 					unset($values['id_agente_modulo']);
 					unset($values['enable_link']);

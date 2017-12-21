@@ -2301,7 +2301,7 @@ function ui_get_url_refresh ($params = false, $relative = true, $add_post = true
 	
 	$url = htmlspecialchars ($url);
 	
-	$url = io_safe_input($url);
+	$url = io_safe_input ($url);
 
 	if (! $relative) {
 		return ui_get_full_url ($url);

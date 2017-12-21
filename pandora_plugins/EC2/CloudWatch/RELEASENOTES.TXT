@@ -1,0 +1,54 @@
+Amazon CloudWatch Command Line Tools
+===============================
+
+CloudWatch CLI version 1.0.13.4 (API 2010-08-01)
+=================================================
+* Added the mon-put-data command to put metric data into Cloudwatch
+* CLI script now restores the parent script echo settings in windows
+
+CloudWatch CLI version 1.0.9.5 (API 2010-08-01)
+=================================================
+
+Config changes
+--------------
+* Updated to use the new API version
+* Modified the syntax of existing commands to reflect the new API
+* --measure-name is now --metric-name for mon-get-stats
+* Added filtering for mon-list-metrics
+* Added multiple APIs for Alarms
+
+CloudWatch CLI version 1.0.2.3 (API 2009-05-15)
+=================================================
+* Minor Fixes
+
+CloudWatch CLI version 1.0.0.24 (API 2009-05-15)
+=================================================
+* Fixed output of exponential numbers
+
+CloudWatch CLI version 1.0.0.22 (API 2009-05-15)
+=================================================
+* Fixed default start-time and end-time timezone.
+
+CloudWatch CLI version 1.0-1 (API 2009-05-15)
+=================================================
+
+Config changes
+--------------
+* Environment var MONITORING_HOME has been renamed to
+   AWS_CLOUDWATCH_HOME
+* Environment var MONITORING_URL has been renamed to
+   AWS_CLOUDWATCH_URL
+
+Command changes
+---------------
+* bin/mon has been removed.
+* bin/service has been renamed bin/mon-cmd.
+* All commands now have default 555 permissions.
+* For all command line options which accept a list of args, args
+  must now be separated by ",".
+* --accesskeyid has been renamed to --access-key-id
+* --secretkey has been renamed to --secret-key
+* All short options for optional arguments have been removed
+
+CloudWatch CLI version 1.0 (API 2009-05-15)
+=================================================

@@ -624,7 +624,7 @@ $table_other->data['custom_report_front-logo'][0] =  __('Custom report front') .
 $table_other->data['custom_report_front-logo'][1] = html_print_select(
 	$customLogos,
 	'custom_report_front_logo',
-	$config['custom_report_front_logo'],
+	io_safe_output($config['custom_report_front_logo']),
 	'showPreview()',
 	__('Default'),
 	'',

@@ -121,8 +121,8 @@ echo '<br />';
 echo '<div style="font-family: lato, "Helvetica Neue", Helvetica, Arial, sans-serif; color: #515151;">';
 echo __('Remote Management System');
 echo '</div>';
-echo '<a target="_blank" rel="noopener noreferrer" href="http://ehorus.com">';
-echo 'http://ehorus.com';
+echo '<a target="_blank" rel="noopener noreferrer" href="https://ehorus.com">';
+echo 'https://ehorus.com';
 echo '</a>';
 echo '</div>';
 

@@ -562,6 +562,41 @@ echo "</fieldset>";
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
+// Visual Consoles
+//----------------------------------------------------------------------
+$table_vc = new stdClass();
+$table_vc->width = '100%';
+$table_vc->class = "databox filters";
+$table_vc->style[0] = 'font-weight: bold';
+$table_vc->size[0] = '50%';
+$table_vc->data = array ();
+
+$vc_favourite_view_array[0] = 'Classic view';
+$vc_favourite_view_array[1] = 'View of favorites';
+$table_vc->data[$row][0] = __('Type of view of visual consoles') . 
+								ui_print_help_tip(__('Allows you to directly display the list of favorite visual consoles'), true);
+$table_vc->data[$row][1] = html_print_select($vc_favourite_view_array, 'vc_favourite_view', $config["vc_favourite_view"], '', '', 0, true);
+$row++;
+
+$table_vc->data[$row][0] = __('Number of favorite visual consoles to show in the menu') . 
+								ui_print_help_tip(__('If the number is 0 it will not show the pull-down menu and maximum 25 favorite consoles'), true);
+//$table_vc->data[$row][1] = html_print_input_text ('vc_menu_items', $config["vc_menu_items"], '', 5, 5, true);
+$table_vc->data[$row][1] = "<input type ='number' value=".$config["vc_menu_items"]." size='5' name='vc_menu_items' min='0' max='25'>";
+$row++;
+
+if (empty($config["vc_line_thickness"])) $config["vc_line_thickness"] = 2;
+$table_vc->data[$row][0] = __('Default line thickness for the Visual Console') . 
+								ui_print_help_tip(__('This interval will affect to the lines between elements on the Visual Console'), true);
+$table_vc->data[$row][1] = html_print_input_text ('vc_line_thickness', $config["vc_line_thickness"], '', 5, 5, true);
+
+
+echo "<fieldset>";
+echo "<legend>" . __('Visual consoles configuration') . "</legend>";
+	html_print_table ($table_vc);
+echo "</fieldset>";	
+
+
+//----------------------------------------------------------------------
 // OTHER CONFIGURATION
 //----------------------------------------------------------------------
 $table_other = new stdClass();
@@ -570,11 +605,6 @@ $table_other->class = "databox filters";
 $table_other->style[0] = 'font-weight: bold;';
 $table_other->size[0] = '50%';
 $table_other->data = array ();
-
-if (empty($config["vc_line_thickness"])) $config["vc_line_thickness"] = 2;
-$table_other->data[$row][0] = __('Default line thickness for the Visual Console') . ui_print_help_tip(__('This interval will affect to the lines between elements on the Visual Console'), true);
-$table_other->data[$row][1] = html_print_input_text ('vc_line_thickness', $config["vc_line_thickness"], '', 5, 5, true);
-$row++;
 
 // Enrique (27/01/2017) New feature: Show report info on top of reports
 $table_other->data[$row][0] = __('Show report info with description') .

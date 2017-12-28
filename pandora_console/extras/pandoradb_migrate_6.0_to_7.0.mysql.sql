@@ -1234,6 +1234,7 @@ UPDATE tagente SET tagente.alias = tagente.nombre;
 -- Table `tlayout`
 -- ---------------------------------------------------------------------
 ALTER TABLE tlayout ADD `background_color` varchar(50) NOT NULL default '#FFF';
+ALTER TABLE tlayout ADD `is_favourite` int(1) NOT NULL DEFAULT 0;
 
 -- ---------------------------------------------------------------------
 -- Table `tlayout_data`

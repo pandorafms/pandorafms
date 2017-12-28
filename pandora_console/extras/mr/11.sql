@@ -1,0 +1,5 @@
+START TRANSACTION;
+
+ALTER TABLE `tlayout` ADD `is_favourite` int(1) NOT NULL DEFAULT 0;
+
+COMMIT;

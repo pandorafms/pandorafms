@@ -526,8 +526,13 @@ function config_update_config () {
 
 					if (!config_update_value ('vc_refr', get_parameter('vc_refr')))
 						$error_update[] = __('Default interval for refresh on Visual Console');
+					if (!config_update_value ('vc_favourite_view', (int) get_parameter('vc_favourite_view', 0)))
+						$error_update[] = __('Default line favourite_view for the Visual Console');
+					if (!config_update_value ('vc_menu_items', (int) get_parameter('vc_menu_items', 10)))
+						$error_update[] = __('Default line menu items for the Visual Console');
 					if (!config_update_value ('vc_line_thickness', (int) get_parameter('vc_line_thickness')))
 						$error_update[] = __('Default line thickness for the Visual Console');
+
 					if (!config_update_value ('agent_size_text_small', get_parameter('agent_size_text_small')))
 						$error_update[] = __('Agent size text');
 					if (!config_update_value ('agent_size_text_medium', get_parameter('agent_size_text_medium')))

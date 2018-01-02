@@ -3364,7 +3364,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
  *
  * @return array A list of layouts the user can see.
  */
-function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter = false, $returnAllGroup = true) {
+function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter = false, $returnAllGroup = true, $favourite = false) {
 	if (! is_array ($filter)){
 		$filter = array ();
 	} else {
@@ -3373,7 +3373,20 @@ function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter
 			unset($filter['name']);
 		}
 	}
-			
+
+	if($favourite){
+		if (empty($where)){
+			$where = "";
+		}
+		
+		if ($where != '') {
+			$where .= ' AND ';
+		}
+
+		$where .= "is_favourite = 1";
+	}
+
+
 	if ($returnAllGroup) {
 		$groups = users_get_groups ($id_user, 'VR');
 	} else {

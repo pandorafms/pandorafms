@@ -177,6 +177,9 @@ $table->data[5][1] .= '<span class="opt" style="visibility:hidden;">
 			value="modsize">' . __('Get default image size') . 
 			'</button></span>';
 
+$table->data[6][0] = __('Fovourite visual console');
+$table->data[6][1] = html_print_checkbox('is_favourite', 0, $is_favourite, true);
+
 if ($action == 'new') {
 	$textButtonSubmit = __('Save');
 	$classButtonSubmit = 'sub wand';
@@ -378,6 +381,22 @@ $(document).ready (function () {
 	});
 		
 	$("#text-background_color").attachColorPicker();
+
+	if($("#checkbox-is_favourite").is(":checked")) {
+		$("#hidden-is_favourite_sent").val(1);
+	}
+	else{
+		$("#hidden-is_favourite_sent").val(0);
+	}
+
+	$("#checkbox-is_favourite").change(function(){
+		if($(this).is(":checked")) {
+			$("#hidden-is_favourite_sent").val(1);
+		}
+		else{
+			$("#hidden-is_favourite_sent").val(0);
+		}
+	});
 
 });
 

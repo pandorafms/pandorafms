@@ -43,7 +43,7 @@ ob_start ('ui_process_page_head');
 // Enterprise main
 enterprise_include ('index.php');
 
-require ('include/functions_visual_map.php');
+require_once ('include/functions_visual_map.php');
 
 $hash = get_parameter ('hash');
 $id_layout = (int) get_parameter ('id_layout');

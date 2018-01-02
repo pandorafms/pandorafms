@@ -1334,6 +1334,7 @@ CREATE TABLE IF NOT EXISTS `tlayout` (
 	`height` INTEGER UNSIGNED NOT NULL default 0,
 	`width` INTEGER UNSIGNED NOT NULL default 0,
 	`background_color` varchar(50) NOT NULL default '#FFF',
+	`is_favourite` INTEGER UNSIGNED NOT NULL default 0,
 	PRIMARY KEY(`id`)
 )  ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

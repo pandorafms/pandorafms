@@ -4379,3 +4379,84 @@ div#footer_help{
 	fill: none;
 	transition: all 2s ease-in-out;
 }
+
+#is_favourite ul.container{
+	display: flex;
+	flex-direction: row;
+	flex-flow: row wrap;
+	align-content: center;
+	justify-content: center;
+}
+
+#is_favourite ul.container a {
+	text-decoration: none;
+}
+
+#is_favourite ul.container a:hover li {
+	background: #E2E2E2;
+}
+
+#is_favourite ul.container a li{
+	min-width: 250px;
+    height: 80px;
+	margin: 10px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	background: #f9faf9;
+}
+
+#is_favourite ul.container a li div.icon_img{
+	width: 30%;
+	text-align: center;
+}
+
+#is_favourite ul.container a li div.text{
+	min-width: 50%;
+	font-family: Verdana;
+	font-size: 18px;
+	color: #3F3F3F;
+	text-align: center;
+}
+
+form ul.form_flex{
+	display: flex;
+	flex-direction: row;
+	flex-flow: row wrap;
+	align-content: center;
+	justify-content: space-around;
+	border: 1px solid #e2e2e2;
+	border-radius: 5px;
+	padding: 20px;
+	background: #f9faf9;
+}
+
+form ul.form_flex li{
+	flex: auto;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+form ul.form_flex li.first_elements{
+	min-width: 550px;
+}
+
+form ul.form_flex li.second_elements{
+	min-width: 300px;
+}
+
+form ul.form_flex li ul{
+	display: flex;
+	flex-direction: row;
+	justify-content: space-around;
+}
+
+form ul.form_flex li ul{
+	flex-basis: 100%;
+}
+
+form ul.form_flex li ul li{
+	height: 50px;
+	width: 100%;
+}

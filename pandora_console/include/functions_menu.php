@@ -379,7 +379,7 @@ function menu_print_menu (&$menu) {
 					$display .= "top: " . $top . "px;'";
 				}
 				//Add submenu2 to submenu string
-				$submenu_output .= "<ul id='sub" . str_replace(' ','_',$sub["id"]) . "' class=submenu2 $display>";
+				$submenu_output .= "<ul id='sub" . str_replace(' ','_',$sub["id"]) . "' class=submenu2>";
 				$submenu_output .= $submenu2_list;
 				$submenu_output .= "</ul>";
 			}

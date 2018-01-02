@@ -1470,3 +1470,9 @@ INSERT INTO ttipo_modulo VALUES (25,'web_analysis', 8, 'Web analysis data', 'mod
 -- Table `tdashboard`
 -- ---------------------------------------------------------------------
 ALTER TABLE `tdashboard` ADD COLUMN `cells_slideshow` TINYINT(1) NOT NULL default 0;
+
+-- ---------------------------------------------------------------------
+-- Table `tsnmp_filter`
+-- ---------------------------------------------------------------------
+SELECT max(unified_filters_id) INTO @max FROM tsnmp_filter;
+UPDATE tsnmp_filter tsf,(SELECT @max:= @max) m SET tsf.unified_filters_id = @max:= @max + 1 where tsf.unified_filters_id=0;

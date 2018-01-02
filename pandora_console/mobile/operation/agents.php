@@ -98,26 +98,41 @@ class Agents {
 		$system = System::getInstance();
 		$user = User::getInstance();
 		
+		// Default
+		$filters = array(
+			'free_search' => '',
+			'status' => -1,
+			'group' => 0
+		);
+		
+		$serialized_filters = (string) $system->getRequest('agents_filter');
+		if (!empty($serialized_filters)) {
+			$filters_unsafe = json_decode(base64_decode($serialized_filters, true), true);
+			if ($filters_unsafe) $filters = $system->safeInput($filters_unsafe);
+		}
+		
 		$this->default_filters['group'] = true;
 		$this->default_filters['status'] = true;
 		$this->default_filters['free_search'] = true;
 		
-		$this->free_search = $system->getRequest('free_search', '');
+		$this->free_search = $system->getRequest('free_search', $filters['free_search']);
 		if ($this->free_search != '') {
 			$this->default = false;
 			$this->default_filters['free_search'] = false;
+			$filters['free_search'] = $this->free_search;
 		}
 		
-		$this->status = $system->getRequest('status', __("Status"));
+		$this->status = $system->getRequest('status', $filters['status']);
 		if (($this->status === __("Status")) || ($this->status == -1)) {
 			$this->status = -1;
 		}
 		else {
 			$this->default = false;
 			$this->default_filters['status'] = false;
+			$filters['status'] = (int) $this->status;
 		}
 		
-		$this->group = (int)$system->getRequest('group', __("Group"));
+		$this->group = (int)$system->getRequest('group', $filters['group']);
 		if (!$user->isInGroup($this->acl, $this->group)) {
 			$this->group = 0;
 		}
@@ -127,6 +142,12 @@ class Agents {
 		else {
 			$this->default = false;
 			$this->default_filters['group'] = false;
+			$filters['group'] = $this->group;
+		}
+		
+		if (!empty($filters)) {
+			// Store the filter
+			$this->serializedFilters = base64_encode(json_encode($system->safeOutput($filters)));
 		}
 	}
 	
@@ -216,6 +237,7 @@ class Agents {
 		$agents = array();
 		
 		$search_sql = '';
+		
 		if (!empty($this->free_search)) {
 			$search_sql = " AND (
 				alias COLLATE utf8_general_ci LIKE '%" . $this->free_search . "%'
@@ -306,9 +328,10 @@ class Agents {
 			
 			$img_alert = agents_tree_view_alert_img ($agent["fired_count"]);
 			
+			$serialized_filters_q_param = empty($this->serializedFilters) ? '' : '&agents_filter=' . $this->serializedFilters;
 			
 			$row[0] = $row[__('Agent')] = '<span class="tiny" style="margin-right: 5px;">' . $img_status . '</span>' . 
-				'<a class="ui-link" data-ajax="false" href="index.php?page=agent&id=' . $agent['id_agente'] . '">' . ui_print_truncate_text(io_safe_output($agent['alias']), 30, false) . '</a>';
+				'<a class="ui-link" data-ajax="false" href="index.php?page=agent&id=' . $agent['id_agente'] . $serialized_filters_q_param . '">' . ui_print_truncate_text($agent['alias'], 30, false) . '</a>';
 			//~ $row[1] = $row[__('Description')] = '<span class="small">' .
 				//~ ui_print_truncate_text($agent["description"], 'description', false, true) .
 				//~ '</span>';

@@ -180,7 +180,7 @@ if ($create_user) {
 		$values["data_section"] = $dashboard;
 	} else if (io_safe_output($values['section']) == 'Visual console') {
 		$values["data_section"] = $visual_console;
-	} else if ($values['section'] == 'Other'){
+	} else if ($values['section'] == 'Other' || io_safe_output($values['section']) == 'External link'){
 		$values["data_section"] = get_parameter ('data_section');
 	}
 	
@@ -236,8 +236,6 @@ if ($create_user) {
 			case "postgresql":
 				$result = create_user($id, $password_new, $values);
 				if ($result) {
-					db_process_sql_insert ('tsesion', array('id_sesion' => '','id_usuario' => $id,'ip_origen' => $_SERVER['REMOTE_ADDR'],'accion' => 'Password&#x20;change',
-					'descripcion' => 'Access password updated','fecha' => date("Y-m-d H:i:s"),'utimestamp' => time()));
 					$res = save_pass_history($id, $password_new);
 				}
 				break;
@@ -306,7 +304,7 @@ if ($update_user) {
 		$values["data_section"] = $dashboard;
 	} else if (io_safe_output($values['section']) == 'Visual console') {
 		$values["data_section"] = $visual_console;
-	} else if ($values['section'] == 'Other'){
+	} else if ($values['section'] == 'Other' || io_safe_output($values['section']) == 'External link'){
 		$values["data_section"] = get_parameter ('data_section');
 	}
 	
@@ -349,7 +347,7 @@ if ($update_user) {
 					$res2 = update_user_password ($id, $password_new);
 					if ($res2) {
 						$res3 = save_pass_history($id, $password_new);
-												db_process_sql_insert ('tsesion', array('id_sesion' => '','id_usuario' => $id,'ip_origen' => $_SERVER['REMOTE_ADDR'],'accion' => 'Password&#x20;change',
+						db_process_sql_insert ('tsesion', array('id_sesion' => '','id_usuario' => $id,'ip_origen' => $_SERVER['REMOTE_ADDR'],'accion' => 'Password&#x20;change',
 						'descripcion' => 'Access password updated','fecha' => date("Y-m-d H:i:s"),'utimestamp' => time()));
 					}
 					ui_print_result_message ($res1 || $res2,
@@ -358,6 +356,8 @@ if ($update_user) {
 				}
 			}
 			else {
+				db_process_sql_insert ('tsesion', array('id_sesion' => '','id_usuario' => $id,'ip_origen' => $_SERVER['REMOTE_ADDR'],'accion' => 'Password&#x20;change',
+				'descripcion' => 'Access password update failed','fecha' => date("Y-m-d H:i:s"),'utimestamp' => time()));
 				ui_print_error_message (__('Passwords does not match'));
 			}
 		}
@@ -570,6 +570,7 @@ $values = array (
 	'Group view'=>__('Group view'),
 	'Tactical view'=>__('Tactical view'),
 	'Alert detail' => __('Alert detail'),
+	'External link' => __('External link'),
 	'Other'=>__('Other'));
 if (enterprise_installed() && !is_metaconsole()) {
 	$values['Dashboard'] = __('Dashboard');
@@ -867,6 +868,11 @@ function show_data_section () {
 			break;
 		case <?php echo "'" . 'Alert detail' . "'"; ?>:
 			$("#text-data_section").css("display", "none");
+			$("#dashboard").css("display", "none");
+			$("#visual_console").css("display", "none");
+			break;
+		case <?php echo "'" . 'External link' . "'"; ?>:
+			$("#text-data_section").css("display", "");
 			$("#dashboard").css("display", "none");
 			$("#visual_console").css("display", "none");
 			break;

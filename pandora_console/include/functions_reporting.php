@@ -1572,14 +1572,18 @@ function reporting_event_report_module($report, $content,
 	$event_graph_by_user_validator        = $event_filter['event_graph_by_user_validator'];
 	$event_graph_by_criticity             = $event_filter['event_graph_by_criticity'];
 	$event_graph_validated_vs_unvalidated = $event_filter['event_graph_validated_vs_unvalidated'];
-
+	
+	$id_server = false;
+	if(is_metaconsole()){
+		$id_server = metaconsole_get_id_server($content["server_name"]);
+	}
 	//data events
 	$data = reporting_get_module_detailed_event (
 		$content['id_agent_module'], $content['period'], $report["datetime"], 
 		$show_summary_group, $filter_event_severity, $filter_event_type, 
 		$filter_event_status, $filter_event_filter_search, $force_width_chart,
 		$event_graph_by_user_validator, $event_graph_by_criticity, 
-		$event_graph_validated_vs_unvalidated, $ttl);
+		$event_graph_validated_vs_unvalidated, $ttl, $id_server);
 
 	if (empty($data)) {
 		$return['failed'] = __('No events');
@@ -6513,7 +6517,13 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 				$labels,
 				false,
 				false,
-				$graph["percentil"]
+				$graph["percentil"],
+				false,
+				false,
+				false,
+				$graph["summatory_series"],
+				$graph["average_series"],
+				$graph["modules_series"]
 			);
 			break;
 		case 'data':
@@ -6803,7 +6813,7 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0,
 	$filter_event_type = false, $filter_event_status = false, 
 	$filter_event_filter_search = false, $force_width_chart = false,
 	$event_graph_by_user_validator = false, $event_graph_by_criticity = false, 
-	$event_graph_validated_vs_unvalidated = false, $ttl = 1) {
+	$event_graph_validated_vs_unvalidated = false, $ttl = 1, $id_server = false) {
 	
 	global $config;
 	
@@ -6826,8 +6836,8 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0,
 		$event['data'] = events_get_agent (false, (int) $period, (int) $date, 
 			$history, $show_summary_group, $filter_event_severity, 
 			$filter_event_type, $filter_event_status, $filter_event_filter_search, 
-			false, false, $id_module, true);
-
+			false, false, $id_module, true , $id_server);
+			
 		//total_events
 		if(isset($event['data'])){
 			$event['total_events'] = count($event['data']);
@@ -7797,6 +7807,10 @@ function reporting_get_stats_modules_status($data, $graph_width = 250, $graph_he
 		$urls['monitor_not_init'] = $links['monitor_not_init'];
 	}
 	
+	// Fixed width non interactive charts
+	$status_chart_width = $config["flash_charts"] == false
+		? 100 : $graph_width;
+
 	// Modules by status table
 	$table_mbs = html_get_predefined_table();
 	
@@ -7836,7 +7850,7 @@ function reporting_get_stats_modules_status($data, $graph_width = 250, $graph_he
 		$table_mbs->colspan[count($table_mbs->data)][0] = 4;
 		$table_mbs->cellstyle[count($table_mbs->data)][0] = 'text-align: center;';
 		$tdata[0] = '<div id="outter_status_pie" style="height: ' . $graph_height . 'px">' .
-			'<div id="status_pie" style="margin: auto; width: ' . $graph_width . 'px;">' .
+			'<div id="status_pie" style="margin: auto; width: ' . $status_chart_width . 'px;">' .
 				graph_agent_status(false, $graph_width, $graph_height, true, true, $data_agents) .
 			'</div></div>';
 		$table_mbs->rowclass[] = '';

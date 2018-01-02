@@ -147,11 +147,11 @@ $(document).ready (function () {
 			$( "#license_error_msg_dialog" ).dialog({
 				dialogClass: "no-close",
 				closeOnEscape: false,
-				resizable: true,
+				resizable: false,
 				draggable: true,
 				modal: true,
-				height: 350,
-				width: 720,
+				height: 450,
+				width: 850,
 				overlay: {
 					opacity: 0.5,
 					background: "black"

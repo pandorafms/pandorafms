@@ -249,7 +249,7 @@ if ($update_pressed || $open_filter) {
 unset($table);
 
 $filters = events_get_event_filter_select();
-$user_groups_array = users_get_groups_for_select($config["id_user"], $access, users_can_manage_group_all(), true, false);
+$user_groups_array = users_get_groups_for_select($config["id_user"], $access, true, true, false);
 
 // Some translated words to be used from javascript
 html_print_div(array('hidden' => true,

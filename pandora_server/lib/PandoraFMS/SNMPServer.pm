@@ -196,10 +196,10 @@ sub pandora_snmptrapd {
 	my ($pa_config, $line, $server_id, $dbh) = @_;
 
 	(my $trap_ver, $line) = split(/\[\*\*\]/, $line, 2);
-print STDERR "ANTES";
+
 	# Process SNMP filter
 	next if (matches_filter ($dbh, $pa_config, $line) == 1);
-print STDERR "DESPUES";
+
 	logger($pa_config, "Reading trap '$line'", 10);
 	my ($date, $time, $source, $oid, $type, $type_desc, $value, $data) = ('', '', '', '', '', '', '', '');
 

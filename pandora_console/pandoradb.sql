@@ -1192,6 +1192,7 @@ CREATE TABLE IF NOT EXISTS `tgraph` (
 	`percentil` tinyint(1) UNSIGNED NOT NULL default 0,
 	`summatory_series` tinyint(1) UNSIGNED NOT NULL default 0,
 	`average_series` tinyint(1) UNSIGNED NOT NULL default 0,
+	`modules_series` tinyint(1) UNSIGNED NOT NULL default 0,
 	PRIMARY KEY(`id_graph`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -1205,7 +1206,7 @@ CREATE TABLE IF NOT EXISTS `tgraph_source` (
 	`id_agent_module` int(11) NOT NULL default 0,
 	`weight` float(8,3) NOT NULL DEFAULT 0,
 	`label` varchar(150) DEFAULT '',
-	`order` int(10) DEFAULT 0,
+	`field_order` int(10) DEFAULT 0,
 	PRIMARY KEY(`id_gs`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -1334,6 +1335,7 @@ CREATE TABLE IF NOT EXISTS `tlayout` (
 	`height` INTEGER UNSIGNED NOT NULL default 0,
 	`width` INTEGER UNSIGNED NOT NULL default 0,
 	`background_color` varchar(50) NOT NULL default '#FFF',
+	`is_favourite` INTEGER UNSIGNED NOT NULL default 0,
 	PRIMARY KEY(`id`)
 )  ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

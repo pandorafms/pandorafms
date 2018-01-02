@@ -388,7 +388,7 @@ $table->data['edit0'][3] .= html_print_checkbox ("dynamic_two_tailed", 1, '', tr
 
 $table->data['edit1'][0] = __('Warning status');
 $table->data['edit1'][1] = '<table width="100%">';
-	$table->data['edit1'][1] .= '<tr>';
+	$table->data['edit1'][1] .= "<tr id='edit1-1-min'>";
 		$table->data['edit1'][1] .= '<td>';
 			$table->data['edit1'][1] .= '<em>' . __('Min.') . '</em>';
 		$table->data['edit1'][1] .= '</td>';
@@ -397,7 +397,7 @@ $table->data['edit1'][1] = '<table width="100%">';
 				'min_warning', '', '', 5, 255, true);
 		$table->data['edit1'][1] .= '</td>';
 	$table->data['edit1'][1] .= '</tr>';
-	$table->data['edit1'][1] .= '<tr>';
+	$table->data['edit1'][1] .= "<tr id='edit1-1-max'>";
 		$table->data['edit1'][1] .= '<td>';
 			$table->data['edit1'][1] .= '<em>' . __('Max.') . '</em>';
 		$table->data['edit1'][1] .= '</td>';
@@ -406,7 +406,7 @@ $table->data['edit1'][1] = '<table width="100%">';
 				'max_warning', '', '', 5, 255, true);
 		$table->data['edit1'][1] .= '</td>';
 	$table->data['edit1'][1] .= '</tr>';
-	$table->data['edit1'][1] .= '<tr>';
+	$table->data['edit1'][1] .= "<tr id='edit1-1-str'>";
 		$table->data['edit1'][1] .= '<td>';
 			$table->data['edit1'][1] .= '<em>' . __('Str.') . '</em>';
 		$table->data['edit1'][1] .= '</td>';
@@ -434,8 +434,8 @@ $table->data['edit1'][1] .= '</table>';
 
 $table->data['edit1'][2] = __('Critical status');
 $table->data['edit1'][3] = '<table width="100%">';
-	$table->data['edit1'][3] .= '<tr>';
-		$table->data['edit1'][3] .= '<td>';
+	$table->data['edit1'][3] .= "<tr id='edit1-3-min'>";
+		$table->data['edit1'][3] .= "<td>";
 			$table->data['edit1'][3] .= '<em>' . __('Min.') . '</em>';
 		$table->data['edit1'][3] .= '</td>';
 		$table->data['edit1'][3] .= '<td align="right">';
@@ -443,7 +443,7 @@ $table->data['edit1'][3] = '<table width="100%">';
 				'min_critical', '', '', 5, 255, true);
 		$table->data['edit1'][3] .= '</td>';
 	$table->data['edit1'][3] .= '</tr>';
-	$table->data['edit1'][3] .= '<tr>';
+	$table->data['edit1'][3] .= "<tr id='edit1-3-max'>";
 		$table->data['edit1'][3] .= '<td>';
 			$table->data['edit1'][3] .= '<em>' . __('Max.') . '</em>';
 		$table->data['edit1'][3] .= '</td>';
@@ -452,7 +452,7 @@ $table->data['edit1'][3] = '<table width="100%">';
 				'max_critical', '', '', 5, 255, true);
 		$table->data['edit1'][3] .= '</td>';
 	$table->data['edit1'][3] .= '</tr>';
-	$table->data['edit1'][3] .= '<tr>';
+	$table->data['edit1'][3] .= "<tr id='edit1-3-str'>";
 		$table->data['edit1'][3] .= '<td>';
 			$table->data['edit1'][3] .= '<em>'.__('Str.').'</em>';
 		$table->data['edit1'][3] .= '</td>';
@@ -807,6 +807,64 @@ $(document).ready (function () {
 			"tr#delete_table-edit13, " +
 			"tr#delete_table-edit14, " +
 			"tr#delete_table-edit15").show ();
+		
+		switch($('#module_type').val()) {
+	    case '3':
+			case '23':
+			case '33':
+				$("#edit1-1-min,#edit1-1-max,#edit1-3-min,#edit1-3-max,#delete_table-edit15," +
+					"#delete_table-edit3-2,#delete_table-edit3-3,#delete_table-edit35").hide();
+				$("#edit1-1-str,#edit1-3-str").show();
+				break;
+			case '6':
+			case '7':
+				$("#edit1-1-min,#edit1-1-max,#edit1-3-min,#edit1-3-max").show();
+				$("#edit1-1-str,#edit1-3-str,#delete_table-edit15,#delete_table-edit3-2," +
+					"#delete_table-edit3-3,#delete_table-edit35-2,#delete_table-edit35-3," +
+					"#delete_table-edit5").hide();
+				break;
+			case '8':
+			case '9':
+			case '11':
+				$("#edit1-1-min,#edit1-1-max,#edit1-3-min,#edit1-3-max").show();
+				$("#edit1-1-str,#edit1-3-str,#delete_table-edit15,#delete_table-edit3-2," +
+					"#delete_table-edit3-3,#delete_table-edit35-2,#delete_table-edit35-3," +
+					"#delete_table-edit5").hide();
+				break;
+			case '10':
+				$("#edit1-1-str,#edit1-3-str").show();
+				$("#edit1-1-str,#edit1-3-str,#delete_table-edit15,#delete_table-edit3-2," +
+					"#delete_table-edit3-3,#delete_table-edit35-2,#delete_table-edit35-3," +
+					"#delete_table-edit5").hide();
+				break;
+			case '15':
+			case '16':
+			case '18':
+				$("#edit1-1-min,#edit1-1-max,#edit1-3-min,#edit1-3-max").show();
+				$("#edit1-1-str,#edit1-3-str,#delete_table-edit5").hide();
+				break;
+			case '17':
+				$("#edit1-1-str,#edit1-3-str").show();
+				$("#edit1-1-min,#edit1-1-max,#edit1-3-min,#edit1-3-max,#delete_table-edit5").hide();
+				break;
+			case '1':
+			case '2':
+			case '4':
+			case '5':
+			case '21':
+			case '22':
+			case '24':
+			case '25':
+			case '30':
+			case '31':
+			case '32':
+			case '100':
+				$("#edit1-1-min,#edit1-1-max,#edit1-3-min,#edit1-3-max").show();
+				$("#edit1-1-str,#edit1-3-str,#delete_table-edit15,#delete_table-edit3-2," +
+				"#delete_table-edit3-3,#delete_table-edit35").hide();
+				break;
+	    default:
+			}
 	}
 	
 	function clean_lists() {

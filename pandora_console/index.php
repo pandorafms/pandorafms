@@ -544,6 +544,7 @@ if (! isset ($config['id_user'])) {
 				exit ("</html>");
 			}
 		}
+			header("Location: ".$config['homeurl']."index.php?sec=".$_GET["sec"]."&sec2=".$_GET["sec2"]);
 	}
 	// Hash login process
 	elseif (isset ($_GET["loginhash"])) {
@@ -583,6 +584,10 @@ if (! isset ($config['id_user'])) {
 			if ($pass1 == $pass2) {
 				$res = update_user_password ($id_user, $pass1);
 				if ($res) {
+					
+					db_process_sql_insert ('tsesion', array('id_sesion' => '','id_usuario' => $id_user,'ip_origen' => $_SERVER['REMOTE_ADDR'],'accion' => 'Reset&#x20;change',
+					'descripcion' => 'Successful reset password process ','fecha' => date("Y-m-d H:i:s"),'utimestamp' => time()));
+					
 					$correct_reset_pass_process = __('Password changed successfully');
 
 					register_pass_change_try($id_user, 1);
@@ -675,6 +680,7 @@ if (! isset ($config['id_user'])) {
 							}
 						}
 						else {
+							
 							$cod_hash = $user_reset_pass . "::::" . md5(rand(10, 1000000) . rand(10, 1000000) . rand(10, 1000000));
 
 							$subject = '[Pandora] '.__('Reset password');
@@ -714,6 +720,29 @@ if (! isset ($config['id_user'])) {
 	}
 }
 else {
+	
+	if ( ($_GET["loginhash_data"])  && ($_GET["loginhash_data"])) {
+
+        $loginhash_data = get_parameter("loginhash_data", "");
+        $loginhash_user = str_rot13(get_parameter("loginhash_user", ""));
+        $iduser = $_SESSION["id_usuario"];
+        //logoff_db ($iduser, $_SERVER["REMOTE_ADDR"]); check why is not available
+        unset($_SESSION["id_usuario"]);
+        unset($iduser);
+
+        if ($config["loginhash_pwd"] != "" && $loginhash_data == md5($loginhash_user.io_output_password($config["loginhash_pwd"]))) {
+            db_logon ($loginhash_user, $_SERVER['REMOTE_ADDR']);
+            $_SESSION['id_usuario'] = $loginhash_user;
+            $config["id_user"] = $loginhash_user;
+        }
+        else {
+            require_once ('general/login_page.php');
+            db_pandora_audit("Logon Failed (loginhash", "", "system");
+            while (@ob_end_flush ());
+            exit ("</html>");
+        }
+    }
+
 	$user_in_db = db_get_row_filter('tusuario', 
 		array('id_user' => $config['id_user']), '*');
 	if ($user_in_db == false) {

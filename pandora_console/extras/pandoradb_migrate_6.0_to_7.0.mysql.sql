@@ -1234,6 +1234,7 @@ UPDATE tagente SET tagente.alias = tagente.nombre;
 -- Table `tlayout`
 -- ---------------------------------------------------------------------
 ALTER TABLE tlayout ADD `background_color` varchar(50) NOT NULL default '#FFF';
+ALTER TABLE tlayout ADD `is_favourite` int(1) NOT NULL DEFAULT 0;
 
 -- ---------------------------------------------------------------------
 -- Table `tlayout_data`
@@ -1263,6 +1264,7 @@ UPDATE tagente_modulo SET cron_interval = '' WHERE cron_interval LIKE '%    %';
 ALTER TABLE tgraph ADD COLUMN `percentil` int(4) unsigned default '0';
 ALTER TABLE tgraph ADD COLUMN `summatory_series` tinyint(1) UNSIGNED NOT NULL default '0';
 ALTER TABLE tgraph ADD COLUMN `average_series`  tinyint(1) UNSIGNED NOT NULL default '0';
+ALTER TABLE tgraph ADD COLUMN `modules_series`  tinyint(1) UNSIGNED NOT NULL default '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tnetflow_filter`
@@ -1435,7 +1437,7 @@ ALTER TABLE tserver_export MODIFY `name` varchar(600) BINARY NOT NULL default ''
 -- ---------------------------------------------------------------------
 
 ALTER TABLE tgraph_source ADD COLUMN id_server int(11) UNSIGNED NOT NULL default 0;
-ALTER TABLE tgraph_source ADD COLUMN `order` int(10) NOT NULL default 0;
+ALTER TABLE tgraph_source ADD COLUMN `field_order` int(10) NOT NULL default 0;
 
 -- ---------------------------------------------------------------------
 -- Table `tserver_export_data`
@@ -1469,3 +1471,9 @@ INSERT INTO ttipo_modulo VALUES (25,'web_analysis', 8, 'Web analysis data', 'mod
 -- Table `tdashboard`
 -- ---------------------------------------------------------------------
 ALTER TABLE `tdashboard` ADD COLUMN `cells_slideshow` TINYINT(1) NOT NULL default 0;
+
+-- ---------------------------------------------------------------------
+-- Table `tsnmp_filter`
+-- ---------------------------------------------------------------------
+SELECT max(unified_filters_id) INTO @max FROM tsnmp_filter;
+UPDATE tsnmp_filter tsf,(SELECT @max:= @max) m SET tsf.unified_filters_id = @max:= @max + 1 where tsf.unified_filters_id=0;

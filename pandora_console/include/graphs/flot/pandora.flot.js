@@ -942,6 +942,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				filled = false;
 				steps_chart = false
 				break;
+			case 'unknown':
 			case 'boolean':
 				line_show = true;
 				points_show = false;
@@ -1606,6 +1607,12 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	
 	// Adjust the overview plot to the width and position of the main plot
 	adjust_left_width_canvas(graph_id, 'overview_'+graph_id);
+	update_left_width_canvas(graph_id); 
+
+	// Adjust overview when main chart is resized
+	$('#'+graph_id).resize(function(){
+		update_left_width_canvas(graph_id);
+	});
 
 	// Adjust linked graph to the width and position of the main plot
 
@@ -1772,9 +1779,11 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 
 				if (timesize+timenewpos > canvaslimit) {
 					$('#timestamp_'+graph_id).css('left', timenewpos - timesize);
+					$('#timestamp_'+graph_id).css('top', 50);
 				}
 				else {
 					$('#timestamp_'+graph_id).css('left', timenewpos);
+					$('#timestamp_'+graph_id).css('top', 50);
 				}
 			}
 			else {
@@ -1817,24 +1826,16 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 		plot.unhighlight();
 		if (item && item.series.label != '' && (item.series.label == legend_events || item.series.label == legend_events+series_suffix_str || item.series.label == legend_alerts || item.series.label == legend_alerts+series_suffix_str)) {
 			plot.unhighlight();
-			var canvaslimit = parseInt(plot.offset().left + plot.width());
 			var dataset  = plot.getData();
-			var timenewpos = parseInt(dataset[0].xaxis.p2c(pos.x)+plot.offset().left);
-			var extrasize = parseInt($('#extra_'+graph_id).css('width').split('px')[0]);
-
-			var left_pos;
-			if (extrasize+timenewpos > canvaslimit) {
-				left_pos = timenewpos - extrasize - 20;
-			}
-			else {
-				left_pos = timenewpos - (extrasize / 2);
-			}
 
 			var extra_info = '<i>No info to show</i>';
 			var extra_show = false;
 
-			$('#extra_'+graph_id).css('left',left_pos);
-			$('#extra_'+graph_id).css('top',plot.offset().top + 25);
+			var coord_x = (item.dataIndex/item.series.xaxis.datamax)* (event.target.clientWidth - event.target.offsetLeft + 1) + event.target.offsetLeft;
+
+
+			$('#extra_'+graph_id).css('left',coord_x);
+			$('#extra_'+graph_id).css('top', event.target.offsetTop + 55 );
 
 			switch(item.series.label) {
 				case legend_alerts+series_suffix_str:
@@ -2142,6 +2143,12 @@ function adjust_left_width_canvas(adapter_id, adapted_id) {
 	
 	$('#'+adapted_id).width(new_adapted_width);
 	$('#'+adapted_id).css('margin-left', adapter_left_margin);
+}
+
+
+function update_left_width_canvas(graph_id) {
+	$('#overview_'+graph_id).width($('#'+graph_id).width() - 30);
+	$('#overview_'+graph_id).css('margin-left', $('#'+graph_id+' .yAxis .tickLabel').width());
 }
 
 function check_adaptions(graph_id) {

@@ -185,7 +185,6 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 	include_javascript_dependencies_flot_graph();
 
 	$menu = (int)$menu;
-	
 	// Get a unique identifier to graph
 	$graph_id = uniqid('graph_');
 	
@@ -338,7 +337,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 	}
 	
 	foreach ($chart_data as $label => $values) {
-		$labels[] = io_safe_output($label);
+		$labels[] = $label;
 		
 		foreach($values as $key => $value) {
 			$jsvar = "data_" . $graph_id . "_" . $key;
@@ -499,6 +498,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 	else {
 		$short_data = false;
 	}
+	
 	
 	// Javascript code
 	$return .= "<script type='text/javascript'>";
@@ -716,7 +716,7 @@ function flot_hcolumn_chart ($graph_data, $width, $height, $water_mark, $font = 
 	$data = array();
 	
 	foreach ($graph_data as $label => $values) {
-		$labels[] = io_safe_output($label);
+		$labels[] = $label;
 		$i--;
 		
 		foreach ($values as $key => $value) {
@@ -818,7 +818,7 @@ function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $lon
 	$max = 0;
 	$i = count($graph_data);
 	foreach ($graph_data as $label => $values) {
-		$labels[] = io_safe_output($label);
+		$labels[] = $label;
 		$i--;
 		
 		foreach ($values as $key => $value) {
@@ -942,7 +942,7 @@ function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $
 	$c = 0;
 	$acumulate_data = array();
 	foreach ($graph_data as $label => $values) {
-		$labels[] = io_safe_output($label);
+		$labels[] = $label;
 		$i--;
 		
 		foreach ($values as $key => $value) {

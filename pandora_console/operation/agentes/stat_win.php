@@ -106,13 +106,11 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 	</head>
 	<body bgcolor="#ffffff" style='background:#ffffff;'>
 		<?php
-		
+
 		// Module id
 		$id = (int) get_parameter ("id", 0);
 		// Agent id
 		$agent_id = (int) modules_get_agentmodule_agent($id);
-		// Kind module
-		$type_module = modules_get_agentmodule_kind($id);
 		
 		if (empty($id) || empty($agent_id)) {
 			ui_print_error_message(__('There was a problem locating the source of the graph'));
@@ -141,15 +139,15 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 		
 		$draw_alerts = get_parameter("draw_alerts", 0);
 
-		if(isset($config['only_average'])){
+		if(isset($config['only_average']) && $config['only_average']){
 			$avg_only = 1;
 		} 
 		else {
 			$avg_only = 0;
 		}
-
+		
 		$show_other = get_parameter('show_other');
-		if (isset($show_other)) {
+		if (isset($show_other) && $show_other) {
 			$avg_only = $show_other;
 		}
 
@@ -171,7 +169,6 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 		$time_compare_overlapped = get_parameter ("time_compare_overlapped", 0);
 		$unknown_graph = get_parameter_checkbox ("unknown_graph", 1);
 
-		//$type_module == 'predictionserver';
 		$fullscale_sent = get_parameter ("fullscale_sent", 0);
 		if(!$fullscale_sent){
 			if(!isset($config['full_scale_option']) || $config['full_scale_option'] == 0){
@@ -207,9 +204,8 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 		if ($zoom > 1) {
 			$height = $height * ($zoom / 2.1);
 			$width = $width * ($zoom / 1.4);
-			
-			echo "<script type='text/javascript'>window.resizeTo($width + 80, $height + 120);</script>";
 		}
+		echo "<script type='text/javascript'>window.resizeTo($width + 190, $height + 260);</script>";
 		
 		// Build date
 		$date = strtotime("$start_date $start_time");
@@ -225,9 +221,9 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 		// log4x doesnt support flash yet
 		//
 		if ($config['flash_charts'] == 1)
-			echo '<div style="margin-left: 100px; padding-top: 10px;">';
+			echo '<div style="margin-left: 65px; padding-top: 10px;">';
 		else
-			echo '<div style="margin-left: 50px; padding-top: 10px;">';
+			echo '<div style="margin-left: 20px; padding-top: 10px;">';
 		
 		switch ($graph_type) {
 			case 'boolean':
@@ -289,7 +285,7 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 		$params = array();
 		// TOP TEXT
 		//Use the no_meta parameter because this image is only in the base console
-		$params['top_text'] = "<div style='color: white; width: 100%; text-align: center; font-weight: bold; vertical-align: top;'>" . html_print_image('images/wrench_blanco.png', true, array('width' => '16px'), false, false, true) . ' ' . __('Pandora FMS Graph configuration menu') . "</div>";
+		$params['top_text'] =  "<div style='color: white; width: 100%; text-align: center; font-weight: bold; vertical-align: top;'>" . html_print_image('images/wrench_blanco.png', true, array('width' => '16px'), false, false, true) . ' ' . __('Pandora FMS Graph configuration menu') . ui_print_help_icon ("graphs",true, $config["homeurl"], "images/help_w.png") . "</div>";
 		$params['body_text'] = "<div class='menu_sidebar_outer'>";
 		$params['body_text'] .=__('Please, make your changes and apply with the <i>Reload</i> button');
 		
@@ -423,14 +419,12 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 				break;
 		}
 
-		if($type_module != 'predictionserver'){
-			$data = array();
-			$data[0] = __('Show full scale graph (TIP)');
-			$data[1] = html_print_checkbox ("fullscale", 1, (bool) $fullscale, 
-									true, false);
-			$table->data[] = $data;
-			$table->rowclass[] = '';
-		}
+		$data = array();
+		$data[0] = __('Show full scale graph (TIP)');
+		$data[1] = html_print_checkbox ("fullscale", 1, (bool) $fullscale, 
+								true, false);
+		$table->data[] = $data;
+		$table->rowclass[] = '';
 		
 		$form_table = html_print_table($table, true);
 		
@@ -505,9 +499,9 @@ ui_include_time_picker(true);
 		var show_overview = false;
 		var height_window;
 		var width_window;
-		$(document).ready(function() {
-			height_window = $(window).height();
-			width_window = $(window).width();
+		$(window).ready(function() {
+			height_window = window.innerHeight;
+			width_window = window.innerWidth;
 		});
 		
 		$("*").filter(function() {
@@ -517,13 +511,12 @@ ui_include_time_picker(true);
 				return false;
 			}).click(function() {
 				if (show_overview) {
-					window.resizeTo(width_window + 20, height_window + 50);
+					window.resizeTo(width_window, height_window);
 				}
 				else {
-					window.resizeTo(width_window + 20, height_window + 200);
+					window.resizeTo(width_window, height_window + 150);
 				}
 				show_overview = !show_overview;
-				
 			});
 	<?php
 	}

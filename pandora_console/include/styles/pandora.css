@@ -3927,6 +3927,17 @@ div.login_logo_icon img{
 	margin: 0 auto;
 	width: 150px;
 }
+
+@keyframes login_move {
+    from {margin-left: 10%;margin-right: 10%;opacity:0.1}
+    to {margin-left: 5%;margin-right: 5%;opacity:1}
+}
+
+
+div.container_login{
+	animation-name: login_move;
+	animation-duration: 3s;
+}
 div.login_double_auth_code,
 div.login_nick,
 div.login_pass {

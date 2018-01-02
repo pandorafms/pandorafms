@@ -100,6 +100,13 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 				else {
 					$("#hidden-show_other").val(0);
 				}
+				// 
+				// if ($('#hidden-avg_only_sent').is(":checked") == true) {
+				// 	$("#hidden-avg_only_sent").val(1);
+				// }
+				// else {
+				// 	$("#hidden-avg_only_sent").val(0);
+				// }
 			}
 			//-->
 		</script>
@@ -139,18 +146,16 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 		
 		$draw_alerts = get_parameter("draw_alerts", 0);
 
-		if(isset($config['only_average']) && $config['only_average']){
-			$avg_only = 1;
-		} 
-		else {
-			$avg_only = 0;
+		if(isset($config['only_average'])){
+			$avg_only = $config['only_average'];
 		}
 		
-		$show_other = get_parameter('show_other');
-		if (isset($show_other) && $show_other) {
+		$show_other = get_parameter('show_other',-1);
+		
+		if ($show_other != -1) {
 			$avg_only = $show_other;
 		}
-
+		
 		$period = get_parameter ("period");
 		$id = get_parameter ("id", 0);
 		$width = get_parameter ("width", STATWIN_DEFAULT_CHART_WIDTH);

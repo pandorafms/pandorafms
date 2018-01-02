@@ -89,7 +89,7 @@ if ($update_filter > -2) {
 			$values = array(
 					'description' => $description,
 					'filter' => $filter,
-					'unified_filters_id' => 0);
+					'unified_filters_id' => $new_unified_id);
 				$result = db_process_sql_insert('tsnmp_filter', $values);
 		}
 		else {

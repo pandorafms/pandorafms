@@ -832,18 +832,22 @@ sub read_config (;$) {
 			config_update('agent_name', $Conf{'agent_name'});
 		} elsif ($Conf{'agent_name_cmd'} ne '') {
 			my $result = `$Conf{'agent_name_cmd'}`;
-	
-			# Use only the first line.
-			my ($temp_agent_name, $remain) = split(/\n/, $result);
-			chomp ($temp_agent_name);
-	
-			# Remove white spaces of the first and last.
-			$temp_agent_name =~ s/^ *(.*?) *$/$1/;
-	
-			$Conf{'agent_name'} = $temp_agent_name if ($temp_agent_name ne '');
-		} else {
-			$Conf{'agent_name'} = hostname();
+			if($result ne '') {
+				# Use only the first line.
+				my ($temp_agent_name, $remain) = split(/\n/, $result);
+				chomp ($temp_agent_name);
+		
+				# Remove white spaces of the first and last.
+				$temp_agent_name =~ s/^ *(.*?) *$/$1/;
+		
+				$Conf{'agent_name'} = $temp_agent_name if ($temp_agent_name ne '');
+			} 
 		}
+	}
+	
+	# Fall back to the hostname if agent_name is still empty.
+	if ($Conf{'agent_name'} eq '') {
+		$Conf{'agent_name'} = hostname();
 	}
 
 	# Update the agent MD5 since agent_name may have changed

@@ -351,6 +351,8 @@ function config_update_config () {
 						$error_update[] = __('Fallback to local authentication');
 					if (!config_update_value ('ldap_login_user_attr', get_parameter ('ldap_login_user_attr')))
 						$error_update[] = __('Login user attribute');
+					if (!config_update_value ('ldap_function', get_parameter ('ldap_function')))
+						$error_update[] = __('LDAP function');
 						
 					if (isset($config['fallback_local_auth']) && $config['fallback_local_auth'] == 0) {
 						if (!config_update_value ('ldap_save_password', get_parameter ('ldap_save_password')))
@@ -1369,6 +1371,10 @@ function config_process_config () {
 
 	if (!isset ($config['ldap_admin_pass'])) {
 		config_update_value ( 'ldap_admin_pass', '');
+	}
+	
+	if (!isset ($config['ldap_function'])) {
+		config_update_value ( 'ldap_function', 'local');
 	}
 	
 	if (!isset ($config['fallback_local_auth'])) {

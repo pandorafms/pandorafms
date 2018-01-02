@@ -204,9 +204,8 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 		if ($zoom > 1) {
 			$height = $height * ($zoom / 2.1);
 			$width = $width * ($zoom / 1.4);
-			
-			echo "<script type='text/javascript'>window.resizeTo($width + 80, $height + 120);</script>";
 		}
+		echo "<script type='text/javascript'>window.resizeTo($width + 190, $height + 260);</script>";
 		
 		// Build date
 		$date = strtotime("$start_date $start_time");
@@ -222,9 +221,9 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 		// log4x doesnt support flash yet
 		//
 		if ($config['flash_charts'] == 1)
-			echo '<div style="margin-left: 100px; padding-top: 10px;">';
+			echo '<div style="margin-left: 65px; padding-top: 10px;">';
 		else
-			echo '<div style="margin-left: 50px; padding-top: 10px;">';
+			echo '<div style="margin-left: 20px; padding-top: 10px;">';
 		
 		switch ($graph_type) {
 			case 'boolean':
@@ -500,9 +499,9 @@ ui_include_time_picker(true);
 		var show_overview = false;
 		var height_window;
 		var width_window;
-		$(document).ready(function() {
-			height_window = $(window).height();
-			width_window = $(window).width();
+		$(window).ready(function() {
+			height_window = window.innerHeight;
+			width_window = window.innerWidth;
 		});
 		
 		$("*").filter(function() {
@@ -512,13 +511,12 @@ ui_include_time_picker(true);
 				return false;
 			}).click(function() {
 				if (show_overview) {
-					window.resizeTo(width_window + 20, height_window + 50);
+					window.resizeTo(width_window, height_window);
 				}
 				else {
-					window.resizeTo(width_window + 20, height_window + 200);
+					window.resizeTo(width_window, height_window + 150);
 				}
 				show_overview = !show_overview;
-				
 			});
 	<?php
 	}

@@ -31,9 +31,10 @@ if ($save_custom_graph) {
 	$height = get_parameter('height', 0);
 	$events = get_parameter('events', 0);
 	$period = get_parameter('period', 0);
+	$fullscale = get_parameter('fullscale', 0);
 	
 	$result = (bool)custom_graphs_create($id_modules, $name,
-		$description, $stacked, $width, $height, $events, $period);
+		$description, $stacked, $width, $height, $events, $period, 0, 0, false, $fullscale);
 	
 	
 	$return['correct'] = $result;
@@ -64,6 +65,7 @@ if ($print_custom_graph) {
 	$ttl = (int) get_parameter('ttl', 1);
 	$dashboard = (bool) get_parameter('dashboard');
 	$vconsole = (bool) get_parameter('vconsole');
+	$fullscale = (bool) get_parameter('fullscale');
 
 	echo custom_graphs_print($id_graph, $height, $width, $period, $stacked,
 		true, $date, $only_image, $background_color, $modules_param,
@@ -103,13 +105,14 @@ if ($print_sparse_graph) {
 	$dashboard = (bool) get_parameter('dashboard');
 	$vconsole = (bool) get_parameter('vconsole');
 	$type_g = get_parameter('type_g', $config['type_module_charts']);
+	$fullscale = get_parameter('fullscale', 0);
 	
 	echo grafico_modulo_sparse($agent_module_id, $period, $show_events,
 		$width, $height , $title, $unit_name, $show_alerts, $avg_only,
 		$pure, $date, $unit, $baseline, $return_data, $show_title,
 		$only_image, $homeurl, $ttl, $projection, $adapt_key, $compare,
 		$show_unknown, $menu, $backgroundColor, $percentil,
-		$dashboard, $vconsole, $type_g);
+		$dashboard, $vconsole, $type_g, $fullscale);
 	return;
 }
 
@@ -192,7 +195,9 @@ if ($get_graphs){
 							null,
 							false,
 							false,
-							'area');
+							'area',
+							$value['fullscale']
+						);
 						$contador --;
 					}
 					// $table .= "</br>";
@@ -255,7 +260,10 @@ if ($get_graphs){
 							false,
 							false,
 							null,
-							false);
+							false,
+							false,
+							$value['fullscale']
+						);
 						$contador --;
 					}
 					break;
@@ -331,7 +339,9 @@ if ($get_graphs){
 								null,
 								false,
 								false,
-								'area');
+								'area',
+								$value['fullscale']
+							);
 							$contador --;
 						}
 					}

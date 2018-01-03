@@ -123,12 +123,11 @@ if($report_r && $report_w){
 					if(e.which == 13) {
 						var time = $('input[id *= hidden-period_container_'+hash+']').val();
 						get_graphs_container(id_container,hash,time);
-       				}
+					}
 				});
 			}
 		});
 	}
-	
 	
     $(document).ready (function () {
 		$('a[id *= tgl]').click(function(e) {

@@ -1193,6 +1193,7 @@ CREATE TABLE IF NOT EXISTS `tgraph` (
 	`summatory_series` tinyint(1) UNSIGNED NOT NULL default 0,
 	`average_series` tinyint(1) UNSIGNED NOT NULL default 0,
 	`modules_series` tinyint(1) UNSIGNED NOT NULL default 0,
+	`fullscale` tinyint(1) UNSIGNED NOT NULL default 0,
 	PRIMARY KEY(`id_graph`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

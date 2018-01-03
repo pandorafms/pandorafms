@@ -208,7 +208,7 @@ function reporting_make_reporting_data($report = null, $id_report,
 			}
 
 			if(sizeof($content['id_agent_module']) != 1){
-			 	$content['style']['name_label'] = str_replace("_module_",sizeof($content['id_agent_module']).__(' modules'),$content['style']['name_label']);
+				$content['style']['name_label'] = str_replace("_module_",sizeof($content['id_agent_module']).__(' modules'),$content['style']['name_label']);
 			}
 
 			$content['name'] = reporting_label_macro($items_label, $content['style']['name_label']);
@@ -6393,7 +6393,7 @@ function reporting_general($report, $content) {
 
 function reporting_custom_graph($report, $content, $type = 'dinamic',
 	$force_width_chart = null, $force_height_chart = null, $type_report = "custom_graph") {
-	
+
 	global $config;
 	
 	require_once ($config["homedir"] . '/include/functions_graph.php');
@@ -6412,7 +6412,7 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 	}
 	
 	$return['title'] = $content['name'];
-	$return['subtitle'] = $graph['name'];
+	$return['subtitle'] = io_safe_output($graph['name']);
 	$return["description"] = $content["description"];
 	$return["date"] = reporting_get_date_text(
 		$report,
@@ -6520,7 +6520,7 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 				$graph["percentil"],
 				false,
 				false,
-				false,
+				$graph["fullscale"],
 				$graph["summatory_series"],
 				$graph["average_series"],
 				$graph["modules_series"]
@@ -6533,7 +6533,7 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 	if ($config['metaconsole'] && $type_report != 'automatic_graph') {
 		metaconsole_restore_db();
 	}
-	
+
 	return reporting_check_structure_content($return);
 }
 

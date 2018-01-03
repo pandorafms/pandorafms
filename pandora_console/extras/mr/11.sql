@@ -7,6 +7,8 @@ UPDATE tsnmp_filter tsf,(SELECT @max:= @max) m SET tsf.unified_filters_id = @max
 
 ALTER TABLE tgraph ADD COLUMN `fullscale` tinyint(1) UNSIGNED NOT NULL default '0';
 
+ALTER TABLE tcontainer_item ADD COLUMN `fullscale` tinyint(1) UNSIGNED NOT NULL default '0';
+
 ALTER TABLE treport_content ADD COLUMN hide_no_data tinyint(1) DEFAULT 0;
 
 COMMIT;

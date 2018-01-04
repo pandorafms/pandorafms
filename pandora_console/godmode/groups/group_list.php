@@ -334,7 +334,13 @@ if (($delete_group) && (check_acl($config['id_user'], 0, "PM"))) {
 	}
 }
 db_clean_cache();
-$groups = users_get_groups_tree ($config['id_user'], "AR", true);
+
+if ($create_group || $delete_group || $update_group) {
+	$groups = users_get_groups ($config['id_user'], "AR", true, true, null, 'id_grupo', false);
+	$groups = groups_get_groups_tree_recursive($groups);
+} else {
+	$groups = users_get_groups_tree ($config['id_user'], "AR", true);
+}
 
 $table->width = '100%';
 
@@ -342,7 +348,7 @@ $all_parents = array();
 $groups_count = 0;
 $sons = array();
 
-
+$groups_count = count($groups);
 
 foreach ($groups as $k => $g) {
 	if ($g['parent'] != 0) {
@@ -359,8 +365,6 @@ foreach ($all_parents as $parent) {
 	}
 }
 
-
-$groups_count = count($groups);
 
 if (!empty($groups)) {
 	$table->class = "databox data";

@@ -151,8 +151,9 @@ function users_get_groups_for_select($id_user,  $privilege = "AR", $returnAllGro
  *
  * @return array A list of the groups the user has certain privileges.
  */
-function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup = true, $returnAllColumns = false, $id_groups = null, $keys_field = 'id_grupo') {
-    static $group_cache = array();
+function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup = true, $returnAllColumns = false, 
+	$id_groups = null, $keys_field = 'id_grupo', $cache = true) {
+	static $group_cache = array();
 
 	if (empty ($id_user)) {
 		global $config;
@@ -162,9 +163,9 @@ function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup 
 			$id_user = $config['id_user'];
 		}
 	}
-
+	
 	// Check the group cache first.
-	if (array_key_exists($id_user, $group_cache)) {
+	if (array_key_exists($id_user, $group_cache) && $cache) {
 		$groups = $group_cache[$id_user];
 	} else {
 		// Admin.
@@ -238,7 +239,7 @@ function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup 
 		// Add the All group to the beginning to be always the first
 		array_unshift($groups, $groupall);
 	}
-
+	
 	$acl_column = get_acl_column($privilege);
 	foreach ($groups as $group) {
 

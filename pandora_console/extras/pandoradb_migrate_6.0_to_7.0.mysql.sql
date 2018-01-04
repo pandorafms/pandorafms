@@ -1236,6 +1236,8 @@ UPDATE tagente SET tagente.alias = tagente.nombre;
 ALTER TABLE tlayout ADD `background_color` varchar(50) NOT NULL default '#FFF';
 ALTER TABLE tlayout ADD `is_favourite` int(1) NOT NULL DEFAULT 0;
 
+UPDATE tlayout SET is_favourite = 1 WHERE name REGEXP '^&#40;' OR name REGEXP '^\\[';
+
 -- ---------------------------------------------------------------------
 -- Table `tlayout_data`
 -- ---------------------------------------------------------------------

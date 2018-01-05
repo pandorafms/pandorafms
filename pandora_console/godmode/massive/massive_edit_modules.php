@@ -296,8 +296,7 @@ $table->data['form_agents_1'][1] = html_print_select_groups (false, 'AW', true, 
 	html_print_checkbox ("recursion", 1, false, true, false);
 $table->data['form_agents_1'][3] = __('Select all modules of this group') . ' ' .
 	html_print_checkbox_extended ("force_group", 'group', '', '', false,
-		'', 'style="margin-right: 40px;"', true);
-
+		'', 'style="margin-right: 40px;"');
 
 $table->rowclass['form_modules_3'] = '';
 $table->data['form_modules_3'][0] = __('Module Status');
@@ -695,7 +694,6 @@ $(document).ready (function () {
 	
 	clean_lists();
 	
-	
 	$(".select_modules_row").css('display', '<?php echo $modules_row?>');
 	$(".select_agents_row").css('display', '<?php echo $agents_row?>');
 	$(".select_modules_row_2").css('display', 'none');
@@ -948,7 +946,7 @@ $(document).ready (function () {
 				}
 			}
 			else if (this.id == "checkbox-recursion") {
-				$("#checkbox-force_group").attr("checked", false);
+				$("#checkbox-force_group").prop("checked", false);
 				$("#groups_select").trigger("change");
 			}
 			else if (this.id == "checkbox-warning_inverse") {
@@ -962,7 +960,7 @@ $(document).ready (function () {
 			}
 			else {
 				if (this.id == "checkbox-force_group") {
-					$("#checkbox-recursion").attr("checked", false);
+					$("#checkbox-recursion").prop("checked", false);
 				}
 				
 				if (this.checked) {
@@ -1058,8 +1056,6 @@ $(document).ready (function () {
 
 	$("#checkbox-recursion").click(function () {
 		recursion = this.checked ? 1 : 0;
-
-		$("#groups_select").trigger("change");
 	});
 
 	$("#groups_select").change (
@@ -1102,11 +1098,11 @@ $(document).ready (function () {
 					"get_agents_group_json" : 1,
 					"recursion" : recursion,
 					"id_group" : this.value,
-				status_agents: function () {
-					return $("#status_agents").val();
-				},
-				// Add a key prefix to avoid auto sorting in js object conversion
-				"keys_prefix" : "_"
+					status_agents: function () {
+						return $("#status_agents").val();
+					},
+					// Add a key prefix to avoid auto sorting in js object conversion
+					"keys_prefix" : "_"
 				},
 				function (data, status) {
 					$("#id_agents").html('');
@@ -1130,7 +1126,6 @@ $(document).ready (function () {
 		$("#groups_select").trigger("change");
 	});
 	
-
 	if("<?php echo $update ?>"){
 		if("<?php echo $selection_mode ?>" == 'agents'){
 			$("#groups_select").trigger("change");
@@ -1138,7 +1133,6 @@ $(document).ready (function () {
 	}
 
 	$("#status_module").change(function() {
-		
 		selector = $("#form_edit input[name=selection_mode]:checked").val();
 		if(selector == 'agents') {
 			$("#id_agents").trigger("change");
@@ -1158,33 +1152,33 @@ $(document).ready (function () {
 	});
 	
 	$('#agents').change(function(e){
-				for(var i=0;i<document.forms["form_edit"].agents.length;i++)	{
-					
-					if(document.forms["form_edit"].agents[0].selected == true){
-						var any = true;
-					}
-					if(i != 0 && document.forms["form_edit"].agents[i].selected){
-							var others = true;
-					}
-					if(any && others){
-							document.forms["form_edit"].agents[0].selected = false;
-					}	
-				}
+		for(var i=0;i<document.forms["form_edit"].agents.length;i++)	{
+			
+			if(document.forms["form_edit"].agents[0].selected == true){
+				var any = true;
+			}
+			if(i != 0 && document.forms["form_edit"].agents[i].selected){
+					var others = true;
+			}
+			if(any && others){
+					document.forms["form_edit"].agents[0].selected = false;
+			}	
+		}
 	});
 	
 	$('#module').change(function(e){
-				for(var i=0;i<document.forms["form_edit"].module.length;i++)	{
-					
-					if(document.forms["form_edit"].module[0].selected == true){
-						var any = true;
-					}
-					if(i != 0 && document.forms["form_edit"].module[i].selected){
-							var others = true;
-					}
-					if(any && others){
-							document.forms["form_edit"].module[0].selected = false;
-					}	
-				}
+		for(var i=0;i<document.forms["form_edit"].module.length;i++)	{
+			
+			if(document.forms["form_edit"].module[0].selected == true){
+				var any = true;
+			}
+			if(i != 0 && document.forms["form_edit"].module[i].selected){
+					var others = true;
+			}
+			if(any && others){
+					document.forms["form_edit"].module[0].selected = false;
+			}	
+		}
 	});
 	
 });

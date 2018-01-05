@@ -130,7 +130,7 @@ if (is_ajax ()) {
 		}
 		else {
 			$agents = agents_get_group_agents($id_group, $filter, "none",
-				false, $recursion, false, '|', $add_alert_bulk_op);
+				true, $recursion, false, '|', $add_alert_bulk_op);
 		}
 		
 		$agents_disabled = array();

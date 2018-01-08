@@ -555,6 +555,8 @@ function config_update_config () {
 						$error_update[] = __('Default icon in GIS');
 					if (!config_update_value ('autohidden_menu', get_parameter('autohidden_menu')))
 						$error_update[] = __('Autohidden menu');
+					if (!config_update_value ('visual_animation', get_parameter('visual_animation')))
+						$error_update[] = __('visual_animation');
 					if (!config_update_value ('fixed_graph', get_parameter('fixed_graph')))
 							$error_update[] = __('Fixed graph');
 					if (!config_update_value ('fixed_header', get_parameter('fixed_header')))
@@ -1817,6 +1819,10 @@ function config_process_config () {
 	
 	if (!isset($config['autohidden_menu'])) {
 		config_update_value ('autohidden_menu', 0);
+	}
+	
+	if (!isset($config['visual_animation'])) {
+		config_update_value ('visual_animation', 1);
 	}
 	
 	if (!isset($config['networkmap_max_width'])) {

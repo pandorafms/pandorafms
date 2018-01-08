@@ -281,6 +281,13 @@ $table_styles->data[$row][1] .= __('No') . '&nbsp;' .
 $table_styles->data['autohidden'][0] = __('Autohidden menu');
 $table_styles->data['autohidden'][1] = html_print_checkbox('autohidden_menu',
 	1, $config['autohidden_menu'], true);
+	
+$table_styles->data[$row][0] = __('Visual effects and animation');
+$table_styles->data[$row][1] = __('Yes') . '&nbsp;' .
+	html_print_radio_button ('visual_animation', 1, '', $config["visual_animation"], true) .
+	'&nbsp;&nbsp;';
+$table_styles->data[$row][1] .= __('No') . '&nbsp;' .
+	html_print_radio_button ('visual_animation', 0, '', $config["visual_animation"], true);	
 
 echo "<fieldset>";
 echo "<legend>" . __('Style configuration') . "</legend>";

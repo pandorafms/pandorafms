@@ -177,7 +177,7 @@ $table->data[5][1] .= '<span class="opt" style="visibility:hidden;">
 			value="modsize">' . __('Get default image size') . 
 			'</button></span>';
 
-$table->data[6][0] = __('Fovourite visual console');
+$table->data[6][0] = __('Favourite visual console');
 $table->data[6][1] = html_print_checkbox('is_favourite', 0, $is_favourite, true);
 
 if ($action == 'new') {

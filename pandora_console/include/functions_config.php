@@ -528,7 +528,7 @@ function config_update_config () {
 
 					if (!config_update_value ('vc_refr', get_parameter('vc_refr')))
 						$error_update[] = __('Default interval for refresh on Visual Console');
-					if (!config_update_value ('vc_favourite_view', (int) get_parameter('vc_favourite_view', 0)))
+					if (!config_update_value ('vc_favourite_view', (int) get_parameter('vc_favourite_view', 5)))
 						$error_update[] = __('Default line favourite_view for the Visual Console');
 					if (!config_update_value ('vc_menu_items', (int) get_parameter('vc_menu_items', 10)))
 						$error_update[] = __('Default line menu items for the Visual Console');

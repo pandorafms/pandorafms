@@ -151,11 +151,21 @@ $module_macros = array ();
 
 // Create agent
 if ($create_agent) {
+	$mssg_warning = 0;
 	$alias = (string) get_parameter_post("alias",'');
 	$alias_as_name = (int) get_parameter_post("alias_as_name", 0);
 	$direccion_agente = (string) get_parameter_post("direccion",'');
+
+	//safe_output only validate ip
 	$direccion_agente = trim(io_safe_output($direccion_agente));
+		
+	if(!validate_address($direccion_agente)){
+		$mssg_warning = 1;
+	}
+
+	//safe-input before validate ip
 	$direccion_agente = io_safe_input($direccion_agente);
+
 	$nombre_agente = hash("sha256",$alias . "|" .$direccion_agente ."|". time() ."|". sprintf("%04d", rand(0,10000)));
 	$grupo = (int) get_parameter_post ("grupo");
 	$intervalo = (string) get_parameter_post ("intervalo", SECONDS_5MINUTES);
@@ -184,7 +194,7 @@ if ($create_agent) {
 	foreach ($fields as $field) {
 		$field_values[$field['id_field']] = (string) get_parameter_post ('customvalue_'.$field['id_field'], '');
 	}
-	
+
 	// Check if agent exists (BUG WC-50518-2)
 	if ($alias == "") {
 		$agent_creation_error = __('No agent alias specified');
@@ -233,8 +243,8 @@ if ($create_agent) {
 			// Create custom fields for this agent
 			foreach ($field_values as $key => $value) {
 				$update_custom = db_process_sql_insert ('tagent_custom_data',
-				 array('id_field' => $key, 'id_agent' => $id_agente,
-					'description' => $value));
+					array('id_field' => $key, 'id_agent' => $id_agente,
+						'description' => $value));
 			}
 			// Create address for this agent in taddress
 			if ( $direccion_agente != '') {
@@ -637,6 +647,10 @@ if ($create_agent) {
 	ui_print_result_message ($agent_created_ok,
 		__('Successfully created'),
 		$agent_creation_error);
+
+	if($mssg_warning){
+		ui_print_warning_message(__('The ip or dns name entered cannot be resolved'));
+	}
 }
 
 // Fix / Normalize module data
@@ -678,13 +692,22 @@ $update_agent = (bool) get_parameter ('update_agent');
 
 // Update AGENT
 if ($update_agent) { // if modified some agent paramenter
+	$mssg_warning = 0;
 	$id_agente = (int) get_parameter_post ("id_agente");
 	$nombre_agente = str_replace('`','&lsquo;',(string) get_parameter_post ("agente", ""));
 	$alias = str_replace('`','&lsquo;',(string) get_parameter_post ("alias", ""));
 	$alias_as_name = (int) get_parameter_post ('alias_as_name', 0);
 	$direccion_agente = (string) get_parameter_post ("direccion", '');
+	//safe_output only validate ip
 	$direccion_agente = trim(io_safe_output($direccion_agente));
+	
+	if(!validate_address($direccion_agente)){
+		$mssg_warning = 1;
+	}
+
+	//safe-input before validate ip
 	$direccion_agente = io_safe_input($direccion_agente);
+
 	$address_list = (string) get_parameter_post ("address_list", '');
 	
 	if ($address_list != $direccion_agente &&
@@ -728,7 +751,6 @@ if ($update_agent) { // if modified some agent paramenter
 		$field_values[$field['id_field']] = (string) get_parameter_post ('customvalue_'.$field['id_field'], '');
 	}
 	
-	
 	foreach ($field_values as $key => $value) {
 		$old_value = db_get_all_rows_filter('tagent_custom_data',
 			array('id_agent' => $id_agente, 'id_field' => $key));
@@ -747,6 +769,10 @@ if ($update_agent) { // if modified some agent paramenter
 						$update_custom_result = 1;
 				}
 		}
+	}
+
+	if($mssg_warning){
+		ui_print_warning_message(__('The ip or dns name entered cannot be resolved'));
 	}
 	
 	//Verify if there is another agent with the same name but different ID

@@ -909,17 +909,30 @@ function networkmap_write_js_array($id, $nodes_and_relations = array(), $map_das
 	
 	$links_js = networkmap_links_to_js_links($relations, $nodes_graph);
 	
+	$array_aux = array();
 	foreach ($links_js as $link_js) {
 		if ($link_js['deleted']) {
-			continue;
+			unset($links_js[$link_js['id']]);
 		}
 		if ($link_js['target'] == -1)
-			continue;
+			unset($links_js[$link_js['id']]);
 		if ($link_js['source'] == -1)
-			continue;
+			unset($links_js[$link_js['id']]);
 		if ($link_js['target'] == $link_js['source'])
+			unset($links_js[$link_js['id']]);
+		if($link_js['arrow_start'] == 'module' && $link_js['arrow_end'] == 'module'){
+			echo "networkmap.links.push(" . json_encode($link_js) . ");\n";
+			$array_aux[$link_js['id_agent_start']] =1;
+			unset($links_js[$link_js['id']]);
+		}
+	}
+
+	foreach ($links_js as $link_js) {
+		if(($link_js['id_agent_end'] === 0) && $array_aux[$link_js['id_agent_start']] === 1 ){
 			continue;
-		echo "networkmap.links.push(" . json_encode($link_js) . ");\n";
+		} else {
+			echo "networkmap.links.push(" . json_encode($link_js) . ");\n";
+		}
 	}
 	
 	echo "\n";

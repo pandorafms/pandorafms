@@ -198,7 +198,7 @@ sub pandora_snmptrapd {
 	(my $trap_ver, $line) = split(/\[\*\*\]/, $line, 2);
 
 	# Process SNMP filter
-	next if (matches_filter ($dbh, $pa_config, $line) == 1);
+	return if (matches_filter ($dbh, $pa_config, $line) == 1);
 
 	logger($pa_config, "Reading trap '$line'", 10);
 	my ($date, $time, $source, $oid, $type, $type_desc, $value, $data) = ('', '', '', '', '', '', '', '');

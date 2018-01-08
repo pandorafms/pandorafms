@@ -168,9 +168,6 @@ if(!$new_agent && $alias != ''){
 	}
 }
 
-
-
-
 // Remote configuration available
 if (!$new_agent) {
 	if (isset($filename)) {

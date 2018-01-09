@@ -1516,6 +1516,9 @@ function paint_graph_status(min_w, max_w, min_c, max_c, inverse_w, inverse_c, er
 		var svg = d3.select("#svg_dinamic");
 		svg.selectAll("g").remove();
 		
+		width_x = 201;
+		height_x = 50;
+		
 		//message error warning
 		if (error_w == 1) {
 			$("#text-max_warning").addClass("input_error");

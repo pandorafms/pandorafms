@@ -2512,6 +2512,7 @@ function init_drag_and_drop() {
 			if (enterprise_installed) {
 				holding_pos_x = d3.select("#holding_area_" + networkmap_id).attr("x");
 				holding_pos_y = d3.select("#holding_area_" + networkmap_id).attr("y");
+				delete d.raw_text;
 				selection
 					.each(function (d) {
 						var params = [];

@@ -90,15 +90,8 @@ function cron_next_execution_date ($cron, $cur_time = false, $module_interval = 
 	
 	// Get cron configuration
 	$cron_array = explode (" ", $cron);
-	// Months start from 0
-	if ($cron_array[3] != '*') {
-		$mon_s = cron_get_interval ($cron_array[3]);
-		if ($mon_s['up'] !== false) {
-			$cron_array[3] = ($mon_s['down'] - 1) . "-" . ($mon_s['up'] - 1);
-		} else {
-			$cron_array[3] = $mon_s['down'] - 1;
-		}
-	}
+	
+	// REMARKS: Months start from 1 in php (different to server)
 	
 	// Get current time
 	if ($cur_time === false) $cur_time = time();
@@ -134,7 +127,7 @@ function cron_next_execution_date ($cron, $cur_time = false, $module_interval = 
 			$nex_time = cron_valid_date($nex_time_array);
 			if ($nex_time === false) {
 				#Update the year if overflow
-				$nex_time_array[3] = 0;
+				$nex_time_array[3] = 1;
 				$nex_time_array[4]++;
 				$nex_time = cron_valid_date($nex_time_array);
 			}
@@ -167,7 +160,7 @@ function cron_next_execution_date ($cron, $cur_time = false, $module_interval = 
 		$nex_time = cron_valid_date($nex_time_array);
 		if ($nex_time === false) {
 			// Update the year if overflow
-			$nex_time_array[3] = 0;
+			$nex_time_array[3] = 1;
 			$nex_time_array[4]++;
 			$nex_time = cron_valid_date($nex_time_array);
 		}
@@ -194,7 +187,7 @@ function cron_next_execution_date ($cron, $cur_time = false, $module_interval = 
 	$nex_time = cron_valid_date($nex_time_array);
 	if ($nex_time === false) {
 		#Update the year if overflow
-		$nex_time_array[3] = 0;
+		$nex_time_array[3] = 1;
 		$nex_time_array[4]++;
 		$nex_time = cron_valid_date($nex_time_array);
 	}
@@ -206,7 +199,7 @@ function cron_next_execution_date ($cron, $cur_time = false, $module_interval = 
 
 	// Update the month if fails
 	$mon_s = cron_get_interval ($cron_array[3]);
-	$nex_time_array[3] = ($mon_s['down'] == '*') ? 0 : $mon_s['down'];
+	$nex_time_array[3] = ($mon_s['down'] == '*') ? 1 : $mon_s['down'];
 
 	// When an overflow is passed check the hour update in the next execution
 	$nex_time = cron_valid_date($nex_time_array);

@@ -139,6 +139,177 @@ function users_get_groups_for_select($id_user,  $privilege = "AR", $returnAllGro
 	return $fields;
 }
 
+
+
+
+// XXX
+// 
+
+
+function get_group_ancestors($group_id,$groups, $debug = 0) {
+
+	if (!isset($groups[$group_id])) {
+		return null;
+	}
+
+	$parent = $groups[$group_id]["parent"];
+
+	if ($groups[$group_id]["propagate"] == 0){
+		return $group_id;
+	}
+
+	if ($parent == 0) {
+		return 0;
+	}
+
+	$r = get_group_ancestors($parent, $groups, $debug);
+
+	if (is_array($r)) {
+		$r = array_merge(array($parent), $r);
+	}
+	else {
+		$r = array($parent, $r);
+	}
+
+
+	return $r;
+}
+
+
+function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup = true, $returnAllColumns = false, 
+	$id_groups = null, $keys_field = 'id_grupo', $cache = true) {
+	static $group_cache = array();
+
+	if (empty ($id_user)) {
+		global $config;
+	
+		$id_user = null;
+		if (isset($config['id_user'])) {
+			$id_user = $config['id_user'];
+		}
+	}
+
+
+	// Check the group cache first.
+	if (array_key_exists($id_user, $group_cache) && $cache) {
+		$forest_acl = $group_cache[$id_user];
+	}
+	else {
+		// Admin.
+		if (is_user_admin($id_user)) {
+			$groups = db_get_all_rows_sql ("SELECT * FROM tgrupo ORDER BY nombre");
+		}
+		// Per-group permissions.
+		else {
+			$query  = "SELECT * FROM tgrupo ORDER BY parent,id_grupo DESC";
+			$raw_groups = db_get_all_rows_sql($query);
+
+			$query = sprintf("SELECT tgrupo.*, tperfil.*, tusuario_perfil.tags FROM tgrupo, tusuario_perfil, tperfil
+						WHERE (tgrupo.id_grupo = tusuario_perfil.id_grupo OR tusuario_perfil.id_grupo = 0)
+						AND tusuario_perfil.id_perfil = tperfil.id_perfil
+						AND tusuario_perfil.id_usuario = '%s' ORDER BY nombre", $id_user);
+			$forest_acl = db_get_all_rows_sql ($query);
+
+
+
+			foreach ($forest_acl as $g) {
+				$forest_acl[$g["id_grupo"]] = $g;
+			}
+
+			$groups = array();
+			foreach ($raw_groups as $g) {
+				$groups[$g["id_grupo"]] = $g;
+			}
+
+			foreach ($groups as $group) {
+				$parents = get_group_ancestors($group["id_grupo"],$groups);
+				
+				if (is_array($parents)) {
+					foreach ($parents as $parent) {
+						if ( (isset($forest_acl[$parent])) && ($groups[$parent]["propagate"] == 1)) {
+							$forest_acl[$group["id_grupo"]] = array_merge($forest_acl[$parent], $group);
+						}
+					}
+				}
+				else {
+					// grants over ALL group TODO
+				}
+			}
+
+
+			// Filter based on arguments
+
+			//html_debug_print($forest_acl);
+
+			//html_debug_print($groups);		
+		}
+
+		// Update the group cache.
+		$group_cache[$id_user] = $forest_acl;
+	}
+
+	$user_groups = array ();
+	if (!$forest_acl) {
+		return $user_groups;
+	}
+	
+	if ($returnAllGroup) { //All group
+		$groupall = array('id_grupo' => 0, 'nombre' => __('All'),
+			'icon' => 'world', 'parent' => 0, 'disabled' => 0,
+			'custom_id' => null, 'description' => '', 'propagate' => 0); 
+		
+		// Add the All group to the beginning to be always the first
+		array_unshift($forest_acl, $groupall);
+	}
+	
+	$acl_column = get_acl_column($privilege);
+	foreach ($forest_acl as $group) {
+
+		# Check the specific permission column. acl_column is undefined for admins.
+		if (defined($group[$acl_column]) && $group[$acl_column] != '1') {
+			continue;
+		}
+
+		if ($returnAllColumns) {
+			$user_groups[$group[$keys_field]] = $group;
+		}
+		else {
+			$user_groups[$group[$keys_field]] = $group['nombre'];
+		}
+	}
+
+	//html_debug_print($user_groups);
+
+	return $user_groups;
+
+}
+
+//
+// XXX
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /**
  * Get all the groups a user has reading privileges.
  *
@@ -151,7 +322,7 @@ function users_get_groups_for_select($id_user,  $privilege = "AR", $returnAllGro
  *
  * @return array A list of the groups the user has certain privileges.
  */
-function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup = true, $returnAllColumns = false, 
+function old_users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup = true, $returnAllColumns = false, 
 	$id_groups = null, $keys_field = 'id_grupo', $cache = true) {
 	static $group_cache = array();
 
@@ -171,7 +342,7 @@ function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup 
 		// Admin.
 		if (is_user_admin($id_user)) {
 			$groups = db_get_all_rows_sql ("SELECT * FROM tgrupo ORDER BY nombre");
-	 	}
+		}
 		// Per-group permissions.
 		else {
 			$query = sprintf("SELECT tgrupo.*, tperfil.*, tusuario_perfil.tags FROM tgrupo, tusuario_perfil, tperfil
@@ -255,6 +426,8 @@ function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup 
 			$user_groups[$group[$keys_field]] = $group['nombre'];
 		}
 	}
+
+	//html_debug_print($user_groups);
 
 	return $user_groups;
 }

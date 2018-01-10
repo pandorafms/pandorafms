@@ -1644,7 +1644,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 					$imgpos = 'float:left';
 				}
 				
-				$varsize = getimagesize($img);
+				$varsize = getimagesize($config['homedir'] . '/' . $img);
 				
 				
 				if($layoutData['show_statistics'] == 1){

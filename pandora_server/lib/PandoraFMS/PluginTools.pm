@@ -609,7 +609,11 @@ sub transfer_xml {
 
 	close (FD);
 
+	# Reassign default values if not present
+	$conf->{tentacle_client} = "tentacle_client" if empty($conf->{tentacle_client});
+	$conf->{tentacle_port}   = "44121"     if empty($conf->{tentacle_port});
 	$conf->{mode} = $conf->{transfer_mode} if empty($conf->{mode});
+
 	if (empty ($conf->{mode}) ) {
 		print_stderror($conf, "[ERROR] Nor \"mode\" nor \"transfer_mode\" defined in configuration.");
 		return undef;

@@ -94,7 +94,7 @@ function cron_next_execution_date ($cron, $cur_time = false, $module_interval = 
 	if ($cron_array[3] != '*') {
 		$mon_s = cron_get_interval ($cron_array[3]);
 		if ($mon_s['up'] !== false) {
-			$cron_array[3] = $mon_s['down'] - 1 . "-" . $mon_s['up'] - 1;
+			$cron_array[3] = ($mon_s['down'] - 1) . "-" . ($mon_s['up'] - 1);
 		} else {
 			$cron_array[3] = $mon_s['down'] - 1;
 		}
@@ -106,10 +106,6 @@ function cron_next_execution_date ($cron, $cur_time = false, $module_interval = 
 	$nex_time = $cur_time + $module_interval;
 	$nex_time_array = explode (" ", date ("i H d m Y", $nex_time));
 	if (cron_is_in_cron($cron_array, $nex_time_array)) return $nex_time;
-	
-	// Get first next date candidate from next cron configuration
-	// Initialize some vars
-	$prev_ovfl = false;
 
 	// Update minutes
 	$min_s = cron_get_interval ($cron_array[0]);
@@ -128,7 +124,6 @@ function cron_next_execution_date ($cron, $cur_time = false, $module_interval = 
 
 	if ($nex_time === false) {
 		// Update the month day if overflow
-		$prev_ovfl = true;
 		$nex_time_array[1] = 0;
 		$nex_time_array[2]++;
 		$nex_time = cron_valid_date($nex_time_array);
@@ -155,20 +150,18 @@ function cron_next_execution_date ($cron, $cur_time = false, $module_interval = 
 	$nex_time_array[1] = ($hour_s['down'] == '*') ? 0 : $hour_s['down'];
 
 	// When an overflow is passed check the hour update again
-	if ($prev_ovfl) {
-		$nex_time = cron_valid_date($nex_time_array);
+	$nex_time = cron_valid_date($nex_time_array);
+	if ($nex_time >= $cur_time) {
 		if (cron_is_in_cron($cron_array, $nex_time_array) && $nex_time) {
 			return $nex_time;
 		}
 	}
-	$prev_ovfl = false;
 
 	// Check if next day is in cron
 	$nex_time_array[2]++;
 	$nex_time = cron_valid_date($nex_time_array);
 	if ($nex_time === false) {
 		// Update the month if overflow
-		$prev_ovfl = true;
 		$nex_time_array[2] = 1;
 		$nex_time_array[3]++;
 		$nex_time = cron_valid_date($nex_time_array);
@@ -189,21 +182,20 @@ function cron_next_execution_date ($cron, $cur_time = false, $module_interval = 
 	$nex_time_array[2] = ($mday_s['down'] == '*') ? 1 : $mday_s['down'];
 
 	// When an overflow is passed check the hour update in the next execution
-	if ($prev_ovfl) {
-		$nex_time = cron_valid_date($nex_time_array);
+	$nex_time = cron_valid_date($nex_time_array);
+	if ($nex_time >= $cur_time) {
 		if (cron_is_in_cron($cron_array, $nex_time_array) && $nex_time) {
 			return $nex_time;
 		}
 	}
-	$prev_ovfl = false;
 
 	// Check if next month is in cron
 	$nex_time_array[3]++;
 	$nex_time = cron_valid_date($nex_time_array);
 	if ($nex_time === false) {
 		#Update the year if overflow
-		$prev_ovfl = true;
-		$nex_time_array[3]++;
+		$nex_time_array[3] = 0;
+		$nex_time_array[4]++;
 		$nex_time = cron_valid_date($nex_time_array);
 	}
 
@@ -217,8 +209,8 @@ function cron_next_execution_date ($cron, $cur_time = false, $module_interval = 
 	$nex_time_array[3] = ($mon_s['down'] == '*') ? 0 : $mon_s['down'];
 
 	// When an overflow is passed check the hour update in the next execution
-	if ($prev_ovfl) {
-		$nex_time = cron_valid_date($nex_time_array);
+	$nex_time = cron_valid_date($nex_time_array);
+	if ($nex_time >= $cur_time) {
 		if (cron_is_in_cron($cron_array, $nex_time_array) && $nex_time) {
 			return $nex_time;
 		}

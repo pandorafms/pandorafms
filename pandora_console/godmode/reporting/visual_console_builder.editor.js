@@ -374,8 +374,7 @@ function update_button_palette_callback() {
 							
 						}
 						
-						
-						if($('#preview > img').attr('naturalWidth') == null || $('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+						if($('#preview > img').prop('naturalWidth') == null || $('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
 							$("#image_" + idItem).removeAttr('width');
 							$("#image_" + idItem).removeAttr('height');
 							$("#image_" + idItem).attr('width', 70);
@@ -503,7 +502,7 @@ function update_button_palette_callback() {
 						}
 						
 						
-						if($('#preview > img').attr('naturalWidth') == null || $('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+						if($('#preview > img').prop('naturalWidth') == null || $('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
 							$("#image_" + idItem).removeAttr('width');
 							$("#image_" + idItem).removeAttr('height');
 							$("#image_" + idItem).attr('width', 70);
@@ -679,7 +678,7 @@ function update_button_palette_callback() {
 			}
 			$("#image_" + idItem).attr('src', "images/spinner.gif");
 			if ((values['width'] == 0) || (values['height'] == 0)) {
-				if($('#preview > img').attr('naturalWidth') == null || $('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+				if($('#preview > img').prop('naturalWidth') == null || $('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
 					$("#image_" + idItem).removeAttr('width');
 					$("#image_" + idItem).removeAttr('height');
 					$("#image_" + idItem).attr('width', 70);
@@ -2720,14 +2719,8 @@ function createItem(type, values, id_data) {
 			break;
 		case 'group_item':
 		
-		switch (type) {
-			case 'group_item':
-				class_type = "group_item";
-				break;
-			case 'static_graph':
-				class_type = "static_graph";
-				break;
-		}
+			class_type = "group_item";
+		
 
 		img_src = "images/spinner.gif";
 
@@ -2805,25 +2798,20 @@ function createItem(type, values, id_data) {
 			
 				if ((values['width'] == 0) || (values['height'] == 0)) {
 					// Do none
-						if(values['image'] != '' && values['image'] != 'none'){
-					
-					if($('#preview > img').attr('naturalWidth') == null || $('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+					if(values['image'] != '' && values['image'] != 'none'){
+						if(values['naturalWidth'] == null || values['naturalWidth'] > 150 || values['naturalHeight'] > 150){
+							$image.attr('width', '70')
+								.attr('height', '70');
+						}
+						else{
+							$image.attr('width', values['naturalWidth'])
+								.attr('height', values['naturalHeight']);
+						}	
+					}
+					else{
 						$image.attr('width', '70')
 							.attr('height', '70');
 					}
-					else{
-						$image.attr('width', $('#preview > img')[0].naturalWidth)
-							.attr('height', $('#preview > img')[0].naturalHeight);
-					}	
-					
-				
-				}
-				else{
-					$image.attr('width', '70')
-						.attr('height', '70');
-				}
-				
-						
 				}
 				else {
 					$image.attr('width', values['width'])
@@ -2932,13 +2920,13 @@ function createItem(type, values, id_data) {
 					
 					if(values['image'] != '' && values['image'] != 'none'){
 					// Do none
-						if($('#preview > img').attr('naturalWidth') == null || $('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+						if(values['naturalWidth'] == null || values['naturalWidth'] > 150 || values['naturalHeight'] > 150){
 							$image.attr('width', '70')
 								.attr('height', '70');
 						}
 						else{
-							$image.attr('width', $('#preview > img')[0].naturalWidth)
-								.attr('height', $('#preview > img')[0].naturalHeight);
+							$image.attr('width', values['naturalWidth'])
+								.attr('height', values['naturalHeight']);
 						}	
 					}
 					else{
@@ -2976,14 +2964,7 @@ function createItem(type, values, id_data) {
 		break;
 		
 		case 'static_graph':
-			switch (type) {
-				case 'group_item':
-					class_type = "group_item";
-					break;
-				case 'static_graph':
-					class_type = "static_graph";
-					break;
-			}
+			class_type = "static_graph";
 
 			img_src = "images/spinner.gif";
 
@@ -3030,13 +3011,13 @@ function createItem(type, values, id_data) {
 					if ((values['width'] == 0) || (values['height'] == 0)) {
 						// Do none
 							if(values['image'] != '' && values['image'] != 'none'){
-								if($('#preview > img').attr('naturalWidth') == null || $('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+								if(values['naturalWidth'] == null || values['naturalWidth'] > 150 || values['naturalHeight'] > 150){
 									$image.attr('width', '70')
 									.attr('height', '70');
 								}
 								else{
-									$image.attr('width', $('#preview > img')[0].naturalWidth)
-									.attr('height', $('#preview > img')[0].naturalHeight);
+									$image.attr('width', values['naturalWidth'])
+									.attr('height', values['naturalHeight']);
 								}	
 							}
 					else{
@@ -3163,13 +3144,13 @@ function createItem(type, values, id_data) {
 						
 						if(values['image'] != '' && values['image'] != 'none'){
 						// Do none
-							if($('#preview > img').attr('naturalWidth') == null || $('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+							if(values['naturalWidth'] == null || values['naturalWidth'] > 150 || values['naturalHeight'] > 150){
 								$image.attr('width', '70')
 									.attr('height', '70');
 							}
 							else{
-								$image.attr('width', $('#preview > img')[0].naturalWidth)
-									.attr('height', $('#preview > img')[0].naturalHeight);
+								$image.attr('width', values['naturalWidth'])
+									.attr('height', values['naturalHeight']);
 							}	
 						}
 						else{
@@ -3444,7 +3425,7 @@ function createItem(type, values, id_data) {
 			break;
 		case 'icon':
 			if ((values['width'] == 0) || (values['height'] == 0)) {
-				if($('#preview > img').attr('naturalWidth') == null || $('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+				if(values['naturalWidth'] == null || values['naturalWidth'] > 150 || values['naturalWidth'] > 150){
 					sizeStyle = 'width: ' + '70'  + 'px; height: ' + '70' + 'px;';
 					imageSize = 'width="' + '70'  + '" height="' + '70' + '"';
 				}			
@@ -3549,6 +3530,10 @@ function insertDB(type, values) {
 		success: function (data) {
 			if (data['correct']) {
 				id = data['id_data'];
+				if((type === 'group_item') || (type === 'icon') || (type === 'static_graph')){
+					values['naturalWidth'] = $('#preview > img')[0].naturalWidth;
+					values['naturalHeight'] = $('#preview > img')[0].naturalHeight;
+				}
 				createItem(type, values, id);
 				addItemSelectParents(id, data['text']);
 				//Reload all events for the item and new item.
@@ -3888,7 +3873,12 @@ function copyDB(idItem) {
 				values = data['values'];
 				type = data['type'];
 				id = data['id_data'];
-
+				
+				if((type === 'group_item') || (type === 'icon') || (type === 'static_graph')){
+					values['naturalWidth'] = $('#image_'+idItem).prop('naturalWidth');
+					values['naturalHeight'] = $('#image_'+idItem).prop('naturalHeight');
+				}
+				
 				createItem(type, values, id);
 				addItemSelectParents(id, data['text']);
 

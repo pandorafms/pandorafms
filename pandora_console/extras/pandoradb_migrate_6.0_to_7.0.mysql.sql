@@ -1110,6 +1110,7 @@ ALTER TABLE tserver ADD COLUMN `server_keepalive` int(11) DEFAULT 0;
 ALTER TABLE tagente_estado MODIFY `status_changes` tinyint(4) unsigned default 0;
 ALTER TABLE tagente_estado CHANGE `last_known_status` `known_status` tinyint(4) default 0;
 ALTER TABLE tagente_estado ADD COLUMN `last_known_status` tinyint(4) default 0;
+ALTER TABLE tagente_estado ADD COLUMN last_unknown_update bigint(20) NOT NULL default 0;
 
 -- ---------------------------------------------------------------------
 -- Table `talert_actions`

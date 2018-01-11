@@ -470,6 +470,8 @@ sub pandora_load_config {
 
 	$pa_config->{"thread_log"} = 0; # 7.0.717
 
+	$pa_config->{"unknown_updates"} = 0; # 7.0.718
+
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
 		if ($> == 0){
@@ -1080,6 +1082,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^thread_log\s+([0-1])/i) {
 			$pa_config->{'thread_log'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^unknown_updates\s+([0-1])/i) {
+			$pa_config->{'unknown_updates'} = clean_blank($1);
 		}
 	} # end of loop for parameter #
 

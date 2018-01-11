@@ -13,4 +13,6 @@ ALTER TABLE tcontainer_item ADD COLUMN `fullscale` tinyint(1) UNSIGNED NOT NULL 
 
 ALTER TABLE treport_content ADD COLUMN hide_no_data tinyint(1) DEFAULT 0;
 
+ALTER TABLE tagente_estado ADD COLUMN last_unknown_update bigint(20) NOT NULL default 0;
+
 COMMIT;

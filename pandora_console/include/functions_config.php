@@ -1630,7 +1630,7 @@ function config_process_config () {
 			if ($is_user_updating == 'operation/users/user_edit') {
 				$id = get_parameter_get ("id", $config["id_user"]); // ID given as parameter
 				$user_info = get_user_info ($id);
-				 
+
 				//If current user is editing himself or if the user has UM (User Management) rights on any groups the user is part of AND the authorization scheme allows for users/admins to update info
 				if (($config["id_user"] == $id || check_acl ($config["id_user"], users_get_groups ($id), "UM")) && $config["user_can_update_info"]) {
 					$view_mode = false;

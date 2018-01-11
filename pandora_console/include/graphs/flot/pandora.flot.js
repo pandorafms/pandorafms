@@ -420,13 +420,29 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 		format = new Array();
 		for (i = 0; i < labels_total.length; i++) {
 			var label = labels_total[i][1];
-			var shortLabel = reduceText(label, 25);
+			// var shortLabel = reduceText(label, 25);
 			var title = '';
-			if (label !== shortLabel) {
+			// if (label !== shortLabel) {
 				title = label;
-				label = shortLabel;
+				// label = shortLabel;
+			// }
+			
+			if(label.length > 30){
+				if(label.indexOf(" - ")){
+					var label_temp = label.split(" - ");
+				}
+				else if(label.indexOf(" ")){
+					var label_temp = label.split(" ");
+				}
+				else{
+					var label_temp = '';
+					label_temp[0] = label.substring(0, (label.length/2));
+					label_temp[1] = label.substring((label.length/2));
+				}
+				label = reduceText(label_temp[0], 20)+"<br>"+reduceText(label_temp[1], 20);
 			}
-			format.push([i,'<div style="font-size:'+font_size+'pt !important; word-break:keep-all; max-width: 150px;" title="'+title+'" class="'+font+'">'
+			
+			format.push([i,'<div style="font-size:'+font_size+'pt !important; word-break:keep-all; max-width: 150px;margin-right:20px;" title="'+title+'" class="'+font+'">'
 				+ label
 				+ '</div>']);
 		}

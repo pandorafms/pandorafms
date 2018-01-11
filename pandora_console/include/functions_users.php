@@ -139,13 +139,6 @@ function users_get_groups_for_select($id_user,  $privilege = "AR", $returnAllGro
 	return $fields;
 }
 
-
-
-
-// XXX
-// 
-
-
 function get_group_ancestors($group_id,$groups, $debug = 0) {
 
 	if (!isset($groups[$group_id])) {
@@ -171,13 +164,73 @@ function get_group_ancestors($group_id,$groups, $debug = 0) {
 		$r = array($parent, $r);
 	}
 
-
 	return $r;
 }
 
+function groups_combine_acl($acl_group_a, $acl_group_b){
+	if(!is_array($acl_group_a)){
+		if(is_array($acl_group_b)){
+			return $acl_group_b;
+		}
+		else{
+			return null;
+		}
+	}
+	else{
+		if(!is_array($acl_group_b)){
+			return $acl_group_a;
+		}
+	}
 
+	$acl_list = array (
+		"incident_view" => 1,
+		"incident_edit" => 1,
+		"incident_management" => 1,
+		"agent_view" => 1,
+		"agent_edit" => 1,
+		"agent_disable" => 1,
+		"alert_edit" => 1,
+		"alert_management" => 1,
+		"pandora_management" => 1,
+		"db_management" => 1,
+		"user_management" => 1,
+		"report_view" => 1,
+		"report_edit" => 1,
+		"report_management" => 1,
+		"event_view" => 1,
+		"event_edit" => 1,
+		"event_management" => 1,
+		"map_view" => 1,
+		"map_edit" => 1,
+		"map_management" => 1,
+		"vconsole_view" => 1,
+		"vconsole_edit" => 1,
+		"vconsole_management" => 1,
+	);
+
+	foreach ($acl_list as $acl => $aux) {
+		// propagate ACL
+		$acl_group_b[$acl] = $acl_group_a[$acl] || $acl_group_b[$acl];
+	}
+
+	return $acl_group_b;
+
+}
+
+/**
+ * Get all the groups a user has reading privileges.
+ *
+ * @param string User id
+ * @param string The privilege to evaluate, and it is false then no check ACL.
+ * @param boolean $returnAllGroup Flag the return group, by default true.
+ * @param boolean $returnAllColumns Flag to return all columns of groups.
+ * @param array $id_groups The list of group to scan to bottom child. By default null.
+ * @param string $keys_field The field of the group used in the array keys. By default ID
+ *
+ * @return array A list of the groups the user has certain privileges.
+ */
 function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup = true, $returnAllColumns = false, 
-	$id_groups = null, $keys_field = 'id_grupo', $cache = true) {
+							$id_groups = null, $keys_field = 'id_grupo', $cache = true) {
 	static $group_cache = array();
 
 	if (empty ($id_user)) {
@@ -189,7 +242,6 @@ function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup 
 		}
 	}
 
-
 	// Check the group cache first.
 	if (array_key_exists($id_user, $group_cache) && $cache) {
 		$forest_acl = $group_cache[$id_user];
@@ -197,7 +249,7 @@ function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup 
 	else {
 		// Admin.
 		if (is_user_admin($id_user)) {
-			$groups = db_get_all_rows_sql ("SELECT * FROM tgrupo ORDER BY nombre");
+			$forest_acl = db_get_all_rows_sql ("SELECT * FROM tgrupo ORDER BY nombre");
 		}
 		// Per-group permissions.
 		else {
@@ -210,8 +262,6 @@ function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup 
 						AND tusuario_perfil.id_usuario = '%s' ORDER BY nombre", $id_user);
 			$forest_acl = db_get_all_rows_sql ($query);
 
-
-
 			foreach ($forest_acl as $g) {
 				$forest_acl[$g["id_grupo"]] = $g;
 			}
@@ -223,25 +273,29 @@ function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup 
 
 			foreach ($groups as $group) {
 				$parents = get_group_ancestors($group["id_grupo"],$groups);
-				
+			
 				if (is_array($parents)) {
 					foreach ($parents as $parent) {
 						if ( (isset($forest_acl[$parent])) && ($groups[$parent]["propagate"] == 1)) {
-							$forest_acl[$group["id_grupo"]] = array_merge($forest_acl[$parent], $group);
+							if (isset($forest_acl[$group["id_grupo"]])) {
+								// update ACL propagation
+								$tmp = groups_combine_acl($forest_acl[$parent], $forest_acl[$group["id_grupo"]]);
+							}
+							else {
+								// add group to user ACL forest
+								$tmp = groups_combine_acl($forest_acl[$parent], $group);
+							}
+							if ($tmp !== null) {
+								// add only if valid
+								$forest_acl[$group["id_grupo"]] = $tmp;
+							}
 						}
 					}
 				}
 				else {
-					// grants over ALL group TODO
+					// no parents, direct assignment already done
 				}
-			}
-
-
-			// Filter based on arguments
-
-			//html_debug_print($forest_acl);
-
-			//html_debug_print($groups);		
+			}		
 		}
 
 		// Update the group cache.
@@ -278,37 +332,8 @@ function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup 
 		}
 	}
 
-	//html_debug_print($user_groups);
-
 	return $user_groups;
-
 }
-
-//
-// XXX
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /**
  * Get all the groups a user has reading privileges.
@@ -426,9 +451,7 @@ function old_users_get_groups ($id_user = false, $privilege = "AR", $returnAllGr
 			$user_groups[$group[$keys_field]] = $group['nombre'];
 		}
 	}
-
-	//html_debug_print($user_groups);
-
+	
 	return $user_groups;
 }
 

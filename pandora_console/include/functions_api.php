@@ -9996,69 +9996,80 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4) {
 		return;
 	}
 	
+	$id_module_type = modules_get_agentmodule_type ($id_module);
+	$module_type = modules_get_moduletype_name ($id_module_type);
+	
+	$string_type = strpos($module_type,'string');
 	// Get the html item
-	$graph_html = grafico_modulo_sparse(
-		$id_module, $graph_seconds, false, 600, 300, '',
-		'', false, false, true, time(), '', 0, 0, true, true,
-		ui_get_full_url(false) . '/', 1, false, '', false, true,
-		true, 'white', null, false, false, $config['type_module_charts'], 
-		false, false);
-		
-        $graph_image_file_encoded = false;
-        if (preg_match("/<img src='(.+)'./", $graph_html, $matches)) {
-                $file_url = $matches[1];
+	if ($string_type === false) {
+		$graph_html = grafico_modulo_sparse(
+			$id_module, $graph_seconds, false, 600, 300, '',
+			'', false, false, true, time(), '', 0, 0, true, true,
+			ui_get_full_url(false) . '/', 1, false, '', false, true,
+			true, 'white', null, false, false, $config['type_module_charts'], 
+			false, false);
+	} else {
+		$graph_html = grafico_modulo_string(
+			$id_module, $graph_seconds, false, 600, 300, '',
+			'', false, false, true, time(), true, ui_get_full_url(false) . '/', 
+			'', 1, true);
+	}
 
-            if (preg_match("/\?(.+)&(.+)&(.+)&(.+)/", $file_url,$parameters)) {
-                    array_shift ($parameters);
-                foreach ($parameters as $parameter){
-                        $value = explode ("=",$parameter);
+	$graph_image_file_encoded = false;
+	if (preg_match("/<img src='(.+)'./", $graph_html, $matches)) {
+		$file_url = $matches[1];
 
-                    if (strcmp($value[0], "static_graph") == 0){
-                            $static_graph = $value[1];
-                    }
-                    elseif (strcmp($value[0], "graph_type") == 0){
-                            $graph_type = $value[1];
-                    }
-                    elseif (strcmp($value[0], "ttl") == 0){
-                            $ttl = $value[1];
-                    }
-                    elseif (strcmp($value[0], "id_graph") == 0){
-                            $id_graph = $value[1];
-                    }
-                }
-            }
-        }
+		if (preg_match("/\?(.+)&(.+)&(.+)&(.+)/", $file_url,$parameters)) {
+			array_shift ($parameters);
+			foreach ($parameters as $parameter){
+				$value = explode ("=",$parameter);
+				
+				if (strcmp($value[0], "static_graph") == 0){
+					$static_graph = $value[1];
+				}
+				elseif (strcmp($value[0], "graph_type") == 0){
+					$graph_type = $value[1];
+				}
+				elseif (strcmp($value[0], "ttl") == 0){
+					$ttl = $value[1];
+				}
+				elseif (strcmp($value[0], "id_graph") == 0){
+					$id_graph = $value[1];
+				}
+			}
+		}
+	}
 
-        // Check values are OK
-        if ( (isset ($graph_type))
-        && (isset ($ttl))
-        && (isset ($id_graph))) {
-            $_GET["ttl"]             = $ttl;
-            $_GET["id_graph"]        = $id_graph;
-            $_GET["graph_type"]      = $graph_type;
-            $_GET["static_graph"]    = $static_graph;
-            $_GET["graph_threshold"] = $graph_threshold;
-            $_GET["id_module"]       = $id_module;
-        }
+	// Check values are OK
+	if ( (isset ($graph_type))
+	&& (isset ($ttl))
+	&& (isset ($id_graph))) {
+		$_GET["ttl"]             = $ttl;
+		$_GET["id_graph"]        = $id_graph;
+		$_GET["graph_type"]      = $graph_type;
+		$_GET["static_graph"]    = $static_graph;
+		$_GET["graph_threshold"] = $graph_threshold;
+		$_GET["id_module"]       = $id_module;
+	}
 
-        ob_start();
-        include (__DIR__ . "/graphs/functions_pchart.php");
-        $output =  ob_get_clean();
+	ob_start();
+	include (__DIR__ . "/graphs/functions_pchart.php");
+	$output =  ob_get_clean();
 
-        $graph_image_file_encoded = base64_encode($output);
-        if (empty($graph_image_file_encoded)) {
-                // returnError('error_module_graph', __(''));
-        }
-        else {
-			if($other['data'][1]){
-				header('Content-type: text/html');
-            	returnData('string', array('type' => 'string', 'data' => '<img src="data:image/jpeg;base64,' . $graph_image_file_encoded . '">'));
-        	} else {
-        		returnData('string', array('type' => 'string', 'data' => $graph_image_file_encoded));	
-        	}
+	$graph_image_file_encoded = base64_encode($output);
+	if (empty($graph_image_file_encoded)) {
+		// returnError('error_module_graph', __(''));
+	}
+	else {
+		if($other['data'][1]){
+			header('Content-type: text/html');
+			returnData('string', array('type' => 'string', 'data' => '<img src="data:image/jpeg;base64,' . $graph_image_file_encoded . '">'));
+		} else {
+			returnData('string', array('type' => 'string', 'data' => $graph_image_file_encoded));	
+		}
 		// To show only the base64 code, call returnData as:
-        // returnData('string', array('type' => 'string', 'data' => $graph_image_file_encoded));
-        }
+		// returnData('string', array('type' => 'string', 'data' => $graph_image_file_encoded));
+	}
 }
 
 function api_set_metaconsole_synch($keys) {

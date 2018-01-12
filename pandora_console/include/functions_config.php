@@ -1645,10 +1645,19 @@ function config_process_config () {
 				}
 			}
 			
-			if (isset($config['id_user']))
-				$relative_path = enterprise_hook('skins_set_image_skin_path',array($config['id_user']));
-			else
-				$relative_path = enterprise_hook('skins_set_image_skin_path',array(get_parameter('nick')));
+			if(!is_metaconsole()) {
+				//  Skins are available only in console mode
+				
+				if (isset($config['id_user'])){
+					$relative_path = enterprise_hook('skins_set_image_skin_path',array($config['id_user']));
+				}
+				else{
+					$relative_path = enterprise_hook('skins_set_image_skin_path',array(get_parameter('nick')));
+				}
+			}
+			else {
+				$relative_path = '';
+			}
 			$config['relative_path'] = $relative_path;
 		}
 	}

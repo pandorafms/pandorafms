@@ -8713,7 +8713,7 @@ function reporting_tiny_stats ($counts_info, $return = false, $type = 'agent', $
 	
 	if ($strict_user && $type == 'agent') {
 		
-		$acltags = tags_get_user_module_and_tags ($config['id_user'],'AR', $strict_user);
+		$acltags = tags_get_user_groups_and_tags ($config['id_user'],'AR', $strict_user);
 		$filter['disabled'] = 0;
 		$id_agent = $counts_info['id_agente'];
 		

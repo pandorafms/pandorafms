@@ -139,7 +139,7 @@ function users_get_groups_for_select($id_user,  $privilege = "AR", $returnAllGro
 	return $fields;
 }
 
-function get_group_ancestors($group_id,$groups, $debug = 0) {
+function get_group_ancestors($group_id, $groups) {
 
 	if (!isset($groups[$group_id])) {
 		return null;
@@ -155,7 +155,7 @@ function get_group_ancestors($group_id,$groups, $debug = 0) {
 		return 0;
 	}
 
-	$r = get_group_ancestors($parent, $groups, $debug);
+	$r = get_group_ancestors($parent, $groups);
 
 	if (is_array($r)) {
 		$r = array_merge(array($parent), $r);
@@ -206,9 +206,26 @@ function groups_combine_acl($acl_group_a, $acl_group_b){
 		"vconsole_view" => 1,
 		"vconsole_edit" => 1,
 		"vconsole_management" => 1,
+		"tags" => 1,
 	);
 
 	foreach ($acl_list as $acl => $aux) {
+
+		if($acl == "tags") {
+			// Mix tags
+			
+			if (isset($acl_group_a[$acl]) && ($acl_group_a[$acl] != "")) {
+				if (isset($acl_group_b[$acl]) && ($acl_group_b[$acl] != "")) {
+					if ($acl_group_b[$acl] != ($acl_group_a[$acl])) {
+						$acl_group_b[$acl] = $acl_group_a[$acl] . "," . $acl_group_b[$acl];
+					}
+				}
+				else {
+					$acl_group_b[$acl] = $acl_group_a[$acl];
+				}
+			}
+			continue;
+		}
 		// propagate ACL
 		$acl_group_b[$acl] = $acl_group_a[$acl] || $acl_group_b[$acl];
 	}

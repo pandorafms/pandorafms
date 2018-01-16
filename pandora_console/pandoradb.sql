@@ -3035,10 +3035,10 @@ CREATE TABLE IF NOT EXISTS `treset_pass` (
 
 create table IF NOT EXISTS `tcluster`(
     `id` int unsigned not null auto_increment,
-    `name` tinytext unsigned not null,
-    `cluster_type` enum('AA','AP') default 'AA' unsigned not null,
-		`description` text unsigned not null,
-		`group` integer unsigned not null,
+    `name` tinytext not null default '',
+    `cluster_type` enum('AA','AP') not null default 'AA',
+		`description` text not null default '',
+		`group` mediumint(4) unsigned,
 		PRIMARY KEY (`id`),
 		FOREIGN KEY (`group`) REFERENCES tgrupo(`id_grupo`)
 			ON DELETE SET NULL ON UPDATE CASCADE
@@ -3050,10 +3050,10 @@ create table IF NOT EXISTS `tcluster`(
 
 create table IF NOT EXISTS `tcluster_item`(
     `id_cluster` int unsigned not null auto_increment,
-    `name` tinytext unsigned not null,
-    `item_type` enum('AA','AP') default 'AA' unsigned not null,
-		`critical_limit` INTEGER unsigned NOT NULL default '0',
-		`warning_limit` INTEGER unsigned NOT NULL default '0',
+    `name` tinytext not null default '',
+    `item_type` enum('AA','AP')  not null default 'AA',
+		`critical_limit` int unsigned NOT NULL default '0',
+		`warning_limit` int unsigned NOT NULL default '0',
 		`is_critical` tinyint(2) unsigned NOT NULL default '0',
     PRIMARY KEY (`id_cluster`)
 ) engine=InnoDB DEFAULT CHARSET=utf8;
@@ -3064,8 +3064,9 @@ create table IF NOT EXISTS `tcluster_item`(
 
 create table IF NOT EXISTS `tcluster_agent`(
     `id_cluster` int unsigned not null auto_increment,
-    `id_agent` int unsigned not null,
+    `id_agent` int unsigned,
 		PRIMARY KEY (`id_cluster`),
 		FOREIGN KEY (`id_agent`) REFERENCES tagente(`id_agente`)
 			ON DELETE SET NULL ON UPDATE CASCADE
 ) engine=InnoDB DEFAULT CHARSET=utf8;
+

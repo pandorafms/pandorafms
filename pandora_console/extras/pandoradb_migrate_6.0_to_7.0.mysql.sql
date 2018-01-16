@@ -1482,3 +1482,44 @@ ALTER TABLE `tdashboard` ADD COLUMN `cells_slideshow` TINYINT(1) NOT NULL defaul
 -- ---------------------------------------------------------------------
 SELECT max(unified_filters_id) INTO @max FROM tsnmp_filter;
 UPDATE tsnmp_filter tsf,(SELECT @max:= @max) m SET tsf.unified_filters_id = @max:= @max + 1 where tsf.unified_filters_id=0;
+
+-- ---------------------------------------------------------------------
+-- Table `tcluster`
+-- ---------------------------------------------------------------------
+
+create table IF NOT EXISTS `tcluster`(
+    `id` int unsigned not null auto_increment,
+    `name` tinytext unsigned not null,
+    `cluster_type` enum('AA','AP') default 'AA' unsigned not null,
+		`description` text unsigned not null,
+		`group` integer unsigned not null,
+		PRIMARY KEY (`id`),
+		FOREIGN KEY (`group`) REFERENCES tgrupo(`id_grupo`)
+			ON DELETE SET NULL ON UPDATE CASCADE
+) engine=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tcluster_item`
+-- ---------------------------------------------------------------------
+
+create table IF NOT EXISTS `tcluster_item`(
+    `id_cluster` int unsigned not null auto_increment,
+    `name` tinytext unsigned not null,
+    `item_type` enum('AA','AP') default 'AA' unsigned not null,
+		`critical_limit` INTEGER unsigned NOT NULL default '0',
+		`warning_limit` INTEGER unsigned NOT NULL default '0',
+		`is_critical` tinyint(2) unsigned NOT NULL default '0',
+    PRIMARY KEY (`id_cluster`)
+) engine=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tcluster_agent`
+-- ---------------------------------------------------------------------
+
+create table IF NOT EXISTS `tcluster_agent`(
+    `id_cluster` int unsigned not null auto_increment,
+    `id_agent` int unsigned not null,
+		PRIMARY KEY (`id_cluster`),
+		FOREIGN KEY (`id_agent`) REFERENCES tagente(`id_agente`)
+			ON DELETE SET NULL ON UPDATE CASCADE
+) engine=InnoDB DEFAULT CHARSET=utf8;

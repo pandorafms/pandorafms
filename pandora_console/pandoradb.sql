@@ -3029,6 +3029,10 @@ CREATE TABLE IF NOT EXISTS `treset_pass` (
 	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- ---------------------------------------------------------------------
+-- Table `tcluster`
+-- ---------------------------------------------------------------------
+
 create table IF NOT EXISTS `tcluster`(
     `id` int unsigned not null auto_increment,
     `name` tinytext unsigned not null,
@@ -3040,6 +3044,10 @@ create table IF NOT EXISTS `tcluster`(
 			ON DELETE SET NULL ON UPDATE CASCADE
 ) engine=InnoDB DEFAULT CHARSET=utf8;
 
+-- ---------------------------------------------------------------------
+-- Table `tcluster_item`
+-- ---------------------------------------------------------------------
+
 create table IF NOT EXISTS `tcluster_item`(
     `id_cluster` int unsigned not null auto_increment,
     `name` tinytext unsigned not null,
@@ -3049,6 +3057,10 @@ create table IF NOT EXISTS `tcluster_item`(
 		`is_critical` tinyint(2) unsigned NOT NULL default '0',
     PRIMARY KEY (`id_cluster`)
 ) engine=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tcluster_agent`
+-- ---------------------------------------------------------------------
 
 create table IF NOT EXISTS `tcluster_agent`(
     `id_cluster` int unsigned not null auto_increment,

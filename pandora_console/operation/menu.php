@@ -105,6 +105,8 @@ if (!empty($sub2)) {
 	$sub["snmpconsole"]["subtype"] = "nolink";
 }
 
+enterprise_hook ('cluster_menu');
+
 if (!empty($sub)) {
 	$menu_operation["estado"]["text"] = __('Monitoring');
 	$menu_operation["estado"]["sec2"] = "operation/agentes/tactical";

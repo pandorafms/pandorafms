@@ -1503,13 +1503,16 @@ create table IF NOT EXISTS `tcluster`(
 -- ---------------------------------------------------------------------
 
 create table IF NOT EXISTS `tcluster_item`(
-    `id_cluster` int unsigned not null auto_increment,
+		`id` int unsigned not null auto_increment,
     `name` tinytext not null default '',
     `item_type` enum('AA','AP')  not null default 'AA',
 		`critical_limit` int unsigned NOT NULL default '0',
 		`warning_limit` int unsigned NOT NULL default '0',
 		`is_critical` tinyint(2) unsigned NOT NULL default '0',
-    PRIMARY KEY (`id_cluster`)
+		`id_cluster` int unsigned,
+		PRIMARY KEY (`id`),
+		FOREIGN KEY (`id_cluster`) REFERENCES tcluster(`id`)
+			ON DELETE SET NULL ON UPDATE CASCADE
 ) engine=InnoDB DEFAULT CHARSET=utf8;
 
 -- ---------------------------------------------------------------------
@@ -1517,9 +1520,11 @@ create table IF NOT EXISTS `tcluster_item`(
 -- ---------------------------------------------------------------------
 
 create table IF NOT EXISTS `tcluster_agent`(
-    `id_cluster` int unsigned not null auto_increment,
-    `id_agent` int unsigned,
-		PRIMARY KEY (`id_cluster`),
+    `id_cluster` int unsigned not null,
+    `id_agent` int(10) unsigned not null,
+		PRIMARY KEY (`id_cluster`,`id_agent`),
 		FOREIGN KEY (`id_agent`) REFERENCES tagente(`id_agente`)
-			ON DELETE SET NULL ON UPDATE CASCADE
+			ON UPDATE CASCADE,
+		FOREIGN KEY (`id_cluster`) REFERENCES tcluster(`id`)
+			ON UPDATE CASCADE
 ) engine=InnoDB DEFAULT CHARSET=utf8;

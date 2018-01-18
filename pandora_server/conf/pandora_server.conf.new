@@ -564,6 +564,10 @@ enc_dir /usr/share/pandora_server/enc/
 # Go to http://wiki.pandorafms.com/ for more information.
 dynamic_updates 5
 
+# Periodically update unknown modules (1), instead of only once (0). Periodic
+# updates may affect server performance.
+unknown_updates 0
+
 # Enable (1) or disable (0) the Pandora FMS WUX Server (PANDORA FMS ENTERPRISE ONLY).
 wuxserver 0
 

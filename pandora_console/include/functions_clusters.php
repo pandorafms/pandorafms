@@ -32,7 +32,15 @@ function clusters_get_name ($id_cluster, $case = 'none') {
 
 function agents_get_cluster_agents ($id_cluster){
   $agents = db_get_all_rows_filter("tcluster_agent", array("id_cluster" => $id_cluster), "id_agent");
-  return ($agents);
+	
+	$post_agent = array();
+	
+	foreach ($agents as $key => $value) {
+		
+		$post_agent[$value['id_agent']] =  agents_get_alias($value['id_agent']);
+	}
+	
+  return ($post_agent);
 }
 
 ?>

@@ -32,8 +32,7 @@ $id_cluster = get_parameter('id_cluster',0);
 if($step == 1){
 
 $add_cluster = (bool) get_parameter('add_cluster', false);
-$update_graph = (bool) get_parameter('update_cluster', false);
-$id_cluster = (int) get_parameter('id', 0);
+$update_cluster = (bool) get_parameter('update_cluster', false);
 
 if ($add_cluster) {
 	$name = get_parameter_post ("name");
@@ -86,14 +85,96 @@ if ($add_cluster) {
 }
 
 }
+elseif ($step == 2) {
+	
+	$assign_agents = get_parameter('assign_agents',0);
+	$cluster_agents = get_parameter('id_agents2',null); //abajao en assign
+	
+	if($assign_agents){
+		
+		$values_cluster_agents = array(
+			'id_cluster' => $id_cluster,
+			'id_agent' => $cluster_agents
+			);
+			
+		$agents_preasigned = db_get_all_rows_sql('select id_agent from tcluster_agent where id_cluster ='.$id_cluster);
+		
+		foreach ($values_cluster_agents['id_agent'] as $key => $value) {
+						
+			$tcluster_agent = db_process_sql('insert into tcluster_agent values ('.$id_cluster.','.$value.')');
+			
+			if ($tcluster_agent !== false){	
+				db_pandora_audit("Report management", "Agent #$value assigned to cluster #$id_cluster");
+			}
+			else{
+				db_pandora_audit("Report management", "Fail try to assign agent to cluster");
+			}
+				
+		}
+		
+		foreach ($agents_preasigned as $key => $value) {
+			
+			if(!in_array($value['id_agent'],$values_cluster_agents['id_agent'])){
+				$tcluster_agent_delete = db_process_sql('delete from tcluster_agent where id_agent = '.$value['id_agent'].' and id_cluster = '.$id_cluster);
+			}
+			
+		}
+		
+		header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=3&id_cluster=".$id_cluster);
+	}
+	
+	
+}
+elseif ($step == 3) {
+	
+	
+	
+
+	$assign_modules = get_parameter('assign_modules',0);
+	$cluster_modules = get_parameter('id_modules2',null); //abajao en assign
+	
+	if($assign_modules){
+		
+		$values_cluster_modules = array(
+			'id_cluster' => $id_cluster,
+			'id_module' => $cluster_modules
+			);
+			
+		// $modules_preasigned = db_get_all_rows_sql('select id_agent from tcluster_agent where id_cluster ='.$id_cluster);
+		// 
+		// foreach ($values_cluster_agents['id_agent'] as $key => $value) {
+		// 				
+		// 	$tcluster_agent = db_process_sql('insert into tcluster_agent values ('.$id_cluster.','.$value.')');
+		// 	
+		// 	if ($tcluster_agent !== false){	
+		// 		db_pandora_audit("Report management", "Agent #$value assigned to cluster #$id_cluster");
+		// 	}
+		// 	else{
+		// 		db_pandora_audit("Report management", "Fail try to assign agent to cluster");
+		// 	}
+		// 		
+		// }
+		// 
+		// foreach ($agents_preasigned as $key => $value) {
+		// 	
+		// 	if(!in_array($value['id_agent'],$values_cluster_agents['id_agent'])){
+		// 		$tcluster_agent_delete = db_process_sql('delete from tcluster_agent where id_agent = '.$value['id_agent'].' and id_cluster = '.$id_cluster);
+		// 	}
+		// 	
+		// }
+		
+		header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=4&id_cluster=".$id_cluster);
+	}
+	
+	
+	
+	
+}
 
 ui_print_page_header (__('Cluster')." &raquo; ".__('New'), "images/chart.png", false, "", false, $buttons);
 
 
 $active_tab = get_parameter('tab', 'main');
-
-
-
 
 switch ($active_tab) {
 	case 'main':

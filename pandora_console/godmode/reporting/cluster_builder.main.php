@@ -115,9 +115,9 @@ elseif($step == 2){
   
   echo "<td class='datos'>";
   echo "<br />";
-  html_print_image ('images/darrowright.png', false, array ('id' => 'right', 'title' => __('Add agents to cluster')));
+  html_print_image ('images/darrowright.png', false, array ('id' => 'agent_right', 'title' => __('Add agents to cluster')));
   echo "<br /><br /><br />";
-  html_print_image ('images/darrowleft.png', false, array ('id' => 'left', 'title' => __('Drop agents to cluster')));
+  html_print_image ('images/darrowleft.png', false, array ('id' => 'agent_left', 'title' => __('Drop agents to cluster')));
   echo "<br /><br /><br />";
   echo "</td>";
   
@@ -135,7 +135,7 @@ elseif($step == 2){
 }
 elseif ($step == 3) {
   
-  echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=3&assign_modules=1&id_cluster=".$id_cluster."'>";
+  echo "<form method='post' id='form_step_3' action='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=3&assign_modules=1&id_cluster=".$id_cluster."'>";
 
   echo "<table width='50%' cellpadding=4 cellspacing=4 class='databox filters'>";
 
@@ -164,35 +164,48 @@ elseif ($step == 3) {
   echo "<tr>";
   echo "<td class='datos'>";
   
+  
   $cluster_agents_in = agents_get_cluster_agents($id_cluster);
   
-  //  $cluster_modules_all = db_get_all_rows_sql('SELECT DISTINCT nombre, id_agente_modulo
-  //       FROM tagente_modulo t1
-  //       WHERE  t1.delete_pending = 0
-  //         AND t1.id_agente IN ()
-  //         AND (
-  //             SELECT count(nombre)
-  //             FROM tagente_modulo t2
-  //             t1.nombre = t2.nombre
-  //             AND t2.id_agente IN () = (' . count($cluster_agents_in) . ')
-  //             ORDER BY nombre');
-    
+  $serialize_agents = '';
   
-  html_print_select ($cluster_modules_all, 'id_modules[]', 0, false, '', '', false, true, true, '', false, 'width: 100%;', $option_style);
+  foreach ($cluster_agents_in as $value) {
+    
+    if ($value === end($cluster_agents_in)) {
+        $serialize_agents .= $value;
+    }
+    else{
+      $serialize_agents .= $value.',';
+    }
+    
+  }
+  
+  $cluster_modules_in = items_get_cluster_items_name($id_cluster);
+  
+   $cluster_modules_all = db_get_all_rows_sql('select count(nombre) as total ,nombre, id_agente_modulo,id_agente FROM
+    tagente_modulo where id_agente in (3,4) group by nombre having total = '.count($cluster_agents_in));
+    
+   foreach ($cluster_modules_all as $key => $value) {
+     $cluster_modules_all_name[$value['nombre']] = $value['nombre'];
+   }
+   
+   $cluster_modules_all_diff = array_diff($cluster_modules_all_name,$cluster_modules_in);
+           
+  html_print_select ($cluster_modules_all_diff, 'name_modules[]', 0, false, '', '', false, true, true, '', false, 'width: 100%;', $option_style);
   
   echo "</td>";
   
   echo "<td class='datos'>";
   echo "<br />";
-  html_print_image ('images/darrowright.png', false, array ('id' => 'right', 'title' => __('Add modules to cluster')));
+  html_print_image ('images/darrowright.png', false, array ('id' => 'module_right', 'title' => __('Add modules to cluster')));
   echo "<br /><br /><br />";
-  html_print_image ('images/darrowleft.png', false, array ('id' => 'left', 'title' => __('Drop modules to cluster')));
+  html_print_image ('images/darrowleft.png', false, array ('id' => 'module_left', 'title' => __('Drop modules to cluster')));
   echo "<br /><br /><br />";
   echo "</td>";
   
   echo "<td class='datos'>";
   
-  html_print_select ($cluster_modules_in, 'id_agents2[]', 0, false, '', '', false, true, true, '', false, 'width: 100%;', $option_style);
+  html_print_select ($cluster_modules_in, 'name_modules2[]', 0, false, '', '', false, true, true, '', false, 'width: 100%;', $option_style);
   
   echo "</td>";
   echo "</tr>";
@@ -204,6 +217,7 @@ elseif ($step == 3) {
 }
 elseif (condition) {
   html_debug('paso 4');
+  echo "<a href='http://127.0.0.1/pandora_console/index.php?sec=estado&sec2=enterprise/operation/cluster/cluster'>Crear otro</a>";
 }
 
 ?>
@@ -407,7 +421,7 @@ elseif (condition) {
 			return false;
 		});
 		
-		$("#right").click (function () {
+		$("#agent_right").click (function () {
 			jQuery.each($("select[name='id_agents[]'] option:selected"), function (key, value) {
 				
 				
@@ -424,7 +438,7 @@ elseif (condition) {
 			});
 		});
 		
-		$("#left").click(function() {
+		$("#agent_left").click(function() {
 			jQuery.each($("select[name='id_agents2[]'] option:selected"), function (key, value) {
 				agent_name = $(value).html();
 				if (agent_name != <?php echo "'".__('None')."'"; ?>){
@@ -442,6 +456,71 @@ elseif (condition) {
 			});
 		});
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    $("#module_right").click (function () {
+            
+      jQuery.each($("select[name='name_modules[]'] option:selected"), function (key, value) {
+        module_name = $(value).html();
+        if (module_name != <?php echo "'".__('None')."'"; ?>){
+          name_module = $(value).attr('value');
+          
+          //Remove the none value
+          $("#name_modules2").find("option[value='']").remove();
+          
+          $("select[name='name_modules2[]']").append($("<option>").val(name_module).html('<i>' + module_name + '</i>'));
+          $("#name_modules").find("option[value='" + name_module + "']").remove();
+        }
+      });
+    });
+    
+    $("#module_left").click(function() {
+      jQuery.each($("select[name='name_modules2[]'] option:selected"), function (key, value) {
+        module_name = $(value).html();
+        if (module_name != <?php echo "'".__('None')."'"; ?>){
+          name_module = $(value).attr('value');
+          $("select[name='name_modules[]']").append($("<option>").val(name_module).html('<i>' + module_name + '</i>'));
+          $("#name_modules2").find("option[value='" + name_module + "']").remove();
+        }
+    
+    //If empty the selectbox
+    if ($("#name_modules2 option").length == 0) {
+      $("select[name='name_modules2[]']")
+        .append($("<option>").val("")
+        .html("<?php echo __('None'); ?>"));
+    }
+  });
+});
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
      $( "#form_step_2" ).submit(function( event ) {
        if($( "#id_agents2 option" ).val() == ''){
          alert( <?php echo "'" . __('Please set agent distinct than ') . '"' . __('None') . '"' . "'"; ?> );
@@ -450,6 +529,31 @@ elseif (condition) {
        else{
          $("#id_agents2>option").prop("selected", true);
        }
-     });     
+     }); 
+     
+     
+     $( "#form_step_3" ).submit(function( event ) {
+       if($( "#name_modules2 option" ).val() == ''){
+         alert( <?php echo "'" . __('Please set module distinct than ') . '"' . __('None') . '"' . "'"; ?> );
+        event.preventDefault(); 
+       }
+       else{
+         $("#name_modules2>option").prop("selected", true);
+       }
+     }); 
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
 	});
 </script>

@@ -127,41 +127,39 @@ elseif ($step == 2) {
 }
 elseif ($step == 3) {
 	
-	
-	
-
 	$assign_modules = get_parameter('assign_modules',0);
-	$cluster_modules = get_parameter('id_modules2',null); //abajao en assign
+	$cluster_modules = get_parameter('name_modules2',null); //abajao en assign
 	
 	if($assign_modules){
 		
-		$values_cluster_modules = array(
-			'id_cluster' => $id_cluster,
-			'id_module' => $cluster_modules
-			);
+		$modules_preasigned = db_get_all_rows_sql('select id,name from tcluster_item where id_cluster ='.$id_cluster);
+		
+		foreach ($cluster_modules as $key => $value) {
 			
-		// $modules_preasigned = db_get_all_rows_sql('select id_agent from tcluster_agent where id_cluster ='.$id_cluster);
-		// 
-		// foreach ($values_cluster_agents['id_agent'] as $key => $value) {
-		// 				
-		// 	$tcluster_agent = db_process_sql('insert into tcluster_agent values ('.$id_cluster.','.$value.')');
-		// 	
-		// 	if ($tcluster_agent !== false){	
-		// 		db_pandora_audit("Report management", "Agent #$value assigned to cluster #$id_cluster");
-		// 	}
-		// 	else{
-		// 		db_pandora_audit("Report management", "Fail try to assign agent to cluster");
-		// 	}
-		// 		
-		// }
-		// 
-		// foreach ($agents_preasigned as $key => $value) {
-		// 	
-		// 	if(!in_array($value['id_agent'],$values_cluster_agents['id_agent'])){
-		// 		$tcluster_agent_delete = db_process_sql('delete from tcluster_agent where id_agent = '.$value['id_agent'].' and id_cluster = '.$id_cluster);
-		// 	}
-		// 	
-		// }
+			$tcluster_module_duplicate_check = db_get_all_rows_sql('select name,id_cluster from tcluster_item where name = "'.$value.'" and id_cluster = '.$id_cluster);
+			
+			if($tcluster_module_duplicate_check){
+				continue;
+			}
+									
+			$tcluster_module = db_process_sql('insert into tcluster_item (name,id_cluster) values ("'.$value.'",'.$id_cluster.')');
+			
+			if ($tcluster_module !== false){	
+				db_pandora_audit("Report management", "Module #$value assigned to cluster #$id_cluster");
+			}
+			else{
+				db_pandora_audit("Report management", "Fail try to assign module to cluster");
+			}
+				
+		}
+		
+		foreach ($modules_preasigned as $key => $value) {
+						
+			if(!in_array($value['name'],$cluster_modules)){
+				$tcluster_module_delete = db_process_sql('delete from tcluster_item where name = "'.$value['name'].'" and id_cluster = '.$id_cluster);
+			}
+			
+		}
 		
 		header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=4&id_cluster=".$id_cluster);
 	}

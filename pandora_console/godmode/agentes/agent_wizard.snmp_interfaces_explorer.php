@@ -96,7 +96,7 @@ if ($snmpwalk) {
 	// We get here only the interface part of the MIB, not full mib
 	foreach($snmpis as $key => $snmp) {
 		
-		$data = explode(': ',$snmp);
+		$data = explode (': ',$snmp, 2);
 		$keydata = explode('::',$key);
 		$keydata2 = explode('.',$keydata[1]);
 		
@@ -106,16 +106,8 @@ if ($snmpwalk) {
 		}
 		
 		if (array_key_exists(1,$data)) {
-			// Fixed for switch dell powerconnect
-			if(count($data) > 2) {
-				$interfaces[$keydata2[1]][$keydata2[0]]['type'] = $data[0];
-				unset($data[0]);
-				$interfaces[$keydata2[1]][$keydata2[0]]['value'] = implode(": ",$data);
-			} else {
-				$interfaces[$keydata2[1]][$keydata2[0]]['type'] = $data[0];
-				$interfaces[$keydata2[1]][$keydata2[0]]['value'] = $data[1];
-			}
-			
+			$interfaces[$keydata2[1]][$keydata2[0]]['type'] = $data[0];
+			$interfaces[$keydata2[1]][$keydata2[0]]['value'] = $data[1];        
 		} else {
 			$interfaces[$keydata2[1]][$keydata2[0]]['type'] = '';
 			$interfaces[$keydata2[1]][$keydata2[0]]['value'] = $data[0];

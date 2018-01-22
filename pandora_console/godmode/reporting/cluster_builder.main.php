@@ -19,6 +19,142 @@ global $config;
 // CREATE/EDIT CLUSTER FORM
 // -----------------------
 
+echo '<ol class="steps">';
+
+if (defined('METACONSOLE')) {
+  
+  $sec = 'advanced';
+}
+else {
+  
+  $sec = 'galertas';
+}
+
+$pure = get_parameter('pure', 0);
+
+/* Step 1 */
+if ($step == 1)
+  echo '<li class="first current">';
+elseif ($step > 1)
+  echo '<li class="visited">';
+else
+  echo '<li class="first">';
+
+if ($id) {
+  echo '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&id='.$id.'&pure='.$pure.'">';
+  echo __('Step') . ' 1 &raquo; ';
+  echo '<span>' . __('Cluster settings') . '</span>';
+  echo '</a>';
+}
+else {
+  echo __('Step') . ' 1 &raquo; ';
+  echo '<span>' . __('Cluster settings') . '</span>';
+}
+echo '</li>';
+
+/* Step 2 */
+if ($step == 2)
+  echo '<li class="current">';
+elseif ($step > 2)
+  echo '<li class="visited">';
+else
+  echo '<li>';
+
+if ($id) {
+  echo '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&id='.$id.'&step=2&pure='.$pure.'">';
+  echo __('Step').' 2 &raquo; ';
+  echo '<span>'.__('Cluster agents').'</span>';
+  echo '</a>';
+}
+else {
+  echo __('Step').' 2 &raquo; ';
+  echo '<span>'.__('Cluster agents').'</span>';
+}
+echo '</li>';
+
+/* Step 3 */
+if ($step == 3)
+  echo '<li class="last current">';
+elseif ($step > 3)
+  echo '<li class="last visited">';
+else
+  echo '<li class="last">';
+
+if ($id) {
+  echo '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&id='.$id.'&step=3&pure='.$pure.'">';
+  echo __('Step').' 3 &raquo; ';
+  echo '<span>'.__('Active modules').'</span>';
+  echo '</a>';
+}
+else {
+  echo __('Step').' 3 &raquo; ';
+  echo '<span>'.__('Active modules').'</span>';
+}
+echo '</li>';
+
+/* Step 3 */
+if ($step == 4)
+  echo '<li class="last current">';
+elseif ($step > 4)
+  echo '<li class="last visited">';
+else
+  echo '<li class="last">';
+
+if ($id) {
+  echo '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&id='.$id.'&step=3&pure='.$pure.'">';
+  echo __('Step').' 4 &raquo; ';
+  echo '<span>'.__('Modules limits').'</span>';
+  echo '</a>';
+}
+else {
+  echo __('Step').' 4 &raquo; ';
+  echo '<span>'.__('Modules limits').'</span>';
+}
+echo '</li>';
+
+/* Step 3 */
+if ($step == 5)
+  echo '<li class="last current">';
+elseif ($step > 5)
+  echo '<li class="last visited">';
+else
+  echo '<li class="last">';
+
+if ($id) {
+  echo '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&id='.$id.'&step=3&pure='.$pure.'">';
+  echo __('Step').' 5 &raquo; ';
+  echo '<span>'.__('Balanced modules').'</span>';
+  echo '</a>';
+}
+else {
+  echo __('Step').' 5 &raquo; ';
+  echo '<span>'.__('Balanced modules').'</span>';
+}
+echo '</li>';
+
+/* Step 3 */
+if ($step == 6)
+  echo '<li class="last current">';
+elseif ($step > 6)
+  echo '<li class="last visited">';
+else
+  echo '<li class="last">';
+
+if ($id) {
+  echo '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&id='.$id.'&step=3&pure='.$pure.'">';
+  echo __('Step').' 6 &raquo; ';
+  echo '<span>'.__('Critical modules').'</span>';
+  echo '</a>';
+}
+else {
+  echo __('Step').' 6 &raquo; ';
+  echo '<span>'.__('Critical modules').'</span>';
+}
+echo '</li>';
+
+echo '</ol>';
+echo '<div id="steps_clean"> </div>';
+
 if($step == 1){
 
   if ($edit_cluster)
@@ -29,7 +165,7 @@ if($step == 1){
   echo "<table width='40%' cellpadding=4 cellspacing=4 class='databox filters'>";
   echo "<tr>";
   echo "<td class='datos'><b>".__('Cluster name')."</b>".ui_print_help_tip (__("An agent with the same name of the cluster will be created, as well a special service with the same name"), true)."</td>";
-  echo "<td class='datos'><input type='text' name='name' size='50'></td>";
+  echo "<td class='datos'><input type='text' name='name' size='50'><img style='width:20px;height:20px' src='images/error_1.png'></td>";
   echo "<tr>";
   echo "<tr>";
   echo "<td class='datos'><b>".__('Cluster type')."</b>";
@@ -101,7 +237,7 @@ elseif($step == 2){
   echo "<td class='datos'>";
   
   $option_style = array();
-  $cluster_agents_in = agents_get_cluster_agents($id_cluster);    
+  $cluster_agents_in = agents_get_cluster_agents_alias($id_cluster);    
   $cluster_agents_all = agents_get_group_agents(0, false, '');
   $cluster_agents_out = array();
   $cluster_agents_out = array_diff_key($template_agents_all, $template_agents_in);
@@ -165,13 +301,13 @@ elseif ($step == 3) {
   echo "<td class='datos'>";
   
   
-  $cluster_agents_in = agents_get_cluster_agents($id_cluster);
+  $cluster_agents_in_id = agents_get_cluster_agents_id($id_cluster);
   
   $serialize_agents = '';
   
-  foreach ($cluster_agents_in as $value) {
+  foreach ($cluster_agents_in_id as $value) {
     
-    if ($value === end($cluster_agents_in)) {
+    if ($value === end($cluster_agents_in_id)) {
         $serialize_agents .= $value;
     }
     else{
@@ -179,11 +315,10 @@ elseif ($step == 3) {
     }
     
   }
-  
   $cluster_modules_in = items_get_cluster_items_name($id_cluster);
   
    $cluster_modules_all = db_get_all_rows_sql('select count(nombre) as total ,nombre, id_agente_modulo,id_agente FROM
-    tagente_modulo where id_agente in (3,4) group by nombre having total = '.count($cluster_agents_in));
+    tagente_modulo where id_agente in ('.$serialize_agents.') group by nombre having total = '.count($cluster_agents_in_id));
     
    foreach ($cluster_modules_all as $key => $value) {
      $cluster_modules_all_name[$value['nombre']] = $value['nombre'];
@@ -215,9 +350,174 @@ elseif ($step == 3) {
   echo "</form>";
       
 }
-elseif (condition) {
-  html_debug('paso 4');
-  echo "<a href='http://127.0.0.1/pandora_console/index.php?sec=estado&sec2=enterprise/operation/cluster/cluster'>Crear otro</a>";
+elseif ($step == 4) {
+  
+  echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=4&assign_limits=1&id_cluster=".$id_cluster."'>";
+
+  echo "<table width='50%' cellpadding=4 cellspacing=4 class='databox filters'>";
+
+  echo "<tr>";
+  echo "<th><b>".__('Common modules')."</b></th>";
+  echo "<th><b>".__('Critical if')."</b></th>";
+  echo "<th><b>".__('Warning if')."</b></th>";
+  echo "<th><b>".__('Actions')."</b></th>";
+  echo "</tr>";
+  
+  $cluster_items = items_get_cluster_items_id_name($id_cluster);
+  
+  foreach ($cluster_items as $key => $value) {
+    echo "<tr>";
+    echo "<td class='datos'>".$value."</td>";
+    echo "<td class='datos'><input class='zero_hundred' value='".get_item_critical_limit_by_item_id($key)."' name='critical_item_".$key."' type='number' max='100' min='0' style='width:60%;' onkeydown='javascript: return event.keyCode == 69 ? false : true'> &nbsp;&nbsp;are down</td>";
+    echo "<td class='datos'><input class='zero_hundred' value='".get_item_warning_limit_by_item_id($key)."' name='warning_item_".$key."' type='number' max='100' min='0' style='width:60%;' onkeydown='javascript: return event.keyCode == 69 ? false : true'> &nbsp;&nbsp;are down</td>";
+    echo "<td class='datos'><a href='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=4&delete_module=".$key."&id_cluster=".$id_cluster."'><img src='images/cross.png'></a></td>";
+    echo "</tr>";
+    
+    
+  }
+  
+  
+  echo "</table>";
+  
+  echo "<div style='width:50%'><input style='float:right;' type=submit name='store' class='sub upd' value='".__('Update and Next')."'></div>";
+  
+  echo "</form>";
+  
+}
+elseif ($step == 5) {
+  
+  echo "<form method='post' id='form_step_3' action='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=5&assign_balanced_modules=1&id_cluster=".$id_cluster."'>";
+
+  echo "<table width='50%' cellpadding=4 cellspacing=4 class='databox filters'>";
+
+  echo "<tr>";
+  echo "<td class='datos'><b>".__('Cluster name')."</b></td>";
+  echo "<td class='datos'>".clusters_get_name($id_cluster)."</td>";
+  echo "</tr>";
+  
+  echo "<tr>";
+  echo "<td class='datos'><b>".__('Adding balanced modules')."</b></td>";
+  echo "</tr>";
+  
+  echo "<tr>";
+  echo "<td  class='datos'>";
+    // $attr = array('id' => 'image-select_all_available', 'title' => __('Select all'), 'style' => 'cursor: pointer;');
+  echo "<b>" . __('Modules')."</b>&nbsp;&nbsp;" . html_print_image ('images/tick.png', true, $attr, false, true);
+  echo "</td>";
+  
+  echo "<td class='datos'>";
+  echo "</td>";
+  
+  echo "<td  class='datos'>";
+    // $attr = array('id' => 'image-select_all_apply', 'title' => __('Select all'), 'style' => 'cursor: pointer;');
+  echo "<b>" . __('Added balanced modules')."</b>&nbsp;&nbsp;" . html_print_image ('images/tick.png', true, $attr, false, true);
+  echo "</td>";
+  echo "<tr>";
+  echo "<td class='datos'>";
+  
+  
+  $cluster_agents_in_id = agents_get_cluster_agents_id($id_cluster);
+  
+  $serialize_agents = '';
+  
+  foreach ($cluster_agents_in_id as $value) {
+    
+    if ($value === end($cluster_agents_in_id)) {
+        $serialize_agents .= $value;
+    }
+    else{
+      $serialize_agents .= $value.',';
+    }
+    
+  }
+  
+  $balanced_modules_all = db_get_all_rows_sql('select nombre from tagente_modulo where id_agente_modulo in ('.$serialize_agents.')');
+  
+  foreach ($balanced_modules_all as $key => $value) {
+    $balanced_modules_all_name[$value['nombre']] = $value['nombre'];
+  }
+  
+  $balanced_modules_in = items_get_cluster_items_name($id_cluster,'AP');
+    
+  $balanced_modules_all_diff = array_diff($balanced_modules_all_name,$balanced_modules_in);
+         
+  html_print_select ($balanced_modules_all_diff, 'name_modules[]', 0, false, '', '', false, true, true, '', false, 'width: 100%;', $option_style);
+  
+  echo "</td>";
+  
+  echo "<td class='datos'>";
+  echo "<br />";
+  html_print_image ('images/darrowright.png', false, array ('id' => 'module_right', 'title' => __('Add modules to cluster')));
+  echo "<br /><br /><br />";
+  html_print_image ('images/darrowleft.png', false, array ('id' => 'module_left', 'title' => __('Drop modules to cluster')));
+  echo "<br /><br /><br />";
+  echo "</td>";
+  
+  echo "<td class='datos'>";
+  
+  html_print_select ($balanced_modules_in, 'name_modules2[]', 0, false, '', '', false, true, true, '', false, 'width: 100%;', $option_style);
+  
+  echo "</td>";
+  echo "</tr>";
+  echo "</table>";
+
+  echo "<div style='width:50%'><input style='float:right;' type=submit name='store' class='sub upd' value='".__('Update and Next')."'></div>";
+  echo "</form>";
+  
+}
+elseif ($step == 6) {
+  
+  $cluster_agents_in_id = agents_get_cluster_agents_id($id_cluster);
+  
+  $serialize_agents = '';
+  
+  foreach ($cluster_agents_in_id as $value) {
+    
+    if ($value === end($cluster_agents_in_id)) {
+        $serialize_agents .= $value;
+    }
+    else{
+      $serialize_agents .= $value.',';
+    }
+    
+  }
+  
+  $balanced_modules_critical = items_get_cluster_items_id_critical($id_cluster);
+  
+  echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=6&assign_critical=1&id_cluster=".$id_cluster."'>";
+
+  echo "<h2><b>".__('Balanced modules settings')."</b></h2>";
+
+  echo "<table width='40%' cellpadding=4 cellspacing=4 class='databox filters'>";
+    
+  echo "<tr>";
+  echo "<th><b>".__('Balanced module')."</b></th>";
+  echo "<th><b>".__('is critical module')."</b></th>";
+  echo "<th><b>".__('Actions')."</b></th>";
+  echo "</tr>";
+  
+  foreach ($balanced_modules_critical as $key => $value) {
+    echo "<tr>";
+    echo "<td class='datos'>".items_get_name($key)."</td>";
+    
+    
+    if($value){
+      echo "<td class='datos'><input class='is_critical_check' name='is_critical_item_".$key."' type='checkbox' checked value='1'></td>";
+    }
+    else{
+      echo "<td class='datos'><input class='is_critical_check' name='is_critical_item_".$key."' type='checkbox' value='1'></td>";
+    }
+    
+    echo "<td class='datos'><a href='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=6&delete_module=".$key."&id_cluster=".$id_cluster."'><img src='images/cross.png'></a></td>";
+    echo "</tr>";
+    
+  }
+  
+  echo "</table>";
+  
+  echo "<div style='width:40%'><input style='float:right;' type=submit name='store' class='sub upd' value='".__('Update and Finish')."'></div>";
+  
+  echo "</form>";
 }
 
 ?>
@@ -543,11 +843,27 @@ elseif (condition) {
      }); 
          
          
-         
-         
-         
-         
-         
+     $(".zero_hundred").keydown(function( event ) {
+       input_zero_hundred = $(this).val();
+     });
+     
+     $(".zero_hundred").keyup(function( event ) {
+       if($(this).val() > 100){
+         $(this).val(100);
+         return false;
+       }
+       else if ($(this).val() < 0) {
+         $(this).val(0);
+         return false;
+       }
+     }); 
+     
+     
+     $('.is_critical_check').click(function(){
+       
+      
+     });
+          
          
          
          

@@ -321,6 +321,9 @@ define ('MODULE_WUX',           8);
 define ('MODULE_PREDICTION_SERVICE',	2);
 define ('MODULE_PREDICTION_SYNTHETIC',	3);
 define ('MODULE_PREDICTION_NETFLOW',	4);
+define ('MODULE_PREDICTION_CLUSTER',	5);
+define ('MODULE_PREDICTION_CLUSTER_AA',	6);
+define ('MODULE_PREDICTION_CLUSTER_AP',	7);
 
 /* SNMP CONSTANTS */
 define('SNMP_DIR_MIBS',		"attachment/mibs");

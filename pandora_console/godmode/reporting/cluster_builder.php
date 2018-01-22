@@ -84,6 +84,8 @@ if ($add_cluster) {
 		$edit_cluster = false;
 }
 
+ui_print_page_header (__('Cluster')." &raquo; ".__('New'), "images/chart.png", false, "", false, $buttons);
+
 }
 elseif ($step == 2) {
 	
@@ -123,6 +125,7 @@ elseif ($step == 2) {
 		header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=3&id_cluster=".$id_cluster);
 	}
 	
+	ui_print_page_header (__('Cluster')." &raquo; ".__('New'), "images/chart.png", false, "", false, $buttons);
 	
 }
 elseif ($step == 3) {
@@ -162,14 +165,136 @@ elseif ($step == 3) {
 		}
 		
 		header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=4&id_cluster=".$id_cluster);
+		}
+		
+		ui_print_page_header (__('Cluster')." &raquo; ".__('New'), "images/chart.png", false, "", false, $buttons);
+		
 	}
-	
-	
-	
-	
-}
+	elseif ($step == 4) {
+		
+		$cluster_items = items_get_cluster_items_id($id_cluster);
+		$assign_limits = get_parameter('assign_limits',0);
+		
+		if($assign_limits == 1){
+		
+		foreach ($cluster_items as $key => $value) {
+			$critical_values[$value] = get_parameter('critical_item_'.$value,0);
+			$warning_values[$value] = get_parameter('warning_item_'.$value,0);
+		}
+						
+				foreach ($critical_values as $key => $value) {
+					$titem_critical_limit = db_process_sql('update tcluster_item set critical_limit = '.$value.' where id = '.$key);
+					
+					if ($titem_critical_limit !== false){	
+						db_pandora_audit("Report management", "Critical limit #$value assigned to item #$key");
+					}
+					else{
+						db_pandora_audit("Report management", "Fail try to assign critical limit to item #$key");
+					}
+						
+				}
+				
+				foreach ($warning_values as $key => $value) {
+				
+					$titem_warning_limit = db_process_sql('update tcluster_item set warning_limit = '.$value.' where id = '.$key);
+							
+					if ($titem_warning_limit !== false){	
+						db_pandora_audit("Report management", "Critical limit #$value assigned to item #$key");
+					}
+					else{
+						db_pandora_audit("Report management", "Fail try to assign warning limit to item #$key");
+					}
+								
+				}
+				
+				$cluster_type = clusters_get_cluster_id_type($id_cluster);
+								
+				if($cluster_type[$id_cluster] == 'AP'){
+					header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=5&id_cluster=".$id_cluster);	
+				}
+				elseif ($cluster_type[$id_cluster] == 'AA') {
+					header ("Location: index.php?sec=estado&sec2=enterprise/operation/cluster/cluster");	
+				}
+				
+			}
+			
+			ui_print_page_header (__('Cluster')." &raquo; ".clusters_get_name($id_cluster), "images/chart.png", false, "", false, $buttons);
+				
+	}
+	elseif ($step == 5) {
+		
+		$assign_balanced_modules = get_parameter('assign_balanced_modules',0);
+		$balanced_modules = get_parameter('name_modules2',null); //abajao en assign
+		
+		if($assign_balanced_modules){
+			
+			$balanced_modules_preasigned = db_get_all_rows_sql('select id,name,item_type from tcluster_item where id_cluster ='.$id_cluster.' and item_type = "AP"');
+			
+			foreach ($balanced_modules as $key => $value) {
+				
+				$tcluster_balanced_module_duplicate_check = db_get_all_rows_sql('select name,id_cluster,item_type from tcluster_item where name = "'.$value.'" and id_cluster = '.$id_cluster.' and item_type = "AP"');
+				
+				if($tcluster_balanced_module_duplicate_check){
+					continue;
+				}
+										
+				$tcluster_balanced_module = db_process_sql('insert into tcluster_item (name,id_cluster,item_type) values ("'.$value.'",'.$id_cluster.',"AP")');
+				
+				if ($tcluster_balanced_module !== false){	
+					db_pandora_audit("Report management", "Module #$value assigned to cluster #$id_cluster");
+				}
+				else{
+					db_pandora_audit("Report management", "Fail try to assign module to cluster");
+				}
+					
+			}
+			
+			foreach ($balanced_modules_preasigned as $key => $value) {
+							
+				if(!in_array($value['name'],$balanced_modules)){
+					$tcluster_balanced_module_delete = db_process_sql('delete from tcluster_item where name = "'.$value['name'].'" and id_cluster = '.$id_cluster.' and item_type = "AP"');
+				}
+				
+			}
+			
+			header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=6&id_cluster=".$id_cluster);
+			}
+		
+		ui_print_page_header (__('Cluster')." &raquo; ".clusters_get_name($id_cluster), "images/chart.png", false, "", false, $buttons);
+		
+	}
+	elseif ($step == 6) {
+		
+		$cluster_items = items_get_cluster_items_id($id_cluster,'AP');
+		$assign_critical = get_parameter('assign_critical',0);
+		
+		foreach ($cluster_items as $key => $value) {
+			
+			$is_critical_values[$value] = get_parameter('is_critical_item_'.$value,0);
+		}
+		
+		if($assign_critical == 1){
+			
+				foreach ($is_critical_values as $key => $value) {
+										
+				$titem_is_critical = db_process_sql('update tcluster_item set is_critical = '.$value.' where id = '.$key);
+				
+					if ($titem_is_critical !== false){	
+						db_pandora_audit("Report management", "Module #$key critical mode is now $value");
+					}
+					else{
+						db_pandora_audit("Report management", "Fail try to assign critical mode to item #$key");
+					}
+						
+				}
+				
+			}
+			
+			ui_print_page_header (__('Cluster')." &raquo; ".__('New'), "images/chart.png", false, "", false, $buttons);
+			
+	}
 
-ui_print_page_header (__('Cluster')." &raquo; ".__('New'), "images/chart.png", false, "", false, $buttons);
+
 
 
 $active_tab = get_parameter('tab', 'main');

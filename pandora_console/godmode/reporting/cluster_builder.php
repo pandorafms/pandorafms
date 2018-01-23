@@ -114,7 +114,7 @@ elseif ($step == 2) {
 		$agents_preasigned = db_get_all_rows_sql('select id_agent from tcluster_agent where id_cluster ='.$id_cluster);
 		
 		foreach ($values_cluster_agents['id_agent'] as $key => $value) {
-						
+			
 			$tcluster_agent = db_process_sql('insert into tcluster_agent values ('.$id_cluster.','.$value.')');
 			
 			if ($tcluster_agent !== false){	

@@ -237,8 +237,15 @@ elseif($step == 2){
   echo "<td class='datos'>";
   
   $option_style = array();
-  $cluster_agents_in = agents_get_cluster_agents_alias($id_cluster);    
-  $cluster_agents_all = agents_get_group_agents(0, false, '');
+  $cluster_agents_in = agents_get_cluster_agents_alias($id_cluster); 
+  // $cluster_agents_all = agents_get_group_agents(0, false, '');
+  
+  $cluster_agents_all_pre = db_get_all_rows_sql('select * from tagente where id_os != 21');
+  
+  foreach ($cluster_agents_all_pre as $key => $value) {
+    $cluster_agents_all[$value['id_agente']] = $value['alias'];
+  }
+  
   $cluster_agents_out = array();
   $cluster_agents_out = array_diff_key($template_agents_all, $template_agents_in);
   
@@ -525,53 +532,53 @@ elseif ($step == 6) {
 <script type="text/javascript">
 	
 	
-	function filterByGroup(idGroup, idSelect) {
-		$('#loading_group').show();
-		
-		$('#id_agents' + idSelect).empty ();
-		search = $("#text-agent_filter" + idSelect).val();
-		
-		jQuery.post (
-			<?php
-			echo "'" . ui_get_full_url(false, false, false, false) . "'";
-			?>
-			+ "/ajax.php", {
-				"page" : "godmode/groups/group_list",
-				"get_group_agents" : 1,
-				"search" : search,
-				"id_group" : idGroup,
-				// Add a key prefix to avoid auto sorting in js object conversion
-				"keys_prefix" : "_",
-				// Juanma (22/05/2014) Fix: Dont show void agents in template wizard
-				"show_void_agents" : 0
-			},
-			function (data, status) {
-				
-				var group_agents = new Array();
-				var group_agents_keys = new Array();
-				
-				jQuery.each (data, function (id, value) {
-					// Remove keys_prefix from the index
-					id = id.substring(1);
-					
-					group_agents.push(value);
-					group_agents_keys.push(id);
-				});
-				
-				if(idSelect == '') {
-					agents_out_keys = group_agents_keys; 
-					agents_out = group_agents; 
-				}
-				else {
-					agents_in_keys = group_agents_keys; 
-					agents_in = group_agents; 
-				}
-				
-				refresh_agents($("#text-agent_filter"+idSelect).attr('value'), agents_out_keys, agents_out, $("#id_agents"+idSelect), <?php if (defined('METACONSOLE')) echo 1; else echo 0; ?>);		
-			},
-			"json"
-		);
-	}
+	// function filterByGroup(idGroup, idSelect) {
+	// 	$('#loading_group').show();
+	// 	
+	// 	$('#id_agents' + idSelect).empty ();
+	// 	search = $("#text-agent_filter" + idSelect).val();
+	// 	
+	// 	jQuery.post (
+	// 		<?php
+	// 		echo "'" . ui_get_full_url(false, false, false, false) . "'";
+	// 		?>
+	// 		+ "/ajax.php", {
+	// 			"page" : "godmode/groups/group_list",
+	// 			"get_group_agents" : 1,
+	// 			"search" : search,
+	// 			"id_group" : idGroup,
+	// 			// Add a key prefix to avoid auto sorting in js object conversion
+	// 			"keys_prefix" : "_",
+	// 			// Juanma (22/05/2014) Fix: Dont show void agents in template wizard
+	// 			"show_void_agents" : 0
+	// 		},
+	// 		function (data, status) {
+	// 			
+	// 			var group_agents = new Array();
+	// 			var group_agents_keys = new Array();
+	// 			
+	// 			jQuery.each (data, function (id, value) {
+	// 				// Remove keys_prefix from the index
+	// 				id = id.substring(1);
+	// 				
+	// 				group_agents.push(value);
+	// 				group_agents_keys.push(id);
+	// 			});
+	// 			
+	// 			if(idSelect == '') {
+	// 				agents_out_keys = group_agents_keys; 
+	// 				agents_out = group_agents; 
+	// 			}
+	// 			else {
+	// 				agents_in_keys = group_agents_keys; 
+	// 				agents_in = group_agents; 
+	// 			}
+	// 			
+	// 			refresh_agents($("#text-agent_filter"+idSelect).attr('value'), agents_out_keys, agents_out, $("#id_agents"+idSelect), <?php if (defined('METACONSOLE')) echo 1; else echo 0; ?>);		
+	// 		},
+	// 		"json"
+	// 	);
+	// }
 	
 	function filterByGroupMetaconsole(groupName, idSelect) {
 		$('#loading_group_filter_group').show();
@@ -685,21 +692,21 @@ elseif ($step == 6) {
 	}
 	
 	$(document).ready (function () {
-		if ($('#hidden-metaconsole_activated').val() == 1) {
-			filterByGroupMetaconsole($("#group").val(), '');
-		}
-		else {
-			filterByGroup($("#group").val(), '');
-		}
-		
-		$("select[name='group']").change(function(){
-			if ($('#hidden-metaconsole_activated').val() == 1) {
-				filterByGroupMetaconsole($(this).val(), '');
-			}
-			else {
-				filterByGroup($(this).val(), '');
-			}
-		});
+		// if ($('#hidden-metaconsole_activated').val() == 1) {
+		// 	filterByGroupMetaconsole($("#group").val(), '');
+		// }
+		// else {
+		// 	filterByGroup($("#group").val(), '');
+		// }
+		// 
+		// $("select[name='group']").change(function(){
+		// 	if ($('#hidden-metaconsole_activated').val() == 1) {
+		// 		filterByGroupMetaconsole($(this).val(), '');
+		// 	}
+		// 	else {
+		// 		filterByGroup($(this).val(), '');
+		// 	}
+		// });
 		
 		$("#text-agent_filter").keyup (function () {
 			$('#loading_filter').show();

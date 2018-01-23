@@ -3038,10 +3038,11 @@ create table IF NOT EXISTS `tcluster`(
     `name` tinytext not null default '',
     `cluster_type` enum('AA','AP') not null default 'AA',
 		`description` text not null default '',
-		`group` mediumint(4) unsigned,
+		`group` int(10) unsigned NOT NULL default '0',
+		`id_agent` int(10) unsigned NOT NULL,
 		PRIMARY KEY (`id`),
-		FOREIGN KEY (`group`) REFERENCES tgrupo(`id_grupo`)
-			ON DELETE SET NULL ON UPDATE CASCADE
+		FOREIGN KEY (`id_agent`) REFERENCES tagente(`id_agente`)
+			ON UPDATE CASCADE
 ) engine=InnoDB DEFAULT CHARSET=utf8;
 
 -- ---------------------------------------------------------------------

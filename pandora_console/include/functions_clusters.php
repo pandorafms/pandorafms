@@ -163,6 +163,47 @@ function clusters_get_cluster_id_type ($id){
   return ($post_clusters);
 }
 
+function clusters_get_user ($id_user = 0, $only_names = false, $returnAllGroup = true, $privileges = 'RR') {
+	global $config;
+	
+	if (!$id_user) {
+		$id_user = $config['id_user'];
+	}
+	
+	$groups = users_get_groups ($id_user, $privileges, $returnAllGroup);
+	
+	$all_clusters = db_get_all_rows_in_table ('tcluster', 'name');
+	if ($all_clusters === false)
+		return array ();
+	
+	$clusters = array ();
+	foreach ($all_clusters as $cluster) {
+		if (!in_array($cluster['id_group'], array_keys($groups)))
+			continue;
+		
+		if ($cluster["id_user"] != $id_user && $cluster['private'])
+			continue;
+		
+		if ($cluster["id_group"] > 0)
+			if (!isset($groups[$cluster["id_group"]])) {
+				continue;
+			}
+		
+		if ($only_names) {
+			$clusters[$cluster['id_cluster']] = $cluster['name'];
+		}
+		else {
+			$clusters[$cluster['id_cluster']] = $cluster;
+			$clustersCount = db_get_value_sql("SELECT COUNT(id_gs)
+				FROM tcluster_source
+				WHERE id_cluster = " . $cluster['id_cluster']);
+			$clusters[$cluster['id_cluster']]['clusters_count'] = $clustersCount;
+		}
+	}
+	
+	return $clusters;
+}
+
 
 
 

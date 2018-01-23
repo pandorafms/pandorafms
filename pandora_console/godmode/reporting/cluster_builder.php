@@ -40,29 +40,41 @@ if ($add_cluster) {
 	$description = get_parameter_post ("description");
 	$idGroup = get_parameter_post ('cluster_id_group');
 
-	// Create cluster
-	$values_cluster = array(
-		'name' => $name,
-    'cluster_type' => $cluster_type,
-		'description' => $description,
-		'group' => $idGroup,
-		);
-    
   // Create agent
     
   $values_agent = array(
-		'nombre' => hash("sha256",$name . "|" ."127.0.0.1" ."|". time() ."|". sprintf("%04d", rand(0,10000))),
-    // 'nombre' => $name,
+		'nombre' => $name,
     'alias' => $name,
 		'comentarios' => $description,
-		'id_grupo' => $idGroup
+		'id_grupo' => $idGroup,
+		'id_os' => 21
 		);
 	
 	if (trim($name) != "") {
-		$id_cluster = db_process_sql_insert('tcluster', $values_cluster);
-    
+		
     $id_agent = db_process_sql_insert('tagente',$values_agent);
-    
+		
+		// Create cluster
+		$values_cluster = array(
+			'name' => $name,
+	    'cluster_type' => $cluster_type,
+			'description' => $description,
+			'group' => $idGroup,
+			'id_agent' => $id_agent
+			);
+			
+		$id_cluster = db_process_sql_insert('tcluster', $values_cluster);
+		
+		
+		$values_module = array(
+			'nombre' => 'Cluster status',
+			'id_modulo' => 5,
+			'prediction_module' => 5,
+			'id_agente' =>$id_agent
+			);
+			
+		$id_module = db_process_sql_insert('tagente_modulo', $values_module);
+		
 		if ($id_cluster !== false)
 			db_pandora_audit("Report management", "Create cluster #$id_cluster");
 		else
@@ -146,6 +158,20 @@ elseif ($step == 3) {
 			}
 									
 			$tcluster_module = db_process_sql('insert into tcluster_item (name,id_cluster) values ("'.$value.'",'.$id_cluster.')');
+			
+			$id_agent = db_process_sql('select id_agent from tcluster where id = '.$id_cluster);
+			
+			$id_parent_modulo = db_process_sql('select id_agente_modulo from tagente_modulo where id_agente = '.$id_agent[0]['id_agent'].' and nombre = "Cluster status"');
+			
+			$values_module = array(
+				'nombre' => $value,
+				'id_modulo' => 5,
+				'prediction_module' => 6,
+				'id_agente' => $id_agent[0]['id_agent'],
+				'parent_module_id' => $id_parent_modulo[0]['id_agente_modulo']
+				);
+				
+			$id_module = db_process_sql_insert('tagente_modulo', $values_module);
 			
 			if ($tcluster_module !== false){	
 				db_pandora_audit("Report management", "Module #$value assigned to cluster #$id_cluster");
@@ -237,6 +263,20 @@ elseif ($step == 3) {
 				if($tcluster_balanced_module_duplicate_check){
 					continue;
 				}
+				
+				$id_agent = db_process_sql('select id_agent from tcluster where id = '.$id_cluster);
+				
+				$id_parent_modulo = db_process_sql('select id_agente_modulo from tagente_modulo where id_agente = '.$id_agent[0]['id_agent'].' and nombre = "Cluster status"');
+				
+				$values_module = array(
+					'nombre' => $value,
+					'id_modulo' => 5,
+					'prediction_module' => 7,
+					'id_agente' => $id_agent[0]['id_agent'],
+					'parent_module_id' => $id_parent_modulo[0]['id_agente_modulo']
+					);
+					
+				$id_module = db_process_sql_insert('tagente_modulo', $values_module);
 										
 				$tcluster_balanced_module = db_process_sql('insert into tcluster_item (name,id_cluster,item_type) values ("'.$value.'",'.$id_cluster.',"AP")');
 				
@@ -287,6 +327,8 @@ elseif ($step == 3) {
 					}
 						
 				}
+				
+			header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_view&id=".$id_cluster);	
 				
 			}
 			

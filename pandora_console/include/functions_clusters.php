@@ -145,7 +145,7 @@ function get_item_critical_limit_by_item_id ($id){
 
 function get_item_warning_limit_by_item_id ($id){
 	
-	$warning_limit = (string) db_get_value ('critical_limit', 'tcluster_item', 'id', (int) $id);
+	$warning_limit = (string) db_get_value ('warning_limit', 'tcluster_item', 'id', (int) $id);
 	
   return $warning_limit;
 }

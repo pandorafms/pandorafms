@@ -159,7 +159,9 @@ elseif ($step == 3) {
 				continue;
 			}
 									
-			$tcluster_module = db_process_sql('insert into tcluster_item (name,id_cluster) values ("'.$value.'",'.$id_cluster.')');
+			// $tcluster_module = db_process_sql('insert into tcluster_item (name,id_cluster,critical_limit,warning_limit) values ("'.$value.'",'.$id_cluster.',100,0)');
+			
+			$tcluster_module = db_process_sql_insert('tcluster_item',array('name'=>$value,'id_cluster'=>$id_cluster,'critical_limit'=>100,'warning_limit'=>0));
 			
 			$id_agent = db_process_sql('select id_agent from tcluster where id = '.$id_cluster);
 			
@@ -171,7 +173,8 @@ elseif ($step == 3) {
 				'prediction_module' => 6,
 				'id_agente' => $id_agent[0]['id_agent'],
 				'parent_module_id' => $id_parent_modulo[0]['id_agente_modulo'],
-				'custom_integer_1' =>$id_cluster
+				'custom_integer_1' =>$id_cluster,
+				'custom_integer_2' =>$tcluster_module
 				);
 				
 			$id_module = db_process_sql_insert('tagente_modulo', $values_module);
@@ -271,19 +274,20 @@ elseif ($step == 3) {
 				
 				$id_parent_modulo = db_process_sql('select id_agente_modulo from tagente_modulo where id_agente = '.$id_agent[0]['id_agent'].' and nombre = "Cluster status"');
 				
+				$tcluster_balanced_module = db_process_sql_insert('tcluster_item',array('name'=>$value,'id_cluster'=>$id_cluster,'item_type'=>"AP"));
+				
 				$values_module = array(
 					'nombre' => $value,
 					'id_modulo' => 5,
 					'prediction_module' => 7,
 					'id_agente' => $id_agent[0]['id_agent'],
 					'parent_module_id' => $id_parent_modulo[0]['id_agente_modulo'],
-					'custom_integer_1' =>$id_cluster
+					'custom_integer_1' => $id_cluster,
+					'custom_integer_2' => $tcluster_balanced_module
 					);
 					
 				$id_module = db_process_sql_insert('tagente_modulo', $values_module);
 										
-				$tcluster_balanced_module = db_process_sql('insert into tcluster_item (name,id_cluster,item_type) values ("'.$value.'",'.$id_cluster.',"AP")');
-				
 				if ($tcluster_balanced_module !== false){	
 					db_pandora_audit("Report management", "Module #$value assigned to cluster #$id_cluster");
 				}

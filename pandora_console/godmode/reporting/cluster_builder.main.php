@@ -285,7 +285,7 @@ elseif ($step == 3) {
   echo "</tr>";
   
   echo "<tr>";
-  echo "<td class='datos'><b>".__('Adding common modules')."</b></td>";
+  echo "<td class='datos'><b>".__('Adding common modules').ui_print_help_tip('Attention: the cluster is configured using module names,<br> so that in order to add an agent to a cluster later on,<br> you will not have to select its modules one by one,<br> but instead, you only need to have a series of modules<br> that are called the same, so do not rename the names<br> of a module once you configure the cluster.', true)."</b></td>";
   echo "</tr>";
   
   echo "<tr>";
@@ -362,8 +362,8 @@ elseif ($step == 4) {
 
   echo "<tr>";
   echo "<th><b>".__('Common modules')."</b></th>";
-  echo "<th><b>".__('Critical if')."</b></th>";
-  echo "<th><b>".__('Warning if')."</b></th>";
+  echo "<th><b>".__('Critical if more than')."</b></th>";
+  echo "<th><b>".__('Warning if more than')."</b></th>";
   echo "<th><b>".__('Actions')."</b></th>";
   echo "</tr>";
   
@@ -372,11 +372,10 @@ elseif ($step == 4) {
   foreach ($cluster_items as $key => $value) {
     echo "<tr>";
     echo "<td class='datos'>".$value."</td>";
-    echo "<td class='datos'><input class='zero_hundred' value='".get_item_critical_limit_by_item_id($key)."' name='critical_item_".$key."' type='number' max='100' min='0' style='width:60%;' onkeydown='javascript: return event.keyCode == 69 ? false : true'> &nbsp;&nbsp;are down</td>";
-    echo "<td class='datos'><input class='zero_hundred' value='".get_item_warning_limit_by_item_id($key)."' name='warning_item_".$key."' type='number' max='100' min='0' style='width:60%;' onkeydown='javascript: return event.keyCode == 69 ? false : true'> &nbsp;&nbsp;are down</td>";
+    echo "<td class='datos'><input class='zero_hundred' value='".get_item_critical_limit_by_item_id($key)."' name='critical_item_".$key."' type='number' max='100' min='0' style='width:60%;' onkeydown='javascript: return event.keyCode == 69 ? false : true'> &nbsp;&nbsp;% are down</td>";
+    echo "<td class='datos'><input class='zero_hundred' value='".get_item_warning_limit_by_item_id($key)."' name='warning_item_".$key."' type='number' max='100' min='0' style='width:60%;' onkeydown='javascript: return event.keyCode == 69 ? false : true'> &nbsp;&nbsp;% are down</td>";
     echo "<td class='datos'><a href='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=4&delete_module=".$key."&id_cluster=".$id_cluster."'><img src='images/cross.png'></a></td>";
     echo "</tr>";
-    
     
   }
   
@@ -384,6 +383,12 @@ elseif ($step == 4) {
   echo "</table>";
   
   echo "<div style='width:50%'><input style='float:right;' type=submit name='store' class='sub upd' value='".__('Update and Next')."'></div>";
+  
+  echo "</form>";
+  
+  echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=3&id_cluster=".$id_cluster."'>";
+  
+  echo "<div style='width:50%'><input style='float:left;' type=submit name='add' class='sub add' value='".__('Add')."'></div>";
   
   echo "</form>";
   
@@ -520,6 +525,12 @@ elseif ($step == 6) {
   echo "</table>";
   
   echo "<div style='width:40%'><input style='float:right;' type=submit name='store' class='sub upd' value='".__('Update and Finish')."'></div>";
+  
+  echo "</form>";
+  
+  echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=5&id_cluster=".$id_cluster."'>";
+  
+  echo "<div style='width:50%'><input style='float:left;' type=submit name='add' class='sub add' value='".__('Add')."'></div>";
   
   echo "</form>";
 }

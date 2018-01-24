@@ -90,11 +90,41 @@ ui_pagination (count($clusters));
 		
 		$cluster_agent = db_process_sql('select id_agente from tagente where id_agente = (select id_agent from tcluster where id = '.$cluster['id'].')');
 		
-		$cluster_agent_status =  agents_get_status($cluster_agent[0]['id_agente']);
+		$cluster_agent_status = agents_get_status($cluster_agent[0]['id_agente']);
 		
-		$data[5] = $cluster_agent_status;
-    
-    $data[6] = "<a href='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&delete_cluster=".$cluster["id"]."'><img src='images/cross.png'></a>
+		switch ($cluster_agent_status) {
+			case 1:
+			
+				$data[5] = '<div title="'.__('Critical').'" style="width:35px;height:20px;background-color:red;"></div>';
+	    
+				break;
+			case 1:
+			
+				$data[5] = '<div title="'.__('Warning').'" style="width:35px;height:20px;background-color:red;"></div>';
+	    
+				break;
+			case 3:
+			
+				$data[5] = '<div title="'.__('Unknown').'" style="width:35px;height:20px;background-color:gray;"></div>';
+			
+				break;
+			case 5:
+			
+				$data[5] = '<div title="'.__('Not init').'" style="width:35px;height:20px;background-color:blue;"></div>';
+			
+				break;
+			case 0:
+			
+				$data[5] = '<div title="'.__('Normal').'" style="width:35px;height:20px;background-color:green;"></div>';
+			
+				break;
+				
+			default:
+			
+				break;
+		}
+		
+		$data[6] = "<a href='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&delete_cluster=".$cluster["id"]."'><img src='images/cross.png'></a>
                 <a href='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder.cluster_editor&id=".$cluster["id"]."'><img src='images/builder.png'></a>";
     
     array_push ($table->data, $data);

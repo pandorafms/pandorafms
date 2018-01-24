@@ -269,8 +269,6 @@ INSERT INTO `ttipo_modulo` VALUES
 (31,'web_proc',9,'Remote HTTP module to check server response','mod_web_proc.png'),
 (32,'web_content_data',9,'Remote HTTP module to retrieve numeric data','mod_web_data.png'),
 (33,'web_content_string',9,'Remote HTTP module to retrieve string data','mod_web_data.png'),
-(34,'cluster_proc',69,'Boolean cluster module','mod_cluster_proc.png'),
-(35,'cluster_data',69,'Numeric cluster module','mod_cluster_data.png'),
 (100,'keep_alive',-1,'KeepAlive','mod_keepalive.png');
 
 --

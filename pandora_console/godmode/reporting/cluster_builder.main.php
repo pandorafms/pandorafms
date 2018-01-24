@@ -157,10 +157,7 @@ echo '<div id="steps_clean"> </div>';
 
 if($step == 1){
 
-  if ($edit_cluster)
-  	echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&edit_cluster=1&update_cluster=1&id=" . $id_cluster . "'>";
-  else
-  	echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&edit_cluster=1&add_cluster=1'>";
+  echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&add_cluster=1&step=1'>";
 
   echo "<table width='40%' cellpadding=4 cellspacing=4 class='databox filters'>";
   echo "<tr>";
@@ -222,7 +219,7 @@ elseif($step == 2){
   
   echo "<tr>";
   echo "<td  class='datos'>";
-    // $attr = array('id' => 'image-select_all_available', 'title' => __('Select all'), 'style' => 'cursor: pointer;');
+    $attr = array('id' => 'select_all_left_agents', 'title' => __('Select all'), 'style' => 'cursor: pointer;');
   echo "<b>" . __('Agents')."</b>&nbsp;&nbsp;" . html_print_image ('images/tick.png', true, $attr, false, true);
   echo "</td>";
   
@@ -230,7 +227,7 @@ elseif($step == 2){
   echo "</td>";
   
   echo "<td  class='datos'>";
-    // $attr = array('id' => 'image-select_all_apply', 'title' => __('Select all'), 'style' => 'cursor: pointer;');
+    $attr = array('id' => 'select_all_right_agents', 'title' => __('Select all'), 'style' => 'cursor: pointer;');
   echo "<b>" . __('Agents in Cluster')."</b>&nbsp;&nbsp;" . html_print_image ('images/tick.png', true, $attr, false, true);
   echo "</td>";
   echo "<tr>";
@@ -293,7 +290,7 @@ elseif ($step == 3) {
   
   echo "<tr>";
   echo "<td  class='datos'>";
-    // $attr = array('id' => 'image-select_all_available', 'title' => __('Select all'), 'style' => 'cursor: pointer;');
+    $attr = array('id' => 'select_all_left_modules', 'title' => __('Select all'), 'style' => 'cursor: pointer;');
   echo "<b>" . __('Common in agents')."</b>&nbsp;&nbsp;" . html_print_image ('images/tick.png', true, $attr, false, true);
   echo "</td>";
   
@@ -301,7 +298,7 @@ elseif ($step == 3) {
   echo "</td>";
   
   echo "<td  class='datos'>";
-    // $attr = array('id' => 'image-select_all_apply', 'title' => __('Select all'), 'style' => 'cursor: pointer;');
+    $attr = array('id' => 'select_all_right_modules', 'title' => __('Select all'), 'style' => 'cursor: pointer;');
   echo "<b>" . __('Added common modules')."</b>&nbsp;&nbsp;" . html_print_image ('images/tick.png', true, $attr, false, true);
   echo "</td>";
   echo "<tr>";
@@ -408,7 +405,7 @@ elseif ($step == 5) {
   
   echo "<tr>";
   echo "<td  class='datos'>";
-    // $attr = array('id' => 'image-select_all_available', 'title' => __('Select all'), 'style' => 'cursor: pointer;');
+    $attr = array('id' => 'select_all_left_modules', 'title' => __('Select all'), 'style' => 'cursor: pointer;');
   echo "<b>" . __('Modules')."</b>&nbsp;&nbsp;" . html_print_image ('images/tick.png', true, $attr, false, true);
   echo "</td>";
   
@@ -416,7 +413,7 @@ elseif ($step == 5) {
   echo "</td>";
   
   echo "<td  class='datos'>";
-    // $attr = array('id' => 'image-select_all_apply', 'title' => __('Select all'), 'style' => 'cursor: pointer;');
+    $attr = array('id' => 'select_all_right_modules', 'title' => __('Select all'), 'style' => 'cursor: pointer;');
   echo "<b>" . __('Added balanced modules')."</b>&nbsp;&nbsp;" . html_print_image ('images/tick.png', true, $attr, false, true);
   echo "</td>";
   echo "<tr>";
@@ -713,15 +710,30 @@ elseif ($step == 6) {
 			refresh_agents($(this).val(), agents_out_keys, agents_out, $("#id_agents"), <?php if (is_metaconsole()) echo 1; else echo 0; ?>);
 		});
 		
-		$("input[name='select_all_left']").click(function () {
+		$("#select_all_left_agents").click(function () {
 			$('#id_agents option').map(function() {
 				$(this).prop('selected', true);
 			});
 			
 			return false;
 		});
-		$("input[name='select_all_right']").click(function () {
+		$("#select_all_right_agents").click(function () {
 			$('#id_agents2 option').map(function() {
+				$(this).prop('selected', true);
+			});
+			
+			return false;
+		});
+    
+    $("#select_all_left_modules").click(function () {
+			$('#name_modules option').map(function() {
+				$(this).prop('selected', true);
+			});
+			
+			return false;
+		});
+		$("#select_all_right_modules").click(function () {
+			$('#name_modules2 option').map(function() {
 				$(this).prop('selected', true);
 			});
 			
@@ -902,9 +914,9 @@ elseif ($step == 6) {
             });
           }
             
-          
-            
         });
+        
+        
          
          
 	});

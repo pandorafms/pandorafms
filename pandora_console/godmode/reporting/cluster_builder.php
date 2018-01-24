@@ -26,11 +26,12 @@ if (! check_acl ($config['id_user'], 0, "RW") && ! check_acl ($config['id_user']
 require_once ('include/functions_agents.php');
 require_once('include/functions_clusters.php');
 
-$step = get_parameter('step',1);
+$step = get_parameter('step',0);
 $id_cluster = get_parameter('id_cluster',0);
+$delete_cluster = get_parameter('delete_cluster',0);
 
 if($step == 1){
-
+	
 $add_cluster = (bool) get_parameter('add_cluster', false);
 $update_cluster = (bool) get_parameter('update_cluster', false);
 
@@ -70,7 +71,8 @@ if ($add_cluster) {
 			'nombre' => 'Cluster status',
 			'id_modulo' => 5,
 			'prediction_module' => 5,
-			'id_agente' =>$id_agent
+			'id_agente' =>$id_agent,
+			'custom_integer_1' =>$id_cluster
 			);
 			
 		$id_module = db_process_sql_insert('tagente_modulo', $values_module);
@@ -168,7 +170,8 @@ elseif ($step == 3) {
 				'id_modulo' => 5,
 				'prediction_module' => 6,
 				'id_agente' => $id_agent[0]['id_agent'],
-				'parent_module_id' => $id_parent_modulo[0]['id_agente_modulo']
+				'parent_module_id' => $id_parent_modulo[0]['id_agente_modulo'],
+				'custom_integer_1' =>$id_cluster
 				);
 				
 			$id_module = db_process_sql_insert('tagente_modulo', $values_module);
@@ -239,7 +242,7 @@ elseif ($step == 3) {
 					header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=5&id_cluster=".$id_cluster);	
 				}
 				elseif ($cluster_type[$id_cluster] == 'AA') {
-					header ("Location: index.php?sec=estado&sec2=enterprise/operation/cluster/cluster");	
+					header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_view&id=".$id_cluster);		
 				}
 				
 			}
@@ -273,7 +276,8 @@ elseif ($step == 3) {
 					'id_modulo' => 5,
 					'prediction_module' => 7,
 					'id_agente' => $id_agent[0]['id_agent'],
-					'parent_module_id' => $id_parent_modulo[0]['id_agente_modulo']
+					'parent_module_id' => $id_parent_modulo[0]['id_agente_modulo'],
+					'custom_integer_1' =>$id_cluster
 					);
 					
 				$id_module = db_process_sql_insert('tagente_modulo', $values_module);
@@ -335,9 +339,22 @@ elseif ($step == 3) {
 			ui_print_page_header (__('Cluster')." &raquo; ".__('New'), "images/chart.png", false, "", false, $buttons);
 			
 	}
-
-
-
+	elseif ($delete_cluster){
+	
+		$temp_id_cluster = db_process_sql('select id_agent from tcluster where id ='.$delete_cluster);
+		
+		$tcluster_modules_delete = db_process_sql('delete from tagente_modulo where custom_integer_1 = '.$delete_cluster);
+		
+		$tcluster_items_delete = db_process_sql('delete from tcluster_item where id_cluster = '.$delete_cluster);
+		
+		$tcluster_agents_delete = db_process_sql('delete from tcluster_agent where id_cluster = '.$delete_cluster);
+		
+		$tcluster_delete = db_process_sql('delete from tcluster where id = '.$delete_cluster);
+		
+		$tcluster_agent_delete = db_process_sql('delete from tagente where id_agente = '.$temp_id_cluster[0]['id_agent']);
+		
+		header ("Location: index.php?sec=reporting&sec2=enterprise/operation/cluster/cluster");	
+	}
 
 $active_tab = get_parameter('tab', 'main');
 

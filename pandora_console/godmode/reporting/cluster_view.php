@@ -71,6 +71,6 @@ echo "<table style='width:100%;'>";
 echo "</table>";
 
 
-echo 'El estado del modulo del cluster '.clusters_get_name($id_cluster).' es '.modules_get_agentmodule_last_status(40);
+echo 'El estado del modulo del cluster '.clusters_get_name($id_cluster).' es '.agents_get_status(40);
 
 ?>

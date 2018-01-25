@@ -43,13 +43,18 @@ if ($add_cluster) {
 	$idGroup = get_parameter_post ('cluster_id_group');
 
   // Create agent
-    
+  
+	$server_name = db_process_sql('select name from tserver where server_type=5 limit 1');	
+	
+	$server_name_agent = $server_name[0]['name'];
+		
   $values_agent = array(
 		'nombre' => $name,
     'alias' => $name,
 		'comentarios' => $description,
 		'id_grupo' => $idGroup,
-		'id_os' => 21
+		'id_os' => 21,
+		'server_name' => $server_name_agent
 		);
 	
 	if (trim($name) != "") {

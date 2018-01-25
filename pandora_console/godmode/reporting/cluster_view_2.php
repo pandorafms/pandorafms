@@ -12,6 +12,7 @@ if (! check_acl ($config['id_user'], 0, "AR")) {
 }
 
 require_once ('include/functions_agents.php');
+require_once ('include/functions_modules.php');
 require_once('include/functions_clusters.php');
 
 $id_cluster = get_parameter('id',0);
@@ -54,8 +55,36 @@ echo "<table style='width:100%;border: 1px black solid;'>";
 					echo "<div style='float:left;width:100%;height:175px;background-color:orange;text-align:center;'>";
 					
 						$balanced_modules_in = items_get_cluster_items_id_name($id_cluster,'AP');
+						
+						foreach ($balanced_modules_in as $key => $value) {
+							$cluster_module = db_process_sql('select id_agente_modulo from tagente_modulo where custom_integer_2 = '.$key);
+							
+							html_debug($cluster_module[0]['id_agente_modulo']);
+							
+							$cluster_module_status = modules_get_status($cluster_module[0]['id_agente_modulo']);
+							
+							
+							html_debug(modules_get_status($cluster_module_status));
+							
+							
+							echo "<div style='float:left;'>";
+							
+							if($cluster_module_status == 5){
+								echo '<img style="width:18px;height:18px;" src="images/exito.png">'.$value;
+							}
+							else{
+								echo '<img style="width:18px;height:18px;" src="images/error_1.png">'.$value;
+							}
+							
+							echo "</div>";
+							
+						}
+						
+						
+						// 
+						// $cluster_module_status = modules_get_status($cluster_module[0]['id_agente_modulo']);
 					
-						html_debug($balanced_modules_in);
+						// html_debug($balanced_modules_in);
 					
 					echo "</div>";
 					

@@ -362,7 +362,7 @@ switch ($action) {
 					break;
 				case 'sql':
 					$description = $item['description'];
-					$sql = $item['external_source'];
+					$sql_query_report = $item['external_source'];
 					$idCustom = $item['treport_custom_sql_id'];
 					$header = $item['header_definition'];
 					$historical_db = $item['historical_db'];
@@ -940,7 +940,7 @@ You can of course remove the warnings, that's why we include the source and do n
 					$agents = agents_get_group_agents($group);
 					if ((empty($agents)) || $agents == -1) $agents = array();
 
-					$sql = 'SELECT source
+					$sql_log = 'SELECT source
 							FROM tagente,tagent_module_log
 							WHERE tagente.id_agente = tagent_module_log.id_agent ';
 					
@@ -948,16 +948,16 @@ You can of course remove the warnings, that's why we include the source and do n
 						$index = 0;
 						foreach ($agents as $key => $a) {
 							if ($index == 0) {
-								$sql .= ' AND (id_agente = ' . $key;
+								$sql_log .= ' AND (id_agente = ' . $key;
 							}
 							else {
-								$sql .= ' OR id_agente = ' . $key;
+								$sql_log .= ' OR id_agente = ' . $key;
 							}
 							$index++;
 						}
-						$sql .= ")";
+						$sql_log .= ")";
 					}
-					html_print_select_from_sql ($sql, 'source', $source, '', __('All'), '', false, false, false);
+					html_print_select_from_sql ($sql_log, 'source', $source, '', __('All'), '', false, false, false);
 				?>
 			</td>
 		</tr>
@@ -1076,10 +1076,10 @@ You can of course remove the warnings, that's why we include the source and do n
 			<td style="font-weight:bold;"><?php echo __('Agents'); ?></td>
 			<td>
 				<?php 
-					$sql = 'SELECT id_agente, alias
+					$sql_log_report = 'SELECT id_agente, alias
 						FROM tagente, tagent_module_log
 						WHERE tagente.id_agente = tagent_module_log.id_agent';
-					$all_agent_log = db_get_all_rows_sql($sql);
+					$all_agent_log = db_get_all_rows_sql($sql_log_report);
 					
 					foreach ($all_agent_log as $key => $value) {
 						$agents2[$value['id_agente']] = $value['alias'];
@@ -1278,7 +1278,7 @@ You can of course remove the warnings, that's why we include the source and do n
 			<td style="font-weight:bold;"><?php echo __('SQL query'); ?></td>
 			<td style="" id="sql_entry">
 				<?php
-				html_print_textarea('sql', 5, 25, $sql);
+					html_print_textarea('sql', 5, 25, $sql_query_report);
 				?>
 			</td>
 			<td style="" id="sql_example"></td> 

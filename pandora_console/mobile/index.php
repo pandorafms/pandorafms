@@ -171,37 +171,18 @@ switch ($action) {
 		if ($user->login() && $user->isLogged()) {
 			if ($user->isWaitingDoubleAuth()) {
 				if ($user->validateDoubleAuthCode()) {
-					$user_language = get_user_language ($system->getConfig('id_user'));
-					if (file_exists ('../include/languages/'.$user_language.'.mo')) {
-						$l10n = new gettext_reader (new CachedFileReader('../include/languages/'.$user_language.'.mo'));
-						$l10n->load_tables();
-					}
-					if (class_exists("HomeEnterprise"))
-						$home = new HomeEnterprise();
-					else
-						$home = new Home();
-					$home->show();
+					// Logged. Refresh the page
+					header('Refresh:0');
+					return;
 				}
 				else {
 					$user->showDoubleAuthPage();
 				}
 			}
 			else {
-				$user_language = get_user_language ($system->getConfig('id_user'));
-				if (file_exists ('../include/languages/'.$user_language.'.mo')) {
-					$l10n = new gettext_reader (new CachedFileReader('../include/languages/'.$user_language.'.mo'));
-					$l10n->load_tables();
-				}
-				
-				if($_GET['page'] != ''){
-					header('refresh:0; url=http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
-				}
-				
-				if (class_exists("HomeEnterprise"))
-					$home = new HomeEnterprise();
-				else
-					$home = new Home();
-				$home->show();
+				// Logged. Refresh the page
+				header('Refresh:0');
+				return;
 			}
 
 		}

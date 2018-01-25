@@ -77,7 +77,8 @@ ui_pagination (count($clusters));
   foreach ($clusters as $cluster) {
     $data = array ();
     
-    $data[0] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/cluster_view&id='.$cluster["id"].'">'.$cluster["name"].'</a>';
+    $data[0] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/cluster_view&id='.$cluster["id"].'">'.$cluster["name"].' - Enlace Map Dani (Mapa de red)</a><br><br>'.
+		'<a href="index.php?sec=reporting&sec2=godmode/reporting/cluster_view_2&id='.$cluster["id"].'">'.$cluster["name"].' - Enlace Enrique (pantalla informativa)</a>';
     $data[1] = ui_print_truncate_text($cluster["description"], 70);
 		
 		$data[2] = ui_print_group_icon($cluster['group'],true);
@@ -88,19 +89,32 @@ ui_pagination (count($clusters));
       
     $data[4] = $nodes_cluster[0]['number'];
 		
+		//agent status - open
+		
 		$cluster_agent = db_process_sql('select id_agente from tagente where id_agente = (select id_agent from tcluster where id = '.$cluster['id'].')');
 		
 		$cluster_agent_status = agents_get_status($cluster_agent[0]['id_agente']);
 		
-		switch ($cluster_agent_status) {
+		//agent status - close
+		
+		
+		//cluster module status - open
+		
+		$cluster_module = db_process_sql('select id_agente_modulo from tagente_modulo where id_agente = (select id_agent from tcluster where id = '.$cluster['id'].') and nombre = "Cluster status"');
+		
+		$cluster_module_status = modules_get_status($cluster_module[0]['id_agente_modulo']);
+		
+		//cluster module status - close
+		
+		switch ($cluster_module_status) {
 			case 1:
 			
 				$data[5] = '<div title="'.__('Critical').'" style="width:35px;height:20px;background-color:red;"></div>';
 	    
 				break;
-			case 1:
+			case 2:
 			
-				$data[5] = '<div title="'.__('Warning').'" style="width:35px;height:20px;background-color:red;"></div>';
+				$data[5] = '<div title="'.__('Warning').'" style="width:35px;height:20px;background-color:yellow;"></div>';
 	    
 				break;
 			case 3:

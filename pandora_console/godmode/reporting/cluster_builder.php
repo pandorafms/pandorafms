@@ -24,6 +24,7 @@ if (! check_acl ($config['id_user'], 0, "RW") && ! check_acl ($config['id_user']
 }
 
 require_once ('include/functions_agents.php');
+require_once ('include/functions_modules.php');
 require_once('include/functions_clusters.php');
 
 $step = get_parameter('step',0);
@@ -53,7 +54,9 @@ if ($add_cluster) {
 	
 	if (trim($name) != "") {
 		
-    $id_agent = db_process_sql_insert('tagente',$values_agent);
+    // $id_agent = db_process_sql_insert('tagente',$values_agent);
+		
+		$id_agent = agents_create_agent($values_agent['nombre'],$values_agent['id_grupo'],300,'127.0.0.1',$values_agent);
 		
 		// Create cluster
 		$values_cluster = array(
@@ -74,6 +77,8 @@ if ($add_cluster) {
 			'id_agente' =>$id_agent,
 			'custom_integer_1' =>$id_cluster
 			);
+			
+		$id_module = 	modules_create_agent_module($values_module['id_agente'],$values_module['nombre'],$values_module);
 			
 		$id_module = db_process_sql_insert('tagente_modulo', $values_module);
 		
@@ -177,8 +182,11 @@ elseif ($step == 3) {
 				'custom_integer_2' =>$tcluster_module
 				);
 				
-			$id_module = db_process_sql_insert('tagente_modulo', $values_module);
+				
+			$id_module = 	modules_create_agent_module($values_module['id_agente'],$values_module['nombre'],$values_module);
 			
+			// $id_module = db_process_sql_insert('tagente_modulo', $values_module);
+						
 			if ($tcluster_module !== false){	
 				db_pandora_audit("Report management", "Module #$value assigned to cluster #$id_cluster");
 			}
@@ -191,7 +199,15 @@ elseif ($step == 3) {
 		foreach ($modules_preasigned as $key => $value) {
 						
 			if(!in_array($value['name'],$cluster_modules)){
-				$tcluster_module_delete = db_process_sql('delete from tcluster_item where name = "'.$value['name'].'" and id_cluster = '.$id_cluster);
+				
+				$tcluster_agent_module_delete_id = db_process_sql('select id_agente_modulo from tagente_modulo where nombre = "'.$value['name'].'" and custom_integer_1 = '.$id_cluster.' and prediction_module = 6');
+				
+				$tcluster_agent_module_delete_id_value = $tcluster_agent_module_delete_id[0]['id_agente_modulo'];
+				
+				$tcluster_agent_module_delete_result = modules_delete_agent_module($tcluster_agent_module_delete_id_value);
+				
+				$tcluster_module_delete = db_process_sql('delete from tcluster_item where name = "'.$value['name'].'" and id_cluster = '.$id_cluster.' and item_type = "AA"');
+				
 			}
 			
 		}
@@ -286,7 +302,9 @@ elseif ($step == 3) {
 					'custom_integer_2' => $tcluster_balanced_module
 					);
 					
-				$id_module = db_process_sql_insert('tagente_modulo', $values_module);
+				// $id_module = db_process_sql_insert('tagente_modulo', $values_module);
+				
+				$id_module = 	modules_create_agent_module($values_module['id_agente'],$values_module['nombre'],$values_module);
 										
 				if ($tcluster_balanced_module !== false){	
 					db_pandora_audit("Report management", "Module #$value assigned to cluster #$id_cluster");
@@ -300,6 +318,13 @@ elseif ($step == 3) {
 			foreach ($balanced_modules_preasigned as $key => $value) {
 							
 				if(!in_array($value['name'],$balanced_modules)){
+					
+					$tcluster_agent_module_delete_id = db_process_sql('select id_agente_modulo from tagente_modulo where nombre = "'.$value['name'].'" and custom_integer_1 = '.$id_cluster.' and prediction_module = 7');
+					
+					$tcluster_agent_module_delete_id_value = $tcluster_agent_module_delete_id[0]['id_agente_modulo'];
+					
+					$tcluster_agent_module_delete_result = modules_delete_agent_module($tcluster_agent_module_delete_id_value);
+					
 					$tcluster_balanced_module_delete = db_process_sql('delete from tcluster_item where name = "'.$value['name'].'" and id_cluster = '.$id_cluster.' and item_type = "AP"');
 				}
 				

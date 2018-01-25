@@ -863,6 +863,12 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	serie_types = serie_types.split(separator);
 	labels_long = labels_long.split(separator);
 	labels = labels.split(separator);
+	// XXX 1827
+	/* Translate datetime to utimestamp -> avoid convert datetime in server better...
+	$.each(labels, function (i,v) {
+		labels[i] = new Date(labels[i]).getTime();
+	});
+	*/
 	legend = legend.split(separator);
 	events = events.split(separator);
 	event_ids = event_ids.split(separator);
@@ -920,6 +926,11 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			}
 
 			aux.push([i, v]);
+
+			// XXX 1827
+			/*
+			aux.push([labels[i], v]);
+			*/
 		});
 
 		switch (serie_types[i]) {
@@ -1559,7 +1570,12 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				tickFormatter: xFormatter,
 				labelHeight: 50,
 				color: '',
-				font: font
+				font: font,
+			// XXX 1827
+			/*
+				mode: "time",
+				timeformat: "%Y/%m/%d %H:%M:%S",
+			*/
 			}],
 			yaxes: [{
 				tickFormatter: yFormatter,

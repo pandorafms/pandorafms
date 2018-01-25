@@ -102,7 +102,7 @@ ui_pagination (count($clusters));
 		
 		$cluster_module = db_process_sql('select id_agente_modulo from tagente_modulo where id_agente = (select id_agent from tcluster where id = '.$cluster['id'].') and nombre = "Cluster status"');
 		
-		$cluster_module_status = modules_get_status($cluster_module[0]['id_agente_modulo']);
+		$cluster_module_status = modules_get_agentmodule_last_status($cluster_module[0]['id_agente_modulo']);
 		
 		//cluster module status - close
 		
@@ -120,6 +120,11 @@ ui_pagination (count($clusters));
 			case 3:
 			
 				$data[5] = '<div title="'.__('Unknown').'" style="width:35px;height:20px;background-color:gray;"></div>';
+			
+				break;
+			case 4:
+			
+				$data[5] = '<div title="'.__('No data').'" style="width:35px;height:20px;background-color:gray;"></div>';
 			
 				break;
 			case 5:

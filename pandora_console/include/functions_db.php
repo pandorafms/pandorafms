@@ -664,14 +664,14 @@ function db_uncompress_module_data($id_agente_modulo, $tstart = false, $tend = f
 
 	$module_interval = modules_get_interval ($id_agente_modulo);
 
-	if (($raw_data === false) && ( ($first_utimestamp < $tstart - (SECONDS_1DAY + 2*$module_interval)) ) ) {
+	if (($raw_data === false) && ( $first_utimestamp === false )) {
 		// No data
 		return false;
 	}
 
 	// Retrieve going unknown events in range
 	$unknown_events = db_get_module_ranges_unknown($id_agente_modulo, $tstart, $tend, $search_historydb);
-
+	
 	// Get the last event after inverval to know if graph start on unknown
 	$previous_unknown_events = db_get_row_filter (
 		'tevento',
@@ -686,25 +686,24 @@ function db_uncompress_module_data($id_agente_modulo, $tstart = false, $tend = f
 
 	//show graph if graph is inside unknown	
 	if( $previous_unknown_events && $previous_unknown_events['event_type'] == 'going_unknown' && 
-		$unknown_events === false && $raw_data === false){
+		$unknown_events === false){
 		$last_inserted_value = $first_data["datos"];
-		$unknown_events[0]['time_from'] = $tstart+0.1;
+		$unknown_events[0]['time_from'] = $tstart;
 	}
 
 	//if time to is missing in last event force time to outside range time
 	if( $unknown_events && !isset($unknown_events[count($unknown_events) -1]['time_to']) ){
-		$unknown_events[count($unknown_events) -1]['time_to'] = $tend + $module_interval;
+		$unknown_events[count($unknown_events) -1]['time_to'] = $tend;
 	}
 
 	//if time to is missing in first event force time to outside range time
 	if ($first_data["datos"] === false && !$flag_async) {
 		$last_inserted_value = false;
-	}elseif( ($unknown_events && !isset($unknown_events[0]['time_from']) &&  
-			 $previous_unknown_events && $previous_unknown_events['event_type'] == 'going_unknown' && !$flag_async) ||
-			 ($first_utimestamp < $tstart - (SECONDS_1DAY + 2*$module_interval) && !$flag_async) ){
-		//$last_inserted_value = null;
+	}elseif(($unknown_events && !isset($unknown_events[0]['time_from']) &&  
+			$previous_unknown_events && $previous_unknown_events['event_type'] == 'going_unknown' && !$flag_async) ||
+			($first_utimestamp < $tstart - (SECONDS_1DAY + 2*$module_interval) && !$flag_async) ){
 		$last_inserted_value = $first_data["datos"];
-		$unknown_events[0]['time_from'] = $tstart+0.1;
+		$unknown_events[0]['time_from'] = $tstart;
 	}
 	else{
 		$last_inserted_value = $first_data["datos"];
@@ -721,7 +720,9 @@ function db_uncompress_module_data($id_agente_modulo, $tstart = false, $tend = f
 	$last_value          = $first_data["datos"];
 
 	//reverse array data optimization
-	$raw_data = array_reverse($raw_data);
+	if (is_array($raw_data)) {
+		$raw_data = array_reverse($raw_data);
+	}
 
 	// Build template
 	$pool_id = 0;
@@ -734,7 +735,7 @@ function db_uncompress_module_data($id_agente_modulo, $tstart = false, $tend = f
 		$current_unknown = null;
 	}
 	
-	if($raw_data){
+	if(is_array($raw_data)) {
 		$current_raw_data = array_pop($raw_data);
 	}
 	else{
@@ -746,11 +747,10 @@ function db_uncompress_module_data($id_agente_modulo, $tstart = false, $tend = f
 		$tmp_data   = array();
 		$current_timestamp_end = $current_timestamp + $slice_size;
 
-		if (( $current_timestamp > $now) || 
-			( ($current_timestamp_end - $last_timestamp) > 
-				(SECONDS_1DAY + 2 * $module_interval) ) ) {
-					
-			$tmp_data["utimestamp"] = $last_timestamp + SECONDS_1DAY + 2 * $module_interval;
+		if (($current_timestamp > $now)
+		|| (($current_timestamp - $last_timestamp) > (SECONDS_1DAY + 2 * $module_interval)) ) {
+
+			$tmp_data["utimestamp"] = $current_timestamp;
 			
 			//check not init
 			$tmp_data["datos"] = $last_value === false ? false : null;
@@ -765,25 +765,30 @@ function db_uncompress_module_data($id_agente_modulo, $tstart = false, $tend = f
 			array_push($return[$pool_id]["data"], $tmp_data);
 		}
 
-		//insert first slice data
-		$tmp_data["utimestamp"] = $current_timestamp;
-		$tmp_data["datos"]  = $last_inserted_value;
-		// debug purpose
-		//$tmp_data["obs"] = "virtual data";
-		
-		$return[$pool_id]["utimestamp"] = $current_timestamp;
-		array_push($return[$pool_id]["data"], $tmp_data);
-
 		//insert raw data
 		while ( ($current_raw_data != null) &&
-				(  ($current_timestamp_end >= $current_raw_data['utimestamp']) && 
-				   ($current_timestamp     <  $current_raw_data['utimestamp']) ) ) {
+				(   ($current_timestamp_end >  $current_raw_data['utimestamp']) && 
+					($current_timestamp     <= $current_raw_data['utimestamp']) ) ) {
 		
-			// Add unknown state detected
+			// Add real data detected
+			if (count($return[$pool_id]['data']) == 0) {
+				//insert first slice data
+				$tmp_data["utimestamp"] = $current_timestamp;
+				$tmp_data["datos"]  =  $last_inserted_value;
+				// debug purpose
+				//$tmp_data["obs"] = "virtual data (raw)";
+
+				//Add order to avoid usort missorder in same utimestamp data cells
+				$tmp_data["order"] = 1;
+				array_push($return[$pool_id]["data"], $tmp_data);
+			}
+
 			$tmp_data["utimestamp"] = $current_raw_data["utimestamp"];
 			$tmp_data["datos"]      = $current_raw_data["datos"];
 			// debug purpose
 			//$tmp_data["obs"] = "real data";
+			//Add order to avoid usort missorder in same utimestamp data cells
+			$tmp_data["order"] = 2;
 			array_push($return[$pool_id]["data"], $tmp_data);
 
 			$last_value = $current_raw_data["datos"];
@@ -803,21 +808,49 @@ function db_uncompress_module_data($id_agente_modulo, $tstart = false, $tend = f
 					( ( ($current_unknown['time_from'] != null) &&
 						($current_timestamp_end >= $current_unknown['time_from']) ) || 
 					($current_timestamp_end >= $current_unknown['time_to']) ) ) {
-			
+
 				if( ( $current_timestamp <= $current_unknown['time_from']) && 
 					( $current_timestamp_end >= $current_unknown['time_from'] ) ){
+					if (count($return[$pool_id]['data']) == 0) {
+						//insert first slice data
+						$tmp_data["utimestamp"] = $current_timestamp;
+						$tmp_data["datos"]  =  $last_inserted_value;
+						// debug purpose
+						//$tmp_data["obs"] = "virtual data (e)";
+						//Add order to avoid usort missorder in same utimestamp data cells
+						$tmp_data["order"] = 1;
+
+						array_push($return[$pool_id]["data"], $tmp_data);
+					}
+
 					// Add unknown state detected
 					$tmp_data["utimestamp"] = $current_unknown["time_from"];
 					$tmp_data["datos"]      = null;
 					// debug purpose
 					//$tmp_data["obs"] = "event data unknown from";
+					//Add order to avoid usort missorder in same utimestamp data cells
+					$tmp_data["order"] = 2;
 					array_push($return[$pool_id]["data"], $tmp_data);
 					$current_unknown["time_from"] = null;
 				}
+				elseif( ($current_timestamp <= $current_unknown['time_to']) && 
+					($current_timestamp_end > $current_unknown['time_to'] ) ){
 
-				if( ($current_timestamp <= $current_unknown['time_to']) && 
-					($current_timestamp_end >= $current_unknown['time_to'] ) ){
+					if (count($return[$pool_id]['data']) == 0) {
+						//add first slice data always
+						//insert first slice data
+						$tmp_data["utimestamp"] = $current_timestamp;
+						$tmp_data["datos"]  =  $last_inserted_value;
+						// debug purpose
+						//$tmp_data["obs"] = "virtual data (event_to)";
+						//Add order to avoid usort missorder in same utimestamp data cells
+						$tmp_data["order"] = 1;
+						array_push($return[$pool_id]["data"], $tmp_data);
+					}
+
 					$tmp_data["utimestamp"] = $current_unknown["time_to"];
+					//Add order to avoid usort missorder in same utimestamp data cells
+					$tmp_data["order"] = 2;
 					$i = count($data_slices) - 1;
 					while ($i >= 0) {
 						if($data_slices[$i]['utimestamp'] <= $current_unknown["time_to"]){
@@ -840,16 +873,32 @@ function db_uncompress_module_data($id_agente_modulo, $tstart = false, $tend = f
 						$current_unknown = null;
 					}
 				}
+				else {
+					break;
+				}
 			}
 		}
-		//sort current slice 
-		usort(
-			$return[$pool_id]['data'],
-			function ($a, $b) {
-    			if ($a['utimestamp'] == $b['utimestamp']) return 0;
-    			return ($a['utimestamp'] < $b['utimestamp']) ? -1 : 1;
-			}
-		);
+
+		$return[$pool_id]["utimestamp"] = $current_timestamp;
+		if (count($return[$pool_id]['data']) == 0) {
+			//insert first slice data
+			$tmp_data["utimestamp"] = $current_timestamp;
+			$tmp_data["datos"]  =  $last_inserted_value;
+			// debug purpose
+			//$tmp_data["obs"] = "virtual data (empty)";
+			array_push($return[$pool_id]["data"], $tmp_data);
+		}
+
+		//sort current slice
+		if(count($return[$pool_id]['data'] > 1)) {
+			usort(
+				$return[$pool_id]['data'],
+				function ($a, $b) {
+					if ($a['utimestamp'] == $b['utimestamp']) return (($a['order'] < $b['order'])?-1:1);
+					return ($a['utimestamp'] < $b['utimestamp']) ? -1 : 1;
+				}
+			);
+		}
 		//put the last slice data like first element of next slice
 		$last_inserted_value = end($return[$pool_id]['data']);
 		$last_inserted_value = $last_inserted_value['datos'];
@@ -867,6 +916,9 @@ function db_uncompress_module_data($id_agente_modulo, $tstart = false, $tend = f
 		//$end_array['data'][0]['obs']        = 'virtual data END';
 		array_push($return, $end_array);
 	}
+
+	// html_debug_print($return);
+
 	return $return;
 }
 

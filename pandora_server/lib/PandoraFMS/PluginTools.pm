@@ -9,12 +9,6 @@ package PandoraFMS::PluginTools;
 #  Library              Centos package
 #  -------              --------------
 #  LWP::UserAgent       perl-libwww-perl
-#  
-#
-#
-# Version   Date
-#  a1        17-11-2015
-#  ** Revision handler in gitlab **
 # 
 ################################################################################
 

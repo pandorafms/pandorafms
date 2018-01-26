@@ -52,6 +52,7 @@ our @EXPORT = qw(
 	get_unit
 	get_unix_time
 	get_sys_environment
+	get_current_utime_milis
 	getCurrentUTimeMilis
 	head
 	in_array
@@ -94,6 +95,7 @@ sub get_lib_version {
 ################################################################################
 # Get current time (milis)
 ################################################################################
+sub get_current_utime_milis { return getCurrentUTimeMilis(); }
 sub getCurrentUTimeMilis {
 	#return trim (`date +"%s%3N"`); # returns 1449681679712
 	return floor(time*1000);

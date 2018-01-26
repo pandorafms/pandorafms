@@ -290,7 +290,7 @@ elseif ($step == 3) {
 					header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=5&id_cluster=".$id_cluster);	
 				}
 				elseif ($cluster_type[$id_cluster] == 'AA') {
-					// header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_view&id=".$id_cluster);		
+					header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_view&id=".$id_cluster);		
 				}
 				
 			}

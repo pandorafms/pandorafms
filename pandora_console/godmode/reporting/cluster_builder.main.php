@@ -362,8 +362,8 @@ elseif ($step == 4) {
 
   echo "<tr>";
   echo "<th><b>".__('Common modules')."</b></th>";
-  echo "<th><b>".__('Critical if more than')."</b></th>";
-  echo "<th><b>".__('Warning if more than')."</b></th>";
+  echo "<th><b>".__('Critical if equal or greater than')."</b></th>";
+  echo "<th><b>".__('Warning if equal or greater than')."</b></th>";
   echo "<th><b>".__('Actions')."</b></th>";
   echo "</tr>";
   

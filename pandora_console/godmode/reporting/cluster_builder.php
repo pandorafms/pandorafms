@@ -181,11 +181,15 @@ elseif ($step == 3) {
 			
 			$id_parent_modulo = db_process_sql('select id_agente_modulo from tagente_modulo where id_agente = '.$id_agent[0]['id_agent'].' and nombre = "Cluster status"');
 			
-			$get_module_type = db_process_sql('select id_tipo_modulo,descripcion from tagente_modulo where nombre = "'.$value.'" limit 1');
+			$get_module_type = db_process_sql('select id_tipo_modulo,descripcion,min_warning,min_critical from tagente_modulo where nombre = "'.$value.'" limit 1');
 			
 			$get_module_type_value = $get_module_type[0]['id_tipo_modulo'];
 			
 			$get_module_description_value = $get_module_type[0]['descripcion'];
+			
+			$get_module_warning_value = $get_module_type[0]['min_warning'];
+			
+			$get_module_critical_value = $get_module_type[0]['min_critical'];
 			
 			$values_module = array(
 				'nombre' => $value,
@@ -197,8 +201,8 @@ elseif ($step == 3) {
 				'custom_integer_2' =>$tcluster_module,
 				'id_tipo_modulo' =>$get_module_type_value,
 				'descripcion' => $get_module_description_value,
-				'min_warning' => 1,
-				'min_critical' => 2
+				'min_warning' => $get_module_warning_value,
+				'min_critical' => $get_module_critical_value
 				);
 				
 				
@@ -248,9 +252,13 @@ elseif ($step == 3) {
 			$critical_values[$value] = get_parameter('critical_item_'.$value,0);
 			$warning_values[$value] = get_parameter('warning_item_'.$value,0);
 		}
+		
+		// $get_module_id_limit = db_process_sql('update tagente_modulo set min_critical = '.$value.' where nombre = (select name from tcluster_item where id = '.$key.') and cutom_integer_1 = '.$id_cluster);
 						
 				foreach ($critical_values as $key => $value) {
 					$titem_critical_limit = db_process_sql('update tcluster_item set critical_limit = '.$value.' where id = '.$key);
+					
+					$get_module_critical_limit = db_process_sql('update tagente_modulo set min_critical = '.$value.' where nombre = (select name from tcluster_item where id = '.$key.') and cutom_integer_1 = '.$id_cluster);
 					
 					if ($titem_critical_limit !== false){	
 						db_pandora_audit("Report management", "Critical limit #$value assigned to item #$key");
@@ -264,6 +272,8 @@ elseif ($step == 3) {
 				foreach ($warning_values as $key => $value) {
 				
 					$titem_warning_limit = db_process_sql('update tcluster_item set warning_limit = '.$value.' where id = '.$key);
+					
+					$get_module_warning_limit = db_process_sql('update tagente_modulo set min_warning = '.$value.' where nombre = (select name from tcluster_item where id = '.$key.') and cutom_integer_1 = '.$id_cluster);
 							
 					if ($titem_warning_limit !== false){	
 						db_pandora_audit("Report management", "Critical limit #$value assigned to item #$key");
@@ -280,7 +290,7 @@ elseif ($step == 3) {
 					header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=5&id_cluster=".$id_cluster);	
 				}
 				elseif ($cluster_type[$id_cluster] == 'AA') {
-					header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_view&id=".$id_cluster);		
+					// header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_view&id=".$id_cluster);		
 				}
 				
 			}

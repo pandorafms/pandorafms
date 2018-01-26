@@ -219,9 +219,13 @@ echo "<table style='width:100%;'>";
     echo "</tr>";
 
     echo "<tr>";
-    echo "<td colspan='2' style='min-width:600px;min-height:600px;vertical-align: top;border:1px solid black;'>
-    <div id='cluster_modules' style='min-height:150px;'></div>
-    </td>";
+    echo "<td colspan='2' style='min-width:600px;min-height:600px;vertical-align: top;border:1px solid black;'>";
+	    echo "<div id='cluster_modules' style='min-height:150px;'>";
+			
+				
+			
+			echo "</div>";
+    echo "</td>";
   echo "</tr>";
 echo "</table>";
 

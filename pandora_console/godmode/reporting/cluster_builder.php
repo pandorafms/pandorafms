@@ -82,7 +82,9 @@ if ($add_cluster) {
 			'id_agente' =>$id_agent,
 			'custom_integer_1' =>$id_cluster,
 			'id_tipo_modulo' => 3,
-			'descripcion' => 'Cluster module'
+			'descripcion' => 'Cluster status information module',
+			'min_warning' => 1,
+			'min_critical' =>	2
 			);
 			
 		$id_module = 	modules_create_agent_module($values_module['id_agente'],$values_module['nombre'],$values_module);
@@ -179,9 +181,11 @@ elseif ($step == 3) {
 			
 			$id_parent_modulo = db_process_sql('select id_agente_modulo from tagente_modulo where id_agente = '.$id_agent[0]['id_agent'].' and nombre = "Cluster status"');
 			
-			$get_module_type = db_process_sql('select id_tipo_modulo from tagente_modulo where nombre = "'.$value.'" limit 1');
+			$get_module_type = db_process_sql('select id_tipo_modulo,descripcion from tagente_modulo where nombre = "'.$value.'" limit 1');
 			
 			$get_module_type_value = $get_module_type[0]['id_tipo_modulo'];
+			
+			$get_module_description_value = $get_module_type[0]['descripcion'];
 			
 			$values_module = array(
 				'nombre' => $value,
@@ -192,7 +196,9 @@ elseif ($step == 3) {
 				'custom_integer_1' =>$id_cluster,
 				'custom_integer_2' =>$tcluster_module,
 				'id_tipo_modulo' =>$get_module_type_value,
-				'descripcion' => 'Cluster module'
+				'descripcion' => $get_module_description_value,
+				'min_warning' => 1,
+				'min_critical' => 2
 				);
 				
 				
@@ -305,9 +311,15 @@ elseif ($step == 3) {
 				
 				$tcluster_balanced_module = db_process_sql_insert('tcluster_item',array('name'=>$value,'id_cluster'=>$id_cluster,'item_type'=>"AP"));
 				
-				$get_module_type = db_process_sql('select id_tipo_modulo from tagente_modulo where nombre = "'.$value.'" limit 1');
+				$get_module_type = db_process_sql('select id_tipo_modulo,descripcion,min_warning,min_critical from tagente_modulo where nombre = "'.$value.'" limit 1');
 				
 				$get_module_type_value = $get_module_type[0]['id_tipo_modulo'];
+				
+				$get_module_description_value = $get_module_type[0]['descripcion'];
+				
+				$get_module_warning_value = $get_module_type[0]['min_warning'];
+				
+				$get_module_critical_value = $get_module_type[0]['min_critical'];
 				
 				$values_module = array(
 					'nombre' => $value,
@@ -318,7 +330,9 @@ elseif ($step == 3) {
 					'custom_integer_1' => $id_cluster,
 					'custom_integer_2' => $tcluster_balanced_module,
 					'id_tipo_modulo' => $get_module_type_value,
-					'descripcion' => 'Cluster module'
+					'descripcion' => $get_module_description_value,
+					'min_warning' => $get_module_warning_value,
+					'min_critical' => $get_module_critical_value
 					);
 					
 				// $id_module = db_process_sql_insert('tagente_modulo', $values_module);

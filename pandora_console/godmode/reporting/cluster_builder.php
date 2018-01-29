@@ -81,7 +81,7 @@ if ($add_cluster) {
 			'prediction_module' => 5,
 			'id_agente' =>$id_agent,
 			'custom_integer_1' =>$id_cluster,
-			'id_tipo_modulo' => 3,
+			'id_tipo_modulo' => 1,
 			'descripcion' => 'Cluster status information module',
 			'min_warning' => 1,
 			'min_critical' =>	2
@@ -199,10 +199,10 @@ elseif ($step == 3) {
 				'parent_module_id' => $id_parent_modulo[0]['id_agente_modulo'],
 				'custom_integer_1' =>$id_cluster,
 				'custom_integer_2' =>$tcluster_module,
-				'id_tipo_modulo' =>$get_module_type_value,
+				'id_tipo_modulo' =>1,
 				'descripcion' => $get_module_description_value,
-				'min_warning' => $get_module_warning_value,
-				'min_critical' => $get_module_critical_value
+				'min_warning' => 0,
+				'min_critical' => 0
 				);
 				
 				
@@ -333,6 +333,24 @@ elseif ($step == 3) {
 				$get_module_warning_value = $get_module_type[0]['min_warning'];
 				
 				$get_module_critical_value = $get_module_type[0]['min_critical'];
+								
+				$get_module_type_nombre = db_process_sql('select nombre from ttipo_modulo where id_tipo = '.$get_module_type_value);
+				
+				$get_module_type_nombre_value = $get_module_type_nombre[0]['nombre'];
+				
+				
+				if(strpos($get_module_type_nombre_value,'inc') != false){
+					$get_module_type_value_normal = 4;
+				}
+				elseif (strpos($get_module_type_nombre_value,'proc') != false) {
+					$get_module_type_value_normal = 2;
+				}
+				elseif (strpos($get_module_type_nombre_value,'data') != false) {
+					$get_module_type_value_normal = 1;
+				}
+				elseif (strpos($get_module_type_nombre_value,'string') != false) {
+					$get_module_type_value_normal = 3;
+				};
 				
 				$values_module = array(
 					'nombre' => $value,
@@ -342,7 +360,7 @@ elseif ($step == 3) {
 					'parent_module_id' => $id_parent_modulo[0]['id_agente_modulo'],
 					'custom_integer_1' => $id_cluster,
 					'custom_integer_2' => $tcluster_balanced_module,
-					'id_tipo_modulo' => $get_module_type_value,
+					'id_tipo_modulo' => $get_module_type_value_normal,
 					'descripcion' => $get_module_description_value,
 					'min_warning' => $get_module_warning_value,
 					'min_critical' => $get_module_critical_value

@@ -34,16 +34,22 @@ ui_print_page_header ( __("Cluster detail").' » '.clusters_get_name($id_cluster
 echo "<table style='width:100%;'>";
   echo "<tr>";
 
-    echo "<td style='border:1px solid black;min-width:600px;min-height:500px;vertical-align: top;width:55%';>";
-      echo "<div id='cluster_map' style='min-width:600px;width:100%;height:500px;'></div>";
+    echo "<td style='border:1px solid black;min-width:800px;min-height:500px;vertical-align: top;width:55%';>";
+      echo "<div id='cluster_map' style='min-width:800px;width:100%;height:500px;'></div>";
     echo "</td>";
 
     echo "<td style='width:45%;min-width:390px;min-height:500px;vertical-align: top;background-color:blue;'>";
 
 
 
-echo "<div style='margin-left:auto;margin-right:auto;left:0;right:0;'>";
 
+
+// echo "<div style='width:100%;height:500px;background-color:green;padding-left:auto;padding-right:auto;position:relative;left:0px;'>";
+
+
+
+			
+			
       echo "<div style='width:50%;min-width:390px;max-width:390px;background-color:lightblue;float:left;'>";
         
         echo "<div style='float:left;width:100px;margin-left:20px;margin-top:25px;font-size:2em;text-align:center;'>".__('CLUSTER STATUS')."</div>";
@@ -142,9 +148,9 @@ echo "<div style='margin-left:auto;margin-right:auto;left:0;right:0;'>";
 					echo "</div>";
 					
 				echo "</div>";
-
+			
       echo "</div>";
-
+			
       
 			echo "<div style='width:50%;min-width:390px;max-width:390px;background-color:red;float:left;'>";
 			
@@ -187,8 +193,7 @@ echo "<div style='margin-left:auto;margin-right:auto;left:0;right:0;'>";
 			
       echo "</div>";
 			
-			
-			echo "</div>";
+			// echo "</div>";
 			
 			echo "<div style='width:100%;height:140px;min-width:390px;background-color:orange;float:left;margin-top:50px;'>";
 			

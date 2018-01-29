@@ -112,6 +112,10 @@ else {
 }
 echo '</li>';
 
+$type_cluster = clusters_get_cluster_id_type($id_cluster);
+
+if($type_cluster[$id_cluster] == 'AP'){
+
 /* Step 3 */
 if ($step == 5)
   echo '<li class="last current">';
@@ -151,6 +155,9 @@ else {
   echo '<span>'.__('Critical modules').'</span>';
 }
 echo '</li>';
+
+
+}
 
 echo '</ol>';
 echo '<div id="steps_clean"> </div>';
@@ -913,7 +920,7 @@ elseif ($step == 6) {
                 console.log(data);
                 $('.create_agent_check').prop('disabled',false);
                 $('.check_image_agent').attr('src','images/exito.png');
-                $('.check_image_label').html('Allowed name');
+                $('.check_image_label').html('');
               }
               else{
                 console.log(data);

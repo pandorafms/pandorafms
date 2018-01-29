@@ -34,25 +34,28 @@ ui_print_page_header ( __("Cluster detail").' » '.clusters_get_name($id_cluster
 echo "<table style='width:100%;'>";
   echo "<tr>";
 
-    echo "<td style='border:1px solid black;min-width:800px;min-height:500px;vertical-align: top;width:55%';>";
-      echo "<div id='cluster_map' style='min-width:800px;width:100%;height:500px;'></div>";
+	$cluster_type = clusters_get_cluster_id_type($id_cluster);
+
+
+	if($cluster_type[$id_cluster] == 'AP'){
+
+    echo "<td style='border:1px solid black;min-width:900px;min-height:500px;vertical-align: top;width:55%;'>";
+      
+	}
+	else{
+		
+		echo "<td style='border:1px solid black;min-width:1200px;min-height:500px;vertical-align: top;width:55%;'>";
+		
+	}
+			
+			echo "<div id='cluster_map' style='min-width:900px;width:100%;height:500px;'></div>";
     echo "</td>";
 
-    echo "<td style='width:45%;min-width:390px;min-height:500px;vertical-align: top;background-color:blue;'>";
-
-
-
-
-
-// echo "<div style='width:100%;height:500px;background-color:green;padding-left:auto;padding-right:auto;position:relative;left:0px;'>";
-
-
-
-			
-			
-      echo "<div style='width:50%;min-width:390px;max-width:390px;background-color:lightblue;float:left;'>";
+    echo "<td style='width:45%;min-width:390px;min-height:500px;vertical-align: top;'>";
+		
+      echo "<div style='width:50%;min-width:390px;float:left;'>";
         
-        echo "<div style='float:left;width:100px;margin-left:20px;margin-top:25px;font-size:2em;text-align:center;'>".__('CLUSTER STATUS')."</div>";
+        echo "<div style='float:left;width:100px;margin-left:25px;margin-top:25px;font-size:2em;text-align:center;'>".__('CLUSTER STATUS')."</div>";
 				
 				$cluster_module = db_process_sql('select id_agente_modulo from tagente_modulo where id_agente = (select id_agent from tcluster where id = '.$id_cluster.') and nombre = "Cluster status"');
 				
@@ -119,11 +122,17 @@ echo "<table style='width:100%;'>";
 						break;
 				}
         
+				
+				
+				
+				if($cluster_type[$id_cluster] == 'AP'){
+				
+				
         echo "<div style='border:1px solid lightgray;float:left;min-width:350px;width:350px;margin-left:20px;margin-right:20px;margin-top:20px;height:200px;margin-bottom:20px;'>";
 					
 					echo "<div style='float:left;width:100%;height:25px;background-color:#373737;text-align:center;'><span style='color:#e7e9ea;display:block;margin:5px;font-size:1.5em;'>".__('Balanced modules')."</span></div>";
 					
-					echo "<div style='float:left;width:100%;height:175px;background-color:orange;text-align:center;overflow-y:auto;overflow-x:hidden;'>";
+					echo "<div style='float:left;width:100%;height:175px;text-align:center;overflow-y:auto;overflow-x:hidden;'>";
 					
 						$balanced_modules_in = items_get_cluster_items_id_name($id_cluster,'AP');
 						
@@ -151,8 +160,10 @@ echo "<table style='width:100%;'>";
 			
       echo "</div>";
 			
+		}
+			
       
-			echo "<div style='width:50%;min-width:390px;max-width:390px;background-color:red;float:left;'>";
+			echo "<div style='width:50%;min-width:390px;max-width:390px;float:left;'>";
 			
 			$last_update = db_process_sql('select timestamp from tagente_estado where id_agente_modulo = '.$cluster_module[0]['id_agente_modulo']);
       
@@ -165,7 +176,7 @@ echo "<table style='width:100%;'>";
 					
 					echo "<div style='float:left;width:100%;height:25px;background-color:#373737;text-align:center;'><span style='color:#e7e9ea;display:block;margin:5px;font-size:1.5em;'>".__('Common modules')."</span></div>";
 					
-					echo "<div style='float:left;width:100%;height:175px;background-color:orange;text-align:center;overflow-y:auto;overflow-x:hidden;'>";
+					echo "<div style='float:left;width:100%;height:175px;text-align:center;overflow-y:auto;overflow-x:hidden;'>";
 					
 						$modules_in = items_get_cluster_items_id_name($id_cluster,'AA');
 						
@@ -193,9 +204,8 @@ echo "<table style='width:100%;'>";
 			
       echo "</div>";
 			
-			// echo "</div>";
 			
-			echo "<div style='width:100%;height:140px;min-width:390px;background-color:orange;float:left;margin-top:50px;'>";
+			echo "<div style='width:100%;height:140px;min-width:390px;max-width:780px;float:left;margin-top:50px;'>";
 			
 			$id_agent = db_process_sql('select id_agent from tcluster where id = '.$id_cluster);
 			
@@ -255,7 +265,7 @@ echo "<table style='width:100%;'>";
     echo "</tr>";
 
     echo "<tr>";
-    echo "<td colspan='2' style='min-width:400px;min-height:600px;vertical-align: top;border:1px solid black;'>";
+    echo "<td colspan='2' style='min-width:400px;min-height:600px;vertical-align: top;'>";
 	    echo "<div id='module_list' style='min-height:150px;margin-top:20px;'>";
 			echo "</div>";
     echo "</td>";

@@ -366,7 +366,8 @@ elseif ($step == 3) {
 					'id_tipo_modulo' => $get_module_type_value_normal,
 					'descripcion' => $get_module_description_value,
 					'min_warning' => $get_module_warning_value,
-					'min_critical' => $get_module_critical_value
+					'min_critical' => $get_module_critical_value,
+					'tcp_port' => 0
 					);
 					
 				// $id_module = db_process_sql_insert('tagente_modulo', $values_module);
@@ -419,6 +420,10 @@ elseif ($step == 3) {
 										
 				$titem_is_critical = db_process_sql('update tcluster_item set is_critical = '.$value.' where id = '.$key);
 				
+				$tagente_modulo_critical = db_process_sql('select id_agente_modulo from tagente_modulo where custom_integer_2 = '.$key);
+				
+				$tagente_modulo_update_critical = db_process_sql('update tagente_modulo set tcp_port = '.$value.' where id_agente_modulo = '.$tagente_modulo_critical[0]['id_agente_modulo']);
+				
 					if ($titem_is_critical !== false){	
 						db_pandora_audit("Report management", "Module #$key critical mode is now $value");
 					}
@@ -439,7 +444,13 @@ elseif ($step == 3) {
 	
 		$temp_id_cluster = db_process_sql('select id_agent from tcluster where id ='.$delete_cluster);
 		
-		$tcluster_modules_delete = db_process_sql('delete from tagente_modulo where custom_integer_1 = '.$delete_cluster);
+		// $tcluster_modules_delete = db_process_sql('delete from tagente_modulo where custom_integer_1 = '.$delete_cluster);
+		
+		foreach ($tcluster_modules_delete_get as $key => $value) {
+			$tcluster_modules_delete_get_values[] = $value['id_agente_modulo'];
+		}
+		
+		$tcluster_modules_delete = modules_delete_agent_module($tcluster_modules_delete_get_values);
 		
 		$tcluster_items_delete = db_process_sql('delete from tcluster_item where id_cluster = '.$delete_cluster);
 		
@@ -447,9 +458,14 @@ elseif ($step == 3) {
 		
 		$tcluster_delete = db_process_sql('delete from tcluster where id = '.$delete_cluster);
 		
-		$tcluster_agent_delete = db_process_sql('delete from tagente where id_agente = '.$temp_id_cluster[0]['id_agent']);
+		// $tcluster_agent_delete = db_process_sql('delete from tagente where id_agente = '.$temp_id_cluster[0]['id_agent']);
+		
+		$tcluster_agent_delete = agents_delete_agent($temp_id_cluster[0]['id_agent']);
 		
 		header ("Location: index.php?sec=reporting&sec2=enterprise/operation/cluster/cluster");	
+	}
+	elseif ($delete_module) {
+		
 	}
 
 $active_tab = get_parameter('tab', 'main');

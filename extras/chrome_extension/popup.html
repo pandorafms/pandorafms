@@ -1,5 +1,6 @@
 <html>
     <head>
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600' rel='stylesheet' type='text/css'>
         <link rel="stylesheet" href="css/popup.css" type="text/css" /> 
         <script src="js/jquery-1.7.2.min.js"></script>
         <script src="js/popup.js"></script>
@@ -7,16 +8,28 @@
     <body>
         <div>
             <div id="head"> 
-                <a href=""><img src="images/logo.png" border="0"/></a><a href="options.html" target="_blank"><img src="images/gear.png" style='float:right;padding:5px 5px 0 0;border:0px' title="Options"></a>
-                <a onclick="mrefresh();" style="cursor:pointer" id="m_refresh"><img src="images/refresh.png"  style='float:right;padding:5px 5px 0 0;border:0px' title="Refresh"></a>
-            </div> 
+                <a href=""><img src="images/logo.png" border="0"/></a>
+                <a href="options.html" target="_blank">
+                    <img src="images/gear.png" style='float:right;padding:5px 5px 0 0;border:0px' title="Options">
+                </a>
+                <a style="cursor:pointer" id="m_refresh">
+                    <img src="images/refresh.png" id="refr_img_id" style='float:right;padding:5px 5px 0 0;border:0px' title="Refresh">
+                </a>
+            </div>
 
-            <div class="loader">   <img src='images/spinny.gif'/> Loading... </div>
-            <div class="result" id="result" >
-                <div class="b" id="event">
-                    <h1>Events</h1>
-                    <div class="e" id="e">
-
+            <div style="margin-top: 35px">
+                <div class="error">
+                    <div>
+                        <img src="images/error.png" title="error">
+                    </div>
+                    <div class="error_text">
+                        <h1>ERROR</h1>
+                        <a href="options.html" target="_blank" ></a>
+                    </div>
+                </div>
+                <div class="result" id="result">
+                    <div class="b" id="events">
+                        <div class="e" id="e" />
                     </div>
                 </div>
             </div>

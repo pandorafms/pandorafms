@@ -25,7 +25,7 @@ ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no cl
 
 <div class="new_task">
 	<div class="image_task">
-		<?php echo html_print_image('images/firts_task/icono_grande_custom_reporting.png', true, array("title" => __('Clusters')));?>
+		<?php echo html_print_image('images/firts_task/icono-cluster-activo.png', true, array("title" => __('Clusters')));?>
 	</div>
 	<div class="text_task">
 		<h3> <?php echo __('Create Cluster'); ?></h3>

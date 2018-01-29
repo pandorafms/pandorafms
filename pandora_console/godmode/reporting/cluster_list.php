@@ -77,8 +77,7 @@ ui_pagination (count($clusters));
   foreach ($clusters as $cluster) {
     $data = array ();
     
-    $data[0] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/cluster_view&id='.$cluster["id"].'">'.$cluster["name"].' - Enlace Map Dani (Mapa de red)</a><br><br>'.
-		'<a href="index.php?sec=reporting&sec2=godmode/reporting/cluster_view_2&id='.$cluster["id"].'">'.$cluster["name"].' - Enlace Enrique (pantalla informativa)</a>';
+    $data[0] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/cluster_view&id='.$cluster["id"].'">'.$cluster["name"].'</a>';
     $data[1] = ui_print_truncate_text($cluster["description"], 70);
 		
 		$data[2] = ui_print_group_icon($cluster['group'],true);
@@ -143,7 +142,7 @@ ui_pagination (count($clusters));
 				break;
 		}
 		
-		$data[6] = "<a href='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&delete_cluster=".$cluster["id"]."'><img src='images/cross.png'></a>
+		$data[6] = "<a href='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&delete_cluster=".$cluster["id"]."' onclick='javascript: if (!confirm(\"Are you sure to delete?\")) return false;'><img src='images/cross.png'></a>
                 <a href='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder.cluster_editor&id=".$cluster["id"]."'><img src='images/builder.png'></a>";
     
     array_push ($table->data, $data);

@@ -142,7 +142,7 @@ INSERT INTO `tconfig_os` (`id_os`, `name`, `description`, `icon_name`) VALUES
 (18, 'Switch', 'Generic switch', 'so_switch.png'),
 (19, 'Satellite', 'Satellite agent', 'satellite.png'),
 (20, 'Mainframe', 'Mainframe agent', 'so_mainframe.png'),
-(21, 'Cluster', 'Cluster agent', 'so_mainframe.png');
+(21, 'Cluster', 'Cluster agent', 'so_cluster.png');
 UNLOCK TABLES;
 
 

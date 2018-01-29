@@ -250,13 +250,9 @@ elseif($step == 2){
     $cluster_agents_all[$value['id_agente']] = $value['alias'];
   }
   
-  $cluster_agents_out = array();
-  $cluster_agents_out = array_diff_key($template_agents_all, $template_agents_in);
+  $cluster_agents_out = array_diff_key($cluster_agents_all,$cluster_agents_in);
   
-  $cluster_agents_in_keys = array_keys($template_agents_in);
-  $cluster_agents_out_keys = array_keys($template_agents_out);
-  
-  html_print_select ($cluster_agents_all, 'id_agents[]', 0, false, '', '', false, true, true, '', false, 'width: 100%;', $option_style);
+  html_print_select ($cluster_agents_out, 'id_agents[]', 0, false, '', '', false, true, true, '', false, 'width: 100%;', $option_style);
   
   echo "</td>";
   

@@ -204,7 +204,14 @@ function clusters_get_user ($id_user = 0, $only_names = false, $returnAllGroup =
 	return $clusters;
 }
 
-
+function cluster_get_status ($id_agente){
+	$sql = sprintf("SELECT known_status FROM tagente_estado ae 
+		INNER JOIN tagente_modulo am ON ae.id_agente_modulo = am.id_agente_modulo
+		WHERE am.nombre = 'Cluster status' AND  am.id_agente = %d",$id_agente);
+	
+	$status = db_get_all_rows_sql($sql);
+	return $status;
+}
 
 
 ?>

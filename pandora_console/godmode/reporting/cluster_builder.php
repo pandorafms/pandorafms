@@ -350,8 +350,11 @@ elseif ($step == 3) {
 				}
 				elseif (strpos($get_module_type_nombre_value,'string') != false) {
 					$get_module_type_value_normal = 3;
-				};
-				
+				}
+				else{
+					$get_module_type_value_normal = 3;
+				}
+								
 				$values_module = array(
 					'nombre' => $value,
 					'id_modulo' => 5,

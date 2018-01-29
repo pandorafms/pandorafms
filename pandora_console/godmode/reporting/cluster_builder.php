@@ -352,7 +352,7 @@ elseif ($step == 3) {
 					$get_module_type_value_normal = 3;
 				}
 				else{
-					$get_module_type_value_normal = 3;
+					$get_module_type_value_normal = 1;
 				}
 								
 				$values_module = array(

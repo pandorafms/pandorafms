@@ -213,21 +213,19 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 	}
 	//$('.legend>table').css('border',"1px solid #E2E2E2");
 	
-	if(background_color == 'transparent'){
+	if(background_color == 'transparent') {
 		$('.legend>table').css('background-color',"");
 		$('.legend>div').css('background-color',"");
 		$('.legend>table').css('color',"#aaa");
-	}
-	else if (background_color == 'white') {
+	} else if (background_color == 'white') {
 		$('.legend>table').css('background-color',"white");
 		$('.legend>table').css('color',"black");
-	}
-	else if (background_color == 'black') {
+	} else if (background_color == 'black') {
 		$('.legend>table').css('background-color',"black");
 		$('.legend>table').css('color',"#aaa");
 	}
 	
-	$('.legend').over(function(){
+	$('.legend').hover(function() {
 		return false;
 	});
 	

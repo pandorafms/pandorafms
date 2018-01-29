@@ -22,7 +22,7 @@ echo "<div style='overflow-y:auto;height:400px;min-height:400px;max-height:400px
 echo get_pandora_error_for_header();
 echo "</div>";
 
-echo "<div class='modalokbutton cerrar'>
+echo "<div class='modalokbutton cerrar' style='margin-top: 10px'>
 <span class='modalokbuttontext close'>OK</span>
 </div>";
 

@@ -9,12 +9,6 @@ package PandoraFMS::PluginTools;
 #  Library              Centos package
 #  -------              --------------
 #  LWP::UserAgent       perl-libwww-perl
-#  
-#
-#
-# Version   Date
-#  a1        17-11-2015
-#  ** Revision handler in gitlab **
 # 
 ################################################################################
 
@@ -58,6 +52,7 @@ our @EXPORT = qw(
 	get_unit
 	get_unix_time
 	get_sys_environment
+	get_current_utime_milis
 	getCurrentUTimeMilis
 	head
 	in_array
@@ -100,6 +95,7 @@ sub get_lib_version {
 ################################################################################
 # Get current time (milis)
 ################################################################################
+sub get_current_utime_milis { return getCurrentUTimeMilis(); }
 sub getCurrentUTimeMilis {
 	#return trim (`date +"%s%3N"`); # returns 1449681679712
 	return floor(time*1000);
@@ -609,7 +605,11 @@ sub transfer_xml {
 
 	close (FD);
 
+	# Reassign default values if not present
+	$conf->{tentacle_client} = "tentacle_client" if empty($conf->{tentacle_client});
+	$conf->{tentacle_port}   = "44121"     if empty($conf->{tentacle_port});
 	$conf->{mode} = $conf->{transfer_mode} if empty($conf->{mode});
+
 	if (empty ($conf->{mode}) ) {
 		print_stderror($conf, "[ERROR] Nor \"mode\" nor \"transfer_mode\" defined in configuration.");
 		return undef;

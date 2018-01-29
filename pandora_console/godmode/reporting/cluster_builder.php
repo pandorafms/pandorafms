@@ -258,7 +258,12 @@ elseif ($step == 3) {
 				foreach ($critical_values as $key => $value) {
 					$titem_critical_limit = db_process_sql('update tcluster_item set critical_limit = '.$value.' where id = '.$key);
 					
-					$get_module_critical_limit = db_process_sql('update tagente_modulo set min_critical = '.$value.' where nombre = (select name from tcluster_item where id = '.$key.') and cutom_integer_1 = '.$id_cluster);
+					$get_module_critical_limit = db_process_sql('update tagente_modulo set min_critical = '.$value.' where nombre = (select name from tcluster_item where id = '.$key.') and custom_integer_1 = '.$id_cluster);
+					
+					html_debug($value);
+					html_debug($key);
+					html_debug($id_cluster);
+					html_debug($get_module_warning_limit);
 					
 					if ($titem_critical_limit !== false){	
 						db_pandora_audit("Report management", "Critical limit #$value assigned to item #$key");
@@ -273,7 +278,10 @@ elseif ($step == 3) {
 				
 					$titem_warning_limit = db_process_sql('update tcluster_item set warning_limit = '.$value.' where id = '.$key);
 					
-					$get_module_warning_limit = db_process_sql('update tagente_modulo set min_warning = '.$value.' where nombre = (select name from tcluster_item where id = '.$key.') and cutom_integer_1 = '.$id_cluster);
+					$get_module_warning_limit = db_process_sql('update tagente_modulo set min_warning = '.$value.' where nombre = (select name from tcluster_item where id = '.$key.') and custom_integer_1 = '.$id_cluster);
+							
+							
+						
 							
 					if ($titem_warning_limit !== false){	
 						db_pandora_audit("Report management", "Critical limit #$value assigned to item #$key");
@@ -287,10 +295,10 @@ elseif ($step == 3) {
 				$cluster_type = clusters_get_cluster_id_type($id_cluster);
 								
 				if($cluster_type[$id_cluster] == 'AP'){
-					header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=5&id_cluster=".$id_cluster);	
+					// header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=5&id_cluster=".$id_cluster);	
 				}
 				elseif ($cluster_type[$id_cluster] == 'AA') {
-					header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_view&id=".$id_cluster);		
+					// header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_view&id=".$id_cluster);		
 				}
 				
 			}

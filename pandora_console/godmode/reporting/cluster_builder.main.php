@@ -381,7 +381,7 @@ elseif ($step == 4) {
     echo "<td class='datos'>".$value."</td>";
     echo "<td class='datos'><input class='zero_hundred' value='".get_item_critical_limit_by_item_id($key)."' name='critical_item_".$key."' type='number' max='100' min='0' style='width:60%;' onkeydown='javascript: return event.keyCode == 69 ? false : true'> &nbsp;&nbsp;% are down</td>";
     echo "<td class='datos'><input class='zero_hundred' value='".get_item_warning_limit_by_item_id($key)."' name='warning_item_".$key."' type='number' max='100' min='0' style='width:60%;' onkeydown='javascript: return event.keyCode == 69 ? false : true'> &nbsp;&nbsp;% are down</td>";
-    echo "<td class='datos'><a href='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=4&delete_module=".$key."&id_cluster=".$id_cluster."'><img src='images/cross.png'></a></td>";
+    echo "<td class='datos'><a href='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&delete_module_aa=".$key."&id_cluster=".$id_cluster."'><img src='images/cross.png'></a></td>";
     echo "</tr>";
     
   }
@@ -524,7 +524,7 @@ elseif ($step == 6) {
       echo "<td class='datos'><input class='is_critical_check' name='is_critical_item_".$key."' type='checkbox' value='1'></td>";
     }
     
-    echo "<td class='datos'><a href='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=6&delete_module=".$key."&id_cluster=".$id_cluster."'><img src='images/cross.png'></a></td>";
+    echo "<td class='datos'><a href='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&delete_module_ap=".$key."&id_cluster=".$id_cluster."'><img src='images/cross.png'></a></td>";
     echo "</tr>";
     
   }

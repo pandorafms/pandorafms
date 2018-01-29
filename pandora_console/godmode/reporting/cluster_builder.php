@@ -30,6 +30,8 @@ require_once('include/functions_clusters.php');
 $step = get_parameter('step',0);
 $id_cluster = get_parameter('id_cluster',0);
 $delete_cluster = get_parameter('delete_cluster',0);
+$delete_module_aa = get_parameter('delete_module_aa',0);
+$delete_module_ap = get_parameter('delete_module_ap',0);
 
 if($step == 1){
 	
@@ -446,6 +448,8 @@ elseif ($step == 3) {
 		
 		// $tcluster_modules_delete = db_process_sql('delete from tagente_modulo where custom_integer_1 = '.$delete_cluster);
 		
+		$tcluster_modules_delete_get = db_process_sql('select id_agente_modulo from tagente_modulo where custom_integer_1 = '.$delete_cluster);
+				
 		foreach ($tcluster_modules_delete_get as $key => $value) {
 			$tcluster_modules_delete_get_values[] = $value['id_agente_modulo'];
 		}
@@ -464,8 +468,25 @@ elseif ($step == 3) {
 		
 		header ("Location: index.php?sec=reporting&sec2=enterprise/operation/cluster/cluster");	
 	}
-	elseif ($delete_module) {
+	elseif ($delete_module_aa) {
 		
+		$delete_module_aa_get = db_process_sql('select id_agente_modulo from tagente_modulo where custom_integer_2 = '.$delete_module_aa);
+								
+		$delete_module_aa_get_result = modules_delete_agent_module($delete_module_aa_get[0]['id_agente_modulo']);
+		
+		$delete_item = db_process_sql('delete from tcluster_item where id = '.$delete_module_aa);
+		
+		header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=4&id_cluster=".$id_cluster);	
+	}
+	elseif($delete_module_ap){
+		
+		$delete_module_ap_get = db_process_sql('select id_agente_modulo from tagente_modulo where custom_integer_2 = '.$delete_module_ap);
+								
+		$delete_module_ap_get_result = modules_delete_agent_module($delete_module_ap_get[0]['id_agente_modulo']);
+		
+		$delete_item = db_process_sql('delete from tcluster_item where id = '.$delete_module_ap);
+		
+		header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=6&id_cluster=".$id_cluster);		
 	}
 
 $active_tab = get_parameter('tab', 'main');

@@ -32,7 +32,7 @@ ui_print_page_header ( __("Cluster detail").' » '.clusters_get_name($id_cluster
 
 $font_size = 10;
 $width = "100%";
-$height = "600";
+$height = "500";
 $node_radius = 40;
 $baseurl = ui_get_full_url(false, false, false, false);
 
@@ -74,7 +74,7 @@ echo "<table style='width:100%;'>";
 					
 					echo "<div style='border:3px gray groove;float:left;width:100px;margin-left:20px;margin-top:20px;height:50px;'>
 					
-					<div class='status_animation' style='position:relative;width:100px;background-color:red;'></div>
+					<div class='status_animation' style='position:relative;width:100px;background-color:".COL_CRITICAL.";'></div>
 					
 					</div>";
 					
@@ -83,7 +83,7 @@ echo "<table style='width:100%;'>";
 					
 					echo "<div style='border:3px gray groove;float:left;width:100px;margin-left:20px;margin-top:20px;height:50px;'>
 					
-					<div class='status_animation' style='position:relative;width:100px;background-color:yellow;'></div>
+					<div class='status_animation' style='position:relative;width:100px;background-color:".COL_WARNING.";'></div>
 					
 					</div>";
 					
@@ -92,7 +92,7 @@ echo "<table style='width:100%;'>";
 					
 					echo "<div style='border:3px gray groove;float:left;width:100px;margin-left:20px;margin-top:20px;height:50px;'>
 					
-					<div class='status_animation' style='position:relative;width:100px;background-color:blue;'></div>
+					<div class='status_animation' style='position:relative;width:100px;background-color:".COL_NOTINIT.";'></div>
 					
 					</div>";
 					
@@ -101,7 +101,7 @@ echo "<table style='width:100%;'>";
 					
 					echo "<div style='border:3px gray groove;float:left;width:100px;margin-left:20px;margin-top:20px;height:50px;'>
 					
-					<div class='status_animation' style='position:relative;width:100px;background-color:gray;'></div>
+					<div class='status_animation' style='position:relative;width:100px;background-color:".COL_UNKNOWN.";'></div>
 					
 					</div>";
 					
@@ -110,7 +110,7 @@ echo "<table style='width:100%;'>";
 					
 					echo "<div style='border:3px gray groove;float:left;width:100px;margin-left:20px;margin-top:20px;height:50px;'>
 					
-					<div class='status_animation' style='position:relative;width:100px;background-color:blue;'></div>
+					<div class='status_animation' style='position:relative;width:100px;background-color:".COL_NOTINIT.";'></div>
 					
 					</div>";
 					
@@ -119,7 +119,7 @@ echo "<table style='width:100%;'>";
 					
 						echo "<div style='border:3px gray groove;float:left;width:100px;margin-left:20px;margin-top:20px;height:50px;'>
 						
-						<div class='status_animation' style='position:relative;width:100px;background-color:green;'></div>
+						<div class='status_animation' style='position:relative;width:100px;background-color:".COL_NORMAL.";'></div>
 						
 						</div>";
 					
@@ -328,7 +328,7 @@ system ($cmd);
 
 unlink($filename_dot);
 
-$nodes = cluster_loadfile($filename_plain, $graph);
+$nodes = cluster_loadfile($filename_plain, $graph, $id_cluster);
 
 
 foreach ($nodes['nodes'] as $key => $node) {

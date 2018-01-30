@@ -142,7 +142,7 @@ echo "<table style='width:100%;'>";
 					
 					echo "<div style='float:left;width:100%;height:175px;text-align:center;overflow-y:auto;overflow-x:hidden;'>";
 					
-						$balanced_modules_in = items_get_cluster_items_id_name($id_cluster,'AP');
+						$balanced_modules_in = items_get_cluster_items_id_name($id_cluster,'AP',1);
 						
 						foreach ($balanced_modules_in as $key => $value) {
 							$cluster_module = db_process_sql('select id_agente_modulo from tagente_modulo where custom_integer_2 = '.$key);
@@ -150,12 +150,12 @@ echo "<table style='width:100%;'>";
 							$cluster_module_status = modules_get_agentmodule_last_status($cluster_module[0]['id_agente_modulo']);
 														
 							echo "<div style='float:left;margin-left:20px;margin-top:10px;width:330px;'>";
-														
-							if($cluster_module_status == 5){
-								echo '<div style="float:left;"><img style="width:18px;height:18px;margin-right:5px;vertical-align:middle;" src="images/exito.png">'.ui_print_truncate_text($value, 40,false).'</div>';
+							
+							if($cluster_module_status == 0){
+								echo '<div class="modal_module_list" style="float:left;" onclick="modal_module(\''.$value.'\','.$id_cluster.',1,event);"><img style="width:18px;height:18px;margin-right:5px;vertical-align:middle;" src="images/exito.png">'.ui_print_truncate_text($value, 40,false).'</div>';
 							}
 							else{
-								echo '<div style="float:left;"><img style="width:18px;height:18px;margin-right:5px;vertical-align:middle;" src="images/error_1.png">'.ui_print_truncate_text($value, 40,false).'</div>';
+								echo '<div class="modal_module_list" style="float:left;" onclick="modal_module(\''.$value.'\','.$id_cluster.',1,event);"><img style="width:18px;height:18px;margin-right:5px;vertical-align:middle;" src="images/error_1.png">'.ui_print_truncate_text($value, 40,false).'</div>';
 							}
 							
 							echo '</div>';
@@ -169,7 +169,9 @@ echo "<table style='width:100%;'>";
       echo "</div>";
 			
 		}
-			
+		// $module_agents = db_process_sql('select tagente_modulo.id_agente_modulo,tagente_modulo.id_agente,utimestamp from tagente_modulo,tagente_estado where tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo and nombre = "CPU&#x20;Load" and tagente_modulo.id_agente in
+	  //  (select id_agent from tcluster_agent where id_cluster = 6)');
+		// html_debug($module_agents);
       
 			echo "<div style='width:50%;min-width:390px;max-width:390px;float:left;'>";
 			
@@ -195,11 +197,11 @@ echo "<table style='width:100%;'>";
 														
 							echo "<div style='float:left;margin-left:20px;margin-top:10px;width:330px;'>";
 														
-							if($cluster_module_status == 5){
-								echo '<div style="float:left;"><img style="width:18px;height:18px;margin-right:5px;vertical-align:middle;" src="images/exito.png">'.ui_print_truncate_text($value, 40,false).'</div>';
+							if($cluster_module_status == 0){
+								echo '<div class="modal_module_list" onclick="modal_module(\''.$value.'\','.$id_cluster.',0,event);" style="float:left;"><img style="width:18px;height:18px;margin-right:5px;vertical-align:middle;" src="images/exito.png">'.ui_print_truncate_text($value, 40,false).'</div>';
 							}
 							else{
-								echo '<div style="float:left;"><img style="width:18px;height:18px;margin-right:5px;vertical-align:middle;" src="images/error_1.png">'.ui_print_truncate_text($value, 40,false).'</div>';
+								echo '<div class="modal_module_list" onclick="modal_module(\''.$value.'\','.$id_cluster.',0,event);" style="float:left;"><img style="width:18px;height:18px;margin-right:5px;vertical-align:middle;" src="images/error_1.png">'.ui_print_truncate_text($value, 40,false).'</div>';
 							}
 							
 							echo '</div>';
@@ -279,6 +281,8 @@ echo "<table style='width:100%;'>";
     echo "</td>";
   echo "</tr>";
 echo "</table>";
+
+echo "<div id='modal_module_popup' style='position:absolute;'></div>";
 
 $id_agent = db_process_sql('select id_agent from tcluster where id = '.$id_cluster);
 
@@ -513,8 +517,32 @@ function refresh_pagination_callback (module_id, id_agent, server_name,module_na
 	});
 }
 
+function modal_module(name,id_cluster,module_ap,event){
+			
+	x=event.clientX-550;
+	y=event.clientY-50;
+				
+	$.ajax({
+	type: "POST",
+	url: "ajax.php",
+	data: {"page" : "godmode/reporting/cluster_name_agents",
+	"name_module" : name,
+	"id_cluster" : id_cluster,
+	"module_ap" : module_ap
+	},
+	success: function(data) {
+		
+		$('#modal_module_popup').css({'display':'block','width':'600px','left':x+'px','top': y+'px'});
+		
+		$('#modal_module_popup').html(data);
+	}
+	});
+	
+}
+		
 
 $(document).ready(function(){
+		
 	$('.tooltip').tooltipster();
 	var controller = null
 	$(function() {

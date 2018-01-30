@@ -123,8 +123,8 @@ function items_get_cluster_items_id ($id_cluster,$item_type = 'AA'){
   return ($post_items);
 }
 
-function items_get_cluster_items_id_name ($id_cluster,$item_type = 'AA'){
-  $items = db_get_all_rows_filter("tcluster_item", array("id_cluster" => $id_cluster,"item_type" => $item_type), array("id"));
+function items_get_cluster_items_id_name ($id_cluster,$item_type = 'AA',$is_critical = '%%'){
+  $items = db_get_all_rows_filter("tcluster_item", array("id_cluster" => $id_cluster,"item_type" => $item_type,"is_critical" => $is_critical), array("id"));
 	
 	$post_items = array();
 	
@@ -212,6 +212,7 @@ function cluster_get_status ($id_agente){
 	$status = db_get_all_rows_sql($sql);
 	return $status;
 }
+
 
 
 ?>

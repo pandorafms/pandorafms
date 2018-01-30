@@ -2511,7 +2511,7 @@ function reporting_database_serialized($report, $content) {
 	$return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
 	
 	$keys = array();
-	if ($content['header_definition'] != '') {
+	if (isset($content['header_definition']) && ($content['header_definition'] != '')) {
 		$keys = explode('|', $content['header_definition']);
 	}
 	
@@ -4492,7 +4492,7 @@ function reporting_sql($report, $content) {
 	}
 	else {
 		$return['correct'] = 0;
-		$return['error'] = __('Illegal query: Due security restrictions, there are some tokens or words you cannot use: *, delete, drop, alter, modify, union, password, pass, insert or update.');
+		$return['error'] = __('Illegal query: Due security restrictions, there are some tokens or words you cannot use: *, delete, drop, alter, modify, password, pass, insert or update.');
 	}
 	
 	if ($config['metaconsole']) {

@@ -1608,7 +1608,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 						if (!modules_is_boolean($layoutData['id_agente_modulo'])) {
 							$img_style_title .=
 								" <br>" . __("Last value: ")
-								. $value;
+								. remove_right_zeros(number_format($value, $config['graph_precision']));
 						}
 					}
 					
@@ -1644,7 +1644,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 					$imgpos = 'float:left';
 				}
 				
-				$varsize = getimagesize($img);
+				$varsize = getimagesize($config['homedir'] . '/' . $img);
 				
 				
 				if($layoutData['show_statistics'] == 1){

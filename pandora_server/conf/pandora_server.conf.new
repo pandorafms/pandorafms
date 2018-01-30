@@ -1,7 +1,7 @@
 #############################################################################
 # Pandora FMS Server Parameters
 # Pandora FMS, the Flexible Monitoring System.
-# Version 7.0NG.717
+# Version 7.0NG.718
 # Licensed under GPL license v2,
 # (c) 2003-2017 Artica Soluciones Tecnologicas
 # http://www.pandorafms.com
@@ -564,6 +564,10 @@ enc_dir /usr/share/pandora_server/enc/
 # Go to http://wiki.pandorafms.com/ for more information.
 dynamic_updates 5
 
+# Periodically update unknown modules (1), instead of only once (0). Periodic
+# updates may affect server performance.
+unknown_updates 0
+
 # Enable (1) or disable (0) the Pandora FMS WUX Server (PANDORA FMS ENTERPRISE ONLY).
 wuxserver 0
 
@@ -572,6 +576,9 @@ wuxserver 0
 
 # Port of the Selenium Grid Server.
 #wux_port 4444
+
+# Maximum timeout to connect to a target web site, also for communications with a Selenium Grid server.
+#wux_webagent_timeout 15
 
 # Enable (1) or disable (0) the Pandora FMS Syslog Server (PANDORA FMS ENTERPRISE ONLY).
 syslogserver 1
@@ -584,4 +591,8 @@ syslog_threads 2
 
 # Maximum number of lines queued by the Syslog Server's producer on each run (PANDORA FMS ENTERPRISE ONLY).
 syslog_max 65535
+
+# Target LogStash server, to allow Dataserver and SyslogServer store log information in ElasticSearch
+#logstash_host ip
+#logstash_port 10514
 

@@ -1336,7 +1336,15 @@ if (!empty($result)) {
 					$salida = $data_macro;
 				} else {
 					$salida .= '&nbsp;' . '<i>' . io_safe_output($row['unit']) . '</i>';
-					$salida = ui_print_truncate_text($salida, 'agent_small', true, true, false, '[&hellip;]', 'font-size:7.5pt;');
+					if(strlen($salida) > $config['agent_size_text_small']) {
+						$salida = ui_print_truncate_text($salida, 'agent_small', true, true, false, '[&hellip;]', 'font-size:7.5pt;');
+						//clean tag <i>
+						$text_aux = explode('<a',$salida);
+						$match = preg_replace('/(&lt;i&gt;|&lt;\/i&gt;|&lt;i|&lt;\/i|i&gt;|\/i&gt;|&lt;|&gt;)/', "", $text_aux[0]);
+						$salida = $match.'<a'.$text_aux[1];
+					} else {
+						$salida = ui_print_truncate_text($salida, 'agent_small', true, true, false, '[&hellip;]', 'font-size:7.5pt;');
+					}
 				}
 			}
 		}

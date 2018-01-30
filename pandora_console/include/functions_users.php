@@ -488,6 +488,10 @@ function old_users_get_groups ($id_user = false, $privilege = "AR", $returnAllGr
 		}
 	}
 	
+	if (!empty($id_groups)) {
+		$user_groups = array_intersect_key($user_groups,array_flip($id_groups));
+	}
+	
 	return $user_groups;
 }
 

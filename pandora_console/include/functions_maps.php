@@ -87,7 +87,7 @@ function maps_duplicate_items_map($id, $map_items) {
 					'options' => $item['options'], 'style' => $item['style']);
 		$result_copy_item = db_process_sql_insert('titem', $copy_items);
 		if ($result_copy_item) {
-			$item_relations = db_get_all_rows_sql("SELECT * FROM trel_item WHERE id = " . $item['id']);
+			$item_relations = db_get_all_rows_sql("SELECT * FROM trel_item WHERE id = " . $item['id'] . " AND deleted = 0");
 			if ($item['id'] == $item_relations['parent_id']) {
 				$copy_item_relations = array(
 					'id_parent' => $result_copy_item,

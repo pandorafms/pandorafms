@@ -23,7 +23,7 @@ else {
 
 include_once($homedir . 'include/functions_ui.php');
 include_once($homedir . 'include/functions.php');
-include_once($homedir . 'include/functions_html.php');
+include_once(__DIR__ . '/../include/functions_html.php');
 
 
 if($config['visual_animation']){

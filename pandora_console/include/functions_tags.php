@@ -2405,7 +2405,6 @@ function tags_get_user_groups_and_tags ($id_user = false, $access = 'AR', $stric
 	$return = array();
 	foreach ($acls as $acl) {
 		$return[$acl["id_grupo"]] = $acl["tags"];
-		
 	}
 
 	return $return;

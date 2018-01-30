@@ -250,6 +250,10 @@ function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup 
 							$id_groups = null, $keys_field = 'id_grupo', $cache = true) {
 	static $group_cache = array();
 
+	// Added users_group_cache to avoid unnecessary proccess on massive calls...
+	static $users_group_cache = array();
+	$users_group_cache_key = $id_user . "|" . $privilege . "|" . $returnAllGroup . "|" . $returnAllColumns;
+
 	if (empty ($id_user)) {
 		global $config;
 	
@@ -277,10 +281,17 @@ function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup 
 						WHERE (tgrupo.id_grupo = tusuario_perfil.id_grupo OR tusuario_perfil.id_grupo = 0)
 						AND tusuario_perfil.id_perfil = tperfil.id_perfil
 						AND tusuario_perfil.id_usuario = '%s' ORDER BY nombre", $id_user);
-			$forest_acl = db_get_all_rows_sql ($query);
+			$raw_forest = db_get_all_rows_sql ($query);
 
-			foreach ($forest_acl as $g) {
-				$forest_acl[$g["id_grupo"]] = $g;
+			foreach ($raw_forest as $g) {
+				// XXX, following code must be remade (TAG)
+				if (!isset($forest_acl[$g["id_grupo"]] )) {
+					$forest_acl[$g["id_grupo"]] = $g;
+				}
+				else {
+					$forest_acl[$g["id_grupo"]]["tags"] .= "," . $g["tags"];
+				}
+				
 			}
 
 			$groups = array();
@@ -334,10 +345,16 @@ function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup 
 	}
 	
 	$acl_column = get_acl_column($privilege);
+
+	if (array_key_exists($users_group_cache_key, $users_group_cache)) {
+		return $users_group_cache[$users_group_cache_key];
+	}
+
+
 	foreach ($forest_acl as $group) {
 
 		# Check the specific permission column. acl_column is undefined for admins.
-		if (defined($group[$acl_column]) && $group[$acl_column] != '1') {
+		if (isset($group[$acl_column]) && $group[$acl_column] != '1') {
 			continue;
 		}
 
@@ -348,6 +365,8 @@ function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup 
 			$user_groups[$group[$keys_field]] = $group['nombre'];
 		}
 	}
+
+	$users_group_cache[$users_group_cache_key] = $user_groups;
 
 	return $user_groups;
 }
@@ -1006,15 +1025,23 @@ function users_get_last_type_message() {
 
 function users_is_admin($id_user = false) {
 	global $config;
-	
+
+	if (!isset($config["is_admin"])) {
+		$config["is_admin"] = array();
+	}
+
 	if ($id_user === false) {
 		$id_user = $config['id_user'];
 	}
 	
-	$is_admin = (bool)db_get_value('is_admin',
+	if (isset($config["is_admin"][$id_user])) {
+		return $config["is_admin"][$id_user];
+	}
+	
+	$config["is_admin"][$id_user] = (bool)db_get_value('is_admin',
 		'tusuario', 'id_user', $id_user);
 	
-	return $is_admin;
+	return $config["is_admin"][$id_user];
 }
 
 function users_is_last_system_message() {

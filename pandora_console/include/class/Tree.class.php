@@ -53,7 +53,7 @@ class Tree {
 
 		$this->strictACL = (bool) db_get_value("strict_acl", "tusuario", "id_user", $config['id_user']);
 		
-		$this->acltags = tags_get_user_module_and_tags($config['id_user'], $this->access);
+		$this->acltags = tags_get_user_groups_and_tags($config['id_user'], $this->access);
 	}
 
 	public function setFilter($filter) {

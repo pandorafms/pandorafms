@@ -317,7 +317,7 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 			$fields = array ('tagente.id_grupo, tagente.nombre, tagente.id_os, tagente.id_parent, tagente.id_agente, 
 						tagente.normal_count, tagente.warning_count, tagente.critical_count,
 						tagente.unknown_count, tagente.total_count, tagente.notinit_count');
-			$acltags = tags_get_user_module_and_tags ($config['id_user'],'AR', $strict_user);
+			$acltags = tags_get_user_groups_and_tags ($config['id_user'],'AR', $strict_user);
 			$agents = tags_get_all_user_agents (false, $config['id_user'], $acltags, $filter, $fields, false, $strict_user, true);
 		}
 		else {
@@ -343,7 +343,7 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 			$fields = array ('tagente.id_grupo, tagente.nombre, tagente.id_os, tagente.id_parent, tagente.id_agente, 
 						tagente.normal_count, tagente.warning_count, tagente.critical_count,
 						tagente.unknown_count, tagente.total_count, tagente.notinit_count');
-			$acltags = tags_get_user_module_and_tags ($config['id_user'],'AR', $strict_user);
+			$acltags = tags_get_user_groups_and_tags ($config['id_user'],'AR', $strict_user);
 			$agents = tags_get_all_user_agents (false, $config['id_user'], $acltags, $filter, $fields, false, $strict_user, true);
 		}
 		else {
@@ -625,7 +625,7 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0,
 	global $config;
 
 	if ($strict_user) {
-		$acltags = tags_get_user_module_and_tags ($config['id_user'],'AR', $strict_user);
+		$acltags = tags_get_user_groups_and_tags ($config['id_user'],'AR', $strict_user);
 	}
 	$parents = array();
 	$orphans = array();
@@ -1003,7 +1003,7 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cu
 	
 	if ($strict_user) {
 		require_once($config['homedir']."/include/functions_tags.php");
-		$acltags = tags_get_user_module_and_tags ($config["id_user"], 'AR', $strict_user);
+		$acltags = tags_get_user_groups_and_tags ($config["id_user"], 'AR', $strict_user);
 		
 		$agent_filter = array("id" => $agent["id_agente"]);
 		$strict_data['normal_count'] = (int) groups_get_normal_monitors ($agent['id_grupo'], $agent_filter, array(), $strict_user, $acltags);
@@ -1798,7 +1798,7 @@ function networkmap_get_new_nodes_from_ip_mask($ip_mask,
 	if ($strict_user) {
 		$filter['group_by'] = 'tagente.id_agente';
 		$fields = array ('tagente.id_agente');
-		$acltags = tags_get_user_module_and_tags ($config['id_user'],'AR', $strict_user);
+		$acltags = tags_get_user_groups_and_tags ($config['id_user'],'AR', $strict_user);
 		$user_agents = tags_get_all_user_agents (false, $config['id_user'], $acltags, $filter, $fields, false, $strict_user, true);
 		
 		foreach ($all_user_agents as $agent) {

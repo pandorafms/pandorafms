@@ -3625,7 +3625,7 @@ function reporting_get_total_servers ($num_servers) {
 
 function reporting_get_events ($data, $links = false) {
 	global $config;
-	
+	$table_events = new stdClass();
 	$table_events->width = "100%";
 	if (defined('METACONSOLE'))
 		$style = " vertical-align:middle;";
@@ -3697,7 +3697,7 @@ function reporting_get_last_activity() {
 	global $config;
 	
 	// Show last activity from this user
-	
+	$table = new stdClass();
 	$table->width = '100%';
 	$table->data = array ();
 	$table->size = array ();
@@ -4010,8 +4010,10 @@ function reporting_get_event_histogram_meta ($width) {
 		$events = db_get_all_rows_sql($sql);
 		
 		$events_criticity = array();
-		foreach ($events as $key => $value) {
-			array_push($events_criticity,$value['criticity']);
+		if(is_array($events)){
+			foreach ($events as $key => $value) {
+				array_push($events_criticity,$value['criticity']);
+			}
 		}
 		
 		if (!empty($events)) {

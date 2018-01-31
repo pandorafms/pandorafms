@@ -2552,7 +2552,9 @@ function modules_get_modules_name ($sql_from , $sql_conditions = '', $meta = fal
 				foreach ($rows_temp as $module_group_key => $modules_group_val)
 					$rows_temp_processed[$modules_group_val['name']] = $modules_group_val['name'];
 				
-				$rows_select = array_unique(array_merge($rows_select, $rows_temp_processed));
+				if(is_array($rows_select) && is_array($rows_temp_processed)){
+					$rows_select = array_unique(array_merge($rows_select, $rows_temp_processed));
+				}
 			}
 			
 			$groups_temp = users_get_groups_for_select(false, "AR", true, true, false);									
@@ -2565,7 +2567,9 @@ function modules_get_modules_name ($sql_from , $sql_conditions = '', $meta = fal
 			}
 			
 			if (!empty($groups_temp_processed)) {
-				$groups_select = array_unique(array_merge($groups_select, $groups_temp_processed));
+				if(is_array($rows_select) && is_array($rows_temp_processed)){
+					$groups_select = array_unique(array_merge($groups_select, $groups_temp_processed));
+				}
 			}
 			
 			if (!empty($modules_temp))
@@ -2574,7 +2578,13 @@ function modules_get_modules_name ($sql_from , $sql_conditions = '', $meta = fal
 			metaconsole_restore_db();
 		}
 		unset($groups_select[__('All')]);
-		$key_group_all = array_search(__('All'), $groups_select);
+		if(is_array($groups_select)){
+			$key_group_all = array_search(__('All'), $groups_select);
+		}
+		else{
+			$key_group_all = false;	
+		}
+		
 		if ($key_group_all !== false)
 			unset($groups_select[$key_group_all]);
 		return $modules;

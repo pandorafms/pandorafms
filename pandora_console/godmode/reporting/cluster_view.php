@@ -30,7 +30,7 @@ $buttons['editor'] = array('active' => false,
     
 ui_print_page_header ( __("Cluster detail").' » '.clusters_get_name($id_cluster), "images/agent_mc.png", false, "agent_status", false, $buttons);
 
-$font_size = 10;
+$font_size = 20;
 $width = "100%";
 $height = "500";
 $node_radius = 40;
@@ -310,9 +310,9 @@ if ($graph === false) {
 
 // Generate image and map
 // If image was generated just a few minutes ago, then don't regenerate (it takes long) unless regen checkbox is set
-$filename_map = safe_url_extraclean ($config["attachment_store"])."/vmware_map_" . $config['id_user'];
-$filename_img = "attachment/vmware_map_" . $config['id_user'];
-$filename_dot = safe_url_extraclean ($config["attachment_store"])."/vmware_map_" . $config['id_user'];
+$filename_map = safe_url_extraclean ($config["attachment_store"])."/cluster_map_" . $config['id_user'];
+$filename_img = "attachment/cluster_map_" . $config['id_user'];
+$filename_dot = safe_url_extraclean ($config["attachment_store"])."/cluster_map_" . $config['id_user'];
 
 $filename_map .= ".map";
 $filename_img .= ".png";
@@ -330,16 +330,24 @@ unlink($filename_dot);
 
 $nodes = cluster_loadfile($filename_plain, $graph, $id_cluster);
 
+// Colored main node (active-passive)
+$node_id_agent = array();
+foreach ($nodes['nodes'] as $key => $node) {
+	if ($node['id'] !== '1') {
+		$node_id_agent[$key] = $node['id_agent'];
+	}
+}
+
+$sql_AP = "SELECT am.nombre, am.id_agente_modulo,am.id_agente, am.post_process, ae.datos, ae.estado, ae.utimestamp FROM tagente_modulo am 
+	INNER JOIN tagente_estado ae ON am.id_agente_modulo = ae.id_agente_modulo 
+	WHERE am.nombre IN (SELECT name FROM tcluster_item WHERE id_cluster = ".$id_cluster." AND item_type like 'AP') 
+	AND am.id_agente IN (".implode(",",$node_id_agent).") ORDER BY ae.utimestamp DESC LIMIT 1";
+	
+$modules_AP = db_get_all_rows_sql ($sql_AP);
 
 foreach ($nodes['nodes'] as $key => $node) {
 	if ($node['id'] !== '1') {
-		$sql_AP = "SELECT am.nombre, am.id_agente_modulo, am.post_process, ae.datos, ae.estado FROM tagente_modulo am 
-			INNER JOIN tagente_estado ae ON am.id_agente_modulo = ae.id_agente_modulo 
-			WHERE nombre IN (SELECT name FROM tcluster_item WHERE id_cluster = $id_cluster AND item_type like 'AP') AND am.id_agente = $node[id_agent]";
-		
-		$modules_AP = db_get_all_rows_sql ($sql_AP);
-		
-		if ($modules_AP) {
+		if ($node['id_agent'] == $modules_AP[0]['id_agente']) {
 			$nodes['nodes'][$key]['passive'] = 1;
 		}
 	}
@@ -469,6 +477,7 @@ function show_module_detail_dialog(module_id, id_agent, server_name, offset, per
 		data: "page=include/ajax/module&get_module_detail=1&server_name="+server_name+"&id_agent="+id_agent+"&id_module=" + module_id+"&offset="+offset+"&period="+period + extra_parameters,
 		dataType: "html",
 		success: function(data) {
+			$(".tooltipster-base").remove();
 			$("#module_details_dialog").hide ()
 				.empty ()
 				.append (data)

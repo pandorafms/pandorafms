@@ -382,6 +382,7 @@ $autorefresh_list_out['operation/snmpconsole/snmp_view'] = "snmp_view";
 $autorefresh_list_out['operation/agentes/pandora_networkmap'] = "networkmap";
 $autorefresh_list_out['operation/visual_console/render_view'] = "render_view";
 $autorefresh_list_out['operation/events/events'] = "events";
+$autorefresh_list_out['godmode/reporting/cluster_view'] = "cluster_view";
 
 if(!isset($autorefresh_list)){
 	$select = db_process_sql("SELECT autorefresh_white_list FROM tusuario WHERE id_user = '" . $config['id_user'] . "'");

@@ -38,8 +38,7 @@ errorlog_file /var/log/pandora/pandora_server.error
 
 # daemon 1
 
-# dbengine: mysql, postgresql or oracle (mysql by default)
-
+# dbengine: mysql
 dbengine mysql
 
 # Database credentials. A VERY important configuration.
@@ -64,8 +63,7 @@ dbpass pandora
 dbhost 127.0.0.1
 
 # dbport: Database port number
-# Default value depends on the dbengine (mysql: 3306, postgresql: 5432, oracle: 1521)
-
+# Default value depends on the dbengine (mysql: 3306)
 #dbport 3306
 
 # By default, parent agent will not be updated
@@ -110,6 +108,18 @@ snmp_pdu_address 0
 # Path to the snmp_trapd binary. If set to manual, the server will not attemp to start snmp_trapd.
 
 #snmp_trapd manual
+
+# SNMP Trap forwarding. Go to http://wiki.pandorafms.com for more information.
+#snmp_forward_trap 1
+#snmp_forward_ip 192.168.1.145
+#snmp_forward_version 1
+#snmp_forward_secName
+#snmp_forward_engineid
+#snmp_forward_authProtocol
+#snmp_forward_authPassword
+#snmp_forward_privProtocol
+#snmp_forward_privPassword
+#snmp_forward_secLevel
 
 # Activate (1) Pandora Network Server 
 
@@ -563,6 +573,8 @@ enc_dir /usr/share/pandora_server/enc/
 # The number of times dynamic_min and dynamic_max will be recalculated per dynamic_interval.
 # Go to http://wiki.pandorafms.com/ for more information.
 dynamic_updates 5
+#dynamic_warning
+#dynamic_constant
 
 # Periodically update unknown modules (1), instead of only once (0). Periodic
 # updates may affect server performance.
@@ -591,6 +603,24 @@ syslog_threads 2
 
 # Maximum number of lines queued by the Syslog Server's producer on each run (PANDORA FMS ENTERPRISE ONLY).
 syslog_max 65535
+
+# Port tentacle server
+#sync_port 41121
+
+# Sync certificate path of the authenticating CA
+#sync_ca /home/cacert.pem
+
+# Sync server certificate path
+#sync_cert /home/tentaclecert.pem
+
+# Sync server certificate private key path
+#sync_key /home/tentaclekey.pem
+
+# Sync number of attempts
+#sync_retries 3
+
+# Sync timeout
+#sync_timeout 10
 
 # Target LogStash server, to allow Dataserver and SyslogServer store log information in ElasticSearch
 #logstash_host ip

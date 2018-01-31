@@ -65,9 +65,9 @@ echo "<table style='width:100%;'>";
         
         echo "<div style='float:left;width:100px;margin-left:25px;margin-top:25px;font-size:2em;text-align:center;'>".__('CLUSTER STATUS')."</div>";
 				
-				$cluster_module = db_process_sql('select id_agente_modulo from tagente_modulo where id_agente = (select id_agent from tcluster where id = '.$id_cluster.') and nombre = "Cluster status"');
+				$cluster_module_central = db_process_sql('select id_agente_modulo from tagente_modulo where id_agente = (select id_agent from tcluster where id = '.$id_cluster.') and nombre = "Cluster status"');
 				
-				$cluster_module_status = modules_get_agentmodule_last_status($cluster_module[0]['id_agente_modulo']);
+				$cluster_module_status = modules_get_agentmodule_last_status($cluster_module_central[0]['id_agente_modulo']);
 				
 				switch ($cluster_module_status) {
 					case 1:
@@ -175,12 +175,73 @@ echo "<table style='width:100%;'>";
       
 			echo "<div style='width:50%;min-width:390px;max-width:390px;float:left;'>";
 			
-			$last_update = db_process_sql('select timestamp from tagente_estado where id_agente_modulo = '.$cluster_module[0]['id_agente_modulo']);
+			$last_update = db_process_sql('select timestamp,id_agente_modulo from tagente_estado where id_agente_modulo = '.$cluster_module_central[0]['id_agente_modulo']);
       
 			$last_update_value = $last_update[0]['timestamp'];
-				
+			
+			$last_update_value_unix = strtotime($last_update_value);
+			
+			$last_run_difference = '';
+
+			$diferencia = time() - $last_update_value_unix;
+
+			$last_run_difference_months = 0;
+			$last_run_difference_weeks = 0;
+			$last_run_difference_days = 0;
+			$last_run_difference_minutos = 0;
+			$last_run_difference_seconds = 0;
+
+			while($diferencia >= 2419200){
+				$diferencia -= 2419200;
+				$last_run_difference_months++;
+			}
+
+			while($diferencia >= 604800){
+				$diferencia -= 604800;
+				$last_run_difference_weeks++;
+			}
+
+			while($diferencia >= 86400){
+				$diferencia -= 86400;
+				$last_run_difference_days++;
+			}
+
+			while($diferencia >= 3600){
+				$diferencia -= 3600;
+				$last_run_difference_hours++;
+			}
+
+			while($diferencia >= 60){
+				$diferencia -= 60;
+				$last_run_difference_minutes++;
+			}
+
+			$last_run_difference_seconds = $diferencia;
+
+			if($last_run_difference_months > 0){
+				$last_run_difference .= $last_run_difference_months.'month/s ';
+			}
+
+			if ($last_run_difference_weeks > 0) {
+				$last_run_difference .= $last_run_difference_weeks.' week/s ';
+			}
+
+			if ($last_run_difference_days > 0) {
+				$last_run_difference .= $last_run_difference_days.' day/s ';
+			}
+
+			if ($last_run_difference_hours > 0) {
+				$last_run_difference .= $last_run_difference_hours.' hour/s ';
+			}
+
+			if ($last_run_difference_minutes > 0) {
+				$last_run_difference .= $last_run_difference_minutes.' minute/s ';
+			}
+
+			$last_run_difference .= $last_run_difference_seconds.' second/s ago';
+			
 			echo "<div style='float:left;width:100px;px;margin-left:20px;margin-top:25px;font-size:2em;text-align:center;'>".__('LAST UPDATE')."</div>";
-			echo "<div style='float:left;width:220px;margin-left:20px;margin-top:40px;font-size:1.5em;text-align:center;'>".$last_update_value."</div>";
+			echo "<div style='float:left;width:220px;margin-left:20px;margin-top:40px;font-size:1.5em;text-align:center;'>".$last_run_difference."</div>";
         
         echo "<div style='border:1px solid lightgray;float:left;width:350px;margin-left:20px;margin-right:20px;margin-top:20px;height:200px;margin-bottom:20px;'>";
 					

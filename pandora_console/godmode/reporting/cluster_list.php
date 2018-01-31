@@ -22,12 +22,102 @@ if (! check_acl ($config['id_user'], 0, "AR")) {
 	return;
 }
 
-ui_pagination (count($clusters));
+ui_print_page_header (__('Monitoring')." &raquo; ".__('Clusters'), "images/chart.png", false, "", false, $buttons);
 
-// $graphs = custom_graphs_get_user ($config['id_user'], false, true, $access);
-// $offset = (int) get_parameter ("offset");
+$group_id = (int) get_parameter ("cluster_group_id", 0);
+$search = trim(get_parameter ("search", ""));
+$offset = (int)get_parameter('offset', 0);
+$refr = get_parameter('refr', 0);
+$recursion = get_parameter('recursion', 0);
+$status = (int) get_parameter ('status', -1);
+
+$strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
+$agent_a = (bool) check_acl ($config['id_user'], 0, "AR");
+$agent_w = (bool) check_acl ($config['id_user'], 0, "AW");
+$access = ($agent_a === true) ? 'AR' : (($agent_w === true) ? 'AW' : 'AR');
+
+
+if ($group_id > 0) {
+	$groups = array($group_id);
+	if ($recursion) {
+		$groups = groups_get_id_recursive($group_id, true);
+	}
+}
+else {
+	$groups = array();
+	$user_groups = users_get_groups($config["id_user"], $access);
+	$groups = array_keys($user_groups);
+}
+
+$groups_sql = '';
+
+foreach ($groups as $value) {
+	if ($value === end($groups)) {
+        $groups_sql .= $value;
+  }
+	else{
+		$groups_sql .= $value.',';
+	}
+}
+
+if($status == -1){
+	$status = '0,1,2,3,4,5,6';
+}
+
+$clusters = db_process_sql('select tcluster.id,tcluster.name,tcluster.cluster_type,tcluster.description,tcluster.group,tcluster.id_agent,tagente_estado.known_status from tcluster 
+INNER JOIN tagente_modulo ON tcluster.id_agent = tagente_modulo.id_agente 
+INNER JOIN tagente_estado ON tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo and tagente_modulo.nombre = "Cluster status" 
+AND `group` in ('.$groups_sql.') and name like "%'.$search.'%" and known_status in ('.$status.')');
+
+echo '<form method="post" action="?sec=estado&sec2=godmode/reporting/cluster_list">';
+
+echo '<table cellpadding="4" cellspacing="4" class="databox filters" width="100%" style="font-weight: bold; margin-bottom: 10px;">';
+
+echo '<tr><td style="white-space:nowrap;">';
+
+echo __('Group') . '&nbsp;';
+
+$groups = users_get_groups (false, $access);
+	
+html_print_select_groups($config['id_user'], "AR", $groups, "cluster_group_id", $group_id, 'this.form.submit();', '', 0, false, false, true, '', false);
+
+
+echo '</td><td style="white-space:nowrap;">';
+
+echo __("Recursion") . '&nbsp;';
+html_print_checkbox ("recursion", 1, $recursion, false, false, 'this.form.submit()');
+
+echo '</td><td style="white-space:nowrap;">';
+
+echo __('Search') . '&nbsp;';
+html_print_input_text ("search", $search, '', 15);
+
+echo '</td><td style="white-space:nowrap;">';
+
+$fields = array ();
+$fields[AGENT_STATUS_NORMAL] = __('Normal');
+$fields[AGENT_STATUS_WARNING] = __('Warning');
+$fields[AGENT_STATUS_CRITICAL] = __('Critical');
+$fields[AGENT_STATUS_UNKNOWN] = __('Unknown');
+$fields[AGENT_STATUS_NOT_INIT] = __('Not init');
+
+echo __('Status') . '&nbsp;';
+html_print_select ($fields, "status", $status, 'this.form.submit()', __('All'), AGENT_STATUS_ALL, false, false, true, '', false, 'width: 90px;');
+
+echo '</td>
+
+<td style="white-space:nowrap;">';
+
+html_print_submit_button (__('Search'), "srcbutton", '',
+	array ("class" => "sub search"));
+
+echo '</td><td style="width:5%;">&nbsp;</td>';
+
+echo '</tr></table></form>';
 
 // ui_pagination (count($graphs));
+
+if($clusters){
 
   $table = new stdClass();
   $table->width = '100%';
@@ -35,32 +125,32 @@ ui_pagination (count($clusters));
   $table->align = array ();
   $table->head = array ();
   $table->head[0] = __('Cluster name') . ' ' . 
-	'<a href="index.php?sec=estado&sec2=enterprise/operation/cluster/cluster&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=name&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp, "alt" => "up"))  . '</a>' .
-	'<a href="index.php?sec=estado&sec2=enterprise/operation/cluster/cluster&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=name&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown, "alt" => "down")) . '</a>';
+	'<a href="index.php?sec=estado&sec2=enterprise/operation/cluster/cluster&amp;offset=' . $offset . '&amp;cluster_group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=name&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp, "alt" => "up"))  . '</a>' .
+	'<a href="index.php?sec=estado&sec2=enterprise/operation/cluster/cluster&amp;offset=' . $offset . '&amp;cluster_group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=name&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown, "alt" => "down")) . '</a>';
   $table->head[1] = __('Description') . ' ' . 
-	'<a href="index.php?sec=estado&sec2=enterprise/operation/cluster/cluster&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=description&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp, "alt" => "up"))  . '</a>' .
-	'<a href="index.php?sec=estado&sec2=enterprise/operation/cluster/cluster&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=description&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown, "alt" => "down")) . '</a>';
+	'<a href="index.php?sec=estado&sec2=enterprise/operation/cluster/cluster&amp;offset=' . $offset . '&amp;cluster_group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=description&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp, "alt" => "up"))  . '</a>' .
+	'<a href="index.php?sec=estado&sec2=enterprise/operation/cluster/cluster&amp;offset=' . $offset . '&amp;cluster_group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=description&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown, "alt" => "down")) . '</a>';
   
 	$table->head[2] = __('Group') . ' ' . 
-	'<a href="index.php?sec=estado&sec2=enterprise/operation/cluster/cluster&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=group&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp, "alt" => "up"))  . '</a>' .
-	'<a href="index.php?sec=estado&sec2=enterprise/operation/cluster/cluster&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=group&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown, "alt" => "down")) . '</a>';
+	'<a href="index.php?sec=estado&sec2=enterprise/operation/cluster/cluster&amp;offset=' . $offset . '&amp;cluster_group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=group&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp, "alt" => "up"))  . '</a>' .
+	'<a href="index.php?sec=estado&sec2=enterprise/operation/cluster/cluster&amp;offset=' . $offset . '&amp;cluster_group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=group&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown, "alt" => "down")) . '</a>';
 	
 	$table->head[3] = __('Type') . ' ' . 
-	'<a href="index.php?sec=estado&sec2=enterprise/operation/cluster/cluster&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=type&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp, "alt" => "up"))  . '</a>' .
-	'<a href="index.php?sec=estado&sec2=enterprise/operation/cluster/cluster&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=type&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown, "alt" => "down")) . '</a>';
+	'<a href="index.php?sec=estado&sec2=enterprise/operation/cluster/cluster&amp;offset=' . $offset . '&amp;cluster_group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=type&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp, "alt" => "up"))  . '</a>' .
+	'<a href="index.php?sec=estado&sec2=enterprise/operation/cluster/cluster&amp;offset=' . $offset . '&amp;cluster_group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=type&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown, "alt" => "down")) . '</a>';
 	
 	
   $table->head[4] = __('Nodes') . ' ' . 
-	'<a href="index.php?sec=estado&sec2=enterprise/operation/cluster/cluster&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=nodes&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp, "alt" => "up"))  . '</a>' .
-	'<a href="index.php?sec=estado&sec2=enterprise/operation/cluster/cluster&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=nodes&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown, "alt" => "down")) . '</a>';
+	'<a href="index.php?sec=estado&sec2=enterprise/operation/cluster/cluster&amp;offset=' . $offset . '&amp;cluster_group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=nodes&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp, "alt" => "up"))  . '</a>' .
+	'<a href="index.php?sec=estado&sec2=enterprise/operation/cluster/cluster&amp;offset=' . $offset . '&amp;cluster_group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=nodes&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown, "alt" => "down")) . '</a>';
   
 	$table->head[5] = __('Status') . ' ' . 
-	'<a href="index.php?sec=estado&sec2=enterprise/operation/cluster/cluster&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=status&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp, "alt" => "up"))  . '</a>' .
-	'<a href="index.php?sec=estado&sec2=enterprise/operation/cluster/cluster&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=status&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown, "alt" => "down")) . '</a>';
+	'<a href="index.php?sec=estado&sec2=enterprise/operation/cluster/cluster&amp;offset=' . $offset . '&amp;cluster_group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=status&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp, "alt" => "up"))  . '</a>' .
+	'<a href="index.php?sec=estado&sec2=enterprise/operation/cluster/cluster&amp;offset=' . $offset . '&amp;cluster_group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=status&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown, "alt" => "down")) . '</a>';
   
   $table->head[6] = __('Actions') . ' ' . 
-	'<a href="index.php?sec=estado&sec2=enterprise/operation/cluster/cluster&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=actions&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp, "alt" => "up"))  . '</a>' .
-	'<a href="index.php?sec=estado&sec2=enterprise/operation/cluster/cluster&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=actions&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown, "alt" => "down")) . '</a>';
+	'<a href="index.php?sec=estado&sec2=enterprise/operation/cluster/cluster&amp;offset=' . $offset . '&amp;cluster_group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=actions&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp, "alt" => "up"))  . '</a>' .
+	'<a href="index.php?sec=estado&sec2=enterprise/operation/cluster/cluster&amp;offset=' . $offset . '&amp;cluster_group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=actions&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown, "alt" => "down")) . '</a>';
   
 	$table->size[0] = '25%';
   $table->size[1] = '25%';
@@ -80,7 +170,7 @@ ui_pagination (count($clusters));
     $data[0] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/cluster_view&id='.$cluster["id"].'">'.$cluster["name"].'</a>';
     $data[1] = ui_print_truncate_text($cluster["description"], 70);
 		
-		$data[2] = ui_print_group_icon($cluster['group'],true);
+		$data[2] = ui_print_group_icon($cluster['group'],true,'groups_small','',false);
 		
     $data[3] = $cluster["cluster_type"];
     
@@ -149,6 +239,8 @@ ui_pagination (count($clusters));
   }
   
   html_print_table($table);
+	
+}
 
       echo '<form method="post" style="float:right;" action="index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=1">';
         html_print_submit_button (__('Create cluster'), 'create', false, 'class="sub next" style="margin-right:5px;"');

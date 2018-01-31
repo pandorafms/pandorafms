@@ -30,13 +30,26 @@ require_once('include/functions_clusters.php');
 $step = get_parameter('step',0);
 $id_cluster = get_parameter('id_cluster',0);
 $delete_cluster = get_parameter('delete_cluster',0);
+$edit_cluster = get_parameter('edit_cluster',0);
 $delete_module_aa = get_parameter('delete_module_aa',0);
 $delete_module_ap = get_parameter('delete_module_ap',0);
+$update = get_parameter('update',0);
+
+$buttons['list'] = array('active' => false,
+  'text' => '<a href="index.php?sec=estado&sec2=enterprise/operation/cluster/cluster">' . 
+    html_print_image("images/list.png", true, array ("title" => __('Clusters list'))) .'</a>');
+    
+if($update){
+
+	$buttons['view'] = array('active' => false,
+	  'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/cluster_view&id='.$id_cluster.'">' . 
+	    html_print_image("images/operation.png", true, array ("title" => __('Cluster view'))) .'</a>');
+	
+}
 
 if($step == 1){
 	
 $add_cluster = (bool) get_parameter('add_cluster', false);
-$update_cluster = (bool) get_parameter('update_cluster', false);
 
 if ($add_cluster) {
 	$name = get_parameter_post ("name");
@@ -113,6 +126,20 @@ if ($add_cluster) {
 	if(!$id_cluster)
 		$edit_cluster = false;
 }
+elseif ($update && $edit_cluster) {
+		
+	$name = get_parameter_post ("name");
+	$description = get_parameter_post ("description");
+	$idGroup = get_parameter_post ('cluster_id_group');
+	
+	$id_agent_update = db_process_sql('update tagente set alias = "'.$name.'",comentarios = "'.$description.'",id_grupo = '.$idGroup.' where id_agente = (select id_agent from tcluster where id = '.$id_cluster.')');
+			
+	$id_cluster_update = db_process_sql('update tcluster set name = "'.$name.'",description = "'.$description.'",`group` = '.$idGroup.' where id = '.$id_cluster);
+		
+  header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_view&id=".$id_cluster);
+      
+	}
+	
 
 ui_print_page_header (__('Cluster')." &raquo; ".__('New'), "images/chart.png", false, "", false, $buttons);
 
@@ -152,7 +179,13 @@ elseif ($step == 2) {
 			
 		}
 		
-		header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=3&id_cluster=".$id_cluster);
+		if(!$update){
+			header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=3&id_cluster=".$id_cluster);
+		}
+		else{
+			header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_view&id=".$id_cluster);
+		}
+		
 	}
 	
 	ui_print_page_header (__('Cluster')." &raquo; ".__('New'), "images/chart.png", false, "", false, $buttons);
@@ -164,6 +197,14 @@ elseif ($step == 3) {
 	$cluster_modules = get_parameter('name_modules2',null); //abajao en assign
 	
 	if($assign_modules){
+		
+		if(!$cluster_modules || $cluster_modules[0] == ''){
+			
+			$tcluster_agent_module_delete_id = db_process_sql('delete from tagente_modulo where custom_integer_1 = '.$id_cluster.' and prediction_module = 6');
+			$tcluster_module_delete = db_process_sql('delete from tcluster_item where id_cluster = '.$id_cluster.' and item_type = "AA"');
+
+		}
+		else{			
 		
 		$modules_preasigned = db_get_all_rows_sql('select id,name from tcluster_item where id_cluster ='.$id_cluster);
 		
@@ -237,8 +278,16 @@ elseif ($step == 3) {
 			
 		}
 		
-		header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=4&id_cluster=".$id_cluster);
 		}
+		
+		if(!$update){
+			header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=4&id_cluster=".$id_cluster);
+		}
+		else{
+			header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_view&id=".$id_cluster);
+		}
+		
+	}
 		
 		ui_print_page_header (__('Cluster')." &raquo; ".__('New'), "images/chart.png", false, "", false, $buttons);
 		
@@ -291,10 +340,10 @@ elseif ($step == 3) {
 				
 				$cluster_type = clusters_get_cluster_id_type($id_cluster);
 								
-				if($cluster_type[$id_cluster] == 'AP'){
+				if($cluster_type[$id_cluster] == 'AP' && !$update){
 					header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=5&id_cluster=".$id_cluster);	
 				}
-				elseif ($cluster_type[$id_cluster] == 'AA') {
+				elseif ($cluster_type[$id_cluster] == 'AA' || $update) {
 					header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_view&id=".$id_cluster);		
 				}
 				
@@ -310,6 +359,13 @@ elseif ($step == 3) {
 		
 		if($assign_balanced_modules){
 			
+			if(!$balanced_modules || $balanced_modules[0] == ''){
+				
+				$tcluster_agent_module_delete_id = db_process_sql('delete from tagente_modulo where custom_integer_1 = '.$id_cluster.' and prediction_module = 7');
+				$tcluster_module_delete = db_process_sql('delete from tcluster_item where id_cluster = '.$id_cluster.' and item_type = "AP"');
+
+			}
+			else{
 			$balanced_modules_preasigned = db_get_all_rows_sql('select id,name,item_type from tcluster_item where id_cluster ='.$id_cluster.' and item_type = "AP"');
 			
 			foreach ($balanced_modules as $key => $value) {
@@ -400,8 +456,16 @@ elseif ($step == 3) {
 				
 			}
 			
+		}
+		
+		if(!$update){
 			header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=6&id_cluster=".$id_cluster);
-			}
+		}
+		else{
+			header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_view&id=".$id_cluster);
+		}
+			
+		}
 		
 		ui_print_page_header (__('Cluster')." &raquo; ".clusters_get_name($id_cluster), "images/chart.png", false, "", false, $buttons);
 		
@@ -434,8 +498,8 @@ elseif ($step == 3) {
 					}
 						
 				}
-				
-			header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_view&id=".$id_cluster);	
+			
+				header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_view&id=".$id_cluster);	
 				
 			}
 			
@@ -495,8 +559,5 @@ switch ($active_tab) {
 	case 'main':
     require_once('godmode/reporting/cluster_builder.main.php');  
     break;
-	case 'cluster_editor':
-		require_once('godmode/reporting/cluster_builder.cluster_editor.php');
-		break;
 }
 ?>

@@ -21,15 +21,6 @@ global $config;
 
 echo '<ol class="steps">';
 
-if (defined('METACONSOLE')) {
-  
-  $sec = 'advanced';
-}
-else {
-  
-  $sec = 'galertas';
-}
-
 $pure = get_parameter('pure', 0);
 
 /* Step 1 */
@@ -40,8 +31,14 @@ elseif ($step > 1)
 else
   echo '<li class="first">';
 
-if ($id) {
-  echo '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&id='.$id.'&pure='.$pure.'">';
+if ($step > 1 && !$update) {
+  echo '<a href="index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&id_cluster='.$id_cluster.'&step=1">';
+  echo __('Step') . ' 1 &raquo; ';
+  echo '<span>' . __('Cluster settings') . '</span>';
+  echo '</a>';
+}
+elseif ($update) {
+  echo '<a href="index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&id_cluster='.$id_cluster.'&step=1&update=1">';
   echo __('Step') . ' 1 &raquo; ';
   echo '<span>' . __('Cluster settings') . '</span>';
   echo '</a>';
@@ -51,66 +48,106 @@ else {
   echo '<span>' . __('Cluster settings') . '</span>';
 }
 echo '</li>';
+
+
+
+
 
 /* Step 2 */
 if ($step == 2)
-  echo '<li class="current">';
+  echo '<li class="first current">';
 elseif ($step > 2)
   echo '<li class="visited">';
 else
-  echo '<li>';
+  echo '<li class="first">';
 
-if ($id) {
-  echo '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&id='.$id.'&step=2&pure='.$pure.'">';
-  echo __('Step').' 2 &raquo; ';
-  echo '<span>'.__('Cluster agents').'</span>';
+if ($step > 2 && !$update) {
+  echo '<a href="index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&id_cluster='.$id_cluster.'&step=2">';
+  echo __('Step') . ' 2 &raquo; ';
+  echo '<span>' . __('Cluster agents') . '</span>';
+  echo '</a>';
+}
+elseif ($update) {
+  echo '<a href="index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&id_cluster='.$id_cluster.'&step=2&update=1">';
+  echo __('Step') . ' 2 &raquo; ';
+  echo '<span>' . __('Cluster agents') . '</span>';
   echo '</a>';
 }
 else {
-  echo __('Step').' 2 &raquo; ';
-  echo '<span>'.__('Cluster agents').'</span>';
+  echo __('Step') . ' 2 &raquo; ';
+  echo '<span>' . __('Cluster agents') . '</span>';
 }
 echo '</li>';
+
+
+
+
+
 
 /* Step 3 */
 if ($step == 3)
-  echo '<li class="last current">';
+  echo '<li class="first current">';
 elseif ($step > 3)
-  echo '<li class="last visited">';
+  echo '<li class="visited">';
 else
-  echo '<li class="last">';
+  echo '<li class="first">';
 
-if ($id) {
-  echo '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&id='.$id.'&step=3&pure='.$pure.'">';
-  echo __('Step').' 3 &raquo; ';
-  echo '<span>'.__('Active modules').'</span>';
+if ($step > 3 && !$update) {
+  echo '<a href="index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&id_cluster='.$id_cluster.'&step=3">';
+  echo __('Step') . ' 3 &raquo; ';
+  echo '<span>' . __('A/A modules') . '</span>';
+  echo '</a>';
+}
+elseif ($update) {
+  echo '<a href="index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&id_cluster='.$id_cluster.'&step=3&update=1">';
+  echo __('Step') . ' 3 &raquo; ';
+  echo '<span>' . __('A/A modules') . '</span>';
   echo '</a>';
 }
 else {
-  echo __('Step').' 3 &raquo; ';
-  echo '<span>'.__('Active modules').'</span>';
+  echo __('Step') . ' 3 &raquo; ';
+  echo '<span>' . __('A/A modules') . '</span>';
 }
 echo '</li>';
+
+
+
+
+
+
+
 
 /* Step 3 */
 if ($step == 4)
-  echo '<li class="last current">';
+  echo '<li class="first current">';
 elseif ($step > 4)
-  echo '<li class="last visited">';
+  echo '<li class="visited">';
 else
-  echo '<li class="last">';
+  echo '<li class="first">';
 
-if ($id) {
-  echo '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&id='.$id.'&step=3&pure='.$pure.'">';
-  echo __('Step').' 4 &raquo; ';
-  echo '<span>'.__('Modules limits').'</span>';
+if ($step > 4 && !$update) {
+  echo '<a href="index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&id_cluster='.$id_cluster.'&step=4">';
+  echo __('Step') . ' 4 &raquo; ';
+  echo '<span>' . __('A/A modules limits') . '</span>';
+  echo '</a>';
+}
+elseif ($update) {
+  echo '<a href="index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&id_cluster='.$id_cluster.'&step=4&update=1">';
+  echo __('Step') . ' 4 &raquo; ';
+  echo '<span>' . __('A/A modules limits') . '</span>';
   echo '</a>';
 }
 else {
-  echo __('Step').' 4 &raquo; ';
-  echo '<span>'.__('Modules limits').'</span>';
+  echo __('Step') . ' 4 &raquo; ';
+  echo '<span>' . __('A/A modules limits') . '</span>';
 }
 echo '</li>';
+
+
+
+
+
+
 
 $type_cluster = clusters_get_cluster_id_type($id_cluster);
 
@@ -118,41 +155,59 @@ if($type_cluster[$id_cluster] == 'AP'){
 
 /* Step 3 */
 if ($step == 5)
-  echo '<li class="last current">';
+  echo '<li class="first current">';
 elseif ($step > 5)
-  echo '<li class="last visited">';
+  echo '<li class="visited">';
 else
-  echo '<li class="last">';
+  echo '<li class="first">';
 
-if ($id) {
-  echo '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&id='.$id.'&step=3&pure='.$pure.'">';
-  echo __('Step').' 5 &raquo; ';
-  echo '<span>'.__('Balanced modules').'</span>';
+if ($step > 5 && !$update) {
+  echo '<a href="index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&id_cluster='.$id_cluster.'&step=5">';
+  echo __('Step') . ' 5 &raquo; ';
+  echo '<span>' . __('A/P modules') . '</span>';
+  echo '</a>';
+}
+elseif ($update) {
+  echo '<a href="index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&id_cluster='.$id_cluster.'&step=5&update=1">';
+  echo __('Step') . ' 5 &raquo; ';
+  echo '<span>' . __('A/P modules') . '</span>';
   echo '</a>';
 }
 else {
-  echo __('Step').' 5 &raquo; ';
-  echo '<span>'.__('Balanced modules').'</span>';
+  echo __('Step') . ' 5 &raquo; ';
+  echo '<span>' . __('A/P modules') . '</span>';
 }
 echo '</li>';
 
+
+
+
+
+
+
 /* Step 3 */
 if ($step == 6)
-  echo '<li class="last current">';
+  echo '<li class="first current">';
 elseif ($step > 6)
-  echo '<li class="last visited">';
+  echo '<li class="visited">';
 else
-  echo '<li class="last">';
+  echo '<li class="first">';
 
-if ($id) {
-  echo '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&id='.$id.'&step=3&pure='.$pure.'">';
-  echo __('Step').' 6 &raquo; ';
-  echo '<span>'.__('Critical modules').'</span>';
+if ($step > 6 && !$update) {
+  echo '<a href="index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&id_cluster='.$id_cluster.'&step=6">';
+  echo __('Step') . ' 6 &raquo; ';
+  echo '<span>' . __('Critical A/P modules') . '</span>';
+  echo '</a>';
+}
+elseif ($update) {
+  echo '<a href="index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&id_cluster='.$id_cluster.'&step=6&update=1">';
+  echo __('Step') . ' 6 &raquo; ';
+  echo '<span>' . __('Critical A/P modules') . '</span>';
   echo '</a>';
 }
 else {
-  echo __('Step').' 6 &raquo; ';
-  echo '<span>'.__('Critical modules').'</span>';
+  echo __('Step') . ' 6 &raquo; ';
+  echo '<span>' . __('Critical A/P modules') . '</span>';
 }
 echo '</li>';
 
@@ -164,15 +219,31 @@ echo '<div id="steps_clean"> </div>';
 
 if($step == 1){
 
-  echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&add_cluster=1&step=1'>";
+  if(!$update){
+    echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&add_cluster=1&step=1'>";
+  }
+  else{
+    echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&update=1&edit_cluster=1&step=1&id_cluster=".$id_cluster."'>";
+  }
 
   echo "<table width='40%' cellpadding=4 cellspacing=4 class='databox filters'>";
   echo "<tr>";
   echo "<td class='datos'><b>".__('Cluster name')."</b>".ui_print_help_tip (__("An agent with the same name of the cluster will be created, as well a special service with the same name"), true)."</td>";
-  echo "<td class='datos'><input type='text' class='check_agent' name='name' size='50'><img class='check_image_agent' style='width:18px;height:18px;margin-right:5px;' src='images/error_1.png'><label class='check_image_label'>".__('Should not be empty')."</label></td>";
-  echo "<tr>";
+  echo "<td class='datos'><input type='text' class='check_agent' name='name' size='50' value='".clusters_get_name($id_cluster)."'>";
+  
+  if(!$update){
+  echo "<img class='check_image_agent' style='width:18px;height:18px;margin-right:5px;' src='images/error_1.png'>
+  <label class='check_image_label'>".__('Should not be empty')."</label>";  
+  }
+  
+  echo "</td>";
+  echo "</tr>";
+  
+  if(!$update){
+  
   echo "<tr>";
   echo "<td class='datos'><b>".__('Cluster type')."</b>";
+  echo "</td>";
   echo "<td class='datos'>";
 
   $cluster_types = array(
@@ -183,36 +254,45 @@ if($step == 1){
   html_print_select ($cluster_types, 'cluster_type', 'AA');
 
   echo "</td>";
-  echo "<tr>";
-  echo "</td>";
+  echo "</tr>";
+  
+  }
+    
   echo "<tr>";
   echo "<td class='datos'><b>".__('Description')."</b></td>";
-  echo "<td class='datos'><input type='text' name='description' size='50'></td>";
+  echo "<td class='datos'><input type='text' name='description' size='50' value='".clusters_get_description($id_cluster)."'></td>";
   echo "</tr>";
+  
+  echo "<tr>";
 
   echo "<td class='datos'><b>".__('Group')."</b></td>";
   echo" <td class='datos'>";
   	if (check_acl ($config['id_user'], 0, "RW"))
-  		echo html_print_select_groups($config['id_user'], 'RW', $return_all_groups, 'cluster_id_group', $id_group, '', '', '', true);
+  		echo html_print_select_groups($config['id_user'], 'RW', $return_all_groups, 'cluster_id_group', clusters_get_group($id_cluster), '', '', '', true);
   	elseif (check_acl ($config['id_user'], 0, "RM"))
-  		echo html_print_select_groups($config['id_user'], 'RM', $return_all_groups, 'cluster_id_group', $id_group, '', '', '', true);
+  		echo html_print_select_groups($config['id_user'], 'RM', $return_all_groups, 'cluster_id_group', clusters_get_group($id_cluster), '', '', '', true);
   echo "</td></tr>";
 
   echo "</table>";
 
-  if ($edit_cluster) {
-  	echo "<div style='width:40%'><input style='float:right;' type=submit name='store' class='sub upd' value='".__('Update')."'></div>";
+  if(!$update){
+	  echo "<div style='width:40%'><input style='float:right;' disabled type=submit name='store' class='sub next create_agent_check' value='".__('Create')."'></div>";
   }
-  else {
-  	echo "<div style='width:40%'><input style='float:right;' disabled type=submit name='store' class='sub next create_agent_check' value='".__('Create')."'></div>";
+  else{
+    echo "<div style='width:40%'><input style='float:right;' type=submit name='store' class='sub next' value='".__('Update and view cluster')."'></div>";
   }
   echo "</form>";
   
 }
 elseif($step == 2){
   
-  echo "<form method='post' id='form_step_2' action='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=2&assign_agents=1&id_cluster=".$id_cluster."'>";
-
+  if(!$update){
+    echo "<form method='post' id='form_step_2' action='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=2&assign_agents=1&id_cluster=".$id_cluster."'>";
+  }
+  else{
+    echo "<form method='post' id='form_step_2' action='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=2&assign_agents=1&id_cluster=".$id_cluster."&update=1'>";
+  }
+  
   echo "<table width='50%' cellpadding=4 cellspacing=4 class='databox filters'>";
 
   echo "<tr>";
@@ -272,13 +352,25 @@ elseif($step == 2){
   echo "</tr>";
   echo "</table>";
 
-  echo "<div style='width:50%'><input style='float:right;' type=submit name='store' class='sub upd' value='".__('Update and go next')."'></div>";
+  if(!$update){
+    echo "<div style='width:50%'><input style='float:right;' type=submit name='store' class='sub upd' value='".__('Update and go next')."'></div>";
+  }
+  else{
+    echo "<div style='width:50%'><input style='float:right;' type=submit name='store' class='sub upd' value='".__('Update and view cluster')."'></div>";
+  }
+  
   echo "</form>";
   
 }
 elseif ($step == 3) {
   
-  echo "<form method='post' id='form_step_3' action='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=3&assign_modules=1&id_cluster=".$id_cluster."'>";
+  if(!$update){
+    echo "<form method='post' id='form_step_3' action='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=3&assign_modules=1&id_cluster=".$id_cluster."'>";
+  }
+  else{
+    echo "<form method='post' id='form_step_3' action='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=3&assign_modules=1&id_cluster=".$id_cluster."&update=1'>";
+  }
+  
 
   echo "<table width='50%' cellpadding=4 cellspacing=4 class='databox filters'>";
 
@@ -352,14 +444,26 @@ elseif ($step == 3) {
   echo "</td>";
   echo "</tr>";
   echo "</table>";
-
-  echo "<div style='width:50%'><input style='float:right;' type=submit name='store' class='sub upd' value='".__('Update and Next')."'></div>";
+  
+  if(!$update){
+    echo "<div style='width:50%'><input style='float:right;' type=submit name='store' class='sub upd' value='".__('Update and Next')."'></div>";
+  }
+  else{
+    echo "<div style='width:50%'><input style='float:right;' type=submit name='store' class='sub upd' value='".__('Update and view cluster')."'></div>";
+  }
+  
   echo "</form>";
       
 }
 elseif ($step == 4) {
   
-  echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=4&assign_limits=1&id_cluster=".$id_cluster."'>";
+  if(!$update){
+    echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=4&assign_limits=1&id_cluster=".$id_cluster."'>";
+  }
+  else{
+    echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=4&assign_limits=1&id_cluster=".$id_cluster."&update=1'>";
+  }
+  
 
   echo "<table width='50%' cellpadding=4 cellspacing=4 class='databox filters'>";
 
@@ -385,11 +489,21 @@ elseif ($step == 4) {
   
   echo "</table>";
   
-  echo "<div style='width:50%'><input style='float:right;' type=submit name='store' class='sub upd' value='".__('Update and Next')."'></div>";
+  if(!$update){
+    echo "<div style='width:50%'><input style='float:right;' type=submit name='store' class='sub upd' value='".__('Update and Next')."'></div>";  
+  }
+  else{
+    echo "<div style='width:50%'><input style='float:right;' type=submit name='store' class='sub upd' value='".__('Update and view cluster')."'></div>";
+  }  
   
   echo "</form>";
   
-  echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=3&id_cluster=".$id_cluster."'>";
+  if(!$update){
+    echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=3&id_cluster=".$id_cluster."'>";
+  }
+  else{
+    echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=3&id_cluster=".$id_cluster."&update=1'>";
+  }
   
   echo "<div style='width:50%'><input style='float:left;' type=submit name='add' class='sub add' value='".__('Add')."'></div>";
   
@@ -398,7 +512,13 @@ elseif ($step == 4) {
 }
 elseif ($step == 5) {
   
-  echo "<form method='post' id='form_step_3' action='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=5&assign_balanced_modules=1&id_cluster=".$id_cluster."'>";
+  if(!$update){
+    echo "<form method='post' id='form_step_3' action='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=5&assign_balanced_modules=1&id_cluster=".$id_cluster."'>";
+  }
+  else{
+    echo "<form method='post' id='form_step_3' action='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=5&assign_balanced_modules=1&id_cluster=".$id_cluster."&update=1'>";
+  }
+  
 
   echo "<table width='50%' cellpadding=4 cellspacing=4 class='databox filters'>";
 
@@ -473,7 +593,14 @@ elseif ($step == 5) {
   echo "</tr>";
   echo "</table>";
 
-  echo "<div style='width:50%'><input style='float:right;' type=submit name='store' class='sub upd' value='".__('Update and Next')."'></div>";
+  if(!$update){
+    echo "<div style='width:50%'><input style='float:right;' type=submit name='store' class='sub upd' value='".__('Update and Next')."'></div>";
+  }
+  else{
+    echo "<div style='width:50%'><input style='float:right;' type=submit name='store' class='sub upd' value='".__('Update and view cluster')."'></div>";
+  }
+  
+  
   echo "</form>";
   
 }
@@ -496,7 +623,13 @@ elseif ($step == 6) {
   
   $balanced_modules_critical = items_get_cluster_items_id_critical($id_cluster);
   
-  echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=6&assign_critical=1&id_cluster=".$id_cluster."'>";
+  if(!$update){
+    echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=6&assign_critical=1&id_cluster=".$id_cluster."'>";
+  }
+  else{
+    echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=6&assign_critical=1&id_cluster=".$id_cluster."&update=1'>";
+  }
+  
 
   echo "<h2><b>".__('Balanced modules settings')."</b></h2>";
 
@@ -527,11 +660,22 @@ elseif ($step == 6) {
   
   echo "</table>";
   
-  echo "<div style='width:40%'><input style='float:right;' type=submit name='store' class='sub upd' value='".__('Update and Finish')."'></div>";
+  if(!$update){
+    echo "<div style='width:40%'><input style='float:right;' type=submit name='store' class='sub upd' value='".__('Update and Finish')."'></div>";
+  }
+  else{
+    echo "<div style='width:40%'><input style='float:right;' type=submit name='store' class='sub upd' value='".__('Update and view cluster')."'></div>";
+  }
+  
   
   echo "</form>";
   
-  echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=5&id_cluster=".$id_cluster."'>";
+  if(!$update){
+    echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=5&id_cluster=".$id_cluster."'>";
+  }
+  else{
+    echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=5&id_cluster=".$id_cluster."&update=1'>";
+  } 
   
   echo "<div style='width:50%'><input style='float:left;' type=submit name='add' class='sub add' value='".__('Add')."'></div>";
   
@@ -841,21 +985,13 @@ elseif ($step == 6) {
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
      $( "#form_step_2" ).submit(function( event ) {
-       if($( "#id_agents2 option" ).val() == ''){
+       
+       if($( "#id_agents2 option" ).length < 2){
+         alert( <?php echo "'" . __('Select at least two agents ') . "'"; ?> );
+        event.preventDefault();        
+       }
+       else if($( "#id_agents2 option" ).val() == ''){
          alert( <?php echo "'" . __('Please set agent distinct than ') . '"' . __('None') . '"' . "'"; ?> );
         event.preventDefault(); 
        }
@@ -866,13 +1002,7 @@ elseif ($step == 6) {
      
      
      $( "#form_step_3" ).submit(function( event ) {
-       if($( "#name_modules2 option" ).val() == ''){
-         alert( <?php echo "'" . __('Please set module distinct than ') . '"' . __('None') . '"' . "'"; ?> );
-        event.preventDefault(); 
-       }
-       else{
-         $("#name_modules2>option").prop("selected", true);
-       }
+          $("#name_modules2>option").prop("selected", true);
      }); 
          
          

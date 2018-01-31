@@ -24,7 +24,7 @@ $buttons['list'] = array('active' => false,
     
     
 $buttons['editor'] = array('active' => false,
-  'text' => '<a href="index.php?sec=estado&sec2=godmode/reporting/cluster_builder.cluster_editor&id='.$id_cluster.'">' . 
+  'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&id_cluster='.$id_cluster.'&step=1&update=1">' . 
     html_print_image("images/gm_setup.png", true, array ("title" => __('Cluster editor'))) .'</a>');
     
     

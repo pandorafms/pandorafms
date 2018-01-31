@@ -30,6 +30,25 @@ function clusters_get_name ($id_cluster, $case = 'none') {
 	}
 }
 
+function clusters_get_description ($id_cluster, $case = 'none') {
+	$description = (string) db_get_value ('description', 'tcluster', 'id', (int) $id_cluster);
+	
+	switch ($case) {
+		case 'upper':
+			return mb_strtoupper($description, 'UTF-8');
+		case 'lower':
+			return mb_strtolower($description, 'UTF-8');
+		case 'none':
+		default:
+			return ($description);
+	}
+}
+
+function clusters_get_group ($id_cluster) {
+	$group = (int) db_get_value ('`group`', 'tcluster', 'id', (int) $id_cluster);
+			return ($group);	
+}
+
 function items_get_name ($id, $case = 'none') {
 	$name = (string) db_get_value ('name', 'tcluster_item', 'id', (int) $id);
 	

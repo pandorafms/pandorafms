@@ -35,13 +35,13 @@
     foreach ($module_agents_value as $key => $value) {
       
       if ($value === reset($module_agents_value) && $module_ap) {
-        echo '<tr style="background-color:#33ffe3;" class="datos2">';
+        echo '<tr style="background-color:#e0eec9;" class="datos2">';
       }
       else{
         echo '<tr class="datos2">';
       }
       
-      echo '<td  style=" text-align:left;" class="datos2 ">'.agents_get_alias($key).'</td>';
+      echo '<td  style=" text-align:left;" class="datos2 "><a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$key.'" target="_blank">'.agents_get_alias($key).'</a></td>';
       echo '<td  style=" text-align:left;" class="datos2 ">'.modules_get_agentmodule_name($value).'</td>';
       echo '<td  style=" text-align:left;" class="datos2 ">';
       

@@ -143,7 +143,7 @@ ui_pagination (count($clusters));
 		}
 		
 		$data[6] = "<a href='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&delete_cluster=".$cluster["id"]."' onclick='javascript: if (!confirm(\"Are you sure to delete?\")) return false;'><img src='images/cross.png'></a>
-                <a href='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder.cluster_editor&id=".$cluster["id"]."'><img src='images/builder.png'></a>";
+                <a href='index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&id_cluster=".$cluster["id"]."&step=1&update=1'><img src='images/builder.png'></a>";
     
     array_push ($table->data, $data);
   }

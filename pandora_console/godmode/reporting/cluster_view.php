@@ -402,9 +402,18 @@ function pagination_list_modules() {
 			
 			$("#module_list").empty();
 			$("#module_list").html(data);
+			
+			//hide filters
+			
 			$('.forced_title[alt=Force]').css('display','none');
+			$('.header a').css('display','none');
+			
+			//hide filters
+			
 		}
 	});
+	
+	
 }
 
 $("a.tag_details").cluetip ({

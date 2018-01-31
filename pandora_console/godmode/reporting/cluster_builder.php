@@ -540,7 +540,14 @@ elseif ($step == 3) {
 		
 		$delete_item = db_process_sql('delete from tcluster_item where id = '.$delete_module_aa);
 		
-		header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=4&id_cluster=".$id_cluster);	
+		if(!$update){
+			header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=4&id_cluster=".$id_cluster);	
+		}
+		else{
+			header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=4&id_cluster=".$id_cluster."&update=1");	
+		}
+		
+		
 	}
 	elseif($delete_module_ap){
 		
@@ -550,7 +557,13 @@ elseif ($step == 3) {
 		
 		$delete_item = db_process_sql('delete from tcluster_item where id = '.$delete_module_ap);
 		
-		header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=6&id_cluster=".$id_cluster);		
+		if(!$update){
+			header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=6&id_cluster=".$id_cluster);			
+		}
+		else{
+			header ("Location: index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=6&id_cluster=".$id_cluster."&update=1");
+		}
+		
 	}
 
 $active_tab = get_parameter('tab', 'main');

@@ -1,0 +1,40 @@
+Copyright 2006-2009 Amazon.com, Inc. or its affiliates.  All Rights Reserved.  
+
+Licensed under the Amazon Software License (the "License").  You may not use 
+this file except in compliance with the License. A copy of the 
+License is located at 
+
+http://aws.amazon.com/asl 
+
+or in the "license" file accompanying this file.  This file is 
+distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
+KIND, either express or implied. See the License for the specific language 
+governing permissions and limitations under the License.
+
+**********************
+THIRD PARTY COMPONENTS
+**********************
+This software includes third party software subject to the following 
+copyrights:
+
+-XML handling functions from the JAXB project - Copyright 2005 Sun 
+Microsystems, Inc.
+-XSLT support from Xalan - Copyright (c) 1999-2002, Lotus Development 
+Corporation, Copyright (c) 2001-2002, Sun Microsystems., Copyright (c) 
+2003, IBM Corporation.
+-Utility functions from Apache Commons - Copyright 2001-2008 Apache Software 
+Foundation
+-Streaming API for XML from Codehaus - Copyright 2003-2006 The Codehaus
+-XML processing from Codehaus - Copyright 2006 Codehaus Foundation
+-XML processing from Apache - Copyright (c) 2000 The Apache Software Foundation
+-XFire SOAP framework from Codehaus - Copyright (c) 2005 Envoi Solutions LLC
+-WS-Security verification for SOAP messages from Apache Software 
+Foundation - Copyright 2004-2009 The Apache Software Foundation
+-Security standards for XML from Apache Software Foundation - Copyright 
+2002-2006 The Apache Software Foundation
+-Cryptographic functions from Bouncy Castle - Copyright (c) 2000 - 2008 
+The Legion Of The Bouncy Castle
+
+The licenses for these third party components are included in 
+THIRDPARTYLICENSE.TXT
+

@@ -13,7 +13,6 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-
 // Check ACL
 if (! check_acl ($config['id_user'], 0, "LW")) {
 	db_pandora_audit("ACL Violation",
@@ -90,7 +89,7 @@ if ($update_filter > -2) {
 			$values = array(
 					'description' => $description,
 					'filter' => $filter,
-					'unified_filters_id' => 0);
+					'unified_filters_id' => $new_unified_id);
 				$result = db_process_sql_insert('tsnmp_filter', $values);
 		}
 		else {
@@ -142,6 +141,7 @@ if ($edit_filter > -1) {
 // Create/update form
 if ($edit_filter > -2) {
 	$index = $index_post;
+	$table = new stdClass();
 	$table->data = array ();
 	$table->id = 'filter_table';
 	$table->width = '100%';
@@ -150,8 +150,16 @@ if ($edit_filter > -2) {
 	$table->data[0][1] = html_print_input_text ('description', $description, '', 60, 100, true);
 	$table->data[1][0] = __('Filter');
 	if ($edit_filter > -1) {
-		$filters = db_get_all_rows_sql("SELECT * FROM tsnmp_filter WHERE unified_filters_id = (SELECT unified_filters_id FROM tsnmp_filter WHERE id_snmp_filter = " . $edit_filter . ")");
+		$unified_filter = db_get_value_sql("SELECT unified_filters_id FROM tsnmp_filter WHERE id_snmp_filter != 0 AND id_snmp_filter = " . $edit_filter);
+		if($unified_filter){
+			$filters = db_get_all_rows_sql("SELECT * FROM tsnmp_filter WHERE unified_filters_id = " . $unified_filter);
+		}
+		else{
+			$filters = db_get_all_rows_sql("SELECT * FROM tsnmp_filter WHERE id_snmp_filter = " . $edit_filter);
+		}
+
 		$j = 1;
+		
 		foreach ($filters as $f) {
 			if ($j != 1) {
 				$table->data[$j][0] = "";
@@ -203,6 +211,7 @@ else {
 		$aglomerate_result[$res['unified_filters_id']] = db_get_all_rows_sql("SELECT * FROM tsnmp_filter WHERE unified_filters_id = " . $res['unified_filters_id'] . " ORDER BY id_snmp_filter ASC");
 	}
 
+	$table = new stdClass();
 	$table->data = array ();
 	$table->head = array ();
 	$table->size = array ();

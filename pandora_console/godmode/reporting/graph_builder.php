@@ -87,6 +87,10 @@ if ($add_graph) {
 	$period = get_parameter_post ("period");
 	$threshold = get_parameter('threshold');
 	$percentil = get_parameter ("percentil", 0);
+	$summatory_series = get_parameter ("summatory_series", 0);
+	$average_series = get_parameter ("average_series", 0);
+	$modules_series = get_parameter ("modules_series", 0);
+	$fullscale = get_parameter ("fullscale", 0);
 
 	if ($threshold == CUSTOM_GRAPH_BULLET_CHART_THRESHOLD){
 		$stacked = $threshold;
@@ -103,7 +107,11 @@ if ($add_graph) {
 		'private' => 0,
 		'id_group' => $idGroup,
 		'stacked' => $stacked,
-		'percentil' => $percentil
+		'percentil' => $percentil,
+		'summatory_series' => $summatory_series,
+		'average_series' => $average_series,
+		'modules_series' => $modules_series,
+		'fullscale' => $fullscale
 		);
 	
 	if (trim($name) != "") {
@@ -131,8 +139,12 @@ if ($update_graph) {
 	$period = get_parameter('period');
 	$stacked = get_parameter('stacked');
 	$percentil = get_parameter('percentil');
+	$summatory_series = get_parameter ("summatory_series");
+	$average_series = get_parameter ("average_series");
+	$modules_series = get_parameter ("modules_series");
 	$alerts = get_parameter('alerts');
 	$threshold = get_parameter('threshold');
+	$fullscale = get_parameter('fullscale');
 
 	if ($threshold == CUSTOM_GRAPH_BULLET_CHART_THRESHOLD){
 		$stacked = $threshold;
@@ -141,7 +153,10 @@ if ($update_graph) {
 	if (trim($name) != "") {
 		
 		$success = db_process_sql_update('tgraph', 
-			array('name' => $name, 'id_group' => $id_group, 'description' => $description, 'width' => $width, 'height' => $height, 'period' => $period, 'stacked' => $stacked, 'percentil' => $percentil ),
+			array('name' => $name, 'id_group' => $id_group, 'description' => $description, 
+			'width' => $width, 'height' => $height, 'period' => $period, 'stacked' => $stacked, 
+			'percentil' => $percentil, 'summatory_series' => $summatory_series, 
+			'average_series' => $average_series, 'modules_series' => $modules_series, 'fullscale' => $fullscale),
 			array('id_graph' => $id_graph));
 		if ($success !== false)
 			db_pandora_audit("Report management", "Update graph #$id_graph");
@@ -179,10 +194,14 @@ if ($add_module) {
 		implode("','", $id_modules).
 		"')");
 	
-	if (count($id_agent_modules) > 0 && $id_agent_modules != '') {
-		foreach($id_agent_modules as $id_agent_module)
-			$result = db_process_sql_insert('tgraph_source', array('id_graph' => $id_graph, 'id_agent_module' => $id_agent_module['id_agente_modulo'], 'weight' => $weight));
-		}
+		if (count($id_agent_modules) > 0 && $id_agent_modules != '') {
+			$order = db_get_row_sql("SELECT `field_order` from tgraph_source ORDER BY `field_order` DESC");
+			$order = $order['field_order'];
+				foreach($id_agent_modules as $id_agent_module){
+					$order++;
+					$result = db_process_sql_insert('tgraph_source', array('id_graph' => $id_graph, 'id_agent_module' => $id_agent_module['id_agente_modulo'], 'weight' => $weight, 'field_order' => $order));
+				}
+			}
 	else
 		$result = false;
 }

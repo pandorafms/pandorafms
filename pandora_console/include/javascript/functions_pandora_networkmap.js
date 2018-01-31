@@ -582,10 +582,16 @@ function update_link(row_index, id_link) {
 				delete_link_from_id(index);
 
 				var temp_link = {};
+				temp_link["status_start"] = "0";
+				temp_link["status_end"] = "0";
+				
 				temp_link["id_db"] = String(data['id_db_link']);
+				
 				if (data['type_source'] == 1) {
 					temp_link["arrow_start"] = "module";
 					temp_link["id_module_start"] = interface_source;
+					temp_link["status_start"] = data['status'];
+					temp_link["link_color"] = (data['status'] == "1") ? "#FC4444" : "#999";
 				}
 				else {
 					temp_link["arrow_start"] = "";
@@ -595,15 +601,15 @@ function update_link(row_index, id_link) {
 				if (data['type_target'] == 1) {
 					temp_link["arrow_end"] = "module";
 					temp_link["id_module_end"] = interface_target;
+					temp_link["status_end"] = data['status'];
+					temp_link["link_color"] = (data['status'] == "1") ? "#FC4444" : "#999";
 				}
 				else {
 					temp_link["arrow_end"] = "";
 					temp_link["id_agent_end"] = interface_target;
 					temp_link["id_module_end"] = 0;
 				}
-				temp_link["status_start"] = "0";
-				temp_link["status_end"] = "0";
-
+				
 				temp_link["text_start"] = data["text_start"];
 				temp_link["text_end"] = data["text_end"];
 
@@ -2512,6 +2518,7 @@ function init_drag_and_drop() {
 			if (enterprise_installed) {
 				holding_pos_x = d3.select("#holding_area_" + networkmap_id).attr("x");
 				holding_pos_y = d3.select("#holding_area_" + networkmap_id).attr("y");
+				delete d.raw_text;
 				selection
 					.each(function (d) {
 						var params = [];
@@ -3218,7 +3225,13 @@ function draw_elements_graph() {
 				"id_module_start_" + d.id_module_start + " " +
 				"id_module_end_" + d.id_module_end;
 		})
-		.attr("stroke", function (d) { return d.link_color; })
+		.attr("stroke", function (d) {
+			if(d.link_color === undefined) {
+				return "#999";
+			} else {
+				return d.link_color;
+			}
+		})
 		.attr("stroke-width", 3)
 		.attr("d", null)
 		.attr('marker-start', function (d) {

@@ -20,10 +20,10 @@
     },
     "options_page": "options.html",
     "permissions": [
-    "tabs",
-    "notifications",
-    "http://*/*",
-    "background"
+        "tabs",
+        "notifications",
+        "http://*/*",
+        "background"
     ],
     "default_locale": "en"
  }

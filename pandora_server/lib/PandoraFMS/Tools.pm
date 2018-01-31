@@ -887,14 +887,14 @@ sub disk_free ($) {
 		# Check relative path
 		my $unit;
 		if ($target =~ m/^([a-zA-Z]):/gi) {
-			$unit = $1/(1024*1024);
+			$unit = $1;
 		} else {
 			return;
 		}
 		# Get the free space of unit found
 		my $all_disk_info = `wmic logicaldisk get caption, freespace`;
 		if ($all_disk_info =~ m/$unit:\D*(\d+)/gmi){
-			return $1;
+			return $1/(1024*1024);
 		}
 		return;
 	}
@@ -1373,7 +1373,7 @@ sub cron_next_execution_date {
 	if($mon ne '*') {
 		my ($mon_down, $mon_up) = cron_get_interval ($mon);
 		if (defined($mon_up)) {
-			$mon = $mon_down - 1 . "-" . $mon_up - 1;
+			$mon = ($mon_down - 1) . "-" . ($mon_up - 1);
 		} else {
 			$mon = $mon_down - 1;
 		}
@@ -1395,7 +1395,6 @@ sub cron_next_execution_date {
 	# Get first next date candidate from next cron configuration
 	# Initialize some vars
 	my @nex_time_array = @curr_time_array;
-	my $prev_ovfl = 0;
 
 	# Update minutes
 	my ($min_down, undef) = cron_get_interval ($min);
@@ -1412,7 +1411,6 @@ sub cron_next_execution_date {
 
 	if ($nex_time == 0) {
 		#Update the month day if overflow
-		$prev_ovfl = 1;
 		$nex_time_array[1] = 0;
 		$nex_time_array[2]++;
 		$nex_time = cron_valid_date(@nex_time_array, $cur_year);
@@ -1437,18 +1435,16 @@ sub cron_next_execution_date {
 	$nex_time_array[1] = ($hour_down eq '*') ? 0 : $hour_down;
 
 	# When an overflow is passed check the hour update again
-	if ($prev_ovfl) {
-		$nex_time = cron_valid_date(@nex_time_array, $cur_year);
+	$nex_time = cron_valid_date(@nex_time_array, $cur_year);
+	if ($nex_time >= $cur_time) {
 		return $nex_time if cron_is_in_cron(\@cron_array, \@nex_time_array);
 	}
-	$prev_ovfl = 0;
 
 	# Check if next day is in cron
 	$nex_time_array[2]++;
 	$nex_time = cron_valid_date(@nex_time_array, $cur_year);
 	if ($nex_time == 0) {
 		#Update the month if overflow
-		$prev_ovfl = 1;
 		$nex_time_array[2] = 1;
 		$nex_time_array[3]++;
 		$nex_time = cron_valid_date(@nex_time_array, $cur_year);
@@ -1467,18 +1463,17 @@ sub cron_next_execution_date {
 	$nex_time_array[2] = ($mday_down eq '*') ? 1 : $mday_down;
 
 	# When an overflow is passed check the hour update in the next execution
-	if ($prev_ovfl) {
-		$nex_time = cron_valid_date(@nex_time_array, $cur_year);
+	$nex_time = cron_valid_date(@nex_time_array, $cur_year);
+	if ($nex_time >= $cur_time) {
 		return $nex_time if cron_is_in_cron(\@cron_array, \@nex_time_array);
 	}
-	$prev_ovfl = 0;
 
 	# Check if next month is in cron
 	$nex_time_array[3]++;
 	$nex_time = cron_valid_date(@nex_time_array, $cur_year);
 	if ($nex_time == 0) {
 		#Update the year if overflow
-		$prev_ovfl = 1;
+		$nex_time_array[3] = 0;
 		$cur_year++;
 		$nex_time = cron_valid_date(@nex_time_array, $cur_year);
 	}
@@ -1488,11 +1483,11 @@ sub cron_next_execution_date {
 
 	#Update the month if fails
 	my ($mon_down, undef) = cron_get_interval ($mon);
-	$nex_time_array[3] = ($mday_down eq '*') ? 0 : $mday_down;
+	$nex_time_array[3] = ($mon_down eq '*') ? 0 : $mon_down;
 
 	# When an overflow is passed check the hour update in the next execution
-	if ($prev_ovfl) {
-		$nex_time = cron_valid_date(@nex_time_array, $cur_year);
+	$nex_time = cron_valid_date(@nex_time_array, $cur_year);
+	if ($nex_time >= $cur_time) {
 		return $nex_time if cron_is_in_cron(\@cron_array, \@nex_time_array);
 	}
 

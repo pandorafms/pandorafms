@@ -1,0 +1,67 @@
+Linux security monitoring Plugin for Pandora FMS
+v1.0, 8th June 2016
+
+Copyright (c) 2016 Sancho Lerena
+Licensed and distributed under BSD Licence.
+
+Checkout more information about Pandora FMS monitoring at http://pandorafms.com
+
+ABOUT THIS PLUGIN 
+=================
+
+This plugin is intended to run ONLY on modern Linux boxes. It's ready to run on 64 & 32 bits. 
+It contains a custom build of John the ripper 1.8 + Contrib patches with 32&64 static binaries. The main concept of the plugin is to be monolothic, detect what can be hardened and try to solve differences between distros without asking nothing to the admin, so deployment could be the same for any system, ignoring versions, distro or architecture. 
+
+This plugin will check:
+
+ 1. User password audit check, using dictionary (provided) with the
+    500 most common used passwords. This usually don't take more than a few seconds. If you have hundred of users, probably need to customize the plugin execution to be executed only each 2-6 hours. You can customize the password dictionary just adding your organization typical password in the file "basic_security/password-list".
+ 2. Check SSH on default port 
+ 3. Check FTP on default port 
+ 4. Check SSH to allow root access
+ 5. Verify if is there a MySQL running without root password defined.
+
+In the future we want to expand it's features to include file hashing check, detect bruteforce attacks by analyzing logs, improve hardening check on root enviroment, etc. Keep updated to see what's new in the next months.
+
+USAGE
+=====
+
+1. Copy contents of tarball in a directory (Usually p.e /etc/pandora/plugins which should be linked to /usr/share/pandora_agent/plugins)
+
+	tar xvzf /tmp/linux_basic_security.tar.gz /etc/pandora/plugins
+
+2. Edit your pandora_agent.conf and define a custom plugin call:
+
+	module_plugin /usr/share/pandora_agent/plugins/basic_security/basic_security
+
+3. Restart the agent. It should report several modules with the information, all starting with SEC[xxxx].
+
+
+DEPENDENCIES
+============
+
+You need to have "john the ripper" installed on your server. We provide CentOS binaries (compatible with Redhat) due the imposibility to install john easily in CentOS servers. Password audit is by the way one of the most important checks you can do to assure your system security.
+
+With SUSE:
+
+	zypper install john
+
+With Debian/Ubuntu
+
+	apt-get install install john
+
+TESTING
+=======
+
+Just call the plugin from commandline (you need root) to see if reports any error.
+
+This has been tested on:
+
+-Centos 6.7 32 bits
+-Centos 6.7 64 bits
+-Centos 7.1 64 bits
+-Suse 11.3 64 Bit
+-Ubuntu 14.x 64 Bit
+
+It contains a static build of john for 32 and 64 bits tested on Centos 6.7 and Centos 7, but
+we cannot give you any WARRANTIES!. If doesnt work for you, get a running John package.

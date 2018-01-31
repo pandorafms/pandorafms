@@ -151,8 +151,9 @@ function users_get_groups_for_select($id_user,  $privilege = "AR", $returnAllGro
  *
  * @return array A list of the groups the user has certain privileges.
  */
-function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup = true, $returnAllColumns = false, $id_groups = null, $keys_field = 'id_grupo') {
-    static $group_cache = array();
+function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup = true, $returnAllColumns = false, 
+	$id_groups = null, $keys_field = 'id_grupo', $cache = true) {
+	static $group_cache = array();
 
 	if (empty ($id_user)) {
 		global $config;
@@ -162,21 +163,21 @@ function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup 
 			$id_user = $config['id_user'];
 		}
 	}
-
+	
 	// Check the group cache first.
-	if (array_key_exists($id_user, $group_cache)) {
+	if (array_key_exists($id_user, $group_cache) && $cache) {
 		$groups = $group_cache[$id_user];
 	} else {
 		// Admin.
 		if (is_user_admin($id_user)) {
-			$groups = db_get_all_rows_sql ("SELECT * FROM tgrupo");
+			$groups = db_get_all_rows_sql ("SELECT * FROM tgrupo ORDER BY nombre");
 	 	}
 		// Per-group permissions.
 		else {
 			$query = sprintf("SELECT tgrupo.*, tperfil.*, tusuario_perfil.tags FROM tgrupo, tusuario_perfil, tperfil
 			        WHERE (tgrupo.id_grupo = tusuario_perfil.id_grupo OR tusuario_perfil.id_grupo = 0)
 					AND tusuario_perfil.id_perfil = tperfil.id_perfil
-					AND tusuario_perfil.id_usuario = '%s'", $id_user);
+					AND tusuario_perfil.id_usuario = '%s' ORDER BY nombre", $id_user);
 			$groups = db_get_all_rows_sql ($query);
 
 			// Get children groups.
@@ -238,7 +239,7 @@ function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup 
 		// Add the All group to the beginning to be always the first
 		array_unshift($groups, $groupall);
 	}
-
+	
 	$acl_column = get_acl_column($privilege);
 	foreach ($groups as $group) {
 
@@ -254,7 +255,11 @@ function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup 
 			$user_groups[$group[$keys_field]] = $group['nombre'];
 		}
 	}
-
+	
+	if (!empty($id_groups)) {
+		$user_groups = array_intersect_key($user_groups,array_flip($id_groups));
+	}
+	
 	return $user_groups;
 }
 

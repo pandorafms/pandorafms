@@ -1461,6 +1461,8 @@ function return_graphtype ($id_module_type) {
 		case 21:
 		case 18:
 		case 9:
+		case 31:
+		case 100:
 			return "boolean";
 			break;
 		case 24:
@@ -1712,7 +1714,7 @@ function check_sql ($sql) {
 	
 	//Check that it not delete_ as "delete_pending" (this is a common field in pandora tables).
 	
-	if (preg_match("/\*|delete[^_]|drop|alter|modify|union|password|pass|insert|update/i", $sql)) {
+	if (preg_match("/\*|delete[^_]|drop|alter|modify|password|pass|insert|update/i", $sql)) {
 		return "";
 	}
 	return $sql;
@@ -2580,7 +2582,7 @@ function get_percentile($percentile, $array) {
 	$index = ($percentile / 100) * count($array);
 	
 	if (floor($index) == $index) {
-		 $result = ($array[$index-1] + $array[$index]) / 2;
+		$result = ($array[$index-1] + $array[$index]) / 2;
 	}
 	else {
 		$result = $array[floor($index)];
@@ -2787,5 +2789,25 @@ function register_pass_change_try ($id_user, $success) {
 	$values['success'] = $success;
 	db_process_sql_insert('treset_pass_history', $values);
 }
-
+/**
+ * returns true or false if it is a valid ip 
+ * checking ipv4 and ipv6 or resolves the name dns
+ * @param string address
+ *
+*/
+function validate_address($address){
+	if($address){
+		if(!filter_var($address, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+			if(!filter_var($address, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+				$ip_address_dns = gethostbyname($address);
+				if(!filter_var($ip_address_dns, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+					if(!filter_var($ip_address_dns, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+						return false;
+					}
+				}
+			}
+		}
+	}
+	return true;
+}
 ?>

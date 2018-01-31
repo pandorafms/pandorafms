@@ -375,7 +375,7 @@ function update_button_palette_callback() {
 						}
 						
 						
-						if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+						if($('#preview > img').attr('naturalWidth') == null || $('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
 							$("#image_" + idItem).removeAttr('width');
 							$("#image_" + idItem).removeAttr('height');
 							$("#image_" + idItem).attr('width', 70);
@@ -503,7 +503,7 @@ function update_button_palette_callback() {
 						}
 						
 						
-						if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+						if($('#preview > img').attr('naturalWidth') == null || $('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
 							$("#image_" + idItem).removeAttr('width');
 							$("#image_" + idItem).removeAttr('height');
 							$("#image_" + idItem).attr('width', 70);
@@ -679,7 +679,7 @@ function update_button_palette_callback() {
 			}
 			$("#image_" + idItem).attr('src', "images/spinner.gif");
 			if ((values['width'] == 0) || (values['height'] == 0)) {
-				if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+				if($('#preview > img').attr('naturalWidth') == null || $('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
 					$("#image_" + idItem).removeAttr('width');
 					$("#image_" + idItem).removeAttr('height');
 					$("#image_" + idItem).attr('width', 70);
@@ -2719,26 +2719,18 @@ function createItem(type, values, id_data) {
 			
 			break;
 		case 'group_item':
-		
-		switch (type) {
-			case 'group_item':
-				class_type = "group_item";
-				break;
-			case 'static_graph':
-				class_type = "static_graph";
-				break;
-		}
+			class_type = "group_item";
 
-		img_src = "images/spinner.gif";
+			img_src = "images/spinner.gif";
 
-		item = $('<div></div>')
-			.attr('id', id_data)
-			.attr('class', 'item ' + class_type)
-			.css('text-align', 'left')
-			.css('position', 'absolute')
-			.css('display', 'inline-block')
-			.css('top', values['top'] + 'px')
-			.css('left', values['left'] + 'px');
+			item = $('<div></div>')
+				.attr('id', id_data)
+				.attr('class', 'item ' + class_type)
+				.css('text-align', 'left')
+				.css('position', 'absolute')
+				.css('display', 'inline-block')
+				.css('top', values['top'] + 'px')
+				.css('left', values['left'] + 'px');
 			
 			
 			
@@ -2807,7 +2799,7 @@ function createItem(type, values, id_data) {
 					// Do none
 						if(values['image'] != '' && values['image'] != 'none'){
 					
-					if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+					if($('#preview > img').attr('naturalWidth') == null || $('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
 						$image.attr('width', '70')
 							.attr('height', '70');
 					}
@@ -2839,7 +2831,7 @@ function createItem(type, values, id_data) {
 
 		if(values['label_position'] == 'up'){
 			
-			if(values['image'] == '' || values['image'] == 'none'){
+			if((values['image'] == '' || values['image'] == 'none') && values['show_statistics'] != 1){
 				item
 					.append('<table style="width:70px"><tr><td></td></tr><tr><td><span id="text_'+id_data+'" class="text">'+values['label']+'</span></td></tr><tr><td></td></tr></table>')
 					.append($input);
@@ -2848,14 +2840,12 @@ function createItem(type, values, id_data) {
 				item
 					.append('<table style="width:70px"><tr><td></td></tr><tr><td><span id="text_'+id_data+'" class="text">'+values['label']+'</span></td></tr><tr><td></td></tr></table>')
 					.append($image)
-					.append($image)
 					.append($input);
 			}
 			
 		}
 		else if(values['label_position'] == 'down'){
-
-			if(values['image'] == '' || values['image'] == 'none'){
+			if((values['image'] == '' || values['image'] == 'none') && values['show_statistics'] != 1){
 				item
 					.append('<table style="width:70px"><tr><td></td></tr><tr><td><span id="text_'+id_data+'" class="text">'+values['label']+'</span></td></tr><tr><td></td></tr></table>')
 					.append($input);
@@ -2863,7 +2853,6 @@ function createItem(type, values, id_data) {
 			}
 			else{
 				item
-					.append($image)
 					.append($image)
 					.append('<table style="width:70px"><tr><td></td></tr><tr><td><span id="text_'+id_data+'" class="text">'+values['label']+'</span></td></tr><tr><td></td></tr></table>')
 					.append($input);	
@@ -2881,13 +2870,12 @@ function createItem(type, values, id_data) {
 					.append('<table style="float:left;height:'+values['height']+'px"><tr><td></td></tr><tr><td><span id="text_'+id_data+'" class="text">'+values['label']+'</span></td></tr><tr><td></td></tr></table>')
 			}
 			
-			if(values['image'] == '' || values['image'] == 'none'){
+			if((values['image'] == '' || values['image'] == 'none') && values['show_statistics'] != 1){
 				item
 				.append($input);
 			}
 			else{
 				item
-				.append($image)
 				.append($image)
 				.append($input);
 			}
@@ -2904,19 +2892,16 @@ function createItem(type, values, id_data) {
 					.append('<table style="float:right;height:'+values['height']+'px"><tr><td></td></tr><tr><td><span id="text_'+id_data+'" class="text">'+values['label']+'</span></td></tr><tr><td></td></tr></table>')
 			}
 			
-			if(values['image'] == '' || values['image'] == 'none'){
+			if((values['image'] == '' || values['image'] == 'none') && values['show_statistics'] != 1){
 				item
 				.append($input);
 			}
 			else{
 				item
 				.append($image)
-				.append($image)
 				.append($input);
 			}
-				
-				
-				
+			
 		}
 		
 		if(values['show_statistics'] != 1){
@@ -2932,7 +2917,7 @@ function createItem(type, values, id_data) {
 					
 					if(values['image'] != '' && values['image'] != 'none'){
 					// Do none
-						if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+						if($('#preview > img').attr('naturalWidth') == null || $('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
 							$image.attr('width', '70')
 								.attr('height', '70');
 						}
@@ -2976,15 +2961,8 @@ function createItem(type, values, id_data) {
 		break;
 		
 		case 'static_graph':
-			switch (type) {
-				case 'group_item':
-					class_type = "group_item";
-					break;
-				case 'static_graph':
-					class_type = "static_graph";
-					break;
-			}
-
+			class_type = "static_graph";
+			
 			img_src = "images/spinner.gif";
 
 			item = $('<div></div>')
@@ -3030,18 +3008,15 @@ function createItem(type, values, id_data) {
 					if ((values['width'] == 0) || (values['height'] == 0)) {
 						// Do none
 							if(values['image'] != '' && values['image'] != 'none'){
-						
-						if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
-							$image.attr('width', '70')
-								.attr('height', '70');
-						}
-						else{
-							$image.attr('width', $('#preview > img')[0].naturalWidth)
-								.attr('height', $('#preview > img')[0].naturalHeight);
-						}	
-						
-					
-					}
+								if($('#preview > img').attr('naturalWidth') == null || $('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+									$image.attr('width', '70')
+									.attr('height', '70');
+								}
+								else{
+									$image.attr('width', $('#preview > img')[0].naturalWidth)
+									.attr('height', $('#preview > img')[0].naturalHeight);
+								}	
+							}
 					else{
 						$image.attr('width', '70')
 							.attr('height', '70');
@@ -3166,7 +3141,7 @@ function createItem(type, values, id_data) {
 						
 						if(values['image'] != '' && values['image'] != 'none'){
 						// Do none
-							if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+							if($('#preview > img').attr('naturalWidth') == null || $('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
 								$image.attr('width', '70')
 									.attr('height', '70');
 							}
@@ -3447,7 +3422,7 @@ function createItem(type, values, id_data) {
 			break;
 		case 'icon':
 			if ((values['width'] == 0) || (values['height'] == 0)) {
-				if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+				if($('#preview > img').attr('naturalWidth') == null || $('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
 					sizeStyle = 'width: ' + '70'  + 'px; height: ' + '70' + 'px;';
 					imageSize = 'width="' + '70'  + '" height="' + '70' + '"';
 				}			

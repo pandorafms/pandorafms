@@ -1261,7 +1261,7 @@ function events_get_group_events_steps ($begin, &$result, $id_group, $period, $d
 function events_get_agent ($id_agent, $period, $date = 0, 
 	$history = false, $show_summary_group = false, $filter_event_severity = false,
 	$filter_event_type = false, $filter_event_status = false, $filter_event_filter_search=false, 
-	$id_group = false, $events_group = false, $id_agent_module = false, $events_module = false) {
+	$id_group = false, $events_group = false, $id_agent_module = false, $events_module = false, $id_server = false) {
 	global $config;
 
 	if (!is_numeric ($date)) {
@@ -1364,7 +1364,11 @@ function events_get_agent ($id_agent, $period, $date = 0,
 		$sql_where .= sprintf(' AND id_agente = %d AND utimestamp > %d
 			AND utimestamp <= %d ', $id_agent, $datelimit, $date);
 	}
-
+	
+	if(is_metaconsole() && $id_server){
+		$sql_where.= " AND server_id = ".$id_server;
+	}
+	
 	if($show_summary_group){
 		return events_get_events_grouped($sql_where, 0, 1000, 
 				is_metaconsole(), false, false, $history);
@@ -1568,18 +1572,6 @@ function events_check_event_filter_group ($id_filter) {
 	}
 	
 	return false;
-}
-
-/**
- * Return an array with all the possible macros in event responses
- *
- * @return array
- */
-function events_get_macros() {
-	return array('_agent_address_' => __('Agent address'),
-		'_agent_id_' => __('Agent id'),
-		'_event_id_' => __('Event id'),
-		'_module_address_' => __('Module Agent address'),);
 }
 
 /**
@@ -1849,50 +1841,153 @@ function events_get_response_target($event_id, $response_id, $server_id, $histor
 	
 	$event = db_get_row($event_table,'id_evento', $event_id);
 	
-	$macros = array_keys(events_get_macros());
-	
 	$target = io_safe_output($event_response['target']);
 	
-	foreach($macros as $macro) {
-		$subst = '';
-		switch($macro) {
-			case '_agent_address_':
-				if ($meta) {
-					$server = metaconsole_get_connection_by_id ($server_id);
-					metaconsole_connect($server);
-				}
-				
-				$subst = agents_get_address($event['id_agente']);
-				
-				if($meta) {
-					metaconsole_restore_db_force();
-				}
-				break;
-			case '_agent_id_':
-				$subst = $event['id_agente'];
-				break;
-			case '_event_id_':
-				$subst = $event['id_evento'];
-				break;
-			case '_module_address_':
-				if($meta) {
-					$server = metaconsole_get_connection_by_id ($server_id);
-					metaconsole_connect($server);
-				}
-
-				$module = db_get_row("tagente_modulo",'id_agente_modulo', $event['id_agentmodule']);
-				if ($module['ip_target'] != false)
-					$subst = $module['ip_target'];
-				
-				if($meta) {
-					metaconsole_restore_db_force();
-				}
-				break;
+	// Substitute each macro
+	if (strpos($target, '_agent_address_') !== false) {
+		if ($meta) {
+			$server = metaconsole_get_connection_by_id ($server_id);
+			metaconsole_connect($server);
 		}
 		
-		$target = str_replace($macro,$subst,$target);
+		$target = str_replace('_agent_address_', $event['id_agente'], $target);
+		
+		if($meta) {
+			metaconsole_restore_db_force();
+		}
 	}
+	if (strpos($target, '_agent_id_') !== false) {
+		$target = str_replace('_agent_id_', $event['id_agente'], $target);
+	}
+	if ((strpos($target, '_module_address_') !== false)	||
+		(strpos($target, '_module_name_') !== false))
+	{
+		if ($event['id_agentmodule'] !== 0) {
+			if($meta) {
+				$server = metaconsole_get_connection_by_id ($server_id);
+				metaconsole_connect($server);
+			}
 	
+			$module = db_get_row("tagente_modulo",'id_agente_modulo', $event['id_agentmodule']);
+			if (empty($module['ip_target'])) $module['ip_target'] = __('N/A');
+			$target = str_replace('_module_address_', $module['ip_target'], $target);
+			if (empty($module['nombre'])) $module['nombre'] = __('N/A');
+			$target = str_replace(
+				'_module_name_',
+				io_safe_output($module['nombre']),
+				$target
+			);
+			
+			if($meta) {
+				metaconsole_restore_db_force();
+			}
+		} else {
+			$target = str_replace('_module_address_', __('N/A'), $target);
+			$target = str_replace('_module_name_', __('N/A'), $target);
+		}
+	}
+	if (strpos($target, '_event_id_') !== false) {
+		$target = str_replace('_event_id_', $event['id_evento'], $target);
+	}
+	if (strpos($target, '_user_id_') !== false) {
+		if (!empty($event['id_usuario'])) {
+			$target = str_replace('_user_id_', $event['id_usuario'], $target);
+		} else {
+			$target = str_replace('_user_id_', __('N/A'), $target);
+		}
+	}
+	if (strpos($target, '_group_id_') !== false) {
+		$target = str_replace('_group_id_', $event['id_grupo'], $target);
+	}
+	if (strpos($target, '_group_name_') !== false) {
+		$target = str_replace(
+			'_group_name_',
+			groups_get_name($event['id_grupo'], true),
+			$target
+		);
+	}
+	if (strpos($target, '_event_utimestamp_') !== false) {
+		$target = str_replace('_event_utimestamp_', $event['utimestamp'], $target);
+	}
+	if (strpos($target, '_event_date_') !== false) {
+		$target = str_replace(
+			'_event_date_',
+			date ($config["date_format"], strtotime($event["timestamp"])),
+			$target
+		);
+	}
+	if (strpos($target, '_event_text_') !== false) {
+		$target = str_replace(
+			'_event_text_',
+			events_display_name($event['evento']),
+			$target
+		);
+	}
+	if (strpos($target, '_event_type_') !== false) {
+		$target = str_replace(
+			'_event_type_',
+			events_print_type_description($event['event_type'], true),
+			$target
+		);
+	}
+	if (strpos($target, '_alert_id_') !== false) {
+		$target = str_replace(
+			'_alert_id_',
+			empty($event['is_alert_am']) ? __('N/A') : $event['is_alert_am'],
+			$target
+		);
+	}
+	if (strpos($target, '_event_severity_id_') !== false) {
+		$target = str_replace('_event_severity_id_', $event['criticity'], $target);
+	}
+	if (strpos($target, '_event_severity_text_') !== false) {
+		$target = str_replace(
+			'_event_severity_text_',
+			get_priority_name($event['criticity']),
+			$target
+		);
+	}
+	if (strpos($target, '_module_id_') !== false) {
+		$target = str_replace('_module_id_', $event['id_agentmodule'], $target);
+	}
+	if (strpos($target, '_event_tags_') !== false) {
+		$target = str_replace('_event_tags_', $event['tags'], $target);
+	}
+	if (strpos($target, '_event_extra_id_') !== false) {
+		if (empty($event['id_extra'])) {
+			$target = str_replace('_event_extra_id_', __('N/A'), $target);
+		} else {
+			$target = str_replace('_event_extra_id_', $event['id_extra'], $target);
+		}
+	}
+	if (strpos($target, '_event_source_') !== false) {
+		$target = str_replace('_event_source_', $event['source'], $target);
+	}
+	if (strpos($target, '_event_instruction_') !== false) {
+		$target = str_replace(
+			'_event_instruction_',
+			events_display_instructions($event['event_type'], $event, false),
+			$target
+		);
+	}
+	if (strpos($target, '_owner_user_') !== false) {
+		if (empty($event['owner_user'])) {
+			$target = str_replace('_owner_user_', __('N/A'), $target);
+		} else {
+			$target = str_replace('_owner_user_', $event['owner_user'], $target);
+		}
+	}
+	if (strpos($target, '_event_status_') !== false) {
+		$event_st = events_display_status($event['estado']);
+		$target = str_replace('_event_status_',	$event_st["title"],	$target);
+	}
+	// Parse the event custom data
+	if (!empty($event['custom_data'])){
+		$custom_data = json_decode (base64_decode ($event['custom_data']));
+		foreach ($custom_data as $key => $value) {
+			$target = str_replace('_customdata_' . $key . '_', $value, $target);
+		}
+	}
 	return $target;
 }
 
@@ -2185,69 +2280,12 @@ function events_page_details ($event, $server = "") {
 		$table_details->data[] = $data;
 	}
 	
-	switch($event['event_type']) {
-		case 'going_unknown':
-			$data = array();
-			$data[0] = __('Instructions');
-			if ($event["unknown_instructions"] != '') {
-				$data[1] = str_replace("\n","<br>", io_safe_output($event["unknown_instructions"]));
-			}
-			else {
-				$data[1] = '<i>' . __('N/A') . '</i>';
-			}
-			$table_details->data[] = $data;
-			break;
-		case 'going_up_warning':
-		case 'going_down_warning':
-			$data = array();
-			$data[0] = __('Instructions');
-			if ($event["warning_instructions"] != '') {
-				$data[1] = str_replace("\n","<br>", io_safe_output($event["warning_instructions"]));
-			}
-			else {
-				$data[1] = '<i>' . __('N/A') . '</i>';
-			}
-			$table_details->data[] = $data;
-			break;
-		case 'going_up_critical':
-		case 'going_down_critical':
-			$data = array();
-			$data[0] = __('Instructions');
-			if ($event["critical_instructions"] != '') {
-				$data[1] = str_replace("\n","<br>", io_safe_output($event["critical_instructions"]));
-			}
-			else {
-				$data[1] = '<i>' . __('N/A') . '</i>';
-			}
-			$table_details->data[] = $data;
-			break;
-		case 'system':
-			$data = array();
-			if ($event["critical_instructions"] != '') {
-				$data[0] = __('Instructions');
-				$data[1] = str_replace("\n","<br>", io_safe_output($event["critical_instructions"]));
-			}
-			else {
-				if ($event["warning_instructions"] != '') {
-					$data[0] = __('Instructions');
-					$data[1] = str_replace("\n","<br>", io_safe_output($event["warning_instructions"]));
-				}
-				else {
-					if ($event["unknown_instructions"] != '') {
-						$data[0] = __('Instructions');
-						$data[1] = str_replace("\n","<br>", io_safe_output($event["unknown_instructions"]));
-					}
-					else {
-						$data[0] = __('Instructions');
-						$data[1] = '<i>' . __('N/A') . '</i>';
-						
-					}
-				}
-			}
-			$table_details->data[] = $data;
-			break;
-	}
 	
+	$data = array();
+	$data[0] = __('Instructions');
+	$data[1] = events_display_instructions ($event['event_type'], $events, true);
+	$table_details->data[] = $data;
+
 	$data = array();
 	$data[0] = __('Extra id');
 	if ($event["id_extra"] != '') {
@@ -2311,6 +2349,72 @@ function events_page_custom_data ($event) {
 	return $custom_data;
 }
 
+// Get the event name from tevento and display it in console
+function events_display_name ($db_name = '') {
+	return io_safe_output(str_replace ( '&#x0a;' , '<br>' , $db_name));
+}
+
+// Get the image and status value of event
+function events_display_status ($status) {
+	switch($status) {
+		case 0:
+			return array(
+				"img" => "images/star.png",
+				"title" => __('New event')
+			);
+		case 1:
+			return array(
+				"img" => "images/tick.png",
+				"title" => __('Event validated')
+			);
+		case 2:
+			return array(
+				"img" => "images/hourglass.png",
+				"title" => __('Event in process')
+			);
+	}
+}
+
+// Get the instruction of an event
+// $event_type: Type of event
+// $inst: Array with unknown warning and critical instructions
+// $italic: Display N/A between italic html marks if instruction is not found
+function events_display_instructions ($event_type = '', $inst, $italic = true) {
+	switch($event_type) {
+		case 'going_unknown':
+			if ($inst["unknown_instructions"] != '') {
+				return str_replace("\n","<br>", io_safe_output($inst["unknown_instructions"]));
+			}
+			break;
+		case 'going_up_warning':
+		case 'going_down_warning':
+			if ($inst["warning_instructions"] != '') {
+				return str_replace("\n","<br>", io_safe_output($inst["warning_instructions"]));
+			}
+			break;
+		case 'going_up_critical':
+		case 'going_down_critical':
+			if ($inst["critical_instructions"] != '') {
+				return str_replace("\n","<br>", io_safe_output($inst["critical_instructions"]));
+			}
+			break;
+		case 'system':
+			$data = array();
+			if ($inst["critical_instructions"] != '') {
+				return str_replace("\n","<br>", io_safe_output($inst["critical_instructions"]));
+			}
+			if ($inst["warning_instructions"] != '') {
+				return str_replace("\n","<br>", io_safe_output($inst["warning_instructions"]));
+			}
+			if ($inst["unknown_instructions"] != '') {
+				return str_replace("\n","<br>", io_safe_output($inst["unknown_instructions"]));
+			}
+			break;
+	}
+	$na_return = $italic ? '<i>' . __('N/A') . '</i>' : __('N/A');
+	return $na_return;
+}
+
 function events_page_general ($event) {
 	global $img_sev;
 	global $config;
@@ -2337,8 +2441,7 @@ function events_page_general ($event) {
 	
 	$data = array();
 	$data[0] = __('Event name');
-	$event["evento"] = str_replace ( '&#x0a;' , '<br>' , $event["evento"]);
-	$data[1] = io_safe_output($event["evento"]);
+	$data[1] = events_display_name ($event["evento"]);
 	$table_general->data[] = $data;
 	
 	$data = array();
@@ -2400,24 +2503,11 @@ function events_page_general ($event) {
 	$table_general->data[] = $data;
 	
 	// Get Status
-	switch($event['estado']) {
-		case 0:
-			$img_st = "images/star.png";
-			$title_st = __('New event');
-			break;
-		case 1:
-			$img_st = "images/tick.png";
-			$title_st = __('Event validated');
-			break;
-		case 2:
-			$img_st = "images/hourglass.png";
-			$title_st = __('Event in process');
-			break;
-	}
+	$event_st = events_display_status ($event['estado']);
 	
 	$data = array();
 	$data[0] = __('Status');
-	$data[1] = html_print_image($img_st,true).' '.$title_st;
+	$data[1] = html_print_image($event_st["img"],true).' '.$event_st["title"];
 	$table_general->data[] = $data;
 	
 	// If event is validated, show who and when acknowleded it

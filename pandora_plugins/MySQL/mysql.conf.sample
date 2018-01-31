@@ -1,0 +1,186 @@
+# Example of configuration file for MySQL Agent/Plugin for Pandora FMS.
+
+#======================================================================
+#---------- MySQL access parameters / General parameters --------------
+#======================================================================
+
+# User and password for MySQL connection
+conf_mysql_user	root
+
+# Use "" if your password is in blank
+conf_mysql_pass none
+
+# Version of MySQL, could be 5.0 or 5.5
+conf_mysql_version 5.5
+
+# Host for MySQL Server
+conf_mysql_host 127.0.0.1
+
+# Homedir diretory of MySQL (by default /var/lib/mysql)
+conf_mysql_homedir /var/lib/mysql
+conf_mysql_basedir /var/lib/mysql
+
+# Logfile of MySQL (by default /var/lib/mysql/mysql.log)
+conf_mysql_logfile /var/log/mysql.log
+
+# Plugin temporary data directory
+conf_temp /tmp
+
+# Complete path to logparser
+conf_logparser /etc/pandora/plugins/grep_log
+
+#======================================================================
+#-------------------- System specific parameters ----------------------
+#======================================================================
+
+# Check connectivity with the mysql server
+check_begin
+check_mysql_connect
+check_end
+
+check_begin
+check_mysql_cpu
+post_condition > 95
+#post_execution snmptrap -v 1 -c public 192.168.5.2 1.3.6.1.2.1.2 192.168.50.124 6 666 1233433 .1.3.6.1.2.1.2.2.1.1.6 i _DATA_
+post_status CRITICAL
+check_end
+
+check_begin
+check_mysql_memory
+check_end
+
+check_begin
+check_mysql_service
+check_end
+
+check_begin
+check_mysql_logs
+module_type async_string
+post_condition == ERROR
+#post_execution snmptrap -v 1 -c public 192.168.5.2 .1.3.6.1.4.1.2789.2005 192.168.5.2 6 666 1233433 .1.3.6.1.4.1.2789.2005.1 s "_DATA_"
+post_status CRITICAL
+check_end
+
+# Too much connections could mean mysql problems!
+check_begin
+check_system_timewait
+post_condition > 5000
+post_status WARNING
+check_end
+
+check_begin
+check_mysql_ibdata1
+check_end
+
+check_begin
+check_system_diskusage
+check_end
+
+#======================================================================
+#----------------------- Query open interface -------------------------
+#======================================================================
+
+#check_begin
+#check_name PandoraDemo_Sessions
+#check_sql select count(*) from pandora_demo.tsesion where accion = 'Logon';
+#post_condition > 5
+#post_status WARNING
+#data_delta
+#check_end
+
+#======================================================================
+#-------------------- Performance specific parameters -----------------
+#======================================================================
+
+check_begin
+# Retrieve active connections
+mysql_status Full processlist
+module_type generic_data
+# Report delta increment
+data_delta
+check_end
+
+check_begin
+# Retrieve activity time in server
+mysql_status Uptime
+check_end
+
+check_begin
+# Number of connections aborted by client
+mysql_status Aborted_connects
+data_delta
+check_end
+
+check_begin
+# Number of DB queries
+mysql_status Queries
+data_delta
+check_end
+
+check_begin
+# Number of locks over DB tables 
+mysql_status Table_locks_waited 
+data_delta
+post_condition > 10
+post_status WARNING
+check_end
+
+check_begin
+# Number of row locks  
+mysql_status Innodb_row_lock_waits a
+data_delta
+post_condition > 10
+post_status WARNING
+check_end
+
+check_begin
+# Number of table locks  
+mysql_status Com_lock_tables 
+data_delta
+check_end
+
+check_begin
+# Number of pending i/o operations  
+mysql_status Pending_io 
+data_delta
+post_condition > 15
+post_status WARNING
+check_end
+
+check_begin
+# Db size in GB  
+mysql_status Total_size 
+post_condition > 5
+post_status WARNING
+check_end
+
+check_begin
+mysql_status Threads_connected
+post_condition > 50
+post_status WARNING
+check_end
+
+check_begin
+mysql_status_Innodb_row_lock_time_avg
+post_condition > 10
+post_status WARNING
+check_end
+
+check_begin
+mysql_status_Connections
+post_condition > 500
+post_status WARNING
+data_delta
+check_end
+
+
+
+check_begin
+# Retrieve innodb status information
+check_name Buffer_pool_size
+mysql_innodb Buffer pool size
+module_type generic_data
+data_delta
+#post_condition == 512
+check_end
+

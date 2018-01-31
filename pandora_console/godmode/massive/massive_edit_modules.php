@@ -296,8 +296,7 @@ $table->data['form_agents_1'][1] = html_print_select_groups (false, 'AW', true, 
 	html_print_checkbox ("recursion", 1, false, true, false);
 $table->data['form_agents_1'][3] = __('Select all modules of this group') . ' ' .
 	html_print_checkbox_extended ("force_group", 'group', '', '', false,
-		'', 'style="margin-right: 40px;"', true);
-
+		'', 'style="margin-right: 40px;"');
 
 $table->rowclass['form_modules_3'] = '';
 $table->data['form_modules_3'][0] = __('Module Status');
@@ -388,7 +387,7 @@ $table->data['edit0'][3] .= html_print_checkbox ("dynamic_two_tailed", 1, '', tr
 
 $table->data['edit1'][0] = __('Warning status');
 $table->data['edit1'][1] = '<table width="100%">';
-	$table->data['edit1'][1] .= '<tr>';
+	$table->data['edit1'][1] .= "<tr id='edit1-1-min'>";
 		$table->data['edit1'][1] .= '<td>';
 			$table->data['edit1'][1] .= '<em>' . __('Min.') . '</em>';
 		$table->data['edit1'][1] .= '</td>';
@@ -397,7 +396,7 @@ $table->data['edit1'][1] = '<table width="100%">';
 				'min_warning', '', '', 5, 255, true);
 		$table->data['edit1'][1] .= '</td>';
 	$table->data['edit1'][1] .= '</tr>';
-	$table->data['edit1'][1] .= '<tr>';
+	$table->data['edit1'][1] .= "<tr id='edit1-1-max'>";
 		$table->data['edit1'][1] .= '<td>';
 			$table->data['edit1'][1] .= '<em>' . __('Max.') . '</em>';
 		$table->data['edit1'][1] .= '</td>';
@@ -406,7 +405,7 @@ $table->data['edit1'][1] = '<table width="100%">';
 				'max_warning', '', '', 5, 255, true);
 		$table->data['edit1'][1] .= '</td>';
 	$table->data['edit1'][1] .= '</tr>';
-	$table->data['edit1'][1] .= '<tr>';
+	$table->data['edit1'][1] .= "<tr id='edit1-1-str'>";
 		$table->data['edit1'][1] .= '<td>';
 			$table->data['edit1'][1] .= '<em>' . __('Str.') . '</em>';
 		$table->data['edit1'][1] .= '</td>';
@@ -434,8 +433,8 @@ $table->data['edit1'][1] .= '</table>';
 
 $table->data['edit1'][2] = __('Critical status');
 $table->data['edit1'][3] = '<table width="100%">';
-	$table->data['edit1'][3] .= '<tr>';
-		$table->data['edit1'][3] .= '<td>';
+	$table->data['edit1'][3] .= "<tr id='edit1-3-min'>";
+		$table->data['edit1'][3] .= "<td>";
 			$table->data['edit1'][3] .= '<em>' . __('Min.') . '</em>';
 		$table->data['edit1'][3] .= '</td>';
 		$table->data['edit1'][3] .= '<td align="right">';
@@ -443,7 +442,7 @@ $table->data['edit1'][3] = '<table width="100%">';
 				'min_critical', '', '', 5, 255, true);
 		$table->data['edit1'][3] .= '</td>';
 	$table->data['edit1'][3] .= '</tr>';
-	$table->data['edit1'][3] .= '<tr>';
+	$table->data['edit1'][3] .= "<tr id='edit1-3-max'>";
 		$table->data['edit1'][3] .= '<td>';
 			$table->data['edit1'][3] .= '<em>' . __('Max.') . '</em>';
 		$table->data['edit1'][3] .= '</td>';
@@ -452,7 +451,7 @@ $table->data['edit1'][3] = '<table width="100%">';
 				'max_critical', '', '', 5, 255, true);
 		$table->data['edit1'][3] .= '</td>';
 	$table->data['edit1'][3] .= '</tr>';
-	$table->data['edit1'][3] .= '<tr>';
+	$table->data['edit1'][3] .= "<tr id='edit1-3-str'>";
 		$table->data['edit1'][3] .= '<td>';
 			$table->data['edit1'][3] .= '<em>'.__('Str.').'</em>';
 		$table->data['edit1'][3] .= '</td>';
@@ -695,7 +694,6 @@ $(document).ready (function () {
 	
 	clean_lists();
 	
-	
 	$(".select_modules_row").css('display', '<?php echo $modules_row?>');
 	$(".select_agents_row").css('display', '<?php echo $agents_row?>');
 	$(".select_modules_row_2").css('display', 'none');
@@ -807,6 +805,64 @@ $(document).ready (function () {
 			"tr#delete_table-edit13, " +
 			"tr#delete_table-edit14, " +
 			"tr#delete_table-edit15").show ();
+		
+		switch($('#module_type').val()) {
+	    case '3':
+			case '23':
+			case '33':
+				$("#edit1-1-min,#edit1-1-max,#edit1-3-min,#edit1-3-max,#delete_table-edit15," +
+					"#delete_table-edit3-2,#delete_table-edit3-3,#delete_table-edit35").hide();
+				$("#edit1-1-str,#edit1-3-str").show();
+				break;
+			case '6':
+			case '7':
+				$("#edit1-1-min,#edit1-1-max,#edit1-3-min,#edit1-3-max").show();
+				$("#edit1-1-str,#edit1-3-str,#delete_table-edit15,#delete_table-edit3-2," +
+					"#delete_table-edit3-3,#delete_table-edit35-2,#delete_table-edit35-3," +
+					"#delete_table-edit5").hide();
+				break;
+			case '8':
+			case '9':
+			case '11':
+				$("#edit1-1-min,#edit1-1-max,#edit1-3-min,#edit1-3-max").show();
+				$("#edit1-1-str,#edit1-3-str,#delete_table-edit15,#delete_table-edit3-2," +
+					"#delete_table-edit3-3,#delete_table-edit35-2,#delete_table-edit35-3," +
+					"#delete_table-edit5").hide();
+				break;
+			case '10':
+				$("#edit1-1-str,#edit1-3-str").show();
+				$("#edit1-1-str,#edit1-3-str,#delete_table-edit15,#delete_table-edit3-2," +
+					"#delete_table-edit3-3,#delete_table-edit35-2,#delete_table-edit35-3," +
+					"#delete_table-edit5").hide();
+				break;
+			case '15':
+			case '16':
+			case '18':
+				$("#edit1-1-min,#edit1-1-max,#edit1-3-min,#edit1-3-max").show();
+				$("#edit1-1-str,#edit1-3-str,#delete_table-edit5").hide();
+				break;
+			case '17':
+				$("#edit1-1-str,#edit1-3-str").show();
+				$("#edit1-1-min,#edit1-1-max,#edit1-3-min,#edit1-3-max,#delete_table-edit5").hide();
+				break;
+			case '1':
+			case '2':
+			case '4':
+			case '5':
+			case '21':
+			case '22':
+			case '24':
+			case '25':
+			case '30':
+			case '31':
+			case '32':
+			case '100':
+				$("#edit1-1-min,#edit1-1-max,#edit1-3-min,#edit1-3-max").show();
+				$("#edit1-1-str,#edit1-3-str,#delete_table-edit15,#delete_table-edit3-2," +
+				"#delete_table-edit3-3,#delete_table-edit35").hide();
+				break;
+	    default:
+			}
 	}
 	
 	function clean_lists() {
@@ -890,7 +946,7 @@ $(document).ready (function () {
 				}
 			}
 			else if (this.id == "checkbox-recursion") {
-				$("#checkbox-force_group").attr("checked", false);
+				$("#checkbox-force_group").prop("checked", false);
 				$("#groups_select").trigger("change");
 			}
 			else if (this.id == "checkbox-warning_inverse") {
@@ -904,7 +960,7 @@ $(document).ready (function () {
 			}
 			else {
 				if (this.id == "checkbox-force_group") {
-					$("#checkbox-recursion").attr("checked", false);
+					$("#checkbox-recursion").prop("checked", false);
 				}
 				
 				if (this.checked) {
@@ -1000,8 +1056,6 @@ $(document).ready (function () {
 
 	$("#checkbox-recursion").click(function () {
 		recursion = this.checked ? 1 : 0;
-
-		$("#groups_select").trigger("change");
 	});
 
 	$("#groups_select").change (
@@ -1044,11 +1098,11 @@ $(document).ready (function () {
 					"get_agents_group_json" : 1,
 					"recursion" : recursion,
 					"id_group" : this.value,
-				status_agents: function () {
-					return $("#status_agents").val();
-				},
-				// Add a key prefix to avoid auto sorting in js object conversion
-				"keys_prefix" : "_"
+					status_agents: function () {
+						return $("#status_agents").val();
+					},
+					// Add a key prefix to avoid auto sorting in js object conversion
+					"keys_prefix" : "_"
 				},
 				function (data, status) {
 					$("#id_agents").html('');
@@ -1072,7 +1126,6 @@ $(document).ready (function () {
 		$("#groups_select").trigger("change");
 	});
 	
-
 	if("<?php echo $update ?>"){
 		if("<?php echo $selection_mode ?>" == 'agents'){
 			$("#groups_select").trigger("change");
@@ -1080,7 +1133,6 @@ $(document).ready (function () {
 	}
 
 	$("#status_module").change(function() {
-		
 		selector = $("#form_edit input[name=selection_mode]:checked").val();
 		if(selector == 'agents') {
 			$("#id_agents").trigger("change");
@@ -1100,33 +1152,33 @@ $(document).ready (function () {
 	});
 	
 	$('#agents').change(function(e){
-				for(var i=0;i<document.forms["form_edit"].agents.length;i++)	{
-					
-					if(document.forms["form_edit"].agents[0].selected == true){
-						var any = true;
-					}
-					if(i != 0 && document.forms["form_edit"].agents[i].selected){
-							var others = true;
-					}
-					if(any && others){
-							document.forms["form_edit"].agents[0].selected = false;
-					}	
-				}
+		for(var i=0;i<document.forms["form_edit"].agents.length;i++)	{
+			
+			if(document.forms["form_edit"].agents[0].selected == true){
+				var any = true;
+			}
+			if(i != 0 && document.forms["form_edit"].agents[i].selected){
+					var others = true;
+			}
+			if(any && others){
+					document.forms["form_edit"].agents[0].selected = false;
+			}	
+		}
 	});
 	
 	$('#module').change(function(e){
-				for(var i=0;i<document.forms["form_edit"].module.length;i++)	{
-					
-					if(document.forms["form_edit"].module[0].selected == true){
-						var any = true;
-					}
-					if(i != 0 && document.forms["form_edit"].module[i].selected){
-							var others = true;
-					}
-					if(any && others){
-							document.forms["form_edit"].module[0].selected = false;
-					}	
-				}
+		for(var i=0;i<document.forms["form_edit"].module.length;i++)	{
+			
+			if(document.forms["form_edit"].module[0].selected == true){
+				var any = true;
+			}
+			if(i != 0 && document.forms["form_edit"].module[i].selected){
+					var others = true;
+			}
+			if(any && others){
+					document.forms["form_edit"].module[0].selected = false;
+			}	
+		}
 	});
 	
 });

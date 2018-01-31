@@ -248,8 +248,7 @@ else {
 
 }
 
-$table = null;
-
+$table = new stdClass();
 $table->cellpadding = 0;
 $table->cellspacing = 0;
 $table->width = '100%';

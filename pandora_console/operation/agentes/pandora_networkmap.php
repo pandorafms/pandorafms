@@ -537,7 +537,9 @@ switch ($tab) {
 		
 		$table->style = array();
 		$table->style['name'] = '';
-		$table->style['nodes'] = 'text-align: center;';
+		if(enterprise_installed()) {
+			$table->style['nodes'] = 'text-align: center;';
+		}
 		$table->style['groups'] = 'text-align: left;';
 		if ($networkmaps_write || $networkmaps_manage) {
 			$table->style['copy'] = 'text-align: center;';
@@ -547,7 +549,9 @@ switch ($tab) {
 		
 		$table->size = array();
 		$table->size['name'] = '60%';
-		$table->size['nodes'] = '30px';
+		if(enterprise_installed()) {
+			$table->size['nodes'] = '30px';
+		}
 		$table->size['groups'] = '400px';
 		if ($networkmaps_write || $networkmaps_manage) {
 			$table->size['copy'] = '30px';
@@ -557,7 +561,9 @@ switch ($tab) {
 		
 		$table->head = array();
 		$table->head['name'] = __('Name');
-		$table->head['nodes'] = __('Nodes');
+		if(enterprise_installed()) {
+			$table->head['nodes'] = __('Nodes');
+		}
 		$table->head['groups'] = __('Groups');
 		if ($networkmaps_write || $networkmaps_manage) {
 			$table->head['copy'] = __('Copy');
@@ -623,16 +629,18 @@ switch ($tab) {
 				if (empty($count))
 					$count = 0;
 				
-				if (($count == 0) && ($network_map['source'] != 'empty')) {
-					if (enterprise_installed() && ($network_map['generated'])) {
-						$data['nodes'] = __('Empty map');
+				if(enterprise_installed()) {
+					if (($count == 0) && ($network_map['source'] != 'empty')) {
+						if ($network_map['generated']) {
+							$data['nodes'] = __('Empty map');
+						}
+						else {
+							$data['nodes'] = __('Pending to generate');
+						}
 					}
 					else {
-						$data['nodes'] = __('Pending to generate');
+						$data['nodes'] = $count - 1; //PandoraFMS node is not an agent
 					}
-				}
-				else {
-					$data['nodes'] = $count - 1; //PandoraFMS node is not an agent
 				}
 				
 				$data['groups'] = ui_print_group_icon ($network_map['id_group'], true);

@@ -45,7 +45,33 @@ $filter_standby = get_parameter ("filter_standby", "all");
 $offset_simple = (int) get_parameter_get ("offset_simple", 0);
 $id_group = (int) get_parameter ("ag_group", 0); //0 is the All group (selects all groups)
 $free_search = get_parameter("free_search", '');
-$tag_filter = get_parameter("tag_filter", 0);
+
+$user_tag_array = array_values(array_keys(tags_get_user_tags($config['id_user'])));
+$user_tag = '';
+
+foreach ($user_tag_array as $key => $value) {
+	if ($value === end($user_tag_array)) {
+		$user_tag .= $value;
+	 }
+	 else{
+		$user_tag .= $value.',';
+	 }
+}
+
+$tag_filter = get_parameter("tag_filter", $user_tag);
+
+$tag_param_validate = explode(',',$tag_filter);
+
+foreach ($tag_param_validate as $key => $value) {
+	if (!in_array($value,$user_tag_array)) {
+		db_pandora_audit("ACL Violation", 
+		"Trying to access Alert view");
+		require ("general/noaccess.php");
+		exit;
+	}
+	
+}
+
 if ($tag_filter) {
 	if ($id_group && $strict_user) {
 		$tag_filter = 0;

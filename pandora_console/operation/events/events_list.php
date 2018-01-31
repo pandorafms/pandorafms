@@ -264,6 +264,7 @@ html_print_div(array('hidden' => true,
 if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0, "EM") ) {
 	// Save filter div for dialog
 	echo '<div id="save_filter_layer" style="display: none">';
+	$table = new StdClass;
 	$table->id = 'save_filter_form';
 	$table->width = '100%';
 	$table->cellspacing = 4;
@@ -329,6 +330,7 @@ if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0,
 
 // Load filter div for dialog
 echo '<div id="load_filter_layer" style="display: none">';
+$table = new StdClass;
 $table->id = 'load_filter_form';
 $table->width = '100%';
 $table->cellspacing = 4;
@@ -805,7 +807,7 @@ enterprise_hook('print_event_tags_active_filters',
 if (!empty($result)) {
 	//~ Checking the event tags exactly. The event query filters approximated tags to keep events
 	//~ with several tags
-	$acltags = tags_get_user_module_and_tags ($config['id_user'], $access, true);
+	$acltags = tags_get_user_groups_and_tags ($config['id_user'], $access, true);
 
 	foreach ($result as $key=>$event_data) {
 		$has_tags = events_checks_event_tags($event_data, $acltags);

@@ -342,6 +342,7 @@ if ($create_group || $delete_group || $update_group) {
 	$groups = users_get_groups_tree ($config['id_user'], "AR", true);
 }
 
+$table = new StdClass();
 $table->width = '100%';
 
 $all_parents = array();

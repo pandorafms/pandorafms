@@ -2511,7 +2511,7 @@ function reporting_database_serialized($report, $content) {
 	$return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
 	
 	$keys = array();
-	if ($content['header_definition'] != '') {
+	if (isset($content['header_definition']) && ($content['header_definition'] != '')) {
 		$keys = explode('|', $content['header_definition']);
 	}
 	
@@ -8713,7 +8713,7 @@ function reporting_tiny_stats ($counts_info, $return = false, $type = 'agent', $
 	
 	if ($strict_user && $type == 'agent') {
 		
-		$acltags = tags_get_user_module_and_tags ($config['id_user'],'AR', $strict_user);
+		$acltags = tags_get_user_groups_and_tags ($config['id_user'],'AR', $strict_user);
 		$filter['disabled'] = 0;
 		$id_agent = $counts_info['id_agente'];
 		

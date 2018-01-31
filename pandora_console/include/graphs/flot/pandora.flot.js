@@ -213,21 +213,19 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 	}
 	//$('.legend>table').css('border',"1px solid #E2E2E2");
 	
-	if(background_color == 'transparent'){
+	if(background_color == 'transparent') {
 		$('.legend>table').css('background-color',"");
 		$('.legend>div').css('background-color',"");
 		$('.legend>table').css('color',"#aaa");
-	}
-	else if (background_color == 'white') {
+	} else if (background_color == 'white') {
 		$('.legend>table').css('background-color',"white");
 		$('.legend>table').css('color',"black");
-	}
-	else if (background_color == 'black') {
+	} else if (background_color == 'black') {
 		$('.legend>table').css('background-color',"black");
 		$('.legend>table').css('color',"#aaa");
 	}
 	
-	$('.legend').over(function(){
+	$('.legend').hover(function() {
 		return false;
 	});
 	
@@ -420,13 +418,29 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 		format = new Array();
 		for (i = 0; i < labels_total.length; i++) {
 			var label = labels_total[i][1];
-			var shortLabel = reduceText(label, 25);
+			// var shortLabel = reduceText(label, 25);
 			var title = '';
-			if (label !== shortLabel) {
+			// if (label !== shortLabel) {
 				title = label;
-				label = shortLabel;
+				// label = shortLabel;
+			// }
+			
+			if(label.length > 30){
+				if(label.indexOf(" - ")){
+					var label_temp = label.split(" - ");
+				}
+				else if(label.indexOf(" ")){
+					var label_temp = label.split(" ");
+				}
+				else{
+					var label_temp = '';
+					label_temp[0] = label.substring(0, (label.length/2));
+					label_temp[1] = label.substring((label.length/2));
+				}
+				label = reduceText(label_temp[0], 20)+"<br>"+reduceText(label_temp[1], 20);
 			}
-			format.push([i,'<div style="font-size:'+font_size+'pt !important; word-break:keep-all; max-width: 150px;" title="'+title+'" class="'+font+'">'
+			
+			format.push([i,'<div style="font-size:'+font_size+'pt !important; word-break:keep-all; max-width: 150px;margin-right:20px;" title="'+title+'" class="'+font+'">'
 				+ label
 				+ '</div>']);
 		}
@@ -1775,7 +1789,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				$('#timestamp_'+graph_id).show();
 				// If no legend, the timestamp labels are short and with value
 				if (legend.length == 0) {
-					$('#timestamp_'+graph_id).text(labels[j] + ' (' + parseFloat(y).toFixed(2) + ')');
+					$('#timestamp_'+graph_id).text(labels[j] + ' (' + (short_data ? parseFloat(y).toFixed(2) : parseFloat(y)) + ')');
 				}
 				else {
 					$('#timestamp_'+graph_id).text(labels_long[j]);
@@ -1811,7 +1825,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			// The graphs of points type and unknown graphs will dont be updated
 			if (serie_types[i] != 'points' && series.label != $('#hidden-unknown_text').val()) {
 				$('#legend_' + graph_id + ' .legendLabel')
-					.eq(i).html(label_aux +	'= ' + parseFloat(y).toFixed(precision_graph) + how_bigger + ' ' + unit);
+					.eq(i).html(label_aux +	'= ' + (short_data ? parseFloat(y).toFixed(2) : parseFloat(y)) + how_bigger + ' ' + unit);
 			}
 
 			$('#legend_' + graph_id + ' .legendLabel')
@@ -2186,9 +2200,8 @@ function number_format(number, force_integer, unit) {
 		}
 	}
 	else {
-		var decimals = 2;
-		var factor = 10 * decimals;
-		number = Math.round(number*factor)/factor;
+		// Round to 2 decimals
+		number = Math.round(number * 100) / 100;
 	}
 
 	var shorts = ["", "K", "M", "G", "T", "P", "E", "Z", "Y"];
@@ -2196,10 +2209,6 @@ function number_format(number, force_integer, unit) {
 	while (1) {
 		if (number >= 1000) { //as long as the number can be divided by 1000
 			pos++; //Position in array starting with 0
-			number = number / 1000;
-		}
-		else if (number <= -1000) {
-			pos++;
 			number = number / 1000;
 		}
 		else if (number <= -1000) {

@@ -279,7 +279,7 @@ function ui_print_message ($message, $class = '', $attributes = '', $return = fa
 	$output .= 	'</td>
 		</tr>
 		<tr>
-			<td style="color:#333">' . $text_message . '</td>
+			<td style="color:#333;padding-top:10px">' . $text_message . '</td>
 			<td></td>
 		</tr>
 		</table>';

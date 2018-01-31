@@ -334,12 +334,14 @@ $(document).ready (function () {
 						}
 					}
 					else {
-						$("[name=field" + i + "_value]")
-							.val($("[name=field" + i + "_value]")
-							.val());
-						$("[name=field" + i + "_recovery_value]")
-							.val($("[name=field" + i + "_recovery_value]")
-							.val());
+						if ($("[name=field" + i + "_value]").val() != 'text/plain') {
+							$("[name=field" + i + "_value]")
+								.val($("[name=field" + i + "_value]")
+								.val());
+							$("[name=field" + i + "_recovery_value]")
+								.val($("[name=field" + i + "_recovery_value]")
+								.val());
+						}
 					}
 					// Add help hint only in first field
 					if (i == 1) {

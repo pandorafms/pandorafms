@@ -113,8 +113,14 @@ if ($action == 'new') {
 	src="">';
 }
 else {
-	$table->data[0][2] = '<img id="imagen2" style="width:230px;" 
-	src="images/console/background/'.$background.'">';
+	if(defined('METACONSOLE')){
+		$table->data[0][2] = '<img id="imagen2" style="width:230px;" 
+		src="../../images/console/background/'.$background.'">';
+	} else {
+		$table->data[0][2] = '<img id="imagen2" style="width:230px;" 
+		src="images/console/background/'.$background.'">';
+	}
+	
 	$table->data[0][2] .= '<img id="imagen" style="display:none;" 
 	src="">';
 }
@@ -204,24 +210,6 @@ echo "</form>";
 <script type="text/javascript">
 
 $(document).ready (function () {
-	
-	var metaconsole = null;
-	function is_metaconsole() {
-		
-		if (metaconsole === null)
-			metaconsole = $("input[name='metaconsole']").val();
-
-		if (metaconsole != 0 && metaconsole != undefined)
-			return true;
-		else
-			return false;
-	}
-
-	var url_hack_metaconsole = '';
-	if (is_metaconsole()) {
-		url_hack_metaconsole = '../../';
-	}
-
 	$("#modsize").click(function(event){
 		event.preventDefault();
 		
@@ -280,6 +268,7 @@ $(document).ready (function () {
 	}
 	else{
 		original_image=new Image();
+		url_hack_metaconsole = metaconsole_url();
 		original_image.src= url_hack_metaconsole + 'images/console/background/'+$('#background').val();
 		if (parseInt(original_image.width) < 1024){
 			alert('Default width is '+original_image.width+'px, smaller than minimum -> 1024px');
@@ -330,7 +319,7 @@ $(document).ready (function () {
 	var size_changer_state = false;
 
 	$("#background").change(function() {
-		
+		url_hack_metaconsole = metaconsole_url();
 		$('#imagen2').attr('src', url_hack_metaconsole + 'images/console/background/'+$('#background').val());
 		
 		$('#imagen2').width(230);
@@ -345,6 +334,7 @@ $(document).ready (function () {
 	
 	$("#background").mouseout(function() {
 		if(size_changer_state){
+			url_hack_metaconsole = metaconsole_url();
 			$('#imagen').attr('src',url_hack_metaconsole + 'images/console/background/'+$('#background').val());
 			$('input[name=width]').val($('#imagen').width());
 			$('input[name=height]').val($('#imagen').height());
@@ -397,7 +387,15 @@ $(document).ready (function () {
 			$("#hidden-is_favourite_sent").val(0);
 		}
 	});
-
+	
+	function metaconsole_url() {
+		metaconsole = $("input[name='metaconsole_activated']").val();
+		if( metaconsole == 0 || metaconsole === undefined){
+			return '';
+		} else {
+			return '../../';
+		}
+	}
 });
 
 </script>

@@ -1608,7 +1608,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 						if (!modules_is_boolean($layoutData['id_agente_modulo'])) {
 							$img_style_title .=
 								" <br>" . __("Last value: ")
-								. $value;
+								. remove_right_zeros(number_format($value, $config['graph_precision']));
 						}
 					}
 					
@@ -1644,7 +1644,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 					$imgpos = 'float:left';
 				}
 				
-				$varsize = getimagesize($img);
+				$varsize = getimagesize($config['homedir'] . '/' . $img);
 				
 				
 				if($layoutData['show_statistics'] == 1){
@@ -3364,7 +3364,8 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
  *
  * @return array A list of layouts the user can see.
  */
-function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter = false, $returnAllGroup = true, $favourite = false) {
+function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter = false, 
+										$returnAllGroup = true, $favourite = false) {
 	if (! is_array ($filter)){
 		$filter = array ();
 	} else {
@@ -3386,20 +3387,19 @@ function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter
 		$where .= "is_favourite = 1";
 	}
 
-
 	if ($returnAllGroup) {
-		$groups = users_get_groups ($id_user, 'VR');
+		$groups = users_get_groups ($id_user, 'VR', true, true);
 	} else {
 		if(!empty($filter['group'])) {
-			$permissions_group = users_get_groups ($id_user, 'VR', false);
+			$permissions_group = users_get_groups ($id_user, 'VR', false, true);
 			if(empty($permissions_group)){
-				$permissions_group = users_get_groups ($id_user, 'VM', false);
+				$permissions_group = users_get_groups ($id_user, 'VM', false, true);
 			}
 			$groups = array_intersect_key($filter['group'], $permissions_group);
 		} else {
-			$groups = users_get_groups ($id_user, 'VR', false);
+			$groups = users_get_groups ($id_user, 'VR', false, true);
 			if(empty($groups)) {
-				$groups = users_get_groups ($id_user, 'VM', false);
+				$groups = users_get_groups ($id_user, 'VM', false, true);
 			}
 		}
 		unset($filter['group']);
@@ -3420,9 +3420,9 @@ function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter
 	if ($where == '') {
 		$where = array();
 	}
-	
+
 	$layouts = db_get_all_rows_filter ('tlayout', $where);
-	
+
 	if ($layouts == false)
 		return array ();
 	
@@ -3432,6 +3432,17 @@ function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter
 			$retval[$layout['id']] = $layout['name'];
 		else
 			$retval[$layout['id']] = $layout;
+
+		//add_perms
+		if ($groups[$layout['id_group']]['vconsole_view']){
+			$retval[$layout['id']]['vr'] = $groups[$layout['id_group']]['vconsole_view'];
+		}
+		if ($groups[$layout['id_group']]['vconsole_edit']){
+			$retval[$layout['id']]['vw'] = $groups[$layout['id_group']]['vconsole_edit'];
+		}
+		if ($groups[$layout['id_group']]['vconsole_management']){
+			$retval[$layout['id']]['vm'] = $groups[$layout['id_group']]['vconsole_management'];
+		}
 	}
 	
 	return $retval;
@@ -3486,8 +3497,8 @@ function visual_map_get_layout_status ($id_layout = 0, $depth = 0, $elements_in_
 		if ($data['type'] == 0) {
 			$stcount++;
 			if ($data["id_layout_linked"] == 0 && $data["id_agente_modulo"] == 0 && $data["id_agent"] == 0) {
-      	$stcount_u++;
-      }
+				$stcount_u++;
+			}
 		}
 	}
 	if ($stcount == 0 || $stcount_u == $stcount) {
@@ -3568,9 +3579,9 @@ function visual_map_get_layout_status ($id_layout = 0, $depth = 0, $elements_in_
 						}
 						else {
 							$status = VISUAL_MAP_STATUS_NORMAL;
-							 if (count($elements_in_child) == 0) {
-								 $status = VISUAL_MAP_STATUS_UNKNOWN;
-							 }
+							if (count($elements_in_child) == 0) {
+								$status = VISUAL_MAP_STATUS_UNKNOWN;
+							}
 						}
 					}
 				}

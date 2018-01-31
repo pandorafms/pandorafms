@@ -445,9 +445,8 @@ function process_user_login_remote ($login, $pass, $api = false) {
  * @return bool True is the user is admin
  */
 function is_user_admin ($id_user) {
-	$is_admin = (bool) db_get_value ('is_admin', 'tusuario', 'id_user', $id_user);
-	
-	return $is_admin;
+	require_once(__DIR__ . "/../functions_users.php");
+	return users_is_admin($id_user);
 }
 
 
@@ -531,7 +530,15 @@ function get_user_email ($user) {
  * @return mixed An array of users
  */
 function get_user_info ($user) {
-	return db_get_row ("tusuario", "id_user", get_user_id ($user));
+	static $cache_user_info = array();
+	if (array_key_exists($user, $cache_user_info)){
+		return $cache_user_info[$user];
+	}
+	else{
+		$return = db_get_row ("tusuario", "id_user", get_user_id ($user));
+		$cache_user_info[$user] = $return;
+		return $return;
+	}
 }
 
 /**

@@ -28,7 +28,7 @@ if ($id_group > 0) {
 	if ($propagate) {
 		$childrens_ids = array($id_group);
 		
-		$childrens = groups_get_childrens($id_group);
+		$childrens = groups_get_childrens($id_group, null, true);
 		
 		if (!empty($childrens)) {
 			foreach ($childrens as $child) {

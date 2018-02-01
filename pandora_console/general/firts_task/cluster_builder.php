@@ -40,7 +40,7 @@ ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no cl
     echo __('<b>Clusters to guarantee service</b>: these are active - passive (A/P) mode clusters. It means that one of the nodes (or machines that make up the cluster) will be running (primary) and another won\'t (secondary). When the primary goes down, the secondary must take over and give the service instead. Although many of the elements of this cluster are active-passive, it will also have active elements in both of them that indicate that the passive node is "online", so that in the case of a service failure in the master, the active node collects this information.');
     
     ?></p>
-		<form action="index.php?sec=reporting&sec2=godmode/reporting/cluster_builder&step=1" method="post">
+		<form action="index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_builder&step=1" method="post">
 			<input type="submit" class="button_task" value="<?php echo __('Create Cluster'); ?>" />
 		</form>
 	</div>

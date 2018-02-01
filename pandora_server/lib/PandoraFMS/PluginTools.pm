@@ -427,7 +427,14 @@ sub print_module {
 	if (ref ($data->{value}) eq "ARRAY") {
 		$xml_module .= "\t<datalist>\n";
 		foreach (@{$data->{value}}) {
-			$xml_module .= "\t<data><![CDATA[" . $data->{value} . "]]></data>\n";
+			if ((ref($_) eq "HASH") && defined($_->{value})) {
+				$xml_module .= "\t<data>\n";
+				$xml_module .= "\t\t<value><![CDATA[" . $_->{value} . "]]></value>\n";
+				if (defined($_->{timestamp})) {
+					$xml_module .= "\t\t<timestamp><![CDATA[" . $_->{timestamp} . "]]></timestamp>\n";
+				}
+				$xml_module .= "\t</data>\n";
+			}
 		}
 		$xml_module .= "\t</datalist>\n";
 	}

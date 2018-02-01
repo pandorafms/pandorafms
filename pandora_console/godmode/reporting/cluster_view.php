@@ -67,9 +67,9 @@ echo "<table style='width:100%;'>";
 				
 				$cluster_module_central = db_process_sql('select id_agente_modulo from tagente_modulo where id_agente = (select id_agent from tcluster where id = '.$id_cluster.') and nombre = "Cluster status"');
 				
-				$cluster_module_status = modules_get_agentmodule_last_status($cluster_module_central[0]['id_agente_modulo']);
+				$cluster_module_central_status = modules_get_agentmodule_last_status($cluster_module_central[0]['id_agente_modulo']);
 				
-				switch ($cluster_module_status) {
+				switch ($cluster_module_central_status) {
 					case 1:
 					
 					echo "<div style='border:3px gray groove;float:left;width:100px;margin-left:20px;margin-top:20px;height:50px;'>
@@ -241,7 +241,14 @@ echo "<table style='width:100%;'>";
 			$last_run_difference .= $last_run_difference_seconds.' second/s ago';
 			
 			echo "<div style='float:left;width:100px;px;margin-left:20px;margin-top:25px;font-size:2em;text-align:center;'>".__('LAST UPDATE')."</div>";
-			echo "<div style='float:left;width:220px;margin-left:20px;margin-top:40px;font-size:1.5em;text-align:center;'>".$last_run_difference."</div>";
+			
+			if($cluster_module_central_status == 4){
+				echo "<div style='float:left;width:220px;margin-left:20px;margin-top:40px;font-size:1.5em;text-align:center;'>".__('Not init')."</div>";
+			}else{
+				echo "<div style='float:left;width:220px;margin-left:20px;margin-top:40px;font-size:1.5em;text-align:center;'>".$last_run_difference."</div>";
+			}
+			
+			
         
         echo "<div style='border:1px solid lightgray;float:left;width:350px;margin-left:20px;margin-right:20px;margin-top:20px;height:200px;margin-bottom:20px;'>";
 					

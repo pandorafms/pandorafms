@@ -245,7 +245,8 @@ elseif ($step == 3) {
 				'id_tipo_modulo' =>1,
 				'descripcion' => $get_module_description_value,
 				'min_warning' => 0,
-				'min_critical' => 0
+				'min_critical' => 0,
+				'tcp_port' => 1
 				);
 				
 				

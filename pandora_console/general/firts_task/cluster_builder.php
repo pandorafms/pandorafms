@@ -15,7 +15,16 @@
 // GNU General Public License for more details.
 
 global $config;
-check_login ();
+
+check_login();
+
+if (! check_acl ($config['id_user'], 0, "AR") && ! check_acl ($config['id_user'], 0, "AW")) {
+	db_pandora_audit("ACL Violation",
+		"Trying to access Inventory");
+	require ("general/noaccess.php");
+	return;
+}
+
 ui_require_css_file ('firts_task');
 ?>
 <?php 

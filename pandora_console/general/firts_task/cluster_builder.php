@@ -32,7 +32,7 @@ ui_require_css_file ('firts_task');
 ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no clusters defined yet.') ) ); 
 ?>
 
-<div class="new_task">
+<div class="new_task_cluster">
 	<div class="image_task">
 		<?php echo html_print_image('images/firts_task/icono-cluster-activo.png', true, array("title" => __('Clusters')));?>
 	</div>

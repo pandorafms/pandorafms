@@ -7,6 +7,15 @@
 	background-color: #ececec;
 	border-radius: 3px 3px 3px 3px;
 }
+.new_task_cluster
+{
+	margin-top: 30px;
+	left: 20px;
+	width: 60%;
+	height: 320px;
+	background-color: #ececec;
+	border-radius: 3px 3px 3px 3px;
+}
 
 .title_task
 {

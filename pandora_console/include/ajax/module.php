@@ -472,6 +472,7 @@ if ($list_modules) {
 	$access = ($agent_a == true) ? 'AR' : (($agent_w == true) ? 'AW' : 'AR');
 
 	$id_agente = $id_agent = (int)get_parameter('id_agente', 0);
+	$show_notinit = (int)get_parameter('show_notinit', 0);
 	$url = 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=' . $id_agent;
 	$selectTypeUp = '';
 	$selectTypeDown = '';
@@ -592,6 +593,13 @@ if ($list_modules) {
 	if (!empty($status_text_monitor)) {
 		$status_text_monitor_sql .= $status_text_monitor . '%';
 	}
+	
+	if(!$show_notinit){
+		$monitor_filter = AGENT_MODULE_STATUS_NO_DATA;
+	}
+	else{
+		$monitor_filter = -15;
+	}
 
 	//Count monitors/modules
 	switch ($config["dbtype"]) {
@@ -610,7 +618,7 @@ if ($list_modules) {
 							AND tagente_estado.estado != %d
 							AND tagente_modulo.%s
 						ORDER BY tagente_modulo.id_module_group , %s  %s",
-					$id_agente, $status_text_monitor_sql,$status_module_group_filter,$status_filter_sql, $tags_sql, AGENT_MODULE_STATUS_NO_DATA,
+					$id_agente, $status_text_monitor_sql,$status_module_group_filter,$status_filter_sql, $tags_sql, $monitor_filter,
 					$status_module_group_filter, $order['field'], $order['order']);
 			break;
 		case "postgresql":
@@ -632,7 +640,7 @@ if ($list_modules) {
 					tagente_modulo.nombre
 				ORDER BY tagente_modulo.id_module_group , %s  %s",
 				$id_agente, $status_text_monitor_sql,$status_module_group_filter,$status_filter_sql,
-				$tags_sql, AGENT_MODULE_STATUS_NO_DATA,$status_module_group_filter,$order['field'],
+				$tags_sql, $monitor_filter,$status_module_group_filter,$order['field'],
 				$order['order']);
 			break;
 		case "oracle":
@@ -650,7 +658,7 @@ if ($list_modules) {
 					AND tagente_estado.estado != %d
 					AND tagente_modulo.%s
 				ORDER BY tagente_modulo.id_module_group , %s %s
-				", $id_agente, $status_text_monitor_sql, $status_filter_sql, $tags_sql, AGENT_MODULE_STATUS_NO_DATA,
+				", $id_agente, $status_text_monitor_sql, $status_filter_sql, $tags_sql, $monitor_filter,
 				$status_module_group_filter,$order['field'], $order['order']);
 			break;
 	}
@@ -679,7 +687,7 @@ if ($list_modules) {
 					AND tagente_estado.estado != %d
 					AND tagente_modulo.%s
 				ORDER BY tmodule_group.name , %s %s",
-				$id_agente, $status_text_monitor_sql,$status_module_group_filter,$status_filter_sql, $tags_sql, AGENT_MODULE_STATUS_NO_DATA,
+				$id_agente, $status_text_monitor_sql,$status_module_group_filter,$status_filter_sql, $tags_sql, $monitor_filter,
 				$status_module_group_filter, $order['field'], $order['order']);
 
 			break;
@@ -698,7 +706,7 @@ if ($list_modules) {
 					AND tagente_estado.estado != %d
 					AND tagente_modulo.%s
 				ORDER BY tmodule_group.name , %s  %s",
-				$id_agente, $status_text_monitor_sql,$status_module_group_filter,$status_filter_sql, $tags_sql, AGENT_MODULE_STATUS_NO_DATA,
+				$id_agente, $status_text_monitor_sql,$status_module_group_filter,$status_filter_sql, $tags_sql, $monitor_filter,
 				$status_module_group_filter, $order['field'], $order['order']);
 			break;
 		// If Dbms is Oracle then field_list in sql statement has to be recoded. See oracle_list_all_field_table()
@@ -721,7 +729,7 @@ if ($list_modules) {
 					AND tagente_estado.estado != %d
 					AND tagente_modulo.%s
 				ORDER BY tmodule_group.name , %s %s
-				", $id_agente, $status_text_monitor_sql, $tags_sql, $status_filter_sql, AGENT_MODULE_STATUS_NO_DATA,
+				", $id_agente, $status_text_monitor_sql, $tags_sql, $status_filter_sql, $monitor_filter,
 				 $status_module_group_filter, $order['field'], $order['order']);
 			break;
 	}

@@ -868,7 +868,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	yellow_up, red_up, yellow_inverse, red_inverse,
 	series_suffix_str, dashboard, vconsole, xaxisname,background_color,legend_color,
 	short_data) {
-	
+
 	var threshold = true;
 	var thresholded = false;
 	font = font.split("/").pop().split(".").shift();
@@ -877,12 +877,12 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	serie_types = serie_types.split(separator);
 	labels_long = labels_long.split(separator);
 	labels = labels.split(separator);
-	// XXX 1827
-	/* Translate datetime to utimestamp -> avoid convert datetime in server better...
+	//XXX 1827
+	//Translate datetime to utimestamp -> avoid convert datetime in server better...
 	$.each(labels, function (i,v) {
 		labels[i] = new Date(labels[i]).getTime();
 	});
-	*/
+
 	legend = legend.split(separator);
 	events = events.split(separator);
 	event_ids = event_ids.split(separator);
@@ -932,21 +932,20 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	for (i = 0; i < values.length; i++) {
 		var serie = values[i].split(separator);
 		var aux = new Array();
+
 		$.each(serie, function(i, v) {
 			if(v < 0){
 				if(min_check > parseFloat(v)){
 					min_check = v;
 				}
 			}
-
-			aux.push([i, v]);
-
 			// XXX 1827
-			/*
+			//aux.push([i, v]);
 			aux.push([labels[i], v]);
-			*/
 		});
-
+		
+		//XXX
+		var time_format_y = labels[labels.length - 1] - labels[0];
 		switch (serie_types[i]) {
 			case 'area':
 				line_show = true;
@@ -1028,6 +1027,8 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 		// Prepared to turn series with a checkbox
 		// showed[i] = true;
 	}
+console.log(data_base);
+	max_x = data_base[0]['data'][data_base[0]['data'].length -1][0];
 
 	if(min_check != 0){
 		min_check = min_check -5;
@@ -1579,17 +1580,19 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				color: legend_color
 			},
 			xaxes: [{
+				/*
 				axisLabelFontSizePixels: font_size,
 				axisLabelUseCanvas: false,
 				tickFormatter: xFormatter,
 				labelHeight: 50,
 				color: '',
 				font: font,
+				*/
 			// XXX 1827
-			/*
+				axisLabelUseCanvas: false,
+				axisLabelFontSizePixels: font_size,
 				mode: "time",
-				timeformat: "%Y/%m/%d %H:%M:%S",
-			*/
+				tickFormatter: xFormatter,
 			}],
 			yaxes: [{
 				tickFormatter: yFormatter,
@@ -1674,7 +1677,10 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 		if (menu == 0) {
 			return;
 		}
+		
+		//XXX
 		dataInSelection = ranges.xaxis.to - ranges.xaxis.from;
+		//time_format_y = dataInSelection;
 		dataInPlot = plot.getData()[0].data.length;
 
 		factor = dataInSelection / dataInPlot;
@@ -1686,7 +1692,8 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to},
 				xaxes: [ {
 						tickFormatter: xFormatter,
-						minTickSize: new_steps,
+						//XXX
+						//minTickSize: new_steps,
 						color: ''
 						} ],
 				legend: { show: false }
@@ -1931,11 +1938,50 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 
 	// Format functions
 	function xFormatter(v, axis) {
-		if (labels[v] == undefined) {
-			return '';
+		//XXX
+		/*
+			if ($period <= SECONDS_6HOURS) {
+				$time_format = 'H:i:s';
+			}
+			elseif ($period < SECONDS_1DAY) {
+				$time_format = 'H:i';
+			}
+			elseif ($period < SECONDS_15DAYS) {
+				$time_format = "M \nd H:i";
+			}
+			elseif ($period < SECONDS_1MONTH) {
+				$time_format = "M \nd H\h";
+			} 
+			elseif ($period < SECONDS_6MONTHS) {
+				$time_format = "M \nd H\h";
+			}
+			else {
+				$time_format = "Y M \nd H\h";
+			}	
+		*/
+
+		var d = new Date(v);
+		var result_date_format = 0;
+		
+		if(time_format_y > 86400000){ //DAY
+
+			result_date_format = 
+								d.getDate() + "/" +
+								(d.getMonth() + 1) + "/" + 
+								d.getFullYear() + "\n" + 
+								d.getHours() + ":" + 
+								d.getMinutes() + ":" + 
+								d.getSeconds(); //+  ":" + d.getMilliseconds();
 		}
-		extra_css = '';
-		return '<div class='+font+' style="font-size:'+font_size+'pt; margin-top:15px;'+extra_css+'">'+labels[v]+'</div>';
+		else{
+			result_date_format = 	
+								d.getHours() + ":" + 
+								d.getMinutes() + ":" + 
+								d.getSeconds(); //+  ":" + d.getMilliseconds();
+		}
+
+		//extra_css = '';
+		return '<div class='+font+' style="transform: rotate(-15deg); -ms-transform:rotate(-15deg); -moz-transform:rotate(-15deg); -webkit-transform:rotate(-15deg); -o-transform:rotate(-15deg); font-size:'+font_size+'pt; margin-top:15px;">'+result_date_format+'</div>';
 	}
 
 	function yFormatter(v, axis) {
@@ -2005,11 +2051,11 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				thresholded = false;
 			}
 			else {
-				
 				var max_draw = plot.getAxes().yaxis.datamax;
 				// Recalculate the y axis
 				var y_recal = axis_thresholded(threshold_data, plot.getAxes().yaxis.min, plot.getAxes().yaxis.max,
 										red_threshold, extremes, red_up);
+
 				plot = $.plot($('#' + graph_id), data_base,
 				$.extend(true, {}, options, {
 					yaxis: {
@@ -2017,16 +2063,19 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 						min: y_recal.min
 					},
 					xaxis: {
+						mode:"time",
 						min: plot.getAxes().xaxis.min,
 						max: plot.getAxes().xaxis.max
 					}
 				}));
+
 				datas = add_threshold (data_base, threshold_data, plot.getAxes().yaxis.min, plot.getAxes().yaxis.max,
 										red_threshold, extremes, red_up);
+
 				thresholded = true;
 				
 			}
-			
+						
 			plot.setData(datas);
 			plot.draw();
 
@@ -2037,10 +2086,11 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			// cancel the zooming
 			plot = $.plot($('#' + graph_id), data_base,
 				$.extend(true, {}, options, {
+					//XXX
 					xaxis: {max: max_x },
 					legend: { show: false }
 				}));
-
+			
 			$('#menu_cancelzoom_' + graph_id)
 				.attr('src', homeurl + '/images/zoom_cross.disabled.png');
 			overview.clearSelection();
@@ -2300,7 +2350,7 @@ function add_threshold (data_base, threshold_data, y_min, y_max,
 		if (/_down/.test(this.id)){
 			var end;
 			if (/critical/.test(this.id)) {
-				 end = red_threshold;
+				end = red_threshold;
 			} else {
 				end = extremes[this.id];
 			}
@@ -2327,6 +2377,7 @@ function add_threshold (data_base, threshold_data, y_min, y_max,
 	});
 	
 	return datas;
+	
 }
 
 function reduceText (text, maxLength) {

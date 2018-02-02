@@ -33,10 +33,10 @@ ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no cl
 ?>
 
 <div class="new_task_cluster">
-	<div class="image_task">
+	<div class="image_task_cluster">
 		<?php echo html_print_image('images/firts_task/icono-cluster-activo.png', true, array("title" => __('Clusters')));?>
 	</div>
-	<div class="text_task">
+	<div class="text_task_cluster">
 		<h3> <?php echo __('Create Cluster'); ?></h3>
 		<p id="description_task"> <?php
     
@@ -50,7 +50,7 @@ ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no cl
     
     ?></p>
 		<form action="index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_builder&step=1" method="post">
-			<input type="submit" class="button_task" value="<?php echo __('Create Cluster'); ?>" />
+			<input style="margin-bottom:20px;" type="submit" class="button_task" value="<?php echo __('Create Cluster'); ?>" />
 		</form>
 	</div>
 </div>

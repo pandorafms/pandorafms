@@ -25,6 +25,24 @@ include_once($homedir . 'include/functions_ui.php');
 include_once($homedir . 'include/functions.php');
 include_once($homedir . 'include/functions_html.php');
 
+
+if($config['visual_animation']){
+	echo 
+	'<style>
+	@keyframes login_move {
+			from {margin-left: 10%;margin-right: 10%;opacity:0.1}
+			to {margin-left: 5%;margin-right: 5%;opacity:1}
+	}
+	
+	
+	div.container_login{
+		animation-name: login_move;
+		animation-duration: 3s;
+	}
+	</style>';
+}
+
+
 if (!isset($login_screen)) {
 	$login_screen = 'login';
 }

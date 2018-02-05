@@ -644,7 +644,7 @@ if ($create_alert || $update_alert) {
 	echo ui_print_help_icon ("snmp_alert_custom", true);
 	
 	echo '</td><td class="datos">';
-	html_print_textarea ("custom_value", $custom_value, 2, $custom_value, 'style="width:400px;"');
+	html_print_textarea ("custom_value", 2, 2, $custom_value, 'style="width:400px;"');
 	
 	echo '</td></tr>';
 	

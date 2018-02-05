@@ -1,0 +1,319 @@
+\Web Service(*)\Total Bytes Sent
+\Web Service(*)\Bytes Sent/sec
+\Web Service(*)\Total Bytes Received
+\Web Service(*)\Bytes Received/sec
+\Web Service(*)\Total Bytes Transferred
+\Web Service(*)\Bytes Total/sec
+\Web Service(*)\Total Files Sent
+\Web Service(*)\Files Sent/sec
+\Web Service(*)\Total Files Received
+\Web Service(*)\Files Received/sec
+\Web Service(*)\Total Files Transferred
+\Web Service(*)\Files/sec
+\Web Service(*)\Current Anonymous Users
+\Web Service(*)\Current NonAnonymous Users
+\Web Service(*)\Total Anonymous Users
+\Web Service(*)\Anonymous Users/sec
+\Web Service(*)\Total NonAnonymous Users
+\Web Service(*)\NonAnonymous Users/sec
+\Web Service(*)\Maximum Anonymous Users
+\Web Service(*)\Maximum NonAnonymous Users
+\Web Service(*)\Current Connections
+\Web Service(*)\Maximum Connections
+\Web Service(*)\Total Connection Attempts (all instances)
+\Web Service(*)\Connection Attempts/sec
+\Web Service(*)\Total Logon Attempts
+\Web Service(*)\Logon Attempts/sec
+\Web Service(*)\Total Options Requests
+\Web Service(*)\Options Requests/sec
+\Web Service(*)\Total Get Requests
+\Web Service(*)\Get Requests/sec
+\Web Service(*)\Total Post Requests
+\Web Service(*)\Post Requests/sec
+\Web Service(*)\Total Head Requests
+\Web Service(*)\Head Requests/sec
+\Web Service(*)\Total Put Requests
+\Web Service(*)\Put Requests/sec
+\Web Service(*)\Total Delete Requests
+\Web Service(*)\Delete Requests/sec
+\Web Service(*)\Total Trace Requests
+\Web Service(*)\Trace Requests/sec
+\Web Service(*)\Total Move Requests
+\Web Service(*)\Move Requests/sec
+\Web Service(*)\Total Copy Requests
+\Web Service(*)\Copy Requests/sec
+\Web Service(*)\Total Mkcol Requests
+\Web Service(*)\Mkcol Requests/sec
+\Web Service(*)\Total Propfind Requests
+\Web Service(*)\Propfind Requests/sec
+\Web Service(*)\Total Proppatch Requests
+\Web Service(*)\Proppatch Requests/sec
+\Web Service(*)\Total Search Requests
+\Web Service(*)\Search Requests/sec
+\Web Service(*)\Total Lock Requests
+\Web Service(*)\Lock Requests/sec
+\Web Service(*)\Total Unlock Requests
+\Web Service(*)\Unlock Requests/sec
+\Web Service(*)\Total Other Request Methods
+\Web Service(*)\Other Request Methods/sec
+\Web Service(*)\Total Method Requests
+\Web Service(*)\Total Method Requests/sec
+\Web Service(*)\Total CGI Requests
+\Web Service(*)\CGI Requests/sec
+\Web Service(*)\Total ISAPI Extension Requests
+\Web Service(*)\ISAPI Extension Requests/sec
+\Web Service(*)\Total Not Found Errors
+\Web Service(*)\Not Found Errors/sec
+\Web Service(*)\Total Locked Errors
+\Web Service(*)\Locked Errors/sec
+\Web Service(*)\Current CGI Requests
+\Web Service(*)\Current ISAPI Extension Requests
+\Web Service(*)\Maximum CGI Requests
+\Web Service(*)\Maximum ISAPI Extension Requests
+\Web Service(*)\Current CAL count for authenticated users
+\Web Service(*)\Maximum CAL count for authenticated users
+\Web Service(*)\Total count of failed CAL requests for authenticated users
+\Web Service(*)\Current CAL count for SSL connections
+\Web Service(*)\Maximum CAL count for SSL connections
+\Web Service(*)\Total count of failed CAL requests for SSL connections
+\Web Service(*)\Total Blocked Async I/O Requests
+\Web Service(*)\Total Allowed Async I/O Requests
+\Web Service(*)\Total Rejected Async I/O Requests
+\Web Service(*)\Current Blocked Async I/O Requests
+\Web Service(*)\Measured Async I/O Bandwidth Usage
+\Web Service(*)\Total blocked bandwidth bytes.
+\Web Service(*)\Current blocked bandwidth bytes.
+\Web Service(*)\Service Uptime
+\SQLServer:Access Methods\Full Scans/sec
+\SQLServer:Access Methods\Range Scans/sec
+\SQLServer:Access Methods\Probe Scans/sec
+\SQLServer:Access Methods\Scan Point Revalidations/sec
+\SQLServer:Access Methods\Workfiles Created/sec
+\SQLServer:Access Methods\Worktables Created/sec
+\SQLServer:Access Methods\Worktables From Cache Ratio
+\SQLServer:Access Methods\Forwarded Records/sec
+\SQLServer:Access Methods\Skipped Ghosted Records/sec
+\SQLServer:Access Methods\Index Searches/sec
+\SQLServer:Access Methods\FreeSpace Scans/sec
+\SQLServer:Access Methods\FreeSpace Page Fetches/sec
+\SQLServer:Access Methods\Pages Allocated/sec
+\SQLServer:Access Methods\Extents Allocated/sec
+\SQLServer:Access Methods\Mixed page allocations/sec
+\SQLServer:Access Methods\Extent Deallocations/sec
+\SQLServer:Access Methods\Page Deallocations/sec
+\SQLServer:Access Methods\Page Splits/sec
+\SQLServer:Access Methods\Table Lock Escalations/sec
+\SQLServer:Access Methods\Deferred Dropped rowsets
+\SQLServer:Access Methods\Dropped rowset cleanups/sec
+\SQLServer:Access Methods\Dropped rowsets skipped/sec
+\SQLServer:Access Methods\Deferred dropped AUs
+\SQLServer:Access Methods\AU cleanups/sec
+\SQLServer:Access Methods\AU cleanup batches/sec
+\SQLServer:Access Methods\Failed AU cleanup batches/sec
+\SQLServer:Access Methods\Used tree page cookie
+\SQLServer:Access Methods\Failed tree page cookie
+\SQLServer:Access Methods\Used leaf page cookie
+\SQLServer:Access Methods\Failed leaf page cookie
+\SQLServer:Access Methods\LobSS Provider Create Count
+\SQLServer:Access Methods\LobSS Provider Destroy Count
+\SQLServer:Access Methods\LobSS Provider Truncation Count
+\SQLServer:Access Methods\LobHandle Create Count
+\SQLServer:Access Methods\LobHandle Destroy Count
+\SQLServer:Access Methods\By-reference Lob Create Count
+\SQLServer:Access Methods\By-reference Lob Use Count
+\SQLServer:Access Methods\Count Push Off Row
+\SQLServer:Access Methods\Count Pull In Row
+\SQLServer:Access Methods\Count Lob Readahead
+\SQLServer:Access Methods\Page compression attempts/sec
+\SQLServer:Access Methods\Pages compressed/sec
+\SQLServer:Backup Device(*)\Device Throughput Bytes/sec
+\SQLServer:Buffer Manager\Buffer cache hit ratio
+\SQLServer:Buffer Manager\Page lookups/sec
+\SQLServer:Buffer Manager\Free list stalls/sec
+\SQLServer:Buffer Manager\Free pages
+\SQLServer:Buffer Manager\Total pages
+\SQLServer:Buffer Manager\Target pages
+\SQLServer:Buffer Manager\Database pages
+\SQLServer:Buffer Manager\Reserved pages
+\SQLServer:Buffer Manager\Stolen pages
+\SQLServer:Buffer Manager\Lazy writes/sec
+\SQLServer:Buffer Manager\Readahead pages/sec
+\SQLServer:Buffer Manager\Page reads/sec
+\SQLServer:Buffer Manager\Page writes/sec
+\SQLServer:Buffer Manager\Checkpoint pages/sec
+\SQLServer:Buffer Manager\AWE lookup maps/sec
+\SQLServer:Buffer Manager\AWE stolen maps/sec
+\SQLServer:Buffer Manager\AWE write maps/sec
+\SQLServer:Buffer Manager\AWE unmap calls/sec
+\SQLServer:Buffer Manager\AWE unmap pages/sec
+\SQLServer:Buffer Manager\Page life expectancy
+\SQLServer:Buffer Partition(*)\Free pages
+\SQLServer:Buffer Partition(*)\Free list requests/sec
+\SQLServer:Buffer Partition(*)\Free list empty/sec
+\SQLServer:CLR\CLR Execution
+\SQLServer:Cursor Manager by Type(*)\Cache Hit Ratio
+\SQLServer:Cursor Manager by Type(*)\Cached Cursor Counts
+\SQLServer:Cursor Manager by Type(*)\Cursor Cache Use Counts/sec
+\SQLServer:Cursor Manager by Type(*)\Cursor Requests/sec
+\SQLServer:Cursor Manager by Type(*)\Active cursors
+\SQLServer:Cursor Manager by Type(*)\Cursor memory usage
+\SQLServer:Cursor Manager by Type(*)\Cursor worktable usage
+\SQLServer:Cursor Manager by Type(*)\Number of active cursor plans
+\SQLServer:Cursor Manager Total\Cursor conversion rate
+\SQLServer:Cursor Manager Total\Async population count
+\SQLServer:Cursor Manager Total\Cursor flushes
+\SQLServer:Database Mirroring(*)\Bytes Sent/sec
+\SQLServer:Database Mirroring(*)\Pages Sent/sec
+\SQLServer:Database Mirroring(*)\Sends/sec
+\SQLServer:Database Mirroring(*)\Transaction Delay
+\SQLServer:Database Mirroring(*)\Redo Queue KB
+\SQLServer:Database Mirroring(*)\Redo Bytes/sec
+\SQLServer:Database Mirroring(*)\Log Send Queue KB
+\SQLServer:Database Mirroring(*)\Bytes Received/sec
+\SQLServer:Database Mirroring(*)\Receives/sec
+\SQLServer:Database Mirroring(*)\Log Bytes Received/sec
+\SQLServer:Database Mirroring(*)\Log Bytes Sent/sec
+\SQLServer:Database Mirroring(*)\Send/Receive Ack Time
+\SQLServer:Database Mirroring(*)\Log Compressed Bytes Rcvd/sec
+\SQLServer:Database Mirroring(*)\Log Compressed Bytes Sent/sec
+\SQLServer:Database Mirroring(*)\Mirrored Write Transactions/sec
+\SQLServer:Database Mirroring(*)\Log Scanned for Undo KB
+\SQLServer:Database Mirroring(*)\Log Remaining for Undo KB
+\SQLServer:Database Mirroring(*)\Log Bytes Sent from Cache/sec
+\SQLServer:Database Mirroring(*)\Log Bytes Redone from Cache/sec
+\SQLServer:Database Mirroring(*)\Log Send Flow Control Time (ms)
+\SQLServer:Database Mirroring(*)\Log Harden Time (ms)
+\SQLServer:Databases(*)\Data File(s) Size (KB)
+\SQLServer:Databases(*)\Log File(s) Size (KB)
+\SQLServer:Databases(*)\Log File(s) Used Size (KB)
+\SQLServer:Databases(*)\Percent Log Used
+\SQLServer:Databases(*)\Active Transactions
+\SQLServer:Databases(*)\Transactions/sec
+\SQLServer:Databases(*)\Repl. Pending Xacts
+\SQLServer:Databases(*)\Repl. Trans. Rate
+\SQLServer:Databases(*)\Log Cache Reads/sec
+\SQLServer:Databases(*)\Log Cache Hit Ratio
+\SQLServer:Databases(*)\Bulk Copy Rows/sec
+\SQLServer:Databases(*)\Bulk Copy Throughput/sec
+\SQLServer:Databases(*)\Backup/Restore Throughput/sec
+\SQLServer:Databases(*)\DBCC Logical Scan Bytes/sec
+\SQLServer:Databases(*)\Shrink Data Movement Bytes/sec
+\SQLServer:Databases(*)\Log Flushes/sec
+\SQLServer:Databases(*)\Log Bytes Flushed/sec
+\SQLServer:Databases(*)\Log Flush Waits/sec
+\SQLServer:Databases(*)\Log Flush Wait Time
+\SQLServer:Databases(*)\Log Truncations
+\SQLServer:Databases(*)\Log Growths
+\SQLServer:Databases(*)\Log Shrinks
+\SQLServer:Databases(*)\Tracked transactions/sec
+\SQLServer:Databases(*)\Write Transactions/sec
+\SQLServer:Databases(*)\Commit table entries
+\SQLServer:Exec Statistics(*)\Extended Procedures
+\SQLServer:Exec Statistics(*)\DTC calls
+\SQLServer:Exec Statistics(*)\OLEDB calls
+\SQLServer:Exec Statistics(*)\Distributed Query
+\SQLServer:General Statistics\Active Temp Tables
+\SQLServer:General Statistics\Temp Tables Creation Rate
+\SQLServer:General Statistics\Logins/sec
+\SQLServer:General Statistics\Connection Reset/sec
+\SQLServer:General Statistics\Logouts/sec
+\SQLServer:General Statistics\User Connections
+\SQLServer:General Statistics\Logical Connections
+\SQLServer:General Statistics\Transactions
+\SQLServer:General Statistics\Non-atomic yield rate
+\SQLServer:General Statistics\Mars Deadlocks
+\SQLServer:General Statistics\HTTP Authenticated Requests
+\SQLServer:General Statistics\SOAP Empty Requests
+\SQLServer:General Statistics\SOAP SQL Requests
+\SQLServer:General Statistics\SOAP Method Invocations
+\SQLServer:General Statistics\SOAP WSDL Requests
+\SQLServer:General Statistics\SOAP Session Initiate Requests
+\SQLServer:General Statistics\SOAP Session Terminate Requests
+\SQLServer:General Statistics\Processes blocked
+\SQLServer:General Statistics\Temp Tables For Destruction
+\SQLServer:General Statistics\Event Notifications Delayed Drop
+\SQLServer:General Statistics\Trace Event Notification Queue
+\SQLServer:General Statistics\SQL Trace IO Provider Lock Waits
+\SQLServer:General Statistics\Tempdb recovery unit id
+\SQLServer:General Statistics\Tempdb rowset id
+\SQLServer:Latches\Latch Waits/sec
+\SQLServer:Latches\Average Latch Wait Time (ms)
+\SQLServer:Latches\Total Latch Wait Time (ms)
+\SQLServer:Latches\Number of SuperLatches
+\SQLServer:Latches\SuperLatch Promotions/sec
+\SQLServer:Latches\SuperLatch Demotions/sec
+\SQLServer:Locks(*)\Lock Requests/sec
+\SQLServer:Locks(*)\Lock Timeouts/sec
+\SQLServer:Locks(*)\Number of Deadlocks/sec
+\SQLServer:Locks(*)\Lock Waits/sec
+\SQLServer:Locks(*)\Lock Wait Time (ms)
+\SQLServer:Locks(*)\Average Wait Time (ms)
+\SQLServer:Locks(*)\Lock Timeouts (timeout > 0)/sec
+\SQLServer:Memory Manager\Connection Memory (KB)
+\SQLServer:Memory Manager\Granted Workspace Memory (KB)
+\SQLServer:Memory Manager\Lock Memory (KB)
+\SQLServer:Memory Manager\Lock Blocks Allocated
+\SQLServer:Memory Manager\Lock Owner Blocks Allocated
+\SQLServer:Memory Manager\Lock Blocks
+\SQLServer:Memory Manager\Lock Owner Blocks
+\SQLServer:Memory Manager\Maximum Workspace Memory (KB)
+\SQLServer:Memory Manager\Memory Grants Outstanding
+\SQLServer:Memory Manager\Memory Grants Pending
+\SQLServer:Memory Manager\Optimizer Memory (KB)
+\SQLServer:Memory Manager\SQL Cache Memory (KB)
+\SQLServer:Memory Manager\Target Server Memory (KB)
+\SQLServer:Memory Manager\Total Server Memory (KB)
+\SQLServer:Plan Cache(*)\Cache Hit Ratio
+\SQLServer:Plan Cache(*)\Cache Pages
+\SQLServer:Plan Cache(*)\Cache Object Counts
+\SQLServer:Plan Cache(*)\Cache Objects in use
+\SQLServer:Replication Agents(*)\Running
+\SQLServer:Replication Dist.(*)\Dist:Delivery Latency
+\SQLServer:Replication Dist.(*)\Dist:Delivered Cmds/sec
+\SQLServer:Replication Dist.(*)\Dist:Delivered Trans/sec
+\SQLServer:Replication Logreader(*)\Logreader:Delivery Latency
+\SQLServer:Replication Logreader(*)\Logreader:Delivered Cmds/sec
+\SQLServer:Replication Logreader(*)\Logreader:Delivered Trans/sec
+\SQLServer:Replication Merge(*)\Uploaded Changes/sec
+\SQLServer:Replication Merge(*)\Downloaded Changes/sec
+\SQLServer:Replication Merge(*)\Conflicts/sec
+\SQLServer:Replication Snapshot(*)\Snapshot:Delivered Cmds/sec
+\SQLServer:Replication Snapshot(*)\Snapshot:Delivered Trans/sec
+\SQLServer:SQL Errors(*)\Errors/sec
+\SQLServer:SQL Statistics\Batch Requests/sec
+\SQLServer:SQL Statistics\Forced Parameterizations/sec
+\SQLServer:SQL Statistics\Auto-Param Attempts/sec
+\SQLServer:SQL Statistics\Failed Auto-Params/sec
+\SQLServer:SQL Statistics\Safe Auto-Params/sec
+\SQLServer:SQL Statistics\Unsafe Auto-Params/sec
+\SQLServer:SQL Statistics\SQL Compilations/sec
+\SQLServer:SQL Statistics\SQL Re-Compilations/sec
+\SQLServer:SQL Statistics\SQL Attention rate
+\SQLServer:SQL Statistics\Guided plan executions/sec
+\SQLServer:SQL Statistics\Misguided plan executions/sec
+\SQLServer:Transactions\Transactions
+\SQLServer:Transactions\Snapshot Transactions
+\SQLServer:Transactions\Update Snapshot Transactions
+\SQLServer:Transactions\NonSnapshot Version Transactions
+\SQLServer:Transactions\Longest Transaction Running Time
+\SQLServer:Transactions\Update conflict ratio
+\SQLServer:Transactions\Free Space in tempdb (KB)
+\SQLServer:Transactions\Version Generation rate (KB/s)
+\SQLServer:Transactions\Version Cleanup rate (KB/s)
+\SQLServer:Transactions\Version Store Size (KB)
+\SQLServer:Transactions\Version Store unit count
+\SQLServer:Transactions\Version Store unit creation
+\SQLServer:Transactions\Version Store unit truncation
+\SQLServer:User Settable(*)\Query
+\SQLServer:Wait Statistics(*)\Lock waits
+\SQLServer:Wait Statistics(*)\Memory grant queue waits
+\SQLServer:Wait Statistics(*)\Thread-safe memory objects waits
+\SQLServer:Wait Statistics(*)\Log write waits
+\SQLServer:Wait Statistics(*)\Log buffer waits
+\SQLServer:Wait Statistics(*)\Network IO waits
+\SQLServer:Wait Statistics(*)\Page IO latch waits
+\SQLServer:Wait Statistics(*)\Page latch waits
+\SQLServer:Wait Statistics(*)\Non-Page latch waits
+\SQLServer:Wait Statistics(*)\Wait for the worker
+\SQLServer:Wait Statistics(*)\Workspace synchronization waits
+\SQLServer:Wait Statistics(*)\Transaction ownership waits

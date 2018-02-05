@@ -4,21 +4,18 @@
 */
 ?>
 
-<h1>Networkmap console</h1>
+<h1>Mapas de red</h1>
 
-<p>Con la version Enterprise puede crear mapas de red editables de una manera mas interactiva comparado con la version Open que esta actualmente en la subseccion &#34;Ver agentes&#34;.</p>
+<p>Con la version Enterprise puede crear mapas de red editables de una manera mas interactiva comparado con la version Open que no cuenta con muchas de las opciones de manipulación de elementos.</p>
 
-<p>En contraste con la version Open, el mapa de red proprociona mas funcionalidades como:</p>
+<p>El mapa de red proprociona algunas funcionalidades como:</p>
 
-
-<li>Mapa de red mas grande, con mas de 1000 agentes para monitorizar.</li>
 <li>Monitorizar en tiempo real toda la topologia de la red con sus sistemas.</li>
 <li>Diferentes vistas de la topologia de red, definidas de una forma manual o generadas automaticamente con grupos de agentes.</li>
 <li>Enlazar diferentes vistas mediante el uso de puntos ficticios.</li>
-<li>Manipular la topologia representada en cada una de las vistas.</li>
 <li>A&ntilde;adir nuevos nodos, uno por uno o de forma masiva.</li>
-<li>Editando las caracteristicas de los nodos.</li>
-<li>Organizandolos dentro de la vista:<br>
+<li>Editar las caracteristicas de los nodos.</li>
+<li>Organizar dentro de la vista:<br>
             - La posición de los nodos.<br>
             - Las relaciones entre los nodos.</li>
 
@@ -44,78 +41,71 @@
 </p>
 
 
-<h2>Panel de control</h2>
+<h2>Menú del mapa</h2>
 
-<p>Desde el panel de control puedes realizar tareas mas complejas sobre el mapa de red.</p>
+<p>Desde el menú contextual del mapa de red puedes realizar tareas mas complejas sobre el.</p>
 
-<p>Se encuentra oculto en la esquina superior derecha, como en el minimapa se puede mostrar pulsando en la flecha.</p>
-<?php html_print_image ("images/help/netmap1.png", false, array('width' => '550px')); ?>
+<p>Se muestra si hacemos click derecho en alguna sección del mapa vacía.</p>
+<?php html_print_image ("images/help/mapa vista menu mapa.png", false, array('width' => '550px')); ?>
 
 <p>Y las opciones disponibles son:</p>
 
-    <li>Cambiar la frecuencia de refresco de los estado de los nodos.</li>
+    <li>Añadir agente, por medio del control inteligente que permite buscar de forma rápida el agente y añadirlo (tanto ficticio como añadido masivo de agentes), el nuevo nodo aparece en el punto donde hiciste click en el mapa.</li>
+    <li>Escoger el centro del mapa de red.</li>
     <li>Forzar el refresco.</li>
-    <li>Añadir agente, por medio del control inteligente que permite buscar de forma rápida el agente y añadirlo, el nuevo nodo aparece en el punto (0, 0) del mapa que esta en la parte superior izquierda del mapa.</li>
-    <li>Añadir varios agentes, por medio del filtrado por grupo que mostrará los agentes de ese grupo en una lista de selección múltiple y que no estén ya en el mapa.</li>
-    <li>Hacer una captura de la parte visible del mapa.</li>
-    <li>Añadir un punto ficticio, donde puedes elegir, el texto como nombre de este punto, el tamaño definido por el radio, la forma del punto, color por defecto y si quieres que el punto ficticio sea un link a un mapa.</li>
-    <li>Buscar agente, por medio de también de un control inteligente, una vez elegido el mapa va automáticamente al punto donde esta el nodo del agente.</li>
-    <li>Zoom, cambiar el nivel de zoom del mapa de red. </li>
+    <li>Refrescar la zona de espera para buscar nuevos nodos.</li>
 
-<h2>Ventana vista detalle</h2>
+<h2>Menú del nodo</h2>
 
-<p>La ventana vista detalle es una vista visual de un agente, la cual se refresca a la misma velocidad que el mapa del que se abrió, y las ventanas son totalmente independientes por lo que puedes tener varias ventanas de estas abiertas.</p>
+<p>Desde el menú contextual del nodo puedes realizar tareas mas complejas sobre el.</p>
 
+<p>Se muestra si hacemos click derecho en algún nodo.</p>
+<?php html_print_image ("images/help/mapa vista menu nodo.png", false, array('width' => '550px')); ?>
 
-<?php html_print_image ("images/help/netmap2.png", false, array('width' => '550px')); ?><br><br>
+<p>Y las opciones disponibles son:</p>
 
-
-
-    <p>Muestra una caja que el borde se pone del color del estado del agente.<br>
-    El nombre del agente es un link a la página del agente de Pandora.<br>
-    Dentro de la caja aparecen todos los módulos que no están en estado desconocido, los cuales según si el estado del modulo estará verde o rojo.<br>
-        Estos módulos son clickables y muestran un tooltip con los datos principales del módulo. <br>
-    En el borde de la caja aparece los módulos de tipo SNMP Proc, que suelen corresponder a interfaces de red cuando se monitoriza un agente relacionado con sistemas de red. <br></p>
-
-<h2>Paleta de punto ficticio
-</h2>
-<p>Si seleccionas ver detalles sobre un punto ficticio, este te mostrara una ventana emergente con una paleta de opciones para modificar el punto ficticio.</p>
-
-<?php html_print_image ("images/help/netmap3.png", false, array('width' => '550px')); ?><br><br>
-
-
-<p>Disponemos de un formulario con las opciones de:</p>
-
-    <li>Nombre del punto ficticio.</li>
-    <li>Radio del punto ficticio.</li>
-    <li>Forma del punto ficticio.</li>
-    <li>Color del punto ficticio.</li>
-    <li>Mapa que linka el punto ficticio. </li>
+    <li>Mostrar una vista en detalle con datos del nodo. Además en esta vista podremos consultar sus interfaces (si las tiene), editar su nombre y su forma o ver que enlaces tiene disponibles para editarlos o borrarlos.</li>
+    <?php html_print_image ("images/help/informacion de nodo.png", false, array('width' => '550px')); ?>
+    <li>Añadir un enlace entre interfaces. Con esto podremos enlazar dos módulos de interfaz entre si, o uno de ellos con otro agente. Primero seleccionamos el hijo de la unión y posteriormente el padre</li>
+    <?php html_print_image ("images/help/crear enlace de interfaz hijo.png", false, array('width' => '550px')); ?>
+    <?php html_print_image ("images/help/crear enlace de interfaz padre.png", false, array('width' => '550px')); ?>
+    <?php html_print_image ("images/help/crear enlace de interfaz tabla.png", false, array('width' => '550px')); ?>
+    <li>Definir un enlace padre-hijo entre agentes, siguiendo la misma metodología que con los enlaces de interfaz, primero se seleccionaría el hijo, y posteriormente, el padre.</li>
+    <?php html_print_image ("images/help/crear enlace agente agente hijo.png", false, array('width' => '550px')); ?>
+    <?php html_print_image ("images/help/crear enlace agente agente padre.png", false, array('width' => '550px')); ?>
+    <li>Eliminar el nodo seleccionado (y todos sus enlaces).</li>
 
 <h2>Creación de un mapa de red</h2>
 
 <p>Para la creación de un mapa de red puedes hacerlo como:</p>
 
     <li>Despliegue de todos los agentes contenidos en un grupo.</li>
+    <?php html_print_image ("images/help/creacion mapa normal.png", false, array('width' => '550px')); ?>
     <li>Creación de un mapa de red en blanco. </li>
+    <?php html_print_image ("images/help/creacion mapa vacio.png", false, array('width' => '550px')); ?>
 
-
-
-
-<br><br>Vamos a hacer una vista rápida de los campos que tiene el formulario de creación:<br><br>
+<br><br>Vamos a hacer una vista rápida de los campos que tiene el formulario de creación (habrá muchos menos valores para la creación de un mapa vacío):<br><br>
 
     <li><b>Nombre:</b> nombre del mapa de red.</li>
     <li><b>Grupo:</b> el grupo al que pertenece el mapa de red para las ACL, y además el grupo del que generar el mapa a partir de los agentes que hay contenidos en ese grupo.</li>
-    <li><b>Generación del mapa de red desde:</b> opción solo disponible en la creación y es la forma de crear el mapa de red, si a partir de los agentes que existen en el grupo elegido previamente o por el contrario queremos un mapa de red vacío.</li>
-    <li><b>Tamaño del mapa de red:</b> en el cual se puede definir el tamaño del mapa de red, por defecto es 3000 pixeles de ancho por 3000 pixeles alto.</li>
-    <li><b>Método de generación del mapa de red:</b> el método de distribución de los nodos que formarán el mapa de red, por defecto es radial, pero existen los siguientes:</li>
+    <li><b>Radio de los nodos:</b> Opción para establecer un tamaño de radio para los nodos.</li>
+    <li><b>Descripción:</b> Descripción para el mapa de red.</li>
+    <li><b>Desplazamiento en X:</b> Desplazamiento en el eje x para establecer una vision por defecto al gusto.</li>
+    <li><b>Desplazamiento en Y:</b> Desplazamiento en el eje y para establecer una vision por defecto al gusto.</li>
+    <li><b>Nivel de zoom:</b> Desplazamiento en el zoom para establecer una vision por defecto de escala al gusto.</li>
+    <li><b>Origen:</b> Establece si el mapa se genera a partir de un grupo, de una tarea de reconocimiento o de una mascara ip.</li>
+    <li><b>No mostrar subgrupos:</b> No mostrará subgrupos si el origen es por grupo.</li>
+    <li><b>Tarea de reconocimiento de origen:</b> Nos permite seleccionar la tarea de reconocimiento para generar el mapa.</li>
+    <li><b>IP:</b> Nos permite seleccionar la IP generar el mapa (solo generación por máscara ip).</li>
+    <li><b>Método de generación del mapa de red:</b> el método de distribución de los nodos que formarán el mapa de red, por defecto es spring2, pero existen los siguientes:</li>
         <p>- <i>Radial:</i> en el cual todos los nodos se dispondrán alrededor del nodo ficticio que simboliza el Pandora.<br>
         - <i>Circular:</i> en el cual se dispondrá los nodos en círculos concentricos.<br>
         - <i>Flat:</i> en el cual se dispondrá los nodos de forma arborescente.<br>
         - <i>spring1, spring2:</i> son variaciones del Flat. <br>
-    <li><b>Refresco del networkmap:</b> la velocidad de refresco de los estados de los nodos contenidos en el networkmap, por defecto es cada 5 minutos. </p>
-
-El resto de los campos que estén deshabilitados como por ejemplo "redimensionar mapa" es porque solo están activos en la edición de un mapa ya creado.<br><br>
-
+        - <i>Radial dinámico:</i> Mapa circular con la jerarquía de grupos y agentes dentro de ellos (y módulos en última instancia). <br>
+    <li><b>Separación entre nodos:</b> Separación entre los nodos del mapa.</li>
+    <li><b>Distancia minima entre nodos (solo circular):</b> Establece la distancia minima entre los nodos del mapa.</li>
+    <li><b>separación entre flechas (solo flat y radial):</b> Separación entre las flechas del mapa.</li>
+    <li><b>Separación por defecto para nodos (solo spring2):</b> Establece la distancia minima entre los nodos del mapa.</li><br><br>
 
 Para más información sobre la edición de mapas consulte http://openideas.info/wiki/index.php?title=Pandora:Documentation_es:Presentacion_datos#Consola_Network_Enteprise

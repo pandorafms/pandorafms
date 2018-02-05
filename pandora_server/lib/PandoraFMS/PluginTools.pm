@@ -9,12 +9,6 @@ package PandoraFMS::PluginTools;
 #  Library              Centos package
 #  -------              --------------
 #  LWP::UserAgent       perl-libwww-perl
-#  
-#
-#
-# Version   Date
-#  a1        17-11-2015
-#  ** Revision handler in gitlab **
 # 
 ################################################################################
 
@@ -36,8 +30,8 @@ use base 'Exporter';
 our @ISA = qw(Exporter);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.717";
-my $pandora_build = "180111";
+my $pandora_version = "7.0NG.718";
+my $pandora_build = "180205";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 our %EXPORT_TAGS = ( 'all' => [ qw() ] );
@@ -58,6 +52,7 @@ our @EXPORT = qw(
 	get_unit
 	get_unix_time
 	get_sys_environment
+	get_current_utime_milis
 	getCurrentUTimeMilis
 	head
 	in_array
@@ -100,6 +95,7 @@ sub get_lib_version {
 ################################################################################
 # Get current time (milis)
 ################################################################################
+sub get_current_utime_milis { return getCurrentUTimeMilis(); }
 sub getCurrentUTimeMilis {
 	#return trim (`date +"%s%3N"`); # returns 1449681679712
 	return floor(time*1000);
@@ -431,7 +427,14 @@ sub print_module {
 	if (ref ($data->{value}) eq "ARRAY") {
 		$xml_module .= "\t<datalist>\n";
 		foreach (@{$data->{value}}) {
-			$xml_module .= "\t<data><![CDATA[" . $data->{value} . "]]></data>\n";
+			if ((ref($_) eq "HASH") && defined($_->{value})) {
+				$xml_module .= "\t<data>\n";
+				$xml_module .= "\t\t<value><![CDATA[" . $_->{value} . "]]></value>\n";
+				if (defined($_->{timestamp})) {
+					$xml_module .= "\t\t<timestamp><![CDATA[" . $_->{timestamp} . "]]></timestamp>\n";
+				}
+				$xml_module .= "\t</data>\n";
+			}
 		}
 		$xml_module .= "\t</datalist>\n";
 	}
@@ -609,7 +612,11 @@ sub transfer_xml {
 
 	close (FD);
 
+	# Reassign default values if not present
+	$conf->{tentacle_client} = "tentacle_client" if empty($conf->{tentacle_client});
+	$conf->{tentacle_port}   = "44121"     if empty($conf->{tentacle_port});
 	$conf->{mode} = $conf->{transfer_mode} if empty($conf->{mode});
+
 	if (empty ($conf->{mode}) ) {
 		print_stderror($conf, "[ERROR] Nor \"mode\" nor \"transfer_mode\" defined in configuration.");
 		return undef;

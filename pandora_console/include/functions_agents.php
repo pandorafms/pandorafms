@@ -2601,7 +2601,9 @@ function select_modules_for_agent_group($id_group, $id_agents,
 	}
 
 	if ($selection == 1 || (count($id_agents) == 1)) {
-		$modules = db_get_all_rows_sql("SELECT DISTINCT nombre, id_agente_modulo FROM tagente_modulo WHERE 1 = 1" . $filter_agent . $filter_group);
+		$modules = db_get_all_rows_sql("SELECT DISTINCT nombre, id_agente_modulo 
+										FROM tagente_modulo 
+										WHERE 1 = 1" . $filter_agent . $filter_group);
 
 		if (empty($modules)) $modules = array();
 
@@ -2614,13 +2616,15 @@ function select_modules_for_agent_group($id_group, $id_agents,
 		}
 	}
 	else {
-		$modules = db_get_all_rows_sql("SELECT nombre, id_agente_modulo FROM tagente_modulo WHERE 1 = 1" . $filter_agent . $filter_group);
+		$modules = db_get_all_rows_sql("SELECT nombre, id_agente_modulo 
+										FROM tagente_modulo
+										WHERE 1 = 1" . $filter_agent . $filter_group);
 
 		if (empty($modules)) $modules = array();
 
 		foreach ($modules as $m) {
 			$is_in_all_agents = true;
-			$module_name = modules_get_agentmodule_name($m['id_agente_modulo']);
+			$module_name = $m['nombre'];
 			foreach ($id_agents as $a) {
 				$module_in_agent = db_get_value_filter('id_agente_modulo',
 					'tagente_modulo', array('id_agente' => $a, 'nombre' => $module_name));

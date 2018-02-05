@@ -11,7 +11,7 @@ function initialise(){
 	document.getElementById('normal').value = localStorage["normal"]; 
 	document.getElementById('warning').value = localStorage["warning"];
 	document.getElementById('refresh').value = localStorage["refresh"];
-	document.getElementById('events').value = localStorage["events"];
+	document.getElementById('number_events').value = localStorage["events"];
 	if(localStorage["sound_alert"]=="on"){
 		disable(false);
 		document.getElementById('sound_alert_o').checked=true;
@@ -20,7 +20,6 @@ function initialise(){
 		disable(true);
 		document.getElementById('sound_alert_f').checked=true;
 	}
-                
 }
             
 function change(value, id){
@@ -46,16 +45,13 @@ function change_o(value, id){
 	if(id=="refresh"){
 		localStorage["refresh"]=value;
 	}
-	if(id=="events"){
+	if(id=="number_events"){
 		localStorage["events"]=value;
 	}
 }
 
 function change_global(value,id){
-	console.log("value => "+value);
-	console.log("id => "+id);
 	bg=chrome.extension.getBackgroundPage();
-	bg.location.reload();
 	if(id=="ip_address"){
 		localStorage["ip_address"]=value;
 	}
@@ -95,12 +91,6 @@ function disable(state){
 		document.getElementById("warning").disabled=false;
 	}
 }
-
-function windowClose() {
-	//window.close();
-	console.log("close");
-}
-
 
 //Add callbacks to elements
 $(document).ready (function () {
@@ -163,13 +153,12 @@ $(document).ready (function () {
 		change_o($(this).val(), "refresh");
 	});
 	
-	$("#events").change(function () {
-		change_o($(this).val(), "events");
+	$("#number_events").change(function () {
+		change_o($(this).val(), "number_events");
 	});
 		
 	//Close button
 	$("#close").click (function () {
 		window.close();
 	});
-	
 });

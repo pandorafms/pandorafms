@@ -929,7 +929,7 @@ function html_print_extended_select_for_cron ($hour = '*', $minute = '*', $mday 
 	}
 	
 	# Months
-	for ($i = 0; $i < 12; $i++) {
+	for ($i = 1; $i <= 12; $i++) {
 		$months[$i] = date('F', mktime (0, 0, 0, $i, 1));
 	}
 	

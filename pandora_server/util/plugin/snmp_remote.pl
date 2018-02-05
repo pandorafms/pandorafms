@@ -206,7 +206,7 @@ if ($module eq "diskuse") {
 		$command_line_parammeters = "-v $version -c $community $host";
 	}
 
-	if ($disk =~ /\\/) {
+	if ($disk =~ /\\ /) {
         	$disk =~ s/\\/\\\\/g;
         }
 	my $diskid = `snmpwalk -r 2 -On $command_line_parammeters .1.3.6.1.2.1.25.2.3.1.3 | grep -F '$disk' | head -1 | gawk '{print \$1}' | gawk -F "." '{print \$13}' | tr -d "\r"`;
@@ -248,9 +248,11 @@ if ($module eq "process") {
 		$command_line_parammeters = "-v $version -c $community $host";
 	}
 	
-	$status = `snmpwalk $command_line_parammeters  1.3.6.1.2.1.25.4.2.1.2 | grep "$process" | head -1 | wc -l`;
-	
-	print $status;
+	$status = `snmpwalk $command_line_parammeters  1.3.6.1.2.1.25.4.2.1.2 2>/dev/null`;
+
+	if ($? == 0) {
+		print (($status =~ m/$process/mi)?1:0);
+	}
 }
 
 #-----------------------------------------------------------------------

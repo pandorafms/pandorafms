@@ -1176,6 +1176,9 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		$datelimit = $date - $period;
 		
 		$resolution = $config['graph_res'] * 50; //Number of points of the graph
+		if($resolution > $period){
+			$resolution = $period;
+		}
 		$interval = (int) ($period / $resolution);
 		
 		// If projection graph, fill with zero previous data to projection interval	
@@ -1321,7 +1324,6 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				$data = array ();
 			}
 			
-
 			// Uncompressed module data
 			if ($uncompressed_module) {
 				$min_necessary = 1;
@@ -2387,8 +2389,9 @@ function fullscale_data_combined($module_list, $period, $date, $flash_charts, $p
 			$array_percentil = array();
 		}
 
+		$previous_data   = modules_get_previous_data ($value_module, $datelimit);
 		$data_uncompress = db_uncompress_module_data($value_module, $datelimit, $date);
-	
+
 		foreach ($data_uncompress as $key_data => $value_data) {
 			foreach ($value_data['data'] as $k => $v) {
 				if($flash_charts) {
@@ -2398,6 +2401,13 @@ function fullscale_data_combined($module_list, $period, $date, $flash_charts, $p
 					$real_date = $v['utimestamp'];
 				}
 				
+				if(!isset($v['datos'])){
+					$v['datos'] = $previous_data;
+				}
+				else{
+					$previous_data = $v['datos'];
+				}
+
 				if (!is_null($percentil) && $percentil) {
 					$array_percentil[] = $v['datos'];
 				}

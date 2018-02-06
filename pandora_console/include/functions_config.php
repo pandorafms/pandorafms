@@ -351,6 +351,8 @@ function config_update_config () {
 						$error_update[] = __('Fallback to local authentication');
 					if (!config_update_value ('ldap_login_user_attr', get_parameter ('ldap_login_user_attr')))
 						$error_update[] = __('Login user attribute');
+					if (!config_update_value ('ldap_function', get_parameter ('ldap_function')))
+						$error_update[] = __('LDAP function');
 						
 					if (isset($config['fallback_local_auth']) && $config['fallback_local_auth'] == 0) {
 						if (!config_update_value ('ldap_save_password', get_parameter ('ldap_save_password')))
@@ -526,8 +528,13 @@ function config_update_config () {
 
 					if (!config_update_value ('vc_refr', get_parameter('vc_refr')))
 						$error_update[] = __('Default interval for refresh on Visual Console');
+					if (!config_update_value ('vc_favourite_view', (int) get_parameter('vc_favourite_view', 5)))
+						$error_update[] = __('Default line favourite_view for the Visual Console');
+					if (!config_update_value ('vc_menu_items', (int) get_parameter('vc_menu_items', 10)))
+						$error_update[] = __('Default line menu items for the Visual Console');
 					if (!config_update_value ('vc_line_thickness', (int) get_parameter('vc_line_thickness')))
 						$error_update[] = __('Default line thickness for the Visual Console');
+
 					if (!config_update_value ('agent_size_text_small', get_parameter('agent_size_text_small')))
 						$error_update[] = __('Agent size text');
 					if (!config_update_value ('agent_size_text_medium', get_parameter('agent_size_text_medium')))
@@ -548,6 +555,8 @@ function config_update_config () {
 						$error_update[] = __('Default icon in GIS');
 					if (!config_update_value ('autohidden_menu', get_parameter('autohidden_menu')))
 						$error_update[] = __('Autohidden menu');
+					if (!config_update_value ('visual_animation', get_parameter('visual_animation')))
+						$error_update[] = __('visual_animation');
 					if (!config_update_value ('fixed_graph', get_parameter('fixed_graph')))
 							$error_update[] = __('Fixed graph');
 					if (!config_update_value ('fixed_header', get_parameter('fixed_header')))
@@ -1371,6 +1380,10 @@ function config_process_config () {
 		config_update_value ( 'ldap_admin_pass', '');
 	}
 	
+	if (!isset ($config['ldap_function'])) {
+		config_update_value ( 'ldap_function', 'local');
+	}
+	
 	if (!isset ($config['fallback_local_auth'])) {
 		config_update_value ( 'fallback_local_auth', '0');
 	}
@@ -1617,7 +1630,7 @@ function config_process_config () {
 			if ($is_user_updating == 'operation/users/user_edit') {
 				$id = get_parameter_get ("id", $config["id_user"]); // ID given as parameter
 				$user_info = get_user_info ($id);
-				 
+
 				//If current user is editing himself or if the user has UM (User Management) rights on any groups the user is part of AND the authorization scheme allows for users/admins to update info
 				if (($config["id_user"] == $id || check_acl ($config["id_user"], users_get_groups ($id), "UM")) && $config["user_can_update_info"]) {
 					$view_mode = false;
@@ -1632,10 +1645,19 @@ function config_process_config () {
 				}
 			}
 			
-			if (isset($config['id_user']))
-				$relative_path = enterprise_hook('skins_set_image_skin_path',array($config['id_user']));
-			else
-				$relative_path = enterprise_hook('skins_set_image_skin_path',array(get_parameter('nick')));
+			if(!is_metaconsole()) {
+				//  Skins are available only in console mode
+				
+				if (isset($config['id_user'])){
+					$relative_path = enterprise_hook('skins_set_image_skin_path',array($config['id_user']));
+				}
+				else{
+					$relative_path = enterprise_hook('skins_set_image_skin_path',array(get_parameter('nick')));
+				}
+			}
+			else {
+				$relative_path = '';
+			}
 			$config['relative_path'] = $relative_path;
 		}
 	}
@@ -1806,6 +1828,10 @@ function config_process_config () {
 	
 	if (!isset($config['autohidden_menu'])) {
 		config_update_value ('autohidden_menu', 0);
+	}
+	
+	if (!isset($config['visual_animation'])) {
+		config_update_value ('visual_animation', 1);
 	}
 	
 	if (!isset($config['networkmap_max_width'])) {

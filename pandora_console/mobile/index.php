@@ -84,7 +84,8 @@ if (!is_object($user) && gettype($user) == 'object') {
 
 $user->saveLogin();
 
-$page = $system->getRequest('page', 'home');
+$default_page = 'home';
+$page = $system->getRequest('page');
 $action = $system->getRequest('action');
 
 // The logout action has priority
@@ -170,37 +171,18 @@ switch ($action) {
 		if ($user->login() && $user->isLogged()) {
 			if ($user->isWaitingDoubleAuth()) {
 				if ($user->validateDoubleAuthCode()) {
-					$user_language = get_user_language ($system->getConfig('id_user'));
-					if (file_exists ('../include/languages/'.$user_language.'.mo')) {
-						$l10n = new gettext_reader (new CachedFileReader('../include/languages/'.$user_language.'.mo'));
-						$l10n->load_tables();
-					}
-					if (class_exists("HomeEnterprise"))
-						$home = new HomeEnterprise();
-					else
-						$home = new Home();
-					$home->show();
+					// Logged. Refresh the page
+					header('Refresh:0');
+					return;
 				}
 				else {
 					$user->showDoubleAuthPage();
 				}
 			}
 			else {
-				$user_language = get_user_language ($system->getConfig('id_user'));
-				if (file_exists ('../include/languages/'.$user_language.'.mo')) {
-					$l10n = new gettext_reader (new CachedFileReader('../include/languages/'.$user_language.'.mo'));
-					$l10n->load_tables();
-				}
-				
-				if($_GET['page'] != ''){
-					header('refresh:0; url=http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
-				}
-				
-				if (class_exists("HomeEnterprise"))
-					$home = new HomeEnterprise();
-				else
-					$home = new Home();
-				$home->show();
+				// Logged. Refresh the page
+				header('Refresh:0');
+				return;
 			}
 
 		}
@@ -242,7 +224,7 @@ switch ($action) {
 	default:
 		if (class_exists("Enterprise")) {
 			$enterprise = Enterprise::getInstance();
-			if ($page != "home") {
+			if (!empty($page) && $page != $default_page) {
 				$permission = $enterprise->checkEnterpriseACL($page);
 
 				if (!$permission) {
@@ -257,6 +239,36 @@ switch ($action) {
 
 					return;
 				}
+			}
+		}
+		
+		if (empty($page)) {
+			$user_info = $user->getInfo();
+			$home_page = $system->safeOutput($user_info['section']);
+			$section_data = $user_info['data_section'];
+
+			switch ($home_page) {
+				case 'Event list':
+					$page = 'events';
+					break;
+				case 'Group view':
+					break;
+				case 'Alert detail':
+					$page = 'alerts';
+					break;
+				case 'Tactical view':
+					$page = 'tactical';
+					break;
+				case 'Dashboard':
+					$page = 'dashboard';
+					$id_dashboard = (int) db_get_value('id', 'tdashboard', 'name', $section_data);
+					$_GET['id_dashboard'] = $id_dashboard;
+					break;
+				case 'Visual console':
+					$page = 'visualmap';
+					$id_map = (int) db_get_value('id', 'tlayout', 'name', $section_data);
+					$_GET['id'] = $id_map;
+					break;
 			}
 		}
 

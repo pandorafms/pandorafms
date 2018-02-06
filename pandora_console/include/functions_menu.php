@@ -379,7 +379,7 @@ function menu_print_menu (&$menu) {
 					$display .= "top: " . $top . "px;'";
 				}
 				//Add submenu2 to submenu string
-				$submenu_output .= "<ul id='sub" . str_replace(' ','_',$sub["id"]) . "' class=submenu2 $display>";
+				$submenu_output .= "<ul id='sub" . str_replace(' ','_',$sub["id"]) . "' class=submenu2>";
 				$submenu_output .= $submenu2_list;
 				$submenu_output .= "</ul>";
 			}
@@ -500,7 +500,16 @@ function menu_add_extras(&$menu) {
 	$menu_extra['eventos']['sub']['godmode/events/events']['text'] = __('Administration events');
 	
 	$menu_extra['reporting']['sub']['operation/reporting/reporting_viewer']['text'] = __('View reporting');
+	
 	$menu_extra['reporting']['sub']['godmode/reporting/graph_builder']['text'] = __('Manage custom graphs');
+	$menu_extra['reporting']['sub']['godmode/reporting/graph_container']['text'] = __('View graph containers');
+	$menu_extra['reporting']['sub']['godmode/reporting/create_container']['text'] = __('Manage graph containers');
+	$menu_extra['reporting']['sub']['enterprise/godmode/reporting/graph_template_list']['text'] = __('View graph templates');
+	$menu_extra['reporting']['sub']['enterprise/godmode/reporting/graph_template_editor']['text'] = __('Manage graph templates');
+	$menu_extra['reporting']['sub']['enterprise/godmode/reporting/graph_template_item_editor']['text'] = __('Graph template items');
+	$menu_extra['reporting']['sub']['enterprise/godmode/reporting/graph_template_wizard']['text'] = __('Graph template wizard');
+	
+	
 	$menu_extra['reporting']['sub']['enterprise/dashboard/dashboard_replicate']['text'] = __('Copy dashboard');
 	
 	if ($config['activate_gis'])

@@ -427,7 +427,7 @@ function tactical_status_modules_agents($id_user = false, $user_strict = false, 
 		$id_user = $config['id_user'];
 	}
 	
-	$acltags = tags_get_user_module_and_tags ($id_user, $access, $user_strict);
+	$acltags = tags_get_user_groups_and_tags ($id_user, $access, $user_strict);
 	
 	// If using metaconsole, the strict users will use the agent table of every node
 	if (is_metaconsole() && $user_strict) {

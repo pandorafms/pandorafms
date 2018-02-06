@@ -135,8 +135,7 @@ if ($update_agents) {
 	$result = false;
 	foreach ($id_agents as $id_agent) {
 		if (!empty($values)) {
-			if ($config['metaconsole_agent_cache'] == 1 &&
-			    isset($values['id_grupo'])) {
+			if ($config['metaconsole_agent_cache'] == 1) {
 				$values['update_module_count'] = 1; // Force an update of the agent cache.
 			}
 			$group_old = false;
@@ -259,7 +258,7 @@ $table->data[0][0] = __('Group');
 $table->data[0][1] = html_print_select_groups(false, "AW", true,
 	'id_group', $id_group, false, '', '', true);
 $table->data[0][2] = __('Group recursion');
-$table->data[0][3] = html_print_checkbox ("recursion", 1, $recursion,
+$table->data[0][3] = html_print_checkbox ("recursion2", 1, $recursion,
 	true, false);
 
 
@@ -410,6 +409,7 @@ $table->data[1][0] = __('Module definition') . ui_print_help_icon("module_defini
 $table->data[1][1] = __('No change').' '.html_print_radio_button_extended ("mode", -1, '', $mode, false, '', 'style="margin-right: 40px;"', true);
 $table->data[1][1] .= __('Learning mode').' '.html_print_radio_button_extended ("mode", 1, '', $mode, false, '', 'style="margin-right: 40px;"', true);
 $table->data[1][1] .= __('Normal mode').' '.html_print_radio_button_extended ("mode", 0, '', $mode, false, '', 'style="margin-right: 40px;"', true);
+$table->data[1][1] .= __('Autodisable mode').' '.html_print_radio_button_extended ("mode", 2, '', $mode, false, '', 'style="margin-right: 40px;"', true);
 
 // Status (Disabled / Enabled)
 $table->data[2][0] = __('Status');
@@ -625,7 +625,7 @@ $(document).ready (function () {
 	$("select#id_os").pandoraSelectOS ();
 	
 	var recursion;
-	$("#checkbox-recursion").click(function () {
+	$("#checkbox-recursion2").click(function () {
 		recursion = this.checked ? 1 : 0;
 		$("#id_group").trigger("change");
 	});

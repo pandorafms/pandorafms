@@ -465,7 +465,7 @@ if ($strict_user) {
 	$fields = array ('tagente.id_agente','tagente.id_grupo','tagente.id_os','tagente.ultimo_contacto','tagente.intervalo','tagente.comentarios description','tagente.quiet',
 		'tagente.normal_count','tagente.warning_count','tagente.critical_count','tagente.unknown_count','tagente.notinit_count','tagente.total_count','tagente.fired_count', 'tagente.nombre', 'tagente.alias');
 	
-	$acltags = tags_get_user_module_and_tags ($config['id_user'], $access, $strict_user);
+	$acltags = tags_get_user_groups_and_tags ($config['id_user'], $access, $strict_user);
 	
 	$total_agents = tags_get_all_user_agents (false, $config['id_user'], $acltags, $count_filter, $fields, false, $strict_user, true);
 	$total_agents = count($total_agents);

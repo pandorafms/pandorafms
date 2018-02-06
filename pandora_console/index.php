@@ -544,6 +544,12 @@ if (! isset ($config['id_user'])) {
 				exit ("</html>");
 			}
 		}
+		if($home_page != 'Visual console'){
+			header("Location: ".$config['homeurl']."index.php?sec=".$_GET["sec"]."&sec2=".$_GET["sec2"]);
+		}
+		else{
+			header("Location: ".$config['homeurl']."index.php?sec=".$_GET["sec"]);
+		}			
 	}
 	// Hash login process
 	elseif (isset ($_GET["loginhash"])) {

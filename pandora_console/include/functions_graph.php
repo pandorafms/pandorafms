@@ -1129,8 +1129,10 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	
 	global $config;
 	global $graphic_type;
-	
-	if(!$fullscale){
+
+	if(!$fullscale || $stacked >= 4){
+		
+		$fullscale = 0;
 		$time_format_2 = '';
 		$temp_range = $period;
 		$unit_list_aux = array();
@@ -1174,6 +1176,9 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		$datelimit = $date - $period;
 		
 		$resolution = $config['graph_res'] * 50; //Number of points of the graph
+		if($resolution > $period){
+			$resolution = $period;
+		}
 		$interval = (int) ($period / $resolution);
 		
 		// If projection graph, fill with zero previous data to projection interval	
@@ -1319,7 +1324,6 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				$data = array ();
 			}
 			
-
 			// Uncompressed module data
 			if ($uncompressed_module) {
 				$min_necessary = 1;
@@ -2378,13 +2382,16 @@ function fullscale_data_combined($module_list, $period, $date, $flash_charts, $p
 	}
 
 	$datelimit = $date - $period;
+	$count_data_all = 0;
 
 	foreach ($module_list as $key_module => $value_module) {
 		if (!is_null($percentil) && $percentil) {
 			$array_percentil = array();
 		}
 
+		$previous_data   = modules_get_previous_data ($value_module, $datelimit);
 		$data_uncompress = db_uncompress_module_data($value_module, $datelimit, $date);
+
 		foreach ($data_uncompress as $key_data => $value_data) {
 			foreach ($value_data['data'] as $k => $v) {
 				if($flash_charts) {
@@ -2394,6 +2401,13 @@ function fullscale_data_combined($module_list, $period, $date, $flash_charts, $p
 					$real_date = $v['utimestamp'];
 				}
 				
+				if(!isset($v['datos'])){
+					$v['datos'] = $previous_data;
+				}
+				else{
+					$previous_data = $v['datos'];
+				}
+
 				if (!is_null($percentil) && $percentil) {
 					$array_percentil[] = $v['datos'];
 				}
@@ -2401,16 +2415,27 @@ function fullscale_data_combined($module_list, $period, $date, $flash_charts, $p
 				$data_all[$real_date][$key_module] = $v['datos'];
 			}
 		}
-		
+
 		if (!is_null($percentil) && $percentil) {
 			$percentil_value = get_percentile($config['percentil'], $array_percentil);
 			$percentil_result[$key_module] = array_fill (0, count($data_all), $percentil_value);
+			if(count($data_all) > $count_data_all){
+				$count_data_all = count($data_all);
+			}
+		}
+	}
+
+	if (!is_null($percentil) && $percentil) {
+		foreach ($percentil_result as $k => $v){
+			if(count($v) < $count_data_all){
+				$percentil_result[$k] =  array_fill (0, $count_data_all, $v[0]);
+			}
 		}
 	}
 
 	$data_prev = array(); 
 
-	//ksort($data_all);
+	ksort($data_all);
 	foreach ($data_all as $key => $value) {
 		foreach ($module_list as $key_module => $value_module) {
 			if(!isset($value[$key_module])){
@@ -3939,7 +3964,7 @@ function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $ho
 		$bottom = $datelimit + ($periodtime * $i);
 		if (! $graphic_type) {
 			if ($config['flash_charts']) {
-				$name = date('H:i:s', $bottom);
+				$name = date('H:i', $bottom);
 			}
 			else {
 				$name = date('H\h', $bottom);
@@ -4550,11 +4575,11 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 }
 
 function fullscale_data ( &$chart_data, &$chart_extra_data, &$long_index, 
-						  $series_type, $agent_module_id, $datelimit, $date, 
-						  $events = false, $show_events = false, 
-						  $show_unknown = false, $show_alerts = false, 
-						  $series_suffix = '', $percentil = false, 
-						  $flash_chart = true, $boolean_graph = false){
+						$series_type, $agent_module_id, $datelimit, $date, 
+						$events = false, $show_events = false, 
+						$show_unknown = false, $show_alerts = false, 
+						$series_suffix = '', $percentil = false, 
+						$flash_chart = true, $boolean_graph = false){
 
 	global $config;
 	global $max_value;
@@ -4609,6 +4634,10 @@ function fullscale_data ( &$chart_data, &$chart_extra_data, &$long_index,
 					$chart_data[$event_date]["event" . $series_suffix] = NULL;
 					$chart_data[$event_date]["alert" . $series_suffix] = 1;
 					$chart_extra_data[count($chart_data)-1]['alerts'] = implode (',', $alert_ids[$event_date]);
+				}
+				else{
+					$chart_data[$event_date]["event" . $series_suffix] = NULL;
+					$chart_data[$event_date]["alert" . $series_suffix] = NULL;
 				}
 				
 				$chart_data[$event_date]["sum" . $series_suffix] = $previous_data;

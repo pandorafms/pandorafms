@@ -56,15 +56,61 @@ $user = $config['ehorus_user'];
 $password = io_output_password($config['ehorus_pass']);
 $curl_timeout = $config['ehorus_req_timeout'];
 
-// Get the agent auth token
-$token_path = '/agents/' . $ehorus_agent_id . '/token';
+$base_url = 'https://' . $hostname . ':' . $port;
+
+// Get the login auth token
+$login_path = '/api/login';
+$body = array(
+	'user' => $user,
+	'pass' => $password,
+	'exp' => 300 // 5 minutes
+);
 $ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, 'https://' . $hostname . ':' . $port . $token_path);
-curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+curl_setopt($ch, CURLOPT_URL, $base_url . $login_path);
+curl_setopt($ch, CURLOPT_HTTPHEADER, array('Accept: application/json'));
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
 curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $curl_timeout);
-curl_setopt($ch, CURLOPT_USERPWD, $user . ':' . $password);
+curl_setopt($ch, CURLOPT_HEADER, false);
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($body));
+
+$result_login = curl_exec($ch);
+$http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+$error = false;
+if ($result_login === false) {
+	$error = curl_error($ch);
+}
+curl_close($ch);
+
+if ($error !== false || $http_status !== 200) {
+	if ($error !== false) {
+		// echo $error;
+		ui_print_error_message(__('There was an error retrieving an authorization token'));
+	}
+	else {
+		ui_print_error_message($http_status . ' ' . $result_login);
+	}
+	return;
+}
+
+$response_auth = array();
+try {
+	$response_auth = json_decode($result_login, true);
+}
+catch (Exception $e) {
+	ui_print_error_message(__('There was an error processing the response'));
+}
+
+// Get the agent auth token
+$token_path = '/api/agents/' . $ehorus_agent_id . '/token';
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $base_url . $token_path);
+curl_setopt($ch, CURLOPT_HTTPHEADER, array('Accept: application/json'));
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $curl_timeout);
+curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: JWT ' . $response_auth['token']));
 
 $result_token = curl_exec($ch);
 $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -94,9 +140,9 @@ catch (Exception $e) {
 }
 
 // Get agent info
-$agent_path = '/agents/' . $ehorus_agent_id;
+$agent_path = '/api/agents/' . $ehorus_agent_id;
 $ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, 'https://' . $hostname . ':' . $port . $agent_path);
+curl_setopt($ch, CURLOPT_URL, $base_url . $agent_path);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
 curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $curl_timeout);

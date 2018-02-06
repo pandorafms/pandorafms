@@ -1374,6 +1374,10 @@ CREATE TABLE IF NOT EXISTS `tlayout_data` (
 	`id_layout_linked_weight` int(10) NOT NULL default '0',
 	`element_group` int(10) NOT NULL default '0',
 	`show_on_top` tinyint(1) NOT NULL default '0',
+	`clock_animation` varchar(60) NOT NULL default "analogic_1",
+	`time_format` varchar(60) NOT NULL default "time",
+	`timezone` varchar(60) NOT NULL default "Europe/Madrid",
+	
 	PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

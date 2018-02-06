@@ -1248,6 +1248,9 @@ ALTER TABLE tlayout_data ADD COLUMN `show_statistics` tinyint(2) NOT NULL defaul
 ALTER TABLE tlayout_data ADD COLUMN `element_group` int(10) NOT NULL default '0';
 ALTER TABLE tlayout_data ADD COLUMN `id_layout_linked_weight` int(10) NOT NULL default '0';
 ALTER TABLE tlayout_data ADD COLUMN `show_on_top` tinyint(1) NOT NULL default '0';
+ALTER TABLE tlayout_data ADD COLUMN `clock_animation` varchar(60) NOT NULL default "analogic_1";
+ALTER TABLE tlayout_data ADD COLUMN `time_format` varchar(60) NOT NULL default "time";
+ALTER TABLE tlayout_data ADD COLUMN `timezone` varchar(60) NOT NULL default "Europe/Madrid";
 
 -- ---------------------------------------------------------------------
 -- Table `tagent_custom_fields`

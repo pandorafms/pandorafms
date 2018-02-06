@@ -2283,7 +2283,7 @@ function events_page_details ($event, $server = "") {
 	
 	$data = array();
 	$data[0] = __('Instructions');
-	$data[1] = events_display_instructions ($event['event_type'], $events, true);
+	$data[1] = events_display_instructions ($event['event_type'], $event, true);
 	$table_details->data[] = $data;
 
 	$data = array();

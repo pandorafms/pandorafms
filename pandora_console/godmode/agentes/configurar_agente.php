@@ -263,23 +263,23 @@ if ($create_agent) {
 				}
 			}
 			
-			$info = 'Name: ' . $nombre_agente .
-				' IP: ' . $direccion_agente .
-				' Group: ' . $grupo .
-				' Interval: ' . $intervalo .
-				' Comments: ' . $comentarios .
-				' Mode: ' . $modo .
-				' ID_parent: ' . $id_parent .
-				' Server: ' . $server_name .
-				' ID os: ' . $id_os .
-				' Disabled: ' . $disabled .
-				' Custom ID: ' . $custom_id .
-				' Cascade protection: '  . $cascade_protection .
-				' Cascade protection module: ' . $cascade_protection_module .
-				' Icon path: ' . $icon_path .
-				' Update GIS data: ' . $update_gis_data . 
-				' Url description: ' . $url_description .
-				' Quiet: ' . (int)$quiet;
+			$info = '{"Name":"' . $nombre_agente .'",
+				"IP":"' . $direccion_agente .'",
+				"Group":"' . $grupo .'",
+				"Interval":"' . $intervalo .'",
+				"Comments":"' . $comentarios .'",
+				"Mode":"' . $modo .'",
+				"ID_parent:":"' . $id_parent .'",
+				"Server":"' . $server_name .'",
+				"ID os":"' . $id_os .'",
+				"Disabled":"' . $disabled .'",
+				"Custom ID":"' . $custom_id .'",
+				"Cascade protection":"'  . $cascade_protection .'",
+				"Cascade protection module":"' . $cascade_protection_module .'",
+				"Icon path":"' . $icon_path .'",
+				"Update GIS data":"' . $update_gis_data .'",
+				"Url description":"' . $url_description .'",
+				"Quiet":"' . (int)$quiet.'"}';
 			
 			db_pandora_audit("Agent management",
 				"Created agent $alias", false, true, $info);
@@ -876,16 +876,25 @@ if ($update_agent) { // if modified some agent paramenter
 				}
 			}
 			
-			$info = 'Group: ' . $grupo . ' Interval: ' . $intervalo .
-				' Comments: ' . $comentarios . ' Mode: ' . $modo . 
-				' ID OS: ' . $id_os . ' Disabled: ' . $disabled . 
-				' Server Name: ' . $server_name . ' ID parent: ' . $id_parent .
-				' Custom ID: ' . $custom_id . ' Cascade Protection: ' . $cascade_protection .
-				' Cascade protection module: ' . $cascade_protection_module .
-				' Icon Path: ' . $icon_path . 'Update GIS data: ' .$update_gis_data .
-				' Url description: ' . $url_description .
-				' Quiet: ' . (int)$quiet;
-			
+			$info = '{
+				"id_agente":"' . $id_agente . '",
+				"alias":"' . $alias . '",
+				"Group":"' . $grupo . '",
+				"Interval" : "' . $intervalo .'",
+				"Comments":"' . $comentarios . '",
+				"Mode":"' . $modo . '",
+				"ID OS":"' . $id_os . '",
+				"Disabled":"' . $disabled .'",
+				"Server Name":"' . $server_name .'",
+				"ID parent":"' . $id_parent .'",
+				"Custom ID":"' . $custom_id . '",
+				"Cascade Protection":"' . $cascade_protection .'",
+				"Cascade protection module":"' . $cascade_protection_module .'",
+				"Icon Path":"' . $icon_path . '",
+				"Update GIS data":"' .$update_gis_data .'",
+				"Url description":"' . $url_description .'",
+				"Quiet":"' . (int)$quiet.'"}';
+							
 			enterprise_hook ('update_agent', array ($id_agente));
 			ui_print_success_message (__('Successfully updated'));
 			db_pandora_audit("Agent management",
@@ -1249,7 +1258,9 @@ if ($update_module || $create_module) {
 if ($update_module) {
 	$id_agent_module = (int) get_parameter ('id_agent_module');
 	
-	$values = array ('descripcion' => $description,
+	$values = array (
+		'id_agente_modulo' => $id_agent_module,
+		'descripcion' => $description,
 		'id_module_group' => $id_module_group,
 		'nombre' => $name,
 		'max' => $max,
@@ -1307,7 +1318,7 @@ if ($update_module) {
 		'warning_inverse' => $warning_inverse,
 		'cron_interval' => $cron_interval,
 		'id_category' => $id_category,
-		'disabled_types_event' => $disabled_types_event,
+		'disabled_types_event' => addslashes($disabled_types_event),
 		'module_macros' => $module_macros);
 	
 	// In local modules, the interval is updated by agent
@@ -1467,7 +1478,7 @@ if ($create_module) {
 		'warning_inverse' => $warning_inverse,
 		'cron_interval' => $cron_interval,
 		'id_category' => $id_category,
-		'disabled_types_event' => $disabled_types_event,
+		'disabled_types_event' => addslashes($disabled_types_event),
 		'module_macros' => $module_macros);
 	
 	if ($prediction_module == 3 && $serialize_ops == '') {

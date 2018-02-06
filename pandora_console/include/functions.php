@@ -2775,6 +2775,12 @@ function register_pass_change_try ($id_user, $success) {
 	$values['success'] = $success;
 	db_process_sql_insert('treset_pass_history', $values);
 }
+
+function isJson($string) {
+ json_decode($string);
+ return (json_last_error() == JSON_ERROR_NONE);
+}
+
 /**
  * returns true or false if it is a valid ip 
  * checking ipv4 and ipv6 or resolves the name dns

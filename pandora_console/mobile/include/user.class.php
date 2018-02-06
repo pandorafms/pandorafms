@@ -328,5 +328,9 @@ class User {
 	public function getIdGroups ($access = "AR", $all = false) {
 		return array_keys(users_get_groups($this->user, $access, $all));
 	}
+	
+	public function getInfo () {
+		return users_get_user_by_id($this->user);
+	}
 }
 ?>

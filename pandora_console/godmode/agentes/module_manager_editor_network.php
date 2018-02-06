@@ -414,14 +414,19 @@ function snmpBrowserWindow () {
 			opacity: 0.5,
 			background: "black"
 		},
-		width: 780,
-		height: 430
+		width: 920,
+		height: 500
 	});
 }
 
 // Set the form OID to the value selected in the SNMP browser
 function setOID () {
-	$('#text-snmp_oid').val($('#snmp_selected_oid').text());
+	
+	if($('#snmp_browser_version').val() == '3'){
+		$('#text-snmp_oid').val($('#table1-0-1').text());
+	} else {
+		$('#text-snmp_oid').val($('#snmp_selected_oid').text());
+	}
 	
 	// Close the SNMP browser
 	$('.ui-dialog-titlebar-close').trigger('click');

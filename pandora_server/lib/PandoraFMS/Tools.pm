@@ -61,6 +61,7 @@ our @EXPORT = qw(
 	MFSERVER
 	TRANSACTIONALSERVER
 	SYNCSERVER
+	SYSLOGSERVER
 	METACONSOLE_LICENSE
 	WUXSERVER
 	$DEVNULL
@@ -131,6 +132,7 @@ use constant TRANSACTIONALSERVER => 14;
 use constant MFSERVER => 15;
 use constant SYNCSERVER => 16;
 use constant WUXSERVER => 17;
+use constant SYSLOGSERVER => 18;
 
 # Module status
 use constant MODULE_NORMAL => 0;
@@ -163,6 +165,141 @@ if ($OS eq 'linux') {
 }
 chomp($OS_VERSION);
 
+# Entity to character mapping. Contains a few tweaks to make it backward compatible with the previous safe_input implementation.
+my %ENT2CHR = (
+	'#x00' => chr(0), 
+	'#x01' => chr(1), 
+	'#x02' => chr(2), 
+	'#x03' => chr(3), 
+	'#x04' => chr(4), 
+	'#x05' => chr(5), 
+	'#x06' => chr(6), 
+	'#x07' => chr(7), 
+	'#x08' => chr(8), 
+	'#x09' => chr(9), 
+	'#x0a' => chr(10), 
+	'#x0b' => chr(11), 
+	'#x0c' => chr(12), 
+	'#x0d' => chr(13), 
+	'#x0e' => chr(14), 
+	'#x0f' => chr(15), 
+	'#x10' => chr(16), 
+	'#x11' => chr(17), 
+	'#x12' => chr(18), 
+	'#x13' => chr(19), 
+	'#x14' => chr(20), 
+	'#x15' => chr(21), 
+	'#x16' => chr(22), 
+	'#x17' => chr(23), 
+	'#x18' => chr(24), 
+	'#x19' => chr(25), 
+	'#x1a' => chr(26), 
+	'#x1b' => chr(27), 
+	'#x1c' => chr(28), 
+	'#x1d' => chr(29), 
+	'#x1e' => chr(30), 
+	'#x1f' => chr(31), 
+	'#x20' => chr(32), 
+	'quot' => chr(34), 
+	'amp' => chr(38), 
+	'#039' => chr(39), 
+	'#40' => chr(40), 
+	'#41' => chr(41), 
+	'lt' => chr(60), 
+	'gt' => chr(62), 
+	'#92' => chr(92), 
+	'#x80' => chr(128), 
+	'#x81' => chr(129), 
+	'#x82' => chr(130), 
+	'#x83' => chr(131), 
+	'#x84' => chr(132), 
+	'#x85' => chr(133), 
+	'#x86' => chr(134), 
+	'#x87' => chr(135), 
+	'#x88' => chr(136), 
+	'#x89' => chr(137), 
+	'#x8a' => chr(138), 
+	'#x8b' => chr(139), 
+	'#x8c' => chr(140), 
+	'#x8d' => chr(141), 
+	'#x8e' => chr(142), 
+	'#x8f' => chr(143), 
+	'#x90' => chr(144), 
+	'#x91' => chr(145), 
+	'#x92' => chr(146), 
+	'#x93' => chr(147), 
+	'#x94' => chr(148), 
+	'#x95' => chr(149), 
+	'#x96' => chr(150), 
+	'#x97' => chr(151), 
+	'#x98' => chr(152), 
+	'#x99' => chr(153), 
+	'#x9a' => chr(154), 
+	'#x9b' => chr(155), 
+	'#x9c' => chr(156), 
+	'#x9d' => chr(157), 
+	'#x9e' => chr(158), 
+	'#x9f' => chr(159), 
+	'#xa0' => chr(160), 
+	'#xa1' => chr(161), 
+	'#xa2' => chr(162), 
+	'#xa3' => chr(163), 
+	'#xa4' => chr(164), 
+	'#xa5' => chr(165), 
+	'#xa6' => chr(166), 
+	'#xa7' => chr(167), 
+	'#xa8' => chr(168), 
+	'#xa9' => chr(169), 
+	'#xaa' => chr(170), 
+	'#xab' => chr(171), 
+	'#xac' => chr(172), 
+	'#xad' => chr(173), 
+	'#xae' => chr(174), 
+	'#xaf' => chr(175), 
+	'#xb0' => chr(176), 
+	'#xb1' => chr(177), 
+	'#xb2' => chr(178), 
+	'#xb3' => chr(179), 
+	'#xb4' => chr(180), 
+	'#xb5' => chr(181), 
+	'#xb6' => chr(182), 
+	'#xb7' => chr(183), 
+	'#xb8' => chr(184), 
+	'#xb9' => chr(185), 
+	'#xba' => chr(186), 
+	'#xbb' => chr(187), 
+	'#xbc' => chr(188), 
+	'#xbd' => chr(189), 
+	'#xbe' => chr(190), 
+	'Aacute' => chr(193), 
+	'Auml' => chr(196), 
+	'Eacute' => chr(201), 
+	'Euml' => chr(203), 
+	'Iacute' => chr(205), 
+	'Iuml' => chr(207), 
+	'Ntilde' => chr(209), 
+	'Oacute' => chr(211), 
+	'Ouml' => chr(214), 
+	'Uacute' => chr(218), 
+	'Uuml' => chr(220), 
+	'aacute' => chr(225), 
+	'auml' => chr(228), 
+	'eacute' => chr(233), 
+	'euml' => chr(235), 
+	'iacute' => chr(237), 
+	'iuml' => chr(239), 
+	'ntilde' => chr(241), 
+	'oacute' => chr(243), 
+	'ouml' => chr(246), 
+	'uacute' => chr(250), 
+	'uuml' => chr(252), 
+);
+
+# Construct the character to entity mapping.
+my %CHR2ENT;
+while (my ($ent, $chr) = each(%ENT2CHR)) {
+	$CHR2ENT{$chr} = "&" . $ent . ";";
+}
 
 ###############################################################################
 # Sets user:group owner for the given file
@@ -213,49 +350,7 @@ sub pandora_trash_ascii {
 sub safe_input($) {
 	my $value = shift;
 	
-	$value = encode_entities ($value, "<>&");
-	
-	#//Replace the character '\' for the equivalent html entitie
-	$value =~ s/\\/&#92;/gi;
-	
-	#// First attempt to avoid SQL Injection based on SQL comments
-	#// Specific for MySQL.
-	$value =~ s/\/\*/&#47;&#42;/gi;
-	$value =~ s/\*\//&#42;&#47;/gi;
-	
-	#//Replace ' for the html entitie
-	$value =~ s/\"/&quot;/gi;
-	
-	#//Replace ' for the html entitie
-	$value =~ s/\'/&#039;/gi;
-	
-	#//Replace ( for the html entitie
-	$value =~ s/\(/&#40;/gi;
-	
-	#//Replace ( for the html entitie
-	$value =~ s/\)/&#41;/gi;	
-	
-	#//Replace some characteres for html entities
-	for (my $i=0;$i<33;$i++) {
-		my $pattern = chr($i);
-		my $hex = ascii_to_html($i);
-		$value =~ s/$pattern/$hex/gi;
-	}
-	
-	for (my $i=128;$i<191;$i++) {
-		my $pattern = chr($i);
-		my $hex = ascii_to_html($i);
-		$value =~ s/$pattern/$hex/gi;
-	}
-	
-	#//Replace characteres for tildes and others
-	my $trans = get_html_entities();
-	
-	foreach(keys(%$trans))
-	{
-		my $pattern = chr($_);
-		$value =~ s/$pattern/$trans->{$_}/g;
-	}
+	$value =~ s/([\x00-\xFF])/$CHR2ENT{$1}||$1/ge;
 	
 	return $value;
 }
@@ -266,97 +361,9 @@ sub safe_input($) {
 sub safe_output($) {
 	my $value = shift;
 	
-	$value = decode_entities ($value);
-	
-	#//Replace the character '\' for the equivalent html entitie
-	$value =~ s/&#92;/\\/gi;
-	
-	#// First attempt to avoid SQL Injection based on SQL comments
-	#// Specific for MySQL.
-	$value =~ s/&#47;&#42;/\/\*/gi;
-	$value =~ s/&#42;&#47;/\*\//gi;
-	
-	#//Replace ( for the html entitie
-	$value =~ s/&#40;/\(/gi;
-	
-	#//Replace ( for the html entitie
-	$value =~ s/&#41;/\)/gi;	
-	
-	#//Replace ' for the html entitie
-	$value =~ s/&#039;/')/gi;	
-	
-	#//Replace " for the html entitie
-	$value =~ s/&quot;/")/gi;	
-	
-	#//Replace some characteres for html entities
-	for (my $i=0;$i<33;$i++) {
-		my $pattern = chr($i);
-		my $hex = ascii_to_html($i);
-		$value =~ s/$hex/$pattern/gi;
-	}
-	
-	for (my $i=128;$i<191;$i++) {
-		my $pattern = chr($i);
-		my $hex = ascii_to_html($i);
-		$value =~ s/$hex/$pattern/gi;
-	}
-	
-	#//Replace characteres for tildes and others
-	my $trans = get_html_entities();
-	
-	foreach(keys(%$trans))
-	{
-		my $pattern = chr($_);
-		$value =~ s/$trans->{$_}/$pattern/g;
-	}
-	
+	_decode_entities ($value, \%ENT2CHR);
+
 	return $value;
-}
-
-##########################################################################
-# SUB get_html_entities
-# Returns a hash table with the acute and special html entities
-# Usefull for future chars addition:
-# http://cpansearch.perl.org/src/GAAS/HTML-Parser-3.68/lib/HTML/Entities.pm
-##########################################################################
-
-sub get_html_entities {
-	my %trans = (
-		225 => '&aacute;',
-		233 => '&eacute;', 
-		237 => '&iacute;',
-		243 => '&oacute;',
-		250 => '&uacute;',
-		193 => '&Aacute;',
-		201 => '&Eacute;', 
-		205 => '&Iacute;',
-		211 => '&Oacute;',
-		218 => '&Uacute;',
-		228 => '&auml;',
-		235 => '&euml;',
-		239 => '&iuml;',
-		246 => '&ouml;',
-		252 => '&uuml;',
-		196 => '&Auml;',
-		203 => '&Euml;',
-		207 => '&Iuml;',
-		214 => '&Ouml;',
-		220 => '&Uuml;',
-		241 => '&ntilde;',
-		209 => '&Ntilde;'
-	);
-	
-	return \%trans;
-}
-########################################################################
-# SUB ascii_to_html (string)
-# Convert an ascii string to hexadecimal
-########################################################################
-
-sub ascii_to_html($) {
-	my $ascii = shift;
-	
-	return "&#x".substr(unpack("H*", pack("N", $ascii)),6,3).";";
 }
 
 ########################################################################
@@ -873,6 +880,24 @@ sub dateTimeToTimestamp {
 sub disk_free ($) {
 	my $target = $_[0];
 
+	my $OSNAME = $^O;
+
+	# Get the free disk on data_in folder unit
+	if ($OSNAME eq "MSWin32") {
+		# Check relative path
+		my $unit;
+		if ($target =~ m/^([a-zA-Z]):/gi) {
+			$unit = $1;
+		} else {
+			return;
+		}
+		# Get the free space of unit found
+		my $all_disk_info = `wmic logicaldisk get caption, freespace`;
+		if ($all_disk_info =~ m/$unit:\D*(\d+)/gmi){
+			return $1/(1024*1024);
+		}
+		return;
+	}
 	# Try to use df command with Posix parameters... 
 	my $command = "df -k -P ".$target." | tail -1 | awk '{ print \$4/1024}'";
 	my $output = `$command`;
@@ -886,6 +911,9 @@ sub load_average {
 
 	if ($OSNAME eq "freebsd"){
 		$load_average = ((split(/\s+/, `/sbin/sysctl -n vm.loadavg`))[1]);
+	} elsif ($OSNAME eq "MSWin32") {
+		# Windows hasn't got load average.
+		$load_average = undef;
 	}
 	# by default LINUX calls
 	else {
@@ -907,6 +935,14 @@ sub free_mem {
 	}
 	elsif ($OSNAME eq "netbsd"){
 		$free_mem = `cat /proc/meminfo | grep MemFree | awk '{ print \$2 }'`;
+	}
+	elsif ($OSNAME eq "MSWin32"){
+		$free_mem = `wmic OS get FreePhysicalMemory /Value`;
+		if ($free_mem =~ m/=(.*)$/gm) {
+			$free_mem = $1;
+		} else {
+			$free_mem = undef;
+		}
 	}
 	# by default LINUX calls
 	else {
@@ -1337,7 +1373,7 @@ sub cron_next_execution_date {
 	if($mon ne '*') {
 		my ($mon_down, $mon_up) = cron_get_interval ($mon);
 		if (defined($mon_up)) {
-			$mon = $mon_down - 1 . "-" . $mon_up - 1;
+			$mon = ($mon_down - 1) . "-" . ($mon_up - 1);
 		} else {
 			$mon = $mon_down - 1;
 		}
@@ -1359,7 +1395,6 @@ sub cron_next_execution_date {
 	# Get first next date candidate from next cron configuration
 	# Initialize some vars
 	my @nex_time_array = @curr_time_array;
-	my $prev_ovfl = 0;
 
 	# Update minutes
 	my ($min_down, undef) = cron_get_interval ($min);
@@ -1376,7 +1411,6 @@ sub cron_next_execution_date {
 
 	if ($nex_time == 0) {
 		#Update the month day if overflow
-		$prev_ovfl = 1;
 		$nex_time_array[1] = 0;
 		$nex_time_array[2]++;
 		$nex_time = cron_valid_date(@nex_time_array, $cur_year);
@@ -1401,18 +1435,16 @@ sub cron_next_execution_date {
 	$nex_time_array[1] = ($hour_down eq '*') ? 0 : $hour_down;
 
 	# When an overflow is passed check the hour update again
-	if ($prev_ovfl) {
-		$nex_time = cron_valid_date(@nex_time_array, $cur_year);
+	$nex_time = cron_valid_date(@nex_time_array, $cur_year);
+	if ($nex_time >= $cur_time) {
 		return $nex_time if cron_is_in_cron(\@cron_array, \@nex_time_array);
 	}
-	$prev_ovfl = 0;
 
 	# Check if next day is in cron
 	$nex_time_array[2]++;
 	$nex_time = cron_valid_date(@nex_time_array, $cur_year);
 	if ($nex_time == 0) {
 		#Update the month if overflow
-		$prev_ovfl = 1;
 		$nex_time_array[2] = 1;
 		$nex_time_array[3]++;
 		$nex_time = cron_valid_date(@nex_time_array, $cur_year);
@@ -1431,18 +1463,17 @@ sub cron_next_execution_date {
 	$nex_time_array[2] = ($mday_down eq '*') ? 1 : $mday_down;
 
 	# When an overflow is passed check the hour update in the next execution
-	if ($prev_ovfl) {
-		$nex_time = cron_valid_date(@nex_time_array, $cur_year);
+	$nex_time = cron_valid_date(@nex_time_array, $cur_year);
+	if ($nex_time >= $cur_time) {
 		return $nex_time if cron_is_in_cron(\@cron_array, \@nex_time_array);
 	}
-	$prev_ovfl = 0;
 
 	# Check if next month is in cron
 	$nex_time_array[3]++;
 	$nex_time = cron_valid_date(@nex_time_array, $cur_year);
 	if ($nex_time == 0) {
 		#Update the year if overflow
-		$prev_ovfl = 1;
+		$nex_time_array[3] = 0;
 		$cur_year++;
 		$nex_time = cron_valid_date(@nex_time_array, $cur_year);
 	}
@@ -1452,11 +1483,11 @@ sub cron_next_execution_date {
 
 	#Update the month if fails
 	my ($mon_down, undef) = cron_get_interval ($mon);
-	$nex_time_array[3] = ($mday_down eq '*') ? 0 : $mday_down;
+	$nex_time_array[3] = ($mon_down eq '*') ? 0 : $mon_down;
 
 	# When an overflow is passed check the hour update in the next execution
-	if ($prev_ovfl) {
-		$nex_time = cron_valid_date(@nex_time_array, $cur_year);
+	$nex_time = cron_valid_date(@nex_time_array, $cur_year);
+	if ($nex_time >= $cur_time) {
 		return $nex_time if cron_is_in_cron(\@cron_array, \@nex_time_array);
 	}
 

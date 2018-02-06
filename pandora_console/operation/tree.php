@@ -16,17 +16,17 @@
 
 global $config;
 
-$pure = get_parameter('pure', 0);
-$tab = get_parameter('tab', 'group');
-$search_agent = get_parameter('searchAgent', '');
-$status_agent = get_parameter('statusAgent', AGENT_STATUS_ALL);
+$pure          = get_parameter('pure', 0);
+$tab           = get_parameter('tab', 'group');
+$search_group  = get_parameter('searchGroup', '');
+$search_agent  = get_parameter('searchAgent', '');
+$status_agent  = get_parameter('statusAgent', AGENT_STATUS_ALL);
 $search_module = get_parameter('searchModule', '');
 $status_module = get_parameter('statusModule', -1);
-$group_id = (int) get_parameter('group_id');
-$tag_id = (int) get_parameter('tag_id');
-
-$strict_acl = (bool) db_get_value("strict_acl", "tusuario", "id_user", $config['id_user']);
-
+$group_id      = (int) get_parameter('group_id');
+$tag_id        = (int) get_parameter('tag_id');
+$strict_acl    = (bool) db_get_value("strict_acl", "tusuario", "id_user", $config['id_user']);
+$serach_hirearchy = (bool) get_parameter('searchHirearchy', false);
 // ---------------------Tabs -------------------------------------------
 $enterpriseEnable = false;
 if (enterprise_include_once('include/functions_policies.php') !== ENTERPRISE_NOT_HOOK) {
@@ -125,6 +125,12 @@ $table->data = array();
 $table->rowspan = array();
 $table->style[0] = 'font-weight: bold;';
 $table->style[2] = 'font-weight: bold;';
+$table->size = array();
+$table->size[0] = '10%';
+$table->size[1] = '35%';
+$table->size[2] = '9%';
+$table->size[3] = '10%';
+$table->size[4] = '10%';
 // Agent filter
 $agent_status_arr = array();
 $agent_status_arr[AGENT_STATUS_ALL] = __('All'); //default
@@ -135,13 +141,20 @@ $agent_status_arr[AGENT_STATUS_UNKNOWN] = __('Unknown');
 $agent_status_arr[AGENT_STATUS_NOT_INIT] = __('Not init');
 
 $row = array();
+$row[] = __('Search group');
+$row[] = html_print_input_text("search_group", $search_group, '', is_metaconsole() ? 70 : 40, 30, true);
+
+$table->data[] = $row;
+
+$row = array();
+$row[] = __('Search agent');
+$row[] = html_print_input_text("search_agent", $search_agent, '', is_metaconsole() ? 70 : 40, 30, true);
+
+$row[] = __('Show full hirearchy');
+$row[] = html_print_checkbox("serach_hirearchy", $serach_hirearchy, false, true);
+
 $row[] = __('Agent status');
 $row[] = html_print_select($agent_status_arr, "status_agent", $status_agent, '', '', 0, true);
-$row[] = __('Search agent');
-if (is_metaconsole())
-	$row[] = html_print_input_text("search_agent", $search_agent, '', 70, 30, true);
-else
-	$row[] = html_print_input_text("search_agent", $search_agent, '', 40, 30, true);
 
 // Button
 $row[] = html_print_submit_button(__('Filter'), "uptbutton", false, 'class="sub search"', true);
@@ -160,10 +173,10 @@ if (!is_metaconsole()) {
 	$module_status_arr[AGENT_MODULE_STATUS_NOT_INIT] = __('Not init');
 	
 	$row = array();
-	$row[] = __('Module status');
-	$row[] = html_print_select($module_status_arr, "status_module", $status_module, '', '', 0, true);
 	$row[] = __('Search module');
 	$row[] = html_print_input_text("search_module", $search_module, '', 40, 30, true);
+	$row[] = __('Module status');
+	$row[] = html_print_select($module_status_arr, "status_module", $status_module, '', '', 0, true);
 	
 	$table->data[] = $row;
 }
@@ -240,8 +253,9 @@ enterprise_hook('close_meta_frame');
 		var parameters = {};
 		parameters['page'] = "include/ajax/tree.ajax";
 		parameters['getChildren'] = 1;
-		parameters['filter'] = {};
 		parameters['type'] = "<?php echo $tab; ?>";
+		parameters['filter'] = {};
+		parameters['filter']['searchGroup'] = $("input#text-search_group").val();
 		parameters['filter']['searchAgent'] = $("input#text-search_agent").val();
 		parameters['filter']['statusAgent'] = $("select#status_agent").val();
 		parameters['filter']['searchModule'] = $("input#text-search_module").val();
@@ -249,6 +263,13 @@ enterprise_hook('close_meta_frame');
 		parameters['filter']['groupID'] = $("input#hidden-group-id").val();
 		parameters['filter']['tagID'] = $("input#hidden-tag-id").val();
 		
+		if($("#checkbox-serach_hirearchy").is(':checked')){
+			parameters['filter']['searchHirearchy'] = 1;
+		}
+		else{
+			parameters['filter']['searchHirearchy'] = 0;
+		}
+
 		$.ajax({
 			type: "POST",
 			url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",

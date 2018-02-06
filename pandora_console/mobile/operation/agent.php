@@ -11,7 +11,6 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-
 include_once("../include/functions_users.php");
 
 class Agent {
@@ -23,6 +22,28 @@ class Agent {
 		$system = System::getInstance();
 		
 		$this->id = $system->getRequest('id', 0);
+		
+		global $config;
+
+		echo "<script>
+		var ismobile = / mobile/i.test(navigator.userAgent);
+		var iswindows = /Windows/i.test(navigator.userAgent);
+		var ismac = /Macintosh/i.test(navigator.userAgent);
+		var isubuntu = /Ubuntu/i.test(navigator.userAgent);
+		var isfedora = /Fedora/i.test(navigator.userAgent);
+		var isredhat = /Red Hat/i.test(navigator.userAgent);
+		var isdebian = /Debian/i.test(navigator.userAgent);
+		var isgentoo = /Gentoo/i.test(navigator.userAgent);
+		var iscentos = /CentOS/i.test(navigator.userAgent);
+		var issuse = /SUSE/i.test(navigator.userAgent);
+		
+		if(!(ismobile) && !(iswindows) && !(ismac) && !(isubuntu) && !(isfedora) && !(isredhat) && !(isdebian) && !(isgentoo) && !(iscentos) 
+		&& !(issuse)){
+			 window.location.href = '".$config['homeurl']."index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$this->id."';
+			";
+			echo "
+		}
+		</script>";
 		
 		if (!$system->getConfig('metaconsole')) {
 			$this->agent = agents_get_agents(array(
@@ -95,10 +116,16 @@ class Agent {
 		$ui = Ui::getInstance();
 		$system = System::getInstance();
 		
+		
+		
+		
 		$ui->createPage();
 		
 		if ($this->id != 0) {
 			$agent_alias = (string) $this->agent['alias'];
+			
+			$agents_filter = (string) $system->getRequest('agents_filter');
+			$agents_filter_q_param = empty($agents_filter) ? '' : '&agents_filter=' . $agents_filter;
 			
 			$ui->createDefaultHeader(
 				sprintf('%s', $agent_alias),
@@ -106,7 +133,7 @@ class Agent {
 					array('icon' => 'back',
 						'pos' => 'left',
 						'text' => __('Back'),
-						'href' => 'index.php?page=agents')));
+						'href' => 'index.php?page=agents' . $agents_filter_q_param)));
 		}
 		else {
 			$ui->createDefaultHeader(__("PandoraFMS: Agents"));
@@ -195,10 +222,16 @@ class Agent {
 				$ui->contentGridAddCell($html, 'agent_details');
 				
 				ob_start();
+
+				// Fixed width non interactive charts
+				$status_chart_width = $config["flash_charts"] == false ? 100 : 160;
+				$graph_width = $config["flash_charts"] == false ? 200 : 160;
 				
 				$html = '<div class="agent_graphs">';
 				$html .= "<b>" . __('Modules by status') . "</b>";
-				$html .= graph_agent_status ($this->id, 160, 160, true);
+				$html .= '<div id="status_pie" style="margin: auto; width: ' . $status_chart_width . 'px;">';
+				$html .= graph_agent_status ($this->id, $graph_width, 160, true);
+				$html .= '</div>';
 				$graph_js = ob_get_clean();
 				$html = $graph_js . $html;
 				
@@ -352,4 +385,9 @@ class Agent {
 		$ui->endContent();
 		$ui->showPage();
 	}
+	
 }
+
+
+
+?>

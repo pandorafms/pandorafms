@@ -147,7 +147,7 @@ function mainInsertData() {
 		$config['remote_config']);
 	echo '</div>';
 	
-	$table = null;
+	$table = new stdClass();
 	$table->width = '100%';
 	$table->class = 'databox filters';
 	$table->style = array();

@@ -235,12 +235,6 @@ function io_safe_output($value, $utf8 = true)
 	//Replace the html entitie of > for the char
 	$value = str_replace("&gt;", '>', $value);
 	
-	//Revert html entities to chars
-	for ($i = 0; $i < 33; $i++) {
-		$value = str_ireplace("&#x" . dechex($i) . ";",
-			io_html_to_ascii(dechex($i)), $value);
-	}
-	
 	if ($utf8) {
 		$value =  html_entity_decode ($value, ENT_QUOTES, "UTF-8");
 	}
@@ -378,8 +372,16 @@ function io_unsafe_string ($string) {
  */
 function __ ($string /*, variable arguments */) {
 	global $l10n;
+	global $config;
+	static $extensions_cache = array();
 	
-	$extensions = extensions_get_extensions();
+	if (array_key_exists($config["id_user"], $extensions_cache)) {
+		$extensions = $extensions_cache[$config["id_user"]];
+	}
+	else {
+		$extensions = extensions_get_extensions();
+		$extensions_cache[$config["id_user"]] = $extensions;
+	}
 	if (empty($extensions))
 		$extensions = array();
 	
@@ -394,7 +396,7 @@ function __ ($string /*, variable arguments */) {
 			return $tranlateString;
 		}
 	}
-	elseif (enterprise_installed() && 
+	elseif (enterprise_installed && 
 				isset($config['translate_string_extension_installed']) && 
 				$config['translate_string_extension_installed'] == 1 &&
 				array_key_exists('translate_string.php', $extensions)) {

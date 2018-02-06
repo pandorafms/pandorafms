@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+
+# Copyright 2006-2009 Amazon.com, Inc. or its affiliates.  All Rights Reserved.  Licensed under the 
+# Amazon Software License (the "License").  You may not use this file except in compliance with the License. A copy of the 
+# License is located at http://aws.amazon.com/asl or in the "license" file accompanying this file.  This file is distributed on an "AS 
+# IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific 
+# language governing permissions and limitations under the License.
+
+# This script "concentrates" all of our Java invocations into a single location
+# for maintainability.
+
+# 'Globals'
+__ZIP_PREFIX__EC2_HOME="${EC2_HOME:-EC2_HOME is not set}"
+__RPM_PREFIX__EC2_HOME=/usr/local/aes/cmdline
+LIBDIR="${EC2_HOME}/lib"
+
+# Check our Java env
+JAVA_HOME=${JAVA_HOME:?JAVA_HOME is not set}
+
+# If a classpath exists preserve it
+CP="${CLASSPATH}"
+
+# Check for cygwin bash so we use the correct path separator
+case "`uname`" in
+	CYGWIN*) cygwin=true;;
+esac 
+
+# ---- Start of Cygwin test ----
+
+cygprop=""
+
+# And add our own libraries too
+if [ "${cygwin}" == "true" ] ; then
+	cygprop="-Dec2.cygwin=true"
+
+	# Make sure that when using Cygwin we use Unix 
+	# Semantics for EC2_HOME
+	if [ -n "${EC2_HOME}" ]
+	then
+		if echo "${EC2_HOME}"|egrep -q '[[:alpha:]]:\\'
+		then
+			echo
+			echo " *INFO* Your EC2_HOME variable needs to specified as a Unix path under Cygwin"
+			echo
+		fi
+	fi
+
+# ---- End of Cygwin Tests ----
+
+	for jar in "${LIBDIR}"/*.jar ; do
+		cygjar=$(cygpath -w -a "${jar}")
+		CP="${CP};${cygjar}"
+	done
+else 
+	for jar in "${LIBDIR}"/*.jar ; do
+		CP="${CP}:${jar}"
+	done
+fi
+
+CMD=$1
+shift
+"${JAVA_HOME}/bin/java" ${EC2_JVM_ARGS} ${cygprop} -classpath "${CP}" "com.amazon.aes.webservices.client.cmd.${CMD}" $EC2_DEFAULT_ARGS "$@"

@@ -31,7 +31,7 @@ require_once ($config['homedir'] . '/include/functions_users.php');
 function custom_graphs_create($id_modules = array(), $name = "",
 	$description = "", $stacked = CUSTOM_GRAPH_AREA, $width = 0,
 	$height = 0, $events = 0 , $period = 0, $private = 0, $id_group = 0,
-	$user = false) {
+	$user = false, $fullscale = 0) {
 	
 	global $config;
 	
@@ -51,7 +51,8 @@ function custom_graphs_create($id_modules = array(), $name = "",
 			'events' => $events,
 			'stacked' => $stacked,
 			'id_group' => $id_group,
-			'id_graph_template' => 0
+			'id_graph_template' => 0,
+			'fullscale' => $fullscale,
 			));
 	
 	if (empty($id_graph)) {
@@ -164,7 +165,8 @@ function custom_graphs_print($id_graph, $height, $width, $period,
 	$background_color = 'white', $modules_param = array(), $homeurl = '',
 	$name_list = array(), $unit_list = array(), $show_last = true,
 	$show_max = true, $show_min = true, $show_avg = true, $ttl = 1,
-	$dashboard = false, $vconsole = false, $percentil = null, $from_interface = false,$id_widget_dashboard=false, $fullscale = false) {
+	$dashboard = false, $vconsole = false, $percentil = null, 
+	$from_interface = false,$id_widget_dashboard=false, $fullscale = false) {
 	
 	global $config;
 	
@@ -201,6 +203,11 @@ function custom_graphs_print($id_graph, $height, $width, $period,
 	else {
 		$sources = db_get_all_rows_field_filter('tgraph_source', 'id_graph',
 			$id_graph);
+		
+		$series = db_get_all_rows_sql('SELECT summatory_series,average_series,modules_series FROM tgraph WHERE id_graph = '.$id_graph);
+		$summatory = $series[0]['summatory_series'];
+		$average = $series[0]['average_series'];
+		$modules_series = $series[0]['modules_series'];
 		
 		$modules = array ();
 		$weights = array ();
@@ -262,7 +269,10 @@ function custom_graphs_print($id_graph, $height, $width, $period,
 		$percentil,
 		$from_interface,
 		$id_widget_dashboard,
-		$fullscale);
+		$fullscale,
+		$summatory,
+		$average,
+		$modules_series);	
 	
 	if ($return)
 		return $output;

@@ -1461,6 +1461,8 @@ function return_graphtype ($id_module_type) {
 		case 21:
 		case 18:
 		case 9:
+		case 31:
+		case 100:
 			return "boolean";
 			break;
 		case 24:
@@ -1712,7 +1714,7 @@ function check_sql ($sql) {
 	
 	//Check that it not delete_ as "delete_pending" (this is a common field in pandora tables).
 	
-	if (preg_match("/\*|delete[^_]|drop|alter|modify|union|password|pass|insert|update/i", $sql)) {
+	if (preg_match("/\*|delete[^_]|drop|alter|modify|password|pass|insert|update/i", $sql)) {
 		return "";
 	}
 	return $sql;
@@ -1807,85 +1809,26 @@ function check_acl($id_user, $id_group, $access, $onlyOneGroup = false) {
 		$id_group = (int) $id_group;
 	}
 
-	$three_eyes_crow_groups = db_get_all_rows_sql("SELECT tperfil.*, tusuario_perfil.id_perfil FROM tperfil, tusuario_perfil WHERE tusuario_perfil.id_usuario = '" . 
-													$id_user . "' AND tusuario_perfil.id_grupo = 0 AND tusuario_perfil.id_perfil = tperfil.id_perfil");
+	if ($id_group != 0 || $onlyOneGroup === true) {
+		$groups_list_acl = users_get_groups ($id_user, 'AR', false, true, null);
+	}
+	else{
+		$groups_list_acl = get_users_acl($id_user);
+	}
 
-	if ($three_eyes_crow_groups && !empty($three_eyes_crow_groups)) {
-		$acl_column = get_acl_column($access);
-		
-		foreach ($three_eyes_crow_groups as $three_eyes_crow_group) {
-			if (isset($three_eyes_crow_group[$acl_column]) && $three_eyes_crow_group[$acl_column] == 1) {
+	if(is_array($groups_list_acl)){
+		if(isset($groups_list_acl[$id_group])){
+			$access = get_acl_column($access);
+			if(isset($groups_list_acl[$id_group][$access])
+				&& $groups_list_acl[$id_group][$access] > 0){
 				return 1;
+			}
+			else{
+				return 0;
 			}
 		}
 	}
 
-	$parents_id = array($id_group);
-	if ($id_group != 0 && $onlyOneGroup !== true) {
-		$group = db_get_row_filter('tgrupo', array('id_grupo' => $id_group));
-		$parents = groups_get_parents($group['parent'], true);
-		
-		foreach ($parents as $parent) {
-			$parents_id[] = $parent['id_grupo'];
-		}
-	}
-	
-	// TODO: To reduce this querys in one adding the group condition if necessary (only one line is different)
-	//Joined multiple queries into one. That saves on the query overhead and query cache.
-	if ($id_group == 0 && $onlyOneGroup !== true) {
-		$query = sprintf("SELECT tperfil.incident_view, tperfil.incident_edit,
-				tperfil.incident_management, tperfil.agent_view,
-				tperfil.agent_edit, tperfil.alert_edit,
-				tperfil.alert_management, tperfil.pandora_management,
-				tperfil.db_management, tperfil.user_management,
-				tperfil.report_view, tperfil.report_edit,
-				tperfil.report_management, tperfil.event_view,
-				tperfil.event_edit, tperfil.event_management, 
-				tperfil.agent_disable,
-				tperfil.map_view, tperfil.map_edit, tperfil.map_management,
-				tperfil.vconsole_view, tperfil.vconsole_edit, tperfil.vconsole_management
-			FROM tusuario_perfil, tperfil
-			WHERE tusuario_perfil.id_perfil = tperfil.id_perfil
-				AND tusuario_perfil.id_usuario = '%s'", $id_user);
-		//GroupID = 0 and onlyOneGroup = false, group id doesnt matter (use with caution!)
-	}
-	else {
-		$query = sprintf("SELECT tperfil.incident_view, tperfil.incident_edit,
-				tperfil.incident_management, tperfil.agent_view,
-				tperfil.agent_edit, tperfil.alert_edit,
-				tperfil.alert_management, tperfil.pandora_management,
-				tperfil.db_management, tperfil.user_management,
-				tperfil.report_view, tperfil.report_edit,
-				tperfil.report_management, tperfil.event_view,
-				tperfil.event_edit, tperfil.event_management,
-				tperfil.agent_disable,
-				tperfil.map_view, tperfil.map_edit, tperfil.map_management,
-				tperfil.vconsole_view, tperfil.vconsole_edit, tperfil.vconsole_management
-			FROM tusuario_perfil, tperfil
-			WHERE tusuario_perfil.id_perfil = tperfil.id_perfil 
-				AND tusuario_perfil.id_usuario = '%s'
-				AND (tusuario_perfil.id_grupo IN (%s)
-				OR tusuario_perfil.id_grupo = 0)", $id_user, implode(', ', $parents_id));
-	}
-	
-	$rowdup = db_get_all_rows_sql ($query);
-	
-	if (empty ($rowdup))
-		return 0;
-	
-	$result = 0;
-	$acl_column = get_acl_column($access);
-	foreach ($rowdup as $row) {
-		// For each profile for this pair of group and user do...
-		if (isset($row[$acl_column])) {
-			$result += $row[$acl_column];
-		}
-	}
-	
-	if ($result >= 1) {
-		return 1;
-	}
-	
 	return 0;
 }
 
@@ -1971,6 +1914,51 @@ function get_acl_column($access) {
 			return "";
 			break;
 	}
+}
+
+function get_users_acl($id_user){
+	static $users_acl_cache = array();
+
+
+	if (is_array($users_acl_cache[$id_user])) {
+		$rowdup = $users_acl_cache[$id_user];
+	}
+	else {
+		$query = sprintf("SELECT sum(tperfil.incident_view) as incident_view,
+						sum(tperfil.incident_edit) as incident_edit,
+						sum(tperfil.incident_management) as incident_management,
+						sum(tperfil.agent_view) as agent_view,
+						sum(tperfil.agent_edit) as agent_edit,
+						sum(tperfil.alert_edit) as alert_edit,
+						sum(tperfil.alert_management) as alert_management,
+						sum(tperfil.pandora_management) as pandora_management,
+						sum(tperfil.db_management) as db_management,
+						sum(tperfil.user_management) as user_management,
+						sum(tperfil.report_view) as report_view,
+						sum(tperfil.report_edit) as report_edit,
+						sum(tperfil.report_management) as report_management,
+						sum(tperfil.event_view) as event_view,
+						sum(tperfil.event_edit) as event_edit,
+						sum(tperfil.event_management) as event_management,
+						sum(tperfil.agent_disable) as agent_disable,
+						sum(tperfil.map_view) as map_view,
+						sum(tperfil.map_edit) as map_edit,
+						sum(tperfil.map_management) as map_management,
+						sum(tperfil.vconsole_view) as vconsole_view,
+						sum(tperfil.vconsole_edit) as vconsole_edit,
+						sum(tperfil.vconsole_management) as vconsole_management
+					FROM tusuario_perfil, tperfil
+					WHERE tusuario_perfil.id_perfil = tperfil.id_perfil
+						AND tusuario_perfil.id_usuario = '%s'", $id_user);
+		
+		$rowdup = db_get_all_rows_sql ($query);
+		$users_acl_cache[$id_user] = $rowdup;
+	}
+
+	if (empty ($rowdup) || !$rowdup)
+		return 0;
+	
+	return $rowdup;	
 }
 
 /**
@@ -2580,7 +2568,7 @@ function get_percentile($percentile, $array) {
 	$index = ($percentile / 100) * count($array);
 	
 	if (floor($index) == $index) {
-		 $result = ($array[$index-1] + $array[$index]) / 2;
+		$result = ($array[$index-1] + $array[$index]) / 2;
 	}
 	else {
 		$result = $array[floor($index)];
@@ -2793,4 +2781,25 @@ function isJson($string) {
  return (json_last_error() == JSON_ERROR_NONE);
 }
 
+/**
+ * returns true or false if it is a valid ip 
+ * checking ipv4 and ipv6 or resolves the name dns
+ * @param string address
+ *
+*/
+function validate_address($address){
+	if($address){
+		if(!filter_var($address, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+			if(!filter_var($address, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+				$ip_address_dns = gethostbyname($address);
+				if(!filter_var($ip_address_dns, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+					if(!filter_var($ip_address_dns, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+						return false;
+					}
+				}
+			}
+		}
+	}
+	return true;
+}
 ?>

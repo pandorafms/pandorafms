@@ -141,6 +141,7 @@ ob_end_clean();
 // Take some parameters (GET)
 $group_id = (int) get_parameter ("group_id", 0);
 $search = trim(get_parameter ("search", ""));
+$search_custom = trim(get_parameter ("search_custom", ""));
 $offset = (int)get_parameter('offset', 0);
 $refr = get_parameter('refr', 0);
 $recursion = get_parameter('recursion', 0);
@@ -205,7 +206,7 @@ html_print_checkbox ("recursion", 1, $recursion, false, false, 'this.form.submit
 echo '</td><td style="white-space:nowrap;">';
 
 echo __('Search') . '&nbsp;';
-html_print_input_text ("search", $search, '', 12);
+html_print_input_text ("search", $search, '', 15);
 
 echo '</td><td style="white-space:nowrap;">';
 
@@ -219,6 +220,11 @@ $fields[AGENT_STATUS_NOT_INIT] = __('Not init');
 
 echo __('Status') . '&nbsp;';
 html_print_select ($fields, "status", $status, 'this.form.submit()', __('All'), AGENT_STATUS_ALL, false, false, true, '', false, 'width: 90px;');
+
+echo '</td><td style="white-space:nowrap;">';
+
+echo __('Search in custom fields') . '&nbsp;';
+html_print_input_text ("search_custom", $search_custom, '', 15);
 
 echo '</td><td style="white-space:nowrap;">';
 
@@ -384,7 +390,6 @@ switch ($sortField) {
 
 $search_sql = '';
 if ($search != "") {
-	//$search_sql = " AND ( nombre " . $order_collation . " LIKE '%$search%' OR direccion LIKE '%$search%' OR comentarios LIKE '%$search%') ";
 	$sql = "SELECT DISTINCT taddress_agent.id_agent FROM taddress
 	INNER JOIN taddress_agent ON
 	taddress.id_a = taddress_agent.id_a
@@ -407,6 +412,14 @@ if ($search != "") {
 		$search_sql = " AND ( nombre " . $order_collation . "
 			COLLATE utf8_general_ci LIKE '%$search%' OR alias ".$order_collation." COLLATE utf8_general_ci LIKE '%$search%') ";
 	}
+}
+
+
+if(!empty($search_custom)){
+	$search_sql_custom = " AND EXISTS (SELECT * FROM tagent_custom_data 
+		WHERE id_agent = id_agente AND description LIKE '%$search_custom%')";
+} else {
+	$search_sql_custom = "";
 }
 
 // Show only selected groups
@@ -452,7 +465,7 @@ if ($strict_user) {
 	$fields = array ('tagente.id_agente','tagente.id_grupo','tagente.id_os','tagente.ultimo_contacto','tagente.intervalo','tagente.comentarios description','tagente.quiet',
 		'tagente.normal_count','tagente.warning_count','tagente.critical_count','tagente.unknown_count','tagente.notinit_count','tagente.total_count','tagente.fired_count', 'tagente.nombre', 'tagente.alias');
 	
-	$acltags = tags_get_user_module_and_tags ($config['id_user'], $access, $strict_user);
+	$acltags = tags_get_user_groups_and_tags ($config['id_user'], $access, $strict_user);
 	
 	$total_agents = tags_get_all_user_agents (false, $config['id_user'], $acltags, $count_filter, $fields, false, $strict_user, true);
 	$total_agents = count($total_agents);
@@ -464,6 +477,7 @@ else {
 		'disabled' => 0,
 		'id_grupo' => $groups,
 		'search' => $search_sql,
+		'search_custom' => $search_sql_custom,
 		'status' => $status),
 		array ('COUNT(*) as total'), $access, false);
 	$total_agents = isset ($total_agents[0]['total']) ?
@@ -474,6 +488,7 @@ else {
 		'id_grupo' => $groups,
 		'disabled' => 0,
 		'status' => $status,
+		'search_custom' => $search_sql_custom,
 		'search' => $search_sql,
 		'offset' => (int) get_parameter ('offset'),
 		'limit' => (int) $config['block_size']),

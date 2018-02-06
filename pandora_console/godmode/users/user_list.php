@@ -76,11 +76,11 @@ switch ($sortField) {
 		switch ($sort) {
 			case 'up':
 				$selectLastConnectUp = $selected;
-				$order = array('field' => 'fullname', 'order' => 'ASC');
+				$order = array('field' => 'last_connect', 'order' => 'ASC');
 				break;
 			case 'down':
 				$selectLastConnectDown = $selected;
-				$order = array('field' => 'fullname', 'order' => 'DESC');
+				$order = array('field' => 'last_connect', 'order' => 'DESC');
 				break;
 		}
 		break;
@@ -248,8 +248,7 @@ else {
 
 }
 
-$table = null;
-
+$table = new stdClass();
 $table->cellpadding = 0;
 $table->cellspacing = 0;
 $table->width = '100%';
@@ -494,10 +493,4 @@ echo '</div>';
 enterprise_hook('close_meta_frame');
 
 ?>
-<script type="text/javascript">
-	$(document).ready (function () {
-		console.log('sknknan');
-		// text-filter_search
-	});
-</script>
 

@@ -56,6 +56,17 @@ function agents_get_agent_id_by_module_id ($id_agente_modulo) {
 }
 
 /**
+ * Get agent id from an agent alias.
+ *
+ * @param string $alias Agent alias.
+ *
+ * @return int Id from the agent.
+ */
+function agents_get_agent_id_by_alias ($alias) {
+	return db_get_all_rows_sql ("SELECT id_agente FROM tagente WHERE upper(alias) LIKE upper('%$alias%')");
+}
+
+/**
  * Creates an agent
  *
  * @param string Agent name.
@@ -314,6 +325,13 @@ function agents_get_agents ($filter = false, $fields = false,
 		$search = '';
 	}
 	
+	if (isset($filter['search_custom'])) {
+		$search_custom = $filter['search_custom'];
+		unset($filter['search_custom']);
+	} else {
+		$search_custom = '';
+	}
+	
 	if (isset($filter['offset'])) {
 		$offset = $filter['offset'];
 		unset($filter['offset']);
@@ -450,8 +468,8 @@ function agents_get_agents ($filter = false, $fields = false,
 			$sql_extra, $where, $where_nogroup, $status_sql, $search, $disabled);	
 	}
 	else {
-		$where = sprintf('%s AND %s AND (%s) %s AND %s',
-			$where, $where_nogroup, $status_sql, $search, $disabled);
+		$where = sprintf('%s AND %s AND (%s) %s AND %s %s',
+			$where, $where_nogroup, $status_sql, $search, $disabled, $search_custom);
 	}
 	$sql = sprintf('SELECT %s
 		FROM tagente
@@ -2583,7 +2601,9 @@ function select_modules_for_agent_group($id_group, $id_agents,
 	}
 
 	if ($selection == 1 || (count($id_agents) == 1)) {
-		$modules = db_get_all_rows_sql("SELECT DISTINCT nombre, id_agente_modulo FROM tagente_modulo WHERE 1 = 1" . $filter_agent . $filter_group);
+		$modules = db_get_all_rows_sql("SELECT DISTINCT nombre, id_agente_modulo 
+										FROM tagente_modulo 
+										WHERE 1 = 1" . $filter_agent . $filter_group);
 
 		if (empty($modules)) $modules = array();
 
@@ -2596,13 +2616,15 @@ function select_modules_for_agent_group($id_group, $id_agents,
 		}
 	}
 	else {
-		$modules = db_get_all_rows_sql("SELECT nombre, id_agente_modulo FROM tagente_modulo WHERE 1 = 1" . $filter_agent . $filter_group);
+		$modules = db_get_all_rows_sql("SELECT nombre, id_agente_modulo 
+										FROM tagente_modulo
+										WHERE 1 = 1" . $filter_agent . $filter_group);
 
 		if (empty($modules)) $modules = array();
 
 		foreach ($modules as $m) {
 			$is_in_all_agents = true;
-			$module_name = modules_get_agentmodule_name($m['id_agente_modulo']);
+			$module_name = $m['nombre'];
 			foreach ($id_agents as $a) {
 				$module_in_agent = db_get_value_filter('id_agente_modulo',
 					'tagente_modulo', array('id_agente' => $a, 'nombre' => $module_name));

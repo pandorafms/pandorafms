@@ -34,10 +34,14 @@ $hack_metaconsole = '';
 if (defined('METACONSOLE'))
 	$hack_metaconsole = '../../';
 
+$buttons['visual_console_favorite'] = array('active' => false,
+	'text' => '<a href="index.php?sec=network&sec2=godmode/reporting/visual_console_favorite">' .
+		html_print_image ("images/list.png", true, array ("title" => __('Visual Favourite Console'))) .'</a>');
+
 if (!defined('METACONSOLE')) {
 	ui_print_page_header(
 		__('Reporting') .' &raquo; ' . __('Visual Console'),
-		"images/op_reporting.png", false, "map_builder");
+		"images/op_reporting.png", false, "map_builder", false, $buttons);
 }
 
 $id_layout = (int) get_parameter ('id_layout');
@@ -254,15 +258,11 @@ $table->head = array ();
 $table->head[0] = __('Map name');
 $table->head[1] = __('Group');
 $table->head[2] = __('Items');
+$table->head[3] = __('Copy');
+$table->head[4] = __('Delete');
+$table->size[3] = "6%";
+$table->size[4] = "6%";
 
-// Fix: IW was the old ACL for report editing, now is RW
-//Only for RW flag
-if ($vconsoles_write || $vconsoles_manage) {
-	$table->head[3] = __('Copy');
-	$table->head[4] = __('Delete');
-	$table->size[3] = "6%";
-	$table->size[4] = "6%";
-}
 
 $table->align = array ();
 $table->align[0] = 'left';
@@ -295,25 +295,22 @@ if ($own_info['is_admin'] || $vconsoles_read) {
 		$maps = visual_map_get_user_layouts (0,false,$filters,false);
 		unset($filters['offset']);
 		unset($filters['limit']);
-		$total_maps = count(visual_map_get_user_layouts(0,false,$filters,false));
+		$total_maps = count($maps);
 	}else{
-		$maps = visual_map_get_user_layouts (0,false,$filters);
+		$maps = visual_map_get_user_layouts (0,false,$filters, false);
 		unset($filters['offset']);
 		unset($filters['limit']);
-		$total_maps = count(visual_map_get_user_layouts(0,false,$filters));
+		$total_maps = count($maps);
 	}
 }
 else {
-	$maps = visual_map_get_user_layouts ($config['id_user'], false,
-		$filters, false);
+	$maps = visual_map_get_user_layouts ($config['id_user'], false, $filters, false);
 	unset($filters['offset']);
 	unset($filters['limit']);
-	$total_maps = count(visual_map_get_user_layouts ($config['id_user'], false,
-		$filters, false));
+	$total_maps = count($maps);
 }
 if (!$maps && !is_metaconsole()) {
-	$total = count(visual_map_get_user_layouts ($config['id_user'], false,
-		false, false));
+	$total = count(visual_map_get_user_layouts ($config['id_user'], false, false, false));
 	if(!$total){
 		require_once ($config['homedir'] . "/general/firts_task/map_builder.php");
 	} else {
@@ -324,8 +321,7 @@ if (!$maps && !is_metaconsole()) {
 	}
 }
 elseif (!$maps && is_metaconsole()) {
-	$total = count(visual_map_get_user_layouts ($config['id_user'], false,
-		false, false));
+	$total = count(visual_map_get_user_layouts ($config['id_user'], false, false, false));
 	if(!$total){
 		ui_print_info_message(
 			array(
@@ -341,14 +337,18 @@ elseif (!$maps && is_metaconsole()) {
 }
 else {
 	ui_pagination ($total_maps, $url, $offset, $pagination);
-	
 	foreach ($maps as $map) {
 		// ACL for the visual console permission
-		$vconsole_write = check_acl ($config['id_user'],
-			$map['id_group'], "VW");
-		$vconsole_manage = check_acl ($config['id_user'],
-			$map['id_group'], "VM");
+		$vconsole_write = false;
+		$vconsole_manage = false;
+		if(isset($map['vw'])){
+			$vconsole_write = true;
+		}
 		
+		if(isset($map['vm'])){
+			$vconsole_manage = true;
+		}
+
 		$data = array ();
 		
 		if (!is_metaconsole()) {
@@ -365,7 +365,6 @@ else {
 		
 		// Fix: IW was the old ACL for report editing, now is RW
 		if ($vconsole_write || $vconsole_manage) {
-			
 			if (!is_metaconsole()) {
 				$data[3] = '<a class="copy_visualmap" href="index.php?sec=network&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;copy_layout=1">'.html_print_image ("images/copy.png", true).'</a>';
 				$data[4] = '<a class="delete_visualmap" href="index.php?sec=network&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;delete_layout=1">'.html_print_image ("images/cross.png", true).'</a>';
@@ -375,6 +374,11 @@ else {
 				$data[4] = '<a class="delete_visualmap" href="index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '&id_layout='.$map['id'].'&amp;delete_layout=1">'.html_print_image ("images/cross.png", true).'</a>';
 			}
 		}
+		else{
+			$data[3] = '';
+			$data[4] = '';
+		}
+
 		array_push ($table->data, $data);
 	}
 	html_print_table ($table);

@@ -14,17 +14,16 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-include_once($config['homedir'] . "/include/functions_agents.php");
-include_once($config['homedir'] . "/include/functions_modules.php");
-include_once($config['homedir'] . '/include/functions_users.php');
 $refr = get_parameter('refresh', 0); // By default 30 seconds
-
 function mainAgentsModules() {
 	global $config;
 	
 	// Load global vars
 	require_once ("include/config.php");
 	require_once ("include/functions_reporting.php");
+	include_once($config['homedir'] . "/include/functions_agents.php");
+	include_once($config['homedir'] . "/include/functions_modules.php");
+	include_once($config['homedir'] . '/include/functions_users.php');
 	
 	check_login ();
 	// ACL Check
@@ -51,7 +50,6 @@ function mainAgentsModules() {
 			exit;
 		}
 	}
-	
 	
 	if ($config["realtimestats"] == 0) {
 		$updated_info = __('Last update'). " : ". ui_print_timestamp (db_get_sql ("SELECT min(utimestamp) FROM tgroup_stat"), true);
@@ -103,7 +101,6 @@ function mainAgentsModules() {
 		serialize_in_temp($agents_id, $config['id_user']."_agents", 1);
 	}
 	
-
 	if ($config["pure"] == 0) {
 		if($modules_selected[0] && $agents_id[0]){
 			
@@ -128,7 +125,6 @@ function mainAgentsModules() {
 				. "</a>";
 				
 		} else {
-			
 			$fullscreen['text'] = '<a href="index.php?extension_in_menu=estado&amp;sec=extensions&amp;sec2=extensions/agents_modules&amp;pure=1&amp;
 			offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'&refresh='.$refr.'">'
 				. html_print_image ("images/full_screen.png", true, array ("title" => __('Full screen mode')))
@@ -247,7 +243,6 @@ function mainAgentsModules() {
 		ui_require_css_file('countdown');
 	}
 	
-	
 	if($config['pure'] != 1){
 		echo '<form method="post" action="' 
 		. ui_get_url_refresh (array ('offset' => $offset, 'hor_offset' => $offset, 'group_id' => $group_id, 'modulegroup' => $modulegroup)).'">';
@@ -321,8 +316,7 @@ function mainAgentsModules() {
 				foreach ($result_sql as $key => $value) {
 					$all_modules[$value['id_agente_modulo']] = io_safe_output($name); 
 				}
-			} 
-			 
+			}
 		}
 	}
 	else{
@@ -352,7 +346,6 @@ function mainAgentsModules() {
 	$modules_by_name = array();
 	$name = '';
 	$cont = 0;
-	
 	
 	foreach ($all_modules as $key => $module) {
 		if ($module == $name) {
@@ -454,7 +447,7 @@ function mainAgentsModules() {
 				"selection_a_m=" . $selection_a_m . "&" .
 				"hor_offset=" . $new_hor_offset . "&".
 				"offset=" . $offset .
-				 "'>" .
+				"'>" .
 				html_print_image(
 					"images/arrow.png", true,
 					array('title' => __('More modules'))) .
@@ -585,7 +578,13 @@ function mainAgentsModules() {
 	echo "<tr><td class='legend_square_simple'><div style='background-color: " . COL_NOTINIT . ";'></div></td><td>" . __("Cell turns blue when the module is in 'not initialize' status") . "</td></tr>";
 	echo "</table>";
 	echo "</div>";
-	
+	$pure_var = $config['pure'];
+	if($pure_var){
+		$pure_var = 1;
+	}
+	else{
+		$pure_var = 0;
+	}
 	echo "
 		<style type='text/css'>
 			.rotate_text_module {
@@ -597,6 +596,7 @@ function mainAgentsModules() {
 				white-space: nowrap;
 			}
 		</style>
+
 		<script type='text/javascript'>
 			$(document).ready(function () {
 				//Get max width of name of modules
@@ -619,9 +619,211 @@ function mainAgentsModules() {
 					$(\"#div_module_r_\" + id).css('margin-top', (max_width - 20) + 'px');
 					$(\"#div_module_r_\" + id).show();
 				});
+
+				var refr =" . $refr . ";
+				var pure =" . $pure_var . ";
+				var href ='" . ui_get_url_refresh ($ignored_params) . "';
+					
+				if (pure) {
+					var startCountDown = function (duration, cb) {
+						$('div.vc-countdown').countdown('destroy');
+						if (!duration) return;
+						var t = new Date();
+						t.setTime(t.getTime() + duration * 1000);
+						$('div.vc-countdown').countdown({
+							until: t,
+							format: 'MS',
+							layout: '(%M%nn%M:%S%nn%S" .  __('Until refresh') . ") ',
+							alwaysExpire: true,
+							onExpiry: function () {
+								$('div.vc-countdown').countdown('destroy');
+								url = js_html_entity_decode( href ) + duration;
+								$(document).attr (\"location\", url);
+							}
+						});
+					}
+					
+					startCountDown(refr, false);
+					var controls = document.getElementById('vc-controls');
+					autoHideElement(controls, 1000);
+					
+					$('select#refresh').change(function (event) {
+						refr = Number.parseInt(event.target.value, 10);
+						startCountDown(refr, false);
+					});
+				}
+				else {
+					
+					var agentes_id = $(\"#id_agents2\").val();
+					var id_agentes = $.get(\"full_agents_id\");
+					if (agentes_id === null && id_agentes !== null) {
+						id_agentes = id_agentes.split(\";\")
+						id_agentes.forEach(function(element) {
+							$(\"#id_agents2 option[value=\"+ element +\"]\").attr(\"selected\",true);
+						});
+						
+						selection_agent_module();
+					}
+					
+					$('#refresh').change(function () {
+						$('#hidden-vc_refr').val($('#refresh option:selected').val());
+					});
+				}
+				
+				$(\"#group_id\").change (function () {
+					
+					jQuery.post (\"ajax.php\",
+						{\"page\" : \"operation/agentes/ver_agente\",
+							\"get_agents_group_json\" : 1,
+							\"id_group\" : this.value,
+							\"privilege\" : \"AW\",
+							\"keys_prefix\" : \"_\",
+							\"recursion\" : $('#checkbox-recursion').is(':checked')
+						},
+						function (data, status) {
+							$(\"#id_agents2\").html('');
+							$(\"#module\").html('');
+							jQuery.each (data, function (id, value) {
+								// Remove keys_prefix from the index
+								id = id.substring(1);
+								
+								option = $(\"<option></option>\")
+									.attr (\"value\", value[\"id_agente\"])
+									.html (value[\"alias\"]);
+								$(\"#id_agents\").append (option);
+								$(\"#id_agents2\").append (option);
+							});
+						},
+						\"json\"
+					);
+				});
+				
+				$(\"#checkbox-recursion\").change (function () {
+					jQuery.post (\"ajax.php\",
+						{\"page\" : \"operation/agentes/ver_agente\",
+							\"get_agents_group_json\" : 1,
+							\"id_group\" : 	$(\"#group_id\").val(),
+							\"privilege\" : \"AW\",
+							\"keys_prefix\" : \"_\",
+							\"recursion\" : $('#checkbox-recursion').is(':checked')
+						},
+						function (data, status) {
+							$(\"#id_agents2\").html('');
+							$(\"#module\").html('');
+							jQuery.each (data, function (id, value) {
+								// Remove keys_prefix from the index
+								id = id.substring(1);
+								
+								option = $(\"<option></option>\")
+									.attr (\"value\", value[\"id_agente\"])
+									.html (value[\"alias\"]);
+								$(\"#id_agents\").append (option);
+								$(\"#id_agents2\").append (option);
+							});
+						},
+						\"json\"
+					);
+				});
+				
+				$(\"#modulegroup\").change (function () {
+					jQuery.post (\"ajax.php\",
+						{\"page\" : \"operation/agentes/ver_agente\",
+							\"get_modules_group_json\" : 1,
+							\"id_module_group\" : this.value,
+							\"id_agents\" : $(\"#id_agents2\").val(),
+							\"selection\" : $(\"#selection_agent_module\").val()
+						},
+						function (data, status) {
+							$(\"#module\").html('');
+							if(data){
+								jQuery.each (data, function (id, value) {
+									option = $(\"<option></option>\")
+										.attr (\"value\", value[\"id_agente_modulo\"])
+										.html (value[\"nombre\"]);
+									$(\"#module\").append (option);
+								});
+							}
+						},
+						\"json\"
+					);
+				});
+
+				$(\"#id_agents2\").click (function(){
+					selection_agent_module();
+				});
+
+				$(\"#selection_agent_module\").change(function() {
+					jQuery.post (\"ajax.php\",
+						{\"page\" : \"operation/agentes/ver_agente\",
+							\"get_modules_group_json\" : 1,
+							\"id_module_group\" : $(\"#modulegroup\").val(),
+							\"id_agents\" : $(\"#id_agents2\").val(),
+							\"selection\" : $(\"#selection_agent_module\").val()
+						},
+						function (data, status) {
+							$(\"#module\").html('');
+							if(data){
+								jQuery.each (data, function (id, value) {
+									option = $(\"<option></option>\")
+										.attr (\"value\", value[\"id_agente_modulo\"])
+										.html (value[\"nombre\"]);
+									$(\"#module\").append (option);
+								});
+							}
+						},
+						\"json\"
+					);
+				});
 			});
+
+			function selection_agent_module() {
+				jQuery.post (\"ajax.php\",
+					{\"page\" : \"operation/agentes/ver_agente\",
+						\"get_modules_group_json\" : 1,
+						\"id_module_group\" : $(\"#modulegroup\").val(),
+						\"id_agents\" : $(\"#id_agents2\").val(),
+						\"selection\" : $(\"#selection_agent_module\").val()
+					},
+					function (data, status) {
+						$(\"#module\").html('');
+						if(data){
+							jQuery.each (data, function (id, value) {
+								option = $(\"<option></option>\")
+									.attr (\"value\", value[\"id_agente_modulo\"])
+									.html (value[\"nombre\"]);
+								$(\"#module\").append (option);
+							});
+							
+							var id_modules = $.get(\"full_modules_selected\");
+							if(id_modules !== null) {
+								id_modules = id_modules.split(\";\");
+								id_modules.forEach(function(element) {
+									$(\"#module option[value=\"+ element +\"]\").attr(\"selected\",true);
+								});
+							}
+						}
+					},
+					\"json\"
+				);
+			}
+
+			(function($) {  
+				$.get = function(key)   {  
+					key = key.replace(/[\[]/, '\\[');  
+					key = key.replace(/[\]]/, '\\]');  
+					var pattern = \"[\\?&]\" + key + \"=([^&#]*)\";  
+					var regex = new RegExp(pattern);  
+					var url = unescape(window.location.href);  
+					var results = regex.exec(url);  
+					if (results === null) {  
+						return null;  
+					} else {  
+						return results[1];  
+					}  
+				}  
+			})(jQuery);
 		</script>
-		";
+	";
 }
 
 extensions_add_operation_menu_option(__("Agents/Modules view"), 'estado', 'agents_modules/icon_menu.png', "v1r1","view");
@@ -630,212 +832,3 @@ extensions_add_main_function('mainAgentsModules');
 $ignored_params['refresh']='';
 
 ?>
-<script type="text/javascript">
-	$(document).ready (function () {
-		var refr = <?php echo (int)$refr; ?>;
-		var pure = <?php echo (int) $config['pure']; ?>;
-		var href = "<?php echo ui_get_url_refresh ($ignored_params); ?>";
-		
-		
-		if (pure) {
-			var startCountDown = function (duration, cb) {
-				$('div.vc-countdown').countdown('destroy');
-				if (!duration) return;
-				var t = new Date();
-				t.setTime(t.getTime() + duration * 1000);
-				$('div.vc-countdown').countdown({
-					until: t,
-					format: 'MS',
-					layout: '(%M%nn%M:%S%nn%S <?php echo __('Until refresh'); ?>) ',
-					alwaysExpire: true,
-					onExpiry: function () {
-						$('div.vc-countdown').countdown('destroy');
-						url = js_html_entity_decode( href ) + duration;
-						$(document).attr ("location", url);
-					}
-				});
-			}
-			
-			startCountDown(refr, false);
-			//~ // Auto hide controls
-			var controls = document.getElementById('vc-controls');
-			autoHideElement(controls, 1000);
-			
-			$('select#refresh').change(function (event) {
-				refr = Number.parseInt(event.target.value, 10);
-				startCountDown(refr, false);
-			});
-		}
-		else {
-			
-			var agentes_id = $("#id_agents2").val();
-			var id_agentes = $.get("full_agents_id");
-			if (agentes_id === null && id_agentes !== null) {
-				id_agentes = id_agentes.split(";")
-				id_agentes.forEach(function(element) {
-					$("#id_agents2 option[value="+ element +"]").attr("selected",true);
-				});
-				
-				selection_agent_module();
-			}
-			
-			$('#refresh').change(function () {
-				$('#hidden-vc_refr').val($('#refresh option:selected').val());
-			});
-		}
-		
-		$("#group_id").change (function () {
-			
-			jQuery.post ("ajax.php",
-				{"page" : "operation/agentes/ver_agente",
-					"get_agents_group_json" : 1,
-					"id_group" : this.value,
-					"privilege" : "AW",
-					"keys_prefix" : "_",
-					"recursion" : $('#checkbox-recursion').is(':checked')
-				},
-				function (data, status) {
-					$("#id_agents2").html('');
-					$("#module").html('');
-					jQuery.each (data, function (id, value) {
-						// Remove keys_prefix from the index
-						id = id.substring(1);
-						
-						option = $("<option></option>")
-							.attr ("value", value["id_agente"])
-							.html (value["alias"]);
-						$("#id_agents").append (option);
-						$("#id_agents2").append (option);
-					});
-				},
-				"json"
-			);
-		});
-		
-		$("#checkbox-recursion").change (function () {
-			jQuery.post ("ajax.php",
-				{"page" : "operation/agentes/ver_agente",
-					"get_agents_group_json" : 1,
-					"id_group" : 	$("#group_id").val(),
-					"privilege" : "AW",
-					"keys_prefix" : "_",
-					"recursion" : $('#checkbox-recursion').is(':checked')
-				},
-				function (data, status) {
-					$("#id_agents2").html('');
-					$("#module").html('');
-					jQuery.each (data, function (id, value) {
-						// Remove keys_prefix from the index
-						id = id.substring(1);
-						
-						option = $("<option></option>")
-							.attr ("value", value["id_agente"])
-							.html (value["alias"]);
-						$("#id_agents").append (option);
-						$("#id_agents2").append (option);
-					});
-				},
-				"json"
-			);
-		});
-		
-		$("#modulegroup").change (function () {
-			jQuery.post ("ajax.php",
-				{"page" : "operation/agentes/ver_agente",
-					"get_modules_group_json" : 1,
-					"id_module_group" : this.value,
-					"id_agents" : $("#id_agents2").val(),
-					"selection" : $("#selection_agent_module").val()
-				},
-				function (data, status) {
-					$("#module").html('');
-					if(data){
-						jQuery.each (data, function (id, value) {
-							option = $("<option></option>")
-								.attr ("value", value["id_agente_modulo"])
-								.html (value["nombre"]);
-							$("#module").append (option);
-						});
-					}
-				},
-				"json"
-			);
-		});
-
-		$("#id_agents2").click (function(){
-			selection_agent_module();
-		});
-
-		$("#selection_agent_module").change(function() {
-			jQuery.post ("ajax.php",
-				{"page" : "operation/agentes/ver_agente",
-					"get_modules_group_json" : 1,
-					"id_module_group" : $("#modulegroup").val(),
-					"id_agents" : $("#id_agents2").val(),
-					"selection" : $("#selection_agent_module").val()
-				},
-				function (data, status) {
-					$("#module").html('');
-					if(data){
-						jQuery.each (data, function (id, value) {
-							option = $("<option></option>")
-								.attr ("value", value["id_agente_modulo"])
-								.html (value["nombre"]);
-							$("#module").append (option);
-						});
-					}
-				},
-				"json"
-			);
-		});
-
-	});
-
-	function selection_agent_module() {
-		jQuery.post ("ajax.php",
-			{"page" : "operation/agentes/ver_agente",
-				"get_modules_group_json" : 1,
-				"id_module_group" : $("#modulegroup").val(),
-				"id_agents" : $("#id_agents2").val(),
-				"selection" : $("#selection_agent_module").val()
-			},
-			function (data, status) {
-				$("#module").html('');
-				if(data){
-					jQuery.each (data, function (id, value) {
-						option = $("<option></option>")
-							.attr ("value", value["id_agente_modulo"])
-							.html (value["nombre"]);
-						$("#module").append (option);
-					});
-					
-					var id_modules = $.get("full_modules_selected");
-					if(id_modules !== null) {
-						id_modules = id_modules.split(";");
-						id_modules.forEach(function(element) {
-			    			$("#module option[value="+ element +"]").attr("selected",true);
-						});
-					}
-				}
-			},
-			"json"
-		);
-	}
-	
-	(function($) {  
-    $.get = function(key)   {  
-        key = key.replace(/[\[]/, '\\[');  
-        key = key.replace(/[\]]/, '\\]');  
-        var pattern = "[\\?&]" + key + "=([^&#]*)";  
-        var regex = new RegExp(pattern);  
-        var url = unescape(window.location.href);  
-        var results = regex.exec(url);  
-        if (results === null) {  
-            return null;  
-        } else {  
-            return results[1];  
-        }  
-    }  
-	})(jQuery); 
-
-</script>

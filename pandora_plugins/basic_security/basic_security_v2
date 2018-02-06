@@ -1,0 +1,498 @@
+#!/bin/bash
+
+# Linux security monitoring Plugin for Pandora FMS
+# (c) Sancho Lerena 2016
+# (c) Pandora FMS Team
+# info@pandorafms.com
+
+# This plugin is intended to run ONLY on modern Linux boxes
+# It's ready to run on 64 & 32 bits. It contains a custom build
+# of John the ripper 1.8 + Contrib patches with 32&64 static binaries.
+# 
+# This plugin will check:
+#
+# 1. Check SSH on default port.
+# 2. Check FTP on default port.
+# 3. Check SSH to allow root access.
+# 4. Check if we have MySQL running.
+# 5. Check MySQL without root password (skipped if no MySQL detected).
+# 6. Check MySQL bind address.
+# 7. Check MySQL on default port if linstening on 0.0.0.0.
+# 8. Check if SELinux is enabled.
+# 9. Check /etc/shadow file integrity.
+# 10. Check /etc/passwd file integrity.
+# 11. Check /etc/hosts file integrity.
+# 12. Check /etc/resolv file integrity.
+# 13. Check /etc/ssh/sshd_config file integrity.
+# 14. Check /etc/rsyslog.conf file integrity.
+# 15. Check ssh keys on /home directory.
+# 16. Check ssh keys on /root directory.
+# 17. User password audit check, using dictionary (provided) with the
+#    500 most common used passwords.
+
+# Future versions of this plugin will increase the number of checks
+# providing a more advanced hardening monitoring.
+# Tested on Centos 6, Centos 7, Suse 13.2
+
+# Change to plugin directory
+PLUGIN_DIR=`dirname "$0"`
+cd $PLUGIN_DIR
+
+# Detect if SSH is running on port 22
+CHECK_22=`netstat -an | grep tcp | grep ":22 "`
+if [ -z "$CHECK_22" ]
+then
+        echo "<module>"
+        echo "<type>generic_proc</type>"
+        echo "<name>SEC[ssh_port]</name>"
+        echo "<data>1</data>"
+        echo "<description>SSH not running on 22</description>"
+        echo "</module>"
+else
+        echo "<module>"
+        echo "<type>generic_proc</type>"
+        echo "<name>SEC[ssh_port]</name>"
+        echo "<data>0</data>"
+        echo "<description>SSH listening on port 22</description>"
+        echo "</module>"
+fi
+
+# Detect if FTP is running on port 21
+CHECK_21=`netstat -an | grep tcp | grep ":21 "`
+if [ -z "$CHECK_21" ]
+then
+        echo "<module>"
+        echo "<type>generic_proc</type>"
+        echo "<name>SEC[ftp_port]</name>"
+        echo "<data>1</data>"
+        echo "<description>FTP not running on 21</description>"
+        echo "</module>"
+else
+        echo "<module>"
+        echo "<type>generic_proc</type>"
+        echo "<name>SEC[ftp_port]</name>"
+        echo "<data>0</data>"
+        echo "<description>FTP listening on port 21</description>"
+        echo "</module>"
+fi
+
+# Detect if SSH doesnt allow to Root to connect
+CHECK_SSH_ROOT=`cat /etc/ssh/sshd_config  | grep -E "^\s*PermitRootLogin"`
+if [ -z "$CHECK_SSH_ROOT" ]
+then
+        echo "<module>"
+        echo "<type>generic_proc</type>"
+        echo "<name>SEC[ssh_allow_root]</name>"
+        echo "<data>1</data>"
+        echo "<description>SSH doesn't allow root to connect</description>"
+        echo "</module>"
+else
+        echo "<module>"
+        echo "<type>generic_proc</type>"
+        echo "<name>SEC[ssh_allow_root]</name>"
+        echo "<data>0</data>"
+        echo "<description>SSH does allow root to connect</description>"
+        echo "</module>"
+fi
+
+
+# Detect if local Mysql is without password
+# First, do we have a running MySQL?
+CHECK_MYSQL=`netstat -an | grep LISTEN | grep ":3306 "`
+if [ ! -z "$CHECK_MYSQL" ]
+then
+
+        CHECK_MYSQL_PASS=`echo "select 1234" | mysql -u root 2> /dev/null | grep 1234`
+        if [ -z "$CHECK_MYSQL_PASS" ]
+        then
+                echo "<module>"
+                echo "<type>generic_proc</type>"
+                echo "<name>SEC[mysql_without_pass]</name>"
+                echo "<data>1</data>"
+                echo "<description>MySQL have a password</description>"
+                echo "</module>"
+        else
+                echo "<module>"
+                echo "<type>generic_proc</type>"
+                echo "<name>SEC[mysql_without_pass]</name>"
+                echo "<data>0</data>"
+                echo "<description>MySQL do not have a password</description>"
+                echo "</module>"
+        fi
+
+
+        CHECK_BIND=`netstat -natp | grep mysql | gawk '{print $4}'`
+        if [[ "$CHECK_BIND" != *"::1:"* ]] && [[ "$CHECK_BIND" != *"127.0.0.1:"* ]]
+        then
+                echo "<module>"
+                echo "<type>generic_proc</type>"
+                echo "<name>SEC[mysql_bind]</name>"
+                echo "<data>0</data>"
+                echo "<description>MySQL bind-address insecure</description>"
+                echo "</module>"
+
+                CHECK_3306=`netstat -anp | grep mysql | grep ":3306 "`
+                if [ ! -z "$CHECK_3306" ]
+                then
+                        echo "<module>"
+                        echo "<type>generic_proc</type>"
+                        echo "<name>SEC[mysql_port]</name>"
+                        echo "<data>0</data>"
+                        echo "<description>MySQL listening on 3306</description>"
+                        echo "</module>"
+                else
+                        echo "<module>"
+                        echo "<type>generic_proc</type>"
+                        echo "<name>SEC[mysql_port]</name>"
+                        echo "<data>1</data>"
+                        echo "<description>MySQL not listening on port 3306</description>"
+                        echo "</module>"
+                fi
+
+        else
+                echo "<module>"
+                echo "<type>generic_proc</type>"
+                echo "<name>SEC[mysql_bind]</name>"
+                echo "<data>1</data>"
+                echo "<description>MySQL bind-address on localhost</description>"
+                echo "</module>"
+        fi
+
+fi
+
+# Check if SELinux is enabled
+CHECK_SELINUX=`sestatus | grep 'SELinux.*enabled'`
+if [ ! -z "$CHECK_SELINUX" ]
+then
+        echo "<module>"
+        echo "<type>generic_proc</type>"
+        echo "<name>SEC[SELinux_status]</name>"
+        echo "<data>1</data>"
+        echo "<description>SELinux is enabled</description>"
+        echo "</module>"
+else
+        echo "<module>"
+        echo "<type>generic_proc</type>"
+        echo "<name>SEC[SELinux_status]</name>"
+        echo "<data>0</data>"
+        echo "<description>SELinux is disabled</description>"
+        echo "</module>"
+fi
+
+
+# Check if /etc/shadow has been modified since last execution
+# First, check if there was a previous execution
+if [ -f /tmp/md5shadow.md5 ]
+then
+        MD5shaprev=`cat /tmp/md5shadow.md5`
+        MD5shanow=`md5sum /etc/shadow`
+
+        if [ "$MD5shaprev" == "$MD5shanow" ]
+        then
+                echo "<module>"
+                echo "<type>generic_proc</type>"
+                echo "<name>SEC[shadow_integrity]</name>"
+                echo "<data>1</data>"
+                echo "<description>md5 unchanged</description>"
+                echo "</module>"
+        else
+                echo "<module>"
+                echo "<type>generic_proc</type>"
+                echo "<name>SEC[shadow_integrity]</name>"
+                echo "<data>0</data>"
+                echo "<description>md5 modified</description>"
+                echo "</module>"
+        fi
+
+        # Update the md5 register file
+        md5sum /etc/shadow > /tmp/md5shadow.md5
+else
+        md5sum /etc/shadow > /tmp/md5shadow.md5
+        echo "<module>"
+        echo "<type>generic_proc</type>"
+        echo "<name>SEC[shadow_integrity]</name>"
+        echo "<data>1</data>"
+        echo "<description>Creating md5 for the first time</description>"
+        echo "</module>"
+fi
+
+
+# Check if /etc/passwd has been modified since last execution
+# First, check if there was a previous execution
+if [ -f /tmp/md5passwd.md5 ]
+then
+        MD5pasprev=`cat /tmp/md5passwd.md5`
+        MD5pasnow=`md5sum /etc/passwd`
+
+        if [ "$MD5pasprev" == "$MD5pasnow" ]
+        then
+                echo "<module>"
+                echo "<type>generic_proc</type>"
+                echo "<name>SEC[passwd_integrity]</name>"
+                echo "<data>1</data>"
+                echo "<description>md5 unchanged</description>"
+                echo "</module>"
+        else
+                echo "<module>"
+                echo "<type>generic_proc</type>"
+                echo "<name>SEC[passwd_integrity]</name>"
+                echo "<data>0</data>"
+                echo "<description>md5 modified</description>"
+                echo "</module>"
+        fi
+
+        # Update the md5 register file
+        md5sum /etc/passwd > /tmp/md5passwd.md5
+else
+        md5sum /etc/passwd > /tmp/md5passwd.md5
+        echo "<module>"
+        echo "<type>generic_proc</type>"
+        echo "<name>SEC[passwd_integrity]</name>"
+        echo "<data>1</data>"
+        echo "<description>Creating md5 for the first time</description>"
+        echo "</module>"
+fi
+
+
+# Check if /etc/hosts has been modified since last execution
+# First, check if there was a previous execution
+if [ -f /tmp/md5hosts.md5 ]
+then
+        MD5pasprev=`cat /tmp/md5hosts.md5`
+        MD5pasnow=`md5sum /etc/hosts`
+
+        if [ "$MD5hosprev" == "$MD5hosnow" ]
+        then
+                echo "<module>"
+                echo "<type>generic_proc</type>"
+                echo "<name>SEC[hosts_integrity]</name>"
+                echo "<data>1</data>"
+                echo "<description>md5 unchanged</description>"
+                echo "</module>"
+        else
+                echo "<module>"
+                echo "<type>generic_proc</type>"
+                echo "<name>SEC[hosts_integrity]</name>"
+                echo "<data>0</data>"
+                echo "<description>md5 modified</description>"
+                echo "</module>"
+        fi
+
+        # Update the md5 register file
+        md5sum /etc/hosts > /tmp/md5hosts.md5
+else
+        md5sum /etc/hosts > /tmp/md5hosts.md5
+        echo "<module>"
+        echo "<type>generic_proc</type>"
+        echo "<name>SEC[hosts_integrity]</name>"
+        echo "<data>1</data>"
+        echo "<description>Creating md5 for the first time</description>"
+        echo "</module>"
+fi
+
+# Check if /etc/resolv.conf has been modified since last execution
+# First, check if there was a previous execution
+if [ -f /tmp/md5resolv.md5 ]
+then
+        MD5resprev=`cat /tmp/md5resolv.md5`
+        MD5resnow=`md5sum /etc/resolv.conf`
+
+        if [ "$MD5resprev" == "$MD5resnow" ]
+        then
+                echo "<module>"
+                echo "<type>generic_proc</type>"
+                echo "<name>SEC[resolv_integrity]</name>"
+                echo "<data>1</data>"
+                echo "<description>md5 unchanged</description>"
+                echo "</module>"
+        else
+                echo "<module>"
+                echo "<type>generic_proc</type>"
+                echo "<name>SEC[resolv_integrity]</name>"
+                echo "<data>0</data>"
+                echo "<description>md5 modified</description>"
+                echo "</module>"
+        fi
+
+        # Update the md5 register file
+        md5sum /etc/resolv.conf > /tmp/md5resolv.md5
+else
+        md5sum /etc/resolv.conf > /tmp/md5resolv.md5
+        echo "<module>"
+        echo "<type>generic_proc</type>"
+        echo "<name>SEC[resolv_integrity]</name>"
+        echo "<data>1</data>"
+        echo "<description>Creating md5 for the first time</description>"
+        echo "</module>"
+fi
+
+# Check if /etc/ssh/sshd_config has been modified since last execution
+# First, check if there was a previous execution
+if [ -f /tmp/md5ssh.md5 ]
+then
+        MD5sshprev=`cat /tmp/md5ssh.md5`
+        MD5sshnow=`md5sum /etc/ssh/sshd_config`
+
+        if [ "$MD5sshprev" == "$MD5sshnow" ]
+        then
+                echo "<module>"
+                echo "<type>generic_proc</type>"
+                echo "<name>SEC[ssh_config_integrity]</name>"
+                echo "<data>1</data>"
+                echo "<description>md5 unchanged</description>"
+                echo "</module>"
+        else
+                echo "<module>"
+                echo "<type>generic_proc</type>"
+                echo "<name>SEC[ssh_config_integrity]</name>"
+                echo "<data>0</data>"
+                echo "<description>md5 modified</description>"
+                echo "</module>"
+        fi
+
+        # Update the md5 register file
+        md5sum /etc/ssh/sshd_config > /tmp/md5ssh.md5
+else
+        md5sum /etc/ssh/sshd_config > /tmp/md5ssh.md5
+        echo "<module>"
+        echo "<type>generic_proc</type>"
+        echo "<name>SEC[ssh_config_integrity]</name>"
+        echo "<data>1</data>"
+        echo "<description>Creating md5 for the first time</description>"
+        echo "</module>"
+fi
+
+# Check if /etc/rsyslog.conf has been modified since last execution
+# First, check if there was a previous execution
+if [ -f /tmp/md5sys.md5 ]
+then
+        MD5sysprev=`cat /tmp/md5sys.md5`
+        MD5sysnow=`md5sum /etc/rsyslog.conf`
+
+        if [ "$MD5sysprev" == "$MD5sysnow" ]
+        then
+                echo "<module>"
+                echo "<type>generic_proc</type>"
+                echo "<name>SEC[rsyslog_integrity]</name>"
+                echo "<data>1</data>"
+                echo "<description>md5 unchanged</description>"
+                echo "</module>"
+        else
+                echo "<module>"
+                echo "<type>generic_proc</type>"
+                echo "<name>SEC[rsyslog_integrity]</name>"
+                echo "<data>0</data>"
+                echo "<description>md5 modified</description>"
+                echo "</module>"
+        fi
+
+        # Update the md5 register file
+        md5sum /etc/rsyslog.conf > /tmp/md5sys.md5
+else
+        md5sum /etc/rsyslog.conf > /tmp/md5sys.md5
+        echo "<module>"
+        echo "<type>generic_proc</type>"
+        echo "<name>SEC[rsyslog_integrity]</name>"
+        echo "<data>1</data>"
+        echo "<description>Creating md5 for the first time</description>"
+        echo "</module>"
+fi
+
+# Check SSH keys on /home directorie
+CHECK_AKEYS=`find /home/ -name authorized_keys | wc -l`
+if [ "$CHECK_AKEYS" == 0 ]
+then
+        echo "<module>"
+        echo "<type>generic_data</type>"
+        echo "<name>SEC[authorized_keys_/home]</name>"
+        echo "<min_critical>1</min_critical>"
+        echo "<data>0</data>"
+        echo "<description>No authorized_keys found in /home</description>"
+        echo "</module>"
+else
+        echo "<module>"
+        echo "<type>generic_data</type>"
+        echo "<name>SEC[authorized_keys_/home]</name>"
+        echo "<min_critical>1</min_critical>"
+        echo "<data>$CHECK_AKEYS</data>"
+        echo "<description>authorized_keys found in /home</description>"
+        echo "</module>"
+fi
+
+# Check SSH keys on /root directories
+CHECK_RAKEYS=`find /root/.ssh -name authorized_keys | wc -l`
+if [ "$CHECK_RAKEYS" == 0 ]
+then
+        echo "<module>"
+        echo "<type>generic_data</type>"
+        echo "<name>SEC[authorized_keys_/root]</name>"
+        echo "<min_critical>1</min_critical>"
+        echo "<data>0</data>"
+        echo "<description>No authorized_keys found in /root</description>"
+        echo "</module>"
+else
+        echo "<module>"
+        echo "<type>generic_data</type>"
+        echo "<name>SEC[authorized_keys_/root]</name>"
+        echo "<min_critical>1</min_critical>"
+        echo "<data>$CHECK_RAKEYS</data>"
+        echo "<description>authorized_keys found in /root</description>"
+        echo "</module>"
+fi
+
+# Password audit
+# Check if exist a local John setup
+ERROR_CODE=`which john 2> /dev/null`
+if [ $? == 0 ]
+then
+        JOHN=`which john`
+else
+        ARCH=`uname -r | grep x86_64 | wc -l`
+        if [ $ARCH == 1 ]
+        then
+                JOHN=./john_64
+        else
+                JOHN=./john_32
+        fi
+fi
+
+# Check if valid john kit, if not, skip audit pass
+ERROR_CODE=`$JOHN 2> /dev/null `
+if [ $? != 0 ]
+then
+        echo "<module>"
+        echo "<type>generic_proc</type>"
+        echo "<name>SEC[password_audit]</name>"
+        echo "<data>1</data>"
+        echo "<description>Cannot perform the test due missing John tool</description>"
+        echo "<status>WARNING</status>"
+        echo "</module>"
+else
+        rm john.pot 2> /dev/null
+        rm /root/.john/john.pot 2> /dev/null
+        
+        RESULT=`$JOHN --wordlist=password-list /etc/shadow 2> /dev/null | grep -v "hashes with" | awk '{ print $2 }'`
+        if [ -z "$RESULT" ]
+        then
+                echo "<module>"
+                echo "<type>generic_proc</type>"
+                echo "<name>SEC[password_audit]</name>"
+                echo "<data>1</data>"
+                echo "<description>All users OK</description>"
+                echo "</module>"
+        else
+                RESULT_USER=`echo $RESULT | tr -d "()"`
+                echo "<module>"
+                echo "<type>generic_proc</type>"
+                echo "<name>SEC[password_audit]</name>"
+                echo "<data>0</data>"
+                echo "<description>Weak password on users: $RESULT_USER</description>"
+                echo "</module>"
+        fi
+
+        rm john.pot 2> /dev/null
+        rm john.log 2> /dev/null
+
+fi
+
+exit 0

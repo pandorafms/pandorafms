@@ -66,7 +66,7 @@ if ($view_graph) {
 	
 	$sql="SELECT * FROM tgraph WHERE id_graph = $id_graph";
 	$graph = db_get_row_sql($sql);
-	
+
 	$id_user = $graph["id_user"];
 	$private = $graph["private"];
 	$width = $graph["width"];
@@ -106,6 +106,7 @@ if ($view_graph) {
 	$stacked = (int) get_parameter ('stacked', -1);
 	$percentil = ($graph['percentil']) ? 1 : null;
 	$check = get_parameter('threshold',false);
+	$fullscale = ($graph['fullscale']) ? 1 : null;
 	
 	if($check == CUSTOM_GRAPH_BULLET_CHART_THRESHOLD){
 		$check = true;
@@ -179,7 +180,8 @@ if ($view_graph) {
 			"images/chart.png", false, "", false, $options);
 		
 	$graph_return = custom_graphs_print($id_graph, $height, $width, $period, $stacked, true, $unixdate, false, 'white', 
-		array(), '', array(), array(), true, true, true, true, 1, false, false, $percentil, false);
+		array(), '', array(), array(), true, true, true, true, 1, false, false, $percentil, false, false, $fullscale);
+
 	if ($graph_return){
 		echo "<table class='databox filters' cellpadding='0' cellspacing='0' width='100%'>";
 		echo "<tr><td>";

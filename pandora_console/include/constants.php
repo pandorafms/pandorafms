@@ -357,6 +357,7 @@ define('SERVER_TYPE_ENTERPRISE_TRANSACTIONAL',	14);
 define('SERVER_TYPE_MAINFRAME',	                15);
 define('SERVER_TYPE_SYNC',	                    16);
 define('SERVER_TYPE_WUX',						17);
+define('SERVER_TYPE_SYSLOG',					18);
 
 /* REPORTS */
 define('REPORT_TOP_N_MAX',	1);

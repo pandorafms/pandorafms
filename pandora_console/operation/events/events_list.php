@@ -249,6 +249,7 @@ if ($update_pressed || $open_filter) {
 unset($table);
 
 $filters = events_get_event_filter_select();
+$user_groups_array = users_get_groups_for_select($config["id_user"], $access, true, true, false);
 
 // Some translated words to be used from javascript
 html_print_div(array('hidden' => true,
@@ -263,6 +264,7 @@ html_print_div(array('hidden' => true,
 if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0, "EM") ) {
 	// Save filter div for dialog
 	echo '<div id="save_filter_layer" style="display: none">';
+	$table = new StdClass;
 	$table->id = 'save_filter_form';
 	$table->width = '100%';
 	$table->cellspacing = 4;
@@ -292,9 +294,11 @@ if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0,
 		$data[1] = __('Save in Group') . $jump;
 	else
 		$data[1] = __('Filter group') . $jump;
-	# Fix : Only admin users can see group ALL
-	$data[1] .= html_print_select_groups($config['id_user'], $access, users_can_manage_group_all(), "id_group_filter",
-				$id_group_filter, '', '', 0, true, false, false, 'w130', false, '', false, false, 'id_grupo', $strict_user);
+	
+	$data[1] .= html_print_select ($user_groups_array, 'id_group_filter', $id_group_filter, 
+								'', '', 0, true, false, false, 'w130'
+							 );
+
 	$table->data[] = $data;
 	$table->rowclass[] = '';
 	
@@ -326,6 +330,7 @@ if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0,
 
 // Load filter div for dialog
 echo '<div id="load_filter_layer" style="display: none">';
+$table = new StdClass;
 $table->id = 'load_filter_form';
 $table->width = '100%';
 $table->cellspacing = 4;
@@ -608,9 +613,9 @@ $table->data = array();
 
 $data = array();
 $data[0] = __('Group') . $jump;
-
-$data[0] .= html_print_select_groups($config["id_user"], $access, true, 
-	'id_group', $id_group, '', '', 0, true, false, false, '', false, false, false, false, 'id_grupo', $strict_user). $jump;
+$data[0] .= html_print_select ($user_groups_array, 'id_group', $id_group, 
+								'', '', 0, true, false, false
+							 ) . $jump;
 //**********************************************************************
 // TODO
 // This code is disabled for to enabled in Pandora 5.1
@@ -794,14 +799,15 @@ enterprise_hook('print_event_tags_active_filters',
 			'severity' => $severities,
 			'duplicate' => $repeated_sel,
 			'alerts' => $alert_events_titles,
-			'groups' => users_get_groups_for_select($config["id_user"], $access, true, true, false))
+			'groups' => $user_groups_array
+		)
 	)
 );
 
 if (!empty($result)) {
 	//~ Checking the event tags exactly. The event query filters approximated tags to keep events
 	//~ with several tags
-	$acltags = tags_get_user_module_and_tags ($config['id_user'], $access, true);
+	$acltags = tags_get_user_groups_and_tags ($config['id_user'], $access, true);
 
 	foreach ($result as $key=>$event_data) {
 		$has_tags = events_checks_event_tags($event_data, $acltags);

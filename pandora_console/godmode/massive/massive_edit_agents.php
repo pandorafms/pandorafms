@@ -410,6 +410,7 @@ $table->data[1][0] = __('Module definition') . ui_print_help_icon("module_defini
 $table->data[1][1] = __('No change').' '.html_print_radio_button_extended ("mode", -1, '', $mode, false, '', 'style="margin-right: 40px;"', true);
 $table->data[1][1] .= __('Learning mode').' '.html_print_radio_button_extended ("mode", 1, '', $mode, false, '', 'style="margin-right: 40px;"', true);
 $table->data[1][1] .= __('Normal mode').' '.html_print_radio_button_extended ("mode", 0, '', $mode, false, '', 'style="margin-right: 40px;"', true);
+$table->data[1][1] .= __('Autodisable mode').' '.html_print_radio_button_extended ("mode", 2, '', $mode, false, '', 'style="margin-right: 40px;"', true);
 
 // Status (Disabled / Enabled)
 $table->data[2][0] = __('Status');

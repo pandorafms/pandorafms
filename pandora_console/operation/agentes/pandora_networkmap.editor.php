@@ -41,6 +41,10 @@ if ($new_networkmap) {
 	$offset_x = "";
 	$offset_y = "";
 	$scale_z = 0.5;
+	$node_sep = 0.25;
+	$rank_sep = 1.0;
+	$mindist = 1.0;
+	$kval = 0.3;
 }
 
 $disabled_generation_method_select = false;
@@ -82,6 +86,36 @@ if ($edit_networkmap) {
 		$offset_x = $filter['x_offs'];
 		$offset_y = $filter['y_offs'];
 		$scale_z = $filter['z_dash'];
+
+		if (isset($filter['node_sep'])) {
+			$node_sep = $filter['node_sep'];
+		}
+		else {
+			$node_sep = 0.25;
+		}
+		if (isset($filter['rank_sep'])) {
+			$rank_sep = $filter['rank_sep'];
+		}
+		else {
+			if ($values['generation_method'] == "twopi") {
+				$rank_sep = 1.0;
+			}
+			else {
+				$rank_sep = 0.5;
+			}
+		}
+		if (isset($filter['mindist'])) {
+			$mindist = $filter['mindist'];
+		}
+		else {
+			$mindist = 1.0;
+		}
+		if (isset($filter['kval'])) {
+			$kval = $filter['kval'];
+		}
+		else {
+			$kval = 0.3;
+		}
 		
 		$node_radius = $filter['node_radius'];
 		
@@ -244,7 +278,23 @@ else {
 	$table->data[7][1] = html_print_select($methods, 'method', $method,
 		'', '', 'twopi', true, false, true, '',
 		$disabled_generation_method_select);
+
+	$itemClass = "";
+	if ($disabled_source) {
+		$itemClass = "disabled";
+	}
+	$table->data['nodesep'][0] = __('Node separation');
+	$table->data['nodesep'][1] = html_print_input_text ('node_sep', $node_sep, '', 5, 10,true, $disabled_source, false, $itemClass) . ui_print_help_tip (__('Separation between nodes. By default 0.25'), true);
 	
+	$table->data['ranksep'][0] = __('Rank separation');
+	$table->data['ranksep'][1] = html_print_input_text ('rank_sep', $rank_sep, '', 5, 10,true, $disabled_source, false, $itemClass) . ui_print_help_tip (__('Only flat and radial. Separation between arrows. By default 0.5 in flat and 1.0 in radial'), true);
+	
+	$table->data['mindist'][0] = __('Min nodes dist');
+	$table->data['mindist'][1] = html_print_input_text ('mindist', $mindist, '', 5, 10,true, $disabled_source, false, $itemClass) . ui_print_help_tip (__('Only circular. Minimum separation between all nodes. By default 1.0'), true);
+
+	$table->data['kval'][0] = __('Default ideal node separation');
+	$table->data['kval'][1] = html_print_input_text ('kval', $kval, '', 5, 10,true, $disabled_source, false, $itemClass) . ui_print_help_tip (__('Only fdp. Default ideal node separation in the layout. By default 0.3'), true);
+
 	echo '<form method="post" action="index.php?sec=network&amp;sec2=operation/agentes/pandora_networkmap">';
 	
 	html_print_table($table);
@@ -296,7 +346,73 @@ $(document).ready(function() {
 				.css('display', '');
 		}
 	});
+
+	$("#method").on('change', function () {
+		var method = $("#method").val();
+
+		if (method == 'circo') {
+			$("#form_editor-ranksep")
+				.css('display', 'none');
+			$("#form_editor-mindist")
+				.css('display', '');
+			$("#form_editor-kval")
+				.css('display', 'none');
+			$("#form_editor-nodesep")
+				.css('display', '');
+		}
+		else if (method == 'dot') {
+			$("#form_editor-ranksep")
+				.css('display', '');
+			$("#form_editor-mindist")
+				.css('display', 'none');
+			$("#form_editor-kval")
+				.css('display', 'none');
+			$("#form_editor-nodesep")
+				.css('display', '');
+		}
+		else if (method == 'twopi') {
+			$("#form_editor-ranksep")
+				.css('display', '');
+			$("#form_editor-mindist")
+				.css('display', 'none');
+			$("#form_editor-kval")
+				.css('display', 'none');
+			$("#form_editor-nodesep")
+				.css('display', '');
+		}
+		else if (method == 'neato') {
+			$("#form_editor-ranksep")
+				.css('display', 'none');
+			$("#form_editor-mindist")
+				.css('display', 'none');
+			$("#form_editor-kval")
+				.css('display', 'none');
+			$("#form_editor-nodesep")
+				.css('display', '');
+		}
+		else if (method == 'radial_dinamic') {
+			$("#form_editor-ranksep")
+				.css('display', 'none');
+			$("#form_editor-mindist")
+				.css('display', 'none');
+			$("#form_editor-kval")
+				.css('display', 'none');
+			$("#form_editor-nodesep")
+				.css('display', 'none');
+		}
+		else if (method == 'fdp') {
+			$("#form_editor-ranksep")
+				.css('display', 'none');
+			$("#form_editor-mindist")
+				.css('display', 'none');
+			$("#form_editor-kval")
+				.css('display', '');
+			$("#form_editor-nodesep")
+				.css('display', '');
+		}
+	});
 	
 	$("input[name='source']").trigger("change");
+	$("#method").trigger("change");
 });
 </script>

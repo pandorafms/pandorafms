@@ -42,8 +42,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.715";
-my $pandora_build = "171123";
+my $pandora_version = "7.0NG.718";
+my $pandora_build = "180124";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -454,6 +454,11 @@ sub pandora_load_config {
 	$pa_config->{"wux_port"} = 4444; # 7.0
 	$pa_config->{"wux_browser"} = "*firefox"; # 7.0
 
+	# Syslog Server
+	$pa_config->{"syslogserver"} = 1; # 7.0.716
+	$pa_config->{"syslog_file"} = '/var/log/messages/'; # 7.0.716
+	$pa_config->{"syslog_max"} = 65535; # 7.0.716
+	$pa_config->{"syslog_threads"} = 4; # 7.0.716
 
 	#$pa_config->{'include_agents'} = 0; #6.1
 	#
@@ -462,6 +467,10 @@ sub pandora_load_config {
 
 	# Enable (1) or disable (0) events related to the unknown status.
 	$pa_config->{"unknown_events"} = 1; # > 6.0SP4
+
+	$pa_config->{"thread_log"} = 0; # 7.0.717
+
+	$pa_config->{"unknown_updates"} = 0; # 7.0.718
 
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
@@ -1058,6 +1067,24 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^wux_browser\s+(.*)/i) {
 			$pa_config->{'wux_browser'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^syslogserver\s+([0-1])/i) {
+			$pa_config->{'syslogserver'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^syslog_file\s+(.*)/i) {
+			$pa_config->{'syslog_file'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^syslog_max\s+([0-9]*)/i) {
+			$pa_config->{'syslog_max'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^syslog_threads\s+([0-9]*)/i) {
+			$pa_config->{'syslog_threads'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^thread_log\s+([0-1])/i) {
+			$pa_config->{'thread_log'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^unknown_updates\s+([0-1])/i) {
+			$pa_config->{'unknown_updates'} = clean_blank($1);
 		}
 	} # end of loop for parameter #
 

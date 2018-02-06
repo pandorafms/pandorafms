@@ -123,11 +123,16 @@ if ($get_module_detail) {
 	$time_from = (string) get_parameter ('time_from', date ('h:iA'));
 	$date_to = (string) get_parameter ('date_to', date ('Y-m-j'));
 	$time_to = (string) get_parameter ('time_to', date ('h:iA'));
+	$freesearch = (string) get_parameter ('freesearch', '');
+	$free_checkbox = (bool) get_parameter ('free_checkbox', false);
 
 	$formtable->width = '98%';
 	$formtable->class = "databox";
 	$formtable->data = array ();
 	$formtable->size = array ();
+
+	$moduletype_name = modules_get_moduletype_name(
+		modules_get_agentmodule_type($module_id));
 
 	$periods = array(SECONDS_5MINUTES =>__('5 minutes'),
 		SECONDS_30MINUTES =>__('30 minutes'),
@@ -175,10 +180,19 @@ if ($get_module_detail) {
 	$formtable->data[1][2] .= html_print_input_text('time_to', $time_to,
 		'', 9, 7, true);
 
-	html_print_table($formtable);
+	$freesearch_object = '';
+	if (preg_match("/_string/", $moduletype_name)) {
+		$formtable->data[2][0] = __('Free search') . ' ';
+		$formtable->data[2][1] = html_print_input_text ('freesearch', $freesearch, '', 20, null, true);
+		$formtable->data[2][2] = html_print_checkbox('free_checkbox', 1, $free_checkbox, true);
+		$formtable->data[2][2] .= ' ' . __('Exact phrase');
+		$freesearch_object = json_encode( array(
+			'value' => io_safe_output($freesearch),
+			'exact' => (bool)$free_checkbox
+		));
+	}
 
-	$moduletype_name = modules_get_moduletype_name(
-		modules_get_agentmodule_type($module_id));
+	html_print_table($formtable);
 
 	$offset = (int) get_parameter("offset");
 	$block_size = (int) $config["block_size"];
@@ -222,10 +236,10 @@ if ($get_module_detail) {
 	}
 
 	$count = modules_get_agentmodule_data ($module_id, $period,
-		$date, true, $conexion);
+		$date, true, $conexion, 'ASC', $freesearch_object);
 
 	$module_data = modules_get_agentmodule_data ($module_id, $period,
-		$date, false, $conexion, 'DESC');
+		$date, false, $conexion, 'DESC', $freesearch_object);
 
 	if (empty($module_data)) {
 		$result = array();
@@ -758,7 +772,7 @@ if ($list_modules) {
 	$table->head[5] = __('Status') . ' ' .
 		'<a href="' . $url . '&sort_field=status&amp;sort=up&refr=&filter_monitors=1&status_filter_monitor=' .$status_filter_monitor.' &status_text_monitor='. $status_text_monitor.'&status_module_group= '.$status_module_group.'">' . html_print_image("images/sort_up.png", true, array("style" => $selectStatusUp, "alt" => "up")) . '</a>' .
 		'<a href="' . $url . '&sort_field=status&amp;sort=down&refr=&filter_monitors=1&status_filter_monitor=' .$status_filter_monitor.' &status_text_monitor='. $status_text_monitor.'&status_module_group= '.$status_module_group.'">' . html_print_image("images/sort_down.png", true, array("style" => $selectStatusDown, "alt" => "down")) . '</a>';
-	$table->head[6] = __('Warn');
+	$table->head[6] = __('Thresholds');
 	$table->head[7] = __('Data');
 	$table->head[8] = __('Graph');
 	$table->head[9] = __('Last contact') . ' ' .

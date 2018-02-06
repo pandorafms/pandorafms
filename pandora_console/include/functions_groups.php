@@ -538,7 +538,7 @@ function groups_get_groups_tree_recursive($groups, $trash = 0, $trash2 = 0) {
 		
 		// If the user has ACLs on a gruop but not in his father,
 		// we consider it as a son of group "all"
-		if(!in_array($group['parent'], array_keys($groups))) {
+		if(!isset($groups[$group['parent']])) {
 			$group['parent'] = 0;  
 		}
 		
@@ -633,61 +633,55 @@ function groups_get_id ($group_name, $returnAllGroup = false) {
  * @param int $id_group The group id to look for
  * @param mixed filter array
  * @param bool True if users with all permissions in the group are retrieved 
- * @param bool Is id_group an array or not #Fix
  *
  * @return array An array with all the users or an empty array
  */
-function groups_get_users ($id_group, $filter = false, $return_user_all = false, $_is_array = false) {
+function groups_get_users ($id_group, $filter = false, $return_user_all = false) {
 	global $config;
-	
+
 	if (! is_array ($filter))
 		$filter = array ();
 	
-	$filter['id_grupo'] = $id_group;
-	
-	$result_a = array();
-	// Juanma (05/05/2014) Fix: Check for number/array id_group variable
-	if ($_is_array && is_array($id_group) && !empty($id_group)) {
-		$result_a = db_get_all_rows_filter ("tusuario_perfil", $filter);
-	} else {
-		if (!is_array($id_group) && !empty($id_group)) {
-			$result_a = db_get_all_rows_filter ("tusuario_perfil", $filter);
+	if($return_user_all){
+		if (is_array($id_group)){
+			$filter['id_grupo'] = $id_group;
 		}
-	
+		else{
+			$filter['id_grupo'][0] = $id_group;
+		}
+		array_push($filter['id_grupo'], 0);
 	}
-	
-	$result_b = array();
-	if ($return_user_all) {
-		// The users of the group All (0) will be also returned
-		$filter['id_grupo'] = 0;
-		$result_b = db_get_all_rows_filter ("tusuario_perfil", $filter);
+	else{
+		$filter['id_grupo'] = $id_group;
 	}
-	
-	if ($result_a == false && $result_b == false)
-		$result = false;
-	elseif ($result_a == false)
-		$result = $result_b;
-	elseif ($result_b == false)
-		$result = $result_a;
-	else
-		$result = array_merge($result_a, $result_b);
-	
-	if ($result === false)
+
+	$query = "SELECT tu.* 	
+		 	  FROM tusuario tu, tusuario_perfil tup
+	       	  WHERE tup.id_usuario = tu.id_user" ;
+
+	if(is_array($filter)){
+		foreach ($filter as $key => $value) {
+			if($key != 'limit' && $key != 'order' &&
+			   $key != 'offset' &&$key != 'group'){
+				$filter_array["tup.".$key] = $value;
+			}
+			else{
+				$filter_array[$key] = $value;	
+			}
+		}
+		$clause_sql = mysql_db_format_array_where_clause_sql($filter_array,'AND',false);
+		if($clause_sql){
+			$query .= " AND " . $clause_sql;
+		}
+	}
+    
+    $result = db_get_all_rows_sql($query);
+
+	if ($result === false){
 		return array ();
-	
-	//This removes stale users from the list. This can happen if switched to another auth scheme
-	//(internal users still exist) or external auth has users removed/inactivated from the list (eg. LDAP)
-	$retval = array ();
-	foreach ($result as $key => $user) {
-		if (!is_user ($user)) {
-			unset ($result[$key]);
-		}
-		else {
-			array_push ($retval, get_user_info ($user));
-		}
 	}
 	
-	return $retval;
+	return $result;
 }
 
 /**
@@ -2241,6 +2235,9 @@ function groups_get_tree(&$groups, $parent = false) {
 			if (!empty($children)) {
 				$return[$id]['children'] = $children;
 			}
+			else {
+				$return[$id]['children'] = array();
+			}
 		}
 		else if ($parent && isset($group['parent']) && $group['parent'] == $parent) {
 			$return[$id] = $group;
@@ -2250,6 +2247,9 @@ function groups_get_tree(&$groups, $parent = false) {
 			if (!empty($children)) {
 				$return[$id]['children'] = $children;
 			}
+			else {
+				$return[$id]['children'] = array();
+			}
 		}
 		else {
 			continue;
@@ -2258,6 +2258,55 @@ function groups_get_tree(&$groups, $parent = false) {
 	
 	return $return;
 }
+
+function groups_get_tree_good (&$groups, $parent = false, &$childs) {
+	$return = array();
+	
+	foreach ($groups as $id => $group) {
+		if ($group['parent'] != 0) {
+			$childs[$id] = $id;
+		}
+		if ($parent === false && (!isset($group['parent']) || $group['parent'] == 0 || !in_array($group['parent'], $groups))) {
+			$return[$id] = $group;
+			//unset($groups[$id]);
+			$children = groups_get_tree_good($groups, $id);
+			
+			if (!empty($children)) {
+				$return[$id]['children'] = $children;
+			}
+			else {
+				$return[$id]['children'] = array();
+			}
+		}
+		else if ($parent && isset($group['parent']) && $group['parent'] == $parent) {
+			$return[$id] = $group;
+			//unset($groups[$id]);
+			$children = groups_get_tree_good($groups, $id);
+			
+			if (!empty($children)) {
+				$return[$id]['children'] = $children;
+			}
+			else {
+				$return[$id]['children'] = array();
+			}
+		}
+		else {
+			continue;
+		}
+	}
+	
+	return $return;
+}
+
+function groups_get_tree_keys ($groups, &$group_keys) {
+	foreach ($groups as $id => $group) {
+		$group_keys[$id] = $id;
+		if (isset($group['children'])) {
+			groups_get_tree_keys($groups[$id]['children'], $group_keys);
+		}
+	}
+}
+
 function groups_get_all_hierarchy_group ($id_group, $hierarchy = array()) {
 	global $config;
 	
@@ -2288,6 +2337,8 @@ function groups_get_all_hierarchy_group ($id_group, $hierarchy = array()) {
 	}
 	return $hierarchy;
 }
+
+
 
 function group_get_data ($id_user = false, $user_strict = false, $acltags, $returnAllGroup = false, $mode = 'group', $agent_filter = array(), $module_filter = array()) {
 	global $config;
@@ -3036,4 +3087,5 @@ function groups_get_group_deep ($id_group) {
 	
 	return $deep;
 }
+
 ?>

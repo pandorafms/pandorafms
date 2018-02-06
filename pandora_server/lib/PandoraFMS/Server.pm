@@ -20,6 +20,7 @@ package PandoraFMS::Server;
 use strict;
 use warnings;
 
+use POSIX 'strftime';
 use threads;
 use threads::shared;
 
@@ -269,6 +270,22 @@ sub update ($) {
 	eval {
 		pandora_update_server ($self->{'_pa_config'}, $self->{'_dbh'}, $self->{'_pa_config'}->{'servername'}, $self->{'_server_id'},
 		                       1, $self->{'_server_type'}, $self->{'_num_threads'}, $self->{'_queue_size'});
+	};
+}
+
+########################################################################################
+# Log a message for the current thread.
+########################################################################################
+sub logThread ($$) {
+	my ($self, $msg) = @_;
+
+	return unless ($self->{'_pa_config'}->{'thread_log'} == 1);
+
+	eval {
+		open(my $fh, '>', $self->{'_pa_config'}->{'temporal'} . '/' . $self->{'_pa_config'}->{'servername'} .'.'. $ServerTypes[$self->{'_server_type'}] . '.' . threads->tid() . '.log');
+		my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
+		print $fh $timestamp . ' ' . $self->{'_pa_config'}->{'servername'} . ' ' . $ServerTypes[$self->{'_server_type'}] . ' (thread ' . threads->tid() . '):' . $msg . "\n";
+		close($fh);
 	};
 }
 

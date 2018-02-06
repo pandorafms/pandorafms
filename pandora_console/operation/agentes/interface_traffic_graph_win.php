@@ -139,7 +139,7 @@ $interface_traffic_modules = array(
 		}
 		
 		// Get input parameters
-		$period = get_parameter ("period");
+		$period = get_parameter ("period", SECONDS_1DAY);
 		$width = (int) get_parameter("width", 555);
 		$height = (int) get_parameter("height", 245);
 		$start_date = (string) get_parameter("start_date", date("Y-m-d"));

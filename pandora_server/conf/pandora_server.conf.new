@@ -1,7 +1,7 @@
 #############################################################################
 # Pandora FMS Server Parameters
 # Pandora FMS, the Flexible Monitoring System.
-# Version 7.0NG.715
+# Version 7.0NG.718
 # Licensed under GPL license v2,
 # (c) 2003-2017 Artica Soluciones Tecnologicas
 # http://www.pandorafms.com
@@ -148,6 +148,10 @@ network_timeout 4
 # Server keepalive (in seconds)
 
 server_keepalive 45
+
+# Log server thread status to disk (always set to 0, except when debugging).
+
+thread_log 0
 
 # Server Threshold: defines number of seconds of main loop (in sec)
 
@@ -560,6 +564,10 @@ enc_dir /usr/share/pandora_server/enc/
 # Go to http://wiki.pandorafms.com/ for more information.
 dynamic_updates 5
 
+# Periodically update unknown modules (1), instead of only once (0). Periodic
+# updates may affect server performance.
+unknown_updates 0
+
 # Enable (1) or disable (0) the Pandora FMS WUX Server (PANDORA FMS ENTERPRISE ONLY).
 wuxserver 0
 
@@ -568,4 +576,16 @@ wuxserver 0
 
 # Port of the Selenium Grid Server.
 #wux_port 4444
+
+# Enable (1) or disable (0) the Pandora FMS Syslog Server (PANDORA FMS ENTERPRISE ONLY).
+syslogserver 1
+
+# Full path to syslog's output file (PANDORA FMS ENTERPRISE ONLY).
+syslog_file /var/log/messages
+
+# Number of threads for the Syslog Server (PANDORA FMS ENTERPRISE ONLY).
+syslog_threads 2
+
+# Maximum number of lines queued by the Syslog Server's producer on each run (PANDORA FMS ENTERPRISE ONLY).
+syslog_max 65535
 

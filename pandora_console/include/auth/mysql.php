@@ -177,8 +177,9 @@ function process_user_login_remote ($login, $pass, $api = false) {
 	switch ($config["auth"]) {
 		// LDAP
 		case 'ldap':
-			if (ldap_process_user_login ($login, $pass) === false) {
-				$config["auth_error"] = "User not found in database or incorrect password";
+			$sr = ldap_process_user_login ($login, $pass);
+			
+			if(!$sr) {
 				return false;
 			}
 			break;
@@ -217,8 +218,8 @@ function process_user_login_remote ($login, $pass, $api = false) {
 	
 	if ($config["auth"] === 'ldap') {
 		$login_user_attribute = $login;
-		if (($config['ldap_login_user_attr'] != 'name') && ($config['ldap_login_user_attr'] != null)) {
-			$login = get_ldap_login_attr($login);
+		if ($config['ldap_login_user_attr'] == 'mail') {
+			$login = $sr["mail"][0];
 		}
 	}
 	
@@ -329,17 +330,45 @@ function process_user_login_remote ($login, $pass, $api = false) {
 			}
 		}
 		
-		// Create the user
-		$prepare_perms = prepare_permissions_groups_of_user_ldap($login_user_attribute, $pass, 
-			array ('fullname' => $login_user_attribute, 'comments' => 'Imported from ' . $config['auth']),
-			false, defined('METACONSOLE'));
-		
-		if (!$prepare_perms) {
-			$config["auth_error"] = __("User not found in database 
-					or incorrect password");
-					
-			return false;
+		$permissions = array();
+		if($config['ldap_advanced_config']){
+			$i = 0;
+			
+			$ldap_adv_perms = json_decode(io_safe_output($config['ldap_adv_perms']), true);
+			
+			foreach ($ldap_adv_perms as $ldap_adv_perm) {
+				$attributes = $ldap_adv_perm['groups_ldap'];
+				
+				foreach ($attributes as $attr) {
+					$attr = explode('=',$attr);
+					if(in_array($attr[1],$sr[$attr[0]])) {
+						$permissions[$i]["profile"] = $ldap_adv_perm['profile'];
+						$permissions[$i]["groups"] = $ldap_adv_perm['group'];
+						$permissions[$i]["tags"] = implode(",",$ldap_adv_perm['tags']);
+						$i++;
+						break;
+					}
+				}
+				
+			}
+		} else {
+			$permissions[0]["profile"] = $config['default_remote_profile'];
+			$permissions[0]["groups"][] = $config['default_remote_group'];
+			$permissions[0]["tags"] = $config['default_assign_tags'];
 		}
+		
+		if(empty($permissions)) {
+			$config["auth_error"] = __("User not found in database or incorrect password");
+			return false;
+			
+		} else {
+			$user_info['fullname'] = $sr['cn'][0];
+			$user_info['email'] = $sr['mail'][0];
+			
+			// Create the user
+			$create_user = create_user_and_permisions_ldap($login, $pass, $user_info, $permissions, defined('METACONSOLE'));
+		}
+
 	}
 	else {
 		
@@ -689,111 +718,72 @@ function ldap_process_user_login ($login, $password) {
 		}
 	}
 
-	$dc = io_safe_output($config["ldap_base_dn"]);
-	
-	#Search group of this user it belong.
-	$filter="(" . $config['ldap_login_attr'] . "=" .  io_safe_output($login) . ")";
-	$justthese = array("objectclass=group");
-	
-	$sr = ldap_search($ds, $dc, $filter, $justthese);
-	
-	$memberof = ldap_get_entries($ds, $sr);
-	
-	if ($memberof["count"] == 0 && !isset($memberof[0]["memberof"])) {
-		@ldap_close ($ds);
-		return false;
-	}
-	else {
-		$memberof = $memberof[0];
-	}
-	
-	unset($memberof["count"]);
-
-	$ldap_base_dn  = !empty($config["ldap_base_dn"]) ? "," . io_safe_output($config["ldap_base_dn"]) : '';
-	
-	$correct = false;
-	if(!empty($ldap_base_dn)) {
-		if (strlen($password) != 0 && @ldap_bind($ds, io_safe_output($memberof['dn']), $password) ) {
-			$correct = true;
+	if($config['ldap_function'] == 'local'){
+		$sr = local_ldap_search($config["ldap_server"], $config["ldap_port"], $config["ldap_version"],
+			io_safe_output($config["ldap_base_dn"]), $config['ldap_login_attr'], 
+			io_safe_output($config['ldap_admin_login']), $config['ldap_admin_pass'], io_safe_output($login));
+		
+		if($sr) {
+			$user_dn = $sr["dn"][0];
+			
+			$ldap_base_dn  = !empty($config["ldap_base_dn"]) ? "," . io_safe_output($config["ldap_base_dn"]) : '';
+		
+			if(!empty($ldap_base_dn)) {
+				if (strlen($password) != 0 && @ldap_bind($ds, io_safe_output($user_dn), $password) ) {
+					@ldap_close ($ds);
+					return $sr;
+				}
+			} else {
+				if (strlen($password) != 0 && @ldap_bind($ds, io_safe_output($login), $password) ) {
+					@ldap_close ($ds);
+					return $sr;
+				}
+			}
 		}
-	}
-	else {
-		if (strlen($password) != 0 && @ldap_bind($ds, io_safe_output($login), $password) ) {
-			$correct = true;
+			
+	} else {
+		// PHP LDAP function 
+		if ($config['ldap_admin_login'] != "" && $config['ldap_admin_pass'] != "") {
+			if (!@ldap_bind($ds, io_safe_output($config['ldap_admin_login']), $config['ldap_admin_pass'])) {
+				$config["auth_error"] = 'Admin ldap connection fail';
+				@ldap_close ($ds);
+				return false;
+			}
+		}
+		
+		$filter="(" . $config['ldap_login_attr'] . "=" .  io_safe_output($login) . ")";
+		
+		$sr = ldap_search($ds, io_safe_output($config["ldap_base_dn"]), $filter);
+		
+		$memberof = ldap_get_entries($ds, $sr);
+		
+		if ($memberof["count"] == 0 && !isset($memberof[0]["memberof"])) {
+			@ldap_close ($ds);
+			return false;
+		} else {
+			$memberof = $memberof[0];
+		}
+		
+		unset($memberof["count"]);
+		$ldap_base_dn  = !empty($config["ldap_base_dn"]) ? "," . io_safe_output($config["ldap_base_dn"]) : '';
+		
+		if(!empty($ldap_base_dn)) {
+			if (strlen($password) != 0 && @ldap_bind($ds, io_safe_output($memberof['dn']), $password) ) {
+				@ldap_close ($ds);
+				return $memberof;
+			}
+		} else {
+			if (strlen($password) != 0 && @ldap_bind($ds, io_safe_output($login), $password) ) {
+				@ldap_close ($ds);
+				return $memberof;
+			}
 		}
 	}
 	
 	@ldap_close ($ds);
-
-	if ($correct) {
-		return true;
-	}
-	else {
-		$config["auth_error"] = 'User not found in database or incorrect password';
-		
-		return false;
-	}
-}
-
-function get_ldap_login_attr ($login) {
-	global $config;
-
-	if (! function_exists ("ldap_connect")) {
-		$config["auth_error"] = __('Your installation of PHP does not support LDAP');
-		
-		return false;
-	}
-
-	// Connect to the LDAP server
-	$ds = @ldap_connect ($config["ldap_server"], $config["ldap_port"]);
+	$config["auth_error"] = 'User not found in database or incorrect password';
+	return false;
 	
-	if (!$ds) {
-		$config["auth_error"] = 'Error connecting to LDAP server';
-		
-		return false;
-	}
-
-	// Set the LDAP version
-	ldap_set_option ($ds, LDAP_OPT_PROTOCOL_VERSION, $config["ldap_version"]);
-	
-	if ($config["ldap_start_tls"]) {
-		if (!@ldap_start_tls ($ds)) { 
-			$config["auth_error"] = 'Could not start TLS for LDAP connection';
-			@ldap_close ($ds);
-			
-			return false;
-		}
-	}
-
-	$id_user = $login;
-
-	switch ($config['ldap_login_user_attr']) {
-		case 'email':
-			$dc = io_safe_output($config["ldap_base_dn"]);
-	
-			$filter="(" . $config['ldap_login_attr'] . "=" . io_safe_output($id_user) . ")";
-			$justthese = array("mail");
-			
-			$sr = ldap_search($ds, $dc, $filter, $justthese);
-			
-			$info = ldap_get_entries($ds, $sr);
-
-			if ($info["count"] == 0 && !isset($info[0]["mail"])) {
-				@ldap_close ($ds);
-				return $id_user;
-			}
-			else {
-				$info = $info[0];
-			}
-
-			$id_user = $info['mail'][0];
-
-			@ldap_close ($ds);
-
-			break;
-	}
-
-	return $id_user;
 }
 
 /**
@@ -814,189 +804,6 @@ function is_user_blacklisted ($user) {
 	}
 	
 	return false;
-}
-
-/**
- * Check permissions in LDAP for prepare to create user in Pandora.
- *
- * @param string Login
- * @param string Password
- * @param string User Info
- * @param string check_permissions Check if change permissions
- *
- * @return bool True if the login succeeds, false otherwise
- */
-function prepare_permissions_groups_of_user_ldap ($id_user, $password,
-	$user_info, $check_permissions = false, $syncronize = false) {
-	
-	global $config;
-	include_once($config['homedir'] . "/include/functions_html.php");
-	
-	if (! function_exists ("ldap_connect")) {
-		return false;
-	}
-	
-	// Do not allow blank passwords
-	if ($password == "") {
-		return false;
-	}
-	
-	// Connect to the LDAP server
-	$ds = @ldap_connect ($config["ldap_server"], $config["ldap_port"]);
-	if (!$ds) {
-		return false;
-	}
-	
-	// Set the LDAP version
-	ldap_set_option ($ds, LDAP_OPT_PROTOCOL_VERSION, $config["ldap_version"]);
-	
-	if ($config["ldap_start_tls"]) {
-		if (!@ldap_start_tls ($ds)) {
-			@ldap_close ($ds);
-			return false;
-		}
-	}
-	
-	$dc = io_safe_output($config["ldap_base_dn"]);
-	
-	#Search group of this user it belong.
-	$filter="(" . $config['ldap_login_attr'] . "=" . io_safe_output($id_user) . ")";
-	$justthese = array("objectclass=group");
-	
-	$sr = ldap_search($ds, $dc, $filter, $justthese);
-	
-	$memberof = ldap_get_entries($ds, $sr);
-	
-	if ($memberof["count"] == 0 && !isset($memberof[0]["memberof"])) {
-		@ldap_close ($ds);
-		return false;
-	}
-	else {
-		$memberof = $memberof[0];
-	}
-	
-	unset($memberof["count"]);
-
-	$ldap_base_dn  = !empty($config["ldap_base_dn"]) ? "," . io_safe_output($config["ldap_base_dn"]) : '';
-	
-	$correct = false;
-	if(!empty($ldap_base_dn)) {
-		if (strlen($password) != 0 && @ldap_bind($ds, $memberof['dn'], $password) ) {
-			$correct = true;
-		}
-	}
-	else {
-		if (strlen($password) != 0 && @ldap_bind($ds, io_safe_output($login), $password) ) {
-			$correct = true;
-		}
-	}
-	
-	if (!$correct) {
-		@ldap_close ($ds);
-
-		return false;
-	}
-	
-	$permissions = array();
-	$i = 0;
-	$count_total = 0;
-
-	$ldap_adv_perms = json_decode(io_safe_output($config['ldap_adv_perms']), true);
-	
-	foreach ($ldap_adv_perms as $ldap_adv_perm) {
-		$groups = $ldap_adv_perm['groups_ldap'];
-		
-		if ($groups[0] == '') {
-			$groups = array();
-		}
-		else {
-			$groups = $groups[0];
-		}
-
-		$count_ad_adv_perms = count(explode(",", $groups));
-		
-		$tags_ids = array();
-		$tags = implode(",", $tags);
-		if ($tags == null) {
-			$tags = "";
-		} 
-
-		foreach ($memberof as $member) {
-			$member_to_compare = str_replace($config['ldap_login_attr'] . "=", "", $member);
-			$member_to_compare = str_replace($id_user . ",", "", $member_to_compare);
-			$member_to_compare = str_replace("," . $dc, "", $member_to_compare);
-			
-			if (($member_to_compare == $dc) && (empty($groups))) {
-				$count_total++;
-			}
-			else {
-				$member_to_compare = explode(",", $member_to_compare);
-				$groups = explode(",", $groups);
-				foreach ($groups as $g) {
-					if ($member_to_compare[0] == $g) {
-						$count_total++;
-					}
-				}
-			}
-		}
-
-		if ($count_total > 0) {
-			$profile_id = $ldap_adv_perm['profile'];
-			$id_grupos = $ldap_adv_perm['group'];
-			
-			if (empty($profile_id)) {
-				@ldap_close ($ds);
-				return false;
-			}
-			
-			$permissions[$i]["profile"] = $profile_id;
-			$permissions[$i]["groups"] = $id_grupos;
-			$permissions[$i]["tags"] = $tags;
-		}
-		$i++;
-		$count_total = 0;
-		$count_ad_adv_perms = 0;
-	}
-	
-	if ( $check_permissions ) {
-		$result = check_permission_ldap ($id_user, $password, $user_info, $permissions, $syncronize);
-		@ldap_close ($ds);
-		
-		return $result;
-	}
-	
-	if (!is_user ($id_user)) {
-		if (($config['ldap_login_user_attr'] != 'name') && ($config['ldap_login_user_attr'] != null)) {
-			switch ($config['ldap_login_user_attr']) {
-				case 'email':
-					$filter="(" . $config['ldap_login_attr'] . "=" . io_safe_output($id_user) . ")";
-					$justthese = array("mail");
-					
-					$sr = ldap_search($ds, $dc, $filter, $justthese);
-					
-					$info = ldap_get_entries($ds, $sr);
-
-					if ($info["count"] == 0 && !isset($info[0]["mail"])) {
-						@ldap_close ($ds);
-						return false;
-					}
-					else {
-						$info = $info[0];
-					}
-
-					$id_user = $info['mail'][0];
-					$user_info['fullname'] = $id_user;
-
-					break;
-			}
-		}
-		
-		$create_user = create_user_and_permisions_ldap($id_user, $password, $user_info, $permissions, $syncronize);
-	}
-	
-	@ldap_close ($ds);
-
-	return $create_user;
 }
 
 /**
@@ -1028,6 +835,7 @@ function create_user_and_permisions_ldap ($id_user, $password, $user_info,
 	if ($user) {
 		if (!empty($permissions)) {
 			foreach ($permissions as $permission) {
+				
 				$id_profile = $permission["profile"];
 				$id_groups = $permission["groups"];
 				$tags = $permission["tags"];
@@ -1238,7 +1046,7 @@ function check_permission_ldap ($id_user, $password, $user_info,
 			}
 
 			foreach ($no_found as $new_profiles) {
-				#Add the missing permissions
+				//Add the missing permissions
 				profile_create_user_profile ($id_user,
 				$new_profiles["id_perfil"],
 				$new_profiles["id_grupo"], false,
@@ -1297,6 +1105,64 @@ function delete_user_pass_ldap ($id_user) {
 	$return = db_process_sql_update('tusuario', $values_update, array('id_user' => $id_user));
 
 	return;
+}
+
+function safe_output_accute($string) {
+	$no_allowed= array ("á","é","í","ó","ú","Á","É","Í","Ó","Ú","ñ","Ñ");
+	$allowed= array ("a","e","i","o","u","A","E","I","O","U","n","N");
+	$result = str_replace($no_allowed, $allowed ,$string);
+	return $result;
+}
+
+function local_ldap_search($ldap_host, $ldap_port=389, $ldap_version=3, $dn, $access_attr, $ldap_admin_user, $ldap_admin_pass, $user) {
+	global $config;
+	
+	$filter = "";
+	if(!empty($access_attr) && !empty($user)){
+		$filter = " -s sub '(" . $access_attr . "=" . $user . ")' ";
+	}
+	
+	$tls = "";
+	if($config["ldap_start_tls"]) {
+		$tls = " -ZZ ";
+	}
+	
+	$ldap_host = " -h " . $ldap_host;
+	$ldap_port = " -p ". $ldap_port; 
+	$ldap_version = " -P ". $ldap_version;
+	if(!empty($ldap_admin_user)){
+		$ldap_admin_user = " -D '". $ldap_admin_user."'";
+	}
+	if(!empty($ldap_admin_pass)){
+		$ldap_admin_pass = " -w " . $ldap_admin_pass;
+	}
+	$dn = " -b '". $dn ."'";
+	
+	$shell_ldap_search = explode("\n", shell_exec('ldapsearch -LLL -o ldif-wrap=no -x' . $ldap_host . $ldap_port . $ldap_version . ' -E pr=10000/noprompt ' . $ldap_admin_user . $ldap_admin_pass . $dn . $filter . $tls . ' | grep -v "^#\|^$" | sed "s/:\+ /=>/g"'));
+	foreach($shell_ldap_search as $line) {
+		$values = explode("=>", $line);
+		if(!empty($values[0]) && !empty($values[1])) {
+			$user_attr[$values[0]][] = $values[1];
+		}
+	}
+	
+	if (empty($user_attr)) {
+		return false;
+	}
+	
+	$base64 = preg_match('/^[a-zA-Z0-9\/\r\n+]*={0,2}$/', $user_attr["dn"][0]);
+	if($base64){
+		$user_dn = safe_output_accute(base64_decode($user_attr["dn"][0]));
+	} else {
+		$user_dn = safe_output_accute($user_attr["dn"][0]);
+	}
+	
+	if(strlen($user_dn) > 0) {
+		$user_attr["dn"][0]=$user_dn;
+	}
+	
+	return $user_attr;
+	
 }
 
 //Reference the global use authorization error to last auth error.

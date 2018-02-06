@@ -185,7 +185,6 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 	include_javascript_dependencies_flot_graph();
 
 	$menu = (int)$menu;
-	
 	// Get a unique identifier to graph
 	$graph_id = uniqid('graph_');
 	
@@ -338,7 +337,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 	}
 	
 	foreach ($chart_data as $label => $values) {
-		$labels[] = io_safe_output($label);
+		$labels[] = $label;
 		
 		foreach($values as $key => $value) {
 			$jsvar = "data_" . $graph_id . "_" . $key;
@@ -499,6 +498,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 	else {
 		$short_data = false;
 	}
+	
 	
 	// Javascript code
 	$return .= "<script type='text/javascript'>";
@@ -674,7 +674,7 @@ function flot_custom_pie_chart ($flash_charts, $graph_values,
 }
 
 // Returns a 3D column chart
-function flot_hcolumn_chart ($graph_data, $width, $height, $water_mark, $font = '', $font_size = 7, $background_color = "white", $tick_color = "white") {
+function flot_hcolumn_chart ($graph_data, $width, $height, $water_mark, $font = '', $font_size = 7, $background_color = "white", $tick_color = "white", $val_min=null, $val_max=null) {
 	global $config;
 	
 	include_javascript_dependencies_flot_graph();
@@ -710,12 +710,13 @@ function flot_hcolumn_chart ($graph_data, $width, $height, $water_mark, $font = 
 	$a = array();
 	$vars = array();
 	
-	$max = 0;
+	$max = PHP_INT_MIN+1;
+	$min = PHP_INT_MAX-1;
 	$i = count($graph_data);
 	$data = array();
 	
 	foreach ($graph_data as $label => $values) {
-		$labels[] = io_safe_output($label);
+		$labels[] = $label;
 		$i--;
 		
 		foreach ($values as $key => $value) {
@@ -727,9 +728,19 @@ function flot_hcolumn_chart ($graph_data, $width, $height, $water_mark, $font = 
 			if ($value > $max) {
 				$max = $value;
 			}
+
+			if ($value < $min) {
+				$min = $value;
+			}
 		}
 	}
 
+	if (!is_numeric($val_min)) {
+		$val_min = $min;
+	}
+	if (!is_numeric($val_max)) {
+		$val_max = $max;
+	}
 	
 	// Store serialized data to use it from javascript
 	$labels = implode($separator,$labels);
@@ -755,7 +766,7 @@ function flot_hcolumn_chart ($graph_data, $width, $height, $water_mark, $font = 
 	$return .= "<script type='text/javascript'>";
 	
 	$return .= "pandoraFlotHBars('$graph_id', '$values', '$labels',
-		false, $max, '$water_mark', '$separator', '$separator2', '$font', $font_size, '$background_color', '$tick_color')";
+		false, $max, '$water_mark', '$separator', '$separator2', '$font', $font_size, '$background_color', '$tick_color', $val_min, $val_max)";
 
 	$return .= "</script>";
 	
@@ -807,7 +818,7 @@ function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $lon
 	$max = 0;
 	$i = count($graph_data);
 	foreach ($graph_data as $label => $values) {
-		$labels[] = io_safe_output($label);
+		$labels[] = $label;
 		$i--;
 		
 		foreach ($values as $key => $value) {
@@ -931,7 +942,7 @@ function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $
 	$c = 0;
 	$acumulate_data = array();
 	foreach ($graph_data as $label => $values) {
-		$labels[] = io_safe_output($label);
+		$labels[] = $label;
 		$i--;
 		
 		foreach ($values as $key => $value) {

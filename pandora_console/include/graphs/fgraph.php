@@ -622,7 +622,7 @@ function hbar_graph($flash_chart, $chart_data, $width, $height,
 	$color, $legend, $long_index, $no_data_image, $xaxisname = "",
 	$yaxisname = "", $water_mark = "", $font = '', $font_size = '',
 	$unit = '', $ttl = 1, $homeurl = '', $backgroundColor = 'white',
-	$tick_color = "white") {
+	$tick_color = "white", $val_min=null, $val_max=null) {
 	
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 	
@@ -632,7 +632,7 @@ function hbar_graph($flash_chart, $chart_data, $width, $height,
 	
 	if ($flash_chart) {
 		return flot_hcolumn_chart(
-			$chart_data, $width, $height, $water_mark_url, $font, $font_size, $backgroundColor, $tick_color);
+			$chart_data, $width, $height, $water_mark_url, $font, $font_size, $backgroundColor, $tick_color, $val_min, $val_max);
 	}
 	else {
 		

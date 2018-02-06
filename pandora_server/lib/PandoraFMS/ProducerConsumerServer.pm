@@ -118,6 +118,7 @@ sub data_producer ($$$$$) {
 		while ($RUN == 1) {
 
 			# Get pending tasks
+			$self->logThread('[PRODUCER] Queuing tasks.');
 			my @tasks = &{$self->{'_producer'}}($self);
 			
 			foreach my $task (@tasks) {
@@ -169,6 +170,7 @@ sub data_consumer ($$$$$) {
 		while ($RUN == 1) {
 
 			# Wait for data
+			$self->logThread('[CONSUMER] Waiting for data.');
 			$task_sem->down;
 
 			$sem->down;
@@ -179,6 +181,7 @@ sub data_consumer ($$$$$) {
 			last if ($RUN == 0);
 			
 			# Execute task
+			$self->logThread("[CONSUMER] Executing task: $task");
 			&{$self->{'_consumer'}}($self, $task);
 
 			# Update task status

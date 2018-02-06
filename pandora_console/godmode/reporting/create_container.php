@@ -36,19 +36,28 @@ if (is_ajax()){
 	$add_custom = (bool) get_parameter('add_custom',0);
 	$add_dynamic = (bool) get_parameter('add_dynamic',0);
 	$id_container2 = get_parameter('id_container',0);
-    
+	
 	if($add_single) {
 		$id_agent = get_parameter('id_agent');
 		$id_agent_module = get_parameter('id_agent_module');
 		$time_lapse = get_parameter('time_lapse');
 		$only_avg = get_parameter('only_avg');
 		$simple_type_graph = get_parameter('simple_type_graph');
+		$fullscale = get_parameter('fullscale');
 				
 		if($only_avg != 'false'){
 			$only_avg = 1;
 		} else{
 			$only_avg = 0;   
 		}
+		
+		if($fullscale != 'false'){
+				$fullscale = 1;
+		}
+		else{
+				$fullscale = 0;
+		}
+		
 		$values = array(
 			'id_container' => $id_container2,
 			'type' => "simple_graph",
@@ -56,7 +65,8 @@ if (is_ajax()){
 			'id_agent_module' => $id_agent_module,
 			'time_lapse' => $time_lapse,
 			'only_average' => $only_avg,
-			'type_graph' => $simple_type_graph);
+			'type_graph' => $simple_type_graph,
+			'fullscale' => $fullscale);
 
 		$id_item = db_process_sql_insert('tcontainer_item', $values);
 		return;
@@ -65,12 +75,21 @@ if (is_ajax()){
   if($add_custom) {
     $time_lapse = get_parameter('time_lapse');
     $id_custom = get_parameter('id_custom');
+		$fullscale = get_parameter('fullscale');
+		if($fullscale != 'false'){
+				$fullscale = 1;
+		}
+		else{
+				$fullscale = 0;
+		}
         
-    $values = array(
-    	'id_container' => $id_container2,
-    	'type' => "custom_graph",
-    	'time_lapse' => $time_lapse,
-    	'id_graph' => $id_custom);
+		$values = array(
+				'id_container' => $id_container2,
+				'type' => "custom_graph",
+				'time_lapse' => $time_lapse,
+				'id_graph' => $id_custom,
+				'fullscale' => $fullscale,
+		);
 
     $id_item = db_process_sql_insert('tcontainer_item', $values);
 		return;
@@ -85,11 +104,20 @@ if (is_ajax()){
 		$tag = get_parameter('tag',0);
     $only_avg = get_parameter('only_avg');
 		$simple_type_graph2 = get_parameter('simple_type_graph2');
+		$fullscale = get_parameter('fullscale');
 		if($only_avg != 'false') {
 			$only_avg = 1;
     } else {
     	$only_avg = 0;   
     }
+		
+		if($fullscale != 'false'){
+				$fullscale = 1;
+		}
+		else{
+				$fullscale = 0;
+		}
+		
 		$values = array(
 			'id_container' => $id_container2,
       'type' => "dynamic_graph",
@@ -100,7 +128,9 @@ if (is_ajax()){
 			'module' => $module_name,
       'id_tag' => $tag,
       'only_average' => $only_avg,
-			'type_graph' => $simple_type_graph2);
+			'type_graph' => $simple_type_graph2,
+			'fullscale' => $fullscale);
+
 		$id_item = db_process_sql_insert('tcontainer_item', $values);
 		return;
 	}
@@ -277,7 +307,7 @@ if($edit_container){
 	
     $single_table = "<table width='100%' cellpadding=4 cellspacing=4>";
         $single_table .= "<tr id='row_time_lapse' style='' class='datos'>";
-            $single_table .= "<td style='font-weight:bold;width: 12%;'>";
+            $single_table .= "<td style='font-weight:bold;width: 13%;'>";
                 $single_table .= __('Time lapse');
                 $single_table .= ui_print_help_tip(__('This is the interval or period of time with which the graph data will be obtained. For example, a week means data from a week ago from now. '),true);
             $single_table .= "</td>";
@@ -345,6 +375,15 @@ if($edit_container){
 						$single_table .= "</td>";
 				$single_table .= "</tr>";
 				
+        $single_table .= "<tr id='row_fullscale' style='' class='datos'>";
+            $single_table .= "<td style='font-weight:bold;'>";
+                $single_table .= __('Show full scale graph (TIP)') . ui_print_help_tip('This option may cause performance issues', true);
+            $single_table .= "</td>";
+            $single_table .= "<td>";
+                $single_table .= html_print_checkbox('fullscale', 1, false,true);
+            $single_table .= "</td>";
+        $single_table .= "</tr>";
+				
         $single_table .= "<tr>";
             $single_table .= "<td >";
             $single_table .= "</td>";
@@ -370,7 +409,7 @@ if($edit_container){
     $table->class = 'dat';
 
     $table->styleTable = 'font-weight: bold;';
-    $table->style[0] = 'width: 12%';
+    $table->style[0] = 'width: 13%';
     $table->data = array();
 
     $data = array();
@@ -391,6 +430,13 @@ if($edit_container){
     }
 
     $data[1] = html_print_select($graphs, 'id_custom_graph',$idCustomGraph, '', __('None'), 0,true);
+    $table->data[] = $data;
+    $table->rowclass[] = '';
+
+    $data = array();
+    $data[0] = __('Show full scale graph (TIP)') . 
+                ui_print_help_tip('This option may cause performance issues', true);
+    $data[1] = html_print_checkbox('fullscale_2', 1, false,true);
     $table->data[] = $data;
     $table->rowclass[] = '';
 
@@ -418,7 +464,7 @@ if($edit_container){
     $table->class = 'dat';
 
     $table->styleTable = 'font-weight: bold;';
-    $table->style[0] = 'width: 12%';
+    $table->style[0] = 'width: 13%';
     $table->data = array();
 
     $data = array();
@@ -473,7 +519,14 @@ if($edit_container){
     $data[1] = html_print_checkbox('only_avg_2', 1, false,true);
     $table->data[] = $data;
     $table->rowclass[] = '';
-     
+
+    $data = array();
+    $data[0] = __('Show full scale graph (TIP)') . 
+                ui_print_help_tip('This option may cause performance issues', true);
+    $data[1] = html_print_checkbox('fullscale_3', 1, false,true);
+    $table->data[] = $data;
+    $table->rowclass[] = '';
+
     $data = array();
     $data[0] = "";
     $data[1] = "<input style='float:right;' type=submit name='add_dynamic' class='sub add' value='".__('Add item')."'>";
@@ -585,6 +638,7 @@ echo html_print_input_hidden('id_agent', 0);
 							var time_lapse = $("#hidden-period_single").attr('value');
 							var simple_type_graph = $("#simple_type_graph option:selected").attr('value');
 	            var only_avg = $("#checkbox-only_avg").prop("checked");
+              var fullscale = $("#checkbox-fullscale").prop("checked");
 	            var id_container = <?php echo $id_container; ?>;
 							jQuery.post ("ajax.php",
 	    					{"page" : "godmode/reporting/create_container",
@@ -594,6 +648,7 @@ echo html_print_input_hidden('id_agent', 0);
 	                "time_lapse" : time_lapse,
 									"simple_type_graph": simple_type_graph,
 	                "only_avg" : only_avg,
+                  "fullscale" : fullscale,
 	                "id_container" : id_container,
 	    					},
 	              function (data, status) {
@@ -605,9 +660,9 @@ echo html_print_input_hidden('id_agent', 0);
 						}
         });
         
-        
         $("input[name=add_custom]").click (function () {
             var id_custom = $("#id_custom_graph").val();
+            var fullscale = $("#checkbox-fullscale_2").prop("checked");
 			if (id_custom !== '0'){
 				var time_lapse = $("#hidden-period_custom").attr('value');
             	var id_container = <?php echo $id_container; ?>;
@@ -617,6 +672,7 @@ echo html_print_input_hidden('id_agent', 0);
                 	"time_lapse" : time_lapse,
                 	"id_custom" : id_custom,
                 	"id_container" : id_container,
+                   "fullscale" : fullscale,
     				},
                 	function (data, status) {
                     	var url = location.href.replace('&update_container=1', "");
@@ -637,6 +693,7 @@ echo html_print_input_hidden('id_agent', 0);
 			var tag = $("#tag").val();
       var only_avg = $("#checkbox-only_avg_2").prop("checked");
 	    var id_container = <?php echo $id_container; ?>;
+			var fullscale = $("#checkbox-fullscale_3").prop("checked");
             jQuery.post ("ajax.php",
     			{"page" : "godmode/reporting/create_container",
     			"add_dynamic" : 1,
@@ -649,6 +706,7 @@ echo html_print_input_hidden('id_agent', 0);
 				"tag" : tag,
             	"id_container" : id_container,
                 "only_avg" : only_avg,
+                "fullscale" : fullscale,
     			},
             	function (data, status) {
                 	var url = location.href.replace('&update_container=1', "");

@@ -573,14 +573,17 @@ function gis_get_agent_icon_map($idAgent, $state = false, $status = null) {
 		switch ($status) {
 			case 1:
 			case 4:
+			case 100:
 				//Critical (BAD or ALERT)
 				$state = ".bad";
 				break;
 			case 0:
+			case 300:
 				//Normal (OK)
 				$state = ".ok";
 				break;
 			case 2:
+			case 200:
 				//Warning
 				$state = ".warning";
 				break;

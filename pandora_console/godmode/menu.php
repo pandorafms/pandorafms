@@ -338,7 +338,7 @@ if (is_array ($config['extensions'])) {
 		
 		
 		
-		if($extension['godmode_menu']['name'] != 'DB Schema check' && $extension['godmode_menu']['name'] != 'DB interface'){
+		if($extension['godmode_menu']['name'] != __('DB Schema check') && $extension['godmode_menu']['name'] != __('DB interface')){
 			$extmenu = $extension['godmode_menu'];
 		}
 		

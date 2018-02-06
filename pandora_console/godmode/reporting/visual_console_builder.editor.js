@@ -375,7 +375,7 @@ function update_button_palette_callback() {
 						}
 						
 						
-						if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+						if($('#preview > img').attr('naturalWidth') == null || $('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
 							$("#image_" + idItem).removeAttr('width');
 							$("#image_" + idItem).removeAttr('height');
 							$("#image_" + idItem).attr('width', 70);
@@ -503,7 +503,7 @@ function update_button_palette_callback() {
 						}
 						
 						
-						if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+						if($('#preview > img').attr('naturalWidth') == null || $('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
 							$("#image_" + idItem).removeAttr('width');
 							$("#image_" + idItem).removeAttr('height');
 							$("#image_" + idItem).attr('width', 70);
@@ -679,7 +679,7 @@ function update_button_palette_callback() {
 			}
 			$("#image_" + idItem).attr('src', "images/spinner.gif");
 			if ((values['width'] == 0) || (values['height'] == 0)) {
-				if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+				if($('#preview > img').attr('naturalWidth') == null || $('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
 					$("#image_" + idItem).removeAttr('width');
 					$("#image_" + idItem).removeAttr('height');
 					$("#image_" + idItem).attr('width', 70);
@@ -1976,7 +1976,7 @@ function set_static_graph_status(idElement, image, status) {
 			data: parameter,
 			success: function (data) {
 				set_static_graph_status(idElement, image, data);
-				if(values['show_statistics'] == 1){
+				if(data['show_statistics'] == 1){
 					if($('#'+idElement+' table').css('float') == 'right' || $('#'+idElement+ ' table').css('float') == 'left'){
 						$('#'+idElement+ ' img').css('margin-top', parseInt($('#'+idElement).css('height'))/2 - parseInt($('#'+idElement+ ' img').css('height'))/2);	
 					}
@@ -2807,7 +2807,7 @@ function createItem(type, values, id_data) {
 					// Do none
 						if(values['image'] != '' && values['image'] != 'none'){
 					
-					if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+					if($('#preview > img').attr('naturalWidth') == null || $('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
 						$image.attr('width', '70')
 							.attr('height', '70');
 					}
@@ -2932,7 +2932,7 @@ function createItem(type, values, id_data) {
 					
 					if(values['image'] != '' && values['image'] != 'none'){
 					// Do none
-						if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+						if($('#preview > img').attr('naturalWidth') == null || $('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
 							$image.attr('width', '70')
 								.attr('height', '70');
 						}
@@ -3030,18 +3030,15 @@ function createItem(type, values, id_data) {
 					if ((values['width'] == 0) || (values['height'] == 0)) {
 						// Do none
 							if(values['image'] != '' && values['image'] != 'none'){
-						
-						if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
-							$image.attr('width', '70')
-								.attr('height', '70');
-						}
-						else{
-							$image.attr('width', $('#preview > img')[0].naturalWidth)
-								.attr('height', $('#preview > img')[0].naturalHeight);
-						}	
-						
-					
-					}
+								if($('#preview > img').attr('naturalWidth') == null || $('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+									$image.attr('width', '70')
+									.attr('height', '70');
+								}
+								else{
+									$image.attr('width', $('#preview > img')[0].naturalWidth)
+									.attr('height', $('#preview > img')[0].naturalHeight);
+								}	
+							}
 					else{
 						$image.attr('width', '70')
 							.attr('height', '70');
@@ -3166,7 +3163,7 @@ function createItem(type, values, id_data) {
 						
 						if(values['image'] != '' && values['image'] != 'none'){
 						// Do none
-							if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+							if($('#preview > img').attr('naturalWidth') == null || $('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
 								$image.attr('width', '70')
 									.attr('height', '70');
 							}
@@ -3447,7 +3444,7 @@ function createItem(type, values, id_data) {
 			break;
 		case 'icon':
 			if ((values['width'] == 0) || (values['height'] == 0)) {
-				if($('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
+				if($('#preview > img').attr('naturalWidth') == null || $('#preview > img')[0].naturalWidth > 150 || $('#preview > img')[0].naturalHeight > 150){
 					sizeStyle = 'width: ' + '70'  + 'px; height: ' + '70' + 'px;';
 					imageSize = 'width="' + '70'  + '" height="' + '70' + '"';
 				}			

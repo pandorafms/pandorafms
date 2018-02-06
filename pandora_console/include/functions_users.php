@@ -403,13 +403,13 @@ function old_users_get_groups ($id_user = false, $privilege = "AR", $returnAllGr
 		// Admin.
 		if (is_user_admin($id_user)) {
 			$groups = db_get_all_rows_sql ("SELECT * FROM tgrupo ORDER BY nombre");
-		}
+	 	}
 		// Per-group permissions.
 		else {
 			$query = sprintf("SELECT tgrupo.*, tperfil.*, tusuario_perfil.tags FROM tgrupo, tusuario_perfil, tperfil
 			        WHERE (tgrupo.id_grupo = tusuario_perfil.id_grupo OR tusuario_perfil.id_grupo = 0)
 					AND tusuario_perfil.id_perfil = tperfil.id_perfil
-					AND tusuario_perfil.id_usuario = '%s' ORDER BY nombre", $id_user);
+					AND tusuario_perfil.id_usuario = '%s' ORDER BY tgrupo.nombre", $id_user);
 			$groups = db_get_all_rows_sql ($query);
 
 			// Get children groups.

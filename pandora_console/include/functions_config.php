@@ -512,6 +512,11 @@ function config_update_config () {
 						$error_update[] = __('Custom title2 login');
 					if (!config_update_value ('login_background', (string) get_parameter ('login_background')))
 						$error_update[] = __('Login background');
+						
+					if (!config_update_value ('custom_docs_url', (string) get_parameter ('custom_docs_url')))
+						$error_update[] = __('Custom Docs url');
+					if (!config_update_value ('custom_support_url', (string) get_parameter ('custom_support_url')))
+						$error_update[] = __('Custom support url');
 
 					if (!config_update_value ('meta_custom_logo', (string) get_parameter ('meta_custom_logo')))
 						$error_update[] = __('Custom logo metaconsole');
@@ -525,6 +530,11 @@ function config_update_config () {
 						$error_update[] = __('Custom title2 login metaconsole');
 					if (!config_update_value ('meta_login_background', (string) get_parameter ('meta_login_background')))
 						$error_update[] = __('Login background metaconsole');
+											
+					if (!config_update_value ('meta_custom_docs_url', (string) get_parameter ('meta_custom_docs_url')))
+						$error_update[] = __('Custom Docs url');
+					if (!config_update_value ('meta_custom_support_url', (string) get_parameter ('meta_custom_support_url')))
+						$error_update[] = __('Custom support url');
 
 					if (!config_update_value ('vc_refr', get_parameter('vc_refr')))
 						$error_update[] = __('Default interval for refresh on Visual Console');
@@ -1184,6 +1194,22 @@ function config_process_config () {
 
 	if (!isset ($config["custom_title2_login"])) {
 		config_update_value ('custom_title2_login', __('NEXT GENERATION'));
+	}
+	
+	if (!isset ($config["custom_docs_url"])) {
+		config_update_value ('custom_docs_url', 'http://wiki.pandorafms.com/');
+	}
+
+	if (!isset ($config["custom_support_url"])) {
+		config_update_value ('custom_support_url', 'https://support.artica.es');
+	}
+	
+	if (!isset ($config["meta_custom_docs_url"])) {
+		config_update_value ('meta_custom_docs_url', 'http://wiki.pandorafms.com/index.php?title=Main_Page');
+	}
+
+	if (!isset ($config["meta_custom_support_url"])) {
+		config_update_value ('meta_custom_support_url', 'https://support.artica.es');
 	}
 
 	if (!isset ($config["meta_custom_logo"])) {

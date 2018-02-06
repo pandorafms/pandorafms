@@ -102,12 +102,11 @@ echo '<div id="header_login">';
 			echo '<img src="images/custom_logo/pandora_logo_head_3.png" alt="pandora_console">';	
 		}
 	echo '</div>';
-	
 		echo '<div id="list_icon_docs_support"><ul>';
-			echo '<li><a href="http://wiki.pandorafms.com/" target="_blank"><img src="images/icono_docs.png" alt="docs pandora"></a></li>';
+			echo '<li><a href="'.$config['custom_docs_url'].'" target="_blank"><img src="images/icono_docs.png" alt="docs pandora"></a></li>';
 			echo '<li>' . __('Docs') . '</li>';
 			if (file_exists (ENTERPRISE_DIR . "/load_enterprise.php")) {
-				echo '<li id="li_margin_left"><a href="https://support.artica.es" target="_blank"><img src="images/icono_support.png" alt="support pandora"></a></li>';
+				echo '<li id="li_margin_left"><a href="'.$config['custom_support_url'].'" target="_blank"><img src="images/icono_support.png" alt="support pandora"></a></li>';
 			} else {
 				echo '<li id="li_margin_left"><a href="https://pandorafms.com/monitoring-services/support/" target="_blank"><img src="images/icono_support.png" alt="support pandora"></a></li>';
 			}

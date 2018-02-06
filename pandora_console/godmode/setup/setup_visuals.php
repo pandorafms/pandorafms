@@ -248,6 +248,18 @@ if(enterprise_installed()) {
 	$row++;
 }	
 
+if(enterprise_installed()) {
+	$table_styles->data[$row][0] = __('Docs URL (login)');
+	$table_styles->data[$row][1] = html_print_input_text ('custom_docs_url', $config["custom_docs_url"], '', 50, 50, true);
+	$row++;
+}	
+
+if(enterprise_installed()) {
+	$table_styles->data[$row][0] = __('Support URL (login)');
+	$table_styles->data[$row][1] = html_print_input_text ('custom_support_url', $config["custom_support_url"], '', 50, 50, true);
+	$row++;
+}	
+
 $table_styles->data[$row][0] = __('Disable logo in graphs');
 $table_styles->data[$row][1] = __('Yes') . '&nbsp;' .
 	html_print_radio_button_extended ('fixed_graph', 1, '', $config["fixed_graph"], $open, '','',true) .

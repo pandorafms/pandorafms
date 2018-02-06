@@ -19,6 +19,7 @@ if (! isset ($config['id_user'])) {
 }
 
 require_once ('include/functions_menu.php');
+include_once ($config["homedir"] . '/include/functions_visual_map.php');
 
 enterprise_include ('operation/menu.php');
 
@@ -125,57 +126,89 @@ if (check_acl ($config['id_user'], 0, "MR") || check_acl ($config['id_user'], 0,
 
 enterprise_hook ('services_menu');
 
-if (check_acl ($config['id_user'], 0, "VR") || check_acl ($config['id_user'], 0, "VW") || check_acl ($config['id_user'], 0, "VM")) {		
-	//Visual console
-	$sub["godmode/reporting/map_builder"]["text"] = __('Visual console');
-	$sub["godmode/reporting/map_builder"]["id"] = 'Visual console';
-	//Set godomode path
-	$sub["godmode/reporting/map_builder"]["subsecs"] = array(
-		"godmode/reporting/map_builder",
-		"godmode/reporting/visual_console_builder");
-	
-	$layouts = db_get_all_rows_in_table ('tlayout', 'name');
-	$sub2 = array ();
-
-	if ($layouts === false) {
-		$layouts = array ();
+if (check_acl ($config['id_user'], 0, "VR") || check_acl ($config['id_user'], 0, "VW") || check_acl ($config['id_user'], 0, "VM")) {
+	if(!isset($config['vc_favourite_view']) || $config['vc_favourite_view'] == 0){
+		//Visual console
+		$sub["godmode/reporting/map_builder"]["text"] = __('Visual console');
+		$sub["godmode/reporting/map_builder"]["id"] = 'Visual console';
 	}
-	else {
+	else{
+		//Visual console favorite
+		$sub["godmode/reporting/visual_console_favorite"]["text"] = __('Visual console');
+		$sub["godmode/reporting/visual_console_favorite"]["id"] = 'Visual console';
+	}
+
+	if($config['vc_menu_items'] != 0){
+		//Set godomode path
+		if(!isset($config['vc_favourite_view']) || $config['vc_favourite_view'] == 0){
+			$sub["godmode/reporting/map_builder"]["subsecs"] = array(
+				"godmode/reporting/map_builder",
+				"godmode/reporting/visual_console_builder");
+		}
+		else{
+			$sub["godmode/reporting/visual_console_favorite"]["subsecs"] = array(
+				"godmode/reporting/map_builder",
+				"godmode/reporting/visual_console_builder");
+		}
+
+		//$layouts = db_get_all_rows_in_table ('tlayout', 'name');
+		$own_info = get_user_info($config['id_user']);
+		$returnAllGroups = 0;
+		if($own_info['is_admin']){
+			$returnAllGroups = 1;
+		}
+
+		$layouts = visual_map_get_user_layouts ($config['id_user'],false,false,$returnAllGroups,true);
 		
-		$id = (int) get_parameter ('id', -1);
-		
-		$firstLetterNameVisualToShow = array('_', ',', '[', '(');
-		
-		foreach ($layouts as $layout) {
-			if (!check_acl ($config['id_user'], 0, "VR") && ! check_acl ($config['id_user'], 0, "VW") && ! check_acl ($config['id_user'], 0, "VM")) {
-				continue;
+		$sub2 = array ();
+
+		if ($layouts === false) {
+			$layouts = array ();
+		}
+		else {
+			$id = (int) get_parameter ('id', -1);
+			$break_max_console = false;
+			$max = $config['vc_menu_items'];
+			$i=0;
+			foreach ($layouts as $layout) {
+				$i++;
+				if ($i > $max) {
+					$break_max_console = true;
+					break;
+				}
+
+				$name = io_safe_output($layout['name']);
+				
+				$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["text"] = mb_substr ($name, 0, 19);
+				$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["id"] = mb_substr ($name, 0, 19);
+				$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["title"] = $name;
+				if (!empty($config['vc_refr'])) {
+					$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["refr"] = $config['vc_refr'];
+				}
+				elseif (((int)get_parameter('refr', 0)) > 0) {
+					$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["refr"] = (int)get_parameter('refr', 0);
+				}
+				else {
+					$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["refr"] = 0;
+				}
 			}
-			$name = io_safe_output($layout['name']);
-			if (empty($name)) {
-				$firstLetter = '';
-			}
-			else {
-				$firstLetter = $name[0];
+
+			if($break_max_console){
+				$sub2["godmode/reporting/visual_console_favorite"]["text"]  = __('Show more') . " >";
+				$sub2["godmode/reporting/visual_console_favorite"]["id"]    = "visual_favourite_console";
+				$sub2["godmode/reporting/visual_console_favorite"]["title"] = "show_more";
+				$sub2["godmode/reporting/visual_console_favorite"]["refr"]  = 0;
 			}
 			
-			if (!in_array($firstLetter, $firstLetterNameVisualToShow)) {
-				continue;
+			if (!empty($sub2)){
+				if(!isset($config['vc_favourite_view']) || $config['vc_favourite_view'] == 0){
+					$sub["godmode/reporting/map_builder"]["sub2"] = $sub2;
+				}
+				else{
+					$sub["godmode/reporting/visual_console_favorite"]["sub2"] = $sub2;
+				}
 			}
-			$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["text"] = mb_substr ($name, 0, 19);
-			$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["id"] = mb_substr ($name, 0, 19);
-			$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["title"] = $name;
-			if (!empty($config['vc_refr'])) {
-				$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["refr"] = $config['vc_refr'];
-			}
-			elseif (((int)get_parameter('refr', 0)) > 0) {
-				$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["refr"] = (int)get_parameter('refr', 0);
-			}
-			else {
-				$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["refr"] = 0;
-			}
-		}
-		if (!empty($sub2))
-			$sub["godmode/reporting/map_builder"]["sub2"] = $sub2;
+		}		
 	}
 }	
 

@@ -338,7 +338,7 @@ if (is_array ($config['extensions'])) {
 		
 		
 		
-		if($extension['godmode_menu']['name'] != 'DB Schema check' && $extension['godmode_menu']['name'] != 'DB interface'){
+		if($extension['godmode_menu']['name'] != __('DB Schema check') && $extension['godmode_menu']['name'] != __('DB interface')){
 			$extmenu = $extension['godmode_menu'];
 		}
 		
@@ -354,7 +354,7 @@ if (is_array ($config['extensions'])) {
 			$sub2[$extmenu["sec2"]]["refr"] = 0;
 		}
 		else {
-			if (array_key_exists('fatherId',$extmenu)) {
+			if (is_array($extmenu) && array_key_exists('fatherId',$extmenu)) {
 				if (strlen($extmenu['fatherId']) > 0) {
 					if (array_key_exists('subfatherId',$extmenu)) {
 						if (strlen($extmenu['subfatherId']) > 0) {

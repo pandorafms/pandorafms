@@ -145,10 +145,10 @@ sub data_consumer ($$) {
 	# Build command to execute
 	my $wmi_command = '';
 	if (defined ($module->{'plugin_pass'}) && $module->{'plugin_pass'} ne "") {
-		$wmi_command = $pa_config->{'wmi_client'} . ' -U "' . $module->{'plugin_user'} . '"%"' . pandora_output_password($pa_config, $module->{'plugin_pass'}) . '"';
+		$wmi_command = $pa_config->{'wmi_client'} . ' -U "' . safe_output($module->{'plugin_user'}) . '"%"' . pandora_output_password($pa_config, $module->{'plugin_pass'}) . '"';
 	}
 	elsif (defined ($module->{'plugin_user'}) && $module->{'plugin_user'} ne "") {
-		$wmi_command = $pa_config->{'wmi_client'} . ' -U "' . $module->{'plugin_user'} . '"';
+		$wmi_command = $pa_config->{'wmi_client'} . ' -U "' . safe_output($module->{'plugin_user'}) . '"';
 	}
 	else {
 		$wmi_command = $pa_config->{'wmi_client'} . ' -N';

@@ -229,6 +229,7 @@ our @EXPORT = qw(
 	pandora_self_monitoring
 	pandora_process_policy_queue
 	subst_alert_macros
+	get_agent_from_alias
 	get_agent_from_addr
 	get_agent_from_name
 	load_module_macros
@@ -243,7 +244,7 @@ our @EXPORT = qw(
 
 # Some global variables
 our @DayNames = qw(sunday monday tuesday wednesday thursday friday saturday);
-our @ServerTypes = qw (dataserver networkserver snmpconsole reconserver pluginserver predictionserver wmiserver exportserver inventoryserver webserver eventserver icmpserver snmpserver satelliteserver transactionalserver mfserver syncserver wuxserver);
+our @ServerTypes = qw (dataserver networkserver snmpconsole reconserver pluginserver predictionserver wmiserver exportserver inventoryserver webserver eventserver icmpserver snmpserver satelliteserver transactionalserver mfserver syncserver wuxserver syslogserver);
 our @AlertStatus = ('Execute the alert', 'Do not execute the alert', 'Do not execute the alert, but increment its internal counter', 'Cease the alert', 'Recover the alert', 'Reset internal counter');
 
 # Event storm protection (no alerts or events)
@@ -251,6 +252,17 @@ our $EventStormProtection :shared = 0;
 
 # Current master server
 my $Master :shared = 0;
+
+##########################################################################
+# Return the agent given the agent name.
+##########################################################################
+sub get_agent_from_alias ($$) {
+	my ($dbh, $alias) = @_;
+	
+	return undef if (! defined ($alias) || $alias eq '');
+	
+	return get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE tagente.alias = ?', safe_input($alias));
+}
 
 ##########################################################################
 # Return the agent given the IP address.
@@ -1010,7 +1022,8 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_modulestatus_ => undef,
 				_moduletags_ => undef,
 				'_moduledata_\S+_' => undef,
-				_id_agent_ => (defined ($module)) ? $module->{'id_agente'} : '', 
+				_id_agent_ => (defined ($module)) ? $module->{'id_agente'} : '',
+				_id_module_ => (defined ($module)) ? $module->{'id_agente_modulo'} : '',
 				_id_group_ => (defined ($group)) ? $group->{'id_grupo'} : '',
 				_id_alert_ => (defined ($alert->{'id_template_module'})) ? $alert->{'id_template_module'} : '',
 				_interval_ => (defined ($module) && $module->{'module_interval'} != 0) ? $module->{'module_interval'} : (defined ($agent)) ? $agent->{'intervalo'} : '',
@@ -4724,23 +4737,29 @@ sub pandora_self_monitoring ($$) {
 	$xml_output .=" <data>$agents_unknown</data>";
 	$xml_output .=" </module>";
 	
-	$xml_output .=" <module>";
-	$xml_output .=" <name>System_Load_AVG</name>";
-	$xml_output .=" <type>generic_data</type>";
-	$xml_output .=" <data>$load_average</data>";
-	$xml_output .=" </module>";
+	if (defined($load_average)) {
+		$xml_output .=" <module>";
+		$xml_output .=" <name>System_Load_AVG</name>";
+		$xml_output .=" <type>generic_data</type>";
+		$xml_output .=" <data>$load_average</data>";
+		$xml_output .=" </module>";
+	}
 	
-	$xml_output .=" <module>";
-	$xml_output .=" <name>Free_RAM</name>";
-	$xml_output .=" <type>generic_data</type>";
-	$xml_output .=" <data>$free_mem</data>";
-	$xml_output .=" </module>";
+	if (defined($free_mem)) {
+		$xml_output .=" <module>";
+		$xml_output .=" <name>Free_RAM</name>";
+		$xml_output .=" <type>generic_data</type>";
+		$xml_output .=" <data>$free_mem</data>";
+		$xml_output .=" </module>";
+	}
 	
-	$xml_output .=" <module>";
-	$xml_output .=" <name>FreeDisk_SpoolDir</name>";
-	$xml_output .=" <type>generic_data</type>";
-	$xml_output .=" <data>$free_disk_spool</data>";
-	$xml_output .=" </module>";
+	if (defined($free_disk_spool)) {
+		$xml_output .=" <module>";
+		$xml_output .=" <name>FreeDisk_SpoolDir</name>";
+		$xml_output .=" <type>generic_data</type>";
+		$xml_output .=" <data>$free_disk_spool</data>";
+		$xml_output .=" </module>";
+	}
 	
 	$xml_output .= "</agent_data>";
 	
@@ -4816,8 +4835,13 @@ sub pandora_module_unknown ($$) {
 			AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo 
 			AND tagente.disabled = 0 
 			AND tagente_modulo.disabled = 0 
-			AND ((tagente_estado.estado <> 3 AND tagente_modulo.id_tipo_modulo NOT IN (21, 22, 23, 100))
-				OR (tagente_estado.estado <> 0 AND tagente_modulo.id_tipo_modulo IN (21, 22, 23)))
+			AND ((tagente_modulo.id_tipo_modulo IN (21, 22, 23) AND tagente_estado.estado <> 0)
+				OR (' .
+				($pa_config->{'unknown_updates'} == 0 ? 
+					'tagente_estado.estado <> 3 AND tagente_modulo.id_tipo_modulo NOT IN (21, 22, 23, 100)' :
+					'tagente_modulo.id_tipo_modulo NOT IN (21, 22, 23, 100) AND tagente_estado.last_unknown_update + tagente_estado.current_interval < UNIX_TIMESTAMP()') .
+				')
+			)
 			AND tagente_estado.utimestamp != 0
 			AND (tagente_estado.current_interval * ?) + tagente_estado.utimestamp < UNIX_TIMESTAMP()', $pa_config->{'unknown_interval'});
 	
@@ -4875,9 +4899,11 @@ sub pandora_module_unknown ($$) {
 		}
 		# Regular module
 		else {
-			# Set the module state to unknown
-			logger ($pa_config, "Module " . $module->{'nombre'} . " is going to UNKNOWN", 10);
-			db_do ($dbh, 'UPDATE tagente_estado SET last_status = 3, estado = 3 WHERE id_agente_estado = ?', $module->{'id_agente_estado'});
+			# Set the module status to unknown (the module can already be unknown if unknown_updates is enabled).
+			if ($module->{'estado'} != 3) {
+				logger ($pa_config, "Module " . $module->{'nombre'} . " is going to UNKNOWN", 10);
+				db_do ($dbh, 'UPDATE tagente_estado SET last_status = 3, estado = 3, last_unknown_update = ? WHERE id_agente_estado = ?', time(), $module->{'id_agente_estado'});
+			}
 			
 			# Get agent information
 			my $agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE id_agente = ?', $module->{'id_agente'});
@@ -4899,7 +4925,8 @@ sub pandora_module_unknown ($$) {
 			
 			my $do_event;
 			# Are unknown events enabled?
-			if ($pa_config->{'unknown_events'} == 0) {
+			if ($pa_config->{'unknown_events'} == 0 ||
+				$module->{'estado'} == 3) { # Already in unknown status (unknown_updates is enabled).
 				$do_event = 0;
 			}
 			elsif (!defined($module->{'disabled_types_event'}) || $module->{'disabled_types_event'} eq "") {
@@ -4919,7 +4946,7 @@ sub pandora_module_unknown ($$) {
 					$do_event = 1;
 				}
 			}
-			
+
 			# Generate event with severity minor
 			if ($do_event) {
 				my ($event_type, $severity) = ('going_unknown', 5);
@@ -5128,7 +5155,7 @@ sub pandora_update_agent_module_count ($$$) {
 	}; # Module counts by status.
 
 	# Retrieve and hash module status counts.
-	my @rows = get_db_rows ($dbh, 'SELECT estado, COUNT(*) AS total FROM tagente_modulo, tagente_estado WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=?GROUP BY estado', $agent_id);
+	my @rows = get_db_rows ($dbh, 'SELECT estado, COUNT(*) AS total FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=?GROUP BY estado', $agent_id);
 	foreach my $row (@rows) {
 		$counts->{$row->{'estado'}} = $row->{'total'};
 		$total += $row->{'total'};

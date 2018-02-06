@@ -43,7 +43,7 @@ ob_start ('ui_process_page_head');
 // Enterprise main
 enterprise_include ('index.php');
 
-require ('include/functions_visual_map.php');
+require_once ('include/functions_visual_map.php');
 
 $hash = get_parameter ('hash');
 $id_layout = (int) get_parameter ('id_layout');
@@ -100,7 +100,7 @@ echo '<ul class="mn">';
 // QR code
 echo '<li class="nomn">';
 echo '<a href="javascript: show_dialog_qrcode();">';
-echo '<img class="vc-qr" src="../../images/qrcode_icon.jpg"/>';
+echo '<img class="vc-qr" src="../../images/qrcode_icon_2.jpg"/>';
 echo '</a>';
 echo '</li>';
 

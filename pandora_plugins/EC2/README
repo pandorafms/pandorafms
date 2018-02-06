@@ -1,0 +1,142 @@
+--------------------------------
+Amazon EC2 CloudWatch monitoring
+--------------------------------
+
+This specific monitoring uses CloudWatch API to monitor your instances
+in Amazon EC2 service. You need to have activated the cloudwatch
+enabled in your instance.
+
+The main idea of this remote server plugin is to get information from
+your instances using the network plugin server, that means you will
+need to register the plugin in the server, and make different modules
+to grab the information of your EC2 servers.
+
+This is an example of the execution:
+
+   ./ec2_cloudwatch_plugin.sh -f ./ec2.conf -d InstanceId=i-9d0b4af1 -n AWS/EC2 -m CPUUtilization
+
+It will return a % numeric value of the metric "CPUUtilization" in the
+instance i-9d0b4af1
+
+For AWS/EC2 namespace, you can use -i option instead -d, like;
+
+   ./ec2_cloudwatch_plugin.sh -f ./ec2.conf -i i-9d0b4af1 -n AWS/EC2 -m CPUUtilization
+
+	***		***		***
+
+This package also includes ec2_describe_instance.sh to get some
+information about EC2 intances.
+
+For example, you can get the AMI Id of the instance, by the command
+below;
+
+   ./ec2_describe_instance.sh -f ./ec2.conf -i i-9d0b4af1 -n ami-id
+
+You can get the following information by this command;
+
+    ami-id
+    public-dns
+    private-dns
+    type
+    available-zone
+    public-ip
+    private-ip
+    block-devices
+    security-group
+
+
+To install you will need:
+-------------------------
+
+1. To have a running JAVA setup, and now its JAVA home directory. In
+   the Pandora FMS Appliance (Vmware/Image) is set in /usr/
+
+2. Put the whole package on a dir in the server, for example:
+
+   /usr/share/pandora_server/util/plugin/ec2/
+
+3. Create a Credential file. This package includes a template file
+   Credential.template.
+
+4. Set the following variables in the configuration file 'ec2.conf'.
+
+4.1 AWS_CLOUDWATCH_HOME
+
+  Set the path of Cloudwatch Command Line Tools, that is located at
+  CloudWatch subdirectory in this package. Foe example, you may set
+  it;
+
+    AWS_CLOUDWATCH_HOME=/usr/share/pandora_server/util/plugin/ec2/CloudWatch
+
+4.2 EC2_HOME
+
+  Set the path of EC2 API Tools, that is located at ec2-api-tools
+  subdirectory in this package. You may set it;
+
+    EC2_HOME=/usr/share/pandora_server/util/plugin/ec2/ec2-api-tools
+
+4.3 EC2_REGION
+
+  Set the region that the targets belong to. This is used to specify
+  'CloundWatch Monitoring URL' for CloudWatch API tools, and 'EC2 URL'
+  for EC2 API tools. You may set it;
+
+    EC2_REGION=ap-northeast-1
+
+4.4 AWS_CREDENTIAL_FILE
+
+  Set the path of the Credential file. You may set it;
+
+    AWS_CREDENTIAL_FILE=/path-to/Credential.txt
+
+5. If you have doubts about if it's correctly installed, execute
+   directly this command:
+
+    /path-to/ec2_cloudwatch_plugin.sh -f /path-to/ec2.conf -l
+
+   should return something like;
+--------------8<------------------------8<----------------
+AWS/EBS  VolumeId=vol-65z53747  VolumeIdleTime
+AWS/EBS  VolumeId=vol-65z53747  VolumeQueueLength
+AWS/EBS  VolumeId=vol-65z53747  VolumeReadBytes
+AWS/EBS  VolumeId=vol-65z53747  VolumeReadOps
+AWS/EBS  VolumeId=vol-65z53747  VolumeTotalReadTime
+AWS/EBS  VolumeId=vol-65z53747  VolumeTotalWriteTime
+AWS/EBS  VolumeId=vol-65z53747  VolumeWriteBytes
+AWS/EBS  VolumeId=vol-65z53747  VolumeWriteOps
+AWS/EC2  InstanceId=i-9d0b4af1  CPUUtilization
+AWS/EC2  InstanceId=i-9d0b4af1  DiskReadBytes
+AWS/EC2  InstanceId=i-9d0b4af1  DiskReadOps
+AWS/EC2  InstanceId=i-9d0b4af1  DiskWriteBytes
+AWS/EC2  InstanceId=i-9d0b4af1  DiskWriteOps
+AWS/EC2  InstanceId=i-9d0b4af1  NetworkIn
+AWS/EC2  InstanceId=i-9d0b4af1  NetworkOut
+AWS/EC2  InstanceId=i-9d0b4af1  StatusCheckFailed
+AWS/EC2  InstanceId=i-9d0b4af1  StatusCheckFailed_Instance
+AWS/EC2  InstanceId=i-9d0b4af1  StatusCheckFailed_System
+----------------------------------------------------------
+
+If you get such result, you're ready to use the plugin.
+
+
+Files:
+------
+
+The plugin has several files:
+
+  ./ec2_cloudwatch_plugin.sh - EC2 Cloud Watch Plugin
+  ./ec2_describe_instance.sh - EC2 API Tools Plugin
+
+  ./ec2.conf - configuration file.
+  
+  ./eCredential.template - Credentail file template.
+
+  ./CloudWatch/* - Components of Amazon CloudWatch (Monitoring)
+                   Command Line Tools, included in this bundle. This
+                   scripts are distributed under the Apache Licence.
+
+  ./ec2-api-tools/* - Components of Amazon EC2 API Tools, included in
+                     this bundle. This scripts are distributed under
+                     the Apache Licence.
+
+

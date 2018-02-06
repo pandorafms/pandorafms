@@ -254,7 +254,7 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 	$id_networkmap = 0, $show_snmp_modules = 0, $cut_names = true,
 	$relative = false, $text_filter = '', $ip_mask = null,
 	$dont_show_subgroups = false, $strict_user = false, $size_canvas = null,
-	$old_mode = false) {
+	$old_mode = false, $map_filter = array()) {
 	
 	global $config;
 	$nooverlap = 1;
@@ -317,7 +317,7 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 			$fields = array ('tagente.id_grupo, tagente.nombre, tagente.id_os, tagente.id_parent, tagente.id_agente, 
 						tagente.normal_count, tagente.warning_count, tagente.critical_count,
 						tagente.unknown_count, tagente.total_count, tagente.notinit_count');
-			$acltags = tags_get_user_module_and_tags ($config['id_user'],'AR', $strict_user);
+			$acltags = tags_get_user_groups_and_tags ($config['id_user'],'AR', $strict_user);
 			$agents = tags_get_all_user_agents (false, $config['id_user'], $acltags, $filter, $fields, false, $strict_user, true);
 		}
 		else {
@@ -343,7 +343,7 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 			$fields = array ('tagente.id_grupo, tagente.nombre, tagente.id_os, tagente.id_parent, tagente.id_agente, 
 						tagente.normal_count, tagente.warning_count, tagente.critical_count,
 						tagente.unknown_count, tagente.total_count, tagente.notinit_count');
-			$acltags = tags_get_user_module_and_tags ($config['id_user'],'AR', $strict_user);
+			$acltags = tags_get_user_groups_and_tags ($config['id_user'],'AR', $strict_user);
 			$agents = tags_get_all_user_agents (false, $config['id_user'], $acltags, $filter, $fields, false, $strict_user, true);
 		}
 		else {
@@ -361,7 +361,7 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 	
 	// Open Graph
 	$graph = networkmap_open_graph ($layout, $nooverlap, $pure, $zoom,
-		$ranksep, $font_size, $size_canvas);
+		$ranksep, $font_size, $size_canvas, $map_filter);
 	
 	// Parse agents
 	$nodes = array ();
@@ -625,7 +625,7 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0,
 	global $config;
 
 	if ($strict_user) {
-		$acltags = tags_get_user_module_and_tags ($config['id_user'],'AR', $strict_user);
+		$acltags = tags_get_user_groups_and_tags ($config['id_user'],'AR', $strict_user);
 	}
 	$parents = array();
 	$orphans = array();
@@ -1003,7 +1003,7 @@ function networkmap_create_agent_node ($agent, $simple = 0, $font_size = 10, $cu
 	
 	if ($strict_user) {
 		require_once($config['homedir']."/include/functions_tags.php");
-		$acltags = tags_get_user_module_and_tags ($config["id_user"], 'AR', $strict_user);
+		$acltags = tags_get_user_groups_and_tags ($config["id_user"], 'AR', $strict_user);
 		
 		$agent_filter = array("id" => $agent["id_agente"]);
 		$strict_data['normal_count'] = (int) groups_get_normal_monitors ($agent['id_grupo'], $agent_filter, array(), $strict_user, $acltags);
@@ -1396,7 +1396,7 @@ function networkmap_close_group () {
 
 // Opens a graph definition
 function networkmap_open_graph ($layout, $nooverlap, $pure, $zoom,
-	$ranksep, $font_size, $size_canvas) {
+	$ranksep, $font_size, $size_canvas, $map_filter = array()) {
 	
 	global $config;
 	
@@ -1422,22 +1422,66 @@ function networkmap_open_graph ($layout, $nooverlap, $pure, $zoom,
 	if (!is_null($size_canvas)) {
 		$size = ($size_canvas['x'] / 100) . "," . ($size_canvas['y'] / 100);
 	}
-	
+
+	// Graphviz custom values
+	if (isset($map_filter['node_sep'])) {
+		$node_sep = $map_filter['node_sep'];
+	}
+	else {
+		$node_sep = 0.25;
+	}
+	if (isset($map_filter['rank_sep'])) {
+		$rank_sep = $map_filter['rank_sep'];
+	}
+	else {
+		if ($layout == "radial") {
+			$rank_sep = 1.0;
+		}
+		else {
+			$rank_sep = 0.5;
+		}
+	}
+	if (isset($map_filter['mindist'])) {
+		$mindist = $map_filter['mindist'];
+	}
+	else {
+		$mindist = 1.0;
+	}
+	if (isset($map_filter['kval'])) {
+		$kval = $map_filter['kval'];
+	}
+	else {
+		$kval = 0.3;
+	}
+
 	// BEWARE: graphwiz DONT use single ('), you need double (")
 	$head = "graph networkmap { dpi=100; bgcolor=\"transparent\"; labeljust=l; margin=0; pad=\"0.75,0.75\";";
 	if ($nooverlap != '') {
-		$head .= "ranksep=\"4\";";
+		$head .= "overlap=\"false\";";
 		$head .= "outputorder=edgesfirst;";
 	}
+
 	if ($layout == 'flat' || $layout == 'spring1' || $layout == "spring2") {
 		if ($nooverlap != '') {
 			$head .= "overlap=\"scalexy\";";
 		}
+		if ($layout == 'flat') {
+			$head .= "ranksep=\"$rank_sep\";";
+		}
+		if ($layout == 'spring2') {
+			$head .= "K=\"$kval\";";
+		}
+	}
+	if ($layout == 'radial') {
+		$head .= "ranksep=\"$rank_sep\";";
+	}
+	if ($layout == 'circular') {
+		$head .= "mindist=\"$mindist\";";
 	}
 	
 	$head .= "ratio=fill;";
 	$head .= "root=0;";
-	$head .= "nodesep=\"0.=2\";";
+	$head .= "nodesep=\"$node_sep\";";
 	$head .= "size=\"$size\";";
 	
 	$head .= "\n";
@@ -1754,7 +1798,7 @@ function networkmap_get_new_nodes_from_ip_mask($ip_mask,
 	if ($strict_user) {
 		$filter['group_by'] = 'tagente.id_agente';
 		$fields = array ('tagente.id_agente');
-		$acltags = tags_get_user_module_and_tags ($config['id_user'],'AR', $strict_user);
+		$acltags = tags_get_user_groups_and_tags ($config['id_user'],'AR', $strict_user);
 		$user_agents = tags_get_all_user_agents (false, $config['id_user'], $acltags, $filter, $fields, false, $strict_user, true);
 		
 		foreach ($all_user_agents as $agent) {

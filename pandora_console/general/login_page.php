@@ -23,7 +23,25 @@ else {
 
 include_once($homedir . 'include/functions_ui.php');
 include_once($homedir . 'include/functions.php');
-include_once($homedir . 'include/functions_html.php');
+include_once(__DIR__ . '/../include/functions_html.php');
+
+
+if($config['visual_animation']){
+	echo 
+	'<style>
+	@keyframes login_move {
+			from {margin-left: 10%;margin-right: 10%;opacity:0.1}
+			to {margin-left: 5%;margin-right: 5%;opacity:1}
+	}
+	
+	
+	div.container_login{
+		animation-name: login_move;
+		animation-duration: 3s;
+	}
+	</style>';
+}
+
 
 if (!isset($login_screen)) {
 	$login_screen = 'login';
@@ -236,7 +254,7 @@ echo '<div class="login_page">';
 			echo '<div><span class="span1">';
 				if(file_exists (ENTERPRISE_DIR . "/load_enterprise.php")){
 					if($config['custom_title1_login']){
-						echo strtoupper(io_safe_output($config['custom_title1_login']));
+						echo io_safe_output($config['custom_title1_login']);
 					}
 					else{
 						echo __('WELCOME TO PANDORA FMS');
@@ -249,7 +267,7 @@ echo '<div class="login_page">';
 			echo '<div><span class="span2">';
 				if(file_exists (ENTERPRISE_DIR . "/load_enterprise.php")){
 					if($config['custom_title2_login']){
-						echo strtoupper(io_safe_output($config['custom_title2_login']));
+						echo io_safe_output($config['custom_title2_login']);
 					}
 					else{
 						echo __('NEXT GENERATION');

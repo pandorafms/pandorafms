@@ -163,6 +163,7 @@ CREATE TABLE IF NOT EXISTS `tagente_estado` (
 	`last_error` int(4) NOT NULL default '0',
 	`ff_start_utimestamp` bigint(20) default 0,
 	`last_dynamic_update` bigint(20) NOT NULL default '0',
+	`last_unknown_update` bigint(20) NOT NULL default '0',
 	PRIMARY KEY  (`id_agente_estado`),
 	KEY `status_index_1` (`id_agente_modulo`),
 	KEY `idx_agente` (`id_agente`),
@@ -604,6 +605,8 @@ CREATE TABLE IF NOT EXISTS `tcontainer_item` (
 	`agent` varchar(100) NOT NULL default '',
 	`module` varchar(100) NOT NULL default '',
 	`id_tag` integer(10) unsigned NOT NULL DEFAULT 0,
+	`type_graph` tinyint(1) unsigned NOT NULL DEFAULT 0,
+	`fullscale` tinyint(1) UNSIGNED NOT NULL default 0,
 	PRIMARY KEY(`id_ci`),
 	FOREIGN KEY (`id_container`) REFERENCES tcontainer(`id_container`)
 	ON DELETE CASCADE
@@ -1192,6 +1195,8 @@ CREATE TABLE IF NOT EXISTS `tgraph` (
 	`percentil` tinyint(1) UNSIGNED NOT NULL default 0,
 	`summatory_series` tinyint(1) UNSIGNED NOT NULL default 0,
 	`average_series` tinyint(1) UNSIGNED NOT NULL default 0,
+	`modules_series` tinyint(1) UNSIGNED NOT NULL default 0,
+	`fullscale` tinyint(1) UNSIGNED NOT NULL default 0,
 	PRIMARY KEY(`id_graph`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -1205,6 +1210,7 @@ CREATE TABLE IF NOT EXISTS `tgraph_source` (
 	`id_agent_module` int(11) NOT NULL default 0,
 	`weight` float(8,3) NOT NULL DEFAULT 0,
 	`label` varchar(150) DEFAULT '',
+	`field_order` int(10) DEFAULT 0,
 	PRIMARY KEY(`id_gs`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -1276,6 +1282,7 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`lapse_calc` tinyint(1) UNSIGNED NOT NULL default '0',
 	`lapse` int(11) UNSIGNED NOT NULL default '300',
 	`visual_format` tinyint(1) UNSIGNED NOT NULL default '0',
+	`hide_no_data` tinyint(1) default 0,
 	PRIMARY KEY(`id_rc`),
 	FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
 		ON UPDATE CASCADE ON DELETE CASCADE
@@ -1332,6 +1339,7 @@ CREATE TABLE IF NOT EXISTS `tlayout` (
 	`height` INTEGER UNSIGNED NOT NULL default 0,
 	`width` INTEGER UNSIGNED NOT NULL default 0,
 	`background_color` varchar(50) NOT NULL default '#FFF',
+	`is_favourite` INTEGER UNSIGNED NOT NULL default 0,
 	PRIMARY KEY(`id`)
 )  ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -1366,6 +1374,10 @@ CREATE TABLE IF NOT EXISTS `tlayout_data` (
 	`id_layout_linked_weight` int(10) NOT NULL default '0',
 	`element_group` int(10) NOT NULL default '0',
 	`show_on_top` tinyint(1) NOT NULL default '0',
+	`clock_animation` varchar(60) NOT NULL default "analogic_1",
+	`time_format` varchar(60) NOT NULL default "time",
+	`timezone` varchar(60) NOT NULL default "Europe/Madrid",
+	
 	PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -1717,6 +1729,7 @@ CREATE TABLE IF NOT EXISTS `tsnmp_filter` (
 	`id_snmp_filter` int(10) unsigned NOT NULL auto_increment,
 	`description` varchar(255) default '',
 	`filter` varchar(255) default '',
+	`unified_filters_id` int(10) not null default 0,
 	PRIMARY KEY  (`id_snmp_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -2740,6 +2753,7 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	`lapse_calc` tinyint(1) UNSIGNED NOT NULL default '0',
 	`lapse` int(11) UNSIGNED NOT NULL default '300',
 	`visual_format` tinyint(1) UNSIGNED NOT NULL default '0',
+	`hide_no_data` tinyint(1) default 0,
 	PRIMARY KEY(`id_rc`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

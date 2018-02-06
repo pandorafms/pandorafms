@@ -670,30 +670,19 @@ function tags_get_acl_tags($id_user, $id_group, $access = 'AR',
 		return ERR_WRONG_PARAMETERS;
 	}
 	
-	$acltags = tags_get_user_module_and_tags($id_user, $access);
-	
-	// Delete the groups without tag restrictions from the acl tags array if $force_group_and_tag == false
-	// Delete the groups that aren't in the received groups id
-	$acltags_aux = array();
-	
-	if (!empty($groups) && in_array(0, $groups)) {
-		$acltags_aux[0] = "";
-	}
-	foreach ($acltags as $group_id => $tags) {
-		if (!empty($groups) && array_search($group_id, $groups) === false) {
-			unset($acltags[$group_id]);
+	$raw_acltags = tags_get_user_groups_and_tags($id_user, $access);
+
+	$acltags = array();
+	foreach ($raw_acltags as $group => $taglist) {
+		if (!empty($taglist)) {
+			$acltags[$group] = explode(',', $taglist);
 		}
 		else {
-			if (!empty($tags))
-				$tags = explode(",", $tags);
-			$acltags_aux[$group_id] = $tags;
+			$acltags[$group] = '';
 		}
 	}
-	// Clean the possible empty elements
-	if (!$force_group_and_tag)
-		$acltags_aux = array_filter($acltags_aux);
-	$acltags = $acltags_aux;
 	
+
 	switch ($return_mode) {
 		case 'data':
 			// Stop here and return the array
@@ -711,6 +700,7 @@ function tags_get_acl_tags($id_user, $id_group, $access = 'AR',
 		case 'event_condition':
 			// Return the condition of the tags for tevento table
 			$condition = tags_get_acl_tags_event_condition($acltags, $meta, $force_group_and_tag);
+
 			if (!empty($condition)) {
 				return " $query_prefix " . "(" . $condition . ")";
 			}
@@ -735,7 +725,7 @@ function tags_get_acl_tags_module_condition($acltags, $modules_table = '') {
 	$group_conditions = array();
 	
 	// The acltags array contains the groups with the acl propagation applied
-	// after the changes done into the 'tags_get_user_module_and_tags' function.
+	// after the changes done into the 'tags_get_user_groups_and_tags' function.
 	foreach ($acltags as $group_id => $group_tags) {
 		$tag_join = '';
 		if (!empty($group_tags)) {
@@ -859,83 +849,84 @@ function tags_get_acl_tags_event_condition($acltags, $meta = false, $force_group
 	
 	// Juanma (08/05/2014) Fix : Will have all groups  retrieved (also propagated ones)
 	$_groups_not_in = '';
-	
-	foreach ($acltags as $group_id => $group_tags) {
-		// Group condition (The module belongs to an agent of the group X)
-		// Juanma (08/05/2014) Fix : Get all groups (children also, Propagate ACL func!)
-		$group_condition = sprintf('id_grupo IN (%s)', implode(',', array_values(groups_get_id_recursive($group_id, true))));
-		$_groups_not_in .= implode(',', array_values(groups_get_id_recursive($group_id))) . ',';
-		
-		// Tags condition (The module has at least one of the restricted tags)
-		$tags_condition = '';
-		if (empty($group_tags)) {
-			$tags_condition = "id_grupo = ".$group_id;
-		}
-		else {
-			if (!is_array($group_tags)) {
-				$group_tags = explode(',', $group_tags);
+
+	if($acltags[0]){
+		foreach ($acltags as $group_id => $group_tags) {
+			// Group condition (The module belongs to an agent of the group X)
+			$group_condition = sprintf('id_grupo IN (%s)', implode(',', array_values(groups_get_id_recursive($group_id, true))));
+			//$_groups_not_in .= implode(',', array_values(groups_get_id_recursive($group_id))) . ',';
+			
+			// Tags condition (The module has at least one of the restricted tags)
+			$tags_condition = '';
+			if (empty($group_tags)) {
+				$tags_condition = "id_grupo = ".$group_id;
+			}
+			else {
+				if (!is_array($group_tags)) {
+					$group_tags = explode(',', $group_tags);
+				}
+				
+				foreach ($group_tags as $tag) {
+					// If the tag ID doesnt exist, ignore
+					if (!isset($all_tags[$tag])) {
+						continue;
+					}
+					
+					if ($tags_condition != '') {
+						$tags_condition .= " OR \n";
+					}
+					
+					//~ // Add as condition all the posibilities of the serialized tags
+					//~ $tags_condition .= sprintf('tags LIKE "%s,%%"',io_safe_input($all_tags[$tag]));
+					//~ $tags_condition .= sprintf(' OR tags LIKE "%%,%s,%%"',io_safe_input($all_tags[$tag]));
+					//~ $tags_condition .= sprintf(' OR tags LIKE "%%,%s"',io_safe_input($all_tags[$tag]));
+					//~ $tags_condition .= sprintf(' OR tags LIKE "%s %%"',io_safe_input($all_tags[$tag]));
+					//~ $tags_condition .= sprintf(' OR tags LIKE "%%,%s %%"',io_safe_input($all_tags[$tag]));
+					
+					if ($force_group_and_tag) {
+						if (!empty($all_tags[$tag])) {
+							if ($force_equal) {
+								$tags_condition .= sprintf('(tags = "%s"',io_safe_input($all_tags[$tag]));
+							} else {
+								$tags_condition .= "(tags LIKE '%".io_safe_input($all_tags[$tag])."%'";
+							}
+							$childrens = groups_get_childrens($group_id, null, true);
+							
+							if (empty($childrens)) {
+								$tags_condition .= sprintf(' AND id_grupo = %d )', $group_id);
+							} else {
+								$childrens_ids[] = $group_id;
+								foreach ($childrens as $child) {
+									$childrens_ids[] = (int)$child['id_grupo'];
+								}
+								$ids_str = implode(',', $childrens_ids);
+								
+								$tags_condition .= sprintf(' AND id_grupo IN (%s) )', $ids_str);
+							}
+						} else {
+							$tags_condition .= "id_grupo = ".$group_id;
+						}
+					} else {
+						if ($force_equal) {
+							$tags_condition .= sprintf('tags = "%s"',io_safe_input($all_tags[$tag]));
+						} else {
+							$tags_condition .= "tags LIKE '%".io_safe_input($all_tags[$tag])."%'";
+						}
+					}
+				}
 			}
 			
-			foreach ($group_tags as $tag) {
-				// If the tag ID doesnt exist, ignore
-				if (!isset($all_tags[$tag])) {
-					continue;
-				}
-				
-				if ($tags_condition != '') {
-					$tags_condition .= " OR \n";
-				}
-				
-				//~ // Add as condition all the posibilities of the serialized tags
-				//~ $tags_condition .= sprintf('tags LIKE "%s,%%"',io_safe_input($all_tags[$tag]));
-				//~ $tags_condition .= sprintf(' OR tags LIKE "%%,%s,%%"',io_safe_input($all_tags[$tag]));
-				//~ $tags_condition .= sprintf(' OR tags LIKE "%%,%s"',io_safe_input($all_tags[$tag]));
-				//~ $tags_condition .= sprintf(' OR tags LIKE "%s %%"',io_safe_input($all_tags[$tag]));
-				//~ $tags_condition .= sprintf(' OR tags LIKE "%%,%s %%"',io_safe_input($all_tags[$tag]));
-				
-				if ($force_group_and_tag) {
-					if (!empty($all_tags[$tag])) {
-						if ($force_equal) {
-							$tags_condition .= sprintf('(tags = "%s"',io_safe_input($all_tags[$tag]));
-						} else {
-							$tags_condition .= "(tags LIKE '%".io_safe_input($all_tags[$tag])."%'";
-						}
-						$childrens = groups_get_childrens($group_id, null, true);
-						
-						if (empty($childrens)) {
-							$tags_condition .= sprintf(' AND id_grupo = %d )', $group_id);
-						} else {
-							$childrens_ids[] = $group_id;
-							foreach ($childrens as $child) {
-								$childrens_ids[] = (int)$child['id_grupo'];
-							}
-							$ids_str = implode(',', $childrens_ids);
-							
-							$tags_condition .= sprintf(' AND id_grupo IN (%s) )', $ids_str);
-						}
-					} else {
-						$tags_condition .= "id_grupo = ".$group_id;
-					}
-				} else {
-					if ($force_equal) {
-						$tags_condition .= sprintf('tags = "%s"',io_safe_input($all_tags[$tag]));
-					} else {
-						$tags_condition .= "tags LIKE '%".io_safe_input($all_tags[$tag])."%'";
-					}
-				}
+			// If there is not tag condition ignore
+			if (empty($tags_condition)) {
+				continue;
 			}
+			
+			if ($condition != '') {
+				$condition .= ' OR ';
+			}
+			
+			$condition .= "($tags_condition)\n";
 		}
-		
-		// If there is not tag condition ignore
-		if (empty($tags_condition)) {
-			continue;
-		}
-		
-		if ($condition != '') {
-			$condition .= ' OR ';
-		}
-		
-		$condition .= "($tags_condition)\n";
 	}
 	
 	//Commented because ACLs propagation don't work
@@ -2402,76 +2393,21 @@ function __add_acltags (&$acltags, $group_id, $tags_str) {
 }
 
 /* Return array with groups and their tags */
-function tags_get_user_module_and_tags ($id_user = false, $access = 'AR', $strict_user = false) {
+function tags_get_user_groups_and_tags ($id_user = false, $access = 'AR', $strict_user = false) {
 	global $config;
-	
+
 	if ($id_user == false) {
 		$id_user = $config['id_user'];
 	}
-	
-	$acl_column = get_acl_column($access);
-	
-	$sql = sprintf("SELECT tags, id_grupo 
-					FROM tusuario_perfil, tperfil
-					WHERE tperfil.id_perfil = tusuario_perfil.id_perfil AND
-						tusuario_perfil.id_usuario = '%s' AND 
-						tperfil.%s = 1
-					ORDER BY id_grupo", $id_user, $acl_column);
-	$tags_and_groups = db_get_all_rows_sql($sql);
-	
-	if ($tags_and_groups === false)
-		$tags_and_groups = array();
-	
-	$acltags = array();
-	
-	// Change the 'All' group with all groups
-	$user_groups = users_get_groups($id_user, $access, false);
-	$user_groups_ids = array();
-	if (!empty($user_groups) && is_array($user_groups)) {
-		$user_groups_ids = array_keys($user_groups);
+
+	$acls = users_get_groups ($id_user, $access, false, true);
+
+	$return = array();
+	foreach ($acls as $acl) {
+		$return[$acl["id_grupo"]] = $acl["tags"];
 	}
-	
-	// If the user is admin, he should have access to the all group with the required permission
-	if (is_user_admin($id_user))
-		array_unshift($tags_and_groups, array('id_grupo' => 0, 'tags' => ''));
-	
-	$tags_and_groups_aux = array();
-	foreach ($tags_and_groups as $data) {
-		// All group
-		if ((int)$data['id_grupo'] === 0) {
-			// All group with empty tags. All groups without tags permission!
-			if (empty($data['tags'])) {
-				foreach ($user_groups_ids as $group_id) {
-					$acltags[$group_id] = '';
-				}
-				
-				return $acltags; // End of the function
-			}
-			// Create a new element for every group with the tags
-			else {
-				foreach ($user_groups_ids as $group_id) {
-					$tags_and_groups_aux[] = array(
-							'id_grupo' => $group_id,
-							'tags' => $data['tags']
-						);
-				}
-			}
-		}
-		// Specific group
-		else {
-			$tags_and_groups_aux[] = $data;
-		}
-	}
-	$tags_and_groups = $tags_and_groups_aux;
-	unset($tags_and_groups_aux);
-	
-	
-	foreach ($tags_and_groups as $group_tag) {
-		__add_acltags($acltags, $group_tag['id_grupo'], $group_tag['tags']);
-	}
-	
-	
-	return $acltags;
+
+	return $return;
 }
 
 /**

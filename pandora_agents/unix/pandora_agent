@@ -40,8 +40,8 @@ my $Sem = undef;
 # Semaphore used to control the number of threads
 my $ThreadSem = undef;
 
-use constant AGENT_VERSION => '7.0NG.716';
-use constant AGENT_BUILD => '171128';
+use constant AGENT_VERSION => '7.0NG.718';
+use constant AGENT_BUILD => '180206';
 
 # Agent log default file size maximum and instances
 use constant DEFAULT_MAX_LOG_SIZE => 600000;
@@ -832,18 +832,22 @@ sub read_config (;$) {
 			config_update('agent_name', $Conf{'agent_name'});
 		} elsif ($Conf{'agent_name_cmd'} ne '') {
 			my $result = `$Conf{'agent_name_cmd'}`;
-	
-			# Use only the first line.
-			my ($temp_agent_name, $remain) = split(/\n/, $result);
-			chomp ($temp_agent_name);
-	
-			# Remove white spaces of the first and last.
-			$temp_agent_name =~ s/^ *(.*?) *$/$1/;
-	
-			$Conf{'agent_name'} = $temp_agent_name if ($temp_agent_name ne '');
-		} else {
-			$Conf{'agent_name'} = hostname();
+			if($result ne '') {
+				# Use only the first line.
+				my ($temp_agent_name, $remain) = split(/\n/, $result);
+				chomp ($temp_agent_name);
+		
+				# Remove white spaces of the first and last.
+				$temp_agent_name =~ s/^ *(.*?) *$/$1/;
+		
+				$Conf{'agent_name'} = $temp_agent_name if ($temp_agent_name ne '');
+			} 
 		}
+	}
+	
+	# Fall back to the hostname if agent_name is still empty.
+	if ($Conf{'agent_name'} eq '') {
+		$Conf{'agent_name'} = hostname();
 	}
 
 	# Update the agent MD5 since agent_name may have changed
@@ -1244,7 +1248,11 @@ sub check_collections () {
 
 	# Delete old collections if there are no broker agents
 	if ($BrokerEnabled == 0) {
-		opendir (DIR, "$ConfDir/collections") || return;
+		if(!opendir (DIR, "$ConfDir/collections")){
+			log_message ('Collection', "Could not open dir $ConfDir/collections");
+			return;
+		}
+
  		while (defined (my $file_name = readdir(DIR))) {
 			next if ($file_name eq '.' || $file_name eq '..');
 
@@ -1252,8 +1260,14 @@ sub check_collections () {
 			$file_name =~ s/\.md5$//;
 
 			if (! defined ($Collections{$file_name})) {
-				rmrf ("$ConfDir/collections/$file_name");
-				unlink ("$ConfDir/collections/$file_name.md5");
+				if(opendir (DIR_check, "$ConfDir/collections/$file_name")){
+					closedir (DIR_check);
+					rmrf ("$ConfDir/collections/$file_name");
+					unlink ("$ConfDir/collections/$file_name.md5");	
+				}
+				else {
+					log_message ('Collection', "Could not open dir $ConfDir/collections/$file_name");
+				}
 			}
 		}
 		closedir (DIR);
@@ -1272,7 +1286,11 @@ sub check_collections () {
 
 		# Get remote md5
  		error ("File '$Conf{'temporal'}/$collection_md5_file' already exists as a symlink and could not be removed: $!.") if (-l "$Conf{'temporal'}/$collection_md5_file" && !unlink("$Conf{'temporal'}/$collection_md5_file"));
-		next unless (recv_file ($collection_md5_file, $Conf{'server_path_md5'}) == 0);
+		if(recv_file ($collection_md5_file, $Conf{'server_path_md5'}) != 0){
+			log_message ('Collection', "Could not write $collection_md5_file on " . $Conf{'server_path_md5'});
+			next;	
+		}
+
 		open (MD5_FILE, "< $Conf{'temporal'}/$collection_md5_file") || error ("Could not open file '$Conf{'temporal'}/$collection_md5_file' for reading: $!.");
 		my $remote_collection_md5 = <MD5_FILE>;
 		close (MD5_FILE);
@@ -1280,9 +1298,14 @@ sub check_collections () {
 
 		# Read local md5
 		my $local_collection_md5 = '';
-		if (defined (open (MD5_FILE, "< $ConfDir/collections/$collection_md5_file"))) {
-			$local_collection_md5 = <MD5_FILE>;
-			close MD5_FILE;
+		if (-f "$ConfDir/collections/$collection_md5_file") {
+			if (open (MD5_FILE, "< $ConfDir/collections/$collection_md5_file")) {
+				$local_collection_md5 = <MD5_FILE>;
+				close MD5_FILE;
+			} else {
+				log_message ('Collection', "Could not open dir $ConfDir/collections/$collection_md5_file");
+				next;
+			}
 		}
 
 		# Check for changes
@@ -1290,7 +1313,10 @@ sub check_collections () {
 		next if ($local_collection_md5 eq $remote_collection_md5);
 		
 		# Download and unzip
-		next unless (recv_file ($collection_file, $Conf{'server_path_zip'}) == 0);
+		if (recv_file ($collection_file, $Conf{'server_path_zip'}) != 0) {
+			log_message ('Collection', "Could not write $collection_file on " . $Conf{'server_path_zip'});
+			next;	
+		}
 		rmrf ("$ConfDir/collections/$collection");
 		`unzip -d "$ConfDir/collections/$collection" "$Conf{'temporal'}/$collection_file" 2>$DevNull`;
 		unlink ("$Conf{'temporal'}/$collection_file");		

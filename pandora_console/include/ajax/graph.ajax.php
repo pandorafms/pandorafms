@@ -159,6 +159,9 @@ if ($get_graphs){
 			if($period > 1){
 				$value['time_lapse'] = $period;
 			}
+			
+			$type_graph = ($value['type_graph'])? "line" : "area";
+			
 			switch ($value['type']) {
 				case 'simple_graph':
 					if ($contador > 0) {
@@ -195,9 +198,8 @@ if ($get_graphs){
 							null,
 							false,
 							false,
-							'area',
-							$value['fullscale']
-						);
+							$type_graph,
+							$value['fullscale']);
 						$contador --;
 					}
 					// $table .= "</br>";
@@ -339,9 +341,8 @@ if ($get_graphs){
 								null,
 								false,
 								false,
-								'area',
-								$value['fullscale']
-							);
+								$type_graph,
+								$value['fullscale']);
 							$contador --;
 						}
 					}

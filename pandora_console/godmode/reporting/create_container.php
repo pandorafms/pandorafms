@@ -32,103 +32,105 @@ $id_container = get_parameter('id',0);
 $offset = (int) get_parameter ('offset',0);
 
 if (is_ajax()){
-    $add_single = (bool) get_parameter('add_single',0);
-    $add_custom = (bool) get_parameter('add_custom',0);
+	$add_single = (bool) get_parameter('add_single',0);
+	$add_custom = (bool) get_parameter('add_custom',0);
 	$add_dynamic = (bool) get_parameter('add_dynamic',0);
-    $id_container2 = get_parameter('id_container',0);
-    
-    if($add_single){
-        $id_agent = get_parameter('id_agent');
-        $id_agent_module = get_parameter('id_agent_module');
-        $time_lapse = get_parameter('time_lapse');
-        $only_avg = get_parameter('only_avg');
-        $fullscale = get_parameter('fullscale');
-        if($only_avg != 'false'){
-            $only_avg = 1;
-        }
-        else{
-            $only_avg = 0;   
-        }
+	$id_container2 = get_parameter('id_container',0);
+	
+	if($add_single) {
+		$id_agent = get_parameter('id_agent');
+		$id_agent_module = get_parameter('id_agent_module');
+		$time_lapse = get_parameter('time_lapse');
+		$only_avg = get_parameter('only_avg');
+		$simple_type_graph = get_parameter('simple_type_graph');
+		$fullscale = get_parameter('fullscale');
+				
+		if($only_avg != 'false'){
+			$only_avg = 1;
+		} else{
+			$only_avg = 0;   
+		}
+		
+		if($fullscale != 'false'){
+				$fullscale = 1;
+		}
+		else{
+				$fullscale = 0;
+		}
+		
+		$values = array(
+			'id_container' => $id_container2,
+			'type' => "simple_graph",
+			'id_agent' => $id_agent,
+			'id_agent_module' => $id_agent_module,
+			'time_lapse' => $time_lapse,
+			'only_average' => $only_avg,
+			'type_graph' => $simple_type_graph,
+			'fullscale' => $fullscale);
 
-        if($fullscale != 'false'){
-            $fullscale = 1;
-        }
-        else{
-            $fullscale = 0;
-        }
-
-        $values = array(
-            'id_container' => $id_container2,
-            'type' => "simple_graph",
-            'id_agent' => $id_agent,
-            'id_agent_module' => $id_agent_module,
-            'time_lapse' => $time_lapse,
-            'only_average' => $only_avg,
-            'fullscale' => $fullscale
-        );
-
-        $id_item = db_process_sql_insert('tcontainer_item', $values);
-        return;
-    }
-    
-    if($add_custom){
-        $time_lapse = get_parameter('time_lapse');
-        $id_custom = get_parameter('id_custom');
-        $fullscale = get_parameter('fullscale');
-        if($fullscale != 'false'){
-            $fullscale = 1;
-        }
-        else{
-            $fullscale = 0;
-        }
-
-        $values = array(
-            'id_container' => $id_container2,
-            'type' => "custom_graph",
-            'time_lapse' => $time_lapse,
-            'id_graph' => $id_custom,
-            'fullscale' => $fullscale,
-        );
-
-        $id_item = db_process_sql_insert('tcontainer_item', $values);
+		$id_item = db_process_sql_insert('tcontainer_item', $values);
 		return;
-    }
+	}
+    
+  if($add_custom) {
+    $time_lapse = get_parameter('time_lapse');
+    $id_custom = get_parameter('id_custom');
+		$fullscale = get_parameter('fullscale');
+		if($fullscale != 'false'){
+				$fullscale = 1;
+		}
+		else{
+				$fullscale = 0;
+		}
+        
+		$values = array(
+				'id_container' => $id_container2,
+				'type' => "custom_graph",
+				'time_lapse' => $time_lapse,
+				'id_graph' => $id_custom,
+				'fullscale' => $fullscale,
+		);
+
+    $id_item = db_process_sql_insert('tcontainer_item', $values);
+		return;
+  }
 	
 	if($add_dynamic) {
-        $time_lapse = get_parameter('time_lapse');
+		$time_lapse = get_parameter('time_lapse');
 		$group = get_parameter('group',0);
 		$module_group= get_parameter('module_group',0);
-        $agent_alias = get_parameter('agent_alias','');
+		$agent_alias = get_parameter('agent_alias','');
 		$module_name = get_parameter('module_name','');
 		$tag = get_parameter('tag',0);
-        $only_avg = get_parameter('only_avg');
-        if($only_avg != 'false'){
-            $only_avg = 1;
-        }
-        else{
-            $only_avg = 0;   
-        }
-
-        $fullscale = get_parameter('fullscale');
-        if($fullscale != 'false'){
-            $fullscale = 1;
-        }
-        else{
-            $fullscale = 0;
-        }
-
+    $only_avg = get_parameter('only_avg');
+		$simple_type_graph2 = get_parameter('simple_type_graph2');
+		$fullscale = get_parameter('fullscale');
+		if($only_avg != 'false') {
+			$only_avg = 1;
+    } else {
+    	$only_avg = 0;   
+    }
+		
+		if($fullscale != 'false'){
+				$fullscale = 1;
+		}
+		else{
+				$fullscale = 0;
+		}
+		
 		$values = array(
-    		'id_container' => $id_container2,
-        	'type' => "dynamic_graph",
+			'id_container' => $id_container2,
+      'type' => "dynamic_graph",
 			'time_lapse' => $time_lapse,
-        	'id_group' => $group,
-        	'id_module_group' => $module_group,
+      'id_group' => $group,
+      'id_module_group' => $module_group,
 			'agent' => $agent_alias,
 			'module' => $module_name,
-        	'id_tag' => $tag,
-            'only_average' => $only_avg,
-            'fullscale' => $fullscale
-        );
+      'id_tag' => $tag,
+      'only_average' => $only_avg,
+			'type_graph' => $simple_type_graph2,
+			'fullscale' => $fullscale);
+
 		$id_item = db_process_sql_insert('tcontainer_item', $values);
 		return;
 	}
@@ -299,6 +301,10 @@ if($edit_container){
 	$periods[SECONDS_15DAYS] = __('15 days');
 	$periods[SECONDS_1MONTH] = __('1 month');
 	
+	$type_graphs = array();
+	$type_graphs[0] = __('Area');
+	$type_graphs[1] = __('Line');
+	
     $single_table = "<table width='100%' cellpadding=4 cellspacing=4>";
         $single_table .= "<tr id='row_time_lapse' style='' class='datos'>";
             $single_table .= "<td style='font-weight:bold;width: 13%;'>";
@@ -359,6 +365,16 @@ if($edit_container){
                 $single_table .= html_print_checkbox('only_avg', 1, true,true);
             $single_table .= "</td>";
         $single_table .= "</tr>";
+				
+				$single_table .= "<tr id='row_only_avg' style='' class='datos'>";
+						$single_table .= "<td style='font-weight:bold;'>";
+								$single_table .= __('Type of graph');
+						$single_table .= "</td>";
+						$single_table .= "<td>";
+								$single_table .= html_print_select ($type_graphs, 'simple_type_graph', "","","",0,true);
+						$single_table .= "</td>";
+				$single_table .= "</tr>";
+				
         $single_table .= "<tr id='row_fullscale' style='' class='datos'>";
             $single_table .= "<td style='font-weight:bold;'>";
                 $single_table .= __('Show full scale graph (TIP)') . ui_print_help_tip('This option may cause performance issues', true);
@@ -367,6 +383,7 @@ if($edit_container){
                 $single_table .= html_print_checkbox('fullscale', 1, false,true);
             $single_table .= "</td>";
         $single_table .= "</tr>";
+				
         $single_table .= "<tr>";
             $single_table .= "<td >";
             $single_table .= "</td>";
@@ -491,6 +508,12 @@ if($edit_container){
     $table->data[] = $data;
     $table->rowclass[] = '';
     
+		$data = array();
+		$data[0] =  __('Type of graph');
+		$data[1] = html_print_select ($type_graphs, 'simple_type_graph2', "","","",0,true);
+		$table->data[] = $data;
+    $table->rowclass[] = '';
+		
     $data = array();
     $data[0] =  __('Only average');
     $data[1] = html_print_checkbox('only_avg_2', 1, false,true);
@@ -610,29 +633,31 @@ echo html_print_input_hidden('id_agent', 0);
     $(document).ready (function () {
         $("input[name=add_single]").click (function () {
             var id_agent_module = $("#id_agent_module").val();
-			if(id_agent_module !== '0'){
-				var id_agent = $("#hidden-id_agent").attr('value');
-				var time_lapse = $("#hidden-period_single").attr('value');
+						if(id_agent_module !== '0'){
+							var id_agent = $("#hidden-id_agent").attr('value');
+							var time_lapse = $("#hidden-period_single").attr('value');
+							var simple_type_graph = $("#simple_type_graph option:selected").attr('value');
 	            var only_avg = $("#checkbox-only_avg").prop("checked");
-                var fullscale = $("#checkbox-fullscale").prop("checked");
+              var fullscale = $("#checkbox-fullscale").prop("checked");
 	            var id_container = <?php echo $id_container; ?>;
-				jQuery.post ("ajax.php",
-	    			{"page" : "godmode/reporting/create_container",
-	    			"add_single" : 1,
+							jQuery.post ("ajax.php",
+	    					{"page" : "godmode/reporting/create_container",
+	    					"add_single" : 1,
 	                "id_agent" : id_agent,
 	                "id_agent_module" : id_agent_module,
 	                "time_lapse" : time_lapse,
+									"simple_type_graph": simple_type_graph,
 	                "only_avg" : only_avg,
-                    "fullscale" : fullscale,
+                  "fullscale" : fullscale,
 	                "id_container" : id_container,
-	    			},
-	                function (data, status) {
-	                    var url = location.href.replace('&update_container=1', "");
-	                    url = url.replace('&delete_item=1', "");
-	                    location.href = url.replace('&add_container=1', "&id="+id_container);
-	                }
+	    					},
+	              function (data, status) {
+	              	var url = location.href.replace('&update_container=1', "");
+	                url = url.replace('&delete_item=1', "");
+	                location.href = url.replace('&add_container=1', "&id="+id_container);
+	              }
 	            );
-			}
+						}
         });
         
         $("input[name=add_custom]").click (function () {
@@ -647,7 +672,7 @@ echo html_print_input_hidden('id_agent', 0);
                 	"time_lapse" : time_lapse,
                 	"id_custom" : id_custom,
                 	"id_container" : id_container,
-                    "fullscale" : fullscale,
+                   "fullscale" : fullscale,
     				},
                 	function (data, status) {
                     	var url = location.href.replace('&update_container=1', "");
@@ -664,10 +689,11 @@ echo html_print_input_hidden('id_agent', 0);
 			var time_lapse = $("#hidden-period_dynamic").attr('value');
 			var group = $("#container_id_group1").val();
 			var module_group = $("#combo_modulegroup").val();
+			var simple_type_graph2 = $("#simple_type_graph2 option:selected").attr('value');
 			var tag = $("#tag").val();
-            var only_avg = $("#checkbox-only_avg_2").prop("checked");
-	        var id_container = <?php echo $id_container; ?>;
-            var fullscale = $("#checkbox-fullscale_3").prop("checked");
+      var only_avg = $("#checkbox-only_avg_2").prop("checked");
+	    var id_container = <?php echo $id_container; ?>;
+			var fullscale = $("#checkbox-fullscale_3").prop("checked");
             jQuery.post ("ajax.php",
     			{"page" : "godmode/reporting/create_container",
     			"add_dynamic" : 1,
@@ -676,6 +702,7 @@ echo html_print_input_hidden('id_agent', 0);
 				"module_group" : module_group,
 				"agent_alias" : agent_alias,
 				"module_name" : module_name,
+				"simple_type_graph2": simple_type_graph2,
 				"tag" : tag,
             	"id_container" : id_container,
                 "only_avg" : only_avg,

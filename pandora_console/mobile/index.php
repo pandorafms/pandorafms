@@ -172,7 +172,7 @@ switch ($action) {
 			if ($user->isWaitingDoubleAuth()) {
 				if ($user->validateDoubleAuthCode()) {
 					// Logged. Refresh the page
-					header('Refresh:0');
+					header('Location: .');
 					return;
 				}
 				else {
@@ -181,7 +181,7 @@ switch ($action) {
 			}
 			else {
 				// Logged. Refresh the page
-				header('Refresh:0');
+				header('Location: .');
 				return;
 			}
 

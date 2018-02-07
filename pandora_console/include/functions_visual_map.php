@@ -1585,6 +1585,68 @@ function visual_map_print_item($mode = "read", $layoutData,
 		case STATIC_GRAPH:
 		case GROUP_ITEM:
 		
+		
+		if (! defined ('METACONSOLE')) {
+		}
+		else {
+			// For each server defined and not disabled:
+			$servers = db_get_all_rows_sql ('SELECT *
+				FROM tmetaconsole_setup
+				WHERE disabled = 0');
+			if ($servers === false)
+				$servers = array();
+			
+			$result = array();
+			$count_modules = 0;
+			foreach ($servers as $server) {
+				// If connection was good then retrieve all data server
+				if (metaconsole_connect($server) == NOERR)
+					$connection = true;
+				else
+					$connection = false;
+				 
+				$result_server = db_get_all_rows_sql ($sql);
+				
+				if (!empty($result_server)) {
+					
+					// Create HASH login info
+					$pwd = $server['auth_token'];
+					$auth_serialized = json_decode($pwd,true);
+					
+					if (is_array($auth_serialized)) {
+						$pwd = $auth_serialized['auth_token'];
+						$api_password = $auth_serialized['api_password'];
+						$console_user = $auth_serialized['console_user'];
+						$console_password = $auth_serialized['console_password'];
+					}
+					
+					$user = $config['id_user'];
+					$user_rot13 = str_rot13($config['id_user']);
+					$hashdata = $user.$pwd;
+					$hashdata = md5($hashdata);
+					$url_hash = '&' .
+						'loginhash=auto&' .
+						'loginhash_data=' . $hashdata . '&' .
+						'loginhash_user=' . $user_rot13;
+					
+					foreach ($result_server as $result_element_key => $result_element_value) {
+						
+						$result_server[$result_element_key]['server_id'] = $server['id'];
+						$result_server[$result_element_key]['server_name'] = $server['server_name'];
+						$result_server[$result_element_key]['server_url'] = $server['server_url'].'/';
+						$result_server[$result_element_key]['hashdata'] = $hashdata;
+						$result_server[$result_element_key]['user'] = $config['id_user'];
+						
+						$count_modules++;
+						
+					}
+					
+					$result = array_merge($result, $result_server);
+				}
+				
+			}
+		}
+		
 			if (($layoutData['image'] != null && $layoutData['image'] != 'none') || $layoutData['show_statistics'] == 1) {
 						
 				
@@ -1608,7 +1670,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 						if (!modules_is_boolean($layoutData['id_agente_modulo'])) {
 							$img_style_title .=
 								" <br>" . __("Last value: ")
-								. remove_right_zeros(number_format($value, $config['graph_precision']));
+								. remove_right_zeros(number_format($value, $config['graph_precision'])).$unit_text;
 						}
 					}
 					
@@ -1780,6 +1842,13 @@ function visual_map_print_item($mode = "read", $layoutData,
 			else if($layoutData['label_position']=='left' || $layoutData['label_position']=='right'){
 				echo io_safe_output($text);
 			}
+			
+			if (! defined ('METACONSOLE')) {
+			}
+			else {
+				metaconsole_restore_db();
+			}
+				
 			
 			break;
 		
@@ -3390,18 +3459,24 @@ function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter
 	if ($returnAllGroup) {
 		$groups = users_get_groups ($id_user, 'VR', true, true);
 	} else {
-		if(!empty($filter['group'])) {
-			$permissions_group = users_get_groups ($id_user, 'VR', false, true);
-			if(empty($permissions_group)){
-				$permissions_group = users_get_groups ($id_user, 'VM', false, true);
-			}
-			$groups = array_intersect_key($filter['group'], $permissions_group);
-		} else {
-			$groups = users_get_groups ($id_user, 'VR', false, true);
-			if(empty($groups)) {
-				$groups = users_get_groups ($id_user, 'VM', false, true);
+		if(users_is_admin($id_user)){
+			$groups = users_get_groups ($id_user, 'VR', true, true);
+		}
+		else{
+			if(!empty($filter['group'])) {
+				$permissions_group = users_get_groups ($id_user, 'VR', false, true);
+				if(empty($permissions_group)){
+					$permissions_group = users_get_groups ($id_user, 'VM', false, true);
+				}
+				$groups = array_intersect_key($filter['group'], $permissions_group);
+			} else {
+				$groups = users_get_groups ($id_user, 'VR', false, true);
+				if(empty($groups)) {
+					$groups = users_get_groups ($id_user, 'VM', false, true);
+				}
 			}
 		}
+		
 		unset($filter['group']);
 	}
 	
@@ -3422,7 +3497,6 @@ function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter
 	}
 
 	$layouts = db_get_all_rows_filter ('tlayout', $where);
-
 	if ($layouts == false)
 		return array ();
 	

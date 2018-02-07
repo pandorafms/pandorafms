@@ -4455,3 +4455,11 @@ form ul.form_flex li ul li{
 	height: 50px;
 	width: 100%;
 }
+
+#modal_module_popup_close:hover{
+	cursor: pointer;
+}
+
+.modal_module_list:hover{
+	cursor: pointer;
+}

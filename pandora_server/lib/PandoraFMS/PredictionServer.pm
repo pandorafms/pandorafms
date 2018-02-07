@@ -196,6 +196,27 @@ sub exec_prediction_module ($$$$) {
 		return;
 	}
 	
+	# Cluster status module.
+	if ($agent_module->{'prediction_module'} == 5) {
+		logger ($pa_config, "Executing cluster status module " . $agent_module->{'nombre'}, 10);
+		enterprise_hook ('exec_cluster_status_module', [$pa_config, $agent_module, $server_id, $dbh]);
+		return;
+	}
+
+	# Cluster active-active module.
+	if ($agent_module->{'prediction_module'} == 6) {
+		logger ($pa_config, "Executing cluster active-active module " . $agent_module->{'nombre'}, 10);
+		enterprise_hook ('exec_cluster_aa_module', [$pa_config, $agent_module, $server_id, $dbh]);
+		return;
+	}
+
+	# Cluster active-passive module.
+	if ($agent_module->{'prediction_module'} == 7) {
+		logger ($pa_config, "Executing cluster active-passive module " . $agent_module->{'nombre'}, 10);
+		enterprise_hook ('exec_cluster_ap_module', [$pa_config, $agent_module, $server_id, $dbh]);
+		return;
+	}
+
 	# Get a full hash for target agent_module record reference ($target_module)
 	my $target_module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente_modulo = ?', $agent_module->{'custom_integer_1'});
 	return unless defined $target_module;

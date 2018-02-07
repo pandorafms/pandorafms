@@ -1649,6 +1649,11 @@ function modules_is_unit_macro($macro) {
 	return false;
 }
 
+function modules_get_last_contact ($id_agentmodule) {
+	return db_get_value ('utimestamp', 'tagente_estado',
+		'id_agente_modulo', $id_agentmodule);
+}
+
 /**
  * Get the current value of an agent module.
  *

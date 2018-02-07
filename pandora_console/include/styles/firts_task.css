@@ -7,6 +7,18 @@
 	background-color: #ececec;
 	border-radius: 3px 3px 3px 3px;
 }
+div.new_task_cluster
+{
+	margin-top: 30px;
+	left: 20px;
+	width: 60%;
+	border-radius: 3px 3px 3px 3px;
+}
+
+div.new_task_cluster, div.new_task_cluster > div
+{
+	background-color: #ececec;
+}
 
 .title_task
 {
@@ -24,6 +36,14 @@
 	height:100%;
 	float:left;
 }
+.image_task_cluster
+{
+	width:20%;
+	height:100%;
+	float:left;
+	margin-left: 50px;
+	margin-top: 50px;
+}
 .image_task>img {
 	margin-top: 35%;
 	margin-left: 15%;
@@ -35,6 +55,14 @@
 	float: right;
 	height: 100%;
 	padding-right: 25px;
+}
+.text_task_cluster
+{
+	width: 70%;
+	height: 100%;
+	padding-right: 25px;
+	margin-left:270px;
+	padding-top:10px;
 }
 .text_task>p
 {

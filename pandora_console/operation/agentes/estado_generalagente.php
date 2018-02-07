@@ -136,8 +136,14 @@ $data = array();
 //$data[0] = reporting_tiny_stats ($agent, true, 'agent', '<div style="height: 5px;"></div>');
 //$table_agent->rowspan[count($table_agent->data)][0] = 6;
 
+// Fixed width non interactive charts
+$status_chart_width = $config["flash_charts"] == false ? 100 : 150;
+$graph_width = $config["flash_charts"] == false ? 200 : 150;
+
 $data[0] = '<div style="margin: 0 auto 6px auto; width: 150px;">';
-$data[0] .= graph_agent_status ($id_agente, 150, 120, true);
+$data[0] .= '<div id="status_pie" style="margin: auto; width: ' . $status_chart_width . 'px;">';
+$data[0] .= graph_agent_status ($id_agente, $graph_width, 120, true);
+$data[0] .= '</div>';
 $data[0] .= '<br>' . reporting_tiny_stats ($agent, true);
 $data[0] .= ui_print_help_tip(__('Agent statuses are re-calculated by the server, they are not  shown in real time.'), true);
 $data[0] .= '</div>';
@@ -467,7 +473,7 @@ if (!empty($network_interfaces)) {
 	$options = array(
 		"class" => "closed",
 		"style" => "vertical-align:righ; cursor:pointer;");
-	$table_interface->head[0] = html_print_image("images/go.png", true, $options) . "&nbsp;&nbsp;";
+	$table_interface->head[0] = html_print_image("images/graphmenu_arrow.png", true, $options) . "&nbsp;&nbsp;";
 	$table_interface->head[0] .= '<span style="vertical-align: middle;">' . __('Interface information') .' (SNMP)</span>';
 	$table_interface->head_colspan = array();
 	$table_interface->head_colspan[0] = 8;
@@ -593,11 +599,11 @@ if (!empty($network_interfaces)) {
 					var arrow = $("#agent_interface_info").find("thead").find("img");
 					if (arrow.hasClass("closed")) {
 						arrow.removeClass("closed");
-						arrow.prop("src", "images/down.png");
+						arrow.prop("src", "images/arrow-down-white.png");
 						$("#agent_interface_info").find("tbody").show();
 					} else {
 						arrow.addClass("closed");
-						arrow.prop("src", "images/go.png");
+						arrow.prop("src", "images/graphmenu_arrow.png");
 						$("#agent_interface_info").find("tbody").hide();
 					}
 				})

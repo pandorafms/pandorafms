@@ -168,9 +168,6 @@ if(!$new_agent && $alias != ''){
 	}
 }
 
-
-
-
 // Remote configuration available
 if (!$new_agent) {
 	if (isset($filename)) {
@@ -248,8 +245,10 @@ $modules = db_get_all_rows_sql("SELECT id_agente_modulo as id_module, nombre as 
 								WHERE id_agente = " . $id_parent);
 $modules_values = array();
 $modules_values[0] = __('Any');
-foreach ($modules as $m) {
-	$modules_values[$m['id_module']] = $m['name'];
+if(is_array($modules)){
+	foreach ($modules as $m) {
+		$modules_values[$m['id_module']] = $m['name'];
+	}
 }
 
 $table->data[4][0] = __('Group');

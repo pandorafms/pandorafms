@@ -2874,7 +2874,16 @@ function reporting_get_stats_summary($data, $graph_width, $graph_height) {
 	$table_sum->cellstyle[count($table_sum->data)][2] = 'text-align: center;';
 	
 	if ($data["monitor_checks"] > 0) {
-		$tdata[0] = '<div style="margin: auto; width: ' . $graph_width . 'px;">' . graph_agent_status (false, $graph_width, $graph_height, true, true) . '</div>';
+		// Fixed width non interactive charts
+		$status_chart_width = $config["flash_charts"] == false
+			? 100 : $graph_width;
+
+		$tdata[0] =
+			'<div style="margin: auto; width: ' . $graph_width . 'px;">' .
+    			'<div id="status_pie" style="margin: auto; width: ' . $graph_width . '">' .
+					graph_agent_status (false, $graph_width, $graph_height, true, true) .
+				'</div>' .
+			'</div>';
 	}
 	else {
 		$tdata[2] = html_print_image('images/image_problem_area_small.png', true, array('width' => $graph_width));
@@ -3616,7 +3625,7 @@ function reporting_get_total_servers ($num_servers) {
 
 function reporting_get_events ($data, $links = false) {
 	global $config;
-	
+	$table_events = new stdClass();
 	$table_events->width = "100%";
 	if (defined('METACONSOLE'))
 		$style = " vertical-align:middle;";
@@ -3688,7 +3697,7 @@ function reporting_get_last_activity() {
 	global $config;
 	
 	// Show last activity from this user
-	
+	$table = new stdClass();
 	$table->width = '100%';
 	$table->data = array ();
 	$table->size = array ();
@@ -4001,8 +4010,10 @@ function reporting_get_event_histogram_meta ($width) {
 		$events = db_get_all_rows_sql($sql);
 		
 		$events_criticity = array();
-		foreach ($events as $key => $value) {
-			array_push($events_criticity,$value['criticity']);
+		if(is_array($events)){
+			foreach ($events as $key => $value) {
+				array_push($events_criticity,$value['criticity']);
+			}
 		}
 		
 		if (!empty($events)) {

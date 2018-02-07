@@ -4,13 +4,17 @@
  */
 ?>
 <h1>モジュール定義</h1>
-
-エージェントには、次の2つのモードがあります:
+<p>Agents can be configured from the console in three working modes:</p>
 <ul>
-    <li><i>学習モード:</i> エージェントから通知されるモジュール情報を受け取ります。モジュールが定義されていない場合は自動的にそれが追加されます。エージェントの設定でこのモードを有効にすることをお勧めします。Pandora FMS が使いやすいです。<br>バージョン 4.0.3 からは、このモードの場合、コンソールが初回はエージェント設定ファイルの全設定内容を読み込みますが、その後はコンソールから変更可能で設定ファイル側の変更は反映されません。
-</li>
+    <li>
+        <b>Learning mode:</b> If the XML received from the software agent contains new modules, they will be automatically created. This is the default behavior.
+    </li>
 <br>
-    <li><i>通常モード:</i> このモードでは、モジュール設定を手動で実施する必要があります。自動設定は行われません。</li>
+    <li>
+        <b>Normal mode:</b> No new modules will be created that arrive in XML if they have not been previously declared in the console.
+    </li>
 <br>
-    <li><i>Autodisable mode:</i> In terms of creating agents and modules it behaves exactly the same as an agent in learning mode: when the first XML reaches it, the first agent is created and, on each report, if there are new modules they can also be added automatically. Nevertheless, when all modules from an agent that are in autodisable mode are also marked as unknown, the agent is automatically disabled. In any case, if the agent reports again, it gets enabled again on its own.</li>
+    <li>
+        <b>Autodisable mode:</b> Similar to learning mode, in this mode, also, if all modules pass to unknown state the agent will be automatically disabled, going to be enabled again if it receives new information.
+    </li>
 </ul>

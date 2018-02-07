@@ -53,35 +53,10 @@ class Tree {
 
 		$this->strictACL = (bool) db_get_value("strict_acl", "tusuario", "id_user", $config['id_user']);
 		
-		$this->acltags = tags_get_user_module_and_tags($config['id_user'], $this->access);
+		$this->acltags = tags_get_user_groups_and_tags($config['id_user'], $this->access);
 	}
 
 	public function setFilter($filter) {
-		// Filter the user groups
-		if (!empty($filter['groupID'])) {
-			$group_id = $filter['groupID'];
-			$this->userGroups = isset($this->userGroupsACL[$group_id])
-				? array($group_id => $this->userGroupsACL[$group_id])
-				: array();
-		}
-		else if (!empty($filter['searchGroup'])) {
-			$groups = db_get_all_rows_filter('tgrupo', array('nombre' => '%' . $filter['searchGroup'] . '%'));
-			
-			// Save the groups which intersect
-			$userGroupsACL = $this->userGroupsACL;
-			$this->userGroups = array_reduce($groups, function ($userGroups, $group) use ($userGroupsACL) {
-				$group_id = $group['id_grupo'];
-				if (isset($userGroupsACL[$group_id])) {
-					$userGroups[$group_id] = $userGroupsACL[$group_id];
-				}
-				
-				return $userGroups;
-			}, array());
-		}
-		else {
-			$this->userGroups = $this->userGroupsACL;
-		}
-		
 		$this->filter = $filter;
 	}
 
@@ -247,6 +222,12 @@ class Tree {
 			$agent_search_filter = " AND LOWER(ta.alias) LIKE LOWER('%".$this->filter['searchAgent']."%')";
 		}
 
+		//Search hirearchy
+		$search_hirearchy = false;
+		if($this->filter['searchHirearchy']){
+			$search_hirearchy = true;
+		}
+
 		// Agent status filter
 		$agent_status_filter = "";
 		if (isset($this->filter['statusAgent'])
@@ -369,16 +350,49 @@ class Tree {
 					$group_filter = "AND ta.id_grupo IN ($user_groups_str)";
 				}
 
+				if(!$search_hirearchy && (!empty($agent_search_filter) || !empty($module_search_filter))){
+					
+					if(is_metaconsole()){
+						$query_agent_search = " SELECT DISTINCT(ta.id_grupo)
+												FROM tmetaconsole_agent ta
+												WHERE ta.disabled = 0
+												$agent_search_filter";
+						$id_groups_agents = db_get_all_rows_sql($query_agent_search);
+					}
+					else{
+						$query_agent_search = " SELECT DISTINCT(ta.id_grupo)
+												FROM tagente ta, tagente_modulo tam
+												WHERE tam.id_agente = ta.id_agente
+												AND ta.disabled = 0
+												$agent_search_filter
+												$module_search_filter";
+						$id_groups_agents = db_get_all_rows_sql($query_agent_search);
+					}
+					
+					if($id_groups_agents != false){
+						foreach	($id_groups_agents as $key => $value) {
+							$id_groups_agents_array[] = $value['id_grupo'];
+						}
+						$user_groups_array = explode(",", $user_groups_str);
+						$user_groups_array = array_intersect($user_groups_array, $id_groups_agents_array);
+						$user_groups_str = implode("," , $user_groups_array);
+					}
+					else{
+						$user_groups_str = false;
+					}
+				}
+
 				switch ($type) {
 					// Get the agents of a group
 					case 'group':
 						if (empty($rootID) || $rootID == -1) {
+							if(!$search_hirearchy && (!empty($agent_search_filter) || !empty($module_search_filter))){
+								$columns = 'tg.id_grupo AS id, tg.nombre AS name, tg.icon';
+							}
+							else{
+								$columns = 'tg.id_grupo AS id, tg.nombre AS name, tg.parent, tg.icon';
+							}
 
-							// Strict acl specifications
-							/*if ($this->strictACL)
-								return false;*/
-
-							$columns = 'tg.id_grupo AS id, tg.nombre AS name, tg.parent, tg.icon';
 							$order_fields = 'tg.nombre ASC, tg.id_grupo ASC';
 
 							if (! is_metaconsole()) {
@@ -1205,6 +1219,7 @@ class Tree {
 						!empty($group['counters']['total']));
 			});
 		}
+		usort($groups, array("Tree", "cmpSortNames"));
 		return $groups;
 	}
 
@@ -1877,6 +1892,25 @@ class Tree {
 		}
 	}
 
+	private static function extractGroupsWithIDs ($groups, $ids_hash) {
+		$result_groups = array();
+		foreach ($groups as $group) {
+			if (isset($ids_hash[$group['id']])) {
+				$result_groups[] = $group;
+			}
+			else if (!empty($group['children'])) {
+				$result = self::extractGroupsWithIDs($group['children'], $ids_hash);
+
+				// Item found on children
+				if (!empty($result)) {
+					$result_groups = array_merge($result_groups, $result);
+				}
+			}
+		}
+
+		return $result_groups;
+	}
+
 	private static function extractItemWithID ($items, $item_id, $item_type = "group", $strictACL = false) {
 		foreach ($items as $item) {
 			if ($item["type"] != $item_type)
@@ -2166,14 +2200,33 @@ class Tree {
 
 			$processed_items = $this->getProcessedGroups($items, true);
 
-			// groupID filter. To access the view from tactical views f.e.
-			if (!empty($processed_items) && !empty($this->filter['groupID'])) {
-				$result = self::extractItemWithID($processed_items, $this->filter['groupID'], "group", $this->strictACL);
+			if (!empty($processed_items)) {
+				// Filter by group name. This should be done after rerieving the items cause we need the possible items descendants
+				if (!empty($this->filter['searchGroup'])) {
+					// Save the groups which intersect with the user groups
+					$groups = db_get_all_rows_filter('tgrupo', array('nombre' => '%' . $this->filter['searchGroup'] . '%'));
+					if ($groups == false) $groups = array();
+					$userGroupsACL = $this->userGroupsACL;
+					$ids_hash = array_reduce($groups, function ($userGroups, $group) use ($userGroupsACL) {
+						$group_id = $group['id_grupo'];
+						if (isset($userGroupsACL[$group_id])) {
+							$userGroups[$group_id] = $userGroupsACL[$group_id];
+						}
+						
+						return $userGroups;
+					}, array());
+					
+					$result = self::extractGroupsWithIDs($processed_items, $ids_hash);
+					
+					$processed_items = ($result === false) ? array() : $result;
+				}
+				
+				// groupID filter. To access the view from tactical views f.e.
+				if (!empty($this->filter['groupID'])) {
+					$result = self::extractItemWithID($processed_items, $this->filter['groupID'], "group", $this->strictACL);
 
-				if ($result === false)
-					$processed_items = array();
-				else
-					$processed_items = array($result);
+					$processed_items = ($result === false) ? array() : array($result);
+				}
 			}
 		}
 		// Agents
@@ -2633,9 +2686,10 @@ class Tree {
 	protected function getGroupCounters($group_id) {
 		global $config;
 		static $group_stats = false;
-
 		# Do not use the group stat cache when using tags or real time group stats.
-		if ($config['realtimestats'] == 1 || (isset($this->userGroups[$group_id]['tags']) && $this->userGroups[$group_id]['tags'] != "")) {
+		if ($config['realtimestats'] == 1 || 
+			(isset($this->userGroups[$group_id]['tags']) && $this->userGroups[$group_id]['tags'] != "") || 
+			!empty($this->filter['searchAgent']) ) {	
 			return $this->getCounters($group_id);
 		}
 

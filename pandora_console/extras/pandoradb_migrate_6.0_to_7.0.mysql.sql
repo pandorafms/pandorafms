@@ -1110,6 +1110,7 @@ ALTER TABLE tserver ADD COLUMN `server_keepalive` int(11) DEFAULT 0;
 ALTER TABLE tagente_estado MODIFY `status_changes` tinyint(4) unsigned default 0;
 ALTER TABLE tagente_estado CHANGE `last_known_status` `known_status` tinyint(4) default 0;
 ALTER TABLE tagente_estado ADD COLUMN `last_known_status` tinyint(4) default 0;
+ALTER TABLE tagente_estado ADD COLUMN last_unknown_update bigint(20) NOT NULL default 0;
 
 -- ---------------------------------------------------------------------
 -- Table `talert_actions`
@@ -1158,10 +1159,10 @@ ALTER TABLE titem MODIFY `source_data` int(10) unsigned;
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('big_operation_step_datos_purge', '100');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('small_operation_step_datos_purge', '1000');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('days_autodisable_deletion', '30');
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 9);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 12);
 UPDATE tconfig SET value = 'https://licensing.artica.es/pandoraupdate7/server.php' WHERE token='url_update_manager';
 DELETE FROM `tconfig` WHERE `token` = 'current_package_enterprise';
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '716');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '719');
 
 -- ---------------------------------------------------------------------
 -- Table `tplanned_downtime_agents`
@@ -1234,6 +1235,9 @@ UPDATE tagente SET tagente.alias = tagente.nombre;
 -- Table `tlayout`
 -- ---------------------------------------------------------------------
 ALTER TABLE tlayout ADD `background_color` varchar(50) NOT NULL default '#FFF';
+ALTER TABLE tlayout ADD `is_favourite` int(1) NOT NULL DEFAULT 0;
+
+UPDATE tlayout SET is_favourite = 1 WHERE name REGEXP '^&#40;' OR name REGEXP '^\\[';
 
 -- ---------------------------------------------------------------------
 -- Table `tlayout_data`
@@ -1244,6 +1248,9 @@ ALTER TABLE tlayout_data ADD COLUMN `show_statistics` tinyint(2) NOT NULL defaul
 ALTER TABLE tlayout_data ADD COLUMN `element_group` int(10) NOT NULL default '0';
 ALTER TABLE tlayout_data ADD COLUMN `id_layout_linked_weight` int(10) NOT NULL default '0';
 ALTER TABLE tlayout_data ADD COLUMN `show_on_top` tinyint(1) NOT NULL default '0';
+ALTER TABLE tlayout_data ADD COLUMN `clock_animation` varchar(60) NOT NULL default "analogic_1";
+ALTER TABLE tlayout_data ADD COLUMN `time_format` varchar(60) NOT NULL default "time";
+ALTER TABLE tlayout_data ADD COLUMN `timezone` varchar(60) NOT NULL default "Europe/Madrid";
 
 -- ---------------------------------------------------------------------
 -- Table `tagent_custom_fields`
@@ -1263,6 +1270,8 @@ UPDATE tagente_modulo SET cron_interval = '' WHERE cron_interval LIKE '%    %';
 ALTER TABLE tgraph ADD COLUMN `percentil` int(4) unsigned default '0';
 ALTER TABLE tgraph ADD COLUMN `summatory_series` tinyint(1) UNSIGNED NOT NULL default '0';
 ALTER TABLE tgraph ADD COLUMN `average_series`  tinyint(1) UNSIGNED NOT NULL default '0';
+ALTER TABLE tgraph ADD COLUMN `modules_series`  tinyint(1) UNSIGNED NOT NULL default '0';
+ALTER TABLE tgraph ADD COLUMN `fullscale` tinyint(1) UNSIGNED NOT NULL default '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tnetflow_filter`
@@ -1287,6 +1296,7 @@ ALTER TABLE treport_content ADD COLUMN `historical_db` tinyint(1) NOT NULL DEFAU
 ALTER TABLE treport_content ADD COLUMN `lapse_calc` tinyint(1) default '0';
 ALTER TABLE treport_content ADD COLUMN `lapse` int(11) default '300';
 ALTER TABLE treport_content ADD COLUMN `visual_format` tinyint(1) default '0';
+ALTER TABLE treport_content ADD COLUMN `hide_no_data` tinyint(1) default '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tmodule_relationship`
@@ -1404,6 +1414,8 @@ CREATE TABLE IF NOT EXISTS `tcontainer_item` (
 	`agent` varchar(100) NOT NULL default '',
 	`module` varchar(100) NOT NULL default '',
 	`id_tag` integer(10) unsigned NOT NULL DEFAULT 0,
+	`type_graph` tinyint(1) unsigned NOT NULL DEFAULT 0,
+	`fullscale` tinyint(1) UNSIGNED NOT NULL default 0,
 	PRIMARY KEY(`id_ci`),
 	FOREIGN KEY (`id_container`) REFERENCES tcontainer(`id_container`)
 	ON DELETE CASCADE
@@ -1434,7 +1446,7 @@ ALTER TABLE tserver_export MODIFY `name` varchar(600) BINARY NOT NULL default ''
 -- ---------------------------------------------------------------------
 
 ALTER TABLE tgraph_source ADD COLUMN id_server int(11) UNSIGNED NOT NULL default 0;
-ALTER TABLE tgraph_source ADD COLUMN `order` int(10) NOT NULL default 0;
+ALTER TABLE tgraph_source ADD COLUMN `field_order` int(10) NOT NULL default 0;
 
 -- ---------------------------------------------------------------------
 -- Table `tserver_export_data`
@@ -1468,3 +1480,56 @@ INSERT INTO ttipo_modulo VALUES (25,'web_analysis', 8, 'Web analysis data', 'mod
 -- Table `tdashboard`
 -- ---------------------------------------------------------------------
 ALTER TABLE `tdashboard` ADD COLUMN `cells_slideshow` TINYINT(1) NOT NULL default 0;
+
+-- ---------------------------------------------------------------------
+-- Table `tsnmp_filter`
+-- ---------------------------------------------------------------------
+SELECT max(unified_filters_id) INTO @max FROM tsnmp_filter;
+UPDATE tsnmp_filter tsf,(SELECT @max:= @max) m SET tsf.unified_filters_id = @max:= @max + 1 where tsf.unified_filters_id=0;
+
+-- ---------------------------------------------------------------------
+-- Table `tcluster`
+-- ---------------------------------------------------------------------
+
+create table IF NOT EXISTS `tcluster`(
+    `id` int unsigned not null auto_increment,
+    `name` tinytext not null default '',
+    `cluster_type` enum('AA','AP') not null default 'AA',
+		`description` text not null default '',
+		`group` int(10) unsigned NOT NULL default '0',
+		`id_agent` int(10) unsigned NOT NULL,
+		PRIMARY KEY (`id`),
+		FOREIGN KEY (`id_agent`) REFERENCES tagente(`id_agente`)
+			ON UPDATE CASCADE
+) engine=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tcluster_item`
+-- ---------------------------------------------------------------------
+
+create table IF NOT EXISTS `tcluster_item`(
+		`id` int unsigned not null auto_increment,
+    `name` tinytext not null default '',
+    `item_type` enum('AA','AP')  not null default 'AA',
+		`critical_limit` int unsigned NOT NULL default '0',
+		`warning_limit` int unsigned NOT NULL default '0',
+		`is_critical` tinyint(2) unsigned NOT NULL default '0',
+		`id_cluster` int unsigned,
+		PRIMARY KEY (`id`),
+		FOREIGN KEY (`id_cluster`) REFERENCES tcluster(`id`)
+			ON DELETE SET NULL ON UPDATE CASCADE
+) engine=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tcluster_agent`
+-- ---------------------------------------------------------------------
+
+create table IF NOT EXISTS `tcluster_agent`(
+    `id_cluster` int unsigned not null,
+    `id_agent` int(10) unsigned not null,
+		PRIMARY KEY (`id_cluster`,`id_agent`),
+		FOREIGN KEY (`id_agent`) REFERENCES tagente(`id_agente`)
+			ON UPDATE CASCADE,
+		FOREIGN KEY (`id_cluster`) REFERENCES tcluster(`id`)
+			ON UPDATE CASCADE
+) engine=InnoDB DEFAULT CHARSET=utf8;

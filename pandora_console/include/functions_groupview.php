@@ -24,14 +24,13 @@ function groupview_get_all_data ($id_user = false, $user_strict = false, $acltag
 	}
 
 	$user_groups = array();
-	$groups_without_tags = array();
-	foreach ($acltags as $group => $tags) {
-		if ($user_strict) { //Remove groups with tags
-			$groups_without_tags[$group] = $group;
-		}
-		$user_groups[$group] = groups_get_name($group);
-		if ($tags != '') {
-			$tags_group = explode(',', $tags);
+	$user_tags   = array();
+
+	foreach ($acltags as $item) {
+		$user_groups[$item["id_grupo"]] = $item["nombre"];
+	
+		if ($item["tags"] != '') {
+			$tags_group = explode(',', $item["tags"]);
 
 			foreach ($tags_group as $tag) {
 				$user_tags[$tag] = tags_get_name($tag);
@@ -39,12 +38,7 @@ function groupview_get_all_data ($id_user = false, $user_strict = false, $acltag
 		}
 	}
 
-	if ($user_strict) {
-		$user_groups_ids = implode(',', array_keys($groups_without_tags));
-	}
-	else {
-		$user_groups_ids = implode(',', array_keys($acltags));
-	}
+	$user_groups_ids = implode(',', array_keys($acltags));
 
 	if (!empty($user_groups_ids)) {
 		if (is_metaconsole() && (!$user_strict)) {
@@ -380,7 +374,8 @@ function groupview_status_modules_agents($id_user = false, $user_strict = false,
 		$id_user = $config['id_user'];
 	}
 
-	$acltags = tags_get_user_module_and_tags ($id_user, $access, $user_strict);
+	//$acltags = tags_get_user_groups_and_tags ($id_user, $access, $user_strict);
+	$acltags = users_get_groups ($id_user, $access, true, true);
 
 	// If using metaconsole, the strict users will use the agent table of every node
 	if (is_metaconsole() && $user_strict) {
@@ -526,7 +521,11 @@ function groupview_get_groups_list($id_user = false, $user_strict = false, $acce
 		$id_user = $config['id_user'];
 	}
 
-	$acltags = tags_get_user_module_and_tags ($id_user, $access, $user_strict);
+	//$acltags = tags_get_user_groups_and_tags ($id_user, $access, $user_strict);
+	//
+	
+
+	$acltags = users_get_groups($id_user, $access, true, true);
 
 	// If using metaconsole, the strict users will use the agent table of every node
 	if (is_metaconsole() && $user_strict) {
@@ -575,19 +574,15 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 	if ($id_user == false) {
 		$id_user = $config['id_user'];
 	}
-	$groups_with_privileges = users_get_groups($id_user, $access);
-	$groups_with_privileges = implode('","', $groups_with_privileges);
-	
+
 	$user_groups = array();
-	$user_tags = array();
-	$groups_without_tags = array();
-	foreach ($acltags as $group => $tags) {
-		if ($user_strict) { //Remove groups with tags
-			$groups_without_tags[$group] = $group;
-		}
-		$user_groups[$group] = groups_get_name($group);
-		if ($tags != '') {
-			$tags_group = explode(',', $tags);
+	$user_tags   = array();
+
+	foreach ($acltags as $item) {
+		$user_groups[$item["id_grupo"]] = $item["nombre"];
+	
+		if ($item["tags"] != '') {
+			$tags_group = explode(',', $item["tags"]);
 
 			foreach ($tags_group as $tag) {
 				$user_tags[$tag] = tags_get_name($tag);
@@ -595,15 +590,12 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 		}
 	}
 	
+	$groups_with_privileges = implode(',', array_keys($acltags));
+
 	if (!$user_strict)
 		$acltags[0] = 0;
 
-	if ($user_strict) {
-		$user_groups_ids = implode(',', array_keys($groups_without_tags));
-	}
-	else {
-		$user_groups_ids = implode(',', array_keys($acltags));
-	}
+	$user_groups_ids = implode(',', array_keys($acltags));
 	
 	if (!empty($user_groups_ids)) {
 		if (is_metaconsole() && (!$user_strict)) {
@@ -700,7 +692,7 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 						SELECT *
 						FROM tgrupo
 						WHERE id_grupo IN (" . $fathers_id . ")
-						AND nombre IN (\"". $groups_with_privileges ."\")
+						AND id_grupo IN (" . $groups_with_privileges . ")
 						ORDER BY nombre COLLATE utf8_general_ci ASC");
 			if (!empty($list_father_groups)) {
 				//Merges the arrays and eliminates the duplicates groups
@@ -763,17 +755,20 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 														COUNT(*) AS _total_agents_, id_grupo, intervalo,
 														ultimo_contacto, disabled
 									FROM tmetaconsole_agent WHERE id_grupo = " . $group['id_grupo'] . " AND disabled = 0 GROUP BY id_grupo");
-			$list[$group['id_grupo']]['_monitors_critical_'] = (int)$group_agents['_monitors_critical_'];
-			$list[$group['id_grupo']]['_monitors_warning_'] = (int)$group_agents['_monitors_warning_'];
-			$list[$group['id_grupo']]['_monitors_unknown_'] = (int)$group_agents['_monitors_unknown_'];
-			$list[$group['id_grupo']]['_monitors_not_init_'] = (int)$group_agents['_monitors_not_init_'];
-			$list[$group['id_grupo']]['_monitors_ok_'] = (int)$group_agents['_monitors_ok_'];
 
+
+			$list[$group['id_grupo']]['_monitors_critical_']     = (int)$group_agents['_monitors_critical_'];
+			$list[$group['id_grupo']]['_monitors_warning_']      = (int)$group_agents['_monitors_warning_'];
+			$list[$group['id_grupo']]['_monitors_unknown_']      = (int)$group_agents['_monitors_unknown_'];
+			$list[$group['id_grupo']]['_monitors_not_init_']     = (int)$group_agents['_monitors_not_init_'];
+			$list[$group['id_grupo']]['_monitors_ok_']           = (int)$group_agents['_monitors_ok_'];
 			$list[$group['id_grupo']]['_monitors_alerts_fired_'] = (int)$group_agents['_monitors_alerts_fired_'];
-
-			$list[$group['id_grupo']]['_total_agents_'] = (int)$group_agents['_total_agents_'];
-
-			$list[$group['id_grupo']]["_monitor_checks_"] = $list[$group['id_grupo']]["_monitors_not_init_"] + $list[$group['id_grupo']]["_monitors_unknown_"] + $list[$group['id_grupo']]["_monitors_warning_"] + $list[$group['id_grupo']]["_monitors_critical_"] + $list[$group['id_grupo']]["_monitors_ok_"];
+			$list[$group['id_grupo']]['_total_agents_']          = (int)$group_agents['_total_agents_'];
+			$list[$group['id_grupo']]["_monitor_checks_"]        = $list[$group['id_grupo']]["_monitors_not_init_"]
+																	+ $list[$group['id_grupo']]["_monitors_unknown_"]
+																	+ $list[$group['id_grupo']]["_monitors_warning_"]
+																	+ $list[$group['id_grupo']]["_monitors_critical_"]
+																	+ $list[$group['id_grupo']]["_monitors_ok_"];
 
 			if ($group['icon'])
 				$list[$group['id_grupo']]["_iconImg_"] = html_print_image ("images/".$group['icon'].".png", true, array ("style" => 'vertical-align: middle;'));

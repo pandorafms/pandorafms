@@ -1022,7 +1022,8 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_modulestatus_ => undef,
 				_moduletags_ => undef,
 				'_moduledata_\S+_' => undef,
-				_id_agent_ => (defined ($module)) ? $module->{'id_agente'} : '', 
+				_id_agent_ => (defined ($module)) ? $module->{'id_agente'} : '',
+				_id_module_ => (defined ($module)) ? $module->{'id_agente_modulo'} : '',
 				_id_group_ => (defined ($group)) ? $group->{'id_grupo'} : '',
 				_id_alert_ => (defined ($alert->{'id_template_module'})) ? $alert->{'id_template_module'} : '',
 				_interval_ => (defined ($module) && $module->{'module_interval'} != 0) ? $module->{'module_interval'} : (defined ($agent)) ? $agent->{'intervalo'} : '',
@@ -4834,8 +4835,13 @@ sub pandora_module_unknown ($$) {
 			AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo 
 			AND tagente.disabled = 0 
 			AND tagente_modulo.disabled = 0 
-			AND ((tagente_estado.estado <> 3 AND tagente_modulo.id_tipo_modulo NOT IN (21, 22, 23, 100))
-				OR (tagente_estado.estado <> 0 AND tagente_modulo.id_tipo_modulo IN (21, 22, 23)))
+			AND ((tagente_modulo.id_tipo_modulo IN (21, 22, 23) AND tagente_estado.estado <> 0)
+				OR (' .
+				($pa_config->{'unknown_updates'} == 0 ? 
+					'tagente_estado.estado <> 3 AND tagente_modulo.id_tipo_modulo NOT IN (21, 22, 23, 100)' :
+					'tagente_modulo.id_tipo_modulo NOT IN (21, 22, 23, 100) AND tagente_estado.last_unknown_update + tagente_estado.current_interval < UNIX_TIMESTAMP()') .
+				')
+			)
 			AND tagente_estado.utimestamp != 0
 			AND (tagente_estado.current_interval * ?) + tagente_estado.utimestamp < UNIX_TIMESTAMP()', $pa_config->{'unknown_interval'});
 	
@@ -4893,9 +4899,11 @@ sub pandora_module_unknown ($$) {
 		}
 		# Regular module
 		else {
-			# Set the module state to unknown
-			logger ($pa_config, "Module " . $module->{'nombre'} . " is going to UNKNOWN", 10);
-			db_do ($dbh, 'UPDATE tagente_estado SET last_status = 3, estado = 3 WHERE id_agente_estado = ?', $module->{'id_agente_estado'});
+			# Set the module status to unknown (the module can already be unknown if unknown_updates is enabled).
+			if ($module->{'estado'} != 3) {
+				logger ($pa_config, "Module " . $module->{'nombre'} . " is going to UNKNOWN", 10);
+				db_do ($dbh, 'UPDATE tagente_estado SET last_status = 3, estado = 3, last_unknown_update = ? WHERE id_agente_estado = ?', time(), $module->{'id_agente_estado'});
+			}
 			
 			# Get agent information
 			my $agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE id_agente = ?', $module->{'id_agente'});
@@ -4917,7 +4925,8 @@ sub pandora_module_unknown ($$) {
 			
 			my $do_event;
 			# Are unknown events enabled?
-			if ($pa_config->{'unknown_events'} == 0) {
+			if ($pa_config->{'unknown_events'} == 0 ||
+				$module->{'estado'} == 3) { # Already in unknown status (unknown_updates is enabled).
 				$do_event = 0;
 			}
 			elsif (!defined($module->{'disabled_types_event'}) || $module->{'disabled_types_event'} eq "") {
@@ -4937,7 +4946,7 @@ sub pandora_module_unknown ($$) {
 					$do_event = 1;
 				}
 			}
-			
+
 			# Generate event with severity minor
 			if ($do_event) {
 				my ($event_type, $severity) = ('going_unknown', 5);
@@ -5146,7 +5155,7 @@ sub pandora_update_agent_module_count ($$$) {
 	}; # Module counts by status.
 
 	# Retrieve and hash module status counts.
-	my @rows = get_db_rows ($dbh, 'SELECT estado, COUNT(*) AS total FROM tagente_modulo, tagente_estado WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=?GROUP BY estado', $agent_id);
+	my @rows = get_db_rows ($dbh, 'SELECT estado, COUNT(*) AS total FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=?GROUP BY estado', $agent_id);
 	foreach my $row (@rows) {
 		$counts->{$row->{'estado'}} = $row->{'total'};
 		$total += $row->{'total'};

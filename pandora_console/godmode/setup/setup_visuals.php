@@ -248,6 +248,18 @@ if(enterprise_installed()) {
 	$row++;
 }	
 
+if(enterprise_installed()) {
+	$table_styles->data[$row][0] = __('Docs URL (login)');
+	$table_styles->data[$row][1] = html_print_input_text ('custom_docs_url', $config["custom_docs_url"], '', 50, 50, true);
+	$row++;
+}	
+
+if(enterprise_installed()) {
+	$table_styles->data[$row][0] = __('Support URL (login)');
+	$table_styles->data[$row][1] = html_print_input_text ('custom_support_url', $config["custom_support_url"], '', 50, 50, true);
+	$row++;
+}	
+
 $table_styles->data[$row][0] = __('Disable logo in graphs');
 $table_styles->data[$row][1] = __('Yes') . '&nbsp;' .
 	html_print_radio_button_extended ('fixed_graph', 1, '', $config["fixed_graph"], $open, '','',true) .
@@ -281,6 +293,13 @@ $table_styles->data[$row][1] .= __('No') . '&nbsp;' .
 $table_styles->data['autohidden'][0] = __('Autohidden menu');
 $table_styles->data['autohidden'][1] = html_print_checkbox('autohidden_menu',
 	1, $config['autohidden_menu'], true);
+	
+$table_styles->data[$row][0] = __('Visual effects and animation');
+$table_styles->data[$row][1] = __('Yes') . '&nbsp;' .
+	html_print_radio_button ('visual_animation', 1, '', $config["visual_animation"], true) .
+	'&nbsp;&nbsp;';
+$table_styles->data[$row][1] .= __('No') . '&nbsp;' .
+	html_print_radio_button ('visual_animation', 0, '', $config["visual_animation"], true);	
 
 echo "<fieldset>";
 echo "<legend>" . __('Style configuration') . "</legend>";
@@ -468,8 +487,8 @@ if (!enterprise_installed()) {
 	$disabled_graph_precision = true;
 }
 
-$table_chars->data[$row][0] = __('Data precision for reports');
-$table_chars->data[$row][0] .= ui_print_help_tip(__('Number of decimals shown in reports. It must be a number between 0 and 5'), true);
+$table_chars->data[$row][0] = __('Data precision for reports and visual consoles');
+$table_chars->data[$row][0] .= ui_print_help_tip(__('Number of decimals shown in reports and visual consoles. It must be a number between 0 and 5'), true);
 $table_chars->data[$row][1] = html_print_input_text ('graph_precision', $config["graph_precision"], '', 5, 5, true, $disabled_graph_precision, false, "onChange=\"change_precision()\"");
 $row++;
 
@@ -562,6 +581,41 @@ echo "</fieldset>";
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
+// Visual Consoles
+//----------------------------------------------------------------------
+$table_vc = new stdClass();
+$table_vc->width = '100%';
+$table_vc->class = "databox filters";
+$table_vc->style[0] = 'font-weight: bold';
+$table_vc->size[0] = '50%';
+$table_vc->data = array ();
+
+$vc_favourite_view_array[0] = 'Classic view';
+$vc_favourite_view_array[1] = 'View of favorites';
+$table_vc->data[$row][0] = __('Type of view of visual consoles') . 
+								ui_print_help_tip(__('Allows you to directly display the list of favorite visual consoles'), true);
+$table_vc->data[$row][1] = html_print_select($vc_favourite_view_array, 'vc_favourite_view', $config["vc_favourite_view"], '', '', 0, true);
+$row++;
+
+$table_vc->data[$row][0] = __('Number of favorite visual consoles to show in the menu') . 
+								ui_print_help_tip(__('If the number is 0 it will not show the pull-down menu and maximum 25 favorite consoles'), true);
+//$table_vc->data[$row][1] = html_print_input_text ('vc_menu_items', $config["vc_menu_items"], '', 5, 5, true);
+$table_vc->data[$row][1] = "<input type ='number' value=".$config["vc_menu_items"]." size='5' name='vc_menu_items' min='0' max='25'>";
+$row++;
+
+if (empty($config["vc_line_thickness"])) $config["vc_line_thickness"] = 2;
+$table_vc->data[$row][0] = __('Default line thickness for the Visual Console') . 
+								ui_print_help_tip(__('This interval will affect to the lines between elements on the Visual Console'), true);
+$table_vc->data[$row][1] = html_print_input_text ('vc_line_thickness', $config["vc_line_thickness"], '', 5, 5, true);
+
+
+echo "<fieldset>";
+echo "<legend>" . __('Visual consoles configuration') . "</legend>";
+	html_print_table ($table_vc);
+echo "</fieldset>";	
+
+
+//----------------------------------------------------------------------
 // OTHER CONFIGURATION
 //----------------------------------------------------------------------
 $table_other = new stdClass();
@@ -570,11 +624,6 @@ $table_other->class = "databox filters";
 $table_other->style[0] = 'font-weight: bold;';
 $table_other->size[0] = '50%';
 $table_other->data = array ();
-
-if (empty($config["vc_line_thickness"])) $config["vc_line_thickness"] = 2;
-$table_other->data[$row][0] = __('Default line thickness for the Visual Console') . ui_print_help_tip(__('This interval will affect to the lines between elements on the Visual Console'), true);
-$table_other->data[$row][1] = html_print_input_text ('vc_line_thickness', $config["vc_line_thickness"], '', 5, 5, true);
-$row++;
 
 // Enrique (27/01/2017) New feature: Show report info on top of reports
 $table_other->data[$row][0] = __('Show report info with description') .
@@ -624,7 +673,7 @@ $table_other->data['custom_report_front-logo'][0] =  __('Custom report front') .
 $table_other->data['custom_report_front-logo'][1] = html_print_select(
 	$customLogos,
 	'custom_report_front_logo',
-	$config['custom_report_front_logo'],
+	io_safe_output($config['custom_report_front_logo']),
 	'showPreview()',
 	__('Default'),
 	'',
@@ -914,7 +963,7 @@ tinyMCE.init({
 	theme : "advanced",
 	theme_advanced_toolbar_location : "top",
 	theme_advanced_toolbar_align : "left",
-	theme_advanced_buttons1 : "bold,italic, |, cut, copy, paste, |, undo, redo",
+	theme_advanced_buttons1 : "bold,italic, |, image, |, cut, copy, paste, |, undo, redo, |, forecolor, |, fontsizeselect, |, justifyleft, justifycenter, justifyright",
 	theme_advanced_buttons2 : "",
 	theme_advanced_buttons3 : "",
 	theme_advanced_statusbar_location : "none"

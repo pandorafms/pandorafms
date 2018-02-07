@@ -560,24 +560,28 @@ function visual_map_print_item($mode = "read", $layoutData,
 				break;
 
 			case GROUP_ITEM:
-				$is_a_link_to_other_visualconsole = false;
-				if ($layoutData['id_layout_linked'] != 0) {
-					$is_a_link_to_other_visualconsole = true;
-				}
-				
-				if ($is_a_link_to_other_visualconsole) {
-					if (empty($layout_data['id_metaconsole'])) {
-						$url = $config['homeurl'] . "index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure=" . $config["pure"] . "&amp;id=" . $layoutData["id_layout_linked"];
+					$is_a_link_to_other_visualconsole = false;
+					if ($layoutData['id_layout_linked'] != 0) {
+						$is_a_link_to_other_visualconsole = true;
+					}
+					if ($is_a_link_to_other_visualconsole) {
+						if (METACONSOLE == 1) {
+							$url = $config['homeurl'] . "index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=0&id_visualmap=".$layoutData["id_layout_linked"]."&refr=300";
+						}
+						else {
+							$url = $config['homeurl'] . "index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;pure=" . $config["pure"] . "&amp;id=" . $layoutData["id_layout_linked"];
+						}
 					}
 					else {
-						$url = "index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=1&id_visualmap=" . $layoutData["id_layout_linked"] . "&refr=0";
+						if (METACONSOLE == 1) {
+							$url = $config['homeurl'] .
+								'index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=0&ag_group='.$layoutData['id_group'].'&ag_freestring=&module_option=1&ag_modulename=&moduletype=&datatype=&status=-1&sort_field=&sort=none&pure=';
+						}
+						else {
+							$url = $config['homeurl'] .
+								'index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id='.$layoutData['id_group'];
+						}
 					}
-				}
-				else {
-					$url = $config['homeurl'] .
-						'index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=' .
-						$layoutData['id_group'];
-				}
 				break;
 			case LABEL:
 				if ($layoutData['id_layout_linked'] != 0) {
@@ -1735,6 +1739,68 @@ function visual_map_print_item($mode = "read", $layoutData,
 		case STATIC_GRAPH:
 		case GROUP_ITEM:
 		
+		
+		if (! defined ('METACONSOLE')) {
+		}
+		else {
+			// For each server defined and not disabled:
+			$servers = db_get_all_rows_sql ('SELECT *
+				FROM tmetaconsole_setup
+				WHERE disabled = 0');
+			if ($servers === false)
+				$servers = array();
+			
+			$result = array();
+			$count_modules = 0;
+			foreach ($servers as $server) {
+				// If connection was good then retrieve all data server
+				if (metaconsole_connect($server) == NOERR)
+					$connection = true;
+				else
+					$connection = false;
+				 
+				$result_server = db_get_all_rows_sql ($sql);
+				
+				if (!empty($result_server)) {
+					
+					// Create HASH login info
+					$pwd = $server['auth_token'];
+					$auth_serialized = json_decode($pwd,true);
+					
+					if (is_array($auth_serialized)) {
+						$pwd = $auth_serialized['auth_token'];
+						$api_password = $auth_serialized['api_password'];
+						$console_user = $auth_serialized['console_user'];
+						$console_password = $auth_serialized['console_password'];
+					}
+					
+					$user = $config['id_user'];
+					$user_rot13 = str_rot13($config['id_user']);
+					$hashdata = $user.$pwd;
+					$hashdata = md5($hashdata);
+					$url_hash = '&' .
+						'loginhash=auto&' .
+						'loginhash_data=' . $hashdata . '&' .
+						'loginhash_user=' . $user_rot13;
+					
+					foreach ($result_server as $result_element_key => $result_element_value) {
+						
+						$result_server[$result_element_key]['server_id'] = $server['id'];
+						$result_server[$result_element_key]['server_name'] = $server['server_name'];
+						$result_server[$result_element_key]['server_url'] = $server['server_url'].'/';
+						$result_server[$result_element_key]['hashdata'] = $hashdata;
+						$result_server[$result_element_key]['user'] = $config['id_user'];
+						
+						$count_modules++;
+						
+					}
+					
+					$result = array_merge($result, $result_server);
+				}
+				
+			}
+		}
+		
 			if (($layoutData['image'] != null && $layoutData['image'] != 'none') || $layoutData['show_statistics'] == 1) {
 						
 				
@@ -1758,7 +1824,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 						if (!modules_is_boolean($layoutData['id_agente_modulo'])) {
 							$img_style_title .=
 								" <br>" . __("Last value: ")
-								. $value;
+								. remove_right_zeros(number_format($value, $config['graph_precision'])).$unit_text;
 						}
 					}
 					
@@ -1794,7 +1860,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 					$imgpos = 'float:left';
 				}
 				
-				$varsize = getimagesize($img);
+				$varsize = getimagesize($config['homedir'] . '/' . $img);
 				
 				
 				if($layoutData['show_statistics'] == 1){
@@ -1930,6 +1996,13 @@ function visual_map_print_item($mode = "read", $layoutData,
 			else if($layoutData['label_position']=='left' || $layoutData['label_position']=='right'){
 				echo io_safe_output($text);
 			}
+			
+			if (! defined ('METACONSOLE')) {
+			}
+			else {
+				metaconsole_restore_db();
+			}
+				
 			
 			break;
 		
@@ -3128,6 +3201,9 @@ function visual_map_get_status_element($layoutData) {
 			}
 			else {
 				$status = VISUAL_MAP_STATUS_NORMAL;
+				if (count($elements_to_compare) == 0) {
+       		$status = VISUAL_MAP_STATUS_UNKNOWN;
+        }
 			}
 		}
 	}
@@ -3524,7 +3600,8 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
  *
  * @return array A list of layouts the user can see.
  */
-function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter = false, $returnAllGroup = true) {
+function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter = false, 
+										$returnAllGroup = true, $favourite = false) {
 	if (! is_array ($filter)){
 		$filter = array ();
 	} else {
@@ -3533,22 +3610,40 @@ function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter
 			unset($filter['name']);
 		}
 	}
-			
+
+	if($favourite){
+		if (empty($where)){
+			$where = "";
+		}
+		
+		if ($where != '') {
+			$where .= ' AND ';
+		}
+
+		$where .= "is_favourite = 1";
+	}
+
 	if ($returnAllGroup) {
-		$groups = users_get_groups ($id_user, 'VR');
+		$groups = users_get_groups ($id_user, 'VR', true, true);
 	} else {
-		if(!empty($filter['group'])) {
-			$permissions_group = users_get_groups ($id_user, 'VR', false);
-			if(empty($permissions_group)){
-				$permissions_group = users_get_groups ($id_user, 'VM', false);
-			}
-			$groups = array_intersect_key($filter['group'], $permissions_group);
-		} else {
-			$groups = users_get_groups ($id_user, 'VR', false);
-			if(empty($groups)) {
-				$groups = users_get_groups ($id_user, 'VM', false);
+		if(users_is_admin($id_user)){
+			$groups = users_get_groups ($id_user, 'VR', true, true);
+		}
+		else{
+			if(!empty($filter['group'])) {
+				$permissions_group = users_get_groups ($id_user, 'VR', false, true);
+				if(empty($permissions_group)){
+					$permissions_group = users_get_groups ($id_user, 'VM', false, true);
+				}
+				$groups = array_intersect_key($filter['group'], $permissions_group);
+			} else {
+				$groups = users_get_groups ($id_user, 'VR', false, true);
+				if(empty($groups)) {
+					$groups = users_get_groups ($id_user, 'VM', false, true);
+				}
 			}
 		}
+		
 		unset($filter['group']);
 	}
 	
@@ -3567,9 +3662,8 @@ function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter
 	if ($where == '') {
 		$where = array();
 	}
-	
+
 	$layouts = db_get_all_rows_filter ('tlayout', $where);
-	
 	if ($layouts == false)
 		return array ();
 	
@@ -3579,6 +3673,17 @@ function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter
 			$retval[$layout['id']] = $layout['name'];
 		else
 			$retval[$layout['id']] = $layout;
+
+		//add_perms
+		if ($groups[$layout['id_group']]['vconsole_view']){
+			$retval[$layout['id']]['vr'] = $groups[$layout['id_group']]['vconsole_view'];
+		}
+		if ($groups[$layout['id_group']]['vconsole_edit']){
+			$retval[$layout['id']]['vw'] = $groups[$layout['id_group']]['vconsole_edit'];
+		}
+		if ($groups[$layout['id_group']]['vconsole_management']){
+			$retval[$layout['id']]['vm'] = $groups[$layout['id_group']]['vconsole_management'];
+		}
 	}
 	
 	return $retval;
@@ -3626,7 +3731,21 @@ function visual_map_get_layout_status ($id_layout = 0, $depth = 0, $elements_in_
 			'element_group'));
 	if ($result === false)
 		return VISUAL_MAP_STATUS_NORMAL;
-	
+		
+	$stcount = 0;
+	$stcount_u = 0;
+	foreach ($result as $data) {
+		if ($data['type'] == 0) {
+			$stcount++;
+			if ($data["id_layout_linked"] == 0 && $data["id_agente_modulo"] == 0 && $data["id_agent"] == 0) {
+				$stcount_u++;
+			}
+		}
+	}
+	if ($stcount == 0 || $stcount_u == $stcount) {
+		return VISUAL_MAP_STATUS_UNKNOWN;
+	}
+
 	foreach ($result as $data) {
 		$layout_group = $data['element_group'];
 		if (!check_acl ($config['id_user'], $layout_group, "VR")) {
@@ -3665,8 +3784,12 @@ function visual_map_get_layout_status ($id_layout = 0, $depth = 0, $elements_in_
 				if (($data["id_layout_linked"] == 0 &&
 					$data["id_agente_modulo"] == 0 &&
 					$data["id_agent"] == 0) ||
-					$data['type'] != 0)
-				continue;
+					$data['type'] != 0){
+						if($data['type'] == 0){
+                    $temp_total = VISUAL_MAP_STATUS_UNKNOWN;
+            }
+						continue;
+					}
 				
 				// Other Layout (Recursive!)
 				if (($data["id_layout_linked"] != 0) && ($data["id_agente_modulo"] == 0)) {
@@ -3697,12 +3820,18 @@ function visual_map_get_layout_status ($id_layout = 0, $depth = 0, $elements_in_
 						}
 						else {
 							$status = VISUAL_MAP_STATUS_NORMAL;
+							if (count($elements_in_child) == 0) {
+								$status = VISUAL_MAP_STATUS_UNKNOWN;
+							}
 						}
 					}
 				}
 				// Module
 				elseif ($data["id_agente_modulo"] != 0) {
 					$status = modules_get_agentmodule_status($data["id_agente_modulo"]);
+					if ($status == 4){
+						$status = 3;
+					}
 				}
 				// Agent
 				else {

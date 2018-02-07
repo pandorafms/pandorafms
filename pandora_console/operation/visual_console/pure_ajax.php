@@ -16,7 +16,7 @@
 global $config;
 
 // Login check
-require ($config['homedir'] . '/include/functions_visual_map.php');
+require_once ($config['homedir'] . '/include/functions_visual_map.php');
 
 check_login ();
 

@@ -23,7 +23,25 @@ else {
 
 include_once($homedir . 'include/functions_ui.php');
 include_once($homedir . 'include/functions.php');
-include_once($homedir . 'include/functions_html.php');
+include_once(__DIR__ . '/../include/functions_html.php');
+
+
+if($config['visual_animation']){
+	echo 
+	'<style>
+	@keyframes login_move {
+			from {margin-left: 10%;margin-right: 10%;opacity:0.1}
+			to {margin-left: 5%;margin-right: 5%;opacity:1}
+	}
+	
+	
+	div.container_login{
+		animation-name: login_move;
+		animation-duration: 3s;
+	}
+	</style>';
+}
+
 
 if (!isset($login_screen)) {
 	$login_screen = 'login';
@@ -84,12 +102,11 @@ echo '<div id="header_login">';
 			echo '<img src="images/custom_logo/pandora_logo_head_3.png" alt="pandora_console">';	
 		}
 	echo '</div>';
-	
 		echo '<div id="list_icon_docs_support"><ul>';
-			echo '<li><a href="http://wiki.pandorafms.com/" target="_blank"><img src="images/icono_docs.png" alt="docs pandora"></a></li>';
+			echo '<li><a href="'.$config['custom_docs_url'].'" target="_blank"><img src="images/icono_docs.png" alt="docs pandora"></a></li>';
 			echo '<li>' . __('Docs') . '</li>';
 			if (file_exists (ENTERPRISE_DIR . "/load_enterprise.php")) {
-				echo '<li id="li_margin_left"><a href="https://support.artica.es" target="_blank"><img src="images/icono_support.png" alt="support pandora"></a></li>';
+				echo '<li id="li_margin_left"><a href="'.$config['custom_support_url'].'" target="_blank"><img src="images/icono_support.png" alt="support pandora"></a></li>';
 			} else {
 				echo '<li id="li_margin_left"><a href="https://pandorafms.com/monitoring-services/support/" target="_blank"><img src="images/icono_support.png" alt="support pandora"></a></li>';
 			}
@@ -236,7 +253,7 @@ echo '<div class="login_page">';
 			echo '<div><span class="span1">';
 				if(file_exists (ENTERPRISE_DIR . "/load_enterprise.php")){
 					if($config['custom_title1_login']){
-						echo strtoupper(io_safe_output($config['custom_title1_login']));
+						echo io_safe_output($config['custom_title1_login']);
 					}
 					else{
 						echo __('WELCOME TO PANDORA FMS');
@@ -249,7 +266,7 @@ echo '<div class="login_page">';
 			echo '<div><span class="span2">';
 				if(file_exists (ENTERPRISE_DIR . "/load_enterprise.php")){
 					if($config['custom_title2_login']){
-						echo strtoupper(io_safe_output($config['custom_title2_login']));
+						echo io_safe_output($config['custom_title2_login']);
 					}
 					else{
 						echo __('NEXT GENERATION');

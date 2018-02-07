@@ -316,12 +316,15 @@ define ('MODULE_PLUGIN',		4);
 define ('MODULE_PREDICTION',	5);
 define ('MODULE_WMI',			6);
 define ('MODULE_WEB',			7);
-define ('MODULE_WUX',           8);
+define ('MODULE_WUX',     8);
 
 /* Type of Modules of Prediction */
 define ('MODULE_PREDICTION_SERVICE',	2);
 define ('MODULE_PREDICTION_SYNTHETIC',	3);
 define ('MODULE_PREDICTION_NETFLOW',	4);
+define ('MODULE_PREDICTION_CLUSTER',	5);
+define ('MODULE_PREDICTION_CLUSTER_AA',	6);
+define ('MODULE_PREDICTION_CLUSTER_AP',	7);
 
 /* SNMP CONSTANTS */
 define('SNMP_DIR_MIBS',		"attachment/mibs");
@@ -358,6 +361,7 @@ define('SERVER_TYPE_ENTERPRISE_TRANSACTIONAL',	14);
 define('SERVER_TYPE_MAINFRAME',	                15);
 define('SERVER_TYPE_SYNC',	                    16);
 define('SERVER_TYPE_WUX',						17);
+define('SERVER_TYPE_SYSLOG',					18);
 
 /* REPORTS */
 define('REPORT_TOP_N_MAX',	1);

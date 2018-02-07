@@ -51,14 +51,13 @@ if (is_ajax ()) {
 		$id_os = get_parameter('id_os', '');
 		$agent_name = get_parameter('name', '');
 		$privilege = (string) get_parameter ('privilege', "AR");
-		
 		// Is is possible add keys prefix to avoid auto sorting in js object conversion
 		$keys_prefix = (string) get_parameter ('keys_prefix', '');
 		$status_agents = (int)get_parameter('status_agents', AGENT_STATUS_ALL);
 		
 		if ($id_group > 0) {
 			$groups = array($id_group);
-			if ($recursion === 'true') {
+			if ($recursion === 'true' || $recursion == 1 ) {
 				$groups = array_merge($groups,
 					groups_get_id_recursive($id_group, true));
 			}

@@ -255,10 +255,9 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'simple_value',
 				'datos',
 				'icon',
-				'bars_graph');
+				'bars_graph',
+				'group_item');
 				
-			if (!is_metaconsole())
-				$form_items['enable_link_row']['items'][] = 'group_item';
 				
 			$form_items['enable_link_row']['html'] =
 				'<td align="left" style="">' . __('Enable link') . '</td>

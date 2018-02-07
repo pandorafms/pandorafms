@@ -801,7 +801,7 @@ function html_print_extended_select_for_time ($name, $selected = '',
 	$readonly = false, $custom_fields = false,$style_icon = '') {
 	
 	global $config;
-	
+	$admin = is_user_admin($config['id_user']);
 	if($custom_fields){
 		$fields = $custom_fields;
 	} else {
@@ -853,7 +853,7 @@ function html_print_extended_select_for_time ($name, $selected = '',
 		html_print_select ($fields, $uniq_name . '_select', $selected,"" . $script,
 			$nothing, $nothing_value, false, false, false, $class, $readonly, 'font-size: xx-small;'.$select_style);
 		// The advanced control is only for admins
-		if (is_user_admin($config['id_user'])) {	
+		if ($admin) {
 			echo ' <a href="javascript:">' .
 				html_print_image('images/pencil.png', true,
 					array('class' => $uniq_name . '_toggler',
@@ -929,7 +929,7 @@ function html_print_extended_select_for_cron ($hour = '*', $minute = '*', $mday 
 	}
 	
 	# Months
-	for ($i = 0; $i < 12; $i++) {
+	for ($i = 1; $i <= 12; $i++) {
 		$months[$i] = date('F', mktime (0, 0, 0, $i, 1));
 	}
 	

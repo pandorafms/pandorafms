@@ -30,6 +30,8 @@ Besides the defined module macros, the following macros are available:
 <li>_all_address_ : All address of the agent that fired the alert.</li>
 <li>_data_: Module data that caused the alert to fire.</li>
 <li>_email_tag_: Emails associated to the module’s tags.</li>
+<li>_event_extra_id_: (Only event alerts) Extra id.</li>
+<li>_event_cfX_: (Only event alerts) Key of the event custom field that fired the alert.</li>
 <li>_event_id_: (Only event alerts) ID of the event that triggered the alert.</li>
 <li>_event_text_severity_: (Only event alerts) event text (that triggered the alert) severity (Maintenance, Informational, Normal Minor, Warning, Major, Critical).</li>
 <li>_field1_: User defined field 1.</li>
@@ -59,12 +61,25 @@ Besides the defined module macros, the following macros are available:
 <li>_modulegraphth_nh_:Same operation as the previous macro only with the critical and warning thresholds of the module provided they are defined.</li>
 <li>_modulegroup_: Module’s group name.</li>
 <li>_modulestatus_: Module status.</li>
+<li>_moduledata_X_: Last data of module X (module name, cannot have white spaces).</li>
+<li>_alert_name_: Alert name.</li>
+<li>_alert_priority_: Alert’s numeric priority.</li>
+<li>_alert_text_severity_: Priority level, in text, for the alert (Maintenance, Informational, Normal Minor, Major, Critical).</li>
+<li>_event_text_severity_: (Only event alerts) Text event (which triggered the alert) severity (Maintenance, Informational, Normal Minor, Warning, Major, Critical).</li>
+<li>_event_id_: (Only event alerts) ID of the event that triggered the alert.</li>
+<li>_event_description_: (Only event alerts) The textual description of the Pandora FMS event.</li>
+<li>_id_agent_: Agent’s ID, useful for building a direct URL that redirects to a Pandora FMS console webpage.</li>
+<li>_id_group_ : Agent group ID.</li>
+<li>_id_module_ : ID of module.</li>
+<li>_id_alert_: Alert’s numeric ID (unique), used to correlate the alert with third party software.</li>
 <li>_moduletags_: URLs asociadas a los tags de módulos.</li>
 <li>_name_tag_: Names of the tags related to the module.</li>
 <li>_phone_tag_: Phone numbers related to the module’s tags.</li>
 <li>_plugin_parameters_: Module’s Plugin parameters.</li>
 <li>_policy_: Name of the policy that the module belongs to (if applies).</li>
-<li>_prevdata_ : Module data previus the alert to fire.</li>
+<li>_prevdata_: Module data previus the alert to fire.</li>
+<li>_server_ip_: Ip of server assigned to agent. </li>
+<li>_server_name_: Name of server assigned to agent. </li>
 <li>_target_ip_: IP address for the module’s target.</li>
 <li>_target_port_: Port number for the module’s target.</li>
 <li>_timestamp_: Time and date on which the alert was triggered (yy-mm-dd hh:mm:ss).</li>

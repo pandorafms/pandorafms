@@ -372,8 +372,16 @@ function io_unsafe_string ($string) {
  */
 function __ ($string /*, variable arguments */) {
 	global $l10n;
+	global $config;
+	static $extensions_cache = array();
 	
-	$extensions = extensions_get_extensions();
+	if (array_key_exists($config["id_user"], $extensions_cache)) {
+		$extensions = $extensions_cache[$config["id_user"]];
+	}
+	else {
+		$extensions = extensions_get_extensions();
+		$extensions_cache[$config["id_user"]] = $extensions;
+	}
 	if (empty($extensions))
 		$extensions = array();
 	
@@ -388,7 +396,7 @@ function __ ($string /*, variable arguments */) {
 			return $tranlateString;
 		}
 	}
-	elseif (enterprise_installed() && 
+	elseif (enterprise_installed && 
 				isset($config['translate_string_extension_installed']) && 
 				$config['translate_string_extension_installed'] == 1 &&
 				array_key_exists('translate_string.php', $extensions)) {

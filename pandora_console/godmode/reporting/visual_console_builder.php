@@ -107,6 +107,7 @@ switch ($activeTab) {
 				$width = '';
 				$height = '';
 				$visualConsoleName = '';
+				$is_favourite = 0;
 				break;
 			
 			case 'update':
@@ -117,7 +118,8 @@ switch ($activeTab) {
 				$width = (int) get_parameter('width');
 				$height = (int) get_parameter('height');
 				$visualConsoleName = (string) get_parameter('name');
-				
+				$is_favourite  = (int) get_parameter('is_favourite_sent');
+
 				// ACL for the new visual console
 				//$vconsole_read_new = check_acl ($config['id_user'], $idGroup, "VR");
 				$vconsole_write_new = check_acl ($config['id_user'], $idGroup, "VW");
@@ -137,7 +139,8 @@ switch ($activeTab) {
 						'background' => $background,
 						'background_color' => $background_color,
 						'width' => $width,
-						'height' => $height
+						'height' => $height,
+						'is_favourite' => $is_favourite
 				);
 				
 				$error = $_FILES['background_image']['error'];
@@ -268,6 +271,7 @@ switch ($activeTab) {
 				$background_color = $visualConsole['background_color'];
 				$width = $visualConsole['width'];
 				$height = $visualConsole['height'];
+				$is_favourite = $visualConsole['is_favourite'];
 				break;
 		}
 		break;
@@ -296,7 +300,7 @@ switch ($activeTab) {
 					'flag' => true,
 					'message' => ui_print_result_message($result,
 						__('Successfully multiple delete.'),
-						__('Unsuccessfull multiple delete.'), '', true));
+						__('Unsuccessful multiple delete.'), '', true));
 				break;
 			case 'update':
 				//Update background

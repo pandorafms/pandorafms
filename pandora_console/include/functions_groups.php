@@ -573,7 +573,7 @@ function groups_get_status ($id_group = 0, $strict_user = false) {
 	require_once ($config['homedir'].'/include/functions_reporting.php');
 	
 	if ($strict_user) {
-		$acltags = tags_get_user_module_and_tags ($config['id_user'], 'AR', $strict_user);
+		$acltags = tags_get_user_groups_and_tags ($config['id_user'], 'AR', $strict_user);
 		$group_status = group_get_data ($config['id_user'], $strict_user, $acltags, false, 'group');
 		$data['monitor_alerts_fired'] = $groups_status['_monitors_alerts_fired_'];
 		$data['agent_critical'] = $groups_status['_agents_critical_'];
@@ -3010,7 +3010,7 @@ function group_get_groups_list($id_user = false, $user_strict = false, $access =
 		$id_user = $config['id_user'];
 	}
 	
-	$acltags = tags_get_user_module_and_tags ($id_user, $access, $user_strict);
+	$acltags = tags_get_user_groups_and_tags ($id_user, $access, $user_strict);
 	
 	// If using metaconsole, the strict users will use the agent table of every node
 	if (is_metaconsole() && $user_strict) {

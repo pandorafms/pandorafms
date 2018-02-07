@@ -998,6 +998,7 @@ function modules_is_string($id_agentmodule) {
 function modules_is_boolean_type ($id_type) {
 	$type_name = modules_get_type_name($id_type);
 	
+	if ($type_name === "keep_alive") return true;
 	return (bool)preg_match('/_proc$/', $type_name);
 }
 
@@ -1646,6 +1647,11 @@ function modules_is_unit_macro($macro) {
 		return true;
 	}
 	return false;
+}
+
+function modules_get_last_contact ($id_agentmodule) {
+	return db_get_value ('utimestamp', 'tagente_estado',
+		'id_agente_modulo', $id_agentmodule);
 }
 
 /**
@@ -2307,50 +2313,53 @@ function modules_change_relation_lock ($id_relation) {
 	return ($result !== false ? $new_value : $old_value);
 }
 
-
-
-function modules_get_count_datas($id_agent_module, $date_init, $date_end) {
-	$interval = modules_get_interval ($id_agent_module);
-	
-	// TODO REMOVE THE TIME IN PLANNED DOWNTIME
-	
-	if (!is_numeric($date_init)) {
-		$date_init = strtotime($date_init);
-	}
-	
-	if (!is_numeric($date_end)) {
-		$date_end = strtotime($date_end);
-	}
-	
-	
-	
-	$first_date = modules_get_first_contact_date($id_agent_module);
-	
-	
-	
-	if ($date_init < $first_date) {
-		$date_init = $first_date;
-	}
-	
-	$diff = $date_end - $date_init;
-	
-	
-	return ($diff / $interval);
-}
-
-
-function modules_get_first_contact_date($id_agent_module) {
+/*
+ * @return utimestamp with the first contact of the module or first contact before datelimit, false if not-init
+ */
+function modules_get_first_date($id_agent_module, $datelimit = 0) {
 	global $config;
 	
-	// TODO REMOVE THE TIME IN PLANNED DOWNTIME
+	//check datatype string or normal
+	$table = "tagente_datos";
+	$module_type_str = modules_get_type_name ($id_agent_module);
+	if (strstr ($module_type_str, 'string') !== false) {
+		$table = "tagente_datos_string";
+	}
+
+	$search_historydb = false;
+
+	// tagente_estado.first_utimestamp is not valid or is not updated. Scan DBs for first utimestamp
+	if ($datelimit > 0) {
+		// get last data before datelimit
+		$query  = " SELECT max(utimestamp) as utimestamp FROM $table ";
+		$query .= " WHERE id_agente_modulo=$id_agent_module ";
+		$query .= " AND utimestamp < $datelimit ";
 	
-	// TODO FOR OTHER KIND OF DATA
+	}
+	else {
+		// get first utimestamp
+		$query  = " SELECT min(utimestamp) as utimestamp FROM $table ";
+		$query .= " WHERE id_agente_modulo=$id_agent_module ";
+	}
 	
-	$first_date = db_get_value('utimestamp', 'tagente_datos',
-		'id_agente_modulo', $id_agent_module,
-		$config['history_db_enabled']);
-	
-	return $first_date;
+
+	// SEARCH ACTIVE DB
+	$data = db_get_all_rows_sql($query,$search_historydb);
+	if (($data === false) || ($data[0]["utimestamp"] === NULL) || ($data[0]["utimestamp"] <= 0)) {
+		// first utimestamp not found in active database
+		// SEARCH HISTORY DB
+		$search_historydb = true;
+		$data = db_get_all_rows_sql($query,$search_historydb);
+	}
+
+	if (($data === false) || ($data[0]["utimestamp"] === NULL) || ($data[0]["utimestamp"] <= 0)) {
+		// Nor active DB nor history DB have the data, the module is not-init
+		return array ("first_utimestamp" => false, "search_historydb" => $search_historydb);
+	}
+
+	// The data has been found
+	return array ("first_utimestamp" => $data[0]["utimestamp"], "search_historydb" => $search_historydb);
+
 }
 
 /**
@@ -2548,7 +2557,9 @@ function modules_get_modules_name ($sql_from , $sql_conditions = '', $meta = fal
 				foreach ($rows_temp as $module_group_key => $modules_group_val)
 					$rows_temp_processed[$modules_group_val['name']] = $modules_group_val['name'];
 				
-				$rows_select = array_unique(array_merge($rows_select, $rows_temp_processed));
+				if(is_array($rows_select) && is_array($rows_temp_processed)){
+					$rows_select = array_unique(array_merge($rows_select, $rows_temp_processed));
+				}
 			}
 			
 			$groups_temp = users_get_groups_for_select(false, "AR", true, true, false);									
@@ -2561,7 +2572,9 @@ function modules_get_modules_name ($sql_from , $sql_conditions = '', $meta = fal
 			}
 			
 			if (!empty($groups_temp_processed)) {
-				$groups_select = array_unique(array_merge($groups_select, $groups_temp_processed));
+				if(is_array($rows_select) && is_array($rows_temp_processed)){
+					$groups_select = array_unique(array_merge($groups_select, $groups_temp_processed));
+				}
 			}
 			
 			if (!empty($modules_temp))
@@ -2570,7 +2583,13 @@ function modules_get_modules_name ($sql_from , $sql_conditions = '', $meta = fal
 			metaconsole_restore_db();
 		}
 		unset($groups_select[__('All')]);
-		$key_group_all = array_search(__('All'), $groups_select);
+		if(is_array($groups_select)){
+			$key_group_all = array_search(__('All'), $groups_select);
+		}
+		else{
+			$key_group_all = false;	
+		}
+		
 		if ($key_group_all !== false)
 			unset($groups_select[$key_group_all]);
 		return $modules;

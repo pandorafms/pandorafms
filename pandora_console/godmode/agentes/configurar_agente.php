@@ -151,11 +151,21 @@ $module_macros = array ();
 
 // Create agent
 if ($create_agent) {
+	$mssg_warning = 0;
 	$alias = (string) get_parameter_post("alias",'');
 	$alias_as_name = (int) get_parameter_post("alias_as_name", 0);
 	$direccion_agente = (string) get_parameter_post("direccion",'');
+
+	//safe_output only validate ip
 	$direccion_agente = trim(io_safe_output($direccion_agente));
+		
+	if(!validate_address($direccion_agente)){
+		$mssg_warning = 1;
+	}
+
+	//safe-input before validate ip
 	$direccion_agente = io_safe_input($direccion_agente);
+
 	$nombre_agente = hash("sha256",$alias . "|" .$direccion_agente ."|". time() ."|". sprintf("%04d", rand(0,10000)));
 	$grupo = (int) get_parameter_post ("grupo");
 	$intervalo = (string) get_parameter_post ("intervalo", SECONDS_5MINUTES);
@@ -184,7 +194,7 @@ if ($create_agent) {
 	foreach ($fields as $field) {
 		$field_values[$field['id_field']] = (string) get_parameter_post ('customvalue_'.$field['id_field'], '');
 	}
-	
+
 	// Check if agent exists (BUG WC-50518-2)
 	if ($alias == "") {
 		$agent_creation_error = __('No agent alias specified');
@@ -233,8 +243,8 @@ if ($create_agent) {
 			// Create custom fields for this agent
 			foreach ($field_values as $key => $value) {
 				$update_custom = db_process_sql_insert ('tagent_custom_data',
-				 array('id_field' => $key, 'id_agent' => $id_agente,
-					'description' => $value));
+					array('id_field' => $key, 'id_agent' => $id_agente,
+						'description' => $value));
 			}
 			// Create address for this agent in taddress
 			if ( $direccion_agente != '') {
@@ -253,23 +263,23 @@ if ($create_agent) {
 				}
 			}
 			
-			$info = 'Name: ' . $nombre_agente .
-				' IP: ' . $direccion_agente .
-				' Group: ' . $grupo .
-				' Interval: ' . $intervalo .
-				' Comments: ' . $comentarios .
-				' Mode: ' . $modo .
-				' ID_parent: ' . $id_parent .
-				' Server: ' . $server_name .
-				' ID os: ' . $id_os .
-				' Disabled: ' . $disabled .
-				' Custom ID: ' . $custom_id .
-				' Cascade protection: '  . $cascade_protection .
-				' Cascade protection module: ' . $cascade_protection_module .
-				' Icon path: ' . $icon_path .
-				' Update GIS data: ' . $update_gis_data . 
-				' Url description: ' . $url_description .
-				' Quiet: ' . (int)$quiet;
+			$info = '{"Name":"' . $nombre_agente .'",
+				"IP":"' . $direccion_agente .'",
+				"Group":"' . $grupo .'",
+				"Interval":"' . $intervalo .'",
+				"Comments":"' . $comentarios .'",
+				"Mode":"' . $modo .'",
+				"ID_parent:":"' . $id_parent .'",
+				"Server":"' . $server_name .'",
+				"ID os":"' . $id_os .'",
+				"Disabled":"' . $disabled .'",
+				"Custom ID":"' . $custom_id .'",
+				"Cascade protection":"'  . $cascade_protection .'",
+				"Cascade protection module":"' . $cascade_protection_module .'",
+				"Icon path":"' . $icon_path .'",
+				"Update GIS data":"' . $update_gis_data .'",
+				"Url description":"' . $url_description .'",
+				"Quiet":"' . (int)$quiet.'"}';
 			
 			db_pandora_audit("Agent management",
 				"Created agent $alias", false, true, $info);
@@ -637,6 +647,10 @@ if ($create_agent) {
 	ui_print_result_message ($agent_created_ok,
 		__('Successfully created'),
 		$agent_creation_error);
+
+	if($mssg_warning){
+		ui_print_warning_message(__('The ip or dns name entered cannot be resolved'));
+	}
 }
 
 // Fix / Normalize module data
@@ -678,13 +692,22 @@ $update_agent = (bool) get_parameter ('update_agent');
 
 // Update AGENT
 if ($update_agent) { // if modified some agent paramenter
+	$mssg_warning = 0;
 	$id_agente = (int) get_parameter_post ("id_agente");
 	$nombre_agente = str_replace('`','&lsquo;',(string) get_parameter_post ("agente", ""));
 	$alias = str_replace('`','&lsquo;',(string) get_parameter_post ("alias", ""));
 	$alias_as_name = (int) get_parameter_post ('alias_as_name', 0);
 	$direccion_agente = (string) get_parameter_post ("direccion", '');
+	//safe_output only validate ip
 	$direccion_agente = trim(io_safe_output($direccion_agente));
+	
+	if(!validate_address($direccion_agente)){
+		$mssg_warning = 1;
+	}
+
+	//safe-input before validate ip
 	$direccion_agente = io_safe_input($direccion_agente);
+
 	$address_list = (string) get_parameter_post ("address_list", '');
 	
 	if ($address_list != $direccion_agente &&
@@ -728,7 +751,6 @@ if ($update_agent) { // if modified some agent paramenter
 		$field_values[$field['id_field']] = (string) get_parameter_post ('customvalue_'.$field['id_field'], '');
 	}
 	
-	
 	foreach ($field_values as $key => $value) {
 		$old_value = db_get_all_rows_filter('tagent_custom_data',
 			array('id_agent' => $id_agente, 'id_field' => $key));
@@ -747,6 +769,10 @@ if ($update_agent) { // if modified some agent paramenter
 						$update_custom_result = 1;
 				}
 		}
+	}
+
+	if($mssg_warning){
+		ui_print_warning_message(__('The ip or dns name entered cannot be resolved'));
 	}
 	
 	//Verify if there is another agent with the same name but different ID
@@ -812,7 +838,7 @@ if ($update_agent) { // if modified some agent paramenter
 		else {
 			// Update the agent from the metaconsole cache
 			enterprise_include_once('include/functions_agents.php');
-			enterprise_hook ('agent_update_from_cache', array($id_agente, $values));
+			enterprise_hook ('agent_update_from_cache', array($id_agente, $values,$server_name));
 			
 			if ($old_interval != $intervalo) {
 				enterprise_hook('config_agents_update_config_interval', array($id_agente, $intervalo));
@@ -850,16 +876,25 @@ if ($update_agent) { // if modified some agent paramenter
 				}
 			}
 			
-			$info = 'Group: ' . $grupo . ' Interval: ' . $intervalo .
-				' Comments: ' . $comentarios . ' Mode: ' . $modo . 
-				' ID OS: ' . $id_os . ' Disabled: ' . $disabled . 
-				' Server Name: ' . $server_name . ' ID parent: ' . $id_parent .
-				' Custom ID: ' . $custom_id . ' Cascade Protection: ' . $cascade_protection .
-				' Cascade protection module: ' . $cascade_protection_module .
-				' Icon Path: ' . $icon_path . 'Update GIS data: ' .$update_gis_data .
-				' Url description: ' . $url_description .
-				' Quiet: ' . (int)$quiet;
-			
+			$info = '{
+				"id_agente":"' . $id_agente . '",
+				"alias":"' . $alias . '",
+				"Group":"' . $grupo . '",
+				"Interval" : "' . $intervalo .'",
+				"Comments":"' . $comentarios . '",
+				"Mode":"' . $modo . '",
+				"ID OS":"' . $id_os . '",
+				"Disabled":"' . $disabled .'",
+				"Server Name":"' . $server_name .'",
+				"ID parent":"' . $id_parent .'",
+				"Custom ID":"' . $custom_id . '",
+				"Cascade Protection":"' . $cascade_protection .'",
+				"Cascade protection module":"' . $cascade_protection_module .'",
+				"Icon Path":"' . $icon_path . '",
+				"Update GIS data":"' .$update_gis_data .'",
+				"Url description":"' . $url_description .'",
+				"Quiet":"' . (int)$quiet.'"}';
+							
 			enterprise_hook ('update_agent', array ($id_agente));
 			ui_print_success_message (__('Successfully updated'));
 			db_pandora_audit("Agent management",
@@ -1002,7 +1037,7 @@ if ($update_module || $create_module) {
 
 	$custom_string_2 = (string) get_parameter ('custom_string_2', $custom_string_2_default);
 	$custom_string_3 = (string) get_parameter ('custom_string_3', $custom_string_3_default);
-	$custom_integer_2 = (int) get_parameter ('custom_integer_2', $custom_integer_2_default);
+	$custom_integer_2 = (int) get_parameter ('custom_integer_2', 0);
 	
 	// Get macros
 	$macros = (string) get_parameter ('macros');
@@ -1223,7 +1258,9 @@ if ($update_module || $create_module) {
 if ($update_module) {
 	$id_agent_module = (int) get_parameter ('id_agent_module');
 	
-	$values = array ('descripcion' => $description,
+	$values = array (
+		'id_agente_modulo' => $id_agent_module,
+		'descripcion' => $description,
 		'id_module_group' => $id_module_group,
 		'nombre' => $name,
 		'max' => $max,
@@ -1281,7 +1318,7 @@ if ($update_module) {
 		'warning_inverse' => $warning_inverse,
 		'cron_interval' => $cron_interval,
 		'id_category' => $id_category,
-		'disabled_types_event' => $disabled_types_event,
+		'disabled_types_event' => addslashes($disabled_types_event),
 		'module_macros' => $module_macros);
 	
 	// In local modules, the interval is updated by agent
@@ -1441,7 +1478,7 @@ if ($create_module) {
 		'warning_inverse' => $warning_inverse,
 		'cron_interval' => $cron_interval,
 		'id_category' => $id_category,
-		'disabled_types_event' => $disabled_types_event,
+		'disabled_types_event' => addslashes($disabled_types_event),
 		'module_macros' => $module_macros);
 	
 	if ($prediction_module == 3 && $serialize_ops == '') {

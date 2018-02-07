@@ -54,6 +54,19 @@ AGENT_WIN_FILE="$CODEHOME/pandora_agents/win32/pandora.cc"
 AGENT_WIN_MPI_FILE="$CODEHOME/pandora_agents/win32/installer/pandora.mpi"
 AGENT_WIN_RC_FILE="$CODEHOME/pandora_agents/win32/versioninfo.rc"
 SATELLITE_FILE="$PANDHOME_ENT/satellite_server/satellite_server.pl"
+PERL_PLUGIN_FILES="$PANDHOME_ENT/pandora_plugins/NGINX/nginx_requests_queued.pl \
+$PANDHOME_ENT/pandora_plugins/Sybase/sybase_plugin.pl \
+$PANDHOME_ENT/pandora_plugins/MarkLogic/pandora_marklogic.pl \
+$PANDHOME_ENT/pandora_plugins/Apache/pandora_apache.pl \
+$PANDHOME_ENT/pandora_plugins/Oracle/Database/pandora_oracle.pl \
+$PANDHOME_ENT/pandora_plugins/OpenNebula/pandora_opennebula.pl \
+$PANDHOME_ENT/pandora_plugins/Nutanix/pandora_nutanix.pl \
+$PANDHOME_ENT/pandora_plugins/MTL/pandora_mtl.pl \
+$PANDHOME_ENT/pandora_plugins/Informix/informix.pl \
+$PANDHOME_ENT/pandora_plugins/Ruckus/ruckus.pl \
+$PANDHOME_ENT/pandora_plugins/UX/pandora_ux.pl \
+$PANDHOME_ENT/pandora_server/util/plugins/vmware-plugin.pl "
+PLUGIN_LIB_FILE="$CODEHOME/pandora_server/lib/PandoraFMS/PluginTools.pm"
 
 # Update version in spec files
 function update_spec_version {
@@ -87,6 +100,14 @@ function update_installer_version {
 	sed -i -e "/^PI_VERSION/s/=.*/=\"$VERSION\"/" -e "/^PI_BUILD/s/=.*/=\"$BUILD\"/" "$FILE"
 }
 
+# Update version in Perl files
+function update_perl_version {
+	FILE=$1
+
+	sed -i -e "s/my\s\s*\$pandora_version\s*=.*/my \$pandora_version = \"$VERSION\";/" "$FILE"
+	sed -i -e "s/my\s\s*\$pandora_build\s*=.*/my \$pandora_build = \"$BUILD\";/" "$FILE"
+}
+
 # Spec files
 for file in $SPEC_FILES; do
 	echo "Updating spec file $file..."
@@ -105,6 +126,12 @@ for file in $INSTALLER_FILES; do
 	update_installer_version $file
 done
 
+# Perl plugins files
+for file in $PERL_PLUGIN_FILES; do
+	echo "Updating plugin file $file..."
+	update_perl_version $file
+done
+
 # Pandora Server
 echo "Updating Pandora Server version..."
 sed -i -e "s/my\s\s*\$pandora_version\s*=.*/my \$pandora_version = \"$VERSION\";/" "$SERVER_FILE"
@@ -116,6 +143,9 @@ sed -i -e "s/my\s\s*\$version\s*=.*/my \$version = \"$VERSION PS$BUILD\";/" "$SE
 sed -i -e "s/\s*\#\s*\Version.*/\# Version $VERSION/" "$SERVER_CONF_FILE"
 sed -i -e "s/\s*\!define PRODUCT_VERSION.*/\!define PRODUCT_VERSION \"$VERSION\"/" "$SERVER_WIN_MPI_OPEN_FILE"
 sed -i -e "s/\s*\!define PRODUCT_VERSION.*/\!define PRODUCT_VERSION \"$VERSION\"/" "$SERVER_WIN_MPI_ENT_FILE"
+echo "Updateing Pandora PluginTools version..."
+sed -i -e "s/my\s\s*\$pandora_version\s*=.*/my \$pandora_version = \"$VERSION\";/" "$PLUGIN_LIB_FILE"
+sed -i -e "s/my\s\s*\$pandora_build\s*=.*/my \$pandora_build = \"$BUILD\";/" "$PLUGIN_LIB_FILE"
 
 # Pandora Satellite Server
 echo "Updating Pandora Satellite Server version..."

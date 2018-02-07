@@ -60,7 +60,6 @@ if ($update_snmp_translation) {
 
 if ($delete_snmp_filter) {
 	$filter_id = get_parameter('filter_id');
-html_debug($filter_id, true);
 	db_process_sql_delete('tsnmp_filter', array('id_snmp_filter' => $filter_id));
 
 	return;

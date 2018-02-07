@@ -74,4 +74,8 @@ function os_get_os() {
 	
 	return $op_systems;
 }
+
+function os_get_icon($id_os) {
+	return db_get_value ('icon_name', 'tconfig_os', 'id_os', (int) $id_os);
+}
 ?>

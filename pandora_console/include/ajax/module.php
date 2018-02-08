@@ -283,6 +283,14 @@ if ($get_module_detail) {
 			if ($attr[1] != "modules_format_data") {
 				$data[] = date('d F Y h:i:s A', $row['utimestamp']);
 			}
+			elseif(is_snapshot_data($row[$attr[0]])){
+				if($config['command_snapshot']){
+					$data[] = "<a target='_blank' href='".io_safe_input($row[$attr[0]])."'><img style='width:300px' src='".io_safe_input($row[$attr[0]])."'></a>";
+				}
+				else{
+					$data[] = "<span>".wordwrap(io_safe_input($row[$attr[0]]),60,"<br>\n",true)."</span>";
+				}
+			}
 			elseif (($config['command_snapshot'] == '0') && (preg_match ("/[\n]+/i", $row[$attr[0]]))) {
 				// Its a single-data, multiline data (data snapshot) ?
 
@@ -342,21 +350,11 @@ if ($get_module_detail) {
 						$data[] = 'No data';
 					}
 					else {
-						if(is_snapshot_data($row[$attr[0]])){
-							if($config['command_snapshot']){
-								$data[] = "<a target='_blank' href='".io_safe_input($row[$attr[0]])."'><img style='width:300px' src='".io_safe_input($row[$attr[0]])."'></a>";
-							}
-							else{
-								$data[] = "<span>".wordwrap(io_safe_input($row[$attr[0]]),60,"<br>\n",true)."</span>";
-							}
-						}
-						else{
-							$data_macro = modules_get_unit_macro($row[$attr[0]],$unit);
-							if($data_macro){
-								$data[] = $data_macro;
-							} else {
-								$data[] = $row[$attr[0]];
-							}
+						$data_macro = modules_get_unit_macro($row[$attr[0]],$unit);
+						if($data_macro){
+							$data[] = $data_macro;
+						} else {
+							$data[] = $row[$attr[0]];
 						}
 					}
 				}

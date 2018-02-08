@@ -915,15 +915,77 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	$dashboard = false, $vconsole = false, $type_graph = 'area', $fullscale = false,
 	$id_widget_dashboard = false,$force_interval = 0,$time_interval = 300,
 	$max_only = 0, $min_only = 0) {
-				
-				
+	
 	global $config;
 	global $graphic_type;
 
 	$flash_chart = $config['flash_charts'];
 	
-	enterprise_include_once("include/functions_reporting.php");
+	//XXX aqui empieza la obtencion de datos:
+	//Es infernal la cantidad de parametros que se le mandan pasamos a un array para simplificar este proceso:
 	
+	//date start final period
+	$date_array = array();
+	$date_array["start_date"] = $date - $period;
+	$date_array["final_date"] = $date;
+	$date_array["period"]     = $period;
+
+	//show elements in the graph
+	$show_elements_graph = array();
+	$show_elements_graph['show_events']  = $show_events;
+	$show_elements_graph['show_alerts']  = $show_alerts;
+	$show_elements_graph['show_unknown'] = $show_unknown;
+	$show_elements_graph['avg_only']     = $avg_only;
+	$show_elements_graph['show_title']   = $show_title;
+	$show_elements_graph['menu']         = $menu;
+	$show_elements_graph['percentil']    = $percentil;
+	$show_elements_graph['projection']   = $projection;
+	$show_elements_graph['adapt_key']    = $adapt_key;
+	$show_elements_graph['compare']      = $compare;
+	$show_elements_graph['dashboard']    = $dashboard;
+	$show_elements_graph['vconsole']     = $vconsole;
+	$show_elements_graph['pure']         = $pure;
+	$show_elements_graph['baseline']     = $baseline;
+	$show_elements_graph['only_image']   = $only_image;
+	$show_elements_graph['return_data']  = $return_data;
+	$show_elements_graph['id_widget']    = $id_widget_dashboard;
+
+	//format of the graph
+	$format_graph = array();
+	$format_graph['width']      = $width;
+	$format_graph['height']     = $height;
+	$format_graph['type_graph'] = $type_graph;
+	$format_graph['fullscale']  = $fullscale;
+	$format_graph['unit_name']  = $unit_name;
+	$format_graph['unit']       = $unit;
+	$format_graph['title']      = $title;
+	$format_graph['homeurl']    = $homeurl;
+	$format_graph['ttl']        = $ttl;
+	$format_graph['background'] = $backgroundColor;
+
+	//exception to change the interval of the graph and show media min max @enriquecd
+	$exception_interval_graph['force_interval'] = $force_interval;
+	$exception_interval_graph['time_interval']  = $time_interval;
+	$exception_interval_graph['max_only']       = $max_only;
+	$exception_interval_graph['min_only']       = $min_only;
+	
+	/*
+	html_debug_print('+++++++++++++++++Parámetros Que recibe la funcion++++++++++++++++++++++');
+	html_debug_print('id_agente_modulo: ' . $agent_module_id);
+	html_debug_print($date_array);
+	html_debug_print($show_elements_graph);
+	html_debug_print($format_graph);
+	html_debug_print($exception_interval_graph);
+	html_debug_print('+++++++++++++FIN Parámetros Que recibe la funcion++++++++++++++++++++++');
+	*/
+
+
+
+
+
+
+	enterprise_include_once("include/functions_reporting.php");
+
 	global $chart;
 	global $color;
 	global $color_prev;
@@ -960,7 +1022,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 			case 'overlapped':
 				// Store the chart calculated deleting index,
 				// because will be over the current period
-				$chart_prev = array_values($chart);
+				$chart_prev = $chart;
 				$legend_prev = $legend;
 				$series_type_prev = $series_type;
 				$color_prev = $color;
@@ -986,6 +1048,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		return $data_returned;
 	}
 	if ($compare === 'overlapped') {
+		/*
 		$i = 0;
 		foreach ($chart as $k=>$v) {
 			if (!isset($chart_prev[$i])) {
@@ -994,7 +1057,23 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 			$chart[$k] = array_merge($v,$chart_prev[$i]);
 			$i++;
 		}
+		*/
+		foreach ($chart_prev as $k => $v) {
+			$chart[$k+$period]['sum2'] = $v['sum2'];
+			//unset($chart[$k]);
+		}
 		
+		/*
+		$chart["1517834070"]["sum2"] = "5";
+		$chart["1517834075"]["sum2"] = "6";
+		$chart["1517834080"]["sum2"] = "7";
+		$chart["1517834085"]["sum2"] = "8";
+		
+		$chart["1517834088"]["sum2"] = "3";
+		*/
+		ksort($chart);
+
+		//html_debug_print($chart);
 		$legend = array_merge($legend, $legend_prev);
 		$color = array_merge($color, $color_prev);
 	}
@@ -4592,6 +4671,7 @@ function fullscale_data ( &$chart_data, &$chart_extra_data, &$long_index,
 	$data_uncompress = db_uncompress_module_data($agent_module_id, $datelimit, $date);
 
 	$chart_data = array();
+	$flag_unknown = 0;
 	
 	$min_value = PHP_INT_MAX-1;
 	$max_value = PHP_INT_MIN+1;
@@ -4600,10 +4680,13 @@ function fullscale_data ( &$chart_data, &$chart_extra_data, &$long_index,
 	
 	$i=0;
 	$current_event = $events[0];
-	$prueba = array();
+	
 	foreach ($data_uncompress as $k) {
 		foreach ($k["data"] as $v) {
-			$real_date = date("Y M d H:i:s", $v['utimestamp']);
+			if (isset($v["type"]) && $v["type"] == 1) { # skip unnecesary virtual data
+				continue;
+			}
+			$real_date = $v['utimestamp'];
 
 			if(!$flash_chart){
 				$real_date = date("Y/M/d", $v['utimestamp']);
@@ -4614,7 +4697,7 @@ function fullscale_data ( &$chart_data, &$chart_extra_data, &$long_index,
 			$event_ids = array();
 			$alert_ids = array();
 			while (isset($current_event) && ($v['utimestamp'] >= $current_event["utimestamp"]) ) {
-				$event_date = date("Y M d H:i:s", $current_event['utimestamp']);
+				$event_date = $current_event['utimestamp'];
 				if(!$flash_chart){
 					$event_date = date("Y/M/d", $current_event['utimestamp']);
 					$event_date .= "\n";
@@ -4716,12 +4799,17 @@ function fullscale_data ( &$chart_data, &$chart_extra_data, &$long_index,
 					$chart_data[$real_date]["unknown" . $series_suffix] = NULL;
 					$previous_unknown = NULL;
 				}
-			}	
+			}
+			$last_data = $v["datos"];
 		}
 	}
 	$series_type['event'.$series_suffix] = 'points';
 	$series_type['alert'.$series_suffix] = 'points';
 	$series_type['unknown'.$series_suffix] = 'unknown';
+
+	// Add missed last data
+	$chart_data[$date]["sum" . $series_suffix] = $last_data;
+
 	if($boolean_graph){
 		$series_type['sum'.$series_suffix] = 'boolean';
 	}

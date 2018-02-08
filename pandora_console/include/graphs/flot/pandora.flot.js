@@ -880,7 +880,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	//XXX 1827
 	//Translate datetime to utimestamp -> avoid convert datetime in server better...
 	$.each(labels, function (i,v) {
-		labels[i] = new Date(labels[i]).getTime();
+		labels[i] = labels[i] * 1000;
 	});
 
 	legend = legend.split(separator);
@@ -949,8 +949,8 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 		switch (serie_types[i]) {
 			case 'area':
 				line_show = true;
-				points_show = false;
-				filled = true;
+				points_show = false; // XXX - false
+				filled = 0.2;
 				steps_chart = false;
 				break;
 			case 'line':
@@ -989,20 +989,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 		var normal = '#0f0';
 		var warning = '#ff0';
 		var critical = '#f00';
-
-		// setup background areas
-		//vnormal_max = vwarning_min - 1;
-
-		var markings = null;
-
-		// Fill the grid background with weak threshold colors
-		//~ markings = [
-			//~ { color: normalw, yaxis: { from: -1,to: vnormal_max } },
-			//~ { color: warningw, yaxis: { from: vwarning_min, to: vwarning_max } },
-			//~ { color: criticalw, yaxis: { from: vcritical_min } },
-			//~ { color: criticalw, yaxis: { to: -1 } }
-		//~ ];
-		
+	
 		var lineWidth = $('#hidden-line_width_graph').val() || 1;
 
 		// Data
@@ -1015,9 +1002,6 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			lines: {
 				show: line_show,
 				fill: filled,
-				fillColor: {
-					colors: [ { opacity: 0.5 }, { opacity: 1 } ]
-				},
 				lineWidth: lineWidth,
 				steps: steps_chart
 			},
@@ -1027,7 +1011,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 		// Prepared to turn series with a checkbox
 		// showed[i] = true;
 	}
-console.log(data_base);
+//console.log(data_base);
 	max_x = data_base[0]['data'][data_base[0]['data'].length -1][0];
 
 	if(min_check != 0){
@@ -1576,7 +1560,6 @@ console.log(data_base);
 				borderWidth:1,
 				borderColor: '#C1C1C1',
 				tickColor: background_color,
-				markings: markings,
 				color: legend_color
 			},
 			xaxes: [{
@@ -1593,6 +1576,7 @@ console.log(data_base);
 				axisLabelFontSizePixels: font_size,
 				mode: "time",
 				tickFormatter: xFormatter,
+				// timeformat: "%Y/%m/%d %H:%M:%S",
 			}],
 			yaxes: [{
 				tickFormatter: yFormatter,
@@ -1799,9 +1783,18 @@ console.log(data_base);
 					$('#timestamp_'+graph_id).text(labels[j] + ' (' + (short_data ? parseFloat(y).toFixed(2) : parseFloat(y)) + ')');
 				}
 				else {
-					$('#timestamp_'+graph_id).text(labels_long[j]);
-				}
+					var date_format = new Date(labels_long[j]*1000);
 
+					date_format = 
+								date_format.getDate() + "/" +
+								(date_format.getMonth() + 1) + "/" + 
+								date_format.getFullYear() + "\n" + 
+								date_format.getHours() + ":" + 
+								date_format.getMinutes() + ":" + 
+								date_format.getSeconds();
+
+					$('#timestamp_'+graph_id).text(date_format);
+				}
 				//$('#timestamp_'+graph_id).css('top', plot.offset().top-$('#timestamp_'+graph_id).height()*1.5);
 
 				var timesize = $('#timestamp_'+graph_id).width();
@@ -1963,23 +1956,23 @@ console.log(data_base);
 		var d = new Date(v);
 		var result_date_format = 0;
 		
-		if(time_format_y > 86400000){ //DAY
+	//	if(time_format_y > 86400000){ //DAY
 
 			result_date_format = 
-								d.getDate() + "/" +
-								(d.getMonth() + 1) + "/" + 
+								(d.getDate() <10?'0':'') + d.getDate() + "/" +
+								(d.getMonth()<9?'0':'') + (d.getMonth() + 1) + "/" + 
 								d.getFullYear() + "\n" + 
-								d.getHours() + ":" + 
-								d.getMinutes() + ":" + 
-								d.getSeconds(); //+  ":" + d.getMilliseconds();
-		}
+								(d.getHours()<10?'0':'') + d.getHours() + ":" + 
+								(d.getMinutes()<10?'0':'') + d.getMinutes() + ":" + 
+								(d.getSeconds()<10?'0':'') + d.getSeconds(); //+  ":" + d.getMilliseconds();
+	/*	}
 		else{
 			result_date_format = 	
 								d.getHours() + ":" + 
 								d.getMinutes() + ":" + 
 								d.getSeconds(); //+  ":" + d.getMilliseconds();
 		}
-
+	*/
 		//extra_css = '';
 		return '<div class='+font+' style="transform: rotate(-15deg); -ms-transform:rotate(-15deg); -moz-transform:rotate(-15deg); -webkit-transform:rotate(-15deg); -o-transform:rotate(-15deg); font-size:'+font_size+'pt; margin-top:15px;">'+result_date_format+'</div>';
 	}

@@ -777,6 +777,7 @@ function db_uncompress_module_data($id_agente_modulo, $tstart = false, $tend = f
 				$tmp_data["datos"]  =  $last_inserted_value;
 				// debug purpose
 				//$tmp_data["obs"] = "virtual data (raw)";
+				$tmp_data["type"] = ($current_timestamp == $tstart || ($current_timestamp == $tend)?0:1); // virtual data
 
 				//Add order to avoid usort missorder in same utimestamp data cells
 				$tmp_data["order"] = 1;
@@ -785,6 +786,7 @@ function db_uncompress_module_data($id_agente_modulo, $tstart = false, $tend = f
 
 			$tmp_data["utimestamp"] = $current_raw_data["utimestamp"];
 			$tmp_data["datos"]      = $current_raw_data["datos"];
+			$tmp_data["type"] = 0; // real data
 			// debug purpose
 			//$tmp_data["obs"] = "real data";
 			//Add order to avoid usort missorder in same utimestamp data cells
@@ -883,7 +885,7 @@ function db_uncompress_module_data($id_agente_modulo, $tstart = false, $tend = f
 		if (count($return[$pool_id]['data']) == 0) {
 			//insert first slice data
 			$tmp_data["utimestamp"] = $current_timestamp;
-			$tmp_data["datos"]  =  $last_inserted_value;
+			$tmp_data["datos"] =  $last_inserted_value;
 			// debug purpose
 			//$tmp_data["obs"] = "virtual data (empty)";
 			array_push($return[$pool_id]["data"], $tmp_data);

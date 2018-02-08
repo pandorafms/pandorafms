@@ -152,7 +152,7 @@ if ($create_user) {
 	}
 	
 	$values = array ();
-	$id = (string) get_parameter ('id_user');
+	$values['id_user'] = (string) get_parameter ('id_user');
 	$values['fullname'] = (string) get_parameter ('fullname');
 	$values['firstname'] = (string) get_parameter ('firstname');
 	$values['lastname'] = (string) get_parameter ('lastname');
@@ -221,7 +221,7 @@ if ($create_user) {
 	}
 	else {
 		$info = 
-		'{"FullName":"' . $values['fullname'] . '","Firstname":"'. $values['firstname'] .'","Lastname":"'. $values['lastname'] . '","Email":"' . $values['email'] . '","Phone":"' . $values['phone'] . '","Comments":"' . $values['comments'] .'","Is_admin":"' . $values['is_admin'] .'","Language":"' . $values['language'] . '","Block size":"' . $values['block_size'] . '","Interactive Charts":"' . $values['flash_chart'].'"';
+		'{"Id_user":"' . $values['id_user'] . '","FullName":"' . $values['fullname'] . '","Firstname":"'. $values['firstname'] .'","Lastname":"'. $values['lastname'] . '","Email":"' . $values['email'] . '","Phone":"' . $values['phone'] . '","Comments":"' . $values['comments'] .'","Is_admin":"' . $values['is_admin'] .'","Language":"' . $values['language'] . '","Block size":"' . $values['block_size'] . '","Interactive Charts":"' . $values['flash_chart'].'"';
 			
 		if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 			$info .= ',"Skin":"' . $values['id_skin'].'"}';
@@ -277,6 +277,7 @@ if ($create_user) {
 
 if ($update_user) {
 	$values = array ();
+	$values['id_user'] = (string) get_parameter ('id_user');
 	$values['fullname'] = (string) get_parameter ('fullname');
 	$values['firstname'] = (string) get_parameter ('firstname');
 	$values['lastname'] = (string) get_parameter ('lastname');

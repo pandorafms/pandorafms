@@ -1810,7 +1810,7 @@ function check_acl($id_user, $id_group, $access, $onlyOneGroup = false) {
 	}
 
 	if ($id_group != 0 || $onlyOneGroup === true) {
-		$groups_list_acl = users_get_groups ($id_user, 'AR', false, true, null);
+		$groups_list_acl = users_get_groups ($id_user, $access, false, true, null);
 	}
 	else{
 		$groups_list_acl = get_users_acl($id_user);

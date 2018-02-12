@@ -120,6 +120,7 @@ snmp_pdu_address 0
 #snmp_forward_privProtocol
 #snmp_forward_privPassword
 #snmp_forward_secLevel
+#snmp_forward_community
 
 # Activate (1) Pandora Network Server 
 
@@ -621,6 +622,9 @@ syslog_max 65535
 
 # Sync timeout
 #sync_timeout 10
+
+# Address 
+# sync_address
 
 # Target LogStash server, to allow Dataserver and SyslogServer store log information in ElasticSearch
 #logstash_host ip

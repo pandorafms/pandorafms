@@ -533,6 +533,15 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 }
 
 
+function grafico_modulo_sparse_data_new($agent_module_id, $date_array,
+										$show_elements_graph, $format_graph,
+										$exception_interval_graph ) {
+	global $config;
+	if($date_array){
+
+	}
+}
+
 function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	$width, $height , $title = '', $unit_name = null,
 	$show_alerts = false, $avg_only = 0, $date = 0, $unit = '',
@@ -920,10 +929,11 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	global $graphic_type;
 
 	$flash_chart = $config['flash_charts'];
-	
+
+if($flash_chart){
 	//XXX aqui empieza la obtencion de datos:
 	//Es infernal la cantidad de parametros que se le mandan pasamos a un array para simplificar este proceso:
-	
+
 	//date start final period
 	$date_array = array();
 	$date_array["start_date"] = $date - $period;
@@ -969,7 +979,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	$exception_interval_graph['max_only']       = $max_only;
 	$exception_interval_graph['min_only']       = $min_only;
 	
-	/*
+	
 	html_debug_print('+++++++++++++++++Parámetros Que recibe la funcion++++++++++++++++++++++');
 	html_debug_print('id_agente_modulo: ' . $agent_module_id);
 	html_debug_print($date_array);
@@ -977,11 +987,12 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	html_debug_print($format_graph);
 	html_debug_print($exception_interval_graph);
 	html_debug_print('+++++++++++++FIN Parámetros Que recibe la funcion++++++++++++++++++++++');
-	*/
+	
+	grafico_modulo_sparse_data_new( $agent_module_id, $date_array,
+									$show_elements_graph, $format_graph,
+									$exception_interval_graph );
 
-
-
-
+}
 
 
 	enterprise_include_once("include/functions_reporting.php");
@@ -1077,7 +1088,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		$legend = array_merge($legend, $legend_prev);
 		$color = array_merge($color, $color_prev);
 	}
-	
+
 	if ($only_image) {
 		$flash_chart = false;
 	}

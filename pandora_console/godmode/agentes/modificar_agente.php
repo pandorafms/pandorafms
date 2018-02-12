@@ -343,7 +343,6 @@ if($os != 0){
 
 // Show only selected groups
 if ($ag_group > 0) {
-	
 	$ag_groups = array();
 	$ag_groups = (array)$ag_group;
 	if ($recursion) {
@@ -391,106 +390,57 @@ if ($ag_group > 0) {
 	$total_agents = db_get_sql ($sql_total);
 }
 else {
+	// Concatenate AW and AD permisions to get all the possible groups where the user can manage
+	$user_groupsAW = users_get_groups ($config['id_user'], 'AW');
+	$user_groupsAD = users_get_groups ($config['id_user'], 'AD');
 	
-	// Admin user get ANY group, even if they doesnt exist
-	if (check_acl ($config['id_user'], 0, "PM")) {
-		
-		$sql = sprintf ('SELECT COUNT(*) FROM tagente WHERE 1=1 %s', $search_sql);
-		$total_agents = db_get_sql ($sql);
-		switch ($config["dbtype"]) {
-			case "mysql":
-				$order['field2'] = "";
-				/*
-				$sql = sprintf ('SELECT *
-					FROM tagente
-					WHERE 1=1
-						%s
-					ORDER BY %s %s, %s %s LIMIT %d, %d', $search_sql, $order['field'],$order['order'], $order['field2'],
-					$order['order'], $offset, $config["block_size"]);
-				*/
-				$sql = sprintf ('SELECT *
-					FROM tagente
-					WHERE 1=1
-						%s
-					ORDER BY %s %s %s LIMIT %d, %d', $search_sql, $order['field'], $order['field2'],
-					$order['order'], $offset, $config["block_size"]);
-				break;
-			case "postgresql":
-				$sql = sprintf ('SELECT *
-					FROM tagente
-					WHERE 1=1
-						%s
-					ORDER BY %s %s, %s %s LIMIT %d OFFSET %d', $search_sql, $order['field'],$order['order'], $order['field2'],
-					$order['order'], $config["block_size"], $offset);
-				break;
-			case "oracle":
-				$set = array ();
-				$set['limit'] = $config["block_size"];
-				$set['offset'] = $offset;
-				$sql = sprintf ('SELECT *
-					FROM tagente
-					WHERE 1=1
-						%s
-					ORDER BY %s %s, %s %s', $search_sql, $order['field'],$order['order'], $order['field2'], $order['order']);
-				$sql = oracle_recode_query ($sql, $set);
-				break;
-		}
-	}
-	else {
-		
-		// Concatenate AW and AD permisions to get all the possible groups where the user can manage
-		$user_groupsAW = users_get_groups ($config['id_user'], 'AW');
-		$user_groupsAD = users_get_groups ($config['id_user'], 'AD');
-		
-		$user_groups = $user_groupsAW + $user_groupsAD;
-		
-		$sql = sprintf ('SELECT COUNT(*)
-			FROM tagente
-			WHERE id_grupo IN (%s)
-				%s',
-			implode (',', array_keys ($user_groups)),
-			$search_sql);
-		
-		$total_agents = db_get_sql ($sql);
-		
-		switch ($config["dbtype"]) {
-			case "mysql":
-				$sql = sprintf ('SELECT *
-					FROM tagente
-					WHERE id_grupo IN (%s)
-						%s
-					ORDER BY %s %s, %s %s
-					LIMIT %d, %d',
-					implode (',', array_keys ($user_groups)),
-					$search_sql, $order['field'],$order['order'], $order['field2'], $order['order'], $offset, $config["block_size"]);
-				break;
-			case "postgresql":
-				$sql = sprintf ('SELECT *
-					FROM tagente
-					WHERE id_grupo IN (%s)
-						%s
-					ORDER BY %s %s, %s %s
-					LIMIT %d OFFSET %d',
-					implode (',', array_keys ($user_groups)),
-					$search_sql, $order['field'],$order['order'], $order['field2'], $order['order'], $config["block_size"], $offset);
-				break;
-			case "oracle":
-				$set = array ();
-				$set['limit'] = $config["block_size"];
-				$set['offset'] = $offset;
-				$sql = sprintf ('SELECT *
-					FROM tagente
-					WHERE id_grupo IN (%s)
-						%s
-					ORDER BY %s %s, %s %s',
-					implode (',', array_keys ($user_groups)),
-					$search_sql, $order['field'],$order['order'], $order['field2'], $order['order']);
-				$sql = oracle_recode_query ($sql, $set);
-				break;
-		}
+	$user_groups = $user_groupsAW + $user_groupsAD;
+	
+	$sql = sprintf ('SELECT COUNT(*)
+		FROM tagente
+		WHERE id_grupo IN (%s)
+			%s',
+		implode (',', array_keys ($user_groups)),
+		$search_sql);
+	
+	$total_agents = db_get_sql ($sql);
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$sql = sprintf ('SELECT *
+				FROM tagente
+				WHERE id_grupo IN (%s)
+					%s
+				ORDER BY %s %s, %s %s
+				LIMIT %d, %d',
+				implode (',', array_keys ($user_groups)),
+				$search_sql, $order['field'],$order['order'], $order['field2'], $order['order'], $offset, $config["block_size"]);
+			break;
+		case "postgresql":
+			$sql = sprintf ('SELECT *
+				FROM tagente
+				WHERE id_grupo IN (%s)
+					%s
+				ORDER BY %s %s, %s %s
+				LIMIT %d OFFSET %d',
+				implode (',', array_keys ($user_groups)),
+				$search_sql, $order['field'],$order['order'], $order['field2'], $order['order'], $config["block_size"], $offset);
+			break;
+		case "oracle":
+			$set = array ();
+			$set['limit'] = $config["block_size"];
+			$set['offset'] = $offset;
+			$sql = sprintf ('SELECT *
+				FROM tagente
+				WHERE id_grupo IN (%s)
+					%s
+				ORDER BY %s %s, %s %s',
+				implode (',', array_keys ($user_groups)),
+				$search_sql, $order['field'],$order['order'], $order['field2'], $order['order']);
+			$sql = oracle_recode_query ($sql, $set);
+			break;
 	}
 }
-
 
 $agents = db_get_all_rows_sql ($sql);
 

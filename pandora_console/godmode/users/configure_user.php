@@ -152,7 +152,7 @@ if ($create_user) {
 	}
 	
 	$values = array ();
-	$id = (string) get_parameter ('id_user');
+	$values['id_user'] = (string) get_parameter ('id_user');
 	$values['fullname'] = (string) get_parameter ('fullname');
 	$values['firstname'] = (string) get_parameter ('firstname');
 	$values['lastname'] = (string) get_parameter ('lastname');
@@ -220,15 +220,14 @@ if ($create_user) {
 		$new_user = true;
 	}
 	else {
-		$info = 'FullName: ' . $values['fullname'] . ' Firstname: ' . $values['firstname'] .
-			' Lastname: ' . $values['lastname'] . ' Email: ' . $values['email'] . 
-			' Phone: ' . $values['phone'] . ' Comments: ' . $values['comments'] .
-			' Is_admin: ' . $values['is_admin'] .
-			' Language: ' . $values['language'] . 
-			' Block size: ' . $values['block_size'] . ' Interactive Charts: ' . $values['flash_chart'];
-		
+		$info = 
+		'{"Id_user":"' . $values['id_user'] . '","FullName":"' . $values['fullname'] . '","Firstname":"'. $values['firstname'] .'","Lastname":"'. $values['lastname'] . '","Email":"' . $values['email'] . '","Phone":"' . $values['phone'] . '","Comments":"' . $values['comments'] .'","Is_admin":"' . $values['is_admin'] .'","Language":"' . $values['language'] . '","Block size":"' . $values['block_size'] . '","Interactive Charts":"' . $values['flash_chart'].'"';
+			
 		if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
-			$info .= ' Skin: ' . $values['id_skin'];
+			$info .= ',"Skin":"' . $values['id_skin'].'"}';
+		}
+		else{
+			$info .= '}';
 		}
 		
 		switch ($config['dbtype']) {
@@ -278,6 +277,7 @@ if ($create_user) {
 
 if ($update_user) {
 	$values = array ();
+	$values['id_user'] = (string) get_parameter ('id_user');
 	$values['fullname'] = (string) get_parameter ('fullname');
 	$values['firstname'] = (string) get_parameter ('firstname');
 	$values['lastname'] = (string) get_parameter ('lastname');
@@ -362,21 +362,40 @@ if ($update_user) {
 			}
 		}
 		else {
-			$info = 'FullName: ' . $values['fullname'] . ' Firstname: ' . $values['firstname'] .
-				' Lastname: ' . $values['lastname'] . ' Email: ' . $values['email'] . 
-				' Phone: ' . $values['phone'] . ' Comments: ' . $values['comments'] .
-				' Is_admin: ' . $values['is_admin'] .
-				' Language: ' . $values['language'] . 
-				' Block size: ' . $values['block_size'] . ' Flash Chats: ' . $values['flash_chart'] .
-				' Section: ' . $values['section'];
+			
+			$has_skin = false;
+			$has_wizard = false;
+			
+			$info = '{"id_user":"'.$values['id_user'].'",
+				"FullName":"' . $values['fullname'] .'",
+				"Firstname":"' . $values['firstname'] .'",
+				"Lastname":"' . $values['lastname'] . '",
+				"Email":"' . $values['email'] . '",
+				"Phone":"' . $values['phone'] . '",
+				"Comments":"' . $values['comments'] . '",
+				"Is_admin":"' . $values['is_admin'] . '",
+				"Language":"' . $values['language'] . '",
+				"Block size":"' . $values['block_size'] . '",
+				"Flash Chats":"' . $values['flash_chart'] . '",
+				"Section":"' . $values['section'].'"';
 			
 			if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
-				$info .= ' Skin: ' . $values['id_skin'];
+				$info .= ',"Skin":"' . $values['id_skin'].'"';
+				$has_skin = true;
 			}
 			
 			if(enterprise_installed() && defined('METACONSOLE')) {
-				$info .= ' Wizard access: ' . $values['metaconsole_access'];
+				$info .= ',"Wizard access":"' . $values['metaconsole_access'].'"}';
+				$has_wizard = true;
 			}
+			elseif($has_skin){
+				$info .= '}';
+			}
+			
+			if(!$has_skin && !$has_wizard){
+				$info .= '}';
+			}
+			
 			
 			db_pandora_audit("User management", "Updated user ".io_safe_input($id),
 				false, false, $info);

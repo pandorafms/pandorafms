@@ -31,7 +31,7 @@ our @ISA = qw(Exporter);
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "7.0NG.718";
-my $pandora_build = "180131";
+my $pandora_build = "180210";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 our %EXPORT_TAGS = ( 'all' => [ qw() ] );
@@ -427,7 +427,14 @@ sub print_module {
 	if (ref ($data->{value}) eq "ARRAY") {
 		$xml_module .= "\t<datalist>\n";
 		foreach (@{$data->{value}}) {
-			$xml_module .= "\t<data><![CDATA[" . $data->{value} . "]]></data>\n";
+			if ((ref($_) eq "HASH") && defined($_->{value})) {
+				$xml_module .= "\t<data>\n";
+				$xml_module .= "\t\t<value><![CDATA[" . $_->{value} . "]]></value>\n";
+				if (defined($_->{timestamp})) {
+					$xml_module .= "\t\t<timestamp><![CDATA[" . $_->{timestamp} . "]]></timestamp>\n";
+				}
+				$xml_module .= "\t</data>\n";
+			}
 		}
 		$xml_module .= "\t</datalist>\n";
 	}

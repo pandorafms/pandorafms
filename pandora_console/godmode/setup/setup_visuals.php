@@ -248,6 +248,18 @@ if(enterprise_installed()) {
 	$row++;
 }	
 
+if(enterprise_installed()) {
+	$table_styles->data[$row][0] = __('Docs URL (login)');
+	$table_styles->data[$row][1] = html_print_input_text ('custom_docs_url', $config["custom_docs_url"], '', 50, 50, true);
+	$row++;
+}	
+
+if(enterprise_installed()) {
+	$table_styles->data[$row][0] = __('Support URL (login)');
+	$table_styles->data[$row][1] = html_print_input_text ('custom_support_url', $config["custom_support_url"], '', 50, 50, true);
+	$row++;
+}	
+
 $table_styles->data[$row][0] = __('Disable logo in graphs');
 $table_styles->data[$row][1] = __('Yes') . '&nbsp;' .
 	html_print_radio_button_extended ('fixed_graph', 1, '', $config["fixed_graph"], $open, '','',true) .
@@ -475,8 +487,8 @@ if (!enterprise_installed()) {
 	$disabled_graph_precision = true;
 }
 
-$table_chars->data[$row][0] = __('Data precision for reports');
-$table_chars->data[$row][0] .= ui_print_help_tip(__('Number of decimals shown in reports. It must be a number between 0 and 5'), true);
+$table_chars->data[$row][0] = __('Data precision for reports and visual consoles');
+$table_chars->data[$row][0] .= ui_print_help_tip(__('Number of decimals shown in reports and visual consoles. It must be a number between 0 and 5'), true);
 $table_chars->data[$row][1] = html_print_input_text ('graph_precision', $config["graph_precision"], '', 5, 5, true, $disabled_graph_precision, false, "onChange=\"change_precision()\"");
 $row++;
 

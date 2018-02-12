@@ -140,6 +140,9 @@ function users_get_groups_for_select($id_user,  $privilege = "AR", $returnAllGro
 }
 
 function get_group_ancestors($group_id, $groups) {
+	if($group_id == 0) {
+		return 0;
+	}
 
 	if (!isset($groups[$group_id])) {
 		return null;
@@ -151,17 +154,13 @@ function get_group_ancestors($group_id, $groups) {
 		return $group_id;
 	}
 
-	if ($parent == 0) {
-		return 0;
-	}
-
 	$r = get_group_ancestors($parent, $groups);
 
 	if (is_array($r)) {
-		$r = array_merge(array($parent), $r);
+		$r = array_merge(array($group_id), $r);
 	}
 	else {
-		$r = array($parent, $r);
+		$r = array($group_id, $r);
 	}
 
 	return $r;
@@ -300,8 +299,7 @@ function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup 
 			}
 
 			foreach ($groups as $group) {
-				$parents = get_group_ancestors($group["id_grupo"],$groups);
-			
+				$parents = get_group_ancestors($group["parent"],$groups);
 				if (is_array($parents)) {
 					foreach ($parents as $parent) {
 						if ( (isset($forest_acl[$parent])) && ($groups[$parent]["propagate"] == 1)) {
@@ -325,7 +323,6 @@ function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup 
 				}
 			}		
 		}
-
 		// Update the group cache.
 		$group_cache[$id_user] = $forest_acl;
 	}
@@ -403,13 +400,13 @@ function old_users_get_groups ($id_user = false, $privilege = "AR", $returnAllGr
 		// Admin.
 		if (is_user_admin($id_user)) {
 			$groups = db_get_all_rows_sql ("SELECT * FROM tgrupo ORDER BY nombre");
-		}
+	 	}
 		// Per-group permissions.
 		else {
 			$query = sprintf("SELECT tgrupo.*, tperfil.*, tusuario_perfil.tags FROM tgrupo, tusuario_perfil, tperfil
 			        WHERE (tgrupo.id_grupo = tusuario_perfil.id_grupo OR tusuario_perfil.id_grupo = 0)
 					AND tusuario_perfil.id_perfil = tperfil.id_perfil
-					AND tusuario_perfil.id_usuario = '%s' ORDER BY nombre", $id_user);
+					AND tusuario_perfil.id_usuario = '%s' ORDER BY tgrupo.nombre", $id_user);
 			$groups = db_get_all_rows_sql ($query);
 
 			// Get children groups.

@@ -829,6 +829,12 @@ input.icon_min {
 input.icon_min[disabled] {
 	background: #fefefe url(../../images/photo.disabled.png) no-repeat center !important;
 }
+input.clock_min {
+	background: #fefefe url(../../images/clock-tab.png) no-repeat center !important;
+}
+input.clock_min[disabled] {
+	background: #fefefe url(../../images/clock-tab.disabled.png) no-repeat center !important;
+}
 input.box_item {
 	background: #fefefe url(../../images/box_item.png) no-repeat center !important;
 }
@@ -4233,7 +4239,7 @@ div#footer_help{
 	left: 90% !important;
 }
 
-.graph_conteiner_inside > .parent_graph > .noresizevc{
+.graph_conteiner_inside > .parent_graph > .graph{
 	width: 90% !important;	
 }
 
@@ -4369,8 +4375,14 @@ div#footer_help{
 .route {
 	fill: none;
 	transition: all 2s ease-in-out;
+<<<<<<< HEAD
+=======
 }
 
+.limit_scroll{
+	max-width: 800px;
+	overflow-x:scroll;
+}
 #is_favourite ul.container{
 	display: flex;
 	flex-direction: row;
@@ -4450,4 +4462,13 @@ form ul.form_flex li ul{
 form ul.form_flex li ul li{
 	height: 50px;
 	width: 100%;
+}
+
+#modal_module_popup_close:hover{
+	cursor: pointer;
+}
+
+.modal_module_list:hover{
+	cursor: pointer;
+>>>>>>> develop
 }

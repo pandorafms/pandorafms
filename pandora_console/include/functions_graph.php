@@ -2046,23 +2046,47 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		}
 
 		foreach ($module_list as $key => $value) {
-			$agent_name  = io_safe_output( modules_get_agentmodule_agent_name ($value) );
-			$alias       = db_get_value ("alias","tagente","nombre",$agent_name);
-			$module_name = io_safe_output( modules_get_agentmodule_name ($value) );
-			
-			if ($flash_charts){
-				$module_name_list[$key] = '<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . $alias . " / " . $module_name. '</span>';
+			if (is_metaconsole()) {
+				$server = metaconsole_get_connection_by_id ($value['server']);
+				metaconsole_connect($server);
+				$value = $value['module'];
 			}
-			else{
-				$module_name_list[$key] = $alias . " / " . $module_name;
+			if ($labels[$value] != ''){
+					$module_name_list[$key] = $labels[$value];
+			}
+			else {
+				$agent_name  = io_safe_output( modules_get_agentmodule_agent_name ($value) );
+				$alias       = db_get_value ("alias","tagente","nombre",$agent_name);
+				$module_name = io_safe_output( modules_get_agentmodule_name ($value) );
+
+				if ($flash_charts){
+					$module_name_list[$key] = '<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . $alias . " / " . $module_name. '</span>';
+				}
+				else{
+					$module_name_list[$key] = $alias . " / " . $module_name;
+				}
+			}
+			if (is_metaconsole()) {
+				metaconsole_restore_db();
 			}
 		}
 
 		if (!is_null($percentil) && $percentil) {
 			foreach ($module_list as $key => $value) {
+				if (is_metaconsole()) {
+					$server = metaconsole_get_connection_by_id ($value['server']);
+					metaconsole_connect($server);
+					$value = $value['module'];
+				}
+
 				$agent_name  = io_safe_output( modules_get_agentmodule_agent_name ($value) );
 				$alias       = db_get_value ("alias","tagente","nombre",$agent_name);
 				$module_name = io_safe_output( modules_get_agentmodule_name ($value) );
+
+				if (is_metaconsole()) {
+					metaconsole_restore_db();
+				}
+
 				$module_name_list['percentil'.$key] = __('Percentile %dº', $config['percentil']) . __(' of module ') . $agent_name .' / ' . $module_name . ' (' . $percentil_result[$key][0] . ' ' . $unit . ') ';
 				$series_type[$key] = 'line';
 			}
@@ -2465,42 +2489,46 @@ function fullscale_data_combined($module_list, $period, $date, $flash_charts, $p
 
 	foreach ($module_list as $key_module => $value_module) {
 		if (!is_null($percentil) && $percentil) {
-			$array_percentil = array();
+				$array_percentil = array();
 		}
 
-		$previous_data   = modules_get_previous_data ($value_module, $datelimit);
-		$data_uncompress = db_uncompress_module_data($value_module, $datelimit, $date);
+		if (is_metaconsole()) {
+				$server = metaconsole_get_connection_by_id ($value_module['server']);
+				metaconsole_connect($server);
+				$previous_data   = modules_get_previous_data ($value_module['module'], $datelimit);
+				$data_uncompress = db_uncompress_module_data($value_module['module'], $datelimit, $date);
+				metaconsole_restore_db();
+		}
+		else{
+				$previous_data   = modules_get_previous_data ($value_module, $datelimit);
+				$data_uncompress = db_uncompress_module_data($value_module, $datelimit, $date);
+		}
 
 		foreach ($data_uncompress as $key_data => $value_data) {
 			foreach ($value_data['data'] as $k => $v) {
-				if($flash_charts) {
-					$real_date = date("Y M d H:i:s", $v['utimestamp']);
-				}
-				else{
-					$real_date = $v['utimestamp'];
-				}
-				
+				$real_date = $v['utimestamp'];
+			
 				if(!isset($v['datos'])){
-					$v['datos'] = $previous_data;
+						$v['datos'] = $previous_data;
 				}
 				else{
-					$previous_data = $v['datos'];
+						$previous_data = $v['datos'];
 				}
 
 				if (!is_null($percentil) && $percentil) {
-					$array_percentil[] = $v['datos'];
+						$array_percentil[] = $v['datos'];
 				}
-				
+
 				$data_all[$real_date][$key_module] = $v['datos'];
 			}
 		}
 
 		if (!is_null($percentil) && $percentil) {
-			$percentil_value = get_percentile($config['percentil'], $array_percentil);
-			$percentil_result[$key_module] = array_fill (0, count($data_all), $percentil_value);
-			if(count($data_all) > $count_data_all){
-				$count_data_all = count($data_all);
-			}
+				$percentil_value = get_percentile($config['percentil'], $array_percentil);
+				$percentil_result[$key_module] = array_fill (0, count($data_all), $percentil_value);
+				if(count($data_all) > $count_data_all){
+						$count_data_all = count($data_all);
+				}
 		}
 	}
 
@@ -2512,25 +2540,34 @@ function fullscale_data_combined($module_list, $period, $date, $flash_charts, $p
 		}
 	}
 
-	$data_prev = array(); 
-
+	$data_prev = array();
+	$data_all_rev = array();
 	ksort($data_all);
+
 	foreach ($data_all as $key => $value) {
-		foreach ($module_list as $key_module => $value_module) {
-			if(!isset($value[$key_module])){
-				$data_all[$key][$key_module] = $data_prev[$key_module];
-			}
-			else{
-				$data_prev[$key_module] = $value[$key_module];	
-			}
+		if($flash_charts) {
+			$real_date = date("Y M d H:i:s", $key);
 		}
+		else{
+			$real_date = $key;
+		}
+
+		foreach ($module_list as $key_module => $value_module) {
+				if(!isset($value[$key_module])){
+						$data_all[$key][$key_module] = $data_prev[$key_module];
+				}
+				else{
+						$data_prev[$key_module] = $value[$key_module];
+				}
+		}
+		$data_all_rev[$real_date] = $data_all[$key];
 	}
 
 	if (!is_null($percentil) && $percentil) {
-		$data_all['percentil'] = $percentil_result; 
+			$data_all_rev['percentil'] = $percentil_result;
 	}
 
-	return $data_all;
+	return $data_all_rev;
 }
 
 /**

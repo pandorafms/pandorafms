@@ -1810,7 +1810,7 @@ function check_acl($id_user, $id_group, $access, $onlyOneGroup = false) {
 	}
 
 	if ($id_group != 0 || $onlyOneGroup === true) {
-		$groups_list_acl = users_get_groups ($id_user, 'AR', false, true, null);
+		$groups_list_acl = users_get_groups ($id_user, $access, false, true, null);
 	}
 	else{
 		$groups_list_acl = get_users_acl($id_user);
@@ -2143,18 +2143,7 @@ function is_image_data ($data) {
 *  Looks for two or more carriage returns.
 */
 function is_snapshot_data ($data) {
-	
-	// TODO IDEA: In the future, we can set a variable in setup
-	// to define how many \n must have a snapshot to define it's 
-	// a snapshot. I think two or three is a good value anyway.
-	
-	$temp = array();
-	$count = preg_match_all ("/\n/", $data, $temp);
-	
-	if ( ($count > 2) || (is_image_data($data)) )
-		return 1;
-	else
-		return 0;
+	return is_image_data($data);
 }
 
 /**
@@ -2775,6 +2764,12 @@ function register_pass_change_try ($id_user, $success) {
 	$values['success'] = $success;
 	db_process_sql_insert('treset_pass_history', $values);
 }
+
+function isJson($string) {
+ json_decode($string);
+ return (json_last_error() == JSON_ERROR_NONE);
+}
+
 /**
  * returns true or false if it is a valid ip 
  * checking ipv4 and ipv6 or resolves the name dns

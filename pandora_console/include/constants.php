@@ -201,6 +201,7 @@ define('CIRCULAR_PROGRESS_BAR', 15);
 define('CIRCULAR_INTERIOR_PROGRESS_BAR', 16);
 define('DONUT_GRAPH',		17);
 define('BARS_GRAPH',		18);
+define('CLOCK',		19);
 //Some styles
 define('MIN_WIDTH',			300);
 define('MIN_HEIGHT',		120);
@@ -315,12 +316,15 @@ define ('MODULE_PLUGIN',		4);
 define ('MODULE_PREDICTION',	5);
 define ('MODULE_WMI',			6);
 define ('MODULE_WEB',			7);
-define ('MODULE_WUX',           8);
+define ('MODULE_WUX',     8);
 
 /* Type of Modules of Prediction */
 define ('MODULE_PREDICTION_SERVICE',	2);
 define ('MODULE_PREDICTION_SYNTHETIC',	3);
 define ('MODULE_PREDICTION_NETFLOW',	4);
+define ('MODULE_PREDICTION_CLUSTER',	5);
+define ('MODULE_PREDICTION_CLUSTER_AA',	6);
+define ('MODULE_PREDICTION_CLUSTER_AP',	7);
 
 /* SNMP CONSTANTS */
 define('SNMP_DIR_MIBS',		"attachment/mibs");

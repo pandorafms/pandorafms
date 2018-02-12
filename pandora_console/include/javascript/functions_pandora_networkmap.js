@@ -2078,10 +2078,16 @@ function add_interface_link_js() {
 		success: function (data) {
 			if (data['correct']) {
 				var temp_link = {};
+				temp_link['status_start'] = "0";
+				temp_link['status_end'] = "0";
+				
 				temp_link['id_db'] = data['id_db_link'];
+				
 				if (data['type_source'] == 1) {
 					temp_link['arrow_start'] = "module";
 					temp_link['id_module_start'] = source_value;
+					temp_link["status_start"] = data['status'];
+					temp_link["link_color"] = (data['status'] == "1") ? "#FC4444" : "#999";
 				}
 				else {
 					temp_link['arrow_start'] = "";
@@ -2091,15 +2097,14 @@ function add_interface_link_js() {
 				if (data['type_target'] == 1) {
 					temp_link['arrow_end'] = "module";
 					temp_link['id_module_end'] = target_value;
+					temp_link["status_end"] = data['status'];
+					temp_link["link_color"] = (data['status'] == "1") ? "#FC4444" : "#999";
 				}
 				else {
 					temp_link['arrow_end'] = "";
 					temp_link['id_agent_end'] = target_value;
 					temp_link['id_module_end'] = 0;
 				}
-				temp_link['status_start'] = "0";
-				temp_link['status_end'] = "0";
-
 
 				temp_link['text_start'] = data['text_start'];
 				temp_link['text_end'] = data['text_end'];
@@ -2112,9 +2117,9 @@ function add_interface_link_js() {
 						temp_link['source'] = graph.nodes[j];
 					}
 				});
-
+				
 				graph.links.push(temp_link);
-
+				
 				draw_elements_graph();
 				init_drag_and_drop();
 				set_positions_graph();

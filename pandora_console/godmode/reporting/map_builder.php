@@ -364,7 +364,7 @@ else {
 		$data[2] = db_get_sql ("SELECT COUNT(*) FROM tlayout_data WHERE id_layout = ".$map['id']);
 		
 		// Fix: IW was the old ACL for report editing, now is RW
-		if ($vconsole_write || $vconsole_manage) {
+		if ($vconsoles_write || $vconsoles_manage) {
 			if (!is_metaconsole()) {
 				$data[3] = '<a class="copy_visualmap" href="index.php?sec=network&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;copy_layout=1">'.html_print_image ("images/copy.png", true).'</a>';
 				$data[4] = '<a class="delete_visualmap" href="index.php?sec=network&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;delete_layout=1">'.html_print_image ("images/cross.png", true).'</a>';

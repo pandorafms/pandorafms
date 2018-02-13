@@ -135,9 +135,6 @@ if ($update_agents) {
 	$result = false;
 	foreach ($id_agents as $id_agent) {
 		if (!empty($values)) {
-			if ($config['metaconsole_agent_cache'] == 1) {
-				$values['update_module_count'] = 1; // Force an update of the agent cache.
-			}
 			$group_old = false;
 			if($values['id_grupo']){
 				$group_old = db_get_sql("SELECT id_grupo FROM tagente WHERE id_agente =" .$id_agent);
@@ -146,6 +143,12 @@ if ($update_agents) {
 			$result = db_process_sql_update ('tagente',
 				$values,
 				array ('id_agente' => $id_agent));
+				
+			if ($result && $config['metaconsole_agent_cache'] == 1) {
+				$server_name['server_name'] = db_get_sql("SELECT server_name FROM tagente WHERE id_agente =" .$id_agent);
+				// Force an update of the agent cache.
+				$result_metaconsole = agent_update_from_cache($id_agent,$values,$server_name);
+			}
 			
 			if($group_old || $result){
 				if ($group_old && $group_old != null) {

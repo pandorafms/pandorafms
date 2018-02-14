@@ -1448,7 +1448,9 @@ function tags_checks_event_acl($id_user, $id_group, $access, $tags = array(), $c
 	if (!empty($tags)) {
 		foreach ($tags as $tag) {
 			$tag_id = tags_get_id($tag);
-			$tags_aux[$tag_id] = $tag_id;
+                        if (isset($tag_id)&& ($tag_id !== false)) {
+				$tags_aux[$tag_id] = $tag_id;
+			}
 		}
 		$tags_str = implode(',', $tags_aux);
 	}

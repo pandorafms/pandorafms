@@ -851,7 +851,7 @@ function db_uncompress_module_data($id_agente_modulo, $tstart = false, $tend = f
 					$tmp_data["utimestamp"] = $current_unknown["time_to"];
 					//Add order to avoid usort missorder in same utimestamp data cells
 					$tmp_data["order"] = 2;
-					$i = count($data_slices) - 1;
+					$i = count($data_slices);
 					while ($i >= 0) {
 						if($data_slices[$i]['utimestamp'] <= $current_unknown["time_to"]){
 							$tmp_data["datos"] = 

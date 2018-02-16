@@ -35,6 +35,8 @@ function include_javascript_dependencies_flot_graph($return = false) {
 		$output = '
 			<!--[if lte IE 8]><script language="javascript" type="text/javascript" src="' . ui_get_full_url($metaconsole_hack . '/include/graphs/flot/excanvas.js') . '"></script><![endif]-->
 			<script language="javascript" type="text/javascript" src="'.
+				ui_get_full_url($metaconsole_hack . '/include/graphs/flot/jquery.flot.js') .'"></script>
+			<script language="javascript" type="text/javascript" src="'.
 				ui_get_full_url($metaconsole_hack . '/include/graphs/flot/jquery.flot.min.js') .'"></script>
 			<script language="javascript" type="text/javascript" src="'.
 				ui_get_full_url($metaconsole_hack . '/include/graphs/flot/jquery.flot.time.js') .'"></script>
@@ -337,7 +339,6 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 			$colors[] = '';
 		}
 	}
-	
 	foreach ($chart_data as $label => $values) {
 		$labels[] = $label;
 		
@@ -501,7 +502,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 		$short_data = false;
 	}
 	
-	
+	//html_debug_print($values);
 	// Javascript code
 	$return .= "<script type='text/javascript'>";
 	$return .= "$(document).ready( function () {";
@@ -553,6 +554,307 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 	
 	return $return;
 }
+
+
+
+
+
+
+
+function flot_area_graph_new (
+	$agent_module_id, $array_data, $color,
+	$legend, $series_type, $date_array,
+	$data_module_graph, $show_elements_graph,
+	$format_graph, $water_mark, $series_suffix_str ) {
+	
+	global $config;
+	
+	include_javascript_dependencies_flot_graph();
+
+	// Get a unique identifier to graph
+	$graph_id = uniqid('graph_');
+	
+
+	//html_debug_print($agent_module_id);
+	//html_debug_print($array_data);
+	//html_debug_print($color);
+	//html_debug_print($legend);
+	//html_debug_print($series_type);
+	//html_debug_print($date_array);
+
+/*	
+	html_debug_print($water_mark);
+	html_debug_print($series_suffix_str);
+*/
+	
+	$background_style = '';
+	switch ($format_graph['background']) {
+		default:
+		case 'white':
+			$background_style = ' background: #fff; ';
+			break;
+		case 'black':
+			$background_style = ' background: #000; ';
+			break;
+		case 'transparent':
+			$background_style = '';
+			break;
+	}
+		
+	// Parent layer
+	$return = "<div class='parent_graph' style='width: " . ($format_graph['width']) . "px; " . $background_style . "'>";
+	// Set some containers to legend, graph, timestamp tooltip, etc.
+	$return .= "<p id='legend_$graph_id' class='legend_graph' style='font-size:" . $format_graph['font_size'] ."pt !important;'></p>";
+	
+	/*
+	if (!empty($threshold_data)) {
+		$yellow_up = $threshold_data['yellow_up'];
+		$red_up = $threshold_data['red_up'];
+		$yellow_inverse = $threshold_data['yellow_inverse'];
+		$red_inverse = $threshold_data['red_inverse'];
+	}
+	else {
+	*/
+
+		$yellow_threshold = $data_module_graph['w_min'];
+		$red_threshold = $data_module_graph['c_min'];
+		// Get other required module datas to draw warning and critical
+		if ($agent_module_id == 0) {
+			$yellow_up = 0;
+			$red_up = 0;
+			$yellow_inverse = false;
+			$red_inverse = false;
+		} else {
+			$yellow_up = $data_module_graph['w_max'];
+			$red_up = $data_module_graph['c_max'];
+			$yellow_inverse = !($data_module_graph['w_inv'] == 0);
+			$red_inverse = !($data_module_graph['c_inv'] == 0);
+		}
+	//}
+	
+	if ($show_elements_graph['menu']) {
+		$return .= menu_graph(
+			$yellow_threshold, $red_threshold, 
+			$yellow_up, $red_up, $yellow_inverse, 
+			$red_inverse, $show_elements_graph['dashboard'], 
+			$show_elements_graph['vconsole'], 
+			$graph_id, $format_graph['width'], 
+			$format_graph['homeurl']
+		);
+	}
+
+	$return .= html_print_input_hidden('line_width_graph', $config['custom_graph_width'], true);
+	$return .= "<div id='timestamp_$graph_id' 
+					class='timestamp_graph' 
+					style='	font-size:".$format_graph['font_size']."pt;
+							display:none; position:absolute; 
+							background:#fff; border: solid 1px #aaa; 
+							padding: 2px; z-index:1000;'></div>";
+	$return .= "<div id='$graph_id' class='";
+
+	if($format_graph['type'] == 'area_simple'){
+		$return .= "noresizevc ";
+	}
+	
+	$return .= "graph" .$format_graph['adapt_key'] ."' 
+				style='	width: ".$format_graph['width']."px; 
+						height: ".$format_graph['height']."px;'></div>";
+
+	if ($show_elements_graph['menu']) {
+		$format_graph['height'] = 100;
+	}
+	else {
+		$format_graph['height'] = 1;
+	}
+	if (!$vconsole)
+		$return .= "<div 	id='overview_$graph_id' 
+							class='overview_graph' 
+							style='	display: none; margin-left:0px; 
+									margin-top:20px; margin-bottom:50px; 
+									width: ".$format_graph['width']."px; 
+									height: ".$format_graph['height'] ."px;'></div>";
+	//XXXXTODO
+	$water_mark = '';
+	if ($water_mark != '') {
+		$return .= "<div id='watermark_$graph_id' style='display:none; position:absolute;'><img id='watermark_image_$graph_id' src='$water_mark'></div>";
+		$watermark = 'true';
+	}
+	else {
+		$watermark = 'false';
+	}
+	
+
+	foreach($series_type as $k => $v){
+		$series_type_unique["data_" . $graph_id . "_" . $k] = $v; 
+	}	
+
+	
+	// Store data series in javascript format
+	$extra_width = (int)($format_graph['width'] / 3);
+	$return .= "<div id='extra_$graph_id' 
+					style='font-size: " . $format_graph['font_size'] . "pt; 
+					display:none; position:absolute; overflow: auto; 
+					max-height: ".($format_graph['height']+50)."px; 
+					width: ".$extra_width."px; 
+					background:#fff; padding: 2px 2px 2px 2px; 
+					border: solid #000 1px;'></div>";
+		
+	if(substr($background_style, -6, 4) == '#fff'){
+		$background_color = "#eee";
+		$legend_color = "#151515";
+	}
+	else if(substr($background_style, -6, 4) == '#000'){
+		$background_color = "#151515";
+		$legend_color = "#BDBDBD";
+	}
+	else{
+		$background_color = "#A4A4A4";
+		$legend_color = "#A4A4A4";
+	}
+
+	//XXXX force_integer TODO
+	$force_integer = 0;
+	
+	// Trick to get translated string from javascript
+	$return .= html_print_input_hidden('unknown_text', __('Unknown'), true);
+
+	if (!isset($config["short_module_graph_data"]))
+		$config["short_module_graph_data"] = true;
+	
+	if ($config["short_module_graph_data"]) {
+		$short_data = true;
+	}
+	else {
+		$short_data = false;
+	}
+	
+	$values              = json_encode($array_data);
+	$legend              = json_encode($legend);
+	$series_type         = json_encode($series_type);
+	$date_array          = json_encode($date_array);
+	$data_module_graph   = json_encode($data_module_graph); 
+	$show_elements_graph = json_encode($show_elements_graph);
+	$format_graph        = json_encode($format_graph);
+
+	// Javascript code
+	$return .= "<script type='text/javascript'>";
+	$return .= "$(document).ready( function () {";
+	$return .= "pandoraFlotAreaNew(" .
+		"'$graph_id', \n" .
+		"JSON.parse('$values'), \n" .
+		"JSON.parse('$legend'), \n" .
+		"'$agent_module_id', \n" .
+		"JSON.parse('$series_type'), \n" .
+		"'$watermark', \n" .
+		"JSON.parse('$date_array'), \n" .
+		"JSON.parse('$data_module_graph'), \n" .
+		"JSON.parse('$show_elements_graph'), \n" .
+		"JSON.parse('$format_graph'), \n" .
+		"$force_integer, \n" .
+		"'$series_suffix_str', \n" .
+		"'$background_color', \n" .
+		"'$legend_color', \n" .
+		"'$short_data'
+	);";
+	$return .= "});";
+	$return .= "</script>";
+	
+	// Parent layer
+	$return .= "</div>";
+	
+	return $return;
+}
+
+function menu_graph(
+	$yellow_threshold, $red_threshold, 
+	$yellow_up, $red_up, $yellow_inverse, 
+	$red_inverse, $dashboard, $vconsole, 
+	$graph_id, $width, $homeurl
+){
+	$return = '';
+	$threshold = false;
+	if ($yellow_threshold != $yellow_up || $red_threshold != $red_up) {
+		$threshold = true;
+	}
+	
+	$nbuttons = 3;
+	
+	if ($threshold) {
+		$nbuttons++;
+	}
+	$menu_width = 25 * $nbuttons + 15;
+	if ( $dashboard == false AND $vconsole == false) {
+		$return .= "<div id='geneal_menu_$graph_id' class='menu_graph' style='
+						width: 30px;
+						height: 250px;
+						left: " . $width . "px;
+						position: absolute;
+						top: 0px;
+						background-color: white;'>";
+		$return .= "<div id='menu_$graph_id' " .
+			"style='display: none; " .
+				"text-align: center;" .
+				"position: relative;".
+				"border-bottom: 0px;'>
+			<a href='javascript:'><img id='menu_cancelzoom_$graph_id' src='".$homeurl."images/zoom_cross_grey.disabled.png' alt='".__('Cancel zoom')."' title='".__('Cancel zoom')."'></a>";
+		if ($threshold) {
+			$return .= " <a href='javascript:'><img id='menu_threshold_$graph_id' src='".$homeurl."images/chart_curve_threshold.png' alt='".__('Warning and Critical thresholds')."' title='".__('Warning and Critical thresholds')."'></a>";
+		}
+		$return .= " <a href='javascript:'>
+			<img id='menu_overview_$graph_id' class='menu_overview' src='" . $homeurl . "images/chart_curve_overview.png' alt='" . __('Overview graph') . "' title='".__('Overview graph')."'></a>";
+		
+		// Export buttons
+		$return .= " <a href='javascript:'><img id='menu_export_csv_$graph_id' src='".$homeurl."images/csv_grey.png' alt='".__('Export to CSV')."' title='".__('Export to CSV')."'></a>";
+		// Button disabled. This feature works, but seems that is not useful enough to the final users.
+		//$return .= " <a href='javascript:'><img id='menu_export_json_$graph_id' src='".$homeurl."images/json.png' alt='".__('Export to JSON')."' title='".__('Export to JSON')."'></a>";
+		
+		$return .= "</div>";
+		$return .= "</div>";
+	}
+
+	if ($dashboard) {
+		$return .= "<div id='geneal_menu_$graph_id' class='menu_graph' style='
+						width: 30px;
+						height: 250px;
+						left: " . $width . "px;
+						position: absolute;
+						top: 0px;
+						background-color: white;'>";
+
+		$return .= "<div id='menu_$graph_id' " .
+			"style='display: none; " .
+				"text-align: center;" .
+				"position: relative;".
+				"border-bottom: 0px;'>
+			<a href='javascript:'><img id='menu_cancelzoom_$graph_id' src='".$homeurl."images/zoom_cross_grey.disabled.png' alt='".__('Cancel zoom')."' title='".__('Cancel zoom')."'></a>";
+	
+		$return .= "</div>";
+		$return .= "</div>";
+	}
+	return $return;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ///////////////////////////////
 ///////////////////////////////

@@ -1183,6 +1183,9 @@ if ($update_module || $create_module) {
 	$mday_to = get_parameter('mday_to');
 	$month_to = get_parameter('month_to');
 	$wday_to = get_parameter('wday_to');
+	
+	$http_user =  get_parameter('http_user');
+	$http_pass =  get_parameter('http_pass');
 
 	if ($hour_to != "*") {
 		$hour_to = "-" . $hour_to;
@@ -1258,6 +1261,7 @@ if ($update_module || $create_module) {
 if ($update_module) {
 	$id_agent_module = (int) get_parameter ('id_agent_module');
 	
+	
 	$values = array (
 		'id_agente_modulo' => $id_agent_module,
 		'descripcion' => $description,
@@ -1320,6 +1324,27 @@ if ($update_module) {
 		'id_category' => $id_category,
 		'disabled_types_event' => addslashes($disabled_types_event),
 		'module_macros' => $module_macros);
+		
+		if($id_module_type == 30 || $id_module_type == 31 || $id_module_type == 32 || $id_module_type == 33){
+			
+			$plugin_parameter_split = explode("&#x0a;", $values['plugin_parameter']);
+			
+			$values['plugin_parameter'] = '';
+			
+			foreach ($plugin_parameter_split as $key => $value) {
+				
+				if($key == 1){
+					$values['plugin_parameter'] .= 'http_auth_user&#x20;'.$http_user.'&#x0a;';
+					$values['plugin_parameter'] .= 'http_auth_pass&#x20;'.$http_pass.'&#x0a;';
+					$values['plugin_parameter'] .= $value."&#x0a;";
+				}
+				else{
+					$values['plugin_parameter'] .= $value."&#x0a;";
+				}
+				
+			}
+			
+		}
 	
 	// In local modules, the interval is updated by agent
 	$module_kind = (int) get_parameter ('moduletype');
@@ -1397,6 +1422,7 @@ if ($update_module) {
 // MODULE INSERT
 // =================
 if ($create_module) {
+	
 	if (isset ($_POST["combo_snmp_oid"])) {
 		$combo_snmp_oid = get_parameter_post ("combo_snmp_oid");
 	}
@@ -1480,6 +1506,27 @@ if ($create_module) {
 		'id_category' => $id_category,
 		'disabled_types_event' => addslashes($disabled_types_event),
 		'module_macros' => $module_macros);
+	
+		if($id_module_type == 30 || $id_module_type == 31 || $id_module_type == 32 || $id_module_type == 33){
+			
+			$plugin_parameter_split = explode("&#x0a;", $values['plugin_parameter']);
+			
+			$values['plugin_parameter'] = '';
+			
+			foreach ($plugin_parameter_split as $key => $value) {
+				
+				if($key == 1){
+					$values['plugin_parameter'] .= 'http_auth_user&#x20;'.$http_user.'&#x0a;';
+					$values['plugin_parameter'] .= 'http_auth_pass&#x20;'.$http_pass.'&#x0a;';
+					$values['plugin_parameter'] .= $value."&#x0a;";
+				}
+				else{
+					$values['plugin_parameter'] .= $value."&#x0a;";
+				}
+				
+			}
+			
+		}
 	
 	if ($prediction_module == 3 && $serialize_ops == '') {
 		$id_agent_module = false;

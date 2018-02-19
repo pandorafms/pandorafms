@@ -2463,7 +2463,7 @@ function reporting_historical_data($report, $content) {
 									WHERE id_agente_modulo =' . $content['id_agent_module'] . '
 									 AND utimestamp >' . $date_limit . '
 									 AND utimestamp <=' . time()
-									);
+									, true);
 			break;
 		default:
 			$result = db_get_all_rows_sql 	(
@@ -2472,7 +2472,7 @@ function reporting_historical_data($report, $content) {
 									WHERE id_agente_modulo =' . $content['id_agent_module'] . '
 									 AND utimestamp >' . $date_limit . '
 									 AND utimestamp <=' . time()
-									);
+									, true);
 			break;
 	}
 	

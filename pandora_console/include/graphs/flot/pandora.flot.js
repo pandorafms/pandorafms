@@ -1535,7 +1535,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 
 	// The first execution, the graph data is the base data
 	datas = data_base;
-	console.log(datas);
+
 	// minTickSize
 	var count_data = datas[0].data.length;
 	var min_tick_pixels = 80;
@@ -1781,7 +1781,6 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			if (currentRanges == null || (currentRanges.xaxis.from < j && j < currentRanges.xaxis.to)) {
 				$('#timestamp_'+graph_id).show();
 				// If no legend, the timestamp labels are short and with value
-				console.log(y);
 				if (legend.length == 0) {
 					$('#timestamp_'+graph_id).text(labels[j] + ' (' + (short_data ? parseFloat(y).toFixed(2) : parseFloat(y)) + ')');
 				}
@@ -1907,7 +1906,6 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	});
 
 	$('#overview_'+graph_id).bind('plothover',  function (event, pos, item) {
-		console.log('entra22222');
 		plot.setCrosshair({ x: pos.x, y: 0 });
 		currentPlot = overview;
 		latestPosition = pos;
@@ -2402,8 +2400,8 @@ function pandoraFlotAreaNew(
 	else{
 		var unit = '';
 	}
-	console.log(format_graph);
-//XXXX
+
+	//XXXX
 	var type        = 'area_simple';
 	var xaxisname   = 'xaxisname';
 	var labels_long = '';
@@ -2490,31 +2488,34 @@ function pandoraFlotAreaNew(
 		}
 	});
 	
-	max_x = date_array['final_date'];
+	max_x = date_array['final_date'] *1000;
+	console.log(max_x);
 
-console.log(data_module_graph);
-	var yellow_threshold = data_module_graph.w_min;
-	var red_threshold = data_module_graph.c_min;
-	var yellow_up = data_module_graph.w_max;
-	var red_up = data_module_graph.c_max;
-	var yellow_inverse = data_module_graph.w_inv;
-	var red_inverse = data_module_graph.c_inv;
+	var yellow_threshold = parseFloat (data_module_graph.w_min);
+	var red_threshold    = parseFloat (data_module_graph.c_min);
+	var yellow_up 		 = parseFloat (data_module_graph.w_max);
+	var red_up 			 = parseFloat (data_module_graph.c_max);
+	
+	var yellow_inverse   = data_module_graph.w_inv;
+	var red_inverse      = data_module_graph.c_inv;
 	// If threshold and up are the same, that critical or warning is disabled
-	if (yellow_threshold == yellow_up) yellow_inverse = false;
-	if (red_threshold == red_up) red_inverse = false;
+	if (yellow_threshold == yellow_up){
+		yellow_inverse = false;
+	}
+	
+	if (red_threshold == red_up){ 
+		red_inverse = false;
+	}
 
 	//Array with points to be painted
 	var threshold_data = new Array();
 	//Array with some interesting points
 	var extremes = new Array ();
-	
-	yellow_threshold = parseFloat (yellow_threshold);
-	yellow_up = parseFloat (yellow_up);
-	red_threshold = parseFloat (red_threshold);
-	red_up = parseFloat (red_up);
+
 	var yellow_only_min = ((yellow_up == 0) && (yellow_threshold != 0));
-	red_only_min = ((red_up == 0) && (red_threshold != 0));
+	var red_only_min    = ((red_up == 0) && (red_threshold != 0));
 	
+	//color
 	var normalw = '#efe';
 	var warningw = '#ffe';
 	var criticalw = '#fee';
@@ -2525,6 +2526,7 @@ console.log(data_module_graph);
 	if (threshold) {
 		// Warning interval. Change extremes depends on critical interval
 		if (yellow_inverse && red_inverse) {
+			console.log('entra');
 			if (red_only_min && yellow_only_min) {
 				// C: |--------         |
 				// W: |········====     |
@@ -3054,14 +3056,9 @@ console.log(data_module_graph);
 			xaxes: [{
 				axisLabelFontSizePixels: font_size,
 				mode: "time",
-				//min: date_array.start_date * 1000,
-				//max: date_array.final_date * 1000,
-				tickFormatter: xFormatter,
-				// timeformat: "%Y/%m/%d %H:%M:%S",
+				tickFormatter: xFormatter
 			}],
 			yaxes: [{
-				//min: min_check,
-				//max: 5000,
 				tickFormatter: yFormatter,
 				color: '',
 				alignTicksWithAxis: 1,
@@ -3086,7 +3083,7 @@ console.log(data_module_graph);
 	
 	var stack = 0, bars = true, lines = false, steps = false;
 	var plot = $.plot($('#' + graph_id), datas, options);
-	console.log(plot);
+
 	// Re-calculate the graph height with the legend height
 	if (dashboard || vconsole) {
 		var hDiff = $('#'+graph_id).height() - $('#legend_'+graph_id).height();
@@ -3144,8 +3141,7 @@ console.log(data_module_graph);
 		if (menu == 0) {
 			return;
 		}
-		
-		//XXX
+
 		dataInSelection = ranges.xaxis.to - ranges.xaxis.from;
 		//time_format_y = dataInSelection;
 		dataInPlot = plot.getData()[0].data.length;
@@ -3159,12 +3155,11 @@ console.log(data_module_graph);
 				xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to},
 				xaxes: [ {
 						tickFormatter: xFormatter,
-						//XXX
-						//minTickSize: new_steps,
 						color: ''
 						} ],
-				legend: { show: false }
+				legend: { show: true }
 			}));
+
 		if (thresholded) {
 			var zoom_data_threshold = new Array ();
 			
@@ -3212,7 +3207,6 @@ console.log(data_module_graph);
 	function updateLegend() {
 		updateLegendTimeout = null;
 		var pos = latestPosition;
-		console.log(pos);
 
 		var axes = currentPlot.getAxes();
 		if (pos.x < axes.xaxis.min || pos.x > axes.xaxis.max ||
@@ -3224,13 +3218,11 @@ console.log(data_module_graph);
 
 		var i = 0;
 
-		console.log(dataset);
 		for (k = 0; k < dataset.length; k++) {
 
 			// k is the real series counter
 			// i is the series counter without thresholds
 			var series = dataset[k];
-			console.log(series);
 			if (series.label == null) {
 				continue;
 			}
@@ -3411,7 +3403,6 @@ console.log(data_module_graph);
 
 	// Format functions
 	function xFormatter(v, axis) {
-		//console.log('x: '+ v);
 		//XXX
 		/*
 			if ($period <= SECONDS_6HOURS) {
@@ -3560,9 +3551,7 @@ console.log(data_module_graph);
 			// cancel the zooming
 			plot = $.plot($('#' + graph_id), data_base,
 				$.extend(true, {}, options, {
-					//XXX
-					xaxis: {max: max_x },
-					legend: { show: false }
+					legend: { show: true }
 				}));
 			
 			$('#menu_cancelzoom_' + graph_id)

@@ -529,7 +529,7 @@ function print_clock_digital_1 ($time_format, $timezone, $clock_animation,$width
 
 				#overlay_".$id_element." path,
 				#overlay_".$id_element." circle {
-				fill: #f6f6f6;
+				fill: rgba(246, 246, 246, 0.15);
 				stroke: none;
 				}
 

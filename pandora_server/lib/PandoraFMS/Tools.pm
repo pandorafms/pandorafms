@@ -349,7 +349,9 @@ sub pandora_trash_ascii {
 ########################################################################
 sub safe_input($) {
 	my $value = shift;
-	
+
+	return "" unless defined($value);
+
 	$value =~ s/([\x00-\xFF])/$CHR2ENT{$1}||$1/ge;
 	
 	return $value;
@@ -360,7 +362,9 @@ sub safe_input($) {
 ########################################################################
 sub safe_output($) {
 	my $value = shift;
-	
+
+	return "" unless defined($value);
+
 	_decode_entities ($value, \%ENT2CHR);
 
 	return $value;

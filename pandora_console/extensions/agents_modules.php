@@ -678,8 +678,6 @@ $ignored_params['refresh']='';
 		}
 		
 		$("#group_id").change (function () {
-			
-			console.log('jijijijijijiji');
 			jQuery.post ("ajax.php",
 				{"page" : "operation/agentes/ver_agente",
 					"get_agents_group_json" : 1,

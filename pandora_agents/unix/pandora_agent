@@ -2355,10 +2355,13 @@ sub check_module_cron {
 
 	my $interval = $main_interval * $module->{'interval'};
 
-	$module->{'cron_utimestamp'} = $now + cron_next_execution(
+	my $time_to_next_execution = cron_next_execution(
 		$module->{'cron'},
 		$interval
 	);
+
+	$module->{'cron_utimestamp'} = $now + $time_to_next_execution;
+	$module->{'cron_interval'} = $time_to_next_execution;
 	
 	if ($Conf{'debug'} eq '1') {
 		log_message ('debug', "Cron for module $module->{'name'} will be executed next time at timestamp: $module->{'cron_utimestamp'}.");
@@ -2474,8 +2477,9 @@ sub write_module_xml ($@) {
 	# Module Alert template
 	$Xml .= "	<alert_template>" . $module->{'alert_template'} . "</alert_template>\n" if (defined ($module->{'alert_template'}));
 	
-	# Module Alert template
+	# Module Crontab
 	$Xml .= "	<crontab>" . $module->{'cron'} . "</crontab>\n" if (defined ($module->{'cron'}) and ($module->{'cron'} ne ""));
+	$Xml .= "	<cron_interval>" . $module->{'cron_interval'} . "</cron_interval>\n" if (defined ($module->{'cron'}) and (defined ($module->{'cron_interval'})));
 
 	# FF threshold configuration
 	$Xml .= "	<min_ff_event_normal>" . $module->{'min_ff_event_normal'} . "</min_ff_event_normal>\n" if (defined ($module->{'min_ff_event_normal'}));

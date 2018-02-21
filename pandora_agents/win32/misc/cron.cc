@@ -54,20 +54,112 @@ Cron::Cron (string cron_string) {
 		
 		// Wildcard
 		if (cron_params[i][0] == '*') {
-			this->params[i][0] = -1;
-			this->params[i][1] = -1;
+			this->params[i][CRDOWN] = CR_WILDCARD_VALUE;
+			this->params[i][1] = CR_WILDCARD_VALUE;
 
 		// Interval
 		} else if (sscanf (cron_params[i], "%255[^-]-%255s", bottom, top) == 2) {
-			this->params[i][0] = (i != 2) ? atoi (bottom) : atoi (bottom) - 1;
-			this->params[i][1] = (i != 2) ? atoi (top) : atoi (top) -1;
+            // Check if there is an interval with two equal values 
+            if (strcmp(bottom, top) == 0) {
+                this->params[i][CRDOWN] = (i != 3)
+                    ? atoi (cron_params[i])
+                    : atoi (cron_params[i]) - 1;
+                this->params[i][CRUP] = CR_WILDCARD_VALUE;    
+            } else {
+                this->params[i][CRDOWN] = (i != 3) ? atoi (bottom) : atoi (bottom) - 1;
+                this->params[i][CRUP] = (i != 3) ? atoi (top) : atoi (top) -1;
+            }
 		
 		// Single value
 		} else {
-			this->params[i][0] = (i != 2)
+			this->params[i][CRDOWN] = (i != 3)
                 ? atoi (cron_params[i])
                 : atoi (cron_params[i]) - 1;
-			this->params[i][1] = -1;
+			this->params[i][CRUP] = CR_WILDCARD_VALUE;
 		}
 	}
+}
+/**
+ * @brief Given a date, return if is inside a cron string or not
+ * 
+ * @param date Date to check
+ * @return true If is inside cron
+ * @return false If is outside cron
+ */
+bool Cron::isInCron(time_t date) {
+    struct tm * timeinfo = localtime(&date);
+
+    // Convert the tm struct to an array
+    int date_array[4] = {
+        timeinfo->tm_min,
+        timeinfo->tm_hour,
+        timeinfo->tm_mday,
+        timeinfo->tm_mon
+    };
+
+    // Check all positions faliures
+    for (int i = 0; i < 4; i++) {
+        if (!isWildCard(i)) {
+            if (isSingleValue(i)) {
+                if (this->params[i][CRDOWN] != date_array[i]) return false;
+            } else {
+                if (isNormalInterval(i)) {
+                    if (
+                        date_array[i] < this->params[i][CRDOWN] ||
+                        date_array[i] > this->params[i][CRUP]
+                    ) {
+                        return false;
+                    }
+                } else {
+                    if (
+                        date_array[i] < this->params[i][CRDOWN] &&
+                        date_array[i] > this->params[i][CRUP]
+                    ) {
+                        return false;
+                    }
+                }
+            }
+        }
+    }
+
+    // If no failures, date is inside cron.
+    return true;
+}
+
+/**
+ * @brief Check if a cron position is a wildcard
+ * 
+ * @param position Position inside the param array
+ * @return true if is a wildcard
+ */
+bool Cron::isWildCard(int position) {
+    return this->params[position][CRDOWN] == CR_WILDCARD_VALUE;
+}
+
+/**
+ * @brief Check if a cron position is a single value
+ * 
+ * @param position Position inside the param array
+ * @return true if is a single value
+ */
+bool Cron::isSingleValue(int position) {
+    return this->params[position][CRUP] == CR_WILDCARD_VALUE;
+}
+
+/**
+ * @brief Check if a cron position is an interval with down lower than up
+ * 
+ * @param position Position inside the param array
+ * @return true if is a normal interval
+ * @return false if is an inverse interval
+ */
+bool Cron::isNormalInterval (int position) {
+    // Wildcard and single value will be treated like normal interval
+    if (
+        this->params[position][CRDOWN] == CR_WILDCARD_VALUE ||
+        this->params[position][CRUP] == CR_WILDCARD_VALUE
+    ) {
+        return true;
+    }
+    return (this->params[position][CRUP] >= this->params[position][CRDOWN]);
 }

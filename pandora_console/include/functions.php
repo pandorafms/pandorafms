@@ -2792,65 +2792,123 @@ function validate_address($address){
 	return true;
 }
 
-function color_graph_array($series_suffix){
+function color_graph_array($series_suffix, $compare = false){
 	global $config;
 
 	//////////////////////////////////////////////////
 	// Color commented not to restrict serie colors //
 	//////////////////////////////////////////////////
-	$color['event' . $series_suffix] =
-		array(	'border' => '#ff0000',
-				'color' => '#ff0000',
-				'alpha' => CHART_DEFAULT_ALPHA
-		);
-	
-	$color['alert' . $series_suffix] =
-		array(	'border' => '#ff7f00',
-				'color' => '#ff7f00',
-				'alpha' => CHART_DEFAULT_ALPHA
-		);
-
-	$color['unknown' . $series_suffix] =
-		array(	'border' => '#999999',
-				'color' => '#999999',
-				'alpha' => CHART_DEFAULT_ALPHA
-		);
-	
-	$color['no_data'.$series_suffix] =
-		array(	'border' => '#000000',
-				'color' => '#f2c40e',
-				'alpha' => CHART_DEFAULT_ALPHA
+	if(!$compare) {
+		$color['event' . $series_suffix] =
+			array(	'border' => '#ff0000',
+					'color' => '#ff0000',
+					'alpha' => CHART_DEFAULT_ALPHA
 			);
-	
-	$color['max'.$series_suffix] =
-		array(	'border' => '#000000',
-				'color' => $config['graph_color3'],
-				'alpha' => CHART_DEFAULT_ALPHA
-			);
-	
-	$color['sum'.$series_suffix] =
-		array(	'border' => '#000000',
-				'color' => $config['graph_color2'],
-				'alpha' => CHART_DEFAULT_ALPHA
-			);
-	
-	$color['min'.$series_suffix] =
-		array(	'border' => '#000000',
-				'color' => $config['graph_color1'],
-				'alpha' => CHART_DEFAULT_ALPHA
+		
+		$color['alert' . $series_suffix] =
+			array(	'border' => '#ff7f00',
+					'color' => '#ff7f00',
+					'alpha' => CHART_DEFAULT_ALPHA
 			);
 
-	$color['unit'.$series_suffix] =
-		array(	'border' => null,
-				'color' => '#0097BC',
-				'alpha' => 10
+		$color['unknown' . $series_suffix] =
+			array(	'border' => '#999999',
+					'color' => '#999999',
+					'alpha' => CHART_DEFAULT_ALPHA
 			);
+		
+		$color['no_data'.$series_suffix] =
+			array(	'border' => '#000000',
+					'color' => '#f2c40e',
+					'alpha' => CHART_DEFAULT_ALPHA
+				);
+		
+		$color['max'.$series_suffix] =
+			array(	'border' => '#000000',
+					'color' => $config['graph_color3'],
+					'alpha' => CHART_DEFAULT_ALPHA
+				);
+		
+		$color['sum'.$series_suffix] =
+			array(	'border' => '#000000',
+					'color' => $config['graph_color2'],
+					'alpha' => CHART_DEFAULT_ALPHA
+				);
+		
+		$color['min'.$series_suffix] =
+			array(	'border' => '#000000',
+					'color' => $config['graph_color1'],
+					'alpha' => CHART_DEFAULT_ALPHA
+				);
+
+		$color['unit'.$series_suffix] =
+			array(	'border' => null,
+					'color' => '#0097BC',
+					'alpha' => 10
+				);
+		
+		$color['percentil'.$series_suffix] =
+			array(	'border' => '#000000',
+					'color' => '#0097BC',
+					'alpha' => CHART_DEFAULT_ALPHA
+				);
+	}
+	else{
+		$color['event' . $series_suffix] =
+			array(	'border' => '#ff0000',
+					'color' => '#ff66cc',
+					'alpha' => CHART_DEFAULT_ALPHA
+			);
+		
+		$color['alert' . $series_suffix] =
+			array(	'border' => '#ffff00',
+					'color' => '#ffff00',
+					'alpha' => CHART_DEFAULT_ALPHA
+			);
+
+		$color['unknown' . $series_suffix] =
+			array(	'border' => '#999999',
+					'color' => '#E1E1E1',
+					'alpha' => CHART_DEFAULT_ALPHA
+			);
+		
+		$color['no_data'.$series_suffix] =
+			array(	'border' => '#000000',
+					'color' => '#f2c40e',
+					'alpha' => CHART_DEFAULT_ALPHA
+				);
+		
+		$color['max'.$series_suffix] =
+			array(	'border' => '#000000',
+					'color' => $config['graph_color3'],
+					'alpha' => CHART_DEFAULT_ALPHA
+				);
+		
+		$color['sum'.$series_suffix] =
+			array(	'border' => '#000000',
+					'color' => '#99ffff',
+					'alpha' => CHART_DEFAULT_ALPHA
+				);
+		
+		$color['min'.$series_suffix] =
+			array(	'border' => '#000000',
+					'color' => $config['graph_color1'],
+					'alpha' => CHART_DEFAULT_ALPHA
+				);
+
+		$color['unit'.$series_suffix] =
+			array(	'border' => null,
+					'color' => '#0097BC',
+					'alpha' => 10
+				);
+		
+		$color['percentil'.$series_suffix] =
+			array(	'border' => '#000000',
+					'color' => '#003333',
+					'alpha' => CHART_DEFAULT_ALPHA
+				);
 	
-	$color['percentil'.$series_suffix] =
-		array(	'border' => '#000000',
-				'color' => '#0097BC',
-				'alpha' => CHART_DEFAULT_ALPHA
-			);
+	}
 	
 	return $color;
 }

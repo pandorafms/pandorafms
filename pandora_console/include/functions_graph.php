@@ -227,6 +227,125 @@ function get_statwin_graph_statistics ($chart_array, $series_suffix = '') {
 	return $stats;
 }
 
+function grafico_modulo_sparse_data_chart_new (
+		$agent_module_id,
+		$date_array,
+		$data_module_graph,
+		$show_elements_graph,
+		$format_graph,
+		$series_suffix
+	) {
+
+	global $config;
+
+	$data = db_get_all_rows_filter ('tagente_datos',
+						array ('id_agente_modulo' => (int)$agent_module_id,
+								"utimestamp > '". $date_array['start_date']. "'",
+								"utimestamp < '". $date_array['final_date'] . "'",
+								'order' => 'utimestamp ASC'),
+						array ('datos', 'utimestamp'), 'AND', $data_module_graph['history_db']);
+
+	// Get previous data
+	$previous_data = modules_get_previous_data (
+						$agent_module_id, 
+						$date_array['start_date']
+					);
+
+	if ($previous_data !== false) {
+		$previous_data['utimestamp'] = $date_array['start_date'];
+		unset($previous_data['id_agente_modulo']);
+		array_unshift ($data, $previous_data);
+	}
+
+	// Get next data
+	$nextData = modules_get_next_data (
+					$agent_module_id, 
+					$date_array['final_date']
+				);
+
+	if ($nextData !== false) {
+		unset($nextData['id_agente_modulo']);
+		array_push ($data, $nextData);
+	}
+	else if (count ($data) > 0) {
+		// Propagate the last known data to the end of the interval
+		$nextData = array(
+			'datos'      => $data[count($data)-1]['datos'],
+			'utimestamp' => $date_array['final_date'], 
+		);
+		array_push ($data, $nextData);
+	}
+	
+	if ($data === false) {
+		$data = array ();
+	}
+	
+	// Check available data
+	if (count ($data) < 1) {
+		//if (!$graphic_type) {
+			return fs_error_image ();
+		//}
+		//graphic_error ();
+	}
+	$array_data = array();
+	$min_value = PHP_INT_MAX-1;
+	$max_value = PHP_INT_MIN+1;
+	$array_percentil = array();
+
+	foreach ($data as $k => $v) {
+		//convert array
+		if($show_elements_graph['flag_overlapped']){
+			$array_data["sum" . $series_suffix]['data'][$k] = array(
+				($v['utimestamp'] + $date_array['period']  )* 1000,
+				$v['datos']
+			);
+		}
+		else{
+			$array_data["sum" . $series_suffix]['data'][$k] = array(
+				$v['utimestamp'] * 1000,
+				$v['datos']
+			);
+		}
+		
+		//min
+		if($min_value > $v['datos']){
+			$min_value = $v['datos'];
+		}
+		
+		//max
+		if($max_value < $v['datos']){
+			$max_value = $v['datos'];
+		}
+
+		//avg
+		$sum_data += $v['datos'];
+		$count_data++;
+
+		//percentil
+		if (!is_null($show_elements_graph['percentil']) && $show_elements_graph['percentil']) {
+			$array_percentil[] = $v['datos'];
+		}
+	}
+
+	$array_data["sum" . $series_suffix]['min'] = $min_value;
+	$array_data["sum" . $series_suffix]['max'] = $max_value;
+	$array_data["sum" . $series_suffix]['avg'] = $sum_data/$count_data;
+
+	if (!is_null($show_elements_graph['percentil']) && $show_elements_graph['percentil'] && !$show_elements_graph['flag_overlapped']) {
+		$percentil_result = get_percentile($show_elements_graph['percentil'], $array_percentil);
+		$array_data["percentil" . $series_suffix]['data'][0] = array(
+			$date_array['start_date'] * 1000, 
+			$percentil_result
+		);
+		$array_data["percentil" . $series_suffix]['data'][1] = array(
+			$date_array['final_date'] * 1000, 
+			$percentil_result
+		);
+	}
+	return $array_data;
+}
+
+
 function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_index, 
 				$data, $data_i, $previous_data, $resolution, $interval, $period, $datelimit, 
 				$projection, $avg_only = false, $uncompressed_module = false, 
@@ -537,7 +656,8 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 function grafico_modulo_sparse_data_new(
 	$agent_module_id, $date_array, 
 	$data_module_graph, $show_elements_graph, 
-	$format_graph, $exception_interval_graph ) {
+	$format_graph, $exception_interval_graph,
+	$series_suffix, $str_series_suffix) {
 
 	global $config;
 	global $array_data;
@@ -546,22 +666,30 @@ function grafico_modulo_sparse_data_new(
 	global $legend;
 	global $series_type;
 
-	$series_suffix = 1;
-	
 	if($show_elements_graph['fullscale']){
 		$array_data = fullscale_data_new(
-			$agent_module_id, 
-			$date_array, 
+			$agent_module_id,
+			$date_array,
 			$show_elements_graph['show_unknown'],
-			$show_elements_graph['percentil']
+			$show_elements_graph['percentil'],
+			$series_suffix,
+			$str_series_suffix,
+			$show_elements_graph['flag_overlapped']
 		);
 	}
 	else{
-
+		$array_data = grafico_modulo_sparse_data_chart_new (
+			$agent_module_id,
+			$date_array,
+			$data_module_graph,
+			$show_elements_graph,
+			$format_graph, 
+			$series_suffix
+		);
 	}
 
 	if($show_elements_graph['percentil']){
-		$percentil_value = $array_data['percentil' . $series_suffix]['data'][0][0];
+		$percentil_value = $array_data['percentil' . $series_suffix]['data'][0][1];
 	}
 	else{
 		$percentil_value = 0;
@@ -574,71 +702,119 @@ function grafico_modulo_sparse_data_new(
 		$avg = $array_data['sum'. $series_suffix]['avg'];
 	}
 
-	if(	$show_elements_graph['show_unknown'] &&
-		isset($array_data['unknown' . $series_suffix]) &&
-		is_array($array_data['unknown' . $series_suffix]['data']) ){
-		foreach ($array_data['unknown' . $series_suffix]['data'] as $key => $s_date) {
-			if ($s_date[1] == 1) {
-				$array_data['unknown' . $series_suffix]['data'][$key] = array($s_date[0], $max * 1.05);
-			}
-		}
-	}
-
-	if ($show_elements_graph['show_events']  || 
-		$show_elements_graph['show_alerts'] ) {
+	if(!$show_elements_graph['flag_overlapped']){
 		
-		$events = db_get_all_rows_filter (
-			'tevento',
-			array ('id_agentmodule' => $agent_module_id,
-					"utimestamp > " . $date_array['start_date'],
-					"utimestamp < " . $date_array['final_date'],
-					'order' => 'utimestamp ASC'
-				),
-			false, 
-			'AND',
-			$data_module_graph['history_db']
-		);
-
-		$alerts_array = array();
-		$events_array = array();
-
-		if($events && is_array($events)){
-			$i=0;
-			foreach ($events as $k => $v) {
-				if (strpos($v["event_type"], "alert") !== false){
-					$alerts_array['data'][$i] = array( ($v['utimestamp']*1000) , $max * 1.10);
+		if($show_elements_graph['fullscale']){
+			if(	$show_elements_graph['show_unknown'] &&
+				isset($array_data['unknown' . $series_suffix]) &&
+				is_array($array_data['unknown' . $series_suffix]['data']) ){
+				foreach ($array_data['unknown' . $series_suffix]['data'] as $key => $s_date) {
+					if ($s_date[1] == 1) {
+						$array_data['unknown' . $series_suffix]['data'][$key] = array($s_date[0], $max * 1.05);
+					}
 				}
-				else{
-					$events_array['data'][$i] = array( ($v['utimestamp']*1000) , $max * 1.2);
-				}
-				$i++;
 			}
 		}
+		else{
+			if(	$show_elements_graph['show_unknown'] ) {
+				$unknown_events = db_get_module_ranges_unknown(
+					$agent_module_id, 
+					$date_array['start_date'], 
+					$date_array['final_date'], 
+					$data_module_graph['history_db']
+				);
 
+				if($unknown_events !== false){
+					foreach ($unknown_events as $key => $s_date) {
+						if( isset($s_date['time_from']) ){
+							$array_data['unknown' . $series_suffix]['data'][] = array( 
+								($s_date['time_from'] - 1) * 1000,
+								0
+							);
+							
+							$array_data['unknown' . $series_suffix]['data'][] = array(	
+								$s_date['time_from'] * 1000,
+								$max * 1.05
+							);
+						}
+						else{
+							$array_data['unknown' . $series_suffix]['data'][] = array(	
+								$date_array['start_date'] * 1000,
+								$max * 1.05
+							);
+						}
+						
+						if( isset($s_date['time_to']) ){
+							$array_data['unknown' . $series_suffix]['data'][] = array(
+								$s_date['time_to'] * 1000,
+								$max * 1.05
+							);
+							
+							$array_data['unknown' . $series_suffix]['data'][] = array( 
+								($s_date['time_to'] + 1) * 1000,
+								0
+							);
+						}
+						else{
+							$array_data['unknown' . $series_suffix]['data'][] = array(	
+								$date_array['final_date'] * 1000,
+								$max * 1.05
+							);
+						}
+					}
+				}
+			}
+		}
+		
+		if ($show_elements_graph['show_events']  || 
+			$show_elements_graph['show_alerts'] ) {
+			
+			$events = db_get_all_rows_filter (
+				'tevento',
+				array ('id_agentmodule' => $agent_module_id,
+						"utimestamp > " . $date_array['start_date'],
+						"utimestamp < " . $date_array['final_date'],
+						'order' => 'utimestamp ASC'
+					),
+				false, 
+				'AND',
+				$data_module_graph['history_db']
+			);
 
-		/*
-		// Get the last event after inverval to know if graph start on unknown
-		$prev_event = db_get_row_filter (
-			'tevento',
-			array ('id_agentmodule' => $agent_module_id,
-				"utimestamp <= $datelimit",
-				'order' => 'utimestamp DESC'
-			),
-			false,
-			'AND',
-			$search_in_history_db	
-		);
-		*/
-	}
+			$alerts_array = array();
+			$events_array = array();
 
-	
-	
-	if($show_elements_graph['show_events']){
-		$array_data['event' . $series_suffix] = $events_array;
-	}
+			if($events && is_array($events)){
+				$i=0;
+				foreach ($events as $k => $v) {
+					if (strpos($v["event_type"], "alert") !== false){
+						if($show_elements_graph['flag_overlapped']){
+							$alerts_array['data'][$i] = array( ($v['utimestamp'] + $date_array['period'] *1000) , $max * 1.10);
+						}
+						else{
+							$alerts_array['data'][$i] = array( ($v['utimestamp']*1000) , $max * 1.10);
+						}
+					}
+					else{
+						if($show_elements_graph['flag_overlapped']){
+							$events_array['data'][$i] = array( ($v['utimestamp'] + $date_array['period'] *1000) , $max * 1.2);
+						}
+						else{
+							$events_array['data'][$i] = array( ($v['utimestamp']*1000) , $max * 1.2);
+						}
+					}
+					$i++;
+				}
+			}
+		}
+		
+		if($show_elements_graph['show_events']){
+			$array_data['event' . $series_suffix] = $events_array;
+		}
 
-	if($show_elements_graph['show_alerts']){
-		$array_data['alert' . $series_suffix] = $alerts_array;
+		if($show_elements_graph['show_alerts']){
+			$array_data['alert' . $series_suffix] = $alerts_array;
+		}
 	}
 
 	if ($show_elements_graph['return_data'] == 1) {
@@ -658,11 +834,9 @@ function grafico_modulo_sparse_data_new(
 		$caption = array();
 	}
 
+	//XXX
 	//$graph_stats = get_statwin_graph_statistics($chart, $series_suffix);
-
-
-
-	$color = color_graph_array($series_suffix);
+	$color = color_graph_array($series_suffix, $show_elements_graph['flag_overlapped']);
 
 	foreach ($color as $k => $v) {
 		if(is_array($array_data[$k])){
@@ -1157,23 +1331,101 @@ if($flash_chart && $entra_por){
 	$exception_interval_graph['max_only']       = $max_only;
 	$exception_interval_graph['min_only']       = $min_only;
 	
-	$series_suffix =1;
-	$$series_suffix_str = '';
+	if ($show_elements_graph['compare'] !== false) {
+		$series_suffix = 2;
+		$series_suffix_str = ' (' . __('Previous') . ')';
+
+		$date_array_prev['final_date'] = $date_array['start_date'];
+		$date_array_prev['start_date'] = $date_array['start_date'] - $date_array['period'];
+		$date_array_prev['period']     = $date_array['period'];
+		
+		if ($show_elements_graph['compare'] === 'overlapped') {
+			$show_elements_graph['flag_overlapped'] = 1;
+		}
+		else{
+			$show_elements_graph['flag_overlapped'] = 0;
+		}
+		
+		grafico_modulo_sparse_data_new(	
+			$agent_module_id, $date_array_prev,
+			$data_module_graph, $show_elements_graph,
+			$format_graph, $exception_interval_graph,
+			$series_suffix, $series_suffix_str
+		);
+
+		switch ($show_elements_graph['compare']) {
+			case 'separated':
+			case 'overlapped':
+				// Store the chart calculated
+				$array_data_prev  = $array_data;
+				$legend_prev      = $legend;
+				$series_type_prev = $series_type;
+				$color_prev       = $color;
+				$caption_prev     = $caption;
+				break;
+		}
+	}
+
+	$series_suffix = 1;
+	$series_suffix_str = '';
+	$show_elements_graph['flag_overlapped'] = 0;
 
 	grafico_modulo_sparse_data_new(	
-		$agent_module_id, $date_array, $data_module_graph,
-		$show_elements_graph, $format_graph,
-		$exception_interval_graph 
+		$agent_module_id, $date_array,
+		$data_module_graph, $show_elements_graph,
+		$format_graph, $exception_interval_graph,
+		$series_suffix, $str_series_suffix
 	);
-	
+
+	if($show_elements_graph['compare']){
+		if ($show_elements_graph['compare'] === 'overlapped') {
+			$array_data = array_merge($array_data, $array_data_prev);
+			$legend     = array_merge($legend, $legend_prev);
+			$color      = array_merge($color, $color_prev);
+		}
+	}
+
 	if (empty($array_data)) {
+		//XXXX
 		return graph_nodata_image($width, $height);
 		return '<img src="' . $no_data_image . '" />';
 	}
 
+	//XXX
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 
-	return 	flot_area_graph_new(
+	if ($show_elements_graph['compare'] === 'separated') {
+		return 	flot_area_graph_new(
+					$agent_module_id,
+					$array_data,
+					$color,
+					$legend,
+					$series_type,
+					$date_array,
+					$data_module_graph,
+					$show_elements_graph,
+					$format_graph,
+					$water_mark,
+					$series_suffix_str
+				) .
+				'<br>'
+				.
+				flot_area_graph_new(
+					$agent_module_id,
+					$array_data_prev,
+					$color,
+					$legend,
+					$series_type,
+					$date_array,
+					$data_module_graph,
+					$show_elements_graph,
+					$format_graph,
+					$water_mark,
+					$series_suffix_str
+				);
+	}
+	else{
+		return flot_area_graph_new(
 				$agent_module_id,
 				$array_data,
 				$color,
@@ -1186,7 +1438,7 @@ if($flash_chart && $entra_por){
 				$water_mark,
 				$series_suffix_str
 			);
-
+	}
 	
 die();
 }
@@ -4898,8 +5150,10 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 
 function fullscale_data_new (
 	$agent_module_id, $date_array, 
-	$show_unknown = 0, $show_percentil = 0 ){
-	
+	$show_unknown = 0, $show_percentil = 0, 
+	$series_suffix, $str_series_suffix = '',
+	$compare = false){
+
 	global $config;
 	$data_uncompress = 
 		db_uncompress_module_data(
@@ -4910,7 +5164,6 @@ function fullscale_data_new (
 
 	$data = array();
 	$previous_data = 0;
-	$series_suffix = 1;
 	$min_value = PHP_INT_MAX-1;
 	$max_value = PHP_INT_MIN+1;
 	$flag_unknown  = 0;
@@ -4920,17 +5173,24 @@ function fullscale_data_new (
 			if (isset($v["type"]) && $v["type"] == 1) { # skip unnecesary virtual data
 				continue;
 			}
-			$real_date = $v['utimestamp'] * 1000; // * 1000 need js utimestam mlsecond
+			if($compare){ // * 1000 need js utimestam mlsecond
+				$real_date = ($v['utimestamp'] + $date_array['period']) * 1000;
+			}
+			else{
+				$real_date = $v['utimestamp'] * 1000;	
+			}
 
 			if ($v["datos"] === NULL) {
 				// Unknown
-				if($flag_unknown){
-					$data["unknown" . $series_suffix]['data'][] = array($real_date , 1);
-				}
-				else{
-					$data["unknown" . $series_suffix]['data'][] = array( ($real_date - 1) , 0);
-					$data["unknown" . $series_suffix]['data'][] = array($real_date , 1);
-					$flag_unknown = 1;
+				if(!$compare){
+					if($flag_unknown){
+						$data["unknown" . $series_suffix]['data'][] = array($real_date , 1);
+					}
+					else{
+						$data["unknown" . $series_suffix]['data'][] = array( ($real_date - 1) , 0);
+						$data["unknown" . $series_suffix]['data'][] = array($real_date , 1);
+						$flag_unknown = 1;
+					}
 				}
 
 				$data["sum" . $series_suffix]['data'][] = array($real_date , $previous_data);
@@ -4946,9 +5206,11 @@ function fullscale_data_new (
 				//normal
 				$previous_data = $v["datos"];
 				$data["sum" . $series_suffix]['data'][] = array($real_date , $v["datos"]);
-				if($flag_unknown){
-					$data["unknown" . $series_suffix]['data'][] = array($real_date , 0);
-					$flag_unknown = 0;
+				if(!$compare){
+					if($flag_unknown){
+						$data["unknown" . $series_suffix]['data'][] = array($real_date , 0);
+						$flag_unknown = 0;
+					}
 				}
 			}
 
@@ -4967,7 +5229,7 @@ function fullscale_data_new (
 			//avg count
 			$count_data++;
 
-			if($show_percentil){
+			if($show_percentil && !$compare){
 				$array_percentil[] = $v["datos"]; 
 			}
 
@@ -4975,13 +5237,25 @@ function fullscale_data_new (
 		}
 	}
 
-	if($show_percentil){
+	if($show_percentil && !$compare){
 		$percentil_result = get_percentile($show_percentil, $array_percentil);
-		$data["percentil" . $series_suffix]['data'][] = array($date_array['start_date'] * 1000 , $percentil_result);
-		$data["percentil" . $series_suffix]['data'][] = array($date_array['final_date'] * 1000 , $percentil_result);
+		if($compare){
+			$data["percentil" . $series_suffix]['data'][] = array( ($date_array['start_date'] + $date_array['period']) * 1000 , $percentil_result);
+			$data["percentil" . $series_suffix]['data'][] = array( ($date_array['final_date'] + $date_array['period']) * 1000 , $percentil_result);
+		}
+		else{
+			$data["percentil" . $series_suffix]['data'][] = array($date_array['start_date'] * 1000 , $percentil_result);
+			$data["percentil" . $series_suffix]['data'][] = array($date_array['final_date'] * 1000 , $percentil_result);
+		}
 	}
 	// Add missed last data
-	$data["sum" . $series_suffix]['data'][] = array($date_array['final_date'] * 1000 , $last_data);
+	if($compare){
+		$data["sum" . $series_suffix]['data'][] = array( ($date_array['final_date'] + $date_array['period']) * 1000 , $last_data);
+	}
+	else{
+		$data["sum" . $series_suffix]['data'][] = array($date_array['final_date'] * 1000 , $last_data);
+	}
+	
 	$data["sum" . $series_suffix]['min'] = $min_value;
 	$data["sum" . $series_suffix]['max'] = $max_value;
 	$data["sum" . $series_suffix]['avg'] = $sum_data/$count_data;

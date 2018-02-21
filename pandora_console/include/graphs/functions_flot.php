@@ -586,7 +586,7 @@ function flot_area_graph_new (
 	html_debug_print($water_mark);
 	html_debug_print($series_suffix_str);
 */
-	
+	//html_debug_print($series_suffix_str);
 	$background_style = '';
 	switch ($format_graph['background']) {
 		default:

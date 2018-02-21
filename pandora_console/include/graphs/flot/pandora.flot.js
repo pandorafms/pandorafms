@@ -869,6 +869,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	yellow_up, red_up, yellow_inverse, red_inverse,
 	series_suffix_str, dashboard, vconsole, xaxisname,background_color,legend_color,
 	short_data) {
+console.log(legend_events);
 
 	var threshold = true;
 	var thresholded = false;
@@ -2282,6 +2283,7 @@ function axis_thresholded (threshold_data, y_min, y_max, red_threshold, extremes
 		normal_down: 0,
 		down: null
 	};
+
 	// Resize the y axis to display all intervals
 	$.each(threshold_data, function() {
 		if (/_up/.test(this.id)){
@@ -2322,14 +2324,12 @@ function axis_thresholded (threshold_data, y_min, y_max, red_threshold, extremes
 			? yaxis_resize['up'] + margin_up_or_down
 			: y_min;
 	}
-	
 	return y;
 }
 function add_threshold (data_base, threshold_data, y_min, y_max,
 						red_threshold, extremes, red_up) {
-	
+
 	var datas = new Array ();
-	
 	$.each(data_base, function() {
 		// Prepared to turning series
 		//if(showed[this.id.split('_')[1]]) {
@@ -2370,9 +2370,7 @@ function add_threshold (data_base, threshold_data, y_min, y_max,
 		}	
 		datas.push(this);
 	});
-	
 	return datas;
-	
 }
 
 function reduceText (text, maxLength) {
@@ -2382,8 +2380,6 @@ function reduceText (text, maxLength) {
 	return str_cut + '...' + text.substr(-firstSlideEnd - 3);
 }
 
-
-
 function pandoraFlotAreaNew(
 	graph_id, values, legend, agent_module_id,
 	series_type, watermark, date_array,
@@ -2391,23 +2387,10 @@ function pandoraFlotAreaNew(
 	format_graph, force_integer, series_suffix_str, 
 	background_color, legend_color, short_data
 ) {
-
-	var threshold = true;
-	var thresholded = false;
-	if(format_graph.unit){
-		var unit = format_graph.unit;
-	}
-	else{
-		var unit = '';
-	}
-
-	//XXXX
-	var type        = 'area_simple';
-	var xaxisname   = 'xaxisname';
-	var labels_long = '';
-	var min_check   = 0;
-	var water_mark = '';
-	
+	console.log(series_suffix_str);
+	console.log('asdasdasdas');
+	//vars
+	var unit        = format_graph.unit ? format_graph.unit : '';
 	var homeurl     = format_graph.homeurl;
 	var font_size   = format_graph.font_size;
 	var font        = format_graph.font;
@@ -2416,6 +2399,27 @@ function pandoraFlotAreaNew(
 	var vconsole    = show_elements_graph.vconsole;
 	var dashboard   = show_elements_graph.dashboard;
 	var menu        = show_elements_graph.menu;
+	var max_x       = date_array['final_date'] *1000;
+
+	//for threshold
+	var threshold        = true;
+	var thresholded      = false;
+	var yellow_threshold = parseFloat (data_module_graph.w_min);
+	var red_threshold    = parseFloat (data_module_graph.c_min);
+	var yellow_up 		 = parseFloat (data_module_graph.w_max);
+	var red_up 			 = parseFloat (data_module_graph.c_max);	
+	var yellow_inverse   = parseInt(data_module_graph.w_inv);
+	var red_inverse      = parseInt(data_module_graph.c_inv);
+
+
+	//XXXX
+	var type        = 'area_simple';
+	var xaxisname   = 'xaxisname';
+	var labels_long = '';
+	var min_check   = 0;
+	var water_mark = '';
+	var legend_events = null;
+	var legend_alerts = null;
 	
 	switch (type) {
 		case 'line_simple':
@@ -2474,7 +2478,7 @@ function pandoraFlotAreaNew(
 			data_base.push({
 				id: 'serie_' + i,
 				data: value.data,
-				label: index,
+				label: index + series_suffix_str,
 				color: value.color,
 				lines: {
 					show: line_show,
@@ -2487,17 +2491,7 @@ function pandoraFlotAreaNew(
 			i++;
 		}
 	});
-	
-	max_x = date_array['final_date'] *1000;
-	console.log(max_x);
-
-	var yellow_threshold = parseFloat (data_module_graph.w_min);
-	var red_threshold    = parseFloat (data_module_graph.c_min);
-	var yellow_up 		 = parseFloat (data_module_graph.w_max);
-	var red_up 			 = parseFloat (data_module_graph.c_max);
-	
-	var yellow_inverse   = data_module_graph.w_inv;
-	var red_inverse      = data_module_graph.c_inv;
+	console.log(series_suffix_str);
 	// If threshold and up are the same, that critical or warning is disabled
 	if (yellow_threshold == yellow_up){
 		yellow_inverse = false;
@@ -2526,7 +2520,6 @@ function pandoraFlotAreaNew(
 	if (threshold) {
 		// Warning interval. Change extremes depends on critical interval
 		if (yellow_inverse && red_inverse) {
-			console.log('entra');
 			if (red_only_min && yellow_only_min) {
 				// C: |--------         |
 				// W: |········====     |
@@ -3032,7 +3025,8 @@ function pandoraFlotAreaNew(
 	if (unit != "") {
 		xaxisname = xaxisname + " (" + unit + ")"
 	}
-	
+
+	var maxticks = date_array['period'] / 3600 /6;
 	var options = {
 			series: {
 				stack: stacked,
@@ -3056,7 +3050,9 @@ function pandoraFlotAreaNew(
 			xaxes: [{
 				axisLabelFontSizePixels: font_size,
 				mode: "time",
-				tickFormatter: xFormatter
+				tickFormatter: xFormatter,
+				tickSize: [maxticks, 'hour'],
+				labelWidth: 70
 			}],
 			yaxes: [{
 				tickFormatter: yFormatter,
@@ -3149,22 +3145,54 @@ function pandoraFlotAreaNew(
 		factor = dataInSelection / dataInPlot;
 
 		new_steps = parseInt(factor * steps);
-
-		plot = $.plot($('#' + graph_id), data_base,
-			$.extend(true, {}, options, {
-				xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to},
-				xaxes: [ {
-						tickFormatter: xFormatter,
-						color: ''
-						} ],
-				legend: { show: true }
-			}));
+		var maxticks_zoom = dataInSelection / 3600000 / 6;
+		flag_caca = 0;
+		if(maxticks_zoom < 0.005){
+			flag_caca = 1;
+			maxticks_zoom = dataInSelection / 60000 / 6;
+			if(maxticks_zoom < 0.005){
+				maxticks_zoom = 1;
+			}
+		}
+		
+		console.log(maxticks_zoom);
+		if(flag_caca == 0){
+			plot = $.plot($('#' + graph_id), data_base,
+				$.extend(true, {}, options, {
+					grid: { borderWidth: 1, hoverable: true, autoHighlight: false},
+					xaxis: { 	min: ranges.xaxis.from, 
+								max: ranges.xaxis.to
+							},
+					xaxes: [ {
+							mode: "time",
+							tickFormatter: xFormatter,
+							tickSize: [maxticks_zoom, 'hour']
+							} ],
+					legend: { show: true }
+				}));
+		}
+		else{
+			plot = $.plot($('#' + graph_id), data_base,
+				$.extend(true, {}, options, {
+					grid: { borderWidth: 1, hoverable: true, autoHighlight: false},
+					xaxis: { 	min: ranges.xaxis.from, 
+								max: ranges.xaxis.to
+							},
+					xaxes: [ {
+							mode: "time",
+							tickFormatter: xFormatter,
+							tickSize: [maxticks_zoom, 'minute']
+							} ],
+					legend: { show: true }
+				}));
+		}
 
 		if (thresholded) {
 			var zoom_data_threshold = new Array ();
 			
 			var y_recal = axis_thresholded(threshold_data, plot.getAxes().yaxis.min, plot.getAxes().yaxis.max,
 									red_threshold, extremes, red_up);
+
 			plot = $.plot($('#' + graph_id), data_base,
 			$.extend(true, {}, options, {
 				yaxis: {
@@ -3299,7 +3327,7 @@ function pandoraFlotAreaNew(
 				$('#timestamp_'+graph_id).hide();
 			}
 
-			var label_aux = series.label;
+			var label_aux = series.label + series_suffix_str;
 
 			// The graphs of points type and unknown graphs will dont be updated
 
@@ -3393,7 +3421,7 @@ function pandoraFlotAreaNew(
 		dataset = plot.getData();
 		for (i = 0; i < dataset.length; ++i) {
 			var series = dataset[i];
-			var label_aux = series.label;
+			var label_aux = series.label + series_suffix_str;
 			$('#legend_' + graph_id + ' .legendLabel')
 				.eq(i).html(label_aux);
 		}
@@ -3429,10 +3457,17 @@ function pandoraFlotAreaNew(
 		var result_date_format = 0;
 		
 	//	if(time_format_y > 86400000){ //DAY
-
+			var monthNames = [	
+				"Jan", "Feb", "Mar",
+				"Apr", "May", "Jun",
+				"Jul", "Aug", "Sep",
+				"Oct", "Nov", "Dec"
+			];
+			
 			result_date_format = 
-								(d.getDate() <10?'0':'') + d.getDate() + "/" +
-								(d.getMonth()<9?'0':'') + (d.getMonth() + 1) + "/" + 
+								(d.getDate() <10?'0':'') + d.getDate() + " " +
+								//(d.getMonth()<9?'0':'') + (d.getMonth() + 1) + "/" + 
+								monthNames[d.getMonth()] + " " +
 								d.getFullYear() + "\n" + 
 								(d.getHours()<10?'0':'') + d.getHours() + ":" + 
 								(d.getMinutes()<10?'0':'') + d.getMinutes() + ":" + 
@@ -3446,7 +3481,7 @@ function pandoraFlotAreaNew(
 		}
 	*/
 		//extra_css = '';
-		return '<div class='+font+' style="transform: rotate(-15deg); -ms-transform:rotate(-15deg); -moz-transform:rotate(-15deg); -webkit-transform:rotate(-15deg); -o-transform:rotate(-15deg); font-size:'+font_size+'pt; margin-top:15px;">'+result_date_format+'</div>';
+		return '<div class='+font+' style="font-size:'+font_size+'pt; margin-top:15px;">'+result_date_format+'</div>';
 	}
 
 	function yFormatter(v, axis) {
@@ -3462,6 +3497,7 @@ function pandoraFlotAreaNew(
 	}
 
 	function lFormatter(v, item) {
+		console.log(v);
 		return '<div style="font-size:'+font_size+'pt;">'+v+'</div>';
 		// Prepared to turn series with a checkbox
 		//return '<div style=color:;font-size:'+font_size+'pt><input type="checkbox" id="' + graph_id + '_' + item.id +'" checked="checked" class="check_serie_'+graph_id+'">'+v+'</div>';
@@ -3522,17 +3558,17 @@ function pandoraFlotAreaNew(
 										red_threshold, extremes, red_up);
 
 				plot = $.plot($('#' + graph_id), data_base,
-				$.extend(true, {}, options, {
-					yaxis: {
-						max: y_recal.max,
-						min: y_recal.min
-					},
-					xaxis: {
-						mode:"time",
-						min: plot.getAxes().xaxis.min,
-						max: plot.getAxes().xaxis.max
-					}
-				}));
+						$.extend(true, {}, options, {
+							yaxis: {
+								max: y_recal.max,
+								min: y_recal.min
+							},
+							xaxis: {
+								//mode:"time",
+								//min: plot.getAxes().xaxis.min,
+								//max: plot.getAxes().xaxis.max
+							}
+						}));
 
 				datas = add_threshold (data_base, threshold_data, plot.getAxes().yaxis.min, plot.getAxes().yaxis.max,
 										red_threshold, extremes, red_up);

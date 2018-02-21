@@ -94,7 +94,6 @@ using namespace Pandora_Strutils;
 #define TOKEN_SAVE          ("module_save ")
 #define TOKEN_CONDITION     ("module_condition ")
 #define TOKEN_CRONTAB       ("module_crontab ")
-#define TOKEN_CRONINTERVAL  ("module_cron_interval ")
 #define TOKEN_PRECONDITION  ("module_precondition ")
 #define TOKEN_NOSEEKEOF     ("module_noseekeof ")
 #define TOKEN_PING          ("module_ping ")
@@ -168,7 +167,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	string                 module_perfcounter, module_tcpcheck;
 	string                 module_port, module_timeout, module_regexp;
 	string                 module_plugin, module_save, module_condition, module_precondition;
-	string                 module_crontab, module_cron_interval, module_post_process;
+	string                 module_crontab, module_post_process;
 	string                 module_min_critical, module_max_critical, module_min_warning, module_max_warning;
 	string                 module_disabled, module_min_ff_event, module_noseekeof;
 	string                 module_ping, module_ping_count, module_ping_timeout;
@@ -222,7 +221,6 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	module_save          = "";
 	module_condition     = "";
 	module_crontab       = "";
-	module_cron_interval = "";
 	module_post_process  = "";
 	module_precondition  = "";
 	module_min_critical  = "";
@@ -422,9 +420,6 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		}
 		if (module_crontab == "") {
 			module_crontab = parseLine (line, TOKEN_CRONTAB);
-		}
-		if (module_cron_interval == "") {
-			module_cron_interval = parseLine (line, TOKEN_CRONINTERVAL);
 		}
 		if (module_noseekeof == "") {
 			module_noseekeof = parseLine (line, TOKEN_NOSEEKEOF);
@@ -904,13 +899,6 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 					}
 				}
 
-				if (module_cron_interval != "") {
-					pos_macro = module_cron_interval.find(macro_name);
-					if (pos_macro != string::npos){
-						module_cron_interval.replace(pos_macro, macro_name.size(), macro_value);
-					}
-				}
-
 				if (module_noseekeof != "") {
 					pos_macro = module_noseekeof.find(macro_name);
 					if (pos_macro != string::npos){
@@ -1321,11 +1309,6 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	/* Module cron */
 	if (module_crontab != "") {
 		module->setCron (module_crontab);
-		
-		/* Set the cron interval */
-		if (module_cron_interval != "") {
-			module->setCronInterval (atoi (module_cron_interval.c_str ()));
-		}
 	}
 
 	/* Plugins do not have a module type */

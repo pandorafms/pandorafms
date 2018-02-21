@@ -292,7 +292,6 @@ namespace Pandora_Modules {
 		void		evaluateConditions ();
 		bool        checkCron (int interval);
 		void        setCron (string cron_string);
-		void        setCronInterval (int interval);
 		int         evaluateCondition (string string_value, double double_value, Condition *condition);
 		int         evaluateIntensiveConditions ();
 		int         hasOutput ();

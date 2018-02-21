@@ -87,6 +87,20 @@ Cron::Cron (string cron_string) {
 bool Cron::getIsSet () { return this->isSet; }
 
 /**
+ * @brief Set utimestamp (private set)
+ * 
+ * @param date
+ */
+void Cron::setUtimestamp(time_t date) {
+    this->utimestamp = date;
+    Pandora::pandoraDebug(
+        "Module with cron %s will be executed at timestamp: %d.",
+        this->cronString.c_str(),
+        this->utimestamp
+    );
+}
+
+/**
  * @brief Given a date, return if is inside a cron string or not
  * 
  * @param date Date to check
@@ -172,6 +186,21 @@ bool Cron::isNormalInterval (int position) {
 }
 
 /**
+ * @brief Get the reset value on a cron position
+ * 
+ * @param position 
+ * @return int Reset value
+ */
+int Cron::getResetValue (int position) {
+    int default_value = 0;
+    // Days start in 1
+    if (position == 2) default_value = 1;
+    return isWildCard(position)
+        ? default_value
+        : this->params[position][CRDOWN];
+}
+
+/**
  * @brief Check if cron module should be executed at a given time
  * 
  * @param date 
@@ -189,11 +218,129 @@ bool Cron::shouldExecuteAt (time_t date) {
  * @param interval Module interval
  */
 void Cron::update (time_t date, int interval) {
-    // TODO
-    this->utimestamp = date + interval;
-    Pandora::pandoraDebug(
-        "Module with cron %s will be executed at timestamp: %d.",
-        this->cronString.c_str(),
-        this->utimestamp
-    );
+
+    time_t nex_time = date + interval;
+    if (isInCron(nex_time)) {
+        setUtimestamp(nex_time);
+        return;
+    }
+
+    // Copy tm struct values to an empty struct to avoid conflicts
+    struct tm * timeinfo_first = localtime(&nex_time);
+    struct tm * timeinfo = new tm();
+    timeinfo->tm_sec = 0;
+    timeinfo->tm_min = timeinfo_first->tm_min;
+    timeinfo->tm_hour = timeinfo_first->tm_hour;
+    timeinfo->tm_mday = timeinfo_first->tm_mday;
+    timeinfo->tm_mon = timeinfo_first->tm_mon;
+    timeinfo->tm_year = timeinfo_first->tm_year;
+
+    // Update minutes
+    timeinfo->tm_min = getResetValue(0);
+    nex_time = mktime(timeinfo);
+    if (nex_time >= date && isInCron(nex_time)) {
+        setUtimestamp(nex_time);
+        return;
+    }
+
+
+	printf("010: minutes\n");
+
+    if (nex_time == CRINVALID_DATE) {
+        // Update the month day if overflow
+        timeinfo->tm_hour = 0;
+        timeinfo->tm_mday++;
+        nex_time = mktime(timeinfo);
+        if (nex_time == CRINVALID_DATE) {
+            // Update the month if overflow
+            timeinfo->tm_mday = 1;
+            timeinfo->tm_mon++;
+            nex_time = mktime(timeinfo);
+            if (nex_time == CRINVALID_DATE) {
+                // Update the year if overflow
+                timeinfo->tm_mon = 0;
+                timeinfo->tm_year++;
+                nex_time = mktime(timeinfo);
+            }
+        }
+    }
+
+    // Check the hour
+    if (isInCron(nex_time)) {
+        setUtimestamp(nex_time);
+    }
+
+    // Update hour if fails
+    timeinfo->tm_hour = getResetValue(1);
+    
+    // When an overflow is passed check the hour update again
+    nex_time = mktime(timeinfo);
+    if (nex_time >= date && isInCron(nex_time)) {
+        setUtimestamp(nex_time);
+        return;
+    }
+
+    // Check if next day is in cron
+    timeinfo->tm_mday++;
+    nex_time = mktime(timeinfo);
+    if (nex_time == CRINVALID_DATE) {
+        // Update the month if overflow
+        timeinfo->tm_mday = 1;
+        timeinfo->tm_mon++;
+        nex_time = mktime(timeinfo);
+        if (nex_time == CRINVALID_DATE) {
+            // Update the year if overflow
+            timeinfo->tm_mon = 0;
+            timeinfo->tm_year++;
+            nex_time = mktime(timeinfo);
+        }
+    }
+
+    // Check the day
+    if (isInCron(nex_time)){
+        setUtimestamp(nex_time);
+        return;
+    }
+
+    // Update the day if fails
+    timeinfo->tm_mday = getResetValue(2);
+
+    // When an overflow is passed check the day update in the next execution
+    nex_time = mktime(timeinfo);
+    if (nex_time >= date && isInCron(nex_time)) {
+        setUtimestamp(nex_time);
+        return;
+    }
+
+    // Check if next month is in cron
+    timeinfo->tm_mon++;
+    nex_time = mktime(timeinfo);
+    if (nex_time == CRINVALID_DATE) {
+        // Update the year if overflow
+        timeinfo->tm_mon = 0;
+        timeinfo->tm_year++;
+        nex_time = mktime(timeinfo);
+    }
+
+    // Check the month
+    if (isInCron(nex_time)) {
+        setUtimestamp(nex_time);
+        return;
+    }
+
+    // Update the month if fails
+    timeinfo->tm_mon = getResetValue(3);
+
+    // When an overflow is passed check the month update in the next execution
+    nex_time = mktime(timeinfo);
+    if (nex_time >= date) {
+        setUtimestamp(nex_time);
+        return;
+    }
+
+    // Update the year if fails
+    timeinfo->tm_year++;
+    nex_time = mktime(timeinfo);
+
+    setUtimestamp(nex_time);
 }

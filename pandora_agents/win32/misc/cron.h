@@ -32,6 +32,7 @@ const string CRON_DEFAULT_STRING = "* * * * *";
 const int CR_WILDCARD_VALUE = -1;
 const int CRDOWN = 0;
 const int CRUP = 1;
+const int CRINVALID_DATE = -1;
 
 class Cron {
     private:
@@ -52,10 +53,12 @@ class Cron {
         string                  cronString;
 
         // Methods
+        void                    setUtimestamp(time_t date);
         bool                    isInCron(time_t date);
         bool                    isWildCard(int position);
         bool                    isSingleValue(int position);
         bool                    isNormalInterval(int position);
+        int                     getResetValue(int position);
 
     public:
         // Constructor

@@ -2213,7 +2213,7 @@ sub cron_next_execution_date {
 	my ($mday_down, undef) = cron_get_interval ($mday);
 	$nex_time_array[2] = ($mday_down eq '*') ? 1 : $mday_down;
 
-	# When an overflow is passed check the hour update in the next execution
+	# When an overflow is passed check the day update in the next execution
 	$nex_time = cron_valid_date(@nex_time_array, $cur_year);
 	if ($nex_time >= $cur_time) {
 		return $nex_time if cron_is_in_cron(\@cron_array, \@nex_time_array);
@@ -2236,12 +2236,13 @@ sub cron_next_execution_date {
 	my ($mon_down, undef) = cron_get_interval ($mon);
 	$nex_time_array[3] = ($mon_down eq '*') ? 0 : $mon_down;
 
-	# When an overflow is passed check the hour update in the next execution
+	# When an overflow is passed check the month update in the next execution
 	$nex_time = cron_valid_date(@nex_time_array, $cur_year);
 	if ($nex_time >= $cur_time) {
 		return $nex_time if cron_is_in_cron(\@cron_array, \@nex_time_array);
 	}
 
+	#Update the year if fails
 	$nex_time = cron_valid_date(@nex_time_array, $cur_year + 1);
 
 	return $nex_time;

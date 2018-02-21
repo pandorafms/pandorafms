@@ -61,11 +61,13 @@ class Cron {
         // Constructor
                                 Cron(string cron_string);
         // Getter & setters
+        bool                    getIsSet();
         string                  getCronString();
         time_t                  getNextExecution();
 
         // Other methods
-        bool                    executeNow();
+        void                    update(time_t date, int interval);
+        bool                    shouldExecuteAt(time_t date);
 };
 
 #endif

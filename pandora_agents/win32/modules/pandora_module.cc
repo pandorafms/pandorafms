@@ -1563,158 +1563,28 @@ Pandora_Module::evaluateIntensiveConditions () {
 /** 
  * Checks the module cron. Returns 1 if the module should run, 0 if not.
  * 
- * @return 1 if the module should run, 0 if not.
+ * @return true if the module should run.
  */
-int
-Pandora_Module::checkCron (int module_interval, int agent_interval) {
-	int i, time_params[5];
-	time_t current_time, offset;
-	struct tm *time_struct;
-	Cron *cron = this->cron;
+bool
+Pandora_Module::checkCron (int interval) {
 
-	// No cron
-	if (cron == NULL) {
-		return 1;
-	}
+	// Execute always if cron is not configured
+	if (!this->cron->getIsSet()) return true;
 
-	// Get current time
-	current_time = time (NULL);
+	time_t now = time(NULL);
+	if (!this->cron->shouldExecuteAt(now)) return false;
 
-	// Check if the module was already executed
-	if (current_time <= cron->utimestamp) {
-		return 0;
-	}
+	this->cron->update(now, interval);
 
-	// Break current time
-	time_struct = localtime(&current_time);
-	if (time_struct == NULL) {
-		return 1;
-	}
-
-	time_params[0] = time_struct->tm_min;
-	time_params[1] = time_struct->tm_hour;
-	time_params[2] = time_struct->tm_mday;
-	time_params[3] = time_struct->tm_mon;
-	time_params[4] = time_struct->tm_wday;
-	
-	// Fix month (localtime retuns 0..11 and we need 1..12)
-	time_params[3] += 1;
-	
-	// Check cron parameters	
-	for (i = 0; i < 5; i++) {
-		
-		// Wildcard
-		if (cron->params[i][0] < 0) {
-			continue;
-		}
-		
-		// Check if next execution will overflow the cron (only minutes overflow)
-		// If overflow, execute the module
-		bool overflow_cron = false;
-		if (i == 0) {
-			int start_cron_seconds = cron->params[i][0]*60;
-			int current_exec_seconds = time_params[i]*60;
-			int next_exec_seconds = time_params[i]*60 + module_interval*agent_interval;
-			if (current_exec_seconds > start_cron_seconds && current_exec_seconds > next_exec_seconds) {
-				start_cron_seconds += 3600;
-			}
-			if ((current_exec_seconds <= start_cron_seconds) && (start_cron_seconds <= next_exec_seconds)) {
-				overflow_cron = true;
-			}
-		}
-		
-		// Check interval
-		if (cron->params[i][0] <= cron->params[i][1]) {
-			if ((time_params[i] < cron->params[i][0] || time_params[i] > cron->params[i][1]) && !overflow_cron) {
-				return 0;
-			}
-		} else {
-			if ((time_params[i] < cron->params[i][0] && time_params[i] > cron->params[i][1]) && !overflow_cron) {
-				return 0;
-			}
-		}
-	}
-
-	// Do not check in the next minute, hour, day or month.
-	offset = 0; 
-	if (cron->interval >= 0) {
-		offset = cron->interval;
-	} else if(cron->params[0][0] >= 0) {
-		// 1 minute
-		offset = 60;
-	} else if(cron->params[1][0] >= 0) {
-		// 1 hour
-		offset = 3600;
-	} else if(cron->params[2][0] >=0 || cron->params[4][0] >= 0) {
-		// 1 day
-		offset = 86400;
-	} else if(cron->params[3][0] >= 0) {
-		// 31 days
-		offset = 2678400;
-	}
-
-	cron->utimestamp = current_time + offset;
-	return 1;
+	return true;
 }
 
 /** 
  * Sets the module cron from a string.
- * 
- * @return 1 if the module should run, 0 if not.
  */
 void
 Pandora_Module::setCron (string cron_string) {
-	int i, value;
-	char cron_params[5][256], bottom[256], top[256];
-	
-	/* Create the new cron if necessary */
-	if (this->cron == NULL) {
-		this->cron = new Cron ();
-	}
-	
-	/* Parse the cron string */
-	if (sscanf (cron_string.c_str (), "%255s %255s %255s %255s %255s", cron_params[0], cron_params[1], cron_params[2], cron_params[3], cron_params[4]) != 5) {
-		pandoraDebug ("Invalid cron string: %s", cron_string.c_str ());
-		return;
-	}
-	
-	/* Fill the cron structure */
-	this->cron->utimestamp = 0;
-	this->cron->interval = -1;
-	for (i = 0; i < 5; i++) {
-		
-		/* Wildcard */
-		if (cron_params[i][0] == '*') {
-			this->cron->params[i][0] = -1;
-
-		/* Interval */
-		} else if (sscanf (cron_params[i], "%255[^-]-%255s", bottom, top) == 2) {
-			value = atoi (bottom);
-			this->cron->params[i][0] = value;
-			value = atoi (top);
-			this->cron->params[i][1] = value;
-		
-		/* Single value */
-		} else {
-			value = atoi (cron_params[i]);
-			this->cron->params[i][0] = value;
-			this->cron->params[i][1] = value;
-		}
-	}	
-}
-
-/** 
- * Sets the interval of the module cron.
- * 
- * @param interval Module cron interval in seconds.
- */
-void
-Pandora_Module::setCronInterval (int interval) {
-	if (this->cron == NULL) {
-		this->cron = new Cron ();
-	}
-	
-	this->cron->interval = interval;
+	this->cron = new Cron(cron_string);
 }
 
 /** 

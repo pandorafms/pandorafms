@@ -22,6 +22,7 @@
 #define	__PANDORA_MODULE_H__
 
 #include "../pandora.h"
+#include "../misc/cron.h"
 #include "pandora_data.h"
 #include "boost/regex.h"
 #include <list>
@@ -107,15 +108,6 @@ namespace Pandora_Modules {
 		string command;
 		regex_t regexp;
 	} Condition;
-
-	/**
-	 * Defines the structure that holds the module cron.
-	 */
-	typedef struct {
-		time_t utimestamp;
-		int interval;
-		int params[5][2];
-	} Cron;
 
 	const string module_exec_str       = "module_exec";
 	const string module_proc_str       = "module_proc";
@@ -298,7 +290,7 @@ namespace Pandora_Modules {
 		void		addIntensiveCondition    (string intensivecondition);
 		int 		evaluatePreconditions ();
 		void		evaluateConditions ();
-		int         checkCron (int module_interval, int agent_interval);
+		bool        checkCron (int interval);
 		void        setCron (string cron_string);
 		void        setCronInterval (int interval);
 		int         evaluateCondition (string string_value, double double_value, Condition *condition);

@@ -79,6 +79,13 @@ Cron::Cron (string cron_string) {
 		}
 	}
 }
+
+/**
+ * @brief Getter of isSet property
+ * 
+ */
+bool Cron::getIsSet () { return this->isSet; }
+
 /**
  * @brief Given a date, return if is inside a cron string or not
  * 
@@ -162,4 +169,31 @@ bool Cron::isNormalInterval (int position) {
         return true;
     }
     return (this->params[position][CRUP] >= this->params[position][CRDOWN]);
+}
+
+/**
+ * @brief Check if cron module should be executed at a given time
+ * 
+ * @param date 
+ * @return true if should execute
+ * @return false if should not execute
+ */
+bool Cron::shouldExecuteAt (time_t date) {
+    return this->utimestamp < date;
+}
+
+/**
+ * @brief Update the cron utimestamp
+ * 
+ * @param date Timestamp "from" to update cron utimestamp
+ * @param interval Module interval
+ */
+void Cron::update (time_t date, int interval) {
+    // TODO
+    this->utimestamp = date + interval;
+    Pandora::pandoraDebug(
+        "Module with cron %s will be executed at timestamp: %d.",
+        this->cronString.c_str(),
+        this->utimestamp
+    );
 }

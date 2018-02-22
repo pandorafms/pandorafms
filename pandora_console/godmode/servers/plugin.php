@@ -892,7 +892,7 @@ ui_require_javascript_file('pandora_modules');
 		
 		// Delete macro
 		var delete_macro_click_event = function (event) {
-			delete_macro('table-form-plugin_');
+			delete_macro_form('table-form-plugin_');
 			update_preview();
 		}
 		$('div#delete_macro_button>a').click(delete_macro_click_event);

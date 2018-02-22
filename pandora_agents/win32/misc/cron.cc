@@ -19,6 +19,7 @@
 */
 #include <stdio.h>
 #include <string.h>
+#include <sstream>
 #include "cron.h"
 #include "../pandora.h"
 
@@ -48,6 +49,7 @@ Cron::Cron (string cron_string) {
 	
 	// Fill the cron structure
 	this->utimestamp = 0;
+	this->cronInterval = 0;
     this->isSet = true;
     // Months in cron are from 1 to 12. For date, are required from 0 to 11.
 	for (int i = 0; i < 5; i++) {
@@ -87,12 +89,31 @@ Cron::Cron (string cron_string) {
 bool Cron::getIsSet () { return this->isSet; }
 
 /**
+ * @brief Getter of cronString property
+ * 
+ */
+string Cron::getCronString() { return this->cronString; }
+
+/**
+ * @brief Getter of cronInterval property casting in string
+ *
+ */
+string Cron::getCronIntervalStr() {
+    stringstream ss;
+    ss << this->cronInterval;
+    return ss.str();
+}
+
+
+/**
  * @brief Set utimestamp (private set)
  * 
- * @param date
+ * @param date when module will be executed next time
+ * @param now current timestamp. Required to update interval
  */
-void Cron::setUtimestamp(time_t date) {
+void Cron::setUtimestamp(time_t date, time_t now) {
     this->utimestamp = date;
+    this->cronInterval = date - now;
     Pandora::pandoraDebug(
         "Module with cron %s will be executed at timestamp: %d.",
         this->cronString.c_str(),
@@ -221,7 +242,7 @@ void Cron::update (time_t date, int interval) {
 
     time_t nex_time = date + interval;
     if (isInCron(nex_time)) {
-        setUtimestamp(nex_time);
+        setUtimestamp(nex_time, date);
         return;
     }
 
@@ -239,7 +260,7 @@ void Cron::update (time_t date, int interval) {
     timeinfo->tm_min = getResetValue(0);
     nex_time = mktime(timeinfo);
     if (nex_time >= date && isInCron(nex_time)) {
-        setUtimestamp(nex_time);
+        setUtimestamp(nex_time, date);
         return;
     }
 
@@ -267,7 +288,7 @@ void Cron::update (time_t date, int interval) {
 
     // Check the hour
     if (isInCron(nex_time)) {
-        setUtimestamp(nex_time);
+        setUtimestamp(nex_time, date);
     }
 
     // Update hour if fails
@@ -276,7 +297,7 @@ void Cron::update (time_t date, int interval) {
     // When an overflow is passed check the hour update again
     nex_time = mktime(timeinfo);
     if (nex_time >= date && isInCron(nex_time)) {
-        setUtimestamp(nex_time);
+        setUtimestamp(nex_time, date);
         return;
     }
 
@@ -298,7 +319,7 @@ void Cron::update (time_t date, int interval) {
 
     // Check the day
     if (isInCron(nex_time)){
-        setUtimestamp(nex_time);
+        setUtimestamp(nex_time, date);
         return;
     }
 
@@ -308,7 +329,7 @@ void Cron::update (time_t date, int interval) {
     // When an overflow is passed check the day update in the next execution
     nex_time = mktime(timeinfo);
     if (nex_time >= date && isInCron(nex_time)) {
-        setUtimestamp(nex_time);
+        setUtimestamp(nex_time, date);
         return;
     }
 
@@ -324,7 +345,7 @@ void Cron::update (time_t date, int interval) {
 
     // Check the month
     if (isInCron(nex_time)) {
-        setUtimestamp(nex_time);
+        setUtimestamp(nex_time, date);
         return;
     }
 
@@ -334,7 +355,7 @@ void Cron::update (time_t date, int interval) {
     // When an overflow is passed check the month update in the next execution
     nex_time = mktime(timeinfo);
     if (nex_time >= date) {
-        setUtimestamp(nex_time);
+        setUtimestamp(nex_time, date);
         return;
     }
 
@@ -342,5 +363,5 @@ void Cron::update (time_t date, int interval) {
     timeinfo->tm_year++;
     nex_time = mktime(timeinfo);
 
-    setUtimestamp(nex_time);
+    setUtimestamp(nex_time, date);
 }

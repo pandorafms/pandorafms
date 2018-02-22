@@ -51,9 +51,10 @@ class Cron {
         int                     params[5][2];
         bool                    isSet;
         string                  cronString;
+        time_t                  cronInterval;
 
         // Methods
-        void                    setUtimestamp(time_t date);
+        void                    setUtimestamp(time_t date, time_t now);
         bool                    isInCron(time_t date);
         bool                    isWildCard(int position);
         bool                    isSingleValue(int position);
@@ -66,7 +67,7 @@ class Cron {
         // Getter & setters
         bool                    getIsSet();
         string                  getCronString();
-        time_t                  getNextExecution();
+        string                  getCronIntervalStr();
 
         // Other methods
         void                    update(time_t date, int interval);

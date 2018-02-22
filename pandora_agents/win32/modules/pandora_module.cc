@@ -740,10 +740,14 @@ Pandora_Module::getXml () {
 	}
 	
 	/* Module Crontab */
-	if (this->module_crontab != "") {
+	if (this->cron->getIsSet()) {
 		module_xml += "\t<crontab>";
-		module_xml += this->module_crontab;
+		module_xml += this->cron->getCronString();
 		module_xml += "</crontab>\n";
+
+		module_xml += "\t<cron_interval><![CDATA[";
+		module_xml += this->cron->getCronIntervalStr();
+		module_xml += "]]></cron_interval>\n";
 	}
 
     /* Write module data */
@@ -1563,7 +1567,7 @@ Pandora_Module::evaluateIntensiveConditions () {
 /** 
  * Checks the module cron. Returns 1 if the module should run, 0 if not.
  * 
- * @return true if the module should run.
+ * @return 1 if the module should run, 0 if not.
  */
 bool
 Pandora_Module::checkCron (int interval) {

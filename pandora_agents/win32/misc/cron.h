@@ -55,6 +55,7 @@ class Cron {
 
         // Methods
         void                    setUtimestamp(time_t date, time_t now);
+        time_t                  getNextExecutionFrom(time_t date, int interval);
         bool                    isInCron(time_t date);
         bool                    isWildCard(int position);
         bool                    isSingleValue(int position);

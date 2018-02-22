@@ -255,11 +255,28 @@ bool Cron::shouldExecuteAtFirst (time_t date) {
  * @param interval Module interval
  */
 void Cron::update (time_t date, int interval) {
+    time_t next_time = getNextExecutionFrom(date, interval);
+    if (isWildCard(4)) {
+        setUtimestamp (next_time, date);
+        return;
+    }
 
+    // TODO if set day of the week
+    setUtimestamp (next_time, date);
+}
+
+/**
+ * @brief Get next execution date given a certain date.
+ * 
+ * @param date Date when start the search for a new date
+ * @param interval Module interval
+ * @return time_t Timestamp when module should be executed next time
+ * @remarks It does not look for day of the week
+ */
+time_t Cron::getNextExecutionFrom(time_t date, int interval) {
     time_t nex_time = date + interval;
     if (isInCron(nex_time)) {
-        setUtimestamp(nex_time, date);
-        return;
+        return nex_time;
     }
 
     // Copy tm struct values to an empty struct to avoid conflicts
@@ -276,8 +293,7 @@ void Cron::update (time_t date, int interval) {
     timeinfo->tm_min = getResetValue(0);
     nex_time = mktime(timeinfo);
     if (nex_time >= date && isInCron(nex_time)) {
-        setUtimestamp(nex_time, date);
-        return;
+        return nex_time;
     }
 
     if (nex_time == CRINVALID_DATE) {
@@ -301,7 +317,7 @@ void Cron::update (time_t date, int interval) {
 
     // Check the hour
     if (isInCron(nex_time)) {
-        setUtimestamp(nex_time, date);
+        return nex_time;
     }
 
     // Update hour if fails
@@ -310,8 +326,7 @@ void Cron::update (time_t date, int interval) {
     // When an overflow is passed check the hour update again
     nex_time = mktime(timeinfo);
     if (nex_time >= date && isInCron(nex_time)) {
-        setUtimestamp(nex_time, date);
-        return;
+        return nex_time;
     }
 
     // Check if next day is in cron
@@ -332,8 +347,7 @@ void Cron::update (time_t date, int interval) {
 
     // Check the day
     if (isInCron(nex_time)){
-        setUtimestamp(nex_time, date);
-        return;
+        return nex_time;
     }
 
     // Update the day if fails
@@ -342,8 +356,7 @@ void Cron::update (time_t date, int interval) {
     // When an overflow is passed check the day update in the next execution
     nex_time = mktime(timeinfo);
     if (nex_time >= date && isInCron(nex_time)) {
-        setUtimestamp(nex_time, date);
-        return;
+        return nex_time;
     }
 
     // Check if next month is in cron
@@ -358,8 +371,7 @@ void Cron::update (time_t date, int interval) {
 
     // Check the month
     if (isInCron(nex_time)) {
-        setUtimestamp(nex_time, date);
-        return;
+        return nex_time;
     }
 
     // Update the month if fails
@@ -368,13 +380,12 @@ void Cron::update (time_t date, int interval) {
     // When an overflow is passed check the month update in the next execution
     nex_time = mktime(timeinfo);
     if (nex_time >= date) {
-        setUtimestamp(nex_time, date);
-        return;
+        return nex_time;
     }
 
     // Update the year if fails
     timeinfo->tm_year++;
     nex_time = mktime(timeinfo);
 
-    setUtimestamp(nex_time, date);
+    return nex_time;
 }

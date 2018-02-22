@@ -264,9 +264,6 @@ void Cron::update (time_t date, int interval) {
         return;
     }
 
-
-	printf("010: minutes\n");
-
     if (nex_time == CRINVALID_DATE) {
         // Update the month day if overflow
         timeinfo->tm_hour = 0;

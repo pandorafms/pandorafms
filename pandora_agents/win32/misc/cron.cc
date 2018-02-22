@@ -104,23 +104,6 @@ string Cron::getCronIntervalStr() {
     return ss.str();
 }
 
-
-/**
- * @brief Set utimestamp (private set)
- * 
- * @param date when module will be executed next time
- * @param now current timestamp. Required to update interval
- */
-void Cron::setUtimestamp(time_t date, time_t now) {
-    this->utimestamp = date;
-    this->cronInterval = date - now;
-    Pandora::pandoraDebug(
-        "Module with cron %s will be executed at timestamp: %d.",
-        this->cronString.c_str(),
-        this->utimestamp
-    );
-}
-
 /**
  * @brief Given a date, return if is inside a cron string or not
  * 
@@ -141,30 +124,42 @@ bool Cron::isInCron(time_t date) {
 
     // Check all positions faliures
     for (int i = 0; i < 4; i++) {
-        if (!isWildCard(i)) {
-            if (isSingleValue(i)) {
-                if (this->params[i][CRDOWN] != date_array[i]) return false;
+        if (!isBetweenParams(date_array[i], i)) return false;
+    }
+
+    // If no failures, date is inside cron.
+    return true;
+}
+
+/**
+ * @brief Check if a value is in a position of cron
+ * 
+ * @param value Value to check
+ * @param position Position in cron to make the check
+ * @return If position is in cron
+ */
+bool Cron::isBetweenParams(int value, int position) {
+    if (!isWildCard(position)) {
+        if (isSingleValue(position)) {
+            if (this->params[position][CRDOWN] != value) return false;
+        } else {
+            if (isNormalInterval(position)) {
+                if (
+                    value < this->params[position][CRDOWN] ||
+                    value > this->params[position][CRUP]
+                ) {
+                    return false;
+                }
             } else {
-                if (isNormalInterval(i)) {
-                    if (
-                        date_array[i] < this->params[i][CRDOWN] ||
-                        date_array[i] > this->params[i][CRUP]
-                    ) {
-                        return false;
-                    }
-                } else {
-                    if (
-                        date_array[i] < this->params[i][CRDOWN] &&
-                        date_array[i] > this->params[i][CRUP]
-                    ) {
-                        return false;
-                    }
+                if (
+                    value < this->params[position][CRDOWN] &&
+                    value > this->params[position][CRUP]
+                ) {
+                    return false;
                 }
             }
         }
     }
-
-    // If no failures, date is inside cron.
     return true;
 }
 
@@ -256,13 +251,38 @@ bool Cron::shouldExecuteAtFirst (time_t date) {
  */
 void Cron::update (time_t date, int interval) {
     time_t next_time = getNextExecutionFrom(date, interval);
-    if (isWildCard(4)) {
-        setUtimestamp (next_time, date);
-        return;
+
+    // Check the day of the week
+    struct tm * timeinfo = localtime(&next_time);
+    int count = 0; // Avoid infinite loops
+    while ((!isBetweenParams(timeinfo->tm_wday, 4)) && (count++ < CR_MAX_ITERS)){
+        next_time = getNextExecutionFrom(next_time + CR_SECONDS_ONE_DAY, 0);
+        timeinfo = localtime(&next_time);
+    }
+    if (count >= CR_MAX_ITERS) {
+        Pandora::pandoraLog(
+            "Module with cron %s will be executed at timestamp: %d, but it can be incorrect",
+            this->cronString.c_str(),
+            this->utimestamp
+        );
     }
 
-    // TODO if set day of the week
-    setUtimestamp (next_time, date);
+    // Security about values
+    if (next_time < date) {
+        this->utimestamp = date + interval;
+        this->cronInterval = interval;
+        Pandora::pandoraLog("Cron update fails in Module with cron %s", this->cronString.c_str());
+    }
+
+    // Save the data
+    this->utimestamp = next_time;
+    this->cronInterval = next_time - date;
+    Pandora::pandoraDebug(
+        "Module with cron %s will be executed at timestamp: %d.",
+        this->cronString.c_str(),
+        this->utimestamp
+    );
+    return;
 }
 
 /**

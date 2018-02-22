@@ -33,6 +33,8 @@ const int CR_WILDCARD_VALUE = -1;
 const int CRDOWN = 0;
 const int CRUP = 1;
 const int CRINVALID_DATE = -1;
+const int CR_SECONDS_ONE_DAY = 86400;
+const int CR_MAX_ITERS = 60;
 
 class Cron {
     private:
@@ -54,9 +56,9 @@ class Cron {
         time_t                  cronInterval;
 
         // Methods
-        void                    setUtimestamp(time_t date, time_t now);
         time_t                  getNextExecutionFrom(time_t date, int interval);
         bool                    isInCron(time_t date);
+        bool                    isBetweenParams(int value, int position);
         bool                    isWildCard(int position);
         bool                    isSingleValue(int position);
         bool                    isNormalInterval(int position);

@@ -1307,9 +1307,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	}
 
 	/* Module cron */
-	if (module_crontab != "") {
-		module->setCron (module_crontab);
-	}
+	module->setCron (module_crontab);
 
 	/* Plugins do not have a module type */
 	if (module_plugin == "") {

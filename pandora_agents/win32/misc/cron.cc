@@ -30,7 +30,16 @@
  */
 Cron::Cron (string cron_string) {
 	char cron_params[5][256], bottom[256], top[256];
-	
+
+    // Check if cron string is the default or empty
+    if (
+        cron_string.compare(CRON_DEFAULT_STRING) == 0 ||
+        cron_string.compare("") == 0
+    ) {
+        this->isSet = false;
+		return;
+    }
+
 	// Parse the cron string
 	if (sscanf (cron_string.c_str (), "%255s %255s %255s %255s %255s", cron_params[0], cron_params[1], cron_params[2], cron_params[3], cron_params[4]) != 5) {
 		Pandora::pandoraDebug ("Invalid cron string: %s", cron_string.c_str ());
@@ -40,12 +49,6 @@ Cron::Cron (string cron_string) {
 	}
 
     this->cronString = cron_string;
-
-    // Check if cron string is the default
-    if (cron_string.compare(CRON_DEFAULT_STRING) == 0) {
-        this->isSet = false;
-		return;
-    }
 	
 	// Fill the cron structure
 	this->utimestamp = 0;

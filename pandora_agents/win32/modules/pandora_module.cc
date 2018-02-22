@@ -1578,9 +1578,12 @@ Pandora_Module::checkCron (int interval) {
 	time_t now = time(NULL);
 	if (!this->cron->shouldExecuteAt(now)) return false;
 
+	// Check if should execute this module at first before update cron params
+	bool execute = this->cron->shouldExecuteAtFirst(now);
+	
 	this->cron->update(now, interval);
 
-	return true;
+	return execute;
 }
 
 /** 

@@ -233,6 +233,22 @@ bool Cron::shouldExecuteAt (time_t date) {
 }
 
 /**
+ * @brief Check if a module should be executed when utimestamp is not calculated yet
+ * 
+ * @param date Current date
+ * @return true It is not first time and current date fit in cron
+ * @return false Don't execute first time
+ */
+bool Cron::shouldExecuteAtFirst (time_t date) {
+
+    // Return true if it is not first
+    if (this->utimestamp != 0) return true;
+
+    // Check current date in cron
+    return isInCron(date);
+}
+
+/**
  * @brief Update the cron utimestamp
  * 
  * @param date Timestamp "from" to update cron utimestamp

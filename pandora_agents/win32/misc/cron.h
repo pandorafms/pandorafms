@@ -1,7 +1,7 @@
 /* Pandora cron manager for Win32.
    
-   Copyright (C) 2016 Artica ST.
-   Written by Ramon Novoa.
+   Copyright (C) 2018 Artica ST.
+   Written by Fermin Hernandez.
   
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -72,6 +72,7 @@ class Cron {
         // Other methods
         void                    update(time_t date, int interval);
         bool                    shouldExecuteAt(time_t date);
+        bool                    shouldExecuteAtFirst(time_t date);
 };
 
 #endif

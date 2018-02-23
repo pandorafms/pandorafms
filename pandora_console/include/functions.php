@@ -2919,225 +2919,53 @@ function legend_graph_array(
 	$series_suffix_str,
 	$format_graph,
 	$show_elements_graph,
-	$percentil_value){
-
+	$percentil_value,
+	$data_module_graph){
+	
+	global $config;
+	global $legend;
 	$unit = $format_graph['unit'];
 
-	if ($show_elements_graph['show_events']) {
-		$legend['event'.$series_suffix_str] = __('Events').$series_suffix_str;
+	$legend['sum'.$series_suffix] = 
+		$data_module_graph['module_name'] . ' ' .
+		__('Min:') . remove_right_zeros(
+			number_format(
+				$min, 
+				$config['graph_precision']
+			)
+		)  . ' ' . 
+		__('Max:') . remove_right_zeros(
+			number_format(
+				$max, 
+				$config['graph_precision']
+			)
+		) . ' ' . 
+		_('Avg:') . remove_right_zeros(
+			number_format(
+				$max, 
+				$config['graph_precision']
+			)
+		) . ' ' . $series_suffix_str;
+
+	if($show_elements_graph['show_unknown']){
+		$legend['unknown'.$series_suffix]   = __('Unknown') . ' ' . $series_suffix_str;
 	}
-	if ($show_elements_graph['show_alerts']) {
-		$legend['alert'.$series_suffix] = __('Alerts').$series_suffix_str;
+	if($show_elements_graph['show_events']){
+		$legend['event'.$series_suffix]     = __('Events') . ' ' . $series_suffix_str;
+	}
+	if($show_elements_graph['show_alerts']){
+		$legend['alert'.$series_suffix]     = __('Alert') . ' ' . $series_suffix_str;
+	}
+	if($show_elements_graph['percentil']){
+		$legend['percentil'.$series_suffix] = __('Percentil') . ' Value: ' . 
+		remove_right_zeros(
+			number_format(
+				$percentil_value, 
+				$config['graph_precision']
+			)
+		) . ' ' . $series_suffix_str;
 	}
 
-	if ($show_elements_graph['vconsole']) {
-		$legend['sum'.$series_suffix] = 
-			__('Last') . ': ' . 
-			remove_right_zeros(
-				number_format(
-					$graph_stats['sum']['last'], 
-					$config['graph_precision']
-				)
-			) . ($unit ? ' ' . $unit : '') . ' ; '. 
-			__('Avg') . ': ' . 
-			remove_right_zeros(
-				number_format(
-					$graph_stats['sum']['avg'],
-					$config['graph_precision']
-					)
-				) . ($unit ? ' ' . $unit : ''
-			);
-	}
-	else if (	$show_elements_graph['dashboard'] && 
-				!$show_elements_graph['avg_only']	) {
-		
-		$legend['max'.$series_suffix] = 
-			__('Max').$series_suffix_str.': '.__('Avg').': '.
-			remove_right_zeros(
-				number_format(
-					$graph_stats['max']['avg'],
-					$config['graph_precision']
-				)
-			).' '.$unit.' ; '.__('Max').': '.
-			remove_right_zeros(
-				number_format(
-					$graph_stats['max']['max'],
-					$config['graph_precision']
-				)
-			).' '.$unit.' ; '.__('Min').': '.
-			remove_right_zeros(
-				number_format(
-					$graph_stats['max']['min'],
-					$config['graph_precision']
-				)
-			).' '.$unit;
-			
-		$legend['sum'.$series_suffix] = 
-			__('Avg').$series_suffix_str.': '.__('Avg').': '.
-			remove_right_zeros(
-				number_format(
-					$graph_stats['sum']['avg'],
-					$config['graph_precision']
-				)
-			).' '.$unit.' ; '.__('Max').': '.
-			remove_right_zeros(
-				number_format(
-					$graph_stats['sum']['max'],
-					$config['graph_precision']
-				)
-			).' '.$unit.' ; '.__('Min').': '.
-			remove_right_zeros(
-				number_format(
-					$graph_stats['sum']['min'],
-					$config['graph_precision']
-				)
-			).' '.$unit;
-
-		$legend['min'.$series_suffix] = 
-			__('Min').$series_suffix_str.': '.__('Avg').': '.
-			remove_right_zeros(
-				number_format(
-					$graph_stats['min']['avg'],
-					$config['graph_precision']
-				)
-			).' '.$unit.' ; '.__('Max').': '.
-			remove_right_zeros(
-				number_format(
-					$graph_stats['min']['max'],
-					$config['graph_precision']
-				)
-			).' '.$unit.' ; '.__('Min').': '.
-			remove_right_zeros(
-				number_format(
-					$graph_stats['min']['min'],
-					$config['graph_precision']
-				)
-			).' '.$unit;
-	}
-	else if ($show_elements_graph['dashboard']) {
-		$legend['sum'.$series_suffix] =
-			__('Last') . ': ' .
-			remove_right_zeros(
-				number_format(
-					$graph_stats['sum']['last'],
-					$config['graph_precision']
-				)
-			) . ($unit ? ' ' . $unit : '') . ' ; '.
-			__('Avg') . ': ' . 
-			remove_right_zeros(
-				number_format(
-					$graph_stats['sum']['avg'],
-					$config['graph_precision']
-				)
-			) . ($unit ? ' ' . $unit : '');
-	}
-	else if (!$show_elements_graph['avg_only'] && 
-			!$show_elements_graph['fullscale']) {
-		
-		$legend['max'.$series_suffix] = 
-			__('Max').$series_suffix_str.': '.__('Avg').': '.
-			remove_right_zeros(
-				number_format(
-					$graph_stats['max']['avg'],
-					$config['graph_precision']
-				)
-			).' '.$unit.' ; '.__('Max').': '.
-			remove_right_zeros(
-				number_format(
-					$graph_stats['max']['max'],
-					$config['graph_precision']
-				)
-			).' '.$unit.' ; '.__('Min').': '.
-			remove_right_zeros(
-				number_format(
-					$graph_stats['max']['min'],
-					$config['graph_precision']
-				)
-			).' '.$unit;
-		
-		$legend['sum'.$series_suffix] = 
-			__('Avg').$series_suffix_str.': '.
-			__('Avg').': '.
-			remove_right_zeros(
-				number_format(
-					$graph_stats['sum']['avg'],
-					$config['graph_precision']
-				)
-			).' '.$unit.' ; '.__('Max').': '.
-			remove_right_zeros(
-				number_format(
-					$graph_stats['sum']['max'],
-					$config['graph_precision']
-				)
-			).' '.$unit.' ; '.__('Min').': '.
-			remove_right_zeros(
-				number_format(
-					$graph_stats['sum']['min'],
-					$config['graph_precision']
-				)
-			).' '.$unit;
-		
-		$legend['min'.$series_suffix] =
-			__('Min').$series_suffix_str.': '.
-			__('Avg').': '.
-			remove_right_zeros(
-				number_format(
-					$graph_stats['min']['avg'],
-					$config['graph_precision']
-				)
-			).' '.$unit.' ; '.__('Max').': '.
-			remove_right_zeros(
-				number_format(
-					$graph_stats['min']['max'],
-					$config['graph_precision']
-				)
-			).' '.$unit.' ; '.__('Min').': '.
-			remove_right_zeros(
-				number_format(
-					$graph_stats['min']['min'],
-					$config['graph_precision']
-				)
-			).' '.$unit;
-	}
-	else if ($show_elements_graph['fullscale']){
-		$legend['sum'.$series_suffix] = 
-			__('Data').$series_suffix_str.': ';
-	}
-	else {
-		$legend['sum'.$series_suffix] = 
-			__('Avg').$series_suffix_str.': '.
-			__('Avg').': '.
-			remove_right_zeros(
-				number_format(
-					$graph_stats['sum']['avg'],
-					$config['graph_precision']
-				)
-			).' '.$unit.' ; '.
-			__('Max').': '.
-			remove_right_zeros(
-				number_format(
-					$graph_stats['sum']['max'],
-					$config['graph_precision']
-				)
-			).' '.$unit.' ; '.__('Min').': '.
-			remove_right_zeros(
-				number_format(
-					$graph_stats['sum']['min'],
-					$config['graph_precision']
-				)
-			).' '.$unit;
-	}
-
-	if ($show_elements_graph['show_unknown']) {
-		$legend['unknown'.$series_suffix] = 
-			__('Unknown').$series_suffix_str;	
-	}
-
-	if (!is_null($show_elements_graph['percentil']) && 
-		$show_elements_graph['percentil']) {
-		$legend['percentil'.$series_suffix] =
-			__('Percentile %dº', $percentil) . $series_suffix_str . " (" . $percentil_value . " " . $unit . ") ";
-	}
 	return $legend;
 }
 ?>

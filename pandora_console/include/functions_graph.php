@@ -844,13 +844,14 @@ function grafico_modulo_sparse_data_new(
 		}
 	}
 
-	$legend = legend_graph_array(
+	legend_graph_array(
 		$max, $min, $avg,
 		$series_suffix,
-		$series_suffix_str,
+		$str_series_suffix,
 		$format_graph,
 		$show_elements_graph,
-		$percentil_value
+		$percentil_value,
+		$data_module_graph
 	);
 
 	$series_type['event'.$series_suffix] = 'points';
@@ -862,8 +863,7 @@ function grafico_modulo_sparse_data_new(
 	else{
 		$series_type['sum'.$series_suffix] = 'area';
 	}
-	$series_type['percentil' . $series_suffix] = 'line';
-	
+	$series_type['percentil' . $series_suffix] = 'percentil';
 }
 
 function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
@@ -1034,7 +1034,6 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 			graphic_error ();
 		}
 		
-
 		// Data iterator
 		$data_i = 0;
 		

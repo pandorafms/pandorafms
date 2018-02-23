@@ -187,7 +187,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 	global $config;
 	
 	include_javascript_dependencies_flot_graph();
-
+	
 	$menu = (int)$menu;
 	// Get a unique identifier to graph
 	$graph_id = uniqid('graph_');
@@ -666,13 +666,15 @@ function flot_area_graph_new (
 	else {
 		$format_graph['height'] = 1;
 	}
-	if (!$vconsole)
+
+	if (!$vconsole){
 		$return .= "<div 	id='overview_$graph_id' 
 							class='overview_graph' 
 							style='	display: none; margin-left:0px; 
 									margin-top:20px; margin-bottom:50px; 
 									width: ".$format_graph['width']."px; 
 									height: ".$format_graph['height'] ."px;'></div>";
+	}
 	//XXXXTODO
 	$water_mark = '';
 	if ($water_mark != '') {
@@ -764,6 +766,12 @@ function flot_area_graph_new (
 	
 	return $return;
 }
+
+
+
+
+
+
 
 function menu_graph(
 	$yellow_threshold, $red_threshold, 

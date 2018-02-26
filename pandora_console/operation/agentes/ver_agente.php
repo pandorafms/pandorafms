@@ -162,7 +162,7 @@ if (is_ajax ()) {
 		
 		$groups = users_get_groups ($config["id_user"], "AW", false);
 		$group_id_list = ($groups ? join(",",array_keys($groups)):"0");
-
+		
 		$sql = 'SELECT DISTINCT(t1.alias) as name
 			FROM tagente t1, tagente_modulo t2
 			WHERE t1.id_agente = t2.id_agente
@@ -172,7 +172,7 @@ if (is_ajax ()) {
 		// Status selector
 		if ($status_modulo == AGENT_MODULE_STATUS_NORMAL) { //Normal
 			$sql_conditions .= ' estado = 0 AND utimestamp > 0)
-			OR (t1.id_tipo_modulo IN(21,22,23,100))) ';
+			OR (t2.id_tipo_modulo IN(21,22,23,100)) ';
 		}
 		elseif ($status_modulo == AGENT_MODULE_STATUS_CRITICAL_BAD) { //Critical
 			$sql_conditions .= ' estado = 1 AND utimestamp > 0 )';
@@ -188,11 +188,11 @@ if (is_ajax ()) {
 		}
 		elseif ($status_modulo == AGENT_MODULE_STATUS_NOT_INIT) { //Not init
 			$sql_conditions .= ' utimestamp = 0 )
-				AND t1.id_tipo_modulo NOT IN (21,22,23,100)';
+				AND t2.id_tipo_modulo NOT IN (21,22,23,100)';
 		}
 		
 		if ($status_modulo != -1) {
-			$filter .= ' AND t1.id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_estado where ' . $sql_conditions;
+			$sql .= ' AND t2.id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_estado where ' . $sql_conditions;
 		}
 		
 		if ($selection_mode == 'common') {
@@ -204,7 +204,7 @@ if (is_ajax ()) {
 		}
 
 		$sql .= ' ORDER BY t1.alias';
-
+		
 		$nameAgents = db_get_all_rows_sql($sql);
 		
 		if ($nameAgents == false)

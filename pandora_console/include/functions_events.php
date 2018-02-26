@@ -1981,6 +1981,11 @@ function events_get_response_target($event_id, $response_id, $server_id, $histor
 		$event_st = events_display_status($event['estado']);
 		$target = str_replace('_event_status_',	$event_st["title"],	$target);
 	}
+	if (strpos($target, '_group_custom_id_') !== false) {
+		$group_custom_id = db_get_value($dbh, "SELECT custom_id FROM tgrupo WHERE id_grupo=?", $event["id_grupo"]);
+		$event_st = events_display_status($event['estado']);
+		$target = str_replace('_group_custom_id_', $group_custom_id, $target);
+	}
 	// Parse the event custom data
 	if (!empty($event['custom_data'])){
 		$custom_data = json_decode (base64_decode ($event['custom_data']));

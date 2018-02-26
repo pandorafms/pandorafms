@@ -640,6 +640,53 @@ $table->data['edit11'][3] = html_print_input_text(
 		'max_timeout', '', '', 5, 10, true) .  ' ' .
 	ui_print_help_tip (
 		__('Seconds that agent will wait for the execution of the module.'), true);
+		
+$table->data['edit16'][0] = __('Retries');
+$table->data['edit16'][1] = html_print_input_text ('max_retries', '', '', 5, 10, true) . ' ' .
+	ui_print_help_tip (
+	__('Number of retries that the module will attempt to run.'), true);
+	
+	
+	$table->data['edit22'][0] = __('Web checks').ui_print_help_icon ("web_checks", true);;
+	$table->data['edit22'][1] = '<textarea id="textarea_plugin_parameter" name="plugin_parameter" cols="65" rows="15"></textarea>';
+	
+$table->data['edit16'][2] = __('Port');
+$table->data['edit16'][3] = html_print_input_text ('tcp_port', '', '', 5, 20, true);
+
+$table->data['edit17'][0] = __('TCP send') . ' ' . ui_print_help_icon ("tcp_send", true);
+$table->data['edit17'][1] = html_print_textarea ('tcp_send', 2, 65, '', '', true);
+
+$table->data['edit17'][2] = __('TCP receive');
+$table->data['edit17'][3] = html_print_textarea ('tcp_rcv', 2, 65, '', '', true);
+
+$table->data['edit18'][0] = __('WMI query') . ui_print_help_icon ('wmiquery', true);
+$table->data['edit18'][1] = html_print_input_text ('snmp_oid', '', '', 35, 255, true);
+
+$table->data['edit18'][2] = __('Key string');
+$table->data['edit18'][3] = html_print_input_text ('snmp_community', '', '', 20, 60, true);
+	
+$table->data['edit19'][0] = __('Field number') . ui_print_help_icon ('wmifield', true);
+$table->data['edit19'][1] = html_print_input_text ('tcp_port', '', '', 5, 15, true);
+
+$table->data['edit20'][0] = __('Plugin') . ui_print_help_icon ('plugin_macros', true);
+$table->data['edit20'][1] = html_print_select_from_sql ('SELECT id, name FROM tplugin ORDER BY name',
+	'id_plugin', '', 'changePluginSelect();', __('None'), 0, true, false, false);
+	
+		
+	// Store the macros in base64 into a hidden control to move between pages
+	$table->data['edit21'][0] = html_print_input_hidden('macros',base64_encode($macros),true);
+
+	if (!empty($id_plugin)) {
+		$preload = db_get_sql ("SELECT description FROM tplugin WHERE id = $id_plugin");
+		$preload = io_safe_output ($preload);
+		$preload = str_replace ("\n", "<br>", $preload);
+	}
+	else {
+		$preload = "";
+	}
+
+	$table->data['edit21'][1] = '<span style="font-weight: normal;" id="plugin_description">'.$preload.'</span>';
+
 
 echo '<form method="post" ' .
 	'action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=edit_modules" ' .
@@ -667,6 +714,8 @@ else {
 }
 
 ?>
+<script type="text/javascript">flag_load_plugin_component = false;</script>
+<script type="text/javascript" src="include/javascript/pandora_modules.js"></script>
 
 <script type="text/javascript">
 /* <![CDATA[ */
@@ -739,6 +788,13 @@ $(document).ready (function () {
 			"tr#delete_table-edit12, " +
 			"tr#delete_table-edit13, " +
 			"tr#delete_table-edit14, " +
+			"tr#delete_table-edit16, " +
+			"tr#delete_table-edit17, " +
+			"tr#delete_table-edit18, " +
+			"tr#delete_table-edit19, " +
+			"tr#delete_table-edit20, " +
+			"tr#delete_table-edit21, " +
+			"tr#delete_table-edit22, " +
 			"tr#delete_table-edit15").hide ();
 		
 		var params = {
@@ -804,6 +860,13 @@ $(document).ready (function () {
 			"tr#delete_table-edit12, " +
 			"tr#delete_table-edit13, " +
 			"tr#delete_table-edit14, " +
+			"tr#delete_table-edit16, " +
+			"tr#delete_table-edit17, " +
+			"tr#delete_table-edit18, " +
+			"tr#delete_table-edit19, " +
+			"tr#delete_table-edit20, " +
+			"tr#delete_table-edit21, " +
+			"tr#delete_table-edit22, " +
 			"tr#delete_table-edit15").show ();
 		
 		switch($('#module_type').val()) {
@@ -892,6 +955,13 @@ $(document).ready (function () {
 			"tr#delete_table-edit12, " +
 			"tr#delete_table-edit13, " +
 			"tr#delete_table-edit14, " +
+			"tr#delete_table-edit16, " +
+			"tr#delete_table-edit17, " +
+			"tr#delete_table-edit18, " +
+			"tr#delete_table-edit19, " +
+			"tr#delete_table-edit20, " +
+			"tr#delete_table-edit21, " +
+			"tr#delete_table-edit22, " +
 			"tr#delete_table-edit15").hide ();
 		$('input[type=checkbox]').attr('checked', false);
 		$('input[type=checkbox]').attr('disabled', true);
@@ -941,6 +1011,13 @@ $(document).ready (function () {
 							"tr#delete_table-edit12, " +
 							"tr#delete_table-edit13, " +
 							"tr#delete_table-edit14, " +
+							"tr#delete_table-edit16, " +
+							"tr#delete_table-edit17, " +
+							"tr#delete_table-edit18, " +
+							"tr#delete_table-edit19, " +
+							"tr#delete_table-edit20, " +
+							"tr#delete_table-edit21, " +
+							"tr#delete_table-edit22, " +
 							"tr#delete_table-edit15").hide ();
 					}
 				}
@@ -984,6 +1061,13 @@ $(document).ready (function () {
 						"tr#delete_table-edit12, " +
 						"tr#delete_table-edit13, " +
 						"tr#delete_table-edit14, " +
+						"tr#delete_table-edit16, " +
+						"tr#delete_table-edit17, " +
+						"tr#delete_table-edit18, " +
+						"tr#delete_table-edit19, " +
+						"tr#delete_table-edit20, " +
+						"tr#delete_table-edit21, " +
+						"tr#delete_table-edit22, " +
 						"tr#delete_table-edit15").show ();
 				}
 				else {
@@ -1008,6 +1092,13 @@ $(document).ready (function () {
 							"tr#delete_table-edit12, " +
 							"tr#delete_table-edit13, " +
 							"tr#delete_table-edit14, " +
+							"tr#delete_table-edit16, " +
+							"tr#delete_table-edit17, " +
+							"tr#delete_table-edit18, " +
+							"tr#delete_table-edit19, " +
+							"tr#delete_table-edit20, " +
+							"tr#delete_table-edit21, " +
+							"tr#delete_table-edit22, " +
 							"tr#delete_table-edit15").hide ();
 					}
 				}
@@ -1091,6 +1182,13 @@ $(document).ready (function () {
 				"tr#delete_table-edit12, " +
 				"tr#delete_table-edit13, " +
 				"tr#delete_table-edit14, " +
+				"tr#delete_table-edit16, " +
+				"tr#delete_table-edit17, " +
+				"tr#delete_table-edit18, " +
+				"tr#delete_table-edit19, " +
+				"tr#delete_table-edit20, " +
+				"tr#delete_table-edit21, " +
+				"tr#delete_table-edit22, " +
 				"tr#delete_table-edit15").hide ();
 			
 			jQuery.post ("ajax.php",
@@ -1183,6 +1281,56 @@ $(document).ready (function () {
 	
 });
 
+function changePluginSelect() {
+		if (flag_load_plugin_component) {
+			flag_load_plugin_component = false;
+			
+			return;
+		}
+		
+		load_plugin_description($("#id_plugin").val());
+		
+		load_plugin_macros_fields_massive('simple-macro');
+		
+		forced_title_callback();
+	}
+	
+	function load_plugin_macros_fields_massive(row_model_id) {
+		// Get plugin macros when selected and load macros fields
+		var id_plugin = $('#id_plugin').val();
+		
+		var params = [];
+		params.push("page=include/ajax/module");
+		params.push("get_plugin_macros=1");
+		params.push("id_plugin=" + id_plugin);
+		
+		jQuery.ajax ({
+			data: params.join ("&"),
+			type: 'POST',
+			url: action = get_php_value('absolute_homeurl') + "ajax.php",
+			dataType: 'json',
+			success: function (data) {
+				// Delete all the macro fields
+				$('.macro_field').remove();
+				
+				if (data['array'] != null) {
+					$('#hidden-macros').val(data['base64']);
+					
+					jQuery.each (data['array'], function (i, macro) {
+						console.log(macro);
+						if (macro['desc'] != '') {
+							$("#delete_table-edit21").after("<tr class='macro_field' id='delete_table-edit"+(80+parseInt(i))+"'><td style='font-weight:bold;'>"+macro['desc']+"<input type='hidden' name='desc"+macro['macro']+"' value='"+macro['desc']+"'></td><td><input type='text' name='"+macro['macro']+"'></td></tr>");
+						}
+					});
+					//Plugin text can be larger
+					$(".macro_field").find(":input").attr("maxlength", 1023);
+					// Add again the hover event to the 'force_callback' elements
+					forced_title_callback();
+				}
+			}
+		});
+	}
+
 function disabled_status () {
 	if($('#dynamic_interval_select').val() != 0){
 		$('#text-min_warning').prop('readonly', true);
@@ -1231,13 +1379,71 @@ function process_manage_edit ($module_name, $agents_select = null, $module_statu
 		'id_category', 'disabled_types_event', 'ip_target', "custom_ip_target",
 		'descripcion', 'min_ff_event_normal', 'min_ff_event_warning',
 		'min_ff_event_critical', 'each_ff', 'module_ff_interval',
-		'ff_timeout', 'max_timeout');
+		'ff_timeout', 'max_timeout','tcp_port','max_retries','tcp_rcv','id_plugin');
 	$values = array ();
 	
 	foreach ($fields as $field) {
 		$value = get_parameter ($field, '');
 		
 		switch ($field) {
+			case 'id_plugin':
+				if ($value != 0) {
+				
+				$value_field_1 = get_parameter ('_field1_', '');
+				$value_field_1_desc = get_parameter ('desc_field1_', '');
+				
+				$value_field_2 = get_parameter ('_field2_', '');
+				$value_field_2_desc = get_parameter ('desc_field2_', '');
+				
+				$value_field_3 = get_parameter ('_field3_', '');
+				$value_field_3_desc = get_parameter ('desc_field3_', '');
+				
+				$value_field_4 = get_parameter ('_field4_', '');
+				$value_field_4_desc = get_parameter ('desc_field4_', '');
+				
+				$value_field_5 = get_parameter ('_field5_', '');
+				$value_field_5_desc = get_parameter ('desc_field5_', '');
+				
+				$values['macros'] = '{"1":{"macro":"_field1_","desc":"'.io_safe_input($value_field_1_desc).'","help":"'.io_safe_input($value_field_1_desc).'","value":"'.$value_field_1.'"}';
+				
+				if($value_field_2_desc != ''){
+				 $values['macros'] .= ',"2":{"macro":"_field2_","desc":"'.io_safe_input($value_field_2_desc).'","help":"'.io_safe_input($value_field_2_desc).'","value":"'.$value_field_2.'"}';
+				 
+				 if($value_field_3_desc != ''){
+					$values['macros'] .= ',"3":{"macro":"_field3_","desc":"'.io_safe_input($value_field_3_desc).'","help":"'.io_safe_input($value_field_3_desc).'","value":"'.$value_field_3.'"}';
+					
+					if($value_field_4_desc != ''){
+					 $values['macros'] .= ',"4":{"macro":"_field4_","desc":"'.io_safe_input($value_field_4_desc).'","help":"'.io_safe_input($value_field_4_desc).'","value":"'.$value_field_4.'"}';
+					 
+					 if($value_field_5_desc != ''){
+	 				 $values['macros'] .= ',"5":{"macro":"_field5_","desc":"'.io_safe_input($value_field_5_desc).'","help":"'.io_safe_input($value_field_5_desc).'","value":"'.$value_field_5.'"}';
+		 				}
+		 				else{
+		 					$values['macros'] .= '}';
+		 				}
+					 
+					}
+					else{
+						$values['macros'] .= '}';
+					}
+					
+				 }
+				 else{
+					 $values['macros'] .= '}';
+				 }
+				 
+				}
+				else{
+					$values['macros'] .= '}';
+				}
+				
+			
+				
+			}
+				
+				
+				
+				break;
 			case 'module_interval':
 				if ($value != 0) {
 					$values[$field] = $value;
@@ -1349,6 +1555,7 @@ function process_manage_edit ($module_name, $agents_select = null, $module_statu
 	}
 	
 	foreach ($modules as $module) {
+		
 		$result = modules_update_agent_module(
 			$module['id_agente_modulo'], $values, true, $update_tags);
 

@@ -981,10 +981,19 @@ function users_check_users() {
 // user is admin or pandora manager and the group is all
 function users_can_manage_group_all($access = "PM") {
 	global $config;
+
+	$access = get_acl_column($access);
+
+	$sql = sprintf ('SELECT COUNT(*) FROM tusuario_perfil
+		INNER JOIN tperfil
+			ON tperfil.id_perfil = tusuario_perfil.id_perfil
+		WHERE tusuario_perfil.id_grupo=0
+			AND tusuario_perfil.id_usuario="%s"
+			AND %s=1
+		', $config['id_user'], $access
+	);
 	
-	$is_admin = db_get_value('is_admin', 'tusuario', 'id_user', $config['id_user']);
-	
-	if (check_acl ($config['id_user'], 0, $access, true) || $is_admin) {
+	if (users_is_admin($config['id_user']) || (int)db_get_value_sql($sql) !== 0) {
 		return true;
 	}
 	

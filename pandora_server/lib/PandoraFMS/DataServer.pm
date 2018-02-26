@@ -611,7 +611,7 @@ sub process_module_data ($$$$$$$$$$) {
 	            'unknown_instructions' => '', 'tags' => '', 'critical_inverse' => 0, 'warning_inverse' => 0, 'quiet' => 0,
 				'module_ff_interval' => 0, 'alert_template' => '', 'crontab' =>	'', 'min_ff_event_normal' => 0,
 				'min_ff_event_warning' => 0, 'min_ff_event_critical' => 0, 'ff_timeout' => 0, 'each_ff' => 0, 'module_parent' => 0,
-				'module_parent_unlink' => 0};
+				'module_parent_unlink' => 0, 'cron_interval' => 0};
 	
 	# Other tags will be saved here
 	$module_conf->{'extended_info'} = '';
@@ -644,8 +644,12 @@ sub process_module_data ($$$$$$$$$$) {
 	delete $module_conf->{'name'};
 	
 	# Calculate the module interval in seconds
-	$module_conf->{'module_interval'} = 1 unless defined ($module_conf->{'module_interval'});
-	$module_conf->{'module_interval'} *= $interval if (defined ($module_conf->{'module_interval'}));
+	if (defined($module_conf->{'cron_interval'})) {
+		$module_conf->{'module_interval'} = 1 unless defined ($module_conf->{'module_interval'});
+		$module_conf->{'module_interval'} *= $interval if (defined ($module_conf->{'module_interval'}));
+	} else {
+		$module_conf->{'module_interval'} = $module_conf->{'cron_interval'};
+	}
 	
 	# Allow , as a decimal separator
 	$module_conf->{'post_process'} =~ s/,/./ if (defined ($module_conf->{'post_process'}));

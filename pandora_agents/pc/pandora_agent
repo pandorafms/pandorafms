@@ -510,8 +510,6 @@ sub parse_conf_modules($) {
 			}
 		} elsif ($line =~ /^\s*module_crontab\s+(((\*|(\d+(-\d+){0,1}))\s*){5}).*$/) {
 			$module->{'cron'} = $1;
-		} elsif ($line =~ /^\s*module_cron_interval\s+(\d+).*$/) {
-			$module->{'cron_interval'} = $1;
 		} elsif ($line =~ /^\s*module_end\s*$/) {
 			next unless ($module->{'name'} ne '') and ($module->{'func'} != 0);
 

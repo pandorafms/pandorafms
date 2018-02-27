@@ -20,6 +20,7 @@ var TreeController = {
 			recipient: '',
 			tree: [],
 			emptyMessage: "No data found.",
+			foundMessage: "Found items",
 			errorMessage: "Error",
 			baseURL: "",
 			ajaxURL: "ajax.php",
@@ -683,6 +684,12 @@ var TreeController = {
 				}
 
 				controller.recipient.empty();
+				controller.recipient.html(
+					"<div> " +
+						controller.foundMessage +  ": " + controller.tree.length +
+					"</div>" +
+					"<br/>"
+				);
 
 				var $children = _processGroup(this.recipient, this.tree, true);
 				$children.show();
@@ -711,6 +718,9 @@ var TreeController = {
 				}
 				if (typeof data.emptyMessage !== 'undefined' && data.emptyMessage.length > 0) {
 					this.emptyMessage = data.emptyMessage;
+				}
+				if (typeof data.foundMessage !== 'undefined' && data.foundMessage.length > 0) {
+					this.foundMessage = data.foundMessage;
 				}
 				if (typeof data.errorMessage !== 'undefined' && data.errorMessage.length > 0) {
 					this.errorMessage = data.errorMessage;

@@ -46,30 +46,37 @@ $offset_simple = (int) get_parameter_get ("offset_simple", 0);
 $id_group = (int) get_parameter ("ag_group", 0); //0 is the All group (selects all groups)
 $free_search = get_parameter("free_search", '');
 
-$user_tag_array = array_values(array_keys(tags_get_user_tags($config['id_user'])));
-$user_tag = '';
+$user_tag_array = tags_get_user_tags($config['id_user'],'AR', true);
 
-foreach ($user_tag_array as $key => $value) {
-	if ($value === end($user_tag_array)) {
-		$user_tag .= $value;
-	 }
-	 else{
-		$user_tag .= $value.',';
-	 }
-}
+if ($user_tag_array) {
+	$user_tag_array = array_values(array_keys($user_tag_array));
+	
+	$user_tag = '';
 
-$tag_filter = get_parameter("tag_filter", $user_tag);
-
-$tag_param_validate = explode(',',$tag_filter);
-
-foreach ($tag_param_validate as $key => $value) {
-	if (!in_array($value,$user_tag_array)) {
-		db_pandora_audit("ACL Violation", 
-		"Trying to access Alert view");
-		require ("general/noaccess.php");
-		exit;
+	foreach ($user_tag_array as $key => $value) {
+		if ($value === end($user_tag_array)) {
+			$user_tag .= $value;
+		 }
+		 else{
+			$user_tag .= $value.',';
+		 }
 	}
 	
+	$tag_filter = get_parameter("tag_filter", $user_tag);
+	
+	$tag_param_validate = explode(',',$tag_filter);
+
+	foreach ($tag_param_validate as $key => $value) {
+		if (!in_array($value,$user_tag_array)) {
+			db_pandora_audit("ACL Violation", 
+			"Trying to access Alert view");
+			require ("general/noaccess.php");
+			exit;
+		}
+	}
+	
+} else {
+	$tag_filter = get_parameter("tag_filter", 0);
 }
 
 if ($tag_filter) {

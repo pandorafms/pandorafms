@@ -975,10 +975,11 @@ function tags_has_user_acl_tags($id_user = false) {
  * 
  * @param string ID of the user (with false the user will be taked from config)
  * @param string Access flag where check what tags have the user
+ * @param bool returns 0 if the user has all the tags
  * 
  * @return string SQL condition for tagente_module
  */
-function tags_get_user_tags($id_user = false, $access = 'AR') {
+function tags_get_user_tags($id_user = false, $access = 'AR', $return_tag_any = false) {
 	global $config;
 	
 	//users_is_strict_acl
@@ -1036,7 +1037,11 @@ function tags_get_user_tags($id_user = false, $access = 'AR') {
 			return array();
 		}
 		else {
-			return $all_tags;
+			if($return_tag_any) {
+				return 0;
+			} else {
+				return $all_tags;
+			}
 		}
 	}
 	

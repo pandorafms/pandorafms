@@ -1681,26 +1681,27 @@ function modules_get_last_value ($id_agentmodule) {
  * @return mixed The row of tagente_datos of the last period. False if there were no data.
  */
 function modules_get_previous_data ($id_agent_module, $utimestamp = 0, $string = 0) {
-	if (empty ($utimestamp))
+	if (empty ($utimestamp)){
 		$utimestamp = time ();
-	
+	}
+
 	if ($string == 1) {
 		$table = 'tagente_datos_string';
 	}
 	else {
 		$table = 'tagente_datos';
 	}
-	
+
 	$sql = sprintf ('SELECT *
 		FROM ' . $table . '
 		WHERE id_agente_modulo = %d
-			AND utimestamp <= %d 
-			AND utimestamp >= %d 
+			AND utimestamp <= %d
 		ORDER BY utimestamp DESC',
-		$id_agent_module, $utimestamp, $utimestamp - SECONDS_2DAY);
-	
-	$search_in_history_db = db_search_in_history_db($utimestamp);
+		$id_agent_module, $utimestamp,
+		$utimestamp - SECONDS_2DAY
+	);
 
+	$search_in_history_db = db_search_in_history_db($utimestamp);
 	return db_get_row_sql ($sql, $search_in_history_db);
 }
 
@@ -2318,7 +2319,7 @@ function modules_change_relation_lock ($id_relation) {
  */
 function modules_get_first_date($id_agent_module, $datelimit = 0) {
 	global $config;
-	
+
 	//check datatype string or normal
 	$table = "tagente_datos";
 	$module_type_str = modules_get_type_name ($id_agent_module);
@@ -2334,14 +2335,12 @@ function modules_get_first_date($id_agent_module, $datelimit = 0) {
 		$query  = " SELECT max(utimestamp) as utimestamp FROM $table ";
 		$query .= " WHERE id_agente_modulo=$id_agent_module ";
 		$query .= " AND utimestamp < $datelimit ";
-	
 	}
 	else {
 		// get first utimestamp
 		$query  = " SELECT min(utimestamp) as utimestamp FROM $table ";
 		$query .= " WHERE id_agente_modulo=$id_agent_module ";
 	}
-	
 
 	// SEARCH ACTIVE DB
 	$data = db_get_all_rows_sql($query,$search_historydb);

@@ -15,7 +15,7 @@
 class ModuleGraph {
 	private $correct_acl = false;
 	private $acl = "AR";
-	
+
 	private $id = 0;
 	private $id_agent = 0;
 	private $graph_type = "sparse";
@@ -31,14 +31,14 @@ class ModuleGraph {
 	private $unknown_graph = 1;
 	private $zoom = 1;
 	private $baseline = 0;
-	
+
 	private $module = null;
-	
+
 	function __construct() {
 		$system = System::getInstance();
-		
+
 		$this->start_date = date("Y-m-d");
-		
+
 		if ($system->checkACL($this->acl)) {
 			$this->correct_acl = true;
 		}
@@ -46,17 +46,17 @@ class ModuleGraph {
 			$this->correct_acl = false;
 		}
 	}
-	
+
 	private function getFilters() {
 		$system = System::getInstance();
-		
+
 		$this->id = (int)$system->getRequest('id', 0);
 		$this->id_agent = (int)$system->getRequest('id_agent', 0);
 		$this->module = modules_get_agentmodule($this->id);
 		$this->graph_type = return_graphtype($this->module["id_tipo_modulo"]);
-		
+
 		$period_hours = $system->getRequest('period_hours', false);
-		
+
 		if ($period_hours == false) {
 			$this->period = SECONDS_1DAY;
 		}
@@ -78,29 +78,29 @@ class ModuleGraph {
 		$this->unknown_graph = (int)$system->getRequest('unknown_graph', 0);
 		$this->zoom = (int)$system->getRequest('zoom', 1);
 		$this->baseline = (int)$system->getRequest('baseline', 0);
-		
+
 		$this->width = (int)$system->getRequest('width', 0);
 		$this->width -= 20; //Correct the width
 		$this->height = (int)$system->getRequest('height', 0);
-		
+
 		//Sancho says "put the height to 1/2 for to make more beautyful"
 		$this->height = $this->height / 1.5;
-		
+
 		$this->height -= 80; //Correct the height
-		
+
 		//For to avoid fucking IPHONES when they are in horizontal.
 		if ($this->height < 140) {
 			$this->height = 140;
 		}
-		
+
 	}
-	
+
 	public function ajax($parameter2 = false) {
-		
+
 		global $config;
-		
+
 		$system = System::getInstance();
-		
+
 		if (!$this->correct_acl) {
 			return;
 		}
@@ -110,23 +110,20 @@ class ModuleGraph {
 					$this->getFilters();
 					$correct = 0;
 					$graph = '';
-					
 					$correct = 1;
-					
 					$label = $this->module["nombre"];
 					$unit = db_get_value('unit', 'tagente_modulo',
 						'id_agente_modulo', $this->id);
-					
 					$utime = get_system_time ();
 					$current = date("Y-m-d", $utime);
-					
+
 					if ($this->start_date != $current)
 						$date = strtotime($this->start_date);
 					else
 						$date = $utime;
-					
+
 					$urlImage = ui_get_full_url(false);
-					
+
 					$time_compare = false;
 					if ($this->time_compare_separated) {
 						$time_compare = 'separated';
@@ -134,37 +131,10 @@ class ModuleGraph {
 					else if ($this->time_compare_overlapped) {
 						$time_compare = 'overlapped';
 					}
-					
+
 					ob_start();
 					switch ($this->graph_type) {
 						case 'boolean':
-							$graph = grafico_modulo_boolean (
-								$this->id,
-								$this->period,
-								$this->draw_events,
-								$this->width,
-								$this->height,
-								false,
-								$unit,
-								$this->draw_alerts,
-								$this->avg_only,
-								false,
-								$date,
-								false,
-								$urlImage,
-								'adapter_' . $this->graph_type,
-								$time_compare,
-								$this->unknown_graph, false);
-							if ($this->draw_events) {
-								$graph .= '<br>';
-								$graph .= graphic_module_events(
-									$this->id,
-									$this->width, $this->height,
-									$this->period, $config['homeurl'],
-									$this->zoom,
-									'adapted_' . $this->graph_type, $date);
-							}
-							break;
 						case 'sparse':
 							$graph = grafico_modulo_sparse(
 								$this->id,
@@ -223,38 +193,18 @@ class ModuleGraph {
 									$this->zoom, 'adapted_' . $this->graph_type, $date);
 							}
 							break;
-						case 'log4x':
-							$graph = grafico_modulo_log4x(
-								$this->id,
-								$this->period,
-								$this->draw_events,
-								$this->width,
-								$this->height,
-								false,
-								$unit_name,
-								$this->draw_alerts,
-								1,
-								$pure,
-								$date);
-							if ($this->draw_events) {
-								$graph .= '<br>';
-								$graph .= graphic_module_events($this->id,
-									$this->width, $this->height,
-									$this->period, $config['homeurl'], $this->zoom, '', $date);
-							}
-							break;
 						default:
 							$graph .= fs_error_image ('../images');
 							break;
 					}
 					$graph = ob_get_clean() . $graph;
-					
+
 					echo json_encode(array('correct' => $correct, 'graph' => $graph));
 					break;
 			}
 		}
 	}
-	
+
 	public function show() {
 		if (!$this->correct_acl) {
 			$this->show_fail_acl();
@@ -264,7 +214,7 @@ class ModuleGraph {
 			$this->showModuleGraph();
 		}
 	}
-	
+
 	private function show_fail_acl() {
 		$error['type'] = 'onStart';
 		$error['title_text'] = __('You don\'t have access to this page');
@@ -275,7 +225,7 @@ class ModuleGraph {
 			$home = new Home();
 		$home->show($error);
 	}
-	
+
 	private function javascript_code() {
 		ob_start();
 		?>
@@ -283,24 +233,24 @@ class ModuleGraph {
 			$(document).ready(function() {
 				function load_graph() {
 					$("#loading_graph").show();
-					
-					 var heigth = $(document).height()
+
+					var heigth = $(document).height()
 							- $(".ui-header").height()
 							- $(".ui-collapsible").height()
 							- 55;
 					var width = $(document).width() - 25;
 					ajax_get_graph($("#id_module").val(), heigth, width);
 				}
-				
+
 				load_graph();
-				
+
 				// Detect orientation change to refresh dinamic content
 				window.addEventListener("resize", function() {
 					// Reload dinamic content
 					load_graph();
 				});
 			});
-			
+
 			function ajax_get_graph(id, heigth_graph, width_graph) {
 				postvars = {};
 				postvars["action"] = "ajax";
@@ -308,20 +258,20 @@ class ModuleGraph {
 				postvars["parameter2"] = "get_graph";
 				postvars["width"] = width_graph;
 				postvars["height"] = heigth_graph;
-				
+
 				postvars["draw_alerts"] = ($("input[name = 'draw_alerts']").is(":checked"))?1:0;
 				postvars["draw_events"] = ($("input[name = 'draw_events']").is(":checked"))?1:0;
 				postvars["time_compare_separated"] = ($("input[name = 'time_compare_separated']").is(":checked"))?1:0;
 				postvars["time_compare_overlapped"] = ($("input[name = 'time_compare_overlapped']").is(":checked"))?1:0;
 				postvars["unknown_graph"] = ($("input[name = 'unknown_graph']").is(":checked"))?1:0;;
 				postvars["avg_only"] = ($("input[name = 'avg_only']").is(":checked"))?1:0;;
-				
+
 				postvars["period_hours"] = $("input[name = 'period_hours']").val();
 				postvars["zoom"] = $("input[name = 'zoom']").val();
 				postvars["start_date"] = $("input[name = 'start_date']").val();
-				
+
 				postvars["id"] = id;
-				
+
 				$.ajax ({
 					type: "POST",
 					url: "index.php",
@@ -348,17 +298,17 @@ class ModuleGraph {
 		</script>
 		<?php
 		$javascript_code = ob_get_clean();
-		
+
 		return $javascript_code;
 	}
-	
+
 	private function showModuleGraph() {
 		$agent_alias = agents_get_alias($this->module['id_agente']);
-		
+
 		$ui = Ui::getInstance();
-		
+
 		$ui->createPage();
-		
+
 		if ($this->id_agent) {
 			$ui->createDefaultHeader(
 				sprintf(__("PandoraFMS: %s"), $this->module["nombre"]),
@@ -394,7 +344,7 @@ class ModuleGraph {
 						'label' => __('Show Alerts')
 						);
 					$ui->formAddCheckbox($options);
-					
+
 					$options = array(
 						'name' => 'draw_events',
 						'value' => 1,
@@ -402,7 +352,7 @@ class ModuleGraph {
 						'label' => __('Show Events')
 						);
 					$ui->formAddCheckbox($options);
-					
+
 					$options = array(
 						'name' => 'time_compare_separated',
 						'value' => 1,
@@ -410,7 +360,7 @@ class ModuleGraph {
 						'label' => __('Time compare (Separated)')
 						);
 					$ui->formAddCheckbox($options);
-					
+
 					$options = array(
 						'name' => 'time_compare_overlapped',
 						'value' => 1,
@@ -418,7 +368,7 @@ class ModuleGraph {
 						'label' => __('Time compare (Overlapped)')
 						);
 					$ui->formAddCheckbox($options);
-					
+
 					$options = array(
 						'name' => 'unknown_graph',
 						'value' => 1,
@@ -426,7 +376,7 @@ class ModuleGraph {
 						'label' => __('Show unknown graph')
 						);
 					$ui->formAddCheckbox($options);
-					
+
 					$options = array(
 						'name' => 'avg_only',
 						'value' => 1,
@@ -434,7 +384,7 @@ class ModuleGraph {
 						'label' => __('Avg Only')
 						);
 					$ui->formAddCheckbox($options);
-					
+
 					$options = array(
 						'label' => __('Time range (hours)'),
 						'name' => 'period_hours',
@@ -444,22 +394,21 @@ class ModuleGraph {
 						'step' => 4
 						);
 					$ui->formAddSlider($options);
-					
-					
+
 					$options = array(
 						'name' => 'start_date',
 						'value' => $this->start_date,
 						'label' => __('Begin date')
 						);
 					$ui->formAddInpuDate($options);
-					
+
 					$options = array(
 						'icon' => 'refresh',
 						'icon_pos' => 'right',
 						'text' => __('Update graph')
 						);
 					$ui->formAddSubmitButton($options);
-					
+
 				$html = $ui->getEndForm();
 				$ui->contentCollapsibleAddItem($html);
 			$ui->contentEndCollapsible();

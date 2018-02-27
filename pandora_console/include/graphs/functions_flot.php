@@ -176,417 +176,19 @@ function flot_line_simple_graph($chart_data, $width, $height, $color,
 		$threshold_data);
 }
 
-function flot_area_graph($chart_data, $width, $height, $color, $legend,
-	$long_index, $homeurl, $unit, $type, $water_mark, $serie_types,
-	$chart_extra_data, $yellow_threshold, $red_threshold, $adapt_key,
-	$force_integer, $series_suffix_str = '', $menu = true,
-	$background_color = 'white', $dashboard = false, $vconsole = false, 
-	$agent_module_id = 0, $font = '', $font_size = 7, $xaxisname = '',
-	$percentil_values = array(), $threshold_data = array()) {
-	
-	global $config;
-	
-	include_javascript_dependencies_flot_graph();
-	
-	$menu = (int)$menu;
-	// Get a unique identifier to graph
-	$graph_id = uniqid('graph_');
-	
-	$background_style = '';
-	switch ($background_color) {
-		default:
-		case 'white':
-			$background_style = ' background: #fff; ';
-			break;
-		case 'black':
-			$background_style = ' background: #000; ';
-			break;
-		case 'transparent':
-			$background_style = '';
-			break;
-	}
-	
-	// Parent layer
-	$return = "<div class='parent_graph' style='width: " . ($width) . "px; " . $background_style . "'>";
-	// Set some containers to legend, graph, timestamp tooltip, etc.
-	$return .= "<p id='legend_$graph_id' class='legend_graph' style='font-size:$font_size"."pt !important;'></p>";
-	
-	if (!empty($threshold_data)) {
-		$yellow_up = $threshold_data['yellow_up'];
-		$red_up = $threshold_data['red_up'];
-		$yellow_inverse = $threshold_data['yellow_inverse'];
-		$red_inverse = $threshold_data['red_inverse'];
-	}
-	else {
-		// Get other required module datas to draw warning and critical
-		if ($agent_module_id == 0) {
-			$yellow_up = 0;
-			$red_up = 0;
-			$yellow_inverse = false;
-			$red_inverse = false;
-		} else {
-			$module_data = db_get_row_sql ('SELECT * FROM tagente_modulo WHERE id_agente_modulo = ' . $agent_module_id);
-			$yellow_up = $module_data['max_warning'];
-			$red_up = $module_data['max_critical'];
-			$yellow_inverse = !($module_data['warning_inverse'] == 0);
-			$red_inverse = !($module_data['critical_inverse'] == 0);
-		}
-	}
-	
-	if ($menu) {
-		$threshold = false;
-		if ($yellow_threshold != $yellow_up || $red_threshold != $red_up) {
-			$threshold = true;
-		}
-		
-		$nbuttons = 3;
-		
-		if ($threshold) {
-			$nbuttons++;
-		}
-		$menu_width = 25 * $nbuttons + 15;
-		if ( $dashboard == false AND $vconsole == false) {
-			$return .= "<div id='geneal_menu_$graph_id' class='menu_graph' style='
-							width: 30px;
-							height: 250px;
-							left: " . $width . "px;
-							position: absolute;
-							top: 0px;
-							background-color: white;'>";
-			$return .= "<div id='menu_$graph_id' " .
-				"style='display: none; " .
-					"text-align: center;" .
-					"position: relative;".
-					"border-bottom: 0px;'>
-				<a href='javascript:'><img id='menu_cancelzoom_$graph_id' src='".$homeurl."images/zoom_cross_grey.disabled.png' alt='".__('Cancel zoom')."' title='".__('Cancel zoom')."'></a>";
-			if ($threshold) {
-				$return .= " <a href='javascript:'><img id='menu_threshold_$graph_id' src='".$homeurl."images/chart_curve_threshold.png' alt='".__('Warning and Critical thresholds')."' title='".__('Warning and Critical thresholds')."'></a>";
-			}
-			$return .= " <a href='javascript:'>
-				<img id='menu_overview_$graph_id' class='menu_overview' src='" . $homeurl . "images/chart_curve_overview.png' alt='" . __('Overview graph') . "' title='".__('Overview graph')."'></a>";
-			
-			// Export buttons
-			$return .= " <a href='javascript:'><img id='menu_export_csv_$graph_id' src='".$homeurl."images/csv_grey.png' alt='".__('Export to CSV')."' title='".__('Export to CSV')."'></a>";
-			// Button disabled. This feature works, but seems that is not useful enough to the final users.
-			//$return .= " <a href='javascript:'><img id='menu_export_json_$graph_id' src='".$homeurl."images/json.png' alt='".__('Export to JSON')."' title='".__('Export to JSON')."'></a>";
-			
-			$return .= "</div>";
-			$return .= "</div>";
-		}
-
-		if ($dashboard) {
-			$return .= "<div id='geneal_menu_$graph_id' class='menu_graph' style='
-							width: 30px;
-							height: 250px;
-							left: " . $width . "px;
-							position: absolute;
-							top: 0px;
-							background-color: white;'>";
-
-			$return .= "<div id='menu_$graph_id' " .
-				"style='display: none; " .
-					"text-align: center;" .
-					"position: relative;".
-					"border-bottom: 0px;'>
-				<a href='javascript:'><img id='menu_cancelzoom_$graph_id' src='".$homeurl."images/zoom_cross_grey.disabled.png' alt='".__('Cancel zoom')."' title='".__('Cancel zoom')."'></a>";
-		
-			$return .= "</div>";
-			$return .= "</div>";
-		}
-	}
-
-	$return .= html_print_input_hidden('line_width_graph', $config['custom_graph_width'], true);
-	$return .= "<div id='timestamp_$graph_id' class='timestamp_graph' style='font-size:".$font_size."pt;display:none; position:absolute; background:#fff; border: solid 1px #aaa; padding: 2px; z-index:1000;'></div>";
-	$return .= "<div id='$graph_id' class='";
-	if($type=='area_simple'){$return .= "noresizevc ";}
-	$return .= "graph $adapt_key' style='width: ".$width."px; height: ".$height."px;'></div>";
-	if ($menu) {
-		$height = 100;
-	}
-	else {
-		$height = 1;
-	}
-	if (!$vconsole)
-		$return .= "<div id='overview_$graph_id' class='overview_graph' style='display: none; margin-left:0px; margin-top:20px; margin-bottom:50px; width: ".$width."px; height: ".$height ."px;'></div>";
-	
-	if ($water_mark != '') {
-		$return .= "<div id='watermark_$graph_id' style='display:none; position:absolute;'><img id='watermark_image_$graph_id' src='$water_mark'></div>";
-		$watermark = 'true';
-	}
-	else {
-		$watermark = 'false';
-	}
-	
-	// Set a weird separator to serialize and unserialize passing data from php to javascript
-	$separator = ';;::;;';
-	$separator2 = ':,:,,,:,:';
-	
-	// Transform data from our format to library format
-	$legend2 = array();
-	$labels = array();
-	$a = array();
-	$vars = array();
-	$serie_types2 = array();
-	
-	$colors = array();
-	
-	$index = array_keys(reset($chart_data));
-	foreach ($index as $serie_key) {
-		if (isset($color[$serie_key])) {
-			$colors[] = $color[$serie_key]['color'];
-		}
-		else {
-			$colors[] = '';
-		}
-	}
-	foreach ($chart_data as $label => $values) {
-		$labels[] = $label;
-		
-		foreach($values as $key => $value) {
-			$jsvar = "data_" . $graph_id . "_" . $key;
-			
-			
-			if (!isset($serie_types[$key])) {
-				switch ($type) {
-					case 'line_simple':
-					case 'line_stacked':
-						$serie_types2[$jsvar] = 'line';
-						break;
-					case 'area_simple':
-					case 'area_stacked':
-					default:
-						$serie_types2[$jsvar] = 'area';
-						break;
-				}
-			}
-			else {
-				$serie_types2[$jsvar] = $serie_types[$key];
-			}
-			
-			
-			if ($serie_types2[$jsvar] == 'points' && $value == 0) {
-				$data[$jsvar][] = 'null';
-			}
-			else {
-				$data[$jsvar][] = $value;
-			}
-			
-			if (!isset($legend[$key])) {
-				$legend2[$jsvar] = 'null';
-			}
-			else {
-				$legend2[$jsvar] = $legend[$key];
-			}
-		}
-	}
-
-	if (!empty($percentil_values)) {
-		foreach($percentil_values as $key => $value) {
-			$jsvar = "percentil_" . $graph_id . "_" . $key;
-			$serie_types2[$jsvar] = 'line';
-			$data[$jsvar] = $value;
-		}
-	}
-	
-	// Store data series in javascript format
-	$jsvars = '';
-	$jsseries = array();
-	$values2 = array();
-	$i = 0;
-	$max_x = 0;
-	foreach ($data as $jsvar => $values) {
-		$n_values = count($values);
-		if ($n_values > $max_x) {
-			$max_x = $n_values;
-		}
-		
-		$values2[] = implode($separator,$values);
-		$i ++;
-	}
-	
-	$values = implode($separator2, $values2);
-	
-	// Max is "n-1" because start with 0 
-	$max_x--;
-	
-	$extra_width = (int)($width / 3);
-	
-	$return .= "<div id='extra_$graph_id' style='font-size: " . $font_size . "pt; display:none; position:absolute; overflow: auto; max-height: ".($height+50)."px; width: ".$extra_width."px; background:#fff; padding: 2px 2px 2px 2px; border: solid #000 1px;'></div>";
-	
-	// Process extra data
-	$events = array();
-	$event_ids = array();
-	$alerts = array();
-	$alert_ids = array();
-	$legend_events = '';
-	$legend_alerts = '';
-	
-	if (empty($chart_extra_data)) {
-		$chart_extra_data = array();
-	}
-	
-	foreach ($chart_extra_data as $i => $data) {
-		switch ($i) {
-			case 'legend_alerts':
-				$legend_alerts = $data;
-				break;
-			case 'legend_events':
-				$legend_events = $data;
-				break;
-			default:
-				if (isset($data['events'])) {
-					$event_ids[] = $i;
-					$events[$i] = $data['events'];
-				}
-				if (isset($data['alerts'])) {
-					$alert_ids[] = $i;
-					$alerts[$i] = $data['alerts'];
-				}
-				break;
-		}
-	}
-	
-	// Store serialized data to use it from javascript
-	$events = implode($separator,$events);
-	$event_ids = implode($separator,$event_ids);
-	$alerts = implode($separator,$alerts);
-	$alert_ids = implode($separator,$alert_ids);
-	$labels = implode($separator,$labels);
-	if (!empty($long_index)) {
-		$labels_long = implode($separator, $long_index);
-	}
-	else {
-		$labels_long = $labels;
-	}
-	if (!empty($legend)) {
-		$legend = io_safe_output(implode($separator, $legend));
-	}
-	$serie_types  = implode($separator, $serie_types2);
-	$colors  = implode($separator, $colors);
-	
-	// transform into string to pass to javascript
-	if ($force_integer) {
-		$force_integer = 'true';
-	}
-	else {
-		$force_integer = 'false';
-	}
-	
-	//modify internal grid lines and legend text color
-	
-	if(substr($background_style, -6, 4) == '#fff'){
-		$background_color = "#eee";
-		$legend_color = "#151515";
-		
-	}
-	else if(substr($background_style, -6, 4) == '#000'){
-		$background_color = "#151515";
-		$legend_color = "#BDBDBD";
-	}
-	else{
-		$background_color = "#A4A4A4";
-		$legend_color = "#A4A4A4";
-	}
-	
-	// Trick to get translated string from javascript
-	$return .= html_print_input_hidden('unknown_text', __('Unknown'),
-		true);
-
-	if (!isset($config["short_module_graph_data"]))
-		$config["short_module_graph_data"] = true;
-	
-	if ($config["short_module_graph_data"]) {
-		$short_data = true;
-	}
-	else {
-		$short_data = false;
-	}
-	
-	//html_debug_print($values);
-	// Javascript code
-	$return .= "<script type='text/javascript'>";
-	$return .= "$(document).ready( function () {";
-	$return .= "pandoraFlotArea(" .
-		"'$graph_id', \n" .
-		"'$values', \n" .
-		"'$labels', \n" .
-		"'$labels_long', \n" .
-		"'$legend', \n" .
-		"'$colors', \n" .
-		"'$type', \n" .
-		"'$serie_types', \n" .
-		"$watermark, \n" .
-		"$width, \n" .
-		"$max_x, \n" .
-		"'$homeurl', \n" .
-		"'$unit', \n" .
-		"$font_size, \n" .
-		"'$font', \n" .
-		"$menu, \n" .
-		"'$events', \n" .
-		"'$event_ids', \n" .
-		"'$legend_events', \n" .
-		"'$alerts', \n" .
-		"'$alert_ids', \n" .
-		"'$legend_alerts', \n" .
-		"'$yellow_threshold', \n" .
-		"'$red_threshold', \n" .
-		"$force_integer, \n" .
-		"'$separator', \n" .
-		"'$separator2', \n" .
-		"'$yellow_up', \n" .
-		"'$red_up', \n" .
-		"'$yellow_inverse', \n" .
-		"'$red_inverse', \n" .
-		"'$series_suffix_str',
-		" . json_encode($dashboard) . ",\n
-		" . json_encode($vconsole) . ",\n" .
-		"'$xaxisname', \n" .
-		"'$background_color', \n" .
-		"'$legend_color', \n" .
-		"'$short_data'
-	);";
-	$return .= "});";
-	$return .= "</script>";
-	
-	// Parent layer
-	$return .= "</div>";
-	
-	return $return;
-}
-
-
-
-
-
-
-
-function flot_area_graph_new (
+function flot_area_graph (
 	$agent_module_id, $array_data, $color,
 	$legend, $series_type, $date_array,
 	$data_module_graph, $show_elements_graph,
 	$format_graph, $water_mark, $series_suffix_str ) {
-	
+
 	global $config;
-	
+
 	include_javascript_dependencies_flot_graph();
 
 	// Get a unique identifier to graph
 	$graph_id = uniqid('graph_');
-	
 
-	//html_debug_print($agent_module_id);
-	//html_debug_print($array_data);
-	//html_debug_print($color);
-	//html_debug_print($legend);
-	//html_debug_print($series_type);
-	//html_debug_print($date_array);
-
-/*	
-	html_debug_print($water_mark);
-	html_debug_print($series_suffix_str);
-*/
-	//html_debug_print($series_suffix_str);
 	$background_style = '';
 	switch ($format_graph['background']) {
 		default:
@@ -600,64 +202,53 @@ function flot_area_graph_new (
 			$background_style = '';
 			break;
 	}
-		
+
 	// Parent layer
 	$return = "<div class='parent_graph' style='width: " . ($format_graph['width']) . "px; " . $background_style . "'>";
 	// Set some containers to legend, graph, timestamp tooltip, etc.
 	$return .= "<p id='legend_$graph_id' class='legend_graph' style='font-size:" . $format_graph['font_size'] ."pt !important;'></p>";
-	
-	/*
-	if (!empty($threshold_data)) {
-		$yellow_up = $threshold_data['yellow_up'];
-		$red_up = $threshold_data['red_up'];
-		$yellow_inverse = $threshold_data['yellow_inverse'];
-		$red_inverse = $threshold_data['red_inverse'];
-	}
-	else {
-	*/
 
-		$yellow_threshold = $data_module_graph['w_min'];
-		$red_threshold = $data_module_graph['c_min'];
-		// Get other required module datas to draw warning and critical
-		if ($agent_module_id == 0) {
-			$yellow_up = 0;
-			$red_up = 0;
-			$yellow_inverse = false;
-			$red_inverse = false;
-		} else {
-			$yellow_up = $data_module_graph['w_max'];
-			$red_up = $data_module_graph['c_max'];
-			$yellow_inverse = !($data_module_graph['w_inv'] == 0);
-			$red_inverse = !($data_module_graph['c_inv'] == 0);
-		}
-	//}
-	
+	$yellow_threshold = $data_module_graph['w_min'];
+	$red_threshold = $data_module_graph['c_min'];
+	// Get other required module datas to draw warning and critical
+	if ($agent_module_id == 0) {
+		$yellow_up = 0;
+		$red_up = 0;
+		$yellow_inverse = false;
+		$red_inverse = false;
+	} else {
+		$yellow_up = $data_module_graph['w_max'];
+		$red_up = $data_module_graph['c_max'];
+		$yellow_inverse = !($data_module_graph['w_inv'] == 0);
+		$red_inverse = !($data_module_graph['c_inv'] == 0);
+	}
+
 	if ($show_elements_graph['menu']) {
 		$return .= menu_graph(
-			$yellow_threshold, $red_threshold, 
-			$yellow_up, $red_up, $yellow_inverse, 
-			$red_inverse, $show_elements_graph['dashboard'], 
-			$show_elements_graph['vconsole'], 
-			$graph_id, $format_graph['width'], 
+			$yellow_threshold, $red_threshold,
+			$yellow_up, $red_up, $yellow_inverse,
+			$red_inverse, $show_elements_graph['dashboard'],
+			$show_elements_graph['vconsole'],
+			$graph_id, $format_graph['width'],
 			$format_graph['homeurl']
 		);
 	}
 
 	$return .= html_print_input_hidden('line_width_graph', $config['custom_graph_width'], true);
-	$return .= "<div id='timestamp_$graph_id' 
-					class='timestamp_graph' 
+	$return .= "<div id='timestamp_$graph_id'
+					class='timestamp_graph'
 					style='	font-size:".$format_graph['font_size']."pt;
-							display:none; position:absolute; 
-							background:#fff; border: solid 1px #aaa; 
+							display:none; position:absolute;
+							background:#fff; border: solid 1px #aaa;
 							padding: 2px; z-index:1000;'></div>";
 	$return .= "<div id='$graph_id' class='";
 
 	if($format_graph['type'] == 'area_simple'){
 		$return .= "noresizevc ";
 	}
-	
-	$return .= "graph" .$format_graph['adapt_key'] ."' 
-				style='	width: ".$format_graph['width']."px; 
+
+	$return .= "graph" .$format_graph['adapt_key'] ."'
+				style='	width: ".$format_graph['width']."px;
 						height: ".$format_graph['height']."px;'></div>";
 
 	if ($show_elements_graph['menu']) {
@@ -668,11 +259,11 @@ function flot_area_graph_new (
 	}
 
 	if (!$vconsole){
-		$return .= "<div 	id='overview_$graph_id' 
-							class='overview_graph' 
-							style='	display: none; margin-left:0px; 
-									margin-top:20px; margin-bottom:50px; 
-									width: ".$format_graph['width']."px; 
+		$return .= "<div 	id='overview_$graph_id'
+							class='overview_graph'
+							style='	display: none; margin-left:0px;
+									margin-top:20px; margin-bottom:50px;
+									width: ".$format_graph['width']."px;
 									height: ".$format_graph['height'] ."px;'></div>";
 	}
 	//XXXXTODO
@@ -684,23 +275,21 @@ function flot_area_graph_new (
 	else {
 		$watermark = 'false';
 	}
-	
 
 	foreach($series_type as $k => $v){
-		$series_type_unique["data_" . $graph_id . "_" . $k] = $v; 
-	}	
+		$series_type_unique["data_" . $graph_id . "_" . $k] = $v;
+	}
 
-	
 	// Store data series in javascript format
 	$extra_width = (int)($format_graph['width'] / 3);
-	$return .= "<div id='extra_$graph_id' 
-					style='font-size: " . $format_graph['font_size'] . "pt; 
-					display:none; position:absolute; overflow: auto; 
-					max-height: ".($format_graph['height']+50)."px; 
-					width: ".$extra_width."px; 
-					background:#fff; padding: 2px 2px 2px 2px; 
+	$return .= "<div id='extra_$graph_id'
+					style='font-size: " . $format_graph['font_size'] . "pt;
+					display:none; position:absolute; overflow: auto;
+					max-height: ".($format_graph['height']+50)."px;
+					width: ".$extra_width."px;
+					background:#fff; padding: 2px 2px 2px 2px;
 					border: solid #000 1px;'></div>";
-		
+
 	if(substr($background_style, -6, 4) == '#fff'){
 		$background_color = "#eee";
 		$legend_color = "#151515";
@@ -716,32 +305,32 @@ function flot_area_graph_new (
 
 	//XXXX force_integer TODO
 	$force_integer = 0;
-	
+
 	// Trick to get translated string from javascript
 	$return .= html_print_input_hidden('unknown_text', __('Unknown'), true);
 
 	if (!isset($config["short_module_graph_data"]))
 		$config["short_module_graph_data"] = true;
-	
+
 	if ($config["short_module_graph_data"]) {
 		$short_data = true;
 	}
 	else {
 		$short_data = false;
 	}
-	
+
 	$values              = json_encode($array_data);
 	$legend              = json_encode($legend);
 	$series_type         = json_encode($series_type);
 	$date_array          = json_encode($date_array);
-	$data_module_graph   = json_encode($data_module_graph); 
+	$data_module_graph   = json_encode($data_module_graph);
 	$show_elements_graph = json_encode($show_elements_graph);
 	$format_graph        = json_encode($format_graph);
 
 	// Javascript code
 	$return .= "<script type='text/javascript'>";
 	$return .= "$(document).ready( function () {";
-	$return .= "pandoraFlotAreaNew(" .
+	$return .= "pandoraFlotArea(" .
 		"'$graph_id', \n" .
 		"JSON.parse('$values'), \n" .
 		"JSON.parse('$legend'), \n" .
@@ -760,23 +349,17 @@ function flot_area_graph_new (
 	);";
 	$return .= "});";
 	$return .= "</script>";
-	
+
 	// Parent layer
 	$return .= "</div>";
-	
+
 	return $return;
 }
 
-
-
-
-
-
-
 function menu_graph(
-	$yellow_threshold, $red_threshold, 
-	$yellow_up, $red_up, $yellow_inverse, 
-	$red_inverse, $dashboard, $vconsole, 
+	$yellow_threshold, $red_threshold,
+	$yellow_up, $red_up, $yellow_inverse,
+	$red_inverse, $dashboard, $vconsole,
 	$graph_id, $width, $homeurl
 ){
 	$return = '';
@@ -784,9 +367,9 @@ function menu_graph(
 	if ($yellow_threshold != $yellow_up || $red_threshold != $red_up) {
 		$threshold = true;
 	}
-	
+
 	$nbuttons = 3;
-	
+
 	if ($threshold) {
 		$nbuttons++;
 	}
@@ -810,12 +393,12 @@ function menu_graph(
 		}
 		$return .= " <a href='javascript:'>
 			<img id='menu_overview_$graph_id' class='menu_overview' src='" . $homeurl . "images/chart_curve_overview.png' alt='" . __('Overview graph') . "' title='".__('Overview graph')."'></a>";
-		
+
 		// Export buttons
 		$return .= " <a href='javascript:'><img id='menu_export_csv_$graph_id' src='".$homeurl."images/csv_grey.png' alt='".__('Export to CSV')."' title='".__('Export to CSV')."'></a>";
 		// Button disabled. This feature works, but seems that is not useful enough to the final users.
 		//$return .= " <a href='javascript:'><img id='menu_export_json_$graph_id' src='".$homeurl."images/json.png' alt='".__('Export to JSON')."' title='".__('Export to JSON')."'></a>";
-		
+
 		$return .= "</div>";
 		$return .= "</div>";
 	}
@@ -835,34 +418,12 @@ function menu_graph(
 				"position: relative;".
 				"border-bottom: 0px;'>
 			<a href='javascript:'><img id='menu_cancelzoom_$graph_id' src='".$homeurl."images/zoom_cross_grey.disabled.png' alt='".__('Cancel zoom')."' title='".__('Cancel zoom')."'></a>";
-	
+
 		$return .= "</div>";
 		$return .= "</div>";
 	}
 	return $return;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ///////////////////////////////
 ///////////////////////////////

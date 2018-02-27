@@ -2766,12 +2766,12 @@ function register_pass_change_try ($id_user, $success) {
 }
 
 function isJson($string) {
- json_decode($string);
- return (json_last_error() == JSON_ERROR_NONE);
+	json_decode($string);
+	return (json_last_error() == JSON_ERROR_NONE);
 }
 
 /**
- * returns true or false if it is a valid ip 
+ * returns true or false if it is a valid ip
  * checking ipv4 and ipv6 or resolves the name dns
  * @param string address
  *
@@ -2804,7 +2804,7 @@ function color_graph_array($series_suffix, $compare = false){
 					'color' => '#ff0000',
 					'alpha' => CHART_DEFAULT_ALPHA
 			);
-		
+
 		$color['alert' . $series_suffix] =
 			array(	'border' => '#ff7f00',
 					'color' => '#ff7f00',
@@ -2816,25 +2816,25 @@ function color_graph_array($series_suffix, $compare = false){
 					'color' => '#999999',
 					'alpha' => CHART_DEFAULT_ALPHA
 			);
-		
+
 		$color['no_data'.$series_suffix] =
 			array(	'border' => '#000000',
 					'color' => '#f2c40e',
 					'alpha' => CHART_DEFAULT_ALPHA
 				);
-		
+
 		$color['max'.$series_suffix] =
 			array(	'border' => '#000000',
 					'color' => $config['graph_color3'],
 					'alpha' => CHART_DEFAULT_ALPHA
 				);
-		
+
 		$color['sum'.$series_suffix] =
 			array(	'border' => '#000000',
 					'color' => $config['graph_color2'],
 					'alpha' => CHART_DEFAULT_ALPHA
 				);
-		
+
 		$color['min'.$series_suffix] =
 			array(	'border' => '#000000',
 					'color' => $config['graph_color1'],
@@ -2846,7 +2846,7 @@ function color_graph_array($series_suffix, $compare = false){
 					'color' => '#0097BC',
 					'alpha' => 10
 				);
-		
+
 		$color['percentil'.$series_suffix] =
 			array(	'border' => '#000000',
 					'color' => '#0097BC',
@@ -2859,7 +2859,7 @@ function color_graph_array($series_suffix, $compare = false){
 					'color' => '#ff66cc',
 					'alpha' => CHART_DEFAULT_ALPHA
 			);
-		
+
 		$color['alert' . $series_suffix] =
 			array(	'border' => '#ffff00',
 					'color' => '#ffff00',
@@ -2871,25 +2871,25 @@ function color_graph_array($series_suffix, $compare = false){
 					'color' => '#E1E1E1',
 					'alpha' => CHART_DEFAULT_ALPHA
 			);
-		
+
 		$color['no_data'.$series_suffix] =
 			array(	'border' => '#000000',
 					'color' => '#f2c40e',
 					'alpha' => CHART_DEFAULT_ALPHA
 				);
-		
+
 		$color['max'.$series_suffix] =
 			array(	'border' => '#000000',
 					'color' => $config['graph_color3'],
 					'alpha' => CHART_DEFAULT_ALPHA
 				);
-		
+
 		$color['sum'.$series_suffix] =
 			array(	'border' => '#000000',
-					'color' => '#99ffff',
+					'color' => '#b781c1',
 					'alpha' => CHART_DEFAULT_ALPHA
 				);
-		
+
 		$color['min'.$series_suffix] =
 			array(	'border' => '#000000',
 					'color' => $config['graph_color1'],
@@ -2901,15 +2901,15 @@ function color_graph_array($series_suffix, $compare = false){
 					'color' => '#0097BC',
 					'alpha' => 10
 				);
-		
+
 		$color['percentil'.$series_suffix] =
 			array(	'border' => '#000000',
 					'color' => '#003333',
 					'alpha' => CHART_DEFAULT_ALPHA
 				);
-	
+
 	}
-	
+
 	return $color;
 }
 
@@ -2921,28 +2921,28 @@ function legend_graph_array(
 	$show_elements_graph,
 	$percentil_value,
 	$data_module_graph){
-	
+
 	global $config;
 	global $legend;
 	$unit = $format_graph['unit'];
 
-	$legend['sum'.$series_suffix] = 
+	$legend['sum'.$series_suffix] =
 		$data_module_graph['module_name'] . ' ' .
 		__('Min:') . remove_right_zeros(
 			number_format(
-				$min, 
+				$min,
 				$config['graph_precision']
 			)
-		)  . ' ' . 
+		)  . ' ' .
 		__('Max:') . remove_right_zeros(
 			number_format(
-				$max, 
+				$max,
 				$config['graph_precision']
 			)
-		) . ' ' . 
+		) . ' ' .
 		_('Avg:') . remove_right_zeros(
 			number_format(
-				$max, 
+				$max,
 				$config['graph_precision']
 			)
 		) . ' ' . $series_suffix_str;
@@ -2957,10 +2957,10 @@ function legend_graph_array(
 		$legend['alert'.$series_suffix]     = __('Alert') . ' ' . $series_suffix_str;
 	}
 	if($show_elements_graph['percentil']){
-		$legend['percentil'.$series_suffix] = __('Percentil') . ' Value: ' . 
+		$legend['percentil'.$series_suffix] = __('Percentil') . ' Value: ' .
 		remove_right_zeros(
 			number_format(
-				$percentil_value, 
+				$percentil_value,
 				$config['graph_precision']
 			)
 		) . ' ' . $series_suffix_str;

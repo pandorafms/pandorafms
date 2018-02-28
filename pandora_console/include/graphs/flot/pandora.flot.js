@@ -1144,6 +1144,7 @@ function pandoraFlotArea(
 	var dashboard = show_elements_graph.dashboard;
 	var menu      = show_elements_graph.menu;
 	var max_x     = date_array['final_date'] *1000;
+	var s_suffix  = data_module_graph['series_suffix'];
 
 	//for threshold
 	var threshold        = true;
@@ -1192,11 +1193,18 @@ function pandoraFlotArea(
 	i=0;
 	$.each(values, function (index, value) {
 		if (typeof value.data !== "undefined") {
-			if(index == 'alert') {
+			console.log(index);
+			console.log(s_suffix);
+			if(index == 'alert' + s_suffix) {
+				console.log('entra');
 				fill_color = '#ffff00';
 			}
-			else if(index == 'events') {
+			else if(index == 'event' + s_suffix) {
+				console.log('entra2');
 				fill_color = '#ff66cc';
+			}
+			else{
+				fill_color = '';
 			}
 			switch (series_type[index]) {
 				case 'area':
@@ -1205,7 +1213,7 @@ function pandoraFlotArea(
 					filled      = 0.2;
 					steps_chart = false;
 					radius      = false;
-					fill_points = '';
+					fill_points = fill_color;
 					break;
 				case 'percentil':
 				case 'line':
@@ -1215,7 +1223,7 @@ function pandoraFlotArea(
 					filled      = false;
 					steps_chart = false;
 					radius      = false;
-					fill_points = '';
+					fill_points = fill_color;
 					break;
 				case 'points':
 					line_show   = false;
@@ -1232,7 +1240,7 @@ function pandoraFlotArea(
 					filled      = true;
 					steps_chart = true;
 					radius      = false;
-					fill_points = '';
+					fill_points = fill_color;
 					break;
 			}
 			data_base.push({

@@ -583,6 +583,8 @@ function grafico_modulo_sparse_data(
 	$series_type['percentil' . $series_suffix] = 'percentil';
 
 	$array_events_alerts[$series_suffix] = $events;
+
+	$data_module_graph['series_suffix'] = $series_suffix;
 }
 
 function grafico_modulo_sparse ($agent_module_id, $period, $show_events,

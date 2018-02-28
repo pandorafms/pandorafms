@@ -206,7 +206,8 @@ function area_graph(
 	$agent_module_id, $array_data, $color,
 	$legend, $series_type, $date_array,
 	$data_module_graph, $show_elements_graph,
-	$format_graph, $water_mark, $series_suffix_str
+	$format_graph, $water_mark, $series_suffix_str,
+	$array_events_alerts
 ) {
 	global $config;
 
@@ -224,7 +225,8 @@ function area_graph(
 			$show_elements_graph,
 			$format_graph,
 			$water_mark,
-			$series_suffix_str
+			$series_suffix_str,
+			$array_events_alerts
 		);
 	}
 	else {

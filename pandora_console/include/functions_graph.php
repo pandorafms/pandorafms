@@ -359,6 +359,7 @@ function grafico_modulo_sparse_data(
 	global $color;
 	global $legend;
 	global $series_type;
+	global $array_events_alerts;
 
 	if($show_elements_graph['fullscale']){
 		$array_data = fullscale_data(
@@ -483,25 +484,39 @@ function grafico_modulo_sparse_data(
 			$events_array = array();
 
 			if($events && is_array($events)){
-				$i=0;
+				$count_events=0;
+				$count_alerts=0;
 				foreach ($events as $k => $v) {
 					if (strpos($v["event_type"], "alert") !== false){
 						if($show_elements_graph['flag_overlapped']){
-							$alerts_array['data'][$i] = array( ($v['utimestamp'] + $date_array['period'] *1000) , $max * 1.10);
+							$alerts_array['data'][$count_alerts] = array(
+								($v['utimestamp'] + $date_array['period'] *1000),
+								$max * 1.10
+							);
 						}
 						else{
-							$alerts_array['data'][$i] = array( ($v['utimestamp']*1000) , $max * 1.10);
+							$alerts_array['data'][$count_alerts] = array(
+								($v['utimestamp']*1000),
+								$max * 1.10
+							);
 						}
+						$count_alerts++;
 					}
 					else{
 						if($show_elements_graph['flag_overlapped']){
-							$events_array['data'][$i] = array( ($v['utimestamp'] + $date_array['period'] *1000) , $max * 1.2);
+							$events_array['data'][$count_events] = array(
+								($v['utimestamp'] + $date_array['period'] *1000),
+								$max * 1.2
+							);
 						}
 						else{
-							$events_array['data'][$i] = array( ($v['utimestamp']*1000) , $max * 1.2);
+							$events_array['data'][$count_events] = array(
+								($v['utimestamp']*1000),
+								$max * 1.2
+							);
 						}
+						$count_events++;
 					}
-					$i++;
 				}
 			}
 		}
@@ -532,9 +547,10 @@ function grafico_modulo_sparse_data(
 		$caption = array();
 	}
 
-	//XXX
-	//$graph_stats = get_statwin_graph_statistics($chart, $series_suffix);
-	$color = color_graph_array($series_suffix, $show_elements_graph['flag_overlapped']);
+	$color = color_graph_array(
+		$series_suffix,
+		$show_elements_graph['flag_overlapped']
+	);
 
 	foreach ($color as $k => $v) {
 		if(is_array($array_data[$k])){
@@ -565,6 +581,8 @@ function grafico_modulo_sparse_data(
 			break;
 	}
 	$series_type['percentil' . $series_suffix] = 'percentil';
+
+	$array_events_alerts[$series_suffix] = $events;
 }
 
 function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
@@ -585,12 +603,15 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	global $color;
 	global $legend;
 	global $series_type;
+	global $array_events_alerts;
 
-	$array_data = array();
-	$caption = array();
-	$color = array();
-	$legend = array();
-	$series_type = array();
+	$array_data   = array();
+	$caption      = array();
+	$color        = array();
+	$legend       = array();
+	$series_type  = array();
+
+	$array_events_alerts = array();
 
 	//date start final period
 	if($date == 0){
@@ -751,6 +772,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 			false
 		)
 	);
+
 	//esto la sparse
 	//setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 	// Check available data
@@ -767,7 +789,8 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 				$show_elements_graph,
 				$format_graph,
 				$water_mark,
-				$series_suffix_str
+				$series_suffix_str,
+				$array_events_alerts
 			);
 		}
 		else{
@@ -786,7 +809,8 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 				$show_elements_graph,
 				$format_graph,
 				$water_mark,
-				$series_suffix_str
+				$series_suffix_str,
+				$array_events_alerts
 			);
 		}
 		else{
@@ -806,7 +830,8 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 				$show_elements_graph,
 				$format_graph,
 				$water_mark,
-				$series_suffix_str
+				$series_suffix_str,
+				$array_events_alerts
 			);
 		}
 		else{

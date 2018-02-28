@@ -180,7 +180,8 @@ function flot_area_graph (
 	$agent_module_id, $array_data, $color,
 	$legend, $series_type, $date_array,
 	$data_module_graph, $show_elements_graph,
-	$format_graph, $water_mark, $series_suffix_str ) {
+	$format_graph, $water_mark, $series_suffix_str,
+	$array_events_alerts ) {
 
 	global $config;
 
@@ -326,6 +327,7 @@ function flot_area_graph (
 	$data_module_graph   = json_encode($data_module_graph);
 	$show_elements_graph = json_encode($show_elements_graph);
 	$format_graph        = json_encode($format_graph);
+	$array_events_alerts = json_encode($array_events_alerts);
 
 	// Javascript code
 	$return .= "<script type='text/javascript'>";
@@ -345,8 +347,9 @@ function flot_area_graph (
 		"'$series_suffix_str', \n" .
 		"'$background_color', \n" .
 		"'$legend_color', \n" .
-		"'$short_data'
-	);";
+		"'$short_data', \n" .
+		"JSON.parse('$array_events_alerts')".
+	");";
 	$return .= "});";
 	$return .= "</script>";
 

@@ -1129,8 +1129,10 @@ function pandoraFlotArea(
 	series_type, watermark, date_array,
 	data_module_graph, show_elements_graph,
 	format_graph, force_integer, series_suffix_str,
-	background_color, legend_color, short_data
+	background_color, legend_color, short_data,
+	events_array
 ) {
+	console.log(events_array);
 	//diferents vars
 	var unit      = format_graph.unit ? format_graph.unit : '';
 	var homeurl   = format_graph.homeurl;
@@ -1190,12 +1192,20 @@ function pandoraFlotArea(
 	i=0;
 	$.each(values, function (index, value) {
 		if (typeof value.data !== "undefined") {
+			if(index == 'alert') {
+				fill_color = '#ffff00';
+			}
+			else if(index == 'events') {
+				fill_color = '#ff66cc';
+			}
 			switch (series_type[index]) {
 				case 'area':
 					line_show   = true;
 					points_show = false; // XXX - false
 					filled      = 0.2;
 					steps_chart = false;
+					radius      = false;
+					fill_points = '';
 					break;
 				case 'percentil':
 				case 'line':
@@ -1204,12 +1214,16 @@ function pandoraFlotArea(
 					points_show = false;
 					filled      = false;
 					steps_chart = false;
+					radius      = false;
+					fill_points = '';
 					break;
 				case 'points':
 					line_show   = false;
 					points_show = true;
 					filled      = false;
-					steps_chart = false
+					steps_chart = false;
+					radius      = 3;
+					fill_points = fill_color;
 					break;
 				case 'unknown':
 				case 'boolean':
@@ -1217,6 +1231,8 @@ function pandoraFlotArea(
 					points_show = false;
 					filled      = true;
 					steps_chart = true;
+					radius      = false;
+					fill_points = '';
 					break;
 			}
 			data_base.push({
@@ -1230,7 +1246,11 @@ function pandoraFlotArea(
 					lineWidth: lineWidth,
 					steps: steps_chart
 				},
-				points: { show: points_show }
+				points: {
+					show: points_show,
+					radius: radius,
+					fillColor: fill_points
+				}
 			});
 			i++;
 		}

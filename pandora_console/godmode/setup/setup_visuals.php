@@ -487,9 +487,16 @@ if (!enterprise_installed()) {
 	$disabled_graph_precision = true;
 }
 
-$table_chars->data[$row][0] = __('Data precision for reports and visual consoles');
-$table_chars->data[$row][0] .= ui_print_help_tip(__('Number of decimals shown in reports and visual consoles. It must be a number between 0 and 5'), true);
+$table_chars->data[$row][0] = __('Data precision in PandoraFMS');
+$table_chars->data[$row][0] .= ui_print_help_tip(__('Number of decimals shown. It must be a number between 0 and 5, except in graphs.'), true);
 $table_chars->data[$row][1] = html_print_input_text ('graph_precision', $config["graph_precision"], '', 5, 5, true, $disabled_graph_precision, false, "onChange=\"change_precision()\"");
+$row++;
+
+if (!isset($config["short_module_graph_data"]))
+	$config["short_module_graph_data"] = true;
+$table_chars->data[$row][0] = __('Data precision in graphs');
+$table_chars->data[$row][0] .= ui_print_help_tip(__('Number of decimals shown. If the field is empty, it will show all the decimals'), true);
+$table_chars->data[$row][1] = html_print_input_text ('short_module_graph_data', $config["short_module_graph_data"], '', 5, 5, true, $disabled_graph_precision, false, "onChange=\"change_precision()\"");
 $row++;
 
 $table_chars->data[$row][0] = __('Default line thickness for the Custom Graph.');
@@ -510,18 +517,6 @@ $table_chars->data[$row][1] .= __('No').'&nbsp;' .
 	html_print_radio_button ('flash_charts', 0, '', $config["global_flash_charts"], true);
 $row++;
 
-if (!isset($config["short_module_graph_data"]))
-	$config["short_module_graph_data"] = true;
-$table_chars->data[$row][0] = __('Shortened module graph data');
-$table_chars->data[$row][0] .= ui_print_help_tip(__('The data number of the module graphs will be rounded and shortened'), true);
-$table_chars->data[$row][1] = __('Yes') . '&nbsp;' .
-	html_print_radio_button ('short_module_graph_data', 1, '',
-		$config["short_module_graph_data"], true) .
-	'&nbsp;&nbsp;';
-$table_chars->data[$row][1] .= __('No') . '&nbsp;' .
-	html_print_radio_button ('short_module_graph_data', 0, '',
-		$config["short_module_graph_data"], true);
-$row++;
 
 $table_chars->data[$row][0] = __('Type of module charts');
 $table_chars->data[$row][1] = __('Area').'&nbsp;' .

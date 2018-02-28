@@ -209,6 +209,7 @@ our @EXPORT = qw(
 	pandora_process_event_replication
 	pandora_process_module
 	pandora_reset_server
+	pandora_safe_mode_modules_update
 	pandora_server_keep_alive
 	pandora_set_event_storm_protection
 	pandora_set_master
@@ -5526,6 +5527,29 @@ sub safe_mode($$$$$$) {
 	elsif ($known_status == MODULE_CRITICAL) {
 		logger($pa_config, "Disabling safe mode for agent " . $agent->{'nombre'}, 10);
 		db_do($dbh, 'UPDATE tagente_modulo SET disabled=0 WHERE id_agente=? AND id_agente_modulo!=?', $agent->{'id_agente'}, $module->{'id_agente_modulo'});
+	}
+}
+
+##########################################################################
+=head2 C<< safe_mode_modules_update (I<$pa_config>, I<$agent>, I<$dbh>) >> 
+
+Check if agent safe module is critical and turn all modules to disabled.
+
+=cut
+##########################################################################
+sub pandora_safe_mode_modules_update {
+	my ($pa_config, $agent_id, $dbh) = @_;
+
+	my $agent = get_db_single_row ($dbh, 'SELECT alias, safe_mode_module FROM tagente WHERE id_agente = ?', $agent_id);
+	# Does nothing if safe_mode is disabled
+	return unless $agent->{'safe_mode_module'} > 0;
+
+	my $status = get_agentmodule_status($pa_config, $dbh, $agent->{'safe_mode_module'});
+
+	# If status is critical, disable the rest of the modules.
+	if ($status == MODULE_CRITICAL) {
+		logger($pa_config, "Update modules for safe mode agent with alias:" . $agent->{'alias'} . ".", 10);
+		db_do($dbh, 'UPDATE tagente_modulo SET disabled=1 WHERE id_agente=? AND id_agente_modulo!=?', $agent_id, $agent->{'safe_mode_module'});
 	}
 }
 

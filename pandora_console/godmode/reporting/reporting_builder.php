@@ -596,10 +596,13 @@ switch ($action) {
 				$table->size[$next] = '15%';
 				
 				$next++;
-				if(!defined('METACONSOLE'))
+				$op_column = false;
+				if(!defined('METACONSOLE')) {
+					$op_column = true;
 					$table->head[$next] = '<span title="Operations">' .
 						__('Op.') . '</span>'.html_print_checkbox('all_delete', 0, false, true, false,
 							'check_all_checkboxes();');
+				}
 					
 				//$table->size = array ();
 				$table->size[$next] = '10%';
@@ -746,6 +749,8 @@ switch ($action) {
 						$data[$next] .= '</form>';
 						
 					}
+				} else {
+					if ($op_column) $data[$next] = '';
 				}
 				
 				array_push ($table->data, $data);

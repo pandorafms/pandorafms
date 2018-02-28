@@ -161,7 +161,9 @@ if (!empty ($graphs)) {
 	$table->size[3] = '200px';
 	$table->align[2] = 'left';
 	$table->align[3] = 'left';
+	$op_column = false;
 	if ($report_w || $report_m) {
+		$op_column = true;
 		$table->align[4] = 'left';
 		$table->head[4] = __('Op.') .
 			html_print_checkbox('all_delete', 0, false, true, false,
@@ -193,6 +195,8 @@ if (!empty ($graphs)) {
 				.$graph['id_graph'].'" onClick="if (!confirm(\''.__('Are you sure?').'\'))
 					return false;">' . html_print_image("images/cross.png", true, array('alt' => __('Delete'), 'title' => __('Delete'))) . '</a>' .
 					html_print_checkbox_extended ('delete_multiple[]', $graph['id_graph'], false, false, '', 'class="check_delete" style="margin-left:2px;"', true);
+		} else {
+			if($op_column) $data[4] = '';
 		}
 		
 		array_push ($table->data, $data);

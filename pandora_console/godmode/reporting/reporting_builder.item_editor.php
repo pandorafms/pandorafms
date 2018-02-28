@@ -370,21 +370,21 @@ switch ($action) {
 					break;
 				case 'sql_graph_pie':
 					$description = $item['description'];
-					$sql = $item['external_source'];
+					$sql_query_report = $item['external_source'];
 					$idCustom = $item['treport_custom_sql_id'];
 					$historical_db = $item['historical_db'];
 					$period = 0;
 					break;
 				case 'sql_graph_vbar':
 					$description = $item['description'];
-					$sql = $item['external_source'];
+					$sql_query_report = $item['external_source'];
 					$idCustom = $item['treport_custom_sql_id'];
 					$historical_db = $item['historical_db'];
 					$period = 0;
 					break;
 				case 'sql_graph_hbar':
 					$description = $item['description'];
-					$sql = $item['external_source'];
+					$sql_query_report = $item['external_source'];
 					$idCustom = $item['treport_custom_sql_id'];
 					$historical_db = $item['historical_db'];
 					$period = 0;

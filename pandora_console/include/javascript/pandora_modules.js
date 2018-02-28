@@ -497,7 +497,7 @@ function configure_modules_form () {
 
 
 // Functions to add and remove dynamic fields for macros
-function delete_macro(prefix) {
+function delete_macro_form(prefix) {
 	var next_number = parseInt($('#next_macro').html());
 	// Is not possible delete first macro
 	if (next_number == 3) {

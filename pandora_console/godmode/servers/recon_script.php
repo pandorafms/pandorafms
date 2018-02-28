@@ -203,7 +203,7 @@ if (($create != "") OR ($view != "")) {
 		if($i <= 2) {
 			$delete_macro_style = 'display:none;';
 		}
-		$datam[2] = '<div id="delete_macro_button" style="'.$delete_macro_style.'">'.__('Delete macro').' <a href="javascript:delete_macro(\'table-form-recon_\');update_preview();">'.html_print_image('images/delete.png',true).'</a></div>';
+		$datam[2] = '<div id="delete_macro_button" style="'.$delete_macro_style.'">'.__('Delete macro').' <a href="javascript:delete_macro_form(\'table-form-recon_\');update_preview();">'.html_print_image('images/delete.png',true).'</a></div>';
 		
 		$table->colspan['recon_action'][0] = 2;
 		$table->rowstyle['recon_action'] = 'text-align:center';

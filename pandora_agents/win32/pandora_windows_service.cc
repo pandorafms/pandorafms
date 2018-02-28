@@ -1884,8 +1884,8 @@ Pandora_Windows_Service::pandora_run_broker (string config) {
 				continue;
 			}
 	
-			/* Check preconditions */			
-			if (module->checkCron (module->getInterval (), atoi (conf->getValue ("interval").c_str())) == 0) {
+			/* Check cron */			
+			if (!module->checkCron (module->getInterval () * atoi (conf->getValue ("interval").c_str()))) {
 				pandoraDebug ("Cron not matched for module %s", module->getName ().c_str ());
 				module->setNoOutput ();
 				this->broker_modules->goNext ();
@@ -2012,8 +2012,8 @@ Pandora_Windows_Service::pandora_run (int forced_run) {
 				continue;
 			}
 	
-			/* Check preconditions */			
-			if (module->checkCron (module->getInterval (), atoi (conf->getValue ("interval").c_str())) == 0) {
+			/* Check cron */			
+			if (!module->checkCron (module->getInterval () * atoi (conf->getValue ("interval").c_str()))) {
 				pandoraDebug ("Cron not matched for module %s", module->getName ().c_str ());
 				module->setNoOutput ();
 				this->modules->goNext ();

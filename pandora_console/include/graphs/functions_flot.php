@@ -490,14 +490,10 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 		true);
 
 	if (!isset($config["short_module_graph_data"]))
-		$config["short_module_graph_data"] = true;
+		$config["short_module_graph_data"] = '';
 	
-	if ($config["short_module_graph_data"]) {
-		$short_data = true;
-	}
-	else {
-		$short_data = false;
-	}
+	$short_data = $config["short_module_graph_data"];
+
 	
 	
 	// Javascript code

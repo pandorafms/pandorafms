@@ -1113,7 +1113,7 @@ function ui_print_help_icon ($help_id, $return = false, $home_url = '', $image =
 			"onclick" => "open_help ('" . $help_id . "','" . $home_url . "','" . $config['id_user'] . "')"
 		),
 		false,
-		$is_relative
+		$is_relative && is_metaconsole()
 	);
 	if (!$return)
 		echo $output;
@@ -1918,7 +1918,13 @@ function ui_print_session_action_icon ($action, $return = false) {
 function ui_print_help_tip ($text, $return = false, $img = 'images/tip.png', $is_relative = false) {
 	$output =
 		'<a href="javascript:" class="tip" >' .
-			html_print_image ($img, true, array('title' => $text), false, $is_relative) .
+			html_print_image (
+				$img,
+				true,
+				array('title' => $text),
+				false,
+				$is_relative && is_metaconsole()
+			) .
 		'</a>';
 	
 	if ($return)

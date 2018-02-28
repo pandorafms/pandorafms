@@ -298,9 +298,15 @@ sub data_consumer ($$) {
 			}
 		}
 	}
-
 	if (! defined $module_data || $module_data eq '') {
-		logger ($pa_config,"[ERROR] Undefined value returned by plug-in module " . $module->{'nombre'} . " agent " . $agent->{'nombre'} . ". Is the server out of memory?" , 3);
+		logger (
+			$pa_config,
+			sprintf(
+				"[ERROR] Undefined value returned by plug-in module '%s' in agent whith name '%s' and alias '%s'. Is the server out of memory?",
+				$module->{'nombre'}, $agent->{'nombre'}, $agent->{'alias'}
+			),
+			3
+		);
 		pandora_update_module_on_error ($pa_config, $module, $dbh);
 		return;
 	}

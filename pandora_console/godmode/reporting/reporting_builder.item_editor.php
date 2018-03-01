@@ -361,33 +361,16 @@ switch ($action) {
 					$text = $item['text'];
 					break;
 				case 'sql':
-					$description = $item['description'];
-					$sql_query_report = $item['external_source'];
-					$idCustom = $item['treport_custom_sql_id'];
 					$header = $item['header_definition'];
-					$historical_db = $item['historical_db'];
-					$period = 0;
-					break;
 				case 'sql_graph_pie':
-					$description = $item['description'];
-					$sql_query_report = $item['external_source'];
-					$idCustom = $item['treport_custom_sql_id'];
-					$historical_db = $item['historical_db'];
-					$period = 0;
-					break;
 				case 'sql_graph_vbar':
-					$description = $item['description'];
-					$sql_query_report = $item['external_source'];
-					$idCustom = $item['treport_custom_sql_id'];
-					$historical_db = $item['historical_db'];
-					$period = 0;
-					break;
 				case 'sql_graph_hbar':
 					$description = $item['description'];
 					$sql_query_report = $item['external_source'];
 					$idCustom = $item['treport_custom_sql_id'];
 					$historical_db = $item['historical_db'];
 					$period = 0;
+					$top_n_value = $item['top_n_value'];
 					break;
 				case 'url':
 					$description = $item['description'];
@@ -1282,6 +1265,16 @@ You can of course remove the warnings, that's why we include the source and do n
 				?>
 			</td>
 			<td style="" id="sql_example"></td> 
+		</tr>
+
+		<tr id="row_max_items" style="" class="datos">
+			<td style="font-weight:bold;"><?php echo __('Max items'); ?></td>
+			<td style="">
+				<?php
+					html_print_input_text('max_items', $top_n_value, '', 7, 7);
+				?>
+			</td>
+			<td style="" id="max_items_example"></td>
 		</tr>
 		
 		<?php
@@ -2766,6 +2759,7 @@ function chooseType() {
 	$("#row_custom_graph").hide();
 	$("#row_text").hide();
 	$("#row_query").hide();
+	$("#row_max_items").hide();
 	$("#row_header").hide();
 	$("#row_custom").hide();
 	$("#row_url").hide();
@@ -3061,6 +3055,7 @@ function chooseType() {
 		case 'sql':
 			$("#row_description").show();
 			$("#row_query").show();
+			$("#row_max_items").show();
 			$("#row_header").show();
 			$("#row_custom").show();
 			$("#row_custom_example").show();
@@ -3072,6 +3067,7 @@ function chooseType() {
 		case 'sql_graph_pie':
 			$("#row_description").show();
 			$("#row_query").show();
+			$("#row_max_items").show();
 			$("#row_show_in_two_columns").show();
 			$("#row_show_in_landscape").show();
 			$("#row_servers").show();
@@ -3082,6 +3078,7 @@ function chooseType() {
 		case 'sql_graph_hbar':
 			$("#row_description").show();
 			$("#row_query").show();
+			$("#row_max_items").show();
 			$("#row_show_in_two_columns").show();
 			$("#row_show_in_landscape").show();
 			$("#row_servers").show();
@@ -3091,6 +3088,7 @@ function chooseType() {
 		case 'sql_graph_vbar':
 			$("#row_description").show();
 			$("#row_query").show();
+			$("#row_max_items").show();
 			$("#row_show_in_two_columns").show();
 			$("#row_show_in_landscape").show();
 			$("#row_servers").show();

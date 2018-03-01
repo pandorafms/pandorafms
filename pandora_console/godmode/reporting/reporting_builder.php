@@ -1194,6 +1194,7 @@ switch ($action) {
 								$values['external_source'] = get_parameter('sql');
 							}
 							$values['historical_db'] = get_parameter('historical_db_check');
+							$values['top_n_value'] = get_parameter('max_items');
 						}
 						else if ($values['type'] == 'url') {
 							$values['external_source'] = get_parameter('url');
@@ -1532,6 +1533,7 @@ switch ($action) {
 								$values['external_source'] = get_parameter('sql');
 							}
 							$values['historical_db'] = get_parameter('historical_db_check');
+							$values['top_n_value'] = get_parameter('max_items');
 						}
 						elseif ($values['type'] == 'url') {
 							$values['external_source'] = get_parameter('url');

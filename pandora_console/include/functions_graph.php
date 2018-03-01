@@ -3949,9 +3949,28 @@ function graph_custom_sql_graph ($id, $width, $height,
 	
 	switch ($type) {
 		case 'sql_graph_vbar': // vertical bar
-			return vbar_graph($flash_charts, $data, $width, $height, array(),
-				array(), "", "", $homeurl, $water_mark,
-				$config['fontpath'], $config['font_size'], false, $ttl, "", "white", false, false, "black");
+			return vbar_graph(
+				$flash_charts,
+				$data,
+				$width,
+				$height,
+				array(),
+				array(),
+				"",
+				"",
+				"",
+				"",
+				$water_mark,
+				$config['fontpath'],
+				$config['font_size'],
+				"",
+				$ttl,
+				$config['homeurl'],
+				"white",
+				false,
+				false,
+				"black"
+			);
 			break;
 		case 'sql_graph_hbar': // horizontal bar
 			return hbar_graph($flash_charts, $data, $width, $height, array(),

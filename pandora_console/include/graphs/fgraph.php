@@ -152,11 +152,29 @@ function slicesbar_graph($chart_data, $period, $width, $height, $colors,
 	return "<img src='".$home_url."include/graphs/functions_pchart.php?static_graph=1&graph_type=slicebar&ttl=".$ttl."&id_graph=".$id_graph."' style='width:100%;'>";
 }
 
-function vbar_graph($flash_chart, $chart_data, $width, $height,
-	$color, $legend, $long_index, $no_data_image, $xaxisname = "",
-	$yaxisname = "", $water_mark = "", $font = '', $font_size = '',
-	$unit = '', $ttl = 1, $homeurl = '', $backgroundColor = 'white',
-	$from_ux = false, $from_wux = false, $tick_color = 'white') {
+function vbar_graph(
+	$flash_chart,
+	$chart_data,
+	$width,
+	$height,
+	$color,
+	$legend,
+	$long_index,
+	$no_data_image,
+	$xaxisname = "",
+	$yaxisname = "",
+	$water_mark = "",
+	$font = '',
+	$font_size = '',
+	$unit = '',
+	$ttl = 1,
+	$homeurl = '',
+	$backgroundColor = 'white',
+	$from_ux = false,
+	$from_wux = false,
+	$tick_color = 'white'
+) {
+
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 	
 	if (empty($chart_data)) {

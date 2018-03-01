@@ -3862,6 +3862,7 @@ function graph_custom_sql_graph ($id, $width, $height,
 	$ttl = 1) {
 	
 	global $config;
+	$SQL_GRAPH_MAX_LABEL_SIZE = 20;
 	
 	$report_content = db_get_row ('treport_content', 'id_rc', $id);
 	if($id != null){
@@ -3922,7 +3923,13 @@ function graph_custom_sql_graph ($id, $width, $height,
 		}
 		$label = __('Data');
 		if (!empty($data_item["label"])) {
-			$label = $data_item["label"];
+			$label = io_safe_output($data_item["label"]);
+			if (strlen($label) > $SQL_GRAPH_MAX_LABEL_SIZE) {
+				$first_label = $label;
+				$label = substr($first_label, 0, floor($SQL_GRAPH_MAX_LABEL_SIZE/2));
+				$label .= '...';
+				$label .= substr($first_label, floor(-$SQL_GRAPH_MAX_LABEL_SIZE/2));
+			}
 		}
 		switch ($type) {
 			case 'sql_graph_vbar': // vertical bar

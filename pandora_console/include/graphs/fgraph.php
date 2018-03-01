@@ -188,9 +188,9 @@ function vbar_graph(
 			$tick_color);
 	}
 	else {
+		$new_chart_data = array();
 		foreach ($chart_data as $key => $value) {
 			if(strlen($key) > 20){
-				
 					if(strpos($key, ' - ') != -1){
 						$key_temp = explode(" - ",$key);
 						$key_temp[0] = $key_temp[0]."   \n";
@@ -198,14 +198,14 @@ function vbar_graph(
 						$key2 = $key_temp[0].$key_temp[1];
 						io_safe_output($key2);
 					}
-				$chart_data[$key2]['g'] = $chart_data[$key]['g'];
-				unset($chart_data[$key]);
+				$new_chart_data[$key2]['g'] = $chart_data[$key]['g'];
+			} else {
+				$new_chart_data[$key] = $value;
 			}
-			
 		}
-				
+
 		$graph = array();
-		$graph['data'] = $chart_data;
+		$graph['data'] = $new_chart_data;
 		$graph['width'] = $width;
 		$graph['height'] = $height;
 		$graph['color'] = $color;

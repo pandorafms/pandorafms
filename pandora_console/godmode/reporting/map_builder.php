@@ -295,19 +295,22 @@ if ($own_info['is_admin'] || $vconsoles_read) {
 		$maps = visual_map_get_user_layouts (0,false,$filters,false);
 		unset($filters['offset']);
 		unset($filters['limit']);
-		$total_maps = count($maps);
+		$count_maps = visual_map_get_user_layouts (0,false,$filters,false);		
+		$total_maps = count($count_maps);
 	}else{
 		$maps = visual_map_get_user_layouts (0,false,$filters, false);
 		unset($filters['offset']);
 		unset($filters['limit']);
-		$total_maps = count($maps);
+		$count_maps = visual_map_get_user_layouts (0,false,$filters,false);
+		$total_maps = count($count_maps);
 	}
 }
 else {
 	$maps = visual_map_get_user_layouts ($config['id_user'], false, $filters, false);
 	unset($filters['offset']);
 	unset($filters['limit']);
-	$total_maps = count($maps);
+	$count_maps = visual_map_get_user_layouts (0,false,$filters,false);	
+	$total_maps = count($count_maps);
 }
 if (!$maps && !is_metaconsole()) {
 	$total = count(visual_map_get_user_layouts ($config['id_user'], false, false, false));

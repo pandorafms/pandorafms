@@ -288,6 +288,7 @@ $table_styles->data[$row][1] = __('Yes') . '&nbsp;' .
 	'&nbsp;&nbsp;';
 $table_styles->data[$row][1] .= __('No') . '&nbsp;' .
 	html_print_radio_button ('fixed_menu', 0, '', $config["fixed_menu"], true);
+$row++;
 
 // For 5.1 Autohidden menu feature
 $table_styles->data['autohidden'][0] = __('Autohidden menu');

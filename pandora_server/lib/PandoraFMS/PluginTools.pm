@@ -78,6 +78,7 @@ our @EXPORT = qw(
 	snmp_data_switcher
 	snmp_get
 	snmp_walk
+	seconds2readable
 	tail
 	to_number
 	transfer_xml
@@ -1118,6 +1119,11 @@ sub process_performance {
 	my ($conf, $process, $mod_name, $only_text_flag) = @_;
 	my $_PluginTools_system = $conf->{'__system'};
 
+	if (empty($_PluginTools_system)) {
+		$_PluginTools_system = init_system();
+		$_PluginTools_system = get_sys_environment($_PluginTools_system);
+	}
+
 	my $cpu;
 	my $mem;
 	my $instances;
@@ -1225,7 +1231,9 @@ sub process_performance {
 	return {
 		cpu => $cpu,
 		mem => $mem,
-		instances => $instances
+		instances => $instances,
+		runit => $runit,
+		cunit => $cunit,
 	};
 }
 
@@ -1876,6 +1884,52 @@ sub load_perl_modules {
 	return 1;
 }
 
+################################################################################
+# Transforms an absolute seconds value into a readable count
+################################################################################
+sub seconds2readable {
+	my ($tseconds, $format) = @_;
 
+	return '' unless looks_like_number($tseconds);
+
+	if (empty($format)) {
+		return int($tseconds/(24*60*60)) . " d, "
+			 . ($tseconds/(60*60))%24 . "h, "
+			 . ($tseconds/60)%60 . "m, "
+			 . $tseconds%60 . "s";
+	}
+
+
+	my $str = $format;
+	
+	# %d -> days
+	if($format =~ /\%d/) {
+		my $days = ($tseconds/(24*60*60)) | 0;
+		$tseconds -= $days*24*60*60;
+		$str =~ s/%d/$days/g;
+	}
+
+	# %h -> hours
+	if($format =~ /\%h/) {
+		my $hours = ($tseconds/(60*60)) | 0;
+		$tseconds -= $hours*60*60;
+		$str =~ s/%h/$hours/g;
+	}
+
+	# %m -> minutes
+	if($format =~ /\%m/) {
+		my $min = ($tseconds/60) | 0;
+		$tseconds -= $min*60;
+		$str =~ s/%m/$min/g;
+	}
+	
+	# %s -> seconds
+	if($format =~ /\%s/) {
+		$str =~ s/%s/$tseconds/g;
+	}
+
+
+	return $str;
+}
 
 1;

@@ -1132,7 +1132,6 @@ function pandoraFlotArea(
 	background_color, legend_color, short_data,
 	events_array
 ) {
-	console.log(events_array);
 	//diferents vars
 	var unit      = format_graph.unit ? format_graph.unit : '';
 	var homeurl   = format_graph.homeurl;
@@ -1144,7 +1143,6 @@ function pandoraFlotArea(
 	var dashboard = show_elements_graph.dashboard;
 	var menu      = show_elements_graph.menu;
 	var max_x     = date_array['final_date'] *1000;
-	var s_suffix  = data_module_graph['series_suffix'];
 
 	//for threshold
 	var threshold        = true;
@@ -1193,19 +1191,16 @@ function pandoraFlotArea(
 	i=0;
 	$.each(values, function (index, value) {
 		if (typeof value.data !== "undefined") {
-			console.log(index);
-			console.log(s_suffix);
-			if(index == 'alert' + s_suffix) {
-				console.log('entra');
-				fill_color = '#ffff00';
+			if(index.search("alert") >= 0){
+				fill_color = '#ff7f00';
 			}
-			else if(index == 'event' + s_suffix) {
-				console.log('entra2');
-				fill_color = '#ff66cc';
+			else if(index.search("event") >= 0){
+				fill_color = '#ff0000';
 			}
 			else{
-				fill_color = '';
+				fill_color = 'green';
 			}
+
 			switch (series_type[index]) {
 				case 'area':
 					line_show   = true;
@@ -1230,7 +1225,7 @@ function pandoraFlotArea(
 					points_show = true;
 					filled      = false;
 					steps_chart = false;
-					radius      = 3;
+					radius      = 1.5;
 					fill_points = fill_color;
 					break;
 				case 'unknown':
@@ -2143,41 +2138,74 @@ function pandoraFlotArea(
 
 	$('#' + graph_id).bind("plotclick", function (event, pos, item) {
 		plot.unhighlight();
-		if (item && item.series.label != '' && (item.series.label == legend_events || item.series.label == legend_events+series_suffix_str || item.series.label == legend_alerts || item.series.label == legend_alerts+series_suffix_str)) {
+		if(item && item.series.label != '' &&
+			( 	(item.series.label.search("alert") >= 0) ||
+				(item.series.label.search("event") >= 0)	)
+		){
 			plot.unhighlight();
-			var dataset  = plot.getData();
 
-			var extra_info = '<i>No info to show</i>';
-			var extra_show = false;
+			$('#extra_'+graph_id).css('width', '170px');
+			$('#extra_'+graph_id).css('height', '60px');
 
-			var coord_x = (item.dataIndex/item.series.xaxis.datamax)* (event.target.clientWidth - event.target.offsetLeft + 1) + event.target.offsetLeft;
+			var dataset         = plot.getData();
+			var extra_info      = '<i>No info to show</i>';
+			var extra_show      = false;
+			var extra_height    = $('#extra_'+graph_id).height();
+			var extra_width     = parseInt($('#extra_'+graph_id)
+									.css('width')
+									.split('px')[0]);
+			var events_data     = new Array();
+			var offset_graph    = plot.getPlotOffset();
+			var offset_relative = plot.offset();
+			var width_graph     = plot.width();
+			var height_legend   = $('#legend_' + graph_id).height();
+			var coord_x         = pos.pageX - offset_relative.left + offset_graph.left;
+			var coord_y         = offset_graph.top + height_legend + extra_height;
 
+			if(coord_x + extra_width > width_graph){
+				coord_x = coord_x - extra_width;
+			}
+
+			var coord_y = offset_graph.top + height_legend + extra_height;
 
 			$('#extra_'+graph_id).css('left',coord_x);
-			$('#extra_'+graph_id).css('top', event.target.offsetTop + 55 );
+			$('#extra_'+graph_id).css('top', coord_y );
 
-			switch(item.series.label) {
-				case legend_alerts+series_suffix_str:
-				case legend_alerts:
-					extra_info = '<b>'+legend_alerts+':<br><span style="font-size:xx-small; font-weight: normal;">From: '+labels_long[item.dataIndex];
-					if (labels_long[item.dataIndex+1] != undefined) {
-						extra_info += '<br>To: '+labels_long[item.dataIndex+1];
-					}
-					extra_info += '</span></b>'+get_event_details(alertsz[item.dataIndex]);
-					extra_show = true;
-					break;
-				case legend_events+series_suffix_str:
-				case legend_events:
-					extra_info = '<b>'+legend_events+':<br><span style="font-size:xx-small; font-weight: normal;">From: '+labels_long[item.dataIndex];
-					if (labels_long[item.dataIndex+1] != undefined) {
-						extra_info += '<br>To: '+labels_long[item.dataIndex+1];
-					}
-					extra_info += '</span></b>'+get_event_details(eventsz[item.dataIndex]);
-					extra_show = true;
-					break;
-				default:
-					return;
-					break;
+			if(	(item.series.label.search("alert") >= 0) ||
+				(item.series.label.search("event") >= 0)	){
+
+				$.each(events_array, function (i, v) {
+					$.each(v, function (index, value) {
+						if((value.utimestamp) == item.datapoint[0]/1000){
+							events_data = value;
+						}
+					});
+				});
+
+				if(events_data.event_type.search("alert") >= 0){
+					$extra_color = '#FFA631';
+				}
+				else if(events_data.event_type.search("critical") >= 0){
+					$extra_color = '#FC4444';
+				}
+				else if(events_data.event_type.search("warning") >= 0){
+					$extra_color = '#FAD403';
+				}
+				else if(events_data.event_type.search("unknown") >= 0){
+					$extra_color = '#3BA0FF';
+				}
+				else if(events_data.event_type.search("normal") >= 0){
+					$extra_color = '#80BA27';
+				}
+				else{
+					$extra_color = '#ffffff';
+				}
+
+				$('#extra_'+graph_id).css('background-color',$extra_color);
+
+				extra_info = '<b>'+events_data.evento+':';
+				extra_info += '<br><br><span style="font-weight: normal;">Time: '+events_data.timestamp;
+				extra_show = true;
 			}
 
 			if (extra_show) {

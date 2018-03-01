@@ -506,13 +506,13 @@ function grafico_modulo_sparse_data(
 						if($show_elements_graph['flag_overlapped']){
 							$events_array['data'][$count_events] = array(
 								($v['utimestamp'] + $date_array['period'] *1000),
-								$max * 1.2
+								$max * 1.15
 							);
 						}
 						else{
 							$events_array['data'][$count_events] = array(
 								($v['utimestamp']*1000),
-								$max * 1.2
+								$max * 1.15
 							);
 						}
 						$count_events++;
@@ -583,8 +583,6 @@ function grafico_modulo_sparse_data(
 	$series_type['percentil' . $series_suffix] = 'percentil';
 
 	$array_events_alerts[$series_suffix] = $events;
-
-	$data_module_graph['series_suffix'] = $series_suffix;
 }
 
 function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
@@ -777,6 +775,9 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 
 	//esto la sparse
 	//setup_watermark($water_mark, $water_mark_file, $water_mark_url);
+
+	$data_module_graph['series_suffix'] = $series_suffix;
+
 	// Check available data
 	if ($show_elements_graph['compare'] === 'separated') {
 		if (!empty($array_data)) {

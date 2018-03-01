@@ -3294,7 +3294,8 @@ function reporting_sql_graph($report, $content, $type,
 				$content["type"],
 				true,
 				ui_get_full_url(false, false, false, false),
-				$ttl);
+				$ttl,
+				$content['top_n_value']);
 			break;
 		case 'data':
 			break;

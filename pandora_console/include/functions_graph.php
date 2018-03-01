@@ -3925,7 +3925,7 @@ function graph_custom_sql_graph ($id, $width, $height,
 			$label = __('Data');
 			if (!empty($data_item["label"])) {
 				$label = io_safe_output($data_item["label"]);
-				if ((strlen($label) > $SQL_GRAPH_MAX_LABEL_SIZE) && ($type !== 'sql_graph_vbar')) {
+				if (strlen($label) > $SQL_GRAPH_MAX_LABEL_SIZE) {
 					$first_label = $label;
 					$label = substr($first_label, 0, floor($SQL_GRAPH_MAX_LABEL_SIZE/2));
 					$label .= '...';

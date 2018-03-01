@@ -974,19 +974,38 @@ sub parse_arguments {
 
 }
 
+
 ################################################################################
 # General configuration file parser
 #
-# log=/PATH/TO/LOG/FILE
+# Custom evals are defined in an array reference of hash references:
+# 
+#   $custom_eval = [
+#   	{
+#   		'exp'    => 'regular expression to match',
+#   		'target' => \&target_custom_method_to_parse_line
+#   	},
+#   	{
+#   		'exp'    => 'another regular expression to search',
+#   		'target' => \&target_custom_method_to_parse_line2
+#   	},
+#   ]
+#
+# Target is an user defined function wich will be invoked with following
+# arguments:
+#
+#  $config          : The configuration read to the point the regex matches
+#  $exp             : The matching regex which fires this action
+#  $line            : The complete line readed from the file
+#  $current_entity  : The current_entity (optional) when regex matches
 #
 ################################################################################
 sub parse_configuration {
-	my $conf_file = shift;
-	my $separator;
-	$separator = shift or $separator = "=";
-	my $custom_eval = shift;
-	my $_CFILE;
+	my ($conf_file, $separator, $custom_eval, $detect_entities, $entities_list) = @_;
 
+	$separator = "=" unless defined($separator);
+
+	my $_CFILE;
 	my $_config;
 
 	if (empty($conf_file)) {
@@ -1001,25 +1020,66 @@ sub parse_configuration {
 		};
 	}
 
+	my $current_entity = '';
+	my $new_entity = '';
+
+	my $global_config;
+
 	while (my $line = <$_CFILE>){
 		if (($line =~ /^ *\r*\n*$/)
 		 || ($line =~ /^#/ )){
 		 	# skip blank lines and comments
 			next;
 		}
-		my @parsed = split /$separator/, $line, 2;
+		my ($key,$value) = split /$separator/, $line, 2;
+
+		if (empty($value) && ($line =~ /^(\w+?)\r*\n*$/) && is_enabled($detect_entities)) {
+			# possible Entity detected - compatibility vmware-plugin
+
+			if (!empty($entities_list)) {
+				if (in_array($entities_list, trim($key))) {
+					$new_entity = $key;
+				}
+			}
+			else {
+				$new_entity = $key;
+			}
+		}
+		if (($line =~ /\[(.*?)\]\r*\n*$/) && is_enabled($detect_entities)) {
+			# Entity detected
+			$new_entity = $1
+		}
+
+		if (!empty($new_entity)) {
+			if (empty($current_entity)) {
+				$global_config = merge_hashes($global_config, $_config);
+			}
+			else {
+				$global_config->{$current_entity} = $_config;
+			}
+
+			$current_entity = trim($new_entity);
+			undef($new_entity);
+
+			# Initialize reference
+			$global_config->{$current_entity} = {};
+			$_config = $global_config->{$current_entity};
+
+			next;
+		}
+
 		if ($line =~ /^\s*global_alerts/){
-			push (@{$_config->{global_alerts}}, trim($parsed[1]));
+			push (@{$_config->{global_alerts}}, trim($value));
 			next;
 		}
 		if (ref ($custom_eval) eq "ARRAY") {
 			my $f = 0;
 			foreach my $item (@{$custom_eval}) {
-				if ($line =~ /$item->{exp}/) {
+				if ($line =~ /$item->{'exp'}/) {
 					$f = 1;
 					my $aux;
 					eval {
-						$aux = $item->{target}->($_config, $item->{exp}, $line);
+						$aux = $item->{'target'}->($_config, $item->{'exp'}, $line, $current_entity);
 					};
 
 					if (empty($_config)) {
@@ -1035,10 +1095,18 @@ sub parse_configuration {
 				next;
 			}
 		}
-		$_config->{trim($parsed[0])} = trim($parsed[1]);
+		$_config->{trim($key)} = trim($value);
 	}
 	close ($_CFILE);
 
+	if (empty($current_entity) && (!empty($global_config))) {
+		$global_config = merge_hashes($global_config, $_config);
+	}
+	else {
+		$global_config->{$current_entity} = $_config;
+	}
+
+	return $global_config unless empty($global_config);
 	return $_config;
 }
 

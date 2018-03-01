@@ -1091,10 +1091,11 @@ function ui_print_alert_template_example ($id_alert_template, $return = false, $
  * @param bool Whether to return or output the result
  * @param string Home url if its necessary
  * @param string Image path
+ * @param bool Route is relative or not
  * 
  * @return string The help tip
  */
-function ui_print_help_icon ($help_id, $return = false, $home_url = '', $image = "images/help.png") {
+function ui_print_help_icon ($help_id, $return = false, $home_url = '', $image = "images/help.png", $is_relative = false) {
 	global $config;
 
 	if (empty($home_url))
@@ -1104,10 +1105,16 @@ function ui_print_help_icon ($help_id, $return = false, $home_url = '', $image =
 		$home_url = "../../" . $home_url;
 	}
 	
-	$output = html_print_image ($image, true,
+	$output = html_print_image (
+		$image,
+		true,
 		array ("class" => "img_help",
 			"title" => __('Help'),
-			"onclick" => "open_help ('" . $help_id . "','" . $home_url . "','" . $config['id_user'] . "')"));
+			"onclick" => "open_help ('" . $help_id . "','" . $home_url . "','" . $config['id_user'] . "')"
+		),
+		false,
+		$is_relative && is_metaconsole()
+	);
 	if (!$return)
 		echo $output;
 	
@@ -1904,11 +1911,21 @@ function ui_print_session_action_icon ($action, $return = false) {
  * @param string Complete text to show in the tip
  * @param bool whether to return an output string or echo now
  * @param img displayed image
+ * @param bool Print image in relative way
  *
  * @return string HTML code if return parameter is true.
  */
-function ui_print_help_tip ($text, $return = false, $img = 'images/tip.png') {
-	$output = '<a href="javascript:" class="tip" >' . html_print_image ($img, true, array('title' => $text)) . '</a>';
+function ui_print_help_tip ($text, $return = false, $img = 'images/tip.png', $is_relative = false) {
+	$output =
+		'<a href="javascript:" class="tip" >' .
+			html_print_image (
+				$img,
+				true,
+				array('title' => $text),
+				false,
+				$is_relative && is_metaconsole()
+			) .
+		'</a>';
 	
 	if ($return)
 		return $output;

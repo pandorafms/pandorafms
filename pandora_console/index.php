@@ -951,7 +951,7 @@ if ($config["pure"] == 0) {
 	else {
 		echo '<div id="container"><div id="head">';
 		require ("general/header.php");
-		echo '</div><div id="page"><div id="menu">';
+		echo '</div><div id="page" style="margin-top:20px;"><div id="menu">';
 		require ("general/main_menu.php");
 		echo '</div>';
 	}

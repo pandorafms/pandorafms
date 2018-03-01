@@ -983,15 +983,16 @@ function check_adaptions(graph_id) {
 	});
 }
 
-function number_format(number, force_integer, unit) {
+function number_format(number, force_integer, unit, short_data) {
 	if (force_integer) {
 		if (Math.round(number) != number) {
 			return '';
 		}
 	}
 	else {
-		// Round to 2 decimals
-		number = Math.round(number * 100) / 100;
+		short_data ++;
+		decimals = pad(1, short_data, 0);
+		number = Math.round(number * decimals) / decimals;
 	}
 
 	var shorts = ["", "K", "M", "G", "T", "P", "E", "Z", "Y"];
@@ -1009,9 +1010,14 @@ function number_format(number, force_integer, unit) {
 			break;
 		}
 	}
-	
 	return number + ' ' + shorts[pos] + unit;
 }
+
+function pad(input, length, padding) { 
+	var str = input + "";
+	return (length <= str.length) ? str : pad(str+padding, length, padding);
+}
+
 // Recalculate the threshold data depends on warning and critical
 function axis_thresholded (threshold_data, y_min, y_max, red_threshold, extremes, red_up) {
 	
@@ -2098,7 +2104,7 @@ function pandoraFlotArea(
 			) {
 				$('#legend_' + graph_id + ' .legendLabel')
 					.eq(i).html(label_aux +	' value = ' +
-					(short_data ? parseFloat(y).toFixed(2) : parseFloat(y)) +
+					(short_data ? number_format(y, 0, "", short_data) : parseFloat(y)) +
 					how_bigger + ' ' + unit
 				);
 			}
@@ -2262,7 +2268,7 @@ function pandoraFlotArea(
 	function yFormatter(v, axis) {
 		axis.datamin = 0;
 		if (short_data) {
-			var formatted = number_format(v, force_integer, "");
+			var formatted = number_format(v, force_integer, "", short_data);
 		}
 		else {
 			var formatted = v;

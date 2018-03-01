@@ -80,7 +80,7 @@ function agents_create_agent ($name, $id_group, $interval, $ip_address, $values 
 	if (empty ($name))
 		return false;
 	
-	if (empty ($id_group))
+	if (empty ($id_group) && (int)$id_group != 0)
 		return false;
 	
 	if (empty ($ip_address))

@@ -310,15 +310,11 @@ function flot_area_graph (
 	// Trick to get translated string from javascript
 	$return .= html_print_input_hidden('unknown_text', __('Unknown'), true);
 
-	if (!isset($config["short_module_graph_data"]))
-		$config["short_module_graph_data"] = true;
+	if (!isset($config["short_module_graph_data"])){
+		$config["short_module_graph_data"] = '';
+	}
 
-	if ($config["short_module_graph_data"]) {
-		$short_data = true;
-	}
-	else {
-		$short_data = false;
-	}
+	$short_data = $config["short_module_graph_data"];
 
 	$values              = json_encode($array_data);
 	$legend              = json_encode($legend);

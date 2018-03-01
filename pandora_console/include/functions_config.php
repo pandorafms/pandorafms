@@ -1864,6 +1864,10 @@ function config_process_config () {
 		config_update_value ('networkmap_max_width', 900);
 	}
 	
+	if (!isset($config['short_module_graph_data'])) {
+		config_update_value ('short_module_graph_data', '');
+	}
+	
 	if (!isset($config['tutorial_mode'])) {
 		config_update_value ('tutorial_mode', 'full');
 	}

@@ -35,6 +35,7 @@ var img_handler_end;
 function toggle_advance_options_palette(close) {
 	if ($("#advance_options").css('display') == 'none') {
 		$("#advance_options").css('display', '');
+		$("#advance_options *").css('display', '');
 	}
 	else {
 		$("#advance_options").css('display', 'none');

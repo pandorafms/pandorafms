@@ -190,7 +190,7 @@ function vbar_graph(
 	else {
 		$new_chart_data = array();
 		foreach ($chart_data as $key => $value) {
-			if(strlen($key) > 20 && strpos($key, ' - ') != -1){
+			if(strlen($key) > 20 && strpos($key, ' - ') !== false){
 				$key_temp = explode(" - ",$key);
 				$key_temp[0] = $key_temp[0]."   \n";
 				$key_temp[1]= '...'.substr($key_temp[1],-15);

@@ -721,7 +721,7 @@ function pie_graph($graph_type, $flash_chart, $chart_data, $width,
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 	
 	// This library allows only 8 colors
-	$max_values = 5;
+	$max_values = 9;
 	
 	//Remove the html_entities
 	$temp = array();

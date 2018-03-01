@@ -9,5 +9,7 @@ START TRANSACTION;
 	PREPARE pr_oum720 FROM @st_oum720;
 	EXECUTE pr_oum720;
 	DEALLOCATE PREPARE pr_oum720;
+	
+	INSERT INTO `tconfig_os` (`id_os`, `name`, `description`, `icon_name`) VALUES (21, 'Cluster', 'Cluster agent', 'so_cluster.png');
 
 COMMIT;

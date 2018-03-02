@@ -132,6 +132,7 @@ switch ($action) {
 		$hide_notinit_agents = 0;
 		$server_name = '';
 		$server_id = 0;
+		$dyn_height = 230;
 		break;
 	case 'save':
 	default:
@@ -173,6 +174,7 @@ switch ($action) {
 				$server_name = '';
 				$server_id = 0;
 				$get_data_editor = false;
+				$dyn_height = 230;
 				break;
 		}
 		
@@ -196,6 +198,7 @@ switch ($action) {
 			$show_in_two_columns = $style['show_in_two_columns'];
 			$show_in_landscape = $style['show_in_landscape'];
 			$hide_notinit_agents = $style['hide_notinit_agents'];
+			$dyn_height = $style['dyn_height'];
 			$type = $item['type'];
 			$name = $item['name'];
 			
@@ -1541,6 +1544,11 @@ You can of course remove the warnings, that's why we include the source and do n
 			<td><?php html_print_checkbox('show_in_two_columns', 1, $show_in_two_columns);?></td>
 		</tr>
 
+		<tr id="row_dyn_height" style="" class="datos">
+			<td style="font-weight:bold;"><?php echo __('Height (dynamic graphs)');?></td>
+			<td><?php html_print_input_text('dyn_height', $dyn_height, '', 7, 7);?></td>
+		</tr>
+
 		<tr id="row_show_in_same_row" style="" class="datos">
 			<td style="font-weight:bold;" class="datos">
 				<?php
@@ -2785,6 +2793,7 @@ function chooseType() {
 	$("#row_exception_condition_value").hide();
 	$("#row_exception_condition").hide();
 	$("#row_show_in_two_columns").hide();
+	$("#row_dyn_height").hide();
 	$("#row_show_in_same_row").hide();
 	$("#row_historical_db_check").hide();
 	$("#row_lapse_calc").hide();
@@ -3060,36 +3069,19 @@ function chooseType() {
 			$("#row_custom").show();
 			$("#row_custom_example").show();
 			$("#row_show_in_two_columns").show();
+			$("#row_dyn_height").show();
 			$("#row_servers").show();
 			$("#row_historical_db_check").show();
 			break;
 		
 		case 'sql_graph_pie':
-			$("#row_description").show();
-			$("#row_query").show();
-			$("#row_max_items").show();
-			$("#row_show_in_two_columns").show();
-			$("#row_show_in_landscape").show();
-			$("#row_servers").show();
-			$("#row_historical_db_check").show();
-			
-			break;
-		
 		case 'sql_graph_hbar':
-			$("#row_description").show();
-			$("#row_query").show();
-			$("#row_max_items").show();
-			$("#row_show_in_two_columns").show();
-			$("#row_show_in_landscape").show();
-			$("#row_servers").show();
-			$("#row_historical_db_check").show();
-			break;
-		
 		case 'sql_graph_vbar':
 			$("#row_description").show();
 			$("#row_query").show();
 			$("#row_max_items").show();
 			$("#row_show_in_two_columns").show();
+			$("#row_dyn_height").show();
 			$("#row_show_in_landscape").show();
 			$("#row_servers").show();
 			$("#row_historical_db_check").show();

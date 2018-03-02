@@ -6767,7 +6767,9 @@ function reporting_set_conf_charts(&$width, &$height, &$only_image, $type,
 		case 'dinamic':
 			$only_image = false;
 			$width = 900;
-			$height = 230;
+			$height = isset($content['style']['dyn_height'])
+				? $content['style']['dyn_height']
+				: 230;
 			$ttl = 1;
 			break;
 		case 'static':

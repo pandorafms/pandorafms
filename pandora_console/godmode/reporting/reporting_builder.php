@@ -1212,6 +1212,7 @@ switch ($action) {
 						$style['show_in_same_row'] = get_parameter('show_in_same_row', 0);
 						$style['show_in_landscape'] = get_parameter('show_in_landscape', 0);
 						$style['hide_notinit_agents'] = get_parameter('hide_notinit_agents', 0);
+						$style['dyn_height'] = get_parameter('dyn_height', 230);
 						
 						switch ($values['type']) {
 							case 'event_report_agent':
@@ -1551,6 +1552,7 @@ switch ($action) {
 						$style['show_in_same_row'] = get_parameter('show_in_same_row', 0);
 						$style['show_in_landscape'] = get_parameter('show_in_landscape', 0);
 						$style['hide_notinit_agents'] = get_parameter('hide_notinit_agents', 0);
+						$style['dyn_height'] = get_parameter('dyn_height', 230);
 						
 						switch ($values['type']) {
 							case 'event_report_agent':

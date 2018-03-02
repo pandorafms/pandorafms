@@ -297,7 +297,7 @@ if (is_ajax ()) {
 		echo json_encode($result);
 		return;
 	}
-	
+
 	if ($get_agent_modules_json_for_multiple_agents) {
 		$idAgents = get_parameter('id_agent');
 		$tags = get_parameter('tags', null);
@@ -312,9 +312,9 @@ if (is_ajax ()) {
 			$metaconsole_server_name = db_get_value('server_name',
 				'tmetaconsole_setup', 'id', $id_server);
 		}
-		
+
 		$filter = '1 = 1';
-		
+
 		$all = (string)get_parameter('all', 'all');
 		switch ($all) {
 			default:
@@ -325,10 +325,10 @@ if (is_ajax ()) {
 				$filter .= ' AND t1.disabled = 0';
 				break;
 		}
-		
+
 		if (!empty($module_types_excluded) && is_array($module_types_excluded))
 			$filter .= ' AND t1.id_tipo_modulo NOT IN (' . implode($module_types_excluded) . ')';
-		
+
 		if (!empty($module_name)) {
 			switch ($config['dbtype']) {
 				case "mysql":
@@ -342,11 +342,11 @@ if (is_ajax ()) {
 					break;
 			}
 		}
-		
+
 		// Status selector
 		if ($status_modulo == AGENT_MODULE_STATUS_NORMAL) { //Normal
 			$sql_conditions .= ' estado = 0 AND utimestamp > 0 )
-			 OR (t1.id_tipo_modulo IN(21,22,23,100)) ';
+			OR (t1.id_tipo_modulo IN(21,22,23,100)) ';
 		}
 		elseif ($status_modulo == AGENT_MODULE_STATUS_CRITICAL_BAD) { //Critical
 			$sql_conditions .= ' estado = 1 AND utimestamp > 0 )';
@@ -356,7 +356,7 @@ if (is_ajax ()) {
 		}
 		elseif ($status_modulo == AGENT_MODULE_STATUS_NOT_NORMAL) { //Not normal
 			$sql_conditions .= ' estado <> 0)';
-		} 
+		}
 		elseif ($status_modulo == AGENT_MODULE_STATUS_UNKNOWN) { //Unknown
 			$sql_conditions .= ' estado = 3 AND utimestamp <> 0 )';
 		}
@@ -364,11 +364,11 @@ if (is_ajax ()) {
 			$sql_conditions .= ' utimestamp = 0 )
 				AND t1.id_tipo_modulo NOT IN (21,22,23,100)';
 		}
-		
+
 		if ($status_modulo != -1) {
 			$filter .= ' AND t1.id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_estado where ' . $sql_conditions;
 		}
-		
+
 		if (is_metaconsole()) {
 			$result = array();
 			$nameModules = array();
@@ -377,7 +377,7 @@ if (is_ajax ()) {
 			$temp_element = array();
 			$counter = 0;
 			$first_elements = array();
-			
+
 			$array_mapped = array_map(function($item) use ($metaconsole_server_name) {
 				if (empty($metaconsole_server_name)) {
 					if (strstr($item, "|@_@|")) {
@@ -393,27 +393,27 @@ if (is_ajax ()) {
 					$server_name = $metaconsole_server_name;
 					$id_agent = $item;
 				}
-				
+
 				return array(
 						'server_name' => $server_name,
 						'id_agent' => $id_agent
 					);
-				
+
 			}, $idAgents);
-			
+
 			$array_reduced = array_reduce($array_mapped, function($carry, $item) {
-				
+
 				if (!isset($carry[$item['server_name']]))
 					$carry[$item['server_name']] = array();
-				
+
 				$carry[$item['server_name']][] = $item['id_agent'];
-				
+
 				return $carry;
-				
+
 			}, array());
-			
+
 			$last_modules_set = array();
-			
+
 			foreach ($array_reduced as $server_name => $id_agents) {
 				//Metaconsole db connection
 				// $server_name can be the server id (ugly hack, I know)
@@ -423,11 +423,11 @@ if (is_ajax ()) {
 				else {
 					$connection = metaconsole_get_connection($server_name);
 				}
-				
+
 				if (metaconsole_load_external_db($connection) != NOERR) {
 					continue;
 				}
-				
+
 				//Get agent's modules
 				$sql = sprintf('SELECT t1.id_agente, t1.id_agente_modulo, t1.nombre
 								FROM tagente_modulo t1
@@ -442,11 +442,11 @@ if (is_ajax ()) {
 											AND t2.id_agente IN (%s)) = (%d)',
 					$filter, implode(',', $id_agents),
 					implode(',', $id_agents), count($id_agents));
-				
+
 				$modules = db_get_all_rows_sql($sql);
 				if (empty($modules))
 					$modules = array();
-				
+
 				$modules_aux = array();
 				foreach ($modules as $key => $module) {
 					// Don't change this order, is used in the serialization
@@ -460,51 +460,64 @@ if (is_ajax ()) {
 					$modules_aux[$module['nombre']][] = $module_data;
 				}
 				$modules = $modules_aux;
-				
+
 				// Build the next array using the common values
 				if (!empty($last_modules_set)) {
 					$modules = array_intersect_key($modules, $last_modules_set);
-					
+
 					array_walk($modules, function(&$module_data, $module_name) use ($last_modules_set) {
 						$module_data = array_merge($module_data, $last_modules_set[$module_name]);
 					});
 				}
 				$last_modules_set = $modules;
-				
+
 				//Restore db connection
 				metaconsole_restore_db();
 			}
-			
+
 			$result = array();
 			foreach ($last_modules_set as $module_name => $module_data) {
 				$value = ui_print_truncate_text(io_safe_output($module_name), 'module_medium', false, true);
-				
+
 				$module_data_processed = array_map(function($item) {
 					// data: -> id_module  |  id_agent  |  server_name;
 					return implode('|', $item);
 				}, $module_data);
 				$key = implode(';', $module_data_processed);
-				
+
 				$result[$key] = $value;
 			}
 			asort($result);
 		}
 		else {
-		  if(implode(',', $idAgents) < 0) {
-			$sql = 'SELECT DISTINCT nombre, id_agente_modulo FROM tagente_modulo
-				WHERE nombre IN (
-				SELECT nombre
-				FROM tagente_modulo 
-				GROUP BY nombre
-				HAVING count(nombre) = (SELECT count(nombre) FROM tagente_modulo))';
-		  }
-		  else {
-			$sql = 'SELECT DISTINCT nombre, id_agente_modulo
-					FROM tagente_modulo t1
-					WHERE ' . $filter . '
-						AND t1.delete_pending = 0
-						AND t1.id_agente IN (' . implode(',', $idAgents) . ')';
-				
+			if($idAgents[0] < 0){
+				if($selection_mode == 'common'){
+					$sql_agent_total = 'SELECT count(*) FROM tagente WHERE disabled=0';
+					$agent_total = db_get_value_sql($sql_agent_total);
+					$sql = "SELECT tam.nombre, tam.id_agente_modulo
+							FROM tagente_modulo tam
+							JOIN (
+							SELECT COUNT(*) AS num_names, nombre
+							FROM tagente_modulo
+							WHERE disabled=0
+							AND delete_pending=0
+							GROUP BY nombre
+							) AS tj
+							ON tj.num_names = $agent_total
+								AND tj.nombre = tam.nombre ";
+				}
+				else{
+					$sql = 'SELECT nombre, id_agente_modulo
+							FROM tagente_modulo';
+				}
+			}
+			else {
+				$sql = 'SELECT DISTINCT nombre, id_agente_modulo
+						FROM tagente_modulo t1
+						WHERE ' . $filter . '
+							AND t1.delete_pending = 0
+							AND t1.id_agente IN (' . implode(',', $idAgents) . ')';
+
 				if ($selection_mode == 'common') {
 					$sql .= ' AND (
 								SELECT count(nombre)
@@ -517,10 +530,9 @@ if (is_ajax ()) {
 					$sql .= 'AND t1.id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_estado where estado = 3 OR estado = 4)';
 				}
 			}
+
 			$sql .= ' ORDER BY nombre';
-			
 			$nameModules = db_get_all_rows_sql($sql);
-			
 			if ($tags != null) {
 				if ((count($tags) >= 1) && ($tags[0] != "") && ($tags[0] != -1)) {
 					$implode_tags = implode(",", $tags);
@@ -545,11 +557,11 @@ if (is_ajax ()) {
 					}
 				}
 			}
-			
+
 			if ($nameModules == false) {
 				$nameModules = array();
 			}
-			
+
 			$result = array();
 			foreach ($nameModules as $nameModule) {
 				if (empty($serialized))
@@ -560,11 +572,11 @@ if (is_ajax ()) {
 					$result[io_safe_output($nameModule['nombre']).'$*$'.implode('|', $idAgents)] = ui_print_truncate_text(io_safe_output($nameModule['nombre']), 'module_medium', false, true);
 			}
 		}
-		
+
 		echo json_encode($result);
 		return;
 	}
-	
+
 	if ($get_agent_modules_json) {
 		$id_agent = (int) get_parameter ('id_agent');
 		

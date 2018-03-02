@@ -409,26 +409,22 @@ var TreeController = {
 										.addClass('module-graph')
 										.click(function (e) {
 											e.preventDefault();
-	if(element.statusImageHTML.indexOf('data:image')!=-1){
-											try {
-												winopeng('operation/agentes/snapshot_view.php?id='+element.id+'&refr=&label='+element.name);
+											if(element.statusImageHTML.indexOf('data:image')!=-1){
+												try {
+													winopeng_var(element.datos,'',700,480);
+												}
+												catch (error) {
+													// console.log(error);
+												}
 											}
-											catch (error) {
-												// console.log(error);
-											}
-										}
-										else{
-											
-											try {
-												
+											else{
+												try {
 													winopeng(element.moduleGraph.url, element.moduleGraph.handle);
+												}
+												catch (error) {
+													// console.log(error);
+												}
 											}
-											catch (error) {
-												// console.log(error);
-											}
-											
-											
-										}
 										});
 
 									$content.append($graphImage);

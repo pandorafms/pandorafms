@@ -997,6 +997,7 @@ sub parse_arguments {
 #  $config          : The configuration read to the point the regex matches
 #  $exp             : The matching regex which fires this action
 #  $line            : The complete line readed from the file
+#  $file_pointer    : A pointer to the file which is being parsed.
 #  $current_entity  : The current_entity (optional) when regex matches
 #
 ################################################################################
@@ -1033,17 +1034,12 @@ sub parse_configuration {
 		}
 		my ($key,$value) = split /$separator/, $line, 2;
 
-		if (empty($value) && ($line =~ /^(\w+?)\r*\n*$/) && is_enabled($detect_entities)) {
+		# Clear entity detection is only compatible with specific entities declaration
+		if (empty($value) && ($line =~ /^(\w+?)\r*\n*$/)
+		 && is_enabled($detect_entities)
+		 && in_array($entities_list, trim($key))) {
 			# possible Entity detected - compatibility vmware-plugin
-
-			if (!empty($entities_list)) {
-				if (in_array($entities_list, trim($key))) {
-					$new_entity = $key;
-				}
-			}
-			else {
-				$new_entity = $key;
-			}
+			$new_entity = $key;
 		}
 		if (($line =~ /\[(.*?)\]\r*\n*$/) && is_enabled($detect_entities)) {
 			# Entity detected
@@ -1079,7 +1075,7 @@ sub parse_configuration {
 					$f = 1;
 					my $aux;
 					eval {
-						$aux = $item->{'target'}->($_config, $item->{'exp'}, $line, $current_entity);
+						$aux = $item->{'target'}->($_config, $item->{'exp'}, $line, $_CFILE, $current_entity);
 					};
 
 					if (empty($_config)) {

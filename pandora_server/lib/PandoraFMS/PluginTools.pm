@@ -47,6 +47,7 @@ our @EXPORT = qw(
 	decrypt
 	empty
 	encrypt
+	extract_dbpass
 	extract_key_map
 	get_lib_version
 	get_unit
@@ -728,7 +729,7 @@ sub print_error {
 	}
 
 	print_module($conf, {
-		name  => "Plugin execution result",
+		name  => (empty($conf->{'global_plugin_module'})?"Plugin execution result":$conf->{'global_plugin_module'}),
 		type  => "generic_proc",
 		value => 0,
 		desc  => $msg,
@@ -1095,14 +1096,17 @@ sub parse_configuration {
 	}
 	close ($_CFILE);
 
-	if (empty($current_entity) && (!empty($global_config))) {
-		$global_config = merge_hashes($global_config, $_config);
-	}
-	else {
-		$global_config->{$current_entity} = $_config;
-	}
+	if(is_enabled($detect_entities)) {
+		if (empty($current_entity) && (!empty($global_config))) {
+			$global_config = merge_hashes($global_config, $_config);
+		}
+		else {
+			$global_config->{$current_entity} = $_config;
+		}
 
-	return $global_config unless empty($global_config);
+		return $global_config unless empty($global_config);
+	}
+	
 	return $_config;
 }
 
@@ -1996,4 +2000,42 @@ sub seconds2readable {
 	return $str;
 }
 
+################################################################################
+# Extracts a database password from file or environment
+################################################################################
+sub extract_dbpass {
+	my ($config) = @_;
+
+	return $config->{'dbpass'} unless empty($config->{'dbpass'});
+
+	if (!empty ($config->{'dbpass_file'})) {
+		if (-f $config->{'dbpass_file'}) {
+			eval {
+				open(my $pf, "<", $config->{'dbpass_file'}) or die ("Cannot open file " . $config->{'dbpass_file'});
+				$config->{'dbpass'} = trim(<$pf>);
+				close($pf);
+			};
+			if($@) {
+				print_error($config, "Failed to read password file" . $@, 1);
+				exit;
+			}
+		}
+		else {
+			print_error($config, "Failed to read password file", 1);
+			exit;
+		}
+	}
+	elsif (!empty ($config->{'dbpass_env_var_name'})) {
+		if (!empty ($ENV{$config->{'dbpass_env_var_name'}})) {
+			$config->{'dbpass'} = $ENV{$config->{'dbpass_env_var_name'}};
+		}
+
+		if (empty($config->{'dbpass'})) {
+			print_error($config, "Failed to read password from environment", 1);
+			exit;
+		}
+	}
+
+	return $config->{'dbpass'};
+}
 1;

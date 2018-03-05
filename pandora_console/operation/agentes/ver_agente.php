@@ -299,7 +299,7 @@ if (is_ajax ()) {
 	}
 
 	if ($get_agent_modules_json_for_multiple_agents) {
-		$idAgents = get_parameter('id_agent');
+		$idAgents = (array) get_parameter('id_agent');
 		$tags = get_parameter('tags', null);
 		$module_types_excluded = get_parameter('module_types_excluded', array());
 		$module_name = (string) get_parameter('name');

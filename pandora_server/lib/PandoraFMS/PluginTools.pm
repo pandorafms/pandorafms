@@ -807,7 +807,8 @@ sub logger {
 		}
 	}
 
-	$message = "[" . $tag . "] " . $message if ((defined $tag) && ($tag ne ""));
+	$message = ''  if empty($message);
+	$message = "[" . $tag . "] " . $message if empty($tag);
 
 	if (!(empty($conf->{agent_name}))){
 		$message = "[" . $conf->{agent_xml_name} . "] " . $message;

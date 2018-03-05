@@ -49,6 +49,7 @@ our @EXPORT = qw(
 	encrypt
 	extract_dbpass
 	extract_key_map
+	get_addresses
 	get_lib_version
 	get_unit
 	get_unix_time
@@ -85,6 +86,9 @@ our @EXPORT = qw(
 	transfer_xml
 	trim
 );
+
+# ~ compat
+my $DevNull = ($^O =~ /win/i)?'/NUL':'/dev/null';
 
 ################################################################################
 #
@@ -422,6 +426,17 @@ sub print_module {
 	$data->{warning_instructions}  = $conf->{warning_instructions}  unless (defined($data->{warning_instructions})  || (!defined($conf->{warning_instructions})));
 	$data->{critical_instructions} = $conf->{critical_instructions} unless (defined($data->{critical_instructions}) || (!defined($conf->{critical_instructions})));
 
+	# Translation compatibility
+	$data->{'min_warning'}      = $data->{'wmin'} if empty($data->{'min_warning'});
+	$data->{'max_warning'}      = $data->{'wmax'} if empty($data->{'max_warning'});
+	$data->{'min_critical'}     = $data->{'cmin'} if empty($data->{'min_critical'});
+	$data->{'max_critical'}     = $data->{'cmax'} if empty($data->{'max_critical'});
+	$data->{'warning_inverse'}  = $data->{'winv'} if empty($data->{'warning_inverse'});
+	$data->{'critical_inverse'} = $data->{'cinv'} if empty($data->{'critical_inverse'});
+	$data->{'str_warning'}      = $data->{'wstr'} if empty($data->{'str_warning'});
+	$data->{'str_critical'}     = $data->{'cstr'} if empty($data->{'str_critical'});
+
+
 	$xml_module .= "<module>\n";
 	$xml_module .= "\t<name><![CDATA[" . $data->{name} . "]]></name>\n";
 	$xml_module .= "\t<type>" . $data->{type} . "</type>\n";
@@ -462,29 +477,29 @@ sub print_module {
 	if (! (empty($data->{module_parent})) ) {
 		$xml_module .= "\t<module_parent>" . $data->{module_parent} . "</module_parent>\n";
 	}
-	if (! (empty($data->{wmin})) ) {
-		$xml_module .= "\t<min_warning><![CDATA[" . $data->{wmin} . "]]></min_warning>\n";
+	if (! (empty($data->{min_warning})) ) {
+		$xml_module .= "\t<min_warning><![CDATA[" . $data->{min_warning} . "]]></min_warning>\n";
 	}
-	if (! (empty($data->{wmax})) ) {
-		$xml_module .= "\t<max_warning><![CDATA[" . $data->{wmax} . "]]></max_warning>\n";
+	if (! (empty($data->{max_warning})) ) {
+		$xml_module .= "\t<max_warning><![CDATA[" . $data->{max_warning} . "]]></max_warning>\n";
 	}
-	if (! (empty ($data->{cmin})) ) {
-		$xml_module .= "\t<min_critical><![CDATA[" . $data->{cmin} . "]]></min_critical>\n";
+	if (! (empty ($data->{min_critical})) ) {
+		$xml_module .= "\t<min_critical><![CDATA[" . $data->{min_critical} . "]]></min_critical>\n";
 	}
-	if (! (empty ($data->{cmax})) ){
-		$xml_module .= "\t<max_critical><![CDATA[" . $data->{cmax} . "]]></max_critical>\n";
+	if (! (empty ($data->{max_critical})) ){
+		$xml_module .= "\t<max_critical><![CDATA[" . $data->{max_critical} . "]]></max_critical>\n";
 	}
-	if (! (empty ($data->{wstr}))) {
-		$xml_module .= "\t<str_warning><![CDATA[" . $data->{wstr} . "]]></str_warning>\n";
+	if (! (empty ($data->{str_warning}))) {
+		$xml_module .= "\t<str_warning><![CDATA[" . $data->{str_warning} . "]]></str_warning>\n";
 	}
-	if (! (empty ($data->{cstr}))) {
-		$xml_module .= "\t<str_critical><![CDATA[" . $data->{cstr} . "]]></str_critical>\n";
+	if (! (empty ($data->{str_critical}))) {
+		$xml_module .= "\t<str_critical><![CDATA[" . $data->{str_critical} . "]]></str_critical>\n";
 	}
-	if (! (empty ($data->{cinv}))) {
-		$xml_module .= "\t<critical_inverse><![CDATA[" . $data->{cinv} . "]]></critical_inverse>\n";
+	if (! (empty ($data->{critical_inverse}))) {
+		$xml_module .= "\t<critical_inverse><![CDATA[" . $data->{critical_inverse} . "]]></critical_inverse>\n";
 	}
-	if (! (empty ($data->{winv}))) {
-		$xml_module .= "\t<warning_inverse><![CDATA[" . $data->{winv} . "]]></warning_inverse>\n";
+	if (! (empty ($data->{warning_inverse}))) {
+		$xml_module .= "\t<warning_inverse><![CDATA[" . $data->{warning_inverse} . "]]></warning_inverse>\n";
 	}
 	if (! (empty ($data->{max}))) {
 		$xml_module .= "\t<max><![CDATA[" . $data->{max} . "]]></max>\n";
@@ -590,6 +605,9 @@ sub transfer_xml {
 		$file_name .=  "_" . time() . ".data";
 	}
 
+	$conf->{temp} = $conf->{tmp}      if (empty($conf->{temp}) && defined($conf->{tmp}));
+	$conf->{temp} = $conf->{temporal} if (empty($conf->{temporal}) && defined($conf->{temporal}));
+
 	$file_path = $conf->{temp} . "/" . $file_name;
 	
 	#Creating XML file in temp directory
@@ -600,7 +618,12 @@ sub transfer_xml {
 		$file_path = $conf->{temp} . "/" . $file_name;
 	}
 
-	open (FD, ">>", $file_path) or print_stderror($conf, "Cannot write to [" . $file_path . "]");
+	my $r = open (my $FD, ">>", $file_path);
+
+	if (empty($r)) {
+		print_stderror($conf, "Cannot write to [" . $file_path . "]", $conf->{'debug'});
+		return undef;
+	}
 	
 	my $bin_opts = ':raw:encoding(UTF8)';
 	
@@ -608,11 +631,11 @@ sub transfer_xml {
 		$bin_opts .= ':crlf';
 	}
 	
-	binmode(FD, $bin_opts);
+	binmode($FD, $bin_opts);
 
-	print FD $xml;
+	print $FD $xml;
 
-	close (FD);
+	close ($FD);
 
 	# Reassign default values if not present
 	$conf->{tentacle_client} = "tentacle_client" if empty($conf->{tentacle_client});
@@ -722,16 +745,24 @@ sub print_execution_result {
 ## Plugin devolution in case of error
 ################################################################################
 sub print_error {
-	my ($conf, $msg) = @_;
+	my ($conf, $msg, $value) = @_;
+
+	$value = 0 unless defined($value);
 
 	if (!(is_enabled($conf->{informational_modules}))) {
 		return 0;
 	}
 
+	if (is_enabled($conf->{'as_server_plugin'})) {
+		print STDERR $msg . "\n";
+		print $value . "\n";
+		exit 1;
+	}
+
 	print_module($conf, {
 		name  => (empty($conf->{'global_plugin_module'})?"Plugin execution result":$conf->{'global_plugin_module'}),
 		type  => "generic_proc",
-		value => 0,
+		value => $value,
 		desc  => $msg,
 	});
 	exit 1;
@@ -2038,4 +2069,39 @@ sub extract_dbpass {
 
 	return $config->{'dbpass'};
 }
+
+################################################################################
+# Extracts IP addresses (IPv4) from current system
+################################################################################
+sub get_addresses {
+	my ($config) = @_;
+	my $address = '';
+
+	if (is_enabled($config->{'local'})) {
+		$address = $config->{'dbhost'};
+	}
+	elsif($^O !~ /win/i) {
+		my @address_list;
+
+		if( -x "/bin/ip" || -x "/sbin/ip" || -x "/usr/sbin/ip" ) {
+			@address_list = `ip addr show 2>$DevNull | sed -e '/127.0.0/d' -e '/[0-9]*\\.[0-9]*\\.[0-9]*/!d' -e 's/^[ \\t]*\\([^ \\t]*\\)[ \\t]*\\([^ \\t]*\\)[ \\t].*/\\2/' -e 's/\\/.*//'`;
+		}
+		else {
+			@address_list = `ifconfig -a 2>$DevNull | sed -e '/127.0.0/d' -e '/[0-9]*\\.[0-9]*\\.[0-9]*/!d' -e 's/^[ \\t]*\\([^ \\t]*\\)[ \\t]*\\([^ \\t]*\\)[ \\t].*/\\2/' -e 's/.*://'`;
+		}
+
+		for (my $i = 0; $i <= $#address_list; $i++) {		
+			chomp($address_list[$i]);
+			if ($i > 0) {
+				$address .= ',';
+			}
+
+			$address .= $address_list[$i];
+		}			
+	}
+
+
+	return $address;
+}
+
 1;

@@ -1931,7 +1931,7 @@ CREATE TABLE IF NOT EXISTS `tupdate_journal` (
 -- ---------------------------------------------------------------------
 -- Table `talert_snmp_action`
 -- ---------------------------------------------------------------------
-CREATE TABLE  IF NOT EXISTS  `talert_snmp_action` (
+CREATE TABLE IF NOT EXISTS  `talert_snmp_action` (
 	`id` int(10) unsigned NOT NULL auto_increment,
 	`id_alert_snmp` int(10) unsigned NOT NULL default '0',
 	`alert_type` int(2) unsigned NOT NULL default '0',
@@ -1956,7 +1956,7 @@ CREATE TABLE  IF NOT EXISTS  `talert_snmp_action` (
 -- ---------------------------------------------------------------------
 -- Table `tsessions_php`
 -- ---------------------------------------------------------------------
-CREATE TABLE tsessions_php (
+CREATE TABLE IF NOT EXISTS `tsessions_php` (
 	`id_session` CHAR(52) NOT NULL,
 	`last_active` INTEGER NOT NULL,
 	`data` TEXT,
@@ -3081,3 +3081,30 @@ create table IF NOT EXISTS `tcluster_agent`(
 			ON UPDATE CASCADE
 ) engine=InnoDB DEFAULT CHARSET=utf8;
 
+-- ---------------------------------------------------------------------
+-- Table `tprovisioning`
+-- ---------------------------------------------------------------------
+create table IF NOT EXISTS `tprovisioning`(
+    `id` int unsigned NOT NULL auto_increment,
+    `name` varchar(100) NOT NULL,
+	`description` TEXT default '',
+	`type` enum('round-robin','less-loaded','custom') default 'round-robin',
+	`config` TEXT default '',
+	`agent_count` int(11) NOT NULL default 0,
+		PRIMARY KEY (`id`)
+) engine=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tprovisioning_rules`
+-- ---------------------------------------------------------------------
+create table IF NOT EXISTS `tprovisioning_rules`(
+    `id` int unsigned NOT NULL auto_increment,
+    `id_provisioning` int unsigned NOT NULL,
+	`order` int(11) NOT NULL default 0,
+	`operator` enum('AND','OR') default 'OR',
+	`type` enum('hostname','ip-range') default 'hostname',
+	`value` varchar(100) NOT NULL default '',
+		PRIMARY KEY (`id`),
+		FOREIGN KEY (`id_provisioning`) REFERENCES tprovisioning(`id`)
+			ON DELETE CASCADE
+) engine=InnoDB DEFAULT CHARSET=utf8;

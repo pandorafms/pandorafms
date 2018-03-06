@@ -370,7 +370,11 @@ $table->data[] = $data;
 $data = array();
 
 $autorefresh_list_out = array();
-$autorefresh_list_out['operation/agentes/tactical'] = "tactical";
+if(is_metaconsole()) {
+	$autorefresh_list_out['monitoring/tactical'] = "tactical";
+} else {
+	$autorefresh_list_out['operation/agentes/tactical'] = "tactical";
+}
 $autorefresh_list_out['operation/agentes/group_view'] = "group_view";
 $autorefresh_list_out['operation/agentes/estado_agente'] = "agent_status";
 $autorefresh_list_out['operation/agentes/alerts_status'] = "alerts_status";

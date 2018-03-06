@@ -290,18 +290,22 @@ if (!defined('METACONSOLE')) {
 else {
 	$url = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&recursion='.$recursion.'&ag_group='.$ag_group.'&search='.$search.'&pagination='.$pagination;
 }
+
+
+
+
 if ($own_info['is_admin'] || $vconsoles_read) {
 	if($ag_group){
-		$maps = visual_map_get_user_layouts (0,false,$filters,false);
+		$maps = visual_map_get_user_layouts ($config['id_user'],false,$filters,false);
 		unset($filters['offset']);
 		unset($filters['limit']);
-		$count_maps = visual_map_get_user_layouts (0,false,$filters,false);		
+		$count_maps = visual_map_get_user_layouts ($config['id_user'],false,$filters,false);		
 		$total_maps = count($count_maps);
 	}else{
-		$maps = visual_map_get_user_layouts (0,false,$filters, false);
+		$maps = visual_map_get_user_layouts ($config['id_user'],false,$filters, false);
 		unset($filters['offset']);
 		unset($filters['limit']);
-		$count_maps = visual_map_get_user_layouts (0,false,$filters,false);
+		$count_maps = visual_map_get_user_layouts ($config['id_user'],false,$filters,false);
 		$total_maps = count($count_maps);
 	}
 }
@@ -309,7 +313,7 @@ else {
 	$maps = visual_map_get_user_layouts ($config['id_user'], false, $filters, false);
 	unset($filters['offset']);
 	unset($filters['limit']);
-	$count_maps = visual_map_get_user_layouts (0,false,$filters,false);	
+	$count_maps = visual_map_get_user_layouts ($config['id_user'],false,$filters,false);	
 	$total_maps = count($count_maps);
 }
 if (!$maps && !is_metaconsole()) {

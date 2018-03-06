@@ -3602,6 +3602,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
  */
 function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter = false, 
 										$returnAllGroup = true, $favourite = false) {
+											
 	if (! is_array ($filter)){
 		$filter = array ();
 	} else {
@@ -3626,10 +3627,7 @@ function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter
 	if ($returnAllGroup) {
 		$groups = users_get_groups ($id_user, 'VR', true, true);
 	} else {
-		if(users_is_admin($id_user)){
-			$groups = users_get_groups ($id_user, 'VR', true, true);
-		}
-		else{
+		
 			if(!empty($filter['group'])) {
 				$permissions_group = users_get_groups ($id_user, 'VR', false, true);
 				if(empty($permissions_group)){
@@ -3637,12 +3635,12 @@ function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter
 				}
 				$groups = array_intersect_key($filter['group'], $permissions_group);
 			} else {
-				$groups = users_get_groups ($id_user, 'VR', false, true);
+				$groups = users_get_groups ($id_user, 'VR', true, true);
 				if(empty($groups)) {
-					$groups = users_get_groups ($id_user, 'VM', false, true);
+					$groups = users_get_groups ($id_user, 'VM', true, true);
 				}
 			}
-		}
+		
 		
 		unset($filter['group']);
 	}

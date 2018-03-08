@@ -3088,7 +3088,7 @@ create table IF NOT EXISTS `tprovisioning`(
     `id` int unsigned NOT NULL auto_increment,
     `name` varchar(100) NOT NULL,
 	`description` TEXT default '',
-	`type` enum('round-robin','less-loaded','custom') default 'round-robin',
+	`order` int(11) NOT NULL default 0,
 	`config` TEXT default '',
 	`agent_count` int(11) NOT NULL default 0,
 		PRIMARY KEY (`id`)

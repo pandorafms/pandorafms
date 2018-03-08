@@ -150,6 +150,13 @@ uninstall () {
 		rm /Library/LaunchDaemons/com.pandorafms.pandorafms.plist 2> /dev/null
 	fi
 
+	# Stops the agent on uninstall
+	if [ -f $PANDORA_BASE/etc/init.d/pandora_agent_daemon ]; then
+		$PANDORA_BASE/etc/init.d/pandora_agent_daemon stop 12> /dev/null
+	else
+		echo "$PANDORA_BASE/etc/init.d/pandora_agent_daemon not found to stop agent"
+	fi
+
 	echo "Removing Pandora FMS Agent..."
 	rm -Rf $PANDORA_BASE$PANDORA_BIN 2> /dev/null
 	rm -Rf $PANDORA_BASE$PANDORA_EXEC_BIN 2> /dev/null

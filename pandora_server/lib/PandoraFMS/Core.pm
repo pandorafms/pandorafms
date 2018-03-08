@@ -230,6 +230,7 @@ our @EXPORT = qw(
 	pandora_self_monitoring
 	pandora_process_policy_queue
 	subst_alert_macros
+	get_agent
 	get_agent_from_alias
 	get_agent_from_addr
 	get_agent_from_name
@@ -253,6 +254,27 @@ our $EventStormProtection :shared = 0;
 
 # Current master server
 my $Master :shared = 0;
+
+
+##########################################################################
+# Return the agent given the agent name or alias or address.
+##########################################################################
+sub get_agent {
+    my ($dbh, $field) = @_;
+
+    return undef if (! defined ($field) || $field eq '');
+
+    my $rs = get_agent_from_alias($dbh, $field);
+    return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
+
+    my $rs = get_agent_from_addr($dbh, $field);
+    return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
+
+    my $rs = get_agent_from_name($dbh, $field);
+    return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
+
+    return undef;
+}
 
 ##########################################################################
 # Return the agent given the agent name.

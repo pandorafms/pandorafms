@@ -3081,3 +3081,26 @@ create table IF NOT EXISTS `tcluster_agent`(
 			ON UPDATE CASCADE
 ) engine=InnoDB DEFAULT CHARSET=utf8;
 
+-- ---------------------------------------------------------------------
+-- Table `tmigration_queue`
+-- ---------------------------------------------------------------------
+
+create table IF NOT EXISTS `tmigration_queue`(
+    `id_metaconsole_agent` int unsigned not null,
+    `id_source_node` int unsigned not null,
+	`id_target_node` int unsigned not null,
+	`priority` int unsigned not null default 0,
+	`step` int unsigned not null default 0
+) engine=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tmigration_module_queue`
+-- ---------------------------------------------------------------------
+
+create table IF NOT EXISTS `tmigration_module_queue`(
+    `id_source_node` int unsigned not null,
+    `id_target_node` int unsigned not null,
+	`id_source_agentmodule` int unsigned not null,
+	`id_target_agentmodule` int unsigned not null,
+	`last_replication_timestamp` bigint(20) NOT NULL default 0
+) engine=InnoDB DEFAULT CHARSET=utf8;

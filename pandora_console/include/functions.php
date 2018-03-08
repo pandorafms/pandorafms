@@ -2699,4 +2699,26 @@ function remove_right_zeros ($value) {
 		return $value;
 	}
 }
+
+/**
+ * returns true or false if it is a valid ip 
+ * checking ipv4 and ipv6 or resolves the name dns
+ * @param string address
+ *
+*/
+function validate_address($address){
+	if($address){
+		if(!filter_var($address, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+			if(!filter_var($address, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+				$ip_address_dns = gethostbyname($address);
+				if(!filter_var($ip_address_dns, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+					if(!filter_var($ip_address_dns, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+						return false;
+					}
+				}
+			}
+		}
+	}
+	return true;
+}
 ?>

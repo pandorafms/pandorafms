@@ -146,10 +146,20 @@ $module_macros = array ();
 
 // Create agent
 if ($create_agent) {
+	$mssg_warning = 0;
 	$nombre_agente = (string) get_parameter_post("agente",'');
 	$direccion_agente = (string) get_parameter_post("direccion",'');
+	
+	//safe_output only validate ip
 	$direccion_agente = trim(io_safe_output($direccion_agente));
+	
+	if(!validate_address($direccion_agente)){
+		$mssg_warning = 1;
+	}
+
+	//safe-input before validate ip
 	$direccion_agente = io_safe_input($direccion_agente);
+
 	$grupo = (int) get_parameter_post ("grupo");
 	$intervalo = (string) get_parameter_post ("intervalo", SECONDS_5MINUTES);
 	$comentarios = (string) get_parameter_post ("comentarios", '');
@@ -209,8 +219,8 @@ if ($create_agent) {
 			// Create custom fields for this agent
 			foreach ($field_values as $key => $value) {
 				db_process_sql_insert ('tagent_custom_data',
-				 array('id_field' => $key, 'id_agent' => $id_agente,
-					'description' => $value));
+					array('id_field' => $key, 'id_agent' => $id_agente,
+						'description' => $value));
 			}
 			// Create address for this agent in taddress
 			if ( $direccion_agente != '') {
@@ -594,6 +604,10 @@ if ($create_agent) {
 	ui_print_result_message ($agent_created_ok,
 		__('Successfully created'),
 		$agent_creation_error);
+
+	if($mssg_warning){
+		ui_print_warning_message(__('The ip or dns name entered cannot be resolved'));
+	}
 }
 
 // Fix / Normalize module data
@@ -635,10 +649,18 @@ $update_agent = (bool) get_parameter ('update_agent');
 
 // Update AGENT
 if ($update_agent) { // if modified some agent paramenter
+	$mssg_warning = 0;
 	$id_agente = (int) get_parameter_post ("id_agente");
 	$nombre_agente = str_replace('`','&lsquo;',(string) get_parameter_post ("agente", ""));
 	$direccion_agente = (string) get_parameter_post ("direccion", '');
+	//safe_output only validate ip
 	$direccion_agente = trim(io_safe_output($direccion_agente));
+	
+	if(!validate_address($direccion_agente)){
+		$mssg_warning = 1;
+	}
+
+	//safe-input before validate ip
 	$direccion_agente = io_safe_input($direccion_agente);
 	$address_list = (string) get_parameter_post ("address_list", '');
 	
@@ -697,6 +719,10 @@ if ($update_agent) { // if modified some agent paramenter
 				array('description' => $value),
 				array('id_field' => $key,'id_agent' => $id_agente));
 		}
+	}
+
+	if($mssg_warning){
+		ui_print_warning_message(__('The ip or dns name entered cannot be resolved'));
 	}
 	
 	//Verify if there is another agent with the same name but different ID

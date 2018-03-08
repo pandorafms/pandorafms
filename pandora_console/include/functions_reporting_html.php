@@ -2741,7 +2741,16 @@ function reporting_get_stats_summary($data, $graph_width, $graph_height) {
 	$table_sum->cellstyle[count($table_sum->data)][2] = 'text-align: center;';
 	
 	if ($data["monitor_checks"] > 0) {
-		$tdata[0] = '<div style="margin: auto; width: ' . $graph_width . 'px;">' . graph_agent_status (false, $graph_width, $graph_height, true, true) . '</div>';
+		// Fixed width non interactive charts
+		$status_chart_width = $config["flash_charts"] == false
+			? 100 : $graph_width;
+
+		$tdata[0] =
+			'<div style="margin: auto; width: ' . $graph_width . 'px;">' .
+    			'<div id="status_pie" style="margin: auto; width: ' . $graph_width . '">' .
+					graph_agent_status (false, $graph_width, $graph_height, true, true) .
+				'</div>' .
+			'</div>';
 	}
 	else {
 		$tdata[2] = html_print_image('images/image_problem.png', true, array('width' => $graph_width));

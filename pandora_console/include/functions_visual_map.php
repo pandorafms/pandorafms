@@ -628,7 +628,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 			//Enter the correct img if the graph has a module selected or not
 			if ($type == STATIC_GRAPH) {
 				//Module
-				if ($layoutData['id_agente_modulo'] != 0) {
+				if ($layoutData['id_agente_modulo'] != 0 && $layoutData['id_layout_linked'] == 0) {
 					$module_status = db_get_sql ('SELECT estado
 						FROM tagente_estado
 						WHERE id_agente_modulo = ' . $layoutData['id_agente_modulo']);
@@ -649,7 +649,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 					}
 				}
 				//No module
-				else if ($layoutData['id_agent'] != 0) {
+				else if ($layoutData['id_agent'] != 0 && $layoutData["id_layout_linked"] == 0) {
 					$agent = db_get_row ("tagente", "id_agente", $layoutData['id_agent']);
 					if ($agent['total_count'] == 0 || $agent['total_count'] == $agent['notinit_count']) {
 						$layoutData['status_calculated'] = AGENT_STATUS_UNKNOWN;
@@ -1707,6 +1707,7 @@ function visual_map_get_image_status_element($layoutData, $status = false) {
 		
 		switch ($status) {
 			case 1:
+			case 100:
 				//Critical (BAD)
 				$img .= "_bad.png";
 				break;
@@ -1715,10 +1716,12 @@ function visual_map_get_image_status_element($layoutData, $status = false) {
 				$img = "4" . $img . "_bad.png";
 				break;
 			case 0:
+			case 300:
 				//Normal (OK)
 				$img .= "_ok.png";
 				break;
 			case 2:
+			case 200:
 				//Warning
 				$img .= "_warning.png";
 				break;
@@ -2268,6 +2271,11 @@ function visual_map_get_layout_status ($id_layout = 0, $depth = 0) {
 				}
 				// Module
 				elseif ($data["id_agente_modulo"] != 0) {
+					$sql_disabled = "SELECT disabled FROM tagente_modulo WHERE id_agente_modulo = ".$data["id_agente_modulo"];
+					$result_sql = db_get_sql($sql_disabled);
+					if($result_sql){
+						continue;
+					} 
 					$status = modules_get_agentmodule_status($data["id_agente_modulo"]);
 				
 				}
@@ -2286,10 +2294,14 @@ function visual_map_get_layout_status ($id_layout = 0, $depth = 0) {
 		if ($status == VISUAL_MAP_STATUS_CRITICAL_BAD)
 			return VISUAL_MAP_STATUS_CRITICAL_BAD;
 		
-		if ($status > $temp_total)
-			$temp_total = $status;
+		if($status != 0){
+			if($status < $temp_total && $temp_total != 0){
+				$temp_total = $status;
+			}else if($temp_total == 0){
+				$temp_total = $status;
+			}
+		}	
 	}
-	
 	return $temp_total;
 }
 

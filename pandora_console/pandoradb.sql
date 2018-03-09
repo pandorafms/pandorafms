@@ -3086,11 +3086,11 @@ create table IF NOT EXISTS `tcluster_agent`(
 -- ---------------------------------------------------------------------
 
 create table IF NOT EXISTS `tmigration_queue`(
-    `id_metaconsole_agent` int unsigned not null,
+    `id_metaconsole_agent` int unsigned not null auto_increment,
     `id_source_node` int unsigned not null,
 	`id_target_node` int unsigned not null,
-	`priority` int unsigned not null default 0,
-	`step` int unsigned not null default 0
+	`priority` int unsigned default 0,
+	`step` int unsigned default 0
 ) engine=InnoDB DEFAULT CHARSET=utf8;
 
 -- ---------------------------------------------------------------------

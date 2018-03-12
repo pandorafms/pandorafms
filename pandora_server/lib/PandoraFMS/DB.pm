@@ -40,6 +40,7 @@ our @EXPORT = qw(
 		db_get_lock
 		db_insert
 		db_insert_get_values
+		db_insert_from_hash
 		db_process_insert
 		db_process_update
 		db_release_lock
@@ -898,6 +899,29 @@ sub db_process_insert($$$$;@) {
 	
 	
 	return $res;
+}
+
+########################################################################
+## SQL insert from hash
+## 1st: dbh
+## 2nd: table name,
+## 2nd: {field => value} ref
+########################################################################
+sub db_insert_from_hash {
+	my ($dbh, $index, $table, $data) = @_;
+
+	my @fields = keys %{$data};
+	my $values_prep = "";
+	my @values = values %{$data};
+	my $nfields = scalar @fields;
+
+	for (my $i=0; $i<$nfields; $i++) {
+		$values_prep .= "?,";
+	}
+	$values_prep =~ s/,$//;
+
+	return db_insert($dbh, $index, "INSERT INTO " . $table . " (" . join (",", @fields) . ") VALUES ($values_prep)", @values);
+
 }
 
 ########################################################################

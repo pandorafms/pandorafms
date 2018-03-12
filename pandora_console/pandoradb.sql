@@ -3086,11 +3086,15 @@ create table IF NOT EXISTS `tcluster_agent`(
 -- ---------------------------------------------------------------------
 
 create table IF NOT EXISTS `tmigration_queue`(
-    `id_metaconsole_agent` int unsigned not null auto_increment,
+    `id` int unsigned not null auto_increment,
+    `id_source_agent` int unsigned not null,
+    `id_target_agent` int unsigned not null,
     `id_source_node` int unsigned not null,
-	`id_target_node` int unsigned not null,
-	`priority` int unsigned default 0,
-	`step` int unsigned default 0
+    `id_target_node` int unsigned not null,
+    `priority` int unsigned default 0,
+    `step` int unsigned default 0,
+    `running` tinyint(2) unsigned not null default 0,
+    PRIMARY KEY(`id`)
 ) engine=InnoDB DEFAULT CHARSET=utf8;
 
 -- ---------------------------------------------------------------------
@@ -3098,9 +3102,16 @@ create table IF NOT EXISTS `tmigration_queue`(
 -- ---------------------------------------------------------------------
 
 create table IF NOT EXISTS `tmigration_module_queue`(
+    `id` int unsigned not null auto_increment,
+    `id_migration` int unsigned not null,
     `id_source_node` int unsigned not null,
     `id_target_node` int unsigned not null,
-	`id_source_agentmodule` int unsigned not null,
-	`id_target_agentmodule` int unsigned not null,
-	`last_replication_timestamp` bigint(20) NOT NULL default 0
+    `id_source_agentmodule` int unsigned not null,
+    `id_target_agentmodule` int unsigned not null,
+    `last_replication_timestamp` bigint(20) NOT NULL default 0,
+    PRIMARY KEY(`id`),
+    FOREIGN KEY(`id_migration`) REFERENCES tmigration_queue(`id`)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 ) engine=InnoDB DEFAULT CHARSET=utf8;
+

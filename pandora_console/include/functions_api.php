@@ -10143,24 +10143,4 @@ function api_set_metaconsole_synch($keys) {
 	
 }
 
-/**
- * Returns the collections associated to this agent
- */
-function api_get_agent_collections($id_agent) {
-	// ACL!
-	$collections = enterprise_hook("collection_get_collections_in_agent", array($id_agent));
-	echo json_encode($collections);
-}
-
-/**
- * Returns if collection exists in this node
- */
-function api_get_check_collection_id($id_collection) {
-	// ACL!
-	$exists = enterprise_hook("collection_exits_directory", array($id_collection));
-	echo json_encode($exists);
-}
-
-
-
 ?>

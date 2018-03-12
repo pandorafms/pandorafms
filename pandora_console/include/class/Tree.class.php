@@ -1599,6 +1599,15 @@ class Tree {
 					'url' => $moduleGraphURL,
 					'handle' => $winHandle
 				);
+
+			// Info to be able to open the snapshot image new page
+			$module['snapshot'] = ui_get_snapshot_link(array(
+				'id_module' => $module['id'],
+				'last_data' => $module['datos'],
+				'timestamp' => $module['timestamp'],
+				'interval' => $module['current_interval'],
+				'module_name' => $module['name']
+			), true);
 		}
 
 		// Alerts fired image

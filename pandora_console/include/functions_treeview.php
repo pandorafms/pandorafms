@@ -268,21 +268,14 @@ function treeview_printModuleTable($id_module, $server_data = false, $no_head = 
 		$last_data_str .= html_print_image('images/clock2.png', true, array('title' => $last_data["timestamp"], 'width' => '18px'));
 		
 		$is_snapshot = is_snapshot_data ( $last_data["datos"] );
-			
 			if (($config['command_snapshot']) && ($is_snapshot)) {
-				$handle = 'snapshot_' . $module['id_agente_modulo'];
-				$url = 'include/procesos.php?agente=' . $row['id_agente_modulo'];
-				$win_handle = dechex(crc32($handle));
-				if (! defined ('METACONSOLE')) {
-				$link = "winopeng_var('operation/agentes/snapshot_view.php?" .
-					"id=" . $module['id_agente_modulo'] .
-					"&refr=" . $module['current_interval'] .
-					"&label=" . rawurlencode(urlencode(io_safe_output($module['module_name']))) . "','" . $win_handle . "', 700,480)";
-				}
-				else{
-					$link = "winopeng_var('$last_data[datos]','',700,480)";
-						
-				}
+				$link = ui_get_snapshot_link( array(
+					'id_module' => $module['id_agente_modulo'],
+					'last_data' => $last_data['datos'],
+					'timestamp' => $last_data['timestamp'],
+					'interval' => $module['current_interval'],
+					'module_name' => $module['module_name']
+				));
 
 				if(!is_image_data($last_data["datos"])){
 					$salida = '<a href="javascript:' . $link . '">' .

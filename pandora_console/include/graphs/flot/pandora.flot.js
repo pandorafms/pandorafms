@@ -1928,7 +1928,12 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			var formatted = number_format(v, force_integer, "", short_data);
 		}
 		else {
-			var formatted = v;
+			// It is an integer
+			if(v - Math.floor(v) == 0){
+				var formatted = number_format(v, force_integer, "", 2);
+			} else {
+				var formatted = v;
+			}
 		}
 
 		return '<div class='+font+' style="font-size:'+font_size+'pt;">'+formatted+'</div>';

@@ -70,8 +70,8 @@
 	<body>
 		<div style='height: 10px'>
 			<?php
-$version = '631';
-$build = '180308';
+$version = '7.0NG.719';
+$build = '180312';
 			$banner = "v$version Build $build";
 			
 			error_reporting(0);

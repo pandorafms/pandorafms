@@ -334,7 +334,6 @@ sub process_xml_data ($$$$$) {
 			if (defined ($data->{'group_id'}) && $data->{'group_id'} ne '') {
 				$group_id = $data->{'group_id'};
 				if (! defined (get_group_name ($dbh, $group_id))) {
-					print "UNABLE GROUP ID\n";
 					pandora_event ($pa_config, "Unable to create agent '" . safe_output($agent_name) . "': group ID '" . $group_id . "' does not exist.", 0, 0, 0, 0, 0, 'error', 0, $dbh);
 					logger($pa_config, "Group ID " . $group_id . " does not exist.", 3);
 					return;
@@ -342,13 +341,11 @@ sub process_xml_data ($$$$$) {
 			} elsif (defined ($data->{'group'}) && $data->{'group'} ne '') {
 				$group_id = get_group_id ($dbh, $data->{'group'});
 				if (! defined (get_group_name ($dbh, $group_id))) {
-					print "UNABLE GROUP\n";
 					pandora_event ($pa_config, "Unable to create agent '" . safe_output($agent_name) . "': group '" . safe_output($data->{'group'}) . "' does not exist.", 0, 0, 0, 0, 0, 'error', 0, $dbh);
 					logger($pa_config, "Group " . $data->{'group'} . " does not exist.", 3);
 					return;
 				}
 			} else {
-					print "UNABLE AUTOCREATE\n";
 					pandora_event ($pa_config, "Unable to create agent '" . safe_output($agent_name) . "': autocreate_group $group_id does not exist. Edit the pandora_server.conf file and change it.", 0, 0, 0, 0, 0, 'error', 0, $dbh);
 					logger($pa_config, "Group id $group_id does not exist (check autocreate_group config token).", 3);
 					return;

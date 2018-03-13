@@ -645,10 +645,11 @@ sub process_module_data ($$$$$$$$$$) {
 	
 	# Calculate the module interval in seconds
 	if (defined($module_conf->{'cron_interval'})) {
-		$module_conf->{'module_interval'} = 1 unless defined ($module_conf->{'module_interval'});
-		$module_conf->{'module_interval'} *= $interval if (defined ($module_conf->{'module_interval'}));
-	} else {
 		$module_conf->{'module_interval'} = $module_conf->{'cron_interval'};
+	} elsif (defined ($module_conf->{'module_interval'})) {
+		$module_conf->{'module_interval'} = $interval * $module_conf->{'module_interval'};
+	} else {
+		$module_conf->{'module_interval'} = $interval;
 	}
 	
 	# Allow , as a decimal separator

@@ -3092,8 +3092,9 @@ create table IF NOT EXISTS `tmigration_queue`(
     `id_source_node` int unsigned not null,
     `id_target_node` int unsigned not null,
     `priority` int unsigned default 0,
-    `step` int unsigned default 0,
-    `running` tinyint(2) unsigned not null default 0,
+    `step` int default 0,
+    `running` tinyint(2) default 0,
+    `active_db_only` tinyint(2) default 0,
     PRIMARY KEY(`id`)
 ) engine=InnoDB DEFAULT CHARSET=utf8;
 
@@ -3104,8 +3105,6 @@ create table IF NOT EXISTS `tmigration_queue`(
 create table IF NOT EXISTS `tmigration_module_queue`(
     `id` int unsigned not null auto_increment,
     `id_migration` int unsigned not null,
-    `id_source_node` int unsigned not null,
-    `id_target_node` int unsigned not null,
     `id_source_agentmodule` int unsigned not null,
     `id_target_agentmodule` int unsigned not null,
     `last_replication_timestamp` bigint(20) NOT NULL default 0,

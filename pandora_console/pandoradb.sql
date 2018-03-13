@@ -3102,7 +3102,7 @@ create table IF NOT EXISTS `tprovisioning_rules`(
     `id_provisioning` int unsigned NOT NULL,
 	`order` int(11) NOT NULL default 0,
 	`operator` enum('AND','OR') default 'OR',
-	`type` enum('hostname','ip-range') default 'hostname',
+	`type` enum('alias','ip-range') default 'alias',
 	`value` varchar(100) NOT NULL default '',
 		PRIMARY KEY (`id`),
 		FOREIGN KEY (`id_provisioning`) REFERENCES tprovisioning(`id`)

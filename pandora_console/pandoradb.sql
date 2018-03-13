@@ -3090,7 +3090,6 @@ create table IF NOT EXISTS `tprovisioning`(
 	`description` TEXT default '',
 	`order` int(11) NOT NULL default 0,
 	`config` TEXT default '',
-	`agent_count` int(11) NOT NULL default 0,
 		PRIMARY KEY (`id`)
 ) engine=InnoDB DEFAULT CHARSET=utf8;
 

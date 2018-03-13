@@ -267,10 +267,10 @@ sub get_agent {
     my $rs = get_agent_from_alias($dbh, $field);
     return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
 
-    my $rs = get_agent_from_addr($dbh, $field);
+    $rs = get_agent_from_addr($dbh, $field);
     return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
 
-    my $rs = get_agent_from_name($dbh, $field);
+    $rs = get_agent_from_name($dbh, $field);
     return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
 
     return undef;

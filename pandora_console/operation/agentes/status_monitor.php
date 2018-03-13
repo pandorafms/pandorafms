@@ -1361,19 +1361,13 @@ if (!empty($result)) {
 			$is_snapshot = is_snapshot_data ( $module_value );
 			
 			if (($config['command_snapshot']) && ($is_snapshot)) {
-				$handle = 'snapshot_' . $row['id_agente_modulo'];
-				$url = 'include/procesos.php?agente=' . $row['id_agente_modulo'];
-				$win_handle = dechex(crc32($handle));
-				if (! defined ('METACONSOLE')) {
-				$link = "winopeng_var('operation/agentes/snapshot_view.php?" .
-					"id=" . $row['id_agente_modulo'] .
-					"&refr=" . $row['current_interval'] .
-					"&label=" . rawurlencode(urlencode(io_safe_output($row['module_name']))) . "','" . $win_handle . "', 700,480)";
-				}
-				else{
-					$link = "winopeng_var('$row[datos]','',700,480)";
-						
-				}
+				$link = ui_get_snapshot_link( array(
+					'id_module' => $row['id_agente_modulo'],
+					'last_data' => $row['datos'],
+					'timestamp' => $row['timestamp'],
+					'interval' => $row['current_interval'],
+					'module_name' => $row['module_name']
+				));
 
 				if(!is_image_data($row['datos'])){
 					$salida = '<a href="javascript:' . $link . '">' .

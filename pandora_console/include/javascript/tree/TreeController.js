@@ -402,16 +402,21 @@ var TreeController = {
 									else{
 									
 									var $graphImage = $('<img src="'+(controller.baseURL.length > 0 ? controller.baseURL : '')
-											+'images/chart_curve.png" /> ');	
+											+'images/chart_curve.png" /> ');
 									}
-									
+
 									$graphImage
 										.addClass('module-graph')
 										.click(function (e) {
 											e.preventDefault();
 											if(element.statusImageHTML.indexOf('data:image')!=-1){
 												try {
-													winopeng_var(element.datos,'',700,480);
+													winopeng_var(
+														decodeURI(element.snapshot[0]),
+														element.snapshot[1],
+														element.snapshot[2],
+														element.snapshot[3]
+													);
 												}
 												catch (error) {
 													// console.log(error);

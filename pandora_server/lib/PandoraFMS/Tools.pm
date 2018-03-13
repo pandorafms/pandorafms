@@ -27,6 +27,7 @@ use Encode;
 use Socket qw(inet_ntoa inet_aton);
 use Sys::Syslog;
 use Scalar::Util qw(looks_like_number);
+use LWP::UserAgent;
 
 # New in 3.2. Used to sendmail internally, without external scripts
 # use Module::Loaded;
@@ -62,9 +63,10 @@ our @EXPORT = qw(
 	TRANSACTIONALSERVER
 	SYNCSERVER
 	SYSLOGSERVER
-	METACONSOLE_LICENSE
 	WUXSERVER
 	PROVISIONINGSERVER
+	MIGRATIONSERVER
+	METACONSOLE_LICENSE
 	$DEVNULL
 	$OS
 	$OS_VERSION
@@ -75,7 +77,8 @@ our @EXPORT = qw(
 	MODULE_WARNING
 	MODULE_UNKNOWN
 	MODULE_NOTINIT
-    cron_get_closest_in_range
+	api_call_url
+	cron_get_closest_in_range
 	cron_next_execution
 	cron_next_execution_date
 	cron_check_syntax
@@ -135,6 +138,7 @@ use constant SYNCSERVER => 16;
 use constant WUXSERVER => 17;
 use constant SYSLOGSERVER => 18;
 use constant PROVISIONINGSERVER => 19;
+use constant MIGRATIONSERVER => 20;
 
 # Module status
 use constant MODULE_NORMAL => 0;
@@ -1709,6 +1713,35 @@ sub uri_encode_literal_percent {
   return $return_char;
 } ## end sub uri_encode_literal_percent
 
+
+################################################################################
+# Launch API call
+################################################################################
+sub api_call_url {
+	my ($pa_config, $server_url, $api_params, @options) = @_;
+	
+
+	my $ua = LWP::UserAgent->new();
+	$ua->timeout($options->{lwp_timeout});
+	# Enable environmental proxy settings
+	$ua->env_proxy;
+	# Enable in-memory cookie management
+	$ua->cookie_jar( {} );
+	
+	# Disable verify host certificate (only needed for self-signed cert)
+	$ua->ssl_opts( 'verify_hostname' => 0 );
+	$ua->ssl_opts( 'SSL_verify_mode' => 0x00 );
+
+	my $response;
+
+	eval {
+		$response = $ua->post($server_url, $api_params, @options);
+	};
+	if ((!$@) && $response->is_success) {
+		return $response->decoded_content;
+	}
+	return undef;
+}
 
 # End of function declaration
 # End of defined Code

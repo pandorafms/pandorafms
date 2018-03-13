@@ -1560,3 +1560,36 @@ create table IF NOT EXISTS `tprovisioning_rules`(
 		FOREIGN KEY (`id_provisioning`) REFERENCES tprovisioning(`id`)
 			ON DELETE CASCADE
 ) engine=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tmigration_queue`
+-- ---------------------------------------------------------------------
+
+create table IF NOT EXISTS `tmigration_queue`(
+    `id` int unsigned not null auto_increment,
+    `id_source_agent` int unsigned not null,
+    `id_target_agent` int unsigned not null,
+    `id_source_node` int unsigned not null,
+    `id_target_node` int unsigned not null,
+    `priority` int unsigned default 0,
+    `step` int default 0,
+    `running` tinyint(2) default 0,
+    `active_db_only` tinyint(2) default 0,
+    PRIMARY KEY(`id`)
+) engine=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tmigration_module_queue`
+-- ---------------------------------------------------------------------
+
+create table IF NOT EXISTS `tmigration_module_queue`(
+    `id` int unsigned not null auto_increment,
+    `id_migration` int unsigned not null,
+    `id_source_agentmodule` int unsigned not null,
+    `id_target_agentmodule` int unsigned not null,
+    `last_replication_timestamp` bigint(20) NOT NULL default 0,
+    PRIMARY KEY(`id`),
+    FOREIGN KEY(`id_migration`) REFERENCES tmigration_queue(`id`)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+) engine=InnoDB DEFAULT CHARSET=utf8;

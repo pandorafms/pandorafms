@@ -51,6 +51,9 @@ $correctLogin = false;
 $user_in_db = null;
 $no_login_msg = "";
 
+// Clean unwanted output
+ob_clean();
+
 // Special call without checks to retrieve version and build of the Pandora FMS
 // This info is avalable from the web console without login
 // Don't change the format, it is parsed by applications

@@ -359,6 +359,7 @@ sub pandora_server_tasks ($) {
 			# Pandora self monitoring
 			if (defined($pa_config->{"self_monitoring"}) 
 				&& $pa_config->{"self_monitoring"} == 1
+				&& !is_metaconsole($pa_config)
 				&& $counter % $pa_config->{'self_monitoring_interval'} == 0) {
 				pandora_self_monitoring ($pa_config, $dbh);
 			}

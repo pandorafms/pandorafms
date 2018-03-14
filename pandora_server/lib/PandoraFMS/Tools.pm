@@ -64,6 +64,7 @@ our @EXPORT = qw(
 	SYNCSERVER
 	SYSLOGSERVER
 	WUXSERVER
+	PROVISIONINGSERVER
 	MIGRATIONSERVER
 	METACONSOLE_LICENSE
 	$DEVNULL
@@ -136,7 +137,8 @@ use constant MFSERVER => 15;
 use constant SYNCSERVER => 16;
 use constant WUXSERVER => 17;
 use constant SYSLOGSERVER => 18;
-use constant MIGRATIONSERVER => 19;
+use constant PROVISIONINGSERVER => 19;
+use constant MIGRATIONSERVER => 20;
 
 # Module status
 use constant MODULE_NORMAL => 0;

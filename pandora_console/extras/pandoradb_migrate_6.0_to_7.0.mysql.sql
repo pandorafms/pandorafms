@@ -1534,6 +1534,32 @@ create table IF NOT EXISTS `tcluster_agent`(
 			ON UPDATE CASCADE
 ) engine=InnoDB DEFAULT CHARSET=utf8;
 
+-- ---------------------------------------------------------------------
+-- Table `tprovisioning`
+-- ---------------------------------------------------------------------
+create table IF NOT EXISTS `tprovisioning`(
+    `id` int unsigned NOT NULL auto_increment,
+    `name` varchar(100) NOT NULL,
+	`description` TEXT default '',
+	`order` int(11) NOT NULL default 0,
+	`config` TEXT default '',
+		PRIMARY KEY (`id`)
+) engine=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tprovisioning_rules`
+-- ---------------------------------------------------------------------
+create table IF NOT EXISTS `tprovisioning_rules`(
+    `id` int unsigned NOT NULL auto_increment,
+    `id_provisioning` int unsigned NOT NULL,
+	`order` int(11) NOT NULL default 0,
+	`operator` enum('AND','OR') default 'OR',
+	`type` enum('alias','ip-range') default 'alias',
+	`value` varchar(100) NOT NULL default '',
+		PRIMARY KEY (`id`),
+		FOREIGN KEY (`id_provisioning`) REFERENCES tprovisioning(`id`)
+			ON DELETE CASCADE
+) engine=InnoDB DEFAULT CHARSET=utf8;
 
 -- ---------------------------------------------------------------------
 -- Table `tmigration_queue`
@@ -1567,4 +1593,3 @@ create table IF NOT EXISTS `tmigration_module_queue`(
         ON DELETE CASCADE
         ON UPDATE CASCADE
 ) engine=InnoDB DEFAULT CHARSET=utf8;
-

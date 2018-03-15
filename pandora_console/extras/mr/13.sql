@@ -54,8 +54,7 @@ START TRANSACTION;
 		`last_replication_timestamp` bigint(20) NOT NULL default 0,
 		PRIMARY KEY(`id`),
 		FOREIGN KEY(`id_migration`) REFERENCES tmigration_queue(`id`)
-			ON DELETE CASCADE
-			ON UPDATE CASCADE
+			ON DELETE CASCADE ON UPDATE CASCADE
 	) engine=InnoDB DEFAULT CHARSET=utf8;
 
 COMMIT;

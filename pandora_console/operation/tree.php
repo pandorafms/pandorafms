@@ -283,7 +283,7 @@ enterprise_hook('close_meta_frame');
 						detailRecipient: $.fixedBottomBox({ width: 400, height: window.innerHeight * 0.9 }),
 						page: parameters['page'],
 						emptyMessage: "<?php echo __('No data found'); ?>",
-						foundMessage: "<?php echo __('Found items'); ?>",
+						foundMessage: "<?php echo __('Found groups'); ?>",
 						tree: data.tree,
 						baseURL: "<?php echo ui_get_full_url(false, false, false, is_metaconsole()); ?>",
 						ajaxURL: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",

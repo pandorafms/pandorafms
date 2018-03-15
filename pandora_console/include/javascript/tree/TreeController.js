@@ -20,7 +20,7 @@ var TreeController = {
 			recipient: '',
 			tree: [],
 			emptyMessage: "No data found.",
-			foundMessage: "Found items",
+			foundMessage: "Found groups",
 			errorMessage: "Error",
 			baseURL: "",
 			ajaxURL: "ajax.php",

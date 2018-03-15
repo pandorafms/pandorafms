@@ -246,7 +246,7 @@ our @EXPORT = qw(
 
 # Some global variables
 our @DayNames = qw(sunday monday tuesday wednesday thursday friday saturday);
-our @ServerTypes = qw (dataserver networkserver snmpconsole reconserver pluginserver predictionserver wmiserver exportserver inventoryserver webserver eventserver icmpserver snmpserver satelliteserver transactionalserver mfserver syncserver wuxserver syslogserver);
+our @ServerTypes = qw (dataserver networkserver snmpconsole reconserver pluginserver predictionserver wmiserver exportserver inventoryserver webserver eventserver icmpserver snmpserver satelliteserver transactionalserver mfserver syncserver wuxserver syslogserver provisioningserver migrationserver);
 our @AlertStatus = ('Execute the alert', 'Do not execute the alert', 'Do not execute the alert, but increment its internal counter', 'Cease the alert', 'Recover the alert', 'Reset internal counter');
 
 # Event storm protection (no alerts or events)

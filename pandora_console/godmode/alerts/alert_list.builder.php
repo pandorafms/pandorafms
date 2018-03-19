@@ -141,6 +141,12 @@ echo '<form class="add_alert_form" method="post">';
 html_print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
+
+if($id_cluster){
+	echo "<input onclick='window.location.replace(\"index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_view&id=".$id_cluster."\");' type=button style='float:right;margin-left:20px;' name='store' class='sub upd' value='".__('Finish and view cluster')."'>";
+}
+
+
 html_print_submit_button (__('Add alert'), 'add', false, 'class="sub wand"');
 html_print_input_hidden ('create_alert', 1);
 echo '</div></form>';

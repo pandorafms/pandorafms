@@ -10,7 +10,11 @@ START TRANSACTION;
 	EXECUTE pr_oum720;
 	DEALLOCATE PREPARE pr_oum720;
 	
-	INSERT INTO `tconfig_os` (`id_os`, `name`, `description`, `icon_name`) VALUES (21, 'Cluster', 'Cluster agent', 'so_cluster.png');
+	INSERT INTO `tconfig_os` (`id_os`, `name`, `description`, `icon_name`) VALUES (100, 'Cluster', 'Cluster agent', 'so_cluster.png');
+	
+	UPDATE `tagente` SET `id_os` = 100 WHERE `id_os` = 21 and (select `id_os` from `tconfig_os` WHERE `id_os` = 21 and `name` = 'Cluster');
+
+	DELETE FROM `tconfig_os` where `id_os` = 21 and `name` = 'Cluster';
 
 	CREATE TABLE IF NOT EXISTS `tprovisioning`(
 	    `id` int unsigned NOT NULL auto_increment,

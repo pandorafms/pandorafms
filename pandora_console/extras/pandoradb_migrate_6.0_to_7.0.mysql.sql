@@ -1165,6 +1165,16 @@ DELETE FROM `tconfig` WHERE `token` = 'current_package_enterprise';
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '720');
 
 -- ---------------------------------------------------------------------
+-- Table `tconfig_os`
+-- ---------------------------------------------------------------------
+
+INSERT INTO `tconfig_os` (`id_os`, `name`, `description`, `icon_name`) VALUES (100, 'Cluster', 'Cluster agent', 'so_cluster.png');
+	
+UPDATE `tagente` SET `id_os` = 100 WHERE `id_os` = 21 and (select `id_os` from `tconfig_os` WHERE `id_os` = 21 and `name` = 'Cluster');
+
+DELETE FROM `tconfig_os` where `id_os` = 21 and `name` = 'Cluster';
+
+-- ---------------------------------------------------------------------
 -- Table `tplanned_downtime_agents`
 -- ---------------------------------------------------------------------
 ALTER TABLE tplanned_downtime_agents ADD COLUMN `manually_disabled` tinyint(1) DEFAULT 0;

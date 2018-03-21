@@ -625,12 +625,31 @@ ui_require_jquery_file('bgiframe');
 
 	function agent_manager_add_secondary_groups (event) {
 		event.preventDefault();
-		// TODO
+		var primary_value = $("#grupo").val()
+		// The selected primary value cannot be selected like secondary
+		if ($("#secondary_groups option:selected[value=" + primary_value + "]").length > 0) {
+			alert("<?php echo __("Primary group cannot be secondary too.");?>")
+			return
+		}
+		// Move from one input to the other
+		$("#secondary_groups_selected option[value=0]").remove()
+		$("#secondary_groups option:selected").each(function(){
+			$(this).remove().appendTo("#secondary_groups_selected")
+		})
 	}
 
 	function agent_manager_remove_secondary_groups (event) {
 		event.preventDefault();
-		// TODO
+		$("#secondary_groups_selected option:selected").each(function(){
+			$(this).remove().appendTo("#secondary_groups")
+		})
+
+		if ($("#secondary_groups_selected option").length == 0) {
+			$("#secondary_groups_selected").append($('<option>',{
+				value: 0,
+				text: "<?php echo __("None");?>"
+			}))
+		}
 	}
 
 	$(document).ready (function() {

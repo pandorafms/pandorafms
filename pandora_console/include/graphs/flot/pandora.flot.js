@@ -419,28 +419,22 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 		for (i = 0; i < labels_total.length; i++) {
 			var label = labels_total[i][1];
 			// var shortLabel = reduceText(label, 25);
-			var title = '';
-			// if (label !== shortLabel) {
-				title = label;
-				// label = shortLabel;
-			// }
-			
-			if(label.length > 30){
-				if(label.indexOf(" - ")){
-					var label_temp = label.split(" - ");
-				}
-				else if(label.indexOf(" ")){
-					var label_temp = label.split(" ");
-				}
-				else{
-					var label_temp = '';
-					label_temp[0] = label.substring(0, (label.length/2));
-					label_temp[1] = label.substring((label.length/2));
-				}
-				label = reduceText(label_temp[0], 20)+"<br>"+reduceText(label_temp[1], 20);
+			var title = label;
+			var margin_top = 0;
+			if(label.length > 33){
+				label  = reduceText(label, 33);
 			}
-			
-			format.push([i,'<div style="font-size:'+font_size+'pt !important; word-break:keep-all; max-width: 150px;margin-right:20px;" title="'+title+'" class="'+font+'">'
+			var div_attributes = 'style="font-size:'+font_size+'pt !important;'
+			 	+ ' margin: 0; max-width: 150px;'
+			 	+ 'margin-right:5px;';
+
+			if (label.indexOf("<br>") != -1) {
+				div_attributes += "min-height: 2.5em;";
+			}
+
+			div_attributes += '" title="'+title+'" class="'+font+'"';
+
+			format.push([i,'<div ' + div_attributes + '>'
 				+ label
 				+ '</div>']);
 		}
@@ -2325,8 +2319,9 @@ function add_threshold (data_base, threshold_data, y_min, y_max,
 }
 
 function reduceText (text, maxLength) {
+	if(!text) return text;
 	if (text.length <= maxLength) return text
-	var firstSlideEnd = parseInt((maxLength - 3) / 2);
+	var firstSlideEnd = parseInt((maxLength - 3)/1.6);
 	var str_cut = text.substr(0, firstSlideEnd);
-	return str_cut + '...' + text.substr(-firstSlideEnd - 3);
+	return str_cut + '...<br>' + text.substr(-firstSlideEnd - 3);
 }

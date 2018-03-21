@@ -712,7 +712,7 @@ function flot_hcolumn_chart ($graph_data, $width, $height, $water_mark, $font = 
 	$data = array();
 	
 	foreach ($graph_data as $label => $values) {
-		$labels[] = $label;
+		$labels[] = io_safe_output($label);
 		$i--;
 		
 		foreach ($values as $key => $value) {

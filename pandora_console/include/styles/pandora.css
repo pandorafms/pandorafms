@@ -4620,3 +4620,9 @@ form ul.form_flex li ul li{
 .events_bar {
 	margin:0 auto;
 }
+
+.tickLabel {
+    white-space: nowrap;
+    overflow-x: hidden;
+    line-height: 1.05em!important;
+}

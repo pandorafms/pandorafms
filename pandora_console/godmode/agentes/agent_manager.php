@@ -251,7 +251,7 @@ if(is_array($modules)){
 	}
 }
 
-$table->data[4][0] = __('Group');
+$table->data[4][0] = __('Primary group');
 $table->data[4][1] = html_print_select_groups(false, "AR", false, 'grupo', $grupo, '', '', 0, true);
 $table->data[4][1] .= ' <span id="group_preview">';
 $table->data[4][1] .= ui_print_group_icon ($grupo, true);
@@ -302,6 +302,54 @@ $table->style = array ();
 $table->style[0] = 'font-weight: bold; ';
 $table->style[4] = 'font-weight: bold;';
 $table->data = array ();
+
+if (enterprise_installed()) {
+	$secondary_groups_selected = enterprise_hook('agents_get_secondary_groups', array($id_agente));
+	$table->data['secondary_groups'][0] = __('Secondary groups');
+	$table->data['secondary_groups'][1] = html_print_select_groups(
+		false,                    // Use the current user to select the groups
+		"AR",                     // ACL permission
+		false,                    // Not all group
+		'secondary_groups',       // HTML id
+		'',                       // No select any by default
+		'',                       // Javascript onChange code
+		'',                       // Do not user no selected value
+		0,                        // Do not use no selected value
+		true,                     // Return HTML (not echo)
+		true,                     // Multiple selection
+		true,                     // Sorting by default
+		'',                       // CSS classnames (default)
+		false,                    // Not disabled (default)
+		false,                    // Inline styles (default)
+		false,                    // Option style select (default)
+		false,                    // Do not truncate the users tree (default)
+		'id_grupo',               // Key to get as value (default)
+		false,                    // Not strict user (default)
+		$secondary_groups_selected['plain'] // Do not show the primary group in this selection
+	);
+
+	$table->data['secondary_groups'][2] =
+		html_print_input_image ('add_secondary', 'images/darrowright.png', 1, '', true, array (
+			'title' => __('Add secondary groups'),
+			'onclick' => "agent_manager_add_secondary_groups(event);"
+		)) .
+		'<br /><br /><br /><br />' .
+		html_print_input_image ('remove_secondary', 'images/darrowleft.png', 1, '', true, array (
+			'title' => __('Remove secondary groups'),
+			'onclick' => "agent_manager_remove_secondary_groups(event);"
+		));
+
+	$table->data['secondary_groups'][3] = html_print_select (
+		$secondary_groups_selected['for_select'],     // Values
+		'secondary_groups_selected',                  // HTML id
+		'',                                           // Selected
+		'',                                           // Javascript onChange code
+		'',                                           // Nothing selected
+		0,                                            // Nothing selected
+		true,                                         // Return HTML (not echo)
+		true                                          // Multiple selection
+	);
+}
 
 // Custom ID
 $table->data[0][0] = __('Custom ID');
@@ -574,7 +622,17 @@ ui_require_jquery_file('bgiframe');
 			$("#modules_not_learning_mode_context_help").hide();
 		}
 	}
-	
+
+	function agent_manager_add_secondary_groups (event) {
+		event.preventDefault();
+		// TODO
+	}
+
+	function agent_manager_remove_secondary_groups (event) {
+		event.preventDefault();
+		// TODO
+	}
+
 	$(document).ready (function() {
 		$("select#id_os").pandoraSelectOS ();
 

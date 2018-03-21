@@ -5612,6 +5612,82 @@ sub cli_export_visual_console() {
 	print_log "[INFO] JSON file now contents: \n" . $data_to_json . "\n\n";
 }
 
+##############################################################################
+# cli_get_server_address gets first occurrence of IP address
+##############################################################################
+sub cli_get_server_address {
+	my ($target_node_name) = $ARGV[2];
+
+	if (is_metaconsole($conf)) {
+		my $rs = enterprise_hook("get_server_address",[\%conf, $dbh, $target_node_name]);
+		if (!defined($rs) || $rs eq '') {
+			print_log("0\n");
+			print STDERR "Error, no IP set in $target_node_name.\n" if ($conf->{'verbosity'} >= 3);
+			return;
+		}
+
+		print_log("$rs\n");
+	}
+	else {
+		my $server_address = get_db_value($dbh, "SELECT ip_address FROM tserver where name = ? AND ip_address!= '' ",
+			$target_node_name);
+
+		if (defined($server_address) && ("$server_address" ne "")) {
+			print_log("$server_address\n");
+		}
+		else {
+			print_log("0\n");
+			print STDERR "Error, no IP set in $target_node_name.\n" if ($conf->{'verbosity'} >= 3);
+		}
+	}
+}
+
+
+##############################################################################
+# cli_check_server_address
+##############################################################################
+sub cli_check_server_address {
+	my ($target_node_name) = $ARGV[2];
+
+	if (!is_metaconsole($conf)) {
+		print_log("0\n");
+		print STDERR "Error, this is not a Metaconsole Server.\n" if ($conf->{'verbosity'} >= 1);
+		return;
+	}
+
+	my $rs = enterprise_hook("get_server_address",[\%conf, $dbh, $target_node_name]);
+	if (!defined($rs) || $rs eq '') {
+		print_log("0\n");
+		print STDERR "Error, no IP set in $target_node_name.\n" if ($conf->{'verbosity'} >= 3);
+		return;
+	}
+
+	print_log("1\n");
+}
+
+
+#
+sub cli_check_mr_same {}
+#
+sub cli_check_alerts_act_exist {}
+#
+sub cli_check_alerts_temp_exist {}
+#
+sub cli_check_inventory_exist {}
+#
+sub cli_check_agent_conf {}
+#
+sub cli_check_collections_exist {}
+#
+sub cli_check_plugins_exist {}
+#
+sub cli_check_policies_exist {}
+#
+sub cli_check_group_exist {}
+#
+sub cli_check_agent_exist {}
+
+
 ###############################################################################
 ###############################################################################
 # MAIN
@@ -6065,6 +6141,14 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--export_json_visual_console') {
 			param_check($ltotal, 3, 2);
 			cli_export_visual_console();
+		}
+		elsif ($param eq '--check_server_address') {
+			param_check($ltotal, 1, 0);
+			cli_check_server_address();
+		}
+		elsif ($param eq '--get_server_address') {
+			param_check($ltotal, 1, 0);
+			cli_get_server_address();
 		}
 		else {
 			print_log "[ERROR] Invalid option '$param'.\n\n";

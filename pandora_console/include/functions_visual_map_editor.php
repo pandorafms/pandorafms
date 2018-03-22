@@ -735,7 +735,17 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'icon', 'label', 'datos');
 			$form_items_advance['element_group_row']['html'] = '<td align="left">'.
 				__('Restrict access to group') . '</td>' .
-				'<td align="left">' . html_print_select($user_groups, 'element_group', '', '', '', 0, true) . 
+				'<td align="left">' .
+				html_print_select_groups(
+					$config['id_user'],
+					"VR",
+					true,
+					'element_group',
+					__('All'),
+					'',
+					'',
+					0,
+					true) .
 				ui_print_help_tip (
 					__("If selected, restrict visualization of this item in the visual console to users who have access to selected group. This is also used on calculating child visual consoles."), true) . 
 				'</td>';

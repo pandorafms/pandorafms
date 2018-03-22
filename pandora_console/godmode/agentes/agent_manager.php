@@ -13,6 +13,16 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+
+// Load global vars
+enterprise_include ('godmode/agentes/agent_manager.php');
+
+require_once ('include/functions_clippy.php');
+require_once ('include/functions_servers.php');
+require_once ('include/functions_gis.php');
+require_once($config['homedir'] . "/include/functions_agents.php");
+require_once ($config['homedir'] . '/include/functions_users.php');
+
 if (is_ajax ()) {
 	
 	global $config;
@@ -88,17 +98,28 @@ if (is_ajax ()) {
 		
 		echo io_json_mb_encode($out);
 	}
-	
+
+	// And and remove groups use the same function
+	$add_secondary_groups = get_parameter('add_secondary_groups');
+	$remove_secondary_groups = get_parameter('remove_secondary_groups');
+	if ($add_secondary_groups || $remove_secondary_groups) {
+		$id_agent = get_parameter('id_agent');
+		$groups_to_add = get_parameter('groups');
+		if (enterprise_installed()) {
+			enterprise_include('include/functions_agents.php');
+			$ret = enterprise_hook(
+				'agents_update_secondary_groups',
+				array(
+					$id_agent,
+					$add_secondary_groups ? $groups_to_add : array(),
+					$remove_secondary_groups ? $groups_to_add : array())
+			);
+			// Echo 0 in case of error. 0 Otherwise.
+			echo $ret ? 1 : 0;
+		}
+	}
 	return;
 }
-// Load global vars
-enterprise_include ('godmode/agentes/agent_manager.php');
-
-require_once ('include/functions_clippy.php');
-require_once ('include/functions_servers.php');
-require_once ('include/functions_gis.php');
-require_once($config['homedir'] . "/include/functions_agents.php");
-require_once ($config['homedir'] . '/include/functions_users.php');
 
 ui_require_javascript_file('openlayers.pandora');
 
@@ -331,12 +352,12 @@ if (enterprise_installed()) {
 	$table->data['secondary_groups'][2] =
 		html_print_input_image ('add_secondary', 'images/darrowright.png', 1, '', true, array (
 			'title' => __('Add secondary groups'),
-			'onclick' => "agent_manager_add_secondary_groups(event);"
+			'onclick' => "agent_manager_add_secondary_groups(event, " . $id_agente . ");"
 		)) .
 		'<br /><br /><br /><br />' .
 		html_print_input_image ('remove_secondary', 'images/darrowleft.png', 1, '', true, array (
 			'title' => __('Remove secondary groups'),
-			'onclick' => "agent_manager_remove_secondary_groups(event);"
+			'onclick' => "agent_manager_remove_secondary_groups(event, " . $id_agente . ");"
 		));
 
 	$table->data['secondary_groups'][3] = html_print_select (
@@ -623,7 +644,7 @@ ui_require_jquery_file('bgiframe');
 		}
 	}
 
-	function agent_manager_add_secondary_groups (event) {
+	function agent_manager_add_secondary_groups (event, id_agent) {
 		event.preventDefault();
 		var primary_value = $("#grupo").val()
 		// The selected primary value cannot be selected like secondary
@@ -631,25 +652,85 @@ ui_require_jquery_file('bgiframe');
 			alert("<?php echo __("Primary group cannot be secondary too.");?>")
 			return
 		}
-		// Move from one input to the other
-		$("#secondary_groups_selected option[value=0]").remove()
+
+		var selected_items = new Array();
 		$("#secondary_groups option:selected").each(function(){
-			$(this).remove().appendTo("#secondary_groups_selected")
+			selected_items.push($(this).val())
 		})
+
+		var data = {
+			page: "godmode/agentes/agent_manager",
+			id_agent: id_agent,
+			groups: selected_items,
+			add_secondary_groups: 1,
+		}
+
+		// Make the AJAX call to update the secondary groups
+		$.ajax({
+			type: "POST",
+			url: "ajax.php",
+			dataType: "html",
+			data: data,
+			success: function (data) {
+				if (data == 1) {
+					// Move from one input to the other
+					$("#secondary_groups_selected option[value=0]").remove()
+					$("#secondary_groups option:selected").each(function() {
+						$(this).remove().appendTo("#secondary_groups_selected")
+					})
+				} else {
+					console.error("Error in AJAX call to add secondary groups")
+				}
+			},
+			error: function (data) {
+				console.error("Fatal error in AJAX call to add secondary groups")
+			}
+		});
 	}
 
-	function agent_manager_remove_secondary_groups (event) {
+	function agent_manager_remove_secondary_groups (event, id_agent) {
 		event.preventDefault();
+
+		var selected_items = new Array();
 		$("#secondary_groups_selected option:selected").each(function(){
-			$(this).remove().appendTo("#secondary_groups")
+			selected_items.push($(this).val())
 		})
 
-		if ($("#secondary_groups_selected option").length == 0) {
-			$("#secondary_groups_selected").append($('<option>',{
-				value: 0,
-				text: "<?php echo __("None");?>"
-			}))
+		var data = {
+			page: "godmode/agentes/agent_manager",
+			id_agent: id_agent,
+			groups: selected_items,
+			remove_secondary_groups: 1,
 		}
+
+		// Make the AJAX call to update the secondary groups
+		$.ajax({
+			type: "POST",
+			url: "ajax.php",
+			dataType: "html",
+			data: data,
+			success: function (data) {
+				if (data == 1) {
+					// Remove the groups selected if success
+					$("#secondary_groups_selected option:selected").each(function(){
+						$(this).remove().appendTo("#secondary_groups")
+					})
+
+					// Add none if empty select
+					if ($("#secondary_groups_selected option").length == 0) {
+						$("#secondary_groups_selected").append($('<option>',{
+							value: 0,
+							text: "<?php echo __("None");?>"
+						}))
+					}
+				} else {
+					console.error("Error in AJAX call to add secondary groups")
+				}
+			},
+			error: function (data) {
+				console.error("Fatal error in AJAX call to add secondary groups")
+			}
+		});
 	}
 
 	$(document).ready (function() {

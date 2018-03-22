@@ -6070,7 +6070,15 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--apply_module_template') {
 			param_check($ltotal, 2, 2);
 			cli_apply_module_template();
-		} 
+		}
+		elsif ($param eq '--migration_agent_queue') {
+			param_check($ltotal, 4, 1);
+			cli_migration_agent_queue();
+		}
+		elsif ($param eq '--migration_agent') {
+			param_check($ltotal, 1, 0);
+			cli_migration_agent();
+		}
 		else {
 			print_log "[ERROR] Invalid option '$param'.\n\n";
 			$param = '';

@@ -522,7 +522,7 @@ function pch_pie_graph ($graph_type, $data_values, $legend_values, $width,
 	
 	if ($legend_position != 'hidden') {
 		// This is a hardcore adjustment to match most of the graphs, please don't alter
-		$legend_with_aprox = 32 + (4.5 * $max_chars);
+		$legend_with_aprox = 32 + (9.5 * $max_chars);
 		
 		$PieChart->drawPieLegend($width - $legend_with_aprox, 5, array("R"=>255,"G"=>255,"B"=>255, "BoxSize"=>10)); 
 	}

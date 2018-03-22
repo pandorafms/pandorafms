@@ -106,7 +106,7 @@ if (is_ajax ()) {
 		
 		if($cluster_mode){
 			
-			$agent_id_os = db_get_all_rows_sql('select id_os from tconfig_os where id_os != 21');
+			$agent_id_os = db_get_all_rows_sql('select id_os from tconfig_os where id_os != 100');
 			
 			foreach ($agent_id_os as $key => $value) {
 				$agent_id_os_array[] = $agent_id_os[$key]['id_os'];

@@ -532,6 +532,7 @@ Pandora_Module::getXml () {
 				try {
 					data_clean = strreplace (this->getDataOutput (data),
 								 "%", "%%" );
+					data_clean = strreplace (data_clean, "]]>", "]]><![CDATA[");
 				} catch (Module_Exception e) {
 					continue;
 				}
@@ -542,6 +543,7 @@ Pandora_Module::getXml () {
 			data = data_list->front ();
 			try {
 				data_clean = strreplace (this->getDataOutput (data), "%", "%%" );
+				data_clean = strreplace (data_clean, "]]>", "]]><![CDATA[");
 				module_xml += data_clean;
 
 			} catch (Module_Exception e) {

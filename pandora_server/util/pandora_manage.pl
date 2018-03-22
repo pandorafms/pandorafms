@@ -6067,21 +6067,10 @@ sub pandora_manage_main ($$$) {
 			param_check($ltotal, 3, 2);
 			cli_export_visual_console();
 		}
-<<<<<<< HEAD
-		elsif ($param eq '--migration_agent_queue') {
-			param_check($ltotal, 4, 1);
-			cli_migration_agent_queue();
-		}
-		elsif ($param eq '--migration_agent') {
-			param_check($ltotal, 1, 0);
-			cli_migration_agent();
-		}
-=======
 		elsif ($param eq '--apply_module_template') {
 			param_check($ltotal, 2, 2);
 			cli_apply_module_template();
 		} 
->>>>>>> origin/develop
 		else {
 			print_log "[ERROR] Invalid option '$param'.\n\n";
 			$param = '';
@@ -6434,7 +6423,6 @@ sub cli_add_tag_to_module() {
 	print "\n$result\n";
 }
 
-<<<<<<< HEAD
 ##############################################################################
 # Only meta migrate agent
 ##############################################################################
@@ -6474,7 +6462,7 @@ sub cli_migration_agent() {
 		print "\n0\n";
 	}
 }
-=======
+
 sub cli_apply_module_template() {
 	my ($id_template, $id_agent) = @ARGV[2..3];
 	
@@ -6566,4 +6554,3 @@ sub cli_apply_module_template() {
 	}
 }
 
->>>>>>> origin/develop

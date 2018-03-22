@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.720 PS180321";
+my $version = "7.0NG.720 PS180322";
 
 # save program name for logging
 my $progname = basename($0);
@@ -195,7 +195,6 @@ sub help_screen{
 	<critical_instructions> <warning_instructions> <unknown_instructions>\n\t <warning_inverse> <critical_inverse>]", 'Add snmp network module to policy');
 	help_screen_line('--create_policy_plugin_module', "<policy_name> <module_name> <module_type> \n\t  <module_port> <plugin_name> <user> <password> <parameters> [<description> <module_group> <min> \n\t  <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max>\n\t  <history_data> <ff_threshold> <warning_str> <critical_str>\n\t  <unknown_events> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical>\n\t <critical_instructions> <warning_instructions> <unknown_instructions>\n\t <warning_inverse> <critical_inverse>]", 'Add plug-in module to policy');
 	help_screen_line('--create_policy_data_module_from_local_component', '<policy_name> <component_name>');
-	help_screen_line('--create_policy_web_module_from_local_component', '<policy_name> <component_name>');
 	help_screen_line('--add_collection_to_policy', "<policy_name> <collection_name>");
 	help_screen_line('--validate_policy_alerts', '<policy_name>', 'Validate the alerts of a given policy');
 	help_screen_line('--get_policy_modules', '<policy_name>', 'Get the modules of a policy');
@@ -5834,10 +5833,6 @@ sub pandora_manage_main ($$$) {
 			param_check($ltotal, 2, 2);
 			cli_create_policy_data_module_from_local_component();
 		}
-		elsif ($param eq '--create_policy_web_module_from_local_component') {
-			param_check($ltotal, 2, 2);
-			cli_create_policy_web_module_from_local_component();
-		}
 		elsif ($param eq '--create_policy') {
 			param_check($ltotal, 3, 2);
 			cli_create_policy();
@@ -6072,6 +6067,7 @@ sub pandora_manage_main ($$$) {
 			param_check($ltotal, 3, 2);
 			cli_export_visual_console();
 		}
+<<<<<<< HEAD
 		elsif ($param eq '--migration_agent_queue') {
 			param_check($ltotal, 4, 1);
 			cli_migration_agent_queue();
@@ -6080,6 +6076,12 @@ sub pandora_manage_main ($$$) {
 			param_check($ltotal, 1, 0);
 			cli_migration_agent();
 		}
+=======
+		elsif ($param eq '--apply_module_template') {
+			param_check($ltotal, 2, 2);
+			cli_apply_module_template();
+		} 
+>>>>>>> origin/develop
 		else {
 			print_log "[ERROR] Invalid option '$param'.\n\n";
 			$param = '';
@@ -6290,25 +6292,6 @@ sub cli_create_policy_data_module_from_local_component() {
 }
 
 ##############################################################################
-# Create policy web module from local component.
-# Related option: --create_policy_web_module_from_local_component
-##############################################################################
-sub cli_create_policy_web_module_from_local_component() {
-	my ($policy_name, $component_name) = @ARGV[2..3];
-	
-	my $policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
-	exist_check($policy_id,'policy',$policy_name);
-	
-	my $lc_id = pandora_get_local_component_id($dbh, $component_name);
-	exist_check($lc_id,'local component',$component_name);
-	
-	# Get local component web
-	my $component = get_db_single_row ($dbh, 'SELECT * FROM tlocal_component WHERE id = ?', $lc_id);
-	
-	enterprise_hook('pandora_create_policy_web_module_from_local_component',[$conf, $component, $policy_id, $dbh]);
-}
-
-##############################################################################
 # Create local component.
 # Related option: --create_local_component
 ##############################################################################
@@ -6451,6 +6434,7 @@ sub cli_add_tag_to_module() {
 	print "\n$result\n";
 }
 
+<<<<<<< HEAD
 ##############################################################################
 # Only meta migrate agent
 ##############################################################################
@@ -6490,3 +6474,96 @@ sub cli_migration_agent() {
 		print "\n0\n";
 	}
 }
+=======
+sub cli_apply_module_template() {
+	my ($id_template, $id_agent) = @ARGV[2..3];
+	
+	my @row = get_db_rows ($dbh,"select * from tagente where id_agente = ".$id_agent);
+	
+	return if (scalar (@row) == 0);
+	
+	my $name_template = get_db_value ($dbh,'select name from tnetwork_profile where id_np = '.$id_template);
+	
+	my @npc = get_db_rows($dbh,"select * from tnetwork_profile_component where id_np = ".$id_template);
+		
+	foreach my $component (@npc) {
+		
+		my @template_values = get_db_rows ($dbh,"SELECT * FROM tnetwork_component where id_nc = ".$component->{'id_nc'});
+		
+		return if (scalar (@template_values) == 0);
+		
+		foreach my $element (@template_values) {
+			my $agent_values;
+			$agent_values->{'id_agente'} = $id_agent;
+			$agent_values->{'id_tipo_modulo'} = $element->{"type"};
+			$agent_values->{'descripcion'} = 'Created by template '.$name_template.' '.$element->{"description"};
+			$agent_values->{'max'} = $element->{"max"};
+			$agent_values->{'min'} = $element->{"min"};
+			$agent_values->{'module_interval'} = $element->{"module_interval"};
+			$agent_values->{'tcp_port'} = $element->{"tcp_port"};
+			$agent_values->{'tcp_send'} = $element->{"tcp_send"};
+			$agent_values->{'tcp_rcv'} = $element->{"tcp_rcv"};
+			$agent_values->{'snmp_community'} = $element->{"snmp_community"};
+			$agent_values->{'snmp_oid'} = $element->{"snmp_oid"};
+			$agent_values->{'ip_target'} = $row[0]->{"direccion"};
+			$agent_values->{'id_module_group'} = $element->{"id_module_group"};
+			$agent_values->{'id_modulo'} = $element->{"id_modulo"};
+			$agent_values->{'plugin_user'} = $element->{"plugin_user"};
+			$agent_values->{'plugin_pass'} = $element->{"plugin_pass"};
+			$agent_values->{'plugin_parameter'} = $element->{"plugin_parameter"};
+			$agent_values->{'unit'} = $element->{"unit"};
+			$agent_values->{'max_timeout'} = $element->{"max_timeout"};
+			$agent_values->{'max_retries'} = $element->{"max_retries"};
+			$agent_values->{'id_plugin'} = $element->{"id_plugin"};
+			$agent_values->{'post_process'} = $element->{"post_process"};
+			$agent_values->{'dynamic_interval'} = $element->{"dynamic_interval"};
+			$agent_values->{'dynamic_max'} = $element->{"dynamic_max"};
+			$agent_values->{'dynamic_min'} = $element->{"dynamic_min"};
+			$agent_values->{'dynamic_two_tailed'} = $element->{"dynamic_two_tailed"};
+			$agent_values->{'min_warning'} = $element->{"min_warning"};
+			$agent_values->{'max_warning'} = $element->{"max_warning"};
+			$agent_values->{'str_warning'} = $element->{"str_warning"};
+			$agent_values->{'min_critical'} = $element->{"min_critical"};
+			$agent_values->{'max_critical'} = $element->{"max_critical"};
+			$agent_values->{'str_critical'} = $element->{"str_critical"};
+			$agent_values->{'critical_inverse'} = $element->{"critical_inverse"};
+			$agent_values->{'warning_inverse'} = $element->{"warning_inverse"};
+			$agent_values->{'critical_instructions'} = $element->{"critical_instructions"};
+			$agent_values->{'warning_instructions'} = $element->{"warning_instructions"};
+			$agent_values->{'unknown_instructions'} = $element->{"unknown_instructions"};
+			$agent_values->{'id_category'} = $element->{"id_category"};
+			$agent_values->{'macros'} = $element->{"macros"};
+			$agent_values->{'each_ff'} = $element->{"each_ff"};
+			$agent_values->{'min_ff_event'} = $element->{"min_ff_event"};
+			$agent_values->{'min_ff_event_normal'} = $element->{"min_ff_event_normal"};
+			$agent_values->{'min_ff_event_warning'} = $element->{"min_ff_event_warning"};
+			$agent_values->{'min_ff_event_critical'} = $element->{"min_ff_event_critical"};
+			$agent_values->{'nombre'} = $element->{"name"};
+						
+			my @tags;
+			if($element->{"tags"} ne '') {
+				@tags = split(',', $element->{"tags"});
+			}
+			
+			my $module_name_check = get_db_value ($dbh,'select id_agente_modulo from tagente_modulo where delete_pending = 0 and nombre ="'.$agent_values->{'nombre'}.'" and id_agente = '.$id_agent);
+				
+			if (!defined($module_name_check)) {
+				
+				my $id_agente_modulo = pandora_create_module_from_hash(\%conf,$agent_values,$dbh);
+				 
+				if ($id_agente_modulo != -1) {
+					
+					foreach my $tag_name (@tags) {
+						
+						my $tag_id = get_db_value($dbh,'select id_tag from ttag where name = "'.$tag_name.'"');
+							
+						db_do($dbh,'insert into ttag_module (id_tag,id_agente_modulo) values ("'.$tag_id.'","'.$id_agente_modulo.'")');
+					
+					}
+				}
+			}
+		}
+	}
+}
+
+>>>>>>> origin/develop

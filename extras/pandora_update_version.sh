@@ -65,7 +65,7 @@ $PANDHOME_ENT/pandora_plugins/MTL/pandora_mtl.pl \
 $PANDHOME_ENT/pandora_plugins/Informix/informix.pl \
 $PANDHOME_ENT/pandora_plugins/Ruckus/ruckus.pl \
 $PANDHOME_ENT/pandora_plugins/UX/pandora_ux.pl \
-$PANDHOME_ENT/pandora_server/util/plugins/vmware-plugin.pl "
+$PANDHOME_ENT/pandora_server/util/plugin/vmware-plugin.pl "
 PLUGIN_LIB_FILE="$CODEHOME/pandora_server/lib/PandoraFMS/PluginTools.pm"
 
 # Update version in spec files

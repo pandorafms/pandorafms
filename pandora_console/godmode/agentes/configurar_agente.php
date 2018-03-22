@@ -555,7 +555,7 @@ if ($id_agente) {
 			$help_header = 'plugins_tab';
 			break;
 		case "module":
-			$type_module_t = (int) get_parameter ('moduletype', '');
+			$type_module_t = get_parameter ('moduletype', '');
 			$tab_description = '- '. __('Modules');
 			if($type_module_t == 'webux'){
 				$help_header = 'wux_console';

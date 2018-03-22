@@ -195,7 +195,6 @@ sub help_screen{
 	<critical_instructions> <warning_instructions> <unknown_instructions>\n\t <warning_inverse> <critical_inverse>]", 'Add snmp network module to policy');
 	help_screen_line('--create_policy_plugin_module', "<policy_name> <module_name> <module_type> \n\t  <module_port> <plugin_name> <user> <password> <parameters> [<description> <module_group> <min> \n\t  <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max>\n\t  <history_data> <ff_threshold> <warning_str> <critical_str>\n\t  <unknown_events> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical>\n\t <critical_instructions> <warning_instructions> <unknown_instructions>\n\t <warning_inverse> <critical_inverse>]", 'Add plug-in module to policy');
 	help_screen_line('--create_policy_data_module_from_local_component', '<policy_name> <component_name>');
-	help_screen_line('--create_policy_web_module_from_local_component', '<policy_name> <component_name>');
 	help_screen_line('--add_collection_to_policy', "<policy_name> <collection_name>");
 	help_screen_line('--validate_policy_alerts', '<policy_name>', 'Validate the alerts of a given policy');
 	help_screen_line('--get_policy_modules', '<policy_name>', 'Get the modules of a policy');
@@ -5828,10 +5827,6 @@ sub pandora_manage_main ($$$) {
 			param_check($ltotal, 2, 2);
 			cli_create_policy_data_module_from_local_component();
 		}
-		elsif ($param eq '--create_policy_web_module_from_local_component') {
-			param_check($ltotal, 2, 2);
-			cli_create_policy_web_module_from_local_component();
-		}
 		elsif ($param eq '--create_policy') {
 			param_check($ltotal, 3, 2);
 			cli_create_policy();
@@ -6273,25 +6268,6 @@ sub cli_create_policy_data_module_from_local_component() {
 	my $component = get_db_single_row ($dbh, 'SELECT * FROM tlocal_component WHERE id = ?', $lc_id);
 	
 	enterprise_hook('pandora_create_policy_data_module_from_local_component',[$conf, $component, $policy_id, $dbh]);
-}
-
-##############################################################################
-# Create policy web module from local component.
-# Related option: --create_policy_web_module_from_local_component
-##############################################################################
-sub cli_create_policy_web_module_from_local_component() {
-	my ($policy_name, $component_name) = @ARGV[2..3];
-	
-	my $policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
-	exist_check($policy_id,'policy',$policy_name);
-	
-	my $lc_id = pandora_get_local_component_id($dbh, $component_name);
-	exist_check($lc_id,'local component',$component_name);
-	
-	# Get local component web
-	my $component = get_db_single_row ($dbh, 'SELECT * FROM tlocal_component WHERE id = ?', $lc_id);
-	
-	enterprise_hook('pandora_create_policy_web_module_from_local_component',[$conf, $component, $policy_id, $dbh]);
 }
 
 ##############################################################################

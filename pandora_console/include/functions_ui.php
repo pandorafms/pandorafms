@@ -961,9 +961,15 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 	if (!defined('METACONSOLE')) {
 		if (check_acl ($config["id_user"], $id_group, "LW") || check_acl ($config["id_user"], $id_group, "LM")) {
 			$data[$index['validate']] = '';
-			
-			
-			$data[$index['validate']] .= html_print_checkbox ("validate[]", $alert["id"], false, true);
+
+			$data[$index['validate']] .= html_print_checkbox (
+				"validate[]",
+				$alert["id"],
+				false,
+				true,
+				false,
+				'',
+				true);
 		}
 	}
 	
@@ -1091,10 +1097,11 @@ function ui_print_alert_template_example ($id_alert_template, $return = false, $
  * @param bool Whether to return or output the result
  * @param string Home url if its necessary
  * @param string Image path
+ * @param bool Route is relative or not
  * 
  * @return string The help tip
  */
-function ui_print_help_icon ($help_id, $return = false, $home_url = '', $image = "images/help.png") {
+function ui_print_help_icon ($help_id, $return = false, $home_url = '', $image = "images/help.png", $is_relative = false) {
 	global $config;
 
 	if (empty($home_url))
@@ -1104,10 +1111,16 @@ function ui_print_help_icon ($help_id, $return = false, $home_url = '', $image =
 		$home_url = "../../" . $home_url;
 	}
 	
-	$output = html_print_image ($image, true,
+	$output = html_print_image (
+		$image,
+		true,
 		array ("class" => "img_help",
 			"title" => __('Help'),
-			"onclick" => "open_help ('" . $help_id . "','" . $home_url . "','" . $config['id_user'] . "')"));
+			"onclick" => "open_help ('" . $help_id . "','" . $home_url . "','" . $config['id_user'] . "')"
+		),
+		false,
+		$is_relative && is_metaconsole()
+	);
 	if (!$return)
 		echo $output;
 	
@@ -1904,11 +1917,21 @@ function ui_print_session_action_icon ($action, $return = false) {
  * @param string Complete text to show in the tip
  * @param bool whether to return an output string or echo now
  * @param img displayed image
+ * @param bool Print image in relative way
  *
  * @return string HTML code if return parameter is true.
  */
-function ui_print_help_tip ($text, $return = false, $img = 'images/tip.png') {
-	$output = '<a href="javascript:" class="tip" >' . html_print_image ($img, true, array('title' => $text)) . '</a>';
+function ui_print_help_tip ($text, $return = false, $img = 'images/tip.png', $is_relative = false) {
+	$output =
+		'<a href="javascript:" class="tip" >' .
+			html_print_image (
+				$img,
+				true,
+				array('title' => $text),
+				false,
+				$is_relative && is_metaconsole()
+			) .
+		'</a>';
 	
 	if ($return)
 		return $output;
@@ -3901,5 +3924,49 @@ function ui_print_tags_view($title = '', $tags = array()) {
 	}
 	$tv .= '</div>';
 	echo $tv;
+}
+
+/**
+ * @brief Get the link to open a snapshot into a new page
+ *
+ * @param Array Params to build the link (see $default_params)
+ * @param bool Flag to choose de return value:
+ * 		true: Get the four params required in the function of pandora.js winopen_var (js use)
+ * 		false: Get an inline winopen_var function call (php user)
+ */
+function ui_get_snapshot_link($params, $only_params = false) {
+	global $config;
+
+	$default_params = array(
+		'id_module' => 0, //id_agente_modulo
+		'module_name' => '',
+		'interval' => 300,
+		'last_data' => '',
+		'timestamp' => '0'
+	);
+
+	// Merge default params with passed params
+	$params = array_merge ($default_params, $params);
+
+	// First parameter of js winopeng_var
+	$page = $config['homeurl_static'] . "/operation/agentes/snapshot_view.php";
+
+	$url = "$page?" .
+		"id=" . $params['id_module'] .
+		"&refr=" . $parms['interval'] .
+		"&timestamp=" . $params['timestamp'] .
+		"&last_data=" . rawurlencode(urlencode(io_safe_output($params['last_data']))) .
+		"&label=" . rawurlencode(urlencode(io_safe_output($params['module_name'])));
+
+	// Second parameter of js winopeng_var
+	$win_handle = dechex(crc32('snapshot_' . $params['id_module']));
+
+	$link_parts = array ($url, $win_handle, 700, 480);
+
+	// Return only the params to js execution
+	if ($only_params) return $link_parts;
+
+	// Return the function call to inline js execution
+	return "winopeng_var('" . implode("', '", $link_parts) . "')";
 }
 ?>

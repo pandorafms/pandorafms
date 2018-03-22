@@ -1159,10 +1159,20 @@ ALTER TABLE titem MODIFY `source_data` int(10) unsigned;
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('big_operation_step_datos_purge', '100');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('small_operation_step_datos_purge', '1000');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('days_autodisable_deletion', '30');
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 12);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 13);
 UPDATE tconfig SET value = 'https://licensing.artica.es/pandoraupdate7/server.php' WHERE token='url_update_manager';
 DELETE FROM `tconfig` WHERE `token` = 'current_package_enterprise';
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '719');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '720');
+
+-- ---------------------------------------------------------------------
+-- Table `tconfig_os`
+-- ---------------------------------------------------------------------
+
+INSERT INTO `tconfig_os` (`id_os`, `name`, `description`, `icon_name`) VALUES (100, 'Cluster', 'Cluster agent', 'so_cluster.png');
+	
+UPDATE `tagente` SET `id_os` = 100 WHERE `id_os` = 21 and (select `id_os` from `tconfig_os` WHERE `id_os` = 21 and `name` = 'Cluster');
+
+DELETE FROM `tconfig_os` where `id_os` = 21 and `name` = 'Cluster';
 
 -- ---------------------------------------------------------------------
 -- Table `tplanned_downtime_agents`
@@ -1358,6 +1368,7 @@ END IF;
 SET @vv2 = (SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = 'tuser_task_scheduled');
 IF @vv2>0 THEN
 	ALTER TABLE tuser_task_scheduled MODIFY args TEXT NOT NULL;
+	ALTER TABLE tuser_task_scheduled ADD (id_grupo int(10) unsigned NOT NULL Default 0);
 END IF;
 END;
 //
@@ -1532,4 +1543,64 @@ create table IF NOT EXISTS `tcluster_agent`(
 			ON UPDATE CASCADE,
 		FOREIGN KEY (`id_cluster`) REFERENCES tcluster(`id`)
 			ON UPDATE CASCADE
+) engine=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tprovisioning`
+-- ---------------------------------------------------------------------
+create table IF NOT EXISTS `tprovisioning`(
+    `id` int unsigned NOT NULL auto_increment,
+    `name` varchar(100) NOT NULL,
+	`description` TEXT default '',
+	`order` int(11) NOT NULL default 0,
+	`config` TEXT default '',
+		PRIMARY KEY (`id`)
+) engine=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tprovisioning_rules`
+-- ---------------------------------------------------------------------
+create table IF NOT EXISTS `tprovisioning_rules`(
+    `id` int unsigned NOT NULL auto_increment,
+    `id_provisioning` int unsigned NOT NULL,
+	`order` int(11) NOT NULL default 0,
+	`operator` enum('AND','OR') default 'OR',
+	`type` enum('alias','ip-range') default 'alias',
+	`value` varchar(100) NOT NULL default '',
+		PRIMARY KEY (`id`),
+		FOREIGN KEY (`id_provisioning`) REFERENCES tprovisioning(`id`)
+			ON DELETE CASCADE
+) engine=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tmigration_queue`
+-- ---------------------------------------------------------------------
+
+create table IF NOT EXISTS `tmigration_queue`(
+    `id` int unsigned not null auto_increment,
+    `id_source_agent` int unsigned not null,
+    `id_target_agent` int unsigned not null,
+    `id_source_node` int unsigned not null,
+    `id_target_node` int unsigned not null,
+    `priority` int unsigned default 0,
+    `step` int default 0,
+    `running` tinyint(2) default 0,
+    `active_db_only` tinyint(2) default 0,
+    PRIMARY KEY(`id`)
+) engine=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tmigration_module_queue`
+-- ---------------------------------------------------------------------
+
+create table IF NOT EXISTS `tmigration_module_queue`(
+    `id` int unsigned not null auto_increment,
+    `id_migration` int unsigned not null,
+    `id_source_agentmodule` int unsigned not null,
+    `id_target_agentmodule` int unsigned not null,
+    `last_replication_timestamp` bigint(20) NOT NULL default 0,
+    PRIMARY KEY(`id`),
+    FOREIGN KEY(`id_migration`) REFERENCES tmigration_queue(`id`)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 ) engine=InnoDB DEFAULT CHARSET=utf8;

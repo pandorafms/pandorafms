@@ -1186,6 +1186,7 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 	
 	$(document).ready (function () {
 		$("#id_agents").change(agent_changed_by_multiple_agents);
+		$("#modules_selection_mode").change(agent_changed_by_multiple_agents);
 		
 		change_type_downtime();
 		change_type_execution();

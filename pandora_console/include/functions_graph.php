@@ -3859,9 +3859,10 @@ function grafico_eventos_usuario ($width, $height) {
  */
 function graph_custom_sql_graph ($id, $width, $height,
 	$type = 'sql_graph_vbar', $only_image = false, $homeurl = '',
-	$ttl = 1) {
+	$ttl = 1, $max_num_elements = 8) {
 	
 	global $config;
+	$SQL_GRAPH_MAX_LABEL_SIZE = 20;
 	
 	$report_content = db_get_row ('treport_content', 'id_rc', $id);
 	if($id != null){
@@ -3920,18 +3921,38 @@ function graph_custom_sql_graph ($id, $width, $height,
 		if (!empty($data_item["value"])) {
 			$value = $data_item["value"];
 		}
-		$label = __('Data');
-		if (!empty($data_item["label"])) {
-			$label = $data_item["label"];
-		}
-		switch ($type) {
-			case 'sql_graph_vbar': // vertical bar
-			case 'sql_graph_hbar': // horizontal bar
-				$data[$label."_".$count]['g'] = $value;
-				break;
-			case 'sql_graph_pie': // Pie
-				$data[$label."_".$count] = $value;
-				break;
+		if ($count <= $max_num_elements) {
+			$label = __('Data');
+			if (!empty($data_item["label"])) {
+				$label = io_safe_output($data_item["label"]);
+				if (strlen($label) > $SQL_GRAPH_MAX_LABEL_SIZE) {
+					$first_label = $label;
+					$label = substr($first_label, 0, floor($SQL_GRAPH_MAX_LABEL_SIZE/2));
+					$label .= '...';
+					$label .= substr($first_label, floor(-$SQL_GRAPH_MAX_LABEL_SIZE/2));
+				}
+			}
+			switch ($type) {
+				case 'sql_graph_vbar': // vertical bar
+				case 'sql_graph_hbar': // horizontal bar
+					$data[$label."_".$count]['g'] = $value;
+					break;
+				case 'sql_graph_pie': // Pie
+					$data[$label."_".$count] = $value;
+					break;
+			}
+		} else {
+			switch ($type) {
+				case 'sql_graph_vbar': // vertical bar
+				case 'sql_graph_hbar': // horizontal bar
+					if (!isset($data[__('Other')]['g'])) $data[__('Other')]['g'] = 0;
+					$data[__('Other')]['g'] += $value;
+					break;
+				case 'sql_graph_pie': // Pie
+					if (!isset($data[__('Other')])) $data[__('Other')] = 0;
+					$data[__('Other')] += $value;
+					break;
+			}
 		}
 	}
 	
@@ -3949,16 +3970,50 @@ function graph_custom_sql_graph ($id, $width, $height,
 	
 	switch ($type) {
 		case 'sql_graph_vbar': // vertical bar
-			return vbar_graph($flash_charts, $data, $width, $height, array(),
-				array(), "", "", $homeurl, $water_mark,
-				$config['fontpath'], $config['font_size'], false, $ttl, "", "white", false, false, "black");
+			return vbar_graph(
+				$flash_charts,
+				$data,
+				$width,
+				$height,
+				array(),
+				array(),
+				"",
+				"",
+				"",
+				"",
+				$water_mark,
+				$config['fontpath'],
+				$config['font_size'],
+				"",
+				$ttl,
+				$config['homeurl'],
+				"white",
+				false,
+				false,
+				"black"
+			);
 			break;
 		case 'sql_graph_hbar': // horizontal bar
-			return hbar_graph($flash_charts, $data, $width, $height, array(),
-				array(), "", "", true, $homeurl, $water_mark,
-				$config['fontpath'], $config['font_size'], false, $ttl,$config['homeurl'],
-					'white',
-					'black');
+			return hbar_graph(
+				$flash_charts,
+				$data,
+				$width,
+				$height,
+				array(),
+				array(),
+				"",
+				"",
+				"",
+				"",
+				$water_mark,
+				$config['fontpath'],
+				$config['font_size'],
+				false,
+				$ttl,
+				$config['homeurl'],
+				'white',
+				'black'
+			);
 			break;
 		case 'sql_graph_pie': // Pie
 			return pie3d_graph($flash_charts, $data, $width, $height, __("other"), $homeurl,

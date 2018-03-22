@@ -20,6 +20,7 @@ var TreeController = {
 			recipient: '',
 			tree: [],
 			emptyMessage: "No data found.",
+			foundMessage: "Found groups",
 			errorMessage: "Error",
 			baseURL: "",
 			ajaxURL: "ajax.php",
@@ -401,33 +402,34 @@ var TreeController = {
 									else{
 									
 									var $graphImage = $('<img src="'+(controller.baseURL.length > 0 ? controller.baseURL : '')
-											+'images/chart_curve.png" /> ');	
+											+'images/chart_curve.png" /> ');
 									}
-									
+
 									$graphImage
 										.addClass('module-graph')
 										.click(function (e) {
 											e.preventDefault();
-	if(element.statusImageHTML.indexOf('data:image')!=-1){
-											try {
-												winopeng('operation/agentes/snapshot_view.php?id='+element.id+'&refr=&label='+element.name);
+											if(element.statusImageHTML.indexOf('data:image')!=-1){
+												try {
+													winopeng_var(
+														decodeURI(element.snapshot[0]),
+														element.snapshot[1],
+														element.snapshot[2],
+														element.snapshot[3]
+													);
+												}
+												catch (error) {
+													// console.log(error);
+												}
 											}
-											catch (error) {
-												// console.log(error);
-											}
-										}
-										else{
-											
-											try {
-												
+											else{
+												try {
 													winopeng(element.moduleGraph.url, element.moduleGraph.handle);
+												}
+												catch (error) {
+													// console.log(error);
+												}
 											}
-											catch (error) {
-												// console.log(error);
-											}
-											
-											
-										}
 										});
 
 									$content.append($graphImage);
@@ -683,6 +685,12 @@ var TreeController = {
 				}
 
 				controller.recipient.empty();
+				controller.recipient.html(
+					"<div> " +
+						controller.foundMessage +  ": " + controller.tree.length +
+					"</div>" +
+					"<br/>"
+				);
 
 				var $children = _processGroup(this.recipient, this.tree, true);
 				$children.show();
@@ -711,6 +719,9 @@ var TreeController = {
 				}
 				if (typeof data.emptyMessage !== 'undefined' && data.emptyMessage.length > 0) {
 					this.emptyMessage = data.emptyMessage;
+				}
+				if (typeof data.foundMessage !== 'undefined' && data.foundMessage.length > 0) {
+					this.foundMessage = data.foundMessage;
 				}
 				if (typeof data.errorMessage !== 'undefined' && data.errorMessage.length > 0) {
 					this.errorMessage = data.errorMessage;

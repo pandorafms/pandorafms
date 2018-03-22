@@ -1212,12 +1212,7 @@ class Tree {
 		Tree::processCounters($groups);
 		// Filter groups and eliminates the reference to empty groups
 		if ($remove_empty) {
-			// Filter empty groups
-			$groups = array_filter($groups, function ($group) {
-				return (isset($group['counters']) &&
-						isset($group['counters']['total']) &&
-						!empty($group['counters']['total']));
-			});
+			$groups = Tree::deleteEmptyGroups($groups);
 		}
 		usort($groups, array("Tree", "cmpSortNames"));
 		return $groups;
@@ -1604,6 +1599,15 @@ class Tree {
 					'url' => $moduleGraphURL,
 					'handle' => $winHandle
 				);
+
+			// Info to be able to open the snapshot image new page
+			$module['snapshot'] = ui_get_snapshot_link(array(
+				'id_module' => $module['id'],
+				'last_data' => $module['datos'],
+				'timestamp' => $module['timestamp'],
+				'interval' => $module['current_interval'],
+				'module_name' => $module['name']
+			), true);
 		}
 
 		// Alerts fired image
@@ -1890,6 +1894,31 @@ class Tree {
 				$this->processAgent($agents[$iterator], $server);
 			}
 		}
+	}
+
+	/**
+	 * @brief Recursive function to remove the empty groups
+	 * 
+	 * @param groups All groups structure
+	 * 
+	 * @return new_groups A new groups structure without empty groups
+	 */
+	protected static function deleteEmptyGroups ($groups) {
+		$new_groups = array();
+		foreach ($groups as $group) {
+			// If a group is empty, do not add to new_groups.
+			if (!isset($group['counters']['total']) || $group['counters']['total'] == 0) {
+				continue;
+			}
+			// Tray to remove the children groups
+			if (!empty($group['children'])) {
+				$children = Tree::deleteEmptyGroups ($group['children']);
+				if (empty($children)) unset($group['children']);
+				else $group['children'] = $children;
+			}
+			$new_groups[] = $group;
+		}
+		return $new_groups;
 	}
 
 	private static function extractGroupsWithIDs ($groups, $ids_hash) {

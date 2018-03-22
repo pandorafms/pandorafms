@@ -122,7 +122,7 @@ function pandora_realtime_graphs () {
 	echo '</form>';
 	
 	// Define a custom action to save the OID selected in the SNMP browser to the form
-	html_print_input_hidden ('custom_action', urlencode (base64_encode('&nbsp;<a href="javascript:setOID()"><img src="' . ui_get_full_url("images") . '/hand_point.png" title="' . __("Use this OID") . '" style="vertical-align: middle;"></img></a>')), false);
+	html_print_input_hidden ('custom_action', urlencode (base64_encode('&nbsp;<a href="javascript:setOID()"><img src="' . ui_get_full_url("images") . '/input_filter.disabled.png" title="' . __("Use this OID") . '" style="vertical-align: middle;"></img></a>')), false);
 	html_print_input_hidden ('incremental_base', '0');
 
 	echo '<script type="text/javascript" src="extensions/realtime_graphs/realtime_graphs.js"></script>';

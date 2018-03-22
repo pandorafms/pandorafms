@@ -34,12 +34,15 @@ our @EXPORT = qw(
 		add_new_address_agent
 		db_concat
 		db_connect
+		db_history_connect
 		db_delete_limit
 		db_disconnect
 		db_do
 		db_get_lock
 		db_insert
 		db_insert_get_values
+		db_insert_from_array_hash
+		db_insert_from_hash
 		db_process_insert
 		db_process_update
 		db_release_lock
@@ -165,6 +168,28 @@ sub db_connect ($$$$$$) {
 	}
 	
 	return undef;
+}
+
+##########################################################################
+## Connect to a history DB associated to given dbh.
+##########################################################################
+sub db_history_connect {
+	my ($dbh, $pa_config) = @_;
+
+	my %conf;
+
+	$conf{'history_db_enabled'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = ?", "history_db_enabled");
+	$conf{'history_db_host'}    = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = ?", "history_db_host");
+	$conf{'history_db_port'}    = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = ?", "history_db_port");
+	$conf{'history_db_name'}    = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = ?", "history_db_name");
+	$conf{'history_db_user'}    = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = ?", "history_db_user");
+	$conf{'history_db_pass'}    = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = ?", "history_db_pass");
+
+	my $history_dbh = ($conf{'history_db_enabled'} eq '1') ? db_connect ($pa_config->{'dbengine'}, $conf{'history_db_name'},
+		$conf{'history_db_host'}, $conf{'history_db_port'}, $conf{'history_db_user'}, $conf{'history_db_pass'}) : undef;
+
+
+	return $history_dbh;
 }
 
 ########################################################################
@@ -898,6 +923,60 @@ sub db_process_insert($$$$;@) {
 	
 	
 	return $res;
+}
+
+########################################################################
+## SQL insert from hash
+## 1st: dbh
+## 2nd: index
+## 3rd: table name,
+## 4th: {field => value} ref
+########################################################################
+sub db_insert_from_hash {
+	my ($dbh, $index, $table, $data) = @_;
+
+	my $values_prep = "";
+	my @fields = keys %{$data};
+	my @values = values %{$data};
+	my $nfields = scalar @fields;
+
+	for (my $i=0; $i<$nfields; $i++) {
+		$values_prep .= "?,";
+	}
+	$values_prep =~ s/,$//;
+
+	return db_insert($dbh, $index, "INSERT INTO " . $table . " (" . join (",", @fields) . ") VALUES ($values_prep)", @values);
+}
+
+########################################################################
+## SQL insert from hash
+## 1st: dbh
+## 2nd: index
+## 3rd: table name,
+## 4th: array({field => value},{field => value}) array ref
+## 
+## Returns: An array with the inserted indexes
+########################################################################
+sub db_insert_from_array_hash {
+	my ($dbh, $index, $table, $data) = @_;
+
+	if ((!defined($data) || ref ($data) ne "ARRAY")) {
+		return ();
+	}
+
+
+	my @inserted_keys;
+
+	eval {
+		foreach my $row (@{$data}) {
+			push @inserted_keys, db_insert_from_hash($dbh, $index, $table, $row);
+		}
+	};
+	if ($@) {
+		return undef;
+	}
+
+	return @inserted_keys;
 }
 
 ########################################################################

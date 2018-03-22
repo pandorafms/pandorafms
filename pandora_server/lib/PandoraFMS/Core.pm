@@ -209,6 +209,7 @@ our @EXPORT = qw(
 	pandora_process_event_replication
 	pandora_process_module
 	pandora_reset_server
+	pandora_safe_mode_modules_update
 	pandora_server_keep_alive
 	pandora_set_event_storm_protection
 	pandora_set_master
@@ -229,6 +230,7 @@ our @EXPORT = qw(
 	pandora_self_monitoring
 	pandora_process_policy_queue
 	subst_alert_macros
+	get_agent
 	get_agent_from_alias
 	get_agent_from_addr
 	get_agent_from_name
@@ -244,7 +246,7 @@ our @EXPORT = qw(
 
 # Some global variables
 our @DayNames = qw(sunday monday tuesday wednesday thursday friday saturday);
-our @ServerTypes = qw (dataserver networkserver snmpconsole reconserver pluginserver predictionserver wmiserver exportserver inventoryserver webserver eventserver icmpserver snmpserver satelliteserver transactionalserver mfserver syncserver wuxserver syslogserver);
+our @ServerTypes = qw (dataserver networkserver snmpconsole reconserver pluginserver predictionserver wmiserver exportserver inventoryserver webserver eventserver icmpserver snmpserver satelliteserver transactionalserver mfserver syncserver wuxserver syslogserver provisioningserver migrationserver);
 our @AlertStatus = ('Execute the alert', 'Do not execute the alert', 'Do not execute the alert, but increment its internal counter', 'Cease the alert', 'Recover the alert', 'Reset internal counter');
 
 # Event storm protection (no alerts or events)
@@ -252,6 +254,27 @@ our $EventStormProtection :shared = 0;
 
 # Current master server
 my $Master :shared = 0;
+
+
+##########################################################################
+# Return the agent given the agent name or alias or address.
+##########################################################################
+sub get_agent {
+    my ($dbh, $field) = @_;
+
+    return undef if (! defined ($field) || $field eq '');
+
+    my $rs = get_agent_from_alias($dbh, $field);
+    return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
+
+    $rs = get_agent_from_addr($dbh, $field);
+    return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
+
+    $rs = get_agent_from_name($dbh, $field);
+    return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
+
+    return undef;
+}
 
 ##########################################################################
 # Return the agent given the agent name.
@@ -1316,7 +1339,11 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 			(defined ($agent) ? $agent->{'id_grupo'} : 0),
 			(defined ($fullagent) ? $fullagent->{'id_agente'} : 0),
 			$priority,
-			(defined($alert) ? $alert->{'id'} : 0),
+			(defined($alert)
+				? defined($alert->{'id_template_module'})
+					? $alert->{'id_template_module'}
+					: $alert->{'id'}
+				: 0),
 			(defined($alert) ? $alert->{'id_agent_module'} : 0),
 			$event_type,
 			0,
@@ -5526,6 +5553,29 @@ sub safe_mode($$$$$$) {
 	elsif ($known_status == MODULE_CRITICAL) {
 		logger($pa_config, "Disabling safe mode for agent " . $agent->{'nombre'}, 10);
 		db_do($dbh, 'UPDATE tagente_modulo SET disabled=0 WHERE id_agente=? AND id_agente_modulo!=?', $agent->{'id_agente'}, $module->{'id_agente_modulo'});
+	}
+}
+
+##########################################################################
+=head2 C<< safe_mode_modules_update (I<$pa_config>, I<$agent>, I<$dbh>) >> 
+
+Check if agent safe module is critical and turn all modules to disabled.
+
+=cut
+##########################################################################
+sub pandora_safe_mode_modules_update {
+	my ($pa_config, $agent_id, $dbh) = @_;
+
+	my $agent = get_db_single_row ($dbh, 'SELECT alias, safe_mode_module FROM tagente WHERE id_agente = ?', $agent_id);
+	# Does nothing if safe_mode is disabled
+	return unless $agent->{'safe_mode_module'} > 0;
+
+	my $status = get_agentmodule_status($pa_config, $dbh, $agent->{'safe_mode_module'});
+
+	# If status is critical, disable the rest of the modules.
+	if ($status == MODULE_CRITICAL) {
+		logger($pa_config, "Update modules for safe mode agent with alias:" . $agent->{'alias'} . ".", 10);
+		db_do($dbh, 'UPDATE tagente_modulo SET disabled=1 WHERE id_agente=? AND id_agente_modulo!=?', $agent_id, $agent->{'safe_mode_module'});
 	}
 }
 

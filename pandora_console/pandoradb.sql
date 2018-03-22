@@ -1931,7 +1931,7 @@ CREATE TABLE IF NOT EXISTS `tupdate_journal` (
 -- ---------------------------------------------------------------------
 -- Table `talert_snmp_action`
 -- ---------------------------------------------------------------------
-CREATE TABLE  IF NOT EXISTS  `talert_snmp_action` (
+CREATE TABLE IF NOT EXISTS  `talert_snmp_action` (
 	`id` int(10) unsigned NOT NULL auto_increment,
 	`id_alert_snmp` int(10) unsigned NOT NULL default '0',
 	`alert_type` int(2) unsigned NOT NULL default '0',
@@ -1956,7 +1956,7 @@ CREATE TABLE  IF NOT EXISTS  `talert_snmp_action` (
 -- ---------------------------------------------------------------------
 -- Table `tsessions_php`
 -- ---------------------------------------------------------------------
-CREATE TABLE tsessions_php (
+CREATE TABLE IF NOT EXISTS `tsessions_php` (
 	`id_session` CHAR(52) NOT NULL,
 	`last_active` INTEGER NOT NULL,
 	`data` TEXT,
@@ -3081,3 +3081,62 @@ create table IF NOT EXISTS `tcluster_agent`(
 			ON UPDATE CASCADE
 ) engine=InnoDB DEFAULT CHARSET=utf8;
 
+-- ---------------------------------------------------------------------
+-- Table `tprovisioning`
+-- ---------------------------------------------------------------------
+create table IF NOT EXISTS `tprovisioning`(
+    `id` int unsigned NOT NULL auto_increment,
+    `name` varchar(100) NOT NULL,
+	`description` TEXT default '',
+	`order` int(11) NOT NULL default 0,
+	`config` TEXT default '',
+		PRIMARY KEY (`id`)
+) engine=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tprovisioning_rules`
+-- ---------------------------------------------------------------------
+create table IF NOT EXISTS `tprovisioning_rules`(
+    `id` int unsigned NOT NULL auto_increment,
+    `id_provisioning` int unsigned NOT NULL,
+	`order` int(11) NOT NULL default 0,
+	`operator` enum('AND','OR') default 'OR',
+	`type` enum('alias','ip-range') default 'alias',
+	`value` varchar(100) NOT NULL default '',
+		PRIMARY KEY (`id`),
+		FOREIGN KEY (`id_provisioning`) REFERENCES tprovisioning(`id`)
+			ON DELETE CASCADE
+) engine=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tmigration_queue`
+-- ---------------------------------------------------------------------
+
+create table IF NOT EXISTS `tmigration_queue`(
+    `id` int unsigned not null auto_increment,
+    `id_source_agent` int unsigned not null,
+    `id_target_agent` int unsigned not null,
+    `id_source_node` int unsigned not null,
+    `id_target_node` int unsigned not null,
+    `priority` int unsigned default 0,
+    `step` int default 0,
+    `running` tinyint(2) default 0,
+    `active_db_only` tinyint(2) default 0,
+    PRIMARY KEY(`id`)
+) engine=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tmigration_module_queue`
+-- ---------------------------------------------------------------------
+
+create table IF NOT EXISTS `tmigration_module_queue`(
+    `id` int unsigned not null auto_increment,
+    `id_migration` int unsigned not null,
+    `id_source_agentmodule` int unsigned not null,
+    `id_target_agentmodule` int unsigned not null,
+    `last_replication_timestamp` bigint(20) NOT NULL default 0,
+    PRIMARY KEY(`id`),
+    FOREIGN KEY(`id_migration`) REFERENCES tmigration_queue(`id`)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+) engine=InnoDB DEFAULT CHARSET=utf8;

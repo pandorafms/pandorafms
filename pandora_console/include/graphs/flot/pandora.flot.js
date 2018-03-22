@@ -1773,7 +1773,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				$('#timestamp_'+graph_id).show();
 				// If no legend, the timestamp labels are short and with value
 				if (legend.length == 0) {
-					$('#timestamp_'+graph_id).text(labels[j] + ' (' + (short_data ? parseFloat(y).toFixed(2) : parseFloat(y)) + ')');
+					$('#timestamp_'+graph_id).text(labels[j] + ' (' + (short_data ? number_format(y, 0, "", short_data)  : parseFloat(y)) + ')');
 				}
 				else {
 					$('#timestamp_'+graph_id).text(labels_long[j]);
@@ -1809,7 +1809,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			// The graphs of points type and unknown graphs will dont be updated
 			if (serie_types[i] != 'points' && series.label != $('#hidden-unknown_text').val()) {
 				$('#legend_' + graph_id + ' .legendLabel')
-					.eq(i).html(label_aux +	'= ' + (short_data ? parseFloat(y).toFixed(2) : parseFloat(y)) + how_bigger + ' ' + unit);
+					.eq(i).html(label_aux +	'= ' + (short_data ? number_format(y, 0, "", short_data) : parseFloat(y)) + how_bigger + ' ' + unit);
 			}
 
 			$('#legend_' + graph_id + ' .legendLabel')
@@ -1925,10 +1925,15 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	function yFormatter(v, axis) {
 		axis.datamin = 0;
 		if (short_data) {
-			var formatted = number_format(v, force_integer, "");
+			var formatted = number_format(v, force_integer, "", short_data);
 		}
 		else {
-			var formatted = v;
+			// It is an integer
+			if(v - Math.floor(v) == 0){
+				var formatted = number_format(v, force_integer, "", 2);
+			} else {
+				var formatted = v;
+			}
 		}
 
 		return '<div class='+font+' style="font-size:'+font_size+'pt;">'+formatted+'</div>';
@@ -2177,15 +2182,16 @@ function check_adaptions(graph_id) {
 	});
 }
 
-function number_format(number, force_integer, unit) {
+function number_format(number, force_integer, unit, short_data) {
 	if (force_integer) {
 		if (Math.round(number) != number) {
 			return '';
 		}
 	}
 	else {
-		// Round to 2 decimals
-		number = Math.round(number * 100) / 100;
+		short_data ++;
+		decimals = pad(1, short_data, 0);
+		number = Math.round(number * decimals) / decimals;
 	}
 
 	var shorts = ["", "K", "M", "G", "T", "P", "E", "Z", "Y"];
@@ -2205,6 +2211,11 @@ function number_format(number, force_integer, unit) {
 	}
 	
 	return number + ' ' + shorts[pos] + unit;
+}
+
+function pad(input, length, padding) { 
+	var str = input + "";
+	return (length <= str.length) ? str : pad(str+padding, length, padding);
 }
 // Recalculate the threshold data depends on warning and critical
 function axis_thresholded (threshold_data, y_min, y_max, red_threshold, extremes, red_up) {

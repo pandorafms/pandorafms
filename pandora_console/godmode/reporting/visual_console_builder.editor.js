@@ -35,6 +35,7 @@ var img_handler_end;
 function toggle_advance_options_palette(close) {
 	if ($("#advance_options").css('display') == 'none') {
 		$("#advance_options").css('display', '');
+		$("#advance_options *").css('display', '');
 	}
 	else {
 		$("#advance_options").css('display', 'none');
@@ -5020,8 +5021,10 @@ function showPreviewIcon(icon) {
 		params.push("get_image_path=1");
 		params.push("img_src=" + imgBase + ".png");
 		params.push("page=include/ajax/skins.ajax");
-		parameter.push ({name: "id_visual_console",
-			value: id_visual_console});
+		params.push ({
+			name: "id_visual_console",
+			value: id_visual_console
+		});
 		jQuery.ajax ({
 			data: params.join ("&"),
 			type: 'POST',

@@ -42,8 +42,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.719";
-my $pandora_build = "180226";
+my $pandora_version = "7.0NG.720";
+my $pandora_build = "180322";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -170,6 +170,8 @@ sub pandora_get_sharedconfig ($$) {
 	# Node with a metaconsole license.
 	# NOTE: This must be read when checking license limits!
 	#$pa_config->{"node_metaconsole"} = pandora_get_tconfig_token ($dbh, 'node_metaconsole', 0);
+
+	$pa_config->{"provisioning_mode"} = pandora_get_tconfig_token ($dbh, 'provisioning_mode', '');
 
 
 	if ($pa_config->{'include_agents'} eq '') {
@@ -472,6 +474,10 @@ sub pandora_load_config {
 	$pa_config->{"thread_log"} = 0; # 7.0.717
 
 	$pa_config->{"unknown_updates"} = 0; # 7.0.718
+
+	$pa_config->{"provisioningserver"} = 1; # 7.0 720
+	$pa_config->{"provisioningserver_threads"} = 1; # 7.0 720
+	$pa_config->{"provisioning_cache_interval"} = 300; # 7.0 720
 
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
@@ -1089,6 +1095,15 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^unknown_updates\s+([0-1])/i) {
 			$pa_config->{'unknown_updates'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^provisioningserver\s+([0-1])/i){
+			$pa_config->{'provisioningserver'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^provisioningserver_threads\s+([0-9]*)/i){
+			$pa_config->{'provisioningserver_threads'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^provisioning_cache_interval\s+([0-9]*)/i){
+			$pa_config->{'provisioning_cache_interval'}= clean_blank($1);
 		}
 	} # end of loop for parameter #
 

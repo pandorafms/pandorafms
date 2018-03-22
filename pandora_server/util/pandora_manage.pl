@@ -126,6 +126,8 @@ sub help_screen{
 	help_screen_line('--clean_conf_file', '<agent_name>', "Clean a local conf of a given agent deleting all modules, \n\t  policies, file collections and comments");
 	help_screen_line('--get_bad_conf_files', '', 'Get the files bad configured (without essential tokens)');
 	help_screen_line('--locate_agent', '<agent_name>', 'Search a agent into of nodes of metaconsole. Only Enterprise.');
+	help_screen_line('--migration_agent_queue', '<id_node> <source_node_name> <target_node_name> [<db_only>]', 'Migrate agent only metaconsole');
+	help_screen_line('--migration_agent', '<id_node> ', 'Is migrating the agent only metaconsole');
 	print "\nMODULES:\n\n" unless $param ne '';
 	help_screen_line('--create_data_module', "<module_name> <module_type> <agent_name> [<description> <module_group> \n\t  <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> \n\t <history_data> <definition_file> <warning_str> <critical_str>\n\t  <unknown_events> <ff_threshold> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <ff_timeout> <warning_inverse> <critical_inverse>\n\t <critical_instructions> <warning_instructions> <unknown_instructions>]", 'Add data server module to agent');
 	help_screen_line('--create_web_module', "<module_name> <module_type> <agent_name> [<description> <module_group> \n\t  <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> \n\t <history_data> <definition_file> <warning_str> <critical_str>\n\t  <unknown_events> <ff_threshold> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <ff_timeout> <warning_inverse> <critical_inverse>\n\t <critical_instructions> <warning_instructions> <unknown_instructions>].\n\t The valid data types are web_data, web_proc, web_content_data or web_content_string", 'Add web server module to agent');
@@ -222,7 +224,7 @@ sub help_screen{
 	help_screen_line('--duplicate_visual_console', '<id> <times> [<prefix>]', 'Duplicate a visual console');
 	help_screen_line('--export_json_visual_console', '<id> [<path>] [<with_element_id>]', 'Creates a json with the visual console elements information');
 
-	
+
 	print "\n";
 	exit;
 }
@@ -5611,6 +5613,9 @@ sub cli_export_visual_console() {
 	print_log "[INFO] JSON file now contents: \n" . $data_to_json . "\n\n";
 }
 
+
+
+
 ###############################################################################
 ###############################################################################
 # MAIN
@@ -6064,7 +6069,15 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--apply_module_template') {
 			param_check($ltotal, 2, 2);
 			cli_apply_module_template();
-		} 
+		}
+		elsif ($param eq '--migration_agent_queue') {
+			param_check($ltotal, 4, 1);
+			cli_migration_agent_queue();
+		}
+		elsif ($param eq '--migration_agent') {
+			param_check($ltotal, 1, 0);
+			cli_migration_agent();
+		}
 		else {
 			print_log "[ERROR] Invalid option '$param'.\n\n";
 			$param = '';
@@ -6415,6 +6428,46 @@ sub cli_add_tag_to_module() {
 	# Call the API.
 	my $result = api_call(\%conf, 'set', 'add_tag_module', $module_id, $tag_id);
 	print "\n$result\n";
+}
+
+##############################################################################
+# Only meta migrate agent
+##############################################################################
+sub cli_migration_agent_queue() {
+	my ($id_agent, $source_name, $target_name, $only_db) = @ARGV[2..5];
+
+	if( !defined($id_agent) || !defined($source_name) || !defined($target_name) ){
+		print "\n0\n";
+	}
+
+	if(!defined($only_db)){
+		$only_db = 0;
+	}
+
+	# Call the API.
+	my $result = api_call( $conf, 'set', 'migrate_agent', $id_agent, 0, "$source_name|$target_name|$only_db" );
+	print "\n$result\n";
+}
+
+##############################################################################
+# Only meta is migrate agent
+##############################################################################
+sub cli_migration_agent() {
+	my ($id_agent) = @ARGV[2];
+
+	if( !defined($id_agent) ){
+		print "\n0\n";
+	}
+
+	# Call the API.
+	my $result = api_call( $conf, 'get', 'migrate_agent', $id_agent);
+
+	if( defined($result) && "$result" ne "" ){
+		print "\n1\n";
+	}
+	else{
+		print "\n0\n";
+	}
 }
 
 sub cli_apply_module_template() {

@@ -10143,4 +10143,147 @@ function api_set_metaconsole_synch($keys) {
 	
 }
 
+function api_set_apply_module_template($id_template, $id_agent, $thrash3, $thrash4) {
+		
+	if (isset ($id_template)) {
+		// Take agent data
+		$row = db_get_row ("tagente", "id_agente", $id_agent);
+		
+		if ($row !== false) {
+			$intervalo = $row["intervalo"];
+			$nombre_agente = $row["nombre"];
+			$direccion_agente =$row["direccion"];
+			$ultima_act = $row["ultimo_contacto"];
+			$ultima_act_remota =$row["ultimo_contacto_remoto"];
+			$comentarios = $row["comentarios"];
+			$id_grupo = $row["id_grupo"];
+			$id_os= $row["id_os"];
+			$os_version = $row["os_version"];
+			$agent_version = $row["agent_version"];
+			$disabled= $row["disabled"];
+		}
+		else {
+			return;
+		}
+		
+		$id_np = $id_template;
+		$name_template = db_get_value ('name', 'tnetwork_profile', 'id_np', $id_np);
+		$npc = db_get_all_rows_field_filter ("tnetwork_profile_component", "id_np", $id_np);
+		
+		if ($npc === false) {
+			$npc = array ();
+		}
+		
+		$success_count = $error_count = 0;
+		$modules_already_added = array();
+		
+		foreach ($npc as $row) {
+			$nc = db_get_all_rows_field_filter ("tnetwork_component", "id_nc", $row["id_nc"]);
+
+			if ($nc === false) {
+				$nc = array ();
+			}
+			foreach ($nc as $row2) {
+				// Insert each module from tnetwork_component into agent
+				$values = array(
+					'id_agente' => $id_agent,
+					'id_tipo_modulo' => $row2["type"],
+					'descripcion' => __('Created by template ').$name_template. ' . '.$row2["description"],
+					'max' => $row2["max"],
+					'min' => $row2["min"],
+					'module_interval' => $row2["module_interval"],
+					'tcp_port' => $row2["tcp_port"],
+					'tcp_send' => $row2["tcp_send"],
+					'tcp_rcv' => $row2["tcp_rcv"],
+					'snmp_community' => $row2["snmp_community"],
+					'snmp_oid' => $row2["snmp_oid"],
+					'ip_target' => $direccion_agente,
+					'id_module_group' => $row2["id_module_group"],
+					'id_modulo' => $row2["id_modulo"], 
+					'plugin_user' => $row2["plugin_user"],
+					'plugin_pass' => $row2["plugin_pass"],
+					'plugin_parameter' => $row2["plugin_parameter"],
+					'unit' => $row2["unit"],
+					'max_timeout' => $row2["max_timeout"],
+					'max_retries' => $row2["max_retries"],
+					'id_plugin' => $row2['id_plugin'],
+					'post_process' => $row2['post_process'],
+					'dynamic_interval' => $row2['dynamic_interval'],
+					'dynamic_max' => $row2['dynamic_max'],
+					'dynamic_min' => $row2['dynamic_min'],
+					'dynamic_two_tailed' => $row2['dynamic_two_tailed'],
+					'min_warning' => $row2['min_warning'],
+					'max_warning' => $row2['max_warning'],
+					'str_warning' => $row2['str_warning'],
+					'min_critical' => $row2['min_critical'],
+					'max_critical' => $row2['max_critical'],
+					'str_critical' => $row2['str_critical'],
+					'critical_inverse' => $row2['critical_inverse'],
+					'warning_inverse' => $row2['warning_inverse'],
+					'critical_instructions' => $row2['critical_instructions'],
+					'warning_instructions' => $row2['warning_instructions'],
+					'unknown_instructions' => $row2['unknown_instructions'],
+					'id_category' => $row2['id_category'],
+					'macros' => $row2['macros'],
+					'each_ff' => $row2['each_ff'],
+					'min_ff_event' => $row2['min_ff_event'],
+					'min_ff_event_normal' => $row2['min_ff_event_normal'],
+					'min_ff_event_warning' => $row2['min_ff_event_warning'],
+					'min_ff_event_critical' => $row2['min_ff_event_critical']
+					);
+				
+				$name = $row2["name"];
+				
+				// Put tags in array if the component has to add them later
+				if(!empty($row2["tags"])) {
+					$tags = explode(',', $row2["tags"]);
+				}
+				else {
+					$tags = array();
+				}
+				
+				// Check if this module exists in the agent
+				$module_name_check = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('delete_pending' => 0, 'nombre' => $name, 'id_agente' => $id_agent));
+				
+				if ($module_name_check !== false) {
+					$modules_already_added[] = $row2["name"];
+					$error_count++;
+				}
+				else {
+					$id_agente_modulo = modules_create_agent_module($id_agent, $name, $values);
+										
+					if ($id_agente_modulo === false) {
+						$error_count++;
+					}
+					else {
+						if(!empty($tags)) {
+							// Creating tags
+							$tag_ids = array();
+							foreach ($tags as $tag_name) {
+								$tag_id = tags_get_id($tag_name);
+								
+								//If tag exists in the system we store to create it
+								$tag_ids[] = $tag_id;
+							}
+							
+							tags_insert_module_tag ($id_agente_modulo, $tag_ids);
+						}
+				
+						$success_count++;
+					}
+				}
+			}
+		}
+		if ($error_count > 0) {
+			if (empty($modules_already_added))
+				ui_print_error_message(__('Error adding modules') . sprintf(' (%s)', $error_count));
+			else
+				ui_print_error_message(__('Error adding modules. The following errors already exists: ') . implode(', ', $modules_already_added));
+		}
+		if ($success_count > 0)
+			ui_print_success_message(__('Modules successfully added'));
+	}
+	
+}
+
 ?>

@@ -223,7 +223,10 @@ sub help_screen{
 	help_screen_line('--duplicate_visual_console', '<id> <times> [<prefix>]', 'Duplicate a visual console');
 	help_screen_line('--export_json_visual_console', '<id> [<path>] [<with_element_id>]', 'Creates a json with the visual console elements information');
 
+	help_screen_line('--migration_agent_queue', '<id_node> <source_node_name> <target_node_name> [<db_only>]', 'Migrate agent only metaconsole');
+	help_screen_line('--migrate_agent', '<id_node> ', 'Is migrating the agent only metaconsole');
 	
+
 	print "\n";
 	exit;
 }
@@ -5612,80 +5615,7 @@ sub cli_export_visual_console() {
 	print_log "[INFO] JSON file now contents: \n" . $data_to_json . "\n\n";
 }
 
-##############################################################################
-# cli_get_server_address gets first occurrence of IP address
-##############################################################################
-sub cli_get_server_address {
-	my ($target_node_name) = $ARGV[2];
 
-	if (is_metaconsole($conf)) {
-		my $rs = enterprise_hook("get_server_address",[\%conf, $dbh, $target_node_name]);
-		if (!defined($rs) || $rs eq '') {
-			print_log("0\n");
-			print STDERR "Error, no IP set in $target_node_name.\n" if ($conf->{'verbosity'} >= 3);
-			return;
-		}
-
-		print_log("$rs\n");
-	}
-	else {
-		my $server_address = get_db_value($dbh, "SELECT ip_address FROM tserver where name = ? AND ip_address!= '' ",
-			$target_node_name);
-
-		if (defined($server_address) && ("$server_address" ne "")) {
-			print_log("$server_address\n");
-		}
-		else {
-			print_log("0\n");
-			print STDERR "Error, no IP set in $target_node_name.\n" if ($conf->{'verbosity'} >= 3);
-		}
-	}
-}
-
-
-##############################################################################
-# cli_check_server_address
-##############################################################################
-sub cli_check_server_address {
-	my ($target_node_name) = $ARGV[2];
-
-	if (!is_metaconsole($conf)) {
-		print_log("0\n");
-		print STDERR "Error, this is not a Metaconsole Server.\n" if ($conf->{'verbosity'} >= 1);
-		return;
-	}
-
-	my $rs = enterprise_hook("get_server_address",[\%conf, $dbh, $target_node_name]);
-	if (!defined($rs) || $rs eq '') {
-		print_log("0\n");
-		print STDERR "Error, no IP set in $target_node_name.\n" if ($conf->{'verbosity'} >= 3);
-		return;
-	}
-
-	print_log("1\n");
-}
-
-
-#
-sub cli_check_mr_same {}
-#
-sub cli_check_alerts_act_exist {}
-#
-sub cli_check_alerts_temp_exist {}
-#
-sub cli_check_inventory_exist {}
-#
-sub cli_check_agent_conf {}
-#
-sub cli_check_collections_exist {}
-#
-sub cli_check_plugins_exist {}
-#
-sub cli_check_policies_exist {}
-#
-sub cli_check_group_exist {}
-#
-sub cli_check_agent_exist {}
 
 
 ###############################################################################
@@ -6142,13 +6072,13 @@ sub pandora_manage_main ($$$) {
 			param_check($ltotal, 3, 2);
 			cli_export_visual_console();
 		}
-		elsif ($param eq '--check_server_address') {
-			param_check($ltotal, 1, 0);
-			cli_check_server_address();
+		elsif ($param eq '--migration_agent_queue') {
+			param_check($ltotal, 4, 1);
+			cli_migration_agent_queue();
 		}
-		elsif ($param eq '--get_server_address') {
+		elsif ($param eq '--migration_agent') {
 			param_check($ltotal, 1, 0);
-			cli_get_server_address();
+			cli_migration_agent();
 		}
 		else {
 			print_log "[ERROR] Invalid option '$param'.\n\n";
@@ -6519,4 +6449,44 @@ sub cli_add_tag_to_module() {
 	# Call the API.
 	my $result = api_call(\%conf, 'set', 'add_tag_module', $module_id, $tag_id);
 	print "\n$result\n";
+}
+
+##############################################################################
+# Only meta migrate agent
+##############################################################################
+sub cli_migration_agent_queue() {
+	my ($id_agent, $source_name, $target_name, $only_db) = @ARGV[2..5];
+
+	if( !defined($id_agent) || !defined($source_name) || !defined($target_name) ){
+		print "\n0\n";
+	}
+
+	if(!defined($only_db)){
+		$only_db = 0;
+	}
+
+	# Call the API.
+	my $result = api_call( $conf, 'set', 'migrate_agent', $id_agent, 0, "$source_name|$target_name|$only_db" );
+	print "\n$result\n";
+}
+
+##############################################################################
+# Only meta is migrate agent
+##############################################################################
+sub cli_migration_agent() {
+	my ($id_agent) = @ARGV[2];
+
+	if( !defined($id_agent) ){
+		print "\n0\n";
+	}
+
+	# Call the API.
+	my $result = api_call( $conf, 'get', 'migrate_agent', $id_agent);
+
+	if( defined($result) && "$result" ne "" ){
+		print "\n1\n";
+	}
+	else{
+		print "\n0\n";
+	}
 }

@@ -2721,44 +2721,66 @@ function reporting_network_interfaces_report($report, $content, $type = 'dinamic
 	$filter = array(
 		'id_grupo' => $content['id_group'],
 		'disabled' => 0);
-	$network_interfaces_by_agents = agents_get_network_interfaces(false, $filter);
-	
+
+	$return['failed'] = null;
+	$return['data'] = array();
+
+	if ($config['metaconsole']) {
+		$server_names = metaconsole_get_connection_names();
+		if(isset($server_names) && is_array($server_names)){
+			foreach ($server_names as $key => $value) {
+				$id_meta = metaconsole_get_id_server($value);
+				$connection = metaconsole_get_connection_by_id ($id_meta);
+				if (metaconsole_connect($connection) != NOERR) {
+					continue;
+				}
+				else{
+					$network_interfaces_by_agents = agents_get_network_interfaces(false, $filter);
+					$return  = agents_get_network_interfaces_array($network_interfaces_by_agents, $return, $type, $content, $report);
+					metaconsole_restore_db();
+				}
+			}
+		}
+	}
+	else{
+		$network_interfaces_by_agents = agents_get_network_interfaces(false, $filter);
+		agents_get_network_interfaces_array($network_interfaces_by_agents, $return, $type, $content, $report);
+	}
+
+	return reporting_check_structure_content($return);
+}
+
+function agents_get_network_interfaces_array($network_interfaces_by_agents, $return, $type, $content, $report){
 	if (empty($network_interfaces_by_agents)) {
 		$return['failed'] =
 			__('The group has no agents or none of the agents has any network interface');
 		$return['data'] = array();
 	}
 	else {
-		$return['failed'] = null;
-		$return['data'] = array();
-		
 		foreach ($network_interfaces_by_agents as $agent_id => $agent) {
 			$row_data = array();
-			
 			$row_data['agent'] = $agent['name'];
-			
 			$row_data['interfaces'] = array();
 			foreach ($agent['interfaces'] as $interface_name => $interface) {
 				$row_interface = array();
-				
 				$row_interface['name'] = $interface_name;
 				$row_interface['ip'] = $interface['ip'];
 				$row_interface['mac'] = $interface['mac'];
 				$row_interface['status'] = $interface['status_image'];
 				$row_interface['chart'] = null;
-				
+
 				// Get chart
 				reporting_set_conf_charts($width, $height, $only_image,
 					$type, $content, $ttl);
-				
+
 				if (!empty($force_width_chart)) {
 					$width = $force_width_chart;
 				}
-				
+
 				if (!empty($force_height_chart)) {
 					$height = $force_height_chart;
 				}
-				
+
 				switch ($type) {
 					case 'dinamic':
 						if (!empty($interface['traffic'])) {
@@ -2818,14 +2840,12 @@ function reporting_network_interfaces_report($report, $content, $type = 'dinamic
 							}
 						break;
 				}
-				
 				$row_data['interfaces'][] = $row_interface;
 			}
-			
 			$return['data'][] = $row_data;
 		}
 	}
-	return reporting_check_structure_content($return);
+	return $return;
 }
 
 /**

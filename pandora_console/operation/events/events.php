@@ -275,7 +275,7 @@ if ($id_agent != 0) {
 }
 
 $text_module = (string) get_parameter('module_search', '');
-$id_agent_module = get_parameter('module_search_hidden', 0);
+$id_agent_module = get_parameter('module_search_hidden', get_parameter('id_agent_module',0));
 if ($id_agent_module != 0) {
 	$text_module = db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $id_agent_module);
 	if ($text_module == false) {

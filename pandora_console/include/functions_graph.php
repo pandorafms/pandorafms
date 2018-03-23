@@ -1967,7 +1967,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		}
 
 		foreach ($module_list as $key => $value) {
-			if (is_metaconsole()) {
+			if (is_metaconsole() && is_array($value)) {
 				$server = metaconsole_get_connection_by_id ($value['server']);
 				metaconsole_connect($server);
 				$value = $value['module'];
@@ -1987,14 +1987,14 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 					$module_name_list[$key] = $alias . " / " . $module_name;
 				}
 			}
-			if (is_metaconsole()) {
+			if (is_metaconsole() && is_array($value)) {
 				metaconsole_restore_db();
 			}
 		}
 
 		if (!is_null($percentil) && $percentil) {
 			foreach ($module_list as $key => $value) {
-				if (is_metaconsole()) {
+				if (is_metaconsole() && is_array($value)) {
 					$server = metaconsole_get_connection_by_id ($value['server']);
 					metaconsole_connect($server);
 					$value = $value['module'];
@@ -2004,7 +2004,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				$alias       = db_get_value ("alias","tagente","nombre",$agent_name);
 				$module_name = io_safe_output( modules_get_agentmodule_name ($value) );
 
-				if (is_metaconsole()) {
+				if (is_metaconsole() && is_array($value)) {
 					metaconsole_restore_db();
 				}
 
@@ -2413,7 +2413,7 @@ function fullscale_data_combined($module_list, $period, $date, $flash_charts, $p
 				$array_percentil = array();
 		}
 
-		if (is_metaconsole()) {
+		if (is_metaconsole() && is_array($value_module)) {
 				$server = metaconsole_get_connection_by_id ($value_module['server']);
 				metaconsole_connect($server);
 				$previous_data   = modules_get_previous_data ($value_module['module'], $datelimit);
@@ -2428,7 +2428,6 @@ function fullscale_data_combined($module_list, $period, $date, $flash_charts, $p
 		foreach ($data_uncompress as $key_data => $value_data) {
 			foreach ($value_data['data'] as $k => $v) {
 				$real_date = $v['utimestamp'];
-			
 				if(!isset($v['datos'])){
 						$v['datos'] = $previous_data;
 				}

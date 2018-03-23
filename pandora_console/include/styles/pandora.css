@@ -4627,3 +4627,10 @@ form ul.form_flex li ul li{
 #snmp_data .databox {
 	border: 0px;
 }
+
+.tickLabel {
+    white-space: nowrap;
+    overflow-x: hidden;
+    line-height: 1.05em!important;
+}
+

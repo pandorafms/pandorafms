@@ -653,13 +653,13 @@ function hbar_graph($flash_chart, $chart_data, $width, $height,
 	else {
 		
 		foreach ($chart_data as $key => $value) {
-			if(strlen($key) > 40){
-					if(strpos($key, ' - ') != -1){
-						$key_temp = explode(" - ",$key);
-						$key_temp[0] = $key_temp[0]."   \n";
+			$str_key = io_safe_output($key);
+			if(strlen($str_key) > 40){
+					if(strpos($str_key, ' - ') != -1){
+						$key_temp = explode(" - ",$str_key);
+						$key_temp[0] = $key_temp[0]."   <br>";
 						$key_temp[1]= '...'.substr($key_temp[1],-20);
 						$key2 = $key_temp[0].$key_temp[1];
-						io_safe_output($key2);
 					}
 				$chart_data[$key2]['g'] = $chart_data[$key]['g'];
 				unset($chart_data[$key]);

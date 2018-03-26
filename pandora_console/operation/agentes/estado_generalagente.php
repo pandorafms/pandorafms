@@ -53,7 +53,7 @@ if ($is_extra === ENTERPRISE_NOT_HOOK) {
 	$is_extra = false;
 }
 
-if (! check_acl ($config["id_user"], $agent["id_grupo"], "AR") && ! check_acl ($config["id_user"], $agent["id_grupo"], "AW") && !$is_extra) {
+if (! check_acl_one_of_groups ($config["id_user"], $all_groups, "AR") && ! check_acl_one_of_groups ($config["id_user"], $all_groups, "AW") && !$is_extra) {
 	db_pandora_audit("ACL Violation", 
 		"Trying to access Agent General Information");
 	require_once ("general/noaccess.php");
@@ -482,16 +482,7 @@ if (!empty($network_interfaces)) {
 	
 	foreach ($network_interfaces as $interface_name => $interface) {
 		if (!empty($interface['traffic'])) {
-			$permission = false;
-			
-			if ($strict_user) {
-				if (tags_check_acl_by_module($interface['traffic']['in'], $config['id_user'], 'RR') === true
-						&& tags_check_acl_by_module($interface['traffic']['out'], $config['id_user'], 'RR') === true)
-					$permission = true;
-			}
-			else {
-				$permission = check_acl($config['id_user'], $agent["id_grupo"], "RR");
-			}
+			$permission = check_acl_one_of_groups($config['id_user'], $all_groups, "RR");
 			
 			if ($permission) {
 				$params = array(
@@ -648,7 +639,7 @@ $table->rowspan[1][0] = 0;
 
 $data[0][2] = '<div style="width:100%; text-align:right">';
 $data[0][2] .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;refr=60">' . html_print_image("images/refresh.png", true, array("border" => '0', "title" => __('Refresh data'), "alt" => "")) . '</a><br>';
-if (check_acl ($config["id_user"], $agent["id_grupo"], "AW"))
+if (check_acl_one_of_groups ($config["id_user"], $all_groups, "AW"))
 	$data[0][2] .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;flag_agent=1&amp;id_agente='.$id_agente.'">' . html_print_image("images/target.png", true, array("border" => '0', "title" => __('Force remote checks'), "alt" => "")) . '</a>';
 $data[0][2] .= '</div>';
 

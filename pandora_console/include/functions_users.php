@@ -242,6 +242,7 @@ function groups_combine_acl($acl_group_a, $acl_group_b){
  * @param boolean $returnAllColumns Flag to return all columns of groups.
  * @param array $id_groups The list of group to scan to bottom child. By default null.
  * @param string $keys_field The field of the group used in the array keys. By default ID
+ * @param bool $cache Set it to false to not use cache
  *
  * @return array A list of the groups the user has certain privileges.
  */

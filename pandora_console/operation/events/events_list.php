@@ -742,7 +742,8 @@ if ($group_rep == 0) {
 	switch ($config["dbtype"]) {
 		case "mysql":
 			$sql = "SELECT *, 1 event_rep
-				FROM $event_table
+				FROM $event_table te LEFT JOIN tagent_secondary_group tasg
+					ON te.id_grupo = tasg.id_group
 				WHERE 1=1 " . $sql_post . "
 				ORDER BY utimestamp DESC LIMIT ".$offset.",".$pagination;
 			break;
@@ -837,7 +838,10 @@ elseif ($group_rep == 1) {
 		false, $meta, $history, true, false);
 }
 elseif ($group_rep == 2) {
-	$sql = "SELECT COUNT(*) FROM (select id_agente as total from $event_table WHERE id_agente > 0  
+	$sql = "SELECT COUNT(*) FROM (select id_agente as total from $event_table te
+		LEFT JOIN tagent_secondary_group tasg
+			ON te.id_grupo = tasg.id_group
+		WHERE id_agente > 0
 					$sql_post GROUP BY id_agente ORDER BY id_agente ) AS t";
 	$total_events = (int) db_get_sql ($sql);
 }

@@ -180,8 +180,6 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 	}
 	
 	if (($id_agent !== false) && ($idGroup !== false)) {
-		$groups = users_get_groups($config["id_user"]);
-		
 		if ($idGroup != 0) { //All group
 			$subQuery = 'SELECT id_agente_modulo
 				FROM tagente_modulo
@@ -190,17 +188,6 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 		else {
 			$subQuery = 'SELECT id_agente_modulo
 				FROM tagente_modulo WHERE delete_pending = 0';
-		}
-		
-		if ($strict_user) {
-			$where_tags = tags_get_acl_tags($config['id_user'], $groups, 'AR', 'module_condition', 'AND', 'tagente_modulo'); 
-			// If there are any errors add imposible condition
-			if(in_array($where_tags, array(ERR_WRONG_PARAMETERS, ERR_ACL))) {
-				$subQuery .= ' AND 1 = 0';
-			} 
-			else {
-				$subQuery .= $where_tags;
-			}
 		}
 	}
 	else if ($id_agent === false || empty($id_agent)) {
@@ -256,7 +243,6 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 				$limit_sql = " LIMIT $offset, $limit "; 
 			}
 			$sql = sprintf("%s %s", $sql, $limit_sql);
-			
 			$alerts = db_get_all_rows_sql($sql);
 			break;
 		case "postgresql":
@@ -389,6 +375,7 @@ function agents_get_agents ($filter = false, $fields = false,
 	if (empty ($filter['id_grupo'])) {
 		$all_groups = true;
 		$filter['id_grupo'] = $groups;
+		$filter['id_group'] = $groups;
 	}
 	elseif (! is_array ($filter['id_grupo'])) {
 		$all_groups = false;
@@ -397,6 +384,7 @@ function agents_get_agents ($filter = false, $fields = false,
 			return false;
 		}
 		$filter['id_grupo'] = (array) $filter['id_grupo']; //Make an array
+		$filter['id_group'] = (array) $filter['id_grupo']; //Make an array
 	}
 	else {
 		$all_groups = true;
@@ -410,10 +398,12 @@ function agents_get_agents ($filter = false, $fields = false,
 		if (count ($filter['id_grupo']) == 0) {
 			return false;
 		}
+		$filter['id_group'] = $filter['id_grupo'];
 	}
 	
 	if (in_array (0, $filter['id_grupo'])) {
 		unset ($filter['id_grupo']);
+		unset ($filter['id_group']);
 	}
 	
 	if (!is_array ($fields)) {
@@ -438,8 +428,22 @@ function agents_get_agents ($filter = false, $fields = false,
 	if (empty($filter['id_agente'])) {
 		unset($filter['id_agente']);
 	}
-	
-	$where = db_format_array_where_clause_sql ($filter, 'AND', '');
+
+	// Group filter with secondary groups
+	$where_secondary = '';
+	if (isset($filter['id_group']) && isset($filter['id_grupo'])) {
+		$where_secondary .= db_format_array_where_clause_sql (array(
+			'tagent_secondary_group.id_group' => $filter['id_group'],
+			'id_grupo' => $filter['id_grupo']
+		) , 'OR', '');
+		unset($filter['id_group']);
+		unset($filter['id_grupo']);
+	}
+	// Add the group filter to
+	$where = db_format_array_where_clause_sql ($filter, 'AND', "(" . $where_secondary . ") AND ");
+	if ($where == '' && $where_secondary != '') {
+		$where = $where_secondary;
+	}
 	
 	$where_nogroup = db_format_array_where_clause_sql(
 		$filter_nogroup, 'AND', '');
@@ -472,49 +476,18 @@ function agents_get_agents ($filter = false, $fields = false,
 			$where, $where_nogroup, $status_sql, $search, $disabled, $search_custom);
 	}
 	$sql = sprintf('SELECT %s
-		FROM tagente
+		FROM tagente LEFT JOIN tagent_secondary_group ON tagent_secondary_group.id_agent=tagente.id_agente
 		WHERE %s %s', implode(',',$fields), $where, $order);
-	
-	switch ($config["dbtype"]) {
-		case "mysql":
-			$limit_sql = '';
-			if (isset($offset) && isset($limit)) {
-				$limit_sql = " LIMIT $offset, $limit "; 
-			}
-			$sql = sprintf("%s %s", $sql, $limit_sql);
-			
-			if ($return)
-				return $sql;
-			else
-				$agents = db_get_all_rows_sql($sql);
-			break;
-		case "postgresql":
-			$limit_sql = '';
-			if (isset($offset) && isset($limit)) {
-				$limit_sql = " OFFSET $offset LIMIT $limit ";
-			}
-			$sql = sprintf("%s %s", $sql, $limit_sql);
-			
-			if ($return)
-				return $sql;
-			else
-				$agents = db_get_all_rows_sql($sql);
-			
-			break;
-		case "oracle":
-			$set = array();
-			if (isset($offset) && isset($limit)) {
-				$set['limit'] = $limit;
-				$set['offset'] = $offset;
-			}
-			
-			if ($return)
-				return $sql;
-			else
-				$agents = oracle_recode_query ($sql, $set, 'AND', false);
-			break;
+
+	$limit_sql = '';
+	if (isset($offset) && isset($limit)) {
+		$limit_sql = " LIMIT $offset, $limit ";
 	}
-	
+	$sql = sprintf("%s %s", $sql, $limit_sql);
+
+	if ($return) return $sql;
+	else $agents = db_get_all_rows_sql($sql);
+
 	return $agents;
 }
 
@@ -1098,20 +1071,24 @@ function agents_get_modules ($id_agent = null, $details = false,
 		$id_agent = safe_int ($id_agent, 1);
 	}
 	
-	
 	$where = "(
 			1 = (
 				SELECT is_admin
 				FROM tusuario
 				WHERE id_user = '" . $config['id_user'] . "'
 			)
-			OR 
+			OR
 			tagente_modulo.id_agente IN (
 				SELECT id_agente
-				FROM tagente
-				WHERE id_grupo IN (
+				FROM tagente tas LEFT JOIN tagent_secondary_group tasgs
+					ON tas.id_agente = tasgs.id_agent
+				WHERE (tas.id_grupo IN (
+						" . implode(',', $id_userGroups) . "
+					) OR
+					tasgs.id_group IN (
 						" . implode(',', $id_userGroups) . "
 					)
+				)
 			)
 			OR 0 IN (
 				SELECT id_grupo
@@ -2676,6 +2653,28 @@ function select_modules_for_agent_group($id_group, $id_agents,
  */
 function agents_generate_name ($alias, $address = '') {
 	return hash('sha256', $alias . '|' . $address . '|' . time() . '|' . sprintf('%04d', rand(0, 10000)));
+}
+
+/**
+ * Returns all the groups related to an agent. It includes all secondary groups.
+ *
+ * @param int $id_agent
+ * @param int $id_group. By default it will search for it in dtabase
+ *
+ * @return Array with the main and secondary groups
+ */
+function agents_get_all_groups_agent ($id_agent, $group = false) {
+	// Get the group if is not defined
+	if ($group === false) $group = agents_get_group_agents($id_agent);
+
+	$secondary_groups = enterprise_hook('agents_get_secondary_groups', array($id_agent));
+
+	// Return only an array with the group in open version
+	if ($secondary_groups == ENTERPRISE_NOT_HOOK) return array($group);
+
+	// Add a list of groups
+	$secondary_groups['plain'][] = $group;
+	return $secondary_groups['plain'];
 }
 
 ?>

@@ -123,8 +123,12 @@ if ($idAgent != 0) {
 	if ($is_extra === ENTERPRISE_NOT_HOOK) {
 		$is_extra = false;
 	}
-	
-	if (!check_acl ($config["id_user"], $id_group, "AR") && !check_acl ($config["id_user"], $id_group, "AW") && !$is_extra) {
+
+	// All groups is calculated in ver_agente.php. Avoid to calculate it again
+	if (!isset($all_groups)) {
+		$all_groups = agents_get_all_groups_agent ($idAgent, $id_group);
+	}
+	if (!check_acl_one_of_groups ($config["id_user"], $all_groups, "AR") && !check_acl_one_of_groups ($config["id_user"], $id_group, "AW") && !$is_extra) {
 		db_pandora_audit("ACL Violation","Trying to access alert view");
 		require ("general/noaccess.php");
 		exit;
@@ -158,6 +162,8 @@ else {
 				users_get_groups($config["id_user"], $access, false)), false, 'lower', true));
 	
 	$idGroup = $id_group;
+	// If there is no agent defined, it means that it cannot search for the secondary groups
+	$all_groups = array($id_group);
 	
 	$print_agent = true;
 	
@@ -170,7 +176,7 @@ else {
 }
 
 if ($alert_validate) {
-	if (check_acl ($config["id_user"], $id_group, "AW") || check_acl ($config["id_user"], $id_group, "LM") ) {
+	if (check_acl_one_of_groups ($config["id_user"], $all_groups, "AW") || check_acl_one_of_groups ($config["id_user"], $all_groups, "LM") ) {
 		validateAlert();
 	}
 	else {
@@ -344,12 +350,14 @@ if (empty($id_groups)) {
 	$whereAlertSimple .= ' AND (1 = 0) ';
 }
 else {
-	$whereAlertSimple .= ' AND id_agent_module IN (
+	$whereAlertSimple .= sprintf (' AND id_agent_module IN (
 		SELECT tam.id_agente_modulo
 		FROM tagente_modulo tam
 		WHERE tam.id_agente IN (SELECT ta.id_agente
-			FROM tagente ta
-			WHERE ta.id_grupo IN (' . implode(',', $id_groups) . '))) ';
+			FROM tagente ta LEFT JOIN tagent_secondary_group tasg ON
+				ta.id_agente = tasg.id_agent
+				WHERE (ta.id_grupo IN (%s) OR tasg.id_group IN (%s)))) ',
+	implode(',', $id_groups), implode(',', $id_groups));
 }
 
 

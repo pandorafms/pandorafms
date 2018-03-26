@@ -34,7 +34,6 @@ enterprise_include_once ('include/functions_local_components.php');
 enterprise_include_once ('include/functions_events.php');
 enterprise_include_once ('include/functions_agents.php');
 enterprise_include_once ('include/functions_modules.php');
-enterprise_include_once ('include/functions_collection.php');
 
 /**
  * Parse the "other" parameter.

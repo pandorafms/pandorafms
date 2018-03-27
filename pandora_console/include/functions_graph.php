@@ -2637,8 +2637,10 @@ function graph_agent_status ($id_agent = false, $width = 300, $height = 200, $re
 				ON ta.id_agente = tasg.id_agent
 			WHERE
 				ta.disabled = 0 AND
+				%s
 				(ta.id_grupo IN (%s) OR tasg.id_group IN (%s))',
 			$show_not_init ? ', SUM(notinit_count) "Not init"' : '',
+			empty($id_agent) ? '' : "ta.id_agente = $id_agent AND",
 			$groups,
 			$groups
 		));

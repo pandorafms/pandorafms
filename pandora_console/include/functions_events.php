@@ -3306,42 +3306,15 @@ function events_get_events_grouped_by_agent($sql_post, $offset = 0,
 		$groupby_extra = '';
 		$fields_extra = '';
 	}
-	
-	switch ($config["dbtype"]) {
-		case "mysql":
-			if ($total) {
-				$sql = "SELECT COUNT(*) FROM (select id_agente from $table WHERE 1=1 
-						$sql_post GROUP BY id_agente, event_type$groupby_extra ORDER BY id_agente ) AS t";
-			}
-			else {
-				$sql = "select id_agente, count(*) as total$fields_extra from $table te LEFT JOIN tagent_secondary_group tasg
-						ON te.id_grupo = tasg.id_group
-					WHERE id_agente > 0 $sql_post GROUP BY id_agente$groupby_extra ORDER BY id_agente LIMIT $offset,$pagination";
-			}
-			break;
-		case 'postgresql':
-			if ($total) {
-				
-			}
-			else {
-				$sql = "select id_agente, count(*) as total$fields_extra from $table 
-					WHERE id_agente > 0 $sql_post GROUP BY id_agente$groupby_extra ORDER BY id_agente LIMIT $offset,$pagination";
-			}
-			break;
-		case 'oracle':
-			if ($total) {
-				
-			}
-			else {
-				$set = array();
-				$set['limit'] = $pagination;
-				$set['offset'] = $offset;
-				
-				$sql = "select id_agente, count(*) as total$fields_extra from $table 
-					WHERE id_agente > 0 $sql_post GROUP BY id_agente, event_type$groupby_extra ORDER BY id_agente ";
-				$sql = oracle_recode_query ($sql, $set);
-			}
-			break;
+
+	if ($total) {
+		$sql = "SELECT COUNT(*) FROM (select id_agente from $table WHERE 1=1 
+				$sql_post GROUP BY id_agente, event_type$groupby_extra ORDER BY id_agente ) AS t";
+	}
+	else {
+		$sql = "select id_agente, count(*) as total$fields_extra from $table te LEFT JOIN tagent_secondary_group tasg
+				ON te.id_grupo = tasg.id_group
+			WHERE id_agente > 0 $sql_post GROUP BY id_agente$groupby_extra ORDER BY id_agente LIMIT $offset,$pagination";
 	}
 	
 	$result = array();
@@ -3365,7 +3338,9 @@ function events_get_events_grouped_by_agent($sql_post, $offset = 0,
 									'event_type' => $resultado['event_type']);
 			}
 			else {
-				$sql = "select event_type from $table 
+				$sql = "SELECT event_type FROM $table te
+					LEFT JOIN tagent_secondary_group tasg
+						ON te.id_agente = tasg.id_agent
 					WHERE id_agente = ".$event['id_agente']." $sql_post ORDER BY utimestamp DESC ";
 				$resultado = db_get_row_sql($sql);
 				

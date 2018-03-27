@@ -829,7 +829,9 @@ if (($config['dbtype'] == 'oracle') && ($result !== false)) {
 
 if ($group_rep == 0) {
 	$sql = "SELECT COUNT(id_evento)
-			FROM $event_table
+			FROM $event_table te
+			LEFT JOIN tagent_secondary_group tasg
+				ON te.id_grupo = tasg.id_group
 			WHERE 1=1 $sql_post";
 	$total_events = (int) db_get_sql ($sql);
 }

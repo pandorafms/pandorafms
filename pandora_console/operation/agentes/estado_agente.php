@@ -95,8 +95,8 @@ if (is_ajax ()) {
 	
 	if ($get_agent_module_last_value) {
 		$id_module = (int) get_parameter ('id_agent_module');
-		
-		if (! check_acl ($config['id_user'], agents_get_agentmodule_group ($id_module), "AR")) {
+		$id_agent = (int) modules_get_agentmodule_agent ((int) $id_module);
+		if (! check_acl_one_of_groups ($config['id_user'], agents_get_all_groups_agent ($id_agent), "AR")) {
 			db_pandora_audit("ACL Violation",
 				"Trying to access agent main list view");
 			echo json_encode (false);

@@ -503,7 +503,7 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		$table->head[1] = "<span title='" . __('Standby') . "'>" . __('S.') . "</span>";
 		
 		if (!is_metaconsole()) {
-			if (check_acl($config['id_user'], $id_group, "AW") || check_acl ($config["id_user"], $id_group, "LM"))
+			if (check_acl_one_of_groups($config['id_user'], $all_groups, "AW") || check_acl_one_of_groups ($config["id_user"], $all_groups, "LM"))
 				$table->head[2] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
 		}
 		
@@ -514,7 +514,7 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		$table->head[7] = __('Status');
 		if (!is_metaconsole()) {
 			$table->size[7] = '5%';
-			if (check_acl ($config["id_user"], $id_group, "LW") || check_acl ($config["id_user"], $id_group, "LM")) {
+			if (check_acl_one_of_groups ($config["id_user"], $all_groups, "LW") || check_acl_one_of_groups ($config["id_user"], $all_groups, "LM")) {
 				$table->head[8] = __('Validate');
 				$table->align[8] = 'center';
 				$table->size[8] = '5%';

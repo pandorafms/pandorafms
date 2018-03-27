@@ -79,16 +79,18 @@ $result = null;
 
 if ($agent_to_delete) {
 	$id_agente = $agent_to_delete;
-	$agent_name = agents_get_name ($id_agente);
-	$id_grupo = agents_get_agent_group($id_agente);
-	if (check_acl ($config["id_user"], $id_grupo, "AW")) {
+	if (check_acl_one_of_groups (
+		$config["id_user"],
+		agents_get_all_groups_agent($id_agente),
+		"AW"
+	)) {
 		$id_agentes[0] = $id_agente;
 		$result = agents_delete_agent($id_agentes);
 	}
 	else {
 		// NO permissions.
 		db_pandora_audit("ACL Violation",
-			"Trying to delete agent \'$agent_name\'");
+			"Trying to delete agent \'" . agents_get_name ($id_agente). "\'");
 		require ("general/noaccess.php");
 		exit;
 	}

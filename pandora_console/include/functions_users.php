@@ -422,15 +422,16 @@ function users_get_first_group ($id_user = false, $privilege = "AR", $all_group 
 function users_access_to_agent ($id_agent, $mode = "AR", $id_user = false) {
 	if (empty ($id_agent))
 		return false;
-	
+
 	if ($id_user == false) {
 		global $config;
 		$id_user = $config['id_user'];
 	}
-	
-	$id_group = (int) db_get_value ('id_grupo', 'tagente', 'id_agente', (int) $id_agent);
-	
-	return (bool) check_acl ($id_user, $id_group, $mode);
+
+	return (bool) check_acl_one_of_groups (
+		$id_user,
+		agents_get_all_groups_agent((int)$id_agent),
+		$mode);
 }
 
 /**

@@ -1836,8 +1836,8 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 		$agent_alias = io_safe_output(agents_get_alias($id_agent));
 		
 		/* Check for deletion permissions */
-		$id_group = agents_get_agent_group ($id_agent);
-		if ((! check_acl ($config['id_user'], $id_group, "AW")) && !$disableACL) {
+		$all_groups = agents_get_all_groups_agent ($id_agent);
+		if ((! check_acl_one_of_groups ($config['id_user'], $all_groups, "AW")) && !$disableACL) {
 			return false;
 		}
 		

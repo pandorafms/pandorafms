@@ -273,7 +273,12 @@ if(is_array($modules)){
 }
 
 $table->data[4][0] = __('Primary group');
-$table->data[4][1] = html_print_select_groups(false, "AR", false, 'grupo', $grupo, '', '', 0, true);
+// Cannot change primary group if user have not permission for that group
+if (isset($groups[$grupo]) || $new_agent) {
+	$table->data[4][1] = html_print_select_groups(false, "AR", false, 'grupo', $grupo, '', '', 0, true);
+} else {
+	$table->data[4][1] = groups_get_name($grupo);
+}
 $table->data[4][1] .= ' <span id="group_preview">';
 $table->data[4][1] .= ui_print_group_icon ($grupo, true);
 $table->data[4][1] .= '</span>';

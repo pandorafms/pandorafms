@@ -29,15 +29,20 @@ if ($id_agente === -1) {
 	return;
 }
 
-if (! check_acl ($config["id_user"], $agent["id_grupo"], "AR") && ! check_acl ($config['id_user'], 0, "AW")) {
-	db_pandora_audit("ACL Violation", 
+// All groups is calculated in ver_agente.php. Avoid to calculate it again
+if (!isset($all_groups)) {
+	$all_groups = agents_get_all_groups_agent ($idAgent, $id_group);
+}
+
+if (! check_acl_one_of_groups ($config["id_user"], $all_groups, "AR") && ! check_acl ($config['id_user'], 0, "AW")) {
+	db_pandora_audit("ACL Violation",
 		"Trying to access Agent General Information");
 	require_once ("general/noaccess.php");
 	return;
 }
 
-$all_customs_fields = (bool)check_acl($config["id_user"],
-	$agent["id_grupo"], "AW");
+$all_customs_fields = (bool)check_acl_one_of_groups($config["id_user"],
+	$all_groups, "AW");
 
 if ($all_customs_fields) {
 	$fields = db_get_all_rows_filter('tagent_custom_fields');

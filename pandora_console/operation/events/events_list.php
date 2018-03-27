@@ -739,32 +739,12 @@ echo "</div>";
 $event_table = events_get_events_table($meta, $history);
 
 if ($group_rep == 0) {
-	switch ($config["dbtype"]) {
-		case "mysql":
-			$sql = "SELECT *, 1 event_rep
-				FROM $event_table te LEFT JOIN tagent_secondary_group tasg
-					ON te.id_grupo = tasg.id_group
-				WHERE 1=1 " . $sql_post . "
-				ORDER BY utimestamp DESC LIMIT ".$offset.",".$pagination;
-			break;
-		case "postgresql":
-			$sql = "SELECT *, 1 event_rep
-				FROM $event_table
-				WHERE 1=1 " . $sql_post . "
-				ORDER BY utimestamp DESC LIMIT ".$pagination." OFFSET ".$offset;
-			break;
-		case "oracle":
-			$set = array();
-			$set['limit'] = $pagination;
-			$set['offset'] = $offset;
-			$sql = "SELECT $event_table.*, 1 event_rep
-				FROM $event_table
-				WHERE 1=1 " . $sql_post . "
-				ORDER BY utimestamp DESC"; 
-			$sql = oracle_recode_query ($sql, $set);
-			break;
-	}
-	
+	$sql = "SELECT *, 1 event_rep
+		FROM $event_table te LEFT JOIN tagent_secondary_group tasg
+			ON te.id_agente = tasg.id_agent
+		WHERE 1=1 " . $sql_post . "
+		ORDER BY utimestamp DESC LIMIT ".$offset.",".$pagination;
+
 	//Extract the events by filter (or not) from db
 	$result = db_get_all_rows_sql ($sql);
 }
@@ -831,7 +811,7 @@ if ($group_rep == 0) {
 	$sql = "SELECT COUNT(id_evento)
 			FROM $event_table te
 			LEFT JOIN tagent_secondary_group tasg
-				ON te.id_grupo = tasg.id_group
+				ON te.id_agente = tasg.id_agent
 			WHERE 1=1 $sql_post";
 	$total_events = (int) db_get_sql ($sql);
 }

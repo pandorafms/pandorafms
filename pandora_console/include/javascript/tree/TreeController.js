@@ -37,6 +37,7 @@ var TreeController = {
 
 				// Load branch
 				function _processGroup (container, elements, rootGroup) {
+					
 					var $group = $("<ul></ul>");
 					
 					// First group
@@ -157,15 +158,16 @@ var TreeController = {
 						$counters.addClass('tree-node-counters');
 
 						if (typeof counters.total != 'undefined'
-								&& counters.total > 0) {
-							var $totalCounter = $("<div></div>");
-							$totalCounter
-								.addClass('tree-node-counter')
-								.addClass('total')
-								.html(counters.total);
+								&& counters.total >= 0) {
 							
-							_processNodeCounterTitle($totalCounter, type, "total");
-							
+								var $totalCounter = $("<div></div>");
+								$totalCounter
+									.addClass('tree-node-counter')
+									.addClass('total')
+									.html(counters.total);
+								
+								_processNodeCounterTitle($totalCounter, type, "total");
+														
 							// Open the parentheses
 							$counters.append(" (");
 
@@ -233,18 +235,18 @@ var TreeController = {
 							}
 							if (typeof counters.not_init != 'undefined'
 									&& counters.not_init > 0) {
-								var $notInitCounter = $("<div></div>");
-								$notInitCounter
-									.addClass('tree-node-counter')
-									.addClass('not_init')
-									.addClass('blue')
-									.html(counters.not_init);
+											var $notInitCounter = $("<div></div>");
+											$notInitCounter
+												.addClass('tree-node-counter')
+												.addClass('not_init')
+												.addClass('blue')
+												.html(counters.not_init);
 
-								_processNodeCounterTitle($notInitCounter, type, "not_init");
-								
-								$counters
-									.append(" : ")
-									.append($notInitCounter);
+											_processNodeCounterTitle($notInitCounter, type, "not_init");
+											
+											$counters
+												.append(" : ")
+												.append($notInitCounter);
 							}
 							if (typeof counters.ok != 'undefined'
 									&& counters.ok > 0) {

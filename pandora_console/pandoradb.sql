@@ -3157,3 +3157,21 @@ create table IF NOT EXISTS `tagent_secondary_group`(
         ON DELETE CASCADE
 ) engine=InnoDB DEFAULT CHARSET=utf8;
 
+-- ---------------------------------------------------------------------
+-- Table `tmetaconsoleagent_secondary_group`
+-- ---------------------------------------------------------------------
+create table IF NOT EXISTS `tmetaconsoleagent_secondary_group`(
+    `id` int unsigned not null auto_increment,
+    `id_agent` int(10) unsigned NOT NULL,
+    `id_tagente` int(10) unsigned NOT NULL,
+    `id_tmetaconsole_setup` int(10) NOT NULL,
+    `id_group` mediumint(4) unsigned NOT NULL,
+    PRIMARY KEY(`id`),
+    FOREIGN KEY(`id_agent`) REFERENCES tmetaconsole_agent(`id_agente`)
+        ON DELETE CASCADE,
+	FOREIGN KEY(`id_group`) REFERENCES tgrupo(`id_grupo`)
+        ON DELETE CASCADE,
+	FOREIGN KEY (`id_tmetaconsole_setup`) REFERENCES tmetaconsole_setup(`id`)
+		ON DELETE CASCADE
+) engine=InnoDB DEFAULT CHARSET=utf8;
+

@@ -943,11 +943,11 @@ function load_interfaces(selected_links) {
 				}
 			}
 		});
-
+		
 		$("#relations_table-template_row-node_source", template_relation_row)
-			.html(link_each.source['raw_text']);
+			.html(link_each.source['raw_text'] != 'undefined' ? link_each.source['text'] : link_each.source['raw_text']);
 		$("#relations_table-template_row-node_target", template_relation_row)
-			.html(link_each.target['raw_text']);
+			.html(link_each.target['raw_text'] != 'undefined' ? link_each.target['text'] : link_each.target['raw_text']);
 		$("#relations_table-template_row-edit", template_relation_row)
 			.attr("align", "center");
 		$("#relations_table-template_row-edit .delete_icon", template_relation_row)

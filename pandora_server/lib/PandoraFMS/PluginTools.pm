@@ -607,7 +607,7 @@ sub transfer_xml {
 		$file_name .=  "_" . time() . ".data";
 	}
 
-	logger($conf, "transfer_xml", "Failed to generate file name.");
+	logger($conf, "transfer_xml", "Failed to generate file name.") if empty($file_name);
 
 	$conf->{temp} = $conf->{tmp}             if (empty($conf->{temp}) && defined($conf->{tmp}));
 	$conf->{temp} = $conf->{temporal}        if (empty($conf->{temp}) && defined($conf->{temporal}));

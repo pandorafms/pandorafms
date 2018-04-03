@@ -421,8 +421,8 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 			// var shortLabel = reduceText(label, 25);
 			var title = label;
 			var margin_top = 0;
-			if(label.length > 33){
-				label  = reduceText(label, 33);
+			if(label.length > 30){
+				label  = reduceText(label, 30);
 			}
 			var div_attributes = 'style="font-size:'+font_size+'pt !important;'
 			 	+ ' margin: 0; max-width: 150px;'
@@ -432,7 +432,7 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 				div_attributes += "min-height: 2.5em;";
 			}
 
-			div_attributes += '" title="'+title+'" class="'+font+'"';
+			div_attributes += '" title="'+title+'" class="'+font+'" '+ ' style="overflow: hidden;"';
 
 			format.push([i,'<div ' + div_attributes + '>'
 				+ label
@@ -663,7 +663,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 			}
 			
 			format.push([i,
-				'<div class="'+font+'" title="'+title+'" style="word-break: normal; transform: rotate(-45deg); position:relative; top:+30px; left:0px; max-width: 100px;font-size:'+font_size+'pt !important;">'
+				'<div class="'+font+'" title="'+title+'" style="word-break: normal; overflow:hidden; transform: rotate(-45deg); position:relative; top:+30px; left:0px; max-width: 100px;font-size:'+font_size+'pt !important;">'
 				+ label
 				+ '</div>']);
 		}

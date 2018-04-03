@@ -4630,7 +4630,6 @@ form ul.form_flex li ul li{
 
 .tickLabel {
     white-space: nowrap;
-    overflow-x: hidden;
     line-height: 1.05em!important;
 }
 

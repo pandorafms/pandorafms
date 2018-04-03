@@ -2736,7 +2736,7 @@ function reporting_network_interfaces_report($report, $content, $type = 'dinamic
 				}
 				else{
 					$network_interfaces_by_agents = agents_get_network_interfaces(false, $filter);
-					$return = agents_get_network_interfaces_array($network_interfaces_by_agents, $return, $type, $content, $report);
+					$return = agents_get_network_interfaces_array($network_interfaces_by_agents, $return, $type, $content, $report, $fullscale);
 					metaconsole_restore_db();
 				}
 			}
@@ -2744,13 +2744,13 @@ function reporting_network_interfaces_report($report, $content, $type = 'dinamic
 	}
 	else{
 		$network_interfaces_by_agents = agents_get_network_interfaces(false, $filter);
-		$return = agents_get_network_interfaces_array($network_interfaces_by_agents, $return, $type, $content, $report);
+		$return = agents_get_network_interfaces_array($network_interfaces_by_agents, $return, $type, $content, $report, $fullscale);
 	}
 
 	return reporting_check_structure_content($return);
 }
 
-function agents_get_network_interfaces_array($network_interfaces_by_agents, $return, $type, $content, $report){
+function agents_get_network_interfaces_array($network_interfaces_by_agents, $return, $type, $content, $report, $fullscale){
 	if (empty($network_interfaces_by_agents)) {
 		$return['failed'] =
 			__('The group has no agents or none of the agents has any network interface');

@@ -417,9 +417,11 @@ sub print_module {
 		$data->{value} = trim($data->{value});
 	}
 
+	$data->{value} = '' if empty($data->{value});
 	$data->{tags}  = $data->{tags}?$data->{tags}:($conf->{MODULE_TAG_LIST}?$conf->{MODULE_TAG_LIST}:undef);
 	$data->{interval}     = $data->{interval}?$data->{interval}:($conf->{MODULE_INTERVAL}?$conf->{MODULE_INTERVAL}:undef);
 	$data->{module_group} = $data->{module_group}?$data->{module_group}:($conf->{MODULE_GROUP}?$conf->{MODULE_GROUP}:undef);
+	
 
 	# Global instructions (if defined)
 	$data->{unknown_instructions}  = $conf->{unknown_instructions}  unless (defined($data->{unknown_instructions})  || (!defined($conf->{unknown_instructions})));

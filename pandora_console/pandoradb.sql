@@ -82,6 +82,7 @@ CREATE TABLE IF NOT EXISTS `tagente` (
 	`fired_count` bigint(20) NOT NULL default '0',
 	`update_module_count` tinyint(1) NOT NULL default '0',
 	`update_alert_count` tinyint(1) NOT NULL default '0',
+	`update_secondary_groups` tinyint(1) NOT NULL default '0',
 	`alias` varchar(600) BINARY NOT NULL default '',
 	`transactional_agent` tinyint(1) NOT NULL default '0',
 	`alias_as_name` tinyint(2) NOT NULL default '0',
@@ -2983,6 +2984,7 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_agent` (
 	`fired_count` bigint(20) NOT NULL default '0',
 	`update_module_count` tinyint(1) NOT NULL default '0',
 	`update_alert_count` tinyint(1) NOT NULL default '0',
+	`update_secondary_groups` tinyint(1) NOT NULL default '0',
 	`transactional_agent` tinyint(1) NOT NULL default '0',
 	`alias` varchar(600) BINARY NOT NULL default '',
 	`alias_as_name` tinyint(2) NOT NULL default '0',
@@ -3155,5 +3157,23 @@ create table IF NOT EXISTS `tagent_secondary_group`(
         ON DELETE CASCADE,
 	FOREIGN KEY(`id_group`) REFERENCES tgrupo(`id_grupo`)
         ON DELETE CASCADE
+) engine=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tmetaconsole_agent_secondary_group`
+-- ---------------------------------------------------------------------
+create table IF NOT EXISTS `tmetaconsole_agent_secondary_group`(
+    `id` int unsigned not null auto_increment,
+    `id_agent` int(10) unsigned NOT NULL,
+    `id_tagente` int(10) unsigned NOT NULL,
+    `id_tmetaconsole_setup` int(10) NOT NULL,
+    `id_group` mediumint(4) unsigned NOT NULL,
+    PRIMARY KEY(`id`),
+    FOREIGN KEY(`id_agent`) REFERENCES tmetaconsole_agent(`id_agente`)
+        ON DELETE CASCADE,
+	FOREIGN KEY(`id_group`) REFERENCES tgrupo(`id_grupo`)
+        ON DELETE CASCADE,
+	FOREIGN KEY (`id_tmetaconsole_setup`) REFERENCES tmetaconsole_setup(`id`)
+		ON DELETE CASCADE
 ) engine=InnoDB DEFAULT CHARSET=utf8;
 

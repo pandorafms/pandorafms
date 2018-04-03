@@ -1028,6 +1028,20 @@ sub read_configuration {
 	}
 	$config = merge_hashes($config, parse_arguments(\@ARGV));
 
+	if(is_enabled($config->{'as_agent_plugin'})) {
+		$config->{'as_server_plugin'} = 0 if (empty($config->{'as_server_plugin'}));
+	}
+	else {
+		$config->{'as_server_plugin'} = 1 if (empty($config->{'as_server_plugin'}));
+	}
+
+	if(is_enabled($config->{'as_server_plugin'})) {
+		$config->{'as_agent_plugin'} = 0 if (empty($config->{'as_agent_plugin'}));
+	}
+	else {
+		$config->{'as_agent_plugin'} = 1 if (empty($config->{'as_agent_plugin'}));
+	}
+
 	return $config;
 }
 

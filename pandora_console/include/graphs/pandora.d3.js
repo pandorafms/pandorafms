@@ -2334,7 +2334,7 @@ var digitPattern = [
   digit.select("path:nth-child(5)").classed("lit", function(d) { return digitPattern[4][d]; });
   digit.select("path:nth-child(6)").classed("lit", function(d) { return digitPattern[5][d]; });
   digit.select("path:nth-child(7)").classed("lit", function(d) { return digitPattern[6][d]; });
-  separator.classed("lit", seconds);
+  separator.classed("lit", 1);
 
   setTimeout(tick, 1000 - now % 1000);
 })();

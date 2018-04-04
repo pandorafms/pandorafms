@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.720 PS180404";
+my $version = "7.0NG.720 PS180403";
 
 # save program name for logging
 my $progname = basename($0);
@@ -160,7 +160,6 @@ sub help_screen{
 	help_screen_line('--delete_special_day', '<special_day>', 'Delete special day');
 	help_screen_line('--update_special_day', "<special_day> <field_to_change> <new_value>", 'Update a field of a special day');
 	help_screen_line('--create_data_module_from_local_component', '<agent_name> <component_name>', "Create a new data \n\t  module from a local component");
-	help_screen_line('--create_web_module_from_local_component', '<agent_name> <component_name>', "Create a new web \n\t  module from a local component");
 	help_screen_line('--create_local_component', "<component_name> <data> [<description> <id_os> <os_version> \n\t  <id_network_component_group> <type> <min> <max> <module_interval> <id_module_group> <history_data> <min_warning> \n\t <max_warning> <str_warning> <min_critical> <max_critical>\n\t  <str_critical> <min_ff_event> <post_process> <unit>\n\t  <wizard_level> <critical_instructions>\n\t  <warning_instructions> <unknown_instructions> <critical_inverse>\n\t  <warning_inverse> <id_category> <disabled_types_event>\n\t  <tags> <min_ff_event_normal> <min_ff_event_warning>\n\t  <min_ff_event_critical> <each_ff> <ff_timeout>]", 'Create local component');
 	
 	print "\nUSERS:\n\n" unless $param ne '';
@@ -1357,23 +1356,28 @@ sub cli_create_web_module($) {
 	my $in_policy = shift;
 	my ($policy_name, $module_name, $module_type, $agent_name, $description, $module_group, 
 		$min,$max,$post_process, $interval, $warning_min, $warning_max, $critical_min,
-		$critical_max, $history_data, $definition_file, $configuration_data, $warning_str, $critical_str, $enable_unknown_events,
+		$critical_max, $history_data, $retries, $requests, $agent_browser_id, $auth_server, $auth_realm, 
+		$definition_file, $http_auth_login, $http_auth_password, 
+		$proxy_url, $proxy_auth_login, $proxy_auth_password, $configuration_data, $warning_str, $critical_str, $enable_unknown_events,
 	    $ff_threshold, $each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $ff_timeout, 
 	    $warning_inverse, $critical_inverse, $critical_instructions, $warning_instructions, $unknown_instructions);
 	
 	if ($in_policy == 0) {
 		($module_name, $module_type, $agent_name, $description, $module_group, 
 		$min,$max,$post_process, $interval, $warning_min, $warning_max, $critical_min,
-		$critical_max, $history_data, $definition_file, $warning_str, $critical_str, $enable_unknown_events, $ff_threshold,
-		$each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $ff_timeout, 
-	    $warning_inverse, $critical_inverse, $critical_instructions, $warning_instructions, $unknown_instructions) = @ARGV[2..30];
+		$critical_max, $history_data, $retries, $requests, $agent_browser_id, $auth_server, $auth_realm, 
+		$definition_file, $http_auth_login, $http_auth_password, 
+		$proxy_url, $proxy_auth_login, $proxy_auth_password, $warning_str, $critical_str, 
+		$enable_unknown_events, $ff_threshold, $each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $ff_timeout, 
+	    $warning_inverse, $critical_inverse, $critical_instructions, $warning_instructions, $unknown_instructions) = @ARGV[2..40];
 	}
 	else {
 		($policy_name, $module_name, $module_type, $description, $module_group, 
 		$min,$max,$post_process, $interval, $warning_min, $warning_max, $critical_min,
-		$critical_max, $history_data, $configuration_data, $warning_str, $critical_str, $enable_unknown_events, $ff_threshold,
-		$each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $ff_timeout, 
-	    $warning_inverse, $critical_inverse, $critical_instructions, $warning_instructions, $unknown_instructions) = @ARGV[2..31];
+		$critical_max, $history_data, $retries, $requests, $agent_browser_id, $auth_server, $auth_realm, $configuration_data, $http_auth_login, $http_auth_password, 
+		$proxy_url, $proxy_auth_login, $proxy_auth_password, $warning_str, $critical_str, 
+		$enable_unknown_events, $ff_threshold, $each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $ff_timeout, 
+	    $warning_inverse, $critical_inverse, $critical_instructions, $warning_instructions, $unknown_instructions) = @ARGV[2..40];
 	}
 	
 	my $module_name_def;
@@ -1531,6 +1535,17 @@ sub cli_create_web_module($) {
 	$parameters{'critical_instructions'} = $critical_instructions unless !defined ($critical_instructions);
 	$parameters{'warning_instructions'} = $warning_instructions unless !defined ($warning_instructions);
 	$parameters{'unknown_instructions'} = $unknown_instructions unless !defined ($unknown_instructions);
+	
+	$parameters{'max_retries'} = $retries unless !defined ($retries);
+	$parameters{'plugin_pass'} = $requests unless !defined ($requests);
+	$parameters{'plugin_user'} = $agent_browser_id unless !defined ($agent_browser_id);
+	$parameters{'http_user'} = $http_auth_login unless !defined ($http_auth_login);
+	$parameters{'http_pass'} = $http_auth_password unless !defined ($http_auth_password);
+	$parameters{'snmp_oid'} = defined ($proxy_url) ? $proxy_url : '';
+	$parameters{'tcp_send'} = $proxy_auth_login unless !defined ($proxy_auth_login);
+	$parameters{'tcp_rcv'} = $proxy_auth_password unless !defined ($proxy_auth_password);
+	$parameters{'ip_target'} = $auth_server unless !defined ($auth_server);
+	$parameters{'snmp_community'} = $auth_realm unless !defined ($auth_realm);
 	
 	if ($in_policy == 0) {
 		pandora_create_module_from_hash ($conf, \%parameters, $dbh);
@@ -5686,7 +5701,7 @@ sub pandora_manage_main ($$$) {
 			cli_create_data_module(0);
 		}
 		elsif ($param eq '--create_web_module') {
-			param_check($ltotal, 30, 24);
+			param_check($ltotal, 40, 33);
 			cli_create_web_module(0);
 		}
 		elsif ($param eq '--create_module_group') {
@@ -5842,7 +5857,7 @@ sub pandora_manage_main ($$$) {
 			cli_create_data_module(1);
 		}
 		elsif ($param eq '--create_policy_web_module') {
-			param_check($ltotal, 28, 20);
+			param_check($ltotal, 38, 29);
 			cli_create_web_module(1);
 		}
 		elsif ($param eq '--create_policy_network_module') {
@@ -5990,10 +6005,6 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--create_data_module_from_local_component') {
 			param_check($ltotal, 2);
 			cli_create_data_module_from_local_component();
-		}
-		elsif ($param eq '--create_web_module_from_local_component') {
-			param_check($ltotal, 2);
-			cli_create_web_module_from_local_component();
 		}
 		elsif ($param eq '--create_local_component') {
 			param_check($ltotal, 35, 33);
@@ -6245,30 +6256,6 @@ sub cli_create_data_module_from_local_component() {
 	#~ pandora_create_module_from_local_component ($conf, $component, $agent_id, $dbh);
 	enterprise_hook('pandora_create_module_from_local_component',[$conf, $component, $agent_id, $dbh]);
 }
-##############################################################################
-# Create web module from local component.
-# Related option: --create_web_module_from_local_component
-##############################################################################
-
-sub cli_create_web_module_from_local_component() {
-	my ($agent_name, $component_name) = @ARGV[2..3];
-	
-	my $agent_id = get_agent_id($dbh,$agent_name);
-	exist_check($agent_id,'agent',$agent_name);
-		
-	my $lc_id = pandora_get_local_component_id($dbh, $component_name);
-	exist_check($lc_id,'local component',$component_name);
-	
-	my $module_exists = get_agent_module_id($dbh, $component_name, $agent_id);
-	non_exist_check($module_exists, 'module name', $component_name);
-	
-	# Get local component data
-	my $component = get_db_single_row ($dbh, 'SELECT * FROM tlocal_component WHERE id = ?', $lc_id);
-	
-	#~ pandora_create_module_from_local_component ($conf, $component, $agent_id, $dbh);
-	enterprise_hook('pandora_create_module_from_local_component',[$conf, $component, $agent_id, $dbh]);
-}
-
 ##############################################################################
 # Create policy data module from local component.
 # Related option: --create_policy_data_module_from_local_component

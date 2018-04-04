@@ -479,7 +479,7 @@ else {
 		'search' => $search_sql,
 		'search_custom' => $search_sql_custom,
 		'status' => $status),
-		array ('COUNT(*) as total'), $access, false);
+		array ('COUNT(DISTINCT id_agente) as total'), $access, false);
 	$total_agents = isset ($total_agents[0]['total']) ?
 		$total_agents[0]['total'] : 0;
 	

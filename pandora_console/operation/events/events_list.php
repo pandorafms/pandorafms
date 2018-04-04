@@ -739,7 +739,7 @@ echo "</div>";
 $event_table = events_get_events_table($meta, $history);
 
 if ($group_rep == 0) {
-	$sql = "SELECT *, 1 event_rep
+	$sql = "SELECT DISTINCT te.*, 1 event_rep
 		FROM $event_table te LEFT JOIN tagent_secondary_group tasg
 			ON te.id_agente = tasg.id_agent
 		WHERE 1=1 " . $sql_post . "
@@ -808,7 +808,7 @@ if (($config['dbtype'] == 'oracle') && ($result !== false)) {
 }
 
 if ($group_rep == 0) {
-	$sql = "SELECT COUNT(id_evento)
+	$sql = "SELECT COUNT(DISTINCT id_evento)
 			FROM $event_table te
 			LEFT JOIN tagent_secondary_group tasg
 				ON te.id_agente = tasg.id_agent

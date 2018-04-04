@@ -845,7 +845,7 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 	switch ($config["dbtype"]) {
 		case "mysql":
 		case "postgresql":
-				$sql = sprintf ("SELECT *
+				$sql = sprintf ("SELECT DISTINCT tevento.*
 					FROM tevento LEFT JOIN tagent_secondary_group tasg ON tevento.id_agente = tasg.id_agent
 					WHERE %s %s
 					ORDER BY utimestamp DESC LIMIT %d", $agent_condition, $filter, $limit);
@@ -857,7 +857,7 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 					ORDER BY utimestamp DESC", $agent_condition, $filter, $limit);
 			break;
 	}
-	
+
 	$result = db_get_all_rows_sql ($sql);
 	
 	if ($result === false) {

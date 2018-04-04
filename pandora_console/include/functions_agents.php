@@ -475,7 +475,7 @@ function agents_get_agents ($filter = false, $fields = false,
 		$where = sprintf('%s AND %s AND (%s) %s AND %s %s',
 			$where, $where_nogroup, $status_sql, $search, $disabled, $search_custom);
 	}
-	$sql = sprintf('SELECT %s
+	$sql = sprintf('SELECT DISTINCT %s
 		FROM tagente LEFT JOIN tagent_secondary_group ON tagent_secondary_group.id_agent=tagente.id_agente
 		WHERE %s %s', implode(',',$fields), $where, $order);
 

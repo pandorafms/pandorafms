@@ -1174,6 +1174,23 @@ class Tree {
 		$data = db_process_sql($sql);
 		if (empty($data))
 			return array();
+			
+		foreach ($data[0] as $key => $value) {
+			
+			if($key != 'total_count' && strpos($key, 'count')){
+				$zero_counter += $value;
+			}
+			
+		}
+		
+		if(!$zero_counter){
+			$data[0]['total_count'] = 0;
+		}
+		else{
+			$data[0]['total_count'] = $zero_counter;
+		}
+		
+		
 
 		// [26/10/2017] It seems the module hierarchy should be only available into the tree by group
 		if ($this->rootType == 'group' && $this->type == 'agent') {
@@ -2308,6 +2325,16 @@ class Tree {
 						$items[$key]['total_count'] = $items[$key]['total_count'] - $items[$key]['notinit_count'];
 						$items[$key]['notinit_count'] = 0;
 					
+				}
+				
+			}
+			
+			if(!$this->filter['show_not_init_agents']){
+				
+				foreach ($items as $key => $value) {					
+						if($items[$key]['total_count'] == $items[$key]['notinit_count']){
+							unset($items[$key]);
+						}
 				}
 				
 			}

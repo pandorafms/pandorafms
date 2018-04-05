@@ -162,7 +162,7 @@ if ($update) {
 		__('Successfully updated') . "(" . $success . "/" . $count . ")",
 		$error_msg);
 	
-	$info = 'Modules: ' . json_encode($modules_) . ' Agents: ' . json_encode($agents_);
+	$info = '{"Modules":"'.implode(",",$modules_).'","Agents":"'.implode(",",$agents_).'"}';
 	if ($success > 0) {
 		db_pandora_audit("Massive management", "Edit module", false, false, $info);
 	}

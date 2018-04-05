@@ -133,7 +133,7 @@ if ($create_special_day) {
 		}
 		else {
 			$result = alerts_create_alert_special_day ($date, $same_day, $values);
-			$info = 'Date: ' . $date . ' Same day of the week: ' . $same_day . ' Description: ' . $values['description'];
+			$info = '{"Date":"'.$date.'","Same day of the week":"'.$same_day.'","Description":"'.$values['description'].'"}';
 		}
 	}
 	
@@ -186,12 +186,12 @@ if ($update_special_day) {
 			}
 			else {
 				$result = alerts_update_alert_special_day ($id, $values);
-				$info = 'Date: ' . $date . ' Same day of the week: ' . $same_day . ' Description: ' . $description;
+				$info = '{"Date":"'.$date.'","Same day of the week":"'.$same_day.'","Description":"'.$description.'"}';
 			}
 		}
 		else {
 			$result = alerts_update_alert_special_day ($id, $values);
-			$info = 'Date: ' . $date . ' Same day of the week: ' . $same_day . ' Description: ' . $description;
+			$info = '{"Date":"'.$date.'","Same day of the week":"'.$same_day.'","Description":"'.$description.'"}';
 		}
 	}
 	

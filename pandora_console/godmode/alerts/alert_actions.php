@@ -168,9 +168,8 @@ if ($create_action) {
 		$result = alerts_create_alert_action ($name, $id_alert_command,
 			$values);
 		
-		$info = 'Name: ' . $name . ' ID alert Command: ' . $id_alert_command .
-			$info_fields . ' Group: ' . $values['id_group'] .
-			' Action threshold: ' . $values['action_threshold'];
+		$info = '{"Name":"'.$name.'", "ID alert Command":"'.$id_alert_command.'", "Field information":"'.$info_fields.'", "Group":"'.$values['id_group'].'",
+			"Action threshold":"'.$values['action_threshold'].'"}';
 	}
 	
 	if ($result) {
@@ -245,10 +244,6 @@ if ($update_action) {
 	}
 	else {
 		$result = alerts_update_alert_action ($id, $values);
-		
-		$info = 'Name: ' . $name . ' ID alert Command: ' . $id_alert_command .
-			$info_fields . ' Group: ' . $group .
-			' Action threshold: ' . $action_threshold;
 	}
 	
 	if ($result) {

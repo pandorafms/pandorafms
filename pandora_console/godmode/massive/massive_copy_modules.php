@@ -43,15 +43,18 @@ $do_operation = (bool) get_parameter ('do_operation');
 if ($do_operation) {
 	$result = agents_process_manage_config($source_id_agent,
 		$destiny_id_agents);
+	
+	$info = array('Source agent' => $source_id_agent,
+		'Destinity agent' => implode(",",$destiny_id_agents));
 	if ($result) {
+		
+			
 		db_pandora_audit("Massive management", "Copy modules", false,
-			false,
-			'Source agent: ' . json_encode($source_id_agent) . ' Destinity agent: ' . json_encode($destiny_id_agents));
+			false, json_encode($info));
 	}
 	else {
 		db_pandora_audit("Massive management",
-			"Fail to try copy modules", false, false,
-			'Source agent: ' . json_encode($source_id_agent) . ' Destinity agent: ' . json_encode($destiny_id_agents));
+			"Fail to try copy modules", false, false,json_encode($info));
 	}
 }
 

@@ -74,13 +74,12 @@ if ($delete_profiles) {
 		}
 	}
 	
+	$info = array('Profiles' => implode(",",$profiles_id), 'Groups' => implode(",",$groups_id), 'Users' => implode(",",$users_id));
 	if ($result) {
-		db_pandora_audit("Massive management", "Delete profile ", false, false,
-			'Profiles: ' . json_encode($profiles_id) . ' Groups: ' . $groups_id . ' Users: ' . $users_id);
+		db_pandora_audit("Massive management", "Delete profile ", false, false, json_encode($info));
 	}
 	else {
-		db_pandora_audit("Massive management", "Fail try to delete profile", false, false,
-			'Profiles: ' . json_encode($profiles_id) . ' Groups: ' . $groups_id . ' Users: ' . $users_id);
+		db_pandora_audit("Massive management", "Fail try to delete profile", false, false, json_encode($info));
 	}
 	
 	ui_print_result_message ($result,

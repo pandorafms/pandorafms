@@ -77,7 +77,7 @@ switch($action) {
 		
 		ui_print_result_message ($result, __('Successfully set off standby'), __('Could not be set off standby'));
 		
-		$info = 'Alert: ' . json_encode($id_standby_alerts);
+		$info = '{"Alert":"'.implode(",",$id_standby_alerts).'"}';
 		if ($result) {
 			db_pandora_audit("Massive management", "Set off standby alerts", false, false, $info);
 		}
@@ -95,7 +95,7 @@ switch($action) {
 		
 		ui_print_result_message ($result, __('Successfully set standby'), __('Could not be set standby'));
 		
-		$info = 'Alert: ' . json_encode($id_not_standby_alerts);
+		$info = '{"Alert":"'.implode(",",$id_not_standby_alerts).'"}';
 		if ($result) {
 			db_pandora_audit("Massive management", "Set on standby alerts", false, false, $info);
 		}

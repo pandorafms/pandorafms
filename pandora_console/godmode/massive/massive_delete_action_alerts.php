@@ -98,16 +98,15 @@ if ($delete) {
 							}
 						}
 					}
-					
+					$info = array('Agents' => implode(',',$id_agents),
+						'Alert templates' => implode(",",$id_alert_templates),
+						'Actions' => implode(',',$actions));
+						
 					if ($results) {
-						db_pandora_audit("Massive management", "Delete alert action", false, false,
-							'Agent: ' . json_encode($id_agents) . ' Alert templates: ' . json_encode($id_alert_templates) . 
-							' Actions: ' . implode(',',$actions));
+						db_pandora_audit("Massive management", "Delete alert action", false, false,json_encode($info));
 					}
 					else {
-						db_pandora_audit("Massive management", "Fail try to delete alert action", false, false,
-							'Agent: ' . json_encode($id_agents) . ' Alert templates: ' . json_encode($id_alert_templates) . 
-							' Actions: ' . implode(',',$actions));
+						db_pandora_audit("Massive management", "Fail try to delete alert action", false, false, json_encode($info));
 					}
 					
 					ui_print_result_message ($results,

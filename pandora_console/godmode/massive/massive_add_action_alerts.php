@@ -104,11 +104,12 @@ if ($add) {
 								$results = false;
 						}
 					}
-					
-					db_pandora_audit("Massive management", "Add alert action " . json_encode($id_agents), false, false, 'Agents: ' . 
-						json_encode($id_agents) . ' Alerts : ' . json_encode($agent_alerts) .
-						' Fires Min: ' . $fires_min . ' Fires Max: ' . $fires_max . ' Actions: ' . implode(',',$actions));
-					
+					$info = array('Agents' => implode(',',$id_agents),
+						'Alerts' => addslashes(io_json_mb_encode($agent_alerts)),
+						'Fires Min' => $fires_min,
+						'Fires_max' => $fires_max,
+						'Actions' => implode(',',$actions));
+					db_pandora_audit("Massive management", "Add alert action " . json_encode($id_agents), false, false, json_encode($info));					
 					ui_print_result_message ($results, __('Successfully added'), __('Could not be added'));
 				}
 			}

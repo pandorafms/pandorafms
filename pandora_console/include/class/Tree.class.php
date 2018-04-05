@@ -114,9 +114,17 @@ class Tree {
 			$agents_normal_count = "($agent_table
 										$agent_normal_filter) AS total_normal_count";
 			// Not init
-			$agent_not_init_filter = $this->getAgentStatusFilter(AGENT_STATUS_NOT_INIT);
-			$agents_not_init_count = "($agent_table
-										$agent_not_init_filter) AS total_not_init_count";
+				
+				if($this->filter['show_not_init_agents']){
+					$agent_not_init_filter = $this->getAgentStatusFilter(AGENT_STATUS_NOT_INIT);
+					$agents_not_init_count = "($agent_table
+												$agent_not_init_filter) AS total_not_init_count";	
+				}
+				else{
+					$agent_not_init_filter = 0;
+					$agents_not_init_count = 0;
+				}
+
 			// Alerts fired
 			$agents_fired_count = "($agent_table
 										AND ta.fired_count > 0) AS total_fired_count";
@@ -287,13 +295,19 @@ class Tree {
 		// Modules join
 		$modules_join = "";
 		$module_status_join = "";
-		if (!empty($module_search_filter) || !empty($module_status_filter)) {
+		if (!empty($module_search_filter) || !empty($module_status_filter) || !$this->filter['show_not_init_agents']) {
 
-			if (!empty($module_status_filter)) {
+			if (!empty($module_status_filter) || !$this->filter['show_not_init_agents']) {
 				$module_status_join = "INNER JOIN tagente_estado tae
 										ON tam.id_agente_modulo IS NOT NULL
 											AND tam.id_agente_modulo = tae.id_agente_modulo
 											$module_status_filter";
+											
+				if(!$this->filter['show_not_init_modules'] || ($this->filter['show_not_init_modules'] && !$this->filter['show_not_init_agents'])){
+					if($type != 'agent' || ($type == 'agent' && !$this->filter['show_not_init_modules'] && !$this->filter['show_not_init_agents'])){
+					$module_status_join .= ' AND tae.estado <> '.AGENT_MODULE_STATUS_NO_DATA.'  AND	tae.estado <> '.AGENT_MODULE_STATUS_NOT_INIT.' ';	
+					}
+				}
 			}
 
 			$modules_join = "INNER JOIN tagente_modulo tam
@@ -304,8 +318,22 @@ class Tree {
 		}
 
 		if (empty($module_status_join)) {
-			$module_status_join = "LEFT JOIN tagente_estado tae
-									ON tam.id_agente_modulo = tae.id_agente_modulo";
+			if(!$this->filter['show_not_init_modules'] || !$this->filter['show_not_init_agents']){
+				if($type == "agent"){
+					$module_status_join = 'INNER JOIN tagente_estado tae
+											ON tam.id_agente_modulo = tae.id_agente_modulo  ';
+				}
+				else{
+					$module_status_join = 'LEFT JOIN tagente_estado tae
+											ON tam.id_agente_modulo = tae.id_agente_modulo  ';	
+				}
+			
+				$module_status_join .= ' AND 1=1 AND	tae.estado <> '.AGENT_MODULE_STATUS_NO_DATA.'  AND	tae.estado <> '.AGENT_MODULE_STATUS_NOT_INIT.' ';
+			}
+			else{
+				$module_status_join = 'LEFT JOIN tagente_estado tae
+										ON tam.id_agente_modulo = tae.id_agente_modulo  ';	
+			}
 		}
 
 		$sql = false;
@@ -407,7 +435,7 @@ class Tree {
 								else {
 									$agent_table = "SELECT COUNT(DISTINCT(ta.id_agente))
 													FROM tagente ta
-													INNER JOIN tagente_modulo tam
+													LEFT JOIN tagente_modulo tam
 														ON tam.disabled = 0
 															AND ta.id_agente = tam.id_agente
 															$module_search_filter
@@ -1146,6 +1174,23 @@ class Tree {
 		$data = db_process_sql($sql);
 		if (empty($data))
 			return array();
+			
+		foreach ($data[0] as $key => $value) {
+			
+			if($key != 'total_count' && strpos($key, 'count')){
+				$zero_counter += $value;
+			}
+			
+		}
+		
+		if(!$zero_counter){
+			$data[0]['total_count'] = 0;
+		}
+		else{
+			$data[0]['total_count'] = $zero_counter;
+		}
+		
+		
 
 		// [26/10/2017] It seems the module hierarchy should be only available into the tree by group
 		if ($this->rootType == 'group' && $this->type == 'agent') {
@@ -1161,7 +1206,6 @@ class Tree {
 		if (!empty($counters)) {
 			$counters = array_pop($counters);
 		}
-
 		return $counters;
 	}
 
@@ -2046,6 +2090,18 @@ class Tree {
 				$items = $this->getItems();
 				$this->processModules($items);
 				$processed_items = $items;
+				
+				if(!$this->filter['show_not_init_modules']){
+					
+					foreach ($items as $key => $value) {
+						if($items[$key]['total_count'] != $items[$key]['notinit_count']){
+							$items[$key]['total_count'] = $items[$key]['total_count'] - $items[$key]['notinit_count'];
+							$items[$key]['notinit_count'] = 0;
+						}
+						
+					}
+					
+				}
 			}
 			else {
 				$items = array();
@@ -2261,6 +2317,28 @@ class Tree {
 		// Agents
 		else {
 			$items = $this->getItems();
+			
+			
+			if(!$this->filter['show_not_init_modules']){
+				
+				foreach ($items as $key => $value) {					
+						$items[$key]['total_count'] = $items[$key]['total_count'] - $items[$key]['notinit_count'];
+						$items[$key]['notinit_count'] = 0;
+					
+				}
+				
+			}
+			
+			if(!$this->filter['show_not_init_agents']){
+				
+				foreach ($items as $key => $value) {					
+						if($items[$key]['total_count'] == $items[$key]['notinit_count']){
+							unset($items[$key]);
+						}
+				}
+				
+			}
+			
 			$this->processAgents($items);
 			$processed_items = $items;
 		}
@@ -2733,7 +2811,12 @@ class Tree {
 					$group_stats[$group['id_group']]['total_critical_count'] = $group['critical'];
 					$group_stats[$group['id_group']]['total_unknown_count'] = $group['unknown'];
 					$group_stats[$group['id_group']]['total_warning_count'] = $group['warning'];
-					$group_stats[$group['id_group']]['total_not_init_count'] = $group['non-init'];
+					if($this->filter['show_not_init_modules']){
+							$group_stats[$group['id_group']]['total_not_init_count'] = $group['non-init'];
+					}
+					else{
+						$group_stats[$group['id_group']]['total_not_init_count'] = 0;
+					}
 					$group_stats[$group['id_group']]['total_normal_count'] = $group['normal'];
 					$group_stats[$group['id_group']]['total_fired_count'] = $group['alerts_fired'];
 				}

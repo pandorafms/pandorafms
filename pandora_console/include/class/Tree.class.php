@@ -361,7 +361,10 @@ class Tree {
 					}
 					else{
 						$query_agent_search = " SELECT DISTINCT(ta.id_grupo)
-												FROM tagente ta, tagente_modulo tam
+												FROM tagente ta
+													LEFT JOIN tagent_secondary_group tasg
+												ON ta.id_agente = tasg.id_agent
+												, tagente_modulo tam
 												WHERE tam.id_agente = ta.id_agente
 												AND ta.disabled = 0
 												$agent_search_filter
@@ -407,13 +410,18 @@ class Tree {
 								else {
 									$agent_table = "SELECT COUNT(DISTINCT(ta.id_agente))
 													FROM tagente ta
+													LEFT JOIN tagent_secondary_group tasg
+														ON ta.id_agente=tasg.id_agent
 													INNER JOIN tagente_modulo tam
 														ON tam.disabled = 0
 															AND ta.id_agente = tam.id_agente
 															$module_search_filter
 													$module_status_join
 													WHERE ta.disabled = 0
-														AND ta.id_grupo = $item_for_count
+														AND (
+															ta.id_grupo = $item_for_count
+															OR tasg.id_group = $item_for_count
+														)
 														$group_filter
 														$agent_search_filter
 														$agent_status_filter";
@@ -443,7 +451,7 @@ class Tree {
 							}
 						}
 						else {
-							if (! is_metaconsole() || $this->strictACL) {
+							if (! is_metaconsole()) {
 								$columns = 'ta.id_agente AS id, ta.nombre AS name, ta.alias,
 									ta.fired_count, ta.normal_count, ta.warning_count,
 									ta.critical_count, ta.unknown_count, ta.notinit_count,
@@ -456,13 +464,18 @@ class Tree {
 
 								$sql = "SELECT $columns
 										FROM tagente ta
+										LEFT JOIN tagent_secondary_group tasg
+											ON tasg.id_agent = ta.id_agente
 										LEFT JOIN tagente_modulo tam
 											ON tam.disabled = 0
 												AND ta.id_agente = tam.id_agente
 												$module_search_filter
 										$module_status_join
 										WHERE ta.disabled = 0
-											AND ta.id_grupo = $rootID
+											AND (
+												ta.id_grupo = $rootID
+												OR tasg.id_group = $rootID
+											)
 											$group_filter
 											$agent_search_filter
 											$agent_status_filter
@@ -514,12 +527,14 @@ class Tree {
 							}
 						}
 
-						$sql = "SELECT $columns
+						$sql = "SELECT DISTINCT $columns
 								FROM tagente_modulo tam
 								$tag_join
 								$module_status_join
 								INNER JOIN tagente ta
 									ON ta.disabled = 0
+								LEFT JOIN tagent_secondary_group tasg
+									ON ta.id_agente = tasg.id_agent
 										AND tam.id_agente = ta.id_agente
 										AND ta.id_grupo = $rootID
 										$group_filter
@@ -1120,11 +1135,11 @@ class Tree {
 						break;
 				}
 				break;
-				default:
-					$sql = $this->getSqlExtended($item_for_count, $type, $rootType, $parent, $rootID,
-										$agent_search_filter, $agent_status_filter, $agents_join,
-										$module_search_filter, $module_status_filter, $modules_join,
-										$module_status_join);
+			default:
+				$sql = $this->getSqlExtended($item_for_count, $type, $rootType, $parent, $rootID,
+									$agent_search_filter, $agent_status_filter, $agents_join,
+									$module_search_filter, $module_status_filter, $modules_join,
+									$module_status_join);
 		}
 
 		return $sql;

@@ -41,7 +41,7 @@ function groupview_get_all_data ($id_user = false, $user_strict = false, $acltag
 	$user_groups_ids = implode(',', array_keys($acltags));
 
 	if (!empty($user_groups_ids)) {
-		if (is_metaconsole() && (!$user_strict)) {
+		if (is_metaconsole()) {
 			switch ($config["dbtype"]) {
 				case "mysql":
 					$list_groups = db_get_all_rows_sql("
@@ -133,7 +133,13 @@ function groupview_get_all_data ($id_user = false, $user_strict = false, $acltag
 														SUM(fired_count) AS _monitors_alerts_fired_,
 														COUNT(*) AS _total_agents_, id_grupo, intervalo,
 														ultimo_contacto, disabled
-									FROM tmetaconsole_agent WHERE id_grupo = " . $group['id_grupo'] . " AND disabled = 0 GROUP BY id_grupo");
+									FROM tmetaconsole_agent ta
+									LEFT JOIN tmetaconsole_agent_secondary_group tasg
+										ON ta.id_agente = tasg.id_agent
+									WHERE (
+										ta.id_grupo = " . $group['id_grupo'] . "
+										OR tasg.id_group = " . $group['id_grupo'] . "
+									) AND disabled = 0 GROUP BY id_grupo");
 			$list[$group['id_grupo']]['_monitors_critical_'] = (int)$group_agents['_monitors_critical_'];
 			$list[$group['id_grupo']]['_monitors_warning_'] = (int)$group_agents['_monitors_warning_'];
 			$list[$group['id_grupo']]['_monitors_unknown_'] = (int)$group_agents['_monitors_unknown_'];
@@ -475,7 +481,10 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 						SELECT *
 						FROM tgrupo
 						WHERE id_grupo IN (" . $user_groups_ids . ")
-						AND id_grupo IN (SELECT id_grupo FROM tmetaconsole_agent WHERE disabled = 0)
+						AND (
+							id_grupo IN (SELECT id_grupo FROM tmetaconsole_agent WHERE disabled = 0)
+							OR id_grupo IN (SELECT id_group FROM tmetaconsole_agent_secondary_group WHERE id_group IN (" . $user_groups_ids . "))
+						)
 						ORDER BY nombre COLLATE utf8_general_ci ASC");
 					break;
 				case "postgresql":
@@ -623,6 +632,10 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 
 	if (is_metaconsole()) { // Agent cache
 		foreach ($list_groups as $group) {
+			// If id group is 0 get all accesses groups
+			$group_id = $group['id_grupo'] == 0
+				? $user_groups_ids
+				: $group['id_grupo'];
 			$group_agents = db_get_row_sql("SELECT SUM(warning_count) AS _monitors_warning_,
 														SUM(critical_count) AS _monitors_critical_,
 														SUM(normal_count) AS _monitors_ok_,
@@ -631,8 +644,14 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 														SUM(fired_count) AS _monitors_alerts_fired_,
 														COUNT(*) AS _total_agents_, id_grupo, intervalo,
 														ultimo_contacto, disabled
-									FROM tmetaconsole_agent WHERE id_grupo = " . $group['id_grupo'] . " AND disabled = 0 GROUP BY id_grupo");
-
+									FROM tmetaconsole_agent ta
+									LEFT JOIN tmetaconsole_agent_secondary_group tasg
+										ON tasg.id_agent = ta.id_agente
+									WHERE (
+										ta.id_grupo IN (" . $group_id . ")
+										OR tasg.id_group IN (" . $group_id . ")
+									)
+									AND disabled = 0");
 
 			$list[$group['id_grupo']]['_monitors_critical_']     = (int)$group_agents['_monitors_critical_'];
 			$list[$group['id_grupo']]['_monitors_warning_']      = (int)$group_agents['_monitors_warning_'];
@@ -655,16 +674,19 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 
 			$total_agents = $list[$group['id_grupo']]['_total_agents_'];
 
-			if (($group['id_grupo'] != 0) && ($total_agents > 0)) {
-				$agents = db_get_all_rows_sql("SELECT warning_count,
+			if ($total_agents > 0) {
+				$agents = db_get_all_rows_sql(sprintf ("SELECT warning_count,
 													critical_count,
 													normal_count,
 													unknown_count,
 													notinit_count,
 													fired_count,
 													disabled
-												FROM tmetaconsole_agent
-												WHERE id_grupo = " . $group['id_grupo'] );
+												FROM tmetaconsole_agent ta
+												LEFT JOIN tmetaconsole_agent_secondary_group tasg
+													ON ta.id_agente = tasg.id_agent
+												WHERE ta.id_grupo IN (%s) OR tasg.id_group IN (%s)",
+					$group_id, $group_id));
 				foreach ($agents as $agent) {
 					if ($agent['critical_count'] > 0) {
 						$list[$group['id_grupo']]['_agents_critical_'] += 1;

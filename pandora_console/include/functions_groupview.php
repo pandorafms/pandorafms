@@ -503,7 +503,10 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 						SELECT *
 						FROM tgrupo
 						WHERE id_grupo IN (" . $user_groups_ids . ")
-						AND id_grupo IN (SELECT id_grupo FROM tagente WHERE disabled = 0)
+						AND (
+							id_grupo IN (SELECT id_grupo FROM tagente WHERE disabled = 0)
+							OR id_grupo IN (SELECT id_group FROM tagent_secondary_group WHERE id_group IN (" . $user_groups_ids . "))
+						)
 						ORDER BY nombre COLLATE utf8_general_ci ASC");
 					break;
 				case "postgresql":
@@ -529,7 +532,11 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 	//Add the group "All" at first
 	$group_all = array('id_grupo'=>0, 'nombre'=>'All', 'icon'=>'', 'parent'=>'', 'propagate'=>0, 'disabled'=>0,
 						'custom_id'=>'', 'id_skin'=>0, 'description'=>'', 'contact'=>'', 'other'=>'', 'password'=>'');
-	array_unshift($list_groups, $group_all);
+	if ($list_groups !== false) {
+		array_unshift($list_groups, $group_all);
+	} else {
+		$list_groups = array($group_all);
+	}
 
 	if (!$user_strict) {
 		//Takes the parents even without agents, first ids
@@ -746,6 +753,10 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 	}
 	else {
 		foreach ($list_groups as $group) {
+			// If id group is 0 get all accesses groups
+			$group_id = $group['id_grupo'] == 0
+				? $user_groups_ids
+				: $group['id_grupo'];
 			$agent_not_init = agents_get_agents(array (
 				'disabled' => 0,
 				'id_grupo' => $group['id_grupo'],
@@ -765,9 +776,9 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 							array ('COUNT(DISTINCT id_agente) as total'), $access, false);
 			$list[$group['id_grupo']]['_agents_critical_'] = isset ($agent_critical[0]['total']) ? $agent_critical[0]['total'] : 0;
 			$agent_total = agents_get_agents(array (
-							'disabled' => 0,
-							'id_grupo' => $group['id_grupo']),
-							array ('COUNT(DISTINCT id_agente) as total'), $access, false);
+				'disabled' => 0,
+				'id_grupo' => $group['id_grupo']),
+				array ('COUNT(DISTINCT id_agente) as total'), $access, false);
 			$list[$group['id_grupo']]['_total_agents_'] = isset ($agent_total[0]['total']) ? $agent_total[0]['total'] : 0;
 			$list[$group['id_grupo']]["_monitor_not_normal_"] = $list[$group['id_grupo']]["_monitor_checks_"] - $list[$group['id_grupo']]["_monitors_ok_"];
 			$list[$group['id_grupo']]["_monitor_not_normal_"] = $list[$group['id_grupo']]["_monitor_checks_"] - $list[$group['id_grupo']]["_monitors_ok_"];
@@ -776,11 +787,16 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 				FROM tagente_estado tae INNER JOIN tagente ta
 					ON tae.id_agente = ta.id_agente
 						AND ta.disabled = 0
-						AND ta.id_grupo = " . $group['id_grupo'] . "
+				LEFT JOIN tagent_secondary_group tasg
+					ON tasg.id_agent = ta.id_agente
 				INNER JOIN tagente_modulo tam
 					ON tae.id_agente_modulo = tam.id_agente_modulo
 						AND tam.disabled = 0
 				WHERE tae.utimestamp > 0
+					AND (
+						ta.id_grupo IN (" . $group_id . ")
+						OR tasg.id_group IN (" . $group_id . ")
+					)
 				GROUP BY estado");
 			if ($result_list) {
 				foreach ($result_list as $result) {
@@ -804,12 +820,17 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 					FROM tagente_estado tae INNER JOIN tagente ta
 						ON tae.id_agente = ta.id_agente
 							AND ta.disabled = 0
-							AND ta.id_grupo = " . $group['id_grupo'] . "
+					LEFT JOIN tagent_secondary_group tasg
+						ON tasg.id_agent = ta.id_agente
 					INNER JOIN tagente_modulo tam
 						ON tae.id_agente_modulo = tam.id_agente_modulo
 							AND tam.disabled = 0
 					WHERE tae.estado = 0
-					AND (tae.utimestamp > 0 OR tam.id_tipo_modulo IN(21,22,23,100))
+						AND (tae.utimestamp > 0 OR tam.id_tipo_modulo IN(21,22,23,100))
+						AND (
+							ta.id_grupo IN (" . $group_id . ")
+							OR tasg.id_group IN (" . $group_id . ")
+						)
 					GROUP BY estado");
 			$list[$group['id_grupo']]['_monitors_ok_'] = isset ($result_normal['contado']) ? $result_normal['contado'] : 0;
 			
@@ -817,50 +838,20 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 					FROM tagente_estado tae INNER JOIN tagente ta
 						ON tae.id_agente = ta.id_agente
 							AND ta.disabled = 0
-							AND ta.id_grupo = " . $group['id_grupo'] . "
+					LEFT JOIN tagent_secondary_group tasg
+						ON tasg.id_agent = ta.id_agente
 					INNER JOIN tagente_modulo tam
 						ON tae.id_agente_modulo = tam.id_agente_modulo
 							AND tam.disabled = 0
 					WHERE tae.utimestamp = 0 AND
 					tae.estado IN (".AGENT_MODULE_STATUS_NO_DATA.",".AGENT_MODULE_STATUS_NOT_INIT." )
 					AND tam.id_tipo_modulo NOT IN (21,22,23,100)
+					AND (
+						ta.id_grupo IN (" . $group_id . ")
+						OR tasg.id_group IN (" . $group_id . ")
+					)
 					GROUP BY estado");
 			$list[$group['id_grupo']]['_monitors_not_init_'] = isset ($result_not_init['contado']) ? $result_not_init['contado'] : 0;
-		}
-	}
-
-	if ($user_strict) {
-		$i = 1;
-		foreach ($user_tags as $group_id => $tag_name) {
-			$id = db_get_value('id_tag', 'ttag', 'name', $tag_name);
-
-			$list[$i]['_id_'] = $id;
-			$list[$i]['_name_'] = $tag_name;
-			$list[$i]['_iconImg_'] = html_print_image ("images/tag_red.png", true, array ("style" => 'vertical-align: middle;'));
-			$list[$i]['_is_tag_'] = 1;
-
-			$list[$i]['_total_agents_'] = (int) tags_get_total_agents ($id, $acltags, $agent_filter, $module_filter, $config["realtimestats"]);
-			$list[$i]['_agents_unknown_'] = (int) tags_get_unknown_agents ($id, $acltags, $agent_filter, $module_filter, $config["realtimestats"]);
-			$list[$i]['_agents_not_init_'] = (int) tags_get_not_init_agents ($id, $acltags, $agent_filter, $module_filter, $config["realtimestats"]);
-			$list[$i]['_agents_critical_'] = (int) tags_get_critical_agents ($id, $acltags, $agent_filter, $module_filter, $config["realtimestats"]);
-			$list[$i]['_monitors_ok_'] = (int) tags_get_normal_monitors ($id, $acltags, $agent_filter, $module_filter);
-			$list[$i]['_monitors_critical_'] = (int) tags_get_critical_monitors ($id, $acltags, $agent_filter, $module_filter);
-			$list[$i]['_monitors_warning_'] = (int) tags_get_warning_monitors ($id, $acltags, $agent_filter, $module_filter);
-			$list[$i]['_monitors_not_init_'] = (int) tags_get_not_init_monitors ($id, $acltags, $agent_filter, $module_filter);
-			$list[$i]['_monitors_unknown_'] = (int) tags_get_unknown_monitors ($id, $acltags, $agent_filter, $module_filter);
-			$list[$i]['_monitors_alerts_fired_'] = tags_monitors_fired_alerts($id, $acltags);
-
-			if (! defined ('METACONSOLE')) {
-				if (($list[$i]['_agents_unknown_'] == 0) && ($list[$i]['_monitors_alerts_fired_'] == 0) && ($list[$i]['_total_agents_'] == 0) && ($list[$i]['_monitors_ok_'] == 0) && ($list[$i]['_monitors_critical_'] == 0) && ($list[$i]['_monitors_warning_'] == 0) && ($list[$i]['_monitors_unknown_'] == 0) && ($list[$i]['_monitors_not_init_'] == 0) && ($list[$i]['_agents_not_init_'] == 0)) {
-					unset($list[$i]);
-				}
-			}
-			else {
-				if (($list[$i]['_agents_unknown_'] == 0) && ($list[$i]['_monitors_alerts_fired_'] == 0) && ($list[$i]['_total_agents_'] == 0) && ($list[$i]['_monitors_ok_'] == 0) && ($list[$i]['_monitors_critical_'] == 0) && ($list[$i]['_monitors_warning_'] == 0)) {
-					unset($list[$i]);
-				}
-			}
-			$i++;
 		}
 	}
 

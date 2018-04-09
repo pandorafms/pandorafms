@@ -353,11 +353,22 @@ class Tree {
 				if(!$search_hirearchy && (!empty($agent_search_filter) || !empty($module_search_filter))){
 					
 					if(is_metaconsole()){
-						$query_agent_search = " SELECT DISTINCT(ta.id_grupo)
-												FROM tmetaconsole_agent ta
-												WHERE ta.disabled = 0
-												$agent_search_filter";
-						$id_groups_agents = db_get_all_rows_sql($query_agent_search);
+						$id_groups_agents = db_get_all_rows_sql(
+							" SELECT DISTINCT(ta.id_grupo)
+								FROM tmetaconsole_agent ta
+								LEFT JOIN tmetaconsole_agent_secondary_group tasg
+									ON ta.id_agente = tasg.id_agent
+								WHERE ta.disabled = 0
+								$agent_search_filter"
+						);
+						$id_secondary_groups_agents = db_get_all_rows_sql(
+							" SELECT DISTINCT(tasg.id_group)
+								FROM tmetaconsole_agent ta
+								LEFT JOIN tmetaconsole_agent_secondary_group tasg
+									ON ta.id_agente = tasg.id_agent
+								WHERE ta.disabled = 0
+								$agent_search_filter"
+						);
 					}
 					else{
 						$query_agent_search = " SELECT DISTINCT(ta.id_grupo)
@@ -374,7 +385,10 @@ class Tree {
 					
 					if($id_groups_agents != false){
 						foreach	($id_groups_agents as $key => $value) {
-							$id_groups_agents_array[] = $value['id_grupo'];
+							$id_groups_agents_array[$value['id_grupo']] = $value['id_grupo'];
+						}
+						foreach	($id_secondary_groups_agents as $key => $value) {
+							$id_groups_agents_array[$value['id_group']] = $value['id_group'];
 						}
 						$user_groups_array = explode(",", $user_groups_str);
 						$user_groups_array = array_intersect($user_groups_array, $id_groups_agents_array);
@@ -441,8 +455,13 @@ class Tree {
 								else {
 									$agent_table = "SELECT COUNT(DISTINCT(ta.id_agente))
 													FROM tmetaconsole_agent ta
+													LEFT JOIN tmetaconsole_agent_secondary_group tasg
+														ON ta.id_agente = tasg.id_agent
 													WHERE ta.disabled = 0
-														AND ta.id_grupo = $item_for_count
+														AND (
+															ta.id_grupo = $item_for_count
+															OR tasg.id_group = $item_for_count
+														)
 														$group_filter
 														$agent_search_filter
 														$agent_status_filter";
@@ -486,13 +505,18 @@ class Tree {
 								$columns = 'ta.id_tagente AS id, ta.nombre AS name, ta.alias,
 									ta.fired_count, ta.normal_count, ta.warning_count,
 									ta.critical_count, ta.unknown_count, ta.notinit_count,
-									ta.total_count, ta.quiet, id_tmetaconsole_setup AS server_id';
+									ta.total_count, ta.quiet, ta.id_tmetaconsole_setup AS server_id';
 								$order_fields = 'ta.alias ASC, ta.id_tagente ASC';
 
 								$sql = "SELECT $columns
 										FROM tmetaconsole_agent ta
+										LEFT JOIN tmetaconsole_agent_secondary_group tasg
+											ON ta.id_agente = tasg.id_agent
 										WHERE ta.disabled = 0
-											AND ta.id_grupo = $rootID
+											AND  (
+												ta.id_grupo = $rootID
+												OR tasg.id_group = $rootID
+											)
 											$group_filter
 											$agent_search_filter
 											$agent_status_filter

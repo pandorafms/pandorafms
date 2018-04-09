@@ -315,39 +315,24 @@ class Tree {
 				// ACL Group
 				$user_groups_str = "-1";
 				$group_filter =  "";
-				if (!$this->strictACL) {
-					if (empty($this->userGroups)) {
+
+				if (empty($this->userGroups)) {
+					return;
+				}
+
+				// Asking for a specific group.
+				if ($item_for_count !== false) {
+					if (!isset($this->userGroups[$item_for_count])) {
 						return;
 					}
-
-					// Asking for a specific group.
-					if ($item_for_count !== false) {
-						if (!isset($this->userGroups[$item_for_count])) {
-							return;
-						}
-					}
-					// Asking for all groups.
-					else {
-						$user_groups_str = implode(",", array_keys($this->userGroups));
-						$group_filter = "AND ta.id_grupo IN ($user_groups_str)";
-					}
 				}
+				// Asking for all groups.
 				else {
-					if (!empty($this->acltags)) {
-						$groups = array();
-						foreach ($this->acltags as $group_id => $tags_str) {
-							if (empty($tags_str)) {
-								$hierarchy_groups = groups_get_id_recursive($group_id);
-								$groups = array_merge($groups, $hierarchy_groups);
-							}
-						}
-						if (!empty($groups)) {
-							if (array_search(0, $groups) === false) {
-								$user_groups_str = implode(",", $groups);
-							}
-						}
-					}
-					$group_filter = "AND ta.id_grupo IN ($user_groups_str)";
+					$user_groups_str = implode(",", array_keys($this->userGroups));
+					$group_filter = "AND (
+						ta.id_grupo IN ($user_groups_str)
+						OR tasg.id_group IN ($user_groups_str)
+					)";
 				}
 
 				if(!$search_hirearchy && (!empty($agent_search_filter) || !empty($module_search_filter))){

@@ -173,6 +173,7 @@ function profile_check_group_mode($user_id, $group_id, $is_secondary) {
  *  @param bool Show the tags select or not
  */
 function profile_print_profile_table ($id, $title, $is_secondary = false) {
+	global $config;
 
 	$is_secondary = enterprise_installed() ? $is_secondary : false;
 
@@ -265,7 +266,7 @@ function profile_print_profile_table ($id, $title, $is_secondary = false) {
 	}
 
 	$data[1] = html_print_select_groups($config['id_user'], "UM",
-		$own_info['is_admin'], 'assign_group', -1, '', __('None'), -1, true,
+		users_is_admin($config['id_user']), 'assign_group', -1, '', __('None'), -1, true,
 		false, false);
 
 	if (!$is_secondary) {

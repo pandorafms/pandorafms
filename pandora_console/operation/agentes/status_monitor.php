@@ -123,11 +123,17 @@ if (!is_metaconsole()) {
 }
 else {
 	if (((int)$ag_group !== 0) && (check_acl ($config['id_user'], $id_ag_group, 'AR'))) {
-		$sql_conditions_group = sprintf (' AND tagente.id_grupo IN (%s) ', $ag_group);
+		$sql_conditions_group = sprintf (
+			' AND (tagente.id_grupo IN (%s) OR tasg.id_group IN (%s))',
+			$user_groups, $user_groups
+		);
 	}
 	elseif ($user_groups != '') {
 		// User has explicit permission on group 1 ?
-		$sql_conditions_group = ' AND tagente.id_grupo IN ('.$user_groups.')';
+		$sql_conditions_group = ' AND (
+			tagente.id_grupo IN ('.$user_groups.')
+			OR tasg.id_group IN ('.$user_groups.')
+		)';
 	}
 }
 

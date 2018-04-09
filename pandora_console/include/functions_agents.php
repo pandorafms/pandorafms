@@ -375,7 +375,6 @@ function agents_get_agents ($filter = false, $fields = false,
 	if (empty ($filter['id_grupo'])) {
 		$all_groups = true;
 		$filter['id_grupo'] = $groups;
-		$filter['id_group'] = $groups;
 	}
 	elseif (! is_array ($filter['id_grupo'])) {
 		$all_groups = false;
@@ -384,7 +383,6 @@ function agents_get_agents ($filter = false, $fields = false,
 			return false;
 		}
 		$filter['id_grupo'] = (array) $filter['id_grupo']; //Make an array
-		$filter['id_group'] = (array) $filter['id_grupo']; //Make an array
 	}
 	else {
 		$all_groups = true;
@@ -398,8 +396,8 @@ function agents_get_agents ($filter = false, $fields = false,
 		if (count ($filter['id_grupo']) == 0) {
 			return false;
 		}
-		$filter['id_group'] = $filter['id_grupo'];
 	}
+	$filter['id_group'] = $filter['id_grupo'];
 	
 	if (in_array (0, $filter['id_grupo'])) {
 		unset ($filter['id_grupo']);
@@ -438,6 +436,8 @@ function agents_get_agents ($filter = false, $fields = false,
 		) , 'OR', '');
 		unset($filter['id_group']);
 		unset($filter['id_grupo']);
+		unset($filter_nogroup['id_grupo']);
+		unset($filter_nogroup['id_group']);
 	}
 	// Add the group filter to
 	$where = db_format_array_where_clause_sql ($filter, 'AND', "(" . $where_secondary . ") AND ");
@@ -484,7 +484,6 @@ function agents_get_agents ($filter = false, $fields = false,
 		$limit_sql = " LIMIT $offset, $limit ";
 	}
 	$sql = sprintf("%s %s", $sql, $limit_sql);
-
 	if ($return) return $sql;
 	else $agents = db_get_all_rows_sql($sql);
 

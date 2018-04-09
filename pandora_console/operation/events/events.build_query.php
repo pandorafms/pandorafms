@@ -51,11 +51,12 @@ if ($id_group > 0 && in_array ($id_group, array_keys ($groups))) {
 	}
 	else {
 		//If a group is selected and it's in the groups allowed
-		$sql_post = " AND id_grupo = $id_group";
+		$sql_post = " AND (id_grupo = $id_group OR id_group = $id_group)";
 	}
 }
 else {
-	$sql_post = " AND id_grupo IN (" . implode (",", array_keys ($groups)) . ")";
+	$sql_post = sprintf(" AND (id_grupo IN (%s) OR id_group IN (%s)) ",
+		implode (",", array_keys ($groups)), implode (",", array_keys ($groups)));
 }
 
 // Skip system messages if user is not PM

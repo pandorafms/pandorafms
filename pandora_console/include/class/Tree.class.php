@@ -371,16 +371,28 @@ class Tree {
 						);
 					}
 					else{
-						$query_agent_search = " SELECT DISTINCT(ta.id_grupo)
-												FROM tagente ta
-													LEFT JOIN tagent_secondary_group tasg
-												ON ta.id_agente = tasg.id_agent
-												, tagente_modulo tam
-												WHERE tam.id_agente = ta.id_agente
-												AND ta.disabled = 0
-												$agent_search_filter
-												$module_search_filter";
-						$id_groups_agents = db_get_all_rows_sql($query_agent_search);
+						$id_groups_agents = db_get_all_rows_sql(
+							" SELECT DISTINCT(ta.id_grupo)
+								FROM tagente ta
+								LEFT JOIN tagent_secondary_group tasg
+									ON ta.id_agente = tasg.id_agent
+								, tagente_modulo tam
+								WHERE tam.id_agente = ta.id_agente
+								AND ta.disabled = 0
+								$agent_search_filter
+								$module_search_filter"
+						);
+						$id_secondary_groups_agents = db_get_all_rows_sql(
+							" SELECT DISTINCT(tasg.id_group)
+								FROM tagente ta
+								LEFT JOIN tagent_secondary_group tasg
+									ON ta.id_agente = tasg.id_agent
+								, tagente_modulo tam
+								WHERE tam.id_agente = ta.id_agente
+								AND ta.disabled = 0
+								$agent_search_filter
+								$module_search_filter"
+						);
 					}
 					
 					if($id_groups_agents != false){

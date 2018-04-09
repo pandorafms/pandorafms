@@ -327,6 +327,22 @@ if (enterprise_installed()) {
 	}
 	
 	$table_data->data[] = $data;
+
+	$data = array();
+	$data[0] = '<b>' . __('Secondary groups') . '</b>';
+	$secondary_groups = enterprise_hook('agents_get_secondary_groups', array($id_agente));
+	if (!$secondary_groups) {
+		$data[1] = '<em>' . __('N/A') . '</em>';
+	}
+	else {
+		$secondary_links = array();
+		foreach ($secondary_groups['for_select'] as $id => $name) {
+			$secondary_links[] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$id.'">'.$name.'</a>';
+		}
+		$data[1] = implode(', ', $secondary_links);
+	}
+	
+	$table_data->data[] = $data;
 }
 
 if ($config['activate_gis'] || $agent['url_address'] != '') {

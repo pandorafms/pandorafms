@@ -187,7 +187,7 @@ function groupview_get_all_data ($id_user = false, $user_strict = false, $acltag
 			}
 		}
 	}
-	else if (($config["realtimestats"] == 0)) {
+	else if (false) { //FIXME: The cached group view is wasted. Avoid to reach this code.
 
 		$group_stat = db_get_all_rows_sql ("SELECT
 			SUM(ta.normal_count) as normal, SUM(ta.critical_count) as critical,
@@ -707,7 +707,7 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 			}
 		}
 	}
-	else if (($config["realtimestats"] == 0)) {
+	else if (false) { //FIXME: The cached group view is wasted. Avoid to reach this code.
 
 		$group_stat = db_get_all_rows_sql ("SELECT
 			SUM(ta.normal_count) as normal, SUM(ta.critical_count) as critical,

@@ -2273,6 +2273,10 @@ function get_news($arguments) {
 	$limit = get_argument ('limit', $arguments, 99999999);
 	
 	$id_group = array_keys(users_get_groups($id_user, false, true));
+
+	// Empty groups
+	if (empty($id_group)) return array();
+
 	$id_group = implode(',',$id_group);
 	$current_datetime = date('Y-m-d H:i:s', time());
 	$modal = (int) $modal;

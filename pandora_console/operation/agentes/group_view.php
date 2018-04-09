@@ -257,11 +257,17 @@ if (!empty($result_groups)) {
 			$item_icon = '';
 			if (isset($data['_iconImg_']) && !empty($data['_iconImg_']))
 				$item_icon = $data['_iconImg_'];
-			
-			if ($data['_name_'] != "All")
+
+			if ($data['_name_'] != "All") {
 				echo $deep . $link . $group_name . "</a>";
-			else
-				echo $link . $group_name . "</a>";
+			}
+			else {
+				$hint = '';
+				if (enterprise_hook('agents_is_using_secondary_groups')) {
+					$hint = ui_print_help_tip(__("This Pandora installation are using the secondary groups feature. For this reason, an agent can be counted several times."));
+				}
+				echo $link . $group_name . "</a>" . $hint;
+			}
 
 			if (isset($data['_is_tag_'])){
 				echo '<a>' . html_print_image("images/tag.png", true, array("border" => '0', "style" => 'width:18px;margin-left:5px', "title" => __('Tag'))) . '</a>' ;

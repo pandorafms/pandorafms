@@ -46,6 +46,7 @@ require_once ($config['homedir'] . '/include/functions_gis.php');
 require_once ($config['homedir'] . '/include/functions_ui.php');
 require_once ($config['homedir'] . '/include/functions_agents.php');
 require_once ($config['homedir'] . '/include/functions_groups.php');
+require_once ($config['homedir'] . '/include/functions_events.php');
 
 $opt = get_parameter('opt');
 
@@ -337,6 +338,26 @@ switch ($opt) {
 			$row[] = $agent["ultimo_contacto_remoto"];
 		}
 		$table->data[] = $row;
+
+		// Critical && not validated events
+		$filter = array(
+			"id_agente" => (int) $agent['id_agente'],
+			"criticity" => EVENT_CRIT_CRITICAL,
+			"estado" => array(EVENT_STATUS_NEW, EVENT_STATUS_INPROCESS)
+		);
+		$result = events_get_events($filter, "COUNT(*) as num");
+
+		if ($result && count($result) > 0) {
+			$number = (int) $result[0]["num"];
+
+			if ($number > 0) {
+				$row = array();
+				$row[] = __("Not validated critical events number");
+				$row[] = '<a href="?sec=estado&sec2=operation/events/events&status=3&severity=' . EVENT_CRIT_CRITICAL
+					. '&id_agent=' . $agent['id_agente'] . '">' . $number . '</a>';
+				$table->data[] = $row;
+			}
+		}
 
 		// To remove the grey background color of the classes datos and datos2
 		for ($i = 0; $i < count($table->data); $i++)

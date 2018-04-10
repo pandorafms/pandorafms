@@ -47,6 +47,7 @@ require_once ($config['homedir'] . '/include/functions_ui.php');
 require_once ($config['homedir'] . '/include/functions_agents.php');
 require_once ($config['homedir'] . '/include/functions_groups.php');
 require_once ($config['homedir'] . '/include/functions_events.php');
+require_once ($config['homedir'] . '/include/functions_alerts.php');
 
 $opt = get_parameter('opt');
 
@@ -347,16 +348,33 @@ switch ($opt) {
 		);
 		$result = events_get_events($filter, "COUNT(*) as num");
 
-		if ($result && count($result) > 0) {
+		if (!empty($result)) {
 			$number = (int) $result[0]["num"];
 
 			if ($number > 0) {
 				$row = array();
-				$row[] = __("Not validated critical events number");
+				$row[] = __("Number of non-validated critical events");
 				$row[] = '<a href="?sec=estado&sec2=operation/events/events&status=3&severity=' . EVENT_CRIT_CRITICAL
 					. '&id_agent=' . $agent['id_agente'] . '">' . $number . '</a>';
 				$table->data[] = $row;
 			}
+		}
+
+		// Alerts fired
+		$alerts_fired = alerts_get_alerts(0, "", "fired", -1, $true, false, $agent['id_agente']);
+		if (!empty($alerts_fired)) {
+			$row = array();
+			$row[] = __("Alert(s) fired");
+			$alerts_detail = "";
+			foreach ($alerts_fired as $alert) {
+				$alerts_detail .= "<p>"
+					. $alert['module_name'] . " - "
+					. $alert['template_name'] . " - "
+					. date($config["date_format"], $alert['last_fired'])
+					. "</p>";
+			}
+			$row[] = $alerts_detail;
+			$table->data[] = $row;
 		}
 
 		// To remove the grey background color of the classes datos and datos2

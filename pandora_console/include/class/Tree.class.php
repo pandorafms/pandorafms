@@ -343,63 +343,77 @@ class Tree {
 				// ACL Group
 				$user_groups_str = "-1";
 				$group_filter =  "";
-				if (!$this->strictACL) {
-					if (empty($this->userGroups)) {
+
+				if (empty($this->userGroups)) {
+					return;
+				}
+
+				// Asking for a specific group.
+				if ($item_for_count !== false) {
+					if (!isset($this->userGroups[$item_for_count])) {
 						return;
 					}
-
-					// Asking for a specific group.
-					if ($item_for_count !== false) {
-						if (!isset($this->userGroups[$item_for_count])) {
-							return;
-						}
-					}
-					// Asking for all groups.
-					else {
-						$user_groups_str = implode(",", array_keys($this->userGroups));
-						$group_filter = "AND ta.id_grupo IN ($user_groups_str)";
-					}
 				}
+				// Asking for all groups.
 				else {
-					if (!empty($this->acltags)) {
-						$groups = array();
-						foreach ($this->acltags as $group_id => $tags_str) {
-							if (empty($tags_str)) {
-								$hierarchy_groups = groups_get_id_recursive($group_id);
-								$groups = array_merge($groups, $hierarchy_groups);
-							}
-						}
-						if (!empty($groups)) {
-							if (array_search(0, $groups) === false) {
-								$user_groups_str = implode(",", $groups);
-							}
-						}
-					}
-					$group_filter = "AND ta.id_grupo IN ($user_groups_str)";
+					$user_groups_str = implode(",", array_keys($this->userGroups));
+					$group_filter = "AND (
+						ta.id_grupo IN ($user_groups_str)
+						OR tasg.id_group IN ($user_groups_str)
+					)";
 				}
 
 				if(!$search_hirearchy && (!empty($agent_search_filter) || !empty($module_search_filter))){
 					
 					if(is_metaconsole()){
-						$query_agent_search = " SELECT DISTINCT(ta.id_grupo)
-												FROM tmetaconsole_agent ta
-												WHERE ta.disabled = 0
-												$agent_search_filter";
-						$id_groups_agents = db_get_all_rows_sql($query_agent_search);
+						$id_groups_agents = db_get_all_rows_sql(
+							" SELECT DISTINCT(ta.id_grupo)
+								FROM tmetaconsole_agent ta
+								LEFT JOIN tmetaconsole_agent_secondary_group tasg
+									ON ta.id_agente = tasg.id_agent
+								WHERE ta.disabled = 0
+								$agent_search_filter"
+						);
+						$id_secondary_groups_agents = db_get_all_rows_sql(
+							" SELECT DISTINCT(tasg.id_group)
+								FROM tmetaconsole_agent ta
+								LEFT JOIN tmetaconsole_agent_secondary_group tasg
+									ON ta.id_agente = tasg.id_agent
+								WHERE ta.disabled = 0
+								$agent_search_filter"
+						);
 					}
 					else{
-						$query_agent_search = " SELECT DISTINCT(ta.id_grupo)
-												FROM tagente ta, tagente_modulo tam
-												WHERE tam.id_agente = ta.id_agente
-												AND ta.disabled = 0
-												$agent_search_filter
-												$module_search_filter";
-						$id_groups_agents = db_get_all_rows_sql($query_agent_search);
+						$id_groups_agents = db_get_all_rows_sql(
+							" SELECT DISTINCT(ta.id_grupo)
+								FROM tagente ta
+								LEFT JOIN tagent_secondary_group tasg
+									ON ta.id_agente = tasg.id_agent
+								, tagente_modulo tam
+								WHERE tam.id_agente = ta.id_agente
+								AND ta.disabled = 0
+								$agent_search_filter
+								$module_search_filter"
+						);
+						$id_secondary_groups_agents = db_get_all_rows_sql(
+							" SELECT DISTINCT(tasg.id_group)
+								FROM tagente ta
+								LEFT JOIN tagent_secondary_group tasg
+									ON ta.id_agente = tasg.id_agent
+								, tagente_modulo tam
+								WHERE tam.id_agente = ta.id_agente
+								AND ta.disabled = 0
+								$agent_search_filter
+								$module_search_filter"
+						);
 					}
 					
 					if($id_groups_agents != false){
 						foreach	($id_groups_agents as $key => $value) {
-							$id_groups_agents_array[] = $value['id_grupo'];
+							$id_groups_agents_array[$value['id_grupo']] = $value['id_grupo'];
+						}
+						foreach	($id_secondary_groups_agents as $key => $value) {
+							$id_groups_agents_array[$value['id_group']] = $value['id_group'];
 						}
 						$user_groups_array = explode(",", $user_groups_str);
 						$user_groups_array = array_intersect($user_groups_array, $id_groups_agents_array);
@@ -435,13 +449,18 @@ class Tree {
 								else {
 									$agent_table = "SELECT COUNT(DISTINCT(ta.id_agente))
 													FROM tagente ta
+													LEFT JOIN tagent_secondary_group tasg
+														ON ta.id_agente=tasg.id_agent
 													LEFT JOIN tagente_modulo tam
 														ON tam.disabled = 0
 															AND ta.id_agente = tam.id_agente
 															$module_search_filter
 													$module_status_join
 													WHERE ta.disabled = 0
-														AND ta.id_grupo = $item_for_count
+														AND (
+															ta.id_grupo = $item_for_count
+															OR tasg.id_group = $item_for_count
+														)
 														$group_filter
 														$agent_search_filter
 														$agent_status_filter";
@@ -461,8 +480,13 @@ class Tree {
 								else {
 									$agent_table = "SELECT COUNT(DISTINCT(ta.id_agente))
 													FROM tmetaconsole_agent ta
+													LEFT JOIN tmetaconsole_agent_secondary_group tasg
+														ON ta.id_agente = tasg.id_agent
 													WHERE ta.disabled = 0
-														AND ta.id_grupo = $item_for_count
+														AND (
+															ta.id_grupo = $item_for_count
+															OR tasg.id_group = $item_for_count
+														)
 														$group_filter
 														$agent_search_filter
 														$agent_status_filter";
@@ -471,7 +495,7 @@ class Tree {
 							}
 						}
 						else {
-							if (! is_metaconsole() || $this->strictACL) {
+							if (! is_metaconsole()) {
 								$columns = 'ta.id_agente AS id, ta.nombre AS name, ta.alias,
 									ta.fired_count, ta.normal_count, ta.warning_count,
 									ta.critical_count, ta.unknown_count, ta.notinit_count,
@@ -484,13 +508,18 @@ class Tree {
 
 								$sql = "SELECT $columns
 										FROM tagente ta
+										LEFT JOIN tagent_secondary_group tasg
+											ON tasg.id_agent = ta.id_agente
 										LEFT JOIN tagente_modulo tam
 											ON tam.disabled = 0
 												AND ta.id_agente = tam.id_agente
 												$module_search_filter
 										$module_status_join
 										WHERE ta.disabled = 0
-											AND ta.id_grupo = $rootID
+											AND (
+												ta.id_grupo = $rootID
+												OR tasg.id_group = $rootID
+											)
 											$group_filter
 											$agent_search_filter
 											$agent_status_filter
@@ -501,13 +530,18 @@ class Tree {
 								$columns = 'ta.id_tagente AS id, ta.nombre AS name, ta.alias,
 									ta.fired_count, ta.normal_count, ta.warning_count,
 									ta.critical_count, ta.unknown_count, ta.notinit_count,
-									ta.total_count, ta.quiet, id_tmetaconsole_setup AS server_id';
+									ta.total_count, ta.quiet, ta.id_tmetaconsole_setup AS server_id';
 								$order_fields = 'ta.alias ASC, ta.id_tagente ASC';
 
 								$sql = "SELECT $columns
 										FROM tmetaconsole_agent ta
+										LEFT JOIN tmetaconsole_agent_secondary_group tasg
+											ON ta.id_agente = tasg.id_agent
 										WHERE ta.disabled = 0
-											AND ta.id_grupo = $rootID
+											AND  (
+												ta.id_grupo = $rootID
+												OR tasg.id_group = $rootID
+											)
 											$group_filter
 											$agent_search_filter
 											$agent_status_filter
@@ -542,12 +576,14 @@ class Tree {
 							}
 						}
 
-						$sql = "SELECT $columns
+						$sql = "SELECT DISTINCT $columns
 								FROM tagente_modulo tam
 								$tag_join
 								$module_status_join
 								INNER JOIN tagente ta
 									ON ta.disabled = 0
+								LEFT JOIN tagent_secondary_group tasg
+									ON ta.id_agente = tasg.id_agent
 										AND tam.id_agente = ta.id_agente
 										AND ta.id_grupo = $rootID
 										$group_filter
@@ -1148,11 +1184,11 @@ class Tree {
 						break;
 				}
 				break;
-				default:
-					$sql = $this->getSqlExtended($item_for_count, $type, $rootType, $parent, $rootID,
-										$agent_search_filter, $agent_status_filter, $agents_join,
-										$module_search_filter, $module_status_filter, $modules_join,
-										$module_status_join);
+			default:
+				$sql = $this->getSqlExtended($item_for_count, $type, $rootType, $parent, $rootID,
+									$agent_search_filter, $agent_status_filter, $agents_join,
+									$module_search_filter, $module_status_filter, $modules_join,
+									$module_status_join);
 		}
 
 		return $sql;

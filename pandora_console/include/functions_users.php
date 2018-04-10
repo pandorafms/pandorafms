@@ -242,6 +242,7 @@ function groups_combine_acl($acl_group_a, $acl_group_b){
  * @param boolean $returnAllColumns Flag to return all columns of groups.
  * @param array $id_groups The list of group to scan to bottom child. By default null.
  * @param string $keys_field The field of the group used in the array keys. By default ID
+ * @param bool $cache Set it to false to not use cache
  *
  * @return array A list of the groups the user has certain privileges.
  */
@@ -421,15 +422,16 @@ function users_get_first_group ($id_user = false, $privilege = "AR", $all_group 
 function users_access_to_agent ($id_agent, $mode = "AR", $id_user = false) {
 	if (empty ($id_agent))
 		return false;
-	
+
 	if ($id_user == false) {
 		global $config;
 		$id_user = $config['id_user'];
 	}
-	
-	$id_group = (int) db_get_value ('id_grupo', 'tagente', 'id_agente', (int) $id_agent);
-	
-	return (bool) check_acl ($id_user, $id_group, $mode);
+
+	return (bool) check_acl_one_of_groups (
+		$id_user,
+		agents_get_all_groups_agent((int)$id_agent),
+		$mode);
 }
 
 /**

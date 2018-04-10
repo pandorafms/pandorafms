@@ -111,7 +111,13 @@ if (($policy_page) || (isset($agent))) {
 		$show_creation = true;
 	}
 	else {
-		if (check_acl ($config['id_user'], $agent['id_grupo'], "AW"))
+		if (!isset($all_groups)) {
+			$all_groups = agents_get_all_groups_agent (
+				$agent['id_agente'],
+				$agent['id_grupo']
+			);
+		}
+		if (check_acl_one_of_groups ($config['id_user'], $all_groups, "AW"))
 			$show_creation = true;
 	}
 	
@@ -164,8 +170,9 @@ if ($multiple_delete) {
 	$count_correct_delete_modules = 0;
 	foreach($id_agent_modules_delete as $id_agent_module_del) {
 		$id_grupo = (int) agents_get_agent_group($id_agente);
+		$all_groups = agents_get_all_groups_agent($id_agente, $id_grupo);
 		
-		if (! check_acl ($config["id_user"], $id_grupo, "AW")) {
+		if (! check_acl_one_of_groups ($config["id_user"], $all_groups, "AW")) {
 			db_pandora_audit("ACL Violation",
 			"Trying to delete a module without admin rights");
 			require ("general/noaccess.php");
@@ -604,7 +611,7 @@ if ($checked) {
 }
 
 foreach ($modules as $module) {
-	if (! check_acl ($config["id_user"], $group, "AW", $id_agente) && ! check_acl ($config["id_user"], $group, "AD", $id_agente)) {
+	if (! check_acl_one_of_groups ($config["id_user"], $all_groups, "AW") && ! check_acl_one_of_groups ($config["id_user"], $all_groups, "AD")) {
 		continue;
 	}
 	
@@ -762,7 +769,7 @@ foreach ($modules as $module) {
 			array('alt' => __('Disable module'), 'title' => __('Disable module'))) ."</a>";
 	}
 
-	if (check_acl ($config['id_user'], $agent['id_grupo'], "AW") && $module['id_tipo_modulo'] != 25) {
+	if (check_acl_one_of_groups ($config['id_user'], $all_groups, "AW") && $module['id_tipo_modulo'] != 25) {
 		$data[8] .= '&nbsp;<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&duplicate_module='.$module['id_agente_modulo'].'"
 			onClick="if (!confirm(\' ' . __('Are you sure?') . '\')) return false;">';
 		$data[8] .= html_print_image ('images/copy.png', true,
@@ -798,7 +805,7 @@ foreach ($modules as $module) {
 		}
 	}
 	
-	if (check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
+	if (check_acl_one_of_groups ($config['id_user'], $all_groups, "AW")) {
 		// Delete module
 		$data[9] = html_print_checkbox('id_delete[]', $module['id_agente_modulo'], false, true);
 		$data[9] .= '&nbsp;<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$module['id_agente_modulo'].'"
@@ -811,14 +818,14 @@ foreach ($modules as $module) {
 	array_push ($table->data, $data);
 }
 
-if (check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
+if (check_acl_one_of_groups ($config['id_user'], $all_groups, "AW")) {
 	echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module"
 		onsubmit="if (! confirm (\'' . __('Are you sure?') . '\')) return false">';
 }
 
 html_print_table ($table);
 
-if (check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
+if (check_acl_one_of_groups ($config['id_user'], $all_groups, "AW")) {
 	echo '<div class="action-buttons" style="width: ' . $table->width . '">';
 	html_print_input_hidden ('multiple_delete', 1);
 	html_print_submit_button (__('Delete'), 'multiple_delete', false, 'class="sub delete"');

@@ -294,8 +294,8 @@ if ($id_agente) {
 	echo $messageAction;
 	
 	require_once('godmode/alerts/alert_list.list.php');
-	
-	if(check_acl ($config['id_user'], $agent['id_grupo'], "LW") || check_acl ($config['id_user'], $agent['id_grupo'], "LM")) {
+	$all_groups = agents_get_all_groups_agent ($id_agente, $agent['id_grupo']);
+	if(check_acl_one_of_groups ($config['id_user'], $all_groups, "LW") || check_acl_one_of_groups ($config['id_user'], $all_groups, "LM")) {
 		require_once('godmode/alerts/alert_list.builder.php');
 	}
 	

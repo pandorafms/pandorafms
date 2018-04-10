@@ -2830,6 +2830,8 @@ class Tree {
 		global $config;
 		static $group_stats = false;
 		# Do not use the group stat cache when using tags or real time group stats.
+		return $this->getCounters($group_id);
+		// FIXME: AVOID TO REACH CACHE
 		if ($config['realtimestats'] == 1 || 
 			(isset($this->userGroups[$group_id]['tags']) && $this->userGroups[$group_id]['tags'] != "") || 
 			!empty($this->filter['searchAgent']) ) {	

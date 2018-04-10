@@ -2050,9 +2050,17 @@ function events_page_custom_fields ($event) {
 		$data = array();
 		$data[0] = $field['name'];
 		
-		$data[1] = empty($fields_data[$field['id_field']])
-			? '<i>'.__('N/A').'</i>'
-			: ui_bbcode_to_html($fields_data[$field['id_field']]);
+		if(empty($fields_data[$field['id_field']])){
+			$data[1] = '<i>'.__('N/A').'</i>';
+		}
+		else{
+			if($field['is_password_type']){
+				$data[1] = '&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;';
+			}
+			else{
+				$data[1] = ui_bbcode_to_html($fields_data[$field['id_field']]);
+			}
+		}
 		
 		$field['id_field'];
 		

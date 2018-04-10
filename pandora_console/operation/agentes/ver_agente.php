@@ -44,12 +44,16 @@ if (is_ajax ()) {
 	$get_agentmodule_status_tooltip = (bool) get_parameter ("get_agentmodule_status_tooltip");
 	$get_group_status_tooltip = (bool) get_parameter ("get_group_status_tooltip");
 	$get_agent_id = (bool) get_parameter ("get_agent_id");
+	$cluster_mode = (bool) get_parameter ("cluster_mode",0);
+	$agent_alias = get_parameter('alias', '');
+	$agents_inserted = get_parameter('agents_inserted', array());
 	$id_group = (int) get_parameter('id_group');
 	if ($get_agents_group_json) {
 		$id_group = (int) get_parameter('id_group');
 		$recursion = get_parameter ('recursion');
 		$id_os = get_parameter('id_os', '');
 		$agent_name = get_parameter('name', '');
+		
 		$privilege = (string) get_parameter ('privilege', "AR");
 		// Is is possible add keys prefix to avoid auto sorting in js object conversion
 		$keys_prefix = (string) get_parameter ('keys_prefix', '');
@@ -75,6 +79,8 @@ if (is_ajax ()) {
 			$filter['id_os'] = $id_os;
 		if (!empty($agent_name))
 			$filter['nombre'] = '%' . $agent_name . '%';
+		if (!empty($agent_alias))
+			$filter['alias'] = '%' . $agent_alias . '%';
 		
 		switch ($status_agents) {
 			case AGENT_STATUS_NORMAL:
@@ -97,6 +103,43 @@ if (is_ajax ()) {
 				break;
 		}
 		$filter['order'] = "alias ASC";
+		
+		if($cluster_mode){
+			
+			$agent_id_os = db_get_all_rows_sql('select id_os from tconfig_os where id_os != 100');
+			
+			foreach ($agent_id_os as $key => $value) {
+				$agent_id_os_array[] = $agent_id_os[$key]['id_os'];
+			}
+			
+			$filter['id_os'] = $agent_id_os_array;
+			
+			if($agents_inserted[0] != ''){
+			
+				$agents_id_list = '';
+				
+				foreach($agents_inserted as $elem) {
+
+				    if ($elem === end($agents_inserted)) {
+				      $agents_id_list .= $elem;
+				    }
+						else{
+							$agents_id_list .= $elem.',';
+						}
+
+				}
+				
+				$agent_id_agente = db_get_all_rows_sql('select id_agente from tagente where id_agente not in ('.$agents_id_list.')');
+				
+				foreach ($agent_id_agente as $key => $value) {
+					$agent_id_agente_array[] = $agent_id_agente[$key]['id_agente'];
+				}
+				
+				$filter['id_agente'] = $agent_id_agente_array;
+				
+			}
+			
+		}
 		
 		// Build fields
 		$fields = array('id_agente', 'alias');

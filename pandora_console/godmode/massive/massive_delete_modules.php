@@ -349,13 +349,12 @@ if ($delete) {
 		$result = process_manage_delete ($modules_, $agents_, $modules_selection_mode);
 	}
 	
+	$info = array('Agent' => implode(",",$agents_), 'Module' => implode(",",$modules_));
 	if ($result) {
-		db_pandora_audit("Massive management", "Delete module ", false, false,
-			'Agent: ' . json_encode($agents_) . ' Module: ' . $module_name);
+		db_pandora_audit("Massive management", "Delete module ", false, false, json_encode($info));
 	}
 	else {
-		db_pandora_audit("Massive management", "Fail try to delete module", false, false,
-			'Agent: ' . json_encode($agents_) . ' Module: ' . $module_name);
+		db_pandora_audit("Massive management", "Fail try to delete module", false, false, json_encode($info));
 	}
 }
 

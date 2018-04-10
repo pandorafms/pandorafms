@@ -294,7 +294,7 @@ if ($create_command) {
 		$result = alerts_create_alert_command ($name, $command,
 			$values);
 		
-		$info = 'Name: ' . $name . ' Command: ' . $command . ' Description: ' . $description. ' ' .$info_fields;
+		$info = '{"Name":"'.$name.'","Command":"'.$command.'","Description":"'.$description. ' '.$info_fields.'"}';
 	}
 	else {
 		$result = '';

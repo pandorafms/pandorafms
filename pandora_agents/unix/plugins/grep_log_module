@@ -215,6 +215,7 @@ sub print_log (@) {
 		$output .= "<source><![CDATA[" . $Module_name . "]]></source>\n";
 		$output .= "<data><![CDATA[";
 		foreach my $line (@data) {
+			$line =~ s/\]\]/]]]]><![CDATA[/g;
 			$output .= $line;
 		}
 		$output .= "]]></data>";
@@ -229,6 +230,7 @@ sub print_log (@) {
 		$output .= "<type><![CDATA[async_string]]></type>\n";
 		$output .= "<datalist>\n";
 		foreach my $line (@data) {
+			$line =~ s/\]\]/]]]]><![CDATA[/g;
 			$output .= "<data><value><![CDATA[$line]]></value></data>\n";
 		}
 		$output .= "</datalist>\n";

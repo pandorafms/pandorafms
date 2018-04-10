@@ -397,16 +397,23 @@ foreach ($fields as $field) {
 	$data = array();
 	$data[0] = '<b>' . $field['name'] .
 		ui_print_help_tip (__('Custom field'), true) . '</b>';
-	$custom_value = db_get_value_filter(
-		'description', 'tagent_custom_data',
-		array('id_field' => $field['id_field'], 'id_agent' => $id_agente));
-	if ($custom_value === false || $custom_value == '') {
-		$custom_value = '<i>'.__('N/A').'</i>';
+		$custom_value = db_get_all_rows_sql("select tagent_custom_data.description,tagent_custom_fields.is_password_type from tagent_custom_fields 
+			INNER JOIN tagent_custom_data ON tagent_custom_fields.id_field = tagent_custom_data.id_field where tagent_custom_fields.id_field = ".$field['id_field']." and tagent_custom_data.id_agent = ".$id_agente);
+
+	if ($custom_value[0]['description'] === false || $custom_value[0]['description'] == '') {
+		$custom_value[0]['description'] = '<i>-'.__('empty').'-</i>';
 	}
 	else {
-		$custom_value = ui_bbcode_to_html($custom_value);
+		$custom_value[0]['description'] = ui_bbcode_to_html($custom_value[0]['description']);
 	}
-	$data[1] = $custom_value;
+	
+	if($custom_value[0]['is_password_type']){
+			$data[1] = '&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;';
+		}
+		else{
+			$data[1] = $custom_value[0]['description'];	
+		}
+
 	$table_data->data[] = $data;
 }
 

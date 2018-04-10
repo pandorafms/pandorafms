@@ -23,6 +23,8 @@ $search_agent  = get_parameter('searchAgent', '');
 $status_agent  = get_parameter('statusAgent', AGENT_STATUS_ALL);
 $search_module = get_parameter('searchModule', '');
 $status_module = get_parameter('statusModule', -1);
+$show_not_init_agents = get_parameter('show_not_init_agents', true);
+$show_not_init_modules = get_parameter('show_not_init_modules', true);
 $group_id      = (int) get_parameter('group_id');
 $tag_id        = (int) get_parameter('tag_id');
 $strict_acl    = (bool) db_get_value("strict_acl", "tusuario", "id_user", $config['id_user']);
@@ -127,9 +129,9 @@ $table->style[0] = 'font-weight: bold;';
 $table->style[2] = 'font-weight: bold;';
 $table->size = array();
 $table->size[0] = '10%';
-$table->size[1] = '35%';
-$table->size[2] = '9%';
-$table->size[3] = '10%';
+$table->size[1] = '20%';
+$table->size[2] = '10%';
+$table->size[3] = '5%';
 $table->size[4] = '10%';
 // Agent filter
 $agent_status_arr = array();
@@ -142,19 +144,30 @@ $agent_status_arr[AGENT_STATUS_NOT_INIT] = __('Not init');
 
 $row = array();
 $row[] = __('Search group');
-$row[] = html_print_input_text("search_group", $search_group, '', is_metaconsole() ? 70 : 40, 30, true);
+$row[] = html_print_input_text("search_group", $search_group, '', is_metaconsole() ? 50 : 40, 30, true);
+
+if (is_metaconsole()) {
+	$row[] = __('Show not init modules');
+	$row[] = html_print_checkbox("show_not_init_modules", $show_not_init_modules, true, true);
+}
+
+
 
 $table->data[] = $row;
 
 $row = array();
 $row[] = __('Search agent');
-$row[] = html_print_input_text("search_agent", $search_agent, '', is_metaconsole() ? 70 : 40, 30, true);
+$row[] = html_print_input_text("search_agent", $search_agent, '', is_metaconsole() ? 50 : 40, 30, true);
+
+$row[] = __('Show not init agents');
+$row[] = html_print_checkbox("show_not_init_agents", $show_not_init_agents, true, true);
 
 $row[] = __('Show full hirearchy');
 $row[] = html_print_checkbox("serach_hirearchy", $serach_hirearchy, false, true);
 
 $row[] = __('Agent status');
 $row[] = html_print_select($agent_status_arr, "status_agent", $status_agent, '', '', 0, true);
+$row[] = html_print_input_hidden('show_not_init_modules_hidden', $show_not_init_modules, true);
 
 // Button
 $row[] = html_print_submit_button(__('Filter'), "uptbutton", false, 'class="sub search"', true);
@@ -175,6 +188,13 @@ if (!is_metaconsole()) {
 	$row = array();
 	$row[] = __('Search module');
 	$row[] = html_print_input_text("search_module", $search_module, '', 40, 30, true);
+	
+	$row[] = __('Show not init modules');
+	$row[] = html_print_checkbox("show_not_init_modules", $show_not_init_modules, true, true);
+	
+	$row[] = '';
+	$row[] = '';
+	
 	$row[] = __('Module status');
 	$row[] = html_print_select($module_status_arr, "status_module", $status_module, '', '', 0, true);
 	
@@ -268,6 +288,22 @@ enterprise_hook('close_meta_frame');
 		}
 		else{
 			parameters['filter']['searchHirearchy'] = 0;
+		}
+		
+		if($("#checkbox-show_not_init_agents").is(':checked')){
+			parameters['filter']['show_not_init_agents'] = 1;
+		}
+		else{
+			parameters['filter']['show_not_init_agents'] = 0;
+		}
+		
+		if($("#checkbox-show_not_init_modules").is(':checked')){
+			parameters['filter']['show_not_init_modules'] = 1;
+			$('#hidden-show_not_init_modules_hidden').val(1);
+		}
+		else{
+			parameters['filter']['show_not_init_modules'] = 0;
+			$('#hidden-show_not_init_modules_hidden').val(0);
 		}
 
 		$.ajax({

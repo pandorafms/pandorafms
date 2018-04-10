@@ -4620,3 +4620,16 @@ form ul.form_flex li ul li{
 .events_bar {
 	margin:0 auto;
 }
+
+#snmp_data {
+	background: #f9faf9;
+}
+#snmp_data .databox {
+	border: 0px;
+}
+
+.tickLabel {
+    white-space: nowrap;
+    line-height: 1.05em!important;
+}
+

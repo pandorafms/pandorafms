@@ -384,7 +384,6 @@ class Tree {
 						);
 					}
 					else{
-						//html_debug("001: $item_for_count", true);
 						$id_groups_agents = db_get_all_rows_sql(
 							" SELECT DISTINCT(ta.id_grupo)
 								FROM tagente ta
@@ -441,8 +440,6 @@ class Tree {
 							if (! is_metaconsole()) {
 								// Groups SQL
 								if ($item_for_count === false) {
-
-									//html_debug("002: $item_for_count", true);
 									$sql = "SELECT $columns
 											FROM tgrupo tg
 											WHERE tg.id_grupo IN ($user_groups_str)
@@ -468,8 +465,6 @@ class Tree {
 														$agent_search_filter
 														$agent_status_filter";
 									$sql = $this->getAgentCountersSql($agent_table);
-									//html_debug("003: $item_for_count", true);
-									//html_debug("$sql", true);
 								}
 							}
 							// Metaconsole
@@ -1208,7 +1203,6 @@ class Tree {
 	}
 
 	protected function getItems ($item_for_count = false) {
-		//html_debug($item_for_count, true);
 		$sql = $this->getSql($item_for_count);
 		if (empty($sql))
 			return array();
@@ -2836,8 +2830,7 @@ class Tree {
 		global $config;
 		static $group_stats = false;
 		# Do not use the group stat cache when using tags or real time group stats.
-		//html_debug($this->getCounters($group_id), true);
-		return $this->getCounters($group_id);
+		return $this->getCounters($group_id); // FIXME: Delete this line
 		// FIXME: AVOID TO REACH CACHE
 		if ($config['realtimestats'] == 1 || 
 			(isset($this->userGroups[$group_id]['tags']) && $this->userGroups[$group_id]['tags'] != "") || 

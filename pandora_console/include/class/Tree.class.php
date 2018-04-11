@@ -48,6 +48,7 @@ class Tree {
 		include_once($config['homedir']."/include/functions_servers.php");
 		include_once($config['homedir']."/include/functions_modules.php");
 		require_once($config['homedir']."/include/functions_tags.php");
+		enterprise_include_once("include/functions_agents.php");
 
 		if (is_metaconsole()) enterprise_include_once("meta/include/functions_ui_meta.php");
 
@@ -2829,9 +2830,11 @@ class Tree {
 	protected function getGroupCounters($group_id) {
 		global $config;
 		static $group_stats = false;
+		// FIXME: Avoid to use cache when secondary groups is used
+		if (enterprise_hook('agents_is_using_secondary_groups')) {
+			return $this->getCounters($group_id);
+		}
 		# Do not use the group stat cache when using tags or real time group stats.
-		return $this->getCounters($group_id); // FIXME: Delete this line
-		// FIXME: AVOID TO REACH CACHE
 		if ($config['realtimestats'] == 1 || 
 			(isset($this->userGroups[$group_id]['tags']) && $this->userGroups[$group_id]['tags'] != "") || 
 			!empty($this->filter['searchAgent']) ) {	

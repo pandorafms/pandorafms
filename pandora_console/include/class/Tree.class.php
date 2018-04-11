@@ -384,6 +384,7 @@ class Tree {
 						);
 					}
 					else{
+						//html_debug("001: $item_for_count", true);
 						$id_groups_agents = db_get_all_rows_sql(
 							" SELECT DISTINCT(ta.id_grupo)
 								FROM tagente ta
@@ -440,6 +441,8 @@ class Tree {
 							if (! is_metaconsole()) {
 								// Groups SQL
 								if ($item_for_count === false) {
+
+									//html_debug("002: $item_for_count", true);
 									$sql = "SELECT $columns
 											FROM tgrupo tg
 											WHERE tg.id_grupo IN ($user_groups_str)
@@ -465,6 +468,8 @@ class Tree {
 														$agent_search_filter
 														$agent_status_filter";
 									$sql = $this->getAgentCountersSql($agent_table);
+									//html_debug("003: $item_for_count", true);
+									//html_debug("$sql", true);
 								}
 							}
 							// Metaconsole
@@ -1203,6 +1208,7 @@ class Tree {
 	}
 
 	protected function getItems ($item_for_count = false) {
+		//html_debug($item_for_count, true);
 		$sql = $this->getSql($item_for_count);
 		if (empty($sql))
 			return array();
@@ -1210,10 +1216,10 @@ class Tree {
 		$data = db_process_sql($sql);
 		if (empty($data))
 			return array();
-			
+
 		foreach ($data[0] as $key => $value) {
 			
-			if($key != 'total_count' && strpos($key, 'count')){
+			if($key != 'total_count' && $key != 'total_fired_count' && strpos($key, 'count')){
 				$zero_counter += $value;
 			}
 			
@@ -2830,6 +2836,7 @@ class Tree {
 		global $config;
 		static $group_stats = false;
 		# Do not use the group stat cache when using tags or real time group stats.
+		//html_debug($this->getCounters($group_id), true);
 		return $this->getCounters($group_id);
 		// FIXME: AVOID TO REACH CACHE
 		if ($config['realtimestats'] == 1 || 
@@ -2842,7 +2849,6 @@ class Tree {
 		if ( $group_stats === false) {
 			$group_stats = array();
 			$stats = db_get_all_rows_sql('SELECT * FROM tgroup_stat');
-				
 			foreach ($stats as $group) {
 				if ($group['modules'] > 0) {
 					$group_stats[$group['id_group']]['total_count'] = $group['modules'] > 0 ? $group['agents'] : 0;

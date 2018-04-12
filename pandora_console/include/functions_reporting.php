@@ -39,6 +39,12 @@ include_once($config['homedir'] . "/include/functions_ui.php");
 include_once($config['homedir'] . "/include/functions_netflow.php");
 include_once($config['homedir'] . "/include/functions_os.php");
 
+/////////////////////////////////////////////////////////
+//                CONSTANTS DEFINITIONS                //
+/////////////////////////////////////////////////////////
+define ('REPORT_PRIORITY_MODE_OK', 1);
+define ('REPORT_PRIORITY_MODE_UNKNOWN', 2);
+
 function reporting_user_can_see_report($id_report, $id_user = null) {
 	global $config;
 	

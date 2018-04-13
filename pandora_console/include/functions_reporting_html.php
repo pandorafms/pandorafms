@@ -2563,27 +2563,28 @@ function reporting_html_availability_graph(&$table, $item, $pdf=0) {
 	$table1 = new stdClass();
 	$table1->width = '99%';
 	$table1->data = array ();
-	if (!$hide_notinit_agent) {
-		foreach ($item['charts'] as $chart) {
-			$table1->data[] = array(
-				$chart['agent'] . "<br />" . $chart['module'],
-				$chart['chart'],
-				"<span style = 'font: bold 2em Arial, Sans-serif;'>" . sla_truncate($chart['sla_value'], $config['graph_precision']) . '%</span>',
-				 "(" . $chart['checks_ok'] . "/" . $chart['checks_total'] . ")" 
-			);
+	foreach ($item['charts'] as $chart) {
+		switch ($chart['sla_status']) {
+			case REPORT_STATUS_ERR:
+				$color = COL_CRITICAL;
+				break;
+			case REPORT_STATUS_OK:
+				$color = COL_NORMAL;
+				break;
+			default:
+				$color = COL_UNKNOWN;
+				break;
 		}
+		$table1->data[] = array(
+			$chart['agent'] . "<br />" . $chart['module'],
+			$chart['chart'],
+			"<span style = 'font: bold 2em Arial, Sans-serif; color: ".$color."'>" .
+				sla_truncate($chart['sla_value'], $config['graph_precision']) . '%' .
+			'</span>',
+				"(" . $chart['checks_ok'] . "/" . $chart['checks_total'] . ")" 
+		);
 	}
-	else{
-		foreach ($item['charts'] as $chart) {
-			$the_first_men_time = get_agent_first_time(io_safe_output($chart['agent']));
-			if ($item['date']['to'] > $the_first_men_time) {
-				$table1->data[] = array(
-					$chart['agent'] . "<br />" . $chart['module'],
-					$chart['chart']);
-			}
-		}
-	}
-	
+
 	if($item['type'] == 'availability_graph'){
 
 	//table_legend_graphs;

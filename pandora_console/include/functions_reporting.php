@@ -42,8 +42,17 @@ include_once($config['homedir'] . "/include/functions_os.php");
 /////////////////////////////////////////////////////////
 //                CONSTANTS DEFINITIONS                //
 /////////////////////////////////////////////////////////
+// Priority modes
 define ('REPORT_PRIORITY_MODE_OK', 1);
 define ('REPORT_PRIORITY_MODE_UNKNOWN', 2);
+
+// Status
+define ('REPORT_STATUS_ERR', 0);
+define ('REPORT_STATUS_OK', 1);
+define ('REPORT_STATUS_UNKNOWN', 2);
+define ('REPORT_STATUS_NOT_INIT', 3);
+define ('REPORT_STATUS_DOWNTIME', 4);
+define ('REPORT_STATUS_IGNORED', 5);
 
 function reporting_user_can_see_report($id_report, $id_user = null) {
 	global $config;

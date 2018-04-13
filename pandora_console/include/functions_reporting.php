@@ -763,7 +763,7 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 	          	    $content['time_from'],
 	           	    $content['time_to'],
         		    $slice
-		            );
+					);
 
             
 			if ($metaconsole_on) {
@@ -819,7 +819,7 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 			$data['min']          = $sla['sla_min'];
 			$data['sla_limit']    = $sla['sla_limit'];
 			$data['dinamic_text'] = $dinamic_text;
-			
+
 			if(isset($sla_array[0])){
 				$data['time_total']      = 0;	
 				$data['time_ok']         = 0;
@@ -879,7 +879,7 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 					}
 					$i++;
 				}
-				$data['sla_value'] = ($data['time_ok']/($data['time_ok']+$data['time_error']))*100;
+				$data['sla_value'] = reporting_sla_get_compliance_from_array($data) * 100;
 				$data['sla_fixed'] = sla_truncate($data['sla_value'],  $config['graph_precision'] );
 			}
 			else{
@@ -895,7 +895,8 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 				$data['checks_error']    = $sla_array['checks_error'];
 				$data['checks_unknown']  = $sla_array['checks_unknown'];
 				$data['checks_not_init'] = $sla_array['checks_not_init'];
-				$data['sla_value']       = $sla_array['SLA'];
+				$data['sla_value']       = $sla_array['SLA'] * 100;
+				$data['sla_fixed']       = $sla_array['sla_fixed'] * 100;
 			}
 			
 			//checks whether or not it meets the SLA
@@ -4677,7 +4678,7 @@ function sla_fixed_worktime($wt_start, $wt_end, $worktime = null, $planned_downt
 	$return["wt_valid"] = 1;
 	$return["interval"] = $wt_end - $wt_start;
 
-	if ( (!isset($wt_start)) || (!isset($wt_end)) || ($wt_start > $wt_end)) {
+	if ( (!isset($wt_start)) || (!isset($wt_end)) || ($wt_start > $wt_end) || ($wt_start > time())) {
 		$return["wt_valid"] = 0;
 		$return["interval"] = 0;
 	}
@@ -5381,14 +5382,7 @@ function reporting_advanced_sla ($id_agent_module, $time_from = null, $time_to =
 		$return["checks_not_init"] = $not_init_checks;
 
 		// SLA
-		if (($time_in_error+$time_in_ok) == 0) {
-			$return["SLA"] = 0;
-		}
-		else {
-			$return["SLA"] = (($time_in_ok/($time_in_error+$time_in_ok))*100);
-		}
-
-		// SLA
+		$return["SLA"] = reporting_sla_get_compliance_from_array($return);
 		$return["SLA_fixed"] = sla_truncate($return["SLA"], $config['graph_precision']);
 
 		// Time ranges
@@ -5507,6 +5501,7 @@ function reporting_availability($report, $content, $date=false, $time=false) {
 			
 			$text = "";
 			
+			// FIXME: Bad data
 			$row['data'] = reporting_advanced_sla(
 				$item['id_agent_module'],
 				$report["datetime"] - $content['period'],
@@ -5770,7 +5765,7 @@ function reporting_availability_graph($report, $content, $pdf=false) {
 	          	    	$content['time_from'],
 	           	   	$content['time_to'],
         		    	$slice
-		            );
+					);
 
             
 			if ($metaconsole_on) {
@@ -5884,12 +5879,7 @@ function reporting_availability_graph($report, $content, $pdf=false) {
 					}
 					$i++;
 				}
-				if (($data['time_ok']+$data['time_error']) > 0 ) {
-					$data['sla_value'] = ($data['time_ok']/($data['time_ok']+$data['time_error']))*100;
-				}
-				else {
-					$data['sla_value'] = 0;
-				}
+				$data['sla_value'] = reporting_sla_get_compliance_from_array($data) * 100;
 				$data['sla_fixed'] = sla_truncate($data['sla_value'],  $config['graph_precision'] );
 			}
 			else{
@@ -5905,7 +5895,7 @@ function reporting_availability_graph($report, $content, $pdf=false) {
 				$data['checks_error']    = $sla_array['checks_error'];
 				$data['checks_unknown']  = $sla_array['checks_unknown'];
 				$data['checks_not_init'] = $sla_array['checks_not_init'];
-				$data['sla_value']       = $sla_array['SLA'];
+				$data['sla_value']       = $sla_array['SLA'] * 100;
 			}
 			
 			//checks whether or not it meets the SLA
@@ -11038,6 +11028,19 @@ function reporting_label_macro ($item, $label) {
 			break;
 	}
 	return $label;
+}
+
+/**
+ * @brief Calculates the SLA compliance value given an sla array
+ *
+ * @param Array With keys time_ok, time_error, time_downtime and time_unknown
+ */
+function reporting_sla_get_compliance_from_array ($sla_array) {
+	$time_compliance = $sla_array['time_ok'] + $sla_array['time_unknown'] + $sla_array['time_downtime'];
+	$time_total_working = $time_compliance + $sla_array['time_error'];
+	return $time_compliance == 0
+		? 0
+		: $time_compliance/$time_total_working;
 }
 
 ?>

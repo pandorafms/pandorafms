@@ -5333,7 +5333,6 @@ function reporting_advanced_sla ($id_agent_module, $time_from = null, $time_to =
 									// Add downtime interval as OK in inclusion mode
 									$total_checks++;
 									$ok_checks++;
-									$time_in_ok   += $wt_check["downtime_interval"];
 									$time_total   += $wt_check["downtime_interval"];
 									$time_in_down += $wt_check["downtime_interval"];
 								}
@@ -5500,8 +5499,7 @@ function reporting_availability($report, $content, $date=false, $time=false) {
 			$row = array();
 			
 			$text = "";
-			
-			// FIXME: Bad data
+
 			$row['data'] = reporting_advanced_sla(
 				$item['id_agent_module'],
 				$report["datetime"] - $content['period'],

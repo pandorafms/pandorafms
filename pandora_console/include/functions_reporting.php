@@ -5697,6 +5697,8 @@ function reporting_availability_graph($report, $content, $pdf=false) {
 		$total_result_SLA = 'ok';
 		$sla_showed = array();
 		$sla_showed_values = array();
+
+		$priority_mode = $content['style']['priority_mode'];
 		
 		foreach ($slas as $sla) {
 			$server_name = $sla ['server_name'];
@@ -5847,34 +5849,9 @@ function reporting_availability_graph($report, $content, $pdf=false) {
 					$data['checks_not_init'] += $value_sla['checks_not_init'];
 
 					// generate raw data for graph
-					if ($value_sla['time_total'] != 0) {
-						if ($value_sla['time_error'] > 0) { // ERR
-							$raw_graph[$i]['data'] = 3;
-						}
-						elseif ($value_sla['time_unknown'] > 0) { // UNKNOWN
-							$raw_graph[$i]['data'] = 4;
-						}
-						elseif ($value_sla['time_not_init'] == $value_sla['time_total']) { // NOT INIT
-							$raw_graph[$i]['data'] = 6;
-						}
-						else {
-							$raw_graph[$i]['data'] = 1;
-						}
-					}
-					else {
-						$raw_graph[$i]['data'] = 7;
-					}
+					$period = reporting_sla_get_status_period($value_sla, $priority_mode);
+					$raw_graph[$i]['data'] = reporting_translate_sla_status_for_graph($period);
 					$raw_graph[$i]['utimestamp'] = $value_sla['date_to'] - $value_sla['date_from'];
-
-					if (isset($planned_downtimes)) {
-						foreach($planned_downtimes as $pd){
-							if(  ($value_sla['date_from'] >= $pd['date_from'])
-							  && ($value_sla['date_to'] <= $pd['date_to']) ) {
-								$raw_graph[$i]['data'] = 5; // in scheduled downtime
-								break;
-							}
-						}
-					}
 					$i++;
 				}
 				$data['sla_value'] = reporting_sla_get_compliance_from_array($data) * 100;
@@ -11041,4 +11018,74 @@ function reporting_sla_get_compliance_from_array ($sla_array) {
 		: $time_compliance/$time_total_working;
 }
 
+/**
+ * @brief Given a period, get the SLA status of the period.
+ *
+ * @param Array An array with all times to calculate the SLA
+ * @param int Priority mode. Setting this parameter to REPORT_PRIORITY_MODE_OK
+ * and there is no critical in this period, return an OK without look for
+ * not init, downtimes, unknown and others...
+ *
+ * @return int Status
+ */
+function reporting_sla_get_status_period($sla_times, $priority_mode = REPORT_PRIORITY_MODE_OK) {
+	if ($sla_times['time_error'] > 0) {
+		return REPORT_STATUS_ERR;
+	}
+	if ($priority_mode == REPORT_PRIORITY_MODE_OK && $sla_times['time_ok'] > 0) {
+		return REPORT_STATUS_OK;
+	}
+	if ($sla_times['time_out'] > 0) {
+		return REPORT_STATUS_IGNORED;
+	}
+	if ($sla_times['time_downtime'] > 0) {
+		return REPORT_STATUS_DOWNTIME;
+	}
+	if ($sla_times['time_unknown'] > 0) {
+		return REPORT_STATUS_UNKNOWN;
+	}
+	if ($sla_times['time_not_init'] > 0) {
+		return REPORT_STATUS_NOT_INIT;
+	}
+	if ($sla_times['time_ok'] > 0) {
+		return REPORT_STATUS_OK;
+	}
+	return REPORT_STATUS_IGNORED;
+}
+
+if ($value_sla['time_total'] != 0) {
+	if ($value_sla['time_error'] > 0) { // ERR
+		$raw_graph[$i]['data'] = 3;
+	}
+	elseif ($value_sla['time_unknown'] > 0) { // UNKNOWN
+		$raw_graph[$i]['data'] = 4;
+	}
+	elseif ($value_sla['time_not_init'] == $value_sla['time_total']) { // NOT INIT
+		$raw_graph[$i]['data'] = 6;
+	}
+	else {
+		$raw_graph[$i]['data'] = 1;
+	}
+}
+else {
+	$raw_graph[$i]['data'] = 7;
+}
+
+/**
+ * @brief Translate the status to the color to graph_sla_slicebar function
+ *
+ * @param int The status in number
+ * @return int The index of color array to graph_sla_slicebar function
+ */
+function reporting_translate_sla_status_for_graph ($status) {
+	$sts = array (
+		REPORT_STATUS_ERR => 3,
+		REPORT_STATUS_OK => 1,
+		REPORT_STATUS_UNKNOWN => 4,
+		REPORT_STATUS_NOT_INIT => 6,
+		REPORT_STATUS_DOWNTIME => 5,
+		REPORT_STATUS_IGNORED => 7
+	);
+	return $sts[$status];
+}
 ?>

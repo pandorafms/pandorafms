@@ -2978,6 +2978,7 @@ function chooseType() {
 			$("#sla_list").show();
 			$("#row_working_time").show();
 			$("#row_historical_db_check").hide();
+			$("#row_priority_mode").show();
 			break;
 
 		case 'module_histogram_graph':

@@ -20,7 +20,13 @@
  */
 require_once ('include/functions_graph.php');
 function folder_get_folders(){
-    $folders = io_safe_output(db_get_all_rows_in_table ('tcontainer','parent, name'));
+    $folders = io_safe_output(db_get_all_rows_filter (
+		'tcontainer',
+		array (
+			'id_group' => array_keys(users_get_groups()),
+			'order' => 'parent, name'
+		)
+	));
     
     $ordered_folders = array();
     foreach ($folders as $folder) {

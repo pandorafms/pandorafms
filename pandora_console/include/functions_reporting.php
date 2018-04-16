@@ -11053,24 +11053,6 @@ function reporting_sla_get_status_period($sla_times, $priority_mode = REPORT_PRI
 	return REPORT_STATUS_IGNORED;
 }
 
-if ($value_sla['time_total'] != 0) {
-	if ($value_sla['time_error'] > 0) { // ERR
-		$raw_graph[$i]['data'] = 3;
-	}
-	elseif ($value_sla['time_unknown'] > 0) { // UNKNOWN
-		$raw_graph[$i]['data'] = 4;
-	}
-	elseif ($value_sla['time_not_init'] == $value_sla['time_total']) { // NOT INIT
-		$raw_graph[$i]['data'] = 6;
-	}
-	else {
-		$raw_graph[$i]['data'] = 1;
-	}
-}
-else {
-	$raw_graph[$i]['data'] = 7;
-}
-
 /**
  * @brief Translate the status to the color to graph_sla_slicebar function
  *

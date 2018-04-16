@@ -3783,9 +3783,6 @@ function visual_map_get_layout_status ($id_layout = 0, $depth = 0, $elements_in_
 					$data["id_agente_modulo"] == 0 &&
 					$data["id_agent"] == 0) ||
 					$data['type'] != 0){
-						if($data['type'] == 0){
-                    $temp_total = VISUAL_MAP_STATUS_UNKNOWN;
-            }
 						continue;
 					}
 				

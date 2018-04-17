@@ -561,8 +561,8 @@ function snmp_browser_print_container ($return = false, $width = '100%', $height
 	$table->data[0][2] = '<strong>'.__('Starting OID').'</strong> &nbsp;&nbsp;';
 	$table->data[0][2] .= html_print_input_text ('starting_oid', '.1.3.6.1.2', '', 25, 0, true);
 	
-	$table->data[0][3] = '<strong>' . __('Version') . '</strong> &nbsp;&nbsp;';
-	$table->data[0][3] .= html_print_select (
+	$table->data[1][0] = '<strong>' . __('Version') . '</strong> &nbsp;&nbsp;';
+	$table->data[1][0] .= html_print_select (
 		array ('1' => 'v. 1',
 			'2' => 'v. 2',
 			'2c' => 'v. 2c',
@@ -587,10 +587,10 @@ function snmp_browser_print_container ($return = false, $width = '100%', $height
 		$servers_to_exec[$row['id_server']] = $row['name'] . $s_type;
 	}
 	}
-	$table->data[0][4] = '<strong>' . __('Server to execute') . '</strong> &nbsp;&nbsp;';
-	$table->data[0][4] .= html_print_select($servers_to_exec, 'server_to_exec', '', '', '', '', true);
+	$table->data[1][1] = '<strong>' . __('Server to execute') . '</strong> &nbsp;&nbsp;';
+	$table->data[1][1] .= html_print_select($servers_to_exec, 'server_to_exec', '', '', '', '', true);
 
-	$table->data[0][5] = html_print_button(__('Browse'), 'browse', false, 'snmpBrowse()', 'class="sub search" style="margin-top:0px;"', true);
+	$table->data[1][2] = html_print_button(__('Browse'), 'browse', false, 'snmpBrowse()', 'class="sub search" style="margin-top:0px;"', true);
 	
 	// SNMP v3 options
 	$table3 = new stdClass();

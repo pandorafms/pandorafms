@@ -1930,6 +1930,8 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			}
 		}
 
+		// Get only two decimals
+		formatted =round_with_decimals(formatted, 100)
 		return '<div class='+font+' style="font-size:'+font_size+'pt;">'+formatted+'</div>';
 	}
 

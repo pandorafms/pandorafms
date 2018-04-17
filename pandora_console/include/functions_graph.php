@@ -2843,9 +2843,9 @@ function graph_sla_slicebar ($id, $period, $sla_min, $sla_max, $date, $daysWeek 
 		2 => COL_WARNING,
 		3 => COL_CRITICAL,
 		4 => COL_UNKNOWN,
-		5 => "#ff8400",//COL_MINOR,
+		5 => COL_DOWNTIME,
 		6 => COL_NOTINIT,
-		7 => "#ddd");//COL_MAJOR);
+		7 => COL_IGNORED);
 	
 	return slicesbar_graph($data, $period, $width, $height, $colors,
 		$config['fontpath'], $round_corner, $home_url, $ttl);

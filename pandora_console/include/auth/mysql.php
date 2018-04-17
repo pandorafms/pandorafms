@@ -340,7 +340,7 @@ function process_user_login_remote ($login, $pass, $api = false) {
 				$attributes = $ldap_adv_perm['groups_ldap'];
 				
 				foreach ($attributes as $attr) {
-					$attr = explode('=',$attr);
+					$attr = explode('=', $attr, 2);
 					if(in_array($attr[1],$sr[$attr[0]])) {
 						$permissions[$i]["profile"] = $ldap_adv_perm['profile'];
 						$permissions[$i]["groups"] = $ldap_adv_perm['group'];

@@ -836,7 +836,7 @@ function networkmap_links_to_js_links($relations, $nodes_graph) {
 				$item['source'] = $node['id'];
 			}
 		}
-		if (($item['target'] == -1) && ($item['source'] == -1) && $relation['parent_type'] == 1 && $relation['child_type'] == 1) {
+		if ((($item['target'] == -1) || ($item['source'] == -1)) && $relation['parent_type'] == 1 && $relation['child_type'] == 1) {
 			continue;
 		}
 		

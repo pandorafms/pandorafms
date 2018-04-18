@@ -3763,6 +3763,8 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 							set_static_graph_status(idElement, values['image']);
 					}
 			}
+			$("#" + idElement).css('left', left + 'px');
+			$("#" + idElement).css('top', top + 'px');
 			break;
 		case 'percentile_item':
 		case 'simple_value':
@@ -3849,8 +3851,8 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 function updateDB(type, idElement , values, event) {
 	metaconsole = $("input[name='metaconsole']").val();
 
-	var top = 0;
-	var left = 0;
+	var top = typeof(values.top) != 'undefined' ? values.top : 0;
+	var left = typeof(values.left) != 'undefined' ? values.left : 0;
 
 	action = "update";
 

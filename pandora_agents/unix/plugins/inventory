@@ -201,6 +201,8 @@ sub get_software_module_data ($$) {
 		$module{'program'} =~ s/;/,/g;
 		$module{'version'} =~ s/;/,/g;
 		$module{'description'} =~ s/;/,/g;
+		# Replace ellipsis character to avoid encoding errors
+		$module{'description'} =~ s/…/.../g;
 		$module{'_keys'} = ['program', 'version','description'];
 		push (@{$modules->{$name}}, \%module);
 	}

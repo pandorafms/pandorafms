@@ -87,7 +87,9 @@ switch ($config["dbtype"]) {
 	case "postgresql":
 	case "oracle":
 		$sql = "SELECT *
-			FROM tevento
+			FROM tevento te
+			LEFT JOIN tagent_secondary_group tasg
+				ON te.id_grupo = tasg.id_group
 			WHERE 1=1 ".$sql_post."
 			ORDER BY utimestamp DESC";
 		break;

@@ -1117,15 +1117,42 @@ function graph_get_formatted_date($timestamp, $format1, $format2) {
  * 
  * @return Mixed 
  */
-function graphic_combined_module ($module_list, $weight_list, $period,
-	$width, $height, $title, $unit_name, $show_events = 0,
-	$show_alerts = 0, $pure = 0, $stacked = 0, $date = 0,
-	$only_image = false, $homeurl = '', $ttl = 1, $projection = false,
-	$prediction_period = false, $background_color = 'white',
-	$name_list = array(), $unit_list = array(), $show_last = true, $show_max = true,
-	$show_min = true, $show_avg = true, $labels = array(), $dashboard = false,
-	$vconsole = false, $percentil = null, $from_interface = false, 
-	$id_widget_dashboard=false, $fullscale = false, $summatory = 0, $average = 0, $modules_series = 0) {
+function graphic_combined_module (
+	$module_list,
+	$weight_list,
+	$period,
+	$width,
+	$height,
+	$title,
+	$unit_name,
+	$show_events = 0,
+	$show_alerts = 0,
+	$pure = 0,
+	$stacked = 0,
+	$date = 0,
+	$only_image = false,
+	$homeurl = '',
+	$ttl = 1,
+	$projection = false,
+	$prediction_period = false,
+	$background_color = 'white',
+	$name_list = array(),
+	$unit_list = array(),
+	$show_last = true,
+	$show_max = true,
+	$show_min = true,
+	$show_avg = true,
+	$labels = array(),
+	$dashboard = false,
+	$vconsole = false,
+	$percentil = null,
+	$from_interface = false,
+	$id_widget_dashboard=false,
+	$fullscale = false,
+	$summatory = 0,
+	$average = 0,
+	$modules_series = 0
+) {
 	
 	global $config;
 	global $graphic_type;

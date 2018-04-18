@@ -154,6 +154,15 @@ function process_user_login_local ($login, $pass, $api = false) {
 		// We get DB nick to put in PHP Session variable,
 		// to avoid problems with case-sensitive usernames.
 		// Thanks to David Muñiz for Bug discovery :)
+		
+		$filter = array("id_usuario" => $login);
+		$user_profile = db_get_row_filter ("tusuario_perfil", $filter);
+		if(!$user_profile){
+			$mysql_cache["auth_error"] = "User does not have any profile";
+			$config["auth_error"] = "User does not have any profile";
+			return false;
+		}
+		
 		return $row["id_user"];
 	}
 	else {

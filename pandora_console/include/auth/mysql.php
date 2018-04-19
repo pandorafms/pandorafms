@@ -157,7 +157,7 @@ function process_user_login_local ($login, $pass, $api = false) {
 		
 		$filter = array("id_usuario" => $login);
 		$user_profile = db_get_row_filter ("tusuario_perfil", $filter);
-		if(!$user_profile){
+		if(!users_is_admin($login) && !$user_profile){
 			$mysql_cache["auth_error"] = "User does not have any profile";
 			$config["auth_error"] = "User does not have any profile";
 			return false;

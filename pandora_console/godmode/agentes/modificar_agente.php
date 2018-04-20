@@ -497,6 +497,8 @@ if ($agents !== false) {
 			
 		$id_grupo = $agent["id_grupo"];
 		
+		$cluster = db_get_row_sql('select id from tcluster where id_agent = '.$agent['id_agente']);
+		
 		if (! check_acl ($config["id_user"], $id_grupo, "AW", $agent['id_agente']) && ! check_acl ($config["id_user"], $id_grupo, "AD", $agent['id_agente']))
 			continue;
 		
@@ -566,22 +568,38 @@ if ($agents !== false) {
 
 		echo '</span><div class="left actions" style="visibility: hidden; clear: left">';
 		if (check_acl ($config["id_user"], $agent["id_grupo"], "AW")) {
-			echo '<a href="index.php?sec=gagente&
-			sec2=godmode/agentes/configurar_agente&tab=main&
-			id_agente='.$agent["id_agente"].'">'.__('Edit').'</a>';
-			echo ' | ';
+			if($agent["id_os"] == 21){
+				$cluster = db_get_row_sql('select id from tcluster where id_agent = '.$agent['id_agente']);
+				echo '<a href="index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_builder&id_cluster='.$cluster['id'].'&step=1&update=1">'.__('Edit').'</a>';
+				echo ' | ';
+			}
+			else{
+				echo '<a href="index.php?sec=gagente&
+				sec2=godmode/agentes/configurar_agente&tab=main&
+				id_agente='.$agent["id_agente"].'">'.__('Edit').'</a>';
+				echo ' | ';
+			}
 		}
+		if($agent["id_os"] != 21){
 		echo '<a href="index.php?sec=gagente&
 			sec2=godmode/agentes/configurar_agente&tab=module&
 			id_agente='.$agent["id_agente"].'">'.__('Modules').'</a>';
 		echo ' | ';
+		}		
+		
 		echo '<a href="index.php?sec=gagente&
 			sec2=godmode/agentes/configurar_agente&tab=alert&
 			id_agente='.$agent["id_agente"].'">'.__('Alerts').'</a>';
 		echo ' | ';
-		echo '<a href="index.php?sec=estado
+		
+		if($agent["id_os"] == 21){
+			echo '<a href="index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_view&id='.$cluster['id'].'">'.__('View').'</a>';
+		}
+		else{
+			echo '<a href="index.php?sec=estado
 			&sec2=operation/agentes/ver_agente
 			&id_agente='.$agent["id_agente"].'">'.__('View').'</a>';
+		}
 		
 		echo '</div>';
 		echo "</td>";
@@ -630,19 +648,41 @@ if ($agents !== false) {
 		
 		if ($agent['disabled']) {
 			echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&
-			enable_agent=".$agent["id_agente"]."&group_id=$ag_group&recursion=$recursion&search=$search&offset=$offsetArg&sort_field=$sortField&sort=$sort&disabled=$disabled''>".
-				html_print_image('images/lightbulb_off.png', true, array('alt' => __('Enable agent'), 'title' => __('Enable agent'))) ."</a>";
+			enable_agent=".$agent["id_agente"]."&group_id=$ag_group&recursion=$recursion&search=$search&offset=$offsetArg&sort_field=$sortField&sort=$sort&disabled=$disabled'";
+			
+			if($agent["id_os"] != 21){
+				echo ">";
+			}
+			else{
+				echo ' onClick="if (!confirm(\' '.__('You are going to enable a cluster agent. Are you sure?').'\')) return false;">';
+			}
+			
+			echo html_print_image('images/lightbulb_off.png', true, array('alt' => __('Enable agent'), 'title' => __('Enable agent'))) ."</a>";
 		}
 		else {
 			echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&
-			disable_agent=".$agent["id_agente"]."&group_id=$ag_group&recursion=$recursion&search=$search&offset=$offsetArg&sort_field=$sortField&sort=$sort&disabled=$disabled'>".
-				html_print_image('images/lightbulb.png', true, array('alt' => __('Disable agent'), 'title' => __('Disable agent'))) ."</a>";
+			disable_agent=".$agent["id_agente"]."&group_id=$ag_group&recursion=$recursion&search=$search&offset=$offsetArg&sort_field=$sortField&sort=$sort&disabled=$disabled'";
+			if($agent["id_os"] != 21){
+				echo ">";
+			}
+			else{
+				echo ' onClick="if (!confirm(\' '.__('You are going to disable a cluster agent. Are you sure?').'\')) return false;">';
+			}
+			
+			echo html_print_image('images/lightbulb.png', true, array('alt' => __('Disable agent'), 'title' => __('Disable agent'))) ."</a>";
 		}
 		
 		if (check_acl ($config["id_user"], $agent["id_grupo"], "AW")) {
 			echo "&nbsp;&nbsp;<a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&
 			borrar_agente=".$agent["id_agente"]."&group_id=$ag_group&recursion=$recursion&search=$search&offset=$offsetArg&sort_field=$sortField&sort=$sort&disabled=$disabled'";
-			echo ' onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+			
+			if($agent["id_os"] != 21){
+				echo ' onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+			}
+			else{
+				echo ' onClick="if (!confirm(\' '.__('You are going to delete a cluster agent. Are you sure?').'\')) return false;">';
+			}
+			
 			echo html_print_image('images/cross.png', true, array("border" => '0')) . "</a>";
 		}
 		

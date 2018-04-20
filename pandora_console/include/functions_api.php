@@ -84,6 +84,10 @@ function returnError($typeError, $returnType = 'string') {
 			returnData($returnType,
 				array('type' => 'string', 'data' => __('Id does not exist in BD.')));
 			break;
+		case 'not_allowed_operation_cluster':
+			returnData($returnType,
+				array('type' => 'string', 'data' => __('This operation can not be used in cluster elements.')));
+			break;
 		default:
 			returnData("string",
 				array('type' => 'string', 'data' => __($returnType)));

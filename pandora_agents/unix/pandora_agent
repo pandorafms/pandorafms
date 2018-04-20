@@ -41,8 +41,8 @@ my $Sem = undef;
 # Semaphore used to control the number of threads
 my $ThreadSem = undef;
 
-use constant AGENT_VERSION => '7.0NG.720';
-use constant AGENT_BUILD => '180409';
+use constant AGENT_VERSION => '7.0NG.722';
+use constant AGENT_BUILD => '180420';
 
 # Agent log default file size maximum and instances
 use constant DEFAULT_MAX_LOG_SIZE => 600000;
@@ -3065,7 +3065,11 @@ while (1) {
 		if (defined ($Conf{'parent_agent_name'})) {
 			$xml_header .= "' parent_agent_name='" .$Conf{'parent_agent_name'};
 		}
-		
+
+		if (defined ($Conf{'secondary_groups'})) {
+			$xml_header .= "' secondary_groups='" .$Conf{'secondary_groups'};
+		}
+
 		if (defined ($Conf{'agent_mode'})) {
 			if ($Conf{'agent_mode'} =~ m/no.?learn/ig) {
 				$xml_header .= "' agent_mode='0";

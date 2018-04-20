@@ -32,15 +32,18 @@ $tab = get_parameter ('tab', 'main');
 //See if id_agente is set (either POST or GET, otherwise -1
 $id_agente = (int) get_parameter ("id_agente");
 $group = 0;
-if ($id_agente)
+$all_groups = array($group);
+if ($id_agente) {
 	$group = agents_get_agent_group ($id_agente);
+	$all_groups = agents_get_all_groups_agent($id_agente, $group);
+}
 
-if (!check_acl ($config["id_user"], $group, "AW", $id_agente)) {
+if (!check_acl_one_of_groups ($config["id_user"], $all_groups, "AW")) {
 	$access_granted = false;
 	switch ($tab) {
 		case 'alert':
 		case 'module':
-			if (check_acl ($config["id_user"], $group, "AD", $id_agente)) {
+			if (check_acl_one_of_groups ($config["id_user"], $all_groups, "AD")) {
 				$access_granted = true;
 			}
 			break;
@@ -447,7 +450,7 @@ if ($id_agente) {
 			$incidenttab['active'] = false;
 	}
 	
-	if (check_acl ($config["id_user"], $group, "AW", $id_agente)) {
+	if (check_acl_one_of_groups ($config["id_user"], $all_groups, "AW")) {
 		if ($has_remote_conf) {
 			$agent_name = agents_get_name($id_agente);
 			$agent_name = io_safe_output($agent_name);
@@ -909,7 +912,7 @@ if ($update_agent) { // if modified some agent paramenter
 if ($id_agente) {
 	//This has been done in the beginning of the page, but if an agent was created, this id might change
 	$id_grupo = agents_get_agent_group ($id_agente);
-	if (!check_acl ($config["id_user"], $id_grupo, "AW") && !check_acl ($config["id_user"], $id_grupo, "AD")) {
+	if (!check_acl_one_of_groups ($config["id_user"], $all_groups, "AW") && !check_acl_one_of_groups ($config["id_user"], $all_groups, "AD")) {
 		db_pandora_audit("ACL Violation","Trying to admin an agent without access");
 		require ("general/noaccess.php");
 		exit;
@@ -1586,8 +1589,9 @@ if ($delete_module) { // DELETE agent module !
 		WHERE tam.id_agente_modulo = tae.id_agente_modulo
 			AND tam.id_agente_modulo = ' . $id_borrar_modulo);
 	$id_grupo = (int) agents_get_agent_group($id_agente);
+	$all_groups = agents_get_all_groups_agent ($id_agente, $id_grupo);
 	
-	if (! check_acl ($config["id_user"], $id_grupo, "AW")) {
+	if (! check_acl_one_of_groups ($config["id_user"], $all_groups, "AW")) {
 		db_pandora_audit("ACL Violation",
 			"Trying to delete a module without admin rights");
 		require ("general/noaccess.php");

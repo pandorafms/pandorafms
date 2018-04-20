@@ -130,6 +130,7 @@ switch ($action) {
 		$show_in_same_row = 0;
 		$show_in_landscape = 0;
 		$hide_notinit_agents = 0;
+		$priority_mode = REPORT_PRIORITY_MODE_OK;
 		$server_name = '';
 		$server_id = 0;
 		$dyn_height = 230;
@@ -272,6 +273,9 @@ switch ($action) {
 					$time_from = $item['time_from'];
 					$time_to = $item['time_to'];
 					$show_graph = $item['show_graph'];
+					$priority_mode = isset($style['priority_mode'])
+						? $style['priority_mode']
+						: REPORT_PRIORITY_MODE_OK;
 					// 'top_n' filed will be reused for SLA sort option
 					$sla_sorted_by = $item['top_n'];
 					$period = $item['period'];
@@ -1589,6 +1593,33 @@ You can of course remove the warnings, that's why we include the source and do n
 			</td>
 		</tr>
 
+		<tr id="row_priority_mode" style="" class="datos">
+			<td style="font-weight:bold;"><?php	echo __('Priority mode');?></td>
+			<td>
+				<?php
+					echo __('Priority ok mode').'<span style="margin-left:5px;"></span>';
+					html_print_radio_button (
+						'priority_mode',
+						REPORT_PRIORITY_MODE_OK,
+						'',
+						$priority_mode == REPORT_PRIORITY_MODE_OK,
+						''
+					);
+
+					echo ('<span style="margin:30px;"></span>');
+
+					echo __('Priority unknown mode').'<span style="margin-left:5px;"></span>';
+					html_print_radio_button (
+						'priority_mode',
+						REPORT_PRIORITY_MODE_UNKNOWN,
+						'',
+						$priority_mode == REPORT_PRIORITY_MODE_UNKNOWN,
+						''
+					);
+				?>
+			</td>
+		</tr>
+
 		<tr id="row_filter_search" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Free search');?></td>
 			<td>
@@ -2801,6 +2832,7 @@ function chooseType() {
 	$("#row_visual_format").hide();	
 	$("#row_show_in_landscape").hide();
 	$('#row_hide_notinit_agents').hide();
+	$('#row_priority_mode').hide();
 	$("#row_module_group").hide();
 	$("#row_servers").hide();
 	$("#row_sort").hide();
@@ -2946,6 +2978,7 @@ function chooseType() {
 			$("#sla_list").show();
 			$("#row_working_time").show();
 			$("#row_historical_db_check").hide();
+			$("#row_priority_mode").show();
 			break;
 
 		case 'module_histogram_graph':
@@ -2963,6 +2996,7 @@ function chooseType() {
 			$("#sla_list").show();
 			$("#row_working_time").show();
 			$("#row_sort").show();
+			$("#row_priority_mode").show();
 			$("#row_historical_db_check").hide();
 			break;
 		

@@ -156,7 +156,6 @@ $table->data[5][1] = html_print_textarea ('command_preview', 5, 30, '',
 $table->data[5][2] = html_print_textarea ('command_recovery_preview', 5, 30, '',
 	'disabled="disabled"', true);
 
-$row = 6;
 for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
 	$table->data['field' . $i][0] = html_print_image(
 		'images/spinner.gif', true);
@@ -164,7 +163,7 @@ for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
 		'images/spinner.gif', true);
 	$table->data['field' . $i][2] = html_print_image(
 		'images/spinner.gif', true);
-	
+
 	// Store the value in a hidden to keep it on first execution
 	$table->data['field' . $i][1] .= html_print_input_hidden(
 		'field' . $i . '_value',
@@ -177,6 +176,7 @@ for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
 			$action['field' . $i . '_recovery'] : '',
 		true);
 }
+
 
 echo '<form method="post" action="' .
 	'index.php?sec=' . $sec . '&' .

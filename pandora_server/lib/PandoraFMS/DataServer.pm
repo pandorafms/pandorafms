@@ -369,6 +369,9 @@ sub process_xml_data ($$$$$) {
 		if (! defined ($agent_id)) {
 			return;
 		}
+
+		# Update the secondary groups
+		enterprise_hook('add_secondary_groups_name', [$pa_config, $dbh, $agent_id, $data->{'secondary_groups'}]);
 		
 		# This agent is new.
 		$new_agent = 1;

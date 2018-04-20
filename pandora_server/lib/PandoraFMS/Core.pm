@@ -92,6 +92,8 @@ Exported Functions:
 
 =item * C<pandora_update_server>
 
+=item * C<pandora_update_secondary_groups_cache>
+
 =item * C<pandora_group_statistics>
 
 =item * C<pandora_server_statistics>
@@ -221,6 +223,7 @@ our @EXPORT = qw(
 	pandora_update_gis_data
 	pandora_update_module_on_error
 	pandora_update_module_from_hash
+	pandora_update_secondary_groups_cache
 	pandora_update_server
 	pandora_update_table_from_hash
 	pandora_update_template_module
@@ -5207,6 +5210,18 @@ sub pandora_update_agent_alert_count ($$$) {
 	fired_count=(SELECT COUNT(*) FROM tagente_modulo, talert_template_modules WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_agente_modulo=talert_template_modules.id_agent_module AND talert_template_modules.disabled=0 AND times_fired>0 AND id_agente=' . $agent_id .
 	') WHERE id_agente = ' . $agent_id);
 	
+	# Sync the agent cache every time the module count is updated.
+	enterprise_hook('update_agent_cache', [$pa_config, $dbh, $agent_id]) if ($pa_config->{'node_metaconsole'} == 1);
+}
+
+##########################################################################
+# Update the secondary group cache.
+##########################################################################
+sub pandora_update_secondary_groups_cache ($$$) {
+	my ($pa_config, $dbh, $agent_id) = @_;
+
+	db_do ($dbh, 'UPDATE tagente SET update_secondary_groups=0 WHERE id_agente = ' . $agent_id);
+
 	# Sync the agent cache every time the module count is updated.
 	enterprise_hook('update_agent_cache', [$pa_config, $dbh, $agent_id]) if ($pa_config->{'node_metaconsole'} == 1);
 }

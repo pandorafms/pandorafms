@@ -1833,6 +1833,22 @@ function check_acl($id_user, $id_group, $access, $onlyOneGroup = false) {
 }
 
 /**
+ * Check the ACL of a list of groups.
+ *
+ * @param string $id_user to check the ACL
+ * @param Array $groups. All groups to check
+ * @param string $access. Profile to check
+ *
+ * @return bool True if at least one of this groups check the ACL
+ */
+function check_acl_one_of_groups($id_user, $groups, $access) {
+	foreach ($groups as $group) {
+		if (check_acl($id_user, $group, $access)) return true;
+	}
+	return false;
+}
+
+/**
  * Get the name of the database column of one access flag
  *
  * @param string access flag
@@ -2273,6 +2289,10 @@ function get_news($arguments) {
 	$limit = get_argument ('limit', $arguments, 99999999);
 	
 	$id_group = array_keys(users_get_groups($id_user, false, true));
+
+	// Empty groups
+	if (empty($id_group)) return array();
+
 	$id_group = implode(',',$id_group);
 	$current_datetime = date('Y-m-d H:i:s', time());
 	$modal = (int) $modal;

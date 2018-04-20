@@ -1552,3 +1552,14 @@ function paint_graph_status(min_w, max_w, min_c, max_c, inverse_w, inverse_c, er
 
 	}
 }
+
+function round_with_decimals (value, multiplier = 1) {
+	// Return non numeric types without modification
+	if (typeof(value) !== "number") return value;
+
+	if ((value * multiplier) == 0) return 0;
+	if ((value * multiplier) >= 1) {
+		return Math.round(value * multiplier) / multiplier;
+	}
+	return round_with_decimals (value, multiplier * 10);
+}

@@ -663,7 +663,6 @@ function tags_get_acl_tags($id_user, $id_group, $access = 'AR',
 	elseif (!is_array($id_group)) {
 		$id_group = array($id_group);
 	}
-	$groups = $id_group;
 	
 	$acl_column = get_acl_column($access);
 	if (empty($acl_column)) {
@@ -740,15 +739,17 @@ function tags_get_acl_tags_module_condition($acltags, $modules_table = '') {
 									%s
 									INNER JOIN tagente tac
 										ON tamc.id_agente = tac.id_agente
-											AND tac.id_grupo = %d',
-									$tag_join, $group_id);
+										LEFT JOIN tagent_secondary_group tasg
+											ON tasg.id_agent = tac.id_agente
+												WHERE (tac.id_grupo = %d OR tasg.id_group = %d)',
+									$tag_join, $group_id, $group_id);
 		$sql_condition = sprintf('(%sid_agente_modulo IN (%s))', $modules_table, $agent_condition);
 		
 		$group_conditions[] = $sql_condition;
 		
 		$i++;
 	}
-	
+
 	if (!empty($group_conditions))
 		$condition = implode(' OR ', $group_conditions);
 	$condition = !empty($condition) ? "($condition)" : '';
@@ -858,7 +859,7 @@ function tags_get_acl_tags_event_condition($acltags, $meta = false, $force_group
 		// Tags condition (The module has at least one of the restricted tags)
 		$tags_condition = '';
 		if (empty($group_tags)) {
-			$tags_condition = "id_grupo = ".$group_id;
+			$tags_condition = "id_grupo = ".$group_id . " OR id_group = " . $group_id;
 		}
 		else {
 			if (!is_array($group_tags)) {

@@ -2623,30 +2623,30 @@ function truncate_negatives(&$element) {
  */
 function graph_agent_status ($id_agent = false, $width = 300, $height = 200, $return = false, $show_not_init = false, $data_agents=false) {
 	global $config;
-	
-	
-	$filter = array('disabled' => 0, 'id_grupo' => array_keys(users_get_groups(false, 'AR', false)));
-	
-	
-	if (!empty($id_agent)) {
-		$filter['id_agente'] = $id_agent; 
-	}
-	
-	$fields = array('SUM(critical_count) AS Critical', 
-		'SUM(warning_count) AS Warning', 
-		'SUM(normal_count) AS Normal', 
-		'SUM(unknown_count) AS Unknown');
-	
-	if ($show_not_init) {
-		$fields[] = 'SUM(notinit_count) "Not init"';
-	}
 
 	if ($data_agents == false) {
-		$data = db_get_row_filter('tagente', $filter, $fields);
+		$groups = implode(',', array_keys(users_get_groups(false, 'AR', false)));
+		$data = db_get_row_sql(sprintf('SELECT
+				SUM(critical_count) AS Critical,
+				SUM(warning_count) AS Warning,
+				SUM(normal_count) AS Normal,
+				SUM(unknown_count) AS Unknown
+				%s
+			FROM tagente ta LEFT JOIN tagent_secondary_group tasg
+				ON ta.id_agente = tasg.id_agent
+			WHERE
+				ta.disabled = 0 AND
+				%s
+				(ta.id_grupo IN (%s) OR tasg.id_group IN (%s))',
+			$show_not_init ? ', SUM(notinit_count) "Not init"' : '',
+			empty($id_agent) ? '' : "ta.id_agente = $id_agent AND",
+			$groups,
+			$groups
+		));
 	} else {
 		$data = $data_agents;
 	}
-	
+
 	if (empty($data)) {
 		$data = array();
 	}
@@ -2843,9 +2843,9 @@ function graph_sla_slicebar ($id, $period, $sla_min, $sla_max, $date, $daysWeek 
 		2 => COL_WARNING,
 		3 => COL_CRITICAL,
 		4 => COL_UNKNOWN,
-		5 => "#ff8400",//COL_MINOR,
+		5 => COL_DOWNTIME,
 		6 => COL_NOTINIT,
-		7 => "#ddd");//COL_MAJOR);
+		7 => COL_IGNORED);
 	
 	return slicesbar_graph($data, $period, $width, $height, $colors,
 		$config['fontpath'], $round_corner, $home_url, $ttl);
@@ -3586,7 +3586,8 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 	//is required if both DISTINCT() and COUNT() are in the statement 
 	$sql = sprintf ('SELECT DISTINCT(id_agente) AS id_agente,
 					COUNT(id_agente) AS count'.$field_extra.'
-				FROM '.$event_table.'
+				FROM '.$event_table.' te LEFT JOIN tagent_secondary_group tasg
+					ON te.id_grupo = tasg.id_group
 				WHERE 1=1 %s %s
 				GROUP BY id_agente'.$groupby_extra.'
 				ORDER BY count DESC LIMIT 8', $url, $tags_condition);
@@ -3985,7 +3986,7 @@ function graph_custom_sql_graph ($id, $width, $height,
 				$config['font_size'],
 				"",
 				$ttl,
-				$config['homeurl'],
+				$homeurl,
 				"white",
 				false,
 				false,
@@ -4009,7 +4010,7 @@ function graph_custom_sql_graph ($id, $width, $height,
 				$config['font_size'],
 				false,
 				$ttl,
-				$config['homeurl'],
+				$homeurl,
 				'white',
 				'black'
 			);

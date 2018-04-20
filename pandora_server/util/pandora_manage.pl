@@ -129,6 +129,12 @@ sub help_screen{
 	help_screen_line('--migration_agent_queue', '<id_node> <source_node_name> <target_node_name> [<db_only>]', 'Migrate agent only metaconsole');
 	help_screen_line('--migration_agent', '<id_node> ', 'Is migrating the agent only metaconsole');
 	help_screen_line('--apply_module_template', '<id_template> <id_agent>', 'Apply module template to agent');	
+	help_screen_line('--new_cluster', '<cluster_name> <cluster_type> <description> <group_id> ', 'Creating a new cluster');
+	help_screen_line('--add_cluster_agent', '<json_data:[{"id":5,"id_agent":2},{"id":5,"id_agent":3}]>', 'Adding agent to cluster');
+	help_screen_line('--add_cluster_item', '<json_data:[{"name":"Swap_Used","id_cluster":5,"type":"AA","critical_limit":80,"warning_limit":60},{"name":"TCP_Connections","id_cluster":5,"type":"AA","critical_limit":80,"warning_limit":60}]> ', 'Adding item to cluster');
+	help_screen_line('--delete_cluster', '<id_cluster>', 'Deleting cluster');
+	help_screen_line('--delete_cluster_agent', '<id_agent> <id_cluster>', 'Deleting cluster agent');
+	help_screen_line('--delete_cluster_item', '<id_item>', 'Deleting cluster item');
 	print "\nMODULES:\n\n" unless $param ne '';
 	help_screen_line('--create_data_module', "<module_name> <module_type> <agent_name> [<description> <module_group> \n\t  <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> \n\t <history_data> <definition_file> <warning_str> <critical_str>\n\t  <unknown_events> <ff_threshold> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <ff_timeout> <warning_inverse> <critical_inverse>\n\t <critical_instructions> <warning_instructions> <unknown_instructions>]", 'Add data server module to agent');
 	help_screen_line('--create_web_module', "<module_name> <module_type> <agent_name> [<description> <module_group> \n\t  <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> \n\t <history_data> <retries> <requests> <agent_browser_id> <auth_server> <auth_realm> <definition_file>\n\t <proxy_url> <proxy_auth_login> <proxy_auth_password> <warning_str> <critical_str>\n\t  <unknown_events> <ff_threshold> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <ff_timeout> <warning_inverse> <critical_inverse>\n\t <critical_instructions> <warning_instructions> <unknown_instructions>].\n\t The valid data types are web_data, web_proc, web_content_data or web_content_string", 'Add web server module to agent');
@@ -6082,6 +6088,31 @@ sub pandora_manage_main ($$$) {
 			param_check($ltotal, 2, 2);
 			cli_apply_module_template();
 		}
+		elsif ($param eq '--new_cluster') {
+			param_check($ltotal, 4, 0);
+			cli_new_cluster();
+		}
+		elsif ($param eq '--add_cluster_agent') {
+			param_check($ltotal, 1, 0);
+			cli_add_cluster_agent();
+		}
+		elsif ($param eq '--add_cluster_item') {
+			param_check($ltotal, 1, 0);
+			cli_add_cluster_item();
+		}
+		elsif ($param eq '--delete_cluster') {
+			param_check($ltotal, 1, 0);
+			cli_delete_cluster();
+		}
+		elsif ($param eq '--delete_cluster_agent') {
+			param_check($ltotal, 2, 0);
+			cli_delete_cluster_agent();
+		}
+		elsif ($param eq '--delete_cluster_item') {
+			param_check($ltotal, 1, 0);
+			cli_delete_cluster_item();
+		}
+		
 		elsif ($param eq '--migration_agent_queue') {
 			param_check($ltotal, 4, 1);
 			cli_migration_agent_queue();
@@ -6549,3 +6580,110 @@ sub cli_apply_module_template() {
 	}
 }
 
+##############################################################################
+# Create an cluster.
+# Related option: --new_cluster
+##############################################################################
+sub cli_new_cluster() {
+	my ($cluster_name,$cluster_type,$description,$group_id) = @ARGV[2..5];
+	
+	# Call the API.
+	my $result = api_call( $conf, 'set', 'new_cluster', undef, undef, "$cluster_name|$cluster_type|$description|$group_id");
+	
+	if( defined($result) && "$result" ne "" ){
+		print "\n1\n";
+	}
+	else{
+		print "\n0\n";
+	}
+}
+
+##############################################################################
+# Assign an agent to cluster.
+# Related option: --add_cluster_agent
+##############################################################################
+sub cli_add_cluster_agent() {
+	my ($other) = @ARGV[2..2];
+	
+	# Call the API.
+	my $result = api_call( $conf, 'set', 'add_cluster_agent', undef, undef, $other);
+	
+	if( defined($result) && "$result" ne "" ){
+		print "\n1\n";
+	}
+	else{
+		print "\n0\n";
+	}
+}
+
+##############################################################################
+# Add item to cluster.
+# Related option: --add_cluster_item
+##############################################################################
+sub cli_add_cluster_item() {
+	my ($other) = @ARGV[2..2];
+	
+	# Call the API.
+	my $result = api_call( $conf, 'set', 'add_cluster_item', undef, undef, $other);
+	
+	if( defined($result) && "$result" ne "" ){
+		print "\n1\n";
+	}
+	else{
+		print "\n0\n";
+	}
+}
+
+##############################################################################
+# Delete cluster.
+# Related option: --delete_cluster
+##############################################################################
+sub cli_delete_cluster() {
+	my ($id) = @ARGV[2..2];
+	
+	# Call the API.
+	my $result = api_call( $conf, 'set', 'delete_cluster', $id);
+	
+	if( defined($result) && "$result" ne "" ){
+		print "\n1\n";
+	}
+	else{
+		print "\n0\n";
+	}
+}
+
+##############################################################################
+# Delete cluster item.
+# Related option: --delete_cluster_item
+##############################################################################
+sub cli_delete_cluster_agent() {
+	my ($id_agent,$id_cluster) = @ARGV[2..3];
+	
+	# Call the API.
+	my $result = api_call( $conf, 'set', 'delete_cluster_agent', undef, undef, "$id_agent|$id_cluster");
+	
+	if( defined($result) && "$result" ne "" ){
+		print "\n1\n";
+	}
+	else{
+		print "\n0\n";
+	}
+}
+
+##############################################################################
+# Delete cluster item.
+# Related option: --delete_cluster_item
+##############################################################################
+sub cli_delete_cluster_item() {
+	my ($id) = @ARGV[2..2];
+	
+	# Call the API.
+	my $result = api_call( $conf, 'set', 'delete_cluster_item', $id);
+	
+	if( defined($result) && "$result" ne "" ){
+		print "\n1\n";
+	}
+	else{
+		print "\n0\n";
+	}
+}

@@ -31,7 +31,7 @@ our @ISA = qw(Exporter);
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "7.0NG.720";
-my $pandora_build = "180321";
+my $pandora_build = "180409";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 our %EXPORT_TAGS = ( 'all' => [ qw() ] );
@@ -417,9 +417,11 @@ sub print_module {
 		$data->{value} = trim($data->{value});
 	}
 
+	$data->{value} = '' if empty($data->{value});
 	$data->{tags}  = $data->{tags}?$data->{tags}:($conf->{MODULE_TAG_LIST}?$conf->{MODULE_TAG_LIST}:undef);
 	$data->{interval}     = $data->{interval}?$data->{interval}:($conf->{MODULE_INTERVAL}?$conf->{MODULE_INTERVAL}:undef);
 	$data->{module_group} = $data->{module_group}?$data->{module_group}:($conf->{MODULE_GROUP}?$conf->{MODULE_GROUP}:undef);
+	
 
 	# Global instructions (if defined)
 	$data->{unknown_instructions}  = $conf->{unknown_instructions}  unless (defined($data->{unknown_instructions})  || (!defined($conf->{unknown_instructions})));
@@ -605,8 +607,11 @@ sub transfer_xml {
 		$file_name .=  "_" . time() . ".data";
 	}
 
-	$conf->{temp} = $conf->{tmp}      if (empty($conf->{temp}) && defined($conf->{tmp}));
-	$conf->{temp} = $conf->{temporal} if (empty($conf->{temporal}) && defined($conf->{temporal}));
+	logger($conf, "transfer_xml", "Failed to generate file name.") if empty($file_name);
+
+	$conf->{temp} = $conf->{tmp}             if (empty($conf->{temp}) && defined($conf->{tmp}));
+	$conf->{temp} = $conf->{temporal}        if (empty($conf->{temp}) && defined($conf->{temporal}));
+	$conf->{temp} = $conf->{__system}->{tmp} if (empty($conf->{temp}) && defined($conf->{__system})) && (ref($conf->{__system}) eq "HASH");
 
 	$file_path = $conf->{temp} . "/" . $file_name;
 	
@@ -734,7 +739,7 @@ sub print_execution_result {
 	}
 
 	print_module($conf, {
-		name  => "Plugin execution result",
+		name  => "Plugin execution result " . $0,
 		type  => "generic_proc",
 		value => (defined($value)?$value:0),
 		desc  => $msg,
@@ -745,12 +750,12 @@ sub print_execution_result {
 ## Plugin devolution in case of error
 ################################################################################
 sub print_error {
-	my ($conf, $msg, $value) = @_;
+	my ($conf, $msg, $value, $always_show) = @_;
 
 	$value = 0 unless defined($value);
 
-	if (!(is_enabled($conf->{informational_modules}))) {
-		return 0;
+	if (!(is_enabled($conf->{informational_modules}) || is_enabled($always_show))) {
+		exit 1;
 	}
 
 	if (is_enabled($conf->{'as_server_plugin'})) {
@@ -760,7 +765,7 @@ sub print_error {
 	}
 
 	print_module($conf, {
-		name  => (empty($conf->{'global_plugin_module'})?"Plugin execution result":$conf->{'global_plugin_module'}),
+		name  => (empty($conf->{'global_plugin_module'})?"Plugin execution result " . $0:$conf->{'global_plugin_module'}),
 		type  => "generic_proc",
 		value => $value,
 		desc  => $msg,
@@ -786,32 +791,39 @@ sub print_stderror {
 my $log_aux_flag = 0;
 sub logger {
 	my ($conf, $tag, $message) = @_;
-	my $file = $conf->{log};
-	print_error($conf, "Log file undefined\n") unless defined $file;
+	my $file = $conf->{'log'};
+
+	print_error($conf, "[ERROR] Log file is not defined.", 0, 1) unless defined($file);
 
 	# Log rotation
-	if (-e $file && (stat($file))[7] > 32000000) {
+	if (defined($file) && -e $file && (stat($file))[7] > 32000000) {
 		rename ($file, $file.'.old');
 	}
 	my $LOGFILE;
 	if ($log_aux_flag == 0) {
 		# Log starts
 		if (! open ($LOGFILE, "> $file")) {
-			print_error ($conf, "[ERROR] Could not open logfile '$file'");
+			print_error ($conf, "[ERROR] Could not open logfile '$file'", 0, 1);
 		}
 		$log_aux_flag = 1;
 	}
 	else {
 		if (! open ($LOGFILE, ">> $file")) {
-			print_error ($conf, "[ERROR] Could not open logfile '$file'");
+			print_error ($conf, "[ERROR] Could not open logfile '$file'", 0, 1);
 		}
 	}
 
-	$message = ''  if empty($message);
-	$message = "[" . $tag . "] " . $message if empty($tag);
+	if (empty($message)) {
+		$message = $tag;
+		$message = "" if empty($message);
+	}
+	else {
+		$message = "[" . $tag . "] " . $message unless empty($tag);
+	}
 
-	if (!(empty($conf->{agent_name}))){
-		$message = "[" . $conf->{agent_xml_name} . "] " . $message;
+
+	if (!(empty($conf->{'agent_name'}))){
+		$message = "[" . $conf->{'agent_name'} . "] " . $message;
 	}
 
 	print $LOGFILE strftime ("%Y-%m-%d %H:%M:%S", localtime()) . " - " . $message . "\n";
@@ -824,7 +836,7 @@ sub logger {
 sub is_enabled {
 	my $value = shift;
 	
-	if ((defined ($value)) && ($value > 0)){
+	if ((defined ($value)) && looks_like_number($value) && ($value > 0)){
 		# return true
 		return 1;
 	}
@@ -931,6 +943,7 @@ sub init_system {
 		$system{grep}    = "findstr";
 		$system{echo}    = "echo";
 		$system{wcl}     = "wc -l";
+		$system{tmp}     = ".\\";
 	}
 	else {
 		$system{devnull} = "/dev/null";
@@ -940,6 +953,7 @@ sub init_system {
 		$system{grep}    = "grep";
 		$system{echo}    = "echo";
 		$system{wcl}     = "wc -l";
+		$system{tmp}     = "/tmp";
 
 		if ($^O =~ /hpux/i) {
 			$system{os}      = "HPUX";
@@ -970,6 +984,41 @@ sub get_sys_environment {
 
 ################################################################################
 # Parses any configuration, from file (1st arg to program) or direct arguments 
+#
+# Custom evals are defined in an array reference of hash references:
+# 
+#   $custom_eval = [
+#   	{
+#   		'exp'    => 'regular expression to match',
+#   		'target' => \&target_custom_method_to_parse_line
+#   	},
+#   	{
+#   		'exp'    => 'another regular expression to search',
+#   		'target' => \&target_custom_method_to_parse_line2
+#   	},
+#   ]
+#
+# Target is an user defined function wich will be invoked with following
+# arguments:
+# 
+#  $config          : The configuration read to the point the regex matches
+#  $exp             : The matching regex which fires this action
+#  $line            : The complete line readed from the file
+#  $file_pointer    : A pointer to the file which is being parsed.
+#  $current_entity  : The current_entity (optional) when regex matches
+#  
+#  E.g.
+#  
+#  sub target_custom_method_to_parse_line {
+#  	my ($config, $exp, $line, $file_pointer, $current_entity) = @_;
+#  	
+#  	if ($line =~ /$exp/) {
+#  		$config->{'my_key'} = complex_operation_on_data($1,$2,$3);
+#  	}
+#  	
+#  	return $config;
+#  }
+#
 ################################################################################
 sub read_configuration {
 	my ($config, $separator, $custom_eval) = @_;
@@ -978,6 +1027,20 @@ sub read_configuration {
 	    $config = merge_hashes($config, parse_configuration(shift @ARGV, $separator, $custom_eval));
 	}
 	$config = merge_hashes($config, parse_arguments(\@ARGV));
+
+	if(is_enabled($config->{'as_agent_plugin'})) {
+		$config->{'as_server_plugin'} = 0 if (empty($config->{'as_server_plugin'}));
+	}
+	else {
+		$config->{'as_server_plugin'} = 1 if (empty($config->{'as_server_plugin'}));
+	}
+
+	if(is_enabled($config->{'as_server_plugin'})) {
+		$config->{'as_agent_plugin'} = 0 if (empty($config->{'as_agent_plugin'}));
+	}
+	else {
+		$config->{'as_agent_plugin'} = 1 if (empty($config->{'as_agent_plugin'}));
+	}
 
 	return $config;
 }
@@ -1034,10 +1097,15 @@ sub parse_arguments {
 #  $current_entity  : The current_entity (optional) when regex matches
 #
 ################################################################################
+sub parse_configuration;
 sub parse_configuration {
 	my ($conf_file, $separator, $custom_eval, $detect_entities, $entities_list) = @_;
 
+	my @arguments = @_;
+	shift(@arguments);
+
 	$separator = "=" unless defined($separator);
+
 
 	my $_CFILE;
 	my $_config;
@@ -1124,6 +1192,24 @@ sub parse_configuration {
 				next;
 			}
 		}
+		if ($key =~ /^include$/i) {
+			my $file_included = trim($value);
+			my $aux;
+			eval {
+				$aux = parse_configuration($file_included, @arguments);
+			};
+			if($@) {
+				Carp::croak ("Failed to parse configuration");
+			}
+
+			if (empty($_config)) {
+				$_config = $aux;
+			}
+			elsif (!empty($aux)  && (ref ($aux) eq "HASH")) {
+				$_config = merge_hashes($_config, $aux);
+			}
+			next;
+		}
 		$_config->{trim($key)} = trim($value);
 	}
 	close ($_CFILE);
@@ -1138,7 +1224,7 @@ sub parse_configuration {
 
 		return $global_config unless empty($global_config);
 	}
-	
+
 	return $_config;
 }
 

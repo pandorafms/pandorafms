@@ -383,7 +383,7 @@ function snmp_browser_get_oid ($target_ip, $community, $target_oid, $version = '
 		else {
 			$snmptranslate_bin = $config['snmptranslate'];
 		}
-		exec ($snmptranslate_bin . " -Td " .  escapeshellarg($oid),
+		exec ($snmptranslate_bin . ' -m ALL -M +' . escapeshellarg($config['homedir'] . '/attachment/mibs') . " -Td " .  escapeshellarg($oid),
 			$translate_output);
 		foreach ($translate_output as $line) {
 			if (preg_match ('/SYNTAX\s+(.*)/', $line, $matches) == 1) {
@@ -399,13 +399,18 @@ function snmp_browser_get_oid ($target_ip, $community, $target_oid, $version = '
 				$oid_data['display_hint'] = $matches[1];
 			}
 		}
-		
-		// Parse the description
-		$translate_output = implode ('', $translate_output);
-		if (preg_match ('/DESCRIPTION\s+\"(.*)\"/', $translate_output, $matches) == 1) {
-			$oid_data['description'] = $matches[1];
+
+		// Parse the description. First search for it in custom values
+		$custom_data = db_get_row('ttrap_custom_values', 'oid', $oid);
+		if ($custom_data === false) {
+			$translate_output = implode ('', $translate_output);
+			if (preg_match ('/DESCRIPTION\s+\"(.*)\"/', $translate_output, $matches) == 1) {
+				$oid_data['description'] = $matches[1];
+			}
+		} else {
+			$oid_data['description'] = $custom_data['description'];
 		}
-		
+
 		$full_value = explode (':', trim ($full_oid[1]));
 		if (! isset ($full_value[1])) {
 			$oid_data['value'] = trim ($full_oid[1]);
@@ -482,26 +487,26 @@ function snmp_browser_print_oid ($oid = array(), $custom_action = '',
 		$table->data[$i][1] = $oid['status'];
 		$i++;
 	}
-	
+
 	$closer = '<a href="javascript:" onClick="hideOIDData();">';
 	$closer .= html_print_image ("images/blade.png", true, array ("title" => __('Close'), "style" => 'vertical-align: middle;'), false);
 	$closer .= '</a>';
-	
-	$table->head[0] = $closer;
-	$table->head[1] = __('OID Information');
-	
+
 	// Add a span for custom actions
 	if ($custom_action != '') {
-		$output .= '<span id="snmp_custom_action">' . $closer . $custom_action . '</span>';
+		$table->head[0] = '<span id="snmp_custom_action">' . $closer . $custom_action . '</span>';
+	} else {
+		$table->head[0] = $closer;
 	}
-	
+
+	$table->head[1] = __('OID Information');
 	$output .= html_print_table($table, true);
-	
+
 	$url = "index.php?" .
 		"sec=gmodules&" .
 		"sec2=godmode/modules/manage_network_components";
 	
-	$output .= '<form style="text-align: center;" method="post" action="' . $url . '">';
+	$output .= '<form style="text-align: center; margin: 10px" method="post" action="' . $url . '">';
 	$output .= html_print_input_hidden('create_network_from_snmp_browser', 1, true);
 	$output .= html_print_input_hidden('id_component_type', 2, true);
 	$output .= html_print_input_hidden('type', 17, true);
@@ -519,7 +524,7 @@ function snmp_browser_print_oid ($oid = array(), $custom_action = '',
 	$output .= html_print_input_hidden('snmp_community', $community, true);
 	$output .= html_print_input_hidden('snmp_version', $snmp_version, true);
 	$output .= html_print_submit_button(__('Create network component'),
-		'', false, '', true);
+		'', false, 'class="sub add"', true);
 	$output .= '</form>';
 	
 	if ($return) {
@@ -672,7 +677,7 @@ function snmp_browser_print_container ($return = false, $width = '100%', $height
 	$output .=     '<div id="search_results" style="display: none; padding: 5px; background-color: #EAEAEA; border: 1px solid #E2E2E2; border-radius: 4px;"></div>';
 	$output .=     '<div id="spinner" style="position: absolute; top:0; left:0px; display:none; padding: 5px;">' . html_print_image ("images/spinner.gif", true) . '</div>';
 	$output .=     '<div id="snmp_browser" style="height: 100%; overflow: auto; background-color: #F4F5F4; border: 1px solid #E2E2E2; border-radius: 4px; padding: 5px;"></div>';
-	$output .=     '<div id="snmp_data" style="margin: 5px;"></div>';
+	$output .=     '<div class="databox" id="snmp_data" style="margin: 5px;"></div>';
 	$output .=   '</div>';
 	$output .= '</div>';
 	$output .= '</div>';

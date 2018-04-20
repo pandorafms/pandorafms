@@ -39,7 +39,7 @@ function networkmap_process_networkmap($id = 0) {
 	$numNodes = (int)db_get_num_rows('
 		SELECT *
 		FROM titem
-		WHERE id_map = ' . $id . ';');
+		WHERE id_map = ' . $id . ' and deleted = 0');
 	
 	$networkmap = db_get_row_filter('tmap',
 		array('id' => $id));
@@ -836,6 +836,11 @@ function networkmap_links_to_js_links($relations, $nodes_graph) {
 				$item['source'] = $node['id'];
 			}
 		}
+		if (($item['target'] == -1) && ($item['source'] == -1) && $relation['parent_type'] == 1 && $relation['child_type'] == 1) {
+			continue;
+		}
+		
+		
 		$return[] = $item;
 	}
 	return $return;

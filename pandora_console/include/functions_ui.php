@@ -961,9 +961,15 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 	if (!defined('METACONSOLE')) {
 		if (check_acl ($config["id_user"], $id_group, "LW") || check_acl ($config["id_user"], $id_group, "LM")) {
 			$data[$index['validate']] = '';
-			
-			
-			$data[$index['validate']] .= html_print_checkbox ("validate[]", $alert["id"], false, true);
+
+			$data[$index['validate']] .= html_print_checkbox (
+				"validate[]",
+				$alert["id"],
+				false,
+				true,
+				false,
+				'',
+				true);
 		}
 	}
 	

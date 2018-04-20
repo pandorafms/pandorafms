@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.720 PS180321";
+my $version = "7.0NG.720 PS180409";
 
 # save program name for logging
 my $progname = basename($0);
@@ -126,6 +126,9 @@ sub help_screen{
 	help_screen_line('--clean_conf_file', '<agent_name>', "Clean a local conf of a given agent deleting all modules, \n\t  policies, file collections and comments");
 	help_screen_line('--get_bad_conf_files', '', 'Get the files bad configured (without essential tokens)');
 	help_screen_line('--locate_agent', '<agent_name>', 'Search a agent into of nodes of metaconsole. Only Enterprise.');
+	help_screen_line('--migration_agent_queue', '<id_node> <source_node_name> <target_node_name> [<db_only>]', 'Migrate agent only metaconsole');
+	help_screen_line('--migration_agent', '<id_node> ', 'Is migrating the agent only metaconsole');
+	help_screen_line('--apply_module_template', '<id_template> <id_agent>', 'Apply module template to agent');	
 	print "\nMODULES:\n\n" unless $param ne '';
 	help_screen_line('--create_data_module', "<module_name> <module_type> <agent_name> [<description> <module_group> \n\t  <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> \n\t <history_data> <definition_file> <warning_str> <critical_str>\n\t  <unknown_events> <ff_threshold> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <ff_timeout> <warning_inverse> <critical_inverse>\n\t <critical_instructions> <warning_instructions> <unknown_instructions>]", 'Add data server module to agent');
 	help_screen_line('--create_web_module', "<module_name> <module_type> <agent_name> [<description> <module_group> \n\t  <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> \n\t <history_data> <definition_file> <warning_str> <critical_str>\n\t  <unknown_events> <ff_threshold> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <ff_timeout> <warning_inverse> <critical_inverse>\n\t <critical_instructions> <warning_instructions> <unknown_instructions>].\n\t The valid data types are web_data, web_proc, web_content_data or web_content_string", 'Add web server module to agent');
@@ -157,7 +160,6 @@ sub help_screen{
 	help_screen_line('--delete_special_day', '<special_day>', 'Delete special day');
 	help_screen_line('--update_special_day', "<special_day> <field_to_change> <new_value>", 'Update a field of a special day');
 	help_screen_line('--create_data_module_from_local_component', '<agent_name> <component_name>', "Create a new data \n\t  module from a local component");
-	help_screen_line('--create_web_module_from_local_component', '<agent_name> <component_name>', "Create a new web \n\t  module from a local component");
 	help_screen_line('--create_local_component', "<component_name> <data> [<description> <id_os> <os_version> \n\t  <id_network_component_group> <type> <min> <max> <module_interval> <id_module_group> <history_data> <min_warning> \n\t <max_warning> <str_warning> <min_critical> <max_critical>\n\t  <str_critical> <min_ff_event> <post_process> <unit>\n\t  <wizard_level> <critical_instructions>\n\t  <warning_instructions> <unknown_instructions> <critical_inverse>\n\t  <warning_inverse> <id_category> <disabled_types_event>\n\t  <tags> <min_ff_event_normal> <min_ff_event_warning>\n\t  <min_ff_event_critical> <each_ff> <ff_timeout>]", 'Create local component');
 	
 	print "\nUSERS:\n\n" unless $param ne '';
@@ -195,7 +197,6 @@ sub help_screen{
 	<critical_instructions> <warning_instructions> <unknown_instructions>\n\t <warning_inverse> <critical_inverse>]", 'Add snmp network module to policy');
 	help_screen_line('--create_policy_plugin_module', "<policy_name> <module_name> <module_type> \n\t  <module_port> <plugin_name> <user> <password> <parameters> [<description> <module_group> <min> \n\t  <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max>\n\t  <history_data> <ff_threshold> <warning_str> <critical_str>\n\t  <unknown_events> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical>\n\t <critical_instructions> <warning_instructions> <unknown_instructions>\n\t <warning_inverse> <critical_inverse>]", 'Add plug-in module to policy');
 	help_screen_line('--create_policy_data_module_from_local_component', '<policy_name> <component_name>');
-	help_screen_line('--create_policy_web_module_from_local_component', '<policy_name> <component_name>');
 	help_screen_line('--add_collection_to_policy', "<policy_name> <collection_name>");
 	help_screen_line('--validate_policy_alerts', '<policy_name>', 'Validate the alerts of a given policy');
 	help_screen_line('--get_policy_modules', '<policy_name>', 'Get the modules of a policy');
@@ -223,7 +224,7 @@ sub help_screen{
 	help_screen_line('--duplicate_visual_console', '<id> <times> [<prefix>]', 'Duplicate a visual console');
 	help_screen_line('--export_json_visual_console', '<id> [<path>] [<with_element_id>]', 'Creates a json with the visual console elements information');
 
-	
+
 	print "\n";
 	exit;
 }
@@ -1355,23 +1356,28 @@ sub cli_create_web_module($) {
 	my $in_policy = shift;
 	my ($policy_name, $module_name, $module_type, $agent_name, $description, $module_group, 
 		$min,$max,$post_process, $interval, $warning_min, $warning_max, $critical_min,
-		$critical_max, $history_data, $definition_file, $configuration_data, $warning_str, $critical_str, $enable_unknown_events,
+		$critical_max, $history_data, $retries, $requests, $agent_browser_id, $auth_server, $auth_realm, 
+		$definition_file, $http_auth_login, $http_auth_password, 
+		$proxy_url, $proxy_auth_login, $proxy_auth_password, $configuration_data, $warning_str, $critical_str, $enable_unknown_events,
 	    $ff_threshold, $each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $ff_timeout, 
 	    $warning_inverse, $critical_inverse, $critical_instructions, $warning_instructions, $unknown_instructions);
 	
 	if ($in_policy == 0) {
 		($module_name, $module_type, $agent_name, $description, $module_group, 
 		$min,$max,$post_process, $interval, $warning_min, $warning_max, $critical_min,
-		$critical_max, $history_data, $definition_file, $warning_str, $critical_str, $enable_unknown_events, $ff_threshold,
-		$each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $ff_timeout, 
-	    $warning_inverse, $critical_inverse, $critical_instructions, $warning_instructions, $unknown_instructions) = @ARGV[2..30];
+		$critical_max, $history_data, $retries, $requests, $agent_browser_id, $auth_server, $auth_realm, 
+		$definition_file, $http_auth_login, $http_auth_password, 
+		$proxy_url, $proxy_auth_login, $proxy_auth_password, $warning_str, $critical_str, 
+		$enable_unknown_events, $ff_threshold, $each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $ff_timeout, 
+	    $warning_inverse, $critical_inverse, $critical_instructions, $warning_instructions, $unknown_instructions) = @ARGV[2..40];
 	}
 	else {
 		($policy_name, $module_name, $module_type, $description, $module_group, 
 		$min,$max,$post_process, $interval, $warning_min, $warning_max, $critical_min,
-		$critical_max, $history_data, $configuration_data, $warning_str, $critical_str, $enable_unknown_events, $ff_threshold,
-		$each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $ff_timeout, 
-	    $warning_inverse, $critical_inverse, $critical_instructions, $warning_instructions, $unknown_instructions) = @ARGV[2..31];
+		$critical_max, $history_data, $retries, $requests, $agent_browser_id, $auth_server, $auth_realm, $configuration_data, $http_auth_login, $http_auth_password, 
+		$proxy_url, $proxy_auth_login, $proxy_auth_password, $warning_str, $critical_str, 
+		$enable_unknown_events, $ff_threshold, $each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $ff_timeout, 
+	    $warning_inverse, $critical_inverse, $critical_instructions, $warning_instructions, $unknown_instructions) = @ARGV[2..40];
 	}
 	
 	my $module_name_def;
@@ -1529,6 +1535,17 @@ sub cli_create_web_module($) {
 	$parameters{'critical_instructions'} = $critical_instructions unless !defined ($critical_instructions);
 	$parameters{'warning_instructions'} = $warning_instructions unless !defined ($warning_instructions);
 	$parameters{'unknown_instructions'} = $unknown_instructions unless !defined ($unknown_instructions);
+	
+	$parameters{'max_retries'} = $retries unless !defined ($retries);
+	$parameters{'plugin_pass'} = $requests unless !defined ($requests);
+	$parameters{'plugin_user'} = $agent_browser_id unless !defined ($agent_browser_id);
+	$parameters{'http_user'} = $http_auth_login unless !defined ($http_auth_login);
+	$parameters{'http_pass'} = $http_auth_password unless !defined ($http_auth_password);
+	$parameters{'snmp_oid'} = defined ($proxy_url) ? $proxy_url : '';
+	$parameters{'tcp_send'} = $proxy_auth_login unless !defined ($proxy_auth_login);
+	$parameters{'tcp_rcv'} = $proxy_auth_password unless !defined ($proxy_auth_password);
+	$parameters{'ip_target'} = $auth_server unless !defined ($auth_server);
+	$parameters{'snmp_community'} = $auth_realm unless !defined ($auth_realm);
 	
 	if ($in_policy == 0) {
 		pandora_create_module_from_hash ($conf, \%parameters, $dbh);
@@ -5612,6 +5629,9 @@ sub cli_export_visual_console() {
 	print_log "[INFO] JSON file now contents: \n" . $data_to_json . "\n\n";
 }
 
+
+
+
 ###############################################################################
 ###############################################################################
 # MAIN
@@ -5681,7 +5701,7 @@ sub pandora_manage_main ($$$) {
 			cli_create_data_module(0);
 		}
 		elsif ($param eq '--create_web_module') {
-			param_check($ltotal, 30, 24);
+			param_check($ltotal, 40, 33);
 			cli_create_web_module(0);
 		}
 		elsif ($param eq '--create_module_group') {
@@ -5828,10 +5848,6 @@ sub pandora_manage_main ($$$) {
 			param_check($ltotal, 2, 2);
 			cli_create_policy_data_module_from_local_component();
 		}
-		elsif ($param eq '--create_policy_web_module_from_local_component') {
-			param_check($ltotal, 2, 2);
-			cli_create_policy_web_module_from_local_component();
-		}
 		elsif ($param eq '--create_policy') {
 			param_check($ltotal, 3, 2);
 			cli_create_policy();
@@ -5841,7 +5857,7 @@ sub pandora_manage_main ($$$) {
 			cli_create_data_module(1);
 		}
 		elsif ($param eq '--create_policy_web_module') {
-			param_check($ltotal, 28, 20);
+			param_check($ltotal, 38, 29);
 			cli_create_web_module(1);
 		}
 		elsif ($param eq '--create_policy_network_module') {
@@ -5990,10 +6006,6 @@ sub pandora_manage_main ($$$) {
 			param_check($ltotal, 2);
 			cli_create_data_module_from_local_component();
 		}
-		elsif ($param eq '--create_web_module_from_local_component') {
-			param_check($ltotal, 2);
-			cli_create_web_module_from_local_component();
-		}
 		elsif ($param eq '--create_local_component') {
 			param_check($ltotal, 35, 33);
 			cli_create_local_component();
@@ -6065,6 +6077,18 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--export_json_visual_console') {
 			param_check($ltotal, 3, 2);
 			cli_export_visual_console();
+		}
+		elsif ($param eq '--apply_module_template') {
+			param_check($ltotal, 2, 2);
+			cli_apply_module_template();
+		}
+		elsif ($param eq '--migration_agent_queue') {
+			param_check($ltotal, 4, 1);
+			cli_migration_agent_queue();
+		}
+		elsif ($param eq '--migration_agent') {
+			param_check($ltotal, 1, 0);
+			cli_migration_agent();
 		}
 		else {
 			print_log "[ERROR] Invalid option '$param'.\n\n";
@@ -6233,30 +6257,6 @@ sub cli_create_data_module_from_local_component() {
 	enterprise_hook('pandora_create_module_from_local_component',[$conf, $component, $agent_id, $dbh]);
 }
 ##############################################################################
-# Create web module from local component.
-# Related option: --create_web_module_from_local_component
-##############################################################################
-
-sub cli_create_web_module_from_local_component() {
-	my ($agent_name, $component_name) = @ARGV[2..3];
-	
-	my $agent_id = get_agent_id($dbh,$agent_name);
-	exist_check($agent_id,'agent',$agent_name);
-		
-	my $lc_id = pandora_get_local_component_id($dbh, $component_name);
-	exist_check($lc_id,'local component',$component_name);
-	
-	my $module_exists = get_agent_module_id($dbh, $component_name, $agent_id);
-	non_exist_check($module_exists, 'module name', $component_name);
-	
-	# Get local component data
-	my $component = get_db_single_row ($dbh, 'SELECT * FROM tlocal_component WHERE id = ?', $lc_id);
-	
-	#~ pandora_create_module_from_local_component ($conf, $component, $agent_id, $dbh);
-	enterprise_hook('pandora_create_module_from_local_component',[$conf, $component, $agent_id, $dbh]);
-}
-
-##############################################################################
 # Create policy data module from local component.
 # Related option: --create_policy_data_module_from_local_component
 ##############################################################################
@@ -6273,25 +6273,6 @@ sub cli_create_policy_data_module_from_local_component() {
 	my $component = get_db_single_row ($dbh, 'SELECT * FROM tlocal_component WHERE id = ?', $lc_id);
 	
 	enterprise_hook('pandora_create_policy_data_module_from_local_component',[$conf, $component, $policy_id, $dbh]);
-}
-
-##############################################################################
-# Create policy web module from local component.
-# Related option: --create_policy_web_module_from_local_component
-##############################################################################
-sub cli_create_policy_web_module_from_local_component() {
-	my ($policy_name, $component_name) = @ARGV[2..3];
-	
-	my $policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
-	exist_check($policy_id,'policy',$policy_name);
-	
-	my $lc_id = pandora_get_local_component_id($dbh, $component_name);
-	exist_check($lc_id,'local component',$component_name);
-	
-	# Get local component web
-	my $component = get_db_single_row ($dbh, 'SELECT * FROM tlocal_component WHERE id = ?', $lc_id);
-	
-	enterprise_hook('pandora_create_policy_web_module_from_local_component',[$conf, $component, $policy_id, $dbh]);
 }
 
 ##############################################################################
@@ -6436,3 +6417,135 @@ sub cli_add_tag_to_module() {
 	my $result = api_call(\%conf, 'set', 'add_tag_module', $module_id, $tag_id);
 	print "\n$result\n";
 }
+
+##############################################################################
+# Only meta migrate agent
+##############################################################################
+sub cli_migration_agent_queue() {
+	my ($id_agent, $source_name, $target_name, $only_db) = @ARGV[2..5];
+
+	if( !defined($id_agent) || !defined($source_name) || !defined($target_name) ){
+		print "\n0\n";
+	}
+
+	if(!defined($only_db)){
+		$only_db = 0;
+	}
+
+	# Call the API.
+	my $result = api_call( $conf, 'set', 'migrate_agent', $id_agent, 0, "$source_name|$target_name|$only_db" );
+	print "\n$result\n";
+}
+
+##############################################################################
+# Only meta is migrate agent
+##############################################################################
+sub cli_migration_agent() {
+	my ($id_agent) = @ARGV[2];
+
+	if( !defined($id_agent) ){
+		print "\n0\n";
+	}
+
+	# Call the API.
+	my $result = api_call( $conf, 'get', 'migrate_agent', $id_agent);
+
+	if( defined($result) && "$result" ne "" ){
+		print "\n1\n";
+	}
+	else{
+		print "\n0\n";
+	}
+}
+
+sub cli_apply_module_template() {
+	my ($id_template, $id_agent) = @ARGV[2..3];
+	
+	my @row = get_db_rows ($dbh,"select * from tagente where id_agente = ".$id_agent);
+	
+	return if (scalar (@row) == 0);
+	
+	my $name_template = get_db_value ($dbh,'select name from tnetwork_profile where id_np = '.$id_template);
+	
+	my @npc = get_db_rows($dbh,"select * from tnetwork_profile_component where id_np = ".$id_template);
+		
+	foreach my $component (@npc) {
+		
+		my @template_values = get_db_rows ($dbh,"SELECT * FROM tnetwork_component where id_nc = ".$component->{'id_nc'});
+		
+		return if (scalar (@template_values) == 0);
+		
+		foreach my $element (@template_values) {
+			my $agent_values;
+			$agent_values->{'id_agente'} = $id_agent;
+			$agent_values->{'id_tipo_modulo'} = $element->{"type"};
+			$agent_values->{'descripcion'} = 'Created by template '.$name_template.' '.$element->{"description"};
+			$agent_values->{'max'} = $element->{"max"};
+			$agent_values->{'min'} = $element->{"min"};
+			$agent_values->{'module_interval'} = $element->{"module_interval"};
+			$agent_values->{'tcp_port'} = $element->{"tcp_port"};
+			$agent_values->{'tcp_send'} = $element->{"tcp_send"};
+			$agent_values->{'tcp_rcv'} = $element->{"tcp_rcv"};
+			$agent_values->{'snmp_community'} = $element->{"snmp_community"};
+			$agent_values->{'snmp_oid'} = $element->{"snmp_oid"};
+			$agent_values->{'ip_target'} = $row[0]->{"direccion"};
+			$agent_values->{'id_module_group'} = $element->{"id_module_group"};
+			$agent_values->{'id_modulo'} = $element->{"id_modulo"};
+			$agent_values->{'plugin_user'} = $element->{"plugin_user"};
+			$agent_values->{'plugin_pass'} = $element->{"plugin_pass"};
+			$agent_values->{'plugin_parameter'} = $element->{"plugin_parameter"};
+			$agent_values->{'unit'} = $element->{"unit"};
+			$agent_values->{'max_timeout'} = $element->{"max_timeout"};
+			$agent_values->{'max_retries'} = $element->{"max_retries"};
+			$agent_values->{'id_plugin'} = $element->{"id_plugin"};
+			$agent_values->{'post_process'} = $element->{"post_process"};
+			$agent_values->{'dynamic_interval'} = $element->{"dynamic_interval"};
+			$agent_values->{'dynamic_max'} = $element->{"dynamic_max"};
+			$agent_values->{'dynamic_min'} = $element->{"dynamic_min"};
+			$agent_values->{'dynamic_two_tailed'} = $element->{"dynamic_two_tailed"};
+			$agent_values->{'min_warning'} = $element->{"min_warning"};
+			$agent_values->{'max_warning'} = $element->{"max_warning"};
+			$agent_values->{'str_warning'} = $element->{"str_warning"};
+			$agent_values->{'min_critical'} = $element->{"min_critical"};
+			$agent_values->{'max_critical'} = $element->{"max_critical"};
+			$agent_values->{'str_critical'} = $element->{"str_critical"};
+			$agent_values->{'critical_inverse'} = $element->{"critical_inverse"};
+			$agent_values->{'warning_inverse'} = $element->{"warning_inverse"};
+			$agent_values->{'critical_instructions'} = $element->{"critical_instructions"};
+			$agent_values->{'warning_instructions'} = $element->{"warning_instructions"};
+			$agent_values->{'unknown_instructions'} = $element->{"unknown_instructions"};
+			$agent_values->{'id_category'} = $element->{"id_category"};
+			$agent_values->{'macros'} = $element->{"macros"};
+			$agent_values->{'each_ff'} = $element->{"each_ff"};
+			$agent_values->{'min_ff_event'} = $element->{"min_ff_event"};
+			$agent_values->{'min_ff_event_normal'} = $element->{"min_ff_event_normal"};
+			$agent_values->{'min_ff_event_warning'} = $element->{"min_ff_event_warning"};
+			$agent_values->{'min_ff_event_critical'} = $element->{"min_ff_event_critical"};
+			$agent_values->{'nombre'} = $element->{"name"};
+						
+			my @tags;
+			if($element->{"tags"} ne '') {
+				@tags = split(',', $element->{"tags"});
+			}
+			
+			my $module_name_check = get_db_value ($dbh,'select id_agente_modulo from tagente_modulo where delete_pending = 0 and nombre ="'.$agent_values->{'nombre'}.'" and id_agente = '.$id_agent);
+				
+			if (!defined($module_name_check)) {
+				
+				my $id_agente_modulo = pandora_create_module_from_hash(\%conf,$agent_values,$dbh);
+				 
+				if ($id_agente_modulo != -1) {
+					
+					foreach my $tag_name (@tags) {
+						
+						my $tag_id = get_db_value($dbh,'select id_tag from ttag where name = "'.$tag_name.'"');
+							
+						db_do($dbh,'insert into ttag_module (id_tag,id_agente_modulo) values ("'.$tag_id.'","'.$id_agente_modulo.'")');
+					
+					}
+				}
+			}
+		}
+	}
+}
+

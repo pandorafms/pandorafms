@@ -695,7 +695,13 @@ function treeview_printTable($id_agente, $server_data = array(), $no_head = fals
 			if (!empty($custom_value)) {
 				$row = array();
 				$row['title'] = $field['name'] . ui_print_help_tip (__('Custom field'), true);
-				$row['data'] = ui_bbcode_to_html($custom_value);
+				if($field['is_password_type']){
+						$row['data'] = '&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;';
+				}
+				else{
+						$row['data'] = ui_bbcode_to_html($custom_value);
+				}
+				
 				$table->data['custom_field_'.$field['id_field']] = $row;
 			}
 		}

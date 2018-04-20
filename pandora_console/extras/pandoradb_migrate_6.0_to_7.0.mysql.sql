@@ -1368,6 +1368,7 @@ END IF;
 SET @vv2 = (SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = 'tuser_task_scheduled');
 IF @vv2>0 THEN
 	ALTER TABLE tuser_task_scheduled MODIFY args TEXT NOT NULL;
+	ALTER TABLE tuser_task_scheduled ADD (id_grupo int(10) unsigned NOT NULL Default 0);
 END IF;
 END;
 //

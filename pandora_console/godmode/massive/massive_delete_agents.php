@@ -76,13 +76,12 @@ $delete = (bool) get_parameter_post ('delete');
 if ($delete) {
 	$result = process_manage_delete ($id_agents);
 	
+	$info = '{"Agent":"'.implode(",",$id_agents).'"}';
 	if ($result) {
-		db_pandora_audit("Massive management", "Delete agent ", false, false,
-			'Agent: ' . json_encode($id_agents));
+		db_pandora_audit("Massive management", "Delete agent ", false, false,$info);
 	}
 	else {
-		db_pandora_audit("Massive management", "Fail try to delete agent", false, false,
-			'Agent: ' . json_encode($id_agents));
+		db_pandora_audit("Massive management", "Fail try to delete agent", false, false,$info);
 	}
 }
 

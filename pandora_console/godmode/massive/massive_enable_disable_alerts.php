@@ -77,7 +77,7 @@ switch ($action) {
 		
 		ui_print_result_message ($result, __('Successfully enabled'), __('Could not be enabled'));
 		
-		$info = 'Alert: ' . json_encode($id_disabled_alerts);
+		$info = '{"Alert":"'.implode(",",$id_disabled_alerts).'"}';
 		if ($result) {
 			db_pandora_audit("Massive management", "Enable alert", false, false, $info);
 		}
@@ -95,7 +95,7 @@ switch ($action) {
 		
 		ui_print_result_message ($result, __('Successfully disabled'), __('Could not be disabled'));
 		
-		$info = 'Alert: ' . json_encode($id_enabled_alerts);
+		$info = '{"Alert":"'.implode(",",$id_enabled_alerts).'"}';
 		if ($result) {
 			db_pandora_audit("Massive management", "Disable alert", false, false, $info);
 		}

@@ -79,7 +79,7 @@ if ($update_command) {
 	}
 	else {
 		$result = alerts_update_alert_command ($id, $values);
-		$info = 'Name: ' . $name . ' Command: ' . $command . ' Description: ' . $description. ' ' .$info_fields;
+		$info = '{"Name":"'.$name.'","Command":"'.$command.'","Description":"'.$description. ' '.$info_fields.'"}';
 	}
 	
 	if ($result) {

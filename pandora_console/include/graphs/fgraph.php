@@ -152,11 +152,29 @@ function slicesbar_graph($chart_data, $period, $width, $height, $colors,
 	return "<img src='".$home_url."include/graphs/functions_pchart.php?static_graph=1&graph_type=slicebar&ttl=".$ttl."&id_graph=".$id_graph."' style='width:100%;'>";
 }
 
-function vbar_graph($flash_chart, $chart_data, $width, $height,
-	$color, $legend, $long_index, $no_data_image, $xaxisname = "",
-	$yaxisname = "", $water_mark = "", $font = '', $font_size = '',
-	$unit = '', $ttl = 1, $homeurl = '', $backgroundColor = 'white',
-	$from_ux = false, $from_wux = false, $tick_color = 'white') {
+function vbar_graph(
+	$flash_chart,
+	$chart_data,
+	$width,
+	$height,
+	$color,
+	$legend,
+	$long_index,
+	$no_data_image,
+	$xaxisname = "",
+	$yaxisname = "",
+	$water_mark = "",
+	$font = '',
+	$font_size = '',
+	$unit = '',
+	$ttl = 1,
+	$homeurl = '',
+	$backgroundColor = 'white',
+	$from_ux = false,
+	$from_wux = false,
+	$tick_color = 'white'
+) {
+
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 
 	if (empty($chart_data)) {
@@ -170,22 +188,22 @@ function vbar_graph($flash_chart, $chart_data, $width, $height,
 			$tick_color);
 	}
 	else {
+		$new_chart_data = array();
 		foreach ($chart_data as $key => $value) {
-			if(strlen($key) > 20){
-				if(strpos($key, ' - ') != -1){
-					$key_temp = explode(" - ",$key);
-					$key_temp[0] = $key_temp[0]."   \n";
-					$key_temp[1]= '...'.substr($key_temp[1],-15);
-					$key2 = $key_temp[0].$key_temp[1];
-					io_safe_output($key2);
-				}
-				$chart_data[$key2]['g'] = $chart_data[$key]['g'];
-				unset($chart_data[$key]);
+			if(strlen($key) > 20 && strpos($key, ' - ') !== false){
+				$key_temp = explode(" - ",$key);
+				$key_temp[0] = $key_temp[0]."   \n";
+				$key_temp[1]= '...'.substr($key_temp[1],-15);
+				$key2 = $key_temp[0].$key_temp[1];
+				io_safe_output($key2);
+				$new_chart_data[$key2]['g'] = $chart_data[$key]['g'];
+			} else {
+				$new_chart_data[$key] = $value;
 			}
 		}
 
 		$graph = array();
-		$graph['data'] = $chart_data;
+		$graph['data'] = $new_chart_data;
 		$graph['width'] = $width;
 		$graph['height'] = $height;
 		$graph['color'] = $color;
@@ -575,13 +593,13 @@ function hbar_graph($flash_chart, $chart_data, $width, $height,
 	}
 	else {
 		foreach ($chart_data as $key => $value) {
-			if(strlen($key) > 40){
-					if(strpos($key, ' - ') != -1){
-						$key_temp = explode(" - ",$key);
-						$key_temp[0] = $key_temp[0]."   \n";
+			$str_key = io_safe_output($key);
+			if(strlen($str_key) > 40){
+					if(strpos($str_key, ' - ') != -1){
+						$key_temp = explode(" - ",$str_key);
+						$key_temp[0] = $key_temp[0]."   <br>";
 						$key_temp[1]= '...'.substr($key_temp[1],-20);
 						$key2 = $key_temp[0].$key_temp[1];
-						io_safe_output($key2);
 					}
 				$chart_data[$key2]['g'] = $chart_data[$key]['g'];
 				unset($chart_data[$key]);
@@ -640,7 +658,7 @@ function pie_graph($graph_type, $flash_chart, $chart_data, $width,
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 
 	// This library allows only 8 colors
-	$max_values = 5;
+	$max_values = 9;
 
 	//Remove the html_entities
 	$temp = array();

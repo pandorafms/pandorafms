@@ -30,8 +30,8 @@ use base 'Exporter';
 our @ISA = qw(Exporter);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.719";
-my $pandora_build = "180301";
+my $pandora_version = "7.0NG.722";
+my $pandora_build = "180423";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 our %EXPORT_TAGS = ( 'all' => [ qw() ] );
@@ -47,7 +47,9 @@ our @EXPORT = qw(
 	decrypt
 	empty
 	encrypt
+	extract_dbpass
 	extract_key_map
+	get_addresses
 	get_lib_version
 	get_unit
 	get_unix_time
@@ -78,11 +80,15 @@ our @EXPORT = qw(
 	snmp_data_switcher
 	snmp_get
 	snmp_walk
+	seconds2readable
 	tail
 	to_number
 	transfer_xml
 	trim
 );
+
+# ~ compat
+my $DevNull = ($^O =~ /win/i)?'/NUL':'/dev/null';
 
 ################################################################################
 #
@@ -411,14 +417,27 @@ sub print_module {
 		$data->{value} = trim($data->{value});
 	}
 
+	$data->{value} = '' if empty($data->{value});
 	$data->{tags}  = $data->{tags}?$data->{tags}:($conf->{MODULE_TAG_LIST}?$conf->{MODULE_TAG_LIST}:undef);
 	$data->{interval}     = $data->{interval}?$data->{interval}:($conf->{MODULE_INTERVAL}?$conf->{MODULE_INTERVAL}:undef);
 	$data->{module_group} = $data->{module_group}?$data->{module_group}:($conf->{MODULE_GROUP}?$conf->{MODULE_GROUP}:undef);
+	
 
 	# Global instructions (if defined)
 	$data->{unknown_instructions}  = $conf->{unknown_instructions}  unless (defined($data->{unknown_instructions})  || (!defined($conf->{unknown_instructions})));
 	$data->{warning_instructions}  = $conf->{warning_instructions}  unless (defined($data->{warning_instructions})  || (!defined($conf->{warning_instructions})));
 	$data->{critical_instructions} = $conf->{critical_instructions} unless (defined($data->{critical_instructions}) || (!defined($conf->{critical_instructions})));
+
+	# Translation compatibility
+	$data->{'min_warning'}      = $data->{'wmin'} if empty($data->{'min_warning'});
+	$data->{'max_warning'}      = $data->{'wmax'} if empty($data->{'max_warning'});
+	$data->{'min_critical'}     = $data->{'cmin'} if empty($data->{'min_critical'});
+	$data->{'max_critical'}     = $data->{'cmax'} if empty($data->{'max_critical'});
+	$data->{'warning_inverse'}  = $data->{'winv'} if empty($data->{'warning_inverse'});
+	$data->{'critical_inverse'} = $data->{'cinv'} if empty($data->{'critical_inverse'});
+	$data->{'str_warning'}      = $data->{'wstr'} if empty($data->{'str_warning'});
+	$data->{'str_critical'}     = $data->{'cstr'} if empty($data->{'str_critical'});
+
 
 	$xml_module .= "<module>\n";
 	$xml_module .= "\t<name><![CDATA[" . $data->{name} . "]]></name>\n";
@@ -460,29 +479,29 @@ sub print_module {
 	if (! (empty($data->{module_parent})) ) {
 		$xml_module .= "\t<module_parent>" . $data->{module_parent} . "</module_parent>\n";
 	}
-	if (! (empty($data->{wmin})) ) {
-		$xml_module .= "\t<min_warning><![CDATA[" . $data->{wmin} . "]]></min_warning>\n";
+	if (! (empty($data->{min_warning})) ) {
+		$xml_module .= "\t<min_warning><![CDATA[" . $data->{min_warning} . "]]></min_warning>\n";
 	}
-	if (! (empty($data->{wmax})) ) {
-		$xml_module .= "\t<max_warning><![CDATA[" . $data->{wmax} . "]]></max_warning>\n";
+	if (! (empty($data->{max_warning})) ) {
+		$xml_module .= "\t<max_warning><![CDATA[" . $data->{max_warning} . "]]></max_warning>\n";
 	}
-	if (! (empty ($data->{cmin})) ) {
-		$xml_module .= "\t<min_critical><![CDATA[" . $data->{cmin} . "]]></min_critical>\n";
+	if (! (empty ($data->{min_critical})) ) {
+		$xml_module .= "\t<min_critical><![CDATA[" . $data->{min_critical} . "]]></min_critical>\n";
 	}
-	if (! (empty ($data->{cmax})) ){
-		$xml_module .= "\t<max_critical><![CDATA[" . $data->{cmax} . "]]></max_critical>\n";
+	if (! (empty ($data->{max_critical})) ){
+		$xml_module .= "\t<max_critical><![CDATA[" . $data->{max_critical} . "]]></max_critical>\n";
 	}
-	if (! (empty ($data->{wstr}))) {
-		$xml_module .= "\t<str_warning><![CDATA[" . $data->{wstr} . "]]></str_warning>\n";
+	if (! (empty ($data->{str_warning}))) {
+		$xml_module .= "\t<str_warning><![CDATA[" . $data->{str_warning} . "]]></str_warning>\n";
 	}
-	if (! (empty ($data->{cstr}))) {
-		$xml_module .= "\t<str_critical><![CDATA[" . $data->{cstr} . "]]></str_critical>\n";
+	if (! (empty ($data->{str_critical}))) {
+		$xml_module .= "\t<str_critical><![CDATA[" . $data->{str_critical} . "]]></str_critical>\n";
 	}
-	if (! (empty ($data->{cinv}))) {
-		$xml_module .= "\t<critical_inverse><![CDATA[" . $data->{cinv} . "]]></critical_inverse>\n";
+	if (! (empty ($data->{critical_inverse}))) {
+		$xml_module .= "\t<critical_inverse><![CDATA[" . $data->{critical_inverse} . "]]></critical_inverse>\n";
 	}
-	if (! (empty ($data->{winv}))) {
-		$xml_module .= "\t<warning_inverse><![CDATA[" . $data->{winv} . "]]></warning_inverse>\n";
+	if (! (empty ($data->{warning_inverse}))) {
+		$xml_module .= "\t<warning_inverse><![CDATA[" . $data->{warning_inverse} . "]]></warning_inverse>\n";
 	}
 	if (! (empty ($data->{max}))) {
 		$xml_module .= "\t<max><![CDATA[" . $data->{max} . "]]></max>\n";
@@ -588,6 +607,12 @@ sub transfer_xml {
 		$file_name .=  "_" . time() . ".data";
 	}
 
+	logger($conf, "transfer_xml", "Failed to generate file name.") if empty($file_name);
+
+	$conf->{temp} = $conf->{tmp}             if (empty($conf->{temp}) && defined($conf->{tmp}));
+	$conf->{temp} = $conf->{temporal}        if (empty($conf->{temp}) && defined($conf->{temporal}));
+	$conf->{temp} = $conf->{__system}->{tmp} if (empty($conf->{temp}) && defined($conf->{__system})) && (ref($conf->{__system}) eq "HASH");
+
 	$file_path = $conf->{temp} . "/" . $file_name;
 	
 	#Creating XML file in temp directory
@@ -598,7 +623,12 @@ sub transfer_xml {
 		$file_path = $conf->{temp} . "/" . $file_name;
 	}
 
-	open (FD, ">>", $file_path) or print_stderror($conf, "Cannot write to [" . $file_path . "]");
+	my $r = open (my $FD, ">>", $file_path);
+
+	if (empty($r)) {
+		print_stderror($conf, "Cannot write to [" . $file_path . "]", $conf->{'debug'});
+		return undef;
+	}
 	
 	my $bin_opts = ':raw:encoding(UTF8)';
 	
@@ -606,11 +636,11 @@ sub transfer_xml {
 		$bin_opts .= ':crlf';
 	}
 	
-	binmode(FD, $bin_opts);
+	binmode($FD, $bin_opts);
 
-	print FD $xml;
+	print $FD $xml;
 
-	close (FD);
+	close ($FD);
 
 	# Reassign default values if not present
 	$conf->{tentacle_client} = "tentacle_client" if empty($conf->{tentacle_client});
@@ -709,7 +739,7 @@ sub print_execution_result {
 	}
 
 	print_module($conf, {
-		name  => "Plugin execution result",
+		name  => "Plugin execution result " . $0,
 		type  => "generic_proc",
 		value => (defined($value)?$value:0),
 		desc  => $msg,
@@ -720,16 +750,24 @@ sub print_execution_result {
 ## Plugin devolution in case of error
 ################################################################################
 sub print_error {
-	my ($conf, $msg) = @_;
+	my ($conf, $msg, $value, $always_show) = @_;
 
-	if (!(is_enabled($conf->{informational_modules}))) {
-		return 0;
+	$value = 0 unless defined($value);
+
+	if (!(is_enabled($conf->{informational_modules}) || is_enabled($always_show))) {
+		exit 1;
+	}
+
+	if (is_enabled($conf->{'as_server_plugin'})) {
+		print STDERR $msg . "\n";
+		print $value . "\n";
+		exit 1;
 	}
 
 	print_module($conf, {
-		name  => "Plugin execution result",
+		name  => (empty($conf->{'global_plugin_module'})?"Plugin execution result " . $0:$conf->{'global_plugin_module'}),
 		type  => "generic_proc",
-		value => 0,
+		value => $value,
 		desc  => $msg,
 	});
 	exit 1;
@@ -753,31 +791,39 @@ sub print_stderror {
 my $log_aux_flag = 0;
 sub logger {
 	my ($conf, $tag, $message) = @_;
-	my $file = $conf->{log};
-	print_error($conf, "Log file undefined\n") unless defined $file;
+	my $file = $conf->{'log'};
+
+	print_error($conf, "[ERROR] Log file is not defined.", 0, 1) unless defined($file);
 
 	# Log rotation
-	if (-e $file && (stat($file))[7] > 32000000) {
+	if (defined($file) && -e $file && (stat($file))[7] > 32000000) {
 		rename ($file, $file.'.old');
 	}
 	my $LOGFILE;
 	if ($log_aux_flag == 0) {
 		# Log starts
 		if (! open ($LOGFILE, "> $file")) {
-			print_error ($conf, "[ERROR] Could not open logfile '$file'");
+			print_error ($conf, "[ERROR] Could not open logfile '$file'", 0, 1);
 		}
 		$log_aux_flag = 1;
 	}
 	else {
 		if (! open ($LOGFILE, ">> $file")) {
-			print_error ($conf, "[ERROR] Could not open logfile '$file'");
+			print_error ($conf, "[ERROR] Could not open logfile '$file'", 0, 1);
 		}
 	}
 
-	$message = "[" . $tag . "] " . $message if ((defined $tag) && ($tag ne ""));
+	if (empty($message)) {
+		$message = $tag;
+		$message = "" if empty($message);
+	}
+	else {
+		$message = "[" . $tag . "] " . $message unless empty($tag);
+	}
 
-	if (!(empty($conf->{agent_name}))){
-		$message = "[" . $conf->{agent_xml_name} . "] " . $message;
+
+	if (!(empty($conf->{'agent_name'}))){
+		$message = "[" . $conf->{'agent_name'} . "] " . $message;
 	}
 
 	print $LOGFILE strftime ("%Y-%m-%d %H:%M:%S", localtime()) . " - " . $message . "\n";
@@ -790,7 +836,7 @@ sub logger {
 sub is_enabled {
 	my $value = shift;
 	
-	if ((defined ($value)) && ($value > 0)){
+	if ((defined ($value)) && looks_like_number($value) && ($value > 0)){
 		# return true
 		return 1;
 	}
@@ -897,6 +943,7 @@ sub init_system {
 		$system{grep}    = "findstr";
 		$system{echo}    = "echo";
 		$system{wcl}     = "wc -l";
+		$system{tmp}     = ".\\";
 	}
 	else {
 		$system{devnull} = "/dev/null";
@@ -906,6 +953,7 @@ sub init_system {
 		$system{grep}    = "grep";
 		$system{echo}    = "echo";
 		$system{wcl}     = "wc -l";
+		$system{tmp}     = "/tmp";
 
 		if ($^O =~ /hpux/i) {
 			$system{os}      = "HPUX";
@@ -936,6 +984,41 @@ sub get_sys_environment {
 
 ################################################################################
 # Parses any configuration, from file (1st arg to program) or direct arguments 
+#
+# Custom evals are defined in an array reference of hash references:
+# 
+#   $custom_eval = [
+#   	{
+#   		'exp'    => 'regular expression to match',
+#   		'target' => \&target_custom_method_to_parse_line
+#   	},
+#   	{
+#   		'exp'    => 'another regular expression to search',
+#   		'target' => \&target_custom_method_to_parse_line2
+#   	},
+#   ]
+#
+# Target is an user defined function wich will be invoked with following
+# arguments:
+# 
+#  $config          : The configuration read to the point the regex matches
+#  $exp             : The matching regex which fires this action
+#  $line            : The complete line readed from the file
+#  $file_pointer    : A pointer to the file which is being parsed.
+#  $current_entity  : The current_entity (optional) when regex matches
+#  
+#  E.g.
+#  
+#  sub target_custom_method_to_parse_line {
+#  	my ($config, $exp, $line, $file_pointer, $current_entity) = @_;
+#  	
+#  	if ($line =~ /$exp/) {
+#  		$config->{'my_key'} = complex_operation_on_data($1,$2,$3);
+#  	}
+#  	
+#  	return $config;
+#  }
+#
 ################################################################################
 sub read_configuration {
 	my ($config, $separator, $custom_eval) = @_;
@@ -944,6 +1027,20 @@ sub read_configuration {
 	    $config = merge_hashes($config, parse_configuration(shift @ARGV, $separator, $custom_eval));
 	}
 	$config = merge_hashes($config, parse_arguments(\@ARGV));
+
+	if(is_enabled($config->{'as_agent_plugin'})) {
+		$config->{'as_server_plugin'} = 0 if (empty($config->{'as_server_plugin'}));
+	}
+	else {
+		$config->{'as_server_plugin'} = 1 if (empty($config->{'as_server_plugin'}));
+	}
+
+	if(is_enabled($config->{'as_server_plugin'})) {
+		$config->{'as_agent_plugin'} = 0 if (empty($config->{'as_agent_plugin'}));
+	}
+	else {
+		$config->{'as_agent_plugin'} = 1 if (empty($config->{'as_agent_plugin'}));
+	}
 
 	return $config;
 }
@@ -973,19 +1070,44 @@ sub parse_arguments {
 
 }
 
+
 ################################################################################
 # General configuration file parser
 #
-# log=/PATH/TO/LOG/FILE
+# Custom evals are defined in an array reference of hash references:
+# 
+#   $custom_eval = [
+#   	{
+#   		'exp'    => 'regular expression to match',
+#   		'target' => \&target_custom_method_to_parse_line
+#   	},
+#   	{
+#   		'exp'    => 'another regular expression to search',
+#   		'target' => \&target_custom_method_to_parse_line2
+#   	},
+#   ]
+#
+# Target is an user defined function wich will be invoked with following
+# arguments:
+#
+#  $config          : The configuration read to the point the regex matches
+#  $exp             : The matching regex which fires this action
+#  $line            : The complete line readed from the file
+#  $file_pointer    : A pointer to the file which is being parsed.
+#  $current_entity  : The current_entity (optional) when regex matches
 #
 ################################################################################
+sub parse_configuration;
 sub parse_configuration {
-	my $conf_file = shift;
-	my $separator;
-	$separator = shift or $separator = "=";
-	my $custom_eval = shift;
-	my $_CFILE;
+	my ($conf_file, $separator, $custom_eval, $detect_entities, $entities_list) = @_;
 
+	my @arguments = @_;
+	shift(@arguments);
+
+	$separator = "=" unless defined($separator);
+
+
+	my $_CFILE;
 	my $_config;
 
 	if (empty($conf_file)) {
@@ -1000,25 +1122,61 @@ sub parse_configuration {
 		};
 	}
 
+	my $current_entity = '';
+	my $new_entity = '';
+
+	my $global_config;
+
 	while (my $line = <$_CFILE>){
 		if (($line =~ /^ *\r*\n*$/)
 		 || ($line =~ /^#/ )){
 		 	# skip blank lines and comments
 			next;
 		}
-		my @parsed = split /$separator/, $line, 2;
+		my ($key,$value) = split /$separator/, $line, 2;
+
+		# Clear entity detection is only compatible with specific entities declaration
+		if (empty($value) && ($line =~ /^(\w+?)\r*\n*$/)
+		 && is_enabled($detect_entities)
+		 && in_array($entities_list, trim($key))) {
+			# possible Entity detected - compatibility vmware-plugin
+			$new_entity = $key;
+		}
+		if (($line =~ /\[(.*?)\]\r*\n*$/) && is_enabled($detect_entities)) {
+			# Entity detected
+			$new_entity = $1
+		}
+
+		if (!empty($new_entity)) {
+			if (empty($current_entity)) {
+				$global_config = merge_hashes($global_config, $_config);
+			}
+			else {
+				$global_config->{$current_entity} = $_config;
+			}
+
+			$current_entity = trim($new_entity);
+			undef($new_entity);
+
+			# Initialize reference
+			$global_config->{$current_entity} = {};
+			$_config = $global_config->{$current_entity};
+
+			next;
+		}
+
 		if ($line =~ /^\s*global_alerts/){
-			push (@{$_config->{global_alerts}}, trim($parsed[1]));
+			push (@{$_config->{global_alerts}}, trim($value));
 			next;
 		}
 		if (ref ($custom_eval) eq "ARRAY") {
 			my $f = 0;
 			foreach my $item (@{$custom_eval}) {
-				if ($line =~ /$item->{exp}/) {
+				if ($line =~ /$item->{'exp'}/) {
 					$f = 1;
 					my $aux;
 					eval {
-						$aux = $item->{target}->($_config, $item->{exp}, $line);
+						$aux = $item->{'target'}->($_config, $item->{'exp'}, $line, $_CFILE, $current_entity);
 					};
 
 					if (empty($_config)) {
@@ -1034,9 +1192,38 @@ sub parse_configuration {
 				next;
 			}
 		}
-		$_config->{trim($parsed[0])} = trim($parsed[1]);
+		if ($key =~ /^include$/i) {
+			my $file_included = trim($value);
+			my $aux;
+			eval {
+				$aux = parse_configuration($file_included, @arguments);
+			};
+			if($@) {
+				Carp::croak ("Failed to parse configuration");
+			}
+
+			if (empty($_config)) {
+				$_config = $aux;
+			}
+			elsif (!empty($aux)  && (ref ($aux) eq "HASH")) {
+				$_config = merge_hashes($_config, $aux);
+			}
+			next;
+		}
+		$_config->{trim($key)} = trim($value);
 	}
 	close ($_CFILE);
+
+	if(is_enabled($detect_entities)) {
+		if (empty($current_entity) && (!empty($global_config))) {
+			$global_config = merge_hashes($global_config, $_config);
+		}
+		else {
+			$global_config->{$current_entity} = $_config;
+		}
+
+		return $global_config unless empty($global_config);
+	}
 
 	return $_config;
 }
@@ -1117,6 +1304,11 @@ sub parse_php_configuration {
 sub process_performance {
 	my ($conf, $process, $mod_name, $only_text_flag) = @_;
 	my $_PluginTools_system = $conf->{'__system'};
+
+	if (empty($_PluginTools_system)) {
+		$_PluginTools_system = init_system();
+		$_PluginTools_system = get_sys_environment($_PluginTools_system);
+	}
 
 	my $cpu;
 	my $mem;
@@ -1225,7 +1417,9 @@ sub process_performance {
 	return {
 		cpu => $cpu,
 		mem => $mem,
-		instances => $instances
+		instances => $instances,
+		runit => $runit,
+		cunit => $cunit,
 	};
 }
 
@@ -1876,6 +2070,125 @@ sub load_perl_modules {
 	return 1;
 }
 
+################################################################################
+# Transforms an absolute seconds value into a readable count
+################################################################################
+sub seconds2readable {
+	my ($tseconds, $format) = @_;
 
+	return '' unless looks_like_number($tseconds);
+
+	if (empty($format)) {
+		return int($tseconds/(24*60*60)) . " d, "
+			 . ($tseconds/(60*60))%24 . "h, "
+			 . ($tseconds/60)%60 . "m, "
+			 . $tseconds%60 . "s";
+	}
+
+
+	my $str = $format;
+	
+	# %d -> days
+	if($format =~ /\%d/) {
+		my $days = ($tseconds/(24*60*60)) | 0;
+		$tseconds -= $days*24*60*60;
+		$str =~ s/%d/$days/g;
+	}
+
+	# %h -> hours
+	if($format =~ /\%h/) {
+		my $hours = ($tseconds/(60*60)) | 0;
+		$tseconds -= $hours*60*60;
+		$str =~ s/%h/$hours/g;
+	}
+
+	# %m -> minutes
+	if($format =~ /\%m/) {
+		my $min = ($tseconds/60) | 0;
+		$tseconds -= $min*60;
+		$str =~ s/%m/$min/g;
+	}
+	
+	# %s -> seconds
+	if($format =~ /\%s/) {
+		$str =~ s/%s/$tseconds/g;
+	}
+
+
+	return $str;
+}
+
+################################################################################
+# Extracts a database password from file or environment
+################################################################################
+sub extract_dbpass {
+	my ($config) = @_;
+
+	return $config->{'dbpass'} unless empty($config->{'dbpass'});
+
+	if (!empty ($config->{'dbpass_file'})) {
+		if (-f $config->{'dbpass_file'}) {
+			eval {
+				open(my $pf, "<", $config->{'dbpass_file'}) or die ("Cannot open file " . $config->{'dbpass_file'});
+				$config->{'dbpass'} = trim(<$pf>);
+				close($pf);
+			};
+			if($@) {
+				print_error($config, "Failed to read password file" . $@, 1);
+				exit;
+			}
+		}
+		else {
+			print_error($config, "Failed to read password file", 1);
+			exit;
+		}
+	}
+	elsif (!empty ($config->{'dbpass_env_var_name'})) {
+		if (!empty ($ENV{$config->{'dbpass_env_var_name'}})) {
+			$config->{'dbpass'} = $ENV{$config->{'dbpass_env_var_name'}};
+		}
+
+		if (empty($config->{'dbpass'})) {
+			print_error($config, "Failed to read password from environment", 1);
+			exit;
+		}
+	}
+
+	return $config->{'dbpass'};
+}
+
+################################################################################
+# Extracts IP addresses (IPv4) from current system
+################################################################################
+sub get_addresses {
+	my ($config) = @_;
+	my $address = '';
+
+	if (is_enabled($config->{'local'})) {
+		$address = $config->{'dbhost'};
+	}
+	elsif($^O !~ /win/i) {
+		my @address_list;
+
+		if( -x "/bin/ip" || -x "/sbin/ip" || -x "/usr/sbin/ip" ) {
+			@address_list = `ip addr show 2>$DevNull | sed -e '/127.0.0/d' -e '/[0-9]*\\.[0-9]*\\.[0-9]*/!d' -e 's/^[ \\t]*\\([^ \\t]*\\)[ \\t]*\\([^ \\t]*\\)[ \\t].*/\\2/' -e 's/\\/.*//'`;
+		}
+		else {
+			@address_list = `ifconfig -a 2>$DevNull | sed -e '/127.0.0/d' -e '/[0-9]*\\.[0-9]*\\.[0-9]*/!d' -e 's/^[ \\t]*\\([^ \\t]*\\)[ \\t]*\\([^ \\t]*\\)[ \\t].*/\\2/' -e 's/.*://'`;
+		}
+
+		for (my $i = 0; $i <= $#address_list; $i++) {		
+			chomp($address_list[$i]);
+			if ($i > 0) {
+				$address .= ',';
+			}
+
+			$address .= $address_list[$i];
+		}			
+	}
+
+
+	return $address;
+}
 
 1;

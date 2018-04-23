@@ -961,9 +961,15 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 	if (!defined('METACONSOLE')) {
 		if (check_acl ($config["id_user"], $id_group, "LW") || check_acl ($config["id_user"], $id_group, "LM")) {
 			$data[$index['validate']] = '';
-			
-			
-			$data[$index['validate']] .= html_print_checkbox ("validate[]", $alert["id"], false, true);
+
+			$data[$index['validate']] .= html_print_checkbox (
+				"validate[]",
+				$alert["id"],
+				false,
+				true,
+				false,
+				'',
+				true);
 		}
 	}
 	
@@ -3918,5 +3924,49 @@ function ui_print_tags_view($title = '', $tags = array()) {
 	}
 	$tv .= '</div>';
 	echo $tv;
+}
+
+/**
+ * @brief Get the link to open a snapshot into a new page
+ *
+ * @param Array Params to build the link (see $default_params)
+ * @param bool Flag to choose de return value:
+ * 		true: Get the four params required in the function of pandora.js winopen_var (js use)
+ * 		false: Get an inline winopen_var function call (php user)
+ */
+function ui_get_snapshot_link($params, $only_params = false) {
+	global $config;
+
+	$default_params = array(
+		'id_module' => 0, //id_agente_modulo
+		'module_name' => '',
+		'interval' => 300,
+		'last_data' => '',
+		'timestamp' => '0'
+	);
+
+	// Merge default params with passed params
+	$params = array_merge ($default_params, $params);
+
+	// First parameter of js winopeng_var
+	$page = $config['homeurl_static'] . "/operation/agentes/snapshot_view.php";
+
+	$url = "$page?" .
+		"id=" . $params['id_module'] .
+		"&refr=" . $parms['interval'] .
+		"&timestamp=" . $params['timestamp'] .
+		"&last_data=" . rawurlencode(urlencode(io_safe_output($params['last_data']))) .
+		"&label=" . rawurlencode(urlencode(io_safe_output($params['module_name'])));
+
+	// Second parameter of js winopeng_var
+	$win_handle = dechex(crc32('snapshot_' . $params['id_module']));
+
+	$link_parts = array ($url, $win_handle, 700, 480);
+
+	// Return only the params to js execution
+	if ($only_params) return $link_parts;
+
+	// Return the function call to inline js execution
+	return "winopeng_var('" . implode("', '", $link_parts) . "')";
 }
 ?>

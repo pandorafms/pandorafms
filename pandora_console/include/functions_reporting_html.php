@@ -535,7 +535,7 @@ function reporting_html_SLA($table, $item, $mini) {
 							$row2[] = '--';
 
 						if($sla['time_downtime'] != 0)
-							$row2[] = '<span style="color: #ff8400;">' . human_time_description_raw($sla['time_downtime'], true) . '</span>';
+							$row2[] = '<span style="color: '.COL_DOWNTIME .';">' . human_time_description_raw($sla['time_downtime'], true) . '</span>';
 						else
 							$row2[] = '--';
 
@@ -614,7 +614,7 @@ function reporting_html_SLA($table, $item, $mini) {
 								$row2[] = '--';
 
 							if($sla['time_downtime'] != 0)
-								$row2[] = '<span style="color: #ff8400;">' . human_time_description_raw($sla['time_downtime'], true) . '</span>';
+								$row2[] = '<span style="color: '.COL_DOWNTIME .';">'. human_time_description_raw($sla['time_downtime'], true) . '</span>';
 							else
 								$row2[] = '--';
 
@@ -693,7 +693,7 @@ function reporting_html_SLA($table, $item, $mini) {
 			$table1->data[0][7] = '<span>'.__('Not Init'). '</span>';
 			
 			$table1->size[8] = '2%';
-			$table1->data[0][8] = '<img src ="'. $src .'images/square_orange.png">';
+			$table1->data[0][8] = '<img src ="'. $src .'images/square_violet.png">';
 			$table1->size[9] = '14%';
 			$table1->data[0][9] = '<span>'.__('Downtimes'). '</span>';
 		
@@ -2427,7 +2427,7 @@ function reporting_html_availability(&$table, $item) {
 				else
 					$table_row[] = '--';
 				
-				$table_row[] = '<span style="font-size: 1.2em; font-weight:bold;">' . sla_truncate($row['SLA'], $config['graph_precision']). '%</span>';	
+				$table_row[] = '<span style="font-size: 1.2em; font-weight:bold;">' . sla_truncate($row['SLA'] * 100, $config['graph_precision']). '%</span>';	
 
 				$table_row2 = array();
 				$table_row2[] = $row['agent'];
@@ -2473,7 +2473,7 @@ function reporting_html_availability(&$table, $item) {
 					else
 						$table_row[] = '--';
 					
-					$table_row[] = '<span style="font-size: 1.2em; font-weight:bold;">' . sla_truncate($row['SLA'], $config['graph_precision']). '%</span>';	
+					$table_row[] = '<span style="font-size: 1.2em; font-weight:bold;">' . sla_truncate($row['SLA'] * 100, $config['graph_precision']). '%</span>';	
 
 					$table_row2 = array();
 					$table_row2[] = $row['agent'];
@@ -2563,27 +2563,28 @@ function reporting_html_availability_graph(&$table, $item, $pdf=0) {
 	$table1 = new stdClass();
 	$table1->width = '99%';
 	$table1->data = array ();
-	if (!$hide_notinit_agent) {
-		foreach ($item['charts'] as $chart) {
-			$table1->data[] = array(
-				$chart['agent'] . "<br />" . $chart['module'],
-				$chart['chart'],
-				"<span style = 'font: bold 2em Arial, Sans-serif;'>" . sla_truncate($chart['sla_value'], $config['graph_precision']) . '%</span>',
-				 "(" . $chart['checks_ok'] . "/" . $chart['checks_total'] . ")" 
-			);
+	foreach ($item['charts'] as $chart) {
+		switch ($chart['sla_status']) {
+			case REPORT_STATUS_ERR:
+				$color = COL_CRITICAL;
+				break;
+			case REPORT_STATUS_OK:
+				$color = COL_NORMAL;
+				break;
+			default:
+				$color = COL_UNKNOWN;
+				break;
 		}
+		$table1->data[] = array(
+			$chart['agent'] . "<br />" . $chart['module'],
+			$chart['chart'],
+			"<span style = 'font: bold 2em Arial, Sans-serif; color: ".$color."'>" .
+				sla_truncate($chart['sla_value'], $config['graph_precision']) . '%' .
+			'</span>',
+				"(" . $chart['checks_ok'] . "/" . $chart['checks_total'] . ")" 
+		);
 	}
-	else{
-		foreach ($item['charts'] as $chart) {
-			$the_first_men_time = get_agent_first_time(io_safe_output($chart['agent']));
-			if ($item['date']['to'] > $the_first_men_time) {
-				$table1->data[] = array(
-					$chart['agent'] . "<br />" . $chart['module'],
-					$chart['chart']);
-			}
-		}
-	}
-	
+
 	if($item['type'] == 'availability_graph'){
 
 	//table_legend_graphs;
@@ -2612,7 +2613,7 @@ function reporting_html_availability_graph(&$table, $item, $pdf=0) {
 	$table2->data[0][7] = '<span>'.__('Not Init'). '</span>';
 	
 	$table2->size[8] = '2%';
-	$table2->data[0][8] = '<img src ="'. $src .'images/square_orange.png">';
+	$table2->data[0][8] = '<img src ="'. $src .'images/square_violet.png">';
 	$table2->size[9] = '14%';
 	$table2->data[0][9] = '<span>'.__('Downtimes'). '</span>';
 

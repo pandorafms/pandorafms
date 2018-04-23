@@ -420,28 +420,22 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 		for (i = 0; i < labels_total.length; i++) {
 			var label = labels_total[i][1];
 			// var shortLabel = reduceText(label, 25);
-			var title = '';
-			// if (label !== shortLabel) {
-				title = label;
-				// label = shortLabel;
-			// }
-			
+			var title = label;
+			var margin_top = 0;
 			if(label.length > 30){
-				if(label.indexOf(" - ")){
-					var label_temp = label.split(" - ");
-				}
-				else if(label.indexOf(" ")){
-					var label_temp = label.split(" ");
-				}
-				else{
-					var label_temp = '';
-					label_temp[0] = label.substring(0, (label.length/2));
-					label_temp[1] = label.substring((label.length/2));
-				}
-				label = reduceText(label_temp[0], 20)+"<br>"+reduceText(label_temp[1], 20);
+				label  = reduceText(label, 30);
 			}
-			
-			format.push([i,'<div style="font-size:'+font_size+'pt !important; word-break:keep-all; max-width: 150px;margin-right:20px;" title="'+title+'" class="'+font+'">'
+			var div_attributes = 'style="font-size:'+font_size+'pt !important;'
+			 	+ ' margin: 0; max-width: 150px;'
+			 	+ 'margin-right:5px;';
+
+			if (label.indexOf("<br>") != -1) {
+				div_attributes += "min-height: 2.5em;";
+			}
+
+			div_attributes += '" title="'+title+'" class="'+font+'" '+ ' style="overflow: hidden;"';
+
+			format.push([i,'<div ' + div_attributes + '>'
 				+ label
 				+ '</div>']);
 		}
@@ -670,7 +664,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 			}
 			
 			format.push([i,
-				'<div class="'+font+'" title="'+title+'" style="word-break: normal; transform: rotate(-45deg); position:relative; top:+30px; left:0px; max-width: 100px;font-size:'+font_size+'pt !important;">'
+				'<div class="'+font+'" title="'+title+'" style="word-break: normal; overflow:hidden; transform: rotate(-45deg); position:relative; top:+30px; left:0px; max-width: 100px;font-size:'+font_size+'pt !important;">'
 				+ label
 				+ '</div>']);
 		}
@@ -2271,8 +2265,16 @@ function pandoraFlotArea(
 			var formatted = number_format(v, force_integer, "", short_data);
 		}
 		else {
-			var formatted = v;
+			// It is an integer
+			if(v - Math.floor(v) == 0){
+				var formatted = number_format(v, force_integer, "", 2);
+			} else {
+				var formatted = v;
+			}
 		}
+
+		// Get only two decimals
+		formatted = round_with_decimals(formatted, 100)
 		return '<div class='+font+' style="font-size:'+font_size+'pt;">'+formatted+'</div>';
 	}
 
@@ -2393,4 +2395,273 @@ function pandoraFlotArea(
 			set_watermark(graph_id, plot, $('#watermark_image_'+graph_id).attr('src'));
 		adjust_menu(graph_id, plot, parent_height, width);
 	}
+}
+
+function adjust_menu(graph_id, plot, parent_height, width) {
+	if ($('#'+graph_id+' .xAxis .tickLabel').eq(0).css('width') != undefined) {
+		left_ticks_width = $('#'+graph_id+' .xAxis .tickLabel').eq(0).css('width').split('px')[0];
+	}
+	else {
+		left_ticks_width = 0;
+	}
+
+	var parent_height_new = 0;
+
+	var legend_height = parseInt($('#legend_'+graph_id).css('height').split('px')[0]) + parseInt($('#legend_'+graph_id).css('margin-top').split('px')[0]);
+	if ($('#overview_'+graph_id).css('display') == 'none') {
+		overview_height = 0;
+	}
+	else {
+		overview_height = parseInt($('#overview_'+graph_id).css('height').split('px')[0]) + parseInt($('#overview_'+graph_id).css('margin-top').split('px')[0]);
+	}
+
+	var menu_height = '25';
+
+	if ($('#menu_'+graph_id).height() != undefined && $('#menu_'+graph_id).height() > 20) {
+		menu_height = $('#menu_'+graph_id).height();
+	}
+
+	offset = $('#' + graph_id)[0].offsetTop;
+	
+	$('#menu_' + graph_id).css('top', ((offset) + 'px'));
+
+	//$('#legend_' + graph_id).css('width',plot.width());
+
+	//~ $('#menu_' + graph_id).css('left', $('#'+graph_id)[0].offsetWidth);
+	
+	$('#menu_' + graph_id).show();
+}
+
+function set_watermark(graph_id, plot, watermark_src) {
+	var img = new Image();
+	img.src = watermark_src;
+	var context = plot.getCanvas().getContext('2d');
+
+	// Once it's loaded draw the image on the canvas.
+	img.addEventListener('load', function () {
+		//~ // Now resize the image: x, y, w, h.
+
+		var down_ticks_height = 0;
+		if ($('#'+graph_id+' .yAxis .tickLabel').eq(0).css('height') != undefined) {
+			down_ticks_height = $('#'+graph_id+' .yAxis .tickLabel').eq(0).css('height').split('px')[0];
+		}
+		
+		var left_pos = parseInt(context.canvas.width - 3) - $('#watermark_image_'+graph_id)[0].width;
+		var top_pos  = 6;
+		//var top_pos = parseInt(context.canvas.height - down_ticks_height - 10) - $('#watermark_image_'+graph_id)[0].height;
+		//var left_pos = 380;
+		context.drawImage(this, left_pos, top_pos);
+
+	}, false);
+}
+
+function get_event_details (event_ids) {
+	table = '';
+	if (typeof(event_ids) != "undefined") {
+		var inputs = [];
+		var table;
+		inputs.push ("get_events_details=1");
+		inputs.push ("event_ids="+event_ids);
+		inputs.push ("page=include/ajax/events");
+
+		// Autologin
+		if ($('#hidden-loginhash').val() != undefined) {
+			inputs.push ("loginhash=" + $('#hidden-loginhash').val());
+			inputs.push ("loginhash_data=" + $('#hidden-loginhash_data').val());
+			inputs.push ("loginhash_user=" + $('#hidden-loginhash_user').val());
+		}
+
+		jQuery.ajax ({
+			data: inputs.join ("&"),
+			type: 'GET',
+			url: action="../../ajax.php",
+			timeout: 10000,
+			dataType: 'html',
+			async: false,
+			success: function (data) {
+				table = data;
+				//forced_title_callback();
+			}
+		});
+	}
+
+	return table;
+}
+
+function adjust_left_width_canvas(adapter_id, adapted_id) {
+	var adapter_left_margin = $('#'+adapter_id+' .yAxis .tickLabel').width();
+	var adapted_pix = $('#'+adapted_id).width();
+	
+	var new_adapted_width = adapted_pix - adapter_left_margin;
+	
+	$('#'+adapted_id).width(new_adapted_width);
+	$('#'+adapted_id).css('margin-left', adapter_left_margin);
+}
+
+
+function update_left_width_canvas(graph_id) {
+	$('#overview_'+graph_id).width($('#'+graph_id).width() - 30);
+	$('#overview_'+graph_id).css('margin-left', $('#'+graph_id+' .yAxis .tickLabel').width());
+}
+
+function check_adaptions(graph_id) {
+	var classes = $('#'+graph_id).attr('class').split(' ');
+
+	$.each(classes, function(i,v) {
+		// If has a class starting with adapted, we adapt it
+		if (v.split('_')[0] == 'adapted') {
+			var adapter_id = $('.adapter_'+v.split('_')[1]).attr('id');
+			adjust_left_width_canvas(adapter_id, graph_id);
+		}
+	});
+}
+
+function number_format(number, force_integer, unit, short_data) {
+	if (force_integer) {
+		if (Math.round(number) != number) {
+			return '';
+		}
+	}
+	else {
+		short_data ++;
+		decimals = pad(1, short_data, 0);
+		number = Math.round(number * decimals) / decimals;
+	}
+
+	var shorts = ["", "K", "M", "G", "T", "P", "E", "Z", "Y"];
+	var pos = 0;
+	while (1) {
+		if (number >= 1000) { //as long as the number can be divided by 1000
+			pos++; //Position in array starting with 0
+			number = number / 1000;
+		}
+		else if (number <= -1000) {
+			pos++;
+			number = number / 1000;
+		}
+		else {
+			break;
+		}
+	}
+	
+	return number + ' ' + shorts[pos] + unit;
+}
+
+function pad(input, length, padding) { 
+	var str = input + "";
+	return (length <= str.length) ? str : pad(str+padding, length, padding);
+}
+// Recalculate the threshold data depends on warning and critical
+function axis_thresholded (threshold_data, y_min, y_max, red_threshold, extremes, red_up) {
+	
+	var y = {
+		min: 0,
+		max: 0
+	};
+	
+	// Default values
+	var yaxis_resize = {
+		up: null,
+		normal_up: 0,
+		normal_down: 0,
+		down: null
+	};
+	// Resize the y axis to display all intervals
+	$.each(threshold_data, function() {
+		if (/_up/.test(this.id)){
+			yaxis_resize['up'] = this.data[0][1];
+		}
+		if (/_down/.test(this.id)){
+			if (/critical/.test(this.id)) {
+				yaxis_resize['down'] = red_threshold;
+			} else {
+				yaxis_resize['down'] = extremes[this.id];
+			}
+		}
+		if (/_normal/.test(this.id)){
+			var end;
+			if (/critical/.test(this.id)) {
+				end = red_up;
+			} else {
+				end = extremes[this.id + '_2'];
+			}
+			if (yaxis_resize['normal_up'] < end) yaxis_resize['normal_up'] = end;
+			if (yaxis_resize['normal_down'] > this.data[0][1]) yaxis_resize['normal_down'] = this.data[0][1];
+		}
+	});
+	
+	// If you need to display a up or a down bar, display 10% of data height
+	var margin_up_or_down = (y_max - y_min)*0.10;
+	
+	// Calculate the new axis
+	y['max'] = yaxis_resize['normal_up'] > y_max ? yaxis_resize['normal_up'] : y_max;
+	y['min'] = yaxis_resize['normal_down'] > y_min ? yaxis_resize['normal_down'] : y_min;
+	if (yaxis_resize['up'] !== null) {
+		y['max'] = (yaxis_resize['up'] + margin_up_or_down) < y_max
+			? y_max
+			: yaxis_resize['up'] + margin_up_or_down;
+	}
+	if (yaxis_resize['down'] !== null) {
+		y['min'] = (yaxis_resize['down'] - margin_up_or_down) < y_min
+			? yaxis_resize['up'] + margin_up_or_down
+			: y_min;
+	}
+	
+	return y;
+}
+function add_threshold (data_base, threshold_data, y_min, y_max,
+						red_threshold, extremes, red_up) {
+	
+	var datas = new Array ();
+	
+	$.each(data_base, function() {
+		// Prepared to turning series
+		//if(showed[this.id.split('_')[1]]) {
+			datas.push(this);
+		//}
+	});
+
+	// Resize the threshold data
+	$.each(threshold_data, function() {
+		if (/_up/.test(this.id)){
+			this.bars.barWidth = y_max - this.data[0][1];
+		}
+		if (/_down/.test(this.id)){
+			var end;
+			if (/critical/.test(this.id)) {
+				 end = red_threshold;
+			} else {
+				end = extremes[this.id];
+			}
+			this.bars.barWidth = end - y_min;
+			this.data[0][1] = y_min;
+		}
+		if (/_normal/.test(this.id)){
+			var end;
+			if (/critical/.test(this.id)) {
+				end = red_up;
+			} else {
+				end = extremes[this.id + '_2'];
+			}
+			if (this.data[0][1] < y_min) {
+				this.bars.barWidth = end - y_min;
+				this.data[0][1] = y_min;
+				end = this.bars.barWidth + this.data[0][1];
+			}
+			if (end > y_max) {
+				this.bars.barWidth = y_max - this.data[0][1];
+			}
+		}	
+		datas.push(this);
+	});
+	
+	return datas;
+}
+
+function reduceText (text, maxLength) {
+	if(!text) return text;
+	if (text.length <= maxLength) return text
+	var firstSlideEnd = parseInt((maxLength - 3)/1.6);
+	var str_cut = text.substr(0, firstSlideEnd);
+	return str_cut + '...<br>' + text.substr(-firstSlideEnd - 3);
 }

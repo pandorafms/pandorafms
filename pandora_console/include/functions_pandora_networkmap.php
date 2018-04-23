@@ -39,7 +39,7 @@ function networkmap_process_networkmap($id = 0) {
 	$numNodes = (int)db_get_num_rows('
 		SELECT *
 		FROM titem
-		WHERE id_map = ' . $id . ';');
+		WHERE id_map = ' . $id . ' and deleted = 0');
 	
 	$networkmap = db_get_row_filter('tmap',
 		array('id' => $id));
@@ -731,6 +731,15 @@ function networkmap_links_to_js_links($relations, $nodes_graph) {
 
 			$agent = agents_get_agent_id_by_module_id($relation['id_parent_source_data']);
 			$agent2 = agents_get_agent_id_by_module_id($relation['id_child_source_data']);
+			foreach ($nodes_graph as $key2 => $node) {
+				if(isset($node['id_agent'])) {
+					if($node['id_agent'] == $agent) {
+						$agent = $node['id_db'];
+					} else if ($node['id_agent'] == $agent2) {
+						$agent2 = $node['id_db'];
+					}
+				} 
+			}
 		}
 		else if ($relation['child_type'] == 1) {
 			$mod1_status = db_get_value_filter('estado', 'tagente_estado', array('id_agente_modulo' => $relation['id_child_source_data']));
@@ -742,8 +751,16 @@ function networkmap_links_to_js_links($relations, $nodes_graph) {
 				$item['link_color'] = "#FAD403";
 			}
 
-			$agent = $relation['id_parent_source_data'];
 			$agent2 = agents_get_agent_id_by_module_id($relation['id_child_source_data']);
+			foreach ($nodes_graph as $key2 => $node) {
+				if(isset($node['id_agent'])) {
+					if($node['id_agent'] == $relation['id_parent_source_data']) {
+						$agent = $node['id_db'];
+					} else if ($node['id_agent'] == $agent2) {
+						$agent2 = $node['id_db'];
+					}
+				} 
+			}
 		}
 		else if ($relation['parent_type'] == 1) {
 			$mod1_status = db_get_value_filter('estado', 'tagente_estado', array('id_agente_modulo' => $relation['id_parent_source_data']));
@@ -756,61 +773,74 @@ function networkmap_links_to_js_links($relations, $nodes_graph) {
 			}
 
 			$agent = agents_get_agent_id_by_module_id($relation['id_parent_source_data']);
-			$agent2 = $relation['id_child_source_data'];
+			
+			foreach ($nodes_graph as $key2 => $node) {
+				if(isset($node['id_agent'])) {
+					if($node['id_agent'] == $agent) {
+						$agent = $node['id_db'];
+					} else if ($node['id_agent'] == $relation['id_child_source_data']) {
+						$agent2 = $node['id_db'];
+					}
+				} 
+			}
 		}
 		else if (($relation['parent_type'] == 3) && ($relation['child_type'] == 3)) {
-			foreach ($nodes_graph as $key => $node) {
+			foreach ($nodes_graph as $key2 => $node) {
 				if ($relation['id_parent'] == $node['id_db']) {
-					$agent = $key;
+					$agent = $node['id_db'];
 				}
 			}
-			foreach ($nodes_graph as $key => $node) {
+			foreach ($nodes_graph as $key2 => $node) {
 				if ($relation['id_child'] == $node['id_db']) {
-					$agent2 = $key;
+					$agent2 = $node['id_db'];
 				}
 			}
 		}
 		else if (($relation['parent_type'] == 3) || ($relation['child_type'] == 3)) {
 			if ($relation['parent_type'] == 3) {
-				foreach ($nodes_graph as $key => $node) {
+				foreach ($nodes_graph as $key2 => $node) {
 					if ($relation['id_parent'] == $node['id_db']) {
-						$agent = $key;
+						$agent = $node['id_db'];
+					} else if ($node['id_agent'] == $relation['id_child_source_data']) {
+						$agent2 = $node['id_db'];
 					}
 				}
-				$agent2 = $relation['id_child_source_data'];
 			}
 			else if ($relation['child_type'] == 3) {
-				foreach ($nodes_graph as $key => $node) {
+				foreach ($nodes_graph as $key2 => $node) {
 					if ($relation['id_child'] == $node['id_db']) {
-						$agent2 = $key;
+						$agent2 = $node['id_db'];
+					} else if ($node['id_agent'] == $relation['id_parent_source_data']) {
+						$agent = $node['id_db'];
 					}
 				}
-				$agent = $relation['id_parent_source_data'];
 			}
 		}
 		else {
-			$agent = $relation['id_parent_source_data'];
-			$agent2 = $relation['id_child_source_data'];
+			foreach ($nodes_graph as $key2 => $node) {
+				if(isset($node['id_agent'])) {
+					if($node['id_agent'] == $relation['id_parent_source_data']) {
+						$agent = $node['id_db'];
+					} else if ($node['id_agent'] == $relation['id_child_source_data']) {
+						$agent2 = $node['id_db'];
+					}
+				} 
+			}
 		}
 		
 		foreach ($nodes_graph as $node) {
-			if (!isset($node['id_agent'])) {
-				if ($node['id'] == $agent) {
-					$item['target'] = $node['id'];
-				}
-				else if($node['id'] == $agent2) {
-					$item['source'] = $node['id'];
-				}
+			if ($node['id_db'] == $agent) {
+				$item['target'] = $node['id'];
 			}
-			else {
-				if ($node['id_agent'] == $agent) {
-					$item['target'] = $node['id'];
-				}
-				else if ($node['id_agent'] == $agent2) {
-					$item['source'] = $node['id'];
-				}
+			else if($node['id_db'] == $agent2) {
+				$item['source'] = $node['id'];
 			}
 		}
+		if ((($item['target'] == -1) || ($item['source'] == -1)) && $relation['parent_type'] == 1 && $relation['child_type'] == 1) {
+			continue;
+		}
+		
+		
 		$return[] = $item;
 	}
 	return $return;

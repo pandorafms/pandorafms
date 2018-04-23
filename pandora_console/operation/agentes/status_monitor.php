@@ -91,7 +91,7 @@ $user_groups = implode (',', array_keys (users_get_groups ()));
 
 ////////////////////////////////////
 // Begin Build SQL sentences
-$sql_from = ' FROM ttipo_modulo,tagente, tagente_modulo, tagente_estado,tmodule ';
+$sql_from = ' FROM ttipo_modulo,tagente LEFT JOIN tagent_secondary_group tasg ON tagente.id_agente = tasg.id_agent, tagente_modulo, tagente_estado,tmodule ';
 
 $sql_conditions_base = ' WHERE tagente.id_agente = tagente_modulo.id_agente 
 		AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.id_tipo_modulo = ttipo_modulo.id_tipo AND tmodule.id_module = tagente_modulo.id_modulo';
@@ -108,20 +108,32 @@ else {
 // Agent group selector
 if (!is_metaconsole()) {
 	if ($ag_group > 0 && check_acl ($config['id_user'], $ag_group, 'AR')) {
-		$sql_conditions_group = sprintf (' AND tagente.id_grupo = %d', $ag_group);
+		$sql_conditions_group = sprintf (
+			' AND (tagente.id_grupo = %d OR tasg.id_group = %d)',
+			$ag_group, $ag_group
+		);
 	}
 	elseif ($user_groups != '') {
 		// User has explicit permission on group 1 ?
-		$sql_conditions_group = ' AND tagente.id_grupo IN ('.$user_groups.')';
+		$sql_conditions_group = ' AND (
+			tagente.id_grupo IN ('.$user_groups.')
+			OR tasg.id_group IN ('.$user_groups.')
+		)';
 	}
 }
 else {
 	if (((int)$ag_group !== 0) && (check_acl ($config['id_user'], $id_ag_group, 'AR'))) {
-		$sql_conditions_group = sprintf (' AND tagente.id_grupo IN (%s) ', $ag_group);
+		$sql_conditions_group = sprintf (
+			' AND (tagente.id_grupo IN (%s) OR tasg.id_group IN (%s))',
+			$user_groups, $user_groups
+		);
 	}
 	elseif ($user_groups != '') {
 		// User has explicit permission on group 1 ?
-		$sql_conditions_group = ' AND tagente.id_grupo IN ('.$user_groups.')';
+		$sql_conditions_group = ' AND (
+			tagente.id_grupo IN ('.$user_groups.')
+			OR tasg.id_group IN ('.$user_groups.')
+		)';
 	}
 }
 
@@ -254,7 +266,7 @@ $sql_conditions_acl = $sql_conditions_base . $sql_conditions_group . $sql_condit
 
 // Get count to paginate
 if (!defined('METACONSOLE')) 
-	$count = db_get_sql ('SELECT COUNT(tagente_modulo.id_agente_modulo) ' . $sql_from . $sql_conditions_all);
+	$count = db_get_sql ('SELECT COUNT(DISTINCT tagente_modulo.id_agente_modulo)' . $sql_from . $sql_conditions_all);
 
 // Get limit_sql depend of the metaconsole or standard mode
 if (is_metaconsole()) {
@@ -759,6 +771,7 @@ switch ($config['dbtype']) {
 			tagente_modulo.unknown_instructions,
 			tagente_estado.utimestamp AS utimestamp' .
 			$sql_from . $sql_conditions_all . '
+			GROUP BY tagente_modulo.id_agente_modulo
 			ORDER BY ' . $order['field'] . " " . $order['order'] . '
 			LIMIT '.$offset.",".$limit_sql;
 		break;
@@ -1361,19 +1374,13 @@ if (!empty($result)) {
 			$is_snapshot = is_snapshot_data ( $module_value );
 			
 			if (($config['command_snapshot']) && ($is_snapshot)) {
-				$handle = 'snapshot_' . $row['id_agente_modulo'];
-				$url = 'include/procesos.php?agente=' . $row['id_agente_modulo'];
-				$win_handle = dechex(crc32($handle));
-				if (! defined ('METACONSOLE')) {
-				$link = "winopeng_var('operation/agentes/snapshot_view.php?" .
-					"id=" . $row['id_agente_modulo'] .
-					"&refr=" . $row['current_interval'] .
-					"&label=" . rawurlencode(urlencode(io_safe_output($row['module_name']))) . "','" . $win_handle . "', 700,480)";
-				}
-				else{
-					$link = "winopeng_var('$row[datos]','',700,480)";
-						
-				}
+				$link = ui_get_snapshot_link( array(
+					'id_module' => $row['id_agente_modulo'],
+					'last_data' => $row['datos'],
+					'timestamp' => $row['timestamp'],
+					'interval' => $row['current_interval'],
+					'module_name' => $row['module_name']
+				));
 
 				if(!is_image_data($row['datos'])){
 					$salida = '<a href="javascript:' . $link . '">' .

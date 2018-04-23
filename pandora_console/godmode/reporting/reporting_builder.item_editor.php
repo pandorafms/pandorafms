@@ -130,8 +130,10 @@ switch ($action) {
 		$show_in_same_row = 0;
 		$show_in_landscape = 0;
 		$hide_notinit_agents = 0;
+		$priority_mode = REPORT_PRIORITY_MODE_OK;
 		$server_name = '';
 		$server_id = 0;
+		$dyn_height = 230;
 		break;
 	case 'save':
 	default:
@@ -173,6 +175,7 @@ switch ($action) {
 				$server_name = '';
 				$server_id = 0;
 				$get_data_editor = false;
+				$dyn_height = 230;
 				break;
 		}
 		
@@ -196,6 +199,7 @@ switch ($action) {
 			$show_in_two_columns = $style['show_in_two_columns'];
 			$show_in_landscape = $style['show_in_landscape'];
 			$hide_notinit_agents = $style['hide_notinit_agents'];
+			$dyn_height = $style['dyn_height'];
 			$type = $item['type'];
 			$name = $item['name'];
 			
@@ -269,6 +273,9 @@ switch ($action) {
 					$time_from = $item['time_from'];
 					$time_to = $item['time_to'];
 					$show_graph = $item['show_graph'];
+					$priority_mode = isset($style['priority_mode'])
+						? $style['priority_mode']
+						: REPORT_PRIORITY_MODE_OK;
 					// 'top_n' filed will be reused for SLA sort option
 					$sla_sorted_by = $item['top_n'];
 					$period = $item['period'];
@@ -361,33 +368,16 @@ switch ($action) {
 					$text = $item['text'];
 					break;
 				case 'sql':
-					$description = $item['description'];
-					$sql_query_report = $item['external_source'];
-					$idCustom = $item['treport_custom_sql_id'];
 					$header = $item['header_definition'];
-					$historical_db = $item['historical_db'];
-					$period = 0;
-					break;
 				case 'sql_graph_pie':
-					$description = $item['description'];
-					$sql_query_report = $item['external_source'];
-					$idCustom = $item['treport_custom_sql_id'];
-					$historical_db = $item['historical_db'];
-					$period = 0;
-					break;
 				case 'sql_graph_vbar':
-					$description = $item['description'];
-					$sql_query_report = $item['external_source'];
-					$idCustom = $item['treport_custom_sql_id'];
-					$historical_db = $item['historical_db'];
-					$period = 0;
-					break;
 				case 'sql_graph_hbar':
 					$description = $item['description'];
 					$sql_query_report = $item['external_source'];
 					$idCustom = $item['treport_custom_sql_id'];
 					$historical_db = $item['historical_db'];
 					$period = 0;
+					$top_n_value = $item['top_n_value'];
 					break;
 				case 'url':
 					$description = $item['description'];
@@ -1283,6 +1273,16 @@ You can of course remove the warnings, that's why we include the source and do n
 			</td>
 			<td style="" id="sql_example"></td> 
 		</tr>
+
+		<tr id="row_max_items" style="" class="datos">
+			<td style="font-weight:bold;"><?php echo __('Max items'); ?></td>
+			<td style="">
+				<?php
+					html_print_input_text('max_items', $top_n_value, '', 7, 7);
+				?>
+			</td>
+			<td style="" id="max_items_example"></td>
+		</tr>
 		
 		<?php
 		if ($meta) {
@@ -1548,6 +1548,11 @@ You can of course remove the warnings, that's why we include the source and do n
 			<td><?php html_print_checkbox('show_in_two_columns', 1, $show_in_two_columns);?></td>
 		</tr>
 
+		<tr id="row_dyn_height" style="" class="datos">
+			<td style="font-weight:bold;"><?php echo __('Height (dynamic graphs)');?></td>
+			<td><?php html_print_input_text('dyn_height', $dyn_height, '', 7, 7);?></td>
+		</tr>
+
 		<tr id="row_show_in_same_row" style="" class="datos">
 			<td style="font-weight:bold;" class="datos">
 				<?php
@@ -1584,6 +1589,33 @@ You can of course remove the warnings, that's why we include the source and do n
 				<?php
 				html_print_checkbox('hide_notinit_agents', 1,
 					$hide_notinit_agents, false, false);
+				?>
+			</td>
+		</tr>
+
+		<tr id="row_priority_mode" style="" class="datos">
+			<td style="font-weight:bold;"><?php	echo __('Priority mode');?></td>
+			<td>
+				<?php
+					echo __('Priority ok mode').'<span style="margin-left:5px;"></span>';
+					html_print_radio_button (
+						'priority_mode',
+						REPORT_PRIORITY_MODE_OK,
+						'',
+						$priority_mode == REPORT_PRIORITY_MODE_OK,
+						''
+					);
+
+					echo ('<span style="margin:30px;"></span>');
+
+					echo __('Priority unknown mode').'<span style="margin-left:5px;"></span>';
+					html_print_radio_button (
+						'priority_mode',
+						REPORT_PRIORITY_MODE_UNKNOWN,
+						'',
+						$priority_mode == REPORT_PRIORITY_MODE_UNKNOWN,
+						''
+					);
 				?>
 			</td>
 		</tr>
@@ -2766,6 +2798,7 @@ function chooseType() {
 	$("#row_custom_graph").hide();
 	$("#row_text").hide();
 	$("#row_query").hide();
+	$("#row_max_items").hide();
 	$("#row_header").hide();
 	$("#row_custom").hide();
 	$("#row_url").hide();
@@ -2791,6 +2824,7 @@ function chooseType() {
 	$("#row_exception_condition_value").hide();
 	$("#row_exception_condition").hide();
 	$("#row_show_in_two_columns").hide();
+	$("#row_dyn_height").hide();
 	$("#row_show_in_same_row").hide();
 	$("#row_historical_db_check").hide();
 	$("#row_lapse_calc").hide();
@@ -2798,6 +2832,7 @@ function chooseType() {
 	$("#row_visual_format").hide();	
 	$("#row_show_in_landscape").hide();
 	$('#row_hide_notinit_agents').hide();
+	$('#row_priority_mode').hide();
 	$("#row_module_group").hide();
 	$("#row_servers").hide();
 	$("#row_sort").hide();
@@ -2943,6 +2978,7 @@ function chooseType() {
 			$("#sla_list").show();
 			$("#row_working_time").show();
 			$("#row_historical_db_check").hide();
+			$("#row_priority_mode").show();
 			break;
 
 		case 'module_histogram_graph':
@@ -2960,6 +2996,7 @@ function chooseType() {
 			$("#sla_list").show();
 			$("#row_working_time").show();
 			$("#row_sort").show();
+			$("#row_priority_mode").show();
 			$("#row_historical_db_check").hide();
 			break;
 		
@@ -3061,37 +3098,24 @@ function chooseType() {
 		case 'sql':
 			$("#row_description").show();
 			$("#row_query").show();
+			$("#row_max_items").show();
 			$("#row_header").show();
 			$("#row_custom").show();
 			$("#row_custom_example").show();
 			$("#row_show_in_two_columns").show();
+			$("#row_dyn_height").show();
 			$("#row_servers").show();
 			$("#row_historical_db_check").show();
 			break;
 		
 		case 'sql_graph_pie':
-			$("#row_description").show();
-			$("#row_query").show();
-			$("#row_show_in_two_columns").show();
-			$("#row_show_in_landscape").show();
-			$("#row_servers").show();
-			$("#row_historical_db_check").show();
-			
-			break;
-		
 		case 'sql_graph_hbar':
-			$("#row_description").show();
-			$("#row_query").show();
-			$("#row_show_in_two_columns").show();
-			$("#row_show_in_landscape").show();
-			$("#row_servers").show();
-			$("#row_historical_db_check").show();
-			break;
-		
 		case 'sql_graph_vbar':
 			$("#row_description").show();
 			$("#row_query").show();
+			$("#row_max_items").show();
 			$("#row_show_in_two_columns").show();
+			$("#row_dyn_height").show();
 			$("#row_show_in_landscape").show();
 			$("#row_servers").show();
 			$("#row_historical_db_check").show();

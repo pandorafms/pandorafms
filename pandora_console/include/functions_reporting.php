@@ -39,6 +39,21 @@ include_once($config['homedir'] . "/include/functions_ui.php");
 include_once($config['homedir'] . "/include/functions_netflow.php");
 include_once($config['homedir'] . "/include/functions_os.php");
 
+/////////////////////////////////////////////////////////
+//                CONSTANTS DEFINITIONS                //
+/////////////////////////////////////////////////////////
+// Priority modes
+define ('REPORT_PRIORITY_MODE_OK', 1);
+define ('REPORT_PRIORITY_MODE_UNKNOWN', 2);
+
+// Status
+define ('REPORT_STATUS_ERR', 0);
+define ('REPORT_STATUS_OK', 1);
+define ('REPORT_STATUS_UNKNOWN', 2);
+define ('REPORT_STATUS_NOT_INIT', 3);
+define ('REPORT_STATUS_DOWNTIME', 4);
+define ('REPORT_STATUS_IGNORED', 5);
+
 function reporting_user_can_see_report($id_report, $id_user = null) {
 	global $config;
 	
@@ -748,7 +763,7 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 	          	    $content['time_from'],
 	           	    $content['time_to'],
         		    $slice
-		            );
+					);
 
             
 			if ($metaconsole_on) {
@@ -804,7 +819,7 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 			$data['min']          = $sla['sla_min'];
 			$data['sla_limit']    = $sla['sla_limit'];
 			$data['dinamic_text'] = $dinamic_text;
-			
+
 			if(isset($sla_array[0])){
 				$data['time_total']      = 0;	
 				$data['time_ok']         = 0;
@@ -864,7 +879,7 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 					}
 					$i++;
 				}
-				$data['sla_value'] = ($data['time_ok']/($data['time_ok']+$data['time_error']))*100;
+				$data['sla_value'] = reporting_sla_get_compliance_from_array($data) * 100;
 				$data['sla_fixed'] = sla_truncate($data['sla_value'],  $config['graph_precision'] );
 			}
 			else{
@@ -880,7 +895,8 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 				$data['checks_error']    = $sla_array['checks_error'];
 				$data['checks_unknown']  = $sla_array['checks_unknown'];
 				$data['checks_not_init'] = $sla_array['checks_not_init'];
-				$data['sla_value']       = $sla_array['SLA'];
+				$data['sla_value']       = $sla_array['SLA'] * 100;
+				$data['sla_fixed']       = $sla_array['sla_fixed'] * 100;
 			}
 			
 			//checks whether or not it meets the SLA
@@ -2721,44 +2737,66 @@ function reporting_network_interfaces_report($report, $content, $type = 'dinamic
 	$filter = array(
 		'id_grupo' => $content['id_group'],
 		'disabled' => 0);
-	$network_interfaces_by_agents = agents_get_network_interfaces(false, $filter);
-	
+
+	$return['failed'] = null;
+	$return['data'] = array();
+
+	if ($config['metaconsole']) {
+		$server_names = metaconsole_get_connection_names();
+		if(isset($server_names) && is_array($server_names)){
+			foreach ($server_names as $key => $value) {
+				$id_meta = metaconsole_get_id_server($value);
+				$connection = metaconsole_get_connection_by_id ($id_meta);
+				if (metaconsole_connect($connection) != NOERR) {
+					continue;
+				}
+				else{
+					$network_interfaces_by_agents = agents_get_network_interfaces(false, $filter);
+					$return = agents_get_network_interfaces_array($network_interfaces_by_agents, $return, $type, $content, $report, $fullscale);
+					metaconsole_restore_db();
+				}
+			}
+		}
+	}
+	else{
+		$network_interfaces_by_agents = agents_get_network_interfaces(false, $filter);
+		$return = agents_get_network_interfaces_array($network_interfaces_by_agents, $return, $type, $content, $report, $fullscale);
+	}
+
+	return reporting_check_structure_content($return);
+}
+
+function agents_get_network_interfaces_array($network_interfaces_by_agents, $return, $type, $content, $report, $fullscale){
 	if (empty($network_interfaces_by_agents)) {
 		$return['failed'] =
 			__('The group has no agents or none of the agents has any network interface');
 		$return['data'] = array();
 	}
 	else {
-		$return['failed'] = null;
-		$return['data'] = array();
-		
 		foreach ($network_interfaces_by_agents as $agent_id => $agent) {
 			$row_data = array();
-			
 			$row_data['agent'] = $agent['name'];
-			
 			$row_data['interfaces'] = array();
 			foreach ($agent['interfaces'] as $interface_name => $interface) {
 				$row_interface = array();
-				
 				$row_interface['name'] = $interface_name;
 				$row_interface['ip'] = $interface['ip'];
 				$row_interface['mac'] = $interface['mac'];
 				$row_interface['status'] = $interface['status_image'];
 				$row_interface['chart'] = null;
-				
+
 				// Get chart
 				reporting_set_conf_charts($width, $height, $only_image,
 					$type, $content, $ttl);
-				
+
 				if (!empty($force_width_chart)) {
 					$width = $force_width_chart;
 				}
-				
+
 				if (!empty($force_height_chart)) {
 					$height = $force_height_chart;
 				}
-				
+
 				switch ($type) {
 					case 'dinamic':
 						if (!empty($interface['traffic'])) {
@@ -2818,14 +2856,12 @@ function reporting_network_interfaces_report($report, $content, $type = 'dinamic
 							}
 						break;
 				}
-				
 				$row_data['interfaces'][] = $row_interface;
 			}
-			
 			$return['data'][] = $row_data;
 		}
 	}
-	return reporting_check_structure_content($return);
+	return $return;
 }
 
 /**
@@ -3294,7 +3330,8 @@ function reporting_sql_graph($report, $content, $type,
 				$content["type"],
 				true,
 				ui_get_full_url(false, false, false, false),
-				$ttl);
+				$ttl,
+				$content['top_n_value']);
 			break;
 		case 'data':
 			break;
@@ -4641,7 +4678,7 @@ function sla_fixed_worktime($wt_start, $wt_end, $worktime = null, $planned_downt
 	$return["wt_valid"] = 1;
 	$return["interval"] = $wt_end - $wt_start;
 
-	if ( (!isset($wt_start)) || (!isset($wt_end)) || ($wt_start > $wt_end)) {
+	if ( (!isset($wt_start)) || (!isset($wt_end)) || ($wt_start > $wt_end) || ($wt_start > time())) {
 		$return["wt_valid"] = 0;
 		$return["interval"] = 0;
 	}
@@ -5296,7 +5333,6 @@ function reporting_advanced_sla ($id_agent_module, $time_from = null, $time_to =
 									// Add downtime interval as OK in inclusion mode
 									$total_checks++;
 									$ok_checks++;
-									$time_in_ok   += $wt_check["downtime_interval"];
 									$time_total   += $wt_check["downtime_interval"];
 									$time_in_down += $wt_check["downtime_interval"];
 								}
@@ -5345,14 +5381,7 @@ function reporting_advanced_sla ($id_agent_module, $time_from = null, $time_to =
 		$return["checks_not_init"] = $not_init_checks;
 
 		// SLA
-		if (($time_in_error+$time_in_ok) == 0) {
-			$return["SLA"] = 0;
-		}
-		else {
-			$return["SLA"] = (($time_in_ok/($time_in_error+$time_in_ok))*100);
-		}
-
-		// SLA
+		$return["SLA"] = reporting_sla_get_compliance_from_array($return);
 		$return["SLA_fixed"] = sla_truncate($return["SLA"], $config['graph_precision']);
 
 		// Time ranges
@@ -5470,7 +5499,7 @@ function reporting_availability($report, $content, $date=false, $time=false) {
 			$row = array();
 			
 			$text = "";
-			
+
 			$row['data'] = reporting_advanced_sla(
 				$item['id_agent_module'],
 				$report["datetime"] - $content['period'],
@@ -5668,6 +5697,8 @@ function reporting_availability_graph($report, $content, $pdf=false) {
 		$total_result_SLA = 'ok';
 		$sla_showed = array();
 		$sla_showed_values = array();
+
+		$priority_mode = $content['style']['priority_mode'];
 		
 		foreach ($slas as $sla) {
 			$server_name = $sla ['server_name'];
@@ -5734,7 +5765,7 @@ function reporting_availability_graph($report, $content, $pdf=false) {
 	          	    	$content['time_from'],
 	           	   	$content['time_to'],
         		    	$slice
-		            );
+					);
 
             
 			if ($metaconsole_on) {
@@ -5818,42 +5849,12 @@ function reporting_availability_graph($report, $content, $pdf=false) {
 					$data['checks_not_init'] += $value_sla['checks_not_init'];
 
 					// generate raw data for graph
-					if ($value_sla['time_total'] != 0) {
-						if ($value_sla['time_error'] > 0) { // ERR
-							$raw_graph[$i]['data'] = 3;
-						}
-						elseif ($value_sla['time_unknown'] > 0) { // UNKNOWN
-							$raw_graph[$i]['data'] = 4;
-						}
-						elseif ($value_sla['time_not_init'] == $value_sla['time_total']) { // NOT INIT
-							$raw_graph[$i]['data'] = 6;
-						}
-						else {
-							$raw_graph[$i]['data'] = 1;
-						}
-					}
-					else {
-						$raw_graph[$i]['data'] = 7;
-					}
+					$period = reporting_sla_get_status_period($value_sla, $priority_mode);
+					$raw_graph[$i]['data'] = reporting_translate_sla_status_for_graph($period);
 					$raw_graph[$i]['utimestamp'] = $value_sla['date_to'] - $value_sla['date_from'];
-
-					if (isset($planned_downtimes)) {
-						foreach($planned_downtimes as $pd){
-							if(  ($value_sla['date_from'] >= $pd['date_from'])
-							  && ($value_sla['date_to'] <= $pd['date_to']) ) {
-								$raw_graph[$i]['data'] = 5; // in scheduled downtime
-								break;
-							}
-						}
-					}
 					$i++;
 				}
-				if (($data['time_ok']+$data['time_error']) > 0 ) {
-					$data['sla_value'] = ($data['time_ok']/($data['time_ok']+$data['time_error']))*100;
-				}
-				else {
-					$data['sla_value'] = 0;
-				}
+				$data['sla_value'] = reporting_sla_get_compliance_from_array($data) * 100;
 				$data['sla_fixed'] = sla_truncate($data['sla_value'],  $config['graph_precision'] );
 			}
 			else{
@@ -5869,7 +5870,7 @@ function reporting_availability_graph($report, $content, $pdf=false) {
 				$data['checks_error']    = $sla_array['checks_error'];
 				$data['checks_unknown']  = $sla_array['checks_unknown'];
 				$data['checks_not_init'] = $sla_array['checks_not_init'];
-				$data['sla_value']       = $sla_array['SLA'];
+				$data['sla_value']       = $sla_array['SLA'] * 100;
 			}
 			
 			//checks whether or not it meets the SLA
@@ -6766,7 +6767,9 @@ function reporting_set_conf_charts(&$width, &$height, &$only_image, $type,
 		case 'dinamic':
 			$only_image = false;
 			$width = 900;
-			$height = 230;
+			$height = isset($content['style']['dyn_height'])
+				? $content['style']['dyn_height']
+				: 230;
 			$ttl = 1;
 			break;
 		case 'static':
@@ -11002,4 +11005,69 @@ function reporting_label_macro ($item, $label) {
 	return $label;
 }
 
+/**
+ * @brief Calculates the SLA compliance value given an sla array
+ *
+ * @param Array With keys time_ok, time_error, time_downtime and time_unknown
+ */
+function reporting_sla_get_compliance_from_array ($sla_array) {
+	$time_compliance = $sla_array['time_ok'] + $sla_array['time_unknown'] + $sla_array['time_downtime'];
+	$time_total_working = $time_compliance + $sla_array['time_error'];
+	return $time_compliance == 0
+		? 0
+		: $time_compliance/$time_total_working;
+}
+
+/**
+ * @brief Given a period, get the SLA status of the period.
+ *
+ * @param Array An array with all times to calculate the SLA
+ * @param int Priority mode. Setting this parameter to REPORT_PRIORITY_MODE_OK
+ * and there is no critical in this period, return an OK without look for
+ * not init, downtimes, unknown and others...
+ *
+ * @return int Status
+ */
+function reporting_sla_get_status_period($sla_times, $priority_mode = REPORT_PRIORITY_MODE_OK) {
+	if ($sla_times['time_error'] > 0) {
+		return REPORT_STATUS_ERR;
+	}
+	if ($priority_mode == REPORT_PRIORITY_MODE_OK && $sla_times['time_ok'] > 0) {
+		return REPORT_STATUS_OK;
+	}
+	if ($sla_times['time_out'] > 0) {
+		return REPORT_STATUS_IGNORED;
+	}
+	if ($sla_times['time_downtime'] > 0) {
+		return REPORT_STATUS_DOWNTIME;
+	}
+	if ($sla_times['time_unknown'] > 0) {
+		return REPORT_STATUS_UNKNOWN;
+	}
+	if ($sla_times['time_not_init'] > 0) {
+		return REPORT_STATUS_NOT_INIT;
+	}
+	if ($sla_times['time_ok'] > 0) {
+		return REPORT_STATUS_OK;
+	}
+	return REPORT_STATUS_IGNORED;
+}
+
+/**
+ * @brief Translate the status to the color to graph_sla_slicebar function
+ *
+ * @param int The status in number
+ * @return int The index of color array to graph_sla_slicebar function
+ */
+function reporting_translate_sla_status_for_graph ($status) {
+	$sts = array (
+		REPORT_STATUS_ERR => 3,
+		REPORT_STATUS_OK => 1,
+		REPORT_STATUS_UNKNOWN => 4,
+		REPORT_STATUS_NOT_INIT => 6,
+		REPORT_STATUS_DOWNTIME => 5,
+		REPORT_STATUS_IGNORED => 7
+	);
+	return $sts[$status];
+}
 ?>

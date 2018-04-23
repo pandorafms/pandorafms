@@ -39,6 +39,16 @@ if (file_exists ('../../include/languages/'.$user_language.'.mo')) {
 
 $id = get_parameter('id');
 $label = get_parameter ("label");
+$last_data = get_parameter("last_data", '');
+$last_timestamp = get_parameter("timestamp", '');
+// FIXME: Support to old call snapshow_view calls. Remove it when all are migrated
+if (empty($last_data)) {
+	$row = db_get_row_sql("SELECT *
+		FROM tagente_estado
+		WHERE id_agente_modulo = $id");
+	$last_data = io_safe_output($row["datos"]);
+	$last_timestamp = $row["timestamp"];
+}
 
 // TODO - Put ACL here
 ?>
@@ -61,15 +71,14 @@ $label = get_parameter ("label");
 		$row = db_get_row_sql("SELECT *
 			FROM tagente_estado
 			WHERE id_agente_modulo = $id");
-		
+
 		echo "<h2 style='text-align:center;' id='title_snapshot_view'>";
 		echo __("Current data at");
 		echo " ";
-		echo $row["timestamp"];
+		echo $last_timestamp;
 		echo "</h2>";
-		$datos = io_safe_output($row["datos"]);
-		if (is_image_data($datos)) {
-			echo '<center><img src="' . $datos . '" alt="image" style="width:100%"/></center>';
+		if (is_image_data($last_data)) {
+			echo '<center><img src="' . $last_data . '" alt="image" style="width:100%"/></center>';
 		}
 		else {
 			$datos = preg_replace ('/</', '&lt;', $datos);
@@ -77,7 +86,7 @@ $label = get_parameter ("label");
 			$datos = preg_replace ('/\n/i','<br>',$datos);
 			$datos = preg_replace ('/\s/i','&nbsp;',$datos);
 			echo "<div id='result_div' style='width: 100%; height: 100%; overflow: scroll; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left'>";
-			echo $datos;
+			echo $last_data;
 			echo "</div>";
 		?>
 		<script type="text/javascript">
@@ -88,16 +97,16 @@ $label = get_parameter ("label");
 				div.css('overflow-y', 'auto');
 				var w2 = $('div', div).innerWidth();
 				$(div).remove();
-				
+
 				return (w1 - w2);
 			}
-			
+
 			$(document).ready(function() {
 				width = $("#result_div").css("width");
 				width = width.replace("px", "");
 				width = parseInt(width);
 				$("#result_div").css("width", (width - getScrollbarWidth()) + "px");
-				
+
 				height = $("#result_div").css("height");
 				height = height.replace("px", "");
 				height = parseInt(height);

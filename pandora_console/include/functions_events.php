@@ -144,7 +144,7 @@ function events_get_events_grouped($sql_post, $offset = 0,
 			db_process_sql ('SET group_concat_max_len = 9999999');
 			if ($total) {
 				$sql = "SELECT COUNT(*) FROM (SELECT *
-					FROM $table te
+					FROM $table te LEFT JOIN tagent_secondary_group tasg ON te.id_grupo = tasg.id_group
 					WHERE 1=1 " . $sql_post . "
 					GROUP BY estado, evento, id_agente, id_agentmodule" . $groupby_extra . ") AS t";
 			}
@@ -159,7 +159,7 @@ function events_get_events_grouped($sql_post, $offset = 0,
 					(SELECT id_agente FROM $table WHERE id_evento = MAX(te.id_evento)) id_agente,
 					(SELECT criticity FROM $table WHERE id_evento = MAX(te.id_evento)) AS criticity,
 					(SELECT ack_utimestamp FROM $table WHERE id_evento = MAX(te.id_evento)) AS ack_utimestamp
-				FROM $table te
+				FROM $table te LEFT JOIN tagent_secondary_group tasg ON te.id_grupo = tasg.id_group
 				WHERE 1=1 " . $sql_post . "
 				GROUP BY estado, evento, id_agente, id_agentmodule" . $groupby_extra . "
 				ORDER BY timestamp_rep " . $order . " LIMIT " . $offset . "," . $pagination;
@@ -845,8 +845,8 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 	switch ($config["dbtype"]) {
 		case "mysql":
 		case "postgresql":
-				$sql = sprintf ("SELECT *
-					FROM tevento
+				$sql = sprintf ("SELECT DISTINCT tevento.*
+					FROM tevento LEFT JOIN tagent_secondary_group tasg ON tevento.id_agente = tasg.id_agent
 					WHERE %s %s
 					ORDER BY utimestamp DESC LIMIT %d", $agent_condition, $filter, $limit);
 			break;
@@ -857,7 +857,7 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 					ORDER BY utimestamp DESC", $agent_condition, $filter, $limit);
 			break;
 	}
-	
+
 	$result = db_get_all_rows_sql ($sql);
 	
 	if ($result === false) {
@@ -913,9 +913,17 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 		$table->headclass[5] = "datos3 f9";
 		$table->align[5] = "left";
 		$table->size[5] = "15%";
-		
+
+		$all_groups = array();
+		if ($agent_id != 0) {
+			$all_groups = agents_get_all_groups_agent ($agent_id);
+		}
+
 		foreach ($result as $event) {
-			if (! check_acl ($config["id_user"], $event["id_grupo"], "ER")) {
+			// Copy all groups of the agent and append the event group
+			$check_events = $all_groups;
+			$check_events[] = $event["id_grupo"];
+			if (! check_acl_one_of_groups ($config["id_user"], $check_events, "ER")) {
 				continue;
 			}
 			
@@ -2042,9 +2050,17 @@ function events_page_custom_fields ($event) {
 		$data = array();
 		$data[0] = $field['name'];
 		
-		$data[1] = empty($fields_data[$field['id_field']])
-			? '<i>'.__('N/A').'</i>'
-			: ui_bbcode_to_html($fields_data[$field['id_field']]);
+		if(empty($fields_data[$field['id_field']])){
+			$data[1] = '<i>'.__('N/A').'</i>';
+		}
+		else{
+			if($field['is_password_type']){
+				$data[1] = '&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;';
+			}
+			else{
+				$data[1] = ui_bbcode_to_html($fields_data[$field['id_field']]);
+			}
+		}
 		
 		$field['id_field'];
 		
@@ -3298,41 +3314,15 @@ function events_get_events_grouped_by_agent($sql_post, $offset = 0,
 		$groupby_extra = '';
 		$fields_extra = '';
 	}
-	
-	switch ($config["dbtype"]) {
-		case "mysql":
-			if ($total) {
-				$sql = "SELECT COUNT(*) FROM (select id_agente from $table WHERE 1=1 
-						$sql_post GROUP BY id_agente, event_type$groupby_extra ORDER BY id_agente ) AS t";
-			}
-			else {
-				$sql = "select id_agente, count(*) as total$fields_extra from $table 
-					WHERE id_agente > 0 $sql_post GROUP BY id_agente$groupby_extra ORDER BY id_agente LIMIT $offset,$pagination";
-			}
-			break;
-		case 'postgresql':
-			if ($total) {
-				
-			}
-			else {
-				$sql = "select id_agente, count(*) as total$fields_extra from $table 
-					WHERE id_agente > 0 $sql_post GROUP BY id_agente$groupby_extra ORDER BY id_agente LIMIT $offset,$pagination";
-			}
-			break;
-		case 'oracle':
-			if ($total) {
-				
-			}
-			else {
-				$set = array();
-				$set['limit'] = $pagination;
-				$set['offset'] = $offset;
-				
-				$sql = "select id_agente, count(*) as total$fields_extra from $table 
-					WHERE id_agente > 0 $sql_post GROUP BY id_agente, event_type$groupby_extra ORDER BY id_agente ";
-				$sql = oracle_recode_query ($sql, $set);
-			}
-			break;
+
+	if ($total) {
+		$sql = "SELECT COUNT(*) FROM (select id_agente from $table WHERE 1=1 
+				$sql_post GROUP BY id_agente, event_type$groupby_extra ORDER BY id_agente ) AS t";
+	}
+	else {
+		$sql = "select id_agente, count(*) as total$fields_extra from $table te LEFT JOIN tagent_secondary_group tasg
+				ON te.id_grupo = tasg.id_group
+			WHERE id_agente > 0 $sql_post GROUP BY id_agente$groupby_extra ORDER BY id_agente LIMIT $offset,$pagination";
 	}
 	
 	$result = array();
@@ -3356,7 +3346,9 @@ function events_get_events_grouped_by_agent($sql_post, $offset = 0,
 									'event_type' => $resultado['event_type']);
 			}
 			else {
-				$sql = "select event_type from $table 
+				$sql = "SELECT event_type FROM $table te
+					LEFT JOIN tagent_secondary_group tasg
+						ON te.id_agente = tasg.id_agent
 					WHERE id_agente = ".$event['id_agente']." $sql_post ORDER BY utimestamp DESC ";
 				$resultado = db_get_row_sql($sql);
 				

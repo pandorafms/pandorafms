@@ -159,8 +159,14 @@ else {
 $form_filter .= "</form>";
 if ( defined("METACONSOLE"))
 	echo "<br>";
+	
+if(!$id_cluster){
+	ui_toggle($form_filter, __('Alert control filter'), __('Toggle filter(s)'));
+}	
+else{
+	unset($form_filter);
+}
 
-ui_toggle($form_filter, __('Alert control filter'), __('Toggle filter(s)'));
 
 $simple_alerts = array();
 
@@ -443,12 +449,11 @@ foreach ($simple_alerts as $alert) {
 	
 	if (! $id_agente) {
 		$id_agent = modules_get_agentmodule_agent ($alert['id_agent_module']);
-		
-		$agent_group = db_get_value('id_grupo', 'tagente', 'id_agente', $id_agent);
+		$all_groups = agents_get_all_groups_agent($id_agent);
 		
 		$data[0] = '';
 		
-		if (check_acl ($config['id_user'], $agent_group, "AW")) {
+		if (check_acl_one_of_groups ($config['id_user'], $all_groups, "AW")) {
 			$main_tab = 'main';
 		}
 		else {
@@ -467,7 +472,7 @@ foreach ($simple_alerts as $alert) {
 		$data[0] .= '</a>';
 	}
 	else {
-		$agent_group = db_get_value('id_grupo', 'tagente', 'id_agente', $id_agente);
+		$all_groups = agents_get_all_groups_agent($id_agente);
 	}
 	
 	$module_name = modules_get_agentmodule_name ($alert['id_agent_module']);
@@ -544,7 +549,7 @@ foreach ($simple_alerts as $alert) {
 				$data[2] .= '</ul>';
 
 				// Is possible manage actions if have LW permissions in the agent group of the alert module
-				if (check_acl ($config['id_user'], $agent_group, "LW")) {
+				if (check_acl_one_of_groups ($config['id_user'], $all_groups, "LW")) {
 					//~ $data[2] .= '<form method="post" action="' . $url . '" class="delete_link" style="display: inline; vertical-align: -50%;">';
 					$data[2] .= '<form method="post" action="' . $url . '" class="delete_link" style="display: inline;">';
 					$data[2] .= html_print_input_image ('delete',
@@ -568,7 +573,7 @@ foreach ($simple_alerts as $alert) {
 	$data[2] .= '</div>';
 	$data[2] .= '</table>';
 	// Is possible manage actions if have LW permissions in the agent group of the alert module
-	if (check_acl ($config['id_user'], $agent_group, "LW") || check_acl ($config['id_user'], $template_group, "LM")) {
+	if (check_acl_one_of_groups ($config['id_user'], $all_groups, "LW") || check_acl ($config['id_user'], $template_group, "LM")) {
 		$own_info = get_user_info($config['id_user']);
 		if (check_acl ($config['id_user'], $template_group, "LW"))
 			$own_groups = users_get_groups($config['id_user'], 'LW', true);
@@ -666,7 +671,7 @@ foreach ($simple_alerts as $alert) {
 	$data[4] .= '</form>';
 
 	// To manage alert is necessary LW permissions in the agent group
-	if(check_acl ($config['id_user'], $agent_group, "LW")) {
+	if(check_acl_one_of_groups ($config['id_user'], $all_groups, "LW")) {
 		$data[4] .= '&nbsp;&nbsp;<form class="standby_alert_form" action="' . $url . '" method="post" style="display: inline;">';
 		if (!$alert['standby']) {
 			$data[4] .= html_print_input_image ('standby_off', 'images/bell.png', 1, 'padding:0px;', true);
@@ -681,7 +686,7 @@ foreach ($simple_alerts as $alert) {
 	}
 	
 	// To access to policy page is necessary have AW permissions in the agent
-	if(check_acl ($config['id_user'], $agent_group, "AW")) {
+	if(check_acl_one_of_groups ($config['id_user'], $all_groups, "AW")) {
 		if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 			$policyInfo = policies_is_alert_in_policy2($alert['id'], false);
 			if ($policyInfo === false)
@@ -697,7 +702,7 @@ foreach ($simple_alerts as $alert) {
 	}
 	
 	// To manage alert is necessary LW permissions in the agent group 
-	if(check_acl ($config['id_user'], $agent_group, "LW")) {
+	if(check_acl_one_of_groups ($config['id_user'], $all_groups, "LW")) {
 		$data[4] .= '&nbsp;&nbsp;<form class="delete_alert_form" action="' . $url . '" method="post" style="display: inline;">';
 		if ($alert['disabled']) {
 			$data[4] .= html_print_image('images/add.disabled.png',
@@ -714,7 +719,7 @@ foreach ($simple_alerts as $alert) {
 		$data[4] .= '</form>';
 	}
 	
-	if(check_acl ($config['id_user'], $agent_group, "LM")) {
+	if(check_acl_one_of_groups ($config['id_user'], $all_groups, "LM")) {
 		$data[4] .= '<form class="view_alert_form" method="post" style="display: inline;" action="index.php?sec=galertas&sec2=godmode/alerts/alert_view">';
 		$data[4] .= html_print_input_image ('view_alert', 'images/eye.png', 1, '', true, array('title' => __('View alert advanced details')));
 		$data[4] .= html_print_input_hidden ('id_alert', $alert['id'], true);
@@ -737,7 +742,7 @@ if (isset($dont_display_alert_create_bttn))
 	if ($dont_display_alert_create_bttn)
 		$display_create = false;
 
-if ($display_create && (check_acl ($config['id_user'], 0, "LW") || check_acl ($config['id_user'], $template_group, "LM"))) {
+if ($display_create && (check_acl ($config['id_user'], 0, "LW") || check_acl ($config['id_user'], $template_group, "LM")) && !$id_cluster) {
 	echo '<div class="action-buttons" style="width: ' . $table->width . '">';
 	echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_list&tab=builder&pure='.$pure.'">';
 	html_print_submit_button (__('Create'), 'crtbtn', false, 'class="sub next"');

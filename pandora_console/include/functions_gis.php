@@ -196,55 +196,45 @@ function gis_make_layer($name, $visible = true, $dot = null, $idLayer = null, $p
 			layer.events.on({
 		 		"featureselected": function(e) {
 					if (e.feature.geometry.CLASS_NAME == "OpenLayers.Geometry.Point") {
-						var feature = e.feature;
-						var featureData = feature.data;
-						var long_lat = featureData.long_lat;
-						var popup;
-						
-						var img_src = null;
+						var featureData = e.feature.data;
+
+						var img_src = "<?php echo ui_get_full_url('images/spinner.gif', false, false, false, false); ?>";
+						var $details = $('<div />');
+
+						$details
+							.prop("id", 'cloudContent_' + featureData.id)
+							.css("text-align", "center")
+							.html('<img src="' + img_src + '" />')
+							.dialog({
+								title: "<?php echo __('Agent'); ?> #" + featureData.id,
+								resizable: true,
+								draggable: true,
+								modal: true,
+								overlay: {
+									opacity: 0.5,
+									background: "black"
+								},
+								close: function () {
+									$details.remove();
+								}
+							});
 						
 						jQuery.ajax ({
 							url: "<?php echo ui_get_full_url('ajax.php', false, false, false, false); ?>",
 							data: {
-								page: "include/ajax/skins.ajax",
-								get_image_path: 1,
-								img_src: "images/spinner.gif"
+								page: "operation/gis_maps/ajax",
+								opt: featureData.type,
+								id: featureData.id,
+								hash: "<?php echo $hash; ?>",
+								id_user: "<?php echo $config['id_user']; ?>",
+								map_id: <?php echo (int)$id_map; ?>
 							},
-							type: 'GET',
-							dataType: 'html',
+							type: "GET",
+							dataType: "json",
 							success: function (data) {
-								img_src = data;
-								
-								popup = new OpenLayers.Popup.FramedCloud('cloud00',
-										long_lat,
-										null,
-										'<div class="cloudContent' + featureData.id + '" style="text-align: center;">' + img_src + '</div>',
-										null,
-										true,
-										function () { popup.destroy(); });
-								feature.popup = popup;
-								map.addPopup(popup);
-								
-								jQuery.ajax ({
-									url: "<?php echo ui_get_full_url('ajax.php', false, false, false, false); ?>",
-									data: {
-										page: "operation/gis_maps/ajax",
-										opt: featureData.type,
-										id: featureData.id,
-										hash: "<?php echo $hash; ?>",
-										id_user: "<?php echo $config['id_user']; ?>",
-										map_id: <?php echo (int)$id_map; ?>
-									},
-									type: "GET",
-									dataType: 'json',
-									success: function (data) {
-										if (data.correct) {
-											$('.cloudContent' + featureData.id).css('text-align', 'left');
-											$('.cloudContent' + featureData.id).html(data.content);
-											popup.updateSize();
-										}
-									}
-								});
+								if (data.correct) {
+									$details.css("text-align", "left").html(data.content);
+								}
 							}
 						});
 					}

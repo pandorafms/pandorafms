@@ -24,6 +24,7 @@ include_once($config['homedir'] . "/include/functions_profile.php");
 include_once($config['homedir'] . '/include/functions_users.php');
 include_once ($config['homedir'] . '/include/functions_groups.php');
 include_once ($config['homedir'] . '/include/functions_visual_map.php');
+enterprise_include_once('include/functions_profile.php');
 
 $meta = false;
 if(enterprise_installed() && defined("METACONSOLE")) {
@@ -444,6 +445,7 @@ if ($add_profile) {
 	$group2 = (int) get_parameter ('assign_group');
 	$profile2 = (int) get_parameter ('assign_profile');
 	$tags = (array) get_parameter ('assign_tags');
+	$is_secondary = (bool)get_parameter ('is_secondary', 0);
 
 	foreach ($tags as $k => $tag) {
 		if(empty($tag)) {
@@ -451,15 +453,22 @@ if ($add_profile) {
 		}
 	}
 	
-	$tags = implode(',', $tags);
+	$tags = $is_secondary ? '' : implode(',', $tags);
 
 	db_pandora_audit("User management",
 		"Added profile for user ".io_safe_input($id2), false, false, 'Profile: ' . $profile2 . ' Group: ' . $group2 . ' Tags: ' . $tags);
-	$return = profile_create_user_profile($id2, $profile2, $group2, false, $tags);
-	
-	ui_print_result_message ($return,
-		__('Profile added successfully'),
-		__('Profile cannot be added'));
+	if (profile_check_group_mode($id2, $group2, $is_secondary)) {
+		$return = profile_create_user_profile($id2, $profile2, $group2, false, $tags, $is_secondary);
+		ui_print_result_message ($return,
+			__('Profile added successfully'),
+			__('Profile cannot be added'));
+	} else {
+		if ($is_secondary) {
+			ui_print_error_message ("A group assigned like primary cannot be assigned like secondary.");
+		} else {
+			ui_print_error_message ("A group assigned like secondary cannot be assigned like primary.");
+		}
+	}
 }
 
 if ($delete_profile) {
@@ -714,110 +723,8 @@ echo '<br />';
 
 /* Don't show anything else if we're creating an user */
 if (!empty ($id) && !$new_user) {
-	if (!defined("METACONSOLE"))
-		echo '<h4>'. __('Profiles/Groups assigned to this user') . '</h4>';
-
-	$table = new stdClass();
-	$table->width = '100%';
-	$table->class = 'databox data';
-	if (defined("METACONSOLE")) {
-		$table->head_colspan[0] = 0;
-		$table->width = '100%';
-		$table->class = 'databox_tactical data';
-		$table->title = __('Profiles/Groups assigned to this user');
-	}
-	$table->data = array ();
-	$table->head = array ();
-	$table->align = array ();
-	$table->style = array ();
-	if (!defined("METACONSOLE")) {
-		$table->style[0] = 'font-weight: bold';
-		$table->style[1] = 'font-weight: bold';
-	}
-	$table->head[0] = __('Profile name');
-	$table->head[1] = __('Group');
-	$table->head[2] = __('Tags');
-	$table->head[3] = __('Action');
-	$table->align[3] = 'center';
-
-	/*
-	if ($enterprise_include) {
-		add_enterprise_column_user_profile_form($table);
-	}
-	*/
-
-	$result = db_get_all_rows_field_filter ("tusuario_perfil", "id_usuario", $id);
-
-	if ($result === false) {
-		$result = array ();
-	}
-
-	foreach ($result as $profile) {
-		if($profile["id_grupo"] == -1) {
-			continue;
-		}
-		
-		$data = array ();
-		
-		$data[0] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile['id_perfil'].'&pure='.$pure.'">'.profile_get_name ($profile['id_perfil']).'</a>';
-		$data[1] = ui_print_group_icon($profile["id_grupo"], true);
-		if (!defined('METACONSOLE')) 
-			$data[1] .= '<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$profile['id_grupo'].'&pure='.$pure.'">';
-			
-		$data[1] .= '&nbsp;' . ui_print_truncate_text(groups_get_name ($profile['id_grupo'], True), GENERIC_SIZE_TEXT);
-		if (!defined('METACONSOLE'))
-			$data[1] .= '</a>';
-			
-		if(empty($profile["tags"])) {
-			$data[2] = '';
-		}
-		else {
-			$tags_ids = explode(',',$profile["tags"]);
-			$tags = tags_get_tags($tags_ids);
-			
-			$data[2] = tags_get_tags_formatted($tags);
-		}
-
-		$data[3] = '<form method="post" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
-		$data[3] .= html_print_input_hidden ('delete_profile', 1, true);
-		$data[3] .= html_print_input_hidden ('id_user_profile', $profile['id_up'], true);
-		$data[3] .= html_print_input_hidden ('id_user', $id, true);
-		$data[3] .= html_print_input_image ('del', 'images/cross.png', 1, '', true);
-		$data[3] .= '</form>';
-		
-		array_push ($table->data, $data);
-	}
-
-	$data = array ();
-
-	$data[0] = '<form method="post">';
-	if (check_acl ($config['id_user'], 0, "PM")) {
-		$data[0] .= html_print_select (profile_get_profiles (), 'assign_profile', 0, '',
-			__('None'), 0, true, false, false);
-	}
-	else {
-		$data[0] .= html_print_select (profile_get_profiles (array ('pandora_management' => '<> 1',
-			'db_management' => '<> 1')), 'assign_profile', 0, '', __('None'), 0,
-			true, false, false);
-	}
-
-	$data[1] = html_print_select_groups($config['id_user'], "UM",
-		$own_info['is_admin'], 'assign_group', -1, '', __('None'), -1, true,
-		false, false);
-		
-	$tags = tags_get_all_tags();
-
-	$data[2] = html_print_select($tags, 'assign_tags[]', '', '', __('Any'), '', true, true);
-
-	$data[3] = html_print_input_image ('add', 'images/add.png', 1, '', true);
-	$data[3] .= html_print_input_hidden ('id', $id, true);
-	$data[3] .= html_print_input_hidden ('add_profile', 1, true);
-	$data[3] .= '</form>';
-
-	array_push ($table->data, $data);
-
-	html_print_table ($table);
-	unset ($table);
+	profile_print_profile_table($id, __('Profiles/Groups assigned to this user'));
+	enterprise_hook('profile_print_profile_secondary_table', array($id));
 
 }
 

@@ -92,6 +92,8 @@ Exported Functions:
 
 =item * C<pandora_update_server>
 
+=item * C<pandora_update_secondary_groups_cache>
+
 =item * C<pandora_group_statistics>
 
 =item * C<pandora_server_statistics>
@@ -221,6 +223,7 @@ our @EXPORT = qw(
 	pandora_update_gis_data
 	pandora_update_module_on_error
 	pandora_update_module_from_hash
+	pandora_update_secondary_groups_cache
 	pandora_update_server
 	pandora_update_table_from_hash
 	pandora_update_template_module
@@ -230,6 +233,7 @@ our @EXPORT = qw(
 	pandora_self_monitoring
 	pandora_process_policy_queue
 	subst_alert_macros
+	get_agent
 	get_agent_from_alias
 	get_agent_from_addr
 	get_agent_from_name
@@ -245,7 +249,7 @@ our @EXPORT = qw(
 
 # Some global variables
 our @DayNames = qw(sunday monday tuesday wednesday thursday friday saturday);
-our @ServerTypes = qw (dataserver networkserver snmpconsole reconserver pluginserver predictionserver wmiserver exportserver inventoryserver webserver eventserver icmpserver snmpserver satelliteserver transactionalserver mfserver syncserver wuxserver syslogserver);
+our @ServerTypes = qw (dataserver networkserver snmpconsole reconserver pluginserver predictionserver wmiserver exportserver inventoryserver webserver eventserver icmpserver snmpserver satelliteserver transactionalserver mfserver syncserver wuxserver syslogserver provisioningserver migrationserver);
 our @AlertStatus = ('Execute the alert', 'Do not execute the alert', 'Do not execute the alert, but increment its internal counter', 'Cease the alert', 'Recover the alert', 'Reset internal counter');
 
 # Event storm protection (no alerts or events)
@@ -253,6 +257,27 @@ our $EventStormProtection :shared = 0;
 
 # Current master server
 my $Master :shared = 0;
+
+
+##########################################################################
+# Return the agent given the agent name or alias or address.
+##########################################################################
+sub get_agent {
+    my ($dbh, $field) = @_;
+
+    return undef if (! defined ($field) || $field eq '');
+
+    my $rs = get_agent_from_alias($dbh, $field);
+    return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
+
+    $rs = get_agent_from_addr($dbh, $field);
+    return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
+
+    $rs = get_agent_from_name($dbh, $field);
+    return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
+
+    return undef;
+}
 
 ##########################################################################
 # Return the agent given the agent name.
@@ -1317,7 +1342,11 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 			(defined ($agent) ? $agent->{'id_grupo'} : 0),
 			(defined ($fullagent) ? $fullagent->{'id_agente'} : 0),
 			$priority,
-			(defined($alert) ? $alert->{'id'} : 0),
+			(defined($alert)
+				? defined($alert->{'id_template_module'})
+					? $alert->{'id_template_module'}
+					: $alert->{'id'}
+				: 0),
 			(defined($alert) ? $alert->{'id_agent_module'} : 0),
 			$event_type,
 			0,
@@ -5181,6 +5210,18 @@ sub pandora_update_agent_alert_count ($$$) {
 	fired_count=(SELECT COUNT(*) FROM tagente_modulo, talert_template_modules WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_agente_modulo=talert_template_modules.id_agent_module AND talert_template_modules.disabled=0 AND times_fired>0 AND id_agente=' . $agent_id .
 	') WHERE id_agente = ' . $agent_id);
 	
+	# Sync the agent cache every time the module count is updated.
+	enterprise_hook('update_agent_cache', [$pa_config, $dbh, $agent_id]) if ($pa_config->{'node_metaconsole'} == 1);
+}
+
+##########################################################################
+# Update the secondary group cache.
+##########################################################################
+sub pandora_update_secondary_groups_cache ($$$) {
+	my ($pa_config, $dbh, $agent_id) = @_;
+
+	db_do ($dbh, 'UPDATE tagente SET update_secondary_groups=0 WHERE id_agente = ' . $agent_id);
+
 	# Sync the agent cache every time the module count is updated.
 	enterprise_hook('update_agent_cache', [$pa_config, $dbh, $agent_id]) if ($pa_config->{'node_metaconsole'} == 1);
 }

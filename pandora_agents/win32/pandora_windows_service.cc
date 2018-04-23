@@ -635,6 +635,7 @@ Pandora_Windows_Service::getXmlHeader () {
 	       "\" os_version=\"" + os_version +
 	       "\" group=\"" + conf->getValue ("group") +
 	       "\" parent_agent_name=\"" + conf->getValue ("parent_agent_name") + 
+	       "\" secondary_groups=\"" + conf->getValue ("secondary_groups") + 
 	       "\" agent_mode=\"" + agent_mode + 
 	       "\">\n";
 	return xml;

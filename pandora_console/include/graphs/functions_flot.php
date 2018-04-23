@@ -185,7 +185,7 @@ function flot_area_graph (
 
 	global $config;
 
-	include_javascript_dependencies_flot_graph();
+	// include_javascript_dependencies_flot_graph();
 
 	// Get a unique identifier to graph
 	$graph_id = uniqid('graph_');
@@ -433,7 +433,7 @@ function flot_pie_chart ($values, $labels, $width, $height, $water_mark,
 	$font = '', $font_size = 8, $legend_position = '', $colors = '',
 	$hide_labels = false) {
 	
-	include_javascript_dependencies_flot_graph();
+	// include_javascript_dependencies_flot_graph();
 	
 	$series = sizeof($values);
 	if (($series != sizeof ($labels)) || ($series == 0) ) {
@@ -489,7 +489,7 @@ function flot_custom_pie_chart ($flash_charts, $graph_values,
 	
 	global $config;
 	///TODO
-	include_javascript_dependencies_flot_graph();
+	// include_javascript_dependencies_flot_graph();
 	
 	$total_modules = $graph_values['total_modules'];
 	unset($graph_values['total_modules']);
@@ -549,7 +549,7 @@ function flot_custom_pie_chart ($flash_charts, $graph_values,
 function flot_hcolumn_chart ($graph_data, $width, $height, $water_mark, $font = '', $font_size = 7, $background_color = "white", $tick_color = "white", $val_min=null, $val_max=null) {
 	global $config;
 	
-	include_javascript_dependencies_flot_graph();
+	// include_javascript_dependencies_flot_graph();
 	
 	$return = '';
 	
@@ -588,7 +588,7 @@ function flot_hcolumn_chart ($graph_data, $width, $height, $water_mark, $font = 
 	$data = array();
 	
 	foreach ($graph_data as $label => $values) {
-		$labels[] = $label;
+		$labels[] = io_safe_output($label);
 		$i--;
 		
 		foreach ($values as $key => $value) {
@@ -649,7 +649,7 @@ function flot_hcolumn_chart ($graph_data, $width, $height, $water_mark, $font = 
 function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, $water_mark, $homedir, $font, $font_size, $from_ux, $from_wux, $background_color = 'white', $tick_color = 'white') {
 	global $config;
 	
-	include_javascript_dependencies_flot_graph();
+	// include_javascript_dependencies_flot_graph();
 	
 	$stacked_str = '';
 	$multicolor = false;
@@ -748,7 +748,7 @@ function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $lon
 function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $colors, $fontpath, $round_corner, $homeurl, $watermark = '', $adapt_key = '', $stat_win = false, $id_agent = 0, $full_legend_date = array()) {
 	global $config;
 	
-	include_javascript_dependencies_flot_graph();
+	// include_javascript_dependencies_flot_graph();
 		
 	$stacked_str = 'stack: stack,';
 	

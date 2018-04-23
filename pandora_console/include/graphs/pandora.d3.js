@@ -1494,14 +1494,6 @@ function print_phases_donut (recipient, phases) {
 	}
 }
 
-function round_with_decimals (value, multiplier = 1) {
-	if ((value * multiplier) == 0) return 0;
-	if ((value * multiplier) >= 1) {
-		return Math.round(value * multiplier) / multiplier;
-	}
-	return round_with_decimals (value, multiplier * 10);
-}
-
 function progress_bar_d3 (recipient, percentile, width, height, color, unit, label, label_color) {
 	var startPercent = 0;
 	var endPercent = parseInt(percentile) / 100;
@@ -2334,7 +2326,7 @@ var digitPattern = [
   digit.select("path:nth-child(5)").classed("lit", function(d) { return digitPattern[4][d]; });
   digit.select("path:nth-child(6)").classed("lit", function(d) { return digitPattern[5][d]; });
   digit.select("path:nth-child(7)").classed("lit", function(d) { return digitPattern[6][d]; });
-  separator.classed("lit", seconds & 1);
+  separator.classed("lit", 1);
 
   setTimeout(tick, 1000 - now % 1000);
 })();

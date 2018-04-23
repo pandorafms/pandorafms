@@ -1087,21 +1087,14 @@ function modules_get_agentmodule_descripcion ($id_agente_modulo) {
  *
  * @return string Module type of the given agent module.
  */
-function modules_get_agentmodule_type ($id_agentmodule, $metaconsole = false, $id_server = null) {
-	
-	if ($metaconsole) {
-		$server = db_get_row('tmetaconsole_setup', 'id', $id_server);
-		
-		$return = db_get_value ('id_tipo_modulo',
-			'tagente_modulo', 'id_agente_modulo', (int) $id_agentmodule);
-		
-		metaconsole_restore_db();
-	}
-	else {
-		$return = db_get_value ('id_tipo_modulo',
-			'tagente_modulo', 'id_agente_modulo', (int) $id_agentmodule);
-	}
-	
+function modules_get_agentmodule_type ($id_agentmodule) {
+	$return = db_get_value (
+		'id_tipo_modulo',
+		'tagente_modulo',
+		'id_agente_modulo',
+		(int) $id_agentmodule
+	);
+
 	return (int) $return;
 }
 
@@ -2322,7 +2315,7 @@ function modules_get_first_date($id_agent_module, $datelimit = 0) {
 
 	//check datatype string or normal
 	$table = "tagente_datos";
-	$module_type_str = modules_get_type_name ($id_agent_module);
+	$module_type_str = modules_get_agentmodule_type($id_agent_module);
 	if (strstr ($module_type_str, 'string') !== false) {
 		$table = "tagente_datos_string";
 	}

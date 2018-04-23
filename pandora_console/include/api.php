@@ -51,6 +51,9 @@ $correctLogin = false;
 $user_in_db = null;
 $no_login_msg = "";
 
+// Clean unwanted output
+ob_clean();
+
 // Special call without checks to retrieve version and build of the Pandora FMS
 // This info is avalable from the web console without login
 // Don't change the format, it is parsed by applications
@@ -102,8 +105,64 @@ if ($correctLogin) {
 		}
 		else {
 			$function_name = 'api_' . $op . '_' . $op2;
+			
+			if ($op == "set" && $id){
+				switch ($op2) {
+                        case "update_agent":
+												
+												case "add_module_in_conf":
+												case "update_module_in_conf":
+												case "delete_module_in_conf":
+												
+													$id_os = db_get_value_sql('select id_os from tagente where id_agente = '.$id);
+													
+													if($id_os == 21){
+														returnError('not_allowed_operation_cluster', $returnType);
+														return false;
+													}
+													
+													break;
+												 
+                        case "create_network_module":
+												case "create_plugin_module":
+												case "create_data_module":
+												case "create_synthetic_module":
+												case "create_snmp_module":
+												case "delete_module":
+												case "delete_agent":
+												
+													$id_os = db_get_value_sql('select id_os from tagente where nombre = "'.$id.'"');
+													
+													html_debug($id_os);
+													
+													if($id_os == 21){
+														returnError('not_allowed_operation_cluster', $returnType);
+														return false;
+													}
+													
+													break;
+												
+												case "update_network_module":
+												case "update_plugin_module":
+												case "update_data_module":
+												case "update_snmp_module":
+												
+													$id_os = db_get_value_sql('select id_os from tagente where id_agente = (select id_agente from tagente_modulo where id_agente_modulo ='.$id.')');
+													
+													if($id_os == 21){
+														returnError('not_allowed_operation_cluster', $returnType);
+														return false;
+													}
+												
+													break;
+												
+												default:
+												
+													// break;
+                    }
+			}
 		}
-		
+			
 		// Check if the function exists
 		if (function_exists($function_name)) {
 			if (!DEBUG) {

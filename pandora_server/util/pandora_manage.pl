@@ -135,6 +135,7 @@ sub help_screen{
 	help_screen_line('--delete_cluster', '<id_cluster>', 'Deleting cluster');
 	help_screen_line('--delete_cluster_agent', '<id_agent> <id_cluster>', 'Deleting cluster agent');
 	help_screen_line('--delete_cluster_item', '<id_item>', 'Deleting cluster item');
+	help_screen_line('--get_cluster_status', '<id_cluster>', 'Getting cluster status');
 	print "\nMODULES:\n\n" unless $param ne '';
 	help_screen_line('--create_data_module', "<module_name> <module_type> <agent_name> [<description> <module_group> \n\t  <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> \n\t <history_data> <definition_file> <warning_str> <critical_str>\n\t  <unknown_events> <ff_threshold> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <ff_timeout> <warning_inverse> <critical_inverse>\n\t <critical_instructions> <warning_instructions> <unknown_instructions>]", 'Add data server module to agent');
 	help_screen_line('--create_web_module', "<module_name> <module_type> <agent_name> [<description> <module_group> \n\t  <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> \n\t <history_data> <retries> <requests> <agent_browser_id> <auth_server> <auth_realm> <definition_file>\n\t <proxy_url> <proxy_auth_login> <proxy_auth_password> <warning_str> <critical_str>\n\t  <unknown_events> <ff_threshold> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <ff_timeout> <warning_inverse> <critical_inverse>\n\t <critical_instructions> <warning_instructions> <unknown_instructions>].\n\t The valid data types are web_data, web_proc, web_content_data or web_content_string", 'Add web server module to agent');
@@ -6112,7 +6113,10 @@ sub pandora_manage_main ($$$) {
 			param_check($ltotal, 1, 0);
 			cli_delete_cluster_item();
 		}
-		
+		elsif ($param eq '--get_cluster_status') {
+			param_check($ltotal, 1, 0);
+			cli_cluster_status();
+		}
 		elsif ($param eq '--migration_agent_queue') {
 			param_check($ltotal, 4, 1);
 			cli_migration_agent_queue();
@@ -6679,6 +6683,25 @@ sub cli_delete_cluster_item() {
 	
 	# Call the API.
 	my $result = api_call( $conf, 'set', 'delete_cluster_item', $id);
+	
+	if( defined($result) && "$result" ne "" ){
+		print "\n1\n";
+	}
+	else{
+		print "\n0\n";
+	}
+}
+
+##############################################################################
+# get cluster status.
+# Related option: --get_cluster_status
+##############################################################################
+
+sub cli_get_cluster_status() {
+	my ($id) = @ARGV[2..2];
+	
+	# Call the API.
+	my $result = api_call( $conf, 'get', 'cluster_status', $id);
 	
 	if( defined($result) && "$result" ne "" ){
 		print "\n1\n";

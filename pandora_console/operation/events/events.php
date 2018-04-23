@@ -966,6 +966,7 @@ function validate_event_advanced(id, new_status) {
 					
 					// Change state image
 					$("#validate-"+id).css("display", "none");
+					$("#in-progress-"+id).css("display", "none");
 					$("#status_img_"+id).attr ("src", "images/tick.png");
 					$("#status_img_"+id).attr ("title", <?php echo "'" . __('Event validated') . "'"; ?>);
 					$("#status_img_"+id).attr ("alt", <?php echo "'" . __('Event validated') . "'"; ?>);
@@ -986,9 +987,21 @@ function validate_event_advanced(id, new_status) {
 					
 					// Change state image
 					$("#status_img_"+id).attr ("src", "images/hourglass.png");
-					$("#status_img_"+id).attr ("title", <?php echo "'" . __('Event in process') . "'"; ?>);
+					$("#status_img_"+id).attr ("data-title", <?php echo "'" . __('Event in process') . "'"; ?>);
 					$("#status_img_"+id).attr ("alt", <?php echo "'" . __('Event in process') . "'"; ?>);
-					
+					$("#status_img_"+id).attr ("data-use_title_for_force_title", 1);
+					$("#status_img_"+id).attr ("class", "forced_title");
+
+					// Change the actions buttons
+					$("#delete-"+id).remove();
+					$("#in-progress-"+id).remove();
+					// Format the new disabled delete icon.
+					$("#validate-"+id).parent().append("<img id='delete-" + id + "' src='images/cross.disabled.png' />");
+					$("#delete-"+id).attr ("data-title", <?php echo "'" . __('Is not allowed delete events in process') . "'"; ?>);
+					$("#delete-"+id).attr ("alt", <?php echo "'" . __('Is not allowed delete events in process') . "'"; ?>);
+					$("#delete-"+id).attr ("data-use_title_for_force_title", 1);
+					$("#delete-"+id).attr ("class", "forced_title");
+
 					// Remove row due to new state
 					if (($("#status").val() == 0)
 						|| ($("#status").val() == 1)) {

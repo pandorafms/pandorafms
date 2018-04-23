@@ -666,8 +666,12 @@ else {
 		
 		if ($i != 0 && $allow_action) {
 			//Actions
-			$data[$i] = '';
-			
+			$data[$i] = '<a href="javascript:" onclick="show_event_dialog(' . $event["id_evento"] . ', '.$group_rep.');">';
+			$data[$i] .= html_print_input_hidden('event_title_'.$event["id_evento"], "#".$event["id_evento"]." - " . strip_tags(io_safe_output($event["evento"])), true);
+			$data[$i] .= html_print_image ("images/eye.png", true,
+				array ("title" => __('Show more')));
+			$data[$i] .= '</a>';
+
 			if(!$readonly) {
 				// Validate event
 				if (($event["estado"] != 1) && (tags_checks_event_acl ($config["id_user"], $event["id_grupo"], "EW", $event['clean_tags'], $childrens_ids))) {
@@ -676,6 +680,13 @@ else {
 					$data[$i] .= html_print_image ("images/ok.png", true,
 						array ("title" => __('Validate event')));
 					$data[$i] .= '</a>';
+					// Display the go to in progress status button
+					if ($event["estado"] != 2) {
+						$data[$i] .= '<a href="javascript:validate_event_advanced('.$event["id_evento"].', 2)" id="in-progress-'.$event["id_evento"].'">';
+						$data[$i] .= html_print_image ("images/hourglass.png", true,
+							array ("title" => __('Change to in progress status')));
+						$data[$i] .= '</a>';
+					}
 				}
 				
 				// Delete event
@@ -693,13 +704,7 @@ else {
 					}
 				}
 			}
-			
-			$data[$i] .= '<a href="javascript:" onclick="show_event_dialog(' . $event["id_evento"] . ', '.$group_rep.');">';
-			$data[$i] .= html_print_input_hidden('event_title_'.$event["id_evento"], "#".$event["id_evento"]." - " . strip_tags(io_safe_output($event["evento"])), true);
-			$data[$i] .= html_print_image ("images/eye.png", true,
-				array ("title" => __('Show more')));
-			$data[$i] .= '</a>';
-			
+
 			$table->cellstyle[count($table->data)][$i] = 'background: #F3F3F3;';
 			
 			$i++;

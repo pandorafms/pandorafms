@@ -87,6 +87,13 @@ $interface_traffic_modules = array(
 		<script type='text/javascript' src='../../include/javascript/jquery-1.9.0.js'></script>
 		<script type='text/javascript' src='../../include/javascript/jquery.pandora.js'></script>
 		<script type='text/javascript' src='../../include/javascript/jquery.jquery-ui-1.10.0.custom.js'></script>
+		<?php
+			if ($config['flash_charts']) {
+				//Include the javascript for the js charts library
+				include_once($config["homedir"] . '/include/graphs/functions_flot.php');
+				echo include_javascript_dependencies_flot_graph(true, "../");
+			}
+		?>
 			<script type='text/javascript'>
 			<!--
 			window.onload = function() {

@@ -568,7 +568,7 @@ if ($agents !== false) {
 
 		echo '</span><div class="left actions" style="visibility: hidden; clear: left">';
 		if (check_acl ($config["id_user"], $agent["id_grupo"], "AW")) {
-			if($agent["id_os"] == 21){
+			if($agent["id_os"] == 100){
 				$cluster = db_get_row_sql('select id from tcluster where id_agent = '.$agent['id_agente']);
 				echo '<a href="index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_builder&id_cluster='.$cluster['id'].'&step=1&update=1">'.__('Edit').'</a>';
 				echo ' | ';
@@ -580,7 +580,7 @@ if ($agents !== false) {
 				echo ' | ';
 			}
 		}
-		if($agent["id_os"] != 21){
+		if($agent["id_os"] != 100){
 		echo '<a href="index.php?sec=gagente&
 			sec2=godmode/agentes/configurar_agente&tab=module&
 			id_agente='.$agent["id_agente"].'">'.__('Modules').'</a>';
@@ -592,7 +592,7 @@ if ($agents !== false) {
 			id_agente='.$agent["id_agente"].'">'.__('Alerts').'</a>';
 		echo ' | ';
 		
-		if($agent["id_os"] == 21){
+		if($agent["id_os"] == 100){
 			echo '<a href="index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_view&id='.$cluster['id'].'">'.__('View').'</a>';
 		}
 		else{
@@ -650,7 +650,7 @@ if ($agents !== false) {
 			echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&
 			enable_agent=".$agent["id_agente"]."&group_id=$ag_group&recursion=$recursion&search=$search&offset=$offsetArg&sort_field=$sortField&sort=$sort&disabled=$disabled'";
 			
-			if($agent["id_os"] != 21){
+			if($agent["id_os"] != 100){
 				echo ">";
 			}
 			else{
@@ -662,7 +662,7 @@ if ($agents !== false) {
 		else {
 			echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&
 			disable_agent=".$agent["id_agente"]."&group_id=$ag_group&recursion=$recursion&search=$search&offset=$offsetArg&sort_field=$sortField&sort=$sort&disabled=$disabled'";
-			if($agent["id_os"] != 21){
+			if($agent["id_os"] != 100){
 				echo ">";
 			}
 			else{
@@ -676,7 +676,7 @@ if ($agents !== false) {
 			echo "&nbsp;&nbsp;<a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&
 			borrar_agente=".$agent["id_agente"]."&group_id=$ag_group&recursion=$recursion&search=$search&offset=$offsetArg&sort_field=$sortField&sort=$sort&disabled=$disabled'";
 			
-			if($agent["id_os"] != 21){
+			if($agent["id_os"] != 100){
 				echo ' onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
 			}
 			else{

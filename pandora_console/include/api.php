@@ -116,7 +116,7 @@ if ($correctLogin) {
 												
 													$id_os = db_get_value_sql('select id_os from tagente where id_agente = '.$id);
 													
-													if($id_os == 21){
+													if($id_os == 100){
 														returnError('not_allowed_operation_cluster', $returnType);
 														return false;
 													}
@@ -135,7 +135,7 @@ if ($correctLogin) {
 													
 													html_debug($id_os);
 													
-													if($id_os == 21){
+													if($id_os == 100){
 														returnError('not_allowed_operation_cluster', $returnType);
 														return false;
 													}
@@ -149,7 +149,7 @@ if ($correctLogin) {
 												
 													$id_os = db_get_value_sql('select id_os from tagente where id_agente = (select id_agente from tagente_modulo where id_agente_modulo ='.$id.')');
 													
-													if($id_os == 21){
+													if($id_os == 100){
 														returnError('not_allowed_operation_cluster', $returnType);
 														return false;
 													}

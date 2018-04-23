@@ -623,7 +623,7 @@ function treeview_printTable($id_agente, $server_data = array(), $no_head = fals
 	if ( $user_access_node && check_acl ($config["id_user"], $agent["id_grupo"], "AW")) {
 		$go_to_agent = '<div style="text-align: right;">';
 		
-		if($agent["id_os"] != 21){
+		if($agent["id_os"] != 100){
 			$go_to_agent .= '<a target=_blank href="' . $console_url . 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.$url_hash.'">';
 			$go_to_agent .= html_print_submit_button (__('Go to agent edition'), 'upd_button', false, 'class="sub config"', true);
 		}

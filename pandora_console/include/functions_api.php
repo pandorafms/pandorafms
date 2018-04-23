@@ -10614,4 +10614,22 @@ function api_set_apply_module_template($id_template, $id_agent, $thrash3, $thras
 	
 }
 
+function api_get_cluster_status($id_cluster, $trash1, $trash2, $returnType) {
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+	
+	$sql = "select estado from tagente_estado INNER JOIN tagente_modulo ON tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo and tagente_modulo.nombre = 'Cluster status' and tagente_modulo.id_agente = (select id_agent from tcluster where id = ".$id_cluster.")";
+	
+	$value = db_get_value_sql($sql);
+	
+	if ($value === false) {
+		returnError('id_not_found', $returnType);
+	}
+	
+	$data = array('type' => 'string', 'data' => $value);
+	
+	returnData($returnType, $data);
+}
+
 ?>

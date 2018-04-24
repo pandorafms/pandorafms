@@ -699,8 +699,15 @@ else {
 						$data[$i] .= '</a>';
 					}
 					else {
-						$data[$i] .= html_print_image ("images/cross.disabled.png", true,
-							array ("title" => __('Is not allowed delete events in process'))).'&nbsp;';
+						$data[$i] .= html_print_image (
+							"images/cross.disabled.png",
+							true,
+							array (
+								"title" => __('Is not allowed delete events in process'),
+								"id" => "delete-" . $event['id_evento']
+							)
+						);
+						$data[$i] .= '&nbsp;';
 					}
 				}
 			}

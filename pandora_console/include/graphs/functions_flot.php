@@ -205,7 +205,7 @@ function flot_area_graph (
 	}
 
 	// Parent layer
-	$return = "<div class='parent_graph' style='width: " . ($format_graph['width']) . "px; " . $background_style . "'>";
+	$return = "<div class='parent_graph' style='width: " . ($format_graph['width']) . "; " . $background_style . "'>";
 	// Set some containers to legend, graph, timestamp tooltip, etc.
 	$return .= "<p id='legend_$graph_id' class='legend_graph' style='font-size:" . $format_graph['font_size'] ."pt !important;'></p>";
 
@@ -260,13 +260,14 @@ function flot_area_graph (
 	}
 
 	if (!$vconsole){
-		$return .= "<div 	id='overview_$graph_id'
-							class='overview_graph'
-							style='	display: none; margin-left:0px;
-									margin-top:20px; margin-bottom:50px;
-									width: ".$format_graph['width']."px;
-									height: ".$format_graph['height'] ."px;'></div>";
+		$return .= "<div id='overview_$graph_id'
+						class='overview_graph'
+						style='	 margin:0px; margin-top:30px; margin-bottom:50px;
+							visibility:hidden;
+							width: ".$format_graph['width'].";
+							height: 200px;'></div>";
 	}
+
 	//XXXXTODO
 	$water_mark = '';
 	if ($water_mark != '') {
@@ -377,7 +378,7 @@ function menu_graph(
 		$return .= "<div id='geneal_menu_$graph_id' class='menu_graph' style='
 						width: 30px;
 						height: 250px;
-						left: " . $width . "px;
+						left: 100%;
 						position: absolute;
 						top: 0px;
 						background-color: white;'>";

@@ -90,7 +90,6 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 			}
 		?>
 		<script type='text/javascript'>
-			<!--
 			window.onload = function() {
 				// Hack to repeat the init process to period select
 				var periodSelectId = $('[name="period"]').attr('class');
@@ -105,15 +104,7 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 				else {
 					$("#hidden-show_other").val(0);
 				}
-				// 
-				// if ($('#hidden-avg_only_sent').is(":checked") == true) {
-				// 	$("#hidden-avg_only_sent").val(1);
-				// }
-				// else {
-				// 	$("#hidden-avg_only_sent").val(0);
-				// }
 			}
-			//-->
 		</script>
 	</head>
 	<body bgcolor="#ffffff" style='background:#ffffff;'>
@@ -163,8 +154,14 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 
 		$period = get_parameter ("period");
 		$id = get_parameter ("id", 0);
+		
+//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+		/*
 		$width = get_parameter ("width", STATWIN_DEFAULT_CHART_WIDTH);
 		$height = get_parameter ("height", STATWIN_DEFAULT_CHART_HEIGHT);
+		*/
+	
+
 		$label = get_parameter ("label", "");
 		$label_graph = base64_decode(get_parameter ("label", ""));
 		$start_date = get_parameter ("start_date", date("Y/m/d"));
@@ -189,7 +186,7 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 			}
 			elseif($config['full_scale_option'] == 2){
 				if($graph_type == 'boolean'){
-					$fullscale = 1;	
+					$fullscale = 1;
 				}else{
 					$fullscale = 0;
 				}
@@ -229,11 +226,13 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 		$unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $id);
 
 		// log4x doesnt support flash yet
-		//
 		if ($config['flash_charts'] == 1)
 			echo '<div style="margin-left: 65px; padding-top: 10px;">';
 		else
 			echo '<div style="margin-left: 20px; padding-top: 10px;">';
+
+		$width  = '90%';
+		$height = '450';
 
 		switch ($graph_type) {
 			case 'boolean':
@@ -488,6 +487,7 @@ ui_include_time_picker(true);
 		var show_overview = false;
 		var height_window;
 		var width_window;
+
 		$(window).ready(function() {
 			height_window = window.innerHeight;
 			width_window = window.innerWidth;

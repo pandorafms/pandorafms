@@ -251,20 +251,20 @@ function area_graph(
 		//XXXXX
 		//Corregir este problema
 		$graph = array();
-		$graph['data'] = $chart_data;
-		$graph['width'] = $width;
-		$graph['height'] = $height;
-		$graph['color'] = $color;
-		$graph['legend'] = $legend;
-		$graph['xaxisname'] = $xaxisname;
-		$graph['yaxisname'] = $yaxisname;
-		$graph['water_mark'] = $water_mark_file;
-		$graph['font'] = $font;
-		$graph['font_size'] = $font_size;
+		$graph['data']            = $chart_data;
+		$graph['width']           = $width;
+		$graph['height']          = $height;
+		$graph['color']           = $color;
+		$graph['legend']          = $legend;
+		$graph['xaxisname']       = $xaxisname;
+		$graph['yaxisname']       = $yaxisname;
+		$graph['water_mark']      = $water_mark_file;
+		$graph['font']            = $font;
+		$graph['font_size']       = $font_size;
 		$graph['backgroundColor'] = $backgroundColor;
-		$graph['unit'] = $unit;
-		$graph['series_type'] = $series_type;
-		$graph['percentil'] = $percentil_values;
+		$graph['unit']            = $unit;
+		$graph['series_type']     = $series_type;
+		$graph['percentil']       = $percentil_values;
 
 		$id_graph = serialize_in_temp($graph, null, $ttl);
 		// Warning: This string is used in the function "api_get_module_graph" from 'functions_api.php' with the regec patern "/<img src='(.+)'>/"

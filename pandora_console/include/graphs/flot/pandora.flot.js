@@ -959,12 +959,6 @@ function adjust_left_width_canvas(adapter_id, adapted_id) {
 	$('#'+adapted_id).css('margin-left', adapter_left_margin);
 }
 
-
-function update_left_width_canvas(graph_id) {
-	$('#overview_'+graph_id).width($('#'+graph_id).width());
-	$('#overview_'+graph_id).css('margin-left', $('#'+graph_id+' .yAxis .tickLabel').width());
-}
-
 function check_adaptions(graph_id) {
 	var classes = $('#'+graph_id).attr('class').split(' ');
 
@@ -1132,6 +1126,7 @@ function pandoraFlotArea(
 	background_color, legend_color, short_data,
 	events_array
 ) {
+	console.log(format_graph.font_size);
 	//diferents vars
 	var unit      = format_graph.unit ? format_graph.unit : '';
 	var homeurl   = format_graph.homeurl;
@@ -1156,8 +1151,6 @@ function pandoraFlotArea(
 
 	//XXXX ver que hay que hacer
 	var type          = 'area_simple';
-	//var xaxisname     = 'xaxisname';
-
 	var labels_long   = '';
 	var min_check     = 0;
 	var water_mark    = '';
@@ -1784,7 +1777,7 @@ function pandoraFlotArea(
 
 	// The first execution, the graph data is the base data
 	datas = data_base;
-
+	font_size = 8;
 	// minTickSize
 	var count_data = datas[0].data.length;
 	var min_tick_pixels = 80;
@@ -1799,7 +1792,7 @@ function pandoraFlotArea(
 				mode: 'xy'
 			},
 			selection: {
-				mode: 'x',
+				mode: 'xy',
 				color: '#777'
 			},
 			export: {
@@ -1885,38 +1878,48 @@ function pandoraFlotArea(
 		var overview = $.plot($('#overview_'+graph_id),datas, {
 			series: {
 				stack: stacked,
-				lines: {
-					show: true,
-					lineWidth: 1
-				},
-				shadowSize: 0
+				shadowSize: 0.1
+			},
+			crosshair: {
+				mode: 'xy'
+			},
+			selection: {
+				mode: 'xy',
+				color: '#777'
+			},
+			export: {
+				export_data: true,
+				labels_long: labels_long,
+				homeurl: homeurl
 			},
 			grid: {
-				borderWidth: 1,
-				borderColor: '#C1C1C1',
 				hoverable: true,
-				autoHighlight: false
+				clickable: true,
+				borderWidth:1,
+				borderColor: '#C1C1C1',
+				tickColor: background_color,
+				color: legend_color
 			},
-			xaxes: [ {
+			xaxes: [{
 				axisLabelFontSizePixels: font_size,
 				mode: "time",
 				tickFormatter: xFormatter,
 				tickSize: [maxticks, 'hour'],
-				labelWidth: 70,
-			} ],
-			yaxis: {
-				ticks: [],
-				autoscaleMargin: 0.1
-			},
-			selection: {
-				mode: 'x',
-				color: '#777'
-			},
+				labelWidth: 70
+			}],
+			yaxes: [{
+				tickFormatter: yFormatter,
+				color: '',
+				alignTicksWithAxis: 1,
+				labelWidth: 30,
+				position: 'left',
+				font: font,
+				reserveSpace: true,
+			}],
 			legend: {
-				show: false
-			},
-			crosshair: {
-				mode: 'x'
+				position: 'se',
+				container: $('#legend_' + graph_id),
+				labelFormatter: lFormatter
 			}
 		});
 	}
@@ -1953,6 +1956,19 @@ function pandoraFlotArea(
 					mode: "time",
 					tickFormatter: xFormatter,
 					tickSize: [maxticks_zoom, 'hour']
+				}],
+				yaxis:{
+					min: ranges.yaxis.from,
+					max: ranges.yaxis.to
+				},
+				yaxes: [{
+					tickFormatter: yFormatter,
+					color: '',
+					alignTicksWithAxis: 1,
+					labelWidth: 30,
+					position: 'left',
+					font: font,
+					reserveSpace: true,
 				}],
 				legend: {
 					show: true
@@ -2121,7 +2137,6 @@ function pandoraFlotArea(
 		plot.setCrosshair({ x: pos.x, y: 0 });
 		currentPlot = plot;
 		latestPosition = pos;
-
 		if (!updateLegendTimeout) {
 			updateLegendTimeout = setTimeout(updateLegend, 50);
 		}
@@ -2285,30 +2300,19 @@ function pandoraFlotArea(
 	if (menu) {
 		var parent_height;
 		$('#menu_overview_' + graph_id).click(function() {
-			$('#overview_' + graph_id).toggle();
+			if($('#overview_' + graph_id).css('visibility') == 'visible'){
+				$('#overview_' + graph_id).css('visibility', 'hidden');
+			}
+			else{
+				$('#overview_' + graph_id).css('visibility', 'visible');
+			}
 		});
-
-		//~ $('#menu_export_csv_' + graph_id).click(function() {
-			//~ exportData({ type: 'csv' });
-		//~ });
 
 		$("#menu_export_csv_"+graph_id)
 			.click(function (event) {
 				event.preventDefault();
 				plot.exportDataCSV();
 		});
-
-		//Not a correct call
-		//~ $('#menu_export_json_' + graph_id).click(function() {
-			//~ exportData({ type: 'json' });
-		//~ });
-
-		//This is a correct call to export data in json
-		//~ $("#menu_export_json_"+graph_id)
-			//~ .click(function (event) {
-				//~ event.preventDefault();
-				//~ plot.exportDataJSON();
-		//~ });
 
 		$('#menu_threshold_' + graph_id).click(function() {
 			datas = new Array();
@@ -2408,12 +2412,6 @@ function adjust_menu(graph_id, plot, parent_height, width) {
 	var parent_height_new = 0;
 
 	var legend_height = parseInt($('#legend_'+graph_id).css('height').split('px')[0]) + parseInt($('#legend_'+graph_id).css('margin-top').split('px')[0]);
-	if ($('#overview_'+graph_id).css('display') == 'none') {
-		overview_height = 0;
-	}
-	else {
-		overview_height = parseInt($('#overview_'+graph_id).css('height').split('px')[0]) + parseInt($('#overview_'+graph_id).css('margin-top').split('px')[0]);
-	}
 
 	var menu_height = '25';
 
@@ -2422,13 +2420,9 @@ function adjust_menu(graph_id, plot, parent_height, width) {
 	}
 
 	offset = $('#' + graph_id)[0].offsetTop;
-	
+
 	$('#menu_' + graph_id).css('top', ((offset) + 'px'));
 
-	//$('#legend_' + graph_id).css('width',plot.width());
-
-	//~ $('#menu_' + graph_id).css('left', $('#'+graph_id)[0].offsetWidth);
-	
 	$('#menu_' + graph_id).show();
 }
 
@@ -2498,9 +2492,8 @@ function adjust_left_width_canvas(adapter_id, adapted_id) {
 	$('#'+adapted_id).css('margin-left', adapter_left_margin);
 }
 
-
 function update_left_width_canvas(graph_id) {
-	$('#overview_'+graph_id).width($('#'+graph_id).width() - 30);
+	$('#overview_'+graph_id).width($('#'+graph_id).width());
 	$('#overview_'+graph_id).css('margin-left', $('#'+graph_id+' .yAxis .tickLabel').width());
 }
 

@@ -679,13 +679,14 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 
 	// ATTENTION: The min size is in constants.php
 	// It's not the same minsize for all graphs, but we are choosed a prudent minsize for all
+	/*
 	if ($height <= CHART_DEFAULT_HEIGHT) {
 		$height = CHART_DEFAULT_HEIGHT;
 	}
 	if ($width < CHART_DEFAULT_WIDTH) {
 		$width = CHART_DEFAULT_WIDTH;
 	}
-
+	*/
 	$format_graph = array();
 	$format_graph['width']      = $width;
 	$format_graph['height']     = $height;
@@ -2367,10 +2368,6 @@ function fullscale_data_combined($module_list, $period, $date, $flash_charts, $p
 		foreach ($data_uncompress as $key_data => $value_data) {
 			foreach ($value_data['data'] as $k => $v) {
 				$real_date = $v['utimestamp'];
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/develop
 				if(!isset($v['datos'])){
 					$v['datos'] = $previous_data;
 				}

@@ -1098,6 +1098,10 @@ function add_agent_node(agents) {
 						draw_elements_graph();
 						init_drag_and_drop();
 						set_positions_graph();
+					} else {
+						$("#error_red").show();
+						$("#error_red").attr("data-title","The agent is already added on the networkmap");
+						$("#error_red").attr("data-use_title_for_force_title","1");
 					}
 				}
 			});

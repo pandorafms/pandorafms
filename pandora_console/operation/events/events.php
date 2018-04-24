@@ -874,7 +874,7 @@ $(document).ready( function() {
 		);
 	});
 	
-	$("a.delete_event").click (function () {
+	$("td").on('click', 'a.delete_event', function () {
 		confirmation = confirm("<?php echo __('Are you sure?'); ?>");
 		if (!confirmation) {
 			return;
@@ -940,6 +940,11 @@ function validate_event_advanced(id, new_status) {
 	$tr = $('#validate-'+id).parents ("tr");
 	
 	var grouped = $('#group_rep').val();
+
+	// Get images url
+	var hourglass_image = "<?php echo ui_get_full_url("images/hourglass.png", false, false, false); ?>";
+	var cross_disabled_image = "<?php echo ui_get_full_url("images/cross.disabled.png", false, false, false); ?>";
+	var cross_image = "<?php echo ui_get_full_url("images/cross.png", false, false, false); ?>";
 	
 	var similar_ids;
 	similar_ids = $('#hidden-similar_ids_'+id).val();
@@ -964,29 +969,31 @@ function validate_event_advanced(id, new_status) {
 					// Change status description
 					$("#status_row_"+id).html(<?php echo "'" . __('Event validated') . "'"; ?>);
 					
-					// Change state image
+					// Change delete icon
+					$("#delete-"+id).remove();
+					$("#validate-"+id).parent().append('<a class="delete_event" href="javascript:" id="delete-' + id + '"></a>');
+					$("#delete-"+id).append("<img src='" + cross_image + "' />");
+					$("#delete-"+id + " img").attr ("id", "delete_cross_" + id);
+					$("#delete-"+id + " img").attr ("data-title", <?php echo "'" . __('Delete event') . "'"; ?>);
+					$("#delete-"+id + " img").attr ("alt", <?php echo "'" . __('Delete event') . "'"; ?>);
+					$("#delete-"+id + " img").attr ("data-use_title_for_force_title", 1);
+					$("#delete-"+id + " img").attr ("class", "forced_title");
+
+					// Change other buttons actions
 					$("#validate-"+id).css("display", "none");
 					$("#in-progress-"+id).css("display", "none");
 					$("#status_img_"+id).attr ("src", "images/tick.png");
-					$("#status_img_"+id).attr ("title", <?php echo "'" . __('Event validated') . "'"; ?>);
-					$("#status_img_"+id).attr ("alt", <?php echo "'" . __('Event validated') . "'"; ?>);
+					$("#status_img_"+id).attr ("data-title", <?php echo "'" . __('Event in process') . "'"; ?>);
+					$("#status_img_"+id).attr ("alt", <?php echo "'" . __('Event in process') . "'"; ?>);
+					$("#status_img_"+id).attr ("data-use_title_for_force_title", 1);
+					$("#status_img_"+id).attr ("class", "forced_title");
 				} // In process
 				else if (new_status == 2) {
 					// Change status description
 					$("#status_row_"+id).html(<?php echo "'" . __('Event in process') . "'"; ?>);
 					
-					// Remove delete link (if event is not grouped and there is more than one event)
-					if (grouped == 1) {
-						if (parseInt($("#count_event_group_"+id).text()) <= 1) {
-							$("#delete-"+id).replaceWith('<img alt="' + <?php echo "'" . __('Is not allowed delete events in process') . "'"; ?> + '" title="' + <?php echo "'" . __('Is not allowed delete events in process') . "'"; ?> + '" src="images/cross.disabled.png">');
-						}
-					}
-					else { // Remove delete link (if event is not grouped)
-						$("#delete-"+id).replaceWith('<img alt="' + <?php echo "'" . __('Is not allowed delete events in process') . "'"; ?> + '" title="' + <?php echo "'" . __('Is not allowed delete events in process') . "'"; ?> + '" src="images/cross.disabled.png">');
-					}
-					
 					// Change state image
-					$("#status_img_"+id).attr ("src", "images/hourglass.png");
+					$("#status_img_"+id).attr ("src", hourglass_image);
 					$("#status_img_"+id).attr ("data-title", <?php echo "'" . __('Event in process') . "'"; ?>);
 					$("#status_img_"+id).attr ("alt", <?php echo "'" . __('Event in process') . "'"; ?>);
 					$("#status_img_"+id).attr ("data-use_title_for_force_title", 1);
@@ -996,7 +1003,7 @@ function validate_event_advanced(id, new_status) {
 					$("#delete-"+id).remove();
 					$("#in-progress-"+id).remove();
 					// Format the new disabled delete icon.
-					$("#validate-"+id).parent().append("<img id='delete-" + id + "' src='images/cross.disabled.png' />");
+					$("#validate-"+id).parent().append("<img id='delete-" + id + "' src='" + cross_disabled_image + "' />");
 					$("#delete-"+id).attr ("data-title", <?php echo "'" . __('Is not allowed delete events in process') . "'"; ?>);
 					$("#delete-"+id).attr ("alt", <?php echo "'" . __('Is not allowed delete events in process') . "'"; ?>);
 					$("#delete-"+id).attr ("data-use_title_for_force_title", 1);

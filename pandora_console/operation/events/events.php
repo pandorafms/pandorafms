@@ -873,41 +873,45 @@ $(document).ready( function() {
 			"html"
 		);
 	});
-	
+
 	$("td").on('click', 'a.delete_event', function () {
-		confirmation = confirm("<?php echo __('Are you sure?'); ?>");
-		if (!confirmation) {
-			return;
-		}
-		meta = $('#hidden-meta').val();
-		history_var = $('#hidden-history').val();
-		
-		$tr = $(this).parents ("tr");
-		id = this.id.split ("-").pop ();
-		
-		$("#delete_cross_"+id).attr ("src", "images/spinner.gif");
-		
-		jQuery.post ("<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
-			{"page" : "operation/events/events",
-			"delete_event" : 1,
-			"id" : id,
-			"similars" : <?php echo ($group_rep ? 1 : 0) ?>,
-			"meta" : meta,
-			"history" : history_var
-			},
-			function (data, status) {
-				if (data == "ok") {
-					$tr.remove ();
-					$('#show_message_error').html('<h3 class="suc"> <?php echo __('Successfully delete'); ?> </h3>');
-				}
-				else
-					$('#show_message_error').html('<h3 class="error"> <?php echo __('Error deleting event'); ?> </h3>');
-			},
-			"html"
+		var click_element = this;
+		display_confirm_dialog(
+			"<?php echo __('Are you sure?'); ?>",
+			"<?php echo __('Confirm'); ?>",
+			"<?php echo __('Cancel'); ?>",
+			function () {
+				meta = $('#hidden-meta').val();
+				history_var = $('#hidden-history').val();
+
+				$tr = $(click_element).parents ("tr");
+				id = click_element.id.split ("-").pop ();
+
+				$("#delete_cross_"+id).attr ("src", "images/spinner.gif");
+
+				jQuery.post ("<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
+					{"page" : "operation/events/events",
+					"delete_event" : 1,
+					"id" : id,
+					"similars" : <?php echo ($group_rep ? 1 : 0) ?>,
+					"meta" : meta,
+					"history" : history_var
+					},
+					function (data, status) {
+						if (data == "ok") {
+							$tr.remove ();
+							$('#show_message_error').html('<h3 class="suc"> <?php echo __('Successfully delete'); ?> </h3>');
+						}
+						else
+							$('#show_message_error').html('<h3 class="error"> <?php echo __('Error deleting event'); ?> </h3>');
+					},
+					"html"
+				);
+				return false;
+			}
 		);
-		return false;
 	});
-	
+
 	function toggleDiv (divid) {
 		if (document.getElementById(divid).style.display == 'none') {
 			document.getElementById(divid).style.display = 'block';

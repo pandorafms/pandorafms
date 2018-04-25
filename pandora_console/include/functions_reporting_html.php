@@ -485,14 +485,19 @@ function reporting_html_SLA($table, $item, $mini) {
 							$row[] = $sla['dinamic_text'];
 						}
 						$row[] = round($sla['sla_limit'], 2) . "%";
-						
-						if ($sla['sla_value_unknown']) {
-							$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_UNKNOWN.';">' .
+
+						if (reporting_sla_is_not_init_from_array($sla)) {
+							$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NOTINIT.';">' .
 								__('N/A') . '</span>';
-							$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_UNKNOWN.';">' .
-								__('Unknown') . '</span>';
-						}
-						elseif ($sla['sla_status']) {
+							$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NOTINIT.';">' .
+								__('Not init') . '</span>';
+						} elseif (reporting_sla_is_ignored_from_array($sla)) {
+							$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_IGNORED.';">' .
+								__('N/A') . '</span>';
+							$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_IGNORED.';">' .
+								__('No data') . '</span>';
+						// Normal calculation
+						} elseif ($sla['sla_status']) {
 							$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NORMAL.';">' .
 								sla_truncate($sla['sla_value'], $config['graph_precision']) . "%" . '</span>';
 							$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NORMAL.';">' .
@@ -2564,24 +2569,36 @@ function reporting_html_availability_graph(&$table, $item, $pdf=0) {
 	$table1->width = '99%';
 	$table1->data = array ();
 	foreach ($item['charts'] as $chart) {
-		switch ($chart['sla_status']) {
-			case REPORT_STATUS_ERR:
-				$color = COL_CRITICAL;
-				break;
-			case REPORT_STATUS_OK:
-				$color = COL_NORMAL;
-				break;
-			default:
-				$color = COL_UNKNOWN;
-				break;
+		$checks_resume = '';
+		$sla_value = '';
+		if (reporting_sla_is_not_init_from_array($chart)) {
+			$color = COL_NOTINIT;
+			$sla_value = __('Not init');
+		} elseif (reporting_sla_is_ignored_from_array($chart)) {
+			$color = COL_IGNORED;
+			$sla_value = __('No data');
+		} else {
+			switch ($chart['sla_status']) {
+				case REPORT_STATUS_ERR:
+					$color = COL_CRITICAL;
+					break;
+				case REPORT_STATUS_OK:
+					$color = COL_NORMAL;
+					break;
+				default:
+					$color = COL_UNKNOWN;
+					break;
+			}
+			$sla_value = sla_truncate($chart['sla_value'], $config['graph_precision']) . '%';
+			$checks_resume = "(" . $chart['checks_ok'] . "/" . $chart['checks_total'] . ")";
 		}
 		$table1->data[] = array(
 			$chart['agent'] . "<br />" . $chart['module'],
 			$chart['chart'],
 			"<span style = 'font: bold 2em Arial, Sans-serif; color: ".$color."'>" .
-				sla_truncate($chart['sla_value'], $config['graph_precision']) . '%' .
+				$sla_value .
 			'</span>',
-				"(" . $chart['checks_ok'] . "/" . $chart['checks_total'] . ")" 
+			$checks_resume 
 		);
 	}
 

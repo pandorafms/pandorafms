@@ -5899,6 +5899,8 @@ function reporting_availability_graph($report, $content, $pdf=false) {
 			$dataslice['order']        = $data['sla_value'];
 			$dataslice['checks_total'] = $data['checks_total'];
 			$dataslice['checks_ok']    = $data['checks_ok'];
+			$dataslice['time_total']   = $data['time_total'];
+			$dataslice['time_not_init']= $data['time_not_init'];
 			$dataslice['sla_status']   = $data['sla_status'];
 			$dataslice['sla_value']    = $data['sla_value'];
 
@@ -11009,6 +11011,7 @@ function reporting_label_macro ($item, $label) {
  * @brief Calculates the SLA compliance value given an sla array
  *
  * @param Array With keys time_ok, time_error, time_downtime and time_unknown
+ * @return SLA Return the compliance value.
  */
 function reporting_sla_get_compliance_from_array ($sla_array) {
 	$time_compliance = $sla_array['time_ok'] + $sla_array['time_unknown'] + $sla_array['time_downtime'];
@@ -11016,6 +11019,28 @@ function reporting_sla_get_compliance_from_array ($sla_array) {
 	return $time_compliance == 0
 		? 0
 		: $time_compliance/$time_total_working;
+}
+
+/**
+ * @brief Calculates if an SLA array is not init
+ *
+ * @param Array With keys time_ok, time_error, time_downtime and time_unknown
+ * @return bool True if not init
+ */
+function reporting_sla_is_not_init_from_array($sla_array) {
+	if ($sla_array["time_total"] == 0) return false;
+	return $sla_array["time_not_init"] == $sla_array["time_total"];
+}
+
+/**
+ * @brief Calculates if an SLA array is ignored
+ *
+ * @param Array With keys time_ok, time_error, time_downtime and time_unknown
+ * @return bool True if igonred time
+ */
+function reporting_sla_is_ignored_from_array($sla_array) {
+	if ($sla_array["time_total"] > 0) return false;
+	return $sla_array["time_not_init"] == 0;
 }
 
 /**

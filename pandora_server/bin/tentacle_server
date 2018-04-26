@@ -201,6 +201,9 @@ $t_program_name =~ s/.*\///g;
 # Log file
 my $log_file = undef;
 
+# Configuration readed from file;
+my $CONF = {};
+
 ################################################################################
 ## SUB print_help
 ## Print help screen.
@@ -217,6 +220,7 @@ sub print_help {
 	print ("\t-d\t\tRun as daemon.\n");
 	print ("\t-e cert\t\tOpenSSL certificate file. Enables SSL.\n");
 	print ("\t-f ca_cert\tVerify that the peer certificate is signed by a ca.\n");
+	print ("\t-F config_file\tConfiguration file full path.\n");
 	print ("\t-h\t\tShow help.\n");
 	print ("\t-I\t\tEnable insecure operations (file listing and moving).\n");
 	print ("\t-i\t\tFilters.\n");
@@ -282,7 +286,7 @@ sub parse_options {
 	my @t_addresses_tmp;
 
 	# Get options
-	if (getopts ('a:b:c:de:f:g:hIi:k:l:m:op:qr:s:S:t:TvVwx:', \%opts) == 0 || defined ($opts{'h'})) {
+	if (getopts ('a:b:c:de:f:F:g:hIi:k:l:m:op:qr:s:S:t:TvVwx:', \%opts) == 0 || defined ($opts{'h'})) {
 		print_help ();
 		exit 1;
 	}
@@ -302,6 +306,11 @@ sub parse_options {
 				uninstall_service();
 			}
 		}
+	}
+
+	# Configuration file
+	if (defined($opts{'F'})) {
+		parse_config_file($opts{'F'});
 	}
 
 	# Address
@@ -534,6 +543,40 @@ sub parse_options {
 	if (defined ($opts{'l'})) {
 		$log_file = $opts{'l'};
 	}
+}
+
+################################################################################
+## SUB parse_config_file
+## Get all options from a config file.
+################################################################################
+sub parse_config_file {
+	my ($config_file) = @_;
+
+	# File should be writable
+	if (! -r $config_file) {
+		print "Configuration file $config_file is not readable.\n";
+		return;
+	}
+
+	# Open the file
+	my $FH;
+	if (! open ($FH, "< $config_file")) {
+		print "Cannot open configuration file $config_file.\n";
+		return;
+	}
+
+	# Read the file and only get the well formed lines
+	while (<$FH>) {
+		my $buffer_line = $_;
+		if ($buffer_line =~ /^[a-zA-Z]/){ # begins with letters
+			if ($buffer_line =~ m/([\w\-\_\.]+)\s([0-9\w\-\_\.\/\?\&\=\)\(\_\-\!\*\@\#\%\$\~\"\']+)/){
+				$CONF->{$1} = $2;
+			}
+		}
+	}
+
+ 	close ($FH);
+	return;
 }
 
 ################################################################################

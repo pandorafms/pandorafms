@@ -247,10 +247,10 @@ function flot_area_graph (
 	if($format_graph['type'] == 'area_simple'){
 		$return .= "noresizevc ";
 	}
-
+//XXXXXX  height: ".$format_graph['height']."px;'
 	$return .= "graph" .$format_graph['adapt_key'] ."'
 				style='	width: ".$format_graph['width']."px;
-						height: ".$format_graph['height']."px;'></div>";
+						height: 400px;'></div>";
 
 	if ($show_elements_graph['menu']) {
 		$format_graph['height'] = 100;
@@ -262,10 +262,7 @@ function flot_area_graph (
 	if (!$vconsole){
 		$return .= "<div id='overview_$graph_id'
 						class='overview_graph'
-						style='	 margin:0px; margin-top:30px; margin-bottom:50px;
-							visibility:hidden;
-							width: ".$format_graph['width'].";
-							height: 200px;'></div>";
+						style='margin:0px; margin-top:30px; margin-bottom:50px; display:none; width: ".$format_graph['width']."; height: 200px;'></div>";
 	}
 
 	//XXXXTODO

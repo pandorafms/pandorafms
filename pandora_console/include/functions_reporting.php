@@ -3603,6 +3603,7 @@ function reporting_prediction_date($report, $content) {
 function reporting_projection_graph($report, $content,
 	$type = 'dinamic', $force_width_chart = null,
 	$force_height_chart = null) {
+html_debug_print('esta en esta');
 	
 	global $config;
 	
@@ -6394,7 +6395,7 @@ function reporting_general($report, $content) {
 
 function reporting_custom_graph($report, $content, $type = 'dinamic',
 	$force_width_chart = null, $force_height_chart = null, $type_report = "custom_graph") {
-
+		html_debug_print('esta en esta 2');
 	global $config;
 	
 	require_once ($config["homedir"] . '/include/functions_graph.php');

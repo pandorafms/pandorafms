@@ -167,7 +167,8 @@ function custom_graphs_print($id_graph, $height, $width, $period,
 	$show_max = true, $show_min = true, $show_avg = true, $ttl = 1,
 	$dashboard = false, $vconsole = false, $percentil = null, 
 	$from_interface = false,$id_widget_dashboard=false, $fullscale = false) {
-	
+
+		html_debug_print('esta en esta otro arch');
 	global $config;
 	
 	if ($from_interface) {

@@ -55,11 +55,11 @@ if (file_exists ('../../include/languages/'.$user_language.'.mo')) {
 
 echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css"/>';
 
-$label = get_parameter('label');
-$label = base64_decode($label);
-$id = get_parameter('id');
+$label    = get_parameter('label');
+$label    = base64_decode($label);
+$id       = get_parameter('id');
 $id_agent = db_get_value ("id_agente","tagente_modulo","id_agente_modulo",$id);
-$alias = db_get_value ("alias","tagente","id_agente",$id_agent);
+$alias    = db_get_value ("alias","tagente","id_agente",$id_agent);
 //$agent = agents_get_agent_with_ip ("192.168.50.31");
 //$label = rawurldecode(urldecode(base64_decode(get_parameter('label', ''))));
 ?>
@@ -121,7 +121,7 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 		}
 
 		// ACL
-		$permission = false;
+		$permission  = false;
 		$agent_group = (int) agents_get_agent_group($agent_id);
 		$strict_user = (bool) db_get_value("strict_acl", "tusuario",
 			"id_user", $config['id_user']);
@@ -153,14 +153,13 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 		}
 
 		$period = get_parameter ("period");
-		$id = get_parameter ("id", 0);
-		
+		$id     = get_parameter ("id", 0);
+
 //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 		/*
 		$width = get_parameter ("width", STATWIN_DEFAULT_CHART_WIDTH);
 		$height = get_parameter ("height", STATWIN_DEFAULT_CHART_HEIGHT);
 		*/
-	
 
 		$label = get_parameter ("label", "");
 		$label_graph = base64_decode(get_parameter ("label", ""));
@@ -212,7 +211,6 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 			$height = $height * ($zoom / 2.1);
 			$width = $width * ($zoom / 1.4);
 		}
-		echo "<script type='text/javascript'>window.resizeTo($width + 190, $height + 260);</script>";
 
 		// Build date
 		$date = strtotime("$start_date $start_time");
@@ -479,37 +477,6 @@ ui_include_time_picker(true);
 	$('#checkbox-time_compare_overlapped').click(function() {
 		$('#checkbox-time_compare_separated').removeAttr('checked');
 	});
-
-	<?php
-	//Resize window when show the overview graph.
-	if ($config['flash_charts']) {
-	?>
-		var show_overview = false;
-		var height_window;
-		var width_window;
-
-		$(window).ready(function() {
-			height_window = window.innerHeight;
-			width_window = window.innerWidth;
-		});
-
-		$("*").filter(function() {
-			if (typeof(this.id) == "string")
-				return this.id.match(/menu_overview_graph.*/);
-			else
-				return false;
-			}).click(function() {
-				if (show_overview) {
-					window.resizeTo(width_window, height_window);
-				}
-				else {
-					window.resizeTo(width_window, height_window + 150);
-				}
-				show_overview = !show_overview;
-			});
-	<?php
-	}
-	?>
 
 	// Add datepicker and timepicker
 	$("#text-start_date").datepicker({

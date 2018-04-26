@@ -2988,4 +2988,23 @@ function legend_graph_array(
 
 	return $legend;
 }
+
+function series_type_graph_array( $series_suffix, $data_module_graph){
+	global $config;
+	global $series_type;
+
+	$series_type['event'.$series_suffix] = 'points';
+	$series_type['alert'.$series_suffix] = 'points';
+	$series_type['unknown'.$series_suffix] = 'unknown';
+	switch ($data_module_graph['id_module_type']) {
+		case 21: case 2: case 6:
+		case 18: case 9: case 31:
+			$series_type['sum'.$series_suffix] = 'boolean';
+			break;
+		default:
+			$series_type['sum'.$series_suffix] = 'area';
+			break;
+	}
+	$series_type['percentil' . $series_suffix] = 'percentil';
+}
 ?>

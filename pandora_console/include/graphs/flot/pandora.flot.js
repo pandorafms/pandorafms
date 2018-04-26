@@ -855,19 +855,19 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
 	}
 }
 
+/*
 function adjust_menu(graph_id, plot, parent_height, width) {
-	/*
+
 	if ($('#'+graph_id+' .xAxis .tickLabel').eq(0).css('width') != undefined) {
 		left_ticks_width = $('#'+graph_id+' .xAxis .tickLabel').eq(0).css('width').split('px')[0];
 	}
 	else {
 		left_ticks_width = 0;
 	}
-	*/
 	var parent_height_new = 0;
 
 	var legend_height = parseInt($('#legend_'+graph_id).css('height').split('px')[0]) + parseInt($('#legend_'+graph_id).css('margin-top').split('px')[0]);
-	
+*/
 	/*
 	if ($('#overview_'+graph_id).css('display') == 'none') {
 		overview_height = 0;
@@ -876,6 +876,7 @@ function adjust_menu(graph_id, plot, parent_height, width) {
 		overview_height = parseInt($('#overview_'+graph_id).css('height').split('px')[0]) + parseInt($('#overview_'+graph_id).css('margin-top').split('px')[0]);
 	}
 	*/
+/*
 	var menu_height = '25';
 
 	if ($('#menu_'+graph_id).height() != undefined && $('#menu_'+graph_id).height() > 20) {
@@ -893,7 +894,10 @@ function adjust_menu(graph_id, plot, parent_height, width) {
 	$('#menu_' + graph_id).show();
 }
 
+
+
 function set_watermark(graph_id, plot, watermark_src) {
+console.log('entra setmark');
 	var img = new Image();
 	img.src = watermark_src;
 	var context = plot.getCanvas().getContext('2d');
@@ -1064,6 +1068,7 @@ function axis_thresholded (threshold_data, y_min, y_max, red_threshold, extremes
 	}
 	return y;
 }
+
 function add_threshold (data_base, threshold_data, y_min, y_max,
 						red_threshold, extremes, red_up) {
 
@@ -1117,7 +1122,7 @@ function reduceText (text, maxLength) {
 	var str_cut = text.substr(0, firstSlideEnd);
 	return str_cut + '...' + text.substr(-firstSlideEnd - 3);
 }
-
+*/
 function pandoraFlotArea(
 	graph_id, values, legend, agent_module_id,
 	series_type, watermark, date_array,
@@ -2300,12 +2305,15 @@ function pandoraFlotArea(
 	if (menu) {
 		var parent_height;
 		$('#menu_overview_' + graph_id).click(function() {
+			$('#overview_' + graph_id).toggle();
+			/*
 			if($('#overview_' + graph_id).css('visibility') == 'visible'){
 				$('#overview_' + graph_id).css('visibility', 'hidden');
 			}
 			else{
 				$('#overview_' + graph_id).css('visibility', 'visible');
 			}
+			*/
 		});
 
 		$("#menu_export_csv_"+graph_id)
@@ -2427,6 +2435,7 @@ function adjust_menu(graph_id, plot, parent_height, width) {
 }
 
 function set_watermark(graph_id, plot, watermark_src) {
+	console.log('entra por la watermark');
 	var img = new Image();
 	img.src = watermark_src;
 	var context = plot.getCanvas().getContext('2d');
@@ -2482,15 +2491,21 @@ function get_event_details (event_ids) {
 	return table;
 }
 
+
+//XXXXXXXXXX
+//Ajusta la grafica pequenña con el desplazamiento del eje y
+
 function adjust_left_width_canvas(adapter_id, adapted_id) {
 	var adapter_left_margin = $('#'+adapter_id+' .yAxis .tickLabel').width();
 	var adapted_pix = $('#'+adapted_id).width();
-	
 	var new_adapted_width = adapted_pix - adapter_left_margin;
-	
 	$('#'+adapted_id).width(new_adapted_width);
 	$('#'+adapted_id).css('margin-left', adapter_left_margin);
 }
+
+
+//XXXXXXXXXXX
+//Ajusta el ancho de la grafica pequeña con respecto a la grande
 
 function update_left_width_canvas(graph_id) {
 	$('#overview_'+graph_id).width($('#'+graph_id).width());

@@ -111,15 +111,22 @@ function set_center(id) {
 
 function get_relations(node_param) {
 	var return_links = [];
+	var links_id_db = [];
+	
 	jQuery.each(graph.links, function (i, link_each) {
-		if (node_param.id == link_each.source.id) {
-			return_links.push(link_each);
-		}
-		else if (node_param.id == link_each.target.id) {
-			return_links.push(link_each);
+		if (node_param.id == link_each.source.id || node_param.id == link_each.target.id) {vo
+			if(links_id_db.length > 0){
+				if(links_id_db.indexOf(link_each.id_db) == -1){
+					return_links.push(link_each);
+					links_id_db.push(link_each.id_db);
+				}
+			} else {
+				return_links.push(link_each);
+				links_id_db.push(link_each.id_db);
+			}
 		}
 	});
-
+	
 	return return_links;
 }
 

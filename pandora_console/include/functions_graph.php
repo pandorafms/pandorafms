@@ -965,7 +965,7 @@ return $return;
 			$config['homedir'] . "/images/logo_vertical_water.png",
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
-	
+
 	if ($type_graph === 'area') {
 		if ($compare === 'separated') {
 			return
@@ -1008,29 +1008,7 @@ return $return;
 		}
 	}
 	elseif ($type_graph === 'line') {
-		if ($compare === 'separated') {
-			return
-				line_graph($flash_chart, $chart, $width, $height/2, $color,
-					$legend, $long_index,
-					ui_get_full_url("images/image_problem_area_small.png", false, false, false),
-					$title, $unit, $water_mark, $config['fontpath'],
-					$config['font_size'], $unit, $ttl, $homeurl, $backgroundColor).
-				'<br>'.
-				line_graph($flash_chart, $chart_prev, $width, $height/2, $color,
-					$legend, $long_index,
-					ui_get_full_url("images/image_problem_area_small.png", false, false, false),
-					$title, $unit, $water_mark, $config['fontpath'],
-					$config['font_size'], $unit, $ttl, $homeurl, $backgroundColor);
-		}
-		else {
-			// Color commented not to restrict serie colors
-			return
-				line_graph($flash_chart, $chart, $width, $height, $color,
-					$legend, $long_index,
-					ui_get_full_url("images/image_problem_area_small.png", false, false, false),
-					$title, $unit, $water_mark, $config['fontpath'],
-					$config['font_size'], $unit, $ttl, $homeurl, $backgroundColor);
-		}
+
 	}
 }
 
@@ -1098,7 +1076,6 @@ function graphic_combined_module ( $module_list, $weight_list, $period, $width, 
 
 	//XXX colocar
 /*
-	$stacked
 	$prediction_period
 	$name_list
 	$unit_list
@@ -1112,7 +1089,6 @@ function graphic_combined_module ( $module_list, $weight_list, $period, $width, 
 	$modules_series
 */
 
-html_debug_print($stacked);
 html_debug_print($name_list);
 html_debug_print($unit_list);
 html_debug_print($from_interface);
@@ -1134,9 +1110,7 @@ html_debug_print($from_interface);
 	$show_elements_graph['show_unknown'] = false; // dont use
 	$show_elements_graph['avg_only']     = false; // dont use
 	$show_elements_graph['fullscale']    = $fullscale;
-//XXXX
-	$show_elements_graph['show_title']   = $show_title; // dont use
-
+	$show_elements_graph['show_title']   = ''; // dont use
 	$show_elements_graph['menu']         = $menu; // dont use
 	$show_elements_graph['adapt_key']    = ''; // dont use
 	$show_elements_graph['percentil']    = $percentil;
@@ -1150,6 +1124,7 @@ html_debug_print($from_interface);
 	$show_elements_graph['return_data']  = true; //dont use
 	$show_elements_graph['id_widget']    = $id_widget_dashboard;
 	$show_elements_graph['labels']       = $labels;
+	$show_elements_graph['stacked']       = $stacked;
 
 	$format_graph = array();
 	$format_graph['width']      = $width;
@@ -1159,7 +1134,6 @@ html_debug_print($from_interface);
 
 	$format_graph['unit_name']  = $unit_name;
 	$format_graph['unit']       = ''; //dont use
-
 	$format_graph['title']      = $title;
 	$format_graph['homeurl']    = $homeurl;
 	$format_graph['ttl']        = $ttl;
@@ -1167,7 +1141,7 @@ html_debug_print($from_interface);
 	$format_graph['font']       = $config['fontpath'];
 	$format_graph['font-size']  = $config['font_size'];
 
-	/*
+	//for flash_charts
 	$user              = users_get_user_by_id($config['id_user']);
 	$user_flash_charts = $user['flash_chart'];
 
@@ -1181,12 +1155,10 @@ html_debug_print($from_interface);
 	if ($only_image) {
 		$flash_charts = false;
 	}
-	*/
 
 	$i=0;
 	$array_data = array();
 	foreach ($module_list as $key => $agent_module_id) {
-
 		$module_data = db_get_row_sql (
 			'SELECT * FROM tagente_modulo
 			WHERE id_agente_modulo = ' .
@@ -1882,36 +1854,16 @@ html_debug_print($from_interface);
 	}
 
 	switch ($stacked) {
+		default:
+		case CUSTOM_GRAPH_STACKED_LINE:
+		case CUSTOM_GRAPH_STACKED_AREA:
 		case CUSTOM_GRAPH_AREA:
+		case CUSTOM_GRAPH_LINE:
 			return area_graph($agent_module_id, $array_data, $color,
 				$legend, $series_type, $date_array,
 				$data_module_graph, $show_elements_graph,
 				$format_graph, $water_mark, $series_suffix_str,
 				$array_events_alerts);
-			break;
-		default:
-		case CUSTOM_GRAPH_STACKED_AREA:
-			html_debug_print('entra por akiiii');
-			return stacked_area_graph($flash_charts, $array_data,
-				$width, $height, $color, $module_name_list, $long_index,
-				ui_get_full_url("images/image_problem_area_small.png", false, false, false),
-				$title, "", $water_mark, $config['fontpath'], $fixed_font_size,
-				"", $ttl, $homeurl, $background_color,$dashboard, $vconsole);
-			break;
-		case CUSTOM_GRAPH_LINE:
-			return line_graph($flash_charts, $graph_values, $width,
-				$height, $color, $module_name_list, $long_index,
-				ui_get_full_url("images/image_problem_area_small.png", false, false, false),
-				$title, "", $water_mark, $config['fontpath'], $fixed_font_size,
-				$unit, $ttl, $homeurl, $background_color, $dashboard,
-				$vconsole, $series_type, $percentil_result, $yellow_threshold, $red_threshold, $threshold_data);
-			break;
-		case CUSTOM_GRAPH_STACKED_LINE:
-			return stacked_line_graph($flash_charts, $graph_values,
-				$width, $height, $color, $module_name_list, $long_index,
-				ui_get_full_url("images/image_problem_area_small.png", false, false, false),
-				"", "", $water_mark, $config['fontpath'], $fixed_font_size,
-				"", $ttl, $homeurl, $background_color, $dashboard, $vconsole);
 			break;
 		case CUSTOM_GRAPH_BULLET_CHART_THRESHOLD:
 		case CUSTOM_GRAPH_BULLET_CHART:

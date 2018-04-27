@@ -1143,6 +1143,7 @@ function pandoraFlotArea(
 	var dashboard = show_elements_graph.dashboard;
 	var menu      = show_elements_graph.menu;
 	var max_x     = date_array['final_date'] *1000;
+	var type      = show_elements_graph.stacked;
 
 	//for threshold
 	var threshold        = true;
@@ -1155,30 +1156,29 @@ function pandoraFlotArea(
 	var red_inverse      = parseInt   (data_module_graph.c_inv);
 
 	//XXXX ver que hay que hacer
-	var type          = 'area_simple';
 	var labels_long   = '';
 	var min_check     = 0;
 	var water_mark    = '';
-
 	var legend_events = null;
 	var legend_alerts = null;
 
 	switch (type) {
-		case 'line_simple':
-			stacked = null;
-			filled  = false;
+		case 2:
+			stacked  = null;
+			filled_s = false;
 			break;
-		case 'line_stacked':
-			stacked = 'stack';
-			filled  = false;
+		case 3:
+			stacked  = 'stack';
+			filled_s = false;
 			break;
-		case 'area_simple':
-			stacked = null;
-			filled  = true;
+		default:
+		case 0:
+			stacked  = null;
+			filled_s = 0.2;
 			break;
-		case 'area_stacked':
-			stacked = 'stack';
-			filled  = true;
+		case 1:
+			stacked  = 'stack';
+			filled_s = 0.2;
 			break;
 	}
 
@@ -1203,7 +1203,7 @@ function pandoraFlotArea(
 				case 'area':
 					line_show   = true;
 					points_show = false; // XXX - false
-					filled      = 0.2;
+					filled      = filled_s;
 					steps_chart = false;
 					radius      = false;
 					fill_points = fill_color;
@@ -1230,7 +1230,7 @@ function pandoraFlotArea(
 				case 'boolean':
 					line_show   = true;
 					points_show = false;
-					filled      = true;
+					filled      = false;
 					steps_chart = true;
 					radius      = false;
 					fill_points = fill_color;
@@ -2448,7 +2448,7 @@ function set_watermark(graph_id, plot, watermark_src) {
 		if ($('#'+graph_id+' .yAxis .tickLabel').eq(0).css('height') != undefined) {
 			down_ticks_height = $('#'+graph_id+' .yAxis .tickLabel').eq(0).css('height').split('px')[0];
 		}
-		
+
 		var left_pos = parseInt(context.canvas.width - 3) - $('#watermark_image_'+graph_id)[0].width;
 		var top_pos  = 6;
 		//var top_pos = parseInt(context.canvas.height - down_ticks_height - 10) - $('#watermark_image_'+graph_id)[0].height;
@@ -2561,12 +2561,11 @@ function pad(input, length, padding) {
 }
 // Recalculate the threshold data depends on warning and critical
 function axis_thresholded (threshold_data, y_min, y_max, red_threshold, extremes, red_up) {
-	
 	var y = {
 		min: 0,
 		max: 0
 	};
-	
+
 	// Default values
 	var yaxis_resize = {
 		up: null,
@@ -2597,10 +2596,10 @@ function axis_thresholded (threshold_data, y_min, y_max, red_threshold, extremes
 			if (yaxis_resize['normal_down'] > this.data[0][1]) yaxis_resize['normal_down'] = this.data[0][1];
 		}
 	});
-	
+
 	// If you need to display a up or a down bar, display 10% of data height
 	var margin_up_or_down = (y_max - y_min)*0.10;
-	
+
 	// Calculate the new axis
 	y['max'] = yaxis_resize['normal_up'] > y_max ? yaxis_resize['normal_up'] : y_max;
 	y['min'] = yaxis_resize['normal_down'] > y_min ? yaxis_resize['normal_down'] : y_min;
@@ -2614,14 +2613,15 @@ function axis_thresholded (threshold_data, y_min, y_max, red_threshold, extremes
 			? yaxis_resize['up'] + margin_up_or_down
 			: y_min;
 	}
-	
+
 	return y;
 }
+
 function add_threshold (data_base, threshold_data, y_min, y_max,
 						red_threshold, extremes, red_up) {
-	
+
 	var datas = new Array ();
-	
+
 	$.each(data_base, function() {
 		// Prepared to turning series
 		//if(showed[this.id.split('_')[1]]) {
@@ -2637,7 +2637,7 @@ function add_threshold (data_base, threshold_data, y_min, y_max,
 		if (/_down/.test(this.id)){
 			var end;
 			if (/critical/.test(this.id)) {
-				 end = red_threshold;
+				end = red_threshold;
 			} else {
 				end = extremes[this.id];
 			}
@@ -2659,10 +2659,10 @@ function add_threshold (data_base, threshold_data, y_min, y_max,
 			if (end > y_max) {
 				this.bars.barWidth = y_max - this.data[0][1];
 			}
-		}	
+		}
 		datas.push(this);
 	});
-	
+
 	return datas;
 }
 

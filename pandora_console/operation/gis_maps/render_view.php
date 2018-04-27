@@ -77,6 +77,10 @@ if ($confMap !== false) {
 				$baselayers[$num_baselayer]['image_width'] = $decodeJSON['image_width'];
 				$baselayers[$num_baselayer]['image_height'] = $decodeJSON['image_height'];
 				break;
+			case 'WMS':
+				$baselayers[$num_baselayer]['url'] = $decodeJSON['url'];
+				$baselayers[$num_baselayer]['layers'] = $decodeJSON['layers'];
+				break;
 		}
 		$num_baselayer++;
 		if ($mapC['default_map_connection'] == 1) {

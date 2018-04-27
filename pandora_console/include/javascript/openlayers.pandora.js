@@ -139,7 +139,7 @@ function js_printMap(id_div, initial_zoom, center_latitude, center_longitude, ob
 	
 	map.events.on({"zoomend": EventZoomEnd});
 	map.events.on({"mouseup": EventZoomEnd});
-	
+
 	//Define the maps layer
 	for (var baselayerIndex in objBaseLayers) {
 		if (isInt(baselayerIndex)) {
@@ -216,6 +216,29 @@ function js_printMap(id_div, initial_zoom, center_latitude, center_longitude, ob
 						}
 					);
 					map.addLayer(baseLayer);
+					break;
+				case 'WMS':
+					// http://<server>/geoserver/wms
+					// ?bbox=-130,24,-66,50
+					// &styles=population
+					// &Format=application/openlayers
+					// &request=GetMap
+					// &layers=topp:states
+					// &width=550
+					// &height=250
+					// &srs=EPSG:4326
+					var layer = new OpenLayers.Layer.WMS(
+						objBaseLayers[baselayerIndex]['name'],
+						objBaseLayers[baselayerIndex]['url'],
+						{
+							layers: objBaseLayers[baselayerIndex]['layers'],
+							format: "image/png"
+						},
+						{
+							numZoomLevels: objBaseLayers[baselayerIndex]['num_zoom_levels']
+						}
+					);
+					map.addLayer(layer);
 					break;
 			}
 		}

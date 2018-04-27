@@ -168,9 +168,8 @@ function custom_graphs_print($id_graph, $height, $width, $period,
 	$dashboard = false, $vconsole = false, $percentil = null, 
 	$from_interface = false,$id_widget_dashboard=false, $fullscale = false) {
 
-		html_debug_print('esta en esta otro arch');
 	global $config;
-	
+
 	if ($from_interface) {
 		if ($config["type_interface_charts"] == 'line') {
 			$graph_conf['stacked'] = CUSTOM_GRAPH_LINE;
@@ -187,29 +186,29 @@ function custom_graphs_print($id_graph, $height, $width, $period,
 			$graph_conf = db_get_row('tgraph', 'id_graph', $id_graph);
 		}
 	}
-	
+
 	if ($stacked === null) {
 		$stacked = $graph_conf['stacked'];
 	}
-	
+
 	$sources = false;
 	if ($id_graph == 0) {
 		$modules = $modules_param;
 		$count_modules = count($modules);
 		$weights = array_fill(0, $count_modules, 1);
-		
+
 		if ($count_modules > 0)
 			$sources = true;
 	}
 	else {
 		$sources = db_get_all_rows_field_filter('tgraph_source', 'id_graph',
 			$id_graph);
-		
+
 		$series = db_get_all_rows_sql('SELECT summatory_series,average_series,modules_series FROM tgraph WHERE id_graph = '.$id_graph);
 		$summatory = $series[0]['summatory_series'];
 		$average = $series[0]['average_series'];
 		$modules_series = $series[0]['modules_series'];
-		
+
 		$modules = array ();
 		$weights = array ();
 		$labels = array ();
@@ -224,22 +223,21 @@ function custom_graphs_print($id_graph, $height, $width, $period,
 			}
 		}
 	}
-		
-	
+
 	if ($sources === false) {
 		if ($return){
 			return false;
 		}
-		else{	
+		else{
 			ui_print_info_message ( array ( 'no_close' => true, 'message' =>  __('No items.') ) );
 			return;
 		}
 	}
-	
+
 	if (empty($homeurl)) {
 		$homeurl = ui_get_full_url(false, false, false, false);
 	}
-	
+
 	$output = graphic_combined_module($modules,
 		$weights,
 		$period,
@@ -273,8 +271,8 @@ function custom_graphs_print($id_graph, $height, $width, $period,
 		$fullscale,
 		$summatory,
 		$average,
-		$modules_series);	
-	
+		$modules_series);
+
 	if ($return)
 		return $output;
 	echo $output;

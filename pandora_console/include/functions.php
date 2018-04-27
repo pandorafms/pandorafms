@@ -2818,6 +2818,95 @@ function color_graph_array($series_suffix, $compare = false){
 	//////////////////////////////////////////////////
 	// Color commented not to restrict serie colors //
 	//////////////////////////////////////////////////
+	$color_series = array();
+	$color_series[0] = array(
+		'border' => '#000000',
+		'color' => $config['graph_color1'],
+		'alpha' => CHART_DEFAULT_ALPHA
+	);
+	$color_series[1] = array(
+		'border' => '#000000',
+		'color' => $config['graph_color2'],
+		'alpha' => CHART_DEFAULT_ALPHA
+	);
+	$color_series[2] = array(
+		'border' => '#000000',
+		'color' => $config['graph_color3'],
+		'alpha' => CHART_DEFAULT_ALPHA
+	);
+	$color_series[3] = array(
+		'border' => '#000000',
+		'color' => $config['graph_color4'],
+		'alpha' => CHART_DEFAULT_ALPHA
+	);
+	$color_series[4] = array(
+		'border' => '#000000',
+		'color' => $config['graph_color5'],
+		'alpha' => CHART_DEFAULT_ALPHA
+	);
+	$color_series[5] = array(
+		'border' => '#000000',
+		'color' => $config['graph_color6'],
+		'alpha' => CHART_DEFAULT_ALPHA
+	);
+	$color_series[6] = array(
+		'border' => '#000000',
+		'color' => $config['graph_color7'],
+		'alpha' => CHART_DEFAULT_ALPHA
+	);
+	$color_series[7] = array(
+		'border' => '#000000',
+		'color' => $config['graph_color8'],
+		'alpha' => CHART_DEFAULT_ALPHA
+	);
+	$color_series[8] = array(
+		'border' => '#000000',
+		'color' => $config['graph_color9'],
+		'alpha' => CHART_DEFAULT_ALPHA
+	);
+	$color_series[9] = array(
+		'border' => '#000000',
+		'color' => $config['graph_color10'],
+		'alpha' => CHART_DEFAULT_ALPHA
+	);
+	$color_series[11] = array(
+		'border' => '#000000',
+		'color' => COL_GRAPH9,
+		'alpha' => CHART_DEFAULT_ALPHA
+	);
+	$color_series[12] = array(
+		'border' => '#000000',
+		'color' => COL_GRAPH10,
+		'alpha' => CHART_DEFAULT_ALPHA
+	);
+	$color_series[13] = array(
+		'border' => '#000000',
+		'color' => COL_GRAPH11,
+		'alpha' => CHART_DEFAULT_ALPHA
+	);
+	$color_series[14] = array(
+		'border' => '#000000',
+		'color' => COL_GRAPH12,
+		'alpha' => CHART_DEFAULT_ALPHA
+	);
+	$color_series[15] = array(
+		'border' => '#000000',
+		'color' => COL_GRAPH13,
+		'alpha' => CHART_DEFAULT_ALPHA
+	);
+
+
+/*
+	if($id_widget_dashboard){
+		$opcion = unserialize(db_get_value_filter('options','twidget_dashboard',array('id' => $id_widget_dashboard)));
+		foreach ($module_list as $key => $value) {
+			if(!empty($opcion[$value])){
+				$color[$key]['color'] = $opcion[$value];
+			}
+		}
+	}
+*/
+
 	if(!$compare) {
 		$color['event' . $series_suffix] =
 			array(	'border' => '#ff0000',
@@ -2843,23 +2932,8 @@ function color_graph_array($series_suffix, $compare = false){
 					'alpha' => CHART_DEFAULT_ALPHA
 				);
 
-		$color['max'.$series_suffix] =
-			array(	'border' => '#000000',
-					'color' => $config['graph_color3'],
-					'alpha' => CHART_DEFAULT_ALPHA
-				);
-
 		$color['sum'.$series_suffix] =
-			array(	'border' => '#000000',
-					'color' => $config['graph_color2'],
-					'alpha' => CHART_DEFAULT_ALPHA
-				);
-
-		$color['min'.$series_suffix] =
-			array(	'border' => '#000000',
-					'color' => $config['graph_color1'],
-					'alpha' => CHART_DEFAULT_ALPHA
-				);
+			$color_series[$series_suffix];
 
 		$color['unit'.$series_suffix] =
 			array(	'border' => null,
@@ -2898,23 +2972,8 @@ function color_graph_array($series_suffix, $compare = false){
 					'alpha' => CHART_DEFAULT_ALPHA
 				);
 
-		$color['max'.$series_suffix] =
-			array(	'border' => '#000000',
-					'color' => $config['graph_color3'],
-					'alpha' => CHART_DEFAULT_ALPHA
-				);
-
 		$color['sum'.$series_suffix] =
-			array(	'border' => '#000000',
-					'color' => '#b781c1',
-					'alpha' => CHART_DEFAULT_ALPHA
-				);
-
-		$color['min'.$series_suffix] =
-			array(	'border' => '#000000',
-					'color' => $config['graph_color1'],
-					'alpha' => CHART_DEFAULT_ALPHA
-				);
+			$color_series[$series_suffix];
 
 		$color['unit'.$series_suffix] =
 			array(	'border' => null,
@@ -2927,7 +2986,6 @@ function color_graph_array($series_suffix, $compare = false){
 					'color' => '#003333',
 					'alpha' => CHART_DEFAULT_ALPHA
 				);
-
 	}
 
 	return $color;
@@ -2946,8 +3004,15 @@ function legend_graph_array(
 	global $legend;
 	$unit = $format_graph['unit'];
 
-	$legend['sum'.$series_suffix] =
-		$data_module_graph['module_name'] . ' ' .
+	if (isset($show_elements_graph['labels']) && is_array($show_elements_graph['labels'])){
+		$legend['sum'.$series_suffix] = $show_elements_graph['labels'][$data_module_graph['module_id']] . ' ' ;
+	}
+	else{
+		$legend['sum'.$series_suffix] = $data_module_graph['agent_name']  . ' / ' .
+										$data_module_graph['module_name'] . ': ';
+	}
+
+	$legend['sum'.$series_suffix] .=
 		__('Min:') . remove_right_zeros(
 			number_format(
 				$min,
@@ -2977,13 +3042,25 @@ function legend_graph_array(
 		$legend['alert'.$series_suffix]     = __('Alert') . ' ' . $series_suffix_str;
 	}
 	if($show_elements_graph['percentil']){
-		$legend['percentil'.$series_suffix] = __('Percentil') . ' Value: ' .
-		remove_right_zeros(
-			number_format(
-				$percentil_value,
-				$config['graph_precision']
-			)
-		) . ' ' . $series_suffix_str;
+		$legend['percentil'.$series_suffix] =
+							__('Percentil') . ' ' .
+							$config['percentil']  .
+							'º ' . __('of module') . ' ';
+
+		if (isset($show_elements_graph['labels']) && is_array($show_elements_graph['labels'])){
+			$legend['percentil'.$series_suffix] .= $show_elements_graph['labels'][$data_module_graph['module_id']] . ' ' ;
+		}
+		else{
+			$legend['percentil'.$series_suffix] .= $data_module_graph['agent_name']  . ' / ' .
+													$data_module_graph['module_name'] . ': ' . ' Value: ';
+		}
+
+		$legend['percentil'.$series_suffix] .= remove_right_zeros(
+													number_format(
+														$percentil_value,
+														$config['graph_precision']
+													)
+												) . ' ' . $series_suffix_str;
 	}
 
 	return $legend;

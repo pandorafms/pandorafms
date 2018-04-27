@@ -125,7 +125,7 @@ else {
 	if (((int)$ag_group !== 0) && (check_acl ($config['id_user'], $id_ag_group, 'AR'))) {
 		$sql_conditions_group = sprintf (
 			' AND (tagente.id_grupo IN (%s) OR tasg.id_group IN (%s))',
-			$user_groups, $user_groups
+			$ag_group, $ag_group
 		);
 	}
 	elseif ($user_groups != '') {

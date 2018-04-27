@@ -680,7 +680,7 @@ if ($agents !== false) {
 				echo ' onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
 			}
 			else{
-				echo ' onClick="if (!confirm(\' '.__('You are going to delete a cluster agent. Are you sure?').'\')) return false;">';
+				echo ' onClick="if (!confirm(\' '.__('WARNING! - You are going to delete a cluster agent. Are you sure?').'\')) return false;">';
 			}
 			
 			echo html_print_image('images/cross.png', true, array("border" => '0')) . "</a>";

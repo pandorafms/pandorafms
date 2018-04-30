@@ -2467,11 +2467,12 @@ function events_page_general ($event) {
 	
 	$data = array();
 	$data[0] = __('Timestamp');
+	
 	if ($group_rep == 1 && $event["event_rep"] > 1) {
 		$data[1] = __('First event').': '.date ($config["date_format"], $event['timestamp_first']).'<br>'.__('Last event').': '.date ($config["date_format"], $event['timestamp_last']);
 	}
 	else {
-		$data[1] = date ($config["date_format"], strtotime($event["timestamp"]));
+		$data[1] = date ($config["date_format"], $event["utimestamp"]);
 	}
 	$table_general->data[] = $data;
 	

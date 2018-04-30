@@ -201,6 +201,8 @@ rm -Rf /usr/share/man/man1/tentacle_server.1.gz
 
 %defattr(-,pandora,root,750)
 /etc/pandora
+
+%defattr(-,pandora,root,754)
 /etc/tentacle
 
 %defattr(644,pandora,root)

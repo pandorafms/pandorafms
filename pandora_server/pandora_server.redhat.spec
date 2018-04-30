@@ -182,6 +182,8 @@ exit 0
 
 %defattr(600,root,root)
 /etc/pandora/pandora_server.conf.new
+
+%defattr(664,root,root)
 /etc/tentacle/tentacle_server.conf.new
 
 %defattr(-,pandora,apache,2770)

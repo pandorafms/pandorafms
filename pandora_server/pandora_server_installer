@@ -379,7 +379,7 @@ install () {
 		else
 			echo cp $TENTACLE_CFG_FILE_DIST $DESTDIR$TENTACLE_CFG_FILE
 			cp $TENTACLE_CFG_FILE_DIST $DESTDIR$TENTACLE_CFG_FILE
-			chmod 770 $DESTDIR$TENTACLE_CFG_FILE
+			chmod 774 $DESTDIR$TENTACLE_CFG_FILE
 		fi
 		
 		echo "Installing Tentacle Server manual"

@@ -109,13 +109,6 @@ case "$1" in
 			rc_exit	# running start on a service already running
 		fi
 
-		# Try to change the privileges of configuration file
-		chown $TENTACLE_USER $TENTACLE_CONFIG_FILE > /dev/null 2>&1
-		if [ $? -ne 0 ]; then
-			echo "Cannot change the owner of $TENTACLE_CONFIG_FILE configuration file to $TENTACLE_USER user."
-			rc_exit
-		fi
-
 		# Init the tentacle process
 		sudo -u $TENTACLE_USER ${TENTACLE_PATH}$TENTACLE_DAEMON $TENTACLE_OPTS
 		sleep 1

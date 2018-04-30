@@ -9,7 +9,7 @@
 addresses 0.0.0.0
 
 # [-p] Port to listen on
-# port 41121
+port 41121
 
 # [-c] Maximum number of simultaneous connections
 # max_connections 10
@@ -54,7 +54,7 @@ directory /var/spool/pandora/data_in
 # verbose 0
 
 # [-l] Log file
-# log_file /path/to/log/file
+log_file /dev/null
 
 # [-x] Server password
 # password PASSWORD

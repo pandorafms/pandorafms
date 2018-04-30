@@ -99,7 +99,7 @@ $now = date ("Y-m-d");
 
 // Show contentype header	
 Header ("Content-type: text/txt");
-header ('Content-Disposition: attachment; filename="pandora_export_event'.$now.'.txt"');
+header ('Content-Disposition: attachment; filename="pandora_export_event'.$now.'.csv"');
 
 echo "timestamp, agent, group, event, status, user, event_type, severity";
 echo chr (13);

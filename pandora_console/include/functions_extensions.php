@@ -154,6 +154,17 @@ function extensions_get_extensions ($enterprise = false) {
 }
 
 /**
+ * @brief Check if an extension is enabled
+ *
+ * @param string Extension name (ended with .php)
+ * @return True if enabled
+ */
+function extensions_is_enabled_extension($name) {
+	global $config;
+	return isset($config['extensions'][$name]);
+}
+
+/**
  * Get disabled open and enterprise extensions 
  */
 function extensions_get_disabled_extensions() {

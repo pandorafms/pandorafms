@@ -37,7 +37,7 @@ var plot = $.plot("#" + id, data, options);
 
 
 var refresh = parseInt($('#refresh').val());
-var incremental = $('#checkbox-incremental').is(':checked');
+var incremental = $('#checkbox-incremental').is(':checked') || $('#hidden-incremental').val() == 1;
 var incremental_base = 0;
 var last_inc = 0;
 var to;

@@ -58,9 +58,11 @@ function refresh_graph () {
 	postvars['snmp_address'] = $('#text-ip_target').val();
 	
 	postvars['refresh'] = refresh;
-	
+
+	var rel_path = $("#hidden-rel_path").val();
+
 	$.ajax({
-		url: "extensions/realtime_graphs/ajax.php",
+		url: rel_path + "extensions/realtime_graphs/ajax.php",
 		type: "POST",
 		dataType: "json",
 		data: postvars,

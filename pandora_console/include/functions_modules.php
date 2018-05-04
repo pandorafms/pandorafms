@@ -2711,11 +2711,13 @@ function get_module_realtime_link_graph ($module) {
 		'snmp_address' => $module['ip_target'],
 		'snmp_community' => $module['snmp_community'],
 		'snmp_oid' => $module['snmp_oid'],
-		'snmp_ver' => $module['tcp_send']
+		'snmp_ver' => $module['tcp_send'],
+		'hide_header' => 1,
+		'rel_path' => '../../'
 	);
 	// Incremental type
 	if ($module['id_tipo_modulo'] == 16) $params['incremental'] = 1;
-	$link = "index.php?sec=view&sec2=extensions/realtime_graphs&"; //FIXME: Not definitive URL
+	$link = "operation/agentes/realtime_win.php?";
 	foreach ($params as $p_key => $p_value) {
 		$link .= "$p_key=" . urlencode(io_safe_output($p_value)) . "&";
 	}
@@ -2723,7 +2725,7 @@ function get_module_realtime_link_graph ($module) {
 
 	$win_handle = "realtime_" . dechex(crc32($module["id_agente_modulo"].$module["nombre"]));
 
-	$link_button = '<a href="javascript:winopeng(\''.$link.'\',\''.$win_handle.'\')">' .
+	$link_button = '<a href="javascript:winopeng_var(\''.$link.'\',\''.$win_handle.'\', 850, 480)">' .
 		html_print_image("images/chart_curve.png", true, array("border" => '0', "alt" => "")) . //FIXME: Not definitive image
 	'</a> &nbsp;&nbsp;';
 

@@ -14,8 +14,10 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-include_once('include/graphs/fgraph.php');
-include_once('include/functions_snmp_browser.php');
+global $config;
+
+include_once($config['homedir'] . '/include/graphs/fgraph.php');
+include_once($config['homedir'] . '/include/functions_snmp_browser.php');
 
 function pandora_realtime_graphs () {
 	global $config;
@@ -25,8 +27,11 @@ function pandora_realtime_graphs () {
 	$action = get_parameter('action', 'list');
 
 	$onheader = array();
-	
-	ui_print_page_header (__("Realtime graphs"), "images/extensions.png", false, "", false, $onheader);
+
+	$hide_header = get_parameter('hide_header', 0);
+	if (!$hide_header) {
+		ui_print_page_header (__("Realtime graphs"), "images/extensions.png", false, "", false, $onheader);
+	}
 
 	$chart[time()]['graph'] = '0';
 	$interactive_graph = true;
@@ -136,6 +141,10 @@ function pandora_realtime_graphs () {
 		snmp_browser_print_container (false, '100%', '60%', 'none');
 	}
 	
+	// Print the relative path to AJAX calls:
+	html_print_input_hidden('rel_path', get_parameter('rel_path', ''));
+
+	// Print the form
 	echo '<form id="realgraph" method="post">';
 	html_print_table($table);
 	echo '</form>';
@@ -144,9 +153,9 @@ function pandora_realtime_graphs () {
 	html_print_input_hidden ('custom_action', urlencode (base64_encode('&nbsp;<a href="javascript:setOID()"><img src="' . ui_get_full_url("images") . '/input_filter.disabled.png" title="' . __("Use this OID") . '" style="vertical-align: middle;"></img></a>')), false);
 	html_print_input_hidden ('incremental_base', '0');
 
-	echo '<script type="text/javascript" src="extensions/realtime_graphs/realtime_graphs.js"></script>';
-	echo '<script type="text/javascript" src="include/javascript/pandora_snmp_browser.js"></script>';
-	echo '<link rel="stylesheet" type="text/css" href="extensions/realtime_graphs/realtime_graphs.css"></style>';
+	echo '<script type="text/javascript" src="'.ui_get_full_url("extensions/realtime_graphs/realtime_graphs.js").'"></script>';
+	echo '<script type="text/javascript" src="'.ui_get_full_url("include/javascript/pandora_snmp_browser.js").'"></script>';
+	echo '<link rel="stylesheet" type="text/css" href="'.ui_get_full_url("extensions/realtime_graphs/realtime_graphs.css").'"></style>';
 	
 	// Store servers timezone offset to be retrieved from js
 	set_js_value('timezone_offset', date('Z', time()));

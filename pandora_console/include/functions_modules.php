@@ -2726,7 +2726,7 @@ function get_module_realtime_link_graph ($module) {
 	$win_handle = "realtime_" . dechex(crc32($module["id_agente_modulo"].$module["nombre"]));
 
 	$link_button = '<a href="javascript:winopeng_var(\''.$link.'\',\''.$win_handle.'\', 850, 480)">' .
-		html_print_image("images/chart_curve.png", true, array("border" => '0', "alt" => "")) . //FIXME: Not definitive image
+		html_print_image("images/realtime_shortcut.png", true, array("border" => '0', "alt" => "")) .
 	'</a> &nbsp;&nbsp;';
 
 	return $link_button;

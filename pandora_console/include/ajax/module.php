@@ -1084,7 +1084,8 @@ if ($list_modules) {
 			$win_handle=dechex(crc32($module["id_agente_modulo"].$module["nombre"]));
 			
 			// Try to display the SNMP module realtime graph
-			$data[8] .= get_module_realtime_link_graph($module);
+			$rt_button .= get_module_realtime_link_graph($module);
+			if (!empty($rt_button)) $data[8] = $rt_button .  "&nbsp;&nbsp;";
 
 			# Show events for boolean modules by default.
 			if ($graph_type == 'boolean') {

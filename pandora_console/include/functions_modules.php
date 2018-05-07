@@ -2692,7 +2692,14 @@ function recursive_get_dt_from_modules_tree (&$f_modules, $modules, $deep) {
  * @return string All the HTML code to paint the button
  */
 function get_module_realtime_link_graph ($module) {
+	global $config;
 
+	// Sometimes some parameters are renamed
+	if (!isset($module['id_tipo_modulo'])) $module['id_tipo_modulo'] = $module['module_type'];
+	if (!isset($module['nombre'])) $module['nombre'] = $module['module_name'];
+
+	// Avoid to show on metaconsole
+	if (is_metaconsole()) return '';
 	// Realtime graph is an extension and it should be enabled
 	if (!extensions_is_enabled_extension("realtime_graphs.php")) return '';
 	// Only to remote_snmp, remote_snmp_proc. snmp_snmp_inc
@@ -2727,7 +2734,7 @@ function get_module_realtime_link_graph ($module) {
 
 	$link_button = '<a href="javascript:winopeng_var(\''.$link.'\',\''.$win_handle.'\', 850, 480)">' .
 		html_print_image("images/realtime_shortcut.png", true, array("border" => '0', "alt" => "")) .
-	'</a> &nbsp;&nbsp;';
+	'</a>';
 
 	return $link_button;
 }

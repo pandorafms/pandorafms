@@ -2359,7 +2359,11 @@ function print_audit_csv ($data) {
 		__('Source ID') . ';' .
 		__('Comments') ."\n";
 	foreach ($data as $line) {
-		echo io_safe_output($line['id_usuario']) . ';' .  io_safe_output($line['accion']) . ';' .  $line['fecha'] . ';' .  $line['ip_origen'] . ';'.  io_safe_output($line['descripcion']). "\n";
+		echo io_safe_output($line['id_usuario']) . ';'
+		. io_safe_output($line['accion']) . ';'
+		. date($config["date_format"], $line['utimestamp']) . ';'
+		. $line['ip_origen'] . ';'
+		. io_safe_output($line['descripcion']). "\n";
 	}
 
 	exit;

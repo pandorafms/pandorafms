@@ -2163,6 +2163,18 @@ function is_snapshot_data ($data) {
 }
 
 /**
+ * Check if text is too long to put it into a black screen
+ *
+ * @param string Data value
+ * @return bool True if black window should be displayed
+ */
+function is_text_to_black_string ($data) {
+	if (is_image_data($data)) return false;
+	// Consider large text if data is greater than 200 characters
+	return ((int)strlen($data)) > 200;
+}
+
+/**
 *  Create an invisible div with a provided ID and value to
 * can retrieve it from javascript with function get_php_value(name)
 */

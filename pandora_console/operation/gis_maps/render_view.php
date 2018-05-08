@@ -238,18 +238,6 @@ if ($layers != false) {
 	gis_activate_ajax_refresh($layers, $timestampLastOperation);
 }
 
-// Resize GIS map on fullscreen
-// if ($config["pure"] != 0) {
-// 		<script type="text/javascript">
-// 			$().ready(function() {
-				
-// 				var new_height = $(document).height();
-// 				$("#map").css("height", new_height - 60);
-// 				$("svg[id*=OpenLayers]").css("height", new_height - 60);		
-				
-// 			});
-// 		</script>
-// }
 ?>
 
 <script type="text/javascript">

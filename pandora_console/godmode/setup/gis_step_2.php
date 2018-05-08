@@ -279,14 +279,17 @@ $optionsConnectionImageTable = '<table class="databox" border="0" cellpadding="4
 // WMS Server Connection
 $optionsConnectionWMSTable = '<table class="databox" border="0" cellpadding="4" cellspacing="4" width="50%">' .
 		'<tr class="row_0">' .
-			'<td>' . __("WMS Server URL") . ':</td>' .
+			'<td>' . __("WMS Server URL") . '</td>' .
 			'<td>' .
 				'<input id="type" type="hidden" name="type" value="WMS" />' .
 				html_print_input_text('url', $mapConnectionDataUrl, '', 90, 255, true) .
 			'</td>' .
 		'</tr>' .
 		'<tr class="row_1">' .
-			'<td>' . __("Layers") . ':</td>' .
+			'<td>' .
+				__("Layers") .
+				ui_print_help_tip (__('Enter a single element or a comma separated list'), true) .
+			'</td>' .
 			'<td>' .
 				html_print_input_text('layers', $layers, '', 90, 255, true) .
 			'</td>' .

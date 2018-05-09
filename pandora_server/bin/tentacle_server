@@ -1034,14 +1034,14 @@ sub recv_file {
 	# Check file name
 	if ($base_name =~ /[$t_invalid_chars]/) {
 		print_log ("File '$base_name' size ${size}b from " . $t_client_socket->sockhost () . " has an invalid file name");
-		send_data ("SEND ERR\n");
+		send_data ("SEND ERR (invalid file name)\n");
 		return;
 	}
 
 	# Check file size, empty files are not allowed
 	if ($size < 1 || $size > $t_max_size) {
 		print_log ("File '$base_name' size ${size}b from " . $t_client_socket->sockhost () . " is too big");
-		send_data ("SEND ERR\n");
+		send_data ("SEND ERR (file is too big)\n");
 		return;
 	}
 	
@@ -1051,7 +1051,7 @@ sub recv_file {
 	# Check if file exists
 	if (-f $file && $t_overwrite == 0) {
 		print_log ("File '$base_name' size ${size}b from " . $t_client_socket->sockhost () . " already exists");
-		send_data ("SEND ERR\n");
+		send_data ("SEND ERR (file already exists)\n");
 		return;
 	}
 
@@ -1084,7 +1084,7 @@ sub send_file {
 	# Check file name
 	if ($base_name =~ /[$t_invalid_chars]/) {
 		print_log ("Requested file '$base_name' from " . $t_client_socket->sockhost () . " has an invalid file name");
-		send_data ("RECV ERR\n");
+		send_data ("RECV ERR (file has an invalid file name)\n");
 		return;
 	}
 	
@@ -1094,7 +1094,7 @@ sub send_file {
 	# Check if file exists
 	if (! -f $file) {
 		print_log ("Requested file '$file' from " . $t_client_socket->sockhost () . " does not exist");
-		send_data ("RECV ERR\n");
+		send_data ("RECV ERR (file does not exist)\n");
 		return;
 	}
 

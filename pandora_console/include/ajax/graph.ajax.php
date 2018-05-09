@@ -234,7 +234,8 @@ if ($get_graphs){
 							$height = 300;
 						}
 						$table .= "<div style='width: 90%'><h4>".$graph[0]['name']."</h4><hr></div>";
-						$table .= graphic_combined_module($modules,
+						$table .= graphic_combined_module(
+							$modules,
 							$weights,
 							$value['time_lapse'],
 							1000,
@@ -261,7 +262,7 @@ if ($get_graphs){
 							$labels,
 							false,
 							false,
-							null,
+							true,
 							false,
 							false,
 							$value['fullscale']

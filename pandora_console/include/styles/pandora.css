@@ -4634,3 +4634,19 @@ form ul.form_flex li ul li{
     width: auto!important;
 }
 
+.pandora_confirm_dialog .ui-dialog-buttonset {
+    display: flex;
+    width: 100%;
+	margin-left: 10px;
+	float: none !important;
+}
+
+.pandora_confirm_dialog .ui-dialog-buttonset button{
+    flex: 50%;
+}
+
+#pandora_confirm_dialog_text h3{
+	margin-left: 20px;
+	margin-right: 20px;
+	text-align: center;
+}

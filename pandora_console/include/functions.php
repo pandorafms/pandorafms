@@ -2811,4 +2811,32 @@ function validate_address($address){
 	}
 	return true;
 }
+
+/**
+ * Get the product name.
+ *
+ * @return string If the installation is open, it will be 'Pandora FMS'.
+ * 		If the product name stored is empty, it returns 'Pandora FMS' too.
+ */
+function get_product_name () {
+	$stored_name = enterprise_hook('enterprise_get_product_name');
+	if (empty($stored_name) || $stored_name == ENTERPRISE_NOT_HOOK) {
+		return "Pandora FMS";
+	}
+	return $stored_name;
+}
+
+/**
+ * Get the copyright notice.
+ *
+ * @return string If the installation is open, it will be 'Artica ST'.
+ * 		If the product name stored is empty, it returns 'Artica ST' too.
+ */
+function get_copyright_notice () {
+	$stored_name = enterprise_hook('enterprise_get_copyright_notice');
+	if (empty($stored_name) || $stored_name == ENTERPRISE_NOT_HOOK) {
+		return "Ártica ST";
+	}
+	return $stored_name;
+}
 ?>

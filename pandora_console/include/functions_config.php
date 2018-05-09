@@ -249,7 +249,11 @@ function config_update_config () {
 							$error_update[] = __('Metaconsole agent cache');
 						if (!config_update_value ('log_collector', (bool)get_parameter('log_collector')))
 							$error_update[] = __('Activate Log Collector');
-						
+						if (!config_update_value ('rb_product_name', (string)get_parameter('rb_product_name')))
+							$error_update[] = __('Product name');
+						if (!config_update_value ('rb_copyright_notice', (string)get_parameter('rb_copyright_notice')))
+							$error_update[] = __('Copyright notice');
+
 						$inventory_changes_blacklist = get_parameter('inventory_changes_blacklist', array());
 						if (!config_update_value ('inventory_changes_blacklist', implode(',',$inventory_changes_blacklist)))
 							$error_update[] = __('Inventory changes blacklist');

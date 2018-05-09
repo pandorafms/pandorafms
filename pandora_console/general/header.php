@@ -31,14 +31,14 @@ config_check();
 					$custom_logo = 'images/custom_logo/' . $config['custom_logo'];
 					
 					if (!defined ('PANDORA_ENTERPRISE')) {
-						$logo_title = 'Pandora FMS Opensource';
+						$logo_title = get_product_name() . ' Opensource';
 						$custom_logo = 'images/custom_logo/pandora_logo_head_3.png';
 					}
 					else {
 						if (file_exists(ENTERPRISE_DIR . '/' . $custom_logo)) {
 							$custom_logo = ENTERPRISE_DIR . '/' . $custom_logo;
 						}
-						$logo_title = 'Pandora FMS Enterprise';
+						$logo_title = get_product_name() . ' Enterprise';
 					}
 					
 					echo html_print_image($custom_logo, true,
@@ -166,8 +166,8 @@ config_check();
 								true,
 								array("id" => 'clippy',
 									"class" => 'clippy',
-									"alt" => __('Pandora FMS assistant'),
-									'title' => __('Pandora FMS assistant'))) .
+									"alt" => __('%s assistant', get_product_name()),
+									'title' => __('%s assistant', get_product_name()))) .
 						'</a>';
 				}
 				

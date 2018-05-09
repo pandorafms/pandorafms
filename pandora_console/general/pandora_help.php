@@ -21,7 +21,7 @@ require_once ("../include/functions_html.php");
 ?>
 <html style="height:100%; margin-top: 25px; margin-left: 15px; margin-right: 15px; background-color: #333;"><head><title>
 <?php
-	echo __('Pandora FMS help system');
+	echo __('%s help system', get_product_name());
 ?>
 </title>
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
@@ -77,7 +77,7 @@ if (! $id || ! file_exists ($help_file)) {
 	echo "<div style='text-align: center; background-color: #fff'>";
 
 	echo "</div>";
-	echo '<div class="msg" style="padding-left: 30px;padding-right: 30px;padding-bottom: 15px;">'.__('Pandora FMS help system has been called with a help reference that currently don\'t exist. There is no help content to show.').'</div></div></div>';
+	echo '<div class="msg" style="padding-left: 30px;padding-right: 30px;padding-bottom: 15px;">'.__("%s help system has been called with a help reference that currently don't exist. There is no help content to show.", get_product_name()).'</div></div></div>';
 	echo '<br /><br />';
 	echo '<div style="text-align: center; padding: 5px; font-family: verdana, arial; font-size: 11px;">';
 	include ('footer.php');

@@ -126,7 +126,7 @@ function config_update_config () {
 			switch ($section_setup) {
 				case 'general':
 					if (!config_update_value ('language', (string) get_parameter ('language')))
-						$error_update[] = __('Language code for Pandora');
+						$error_update[] = __('Language settings');
 					if (!config_update_value ('remote_config', (string) get_parameter ('remote_config')))
 						$error_update[] = __('Remote config directory');
 					if (!config_update_value ('loginhash_pwd', io_input_password((string) get_parameter ('loginhash_pwd'))))
@@ -149,9 +149,7 @@ function config_update_config () {
 					if (!config_update_value ('api_password', io_input_password(get_parameter('api_password'))))
 						$error_update[] = __('API password');
 					if (!config_update_value ('activate_gis', (bool) get_parameter ('activate_gis')))
-						$error_update[] = __('Enable GIS features in Pandora Console');
-					if (!config_update_value ('integria_enabled', get_parameter ('integria_enabled')))
-						$error_update[] = __('Enable Integria incidents in Pandora Console');
+						$error_update[] = __('Enable GIS features');
 					if (!config_update_value ('integria_inventory', get_parameter ('integria_inventory')))
 						$error_update[] = __('Integria inventory');
 					if (!config_update_value ('integria_api_password', io_input_password(get_parameter ('integria_api_password'))))

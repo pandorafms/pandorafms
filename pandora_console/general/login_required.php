@@ -83,7 +83,7 @@ echo '<div id="login_id_dialog" title="' .
 		$table->size[1] = '60%';
 		$table->border = '5px solid';
 		
-		$table->data[0][0] = __('Language code for Pandora');
+		$table->data[0][0] = __('Language code');
 		$table->data[0][1] = html_print_select_from_sql (
 			'SELECT id_language, name FROM tlanguage',
 			'language', $config['language'] , '', '', '', true);

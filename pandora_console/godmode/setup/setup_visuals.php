@@ -386,7 +386,7 @@ $table_font->data[$row][1] = html_print_select($font_size_array, 'font_size',
 $row++;
 
 $table_font->data[$row][0] = __('Agent size text') .
-	ui_print_help_tip(__('When the agent name have a lot of characters, in some places in Pandora Console it is necesary truncate to N characters.'), true);
+	ui_print_help_tip(__('When the agent name has a lot of characters, it is needed to truncate it into N characters in some sections in %s Console', get_product_name()), true);
 $table_font->data[$row][1] = __('Small:') .
 	html_print_input_text ('agent_size_text_small', $config["agent_size_text_small"], '', 3, 3, true);
 $table_font->data[$row][1] .= ' ' . __('Normal:') .
@@ -394,19 +394,19 @@ $table_font->data[$row][1] .= ' ' . __('Normal:') .
 $row++;
 
 $table_font->data[$row][0] = __('Module size text') .
-	ui_print_help_tip(__('When the module name have a lot of characters, in some places in Pandora Console it is necesary truncate to N characters.'), true);
+	ui_print_help_tip(__('When the module name has a lot of characters, it is needed to truncate it into N characters in some sections in %s Console', get_product_name()), true);
 $table_font->data[$row][1] = __('Small:') .
 	html_print_input_text ('module_size_text_small', $config["module_size_text_small"], '', 3, 3, true);
 $table_font->data[$row][1] .= ' ' . __('Normal:') .
 	html_print_input_text ('module_size_text_medium', $config["module_size_text_medium"], '', 3, 3, true);
 $row++;
 
-$table_font->data[$row][0] = __('Description size text') . ui_print_help_tip(__('When the description name have a lot of characters, in some places in Pandora Console it is necesary truncate to N characters.'), true);
+$table_font->data[$row][0] = __('Description size text') . ui_print_help_tip(__('If the description name has a lot of characters, in some places in %s Console it is necessary to truncate it to N characters.', get_product_name()), true);
 $table_font->data[$row][1] = html_print_input_text ('description_size_text', $config["description_size_text"], '', 3, 3, true);
 $row++;
 
 $table_font->data[$row][0] = __('Item title size text') .
-	ui_print_help_tip(__('When the item title name have a lot of characters, in some places in Pandora Console it is necesary truncate to N characters.'), true);
+	ui_print_help_tip(__('When the item title name has a lot of characters, it is needed to truncate it into N characters in some sections in %s Console.', get_product_name()), true);
 $table_font->data[$row][1] = html_print_input_text('item_title_size_text',
 	$config["item_title_size_text"], '', 3, 3, true);
 $row++;
@@ -488,7 +488,7 @@ if (!enterprise_installed()) {
 	$disabled_graph_precision = true;
 }
 
-$table_chars->data[$row][0] = __('Data precision in PandoraFMS');
+$table_chars->data[$row][0] = __('Data precision');
 $table_chars->data[$row][0] .= ui_print_help_tip(__('Number of decimals shown. It must be a number between 0 and 5, except in graphs.'), true);
 $table_chars->data[$row][1] = html_print_input_text ('graph_precision', $config["graph_precision"], '', 5, 5, true, $disabled_graph_precision, false, "onChange=\"change_precision()\"");
 $row++;
@@ -665,7 +665,7 @@ $table_other->data['custom_report_front-font'][1] = html_print_select ($_fonts,
 $table_other->data['custom_report_front-logo'][0] =  __('Custom report front') . ' - ' .
 	__('Custom logo') .
 	ui_print_help_tip(
-		__("The dir of custom logos is in your www Pandora Console in \"images/custom_logo\". You can upload more files (ONLY JPEG AND PNG) in upload tool in console."), true);
+		__("The dir of custom logos is in your www Console in 'images/custom_logo'. You can upload more files (ONLY JPEG AND PNG) in upload tool in console."), true);
 $table_other->data['custom_report_front-logo'][1] = html_print_select(
 	$customLogos,
 	'custom_report_front_logo',

@@ -92,28 +92,27 @@ function extensions_is_extension ($page) {
  *
  * @param bool $enterprise
  */
-function extensions_get_extensions ($enterprise = false) {
-	
-	$dir = EXTENSIONS_DIR;
-	$master_dir = ENTERPRISE_DIR . '/' . EXTENSIONS_DIR;
+function extensions_get_extensions ($enterprise = false, $rel_path = '') {
+
+	$dir = $rel_path . EXTENSIONS_DIR;
+	$master_dir = $rel_path . ENTERPRISE_DIR . '/' . EXTENSIONS_DIR;
 	$handle = false;
 	if ($enterprise) {
-		$dir = ENTERPRISE_DIR . '/' . EXTENSIONS_DIR;
+		$dir = $rel_path . ENTERPRISE_DIR . '/' . EXTENSIONS_DIR;
 		if (defined("METACONSOLE")) {
-			$dir = '../' . EXTENSIONS_DIR;
-			$master_dir = '../' . EXTENSIONS_DIR;
+			$dir = $rel_path . '../' . EXTENSIONS_DIR;
+			$master_dir = $rel_path . '../' . EXTENSIONS_DIR;
 		}
 	}
 	else {
 		if (defined("METACONSOLE")) {
-			$dir = '../../' . $dir;
-			$master_dir = '../' . EXTENSIONS_DIR;
+			$dir = $rel_path . '../../' . $dir;
+			$master_dir = $rel_path . '../' . EXTENSIONS_DIR;
 		}
 	}
-	
+
 	if (file_exists ($dir))
 		$handle = @opendir ($dir);
-	
 	if (empty ($handle))
 		return;
 	
@@ -148,9 +147,20 @@ function extensions_get_extensions ($enterprise = false) {
 	
 	/* Load extensions in enterprise directory */
 	if (! $enterprise && file_exists ($master_dir))
-		return array_merge ($extensions, extensions_get_extensions (true));
+		return array_merge ($extensions, extensions_get_extensions (true, $rel_path));
 	
 	return $extensions;
+}
+
+/**
+ * @brief Check if an extension is enabled
+ *
+ * @param string Extension name (ended with .php)
+ * @return True if enabled
+ */
+function extensions_is_enabled_extension($name) {
+	global $config;
+	return isset($config['extensions'][$name]);
 }
 
 /**

@@ -753,7 +753,11 @@ switch ($config['dbtype']) {
 			tagente.id_grupo AS id_group, 
 			tagente.id_agente AS id_agent, 
 			tagente_modulo.id_tipo_modulo AS module_type,
-			tagente_modulo.module_interval, 
+			tagente_modulo.module_interval,
+			tagente_modulo.tcp_send,
+			tagente_modulo.ip_target,
+			tagente_modulo.snmp_community,
+			tagente_modulo.snmp_oid,
 			tagente_estado.datos, 
 			tagente_estado.estado,
 			tagente_modulo.min_warning,
@@ -1272,12 +1276,11 @@ if (!empty($result)) {
 			$graph_params_str = http_build_query($graph_params);
 			
 			$link = 'winopeng(\''.$url.'?'.$graph_params_str.'\',\''.$win_handle.'\')';
-			
-			$data[7] = '';
-			
+
+			$data[7] = get_module_realtime_link_graph($row);
+
 			if(!is_snapshot_data($row['datos'])){
-			
-			$data[7] = '<a href="javascript:'.$link.'">' . html_print_image('images/chart_curve.png', true, array('border' => '0', 'alt' => '')) .  '</a>';
+				$data[7] .= '<a href="javascript:'.$link.'">' . html_print_image('images/chart_curve.png', true, array('border' => '0', 'alt' => '')) .  '</a>';
 			}
 			$data[7] .= '<a href="javascript: ' .
 				'show_module_detail_dialog(' .

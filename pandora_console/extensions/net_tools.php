@@ -313,23 +313,23 @@ function godmode_net_tools() {
 	$table->data = array();
 	
 	$table->data[0][0] = __("Traceroute path");
-	$table->data[0][0] .= ui_print_help_tip(__('If it is empty, Pandora searchs the traceroute system.'), true);
+	$table->data[0][0] .= ui_print_help_tip(__('If empty, %s will search the traceroute system.', get_product_name()), true);
 	$table->data[0][1] = html_print_input_text('traceroute_path', $traceroute_path, '', 40, 255, true);
 	
 	$table->data[1][0] = __("Ping path");
-	$table->data[1][0] .= ui_print_help_tip(__('If it is empty, Pandora searchs the ping system.'), true);
+	$table->data[1][0] .= ui_print_help_tip(__('If empty, %s will search the ping system.', get_product_name()), true);
 	$table->data[1][1] = html_print_input_text('ping_path', $ping_path, '', 40, 255, true);
 	
 	$table->data[2][0] = __("Nmap path");
-	$table->data[2][0] .= ui_print_help_tip(__('If it is empty, Pandora searchs the nmap system.'), true);
+	$table->data[2][0] .= ui_print_help_tip(__('If empty, %s will search the nmap system.', get_product_name()), true);
 	$table->data[2][1] = html_print_input_text('nmap_path', $nmap_path, '', 40, 255, true);
 	
 	$table->data[3][0] = __("Dig path");
-	$table->data[3][0] .= ui_print_help_tip(__('If it is empty, Pandora searchs the dig system.'), true);
+	$table->data[3][0] .= ui_print_help_tip(__('If empty, %s will search the dig system', get_product_name()), true);
 	$table->data[3][1] = html_print_input_text('dig_path', $dig_path, '', 40, 255, true);
 	
 	$table->data[4][0] = __("Snmpget path");
-	$table->data[4][0] .= ui_print_help_tip(__('If it is empty, Pandora searchs the snmpget system.'), true);
+	$table->data[4][0] .= ui_print_help_tip(__('If empty, %s will search the snmpget system.', get_product_name()), true);
 	$table->data[4][1] = html_print_input_text('snmpget_path', $snmpget_path, '', 40, 255, true);
 	
 	echo '<form id="form_setup" method="post" >';

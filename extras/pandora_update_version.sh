@@ -56,6 +56,7 @@ AGENT_WIN_RC_FILE="$CODEHOME/pandora_agents/win32/versioninfo.rc"
 SATELLITE_FILE="$PANDHOME_ENT/satellite_server/satellite_server.pl"
 PERL_PLUGIN_FILES="$PANDHOME_ENT/pandora_plugins/NGINX/nginx_requests_queued.pl \
 $PANDHOME_ENT/pandora_plugins/Sybase/sybase_plugin.pl \
+$PANDHOME_ENT/pandora_plugins/JMX/pandora_plugin_jmx.pl \
 $PANDHOME_ENT/pandora_plugins/MarkLogic/pandora_marklogic.pl \
 $PANDHOME_ENT/pandora_plugins/Apache/pandora_apache.pl \
 $PANDHOME_ENT/pandora_plugins/Oracle/Database/pandora_oracle.pl \

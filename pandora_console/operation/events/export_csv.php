@@ -101,7 +101,7 @@ $now = date ("Y-m-d");
 Header ("Content-type: text/txt");
 header ('Content-Disposition: attachment; filename="pandora_export_event'.$now.'.csv"');
 
-echo "timestamp, agent, group, event, status, user, event_type, severity";
+echo "timestamp, agent, group, event, status, user, event_type, severity, id";
 echo chr (13);
 
 $new = true;
@@ -128,6 +128,8 @@ while ($event = db_get_all_row_by_steps_sql($new, $result, $sql)) {
 	echo io_safe_output($event["event_type"]);
 	echo ",";
 	echo $event["criticity"];
+	echo ",";
+	echo $event["id_evento"];
 	echo chr (13);
 }
 ?>

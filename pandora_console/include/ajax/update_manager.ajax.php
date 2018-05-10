@@ -237,7 +237,7 @@ if ($install_package) {
 		}
 
 		update_manager_enterprise_set_version($version);
-		db_pandora_audit("Update Pandora", "Update version: $version of Pandora FMS by ".$config['id_user']);
+		db_pandora_audit("Update " . get_product_name(), "Update version: $version of " . get_product_name() ." by ".$config['id_user']);
 		
 		$return["status"] = "success";
 		echo json_encode($return);
@@ -252,6 +252,7 @@ if ($install_package) {
 }
 
 if ($check_install_package) {
+	
 	// 1 second
 	//sleep(1);
 	// Half second

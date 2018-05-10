@@ -244,10 +244,12 @@ $alias    = db_get_value ("alias","tagente","id_agente",$id_agent);
 					(($show_percentil)? $config['percentil'] : null),
 					false, false, $config['type_module_charts'], $fullscale);
 				echo '<br>';
-				if ($show_events_graph)
+				if ($show_events_graph){
+					$width = '500';
 					echo graphic_module_events($id, $width, $height,
 						$period, $config['homeurl'], $zoom,
 						'adapted_' . $graph_type, $date, true);
+					}
 				break;
 			case 'string':
 				html_debug_print('entra x stats win hay que rehacer esta funcion');

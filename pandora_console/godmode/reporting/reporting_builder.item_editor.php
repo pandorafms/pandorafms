@@ -2912,7 +2912,7 @@ function chooseType() {
 		
 		case 'simple_graph':
 			$("#row_time_compare_overlapped").show();
-			$("#row_only_avg").show();
+			// $("#row_only_avg").show();
 			$("#row_fullscale").show();
 			if ($("#checkbox-percentil").prop("checked"))
 				$("#row_percentil").show();
@@ -2923,7 +2923,6 @@ function chooseType() {
 			$("#row_agent").show();
 			$("#row_module").show();
 			$("#row_period").show();
-			$("#row_show_in_two_columns").show();
 			$("#row_show_in_landscape").show();
 			$("#row_time_compare_overlapped").show();
 			$("#row_historical_db_check").hide();

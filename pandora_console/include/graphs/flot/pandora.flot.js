@@ -693,7 +693,7 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
 	if (full_legend != false) {
 		full_legend = full_legend.split(separator);
 	}
-	
+
 	// Check possible adapt_keys on classes
 	check_adaptions(graph_id);
 
@@ -806,7 +806,7 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
     			var to = legend[item.seriesIndex+1];
     			//current date
     			var dateObj = new Date();
-    
+
     			if (full_legend != "") {
     				newdate = full_legend[item.seriesIndex];
     				newdate2 = full_legend[item.seriesIndex+1];
@@ -817,11 +817,11 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
     				var year = dateObj.getUTCFullYear();
     					newdate = year + "/" + month + "/" + day;
     			}
-    
+
     			if(!to){
     				to= '23:59';
     			}
-    
+
     			if (full_legend != "") {
     				if (newdate2 == undefined) {
     					window.location='index.php?sec=eventos&sec2=operation/events/events&id_agent='+id_agent+'&date_from='+newdate+'&time_from='+from+'&status=-1';
@@ -855,274 +855,6 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
 	}
 }
 
-/*
-function adjust_menu(graph_id, plot, parent_height, width) {
-
-	if ($('#'+graph_id+' .xAxis .tickLabel').eq(0).css('width') != undefined) {
-		left_ticks_width = $('#'+graph_id+' .xAxis .tickLabel').eq(0).css('width').split('px')[0];
-	}
-	else {
-		left_ticks_width = 0;
-	}
-	var parent_height_new = 0;
-
-	var legend_height = parseInt($('#legend_'+graph_id).css('height').split('px')[0]) + parseInt($('#legend_'+graph_id).css('margin-top').split('px')[0]);
-*/
-	/*
-	if ($('#overview_'+graph_id).css('display') == 'none') {
-		overview_height = 0;
-	}
-	else {
-		overview_height = parseInt($('#overview_'+graph_id).css('height').split('px')[0]) + parseInt($('#overview_'+graph_id).css('margin-top').split('px')[0]);
-	}
-	*/
-/*
-	var menu_height = '25';
-
-	if ($('#menu_'+graph_id).height() != undefined && $('#menu_'+graph_id).height() > 20) {
-		menu_height = $('#menu_'+graph_id).height();
-	}
-
-	offset = $('#' + graph_id)[0].offsetTop;
-	
-	$('#menu_' + graph_id).css('top', ((offset) + 'px'));
-
-	//$('#legend_' + graph_id).css('width',plot.width());
-
-	//~ $('#menu_' + graph_id).css('left', $('#'+graph_id)[0].offsetWidth);
-	
-	$('#menu_' + graph_id).show();
-}
-
-
-
-function set_watermark(graph_id, plot, watermark_src) {
-console.log('entra setmark');
-	var img = new Image();
-	img.src = watermark_src;
-	var context = plot.getCanvas().getContext('2d');
-
-	// Once it's loaded draw the image on the canvas.
-	img.addEventListener('load', function () {
-		//~ // Now resize the image: x, y, w, h.
-
-		var down_ticks_height = 0;
-		if ($('#'+graph_id+' .yAxis .tickLabel').eq(0).css('height') != undefined) {
-			down_ticks_height = $('#'+graph_id+' .yAxis .tickLabel').eq(0).css('height').split('px')[0];
-		}
-		
-		var left_pos = parseInt(context.canvas.width - 3) - $('#watermark_image_'+graph_id)[0].width;
-		var top_pos  = 6;
-		//var top_pos = parseInt(context.canvas.height - down_ticks_height - 10) - $('#watermark_image_'+graph_id)[0].height;
-		//var left_pos = 380;
-		context.drawImage(this, left_pos, top_pos);
-
-	}, false);
-}
-
-function get_event_details (event_ids) {
-	table = '';
-	if (typeof(event_ids) != "undefined") {
-		var inputs = [];
-		var table;
-		inputs.push ("get_events_details=1");
-		inputs.push ("event_ids="+event_ids);
-		inputs.push ("page=include/ajax/events");
-
-		// Autologin
-		if ($('#hidden-loginhash').val() != undefined) {
-			inputs.push ("loginhash=" + $('#hidden-loginhash').val());
-			inputs.push ("loginhash_data=" + $('#hidden-loginhash_data').val());
-			inputs.push ("loginhash_user=" + $('#hidden-loginhash_user').val());
-		}
-
-		jQuery.ajax ({
-			data: inputs.join ("&"),
-			type: 'GET',
-			url: action="../../ajax.php",
-			timeout: 10000,
-			dataType: 'html',
-			async: false,
-			success: function (data) {
-				table = data;
-				//forced_title_callback();
-			}
-		});
-	}
-
-	return table;
-}
-
-function adjust_left_width_canvas(adapter_id, adapted_id) {
-	var adapter_left_margin = $('#'+adapter_id+' .yAxis .tickLabel').width();
-	var adapted_pix = $('#'+adapted_id).width();
-	
-	var new_adapted_width = adapted_pix - adapter_left_margin;
-	
-	$('#'+adapted_id).width(new_adapted_width);
-	$('#'+adapted_id).css('margin-left', adapter_left_margin);
-}
-
-function check_adaptions(graph_id) {
-	var classes = $('#'+graph_id).attr('class').split(' ');
-
-	$.each(classes, function(i,v) {
-		// If has a class starting with adapted, we adapt it
-		if (v.split('_')[0] == 'adapted') {
-			var adapter_id = $('.adapter_'+v.split('_')[1]).attr('id');
-			adjust_left_width_canvas(adapter_id, graph_id);
-		}
-	});
-}
-
-function number_format(number, force_integer, unit, short_data) {
-	if (force_integer) {
-		if (Math.round(number) != number) {
-			return '';
-		}
-	}
-	else {
-		short_data ++;
-		decimals = pad(1, short_data, 0);
-		number = Math.round(number * decimals) / decimals;
-	}
-
-	var shorts = ["", "K", "M", "G", "T", "P", "E", "Z", "Y"];
-	var pos = 0;
-	while (1) {
-		if (number >= 1000) { //as long as the number can be divided by 1000
-			pos++; //Position in array starting with 0
-			number = number / 1000;
-		}
-		else if (number <= -1000) {
-			pos++;
-			number = number / 1000;
-		}
-		else {
-			break;
-		}
-	}
-	return number + ' ' + shorts[pos] + unit;
-}
-
-function pad(input, length, padding) { 
-	var str = input + "";
-	return (length <= str.length) ? str : pad(str+padding, length, padding);
-}
-
-// Recalculate the threshold data depends on warning and critical
-function axis_thresholded (threshold_data, y_min, y_max, red_threshold, extremes, red_up) {
-	
-	var y = {
-		min: 0,
-		max: 0
-	};
-	
-	// Default values
-	var yaxis_resize = {
-		up: null,
-		normal_up: 0,
-		normal_down: 0,
-		down: null
-	};
-
-	// Resize the y axis to display all intervals
-	$.each(threshold_data, function() {
-		if (/_up/.test(this.id)){
-			yaxis_resize['up'] = this.data[0][1];
-		}
-		if (/_down/.test(this.id)){
-			if (/critical/.test(this.id)) {
-				yaxis_resize['down'] = red_threshold;
-			} else {
-				yaxis_resize['down'] = extremes[this.id];
-			}
-		}
-		if (/_normal/.test(this.id)){
-			var end;
-			if (/critical/.test(this.id)) {
-				end = red_up;
-			} else {
-				end = extremes[this.id + '_2'];
-			}
-			if (yaxis_resize['normal_up'] < end) yaxis_resize['normal_up'] = end;
-			if (yaxis_resize['normal_down'] > this.data[0][1]) yaxis_resize['normal_down'] = this.data[0][1];
-		}
-	});
-	
-	// If you need to display a up or a down bar, display 10% of data height
-	var margin_up_or_down = (y_max - y_min)*0.10;
-	
-	// Calculate the new axis
-	y['max'] = yaxis_resize['normal_up'] > y_max ? yaxis_resize['normal_up'] : y_max;
-	y['min'] = yaxis_resize['normal_down'] > y_min ? yaxis_resize['normal_down'] : y_min;
-	if (yaxis_resize['up'] !== null) {
-		y['max'] = (yaxis_resize['up'] + margin_up_or_down) < y_max
-			? y_max
-			: yaxis_resize['up'] + margin_up_or_down;
-	}
-	if (yaxis_resize['down'] !== null) {
-		y['min'] = (yaxis_resize['down'] - margin_up_or_down) < y_min
-			? yaxis_resize['up'] + margin_up_or_down
-			: y_min;
-	}
-	return y;
-}
-
-function add_threshold (data_base, threshold_data, y_min, y_max,
-						red_threshold, extremes, red_up) {
-
-	var datas = new Array ();
-	$.each(data_base, function() {
-		// Prepared to turning series
-		//if(showed[this.id.split('_')[1]]) {
-			datas.push(this);
-		//}
-	});
-
-	// Resize the threshold data
-	$.each(threshold_data, function() {
-		if (/_up/.test(this.id)){
-			this.bars.barWidth = y_max - this.data[0][1];
-		}
-		if (/_down/.test(this.id)){
-			var end;
-			if (/critical/.test(this.id)) {
-				end = red_threshold;
-			} else {
-				end = extremes[this.id];
-			}
-			this.bars.barWidth = end - y_min;
-			this.data[0][1] = y_min;
-		}
-		if (/_normal/.test(this.id)){
-			var end;
-			if (/critical/.test(this.id)) {
-				end = red_up;
-			} else {
-				end = extremes[this.id + '_2'];
-			}
-			if (this.data[0][1] < y_min) {
-				this.bars.barWidth = end - y_min;
-				this.data[0][1] = y_min;
-				end = this.bars.barWidth + this.data[0][1];
-			}
-			if (end > y_max) {
-				this.bars.barWidth = y_max - this.data[0][1];
-			}
-		}
-		datas.push(this);
-	});
-	return datas;
-}
-
-function reduceText (text, maxLength) {
-	if (text.length <= maxLength) return text
-	var firstSlideEnd = parseInt((maxLength - 3) / 2);
-	var str_cut = text.substr(0, firstSlideEnd);
-	return str_cut + '...' + text.substr(-firstSlideEnd - 3);
-}
-*/
 function pandoraFlotArea(
 	graph_id, values, legend, agent_module_id,
 	series_type, watermark, date_array,
@@ -1131,7 +863,7 @@ function pandoraFlotArea(
 	background_color, legend_color, short_data,
 	events_array
 ) {
-	console.log(format_graph.font_size);
+
 	//diferents vars
 	var unit      = format_graph.unit ? format_graph.unit : '';
 	var homeurl   = format_graph.homeurl;
@@ -1142,8 +874,13 @@ function pandoraFlotArea(
 	var vconsole  = show_elements_graph.vconsole;
 	var dashboard = show_elements_graph.dashboard;
 	var menu      = show_elements_graph.menu;
+	var min_x     = date_array['start_date'] *1000;
 	var max_x     = date_array['final_date'] *1000;
 	var type      = show_elements_graph.stacked;
+
+	if(typeof type === 'undefined' || type == ''){
+		type = format_graph.type_graph;
+	}
 
 	//for threshold
 	var threshold        = true;
@@ -1155,6 +892,9 @@ function pandoraFlotArea(
 	var yellow_inverse   = parseInt   (data_module_graph.w_inv);
 	var red_inverse      = parseInt   (data_module_graph.c_inv);
 
+	//XXXXX
+	var markins_graph    = true;
+
 	//XXXX ver que hay que hacer
 	var labels_long   = '';
 	var min_check     = 0;
@@ -1162,7 +902,587 @@ function pandoraFlotArea(
 	var legend_events = null;
 	var legend_alerts = null;
 
+
+	// If threshold and up are the same, that critical or warning is disabled
+	if (yellow_threshold == yellow_up){
+		yellow_inverse = false;
+	}
+
+	if (red_threshold == red_up){
+		red_inverse = false;
+	}
+
+	//Array with points to be painted
+	var threshold_data = new Array();
+	//Array with some interesting points
+	var extremes = new Array ();
+
+	var yellow_only_min = ((yellow_up == 0) && (yellow_threshold != 0));
+	var red_only_min    = ((red_up == 0) && (red_threshold != 0));
+
+	//color
+	var normalw   = '#efe';
+	var warningw  = '#ffe';
+	var criticalw = '#fee';
+	var normal    = '#0f0';
+	var warning   = 'yellow';
+	var critical  = 'red';
+
+	if (threshold) {
+		// Warning interval. Change extremes depends on critical interval
+		if (yellow_inverse && red_inverse) {
+			if (red_only_min && yellow_only_min) {
+				// C: |--------         |
+				// W: |········====     |
+				if (yellow_threshold > red_threshold) {
+					threshold_data.push({
+						id: 'warning_normal_fdown',
+						data: [[max_x, red_threshold]],
+						label: null,
+						color: warning,
+						bars: {
+							show: true,
+							align: "left",
+							barWidth: yellow_threshold - red_threshold,
+							lineWidth: 0,
+							horizontal: true,
+							fillColor: {
+								colors: [
+									{
+										opacity: 0.1
+									},
+									{
+										opacity: 0.1
+									}
+								]
+							}
+						},
+						highlightColor: 'rgba(254, 255, 198, 0)'
+					});
+
+					extremes['warning_normal_fdown_1'] = red_threshold;
+					extremes['warning_normal_fdown_2'] = yellow_threshold;
+				}
+			} else if (!red_only_min && yellow_only_min) {
+				// C: |--------   ------|
+				// W: |········===·     |
+				if (yellow_threshold > red_up) {
+					yellow_threshold = red_up;
+				}
+				if (yellow_threshold > red_threshold) {
+					threshold_data.push({
+						id: 'warning_normal_fdown',
+						data: [[max_x, red_threshold]],
+						label: null,
+						color: warning,
+						bars: {show: true, align: "left", barWidth: yellow_threshold - red_threshold, lineWidth: 0, horizontal: true, fillColor: { colors: [ { opacity: 0.1 }, { opacity: 0.1 } ] }},
+						highlightColor: 'rgba(254, 255, 198, 0)'
+					});
+					extremes['warning_normal_fdown_1'] = red_threshold;
+					extremes['warning_normal_fdown_2'] = yellow_threshold;
+				}
+			} else if (red_only_min && !yellow_only_min) {
+				// C: |-------          |
+				// W: |·······====   ===|
+				if (red_threshold < yellow_threshold) {
+					threshold_data.push({
+						id: 'warning_normal_fdown',
+						data: [[max_x, red_threshold]],
+						label: null,
+						color: warning,
+						bars: {show: true, align: "left", barWidth: yellow_threshold - red_threshold, lineWidth: 0, horizontal: true, fillColor: { colors: [ { opacity: 0.1 }, { opacity: 0.1 } ] }},
+						highlightColor: 'rgba(254, 255, 198, 0)'
+					});
+					extremes['warning_normal_fdown_1'] = red_threshold;
+					extremes['warning_normal_fdown_2'] = yellow_threshold;
+				}
+
+				if (yellow_up < red_threshold) {
+					yellow_up = red_threshold;
+				}
+				threshold_data.push({ // barWidth will be correct on draw time
+					id: 'warning_up',
+					data: [[max_x, yellow_up]],
+					label: null,
+					color: warning,
+					bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true, fillColor: { colors: [ { opacity: 0.1 }, { opacity: 0.1 } ] }},
+					highlightColor: 'rgba(254, 255, 198, 0)'
+				});
+				extremes['warning_up'] = yellow_up;
+			} else {
+				if (yellow_threshold > red_threshold) {
+					// C: |--------   ------|
+					// W: |········===·  ···|
+					if (yellow_threshold > red_up) {
+						yellow_threshold = red_up;
+					}
+					threshold_data.push({
+						id: 'warning_normal_fdown',
+						data: [[max_x, red_threshold]],
+						label: null,
+						color: warning,
+						bars: {show: true, align: "left", barWidth: yellow_threshold - red_threshold, lineWidth: 0, horizontal: true, fillColor: { colors: [ { opacity: 0.1 }, { opacity: 0.1 } ] }},
+						highlightColor: 'rgba(254, 255, 198, 0)'
+					});
+					extremes['warning_normal_fdown_1'] = red_threshold;
+					extremes['warning_normal_fdown_2'] = yellow_threshold;
+				}
+				if (yellow_up < red_up) {
+					// C: |--------      ---|
+					// W: |·····  ·======···|
+					if (yellow_up < red_threshold) {
+						yellow_up = red_up;
+					}
+					threshold_data.push({
+						id: 'warning_normal_fup',
+						data: [[max_x, yellow_up]],
+						label: null,
+						color: warning,
+						bars: {show: true, align: "left", barWidth: red_up - yellow_up, lineWidth: 0, horizontal: true, fillColor: { colors: [ { opacity: 0.1 }, { opacity: 0.1 } ] }},
+						highlightColor: 'rgba(254, 255, 198, 0)'
+					});
+					extremes['warning_normal_fup_1'] = red_up;
+					extremes['warning_normal_fup_2'] = yellow_up;
+				}
+				// If warning is under critical completely do not paint anything yellow
+					// C: |--------    -----|
+					// W: |····          ···|
+			}
+		} else if (yellow_inverse && !red_inverse) {
+			if (red_only_min && yellow_only_min) {
+				// C: |            -----|
+				// W: |============···  |
+				if (yellow_threshold > red_threshold) {
+					yellow_threshold = red_threshold;
+				}
+				threshold_data.push({ // barWidth will be correct on draw time
+					id: 'warning_down',
+					data: [[max_x, yellow_threshold]],
+					label: null,
+					color: warning,
+					bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true, fillColor: { colors: [ { opacity: 0.1 }, { opacity: 0.1 } ] }},
+					highlightColor: 'rgba(254, 255, 198, 0)'
+				});
+				extremes['warning_down'] = yellow_threshold;
+
+			} else if (!red_only_min && yellow_only_min) {
+				// C: |      ----       |
+				// W: |======····===    |
+
+				if (yellow_threshold > red_up) {
+					threshold_data.push({
+						id: 'warning_normal_fdown',
+						data: [[max_x, red_up]],
+						label: null,
+						color: warning,
+						bars: {show: true, align: "left", barWidth: yellow_threshold - red_up, lineWidth: 0, horizontal: true, fillColor: { colors: [ { opacity: 0.1 }, { opacity: 0.1 } ] }},
+						highlightColor: 'rgba(254, 255, 198, 0)'
+					});
+					extremes['warning_normal_fdown_1'] = red_up;
+					extremes['warning_normal_fdown_2'] = yellow_threshold;
+				}
+
+				if (yellow_threshold > red_threshold) {
+					yellow_threshold = red_threshold;
+				}
+				threshold_data.push({ // barWidth will be correct on draw time
+						id: 'warning_down',
+						data: [[max_x, yellow_threshold]],
+						label: null,
+						color: warning,
+						bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true, fillColor: { colors: [ { opacity: 0.1 }, { opacity: 0.1 } ] }},
+						highlightColor: 'rgba(254, 255, 198, 0)'
+					});
+				extremes['warning_down'] = yellow_threshold;
+
+			} else if (red_only_min && !yellow_only_min) {
+				if (yellow_threshold < red_threshold) {
+					// C: |            -----|
+					// W: |=======  ===·····|
+					threshold_data.push({ // barWidth will be correct on draw time
+						id: 'warning_down',
+						data: [[max_x, yellow_threshold]],
+						label: null,
+						color: warning,
+						bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true, fillColor: { colors: [ { opacity: 0.1 }, { opacity: 0.1 } ] }},
+						highlightColor: 'rgba(254, 255, 198, 0)'
+					});
+					extremes['warning_down'] = yellow_threshold;
+
+					if (red_threshold > yellow_up) {
+						threshold_data.push({
+							id: 'warning_normal_fup',
+							data: [[max_x, yellow_up]],
+							label: null,
+							color: warning,
+							bars: {show: true, align: "left", barWidth: red_threshold - yellow_up, lineWidth: 0, horizontal: true, fillColor: { colors: [ { opacity: 0.1 }, { opacity: 0.1 } ] }},
+							highlightColor: 'rgba(254, 255, 198, 0)'
+						});
+						extremes['warning_normal_fup_1'] = yellow_up;
+						extremes['warning_normal_fup_2'] = red_threshold;
+					}
+				} else {
+					// C: |     ------------|
+					// W: |=====··  ········|
+					threshold_data.push({ // barWidth will be correct on draw time
+						id: 'warning_down',
+						data: [[max_x, red_threshold]],
+						label: null,
+						color: warning,
+						bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true, fillColor: { colors: [ { opacity: 0.1 }, { opacity: 0.1 } ] }},
+						highlightColor: 'rgba(254, 255, 198, 0)'
+					});
+					extremes['warning_down'] = red_threshold;
+				}
+			} else {
+				if (yellow_threshold > red_up) {
+					// C: |    -----        |
+					// W: |====·····===  ===|
+					threshold_data.push({ // barWidth will be correct on draw time
+						id: 'warning_down',
+						data: [[max_x, red_threshold]],
+						label: null,
+						color: warning,
+						bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true, fillColor: { colors: [ { opacity: 0.1 }, { opacity: 0.1 } ] }},
+						highlightColor: 'rgba(254, 255, 198, 0)'
+					});
+					extremes['warning_down'] = red_threshold;
+
+					threshold_data.push({
+						id: 'warning_normal_fdown',
+						data: [[max_x, red_up]],
+						label: null,
+						color: warning,
+						bars: {show: true, align: "left", barWidth: yellow_threshold - red_up, lineWidth: 0, horizontal: true, fillColor: { colors: [ { opacity: 0.1 }, { opacity: 0.1 } ] }},
+						highlightColor: 'rgba(254, 255, 198, 0)'
+					});
+					extremes['warning_normal_fdown_1'] = red_up;
+					extremes['warning_normal_fdown_2'] = yellow_threshold;
+
+					threshold_data.push({ // barWidth will be correct on draw time
+						id: 'warning_up',
+						data: [[max_x, yellow_up]],
+						label: null,
+						color: warning,
+						bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true, fillColor: { colors: [ { opacity: 0.1 }, { opacity: 0.1 } ] }},
+						highlightColor: 'rgba(254, 255, 198, 0)'
+					});
+					extremes['warning_up'] = yellow_up;
+				} else if (red_threshold > yellow_up){
+					// C: |          -----  |
+					// W: |===    ===·····==|
+					threshold_data.push({ // barWidth will be correct on draw time
+						id: 'warning_down',
+						data: [[max_x, yellow_threshold]],
+						label: null,
+						color: warning,
+						bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true, fillColor: { colors: [ { opacity: 0.1 }, { opacity: 0.1 } ] }},
+						highlightColor: 'rgba(254, 255, 198, 0)'
+					});
+					extremes['warning_down'] = yellow_threshold;
+
+					threshold_data.push({
+						id: 'warning_normal_fup',
+						data: [[max_x, yellow_up]],
+						label: null,
+						color: warning,
+						bars: {show: true, align: "left", barWidth: red_threshold - yellow_up, lineWidth: 0, horizontal: true, fillColor: { colors: [ { opacity: 0.1 }, { opacity: 0.1 } ] }},
+						highlightColor: 'rgba(254, 255, 198, 0)'
+					});
+					extremes['warning_normal_fup_1'] = yellow_up;
+					extremes['warning_normal_fup_2'] = red_threshold;
+
+					threshold_data.push({ // barWidth will be correct on draw time
+						id: 'warning_up',
+						data: [[max_x, red_up]],
+						label: null,
+						color: warning,
+						bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true, fillColor: { colors: [ { opacity: 0.1 }, { opacity: 0.1 } ] }},
+						highlightColor: 'rgba(254, 255, 198, 0)'
+					});
+					extremes['warning_up'] = red_up;
+				} else {
+					// C: |  --------       |
+					// W: |==·    ···=======|
+					if (yellow_threshold > red_threshold) {
+						yellow_threshold = red_threshold;
+					}
+					if (yellow_up < red_up) {
+						yellow_up = red_up;
+					}
+
+					threshold_data.push({ // barWidth will be correct on draw time
+						id: 'warning_down',
+						data: [[max_x, yellow_threshold]],
+						label: null,
+						color: warning,
+						bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true, fillColor: { colors: [ { opacity: 0.1 }, { opacity: 0.1 } ] }},
+						highlightColor: 'rgba(254, 255, 198, 0)'
+					});
+					extremes['warning_down'] = yellow_threshold;
+
+					threshold_data.push({ // barWidth will be correct on draw time
+						id: 'warning_up',
+						data: [[max_x, yellow_up]],
+						label: null,
+						color: warning,
+						bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true, fillColor: { colors: [ { opacity: 0.1 }, { opacity: 0.1 } ] }},
+						highlightColor: 'rgba(254, 255, 198, 0)'
+					});
+					extremes['warning_up'] = yellow_up;
+				}
+			}
+		} else if (!yellow_inverse && red_inverse) {
+			if (yellow_only_min && red_only_min) {
+				// C: |-----            |
+				// W: |   ··============|
+				if (yellow_threshold < red_threshold) {
+					yellow_threshold = red_threshold;
+				}
+				threshold_data.push({ // barWidth will be correct on draw time
+					id: 'warning_up',
+					data: [[max_x, yellow_threshold]],
+					label: null,
+					color: warning,
+					bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true, fillColor: { colors: [ { opacity: 0.1 }, { opacity: 0.1 } ] }},
+					highlightColor: 'rgba(254, 255, 198, 0)'
+				});
+				extremes['warning_up'] = yellow_threshold;
+			} else if (!yellow_only_min && red_only_min) {
+				// C: |-----            |
+				// W: |   ··========    |
+				if (yellow_threshold < red_threshold) {
+					yellow_threshold = red_threshold;
+				}
+				if (yellow_up > red_threshold) {
+					threshold_data.push({
+						id: 'warning_normal',
+						data: [[max_x, yellow_threshold]],
+						label: null,
+						color: warning,
+						bars: {show: true, align: "left", barWidth: (yellow_up - yellow_threshold), lineWidth: 0, horizontal: true, fillColor: { colors: [ { opacity: 0.1 }, { opacity: 0.1 } ] }},
+						highlightColor: 'rgba(254, 255, 198, 0)'
+					});
+					extremes['warning_normal_1'] = yellow_threshold;
+					extremes['warning_normal_2'] = yellow_up;
+				}
+			} else if (yellow_only_min && !red_only_min) {
+				// C: |-----      ------|
+				// W: |   ··======······|
+				if (yellow_threshold < red_threshold) {
+					yellow_threshold = red_threshold;
+				}
+				if (yellow_threshold < red_up) {
+					threshold_data.push({
+						id: 'warning_normal',
+						data: [[max_x, yellow_threshold]],
+						label: null,
+						color: warning,
+						bars: {show: true, align: "left", barWidth: (red_up - yellow_threshold), lineWidth: 0, horizontal: true, fillColor: { colors: [ { opacity: 0.1 }, { opacity: 0.1 } ] }},
+						highlightColor: 'rgba(254, 255, 198, 0)'
+					});
+					extremes['warning_normal_1'] = yellow_threshold;
+					extremes['warning_normal_2'] = red_up;
+				}
+				// If warning is under critical completely do not paint anything yellow
+					// C: |--------    -----|
+					// W: |              ···|
+			} else {
+				if (red_up > yellow_threshold && red_threshold < yellow_up) {
+					// C: |-----      ------|
+					// W: |   ··======·     |
+					if (yellow_threshold < red_threshold) {
+						yellow_threshold = red_threshold;
+					}
+					if (yellow_up > red_up) {
+						yellow_up = red_up;
+					}
+
+					threshold_data.push({
+						id: 'warning_normal',
+						data: [[max_x, yellow_threshold]],
+						label: null,
+						color: warning,
+						bars: {show: true, align: "left", barWidth: (yellow_up - yellow_threshold), lineWidth: 0, horizontal: true, fillColor: { colors: [ { opacity: 0.1 }, { opacity: 0.1 } ] }},
+						highlightColor: 'rgba(254, 255, 198, 0)'
+					});
+					extremes['warning_normal_1'] = yellow_threshold;
+					extremes['warning_normal_2'] = yellow_up;
+				}
+			}
+		}
+			// If warning is under critical completely do not paint anything yellow
+				// C: |--------    -----|   or	// C: |--------    -----|
+				// W: |   ····          |		// W: |             ··  |
+		else {
+			if (red_only_min && yellow_only_min) {
+				if (yellow_threshold < red_threshold) {
+					// C: |        ---------|
+					// W: |   =====·········|
+					threshold_data.push({
+						id: 'warning_normal',
+						data: [[max_x, yellow_threshold]],
+						label: null,
+						color: warning,
+						bars: {show: true, align: "left", barWidth: (red_threshold - yellow_threshold), lineWidth: 0, horizontal: true, fillColor: { colors: [ { opacity: 0.1 }, { opacity: 0.1 } ] }},
+						highlightColor: 'rgba(254, 255, 198, 0)'
+					});
+					extremes['warning_normal_1'] = yellow_threshold;
+					extremes['warning_normal_2'] = red_threshold;
+				}
+			} else if (red_only_min && !yellow_only_min) {
+				// C: |        ---------|
+				// W: |   =====···      |
+				if (yellow_up > red_threshold) {
+					yellow_up = red_threshold;
+				}
+				if (yellow_threshold < red_threshold) {
+					threshold_data.push({
+						id: 'warning_normal',
+						data: [[max_x, yellow_threshold]],
+						label: null,
+						color: warning,
+						bars: {show: true, align: "left", barWidth: (yellow_up - yellow_threshold), lineWidth: 0, horizontal: true, fillColor: { colors: [ { opacity: 0.1 }, { opacity: 0.1 } ] }},
+						highlightColor: 'rgba(254, 255, 198, 0)'
+					});
+					extremes['warning_normal_1'] = yellow_threshold;
+					extremes['warning_normal_2'] = yellow_up;
+				}
+			} else if (!red_only_min && yellow_only_min) {
+				// C: |     -------     |
+				// W: |   ==·······=====|
+				if (yellow_threshold < red_threshold) {
+					threshold_data.push({
+						id: 'warning_normal_fdown',
+						data: [[max_x, yellow_threshold]],
+						label: null,
+						color: warning,
+						bars: {show: true, align: "left", barWidth: red_threshold - yellow_threshold, lineWidth: 0, horizontal: true, fillColor: { colors: [ { opacity: 0.1 }, { opacity: 0.1 } ] }},
+						highlightColor: 'rgba(254, 255, 198, 0)'
+					});
+					extremes['warning_normal_fdown_1'] = yellow_threshold;
+					extremes['warning_normal_fdown_2'] = red_threshold;
+				}
+
+				if (yellow_threshold < red_up) {
+					yellow_threshold = red_up;
+				}
+
+				threshold_data.push({ // barWidth will be correct on draw time
+					id: 'warning_up',
+					data: [[max_x, yellow_threshold]],
+					label: null,
+					color: warning,
+					bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true, fillColor: { colors: [ { opacity: 0.1 }, { opacity: 0.1 } ] }},
+					highlightColor: 'rgba(254, 255, 198, 0)'
+				});
+				extremes['warning_up'] = yellow_threshold;
+
+			} else {
+				if (red_threshold > yellow_threshold && red_up < yellow_up ) {
+					// C: |    ------       |
+					// W: |  ==······====   |
+					threshold_data.push({
+						id: 'warning_normal_fdown',
+						data: [[max_x, yellow_threshold]],
+						label: null,
+						color: warning,
+						bars: {show: true, align: "left", barWidth: red_threshold - yellow_threshold, lineWidth: 0, horizontal: true, fillColor: { colors: [ { opacity: 0.1 }, { opacity: 0.1 } ] }},
+						highlightColor: 'rgba(254, 255, 198, 0)'
+					});
+					extremes['warning_normal_fdown_1'] = yellow_threshold;
+					extremes['warning_normal_fdown_2'] = red_threshold;
+
+					threshold_data.push({
+						id: 'warning_normal_fup',
+						data: [[max_x, red_up]],
+						label: null,
+						color: warning,
+						bars: {show: true, align: "left", barWidth: yellow_up - red_up, lineWidth: 0, horizontal: true, fillColor: { colors: [ { opacity: 0.1 }, { opacity: 0.1 } ] }},
+						highlightColor: 'rgba(254, 255, 198, 0)'
+					});
+					extremes['warning_normal_fup_1'] = red_up;
+					extremes['warning_normal_fup_2'] = yellow_up;
+				} else if (red_threshold < yellow_threshold && red_up > yellow_up) {
+				// If warning is under critical completely do not paint anything yellow
+					// C: |  --------        |
+					// W: |    ····          |
+				} else {
+					// C: |     --------    |   or	// C: |     ------      |
+					// W: |   ==··          |		// W: |        ···====  |
+					if ((yellow_up > red_threshold) && (yellow_up < red_up)) {
+						yellow_up = red_threshold;
+					}
+					if ((yellow_threshold < red_up) && (yellow_threshold > red_threshold)) {
+						yellow_threshold = red_up;
+					}
+					threshold_data.push({
+						id: 'warning_normal',
+						data: [[max_x, yellow_threshold]],
+						label: null,
+						color: warning,
+						bars: {show: true, align: "left", barWidth: (yellow_up - yellow_threshold), lineWidth: 0, horizontal: true, fillColor: { colors: [ { opacity: 0.1 }, { opacity: 0.1 } ] }},
+						highlightColor: 'rgba(254, 255, 198, 0)'
+					});
+					extremes['warning_normal_1'] = yellow_threshold;
+					extremes['warning_normal_2'] = yellow_up;
+				}
+			}
+		}
+
+		// Critical interval
+		if (red_inverse) {
+			if (!red_only_min) {
+				threshold_data.push({ // barWidth will be correct on draw time
+					id: 'critical_up',
+					data: [[max_x, red_up]],
+					label: null,
+					color: critical,
+					bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true, fillColor: { colors: [ { opacity: 0.1 }, { opacity: 0.1 } ] }},
+					highlightColor: 'rgba(254, 236, 234, 0)'
+				});
+				extremes['critical_normal_1'] = red_threshold;
+				extremes['critical_normal_2'] = red_up;
+			}
+			threshold_data.push({ // barWidth will be correct on draw time
+				id: 'critical_down',
+				data: [[max_x, red_threshold]],
+				label: null,
+				color: critical,
+				bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true, fillColor: { colors: [ { opacity: 0.1 }, { opacity: 0.1 } ] }},
+				highlightColor: 'rgba(254, 236, 234, 0)'
+			});
+			extremes['critical_normal_3'] = red_threshold;
+			extremes['critical_normal_4'] = red_threshold;
+		} else {
+			if (red_up == 0 && red_threshold != 0) {
+				threshold_data.push({ // barWidth will be correct on draw time
+					id: 'critical_up',
+					data: [[max_x, red_threshold]],
+					label: null,
+					color: critical,
+					bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true, fillColor: { colors: [ { opacity: 0.1 }, { opacity: 0.1 } ] }},
+					highlightColor: 'rgba(254, 236, 234, 0)'
+				});
+				extremes['critical_normal_1'] = red_threshold;
+				extremes['critical_normal_2'] = red_up;
+			} else {
+				threshold_data.push({
+					id: 'critical_normal',
+					data: [[max_x, red_threshold]],
+					label: null,
+					color: critical,
+					bars: {show: true, align: "left", barWidth: (red_up - red_threshold), lineWidth: 0, horizontal: true, fillColor: { colors: [ { opacity: 0.1 }, { opacity: 0.1 } ] }},
+					highlightColor: 'rgba(254, 236, 234, 0)'
+				});
+				extremes['critical_normal_1'] = red_threshold;
+				extremes['critical_normal_2'] = red_up;
+			}
+		}
+	}
+
 	switch (type) {
+		case 'line':
 		case 2:
 			stacked  = null;
 			filled_s = false;
@@ -1172,13 +1492,14 @@ function pandoraFlotArea(
 			filled_s = false;
 			break;
 		default:
+		case 'area':
 		case 0:
 			stacked  = null;
-			filled_s = 0.2;
+			filled_s = 0.3;
 			break;
 		case 1:
 			stacked  = 'stack';
-			filled_s = 0.2;
+			filled_s = 0.3;
 			break;
 	}
 
@@ -1230,12 +1551,13 @@ function pandoraFlotArea(
 				case 'boolean':
 					line_show   = true;
 					points_show = false;
-					filled      = false;
+					filled      = filled_s;
 					steps_chart = true;
 					radius      = false;
 					fill_points = fill_color;
 					break;
 			}
+
 			data_base.push({
 				id: 'serie_' + i,
 				data: value.data,
@@ -1249,536 +1571,14 @@ function pandoraFlotArea(
 				},
 				points: {
 					show: points_show,
-					radius: radius,
+					radius: 3,
 					fillColor: fill_points
 				}
 			});
+
 			i++;
 		}
 	});
-
-	// If threshold and up are the same, that critical or warning is disabled
-	if (yellow_threshold == yellow_up){
-		yellow_inverse = false;
-	}
-
-	if (red_threshold == red_up){
-		red_inverse = false;
-	}
-
-	//Array with points to be painted
-	var threshold_data = new Array();
-	//Array with some interesting points
-	var extremes = new Array ();
-
-	var yellow_only_min = ((yellow_up == 0) && (yellow_threshold != 0));
-	var red_only_min    = ((red_up == 0) && (red_threshold != 0));
-
-	//color
-	var normalw   = '#efe';
-	var warningw  = '#ffe';
-	var criticalw = '#fee';
-	var normal    = '#0f0';
-	var warning   = '#ff0';
-	var critical  = '#f00';
-
-	if (threshold) {
-		// Warning interval. Change extremes depends on critical interval
-		if (yellow_inverse && red_inverse) {
-			if (red_only_min && yellow_only_min) {
-				// C: |--------         |
-				// W: |········====     |
-				
-				if (yellow_threshold > red_threshold) {
-					threshold_data.push({
-						id: 'warning_normal_fdown',
-						data: [[max_x, red_threshold]],
-						label: null,
-						color: warning, 
-						bars: {show: true, align: "left", barWidth: yellow_threshold - red_threshold, lineWidth: 0, horizontal: true}
-					});
-					extremes['warning_normal_fdown_1'] = red_threshold;
-					extremes['warning_normal_fdown_2'] = yellow_threshold;
-				}
-			} else if (!red_only_min && yellow_only_min) {
-				// C: |--------   ------|
-				// W: |········===·     |
-				
-				if (yellow_threshold > red_up) {
-					yellow_threshold = red_up;
-				}
-				if (yellow_threshold > red_threshold) {
-					threshold_data.push({
-						id: 'warning_normal_fdown',
-						data: [[max_x, red_threshold]],
-						label: null,
-						color: warning, 
-						bars: {show: true, align: "left", barWidth: yellow_threshold - red_threshold, lineWidth: 0, horizontal: true}
-					});
-					extremes['warning_normal_fdown_1'] = red_threshold;
-					extremes['warning_normal_fdown_2'] = yellow_threshold;
-				}
-			} else if (red_only_min && !yellow_only_min) {
-				// C: |-------          |
-				// W: |·······====   ===|
-				if (red_threshold < yellow_threshold) {
-					threshold_data.push({
-						id: 'warning_normal_fdown',
-						data: [[max_x, red_threshold]],
-						label: null,
-						color: warning, 
-						bars: {show: true, align: "left", barWidth: yellow_threshold - red_threshold, lineWidth: 0, horizontal: true}
-					});
-					extremes['warning_normal_fdown_1'] = red_threshold;
-					extremes['warning_normal_fdown_2'] = yellow_threshold;
-				}
-				
-				if (yellow_up < red_threshold) {
-					yellow_up = red_threshold;
-				}
-				threshold_data.push({ // barWidth will be correct on draw time
-					id: 'warning_up',
-					data: [[max_x, yellow_up]],
-					label: null,
-					color: warning, 
-					bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true}
-				});
-				extremes['warning_up'] = yellow_up;
-				
-			} else {
-				if (yellow_threshold > red_threshold) {
-					// C: |--------   ------|
-					// W: |········===·  ···|
-					if (yellow_threshold > red_up) {
-						yellow_threshold = red_up;
-					}
-					threshold_data.push({
-						id: 'warning_normal_fdown',
-						data: [[max_x, red_threshold]],
-						label: null,
-						color: warning, 
-						bars: {show: true, align: "left", barWidth: yellow_threshold - red_threshold, lineWidth: 0, horizontal: true}
-					});
-					extremes['warning_normal_fdown_1'] = red_threshold;
-					extremes['warning_normal_fdown_2'] = yellow_threshold;
-				}
-				if (yellow_up < red_up) {
-					// C: |--------      ---|
-					// W: |·····  ·======···|
-					if (yellow_up < red_threshold) {
-						yellow_up = red_up;
-					}
-					threshold_data.push({ 
-						id: 'warning_normal_fup',
-						data: [[max_x, yellow_up]],
-						label: null,
-						color: warning, 
-						bars: {show: true, align: "left", barWidth: red_up - yellow_up, lineWidth: 0, horizontal: true}
-					});
-					extremes['warning_normal_fup_1'] = red_up;
-					extremes['warning_normal_fup_2'] = yellow_up;
-				}
-				// If warning is under critical completely do not paint anything yellow
-					// C: |--------    -----|
-					// W: |····          ···|
-			}
-		} else if (yellow_inverse && !red_inverse) {
-			if (red_only_min && yellow_only_min) {
-				// C: |            -----|
-				// W: |============···  |
-				if (yellow_threshold > red_threshold) {
-					yellow_threshold = red_threshold;
-				}
-				threshold_data.push({ // barWidth will be correct on draw time
-					id: 'warning_down',
-					data: [[max_x, yellow_threshold]],
-					label: null,
-					color: warning, 
-					bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true}
-				});
-				extremes['warning_down'] = yellow_threshold;
-				
-			} else if (!red_only_min && yellow_only_min) {
-				// C: |      ----       |
-				// W: |======····===    |
-				
-				if (yellow_threshold > red_up) {
-					threshold_data.push({
-						id: 'warning_normal_fdown',
-						data: [[max_x, red_up]],
-						label: null,
-						color: warning, 
-						bars: {show: true, align: "left", barWidth: yellow_threshold - red_up, lineWidth: 0, horizontal: true}
-					});
-					extremes['warning_normal_fdown_1'] = red_up;
-					extremes['warning_normal_fdown_2'] = yellow_threshold;
-				}
-				
-				if (yellow_threshold > red_threshold) {
-					yellow_threshold = red_threshold;
-				}
-				threshold_data.push({ // barWidth will be correct on draw time
-						id: 'warning_down',
-						data: [[max_x, yellow_threshold]],
-						label: null,
-						color: warning, 
-						bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true}
-					});
-				extremes['warning_down'] = yellow_threshold;
-				
-			} else if (red_only_min && !yellow_only_min) {
-				if (yellow_threshold < red_threshold) {
-					// C: |            -----|
-					// W: |=======  ===·····|
-					threshold_data.push({ // barWidth will be correct on draw time
-						id: 'warning_down',
-						data: [[max_x, yellow_threshold]],
-						label: null,
-						color: warning, 
-						bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true}
-					});
-					extremes['warning_down'] = yellow_threshold;
-					
-					if (red_threshold > yellow_up) {
-						threshold_data.push({
-							id: 'warning_normal_fup',
-							data: [[max_x, yellow_up]],
-							label: null,
-							color: warning, 
-							bars: {show: true, align: "left", barWidth: red_threshold - yellow_up, lineWidth: 0, horizontal: true}
-						});
-						extremes['warning_normal_fup_1'] = yellow_up;
-						extremes['warning_normal_fup_2'] = red_threshold;
-					}
-				} else {
-					// C: |     ------------|
-					// W: |=====··  ········|
-					threshold_data.push({ // barWidth will be correct on draw time
-						id: 'warning_down',
-						data: [[max_x, red_threshold]],
-						label: null,
-						color: warning, 
-						bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true}
-					});
-					extremes['warning_down'] = red_threshold;
-				}
-			} else {
-				if (yellow_threshold > red_up) {
-					// C: |    -----        |
-					// W: |====·····===  ===|
-					threshold_data.push({ // barWidth will be correct on draw time
-						id: 'warning_down',
-						data: [[max_x, red_threshold]],
-						label: null,
-						color: warning, 
-						bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true}
-					});
-					extremes['warning_down'] = red_threshold;
-					
-					threshold_data.push({
-						id: 'warning_normal_fdown',
-						data: [[max_x, red_up]],
-						label: null,
-						color: warning, 
-						bars: {show: true, align: "left", barWidth: yellow_threshold - red_up, lineWidth: 0, horizontal: true}
-					});
-					extremes['warning_normal_fdown_1'] = red_up;
-					extremes['warning_normal_fdown_2'] = yellow_threshold;
-					
-					threshold_data.push({ // barWidth will be correct on draw time
-						id: 'warning_up',
-						data: [[max_x, yellow_up]],
-						label: null,
-						color: warning, 
-						bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true}
-					});
-					extremes['warning_up'] = yellow_up;
-				} else if (red_threshold > yellow_up){
-					// C: |          -----  |
-					// W: |===    ===·····==|
-					threshold_data.push({ // barWidth will be correct on draw time
-						id: 'warning_down',
-						data: [[max_x, yellow_threshold]],
-						label: null,
-						color: warning, 
-						bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true}
-					});
-					extremes['warning_down'] = yellow_threshold;
-					
-					threshold_data.push({
-						id: 'warning_normal_fup',
-						data: [[max_x, yellow_up]],
-						label: null,
-						color: warning, 
-						bars: {show: true, align: "left", barWidth: red_threshold - yellow_up, lineWidth: 0, horizontal: true}
-					});
-					extremes['warning_normal_fup_1'] = yellow_up;
-					extremes['warning_normal_fup_2'] = red_threshold;
-					
-					threshold_data.push({ // barWidth will be correct on draw time
-						id: 'warning_up',
-						data: [[max_x, red_up]],
-						label: null,
-						color: warning, 
-						bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true}
-					});
-					extremes['warning_up'] = red_up;
-				} else {
-					// C: |  --------       |
-					// W: |==·    ···=======|
-					if (yellow_threshold > red_threshold) {
-						yellow_threshold = red_threshold;
-					}
-					if (yellow_up < red_up) {
-						yellow_up = red_up;
-					}
-					
-					threshold_data.push({ // barWidth will be correct on draw time
-						id: 'warning_down',
-						data: [[max_x, yellow_threshold]],
-						label: null,
-						color: warning, 
-						bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true}
-					});
-					extremes['warning_down'] = yellow_threshold;
-					
-					threshold_data.push({ // barWidth will be correct on draw time
-						id: 'warning_up',
-						data: [[max_x, yellow_up]],
-						label: null,
-						color: warning, 
-						bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true}
-					});
-					extremes['warning_up'] = yellow_up;
-				}
-			}
-		} else if (!yellow_inverse && red_inverse) {
-			if (yellow_only_min && red_only_min) {
-				// C: |-----            |
-				// W: |   ··============|
-				if (yellow_threshold < red_threshold) {
-					yellow_threshold = red_threshold;
-				}
-				threshold_data.push({ // barWidth will be correct on draw time
-					id: 'warning_up',
-					data: [[max_x, yellow_threshold]],
-					label: null,
-					color: warning, 
-					bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true}
-				});
-				extremes['warning_up'] = yellow_threshold;
-				
-			} else if (!yellow_only_min && red_only_min) {
-				// C: |-----            |
-				// W: |   ··========    |
-				if (yellow_threshold < red_threshold) {
-					yellow_threshold = red_threshold;
-				}
-				if (yellow_up > red_threshold) {
-					threshold_data.push({
-						id: 'warning_normal',
-						data: [[max_x, yellow_threshold]],
-						label: null,
-						color: warning, 
-						bars: {show: true, align: "left", barWidth: (yellow_up - yellow_threshold), lineWidth: 0, horizontal: true}
-					});
-					extremes['warning_normal_1'] = yellow_threshold;
-					extremes['warning_normal_2'] = yellow_up;
-				}
-			} else if (yellow_only_min && !red_only_min) {
-				// C: |-----      ------|
-				// W: |   ··======······|
-				if (yellow_threshold < red_threshold) {
-					yellow_threshold = red_threshold;
-				}
-				if (yellow_threshold < red_up) {
-					threshold_data.push({
-						id: 'warning_normal',
-						data: [[max_x, yellow_threshold]],
-						label: null,
-						color: warning, 
-						bars: {show: true, align: "left", barWidth: (red_up - yellow_threshold), lineWidth: 0, horizontal: true}
-					});
-					extremes['warning_normal_1'] = yellow_threshold;
-					extremes['warning_normal_2'] = red_up;
-				}
-				// If warning is under critical completely do not paint anything yellow
-					// C: |--------    -----|
-					// W: |              ···|
-			} else {
-				if (red_up > yellow_threshold && red_threshold < yellow_up) {
-					// C: |-----      ------|
-					// W: |   ··======·     |
-					if (yellow_threshold < red_threshold) {
-						yellow_threshold = red_threshold;
-					}
-					if (yellow_up > red_up) {
-						yellow_up = red_up;
-					}
-					
-					threshold_data.push({
-						id: 'warning_normal',
-						data: [[max_x, yellow_threshold]],
-						label: null,
-						color: warning, 
-						bars: {show: true, align: "left", barWidth: (yellow_up - yellow_threshold), lineWidth: 0, horizontal: true}
-					});
-					extremes['warning_normal_1'] = yellow_threshold;
-					extremes['warning_normal_2'] = yellow_up;
-				}
-			}
-		}
-			// If warning is under critical completely do not paint anything yellow
-				// C: |--------    -----|   or	// C: |--------    -----|
-				// W: |   ····          |		// W: |             ··  |
-		else {
-			if (red_only_min && yellow_only_min) {
-				if (yellow_threshold < red_threshold) {
-					// C: |        ---------|
-					// W: |   =====·········|
-					threshold_data.push({
-						id: 'warning_normal',
-						data: [[max_x, yellow_threshold]],
-						label: null,
-						color: warning, 
-						bars: {show: true, align: "left", barWidth: (red_threshold - yellow_threshold), lineWidth: 0, horizontal: true}
-					});
-					extremes['warning_normal_1'] = yellow_threshold;
-					extremes['warning_normal_2'] = red_threshold;
-				}
-			} else if (red_only_min && !yellow_only_min) {
-				// C: |        ---------|
-				// W: |   =====···      |
-				if (yellow_up > red_threshold) {
-					yellow_up = red_threshold;
-				}
-				if (yellow_threshold < red_threshold) {
-					threshold_data.push({
-						id: 'warning_normal',
-						data: [[max_x, yellow_threshold]],
-						label: null,
-						color: warning, 
-						bars: {show: true, align: "left", barWidth: (yellow_up - yellow_threshold), lineWidth: 0, horizontal: true}
-					});
-					extremes['warning_normal_1'] = yellow_threshold;
-					extremes['warning_normal_2'] = yellow_up;
-				}
-			} else if (!red_only_min && yellow_only_min) {
-				// C: |     -------     |
-				// W: |   ==·······=====|
-				
-				if (yellow_threshold < red_threshold) {
-					threshold_data.push({
-						id: 'warning_normal_fdown',
-						data: [[max_x, yellow_threshold]],
-						label: null,
-						color: warning, 
-						bars: {show: true, align: "left", barWidth: red_threshold - yellow_threshold, lineWidth: 0, horizontal: true}
-					});
-					extremes['warning_normal_fdown_1'] = yellow_threshold;
-					extremes['warning_normal_fdown_2'] = red_threshold;
-				}
-				
-				if (yellow_threshold < red_up) {
-					yellow_threshold = red_up;
-				}
-				
-				threshold_data.push({ // barWidth will be correct on draw time
-					id: 'warning_up',
-					data: [[max_x, yellow_threshold]],
-					label: null,
-					color: warning, 
-					bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true}
-				});
-				extremes['warning_up'] = yellow_threshold;
-				
-			} else {
-				if (red_threshold > yellow_threshold && red_up < yellow_up ) {
-					// C: |    ------       |
-					// W: |  ==······====   |
-					threshold_data.push({
-						id: 'warning_normal_fdown',
-						data: [[max_x, yellow_threshold]],
-						label: null,
-						color: warning, 
-						bars: {show: true, align: "left", barWidth: red_threshold - yellow_threshold, lineWidth: 0, horizontal: true}
-					});
-					extremes['warning_normal_fdown_1'] = yellow_threshold;
-					extremes['warning_normal_fdown_2'] = red_threshold;
-					
-					threshold_data.push({
-						id: 'warning_normal_fup',
-						data: [[max_x, red_up]],
-						label: null,
-						color: warning, 
-						bars: {show: true, align: "left", barWidth: yellow_up - red_up, lineWidth: 0, horizontal: true}
-					});
-					extremes['warning_normal_fup_1'] = red_up;
-					extremes['warning_normal_fup_2'] = yellow_up;
-				} else if (red_threshold < yellow_threshold && red_up > yellow_up) {
-				// If warning is under critical completely do not paint anything yellow
-					// C: |  --------        |
-					// W: |    ····          |
-				} else {
-					// C: |     --------    |   or	// C: |     ------      |
-					// W: |   ==··          |		// W: |        ···====  |
-					if ((yellow_up > red_threshold) && (yellow_up < red_up)) {
-						yellow_up = red_threshold;
-					}
-					if ((yellow_threshold < red_up) && (yellow_threshold > red_threshold)) {
-						yellow_threshold = red_up;
-					}
-					threshold_data.push({
-						id: 'warning_normal',
-						data: [[max_x, yellow_threshold]],
-						label: null,
-						color: warning, 
-						bars: {show: true, align: "left", barWidth: (yellow_up - yellow_threshold), lineWidth: 0, horizontal: true}
-					});
-					extremes['warning_normal_1'] = yellow_threshold;
-					extremes['warning_normal_2'] = yellow_up;
-				}
-			}
-		}
-		// Critical interval
-		if (red_inverse) {
-			if (!red_only_min) {
-				threshold_data.push({ // barWidth will be correct on draw time
-					id: 'critical_up',
-					data: [[max_x, red_up]],
-					label: null,
-					color: critical, 
-					bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true}
-				});
-			}
-			threshold_data.push({ // barWidth will be correct on draw time
-				id: 'critical_down',
-				data: [[max_x, red_threshold]],
-				label: null,
-				color: critical, 
-				bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true}
-			});
-		} else {
-			if (red_up == 0 && red_threshold != 0) {
-				threshold_data.push({ // barWidth will be correct on draw time
-					id: 'critical_up',
-					data: [[max_x, red_threshold]],
-					label: null,
-					color: critical, 
-					bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true}
-				});
-			} else {
-				threshold_data.push({
-					id: 'critical_normal',
-					data: [[max_x, red_threshold]],
-					label: null,
-					color: critical, 
-					bars: {show: true, align: "left", barWidth: (red_up - red_threshold), lineWidth: 0, horizontal: true}
-				});
-			}
-		}
-		
-	}
 
 	// The first execution, the graph data is the base data
 	datas = data_base;
@@ -1794,7 +1594,8 @@ function pandoraFlotArea(
 				shadowSize: 0.1
 			},
 			crosshair: {
-				mode: 'xy'
+				mode: 'xy',
+				color: 'grey'
 			},
 			selection: {
 				mode: 'xy',
@@ -1811,7 +1612,8 @@ function pandoraFlotArea(
 				borderWidth:1,
 				borderColor: '#C1C1C1',
 				tickColor: background_color,
-				color: legend_color
+				color: legend_color,
+				autoHighlight: true
 			},
 			xaxes: [{
 				axisLabelFontSizePixels: font_size,
@@ -1946,69 +1748,92 @@ function pandoraFlotArea(
 			}
 		}
 
-		plot = $.plot($('#' + graph_id), data_base,
-			$.extend(true, {}, options, {
-				grid: {
-					borderWidth: 1,
-					hoverable: true,
-					autoHighlight: true
-				},
-				xaxis: {
-					min: ranges.xaxis.from,
-					max: ranges.xaxis.to
-				},
-				xaxes: [{
-					mode: "time",
-					tickFormatter: xFormatter,
-					tickSize: [maxticks_zoom, 'hour']
-				}],
-				yaxis:{
-					min: ranges.yaxis.from,
-					max: ranges.yaxis.to
-				},
-				yaxes: [{
-					tickFormatter: yFormatter,
-					color: '',
-					alignTicksWithAxis: 1,
-					labelWidth: 30,
-					position: 'left',
-					font: font,
-					reserveSpace: true,
-				}],
-				legend: {
-					show: true
-				}
-		}));
-
 		if (thresholded) {
-			var zoom_data_threshold = new Array ();
+			data_base_treshold = add_threshold (
+				data_base,
+				threshold_data,
+				ranges.yaxis.from,
+				ranges.yaxis.to,
+				red_threshold,
+				extremes,
+				red_up,
+				markins_graph
+			);
 
-			var y_recal = axis_thresholded(threshold_data, plot.getAxes().yaxis.min, plot.getAxes().yaxis.max,
-									red_threshold, extremes, red_up);
-
-			plot = $.plot($('#' + graph_id), data_base,
-			$.extend(true, {}, options, {
-				yaxis: {
-					max: y_recal.max,
-					min: y_recal.min
-				},
-				xaxis: {
-					min: plot.getAxes().xaxis.min,
-					max: plot.getAxes().xaxis.max
-				}
+			plot = $.plot($('#' + graph_id), data_base_treshold,
+				$.extend(true, {}, options, {
+					grid: {
+						borderWidth: 1,
+						hoverable: true,
+						autoHighlight: true
+					},
+					xaxis: {
+						min: ranges.xaxis.from,
+						max: ranges.xaxis.to
+					},
+					xaxes: [{
+						mode: "time",
+						tickFormatter: xFormatter,
+						tickSize: [maxticks_zoom, 'hour']
+					}],
+					yaxis:{
+						min: ranges.yaxis.from,
+						max: ranges.yaxis.to
+					},
+					yaxes: [{
+						tickFormatter: yFormatter,
+						color: '',
+						alignTicksWithAxis: 1,
+						labelWidth: 30,
+						position: 'left',
+						font: font,
+						reserveSpace: true,
+					}],
+					legend: {
+						show: true
+					}
 			}));
-
-			zoom_data_threshold = add_threshold (data_base, threshold_data, plot.getAxes().yaxis.min, plot.getAxes().yaxis.max,
-										red_threshold, extremes, red_up);
-
-			plot.setData(zoom_data_threshold);
-			plot.draw();
+		}
+		else{
+			plot = $.plot($('#' + graph_id), data_base,
+				$.extend(true, {}, options, {
+					grid: {
+						borderWidth: 1,
+						hoverable: true,
+						autoHighlight: true
+					},
+					xaxis: {
+						min: ranges.xaxis.from,
+						max: ranges.xaxis.to
+					},
+					xaxes: [{
+						mode: "time",
+						tickFormatter: xFormatter,
+						tickSize: [maxticks_zoom, 'hour']
+					}],
+					yaxis:{
+						min: ranges.yaxis.from,
+						max: ranges.yaxis.to
+					},
+					yaxes: [{
+						tickFormatter: yFormatter,
+						color: '',
+						alignTicksWithAxis: 1,
+						labelWidth: 30,
+						position: 'left',
+						font: font,
+						reserveSpace: true,
+					}],
+					legend: {
+						show: true
+					}
+			}));
 		}
 
 		$('#menu_cancelzoom_' + graph_id)
 			.attr('src', homeurl + '/images/zoom_cross_grey.png');
 
-		currentRanges = ranges;
+	//	currentRanges = ranges;
 		// don't fire event on the overview to prevent eternal loop
 		overview.setSelection(ranges, true);
 	});
@@ -2158,7 +1983,7 @@ function pandoraFlotArea(
 
 	$('#' + graph_id).bind("plotclick", function (event, pos, item) {
 		plot.unhighlight();
-		if(item && item.series.label != '' &&
+		if(item && item.series.label != '' && item.series.label != null &&
 			( 	(item.series.label.search("alert") >= 0) ||
 				(item.series.label.search("event") >= 0)	)
 		){
@@ -2196,7 +2021,8 @@ function pandoraFlotArea(
 
 				$.each(events_array, function (i, v) {
 					$.each(v, function (index, value) {
-						if((value.utimestamp) == item.datapoint[0]/1000){
+						if(value.utimestamp == item.datapoint[0]/1000 ||
+							value.utimestamp == (item.datapoint[0]/1000) - 1){
 							events_data = value;
 						}
 					});
@@ -2327,14 +2153,16 @@ function pandoraFlotArea(
 
 			if (thresholded) {
 				$.each(data_base, function() {
-					// Prepared to turning series
-					//if(showed[this.id.split('_')[1]]) {
 						datas.push(this);
-					//}
 				});
+
+				delete data_base[0].threshold;
+
 				plot = $.plot($('#' + graph_id), data_base,
 					$.extend(true, {}, options, {
-						yaxis: {max: max_draw},
+						yaxis: {
+							max: max_draw
+						},
 						xaxis: {
 							min: plot.getAxes().xaxis.min,
 							max: plot.getAxes().xaxis.max
@@ -2344,36 +2172,51 @@ function pandoraFlotArea(
 			}
 			else {
 				var max_draw = plot.getAxes().yaxis.datamax;
-				// Recalculate the y axis
-				var y_recal = axis_thresholded(threshold_data, plot.getAxes().yaxis.min, plot.getAxes().yaxis.max,
-										red_threshold, extremes, red_up);
 
-				plot = $.plot($('#' + graph_id), data_base,
+				if(!thresholded){
+					// Recalculate the y axis
+					var y_recal = axis_thresholded(
+						threshold_data,
+						plot.getAxes().yaxis.min,
+						plot.getAxes().yaxis.max,
+						red_threshold, extremes,
+						red_up
+					);
+				}
+				else{
+					var y_recal = plot.getAxes().yaxis.max
+				}
+
+				datas_treshold = add_threshold (
+					data_base,
+					threshold_data,
+					plot.getAxes().yaxis.min,
+					plot.getAxes().yaxis.max,
+					red_threshold,
+					extremes,
+					red_up,
+					markins_graph
+				);
+
+				plot = $.plot($('#' + graph_id), datas_treshold,
 						$.extend(true, {}, options, {
 							yaxis: {
 								max: y_recal.max,
-								min: y_recal.min
 							},
 							xaxis: {
-								//mode:"time",
-								//min: plot.getAxes().xaxis.min,
-								//max: plot.getAxes().xaxis.max
+								min: plot.getAxes().xaxis.min,
+								max: plot.getAxes().xaxis.max
 							}
 						}));
 
-				datas = add_threshold (data_base, threshold_data, plot.getAxes().yaxis.min, plot.getAxes().yaxis.max,
-										red_threshold, extremes, red_up);
-
 				thresholded = true;
 			}
-			plot.setData(datas);
-			plot.draw();
 
-			//~ plot.setSelection(currentRanges);
 		});
 
 		$('#menu_cancelzoom_' + graph_id).click(function() {
 			// cancel the zooming
+			delete data_base[0].threshold;
 			plot = $.plot($('#' + graph_id), data_base,
 				$.extend(true, {}, options, {
 					legend: { show: true }
@@ -2494,7 +2337,6 @@ function get_event_details (event_ids) {
 
 //XXXXXXXXXX
 //Ajusta la grafica pequenña con el desplazamiento del eje y
-
 function adjust_left_width_canvas(adapter_id, adapted_id) {
 	var adapter_left_margin = $('#'+adapter_id+' .yAxis .tickLabel').width();
 	var adapted_pix = $('#'+adapted_id).width();
@@ -2506,7 +2348,6 @@ function adjust_left_width_canvas(adapter_id, adapted_id) {
 
 //XXXXXXXXXXX
 //Ajusta el ancho de la grafica pequeña con respecto a la grande
-
 function update_left_width_canvas(graph_id) {
 	$('#overview_'+graph_id).width($('#'+graph_id).width());
 	$('#overview_'+graph_id).css('margin-left', $('#'+graph_id+' .yAxis .tickLabel').width());
@@ -2551,14 +2392,15 @@ function number_format(number, force_integer, unit, short_data) {
 			break;
 		}
 	}
-	
+
 	return number + ' ' + shorts[pos] + unit;
 }
 
-function pad(input, length, padding) { 
+function pad(input, length, padding) {
 	var str = input + "";
 	return (length <= str.length) ? str : pad(str+padding, length, padding);
 }
+
 // Recalculate the threshold data depends on warning and critical
 function axis_thresholded (threshold_data, y_min, y_max, red_threshold, extremes, red_up) {
 	var y = {
@@ -2617,23 +2459,41 @@ function axis_thresholded (threshold_data, y_min, y_max, red_threshold, extremes
 	return y;
 }
 
+//add treshold
 function add_threshold (data_base, threshold_data, y_min, y_max,
-						red_threshold, extremes, red_up) {
-
+						red_threshold, extremes, red_up, markins_graph) {
 	var datas = new Array ();
 
 	$.each(data_base, function() {
-		// Prepared to turning series
-		//if(showed[this.id.split('_')[1]]) {
-			datas.push(this);
-		//}
+		datas.push(this);
 	});
 
+	var threshold_array = [];
+
 	// Resize the threshold data
-	$.each(threshold_data, function() {
+	$.each(threshold_data, function(index, value) {
+		threshold_array[index] = [];
+
 		if (/_up/.test(this.id)){
 			this.bars.barWidth = y_max - this.data[0][1];
+
+			if (/critical/.test(this.id)){
+				threshold_array[index]['min']   = this.data[0][1];
+				threshold_array[index]['max']   = y_max;
+				threshold_array[index]['color'] = "red";
+			}
+			else{
+				threshold_array[index]['min']   = this.data[0][1];
+				threshold_array[index]['max']   = y_max;
+				threshold_array[index]['color'] = "yellow";
+			}
+
+			if(y_min > this.data[0][1]){
+				this.bars.barWidth = this.bars.barWidth - (y_min - this.data[0][1]);
+				this.data[0][1] = y_min;
+			}
 		}
+
 		if (/_down/.test(this.id)){
 			var end;
 			if (/critical/.test(this.id)) {
@@ -2641,27 +2501,103 @@ function add_threshold (data_base, threshold_data, y_min, y_max,
 			} else {
 				end = extremes[this.id];
 			}
+
 			this.bars.barWidth = end - y_min;
 			this.data[0][1] = y_min;
+
+			if (/critical/.test(this.id)){
+				threshold_array[index]['min']   = this.data[0][1];
+				threshold_array[index]['max']   = this.bars.barWidth;
+				threshold_array[index]['color'] = "red";
+			}
+			else{
+				threshold_array[index]['min']   = this.data[0][1];
+				threshold_array[index]['max']   = this.bars.barWidth;
+				threshold_array[index]['color'] = "yellow";
+			}
 		}
+
 		if (/_normal/.test(this.id)){
 			var end;
 			if (/critical/.test(this.id)) {
 				end = red_up;
+				threshold_array[index]['min']   = this.data[0][1];
+				threshold_array[index]['max']   = end;
+				threshold_array[index]['color'] = "red";
 			} else {
-				end = extremes[this.id + '_2'];
+				end = extremes[this.id + '_1'];
+				threshold_array[index]['min']   = this.data[0][1];
+				threshold_array[index]['max']   = end;
+				threshold_array[index]['color'] = "yellow";
 			}
+
+
 			if (this.data[0][1] < y_min) {
 				this.bars.barWidth = end - y_min;
 				this.data[0][1] = y_min;
 				end = this.bars.barWidth + this.data[0][1];
+
+				if (/critical/.test(this.id)){
+					threshold_array[index]['min']   = this.data[0][1];
+					threshold_array[index]['max']   = this.data[0][1] + this.bars.barWidth;
+					threshold_array[index]['color'] = "red";
+				}
+				else{
+					threshold_array[index]['min']   = this.data[0][1];
+					threshold_array[index]['max']   = this.data[0][1] + this.bars.barWidth;
+					threshold_array[index]['color'] = "yellow";
+				}
+
 			}
+
 			if (end > y_max) {
 				this.bars.barWidth = y_max - this.data[0][1];
+
+				if (/critical/.test(this.id)){
+					threshold_array[index]['min']   = this.data[0][1];
+					threshold_array[index]['max']   = this.data[0][1] + this.bars.barWidth;
+					threshold_array[index]['color'] = "red";
+				}
+				else{
+					threshold_array[index]['min']   = this.data[0][1];
+					threshold_array[index]['max']   = this.data[0][1] + this.bars.barWidth;
+					threshold_array[index]['color'] = "yellow";
+				}
+
 			}
 		}
-		datas.push(this);
+
+		if(markins_graph && this.bars.barWidth > 0){
+			datas.push(this);
+		}
 	});
+
+	var extreme_treshold_array = [];
+	var i = 0;
+	var flag = true;
+console.log(threshold_array);
+	$.each(threshold_array, function(index, value) {
+		flag = true;
+		extreme_treshold_array[i] = {
+						'below': value['max'],
+						'color': value['color'],
+					}
+		i++;
+		$.each(threshold_array, function(i, v) {
+			if(value['min'] == v['max']){
+				return flag = false;
+			}
+		});
+		if(flag){
+			extreme_treshold_array[i] = {
+				'below': value['min'],
+				'color': datas[0].color,
+			}
+			i++;
+		}
+	});
+
+	datas[0].threshold = extreme_treshold_array;
 
 	return datas;
 }

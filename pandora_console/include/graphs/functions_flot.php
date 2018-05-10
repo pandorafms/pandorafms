@@ -53,6 +53,8 @@ function include_javascript_dependencies_flot_graph($return = false) {
 			<script language="javascript" type="text/javascript" src="'.
 				ui_get_full_url($metaconsole_hack . '/include/graphs/flot/jquery.flot.threshold.js') .'"></script>
 			<script language="javascript" type="text/javascript" src="'.
+				ui_get_full_url($metaconsole_hack . '/include/graphs/flot/jquery.flot.threshold.multiple.js') .'"></script>
+			<script language="javascript" type="text/javascript" src="'.
 				ui_get_full_url($metaconsole_hack . '/include/graphs/flot/jquery.flot.symbol.min.js') .'"></script>
 			<script language="javascript" type="text/javascript" src="'.
 				ui_get_full_url($metaconsole_hack . '/include/graphs/flot/jquery.flot.exportdata.pandora.js') .'"></script>
@@ -128,7 +130,7 @@ function flot_area_graph (
 
 	///XXXXXXX los px caca
 	// Parent layer
-	$return = "<div class='parent_graph' style='width: " . ($format_graph['width']) . "px; " . $background_style . "'>";
+	$return = "<div class='parent_graph' style='width: " . ($format_graph['width']) . "; " . $background_style . "'>";
 	// Set some containers to legend, graph, timestamp tooltip, etc.
 	$return .= "<p id='legend_$graph_id' class='legend_graph' style='font-size:" . $format_graph['font_size'] ."pt !important;'></p>";
 
@@ -297,7 +299,7 @@ function menu_graph(
 		$return .= "<div id='geneal_menu_$graph_id' class='menu_graph' style='
 						width: 30px;
 						height: 250px;
-						left:" . $width . "px;
+						left:100%;
 						position: absolute;
 						top: 0px;
 						background-color: white;'>";
@@ -677,10 +679,10 @@ function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $
 	
 	// Set some containers to legend, graph, timestamp tooltip, etc.
 	if ($stat_win) {
-		$return = "<div id='$graph_id' class='noresizevc graph $adapt_key' style='width: ".$width."px; height: ".$height."px; display: inline-block;'></div>";
+		$return = "<div id='$graph_id' class='noresizevc graph $adapt_key' style='width: ".$width."%; height: ".$height."px; display: inline-block;'></div>";
 	}
 	else {
-		$return = "<div id='$graph_id' class='noresizevc graph $adapt_key' style='width: ".$width."px; height: ".$height."px;'></div>";
+		$return = "<div id='$graph_id' class='noresizevc graph $adapt_key' style='width: ".$width."%; height: ".$height."px;'></div>";
 	}
 	$return .= "<div id='value_$graph_id' style='display:none; position:absolute; background:#fff; border: solid 1px #aaa; padding: 2px'></div>";
 	

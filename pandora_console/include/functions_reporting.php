@@ -1199,11 +1199,7 @@ function reporting_event_top_n($report, $content, $type = 'dinamic',
 						ui_print_truncate_text($agent_name[$i], $truncate_size, false, true, false, "...") .
 						' - ' . 
 						ui_print_truncate_text($module_name[$i], $truncate_size, false, true, false, "...");
-					
-					
-					
-					//Dirty hack, maybe I am going to apply a job in Apple
-					//https://www.imperialviolet.org/2014/02/22/applebug.html
+
 					$item_name_key_pie = $item_name;
 					$exist_key = true;
 					while ($exist_key) {
@@ -1255,11 +1251,7 @@ function reporting_event_top_n($report, $content, $type = 'dinamic',
 						' - ' . 
 						ui_print_truncate_text($module_name[$i],
 							$truncate_size, false, true, false, "...");
-					
-					
-					
-					//Dirty hack, maybe I am going to apply a job in Apple
-					//https://www.imperialviolet.org/2014/02/22/applebug.html
+
 					$item_name_key_pie = $item_name;
 					$exist_key = true;
 					while ($exist_key) {
@@ -3485,7 +3477,7 @@ function reporting_netflow($report, $content, $type,
 function reporting_simple_baseline_graph($report, $content,
 	$type = 'dinamic', $force_width_chart = null,
 	$force_height_chart = null) {
-	
+
 	global $config;
 	
 	if ($config['metaconsole']) {
@@ -3603,8 +3595,7 @@ function reporting_prediction_date($report, $content) {
 function reporting_projection_graph($report, $content,
 	$type = 'dinamic', $force_width_chart = null,
 	$force_height_chart = null) {
-html_debug_print('esta en esta');
-	
+
 	global $config;
 	
 	if ($config['metaconsole']) {
@@ -3820,7 +3811,7 @@ function reporting_agent_configuration($report, $content) {
 
 function reporting_value($report, $content, $type,$pdf) {
 	global $config;
-	
+
 	$return = array();
 	switch ($type) {
 		case 'max':
@@ -6395,7 +6386,7 @@ function reporting_general($report, $content) {
 
 function reporting_custom_graph($report, $content, $type = 'dinamic',
 	$force_width_chart = null, $force_height_chart = null, $type_report = "custom_graph") {
-		html_debug_print('esta en esta 2');
+
 	global $config;
 	
 	require_once ($config["homedir"] . '/include/functions_graph.php');
@@ -6541,36 +6532,28 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 
 function reporting_simple_graph($report, $content, $type = 'dinamic',
 	$force_width_chart = null, $force_height_chart = null) {
-	
+
 	global $config;
-	
-	
+
 	if ($config['metaconsole']) {
 		$id_meta = metaconsole_get_id_server($content["server_name"]);
-		
-		
+
 		$server = metaconsole_get_connection_by_id ($id_meta);
 		metaconsole_connect($server);
 	}
-	
-	
+
 	$return = array();
 	$return['type'] = 'simple_graph';
-	
+
 	if (empty($content['name'])) {
 		$content['name'] = __('Simple graph');
 	}
-	
-	
-	
+
 	$module_name = io_safe_output(
 		modules_get_agentmodule_name($content['id_agent_module']));
 	$agent_name = io_safe_output(
 		modules_get_agentmodule_agent_alias ($content['id_agent_module']));
-	
-	
-	
-	
+
 	$return['title'] = $content['name'];
 	$return['subtitle'] = $agent_name . " - " . $module_name;
 	$return['agent_name'] = $agent_name;
@@ -6580,10 +6563,10 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 		$report,
 		$content);
 	$label = (isset($content['style']['label'])) ? $content['style']['label'] : '';
-	 if ($label != '') {
-		 $label = reporting_label_macro($content, $label);
-	 }
-	
+	if ($label != '') {
+		$label = reporting_label_macro($content, $label);
+	}
+
 	$only_avg = true;
 	// Due to database compatibility problems, the 'only_avg' value
 	// is stored into the json contained into the 'style' column.
@@ -6594,31 +6577,29 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 	if (isset($content['style']['fullscale'])) {
 		$fullscale = (bool) $content['style']['fullscale'];
 	}
-	
+
 	$moduletype_name = modules_get_moduletype_name(
 		modules_get_agentmodule_type(
 			$content['id_agent_module']));
-	
+
 	$return['chart'] = '';
+
 	// Get chart
-	reporting_set_conf_charts($width, $height, $only_image, $type,
-		$content, $ttl);
-	
+	reporting_set_conf_charts($width, $height, $only_image, $type, $content, $ttl);
+
 	if (!empty($force_width_chart)) {
 		$width = $force_width_chart;
 	}
-	
+
 	if (!empty($force_height_chart)) {
 		$height = $force_height_chart;
 	}
-	
+
 	switch ($type) {
 		case 'dinamic':
 		case 'static':
 			if (preg_match ("/string/", $moduletype_name)) {
-				
 				$urlImage = ui_get_full_url(false, false, false, false);
-				
 				$return['chart'] = grafico_modulo_string(
 					$content['id_agent_module'],
 					$content['period'],
@@ -6635,7 +6616,7 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 					$urlImage,
 					"",
 					$ttl);
-				
+
 			}
 			else {
 				// HACK it is saved in show_graph field.
@@ -6643,13 +6624,13 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 				if ($content['show_graph']) {
 					$time_compare_overlapped = 'overlapped';
 				}
-				
+
 				$return['chart'] = grafico_modulo_sparse(
 					$content['id_agent_module'],
 					$content['period'],
 					false,
-					$width,
-					$height,
+					'90%',
+					400,
 					$label,
 					'',
 					false,
@@ -6681,18 +6662,18 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 				$content['id_agent_module'],
 				$content['period'],
 				$report["datetime"]);
-			
+
 			foreach ($data as $d) {
 				$return['chart'][$d['utimestamp']] = $d['data'];
 			}
-			
+
 			break;
 	}
-	
+
 	if ($config['metaconsole']) {
 		metaconsole_restore_db();
 	}
-	
+
 	return reporting_check_structure_content($return);
 }
 

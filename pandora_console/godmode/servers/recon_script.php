@@ -225,7 +225,7 @@ if (($create != "") OR ($view != "")) {
 	echo '</form></table>';
 }
 else {
-	ui_print_page_header (__('Recon scripts registered in Pandora FMS'), "images/gm_servers.png", false, "", true);
+	ui_print_page_header (__('Recon scripts registered on %s', get_product_name()), "images/gm_servers.png", false, "", true);
 	
 	// Update reconscript
 	if (isset($_GET["update_reconscript"])) { // if modified any parameter

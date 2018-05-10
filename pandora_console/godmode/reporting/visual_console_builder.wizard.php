@@ -328,7 +328,7 @@ $table->data["all_8"][2] = '<span id="parent_column_2_item_in_visual_map">' .
 	__('Item in the map') . '</span>' .
 	'<span id="parent_column_2_relationship">' .
 	ui_print_help_tip(
-		__('The parent relationships in Pandora will be drawn in the map.'), true) .
+		__('The parenting relationships in %s will be drawn on the map.', get_product_name()), true) .
 	'</span>';
 $table->data["all_8"][3] = '<span id="parent_column_3_item_in_visual_map">' .
 	html_print_select($parents, 'item_in_the_map', 0, '',

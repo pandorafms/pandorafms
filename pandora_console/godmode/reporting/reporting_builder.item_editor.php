@@ -888,7 +888,7 @@ You can of course remove the warnings, that's why we include the source and do n
 						<td>
 							<?php
 							echo __('Time from') .
-							ui_print_help_tip(__('Time format in Pandora is hours(24h):minutes:seconds'), true);
+							ui_print_help_tip(__('Watch format is hours (24h):minutes:seconds'), true);
 							?>
 						</td>
 						<td colspan="6"><?php html_print_input_text ('time_from', $time_from, '', 7, 8);?></td>
@@ -897,7 +897,7 @@ You can of course remove the warnings, that's why we include the source and do n
 						<td>
 							<?php
 							echo __('Time to') .
-							ui_print_help_tip(__('Time format in Pandora is hours(24h):minutes:seconds'), true);
+							ui_print_help_tip(__('Watch format is hours (24h):minutes:seconds'), true);
 							?>
 						</td>
 						<td colspan="6"><?php html_print_input_text ('time_to', $time_to, '', 7, 8);?></td>

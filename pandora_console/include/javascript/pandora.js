@@ -1627,3 +1627,10 @@ function display_confirm_dialog (
 		}
 	});
 }
+
+function ellipsize (str, max, ellipse) {
+	if (max == null) max = 140;
+	if (ellipse == null) ellipse = "…";
+
+	return str.trim().length > max ? str.substr(0, max).trim() + ellipse : str;
+}

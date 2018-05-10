@@ -1564,6 +1564,70 @@ function round_with_decimals (value, multiplier = 1) {
 	return round_with_decimals (value, multiplier * 10);
 }
 
+/*
+
+		$("body").append('<div id="event_delete_confirm_dialog"><h4>' + '<?php echo __('Are you sure?'); ?>' + '</h4></div>');
+		$("#event_delete_confirm_dialog").dialog({
+			resizable: false,
+			draggable: false,
+			modal: true,
+			height: 280,
+			width: 330,
+			overlay: {
+					opacity: 0.5,
+					background: "black"
+				},
+			closeOnEscape: false,
+			open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); }
+		});
+*/
+
+/**
+ * Display a confirm dialog box
+ *
+ * @param string Text to display
+ * @param string Ok button text
+ * @param string Cancel button text
+ * @param function Callback to action when ok button is pressed
+*/
+function display_confirm_dialog (
+	message = '',
+	ok_text = '',
+	cancel_text = '',
+	ok_function = function () {}
+) {
+	// Clean function to close the dialog
+	var clean_function = function () {
+		$("#pandora_confirm_dialog_text").hide();
+		$("#pandora_confirm_dialog_text").remove();
+	}
+
+	// Modify the ok function to close the dialog too
+	var ok_function_clean = function () {
+		ok_function();
+		clean_function();
+	}
+
+	// Display the dialog
+	$("body").append('<div id="pandora_confirm_dialog_text"><h3>' + message + '</h3></div>');
+	$("#pandora_confirm_dialog_text").dialog({
+		resizable: false,
+		draggable: true,
+		modal: true,
+		dialogClass: "pandora_confirm_dialog",
+		overlay: {
+			opacity: 0.5,
+			background: "black"
+		},
+		closeOnEscape: true,
+		modal: true,
+		buttons: {
+			Cancel: clean_function,
+			"Confirm": ok_function_clean
+		}
+	});
+}
+
 function ellipsize (str, max, ellipse) {
 	if (max == null) max = 140;
 	if (ellipse == null) ellipse = "…";

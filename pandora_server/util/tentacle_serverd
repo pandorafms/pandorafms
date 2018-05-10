@@ -57,7 +57,7 @@ function get_pid {
 	# in a "strech" term, ps aux don't report more than COLUMNS
 	# characters and this will not work. 
 	COLUMNS=300
-	TENTACLE_PID=`ps -Af | grep "$TENTACLE_PATH$TENTACLE_DAEMON" | grep "$TENTACLE_PORT" | grep -v grep | tail -1 | awk '{ print $2 }'`
+	TENTACLE_PID=`ps -Af | grep "$TENTACLE_PATH$TENTACLE_DAEMON" | grep "$TENTACLE_CONFIG_FILE" | grep -v grep | tail -1 | awk '{ print $2 }'`
 	echo $TENTACLE_PID
 }
 
@@ -71,18 +71,12 @@ function get_all_pid {
 	echo $TENTACLE_PID
 }
 
-# Pandora server settings
-PANDORA_SERVER_PATH="/var/spool/pandora/data_in"
-
 # Tentacle server settings
 TENTACLE_DAEMON="tentacle_server"
 TENTACLE_PATH="/usr/bin"
 TENTACLE_USER="pandora"
-
-TENTACLE_ADDR="0.0.0.0"
-TENTACLE_PORT="41121"
-TENTACLE_EXT_OPTS="-i.*\.conf:conf;.*\.md5:md5;.*\.zip:collections;.*\.lock:trans"
-TENTACLE_LOG_FILE="/dev/null"
+TENTACLE_CONFIG_FILE="/etc/tentacle/tentacle_server.conf"
+TENTACLE_EXT_OPTS=""
 
 # Set umask to 0002, because group MUST have access to write files to
 # use remote file management on Pandora FMS Enterprise.
@@ -90,7 +84,7 @@ TENTACLE_LOG_FILE="/dev/null"
 umask 0007
 
 # Main script
-TENTACLE_OPTS="-a $TENTACLE_ADDR -p $TENTACLE_PORT -s $PANDORA_SERVER_PATH $TENTACLE_EXT_OPTS -d -l $TENTACLE_LOG_FILE -v"
+TENTACLE_OPTS="-F $TENTACLE_CONFIG_FILE $TENTACLE_EXT_OPTS"
 
 # Fix TENTACLE_PATH
 case "$TENTACLE_PATH" in
@@ -114,7 +108,8 @@ case "$1" in
 			echo "Tentacle Server is already running with PID $TENTACLE_PID"
 			rc_exit	# running start on a service already running
 		fi
-	
+
+		# Init the tentacle process
 		sudo -u $TENTACLE_USER ${TENTACLE_PATH}$TENTACLE_DAEMON $TENTACLE_OPTS
 		sleep 1
 
@@ -124,7 +119,7 @@ case "$1" in
 			rc_status -v
 		else
 			echo "Tentacle Server could not be started."
-			echo "Verify that port $TENTACLE_PORT is not used."
+			echo "Verify that Tentacle port is not used."
 			rc_failed 7 # program not running
 		fi
 

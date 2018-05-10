@@ -879,7 +879,7 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 					}
 					$i++;
 				}
-				$data['sla_value'] = reporting_sla_get_compliance_from_array($data) * 100;
+				$data['sla_value'] = reporting_sla_get_compliance_from_array($data);
 				$data['sla_fixed'] = sla_truncate($data['sla_value'],  $config['graph_precision'] );
 			}
 			else{
@@ -895,8 +895,8 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 				$data['checks_error']    = $sla_array['checks_error'];
 				$data['checks_unknown']  = $sla_array['checks_unknown'];
 				$data['checks_not_init'] = $sla_array['checks_not_init'];
-				$data['sla_value']       = $sla_array['SLA'] * 100;
-				$data['sla_fixed']       = $sla_array['sla_fixed'] * 100;
+				$data['sla_value']       = $sla_array['SLA'];
+				$data['sla_fixed']       = $sla_array['sla_fixed'];
 			}
 			
 			//checks whether or not it meets the SLA
@@ -5854,7 +5854,7 @@ function reporting_availability_graph($report, $content, $pdf=false) {
 					$raw_graph[$i]['utimestamp'] = $value_sla['date_to'] - $value_sla['date_from'];
 					$i++;
 				}
-				$data['sla_value'] = reporting_sla_get_compliance_from_array($data) * 100;
+				$data['sla_value'] = reporting_sla_get_compliance_from_array($data);
 				$data['sla_fixed'] = sla_truncate($data['sla_value'],  $config['graph_precision'] );
 			}
 			else{
@@ -5870,7 +5870,7 @@ function reporting_availability_graph($report, $content, $pdf=false) {
 				$data['checks_error']    = $sla_array['checks_error'];
 				$data['checks_unknown']  = $sla_array['checks_unknown'];
 				$data['checks_not_init'] = $sla_array['checks_not_init'];
-				$data['sla_value']       = $sla_array['SLA'] * 100;
+				$data['sla_value']       = $sla_array['SLA'];
 			}
 			
 			//checks whether or not it meets the SLA
@@ -11018,7 +11018,7 @@ function reporting_sla_get_compliance_from_array ($sla_array) {
 	$time_total_working = $time_compliance + $sla_array['time_error'];
 	return $time_compliance == 0
 		? 0
-		: $time_compliance/$time_total_working;
+		: ($time_compliance/$time_total_working) * 100;
 }
 
 /**

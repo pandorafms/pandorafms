@@ -77,6 +77,10 @@ if ($confMap !== false) {
 				$baselayers[$num_baselayer]['image_width'] = $decodeJSON['image_width'];
 				$baselayers[$num_baselayer]['image_height'] = $decodeJSON['image_height'];
 				break;
+			case 'WMS':
+				$baselayers[$num_baselayer]['url'] = $decodeJSON['url'];
+				$baselayers[$num_baselayer]['layers'] = $decodeJSON['layers'];
+				break;
 		}
 		$num_baselayer++;
 		if ($mapC['default_map_connection'] == 1) {
@@ -157,12 +161,12 @@ $buttons[]['text'] = '&nbsp;' . __('Show agents by state: ') .
 ui_print_page_header(__('Map') . " &raquo; " . __('Map') . "&nbsp;" . $map['map_name'],
 	"images/op_gis.png", false, "", false, $buttons);
 
-if ($config["pure"] == 0) {
-	echo "<div id='map' style='width: 100%; height: 500px; border: 1px solid black;' ></div>";
-}
-else {
-	echo "<div id='map' style='position:absolute; top:40px; z-index:100; width: 100%; height: 500px; min-height:500px; border: 1px solid black;' ></div>";
-}
+$map_inline_style = "width: 100%; min-height:500px; height: calc(100vh - 80px);";
+$map_inline_style .= $config["pure"]
+	? "position:absolute; top: 80px; left: 0px;"
+	: "border: 1px solid black;";
+
+echo '<div id="map" style="' . $map_inline_style . '" />';
 
 gis_print_map('map', $map['zoom_level'], $map['initial_latitude'],
 	$map['initial_longitude'], $baselayers, $controls);
@@ -234,18 +238,11 @@ if ($layers != false) {
 	gis_activate_ajax_refresh($layers, $timestampLastOperation);
 }
 
-// Resize GIS map on fullscreen
-if ($config["pure"] != 0) {
-	?>
-		<script type="text/javascript">
-			$().ready(function() {
-				
-				var new_height = $(document).height();
-				$("#map").css("height", new_height - 60);
-				$("svg[id*=OpenLayers]").css("height", new_height - 60);		
-				
-			});
-		</script>
-	<?php
-}
 ?>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		var $map = $("#map");
+		$map.css("height", "calc(100vh - " + $map.offset().top + "px - 20px)");
+	});
+</script>

@@ -497,6 +497,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 	
 	
 	// Javascript code
+	if ($font_size == '') $font_size = '\'\'';
 	$return .= "<script type='text/javascript'>";
 	$return .= "$(document).ready( function () {";
 	$return .= "pandoraFlotArea(" .

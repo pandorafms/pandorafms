@@ -123,6 +123,15 @@ switch ($action) {
 					'image_height' => $image_height
 					);
 				break;
+			case 'WMS':
+				$url = get_parameter('url');
+				$layers = get_parameter('layers');
+				$mapConnectionData = array(
+					'type' => 'WMS',
+					'url' => $url,
+					'layers' => $layers
+				);
+				break;
 		}
 		
 		//TODO VALIDATE PARAMETERS
@@ -168,6 +177,7 @@ $table->data = array();
 $types["OSM"] = __('Open Street Maps');
 $types["Gmap"] = __('Google Maps');
 $types["Static_Image"] = __('Static Image');
+$types["WMS"] = __('WMS Server');
 $table->data[0][0] = __('Type') . ":";
 $table->data[0][1] = html_print_select($types, 'sel_type', $mapConnection_type, "selMapConnectionType();", __('Please select the connection type'), 0, true);
 
@@ -184,6 +194,7 @@ $bb_bottom = '';
 $bb_top = '';
 $image_width = '';
 $image_height = '';
+$layers = '';
 if ($mapConnectionData != null) {
 	switch ($mapConnection_type) {
 		case 'OSM':
@@ -201,6 +212,10 @@ if ($mapConnectionData != null) {
 			$bb_top= $mapConnectionData['bb_top'];
 			$image_width= $mapConnectionData['image_width'];
 			$image_height= $mapConnectionData['image_height'];
+			break;
+		case 'WMS':
+			$mapConnectionDataUrl = $mapConnectionData['url'];
+			$layers = $mapConnectionData['layers'];
 			break;
 	}
 }
@@ -260,6 +275,27 @@ $optionsConnectionImageTable = '<table class="databox" border="0" cellpadding="4
 			'<td>'. html_print_input_text ('image_height', $image_height, '', 25, 25, true) . '</td>' .
 		'</tr>' . 
 	'</table>';
+
+// WMS Server Connection
+$optionsConnectionWMSTable = '<table class="databox" border="0" cellpadding="4" cellspacing="4" width="50%">' .
+		'<tr class="row_0">' .
+			'<td>' . __("WMS Server URL") . '</td>' .
+			'<td>' .
+				'<input id="type" type="hidden" name="type" value="WMS" />' .
+				html_print_input_text('url', $mapConnectionDataUrl, '', 90, 255, true) .
+			'</td>' .
+		'</tr>' .
+		'<tr class="row_1">' .
+			'<td>' .
+				__("Layers") .
+				ui_print_help_tip (__('Enter a single element or a comma separated list'), true) .
+			'</td>' .
+			'<td>' .
+				html_print_input_text('layers', $layers, '', 90, 255, true) .
+			'</td>' .
+		'</tr>' .
+	'</table>';
+
 if ($mapConnectionData != null) {
 	switch ($mapConnection_type) {
 		case 'OSM':
@@ -270,6 +306,9 @@ if ($mapConnectionData != null) {
 			break;
 		case 'Static_Image':
 			$optionsConnectionTypeTable = $optionsConnectionImageTable;
+			break;
+		case 'WMS':
+			$optionsConnectionTypeTable = $optionsConnectionWMSTable;
 			break;
 	}
 }
@@ -434,6 +473,8 @@ function refreshMapViewSecondStep() {
 	objBaseLayers[0]['bb_top'] = $('input[name=bb_top]').val();
 	objBaseLayers[0]['image_width'] = $('input[name=image_width]').val();
 	objBaseLayers[0]['image_height'] = $('input[name=image_height]').val();
+	// type WMS
+	objBaseLayers[0]['layers'] = $('input[name=layers]').val();
 	
 	arrayControls = null;
 	arrayControls = Array('Navigation', 'PanZoom', 'MousePosition');
@@ -486,6 +527,9 @@ function selMapConnectionType() {
 			break;
 		case 'Static_Image':
 			$('#form_map_connection_type').html('<?php echo $optionsConnectionImageTable; ?>').hide();
+			break;
+		case 'WMS':
+			$('#form_map_connection_type').html('<?php echo $optionsConnectionWMSTable; ?>').hide();
 			break;
 		default:
 			$('#form_map_connection_type').html('').hide();

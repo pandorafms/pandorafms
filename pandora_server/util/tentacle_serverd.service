@@ -4,7 +4,7 @@ After=network-online.target
 
 [Service]
 Type=forking
-ExecStart=/usr/bin/tentacle_server -a 0.0.0.0 -p 41121 -s /var/spool/pandora/data_in -i.*\.conf:conf;.*\.md5:md5;.*\.zip:collections -d
+ExecStart=/usr/bin/tentacle_server -F /etc/tentacle/tentacle_server.conf
 User=pandora
 
 [Install]

@@ -37,7 +37,7 @@ var plot = $.plot("#" + id, data, options);
 
 
 var refresh = parseInt($('#refresh').val());
-var incremental = $('#checkbox-incremental').is(':checked');
+var incremental = $('#checkbox-incremental').is(':checked') || $('#hidden-incremental').val() == 1;
 var incremental_base = 0;
 var last_inc = 0;
 var to;
@@ -58,9 +58,11 @@ function refresh_graph () {
 	postvars['snmp_address'] = $('#text-ip_target').val();
 	
 	postvars['refresh'] = refresh;
-	
+
+	var rel_path = $("#hidden-rel_path").val();
+
 	$.ajax({
-		url: "extensions/realtime_graphs/ajax.php",
+		url: rel_path + "extensions/realtime_graphs/ajax.php",
 		type: "POST",
 		dataType: "json",
 		data: postvars,

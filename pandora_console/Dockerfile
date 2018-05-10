@@ -45,13 +45,14 @@ RUN yum install -y \
 	php-zip \ 
 	nmap \
 	net-snmp-utils \
+	mod_ssl \
 	xprobe2
 
 #Clone the repo
 RUN git clone -b develop https://github.com/pandorafms/pandorafms.git /tmp/pandorafms
 
 #Exposing ports for: HTTP, SNMP Traps, Tentacle protocol
-EXPOSE 80 162/udp 41121
+EXPOSE 80 162/udp 443 41121
 
 # Simple startup script to avoid some issues observed with container restart
 ADD docker_entrypoint.sh /entrypoint.sh

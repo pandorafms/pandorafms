@@ -654,7 +654,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items_advance['position_row']['items'] = array('static_graph',
 				'percentile_bar', 'percentile_item', 'module_graph',
 				'simple_value', 'label', 'icon', 'datos', 'box_item',
-				'auto_sla_graph', 'bars_graph','clock');
+				'auto_sla_graph', 'bars_graph','clock', 'donut_graph');
 			$form_items_advance['position_row']['html'] = '
 				<td align="left">' . __('Position') . '</td>
 				<td align="left">(' . html_print_input_text('left', '0', '', 3, 5, true) .
@@ -684,7 +684,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'group_item', 'static_graph',
 				'percentile_bar', 'percentile_item', 'module_graph',
 				'simple_value', 'label', 'icon', 'datos', 'auto_sla_graph',
-				'bars_graph');
+				'bars_graph', 'donut_graph');
 			$form_items_advance['parent_row']['html'] = '<td align="left">' .
 				__('Parent') . '</td>
 				<td align="left">' .
@@ -696,7 +696,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items_advance['map_linked_row']['items'] = array(
 				'group_item', 'static_graph', 'percentile_bar',
 				'percentile_item', 'module_graph', 'simple_value',
-				'icon', 'label', 'datos');
+				'icon', 'label', 'datos', 'donut_graph');
 			$form_items_advance['map_linked_row']['html'] = '<td align="left">'.
 				__('Map linked') . '</td>' .
 				'<td align="left">' . html_print_select_from_sql (
@@ -732,7 +732,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items_advance['element_group_row']['items'] = array(
 				'group_item', 'static_graph', 'percentile_bar',
 				'percentile_item', 'module_graph', 'simple_value',
-				'icon', 'label', 'datos');
+				'icon', 'label', 'datos', 'donut_graph');
 			$form_items_advance['element_group_row']['html'] = '<td align="left">'.
 				__('Restrict access to group') . '</td>' .
 				'<td align="left">' .

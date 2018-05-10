@@ -60,7 +60,7 @@ $viewtab['active'] = false;
 $onheader = array('view' => $viewtab);
 
 // Header
-ui_print_page_header (__('Agents defined in Pandora'), "images/agent_mc.png", false, "", true, $onheader);
+ui_print_page_header (__('Agents defined in %s', get_product_name()), "images/agent_mc.png", false, "", true, $onheader);
 
 // Perform actions
 $agent_to_delete = (int)get_parameter('borrar_agente');

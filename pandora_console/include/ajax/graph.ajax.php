@@ -225,7 +225,7 @@ if ($get_graphs){
 						
 						$homeurl = ui_get_full_url(false, false, false, false);
 						$graph_conf = db_get_row('tgraph', 'id_graph', $value['id_graph']);
-						
+
 						if($graph_conf['stacked'] == 4 || $graph_conf['stacked'] == 9){
 							$height = 50;
 						} else if ($graph_conf['stacked'] == 5){
@@ -262,7 +262,7 @@ if ($get_graphs){
 							$labels,
 							false,
 							false,
-							true,
+							$graph_conf['percentil'] == 1,
 							false,
 							false,
 							$value['fullscale']

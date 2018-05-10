@@ -5,6 +5,7 @@ WORKDIR /pandorafms/pandora_console
 
 ADD pandoradb.sql /docker-entrypoint-initdb.d
 ADD pandoradb_data.sql /docker-entrypoint-initdb.d
+RUN chown mysql /docker-entrypoint-initdb.d
 
 ENV MYSQL_DATABASE=pandora
 

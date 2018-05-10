@@ -248,6 +248,7 @@ function flot_area_graph (
 	$array_events_alerts = json_encode($array_events_alerts);
 
 	// Javascript code
+	if ($font_size == '') $font_size = '\'\'';
 	$return .= "<script type='text/javascript'>";
 	$return .= "$(document).ready( function () {";
 	$return .= "pandoraFlotArea(" .

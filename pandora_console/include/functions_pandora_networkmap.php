@@ -1815,7 +1815,8 @@ if (empty($list_networkmaps))
 		$table->data[1][0] = '';
 		$table->data[1][1] =
 			html_print_button(__('Add agent node'), '', false,
-				'add_agent_node();', 'class="sub"', true);
+				'add_agent_node();', 'class="sub"', true) . html_print_image('images/error_red.png', true, 
+				array('id' => 'error_red', 'style' => 'vertical-align: bottom;display: none;', 'class' => 'forced_title', 'alt' => 'Esto es una prueba', 'data-title' => 'data-use_title_for_force_title:1'), false);
 		
 		$add_agent_node_html = html_print_table($table, true);
 		ui_toggle($add_agent_node_html, __('Add agent node'),

@@ -555,12 +555,15 @@ if (! isset ($config['id_user'])) {
 				exit ("</html>");
 			}
 		}
-		if($home_page != 'Visual console'){
-			header("Location: ".$config['homeurl']."index.php?sec=".$_GET["sec"]."&sec2=".$_GET["sec2"]);
+		// Form the url
+		$query_params_redirect = $_GET;
+		// Visual console do not want sec2
+		if($home_page == 'Visual console') unset($query_params_redirect["sec2"]);
+		$redirect_url = '?1=1';
+		foreach ($query_params_redirect as $key => $value) {
+			$redirect_url .= '&'.safe_url_extraclean($key).'='.safe_url_extraclean($value);
 		}
-		else{
-			header("Location: ".$config['homeurl']."index.php?sec=".$_GET["sec"]);
-		}			
+		header("Location: ".$config['homeurl']."index.php".$redirect_url);
 	}
 	// Hash login process
 	elseif (isset ($_GET["loginhash"])) {

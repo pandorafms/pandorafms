@@ -3048,9 +3048,7 @@ create table IF NOT EXISTS `tcluster`(
 		`description` text not null default '',
 		`group` int(10) unsigned NOT NULL default '0',
 		`id_agent` int(10) unsigned NOT NULL,
-		PRIMARY KEY (`id`),
-		FOREIGN KEY (`id_agent`) REFERENCES tagente(`id_agente`)
-			ON UPDATE CASCADE
+		PRIMARY KEY (`id`)
 ) engine=InnoDB DEFAULT CHARSET=utf8;
 
 -- ---------------------------------------------------------------------
@@ -3078,8 +3076,6 @@ create table IF NOT EXISTS `tcluster_agent`(
     `id_cluster` int unsigned not null,
     `id_agent` int(10) unsigned not null,
 		PRIMARY KEY (`id_cluster`,`id_agent`),
-		FOREIGN KEY (`id_agent`) REFERENCES tagente(`id_agente`)
-			ON UPDATE CASCADE,
 		FOREIGN KEY (`id_cluster`) REFERENCES tcluster(`id`)
 			ON UPDATE CASCADE
 ) engine=InnoDB DEFAULT CHARSET=utf8;

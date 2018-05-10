@@ -641,7 +641,7 @@ foreach ($agents as $agent) {
 	
 	$data[0] .= '<div class="agentleft_' . $agent["id_agente"] . '" style="visibility: hidden; clear: left;">';
 	
-	if($agent["id_os"] == 21){
+	if($agent["id_os"] == 100){
 		$data[0] .= '<a href="index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_view&id='.$cluster['id'].'">'.__('View').'</a>';
 	}
 	else{
@@ -651,7 +651,7 @@ foreach ($agents as $agent) {
 	if (check_acl ($config['id_user'], $agent["id_grupo"], "AW")) {
 		$data[0] .= ' | ';
 		
-		if($agent["id_os"] == 21){
+		if($agent["id_os"] == 100){
 				$data[0] .= '<a href="index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_builder&id_cluster='.$cluster['id'].'&step=1&update=1">'.__('Edit').'</a>';
 		}
 		else{

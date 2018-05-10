@@ -10271,7 +10271,7 @@ function api_set_new_cluster($thrash1, $thrash2, $other, $thrash3) {
 						
 						$id_parent_modulo = db_process_sql('select id_agente_modulo from tagente_modulo where id_agente = '.$id_agent[0]['id_agent'].' and nombre = "Cluster status"');
 						
-						$get_module_type = db_process_sql('select id_tipo_modulo,descripcion,min_warning,min_critical,module_interval from tagente_modulo where nombre = "'.$element["name"].'" limit 1');
+						$get_module_type = db_process_sql('select id_tipo_modulo,descripcion,min_warning,min_critical,module_interval from tagente_modulo where nombre = "'.io_safe_input($element["name"]).'" limit 1');
 						
 						$get_module_type_value = $get_module_type[0]['id_tipo_modulo'];
 						
@@ -10302,6 +10302,8 @@ function api_set_new_cluster($thrash1, $thrash2, $other, $thrash3) {
 														
 						$id_module = 	modules_create_agent_module($values_module['id_agente'],$values_module['nombre'],$values_module);
 						
+						$launch_cluster = db_process_sql('update tagente_modulo set flag = 1 where custom_integer_1 = '.$element["id_cluster"].' and nombre = "Cluster status"');
+						
 						if ($tcluster_module !== false){	
 							db_pandora_audit("Report management", "Module #".$element["name"]." assigned to cluster #".$element["id_cluster"]);
 						}
@@ -10319,7 +10321,7 @@ function api_set_new_cluster($thrash1, $thrash2, $other, $thrash3) {
 							
 							$tcluster_balanced_module = db_process_sql_insert('tcluster_item',array('name'=>$element["name"],'id_cluster'=>$element["id_cluster"],'item_type'=>"AP",'is_critical'=>$element["is_critical"]));
 							
-							$get_module_type = db_process_sql('select id_tipo_modulo,descripcion,min_warning,min_critical,module_interval from tagente_modulo where nombre = "'.$element["name"].'" limit 1');
+							$get_module_type = db_process_sql('select id_tipo_modulo,descripcion,min_warning,min_critical,module_interval from tagente_modulo where nombre = "'.io_safe_input($element["name"]).'" limit 1');
 							
 							$get_module_type_value = $get_module_type[0]['id_tipo_modulo'];
 							
@@ -10369,6 +10371,8 @@ function api_set_new_cluster($thrash1, $thrash2, $other, $thrash3) {
 								);
 								
 							$id_module = 	modules_create_agent_module($values_module['id_agente'],$values_module['nombre'],$values_module);
+							
+							$launch_cluster = db_process_sql('update tagente_modulo set flag = 1 where custom_integer_1 = '.$element["id_cluster"].' and nombre = "Cluster status"');
 													
 							if ($tcluster_balanced_module !== false){	
 								db_pandora_audit("Report management", "Module #".$element["name"]." assigned to cluster #".$element["id_cluster"]);
@@ -10612,6 +10616,24 @@ function api_set_apply_module_template($id_template, $id_agent, $thrash3, $thras
 			ui_print_success_message(__('Modules successfully added'));
 	}
 	
+}
+
+function api_get_cluster_status($id_cluster, $trash1, $trash2, $returnType) {
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+	
+	$sql = "select estado from tagente_estado INNER JOIN tagente_modulo ON tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo and tagente_modulo.nombre = 'Cluster status' and tagente_modulo.id_agente = (select id_agent from tcluster where id = ".$id_cluster.")";
+	
+	$value = db_get_value_sql($sql);
+	
+	if ($value === false) {
+		returnError('id_not_found', $returnType);
+	}
+	
+	$data = array('type' => 'string', 'data' => $value);
+	
+	returnData($returnType, $data);
 }
 
 ?>

@@ -68,7 +68,7 @@ echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/
 		}
 		?>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<title>Pandora FMS Realtime Module Graph</title>
+		<title><?php echo __("%s Realtime Module Graph", get_product_name());?></title>
 		<link rel="stylesheet" href="../../include/styles/pandora_minimal.css" type="text/css" />
 		<link rel="stylesheet" href="../../include/styles/jquery-ui-1.10.0.custom.css" type="text/css" />
 		<script type='text/javascript' src='../../include/javascript/pandora.js'></script>
@@ -95,11 +95,3 @@ echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/
 
 	</body>
 </html>
-
-<?php
-// Echo the script tags of the datepicker and the timepicker
-// Modify the user language cause the ui.datepicker language files use - instead _
-$custom_user_language = str_replace('_', '-', $user_language);
-ui_require_jquery_file("ui.datepicker-" . $custom_user_language, "include/javascript/i18n/", true);
-ui_include_time_picker(true);
-?>

@@ -80,7 +80,7 @@ $interface_traffic_modules = array(
 		}
 ?>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<title>Pandora FMS Graph (<?php echo agents_get_alias($agent_id) . ' - ' . $interface_name; ?>)</title>
+		<title><?php echo __('%s Interface Graph', get_product_name()) . ' (' .agents_get_alias($agent_id) . ' - ' . $interface_name; ?>)</title>
 		<link rel="stylesheet" href="../../include/styles/pandora_minimal.css" type="text/css" />
 		<link rel="stylesheet" href="../../include/styles/jquery-ui-1.10.0.custom.css" type="text/css" />
 		<script type='text/javascript' src='../../include/javascript/pandora.js'></script>
@@ -228,7 +228,7 @@ $interface_traffic_modules = array(
 		$side_layer_params = array();
 		// TOP TEXT
 
-		$side_layer_params['top_text'] = "<div style='color: white; width: 100%; text-align: center; font-weight: bold; vertical-align: top;'>" . html_print_image('/images/config.disabled.png', true, array('width' => '16px'),false,false,false,true) . ' ' . __('Pandora FMS Graph configuration menu') . "</div>";
+		$side_layer_params['top_text'] = "<div style='color: white; width: 100%; text-align: center; font-weight: bold; vertical-align: top;'>" . html_print_image('/images/config.disabled.png', true, array('width' => '16px'),false,false,false,true) . ' ' . __('Graph configuration menu') . "</div>";
 		$side_layer_params['body_text'] = "<div class='menu_sidebar_outer'>";
 		$side_layer_params['body_text'] .=__('Please, make your changes and apply with the <i>Reload</i> button');
 		

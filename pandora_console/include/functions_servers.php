@@ -753,25 +753,25 @@ function servers_show_type ($id) {
 	
 	switch ($id) {
 		case 1:
-			return html_print_image("images/database.png", true, array("title" => "Pandora FMS Data server"));
+			return html_print_image("images/database.png", true, array("title" => get_product_name() . " Data server"));
 			break;
 		case 2:
-			return html_print_image("images/network.png", true, array("title" => "Pandora FMS Network server"));
+			return html_print_image("images/network.png", true, array("title" => get_product_name() . " Network server"));
 			break;
 		case 4:
-			return html_print_image("images/plugin.png", true, array("title" => "Pandora FMS Plugin server"));
+			return html_print_image("images/plugin.png", true, array("title" => get_product_name() . " Plugin server"));
 			break;
 		case 5:
-			return html_print_image("images/chart_bar.png", true, array("title" => "Pandora FMS Prediction server"));
+			return html_print_image("images/chart_bar.png", true, array("title" => get_product_name() . " Prediction server"));
 			break;
 		case 6:
-			return html_print_image("images/wmi.png", true, array("title" => "Pandora FMS WMI server"));
+			return html_print_image("images/wmi.png", true, array("title" => get_product_name() . " WMI server"));
 			break;
 		case 7:
-			return html_print_image("images/server_web.png", true, array("title" => "Pandora FMS WEB server"));
+			return html_print_image("images/server_web.png", true, array("title" => get_product_name() . " WEB server"));
 			break;
 		case 8:
-			return html_print_image("images/module-wux.png", true, array("title" => "Pandora FMS WUX server"));
+			return html_print_image("images/module-wux.png", true, array("title" => get_product_name() . " WUX server"));
 			break;
 		default:
 			return "--";

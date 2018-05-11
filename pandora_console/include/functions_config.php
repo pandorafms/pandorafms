@@ -2041,7 +2041,7 @@ function config_check () {
 	// ~ about 50 hr
 	if ($last_maintance > 190000) {
 		set_pandora_error_for_header(
-			__('Your database is not well maintained. Seems that it have more than 48hr without a proper maintance. Please review Pandora FMS documentation about how to execute this maintance process (pandora_db.pl) and enable it as soon as possible'),
+			__("Your database is not maintained correctly. It seems that more than 48hrs have passed without proper maintenance. Please review documents of %s on how to perform this maintenance process (DB Tool) and enable it as soon as possible.", get_product_name()),
 			__("Database maintance problem"));
 	}
 	
@@ -2062,7 +2062,7 @@ function config_check () {
 	
 	if ($develop_bypass == 1) {
 		set_pandora_error_for_header(
-			__('Your Pandora FMS has the "develop_bypass" mode enabled. This is a developer mode and should be disabled in a production system. This value is written in the main index.php file'),
+			__('Your %s has the "develop_bypass" mode enabled. This is a developer mode and should be disabled in a production system. This value is written in the main index.php file', get_product_name()),
 			__("Developer mode is enabled"));
 	}
 	
@@ -2079,7 +2079,7 @@ function config_check () {
 		if ($_SESSION['new_update'] == 'new') {
 			set_pandora_error_for_header(
 				__('There is a new update available. Please<a style="font-weight:bold;" href="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=online"> go to Administration:Setup:Update Manager</a> for more details.'),
-				__("New update of Pandora Console"));
+				__("New %s Console update", get_product_name()));
 		}
 	}
 	

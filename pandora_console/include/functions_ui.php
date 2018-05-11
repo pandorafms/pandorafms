@@ -1346,7 +1346,7 @@ function ui_process_page_head ($string, $bitfield) {
 		}
 	}
 	$output .= "\n\t";
-	$output .= '<title>Pandora FMS - '.__('the Flexible Monitoring System').'</title>
+	$output .= '<title>' . get_product_name() . ' - '.__('the Flexible Monitoring System').'</title>
 		<meta http-equiv="expires" content="never" />
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta http-equiv="Content-Style-Type" content="text/css" />
@@ -3719,62 +3719,12 @@ function ui_print_agent_autocomplete_input($parameters) {
  * 
  * @param string error code
  */
-function ui_get_error ($error_code) {
-	switch($error_code) {
-		case 'error_authconfig':
-		case 'error_dbconfig':
-			$title = __('Problem with Pandora FMS database');
-			$message = __('Cannot connect to the database, please check your database setup in the <b>include/config.php</b> file.<i><br/><br/>
-			Probably your database, hostname, user or password values are incorrect or
-			the database server is not running.').'<br /><br />';
-			$message .= '<span class="red">';
-			$message .= '<b>' . __('DB ERROR') . ':</b><br>';
-			$message .= db_get_last_error();
-			$message .= '</span>';
-			
-			if ($error_code == 'error_authconfig') {
-				$message .= '<br/><br/>';
-				$message .= __('If you have modified auth system, this problem could be because Pandora cannot override authorization variables from the config database. Remove them from your database by executing:<br><pre>DELETE FROM tconfig WHERE token = "auth";</pre>');
-			}
-			break;
-		case 'error_emptyconfig':
-			$title = __('Empty configuration table');
-			$message = __('Cannot load configuration variables from database. Please check your database setup in the
-			<b>include/config.php</b> file.<i><br><br>
-			Most likely your database schema has been created but there are is no data in it, you have a problem with the database access credentials or your schema is out of date.
-			<br><br>Pandora FMS Console cannot find <i>include/config.php</i> or this file has invalid
-			permissions and HTTP server cannot read it. Please read documentation to fix this problem.</i>').'<br /><br />';
-			break;
-		case 'error_noconfig':
-			$title = __('No configuration file found');
-			$message = __('Pandora FMS Console cannot find <i>include/config.php</i> or this file has invalid
-			permissions and HTTP server cannot read it. Please read documentation to fix this problem.').'<br /><br />';
-			if (file_exists('install.php')) {
-				$link_start = '<a href="install.php">';
-				$link_end = '</a>';
-			}
-			else {
-				$link_start = '';
-				$link_end = '';
-			}
-			
-			$message .= sprintf(__('You may try to run the %s<b>installation wizard</b>%s to create one.'), $link_start, $link_end);
-			break;
-		case 'error_install':
-			$title = __('Installer active');
-			$message = __('For security reasons, normal operation is not possible until you delete installer file.
-			Please delete the <i>./install.php</i> file before running Pandora FMS Console.');
-			break;
-		case 'error_perms':
-			$title = __('Bad permission for include/config.php');
-			$message = __('For security reasons, <i>config.php</i> must have restrictive permissions, and "other" users
-			should not read it or write to it. It should be written only for owner
-			(usually www-data or http daemon user), normal operation is not possible until you change
-			permissions for <i>include/config.php</i> file. Please do it, it is for your security.');
-			break;
-	}
-	
-	return array('title' => $title, 'message' => $message);
+function ui_get_error ($error_code = '') {
+	// FIXME: Deprecated. Pandora shouldn't go inside this
+	return array(
+		'title' => __('Unhandled error'),
+		'message' => __('An unhandled error occurs')
+	);
 }
 
 function ui_include_time_picker($echo_tags = false) {

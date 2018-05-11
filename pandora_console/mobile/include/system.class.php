@@ -129,5 +129,13 @@ class System {
 			return false;
 		}
 	}
+
+	public function getDefaultACLFailText() {
+		return 
+			__("Access to this page is restricted to authorized users only, please contact your system administrator if you should need help.") .
+			"<br><br>" .
+			__("Please remember that any attempts to access this page will be recorded on the %s System Database.", get_product_name())
+		;
+	}
 }
 ?>

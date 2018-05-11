@@ -218,7 +218,7 @@ class User {
 			$options['dialog_id'] = 'logout_dialog';
 			$options['type'] = 'onStart';
 			$options['title_text'] = __('Login out');
-			$options['content_text'] = __('Your session is over. Please close your browser window to close this Pandora session.');
+			$options['content_text'] = __('Your session has ended. Please close your browser window to close this %s session.', get_product_name());
 			$ui->addDialog($options);
 			
 		}

@@ -855,11 +855,12 @@ function resource_registration_extension_main() {
 	}
 	
 	echo "<div class=notify>";
-	printf(__("This extension makes registration of resource template more easy. " .
-		"Here you can upload a resource template in Pandora FMS 3.x format (.ptr). " .
-		"Please refer to documentation on how to obtain and use Pandora FMS resources. " .
-		"<br><br>You can get more resurces in our <a href='%s'>Public Resource Library</a>") ,
-		"http://pandorafms.org/index.php?sec=community&sec2=repository&lng=en");
+	echo __("This extension makes registering resource templates easier.") . " " .
+		__("Here you can upload a resource template in .ptr format.") . " " .
+		__("Please refer to our documentation for more information on how to obtain and use Pandora FMS' resources.") . " " .
+		"<br> <br>" .
+		__("You can get more resurces in our <a href='http://pandorafms.org/index.php?sec=community&sec2=repository&lng=en'>Public Resource Library</a>")
+	;
 	echo "</div>";
 	
 	echo "<br /><br />";

@@ -700,6 +700,9 @@ else {
 	$id = (int) get_parameter('id_networkmap', 0);
 }
 
+// Print the product name to handle it in js
+html_print_input_hidden ('product_name', get_product_name());
+
 $dash_mode = 0;
 $map_dash_details = array();
 $networkmap = db_get_row('tmap', 'id', $id);

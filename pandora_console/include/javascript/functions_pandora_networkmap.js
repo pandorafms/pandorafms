@@ -3640,9 +3640,6 @@ function draw_elements_graph() {
 		})
 		.on("contextmenu", function (d) { show_menu("node", d); });
 
-	node_temp.append("title")
-		.text(function (d) { return d.text; });
-
 	var font_size = (node_radius / 1.5);
 
 	node_temp.append("text")
@@ -3657,14 +3654,22 @@ function draw_elements_graph() {
 		})
 		.append("tspan")
 		.attr("style", "font-size: " + font_size + "px !important; font-family:Verdana; text-align:center; text-anchor:middle; fill:#000000")
-		.text(function (d) {
-			return d.text;
-		})
+		.text(function (d) { return get_node_name_ov(d) })
 		.classed('dragable_node', true) //own dragable
 		.on("click", selected_node)
 		.on("contextmenu", function (d) { show_menu("node", d); });
 
+	node_temp.append("title")
+		.text(function (d) { return get_node_name_ov(d) });
+
 	node.exit().remove();
+}
+
+function get_node_name_ov (data) {
+	// Node central name should be the product name
+	return (data.type == 0 && data.id_agent == 0)
+		? $("#hidden-product_name").val()
+		: data.text;
 }
 
 function choose_group_for_show_agents() {

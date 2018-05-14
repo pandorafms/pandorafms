@@ -106,7 +106,7 @@ foreach ($result as $row) {
 
 echo "<html>";
 echo "<head>";
-echo "<title>Pandora FMS - Latest events </title>";
+echo "<title>" . __("%s - Latest events", get_product_name()) . "</title>";
 
 $query = ui_get_full_url();
 echo '<meta http-equiv="refresh" content="' . $MARQUEE_INTERVAL . '; URL=' . $query . '">';

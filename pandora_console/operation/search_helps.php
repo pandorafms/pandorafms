@@ -20,7 +20,7 @@ $totalHelps = check_acl($config["id_user"], 0, "IR");
 
 if ($helps === false || !$searchHelps) {
 	echo "<br><div class='nf'>" . __("Zero results found.") .
-		sprintf(__('You can find more help in the <a style="text-decoration: underline;" href="%s">Pandora\'s wiki</a>'),
+		sprintf(__('You can find more help in the <a style="text-decoration: underline;" href="%s">wiki</a>'),
 			"http://wiki.pandorafms.com/index.php?search=" . $config['search_keywords']) .
 		"</div>\n";
 }

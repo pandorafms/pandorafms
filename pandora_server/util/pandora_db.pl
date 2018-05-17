@@ -555,7 +555,7 @@ sub pandora_compactdb ($$) {
 sub pandora_init ($) {
 	my $conf = shift;
 	
-	log_message ('', "\nPandora FMS DB Tool $version Copyright (c) 2004-2015 Artica ST\n");
+	log_message ('', "\nDB Tool $version Copyright (c) 2004-2018 Artica ST\n");
 	log_message ('', "This program is Free Software, licensed under the terms of GPL License v2\n");
 	log_message ('', "You can download latest versions and documentation at http://www.pandorafms.org\n\n");
 	
@@ -677,7 +677,7 @@ sub pandora_load_config ($) {
    	
 	db_disconnect ($dbh);
 
-	log_message ('', "Pandora DB now initialized and running (PURGE=" . $conf->{'_days_purge'} . " days, COMPACT=$conf->{'_days_compact'} days, STEP=" . $conf->{'_step_compact'} . ") . \n\n");
+	log_message ('', "DB Tool now initialized and running (PURGE=" . $conf->{'_days_purge'} . " days, COMPACT=$conf->{'_days_compact'} days, STEP=" . $conf->{'_step_compact'} . ") . \n\n");
 }
 
 
@@ -1045,7 +1045,7 @@ my $history_dbh = ($conf{'_history_db_enabled'} eq '1') ? db_connect ($conf{'dbe
 # Get a lock
 my $lock = db_get_lock ($dbh, 'pandora_db');
 if ($lock == 0 && $conf{'_force'} == 0) { 
-	log_message ('', " [*] Another instance of pandora_db seems to be running.\n\n");
+	log_message ('', " [*] Another instance of DB Tool seems to be running.\n\n");
 	exit 1;
 }
 

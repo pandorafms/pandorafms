@@ -445,7 +445,7 @@ sub pandora_sendmail {
 	my %mail = ( To	=> $to_address,
 		Message		=> $message,
 		Subject		=> encode('MIME-Header', $subject),
-		'X-Mailer'	=> "Pandora FMS",
+		'X-Mailer'	=> $pa_config->{"rb_product_name"},
 		Smtp		=> $pa_config->{"mta_address"},
 		Port		=> $pa_config->{"mta_port"},
 		From		=> $pa_config->{"mta_from"},

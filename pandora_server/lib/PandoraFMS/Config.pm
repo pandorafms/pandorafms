@@ -178,6 +178,12 @@ sub pandora_get_sharedconfig ($$) {
 		$pa_config->{'include_agents'} = 0;
 	}
 
+	# PandoraFMS product name
+	$pa_config->{'rb_product_name'} = enterprise_hook(
+		'pandora_get_product_name',
+		[$dbh]
+	);
+	$pa_config->{'rb_product_name'} = 'Pandora FMS' unless (defined ($pa_config->{'rb_product_name'}) && $pa_config->{'rb_product_name'} ne '');
 }
 
 ##########################################################################

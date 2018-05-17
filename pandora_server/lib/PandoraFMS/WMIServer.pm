@@ -54,8 +54,8 @@ sub new ($$;$) {
 
 	# Check for a WMI client
 	if (system ($config->{'wmi_client'} . " >$DEVNULL 2>&1") >> 8 != 1) {
-		logger ($config, ' [E] ' . $config->{'wmi_client'} . " not found. Pandora FMS WMI Server needs a DCOM/WMI client.", 1);
-		print_message ($config, ' [E] ' . $config->{'wmi_client'} . " not found. Pandora FMS WMI Server needs a DCOM/WMI client.", 1);
+		logger ($config, ' [E] ' . $config->{'wmi_client'} . " not found. " . $config->{'rb_product_name'} . " WMI Server needs a DCOM/WMI client.", 1);
+		print_message ($config, ' [E] ' . $config->{'wmi_client'} . " not found. " . $config->{'rb_product_name'} . " WMI Server needs a DCOM/WMI client.", 1);
 		return undef;
 	}
 
@@ -79,7 +79,7 @@ sub run ($) {
 	my $self = shift;
 	my $pa_config = $self->getConfig ();
 
-	print_message ($pa_config, " [*] Starting Pandora FMS WMI Server.", 1);
+	print_message ($pa_config, " [*] Starting " . $pa_config->{'rb_product_name'} . " WMI Server.", 1);
 	$self->setNumThreads ($pa_config->{'wmi_threads'});
 	$self->SUPER::run (\@TaskQueue, \%PendingTasks, $Sem, $TaskSem);
 }

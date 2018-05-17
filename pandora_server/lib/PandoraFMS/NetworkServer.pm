@@ -55,8 +55,8 @@ sub new ($$$) {
 	return undef unless $config->{'networkserver'} == 1;
 
 	if (! -e $config->{'snmpget'}) {
-		logger ($config, ' [E] ' . $config->{'snmpget'} . " needed by Pandora FMS Network Server not found.", 1);
-		print_message ($config, ' [E] ' . $config->{'snmpget'} . " needed by Pandora FMS Network Server not found.", 1);
+		logger ($config, ' [E] ' . $config->{'snmpget'} . " needed by " . $config->{'rb_product_name'} . " Network Server not found.", 1);
+		print_message ($config, ' [E] ' . $config->{'snmpget'} . " needed by " . $config->{'rb_product_name'} . " Network Server not found.", 1);
 		return undef;
 	}
 
@@ -80,7 +80,7 @@ sub run ($) {
 	my $self = shift;
 	my $pa_config = $self->getConfig ();
 
-	print_message ($pa_config, " [*] Starting Pandora FMS Network Server.", 1);
+	print_message ($pa_config, " [*] Starting " . $pa_config->{'rb_product_name'} . " Network Server.", 1);
 	$self->setNumThreads ($pa_config->{'network_threads'});
 	$self->SUPER::run (\@TaskQueue, \%PendingTasks, $Sem, $TaskSem);
 }

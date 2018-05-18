@@ -230,7 +230,6 @@ function area_graph(
 	global $config;
 
 	include_once('functions_flot.php');
-
 	if ($config['flash_charts']) {
 		return flot_area_graph(
 			$agent_module_id,

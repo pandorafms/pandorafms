@@ -3479,75 +3479,108 @@ function reporting_simple_baseline_graph($report, $content,
 	$force_height_chart = null) {
 
 	global $config;
-	
+
 	if ($config['metaconsole']) {
 		$id_meta = metaconsole_get_id_server($content["server_name"]);
-		
-		
 		$server = metaconsole_get_connection_by_id ($id_meta);
 		metaconsole_connect($server);
 	}
-	
+
 	$return['type'] = 'simple_baseline_graph';
-	
+
 	if (empty($content['name'])) {
 		$content['name'] = __('Simple baseline graph');
 	}
-	
+
 	$module_name = io_safe_output(
 		modules_get_agentmodule_name($content['id_agent_module']));
 	$agent_name = io_safe_output(
 		modules_get_agentmodule_agent_alias ($content['id_agent_module']));
-	
+
 	$return['title'] = $content['name'];
 	$return['subtitle'] = $agent_name . " - " . $module_name;
 	$return["description"] = $content["description"];
 	$return["date"] = reporting_get_date_text($report, $content);
 	$return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
-	
+
 	// Get chart
 	reporting_set_conf_charts($width, $height, $only_image, $type,
 		$content, $ttl);
-	
+
 	if (!empty($force_width_chart)) {
 		$width = $force_width_chart;
 	}
-	
+
 	if (!empty($force_height_chart)) {
 		$height = $force_height_chart;
 	}
-	
+
+//XXXXXXXX
+	$width  = '90%';
+	$height = 300;
+
+	$baseline_data = enterprise_hook(
+		'reporting_enterprise_get_baseline',
+		array (
+			$content['id_agent_module'],
+			$content['period'],
+			$report["datetime"]
+		)
+	);
+
+	if ($baseline_data === ENTERPRISE_NOT_HOOK) {
+		$baseline_data = array ();
+	}
+
 	switch ($type) {
 		case 'dinamic':
 		case 'static':
-			$return['chart'] = grafico_modulo_sparse(
+			$return['chart'] = grafico_modulo_sparse (
 				$content['id_agent_module'],
 				$content['period'],
 				false,
 				$width,
 				$height,
 				'',
-				'',
+				null,
 				false,
-				true,
-				true,
+				0,
+				false,
 				$report["datetime"],
 				'',
-				true,
+				0,
 				0,
 				true,
 				$only_image,
 				ui_get_full_url(false, false, false, false),
-				$ttl);
+				$ttl,
+				false,
+				'',
+				false,
+				false,
+				true,
+				'white',
+				null,
+				false,
+				false,
+				'area',
+				false,
+				false,
+				0,
+				300,
+				0,
+				0,
+				$baseline_data
+			);
 			break;
 		case 'data':
 			break;
 	}
-	
+
 	if ($config['metaconsole']) {
 		metaconsole_restore_db();
 	}
-	
+
 	return reporting_check_structure_content($return);
 }
 

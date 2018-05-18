@@ -238,7 +238,8 @@ function custom_graphs_print($id_graph, $height, $width, $period,
 		$homeurl = ui_get_full_url(false, false, false, false);
 	}
 
-	$output = graphic_combined_module($modules,
+	$output = graphic_combined_module(
+		$modules,
 		$weights,
 		$period,
 		$width,
@@ -271,7 +272,8 @@ function custom_graphs_print($id_graph, $height, $width, $period,
 		$fullscale,
 		$summatory,
 		$average,
-		$modules_series);
+		$modules_series
+	);
 
 	if ($return)
 		return $output;

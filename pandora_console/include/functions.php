@@ -3004,7 +3004,7 @@ function legend_graph_array(
 	global $legend;
 	$unit = $format_graph['unit'];
 
-	if (isset($show_elements_graph['labels']) && is_array($show_elements_graph['labels'])){
+	if (isset($show_elements_graph['labels']) && is_array($show_elements_graph['labels']) && (count($show_elements_graph['labels']) > 0)){
 		$legend['sum'.$series_suffix] = $show_elements_graph['labels'][$data_module_graph['module_id']] . ' ' ;
 	}
 	else{
@@ -3066,22 +3066,36 @@ function legend_graph_array(
 	return $legend;
 }
 
-function series_type_graph_array( $series_suffix, $data_module_graph){
+function series_type_graph_array($data){
 	global $config;
-	global $series_type;
-
-	$series_type['event'.$series_suffix] = 'points';
-	$series_type['alert'.$series_suffix] = 'points';
-	$series_type['unknown'.$series_suffix] = 'unknown';
-	switch ($data_module_graph['id_module_type']) {
-		case 21: case 2: case 6:
-		case 18: case 9: case 31:
-			$series_type['sum'.$series_suffix] = 'boolean';
-			break;
-		default:
-			$series_type['sum'.$series_suffix] = 'area';
-			break;
+	foreach ($data as $key => $value) {
+		if(strpos($key, 'sum') !== false){
+			switch ($value['id_module_type']) {
+				case 21: case 2: case 6:
+				case 18: case 9: case 31:
+					$series_type[$key] = 'boolean';
+					break;
+				default:
+					$series_type[$key] = 'area';
+					break;
+			}
+		}
+		elseif(strpos($key, 'event') !== false){
+			$series_type[$key] = 'points';
+		}
+		elseif(strpos($key, 'alert') !== false){
+			$series_type[$key] = 'points';
+		}
+		elseif(strpos($key, 'unknown') !== false){
+			$series_type[$key] = 'unknown';
+		}
+		elseif(strpos($key, 'percentil') !== false){
+			$series_type[$key] = 'percentil';
+		}
+		else{
+			$series_type[$key] = 'area';
+		}
 	}
-	$series_type['percentil' . $series_suffix] = 'percentil';
+	return $series_type;
 }
 ?>

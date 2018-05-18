@@ -1558,27 +1558,32 @@ function pandoraFlotArea(
 					break;
 			}
 
-			data_base.push({
-				id: 'serie_' + i,
-				data: value.data,
-				label: index + series_suffix_str,
-				color: value.color,
-				lines: {
-					show: line_show,
-					fill: filled,
-					lineWidth: lineWidth,
-					steps: steps_chart
-				},
-				points: {
-					show: points_show,
-					radius: 3,
-					fillColor: fill_points
-				}
-			});
-
-			i++;
+			//in graph stacked unset percentil
+			if(	! ( (type == 1) && ( /percentil/.test(index) ) == true ) &&
+				! ( (type == 3) && ( /percentil/.test(index) ) == true )   ){
+				data_base.push({
+					id: 'serie_' + i,
+					data: value.data,
+					label: index + series_suffix_str,
+					color: value.color,
+					lines: {
+						show: line_show,
+						fill: filled,
+						lineWidth: lineWidth,
+						steps: steps_chart
+					},
+					points: {
+						show: points_show,
+						radius: 3,
+						fillColor: fill_points
+					}
+				});
+			}
 		}
+		i++;
 	});
+
+	console.log(data_base);
 
 	// The first execution, the graph data is the base data
 	datas = data_base;
@@ -2120,6 +2125,7 @@ function pandoraFlotArea(
 		}
 
 		// Get only two decimals
+		//XXXXXXXXXX
 		formatted = round_with_decimals(formatted, 100)
 		return '<div class='+font+' style="font-size:'+font_size+'pt;">'+formatted+'</div>';
 	}

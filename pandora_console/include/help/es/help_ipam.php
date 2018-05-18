@@ -73,13 +73,13 @@ Cada dirección tendrá un icono grande que nos aportará información:<br><br>
 Cada dirección tendrá en la parte inferior derecha un enlace para editarla, si disponemos de privilegios suficientes. Así mismo, en la parte inferior izquierda, tendrá un pequeño icono indicando el sistema operativo asociado. 
 En el caso de las direcciones desactivadas, el icono del sistema operativo se verá sustituido por el siguiente icono:<br><br><img src="../images/delete.png" style="width:18px;"><br><br>
 Si hacemos click en el icono principal, se abrirá una ventana modal con toda la información de la IP, incluyendo agente y sistema operativo asociados, configuración y el seguimiento de cuando se creó, editó por el usuario o fue chequeado por el servidor por última vez. En esta vista también se podrá hacer un ping a dicha dirección*.<br><br>
-<b>* El ping se realiza desde la máquina donde esté instalada la consola de Pandora FMS.</b>
+<b>* El ping se realiza desde la máquina donde esté instalada la consola de <?php echo get_product_name();?>.</b>
 
 <h3>Vista de edición</h3>
 Si se tienen los permisos suficientes se podrá acceder a la vista de edición, donde las IPs aparecerán mostradas en forma de lista. Se podrá filtrar para mostrar las direcciones deseadas, hacer cambios 
 en ellas y actualizar todas a la vez.<br><br>
 
-Algunos campos, se rellenan automáticamente por el script de reconocimiento, como el nombre de host, el agente de Pandora FMS asociado y el sistema operativo. Podemos definir estos campos como manuales* y editarlos.<br><br>
+Algunos campos, se rellenan automáticamente por el script de reconocimiento, como el nombre de host, el agente de <?php echo get_product_name();?> asociado y el sistema operativo. Podemos definir estos campos como manuales* y editarlos.<br><br>
 
 <table width=100%>
 <tr>

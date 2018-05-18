@@ -62,5 +62,5 @@ El gráfico de accesos del agente, renderiza el número de contactos por hora en
 <br><br>
 Campo donde se define el número máximo de días antes de borrar los módulos desconocidos. 
 <br><br>
-<i>**Con todos estos parámetros trabaja la herramienta pandora_db.pl. </i>
+<i>**Con todos estos parámetros trabaja la herramienta DB Tool. </i>
 

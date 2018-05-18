@@ -17,7 +17,7 @@ Las siguientes macros están disponibles:
 <li>_modulegroup_ : Nombre del grupo del módulo.</li>
 <li>_moduledescription_: Descripcion del modulo.</li>
 <li>_modulestatus_ : Estado del módulo.</li>
-<li>_id_agent_: ID del agente, util para construir URL de acceso a la consola de Pandora.</li>
+<li>_id_agent_: ID del agente, util para construir URL de acceso a la consola de <?php echo get_product_name();?>.</li>
 <li>_policy_: Nombre de la política a la que pertenece el módulo (si aplica).</li>
 <li>_interval_ : Intervalo de la ejecución del módulo. </li>
 

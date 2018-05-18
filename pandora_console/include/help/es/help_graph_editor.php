@@ -6,5 +6,5 @@
 
 <h1>Editor de items</h1>
 
-<p>Esta vista permite a&ntile;ade modulos a graficos. Puedes a&ntilde;adir mas de un modulo para crear graficos combinados. Los graficos combinados permiten definir el peso de las variables, tendran valores de diferentes modulos que seran de uno a mas agentes. De esta forma se puede comparar visualmente informacion que venga de diferentes fuentes.</p>
+<p>Esta vista permite a&ntile;ade módulos a gráficos. Puedes a&ntilde;adir más de un módulo para crear gráficos combinados. Los gráficos combinados permiten definir el peso de las variables, tendrán valores de diferentes módulos que serán de uno a mas agentes. De esta forma se puede comparar visualmente información que venga de diferentes fuentes.</p>
 

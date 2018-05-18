@@ -14,7 +14,7 @@
 
 	<li><b>Tipo de alerta:</b> Éste puede seleccionarse de la lista de alertas que hayan sido previamente generadas.</li>
 	<li><b>Valor máximo:</b> Define el valor máximo para un módulo. Cualquier valor por encima de este umbral lanzará la alerta.</li>
-	<li><b>Valor mínimo:</b> Define el valor mínimo para un módulo. Cualquier valor por debajo de este umbral disparará la alerta. La pareja de &laquo;maximo&raquo; y &laquo;minimo&raquo; son los valores clave en la definición de una alerta, ya que definen en qué rango de valores se ha de disparar una alerta. Los valores de máximo y mínimo definen «lo aceptable», valores que Pandora FMS considera «válidos», fuera de estos valores, Pandora FMS lo considerará como alerta candidata a ser disparada.</li>
+	<li><b>Valor mínimo:</b> Define el valor mínimo para un módulo. Cualquier valor por debajo de este umbral disparará la alerta. La pareja de &laquo;maximo&raquo; y &laquo;minimo&raquo; son los valores clave en la definición de una alerta, ya que definen en qué rango de valores se ha de disparar una alerta. Los valores de máximo y mínimo definen «lo aceptable», valores que <?php echo get_product_name();?> considera «válidos», fuera de estos valores, <?php echo get_product_name();?> lo considerará como alerta candidata a ser disparada.</li>
 	<li><b>Texto de la alerta:</b> En caso de módulos string, se puede definir una expresión regular o una subcadena para hacer disparar una alerta.</li>
 	<li><b>Hora desde / Hora hasta:</b> Esto define un rango de tiempo &laquo;válido&raquo; para lanzar alertas.</li>
 	<li><b>Descripción:</b> Describe la función de la alerta, y resulta útil para identificar la alerta entre otras en la vista general de alertas.</li>

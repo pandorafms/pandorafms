@@ -25,7 +25,7 @@ Red sobre la que realizar la exploración. Utiliza el formato de red / mascara d
 
 <b>Intervalo</b>
 <br>
-Intervalo de repetición de la búsqueda de equipos. No utilice intervalos muy cortos ya que recon explora una red enviando un Ping a cada dirección, si utiliza redes de exploracion muy amplias (por ejemplo una clase A) combinado con intervalos muy cortos (6 horas) estará provocando que Pandora FMS esté constantemente bombardeando la red con pings, cargandola e innecesariamente sobre cargando Pandora FMS.<br><br>
+Intervalo de repetición de la búsqueda de equipos. No utilice intervalos muy cortos ya que recon explora una red enviando un Ping a cada dirección, si utiliza redes de exploracion muy amplias (por ejemplo una clase A) combinado con intervalos muy cortos (6 horas) estará provocando que <?php echo get_product_name();?> esté constantemente bombardeando la red con pings, cargandola e innecesariamente sobre cargando <?php echo get_product_name();?>.<br><br>
 
 <b>Plantilla de módulos</b><br>
 
@@ -33,7 +33,7 @@ Plantilla de componentes que añadir a los equipos descubiertos. Cuando detecte 
 
 <b>SO</b><br>
 
-Sistema operativo para reconocer. Si se selecciona uno en lugar de cualquiera (Any) sólo se añadirán los equipos con ese sistema operativo. Piense que en determiandas situaciones Pandora FMS puede equivocarse a la hora de detectar sistemas, ya que este tipo de "adivinación" se realiza con patrones estadísticos que en función de algunos factores ajenos pueden fallar (redes con filtrados, software de seguridad, versiones modificadas de los sistemas). Para poder utilizar con seguridad este método debe tener instalado Xprobe2 en su sistema.<br><br>
+Sistema operativo para reconocer. Si se selecciona uno en lugar de cualquiera (Any) sólo se añadirán los equipos con ese sistema operativo. Piense que en determiandas situaciones <?php echo get_product_name();?> puede equivocarse a la hora de detectar sistemas, ya que este tipo de "adivinación" se realiza con patrones estadísticos que en función de algunos factores ajenos pueden fallar (redes con filtrados, software de seguridad, versiones modificadas de los sistemas). Para poder utilizar con seguridad este método debe tener instalado Xprobe2 en su sistema.<br><br>
 
 <b>Puertos</b><br>
 

@@ -3,7 +3,7 @@
  * @package Include/help/es
  */
 ?>
-<h1>Tags en Pandora FMS</h1>
+<h1>Tags en <?php echo get_product_name();?></h1>
 
 El acceso a los módulos se puede configurar con un sistema de Etiquetas o Tags. Se configuran unos tags en el sistema, se asignan a los módulos que se quiera. De esta forma se puede limitar el acceso a un usuario a los módulos con determinados tags.
 <br><br>

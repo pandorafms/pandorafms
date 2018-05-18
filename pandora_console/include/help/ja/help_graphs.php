@@ -48,11 +48,11 @@ div.img_title {
 </style>
 
 <body class="hlp_graphs">
-<h1>INTERPRETING GHRAPHS IN PANDORA FMS</h1>
+<h1>INTERPRETING GHRAPHS IN <?php echo get_product_name();?></h1>
 
 
-<p>In Pandora FMS, graphs represent the values a module has had during a given period.</p>
-<p>Due to the large amount of data that Pandora FMS stores, two different types of functionality are offered</p>
+<p>In <?php echo get_product_name();?>, graphs represent the values a module has had during a given period.</p>
+<p>Due to the large amount of data that <?php echo get_product_name();?> stores, two different types of functionality are offered</p>
 
 
 <h2>NORMAL GRAPHS</h2>
@@ -98,7 +98,7 @@ div.img_title {
 <dd>Shows indicator points with triggered alert information at the top.</dd>
 
 <dt>Show percentile</dt>
-<dd>Adds a graph that indicates the percentile line (configurable in general visual options of Pandora).</dd>
+<dd>Adds a graph that indicates the percentile line (configurable in general visual options of <?php echo get_product_name();?>).</dd>
 
 <dt>Time comparison (superimposed)</dt>
 <dd>Displays the same graphic overlay, but in the period before the selected one. For example, if we request a period of one week and activate this option, the week before the chosen one will also be shown superimposed.</dd>
@@ -107,7 +107,7 @@ div.img_title {
 <dd>Displays the same graph, but in the period before the selected one, in a separate area. For example, if we request a period of one week and activate this option, the week before the chosen one will also be shown.</dd>
 
 <dt>Display unknown graphic</dt>
-<dd>It shows boxes in grey shading covering the periods in which Pandora FMS cannot guarantee the module's status, either due to data loss, disconnection of a software agent, etc.</dd>
+<dd>It shows boxes in grey shading covering the periods in which <?php echo get_product_name();?> cannot guarantee the module's status, either due to data loss, disconnection of a software agent, etc.</dd>
 
 <dt>Show Full Scale Graph (TIP)</dt>
 <dd>Switches the creation mode from "normal" to "TIP". In this mode, the graphs will show real data rather than approximations, so the time it will take to generate them will be longer. More detailed information on this type of graphs can be found in the following section.</dd>

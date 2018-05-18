@@ -6,7 +6,7 @@
 <h1>GIS Map builder</h1>
 
 <p>
-This page shows a list of the defined maps, and let you edit, delete or view any of them. Also from this page is where the <strong>default Map</strong> of Pandora FMS is set.
+This page shows a list of the defined maps, and let you edit, delete or view any of them. Also from this page is where the <strong>default Map</strong> of <?php echo get_product_name();?> is set.
 </p>
 To create a map a connection to a map server is needed, the connections are created by the Adminstrator in the <strong>Setup</strong> menu.
 <p>

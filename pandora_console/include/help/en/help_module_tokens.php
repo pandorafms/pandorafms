@@ -96,7 +96,7 @@ The total of seconds, agent will wait for the execution of the module, so if it 
 <br><br>
 <b>module_postprocess 'factor'</b>
 <br><br>
-Same as in the definition of post processing of a module that is done from the console, here could be defined a numeric value of floating comma that will send this value to Pandora FMS in order the server will use it to multiply the received (raw) by the agent.
+Same as in the definition of post processing of a module that is done from the console, here could be defined a numeric value of floating comma that will send this value to <?php echo get_product_name();?> in order the server will use it to multiply the received (raw) by the agent.
 <br><br>
 <b>module_save 'variable name'</b>
 <br><br>
@@ -245,7 +245,7 @@ module_end<br>
 <br>
 <b>Processes Watchdog</b>
 <br><br>
-A Watchdog is a system that allows to act immediately when an agent is down, usually picking up the process that is down . The Pandora FMS Windows agent could act as Watchdog when a process is down. This is called watchdog mode for the process: 
+A Watchdog is a system that allows to act immediately when an agent is down, usually picking up the process that is down . The <?php echo get_product_name();?> Windows agent could act as Watchdog when a process is down. This is called watchdog mode for the process: 
 <br><br>
 Executing a process could need some parameters, so there are some additional configuration options for these kind of modules. It is important to say that the watchdog mode only works when the module type is asynchronous. Let's see an example of configuration of a module_proc with watchdog.
 <br><br>
@@ -268,7 +268,7 @@ This is the definition of the additional parameters for module_proc with watchdo
 <br><br>
     <i>module_startdelay:</i> Number of milliseconds the module will wait before starting the process by first time. If the process takes lot of time at starting , then it will be a great idea to order the agent through this parameter that it "wait" until start checking again if the process has got up. In this example wait 3 seconds.
 <br><br>
-    <i>module_retrydelay:</i> Similar to the previous one but for subsequent falls/reattempts, after having detect a fall. When Pandora detects a fall, relaunch the process, wait the nº of milliseconds pointed out in this parameter and check again if the process is already up.  
+    <i>module_retrydelay:</i> Similar to the previous one but for subsequent falls/reattempts, after having detect a fall. When <?php echo get_product_name();?> detects a fall, relaunch the process, wait the nº of milliseconds pointed out in this parameter and check again if the process is already up.  
 <br><br>
 <b>module_cpuproc 'process'</b>
 <br><br>

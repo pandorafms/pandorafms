@@ -2,11 +2,11 @@
 <h2>Introducci&oacute;n</h2>
 
 <p>
-    Pandora WUX es un componente interno de Pandora FMS que permite a los usuarios automatizar sus sesiones de navegaci&oacute;n web. Genera en Pandora FMS un informe con los resultados de las ejecuciones, tiempos empleados, y capturas con los posibles errores encontrados. Es capaz de dividir las sesiones de navegaci&oacute;n en fases para simplificar la vista y depurar posibles cuellos de botella.
+	<?php echo get_product_name();?> WUX es un componente interno de <?php echo get_product_name();?> que permite a los usuarios automatizar sus sesiones de navegaci&oacute;n web. Genera en <?php echo get_product_name();?> un informe con los resultados de las ejecuciones, tiempos empleados, y capturas con los posibles errores encontrados. Es capaz de dividir las sesiones de navegaci&oacute;n en fases para simplificar la vista y depurar posibles cuellos de botella.
 </p>
 
 <p>
-    Pandora WUX utiliza el robot de navegaci&oacute;n de Pandora (PWR - Pandora Web Robot) para automatizar las sesiones de navegaci&oacute;n
+	<?php echo get_product_name();?> WUX utiliza el robot de navegaci&oacute;n de <?php echo get_product_name();?> (PWR - <?php echo get_product_name();?> Web Robot) para automatizar las sesiones de navegaci&oacute;n
 </p>
 
 <h2>Grabar una sesi&oacute;n de navegaci&oacute;n web</h2>
@@ -114,13 +114,13 @@
 </p>
 
 <p>
-	Una vez verificada la validez de la secuencia de navegaci&oacute;n, la guardaremos (Archivo -&gt; Save Test Case) para ejecutarla posteriormente con Pandora WUX. El fichero resultante ser&aacute; un documento HTML que Pandora WUX interpretar&aacute;.
+	Una vez verificada la validez de la secuencia de navegaci&oacute;n, la guardaremos (Archivo -&gt; Save Test Case) para ejecutarla posteriormente con <?php echo get_product_name();?> WUX. El fichero resultante ser&aacute; un documento HTML que <?php echo get_product_name();?> WUX interpretar&aacute;.
 </p>
 
-<h4>Grabar una sesi&oacute;n transaccional con Pandora WUX PWR</h4>
+<h4>Grabar una sesi&oacute;n transaccional con <?php echo get_product_name();?> WUX PWR</h4>
 
 <p>
-	Pandora WUX en modo PWR (Pandora Web Robot) permite dividir la monitorizaci&oacute;n de la navegaci&oacute;n de un sitio web en m&uacute;ltiples m&oacute;dulos, que representar&aacute;n cada uno de los pasos realizados.
+	<?php echo get_product_name();?> WUX en modo PWR (<?php echo get_product_name();?> Web Robot) permite dividir la monitorizaci&oacute;n de la navegaci&oacute;n de un sitio web en m&uacute;ltiples m&oacute;dulos, que representar&aacute;n cada uno de los pasos realizados.
 </p>
 
 <p>
@@ -186,7 +186,7 @@
     En esta vista podemos encontrar toda la infomaci&oacute;n que el sistema WUX ha obtenido de la sesi&oacute;n de navegaci&oacute;n configurada: 
 </p>
 <p>
-    <b><u>Nota</u>:</b> Si hemos definido fases en nuestra sesi&oacute;n de navegaci&oacute;n, se mostrar&aacute;n en esta vista de una forma sencilla y clara (ver apartado de grabaci&oacute;n <i>sesi&oacute;n transaccional con Pandora WUX PWR)</i>.
+    <b><u>Nota</u>:</b> Si hemos definido fases en nuestra sesi&oacute;n de navegaci&oacute;n, se mostrar&aacute;n en esta vista de una forma sencilla y clara (ver apartado de grabaci&oacute;n <i>sesi&oacute;n transaccional con <?php echo get_product_name();?> WUX PWR)</i>.
 </p>
 
 <p style="text-align: center">

@@ -9,7 +9,7 @@
 
 <p>
 	The date format must be year/month/day and the time format must be hour:minute:second.
-	It's possible to create a scheduled downtime with a past date, if that option aren't disabled by the admin of Pandora FMS.
+	It's possible to create a scheduled downtime with a past date, if that option aren't disabled by the admin of <?php echo get_product_name();?>.
 </p>
 
 <h2>Periodically execution</h2>

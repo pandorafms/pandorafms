@@ -8,7 +8,7 @@
 <h2>Dynamic threshold Interval</h2>
 
 <p>
-	Introduce a time period in the Dynamic Threshold Interval field and the module will return the data obtained during the interval. This allows Pandora to establish minimum thresholds of critical and warning status according to the server configuration.
+	Introduce a time period in the Dynamic Threshold Interval field and the module will return the data obtained during the interval. This allows <?php echo get_product_name();?> to establish minimum thresholds of critical and warning status according to the server configuration.
 	<br><br>
 	The default setting will <b>only</b> give minimums, so if maximum = 0 it will read from the configured minimum to infinite.
 	<br><br>

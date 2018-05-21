@@ -506,6 +506,10 @@ function config_update_config () {
 						$error_update[] = __('Custom logo login');
 					if (!config_update_value ('custom_splash_login', (string) get_parameter ('custom_splash_login')))
 						$error_update[] = __('Custom splash login');
+					if (!config_update_value ('custom_docs_logo', (string) get_parameter ('custom_docs_logo')))
+						$error_update[] = __('Custom documentation logo');
+					if (!config_update_value ('custom_support_logo', (string) get_parameter ('custom_support_logo')))
+						$error_update[] = __('Custom support logo');
 					if (!config_update_value ('custom_title1_login', (string) get_parameter ('custom_title1_login')))
 						$error_update[] = __('Custom title1 login');
 					if (!config_update_value ('custom_title2_login', (string) get_parameter ('custom_title2_login')))
@@ -1194,6 +1198,14 @@ function config_process_config () {
 	
 	if (!isset ($config["custom_splash_login"])) {
 		config_update_value ('custom_splash_login', 'splash_image_default.png');
+	}
+
+	if (!isset ($config["custom_docs_logo"])) {
+		config_update_value ('custom_docs_logo', '');
+	}
+
+	if (!isset ($config["custom_support_logo"])) {
+		config_update_value ('custom_support_logo', '');
 	}
 	
 	if (!isset ($config["custom_title1_login"])) {

@@ -3919,4 +3919,41 @@ function ui_get_snapshot_link($params, $only_params = false) {
 	// Return the function call to inline js execution
 	return "winopeng_var('" . implode("', '", $link_parts) . "')";
 }
+
+/**
+ * Get the custom docs logo
+ *
+ * @return string with the path to logo. False if it should not be displayed
+ *
+ */
+function ui_get_docs_logo () {
+	global $config;
+
+	// Default logo to open version (enterprise_installed function only works in login status)
+	if (!file_exists (ENTERPRISE_DIR . "/load_enterprise.php")) {
+		return "images/icono_docs.png";
+	}
+
+	if (empty($config['custom_docs_logo'])) return false;
+	return 'enterprise/images/custom_general_logos/' . $config['custom_docs_logo'];
+}
+
+/**
+ * Get the custom support logo
+ *
+ * @return string with the path to logo. False if it should not be displayed
+ *
+ */
+function ui_get_support_logo () {
+	global $config;
+
+	// Default logo to open version (enterprise_installed function only works in login status)
+	if (!file_exists (ENTERPRISE_DIR . "/load_enterprise.php")) {
+		return "images/icono_support.png";
+	}
+
+	if (empty($config['custom_support_logo'])) return false;
+	return 'enterprise/images/custom_general_logos/' . $config['custom_support_logo'];
+}
+
 ?>

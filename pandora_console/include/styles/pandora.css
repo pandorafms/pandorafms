@@ -4654,3 +4654,11 @@ form ul.form_flex li ul li{
 .pandora_upper {
 	text-transform: uppercase;
 }
+
+.dialog-grayed {
+	background: #373737 !important;
+}
+
+.dialog-grayed .ui-dialog-buttonpane {
+	background: #373737 !important;
+}

@@ -86,6 +86,9 @@ if (!empty($config['login_background'])) {
 	$background_url = "images/backgrounds/" . $config['login_background'];
 	$login_body_style = "style=\"background-image: url('$background_url');\"";
 }
+// Get the custom icons
+$docs_logo = ui_get_docs_logo();
+$support_logo = ui_get_support_logo();
 echo '<div id="login_body" ' . $login_body_style . '>';
 echo '<div id="header_login">';
 	echo '<div id="icon_custom_pandora">';
@@ -102,15 +105,20 @@ echo '<div id="header_login">';
 			echo '<img src="images/custom_logo/pandora_logo_head_3.png" alt="pandora_console">';	
 		}
 	echo '</div>';
-		echo '<div id="list_icon_docs_support"><ul>';
-			echo '<li><a href="'.$config['custom_docs_url'].'" target="_blank"><img src="images/icono_docs.png" alt="docs pandora"></a></li>';
-			echo '<li>' . __('Docs') . '</li>';
-			if (file_exists (ENTERPRISE_DIR . "/load_enterprise.php")) {
-				echo '<li id="li_margin_left"><a href="'.$config['custom_support_url'].'" target="_blank"><img src="images/icono_support.png" alt="support pandora"></a></li>';
-			} else {
-				echo '<li id="li_margin_left"><a href="https://pandorafms.com/monitoring-services/support/" target="_blank"><img src="images/icono_support.png" alt="support pandora"></a></li>';
+		echo '<div id="list_icon_docs_support"><ul style="line-height: 36px;">';
+			if ($docs_logo !== false) {
+				echo '<li><a href="'.$config['custom_docs_url'].'" target="_blank"><img src="' . $docs_logo . '" alt="docs"></a></li>';
 			}
-			echo '<li>' . __('Support') . '</li>';
+			echo '<li><a style="color: white; font-size:inherit;" href="'.$config['custom_docs_url'].'" target="_blank">' . __('Docs') . '</li>';
+			if (file_exists (ENTERPRISE_DIR . "/load_enterprise.php")) {
+				if ($support_logo !== false) {
+					echo '<li id="li_margin_left"><a href="'.$config['custom_support_url'].'" target="_blank"><img src="' . $support_logo .'" alt="support"></a></li>';
+				}
+				echo '<li><a style="color: white; font-size:inherit;" href="'.$config['custom_support_url'].'" target="_blank">' . __('Support') . '</li>';
+			} else {
+				echo '<li id="li_margin_left"><a href="https://pandorafms.com/monitoring-services/support/" target="_blank"><img src="' . $support_logo .'" alt="support"></a></li>';
+				echo '<li>' . __('Support') . '</li>';
+			}
 		echo '</ul></div>';
 	
 		

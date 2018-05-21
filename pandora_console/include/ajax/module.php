@@ -1083,6 +1083,10 @@ if ($list_modules) {
 			$url = 'include/procesos.php?agente='.$module["id_agente_modulo"];
 			$win_handle=dechex(crc32($module["id_agente_modulo"].$module["nombre"]));
 			
+			// Try to display the SNMP module realtime graph
+			$rt_button = get_module_realtime_link_graph($module);
+			if (!empty($rt_button)) $data[8] = $rt_button .  "&nbsp;&nbsp;";
+
 			# Show events for boolean modules by default.
 			if ($graph_type == 'boolean') {
 				$draw_events = 1;
@@ -1099,9 +1103,8 @@ if ($list_modules) {
 						base64_encode($module["nombre"]))) . "&amp;" .
 				"refresh=" . SECONDS_10MINUTES . "&amp;" .
 				"draw_events=$draw_events', 'day_".$win_handle."')";
-
-		if(!is_snapshot_data($module['datos'])){
-			$data[8] .= '<a href="javascript:'.$link.'">' . html_print_image("images/chart_curve.png", true, array("border" => '0', "alt" => "")) . '</a> &nbsp;&nbsp;';
+			if(!is_snapshot_data($module['datos'])){
+				$data[8] .= '<a href="javascript:'.$link.'">' . html_print_image("images/chart_curve.png", true, array("border" => '0', "alt" => "")) . '</a> &nbsp;&nbsp;';
 			}
 			$server_name = '';
 			$data[8] .= "<a href='javascript: " .

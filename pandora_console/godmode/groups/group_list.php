@@ -404,7 +404,8 @@ if (!empty($groups)) {
 		
 		$symbolBranchs = ' symbol_branch_' . $group['parent'];
 		
-		$data = groups_get_group_to_list($group, $groups_count, $symbolBranchs);
+		$has_children = isset($sons[$group['id_grupo']]);
+		$data = groups_get_group_to_list($group, $groups_count, $symbolBranchs, $has_children);
 		array_push ($table->data, $data);
 		$table->rowstyle[$iterator] = '';
 		if ($group['id_grupo'] != 0) {

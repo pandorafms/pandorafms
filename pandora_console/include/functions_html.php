@@ -798,7 +798,7 @@ function html_print_extended_select_for_post_process($name, $selected = '',
 function html_print_extended_select_for_time ($name, $selected = '',
 	$script = '', $nothing = '', $nothing_value = '0', $size = false,
 	$return = false, $select_style = false, $unique_name = true, $class='',
-	$readonly = false, $custom_fields = false,$style_icon = '') {
+	$readonly = false, $custom_fields = false,$style_icon = '',$no_change = false) {
 	
 	global $config;
 	$admin = is_user_admin($config['id_user']);
@@ -808,6 +808,9 @@ function html_print_extended_select_for_time ($name, $selected = '',
 		$fields = get_periods();
 	}
 	
+	if($no_change){
+		$fields['-2'] = __('No change');
+	}
 	
 	if ( ! $selected ) {
 		foreach( $fields as $t_key => $t_value){

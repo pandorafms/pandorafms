@@ -235,6 +235,18 @@ else {
 
 //Search by tag
 if (!empty($tag_with)) {
+	
+	if (!users_is_admin()) {
+		$user_tags = array_flip(tags_get_tags_for_module_search());
+		if($user_tags != null){
+			foreach ($tag_with as $id_tag) {
+				if (!array_search($id_tag,$user_tags)) {
+					return false;
+				}
+			}
+		}
+	}
+	
 	$sql_post .= ' AND ( ';
 	$first = true;
 	$filter_resume['tag_inc'] = $tag_with;

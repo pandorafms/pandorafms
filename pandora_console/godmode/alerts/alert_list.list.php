@@ -159,8 +159,14 @@ else {
 $form_filter .= "</form>";
 if ( defined("METACONSOLE"))
 	echo "<br>";
+	
+if(!$id_cluster){
+	ui_toggle($form_filter, __('Alert control filter'), __('Toggle filter(s)'));
+}	
+else{
+	unset($form_filter);
+}
 
-ui_toggle($form_filter, __('Alert control filter'), __('Toggle filter(s)'));
 
 $simple_alerts = array();
 
@@ -736,7 +742,7 @@ if (isset($dont_display_alert_create_bttn))
 	if ($dont_display_alert_create_bttn)
 		$display_create = false;
 
-if ($display_create && (check_acl ($config['id_user'], 0, "LW") || check_acl ($config['id_user'], $template_group, "LM"))) {
+if ($display_create && (check_acl ($config['id_user'], 0, "LW") || check_acl ($config['id_user'], $template_group, "LM")) && !$id_cluster) {
 	echo '<div class="action-buttons" style="width: ' . $table->width . '">';
 	echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_list&tab=builder&pure='.$pure.'">';
 	html_print_submit_button (__('Create'), 'crtbtn', false, 'class="sub next"');

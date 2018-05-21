@@ -622,8 +622,17 @@ function treeview_printTable($id_agente, $server_data = array(), $no_head = fals
 
 	if ( $user_access_node && check_acl ($config["id_user"], $agent["id_grupo"], "AW")) {
 		$go_to_agent = '<div style="text-align: right;">';
-		$go_to_agent .= '<a target=_blank href="' . $console_url . 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.$url_hash.'">';
-		$go_to_agent .= html_print_submit_button (__('Go to agent edition'), 'upd_button', false, 'class="sub config"', true);
+		
+		if($agent["id_os"] != 100){
+			$go_to_agent .= '<a target=_blank href="' . $console_url . 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.$url_hash.'">';
+			$go_to_agent .= html_print_submit_button (__('Go to agent edition'), 'upd_button', false, 'class="sub config"', true);
+		}
+		else{
+			$cluster = db_get_row_sql('select id from tcluster where id_agent = '.$id_agente);
+			$go_to_agent .= '<a target=_blank href="' . $console_url . 'index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_builder&id_cluster='.$cluster['id'].'&step=1&update=1='.$id_agente.'">';
+			$go_to_agent .= html_print_submit_button (__('Edit cluster'), 'upd_button', false, 'class="sub config"', true);
+		}
+		
 		$go_to_agent .= '</a>';
 		$go_to_agent .= '</div>';
 

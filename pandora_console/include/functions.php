@@ -2163,6 +2163,18 @@ function is_snapshot_data ($data) {
 }
 
 /**
+ * Check if text is too long to put it into a black screen
+ *
+ * @param string Data value
+ * @return bool True if black window should be displayed
+ */
+function is_text_to_black_string ($data) {
+	if (is_image_data($data)) return false;
+	// Consider large text if data is greater than 200 characters
+	return ((int)strlen($data)) > 200;
+}
+
+/**
 *  Create an invisible div with a provided ID and value to
 * can retrieve it from javascript with function get_php_value(name)
 */
@@ -2289,6 +2301,10 @@ function get_news($arguments) {
 	$limit = get_argument ('limit', $arguments, 99999999);
 	
 	$id_group = array_keys(users_get_groups($id_user, false, true));
+
+	// Empty groups
+	if (empty($id_group)) return array();
+
 	$id_group = implode(',',$id_group);
 	$current_datetime = date('Y-m-d H:i:s', time());
 	$modal = (int) $modal;

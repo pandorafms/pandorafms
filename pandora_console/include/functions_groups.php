@@ -2122,7 +2122,7 @@ function groups_agent_disabled ($group_array) {
  * @return mixed Row with html_print_table format
  * 
  */
-function groups_get_group_to_list($group, $groups_count, &$symbolBranchs) {
+function groups_get_group_to_list($group, $groups_count, &$symbolBranchs, $has_children = false) {
 	$tabulation = str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $group['deep']);
 	
 	if ($group['id_grupo'] == 0) {
@@ -2160,11 +2160,16 @@ function groups_get_group_to_list($group, $groups_count, &$symbolBranchs) {
 			'id_group=' . $group['id_grupo'] . '">' . html_print_image("images/config.png", true, array("alt" => __('Edit'), "title" => __('Edit'), "border" => '0'));
 		//Check if there is only a group to unable delete it
 		if ($groups_count > 2) {
+			$confirm_message = __('Are you sure?');
+			if ($has_children) {
+				$confirm_message = __('The child groups will be updated to use the parent id of the deleted group') . ". " . $confirm_message;
+			}
+
 			$data[5] .= '&nbsp;&nbsp;' .
 				'<a href="index.php?sec=gagente&' .
 					'sec2=godmode/groups/group_list&' .
 					'id_group=' . $group['id_grupo'] . '&' .
-					'delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true, array("alt" => __('Delete'), "border" => '0'));
+					'delete_group=1" onClick="if (!confirm(\' '.$confirm_message.'\')) return false;">' . html_print_image("images/cross.png", true, array("alt" => __('Delete'), "border" => '0'));
 		}
 		else {
 			$data[5] .= '&nbsp;&nbsp;' .
@@ -2193,7 +2198,9 @@ function groups_print_group_sons($group, $sons, &$branch_classes, $groups_count,
 		foreach($sons[$group['id_grupo']] as $key => $g) {
 			$symbolBranchs .= ' symbol_branch_' . $g['parent'];
 			
-			$data = groups_get_group_to_list($g, $groups_count, $symbolBranchs);
+			$has_children = isset($sons[$g['id_grupo']]);
+
+			$data = groups_get_group_to_list($g, $groups_count, $symbolBranchs, $has_children);
 			array_push ($table->data, $data);
 			
 			$branch_classes[$g['id_grupo']] = $branch_classes[$g['parent']] . ' branch_' . $g['parent'];

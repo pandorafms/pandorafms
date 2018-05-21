@@ -1117,15 +1117,42 @@ function graph_get_formatted_date($timestamp, $format1, $format2) {
  * 
  * @return Mixed 
  */
-function graphic_combined_module ($module_list, $weight_list, $period,
-	$width, $height, $title, $unit_name, $show_events = 0,
-	$show_alerts = 0, $pure = 0, $stacked = 0, $date = 0,
-	$only_image = false, $homeurl = '', $ttl = 1, $projection = false,
-	$prediction_period = false, $background_color = 'white',
-	$name_list = array(), $unit_list = array(), $show_last = true, $show_max = true,
-	$show_min = true, $show_avg = true, $labels = array(), $dashboard = false,
-	$vconsole = false, $percentil = null, $from_interface = false, 
-	$id_widget_dashboard=false, $fullscale = false, $summatory = 0, $average = 0, $modules_series = 0) {
+function graphic_combined_module (
+	$module_list,
+	$weight_list,
+	$period,
+	$width,
+	$height,
+	$title,
+	$unit_name,
+	$show_events = 0,
+	$show_alerts = 0,
+	$pure = 0,
+	$stacked = 0,
+	$date = 0,
+	$only_image = false,
+	$homeurl = '',
+	$ttl = 1,
+	$projection = false,
+	$prediction_period = false,
+	$background_color = 'white',
+	$name_list = array(),
+	$unit_list = array(),
+	$show_last = true,
+	$show_max = true,
+	$show_min = true,
+	$show_avg = true,
+	$labels = array(),
+	$dashboard = false,
+	$vconsole = false,
+	$percentil = null,
+	$from_interface = false,
+	$id_widget_dashboard=false,
+	$fullscale = false,
+	$summatory = 0,
+	$average = 0,
+	$modules_series = 0
+) {
 	
 	global $config;
 	global $graphic_type;
@@ -2843,9 +2870,9 @@ function graph_sla_slicebar ($id, $period, $sla_min, $sla_max, $date, $daysWeek 
 		2 => COL_WARNING,
 		3 => COL_CRITICAL,
 		4 => COL_UNKNOWN,
-		5 => "#ff8400",//COL_MINOR,
+		5 => COL_DOWNTIME,
 		6 => COL_NOTINIT,
-		7 => "#ddd");//COL_MAJOR);
+		7 => COL_IGNORED);
 	
 	return slicesbar_graph($data, $period, $width, $height, $colors,
 		$config['fontpath'], $round_corner, $home_url, $ttl);
@@ -3986,7 +4013,7 @@ function graph_custom_sql_graph ($id, $width, $height,
 				$config['font_size'],
 				"",
 				$ttl,
-				$config['homeurl'],
+				$homeurl,
 				"white",
 				false,
 				false,
@@ -4010,7 +4037,7 @@ function graph_custom_sql_graph ($id, $width, $height,
 				$config['font_size'],
 				false,
 				$ttl,
-				$config['homeurl'],
+				$homeurl,
 				'white',
 				'black'
 			);

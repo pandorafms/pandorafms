@@ -103,23 +103,8 @@ if ($module_service_synthetic_selector !== ENTERPRISE_NOT_HOOK) {
 	$data[0] = '';
 }
 
-
-
-
 $data[1] = '<div id="module_data" style="top:1em; float:left; width:50%;">';
 $data[1] .= html_print_label(__("Agent"),'agent_name', true)."<br/>";
-
-$params = array();
-$params['return'] = true;
-$params['show_helptip'] = true;
-$params['input_name'] = 'agent_name';
-$params['value'] = $agent_name;
-$params['javascript_is_function_select'] = true;
-$params['selectbox_id'] = 'prediction_module';
-$params['none_module_text'] = __('Select Module');
-$params['use_hidden_input_idagent'] = true;
-$params['hidden_input_idagent_id'] = 'hidden-id_agente';
-$data[1] .= ui_print_agent_autocomplete_input($params);
 
 // Get module and agent of the target prediction module
 if (!empty($prediction_module)) {
@@ -131,6 +116,19 @@ else {
 	$id_agente_clean = $id_agente;
 	$agent_name_clean = $agent_name;
 }
+$agent_alias = agents_get_alias($id_agente_clean);
+
+$params = array();
+$params['return'] = true;
+$params['show_helptip'] = true;
+$params['input_name'] = 'agent_name';
+$params['value'] = $agent_alias;
+$params['javascript_is_function_select'] = true;
+$params['selectbox_id'] = 'prediction_module';
+$params['none_module_text'] = __('Select Module');
+$params['use_hidden_input_idagent'] = true;
+$params['hidden_input_idagent_id'] = 'hidden-id_agente_module_prediction';
+$data[1] .= ui_print_agent_autocomplete_input($params);
 
 $data[1] .= html_print_label(__("Module"),'prediction_module',true);
 if ($id_agente) {
@@ -154,7 +152,7 @@ $periods [1] = __('Monthly');
 $periods [2] = __('Daily');
 $data[1] .= html_print_select ($periods, 'custom_integer_2', $custom_integer_2, '', '', 0, true);
 
-$data[1] .= html_print_input_hidden ('id_agente', $id_agente, true);
+$data[1] .= html_print_input_hidden ('id_agente_module_prediction', $id_agente, true);
 $data[1] .= '</div>';
 
 $table_simple->colspan['prediction_module'][1] = 3;

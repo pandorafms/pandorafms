@@ -29,8 +29,6 @@ if (! check_acl($config['id_user'], 0, "PM")) {
 	exit;
 }
 
-ui_print_page_header(__('Pandora audit') . " &raquo; " . __('Review Logs'), "images/gm_log.png", false, "", true);
-
 $offset = (int) get_parameter("offset");
 $filter_type = (string) get_parameter("filter_type");
 $filter_user = (string) get_parameter("filter_user");
@@ -44,6 +42,19 @@ $filter_query = "&filter_type=" . $filter_type
 	. "&filter_text=" . $filter_text
 	. "&filter_period=" . $filter_period
 	. "&filter_ip=" . $filter_ip;
+
+$csv_url = ui_get_full_url(false, false, false, false)
+	. 'index.php?sec=gextensions&sec2=godmode/audit_log_csv'
+	. $filter_query;
+$csv_img = html_print_image("images/csv_mc.png", true, array ("title" => __('Export to CSV')));
+$header_buttons = array(
+	'csv' => array(
+		'active' => false,
+		'text' => '<a href="' . $csv_url . '">' . $csv_img . '</a>'
+	)
+);
+
+ui_print_page_header(__('Pandora audit') . " &raquo; " . __('Review Logs'), "images/gm_log.png", false, "", true, $header_buttons);
 
 $table = new stdClass();
 $table->class = "databox filters";
@@ -238,13 +249,6 @@ foreach ($result as $row) {
 }
 
 html_print_table($table);
-
-echo '<div style="width: '.$table->width.'" class="action-buttons">';
-$csv_url = ui_get_full_url(false, false, false, false) . 'index.php?sec=gextensions&sec2=godmode/audit_log_csv' . $filter_query;
-echo '<a href="' . $csv_url . '">'
-	. html_print_button(__("Export to CSV"), "export_csv", false, "", "class=sub upd", true, false)
-	. '</a>';
-echo '</div>';
 
 if ($enterprise_include !== ENTERPRISE_NOT_HOOK) {
 	enterprise_hook('enterpriseAuditFooter');

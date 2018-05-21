@@ -1373,10 +1373,11 @@ if (!empty($result)) {
 			else {
 				$module_value = io_safe_output($row['datos']);
 			}
-			
+
 			$is_snapshot = is_snapshot_data ( $module_value );
-			
-			if (($config['command_snapshot']) && ($is_snapshot)) {
+			$is_large_image = is_text_to_black_string ( $module_value );
+
+			if (($config['command_snapshot']) && ($is_snapshot || $is_large_image)) {
 				$link = ui_get_snapshot_link( array(
 					'id_module' => $row['id_agente_modulo'],
 					'last_data' => $row['datos'],
@@ -1385,7 +1386,7 @@ if (!empty($result)) {
 					'module_name' => $row['module_name']
 				));
 
-				if(!is_image_data($row['datos'])){
+				if($is_large_image){
 					$salida = '<a href="javascript:' . $link . '">' .
 						html_print_image('images/default_list.png', true,
 							array('border' => '0',

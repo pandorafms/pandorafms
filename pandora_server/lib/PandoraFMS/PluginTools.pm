@@ -1433,10 +1433,10 @@ sub api_available {
 	 	($api_url, $api_pass, $api_user, $api_user_pass) = @{$apidata};
 	}
 
-	$api_url       = $conf->{'api_url'}       unless empty($api_url);
-	$api_pass      = $conf->{'api_pass'}      unless empty($api_pass);
-	$api_user      = $conf->{'api_user'}      unless empty($api_user);
-	$api_user_pass = $conf->{'api_user_pass'} unless empty($api_user_pass);
+	$api_url       = $conf->{'api_url'}       if empty($api_url);
+	$api_pass      = $conf->{'api_pass'}      if empty($api_pass);
+	$api_user      = $conf->{'api_user'}      if empty($api_user);
+	$api_user_pass = $conf->{'api_user_pass'} if empty($api_user_pass);
 
 	my $op = "get";
 	my $op2 = "test";
@@ -1473,10 +1473,10 @@ sub api_create_custom_field {
 	 	($api_url, $api_pass, $api_user, $api_user_pass) = @{$apidata};
 	}
 
-	$api_url       = $conf->{'api_url'}       unless empty($api_url);
-	$api_pass      = $conf->{'api_pass'}      unless empty($api_pass);
-	$api_user      = $conf->{'api_user'}      unless empty($api_user);
-	$api_user_pass = $conf->{'api_user_pass'} unless empty($api_user_pass);
+	$api_url       = $conf->{'api_url'}       if empty($api_url);
+	$api_pass      = $conf->{'api_pass'}      if empty($api_pass);
+	$api_user      = $conf->{'api_user'}      if empty($api_user);
+	$api_user_pass = $conf->{'api_user_pass'} if empty($api_user_pass);
 
 
 
@@ -1572,10 +1572,10 @@ sub api_create_tag {
 	 	($api_url, $api_pass, $api_user, $api_user_pass) = @{$apidata};
 	}
 
-	$api_url       = $conf->{'api_url'}       unless empty($api_url);
-	$api_pass      = $conf->{'api_pass'}      unless empty($api_pass);
-	$api_user      = $conf->{'api_user'}      unless empty($api_user);
-	$api_user_pass = $conf->{'api_user_pass'} unless empty($api_user_pass);
+	$api_url       = $conf->{'api_url'}       if empty($api_url);
+	$api_pass      = $conf->{'api_pass'}      if empty($api_pass);
+	$api_user      = $conf->{'api_user'}      if empty($api_user);
+	$api_user_pass = $conf->{'api_user_pass'} if empty($api_user_pass);
 
 	my $op = "set";
 	my $op2 = "create_tag";

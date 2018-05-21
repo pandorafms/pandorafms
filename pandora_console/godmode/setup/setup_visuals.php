@@ -258,7 +258,19 @@ if(enterprise_installed()) {
 	$table_styles->data[$row][0] = __('Support URL (login)');
 	$table_styles->data[$row][1] = html_print_input_text ('custom_support_url', $config["custom_support_url"], '', 50, 50, true);
 	$row++;
-}	
+}
+
+if(enterprise_installed()) {
+	$table_styles->data[$row][0] = __('Product name');
+	$table_styles->data[$row][1] = html_print_input_text('rb_product_name', get_product_name(), '', 30, 255, true);
+	$row++;
+}
+
+if(enterprise_installed()) {
+	$table_styles->data[$row][0] = __('Copyright notice');
+	$table_styles->data[$row][1] = html_print_input_text('rb_copyright_notice', get_copyright_notice(), '', 30, 255, true);
+	$row++;
+}
 
 $table_styles->data[$row][0] = __('Disable logo in graphs');
 $table_styles->data[$row][1] = __('Yes') . '&nbsp;' .

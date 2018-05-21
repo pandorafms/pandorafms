@@ -247,10 +247,6 @@ function config_update_config () {
 							$error_update[] = __('Metaconsole agent cache');
 						if (!config_update_value ('log_collector', (bool)get_parameter('log_collector')))
 							$error_update[] = __('Activate Log Collector');
-						if (!config_update_value ('rb_product_name', get_parameter('rb_product_name')))
-							$error_update[] = __('Product name');
-						if (!config_update_value ('rb_copyright_notice', get_parameter('rb_copyright_notice')))
-							$error_update[] = __('Copyright notice');
 						if (!config_update_value ('enable_update_manager', get_parameter('enable_update_manager')))
 							$error_update[] = __('Enable Update Manager');
 
@@ -521,8 +517,12 @@ function config_update_config () {
 						$error_update[] = __('Custom Docs url');
 					if (!config_update_value ('custom_support_url', (string) get_parameter ('custom_support_url')))
 						$error_update[] = __('Custom support url');
-
-					if (!config_update_value ('meta_custom_logo', (string) get_parameter ('meta_custom_logo')))
+					if (!config_update_value ('rb_product_name', (string) get_parameter ('rb_product_name')))
+						$error_update[] = __('Product name');
+					if (!config_update_value ('rb_copyright_notice', (string) get_parameter ('rb_copyright_notice')))
+						$error_update[] = __('Copyright notice');
+					
+						if (!config_update_value ('meta_custom_logo', (string) get_parameter ('meta_custom_logo')))
 						$error_update[] = __('Custom logo metaconsole');
 					if (!config_update_value ('meta_custom_logo_login', (string) get_parameter ('meta_custom_logo_login')))
 						$error_update[] = __('Custom logo login metaconsole');
@@ -1053,14 +1053,6 @@ function config_process_config () {
 		config_update_value ('log_collector', 0);
 	}
 
-	if (!isset ($config['rb_product_name'])) {
-		config_update_value('rb_product_name', get_product_name());
-	}
-
-	if (!isset ($config['rb_copyright_notice'])) {
-		config_update_value('rb_copyright_notice', get_copyright_notice());
-	}
-
 	if (!isset ($config["enable_update_manager"])) {
 		config_update_value ('enable_update_manager', 1);
 	}
@@ -1218,6 +1210,14 @@ function config_process_config () {
 
 	if (!isset ($config["custom_support_url"])) {
 		config_update_value ('custom_support_url', 'https://support.artica.es');
+	}
+
+	if (!isset ($config['rb_product_name'])) {
+		config_update_value('rb_product_name', get_product_name());
+	}
+
+	if (!isset ($config['rb_copyright_notice'])) {
+		config_update_value('rb_copyright_notice', get_copyright_notice());
 	}
 	
 	if (!isset ($config["meta_custom_docs_url"])) {

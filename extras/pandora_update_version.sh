@@ -67,6 +67,7 @@ $PANDHOME_ENT/pandora_plugins/Informix/informix.pl \
 $PANDHOME_ENT/pandora_plugins/Ruckus/ruckus.pl \
 $PANDHOME_ENT/pandora_plugins/UX/pandora_ux.pl \
 $PANDHOME_ENT/pandora_plugins/JMX/pandora_plugin_jmx.pl \
+$PANDHOME_ENT/pandora_plugins/SNMP/dynamic_snmp.pl \
 $PANDHOME_ENT/pandora_plugins/MySQL/pandora_mysql.pl \
 $PANDHOME_ENT/pandora_server/util/plugin/vmware-plugin.pl "
 PLUGIN_LIB_FILE="$CODEHOME/pandora_server/lib/PandoraFMS/PluginTools.pm"

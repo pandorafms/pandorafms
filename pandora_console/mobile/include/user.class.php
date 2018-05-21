@@ -76,7 +76,6 @@ class User {
 		
 		if (($user == null) && ($password == null)) {
 			$user = $system->getRequest('user', null);
-			$user = $system->safeInput($user);
 			$password = $system->getRequest('password', null);
 			$password = $system->safeInput($password);
 		}
@@ -144,6 +143,7 @@ class User {
 		}
 		if (empty($code)) {
 			$code = $system->getRequest('auth_code', null);
+			$code = $system->safeOutput($code);
 		}
 
 		if (!empty($user) && !empty($code)) {

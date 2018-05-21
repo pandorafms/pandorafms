@@ -251,6 +251,8 @@ function config_update_config () {
 							$error_update[] = __('Product name');
 						if (!config_update_value ('rb_copyright_notice', get_parameter('rb_copyright_notice')))
 							$error_update[] = __('Copyright notice');
+						if (!config_update_value ('enable_update_manager', get_parameter('enable_update_manager')))
+							$error_update[] = __('Enable Update Manager');
 
 						$inventory_changes_blacklist = get_parameter('inventory_changes_blacklist', array());
 						if (!config_update_value ('inventory_changes_blacklist', implode(',',$inventory_changes_blacklist)))
@@ -1057,6 +1059,10 @@ function config_process_config () {
 
 	if (!isset ($config['rb_copyright_notice'])) {
 		config_update_value('rb_copyright_notice', get_copyright_notice());
+	}
+
+	if (!isset ($config["enable_update_manager"])) {
+		config_update_value ('enable_update_manager', 1);
 	}
 
 	if (!isset ($config["reset_pass_option"])) {

@@ -40,6 +40,7 @@ our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 
 our @EXPORT = qw(
 	api_available
+	api_call
 	api_create_custom_field
 	api_create_tag
 	api_create_group
@@ -1460,7 +1461,80 @@ sub api_available {
 			id => (empty($rs)?undef:trim($rs))
 		}
 	}
+}
 
+#########################################################################################
+# Pandora API call
+# apidata->{other} = [field1,field2,...,fieldi,...,fieldn]
+#########################################################################################
+sub api_call {
+	my ($conf, $apidata) = @_;
+	my ($api_url, $api_pass, $api_user, $api_user_pass,
+	 	 $op, $op2, $other_mode, $other, $return_type);
+	my $separator;
+
+	if (ref $apidata eq "ARRAY") {
+	 	($api_url, $api_pass, $api_user, $api_user_pass,
+	 	 $op, $op2, $return_type, $other_mode, $other) = @{$apidata};
+	}
+	if (ref $apidata eq "HASH") {
+		$api_url       = $apidata->{'api_url'};
+		$api_pass      = $apidata->{'api_pass'};
+		$api_user      = $apidata->{'api_user'};
+		$api_user_pass = $apidata->{'api_user_pass'};
+		$op            = $apidata->{'op'};
+		$op2           = $apidata->{'op2'};
+		$return_type   = $apidata->{'return_type'};
+		$other_mode    = "url_encode_separator_" . $apidata->{'url_encode_separator'} unless empty($apidata->{'url_encode_separator'});
+		$other_mode    = "url_encode_separator_|" if empty($other_mode);
+		($separator)   = $other_mode =~ /url_encode_separator_(.*)/;
+	}
+
+	$api_url       = $conf->{'api_url'}       if empty($api_url);
+	$api_pass      = $conf->{'api_pass'}      if empty($api_pass);
+	$api_user      = $conf->{'api_user'}      if empty($api_user);
+	$api_user_pass = $conf->{'api_user_pass'} if empty($api_user_pass);
+	$op            = $conf->{'op'}            if empty($op);
+	$op2           = $conf->{'op2'}           if empty($op2);
+	$return_type   = $conf->{'return_type'}   if empty($return_type);
+	$return_type   = 'json'                   if empty($return_type);
+	if (ref ($apidata->{'other'}) eq "ARRAY") {
+		$other_mode  = "url_encode_separator_|" if empty($other_mode);
+		($separator) = $other_mode =~ /url_encode_separator_(.*)/;
+
+		if (empty($separator)) {
+			$separator  = "|";
+			$other_mode = "url_encode_separator_|";
+		}
+
+		$other = join $separator, @{$apidata->{'other'}};
+	}
+
+	my $call;
+
+	$call = $api_url . '?';
+	$call .= 'op=' . $op . '&op2=' . $op2;
+	$call .= '&other_mode=url_encode_separator_' . $separator;
+	$call .= '&other=' . $other;
+	$call .= '&apipass=' . $api_pass . '&user=' . $api_user . '&pass=' . $api_user_pass;
+	$call .= '&return_type=' . $return_type;
+
+	my $rs = call_url($conf, "$call");
+
+	if (ref($rs) ne "HASH") {
+		return {
+			rs => (empty($rs)?1:0),
+			error => (empty($rs)?"Empty response.":undef),
+			id => (empty($rs)?undef:trim($rs)),
+			response => (empty($rs)?undef:$rs),
+		}
+	}
+	else {
+		return {
+			rs => 1,
+			error => $rs->{'error'},
+		}
+	}
 }
 
 #########################################################################################

@@ -8822,6 +8822,40 @@ function api_get_agent_name($id_agent, $trash1, $trash2, $returnType) {
 }
 
 /**
+ *  Return the ID or an hash of IDs of the detected given agents
+ * 
+ *  @param array or value $data
+ * 
+ * 
+**/
+function api_get_agent_id($trash1, $trash2, $data, $returnType) {
+	$response;
+
+	if (is_metaconsole()) {
+		return;
+	}
+	if (empty($returnType)) {
+		$returnType = "json";
+	}
+
+	$response = array();
+
+	if ($data["type"] == "array") {
+		$response["type"] = "array";
+		$response["data"] = array();
+
+		foreach ($data["data"] as $name) {
+			$response["data"][$name] = agents_get_agent_id($name, 1);
+		}
+	} else {
+		$response["type"] = "string";
+		$response["data"] = agents_get_agent_id($data["data"], 1);
+	}
+
+	returnData($returnType, $response);
+}
+
+/**
  * Agent alias for a given id
  * 
  * @param int $id_agent 

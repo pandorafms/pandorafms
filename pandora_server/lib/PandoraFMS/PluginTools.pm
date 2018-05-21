@@ -1509,6 +1509,9 @@ sub api_call {
 
 		$other = join $separator, @{$apidata->{'other'}};
 	}
+	else {
+		$other = $apidata->{'other'};
+	}
 
 	my $call;
 

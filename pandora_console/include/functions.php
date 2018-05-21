@@ -2991,111 +2991,110 @@ function color_graph_array($series_suffix, $compare = false){
 	return $color;
 }
 
-function legend_graph_array(
-	$max, $min, $avg,
-	$series_suffix,
-	$series_suffix_str,
-	$format_graph,
-	$show_elements_graph,
-	$percentil_value,
-	$data_module_graph){
-
-	global $config;
-	global $legend;
-	$unit = $format_graph['unit'];
-
-	if (isset($show_elements_graph['labels']) && is_array($show_elements_graph['labels']) && (count($show_elements_graph['labels']) > 0)){
-		$legend['sum'.$series_suffix] = $show_elements_graph['labels'][$data_module_graph['module_id']] . ' ' ;
-	}
-	else{
-		$legend['sum'.$series_suffix] = $data_module_graph['agent_name']  . ' / ' .
-										$data_module_graph['module_name'] . ': ';
-	}
-
-	$legend['sum'.$series_suffix] .=
-		__('Min:') . remove_right_zeros(
-			number_format(
-				$min,
-				$config['graph_precision']
-			)
-		)  . ' ' .
-		__('Max:') . remove_right_zeros(
-			number_format(
-				$max,
-				$config['graph_precision']
-			)
-		) . ' ' .
-		_('Avg:') . remove_right_zeros(
-			number_format(
-				$max,
-				$config['graph_precision']
-			)
-		) . ' ' . $series_suffix_str;
-
-	if($show_elements_graph['show_unknown']){
-		$legend['unknown'.$series_suffix]   = __('Unknown') . ' ' . $series_suffix_str;
-	}
-	if($show_elements_graph['show_events']){
-		$legend['event'.$series_suffix]     = __('Events') . ' ' . $series_suffix_str;
-	}
-	if($show_elements_graph['show_alerts']){
-		$legend['alert'.$series_suffix]     = __('Alert') . ' ' . $series_suffix_str;
-	}
-	if($show_elements_graph['percentil']){
-		$legend['percentil'.$series_suffix] =
-							__('Percentil') . ' ' .
-							$config['percentil']  .
-							'º ' . __('of module') . ' ';
-
-		if (isset($show_elements_graph['labels']) && is_array($show_elements_graph['labels'])){
-			$legend['percentil'.$series_suffix] .= $show_elements_graph['labels'][$data_module_graph['module_id']] . ' ' ;
-		}
-		else{
-			$legend['percentil'.$series_suffix] .= $data_module_graph['agent_name']  . ' / ' .
-													$data_module_graph['module_name'] . ': ' . ' Value: ';
-		}
-
-		$legend['percentil'.$series_suffix] .= remove_right_zeros(
-													number_format(
-														$percentil_value,
-														$config['graph_precision']
-													)
-												) . ' ' . $series_suffix_str;
-	}
-
-	return $legend;
-}
-
-function series_type_graph_array($data){
+function series_type_graph_array($data, $show_elements_graph){
 	global $config;
 	foreach ($data as $key => $value) {
-		if(strpos($key, 'sum') !== false){
+		if(strpos($key, 'summatory') !== false){
+			$data_return['series_type'][$key] = 'area';
+			$data_return['legend'][$key] = __('Summatory series') . ' ' . $series_suffix_str;
+		}
+		elseif(strpos($key, 'average') !== false){
+			$data_return['series_type'][$key] = 'area';
+			$data_return['legend'][$key] = __('Average series') . ' ' . $series_suffix_str;
+		}
+		elseif(strpos($key, 'sum') !== false || strpos($key, 'baseline') !== false){
 			switch ($value['id_module_type']) {
 				case 21: case 2: case 6:
 				case 18: case 9: case 31:
-					$series_type[$key] = 'boolean';
+					$data_return['series_type'][$key] = 'boolean';
 					break;
 				default:
-					$series_type[$key] = 'area';
+					$data_return['series_type'][$key] = 'area';
 					break;
+			}
+
+			if (isset($show_elements_graph['labels']) &&
+				is_array($show_elements_graph['labels']) &&
+				(count($show_elements_graph['labels']) > 0)){
+				$data_return['legend'][$key] = $show_elements_graph['labels'][$value['id_module_type']] . ' ' ;
+			}
+			else{
+				if(strpos($key, 'baseline') !== false){
+					$data_return['legend'][$key] = $value['agent_name']  . ' / ' .
+												$value['module_name'] . ' Baseline ';
+				}
+				else{
+					$data_return['legend'][$key] = $value['agent_name']  . ' / ' .
+												$value['module_name'] . ': ';
+				}
+			}
+
+			if(strpos($key, 'baseline') === false){
+				$data_return['legend'][$key] .=
+					__('Min:') . remove_right_zeros(
+						number_format(
+							$value['min'],
+							$config['graph_precision']
+						)
+					)  . ' ' .
+					__('Max:') . remove_right_zeros(
+						number_format(
+							$value['max'],
+							$config['graph_precision']
+						)
+					) . ' ' .
+					_('Avg:') . remove_right_zeros(
+						number_format(
+							$value['avg'],
+							$config['graph_precision']
+						)
+					) . ' ' . $series_suffix_str;
 			}
 		}
 		elseif(strpos($key, 'event') !== false){
-			$series_type[$key] = 'points';
+			$data_return['series_type'][$key] = 'points';
+			if($show_elements_graph['show_events']){
+				$data_return['legend'][$key] = __('Events') . ' ' . $series_suffix_str;
+			}
 		}
 		elseif(strpos($key, 'alert') !== false){
-			$series_type[$key] = 'points';
+			$data_return['series_type'][$key] = 'points';
+			if($show_elements_graph['show_alerts']){
+				$data_return['legend'][$key] = __('Alert') . ' ' . $series_suffix_str;
+			}
 		}
 		elseif(strpos($key, 'unknown') !== false){
-			$series_type[$key] = 'unknown';
+			$data_return['series_type'][$key] = 'unknown';
+			if($show_elements_graph['show_unknown']){
+				$data_return['legend'][$key] = __('Unknown') . ' ' . $series_suffix_str;
+			}
 		}
 		elseif(strpos($key, 'percentil') !== false){
-			$series_type[$key] = 'percentil';
+			$data_return['series_type'][$key] = 'percentil';
+			if($show_elements_graph['percentil']){
+				$data_return['legend'][$key] =
+					__('Percentil') . ' ' .
+					$config['percentil']  .
+					'º ' . __('of module') . ' ';
+				if (isset($show_elements_graph['labels']) && is_array($show_elements_graph['labels'])){
+					$data_return['legend'][$key] .= $show_elements_graph['labels'][$value['id_module_type']] . ' ' ;
+				}
+				else{
+					$data_return['legend'][$key] .= $value['agent_name']  . ' / ' .
+											$value['module_name'] . ': ' . ' Value: ';
+				}
+				$data_return['legend'][$key] .= remove_right_zeros(
+												number_format(
+													$value['data'][0][1],
+													$config['graph_precision']
+												)
+											) . ' ' . $series_suffix_str;
+			}
 		}
 		else{
-			$series_type[$key] = 'area';
+			$data_return['series_type'][$key] = 'area';
 		}
 	}
-	return $series_type;
+	return $data_return;
 }
 ?>

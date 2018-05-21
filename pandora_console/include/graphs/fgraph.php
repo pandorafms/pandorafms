@@ -221,7 +221,7 @@ function vbar_graph(
 }
 
 function area_graph(
-	$agent_module_id, $array_data, $color,
+	$agent_module_id, $array_data,
 	$legend, $series_type, $date_array,
 	$data_module_graph, $show_elements_graph,
 	$format_graph, $water_mark, $series_suffix_str,
@@ -234,7 +234,6 @@ function area_graph(
 		return flot_area_graph(
 			$agent_module_id,
 			$array_data,
-			$color,
 			$legend,
 			$series_type,
 			$date_array,

@@ -327,11 +327,12 @@ function grafico_modulo_sparse_data_chart (
 		}
 	}
 
-	$array_data["sum" . $series_suffix]['min'] = $min_value;
-	$array_data["sum" . $series_suffix]['max'] = $max_value;
-	$array_data["sum" . $series_suffix]['avg'] = $sum_data/$count_data;
-
-	$array_data["sum" . $series_suffix]['id_module_type'] = $data_module_graph['id_module_type'];
+	$array_data["sum" . $series_suffix]['min']           = $min_value;
+	$array_data["sum" . $series_suffix]['max']           = $max_value;
+	$array_data["sum" . $series_suffix]['avg']           = $sum_data/$count_data;
+	$array_data["sum" . $series_suffix]['id_module_type']= $data_module_graph['id_module_type'];
+	$array_data["sum" . $series_suffix]['agent_name']    = $data_module_graph['agent_name'];
+	$array_data["sum" . $series_suffix]['module_name']   = $data_module_graph['module_name'];
 
 	if (!is_null($show_elements_graph['percentil']) &&
 		$show_elements_graph['percentil'] &&
@@ -356,10 +357,6 @@ function grafico_modulo_sparse_data(
 	$series_suffix, $str_series_suffix) {
 
 	global $config;
-	//global $array_data;
-	global $caption;
-	global $color;
-	global $legend;
 	global $array_events_alerts;
 
 	if($show_elements_graph['fullscale']){
@@ -553,19 +550,6 @@ function grafico_modulo_sparse_data(
 		return $array_data;
 	}
 
-	// Only show caption if graph is not small
-	if ($width > MIN_WIDTH_CAPTION && $height > MIN_HEIGHT){
-		//Flash chart
-		$caption =
-			__('Max. Value')   . $series_suffix_str . ': ' . $max . '    ' .
-			__('Avg. Value')   . $series_suffix_str . ': ' . $avg . '    ' .
-			__('Min. Value')   . $series_suffix_str . ': ' . $min . '    ' .
-			__('Units. Value') . $series_suffix_str . ': ' . $format_graph['unit'];
-	}
-	else{
-		$caption = array();
-	}
-
 	$color = color_graph_array(
 		$series_suffix,
 		$show_elements_graph['flag_overlapped']
@@ -576,16 +560,6 @@ function grafico_modulo_sparse_data(
 			$array_data[$k]['color'] = $v['color'];
 		}
 	}
-
-	legend_graph_array(
-		$max, $min, $avg,
-		$series_suffix,
-		$str_series_suffix,
-		$format_graph,
-		$show_elements_graph,
-		$percentil_value,
-		$data_module_graph
-	);
 
 	$array_events_alerts[$series_suffix] = $events;
 
@@ -605,20 +579,12 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 
 	global $config;
 
-
 	global $graphic_type;
-	//global $array_data;
-	global $caption;
-	global $color;
-	global $legend;
 	global $array_events_alerts;
 
 
 	$array_data   = array();
-	$caption      = array();
-	$color        = array();
 	$legend       = array();
-
 	$array_events_alerts = array();
 
 	//date start final period
@@ -743,10 +709,8 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 				case 'separated':
 				case 'overlapped':
 					// Store the chart calculated
-					$array_data_prev  = $array_data;
-					$legend_prev      = $legend;
-					$color_prev       = $color;
-					$caption_prev     = $caption;
+					$array_data_prev = $array_data;
+					$legend_prev     = $legend;
 					break;
 			}
 		}
@@ -766,7 +730,6 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 			if ($show_elements_graph['compare'] === 'overlapped') {
 				$array_data = array_merge($array_data, $array_data_prev);
 				$legend     = array_merge($legend, $legend_prev);
-				$color      = array_merge($color, $color_prev);
 			}
 		}
 	}
@@ -790,9 +753,13 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		)
 	);
 
-	$series_type = series_type_graph_array(
-		$array_data
+	$series_type_array = series_type_graph_array(
+		$array_data,
+		$show_elements_graph
 	);
+
+	$series_type = $series_type_array['series_type'];
+	$legend = $series_type_array['legend'];
 
 	//esto la sparse
 	//setup_watermark($water_mark, $water_mark_file, $water_mark_url);
@@ -805,7 +772,6 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 			$return = area_graph(
 				$agent_module_id,
 				$array_data,
-				$color,
 				$legend,
 				$series_type,
 				$date_array,
@@ -823,14 +789,17 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		$return .= '<br>';
 		if (!empty($array_data_prev)) {
 
-			$series_type = series_type_graph_array(
-				$array_data_prev
+			$series_type_array = series_type_graph_array(
+				$array_data_prev,
+				$show_elements_graph
 			);
+
+			$series_type = $series_type_array['series_type'];
+			$legend = $series_type_array['legend'];
 
 			$return .= area_graph(
 				$agent_module_id,
 				$array_data_prev,
-				$color,
 				$legend,
 				$series_type,
 				$date_array,
@@ -851,7 +820,6 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 			$return = area_graph(
 				$agent_module_id,
 				$array_data,
-				$color,
 				$legend,
 				$series_type,
 				$date_array,
@@ -951,10 +919,8 @@ function graphic_combined_module (
 
 	global $config;
 	global $graphic_type;
-	global $legend;
 
 	$legend        = array();
-	$caption       = array();
 	$series_type   = array();
 
 	//date start final period
@@ -971,16 +937,8 @@ function graphic_combined_module (
 	$show_max
 	$show_min
 	$show_avg
-	$from_interface
-	$summatory
-	$average
-	$modules_series
 */
-/*
-html_debug_print($name_list);
-html_debug_print($unit_list);
-html_debug_print($from_interface);
-*/
+
 	$date_array = array();
 	$date_array["period"]     = $period;
 	$date_array["final_date"] = $date;
@@ -1013,6 +971,8 @@ html_debug_print($from_interface);
 	$show_elements_graph['id_widget']    = $id_widget_dashboard;
 	$show_elements_graph['labels']       = $labels;
 	$show_elements_graph['stacked']      = $stacked;
+	$show_elements_graph['combined']     = true;
+	$show_elements_graph['from_interface'] = $from_interface;
 
 	$format_graph = array();
 	$format_graph['width']      = "90%";
@@ -1109,16 +1069,6 @@ html_debug_print($from_interface);
 			}
 		}
 
-		legend_graph_array(
-			$max, $min, $avg,
-			$series_suffix,
-			$str_series_suffix,
-			$format_graph,
-			$show_elements_graph,
-			$percentil_value,
-			$data_module_graph
-		);
-
 		if($config["fixed_graph"] == false){
 			$water_mark = array(
 				'file' => $config['homedir'] .  "/images/logo_vertical_water.png",
@@ -1132,9 +1082,20 @@ html_debug_print($from_interface);
 		$i++;
 	}
 
-	$series_type = series_type_graph_array(
-		$array_data
+	//summatory and average series
+	if($stacked == CUSTOM_GRAPH_AREA  || $stacked == CUSTOM_GRAPH_LINE) {
+		if($summatory || $average) {
+			$array_data = combined_graph_summatory_average ($array_data, $average, $summatory, $modules_series);
+		}
+	}
+
+	$series_type_array = series_type_graph_array(
+		$array_data,
+		$show_elements_graph
 	);
+
+	$series_type = $series_type_array['series_type'];
+	$legend      = $series_type_array['legend'];
 
 	if ($flash_charts === false && $stacked == CUSTOM_GRAPH_GAUGE)
 		$stacked = CUSTOM_GRAPH_BULLET_CHART;
@@ -1496,14 +1457,10 @@ html_debug_print($from_interface);
 				$module_name_list[$i] .= " (x". format_numeric ($weight_list[$i], 1).")";
 			}
 */
-	//	$temp = array();
 
 
 	$graph_values = $temp;
 
-
-
-	//Set graph color
 	$threshold_data = array();
 
 	if ($from_interface) {
@@ -1527,9 +1484,10 @@ html_debug_print($from_interface);
 
 		$do_it_warning_inverse = true;
 		$do_it_critical_inverse = true;
+
 		foreach ($module_list as $index => $id_module) {
 			// Get module warning_min and critical_min
-			$warning_min = db_get_value('min_warning','tagente_modulo','id_agente_modulo',$id_module);
+			$warning_min  = db_get_value('min_warning','tagente_modulo','id_agente_modulo',$id_module);
 			$critical_min = db_get_value('min_critical','tagente_modulo','id_agente_modulo',$id_module);
 
 			if ($index == 0) {
@@ -1553,7 +1511,7 @@ html_debug_print($from_interface);
 
 		if ($do_it_warning_min || $do_it_critical_min) {
 			foreach ($module_list as $index => $id_module) {
-				$warning_max = db_get_value('max_warning','tagente_modulo','id_agente_modulo',$id_module);
+				$warning_max  = db_get_value('max_warning','tagente_modulo','id_agente_modulo',$id_module);
 				$critical_max = db_get_value('max_critical','tagente_modulo','id_agente_modulo',$id_module);
 
 				if ($index == 0) {
@@ -1578,7 +1536,7 @@ html_debug_print($from_interface);
 
 		if ($do_it_warning_min || $do_it_critical_min) {
 			foreach ($module_list as $index => $id_module) {
-				$warning_inverse = db_get_value('warning_inverse','tagente_modulo','id_agente_modulo',$id_module);
+				$warning_inverse  = db_get_value('warning_inverse','tagente_modulo','id_agente_modulo',$id_module);
 				$critical_inverse = db_get_value('critical_inverse','tagente_modulo','id_agente_modulo',$id_module);
 
 				if ($index == 0) {
@@ -1603,111 +1561,17 @@ html_debug_print($from_interface);
 
 		if ($do_it_warning_min && $do_it_warning_max && $do_it_warning_inverse) {
 			$yellow_threshold = $compare_warning;
-			$threshold_data['yellow_up'] = $yellow_up;
+			$threshold_data['yellow_up']      = $yellow_up;
 			$threshold_data['yellow_inverse'] = (bool)$yellow_inverse;
 		}
 
 		if ($do_it_critical_min && $do_it_critical_max && $do_it_critical_inverse) {
 			$red_threshold = $compare_critical;
-			$threshold_data['red_up'] = $red_up;
+			$threshold_data['red_up']      = $red_up;
 			$threshold_data['red_inverse'] = (bool)$red_inverse;
 		}
-	}
 
-	//summatory and average series
-	if($stacked == CUSTOM_GRAPH_AREA  || $stacked == CUSTOM_GRAPH_LINE) {
-		if($summatory || $average) {
-			if(isset($array_data) && is_array($array_data)){
-				foreach ($array_data as $key => $value) {
-					if(strpos($key, 'sum') !== false){
-						$data_array_reverse[$key] = array_reverse($value['data']);
-						if(!$modules_series) {
-							unset($array_data[$key]);
-							unset($legend[$key]);
-							unset($series_type[$key]);
-						}
-					}
-				}
-
-				if(isset($data_array_reverse) && is_array($data_array_reverse)){
-					$array_sum_reverse = array();
-					$data_array_prev = false;
-					$data_array_pop = array();
-					$count = 0;
-
-					while(count($data_array_reverse['sum0']) > 0){
-						foreach ($data_array_reverse as $key_reverse => $value_reverse) {
-							if(is_array($value_reverse) && count($value_reverse) > 0){
-								$data_array_pop[$key_reverse] = array_pop($data_array_reverse[$key_reverse]);
-							}
-						}
-
-						if(isset($data_array_pop) && is_array($data_array_pop)){
-							$acum_data = 0;
-							$acum_array = array();
-							$sum_data = 0;
-							$count_pop = 0;
-							foreach ($data_array_pop as $key_pop => $value_pop) {
-								if( $value_pop[0] > $acum_data ){
-									if($acum_data != 0){
-										$sum_data = $sum_data + $data_array_prev[$key_pop][1];
-										$data_array_reverse[$key_pop][] = $value_pop;
-										$data_array_prev[$acum_key] = $acum_array;
-									}
-									else{
-										if($data_array_prev[$key_pop] == false){
-											$data_array_prev[$key_pop] = $value_pop;
-										}
-										$acum_key   = $key_pop;
-										$acum_data  = $value_pop[0];
-										$acum_array = $value_pop;
-										$sum_data   = $value_pop[1];
-									}
-								}
-								elseif($value_pop[0] < $acum_data){
-									$sum_data = $sum_data + $data_array_prev[$key_pop][1];
-									$data_array_reverse[$acum_key][] = $acum_array;
-									$data_array_prev[$key_pop] = $value_pop;
-									$acum_key   = $key_pop;
-									$acum_data  = $value_pop[0];
-									$acum_array = $value_pop;
-								}
-								elseif($value_pop[0] == $acum_data){
-									$data_array_prev[$key_pop] = $value_pop;
-									$sum_data += $value_pop[1];
-								}
-								$count_pop++;
-							}
-							if($summatory){
-								$array_sum_reverse[$count][0] = $acum_data;
-								$array_sum_reverse[$count][1] = $sum_data;
-							}
-							if($average){
-								$array_avg_reverse[$count][0] = $acum_data;
-								$array_avg_reverse[$count][1] = $sum_data / $count_pop;
-							}
-						}
-						$count++;
-					}
-				}
-			}
-
-//XXXXX color,type,title, opacity
-			if(isset($array_sum_reverse) && is_array($array_sum_reverse)){
-				$array_data['sumatory']['data']  = $array_sum_reverse;
-				$array_data['sumatory']['color'] = 'purple';
-				$legend['sumatory']              = __('Summatory');
-				$series_type['sumatory']         = 'area';
-			}
-
-			if(isset($array_avg_reverse) && is_array($array_avg_reverse)){
-				$array_data['sum_avg']['data']  = $array_avg_reverse;
-				$array_data['sum_avg']['color'] = 'orange';
-				$legend['sum_avg']              = __('AVG');
-				$series_type['sum_avg']         = 'area';
-			}
-
-		}
+		$show_elements_graph['threshold_data'] = $threshold_data;
 	}
 
 	switch ($stacked) {
@@ -1716,7 +1580,7 @@ html_debug_print($from_interface);
 		case CUSTOM_GRAPH_STACKED_AREA:
 		case CUSTOM_GRAPH_AREA:
 		case CUSTOM_GRAPH_LINE:
-			return area_graph($agent_module_id, $array_data, $color,
+			return area_graph($agent_module_id, $array_data,
 				$legend, $series_type, $date_array,
 				$data_module_graph, $show_elements_graph,
 				$format_graph, $water_mark, $series_suffix_str,
@@ -1759,18 +1623,14 @@ html_debug_print($from_interface);
 	}
 }
 
-function combined_graph_summatory_average ($array_data){
+function combined_graph_summatory_average ($array_data, $average = false, $summatory = false, $modules_series = false, $baseline = false){
 	if(isset($array_data) && is_array($array_data)){
 		foreach ($array_data as $key => $value) {
 			if(strpos($key, 'sum') !== false){
 				$data_array_reverse[$key] = array_reverse($value['data']);
-				/*
 				if(!$modules_series) {
 					unset($array_data[$key]);
-					unset($legend[$key]);
-					unset($series_type[$key]);
 				}
-				*/
 			}
 		}
 
@@ -1824,19 +1684,36 @@ function combined_graph_summatory_average ($array_data){
 						}
 						$count_pop++;
 					}
-				//	if($summatory){
-					//	$array_sum_reverse[$count][0] = $acum_data;
-					//	$array_sum_reverse[$count][1] = $sum_data;
-				//	}
-				//	if($average){
+					if($summatory){
+						$array_sum_reverse[$count][0] = $acum_data;
+						$array_sum_reverse[$count][1] = $sum_data;
+					}
+					if($average){
 						$array_avg_reverse[$count][0] = $acum_data;
 						$array_avg_reverse[$count][1] = $sum_data / $count_pop;
-				//	}
+					}
 				}
 				$count++;
 			}
+
+			if($summatory && isset($array_sum_reverse) && is_array($array_sum_reverse) && count($array_sum_reverse) > 0){
+				$array_data['summatory']['data']  = $array_sum_reverse;
+				$array_data['summatory']['color'] = 'purple';
+			}
+
+			if($average && isset($array_avg_reverse) && is_array($array_avg_reverse) && count($array_avg_reverse) > 0){
+				if($baseline){
+					$array_data['baseline']['data']  = $array_avg_reverse;
+					$array_data['baseline']['color'] = 'green';
+				}
+				else{
+					$array_data['average']['data']  = $array_avg_reverse;
+					$array_data['average']['color'] = 'orange';
+				}
+			}
+
 		}
-		return $array_avg_reverse;
+		return $array_data;
 	}
 	else{
 		return false;

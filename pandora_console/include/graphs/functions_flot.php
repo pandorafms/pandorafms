@@ -101,7 +101,7 @@ function include_javascript_dependencies_flot_graph($return = false) {
 ////////// AREA GRAPHS ////////
 ///////////////////////////////
 function flot_area_graph (
-	$agent_module_id, $array_data, $color,
+	$agent_module_id, $array_data,
 	$legend, $series_type, $date_array,
 	$data_module_graph, $show_elements_graph,
 	$format_graph, $water_mark, $series_suffix_str,
@@ -133,20 +133,41 @@ function flot_area_graph (
 	$return = "<div class='parent_graph' style='width: " . ($format_graph['width']) . "; " . $background_style . "'>";
 	// Set some containers to legend, graph, timestamp tooltip, etc.
 	$return .= "<p id='legend_$graph_id' class='legend_graph' style='font-size:" . $format_graph['font_size'] ."pt !important;'></p>";
-
-	$yellow_threshold = $data_module_graph['w_min'];
-	$red_threshold = $data_module_graph['c_min'];
-	// Get other required module datas to draw warning and critical
-	if ($agent_module_id == 0) {
-		$yellow_up = 0;
-		$red_up = 0;
+	if(!isset($show_elements_graph['combined']) || !$show_elements_graph['combined']){
+		$yellow_threshold = $data_module_graph['w_min'];
+		$red_threshold    = $data_module_graph['c_min'];
+		// Get other required module datas to draw warning and critical
+		if ($agent_module_id == 0) {
+			$yellow_up      = 0;
+			$red_up         = 0;
+			$yellow_inverse = false;
+			$red_inverse    = false;
+		} else {
+			$yellow_up      = $data_module_graph['w_max'];
+			$red_up         = $data_module_graph['c_max'];
+			$yellow_inverse = !($data_module_graph['w_inv'] == 0);
+			$red_inverse    = !($data_module_graph['c_inv'] == 0);
+		}
+	}
+	elseif(isset($show_elements_graph['from_interface']) && $show_elements_graph['from_interface']){
+		if(	isset($show_elements_graph['threshold_data']) && is_array($show_elements_graph['threshold_data'])){
+			$yellow_up      = $show_elements_graph['threshold_data']['yellow_up'];
+			$red_up         = $show_elements_graph['threshold_data']['red_up'];
+			$yellow_inverse = $show_elements_graph['threshold_data']['yellow_inverse'];
+			$red_inverse    = $show_elements_graph['threshold_data']['red_inverse'];
+		}
+		else{
+			$yellow_up      = 0;
+			$red_up         = 0;
+			$yellow_inverse = false;
+			$red_inverse    = false;
+		}
+	}
+	else{
+		$yellow_up      = 0;
+		$red_up         = 0;
 		$yellow_inverse = false;
-		$red_inverse = false;
-	} else {
-		$yellow_up = $data_module_graph['w_max'];
-		$red_up = $data_module_graph['c_max'];
-		$yellow_inverse = !($data_module_graph['w_inv'] == 0);
-		$red_inverse = !($data_module_graph['c_inv'] == 0);
+		$red_inverse    = false;
 	}
 
 	if ($show_elements_graph['menu']) {

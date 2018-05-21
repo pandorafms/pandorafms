@@ -1576,15 +1576,14 @@ function pandoraFlotArea(
 						show: points_show,
 						radius: 3,
 						fillColor: fill_points
-					}
+					},
+					legend: legend.index
 				});
 			}
 		}
 		i++;
 	});
-
-	console.log(data_base);
-
+console.log(legend);
 	// The first execution, the graph data is the base data
 	datas = data_base;
 	font_size = 8;
@@ -1608,7 +1607,7 @@ function pandoraFlotArea(
 			},
 			export: {
 				export_data: true,
-				labels_long: labels_long,
+				labels_long: legend,
 				homeurl: homeurl
 			},
 			grid: {
@@ -1701,7 +1700,7 @@ function pandoraFlotArea(
 			},
 			export: {
 				export_data: true,
-				labels_long: labels_long,
+				labels_long: legend,
 				homeurl: homeurl
 			},
 			grid: {
@@ -2126,7 +2125,7 @@ function pandoraFlotArea(
 
 		// Get only two decimals
 		//XXXXXXXXXX
-		formatted = round_with_decimals(formatted, 100)
+		formatted = round_with_decimals(formatted, 100);
 		return '<div class='+font+' style="font-size:'+font_size+'pt;">'+formatted+'</div>';
 	}
 

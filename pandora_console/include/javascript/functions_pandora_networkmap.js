@@ -3445,7 +3445,9 @@ function draw_elements_graph() {
 	node_temp.append("image")
 		.attr("class", "node_image")
 		.attr("xlink:href", function (d) {
-			return d.image_url;
+			return is_central_node(d)
+				? $("#hidden-center_logo").val()
+				: d.image_url;
 		})
 		.attr("x", function (d) {
 			return d.x - (d.image_width / 2);
@@ -3665,9 +3667,13 @@ function draw_elements_graph() {
 	node.exit().remove();
 }
 
+function is_central_node (data) {
+	return (data.type == 0 && data.id_agent == 0);
+}
+
 function get_node_name_ov (data) {
 	// Node central name should be the product name
-	return (data.type == 0 && data.id_agent == 0)
+	return (is_central_node(data))
 		? $("#hidden-product_name").val()
 		: data.text;
 }

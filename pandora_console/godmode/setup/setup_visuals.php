@@ -235,11 +235,13 @@ if(enterprise_installed()) {
 }
 
 if(enterprise_installed()){
+	// Get all the custom logos
+	$files = list_files('enterprise/images/custom_general_logos', "png", 1, 0);
+
 	// Custom docs icon
 	$table_styles->data[$row][0] = __('Custom documentation logo');
 	$table_styles->data[$row][0] .= ui_print_help_tip(__('You can place your custom logos into the folder enterprise/images/custom_general_logos/'), true);
-	
-	$files = list_files('enterprise/images/custom_general_logos', "png", 1, 0);
+
 	$table_styles->data[$row][1] = html_print_select(
 		$files,
 		'custom_docs_logo',
@@ -260,8 +262,6 @@ if(enterprise_installed()){
 	// Custom support icon
 	$table_styles->data[$row][0] = __('Custom support logo');
 	$table_styles->data[$row][0] .= ui_print_help_tip(__('You can place your custom logos into the folder enterprise/images/custom_general_logos/'), true);
-	
-	$files = list_files('enterprise/images/custom_general_logos', "png", 1, 0);
 	$table_styles->data[$row][1] = html_print_select(
 		$files,
 		'custom_support_logo',
@@ -277,6 +277,26 @@ if(enterprise_installed()){
 		'width:240px'
 	);
 	$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'custom_support_logo_preview', $open, '', 'class="sub camera"', true,false,$open,'visualmodal');
+	$row++;
+
+	// Custom center networkmap icon
+	$table_styles->data[$row][0] = __('Custom networkmap center logo');
+	$table_styles->data[$row][0] .= ui_print_help_tip(__('You can place your custom logos into the folder enterprise/images/custom_general_logos/'), true);
+	$table_styles->data[$row][1] = html_print_select(
+		$files,
+		'custom_network_center_logo',
+		$config["custom_network_center_logo"],
+		'',
+		__('Default'),
+		'',
+		true,
+		false,
+		true,
+		'',
+		false,
+		'width:240px'
+	);
+	$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'custom_network_center_logo_preview', $open, '', 'class="sub camera"', true,false,$open,'visualmodal');
 	$row++;
 }
 
@@ -1277,7 +1297,6 @@ $("#button-custom_docs_logo_preview").click (function (e) {
 	}
 });
 
-
 $("#button-custom_support_logo_preview").click (function (e) {
 	var icon_name = $("select#custom_support_logo option:selected").val();
 	var icon_path = "<?php echo $config['homeurl']; ?>enterprise/images/custom_general_logos/" + icon_name;
@@ -1305,6 +1324,46 @@ $("#button-custom_support_logo_preview").click (function (e) {
 					background: "black"
 				},
 				dialogClass: 'dialog-grayed',
+				minHeight: 1,
+				width: $image.width,
+				close: function () {
+					$dialog
+						.empty()
+						.remove();
+				}
+			}).show();
+	}
+	catch (err) {
+		// console.log(err);
+	}
+});
+
+$("#button-custom_network_center_logo_preview").click (function (e) {
+	var icon_name = $("select#custom_network_center_logo option:selected").val();
+	var icon_path = "<?php echo $config['homeurl']; ?>enterprise/images/custom_general_logos/" + icon_name;
+
+	if (icon_name == "")
+		return;
+
+	$dialog = $("<div></div>");
+	$image = $("<img src=\"" + icon_path + "\">");
+	$image
+		.css('max-width', '500px')
+		.css('max-height', '500px');
+
+	try {
+		$dialog
+			.hide()
+			.html($image)
+			.dialog({
+				title: "<?php echo __('Logo preview'); ?>",
+				resizable: true,
+				draggable: true,
+				modal: true,
+				overlay: {
+					opacity: 0.5,
+					background: "black"
+				},
 				minHeight: 1,
 				width: $image.width,
 				close: function () {

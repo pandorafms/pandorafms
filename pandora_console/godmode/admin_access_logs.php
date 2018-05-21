@@ -108,11 +108,11 @@ if (!empty($filter_user)) {
 }
 
 if (!empty($filter_text)) {
-	$filter .= " AND (accion LIKE '%'" . $filter_text . "'%' OR descripcion LIKE '%'" . $filter_text . "'%')";
+	$filter .= sprintf(" AND (accion LIKE '%%%s%%' OR descripcion LIKE '%%%s%%')", $filter_text, $filter_text);
 }
 
 if (!empty($filter_ip)) {
-	$filter .= sprintf(" AND ip_origen LIKE '%'", $filter_ip);
+	$filter .= sprintf(" AND ip_origen LIKE '%%%s%%'", $filter_ip);
 }
 
 if (!empty($filter_period)) {

@@ -247,9 +247,9 @@ function config_update_config () {
 							$error_update[] = __('Metaconsole agent cache');
 						if (!config_update_value ('log_collector', (bool)get_parameter('log_collector')))
 							$error_update[] = __('Activate Log Collector');
-						if (!config_update_value ('rb_product_name', (string)get_parameter('rb_product_name')))
+						if (!config_update_value ('rb_product_name', get_parameter('rb_product_name')))
 							$error_update[] = __('Product name');
-						if (!config_update_value ('rb_copyright_notice', (string)get_parameter('rb_copyright_notice')))
+						if (!config_update_value ('rb_copyright_notice', get_parameter('rb_copyright_notice')))
 							$error_update[] = __('Copyright notice');
 
 						$inventory_changes_blacklist = get_parameter('inventory_changes_blacklist', array());
@@ -1049,6 +1049,14 @@ function config_process_config () {
 	
 	if (!isset ($config["log_collector"])) {
 		config_update_value ('log_collector', 0);
+	}
+
+	if (!isset ($config['rb_product_name'])) {
+		config_update_value('rb_product_name', get_product_name());
+	}
+
+	if (!isset ($config['rb_copyright_notice'])) {
+		config_update_value('rb_copyright_notice', get_copyright_notice());
 	}
 
 	if (!isset ($config["reset_pass_option"])) {

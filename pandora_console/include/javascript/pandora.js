@@ -1558,7 +1558,7 @@ function round_with_decimals (value, multiplier = 1) {
 	if (typeof(value) !== "number") return value;
 
 	if ((value * multiplier) == 0) return 0;
-	if ((value * multiplier) >= 1) {
+	if ((Math.abs(value) * multiplier) >= 1) {
 		return Math.round(value * multiplier) / multiplier;
 	}
 	return round_with_decimals (value, multiplier * 10);

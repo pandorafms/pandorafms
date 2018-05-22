@@ -98,12 +98,12 @@
 										(d.getMinutes()<10?'0':'') + d.getMinutes() + ":" +
 										(d.getSeconds()<10?'0':'') + d.getSeconds();
 
-
 						var date  = date_format;
 
 						var value = item[1];
 
 						var clean_label = plot.getOptions().export.labels_long[dataObject.label];
+						clean_label = clean_label.replace( new RegExp("&#x20;", "g"), " ");
 						result.data.push([timestap, date, value, clean_label]);
 					});
 				}

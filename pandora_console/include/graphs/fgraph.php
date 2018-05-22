@@ -251,22 +251,24 @@ function area_graph(
 		//tener en cuenta stacked, area, line
 
 		$graph = array();
-		$graph['data']            = $chart_data;
-		$graph['width']           = $width;
-		$graph['height']          = $height;
-		$graph['color']           = $color;
+		$graph['data']            = $array_data;
+		$graph['width']           = 900;
+		$graph['height']          = 400;
+	//	$graph['color']           = $color;
 		$graph['legend']          = $legend;
-		$graph['xaxisname']       = $xaxisname;
-		$graph['yaxisname']       = $yaxisname;
-		$graph['water_mark']      = $water_mark_file;
-		$graph['font']            = $font;
-		$graph['font_size']       = $font_size;
-		$graph['backgroundColor'] = $backgroundColor;
-		$graph['unit']            = $unit;
-		$graph['series_type']     = $series_type;
-		$graph['percentil']       = $percentil_values;
+		$graph['xaxisname']       = 'me la pela';
+		$graph['yaxisname']       = 'borja es gay';
+	//  $graph['water_mark']      = $water_mark_file;
+		$graph['font']            = $format_graph['font'];
+		$graph['font_size']       = $format_graph['font_size'];
+		$graph['backgroundColor'] = 'white';
+		$graph['unit']            = '';
+		$graph['series_type']     = array();
+		$graph['percentil']       = false;
 
-		$id_graph = serialize_in_temp($graph, null, $ttl);
+//XXX $ttl tercer parametro
+
+		$id_graph = serialize_in_temp($graph, null, 1);
 		// Warning: This string is used in the function "api_get_module_graph" from 'functions_api.php' with the regec patern "/<img src='(.+)'>/"
 		return "<img src='" .
 			ui_get_full_url (false, false, false, false) .

@@ -27,7 +27,6 @@ include_once("pChart/pScatter.class.php");
 include_once("pChart/pRadar.class.php");
 
 // Define default fine colors
-
 $default_fine_colors = array();
 $default_fine_colors[] = "#2222FF";
 $default_fine_colors[] = "#00DD00";
@@ -45,7 +44,7 @@ $yaxisname = '';
 $legend = null;
 $colors = null;
 $font_size = 8;
-$force_steps = true; 
+$force_steps = true;
 $legend_position = null;
 $series_type = null;
 
@@ -72,6 +71,9 @@ if (!$graph) {
 }
 
 $data = $graph['data'];
+
+html_debug_print($data, true);
+
 $width = $graph['width'];
 $height = $graph['height'];
 
@@ -882,8 +884,9 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	$graph_threshold = false, $id_module) {
 	
 	global $config;
-	
+
 	/* CAT:Vertical Charts */
+/*
 	if (!is_array($legend) || empty($legend)) {
 		unset($legend);
 	}
@@ -902,8 +905,9 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	else {
 		$data = array($data);
 	}
-	
+*/
 	/* Create and populate the pData object */
+/*
 	$MyData = new pData();
 	
 	foreach ($data as $i => $values) {
@@ -958,13 +962,149 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 		$reduction_coefficient = 0.31;
 		$MyData->setSerieWeight($point_id, $config['custom_graph_width'] * $reduction_coefficient);
 	}
-	
+*/
+/*
+	$MyData = new pData();
+	$MyData->addPoints(array(0.11, 0.91, 0.58, 1.11),"Probe 1");
+	$MyData->setAxisName(0,"Temperatures");
+	$MyData->addPoints(array(1328112000, 1328126400, 1330610400, 1330610420),"Labels");
+	$MyData->setAbscissa("Labels");
+	$MyData->setXAxisDisplay(AXIS_FORMAT_TIME,"d/m\nH:i");
+*/
+/*
+	$MyData = new pData();
+	$MyData->addPoints(array(1700,2500,7800,5),"Distance");
+	$MyData->setAxisName(0,"Maximum distance");
+	$MyData->setAxisUnit(0,"m");
+	$MyData->setAxisDisplay(0,AXIS_FORMAT_METRIC);
+
 	$MyData->setAxisName(0,$unit);
-	$MyData->addPoints($index,"Xaxis");
-	$MyData->setSerieDescription("Xaxis", $xaxisname);
-	$MyData->setAbscissa("Xaxis");
-	$MyData->setAxisDisplay(0, AXIS_FORMAT_TWO_SIGNIFICANT, 0);
-	
+	$MyData->addPoints(array(1526886033000, 1526893630000, 1526972433000, 1526972433300),"Timestamp");
+	$MyData->setSerieDescription("Timestamp", $xaxisname);
+	$MyData->setAbscissa("Timestamp");
+	$MyData->setXAxisDisplay(AXIS_FORMAT_DATE);
+*/
+	// Create the pChart object
+	//$myPicture = new pImage(800,  800, $MyData);
+
+/*
+	$myPicture->setGraphArea(60,60,660,190);
+	$myPicture->drawText(350,55,"My chart title",array("FontSize"=>20,"Align"=>TEXT_ALIGN_BOTTOMMIDDLE));
+	$myPicture->drawFilledRectangle(60,60,660,190,array("R"=>255,"G"=>255,"B"=>255,"Surrounding"=>-200,"Alpha"=>10));
+*/
+/*
+	$myPicture->setGraphArea(60,60,800,400);
+	$myPicture->drawText(350,55,"My chart title",array("FontSize"=>20,"Align"=>TEXT_ALIGN_BOTTOMMIDDLE));
+	$myPicture->drawFilledRectangle(60,60,800,400,array("R"=>255,"G"=>255,"B"=>255,"Surrounding"=>-200,"Alpha"=>10));
+	$myPicture->drawScale(array("DrawSubTicks"=>TRUE,"LabelShowBoundaries"=>TRUE,"ScaleModeAuto"=>TRUE));
+	$myPicture->setShadow(TRUE,array("X"=>1,"Y"=>1,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10));
+	$myPicture->setFontProperties(array("FontName"=>"fonts/pf_arma_five.ttf","FontSize"=>6));
+	$myPicture->drawStepChart(array("DisplayValues"=>TRUE,"DisplayColor"=>DISPLAY_AUTO,"ScaleModeAuto"=>TRUE));
+	$myPicture->drawAreaChart(array("DisplayValues"=>TRUE,"DisplayColor"=>DISPLAY_AUTO));
+	//$myPicture->setShadow(FALSE);
+*/
+
+
+/* Create and populate the pData object */
+$MyData = new pData();  
+$MyData->addPoints(array(-4,VOID,VOID,12,8,3),"Probe 1");
+$MyData->addPoints(array(3,12,15,8,5,-5),"Probe 2");
+$MyData->addPoints(array(2,7,5,18,19,22),"Probe 3");
+$MyData->setSerieTicks("Probe 2",4);
+$MyData->setAxisName(0,"Temperatures");
+$MyData->addPoints(array(1296299019,1296302903,1296307001,1296308071,1296309901,1296318931),"Labels");
+$MyData->setSerieDescription("Labels","Timestamp");
+$MyData->setXAxisDisplay(AXIS_FORMAT_DATE,"H:i");
+$MyData->setAbscissa("Labels");
+
+/* Create the pChart object */
+$myPicture = new pImage(700,230,$MyData);
+
+/* Draw the background */
+$Settings = array("R"=>170, "G"=>183, "B"=>87, "Dash"=>1, "DashR"=>190, "DashG"=>203, "DashB"=>107);
+$myPicture->drawFilledRectangle(0,0,700,230,$Settings);
+
+/* Overlay with a gradient */
+$Settings = array("StartR"=>219, "StartG"=>231, "StartB"=>139, "EndR"=>1, "EndG"=>138, "EndB"=>68, "Alpha"=>50);
+$myPicture->drawGradientArea(0,0,700,230,DIRECTION_VERTICAL,$Settings);
+$myPicture->drawGradientArea(0,0,700,20,DIRECTION_VERTICAL,array("StartR"=>0,"StartG"=>0,"StartB"=>0,"EndR"=>50,"EndG"=>50,"EndB"=>50,"Alpha"=>80));
+
+/* Add a border to the picture */
+$myPicture->drawRectangle(0,0,699,229,array("R"=>0,"G"=>0,"B"=>0));
+
+/* Write the picture title */
+$myPicture->setFontProperties(array("FontName" =>$font, "FontSize" => $font_size));
+$myPicture->drawText(10,13,"drawStepChart() - draw a step chart",array("R"=>255,"G"=>255,"B"=>255));
+
+/* Write the chart title */ 
+$myPicture->setFontProperties(array("FontName" =>$font, "FontSize" => $font_size));
+$myPicture->drawText(250,55,"Average temperature",array("FontSize"=>20,"Align"=>TEXT_ALIGN_BOTTOMMIDDLE));
+
+/* Draw the scale and the 1st chart */
+$myPicture->setGraphArea(60,60,450,190);
+$myPicture->drawFilledRectangle(60,60,450,190,array("R"=>255,"G"=>255,"B"=>255,"Surrounding"=>-200,"Alpha"=>10));
+$myPicture->drawScale(array("DrawSubTicks"=>TRUE,"LabelShowBoundaries"=>TRUE,"ScaleModeAuto"=>TRUE));
+$myPicture->setShadow(TRUE,array("X"=>1,"Y"=>1,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10));
+$myPicture->setFontProperties(array("FontName" =>$font, "FontSize" => $font_size));
+$myPicture->drawStepChart(array("DisplayValues"=>TRUE,"DisplayColor"=>DISPLAY_AUTO,"ScaleModeAuto"=>TRUE));
+$myPicture->setShadow(FALSE);
+
+/* Draw the scale and the 2nd chart */
+$myPicture->setGraphArea(500,60,670,190);
+$myPicture->drawFilledRectangle(500,60,670,190,array("R"=>255,"G"=>255,"B"=>255,"Surrounding"=>-200,"Alpha"=>10));
+$myPicture->drawScale(array("Pos"=>SCALE_POS_TOPBOTTOM,"DrawSubTicks"=>TRUE,"ScaleModeAuto"=>TRUE));
+$myPicture->setShadow(TRUE,array("X"=>-1,"Y"=>1,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10));
+$myPicture->drawStepChart(array("ScaleModeAuto"=>TRUE));
+$myPicture->setShadow(FALSE);
+
+/* Write the chart legend */
+$myPicture->drawLegend(510,205,array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_HORIZONTAL));
+
+/* Render the picture (choose the best way) */
+//$myPicture->autoOutput("pictures/example.drawStepChart.png");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	$myPicture->stroke();
+/*
 	switch ($backgroundColor) {
 		case 'white':
 			$transparent = false;
@@ -980,26 +1120,26 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 			// Now the color of the text will be grey
 			$fontColor = array('R' => 200, 'G' => 200, 'B' => 200);
 			break;
-		
 	}
-	/* Create the pChart object */
+
+	// Create the pChart object
 	$myPicture = new pImage($width, $height + $font_size, $MyData, $transparent,
 		$backgroundColor, $fontColor);
-	
-	/* Turn of Antialiasing */
+
+	//Turn of Antialiasing
 	$myPicture->Antialias = $antialiasing;
-	
-	/* Add a border to the picture */
+
+	//Add a border to the picture
 	//$myPicture->drawRectangle(0,0,$width,$height,array("R"=>0,"G"=>0,"B"=>0));
-	
-	/* Set the default font */
+	//Set the default font
 	$myPicture->setFontProperties(
 		array("FontName" =>$font, "FontSize" => $font_size));
-	
+
 	// By default, set a top margin of 5 px
 	$top_margin = 5;
 	if (isset($legend)) {
-		/* Set horizontal legend if is posible */
+
+		//Set horizontal legend if is posible
 		$legend_mode = LEGEND_HORIZONTAL;
 		$size = $myPicture->getLegendSize(
 			array("Style" => LEGEND_NOBORDER,"Mode" => $legend_mode));
@@ -1010,12 +1150,13 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 		
 		// Update the top margin to add the legend Height
 		$top_margin = $size['Height'];
-		
-		/* Write the chart legend */
+
+		//Write the chart legend
+
 		$myPicture->drawLegend($width - $size['Width'], 8,
 			array("Style" => LEGEND_NOBORDER, "Mode" => $legend_mode));
 	}
-	
+
 	//Calculate the bottom margin from the size of string in each index
 	$max_chars = graph_get_max_index($index);
 	$margin_bottom = $font_size * $max_chars;
@@ -1076,8 +1217,9 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 		}
 	}
 	$chart_margin = 36;
-	
-	/* Area depends on yaxisname */
+
+	//Area depends on yaxisname
+
 	if ($yaxisname != '') {
 		$chart_margin += $chart_size;
 	}
@@ -1211,7 +1353,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 		$ManualScale = array( 0 => array("Min" => $check_scale_min, "Max" => $check_scale) );
 		$mode = SCALE_MODE_MANUAL;
 
-		/* Draw the scale */
+		//Draw the scale 
 		$scaleSettings = array(
 			"GridR" => 200,
 			"GridG" => 200,
@@ -1305,7 +1447,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 		//html_debug("MAX: $max_data, ROUND: $max_round", true);
 		$mode = SCALE_MODE_MANUAL;
 
-		/* Draw the scale */
+		//Draw the scale
 		$scaleSettings = array(
 			"GridR" => 200,
 			"GridG" => 200,
@@ -1332,7 +1474,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 		$myPicture->drawScale($scaleSettings);
 	}
 
-	/* Turn on shadow computing */ 
+	//Turn on shadow computing
 	//$myPicture->setShadow(TRUE,array("X"=>0,"Y"=>1,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10));
 	
 	switch ($graph_type) {
@@ -1344,7 +1486,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 			break;
 	}
 	
-	/* Draw the chart */
+	// Draw the chart
 	$settings = array(
 		"ForceTransparency" => 20,
 		"Gradient" => TRUE,
@@ -1404,9 +1546,10 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 			$MyData->setSerieDrawable($id, false); //Disable the serie to paint the rest
 		}
 	}
-	
-	/* Render the picture */
-	$myPicture->stroke(); 
+
+	//Render the picture
+	$myPicture->stroke();
+*/
 }
 
 function pch_threshold_graph ($graph_type, $index, $data, $width, $height, $font,

@@ -26,19 +26,15 @@ ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no HA
 
 <div class="new_task_cluster">
 	<div class="image_task_cluster">
-		<?php echo html_print_image('images/firts_task/icono-cluster-activo.png', true, array("title" => __('Clusters')));?>
+		<?php echo html_print_image('images/firts_task/slave-mode.png', true, array("title" => __('Clusters')));?>
 	</div>
 	<div class="text_task_cluster">
 		<h3> <?php echo __('PANDORA FMS DB CLUSTER'); ?></h3>
 		<p id="description_task"> <?php
     
-    echo __('A cluster is a group of devices that provide the same service in high availability.').'<br><br>';
+    echo __('With Pandora FMS Enterprise you can add high availability to your Pandora FMS installation by adding redundant MySQL servers').'<br><br>';
     
-    echo __('Depending on how they provide that service, we can find two types:').'<br><br>';
-    
-    echo __('<b>Clusters to balance the service load</b>: these are  active - active (A/A)  mode clusters. It means that all the nodes (or machines that compose it) are working. They must be working because if one stops working, it will overload the others.').'<br><br>';
-    
-    echo __('<b>Clusters to guarantee service</b>: these are active - passive (A/P) mode clusters. It means that one of the nodes (or machines that make up the cluster) will be running (primary) and another won\'t (secondary). When the primary goes down, the secondary must take over and give the service instead. Although many of the elements of this cluster are active-passive, it will also have active elements in both of them that indicate that the passive node is "online", so that in the case of a service failure in the master, the active node collects this information.');
+    echo __('Click on "add new node" to start transforming your Pandora FMS DB Cluster into a Pandora FMS DB Cluster.').'<br><br>';
     
     ?></p>
 		
@@ -46,7 +42,7 @@ ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no HA
 			if(check_acl ($config['id_user'], 0, "AW")) {
 				echo "<div id='create_master_window'></div>";
 		?>
-			<input style="margin-bottom:20px;" onclick="show_create_ha_cluster();" type="submit" class="button_task" value="<?php echo __('Create Cluster'); ?>" />
+			<input style="margin-bottom:20px;" onclick="show_create_ha_cluster();" type="submit" class="button_task" value="<?php echo __('Add new node'); ?>" />
 		<?php
 			}
 		?>
@@ -64,7 +60,7 @@ ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no HA
 			url: "ajax.php",
 			success: function (data) {
 				$("#create_master_window").dialog ({
-					title: 'Agregar nodo maestro',
+					title: '<?php echo __("Add master node");?>',
 					resizable: true,
 					draggable: true,
 					modal: true,

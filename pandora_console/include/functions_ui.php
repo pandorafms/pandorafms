@@ -3969,8 +3969,9 @@ function ui_get_custom_header_logo () {
 		return 'images/pandora_tinylogo_open.png';
 	}
 
-	if (empty($config['custom_logo'])) return 'images/pandora_tinylogo.png';
-	return 'enterprise/images/custom_logo/' . $config['custom_logo'];
+	$stored_logo = is_metaconsole() ? $config['meta_custom_logo'] : $config['custom_logo'];
+	if (empty($stored_logo)) return 'images/pandora_tinylogo.png';
+	return 'enterprise/images/custom_logo/' . $stored_logo;
 }
 
 ?>

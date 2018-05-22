@@ -51,11 +51,12 @@ our @EXPORT = qw(
 	extract_dbpass
 	extract_key_map
 	get_addresses
+	get_current_utime_milis
 	get_lib_version
 	get_unit
 	get_unix_time
 	get_sys_environment
-	get_current_utime_milis
+	get_value_translated
 	getCurrentUTimeMilis
 	head
 	in_array
@@ -294,6 +295,37 @@ sub get_unit {
 	my $str = shift;
 	$str =~ s/[\d\.\,]//g;
 	return $str;
+}
+
+################################################################################
+# Get unit
+################################################################################
+sub get_value_translated {
+	my $str = shift;
+
+	if (empty($str)) {
+		return $str;
+	}
+	$str = trim($str);
+
+	my $value = $str;
+	my $unit = get_unit($str);
+	if(empty($unit)) {
+		return $str;
+	}
+
+	$value =~ s/$unit//g;
+
+	if ($unit =~ /kb/i) { return $value * (2**10);}
+	if ($unit =~ /kib/i) { return $value * (2**10);}
+	if ($unit =~ /mb/i) { return $value * (2**20);}
+	if ($unit =~ /mib/i) { return $value * (2**20);}
+	if ($unit =~ /gb/i) { return $value * (2**30);}
+	if ($unit =~ /gib/i) { return $value * (2**30);}
+	if ($unit =~ /tb/i) { return $value * (2**40);}
+	
+	return $value;
+
 }
 
 ################################################################################

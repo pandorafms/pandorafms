@@ -95,14 +95,14 @@ echo '<div id="header_login">';
 	
 		if (file_exists (ENTERPRISE_DIR . "/load_enterprise.php")) {
 			if(isset ($config['custom_logo'])){
-				echo '<img src="enterprise/images/custom_logo/' . $config['custom_logo'] .'" alt="pandora_console">';
+				echo '<img src="enterprise/images/custom_logo/' . $config['custom_logo'] .'" alt="monitoring_console">';
 			}
 			else{
-				echo '<img src="images/custom_logo/pandora_logo_head_4.png" alt="pandora_console">';
+				echo '<img src="images/custom_logo/pandora_logo_head_4.png" alt="monitoring_console">';
 			}
 		}
 		else{
-			echo '<img src="images/custom_logo/pandora_logo_head_3.png" alt="pandora_console">';	
+			echo '<img src="images/custom_logo/pandora_logo_head_3.png" alt="monitoring_console">';	
 		}
 	echo '</div>';
 		echo '<div id="list_icon_docs_support"><ul style="line-height: 36px;">';

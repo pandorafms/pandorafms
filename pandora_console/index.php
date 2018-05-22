@@ -702,7 +702,7 @@ if (! isset ($config['id_user'])) {
 							
 							$cod_hash = $user_reset_pass . "::::" . md5(rand(10, 1000000) . rand(10, 1000000) . rand(10, 1000000));
 
-							$subject = '[Pandora] '.__('Reset password');
+							$subject = '[' . get_product_name() . '] '.__('Reset password');
 							$body = __('This is an automatically sent message for user ');
 							$body .= ' "<strong>' . $user_reset_pass . '"</strong>';
 							$body .= '<p />';
@@ -710,7 +710,7 @@ if (! isset ($config['id_user'])) {
 							$body .= '<p />';
 							$body .= '<a href="' . $config['homeurl'] . 'index.php?reset_hash=' . $cod_hash . '">' . __('Reset your password') . '</a>';
 							$body .= '<p />';
-							$body .= 'Pandora FMS';
+							$body .= get_product_name();
 							$body .= '<p />';
 							$body .= '<em>'.__('Please do not reply to this email.').'</em>';
 							

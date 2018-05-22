@@ -3956,4 +3956,21 @@ function ui_get_support_logo () {
 	return 'enterprise/images/custom_general_logos/' . $config['custom_support_logo'];
 }
 
+/**
+ * Get the custom header logo
+ *
+ * @return string with the path to logo. If it is not set, return the default value
+ *
+ */
+function ui_get_custom_header_logo () {
+	global $config;
+
+	if (empty($config['enterprise_installed'])) {
+		return 'images/pandora_tinylogo_open.png';
+	}
+
+	if (empty($config['custom_logo'])) return 'images/pandora_tinylogo.png';
+	return 'enterprise/images/custom_logo/' . $config['custom_logo'];
+}
+
 ?>

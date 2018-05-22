@@ -61,11 +61,12 @@ foreach ($files as $file) {
 	}
 }
 
+$logo = ui_get_custom_header_logo();
 
 if (! $id || ! file_exists ($help_file)) {
 	echo '<div id="main_help" style="background-color: #fff;text-align:center; padding-top: 15px; padding-bottom: 15px; ">';
 		if (!is_metaconsole()) {
-			echo html_print_image('images/pandora_tinylogo.png', true, array("border" => '0'));
+			echo html_print_image($logo, true, array("border" => '0'));
 		}
 	echo '</div>';
 	echo '<div style="font-family: verdana, arial; font-size: 11px; text-align:left; background-color: #fff;">';
@@ -86,16 +87,11 @@ if (! $id || ! file_exists ($help_file)) {
 
 /* Show help */
 echo '<div id="main_help_new" style="background-color: #fff">';
-	if (empty($config['enterprise_installed'])) {
-		echo html_print_image('images/pandora_tinylogo_open.png', true, array("border" => '0'));
+	if (!empty($config['enterprise_installed']) && is_metaconsole()) {
+		echo '<img src="' . $config["homeurl"] . $logo . '">';
 	}
 	else {
-		if (is_metaconsole()) {
-			echo '<img src="'.$config["homeurl"].'images/pandora_tinylogo.png">';
-		}
-		else{
-			echo html_print_image('images/pandora_tinylogo.png', true, array("border" => '0'));
-		}
+		echo html_print_image($logo, true, array("border" => '0'));
 	}
 echo '</div>';
 echo '<div id="main_help_new_content" style="height: auto ! important;overfloat: auto;">';

@@ -2368,7 +2368,7 @@ function print_audit_csv ($data) {
 	echo __('User') . ';' .
 		__('Action') . ';' .
 		__('Date') . ';' .
-		__('Source ID') . ';' .
+		__('Source IP') . ';' .
 		__('Comments') ."\n";
 	foreach ($data as $line) {
 		echo io_safe_output($line['id_usuario']) . ';' .  io_safe_output($line['accion']) . ';' .  $line['fecha'] . ';' .  $line['ip_origen'] . ';'.  io_safe_output($line['descripcion']). "\n";

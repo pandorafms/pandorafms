@@ -14,7 +14,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-$refr = get_parameter('refresh', 0); // By default 30 seconds
+$refr = (int) get_parameter('refresh', 0); // By default 30 seconds
 function mainAgentsModules() {
 	global $config;
 	
@@ -62,7 +62,7 @@ function mainAgentsModules() {
 	$updated_time = $updated_info;
 	
 	$modulegroup = get_parameter('modulegroup', 0);
-	$refr = get_parameter('refresh', 0); // By default 30 seconds
+	$refr = (int) get_parameter('refresh', 0); // By default 30 seconds
 	
 	$recursion = get_parameter('recursion', 0);
 	$group_id = (int)get_parameter('group_id', 0);

@@ -83,7 +83,7 @@ function mainAgentsAlerts() {
 		}
 		
 	}
-	$refr = get_parameter('refr', 30); // By default 30 seconds
+	$refr = (int) get_parameter('refr', 30); // By default 30 seconds
 	$show_modules = (bool) get_parameter ("show_modules",0);
 	$group_id = get_parameter('group_id', 0);
 	$offset = get_parameter('offset', 0);

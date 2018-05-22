@@ -96,6 +96,10 @@ if ($confMap !== false) {
 				$baselayers[$num_baselayer]['image_width'] = $decodeJSON['image_width'];
 				$baselayers[$num_baselayer]['image_height'] = $decodeJSON['image_height'];
 				break;
+			case 'WMS':
+				$baselayers[$num_baselayer]['url'] = $decodeJSON['url'];
+				$baselayers[$num_baselayer]['layers'] = $decodeJSON['layers'];
+				break;
 		}
 		$num_baselayer++;
 		if ($mapC['default_map_connection'] == 1) {
@@ -203,11 +207,7 @@ if ($layers != false) {
 // Resize GIS map on fullscreen
 ?>
 <script type="text/javascript">
-	$().ready(function() {
-		
-		var new_height = $(document).height();
-		$("#map").css("height", new_height - 60);
-		$("svg[id*=OpenLayers]").css("height", new_height - 60);
-		
+	$(document).ready(function() {
+		$("#map").css("height", $(document).height() - 100);
 	});
 </script>

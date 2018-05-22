@@ -49,7 +49,9 @@ class Tactical {
 			switch ($parameter2) {
 				case 'render_status_pie':
 					$links = $system->getRequest('links', '');
+					$links = $system->safeOutput($links);
 					$data = $system->getRequest('data', '');
+					$data = $system->safeOutput($data);
 					$data = str_replace('\\','',$data);
 					$links = str_replace('\\','',$links);
 					$width = $system->getRequest('width', 230);

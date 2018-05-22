@@ -12,21 +12,18 @@
 
 $ownDir = dirname(__FILE__) . '/';
 $ownDir = str_replace("\\", "/", $ownDir);
-require_once ($ownDir.'../include/config.php');
+require_once($ownDir . "../include/config.php");
+
+require_once($config["homedir"] . "/include/functions.php");
+require_once($config["homedir"] . "/include/functions_db.php");
+require_once($config["homedir"] . "/include/auth/mysql.php");
 
 global $config;
-require_once ($config["homedir"]."/include/functions.php");
-require_once ($config["homedir"]."/include/functions_db.php");
-require_once ($config["homedir"]."/include/auth/mysql.php");
 
-error_reporting(E_ALL);
-ini_set("display_errors", 1);
-
-if (! isset ($_SESSION["id_usuario"])) {
-	session_start ();
-	session_write_close ();
+if (! isset($_SESSION["id_usuario"])) {
+	session_start();
+	session_write_close();
 }
-
 
 // Login check
 if (!isset($_SESSION["id_usuario"])) {
@@ -36,94 +33,56 @@ else {
 	$config['id_user'] = $_SESSION["id_usuario"];
 }
 
-if (!check_login()) {
-	db_pandora_audit("ACL Violation", "Trying to access graph builder");
-	include ($config["homedir"]."/general/noaccess.php");
-	return;
-}
+check_login();
 
-if (! check_acl ($config['id_user'], 0, "PM")) {
-	db_pandora_audit( "ACL Violation",
-		"Trying to access event viewer");
-	require ("general/noaccess.php");
+if (! check_acl($config['id_user'], 0, "PM")) {
+	db_pandora_audit("ACL Violation", "Trying to access audit CSV export");
+	require("general/noaccess.php");
 	exit;
 }
 
-$tipo_log = get_parameter ("tipo_log", 'all');
-$user_filter = get_parameter('user_filter', 'all');
-$filter_text = get_parameter('filter_text', '');
-$filter_hours_old = get_parameter('filter_hours_old', 24);
-$filter_ip = get_parameter('filter_ip', '');
+$filter_type = (string) get_parameter("filter_type");
+$filter_user = (string) get_parameter("filter_user");
+$filter_text = (string) get_parameter("filter_text");
+$filter_period = get_parameter("filter_period", null);
+$filter_period = ($filter_period !== null) ? (int) $filter_period : 24;
+$filter_ip = (string) get_parameter("filter_ip");
 
-$filter = 'WHERE 1 = 1';
+$filter = "1=1";
 
-if ($tipo_log != 'all') {
-	$filter .= " AND accion = '$tipo_log'";
-}
-switch ($config['dbtype']) {
-	case "mysql":
-		if ($user_filter != 'all') {
-			$filter .= sprintf(' AND id_usuario = "%s"', $user_filter);
-		}
-		
-		$filter .= ' AND (accion LIKE "%' . $filter_text . '%" OR descripcion LIKE "%' . $filter_text . '%")';
-		
-		if ($filter_ip != '') {
-			$filter .= sprintf(' AND ip_origen LIKE "%s"', $filter_ip);
-		}
-		break;
-	case "postgresql":
-	case "oracle":
-		if ($user_filter != 'all') {
-			$filter .= sprintf(' AND id_usuario = \'%s\'', $user_filter);
-		}
-		
-		$filter .= ' AND (accion LIKE \'%' . $filter_text . '%\' OR descripcion LIKE \'%' . $filter_text . '%\')';
-		
-		if ($filter_ip != '') {
-			$filter .= sprintf(' AND ip_origen LIKE \'%s\'', $filter_ip);
-		}
-		break;
+if (!empty($filter_type)) {
+	$filter .= sprintf (" AND accion = '%s'", $filter_type);
 }
 
-if ($filter_hours_old != 0) {
+if (!empty($filter_user)) {
+	$filter .= sprintf(" AND id_usuario = '%s'", $filter_user);
+}
+
+if (!empty($filter_text)) {
+	$filter .= sprintf(" AND (accion LIKE '%%%s%%' OR descripcion LIKE '%%%s%%')", $filter_text, $filter_text);
+}
+
+if (!empty($filter_ip)) {
+	$filter .= sprintf(" AND ip_origen LIKE '%%%s%%'", $filter_ip);
+}
+
+if (!empty($filter_period)) {
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$filter .= ' AND fecha >= DATE_ADD(NOW(), INTERVAL -' . $filter_hours_old . ' HOUR)';
+			$filter .= ' AND fecha >= DATE_ADD(NOW(), INTERVAL -' . $filter_period . ' HOUR)';
 			break;
 		case "postgresql":
-			$filter .= ' AND fecha >= NOW() - INTERVAL \'' . $filter_hours_old . ' HOUR \'';
+			$filter .= ' AND fecha >= NOW() - INTERVAL \'' . $filter_period . ' HOUR \'';
 			break;
 		case "oracle":
-			$filter .= ' AND fecha >= (SYSTIMESTAMP - INTERVAL \'' . $filter_hours_old . '\' HOUR)';
+			$filter .= ' AND fecha >= (SYSTIMESTAMP - INTERVAL \'' . $filter_period . '\' HOUR)';
 			break;
 	}
 }
 
-switch ($config["dbtype"]) {
-	case "mysql":
-		$sql = sprintf ("SELECT *
-			FROM tsesion
-			%s
-			ORDER BY fecha DESC", $filter);
-		break;
-	case "postgresql":
-		$sql = sprintf ("SELECT *
-			FROM tsesion
-			%s
-			ORDER BY fecha DESC", $filter);
-		break;
-	case "oracle":
-		$sql = sprintf ("SELECT *
-			FROM tsesion
-			%s
-			ORDER BY fecha DESC", $filter);
-		$result = oracle_recode_query ($sql, $set);
-		break;
-}
+$sql = sprintf( "SELECT * FROM tsesion WHERE %s ORDER BY fecha DESC", $filter);
+$result = db_get_all_rows_sql($sql);
 
-$result = db_get_all_rows_sql ($sql);
-
-print_audit_csv ($result);
+print_audit_csv($result);
 
 ?>

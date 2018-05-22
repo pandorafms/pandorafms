@@ -576,16 +576,17 @@ function snmp_browser_print_container ($return = false, $width = '100%', $height
 		enterprise_include_once ('include/functions_satellite.php');
 		
 		$rows = get_proxy_servers();
-	foreach ($rows as $row) {
-		if ($row['server_type'] != 13) {
-			$s_type = " (Standard)";
+		if ($rows !== false) {
+			foreach ($rows as $row) {
+				if ($row['server_type'] != 13) {
+					$s_type = " (Standard)";
+				}
+				else {
+					$s_type = " (Satellite)";
+				}
+				$servers_to_exec[$row['id_server']] = $row['name'] . $s_type;
+			}
 		}
-		else {
-			$s_type = " (Satellite)";
-		}
-
-		$servers_to_exec[$row['id_server']] = $row['name'] . $s_type;
-	}
 	}
 	$table->data[1][1] = '<strong>' . __('Server to execute') . '</strong> &nbsp;&nbsp;';
 	$table->data[1][1] .= html_print_select($servers_to_exec, 'server_to_exec', '', '', '', '', true);

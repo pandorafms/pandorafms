@@ -118,6 +118,10 @@ function gis_print_map($idDiv, $iniZoom, $latCenter, $lonCenter, $baselayers, $c
 			case 'Gmap':
 				echo "baselayer['gmap_type'] = '" . $baselayer['gmap_type'] . "';";
 				break;
+			case 'WMS':
+				echo "baselayer['url'] = '" . $baselayer['url'] . "';";
+				echo "baselayer['layers'] = '" . $baselayer['layers'] . "';";
+				break;
 		}
 		
 		echo "baselayerList.push(baselayer);";
@@ -1034,6 +1038,10 @@ function gis_get_agent_map($agent_id, $heigth, $width, $show_history = false, $c
 			$baselayers[0]['bb_top'] = $conectionData['bb_top'];
 			$baselayers[0]['image_width'] = $conectionData['image_width'];
 			$baselayers[0]['image_height'] = $conectionData['image_height'];
+			break;
+		case 'WMS':
+			$baselayers[0]['url'] = $conectionData['url'];
+			$baselayers[0]['layers'] = $conectionData['layers'];
 			break;
 	}
 	

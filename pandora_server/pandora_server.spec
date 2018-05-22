@@ -3,7 +3,7 @@
 #
 %define name        pandorafms_server
 %define version     7.0NG.722
-%define release     180427
+%define release     180522
 
 Summary:            Pandora FMS Server
 Name:               %{name}
@@ -54,6 +54,7 @@ mkdir -p $RPM_BUILD_ROOT/usr/bin/
 mkdir -p $RPM_BUILD_ROOT/usr/sbin/
 mkdir -p $RPM_BUILD_ROOT/etc/init.d/
 mkdir -p $RPM_BUILD_ROOT/etc/pandora/
+mkdir -p $RPM_BUILD_ROOT/etc/tentacle/
 mkdir -p $RPM_BUILD_ROOT/var/spool/pandora/data_in
 mkdir -p $RPM_BUILD_ROOT/var/spool/pandora/data_in/conf
 mkdir -p $RPM_BUILD_ROOT/var/spool/pandora/data_in/md5
@@ -62,6 +63,7 @@ mkdir -p $RPM_BUILD_ROOT/var/spool/pandora/data_in/netflow
 mkdir -p $RPM_BUILD_ROOT/var/spool/pandora/data_in/trans
 mkdir -p $RPM_BUILD_ROOT/var/log/pandora/
 mkdir -p $RPM_BUILD_ROOT%{prefix}/pandora_server/conf/
+mkdir -p $RPM_BUILD_ROOT%{prefix}/tentacle/conf/
 mkdir -p $RPM_BUILD_ROOT/usr/lib/perl5/
 mkdir -p $RPM_BUILD_ROOT/usr/share/man/man1/
 
@@ -70,8 +72,10 @@ cp -aRf bin/pandora_server $RPM_BUILD_ROOT/usr/bin/
 cp -aRf bin/pandora_exec $RPM_BUILD_ROOT/usr/bin/
 cp -aRf bin/tentacle_server $RPM_BUILD_ROOT/usr/bin/
 
-cp -aRf conf/* $RPM_BUILD_ROOT%{prefix}/pandora_server/conf/
+cp -aRf conf/pandora_* $RPM_BUILD_ROOT%{prefix}/pandora_server/conf/
 cp -aRf conf/pandora_server.conf.new $RPM_BUILD_ROOT/etc/pandora/
+cp -aRf conf/tentacle_* $RPM_BUILD_ROOT%{prefix}/tentacle/conf/
+cp -aRf conf/tentacle_server.conf.new $RPM_BUILD_ROOT/etc/tentacle/
 cp -aRf util $RPM_BUILD_ROOT%{prefix}/pandora_server/
 cp -aRf lib/* $RPM_BUILD_ROOT/usr/lib/perl5/
 cp -aRf AUTHORS COPYING README $RPM_BUILD_ROOT%{prefix}/pandora_server/
@@ -112,6 +116,8 @@ if [ ! -d /etc/pandora ] ; then
    mkdir -p /etc/pandora
 fi
 
+# Avoid to overwrite config files on upgrades
+# Main configuration files
 if [ ! -e "/etc/pandora/pandora_server.conf" ]
 then
         echo "Creating a new version of Pandora FMS Server config file at /etc/pandora/pandora_server.conf"
@@ -120,6 +126,12 @@ else
         # Do a copy of current .conf, just in case.
         echo "An existing version of pandora_server.conf is found."
         cat /etc/pandora/pandora_server.conf > /etc/pandora/pandora_server.conf.old
+fi
+# Tentacle config files
+if [ ! -e "/etc/tentacle/tentacle_server.conf" ]
+then
+        echo "Creating a new version of Tentacle Server config file at /etc/tentacle/tentacle_server.conf"
+        cat /etc/tentacle/tentacle_server.conf.new > /etc/tentacle/tentacle_server.conf
 fi
 
 echo "Don't forget to start Tentacle Server daemon if you want to receive"
@@ -152,6 +164,7 @@ rm -Rf %{prefix}pandora_server
 rm -Rf /var/log/pandora
 rm -Rf /usr/lib/perl5/PandoraFMS/
 rm -Rf /etc/pandora/pandora_server.conf*
+rm -Rf /etc/tentacle/tentacle_server.conf*
 rm -Rf /var/spool/pandora
 rm -Rf /etc/init.d/pandora_server /etc/init.d/tentacle_serverd 
 rm -Rf /usr/bin/pandora_exec /usr/bin/pandora_server /usr/bin/tentacle_server
@@ -174,6 +187,7 @@ rm -Rf /usr/share/man/man1/tentacle_server.1.gz
 %defattr(755,pandora,root,755)
 /usr/lib/perl5/PandoraFMS/
 %{prefix}/pandora_server
+%{prefix}/tentacle
 /var/log/pandora
 
 %defattr(-,pandora,www,2770)
@@ -187,6 +201,9 @@ rm -Rf /usr/share/man/man1/tentacle_server.1.gz
 
 %defattr(-,pandora,root,750)
 /etc/pandora
+
+%defattr(-,pandora,root,754)
+/etc/tentacle
 
 %defattr(644,pandora,root)
 /usr/share/man/man1/pandora_server.1.gz

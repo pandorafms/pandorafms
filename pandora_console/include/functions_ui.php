@@ -3764,12 +3764,11 @@ function ui_print_module_string_value($value, $id_agente_module,
 	if ($is_web_content_string) {
 		$value = io_safe_input($value);
 	}
-	
-	
-	
+
 	$is_snapshot = is_snapshot_data($value);
-	
-	if (($config['command_snapshot']) && ($is_snapshot)) {
+	$is_large_image = is_text_to_black_string ($value);
+
+	if (($config['command_snapshot']) && ($is_snapshot || $is_large_image)) {
 		$handle = "snapshot" . "_" . $id_agente_module;
 		$url = 'include/procesos.php?agente=' . $id_agente_module;
 		$win_handle = dechex(crc32($handle));
@@ -3778,7 +3777,7 @@ function ui_print_module_string_value($value, $id_agente_module,
 			"id=" . $id_agente_module .
 			"&refr=" . $current_interval .
 			"&label=" . rawurlencode(urlencode(io_safe_output($module_name))) . "','" . $win_handle . "', 700,480)";
-		if (is_image_data($value)) {	
+		if ($is_snapshot) {
 			$salida = '<a href="javascript:' . $link . '">' .
 				html_print_image("images/photo.png", true,
 					array("border" => '0',

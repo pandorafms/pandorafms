@@ -461,14 +461,9 @@ config_check();
 
 		<?php
 		if ($_GET["refr"]) {
-			$_get_refr = strip_tags($_GET["refr"]);
 		?>
-			refr_time = parseInt("<?php echo $_get_refr; ?>");
-			if (isNaN(refr_time)) {
-				refr_time = 0;
-			}
-			
-			t = new Date();
+			var refr_time = <?php echo (int) get_parameter("refr", 0); ?>;
+			var t = new Date();
 			t.setTime (t.getTime () +
 				parseInt(<?php echo $config["refr"] * 1000; ?>));
 			$("#refrcounter").countdown ({until: t, 

@@ -15,6 +15,14 @@
 
 global $config;
 
+check_login ();
+
+if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
+	db_pandora_audit("ACL Violation", "Trying to access update Management");
+	require ("general/noaccess.php");
+	return;
+}
+
 require_once($config['homedir'] . "/include/functions_update_manager.php");
 require_once($config['homedir'] . "/include/functions_graph.php");
 enterprise_include_once("include/functions_update_manager.php");

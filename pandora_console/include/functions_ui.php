@@ -1352,9 +1352,8 @@ function ui_process_page_head ($string, $bitfield) {
 		<meta http-equiv="Content-Style-Type" content="text/css" />
 		<meta name="resource-type" content="document" />
 		<meta name="distribution" content="global" />
-		<meta name="author" content="Pandora FMS Developer team" />
-		<meta name="copyright" content="(c) Artica Soluciones Tecnologicas" />
-		<meta name="keywords" content="pandora, monitoring, system, GPL, software" />
+		<meta name="author" content="' . get_copyright_notice() . '" />
+		<meta name="copyright" content="(c) ' . get_copyright_notice() . '" />
 		<meta name="robots" content="index, follow" />';
 		if(defined ('METACONSOLE')){
 		$output .='<link rel="icon" href="images/favicon_meta.ico" type="image/ico" />';
@@ -3973,4 +3972,19 @@ function ui_get_custom_header_logo () {
 	return 'enterprise/images/custom_logo/' . $stored_logo;
 }
 
+/**
+ * Get the central networkmap logo
+ *
+ * @return string with the path to logo. If it is not set, return the default.
+ *
+ */
+function ui_get_logo_to_center_networkmap () {
+	global $config;
+
+	if ((!enterprise_installed()) || empty($config['custom_network_center_logo'])) {
+		return DEFAULT_NETWORKMAP_CENTER_LOGO;
+	}
+
+	return 'enterprise/images/custom_general_logos/' . $config['custom_support_logo'];
+}
 ?>

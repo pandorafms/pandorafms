@@ -71,11 +71,11 @@ echo '<div id="login_help_dialog" title="' .
 			echo '</td>';
 			
 			echo '<td style="border:1px solid #FFF; text-align:center;">';
-				echo '<a href="http://pandorafms.com/pandora/doc/en" target="_blank" style="text-decoration:none;">' .
+				echo '<a href="' . $config['custom_docs_url'] . '" target="_blank" style="text-decoration:none;">' .
 					html_print_image('images/documentation.png', true,
 						array("alt" => __('Documentation'), "border" => 0)) . '</a>';
 				echo '<br style="margin-bottom: 40px;" />';
-				echo '<a style="font-size: 9pt;" href="http://pandorafms.com/pandora/doc/en" target="_blank">' . __('Documentation') . '</span></a>';
+				echo '<a style="font-size: 9pt;" href="' . $config['custom_docs_url'] . '" target="_blank">' . __('Documentation') . '</span></a>';
 			echo '</td>';
 		echo '</tr>';
 		echo '</table>';

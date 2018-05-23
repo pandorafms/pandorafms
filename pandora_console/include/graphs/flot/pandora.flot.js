@@ -1546,7 +1546,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				shadowSize: 0.1
 			},
 			crosshair: { mode: 'xy' },
-			selection: { mode: 'x', color: '#777' },
+			selection: { mode: 'xy', color: '#777' },
 			export: {
 				export_data: true,
 				labels_long: labels_long,
@@ -1640,7 +1640,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 					color: ''
 					} ],
 			yaxis: {ticks: [], autoscaleMargin: 0.1 },
-			selection: {mode: 'x', color: '#777' },
+			selection: {mode: 'xy', color: '#777' },
 			legend: {show: false},
 			crosshair: {mode: 'x'}
 		});
@@ -1652,6 +1652,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 		if (menu == 0) {
 			return;
 		}
+
 		dataInSelection = ranges.xaxis.to - ranges.xaxis.from;
 		dataInPlot = plot.getData()[0].data.length;
 
@@ -1660,18 +1661,36 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 		new_steps = parseInt(factor * steps);
 
 		plot = $.plot($('#' + graph_id), data_base,
-			$.extend(true, {}, options, {
-				xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to},
-				xaxes: [ {
-						tickFormatter: xFormatter,
-						minTickSize: new_steps,
-						color: ''
-						} ],
-				legend: { show: false }
-			}));
+		$.extend(true, {}, options, {
+			yaxis: {
+				min: ranges.yaxis.from,
+				max: ranges.yaxis.to
+			},
+			yaxes: [{
+				tickFormatter: yFormatter,
+				color: '',
+				alignTicksWithAxis: 1,
+				labelWidth: 30,
+				position: 'left',
+				font: font,
+				reserveSpace: true,
+				min: ranges.yaxis.from
+			}],
+			xaxis: {
+				min: ranges.xaxis.from,
+				max: ranges.xaxis.to
+			},
+			xaxes: [ {
+					tickFormatter: xFormatter,
+					minTickSize: new_steps,
+					color: ''
+					} ],
+			legend: { show: false }
+		}));
+
 		if (thresholded) {
 			var zoom_data_threshold = new Array ();
-			
+
 			var y_recal = axis_thresholded(threshold_data, plot.getAxes().yaxis.min, plot.getAxes().yaxis.max,
 									red_threshold, extremes, red_up);
 			plot = $.plot($('#' + graph_id), data_base,
@@ -1690,7 +1709,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			plot.setData(zoom_data_threshold);
 			plot.draw();
 		}
-			
+
 
 		$('#menu_cancelzoom_' + graph_id)
 			.attr('src', homeurl + '/images/zoom_cross_grey.png');
@@ -1760,7 +1779,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			}
 			else if (y < -1000) {
 				how_bigger = "K";
-				y = y / 1000;	
+				y = y / 1000;
 			}
 
 			if (currentRanges == null || (currentRanges.xaxis.from < j && j < currentRanges.xaxis.to)) {

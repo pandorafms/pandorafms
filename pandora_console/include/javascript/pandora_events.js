@@ -361,13 +361,8 @@ function perform_response(target, response_id) {
 		timeout: 10000,
 		dataType: 'html',
 		success: function (data) {
-			if (data == '') {
-				$('#response_out').html('<i>Unreachable host</i>');
-			}
-			else {
-				var out = data.replace(/[\n|\r]/g, "<br>");
-				$('#response_out').html(out);
-			}
+			var out = data.replace(/[\n|\r]/g, "<br>");
+			$('#response_out').html(out);
 			$('#response_loading_command').hide();
 			$('#re_exec_command').show();
 		}

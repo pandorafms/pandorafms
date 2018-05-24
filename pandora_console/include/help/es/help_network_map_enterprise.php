@@ -107,5 +107,3 @@
     <li><b>Distancia minima entre nodos (solo circular):</b> Establece la distancia minima entre los nodos del mapa.</li>
     <li><b>separación entre flechas (solo flat y radial):</b> Separación entre las flechas del mapa.</li>
     <li><b>Separación por defecto para nodos (solo spring2):</b> Establece la distancia minima entre los nodos del mapa.</li><br><br>
-
-Para más información sobre la edición de mapas consulte http://openideas.info/wiki/index.php?title=Pandora:Documentation_es:Presentacion_datos#Consola_Network_Enteprise

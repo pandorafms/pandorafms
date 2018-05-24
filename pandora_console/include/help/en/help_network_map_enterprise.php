@@ -113,7 +113,4 @@
         - <i>spring1, spring2:</i> are variations of the Flat.  <br>
     <li><b>Networkmap Refresh:</b> the refresh velocity of the status of the nodes contained in the networkmap, by default is any 5 minutes.  </p>
 
-The rest of the fields disabled, as for example "resizing map" is because there are only actives in the edition of one map already created. <br><br>
-
-
-For more information about editing maps see http://www.openideas.info/wiki/index.php?title=Pandora:Documentation_en:Data_Presentation#Network_Enteprise_Console
+The rest of the fields disabled, as for example "resizing map" is because there are only actives in the edition of one map already created.

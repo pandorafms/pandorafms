@@ -113,6 +113,3 @@
     <li><b>ネットワークマップ更新(Networkmap Refresh):</b> ネットワークマップに含まれるノードの状態の更新間隔です。デフォルトは 5分です。</p>
 
 残りのフィールドは無効になっています。例えば、"マップのリサイズ(resizing map)"は、マップが作成された後にのみ有効になります。<br><br>
-
-
-マップ編集の詳細については、<a href="http://www.openideas.info/wiki/index.php?title=Pandora:Documentation_ja:Data_Presentation#.E3.82.A8.E3.83.B3.E3.82.BF.E3.83.BC.E3.83.97.E3.83.A9.E3.82.A4.E3.82.BA.E7.89.88.E3.81.AE.E3.83.8D.E3.83.83.E3.83.88.E3.83.AF.E3.83.BC.E3.82.AF.E3.83.9E.E3.83.83.E3.83.97.E3.82.B3.E3.83.B3.E3.82.BD.E3.83.BC.E3.83.AB">公式ドキュメント(エンタープライズ版のネットワークマップコンソール)</a> を参照してください。

@@ -61,7 +61,7 @@ foreach ($files as $file) {
 	}
 }
 
-$logo = ui_get_custom_header_logo();
+$logo = ui_get_custom_header_logo(true);
 
 if (! $id || ! file_exists ($help_file)) {
 	echo '<div id="main_help" style="background-color: #fff;text-align:center; padding-top: 15px; padding-bottom: 15px; ">';

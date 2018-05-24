@@ -226,11 +226,11 @@ class User {
 		$ui->showFooter(false);
 		$ui->beginContent();
 		
-		if (!$system->getConfig('metaconsole'))
-			$logo_image = html_print_image ("mobile/images/pandora_mobile_console.png",
+		if ($system->getConfig('metaconsole'))
+			$logo_image = html_print_image (ui_get_mobile_login_icon(),
 						true, array ("alt" => "logo", "border" => 0));
 		else
-			$logo_image = html_print_image ("mobile/images/metaconsole_mobile.png",
+			$logo_image = html_print_image (ui_get_mobile_login_icon(),
 						true, array ("alt" => "logo", "border" => 0),false, false, false, true);
 		
 		$ui->contentAddHtml('<div style="text-align: center;" class="login_logo">' .
@@ -289,7 +289,7 @@ class User {
 		$ui->showFooter(false);
 		$ui->beginContent();
 			$ui->contentAddHtml('<div style="text-align: center;" class="login_logo">' .
-				html_print_image ("mobile/images/pandora_mobile_console.png",
+				html_print_image (ui_get_mobile_login_icon(),
 					true, array ("alt" => "logo", "border" => 0)) .
 					'</div>');
 			$ui->contentAddHtml('<div id="login_container">');

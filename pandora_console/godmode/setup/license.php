@@ -103,7 +103,7 @@ if (enterprise_installed()) {
 echo '</form>';
 echo '<div id="code_license_dialog" style="display: none; text-align: left;" title="' . __('Request new license') . '">';
 echo '<div id="logo">';
-html_print_image(ui_get_custom_header_logo());
+html_print_image(ui_get_custom_header_logo(true));
 echo '</div>';
 echo '' . __('To get your <b>%s Enterprise License</b>:', get_product_name()) . '<br />';
 echo '<ul>';

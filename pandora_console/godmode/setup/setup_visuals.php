@@ -179,6 +179,32 @@ if(!enterprise_installed()){
 	$open=true; 
 }
 
+// Custom favicon
+$files = list_files('images/custom_favicon', "ico", 1, 0);
+$table_styles->data[$row][0] = __('Custom favicon');
+$table_styles->data[$row][0] .= ui_print_help_tip(__('You can place your favicon into the folder images/custom_favicon/. This file should be in .ico format with a size of 16x16.'), true);
+$table_styles->data[$row][1] = html_print_select(
+	$files,
+	'custom_favicon',
+	$config["custom_favicon"],
+	'setup_visuals_change_favicon();',
+	__('Default'),
+	'',
+	true,
+	false,
+	true,
+	'',
+	false,
+	'width:240px'
+);
+$table_styles->data[$row][1] .= "&nbsp;&nbsp;&nbsp;" . html_print_image(
+	ui_get_favicon(),
+	true,
+	array('id' => 'favicon_preview')
+);
+$row++;
+
+$table_styles->data[$row][0] = __('Custom background logo');
 $table_styles->data[$row][1] = html_print_select ($backgrounds_list,
 	'login_background', $config["login_background"], '', __('Default'),
 	'', true,false,true,'',false,'width:240px');
@@ -187,7 +213,6 @@ $table_styles->data[$row][1] .= "&nbsp;" .
 $row++;
 
 $table_styles->data[$row][0] = __('Custom logo (header)') . ui_print_help_icon("custom_logo", true);
-
 if(enterprise_installed()){
 	$ent_files = list_files('enterprise/images/custom_logo', "png", 1, 0);
 	$open_files = list_files('images/custom_logo', "png", 1, 0);
@@ -201,8 +226,24 @@ else{
 	list_files('images/custom_logo', "png", 1, 0), 'custom_logo',
 	$config["custom_logo"], '', '', '',true,false,true,'',$open,'width:240px');
 }
+$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'custom_logo_preview', $open, '', 'class="sub camera logo_preview"', true,false,$open,'visualmodal');
+$row++;
+
+$table_styles->data[$row][0] = __('Custom logo (header white background)');
+if(enterprise_installed()){
+	$ent_files = list_files('enterprise/images/custom_logo', "png", 1, 0);
+	$open_files = list_files('images/custom_logo', "png", 1, 0);
 	
-	$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'custom_logo_preview', $open, '', 'class="sub camera logo_preview"', true,false,$open,'visualmodal');
+	$table_styles->data[$row][1] = html_print_select(
+	array_merge($open_files, $ent_files), 'custom_logo_white_bg',
+	$config["custom_logo_white_bg"], '', '', '',true,false,true,'',$open,'width:240px');
+}
+else{
+	$table_styles->data[$row][1] = html_print_select(
+	list_files('images/custom_logo', "png", 1, 0), 'custom_logo_white_bg',
+	$config["custom_logo_white_bg"], '', '', '',true,false,true,'',$open,'width:240px');
+}
+$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'custom_logo_white_bg_preview', $open, '', 'class="sub camera logo_preview"', true,false,$open,'visualmodal');
 $row++;
 
 $table_styles->data[$row][0] = __('Custom logo (login)') . ui_print_help_icon("custom_logo", true);
@@ -230,7 +271,6 @@ if(enterprise_installed()) {
 		$config["custom_splash_login"], '', '', '',true,false,true,'',$open,'width:240px');
 
 	$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'custom_splash_login_preview', $open, '', 'class="sub camera logo_preview"', true,false,$open,'visualmodal');
-	
 	$row++;
 }
 
@@ -297,6 +337,26 @@ if(enterprise_installed()){
 		'width:240px'
 	);
 	$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'custom_network_center_logo_preview', $open, '', 'class="sub camera logo_preview"', true,false,$open,'visualmodal');
+	$row++;
+
+	// Custom center mobile console icon
+	$table_styles->data[$row][0] = __('Custom mobile console icon');
+	$table_styles->data[$row][0] .= ui_print_help_tip(__('You can place your custom logos into the folder enterprise/images/custom_general_logos/'), true);
+	$table_styles->data[$row][1] = html_print_select(
+		$files,
+		'custom_mobile_console_logo',
+		$config["custom_mobile_console_logo"],
+		'',
+		__('Default'),
+		'',
+		true,
+		false,
+		true,
+		'',
+		false,
+		'width:240px'
+	);
+	$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'custom_mobile_console_logo_preview', $open, '', 'class="sub camera logo_preview"', true,false,$open,'visualmodal');
 	$row++;
 }
 
@@ -1135,13 +1195,22 @@ $(document).ready (function () {
 	});
 });
 
+// Change the favicon preview when is changed
+function setup_visuals_change_favicon(meta) {
+	var icon_name = $("select#custom_favicon option:selected").val();
+	var icon_path = (icon_name == "")
+		? "images/pandora.ico"
+		: "images/custom_favicon/" + icon_name;
+	$("#favicon_preview").attr("src", "<?php echo $config['homeurl'];?>" + icon_path);
+}
+
 // Dialog loaders for the images previews
 $(".logo_preview").click (function(e) {
 	// Init the vars
 	var icon_name = '';
 	var icon_path = '';
 	var options = {
-		title: "<?php echo __('Logo preview!'); ?>"
+		title: "<?php echo __('Logo preview'); ?>"
 	};
 
 	// Fill it seing the target has been clicked
@@ -1150,6 +1219,10 @@ $(".logo_preview").click (function(e) {
 			icon_name = $("select#custom_logo option:selected").val();
 			icon_path = "<?php echo $config['homeurl'];  if(enterprise_installed){ echo 'enterprise/'; } ?>images/custom_logo/" + icon_name;
 			options.grayed = true;
+			break;
+		case 'button-custom_logo_white_bg_preview':
+			icon_name = $("select#custom_logo_white_bg option:selected").val();
+			icon_path = "<?php echo $config['homeurl'];  if(enterprise_installed){ echo 'enterprise/'; } ?>images/custom_logo/" + icon_name;
 			break;
 		case 'button-custom_logo_login_preview':
 			icon_name = $("select#custom_logo_login option:selected").val();
@@ -1174,6 +1247,11 @@ $(".logo_preview").click (function(e) {
 		case 'button-custom_network_center_logo_preview':
 			icon_name = $("select#custom_network_center_logo option:selected").val();
 			icon_path = "<?php echo $config['homeurl']; ?>enterprise/images/custom_general_logos/" + icon_name;
+			break;
+		case 'button-custom_mobile_console_logo_preview':
+			icon_name = $("select#custom_mobile_console_logo option:selected").val();
+			icon_path = "<?php echo $config['homeurl']; ?>enterprise/images/custom_general_logos/" + icon_name;
+			options.title = "<?php echo __('Mobile console logo preview'); ?>";
 			break;
 		case 'button-login_background_preview':
 			icon_name = $("select#login_background option:selected").val();

@@ -1355,14 +1355,9 @@ function ui_process_page_head ($string, $bitfield) {
 		<meta name="author" content="' . get_copyright_notice() . '" />
 		<meta name="copyright" content="(c) ' . get_copyright_notice() . '" />
 		<meta name="robots" content="index, follow" />';
-		if(defined ('METACONSOLE')){
-		$output .='<link rel="icon" href="images/favicon_meta.ico" type="image/ico" />';
-		}
-		else{
-		$output .='<link rel="icon" href="images/pandora.ico" type="image/ico" />';	
-		}
+		$output .='<link rel="icon" href="' . ui_get_favicon() . '" type="image/ico" />';
 		$output .='	
-		<link rel="shortcut icon" href="images/pandora.ico" type="image/x-icon" />
+		<link rel="shortcut icon" href="' . ui_get_favicon() . '" type="image/x-icon" />
 		<link rel="alternate" href="operation/events/events_rss.php" title="Pandora RSS Feed" type="application/rss+xml" />';
 	
 	if ($config["language"] != "en") {
@@ -3960,14 +3955,16 @@ function ui_get_support_logo () {
  * @return string with the path to logo. If it is not set, return the default value
  *
  */
-function ui_get_custom_header_logo () {
+function ui_get_custom_header_logo ($white_bg = false) {
 	global $config;
 
 	if (empty($config['enterprise_installed'])) {
 		return 'images/pandora_tinylogo_open.png';
 	}
 
-	$stored_logo = is_metaconsole() ? $config['meta_custom_logo'] : $config['custom_logo'];
+	$stored_logo = is_metaconsole()
+		? $config['meta_custom_logo']
+		: $white_bg ? $config['custom_logo_white_bg'] : $config['custom_logo'];
 	if (empty($stored_logo)) return 'images/pandora_tinylogo.png';
 	return 'enterprise/images/custom_logo/' . $stored_logo;
 }
@@ -3987,4 +3984,41 @@ function ui_get_logo_to_center_networkmap () {
 
 	return 'enterprise/images/custom_general_logos/' . $config['custom_support_logo'];
 }
+
+/**
+ * Get the mobile console login logo
+ *
+ * @return string with the path to logo. If it is not set, return the default.
+ *
+ */
+function ui_get_mobile_login_icon () {
+	global $config;
+
+	if ((!enterprise_installed()) || empty($config['custom_mobile_console_logo'])) {
+		return is_metaconsole()
+			? "mobile/images/metaconsole_mobile.png"
+			: "mobile/images/pandora_mobile_console.png";
+	}
+
+	return 'enterprise/images/custom_general_logos/' . $config['custom_mobile_console_logo'];
+}
+
+/**
+ * Get the favicon
+ *
+ * @return string with the path to logo. If it is not set, return the default.
+ *
+ */
+function ui_get_favicon () {
+	global $config;
+
+	if (empty($config['custom_favicon'])) {
+		return !is_metaconsole()
+			? "images/pandora.ico"
+			: "enterprise/meta/images/favicon_meta.ico";
+	}
+
+	return 'images/custom_favicon/' . $config['custom_favicon'];
+}
+
 ?>

@@ -500,8 +500,12 @@ function config_update_config () {
 					if (!config_update_value ('flash_charts', (bool) get_parameter ('flash_charts')))
 						$error_update[] = __('Interactive charts');
 					
+					if (!config_update_value ('custom_favicon', (string) get_parameter ('custom_favicon')))
+						$error_update[] = __('Custom favicon');
 					if (!config_update_value ('custom_logo', (string) get_parameter ('custom_logo')))
 						$error_update[] = __('Custom logo');
+					if (!config_update_value ('custom_logo_white_bg', (string) get_parameter ('custom_logo_white_bg')))
+						$error_update[] = __('Custom logo white background');
 					if (!config_update_value ('custom_logo_login', (string) get_parameter ('custom_logo_login')))
 						$error_update[] = __('Custom logo login');
 					if (!config_update_value ('custom_splash_login', (string) get_parameter ('custom_splash_login')))
@@ -509,9 +513,11 @@ function config_update_config () {
 					if (!config_update_value ('custom_docs_logo', (string) get_parameter ('custom_docs_logo')))
 						$error_update[] = __('Custom documentation logo');
 					if (!config_update_value ('custom_support_logo', (string) get_parameter ('custom_support_logo')))
-						$error_update[] = __('Custom networkmap center logo');
-					if (!config_update_value ('custom_network_center_logo', (string) get_parameter ('custom_network_center_logo')))
 						$error_update[] = __('Custom support logo');
+					if (!config_update_value ('custom_network_center_logo', (string) get_parameter ('custom_network_center_logo')))
+						$error_update[] = __('Custom networkmap center logo');
+					if (!config_update_value ('custom_mobile_console_logo', (string) get_parameter ('custom_mobile_console_logo')))
+						$error_update[] = __('Custom networkmap center logo');
 					if (!config_update_value ('custom_title1_login', (string) get_parameter ('custom_title1_login')))
 						$error_update[] = __('Custom title1 login');
 					if (!config_update_value ('custom_title2_login', (string) get_parameter ('custom_title2_login')))
@@ -1189,9 +1195,17 @@ function config_process_config () {
 	if (!isset ($config["fixed_menu"])) {
 		config_update_value ('fixed_menu', false);
 	}
-	
+
+	if (!isset ($config["custom_favicon"])) {
+		config_update_value ('custom_favicon', '');
+	}
+
 	if (!isset ($config["custom_logo"])) {
 		config_update_value ('custom_logo', 'pandora_logo_head_4.png');
+	}
+
+	if (!isset ($config["custom_logo_white_bg"])) {
+		config_update_value ('custom_logo_white_bg', 'pandora_logo_head_white_bg.png');
 	}
 
 	if (!isset ($config["custom_logo_login"])) {
@@ -1212,6 +1226,10 @@ function config_process_config () {
 
 	if (!isset ($config["custom_network_center_logo"])) {
 		config_update_value ('custom_network_center_logo', '');
+	}
+
+	if (!isset ($config["custom_mobile_console_logo"])) {
+		config_update_value ('custom_mobile_console_logo', '');
 	}
 
 	if (!isset ($config["custom_title1_login"])) {

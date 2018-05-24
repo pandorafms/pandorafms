@@ -534,8 +534,10 @@ function config_update_config () {
 					if (!config_update_value ('rb_copyright_notice', (string) get_parameter ('rb_copyright_notice')))
 						$error_update[] = __('Copyright notice');
 					
-						if (!config_update_value ('meta_custom_logo', (string) get_parameter ('meta_custom_logo')))
+					if (!config_update_value ('meta_custom_logo', (string) get_parameter ('meta_custom_logo')))
 						$error_update[] = __('Custom logo metaconsole');
+					if (!config_update_value ('meta_custom_logo_white_bg', (string) get_parameter ('meta_custom_logo_white_bg')))
+						$error_update[] = __('Custom logo metaconsole (white background)');
 					if (!config_update_value ('meta_custom_logo_login', (string) get_parameter ('meta_custom_logo_login')))
 						$error_update[] = __('Custom logo login metaconsole');
 					if (!config_update_value ('meta_custom_splash_login', (string) get_parameter ('meta_custom_splash_login')))
@@ -1266,6 +1268,10 @@ function config_process_config () {
 
 	if (!isset ($config["meta_custom_logo"])) {
 		config_update_value ('meta_custom_logo', 'logo_pandora_metaconsola.png');
+	}
+
+	if (!isset ($config["meta_custom_logo_white_bg"])) {
+		config_update_value ('pandora_logo_head_white_bg', 'pandora_logo_head_white_bg.png');
 	}
 
 	if (!isset ($config["meta_custom_logo_login"])) {

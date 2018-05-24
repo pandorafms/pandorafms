@@ -1196,7 +1196,7 @@ $(document).ready (function () {
 });
 
 // Change the favicon preview when is changed
-function setup_visuals_change_favicon(meta) {
+function setup_visuals_change_favicon() {
 	var icon_name = $("select#custom_favicon option:selected").val();
 	var icon_path = (icon_name == "")
 		? "images/pandora.ico"

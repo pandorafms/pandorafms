@@ -822,7 +822,7 @@ sub pandora_execute_alert ($$$$$$$$$;$) {
 		if (time () >= ($action->{'last_execution'} + $threshold)) {
 			
 			# Does the action generate an event?
-			if (safe_output($action->{'name'}) eq "Pandora FMS Event") {
+			if (safe_output($action->{'name'}) eq "Monitoring Event") {
 				$event_generated = 1;
 			}
 			
@@ -1290,7 +1290,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		}
 	
 	# Pandora FMS Event
-	} elsif ($clean_name eq "Pandora FMS Event") {
+	} elsif ($clean_name eq "Monitoring Event") {
 		$field1 = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module);
 		$field3 = subst_alert_macros ($field3, \%macros, $pa_config, $dbh, $agent, $module);
 		$field4 = subst_alert_macros ($field4, \%macros, $pa_config, $dbh, $agent, $module);

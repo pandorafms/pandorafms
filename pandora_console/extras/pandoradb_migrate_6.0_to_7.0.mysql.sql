@@ -1123,6 +1123,7 @@ UPDATE talert_actions SET   `field4` = 'integria',
 							`field9` = 'admin',
 							`field10` = '_alert_description_'
 WHERE `id` = 4 AND `id_alert_command` = 11;
+UPDATE talert_actions SET name='Monitoring&#x20;Event' WHERE name='Pandora&#x20;FMS&#x20;Event';
 ALTER TABLE talert_actions ADD COLUMN `field11` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_actions ADD COLUMN `field12` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_actions ADD COLUMN `field13` TEXT NOT NULL DEFAULT "";

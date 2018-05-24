@@ -49,7 +49,7 @@ if (isset ($_GET["loginhash"])) {
 $public_hash = get_parameter('hash', false);
 
 // Check user
-if ($public_hash === false) {
+if ($public_hash == false) {
 	check_login();
 } else {
 	enterprise_include_once('include/functions_dashboard.php');

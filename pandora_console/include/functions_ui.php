@@ -1104,6 +1104,9 @@ function ui_print_alert_template_example ($id_alert_template, $return = false, $
 function ui_print_help_icon ($help_id, $return = false, $home_url = '', $image = "images/help.png", $is_relative = false) {
 	global $config;
 
+	// Do not display the help icon if help is disabled
+	if ($config['disable_help']) return '';
+
 	if (empty($home_url))
 		$home_url = "";
 	

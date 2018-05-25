@@ -158,7 +158,7 @@ config_check();
 				</script>
 				<?php
 				
-				if ($config['tutorial_mode'] !== 'expert') {
+				if ($config['tutorial_mode'] !== 'expert' && !$config['disable_help']) {
 					$table->data[0]['clippy'] = 
 						'<a href="javascript: show_clippy();">' .
 							html_print_image(
@@ -307,11 +307,15 @@ config_check();
 				$table->data[0][3] = $maintenance_img;
 				
 				// Main help icon
-				$table->data[0][4] = '<a href="#" class="modalpopup" id="helpmodal">'.html_print_image("images/header_help.png",
-					true, array(
-						"title" => __('Main help'),
-						"id" => "helpmodal",
-						"class" => "modalpopup")).'</a>';
+				if (!$config['disable_help']) {
+					$table->data[0][4] =
+						'<a href="#" class="modalpopup" id="helpmodal">' .
+						html_print_image("images/header_help.png", true, array(
+							"title" => __('Main help'),
+							"id" => "helpmodal",
+							"class" => "modalpopup")) .
+						'</a>';
+				}
 				
 				// Logout
 				$table->data[0][5] = '<a class="white" href="' . ui_get_full_url('index.php?bye=bye') . '">';

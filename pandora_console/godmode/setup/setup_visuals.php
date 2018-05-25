@@ -411,6 +411,13 @@ $table_styles->data[$row][1] .= __('No') . '&nbsp;' .
 	html_print_radio_button_extended ('fixed_graph', 0, '', $config["fixed_graph"], $open, '','',true, $open,'visualmodal');
 $row++;
 
+$table_styles->data[$row][0] = __('Disable helps');
+$table_styles->data[$row][1] = __('Yes') . '&nbsp;' .
+	html_print_radio_button ('disable_help', 1, '', $config["disable_help"], true) .
+	'&nbsp;&nbsp;';
+$table_styles->data[$row][1] .= __('No') . '&nbsp;' .
+	html_print_radio_button ('disable_help', 0, '', $config["disable_help"], true);
+$row++;
 
 $table_styles->data[$row][0] = __('Fixed header');
 $table_styles->data[$row][1] = __('Yes') . '&nbsp;' .

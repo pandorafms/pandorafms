@@ -585,8 +585,10 @@ function config_update_config () {
 						$error_update[] = __('Autohidden menu');
 					if (!config_update_value ('visual_animation', get_parameter('visual_animation')))
 						$error_update[] = __('visual_animation');
+					if (!config_update_value ('disable_help', get_parameter('disable_help')))
+						$error_update[] = __('Disable help');
 					if (!config_update_value ('fixed_graph', get_parameter('fixed_graph')))
-							$error_update[] = __('Fixed graph');
+						$error_update[] = __('Fixed graph');
 					if (!config_update_value ('fixed_header', get_parameter('fixed_header')))
 						$error_update[] = __('Fixed header');
 					if (!config_update_value ('fixed_menu', get_parameter('fixed_menu')))
@@ -1185,7 +1187,11 @@ function config_process_config () {
 	if (!isset ($config["graphviz_bin_dir"])) {
 		config_update_value ('graphviz_bin_dir', "");
 	}
-	
+
+	if (!isset ($config["disable_help"])) {
+		config_update_value ('disable_help', false);
+	}
+
 	if (!isset ($config["fixed_header"])) {
 		config_update_value ('fixed_header', false);
 	}

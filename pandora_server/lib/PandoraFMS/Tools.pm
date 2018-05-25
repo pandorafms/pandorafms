@@ -399,7 +399,7 @@ sub pandora_daemonize {
 			
 			# check if pandora_server is running
 			if (kill (0, $pid)) {
-				die "[FATAL] pandora_server already running, pid: $pid.";
+				die "[FATAL] " . pandora_get_initial_product_name() . " Server already running, pid: $pid.";
 			}
 			logger ($pa_config, '[W] Stale PID file, overwriting.', 1);
 		}
@@ -673,12 +673,15 @@ sub enterprise_load ($) {
 	else {
 		eval 'require PandoraFMS::Enterprise;';
 	}
-	
-	
-	
+
 	# Ops
 	if ($@) {
-		
+		# Remove the rebranding if open version
+		if ($^O ne 'MSWin32') {
+			`unset PANDORA_RB_PRODUCT_NAME`;
+			`unset PANDORA_RB_COPYRIGHT_NOTICE`;
+		}
+
 		# Enterprise.pm not found.
 		return 0 if ($@ =~ m/PandoraFMS\/Enterprise\.pm.*\@INC/);
 

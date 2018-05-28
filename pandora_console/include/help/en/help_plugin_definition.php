@@ -5,9 +5,9 @@
 ?>
 <h1>Plugin registration</h1>
 
-Unlike with the rest of components, in a default way Pandora FMS does not include any pre-configured complement, so first you should create and configure a complement to could after add it to the module of an agent. But Pandora FMS includes plugins in the installation directories, but as have already been said, they are not configured in the database. 
+Unlike with the rest of components, in a default way <?php echo get_product_name();?> does not include any pre-configured complement, so first you should create and configure a complement to could after add it to the module of an agent. But <?php echo get_product_name();?> includes plugins in the installation directories, but as have already been said, they are not configured in the database. 
 <br><br>
-To add a plugin that already exists to Pandora FMS, go to the console administration section, and in it, click on Manage servers. After doing this, click on Manage plugins: 
+To add a plugin that already exists to <?php echo get_product_name();?>, go to the console administration section, and in it, click on Manage servers. After doing this, click on Manage plugins: 
 <br><br>
 Once you are in the screen of the plugin management, click on Create a new plugin, so there will be no one. 
 <br><br>
@@ -18,7 +18,7 @@ Fill in the plugin creation form with the following data:
 Name of the plugin, in this case Nmap.
 <br><br>
 <b>Plugin type </b><br>
-There are two kinds of plugins, the standard ones and the kind Nagios. The standard plugins are scripts that execute actions and accept parameters. The Nagios plugins are, as their name shows, Nagios plugins that could be being used in Pandora FMS.The difference is mainly on that the Nagios plugins return an error level to show if the test has been successful or not.
+There are two kinds of plugins, the standard ones and the kind Nagios. The standard plugins are scripts that execute actions and accept parameters. The Nagios plugins are, as their name shows, Nagios plugins that could be being used in <?php echo get_product_name();?>.The difference is mainly on that the Nagios plugins return an error level to show if the test has been successful or not.
 <br><br>
 If you want to use a plugin kind Nagios and you want to get a data, not an state (good/Bad), then you can use a plugin kind Nagios is the "Standard" mode.
 <br><br>
@@ -38,7 +38,7 @@ Plugin description. Write a short description, as for example:Test # UDP open po
 
 It is the path where the plugin command is. In a default way, if the installation has been an standard one, there will be in the directory /usr/share/pandora_server/util/plugin/. Though it could be any path of the system. For this case, writte /usr/share/pandora_server/util/plugin/udp_nmap_plugin.shin the field.
 <br><br>
-Pandora server will execute this script, so this should have permissions of access and execution on it.
+<?php echo get_product_name();?> server will execute this script, so this should have permissions of access and execution on it.
 <br><br>
 <b>Plug-in parameters</b><br>
 

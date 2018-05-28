@@ -893,6 +893,9 @@ div#cont {
 table, img {
 	border: 0px;
 }
+table pre{
+	white-space: pre-wrap;
+}
 
 tr:first-child>th {
 	background-color: #373737;
@@ -4649,4 +4652,16 @@ form ul.form_flex li ul li{
 	margin-left: 20px;
 	margin-right: 20px;
 	text-align: center;
+}
+
+.pandora_upper {
+	text-transform: uppercase;
+}
+
+.dialog-grayed {
+	background: #373737 !important;
+}
+
+.dialog-grayed .ui-dialog-buttonpane {
+	background: #373737 !important;
 }

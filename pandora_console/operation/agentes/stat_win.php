@@ -75,7 +75,7 @@ $alias    = db_get_value ("alias","tagente","id_agente",$id_agent);
 		}
 		?>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<title>Pandora FMS Graph (<?php echo $alias . ' - ' . $label; ?>)</title>
+		<title><?php echo __("%s Graph", get_product_name()) . ' (' . $alias . ' - ' . $label; ?>)</title>
 		<link rel="stylesheet" href="../../include/styles/pandora_minimal.css" type="text/css" />
 		<link rel="stylesheet" href="../../include/styles/jquery-ui-1.10.0.custom.css" type="text/css" />
 		<script type='text/javascript' src='../../include/javascript/pandora.js'></script>
@@ -288,7 +288,7 @@ $alias    = db_get_value ("alias","tagente","id_agente",$id_agent);
 		$params = array();
 		// TOP TEXT
 		//Use the no_meta parameter because this image is only in the base console
-		$params['top_text'] =  "<div style='color: white; width: 100%; text-align: center; font-weight: bold; vertical-align: top;'>" . html_print_image('images/wrench_blanco.png', true, array('width' => '16px'), false, false, true) . ' ' . __('Pandora FMS Graph configuration menu') . ui_print_help_icon ("graphs",true, $config["homeurl"], "images/help_w.png", true) . "</div>";
+		$params['top_text'] =  "<div style='color: white; width: 100%; text-align: center; font-weight: bold; vertical-align: top;'>" . html_print_image('images/wrench_blanco.png', true, array('width' => '16px'), false, false, true) . ' ' . __('Graph configuration menu') . ui_print_help_icon ("graphs",true, $config["homeurl"], "images/help_w.png", true) . "</div>";
 		$params['body_text'] = "<div class='menu_sidebar_outer'>";
 		$params['body_text'] .=__('Please, make your changes and apply with the <i>Reload</i> button');
 
@@ -375,7 +375,7 @@ $alias    = db_get_value ("alias","tagente","id_agente",$id_agent);
 			(bool)$draw_events, true, $disabled);
 		if ($disabled) {
 			$data[1] .= ui_print_help_tip(
-				__('Show events is disabled because this Pandora node is set the event replication.'), true);
+				__("'Show events' is disabled because this %s node is set to event replication.", get_product_name()), true);
 		}
 		$table->data[] = $data;
 		$table->rowclass[] = '';

@@ -36,10 +36,11 @@ if (is_ajax()) {
 
 // Prints help dialog information
 echo '<div id="login_help_dialog" title="' .
-	__('Welcome to Pandora FMS') . '" style="">';
+	__('Welcome to %s', get_product_name()) . '" style="">';
 	
 	echo '<div style="font-size: 10pt; margin: 20px;">';
-	echo __('If this is your first time with Pandora FMS, we propose you a few links to learn more about Pandora FMS. Monitoring could be overwhelm, but take your time to learn how to use the power of Pandora FMS!');
+	echo __("If this is your first time using %s, we suggest a few links that'll help you learn more about the software. Monitoring can be overwhelming, but take your time to learn how to harness the power of %s!",
+			get_product_name(), get_product_name());
 	echo '</div>';
 	
 	echo '<div style="">';
@@ -70,11 +71,11 @@ echo '<div id="login_help_dialog" title="' .
 			echo '</td>';
 			
 			echo '<td style="border:1px solid #FFF; text-align:center;">';
-				echo '<a href="http://pandorafms.com/pandora/doc/en" target="_blank" style="text-decoration:none;">' .
+				echo '<a href="' . $config['custom_docs_url'] . '" target="_blank" style="text-decoration:none;">' .
 					html_print_image('images/documentation.png', true,
 						array("alt" => __('Documentation'), "border" => 0)) . '</a>';
 				echo '<br style="margin-bottom: 40px;" />';
-				echo '<a style="font-size: 9pt;" href="http://pandorafms.com/pandora/doc/en" target="_blank">' . __('Documentation') . '</span></a>';
+				echo '<a style="font-size: 9pt;" href="' . $config['custom_docs_url'] . '" target="_blank">' . __('Documentation') . '</span></a>';
 			echo '</td>';
 		echo '</tr>';
 		echo '</table>';

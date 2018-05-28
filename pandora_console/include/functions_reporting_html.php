@@ -880,7 +880,7 @@ function reporting_html_event_report_group($table, $item, $pdf = 0) {
 			if (!empty($event['id_agente']))
 				$data[] = agents_get_alias($event['id_agente']);
 			else
-				$data[] = __('Pandora System');
+				$data[] = __('%s System', get_product_name());
 			$data[] = get_priority_name ($event['criticity']);
 			if (empty($event['id_usuario']) && $event['estado'] == EVENT_VALIDATE) {
 				$data[] = '<i>' . __('System') . '</i>';
@@ -3729,7 +3729,7 @@ function reporting_get_last_activity() {
 	$table->head[3] = __('Date');
 	$table->head[4] = __('Source IP');
 	$table->head[5] = __('Comments');
-	$table->title = '<span>' . __('Last activity in Pandora FMS console') . '</span>';
+	$table->title = '<span>' . __('Last activity in %s console', get_product_name()) . '</span>';
 	
 	switch ($config["dbtype"]) {
 		case "mysql":

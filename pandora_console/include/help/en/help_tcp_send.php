@@ -38,7 +38,7 @@ If you type something, like "none" and press enter, they reply you the following
 <br /><br />
 Protocol mismatch
 <br /><br />
-So to "code" this conversation in a Pandora FMS TCP module, you need to put in TCP Send:
+So to "code" this conversation in a <?php echo get_product_name();?> TCP module, you need to put in TCP Send:
 <br /><br />
 |none^M
 <br /><br />

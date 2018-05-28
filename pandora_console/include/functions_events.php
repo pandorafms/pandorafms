@@ -703,10 +703,12 @@ function events_create_event ($event, $id_group, $id_agent, $status = 0,
 	$id_user = "", $event_type = "unknown", $priority = 0,
 	$id_agent_module = 0, $id_aam = 0, $critical_instructions = '',
 	$warning_instructions = '', $unknown_instructions = '',
-	$source="Pandora", $tags="", $custom_data="", $server_id = 0, $id_extra ="") {
+	$source=false, $tags="", $custom_data="", $server_id = 0, $id_extra ="") {
 	
 	global $config;
 	
+	if ($source === false) $source = get_product_name();
+
 	$table_events = 'tevento';
 	if (defined ('METACONSOLE')) {
 		$table_events = 'tmetaconsole_event';

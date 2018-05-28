@@ -1745,6 +1745,8 @@ function db_process_file ($path, $handle_error = true) {
  */
 function db_check_minor_relase_available () {
 	global $config;
+
+	if (!$config['enable_update_manager']) return false;
 	
 	$dir = $config["homedir"]."/extras/mr";
 	
@@ -1789,6 +1791,8 @@ function db_check_minor_relase_available () {
 function db_check_minor_relase_available_to_um ($package, $ent, $offline) {
 	global $config;
 	
+	if (!$config['enable_update_manager']) return false;
+
 	if (!$ent) {
 		$dir = $config['attachment_store'] . "/downloads/pandora_console/extras/mr";
 	}

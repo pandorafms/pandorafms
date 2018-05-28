@@ -55,7 +55,7 @@ my $MainThread = threads->self;
 sub pandora_shutdown () {
 	my $signal = shift;
 
-	logger (\%Config, 'Pandora FMS Server \'' . $Config{'servername'} . '\' Caught SIG' . $signal . ' by thread(' . threads->self()->tid() . ')', 10);
+	logger (\%Config, $Config{'rb_product_name'} . ' Server \'' . $Config{'servername'} . '\' Caught SIG' . $signal . ' by thread(' . threads->self()->tid() . ')', 10);
 
 	if (!threads->self->equal($MainThread)) {
 		# deliver signal to the main thread since no other threads than main thread
@@ -63,7 +63,7 @@ sub pandora_shutdown () {
 		$MainThread->kill($signal);
 		return;
 	}
-	logger (\%Config, 'Pandora FMS Server \'' . $Config{'servername'} . '\' Shutdown by signal ', 1);
+	logger (\%Config, $Config{'rb_product_name'} . ' Server \'' . $Config{'servername'} . '\' Shutdown by signal ', 1);
 	
 	# Stop servers
 	foreach my $server (@Servers) {
@@ -103,7 +103,7 @@ sub pandora_startup () {
 
 	# Update the agent cache.
 	threads->create('enterprise_hook', ('update_agent_cache', [\%Config]))->detach() if ($Config{'node_metaconsole'} == 1);
-	pandora_audit (\%Config, 'Pandora FMS Server Daemon starting', 'SYSTEM', 'System', $DBH);
+	pandora_audit (\%Config, $Config{'rb_product_name'} . ' Server Daemon starting', 'SYSTEM', 'System', $DBH);
 	
 	# Load servers
 	if (!is_metaconsole(\%Config)) {
@@ -197,7 +197,7 @@ sub pandora_crash () {
 		$full_error .= $error_line;
 	}
 	
-	logger (\%Config, 'Pandora FMS Server \'' . $Config{'servername'} . '\' unhandled error.', 1);
+	logger (\%Config, $Config{'rb_product_name'} . ' Server \'' . $Config{'servername'} . '\' unhandled error.', 1);
 	
 	# It's interesting show by console problems, not only in logs. This helps
 	# to solve stupid problems like Database credential problems for example
@@ -519,7 +519,7 @@ sub main() {
 
 	# Daemonize and put in background
 	if ($Config{'daemon'} == 1) {
-		print_message (\%Config, " [*] Backgrounding Pandora FMS Server process.\n", 1);
+		print_message (\%Config, " [*] Backgrounding " . pandora_get_initial_product_name() . " Server process.\n", 1);
 		pandora_daemonize (\%Config);
 	}
 	
@@ -528,8 +528,8 @@ sub main() {
 		print_message (\%Config, " [*] Pandora FMS Enterprise module not available.", 1);
 		logger (\%Config, " [*] Pandora FMS Enterprise module not available.", 1);
 	} else {
-		print_message (\%Config, " [*] Pandora FMS Enterprise module loaded.", 1);
-		logger (\%Config, " [*] Pandora FMS Enterprise module loaded.", 1);
+		print_message (\%Config, " [*] " . pandora_get_initial_product_name() . " Enterprise module loaded.", 1);
+		logger (\%Config, " [*] " . pandora_get_initial_product_name() . " Enterprise module loaded.", 1);
 	
 		if($Config{'policy_manager'} == 1) {
 			# Start thread to patrol policy queue
@@ -634,7 +634,7 @@ sub main() {
 				$server->restartEvent ($@);
 			}
 			
-			logger (\%Config, 'Pandora FMS Server restarting (' . $@ . ') in ' . $Config{'restart_delay'} . ' seconds.', 1);
+			logger (\%Config, $Config{'rb_product_name'} . ' Server restarting (' . $@ . ') in ' . $Config{'restart_delay'} . ' seconds.', 1);
 			pandora_restart ();
 		}
 		elsif (($Config{'auto_restart'} > 0) && (time () - $time_ref > $Config{'auto_restart'})) {
@@ -660,7 +660,7 @@ sub main() {
 					$server->restartEvent ($@);
 				}
 				
-				logger (\%Config, 'Pandora FMS Server restarting (' . $@ . ') in 5 seconds.', 1);
+				logger (\%Config, $Config{'rb_product_name'} . ' Server restarting (' . $@ . ') in 5 seconds.', 1);
 				pandora_load_config (\%Config);
 				pandora_restart (5);
 			}
@@ -687,7 +687,7 @@ $SIG{__DIE__} = 'pandora_crash';
 $SIG{'ALRM'} = 'IGNORE';
 	
 # Initialize
-pandora_init(\%Config, 'Pandora FMS Server');
+pandora_init(\%Config, pandora_get_initial_product_name() . ' Server');
 pandora_load_config (\%Config);
 	
 # Parse command line options.

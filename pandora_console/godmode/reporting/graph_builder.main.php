@@ -59,8 +59,6 @@ if ($edit_graph) {
 	$graphInTgraph = db_get_row_sql("SELECT * FROM tgraph WHERE id_graph = " . $id_graph);
 	$stacked = $graphInTgraph['stacked'];
 	$period = $graphInTgraph['period'];
-	$name = $graphInTgraph['name'];
-	$description = $graphInTgraph['description'];
 	$id_group = $graphInTgraph['id_group'];
 	$width = $graphInTgraph['width'];
 	$height = $graphInTgraph['height'];
@@ -80,7 +78,6 @@ else {
 	$id_agent = 0;
 	$id_module = 0;
 	$id_group = 0;
-	$name = "Pandora FMS combined graph";
 	$width = 550;
 	$height = 210;
 	$period = SECONDS_1DAY;

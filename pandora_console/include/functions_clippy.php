@@ -125,7 +125,7 @@ function clippy_write_javascript_helps_steps($tours) {
 	if (!empty($steps)) {
 		foreach ($steps as $iterator => $element) {
 			$steps[$iterator]['intro'] = 
-				"<div id='clippy_head_title'>"  . __("Pandora FMS assistant") . "</div>" .
+				"<div id='clippy_head_title'>"  . __("%s assistant", get_product_name()) . "</div>" .
 				$steps[$iterator]['intro'];
 		}
 		

@@ -3121,9 +3121,37 @@ function generator_chart_to_pdf($params){
 	$img_destination = "/var/www/html/pandora_console/attachment/imagen_". $params['agent_module_id'] .".png";
 	$width_img = 1048;
 	$height_img = 568;
-html_debug_print("entra con: " . $params['agent_module_id'] ."  en el tiempo " . date("Y-m-d H:i:s"), true);
+	html_debug_print("entra con: " . $params['agent_module_id'] ."  en el tiempo " . date("Y-m-d H:i:s"), true);
 	exec("phantomjs " . $file_js . " " . $url . "  '" . $params_encode_json . "' " . $img_destination . " " . $width_img . " " . $height_img);
-html_debug_print("sale con:  " . $params['agent_module_id'] ."  en el tiempo " . date("Y-m-d H:i:s"), true);
-return "<img src='/var/www/html/pandora_console/attachment/imagen_". $params['agent_module_id'] .".png' alt='la imagen bonica'>";
+	html_debug_print("sale con:  " . $params['agent_module_id'] ."  en el tiempo " . date("Y-m-d H:i:s"), true);
+	return "<img src='/var/www/html/pandora_console/attachment/imagen_". $params['agent_module_id'] .".png' alt='la imagen bonica'>";
+}
+
+/**
+ * Get the product name.
+ *
+ * @return string If the installation is open, it will be 'Pandora FMS'.
+ * 		If the product name stored is empty, it returns 'Pandora FMS' too.
+ */
+function get_product_name () {
+	$stored_name = enterprise_hook('enterprise_get_product_name');
+	if (empty($stored_name) || $stored_name == ENTERPRISE_NOT_HOOK) {
+		return "Pandora FMS";
+	}
+	return $stored_name;
+}
+
+/**
+ * Get the copyright notice.
+ *
+ * @return string If the installation is open, it will be 'Artica ST'.
+ * 		If the product name stored is empty, it returns 'Artica ST' too.
+ */
+function get_copyright_notice () {
+	$stored_name = enterprise_hook('enterprise_get_copyright_notice');
+	if (empty($stored_name) || $stored_name == ENTERPRISE_NOT_HOOK) {
+		return "Ártica ST";
+	}
+	return $stored_name;
 }
 ?>

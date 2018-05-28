@@ -26,10 +26,11 @@ ui_require_css_file ('firts_task');
 	</div>
 	<div class="text_task">
 		<h3> <?php echo __('Create Planned Downtime'); ?></h3>
-		<p id="description_task"> <?php echo __("Pandora FMS contains a scheduled downtime management system. 
-						This system was designed to deactivate the alerts in the intervals whenever there is down time by deactivating the agent.
-						If an agent is deactivated, it doesn't collect information. In a down time, the down-time intervals aren't taken into 
-						account for most of the metrics or types of reports, because the agents don't contain any data within those intervals. "); ?></p>
+		<p id="description_task"> <?php echo __("%s contains a scheduled downtime management system.
+						This system was designed to deactivate alerts during specific intervals whenever there is down time by deactivating the agent.
+						If an agent is deactivated, it doesn't gather information. During down time, down-time intervals aren't taken into
+						account for most metrics or report types, because agents don't contain any data within those intervals.",
+						get_product_name()); ?></p>
 		<form action="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime.editor" method="post">
 			<input type="submit" class="button_task" value="<?php echo __('Create Planned Downtime'); ?>" />
 		</form>

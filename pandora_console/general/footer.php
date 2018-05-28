@@ -45,11 +45,11 @@ else{
 	$build_package_version = $current_package;
 }
 
-echo sprintf(__('Pandora FMS %s - Build %s - MR %s', $pandora_version, $build_package_version, $config["MR"]));
+echo sprintf(__('%s %s - Build %s - MR %s', get_product_name(), $pandora_version, $build_package_version, $config["MR"]));
 
 echo '</a><br />';
 echo '<a class="white footer">'. __('Page generated at') . ' '. date('F j, Y h:i a'); //Always use timestamp here
-echo '</a><br /><span style="color:#eff">'.__("&reg; Ártica ST").'</span>';
+echo '</a><br /><span style="color:#eff">&reg; '.get_copyright_notice().'</span>';
 
 if (isset ($config['debug'])) {
 	$cache_info = array();

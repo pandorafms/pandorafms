@@ -507,7 +507,7 @@ foreach ($fields as $field) {
 		. '.<br />'
 		. __('The format is: [url=\'url to navigate\']\'text to show\'[/url]')
 		. '.<br /><br />'
-		. __('e.g.: [url=pandorafms.org]Pandora FMS Community[/url]')
+		. __('e.g.: [url=google.com]Google web search[/url]')
 		, true);
 	
 	$custom_value = db_get_value_filter('description', 'tagent_custom_data', array('id_field' => $field['id_field'], 'id_agent' => $id_agente));

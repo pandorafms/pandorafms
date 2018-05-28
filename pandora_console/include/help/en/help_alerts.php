@@ -14,7 +14,7 @@
 
 	<li><b>Alert type:</b> This can be selected from the previously generated alert list.</li>
 	<li><b>Max. Value:</b> Defines the maximum value for a module. Any value above that threshold will trigger the alert.</li>
-	<li><b>Min. Value:</b> Defines the minimum value for a module. Any value below that will trigger the alert. The ”max." &amp; "min." couple are key values when defining an alert, since they define the range for normal values. Outside that range Pandora FMS will trigger the alert.</li>
+	<li><b>Min. Value:</b> Defines the minimum value for a module. Any value below that will trigger the alert. The ”max." &amp; "min." couple are key values when defining an alert, since they define the range for normal values. Outside that range <?php echo get_product_name();?> will trigger the alert.</li>
 	<li><b>Alert text:</b> In the case of string modules you can define a regular expression or a substring to match the contents of a data module in order to trigger the alert.</li>
 	<li><b>Time from / Time to:</b> This defines a “valid” timespan to trigger alert.</li>
 	<li><b>Description:</b> Describes the function of the alert, and it is useful to identify the alert among the others in the general view of alerts.</li>

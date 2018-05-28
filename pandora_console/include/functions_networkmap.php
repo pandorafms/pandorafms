@@ -29,6 +29,11 @@ require_once($config['homedir'] . "/include/functions_modules.php");
 require_once($config['homedir'] . "/include/functions_groups.php");
 ui_require_css_file ('cluetip');
 
+/**
+ * Definitions
+ */
+define('DEFAULT_NETWORKMAP_CENTER_LOGO', 'images/networkmap/bola_pandora_network_maps.png');
+
 // Check if a node descends from a given node
 function networkmap_is_descendant ($node, $ascendant, $parents) {
 	if (! isset ($parents[$node])) {
@@ -1327,7 +1332,7 @@ function networkmap_create_pandora_node ($name, $font_size = 10, $simple = 0, $s
 	}
 	$stats_json = base64_encode(json_encode($summary));
 	
-	$img_src = "images/networkmap/bola_pandora_network_maps.png";
+	$img_src = ui_get_logo_to_center_networkmap();
 	if (defined('METACONSOLE')) {
 		
 		$url_tooltip = '../../ajax.php?' .
@@ -1346,11 +1351,11 @@ function networkmap_create_pandora_node ($name, $font_size = 10, $simple = 0, $s
 	
 	if ($hack_networkmap_mobile) {
 		$img = '<TR><TD>' .
-			"<img src='" . $config['homedir'] . '/' . "images/networkmap/bola_pandora_network_maps.png' />" .
+			"<img src='" . $config['homedir'] . '/' . ui_get_logo_to_center_networkmap() . "' />" .
 			'</TD></TR>';
 	}
 	else {
-		$image = html_print_image("images/networkmap/bola_pandora_network_maps.png", true, false, false, true);
+		$image = html_print_image(ui_get_logo_to_center_networkmap(), true, false, false, true);
 		//$image = str_replace('"',"'",$image);
 		$img = '<TR><TD>' . $image . '</TD></TR>';
 	}

@@ -148,7 +148,7 @@ if ($new_user && $config['admin_can_add_user']) {
 
 if ($create_user) {
 	if (! $config['admin_can_add_user']) {
-		ui_print_error_message (__('The current authentication scheme doesn\'t support creating users from Pandora FMS'));
+		ui_print_error_message (__('The current authentication scheme doesn\'t support creating users on %s', get_product_name()));
 		return;
 	}
 	

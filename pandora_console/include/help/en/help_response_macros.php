@@ -18,7 +18,7 @@ The accepted macros are:
 <li><b>Event ID:</b> _event_id_</li>
 <li><b>Event instructions:</b> _event_instruction_</li>
 <li><b>Event severity ID:</b> _event_severity_id_</li>
-<li><b>Event severity (translated by Pandora console):</b> _event_severity_text_</li>
+<li><b>Event severity (translated by <?php echo get_product_name();?> console):</b> _event_severity_text_</li>
 <li><b>Event source:</b> _event_source_</li>
 <li><b>Event status (new, validated or event in process):</b> _event_status_</li>
 <li><b>Event tags separated by commas:</b> _event_tags_</li>

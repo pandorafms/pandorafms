@@ -4,7 +4,7 @@
 */
 ?>
 
-<h1>Editor graficos</h1>
+<h1>Editor gráficos</h1>
 
-<p>Permite crear nuevas graficas y editar los antiguos. En esta vista se pueden configurar los parametros generales de las graficas.</p>
+<p>Permite crear nuevas gráficas y editar los antiguos. En esta vista se pueden configurar los parametros generales de las gráficas.</p>
 

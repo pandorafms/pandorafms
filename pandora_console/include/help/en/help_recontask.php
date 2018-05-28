@@ -25,7 +25,7 @@ Network where you want to do the recognition. Use the network format/ bits mask.
 
 <b>Interval</b>
 <br>
-Repetition interval of systems search. Do not use intervals very shorts so Recon explores a network sending one Ping to each address. If you use recon networks very larges (for example a class A) combined with very short intervals (6 hours) you will be doing that Pandora FMS will be always bomb the network with pings, overloading it and also Pandora FMS unnecessarily.<br><br>
+Repetition interval of systems search. Do not use intervals very shorts so Recon explores a network sending one Ping to each address. If you use recon networks very larges (for example a class A) combined with very short intervals (6 hours) you will be doing that <?php echo get_product_name();?> will be always bomb the network with pings, overloading it and also <?php echo get_product_name();?> unnecessarily.<br><br>
 
 <b>Module template</b><br>
 
@@ -33,7 +33,7 @@ Plugins template to add to the discovered systems. When it detects a system that
 
 <b>OS</b><br>
 
-Operative system to recognize. If you select one instead of any (Any) it will only be added the systems with this operative system.Consider that in some circumstances Pandora FMS can make a mistake when detecting systems, so this kind of "guess" is done with statistic patterns, that depending on some other factors could fail (networks with filters, security software, modified versions of the systems).To could use this method with security, you should have installed Xprobe2 in your system. <br><br>
+Operative system to recognize. If you select one instead of any (Any) it will only be added the systems with this operative system.Consider that in some circumstances <?php echo get_product_name();?> can make a mistake when detecting systems, so this kind of "guess" is done with statistic patterns, that depending on some other factors could fail (networks with filters, security software, modified versions of the systems).To could use this method with security, you should have installed Xprobe2 in your system. <br><br>
 
 <b>Ports</b><br>
 

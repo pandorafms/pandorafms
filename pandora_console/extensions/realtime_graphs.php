@@ -63,12 +63,12 @@ function pandora_realtime_graphs () {
 	$table->style['snmp_oid'] = 'font-weight: bold;';
 	$table->data = array ();
 	
-	$graph_fields['cpu_load'] = __('Pandora Server CPU');
-	$graph_fields['pending_packets'] = __('Pandora Server Pending packets');
-	$graph_fields['disk_io_wait'] = __('Pandora Server Disk IO Wait');
-	$graph_fields['apache_load'] = __('Pandora Server Apache load');
-	$graph_fields['mysql_load'] = __('Pandora Server MySQL load');
-	$graph_fields['server_load'] = __('Pandora Server load');
+	$graph_fields['cpu_load'] = __('%s Server CPU', get_product_name());
+	$graph_fields['pending_packets'] = __('Pending packages from %s Server', get_product_name());
+	$graph_fields['disk_io_wait'] = __('%s Server Disk IO Wait', get_product_name());
+	$graph_fields['apache_load'] = __('%s Server Apache load', get_product_name());
+	$graph_fields['mysql_load'] = __('%s Server MySQL load', get_product_name());
+	$graph_fields['server_load'] = __('%s Server load', get_product_name());
 	$graph_fields['snmp_interface'] = __('SNMP Interface throughput');
 	
 	$graph = get_parameter('graph', 'cpu_load');

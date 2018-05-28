@@ -57,7 +57,7 @@ function clippy_start_page_homepage() {
 		'intro' => 
 			'<div class="clippy_body" style="text-align: left; padding-left: 20px; padding-right: 20px;">'.
 			__('Hi, can I help you?') . '<br/><br/>' .
-			__('Let me introduce my self: I am Pandorin, the annoying assistant of Pandora FMS. You can follow my steps to do basic tasks in Pandora FMS or you can close me and never see me again.') .
+			__('Let me introduce my self: I am Pandorin, the annoying assistant of %s. You can follow my steps to do basic tasks in %s or you can close me and never see me again.', get_product_name(), get_product_name()) .
 			'<br /> ' .
 			'<br /> ' .
 			'<div class="clippy_body" style="font-size: 7pt;">' .
@@ -82,7 +82,7 @@ function clippy_start_page_homepage() {
 			'<ul style="text-align: left; margin-left: 10px; list-style-type: disc;">' .
 				'<li>' .
 					"<a href='javascript: clippy_go_link_show_help(\"index.php?sec=gagente&sec2=godmode/agentes/modificar_agente\", \"monitoring_server_step_1\");'>" . 
-						__('Ping to a Linux or Windows server with a Pandora FMS agent') .
+						__('Ping a Linux or Windows server using a %s agent.', get_product_name()) .
 					'</a>' .
 				'</li>' .
 				'<li>' .
@@ -206,7 +206,7 @@ function clippy_start_page_homepage() {
 	$return_tours['tours']['email_alert_module_step_1']['steps'] = array();
 	$return_tours['tours']['email_alert_module_step_1']['steps'][] = array(
 		'element'=> '#clippy',
-		'intro' => __('The first thing you have to do  is to setup the config email in the Pandora FMS Server.') .
+		'intro' => __('The first thing you have to do is to setup the e-mail config on the %s Server.', get_product_name()) .
 			'<br />' .
 			ui_print_help_icon ('context_pandora_server_email', true, '', 'images/help.png') .
 			'<br />' .

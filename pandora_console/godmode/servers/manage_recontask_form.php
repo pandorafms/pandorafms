@@ -186,11 +186,10 @@ if (!$modify){
 	ui_print_page_header (__('Manage recontask'), "", false, "recontask", true);
 }
 
-
 $is_windows = strtoupper(substr(PHP_OS, 0, 3)) == 'WIN';
 if ($is_windows) {
 	echo '<div class="notify">';
-	echo __('Warning') . ": " . __("By default, in Windows, Pandora FMS only support Standard network sweep, not custom scripts");
+	echo __('Warning') . ": " . __("By default, in Windows, %s only support Standard network sweep, not custom scripts", get_product_name());
 	echo '</div>';
 }
 

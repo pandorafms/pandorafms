@@ -5,9 +5,9 @@
 ?>
 <h1>IP Address Management (IPAM)</h1>
 <br>
-Using IPAM extension, we can manage, discover and get event on changes on hosts in a given network. We can know if a given IP address (IPv4 or IPv6) change it's availability (answer to a ping) or hostname (using dns resolution). We also can detect its OS and link a IP address to a current Pandora FMS agent, adding the IP address to their currently assigned addresses. IPAM extension uses the recon server and a recon script on the low level, but you don't need to configure nothing, IPAM extension do everything for you.
+Using IPAM extension, we can manage, discover and get event on changes on hosts in a given network. We can know if a given IP address (IPv4 or IPv6) change it's availability (answer to a ping) or hostname (using dns resolution). We also can detect its OS and link a IP address to a current <?php echo get_product_name();?>  agent, adding the IP address to their currently assigned addresses. IPAM extension uses the recon server and a recon script on the low level, but you don't need to configure nothing, IPAM extension do everything for you.
 <br><br>
-IP Management works in parallel to the monitoring you currently manage with Pandora FMS agents, you can associate a IP address managed with IPAM extension or not, it depends on you. Managed IP addresses can optionally generate event on change.
+IP Management works in parallel to the monitoring you currently manage with <?php echo get_product_name();?>  agents, you can associate a IP address managed with IPAM extension or not, it depends on you. Managed IP addresses can optionally generate event on change.
 
 <h2>IPs Detection</h2>
 We can setup a network (using a bit mask or a prefix), and this network will be automatically sweeped or setup to have a on-request manual execution. This will execute a recon script task, searching for active IP (using nmap for IPv4 and ping for IPv6). You see the progress on network sweep in the status view and also in the recon server view.
@@ -76,7 +76,7 @@ When you click on the main icon, a modal window will be opened showing all the I
 <h3>Edition view</h3>
 If you have enought permission, you will have access to setup view, where IP address are shown as a list. You can filter to show only the IP's you are interested into, make changes and update all at once.<br><br>
 
-Some fields, are automatically filled by the recon script, like hostname, if it have a Pandora FMS agent and the operating system. You can mark that fields as "manual" and edit them.<br><br>
+Some fields, are automatically filled by the recon script, like hostname, if it have a <?php echo get_product_name();?>  agent and the operating system. You can mark that fields as "manual" and edit them.<br><br>
 
 <table width=100%>
 <tr>

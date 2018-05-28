@@ -183,7 +183,8 @@ function update_manager_install_package_step2() {
 	}
 	
 	update_manager_enterprise_set_version($version);
-	db_pandora_audit("Update Pandora", "Update version: $version of Pandora FMS by ".$config['id_user']);
+	$product_name = get_product_name();
+	db_pandora_audit("Update $product_name", "Update version: $version of $product_name by ".$config['id_user']);
 	
 	$return["status"] = "success";
 	$return["message"]= __("The package is installed.");

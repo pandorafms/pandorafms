@@ -101,7 +101,7 @@ function extension_api_checker() {
 	$table->data[] = $row;
 	
 	$row = array();
-	$row[] = __("Pandora Console URL");
+	$row[] = __("%s Console URL", get_product_name());
 	$row[] = html_print_input_text('pandora_url', $pandora_url, '', 50, 255, true);
 	$table->data[] = $row;
 	

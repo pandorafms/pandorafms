@@ -16,6 +16,8 @@
 
 function pluginreg_extension_main () {
 	global $config;
+
+	check_login();
 	
 	if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
 		db_pandora_audit("ACL Violation", "Trying to access Setup Management");
@@ -31,10 +33,10 @@ function pluginreg_extension_main () {
 			echo '</div>';
 				echo '<div class="text_task">';
 					echo '<h3>' . __("Plugin registration") . '</h3>';
-					echo '<p id="description_task">' . 
-					__("This extension makes registration of server plugins more easy. 
-						Here you can upload a server plugin in Pandora FMS 3.x zipped format (.pspz). 
-						Please refer to documentation on how to obtain and use Pandora FMS Server Plugins.
+					echo '<p id="description_task">' .
+					__("This extension makes registering server plugins an easier task.
+						Here you can upload a server plugin in .pspz zipped format.
+						Please refer to the official documentation on how to obtain and use Server Plugins.
 						<br><br>You can get more plugins in our <a href='http://pandorafms.com/Library/Library/'>Public Resource Library</a> ") . '</p>';
 						// Upload form
 					echo "<form name='submit_plugin' method='post' enctype='multipart/form-data'>";

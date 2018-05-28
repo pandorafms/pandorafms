@@ -1634,3 +1634,54 @@ function ellipsize (str, max, ellipse) {
 
 	return str.trim().length > max ? str.substr(0, max).trim() + ellipse : str;
 }
+
+/**
+ * Display a dialog with an image
+ *
+ * @param {string} icon_name The name of the icon you will display
+ * @param {string} icon_path The path to the icon
+ * @param {Object} incoming_options All options 
+ * 		grayed: {bool} True to display the background black
+ * 		title {string} 'Logo preview' by default
+ */
+function logo_preview (icon_name, icon_path, incoming_options) {
+	// Get the options
+	options = {
+		grayed: false,
+		title: "Logo preview"
+	}
+	$.extend(options, incoming_options);
+
+	if (icon_name == "") return;
+
+	$dialog = $("<div></div>");
+	$image = $("<img src=\"" + icon_path + "\">");
+	$image.css('max-width', '500px').css('max-height', '500px');
+
+	try {
+		$dialog
+			.hide()
+			.html($image)
+			.dialog({
+				title: options.title,
+				resizable: true,
+				draggable: true,
+				modal: true,
+				dialogClass: options.grayed ? 'dialog-grayed' : '',
+				overlay: {
+					opacity: 0.5,
+					background: "black"
+				},
+				minHeight: 1,
+				width: $image.width,
+				close: function () {
+					$dialog
+						.empty()
+						.remove();
+				}
+			}).show();
+	}
+	catch (err) {
+		// console.log(err);
+	}
+}

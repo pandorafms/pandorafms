@@ -111,6 +111,13 @@ $table->size[0] = '20%';
 $table->data = array ();
 $table->data[0][0] = __('Name');
 $table->data[0][1] = html_print_input_text ('name', $name, '', 35, 255, true);
+if (io_safe_output($name) == "Monitoring Event") {
+	$table->data[0][1] .= '&nbsp;&nbsp;' . ui_print_help_tip(
+		__("This action may stop working, if you change its name."),
+		true,
+		"images/header_yellow.png"
+	);
+}
 $table->colspan[0][1] = 2;
 
 $table->data[1][0] = __('Group');

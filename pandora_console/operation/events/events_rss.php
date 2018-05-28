@@ -138,7 +138,8 @@ require('events.build_query.php');
 ////////////////////////////////////////////////////////////////////////
 
 $sql = "SELECT *
-	FROM tevento LEFT JOIN tagent_secondary_group on id_grupo = id_group
+	FROM tevento te LEFT JOIN tagent_secondary_group tasg
+		ON te.id_grupo = tasg.id_group
 	WHERE 1=1 " . $sql_post . "
 	ORDER BY utimestamp DESC";
 

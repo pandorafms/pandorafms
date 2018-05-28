@@ -284,8 +284,9 @@ if ($create_agent) {
 				"Url description":"' . $url_description .'",
 				"Quiet":"' . (int)$quiet.'"}';
 			
+			$unsafe_alias = io_safe_output($alias);
 			db_pandora_audit("Agent management",
-				"Created agent $alias", false, true, $info);
+				"Created agent $unsafe_alias", false, true, $info);
 		}
 		else {
 			$id_agente = 0;

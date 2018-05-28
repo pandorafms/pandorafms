@@ -893,6 +893,9 @@ div#cont {
 table, img {
 	border: 0px;
 }
+table pre{
+	white-space: pre-wrap;
+}
 
 tr:first-child>th {
 	background-color: #373737;

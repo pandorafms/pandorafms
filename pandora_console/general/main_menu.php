@@ -244,6 +244,7 @@ $(document).ready( function() {
 			openTimeMenu = new Date().getTime();
 			$('#menu').css('width', '145px');
 			$('#menu').css('position', 'block');
+			$('div#menu').css('top', '80px');
 			$('li.menu_icon').addClass( " no_hidden_menu" );
 			$('ul.submenu').css('left', '144px');
 

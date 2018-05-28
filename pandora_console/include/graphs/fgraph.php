@@ -223,61 +223,25 @@ function vbar_graph(
 function area_graph(
 	$agent_module_id, $array_data,
 	$legend, $series_type, $date_array,
-	$data_module_graph, $show_elements_graph,
-	$format_graph, $water_mark, $series_suffix_str,
+	$data_module_graph, $params, $water_mark, $series_suffix_str,
 	$array_events_alerts
 ) {
 	global $config;
 
 	include_once('functions_flot.php');
-	if ($config['flash_charts']) {
-		return flot_area_graph(
-			$agent_module_id,
-			$array_data,
-			$legend,
-			$series_type,
-			$date_array,
-			$data_module_graph,
-			$show_elements_graph,
-			$format_graph,
-			$water_mark,
-			$series_suffix_str,
-			$array_events_alerts
-		);
-	}
-	else {
-		//XXXXX
-		//Corregir este problema
-		//tener en cuenta stacked, area, line
 
-		$graph = array();
-		$graph['data']            = $array_data;
-		$graph['width']           = 900;
-		$graph['height']          = 400;
-	//	$graph['color']           = $color;
-		$graph['legend']          = $legend;
-		$graph['xaxisname']       = 'me la pela';
-		$graph['yaxisname']       = 'borja es gay';
-	//  $graph['water_mark']      = $water_mark_file;
-		$graph['font']            = $format_graph['font'];
-		$graph['font_size']       = $format_graph['font_size'];
-		$graph['backgroundColor'] = 'white';
-		$graph['unit']            = '';
-		$graph['series_type']     = array();
-		$graph['percentil']       = false;
-
-//XXX $ttl tercer parametro
-
-		$id_graph = serialize_in_temp($graph, null, 1);
-		// Warning: This string is used in the function "api_get_module_graph" from 'functions_api.php' with the regec patern "/<img src='(.+)'>/"
-		return "<img src='" .
-			ui_get_full_url (false, false, false, false) .
-			"include/graphs/functions_pchart.php?" .
-				"static_graph=1&" .
-				"graph_type=area&" .
-				"ttl=" . $ttl . "&" .
-				"id_graph=" . $id_graph . "'>";
-	}
+	return flot_area_graph(
+		$agent_module_id,
+		$array_data,
+		$legend,
+		$series_type,
+		$date_array,
+		$data_module_graph,
+		$params,
+		$water_mark,
+		$series_suffix_str,
+		$array_events_alerts
+	);
 }
 
 function stacked_bullet_chart($flash_chart, $chart_data, $width, $height,

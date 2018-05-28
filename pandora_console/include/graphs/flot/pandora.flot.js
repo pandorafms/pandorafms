@@ -858,28 +858,28 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
 function pandoraFlotArea(
 	graph_id, values, legend, agent_module_id,
 	series_type, watermark, date_array,
-	data_module_graph, show_elements_graph,
-	format_graph, force_integer, series_suffix_str,
+	data_module_graph, params,
+	force_integer, series_suffix_str,
 	background_color, legend_color, short_data,
 	events_array
 ) {
 
 	//diferents vars
-	var unit      = format_graph.unit ? format_graph.unit : '';
-	var homeurl   = format_graph.homeurl;
-	var font_size = format_graph.font_size;
-	var font      = format_graph.font;
-	var width     = format_graph.width;
-	var height    = format_graph.height;
-	var vconsole  = show_elements_graph.vconsole;
-	var dashboard = show_elements_graph.dashboard;
-	var menu      = show_elements_graph.menu;
+	var unit      = params.unit ? params.unit : '';
+	var homeurl   = params.homeurl;
+	var font_size = params.font_size;
+	var font      = params.font;
+	var width     = params.width;
+	var height    = params.height;
+	var vconsole  = params.vconsole;
+	var dashboard = params.dashboard;
+	var menu      = params.menu;
 	var min_x     = date_array['start_date'] *1000;
 	var max_x     = date_array['final_date'] *1000;
-	var type      = show_elements_graph.stacked;
+	var type      = params.stacked;
 
 	if(typeof type === 'undefined' || type == ''){
-		type = format_graph.type_graph;
+		type = params.type_graph;
 	}
 
 	//for threshold
@@ -2125,7 +2125,7 @@ console.log(legend);
 
 		// Get only two decimals
 		//XXXXXXXXXX
-		formatted = round_with_decimals(formatted, 100);
+		//formatted = round_with_decimals(formatted, 100);
 		return '<div class='+font+' style="font-size:'+font_size+'pt;">'+formatted+'</div>';
 	}
 

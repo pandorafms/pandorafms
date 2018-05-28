@@ -3507,18 +3507,6 @@ function reporting_simple_baseline_graph($report, $content,
 	reporting_set_conf_charts($width, $height, $only_image, $type,
 		$content, $ttl);
 
-	if (!empty($force_width_chart)) {
-		$width = $force_width_chart;
-	}
-
-	if (!empty($force_height_chart)) {
-		$height = $force_height_chart;
-	}
-
-//XXXXXXXX
-	$width  = '90%';
-	$height = 300;
-
 	$baseline_data = enterprise_hook(
 		'reporting_enterprise_get_baseline',
 		array (
@@ -3535,43 +3523,17 @@ function reporting_simple_baseline_graph($report, $content,
 	switch ($type) {
 		case 'dinamic':
 		case 'static':
-			$return['chart'] = grafico_modulo_sparse (
-				$content['id_agent_module'],
-				$content['period'],
-				false,
-				$width,
-				$height,
-				'',
-				null,
-				false,
-				0,
-				false,
-				$report["datetime"],
-				'',
-				0,
-				0,
-				true,
-				$only_image,
-				ui_get_full_url(false, false, false, false),
-				$ttl,
-				false,
-				'',
-				false,
-				false,
-				true,
-				'white',
-				null,
-				false,
-				false,
-				'area',
-				false,
-				false,
-				0,
-				300,
-				0,
-				0,
-				$baseline_data
+			$params =array(
+				'agent_module_id'     => $content['id_agent_module'],
+				'period'              => $content['period'],
+				'date'                => $report["datetime"],
+				'only_image'          => $only_image,
+				'homeurl'             => ui_get_full_url(false, false, false, false),
+				'ttl'                 => $ttl,
+				'array_data_create'   => $baseline_data
 			);
+
+			$return['chart'] = grafico_modulo_sparse ($params);
 			break;
 		case 'data':
 			break;
@@ -3934,7 +3896,6 @@ function reporting_value($report, $content, $type,$pdf) {
 	switch ($type) {
 		case 'max':
 		if($content['lapse_calc'] == 0){
-		
 			$value = reporting_get_agentmodule_data_max(
 				$content['id_agent_module'], $content['period'], $report["datetime"]);
 			if (!$config['simple_module_value']) {
@@ -3943,17 +3904,27 @@ function reporting_value($report, $content, $type,$pdf) {
 			else {
 				$formated_value = format_for_graph($value, $config['graph_precision']) . " " . $unit;
 			}
-			
 		}
 		else{
-			
+			$params =array(
+				'agent_module_id'     => $content['id_agent_module'],
+				'period'              => $content['period'],
+				'width'               => '600px',
+				'pure'                => false,///true
+				'date'                => $report["datetime"],
+				'only_image'          => $only_image,
+				'homeurl'             => ui_get_full_url(false, false, false, false),
+				'ttl'                 => 1,///2
+				'type_graph'          => $config['type_module_charts'],
+				'time_interval'       => $content['lapse']
+			);
+
 			$value = '
 			<table border="0" style="margin:0 auto;text-align:center;">
 				<tr>
 					<td width="400px;" height="20%;">';
-					
 					if($content['visual_format'] == 1 || $content['visual_format'] == 2 || $content['visual_format'] == 3){
-					
+
 					$value .= '
 						<table style="width:90%;margin:0 auto;background-color:#eee;border: solid lightgray 1px;">
 							<tr>
@@ -3979,62 +3950,28 @@ function reporting_value($report, $content, $type,$pdf) {
 								</td>
 							</tr>
 						</table>';
-						
 					}
-						
+
 					$value .= '
 				</td>
 				<td rowspan="2" width="150px">
 				</td>
 				<td rowspan="2">';
-				
+
 				if($content['visual_format'] == 2 || $content['visual_format'] == 3){
-					$value .=
-					grafico_modulo_sparse(
-					$content['id_agent_module'],
-					$content['period'],
-					false,
-					600,
-					300,
-					'',
-					'',
-					false,
-					0,
-					true,
-					$report["datetime"],
-					'',
-					0,
-					0,
-					true,
-					$only_image,
-					ui_get_full_url(false, false, false, false),
-					2,
-					false,
-					'',
-					$time_compare_overlapped,
-					true,
-					true,
-					'white',
-					($content['style']['percentil'] == 1) ? $config['percentil'] : null,
-					false,
-					false,
-					$config['type_module_charts'],
-					false,
-					false,
-					$content['lapse_calc'],
-					$content['lapse'],
-					1);
+					$params['force_interval'] = 'max_only';
+					$value .= grafico_modulo_sparse($params);
 				}
-				
+
 				$value .= '
-				
-				</td>				
+
+				</td>
 			</tr>
 			<tr>
 				<td>';
-				
+
 				if($content['visual_format'] == 1 || $content['visual_format'] == 3){
-				
+
 				$value .= '
 					<table style="width:90%;margin:0 auto;margin-top:30px;background-color:#eee;border: solid lightgray 1px;">
 						<tr>
@@ -4048,11 +3985,11 @@ function reporting_value($report, $content, $type,$pdf) {
 						<tr>';
 							$time_begin = db_get_row_sql('select utimestamp from tagente_datos where id_agente_modulo ='.$content['id_agent_module']);
 							$date_reference = getdate();
-							
+
 							for ($i=$date_reference[0]; $i > ($date_reference[0]-$content["period"]); $i -= $content["lapse"]) { 
-									
+
 								$value .= '<tr><td style="padding:5px;">'. date("Y-m-d H:i:s", ($i-$content["lapse"]+1)).' to '.date("Y-m-d H:i:s",$i).'</td><td>';
-								
+
 								if($i>$time_begin['utimestamp']){
 									$value .= format_for_graph(reporting_get_agentmodule_data_max(
 									$content['id_agent_module'], $content["lapse"], $i), $config['graph_precision']) . ' ' . $unit.'</td></tr>';
@@ -4060,37 +3997,35 @@ function reporting_value($report, $content, $type,$pdf) {
 								else{
 										$value .= 'N/A</td></tr>';
 								}
-			
+
 							}
-							
+
 							$value .='</table>';
 				}
-					
 					$value .= '
-					
 				</td>
 			</tr>
 		</table>';
-			
+
 			$formated_value = $value;
 		}
-		
+
 		break;
 		case 'min':
 			if($content['lapse_calc'] == 0){
 				$value = reporting_get_agentmodule_data_min(
 				$content['id_agent_module'], $content['period'], $report["datetime"]);
-			
+
 				if (!$config['simple_module_value']) {
 					$formated_value = $value;
 				}
 				else {
 					$formated_value = format_for_graph($value, $config['graph_precision']) . " " . $unit;
 				}
-						
+
 			}
 			else{
-				
+
 				$value = '
 				<table border="0" style="margin:0 auto;text-align:center;">
 					<tr>
@@ -4123,57 +4058,21 @@ function reporting_value($report, $content, $type,$pdf) {
 									</td>
 								</tr>
 							</table>';
-							
 						}
-							
+
 						$value .= '
 					</td>
 					<td rowspan="2" width="150px">
 					</td>
 					<td rowspan="2">';
-					
+
 					if($content['visual_format'] == 2 || $content['visual_format'] == 3){
-						$value .=
-						grafico_modulo_sparse(
-						$content['id_agent_module'],
-						$content['period'],
-						false,
-						600,
-						300,
-						'',
-						'',
-						false,
-						0,
-						true,
-						$report["datetime"],
-						'',
-						0,
-						0,
-						true,
-						$only_image,
-						ui_get_full_url(false, false, false, false),
-						2,
-						false,
-						'',
-						$time_compare_overlapped,
-						true,
-						true,
-						'white',
-						($content['style']['percentil'] == 1) ? $config['percentil'] : null,
-						false,
-						false,
-						$config['type_module_charts'],
-						false,
-						false,
-						$content['lapse_calc'],
-						$content['lapse'],
-						0,
-						1);
+						$params['force_interval'] = 'min_only';
+						$value .= grafico_modulo_sparse($params);
 					}
-					
+
 					$value .= '
-					
-					</td>				
+					</td>
 				</tr>
 				<tr>
 					<td>';
@@ -4239,7 +4138,6 @@ function reporting_value($report, $content, $type,$pdf) {
 					<td width="400px;" height="20%;">';
 					
 					if($content['visual_format'] == 1 || $content['visual_format'] == 2 || $content['visual_format'] == 3){
-					
 					$value .= '
 						<table style="width:90%;margin:0 auto;background-color:#eee;border: solid lightgray 1px;">
 							<tr>
@@ -4275,41 +4173,8 @@ function reporting_value($report, $content, $type,$pdf) {
 				<td rowspan="2">';
 				
 				if($content['visual_format'] == 2 || $content['visual_format'] == 3){
-					$value .=
-					grafico_modulo_sparse(
-					$content['id_agent_module'],
-					$content['period'],
-					false,
-					600,
-					300,
-					'',
-					'',
-					false,
-					1,
-					true,
-					$report["datetime"],
-					'',
-					0,
-					0,
-					true,
-					$only_image,
-					ui_get_full_url(false, false, false, false),
-					2,
-					false,
-					'',
-					$time_compare_overlapped,
-					true,
-					true,
-					'white',
-					($content['style']['percentil'] == 1) ? $config['percentil'] : null,
-					false,
-					false,
-					$config['type_module_charts'],
-					false,
-					false,
-					$content['lapse_calc'],
-					$content['lapse']
-					);
+					$params['force_interval'] = 'avg_only';
+					$value .= grafico_modulo_sparse($params);
 				}
 				
 				$value .= '
@@ -6635,6 +6500,7 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 		case 'static':
 			if (preg_match ("/string/", $moduletype_name)) {
 				$urlImage = ui_get_full_url(false, false, false, false);
+				/*
 				$return['chart'] = grafico_modulo_string(
 					$content['id_agent_module'],
 					$content['period'],
@@ -6651,6 +6517,8 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 					$urlImage,
 					"",
 					$ttl);
+				*/
+				$return['chart'] = 'arreglar la grafica de string de una vez por todassssssssss';
 
 			}
 			else {
@@ -6660,36 +6528,23 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 					$time_compare_overlapped = 'overlapped';
 				}
 
-				$return['chart'] = grafico_modulo_sparse(
-					$content['id_agent_module'],
-					$content['period'],
-					false,
-					'90%',
-					400,
-					$label,
-					'',
-					false,
-					$only_avg,
-					true,
-					$report["datetime"],
-					'',
-					0,
-					0,
-					true,
-					$only_image,
-					ui_get_full_url(false, false, false, false),
-					$ttl,
-					false,
-					'',
-					$time_compare_overlapped,
-					true,
-					true,
-					'white',
-					($content['style']['percentil'] == 1) ? $config['percentil'] : null,
-					false,
-					false,
-					$config['type_module_charts'],
-					$fullscale);
+				$params =array(
+					'agent_module_id'     => $content['id_agent_module'],
+					'period'              => $content['period'],
+					'title'               => $label,
+					'avg_only'            => $only_avg,
+					'pure'                => false, //XXX
+					'date'                => $report["datetime"],
+					'only_image'          => $only_image,
+					'homeurl'             => ui_get_full_url(false, false, false, false),
+					'ttl'                 => $ttl,
+					'compare'             => $time_compare_overlapped,
+					'show_unknown'        => true,
+					'percentil'           => ($content['style']['percentil'] == 1) ? $config['percentil'] : null,
+					'fullscale'           => $fullscale
+				);
+
+				$return['chart'] = grafico_modulo_sparse($params);
 			}
 			break;
 		case 'data':
@@ -6708,7 +6563,6 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 	if ($config['metaconsole']) {
 		metaconsole_restore_db();
 	}
-
 	return reporting_check_structure_content($return);
 }
 

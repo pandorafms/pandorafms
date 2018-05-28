@@ -235,14 +235,27 @@ $alias    = db_get_value ("alias","tagente","id_agente",$id_agent);
 		switch ($graph_type) {
 			case 'boolean':
 			case 'sparse':
-				echo grafico_modulo_sparse ($id, $period, $draw_events,
-					$width, $height, $label_graph, $unit, $draw_alerts,
-					$avg_only, false, $date, $unit, $baseline, 0, true,
-					false, $urlImage, 1, false,
-					'adapter_' . $graph_type, $time_compare,
-					$unknown_graph, true, 'white',
-					(($show_percentil)? $config['percentil'] : null),
-					false, false, $config['type_module_charts'], $fullscale);
+			$params =array(
+				'agent_module_id'     => $id,
+				'period'              => $period,
+				'show_events'         => $draw_events,
+				'title'               => $label_graph,
+				'unit_name'           => $unit,
+				'show_alerts'         => $draw_alerts,
+				'avg_only'            => $avg_only,
+				'date'                => $date,
+				'unit'                => $unit,
+				'baseline'            => $baseline,
+				'homeurl'             => $urlImage,
+				'adapt_key'           => 'adapter_' . $graph_type,
+				'compare'             => $time_compare,
+				'show_unknown'        => $unknown_graph,
+				'percentil'           => (($show_percentil)? $config['percentil'] : null),
+				'type_graph'          => $config['type_module_charts'],
+				'fullscale'           => $fullscale
+			);
+
+				echo grafico_modulo_sparse ($params);
 				echo '<br>';
 				if ($show_events_graph){
 					$width = '500';

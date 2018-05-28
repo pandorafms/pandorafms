@@ -3005,108 +3005,125 @@ function color_graph_array($series_suffix, $compare = false){
 
 function series_type_graph_array($data, $show_elements_graph){
 	global $config;
-	foreach ($data as $key => $value) {
-		if(strpos($key, 'summatory') !== false){
-			$data_return['series_type'][$key] = 'area';
-			$data_return['legend'][$key] = __('Summatory series') . ' ' . $series_suffix_str;
-		}
-		elseif(strpos($key, 'average') !== false){
-			$data_return['series_type'][$key] = 'area';
-			$data_return['legend'][$key] = __('Average series') . ' ' . $series_suffix_str;
-		}
-		elseif(strpos($key, 'sum') !== false || strpos($key, 'baseline') !== false){
-			switch ($value['id_module_type']) {
-				case 21: case 2: case 6:
-				case 18: case 9: case 31:
-					$data_return['series_type'][$key] = 'boolean';
-					break;
-				default:
-					$data_return['series_type'][$key] = 'area';
-					break;
+	if(isset($data) && is_array($data)){
+		foreach ($data as $key => $value) {
+			if(strpos($key, 'summatory') !== false){
+				$data_return['series_type'][$key] = 'area';
+				$data_return['legend'][$key] = __('Summatory series') . ' ' . $series_suffix_str;
 			}
+			elseif(strpos($key, 'average') !== false){
+				$data_return['series_type'][$key] = 'area';
+				$data_return['legend'][$key] = __('Average series') . ' ' . $series_suffix_str;
+			}
+			elseif(strpos($key, 'sum') !== false || strpos($key, 'baseline') !== false){
+				switch ($value['id_module_type']) {
+					case 21: case 2: case 6:
+					case 18: case 9: case 31:
+						$data_return['series_type'][$key] = 'boolean';
+						break;
+					default:
+						$data_return['series_type'][$key] = 'area';
+						break;
+				}
 
-			if (isset($show_elements_graph['labels']) &&
-				is_array($show_elements_graph['labels']) &&
-				(count($show_elements_graph['labels']) > 0)){
-				$data_return['legend'][$key] = $show_elements_graph['labels'][$value['id_module_type']] . ' ' ;
+				if (isset($show_elements_graph['labels']) &&
+					is_array($show_elements_graph['labels']) &&
+					(count($show_elements_graph['labels']) > 0)){
+					$data_return['legend'][$key] = $show_elements_graph['labels'][$value['id_module_type']] . ' ' ;
+				}
+				else{
+					if(strpos($key, 'baseline') !== false){
+						$data_return['legend'][$key] = $value['agent_name']  . ' / ' .
+													$value['module_name'] . ' Baseline ';
+					}
+					else{
+						$data_return['legend'][$key] = $value['agent_name']  . ' / ' .
+													$value['module_name'] . ': ';
+					}
+				}
+
+				if(strpos($key, 'baseline') === false){
+					$data_return['legend'][$key] .=
+						__('Min:') . remove_right_zeros(
+							number_format(
+								$value['min'],
+								$config['graph_precision']
+							)
+						)  . ' ' .
+						__('Max:') . remove_right_zeros(
+							number_format(
+								$value['max'],
+								$config['graph_precision']
+							)
+						) . ' ' .
+						_('Avg:') . remove_right_zeros(
+							number_format(
+								$value['avg'],
+								$config['graph_precision']
+							)
+						) . ' ' . $series_suffix_str;
+				}
+			}
+			elseif(strpos($key, 'event') !== false){
+				$data_return['series_type'][$key] = 'points';
+				if($show_elements_graph['show_events']){
+					$data_return['legend'][$key] = __('Events') . ' ' . $series_suffix_str;
+				}
+			}
+			elseif(strpos($key, 'alert') !== false){
+				$data_return['series_type'][$key] = 'points';
+				if($show_elements_graph['show_alerts']){
+					$data_return['legend'][$key] = __('Alert') . ' ' . $series_suffix_str;
+				}
+			}
+			elseif(strpos($key, 'unknown') !== false){
+				$data_return['series_type'][$key] = 'unknown';
+				if($show_elements_graph['show_unknown']){
+					$data_return['legend'][$key] = __('Unknown') . ' ' . $series_suffix_str;
+				}
+			}
+			elseif(strpos($key, 'percentil') !== false){
+				$data_return['series_type'][$key] = 'percentil';
+				if($show_elements_graph['percentil']){
+					$data_return['legend'][$key] =
+						__('Percentil') . ' ' .
+						$config['percentil']  .
+						'º ' . __('of module') . ' ';
+					if (isset($show_elements_graph['labels']) && is_array($show_elements_graph['labels'])){
+						$data_return['legend'][$key] .= $show_elements_graph['labels'][$value['id_module_type']] . ' ' ;
+					}
+					else{
+						$data_return['legend'][$key] .= $value['agent_name']  . ' / ' .
+												$value['module_name'] . ': ' . ' Value: ';
+					}
+					$data_return['legend'][$key] .= remove_right_zeros(
+													number_format(
+														$value['data'][0][1],
+														$config['graph_precision']
+													)
+												) . ' ' . $series_suffix_str;
+				}
 			}
 			else{
-				if(strpos($key, 'baseline') !== false){
-					$data_return['legend'][$key] = $value['agent_name']  . ' / ' .
-												$value['module_name'] . ' Baseline ';
-				}
-				else{
-					$data_return['legend'][$key] = $value['agent_name']  . ' / ' .
-												$value['module_name'] . ': ';
-				}
-			}
-
-			if(strpos($key, 'baseline') === false){
-				$data_return['legend'][$key] .=
-					__('Min:') . remove_right_zeros(
-						number_format(
-							$value['min'],
-							$config['graph_precision']
-						)
-					)  . ' ' .
-					__('Max:') . remove_right_zeros(
-						number_format(
-							$value['max'],
-							$config['graph_precision']
-						)
-					) . ' ' .
-					_('Avg:') . remove_right_zeros(
-						number_format(
-							$value['avg'],
-							$config['graph_precision']
-						)
-					) . ' ' . $series_suffix_str;
+				$data_return['series_type'][$key] = 'area';
 			}
 		}
-		elseif(strpos($key, 'event') !== false){
-			$data_return['series_type'][$key] = 'points';
-			if($show_elements_graph['show_events']){
-				$data_return['legend'][$key] = __('Events') . ' ' . $series_suffix_str;
-			}
-		}
-		elseif(strpos($key, 'alert') !== false){
-			$data_return['series_type'][$key] = 'points';
-			if($show_elements_graph['show_alerts']){
-				$data_return['legend'][$key] = __('Alert') . ' ' . $series_suffix_str;
-			}
-		}
-		elseif(strpos($key, 'unknown') !== false){
-			$data_return['series_type'][$key] = 'unknown';
-			if($show_elements_graph['show_unknown']){
-				$data_return['legend'][$key] = __('Unknown') . ' ' . $series_suffix_str;
-			}
-		}
-		elseif(strpos($key, 'percentil') !== false){
-			$data_return['series_type'][$key] = 'percentil';
-			if($show_elements_graph['percentil']){
-				$data_return['legend'][$key] =
-					__('Percentil') . ' ' .
-					$config['percentil']  .
-					'º ' . __('of module') . ' ';
-				if (isset($show_elements_graph['labels']) && is_array($show_elements_graph['labels'])){
-					$data_return['legend'][$key] .= $show_elements_graph['labels'][$value['id_module_type']] . ' ' ;
-				}
-				else{
-					$data_return['legend'][$key] .= $value['agent_name']  . ' / ' .
-											$value['module_name'] . ': ' . ' Value: ';
-				}
-				$data_return['legend'][$key] .= remove_right_zeros(
-												number_format(
-													$value['data'][0][1],
-													$config['graph_precision']
-												)
-											) . ' ' . $series_suffix_str;
-			}
-		}
-		else{
-			$data_return['series_type'][$key] = 'area';
-		}
+		return $data_return;
 	}
-	return $data_return;
+	return false;
+}
+
+function generator_chart_to_pdf($params){
+	global $config;
+	$params_encode_json = urlencode(json_encode($params));
+	$file_js = "/var/www/html/pandora_console/include/web2image.js";
+	$url = "http://localhost/pandora_console/include/chart_generator.php";
+	$img_destination = "/var/www/html/pandora_console/attachment/imagen_". $params['agent_module_id'] .".png";
+	$width_img = 1048;
+	$height_img = 568;
+html_debug_print("entra con: " . $params['agent_module_id'] ."  en el tiempo " . date("Y-m-d H:i:s"), true);
+	exec("phantomjs " . $file_js . " " . $url . "  '" . $params_encode_json . "' " . $img_destination . " " . $width_img . " " . $height_img);
+html_debug_print("sale con:  " . $params['agent_module_id'] ."  en el tiempo " . date("Y-m-d H:i:s"), true);
+return "<img src='/var/www/html/pandora_console/attachment/imagen_". $params['agent_module_id'] .".png' alt='la imagen bonica'>";
 }
 ?>

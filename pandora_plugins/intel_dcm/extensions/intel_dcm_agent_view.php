@@ -168,9 +168,23 @@ function main_intel_dcm_agent_view () {
 		
 	$module = modules_get_agentmodule_id (io_safe_input("Avg. Power"), $id_agent);		
 	$unit = modules_get_unit ($module['id_agente_modulo']);
-		
-	$data[1] = grafico_modulo_sparse($module['id_agente_modulo'], 7200, $draw_events, 400, 250,
-		$module['nombre'], null, $draw_alerts, $avg_only, false, $date, $unit);
+
+	$params_1 =array(
+		'agent_module_id'     => $module['id_agente_modulo'],
+		'period'              => 7200,
+		'show_events'         => $draw_events,
+		'width'               => 400,
+		'height'              => 250,
+		'title'               => $module['nombre'],
+		'unit_name'           => null,
+		'show_alerts'         => $draw_alerts,
+		'avg_only'            => $avg_only,
+		'pure'                => false,
+		'date'                => $date,
+		'unit'                => $unit
+	);
+
+	$data[1] = grafico_modulo_sparse($params_1);
 		
 	array_push ($table->data, $data);
 		
@@ -190,19 +204,44 @@ function main_intel_dcm_agent_view () {
 	
 	$module = modules_get_agentmodule_id (io_safe_input("Avg. Inlet Temperature"), $id_agent);		
 	$unit = modules_get_unit ($module['id_agente_modulo']);
-		
-	$data[0] = grafico_modulo_sparse($module['id_agente_modulo'], 7200, $draw_events, 400, 250,
-		$module['nombre'], null, $draw_alerts, $avg_only, false, $date, $unit);
-
+	$params_2 =array(
+		'agent_module_id'     => $module['id_agente_modulo'],
+		'period'              => 7200,
+		'show_events'         => $draw_events,
+		'width'               => 400,
+		'height'              => 250,
+		'title'               => $module['nombre'],
+		'unit_name'           => null,
+		'show_alerts'         => $draw_alerts,
+		'avg_only'            => $avg_only,
+		'pure'                => false,
+		'date'                => $date,
+		'unit'                => $unit
+	);
+	$data[0] = grafico_modulo_sparse($params_2);
 
 	$module = modules_get_agentmodule_id (io_safe_input("Calculated Cooling Power"), $id_agent);		
 	$unit = modules_get_unit ($module['id_agente_modulo']);
-		
-	$data[1] = grafico_modulo_sparse($module['id_agente_modulo'], 7200, $draw_events, 400, 250,
-		$module['nombre'], null, $draw_alerts, $avg_only, false, $date, $unit);
-	
+
+	$params_3 =array(
+		'agent_module_id'     => $module['id_agente_modulo'],
+		'period'              => 7200,
+		'show_events'         => $draw_events,
+		'width'               => 400,
+		'height'              => 250,
+		'title'               => $module['nombre'],
+		'unit_name'           => null,
+		'show_alerts'         => $draw_alerts,
+		'avg_only'            => $avg_only,
+		'pure'                => false,
+		'date'                => $date,
+		'unit'                => $unit
+	);
+
+	$data[1] = grafico_modulo_sparse($params_3);
+
 	array_push ($table->data, $data);
-	
+
 	echo "<center>";
 	html_print_table($table);
 	echo "</center>";

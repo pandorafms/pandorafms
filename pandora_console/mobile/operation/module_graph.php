@@ -136,29 +136,26 @@ class ModuleGraph {
 					switch ($this->graph_type) {
 						case 'boolean':
 						case 'sparse':
-							$graph = grafico_modulo_sparse(
-								$this->id,
-								$this->period,
-								$this->draw_events,
-								$this->width,
-								$this->height,
-								false,
-								null,
-								$this->draw_alerts,
-								$this->avg_only,
-								false,
-								$date,
-								$unit,
-								$this->baseline,
-								0,
-								true,
-								false,
-								$urlImage,
-								1,
-								false,
-								'adapter_' . $this->graph_type,
-								$time_compare, $this->unknown_graph, false,
-								'white', null, false, false, $config['type_module_charts']);
+							$params =array(
+								'agent_module_id'     => $this->id,
+								'period'              => $this->period,
+								'show_events'         => $this->draw_events,
+								'width'               => $this->width,
+								'height'              => $this->height,
+								'show_alerts'         => $this->draw_alerts,
+								'avg_only'            => $this->avg_only,
+								'date'                => $date,
+								'unit'                => $unit,
+								'baseline'            => $this->baseline,
+								'homeurl'             => $urlImage,
+								'adapt_key'           => 'adapter_' . $this->graph_type,
+								'compare'             => $time_compare,
+								'show_unknown'        => $this->unknown_graph,
+								'menu'                => false,
+								'type_graph'          => $config['type_module_charts']
+							);
+
+							$graph = grafico_modulo_sparse($params);
 							if ($this->draw_events) {
 								$graph .= '<br>';
 								$graph .= graphic_module_events($this->id,

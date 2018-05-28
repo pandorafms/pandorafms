@@ -103,8 +103,7 @@ function include_javascript_dependencies_flot_graph($return = false) {
 function flot_area_graph (
 	$agent_module_id, $array_data,
 	$legend, $series_type, $date_array,
-	$data_module_graph, $show_elements_graph,
-	$format_graph, $water_mark, $series_suffix_str,
+	$data_module_graph, $params, $water_mark, $series_suffix_str,
 	$array_events_alerts ) {
 
 	global $config;
@@ -115,7 +114,7 @@ function flot_area_graph (
 	$graph_id = uniqid('graph_');
 
 	$background_style = '';
-	switch ($format_graph['background']) {
+	switch ($params['background']) {
 		default:
 		case 'white':
 			$background_style = ' background: #fff; ';
@@ -130,10 +129,10 @@ function flot_area_graph (
 
 	///XXXXXXX los px caca
 	// Parent layer
-	$return = "<div class='parent_graph' style='width: " . ($format_graph['width']) . "; " . $background_style . "'>";
+	$return = "<div class='parent_graph' style='width: " . ($params['width']) . "; " . $background_style . "'>";
 	// Set some containers to legend, graph, timestamp tooltip, etc.
-	$return .= "<p id='legend_$graph_id' class='legend_graph' style='font-size:" . $format_graph['font_size'] ."pt !important;'></p>";
-	if(!isset($show_elements_graph['combined']) || !$show_elements_graph['combined']){
+	$return .= "<p id='legend_$graph_id' class='legend_graph' style='font-size:" . $params['font_size'] ."pt !important;'></p>";
+	if(!isset($params['combined']) || !$params['combined']){
 		$yellow_threshold = $data_module_graph['w_min'];
 		$red_threshold    = $data_module_graph['c_min'];
 		// Get other required module datas to draw warning and critical
@@ -149,12 +148,12 @@ function flot_area_graph (
 			$red_inverse    = !($data_module_graph['c_inv'] == 0);
 		}
 	}
-	elseif(isset($show_elements_graph['from_interface']) && $show_elements_graph['from_interface']){
-		if(	isset($show_elements_graph['threshold_data']) && is_array($show_elements_graph['threshold_data'])){
-			$yellow_up      = $show_elements_graph['threshold_data']['yellow_up'];
-			$red_up         = $show_elements_graph['threshold_data']['red_up'];
-			$yellow_inverse = $show_elements_graph['threshold_data']['yellow_inverse'];
-			$red_inverse    = $show_elements_graph['threshold_data']['red_inverse'];
+	elseif(isset($params['from_interface']) && $params['from_interface']){
+		if(	isset($params['threshold_data']) && is_array($params['threshold_data'])){
+			$yellow_up      = $params['threshold_data']['yellow_up'];
+			$red_up         = $params['threshold_data']['red_up'];
+			$yellow_inverse = $params['threshold_data']['yellow_inverse'];
+			$red_inverse    = $params['threshold_data']['red_inverse'];
 		}
 		else{
 			$yellow_up      = 0;
@@ -170,44 +169,44 @@ function flot_area_graph (
 		$red_inverse    = false;
 	}
 
-	if ($show_elements_graph['menu']) {
+	if ($params['menu']) {
 		$return .= menu_graph(
 			$yellow_threshold, $red_threshold,
 			$yellow_up, $red_up, $yellow_inverse,
-			$red_inverse, $show_elements_graph['dashboard'],
-			$show_elements_graph['vconsole'],
-			$graph_id, $format_graph['width'],
-			$format_graph['homeurl']
+			$red_inverse, $params['dashboard'],
+			$params['vconsole'],
+			$graph_id, $params['width'],
+			$params['homeurl']
 		);
 	}
 
 	$return .= html_print_input_hidden('line_width_graph', $config['custom_graph_width'], true);
 	$return .= "<div id='timestamp_$graph_id'
 					class='timestamp_graph'
-					style='	font-size:".$format_graph['font_size']."pt;
+					style='	font-size:".$params['font_size']."pt;
 							display:none; position:absolute;
 							background:#fff; border: solid 1px #aaa;
 							padding: 2px; z-index:1000;'></div>";
 	$return .= "<div id='$graph_id' class='";
 
-	if($format_graph['type'] == 'area_simple'){
+	if($params['type'] == 'area_simple'){
 		$return .= "noresizevc ";
 	}
-//XXXXXX  height: ".$format_graph['height']."px;'
-	$return .= "graph" .$format_graph['adapt_key'] ."'
-				style='	width: ".$format_graph['width']."px;
-				height: ".$format_graph['height']."px;'></div>";
+//XXXXXX  height: ".$params['height']."px;'
+	$return .= "graph" .$params['adapt_key'] ."'
+				style='	width: ".$params['width']."px;
+				height: ".$params['height']."px;'></div>";
 
-	if ($show_elements_graph['menu']) {
-		$format_graph['height'] = 100;
+	if ($params['menu']) {
+		$params['height'] = 100;
 	}
 	else {
-		$format_graph['height'] = 1;
+		$params['height'] = 1;
 	}
 
 	if (!$vconsole){
 		$return .= "<div id='overview_$graph_id' class='overview_graph'
-						style='margin:0px; margin-top:30px; margin-bottom:50px; display:none; width: ".$format_graph['width']."; height: 200px;'></div>";
+						style='margin:0px; margin-top:30px; margin-bottom:50px; display:none; width: ".$params['width']."; height: 200px;'></div>";
 	}
 
 	//XXXXTODO
@@ -225,11 +224,11 @@ function flot_area_graph (
 	}
 
 	// Store data series in javascript format
-	$extra_width = (int)($format_graph['width'] / 3);
+	$extra_width = (int)($params['width'] / 3);
 	$return .= "<div id='extra_$graph_id'
-					style='font-size: " . $format_graph['font_size'] . "pt;
+					style='font-size: " . $params['font_size'] . "pt;
 					display:none; position:absolute; overflow: auto;
-					max-height: ".($format_graph['height']+50)."px;
+					max-height: ".($params['height']+50)."px;
 					width: ".$extra_width."px;
 					background:#fff; padding: 2px 2px 2px 2px;
 					border: solid #000 1px;'></div>";
@@ -264,8 +263,7 @@ function flot_area_graph (
 	$series_type         = json_encode($series_type);
 	$date_array          = json_encode($date_array);
 	$data_module_graph   = json_encode($data_module_graph);
-	$show_elements_graph = json_encode($show_elements_graph);
-	$format_graph        = json_encode($format_graph);
+	$params 			 = json_encode($params);
 	$array_events_alerts = json_encode($array_events_alerts);
 
 	// Javascript code
@@ -281,8 +279,7 @@ function flot_area_graph (
 		"'$watermark', \n" .
 		"JSON.parse('$date_array'), \n" .
 		"JSON.parse('$data_module_graph'), \n" .
-		"JSON.parse('$show_elements_graph'), \n" .
-		"JSON.parse('$format_graph'), \n" .
+		"JSON.parse('$params'), \n" .
 		"$force_integer, \n" .
 		"'$series_suffix_str', \n" .
 		"'$background_color', \n" .

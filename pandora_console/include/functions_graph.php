@@ -228,8 +228,7 @@ function grafico_modulo_sparse_data_chart (
 		$agent_module_id,
 		$date_array,
 		$data_module_graph,
-		$show_elements_graph,
-		$format_graph,
+		$params,
 		$series_suffix
 	) {
 
@@ -294,7 +293,7 @@ function grafico_modulo_sparse_data_chart (
 
 	foreach ($data as $k => $v) {
 		//convert array
-		if($show_elements_graph['flag_overlapped']){
+		if($params['flag_overlapped']){
 			$array_data["sum" . $series_suffix]['data'][$k] = array(
 				($v['utimestamp'] + $date_array['period']  )* 1000,
 				$v['datos']
@@ -322,7 +321,7 @@ function grafico_modulo_sparse_data_chart (
 		$count_data++;
 
 		//percentil
-		if (!is_null($show_elements_graph['percentil']) && $show_elements_graph['percentil']) {
+		if (!is_null($params['percentil']) && $params['percentil']) {
 			$array_percentil[] = $v['datos'];
 		}
 	}
@@ -334,10 +333,10 @@ function grafico_modulo_sparse_data_chart (
 	$array_data["sum" . $series_suffix]['agent_name']    = $data_module_graph['agent_name'];
 	$array_data["sum" . $series_suffix]['module_name']   = $data_module_graph['module_name'];
 
-	if (!is_null($show_elements_graph['percentil']) &&
-		$show_elements_graph['percentil'] &&
-		!$show_elements_graph['flag_overlapped']) {
-		$percentil_result = get_percentile($show_elements_graph['percentil'], $array_percentil);
+	if (!is_null($params['percentil']) &&
+		$params['percentil'] &&
+		!$params['flag_overlapped']) {
+		$percentil_result = get_percentile($params['percentil'], $array_percentil);
 		$array_data["percentil" . $series_suffix]['data'][0] = array(
 			$date_array['start_date'] * 1000,
 			$percentil_result
@@ -352,22 +351,21 @@ function grafico_modulo_sparse_data_chart (
 
 function grafico_modulo_sparse_data(
 	$agent_module_id, $date_array,
-	$data_module_graph, $show_elements_graph,
-	$format_graph, $exception_interval_graph,
+	$data_module_graph, $params,
 	$series_suffix, $str_series_suffix) {
 
 	global $config;
 	global $array_events_alerts;
 
-	if($show_elements_graph['fullscale']){
+	if($params['fullscale']){
 		$array_data = fullscale_data(
 			$agent_module_id,
 			$date_array,
-			$show_elements_graph['show_unknown'],
-			$show_elements_graph['percentil'],
+			$params['show_unknown'],
+			$params['percentil'],
 			$series_suffix,
 			$str_series_suffix,
-			$show_elements_graph['flag_overlapped']
+			$params['flag_overlapped']
 		);
 	}
 	else{
@@ -375,8 +373,7 @@ function grafico_modulo_sparse_data(
 			$agent_module_id,
 			$date_array,
 			$data_module_graph,
-			$show_elements_graph,
-			$format_graph,
+			$params,
 			$series_suffix
 		);
 	}
@@ -385,7 +382,71 @@ function grafico_modulo_sparse_data(
 		return false;
 	}
 
-	if($show_elements_graph['percentil']){
+	//XXX Para un tipo de reports en concreto habria que optimizar que la tabla que crea coincida con los datos documentar
+	if($params['force_interval'] != ''){
+		$period_time_interval = $date_array['period'] * 1000;
+		$start_period = $date_array['start_date'] * 1000;
+		$i = 0;
+
+		$sum_data = 0;
+		$count_data = 0;
+		$data_last_acum = $array_data['sum1']['data'][0][1];
+
+		while($period_time_interval > 0) {
+			foreach ($array_data['sum1']['data'] as $key => $value) {
+				if($value[0] >= $start_period && $value[0] < $start_period + $params['time_interval'] * 1000){
+					$sum_data = $value[1];
+					$array_data_only[] = $value[1];
+					$count_data++;
+					unset($array_data['sum1']['data'][$key]);
+				}
+				else{
+					if($params['force_interval'] == 'max_only'){
+						$acum_array_data[$i][0] = $start_period;
+						if(is_array($array_data_only) && count($array_data_only) > 0){
+							$acum_array_data[$i][1] = max($array_data_only);
+							$data_last_acum = $array_data_only[count($array_data_only) - 1];
+						}
+						else{
+							$acum_array_data[$i][1] = $data_last_acum;
+						}
+					}
+
+					if($params['force_interval'] == 'min_only'){
+						$acum_array_data[$i][0] = $start_period;
+						if(is_array($array_data_only) && count($array_data_only) > 0){
+							$acum_array_data[$i][1] = min($array_data_only);
+							$data_last_acum = $array_data_only[count($array_data_only) - 1];
+						}
+						else{
+							$acum_array_data[$i][1] = $data_last_acum;
+						}
+					}
+
+					if($params['force_interval'] == 'avg_only'){
+						$acum_array_data[$i][0] = $start_period;
+						if(is_array($array_data_only) && count($array_data_only) > 0){
+							$acum_array_data[$i][1] = $sum_data / $count_data;
+						}
+						else{
+							$acum_array_data[$i][1] = $data_last_acum;
+						}
+					}
+
+					$start_period = $start_period + $params['time_interval'] * 1000;
+					$array_data_only = array();
+					$sum_data = 0;
+					$count_data = 0;
+					$i++;
+					break;
+				}
+			}
+			$period_time_interval = $period_time_interval - $params['time_interval'];
+		}
+		$array_data['sum1']['data'] = $acum_array_data;
+	}
+
+	if($params['percentil']){
 		$percentil_value = $array_data['percentil' . $series_suffix]['data'][0][1];
 	}
 	else{
@@ -399,9 +460,9 @@ function grafico_modulo_sparse_data(
 		$avg = $array_data['sum'. $series_suffix]['avg'];
 	}
 
-	if(!$show_elements_graph['flag_overlapped']){
-		if($show_elements_graph['fullscale']){
-			if(	$show_elements_graph['show_unknown'] &&
+	if(!$params['flag_overlapped']){
+		if($params['fullscale']){
+			if(	$params['show_unknown'] &&
 				isset($array_data['unknown' . $series_suffix]) &&
 				is_array($array_data['unknown' . $series_suffix]['data']) ){
 				foreach ($array_data['unknown' . $series_suffix]['data'] as $key => $s_date) {
@@ -412,7 +473,7 @@ function grafico_modulo_sparse_data(
 			}
 		}
 		else{
-			if(	$show_elements_graph['show_unknown'] ) {
+			if(	$params['show_unknown'] ) {
 				$unknown_events = db_get_module_ranges_unknown(
 					$agent_module_id,
 					$date_array['start_date'],
@@ -463,8 +524,8 @@ function grafico_modulo_sparse_data(
 			}
 		}
 
-		if ($show_elements_graph['show_events']  ||
-			$show_elements_graph['show_alerts'] ) {
+		if ($params['show_events']  ||
+			$params['show_alerts'] ) {
 
 			$events = db_get_all_rows_filter (
 				'tevento',
@@ -486,7 +547,7 @@ function grafico_modulo_sparse_data(
 				$count_alerts=0;
 				foreach ($events as $k => $v) {
 					if (strpos($v["event_type"], "alert") !== false){
-						if($show_elements_graph['flag_overlapped']){
+						if($params['flag_overlapped']){
 							$alerts_array['data'][$count_alerts] = array(
 								($v['utimestamp'] + $date_array['period'] *1000),
 								$max * 1.10
@@ -501,7 +562,7 @@ function grafico_modulo_sparse_data(
 						$count_alerts++;
 					}
 					else{
-						if($show_elements_graph['flag_overlapped']){
+						if($params['flag_overlapped']){
 							if( ( strstr($v['event_type'], 'going_up') ) ||
 									( strstr($v['event_type'], 'going_down') ) ){
 								$events_array['data'][$count_events] = array(
@@ -537,22 +598,22 @@ function grafico_modulo_sparse_data(
 			}
 		}
 
-		if($show_elements_graph['show_events']){
+		if($params['show_events']){
 			$array_data['event' . $series_suffix] = $events_array;
 		}
 
-		if($show_elements_graph['show_alerts']){
+		if($params['show_alerts']){
 			$array_data['alert' . $series_suffix] = $alerts_array;
 		}
 	}
 
-	if ($show_elements_graph['return_data'] == 1) {
+	if ($params['return_data'] == 1) {
 		return $array_data;
 	}
 
 	$color = color_graph_array(
 		$series_suffix,
-		$show_elements_graph['flag_overlapped']
+		$params['flag_overlapped']
 	);
 
 	foreach ($color as $k => $v) {
@@ -566,36 +627,215 @@ function grafico_modulo_sparse_data(
 	return $array_data;
 }
 
-function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
-	$width, $height , $title = '', $unit_name = null,
-	$show_alerts = false, $avg_only = 0, $pure = false, $date = 0,
-	$unit = '', $baseline = 0, $return_data = 0, $show_title = true,
-	$only_image = false, $homeurl = '', $ttl = 1, $projection = false,
-	$adapt_key = '', $compare = false, $show_unknown = false,
-	$menu = true, $backgroundColor = 'white', $percentil = null,
-	$dashboard = false, $vconsole = false, $type_graph = 'area', $fullscale = false,
-	$id_widget_dashboard = false,$force_interval = 0,$time_interval = 300,
-	$max_only = 0, $min_only = 0, $array_data_create = 0) {
-
+/*
+	$params =array(
+		'agent_module_id'     => $agent_module_id,
+		'period'              => $period,
+		'show_events'         => false,
+		'width'               => $width,
+		'height'              => $height,
+		'title'               => '',
+		'unit_name'           => null,
+		'show_alerts'         => false,
+		'avg_only'            => 0,
+		'pure'                => false,
+		'date'                => 0,
+		'unit'                => '',
+		'baseline'            => 0,
+		'return_data'         => 0,
+		'show_title'          => true,
+		'only_image'          => false,
+		'homeurl'             => '',
+		'ttl'                 => 1,
+		'projection'          => false,
+		'adapt_key'           => '',
+		'compare'             => false,
+		'show_unknown'        => false,
+		'menu'                => true,
+		'backgroundColor'     => 'white',
+		'percentil'           => null,
+		'dashboard'           => false,
+		'vconsole'            => false,
+		'type_graph'          => 'area',
+		'fullscale'           => false,
+		'id_widget_dashboard' => false,
+		'force_interval'      => '',
+		'time_interval'       => 300,
+		'array_data_create'   => 0
+	);
+ */
+function grafico_modulo_sparse ($params) {
+	html_debug_print('entra por este sitio', true);
 	global $config;
+
+	/*XXXXXXXXXXXX Documnetar
+	*Set all variable
+	*/
+
+	if(!isset($params) || !is_array($params)){
+		return false;
+	}
+
+	if(!isset($params['agent_module_id'])){
+		return false;
+	}
+	else{
+		$agent_module_id = $params['agent_module_id'];
+	}
+
+	if(!isset($params['period'])){
+		return false;
+	}
+
+	if(!isset($params['show_events'])){
+		$params['show_events'] = false;
+	}
+
+	// ATTENTION: The min size is in constants.php
+	// It's not the same minsize for all graphs, but we are choosed a prudent minsize for all
+	if(!isset($params['width'])){
+		$params['width'] = '90%';
+	}
+
+	if(!isset($params['height'])){
+		$params['height'] = 450;
+	}
+
+	if(!isset($params['title'])){
+		$params['title'] = '';
+	}
+
+	if(!isset($params['unit_name'])){
+		$params['unit_name'] = null;
+	}
+
+	if(!isset($params['show_alerts'])){
+		$params['show_alerts'] = false;
+	}
+
+	if(!isset($params['avg_only'])){
+		$params['avg_only'] = 0;
+	}
+
+	if(!isset($params['pure'])){
+		$params['pure'] = false;
+	}
+
+	if(!isset($params['date']) || !$params['date']){
+		$params['date'] = get_system_time();
+	}
+
+	if(!isset($params['unit'])){
+		$params['unit'] = '';
+	}
+
+	if(!isset($params['baseline'])){
+		$params['baseline'] = 0;
+	}
+
+	if(!isset($params['return_data'])){
+		$params['return_data'] = 0;
+	}
+
+	if(!isset($params['show_title'])){
+		$show_title = true;
+	}
+
+	if(!isset($params['only_image'])){
+		$params['only_image'] = false;
+	}
+
+	if(!isset($params['homeurl'])){
+		$params['homeurl'] = '';
+	}
+
+	if(!isset($params['ttl'])){
+		$params['ttl'] = 1;
+	}
+
+	if(!isset($params['projection'])){
+		$params['projection'] = false;
+	}
+
+	if(!isset($params['adapt_key'])){
+		$params['adapt_key'] = '';
+	}
+
+	if(!isset($params['compare'])){
+		$params['compare'] = false;
+	}
+
+	if(!isset($params['show_unknown'])){
+		$params['show_unknown'] = false;
+	}
+
+	if(!isset($params['menu'])){
+		$params['menu'] = true;
+	}
+
+	if(!isset($params['backgroundColor'])){
+		$params['backgroundColor'] = 'white';
+	}
+
+	if(!isset($params['percentil'])){
+		$params['percentil'] = null;
+	}
+
+	if(!isset($params['dashboard'])){
+		$params['dashboard'] = false;
+	}
+
+	if(!isset($params['vconsole'])){
+		$params['vconsole'] = false;
+	}
+	else{
+		$params['menu'] = false;
+	}
+
+	if(!isset($params['type_graph'])){
+		$params['type_graph'] = $config['type_module_charts'];
+	}
+
+	if(!isset($params['fullscale'])){
+		$params['fullscale'] = false;
+	}
+
+	if(!isset($params['id_widget_dashboard'])){
+		$params['id_widget_dashboard'] = false;
+	}
+
+	if(!isset($params['force_interval'])){
+		$params['force_interval'] = '';
+	}
+
+	if(!isset($params['time_interval'])){
+		$params['time_interval'] = 300;
+	}
+
+	if(!isset($params['array_data_create'])){
+		$params['array_data_create'] = 0;
+	}
+
+	$params['font']       = $config['fontpath'];
+	$params['font-size']  = $config['font_size'];
+
+	//XXXXXXXXXXXX se devuelve phantom.js
+	if($params['only_image']){
+		return	generator_chart_to_pdf($params);
+	}
 
 	global $graphic_type;
 	global $array_events_alerts;
-
 
 	$array_data   = array();
 	$legend       = array();
 	$array_events_alerts = array();
 
-	//date start final period
-	if($date == 0){
-		$date = get_system_time();
-	}
 
 	$date_array = array();
-	$date_array["period"]     = $period;
-	$date_array["final_date"] = $date;
-	$date_array["start_date"] = $date - $period;
+	$date_array["period"]     = $params['period'];
+	$date_array["final_date"] = $params['date'];
+	$date_array["start_date"] = $params['date'] - $params['period'];
 
 	$module_data = db_get_row_sql (
 		'SELECT * FROM tagente_modulo
@@ -618,72 +858,16 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	$data_module_graph['c_max']    		 = $module_data['max_critical'];
 	$data_module_graph['c_inv']    		 = $module_data['critical_inverse'];
 
-	//show elements in the graph
-	if ($vconsole){
-		$menu = false;
-	}
-
-	$show_elements_graph = array();
-	$show_elements_graph['show_events']  = $show_events;
-	$show_elements_graph['show_alerts']  = $show_alerts;
-	$show_elements_graph['show_unknown'] = $show_unknown;
-	$show_elements_graph['avg_only']     = $avg_only;
-	$show_elements_graph['fullscale']    = $fullscale;
-	$show_elements_graph['show_title']   = $show_title;
-	$show_elements_graph['menu']         = $menu;
-	$show_elements_graph['percentil']    = $percentil;
-	$show_elements_graph['projection']   = $projection;
-	$show_elements_graph['adapt_key']    = $adapt_key;
-	$show_elements_graph['compare']      = $compare;
-	$show_elements_graph['dashboard']    = $dashboard;
-	$show_elements_graph['vconsole']     = $vconsole;
-	$show_elements_graph['pure']         = $pure;
-	$show_elements_graph['baseline']     = $baseline;
-	$show_elements_graph['only_image']   = $only_image;
-	$show_elements_graph['return_data']  = $return_data;
-	$show_elements_graph['id_widget']    = $id_widget_dashboard;
-
 	//format of the graph
-	if (empty($unit)) {
-		$unit = $module_data['unit'];
-		if(modules_is_unit_macro($unit)){
-			$unit = "";
+	if (empty($params['unit'])) {
+		$params['unit'] = $module_data['unit'];
+		if(modules_is_unit_macro($params['unit'])){
+			$params['unit'] = "";
 		}
 	}
 
-	// ATTENTION: The min size is in constants.php
-	// It's not the same minsize for all graphs, but we are choosed a prudent minsize for all
-	/*
-	if ($height <= CHART_DEFAULT_HEIGHT) {
-		$height = CHART_DEFAULT_HEIGHT;
-	}
-	if ($width < CHART_DEFAULT_WIDTH) {
-		$width = CHART_DEFAULT_WIDTH;
-	}
-	*/
-	$format_graph = array();
-	$format_graph['width']      = $width;
-	$format_graph['height']     = $height;
-	$format_graph['type_graph'] = $type_graph;
-	$format_graph['unit_name']  = $unit_name;
-	$format_graph['unit']       = $unit;
-	$format_graph['title']      = $title;
-	$format_graph['homeurl']    = $homeurl;
-	$format_graph['ttl']        = $ttl;
-	$format_graph['background'] = $backgroundColor;
-	$format_graph['font']       = $config['fontpath'];
-	$format_graph['font-size']  = $config['font_size'];
-
-	//exception to change the interval of the graph and show media min max @enriquecd
-	$exception_interval_graph['force_interval'] = $force_interval;
-	$exception_interval_graph['time_interval']  = $time_interval;
-	$exception_interval_graph['max_only']       = $max_only;
-	$exception_interval_graph['min_only']       = $min_only;
-
-	$type_graph = $config['type_module_charts'];
-
-	if(!$array_data_create){
-		if ($show_elements_graph['compare'] !== false) {
+	if(!$params['array_data_create']){
+		if ($params['compare'] !== false) {
 			$series_suffix = 2;
 			$series_suffix_str = ' (' . __('Previous') . ')';
 
@@ -691,21 +875,20 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 			$date_array_prev['start_date'] = $date_array['start_date'] - $date_array['period'];
 			$date_array_prev['period']     = $date_array['period'];
 
-			if ($show_elements_graph['compare'] === 'overlapped') {
-				$show_elements_graph['flag_overlapped'] = 1;
+			if ($params['compare'] === 'overlapped') {
+				$params['flag_overlapped'] = 1;
 			}
 			else{
-				$show_elements_graph['flag_overlapped'] = 0;
+				$params['flag_overlapped'] = 0;
 			}
 
 			$array_data = grafico_modulo_sparse_data(
 				$agent_module_id, $date_array_prev,
-				$data_module_graph, $show_elements_graph,
-				$format_graph, $exception_interval_graph,
+				$data_module_graph, $params,
 				$series_suffix, $series_suffix_str
 			);
 
-			switch ($show_elements_graph['compare']) {
+			switch ($params['compare']) {
 				case 'separated':
 				case 'overlapped':
 					// Store the chart calculated
@@ -717,27 +900,26 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 
 		$series_suffix = 1;
 		$series_suffix_str = '';
-		$show_elements_graph['flag_overlapped'] = 0;
+		$params['flag_overlapped'] = 0;
 
 		$array_data = grafico_modulo_sparse_data(
 			$agent_module_id, $date_array,
-			$data_module_graph, $show_elements_graph,
-			$format_graph, $exception_interval_graph,
+			$data_module_graph, $params,
 			$series_suffix, $str_series_suffix
 		);
 
-		if($show_elements_graph['compare']){
-			if ($show_elements_graph['compare'] === 'overlapped') {
+		if($params['compare']){
+			if ($params['compare'] === 'overlapped') {
 				$array_data = array_merge($array_data, $array_data_prev);
 				$legend     = array_merge($legend, $legend_prev);
 			}
 		}
 	}
 	else{
-		$array_data = $array_data_create;
+		$array_data = $params['array_data_create'];
 	}
 
-	if($show_elements_graph['return_data']){
+	if($params['return_data']){
 		return $array_data;
 	}
 
@@ -755,7 +937,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 
 	$series_type_array = series_type_graph_array(
 		$array_data,
-		$show_elements_graph
+		$params
 	);
 
 	$series_type = $series_type_array['series_type'];
@@ -767,7 +949,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	$data_module_graph['series_suffix'] = $series_suffix;
 
 	// Check available data
-	if ($show_elements_graph['compare'] === 'separated') {
+	if ($params['compare'] === 'separated') {
 		if (!empty($array_data)) {
 			$return = area_graph(
 				$agent_module_id,
@@ -776,22 +958,21 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 				$series_type,
 				$date_array,
 				$data_module_graph,
-				$show_elements_graph,
-				$format_graph,
+				$params,
 				$water_mark,
 				$series_suffix_str,
 				$array_events_alerts
 			);
 		}
 		else{
-			$return = graph_nodata_image($width, $height);
+			$return = graph_nodata_image($params['width'], $params['height']);
 		}
 		$return .= '<br>';
 		if (!empty($array_data_prev)) {
 
 			$series_type_array = series_type_graph_array(
 				$array_data_prev,
-				$show_elements_graph
+				$params
 			);
 
 			$series_type = $series_type_array['series_type'];
@@ -804,15 +985,14 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 				$series_type,
 				$date_array,
 				$data_module_graph,
-				$show_elements_graph,
-				$format_graph,
+				$params,
 				$water_mark,
 				$series_suffix_str,
 				$array_events_alerts
 			);
 		}
 		else{
-			$return .= graph_nodata_image($width, $height);
+			$return .= graph_nodata_image($params['width'], $params['height']);
 		}
 	}
 	else{
@@ -824,20 +1004,21 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 				$series_type,
 				$date_array,
 				$data_module_graph,
-				$show_elements_graph,
-				$format_graph,
+				$params,
 				$water_mark,
 				$series_suffix_str,
 				$array_events_alerts
 			);
 		}
 		else{
-			$return = graph_nodata_image($width, $height);
+			$return = graph_nodata_image($params['width'], $params['height']);
 		}
 	}
 
 return $return;
 }
+
+
 
 function graph_get_formatted_date($timestamp, $format1, $format2) {
 	global $config;
@@ -950,43 +1131,33 @@ function graphic_combined_module (
 		$menu = false;
 	}
 
-	$show_elements_graph = array();
-	$show_elements_graph['show_events']  = $show_events;
-	$show_elements_graph['show_alerts']  = $show_alerts;
-	$show_elements_graph['show_unknown'] = false; // dont use
-	$show_elements_graph['avg_only']     = false; // dont use
-	$show_elements_graph['fullscale']    = $fullscale;
-	$show_elements_graph['show_title']   = ''; // dont use
-	$show_elements_graph['menu']         = $menu; // dont use
-	$show_elements_graph['adapt_key']    = ''; // dont use
-	$show_elements_graph['percentil']    = $percentil;
-	$show_elements_graph['projection']   = $projection;
-	$show_elements_graph['compare']      = false; //dont use
-	$show_elements_graph['dashboard']    = $dashboard;
-	$show_elements_graph['vconsole']     = $vconsole;
-	$show_elements_graph['pure']         = $pure;
-	$show_elements_graph['baseline']     = false; //dont use
-	$show_elements_graph['only_image']   = $only_image;
-	$show_elements_graph['return_data']  = false; //dont use
-	$show_elements_graph['id_widget']    = $id_widget_dashboard;
-	$show_elements_graph['labels']       = $labels;
-	$show_elements_graph['stacked']      = $stacked;
-	$show_elements_graph['combined']     = true;
-	$show_elements_graph['from_interface'] = $from_interface;
-
-	$format_graph = array();
-	$format_graph['width']      = "90%";
-	$format_graph['height']     = "450";
-	$format_graph['type_graph'] = ''; //dont use
-	$format_graph['unit_name']  = $unit_name;
-	$format_graph['unit']       = ''; //dont use
-	$format_graph['title']      = $title;
-	$format_graph['homeurl']    = $homeurl;
-	$format_graph['ttl']        = $ttl;
-	$format_graph['background'] = $backgroundColor;
-	$format_graph['font']       = $config['fontpath'];
-	$format_graph['font-size']  = $config['font_size'];
-
+	$params = array();
+	$params['show_events']    = $show_events;
+	$params['show_alerts']    = $show_alerts;
+	$params['show_unknown']   = false; // dont use
+	$params['avg_only']       = false; // dont use
+	$params['fullscale']      = $fullscale;
+	$params['show_title']     = ''; // dont use
+	$params['menu']           = $menu; // dont use
+	$params['adapt_key']      = ''; // dont use
+	$params['percentil']      = $percentil;
+	$params['projection']     = $projection;
+	$params['compare']        = false; //dont use
+	$params['dashboard']      = $dashboard;
+	$params['vconsole']       = $vconsole;
+	$params['pure']           = $pure;
+	$params['baseline']       = false; //dont use
+	$params['only_image']     = $only_image;
+	$params['return_data']    = false; //dont use
+	$params['id_widget']      = $id_widget_dashboard;
+	$params['labels']         = $labels;
+	$params['stacked']        = $stacked;
+	$params['combined']       = true;
+	$params['from_interface'] = $from_interface;
+	$params['font']           = $config['fontpath'];
+	$params['font-size']      = $config['font_size'];
+	$params['width']          ='90%';
+	$params['height']         = $height;
 	//for flash_charts
 	$user              = users_get_user_by_id($config['id_user']);
 	$user_flash_charts = $user['flash_chart'];
@@ -1032,9 +1203,7 @@ function graphic_combined_module (
 			$agent_module_id,
 			$date_array,
 			$data_module_graph,
-			$show_elements_graph,
-			$format_graph,
-			array(),
+			$param,
 			$i,
 			$data_module_graph['agent_name']
 		);
@@ -1581,9 +1750,8 @@ function graphic_combined_module (
 		case CUSTOM_GRAPH_AREA:
 		case CUSTOM_GRAPH_LINE:
 			return area_graph($agent_module_id, $array_data,
-				$legend, $series_type, $date_array,
-				$data_module_graph, $show_elements_graph,
-				$format_graph, $water_mark, $series_suffix_str,
+				$legend, $series_type, $date_array, $data_module_graph,
+				$params, $water_mark, $series_suffix_str,
 				$array_events_alerts);
 			break;
 		case CUSTOM_GRAPH_BULLET_CHART_THRESHOLD:

@@ -9,7 +9,7 @@
 
 <p>
 	El formato de la fecha debe ser año/mes/día y el del tiempo hora:minuto:segundo.
-	Se pueden crear paradas planificadas en fechas pasadas, siempre que el administrador de Pandora FMS no haya deshabilitado esa opción.
+	Se pueden crear paradas planificadas en fechas pasadas, siempre que el administrador de <?php echo get_product_name();?> no haya deshabilitado esa opción.
 </p>
 
 <h2>Ejecución periódica</h2>

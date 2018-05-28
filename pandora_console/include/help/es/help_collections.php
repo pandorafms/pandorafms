@@ -3,9 +3,7 @@
 */
 ?>
 
-<h3>Collections</h3>
+<h1>Colecciones del agente</h1>
 
-<p>
-A collection is group of files (executables or scripts) that are copied to a specific agent directory. With this you can transfer remotely software to agent's machine in a easy way.
-</p>
+<p>Una colección es un grupo de ficheros (ejecutables o scripts) que son copiados a la maquina del agente en un diretorio específico. Con esto se puede transferir remotamente software a la máquina del agente de una manera sencilla.</p>
 

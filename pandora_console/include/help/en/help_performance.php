@@ -62,5 +62,5 @@ Agent access graph, renders the number of agent contacts per hour in a graph wit
 <br><br>
 Maximum number of days before delete unknown modules. 
 <br><br>
-<i>**All these parameters are made when running the pandora_db.pl tool</i>
+<i>**All these parameters are made when running the DB Tool</i>
 

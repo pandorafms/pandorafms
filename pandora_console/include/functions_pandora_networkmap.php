@@ -104,7 +104,7 @@ function networkmap_process_networkmap($id = 0) {
 			// Open Graph
 			$graph = networkmap_open_graph ($layout, $nooverlap, $pure, $zoom,
 				$ranksep, $font_size, null);
-			$graph .= networkmap_create_pandora_node (__('Pandora FMS'), $font_size, $simple);
+			$graph .= networkmap_create_pandora_node (get_product_name(), $font_size, $simple);
 			$graph .= networkmap_close_graph ();
 
 			switch (PHP_OS) {
@@ -211,7 +211,7 @@ function networkmap_process_networkmap($id = 0) {
 		}
 		else {
 			// Generate dot file
-			$graph = networkmap_generate_dot (__('Pandora FMS'),
+			$graph = networkmap_generate_dot (get_product_name(),
 				$id_group,
 				$simple,
 				$font_size,
@@ -1090,8 +1090,9 @@ function networkmap_loadfile($id = 0, $file = '',
 				$data['id_agent'] = 0;
 				$data['id_module'] = 0;
 				$data['type'] = '';
-				if (preg_match('/Pandora FMS/', $line) != 0) {
-					$data['text'] = 'Pandora FMS';
+				$product_name = get_product_name();
+				if (preg_match("/$product_name/", $line) != 0) {
+					$data['text'] = $product_name;
 					$data['id_agent'] = 0;
 				}
 				else {
@@ -1621,7 +1622,9 @@ if (empty($list_networkmaps))
 	$list_networkmaps = array();
 ?>
 
-<div id="open_version_dialog" style="display: none;">In the Open version of PandoraFMS can not be edited nodes or map</div>
+<div id="open_version_dialog" style="display: none;">
+	<?php echo __("In the Open version of %s can not be edited nodes or map", get_product_name()); ?>
+</div>
 
 <div id="dialog_node_edit" style="display: none;" title="<?php echo __('Edit node');?>">
 	<div style="text-align: left; width: 100%;">

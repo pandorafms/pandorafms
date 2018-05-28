@@ -66,10 +66,10 @@ if ($email == 'admin@example.com') $email = '';
 
 // Prints first step pandora registration
 echo '<div id="login_id_dialog" title="' .
-	__('Pandora FMS instance identification wizard') . '" style="display: none;">';
+	__('%s instance identification wizard', get_product_name()) . '" style="display: none;">';
 	
 	echo '<div style="font-size: 10pt; margin: 20px;">';
-	echo __('Please fill the following information in order to configure your Pandora FMS instance successfully') . '.';
+	echo __('Please fill the following information in order to configure your %s instance successfully', get_product_name()) . '.';
 	echo '</div>';
 	
 	echo '<div style="">';
@@ -83,7 +83,7 @@ echo '<div id="login_id_dialog" title="' .
 		$table->size[1] = '60%';
 		$table->border = '5px solid';
 		
-		$table->data[0][0] = __('Language code for Pandora');
+		$table->data[0][0] = __('Language code');
 		$table->data[0][1] = html_print_select_from_sql (
 			'SELECT id_language, name FROM tlanguage',
 			'language', $config['language'] , '', '', '', true);

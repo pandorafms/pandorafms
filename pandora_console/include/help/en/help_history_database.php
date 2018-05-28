@@ -5,7 +5,7 @@
 ?>
 <h1>History database</h1>
 
-A history database is a database where old module data is moved to make the main Pandora FMS database more responsive for everyday operations. That data will still be available seamlessly to the Pandora FMS console when viewing reports, module charts etc. 
+A history database is a database where old module data is moved to make the main <?php echo get_product_name();?>  database more responsive for everyday operations. That data will still be available seamlessly to the <?php echo get_product_name();?>  console when viewing reports, module charts etc. 
 <br><br>
 <b>SETTING UP A HISTORY DATABASE</b>
 <br><br>
@@ -14,7 +14,7 @@ To configure a history database follow these simple steps:
 <ol>
 <li>Create the new history database. 
 <br><br>
-<li>Create the necessary tables in the new database. You can use the pandoradb.sql script provided with the Pandora FMS console: 
+<li>Create the necessary tables in the new database. You can use the DB Tool script provided with the <?php echo get_product_name();?>  console: 
 <br><br>
 <i>cat pandoradb.sql | mysql -u user -p -D history_db</i>
 <br><br>
@@ -22,7 +22,7 @@ To configure a history database follow these simple steps:
 <br><br>
 <i>Mysql Example: GRANT ALL PRIVILEGES ON pandora.* TO 'pandora'@'IP' IDENTIFIED BY 'password'</i>
 <br><br>
-<li>In your Pandora FMS console navigate to Setup->History database and enter the host, port, database name, user and password of the new database.
+<li>In your <?php echo get_product_name();?>  console navigate to Setup->History database and enter the host, port, database name, user and password of the new database.
 </ol>
 <br><br>
 <?php html_print_image ("images/help/historyddbb.png", false, array('width' => '550px')); ?>

@@ -6,7 +6,7 @@
 
 <h1>Networkmap console</h1>
 
-<p>With Pandora FMS Enterprise we have the possibility of create editable network maps that are more interactive comparing with the Open version that is currently on the "See agents" submenu.</p>
+<p>With <?php echo get_product_name();?> Enterprise we have the possibility of create editable network maps that are more interactive comparing with the Open version that is currently on the "See agents" submenu.</p>
 
 <p>On the contrary to the Open version, the Networkmap Enterprise provide us with more features, such as: </p>
 
@@ -38,7 +38,7 @@
 
 <h2>Minimap</h2>
 
-<p>This minimap gives us a global view that shows all the map extension, but in a smaller view, and besides, in contrast with the map view, all the nodes are shown, but without status and without relationships. Except the Pandora fictitious point, that is shown in green. And a red box is also shown of the part of the map that is being shown. </p>
+<p>This minimap gives us a global view that shows all the map extension, but in a smaller view, and besides, in contrast with the map view, all the nodes are shown, but without status and without relationships. Except the <?php echo get_product_name();?> fictitious point, that is shown in green. And a red box is also shown of the part of the map that is being shown. </p>
 
 <p>It's on the upper left corner, and could be hidden pressing on the arrow icon. 
 </p>
@@ -72,7 +72,7 @@
 
 
     <p>It shows a box which rim will be of the same color that the agent status. <br>
-    The agent name is a link to the Pandora agent page. <br>
+    The agent name is a link to the <?php echo get_product_name();?> agent page. <br>
     Inside the box are all the modules that are not in unknown status, which, depending if the module status is green or red. <br>
         It's possible to click on these modules and they shown a tooltip with the module main data.  <br>
     In the box rim are the modules kind SNMP Proc,that use to be for network interfaces when an agent related with network systems is monitored.  <br></p>
@@ -107,13 +107,10 @@
     <li><b>Creating the network map from:</b> option only available in the creation. It's the way to create the network map if we do it from the agents that are in the previously selected group, or on the contrary we want an empty network map. </li>
     <li><b>Size of the network map:</b> where it's possible to define the size of the network map, by default it's of 3000 width and 3000 high. </li>
     <li><b>Method for creating of the network map:</b> the method of distribution of the nodes that will make up the network map, by default it's radial, but there are the following ones: </li>
-        <p>- <i>Radial:</i> In which all the nodes will be placed around the fictitious node that the Pandora represents. <br>
+        <p>- <i>Radial:</i> In which all the nodes will be placed around the fictitious node that the <?php echo get_product_name();?> represents. <br>
         - <i>Circular:</i> In which the nodes will be placed in concentric circles en el cual se dispondrá los nodos en círculos concentricos. <br>
         - <i>Flat:</i> In which the nodes with tree shape will be placed. <br>
         - <i>spring1, spring2:</i> are variations of the Flat.  <br>
     <li><b>Networkmap Refresh:</b> the refresh velocity of the status of the nodes contained in the networkmap, by default is any 5 minutes.  </p>
 
-The rest of the fields disabled, as for example "resizing map" is because there are only actives in the edition of one map already created. <br><br>
-
-
-For more information about editing maps see http://www.openideas.info/wiki/index.php?title=Pandora:Documentation_en:Data_Presentation#Network_Enteprise_Console
+The rest of the fields disabled, as for example "resizing map" is because there are only actives in the edition of one map already created.

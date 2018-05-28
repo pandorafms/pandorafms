@@ -197,7 +197,7 @@ echo "</td></tr>";
 
 echo '<tr><td colspan=2>';
 echo '<div align="justify"><br><hr width=100%>';
-echo '(*) '.__('Please check your Pandora Server setup and be sure that database maintenance daemon is running. It\'s very important to keep up-to-date database to get the best performance and results in Pandora');
+echo '(*) '.__("Please make sure your %s Server settings are correct and that the database maintenance daemon is running. It's very important to keep your database up to date in order to get the best performance and results from %s.", get_product_name(), get_product_name());
 echo '</div>';
 echo '</td></tr></table>';
 ?>

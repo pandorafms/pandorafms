@@ -4653,3 +4653,15 @@ form ul.form_flex li ul li{
 	margin-right: 20px;
 	text-align: center;
 }
+
+.pandora_upper {
+	text-transform: uppercase;
+}
+
+.dialog-grayed {
+	background: #373737 !important;
+}
+
+.dialog-grayed .ui-dialog-buttonpane {
+	background: #373737 !important;
+}

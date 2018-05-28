@@ -3,18 +3,18 @@
  * @package Include/help/es 
  */
 ?> 
- <h1>Guía rápida de configuración de alertas para Pandora FMS</h1>
+ <h1>Guía rápida de configuración de alertas para <?php echo get_product_name();?></h1>
 <br>
 
 <b>Introducción al sistema de alertas actual</b><br><br>
 
-Uno de los problemas más frecuentes y que ocasiona mayor número de quejas por parte de los usuarios es la complejidad de definir alertas en Pandora FMS. Antes, hasta la version 2.0, las alertas eran bastante más sencillas de configurar.Para cada alerta, se definía la condición y lo que hacía cuando la acción no se cumplía, para cada caso. Era más intuitivo (aun así habia campos como el alert "threshold" que daban dolores de cabeza a más de uno). Era sencillo, pero ¿merecía la pena?.<br><br>
+Uno de los problemas más frecuentes y que ocasiona mayor número de quejas por parte de los usuarios es la complejidad de definir alertas en <?php echo get_product_name();?>. Antes, hasta la version 2.0, las alertas eran bastante más sencillas de configurar.Para cada alerta, se definía la condición y lo que hacía cuando la acción no se cumplía, para cada caso. Era más intuitivo (aun así habia campos como el alert "threshold" que daban dolores de cabeza a más de uno). Era sencillo, pero ¿merecía la pena?.<br><br>
 
-Uno de nuestros mejores usuarios (cuando digo mejor, es porque tenía muchísimos agentes instalados, y además conocía muy bien el funcionamiento de Pandora FMS), nos comentó que crear una alerta en 2000 modulos, era enormemente complicado, especialmente cuando habia que modificar algo en todas ellas. Debido principalmente a este y otros problemas, modificamos el sistema de alertas para que fuera modular, para que se pudiera separar la definición de la condición de disparo de la alerta (Alert template), de la acción a ejecutar cuando esta se dispara (Alert action) y del comando que se ejecuta dentro de la acción (Alert comnmand). La combinación de una plantilla de alerta (Alert template) con un módulo desencadena la alerta en sí.<br><br>
+Uno de nuestros mejores usuarios (cuando digo mejor, es porque tenía muchísimos agentes instalados, y además conocía muy bien el funcionamiento de <?php echo get_product_name();?>), nos comentó que crear una alerta en 2000 modulos, era enormemente complicado, especialmente cuando habia que modificar algo en todas ellas. Debido principalmente a este y otros problemas, modificamos el sistema de alertas para que fuera modular, para que se pudiera separar la definición de la condición de disparo de la alerta (Alert template), de la acción a ejecutar cuando esta se dispara (Alert action) y del comando que se ejecuta dentro de la acción (Alert comnmand). La combinación de una plantilla de alerta (Alert template) con un módulo desencadena la alerta en sí.<br><br>
 
 De esta forma, si yo tengo 1000 máquinas con un modulo llamado "Host alive" y todos ellas tienen asociada una plantilla de alerta llamada "Host down" que ejecuta por defecto una acción llamada "Avisar al operador", y quiero cambiar el número mínimo de alertas que se deben disparar antes de avisar al operador, sólo tengo que hacer un cambio en la definicion de la plantilla, no ir una por una, en las 1000 alertas para modificar esa condición.<br><br>
 
-Muchos usuarios sólo gestionan algunas decenas de máquinas, pero existen usuarios con cientos, incluso miles de sistemas monitorizados con Pandora FMS, y tenemos que intentar hacer posible que con Pandora FMS se puedan gestionar todo tipo de entornos.<br><br><br><br>
+Muchos usuarios sólo gestionan algunas decenas de máquinas, pero existen usuarios con cientos, incluso miles de sistemas monitorizados con <?php echo get_product_name();?>, y tenemos que intentar hacer posible que con <?php echo get_product_name();?> se puedan gestionar todo tipo de entornos.<br><br><br><br>
 <b>Estructura de una alerta</b><br><br>
 
 <?php html_print_image ("images/help/alert01.png", false, array('width' => '550px')); ?>
@@ -85,16 +85,16 @@ Aceptamos y grabamos la modificación. Ahora cuando el valor del módulo CPU sea
 
 <?php html_print_image ("images/help/alert07.png", false, array('width' => '550px')); ?>
 <br>
-Ya hemos hecho que el sistema sepa discriminar cuando algo está bien (OK, color VERDE) y cuando está mal (CRITICAL, color rojo). Ahora lo que debemos hacer es que nos envíe un email cuando el modulo se ponga en este estado. Para ello utilizaremos el sistema de alertas de Pandora FMS.<br><br>
+Ya hemos hecho que el sistema sepa discriminar cuando algo está bien (OK, color VERDE) y cuando está mal (CRITICAL, color rojo). Ahora lo que debemos hacer es que nos envíe un email cuando el modulo se ponga en este estado. Para ello utilizaremos el sistema de alertas de <?php echo get_product_name();?>.<br><br>
 
-Para esto, lo primero que debemos hacer es asegurarnos de que existe un comando que hace lo que necesitamos (enviar un email). Este ejemplo es fácil porque existe un comando predefinido en Pandora FMS para enviar mails. Asi que ya lo tenemos.<br><br>
+Para esto, lo primero que debemos hacer es asegurarnos de que existe un comando que hace lo que necesitamos (enviar un email). Este ejemplo es fácil porque existe un comando predefinido en <?php echo get_product_name();?> para enviar mails. Asi que ya lo tenemos.<br><br>
 <b>Configurando la acción</b><br><br>
 
 Ahora tenemos que crear una acción que sea "Enviar un email al operador". Vamos a ello: Vamos al menu de administracion -> Alertas -> Acciones y le damos al botón para crear una nueva acción:<br><br>
 
 <?php html_print_image ("images/help/alert08.png", false, array('width' => '550px')); ?>
 <br>
-Esta acción utiliza el comando "Enviar email", y es realmente sencillo, ya que sólo relleno un campo (Field 1) dejando los otros dos vacíos. Esta es una de las partes más confusas del sistema de alertas de Pandora FMS: ¿Qué son los campos field1, field2, y field3?.<br><br>
+Esta acción utiliza el comando "Enviar email", y es realmente sencillo, ya que sólo relleno un campo (Field 1) dejando los otros dos vacíos. Esta es una de las partes más confusas del sistema de alertas de <?php echo get_product_name();?>: ¿Qué son los campos field1, field2, y field3?.<br><br>
 
 Esos campos son los que se usan para "pasar" la información de la plantilla de alerta al comando, y a su vez, de éste al comando. De forma que tanto Plantilla como Comando, puedan aportar diferente información al comando. En este caso el comando sólo establece el campo 1, y dejaremos el campo 2 y el campo 3 a la plantilla, como veremos a continuación.<br><br>
 
@@ -120,18 +120,18 @@ Los parámetros más críticos aquí son los siguientes:<br><br>
 
     <i>Time threshold:</i> Por defecto es un día. Si un módulo permanece todo el rato caído, durante, por ejemplo un día, y tenemos aquí un valor de 5 minutos, significa que nos estaría mandando alertas cada 5 minutos. Si lo dejamos en un día (24 horas), sólo nos enviará la alerta una vez, cuando se caiga. Si el modulo se recupera, y luego se vuelve a caer, nos enviará una alerta de nuevo, pero si sigue caída desde la 2º caida, no enviará mas alertas hasta dentro de 24 horas. <br><br>
 
-    <i>Min. Número de alertas:</i> El nº mínimo de veces que se tendrá que dar la condición (en este caso, que el modulo esté en estado CRITICAL) antes de que Pandora FMS me ejecute las acciones asociadas a la plantilla de alerta. Es una forma de evitar que falsos positivos me "inunden" a alertas, o que un comportamiento errático (ahora bien, ahora mal) haga que se disparen muchas alertas. Si ponemos aquí 1, significa que hasta que no ocurra al menos una vez, no lo tendré en cuenta. Si pongo 0, la primera vez que el modulo esté mal, disparará la alerta. <br><br>
+    <i>Min. Número de alertas:</i> El nº mínimo de veces que se tendrá que dar la condición (en este caso, que el modulo esté en estado CRITICAL) antes de que <?php echo get_product_name();?> me ejecute las acciones asociadas a la plantilla de alerta. Es una forma de evitar que falsos positivos me "inunden" a alertas, o que un comportamiento errático (ahora bien, ahora mal) haga que se disparen muchas alertas. Si ponemos aquí 1, significa que hasta que no ocurra al menos una vez, no lo tendré en cuenta. Si pongo 0, la primera vez que el modulo esté mal, disparará la alerta. <br><br>
 
     <i>Max. Numero de alertas:</i> 1 significa que sólo ejecutará la acción una vez. Si tenemos aquí 10, ejecutará 10 veces la acción. Es una forma de limitar el número de veces que una alerta se puede ejecutar. <br><br>
 
 De nuevo volvemos a ver los campos: "campo1, campo2 y campo3". Ahora podemos ver que el campo1 está en blanco, que es justamente el que hemos definido al configurar la acción. El campo2 y el campo3 se usan en la acción de enviar un mail para definir el subject y el texto del mensaje, mientras que el campo1 se usa para definir el o los destinatarios (separados por comas). Asi que la plantilla, usando algunas macros, está definiendo el subject y el mensaje de alerta de forma que en nuestro caso nos llegaría un mensaje como el que sigue (suponiendo que el agente donde está el modulo se llama "Farscape":<br><br>
 
 <i>To: sancho.lerena@notexist.ocm<br>
-Subject: [PANDORA] Farscape cpu_sys is in CRITICAL status with value 20<br>
+Subject: [MONITORING] Farscape cpu_sys is in CRITICAL status with value 20<br>
 Texto email:<br><br>
 
-This is an automated alert generated by Pandora FMS<br>
-Please contact your Pandora FMS for more information. *DO NOT* reply this email.<br></i><br>
+This is an automated alert generated by <?php echo get_product_name();?><br>
+Please contact your <?php echo get_product_name();?> for more information. *DO NOT* reply this email.<br></i><br>
 
 Dado que la acción por defecto es la que he definido previamente, todas las alertas que usen esta plantilla, usarán esa acción predeterminada por defecto, a no ser que la modifique.<br><br>
 
@@ -169,7 +169,7 @@ Las alertas pueden estar activadas, desactivadas o en standby. La diferencia ent
 Las alertas en standby son útiles para poder visualizarlas sin que molesten en otros aspectos.<br><br>
 <b>Utilizando comandos de alertas distintos del email</b><br><br>
 
-El email, como comando es interno a Pandora FMS y no se puede configurar, es decir, field1, field2 y field3 son campos que están definidos que se usan como destinatario, subject y texto del mensaje. Pero, ¿que ocurre si yo quiero ejecutar una acción diferente, definida por mi?.<br><br>
+El email, como comando es interno a <?php echo get_product_name();?> y no se puede configurar, es decir, field1, field2 y field3 son campos que están definidos que se usan como destinatario, subject y texto del mensaje. Pero, ¿que ocurre si yo quiero ejecutar una acción diferente, definida por mi?.<br><br>
 
 Vamos a definir un nuevo comando, algo totalmente definido por nosotros. Imaginemos que queremos generar un fichero log con cada alerta que encontremos. El formato de ese fichero log tiene que ser algo como:<br><br>
 
@@ -189,8 +189,8 @@ Si vemos el fichero de log que hemos creado:<br><br>
 
 <i>2010-05-25 18:17:10 - farscape - cpu_sys - 23.00 - Custom alert for LOG#1</i><br><br>
 
-La alerta se disparó a las 18:17:10 en el agente "farscape", en el modulo "cpu_sys" con un dato de "23.00" y con la descripcion que pusimos al definir la acción.<br><br>
+La alerta se disparó a las 18:17:10 en el agente "farscape", en el modulo "cpu_sys" con un dato de "23.00" y con la descripción que pusimos al definir la acción.<br><br>
 
-Dado que la ejecución del comando, el orden de los campos y otros asuntos pueden hacer que no entendamos bien cómo se ejecuta al final el comando, lo más sencillo es activar las trazas de debug del servidor de pandora (verbose 10) en el fichero de configuracion de pandora server en /etc/pandora/pandora_server.conf, reiniciemos el servidor (/etc/init.d/pandora_server restart) y que miremos el fichero /var/log/pandora/pandora_server.log buscando la línea exacta con la ejecución del comando de la alerta que hemos definido, para ver como el servidor de Pandora FMS está lanzando el comando. <br><br>
+Dado que la ejecución del comando, el orden de los campos y otros asuntos pueden hacer que no entendamos bien cómo se ejecuta al final el comando, lo más sencillo es activar las trazas de debug del servidor de <?php echo get_product_name();?> (verbose 10) en el fichero de configuración de <?php echo get_product_name();?> server en /etc/pandora/pandora_server.conf, reiniciemos el servidor (/etc/init.d/pandora_server restart) y que miremos el fichero /var/log/pandora/pandora_server.log buscando la línea exacta con la ejecución del comando de la alerta que hemos definido, para ver como el servidor de <?php echo get_product_name();?> está lanzando el comando. <br><br>
 
 

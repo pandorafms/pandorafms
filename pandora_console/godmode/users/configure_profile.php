@@ -46,7 +46,7 @@ if (!is_metaconsole()) {
 
 	$buttons[$tab]['active'] = true;
 
-	ui_print_page_header (__('User management').' &raquo; '.__('Profiles defined in Pandora'), "images/gm_users.png", false, "", true, $buttons);
+	ui_print_page_header (__('User management').' &raquo; '.__('Profiles defined on %s', get_product_name()), "images/gm_users.png", false, "", true, $buttons);
 	$sec2 = 'gusuarios';
 }
 else {
@@ -211,8 +211,8 @@ if ($id_profile || $new_profile) {
 				' Visual console edit: ' . $vconsole_edit .
 				' Visual console management: ' . $vconsole_management .
 				
-				' Pandora Management: ' . $pandora_management;
-		
+				' ' . get_product_name() . ' Management: ' . $pandora_management;
+
 		enterprise_hook('audit_pandora_enterprise', array($id_audit, $info));
 		
 		
@@ -361,7 +361,7 @@ if ($id_profile || $new_profile) {
 	
 	// Pandora
 	$row = array();
-	$row['name'] = __('Pandora management');
+	$row['name'] = __('%s management', get_product_name());
 	$row['input'] = html_print_checkbox ('pandora_management', 1, $pandora_management, true);
 	$table->data['PM'] = $row;
 	$table->data[] = '<hr>';

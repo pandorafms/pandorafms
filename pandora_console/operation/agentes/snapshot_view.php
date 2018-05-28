@@ -63,7 +63,7 @@ if (empty($last_data)) {
 		}
 		?>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<title>Pandora FMS Snapshot data view for module (<?php echo $label; ?>)</title>
+		<title><?php echo __("%s Snapshot data view for module (%s)", get_product_name(), $label); ?></title>
 		<script type='text/javascript' src='../../include/javascript/jquery-1.7.1.js'></script>
 	</head>
 	<body style='background:#000; color: #ccc;'>

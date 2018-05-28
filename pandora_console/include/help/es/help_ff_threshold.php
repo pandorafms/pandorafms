@@ -8,7 +8,7 @@
 <br> 
 <br>
 
-El umbral del parámetro FF (FF=FlipFLoP) se utiliza para "filtrar" los continuos cambios de estado en la creación de eventos/estados, para que pueda indicar a Pandora FMS que hasta que un elemento no esté al menos x veces en el mismo estado después de cambiar desde su estado original, no considere que haya cambiado.
+El umbral del parámetro FF (FF=FlipFLoP) se utiliza para "filtrar" los continuos cambios de estado en la creación de eventos/estados, para que pueda indicar a <?php echo get_product_name();?> que hasta que un elemento no esté al menos x veces en el mismo estado después de cambiar desde su estado original, no considere que haya cambiado.
 
 <br><br>
 
@@ -27,7 +27,7 @@ Tomemos como ejemplo clásico: un ping para un host donde hay pérdida de paquet
 </pre>
 <br>
 
-Sin embargo, el host está vivo en todos los casos. Lo que queremos realmente es decirle a Pandora que hasta que es host no lo diga usted está al menos tres veces caído, no lo marque así, con lo que en el caso anterior no estaría caído, y sólo en este caso sería:
+Sin embargo, el host está vivo en todos los casos. Lo que queremos realmente es decirle a <?php echo get_product_name();?> que hasta que es host no lo diga usted está al menos tres veces caído, no lo marque así, con lo que en el caso anterior no estaría caído, y sólo en este caso sería:
 
 <pre>
  1  

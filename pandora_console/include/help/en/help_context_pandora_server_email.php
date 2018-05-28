@@ -3,14 +3,14 @@
  * @package Include/help/en
  */
 ?>
-<h1>Config the Pandora Server for email alerts</h1>
-<p>You must to edit the <i>"Pandora Server conf file"</i>, normaly it is in:
+<h1>Config the <?php echo get_product_name();?> for email alerts</h1>
+<p>You must to edit the <i>"<?php echo get_product_name();?> conf file"</i>, normaly it is in:
 <pre>
 	/etc/pandora_server/pandora_server.conf
 </pre>
 And you must set these values:
 <pre>
-# mta_address: External Mailer (MTA) IP Address to be used by Pandora FMS internal email capabilities
+# mta_address: External Mailer (MTA) IP Address to be used by <?php echo get_product_name();?> internal email capabilities
 
 mta_address localhost
 
@@ -33,6 +33,6 @@ mta_auth LOGIN
 # mta_from Email address that sends the mail, by default is pandora@localhost 
 #           probably you need to change it to avoid problems with your antispam
 
-mta_from Pandora FMS <pandora@mydomain.com>
+mta_from <?php echo get_product_name();?> &lt;monitoring@mydomain.com&gt;
 </pre>
 </p>

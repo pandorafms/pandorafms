@@ -264,7 +264,7 @@ if (!empty($result_groups)) {
 			else {
 				$hint = '';
 				if (enterprise_hook('agents_is_using_secondary_groups')) {
-					$hint = ui_print_help_tip(__("This Pandora installation are using the secondary groups feature. For this reason, an agent can be counted several times."));
+					$hint = ui_print_help_tip(__("This %s installation are using the secondary groups feature. For this reason, an agent can be counted several times.", get_product_name()));
 				}
 				echo $link . $group_name . "</a>" . $hint;
 			}

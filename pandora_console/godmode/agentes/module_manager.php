@@ -151,12 +151,13 @@ if (($policy_page) || (isset($agent))) {
 
 echo "</table>";
 
-
-echo '<div style="text-align: right; width: 100%;padding-top:10px;padding-bottom:10px">';
-echo "<strong>";
-echo "<a style='color: #373737;' target='_blank' href='http://pandorafms.com/Library/Library/'>".__("Get more modules in Pandora FMS Library")."</a>";
-echo "</strong>";
-echo '</div>';
+if (!$config['disable_help']) {
+	echo '<div style="text-align: right; width: 100%;padding-top:10px;padding-bottom:10px">';
+	echo "<strong>";
+	echo "<a style='color: #373737;' target='_blank' href='http://pandorafms.com/Library/Library/'>".__("Get more modules on Monitoring Library")."</a>";
+	echo "</strong>";
+	echo '</div>';
+}
 
 if (! isset ($id_agente))
 	return;

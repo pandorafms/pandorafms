@@ -82,7 +82,7 @@ elseif (isset($_GET["server_remote"])) {
 }
 else {
 	// Header
-	ui_print_page_header (__('Pandora servers'), "images/gm_servers.png", false, "servers", true);
+	ui_print_page_header (__('%s servers', get_product_name()), "images/gm_servers.png", false, "servers", true);
 
 	// Move SNMP modules back to the enterprise server
 	if (isset($_GET["server_reset_snmp_enterprise"])) {

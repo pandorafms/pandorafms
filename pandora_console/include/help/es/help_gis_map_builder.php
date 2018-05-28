@@ -7,11 +7,11 @@
 
 <p>
 
-Esta página muestra una lista de los mapas definidos, y le permite editar, borrar o ver cualquiera de ellos. También está instalado en está página el <strong>mapa por defecto</strong> de Pandora FMS.
+Esta página muestra una lista de los mapas definidos, y le permite editar, borrar o ver cualquiera de ellos. También está instalado en está página el <strong>mapa por defecto</strong> de <?php echo get_product_name();?>.
 
 </p>
 
-Para crear una conexión de mapa se necesita una conexión a un servidor de mapas. Las conexiones las crea el Administrador en el menú<strong>Setup</strong>
+Para crear una conexión de mapa se necesita una conexión a un servidor de mapas. Las conexiones las crea el Administrador en el menú <strong>Setup</strong>
 
 <p>
 </p>

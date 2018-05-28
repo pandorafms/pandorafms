@@ -561,7 +561,7 @@ else {
 		$sec = 'advanced';
 	}
 	else {
-		ui_print_page_header (__('Plugins registered in Pandora FMS'), "images/gm_servers.png", false, "", true);
+		ui_print_page_header (__('Plug-ins registered on %s', get_product_name()), "images/gm_servers.png", false, "", true);
 
 		$is_windows = strtoupper(substr(PHP_OS, 0, 3)) == 'WIN';
 		if ($is_windows) {

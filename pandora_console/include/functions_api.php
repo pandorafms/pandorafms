@@ -1358,7 +1358,7 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 		returnError('id_os_not_exist', 'The OS don`t exist.');
 	}
 	else if (db_get_value_sql($sql1) === false) {
-		returnError('server_not_exist', 'The Pandora Server don`t exist.');
+		returnError('server_not_exist', 'The ' . get_product_name() . ' Server don`t exist.');
 	}
 	else {
 		$idAgente = db_process_sql_insert ('tagente', 
@@ -7721,9 +7721,9 @@ function api_set_gis_agent_only_position($id_agent, $trash1, $other, $return_typ
 		if ($correct) {
 			$correct = agents_update_gis($id_agent, $latitude,
 				$longitude, $altitude, 0, 1, date( 'Y-m-d H:i:s'), null,
-				1, __('Save by Pandora Console'),
-				__('Update by Pandora Console'),
-				__('Insert by Pandora Console'));
+				1, __('Save by %s Console', get_product_name()),
+				__('Update by %s Console', get_product_name()),
+				__('Insert by %s Console', get_product_name()));
 		}
 	}
 	
@@ -9111,7 +9111,7 @@ function api_set_create_event($id, $trash1, $other, $returnType) {
 			$values['source'] = $other['data'][14];
 		}
 		else {
-			$values['source'] = "Pandora";
+			$values['source'] = get_product_name();
 		}
 		
 		if ($other['data'][15] != '') {

@@ -6,7 +6,7 @@
 
 <h1>Agent Plugins</h1>
 
-<p>Since Pandora FMS 5.0, with the plugins editor in policies is possible propagate the agents plugins easily.
+<p>With the plugins editor in policies is possible propagate the agents plugins easily.
 <br><br>
 Is possible to add agent plugins in a policy to be created in each local agent when be applied. 
 <br><br>

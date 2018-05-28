@@ -118,7 +118,7 @@ else {
 	
 	$buttons[$tab]['active'] = true;
 	
-	ui_print_page_header (__('User management').' &raquo; '.__('Users defined in Pandora'), "images/gm_users.png", false, "", true, $buttons);
+	ui_print_page_header (__('User management').' &raquo; '.__('Users defined on %s', get_product_name()), "images/gm_users.png", false, "", true, $buttons);
 	
 	$sec = 'gusuarios';
 	
@@ -486,7 +486,7 @@ if ($config["admin_can_add_user"] !== false) {
 	echo '</form>';
 }
 else {
-	echo '<i>'.__('The current authentication scheme doesn\'t support creating users from Pandora FMS').'</i>';
+	echo '<i>'.__("The current authentication scheme doesn't support creating users on %s", get_product_name()).'</i>';
 }
 echo '</div>';
 

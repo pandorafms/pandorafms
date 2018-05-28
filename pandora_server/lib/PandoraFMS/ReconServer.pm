@@ -65,8 +65,8 @@ sub new ($$$$$$) {
 	return undef unless $config->{'reconserver'} == 1;
 	
 	if (! -e $config->{'nmap'}) {
-		logger ($config, ' [E] ' . $config->{'nmap'} . " needed by Pandora FMS Recon Server not found.", 1);
-		print_message ($config, ' [E] ' . $config->{'nmap'} . " needed by Pandora FMS Recon Server not found.", 1);
+		logger ($config, ' [E] ' . $config->{'nmap'} . " needed by " . $config->{'rb_product_name'} . " Recon Server not found.", 1);
+		print_message ($config, ' [E] ' . $config->{'nmap'} . " needed by " . $config->{'rb_product_name'} . " Recon Server not found.", 1);
 		return undef;
 	}
 
@@ -98,7 +98,7 @@ sub run ($) {
 	my $self = shift;
 	my $pa_config = $self->getConfig ();
 	
-	print_message ($pa_config, " [*] Starting Pandora FMS Recon Server.", 1);
+	print_message ($pa_config, " [*] Starting " . $pa_config->{'rb_product_name'} . " Recon Server.", 1);
 	$self->setNumThreads ($pa_config->{'recon_threads'});
 	$self->SUPER::run (\@TaskQueue, \%PendingTasks, $Sem, $TaskSem);
 }

@@ -8,7 +8,7 @@
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
-PI_VERSION="7.0NG.722"
+PI_VERSION="7.0NG.723"
 PI_BUILD="180528"
 
 MODE=$1

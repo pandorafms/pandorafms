@@ -84,7 +84,7 @@ class Ui {
 	
 	public function createPage($title = null, $page_name = null) {
 		if (!isset($title)) {
-			$this->title = __('Pandora FMS mobile');
+			$this->title = __('%s mobile', get_product_name());
 		}
 		else {
 			$this->title = $title;

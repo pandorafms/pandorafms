@@ -30,6 +30,7 @@ use Time::HiRes qw(usleep);
 use lib '/usr/lib/perl5';
 
 use PandoraFMS::Tools;
+use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version

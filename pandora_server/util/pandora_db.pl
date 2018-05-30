@@ -553,7 +553,7 @@ sub pandora_compactdb ($$) {
 ########################################################################
 # Check command line parameters.
 ########################################################################
-sub pandora_init ($) {
+sub pandora_init_pdb ($) {
 	my $conf = shift;
 	
 	log_message ('', "\nDB Tool $version Copyright (c) 2004-2018 " . pandora_get_initial_copyright_notice() . "\n");
@@ -595,7 +595,7 @@ sub pandora_init ($) {
 ########################################################################
 # Read external configuration file.
 ########################################################################
-sub pandora_load_config ($) {
+sub pandora_load_config_pdb ($) {
 	my $conf = shift;
 
 	# Read conf file
@@ -1025,10 +1025,10 @@ sub pandoradb_main ($$$) {
 }
 
 # Init
-pandora_init(\%conf);
+pandora_init_pdb(\%conf);
 
 # Read config file
-pandora_load_config (\%conf);
+pandora_load_config_pdb (\%conf);
 
 # Load enterprise module
 if (enterprise_load (\%conf) == 0) {

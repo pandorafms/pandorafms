@@ -676,12 +676,6 @@ sub enterprise_load ($) {
 
 	# Ops
 	if ($@) {
-		# Remove the rebranding if open version
-		if ($^O ne 'MSWin32') {
-			`unset PANDORA_RB_PRODUCT_NAME`;
-			`unset PANDORA_RB_COPYRIGHT_NOTICE`;
-		}
-
 		# Enterprise.pm not found.
 		return 0 if ($@ =~ m/PandoraFMS\/Enterprise\.pm.*\@INC/);
 

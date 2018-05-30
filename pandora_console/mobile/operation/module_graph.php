@@ -136,6 +136,7 @@ class ModuleGraph {
 					switch ($this->graph_type) {
 						case 'boolean':
 						case 'sparse':
+						case 'string':
 							$params =array(
 								'agent_module_id'     => $this->id,
 								'period'              => $this->period,
@@ -162,32 +163,6 @@ class ModuleGraph {
 									$this->width, $this->height,
 									$this->period, $config['homeurl'],
 									$this->zoom, 'adapted_'.$this->graph_type, $date);
-							}
-							break;
-						case 'string':
-							$graph = grafico_modulo_string(
-								$this->id,
-								$this->period,
-								$this->draw_events,
-								$this->width,
-								$this->height,
-								false,
-								null,
-								$this->draw_alerts,
-								1,
-								false,
-								$date,
-								false,
-								$urlImage,
-								'adapter_' . $this->graph_type,
-								1,
-								false);
-							if ($this->draw_events) {
-								$graph .= '<br>';
-								$graph .= graphic_module_events($this->id,
-									$this->width, $this->height,
-									$this->period, $config['homeurl'],
-									$this->zoom, 'adapted_' . $this->graph_type, $date);
 							}
 							break;
 						default:

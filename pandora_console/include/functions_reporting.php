@@ -6478,10 +6478,6 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 		$fullscale = (bool) $content['style']['fullscale'];
 	}
 
-	$moduletype_name = modules_get_moduletype_name(
-		modules_get_agentmodule_type(
-			$content['id_agent_module']));
-
 	$return['chart'] = '';
 
 	// Get chart
@@ -6498,54 +6494,30 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 	switch ($type) {
 		case 'dinamic':
 		case 'static':
-			if (preg_match ("/string/", $moduletype_name)) {
-				$urlImage = ui_get_full_url(false, false, false, false);
-				/*
-				$return['chart'] = grafico_modulo_string(
-					$content['id_agent_module'],
-					$content['period'],
-					false,
-					$width,
-					$height,
-					$label,
-					'',
-					false,
-					$only_avg,
-					false,
-					$report["datetime"],
-					$only_image,
-					$urlImage,
-					"",
-					$ttl);
-				*/
-				$return['chart'] = 'arreglar la grafica de string de una vez por todassssssssss';
-
+			// HACK it is saved in show_graph field.
+			$time_compare_overlapped = false;
+			if ($content['show_graph']) {
+				$time_compare_overlapped = 'overlapped';
 			}
-			else {
-				// HACK it is saved in show_graph field.
-				$time_compare_overlapped = false;
-				if ($content['show_graph']) {
-					$time_compare_overlapped = 'overlapped';
-				}
 
-				$params =array(
-					'agent_module_id'     => $content['id_agent_module'],
-					'period'              => $content['period'],
-					'title'               => $label,
-					'avg_only'            => $only_avg,
-					'pure'                => false, //XXX
-					'date'                => $report["datetime"],
-					'only_image'          => $only_image,
-					'homeurl'             => ui_get_full_url(false, false, false, false),
-					'ttl'                 => $ttl,
-					'compare'             => $time_compare_overlapped,
-					'show_unknown'        => true,
-					'percentil'           => ($content['style']['percentil'] == 1) ? $config['percentil'] : null,
-					'fullscale'           => $fullscale
-				);
+			$params =array(
+				'agent_module_id'     => $content['id_agent_module'],
+				'period'              => $content['period'],
+				'title'               => $label,
+				'avg_only'            => $only_avg,
+				'pure'                => false, //XXX
+				'date'                => $report["datetime"],
+				'only_image'          => $only_image,
+				'homeurl'             => ui_get_full_url(false, false, false, false),
+				'ttl'                 => $ttl,
+				'compare'             => $time_compare_overlapped,
+				'show_unknown'        => true,
+				'percentil'           => ($content['style']['percentil'] == 1) ? $config['percentil'] : null,
+				'fullscale'           => $fullscale
+			);
 
-				$return['chart'] = grafico_modulo_sparse($params);
-			}
+			$return['chart'] = grafico_modulo_sparse($params);
+
 			break;
 		case 'data':
 			$data = modules_get_agentmodule_data(

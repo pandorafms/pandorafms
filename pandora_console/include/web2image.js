@@ -1,7 +1,6 @@
 var system = require('system');
 
 if (system.args.length < 2 || system.args.length > 6) {
-	//console.log('Usage web2image.js url url_parameters output_filename width height');
 	phantom.exit(1);
 }
 
@@ -22,12 +21,15 @@ if (!_height) {
 }
 
 page.viewportSize = { width: _width, height: _height };
+//page.zoomFactor = 1.75;
 
 //console.log("Pagina: " + url);
 //console.log("parametros: " + url_params);
 //console.log("Archivo salida: " + output_filename);
 page.open(url + "?" + "data=" + url_params, function start(status) {
-	page.render(output_filename, {format: 'png'}); //, 'quality': 100});
+	page.render(output_filename, {format: 'png'});
+	//var base64 = page.renderBase64('JPG');
+	//console.log(base64);
 	phantom.exit();
 });
 

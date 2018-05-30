@@ -235,26 +235,26 @@ $alias    = db_get_value ("alias","tagente","id_agente",$id_agent);
 		switch ($graph_type) {
 			case 'boolean':
 			case 'sparse':
-			$params =array(
-				'agent_module_id'     => $id,
-				'period'              => $period,
-				'show_events'         => $draw_events,
-				'title'               => $label_graph,
-				'unit_name'           => $unit,
-				'show_alerts'         => $draw_alerts,
-				'avg_only'            => $avg_only,
-				'date'                => $date,
-				'unit'                => $unit,
-				'baseline'            => $baseline,
-				'homeurl'             => $urlImage,
-				'adapt_key'           => 'adapter_' . $graph_type,
-				'compare'             => $time_compare,
-				'show_unknown'        => $unknown_graph,
-				'percentil'           => (($show_percentil)? $config['percentil'] : null),
-				'type_graph'          => $config['type_module_charts'],
-				'fullscale'           => $fullscale
-			);
-
+			case 'string':
+				$params =array(
+					'agent_module_id'     => $id,
+					'period'              => $period,
+					'show_events'         => $draw_events,
+					'title'               => $label_graph,
+					'unit_name'           => $unit,
+					'show_alerts'         => $draw_alerts,
+					'avg_only'            => $avg_only,
+					'date'                => $date,
+					'unit'                => $unit,
+					'baseline'            => $baseline,
+					'homeurl'             => $urlImage,
+					'adapt_key'           => 'adapter_' . $graph_type,
+					'compare'             => $time_compare,
+					'show_unknown'        => $unknown_graph,
+					'percentil'           => (($show_percentil)? $config['percentil'] : null),
+					'type_graph'          => $config['type_module_charts'],
+					'fullscale'           => $fullscale
+				);
 				echo grafico_modulo_sparse ($params);
 				echo '<br>';
 				if ($show_events_graph){
@@ -263,18 +263,6 @@ $alias    = db_get_value ("alias","tagente","id_agente",$id_agent);
 						$period, $config['homeurl'], $zoom,
 						'adapted_' . $graph_type, $date, true);
 					}
-				break;
-			case 'string':
-				html_debug_print('entra x stats win hay que rehacer esta funcion');
-				echo grafico_modulo_string ($id, $period, $draw_events,
-					$width, $height, $label_graph, null, $draw_alerts, 1,
-					false, $date, false, $urlImage,
-					'adapter_' . $graph_type);
-				echo '<br>';
-				if ($show_events_graph)
-					echo graphic_module_events($id, $width, $height,
-						$period, $config['homeurl'], $zoom,
-						'adapted_' . $graph_type, $date, true);
 				break;
 			default:
 				echo fs_error_image ('../images');

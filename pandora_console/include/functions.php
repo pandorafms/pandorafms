@@ -3104,6 +3104,10 @@ function series_type_graph_array($data, $show_elements_graph){
 												) . ' ' . $series_suffix_str;
 				}
 			}
+			elseif(strpos($key, 'projection') !== false){
+				$data_return['series_type'][$key] = 'area';
+				$data_return['legend'][$key] = __('Projection') . ' ' . $series_suffix_str;
+			}
 			else{
 				$data_return['series_type'][$key] = 'area';
 			}
@@ -3116,15 +3120,23 @@ function series_type_graph_array($data, $show_elements_graph){
 function generator_chart_to_pdf($params){
 	global $config;
 	$params_encode_json = urlencode(json_encode($params));
-	$file_js = "/var/www/html/pandora_console/include/web2image.js";
-	$url = "http://localhost/pandora_console/include/chart_generator.php";
-	$img_destination = "/var/www/html/pandora_console/attachment/imagen_". $params['agent_module_id'] .".png";
-	$width_img = 1048;
-	$height_img = 568;
-	html_debug_print("entra con: " . $params['agent_module_id'] ."  en el tiempo " . date("Y-m-d H:i:s"), true);
-	exec("phantomjs " . $file_js . " " . $url . "  '" . $params_encode_json . "' " . $img_destination . " " . $width_img . " " . $height_img);
-	html_debug_print("sale con:  " . $params['agent_module_id'] ."  en el tiempo " . date("Y-m-d H:i:s"), true);
-	return "<img src='/var/www/html/pandora_console/attachment/imagen_". $params['agent_module_id'] .".png' alt='la imagen bonica'>";
+	$file_js = $config["homedir"] . "/include/web2image.js";
+	$url = $config["homeurl"] . "/include/chart_generator.php";
+
+	$img_file = "img_". uniqid() . $params['agent_module_id'] .".png";
+	$img_path = $config["homedir"] . "/attachment/" . $img_file;
+	$img_url  = $config["homeurl"] . "/attachment/" . $img_file;
+
+	error_log($img_url);
+
+	$width_img  = 500;
+	$height_img = 450;
+	//html_debug_print('entrando en llamada a phantom.js.......', true);
+	$result = exec("phantomjs " . $file_js . " " . $url . "  '" . $params_encode_json . "' " . $img_path . " " . $width_img . " " . $height_img);
+	return '<img src="' . $img_url . '" />';
+	//header('Content-Type: image/png;');
+	//return '<img src="data:image/jpg;base64, '.$result.'" />';
+	//return "<img src='/var/www/html/pandora_console/attachment/imagen_". $params['agent_module_id'] .".png' alt='la imagen bonica'>";
 }
 
 /**

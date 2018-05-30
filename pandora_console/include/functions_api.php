@@ -10041,25 +10041,13 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4) {
 		// returnError('error_module_graph', __(''));
 		return;
 	}
-	
-	$id_module_type = modules_get_agentmodule_type ($id_module);
-	$module_type = modules_get_moduletype_name ($id_module_type);
-	
-	$string_type = strpos($module_type,'string');
-	// Get the html item
-	if ($string_type === false) {
-		$graph_html = grafico_modulo_sparse(
-			$id_module, $graph_seconds, false, 600, 300, '',
-			'', false, false, true, time(), '', 0, 0, true, true,
-			ui_get_full_url(false) . '/', 1, false, '', false, true,
-			true, 'white', null, false, false, $config['type_module_charts'], 
-			false, false);
-	} else {
-		$graph_html = grafico_modulo_string(
-			$id_module, $graph_seconds, false, 600, 300, '',
-			'', false, false, true, time(), true, ui_get_full_url(false) . '/', 
-			'', 1, true);
-	}
+
+	$graph_html = grafico_modulo_sparse(
+		$id_module, $graph_seconds, false, 600, 300, '',
+		'', false, false, true, time(), '', 0, 0, true, true,
+		ui_get_full_url(false) . '/', 1, false, '', false, true,
+		true, 'white', null, false, false, $config['type_module_charts'], 
+		false, false);
 
 	$graph_image_file_encoded = false;
 	if (preg_match("/<img src='(.+)'./", $graph_html, $matches)) {

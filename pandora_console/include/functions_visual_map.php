@@ -1034,85 +1034,61 @@ function visual_map_print_item($mode = "read", $layoutData,
 						else{
 							$img =  '<img src="images/console/signes/module_graph.png" style="width:'.$width.'px;height:'.	$height.'px;'.$imgpos.'">';
 						}
-					}				
-			 	}
-				else {
-					if ($width == 0 || $height == 0) {
-						
-						if ($layoutData['label_position']=='left') {
-							$img =  '<div style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;">'.
-							grafico_modulo_sparse($id_module, $period, 
-							0, 300, 180, modules_get_agentmodule_name($id_module),null, false, 1, false, 0, 
-							modules_get_unit($id_module), 0, 0, true, $only_image, '', 1, false, '', 
-							false, false, false, $layoutData['image'], 
-							null, true, false, $type_graph) . '</div>';
-						}
-						elseif($layoutData['label_position']=='right') {
-							$img =  '<div style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;">' . 
-								grafico_modulo_sparse($id_module, 
-								$period, 0, 300, 180, modules_get_agentmodule_name($id_module),null, false, 
-								1, false, 0, modules_get_unit($id_module), 0, 0, true, $only_image, '', 
-								1, false, '', false, false, false, 
-								$layoutData['image'], null, true, 
-								false, $type_graph) . '</div>';
-						}
-						else {
-							$img =  grafico_modulo_sparse($id_module, 
-							$period, 0, 300, 180, modules_get_agentmodule_name($id_module),null, false, 1, 
-							false, 0, modules_get_unit($id_module), 0, 0, true, $only_image, '', 
-							1, false, '', false, false, false, 
-							$layoutData['image'], null, true, false, $type_graph);
-						}
-					}
-					else{
-						if ($layoutData['label_position']=='left') {
-							$img =  '<div style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;">' . 
-								grafico_modulo_sparse($id_module, $period, 
-							0, $width, $height, modules_get_agentmodule_name($id_module), null, false, 1, 
-							false, 0, modules_get_unit($id_module), 0, 0, true, $only_image, '', 
-							1, false, '', false, false, false, 
-							$layoutData['image'], null, true, 
-							false, $type_graph) . '</div>';
-						}
-						elseif ($layoutData['label_position']=='right') {
-							$img =  '<div style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;">' . 
-								grafico_modulo_sparse($id_module, $period, 
-								0, $width, $height, modules_get_agentmodule_name($id_module), null, false, 1, 
-								false, 0, modules_get_unit($id_module), 0, 0, true, $only_image, 
-								'', 1, false, modules_get_unit($id_module), false, false, false, 
-								$layoutData['image'], null, true, 
-								false, $type_graph) . '</div>';
-						}
-						else {
-							$img =  grafico_modulo_sparse($id_module, 
-								$period, 0, $width, $height, modules_get_agentmodule_name($id_module), null, 
-								false, 1, false, 0, modules_get_unit($id_module), 0, 0, true, 
-								$only_image, '', 1, false, '', false, 
-								false, false, $layoutData['image'], 
-								null, false, true, $type_graph);
-						}
 					}
 				}
-		    }
-			
+				else {
+
+					if ($width == 0 || $height == 0) {
+						$width = 300;
+						$height = 180;
+					}
+
+					$params =array(
+						'agent_module_id'     => $id_module,
+						'period'              => $period,
+						'show_events'         => false,
+						'width'               => $width,
+						'height'              => $height,
+						'title'               => modules_get_agentmodule_name($id_module),
+						'unit'                => modules_get_unit($id_module),
+						'only_image'          => $only_image,
+						'menu'                => false,
+						'backgroundColor'     => $layoutData['image'],
+						'type_graph'          => $type_graph
+					);
+
+					if ($layoutData['label_position']=='left') {
+						$img =  '<div style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;">'.
+						grafico_modulo_sparse($params) . '</div>';
+					}
+					elseif($layoutData['label_position']=='right') {
+
+						$img =  '<div style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;">' . 
+							grafico_modulo_sparse($params) . '</div>';
+					}
+					else {
+						$img =  grafico_modulo_sparse($params);
+					}
+
+				}
+			}
+
 			//Restore db connection
 			if ($layoutData['id_metaconsole'] != 0) {
 				metaconsole_restore_db();
 			}
-
 			break;
-		
+
 		case BARS_GRAPH:
-		
 			$imgpos = '';
-						
+
 			if($layoutData['label_position']=='left'){
 				$imgpos = 'float:right';
 			}
 			else if($layoutData['label_position']=='right'){
 				$imgpos = 'float:left';
 			}
-		
+
 			if (!empty($proportion)) {
 				$width =
 					((integer)($proportion['proportion_width'] * $width));

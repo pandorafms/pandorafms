@@ -663,7 +663,6 @@ function tags_get_acl_tags($id_user, $id_group, $access = 'AR',
 	elseif (!is_array($id_group)) {
 		$id_group = array($id_group);
 	}
-	$groups = $id_group;
 	
 	$acl_column = get_acl_column($access);
 	if (empty($acl_column)) {
@@ -720,10 +719,10 @@ function tags_get_acl_tags($id_user, $id_group, $access = 'AR',
 function tags_get_acl_tags_module_condition($acltags, $modules_table = '') {
 	if (!empty($modules_table))
 		$modules_table .= '.';
-	
+
 	$condition = '';
 	$group_conditions = array();
-	
+
 	// The acltags array contains the groups with the acl propagation applied
 	// after the changes done into the 'tags_get_user_groups_and_tags' function.
 	foreach ($acltags as $group_id => $group_tags) {
@@ -734,21 +733,35 @@ function tags_get_acl_tags_module_condition($acltags, $modules_table = '') {
 										AND ttmc.id_tag IN (%s)',
 								is_array($group_tags) ? implode(',', $group_tags) : $group_tags);
 		}
-		
-		$agent_condition = sprintf('SELECT tamc.id_agente_modulo
+		// FIXME: Not properly way to increse performance
+		if(enterprise_hook('agents_is_using_secondary_groups')){
+			$agent_condition = sprintf('SELECT tamc.id_agente_modulo
 									FROM tagente_modulo tamc
 									%s
 									INNER JOIN tagente tac
 										ON tamc.id_agente = tac.id_agente
-											AND tac.id_grupo = %d',
+										LEFT JOIN tagent_secondary_group tasg
+											ON tasg.id_agent = tac.id_agente
+												WHERE (tac.id_grupo = %d OR tasg.id_group = %d)',
+									$tag_join, $group_id, $group_id);
+		}
+		else{
+			$agent_condition = sprintf('SELECT tamc.id_agente_modulo
+									FROM tagente_modulo tamc
+									%s
+									INNER JOIN tagente tac
+										ON tamc.id_agente = tac.id_agente
+										AND tac.id_grupo = %d',
 									$tag_join, $group_id);
+		}
+
 		$sql_condition = sprintf('(%sid_agente_modulo IN (%s))', $modules_table, $agent_condition);
-		
+
 		$group_conditions[] = $sql_condition;
-		
+
 		$i++;
 	}
-	
+
 	if (!empty($group_conditions))
 		$condition = implode(' OR ', $group_conditions);
 	$condition = !empty($condition) ? "($condition)" : '';
@@ -858,7 +871,13 @@ function tags_get_acl_tags_event_condition($acltags, $meta = false, $force_group
 		// Tags condition (The module has at least one of the restricted tags)
 		$tags_condition = '';
 		if (empty($group_tags)) {
-			$tags_condition = "id_grupo = ".$group_id;
+			// FIXME: Not properly way to increse performance
+			if(enterprise_hook('agents_is_using_secondary_groups')){
+				$tags_condition = "id_grupo = ".$group_id . " OR id_group = " . $group_id;
+			}
+			else{
+				$tags_condition = "id_grupo = ".$group_id;
+			}
 		}
 		else {
 			if (!is_array($group_tags)) {

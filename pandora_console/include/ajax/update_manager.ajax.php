@@ -15,6 +15,14 @@
 
 global $config;
 
+check_login ();
+
+if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
+	db_pandora_audit("ACL Violation", "Trying to access update Management");
+	require ("general/noaccess.php");
+	return;
+}
+
 require_once($config['homedir'] . "/include/functions_update_manager.php");
 require_once($config['homedir'] . "/include/functions_graph.php");
 enterprise_include_once("include/functions_update_manager.php");
@@ -237,7 +245,7 @@ if ($install_package) {
 		}
 
 		update_manager_enterprise_set_version($version);
-		db_pandora_audit("Update Pandora", "Update version: $version of Pandora FMS by ".$config['id_user']);
+		db_pandora_audit("Update " . get_product_name(), "Update version: $version of " . get_product_name() ." by ".$config['id_user']);
 		
 		$return["status"] = "success";
 		echo json_encode($return);
@@ -252,6 +260,7 @@ if ($install_package) {
 }
 
 if ($check_install_package) {
+	
 	// 1 second
 	//sleep(1);
 	// Half second

@@ -88,7 +88,7 @@ sub run ($) {
 	my $self = shift;
 	my $pa_config = $self->getConfig ();
 
-	print_message ($pa_config, " [*] Starting Pandora FMS Data Server.", 1);
+	print_message ($pa_config, " [*] Starting " . $pa_config->{'rb_product_name'} . " Data Server.", 1);
 	$self->setNumThreads ($pa_config->{'dataserver_threads'});
 	$self->SUPER::run (\@TaskQueue, \%PendingTasks, $Sem, $TaskSem);
 }
@@ -334,7 +334,6 @@ sub process_xml_data ($$$$$) {
 			if (defined ($data->{'group_id'}) && $data->{'group_id'} ne '') {
 				$group_id = $data->{'group_id'};
 				if (! defined (get_group_name ($dbh, $group_id))) {
-					print "UNABLE GROUP ID\n";
 					pandora_event ($pa_config, "Unable to create agent '" . safe_output($agent_name) . "': group ID '" . $group_id . "' does not exist.", 0, 0, 0, 0, 0, 'error', 0, $dbh);
 					logger($pa_config, "Group ID " . $group_id . " does not exist.", 3);
 					return;
@@ -342,14 +341,12 @@ sub process_xml_data ($$$$$) {
 			} elsif (defined ($data->{'group'}) && $data->{'group'} ne '') {
 				$group_id = get_group_id ($dbh, $data->{'group'});
 				if (! defined (get_group_name ($dbh, $group_id))) {
-					print "UNABLE GROUP\n";
 					pandora_event ($pa_config, "Unable to create agent '" . safe_output($agent_name) . "': group '" . safe_output($data->{'group'}) . "' does not exist.", 0, 0, 0, 0, 0, 'error', 0, $dbh);
 					logger($pa_config, "Group " . $data->{'group'} . " does not exist.", 3);
 					return;
 				}
 			} else {
-					print "UNABLE AUTOCREATE\n";
-					pandora_event ($pa_config, "Unable to create agent '" . safe_output($agent_name) . "': autocreate_group $group_id does not exist. Edit the pandora_server.conf file and change it.", 0, 0, 0, 0, 0, 'error', 0, $dbh);
+					pandora_event ($pa_config, "Unable to create agent '" . safe_output($agent_name) . "': autocreate_group $group_id does not exist. Edit the server configuration file and change it.", 0, 0, 0, 0, 0, 'error', 0, $dbh);
 					logger($pa_config, "Group id $group_id does not exist (check autocreate_group config token).", 3);
 					return;
 			}
@@ -372,6 +369,9 @@ sub process_xml_data ($$$$$) {
 		if (! defined ($agent_id)) {
 			return;
 		}
+
+		# Update the secondary groups
+		enterprise_hook('add_secondary_groups_name', [$pa_config, $dbh, $agent_id, $data->{'secondary_groups'}]);
 		
 		# This agent is new.
 		$new_agent = 1;
@@ -645,10 +645,11 @@ sub process_module_data ($$$$$$$$$$) {
 	
 	# Calculate the module interval in seconds
 	if (defined($module_conf->{'cron_interval'})) {
-		$module_conf->{'module_interval'} = 1 unless defined ($module_conf->{'module_interval'});
-		$module_conf->{'module_interval'} *= $interval if (defined ($module_conf->{'module_interval'}));
-	} else {
 		$module_conf->{'module_interval'} = $module_conf->{'cron_interval'};
+	} elsif (defined ($module_conf->{'module_interval'})) {
+		$module_conf->{'module_interval'} = $interval * $module_conf->{'module_interval'};
+	} else {
+		$module_conf->{'module_interval'} = $interval;
 	}
 	
 	# Allow , as a decimal separator

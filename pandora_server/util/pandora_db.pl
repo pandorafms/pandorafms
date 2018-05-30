@@ -30,10 +30,11 @@ use Time::HiRes qw(usleep);
 use lib '/usr/lib/perl5';
 
 use PandoraFMS::Tools;
+use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.719 PS180302";
+my $version = "7.0NG.723 PS180530";
 
 # Pandora server configuration
 my %conf;
@@ -552,12 +553,12 @@ sub pandora_compactdb ($$) {
 ########################################################################
 # Check command line parameters.
 ########################################################################
-sub pandora_init ($) {
+sub pandora_init_pdb ($) {
 	my $conf = shift;
 	
-	log_message ('', "\nPandora FMS DB Tool $version Copyright (c) 2004-2015 Artica ST\n");
+	log_message ('', "\nDB Tool $version Copyright (c) 2004-2018 " . pandora_get_initial_copyright_notice() . "\n");
 	log_message ('', "This program is Free Software, licensed under the terms of GPL License v2\n");
-	log_message ('', "You can download latest versions and documentation at http://www.pandorafms.org\n\n");
+	log_message ('', "You can download latest versions and documentation at official web\n\n");
 	
 	# Load config file from command line
 	help_screen () if ($#ARGV < 0);
@@ -594,7 +595,7 @@ sub pandora_init ($) {
 ########################################################################
 # Read external configuration file.
 ########################################################################
-sub pandora_load_config ($) {
+sub pandora_load_config_pdb ($) {
 	my $conf = shift;
 
 	# Read conf file
@@ -677,7 +678,7 @@ sub pandora_load_config ($) {
    	
 	db_disconnect ($dbh);
 
-	log_message ('', "Pandora DB now initialized and running (PURGE=" . $conf->{'_days_purge'} . " days, COMPACT=$conf->{'_days_compact'} days, STEP=" . $conf->{'_step_compact'} . ") . \n\n");
+	log_message ('', "DB Tool now initialized and running (PURGE=" . $conf->{'_days_purge'} . " days, COMPACT=$conf->{'_days_compact'} days, STEP=" . $conf->{'_step_compact'} . ") . \n\n");
 }
 
 
@@ -897,7 +898,7 @@ sub pandora_checkdb_consistency {
 # Print a help screen and exit.
 ##############################################################################
 sub help_screen{
-	log_message ('', "Usage: $0 <path to pandora_server.conf> [options]\n\n");
+	log_message ('', "Usage: $0 <path to configuration file> [options]\n\n");
 	log_message ('', "\t\t-p   Only purge and consistency check, skip compact.\n");
 	log_message ('', "\t\t-f   Force execution event if another instance of $0 is running.\n\n");
 	exit -1;
@@ -1024,17 +1025,17 @@ sub pandoradb_main ($$$) {
 }
 
 # Init
-pandora_init(\%conf);
+pandora_init_pdb(\%conf);
 
 # Read config file
-pandora_load_config (\%conf);
+pandora_load_config_pdb (\%conf);
 
 # Load enterprise module
 if (enterprise_load (\%conf) == 0) {
-	log_message ('', " [*] Pandora FMS Enterprise module not available.\n\n");
+	log_message ('', " [*] " . pandora_get_initial_product_name() . " Enterprise module not available.\n\n");
 }
 else {
-	log_message ('', " [*] Pandora FMS Enterprise module loaded.\n\n");
+	log_message ('', " [*] " . pandora_get_initial_product_name() . " Enterprise module loaded.\n\n");
 }
 
 # Connect to the DB
@@ -1045,7 +1046,7 @@ my $history_dbh = ($conf{'_history_db_enabled'} eq '1') ? db_connect ($conf{'dbe
 # Get a lock
 my $lock = db_get_lock ($dbh, 'pandora_db');
 if ($lock == 0 && $conf{'_force'} == 0) { 
-	log_message ('', " [*] Another instance of pandora_db seems to be running.\n\n");
+	log_message ('', " [*] Another instance of DB Tool seems to be running.\n\n");
 	exit 1;
 }
 

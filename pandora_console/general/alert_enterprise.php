@@ -93,15 +93,17 @@ switch ($tipo) {
 	
 	case "helpmodal":
 	
-	echo __("This is the online help for Pandora FMS console. This help is -in best cases- just a brief contextual help, not intented to teach you how to use Pandora FMS. Official documentation of Pandora FMS is about 900 pages, and you probably don't need to read it entirely, but sure, you should download it and take a look.<br><br>
-	<a href='https://pandorafms.org/en/docs/monitoring-documentation/' target='_blanck' style='color: #82b92e; font-size: 10pt; text-decoration: underline;'>Download the official documentation</a>");
+	echo __("This is the online help for %s console. This help is -in best cases- just a brief contextual help, not intented to teach you how to use %s. Official documentation of %s is about 900 pages, and you probably don't need to read it entirely, but sure, you should download it and take a look.<br><br>
+  <a href='%s' target='_blanck' style='color: #82b92e; font-size: 10pt; text-decoration: underline;'>Download the official documentation</a>",
+  get_product_name(), get_product_name(), get_product_name(), $config['custom_docs_url']);
 	
 	break;
 	
 	case "noaccess":
 	
-	echo __('Access to this page is restricted to authorized users only, please contact system administrator if you need assistance. <br/> <br/>
-	Please know that all attempts to access this page are recorded in security logs of Pandora System Database');
+	echo __('Access to this page is restricted to authorized users only, please contact system administrator if you need assistance. <br> <br>
+    Please know that all attempts to access this page are recorded in security logs of %s System Database.',
+    get_product_name());
 	
 	break;
 	
@@ -111,13 +113,13 @@ switch ($tipo) {
 
   echo 
     '<p>' .
-    	__('The Update Manager client is included on Pandora FMS. It helps system administrators update their Pandora FMS automatically, since the Update Manager retrieves new modules, new plugins and new features (even full migrations tools for future versions) automatically.') .
+    	__('The Update Manager client is included on %s. It helps system administrators update their %s automatically, since the Update Manager retrieves new modules, new plugins and new features (even full migrations tools for future versions) automatically.', get_product_name(), get_product_name()) .
     '</p>' .
     '<p>' .
     	__('<b>OpenSource version updates are automated packages generated each week. These updates come WITHOUT ANY warranty or support. If your system is corrupted or a feature stops working properly, you will need to recover a backup by yourself.</b>') .
     '</p>' .
     '<p>' .
-    	__('The Enterprise version comes with a different update system, with fully tested, professionally-supported packages, and our support team is there to help you in case of problems or queries. Update Manager is another feature present in the Enterprise version and not included in the OpenSource version. There are lots of advanced business-oriented features contained in Pandora FMS Enterprise Edition. For more information visit <a href="http://pandorafms.com">pandorafms.com</a>') .
+    	__('The Enterprise version comes with a different update system, with fully tested, professionally-supported packages, and our support team is there to help you in case of problems or queries. Update Manager is another feature present in the Enterprise version and not included in the OpenSource version. There are lots of advanced business-oriented features contained in %s Enterprise Edition. For more information visit <a href="http://pandorafms.com">pandorafms.com</a>', get_product_name()) .
     '</p>'
     ;
     	
@@ -125,13 +127,13 @@ switch ($tipo) {
     	
     	echo 
       '<p>' .
-    		__('The new <a href="http://updatemanager.sourceforge.net">Update Manager</a> client is shipped with Pandora FMS It helps system administrators to update their Pandora FMS automatically, since the Update Manager does the task of getting new modules, new plugins and new features (even full migrations tools for future versions) automatically.') .
+    		__('The new <a href="http://updatemanager.sourceforge.net">Update Manager</a> client is included on %s. It helps system administrators update their %s automatically, since the Update Manager retrieves new modules, new plugins and new features (even full migrations tools for future versions) automatically.', get_product_name(), get_product_name()) .
     	'</p>' .
     	'<p>' .
-    		__('Update Manager is one of the most advanced features of Pandora FMS Enterprise version, for more information visit <a href="http://pandorafms.com">http://pandorafms.com</a>.') .
+    		__('The Update Manager is one of the most advanced features on the %s Enterprise Edition. For more information visit <a href="http://pandorafms.com">http://pandorafms.com</a>.', get_product_name()) .
     	'</p>' .
     	'<p>' .
-    		__('Update Manager sends anonymous information about Pandora FMS usage (number of agents and modules running). To disable it, please remove the remote server address from the Update Manager plugin setup.') .
+    		__('Update Manager sends anonymous information about %s usage (number of agents and modules running). To disable it, please remove the remote server address from the Update Manager plugin setup.', get_product_name()) .
     	'</p>'
     ;
     }
@@ -142,13 +144,13 @@ switch ($tipo) {
       <br><br><img style='width:105px' src='".$config['homeurl']."images/logo_oracle.png'><img style='width:105px' src='".$config['homeurl']."images/logo_citrix.png'><img style='width:105px' src='".$config['homeurl']."images/logo_sap.png'><img style='width:105px' src='".$config['homeurl']."images/logo_exchange.png'><br><br><span style='font-style:italic;'>* Todos los logotipos pertenecen a marcas registradas</span>");
       break;
     case "massivemodal":
-      echo __("Do you want to consolidate all your system monitoring? Do you have many systems, making it difficult to manage them in a comprehensive manner? Would you like to deploy monitoring, alerts and even local plugins with a single click? Pandora FMS Enterprise Policies are exactly what you need; you'll save time, effort and annoyances. More information <a href='pandorafms.com'>pandorafms.com</a>");
+      echo __("Do you want to consolidate all your system monitoring? Do you have many systems, making it difficult to manage them in a comprehensive manner? Would you like to deploy monitoring, alerts and even local plugins with a single click? %s Enterprise Policies are exactly what you need; you'll save time, effort and annoyances. More information <a href='pandorafms.com'>pandorafms.com</a>", get_product_name());
       break;
     case "eventsmodal":
-      echo __("Pandora FMS Enterprise also features event correlation. Through correlation you can generate realtime alerts and / or new events based on logical rules. This allows you to automate troubleshooting. If you know the value of working with events, event correlation will take you to a new level.");
+      echo __("%s Enterprise also features event correlation. Through correlation you can generate realtime alerts and / or new events based on logical rules. This allows you to automate troubleshooting. If you know the value of working with events, event correlation will take you to a new level.", get_product_name());
       break;
     case "reportingmodal":
-      echo __("Report generating on the Enterprise version is also more powerful: it has wizards, you can schedule emails in PDF to be sent according to the schedule you decide, and it has a template system to create personalized reports quickly for each of your customers. It will even allow your customers to generate their own reports from templates created by you. If reports are key to your business, Pandora FMS Enterprise version is for you.");
+      echo __("Report generating on the Enterprise version is also more powerful: it has wizards, you can schedule emails in PDF to be sent according to the schedule you decide, and it has a template system to create personalized reports quickly for each of your customers. It will even allow your customers to generate their own reports from templates created by you. If reports are key to your business, %s Enterprise version is for you.", get_product_name());
       break;
     case "visualmodal":  
       echo __("These options are only effective on the Enterprise version.");

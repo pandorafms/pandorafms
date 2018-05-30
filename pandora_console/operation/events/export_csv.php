@@ -87,7 +87,9 @@ switch ($config["dbtype"]) {
 	case "postgresql":
 	case "oracle":
 		$sql = "SELECT *
-			FROM tevento
+			FROM tevento te
+			LEFT JOIN tagent_secondary_group tasg
+				ON te.id_grupo = tasg.id_group
 			WHERE 1=1 ".$sql_post."
 			ORDER BY utimestamp DESC";
 		break;
@@ -97,9 +99,9 @@ $now = date ("Y-m-d");
 
 // Show contentype header	
 Header ("Content-type: text/txt");
-header ('Content-Disposition: attachment; filename="pandora_export_event'.$now.'.txt"');
+header ('Content-Disposition: attachment; filename="pandora_export_event'.$now.'.csv"');
 
-echo "timestamp, agent, group, event, status, user, event_type, severity";
+echo "timestamp, agent, group, event, status, user, event_type, severity, id";
 echo chr (13);
 
 $new = true;
@@ -126,6 +128,8 @@ while ($event = db_get_all_row_by_steps_sql($new, $result, $sql)) {
 	echo io_safe_output($event["event_type"]);
 	echo ",";
 	echo $event["criticity"];
+	echo ",";
+	echo $event["id_evento"];
 	echo chr (13);
 }
 ?>

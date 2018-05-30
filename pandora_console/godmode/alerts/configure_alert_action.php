@@ -111,6 +111,13 @@ $table->size[0] = '20%';
 $table->data = array ();
 $table->data[0][0] = __('Name');
 $table->data[0][1] = html_print_input_text ('name', $name, '', 35, 255, true);
+if (io_safe_output($name) == "Monitoring Event") {
+	$table->data[0][1] .= '&nbsp;&nbsp;' . ui_print_help_tip(
+		__("This action may stop working, if you change its name."),
+		true,
+		"images/header_yellow.png"
+	);
+}
 $table->colspan[0][1] = 2;
 
 $table->data[1][0] = __('Group');
@@ -156,7 +163,6 @@ $table->data[5][1] = html_print_textarea ('command_preview', 5, 30, '',
 $table->data[5][2] = html_print_textarea ('command_recovery_preview', 5, 30, '',
 	'disabled="disabled"', true);
 
-$row = 6;
 for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
 	$table->data['field' . $i][0] = html_print_image(
 		'images/spinner.gif', true);
@@ -164,7 +170,7 @@ for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
 		'images/spinner.gif', true);
 	$table->data['field' . $i][2] = html_print_image(
 		'images/spinner.gif', true);
-	
+
 	// Store the value in a hidden to keep it on first execution
 	$table->data['field' . $i][1] .= html_print_input_hidden(
 		'field' . $i . '_value',
@@ -177,6 +183,7 @@ for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
 			$action['field' . $i . '_recovery'] : '',
 		true);
 }
+
 
 echo '<form method="post" action="' .
 	'index.php?sec=' . $sec . '&' .

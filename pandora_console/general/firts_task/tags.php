@@ -26,9 +26,9 @@ ui_require_css_file ('firts_task');
 	</div>
 	<div class="text_task">
 		<h3> <?php echo __('Create Tags'); ?></h3>
-		<p id="description_task"> <?php echo __("From Pandora FMS versions 5 and above, the access to modules can be configured by a tags system.
-								Tags are configured on the system and be assigned to the chosen modules. 
-								The user's access can be limited to modules with certain tags in this way. "); ?></p>
+		<p id="description_task"> <?php echo __("Access to modules can be configured by a tagging system.
+								Tags are configured on the system and are assigned to the chosen modules.
+								A user's access can therefore be restricted to modules with certain tags."); ?></p>
 		<form action="index.php?sec=gmodules&sec2=godmode/tag/edit_tag&action=new" method="post">
 			<input type="submit" class="button_task" value="<?php echo __('Create Tags'); ?>" />
 		</form>

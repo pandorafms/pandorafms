@@ -46,8 +46,19 @@ if (isset ($_GET["loginhash"])) {
 	}
 }
 
+$public_hash = get_parameter('hash', false);
+
 // Check user
-//check_login ();
+if ($public_hash == false) {
+	check_login();
+} else {
+	enterprise_include_once('include/functions_dashboard.php');
+	if (dashboard_check_public_hash($public_hash) === false) {
+		db_pandora_audit("Invalid public hash",	"Trying to access public dashboard");
+		require ("general/noaccess.php");
+		exit;
+	}
+}
 
 define ('AJAX', true);
 

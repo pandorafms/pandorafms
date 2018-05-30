@@ -9,9 +9,9 @@
 Qué origen de tiempo usar. Esto puede ser (por el momento) el sistema local (&laquo;Sistema&raquo;) o la base de datos (&laquo;Base de datos&raquo;).
 </p>
 <p>
-Esto es útil cuando su base de datos no está en el mismo sistema que su servidor Web o los servidores de su Pandora FMS.
+Esto es útil cuando su base de datos no está en el mismo sistema que su servidor Web o los servidores de su <?php echo get_product_name();?>.
 En ese caso cualquier diferencia de tiempo calculará de forma errónea las diferencias de tiempo y marcas de tiempo.
-Debería usar NTP para sincronizar todos sus servidores de Pandora FMS y su servidor de MySQL.
+Debería usar NTP para sincronizar todos sus servidores de <?php echo get_product_name();?> y su servidor de MySQL.
 Usando estas preferencias no tendrá que sincronizar su servidor web, aún así se recomienda.
 </p>
 <p>

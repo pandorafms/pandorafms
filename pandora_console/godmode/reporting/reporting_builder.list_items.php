@@ -352,9 +352,8 @@ foreach ($items as $item) {
 	
 	$row[1] = get_report_name($item['type']);
 	
-	$custom_graph_name = db_get_row_sql('select name from tgraph where id_graph = '.$item['id_gs']);
-	
 	if($item['type'] == 'custom_graph'){
+		$custom_graph_name = db_get_row_sql('select name from tgraph where id_graph = '.$item['id_gs']);
 		$row[1] = get_report_name($item['type']).' ('.$custom_graph_name['name'].')';
 	}
 	

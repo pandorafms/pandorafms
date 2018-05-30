@@ -10,7 +10,7 @@ Esta página es el lugar para configurar un Mapa GIS.
 </p>
 <h2>Nombre del Mapa</h2>
 <p>
-Cada mapa tiene un nombre descriptivo que se utiliza para reconocer el mapa dentro de Pandora FMS.
+Cada mapa tiene un nombre descriptivo que se utiliza para reconocer el mapa dentro de <?php echo get_product_name();?>.
 
 </p>
 <h2>Seleccionar Conexiones</h2>
@@ -19,7 +19,7 @@ El primer paso es seleccionar la principal <strong>conexión </strong> empleada 
 
 </p>
 <p>
-Cuando se configura la primera conexión, Pandora FMS te pregunta si quiere utilizar los valores por defecto de la conexión para el mapa, para evitar tener que escribir de nuevo toda la información. También, si la conexión por defecto del mapa se ha cambiado (utilizando el radio button), Pandora FMS te preguntará de nuevo si quiere usar los valores de la nueva conexión por defecto.
+Cuando se configura la primera conexión, <?php echo get_product_name();?> te pregunta si quiere utilizar los valores por defecto de la conexión para el mapa, para evitar tener que escribir de nuevo toda la información. También, si la conexión por defecto del mapa se ha cambiado (utilizando el radio button), <?php echo get_product_name();?> te preguntará de nuevo si quiere usar los valores de la nueva conexión por defecto.
 
 </p>
 <h2>Parámetros del Mapa</h2>

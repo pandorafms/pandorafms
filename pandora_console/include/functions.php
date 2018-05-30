@@ -1833,6 +1833,22 @@ function check_acl($id_user, $id_group, $access, $onlyOneGroup = false) {
 }
 
 /**
+ * Check the ACL of a list of groups.
+ *
+ * @param string $id_user to check the ACL
+ * @param Array $groups. All groups to check
+ * @param string $access. Profile to check
+ *
+ * @return bool True if at least one of this groups check the ACL
+ */
+function check_acl_one_of_groups($id_user, $groups, $access) {
+	foreach ($groups as $group) {
+		if (check_acl($id_user, $group, $access)) return true;
+	}
+	return false;
+}
+
+/**
  * Get the name of the database column of one access flag
  *
  * @param string access flag
@@ -2147,6 +2163,18 @@ function is_snapshot_data ($data) {
 }
 
 /**
+ * Check if text is too long to put it into a black screen
+ *
+ * @param string Data value
+ * @return bool True if black window should be displayed
+ */
+function is_text_to_black_string ($data) {
+	if (is_image_data($data)) return false;
+	// Consider large text if data is greater than 200 characters
+	return ((int)strlen($data)) > 200;
+}
+
+/**
 *  Create an invisible div with a provided ID and value to
 * can retrieve it from javascript with function get_php_value(name)
 */
@@ -2273,6 +2301,10 @@ function get_news($arguments) {
 	$limit = get_argument ('limit', $arguments, 99999999);
 	
 	$id_group = array_keys(users_get_groups($id_user, false, true));
+
+	// Empty groups
+	if (empty($id_group)) return array();
+
 	$id_group = implode(',',$id_group);
 	$current_datetime = date('Y-m-d H:i:s', time());
 	$modal = (int) $modal;
@@ -2336,7 +2368,7 @@ function print_audit_csv ($data) {
 	echo __('User') . ';' .
 		__('Action') . ';' .
 		__('Date') . ';' .
-		__('Source ID') . ';' .
+		__('Source IP') . ';' .
 		__('Comments') ."\n";
 	foreach ($data as $line) {
 		echo io_safe_output($line['id_usuario']) . ';' .  io_safe_output($line['accion']) . ';' .  $line['fecha'] . ';' .  $line['ip_origen'] . ';'.  io_safe_output($line['descripcion']). "\n";
@@ -2790,5 +2822,33 @@ function validate_address($address){
 		}
 	}
 	return true;
+}
+
+/**
+ * Get the product name.
+ *
+ * @return string If the installation is open, it will be 'Pandora FMS'.
+ * 		If the product name stored is empty, it returns 'Pandora FMS' too.
+ */
+function get_product_name () {
+	$stored_name = enterprise_hook('enterprise_get_product_name');
+	if (empty($stored_name) || $stored_name == ENTERPRISE_NOT_HOOK) {
+		return "Pandora FMS";
+	}
+	return $stored_name;
+}
+
+/**
+ * Get the copyright notice.
+ *
+ * @return string If the installation is open, it will be 'Artica ST'.
+ * 		If the product name stored is empty, it returns 'Artica ST' too.
+ */
+function get_copyright_notice () {
+	$stored_name = enterprise_hook('enterprise_get_copyright_notice');
+	if (empty($stored_name) || $stored_name == ENTERPRISE_NOT_HOOK) {
+		return "Ártica ST";
+	}
+	return $stored_name;
 }
 ?>

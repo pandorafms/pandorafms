@@ -228,7 +228,7 @@ if ($view_mode === false) {
 	}
 	else {
 		$data = array();
-		$data[0] = '<i>'.__('You can not change your password from Pandora FMS under the current authentication scheme').'</i>';
+		$data[0] = '<i>'.__('You cannot change your password under the current authentication scheme').'</i>';
 		$table->rowclass[] = '';
 		$table->rowstyle[] = '';
 		$table->colspan[count($table-data)][0] = 2;
@@ -352,7 +352,7 @@ if (check_acl ($config['id_user'], 0, "ER")){
 else if (license_free()) {
 	$data[1] = __('Newsletter Subscribed') . ':';
 	if ($user_info["middlename"]) {
-		$data[1] .= $jump . '<span style="font-weight:initial;">' . __('Already subscribed to Pandora FMS newsletter') . "</span>";
+		$data[1] .= $jump . '<span style="font-weight:initial;">' . __('Already subscribed to %s newsletter', get_product_name()) . "</span>";
 	}
 	else {
 		$data[1] .= $jump . '<span style="font-weight:initial;"><a style="text-decoration:underline;" href="javascript: force_run_newsletter();">' . __('Subscribe to our newsletter') . "</a></span>";
@@ -370,7 +370,11 @@ $table->data[] = $data;
 $data = array();
 
 $autorefresh_list_out = array();
-$autorefresh_list_out['operation/agentes/tactical'] = "tactical";
+if(is_metaconsole()) {
+	$autorefresh_list_out['monitoring/tactical'] = "tactical";
+} else {
+	$autorefresh_list_out['operation/agentes/tactical'] = "tactical";
+}
 $autorefresh_list_out['operation/agentes/group_view'] = "group_view";
 $autorefresh_list_out['operation/agentes/estado_agente'] = "agent_status";
 $autorefresh_list_out['operation/agentes/alerts_status'] = "alerts_status";
@@ -470,10 +474,9 @@ echo '<form name="user_mod" method="post" action="'.$url.'&amp;modified=1&amp;id
 
 html_print_table($table);
 
-
 echo '<div style="width:' . $table->width . '; text-align:right;">';
 if (!$config["user_can_update_info"]) {
-	echo '<i>'.__('You can not change your user info from Pandora FMS under the current authentication scheme').'</i>';
+	echo '<i>'.__('You can not change your user info under the current authentication scheme').'</i>';
 }
 else {
 	html_print_submit_button (__('Update'), 'uptbutton', $view_mode, 'class="sub upd"');

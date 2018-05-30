@@ -28,9 +28,8 @@ if (!isset ($config)) {
 		<meta http-equiv="content-type" content="text/html; charset=utf8">
 		<meta name="resource-type" content="document">
 		<meta name="distribution" content="global">
-		<meta name="author" content="Sancho Lerena">
-		<meta name="copyright" content="This is GPL software. Created by Sancho Lerena and others">
-		<meta name="keywords" content="pandora, monitoring, system, GPL, software">
+		<meta name="author" content="Artica ST">
+		<meta name="copyright" content="(c) Artica ST">
 		<meta name="robots" content="index, follow">
 		<link rel="icon" href="../../images/pandora.ico" type="image/ico">
 		<link rel="stylesheet" href="../styles/pandora.css" type="text/css">
@@ -154,6 +153,15 @@ function process_user_login_local ($login, $pass, $api = false) {
 		// We get DB nick to put in PHP Session variable,
 		// to avoid problems with case-sensitive usernames.
 		// Thanks to David Muñiz for Bug discovery :)
+		
+		$filter = array("id_usuario" => $login);
+		$user_profile = db_get_row_filter ("tusuario_perfil", $filter);
+		if(!users_is_admin($login) && !$user_profile){
+			$mysql_cache["auth_error"] = "User does not have any profile";
+			$config["auth_error"] = "User does not have any profile";
+			return false;
+		}
+		
 		return $row["id_user"];
 	}
 	else {
@@ -340,7 +348,7 @@ function process_user_login_remote ($login, $pass, $api = false) {
 				$attributes = $ldap_adv_perm['groups_ldap'];
 				
 				foreach ($attributes as $attr) {
-					$attr = explode('=',$attr);
+					$attr = explode('=', $attr, 2);
 					if(in_array($attr[1],$sr[$attr[0]])) {
 						$permissions[$i]["profile"] = $ldap_adv_perm['profile'];
 						$permissions[$i]["groups"] = $ldap_adv_perm['group'];

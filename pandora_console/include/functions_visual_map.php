@@ -247,8 +247,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 	
 	
 	if (!isset($layoutData['status_calculated'])) {
-		$layoutData['status_calculated'] =
-			visual_map_get_status_element($layoutData);
+		$layoutData['status_calculated'] = visual_map_get_status_element($layoutData);
 	}
 	$status = $layoutData['status_calculated'];
 	
@@ -812,50 +811,6 @@ function visual_map_print_item($mode = "read", $layoutData,
 	switch ($type) {
 		case STATIC_GRAPH:
 		case GROUP_ITEM:
-			//Enter the correct img if the graph has a module selected or not
-			if ($type == STATIC_GRAPH) {
-				//Module
-				if ($layoutData['id_agente_modulo'] != 0) {
-					$module_status = db_get_sql ('SELECT estado
-						FROM tagente_estado
-						WHERE id_agente_modulo = ' . $layoutData['id_agente_modulo']);
-					switch($module_status) {
-						case AGENT_STATUS_NORMAL:
-							$layoutData['status_calculated'] = AGENT_STATUS_NORMAL;
-							break;
-						case AGENT_MODULE_STATUS_WARNING:
-							$layoutData['status_calculated'] = AGENT_STATUS_WARNING;
-							break;
-						case AGENT_STATUS_CRITICAL:
-							$layoutData['status_calculated'] = AGENT_STATUS_CRITICAL;
-							break;
-						case AGENT_MODULE_STATUS_NO_DATA:
-						default:
-							$layoutData['status_calculated'] = AGENT_STATUS_UNKNOWN;
-							break;
-					}
-				}
-				//No module
-				else if ($layoutData['id_agent'] != 0) {
-					$agent = db_get_row ("tagente", "id_agente", $layoutData['id_agent']);
-					if ($agent['total_count'] == 0 || $agent['total_count'] == $agent['notinit_count']) {
-						$layoutData['status_calculated'] = AGENT_STATUS_UNKNOWN;
-					}
-					else if ($agent['critical_count'] > 0) {
-						$layoutData['status_calculated'] = AGENT_STATUS_CRITICAL;
-					}
-					else if ($agent['warning_count'] > 0) {
-						$layoutData['status_calculated'] = AGENT_STATUS_WARNING;
-					}
-					else if ($agent['unknown_count'] > 0) {
-						$layoutData['status_calculated'] = AGENT_STATUS_UNKNOWN;
-					}
-					else {
-						$layoutData['status_calculated'] = AGENT_STATUS_NORMAL;
-					}
-				}
-			}
-
 			if ($layoutData['image'] != null) {
 				$img = visual_map_get_image_status_element($layoutData,
 					$layoutData['status_calculated']);
@@ -3210,7 +3165,18 @@ function visual_map_get_status_element($layoutData) {
 	else {
 		switch ($layoutData["type"]) {
 			case STATIC_GRAPH:
-			//Enter the correct img if the graph has a module selected or not
+				// Open metaconsole connection
+				if ($layoutData['id_metaconsole'] != 0) {
+					//Metaconsole db connection
+					$connection = db_get_row_filter ('tmetaconsole_setup',
+						array('id' => $layoutData['id_metaconsole']));
+					if (metaconsole_load_external_db($connection) != NOERR) {
+						//ui_print_error_message ("Error connecting to ".$server_name);
+						continue;
+					}
+				}
+
+				//Enter the correct img if the graph has a module selected or not
 				//Module
 				if ($layoutData['id_agente_modulo'] != 0) {
 					$module_status = db_get_sql ('SELECT estado
@@ -3257,15 +3223,7 @@ function visual_map_get_status_element($layoutData) {
 				}
 				$status = $layoutData['status_calculated'];
 
-				if ($layoutData['id_metaconsole'] != 0) {
-					//Metaconsole db connection
-					$connection = db_get_row_filter ('tmetaconsole_setup',
-						array('id' => $layoutData['id_metaconsole']));
-					if (metaconsole_load_external_db($connection) != NOERR) {
-						//ui_print_error_message ("Error connecting to ".$server_name);
-						continue;
-					}
-				}
+				// Close metaconsole connection
 				if ($layoutData['id_metaconsole'] != 0) {
 					//Restore db connection
 					metaconsole_restore_db();
@@ -3602,6 +3560,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
  */
 function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter = false, 
 										$returnAllGroup = true, $favourite = false) {
+											
 	if (! is_array ($filter)){
 		$filter = array ();
 	} else {
@@ -3626,10 +3585,7 @@ function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter
 	if ($returnAllGroup) {
 		$groups = users_get_groups ($id_user, 'VR', true, true);
 	} else {
-		if(users_is_admin($id_user)){
-			$groups = users_get_groups ($id_user, 'VR', true, true);
-		}
-		else{
+		
 			if(!empty($filter['group'])) {
 				$permissions_group = users_get_groups ($id_user, 'VR', false, true);
 				if(empty($permissions_group)){
@@ -3637,12 +3593,12 @@ function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter
 				}
 				$groups = array_intersect_key($filter['group'], $permissions_group);
 			} else {
-				$groups = users_get_groups ($id_user, 'VR', false, true);
+				$groups = users_get_groups ($id_user, 'VR', true, true);
 				if(empty($groups)) {
-					$groups = users_get_groups ($id_user, 'VM', false, true);
+					$groups = users_get_groups ($id_user, 'VM', true, true);
 				}
 			}
-		}
+		
 		
 		unset($filter['group']);
 	}
@@ -3785,9 +3741,6 @@ function visual_map_get_layout_status ($id_layout = 0, $depth = 0, $elements_in_
 					$data["id_agente_modulo"] == 0 &&
 					$data["id_agent"] == 0) ||
 					$data['type'] != 0){
-						if($data['type'] == 0){
-                    $temp_total = VISUAL_MAP_STATUS_UNKNOWN;
-            }
 						continue;
 					}
 				

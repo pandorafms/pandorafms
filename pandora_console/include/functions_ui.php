@@ -961,9 +961,15 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 	if (!defined('METACONSOLE')) {
 		if (check_acl ($config["id_user"], $id_group, "LW") || check_acl ($config["id_user"], $id_group, "LM")) {
 			$data[$index['validate']] = '';
-			
-			
-			$data[$index['validate']] .= html_print_checkbox ("validate[]", $alert["id"], false, true);
+
+			$data[$index['validate']] .= html_print_checkbox (
+				"validate[]",
+				$alert["id"],
+				false,
+				true,
+				false,
+				'',
+				true);
 		}
 	}
 	
@@ -1097,6 +1103,9 @@ function ui_print_alert_template_example ($id_alert_template, $return = false, $
  */
 function ui_print_help_icon ($help_id, $return = false, $home_url = '', $image = "images/help.png", $is_relative = false) {
 	global $config;
+
+	// Do not display the help icon if help is disabled
+	if ($config['disable_help']) return '';
 
 	if (empty($home_url))
 		$home_url = "";
@@ -1340,24 +1349,18 @@ function ui_process_page_head ($string, $bitfield) {
 		}
 	}
 	$output .= "\n\t";
-	$output .= '<title>Pandora FMS - '.__('the Flexible Monitoring System').'</title>
+	$output .= '<title>' . get_product_name() . ' - '.__('the Flexible Monitoring System').'</title>
 		<meta http-equiv="expires" content="never" />
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta http-equiv="Content-Style-Type" content="text/css" />
 		<meta name="resource-type" content="document" />
 		<meta name="distribution" content="global" />
-		<meta name="author" content="Pandora FMS Developer team" />
-		<meta name="copyright" content="(c) Artica Soluciones Tecnologicas" />
-		<meta name="keywords" content="pandora, monitoring, system, GPL, software" />
+		<meta name="author" content="' . get_copyright_notice() . '" />
+		<meta name="copyright" content="(c) ' . get_copyright_notice() . '" />
 		<meta name="robots" content="index, follow" />';
-		if(defined ('METACONSOLE')){
-		$output .='<link rel="icon" href="images/favicon_meta.ico" type="image/ico" />';
-		}
-		else{
-		$output .='<link rel="icon" href="images/pandora.ico" type="image/ico" />';	
-		}
+		$output .='<link rel="icon" href="' . ui_get_favicon() . '" type="image/ico" />';
 		$output .='	
-		<link rel="shortcut icon" href="images/pandora.ico" type="image/x-icon" />
+		<link rel="shortcut icon" href="' . ui_get_favicon() . '" type="image/x-icon" />
 		<link rel="alternate" href="operation/events/events_rss.php" title="Pandora RSS Feed" type="application/rss+xml" />';
 	
 	if ($config["language"] != "en") {
@@ -3713,62 +3716,12 @@ function ui_print_agent_autocomplete_input($parameters) {
  * 
  * @param string error code
  */
-function ui_get_error ($error_code) {
-	switch($error_code) {
-		case 'error_authconfig':
-		case 'error_dbconfig':
-			$title = __('Problem with Pandora FMS database');
-			$message = __('Cannot connect to the database, please check your database setup in the <b>include/config.php</b> file.<i><br/><br/>
-			Probably your database, hostname, user or password values are incorrect or
-			the database server is not running.').'<br /><br />';
-			$message .= '<span class="red">';
-			$message .= '<b>' . __('DB ERROR') . ':</b><br>';
-			$message .= db_get_last_error();
-			$message .= '</span>';
-			
-			if ($error_code == 'error_authconfig') {
-				$message .= '<br/><br/>';
-				$message .= __('If you have modified auth system, this problem could be because Pandora cannot override authorization variables from the config database. Remove them from your database by executing:<br><pre>DELETE FROM tconfig WHERE token = "auth";</pre>');
-			}
-			break;
-		case 'error_emptyconfig':
-			$title = __('Empty configuration table');
-			$message = __('Cannot load configuration variables from database. Please check your database setup in the
-			<b>include/config.php</b> file.<i><br><br>
-			Most likely your database schema has been created but there are is no data in it, you have a problem with the database access credentials or your schema is out of date.
-			<br><br>Pandora FMS Console cannot find <i>include/config.php</i> or this file has invalid
-			permissions and HTTP server cannot read it. Please read documentation to fix this problem.</i>').'<br /><br />';
-			break;
-		case 'error_noconfig':
-			$title = __('No configuration file found');
-			$message = __('Pandora FMS Console cannot find <i>include/config.php</i> or this file has invalid
-			permissions and HTTP server cannot read it. Please read documentation to fix this problem.').'<br /><br />';
-			if (file_exists('install.php')) {
-				$link_start = '<a href="install.php">';
-				$link_end = '</a>';
-			}
-			else {
-				$link_start = '';
-				$link_end = '';
-			}
-			
-			$message .= sprintf(__('You may try to run the %s<b>installation wizard</b>%s to create one.'), $link_start, $link_end);
-			break;
-		case 'error_install':
-			$title = __('Installer active');
-			$message = __('For security reasons, normal operation is not possible until you delete installer file.
-			Please delete the <i>./install.php</i> file before running Pandora FMS Console.');
-			break;
-		case 'error_perms':
-			$title = __('Bad permission for include/config.php');
-			$message = __('For security reasons, <i>config.php</i> must have restrictive permissions, and "other" users
-			should not read it or write to it. It should be written only for owner
-			(usually www-data or http daemon user), normal operation is not possible until you change
-			permissions for <i>include/config.php</i> file. Please do it, it is for your security.');
-			break;
-	}
-	
-	return array('title' => $title, 'message' => $message);
+function ui_get_error ($error_code = '') {
+	// FIXME: Deprecated. Pandora shouldn't go inside this
+	return array(
+		'title' => __('Unhandled error'),
+		'message' => __('An unhandled error occurs')
+	);
 }
 
 function ui_include_time_picker($echo_tags = false) {
@@ -3808,12 +3761,11 @@ function ui_print_module_string_value($value, $id_agente_module,
 	if ($is_web_content_string) {
 		$value = io_safe_input($value);
 	}
-	
-	
-	
+
 	$is_snapshot = is_snapshot_data($value);
-	
-	if (($config['command_snapshot']) && ($is_snapshot)) {
+	$is_large_image = is_text_to_black_string ($value);
+
+	if (($config['command_snapshot']) && ($is_snapshot || $is_large_image)) {
 		$handle = "snapshot" . "_" . $id_agente_module;
 		$url = 'include/procesos.php?agente=' . $id_agente_module;
 		$win_handle = dechex(crc32($handle));
@@ -3822,7 +3774,7 @@ function ui_print_module_string_value($value, $id_agente_module,
 			"id=" . $id_agente_module .
 			"&refr=" . $current_interval .
 			"&label=" . rawurlencode(urlencode(io_safe_output($module_name))) . "','" . $win_handle . "', 700,480)";
-		if (is_image_data($value)) {	
+		if ($is_snapshot) {
 			$salida = '<a href="javascript:' . $link . '">' .
 				html_print_image("images/photo.png", true,
 					array("border" => '0',
@@ -3919,4 +3871,157 @@ function ui_print_tags_view($title = '', $tags = array()) {
 	$tv .= '</div>';
 	echo $tv;
 }
+
+/**
+ * @brief Get the link to open a snapshot into a new page
+ *
+ * @param Array Params to build the link (see $default_params)
+ * @param bool Flag to choose de return value:
+ * 		true: Get the four params required in the function of pandora.js winopen_var (js use)
+ * 		false: Get an inline winopen_var function call (php user)
+ */
+function ui_get_snapshot_link($params, $only_params = false) {
+	global $config;
+
+	$default_params = array(
+		'id_module' => 0, //id_agente_modulo
+		'module_name' => '',
+		'interval' => 300,
+		'last_data' => '',
+		'timestamp' => '0'
+	);
+
+	// Merge default params with passed params
+	$params = array_merge ($default_params, $params);
+
+	// First parameter of js winopeng_var
+	$page = $config['homeurl_static'] . "/operation/agentes/snapshot_view.php";
+
+	$url = "$page?" .
+		"id=" . $params['id_module'] .
+		"&refr=" . $parms['interval'] .
+		"&timestamp=" . $params['timestamp'] .
+		"&last_data=" . rawurlencode(urlencode(io_safe_output($params['last_data']))) .
+		"&label=" . rawurlencode(urlencode(io_safe_output($params['module_name'])));
+
+	// Second parameter of js winopeng_var
+	$win_handle = dechex(crc32('snapshot_' . $params['id_module']));
+
+	$link_parts = array ($url, $win_handle, 700, 480);
+
+	// Return only the params to js execution
+	if ($only_params) return $link_parts;
+
+	// Return the function call to inline js execution
+	return "winopeng_var('" . implode("', '", $link_parts) . "')";
+}
+
+/**
+ * Get the custom docs logo
+ *
+ * @return string with the path to logo. False if it should not be displayed
+ *
+ */
+function ui_get_docs_logo () {
+	global $config;
+
+	// Default logo to open version (enterprise_installed function only works in login status)
+	if (!file_exists (ENTERPRISE_DIR . "/load_enterprise.php")) {
+		return "images/icono_docs.png";
+	}
+
+	if (empty($config['custom_docs_logo'])) return false;
+	return 'enterprise/images/custom_general_logos/' . $config['custom_docs_logo'];
+}
+
+/**
+ * Get the custom support logo
+ *
+ * @return string with the path to logo. False if it should not be displayed
+ *
+ */
+function ui_get_support_logo () {
+	global $config;
+
+	// Default logo to open version (enterprise_installed function only works in login status)
+	if (!file_exists (ENTERPRISE_DIR . "/load_enterprise.php")) {
+		return "images/icono_support.png";
+	}
+
+	if (empty($config['custom_support_logo'])) return false;
+	return 'enterprise/images/custom_general_logos/' . $config['custom_support_logo'];
+}
+
+/**
+ * Get the custom header logo
+ *
+ * @return string with the path to logo. If it is not set, return the default value
+ *
+ */
+function ui_get_custom_header_logo ($white_bg = false) {
+	global $config;
+
+	if (empty($config['enterprise_installed'])) {
+		return 'images/pandora_tinylogo_open.png';
+	}
+
+	$stored_logo = is_metaconsole()
+		? ($white_bg ? $config['meta_custom_logo_white_bg'] : $config['meta_custom_logo'])
+		: ($white_bg ? $config['custom_logo_white_bg'] : $config['custom_logo']);
+	if (empty($stored_logo)) return 'images/pandora_tinylogo.png';
+	return 'enterprise/images/custom_logo/' . $stored_logo;
+}
+
+/**
+ * Get the central networkmap logo
+ *
+ * @return string with the path to logo. If it is not set, return the default.
+ *
+ */
+function ui_get_logo_to_center_networkmap () {
+	global $config;
+
+	if ((!enterprise_installed()) || empty($config['custom_network_center_logo'])) {
+		return DEFAULT_NETWORKMAP_CENTER_LOGO;
+	}
+
+	return 'enterprise/images/custom_general_logos/' . $config['custom_support_logo'];
+}
+
+/**
+ * Get the mobile console login logo
+ *
+ * @return string with the path to logo. If it is not set, return the default.
+ *
+ */
+function ui_get_mobile_login_icon () {
+	global $config;
+
+	if ((!enterprise_installed()) || empty($config['custom_mobile_console_logo'])) {
+		return is_metaconsole()
+			? "mobile/images/metaconsole_mobile.png"
+			: "mobile/images/pandora_mobile_console.png";
+	}
+
+	return 'enterprise/images/custom_general_logos/' . $config['custom_mobile_console_logo'];
+}
+
+/**
+ * Get the favicon
+ *
+ * @return string with the path to logo. If it is not set, return the default.
+ *
+ */
+function ui_get_favicon () {
+	global $config;
+
+	if (empty($config['custom_favicon'])) {
+		return !is_metaconsole()
+			? "images/pandora.ico"
+			: "enterprise/meta/images/favicon_meta.ico";
+	}
+
+	return 'images/custom_favicon/' . $config['custom_favicon'];
+}
+
 ?>

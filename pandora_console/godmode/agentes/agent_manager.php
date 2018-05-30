@@ -13,6 +13,16 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+
+// Load global vars
+enterprise_include ('godmode/agentes/agent_manager.php');
+
+require_once ('include/functions_clippy.php');
+require_once ('include/functions_servers.php');
+require_once ('include/functions_gis.php');
+require_once($config['homedir'] . "/include/functions_agents.php");
+require_once ($config['homedir'] . '/include/functions_users.php');
+
 if (is_ajax ()) {
 	
 	global $config;
@@ -88,17 +98,28 @@ if (is_ajax ()) {
 		
 		echo io_json_mb_encode($out);
 	}
-	
+
+	// And and remove groups use the same function
+	$add_secondary_groups = get_parameter('add_secondary_groups');
+	$remove_secondary_groups = get_parameter('remove_secondary_groups');
+	if ($add_secondary_groups || $remove_secondary_groups) {
+		$id_agent = get_parameter('id_agent');
+		$groups_to_add = get_parameter('groups');
+		if (enterprise_installed()) {
+			enterprise_include('include/functions_agents.php');
+			$ret = enterprise_hook(
+				'agents_update_secondary_groups',
+				array(
+					$id_agent,
+					$add_secondary_groups ? $groups_to_add : array(),
+					$remove_secondary_groups ? $groups_to_add : array())
+			);
+			// Echo 0 in case of error. 0 Otherwise.
+			echo $ret ? 1 : 0;
+		}
+	}
 	return;
 }
-// Load global vars
-enterprise_include ('godmode/agentes/agent_manager.php');
-
-require_once ('include/functions_clippy.php');
-require_once ('include/functions_servers.php');
-require_once ('include/functions_gis.php');
-require_once($config['homedir'] . "/include/functions_agents.php");
-require_once ($config['homedir'] . '/include/functions_users.php');
 
 ui_require_javascript_file('openlayers.pandora');
 
@@ -251,8 +272,13 @@ if(is_array($modules)){
 	}
 }
 
-$table->data[4][0] = __('Group');
-$table->data[4][1] = html_print_select_groups(false, "AR", false, 'grupo', $grupo, '', '', 0, true);
+$table->data[4][0] = __('Primary group');
+// Cannot change primary group if user have not permission for that group
+if (isset($groups[$grupo]) || $new_agent) {
+	$table->data[4][1] = html_print_select_groups(false, "AR", false, 'grupo', $grupo, '', '', 0, true);
+} else {
+	$table->data[4][1] = groups_get_name($grupo);
+}
 $table->data[4][1] .= ' <span id="group_preview">';
 $table->data[4][1] .= ui_print_group_icon ($grupo, true);
 $table->data[4][1] .= '</span>';
@@ -303,6 +329,54 @@ $table->style[0] = 'font-weight: bold; ';
 $table->style[4] = 'font-weight: bold;';
 $table->data = array ();
 
+if (enterprise_installed()) {
+	$secondary_groups_selected = enterprise_hook('agents_get_secondary_groups', array($id_agente));
+	$table->data['secondary_groups'][0] = __('Secondary groups');
+	$table->data['secondary_groups'][1] = html_print_select_groups(
+		false,                    // Use the current user to select the groups
+		"AR",                     // ACL permission
+		false,                    // Not all group
+		'secondary_groups',       // HTML id
+		'',                       // No select any by default
+		'',                       // Javascript onChange code
+		'',                       // Do not user no selected value
+		0,                        // Do not use no selected value
+		true,                     // Return HTML (not echo)
+		true,                     // Multiple selection
+		true,                     // Sorting by default
+		'',                       // CSS classnames (default)
+		false,                    // Not disabled (default)
+		false,                    // Inline styles (default)
+		false,                    // Option style select (default)
+		false,                    // Do not truncate the users tree (default)
+		'id_grupo',               // Key to get as value (default)
+		false,                    // Not strict user (default)
+		$secondary_groups_selected['plain'] // Do not show the primary group in this selection
+	);
+
+	$table->data['secondary_groups'][2] =
+		html_print_input_image ('add_secondary', 'images/darrowright.png', 1, '', true, array (
+			'title' => __('Add secondary groups'),
+			'onclick' => "agent_manager_add_secondary_groups(event, " . $id_agente . ");"
+		)) .
+		'<br /><br /><br /><br />' .
+		html_print_input_image ('remove_secondary', 'images/darrowleft.png', 1, '', true, array (
+			'title' => __('Remove secondary groups'),
+			'onclick' => "agent_manager_remove_secondary_groups(event, " . $id_agente . ");"
+		));
+
+	$table->data['secondary_groups'][3] = html_print_select (
+		$secondary_groups_selected['for_select'],     // Values
+		'secondary_groups_selected',                  // HTML id
+		'',                                           // Selected
+		'',                                           // Javascript onChange code
+		'',                                           // Nothing selected
+		0,                                            // Nothing selected
+		true,                                         // Return HTML (not echo)
+		true                                          // Multiple selection
+	);
+}
+
 // Custom ID
 $table->data[0][0] = __('Custom ID');
 $table->data[0][1] = html_print_input_text ('custom_id', $custom_id, '', 16, 255, true);
@@ -335,8 +409,8 @@ if($id_agente){
 	}
 
 	$table->data[2][0] = __('Safe operation mode')
-		. ui_print_help_tip(__('This mode allow Pandora FMS to disable all modules 
-		of this agent while the selected module is on CRITICAL status'), true);
+		. ui_print_help_tip(__('This mode allow %s to disable all modules 
+		of this agent while the selected module is on CRITICAL status', get_product_name()), true);
 	$table->data[2][1] = html_print_checkbox('safe_mode', 1, $safe_mode, true);
 	$table->data[2][1] .= "&nbsp;&nbsp;" .  __('Module') . "&nbsp;" . html_print_select ($safe_mode_modules, "safe_mode_module", $safe_mode_module, "", "", 0, true);
 }
@@ -468,7 +542,7 @@ foreach ($fields as $field) {
 		. '.<br />'
 		. __('The format is: [url=\'url to navigate\']\'text to show\'[/url]')
 		. '.<br /><br />'
-		. __('e.g.: [url=pandorafms.org]Pandora FMS Community[/url]')
+		. __('e.g.: [url=google.com]Google web search[/url]')
 		, true);
 	
 	$custom_value = db_get_value_filter('description',
@@ -574,7 +648,96 @@ ui_require_jquery_file('bgiframe');
 			$("#modules_not_learning_mode_context_help").hide();
 		}
 	}
-	
+
+	function agent_manager_add_secondary_groups (event, id_agent) {
+		event.preventDefault();
+		var primary_value = $("#grupo").val()
+		// The selected primary value cannot be selected like secondary
+		if ($("#secondary_groups option:selected[value=" + primary_value + "]").length > 0) {
+			alert("<?php echo __("Primary group cannot be secondary too.");?>")
+			return
+		}
+
+		var selected_items = new Array();
+		$("#secondary_groups option:selected").each(function(){
+			selected_items.push($(this).val())
+		})
+
+		var data = {
+			page: "godmode/agentes/agent_manager",
+			id_agent: id_agent,
+			groups: selected_items,
+			add_secondary_groups: 1,
+		}
+
+		// Make the AJAX call to update the secondary groups
+		$.ajax({
+			type: "POST",
+			url: "ajax.php",
+			dataType: "html",
+			data: data,
+			success: function (data) {
+				if (data == 1) {
+					// Move from one input to the other
+					$("#secondary_groups_selected option[value=0]").remove()
+					$("#secondary_groups option:selected").each(function() {
+						$(this).remove().appendTo("#secondary_groups_selected")
+					})
+				} else {
+					console.error("Error in AJAX call to add secondary groups")
+				}
+			},
+			error: function (data) {
+				console.error("Fatal error in AJAX call to add secondary groups")
+			}
+		});
+	}
+
+	function agent_manager_remove_secondary_groups (event, id_agent) {
+		event.preventDefault();
+
+		var selected_items = new Array();
+		$("#secondary_groups_selected option:selected").each(function(){
+			selected_items.push($(this).val())
+		})
+
+		var data = {
+			page: "godmode/agentes/agent_manager",
+			id_agent: id_agent,
+			groups: selected_items,
+			remove_secondary_groups: 1,
+		}
+
+		// Make the AJAX call to update the secondary groups
+		$.ajax({
+			type: "POST",
+			url: "ajax.php",
+			dataType: "html",
+			data: data,
+			success: function (data) {
+				if (data == 1) {
+					// Remove the groups selected if success
+					$("#secondary_groups_selected option:selected").each(function(){
+						$(this).remove().appendTo("#secondary_groups")
+					})
+
+					// Add none if empty select
+					if ($("#secondary_groups_selected option").length == 0) {
+						$("#secondary_groups_selected").append($('<option>',{
+							value: 0,
+							text: "<?php echo __("None");?>"
+						}))
+					}
+				} else {
+					console.error("Error in AJAX call to add secondary groups")
+				}
+			},
+			error: function (data) {
+				console.error("Fatal error in AJAX call to add secondary groups")
+			}
+		});
+	}
+
 	$(document).ready (function() {
 		$("select#id_os").pandoraSelectOS ();
 

@@ -115,7 +115,7 @@ sub run ($) {
 	my $self = shift;
 	my $pa_config = $self->getConfig ();
 
-	print_message ($pa_config, " [*] Starting Pandora FMS SNMP Console.", 2);
+	print_message ($pa_config, " [*] Starting " . $pa_config->{'rb_product_name'} . " SNMP Console.", 2);
 	
 	# Set the initial date for storm protection.
 	$pa_config->{"__storm_ref__"} = time();

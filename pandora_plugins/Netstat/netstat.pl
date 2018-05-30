@@ -32,7 +32,7 @@ foreach my $line (@out) {
 
 	print "<module>\n";
 	print "	<name><![CDATA[[$section] $module_name]]></name>\n";
-	print "	<type>generic_data</type>\n";
+	print "	<type>generic_data_inc</type>\n";
 	print "	<module_group>Networking</module_group>\n";
 	print "	<data>$data</data>\n";
 	print "</module>\n";

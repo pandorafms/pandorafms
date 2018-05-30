@@ -49,7 +49,9 @@ class Tactical {
 			switch ($parameter2) {
 				case 'render_status_pie':
 					$links = $system->getRequest('links', '');
+					$links = $system->safeOutput($links);
 					$data = $system->getRequest('data', '');
+					$data = $system->safeOutput($data);
 					$data = str_replace('\\','',$data);
 					$links = str_replace('\\','',$links);
 					$width = $system->getRequest('width', 230);
@@ -69,7 +71,7 @@ class Tactical {
 	private function show_fail_acl() {
 		$error['type'] = 'onStart';
 		$error['title_text'] = __('You don\'t have access to this page');
-		$error['content_text'] = __('Access to this page is restricted to authorized users only, please contact system administrator if you need assistance. <br><br>Please know that all attempts to access this page are recorded in security logs of Pandora System Database');
+		$error['content_text'] = System::getDefaultACLFailText();
 		if (class_exists("HomeEnterprise"))
 			$home = new HomeEnterprise();
 		else

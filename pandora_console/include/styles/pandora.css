@@ -893,6 +893,9 @@ div#cont {
 table, img {
 	border: 0px;
 }
+table pre{
+	white-space: pre-wrap;
+}
 
 tr:first-child>th {
 	background-color: #373737;
@@ -4619,4 +4622,46 @@ form ul.form_flex li ul li{
 
 .events_bar {
 	margin:0 auto;
+}
+
+#snmp_data {
+	background: #f9faf9;
+}
+#snmp_data .databox {
+	border: 0px;
+}
+
+.yAxis.y1Axis > .tickLabel {
+    white-space: nowrap;
+    line-height: 1.05em!important;
+    width: auto!important;
+}
+
+.pandora_confirm_dialog .ui-dialog-buttonset {
+    display: flex;
+    width: 100%;
+	margin-left: 10px;
+	float: none !important;
+}
+
+.pandora_confirm_dialog .ui-dialog-buttonset button{
+    flex: 50%;
+}
+
+#pandora_confirm_dialog_text h3{
+	margin-left: 20px;
+	margin-right: 20px;
+	text-align: center;
+}
+
+.pandora_upper {
+	text-transform: uppercase;
+}
+
+.dialog-grayed {
+	background: #373737 !important;
+}
+
+.dialog-grayed .ui-dialog-buttonpane {
+	background: #373737 !important;
 }

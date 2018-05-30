@@ -485,14 +485,19 @@ function reporting_html_SLA($table, $item, $mini) {
 							$row[] = $sla['dinamic_text'];
 						}
 						$row[] = round($sla['sla_limit'], 2) . "%";
-						
-						if ($sla['sla_value_unknown']) {
-							$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_UNKNOWN.';">' .
+
+						if (reporting_sla_is_not_init_from_array($sla)) {
+							$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NOTINIT.';">' .
 								__('N/A') . '</span>';
-							$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_UNKNOWN.';">' .
-								__('Unknown') . '</span>';
-						}
-						elseif ($sla['sla_status']) {
+							$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NOTINIT.';">' .
+								__('Not init') . '</span>';
+						} elseif (reporting_sla_is_ignored_from_array($sla)) {
+							$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_IGNORED.';">' .
+								__('N/A') . '</span>';
+							$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_IGNORED.';">' .
+								__('No data') . '</span>';
+						// Normal calculation
+						} elseif ($sla['sla_status']) {
 							$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NORMAL.';">' .
 								sla_truncate($sla['sla_value'], $config['graph_precision']) . "%" . '</span>';
 							$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NORMAL.';">' .
@@ -535,7 +540,7 @@ function reporting_html_SLA($table, $item, $mini) {
 							$row2[] = '--';
 
 						if($sla['time_downtime'] != 0)
-							$row2[] = '<span style="color: #ff8400;">' . human_time_description_raw($sla['time_downtime'], true) . '</span>';
+							$row2[] = '<span style="color: '.COL_DOWNTIME .';">' . human_time_description_raw($sla['time_downtime'], true) . '</span>';
 						else
 							$row2[] = '--';
 
@@ -614,7 +619,7 @@ function reporting_html_SLA($table, $item, $mini) {
 								$row2[] = '--';
 
 							if($sla['time_downtime'] != 0)
-								$row2[] = '<span style="color: #ff8400;">' . human_time_description_raw($sla['time_downtime'], true) . '</span>';
+								$row2[] = '<span style="color: '.COL_DOWNTIME .';">'. human_time_description_raw($sla['time_downtime'], true) . '</span>';
 							else
 								$row2[] = '--';
 
@@ -693,7 +698,7 @@ function reporting_html_SLA($table, $item, $mini) {
 			$table1->data[0][7] = '<span>'.__('Not Init'). '</span>';
 			
 			$table1->size[8] = '2%';
-			$table1->data[0][8] = '<img src ="'. $src .'images/square_orange.png">';
+			$table1->data[0][8] = '<img src ="'. $src .'images/square_violet.png">';
 			$table1->size[9] = '14%';
 			$table1->data[0][9] = '<span>'.__('Downtimes'). '</span>';
 		
@@ -875,7 +880,7 @@ function reporting_html_event_report_group($table, $item, $pdf = 0) {
 			if (!empty($event['id_agente']))
 				$data[] = agents_get_alias($event['id_agente']);
 			else
-				$data[] = __('Pandora System');
+				$data[] = __('%s System', get_product_name());
 			$data[] = get_priority_name ($event['criticity']);
 			if (empty($event['id_usuario']) && $event['estado'] == EVENT_VALIDATE) {
 				$data[] = '<i>' . __('System') . '</i>';
@@ -2427,7 +2432,7 @@ function reporting_html_availability(&$table, $item) {
 				else
 					$table_row[] = '--';
 				
-				$table_row[] = '<span style="font-size: 1.2em; font-weight:bold;">' . sla_truncate($row['SLA'], $config['graph_precision']). '%</span>';	
+				$table_row[] = '<span style="font-size: 1.2em; font-weight:bold;">' . sla_truncate($row['SLA'] * 100, $config['graph_precision']). '%</span>';	
 
 				$table_row2 = array();
 				$table_row2[] = $row['agent'];
@@ -2473,7 +2478,7 @@ function reporting_html_availability(&$table, $item) {
 					else
 						$table_row[] = '--';
 					
-					$table_row[] = '<span style="font-size: 1.2em; font-weight:bold;">' . sla_truncate($row['SLA'], $config['graph_precision']). '%</span>';	
+					$table_row[] = '<span style="font-size: 1.2em; font-weight:bold;">' . sla_truncate($row['SLA'] * 100, $config['graph_precision']). '%</span>';	
 
 					$table_row2 = array();
 					$table_row2[] = $row['agent'];
@@ -2563,27 +2568,40 @@ function reporting_html_availability_graph(&$table, $item, $pdf=0) {
 	$table1 = new stdClass();
 	$table1->width = '99%';
 	$table1->data = array ();
-	if (!$hide_notinit_agent) {
-		foreach ($item['charts'] as $chart) {
-			$table1->data[] = array(
-				$chart['agent'] . "<br />" . $chart['module'],
-				$chart['chart'],
-				"<span style = 'font: bold 2em Arial, Sans-serif;'>" . sla_truncate($chart['sla_value'], $config['graph_precision']) . '%</span>',
-				 "(" . $chart['checks_ok'] . "/" . $chart['checks_total'] . ")" 
-			);
-		}
-	}
-	else{
-		foreach ($item['charts'] as $chart) {
-			$the_first_men_time = get_agent_first_time(io_safe_output($chart['agent']));
-			if ($item['date']['to'] > $the_first_men_time) {
-				$table1->data[] = array(
-					$chart['agent'] . "<br />" . $chart['module'],
-					$chart['chart']);
+	foreach ($item['charts'] as $chart) {
+		$checks_resume = '';
+		$sla_value = '';
+		if (reporting_sla_is_not_init_from_array($chart)) {
+			$color = COL_NOTINIT;
+			$sla_value = __('Not init');
+		} elseif (reporting_sla_is_ignored_from_array($chart)) {
+			$color = COL_IGNORED;
+			$sla_value = __('No data');
+		} else {
+			switch ($chart['sla_status']) {
+				case REPORT_STATUS_ERR:
+					$color = COL_CRITICAL;
+					break;
+				case REPORT_STATUS_OK:
+					$color = COL_NORMAL;
+					break;
+				default:
+					$color = COL_UNKNOWN;
+					break;
 			}
+			$sla_value = sla_truncate($chart['sla_value'], $config['graph_precision']) . '%';
+			$checks_resume = "(" . $chart['checks_ok'] . "/" . $chart['checks_total'] . ")";
 		}
+		$table1->data[] = array(
+			$chart['agent'] . "<br />" . $chart['module'],
+			$chart['chart'],
+			"<span style = 'font: bold 2em Arial, Sans-serif; color: ".$color."'>" .
+				$sla_value .
+			'</span>',
+			$checks_resume 
+		);
 	}
-	
+
 	if($item['type'] == 'availability_graph'){
 
 	//table_legend_graphs;
@@ -2612,7 +2630,7 @@ function reporting_html_availability_graph(&$table, $item, $pdf=0) {
 	$table2->data[0][7] = '<span>'.__('Not Init'). '</span>';
 	
 	$table2->size[8] = '2%';
-	$table2->data[0][8] = '<img src ="'. $src .'images/square_orange.png">';
+	$table2->data[0][8] = '<img src ="'. $src .'images/square_violet.png">';
 	$table2->size[9] = '14%';
 	$table2->data[0][9] = '<span>'.__('Downtimes'). '</span>';
 
@@ -3711,7 +3729,7 @@ function reporting_get_last_activity() {
 	$table->head[3] = __('Date');
 	$table->head[4] = __('Source IP');
 	$table->head[5] = __('Comments');
-	$table->title = '<span>' . __('Last activity in Pandora FMS console') . '</span>';
+	$table->title = '<span>' . __('Last activity in %s console', get_product_name()) . '</span>';
 	
 	switch ($config["dbtype"]) {
 		case "mysql":

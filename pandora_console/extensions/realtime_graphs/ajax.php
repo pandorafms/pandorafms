@@ -59,6 +59,7 @@ switch($graph) {
 			$data = exec("ps aux | grep pandora_server | grep -v grep | awk '{ print $3 }'");
 		break;
 	case 'snmp_interface':
+	case 'snmp_module':
 		$snmp_address = $_POST['snmp_address'];
 		$snmp_community = $_POST['snmp_community'];
 		$snmp_ver = $_POST['snmp_ver'];

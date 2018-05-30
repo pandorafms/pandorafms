@@ -77,7 +77,7 @@ sub run ($) {
 	my $self = shift;
 	my $pa_config = $self->getConfig ();
 	
-	print_message ($pa_config, " [*] Starting Pandora FMS Prediction Server.", 1);
+	print_message ($pa_config, " [*] Starting " . $pa_config->{'rb_product_name'} . " Prediction Server.", 1);
 	$self->setNumThreads ($pa_config->{'prediction_threads'});
 	$self->SUPER::run (\@TaskQueue, \%PendingTasks, $Sem, $TaskSem);
 }

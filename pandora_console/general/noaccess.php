@@ -112,7 +112,7 @@ position:absolute;background:black;opacity:0.6;z-index:-1;left:0px;top:0px;width
 	
 	<div class='modalheade'>
 	<span class='modalheadertex'>
-	You don't have access to this page
+		<?php echo __("You don't have access to this page");?>
 	</span>
 	<img class='modalclose cerrar' src='<?php echo $config['homeurl'];?>images/icono_cerrar.png'>
 	
@@ -121,8 +121,11 @@ position:absolute;background:black;opacity:0.6;z-index:-1;left:0px;top:0px;width
 	<div class='modalconten'>
 	<img class='modalcontentim' src='<?php echo $config['homeurl'];?>images/access_denied.png'>
 	<div class='modalcontenttex'>
-		Access to this page is restricted to authorized users only, please contact system administrator if you need assistance. <br/> <br/>
-		Please know that all attempts to access this page are recorded in security logs of Pandora System Database	
+		<?php
+			echo __("Access to this page is restricted to authorized users only, please contact system administrator if you need assistance.");
+			echo "<br/> <br/>";
+			echo __("Please know that all attempts to access this page are recorded in security logs of %s System Database", get_product_name());
+		?>
 	
 	</div>
 

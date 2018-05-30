@@ -44,12 +44,16 @@ if (is_ajax ()) {
 	$get_agentmodule_status_tooltip = (bool) get_parameter ("get_agentmodule_status_tooltip");
 	$get_group_status_tooltip = (bool) get_parameter ("get_group_status_tooltip");
 	$get_agent_id = (bool) get_parameter ("get_agent_id");
+	$cluster_mode = (bool) get_parameter ("cluster_mode",0);
+	$agent_alias = get_parameter('alias', '');
+	$agents_inserted = get_parameter('agents_inserted', array());
 	$id_group = (int) get_parameter('id_group');
 	if ($get_agents_group_json) {
 		$id_group = (int) get_parameter('id_group');
 		$recursion = get_parameter ('recursion');
 		$id_os = get_parameter('id_os', '');
 		$agent_name = get_parameter('name', '');
+		
 		$privilege = (string) get_parameter ('privilege', "AR");
 		// Is is possible add keys prefix to avoid auto sorting in js object conversion
 		$keys_prefix = (string) get_parameter ('keys_prefix', '');
@@ -75,6 +79,8 @@ if (is_ajax ()) {
 			$filter['id_os'] = $id_os;
 		if (!empty($agent_name))
 			$filter['nombre'] = '%' . $agent_name . '%';
+		if (!empty($agent_alias))
+			$filter['alias'] = '%' . $agent_alias . '%';
 		
 		switch ($status_agents) {
 			case AGENT_STATUS_NORMAL:
@@ -97,6 +103,43 @@ if (is_ajax ()) {
 				break;
 		}
 		$filter['order'] = "alias ASC";
+		
+		if($cluster_mode){
+			
+			$agent_id_os = db_get_all_rows_sql('select id_os from tconfig_os where id_os != 100');
+			
+			foreach ($agent_id_os as $key => $value) {
+				$agent_id_os_array[] = $agent_id_os[$key]['id_os'];
+			}
+			
+			$filter['id_os'] = $agent_id_os_array;
+			
+			if($agents_inserted[0] != ''){
+			
+				$agents_id_list = '';
+				
+				foreach($agents_inserted as $elem) {
+
+				    if ($elem === end($agents_inserted)) {
+				      $agents_id_list .= $elem;
+				    }
+						else{
+							$agents_id_list .= $elem.',';
+						}
+
+				}
+				
+				$agent_id_agente = db_get_all_rows_sql('select id_agente from tagente where id_agente not in ('.$agents_id_list.')');
+				
+				foreach ($agent_id_agente as $key => $value) {
+					$agent_id_agente_array[] = $agent_id_agente[$key]['id_agente'];
+				}
+				
+				$filter['id_agente'] = $agent_id_agente_array;
+				
+			}
+			
+		}
 		
 		// Build fields
 		$fields = array('id_agente', 'alias');
@@ -299,7 +342,7 @@ if (is_ajax ()) {
 	}
 
 	if ($get_agent_modules_json_for_multiple_agents) {
-		$idAgents = get_parameter('id_agent');
+		$idAgents = (array) get_parameter('id_agent');
 		$tags = get_parameter('tags', null);
 		$module_types_excluded = get_parameter('module_types_excluded', array());
 		$module_name = (string) get_parameter('name');
@@ -978,7 +1021,9 @@ if ($is_extra === ENTERPRISE_NOT_HOOK) {
 	$is_extra = false;
 }
 
-if (! check_acl ($config['id_user'], $id_grupo, "AR", $id_agente) && ! check_acl ($config['id_user'], $id_grupo, "AW", $id_agente) && !$is_extra) {
+$all_groups = agents_get_all_groups_agent ($id_agente, $id_grupo);
+
+if (! check_acl_one_of_groups ($config['id_user'], $all_groups, "AR") && ! check_acl_one_of_groups ($config['id_user'], $all_groups, "AW", $id_agente) && !$is_extra) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access (read) to agent ".agents_get_name($id_agente));
 	include ("general/noaccess.php");
@@ -988,7 +1033,7 @@ if (! check_acl ($config['id_user'], $id_grupo, "AR", $id_agente) && ! check_acl
 // Check for Network FLAG change request
 $flag = get_parameter('flag', '');
 if ($flag !== '') {
-	if ($flag == 1 && check_acl ($config['id_user'], $id_grupo, "AW")) {
+	if ($flag == 1 && check_acl_one_of_groups ($config['id_user'], $all_groups, "AW")) {
 		$id_agent_module = get_parameter('id_agente_modulo');
 		
 		db_process_sql_update('tagente_modulo',
@@ -998,7 +1043,7 @@ if ($flag !== '') {
 // Check for Network FLAG change request
 $flag_agent = get_parameter('flag_agent','');
 if ($flag_agent !== '') {
-	if ($flag_agent == 1 && check_acl ($config['id_user'], $id_grupo, "AW")) {
+	if ($flag_agent == 1 && check_acl_one_of_groups ($config['id_user'], $all_groups, "AW")) {
 		db_process_sql_update('tagente_modulo', array('flag' => 1), array('id_agente' =>$id_agente));
 	}
 }
@@ -1017,7 +1062,7 @@ $tab = get_parameter ("tab", "main");
 /* Manage tab */
 $managetab = "";
 
-if (check_acl ($config['id_user'],$id_grupo, "AW") || $is_extra) {
+if (check_acl_one_of_groups ($config['id_user'],$all_groups, "AW") || $is_extra) {
 	$managetab['text'] ='<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'">'
 		. html_print_image("images/setup.png", true, array ("title" => __('Manage')))
 		. '</a>';
@@ -1175,7 +1220,7 @@ if (enterprise_installed() && $config['log_collector']) {
 
 /* eHorus tab */
 if ($config['ehorus_enabled'] && !empty($config['ehorus_custom_field'])
-		&& (check_acl($config['id_user'], $id_grupo, 'AW') || is_user_admin($config['id_user']))) {
+		&& (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') || is_user_admin($config['id_user']))) {
 	$ehorus_agent_id = agents_get_agent_custom_field($id_agente, $config['ehorus_custom_field']);
 	if (!empty($ehorus_agent_id)) {
 		$tab_url = 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=ehorus&id_agente='.$id_agente;
@@ -1249,7 +1294,7 @@ if (isset($ehorus_tab) && !empty($ehorus_tab)) {
 //Tabs for extensions
 foreach ($config['extensions'] as $extension) {
 	if (isset($extension['extension_ope_tab']) && !isset($extension['extension_god_tab'])) {
-		if (check_acl($config['id_user'], $id_grupo, $extension['extension_ope_tab']['acl'])) {
+		if (check_acl_one_of_groups($config['id_user'], $all_groups, $extension['extension_ope_tab']['acl'])) {
 			//VMware extension is only available for VMware OS
 			if ($extension['extension_ope_tab']['id'] === "vmware_manager") {
 				//Check if OS is vmware

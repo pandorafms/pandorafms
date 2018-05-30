@@ -203,8 +203,9 @@ function hideOIDData() {
 
 	// Empty previous OID data
 	$("#snmp_data").empty();
-	
+
 	$("#snmp_data").css('display', 'none');
+	$(".forced_title_layer").css('display', 'none');
 }
 
 // Search the SNMP tree for a matching string

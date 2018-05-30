@@ -6,7 +6,7 @@
 
 <h1>Alerta de evento</h1>
 
-Desde la versión 4.0 de Pandora FMS se pueden definir alertas sobre los eventos, lo que permite trabajar desde una perspectiva completamente nueva y mucho más flexible. Esta es una característica Enterprise.<br><br>
+Desde la versión 4.0 de <?php echo get_product_name();?> se pueden definir alertas sobre los eventos, lo que permite trabajar desde una perspectiva completamente nueva y mucho más flexible. Esta es una característica Enterprise.<br><br>
 
 Las Alertas de evento nuevas se crean pinchando en el botón Create en el menú Event alerts en el menú de Administración.
 <br><br>
@@ -59,6 +59,6 @@ Por ejemplo, podríamos configurar una regla que case con los eventos generados 
 <?php html_print_image ("images/help/event04.png", false, array('width' => '550px')); ?>
 
 <br>
-<p>Dado el elevado número de eventos que puede llegar a albergar la base de datos de Pandora FMS, el servidor trabaja sobre una ventana de eventos que se define en el fichero de configuración pandora_server.conf mediante el parámetro event_window. Los eventos que se hayan generado fuera de esta ventana de tiempo no serán procesados por el servidor, de modo que no tiene sentido especificar en una regla una ventana de tiempo superior a la configurada en el servidor </p>
+<p>Dado el elevado número de eventos que puede llegar a albergar la base de datos de <?php echo get_product_name();?>, el servidor trabaja sobre una ventana de eventos que se define en el fichero de configuración pandora_server.conf mediante el parámetro event_window. Los eventos que se hayan generado fuera de esta ventana de tiempo no serán procesados por el servidor, de modo que no tiene sentido especificar en una regla una ventana de tiempo superior a la configurada en el servidor </p>
 
 

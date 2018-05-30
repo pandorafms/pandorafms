@@ -1,0 +1,75 @@
+##########################################################################
+# Tentacle Server Parameters
+# See https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Tentacle
+# for protocol description.
+# Tentacle have IANA assigned port tpc/41121 as official port.
+##########################################################################
+
+# [-a] IPv4 address to listen on. Several IPs cam be selected separating if by comma.
+addresses 0.0.0.0
+
+# [-p] Port to listen on
+port 41121
+
+# [-c] Maximum number of simultaneous connections
+# max_connections 10
+
+# [-d] Run as daemon. 1 true, 0 false
+daemon 1
+
+# [-i] Enable insecure mode
+# insecure 0
+
+# Filters (regexp:dir;regexp:dir...)
+filters .*\.conf:conf;.*\.md5:md5;.*\.zip:collections;.*\.lock:trans
+
+# [-m] Maximum file size allowed by the server in bytes
+#max_size 2000000
+
+# [-o] Accept files with a repeated name
+# overwrite 0
+
+# [-q] Do not output error messages.
+# quiet 0
+
+# [-r] Number of retries for socket read/write operations
+# retries 3
+
+# [-s] Storage directory
+directory /var/spool/pandora/data_in
+
+# [-b] Address to proxy client requests to
+# proxy_ip 127.0.0.1
+
+# [-g] Port to proxy client requests to
+# proxy_port 41121
+
+# [-t] Timeout for socket read/write operations in seconds
+# timeout 1
+
+# [-v and -V] Verbose level
+#   0: Do not display any informative messages
+#   1: Display only important messages [-v]
+#   2: Display all messages [-V]
+# verbose 0
+
+# [-l] Log file
+log_file /dev/null
+
+# [-x] Server password
+# password PASSWORD
+
+# [-e] SSL certificate file full path
+# ssl_cert /path/to/ssl/cert
+
+# [-f] SSL CA file full path
+# ssl_ca /path/to/ssl/ca
+
+# [-k] SSL private key file
+# ssl_key /path/to/private/key/file
+
+# [-w] SSL password. Set to 1 to ask for password by command line
+# ssl_password 0
+
+# [-T] Use libwrap library (Authen::Libwrap perl module)
+# use_libwrap 0

@@ -74,7 +74,6 @@ class User {
 		
 		if (($user == null) && ($password == null)) {
 			$user = $system->getRequest('user', null);
-			$user = $system->safeInput($user);
 			$password = $system->getRequest('password', null);
 		}
 		
@@ -141,6 +140,7 @@ class User {
 		}
 		if (empty($code)) {
 			$code = $system->getRequest('auth_code', null);
+			$code = $system->safeOutput($code);
 		}
 
 		if (!empty($user) && !empty($code)) {
@@ -218,7 +218,7 @@ class User {
 			$options['dialog_id'] = 'logout_dialog';
 			$options['type'] = 'onStart';
 			$options['title_text'] = __('Login out');
-			$options['content_text'] = __('Your session is over. Please close your browser window to close this Pandora session.');
+			$options['content_text'] = __('Your session has ended. Please close your browser window to close this %s session.', get_product_name());
 			$ui->addDialog($options);
 			
 		}
@@ -226,11 +226,11 @@ class User {
 		$ui->showFooter(false);
 		$ui->beginContent();
 		
-		if (!$system->getConfig('metaconsole'))
-			$logo_image = html_print_image ("mobile/images/pandora_mobile_console.png",
+		if ($system->getConfig('metaconsole'))
+			$logo_image = html_print_image (ui_get_mobile_login_icon(),
 						true, array ("alt" => "logo", "border" => 0));
 		else
-			$logo_image = html_print_image ("mobile/images/metaconsole_mobile.png",
+			$logo_image = html_print_image (ui_get_mobile_login_icon(),
 						true, array ("alt" => "logo", "border" => 0),false, false, false, true);
 		
 		$ui->contentAddHtml('<div style="text-align: center;" class="login_logo">' .
@@ -289,7 +289,7 @@ class User {
 		$ui->showFooter(false);
 		$ui->beginContent();
 			$ui->contentAddHtml('<div style="text-align: center;" class="login_logo">' .
-				html_print_image ("mobile/images/pandora_mobile_console.png",
+				html_print_image (ui_get_mobile_login_icon(),
 					true, array ("alt" => "logo", "border" => 0)) .
 					'</div>');
 			$ui->contentAddHtml('<div id="login_container">');

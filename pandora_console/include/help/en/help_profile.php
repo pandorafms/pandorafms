@@ -6,7 +6,7 @@
 
 <h1>Profile</h1>
 
-<p>Pandora FMS is a Web management tool that allows multiple users to work with different permissions in multiple defined agent groups. The permissions an user can have are defined in profiles.</p>
+<p><?php echo get_product_name();?> is a Web management tool that allows multiple users to work with different permissions in multiple defined agent groups. The permissions an user can have are defined in profiles.</p>
 
 <p>The following list defines what ACL control allows in each feature at the console:</p>
 

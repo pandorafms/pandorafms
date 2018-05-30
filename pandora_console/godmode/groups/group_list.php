@@ -193,7 +193,7 @@ if (defined('METACONSOLE')) {
 }
 else {
 	
-	ui_print_page_header (__("Groups defined in Pandora"),
+	ui_print_page_header (__("Groups defined in %s", get_product_name()),
 		"images/group.png", false, "", true, "");
 	$sec = 'gagente';
 
@@ -404,7 +404,8 @@ if (!empty($groups)) {
 		
 		$symbolBranchs = ' symbol_branch_' . $group['parent'];
 		
-		$data = groups_get_group_to_list($group, $groups_count, $symbolBranchs);
+		$has_children = isset($sons[$group['id_grupo']]);
+		$data = groups_get_group_to_list($group, $groups_count, $symbolBranchs, $has_children);
 		array_push ($table->data, $data);
 		$table->rowstyle[$iterator] = '';
 		if ($group['id_grupo'] != 0) {

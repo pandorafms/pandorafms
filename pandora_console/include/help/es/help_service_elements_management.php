@@ -3,7 +3,7 @@
  * @package Include/help/es
  */
 ?>
-<h1>Gestion de elementos de servicio</h1>
+<h1>Gestión de elementos de servicio</h1>
 
-<p>Esta vista muestra los modulos dentro del servicio actual.</p>
+<p>Esta vista muestra los módulos dentro del servicio actual.</p>
 

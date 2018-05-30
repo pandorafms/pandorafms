@@ -6,7 +6,7 @@
 <h1>Alerts</h1>
 
 <p>
-Las Alertas en Pandora FMS reacionan a un valor "fuera de rango" de un módulo. La alerta consiste en enviar un e-mail o un SMS al administrador, enviando un trap SNMP, escribir el indcidenete en el log del sistema en el fichero de log de Pandora FMS, etc. Basicamente, una alerta puede ser cualquier cosa que pueda ser disparada por un script configurado en el Sistema Operativo donde los servidores de Pandora FMS se ejecutan.
+Las Alertas en <?php echo get_product_name();?> reacionan a un valor "fuera de rango" de un módulo. La alerta consiste en enviar un e-mail o un SMS al administrador, enviando un trap SNMP, escribir el indcidenete en el log del sistema en el fichero de log de <?php echo get_product_name();?>, etc. Basicamente, una alerta puede ser cualquier cosa que pueda ser disparada por un script configurado en el Sistema Operativo donde los servidores de <?php echo get_product_name();?> se ejecutan.
 </p>
 
 <p>

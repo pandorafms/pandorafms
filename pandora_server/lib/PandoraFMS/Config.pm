@@ -39,11 +39,13 @@ our @EXPORT = qw(
 	pandora_start_log
 	pandora_get_sharedconfig
 	pandora_get_tconfig_token
+	pandora_get_initial_product_name
+	pandora_get_initial_copyright_notice
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.719";
-my $pandora_build = "180302";
+my $pandora_version = "7.0NG.723";
+my $pandora_build = "180530";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -56,7 +58,7 @@ my %pa_config;
 ##########################################################################
 
 sub help_screen {
-	print "\nSyntax: \n\n pandora_server [ options ] < fullpathname to configuration file (pandora_server.conf) > \n\n";
+	print "\nSyntax: \n\n pandora_server [ options ] < fullpathname to configuration file > \n\n";
 	print "Following options are optional : \n";
 	print "	-v        :  Verbose mode activated. Writes more information in the logfile \n";
 	print "	-d        :  Debug mode activated. Writes extensive information in the logfile \n";
@@ -77,13 +79,13 @@ sub help_screen {
 sub pandora_init {
 	my $pa_config = $_[0];
 	my $init_string = $_[1];
-	print "\n$init_string $pandora_version Build $pandora_build Copyright (c) 2004-2015 ArticaST\n";
+	print "\n$init_string $pandora_version Build $pandora_build Copyright (c) 2004-2018 " . pandora_get_initial_copyright_notice() . "\n";
 	print "This program is OpenSource, licensed under the terms of GPL License version 2.\n";
-	print "You can download latest versions and documentation at http://www.pandorafms.org \n\n";
+	print "You can download latest versions and documentation at official web page.\n\n";
 
 	# Load config file from command line
 	if ($#ARGV == -1 ){
-		print "I need at least one parameter: Complete path to Pandora FMS Server configuration file \n";
+		print "I need at least one parameter: Complete path to " . pandora_get_initial_product_name() . " Server configuration file \n";
 		help_screen;
 		exit;
 	}
@@ -124,7 +126,7 @@ sub pandora_init {
 		}
 	}
 	if ($pa_config->{"pandora_path"} eq ""){
-		print " [ERROR] I need at least one parameter: Complete path to Pandora FMS configuration file. \n";
+		print " [ERROR] I need at least one parameter: Complete path to " . pandora_get_initial_product_name() . " configuration file. \n";
 		print "		For example: ./pandora_server /etc/pandora/pandora_server.conf \n\n";
 		exit;
 	}
@@ -171,11 +173,19 @@ sub pandora_get_sharedconfig ($$) {
 	# NOTE: This must be read when checking license limits!
 	#$pa_config->{"node_metaconsole"} = pandora_get_tconfig_token ($dbh, 'node_metaconsole', 0);
 
+	$pa_config->{"provisioning_mode"} = pandora_get_tconfig_token ($dbh, 'provisioning_mode', '');
+
 
 	if ($pa_config->{'include_agents'} eq '') {
 		$pa_config->{'include_agents'} = 0;
 	}
 
+	# PandoraFMS product name
+	$pa_config->{'rb_product_name'} = enterprise_hook(
+		'pandora_get_product_name',
+		[$dbh]
+	);
+	$pa_config->{'rb_product_name'} = 'Pandora FMS' unless (defined ($pa_config->{'rb_product_name'}) && $pa_config->{'rb_product_name'} ne '');
 }
 
 ##########################################################################
@@ -473,6 +483,10 @@ sub pandora_load_config {
 
 	$pa_config->{"unknown_updates"} = 0; # 7.0.718
 
+	$pa_config->{"provisioningserver"} = 1; # 7.0 720
+	$pa_config->{"provisioningserver_threads"} = 1; # 7.0 720
+	$pa_config->{"provisioning_cache_interval"} = 300; # 7.0 720
+
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
 		if ($> == 0){
@@ -484,7 +498,7 @@ sub pandora_load_config {
 	# Check for file
 	if ( ! -f $archivo_cfg ) {
 		printf "\n [ERROR] Cannot open configuration file at $archivo_cfg. \n";
-		printf "	Please specify a valid Pandora FMS configuration file in command line. \n";
+		printf "	Please specify a valid " . pandora_get_initial_product_name() ." configuration file in command line. \n";
 		print "	Standard configuration file is at /etc/pandora/pandora_server.conf \n";
 		exit 1;
 	}
@@ -1090,6 +1104,15 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^unknown_updates\s+([0-1])/i) {
 			$pa_config->{'unknown_updates'} = clean_blank($1);
 		}
+		elsif ($parametro =~ m/^provisioningserver\s+([0-1])/i){
+			$pa_config->{'provisioningserver'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^provisioningserver_threads\s+([0-9]*)/i){
+			$pa_config->{'provisioningserver_threads'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^provisioning_cache_interval\s+([0-9]*)/i){
+			$pa_config->{'provisioning_cache_interval'}= clean_blank($1);
+		}
 	} # end of loop for parameter #
 
 	# Set to RDBMS' standard port
@@ -1144,10 +1167,10 @@ sub pandora_start_log ($){
 	my $pa_config = shift;
 
 	# Dump all errors to errorlog
-	open (STDERR, ">> " . $pa_config->{'errorlog_file'}) or die " [ERROR] Pandora FMS can't write to Errorlog. Aborting : \n $! \n";
+	open (STDERR, ">> " . $pa_config->{'errorlog_file'}) or die " [ERROR] " . pandora_get_initial_product_name() . " can't write to Errorlog. Aborting : \n $! \n";
 	my $mode = 0664;
 	chmod $mode, $pa_config->{'errorlog_file'};
-	print STDERR strftime ("%Y-%m-%d %H:%M:%S", localtime()) . ' - ' . $pa_config->{'servername'} . " Starting Pandora FMS Server. Error logging activated.\n";
+	print STDERR strftime ("%Y-%m-%d %H:%M:%S", localtime()) . ' - ' . $pa_config->{'servername'} . " Starting " . pandora_get_initial_product_name() . " Server. Error logging activated.\n";
 }
 
 ##########################################################################
@@ -1162,6 +1185,26 @@ sub pandora_get_tconfig_token ($$$) {
 	}
 	
 	return $default_value;
+}
+
+##########################################################################
+# Get the product name in previous tasks to read from database.
+##########################################################################
+sub pandora_get_initial_product_name {
+	# PandoraFMS product name
+	my $product_name = $ENV{'PANDORA_RB_PRODUCT_NAME'};
+	return 'Pandora FMS' unless (defined ($product_name) && $product_name ne '');
+	return $product_name;
+}
+
+##########################################################################
+# Get the copyright notice.
+##########################################################################
+sub pandora_get_initial_copyright_notice {
+	# PandoraFMS product name
+	my $name = $ENV{'PANDORA_RB_COPYRIGHT_NOTICE'};
+	return 'Artica ST' unless (defined ($name) && $name ne '');
+	return $name;
 }
 
 # End of function declaration

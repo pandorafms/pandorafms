@@ -90,14 +90,17 @@ if ($create_alert) {
 			"tagente_modulo","id_agente_modulo", $id_agent_module));
 		
 		// Audit the creation only when the alert creation is correct
+		$unsafe_alert_template_name = io_safe_output($alert_template_name);
+		$unsafe_module_name = io_safe_output($module_name);
+		$unsafe_agent_alias = io_safe_output($agent_alias);
 		if ($id) {
 			db_pandora_audit("Alert management",
-				"Added alert '$alert_template_name' for module '$module_name' in agent '$agent_alias'",
+				"Added alert '$unsafe_alert_template_name' for module '$unsafe_module_name' in agent '$unsafe_agent_alias'",
 				false, false, 'ID: ' . $id);
 		}
 		else {
 			db_pandora_audit("Alert management",
-				"Fail Added alert '$alert_template_name' for module '$module_name' in agent '$agent_alias'");
+				"Fail Added alert '$unsafe_alert_template_name' for module '$unsafe_module_name' in agent '$unsafe_agent_alias'");
 		}
 		
 		$messageAction = ui_print_result_message ($id,
@@ -143,6 +146,20 @@ if ($delete_alert) {
 	
 	$messageAction = ui_print_result_message ($result,
 		__('Successfully deleted'), __('Could not be deleted'), '', true);
+		
+	$id_cluster = db_get_all_rows_sql('select id,cluster_type from tcluster where id_agent = '.$id_agente);
+	
+	if($id_cluster){
+		
+		if($id_cluster[0]['cluster_type'] == 'AA'){
+			header('Location: index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_builder&id_cluster='.$id_cluster[0]['id'].'&step=5&update=1&message_delete_alert='.$result);
+		}
+		else{
+			header('Location: index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_builder&id_cluster='.$id_cluster[0]['id'].'&step=7&update=1&message_delete_alert='.$result);	
+		}
+		
+	}
+		
 }
 
 if ($add_action) {
@@ -211,6 +228,20 @@ if ($delete_action) {
 	
 	$messageAction = ui_print_result_message ($result,
 		__('Successfully deleted'), __('Could not be deleted'), '', true);
+		
+	$id_cluster = db_get_all_rows_sql('select id,cluster_type from tcluster where id_agent = '.$id_agente);
+	
+	if($id_cluster){
+		
+		if($id_cluster[0]['cluster_type'] == 'AA'){
+			header('Location: index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_builder&id_cluster='.$id_cluster[0]['id'].'&step=5&update=1&message_delete_action='.$result);
+		}
+		else{
+			header('Location: index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_builder&id_cluster='.$id_cluster[0]['id'].'&step=7&update=1&message_delete_action='.$result);	
+		}
+		
+	}
+		
 }
 
 if ($enable_alert) {
@@ -228,6 +259,19 @@ if ($enable_alert) {
 	
 	$messageAction = ui_print_result_message ($result,
 		__('Successfully enabled'), __('Could not be enabled'), '', true);
+		
+	$id_cluster = db_get_all_rows_sql('select id,cluster_type from tcluster where id_agent = '.$id_agente);
+	
+	if($id_cluster){
+		
+		if($id_cluster[0]['cluster_type'] == 'AA'){
+			header('Location: index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_builder&id_cluster='.$id_cluster[0]['id'].'&step=5&update=1&message_enable_alert='.$result);
+		}
+		else{
+			header('Location: index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_builder&id_cluster='.$id_cluster[0]['id'].'&step=7&update=1&message_enable_alert='.$result);	
+		}
+		
+	}
 }
 
 if ($disable_alert) {
@@ -245,6 +289,20 @@ if ($disable_alert) {
 	
 	$messageAction = ui_print_result_message ($result,
 		__('Successfully disabled'), __('Could not be disabled'), '', true);
+	
+	$id_cluster = db_get_all_rows_sql('select id,cluster_type from tcluster where id_agent = '.$id_agente);
+	
+	if($id_cluster){
+		
+		if($id_cluster[0]['cluster_type'] == 'AA'){
+			header('Location: index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_builder&id_cluster='.$id_cluster[0]['id'].'&step=5&update=1&message_disable_alert='.$result);
+		}
+		else{
+			header('Location: index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_builder&id_cluster='.$id_cluster[0]['id'].'&step=7&update=1&message_disable_alert='.$result);	
+		}
+		
+	}
+	
 }
 
 if ($standbyon_alert) {
@@ -262,6 +320,19 @@ if ($standbyon_alert) {
 	
 	$messageAction = ui_print_result_message ($result,
 		__('Successfully set standby'), __('Could not be set standby'), '', true);
+		
+	$id_cluster = db_get_all_rows_sql('select id,cluster_type from tcluster where id_agent = '.$id_agente);
+	
+	if($id_cluster){
+		
+		if($id_cluster[0]['cluster_type'] == 'AA'){
+			header('Location: index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_builder&id_cluster='.$id_cluster[0]['id'].'&step=5&update=1&message_standbyon='.$result);
+		}
+		else{
+			header('Location: index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_builder&id_cluster='.$id_cluster[0]['id'].'&step=7&update=1&message_standbyon='.$result);	
+		}
+		
+	}
 }
 
 if ($standbyoff_alert) {
@@ -279,6 +350,19 @@ if ($standbyoff_alert) {
 	
 	$messageAction = ui_print_result_message ($result,
 		__('Successfully set off standby'), __('Could not be set off standby'), '', true);
+		
+	$id_cluster = db_get_all_rows_sql('select id,cluster_type from tcluster where id_agent = '.$id_agente);
+	
+	if($id_cluster){
+		
+		if($id_cluster[0]['cluster_type'] == 'AA'){
+			header('Location: index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_builder&id_cluster='.$id_cluster[0]['id'].'&step=5&update=1&message_standbyoff='.$result);
+		}
+		else{
+			header('Location: index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_builder&id_cluster='.$id_cluster[0]['id'].'&step=7&update=1&message_standbyoff='.$result);	
+		}
+		
+	}
 }
 
 if ($id_agente) {
@@ -294,8 +378,8 @@ if ($id_agente) {
 	echo $messageAction;
 	
 	require_once('godmode/alerts/alert_list.list.php');
-	
-	if(check_acl ($config['id_user'], $agent['id_grupo'], "LW") || check_acl ($config['id_user'], $agent['id_grupo'], "LM")) {
+	$all_groups = agents_get_all_groups_agent ($id_agente, $agent['id_grupo']);
+	if(check_acl_one_of_groups ($config['id_user'], $all_groups, "LW") || check_acl_one_of_groups ($config['id_user'], $all_groups, "LM")) {
 		require_once('godmode/alerts/alert_list.builder.php');
 	}
 	

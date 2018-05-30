@@ -21,7 +21,7 @@ require_once ("../include/functions_html.php");
 ?>
 <html style="height:100%; margin-top: 25px; margin-left: 15px; margin-right: 15px; background-color: #333;"><head><title>
 <?php
-	echo __('Pandora FMS help system');
+	echo __('%s help system', get_product_name());
 ?>
 </title>
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
@@ -61,11 +61,12 @@ foreach ($files as $file) {
 	}
 }
 
+$logo = ui_get_custom_header_logo(true);
 
 if (! $id || ! file_exists ($help_file)) {
 	echo '<div id="main_help" style="background-color: #fff;text-align:center; padding-top: 15px; padding-bottom: 15px; ">';
 		if (!is_metaconsole()) {
-			echo html_print_image('images/pandora_tinylogo.png', true, array("border" => '0'));
+			echo html_print_image($logo, true, array("border" => '0'));
 		}
 	echo '</div>';
 	echo '<div style="font-family: verdana, arial; font-size: 11px; text-align:left; background-color: #fff;">';
@@ -77,7 +78,7 @@ if (! $id || ! file_exists ($help_file)) {
 	echo "<div style='text-align: center; background-color: #fff'>";
 
 	echo "</div>";
-	echo '<div class="msg" style="padding-left: 30px;padding-right: 30px;padding-bottom: 15px;">'.__('Pandora FMS help system has been called with a help reference that currently don\'t exist. There is no help content to show.').'</div></div></div>';
+	echo '<div class="msg" style="padding-left: 30px;padding-right: 30px;padding-bottom: 15px;">'.__("%s help system has been called with a help reference that currently don't exist. There is no help content to show.", get_product_name()).'</div></div></div>';
 	echo '<br /><br />';
 	echo '<div style="text-align: center; padding: 5px; font-family: verdana, arial; font-size: 11px;">';
 	include ('footer.php');
@@ -86,16 +87,11 @@ if (! $id || ! file_exists ($help_file)) {
 
 /* Show help */
 echo '<div id="main_help_new" style="background-color: #fff">';
-	if (empty($config['enterprise_installed'])) {
-		echo html_print_image('images/pandora_tinylogo_open.png', true, array("border" => '0'));
+	if (!empty($config['enterprise_installed']) && is_metaconsole()) {
+		echo '<img src="' . $config["homeurl"] . $logo . '">';
 	}
 	else {
-		if (is_metaconsole()) {
-			echo '<img src="'.$config["homeurl"].'images/pandora_tinylogo.png">';
-		}
-		else{
-			echo html_print_image('images/pandora_tinylogo.png', true, array("border" => '0'));
-		}
+		echo html_print_image($logo, true, array("border" => '0'));
 	}
 echo '</div>';
 echo '<div id="main_help_new_content" style="height: auto ! important;overfloat: auto;">';

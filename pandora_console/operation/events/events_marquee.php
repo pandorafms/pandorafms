@@ -106,11 +106,11 @@ foreach ($result as $row) {
 
 echo "<html>";
 echo "<head>";
-echo "<title>Pandora FMS - Latest events </title>";
+echo "<title>" . __("%s - Latest events", get_product_name()) . "</title>";
 
 $query = ui_get_full_url();
 echo '<meta http-equiv="refresh" content="' . $MARQUEE_INTERVAL . '; URL=' . $query . '">';
-echo '<link rel="icon" href="../../images/pandora.ico" type="image/ico">';
+echo '<link rel="icon" href="../../' . ui_get_favicon() . '" type="image/ico">';
 echo "</head>";
 
 echo "<body bgcolor='#000000' >";

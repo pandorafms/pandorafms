@@ -32,6 +32,9 @@ class System {
 		}
 		$this->session = $_SESSION;
 		session_write_close();
+
+		require_once($this->getConfig('homedir') . '/include/functions.php');
+		require_once($this->getConfig('homedir') . '/include/functions_io.php');
 	}
 	
 	public static function getInstance() {
@@ -51,29 +54,14 @@ class System {
 	}
 	
 	public function getRequest($name, $default = null) {
-		$return = $default;
-		
-		if (isset($_POST[$name])) {
-			$return = $_POST[$name];
-		}
-		else {
-			if (isset($_GET[$name])) {
-				$return = $_GET[$name];
-			}
-		}
-		
-		return $return;
+		return get_parameter($name, $default);
 	}
 	
 	public function safeOutput($value) {
-		require_once($this->getConfig('homedir') . '/include/functions_io.php');
-		
 		return io_safe_output($value);
 	}
 	
 	public function safeInput($value) {
-		require_once($this->getConfig('homedir') . '/include/functions_io.php');
-		
 		return io_safe_input($value);
 	}
 	
@@ -128,6 +116,14 @@ class System {
 			
 			return false;
 		}
+	}
+
+	public function getDefaultACLFailText() {
+		return 
+			__("Access to this page is restricted to authorized users only, please contact your system administrator if you should need help.") .
+			"<br><br>" .
+			__("Please remember that any attempts to access this page will be recorded on the %s System Database.", get_product_name())
+		;
 	}
 }
 ?>

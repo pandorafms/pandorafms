@@ -338,8 +338,9 @@ function resource_exportation_extension_main() {
 	ui_print_page_header (__('Resource exportation'), "images/extensions.png", false, "", true, "" );
 	
 	echo "<div class=notify>";
-	echo __("This extension makes exportation of resource template more easy. " .
-		"Here you can export as a resource template in Pandora FMS 3.x format (.ptr). ");
+	echo __("This extension makes exportation of resource template more easy.") .
+		" " .
+		__("You can export resource templates in .ptr format.");
 	echo "</div>";
 	
 	echo "<br /><br />";

@@ -163,7 +163,7 @@ $iconsets["color_text"] = __('Colors and text');
 $table_styles->data[$row][1] = html_print_select($iconsets,
 	'status_images_set', $config["status_images_set"], '', '', '', true);
 $table_styles->data[$row][1] .= "&nbsp;" .
-	html_print_button(__("View"), 'status_set_preview', false, '', '', true);
+	html_print_button(__("View"), 'status_set_preview', false, '', 'class="sub camera logo_preview"', true);
 $row++;
 
 $table_styles->data[$row][0] = __('Login background') .
@@ -179,15 +179,40 @@ if(!enterprise_installed()){
 	$open=true; 
 }
 
+// Custom favicon
+$files = list_files('images/custom_favicon', "ico", 1, 0);
+$table_styles->data[$row][0] = __('Custom favicon');
+$table_styles->data[$row][0] .= ui_print_help_tip(__('You can place your favicon into the folder images/custom_favicon/. This file should be in .ico format with a size of 16x16.'), true);
+$table_styles->data[$row][1] = html_print_select(
+	$files,
+	'custom_favicon',
+	$config["custom_favicon"],
+	'setup_visuals_change_favicon();',
+	__('Default'),
+	'',
+	true,
+	false,
+	true,
+	'',
+	false,
+	'width:240px'
+);
+$table_styles->data[$row][1] .= "&nbsp;&nbsp;&nbsp;" . html_print_image(
+	ui_get_favicon(),
+	true,
+	array('id' => 'favicon_preview')
+);
+$row++;
+
+$table_styles->data[$row][0] = __('Custom background logo');
 $table_styles->data[$row][1] = html_print_select ($backgrounds_list,
 	'login_background', $config["login_background"], '', __('Default'),
 	'', true,false,true,'',false,'width:240px');
 $table_styles->data[$row][1] .= "&nbsp;" .
-	html_print_button(__("View"), 'login_background_preview', false, '', 'class="sub camera"', true);
+	html_print_button(__("View"), 'login_background_preview', false, '', 'class="sub camera logo_preview"', true);
 $row++;
 
 $table_styles->data[$row][0] = __('Custom logo (header)') . ui_print_help_icon("custom_logo", true);
-
 if(enterprise_installed()){
 	$ent_files = list_files('enterprise/images/custom_logo', "png", 1, 0);
 	$open_files = list_files('images/custom_logo', "png", 1, 0);
@@ -201,8 +226,24 @@ else{
 	list_files('images/custom_logo', "png", 1, 0), 'custom_logo',
 	$config["custom_logo"], '', '', '',true,false,true,'',$open,'width:240px');
 }
+$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'custom_logo_preview', $open, '', 'class="sub camera logo_preview"', true,false,$open,'visualmodal');
+$row++;
+
+$table_styles->data[$row][0] = __('Custom logo (header white background)');
+if(enterprise_installed()){
+	$ent_files = list_files('enterprise/images/custom_logo', "png", 1, 0);
+	$open_files = list_files('images/custom_logo', "png", 1, 0);
 	
-	$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'custom_logo_preview', $open, '', 'class="sub camera"', true,false,$open,'visualmodal');
+	$table_styles->data[$row][1] = html_print_select(
+	array_merge($open_files, $ent_files), 'custom_logo_white_bg',
+	$config["custom_logo_white_bg"], '', '', '',true,false,true,'',$open,'width:240px');
+}
+else{
+	$table_styles->data[$row][1] = html_print_select(
+	list_files('images/custom_logo', "png", 1, 0), 'custom_logo_white_bg',
+	$config["custom_logo_white_bg"], '', '', '',true,false,true,'',$open,'width:240px');
+}
+$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'custom_logo_white_bg_preview', $open, '', 'class="sub camera logo_preview"', true,false,$open,'visualmodal');
 $row++;
 
 $table_styles->data[$row][0] = __('Custom logo (login)') . ui_print_help_icon("custom_logo", true);
@@ -218,7 +259,7 @@ else {
                 $config["custom_logo_login"], '', '', '',true,false,true,'',$open,'width:240px');
 }
 
-$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'custom_logo_login_preview', $open, '', 'class="sub camera"', true,false,$open,'visualmodal');
+$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'custom_logo_login_preview', $open, '', 'class="sub camera logo_preview"', true,false,$open,'visualmodal');
 $row++;
 
 //Splash login
@@ -229,8 +270,93 @@ if(enterprise_installed()) {
 		list_files('enterprise/images/custom_splash_login', "png", 1, 0), 'custom_splash_login',
 		$config["custom_splash_login"], '', '', '',true,false,true,'',$open,'width:240px');
 
-	$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'custom_splash_login_preview', $open, '', 'class="sub camera"', true,false,$open,'visualmodal');
-	
+	$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'custom_splash_login_preview', $open, '', 'class="sub camera logo_preview"', true,false,$open,'visualmodal');
+	$row++;
+}
+
+if(enterprise_installed()){
+	// Get all the custom logos
+	$files = list_files('enterprise/images/custom_general_logos', "png", 1, 0);
+
+	// Custom docs icon
+	$table_styles->data[$row][0] = __('Custom documentation logo');
+	$table_styles->data[$row][0] .= ui_print_help_tip(__('You can place your custom logos into the folder enterprise/images/custom_general_logos/'), true);
+
+	$table_styles->data[$row][1] = html_print_select(
+		$files,
+		'custom_docs_logo',
+		$config["custom_docs_logo"],
+		'',
+		__('None'),
+		'',
+		true,
+		false,
+		true,
+		'',
+		false,
+		'width:240px'
+	);
+	$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'custom_docs_logo_preview', $open, '', 'class="sub camera logo_preview"', true,false,$open,'visualmodal');
+	$row++;
+
+	// Custom support icon
+	$table_styles->data[$row][0] = __('Custom support logo');
+	$table_styles->data[$row][0] .= ui_print_help_tip(__('You can place your custom logos into the folder enterprise/images/custom_general_logos/'), true);
+	$table_styles->data[$row][1] = html_print_select(
+		$files,
+		'custom_support_logo',
+		$config["custom_support_logo"],
+		'',
+		__('None'),
+		'',
+		true,
+		false,
+		true,
+		'',
+		false,
+		'width:240px'
+	);
+	$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'custom_support_logo_preview', $open, '', 'class="sub camera logo_preview"', true,false,$open,'visualmodal');
+	$row++;
+
+	// Custom center networkmap icon
+	$table_styles->data[$row][0] = __('Custom networkmap center logo');
+	$table_styles->data[$row][0] .= ui_print_help_tip(__('You can place your custom logos into the folder enterprise/images/custom_general_logos/'), true);
+	$table_styles->data[$row][1] = html_print_select(
+		$files,
+		'custom_network_center_logo',
+		$config["custom_network_center_logo"],
+		'',
+		__('Default'),
+		'',
+		true,
+		false,
+		true,
+		'',
+		false,
+		'width:240px'
+	);
+	$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'custom_network_center_logo_preview', $open, '', 'class="sub camera logo_preview"', true,false,$open,'visualmodal');
+	$row++;
+
+	// Custom center mobile console icon
+	$table_styles->data[$row][0] = __('Custom mobile console icon');
+	$table_styles->data[$row][0] .= ui_print_help_tip(__('You can place your custom logos into the folder enterprise/images/custom_general_logos/'), true);
+	$table_styles->data[$row][1] = html_print_select(
+		$files,
+		'custom_mobile_console_logo',
+		$config["custom_mobile_console_logo"],
+		'',
+		__('Default'),
+		'',
+		true,
+		false,
+		true,
+		'',
+		false,
+		'width:240px'
+	);
+	$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'custom_mobile_console_logo_preview', $open, '', 'class="sub camera logo_preview"', true,false,$open,'visualmodal');
 	$row++;
 }
 
@@ -258,7 +384,19 @@ if(enterprise_installed()) {
 	$table_styles->data[$row][0] = __('Support URL (login)');
 	$table_styles->data[$row][1] = html_print_input_text ('custom_support_url', $config["custom_support_url"], '', 50, 50, true);
 	$row++;
-}	
+}
+
+if(enterprise_installed()) {
+	$table_styles->data[$row][0] = __('Product name');
+	$table_styles->data[$row][1] = html_print_input_text('rb_product_name', get_product_name(), '', 30, 255, true);
+	$row++;
+}
+
+if(enterprise_installed()) {
+	$table_styles->data[$row][0] = __('Copyright notice');
+	$table_styles->data[$row][1] = html_print_input_text('rb_copyright_notice', get_copyright_notice(), '', 30, 255, true);
+	$row++;
+}
 
 $table_styles->data[$row][0] = __('Disable logo in graphs');
 $table_styles->data[$row][1] = __('Yes') . '&nbsp;' .
@@ -273,6 +411,13 @@ $table_styles->data[$row][1] .= __('No') . '&nbsp;' .
 	html_print_radio_button_extended ('fixed_graph', 0, '', $config["fixed_graph"], $open, '','',true, $open,'visualmodal');
 $row++;
 
+$table_styles->data[$row][0] = __('Disable helps');
+$table_styles->data[$row][1] = __('Yes') . '&nbsp;' .
+	html_print_radio_button ('disable_help', 1, '', $config["disable_help"], true) .
+	'&nbsp;&nbsp;';
+$table_styles->data[$row][1] .= __('No') . '&nbsp;' .
+	html_print_radio_button ('disable_help', 0, '', $config["disable_help"], true);
+$row++;
 
 $table_styles->data[$row][0] = __('Fixed header');
 $table_styles->data[$row][1] = __('Yes') . '&nbsp;' .
@@ -336,7 +481,7 @@ $table_gis->data[$row][1] = html_print_select($arraySelectIcon,
 	"gis_default_icon", $config["gis_default_icon"], "", __('Agent icon group'),
 		'', true);
 $table_gis->data[$row][1] .= "&nbsp;" .
-	html_print_button(__("View"), 'gis_icon_preview', false, '', '', true);
+html_print_button(__("View"), 'gis_icon_preview', false, '', 'class="sub camera logo_preview"', true);
 $row++;
 
 echo "<fieldset>";
@@ -386,7 +531,7 @@ $table_font->data[$row][1] = html_print_select($font_size_array, 'font_size',
 $row++;
 
 $table_font->data[$row][0] = __('Agent size text') .
-	ui_print_help_tip(__('When the agent name have a lot of characters, in some places in Pandora Console it is necesary truncate to N characters.'), true);
+	ui_print_help_tip(__('When the agent name has a lot of characters, it is needed to truncate it into N characters in some sections in %s Console', get_product_name()), true);
 $table_font->data[$row][1] = __('Small:') .
 	html_print_input_text ('agent_size_text_small', $config["agent_size_text_small"], '', 3, 3, true);
 $table_font->data[$row][1] .= ' ' . __('Normal:') .
@@ -394,19 +539,19 @@ $table_font->data[$row][1] .= ' ' . __('Normal:') .
 $row++;
 
 $table_font->data[$row][0] = __('Module size text') .
-	ui_print_help_tip(__('When the module name have a lot of characters, in some places in Pandora Console it is necesary truncate to N characters.'), true);
+	ui_print_help_tip(__('When the module name has a lot of characters, it is needed to truncate it into N characters in some sections in %s Console', get_product_name()), true);
 $table_font->data[$row][1] = __('Small:') .
 	html_print_input_text ('module_size_text_small', $config["module_size_text_small"], '', 3, 3, true);
 $table_font->data[$row][1] .= ' ' . __('Normal:') .
 	html_print_input_text ('module_size_text_medium', $config["module_size_text_medium"], '', 3, 3, true);
 $row++;
 
-$table_font->data[$row][0] = __('Description size text') . ui_print_help_tip(__('When the description name have a lot of characters, in some places in Pandora Console it is necesary truncate to N characters.'), true);
+$table_font->data[$row][0] = __('Description size text') . ui_print_help_tip(__('If the description name has a lot of characters, in some places in %s Console it is necessary to truncate it to N characters.', get_product_name()), true);
 $table_font->data[$row][1] = html_print_input_text ('description_size_text', $config["description_size_text"], '', 3, 3, true);
 $row++;
 
 $table_font->data[$row][0] = __('Item title size text') .
-	ui_print_help_tip(__('When the item title name have a lot of characters, in some places in Pandora Console it is necesary truncate to N characters.'), true);
+	ui_print_help_tip(__('When the item title name has a lot of characters, it is needed to truncate it into N characters in some sections in %s Console.', get_product_name()), true);
 $table_font->data[$row][1] = html_print_input_text('item_title_size_text',
 	$config["item_title_size_text"], '', 3, 3, true);
 $row++;
@@ -488,7 +633,7 @@ if (!enterprise_installed()) {
 	$disabled_graph_precision = true;
 }
 
-$table_chars->data[$row][0] = __('Data precision in PandoraFMS');
+$table_chars->data[$row][0] = __('Data precision');
 $table_chars->data[$row][0] .= ui_print_help_tip(__('Number of decimals shown. It must be a number between 0 and 5, except in graphs.'), true);
 $table_chars->data[$row][1] = html_print_input_text ('graph_precision', $config["graph_precision"], '', 5, 5, true, $disabled_graph_precision, false, "onChange=\"change_precision()\"");
 $row++;
@@ -665,7 +810,7 @@ $table_other->data['custom_report_front-font'][1] = html_print_select ($_fonts,
 $table_other->data['custom_report_front-logo'][0] =  __('Custom report front') . ' - ' .
 	__('Custom logo') .
 	ui_print_help_tip(
-		__("The dir of custom logos is in your www Pandora Console in \"images/custom_logo\". You can upload more files (ONLY JPEG AND PNG) in upload tool in console."), true);
+		__("The dir of custom logos is in your www Console in 'images/custom_logo'. You can upload more files (ONLY JPEG AND PNG) in upload tool in console."), true);
 $table_other->data['custom_report_front-logo'][1] = html_print_select(
 	$customLogos,
 	'custom_report_front_logo',
@@ -874,6 +1019,7 @@ function load_fonts() {
 }
 
 ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
+ui_require_javascript_file('pandora');
 
 ?>
 <script language="javascript" type="text/javascript">
@@ -1056,167 +1202,73 @@ $(document).ready (function () {
 	});
 });
 
+// Change the favicon preview when is changed
+function setup_visuals_change_favicon() {
+	var icon_name = $("select#custom_favicon option:selected").val();
+	var icon_path = (icon_name == "")
+		? "images/pandora.ico"
+		: "images/custom_favicon/" + icon_name;
+	$("#favicon_preview").attr("src", "<?php echo $config['homeurl'];?>" + icon_path);
+}
+
 // Dialog loaders for the images previews
+$(".logo_preview").click (function(e) {
+	// Init the vars
+	var icon_name = '';
+	var icon_path = '';
+	var options = {
+		title: "<?php echo __('Logo preview'); ?>"
+	};
 
-$("#button-custom_logo_preview").click (function (e) {
-	var icon_name = $("select#custom_logo option:selected").val();
-	var icon_path = "<?php echo $config['homeurl'];  if(enterprise_installed){ echo 'enterprise/'; } ?>images/custom_logo/" + icon_name;
-
-	if (icon_name == "")
-		return;
-
-	$dialog = $("<div></div>");
-	$image = $("<div style='background-color:grey'><img src=\"" + icon_path + "\"></div>");
-	$image
-		.css('max-width', '500px')
-		.css('max-height', '500px');
-
-	try {
-		$dialog
-			.hide()
-			.html($image)
-			.dialog({
-				title: "<?php echo __('Logo preview'); ?>",
-				resizable: true,
-				draggable: true,
-				modal: true,
-				overlay: {
-					opacity: 0.5,
-					background: "black"
-				},
-				minHeight: 1,
-				width: $image.width,
-				close: function () {
-					$dialog
-						.empty()
-						.remove();
-				}
-			}).show();
+	// Fill it seing the target has been clicked
+	switch (e.target.id) {
+		case 'button-custom_logo_preview':
+			icon_name = $("select#custom_logo option:selected").val();
+			icon_path = "<?php echo $config['homeurl'];  if(enterprise_installed){ echo 'enterprise/'; } ?>images/custom_logo/" + icon_name;
+			options.grayed = true;
+			break;
+		case 'button-custom_logo_white_bg_preview':
+			icon_name = $("select#custom_logo_white_bg option:selected").val();
+			icon_path = "<?php echo $config['homeurl'];  if(enterprise_installed){ echo 'enterprise/'; } ?>images/custom_logo/" + icon_name;
+			break;
+		case 'button-custom_logo_login_preview':
+			icon_name = $("select#custom_logo_login option:selected").val();
+			icon_path = "<?php echo $config['homeurl']; if(enterprise_installed){ echo 'enterprise/'; } ?>images/custom_logo_login/" + icon_name;
+			options.grayed = true;
+			break;
+		case 'button-custom_splash_login_preview':
+			icon_name = $("select#custom_splash_login option:selected").val();
+			icon_path = "<?php echo $config['homeurl']; if(enterprise_installed){ echo 'enterprise/'; } ?>images/custom_splash_login/" + icon_name;
+			options.title = "<?php echo __('Splash Preview'); ?>";
+			break;
+		case 'button-custom_docs_logo_preview':
+			icon_name = $("select#custom_docs_logo option:selected").val();
+			icon_path = "<?php echo $config['homeurl']; ?>enterprise/images/custom_general_logos/" + icon_name;
+			options.grayed = true;
+			break;
+		case 'button-custom_support_logo_preview':
+			icon_name = $("select#custom_support_logo option:selected").val();
+			icon_path = "<?php echo $config['homeurl']; ?>enterprise/images/custom_general_logos/" + icon_name;
+			options.grayed = true;
+			break;
+		case 'button-custom_network_center_logo_preview':
+			icon_name = $("select#custom_network_center_logo option:selected").val();
+			icon_path = "<?php echo $config['homeurl']; ?>enterprise/images/custom_general_logos/" + icon_name;
+			break;
+		case 'button-custom_mobile_console_logo_preview':
+			icon_name = $("select#custom_mobile_console_logo option:selected").val();
+			icon_path = "<?php echo $config['homeurl']; ?>enterprise/images/custom_general_logos/" + icon_name;
+			options.title = "<?php echo __('Mobile console logo preview'); ?>";
+			break;
+		case 'button-login_background_preview':
+			icon_name = $("select#login_background option:selected").val();
+			icon_path = "<?php echo $config['homeurl']; ?>/images/backgrounds/" + icon_name;
+			options.title = "<?php echo __('Background preview'); ?>";
+			break;
 	}
-	catch (err) {
-		// console.log(err);
-	}
-});
 
-$("#button-custom_logo_login_preview").click (function (e) {
-	var icon_name = $("select#custom_logo_login option:selected").val();
-	var icon_path = "<?php echo $config['homeurl']; if(enterprise_installed){ echo 'enterprise/'; } ?>images/custom_logo_login/" + icon_name;
-
-	if (icon_name == "")
-		return;
-
-	$dialog = $("<div></div>");
-	$image = $("<div style='background-color:grey'><img src=\"" + icon_path + "\"></div>");
-	$image
-		.css('max-width', '500px')
-		.css('max-height', '500px');
-
-	try {
-		$dialog
-			.hide()
-			.html($image)
-			.dialog({
-				title: "<?php echo __('Logo preview'); ?>",
-				resizable: true,
-				draggable: true,
-				modal: true,
-				overlay: {
-					opacity: 0.5,
-					background: "black"
-				},
-				minHeight: 1,
-				width: $image.width,
-				close: function () {
-					$dialog
-						.empty()
-						.remove();
-				}
-			}).show();
-	}
-	catch (err) {
-		// console.log(err);
-	}
-});
-
-$("#button-custom_splash_login_preview").click (function (e) {
-	var icon_name = $("select#custom_splash_login option:selected").val();
-	var icon_path = "<?php echo $config['homeurl']; if(enterprise_installed){ echo 'enterprise/'; } ?>images/custom_splash_login/" + icon_name;
-
-	if (icon_name == "")
-		return;
-
-	$dialog = $("<div></div>");
-	$image = $("<img src=\"" + icon_path + "\">");
-	$image
-		.css('max-width', '500px')
-		.css('max-height', '500px');
-
-	try {
-		$dialog
-			.hide()
-			.html($image)
-			.dialog({
-				title: "<?php echo __('Splash Preview'); ?>",
-				resizable: true,
-				draggable: true,
-				modal: true,
-				overlay: {
-					opacity: 0.5,
-					background: "black"
-				},
-				minHeight: 1,
-				width: $image.width,
-				close: function () {
-					$dialog
-						.empty()
-						.remove();
-				}
-			}).show();
-	}
-	catch (err) {
-		// console.log(err);
-	}
-});
-
-
-$("#button-login_background_preview").click (function (e) {
-	var icon_name = $("select#login_background option:selected").val();
-	var icon_path = "<?php echo $config['homeurl']; ?>/images/backgrounds/" + icon_name;
-
-	if (icon_name == "")
-		return;
-
-	$dialog = $("<div></div>");
-	$image = $("<img src=\"" + icon_path + "\">");
-	$image
-		.css('max-width', '500px')
-		.css('max-height', '500px');
-
-	try {
-		$dialog
-			.hide()
-			.html($image)
-			.dialog({
-				title: "<?php echo __('Background preview'); ?>",
-				resizable: true,
-				draggable: true,
-				modal: true,
-				overlay: {
-					opacity: 0.5,
-					background: "black"
-				},
-				minHeight: 1,
-				width: $image.width,
-				close: function () {
-					$dialog
-						.empty()
-						.remove();
-				}
-			}).show();
-	}
-	catch (err) {
-		// console.log(err);
-	}
+	// Display the preview
+	logo_preview (icon_name, icon_path, options);
 });
 
 $("#button-gis_icon_preview").click (function (e) {

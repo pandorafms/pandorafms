@@ -268,21 +268,14 @@ function treeview_printModuleTable($id_module, $server_data = false, $no_head = 
 		$last_data_str .= html_print_image('images/clock2.png', true, array('title' => $last_data["timestamp"], 'width' => '18px'));
 		
 		$is_snapshot = is_snapshot_data ( $last_data["datos"] );
-			
 			if (($config['command_snapshot']) && ($is_snapshot)) {
-				$handle = 'snapshot_' . $module['id_agente_modulo'];
-				$url = 'include/procesos.php?agente=' . $row['id_agente_modulo'];
-				$win_handle = dechex(crc32($handle));
-				if (! defined ('METACONSOLE')) {
-				$link = "winopeng_var('operation/agentes/snapshot_view.php?" .
-					"id=" . $module['id_agente_modulo'] .
-					"&refr=" . $module['current_interval'] .
-					"&label=" . rawurlencode(urlencode(io_safe_output($module['module_name']))) . "','" . $win_handle . "', 700,480)";
-				}
-				else{
-					$link = "winopeng_var('$last_data[datos]','',700,480)";
-						
-				}
+				$link = ui_get_snapshot_link( array(
+					'id_module' => $module['id_agente_modulo'],
+					'last_data' => $last_data['datos'],
+					'timestamp' => $last_data['timestamp'],
+					'interval' => $module['current_interval'],
+					'module_name' => $module['module_name']
+				));
 
 				if(!is_image_data($last_data["datos"])){
 					$salida = '<a href="javascript:' . $link . '">' .
@@ -629,8 +622,17 @@ function treeview_printTable($id_agente, $server_data = array(), $no_head = fals
 
 	if ( $user_access_node && check_acl ($config["id_user"], $agent["id_grupo"], "AW")) {
 		$go_to_agent = '<div style="text-align: right;">';
-		$go_to_agent .= '<a target=_blank href="' . $console_url . 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.$url_hash.'">';
-		$go_to_agent .= html_print_submit_button (__('Go to agent edition'), 'upd_button', false, 'class="sub config"', true);
+		
+		if($agent["id_os"] != 100){
+			$go_to_agent .= '<a target=_blank href="' . $console_url . 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.$url_hash.'">';
+			$go_to_agent .= html_print_submit_button (__('Go to agent edition'), 'upd_button', false, 'class="sub config"', true);
+		}
+		else{
+			$cluster = db_get_row_sql('select id from tcluster where id_agent = '.$id_agente);
+			$go_to_agent .= '<a target=_blank href="' . $console_url . 'index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_builder&id_cluster='.$cluster['id'].'&step=1&update=1='.$id_agente.'">';
+			$go_to_agent .= html_print_submit_button (__('Edit cluster'), 'upd_button', false, 'class="sub config"', true);
+		}
+		
 		$go_to_agent .= '</a>';
 		$go_to_agent .= '</div>';
 
@@ -702,7 +704,13 @@ function treeview_printTable($id_agente, $server_data = array(), $no_head = fals
 			if (!empty($custom_value)) {
 				$row = array();
 				$row['title'] = $field['name'] . ui_print_help_tip (__('Custom field'), true);
-				$row['data'] = ui_bbcode_to_html($custom_value);
+				if($field['is_password_type']){
+						$row['data'] = '&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;';
+				}
+				else{
+						$row['data'] = ui_bbcode_to_html($custom_value);
+				}
+				
 				$table->data['custom_field_'.$field['id_field']] = $row;
 			}
 		}

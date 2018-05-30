@@ -50,7 +50,7 @@ if (!defined('METACONSOLE')) {
 			
 	$buttons[$tab]['active'] = true;
 
-	ui_print_page_header (__('User management').' &raquo; '.__('Profiles defined in Pandora'), "images/gm_users.png", false, "profile", true, $buttons);
+	ui_print_page_header (__('User management').' &raquo; '.__('Profiles defined on %s', get_product_name()), "images/gm_users.png", false, "profile", true, $buttons);
 	$sec = 'gusuarios';
 }
 else {
@@ -182,40 +182,30 @@ if ($update_profile) {
 	if ($name) {
 		$ret = db_process_sql_update('tperfil', $values, array('id_perfil' => $id_profile));
 		if ($ret !== false) {
-			$info = 'Name: ' . $name .
-					
-					' Incident view: ' . $incident_view .
-					' Incident edit: ' . $incident_edit .
-					' Incident management: ' . $incident_management .
-					
-					' Agent view: ' . $agent_view .
-					' Agent edit: ' . $agent_edit .
-					' Agent disable: ' . $agent_disable .
-					
-					' Alert edit: ' . $alert_edit .
-					' Alert management: ' . $alert_management .
-					
-					' User management: ' . $user_management .
-					
-					' DB management: ' . $db_management .
-					
-					' Event view: ' . $event_view .
-					' Event edit: ' . $event_edit .
-					' Event management: ' . $event_management .
-					
-					' Report view: ' . $report_view .
-					' Report edit: ' . $report_edit .
-					' Report management: ' . $report_management .
-					
-					' Network map view: ' . $map_view .
-					' Network map edit: ' . $map_edit .
-					' Network map management: ' . $map_management .
-					
-					' Visual console view: ' . $vconsole_view .
-					' Visual console edit: ' . $vconsole_edit .
-					' Visual console management: ' . $vconsole_management .
-					
-					' Pandora Management: ' . $pandora_management;
+			$info = '{"Name":"'.$incident_view.'",
+				"Incident view":"'.$incident_view.'",
+				"Incident edit":"'.$incident_edit.'",
+				"Incident management":"'.$incident_management.'",
+				"Agent view":"'.$agent_view.'",
+				"Agent edit":"'.$agent_edit.'",
+				"Agent disable":"'.$agent_disable.'",
+				"Alert edit":"'.$alert_edit.'",
+				"Alert management":"'.$alert_management.'",
+				"User management":"'.$user_management.'",
+				"DB management":"'.$db_management.'",
+				"Event view":"'.$event_view.'",
+				"Event edit":"'.$event_edit.'",
+				"Event management":"'.$event_management.'",
+				"Report view":"'.$report_view.'",
+				"Report edit":"'.$report_edit.'",
+				"Report management":"'.$report_management.'",
+				"Network map view":"'.$map_view.'",
+				"Network map edit":"'.$map_edit.'",
+				"Network map management":"'.$map_management.'",
+				"Visual console view":"'.$vconsole_view.'",
+				"Visual console edit":"'.$vconsole_edit.'",
+				"Visual console management":"'.$vconsole_management.'",
+				"'.get_product_name().' Management":"'.$pandora_management.'"}';
 			
 			db_pandora_audit("User management",
 				"Update profile ". $name, false, false, $info);
@@ -239,41 +229,30 @@ if ($create_profile) {
 		
 		if ($ret !== false) {
 			ui_print_success_message(__('Successfully created'));
-			
-			$info = 'Name: ' . $name .
-					
-					' Incident view: ' . $incident_view .
-					' Incident edit: ' . $incident_edit .
-					' Incident management: ' . $incident_management .
-					
-					' Agent view: ' . $agent_view .
-					' Agent edit: ' . $agent_edit .
-					' Agent disable: ' . $agent_disable .
-					
-					' Alert edit: ' . $alert_edit .
-					' Alert management: ' . $alert_management .
-					
-					' User management: ' . $user_management .
-					
-					' DB management: ' . $db_management .
-					
-					' Event view: ' . $event_view .
-					' Event edit: ' . $event_edit .
-					' Event management: ' . $event_management .
-					
-					' Report view: ' . $report_view .
-					' Report edit: ' . $report_edit .
-					' Report management: ' . $report_management .
-					
-					' Network map view: ' . $map_view .
-					' Network map edit: ' . $map_edit .
-					' Network map management: ' . $map_management .
-					
-					' Visual console view: ' . $vconsole_view .
-					' Visual console edit: ' . $vconsole_edit .
-					' Visual console management: ' . $vconsole_management .
-					
-					' Pandora Management: ' . $pandora_management;
+			$info = '{"Name":"'.$incident_view.'",
+				"Incident view":"'.$incident_view.'",
+				"Incident edit":"'.$incident_edit.'",
+				"Incident management":"'.$incident_management.'",
+				"Agent view":"'.$agent_view.'",
+				"Agent edit":"'.$agent_edit.'",
+				"Agent disable":"'.$agent_disable.'",
+				"Alert edit":"'.$alert_edit.'",
+				"Alert management":"'.$alert_management.'",
+				"User management":"'.$user_management.'",
+				"DB management":"'.$db_management.'",
+				"Event view":"'.$event_view.'",
+				"Event edit":"'.$event_edit.'",
+				"Event management":"'.$event_management.'",
+				"Report view":"'.$report_view.'",
+				"Report edit":"'.$report_edit.'",
+				"Report management":"'.$report_management.'",
+				"Network map view":"'.$map_view.'",
+				"Network map edit":"'.$map_edit.'",
+				"Network map management":"'.$map_management.'",
+				"Visual console view":"'.$vconsole_view.'",
+				"Visual console edit":"'.$vconsole_edit.'",
+				"Visual console management":"'.$vconsole_management.'",
+				"'.get_product_name().' Management":"'.$pandora_management.'"}';
 			
 			db_pandora_audit("User management",
 				"Created profile ". $name, false, false, $info);

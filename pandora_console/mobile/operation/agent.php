@@ -85,7 +85,7 @@ class Agent {
 	private function show_fail_acl() {
 		$error['type'] = 'onStart';
 		$error['title_text'] = __('You don\'t have access to this page');
-		$error['content_text'] = __('Access to this page is restricted to authorized users only, please contact system administrator if you need assistance. <br><br>Please know that all attempts to access this page are recorded in security logs of Pandora System Database');
+		$error['content_text'] = System::getDefaultACLFailText();
 		if (class_exists("HomeEnterprise"))
 			$home = new HomeEnterprise();
 		else
@@ -136,7 +136,7 @@ class Agent {
 						'href' => 'index.php?page=agents' . $agents_filter_q_param)));
 		}
 		else {
-			$ui->createDefaultHeader(__("PandoraFMS: Agents"));
+			$ui->createDefaultHeader(__("Agents"));
 		}
 		$ui->showFooter(false);
 		$ui->beginContent();

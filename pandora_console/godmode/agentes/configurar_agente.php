@@ -32,15 +32,18 @@ $tab = get_parameter ('tab', 'main');
 //See if id_agente is set (either POST or GET, otherwise -1
 $id_agente = (int) get_parameter ("id_agente");
 $group = 0;
-if ($id_agente)
+$all_groups = array($group);
+if ($id_agente) {
 	$group = agents_get_agent_group ($id_agente);
+	$all_groups = agents_get_all_groups_agent($id_agente, $group);
+}
 
-if (!check_acl ($config["id_user"], $group, "AW", $id_agente)) {
+if (!check_acl_one_of_groups ($config["id_user"], $all_groups, "AW")) {
 	$access_granted = false;
 	switch ($tab) {
 		case 'alert':
 		case 'module':
-			if (check_acl ($config["id_user"], $group, "AD", $id_agente)) {
+			if (check_acl_one_of_groups ($config["id_user"], $all_groups, "AD")) {
 				$access_granted = true;
 			}
 			break;
@@ -281,8 +284,9 @@ if ($create_agent) {
 				"Url description":"' . $url_description .'",
 				"Quiet":"' . (int)$quiet.'"}';
 			
+			$unsafe_alias = io_safe_output($alias);
 			db_pandora_audit("Agent management",
-				"Created agent $alias", false, true, $info);
+				"Created agent $unsafe_alias", false, true, $info);
 		}
 		else {
 			$id_agente = 0;
@@ -447,7 +451,7 @@ if ($id_agente) {
 			$incidenttab['active'] = false;
 	}
 	
-	if (check_acl ($config["id_user"], $group, "AW", $id_agente)) {
+	if (check_acl_one_of_groups ($config["id_user"], $all_groups, "AW")) {
 		if ($has_remote_conf) {
 			$agent_name = agents_get_name($id_agente);
 			$agent_name = io_safe_output($agent_name);
@@ -555,7 +559,7 @@ if ($id_agente) {
 			$help_header = 'plugins_tab';
 			break;
 		case "module":
-			$type_module_t = (int) get_parameter ('moduletype', '');
+			$type_module_t = get_parameter ('moduletype', '');
 			$tab_description = '- '. __('Modules');
 			if($type_module_t == 'webux'){
 				$help_header = 'wux_console';
@@ -909,7 +913,7 @@ if ($update_agent) { // if modified some agent paramenter
 if ($id_agente) {
 	//This has been done in the beginning of the page, but if an agent was created, this id might change
 	$id_grupo = agents_get_agent_group ($id_agente);
-	if (!check_acl ($config["id_user"], $id_grupo, "AW") && !check_acl ($config["id_user"], $id_grupo, "AD")) {
+	if (!check_acl_one_of_groups ($config["id_user"], $all_groups, "AW") && !check_acl_one_of_groups ($config["id_user"], $all_groups, "AD")) {
 		db_pandora_audit("ACL Violation","Trying to admin an agent without access");
 		require ("general/noaccess.php");
 		exit;
@@ -1586,8 +1590,9 @@ if ($delete_module) { // DELETE agent module !
 		WHERE tam.id_agente_modulo = tae.id_agente_modulo
 			AND tam.id_agente_modulo = ' . $id_borrar_modulo);
 	$id_grupo = (int) agents_get_agent_group($id_agente);
+	$all_groups = agents_get_all_groups_agent ($id_agente, $id_grupo);
 	
-	if (! check_acl ($config["id_user"], $id_grupo, "AW")) {
+	if (! check_acl_one_of_groups ($config["id_user"], $all_groups, "AW")) {
 		db_pandora_audit("ACL Violation",
 			"Trying to delete a module without admin rights");
 		require ("general/noaccess.php");
@@ -1787,7 +1792,7 @@ if ($updateGIS) {
 			"altitude" => $previusAgentGISData['stored_altitude'],
 			"start_timestamp" => $previusAgentGISData['start_timestamp'],
 			"end_timestamp" => date( 'Y-m-d H:i:s'),
-			"description" => __('Save by Pandora Console'),
+			"description" => __('Save by %s Console', get_product_name()),
 			"manual_placement" => $previusAgentGISData['manual_placement'],
 			"number_of_packages" => $previusAgentGISData['number_of_packages'],
 			"tagente_id_agente" => $previusAgentGISData['tagente_id_agente']
@@ -1802,7 +1807,7 @@ if ($updateGIS) {
 			"stored_altitude" => $lastAltitude,
 			"start_timestamp" => date( 'Y-m-d H:i:s'),
 			"manual_placement" => 1,
-			"description" => __('Update by Pandora Console')),
+			"description" => __('Update by %s Console', get_product_name())),
 			array("tagente_id_agente" => $idAgente));
 	}
 	else {
@@ -1815,7 +1820,7 @@ if ($updateGIS) {
 			"stored_latitude" => $lastLatitude,
 			"stored_altitude" => $lastAltitude,
 			"manual_placement" => 1,
-			"description" => __('Insert by Pandora Console')
+			"description" => __('Insert by %s Console', get_product_name())
 		));
 	}
 }

@@ -46,6 +46,8 @@ require_once ($config['homedir'] . '/include/functions_gis.php');
 require_once ($config['homedir'] . '/include/functions_ui.php');
 require_once ($config['homedir'] . '/include/functions_agents.php');
 require_once ($config['homedir'] . '/include/functions_groups.php');
+require_once ($config['homedir'] . '/include/functions_events.php');
+require_once ($config['homedir'] . '/include/functions_alerts.php');
 
 $opt = get_parameter('opt');
 
@@ -337,6 +339,43 @@ switch ($opt) {
 			$row[] = $agent["ultimo_contacto_remoto"];
 		}
 		$table->data[] = $row;
+
+		// Critical && not validated events
+		$filter = array(
+			"id_agente" => (int) $agent['id_agente'],
+			"criticity" => EVENT_CRIT_CRITICAL,
+			"estado" => array(EVENT_STATUS_NEW, EVENT_STATUS_INPROCESS)
+		);
+		$result = events_get_events($filter, "COUNT(*) as num");
+
+		if (!empty($result)) {
+			$number = (int) $result[0]["num"];
+
+			if ($number > 0) {
+				$row = array();
+				$row[] = __("Number of non-validated critical events");
+				$row[] = '<a href="?sec=estado&sec2=operation/events/events&status=3&severity=' . EVENT_CRIT_CRITICAL
+					. '&id_agent=' . $agent['id_agente'] . '">' . $number . '</a>';
+				$table->data[] = $row;
+			}
+		}
+
+		// Alerts fired
+		$alerts_fired = alerts_get_alerts(0, "", "fired", -1, $true, false, $agent['id_agente']);
+		if (!empty($alerts_fired)) {
+			$row = array();
+			$row[] = __("Alert(s) fired");
+			$alerts_detail = "";
+			foreach ($alerts_fired as $alert) {
+				$alerts_detail .= "<p>"
+					. $alert['module_name'] . " - "
+					. $alert['template_name'] . " - "
+					. date($config["date_format"], $alert['last_fired'])
+					. "</p>";
+			}
+			$row[] = $alerts_detail;
+			$table->data[] = $row;
+		}
 
 		// To remove the grey background color of the classes datos and datos2
 		for ($i = 0; $i < count($table->data); $i++)

@@ -31,14 +31,14 @@ config_check();
 					$custom_logo = 'images/custom_logo/' . $config['custom_logo'];
 					
 					if (!defined ('PANDORA_ENTERPRISE')) {
-						$logo_title = 'Pandora FMS Opensource';
+						$logo_title = get_product_name() . ' Opensource';
 						$custom_logo = 'images/custom_logo/pandora_logo_head_3.png';
 					}
 					else {
 						if (file_exists(ENTERPRISE_DIR . '/' . $custom_logo)) {
 							$custom_logo = ENTERPRISE_DIR . '/' . $custom_logo;
 						}
-						$logo_title = 'Pandora FMS Enterprise';
+						$logo_title = get_product_name() . ' Enterprise';
 					}
 					
 					echo html_print_image($custom_logo, true,
@@ -158,7 +158,7 @@ config_check();
 				</script>
 				<?php
 				
-				if ($config['tutorial_mode'] !== 'expert') {
+				if ($config['tutorial_mode'] !== 'expert' && !$config['disable_help']) {
 					$table->data[0]['clippy'] = 
 						'<a href="javascript: show_clippy();">' .
 							html_print_image(
@@ -166,8 +166,8 @@ config_check();
 								true,
 								array("id" => 'clippy',
 									"class" => 'clippy',
-									"alt" => __('Pandora FMS assistant'),
-									'title' => __('Pandora FMS assistant'))) .
+									"alt" => __('%s assistant', get_product_name()),
+									'title' => __('%s assistant', get_product_name()))) .
 						'</a>';
 				}
 				
@@ -307,11 +307,15 @@ config_check();
 				$table->data[0][3] = $maintenance_img;
 				
 				// Main help icon
-				$table->data[0][4] = '<a href="#" class="modalpopup" id="helpmodal">'.html_print_image("images/header_help.png",
-					true, array(
-						"title" => __('Main help'),
-						"id" => "helpmodal",
-						"class" => "modalpopup")).'</a>';
+				if (!$config['disable_help']) {
+					$table->data[0][4] =
+						'<a href="#" class="modalpopup" id="helpmodal">' .
+						html_print_image("images/header_help.png", true, array(
+							"title" => __('Main help'),
+							"id" => "helpmodal",
+							"class" => "modalpopup")) .
+						'</a>';
+				}
 				
 				// Logout
 				$table->data[0][5] = '<a class="white" href="' . ui_get_full_url('index.php?bye=bye') . '">';
@@ -461,14 +465,9 @@ config_check();
 
 		<?php
 		if ($_GET["refr"]) {
-			$_get_refr = strip_tags($_GET["refr"]);
 		?>
-			refr_time = parseInt("<?php echo $_get_refr; ?>");
-			if (isNaN(refr_time)) {
-				refr_time = 0;
-			}
-			
-			t = new Date();
+			var refr_time = <?php echo (int) get_parameter("refr", 0); ?>;
+			var t = new Date();
 			t.setTime (t.getTime () +
 				parseInt(<?php echo $config["refr"] * 1000; ?>));
 			$("#refrcounter").countdown ({until: t, 

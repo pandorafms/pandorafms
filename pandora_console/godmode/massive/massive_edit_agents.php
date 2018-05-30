@@ -197,13 +197,17 @@ if ($update_agents) {
 			}
 		}
 		
+		$info = array();
 		// Update Custom Fields
 		foreach ($fields as $field) {
+			$info[$field['id_field']] = $field['name'];
 			if (get_parameter_post ('customvalue_' . $field['id_field'], '') != '') {
 				$key = $field['id_field'];
 				$value = get_parameter_post ('customvalue_' . $field['id_field'], '');
 				
 				$old_value = db_get_all_rows_filter('tagent_custom_data', array('id_agent' => $id_agent, 'id_field' => $key));
+				
+				
 				
 				if ($old_value === false) {
 					// Create custom field if not exist
@@ -225,11 +229,11 @@ if ($update_agents) {
 	
 	
 	if ($result !== false) {
-		db_pandora_audit("Massive management", "Update agent " . $id_agent, false, false, json_encode($fields));
+		db_pandora_audit("Massive management", "Update agent " . $id_agent, false, false, json_encode($info));
 	}
 	else {
 		if (isset ($id_agent)) {
-			db_pandora_audit("Massive management", "Try to update agent " . $id_agent, false, false, json_encode($fields));
+			db_pandora_audit("Massive management", "Try to update agent " . $id_agent, false, false, json_encode($info));
 		}
 	}
 	
@@ -503,7 +507,7 @@ foreach ($fields as $field) {
 		. '.<br />'
 		. __('The format is: [url=\'url to navigate\']\'text to show\'[/url]')
 		. '.<br /><br />'
-		. __('e.g.: [url=pandorafms.org]Pandora FMS Community[/url]')
+		. __('e.g.: [url=google.com]Google web search[/url]')
 		, true);
 	
 	$custom_value = db_get_value_filter('description', 'tagent_custom_data', array('id_field' => $field['id_field'], 'id_agent' => $id_agente));

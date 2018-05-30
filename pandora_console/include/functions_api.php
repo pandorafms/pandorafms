@@ -84,6 +84,10 @@ function returnError($typeError, $returnType = 'string') {
 			returnData($returnType,
 				array('type' => 'string', 'data' => __('Id does not exist in BD.')));
 			break;
+		case 'not_allowed_operation_cluster':
+			returnData($returnType,
+				array('type' => 'string', 'data' => __('This operation can not be used in cluster elements.')));
+			break;
 		default:
 			returnData("string",
 				array('type' => 'string', 'data' => __($returnType)));
@@ -1354,7 +1358,7 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 		returnError('id_os_not_exist', 'The OS don`t exist.');
 	}
 	else if (db_get_value_sql($sql1) === false) {
-		returnError('server_not_exist', 'The Pandora Server don`t exist.');
+		returnError('server_not_exist', 'The ' . get_product_name() . ' Server don`t exist.');
 	}
 	else {
 		$idAgente = db_process_sql_insert ('tagente', 
@@ -7717,9 +7721,9 @@ function api_set_gis_agent_only_position($id_agent, $trash1, $other, $return_typ
 		if ($correct) {
 			$correct = agents_update_gis($id_agent, $latitude,
 				$longitude, $altitude, 0, 1, date( 'Y-m-d H:i:s'), null,
-				1, __('Save by Pandora Console'),
-				__('Update by Pandora Console'),
-				__('Insert by Pandora Console'));
+				1, __('Save by %s Console', get_product_name()),
+				__('Update by %s Console', get_product_name()),
+				__('Insert by %s Console', get_product_name()));
 		}
 	}
 	
@@ -9107,7 +9111,7 @@ function api_set_create_event($id, $trash1, $other, $returnType) {
 			$values['source'] = $other['data'][14];
 		}
 		else {
-			$values['source'] = "Pandora";
+			$values['source'] = get_product_name();
 		}
 		
 		if ($other['data'][15] != '') {
@@ -10140,6 +10144,496 @@ function api_set_metaconsole_synch($keys) {
 	}
 
 	
+}
+
+function api_set_new_cluster($thrash1, $thrash2, $other, $thrash3) {
+	global $config;
+	
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+	
+	$name = $other['data'][0];
+	$cluster_type = $other['data'][1];
+	$description = $other['data'][2];
+	$idGroup = $other['data'][3];
+		
+	
+	$server_name = db_process_sql('select name from tserver where server_type=5 limit 1');	
+	
+	$server_name_agent = $server_name[0]['name'];
+		
+  $values_agent = array(
+		'nombre' => $name,
+    'alias' => $name,
+		'comentarios' => $description,
+		'id_grupo' => $idGroup,
+		'id_os' => 100,
+		'server_name' => $server_name_agent
+		);
+	
+	if (trim($name) != "") {
+		
+    // $id_agent = db_process_sql_insert('tagente',$values_agent);
+		
+		$id_agent = agents_create_agent($values_agent['nombre'],$values_agent['id_grupo'],300,'127.0.0.1',$values_agent);
+		
+		// Create cluster
+		$values_cluster = array(
+			'name' => $name,
+	    'cluster_type' => $cluster_type,
+			'description' => $description,
+			'group' => $idGroup,
+			'id_agent' => $id_agent
+			);
+			
+		$id_cluster = db_process_sql_insert('tcluster', $values_cluster);
+		
+		
+		$values_module = array(
+			'nombre' => 'Cluster status',
+			'id_modulo' => 5,
+			'prediction_module' => 5,
+			'id_agente' =>$id_agent,
+			'custom_integer_1' =>$id_cluster,
+			'id_tipo_modulo' => 1,
+			'descripcion' => 'Cluster status information module',
+			'min_warning' => 1,
+			'min_critical' =>	2
+			);
+			
+		$id_module = 	modules_create_agent_module($values_module['id_agente'],$values_module['nombre'],$values_module);
+		
+		
+		if ($id_cluster !== false)
+			db_pandora_audit("Report management", "Create cluster #$id_cluster");
+		else
+			db_pandora_audit("Report management", "Fail try to create cluster");
+      
+    if ($id_agent !== false)
+			db_pandora_audit("Report management", "Create cluster #$id_agent");
+		else
+			db_pandora_audit("Report management", "Fail try to create agent");
+		
+		returnData('string',
+			array('type' => 'string', 'data' => (int)((bool)$id_cluster)));
+		}
+	}
+	
+	
+	function api_set_add_cluster_agent($thrash1, $thrash2, $other, $thrash3) {
+		
+		$array_json = json_decode(base64_decode(io_safe_output($other['data'][0])), true);
+		
+		if(!empty($array_json)){
+			$results = false;
+			
+			foreach ($array_json as $key => $element) {
+				
+				if($element['id'] == 0){
+					continue;
+				}
+				
+				$tcluster_agent = db_process_sql('insert into tcluster_agent values ('.$element["id"].','.$element["id_agent"].')');
+				
+			}
+				
+				if($result && !$results){
+					$results = $result;
+				}
+			}
+		
+			
+		if($tcluster_agent){
+			returnData('string', array('type' => 'string', 'data' => 1));
+		} else {
+			returnError('error_add_cluster_element', __('Error adding elements to cluster'));
+		}
+		
+	}
+	
+	function api_set_add_cluster_item($thrash1, $thrash2, $other, $thrash3) {
+		
+		$array_json = json_decode(base64_decode(io_safe_output($other['data'][0])), true);
+		
+		if(!empty($array_json)){
+			$results = false;
+		}
+			
+			// 
+			foreach ($array_json as $key => $element) {
+			// 	
+				if($element["type"] == "AA"){
+			// 								
+						$tcluster_module = db_process_sql_insert('tcluster_item',array('name'=>$element["name"],'id_cluster'=>$element["id_cluster"],'critical_limit'=>$element["critical_limit"],'warning_limit'=>$element["warning_limit"]));
+						
+						$id_agent = db_process_sql('select id_agent from tcluster where id = '.$element["id_cluster"]);
+						
+						$id_parent_modulo = db_process_sql('select id_agente_modulo from tagente_modulo where id_agente = '.$id_agent[0]['id_agent'].' and nombre = "Cluster status"');
+						
+						$get_module_type = db_process_sql('select id_tipo_modulo,descripcion,min_warning,min_critical,module_interval from tagente_modulo where nombre = "'.io_safe_input($element["name"]).'" limit 1');
+						
+						$get_module_type_value = $get_module_type[0]['id_tipo_modulo'];
+						
+						$get_module_description_value = $get_module_type[0]['descripcion'];
+						
+						$get_module_warning_value = $get_module_type[0]['min_warning'];
+						
+						$get_module_critical_value = $get_module_type[0]['min_critical'];
+						
+						$get_module_interval_value = $get_module_type[0]['module_interval'];
+						
+						$values_module = array(
+							'nombre' => $element["name"],
+							'id_modulo' => 0,
+							'prediction_module' => 6,
+							'id_agente' => $id_agent[0]['id_agent'],
+							'parent_module_id' => $id_parent_modulo[0]['id_agente_modulo'],
+							'custom_integer_1' =>$element["id_cluster"],
+							'custom_integer_2' =>$tcluster_module,
+							'id_tipo_modulo' =>1,
+							'descripcion' => $get_module_description_value,
+							'min_warning' => $element["warning_limit"],
+							'min_critical' => $element["critical_limit"],
+							'tcp_port' => 1,
+							'module_interval' => $get_module_interval_value
+							);
+							
+														
+						$id_module = 	modules_create_agent_module($values_module['id_agente'],$values_module['nombre'],$values_module);
+						
+						$launch_cluster = db_process_sql('update tagente_modulo set flag = 1 where custom_integer_1 = '.$element["id_cluster"].' and nombre = "Cluster status"');
+						
+						if ($tcluster_module !== false){	
+							db_pandora_audit("Report management", "Module #".$element["name"]." assigned to cluster #".$element["id_cluster"]);
+						}
+						else{
+							db_pandora_audit("Report management", "Fail try to assign module to cluster");
+						}
+					
+				}
+				elseif ($element["type"] == "AP") {
+					
+					
+							$id_agent = db_process_sql('select id_agent from tcluster where id = '.$element["id_cluster"]);
+							
+							$id_parent_modulo = db_process_sql('select id_agente_modulo from tagente_modulo where id_agente = '.$id_agent[0]['id_agent'].' and nombre = "Cluster status"');
+							
+							$tcluster_balanced_module = db_process_sql_insert('tcluster_item',array('name'=>$element["name"],'id_cluster'=>$element["id_cluster"],'item_type'=>"AP",'is_critical'=>$element["is_critical"]));
+							
+							$get_module_type = db_process_sql('select id_tipo_modulo,descripcion,min_warning,min_critical,module_interval from tagente_modulo where nombre = "'.io_safe_input($element["name"]).'" limit 1');
+							
+							$get_module_type_value = $get_module_type[0]['id_tipo_modulo'];
+							
+							$get_module_description_value = $get_module_type[0]['descripcion'];
+							
+							$get_module_warning_value = $get_module_type[0]['min_warning'];
+							
+							$get_module_critical_value = $get_module_type[0]['min_critical'];
+							
+							$get_module_interval_value = $get_module_type[0]['module_interval'];
+							
+							$get_module_type_nombre = db_process_sql('select nombre from ttipo_modulo where id_tipo = '.$get_module_type_value);
+							
+							$get_module_type_nombre_value = $get_module_type_nombre[0]['nombre'];
+							
+							
+							if(strpos($get_module_type_nombre_value,'inc') != false){
+								$get_module_type_value_normal = 4;
+							}
+							elseif (strpos($get_module_type_nombre_value,'proc') != false) {
+								$get_module_type_value_normal = 2;
+							}
+							elseif (strpos($get_module_type_nombre_value,'data') != false) {
+								$get_module_type_value_normal = 1;
+							}
+							elseif (strpos($get_module_type_nombre_value,'string') != false) {
+								$get_module_type_value_normal = 3;
+							}
+							else{
+								$get_module_type_value_normal = 1;
+							}
+							
+							$values_module = array(
+								'nombre' => $element["name"],
+								'id_modulo' => 5,
+								'prediction_module' => 7,
+								'id_agente' => $id_agent[0]['id_agent'],
+								'parent_module_id' => $id_parent_modulo[0]['id_agente_modulo'],
+								'custom_integer_1' => $element["id_cluster"],
+								'custom_integer_2' => $tcluster_balanced_module,
+								'id_tipo_modulo' => $get_module_type_value_normal,
+								'descripcion' => $get_module_description_value,
+								'min_warning' => $get_module_warning_value,
+								'min_critical' => $get_module_critical_value,
+								'tcp_port' => $element["is_critical"],
+								'module_interval' => $get_module_interval_value
+								);
+								
+							$id_module = 	modules_create_agent_module($values_module['id_agente'],$values_module['nombre'],$values_module);
+							
+							$launch_cluster = db_process_sql('update tagente_modulo set flag = 1 where custom_integer_1 = '.$element["id_cluster"].' and nombre = "Cluster status"');
+													
+							if ($tcluster_balanced_module !== false){	
+								db_pandora_audit("Report management", "Module #".$element["name"]." assigned to cluster #".$element["id_cluster"]);
+							}
+							else{
+								db_pandora_audit("Report management", "Fail try to assign module to cluster");
+							}
+								
+						}
+						
+					}
+						
+						if($result && !$results){
+							$results = $result;
+						}
+			
+						if($id_module){
+							returnData('string', array('type' => 'string', 'data' => 1));
+						} else {
+							returnError('error_add_cluster_element', __('Error adding elements to cluster'));
+						}
+		
+	}
+	
+	
+	function api_set_delete_cluster($id, $thrash1, $thrast2, $thrash3) {
+		
+		global $config;
+		
+		if (defined ('METACONSOLE')) {
+			return;
+		}
+		
+		$temp_id_cluster = db_process_sql('select id_agent from tcluster where id ='.$id);
+		
+		$tcluster_modules_delete_get = db_process_sql('select id_agente_modulo from tagente_modulo where custom_integer_1 = '.$id);
+				
+		foreach ($tcluster_modules_delete_get as $key => $value) {
+			$tcluster_modules_delete_get_values[] = $value['id_agente_modulo'];
+		}
+		
+		$tcluster_modules_delete = modules_delete_agent_module($tcluster_modules_delete_get_values);
+		
+		$tcluster_items_delete = db_process_sql('delete from tcluster_item where id_cluster = '.$id);
+		
+		$tcluster_agents_delete = db_process_sql('delete from tcluster_agent where id_cluster = '.$id);
+		
+		$tcluster_delete = db_process_sql('delete from tcluster where id = '.$id);
+		
+		$tcluster_agent_delete = agents_delete_agent($temp_id_cluster[0]['id_agent']);
+		
+		if (!$tcluster_modules_delete || !$tcluster_items_delete || !$tcluster_agents_delete || !$tcluster_delete || !$tcluster_agent_delete)
+			returnError('error_delete', 'Error in delete operation.');
+		else
+			returnData('string', array('type' => 'string', 'data' => __('Correct Delete')));
+	
+	}
+	
+	
+	function api_set_delete_cluster_agent($thrash1, $thrast2, $other, $thrash3) {
+		
+		global $config;
+		
+		if (defined ('METACONSOLE')) {
+			return;
+		}
+		
+		$id_agent = $other['data'][0];
+		$id_cluster = $other['data'][1];
+		
+		$tcluster_agent_delete = db_process_sql('delete from tcluster_agent where id_agent = '.$id_agent.' and id_cluster = '.$id_cluster);
+		
+		
+		if (!$tcluster_agent_delete)
+			returnError('error_delete', 'Error in delete operation.');
+		else
+			returnData('string', array('type' => 'string', 'data' => __('Correct Delete')));
+	
+	}
+	
+	
+	function api_set_delete_cluster_item($id, $thrash1, $thrast2, $thrast3) {
+		
+		global $config;
+		
+		if (defined ('METACONSOLE')) {
+			return;
+		}
+		
+		$delete_module_aa_get = db_process_sql('select id_agente_modulo from tagente_modulo where custom_integer_2 = '.$id);
+								
+		$delete_module_aa_get_result = modules_delete_agent_module($delete_module_aa_get[0]['id_agente_modulo']);
+		
+		$delete_item = db_process_sql('delete from tcluster_item where id = '.$id);
+				
+		if (!$delete_item)
+			returnError('error_delete', 'Error in delete operation.');
+		else
+			returnData('string', array('type' => 'string', 'data' => __('Correct Delete')));
+	
+	}
+	
+function api_set_apply_module_template($id_template, $id_agent, $thrash3, $thrash4) {
+		
+	if (isset ($id_template)) {
+		// Take agent data
+		$row = db_get_row ("tagente", "id_agente", $id_agent);
+		
+		if ($row !== false) {
+			$intervalo = $row["intervalo"];
+			$nombre_agente = $row["nombre"];
+			$direccion_agente =$row["direccion"];
+			$ultima_act = $row["ultimo_contacto"];
+			$ultima_act_remota =$row["ultimo_contacto_remoto"];
+			$comentarios = $row["comentarios"];
+			$id_grupo = $row["id_grupo"];
+			$id_os= $row["id_os"];
+			$os_version = $row["os_version"];
+			$agent_version = $row["agent_version"];
+			$disabled= $row["disabled"];
+		}
+		else {
+			return;
+		}
+		
+		$id_np = $id_template;
+		$name_template = db_get_value ('name', 'tnetwork_profile', 'id_np', $id_np);
+		$npc = db_get_all_rows_field_filter ("tnetwork_profile_component", "id_np", $id_np);
+		
+		if ($npc === false) {
+			$npc = array ();
+		}
+		
+		$success_count = $error_count = 0;
+		$modules_already_added = array();
+		
+		foreach ($npc as $row) {
+			$nc = db_get_all_rows_field_filter ("tnetwork_component", "id_nc", $row["id_nc"]);
+
+			if ($nc === false) {
+				$nc = array ();
+			}
+			foreach ($nc as $row2) {
+				// Insert each module from tnetwork_component into agent
+				$values = array(
+					'id_agente' => $id_agent,
+					'id_tipo_modulo' => $row2["type"],
+					'descripcion' => __('Created by template ').$name_template. ' . '.$row2["description"],
+					'max' => $row2["max"],
+					'min' => $row2["min"],
+					'module_interval' => $row2["module_interval"],
+					'tcp_port' => $row2["tcp_port"],
+					'tcp_send' => $row2["tcp_send"],
+					'tcp_rcv' => $row2["tcp_rcv"],
+					'snmp_community' => $row2["snmp_community"],
+					'snmp_oid' => $row2["snmp_oid"],
+					'ip_target' => $direccion_agente,
+					'id_module_group' => $row2["id_module_group"],
+					'id_modulo' => $row2["id_modulo"], 
+					'plugin_user' => $row2["plugin_user"],
+					'plugin_pass' => $row2["plugin_pass"],
+					'plugin_parameter' => $row2["plugin_parameter"],
+					'unit' => $row2["unit"],
+					'max_timeout' => $row2["max_timeout"],
+					'max_retries' => $row2["max_retries"],
+					'id_plugin' => $row2['id_plugin'],
+					'post_process' => $row2['post_process'],
+					'dynamic_interval' => $row2['dynamic_interval'],
+					'dynamic_max' => $row2['dynamic_max'],
+					'dynamic_min' => $row2['dynamic_min'],
+					'dynamic_two_tailed' => $row2['dynamic_two_tailed'],
+					'min_warning' => $row2['min_warning'],
+					'max_warning' => $row2['max_warning'],
+					'str_warning' => $row2['str_warning'],
+					'min_critical' => $row2['min_critical'],
+					'max_critical' => $row2['max_critical'],
+					'str_critical' => $row2['str_critical'],
+					'critical_inverse' => $row2['critical_inverse'],
+					'warning_inverse' => $row2['warning_inverse'],
+					'critical_instructions' => $row2['critical_instructions'],
+					'warning_instructions' => $row2['warning_instructions'],
+					'unknown_instructions' => $row2['unknown_instructions'],
+					'id_category' => $row2['id_category'],
+					'macros' => $row2['macros'],
+					'each_ff' => $row2['each_ff'],
+					'min_ff_event' => $row2['min_ff_event'],
+					'min_ff_event_normal' => $row2['min_ff_event_normal'],
+					'min_ff_event_warning' => $row2['min_ff_event_warning'],
+					'min_ff_event_critical' => $row2['min_ff_event_critical']
+					);
+				
+				$name = $row2["name"];
+				
+				// Put tags in array if the component has to add them later
+				if(!empty($row2["tags"])) {
+					$tags = explode(',', $row2["tags"]);
+				}
+				else {
+					$tags = array();
+				}
+				
+				// Check if this module exists in the agent
+				$module_name_check = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('delete_pending' => 0, 'nombre' => $name, 'id_agente' => $id_agent));
+				
+				if ($module_name_check !== false) {
+					$modules_already_added[] = $row2["name"];
+					$error_count++;
+				}
+				else {
+					$id_agente_modulo = modules_create_agent_module($id_agent, $name, $values);
+										
+					if ($id_agente_modulo === false) {
+						$error_count++;
+					}
+					else {
+						if(!empty($tags)) {
+							// Creating tags
+							$tag_ids = array();
+							foreach ($tags as $tag_name) {
+								$tag_id = tags_get_id($tag_name);
+								
+								//If tag exists in the system we store to create it
+								$tag_ids[] = $tag_id;
+							}
+							
+							tags_insert_module_tag ($id_agente_modulo, $tag_ids);
+						}
+				
+						$success_count++;
+					}
+				}
+			}
+		}
+		if ($error_count > 0) {
+			if (empty($modules_already_added))
+				ui_print_error_message(__('Error adding modules') . sprintf(' (%s)', $error_count));
+			else
+				ui_print_error_message(__('Error adding modules. The following errors already exists: ') . implode(', ', $modules_already_added));
+		}
+		if ($success_count > 0)
+			ui_print_success_message(__('Modules successfully added'));
+	}
+	
+}
+
+function api_get_cluster_status($id_cluster, $trash1, $trash2, $returnType) {
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+	
+	$sql = "select estado from tagente_estado INNER JOIN tagente_modulo ON tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo and tagente_modulo.nombre = 'Cluster status' and tagente_modulo.id_agente = (select id_agent from tcluster where id = ".$id_cluster.")";
+	
+	$value = db_get_value_sql($sql);
+	
+	if ($value === false) {
+		returnError('id_not_found', $returnType);
+	}
+	
+	$data = array('type' => 'string', 'data' => $value);
+	
+	returnData($returnType, $data);
 }
 
 ?>

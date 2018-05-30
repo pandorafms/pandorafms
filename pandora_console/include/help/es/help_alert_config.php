@@ -9,7 +9,7 @@ A continuación se detallan los campos que hay que rellenar:<br><br>
 
     <b>Name:</b> El nombre de la acción.<br>
     <b>Group:</b> El grupo de la acción.<br>
-    <b>Command:</b> En este campo se define el comando que se usará en el caso de que se ejecute la alerta. Se puede elegir entre los diferntes Comandos que hay definidos en Pandora. Dependiendo del comando elegido nos aparecerán unos campos a rellenar u otros.<br>
+    <b>Command:</b> En este campo se define el comando que se usará en el caso de que se ejecute la alerta. Se puede elegir entre los diferntes Comandos que hay definidos en  <?php echo get_product_name();?>. Dependiendo del comando elegido nos aparecerán unos campos a rellenar u otros.<br>
     <b>Threshold:</b> El umbral de ejecución de la acción.<br>
     <b>Command Preview:</b> En este campo, no editable, aparecerá automáticamente el comando que se va a ejecutar en el sistema.<br>
     <b>Field X:</b> En estos campos se define el valor de las macros _field1_ a _field10_, que se usarán en el comando, en caso de ser necesario. Estos campos pueden ser un campo de texto o un combo de selección si se configura. Dependiendo del comando seleccionado apareceran un numero de campos a rellenar según sea necesario o no. Por ejemplo:<br><br>
@@ -50,7 +50,7 @@ Además de las macros de módulo definidas, las siguientes macros están disponi
   <li>_data_: Dato que hizo que la alerta se disparase.</li>
   <li>_email_tag_: Emails asociados a los tags de módulos.</li>
   <li>_event_cfX_: (Solo alertas de evento) Clave del campo personalizado del evento que disparó la alerta. Por ejemplo, si hay un campo personalizado cuya clave es IPAM, se puede obtener su valor usando la macro _event_cfIPAM_.</li>
-  <li>_event_description_ : (Solo alertas de evento) Descripción textual del evento de Pandora FMS.</li>
+  <li>_event_description_ : (Solo alertas de evento) Descripción textual del evento de  <?php echo get_product_name();?>.</li>
   <li>_event_extra_id_ : (Solo alertas de evento) Id extra.</li>
   <li>_event_id_: (Solo alertas de evento) Id del evento que disparó la alerta.</li>
   <li>_event_text_severity_: (Solo alertas de evento) Prioridad en texto de el evento que dispara la alerta (Maintenance, Informational, Normal Minor, Warning, Major, Critical).</li>
@@ -73,7 +73,7 @@ Además de las macros de módulo definidas, las siguientes macros están disponi
   <li>_groupcustomid_: ID personalizado del grupo.</li>
   <li>_groupother_: Otra información sobre el grupo. Se configura al crear el grupo.</li>
   <li>_homeurl_: Es un enlace de la URL pública que debe configurarse en las opciones generales de la configuración.</li>
-  <li>_id_agent_: ID del agente, util para construir URL de acceso a la consola de Pandora.</li>
+  <li>_id_agent_: ID del agente, util para construir URL de acceso a la consola de  <?php echo get_product_name();?>.</li>
   <li>_id_alert_: ID de la alerta, util para correlar la alerta en herramientas de terceros.</li>
   <li>_id_group_ : ID del grupo de agente.</li>
   <li>_id_module_: ID del módulo.</li>

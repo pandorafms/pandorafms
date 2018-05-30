@@ -129,6 +129,8 @@ define('COL_WARNING_DARK',	'#FFB900');
 define('COL_NORMAL',		'#80BA27');
 define('COL_NOTINIT',		'#3BA0FF');
 define('COL_UNKNOWN',		'#B2B2B2');
+define('COL_DOWNTIME',		'#976DB1');
+define('COL_IGNORED',		'#DDD');
 define('COL_ALERTFIRED',	'#FFA631');
 define('COL_MINOR',			'#F099A2');
 define('COL_MAJOR',			'#C97A4A');

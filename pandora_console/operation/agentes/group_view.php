@@ -69,9 +69,7 @@ else {
 // Header
 ui_print_page_header (__("Group view"), "images/group.png", false, "", false, $updated_time);
 
-$strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
-
-$all_data = groupview_status_modules_agents ($config['id_user'], $strict_user, ($agent_a == true) ? 'AR' : (($agent_w == true) ? 'AW' : 'AR'), $strict_user);
+$strict_user = false;
 
 $total_agentes = 0;
 $monitor_ok = 0;
@@ -84,33 +82,53 @@ $agents_critical = 0;
 $agents_notinit = 0;
 $all_alerts_fired = 0;
 
-foreach ($all_data as $group_all_data) {
-	$total_agentes += $group_all_data["_total_agents_"];
-	$monitor_ok += $group_all_data["_monitors_ok_"];
-	$monitor_warning += $group_all_data["_monitors_warning_"];
-	$monitor_critical += $group_all_data["_monitors_critical_"];
-	$monitor_unknown += $group_all_data["_monitors_unknown_"];
-	$monitor_not_init += $group_all_data["_monitors_not_init_"];
-	
-	$agents_unknown += $group_all_data["_agents_unknown_"];
-	$agents_notinit += $group_all_data["_agents_not_init_"];
-	$agents_critical += $group_all_data["_agents_critical_"];
+//Groups and tags
+$result_groups = groupview_get_groups_list($config['id_user'], $strict_user,
+	($agent_a == true) ? 'AR' : (($agent_w == true) ? 'AW' : 'AR'), true, true);
+$count = count($result_groups);
 
-	$all_alerts_fired += $group_all_data["_monitors_alerts_fired_"];
+if ($result_groups[0]["_id_"] == 0) {
+	$total_agentes = $result_groups[0]["_total_agents_"];
+	$monitor_ok = $result_groups[0]["_monitors_ok_"];
+	$monitor_warning = $result_groups[0]["_monitors_warning_"];
+	$monitor_critical = $result_groups[0]["_monitors_critical_"];
+	$monitor_unknown = $result_groups[0]["_monitors_unknown_"];
+	$monitor_not_init = $result_groups[0]["_monitors_not_init_"];
+	
+	$agents_unknown = $result_groups[0]["_agents_unknown_"];
+	$agents_notinit = $result_groups[0]["_agents_not_init_"];
+	$agents_critical = $result_groups[0]["_agents_critical_"];
+
+	$all_alerts_fired = $result_groups[0]["_monitors_alerts_fired_"];
 }
 
 $total = $monitor_ok + $monitor_warning + $monitor_critical + $monitor_unknown + $monitor_not_init;
 
-//Monitors
-$total_ok = format_numeric (($monitor_ok*100)/$total,2);
-$total_warning = format_numeric (($monitor_warning*100)/$total,2);
-$total_critical = format_numeric (($monitor_critical*100)/$total,2);
-$total_unknown = format_numeric (($monitor_unknown*100)/$total,2);
-$total_monitor_not_init = format_numeric (($monitor_not_init*100)/$total,2);
+//Modules
+$total_ok =0;
+$total_warning =0;
+$total_critical =0;
+$total_unknown =0;
+$total_monitor_not_init =0;
 //Agents
-$total_agent_unknown = format_numeric (($agents_unknown*100)/$total_agentes,2);
-$total_agent_critical = format_numeric (($agents_critical*100)/$total_agentes,2);
-$total_not_init = format_numeric (($agents_notinit*100)/$total_agentes,2);
+$total_agent_unknown = 0;
+$total_agent_critical = 0;
+$total_not_init = 0;
+
+if ($total > 0) {
+	//Modules
+	$total_ok = format_numeric (($monitor_ok*100)/$total,2);
+	$total_warning = format_numeric (($monitor_warning*100)/$total,2);
+	$total_critical = format_numeric (($monitor_critical*100)/$total,2);
+	$total_unknown = format_numeric (($monitor_unknown*100)/$total,2);
+	$total_monitor_not_init = format_numeric (($monitor_not_init*100)/$total,2);
+}
+if ($total_agentes > 0) {
+	//Agents
+	$total_agent_unknown = format_numeric (($agents_unknown*100)/$total_agentes,2);
+	$total_agent_critical = format_numeric (($agents_critical*100)/$total_agentes,2);
+	$total_not_init = format_numeric (($agents_notinit*100)/$total_agentes,2);
+}
 
 echo '<table cellpadding="0" cellspacing="0" border="0" width="100%" class="databox">';
 	echo "<tr>";
@@ -135,12 +153,6 @@ echo '<table cellpadding="0" cellspacing="0" border="0" width="100%" class="data
 		echo "</td>";
 	echo "</tr>";
 echo "</table>";
-
-//Groups and tags
-$result_groups = groupview_get_groups_list($config['id_user'], $strict_user,
-	($agent_a == true) ? 'AR' : (($agent_w == true) ? 'AW' : 'AR'), true, true);
-
-$count = count($result_groups);
 
 if ($count == 1) {
 	if ($result_groups[0]['_id_'] == 0) {
@@ -245,11 +257,17 @@ if (!empty($result_groups)) {
 			$item_icon = '';
 			if (isset($data['_iconImg_']) && !empty($data['_iconImg_']))
 				$item_icon = $data['_iconImg_'];
-			
-			if ($data['_name_'] != "All")
+
+			if ($data['_name_'] != "All") {
 				echo $deep . $link . $group_name . "</a>";
-			else
-				echo $link . $group_name . "</a>";
+			}
+			else {
+				$hint = '';
+				if (enterprise_hook('agents_is_using_secondary_groups')) {
+					$hint = ui_print_help_tip(__("This %s installation are using the secondary groups feature. For this reason, an agent can be counted several times.", get_product_name()));
+				}
+				echo $link . $group_name . "</a>" . $hint;
+			}
 
 			if (isset($data['_is_tag_'])){
 				echo '<a>' . html_print_image("images/tag.png", true, array("border" => '0', "style" => 'width:18px;margin-left:5px', "title" => __('Tag'))) . '</a>' ;

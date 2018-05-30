@@ -268,7 +268,7 @@ class ModuleGraph {
 	private function show_fail_acl() {
 		$error['type'] = 'onStart';
 		$error['title_text'] = __('You don\'t have access to this page');
-		$error['content_text'] = __('Access to this page is restricted to authorized users only, please contact system administrator if you need assistance. <br><br>Please know that all attempts to access this page are recorded in security logs of Pandora System Database');
+		$error['content_text'] = System::getDefaultACLFailText();
 		if (class_exists("HomeEnterprise"))
 			$home = new HomeEnterprise();
 		else
@@ -278,6 +278,14 @@ class ModuleGraph {
 	
 	private function javascript_code() {
 		ob_start();
+		
+		global $config;
+		if ($config['flash_charts']) {
+				//Include the javascript for the js charts library
+				echo include_javascript_dependencies_flot_graph(true);
+				ui_require_javascript_file('pandora', 'include/javascript/',true);
+		}
+
 		?>
 		<script type="text/javascript">
 			$(document).ready(function() {
@@ -361,7 +369,7 @@ class ModuleGraph {
 		
 		if ($this->id_agent) {
 			$ui->createDefaultHeader(
-				sprintf(__("PandoraFMS: %s"), $this->module["nombre"]),
+				sprintf(__("%s: %s"), get_product_name(), $this->module["nombre"]),
 				$ui->createHeaderButton(
 						array('icon' => 'back',
 							'pos' => 'left',
@@ -370,7 +378,7 @@ class ModuleGraph {
 		}
 		else {
 			$ui->createDefaultHeader(
-				sprintf(__("PandoraFMS: %s"), $this->module["nombre"]),
+				sprintf(__("%s: %s"), get_product_name(), $this->module["nombre"]),
 				$ui->createHeaderButton(
 						array('icon' => 'back',
 							'pos' => 'left',

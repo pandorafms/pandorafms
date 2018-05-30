@@ -71,7 +71,7 @@ chown -R pandora:www-data /var/spool/pandora/
 echo "Creating setup directory in /etc/pandora"
 mkdir /etc/pandora 2> /dev/null
 
-#Check if exist old conf file
+#Check if exist old conf files
 if [ ! -e /etc/pandora/pandora_server.conf ]
 then
 	cp /usr/share/pandora_server/conf/pandora_server.conf.new /etc/pandora/pandora_server.conf
@@ -79,6 +79,14 @@ then
 else
 	cp /usr/share/pandora_server/conf/pandora_server.conf.new /etc/pandora/pandora_server.conf.new
 	echo "Skipping creation of pandora_server.conf: there is already one."
+fi
+if [ ! -e /etc/tentacle/tentacle_server.conf ]
+then
+	cp /usr/share/tentacle_server/conf/tentacle_server.conf.new /etc/tentacle/tentacle_server.conf
+	chmod 664 /etc/tentacle/tentacle_server.conf
+else
+	cp /usr/share/tentacle_server/conf/tentacle_server.conf.new /etc/tentacle/tentacle_server.conf.new
+	echo "Skipping creation of tentacle_server.conf: there is already one."
 fi
 
 echo "Enabling start-up pandora & tentacle server daemons";

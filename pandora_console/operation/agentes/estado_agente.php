@@ -95,8 +95,8 @@ if (is_ajax ()) {
 	
 	if ($get_agent_module_last_value) {
 		$id_module = (int) get_parameter ('id_agent_module');
-		
-		if (! check_acl ($config['id_user'], agents_get_agentmodule_group ($id_module), "AR")) {
+		$id_agent = (int) modules_get_agentmodule_agent ((int) $id_module);
+		if (! check_acl_one_of_groups ($config['id_user'], agents_get_all_groups_agent ($id_agent), "AR")) {
 			db_pandora_audit("ACL Violation",
 				"Trying to access agent main list view");
 			echo json_encode (false);
@@ -479,7 +479,7 @@ else {
 		'search' => $search_sql,
 		'search_custom' => $search_sql_custom,
 		'status' => $status),
-		array ('COUNT(*) as total'), $access, false);
+		array ('COUNT(DISTINCT id_agente) as total'), $access, false);
 	$total_agents = isset ($total_agents[0]['total']) ?
 		$total_agents[0]['total'] : 0;
 	
@@ -599,6 +599,9 @@ $table->data = array ();
 $rowPair = true;
 $iterator = 0;
 foreach ($agents as $agent) {
+	
+	$cluster = db_get_row_sql('select id from tcluster where id_agent = '.$agent['id_agente']);
+	
 	if ($rowPair)
 		$table->rowclass[$iterator] = 'rowPair';
 	else
@@ -637,11 +640,24 @@ foreach ($agents as $agent) {
 	}
 	
 	$data[0] .= '<div class="agentleft_' . $agent["id_agente"] . '" style="visibility: hidden; clear: left;">';
-	$data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'">'.__('View').'</a>';
+	
+	if($agent["id_os"] == 100){
+		$data[0] .= '<a href="index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_view&id='.$cluster['id'].'">'.__('View').'</a>';
+	}
+	else{
+		$data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'">'.__('View').'</a>';
+	}
 	
 	if (check_acl ($config['id_user'], $agent["id_grupo"], "AW")) {
 		$data[0] .= ' | ';
-		$data[0] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$agent["id_agente"].'">'.__('Edit').'</a>';
+		
+		if($agent["id_os"] == 100){
+				$data[0] .= '<a href="index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_builder&id_cluster='.$cluster['id'].'&step=1&update=1">'.__('Edit').'</a>';
+		}
+		else{
+				$data[0] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$agent["id_agente"].'">'.__('Edit').'</a>';
+		}
+		
 	}
 	
 	$data[0] .= '</div></div>';

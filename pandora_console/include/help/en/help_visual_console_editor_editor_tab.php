@@ -17,7 +17,7 @@ defined:
 	<li>the work area (where you will "draw" the visual console)</li>
 	<li>the option palette ( that is not visible in this screen shot)</li>
 </ul>
-In the version Pandora 5.0.1 you can set the label with a rich text.
+You can set the label with a rich text.
 And the item "Simple value" you can use the macros to set inner the text
 with (_VALUE_).
 </p>

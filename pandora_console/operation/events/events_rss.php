@@ -60,9 +60,9 @@ function rss_error_handler ($errno, $errstr, $errfile, $errline, $error_human_de
 	$rss_feed .= "\n";
 	$rss_feed .= '<channel>';
 	$rss_feed .= "\n";
-	$rss_feed .= '<title>Pandora RSS Feed</title>';
+	$rss_feed .= '<title>' . get_product_name() . ' RSS Feed</title>';
 	$rss_feed .= "\n";
-	$rss_feed .= '<description>Latest events on Pandora</description>';
+	$rss_feed .= '<description>Latest events on ' . get_product_name() .  '</description>';
 	$rss_feed .= "\n";
 	$rss_feed .= '<lastBuildDate>'.date (DATE_RFC822, 0).'</lastBuildDate>';
 	$rss_feed .= "\n";
@@ -138,7 +138,8 @@ require('events.build_query.php');
 ////////////////////////////////////////////////////////////////////////
 
 $sql = "SELECT *
-	FROM tevento
+	FROM tevento te LEFT JOIN tagent_secondary_group tasg
+		ON te.id_grupo = tasg.id_group
 	WHERE 1=1 " . $sql_post . "
 	ORDER BY utimestamp DESC";
 
@@ -157,8 +158,8 @@ else {
 $rss_feed = '<?xml version="1.0" encoding="utf-8" ?>' . "\n"; // ' <?php ' -- Fixes highlighters thinking that the closing tag is PHP
 $rss_feed .= '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">' . "\n"; 
 $rss_feed .= '<channel>'. "\n";
-$rss_feed .= '<title>Pandora RSS Feed</title>'. "\n";
-$rss_feed .= '<description>Latest events on Pandora</description>' . "\n";
+$rss_feed .= '<title>' . get_product_name() . ' RSS Feed</title>'. "\n";
+$rss_feed .= '<description>Latest events on ' . get_product_name() . '</description>' . "\n";
 $rss_feed .= '<lastBuildDate>'.date (DATE_RFC822, $lastbuild).'</lastBuildDate>'. "\n"; //Last build date is the last event - that way readers won't mark it as having new posts
 $rss_feed .= '<link>'.$url.'</link>'. "\n"; //Link back to the main Pandora page
 $rss_feed .= '<atom:link href="' . xml_entities(io_safe_input ($selfurl)) . '" rel="self" type="application/rss+xml" />'. "\n";; //Alternative for Atom feeds. It's the same.

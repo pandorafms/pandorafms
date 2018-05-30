@@ -1123,6 +1123,7 @@ UPDATE talert_actions SET   `field4` = 'integria',
 							`field9` = 'admin',
 							`field10` = '_alert_description_'
 WHERE `id` = 4 AND `id_alert_command` = 11;
+UPDATE talert_actions SET name='Monitoring&#x20;Event' WHERE name='Pandora&#x20;FMS&#x20;Event';
 ALTER TABLE talert_actions ADD COLUMN `field11` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_actions ADD COLUMN `field12` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_actions ADD COLUMN `field13` TEXT NOT NULL DEFAULT "";
@@ -1160,9 +1161,22 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES ('big_operation_step_datos_purge
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('small_operation_step_datos_purge', '1000');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('days_autodisable_deletion', '30');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 13);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_docs_logo', 'default_docs.png');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_support_logo', 'default_support.png');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_logo_white_bg_preview', 'pandora_logo_head_white_bg.png');
 UPDATE tconfig SET value = 'https://licensing.artica.es/pandoraupdate7/server.php' WHERE token='url_update_manager';
 DELETE FROM `tconfig` WHERE `token` = 'current_package_enterprise';
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '720');
+
+-- ---------------------------------------------------------------------
+-- Table `tconfig_os`
+-- ---------------------------------------------------------------------
+
+INSERT INTO `tconfig_os` (`id_os`, `name`, `description`, `icon_name`) VALUES (100, 'Cluster', 'Cluster agent', 'so_cluster.png');
+	
+UPDATE `tagente` SET `id_os` = 100 WHERE `id_os` = 21 and (select `id_os` from `tconfig_os` WHERE `id_os` = 21 and `name` = 'Cluster');
+
+DELETE FROM `tconfig_os` where `id_os` = 21 and `name` = 'Cluster';
 
 -- ---------------------------------------------------------------------
 -- Table `tplanned_downtime_agents`
@@ -1358,6 +1372,7 @@ END IF;
 SET @vv2 = (SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = 'tuser_task_scheduled');
 IF @vv2>0 THEN
 	ALTER TABLE tuser_task_scheduled MODIFY args TEXT NOT NULL;
+	ALTER TABLE tuser_task_scheduled ADD (id_grupo int(10) unsigned NOT NULL Default 0);
 END IF;
 END;
 //
@@ -1498,9 +1513,7 @@ create table IF NOT EXISTS `tcluster`(
 		`description` text not null default '',
 		`group` int(10) unsigned NOT NULL default '0',
 		`id_agent` int(10) unsigned NOT NULL,
-		PRIMARY KEY (`id`),
-		FOREIGN KEY (`id_agent`) REFERENCES tagente(`id_agente`)
-			ON UPDATE CASCADE
+		PRIMARY KEY (`id`)
 ) engine=InnoDB DEFAULT CHARSET=utf8;
 
 -- ---------------------------------------------------------------------
@@ -1528,8 +1541,103 @@ create table IF NOT EXISTS `tcluster_agent`(
     `id_cluster` int unsigned not null,
     `id_agent` int(10) unsigned not null,
 		PRIMARY KEY (`id_cluster`,`id_agent`),
-		FOREIGN KEY (`id_agent`) REFERENCES tagente(`id_agente`)
-			ON UPDATE CASCADE,
 		FOREIGN KEY (`id_cluster`) REFERENCES tcluster(`id`)
 			ON UPDATE CASCADE
 ) engine=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tprovisioning`
+-- ---------------------------------------------------------------------
+create table IF NOT EXISTS `tprovisioning`(
+    `id` int unsigned NOT NULL auto_increment,
+    `name` varchar(100) NOT NULL,
+	`description` TEXT default '',
+	`order` int(11) NOT NULL default 0,
+	`config` TEXT default '',
+		PRIMARY KEY (`id`)
+) engine=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tprovisioning_rules`
+-- ---------------------------------------------------------------------
+create table IF NOT EXISTS `tprovisioning_rules`(
+    `id` int unsigned NOT NULL auto_increment,
+    `id_provisioning` int unsigned NOT NULL,
+	`order` int(11) NOT NULL default 0,
+	`operator` enum('AND','OR') default 'OR',
+	`type` enum('alias','ip-range') default 'alias',
+	`value` varchar(100) NOT NULL default '',
+		PRIMARY KEY (`id`),
+		FOREIGN KEY (`id_provisioning`) REFERENCES tprovisioning(`id`)
+			ON DELETE CASCADE
+) engine=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tmigration_queue`
+-- ---------------------------------------------------------------------
+
+create table IF NOT EXISTS `tmigration_queue`(
+    `id` int unsigned not null auto_increment,
+    `id_source_agent` int unsigned not null,
+    `id_target_agent` int unsigned not null,
+    `id_source_node` int unsigned not null,
+    `id_target_node` int unsigned not null,
+    `priority` int unsigned default 0,
+    `step` int default 0,
+    `running` tinyint(2) default 0,
+    `active_db_only` tinyint(2) default 0,
+    PRIMARY KEY(`id`)
+) engine=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tmigration_module_queue`
+-- ---------------------------------------------------------------------
+
+create table IF NOT EXISTS `tmigration_module_queue`(
+    `id` int unsigned not null auto_increment,
+    `id_migration` int unsigned not null,
+    `id_source_agentmodule` int unsigned not null,
+    `id_target_agentmodule` int unsigned not null,
+    `last_replication_timestamp` bigint(20) NOT NULL default 0,
+    PRIMARY KEY(`id`),
+    FOREIGN KEY(`id_migration`) REFERENCES tmigration_queue(`id`)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+) engine=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tagent_secondary_group`
+-- ---------------------------------------------------------------------
+
+create table IF NOT EXISTS `tagent_secondary_group`(
+    `id` int unsigned not null auto_increment,
+    `id_agent` int(10) unsigned NOT NULL,
+    `id_group` mediumint(4) unsigned NOT NULL,
+    PRIMARY KEY(`id`),
+    FOREIGN KEY(`id_agent`) REFERENCES tagente(`id_agente`)
+        ON DELETE CASCADE,
+	FOREIGN KEY(`id_group`) REFERENCES tgrupo(`id_grupo`)
+        ON DELETE CASCADE
+) engine=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tmetaconsole_agent_secondary_group`
+-- ---------------------------------------------------------------------
+create table IF NOT EXISTS `tmetaconsole_agent_secondary_group`(
+    `id` int unsigned not null auto_increment,
+    `id_agent` int(10) unsigned NOT NULL,
+    `id_tagente` int(10) unsigned NOT NULL,
+    `id_tmetaconsole_setup` int(10) NOT NULL,
+    `id_group` mediumint(4) unsigned NOT NULL,
+    PRIMARY KEY(`id`),
+    FOREIGN KEY(`id_agent`) REFERENCES tmetaconsole_agent(`id_agente`)
+        ON DELETE CASCADE,
+	FOREIGN KEY(`id_group`) REFERENCES tgrupo(`id_grupo`)
+        ON DELETE CASCADE,
+	FOREIGN KEY (`id_tmetaconsole_setup`) REFERENCES tmetaconsole_setup(`id`)
+		ON DELETE CASCADE
+) engine=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE tagente ADD COLUMN `update_secondary_groups` tinyint(1) NOT NULL default '0';
+ALTER TABLE tmetaconsole_agent ADD COLUMN `update_secondary_groups` tinyint(1) NOT NULL default '0';
+ALTER TABLE tusuario_perfil ADD COLUMN `is_secondary` tinyint(1) NOT NULL default '0';

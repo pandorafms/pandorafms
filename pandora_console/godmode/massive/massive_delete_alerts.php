@@ -170,13 +170,14 @@ $delete = (bool) get_parameter_post ('delete');
 if ($delete) {
 	$result = process_manage_delete ($id_alert_template, $id_agents, $module_names);
 	
+	$info = array('Agent' => implode(",",$id_agents),
+		'Template' => $id_alert_template, 'Module' => implode(",",$module_names));
+		
 	if ($result) {
-		db_pandora_audit("Massive management", "Delete alert ", false, false,
-			'Agent: ' . json_encode($id_agents) . ' Template: ' . $id_alert_template . ' Module: ' . $module_names);
+		db_pandora_audit("Massive management", "Delete alert ", false, false,json_encode($info));
 	}
 	else {
-		db_pandora_audit("Massive management", "Fail try to delete alert", false, false,
-			'Agent: ' . json_encode($id_agents) . ' Template: ' . $id_alert_template . ' Module: ' . $module_names);
+		db_pandora_audit("Massive management", "Fail try to delete alert", false, false,json_encode($info));
 	}
 }
 

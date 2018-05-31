@@ -2714,7 +2714,7 @@ function get_module_realtime_link_graph ($module) {
 	$params = array(
 		'graph' => 'snmp_module',
 		'agent_alias' => modules_get_agentmodule_agent_alias($module['id_agente_modulo']),
-		'module_name' => $module['nombre'],
+		'module_name' => urlencode($module['nombre']),
 		'snmp_address' => $module['ip_target'],
 		'snmp_community' => $module['snmp_community'],
 		'snmp_oid' => $module['snmp_oid'],

@@ -44,6 +44,7 @@ if (is_ajax ()) {
 	$get_agentmodule_status_tooltip = (bool) get_parameter ("get_agentmodule_status_tooltip");
 	$get_group_status_tooltip = (bool) get_parameter ("get_group_status_tooltip");
 	$get_agent_id = (bool) get_parameter ("get_agent_id");
+	$get_agents_source_json = (bool) get_parameter ("get_agents_source_json");
 	$cluster_mode = (bool) get_parameter ("cluster_mode",0);
 	$agent_alias = get_parameter('alias', '');
 	$agents_inserted = get_parameter('agents_inserted', array());
@@ -998,6 +999,29 @@ if (is_ajax ()) {
 		$agent_name = (string) get_parameter ("agent_name");
 		
 		echo agents_get_agent_id ($agent_name);
+		return;
+	}
+	
+	if ($get_agents_source_json) {
+		$source = get_parameter('source', '');
+		
+		if (empty($source)) {
+			$sql_report_log = 'SELECT id_agente, alias
+				FROM tagente, tagent_module_log
+				WHERE tagente.id_agente = tagent_module_log.id_agent AND tagente.disabled = 0';
+		} else {
+			$sql_report_log = 'SELECT id_agente, alias
+				FROM tagente, tagent_module_log
+				WHERE tagente.id_agente = tagent_module_log.id_agent AND tagente.disabled = 0 AND tagent_module_log.source like "'. $source.'"';
+		}
+		
+		$all_agent_log = db_get_all_rows_sql($sql_report_log);
+		
+		foreach ($all_agent_log as $key => $value) {
+			$agents2[$value['id_agente']] = $value['alias'];
+		}
+		
+		echo json_encode($agents2);
 		return;
 	}
 	

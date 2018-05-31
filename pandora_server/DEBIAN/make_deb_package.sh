@@ -82,6 +82,7 @@ then
 	mkdir -p temp_package/var/spool/pandora/data_in/trans
         chmod 770 temp_package/var/spool/pandora/data_in/trans
 	mkdir -p temp_package/var/log/pandora/
+	chmod 754 temp_package/var/log/pandora/
 	mkdir -p temp_package/usr/share/pandora_server/conf/
 	mkdir -p temp_package/usr/share/tentacle_server/conf/
 	mkdir -p temp_package/usr/lib/perl5/

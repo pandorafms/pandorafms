@@ -944,9 +944,9 @@ function visual_map_print_item($mode = "read", $layoutData,
 					continue;
 				}
 			}
-			
+
 			$only_image = !$graph_javascript && $isExternalLink;
-			
+
 			if ($layoutData['id_custom_graph'] != 0) {
 				// Show only avg on the visual console
 				if (get_parameter('action') == 'edit') {
@@ -955,59 +955,54 @@ function visual_map_print_item($mode = "read", $layoutData,
 					}
 					else {
 						$img =  '<img src="images/console/signes/custom_graph.png" style="width:'.$width.'px;height:'.$height.'px;'.$imgpos.'">';
-					}				
-			 	}
+					}
+				}
 				else {
-					if ($width == 0 || $height == 0) {
-						if ($layoutData['label_position']=='left') {
-							$img = '<div style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;">'.custom_graphs_print(
-							$layoutData['id_custom_graph'], 180, 480,
-							$period, null, true, 0, $only_image, $layoutData['image'],
-							array(), '', array(), array(), true,
-							false, false, true, 1, false, true).'</div>';
-						}
-						elseif ($layoutData['label_position']=='right') {
-						$img = '<div style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;">'.custom_graphs_print(
-							$layoutData['id_custom_graph'], 180, 480,
-							$period, null, true, 0, $only_image, $layoutData['image'],
-							array(), '', array(), array(), true,
-							false, false, true, 1, false, true).'</div>';
-						}
-						else {
-							$img = custom_graphs_print(
-							$layoutData['id_custom_graph'], 180, 480,
-							$period, null, true, 0, $only_image, $layoutData['image'],
-							array(), '', array(), array(), true,
-							false, false, true, 1, false, true);
-						}
+					if ($width == 0 ) {
+						$width  = 180;
+					}
+					if($height == 0) {
+						$height = 480;
+					}
+
+					$params =array(
+						'period'              => $period,
+						'width'               => $width,
+						'height'              => $height,
+						'title'               => '',
+						'unit_name'           => null,
+						'show_alerts'         => false,
+						'only_image'          => $only_image,
+						'vconsole'            => true,
+						'backgroundColor' => $layoutData['image']
+					);
+
+					$params_combined = array(
+						'id_graph'       => $layoutData['id_custom_graph']
+					);
+
+					if ($layoutData['label_position']=='left') {
+						$img = '<div style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;">'.
+						graphic_combined_module(
+							false,
+							$params,
+							$params_combined
+						).'</div>';
+					}
+					elseif ($layoutData['label_position']=='right') {
+						$img = '<div style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;">'.
+						graphic_combined_module(
+							false,
+							$params,
+							$params_combined
+						).'</div>';
 					}
 					else {
-						if ($width < 480){
-							$img = '<div class="error">'._("Could not draw pie with labels contained inside canvas. Resize widget to 500px width minimum").'</div>';
-						}
-						else {
-							if ($layoutData['label_position']=='left') {
-								$img = '<div style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;">'.custom_graphs_print(
-								$layoutData['id_custom_graph'], $height, $width,
-								$period, null, true, 0, $only_image, $layoutData['image'],
-								array(), '', array(), array(), true,
-								false, false, true, 1, false, true).'</div>';
-							}
-							elseif($layoutData['label_position']=='right') {
-								$img = '<div style="z-index:'.$show_on_top_index.';float:left;height:'.$himg.'px;">'.custom_graphs_print(
-								$layoutData['id_custom_graph'], $height, $width,
-								$period, null, true, 0, $only_image, $layoutData['image'],
-								array(), '', array(), array(), true,
-								false, false, true, 1, false, true).'</div>';
-							}
-							else {
-								$img = custom_graphs_print(
-								$layoutData['id_custom_graph'], $height, $width,
-								$period, null, true, 0, $only_image, $layoutData['image'],
-								array(), '', array(), array(), true,
-								false, false, true, 1, false, true);
-							}
-						}
+						$img = graphic_combined_module(
+							false,
+							$params,
+							$params_combined
+						);
 					}
 				}
 			}
@@ -1016,7 +1011,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 					$homeurl = $config['homeurl'];
 				else
 					$homeurl = '';
-				
+
 				if ( (get_parameter('action') == 'edit') || (get_parameter('operation') == 'edit_visualmap') ) {
 					if($width == 0 || $height == 0){
 						if ($layoutData['id_metaconsole'] != 0) {

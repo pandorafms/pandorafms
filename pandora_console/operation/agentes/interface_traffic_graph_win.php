@@ -192,34 +192,34 @@ $interface_traffic_modules = array(
 		else
 			echo '<div style="margin-left: 50px; padding-top: 10px;">';
 
+		//XXXXXXX width and height
 		$height = 400;
 		$width  = '90%';
 
-		custom_graphs_print(
-			0,
-			$height,
-			$width,
-			$period,
-			null,
-			false,
-			$date,
-			false,
-			'white',
+		$params =array(
+			'period'    => $period,
+			'width'     => $width,
+			'height'    => $height,
+			'unit_name' => array_fill(0, count($interface_traffic_modules), $config["interface_unit"]),
+			'date'      => $date,
+			'homeurl'   => $config['homeurl'],
+			'percentil' => (($show_percentil)? $config['percentil'] : null),
+			'fullscale' => $fullscale
+		);
+
+		$params_combined = array(
+			'weight_list'    => array(),
+			'projection'     => false,
+			'labels'         => array_keys($interface_traffic_modules),
+			'from_interface' => true,
+			'modules_series' => array_values($interface_traffic_modules),
+			'return'         => 0
+		);
+
+		graphic_combined_module(
 			array_values($interface_traffic_modules),
-			$config['homeurl'],
-			array_keys($interface_traffic_modules),
-			array_fill(0, count($interface_traffic_modules), $config["interface_unit"]),
-			false,
-			true,
-			true,
-			true,
-			1,
-			false,
-			false,
-			(($show_percentil)? $config['percentil'] : null),
-			true,
-			false,
-			$fullscale
+			$params,
+			$params_combined
 		);
 
 		echo '</div>';

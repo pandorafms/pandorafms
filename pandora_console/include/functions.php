@@ -3117,23 +3117,32 @@ function series_type_graph_array($data, $show_elements_graph){
 	return false;
 }
 
-function generator_chart_to_pdf($params){
+function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined = false, $module_list = false){
 	global $config;
-	$params_encode_json = urlencode(json_encode($params));
-	$file_js = $config["homedir"] . "/include/web2image.js";
-	$url = $config["homeurl"] . "/include/chart_generator.php";
 
-	$img_file = "img_". uniqid() . $params['agent_module_id'] .".png";
+	$file_js  = $config["homedir"] . "/include/web2image.js";
+	$url      = $config["homeurl"] . "/include/chart_generator.php";
+	$img_file = "img_". uniqid()  .".png";
 	$img_path = $config["homedir"] . "/attachment/" . $img_file;
 	$img_url  = $config["homeurl"] . "/attachment/" . $img_file;
 
-	error_log($img_url);
-
 	$width_img  = 500;
 	$height_img = 450;
-	//html_debug_print('entrando en llamada a phantom.js.......', true);
-	$result = exec("phantomjs " . $file_js . " " . $url . "  '" . $params_encode_json . "' " . $img_path . " " . $width_img . " " . $height_img);
+
+	$params_encode_json = urlencode(json_encode($params));
+
+	if($params_combined){
+		$params_combined = urlencode(json_encode($params_combined));
+	}
+
+	if($module_list){
+		$module_list = urlencode(json_encode($module_list));
+	}
+
+	$result = exec("phantomjs " . $file_js . " " . $url . "  '" . $type_graph_pdf . "' '" . $params_encode_json . "' '" . $params_combined . "' '" . $module_list . "' " . $img_path . " " . $width_img . " " . $height_img);
 	return '<img src="' . $img_url . '" />';
+
+	//html_debug_print('entrando en llamada a phantom.js.......', true);
 	//header('Content-Type: image/png;');
 	//return '<img src="data:image/jpg;base64, '.$result.'" />';
 	//return "<img src='/var/www/html/pandora_console/attachment/imagen_". $params['agent_module_id'] .".png' alt='la imagen bonica'>";

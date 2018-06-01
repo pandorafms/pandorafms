@@ -94,15 +94,32 @@ if (file_exists ('languages/'.$user_language.'.mo')) {
 	<body bgcolor="#ffffff" style='background:#ffffff;'>
 <?php
 
-        $params = json_decode($_GET['data'], true);
+		$params = json_decode($_GET['data'], true);
         //XXXXXX
         $params['only_image'] = false;
-        $params['width'] = '1048';
+		$params['width'] = '1048';
 
-        echo '<p> Grafica molona para ' .  $params['agent_module_id'] . '</p>';
-        echo '<div>';
-            echo grafico_modulo_sparse ($params);
-		echo '</div>';
+		//cominadasssss
+		$params_combined = json_decode($_GET['data_combined'], true);
+		$module_list     = json_decode($_GET['data_module_list'], true);
+		$type_graph_pdf  = $_GET['type_graph_pdf'];
+
+		if($type_graph_pdf == 'combined'){
+			echo '<p> Grafica molona para combinadaaaaaaaaaaaaa</p>';
+			echo '<div>';
+				echo graphic_combined_module(
+					$module_list,
+					$params,
+					$params_combined
+				);
+			echo '</div>';
+		}
+		elseif($type_graph_pdf == 'sparse'){
+			echo '<p> Grafica molona para ' .  $params['agent_module_id'] . '</p>';
+			echo '<div>';
+				echo grafico_modulo_sparse ($params);
+			echo '</div>';
+		}
 ?>
 	</body>
 </html>

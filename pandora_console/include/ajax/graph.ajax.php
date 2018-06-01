@@ -45,31 +45,37 @@ if ($save_custom_graph) {
 if ($print_custom_graph) {
 	ob_clean();
 
-	$id_graph = (int) get_parameter('id_graph');
-	$height = (int) get_parameter('height', CHART_DEFAULT_HEIGHT);
-	$width = (int) get_parameter('width', CHART_DEFAULT_WIDTH);
-	$period = (int) get_parameter('period', SECONDS_5MINUTES);
-	$stacked = (int) get_parameter('stacked', CUSTOM_GRAPH_LINE);
-	$date = (int) get_parameter('date', time());
-	$only_image = (bool) get_parameter('only_image');
-	$background_color = (string) get_parameter('background_color', 'white');
-	$modules_param = get_parameter('modules_param', array());
-	$homeurl = (string) get_parameter('homeurl');
-	$name_list = get_parameter('name_list', array());
-	$unit_list = get_parameter('unit_list', array());
-	$show_last = (bool) get_parameter('show_last', true);
-	$show_max = (bool) get_parameter('show_max', true);
-	$show_min = (bool) get_parameter('show_min', true);
-	$show_avg = (bool) get_parameter('show_avg', true);
-	$ttl = (int) get_parameter('ttl', 1);
-	$dashboard = (bool) get_parameter('dashboard');
-	$vconsole = (bool) get_parameter('vconsole');
-	$fullscale = (bool) get_parameter('fullscale');
+	$params =array(
+		'period'     => (int) get_parameter('period', SECONDS_5MINUTES),
+		'width'      => (int) get_parameter('width', CHART_DEFAULT_WIDTH),
+		'height'     => (int) get_parameter('height', CHART_DEFAULT_HEIGHT),
+		'unit_name'  => get_parameter('unit_list', array()),
+		'date'       => (int) get_parameter('date', time()),
+		'only_image' => (bool) get_parameter('only_image', false),
+		'homeurl'    => (string) get_parameter('homeurl', ''),
+		'ttl'        => (int) get_parameter('ttl', 1),
+		'dashboard'  => (bool) get_parameter('dashboard', false),
+		'vconsole'   => (bool) get_parameter('vconsole', false),
+		'fullscale'  => (bool) get_parameter('fullscale', false),
+		'backgroundColor' => (string) get_parameter('background_color', 'white'),
+		'show_alerts'     => (bool) get_parameter('show_alerts'),
+		'show_events'     => (bool) get_parameter('show_events'),
+		'type_graph'      => get_parameter('type_g', $config['type_module_charts']),
+	);
 
-	echo custom_graphs_print($id_graph, $height, $width, $period, $stacked,
-		true, $date, $only_image, $background_color, $modules_param,
-		$homeurl, $name_list, $unit_list, $show_last, $show_max,
-		$show_min, $show_avg, $ttl, $dashboard, $vconsole);
+	$params_combined = array(
+		'stacked'        => (int) get_parameter('stacked', CUSTOM_GRAPH_LINE),
+		'labels'         => get_parameter('name_list', array()),
+		'modules_series' => get_parameter('modules_param', array()),
+		'id_graph'       => (int) get_parameter('id_graph', 0),
+		'return'         => 1
+	);
+
+	echo graphic_combined_module(
+		get_parameter('modules_param', array()),
+		$params,
+		$params_combined
+	);
 	return;
 }
 
@@ -184,24 +190,6 @@ if ($get_graphs){
 					break;
 				case 'custom_graph':
 					if ($contador > 0) {
-						$graph = db_get_all_rows_field_filter('tgraph', 'id_graph',$value['id_graph']);
-
-						$sources = db_get_all_rows_field_filter('tgraph_source', 'id_graph',$value['id_graph']);
-						$modules = array ();
-						$weights = array ();
-						$labels = array ();
-						foreach ($sources as $source) {
-							array_push ($modules, $source['id_agent_module']);
-							array_push ($weights, $source['weight']);
-							if ($source['label'] != ''){
-									$item['type']            = 'custom_graph';
-									$item['id_agent']        = agents_get_module_id($source['id_agent_module']);
-									$item['id_agent_module'] = $source['id_agent_module'];
-									$labels[$source['id_agent_module']] = reporting_label_macro($item, $source['label']);
-							}
-						}
-
-						$homeurl = ui_get_full_url(false, false, false, false);
 						$graph_conf = db_get_row('tgraph', 'id_graph', $value['id_graph']);
 
 						if($graph_conf['stacked'] == 4 || $graph_conf['stacked'] == 9){
@@ -211,40 +199,28 @@ if ($get_graphs){
 						} else {
 							$height = 300;
 						}
+
 						$table .= "<div style='width: 90%'><h4>".$graph[0]['name']."</h4><hr></div>";
-						$table .= graphic_combined_module(
-							$modules,
-							$weights,
-							$value['time_lapse'],
-							1000,
-							$height,
-							'',
-							'',
-							0,
-							0,
-							0,
-							$graph_conf['stacked'],
-							0,
-							false,
-							$homeurl,
-							1,
-							false,
-							false,
-							'white',
-							array(),
-							array(),
-							1,
-							1,
-							1,
-							1,
-							$labels,
-							false,
-							false,
-							$graph_conf['percentil'] == 1,
-							false,
-							false,
-							$value['fullscale']
+
+						$params =array(
+							'period'    => $value['time_lapse'],
+							'width'     => 1000,
+							'height'    => $height,
+							'percentil' => $graph_conf['percentil'] == 1,
+							'fullscale' => $value['fullscale']
 						);
+
+						$params_combined = array(
+							'stacked'     => $graph_conf['stacked'],
+							'id_graph'    => $value['id_graph']
+						);
+
+						$table .= graphic_combined_module(
+							false,
+							$params,
+							$params_combined
+						);
+
 						$contador --;
 					}
 					break;

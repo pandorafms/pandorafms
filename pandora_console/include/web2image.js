@@ -1,16 +1,19 @@
 var system = require('system');
 
-if (system.args.length < 2 || system.args.length > 6) {
+if (system.args.length < 3 || system.args.length > 9) {
 	phantom.exit(1);
 }
 
 var webPage	        = require('webpage');
 var page            = webPage.create();
 var url             = system.args[1];
-var url_params      = system.args[2];
-var output_filename = system.args[3];
-var _width          = system.args[4];
-var _height         = system.args[5];
+var type_graph_pdf  = system.args[2];
+var url_params      = system.args[3];
+var url_params_comb = system.args[4];
+var url_module_list = system.args[5];
+var output_filename = system.args[6];
+var _width          = system.args[7];
+var _height         = system.args[8];
 
 if (!_width) {
 	_width = 750;
@@ -20,13 +23,21 @@ if (!_height) {
 	_height = 350;
 }
 
+if(type_graph_pdf == 'combined'){
+	finish_url = url + "?" + "data=" + url_params +
+				"&data_combined=" + url_params_comb +
+				"&data_module_list=" + url_module_list +
+				"&type_graph_pdf=" + type_graph_pdf;
+}
+else{
+	finish_url = url + "?" + "data=" + url_params +
+				"&type_graph_pdf=" + type_graph_pdf;
+}
+
 page.viewportSize = { width: _width, height: _height };
 //page.zoomFactor = 1.75;
 
-//console.log("Pagina: " + url);
-//console.log("parametros: " + url_params);
-//console.log("Archivo salida: " + output_filename);
-page.open(url + "?" + "data=" + url_params, function start(status) {
+page.open(finish_url, function start(status) {
 	page.render(output_filename, {format: 'png'});
 	//var base64 = page.renderBase64('JPG');
 	//console.log(base64);

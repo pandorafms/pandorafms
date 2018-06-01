@@ -252,10 +252,24 @@ switch ($action) {
 			}
 		}
 
+		$params =array(
+			'period'         => $period,
+			'width'          => $width,
+			'height'         => $height,
+			'vconsole'       => true,
+			'backgroundColor'=> $background_color
+		);
+
+		$params_combined = array(
+			'id_graph'       => $id_custom_graph
+		);
+
 		if ($id_custom_graph != 0) {
-			$img = custom_graphs_print(
-				$id_custom_graph, $height, $width, $period,
-				null, true, 0, true, $background_color);
+			$img = graphic_combined_module(
+				false,
+				$params,
+				$params_combined
+			);
 		}
 		else {
 			$params =array(
@@ -264,8 +278,6 @@ switch ($action) {
 				'show_events'         => false,
 				'width'               => $width,
 				'height'              => $height,
-				//'only_image'          => true,
-				//'homeurl'             => '',
 				'menu'                => false,
 				'backgroundColor'     => $background_color,
 				'vconsole'            => true,

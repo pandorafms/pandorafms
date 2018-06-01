@@ -807,7 +807,7 @@ function group_view_get_cache_stats ($list, $list_groups, $user_groups_ids) {
 	// Change the metaconsole tables
 	if (is_metaconsole()) {
 		$table_agent = 'tmetaconsole_agent';
-		$table_secondary = 'tmetaconsole_secondary_group';
+		$table_secondary = 'tmetaconsole_agent_secondary_group';
 	}
 
 	// Walk for each group

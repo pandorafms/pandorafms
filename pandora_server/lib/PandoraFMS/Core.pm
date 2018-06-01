@@ -605,13 +605,13 @@ sub pandora_process_alert ($$$$$$$$;$) {
 			pandora_event ($pa_config, "Alert ceased (" .
 				safe_output($alert->{'name'}) . ")", 0, 0, $alert->{'priority'}, $id,
 				(defined ($alert->{'id_agent_module'}) ? $alert->{'id_agent_module'} : 0), 
-				"alert_ceased", 0, $dbh, $pa_config->{'rb_product_name'}, '', '', '', '', $critical_instructions, $warning_instructions, $unknown_instructions);
+				"alert_ceased", 0, $dbh, 'monitoring_server', '', '', '', '', $critical_instructions, $warning_instructions, $unknown_instructions);
 		}  else {
 			pandora_event ($pa_config, "Alert ceased (" .
 					safe_output($alert->{'name'}) . ")", $agent->{'id_grupo'},
 					$agent->{'id_agente'}, $alert->{'priority'}, $id,
 					(defined ($alert->{'id_agent_module'}) ? $alert->{'id_agent_module'} : 0),
-					"alert_ceased", 0, $dbh, $pa_config->{'rb_product_name'}, '', '', '', '', $critical_instructions, $warning_instructions, $unknown_instructions);
+					"alert_ceased", 0, $dbh, 'monitoring_server', '', '', '', '', $critical_instructions, $warning_instructions, $unknown_instructions);
 		}
 		return;
 	}
@@ -844,7 +844,7 @@ sub pandora_execute_alert ($$$$$$$$$;$) {
 
 		pandora_event ($pa_config, "Alert $text (" . safe_output($alert->{'name'}) . ") " . (defined ($module) ? 'assigned to ('. safe_output($module->{'nombre'}) . ")" : ""),
  			(defined ($agent) ? $agent->{'id_grupo'} : 0), (defined ($agent) ? $agent->{'id_agente'} : 0), $severity, (defined ($alert->{'id_template_module'}) ? $alert->{'id_template_module'} : 0),
-			(defined ($alert->{'id_agent_module'}) ? $alert->{'id_agent_module'} : 0), $event, 0, $dbh, $pa_config->{'rb_product_name'}, '', '', '', '', $critical_instructions, $warning_instructions, $unknown_instructions);
+			(defined ($alert->{'id_agent_module'}) ? $alert->{'id_agent_module'} : 0), $event, 0, $dbh, 'monitoring_server', '', '', '', '', $critical_instructions, $warning_instructions, $unknown_instructions);
 	}
 }
 
@@ -3146,7 +3146,7 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$) {
 	
 	
 	# Set default values for optional parameters
-	$source = $pa_config->{'rb_product_name'} unless defined ($source);
+	$source = 'monitoring_server' unless defined ($source);
 	$comment = '' unless defined ($comment);
 	$id_extra = '' unless defined ($id_extra);
 	$user_name = '' unless defined ($user_name);
@@ -4160,11 +4160,11 @@ sub generate_status_event ($$$$$$$$) {
 	# Generate the event
 	if ($status != 0){
 		pandora_event ($pa_config, $description, $agent->{'id_grupo'}, $module->{'id_agente'},
-			$severity, 0, $module->{'id_agente_modulo'}, $event_type, 0, $dbh, $pa_config->{'rb_product_name'}, '', '', '', '', $module->{'critical_instructions'}, $module->{'warning_instructions'}, $module->{'unknown_instructions'});
+			$severity, 0, $module->{'id_agente_modulo'}, $event_type, 0, $dbh, 'monitoring_server', '', '', '', '', $module->{'critical_instructions'}, $module->{'warning_instructions'}, $module->{'unknown_instructions'});
 	} else { 
 		# Self validate this event if has "normal" status
 		pandora_event ($pa_config, $description, $agent->{'id_grupo'}, $module->{'id_agente'},
-			$severity, 0, $module->{'id_agente_modulo'}, $event_type, 1, $dbh, $pa_config->{'rb_product_name'}, '', '', '', '', $module->{'critical_instructions'}, $module->{'warning_instructions'}, $module->{'unknown_instructions'});
+			$severity, 0, $module->{'id_agente_modulo'}, $event_type, 1, $dbh, 'monitoring_server', '', '', '', '', $module->{'critical_instructions'}, $module->{'warning_instructions'}, $module->{'unknown_instructions'});
 	}
 
 }
@@ -4919,7 +4919,7 @@ sub pandora_module_unknown ($$) {
 			# Are unknown events enabled?
 			if ($pa_config->{'unknown_events'} == 1) {
 				pandora_event ($pa_config, $description, $agent->{'id_grupo'}, $module->{'id_agente'},
-					$severity, 0, $module->{'id_agente_modulo'}, $event_type, 0, $dbh, $pa_config->{'rb_product_name'}, '', '', '', '', $module->{'critical_instructions'}, $module->{'warning_instructions'}, $module->{'unknown_instructions'});
+					$severity, 0, $module->{'id_agente_modulo'}, $event_type, 0, $dbh, 'monitoring_server', '', '', '', '', $module->{'critical_instructions'}, $module->{'warning_instructions'}, $module->{'unknown_instructions'});
 			}
 		}
 		# Regular module
@@ -4985,7 +4985,7 @@ sub pandora_module_unknown ($$) {
 		        $description = subst_alert_macros ($description, \%macros, $pa_config, $dbh, $agent, $module);
 		        
 				pandora_event ($pa_config, $description, $agent->{'id_grupo'}, $module->{'id_agente'},
-					$severity, 0, $module->{'id_agente_modulo'}, $event_type, 0, $dbh, $pa_config->{'rb_product_name'}, '', '', '', '', $module->{'critical_instructions'}, $module->{'warning_instructions'}, $module->{'unknown_instructions'});
+					$severity, 0, $module->{'id_agente_modulo'}, $event_type, 0, $dbh, 'monitoring_server', '', '', '', '', $module->{'critical_instructions'}, $module->{'warning_instructions'}, $module->{'unknown_instructions'});
 			}
 		}
 	}

@@ -3966,8 +3966,8 @@ function ui_get_custom_header_logo ($white_bg = false) {
 	}
 
 	$stored_logo = is_metaconsole()
-		? $config['meta_custom_logo']
-		: $white_bg ? $config['custom_logo_white_bg'] : $config['custom_logo'];
+		? ($white_bg ? $config['meta_custom_logo_white_bg'] : $config['meta_custom_logo'])
+		: ($white_bg ? $config['custom_logo_white_bg'] : $config['custom_logo']);
 	if (empty($stored_logo)) return 'images/pandora_tinylogo.png';
 	return 'enterprise/images/custom_logo/' . $stored_logo;
 }

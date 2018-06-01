@@ -610,7 +610,7 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 		$list_groups = array();
 	}
 
-	if (is_metaconsole() || ($config["realtimestats"] == 0 && !enterprise_hook('agents_is_using_secondary_groups'))) { // Agent cache
+	if (is_metaconsole() || ($config["realtimestats"] == 0)) { // Agent cache
 		$list = group_view_get_cache_stats ($list, $list_groups, $user_groups_ids);
 	} else {
 		foreach ($list_groups as $group) {

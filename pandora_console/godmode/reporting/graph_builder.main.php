@@ -116,11 +116,8 @@ if ($edit_graph) {
 echo ">";
 
 $own_info = get_user_info ($config['id_user']);
-if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
-	$return_all_groups = true;
-else	
-	$return_all_groups = false;
-	
+$return_all_groups = $own_info['is_admin'] || users_can_manage_group_all("RR");
+
 echo "<td><b>".__('Group')."</b></td><td>";
 	if (check_acl ($config['id_user'], 0, "RW"))
 		echo html_print_select_groups($config['id_user'], 'RW', $return_all_groups, 'graph_id_group', $id_group, '', '', '', true);

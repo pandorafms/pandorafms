@@ -106,6 +106,7 @@ if (is_ajax ()) {
 		$id_agent = get_parameter('id_agent');
 		$groups_to_add = get_parameter('groups');
 		if (enterprise_installed()) {
+			if (empty($groups_to_add)) return 0;
 			enterprise_include('include/functions_agents.php');
 			$ret = enterprise_hook(
 				'agents_update_secondary_groups',

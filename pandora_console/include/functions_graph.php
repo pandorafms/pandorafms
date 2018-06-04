@@ -1927,6 +1927,72 @@ function graphic_combined_module (
 					$i++;
 				}
 				break;
+				case CUSTOM_GRAPH_THERMOMETER:
+					$datelimit = $date - $period;
+					$i = 0;
+					foreach ($module_list as $module_item) {
+						$automatic_custom_graph_meta = false;
+						if ($config['metaconsole']) {
+							// Automatic custom graph from the report template in metaconsole
+							if (is_array($module_list[$i])) {
+								$server = metaconsole_get_connection_by_id ($module_item['server']);
+								metaconsole_connect($server);
+								$automatic_custom_graph_meta = true;
+							}
+						}
+						
+						if ($automatic_custom_graph_meta)
+							$module = $module_item['module'];
+						else
+							$module = $module_item;
+						
+						$temp[$module] = modules_get_agentmodule($module);
+						$query_last_value = sprintf('
+							SELECT datos
+							FROM tagente_datos
+							WHERE id_agente_modulo = %d
+								AND utimestamp < %d
+								ORDER BY utimestamp DESC',
+							$module, $date);
+						$temp_data = db_get_value_sql($query_last_value);
+						if ( $temp_data ) {
+							if (is_numeric($temp_data))
+								$value = $temp_data;
+							else
+								$value = count($value);
+						}
+						else {
+							$value = false;
+						}
+						$temp[$module]['label'] = ($labels[$module] != '') ? $labels[$module] : $temp[$module]['nombre'];
+						
+						$temp[$module]['value'] = $value;
+						$temp[$module]['label'] = ui_print_truncate_text($temp[$module]['label'],"module_small",false,true,false,"..");
+						
+						if ($temp[$module]['unit'] == '%') {
+							$temp[$module]['min'] =	0;
+							$temp[$module]['max'] = 100;
+						}
+						else {
+							$min = $temp[$module]['min'];
+							if ($temp[$module]['max'] == 0)
+								$max = reporting_get_agentmodule_data_max($module,$period,$date);
+							else
+								$max = $temp[$module]['max'];
+							$temp[$module]['min'] = ($min == 0 ) ? 0 : $min;
+							$temp[$module]['max'] = ($max == 0 ) ? 100 : $max;
+						}
+						$temp[$module]['gauge'] = uniqid('gauge_');
+						
+						if ($config['metaconsole']) {
+							// Automatic custom graph from the report template in metaconsole
+							if (is_array($module_list[0])) {
+								metaconsole_restore_db();
+							}
+						}
+						$i++;
+					}
+					break;
 			default:
 				if (!is_null($percentil) && $percentil) {
 					foreach ($graph_values as $graph_group => $point) {
@@ -2403,6 +2469,13 @@ function graphic_combined_module (
 				"", "", $water_mark, $config['fontpath'], $fixed_font_size,
 				"", $ttl, $homeurl, $background_color);
 			break;
+		case CUSTOM_GRAPH_THERMOMETER:
+				return stacked_thermometers($flash_charts, $graph_values,
+					$width, $height, $color, $module_name_list, $long_index,
+					ui_get_full_url("images/image_problem_area_small.png", false, false, false),
+					"", "", $water_mark, $config['fontpath'], $fixed_font_size,
+					"", $ttl, $homeurl, $background_color);
+				break;			
 		case CUSTOM_GRAPH_HBARS:
 			return hbar_graph($flash_charts, $graph_values,
 				$width, $height, $color, $module_name_list, $long_index,

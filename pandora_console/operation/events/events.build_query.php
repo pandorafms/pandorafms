@@ -107,7 +107,7 @@ if($count_events == 0){
 
 if ($search != "") {
 	$filter_resume['free_search'] = $search;
-	$sql_post .= " AND (evento LIKE '%". io_safe_input($search) . "%' OR id_evento LIKE '%$search%' ".$events_wi_cdata_id.")";
+	$sql_post .= " AND (evento LIKE '%". $search . "%' OR id_evento LIKE '%$search%' ".$events_wi_cdata_id.")";
 }
 
 if ($event_type != "") {

@@ -247,12 +247,10 @@ function output_xml_visual_console($id) {
 		echo "<other_id>" . $item['id'] . "</other_id>\n"; //OLD ID USE FOR parent item 
 		$agent = '';
 		if ($item['id_agent'] != 0) {
-			$agent = db_get_value ("alias","tagente","id_agente",$item['id_agent']);
+			$agent = db_get_value ("nombre","tagente","id_agente",$item['id_agent']);
 		}
 		if (!empty($item['label'])) {
-			$aux = explode("-",$item['label']);
-			$label = $agent .' -'. $aux[1];
-			echo "<label><![CDATA[" . io_safe_output($label) . "]]></label>\n";
+			echo "<label><![CDATA[" . io_safe_output($item['label']) . "]]></label>\n";
 		}
 		echo "<x>" . $item['pos_x'] . "</x>\n";
 		echo "<y>" . $item['pos_y'] . "</y>\n";
@@ -273,7 +271,7 @@ function output_xml_visual_console($id) {
 			if ($item['id_agente_modulo'] != 0) {
 				$module = db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $item['id_agente_modulo']);
 				$id_agent = db_get_value('id_agente', 'tagente_modulo', 'id_agente_modulo', $item['id_agente_modulo']);
-				$agent = db_get_value ("alias","tagente","id_agente",$id_agent);
+				$agent = db_get_value ("nombre","tagente","id_agente",$id_agent);
 				
 				echo "<module><![CDATA[" . io_safe_output($module) . "]]></module>\n";
 			}
@@ -286,6 +284,10 @@ function output_xml_visual_console($id) {
 		}
 		if ($item['parent_item'] != 0) {
 			echo "<parent_item>" . $item['parent_item'] . "</parent_item>\n";
+		}
+		if ($item['type'] == 19) {
+			echo "<clock_animation>" . $item['clock_animation'] . "</clock_animation>\n";
+			echo "<fill_color>" . $item['fill_color'] . "</fill_color>\n";
 		}
 		echo "</item>\n";
 	}

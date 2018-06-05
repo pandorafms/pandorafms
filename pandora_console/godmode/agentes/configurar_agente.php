@@ -392,7 +392,7 @@ if ($id_agente) {
 	
 	$grouptab['active'] = false;
 	
-	$gistab = "";
+	$gistab = array();
 	
 	/* GIS tab */
 	if ($config['activate_gis']) {

@@ -1084,7 +1084,7 @@ else {
 $tab = get_parameter ("tab", "main");
 
 /* Manage tab */
-$managetab = "";
+$managetab = array();
 
 if (check_acl_one_of_groups ($config['id_user'],$all_groups, "AW") || $is_extra) {
 	$managetab['text'] ='<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'">'
@@ -1165,7 +1165,7 @@ if ($url_route_analyzer) {
 }
 
 /* GIS tab */
-$gistab="";
+$gistab=array();
 if ($config['activate_gis']) {
 	$gistab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=gis&id_agente='.$id_agente.'">'
 		.html_print_image("images/op_gis.png", true, array( "title" => __('GIS data')))

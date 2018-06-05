@@ -119,6 +119,17 @@ $(document).ready( function() {
 		$('div#menu')
 			.css('position', 'fixed')
 			.css('z-index', '9000')
+			.css('top','80px')
+	}else{
+		$('div#menu')
+			.css('z-index', '9000')
+	}
+	if (fixed_header) {
+		$('div#menu')
+			.css('position', 'fixed')
+			.css('z-index', '9000')
+			.css('top','80px')
+		$('#menu_tab_frame_view').css('margin-top','20px')
 	}
 	//Daniel maya 02/06/2016 Fixed menu position--END
 	/*

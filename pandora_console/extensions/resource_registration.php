@@ -536,6 +536,26 @@ function process_upload_xml_visualmap($xml, $filter_group = 0) {
 				$values['fill_color'] = (string)$item->fill_color;
 			}
 			
+			if (isset($item->type_graph)) {
+				$values['type_graph'] = (string)$item->type_graph;
+			}
+			
+			if (isset($item->time_format)) {
+				$values['time_format'] = (string)$item->time_format;
+			}
+			
+			if (isset($item->timezone)) {
+				$values['timezone'] = (string)$item->timezone;
+			}
+			
+			if (isset($item->border_width)) {
+				$values['border_width'] = (string)$item->border_width;
+			}
+			
+			if (isset($item->border_color)) {
+				$values['border_color'] = (string)$item->border_color;
+			}
+			
 			if ($no_agents) {
 				$id_item = db_process_sql_insert('tlayout_data', $values);
 				

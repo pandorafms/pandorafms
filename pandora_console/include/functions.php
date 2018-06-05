@@ -2434,7 +2434,7 @@ function clear_pandora_error_for_header() {
 	global $config;
 	
 	$config["alert_cnt"] = 0;
-	$_SESSION["alert_msg"] = "";
+	$_SESSION["alert_msg"] = array();
 }
 
 function set_pandora_error_for_header($message, $title = null) {

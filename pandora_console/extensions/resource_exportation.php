@@ -285,9 +285,26 @@ function output_xml_visual_console($id) {
 		if ($item['parent_item'] != 0) {
 			echo "<parent_item>" . $item['parent_item'] . "</parent_item>\n";
 		}
-		if ($item['type'] == 19) {
+		if (!empty($item['clock_animation'])) {
 			echo "<clock_animation>" . $item['clock_animation'] . "</clock_animation>\n";
+		}
+		if (!empty($item['fill_color'])) {
 			echo "<fill_color>" . $item['fill_color'] . "</fill_color>\n";
+		}
+		if (!empty($item['type_graph'])) {
+			echo "<type_graph>" . $item['type_graph'] . "</type_graph>\n";
+		}
+		if (!empty($item['time_format'])) {
+			echo "<time_format>" . $item['time_format'] . "</time_format>\n";
+		}
+		if (!empty($item['timezone'])) {
+			echo "<timezone>" . $item['timezone'] . "</timezone>\n";
+		}
+		if (!empty($item['border_width'])) {
+			echo "<border_width>" . $item['border_width'] . "</border_width>\n";
+		}
+		if (!empty($item['border_color'])) {
+			echo "<border_color>" . $item['border_color'] . "</border_color>\n";
 		}
 		echo "</item>\n";
 	}

@@ -38,10 +38,14 @@ page.viewportSize = { width: _width, height: _height };
 //page.zoomFactor = 1.75;
 
 page.open(finish_url, function start(status) {
+	page.includeJs('./javascript/pandora.js');
+});
+
+page.onLoadFinished = function (status) {
 	page.render(output_filename, {format: 'png'});
 	//var base64 = page.renderBase64('JPG');
 	//console.log(base64);
 	phantom.exit();
-});
+}
 
 

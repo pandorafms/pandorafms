@@ -3005,15 +3005,22 @@ function color_graph_array($series_suffix, $compare = false){
 
 function series_type_graph_array($data, $show_elements_graph){
 	global $config;
+
 	if(isset($data) && is_array($data)){
 		foreach ($data as $key => $value) {
+			if($show_elements_graph['compare'] == 'overlapped'){
+				if($key == 'sum2'){
+					$str = ' (' . __('Previous') . ')';
+				}
+			}
+
 			if(strpos($key, 'summatory') !== false){
 				$data_return['series_type'][$key] = 'area';
-				$data_return['legend'][$key] = __('Summatory series') . ' ' . $series_suffix_str;
+				$data_return['legend'][$key] = __('Summatory series') . ' ' . $str;
 			}
 			elseif(strpos($key, 'average') !== false){
 				$data_return['series_type'][$key] = 'area';
-				$data_return['legend'][$key] = __('Average series') . ' ' . $series_suffix_str;
+				$data_return['legend'][$key] = __('Average series') . ' ' . $str;
 			}
 			elseif(strpos($key, 'sum') !== false || strpos($key, 'baseline') !== false){
 				switch ($value['id_module_type']) {
@@ -3029,7 +3036,7 @@ function series_type_graph_array($data, $show_elements_graph){
 				if (isset($show_elements_graph['labels']) &&
 					is_array($show_elements_graph['labels']) &&
 					(count($show_elements_graph['labels']) > 0)){
-					$data_return['legend'][$key] = $show_elements_graph['labels'][$value['id_module_type']] . ' ' ;
+					$data_return['legend'][$key] = $show_elements_graph['labels'][$value['agent_module_id']] . ' ' ;
 				}
 				else{
 					if(strpos($key, 'baseline') !== false){
@@ -3061,25 +3068,25 @@ function series_type_graph_array($data, $show_elements_graph){
 								$value['avg'],
 								$config['graph_precision']
 							)
-						) . ' ' . $series_suffix_str;
+						) . ' ' . $str;
 				}
 			}
 			elseif(strpos($key, 'event') !== false){
 				$data_return['series_type'][$key] = 'points';
 				if($show_elements_graph['show_events']){
-					$data_return['legend'][$key] = __('Events') . ' ' . $series_suffix_str;
+					$data_return['legend'][$key] = __('Events') . ' ' . $str;
 				}
 			}
 			elseif(strpos($key, 'alert') !== false){
 				$data_return['series_type'][$key] = 'points';
 				if($show_elements_graph['show_alerts']){
-					$data_return['legend'][$key] = __('Alert') . ' ' . $series_suffix_str;
+					$data_return['legend'][$key] = __('Alert') . ' ' . $str;
 				}
 			}
 			elseif(strpos($key, 'unknown') !== false){
 				$data_return['series_type'][$key] = 'unknown';
 				if($show_elements_graph['show_unknown']){
-					$data_return['legend'][$key] = __('Unknown') . ' ' . $series_suffix_str;
+					$data_return['legend'][$key] = __('Unknown') . ' ' . $str;
 				}
 			}
 			elseif(strpos($key, 'percentil') !== false){
@@ -3090,7 +3097,7 @@ function series_type_graph_array($data, $show_elements_graph){
 						$config['percentil']  .
 						'º ' . __('of module') . ' ';
 					if (isset($show_elements_graph['labels']) && is_array($show_elements_graph['labels'])){
-						$data_return['legend'][$key] .= $show_elements_graph['labels'][$value['id_module_type']] . ' ' ;
+						$data_return['legend'][$key] .= $show_elements_graph['labels'][$value['agent_module_id']] . ' ' ;
 					}
 					else{
 						$data_return['legend'][$key] .= $value['agent_name']  . ' / ' .
@@ -3101,15 +3108,16 @@ function series_type_graph_array($data, $show_elements_graph){
 														$value['data'][0][1],
 														$config['graph_precision']
 													)
-												) . ' ' . $series_suffix_str;
+												) . ' ' . $str;
 				}
 			}
 			elseif(strpos($key, 'projection') !== false){
 				$data_return['series_type'][$key] = 'area';
-				$data_return['legend'][$key] = __('Projection') . ' ' . $series_suffix_str;
+				$data_return['legend'][$key] = __('Projection') . ' ' . $str;
 			}
 			else{
 				$data_return['series_type'][$key] = 'area';
+				$data_return['legend'][$key] = $key;
 			}
 		}
 		return $data_return;
@@ -3138,8 +3146,9 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined = fal
 	if($module_list){
 		$module_list = urlencode(json_encode($module_list));
 	}
-
+html_debug_print("phantomjs " . $file_js . " " . $url . "  '" . $type_graph_pdf . "' '" . $params_encode_json . "' '" . $params_combined . "' '" . $module_list . "' " . $img_path . " " . $width_img . " " . $height_img, true);
 	$result = exec("phantomjs " . $file_js . " " . $url . "  '" . $type_graph_pdf . "' '" . $params_encode_json . "' '" . $params_combined . "' '" . $module_list . "' " . $img_path . " " . $width_img . " " . $height_img);
+	html_debug_print($result, true);
 	return '<img src="' . $img_url . '" />';
 
 	//html_debug_print('entrando en llamada a phantom.js.......', true);

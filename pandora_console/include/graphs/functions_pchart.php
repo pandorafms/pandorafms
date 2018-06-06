@@ -883,11 +883,6 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 
 	global $config;
 
-	html_debug_print($graph_type, true);
-	html_debug_print($index, true);
-	html_debug_print($data, true);
-
-
 	/* Create and populate the pData object */
 	$MyData = new pData();
 	$MyData->addPoints(array(20,22,25,5,12,8,30,8),"Probe 1");

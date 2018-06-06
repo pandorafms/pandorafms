@@ -355,12 +355,13 @@ function grafico_modulo_sparse_data_chart (
 		}
 	}
 
-	$array_data["sum" . $series_suffix]['min']           = $min_value;
-	$array_data["sum" . $series_suffix]['max']           = $max_value;
-	$array_data["sum" . $series_suffix]['avg']           = $sum_data/$count_data;
-	$array_data["sum" . $series_suffix]['id_module_type']= $data_module_graph['id_module_type'];
-	$array_data["sum" . $series_suffix]['agent_name']    = $data_module_graph['agent_name'];
-	$array_data["sum" . $series_suffix]['module_name']   = $data_module_graph['module_name'];
+	$array_data["sum" . $series_suffix]['min']            = $min_value;
+	$array_data["sum" . $series_suffix]['max']            = $max_value;
+	$array_data["sum" . $series_suffix]['avg']            = $sum_data/$count_data;
+	$array_data["sum" . $series_suffix]['agent_module_id']= $agent_module_id;
+	$array_data["sum" . $series_suffix]['id_module_type'] = $data_module_graph['id_module_type'];
+	$array_data["sum" . $series_suffix]['agent_name']     = $data_module_graph['agent_name'];
+	$array_data["sum" . $series_suffix]['module_name']    = $data_module_graph['module_name'];
 
 	if (!is_null($params['percentil']) &&
 		$params['percentil'] &&
@@ -374,6 +375,7 @@ function grafico_modulo_sparse_data_chart (
 			$date_array['final_date'] * 1000,
 			$percentil_result
 		);
+		$array_data["percentil" . $series_suffix]['agent_module_id'] = $agent_module_id;
 	}
 	return $array_data;
 }
@@ -381,7 +383,7 @@ function grafico_modulo_sparse_data_chart (
 function grafico_modulo_sparse_data(
 	$agent_module_id, $date_array,
 	$data_module_graph, $params,
-	$series_suffix, $str_series_suffix) {
+	$series_suffix) {
 
 	global $config;
 	global $array_events_alerts;
@@ -393,9 +395,13 @@ function grafico_modulo_sparse_data(
 			$params['show_unknown'],
 			$params['percentil'],
 			$series_suffix,
-			$str_series_suffix,
 			$params['flag_overlapped']
 		);
+
+		$array_data["sum" . $series_suffix]['agent_module_id']= $agent_module_id;
+		$array_data["sum" . $series_suffix]['id_module_type'] = $data_module_graph['id_module_type'];
+		$array_data["sum" . $series_suffix]['agent_name']     = $data_module_graph['agent_name'];
+		$array_data["sum" . $series_suffix]['module_name']    = $data_module_graph['module_name'];
 	}
 	else{
 		$array_data = grafico_modulo_sparse_data_chart (
@@ -672,7 +678,7 @@ function grafico_modulo_sparse_data(
 		'return_data'         => 0,
 		'show_title'          => true,
 		'only_image'          => false,
-		'homeurl'             => '',
+		'homeurl'             => $config['homeurl'],
 		'ttl'                 => 1,
 		'adapt_key'           => '',
 		'compare'             => false,
@@ -687,7 +693,9 @@ function grafico_modulo_sparse_data(
 		'id_widget_dashboard' => false,
 		'force_interval'      => '',
 		'time_interval'       => 300,
-		'array_data_create'   => 0
+		'array_data_create'   => 0,
+		'show_legend'         => true,
+		'show_overview'       => true
 	);
  */
 function grafico_modulo_sparse ($params) {
@@ -761,7 +769,7 @@ function grafico_modulo_sparse ($params) {
 	}
 
 	if(!isset($params['homeurl'])){
-		$params['homeurl'] = '';
+		$params['homeurl'] = $config['homeurl'];
 	}
 
 	if(!isset($params['ttl'])){
@@ -782,6 +790,18 @@ function grafico_modulo_sparse ($params) {
 
 	if(!isset($params['menu'])){
 		$params['menu'] = true;
+	}
+
+	if(!isset($params['show_legend'])){
+		$params['show_legend'] = true;
+	}
+
+	if(!isset($params['show_overview'])){
+		$params['show_overview'] = true;
+	}
+
+	if(!isset($params['show_export_csv'])){
+		$params['show_export_csv'] = true;
 	}
 
 	if(!isset($params['backgroundColor'])){
@@ -848,26 +868,31 @@ function grafico_modulo_sparse ($params) {
 	$date_array["final_date"] = $params['date'];
 	$date_array["start_date"] = $params['date'] - $params['period'];
 
-	$module_data = db_get_row_sql (
-		'SELECT * FROM tagente_modulo
-		WHERE id_agente_modulo = ' .
-		$agent_module_id
-	);
+	if($agent_module_id){
+		$module_data = db_get_row_sql (
+			'SELECT * FROM tagente_modulo
+			WHERE id_agente_modulo = ' .
+			$agent_module_id
+		);
 
-	$data_module_graph = array();
-	$data_module_graph['history_db']     = db_search_in_history_db($date_array["start_date"]);
-	$data_module_graph['agent_name']     = modules_get_agentmodule_agent_name ($agent_module_id);
-	$data_module_graph['agent_id']       = $module_data['id_agente'];
-	$data_module_graph['module_name']    = $module_data['nombre'];
-	$data_module_graph['id_module_type'] = $module_data['id_tipo_modulo'];
-	$data_module_graph['module_type']    = modules_get_moduletype_name ($data_module_graph['id_module_type']);
-	$data_module_graph['uncompressed']   = is_module_uncompressed ($data_module_graph['module_type']);
-	$data_module_graph['w_min']    		 = $module_data['min_warning'];
-	$data_module_graph['w_max']   		 = $module_data['max_warning'];
-	$data_module_graph['w_inv']    		 = $module_data['warning_inverse'];
-	$data_module_graph['c_min']    		 = $module_data['min_critical'];
-	$data_module_graph['c_max']    		 = $module_data['max_critical'];
-	$data_module_graph['c_inv']    		 = $module_data['critical_inverse'];
+		$data_module_graph = array();
+		$data_module_graph['history_db']     = db_search_in_history_db($date_array["start_date"]);
+		$data_module_graph['agent_name']     = modules_get_agentmodule_agent_name ($agent_module_id);
+		$data_module_graph['agent_id']       = $module_data['id_agente'];
+		$data_module_graph['module_name']    = $module_data['nombre'];
+		$data_module_graph['id_module_type'] = $module_data['id_tipo_modulo'];
+		$data_module_graph['module_type']    = modules_get_moduletype_name ($data_module_graph['id_module_type']);
+		$data_module_graph['uncompressed']   = is_module_uncompressed ($data_module_graph['module_type']);
+		$data_module_graph['w_min']    		 = $module_data['min_warning'];
+		$data_module_graph['w_max']   		 = $module_data['max_warning'];
+		$data_module_graph['w_inv']    		 = $module_data['warning_inverse'];
+		$data_module_graph['c_min']    		 = $module_data['min_critical'];
+		$data_module_graph['c_max']    		 = $module_data['max_critical'];
+		$data_module_graph['c_inv']    		 = $module_data['critical_inverse'];
+	}
+	else{
+		$data_module_graph = false;
+	}
 
 	//format of the graph
 	if (empty($params['unit'])) {
@@ -880,7 +905,6 @@ function grafico_modulo_sparse ($params) {
 	if(!$params['array_data_create']){
 		if ($params['compare'] !== false) {
 			$series_suffix = 2;
-			$series_suffix_str = ' (' . __('Previous') . ')';
 
 			$date_array_prev['final_date'] = $date_array['start_date'];
 			$date_array_prev['start_date'] = $date_array['start_date'] - $date_array['period'];
@@ -894,9 +918,11 @@ function grafico_modulo_sparse ($params) {
 			}
 
 			$array_data = grafico_modulo_sparse_data(
-				$agent_module_id, $date_array_prev,
-				$data_module_graph, $params,
-				$series_suffix, $series_suffix_str
+				$agent_module_id,
+				$date_array_prev,
+				$data_module_graph,
+				$params,
+				$series_suffix
 			);
 
 			switch ($params['compare']) {
@@ -910,13 +936,14 @@ function grafico_modulo_sparse ($params) {
 		}
 
 		$series_suffix = 1;
-		$series_suffix_str = '';
 		$params['flag_overlapped'] = 0;
 
 		$array_data = grafico_modulo_sparse_data(
-			$agent_module_id, $date_array,
-			$data_module_graph, $params,
-			$series_suffix, $str_series_suffix
+			$agent_module_id,
+			$date_array,
+			$data_module_graph,
+			$params,
+			$series_suffix
 		);
 
 		if($params['compare']){
@@ -971,7 +998,6 @@ function grafico_modulo_sparse ($params) {
 				$data_module_graph,
 				$params,
 				$water_mark,
-				$series_suffix_str,
 				$array_events_alerts
 			);
 		}
@@ -998,7 +1024,6 @@ function grafico_modulo_sparse ($params) {
 				$data_module_graph,
 				$params,
 				$water_mark,
-				$series_suffix_str,
 				$array_events_alerts
 			);
 		}
@@ -1017,19 +1042,19 @@ function grafico_modulo_sparse ($params) {
 				$data_module_graph,
 				$params,
 				$water_mark,
-				$series_suffix_str,
 				$array_events_alerts
 			);
 		}
 		else{
-			$return = graph_nodata_image($params['width'], $params['height']);
+			$return = graph_nodata_image(
+				$params['width'],
+				$params['height']
+			);
 		}
 	}
 
 return $return;
 }
-
-
 
 function graph_get_formatted_date($timestamp, $format1, $format2) {
 	global $config;
@@ -1171,6 +1196,13 @@ function graphic_combined_module (
 		$params_combined['id_graph'] = 0;
 	}
 
+	if(!isset($params['percentil'])){
+		$params_combined['percentil'] = null;
+	}
+	else{
+		$params_combined['percentil'] = $params['percentil'];
+	}
+
 
 	//XXX seteo los parametros
 	if(!isset($params['period'])){
@@ -1247,6 +1279,18 @@ function graphic_combined_module (
 		$params['homeurl'] = ui_get_full_url(false, false, false, false);
 	}
 
+	if(!isset($params['show_legend'])){
+		$params['show_legend'] = true;
+	}
+
+	if(!isset($params['show_overview'])){
+		$params['show_overview'] = true;
+	}
+
+	if(!isset($params['show_export_csv'])){
+		$params['show_export_csv'] = true;
+	}
+
 	//XXXX
 	if($params['only_image']){
 		return generator_chart_to_pdf('combined', $params, $params_combined, $module_list);
@@ -1254,16 +1298,6 @@ function graphic_combined_module (
 
 	global $config;
 	global $graphic_type;
-
-	//XXX colocar
-/*
-	$name_list
-	$unit_list
-	$show_last
-	$show_max
-	$show_min
-	$show_avg
-*/
 
 	$sources = false;
 	if ($params_combined['id_graph'] == 0) {
@@ -1313,6 +1347,18 @@ function graphic_combined_module (
 		}
 	}
 
+	if(isset($summatory)){
+		$params_combined['summatory'] = $summatory;
+	}
+
+	if(isset($average)){
+		$params_combined['average'] = $average;
+	}
+
+	if(isset($modules_series)){
+		$params_combined['modules_series'] = $modules_series;
+	}
+
 	if(isset($labels)){
 		$params_combined['labels'] = $labels;
 	}
@@ -1349,7 +1395,7 @@ function graphic_combined_module (
 	$flash_charts     = false;
 
 	//XXX no se que hacen
-	$fixed_font_size = '';
+	$fixed_font_size = $config['font_size'];
 	$water_mark      = '';
 	$long_index      = '';
 	$color           = array();
@@ -1397,12 +1443,10 @@ function graphic_combined_module (
 					$date_array,
 					$data_module_graph,
 					$params,
-					$i,
-					$data_module_graph['agent_name']
+					$i
 				);
 
 				$series_suffix     = $i;
-				$series_suffix_str = '';
 
 				//convert to array graph and weight
 				foreach ($array_data_module as $key => $value) {
@@ -1422,7 +1466,7 @@ function graphic_combined_module (
 
 				$color = color_graph_array(
 					$series_suffix,
-					$show_elements_graph['flag_overlapped']
+					$params['flag_overlapped']
 				);
 
 				foreach ($color as $k => $v) {
@@ -1462,7 +1506,7 @@ function graphic_combined_module (
 
 			$series_type_array = series_type_graph_array(
 				$array_data,
-				$show_elements_graph
+				$params_combined
 			);
 
 			$series_type = $series_type_array['series_type'];
@@ -1590,9 +1634,9 @@ function graphic_combined_module (
 				$data_module_graph,
 				$params,
 				$water_mark,
-				$series_suffix_str,
 				$array_events_alerts
 			);
+
 			break;
 		case CUSTOM_GRAPH_BULLET_CHART_THRESHOLD:
 		case CUSTOM_GRAPH_BULLET_CHART:
@@ -1650,10 +1694,7 @@ function graphic_combined_module (
 						$value = count($value);
 				}
 				else {
-					if ($flash_charts === false)
-						$value = 0;
-					else
-						$value = false;
+					$value = false;
 				}
 
 				if ( !empty($params_combined['labels']) && isset($params_combined['labels'][$module]) ){
@@ -1690,8 +1731,10 @@ function graphic_combined_module (
 			//XXXX
 			$graph_values = $temp;
 
+			$width = 1024;
+			$height = 50;
+
 			$output = stacked_bullet_chart(
-				$flash_charts,
 				$graph_values,
 				$width,
 				$height,
@@ -1709,6 +1752,7 @@ function graphic_combined_module (
 				$homeurl,
 				$background_color
 			);
+
 			break;
 
 		case CUSTOM_GRAPH_GAUGE:
@@ -1779,24 +1823,20 @@ function graphic_combined_module (
 			//XXXX
 			$graph_values = $temp;
 
+			$width = 200;
+			$height = 200;
+
 			$output = stacked_gauge(
-				$flash_charts,
 				$graph_values,
 				$width,
 				$height,
 				$color,
 				$module_name_list,
-				$long_index,
 				ui_get_full_url("images/image_problem_area_small.png", false, false, false),
-				"",
-				"",
-				$water_mark,
 				$config['fontpath'],
 				$fixed_font_size,
 				"",
-				$ttl,
-				$homeurl,
-				$background_color
+				$homeurl
 			);
 
 			break;
@@ -1852,9 +1892,13 @@ function graphic_combined_module (
 			//XXXX
 			$graph_values = $temp;
 
+			$width = 1024;
+			$height = 500;
+			$flash_charts = true;
+
 			if($params_combined['stacked'] == CUSTOM_GRAPH_HBARS){
 				$output = hbar_graph(
-					$flash_charts,
+					true,
 					$graph_values,
 					$width,
 					$height,
@@ -1877,7 +1921,7 @@ function graphic_combined_module (
 
 			if($params_combined['stacked'] == CUSTOM_GRAPH_VBARS){
 				$output = vbar_graph(
-					$flash_charts,
+					true,
 					$graph_values,
 					$width,
 					$height,
@@ -1963,8 +2007,11 @@ function graphic_combined_module (
 			//XXXX
 			$graph_values = $temp;
 
+			$width = 1024;
+			$height = 500;
+
 			$output = ring_graph(
-				$flash_charts,
+				true,
 				$graph_values,
 				$width,
 				$height,
@@ -2114,66 +2161,70 @@ function combined_graph_summatory_average ($array_data, $average = false, $summa
  * @param integer period time period
  * @param bool return or echo the result flag
  */
-function graphic_agentaccess ($id_agent, $width, $height, $period = 0, $return = false) {
+function graphic_agentaccess ($id_agent, $width, $height, $period = 0, $return = false, $tree = false) {
 	global $config;
 	global $graphic_type;
 
-	$data = array ();
+	$date       = get_system_time();
+	$datelimit  = $date - $period;
+	$data_array = array ();
 
-	$resolution = $config["graph_res"] * ($period * 2 / $width); // Number of "slices" we want in graph
+	$data = db_get_all_rows_sql(
+		"SELECT count(*) as data, min(utimestamp) as utimestamp
+		FROM tagent_access
+		WHERE id_agent = $id_agent
+		AND utimestamp > $datelimit
+		AND utimestamp < $date
+		GROUP by ROUND(utimestamp / 300)"
+	);
 
-	$interval = (int) ($period / $resolution);
-	$date = get_system_time();
-	$datelimit = $date - $period;
-	$periodtime = floor ($period / $interval);
-	$time = array ();
-	$data = array ();
-
-	$empty_data = true;
-	for ($i = 0; $i < $interval; $i++) {
-		$bottom = $datelimit + ($periodtime * $i);
-		if (! $graphic_type) {
-			$name = date('G:i', $bottom);
+	if(isset($data) && is_array($data)){
+		foreach ($data as $key => $value) {
+			$data_array['Agent access']['data'][$key][0] = $value['utimestamp'] * 1000;
+			$data_array['Agent access']['data'][$key][1] = $value['data'];
 		}
-		else {
-			$name = $bottom;
+		$data_array['Agent access']['color'] = 'green';
+	}
+	else{
+		if ($return) {
+			return graph_nodata_image($width, $height);
 		}
-
-		$top = $datelimit + ($periodtime * ($i + 1));
-
-		$data[$name]['data'] = (int) db_get_value_filter ('COUNT(*)',
-			'tagent_access',
-			array ('id_agent' => $id_agent,
-				'utimestamp > '.$bottom,
-				'utimestamp < '.$top));
-
-		if ($data[$name]['data'] != 0) {
-			$empty_data = false;
+		else{
+			echo graph_nodata_image($width, $height);
 		}
 	}
 
+	//XXXXX
 	if($config["fixed_graph"] == false){
 		$water_mark = array('file' =>
 			$config['homedir'] . "/images/logo_vertical_water.png",
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
 
-	if ($empty_data) {
-		$out = graph_nodata_image($width, $height);
-	}
-	else {
-		$out = area_graph(
-			$config['flash_charts'], $data, $width, $height, null, null, null,
-			ui_get_full_url("images/image_problem_area_small.png", false, false, false),
-			"", "", ui_get_full_url(false, false, false, false), $water_mark,
-			$config['fontpath'], $config['font_size'], "", 1, array(), array(), 0, 0, '', false, '', false);
-	}
+	$params =array(
+		'agent_module_id'     => false,
+		'period'              => $period,
+		'width'               => $width,
+		'height'              => $height,
+		'unit'                => $unit,
+		'only_image'          => $only_image,
+		'homeurl'             => $homeurl,
+		'menu'                => true,
+		'backgroundColor'     => 'white',
+		'type_graph'          => 'area',
+		'font'                => $config['fontpath'],
+		'font-size'           => $config['font_size'],
+		'array_data_create'   => $data_array,
+		'show_overview'       => false,
+		'show_export_csv'     => false,
+		'vconsole'            => $tree
+	);
 
 	if ($return) {
-		return $out;
+		return grafico_modulo_sparse($params);
 	}
 	else {
-		echo $out;
+		echo grafico_modulo_sparse($params);
 	}
 }
 
@@ -3746,9 +3797,9 @@ function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $ho
 function graph_graphic_moduleevents ($id_agent, $id_module, $width, $height, $period = 0, $homeurl, $return = false) {
 	global $config;
 	global $graphic_type;
-	
+
 	$data = array ();
-	
+
 	$resolution = $config['graph_res'] * ($period * 2 / $width); // Number of "slices" we want in graph
 	$interval = (int) ($period / $resolution);
 	$date = get_system_time ();
@@ -3758,7 +3809,7 @@ function graph_graphic_moduleevents ($id_agent, $id_module, $width, $height, $pe
 	$data = array ();
 	$legend = array();
 	$full_legend = array();
-	
+
 	$cont = 0;
 	for ($i = 0; $i < $interval; $i++) {
 		$bottom = $datelimit + ($periodtime * $i);
@@ -3773,13 +3824,13 @@ function graph_graphic_moduleevents ($id_agent, $id_module, $width, $height, $pe
 		else {
 			$name = $bottom;
 		}
-		
+
 		// Show less values in legend
 		if ($cont == 0 or $cont % 2)
 			$legend[$cont] = $name;
-		
+
 		$full_legend[$cont] = $name;
-		
+
 		$top = $datelimit + ($periodtime * ($i + 1));
 
 		$event_filter = array ('id_agente' => $id_agent,
@@ -3810,16 +3861,16 @@ function graph_graphic_moduleevents ($id_agent, $id_module, $width, $height, $pe
 		}
 		$cont++;
 	}
-	
+
 	$colors = array(1 => COL_NORMAL, 2 => COL_WARNING, 3 => COL_CRITICAL, 4 => COL_UNKNOWN);
-	
+
 	// Draw slicebar graph
 	if ($config['flash_charts']) {
 		$out = flot_slicesbar_graph($data, $period, $width, $height, $full_legend, $colors, $config['fontpath'], $config['round_corner'], $homeurl, '', '', false, $id_agent);
 	}
 	else {
 		$out = slicesbar_graph($data, $period, $width, $height, $colors, $config['fontpath'], $config['round_corner'], $homeurl);
-		
+
 		// Draw legend
 		$out .=  "<br>";
 		$out .=  "&nbsp;";
@@ -3846,7 +3897,7 @@ function fs_error_image ($width = 300, $height = 110) {
 function fullscale_data (
 	$agent_module_id, $date_array,
 	$show_unknown = 0, $show_percentil = 0,
-	$series_suffix, $str_series_suffix = '',
+	$series_suffix,
 	$compare = false){
 
 	global $config;
@@ -3981,118 +4032,55 @@ function graph_netflow_aggregate_area ($data, $period, $width, $height, $unit = 
 		return;
 	}
 
-	if ($period <= SECONDS_6HOURS) {
-		$chart_time_format = 'H:i:s';
-	}
-	elseif ($period < SECONDS_1DAY) {
-		$chart_time_format = 'H:i';
-	}
-	elseif ($period < SECONDS_15DAYS) {
-		$chart_time_format = 'M d H:i';
-	}
-	elseif ($period < SECONDS_1MONTH) {
-		$chart_time_format = 'M d H\h';
-	}
-	elseif ($period < SECONDS_6MONTHS) {
-		$chart_time_format = "M d H\h";
-	}
-	else {
-		$chart_time_format = "Y M d H\h";
-	}
-	
 	// Calculate source indexes
-	$i = 0;
-	$sources = array ();
-	foreach ($data['sources'] as $source => $value) {
-		$source_indexes[$source] = $i;
-		$sources[$i] = $source;
-		$i++;
-	}
-	
-	// Add sources to chart
-	$chart = array ();
-	foreach ($data['data'] as $timestamp => $data) {
-		$chart_date = date ($chart_time_format, $timestamp);
-		$chart[$chart_date] = array ();
-		foreach ($source_indexes as $source => $index) {
-			$chart[$chart_date][$index] = 0;
-		}
-		foreach ($data as $source => $value) {
-			$chart[$chart_date][$source_indexes[$source]] = $value;
+	foreach ($data['sources'] as $key => $value) {
+		$i = 0;
+		foreach($data['data'] as $k => $v){
+			$chart['netflow_' . $key]['data'][$i][0] = $k * 1000;
+			$chart['netflow_' . $key]['data'][$i][1] = $v[$key];
+			$i++;
 		}
 	}
-	
-	
-	$flash_chart = $config['flash_charts'];
-	if ($only_image) {
-		$flash_chart = false;
-	}
-	
+
 	if ($config['homeurl'] != '') {
 		$homeurl = $config['homeurl'];
 	}
 	else {
 		$homeurl = '';
 	}
-	
+
 	if($config["fixed_graph"] == false){
 		$water_mark = array('file' =>
 			$config['homedir'] . "/images/logo_vertical_water.png",
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
-	}
-	
-	$color = array();
-	$color[0] = array('border' => '#000000',
-		'color' => $config['graph_color1'],
-		'alpha' => CHART_DEFAULT_ALPHA);
-	$color[1] = array('border' => '#000000',
-		'color' => $config['graph_color2'],
-		'alpha' => CHART_DEFAULT_ALPHA);
-	$color[2] = array('border' => '#000000',
-		'color' => $config['graph_color3'],
-		'alpha' => CHART_DEFAULT_ALPHA);
-	$color[3] = array('border' => '#000000',
-		'color' => $config['graph_color4'],
-		'alpha' => CHART_DEFAULT_ALPHA);
-	$color[4] = array('border' => '#000000',
-		'color' => $config['graph_color5'],
-		'alpha' => CHART_DEFAULT_ALPHA);
-	$color[5] = array('border' => '#000000',
-		'color' => $config['graph_color6'],
-		'alpha' => CHART_DEFAULT_ALPHA);
-	$color[6] = array('border' => '#000000',
-		'color' => $config['graph_color7'],
-		'alpha' => CHART_DEFAULT_ALPHA);
-	$color[7] = array('border' => '#000000',
-		'color' => $config['graph_color8'],
-		'alpha' => CHART_DEFAULT_ALPHA);
-	$color[8] = array('border' => '#000000',
-		'color' => $config['graph_color9'],
-		'alpha' => CHART_DEFAULT_ALPHA);
-	$color[9] = array('border' => '#000000',
-		'color' => $config['graph_color10'],
-		'alpha' => CHART_DEFAULT_ALPHA);
-	$color[11] = array('border' => '#000000',
-		'color' => COL_GRAPH9,
-		'alpha' => CHART_DEFAULT_ALPHA);
-	$color[12] = array('border' => '#000000',
-		'color' => COL_GRAPH10,
-		'alpha' => CHART_DEFAULT_ALPHA);
-	$color[13] = array('border' => '#000000',
-		'color' => COL_GRAPH11,
-		'alpha' => CHART_DEFAULT_ALPHA);
-	$color[14] = array('border' => '#000000',
-		'color' => COL_GRAPH12,
-		'alpha' => CHART_DEFAULT_ALPHA);
-	$color[15] = array('border' => '#000000',
-		'color' => COL_GRAPH13,
-		'alpha' => CHART_DEFAULT_ALPHA);
 
-	return area_graph($flash_chart, $chart, $width, $height, $color,
-		$sources, array (), ui_get_full_url("images/image_problem_area_small.png", false, false, false),
-		"", $unit, $homeurl,
-		$config['homedir'] .  "/images/logo_vertical_water.png",
-		$config['fontpath'], $config['font_size'], $unit, $ttl);
+			$water_mark = 	$config['homedir'] .  "/images/logo_vertical_water.png";
+	}
+
+	if($ttl >= 2){
+		$only_image = true;
+	}
+	else{
+		$only_image = false;
+	}
+
+	$params =array(
+		'agent_module_id'     => false,
+		'period'              => $period,
+		'width'               =>'90%',
+		'height'              => 450,
+		'unit'                => $unit,
+		'only_image'          => $only_image,
+		'homeurl'             => $homeurl,
+		'menu'                => true,
+		'backgroundColor'     => 'white',
+		'type_graph'          => 'area',
+		'font'                => $config['fontpath'],
+		'font-size'           => $config['font_size'],
+		'array_data_create'   => $chart
+	);
+
+	return grafico_modulo_sparse($params);
 }
 
 /**
@@ -4101,80 +4089,59 @@ function graph_netflow_aggregate_area ($data, $period, $width, $height, $unit = 
 function graph_netflow_total_area ($data, $period, $width, $height, $unit = '', $ttl = 1, $only_image = false) {
 	global $config;
 	global $graphic_type;
-	
+
 	if (empty ($data)) {
 		echo fs_error_image ();
 		return;
 	}
-	
-	if ($period <= SECONDS_6HOURS) {
-		$chart_time_format = 'H:i:s';
-	}
-	elseif ($period < SECONDS_1DAY) {
-		$chart_time_format = 'H:i';
-	}
-	elseif ($period < SECONDS_15DAYS) {
-		$chart_time_format = 'M d H:i';
-	}
-	elseif ($period < SECONDS_1MONTH) {
-		$chart_time_format = 'M d H\h';
-	}
-	elseif ($period < SECONDS_6MONTHS) {
-		$chart_time_format = "M d H\h";
-	}
-	else {
-		$chart_time_format = "Y M d H\h";
+
+	// Calculate source indexes
+	$i=0;
+	foreach ($data as $key => $value) {
+		$chart['netflow']['data'][$i][0] = $key * 1000;
+		$chart['netflow']['data'][$i][1] = $value['data'];
+		$i++;
 	}
 
-	// Calculate min, max and avg values
-	$avg = 0;
-	foreach ($data as $timestamp => $value) {
-		$max = $value['data'];
-		$min = $value['data'];
-		break;
-	}
-	
-	// Populate chart
-	$count = 0;
-	$chart = array ();
-	foreach ($data as $timestamp => $value) {
-		$chart[date ($chart_time_format, $timestamp)] = $value;
-		if ($value['data'] > $max) {
-			$max = $value['data'];
-		}
-		if ($value['data'] < $min) {
-			$min = $value['data'];
-		}
-		$avg += $value['data'];
-		$count++;
-	}
-	if ($count > 0) {
-		$avg /= $count;
-	}
-
-	$flash_chart = $config['flash_charts'];
-	if ($only_image) {
-		$flash_chart = false;
-	}
-	
 	if ($config['homeurl'] != '') {
 		$homeurl = $config['homeurl'];
 	}
 	else {
 		$homeurl = '';
 	}
-	
+
 	if($config["fixed_graph"] == false){
 		$water_mark = array('file' =>
 			$config['homedir'] . "/images/logo_vertical_water.png",
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+
+			$water_mark = 	$config['homedir'] .  "/images/logo_vertical_water.png";
 	}
-	
-	$legend = array (__('Max.') . ' ' . format_numeric($max) . ' ' . __('Min.') . ' ' . format_numeric($min) . ' ' . __('Avg.') . ' ' . format_numeric ($avg));
-	return area_graph($flash_chart, $chart, $width, $height, array (), $legend,
-		array (), ui_get_full_url("images/image_problem_area_small.png", false, false, false),
-		"", "", $homeurl, $water_mark,
-		$config['fontpath'], $config['font_size'], $unit, $ttl);
+
+	if($ttl >= 2){
+		$only_image = true;
+	}
+	else{
+		$only_image = false;
+	}
+
+	$params =array(
+		'agent_module_id'     => false,
+		'period'              => $period,
+		'width'               =>'90%',
+		'height'              => 450,
+		'unit'                => $unit,
+		'only_image'          => $only_image,
+		'homeurl'             => $homeurl,
+		'menu'                => true,
+		'backgroundColor'     => 'white',
+		'type_graph'          => 'area',
+		'font'                => $config['fontpath'],
+		'font-size'           => $config['font_size'],
+		'array_data_create'   => $chart
+	);
+
+	return grafico_modulo_sparse($params);
 }
 
 /**
@@ -4183,11 +4150,16 @@ function graph_netflow_total_area ($data, $period, $width, $height, $unit = '', 
 function graph_netflow_aggregate_pie ($data, $aggregate, $ttl = 1, $only_image = false) {
 	global $config;
 	global $graphic_type;
-	
+
 	if (empty ($data)) {
 		return fs_error_image ();
 	}
-	
+
+	$date_array = array();
+	$date_array["period"]     = 300;
+	$date_array["final_date"] = time();
+	$date_array["start_date"] = time() - 300;
+
 	$i = 0;
 	$values = array();
 	$agg = '';
@@ -4201,18 +4173,18 @@ function graph_netflow_aggregate_pie ($data, $aggregate, $ttl = 1, $only_image =
 		}
 		$i++;
 	}
-	
+
 	$flash_chart = $config['flash_charts'];
 	if ($only_image) {
 		$flash_chart = false;
 	}
-	
+
 	if($config["fixed_graph"] == false){
 		$water_mark = array('file' =>
 			$config['homedir'] . "/images/logo_vertical_water.png",
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
-	
+
 	return pie3d_graph($flash_chart, $values, 370, 200,
 		__('Other'), $config['homeurl'], $water_mark,
 		$config['fontpath'], $config['font_size'], $ttl);

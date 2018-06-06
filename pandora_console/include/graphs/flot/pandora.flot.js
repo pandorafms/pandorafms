@@ -859,24 +859,25 @@ function pandoraFlotArea(
 	graph_id, values, legend, agent_module_id,
 	series_type, watermark, date_array,
 	data_module_graph, params,
-	force_integer, series_suffix_str,
+	force_integer,
 	background_color, legend_color, short_data,
 	events_array
 ) {
 
 	//diferents vars
-	var unit      = params.unit ? params.unit : '';
-	var homeurl   = params.homeurl;
-	var font_size = params.font_size;
-	var font      = params.font;
-	var width     = params.width;
-	var height    = params.height;
-	var vconsole  = params.vconsole;
-	var dashboard = params.dashboard;
-	var menu      = params.menu;
-	var min_x     = date_array['start_date'] *1000;
-	var max_x     = date_array['final_date'] *1000;
-	var type      = params.stacked;
+	var unit       = params.unit ? params.unit : '';
+	var homeurl    = params.homeurl;
+	var font_size  = params.font_size;
+	var font       = params.font;
+	var width      = params.width;
+	var height     = params.height;
+	var vconsole   = params.vconsole;
+	var dashboard  = params.dashboard;
+	var menu       = params.menu;
+	var min_x      = date_array['start_date'] *1000;
+	var max_x      = date_array['final_date'] *1000;
+	var type       = params.stacked;
+	var show_legend= params.show_legend;
 
 	if(typeof type === 'undefined' || type == ''){
 		type = params.type_graph;
@@ -1564,7 +1565,7 @@ function pandoraFlotArea(
 				data_base.push({
 					id: 'serie_' + i,
 					data: value.data,
-					label: index + series_suffix_str,
+					label: index,
 					color: value.color,
 					lines: {
 						show: line_show,
@@ -1583,15 +1584,22 @@ function pandoraFlotArea(
 		}
 		i++;
 	});
-console.log(legend);
+
 	// The first execution, the graph data is the base data
 	datas = data_base;
 	font_size = 8;
 	// minTickSize
 	var count_data = datas[0].data.length;
-	var min_tick_pixels = 80;
+	var min_tick = datas[0].data[0][0];
+	var max_tick = datas[0].data[count_data - 1][0];
 
-	var maxticks = date_array['period'] / 3600 /6;
+	var number_ticks = 8;
+	if(vconsole){
+		number_ticks = 5;
+	}
+
+	var maxticks = date_array['period'] / 3600 / number_ticks;
+
 	var options = {
 			series: {
 				stack: stacked,
@@ -1622,9 +1630,8 @@ console.log(legend);
 			xaxes: [{
 				axisLabelFontSizePixels: font_size,
 				mode: "time",
-				tickFormatter: xFormatter,
-				tickSize: [maxticks, 'hour'],
-				labelWidth: 70
+				//tickFormatter: xFormatter,
+				tickSize: [maxticks, 'hour']
 			}],
 			yaxes: [{
 				tickFormatter: yFormatter,
@@ -1633,7 +1640,7 @@ console.log(legend);
 				labelWidth: 30,
 				position: 'left',
 				font: font,
-				reserveSpace: true,
+				reserveSpace: true
 			}],
 			legend: {
 				position: 'se',
@@ -1641,6 +1648,7 @@ console.log(legend);
 				labelFormatter: lFormatter
 			}
 		};
+
 	if (vconsole) {
 		options.grid['hoverable'] = false;
 		options.grid['clickable'] = false;
@@ -1664,15 +1672,16 @@ console.log(legend);
 			$('#'+graph_id).css('height', hDiff);
 		}
 	}
-
-	if (vconsole) {
+console.log(vconsole);
+/*	
+if (vconsole) {
 		var myCanvas = plot.getCanvas();
 		plot.setupGrid(); // redraw plot to new size
 		plot.draw();
 		var image = myCanvas.toDataURL("image/png");
 		return;
 	}
-
+*/
 	// Adjust the overview plot to the width and position of the main plot
 	adjust_left_width_canvas(graph_id, 'overview_'+graph_id);
 	update_left_width_canvas(graph_id);
@@ -1714,9 +1723,8 @@ console.log(legend);
 			xaxes: [{
 				axisLabelFontSizePixels: font_size,
 				mode: "time",
-				tickFormatter: xFormatter,
+				//tickFormatter: xFormatter,
 				tickSize: [maxticks, 'hour'],
-				labelWidth: 70
 			}],
 			yaxes: [{
 				tickFormatter: yFormatter,
@@ -1777,7 +1785,7 @@ console.log(legend);
 					},
 					xaxes: [{
 						mode: "time",
-						tickFormatter: xFormatter,
+						//tickFormatter: xFormatter,
 						tickSize: [maxticks_zoom, 'hour']
 					}],
 					yaxis:{
@@ -1812,7 +1820,7 @@ console.log(legend);
 					},
 					xaxes: [{
 						mode: "time",
-						tickFormatter: xFormatter,
+						//tickFormatter: xFormatter,
 						tickSize: [maxticks_zoom, 'hour']
 					}],
 					yaxis:{
@@ -1833,9 +1841,8 @@ console.log(legend);
 					}
 			}));
 		}
-
-		$('#menu_cancelzoom_' + graph_id)
-			.attr('src', homeurl + '/images/zoom_cross_grey.png');
+console.log(homeurl);
+		$('#menu_cancelzoom_' + graph_id).attr('src', homeurl + '/images/zoom_cross_grey.png');
 
 	//	currentRanges = ranges;
 		// don't fire event on the overview to prevent eternal loop
@@ -1939,7 +1946,7 @@ console.log(legend);
 				y = y / 1000;
 			}
 
-			var label_aux = legend[series.label] + series_suffix_str;
+			var label_aux = legend[series.label];
 
 			// The graphs of points type and unknown graphs will dont be updated
 			if (series_type[dataset[k]["label"]] != 'points' &&
@@ -2070,21 +2077,26 @@ console.log(legend);
 		}
 	});
 
-	$('#'+graph_id).bind('mouseout',resetInteractivity);
-	$('#overview_'+graph_id).bind('mouseout',resetInteractivity);
+	$('#'+graph_id).bind('mouseout',resetInteractivity(vconsole));
+	
+	if(!vconsole){
+		$('#overview_'+graph_id).bind('mouseout',resetInteractivity);
+	}
 
 	// Reset interactivity styles
-	function resetInteractivity() {
+	function resetInteractivity(vconsole) {
 		$('#timestamp_'+graph_id).hide();
 		dataset = plot.getData();
 		for (i = 0; i < dataset.length; ++i) {
 			var series = dataset[i];
-			var label_aux = legend[series.label] + ' ' + series_suffix_str;
+			var label_aux = legend[series.label];
 			$('#legend_' + graph_id + ' .legendLabel')
 				.eq(i).html(label_aux);
 		}
 		plot.clearCrosshair();
-		overview.clearCrosshair();
+		if(!vconsole){
+			overview.clearCrosshair();
+		}
 	}
 
 	// Format functions
@@ -2124,8 +2136,7 @@ console.log(legend);
 		}
 
 		// Get only two decimals
-		//XXXXXXXXXX
-		//formatted = round_with_decimals(formatted, 100);
+		formatted = round_with_decimals(formatted, 100);
 		return '<div class='+font+' style="font-size:'+font_size+'pt;">'+formatted+'</div>';
 	}
 
@@ -2247,17 +2258,17 @@ console.log(legend);
 		$('#legend_'+graph_id).css('margin-bottom').split('px')[0]);
 		$('#legend_'+graph_id).css('margin-bottom', '10px');
 		parent_height = parseInt($('#menu_'+graph_id).parent().css('height').split('px')[0]);
-		adjust_menu(graph_id, plot, parent_height, width);
+		adjust_menu(graph_id, plot, parent_height, width, show_legend);
 	}
 
 	if (!dashboard) {
 		if (water_mark)
 			set_watermark(graph_id, plot, $('#watermark_image_'+graph_id).attr('src'));
-		adjust_menu(graph_id, plot, parent_height, width);
+		adjust_menu(graph_id, plot, parent_height, width, show_legend);
 	}
 }
 
-function adjust_menu(graph_id, plot, parent_height, width) {
+function adjust_menu(graph_id, plot, parent_height, width, show_legend) {
 	if ($('#'+graph_id+' .xAxis .tickLabel').eq(0).css('width') != undefined) {
 		left_ticks_width = $('#'+graph_id+' .xAxis .tickLabel').eq(0).css('width').split('px')[0];
 	}
@@ -2267,7 +2278,12 @@ function adjust_menu(graph_id, plot, parent_height, width) {
 
 	var parent_height_new = 0;
 
-	var legend_height = parseInt($('#legend_'+graph_id).css('height').split('px')[0]) + parseInt($('#legend_'+graph_id).css('margin-top').split('px')[0]);
+	if(show_legend){
+		var legend_height = parseInt($('#legend_'+graph_id).css('height').split('px')[0]) + parseInt($('#legend_'+graph_id).css('margin-top').split('px')[0]);
+	}
+	else{
+		var legend_height = 0;
+	}
 
 	var menu_height = '25';
 

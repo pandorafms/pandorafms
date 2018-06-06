@@ -1553,7 +1553,10 @@ function paint_graph_status(min_w, max_w, min_c, max_c, inverse_w, inverse_c, er
 	}
 }
 
-function round_with_decimals (value, multiplier = 1) {
+function round_with_decimals(value, multiplier) {
+	// Default values
+	if (typeof(multiplier) === "undefined") multiplier = 1;
+
 	// Return non numeric types without modification
 	if (typeof(value) !== "number") return value;
 
@@ -1564,24 +1567,6 @@ function round_with_decimals (value, multiplier = 1) {
 	return round_with_decimals (value, multiplier * 10);
 }
 
-/*
-
-		$("body").append('<div id="event_delete_confirm_dialog"><h4>' + '<?php echo __('Are you sure?'); ?>' + '</h4></div>');
-		$("#event_delete_confirm_dialog").dialog({
-			resizable: false,
-			draggable: false,
-			modal: true,
-			height: 280,
-			width: 330,
-			overlay: {
-					opacity: 0.5,
-					background: "black"
-				},
-			closeOnEscape: false,
-			open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); }
-		});
-*/
-
 /**
  * Display a confirm dialog box
  *
@@ -1590,12 +1575,7 @@ function round_with_decimals (value, multiplier = 1) {
  * @param string Cancel button text
  * @param function Callback to action when ok button is pressed
 */
-function display_confirm_dialog (
-	message = '',
-	ok_text = '',
-	cancel_text = '',
-	ok_function = function () {}
-) {
+function display_confirm_dialog (message, ok_text, cancel_text, ok_function) {
 	// Clean function to close the dialog
 	var clean_function = function () {
 		$("#pandora_confirm_dialog_text").hide();

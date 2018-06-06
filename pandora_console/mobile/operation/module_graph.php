@@ -153,7 +153,8 @@ class ModuleGraph {
 								'compare'             => $time_compare,
 								'show_unknown'        => $this->unknown_graph,
 								'menu'                => false,
-								'type_graph'          => $config['type_module_charts']
+								'type_graph'          => $config['type_module_charts'],
+								'vconsole'            => true
 							);
 
 							$graph = grafico_modulo_sparse($params);

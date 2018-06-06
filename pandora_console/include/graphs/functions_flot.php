@@ -103,7 +103,7 @@ function include_javascript_dependencies_flot_graph($return = false) {
 function flot_area_graph (
 	$agent_module_id, $array_data,
 	$legend, $series_type, $date_array,
-	$data_module_graph, $params, $water_mark, $series_suffix_str,
+	$data_module_graph, $params, $water_mark,
 	$array_events_alerts ) {
 
 	global $config;
@@ -114,8 +114,7 @@ function flot_area_graph (
 	$graph_id = uniqid('graph_');
 
 	$background_style = '';
-	switch ($params['background']) {
-		default:
+	switch ($params['backgroundColor']) {
 		case 'white':
 			$background_style = ' background: #fff; ';
 			break;
@@ -125,13 +124,19 @@ function flot_area_graph (
 		case 'transparent':
 			$background_style = '';
 			break;
+		default:
+			$background_style = 'background-color: ' . $params['backgroundColor'];
+			break;
 	}
 
 	///XXXXXXX los px caca
 	// Parent layer
-	$return = "<div class='parent_graph' style='width: " . ($params['width']) . "; " . $background_style . "'>";
+	$return = "<div class='parent_graph' style='width: " . ($params['width']) . "; height:" . ($params['height'] + 30) . "px; " . $background_style . "'>";
 	// Set some containers to legend, graph, timestamp tooltip, etc.
-	$return .= "<p id='legend_$graph_id' class='legend_graph' style='font-size:" . $params['font_size'] ."pt !important;'></p>";
+	if($params['show_legend']){
+		$return .= "<p id='legend_$graph_id' class='legend_graph' style='font-size:" . $params['font_size'] ."pt !important;'></p>";
+	}
+
 	if(!isset($params['combined']) || !$params['combined']){
 		$yellow_threshold = $data_module_graph['w_min'];
 		$red_threshold    = $data_module_graph['c_min'];
@@ -171,12 +176,14 @@ function flot_area_graph (
 
 	if ($params['menu']) {
 		$return .= menu_graph(
-			$yellow_threshold, $red_threshold,
-			$yellow_up, $red_up, $yellow_inverse,
-			$red_inverse, $params['dashboard'],
-			$params['vconsole'],
-			$graph_id, $params['width'],
-			$params['homeurl']
+			$yellow_threshold,
+			$red_threshold,
+			$yellow_up,
+			$red_up,
+			$yellow_inverse,
+			$red_inverse,
+			$graph_id,
+			$params
 		);
 	}
 
@@ -281,7 +288,6 @@ function flot_area_graph (
 		"JSON.parse('$data_module_graph'), \n" .
 		"JSON.parse('$params'), \n" .
 		"$force_integer, \n" .
-		"'$series_suffix_str', \n" .
 		"'$background_color', \n" .
 		"'$legend_color', \n" .
 		"'$short_data', \n" .
@@ -299,8 +305,7 @@ function flot_area_graph (
 function menu_graph(
 	$yellow_threshold, $red_threshold,
 	$yellow_up, $red_up, $yellow_inverse,
-	$red_inverse, $dashboard, $vconsole,
-	$graph_id, $width, $homeurl
+	$red_inverse, $graph_id, $params
 ){
 	$return = '';
 	$threshold = false;
@@ -308,34 +313,31 @@ function menu_graph(
 		$threshold = true;
 	}
 
-	$nbuttons = 3;
-
-	if ($threshold) {
-		$nbuttons++;
-	}
-	$menu_width = 25 * $nbuttons + 15;
-	if ( $dashboard == false AND $vconsole == false) {
-		$return .= "<div id='geneal_menu_$graph_id' class='menu_graph' style='
-						width: 30px;
-						height: 250px;
+	if ( $params['dashboard'] == false AND $params['vconsole'] == false) {
+		$return .= "<div id='general_menu_$graph_id' class='menu_graph' style='
+						width: 20px;
+						height: 150px;
 						left:100%;
 						position: absolute;
 						top: 0px;
-						background-color: white;'>";
+						background-color: tranparent;'>";
 		$return .= "<div id='menu_$graph_id' " .
 			"style='display: none; " .
 				"text-align: center;" .
 				"position: relative;".
 				"border-bottom: 0px;'>
-			<a href='javascript:'><img id='menu_cancelzoom_$graph_id' src='".$homeurl."images/zoom_cross_grey.disabled.png' alt='".__('Cancel zoom')."' title='".__('Cancel zoom')."'></a>";
+			<a href='javascript:'><img id='menu_cancelzoom_$graph_id' src='".$params['homeurl']."images/zoom_cross_grey.disabled.png' alt='".__('Cancel zoom')."' title='".__('Cancel zoom')."'></a>";
 		if ($threshold) {
-			$return .= " <a href='javascript:'><img id='menu_threshold_$graph_id' src='".$homeurl."images/chart_curve_threshold.png' alt='".__('Warning and Critical thresholds')."' title='".__('Warning and Critical thresholds')."'></a>";
+			$return .= " <a href='javascript:'><img id='menu_threshold_$graph_id' src='".$params['homeurl']."images/chart_curve_threshold.png' alt='".__('Warning and Critical thresholds')."' title='".__('Warning and Critical thresholds')."'></a>";
 		}
-		$return .= " <a href='javascript:'>
-			<img id='menu_overview_$graph_id' class='menu_overview' src='" . $homeurl . "images/chart_curve_overview.png' alt='" . __('Overview graph') . "' title='".__('Overview graph')."'></a>";
-
+		if($params['show_overview']){
+			$return .= " <a href='javascript:'>
+				<img id='menu_overview_$graph_id' class='menu_overview' src='" . $params['homeurl'] . "images/chart_curve_overview.png' alt='" . __('Overview graph') . "' title='".__('Overview graph')."'></a>";
+		}
 		// Export buttons
-		$return .= " <a href='javascript:'><img id='menu_export_csv_$graph_id' src='".$homeurl."images/csv_grey.png' alt='".__('Export to CSV')."' title='".__('Export to CSV')."'></a>";
+		if($params['show_export_csv']){
+			$return .= " <a href='javascript:'><img id='menu_export_csv_$graph_id' src='".$params['homeurl']."images/csv_grey.png' alt='".__('Export to CSV')."' title='".__('Export to CSV')."'></a>";
+		}
 		// Button disabled. This feature works, but seems that is not useful enough to the final users.
 		//$return .= " <a href='javascript:'><img id='menu_export_json_$graph_id' src='".$homeurl."images/json.png' alt='".__('Export to JSON')."' title='".__('Export to JSON')."'></a>";
 
@@ -343,11 +345,11 @@ function menu_graph(
 		$return .= "</div>";
 	}
 
-	if ($dashboard) {
-		$return .= "<div id='geneal_menu_$graph_id' class='menu_graph' style='
+	if ($params['dashboard']) {
+		$return .= "<div id='general_menu_$graph_id' class='menu_graph' style='
 						width: 30px;
 						height: 250px;
-						left: " . $width . "px;
+						left: " . $params['width'] . "px;
 						position: absolute;
 						top: 0px;
 						background-color: white;'>";
@@ -357,7 +359,7 @@ function menu_graph(
 				"text-align: center;" .
 				"position: relative;".
 				"border-bottom: 0px;'>
-			<a href='javascript:'><img id='menu_cancelzoom_$graph_id' src='".$homeurl."images/zoom_cross_grey.disabled.png' alt='".__('Cancel zoom')."' title='".__('Cancel zoom')."'></a>";
+			<a href='javascript:'><img id='menu_cancelzoom_$graph_id' src='".$params['homeurl']."images/zoom_cross_grey.disabled.png' alt='".__('Cancel zoom')."' title='".__('Cancel zoom')."'></a>";
 
 		$return .= "</div>";
 		$return .= "</div>";

@@ -1049,7 +1049,8 @@ function visual_map_print_item($mode = "read", $layoutData,
 						'only_image'          => $only_image,
 						'menu'                => false,
 						'backgroundColor'     => $layoutData['image'],
-						'type_graph'          => $type_graph
+						'type_graph'          => $type_graph,
+						'vconsole'            => true
 					);
 
 					if ($layoutData['label_position']=='left') {

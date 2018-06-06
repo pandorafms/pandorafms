@@ -223,7 +223,7 @@ function vbar_graph(
 function area_graph(
 	$agent_module_id, $array_data,
 	$legend, $series_type, $date_array,
-	$data_module_graph, $params, $water_mark, $series_suffix_str,
+	$data_module_graph, $params, $water_mark,
 	$array_events_alerts
 ) {
 	global $config;
@@ -239,12 +239,11 @@ function area_graph(
 		$data_module_graph,
 		$params,
 		$water_mark,
-		$series_suffix_str,
 		$array_events_alerts
 	);
 }
 
-function stacked_bullet_chart($flash_chart, $chart_data, $width, $height,
+function stacked_bullet_chart($chart_data, $width, $height,
 	$color, $legend, $long_index, $no_data_image, $xaxisname = "",
 	$yaxisname = "", $water_mark = "", $font = '', $font_size = '',
 	$unit = '', $ttl = 1, $homeurl = '', $backgroundColor = 'white') {
@@ -256,75 +255,43 @@ function stacked_bullet_chart($flash_chart, $chart_data, $width, $height,
 	if (empty($chart_data)) {
 		return '<img src="' . $no_data_image . '" />';
 	}
-	if ($flash_chart) {
-		return d3_bullet_chart(
-				$chart_data,
-				$width,
-				$height,
-				$color,
-				$legend,
-				$homeurl,
-				$unit,
-				$font,
-				$font_size
-				);
-	}
-	else {
-		$legend = array();
-		$new_data = array();
-		foreach($chart_data as $key => $data) {
-			$temp[] = ($data['min'] != false) ? $data['min'] : 0;
-			$temp[] = ($data['value'] != false) ? $data['value'] : 0;
-			$temp[] = ($data['max'] != false) ? $data['max'] : 0;
 
-			$legend[] = $data['label'];
-			array_push($new_data, $temp);
-			$temp = array();
-		}
-		$graph = array();
-		$graph['data'] = $new_data;
-		$graph['width'] = $width;
-		$graph['height'] = $height;
-		$graph['color'] = $color;
-		$graph['legend'] = $legend;
-		$graph['xaxisname'] = $xaxisname;
-		$graph['yaxisname'] = $yaxisname;
-		$graph['water_mark'] = $water_mark_file;
-		$graph['font'] = $font;
-		$graph['font_size'] = $font_size;
-		$graph['backgroundColor'] = $backgroundColor;
+	return d3_bullet_chart(
+		$chart_data,
+		$width,
+		$height,
+		$color,
+		$legend,
+		$homeurl,
+		$unit,
+		$font,
+		$font_size
+	);
 
-		$id_graph = serialize_in_temp($graph, null, $ttl);
-
-		return "<img src='" . $homeurl . "include/graphs/functions_pchart.php?static_graph=1&graph_type=bullet_chart&ttl=".$ttl."&id_graph=" . $id_graph . "' />";
-	}
 }
 
-function stacked_gauge($flash_chart, $chart_data, $width, $height,
-	$color, $legend, $long_index, $no_data_image, $xaxisname = "",
-	$yaxisname = "", $water_mark = "", $font = '', $font_size = '',
-	$unit = '', $ttl = 1, $homeurl = '', $backgroundColor = 'white') {
+function stacked_gauge($chart_data, $width, $height,
+	$color, $legend, $no_data_image, $font = '', $font_size = '',
+	$unit = '', $homeurl = '') {
 
 	include_once('functions_d3.php');
-
-	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 
 	if (empty($chart_data)) {
 		return '<img src="' . $no_data_image . '" />';
 	}
 
 	return d3_gauges(
-			$chart_data,
-			$width,
-			$height,
-			$color,
-			$legend,
-			$homeurl,
-			$unit,
-			$font,
-			$font_size + 2,
-			$no_data_image
-			);
+		$chart_data,
+		$width,
+		$height,
+		$color,
+		$legend,
+		$homeurl,
+		$unit,
+		$font,
+		$font_size + 2,
+		$no_data_image
+	);
 }
 
 function kiviat_graph($graph_type, $flash_chart, $chart_data, $width,

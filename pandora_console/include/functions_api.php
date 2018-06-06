@@ -10067,7 +10067,7 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4) {
 		SECONDS_1HOUR; // 1 hour by default
 
 	$graph_threshold =
-		(!empty($other) && isset($other['data'][2]))
+		(!empty($other) && isset($other['data'][2]) && !$other['data'][2])
 		?
 		$other['data'][2]
 		:

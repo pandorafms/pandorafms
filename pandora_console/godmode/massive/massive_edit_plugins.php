@@ -109,6 +109,7 @@ if (is_ajax()) {
 				'nombre' => $module_names
 			);
 		$module_plugin_macros = db_get_all_rows_filter('tagente_modulo', $filter, $fields);
+		$module_plugin_macros = io_safe_output($module_plugin_macros);
 		if (empty($module_plugin_macros)) $module_plugin_macros = array();
 		
 		$module_plugin_macros = array_reduce($module_plugin_macros, function($carry, $item) {

@@ -34,6 +34,7 @@ enterprise_include_once ('include/functions_local_components.php');
 enterprise_include_once ('include/functions_events.php');
 enterprise_include_once ('include/functions_agents.php');
 enterprise_include_once ('include/functions_modules.php');
+enterprise_include_once ('include/functions_clusters.php');
 
 /**
  * Parse the "other" parameter.
@@ -8822,6 +8823,40 @@ function api_get_agent_name($id_agent, $trash1, $trash2, $returnType) {
 }
 
 /**
+ *  Return the ID or an hash of IDs of the detected given agents
+ * 
+ *  @param array or value $data
+ * 
+ * 
+**/
+function api_get_agent_id($trash1, $trash2, $data, $returnType) {
+	$response;
+
+	if (is_metaconsole()) {
+		return;
+	}
+	if (empty($returnType)) {
+		$returnType = "json";
+	}
+
+	$response = array();
+
+	if ($data["type"] == "array") {
+		$response["type"] = "array";
+		$response["data"] = array();
+
+		foreach ($data["data"] as $name) {
+			$response["data"][$name] = agents_get_agent_id($name, 1);
+		}
+	} else {
+		$response["type"] = "string";
+		$response["data"] = agents_get_agent_id($data["data"], 1);
+	}
+
+	returnData($returnType, $response);
+}
+
+/**
  * Agent alias for a given id
  * 
  * @param int $id_agent 
@@ -10204,7 +10239,7 @@ function api_set_new_cluster($thrash1, $thrash2, $other, $thrash3) {
 			db_pandora_audit("Report management", "Fail try to create agent");
 		
 		returnData('string',
-			array('type' => 'string', 'data' => (int)((bool)$id_cluster)));
+			array('type' => 'string', 'data' => (int)$id_cluster));
 		}
 	}
 	
@@ -10253,7 +10288,7 @@ function api_set_new_cluster($thrash1, $thrash2, $other, $thrash3) {
 			// 	
 				if($element["type"] == "AA"){
 			// 								
-						$tcluster_module = db_process_sql_insert('tcluster_item',array('name'=>$element["name"],'id_cluster'=>$element["id_cluster"],'critical_limit'=>$element["critical_limit"],'warning_limit'=>$element["warning_limit"]));
+						$tcluster_module = db_process_sql_insert('tcluster_item',array('name'=>io_safe_input($element["name"]),'id_cluster'=>$element["id_cluster"],'critical_limit'=>$element["critical_limit"],'warning_limit'=>$element["warning_limit"]));
 						
 						$id_agent = db_process_sql('select id_agent from tcluster where id = '.$element["id_cluster"]);
 						
@@ -10272,7 +10307,7 @@ function api_set_new_cluster($thrash1, $thrash2, $other, $thrash3) {
 						$get_module_interval_value = $get_module_type[0]['module_interval'];
 						
 						$values_module = array(
-							'nombre' => $element["name"],
+							'nombre' => io_safe_input($element["name"]),
 							'id_modulo' => 0,
 							'prediction_module' => 6,
 							'id_agente' => $id_agent[0]['id_agent'],
@@ -10623,5 +10658,95 @@ function api_get_cluster_status($id_cluster, $trash1, $trash2, $returnType) {
 	
 	returnData($returnType, $data);
 }
+
+function api_get_cluster_id_by_name($cluster_name, $trash1, $trash2, $returnType) {
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+	
+	$cluster_name = io_safe_output($cluster_name);
+	
+	$value = cluster_get_id_by_name($cluster_name);
+	
+	if ($value === false) {
+		returnError('id_not_found', $returnType);
+	}
+	
+	$data = array('type' => 'string', 'data' => $value);
+	
+	returnData($returnType, $data);
+}
+
+function api_get_agents_id_name_by_cluster_id($cluster_id, $trash1, $trash2, $returnType) {
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+	
+	$all_agents = cluster_get_agents_id_name_by_cluster_id($cluster_id);	
+	
+	if (count($all_agents) > 0 and $all_agents !== false) {
+		$data = array('type' => 'array', 'data' => $all_agents);
+		
+		returnData('json', $data);
+	}
+	else {
+		returnError('error_agents', 'No agents retrieved.');
+	}
+}
+
+function api_get_agents_id_name_by_cluster_name($cluster_name, $trash1, $trash2, $returnType) {
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+		
+	$all_agents = cluster_get_agents_id_name_by_cluster_name($cluster_name);
+	
+	if (count($all_agents) > 0 and $all_agents !== false) {
+		$data = array('type' => 'array', 'data' => $all_agents);
+		
+		returnData('json', $data);
+	}
+	else {
+		returnError('error_agents', 'No agents retrieved.');
+	}
+}
+
+function api_get_modules_id_name_by_cluster_id ($cluster_id){
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+	
+	$all_modules = cluster_get_modules_id_name_by_cluster_id($cluster_id);	
+	
+	if (count($all_modules) > 0 and $all_modules !== false) {
+		$data = array('type' => 'array', 'data' => $all_modules);
+		
+		returnData('json', $data);
+	}
+	else {
+		returnError('error_agent_modules', 'No modules retrieved.');
+	}
+	
+}
+
+function api_get_modules_id_name_by_cluster_name ($cluster_name){
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+	
+	$all_modules = cluster_get_modules_id_name_by_cluster_name($cluster_name);	
+	
+	if (count($all_modules) > 0 and $all_modules !== false) {
+		$data = array('type' => 'array', 'data' => $all_modules);
+		
+		returnData('json', $data);
+	}
+	else {
+		returnError('error_agent_modules', 'No modules retrieved.');
+	}
+	
+}
+
+
 
 ?>

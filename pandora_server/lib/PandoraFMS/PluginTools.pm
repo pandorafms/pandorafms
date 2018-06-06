@@ -31,7 +31,7 @@ our @ISA = qw(Exporter);
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "7.0NG.723";
-my $pandora_build = "180601";
+my $pandora_build = "180606";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 our %EXPORT_TAGS = ( 'all' => [ qw() ] );
@@ -40,6 +40,7 @@ our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 
 our @EXPORT = qw(
 	api_available
+	api_call
 	api_create_custom_field
 	api_create_tag
 	api_create_group
@@ -50,11 +51,12 @@ our @EXPORT = qw(
 	extract_dbpass
 	extract_key_map
 	get_addresses
+	get_current_utime_milis
 	get_lib_version
 	get_unit
 	get_unix_time
 	get_sys_environment
-	get_current_utime_milis
+	get_value_translated
 	getCurrentUTimeMilis
 	head
 	in_array
@@ -293,6 +295,37 @@ sub get_unit {
 	my $str = shift;
 	$str =~ s/[\d\.\,]//g;
 	return $str;
+}
+
+################################################################################
+# Get unit
+################################################################################
+sub get_value_translated {
+	my $str = shift;
+
+	if (empty($str)) {
+		return $str;
+	}
+	$str = trim($str);
+
+	my $value = $str;
+	my $unit = get_unit($str);
+	if(empty($unit)) {
+		return $str;
+	}
+
+	$value =~ s/$unit//g;
+
+	if ($unit =~ /kb/i) { return $value * (2**10);}
+	if ($unit =~ /kib/i) { return $value * (2**10);}
+	if ($unit =~ /mb/i) { return $value * (2**20);}
+	if ($unit =~ /mib/i) { return $value * (2**20);}
+	if ($unit =~ /gb/i) { return $value * (2**30);}
+	if ($unit =~ /gib/i) { return $value * (2**30);}
+	if ($unit =~ /tb/i) { return $value * (2**40);}
+	
+	return $value;
+
 }
 
 ################################################################################
@@ -1433,10 +1466,10 @@ sub api_available {
 	 	($api_url, $api_pass, $api_user, $api_user_pass) = @{$apidata};
 	}
 
-	$api_url       = $conf->{'api_url'}       unless empty($api_url);
-	$api_pass      = $conf->{'api_pass'}      unless empty($api_pass);
-	$api_user      = $conf->{'api_user'}      unless empty($api_user);
-	$api_user_pass = $conf->{'api_user_pass'} unless empty($api_user_pass);
+	$api_url       = $conf->{'api_url'}       if empty($api_url);
+	$api_pass      = $conf->{'api_pass'}      if empty($api_pass);
+	$api_user      = $conf->{'api_user'}      if empty($api_user);
+	$api_user_pass = $conf->{'api_user_pass'} if empty($api_user_pass);
 
 	my $op = "get";
 	my $op2 = "test";
@@ -1460,7 +1493,83 @@ sub api_available {
 			id => (empty($rs)?undef:trim($rs))
 		}
 	}
+}
 
+#########################################################################################
+# Pandora API call
+# apidata->{other} = [field1,field2,...,fieldi,...,fieldn]
+#########################################################################################
+sub api_call {
+	my ($conf, $apidata) = @_;
+	my ($api_url, $api_pass, $api_user, $api_user_pass,
+	 	 $op, $op2, $other_mode, $other, $return_type);
+	my $separator;
+
+	if (ref $apidata eq "ARRAY") {
+	 	($api_url, $api_pass, $api_user, $api_user_pass,
+	 	 $op, $op2, $return_type, $other_mode, $other) = @{$apidata};
+	}
+	if (ref $apidata eq "HASH") {
+		$api_url       = $apidata->{'api_url'};
+		$api_pass      = $apidata->{'api_pass'};
+		$api_user      = $apidata->{'api_user'};
+		$api_user_pass = $apidata->{'api_user_pass'};
+		$op            = $apidata->{'op'};
+		$op2           = $apidata->{'op2'};
+		$return_type   = $apidata->{'return_type'};
+		$other_mode    = "url_encode_separator_" . $apidata->{'url_encode_separator'} unless empty($apidata->{'url_encode_separator'});
+		$other_mode    = "url_encode_separator_|" if empty($other_mode);
+		($separator)   = $other_mode =~ /url_encode_separator_(.*)/;
+	}
+
+	$api_url       = $conf->{'api_url'}       if empty($api_url);
+	$api_pass      = $conf->{'api_pass'}      if empty($api_pass);
+	$api_user      = $conf->{'api_user'}      if empty($api_user);
+	$api_user_pass = $conf->{'api_user_pass'} if empty($api_user_pass);
+	$op            = $conf->{'op'}            if empty($op);
+	$op2           = $conf->{'op2'}           if empty($op2);
+	$return_type   = $conf->{'return_type'}   if empty($return_type);
+	$return_type   = 'json'                   if empty($return_type);
+	if (ref ($apidata->{'other'}) eq "ARRAY") {
+		$other_mode  = "url_encode_separator_|" if empty($other_mode);
+		($separator) = $other_mode =~ /url_encode_separator_(.*)/;
+
+		if (empty($separator)) {
+			$separator  = "|";
+			$other_mode = "url_encode_separator_|";
+		}
+
+		$other = join $separator, @{$apidata->{'other'}};
+	}
+	else {
+		$other = $apidata->{'other'};
+	}
+
+	my $call;
+
+	$call = $api_url . '?';
+	$call .= 'op=' . $op . '&op2=' . $op2;
+	$call .= '&other_mode=url_encode_separator_' . $separator;
+	$call .= '&other=' . $other;
+	$call .= '&apipass=' . $api_pass . '&user=' . $api_user . '&pass=' . $api_user_pass;
+	$call .= '&return_type=' . $return_type;
+
+	my $rs = call_url($conf, "$call");
+
+	if (ref($rs) ne "HASH") {
+		return {
+			rs => (empty($rs)?1:0),
+			error => (empty($rs)?"Empty response.":undef),
+			id => (empty($rs)?undef:trim($rs)),
+			response => (empty($rs)?undef:$rs),
+		}
+	}
+	else {
+		return {
+			rs => 1,
+			error => $rs->{'error'},
+		}
+	}
 }
 
 #########################################################################################
@@ -1473,10 +1582,10 @@ sub api_create_custom_field {
 	 	($api_url, $api_pass, $api_user, $api_user_pass) = @{$apidata};
 	}
 
-	$api_url       = $conf->{'api_url'}       unless empty($api_url);
-	$api_pass      = $conf->{'api_pass'}      unless empty($api_pass);
-	$api_user      = $conf->{'api_user'}      unless empty($api_user);
-	$api_user_pass = $conf->{'api_user_pass'} unless empty($api_user_pass);
+	$api_url       = $conf->{'api_url'}       if empty($api_url);
+	$api_pass      = $conf->{'api_pass'}      if empty($api_pass);
+	$api_user      = $conf->{'api_user'}      if empty($api_user);
+	$api_user_pass = $conf->{'api_user_pass'} if empty($api_user_pass);
 
 
 
@@ -1572,10 +1681,10 @@ sub api_create_tag {
 	 	($api_url, $api_pass, $api_user, $api_user_pass) = @{$apidata};
 	}
 
-	$api_url       = $conf->{'api_url'}       unless empty($api_url);
-	$api_pass      = $conf->{'api_pass'}      unless empty($api_pass);
-	$api_user      = $conf->{'api_user'}      unless empty($api_user);
-	$api_user_pass = $conf->{'api_user_pass'} unless empty($api_user_pass);
+	$api_url       = $conf->{'api_url'}       if empty($api_url);
+	$api_pass      = $conf->{'api_pass'}      if empty($api_pass);
+	$api_user      = $conf->{'api_user'}      if empty($api_user);
+	$api_user_pass = $conf->{'api_user_pass'} if empty($api_user_pass);
 
 	my $op = "set";
 	my $op2 = "create_tag";

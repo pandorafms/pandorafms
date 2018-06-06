@@ -3,7 +3,7 @@
 #
 %define name        pandorafms_server
 %define version     7.0NG.723
-%define release     180601
+%define release     180606
 
 Summary:            Pandora FMS Server
 Name:               %{name}
@@ -176,9 +176,11 @@ exit 0
 %{_bindir}/pandora_exec
 %{_bindir}/pandora_server
 %{_bindir}/tentacle_server
-%dir %{_localstatedir}/log/pandora
 %dir %{_sysconfdir}/pandora
 %dir %{_localstatedir}/spool/pandora
+
+%defattr(-,pandora,root, 754)
+%dir %{_localstatedir}/log/pandora
 
 %defattr(600,root,root)
 /etc/pandora/pandora_server.conf.new

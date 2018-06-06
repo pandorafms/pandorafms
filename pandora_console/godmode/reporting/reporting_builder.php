@@ -690,25 +690,18 @@ switch ($action) {
 				
 				switch ($type_access_selected) {
 					case 'group_view':
-						$edit = check_acl($config['id_user'],
-							$report['id_group'], "RW");
-						
-						if ($config['id_user'] == $report['id_user'] || is_user_admin ($config["id_user"])) {
-							$delete = true; //owner can delete
-						} else {
-							$delete = false;
-						}
+						$edit = check_acl($config['id_user'], $report['id_group'], "RW");
+						$delete =
+							$edit ||
+							is_user_admin ($config["id_user"]) ||
+							$config['id_user'] == $report['id_user'];
 						break;
 					case 'group_edit':
-						$edit = check_acl($config['id_user'],
-							$report['id_group_edit'], "RW");
-						
-						if ($config['id_user'] == $report['id_user'] || is_user_admin ($config["id_user"])) {
-							$delete = true; //owner can delete
-						} else {
-							$delete = check_acl($config['id_user'],
-								$report['id_group'], "RM");
-						}
+						$edit = check_acl($config['id_user'], $report['id_group_edit'], "RW");
+						$delete =
+							$edit ||
+							is_user_admin ($config["id_user"]) ||
+							$config['id_user'] == $report['id_user'];
 						break;
 					case 'user_edit':
 						if ($config['id_user'] == $report['id_user'] ||

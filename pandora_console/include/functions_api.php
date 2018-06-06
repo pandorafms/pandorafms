@@ -884,6 +884,8 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType) {
  */
 function api_get_module_properties($id_module, $trahs2, $other, $returnType)
 {
+	if (!api_check_agent_and_print_error(modules_get_agentmodule($id_module), $returnType)) return;
+
 	if ($other['type'] == 'array') {
 		$separator = $other['data'][0];
 		$returnReplace = $other['data'][1];
@@ -945,19 +947,20 @@ function api_get_module_properties_by_name($agent_name, $module_name, $other, $r
 	}
 
 	$agent_id = agents_get_agent_id($agent_name);
+	if ($agent_id == 0) {
+		returnError('error_get_module_properties_by_name', __('Does not exist agent with this name.'));
+		return;
+	}
+	if (!api_check_agent_and_print_error($agent_id, $returnType)) return;
+
 	$tagente_modulo = modules_get_agentmodule_id ($module_name, $agent_id);
+	if ($tagente_modulo === false) {
+		returnError('error_get_module_properties_by_name', __('Does not exist module with this name.'));
+		return;
+	}
 	$module_id = $tagente_modulo['id_agente_modulo'];
 
-	if( $agent_id > 0 && $module_id > 0 ) {
-		get_module_properties($module_id, $fields, $separator, $returnType, $returnReplace);
-	}
-	else {
-		if( ! $agent_id || $agent_id < 0 ) {
-			returnError('error_get_module_properties_by_name', __('Does not exist agent with this name.'));
-		} else {
-			returnError('error_get_module_properties_by_name', __('Does not exist module with this name.'));
-		}
-	}
+	get_module_properties($module_id, $fields, $separator, $returnType, $returnReplace);
 }
 
 /*
@@ -1002,22 +1005,19 @@ function api_get_module_properties_by_alias($alias, $module_name, $other, $retur
 		$fields = false;
 	}
 
-	$sql = sprintf('SELECT tagente_modulo.id_agente_modulo FROM tagente_modulo 
+	$sql = sprintf('SELECT tagente_modulo.id_agente_modulo, tagente.id_agente FROM tagente_modulo 
 					INNER JOIN tagente ON tagente_modulo.id_agente = tagente.id_agente 
 					WHERE tagente.alias LIKE "%s" AND tagente_modulo.nombre LIKE "%s"', $alias, $module_name); 
 
-	$module_id = db_get_value_sql($sql);
+	$data = db_get_row_sql($sql);
+	if ($data === false) {
+		returnError('error_get_module_properties_by_name', __('Does not exist the pair alias/module required.'));
+	}
+	if (!api_check_agent_and_print_error($data['id_agente'], $returnType)) return;
 
-	if( !empty($alias) && $module_id > 0 ) {
-		get_module_properties($module_id, $fields, $separator, $returnType, $returnReplace);
-	}
-	else {
-		if(empty($alias)) {
-			returnError('error_get_module_properties_by_name', __('Does not exist agent with this name.'));
-		} else {
-			returnError('error_get_module_properties_by_name', __('Does not exist module with this name.'));
-		}
-	}
+	$module_id = $data['id_agente_modulo'];
+
+	get_module_properties($module_id, $fields, $separator, $returnType, $returnReplace);
 }
 
 /*
@@ -1444,10 +1444,15 @@ function api_get_custom_field_id($t1, $t2, $other, $returnType) {
 	if (defined ('METACONSOLE')) {
 		return;
 	}
-	
+
 	$name = $other["data"][0];
 	$id = db_get_value ('id_field', 'tagent_custom_fields', 'name', $name);
-	
+
+	if ($id === false) {
+		returnError('id_not_found', $returnType);
+		return;
+	}
+
 	$data['type'] = "string";
 	$data["data"] = $id;
 	returnData("string", $data);
@@ -7712,18 +7717,20 @@ function api_get_gis_agent($id_agent, $trash1, $tresh2, $return_type, $user_in_d
 	if (defined ('METACONSOLE')) {
 		return;
 	}
-	
+
+	if (!api_check_agent_and_print_error($id_agent, $return_type)) return;
+
 	$agent_gis_data = db_get_row_sql("
 		SELECT *
 		FROM tgis_data_status
 		WHERE tagente_id_agente = " . $id_agent);
-	
+
 	if ($agent_gis_data) {
 		returnData($return_type,
 			array('type' => 'array', 'data' => array($agent_gis_data)));
 	}
 	else {
-		returnError('Error.');
+		returnError('get_gis_agent', __('There is not gis data for the agent'));
 	}
 }
 
@@ -8922,7 +8929,9 @@ function api_get_module_name($id_module, $trash1, $trash2, $returnType) {
 	if (defined ('METACONSOLE')) {
 		return;
 	}
-	
+
+	if (!api_check_agent_and_print_error(modules_get_agentmodule($id_module), $returnType)) return;
+
 	$sql = sprintf('SELECT nombre
 		FROM tagente_modulo
 		WHERE id_agente_modulo = %d', $id_module);
@@ -8940,44 +8949,75 @@ function api_get_module_name($id_module, $trash1, $trash2, $returnType) {
 
 // http://localhost/pandora_console/include/api.php?op=get&op2=alert_action_by_group&id=3&id2=1&apipass=1234&user=admin&pass=pandora
 function api_get_alert_action_by_group($id_group, $id_action, $trash2, $returnType) {
+	global $config;
+
 	if (defined ('METACONSOLE')) {
 		return;
 	}
-	
+
+	if (!check_acl($config['id_user'], $id_group, "LW")) {
+		returnError('forbidden', $returnType);
+		return;
+	}
+
+	// Get only the user groups
+	$filter_groups = "1 = 1";
+	if (!users_is_admin($config['id_user'])) {
+		$user_groups = implode (',', array_keys(users_get_groups()));
+		$filter_groups = "(ta.id_grupo IN ($user_groups) OR tasg.id_group IN ($user_groups))";
+	}
+
 	$sql = "SELECT SUM(internal_counter)
-		FROM talert_template_modules
-		WHERE id_alert_template IN 
-			(SELECT id
-			FROM talert_templates
-			WHERE id_group=$id_group AND id_alert_action = $id_action)";
-	
+		FROM
+			talert_template_modules tatm,
+			tagente ta LEFT JOIN tagent_secondary_group tasg
+				ON ta.id_agente = tasg.id_agent,
+			tagente_modulo tam
+		WHERE tam.id_agente = ta.id_agente
+			AND tatm.id_agent_module = tam.id_agente_modulo
+			AND ta.disabled = 0
+			AND $filter_groups";
+
 	$value = db_get_value_sql($sql);
-	
+
 	if ($value === false) {
-		returnError('data_not_found', $returnType);
+		returnError('data_not_found', __('No alert found'));
+		return;
 	}
 	else if ($value == '') {
 		$value = 0;
 	}
 	
 	$data = array('type' => 'string', 'data' => $value);
-	
 	returnData($returnType, $data);
 }
 
 // http://localhost/pandora_console/include/api.php?op=get&op2=event_info&id=58&apipass=1234&user=admin&pass=pandora
 function api_get_event_info($id_event, $trash1, $trash, $returnType) {
-	
+	global $config;
+
 	$table_events = 'tevento';
 	if (defined ('METACONSOLE')) {
 		$table_events = 'tmetaconsole_event';
 	}
-	
+
 	$sql = "SELECT *
 		FROM " . $table_events . "
 		WHERE id_evento=$id_event";
 	$event_data = db_get_row_sql($sql);
-	
+
+	// Check the access to group
+	if (!empty($event_data['id_grupo']) && $event_data['id_grupo'] > 0 && !$event_data['id_agente']) {
+		if (!check_acl($config['id_user'], $event_data['id_grupo'], "ER")) {
+			returnError('forbidden', $returnType);
+			return;
+		}
+	}
+	// Check the access to agent
+	if (!empty($event_data['id_agente']) && $event_data['id_agente'] > 0) {
+		if (!api_check_agent_and_print_error($event_data['id_agente'], $returnType)) return;
+	}
+
 	$i = 0;
 	foreach ($event_data as $key => $data) {
 		$data = strip_tags($data);
@@ -9435,10 +9475,17 @@ function api_set_validate_event_by_id ($id, $trash1, $trash2, $returnType) {
  */
 //  http://localhost/pandora_console/include/api.php?op=get&op2=pandora_servers&return_type=csv&apipass=1234&user=admin&pass=pandora
 function api_get_pandora_servers($trash1, $trash2, $other, $returnType) {
+	global $config;
+
 	if (defined ('METACONSOLE')) {
 		return;
 	}
-	
+
+	if (!check_acl($config['id_user'], 0, "AW")) {
+		returnError("forbidden", $returnType);
+		return;
+	}
+
 	if (!isset($other['data'][0]))
 		$separator = ';'; // by default
 	else
@@ -9631,10 +9678,17 @@ function api_set_pagerduty_webhook($type, $matchup_path, $tresh2, $return_type) 
  *
  */
 function api_get_special_days($thrash1, $thrash2, $other, $thrash3) {
+	global $config;
+
 	if (defined ('METACONSOLE')) {
 		return;
 	}
-	
+
+	if (!check_acl($config['id_user'], 0, "LM")) {
+		returnError('forbidden', 'csv');
+		return;
+	}
+
 	if (!isset($other['data'][0]))
 		$separator = ';'; // by default
 	else

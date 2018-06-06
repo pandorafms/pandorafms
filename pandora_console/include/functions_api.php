@@ -4983,10 +4983,17 @@ function api_set_tag($id, $thrash1, $other, $thrash3) {
  */
 
 function api_get_all_planned_downtimes ($thrash1, $thrash2, $other, $returnType = 'json') {
+	global $config;
+
 	if (defined ('METACONSOLE')) {
 		return;
 	}
-	
+
+	if(!check_acl($config['id_user'], 0, "AR")) {
+		returnError('forbidden', $returnType);
+		return;
+	}
+
 	$values = array();
 	$values = array(
 		"name LIKE '%".$other['data'][0]."%'"
@@ -5003,7 +5010,12 @@ function api_get_all_planned_downtimes ($thrash1, $thrash2, $other, $returnType 
 		
 	
 	$returned = all_planned_downtimes($values);
-	
+
+	if ($returned === false) {
+		returnError("error_get_all_planned_downtimes", __('No planned downtime retrieved'));
+		return;
+	}
+
 	returnData($returnType,
 			array('type' => 'array', 'data' => $returned));
 }
@@ -10134,14 +10146,9 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4) {
 		returnError('error_module_graph', __(''));
 		return;
 	}
-	
-	$id_exist = (bool) db_get_value ('id_agente_modulo', 'tagente_modulo', 'id_agente_modulo', $id_module);
-	
-	if (!$id_exist) {
-		// returnError('id_not_found');
-		return;
-	}
-	
+
+	if (!api_check_agent_and_print_error(modules_get_agentmodule($id_module), 'string')) return;
+
 	$graph_seconds =
 		(!empty($other) && isset($other['data'][0]))
 		?

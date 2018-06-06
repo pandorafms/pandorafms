@@ -68,9 +68,7 @@ if (file_exists ('languages/'.$user_language.'.mo')) {
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-
 		<title>Pandora FMS Graph (<?php echo agents_get_alias($agent_id) . ' - ' . $interface_name; ?>)</title>
-
         <link rel="stylesheet" href="styles/pandora.css" type="text/css" />
 		<link rel="stylesheet" href="styles/pandora_minimal.css" type="text/css" />
 		<link rel="stylesheet" href="styles/jquery-ui-1.10.0.custom.css" type="text/css" />
@@ -108,7 +106,6 @@ if (file_exists ('languages/'.$user_language.'.mo')) {
 		$type_graph_pdf  = $_GET['type_graph_pdf'];
 
 		if($type_graph_pdf == 'combined'){
-			echo '<p> Grafica molona para combinadaaaaaaaaaaaaa</p>';
 			echo '<div>';
 				echo graphic_combined_module(
 					$module_list,
@@ -118,12 +115,11 @@ if (file_exists ('languages/'.$user_language.'.mo')) {
 			echo '</div>';
 		}
 		elseif($type_graph_pdf == 'sparse'){
-			echo '<p> Grafica molona para ' .  $params['agent_module_id'] . '</p>';
 			echo '<div>';
-				echo grafico_modulo_sparse ($params);
+				echo grafico_modulo_sparse($params);
 			echo '</div>';
 		}
 ?>
 	</body>
-	
+
 </html>

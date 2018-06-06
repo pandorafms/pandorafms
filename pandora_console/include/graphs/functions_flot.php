@@ -131,13 +131,19 @@ function flot_area_graph (
 
 	///XXXXXXX los px caca
 	// Parent layer
-	$return = "<div class='parent_graph' style='width: " . ($params['width']) . "; height:" . ($params['height'] + 30) . "px; " . $background_style . "'>";
+	$return = "<div class='parent_graph' style='width: " . ($params['width']) . ";" . $background_style . "'>";
 	// Set some containers to legend, graph, timestamp tooltip, etc.
 	if($params['show_legend']){
 		$return .= "<p id='legend_$graph_id' class='legend_graph' style='font-size:" . $params['font_size'] ."pt !important;'></p>";
 	}
-
-	if(!isset($params['combined']) || !$params['combined']){
+	if(isset($params['graph_combined']) && $params['graph_combined'] &&
+		(!isset($params['from_interface']) || !$params['from_interface']) ){
+		$yellow_up      = 0;
+		$red_up         = 0;
+		$yellow_inverse = false;
+		$red_inverse    = false;
+	}
+	elseif(!isset($params['combined']) || !$params['combined']){
 		$yellow_threshold = $data_module_graph['w_min'];
 		$red_threshold    = $data_module_graph['c_min'];
 		// Get other required module datas to draw warning and critical

@@ -865,19 +865,20 @@ function pandoraFlotArea(
 ) {
 
 	//diferents vars
-	var unit       = params.unit ? params.unit : '';
-	var homeurl    = params.homeurl;
-	var font_size  = params.font_size;
-	var font       = params.font;
-	var width      = params.width;
-	var height     = params.height;
-	var vconsole   = params.vconsole;
-	var dashboard  = params.dashboard;
-	var menu       = params.menu;
-	var min_x      = date_array['start_date'] *1000;
-	var max_x      = date_array['final_date'] *1000;
-	var type       = params.stacked;
-	var show_legend= params.show_legend;
+	var unit           = params.unit ? params.unit : '';
+	var homeurl        = params.homeurl;
+	var font_size      = params.font_size;
+	var font           = params.font;
+	var width          = params.width;
+	var height         = params.height;
+	var vconsole       = params.vconsole;
+	var dashboard      = params.dashboard;
+	var menu           = params.menu;
+	var min_x          = date_array['start_date'] *1000;
+	var max_x          = date_array['final_date'] *1000;
+	var type           = params.stacked;
+	var show_legend    = params.show_legend;
+	var image_treshold = params.image_treshold;
 
 	if(typeof type === 'undefined' || type == ''){
 		type = params.type_graph;
@@ -1481,7 +1482,7 @@ function pandoraFlotArea(
 			}
 		}
 	}
-
+console.log(type);
 	switch (type) {
 		case 'line':
 		case 2:
@@ -1841,7 +1842,7 @@ if (vconsole) {
 					}
 			}));
 		}
-console.log(homeurl);
+
 		$('#menu_cancelzoom_' + graph_id).attr('src', homeurl + '/images/zoom_cross_grey.png');
 
 	//	currentRanges = ranges;
@@ -2081,6 +2082,46 @@ console.log(homeurl);
 	
 	if(!vconsole){
 		$('#overview_'+graph_id).bind('mouseout',resetInteractivity);
+	}
+
+	if(image_treshold){
+		if(!thresholded){
+			// Recalculate the y axis
+			var y_recal = axis_thresholded(
+				threshold_data,
+				plot.getAxes().yaxis.min,
+				plot.getAxes().yaxis.max,
+				red_threshold, extremes,
+				red_up
+			);
+		}
+		else{
+			var y_recal = plot.getAxes().yaxis.max
+		}
+
+		datas_treshold = add_threshold (
+			data_base,
+			threshold_data,
+			plot.getAxes().yaxis.min,
+			plot.getAxes().yaxis.max,
+			red_threshold,
+			extremes,
+			red_up,
+			markins_graph
+		);
+
+		plot = $.plot($('#' + graph_id), datas_treshold,
+				$.extend(true, {}, options, {
+					yaxis: {
+						max: y_recal.max,
+					},
+					xaxis: {
+						min: plot.getAxes().xaxis.min,
+						max: plot.getAxes().xaxis.max
+					}
+				}));
+
+		thresholded = true;
 	}
 
 	// Reset interactivity styles
@@ -2546,7 +2587,14 @@ function add_threshold (data_base, threshold_data, y_min, y_max,
 				threshold_array[index]['max']   = end;
 				threshold_array[index]['color'] = "red";
 			} else {
-				end = extremes[this.id + '_1'];
+				var first = extremes[this.id + '_1'];
+				var second = extremes[this.id + '_2'];
+				if(first > second){
+					end = first;
+				}
+				else{
+					end = second;
+				}
 				threshold_array[index]['min']   = this.data[0][1];
 				threshold_array[index]['max']   = end;
 				threshold_array[index]['color'] = "yellow";
@@ -2596,7 +2644,7 @@ function add_threshold (data_base, threshold_data, y_min, y_max,
 	var extreme_treshold_array = [];
 	var i = 0;
 	var flag = true;
-console.log(threshold_array);
+
 	$.each(threshold_array, function(index, value) {
 		flag = true;
 		extreme_treshold_array[i] = {

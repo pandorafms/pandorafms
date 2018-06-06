@@ -695,7 +695,10 @@ function grafico_modulo_sparse_data(
 		'time_interval'       => 300,
 		'array_data_create'   => 0,
 		'show_legend'         => true,
-		'show_overview'       => true
+		'show_overview'       => true,
+		'return_img_base_64'  => false,
+		'image_treshold'      => false,
+		'graph_combined'      => false
 	);
  */
 function grafico_modulo_sparse ($params) {
@@ -845,6 +848,18 @@ function grafico_modulo_sparse ($params) {
 
 	if(!isset($params['array_data_create'])){
 		$params['array_data_create'] = 0;
+	}
+
+	if(!isset($params['return_img_base_64'])){
+		$params['return_img_base_64'] = false;
+	}
+
+	if(!isset($params['image_treshold'])){
+		$params['image_treshold'] = false;
+	}
+
+	if(!isset($params['graph_combined'])){
+		$params['graph_combined'] = false;
 	}
 
 	$params['font']       = $config['fontpath'];
@@ -1155,7 +1170,7 @@ function graphic_combined_module (
 		}
 		else {
 			if ($id_graph == 0) {
-				$params_combined['stacked'] = CUSTOM_GRAPH_LINE;
+				$params_combined['stacked'] = CUSTOM_GRAPH_AREA;
 			}
 			else {
 				$params_combined['stacked'] = db_get_row('tgraph', 'id_graph', $id_graph);
@@ -1263,6 +1278,10 @@ function graphic_combined_module (
 		$params['menu'] = false;
 	}
 
+	if(!isset($params['type_graph'])){
+		$params['type_graph'] = $config['type_module_charts'];
+	}
+
 	if(!isset($params['percentil'])){
 		$params['percentil'] = null;
 	}
@@ -1289,6 +1308,20 @@ function graphic_combined_module (
 
 	if(!isset($params['show_export_csv'])){
 		$params['show_export_csv'] = true;
+	}
+
+	if(!isset($params['return_img_base_64'])){
+		$params['return_img_base_64'] = false;
+	}
+
+	if(!isset($params['image_treshold'])){
+		$params['image_treshold'] = false;
+	}
+
+	$params['graph_combined'] = true;
+
+	if(!isset($params['show_unknown'])){
+		$params['show_unknown'] = false;
 	}
 
 	//XXXX
@@ -1436,6 +1469,7 @@ function graphic_combined_module (
 				$data_module_graph['c_max']    		 = $module_data['max_critical'];
 				$data_module_graph['c_inv']    		 = $module_data['critical_inverse'];
 				$data_module_graph['module_id']      = $agent_module_id;
+
 
 				//stract data
 				$array_data_module = grafico_modulo_sparse_data(
@@ -4016,14 +4050,16 @@ function fullscale_data (
 
 			if ($v["datos"] === NULL) {
 				// Unknown
-				if(!$compare){
-					if($flag_unknown){
-						$data["unknown" . $series_suffix]['data'][] = array($real_date , 1);
-					}
-					else{
-						$data["unknown" . $series_suffix]['data'][] = array( ($real_date - 1) , 0);
-						$data["unknown" . $series_suffix]['data'][] = array($real_date , 1);
-						$flag_unknown = 1;
+				if($show_unknown){
+					if(!$compare){
+						if($flag_unknown){
+							$data["unknown" . $series_suffix]['data'][] = array($real_date , 1);
+						}
+						else{
+							$data["unknown" . $series_suffix]['data'][] = array( ($real_date - 1) , 0);
+							$data["unknown" . $series_suffix]['data'][] = array($real_date , 1);
+							$flag_unknown = 1;
+						}
 					}
 				}
 
@@ -4033,10 +4069,12 @@ function fullscale_data (
 				//normal
 				$previous_data = $v["datos"];
 				$data["sum" . $series_suffix]['data'][] = array($real_date , $v["datos"]);
-				if(!$compare){
-					if($flag_unknown){
-						$data["unknown" . $series_suffix]['data'][] = array($real_date , 0);
-						$flag_unknown = 0;
+				if($show_unknown){
+					if(!$compare){
+						if($flag_unknown){
+							$data["unknown" . $series_suffix]['data'][] = array($real_date , 0);
+							$flag_unknown = 0;
+						}
 					}
 				}
 			}

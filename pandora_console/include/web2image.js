@@ -1,6 +1,6 @@
 var system = require('system');
 
-if (system.args.length < 3 || system.args.length > 9) {
+if (system.args.length < 3 || system.args.length > 10) {
 	phantom.exit(1);
 }
 
@@ -14,6 +14,7 @@ var url_module_list = system.args[5];
 var output_filename = system.args[6];
 var _width          = system.args[7];
 var _height         = system.args[8];
+var base_64         = system.args[9];
 
 if (!_width) {
 	_width = 750;
@@ -38,13 +39,17 @@ page.viewportSize = { width: _width, height: _height };
 //page.zoomFactor = 1.75;
 
 page.open(finish_url, function start(status) {
-	page.includeJs('./javascript/pandora.js');
+
 });
 
 page.onLoadFinished = function (status) {
-	page.render(output_filename, {format: 'png'});
-	//var base64 = page.renderBase64('JPG');
-	//console.log(base64);
+	if(!base_64){
+		page.render(output_filename, {format: 'png'});
+	}
+	else{
+		var base64 = page.renderBase64('png');
+		console.log(base64);
+	}
 	phantom.exit();
 }
 

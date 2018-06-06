@@ -3006,6 +3006,21 @@ function color_graph_array($series_suffix, $compare = false){
 function series_type_graph_array($data, $show_elements_graph){
 	global $config;
 
+	if(isset($show_elements_graph['stacked'])){
+		switch ($show_elements_graph['stacked']) {
+			case 2:
+			case 4:
+				$type_graph = 'line';
+				break;
+			default:
+				$type_graph = 'area';
+				break;
+		}
+	}
+	else{
+		$type_graph = $show_elements_graph['type_graph'];
+	}
+
 	if(isset($data) && is_array($data)){
 		foreach ($data as $key => $value) {
 			if($show_elements_graph['compare'] == 'overlapped'){
@@ -3015,11 +3030,11 @@ function series_type_graph_array($data, $show_elements_graph){
 			}
 
 			if(strpos($key, 'summatory') !== false){
-				$data_return['series_type'][$key] = 'area';
+				$data_return['series_type'][$key] = $type_graph;
 				$data_return['legend'][$key] = __('Summatory series') . ' ' . $str;
 			}
 			elseif(strpos($key, 'average') !== false){
-				$data_return['series_type'][$key] = 'area';
+				$data_return['series_type'][$key] = $type_graph;
 				$data_return['legend'][$key] = __('Average series') . ' ' . $str;
 			}
 			elseif(strpos($key, 'sum') !== false || strpos($key, 'baseline') !== false){
@@ -3029,7 +3044,7 @@ function series_type_graph_array($data, $show_elements_graph){
 						$data_return['series_type'][$key] = 'boolean';
 						break;
 					default:
-						$data_return['series_type'][$key] = 'area';
+						$data_return['series_type'][$key] = $type_graph;
 						break;
 				}
 
@@ -3112,11 +3127,11 @@ function series_type_graph_array($data, $show_elements_graph){
 				}
 			}
 			elseif(strpos($key, 'projection') !== false){
-				$data_return['series_type'][$key] = 'area';
+				$data_return['series_type'][$key] = $type_graph;
 				$data_return['legend'][$key] = __('Projection') . ' ' . $str;
 			}
 			else{
-				$data_return['series_type'][$key] = 'area';
+				$data_return['series_type'][$key] = $type_graph;
 				$data_return['legend'][$key] = $key;
 			}
 		}
@@ -3146,15 +3161,26 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined = fal
 	if($module_list){
 		$module_list = urlencode(json_encode($module_list));
 	}
-html_debug_print("phantomjs " . $file_js . " " . $url . "  '" . $type_graph_pdf . "' '" . $params_encode_json . "' '" . $params_combined . "' '" . $module_list . "' " . $img_path . " " . $width_img . " " . $height_img, true);
-	$result = exec("phantomjs " . $file_js . " " . $url . "  '" . $type_graph_pdf . "' '" . $params_encode_json . "' '" . $params_combined . "' '" . $module_list . "' " . $img_path . " " . $width_img . " " . $height_img);
-	html_debug_print($result, true);
-	return '<img src="' . $img_url . '" />';
 
-	//html_debug_print('entrando en llamada a phantom.js.......', true);
-	//header('Content-Type: image/png;');
-	//return '<img src="data:image/jpg;base64, '.$result.'" />';
-	//return "<img src='/var/www/html/pandora_console/attachment/imagen_". $params['agent_module_id'] .".png' alt='la imagen bonica'>";
+	$result = exec(
+		"phantomjs " . $file_js . " " .
+		$url . "  '" .
+		$type_graph_pdf . "' '" .
+		$params_encode_json . "' '" .
+		$params_combined . "' '" .
+		$module_list . "' " .
+		$img_path . " " .
+		$width_img . " " .
+		$height_img . " " .
+		$params['return_img_base_64']
+	);
+
+	if($params['return_img_base_64']){
+		return $result;
+	}
+	else{
+		return '<img src="' . $img_url . '" />';
+	}
 }
 
 /**

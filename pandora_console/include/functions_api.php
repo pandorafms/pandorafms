@@ -88,6 +88,10 @@ function returnError($typeError, $returnType = 'string') {
 			returnData($returnType,
 				array('type' => 'string', 'data' => __('This operation can not be used in cluster elements.')));
 			break;
+		case 'forbidden':
+			returnData($returnType,
+				array('type' => 'string', 'data' => __('The user has not enough permission to make this action.')));
+			break;
 		default:
 			returnData("string",
 				array('type' => 'string', 'data' => __($returnType)));
@@ -304,41 +308,24 @@ function api_get_groups($thrash1, $thrash2, $other, $returnType, $user_in_db) {
 function api_get_agent_module_name_last_value($agentName, $moduleName, $other = ';', $returnType)
 {
 	global $config;
-	
+
 	$idAgent = agents_get_agent_id($agentName);
-	switch ($config["dbtype"]) {
-		case "mysql":
-			$sql = sprintf('SELECT id_agente_modulo
-				FROM tagente_modulo
-				WHERE id_agente = %d AND nombre LIKE "%s"', $idAgent, $moduleName);
-			break;
-		case "postgresql":
-		case "oracle":
-			$sql = sprintf('SELECT id_agente_modulo
-				FROM tagente_modulo
-				WHERE id_agente = %d AND nombre LIKE \'%s\'', $idAgent, $moduleName);
-			break;
-	}
-	
+	$sql = sprintf('SELECT id_agente_modulo
+		FROM tagente_modulo
+		WHERE id_agente = %d AND nombre LIKE "%s"', $idAgent, $moduleName);
 	$idModuleAgent = db_get_value_sql($sql);
-	
-	if ($idModuleAgent === false) {
-		switch ($other['type']) {
-			case 'string':
-				switch ($other['data']) {
-					case 'error_message':
-					default:
-						returnError('id_not_found', $returnType);
-					break;
-				}
-				break;
-			case 'array':
-				switch ($other['data'][0]) {
-					case 'error_value':
-						returnData($returnType, array('type' => 'string', 'data' => $other['data'][1]));
-						break;
-				}
-				break;
+
+	$user_has_access = users_access_to_agent($idAgent);
+
+	if (($value === false || !$user_has_access) && isset($other['data'][0])) {
+		if ($other['type'] == 'array' && $other['data'][0] == 'error_value') {
+			returnData($returnType, array('type' => 'string', 'data' => $other['data'][1]));
+		} else {
+			if (!$value) {
+				returnError('id_not_found', $returnType);
+			} else {
+				returnError('forbidden', $returnType);
+			}
 		}
 	}
 	else {
@@ -350,40 +337,23 @@ function api_get_agent_module_name_last_value($agentName, $moduleName, $other = 
 function api_get_agent_module_name_last_value_alias($alias, $moduleName, $other = ';', $returnType)
 {
 	global $config;
-	
-	switch ($config["dbtype"]) {
-		case "mysql":
-			$sql = sprintf('SELECT tagente_modulo.id_agente_modulo FROM tagente_modulo 
-					INNER JOIN tagente ON tagente_modulo.id_agente = tagente.id_agente 
-					WHERE tagente.alias LIKE "%s" AND tagente_modulo.nombre LIKE "%s"', $alias, $moduleName);
-			break;
-		case "postgresql":
-		case "oracle":
-			$sql = sprintf('SELECT tagente_modulo.id_agente_modulo FROM tagente_modulo 
-					INNER JOIN tagente ON tagente_modulo.id_agente = tagente.id_agente 
-					WHERE tagente.alias LIKE \'%s\' AND tagente_modulo.nombre LIKE \'%s\'', $alias, $moduleName);
-			break;
-	}
-	
+
+	$sql = sprintf('SELECT tagente_modulo.id_agente_modulo FROM tagente_modulo
+			INNER JOIN tagente ON tagente_modulo.id_agente = tagente.id_agente
+			WHERE tagente.alias LIKE "%s" AND tagente_modulo.nombre LIKE "%s"', $alias, $moduleName);
 	$idModuleAgent = db_get_value_sql($sql);
-	
-	if ($idModuleAgent === false) {
-		switch ($other['type']) {
-			case 'string':
-				switch ($other['data']) {
-					case 'error_message':
-					default:
-						returnError('id_not_found', $returnType);
-					break;
-				}
-				break;
-			case 'array':
-				switch ($other['data'][0]) {
-					case 'error_value':
-						returnData($returnType, array('type' => 'string', 'data' => $other['data'][1]));
-						break;
-				}
-				break;
+
+	$user_has_access = users_access_to_agent($idAgent);
+
+	if (($value === false || !$user_has_access) && isset($other['data'][0])) {
+		if ($other['type'] == 'array' && $other['data'][0] == 'error_value') {
+			returnData($returnType, array('type' => 'string', 'data' => $other['data'][1]));
+		} else {
+			if (!$value) {
+				returnError('id_not_found', $returnType);
+			} else {
+				returnError('forbidden', $returnType);
+			}
 		}
 	}
 	else {
@@ -393,31 +363,27 @@ function api_get_agent_module_name_last_value_alias($alias, $moduleName, $other 
 
 
 function api_get_module_last_value($idAgentModule, $trash1, $other = ';', $returnType) {
+	global $config;
 	if (defined ('METACONSOLE')) {
 		return;
 	}
-	
+
+	$user_has_access = users_access_to_agent(modules_get_agentmodule($idAgentModule));
+
 	$sql = sprintf('SELECT datos
 		FROM tagente_estado
 		WHERE id_agente_modulo = %d', $idAgentModule);
 	$value = db_get_value_sql($sql);
-	if ($value === false) {
-		switch ($other['type']) {
-			case 'string':
-				switch ($other['data']) {
-					case 'error_message':
-					default:
-						returnError('id_not_found', $returnType);
-					break;
-				}
-				break;
-			case 'array':
-				switch ($other['data'][0]) {
-					case 'error_value':
-						returnData($returnType, array('type' => 'string', 'data' => $other['data'][1]));
-						break;
-				}
-				break;
+
+	if (($value === false || !$user_has_access) && isset($other['data'][0])) {
+		if ($other['type'] == 'array' && $other['data'][0] == 'error_value') {
+			returnData($returnType, array('type' => 'string', 'data' => $other['data'][1]));
+		} else {
+			if (!$value) {
+				returnError('id_not_found', $returnType);
+			} else {
+				returnError('forbidden', $returnType);
+			}
 		}
 	}
 	else {
@@ -527,6 +493,8 @@ $estado_fields_to_columns_mapping = array(
  * @return unknown_type
  */
 function api_get_tree_agents($trash1, $trahs2, $other, $returnType) {
+	global $config;
+
 	if (defined ('METACONSOLE')) {
 		return;
 	}
@@ -806,81 +774,89 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType) {
 	}
 	
 	$returnVar = array();
-	
+
+	// Get only the user groups
+	$filter_groups = "1 = 1";
+	if (!users_is_admin($config['id_user'])) {
+		$user_groups = implode (',', array_keys(users_get_groups()));
+		$filter_groups = "id_grupo IN ($user_groups)";
+	}
+
 	$groups = db_get_all_rows_sql('SELECT id_grupo as group_id, ' .
 			'nombre as group_name, parent as group_parent, disabled, custom_id, ' .
 			'description as group_description, contact as group_contact, ' .
-			'other as group_other FROM tgrupo');
+			'other as group_other FROM tgrupo WHERE ' . $filter_groups);
 	if ($groups === false) $groups = array();
 	$groups = str_replace('\n', $returnReplace, $groups);
-	
-	$agents = db_get_all_rows_sql('
-		SELECT id_agente AS agent_id, id_grupo AS agent_id_group , alias' . $agent_additional_columns . ' FROM tagente');
-	if ($agents === false) $agents = array();
-	$agents = str_replace('\n', $returnReplace, $agents);
-	
+
 	foreach ($groups as &$group) {
 		$group['type_row'] = 'group';
 		$returnVar[] = $group;
-		
+
+		// Get the agents for this group
+		$id_group = $group['group_id'];
+		$agents = db_get_all_rows_sql("SELECT id_agente AS agent_id, id_grupo AS agent_id_group , alias $agent_additional_columns
+			FROM tagente ta LEFT JOIN tagent_secondary_group tasg
+				ON ta.id_agente = tasg.id_agent
+			WHERE ta.id_grupo = $id_group OR tasg.id_group = $id_group"
+		);
+		if ($agents === false) $agents = array();
+		$agents = str_replace('\n', $returnReplace, $agents);
+
 		foreach ($agents as $index => &$agent) {
-			if ($agent['agent_id_group'] == $group['group_id']) {
+			$agent['type_row']  = 'agent';
+			$returnVar[] = $agent;
+			
+			if ( strlen($module_additional_columns) <= 0
+				&& strlen($estado_additional_columns) <= 0 
+				&& strlen($alert_additional_columns) <= 0 ) {
+				continue; /** SKIP collecting MODULES and ALERTS **/
+			}
+			
+			$modules = db_get_all_rows_sql('SELECT *
+				FROM (SELECT id_agente_modulo as module_id_agent_modulo ' .  $module_additional_columns . '
+						FROM tagente_modulo 
+						WHERE id_agente = ' . $agent['agent_id'] . ') t1 
+					INNER JOIN (SELECT id_agente_modulo as module_id_agent_modulo ' .  $estado_additional_columns . '
+						FROM tagente_estado
+						WHERE id_agente = ' . $agent['agent_id'] . ') t2
+					ON t1.module_id_agent_modulo = t2.module_id_agent_modulo');
+			
+			if ($modules === false) $modules = array();
+			$modules = str_replace('\n', $returnReplace, $modules);
+			
+			foreach ($modules as &$module) {
+				$module['type_row']  = 'module';
+
+				if( $module['module_macros'] ) {
+					$module['module_macros'] = base64_decode( $module['module_macros']);
+				}
+
+				$returnVar[] = $module;
 				
-				$agent['type_row']  = 'agent';
-				$returnVar[] = $agent;
-				
-				if ( strlen($module_additional_columns) <= 0
-					&& strlen($estado_additional_columns) <= 0 
-					&& strlen($alert_additional_columns) <= 0 ) {
-					continue; /** SKIP collecting MODULES and ALERTS **/
+				if ( strlen($alert_additional_columns) <= 0 ) {
+					continue;	/** SKIP collecting ALERTS info **/
 				}
 				
-				$modules = db_get_all_rows_sql('SELECT *
-					FROM (SELECT id_agente_modulo as module_id_agent_modulo ' .  $module_additional_columns . '
-							FROM tagente_modulo 
-							WHERE id_agente = ' . $agent['agent_id'] . ') t1 
-						INNER JOIN (SELECT id_agente_modulo as module_id_agent_modulo ' .  $estado_additional_columns . '
-							FROM tagente_estado
-							WHERE id_agente = ' . $agent['agent_id'] . ') t2
-						ON t1.module_id_agent_modulo = t2.module_id_agent_modulo');
+				$alerts = db_get_all_rows_sql('SELECT t1.id_agent_module as alert_id_agent_module ' .  $alert_additional_columns . '
+					FROM (SELECT * FROM talert_template_modules
+						WHERE id_agent_module = ' . $module['module_id_agent_modulo'] . ') t1 
+					INNER JOIN talert_templates t2
+						ON t1.id_alert_template = t2.id
+					LEFT JOIN talert_template_module_actions t3
+						ON t1.id = t3.id_alert_template_module
+					LEFT JOIN talert_actions t4
+						ON t3.id_alert_action = t4.id
+					LEFT JOIN talert_commands t5
+						ON t4.id_alert_command = t5.id');
 				
-				if ($modules === false) $modules = array();
-				$modules = str_replace('\n', $returnReplace, $modules);
+				if ($alerts === false) $alerts = array();
+				$alerts = str_replace('\n', $returnReplace, $alerts);
 				
-				foreach ($modules as &$module) {
-					$module['type_row']  = 'module';
-
-					if( $module['module_macros'] ) {
-						$module['module_macros'] = base64_decode( $module['module_macros']);
-					}
-
-					$returnVar[] = $module;
-					
-					if ( strlen($alert_additional_columns) <= 0 ) {
-						continue;	/** SKIP collecting ALERTS info **/
-					}
-					
-					$alerts = db_get_all_rows_sql('SELECT t1.id_agent_module as alert_id_agent_module ' .  $alert_additional_columns . '
-						FROM (SELECT * FROM talert_template_modules
-							WHERE id_agent_module = ' . $module['module_id_agent_modulo'] . ') t1 
-						INNER JOIN talert_templates t2
-							ON t1.id_alert_template = t2.id
-						LEFT JOIN talert_template_module_actions t3
-							ON t1.id = t3.id_alert_template_module
-						LEFT JOIN talert_actions t4
-							ON t3.id_alert_action = t4.id
-						LEFT JOIN talert_commands t5
-							ON t4.id_alert_command = t5.id');
-					
-					if ($alerts === false) $alerts = array();
-					$alerts = str_replace('\n', $returnReplace, $alerts);
-					
-					foreach ($alerts as &$alert) {
-						$alert['type_row'] = 'alert';
-						$returnVar[] = $alert;
-					}
+				foreach ($alerts as &$alert) {
+					$alert['type_row'] = 'alert';
+					$returnVar[] = $alert;
 				}
-				unset($agents[$index]);
 			}
 		}
 	}
@@ -1537,10 +1513,23 @@ function api_set_delete_agent($id, $thrash1, $thrast2, $thrash3) {
  * @param $returnType.
  */
 function api_get_all_agents($thrash1, $thrash2, $other, $returnType) {
+	global $config;
+
 	if (defined ('METACONSOLE')) {
 		return;
 	}
-	$where = '';
+
+	// Error if user cannot read agents.
+	if (!check_acl($config['id_user'], 0, "AR")) {
+		returnError('forbidden', $returnType);
+		return;
+	}
+
+	$groups = '1 = 1';
+	if (!is_user_admin($config['id_user'])) {
+		$user_groups = implode (',', array_keys(users_get_groups()));
+		$groups = "(id_grupo IN ($user_groups) OR id_group IN ($user_groups))";
+	}
 
 	if (isset($other['data'][0])) {
 		// Filter by SO
@@ -1580,10 +1569,12 @@ function api_get_all_agents($thrash1, $thrash2, $other, $returnType) {
 	// Filter by state
 	$sql = "SELECT id_agente, alias, direccion, comentarios,
 			tconfig_os.name, url_address, nombre
-		FROM tagente, tconfig_os
+		FROM tconfig_os, tagente
+		LEFT JOIN tagent_secondary_group
+			ON tagente.id_agente = tagent_secondary_group.id_agent
 		WHERE tagente.id_os = tconfig_os.id_os
-			AND disabled = 0 " . $where;
-	
+			AND disabled = 0 $where AND $groups";
+
 	$all_agents = db_get_all_rows_sql($sql);
 
 	// Filter by status: unknown, warning, critical, without modules 
@@ -1678,6 +1669,8 @@ function api_get_agent_modules($thrash1, $thrash2, $other, $thrash3) {
 		return;
 	}
 	
+	if (!api_check_agent_and_print_error($other['data'][0], 'csv')) return;
+
 	$sql = sprintf("SELECT id_agente, id_agente_modulo, nombre 
 		FROM tagente_modulo
 		WHERE id_agente = %d AND disabled = 0
@@ -2013,6 +2006,8 @@ function api_get_module_id($id , $thrash1 , $name, $thrash3) {
 	if (defined ('METACONSOLE')) {
 		return;
 	}
+
+	if (!api_check_agent_and_print_error($id, 'csv')) return;
 
 	$sql = sprintf('SELECT id_agente_modulo
 		FROM tagente_modulo WHERE id_agente = %d
@@ -2406,23 +2401,30 @@ function api_get_id_group_agent_by_alias($thrash1, $thrash2, $other, $thrash3) {
  * @param $thrash3 Don't use.
  */
 function api_get_policies($thrash1, $thrash2, $other, $thrash3) {
+	global $config;
+
 	if (defined ('METACONSOLE')) {
 		return;
 	}
-	
-	$where = '';
-	
+
+	$user_groups = implode (',', array_keys(users_get_groups($config["id_user"], "AW")));
+
 	if ($other['data'][0] != "") {
-		$where .= ' AND pol_agents.id_agent = ' . $other['data'][0];
-		
+		if (!users_access_to_agent($other['data'][0])) {
+			returnError ('forbidden', 'csv');
+			return;
+		}
+		$where = ' AND pol_agents.id_agent = ' . $other['data'][0];
+
 		$sql = sprintf("SELECT policy.id, name, id_agent
 			FROM tpolicies AS policy, tpolicy_agents AS pol_agents 
-			WHERE policy.id = pol_agents.id_policy %s", $where);
+			WHERE policy.id = pol_agents.id_policy %s AND id_group IN (%s)",
+			$where, $user_groups);
 	}
 	else {
-		$sql = "SELECT id, name FROM tpolicies AS policy";
+		$sql = "SELECT id, name FROM tpolicies AS policy WHERE id_group IN ($user_groups)";
 	}
-	
+
 	$policies = db_get_all_rows_sql($sql);
 	
 	if (count($policies) > 0 and $policies !== false) {
@@ -4012,34 +4014,43 @@ function api_set_new_local_component($id, $thrash1, $other, $thrash2) {
 
  */
 function api_get_module_value_all_agents($id, $thrash1, $other, $thrash2) {
+	global $config;
 	if (defined ('METACONSOLE')) {
 		return;
 	}
-	
+
 	if ($id == "") {
 		returnError('error_get_module_value_all_agents',
 			__('Error getting module value from all agents. Module name cannot be left blank.'));
 		return;
 	}
-	
+
 	$id_module = db_get_value ('id_agente_modulo', 'tagente_modulo', 'nombre', $id);
-	
+
 	if ($id_module === false) {
 		returnError('error_get_module_value_all_agents',
 			__('Error getting module value from all agents. Module name doesn\'t exist.'));
 		return;
 	}
-	
-	$sql = sprintf("SELECT agent.id_agente, agent.alias, module_state.datos, agent.nombre FROM tagente agent, tagente_modulo module, tagente_estado module_state WHERE agent.id_agente = module.id_agente AND module.id_agente_modulo=module_state.id_agente_modulo AND module.nombre = '%s'", $id);
-	
+
+	$groups = '1 = 1';
+	if (!is_user_admin($config['id_user'])) {
+		$user_groups = implode (',', array_keys(users_get_groups()));
+		$groups = "(id_grupo IN ($user_groups) OR id_group IN ($user_groups))";
+	}
+
+	$sql = sprintf( "SELECT agent.id_agente, agent.alias, module_state.datos, agent.nombre
+		FROM tagente agent LEFT JOIN tagent_secondary_group tasg ON agent.id_agente = tasg.id_agent, tagente_modulo module, tagente_estado module_state
+		WHERE agent.id_agente = module.id_agente AND module.id_agente_modulo=module_state.id_agente_modulo AND module.nombre = '%s'
+		AND %s", $id, $groups);
+
 	$module_values = db_get_all_rows_sql($sql);
-	
+
 	if (!$module_values) {
 		returnError('error_get_module_value_all_agents', 'Error getting module values from all agents.');
 	}
 	else {
 		$data = array('type' => 'array', 'data' => $module_values);
-		
 		returnData('csv', $data, ';');
 	}
 }
@@ -4267,6 +4278,8 @@ function api_set_delete_alert_template($id_template, $thrash1, $other, $thrash3)
  * @param $thrash3 Don't use.
  */
 function api_get_all_alert_templates($thrash1, $thrash2, $other, $thrash3) {
+	global $config;
+
 	if (defined ('METACONSOLE')) {
 		return;
 	}
@@ -4275,7 +4288,12 @@ function api_get_all_alert_templates($thrash1, $thrash2, $other, $thrash3) {
 		$separator = ';'; // by default
 	else
 		$separator = $other['data'][0];
-	
+
+	if (!check_acl($config["id_user"], 0, "LM")) {
+		returnError("forbidden", "csv");
+		return;
+	}
+
 	$filter_templates = false;
 	
 	$template = alerts_get_alert_templates();
@@ -4356,10 +4374,17 @@ function api_get_alert_template($id_template, $thrash1, $other, $thrash3) {
  * @param $thrash3 Don't use.
  */
 function api_get_module_groups($thrash1, $thrash2, $other, $thrash3) {
+	global $config;
+
 	if (defined ('METACONSOLE')) {
 		return;
 	}
-	
+
+	if (!check_acl($config["id_user"], 0, "PM")) {
+		returnError('forbidden', 'csv');
+		return;
+	}
+
 	if (!isset($other['data'][0]))
 		$separator = ';'; // by default
 	else
@@ -4395,10 +4420,17 @@ function api_get_module_groups($thrash1, $thrash2, $other, $thrash3) {
  * @param $thrash3 Don't use.
  */
 function api_get_plugins($thrash1, $thrash2, $other, $thrash3) {
+	global $config;
+
 	if (defined ('METACONSOLE')) {
 		return;
 	}
-	
+
+	if (!check_acl($config["id_user"], 0, "PM")) {
+		returnError('forbidden', 'csv');
+		return;
+	}
+
 	if (!isset($other['data'][0]))
 		$separator = ';'; // by default
 	else
@@ -5813,15 +5845,18 @@ function api_get_module_from_conf($id_agent, $module_name, $thrash2, $thrash3) {
 	if (defined ('METACONSOLE')) {
 		return;
 	}
-	
+
+	if (!api_check_agent_and_print_error($id_agent, 'string')) return;
+
+	$module_name = io_safe_output($module_name);
 	$result = enterprise_hook('config_agents_get_module_from_conf',
-		array($id_agent, io_safe_output($module_name)));
-	
-	if ($result !== ENTERPRISE_NOT_HOOK) {
+		array($id_agent, $module_name));
+
+	if ($result !== ENTERPRISE_NOT_HOOK && !empty($result)) {
 		returnData('string', array('type' => 'string', 'data' => $result));
 	}
 	else {
-		returnError('error_adding_module_conf', '');
+		returnError('error_adding_module_conf', __('Remote config of module %s not available', $module_name));
 	}
 }
 
@@ -6574,6 +6609,8 @@ function api_get_module_data($id, $thrash1, $other, $returnType) {
 		return;
 	}
 
+	if (!api_check_agent_and_print_error(modules_get_agentmodule($id), $returnType)) return;
+
 	$separator = $other['data'][0];
 	$periodSeconds = $other['data'][1];
 	$tstart = $other['data'][2];
@@ -6654,7 +6691,9 @@ function api_get_graph_module_data($id, $thrash1, $other, $thrash2) {
 	if (defined ('METACONSOLE')) {
 		return;
 	}
-	
+
+	if (!api_check_agent_and_print_error(modules_get_agentmodule($id), "string")) return;
+
 	$period = $other['data'][0];
 	$width = $other['data'][1];
 	$height = $other['data'][2];
@@ -8722,10 +8761,17 @@ function api_set_enable_module_alerts ($agent_name, $module_name, $thrash3, $thr
 }
 
 function api_get_tags($thrash1, $thrash2, $other, $returnType, $user_in_db) {
+	global $config;
+
 	if (defined ('METACONSOLE')) {
 		return;
 	}
-	
+
+	if (!check_acl($config["id_user"], 0, "AR")){
+		returnError("forbidden", $returnType);
+		return;
+	}
+
 	if ($other['type'] == 'string') {
 		if ($other['data'] != '') {
 			returnError('error_parameter', 'Error in the parameters.');
@@ -8760,14 +8806,30 @@ function api_get_tags($thrash1, $thrash2, $other, $returnType, $user_in_db) {
 **/
 // http://localhost/pandora_console/include/api.php?op=get&op2=total_modules&id=1&apipass=1234&user=admin&pass=pandora
 function api_get_total_modules($id_group, $trash1, $trash2, $returnType) {
+	global $config;
+
 	if (defined ('METACONSOLE')) {
 		return;
 	}
-	
-	$sql = "SELECT COUNT(*)
-		FROM tagente_modulo
-		WHERE id_module_group=$id_group AND delete_pending = 0";
-	
+
+	if (!check_acl($config["id_user"], 0, "AR")) {
+		returnError('forbidden', $returnType);
+		return;
+	}
+
+	$groups_clause = "1 = 1";
+	if (!users_is_admin($config["id_user"])) {
+		$user_groups = implode (',', array_keys(users_get_groups()));
+		$groups_clause = "(ta.id_grupo IN ($user_groups) OR tasg.id_group IN ($user_groups))";
+	}
+
+	$sql = "SELECT COUNT(DISTINCT(id_agente_modulo))
+		FROM tagente_modulo tam, tagente ta
+		LEFT JOIN tagent_secondary_group tasg
+			ON ta.id_agente = tasg.id_agent
+		WHERE tam.id_agente = ta.id_agente AND id_module_group = $id_group
+			AND delete_pending = 0 AND $groups_clause";
+
 	$total = db_get_value_sql($sql);
 	
 	$data = array('type' => 'string', 'data' => $total);
@@ -8783,15 +8845,20 @@ function api_get_total_modules($id_group, $trash1, $trash2, $returnType) {
 **/
 // http://localhost/pandora_console/include/api.php?op=get&op2=total_agents&id=2&apipass=1234&user=admin&pass=pandora
 function api_get_total_agents($id_group, $trash1, $trash2, $returnType) {
+	global $config;
+
 	if (defined ('METACONSOLE')) {
 		return;
 	}
-	
-	$sql = sprintf('SELECT COUNT(*)
-		FROM tagente
-		WHERE id_grupo=%d AND disabled=0', $id_group);
-	$total_agents = db_get_value_sql($sql);
-	
+
+	// Only for agent reader of specified group
+	if (!check_acl($config["id_user"], $id_group, "AR")) {
+		returnError('forbidden', $returnType);
+		return;
+	}
+
+	$total_agents = agents_count_agents_filter(array ('id_group' => $id_group));
+
 	$data = array('type' => 'string', 'data' => $total_agents);
 	returnData($returnType, $data);
 }
@@ -8807,17 +8874,16 @@ function api_get_agent_name($id_agent, $trash1, $trash2, $returnType) {
 	if (defined ('METACONSOLE')) {
 		return;
 	}
-	
+
+	if (!api_check_agent_and_print_error($id_agent, $returnType)) return;
+
 	$sql = sprintf('SELECT nombre
 		FROM tagente
 		WHERE id_agente = %d', $id_agent);
 	$value = db_get_value_sql($sql);
-	if ($value === false) {
-		returnError('id_not_found', $returnType);
-	}
-	
+
 	$data = array('type' => 'string', 'data' => $value);
-	
+
 	returnData($returnType, $data);
 }
 
@@ -8832,17 +8898,16 @@ function api_get_agent_alias($id_agent, $trash1, $trash2, $returnType) {
 	if (defined ('METACONSOLE')) {
 		return;
 	}
-	
+
+	if (!api_check_agent_and_print_error($id_agent, $returnType)) return;
+
 	$sql = sprintf('SELECT alias
 		FROM tagente
 		WHERE id_agente = %d', $id_agent);
 	$value = db_get_value_sql($sql);
-	if ($value === false) {
-		returnError('id_not_found', $returnType);
-	}
-	
+
 	$data = array('type' => 'string', 'data' => $value);
-	
+
 	returnData($returnType, $data);
 }
 
@@ -10634,6 +10699,21 @@ function api_get_cluster_status($id_cluster, $trash1, $trash2, $returnType) {
 	$data = array('type' => 'string', 'data' => $value);
 	
 	returnData($returnType, $data);
+}
+
+function api_check_agent_and_print_error($id_agent, $returnType, $access = "AR") {
+	global $config;
+
+	$check_agent = agents_check_access_agent($id_agent, $access);
+	if ($check_agent === true) return true;
+
+	if ($check_agent === false || !check_acl($config['id_user'], 0, $access)) {
+		returnError('forbidden', $returnType);
+	} elseif ($check_agent === null) {
+		returnError('id_not_found', $returnType);
+	}
+
+	return false;
 }
 
 ?>

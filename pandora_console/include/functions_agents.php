@@ -2669,7 +2669,10 @@ function agents_generate_name ($alias, $address = '') {
  */
 function agents_get_all_groups_agent ($id_agent, $group = false) {
 	// Get the group if is not defined
-	if ($group === false) $group = agents_get_group_agents($id_agent);
+	if ($group === false) $group = agents_get_agent_group($id_agent);
+
+	// If cannot retrieve the group, it means that agent does not exist
+	if (!$group) return array();
 
 	$secondary_groups = enterprise_hook('agents_get_secondary_groups', array($id_agent));
 
@@ -2681,4 +2684,42 @@ function agents_get_all_groups_agent ($id_agent, $group = false) {
 	return $secondary_groups['plain'];
 }
 
+/**
+ * @brief Get the total agents with a filter and an access bit
+ *
+ * @param Array filter agentes array. It is the same that agents_get_agents function
+ * @param string ACL bit
+ *
+ * @return int Total agents retrieved with the filter
+ */
+function agents_count_agents_filter ($filter = array(), $access = "AR") {
+	$total_agents = agents_get_agents(
+		array ('id_group' => $id_group),
+		array ('COUNT(DISTINCT id_agente) as total'),
+		$access
+	);
+	return ($total_agents !== false)
+		? $total_agents[0]['total']
+		: 0;
+}
+
+/**
+ * @brief Check if an agent is accessible by the user
+ *
+ * @param int Id agent
+ * @param string ACL access bit
+ *
+ * @return True if user has access, false if user has not permissions and
+ * 		null if id agent does not exist
+ */
+function agents_check_access_agent ($id_agent, $access = "AR") {
+	global $config;
+
+	if (users_access_to_agent($id_agent, $access)) return true;
+
+	// If agent exist return false
+	if (agents_check_agent_exists($id_agent)) return false;
+	// Return null otherwise
+	return null;
+}
 ?>

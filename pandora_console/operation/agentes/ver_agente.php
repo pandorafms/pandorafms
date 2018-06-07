@@ -44,6 +44,7 @@ if (is_ajax ()) {
 	$get_agentmodule_status_tooltip = (bool) get_parameter ("get_agentmodule_status_tooltip");
 	$get_group_status_tooltip = (bool) get_parameter ("get_group_status_tooltip");
 	$get_agent_id = (bool) get_parameter ("get_agent_id");
+	$get_agents_source_json = (bool) get_parameter ("get_agents_source_json");
 	$cluster_mode = (bool) get_parameter ("cluster_mode",0);
 	$agent_alias = get_parameter('alias', '');
 	$agents_inserted = get_parameter('agents_inserted', array());
@@ -1001,6 +1002,29 @@ if (is_ajax ()) {
 		return;
 	}
 	
+	if ($get_agents_source_json) {
+		$source = get_parameter('source', '');
+		
+		if (empty($source)) {
+			$sql_report_log = 'SELECT id_agente, alias
+				FROM tagente, tagent_module_log
+				WHERE tagente.id_agente = tagent_module_log.id_agent AND tagente.disabled = 0';
+		} else {
+			$sql_report_log = 'SELECT id_agente, alias
+				FROM tagente, tagent_module_log
+				WHERE tagente.id_agente = tagent_module_log.id_agent AND tagente.disabled = 0 AND tagent_module_log.source like "'. $source.'"';
+		}
+		
+		$all_agent_log = db_get_all_rows_sql($sql_report_log);
+		
+		foreach ($all_agent_log as $key => $value) {
+			$agents2[$value['id_agente']] = $value['alias'];
+		}
+		
+		echo json_encode($agents2);
+		return;
+	}
+	
 	return;
 }
 
@@ -1060,7 +1084,7 @@ else {
 $tab = get_parameter ("tab", "main");
 
 /* Manage tab */
-$managetab = "";
+$managetab = array();
 
 if (check_acl_one_of_groups ($config['id_user'],$all_groups, "AW") || $is_extra) {
 	$managetab['text'] ='<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'">'
@@ -1141,7 +1165,7 @@ if ($url_route_analyzer) {
 }
 
 /* GIS tab */
-$gistab="";
+$gistab=array();
 if ($config['activate_gis']) {
 	$gistab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=gis&id_agente='.$id_agente.'">'
 		.html_print_image("images/op_gis.png", true, array( "title" => __('GIS data')))

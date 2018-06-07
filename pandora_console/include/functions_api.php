@@ -34,6 +34,7 @@ enterprise_include_once ('include/functions_local_components.php');
 enterprise_include_once ('include/functions_events.php');
 enterprise_include_once ('include/functions_agents.php');
 enterprise_include_once ('include/functions_modules.php');
+enterprise_include_once ('include/functions_clusters.php');
 
 /**
  * Parse the "other" parameter.
@@ -884,7 +885,7 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType) {
  */
 function api_get_module_properties($id_module, $trahs2, $other, $returnType)
 {
-	if (!api_check_agent_and_print_error(modules_get_agentmodule($id_module), $returnType)) return;
+	if (!util_api_check_agent_and_print_error(modules_get_agentmodule($id_module), $returnType)) return;
 
 	if ($other['type'] == 'array') {
 		$separator = $other['data'][0];
@@ -951,7 +952,7 @@ function api_get_module_properties_by_name($agent_name, $module_name, $other, $r
 		returnError('error_get_module_properties_by_name', __('Does not exist agent with this name.'));
 		return;
 	}
-	if (!api_check_agent_and_print_error($agent_id, $returnType)) return;
+	if (!util_api_check_agent_and_print_error($agent_id, $returnType)) return;
 
 	$tagente_modulo = modules_get_agentmodule_id ($module_name, $agent_id);
 	if ($tagente_modulo === false) {
@@ -1013,7 +1014,7 @@ function api_get_module_properties_by_alias($alias, $module_name, $other, $retur
 	if ($data === false) {
 		returnError('error_get_module_properties_by_name', __('Does not exist the pair alias/module required.'));
 	}
-	if (!api_check_agent_and_print_error($data['id_agente'], $returnType)) return;
+	if (!util_api_check_agent_and_print_error($data['id_agente'], $returnType)) return;
 
 	$module_id = $data['id_agente_modulo'];
 
@@ -1674,7 +1675,7 @@ function api_get_agent_modules($thrash1, $thrash2, $other, $thrash3) {
 		return;
 	}
 	
-	if (!api_check_agent_and_print_error($other['data'][0], 'csv')) return;
+	if (!util_api_check_agent_and_print_error($other['data'][0], 'csv')) return;
 
 	$sql = sprintf("SELECT id_agente, id_agente_modulo, nombre 
 		FROM tagente_modulo
@@ -2012,7 +2013,7 @@ function api_get_module_id($id , $thrash1 , $name, $thrash3) {
 		return;
 	}
 
-	if (!api_check_agent_and_print_error($id, 'csv')) return;
+	if (!util_api_check_agent_and_print_error($id, 'csv')) return;
 
 	$sql = sprintf('SELECT id_agente_modulo
 		FROM tagente_modulo WHERE id_agente = %d
@@ -5863,7 +5864,7 @@ function api_get_module_from_conf($id_agent, $module_name, $thrash2, $thrash3) {
 		return;
 	}
 
-	if (!api_check_agent_and_print_error($id_agent, 'string')) return;
+	if (!util_api_check_agent_and_print_error($id_agent, 'string')) return;
 
 	$module_name = io_safe_output($module_name);
 	$result = enterprise_hook('config_agents_get_module_from_conf',
@@ -6626,7 +6627,7 @@ function api_get_module_data($id, $thrash1, $other, $returnType) {
 		return;
 	}
 
-	if (!api_check_agent_and_print_error(modules_get_agentmodule($id), $returnType)) return;
+	if (!util_api_check_agent_and_print_error(modules_get_agentmodule($id), $returnType)) return;
 
 	$separator = $other['data'][0];
 	$periodSeconds = $other['data'][1];
@@ -6709,7 +6710,7 @@ function api_get_graph_module_data($id, $thrash1, $other, $thrash2) {
 		return;
 	}
 
-	if (!api_check_agent_and_print_error(modules_get_agentmodule($id), "string")) return;
+	if (!util_api_check_agent_and_print_error(modules_get_agentmodule($id), "string")) return;
 
 	$period = $other['data'][0];
 	$width = $other['data'][1];
@@ -7730,7 +7731,7 @@ function api_get_gis_agent($id_agent, $trash1, $tresh2, $return_type, $user_in_d
 		return;
 	}
 
-	if (!api_check_agent_and_print_error($id_agent, $return_type)) return;
+	if (!util_api_check_agent_and_print_error($id_agent, $return_type)) return;
 
 	$agent_gis_data = db_get_row_sql("
 		SELECT *
@@ -8894,7 +8895,7 @@ function api_get_agent_name($id_agent, $trash1, $trash2, $returnType) {
 		return;
 	}
 
-	if (!api_check_agent_and_print_error($id_agent, $returnType)) return;
+	if (!util_api_check_agent_and_print_error($id_agent, $returnType)) return;
 
 	$sql = sprintf('SELECT nombre
 		FROM tagente
@@ -8904,6 +8905,40 @@ function api_get_agent_name($id_agent, $trash1, $trash2, $returnType) {
 	$data = array('type' => 'string', 'data' => $value);
 
 	returnData($returnType, $data);
+}
+
+/**
+ *  Return the ID or an hash of IDs of the detected given agents
+ * 
+ *  @param array or value $data
+ * 
+ * 
+**/
+function api_get_agent_id($trash1, $trash2, $data, $returnType) {
+	$response;
+
+	if (is_metaconsole()) {
+		return;
+	}
+	if (empty($returnType)) {
+		$returnType = "json";
+	}
+
+	$response = array();
+
+	if ($data["type"] == "array") {
+		$response["type"] = "array";
+		$response["data"] = array();
+
+		foreach ($data["data"] as $name) {
+			$response["data"][$name] = agents_get_agent_id($name, 1);
+		}
+	} else {
+		$response["type"] = "string";
+		$response["data"] = agents_get_agent_id($data["data"], 1);
+	}
+
+	returnData($returnType, $response);
 }
 
 /**
@@ -8918,7 +8953,7 @@ function api_get_agent_alias($id_agent, $trash1, $trash2, $returnType) {
 		return;
 	}
 
-	if (!api_check_agent_and_print_error($id_agent, $returnType)) return;
+	if (!util_api_check_agent_and_print_error($id_agent, $returnType)) return;
 
 	$sql = sprintf('SELECT alias
 		FROM tagente
@@ -8942,7 +8977,7 @@ function api_get_module_name($id_module, $trash1, $trash2, $returnType) {
 		return;
 	}
 
-	if (!api_check_agent_and_print_error(modules_get_agentmodule($id_module), $returnType)) return;
+	if (!util_api_check_agent_and_print_error(modules_get_agentmodule($id_module), $returnType)) return;
 
 	$sql = sprintf('SELECT nombre
 		FROM tagente_modulo
@@ -9027,7 +9062,7 @@ function api_get_event_info($id_event, $trash1, $trash, $returnType) {
 	}
 	// Check the access to agent
 	if (!empty($event_data['id_agente']) && $event_data['id_agente'] > 0) {
-		if (!api_check_agent_and_print_error($event_data['id_agente'], $returnType)) return;
+		if (!util_api_check_agent_and_print_error($event_data['id_agente'], $returnType)) return;
 	}
 
 	$i = 0;
@@ -10147,7 +10182,7 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4) {
 		return;
 	}
 
-	if (!api_check_agent_and_print_error(modules_get_agentmodule($id_module), 'string')) return;
+	if (!util_api_check_agent_and_print_error(modules_get_agentmodule($id_module), 'string')) return;
 
 	$graph_seconds =
 		(!empty($other) && isset($other['data'][0]))
@@ -10342,7 +10377,7 @@ function api_set_new_cluster($thrash1, $thrash2, $other, $thrash3) {
 			db_pandora_audit("Report management", "Fail try to create agent");
 		
 		returnData('string',
-			array('type' => 'string', 'data' => (int)((bool)$id_cluster)));
+			array('type' => 'string', 'data' => (int)$id_cluster));
 		}
 	}
 	
@@ -10391,7 +10426,7 @@ function api_set_new_cluster($thrash1, $thrash2, $other, $thrash3) {
 			// 	
 				if($element["type"] == "AA"){
 			// 								
-						$tcluster_module = db_process_sql_insert('tcluster_item',array('name'=>$element["name"],'id_cluster'=>$element["id_cluster"],'critical_limit'=>$element["critical_limit"],'warning_limit'=>$element["warning_limit"]));
+						$tcluster_module = db_process_sql_insert('tcluster_item',array('name'=>io_safe_input($element["name"]),'id_cluster'=>$element["id_cluster"],'critical_limit'=>$element["critical_limit"],'warning_limit'=>$element["warning_limit"]));
 						
 						$id_agent = db_process_sql('select id_agent from tcluster where id = '.$element["id_cluster"]);
 						
@@ -10410,7 +10445,7 @@ function api_set_new_cluster($thrash1, $thrash2, $other, $thrash3) {
 						$get_module_interval_value = $get_module_type[0]['module_interval'];
 						
 						$values_module = array(
-							'nombre' => $element["name"],
+							'nombre' => io_safe_input($element["name"]),
 							'id_modulo' => 0,
 							'prediction_module' => 6,
 							'id_agente' => $id_agent[0]['id_agent'],
@@ -10762,7 +10797,99 @@ function api_get_cluster_status($id_cluster, $trash1, $trash2, $returnType) {
 	returnData($returnType, $data);
 }
 
-function api_check_agent_and_print_error($id_agent, $returnType, $access = "AR") {
+function api_get_cluster_id_by_name($cluster_name, $trash1, $trash2, $returnType) {
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+	
+	$cluster_name = io_safe_output($cluster_name);
+	
+	$value = cluster_get_id_by_name($cluster_name);
+	
+	if ($value === false) {
+		returnError('id_not_found', $returnType);
+	}
+	
+	$data = array('type' => 'string', 'data' => $value);
+	
+	returnData($returnType, $data);
+}
+
+function api_get_agents_id_name_by_cluster_id($cluster_id, $trash1, $trash2, $returnType) {
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+	
+	$all_agents = cluster_get_agents_id_name_by_cluster_id($cluster_id);	
+	
+	if (count($all_agents) > 0 and $all_agents !== false) {
+		$data = array('type' => 'array', 'data' => $all_agents);
+		
+		returnData('json', $data);
+	}
+	else {
+		returnError('error_agents', 'No agents retrieved.');
+	}
+}
+
+function api_get_agents_id_name_by_cluster_name($cluster_name, $trash1, $trash2, $returnType) {
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+		
+	$all_agents = cluster_get_agents_id_name_by_cluster_name($cluster_name);
+	
+	if (count($all_agents) > 0 and $all_agents !== false) {
+		$data = array('type' => 'array', 'data' => $all_agents);
+		
+		returnData('json', $data);
+	}
+	else {
+		returnError('error_agents', 'No agents retrieved.');
+	}
+}
+
+function api_get_modules_id_name_by_cluster_id ($cluster_id){
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+	
+	$all_modules = cluster_get_modules_id_name_by_cluster_id($cluster_id);	
+	
+	if (count($all_modules) > 0 and $all_modules !== false) {
+		$data = array('type' => 'array', 'data' => $all_modules);
+		
+		returnData('json', $data);
+	}
+	else {
+		returnError('error_agent_modules', 'No modules retrieved.');
+	}
+	
+}
+
+function api_get_modules_id_name_by_cluster_name ($cluster_name){
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+	
+	$all_modules = cluster_get_modules_id_name_by_cluster_name($cluster_name);	
+	
+	if (count($all_modules) > 0 and $all_modules !== false) {
+		$data = array('type' => 'array', 'data' => $all_modules);
+		
+		returnData('json', $data);
+	}
+	else {
+		returnError('error_agent_modules', 'No modules retrieved.');
+	}
+	
+}
+
+/////////////////////////////////////////////////////////////////////
+// AUX FUNCTIONS
+/////////////////////////////////////////////////////////////////////
+
+function util_api_check_agent_and_print_error($id_agent, $returnType, $access = "AR") {
 	global $config;
 
 	$check_agent = agents_check_access_agent($id_agent, $access);
@@ -10776,5 +10903,7 @@ function api_check_agent_and_print_error($id_agent, $returnType, $access = "AR")
 
 	return false;
 }
+
+
 
 ?>

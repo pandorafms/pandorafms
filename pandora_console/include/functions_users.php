@@ -344,7 +344,7 @@ function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup 
 	
 	$acl_column = get_acl_column($privilege);
 
-	if (array_key_exists($users_group_cache_key, $users_group_cache)) {
+	if (array_key_exists($users_group_cache_key, $users_group_cache) && $cache) {
 		return $users_group_cache[$users_group_cache_key];
 	}
 

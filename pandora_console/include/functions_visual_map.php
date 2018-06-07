@@ -3684,7 +3684,8 @@ function visual_map_get_layout_status ($id_layout = 0, $depth = 0, $elements_in_
 			'id_layout_linked_weight',
 			'id',
 			'id_layout',
-			'element_group'));
+			'element_group',
+			'id_metaconsole'));
 	if ($result === false)
 		return VISUAL_MAP_STATUS_NORMAL;
 		
@@ -3781,9 +3782,23 @@ function visual_map_get_layout_status ($id_layout = 0, $depth = 0, $elements_in_
 				}
 				// Module
 				elseif ($data["id_agente_modulo"] != 0) {
+					//Metaconsole db connection
+					if ($data['id_metaconsole'] != 0) {
+						$connection = db_get_row_filter ('tmetaconsole_setup',
+							array('id' => $data['id_metaconsole']));
+						if (metaconsole_load_external_db($connection) != NOERR) {
+							continue;
+						}
+					}
+
 					$status = modules_get_agentmodule_status($data["id_agente_modulo"]);
 					if ($status == 4){
 						$status = 3;
+					}
+
+					//Restore db connection
+					if ($data['id_metaconsole'] != 0) {
+						metaconsole_restore_db();
 					}
 				}
 				// Agent
@@ -3792,8 +3807,20 @@ function visual_map_get_layout_status ($id_layout = 0, $depth = 0, $elements_in_
 					// ADDED NO CHECK ACL FOR AVOID CHECK TAGS THAT
 					// MAKE VERY SLOW THE VISUALMAPS WITH ACL TAGS
 					//--------------------------------------------------
-					
+					//Metaconsole db connection
+					if ($data['id_metaconsole'] != 0) {
+						$connection = db_get_row_filter ('tmetaconsole_setup',
+							array('id' => $data['id_metaconsole']));
+						if (metaconsole_load_external_db($connection) != NOERR) {
+							continue;
+						}
+					}
 					$status = agents_get_status($data["id_agent"], true);
+
+					//Restore db connection
+					if ($data['id_metaconsole'] != 0) {
+						metaconsole_restore_db();
+					}
 				}
 				break;
 		}

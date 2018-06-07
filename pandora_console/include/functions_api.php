@@ -93,6 +93,10 @@ function returnError($typeError, $returnType = 'string') {
 			returnData($returnType,
 				array('type' => 'string', 'data' => __('The user has not enough permission to make this action.')));
 			break;
+		case 'no_data_to_show':
+			returnData($returnType,
+				array('type' => 'string', 'data' => __('No data to show.')));
+			break;
 		default:
 			returnData("string",
 				array('type' => 'string', 'data' => __($returnType)));
@@ -2116,6 +2120,7 @@ function api_get_group_agent_by_name($thrash1, $thrash2, $other, $thrash3) {
 	}
 	else {
 		$agent_id = agents_get_agent_id($other['data'][0],true);
+		if (!util_api_check_agent_and_print_error($agent_id, 'csv')) return;
 	
 		$sql = sprintf("SELECT groups.nombre nombre 
 			FROM tagente agents, tgrupo groups
@@ -2149,7 +2154,11 @@ function api_get_group_agent_by_name($thrash1, $thrash2, $other, $thrash3) {
  * @param $thrash3 Don't use.
  */
 function api_get_group_agent_by_alias($thrash1, $thrash2, $other, $thrash3) {
-	
+	global $config;
+	if (!check_acl($config['id_user'], 0, "AR")) {
+		returnError('forbidden', 'csv');
+		return;
+	}
 	$group_names =array();
 	
 	if (is_metaconsole()) {
@@ -2188,6 +2197,8 @@ function api_get_group_agent_by_alias($thrash1, $thrash2, $other, $thrash3) {
 		$agent_id = db_get_all_rows_sql($sql);
 
 		foreach ($agent_id as &$id) {
+			if(!users_access_to_agent($id['id_agente'])) continue;
+
 			$sql = sprintf("SELECT groups.nombre nombre 
 			FROM tagente agents, tgrupo groups
 			WHERE id_agente = %d 
@@ -2303,6 +2314,8 @@ function api_get_id_group_agent_by_name($thrash1, $thrash2, $other, $thrash3) {
 	}
 	else {
 		$agent_id = agents_get_agent_id($other['data'][0],true);
+
+		if(!util_api_check_agent_and_print_error($agent_id, 'csv')) return;
 		
 		$sql = sprintf("SELECT groups.id_grupo id_group
 			FROM tagente agents, tgrupo groups
@@ -2336,9 +2349,15 @@ function api_get_id_group_agent_by_name($thrash1, $thrash2, $other, $thrash3) {
  * @param $thrash3 Don't use.
  */
 function api_get_id_group_agent_by_alias($thrash1, $thrash2, $other, $thrash3) {
-	
+	global $config;
+
+	if (!check_acl($config['id_user'], 0, "AR")) {
+		returnError('forbidden', 'csv');
+		return;
+	}
+
 	$group_names =array();
-	
+
 	if (is_metaconsole()) {
 		$servers = db_get_all_rows_sql ("SELECT *
 			FROM tmetaconsole_setup
@@ -2375,6 +2394,8 @@ function api_get_id_group_agent_by_alias($thrash1, $thrash2, $other, $thrash3) {
 		$agent_id = db_get_all_rows_sql($sql);
 
 		foreach ($agent_id as &$id) {
+			if(!users_access_to_agent($id['id_agente'])) continue;
+
 			$sql = sprintf("SELECT groups.id_grupo id_group
 			FROM tagente agents, tgrupo groups
 			WHERE id_agente = %d 
@@ -5036,10 +5057,17 @@ function api_get_all_planned_downtimes ($thrash1, $thrash2, $other, $returnType 
  */
 
 function api_get_planned_downtimes_items ($thrash1, $thrash2, $other, $returnType = 'json') {
+	global $config;
+
 	if (defined ('METACONSOLE')) {
 		return;
 	}
 	
+	if(!check_acl($config['id_user'], 0, "AR")) {
+		returnError('forbidden', $returnType);
+		return;
+	}
+ 
 	$values = array();
 	$values = array(
 		"name LIKE '%".$other['data'][0]."%'"
@@ -5066,9 +5094,16 @@ function api_get_planned_downtimes_items ($thrash1, $thrash2, $other, $returnTyp
 		
 		$filter['id_downtime'] = $downtime['id'];
 		
-		$return[] = planned_downtimes_items ($filter);
+		$items = planned_downtimes_items ($filter);
+		if ($items !== false) $return[] = $items;
 	}
 	
+	// If the header is the unique element in the array, return an error
+	if (count($return) == 1) {
+		returnError('no_data_to_show', $returnType);
+		return;
+	}
+
 	if ($is_quiet)
 		$return['list_index'][] = 'modules';
 	

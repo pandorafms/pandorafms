@@ -1150,11 +1150,20 @@ function get_module_properties($id_module, $fields, $separator, $returnType, $re
 
 function api_set_update_agent($id_agent, $thrash2, $other, $thrash3) {
 	global $config;
-	
+
 	if (defined ('METACONSOLE')) {
 		return;
 	}
 	
+	if (!check_acl($config['id_user'], 0, "AW")) {
+		returnError('forbidden', 'string');
+		return;
+	}
+
+	if (!util_api_check_agent_and_print_error($id_agent, 'string', 'AW')) {
+		return;
+	}
+
 	$alias = $other['data'][0];
 	$ip = $other['data'][1];
 	$idParent = $other['data'][2];
@@ -1179,6 +1188,24 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3) {
 	}
 	else {
 		$cascadeProtectionModule = 0;
+	}
+	// Check ACL group
+	if (!check_acl($config['id_user'], $idGroup, "AW")) {
+		returnError('forbidden', 'string');
+		return;
+	}
+
+	// Check selected parent
+	if ($idParent != 0) {
+		$parentCheck = agents_check_access_agent($idParent);
+		if ($parentCheck === null) {
+			returnError('parent_agent_not_exist', __('The agent parent don`t exist.'));
+			return;
+		}
+		if ($parentCheck === false) {
+			returnError('parent_agent_forbidden', __('The user cannot access to parent agent.'));
+			return;
+		}
 	}
 	
 	$group_old = db_get_sql("SELECT id_grupo FROM tagente WHERE id_agente =" .$id_agent);
@@ -1260,6 +1287,11 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3) {
  */
 function api_set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 	global $config;
+
+	if (!check_acl($config['id_user'], 0, "AW")) {
+		returnError('forbidden', 'string');
+		return;
+	}
 	
 	if (defined ('METACONSOLE')) {
 		return;
@@ -1315,16 +1347,27 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 	}
 	
 	$nameServer = db_get_value_sql($sql1);
-	
+
+	// Check ACL group
+	if (!check_acl($config['id_user'], $idGroup, "AW")) {
+		returnError('forbidden', 'string');
+		return;
+	}
+
+	// Check selected parent
+	if ($idParent != 0) {
+		$parentCheck = agents_check_access_agent($idParent);
+		if ($parentCheck === null) {
+			returnError('parent_agent_not_exist', __('The agent parent don`t exist.'));
+			return;
+		}
+		if ($parentCheck === false) {
+			returnError('parent_agent_forbidden', __('The user cannot access to parent agent.'));
+			return;
+		}
+	}
 	if (agents_get_agent_id ($name)) {
 		returnError('agent_name_exist', 'The name of agent yet exist in DB.');
-	}
-	else if (($idParent != 0) && 
-		(db_get_value_sql('SELECT id_agente
-			FROM tagente
-			WHERE id_agente = ' . $idParent) === false)) {
-		
-		returnError('parent_agent_not_exist', 'The agent parent don`t exist.');
 	}
 	else if (db_get_value_sql('SELECT id_grupo
 		FROM tgrupo
@@ -1472,7 +1515,7 @@ function api_get_custom_field_id($t1, $t2, $other, $returnType) {
  * @param $thrash3 Don't use.
  */
 function api_set_delete_agent($id, $thrash1, $thrast2, $thrash3) {
-	
+
 	if (is_metaconsole()) {
 		$servers = db_get_all_rows_sql ("SELECT *
 			FROM tmetaconsole_setup
@@ -1492,12 +1535,11 @@ function api_set_delete_agent($id, $thrash1, $thrast2, $thrash3) {
 		}
 	}
 	else {
-		$agentName = $id;
-		$idAgent[0] = agents_get_agent_id($agentName);
-		if ($idAgent[0])
-			$result = agents_delete_agent ($idAgent, true);
-		else
-			$result = false;
+		$idAgent = agents_get_agent_id($id);
+		if (!util_api_check_agent_and_print_error($idAgent, 'string', "AD")) {
+			return;
+		}
+		$result = agents_delete_agent ($idAgent, true);
 	}
 	if (!$result)
 		returnError('error_delete', 'Error in delete operation.');
@@ -2534,10 +2576,8 @@ function api_set_create_network_module($id, $thrash1, $other, $thrash3) {
 	$agentName = $id;
 	
 	$idAgent = agents_get_agent_id($agentName);
-	
-	if (!$idAgent) {
-		returnError('error_create_network_module',
-			__('Error in creation network module. Agent name doesn\'t exist.'));
+
+	if (!util_api_check_agent_and_print_error($idAgent, 'string', 'AW')) {
 		return;
 	}
 	
@@ -2628,10 +2668,15 @@ function api_set_update_network_module($id_module, $thrash1, $other, $thrash3) {
 		return;
 	}
 	
-	
 	if ($id_module == "") {
 		returnError('error_update_network_module',
 			__('Error updating network module. Module name cannot be left blank.'));
+		return;
+	}
+
+	if (!util_api_check_agent_and_print_error(
+			modules_get_agentmodule($id_module), 'string', 'AW')
+	) {
 		return;
 	}
 	
@@ -2645,6 +2690,9 @@ function api_set_update_network_module($id_module, $thrash1, $other, $thrash3) {
 	
 	// If we want to change the module to a new agent
 	if ($other['data'][0] != "") {
+		if (!util_api_check_agent_and_print_error($other['data'][0], 'string', 'AW')) {
+			return;
+		}
 		$id_agent_old = db_get_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_module);
 		
 		if ($id_agent_old != $other['data'][0]) {
@@ -2657,12 +2705,6 @@ function api_set_update_network_module($id_module, $thrash1, $other, $thrash3) {
 					__('Error updating network module. Id_module exists in the new agent.'));
 				return;
 			}
-		}
-		// Check if agent exists
-		$check_id_agent = db_get_value ('id_agente', 'tagente', 'id_agente', $other['data'][0]);
-		if (!$check_id_agent) {
-			returnError('error_update_data_module', __('Error updating network module. Id_agent doesn\'t exist.'));
-			return;
 		}
 	}
 	
@@ -2748,9 +2790,8 @@ function api_set_create_plugin_module($id, $thrash1, $other, $thrash3) {
 	}
 	
 	$idAgent = agents_get_agent_id($agentName);
-	
-	if (!$idAgent) {
-		returnError('error_create_plugin_module', __('Error in creation plugin module. Agent name doesn\'t exist.'));
+ 
+	if (!util_api_check_agent_and_print_error($idAgent, 'string', 'AW')) {
 		return;
 	}
 	
@@ -2844,16 +2885,18 @@ function api_set_update_plugin_module($id_module, $thrash1, $other, $thrash3) {
 		returnError('error_update_plugin_module', __('Error updating plugin module. Id_module cannot be left blank.'));
 		return;
 	}
-	
-	$check_id_module = db_get_value ('id_agente_modulo', 'tagente_modulo', 'id_agente_modulo', $id_module);
-	
-	if (!$check_id_module) {
-		returnError('error_update_plugin_module', __('Error updating plugin module. Id_module doesn\'t exist.'));
+
+	if (!util_api_check_agent_and_print_error(
+			modules_get_agentmodule($id_module), 'string', 'AW')
+	) {
 		return;
 	}
 	
 	// If we want to change the module to a new agent
 	if ($other['data'][0] != "") {
+		if (!util_api_check_agent_and_print_error($other['data'][0], 'string', 'AW')) {
+			return;
+		}
 		$id_agent_old = db_get_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_module);
 		
 		if ($id_agent_old != $other['data'][0]) {
@@ -2963,8 +3006,7 @@ function api_set_create_data_module($id, $thrash1, $other, $thrash3) {
 	
 	$idAgent = agents_get_agent_id($agentName);
 	
-	if (!$idAgent) {
-		returnError('error_create_data_module', __('Error in creation data module. Agent name doesn\'t exist.'));
+	if (!util_api_check_agent_and_print_error($idAgent, 'string', 'AW')) {
 		return;
 	}
 	
@@ -3227,16 +3269,18 @@ function api_set_update_data_module($id_module, $thrash1, $other, $thrash3) {
 		returnError('error_update_data_module', __('Error updating data module. Id_module cannot be left blank.'));
 		return;
 	}
-	
-	$check_id_module = db_get_value ('id_agente_modulo', 'tagente_modulo', 'id_agente_modulo', $id_module);
-	
-	if (!$check_id_module) {
-		returnError('error_update_data_module', __('Error updating data module. Id_module doesn\'t exist.'));
+
+	if (!util_api_check_agent_and_print_error(
+			modules_get_agentmodule($id_module), 'string', 'AW')
+	) {
 		return;
 	}
 	
 	// If we want to change the module to a new agent
 	if ($other['data'][0] != "") {
+		if (!util_api_check_agent_and_print_error($other['data'][0], 'string', 'AW')) {
+			return;
+		}
 		$id_agent_old = db_get_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_module);
 		
 		if ($id_agent_old != $other['data'][0]) {
@@ -3346,8 +3390,7 @@ function api_set_create_snmp_module($id, $thrash1, $other, $thrash3) {
 	
 	$idAgent = agents_get_agent_id($agentName);
 	
-	if (!$idAgent) {
-		returnError('error_create_snmp_module', __('Error in creation SNMP module. Agent name doesn\'t exist.'));
+	if (!util_api_check_agent_and_print_error($idAgent, 'string', 'AW')) {
 		return;
 	}
 	
@@ -3492,16 +3535,18 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3) {
 		returnError('error_update_snmp_module', __('Error updating SNMP module. Id_module cannot be left blank.'));
 		return;
 	}
-	
-	$check_id_module = db_get_value ('id_agente_modulo', 'tagente_modulo', 'id_agente_modulo', $id_module);
-	
-	if (!$check_id_module) {
-		returnError('error_update_snmp_module', __('Error updating SNMP module. Id_module doesn\'t exist.'));
+
+	if (!util_api_check_agent_and_print_error(
+			modules_get_agentmodule($id_module), 'string', 'AW')
+	) {
 		return;
 	}
 	
 	// If we want to change the module to a new agent
 	if ($other['data'][0] != "") {
+		if (!util_api_check_agent_and_print_error($other['data'][0], 'string', 'AW')) {
+			return; 
+		}
 		$id_agent_old = db_get_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_module);
 		
 		if ($id_agent_old != $other['data'][0]) {
@@ -3651,7 +3696,13 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3) {
 
  */
 function api_set_new_network_component($id, $thrash1, $other, $thrash2) {
+	global $config;
 	if (defined ('METACONSOLE')) {
+		return;
+	}
+
+	if (!check_acl($config['id_user'], 0, "PM")) {
+		returnError('forbidden', 'string');
 		return;
 	}
 	
@@ -3734,11 +3785,17 @@ function api_set_new_network_component($id, $thrash1, $other, $thrash2) {
 
  */
 function api_set_new_plugin_component($id, $thrash1, $other, $thrash2) {
+	global $config;
+
 	if (defined ('METACONSOLE')) {
 		return;
 	}
-	
-	
+
+	if (!check_acl($config['id_user'], 0, "PM")) {
+		returnError('forbidden', 'string');
+		return;
+	}
+
 	if ($id == "") {
 		returnError('error_set_new_plugin_component',
 			__('Error creating plugin component. Plugin component name cannot be left blank.'));
@@ -3824,12 +3881,19 @@ function api_set_new_plugin_component($id, $thrash1, $other, $thrash2) {
 
  */
 function api_set_new_snmp_component($id, $thrash1, $other, $thrash2) {
+	global $config;
+
 	if (defined ('METACONSOLE')) {
 		return;
 	}
 	
 	if ($id == "") {
 		returnError('error_set_new_snmp_component', __('Error creating SNMP component. SNMP component name cannot be left blank.'));
+		return;
+	}
+
+	if (!check_acl($config['id_user'], 0, "PM")) {
+		returnError('forbidden', 'string');
 		return;
 	}
 	
@@ -3972,6 +4036,8 @@ function api_set_new_snmp_component($id, $thrash1, $other, $thrash2) {
 
  */
 function api_set_new_local_component($id, $thrash1, $other, $thrash2) {
+	global $config;
+
 	if (defined ('METACONSOLE')) {
 		return;
 	}
@@ -3979,6 +4045,11 @@ function api_set_new_local_component($id, $thrash1, $other, $thrash2) {
 	if ($id == "") {
 		returnError('error_set_new_local_component',
 			__('Error creating local component. Local component name cannot be left blank.'));
+		return;
+	}
+
+	if (!check_acl($config['id_user'], 0, "PM")) {
+		returnError('forbidden', 'string');
 		return;
 	}
 	
@@ -4570,6 +4641,13 @@ function api_set_create_module_template($id, $thrash1, $other, $thrash3) {
 		return;
 	}
 	
+	$id_module = $other['data'][0];
+	$id_agent = $other['data'][1];
+
+	if (!util_api_check_agent_and_print_error($id_agent, 'string', "AW")) {
+		return;
+	}
+	
 	$result_template = alerts_get_alert_template($id);
 	
 	if (!$result_template) {
@@ -4577,9 +4655,6 @@ function api_set_create_module_template($id, $thrash1, $other, $thrash3) {
 			__('Error assigning module to template. Id_template doensn\'t exists.'));
 		return;
 	}
-	
-	$id_module = $other['data'][0];
-	$id_agent = $other['data'][1];
 	
 	$result_agent = agents_get_name($id_agent);
 	
@@ -4806,7 +4881,7 @@ function api_set_validate_all_policy_alerts($id, $thrash1, $other, $thrash3) {
 	}
 	
 	# Get all policies
-	$policies = enterprise_hook('policies_get_policies', array(false, false, false, true));
+	$policies = enterprise_hook('policies_get_policies', array(false, false, false));
 	
 	if ($duplicated === ENTERPRISE_NOT_HOOK) {
 		returnError('error_validate_all_policy_alerts', __('Error validating all alert policies.'));
@@ -5290,11 +5365,19 @@ function api_set_add_agent_policy($id, $thrash1, $other, $thrash2) {
 		return;
 	}
 	
-	// Check if the agent exists
-	$result_agent = db_get_value ('id_agente', 'tagente', 'id_agente', (int) $other['data'][0]);
-	
-	if (!$result_agent) {
-		returnError('error_add_agent_policy', __('Error adding agent to policy. Id_agent doesn\'t exist.'));
+	// Check if the agent exists and permissions
+	if (!util_api_check_agent_and_print_error((int) $other['data'][0], 'string', "AW")) {
+		return;
+	}
+
+	// Check the policy permissions and existence
+	if (enterprise_hook('policies_check_user_policy', array($id)) === false) {
+		$result_agent = db_get_value ('id_agente', 'tagente', 'id_agente', (int) $other['data'][0]);
+		if ($result_agent) {
+			returnError('error_add_agent_policy', __('Error adding agent to policy. Id policy doesn\'t exist.'));
+			return;
+		}
+		returnError('forbidden', 'string');
 		return;
 	}
 	
@@ -5346,6 +5429,11 @@ function api_set_add_data_module_policy($id, $thrash1, $other, $thrash3) {
 	
 	if ($id == "") {
 		returnError('error_add_data_module_policy', __('Error adding data module to policy. Id_policy cannot be left blank.'));
+		return;
+	}
+	
+	if (enterprise_hook('policies_check_user_policy', array($id)) === false) {
+		returnError('forbidden', 'string');
 		return;
 	}
 	
@@ -5437,6 +5525,10 @@ function api_set_update_data_module_policy($id, $thrash1, $other, $thrash3) {
 		returnError('error_update_data_module_policy', __('Error updating data module in policy. Id_policy cannot be left blank.'));
 		return;
 	}
+
+	if (!util_api_check_agent_and_print_error($id, 'string', "AW")) {
+		return;
+	}
 	
 	if ($other['data'][0] == "") {
 		returnError('error_update_data_module_policy', __('Error updating data module in policy. Id_policy_module cannot be left blank.'));
@@ -5515,6 +5607,11 @@ function api_set_add_network_module_policy($id, $thrash1, $other, $thrash3) {
 		return;
 	}
 	
+	if (enterprise_hook('policies_check_user_policy', array($id)) === false) {
+		returnError('forbidden', 'string');
+		return;
+	}
+
 	if ($other['data'][0] == "") {
 		returnError('error_network_data_module_policy',
 			__('Error adding network module to policy. Module_name cannot be left blank.'));
@@ -5687,6 +5784,11 @@ function api_set_add_plugin_module_policy($id, $thrash1, $other, $thrash3) {
 		return;
 	}
 	
+	if (enterprise_hook('policies_check_user_policy', array($id)) === false) {
+		returnError('forbidden', 'string');
+		return;
+	}
+
 	if ($other['data'][0] == "") {
 		returnError('error_add_plugin_module_policy', __('Error adding plugin module to policy. Module_name cannot be left blank.'));
 		return;
@@ -6018,6 +6120,11 @@ function api_set_add_snmp_module_policy($id, $thrash1, $other, $thrash3) {
 		return;
 	}
 	
+	if (enterprise_hook('policies_check_user_policy', array($id)) === false) {
+		returnError('forbidden', 'string');
+		return;
+	}
+
 	if ($other['data'][0] == "") {
 		returnError('error_add_snmp_module_policy', __('Error adding SNMP module to policy. Module_name cannot be left blank.'));
 		return;
@@ -6302,6 +6409,18 @@ function api_set_apply_policy($id, $thrash1, $other, $thrash3) {
 			return;
 		}
 	}
+
+	$check_acl = enterprise_hook('policies_check_user_policy', array($id));
+	if ($check_acl !== true) {
+		// We want to return a value
+		if ($other == "return") {
+			return -1;
+		}
+		else {
+			returnError('error_apply_policy', __('Error applying policy.'));
+			return;
+		}
+	}
 	
 	$id = enterprise_hook('add_policy_queue_operation', array($id, 0, 'apply'));
 	
@@ -6346,20 +6465,27 @@ function api_set_apply_policy($id, $thrash1, $other, $thrash3) {
  * @param $thrash3 Don't use
  */
 function api_set_apply_all_policies($thrash1, $thrash2, $other, $thrash3) {
+	global $config;
 	if (defined ('METACONSOLE')) {
 		return;
 	}
 	
+	if (!check_acl($config['id_user'], 0, "AW")) {
+		returnError('forbidden', 'string');
+		return;
+	}
+
 	$policies = array();
 	
 	# Get all policies
-	$policies = enterprise_hook('policies_get_policies', array(false, false, false, true));
+	$policies = enterprise_hook('policies_get_policies', array(false, false, false));
 	
 	if ($policies === ENTERPRISE_NOT_HOOK) {
 		returnError('error_apply_all_policy', __('Error applying all policies.'));
 		return;
 	}
-	
+	if ($policies === false) $policies = array();
+
 	$num_policies = count($policies);
 	$count_results = 0;
 	foreach ($policies as $policy) {
@@ -10674,26 +10800,23 @@ function api_set_new_cluster($thrash1, $thrash2, $other, $thrash3) {
 function api_set_apply_module_template($id_template, $id_agent, $thrash3, $thrash4) {
 		
 	if (isset ($id_template)) {
+
+		if (!util_api_check_agent_and_print_error($id_agent, 'string', "AW")) return;
 		// Take agent data
 		$row = db_get_row ("tagente", "id_agente", $id_agent);
 		
-		if ($row !== false) {
-			$intervalo = $row["intervalo"];
-			$nombre_agente = $row["nombre"];
-			$direccion_agente =$row["direccion"];
-			$ultima_act = $row["ultimo_contacto"];
-			$ultima_act_remota =$row["ultimo_contacto_remoto"];
-			$comentarios = $row["comentarios"];
-			$id_grupo = $row["id_grupo"];
-			$id_os= $row["id_os"];
-			$os_version = $row["os_version"];
-			$agent_version = $row["agent_version"];
-			$disabled= $row["disabled"];
-		}
-		else {
-			return;
-		}
-		
+		$intervalo = $row["intervalo"];
+		$nombre_agente = $row["nombre"];
+		$direccion_agente =$row["direccion"];
+		$ultima_act = $row["ultimo_contacto"];
+		$ultima_act_remota =$row["ultimo_contacto_remoto"];
+		$comentarios = $row["comentarios"];
+		$id_grupo = $row["id_grupo"];
+		$id_os= $row["id_os"];
+		$os_version = $row["os_version"];
+		$agent_version = $row["agent_version"];
+		$disabled= $row["disabled"];
+
 		$id_np = $id_template;
 		$name_template = db_get_value ('name', 'tnetwork_profile', 'id_np', $id_np);
 		$npc = db_get_all_rows_field_filter ("tnetwork_profile_component", "id_np", $id_np);
@@ -10804,12 +10927,13 @@ function api_set_apply_module_template($id_template, $id_agent, $thrash3, $thras
 		}
 		if ($error_count > 0) {
 			if (empty($modules_already_added))
-				ui_print_error_message(__('Error adding modules') . sprintf(' (%s)', $error_count));
+				returnError('set_apply_module_template', __('Error adding modules') . sprintf(' (%s)', $error_count));
 			else
-				ui_print_error_message(__('Error adding modules. The following errors already exists: ') . implode(', ', $modules_already_added));
+				returnError('set_apply_module_template', __('Error adding modules. The following errors already exists: ') . implode(', ', $modules_already_added));
 		}
-		if ($success_count > 0)
-			ui_print_success_message(__('Modules successfully added'));
+		if ($success_count > 0) {
+			returnData('string',  array('type' => 'string', 'data' => __('Modules successfully added')));
+		}
 	}
 	
 }

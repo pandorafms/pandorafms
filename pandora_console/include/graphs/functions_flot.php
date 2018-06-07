@@ -222,10 +222,8 @@ function flot_area_graph (
 						style='margin:0px; margin-top:30px; margin-bottom:50px; display:none; width: ".$params['width']."; height: 200px;'></div>";
 	}
 
-	//XXXXTODO
-	$water_mark = '';
 	if ($water_mark != '') {
-		$return .= "<div id='watermark_$graph_id' style='display:none; position:absolute;'><img id='watermark_image_$graph_id' src='$water_mark'></div>";
+		$return .= "<div id='watermark_$graph_id' style='display:none; position:absolute;'><img id='watermark_image_$graph_id' src='" . $water_mark['url'] . "'></div>";
 		$watermark = 'true';
 	}
 	else {

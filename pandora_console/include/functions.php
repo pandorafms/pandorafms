@@ -3179,6 +3179,7 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined = fal
 		return $result;
 	}
 	else{
+		$config["temp_images"][] = $img_url;
 		return '<img src="' . $img_url . '" />';
 	}
 }

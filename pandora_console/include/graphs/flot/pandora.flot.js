@@ -857,7 +857,7 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
 
 function pandoraFlotArea(
 	graph_id, values, legend, agent_module_id,
-	series_type, watermark, date_array,
+	series_type, water_mark, date_array,
 	data_module_graph, params,
 	force_integer,
 	background_color, legend_color, short_data,
@@ -900,7 +900,7 @@ function pandoraFlotArea(
 	//XXXX ver que hay que hacer
 	var labels_long   = '';
 	var min_check     = 0;
-	var water_mark    = '';
+
 	var legend_events = null;
 	var legend_alerts = null;
 
@@ -2303,9 +2303,11 @@ if (vconsole) {
 	}
 
 	if (!dashboard) {
-		if (water_mark)
+		if (water_mark){
+			console.log($('#watermark_image_'+graph_id));
 			set_watermark(graph_id, plot, $('#watermark_image_'+graph_id).attr('src'));
-		adjust_menu(graph_id, plot, parent_height, width, show_legend);
+		}
+		//adjust_menu(graph_id, plot, parent_height, width, show_legend);
 	}
 }
 
@@ -2340,22 +2342,21 @@ function adjust_menu(graph_id, plot, parent_height, width, show_legend) {
 }
 
 function set_watermark(graph_id, plot, watermark_src) {
-	console.log('entra por la watermark');
 	var img = new Image();
+
 	img.src = watermark_src;
 	var context = plot.getCanvas().getContext('2d');
 
 	// Once it's loaded draw the image on the canvas.
 	img.addEventListener('load', function () {
-		//~ // Now resize the image: x, y, w, h.
-
+		// Now resize the image: x, y, w, h.
 		var down_ticks_height = 0;
 		if ($('#'+graph_id+' .yAxis .tickLabel').eq(0).css('height') != undefined) {
 			down_ticks_height = $('#'+graph_id+' .yAxis .tickLabel').eq(0).css('height').split('px')[0];
 		}
 
-		var left_pos = parseInt(context.canvas.width - 3) - $('#watermark_image_'+graph_id)[0].width;
-		var top_pos  = 6;
+		var left_pos = parseInt(context.canvas.width) - $('#watermark_image_'+graph_id)[0].width - 30;
+		var top_pos  = 7;
 		//var top_pos = parseInt(context.canvas.height - down_ticks_height - 10) - $('#watermark_image_'+graph_id)[0].height;
 		//var left_pos = 380;
 		context.drawImage(this, left_pos, top_pos);

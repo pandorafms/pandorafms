@@ -976,18 +976,6 @@ function grafico_modulo_sparse ($params) {
 		return $array_data;
 	}
 
-	//XXX
-	//esto lo tenia la bool
-	$water_mark = array(
-		'file' => $config['homedir'] .  "/images/logo_vertical_water.png",
-		'url' => ui_get_full_url(
-			"/images/logo_vertical_water.png",
-			false,
-			false,
-			false
-		)
-	);
-
 	$series_type_array = series_type_graph_array(
 		$array_data,
 		$params
@@ -996,8 +984,17 @@ function grafico_modulo_sparse ($params) {
 	$series_type = $series_type_array['series_type'];
 	$legend = $series_type_array['legend'];
 
-	//esto la sparse
-	//setup_watermark($water_mark, $water_mark_file, $water_mark_url);
+	if($config["fixed_graph"] == false){
+		$water_mark = array(
+			'file' => $config['homedir'] .  "/images/logo_vertical_water.png",
+			'url' => ui_get_full_url(
+				"/images/logo_vertical_water.png",
+				false,
+				false,
+				false
+			)
+		);
+	}
 
 	$data_module_graph['series_suffix'] = $series_suffix;
 
@@ -1318,12 +1315,11 @@ function graphic_combined_module (
 		$params['image_treshold'] = false;
 	}
 
-	$params['graph_combined'] = true;
-
 	if(!isset($params['show_unknown'])){
 		$params['show_unknown'] = false;
 	}
 
+	$params['graph_combined'] = true;
 	//XXXX
 	if($params['only_image']){
 		return generator_chart_to_pdf('combined', $params, $params_combined, $module_list);
@@ -1425,11 +1421,22 @@ function graphic_combined_module (
 	$ttl              = $params['ttl'];
 	$background_color = $params['backgroundColor'];
 	$datelimit        = $date_array["start_date"];
+	$fixed_font_size  = $config['font_size'];
 	$flash_charts     = false;
 
+	if($config["fixed_graph"] == false){
+		$water_mark = array(
+			'file' => $config['homedir'] .  "/images/logo_vertical_water.png",
+			'url' => ui_get_full_url(
+				"/images/logo_vertical_water.png",
+				false,
+				false,
+				false
+			)
+		);
+	}
+
 	//XXX no se que hacen
-	$fixed_font_size = $config['font_size'];
-	$water_mark      = '';
 	$long_index      = '';
 	$color           = array();
 
@@ -1439,7 +1446,6 @@ function graphic_combined_module (
 		case CUSTOM_GRAPH_STACKED_AREA:
 		case CUSTOM_GRAPH_AREA:
 		case CUSTOM_GRAPH_LINE:
-
 			$date_array = array();
 			$date_array["period"]     = $params['period'];
 			$date_array["final_date"] = $params['date'];
@@ -1469,7 +1475,6 @@ function graphic_combined_module (
 				$data_module_graph['c_max']    		 = $module_data['max_critical'];
 				$data_module_graph['c_inv']    		 = $module_data['critical_inverse'];
 				$data_module_graph['module_id']      = $agent_module_id;
-
 
 				//stract data
 				$array_data_module = grafico_modulo_sparse_data(
@@ -1546,7 +1551,6 @@ function graphic_combined_module (
 			$series_type = $series_type_array['series_type'];
 			$legend      = $series_type_array['legend'];
 
-			//XXXXXXREVISAR
 			$threshold_data = array();
 			if ($params_combined['from_interface']) {
 				$yellow_threshold = 0;
@@ -1656,7 +1660,7 @@ function graphic_combined_module (
 					$threshold_data['red_inverse'] = (bool)$red_inverse;
 				}
 
-				$show_elements_graph['threshold_data'] = $threshold_data;
+				$params['threshold_data'] = $threshold_data;
 			}
 
 			$output = area_graph(
@@ -1674,7 +1678,6 @@ function graphic_combined_module (
 			break;
 		case CUSTOM_GRAPH_BULLET_CHART_THRESHOLD:
 		case CUSTOM_GRAPH_BULLET_CHART:
-
 			if($params_combined['stacked'] == CUSTOM_GRAPH_BULLET_CHART_THRESHOLD){
 				$acumulador = 0;
 				foreach ($module_list as $module_item) {

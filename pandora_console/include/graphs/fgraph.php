@@ -230,6 +230,8 @@ function area_graph(
 
 	include_once('functions_flot.php');
 
+	//setup_watermark($water_mark, $water_mark_file, $water_mark_url);
+
 	return flot_area_graph(
 		$agent_module_id,
 		$array_data,

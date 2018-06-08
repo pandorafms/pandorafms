@@ -2246,8 +2246,6 @@ CREATE TABLE IF NOT EXISTS `tdatabase` (
 	`db_port` int(4) unsigned default '3306',
 	`status` tinyint(1) unsigned default '0',
 	`action` tinyint(1) unsigned default '0',
-	`master` tinyint(1) unsigned default '0',
-	`deployment_percent` float unsigned default 0,
 	`last_error` varchar(255) default '',
 	PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8 ;

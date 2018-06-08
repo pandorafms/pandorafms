@@ -859,9 +859,8 @@ function pandoraFlotArea(
 	graph_id, values, legend, agent_module_id,
 	series_type, water_mark, date_array,
 	data_module_graph, params,
-	force_integer,
-	background_color, legend_color, short_data,
-	events_array
+	force_integer, background_color,
+	legend_color, short_data, events_array
 ) {
 
 	//diferents vars
@@ -2397,8 +2396,6 @@ function get_event_details (event_ids) {
 	return table;
 }
 
-
-//XXXXXXXXXX
 //Ajusta la grafica pequenña con el desplazamiento del eje y
 function adjust_left_width_canvas(adapter_id, adapted_id) {
 	var adapter_left_margin = $('#'+adapter_id+' .yAxis .tickLabel').width();
@@ -2408,8 +2405,6 @@ function adjust_left_width_canvas(adapter_id, adapted_id) {
 	$('#'+adapted_id).css('margin-left', adapter_left_margin);
 }
 
-
-//XXXXXXXXXXX
 //Ajusta el ancho de la grafica pequeña con respecto a la grande
 function update_left_width_canvas(graph_id) {
 	$('#overview_'+graph_id).width($('#'+graph_id).width());

@@ -12,15 +12,11 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-// XXX
-/*
-if (! isset($_SESSION['id_usuario'])) {
-	session_start();
-	session_write_close();
-}
-*/
-
 // Global & session manageme
+session_id($_GET["session_id"]);
+session_start();
+session_write_close();
+
 require_once ('config.php');
 require_once ($config['homedir'] . '/include/auth/mysql.php');
 require_once ($config['homedir'] . '/include/functions.php');
@@ -32,8 +28,9 @@ require_once ($config['homedir'] . '/include/functions_modules.php');
 require_once ($config['homedir'] . '/include/functions_agents.php');
 require_once ($config['homedir'] . '/include/functions_tags.php');
 
-// XXX
-//check_login();
+check_login();
+
+global $config;
 
 /*
 $params_json = base64_decode((string) get_parameter('params'));
@@ -55,14 +52,14 @@ if ($config["metaconsole"] && !empty($server_id)) {
 		exit;
 	}
 }
-
+*/
 
 $user_language = get_user_language($config['id_user']);
 if (file_exists ('languages/'.$user_language.'.mo')) {
 	$l10n = new gettext_reader (new CachedFileReader ('languages/'.$user_language.'.mo'));
 	$l10n->load_tables();
 }
-*/
+
 ?>
 <!DOCTYPE>
 <html>
@@ -95,12 +92,10 @@ if (file_exists ('languages/'.$user_language.'.mo')) {
 <?php
 
 		$params = json_decode($_GET['data'], true);
-        //XXXXXX
         $params['only_image'] = false;
 		$params['width']      = '1048';
 		$params['menu']       = false;
 
-		//cominadasssss
 		$params_combined = json_decode($_GET['data_combined'], true);
 		$module_list     = json_decode($_GET['data_module_list'], true);
 		$type_graph_pdf  = $_GET['type_graph_pdf'];

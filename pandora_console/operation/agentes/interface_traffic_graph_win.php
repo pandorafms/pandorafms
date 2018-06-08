@@ -192,7 +192,6 @@ $interface_traffic_modules = array(
 		else
 			echo '<div style="margin-left: 50px; padding-top: 10px;">';
 
-		//XXXXXXX width and height
 		$height = 400;
 		$width  = '90%';
 

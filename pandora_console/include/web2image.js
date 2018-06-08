@@ -1,6 +1,6 @@
 var system = require('system');
 
-if (system.args.length < 3 || system.args.length > 10) {
+if (system.args.length < 3 || system.args.length > 11) {
 	phantom.exit(1);
 }
 
@@ -14,7 +14,9 @@ var url_module_list = system.args[5];
 var output_filename = system.args[6];
 var _width          = system.args[7];
 var _height         = system.args[8];
-var base_64         = system.args[9];
+var session_id      = system.args[9];
+var base_64         = system.args[10];
+
 
 if (!_width) {
 	_width = 750;
@@ -28,11 +30,13 @@ if(type_graph_pdf == 'combined'){
 	finish_url = url + "?" + "data=" + url_params +
 				"&data_combined=" + url_params_comb +
 				"&data_module_list=" + url_module_list +
-				"&type_graph_pdf=" + type_graph_pdf;
+				"&type_graph_pdf=" + type_graph_pdf +
+				"&session_id=" + session_id;
 }
 else{
 	finish_url = url + "?" + "data=" + url_params +
-				"&type_graph_pdf=" + type_graph_pdf;
+				"&type_graph_pdf=" + type_graph_pdf +
+				"&session_id=" + session_id;
 }
 
 page.viewportSize = { width: _width, height: _height };

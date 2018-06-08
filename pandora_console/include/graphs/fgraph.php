@@ -172,8 +172,7 @@ function vbar_graph(
 	$backgroundColor = 'white',
 	$from_ux = false,
 	$from_wux = false,
-	$tick_color = 'white'
-) {
+	$tick_color = 'white') {
 
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 
@@ -224,13 +223,12 @@ function area_graph(
 	$agent_module_id, $array_data,
 	$legend, $series_type, $date_array,
 	$data_module_graph, $params, $water_mark,
-	$array_events_alerts
-) {
+	$array_events_alerts) {
 	global $config;
 
 	include_once('functions_flot.php');
 
-	//setup_watermark($water_mark, $water_mark_file, $water_mark_url);
+	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 
 	return flot_area_graph(
 		$agent_module_id,
@@ -276,15 +274,15 @@ function stacked_thermometers($flash_chart, $chart_data, $width, $height,
 	$color, $legend, $long_index, $no_data_image, $xaxisname = "",
 	$yaxisname = "", $water_mark = "", $font = '', $font_size = '',
 	$unit = '', $ttl = 1, $homeurl = '', $backgroundColor = 'white') {
-	
+
 	include_once('functions_d3.php');
-	
+
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
-	
+
 	if (empty($chart_data)) {
 		return '<img src="' . $no_data_image . '" />';
 	}
-	
+
 	return d3_thermometers(
 			$chart_data,
 			$width,
@@ -321,23 +319,6 @@ function stacked_gauge($chart_data, $width, $height,
 		$font_size + 2,
 		$no_data_image
 	);
-}
-
-function kiviat_graph($graph_type, $flash_chart, $chart_data, $width,
-	$height, $no_data_image, $ttl = 1, $homedir="") {
-
-	if (empty($chart_data)) {
-		return '<img src="' . $no_data_image . '" />';
-	}
-
-	$graph = array();
-	$graph['data'] = $chart_data;
-	$graph['width'] = $width;
-	$graph['height'] = $height;
-
-	$id_graph = serialize_in_temp($graph, null, $ttl);
-
-	return "<img src='".$homedir."include/graphs/functions_pchart.php?static_graph=1&graph_type=".$graph_type."&ttl=".$ttl."&id_graph=" . $id_graph . "' />";
 }
 
 function hbar_graph($flash_chart, $chart_data, $width, $height,

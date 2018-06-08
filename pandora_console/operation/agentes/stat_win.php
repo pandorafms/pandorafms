@@ -154,13 +154,6 @@ $alias    = db_get_value ("alias","tagente","id_agente",$id_agent);
 
 		$period = get_parameter ("period");
 		$id     = get_parameter ("id", 0);
-
-//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-		/*
-		$width = get_parameter ("width", STATWIN_DEFAULT_CHART_WIDTH);
-		$height = get_parameter ("height", STATWIN_DEFAULT_CHART_HEIGHT);
-		*/
-
 		$label = get_parameter ("label", "");
 		$label_graph = base64_decode(get_parameter ("label", ""));
 		$start_date = get_parameter ("start_date", date("Y/m/d"));

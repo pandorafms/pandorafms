@@ -2805,21 +2805,6 @@ function agents_get_network_interfaces_array(
 				$row_interface['status'] = $interface['status_image'];
 				$row_interface['chart'] = null;
 
-				//XXXX ancho y largo
-				// Get chart
-				/*
-				reporting_set_conf_charts($width, $height, $only_image,
-					$type, $content, $ttl);
-
-				if (!empty($force_width_chart)) {
-					$width = $force_width_chart;
-				}
-
-				if (!empty($force_height_chart)) {
-					$height = $force_height_chart;
-				}
-				*/
-
 				$width = null;
 				$height = null;
 
@@ -3631,11 +3616,6 @@ function reporting_projection_graph($report, $content,
 
 	set_time_limit(500);
 
-	// Get chart
-	//reporting_set_conf_charts($width, $height, $only_image, $type,
-	//	$content, $ttl);
-
-	//XXXX width y height
 	switch ($type) {
 		case 'dinamic':
 		case 'static':
@@ -6505,7 +6485,7 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 				'period'              => $content['period'],
 				'title'               => $label,
 				'avg_only'            => $only_avg,
-				'pure'                => false, //XXX
+				'pure'                => false,
 				'date'                => $report["datetime"],
 				'only_image'          => $only_image,
 				'homeurl'             => ui_get_full_url(false, false, false, false),

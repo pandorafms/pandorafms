@@ -129,7 +129,6 @@ function flot_area_graph (
 			break;
 	}
 
-	///XXXXXXX los px caca
 	// Parent layer
 	$return = "<div class='parent_graph' style='width: " . ($params['width']) . ";" . $background_style . "'>";
 	// Set some containers to legend, graph, timestamp tooltip, etc.
@@ -205,7 +204,7 @@ function flot_area_graph (
 	if($params['type'] == 'area_simple'){
 		$return .= "noresizevc ";
 	}
-//XXXXXX  height: ".$params['height']."px;'
+
 	$return .= "graph" .$params['adapt_key'] ."'
 				style='	width: ".$params['width']."px;
 				height: ".$params['height']."px;'></div>";
@@ -257,7 +256,6 @@ function flot_area_graph (
 		$legend_color = "#A4A4A4";
 	}
 
-	//XXXX force_integer TODO
 	$force_integer = 0;
 
 	// Trick to get translated string from javascript

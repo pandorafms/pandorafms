@@ -190,8 +190,6 @@ if ($view_graph) {
 		$options
 	);
 
-
-	//XXXX el width y height
 	$width = null;
 	$height = null;
 	$params =array(

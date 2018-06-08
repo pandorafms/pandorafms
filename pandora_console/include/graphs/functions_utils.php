@@ -136,16 +136,17 @@ function setup_watermark($water_mark, &$water_mark_file, &$water_mark_url) {
 	if (!is_array($water_mark)) {
 		$water_mark_file = $water_mark;
 		$water_mark_url = '';
+		
 		return;
 	}
-
+	
 	if (isset($water_mark['file'])) {
 		$water_mark_file = $water_mark['file'];
 	}
 	else {
 		$water_mark_file = '';
 	}
-
+	
 	if (isset($water_mark['url'])) {
 		$water_mark_url = $water_mark['url'];
 	}

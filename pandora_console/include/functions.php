@@ -3147,7 +3147,7 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined = fal
 	$url      = $config["homeurl"] . "/include/chart_generator.php";
 	$img_file = "img_". uniqid()  .".png";
 	$img_path = $config["homedir"] . "/attachment/" . $img_file;
-	$img_url  = $config["homeurl"] . "/attachment/" . $img_file;
+	$img_url  = $config["homeurl"] . "attachment/" . $img_file;
 
 	$width_img  = 500;
 	$height_img = 450;
@@ -3162,6 +3162,8 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined = fal
 		$module_list = urlencode(json_encode($module_list));
 	}
 
+	$session_id = session_id();
+
 	$result = exec(
 		"phantomjs " . $file_js . " " .
 		$url . "  '" .
@@ -3171,7 +3173,8 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined = fal
 		$module_list . "' " .
 		$img_path . " " .
 		$width_img . " " .
-		$height_img . " " .
+		$height_img . " '" .
+		$session_id . "' " .
 		$params['return_img_base_64']
 	);
 
@@ -3179,7 +3182,7 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined = fal
 		return $result;
 	}
 	else{
-		$config["temp_images"][] = $img_url;
+		$config["temp_images"][] = $img_path;
 		return '<img src="' . $img_url . '" />';
 	}
 }

@@ -240,7 +240,7 @@ function grafico_modulo_sparse_data_chart (
 		$data_module_graph['id_module_type'] == 10 ||
 		$data_module_graph['id_module_type'] == 33 ){
 
-//XXXXXXXXXXX
+//XXXXXXXXXXX SLICES
 /*
 "SELECT count(*) as data, min(utimestamp) as utimestamp
 					FROM tagente_datos_string
@@ -865,7 +865,6 @@ function grafico_modulo_sparse ($params) {
 	$params['font']       = $config['fontpath'];
 	$params['font-size']  = $config['font_size'];
 
-	//XXXXXXXXXXXX se devuelve phantom.js
 	if($params['only_image']){
 		return generator_chart_to_pdf('sparse', $params);
 	}
@@ -1151,7 +1150,7 @@ function graphic_combined_module (
 	$params,
 	$params_combined
 ) {
-	//XXX seteo todos los parametros
+
 	if(!isset($params_combined['from_interface'])){
 		$params_combined['from_interface'] = false;
 	}
@@ -1216,7 +1215,6 @@ function graphic_combined_module (
 	}
 
 
-	//XXX seteo los parametros
 	if(!isset($params['period'])){
 		return false;
 	}
@@ -1320,7 +1318,7 @@ function graphic_combined_module (
 	}
 
 	$params['graph_combined'] = true;
-	//XXXX
+
 	if($params['only_image']){
 		return generator_chart_to_pdf('combined', $params, $params_combined, $module_list);
 	}
@@ -1436,7 +1434,7 @@ function graphic_combined_module (
 		);
 	}
 
-	//XXX no se que hacen
+	//XXX arreglar estas
 	$long_index      = '';
 	$color           = array();
 
@@ -1765,7 +1763,6 @@ function graphic_combined_module (
 				}
 			}
 
-			//XXXX
 			$graph_values = $temp;
 
 			$width = 1024;
@@ -1857,7 +1854,6 @@ function graphic_combined_module (
 				$i++;
 			}
 
-			//XXXX
 			$graph_values = $temp;
 
 			$width = 200;
@@ -1926,7 +1922,6 @@ function graphic_combined_module (
 				}
 			}
 
-			//XXXX
 			$graph_values = $temp;
 
 			$width = 1024;
@@ -2046,7 +2041,6 @@ function graphic_combined_module (
 				}
 				$i++;
 
-				//XXXX
 				$graph_values = $temp;
 
 				return stacked_thermometers(
@@ -2129,7 +2123,6 @@ function graphic_combined_module (
 
 			$temp['total_modules'] = $total_modules;
 
-			//XXXX
 			$graph_values = $temp;
 
 			$width = 1024;
@@ -2319,7 +2312,6 @@ function graphic_agentaccess ($id_agent, $width, $height, $period = 0, $return =
 		}
 	}
 
-	//XXXXX
 	if($config["fixed_graph"] == false){
 		$water_mark = array('file' =>
 			$config['homedir'] . "/images/logo_vertical_water.png",

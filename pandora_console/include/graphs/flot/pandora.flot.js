@@ -302,15 +302,14 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 			$(this).text(legend[j]);
 			j++;
 		});
-		
+
 		if ($('input[name="custom_graph"]').val()) {
 			$('.legend>div').css('right',($('.legend>div').height()*-1));
 			$('.legend>table').css('right',($('.legend>div').height()*-1));
 		}
 		//$('.legend>table').css('border',"1px solid #E2E2E2");
 		$('.legend>table').css('background-color',"transparent");
-		
-		
+
 		var pielegends = $('#'+graph_id+' .pieLabelBackground');
 		pielegends.each(function () {
 			$(this).css('transform', "rotate(-35deg)").css('color', 'black');
@@ -324,7 +323,8 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 }
 
 function pandoraFlotHBars(graph_id, values, labels, water_mark,
-	maxvalue, water_mark, separator, separator2, font, font_size, background_color, tick_color, min, max) {
+	maxvalue, water_mark, separator, separator2, font, font_size,
+	background_color, tick_color, min, max) {
 
 	var colors_data = ['#FC4444','#FFA631','#FAD403','#5BB6E5','#F2919D','#80BA27'];
 	values = values.split(separator2);
@@ -857,7 +857,7 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
 
 function pandoraFlotArea(
 	graph_id, values, legend, agent_module_id,
-	series_type, water_mark, date_array,
+	series_type, color, water_mark, date_array,
 	data_module_graph, params,
 	force_integer, background_color,
 	legend_color, short_data, events_array
@@ -896,13 +896,8 @@ function pandoraFlotArea(
 	//XXXXX
 	var markins_graph    = true;
 
-	//XXXX ver que hay que hacer
-	var labels_long   = '';
-	var min_check     = 0;
-
 	var legend_events = null;
 	var legend_alerts = null;
-
 
 	// If threshold and up are the same, that critical or warning is disabled
 	if (yellow_threshold == yellow_up){
@@ -1481,7 +1476,7 @@ function pandoraFlotArea(
 			}
 		}
 	}
-console.log(type);
+
 	switch (type) {
 		case 'line':
 		case 2:
@@ -1510,6 +1505,7 @@ console.log(type);
 
 	i=0;
 	$.each(values, function (index, value) {
+		
 		if (typeof value.data !== "undefined") {
 			if(index.search("alert") >= 0){
 				fill_color = '#ff7f00';
@@ -1562,11 +1558,11 @@ console.log(type);
 			//in graph stacked unset percentil
 			if(	! ( (type == 1) && ( /percentil/.test(index) ) == true ) &&
 				! ( (type == 3) && ( /percentil/.test(index) ) == true )   ){
-				data_base.push({
+					data_base.push({
 					id: 'serie_' + i,
 					data: value.data,
 					label: index,
-					color: value.color,
+					color: color[index]['color'],
 					lines: {
 						show: line_show,
 						fill: filled,
@@ -1672,7 +1668,7 @@ console.log(type);
 			$('#'+graph_id).css('height', hDiff);
 		}
 	}
-console.log(vconsole);
+
 /*	
 if (vconsole) {
 		var myCanvas = plot.getCanvas();
@@ -2303,7 +2299,6 @@ if (vconsole) {
 
 	if (!dashboard) {
 		if (water_mark){
-			console.log($('#watermark_image_'+graph_id));
 			set_watermark(graph_id, plot, $('#watermark_image_'+graph_id).attr('src'));
 		}
 		//adjust_menu(graph_id, plot, parent_height, width, show_legend);

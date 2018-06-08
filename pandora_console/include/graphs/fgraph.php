@@ -221,7 +221,7 @@ function vbar_graph(
 
 function area_graph(
 	$agent_module_id, $array_data,
-	$legend, $series_type, $date_array,
+	$legend, $series_type, $color, $date_array,
 	$data_module_graph, $params, $water_mark,
 	$array_events_alerts) {
 	global $config;
@@ -235,6 +235,7 @@ function area_graph(
 		$array_data,
 		$legend,
 		$series_type,
+		$color,
 		$date_array,
 		$data_module_graph,
 		$params,

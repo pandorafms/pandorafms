@@ -637,7 +637,6 @@ function post_process_select_init_unit(name,selected) {
 	$('#' + name + '_select').change(function() {
 		var value = $('#' + name + '_select').val();
 		$('#' + name + '_select option[value='+ value +']').attr("selected",true);
-		console.log(value);
 	});
 	
 }

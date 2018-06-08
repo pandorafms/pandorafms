@@ -334,7 +334,6 @@ if ($view_graph) {
 
 	$("#stacked").change(function(){
 		if ($(this).val() == '4') {
-			console.log($(this).val());
 			$("#thresholdDiv").show();
 			$(".stacked").show();
 		} else {

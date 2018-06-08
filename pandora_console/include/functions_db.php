@@ -918,8 +918,6 @@ function db_uncompress_module_data($id_agente_modulo, $tstart = false, $tend = f
 		array_push($return, $end_array);
 	}
 
-	// html_debug_print($return);
-
 	return $return;
 }
 

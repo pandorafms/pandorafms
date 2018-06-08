@@ -213,10 +213,9 @@
 			}
 			catch (e) {
 				alert('There was an error exporting the data');
-				console.log(e);
 			}
 		}
-		
+
 		plot.exportDataJSON = function (args) {
 			//amount = plot.getOptions().export.type,
 			//options = options || {};
@@ -261,7 +260,7 @@
 			// Throw errors
 			var processDataObject = function (dataObject) {
 				var result;
-console.log(dataObject);
+
 				if (typeof dataObject === 'undefined')
 					throw new Error('Empty parameter');
 
@@ -404,11 +403,10 @@ console.log(dataObject);
 			}
 			catch (e) {
 				alert('There was an error exporting the data');
-				console.log(e);
 			}
 		}
 	}
-    
+
     $.plot.plugins.push({
         init: init,
         options: options,

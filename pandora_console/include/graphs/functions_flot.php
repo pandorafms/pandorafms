@@ -102,7 +102,7 @@ function include_javascript_dependencies_flot_graph($return = false) {
 ///////////////////////////////
 function flot_area_graph (
 	$agent_module_id, $array_data,
-	$legend, $series_type, $date_array,
+	$legend, $series_type, $color, $date_array,
 	$data_module_graph, $params, $water_mark,
 	$array_events_alerts ) {
 
@@ -270,6 +270,7 @@ function flot_area_graph (
 	$values              = json_encode($array_data);
 	$legend              = json_encode($legend);
 	$series_type         = json_encode($series_type);
+	$color               = json_encode($color);
 	$date_array          = json_encode($date_array);
 	$data_module_graph   = json_encode($data_module_graph);
 	$params 			 = json_encode($params);
@@ -285,6 +286,7 @@ function flot_area_graph (
 		"JSON.parse('$legend'), \n" .
 		"'$agent_module_id', \n" .
 		"JSON.parse('$series_type'), \n" .
+		"JSON.parse('$color'), \n" .
 		"'$watermark', \n" .
 		"JSON.parse('$date_array'), \n" .
 		"JSON.parse('$data_module_graph'), \n" .

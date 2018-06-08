@@ -417,7 +417,7 @@ function grafico_modulo_sparse_data(
 		return false;
 	}
 
-	//XXX Para un tipo de reports en concreto habria que optimizar que la tabla que crea coincida con los datos documentar
+	//XXX Esto es para un tipo especifico de report que consiste en pasarle un intervalo y hacer suma media y avg.
 	if($params['force_interval'] != ''){
 		$period_time_interval = $date_array['period'] * 1000;
 		$start_period = $date_array['start_date'] * 1000;
@@ -644,17 +644,6 @@ function grafico_modulo_sparse_data(
 
 	if ($params['return_data'] == 1) {
 		return $array_data;
-	}
-
-	$color = color_graph_array(
-		$series_suffix,
-		$params['flag_overlapped']
-	);
-
-	foreach ($color as $k => $v) {
-		if(is_array($array_data[$k])){
-			$array_data[$k]['color'] = $v['color'];
-		}
 	}
 
 	$array_events_alerts[$series_suffix] = $events;
@@ -981,7 +970,8 @@ function grafico_modulo_sparse ($params) {
 	);
 
 	$series_type = $series_type_array['series_type'];
-	$legend = $series_type_array['legend'];
+	$legend      = $series_type_array['legend'];
+	$color       = $series_type_array['color'];
 
 	if($config["fixed_graph"] == false){
 		$water_mark = array(
@@ -1005,6 +995,7 @@ function grafico_modulo_sparse ($params) {
 				$array_data,
 				$legend,
 				$series_type,
+				$color,
 				$date_array,
 				$data_module_graph,
 				$params,
@@ -1024,13 +1015,15 @@ function grafico_modulo_sparse ($params) {
 			);
 
 			$series_type = $series_type_array['series_type'];
-			$legend = $series_type_array['legend'];
+			$legend      = $series_type_array['legend'];
+			$color       = $series_type_array['color'];
 
 			$return .= area_graph(
 				$agent_module_id,
 				$array_data_prev,
 				$legend,
 				$series_type,
+				$color,
 				$date_array,
 				$data_module_graph,
 				$params,
@@ -1049,6 +1042,7 @@ function grafico_modulo_sparse ($params) {
 				$array_data,
 				$legend,
 				$series_type,
+				$color,
 				$date_array,
 				$data_module_graph,
 				$params,
@@ -1436,7 +1430,6 @@ function graphic_combined_module (
 
 	//XXX arreglar estas
 	$long_index      = '';
-	$color           = array();
 
 	switch ($params_combined['stacked']) {
 		default:
@@ -1501,17 +1494,6 @@ function graphic_combined_module (
 
 				$percentil_value = $array_data['percentil' . $i]['data'][0][1];
 
-				$color = color_graph_array(
-					$series_suffix,
-					$params['flag_overlapped']
-				);
-
-				foreach ($color as $k => $v) {
-					if(is_array($array_data[$k])){
-						$array_data[$k]['color'] = $v['color'];
-					}
-				}
-
 				if($config["fixed_graph"] == false){
 					$water_mark = array(
 						'file' => $config['homedir'] .  "/images/logo_vertical_water.png",
@@ -1548,6 +1530,7 @@ function graphic_combined_module (
 
 			$series_type = $series_type_array['series_type'];
 			$legend      = $series_type_array['legend'];
+			$color       = $series_type_array['color'];
 
 			$threshold_data = array();
 			if ($params_combined['from_interface']) {
@@ -1666,6 +1649,7 @@ function graphic_combined_module (
 				$array_data,
 				$legend,
 				$series_type,
+				$color,
 				$date_array,
 				$data_module_graph,
 				$params,
@@ -1768,6 +1752,8 @@ function graphic_combined_module (
 			$width = 1024;
 			$height = 50;
 
+			$color = color_graph_array();
+
 			$output = stacked_bullet_chart(
 				$graph_values,
 				$width,
@@ -1856,6 +1842,8 @@ function graphic_combined_module (
 
 			$graph_values = $temp;
 
+			$color = color_graph_array();
+
 			$width = 200;
 			$height = 200;
 
@@ -1921,6 +1909,8 @@ function graphic_combined_module (
 					}
 				}
 			}
+
+			$color = color_graph_array();
 
 			$graph_values = $temp;
 
@@ -2041,6 +2031,8 @@ function graphic_combined_module (
 				}
 				$i++;
 
+				$color = color_graph_array();
+
 				$graph_values = $temp;
 
 				return stacked_thermometers(
@@ -2125,8 +2117,10 @@ function graphic_combined_module (
 
 			$graph_values = $temp;
 
-			$width = 1024;
+			$width  = 1024;
 			$height = 500;
+
+			$color  = color_graph_array();
 
 			$output = ring_graph(
 				true,

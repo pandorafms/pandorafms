@@ -2913,7 +2913,7 @@ function color_graph_array(){
 	//XXX Colores fijos para eventos, alertas, desconocidos, percentil, overlapped, summatory, average, projection
 	$color_series['event'] = array(
 		'border' => '#ff0000',
-		'color' => '#ff66cc',
+		'color' => '#FF5733',
 		'alpha' => CHART_DEFAULT_ALPHA
 	);
 
@@ -3041,11 +3041,11 @@ function series_type_graph_array($data, $show_elements_graph){
 				}
 				else{
 					if(strpos($key, 'baseline') !== false){
-						$data_return['legend'][$key] = $value['agent_name']  . ' / ' .
+						$data_return['legend'][$key] = $value['agent_alias']  . ' / ' .
 													$value['module_name'] . ' Baseline ';
 					}
 					else{
-						$data_return['legend'][$key] = $value['agent_name']  . ' / ' .
+						$data_return['legend'][$key] = $value['agent_alias']  . ' / ' .
 													$value['module_name'] . ': ';
 					}
 				}
@@ -3114,7 +3114,7 @@ function series_type_graph_array($data, $show_elements_graph){
 						$data_return['legend'][$key] .= $show_elements_graph['labels'][$value['agent_module_id']] . ' ' ;
 					}
 					else{
-						$data_return['legend'][$key] .= $value['agent_name']  . ' / ' .
+						$data_return['legend'][$key] .= $value['agent_alias']  . ' / ' .
 												$value['module_name'] . ': ' . ' Value: ';
 					}
 					$data_return['legend'][$key] .= remove_right_zeros(

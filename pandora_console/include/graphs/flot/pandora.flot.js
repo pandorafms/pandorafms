@@ -165,9 +165,9 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 				color: ''
 			}
 		};
-		
+
 	}
-	
+
 	var conf_pie = {
 			series: {
 				pie: {
@@ -1505,7 +1505,6 @@ function pandoraFlotArea(
 
 	i=0;
 	$.each(values, function (index, value) {
-		
 		if (typeof value.data !== "undefined") {
 			if(index.search("alert") >= 0){
 				fill_color = '#ff7f00';
@@ -1582,12 +1581,12 @@ function pandoraFlotArea(
 	});
 
 	// The first execution, the graph data is the base data
-	datas = data_base;
-	font_size = 8;
+	datas     = data_base;
+
 	// minTickSize
 	var count_data = datas[0].data.length;
-	var min_tick = datas[0].data[0][0];
-	var max_tick = datas[0].data[count_data - 1][0];
+	var min_tick   = datas[0].data[0][0];
+	var max_tick   = datas[0].data[count_data - 1][0];
 
 	var number_ticks = 8;
 	if(vconsole){
@@ -1623,8 +1622,15 @@ function pandoraFlotArea(
 				color: legend_color,
 				autoHighlight: true
 			},
+			xaxis: {
+				min: date_array.start_date * 1000,
+				max: date_array.final_date * 1000
+			},
 			xaxes: [{
+				axisLabelUseCanvas: true,
 				axisLabelFontSizePixels: font_size,
+				axisLabelFontFamily: font+'Font',
+				axisLabelPadding: 0,
 				mode: "time",
 				//tickFormatter: xFormatter,
 				tickSize: [maxticks, 'hour']
@@ -1669,7 +1675,7 @@ function pandoraFlotArea(
 		}
 	}
 
-/*	
+/*//XXXXXXX
 if (vconsole) {
 		var myCanvas = plot.getCanvas();
 		plot.setupGrid(); // redraw plot to new size
@@ -1714,13 +1720,21 @@ if (vconsole) {
 				borderWidth:1,
 				borderColor: '#C1C1C1',
 				tickColor: background_color,
-				color: legend_color
+				color: legend_color,
+				autoHighlight: true
+			},
+			xaxis: {
+				min: date_array.start_date * 1000,
+				max: date_array.final_date * 1000
 			},
 			xaxes: [{
+				axisLabelUseCanvas: true,
 				axisLabelFontSizePixels: font_size,
+				axisLabelFontFamily: font+'Font',
+				axisLabelPadding: 0,
 				mode: "time",
 				//tickFormatter: xFormatter,
-				tickSize: [maxticks, 'hour'],
+				tickSize: [maxticks, 'hour']
 			}],
 			yaxes: [{
 				tickFormatter: yFormatter,
@@ -1729,7 +1743,7 @@ if (vconsole) {
 				labelWidth: 30,
 				position: 'left',
 				font: font,
-				reserveSpace: true,
+				reserveSpace: true
 			}],
 			legend: {
 				position: 'se',
@@ -1738,8 +1752,13 @@ if (vconsole) {
 			}
 		});
 	}
-	// Connection between plot and miniplot
 
+	// Adjust overview when main chart is resized
+	$('#overview_'+graph_id).resize(function(){
+		update_left_width_canvas(graph_id);
+	});
+
+	// Connection between plot and miniplot
 	$('#' + graph_id).bind('plotselected', function (event, ranges) {
 		// do the zooming if exist menu to undo it
 		if (menu == 0) {
@@ -1748,9 +1767,9 @@ if (vconsole) {
 
 		dataInSelection = ranges.xaxis.to - ranges.xaxis.from;
 
-		var maxticks_zoom = dataInSelection / 3600000 / 6;
+		var maxticks_zoom = dataInSelection / 3600000 / number_ticks;
 		if(maxticks_zoom < 0.001){
-			maxticks_zoom = dataInSelection / 60000 / 6;
+			maxticks_zoom = dataInSelection / 60000 / number_ticks;
 			if(maxticks_zoom < 0.001){
 				maxticks_zoom = 0;
 			}
@@ -1780,6 +1799,10 @@ if (vconsole) {
 						max: ranges.xaxis.to
 					},
 					xaxes: [{
+						axisLabelUseCanvas: true,
+						axisLabelFontSizePixels: font_size,
+						axisLabelFontFamily: font+'Font',
+						axisLabelPadding: 0,
 						mode: "time",
 						//tickFormatter: xFormatter,
 						tickSize: [maxticks_zoom, 'hour']
@@ -1815,6 +1838,10 @@ if (vconsole) {
 						max: ranges.xaxis.to
 					},
 					xaxes: [{
+						axisLabelUseCanvas: true,
+						axisLabelFontSizePixels: font_size,
+						axisLabelFontFamily: font+'Font',
+						axisLabelPadding: 0,
 						mode: "time",
 						//tickFormatter: xFormatter,
 						tickSize: [maxticks_zoom, 'hour']
@@ -1840,7 +1867,6 @@ if (vconsole) {
 
 		$('#menu_cancelzoom_' + graph_id).attr('src', homeurl + '/images/zoom_cross_grey.png');
 
-	//	currentRanges = ranges;
 		// don't fire event on the overview to prevent eternal loop
 		overview.setSelection(ranges, true);
 	});
@@ -1971,7 +1997,7 @@ if (vconsole) {
 
 	// Events
 	$('#overview_' + graph_id).bind('plothover',  function (event, pos, item) {
-		plot.setCrosshair({ x: pos.x, y: 0 });
+		plot.setCrosshair({ x: pos.x, y: pos.y });
 		currentPlot = plot;
 		latestPosition = pos;
 		if (!updateLegendTimeout) {
@@ -1980,7 +2006,7 @@ if (vconsole) {
 	});
 
 	$('#' + graph_id).bind('plothover',  function (event, pos, item) {
-		overview.setCrosshair({ x: pos.x, y: 0 });
+		overview.setCrosshair({ x: pos.x, y: pos.y });
 		currentPlot = plot;
 		latestPosition = pos;
 		if (!updateLegendTimeout) {
@@ -2074,7 +2100,7 @@ if (vconsole) {
 	});
 
 	$('#'+graph_id).bind('mouseout',resetInteractivity(vconsole));
-	
+
 	if(!vconsole){
 		$('#overview_'+graph_id).bind('mouseout',resetInteractivity);
 	}

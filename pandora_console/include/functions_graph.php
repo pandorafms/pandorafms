@@ -262,16 +262,33 @@ function grafico_modulo_sparse_data_chart (
 		);
 	}
 	else{
-		$data = db_get_all_rows_filter (
-			'tagente_datos',
-			array ('id_agente_modulo' => (int)$agent_module_id,
-					"utimestamp > '". $date_array['start_date']. "'",
-					"utimestamp < '". $date_array['final_date'] . "'",
-					'order' => 'utimestamp ASC'),
-			array ('datos', 'utimestamp'),
-			'AND',
-			$data_module_graph['history_db']
-		);
+		/*
+		if(true){
+			$data = db_get_all_rows_filter (
+				'tagente_datos',
+				array ('id_agente_modulo' => (int)$agent_module_id,
+						"utimestamp > '". $date_array['start_date']. "'",
+						"utimestamp < '". $date_array['final_date'] . "'",
+						'group' => "ROUND(utimestamp / 86400)",
+						'order' => 'utimestamp ASC'),
+				array ('max(datos) as datos', 'min(utimestamp) as utimestamp'),
+				'AND',
+				$data_module_graph['history_db']
+			);
+		}
+		else{
+			*/
+			$data = db_get_all_rows_filter (
+				'tagente_datos',
+				array ('id_agente_modulo' => (int)$agent_module_id,
+						"utimestamp > '". $date_array['start_date']. "'",
+						"utimestamp < '". $date_array['final_date'] . "'",
+						'order' => 'utimestamp ASC'),
+				array ('datos', 'utimestamp'),
+				'AND',
+				$data_module_graph['history_db']
+			);
+		//}
 	}
 
 	if($data === false){
@@ -362,6 +379,7 @@ function grafico_modulo_sparse_data_chart (
 	$array_data["sum" . $series_suffix]['id_module_type'] = $data_module_graph['id_module_type'];
 	$array_data["sum" . $series_suffix]['agent_name']     = $data_module_graph['agent_name'];
 	$array_data["sum" . $series_suffix]['module_name']    = $data_module_graph['module_name'];
+	$array_data["sum" . $series_suffix]['agent_alias']    = $data_module_graph['agent_alias'];
 
 	if (!is_null($params['percentil']) &&
 		$params['percentil'] &&
@@ -402,6 +420,7 @@ function grafico_modulo_sparse_data(
 		$array_data["sum" . $series_suffix]['id_module_type'] = $data_module_graph['id_module_type'];
 		$array_data["sum" . $series_suffix]['agent_name']     = $data_module_graph['agent_name'];
 		$array_data["sum" . $series_suffix]['module_name']    = $data_module_graph['module_name'];
+		$array_data["sum" . $series_suffix]['agent_alias']    = $data_module_graph['agent_alias'];
 	}
 	else{
 		$array_data = grafico_modulo_sparse_data_chart (
@@ -880,12 +899,13 @@ function grafico_modulo_sparse ($params) {
 
 		$data_module_graph = array();
 		$data_module_graph['history_db']     = db_search_in_history_db($date_array["start_date"]);
-		$data_module_graph['agent_name']     = modules_get_agentmodule_agent_name ($agent_module_id);
+		$data_module_graph['agent_name']     = modules_get_agentmodule_agent_name($agent_module_id);
+		$data_module_graph['agent_alias']    = modules_get_agentmodule_agent_alias($agent_module_id);
 		$data_module_graph['agent_id']       = $module_data['id_agente'];
 		$data_module_graph['module_name']    = $module_data['nombre'];
 		$data_module_graph['id_module_type'] = $module_data['id_tipo_modulo'];
-		$data_module_graph['module_type']    = modules_get_moduletype_name ($data_module_graph['id_module_type']);
-		$data_module_graph['uncompressed']   = is_module_uncompressed ($data_module_graph['module_type']);
+		$data_module_graph['module_type']    = modules_get_moduletype_name($data_module_graph['id_module_type']);
+		$data_module_graph['uncompressed']   = is_module_uncompressed($data_module_graph['module_type']);
 		$data_module_graph['w_min']    		 = $module_data['min_warning'];
 		$data_module_graph['w_max']   		 = $module_data['max_warning'];
 		$data_module_graph['w_inv']    		 = $module_data['warning_inverse'];
@@ -1453,12 +1473,13 @@ function graphic_combined_module (
 
 				$data_module_graph = array();
 				$data_module_graph['history_db']     = db_search_in_history_db($date_array["start_date"]);
-				$data_module_graph['agent_name']     = modules_get_agentmodule_agent_name ($agent_module_id);
+				$data_module_graph['agent_name']     = modules_get_agentmodule_agent_name($agent_module_id);
+				$data_module_graph['agent_alias']    = modules_get_agentmodule_agent_alias($agent_module_id);
 				$data_module_graph['agent_id']       = $module_data['id_agente'];
 				$data_module_graph['module_name']    = $module_data['nombre'];
 				$data_module_graph['id_module_type'] = $module_data['id_tipo_modulo'];
-				$data_module_graph['module_type']    = modules_get_moduletype_name ($data_module_graph['id_module_type']);
-				$data_module_graph['uncompressed']   = is_module_uncompressed ($data_module_graph['module_type']);
+				$data_module_graph['module_type']    = modules_get_moduletype_name($data_module_graph['id_module_type']);
+				$data_module_graph['uncompressed']   = is_module_uncompressed($data_module_graph['module_type']);
 				$data_module_graph['w_min']    		 = $module_data['min_warning'];
 				$data_module_graph['w_max']   		 = $module_data['max_warning'];
 				$data_module_graph['w_inv']    		 = $module_data['warning_inverse'];

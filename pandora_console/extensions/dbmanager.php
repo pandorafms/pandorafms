@@ -134,7 +134,13 @@ function dbmgr_extension_main () {
 	ui_print_page_header (__('Database interface'), "images/gm_db.png", false, false, true);
 	
 	echo '<div class="notify">';
-	echo "This is an advanced extension to interface with Pandora FMS database directly from WEB console using native SQL sentences. Please note that <b>you can damage</b> your Pandora FMS installation if you don't know </b>exactly</b> what are you are doing, this means that you can severily damage your setup using this extension. This extension is intended to be used <b>only by experienced users</b> with a depth knowledge of Pandora FMS internals.";
+	echo __("This is an advanced extension to interface with %s database directly from WEB console
+		using native SQL sentences. Please note that <b>you can damage</b> your %s installation
+		if you don't know </b>exactly</b> what are you are doing,
+		this means that you can severily damage your setup using this extension.
+		This extension is intended to be used <b>only by experienced users</b>
+		with a depth knowledge of %s internals.",
+		get_product_name(), get_product_name(), get_product_name());
 	echo '</div>';
 	
 	echo "<br />";

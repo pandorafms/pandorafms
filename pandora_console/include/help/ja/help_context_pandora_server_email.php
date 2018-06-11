@@ -3,14 +3,14 @@
  * @package Include/help/ja
  */
 ?>
-<h1>email アラートのための Pandora サーバ設定</h1>
-<p><i>"Pandora サーバ設定ファイル"</i>を編集する必要があります。通常は以下にあります。
+<h1>email アラートのための <?php echo get_product_name();?> サーバ設定</h1>
+<p><i>"<?php echo get_product_name();?> サーバ設定ファイル"</i>を編集する必要があります。通常は以下にあります。
 <pre>
 	/etc/pandora_server/pandora_server.conf
 </pre>
 次の値を設定します。
 <pre>
-# mta_address: External Mailer (MTA) IP Address to be used by Pandora FMS internal email capabilities
+# mta_address: External Mailer (MTA) IP Address to be used by <?php echo get_product_name();?> internal email capabilities
 
 mta_address localhost
 
@@ -33,6 +33,6 @@ mta_auth LOGIN
 # mta_from Email address that sends the mail, by default is pandora@localhost 
 #           probably you need to change it to avoid problems with your antispam
 
-mta_from Pandora FMS <pandora@mydomain.com>
+mta_from <?php echo get_product_name();?> &lt;monitoring@mydomain.com&gt;
 </pre>
 </p>

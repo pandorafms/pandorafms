@@ -24,7 +24,6 @@
 			// Throw errors
 			var retrieveDataOject = function (dataObjects, custom) {
 				var result;
-
 				if (typeof dataObjects === 'undefined')
 					throw new Error('Empty parameter');
 
@@ -76,25 +75,36 @@
 				 * }
 				 */
 				if (type === 'csv') {
-
 					result = {
-						head: ['date', 'value','label'],
+						head: ['timestap', 'date', 'value', 'label'],
 						data: []
 					};
 
 					dataObject.data.forEach(function (item, index) {
-						var date = '', value = item[1];
+						var timestap = item[0];
 
-						// Long labels are preferred
-						if (typeof  plot.getOptions().export.labels_long[index] !== 'undefined')
-							date =  plot.getOptions().export.labels_long[index];
-						else if (typeof labels[index] !== 'undefined')
-							date = labels[index];
+						var d = new Date(item[0]);
+						var monthNames = [
+							"Jan", "Feb", "Mar",
+							"Apr", "May", "Jun",
+							"Jul", "Aug", "Sep",
+							"Oct", "Nov", "Dec"
+						];
 
-						var clean_label = dataObject.label;
-						clean_label = clean_label.replace( new RegExp("<.*?>", "g"), "");
-						clean_label = clean_label.replace( new RegExp(";", "g"), "");
-						result.data.push([date, value, clean_label]);
+						date_format = 	(d.getDate() <10?'0':'') + d.getDate() + " " +
+										monthNames[d.getMonth()] + " " +
+										d.getFullYear() + " " +
+										(d.getHours()<10?'0':'') + d.getHours() + ":" +
+										(d.getMinutes()<10?'0':'') + d.getMinutes() + ":" +
+										(d.getSeconds()<10?'0':'') + d.getSeconds();
+
+						var date  = date_format;
+
+						var value = item[1];
+
+						var clean_label = plot.getOptions().export.labels_long[dataObject.label];
+						clean_label = clean_label.replace( new RegExp("&#x20;", "g"), " ");
+						result.data.push([timestap, date, value, clean_label]);
 					});
 				}
 				/* [
@@ -203,10 +213,9 @@
 			}
 			catch (e) {
 				alert('There was an error exporting the data');
-				console.log(e);
 			}
 		}
-		
+
 		plot.exportDataJSON = function (args) {
 			//amount = plot.getOptions().export.type,
 			//options = options || {};
@@ -394,11 +403,10 @@
 			}
 			catch (e) {
 				alert('There was an error exporting the data');
-				console.log(e);
 			}
 		}
 	}
-    
+
     $.plot.plugins.push({
         init: init,
         options: options,

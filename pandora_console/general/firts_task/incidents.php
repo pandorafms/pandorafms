@@ -33,13 +33,13 @@ if ($incident_w || $incident_m) {
 	</div>
 	<div class="text_task">
 		<h3> <?php echo __('Create Incidents'); ?></h3>
-		<p id="description_task"> <?php echo __("Besides receiving and processing data to monitor systems or applications, 
-			you're also required to monitor possible incidents which might take place on these systems within the system monitoring process.
-			For it, the Pandora FMS team has designed an incident manager within which any user is able to open incidents, 
-			explaining what's happened on the network and to update them with comments and files any time in case there is a need to do so.
-			This system allows the users to work as a team, along with different roles and work-flow systems which allows an incident to be 
-			moved from one group to another, and that members from different groups and different people could work on the same incident, sharing information and files.
-		"); ?></p>
+		<p id="description_task"> <?php echo __("Besides receiving and processing data to monitor systems or applications,
+			you're also required to monitor possible incidents which might take place on these subsystems within the system's monitoring process.
+			For it, the %s team has designed an incident manager from which any user is able to open incidents,
+			that explain what's happened on the network, and update them with comments and files, at any time, in case there is a need to do so.
+			This system allows users to work as a team, along with different roles and work-flow systems which allow an incident to be
+			moved from one group to another, and members from different groups and different people could work on the same incident, sharing information and files.
+		", get_product_name()); ?></p>
 		<form action="index.php?sec=workspace&amp;sec2=operation/incidents/incident_detail&amp;insert_form=1" method="post">
 			<input type="submit" class="button_task" value="<?php echo __('Create Incidents'); ?>" />
 		</form>

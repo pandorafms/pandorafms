@@ -34,6 +34,20 @@ fi
 export PANDORA_HOME="/etc/pandora/pandora_server.conf"
 export PANDORA_DAEMON=/usr/bin/pandora_server
 
+# Environment variables
+if [ -f /etc/pandora/pandora_server.env ]; then
+	source /etc/pandora/pandora_server.env
+fi
+if [[ -z ${PANDORA_RB_PRODUCT_NAME} ]]; then
+	PANDORA_RB_PRODUCT_NAME="Pandora FMS"
+fi
+if [[ -z ${PANDORA_RB_COPYRIGHT_NOTICE} ]]; then
+	PANDORA_RB_COPYRIGHT_NOTICE="Artica ST"
+fi
+
+export PANDORA_RB_PRODUCT_NAME=$PANDORA_RB_PRODUCT_NAME
+export PANDORA_RB_COPYRIGHT_NOTICE=$PANDORA_RB_COPYRIGHT_NOTICE
+
 # Uses a wait limit before sending a KILL signal, before trying to stop
 # Pandora FMS server nicely. Some big systems need some time before close
 # all pending tasks / threads.
@@ -73,7 +87,7 @@ function pidof_pandora () {
 
 if [ ! -f $PANDORA_DAEMON ]
 then
-	echo "Pandora FMS Server not found, please check setup and read manual"
+	echo "$PANDORA_RB_PRODUCT_NAME Server not found, please check setup and read manual"
 	rc_failed 5 # program is not installed
 	rc_exit
 fi
@@ -83,7 +97,7 @@ case "$1" in
 		PANDORA_PID=`pidof_pandora`
 		if [ ! -z "$PANDORA_PID" ]
 		then
-			echo "Pandora FMS Server is currently running on this machine with PID ($PANDORA_PID)."
+			echo "$PANDORA_RB_PRODUCT_NAME Server is currently running on this machine with PID ($PANDORA_PID)."
 			rc_exit # running start on a service already running
 		fi
 	
@@ -94,11 +108,11 @@ case "$1" in
 		
 		if [ ! -z "$PANDORA_PID" ]
 		then
-			echo "Pandora Server is now running with PID $PANDORA_PID"
+			echo "$PANDORA_RB_PRODUCT_NAME Server is now running with PID $PANDORA_PID"
 			rc_status -v
 		else
-			echo "Cannot start Pandora FMS Server. Aborted."
-			echo "Check Pandora FMS log files at '/var/log/pandora/pandora_server.error & pandora_server.log'"
+			echo "Cannot start $PANDORA_RB_PRODUCT_NAME Server. Aborted."
+			echo "Check $PANDORA_RB_PRODUCT_NAME log files at '/var/log/pandora/pandora_server.error & pandora_server.log'"
 			rc_failed 7 # program is not running
 		fi
 	;;
@@ -107,10 +121,10 @@ case "$1" in
 		PANDORA_PID=`pidof_pandora`
 		if [ -z "$PANDORA_PID" ]
 		then
-			echo "Pandora FMS Server is not running, cannot stop it."
+			echo "$PANDORA_RB_PRODUCT_NAME Server is not running, cannot stop it."
 			rc_exit # running stop on a service already stopped or not running
 		else
-			echo "Stopping Pandora FMS Server"
+			echo "Stopping $PANDORA_RB_PRODUCT_NAME Server"
 			kill $PANDORA_PID > /dev/null 2>&1
 			COUNTER=0
 
@@ -138,10 +152,10 @@ case "$1" in
 		PANDORA_PID=`pidof_pandora`
 		if [ -z "$PANDORA_PID" ]
 		then
-			echo "Pandora FMS Server is not running."
+			echo "$PANDORA_RB_PRODUCT_NAME Server is not running."
 			rc_failed 7 # program is not running
 		else
-			echo "Pandora FMS Server is running with PID $PANDORA_PID."
+			echo "$PANDORA_RB_PRODUCT_NAME Server is running with PID $PANDORA_PID."
 			rc_status
 		fi
 	;;

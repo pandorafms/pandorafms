@@ -2174,7 +2174,7 @@ function groups_get_group_to_list($group, $groups_count, &$symbolBranchs, $has_c
 		else {
 			$data[5] .= '&nbsp;&nbsp;' .
 				ui_print_help_tip(
-					__('You can not delete the last group in Pandora. A common installation must has almost one group.'), true);
+					__('You cannot delete the last group. A common installation must have at least one group.'), true);
 		}
 	}
 	

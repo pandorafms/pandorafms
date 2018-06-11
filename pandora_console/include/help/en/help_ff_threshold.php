@@ -8,7 +8,7 @@
 <br>
 <br>
 
-The Threshold parameter FF (FF = FlipFlop) is used to "filter" the continuous changes of state in the generation of events / states, so that you can tell Pandora FMS until an element is not at least X times in the same state after changing from an original state, not considered to have changed. 
+The Threshold parameter FF (FF = FlipFlop) is used to "filter" the continuous changes of state in the generation of events / states, so that you can tell <?php echo get_product_name();?> until an element is not at least X times in the same state after changing from an original state, not considered to have changed. 
 <br><br>
 Take a classic example: A ping to a host where there is packet loss. In an environment like this, might give results as:
 <br>
@@ -24,7 +24,7 @@ Take a classic example: A ping to a host where there is packet loss. In an envir
  1 
 </pre>
 <br>
-However, the host is alive in all cases. What we really want is to tell Pandora that until the host does not say you are at least three times down, not marked as such, so that in the previous case and would never be dropped, and only in this case it would be:
+However, the host is alive in all cases. What we really want is to tell <?php echo get_product_name();?> that until the host does not say you are at least three times down, not marked as such, so that in the previous case and would never be dropped, and only in this case it would be:
 <pre>
  1  
  1  

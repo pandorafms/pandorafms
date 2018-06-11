@@ -193,7 +193,7 @@ if (defined('METACONSOLE')) {
 }
 else {
 	
-	ui_print_page_header (__("Groups defined in Pandora"),
+	ui_print_page_header (__("Groups defined in %s", get_product_name()),
 		"images/group.png", false, "", true, "");
 	$sec = 'gagente';
 

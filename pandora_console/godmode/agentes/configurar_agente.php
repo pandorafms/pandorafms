@@ -284,8 +284,9 @@ if ($create_agent) {
 				"Url description":"' . $url_description .'",
 				"Quiet":"' . (int)$quiet.'"}';
 			
+			$unsafe_alias = io_safe_output($alias);
 			db_pandora_audit("Agent management",
-				"Created agent $alias", false, true, $info);
+				"Created agent $unsafe_alias", false, true, $info);
 		}
 		else {
 			$id_agente = 0;
@@ -391,7 +392,7 @@ if ($id_agente) {
 	
 	$grouptab['active'] = false;
 	
-	$gistab = "";
+	$gistab = array();
 	
 	/* GIS tab */
 	if ($config['activate_gis']) {
@@ -1264,7 +1265,6 @@ if ($update_module || $create_module) {
 if ($update_module) {
 	$id_agent_module = (int) get_parameter ('id_agent_module');
 	
-	
 	$values = array (
 		'id_agente_modulo' => $id_agent_module,
 		'descripcion' => $description,
@@ -1791,7 +1791,7 @@ if ($updateGIS) {
 			"altitude" => $previusAgentGISData['stored_altitude'],
 			"start_timestamp" => $previusAgentGISData['start_timestamp'],
 			"end_timestamp" => date( 'Y-m-d H:i:s'),
-			"description" => __('Save by Pandora Console'),
+			"description" => __('Save by %s Console', get_product_name()),
 			"manual_placement" => $previusAgentGISData['manual_placement'],
 			"number_of_packages" => $previusAgentGISData['number_of_packages'],
 			"tagente_id_agente" => $previusAgentGISData['tagente_id_agente']
@@ -1806,7 +1806,7 @@ if ($updateGIS) {
 			"stored_altitude" => $lastAltitude,
 			"start_timestamp" => date( 'Y-m-d H:i:s'),
 			"manual_placement" => 1,
-			"description" => __('Update by Pandora Console')),
+			"description" => __('Update by %s Console', get_product_name())),
 			array("tagente_id_agente" => $idAgente));
 	}
 	else {
@@ -1819,7 +1819,7 @@ if ($updateGIS) {
 			"stored_latitude" => $lastLatitude,
 			"stored_altitude" => $lastAltitude,
 			"manual_placement" => 1,
-			"description" => __('Insert by Pandora Console')
+			"description" => __('Insert by %s Console', get_product_name())
 		));
 	}
 }
@@ -1895,10 +1895,81 @@ switch ($tab) {
 	var wizard_tab_showed = 0;
 	
 	$(document).ready (function () {
+		
+		$('body').append('<div id="dialog"></div>');
 		// Control the tab and subtab hover. When mouse leave one, 
 		// check if is hover the other before hide the subtab
 		$('.agent_wizard_tab').hover(agent_wizard_tab_show, agent_wizard_tab_hide);
-	
+		
+		$('#module_form').submit(function() {
+			
+			var aget_id_os = '<?php echo agents_get_os(modules_get_agentmodule_agent(get_parameter("id_agent_module"))); ?>';
+			
+			if('<?php echo modules_get_agentmodule_name(get_parameter("id_agent_module")); ?>' != $('#text-name').val() &&
+			 '<?php echo agents_get_os(modules_get_agentmodule_agent(get_parameter("id_agent_module"))); ?>' == 19){
+				
+				event.preventDefault();
+				
+				$("#dialog").dialog({
+					resizable: true,
+					draggable: true,
+					modal: true,
+					height: 220,
+					width: 600,
+					title: 'Changing the module name of a satellite agent',
+					open: function(){
+							$('#dialog').html('<br><img src="images/icono-warning-triangulo.png" style="float:left;margin-left:25px;"><p style="float:right;font-style:nunito;font-size:11pt;margin-right:50px;"><span style="font-weight:bold;font-size:12pt;">Warning</span> <br>The names of the modules of a satellite should not be <br> altered manually. Unless you are absolutely certain of <br> the process, do not alter these names.</p>');
+					},
+					buttons: [{
+							text: "Ok",
+							click: function() {
+								$('#module_form').submit();
+							}
+						},
+						{
+						text: "Cancel",
+						click: function() {
+							$( this ).dialog( "close" );
+							return false;
+						}
+					}]
+				});
+				
+			}				
+			
+			var module_type_snmp =  '<?php echo modules_get_agentmodule_type(get_parameter("id_agent_module")); ?>';
+			
+			if('<?php echo modules_get_agentmodule_name(get_parameter("id_agent_module")); ?>' != $('#text-name').val() && (
+				module_type_snmp == 15 || module_type_snmp == 16 || module_type_snmp == 17 || module_type_snmp == 18)){
+					
+					event.preventDefault();
+					
+					$("#dialog").dialog({
+						resizable: true,
+						draggable: true,
+						modal: true,
+						height: 260,
+						width: 600,
+						title: 'Changing snmp module name',
+						open: function(){
+								$('#dialog').html('<br><img src="images/icono-warning-triangulo.png" style="float:left;margin-left:25px;margin-top:30px;"><p style="float:right;font-style:nunito;font-size:11pt;margin-right:50px;"><span style="font-weight:bold;font-size:12pt;">Warning</span> <br> 					If you change the name of this module, various features <br> associated with this module, such as network maps, <br> interface graphs or other network modules, may  no longer <br>  work. If you are not completely sure of the process, please <br> do not change the name of the module.					</p>');
+						},
+						buttons: [{
+					      text: "Ok",
+					      click: function() {
+					        $('#module_form').submit();
+					      }
+				    	},
+							{
+							text: "Cancel",
+							click: function() {
+								$( this ).dialog( "close" );
+								return false;
+							}
+						}]
+					});
+			}
+    });
 	});
 	
 	// Set the position and width of the subtab

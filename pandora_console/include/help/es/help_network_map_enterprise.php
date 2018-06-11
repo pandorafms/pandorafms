@@ -35,7 +35,7 @@
 
 <h2>Minimapa</h2>
 
-<p>El minimapa nos provee de una vista global que muestra toda la extensión del mapa, pero en una vista mucho mas pequeña, además que frente a la vista del mapa se muestra completamente todos los nodos pero sin estado y sin las relaciones. Excepto el punto ficticio de Pandora que se muestra en verde. Y además se muestra un recuadro rojo de la parte del mapa que se esta mostrando.</p>
+<p>El minimapa nos provee de una vista global que muestra toda la extensión del mapa, pero en una vista mucho mas pequeña, además que frente a la vista del mapa se muestra completamente todos los nodos pero sin estado y sin las relaciones. Excepto el punto ficticio de <?php echo get_product_name();?> que se muestra en verde. Y además se muestra un recuadro rojo de la parte del mapa que se esta mostrando.</p>
 
 <p>Se encuentra en la esquina superior izquierda, y se puede ocultar pulsando en el icono de la flecha.
 </p>
@@ -98,7 +98,7 @@
     <li><b>Tarea de reconocimiento de origen:</b> Nos permite seleccionar la tarea de reconocimiento para generar el mapa.</li>
     <li><b>IP:</b> Nos permite seleccionar la IP generar el mapa (solo generación por máscara ip).</li>
     <li><b>Método de generación del mapa de red:</b> el método de distribución de los nodos que formarán el mapa de red, por defecto es spring2, pero existen los siguientes:</li>
-        <p>- <i>Radial:</i> en el cual todos los nodos se dispondrán alrededor del nodo ficticio que simboliza el Pandora.<br>
+        <p>- <i>Radial:</i> en el cual todos los nodos se dispondrán alrededor del nodo ficticio que simboliza el <?php echo get_product_name();?>.<br>
         - <i>Circular:</i> en el cual se dispondrá los nodos en círculos concentricos.<br>
         - <i>Flat:</i> en el cual se dispondrá los nodos de forma arborescente.<br>
         - <i>spring1, spring2:</i> son variaciones del Flat. <br>
@@ -107,5 +107,3 @@
     <li><b>Distancia minima entre nodos (solo circular):</b> Establece la distancia minima entre los nodos del mapa.</li>
     <li><b>separación entre flechas (solo flat y radial):</b> Separación entre las flechas del mapa.</li>
     <li><b>Separación por defecto para nodos (solo spring2):</b> Establece la distancia minima entre los nodos del mapa.</li><br><br>
-
-Para más información sobre la edición de mapas consulte http://openideas.info/wiki/index.php?title=Pandora:Documentation_es:Presentacion_datos#Consola_Network_Enteprise

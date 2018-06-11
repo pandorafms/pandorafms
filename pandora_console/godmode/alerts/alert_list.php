@@ -90,14 +90,17 @@ if ($create_alert) {
 			"tagente_modulo","id_agente_modulo", $id_agent_module));
 		
 		// Audit the creation only when the alert creation is correct
+		$unsafe_alert_template_name = io_safe_output($alert_template_name);
+		$unsafe_module_name = io_safe_output($module_name);
+		$unsafe_agent_alias = io_safe_output($agent_alias);
 		if ($id) {
 			db_pandora_audit("Alert management",
-				"Added alert '$alert_template_name' for module '$module_name' in agent '$agent_alias'",
+				"Added alert '$unsafe_alert_template_name' for module '$unsafe_module_name' in agent '$unsafe_agent_alias'",
 				false, false, 'ID: ' . $id);
 		}
 		else {
 			db_pandora_audit("Alert management",
-				"Fail Added alert '$alert_template_name' for module '$module_name' in agent '$agent_alias'");
+				"Fail Added alert '$unsafe_alert_template_name' for module '$unsafe_module_name' in agent '$unsafe_agent_alias'");
 		}
 		
 		$messageAction = ui_print_result_message ($id,

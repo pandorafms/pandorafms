@@ -180,10 +180,10 @@ function extension_db_check_tables_differences($connection_test,
 	$diff_tables = array_diff($tables_test, $tables_system);
 	
 	ui_print_result_message(
-		empty($diff_tables),
-		__('Successful the DB Pandora has all tables'),
-		__('Pandora DB could not retrieve all tables. The missing tables are (%s)',
-			implode(", ", $diff_tables)));
+		!empty($diff_tables),
+		__('Success! %s DB contains all tables', get_product_name()),
+		__('%s DB could not retrieve all tables. The missing tables are (%s)',
+			get_product_name(), implode(", ", $diff_tables)));
 	
 	if (!empty($diff_tables)) {
 		foreach ($diff_tables as $table) {

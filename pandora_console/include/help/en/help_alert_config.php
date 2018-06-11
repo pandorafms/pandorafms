@@ -8,7 +8,7 @@
 
     <b>Name:</b> Name assigned to the action.<br>
     <b>Group:</b> Group the action belongs to. <br>
-    <b>Command:</b> In this field the command that will be used in case the alert is triggered can be defined. Users can choose from the different commands that are defined on Pandora. Depending on the command chosen a variable group of fields will be shown (specific to each command) <br>
+    <b>Command:</b> In this field the command that will be used in case the alert is triggered can be defined. Users can choose from the different commands that are defined on <?php echo get_product_name();?>. Depending on the command chosen a variable group of fields will be shown (specific to each command) <br>
     <b>Threshold:</b> The action’s execution threshold. <br>
     <b>Command Preview:</b>  In this field, which can’t be edited, the command that will be run on the system will appear automatically. <br>
     <b>Field X:</b> In these fields:<br><br>
@@ -48,7 +48,7 @@ Apart from the defined module macros, the following macros are also available:
   <li>_data_: Module data that caused the alert to fire.</li>
   <li>_email_tag_: Emails associated to the module’s tags.</li>
   <li>_event_cfX_: (Only event alerts) Key of the event custom field that fired the alert. For example, if there is a custom field whose key is IPAM, its value can be obtained using the _event_cfIPAM_ macro.</li>
-  <li>_event_description_: (Only event alerts) The textual description of the Pandora FMS event.</li>
+  <li>_event_description_: (Only event alerts) The textual description of the <?php echo get_product_name();?> event.</li>
   <li>_event_extra_id_ : (Only event alerts) Extra id.</li>
   <li>_event_id_: (Only event alerts) ID of the event that triggered the alert.</li>
   <li>_event_text_severity_: (Only event alerts) Event text severity (Maintenance, Informational, Normal Minor, Warning, Major, Critical).</li>
@@ -71,7 +71,7 @@ Apart from the defined module macros, the following macros are also available:
   <li>_groupcustomid_: Group custom ID.</li>
   <li>_groupother_: Other information about the group. Configured when the group is created.</li>
   <li>_homeurl_ : It is a link of the public URL this must be configured in the general options of the setup.</li>
-  <li>_id_agent_: Agent’s ID, useful for building a direct URL that redirects to a Pandora FMS console webpage.</li>
+  <li>_id_agent_: Agent’s ID, useful for building a direct URL that redirects to a <?php echo get_product_name();?> console webpage.</li>
   <li>_id_alert_: Alert’s numeric ID (unique), used to correlate the alert with third party software.</li>
   <li>_id_group_ : Agent group ID.</li>
   <li>_id_module_: Module ID.</li>

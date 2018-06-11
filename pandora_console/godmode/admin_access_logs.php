@@ -54,7 +54,7 @@ $header_buttons = array(
 	)
 );
 
-ui_print_page_header(__('Pandora audit') . " &raquo; " . __('Review Logs'), "images/gm_log.png", false, "", true, $header_buttons);
+ui_print_page_header(__('%s audit', get_product_name()) . " &raquo; " . __('Review Logs'), "images/gm_log.png", false, "", true, $header_buttons);
 
 $table = new stdClass();
 $table->class = "databox filters";

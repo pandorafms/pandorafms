@@ -435,7 +435,7 @@ foreach ($rows as $row) {
 $menu_godmode["links"]["sub"] = $sub;
 
 // Update Manager
-if (check_acl ($config['id_user'], 0, "PM")) {
+if (check_acl ($config['id_user'], 0, "PM") && $config['enable_update_manager']) {
 	$menu_godmode["messages"]["text"] = __('Update manager');
 	$menu_godmode["messages"]["sec2"] = "";
 	$menu_godmode["messages"]["id"] = "god-um_messages";

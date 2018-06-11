@@ -11,7 +11,7 @@
 
 <h2>マップの種類</h2>
 <p>
-現在、Pandora FMS は、OpenStreetマップ、Google マップ、静的画像の 3種類のマップをサポートしています。
+現在、<?php echo get_product_name();?> は、OpenStreetマップ、Google マップ、静的画像の 3種類のマップをサポートしています。
 </p>
 <h3>Open Street マップ</h3>
 <p>

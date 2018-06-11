@@ -889,7 +889,7 @@ You can of course remove the warnings, that's why we include the source and do n
 						<td>
 							<?php
 							echo __('Time from') .
-							ui_print_help_tip(__('Time format in Pandora is hours(24h):minutes:seconds'), true);
+							ui_print_help_tip(__('Watch format is hours (24h):minutes:seconds'), true);
 							?>
 						</td>
 						<td colspan="6"><?php html_print_input_text ('time_from', $time_from, '', 7, 8);?></td>
@@ -898,7 +898,7 @@ You can of course remove the warnings, that's why we include the source and do n
 						<td>
 							<?php
 							echo __('Time to') .
-							ui_print_help_tip(__('Time format in Pandora is hours(24h):minutes:seconds'), true);
+							ui_print_help_tip(__('Watch format is hours (24h):minutes:seconds'), true);
 							?>
 						</td>
 						<td colspan="6"><?php html_print_input_text ('time_to', $time_to, '', 7, 8);?></td>
@@ -931,10 +931,10 @@ You can of course remove the warnings, that's why we include the source and do n
 					$agents = agents_get_group_agents($group);
 					if ((empty($agents)) || $agents == -1) $agents = array();
 
-					$sql_log = 'SELECT source
+					$sql_log = 'SELECT source AS k, source AS v
 							FROM tagente,tagent_module_log
-							WHERE tagente.id_agente = tagent_module_log.id_agent ';
-					
+							WHERE tagente.id_agente = tagent_module_log.id_agent AND tagente.disabled = 0';
+							
 					if (!empty($agents)) {
 						$index = 0;
 						foreach ($agents as $key => $a) {
@@ -948,7 +948,7 @@ You can of course remove the warnings, that's why we include the source and do n
 						}
 						$sql_log .= ")";
 					}
-					html_print_select_from_sql ($sql_log, 'source', $source, '', __('All'), '', false, false, false);
+					html_print_select_from_sql ($sql_log, 'source', $source, 'onselect=source_change_agents();', __('All'), '', false, false, false);
 				?>
 			</td>
 		</tr>
@@ -1067,9 +1067,15 @@ You can of course remove the warnings, that's why we include the source and do n
 			<td style="font-weight:bold;"><?php echo __('Agents'); ?></td>
 			<td>
 				<?php 
-					$sql_log_report = 'SELECT id_agente, alias
-						FROM tagente, tagent_module_log
-						WHERE tagente.id_agente = tagent_module_log.id_agent';
+					if ($source) {
+						$sql_log_report = 'SELECT id_agente, alias
+							FROM tagente, tagent_module_log
+							WHERE tagente.id_agente = tagent_module_log.id_agent AND tagente.disabled = 0 AND tagent_module_log.source like "'. $source.'"';
+					} else {
+						$sql_log_report = 'SELECT id_agente, alias
+							FROM tagente, tagent_module_log
+							WHERE tagente.id_agente = tagent_module_log.id_agent AND tagente.disabled = 0';
+					}
 					$all_agent_log = db_get_all_rows_sql($sql_log_report);
 					
 					foreach ($all_agent_log as $key => $value) {
@@ -1090,6 +1096,7 @@ You can of course remove the warnings, that's why we include the source and do n
 						}
 					}
 					html_print_select($agents2, 'id_agents2[]', $agents_select, $script = '', "", 0, false, true, true, '', false, "min-width: 180px");
+					echo "<span id='spinner_hack' style='display:none;'>" . html_print_image('images/spinner.gif', true) . "</span>";
 				?>
 			</td>
 		</tr>
@@ -2913,7 +2920,7 @@ function chooseType() {
 		
 		case 'simple_graph':
 			$("#row_time_compare_overlapped").show();
-			$("#row_only_avg").show();
+			// $("#row_only_avg").show();
 			$("#row_fullscale").show();
 			if ($("#checkbox-percentil").prop("checked"))
 				$("#row_percentil").show();
@@ -2924,7 +2931,6 @@ function chooseType() {
 			$("#row_agent").show();
 			$("#row_module").show();
 			$("#row_period").show();
-			$("#row_show_in_two_columns").show();
 			$("#row_show_in_landscape").show();
 			$("#row_time_compare_overlapped").show();
 			$("#row_historical_db_check").hide();
@@ -3522,5 +3528,23 @@ function set_last_value_period() {
 	else {
 		$("#row_period").show();
 	}
+}
+
+function source_change_agents() {
+	$("#id_agents2").empty();
+	$("#spinner_hack").show();
+	jQuery.post ("ajax.php",
+		{"page" : "operation/agentes/ver_agente",
+			"get_agents_source_json" : 1,
+			"source" : $("#source").val()
+		},
+		function (data, status) {
+			for (var clave in data) {
+				$("#id_agents2").append('<option value="'+clave+'">'+data[clave]+'</option>');
+			}
+			$("#spinner_hack").hide();
+		},
+		"json"
+	);
 }
 </script>

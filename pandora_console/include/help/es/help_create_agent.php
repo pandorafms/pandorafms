@@ -12,5 +12,5 @@ Para crear un Agente, debes rellenar este formulario. Por favor rellena todos lo
 "Interval" se refiere al intervalo de ejecución del agente. El intervalo es cada cuanto el agente envía datos al servidor.
 </p>
 <p>
-"Server" se refiere al Servidor de Pandora que leerá los datos enviados por el agente.
+"Server" se refiere al Servidor de <?php echo get_product_name();?> que leerá los datos enviados por el agente.
 </p>

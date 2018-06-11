@@ -5,9 +5,9 @@
 ?>
 <h1>Registro de complementos</h1>
 
-A diferencia del resto de componentes, de forma predeterminada Pandora FMS no incluye ningún complemento pre-configurado, por lo tanto primero se deberá crear y configurar un complemento, para después añadírselo al módulo de un agente. No obstante Pandora FMS sí incluye complementos en los directorios de instalación, pero como ya se ha dicho no están configurados en la base de datos. 
+A diferencia del resto de componentes, de forma predeterminada <?php echo get_product_name();?> no incluye ningún complemento pre-configurado, por lo tanto primero se deberá crear y configurar un complemento, para después añadírselo al módulo de un agente. No obstante <?php echo get_product_name();?> sí incluye complementos en los directorios de instalación, pero como ya se ha dicho no están configurados en la base de datos. 
 <br><br>
-Para añadir un complemento existente a Pandora FMS, ir a la sección de administración de la consola, y en ella, pulsar sobre Manage servers; después pulsar Manage plugins: 
+Para añadir un complemento existente a <?php echo get_product_name();?>, ir a la sección de administración de la consola, y en ella, pulsar sobre Manage servers; después pulsar Manage plugins: 
 <br><br>
 Una vez en la pantalla de gestión de los complementos, pulsar el botón Create para crear un nuevo complemento, ya que no habrá ninguno.  
 <br><br>
@@ -19,7 +19,7 @@ Rellenar el formulario de creación de complementos con los siguientes datos:
 Nombre del plugin, en este caso Nmap.
 <br><br>
 <b>Plugin type </b><br>
-Hay dos tipos de complementos, los estándar (standard) y los de tipo Nagios. Los complementos estándar son scripts que ejecutan acciones y admiten parámetros. Los complementos de Nagios son, como su nombre indica, complementos de Nagios que se pueden usar en Pandora FMS. La diferencia estriba principalmente en que los plugins de nagios devuelven un error level para indicar si la prueba ha tenido éxito o no.
+Hay dos tipos de complementos, los estándar (standard) y los de tipo Nagios. Los complementos estándar son scripts que ejecutan acciones y admiten parámetros. Los complementos de Nagios son, como su nombre indica, complementos de Nagios que se pueden usar en <?php echo get_product_name();?>. La diferencia estriba principalmente en que los plugins de nagios devuelven un error level para indicar si la prueba ha tenido éxito o no.
 <br><br>
 Si quiere usar un plugin de tipo nagios y quiere obtener un dato, no un estado (Bien/Mal), puede utilizar un plugin de tipo nagios en el modo "Standard". 
 <br><br>
@@ -39,7 +39,7 @@ Descripción del complemento. Escribir una breve descripción, como por ejemplo:
 
 Es la ruta a donde está el comando del complemento. De forma predeterminada, si la instalación ha sido estándar, estarán en el directorio /usr/share/pandora_server/util/plugin/. Aunque puede ser cualquier ruta del sistema. Para este caso, escribir /usr/share/pandora_server/util/plugin/udp_nmap_plugin.sh en el campo.
 <br><br>
-El servidor de pandora ejecutará ese script, por lo que éste debe tener permisos de acceso y de ejecución sobre él. 
+El servidor de <?php echo get_product_name();?> ejecutará ese script, por lo que éste debe tener permisos de acceso y de ejecución sobre él. 
 <br><br>
 <b>Plug-in parameters</b><br>
 

@@ -11,7 +11,7 @@ En esta sección, es donde el administrador puede configurar <strong>una conexi�
 
 <h2>Tipos de conexión</h2>
 <p>
-Ahora mismo, Pandora FMS soporta tres tipos de conexiones:
+Ahora mismo, <?php echo get_product_name();?> soporta tres tipos de conexiones:
 OpenStreetMap, Google Maps e imágenes estáticas.
 </p>
 <h3>Open Street Maps</h3>

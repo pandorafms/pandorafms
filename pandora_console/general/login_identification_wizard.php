@@ -138,17 +138,17 @@ if ($email == 'admin@example.com') $email = '';
 
 // Prints accept register license
 echo '<div id="login_accept_register" title="' .
-	__('The Pandora FMS community wizard') . '" style="">';
+	__('The %s community wizard', get_product_name()) . '" style="">';
 	echo '<div style="margin: 5px 0 10px; float: left; padding-left: 15px;">';
 		echo html_print_image ('images/pandora_circle_big.png', true);
 	echo '</div>';
 	echo '<div style="font-size: 12pt; margin: 5px 20px; float: left; padding-top: 23px;">';
-		echo __('Stay up to date with the Pandora FMS community') . ".";
+		echo __('Stay up to date with the %s community', get_product_name()) . ".";
 	echo '</div>';
 	
 	echo '<div id="license_newsletter">';
-		echo '<p>' . __("When you subscribe to the Pandora FMS Update Manager service, you accept that we register your Pandora instance as an identifier on the database owned by Artica TS. This data will solely be used to provide you with information about Pandora FMS and will not be conceded to third parties. You'll be able to unregister from said database at any time from the Update Manager options") . '.</p>';
-		echo '<p>' . __("In the same fashion, when subscribed to the newsletter you accept that your email will pass on to a database property of Artica TS. This data will solely be used to provide you with information about Pandora FMS and will not be conceded to third parties. You'll be able to unregister from said database at any time from the newsletter subscription options") . '.</p>';
+		echo '<p>' . __("When you subscribe to the %s Update Manager service, you accept that we register your %s instance as an identifier on the database owned by Artica TS. This data will solely be used to provide you with information about %s and will not be conceded to third parties. You can unregister from said database at any time from the Update Manager options.", get_product_name(), get_product_name(), get_product_name()) . '</p>';
+		echo '<p>' . __("In the same fashion, when subscribed to the newsletter you accept that your email will pass on to a database property of Artica TS. This data will solely be used to provide you with information about %s and will not be conceded to third parties. You can unregister from said database at any time from the newsletter subscription options.", get_product_name()) . '</p>';
 	echo '</div>';
 	
 	echo '<div style="position:absolute; margin: 0 auto; bottom: 0px; padding-top:10px; position:relative; border: 1px solid #FFF;">';
@@ -161,7 +161,7 @@ echo '<div id="login_accept_register" title="' .
 		echo '</div>';
 		echo '<div style="float: left; margin-left: 0px; width: 50%; text-align: left;">';
 			html_print_checkbox('register', 1, false, false, false, 'cursor: \'pointer\'');
-			echo '&nbsp;<span style="font-size: 12px;" id="label-register">' .__("Join the Pandora FMS community") . '!</span><br>';
+			echo '&nbsp;<span style="font-size: 12px;" id="label-register">' .__('Join the %s community!', get_product_name()) . '!</span><br>';
 			html_print_checkbox('newsletter', 1, false, false, false, 'cursor: \'pointer\'');
 			echo '&nbsp;<span style="font-size: 12px;" id="label-newsletter">' .__("Subscribe to our newsletter") . '</span>';
 			echo "<br>";
@@ -176,7 +176,7 @@ echo '</div>';
 
 // Print yes or not dialog
 echo '<div id="login_registration_yesno" title="' .
-	__('Pandora FMS instance identification wizard') . '" style="">';
+	__("%s instance identification wizard", get_product_name()) . '" style="">';
 	echo '<div style="font-size: 12pt; margin: 20px;">';
 		echo __("Do you want to continue without any registration") . "?";
 	echo '</div>';

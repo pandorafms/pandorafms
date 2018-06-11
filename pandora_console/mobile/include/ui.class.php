@@ -84,7 +84,7 @@ class Ui {
 	
 	public function createPage($title = null, $page_name = null) {
 		if (!isset($title)) {
-			$this->title = __('Pandora FMS mobile');
+			$this->title = __('%s mobile', get_product_name());
 		}
 		else {
 			$this->title = $title;
@@ -165,7 +165,7 @@ class Ui {
 	
 	public function createDefaultHeader($title = false, $left_button = false) {
 		if ($title === false) {
-			$title = __('Pandora FMS mobile');
+			$title = __('%s : Mobile', get_product_name());
 		}
 		
 		if ($left_button === false) {
@@ -254,7 +254,7 @@ class Ui {
 		}
 		
 		return "<div id='footer' style='text-align: center;'>\n"
-			. sprintf(__('Pandora FMS %s - Build %s', $pandora_version, $build_version)) . "<br />\n"
+			. sprintf(__('%s %s - Build %s', get_product_name(), $pandora_version, $build_version)) . "<br />\n"
 			. __('Generated at') . ' '. ui_print_timestamp ($time, true, array ("prominent" => "timestamp")) . "\n"
 			. "</div>";
 	}

@@ -6,14 +6,14 @@
 <h1>WEB Monitoring</h1>
 
 <p>
-Advanced WEB Monitoring is a feature done by the Goliat/WEB Server in Pandora FMS Enterprise version.
+Advanced WEB Monitoring is a feature done by the Goliat/WEB Server in <?php echo get_product_name();?> Enterprise version.
 <br /><br />
 This is a sample of GOLIAT Webcheck module:
 <br />
 </p>
 <pre>
 task_begin
-post http://galaga.artica.es/pandora/index.php?login=1
+post http://galaga.artica.es/monitoring/index.php?login=1
 variable_name nick
 variable_value demo
 variable_name pass
@@ -23,7 +23,7 @@ resource 1
 task_end
 
 task_begin
-get http://galaga.artica.es/pandora/index.php?sec=messages&amp;sec2=operation/messages/message
+get http://galaga.artica.es/monitoring/index.php?sec=messages&amp;sec2=operation/messages/message
 cookie 1
 resource 1
 check_string Read messages
@@ -43,7 +43,7 @@ The following macros are available:
 <li>_moduledescription_ : Description of the module who fired the alert.</li>
 <li>_modulestatus_ : Status of the module.</li>
 <li>_moduletags_ : Tags associated to the module.</li>
-<li>_id_agent_ : Id of agent, useful to build direct URL to redirect to a Pandora FMS console webpage.</li>
+<li>_id_agent_ : Id of agent, useful to build direct URL to redirect to a <?php echo get_product_name();?> console webpage.</li>
 <li>_policy_ : Name of the policy the module belongs to (if applies).</li>
 <li>_interval_ : Execution interval of the module. </li>
 <li>_target_ip_ : IP address of the target of the module.</li>

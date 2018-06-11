@@ -63,7 +63,7 @@ if ($delete_graph) {
 if ($view_graph) {
 	$sql="SELECT * FROM tgraph_source WHERE id_graph = $id_graph";
 	$sources = db_get_all_rows_sql($sql);
-	
+
 	$sql="SELECT * FROM tgraph WHERE id_graph = $id_graph";
 	$graph = db_get_row_sql($sql);
 
@@ -71,7 +71,7 @@ if ($view_graph) {
 	$private = $graph["private"];
 	$width = $graph["width"];
 	$height = $graph["height"] + count($sources) * 10;
-	
+
 	$zoom = (int) get_parameter ('zoom', 0);
 	//Increase the height to fix the leyend rise
 	if ($zoom > 0) {
@@ -124,6 +124,12 @@ if ($view_graph) {
 		$height = $graph["height"];
 	}
 	
+	if ($stacked == CUSTOM_GRAPH_THERMOMETER ){
+		// Use the defined graph height, that's why
+		// the user can setup graph height.
+		$height = $graph["height"];
+	}
+	
 	$name = $graph["name"];
 	if (($graph["private"]==1) && ($graph["id_user"] != $id_user)) {
 		db_pandora_audit("ACL Violation",
@@ -154,12 +160,12 @@ if ($view_graph) {
 					html_print_image("images/builder.png", true, array ("title" => __('Graph editor'))) .'</a>')
 			);
 	}
-	
+
 	$options['view']['text'] = '<a href="index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id=' . $id_graph . '">' . 
 		html_print_image("images/operation.png", true,
 			array ("title" => __('View graph'))) .'</a>';
 	$options['view']['active'] = true;
-	
+
 	if ($config["pure"] == 0) {
 		$options['screen']['text'] = "<a href='$url&pure=1'>"
 			. html_print_image ("images/full_screen.png", true, array ("title" => __('Full screen mode')))
@@ -169,18 +175,42 @@ if ($view_graph) {
 		$options['screen']['text'] = "<a href='$url&pure=0'>"
 			. html_print_image ("images/normal_screen.png", true, array ("title" => __('Back to normal mode')))
 			. "</a>";
-		
+
 		// In full screen, the manage options are not available
 		$options = array('view' => $options['view'], 'screen' => $options['screen']);
 	}
-	
+
 	// Header
-	
-		ui_print_page_header ($graph['name'],
-			"images/chart.png", false, "", false, $options);
-		
-	$graph_return = custom_graphs_print($id_graph, $height, $width, $period, $stacked, true, $unixdate, false, 'white', 
-		array(), '', array(), array(), true, true, true, true, 1, false, false, $percentil, false, false, $fullscale);
+	ui_print_page_header (
+		$graph['name'],
+		"images/chart.png",
+		false,
+		"",
+		false,
+		$options
+	);
+
+	$width = null;
+	$height = null;
+	$params =array(
+		'period'    => $period,
+		'width'     => $width,
+		'height'    => $height,
+		'date'      => $unixdate,
+		'percentil' => $percentil,
+		'fullscale' => $fullscale
+	);
+
+	$params_combined = array(
+		'stacked'  => $stacked,
+		'id_graph' => $id_graph
+	);
+
+	$graph_return = graphic_combined_module(
+		false,
+		$params,
+		$params_combined
+	);
 
 	if ($graph_return){
 		echo "<table class='databox filters' cellpadding='0' cellspacing='0' width='100%'>";
@@ -235,6 +265,7 @@ if ($view_graph) {
 	$stackeds[CUSTOM_GRAPH_HBARS] = __('Horizontal Bars');
 	$stackeds[CUSTOM_GRAPH_VBARS] = __('Vertical Bars');
 	$stackeds[CUSTOM_GRAPH_PIE] = __('Pie');
+	$stackeds[CUSTOM_GRAPH_THERMOMETER] = __('Thermometer');
 	html_print_select ($stackeds, 'stacked', $stacked , '', '', -1, false, false);
 	echo "</td>";
 
@@ -303,7 +334,6 @@ if ($view_graph) {
 
 	$("#stacked").change(function(){
 		if ($(this).val() == '4') {
-			console.log($(this).val());
 			$("#thresholdDiv").show();
 			$(".stacked").show();
 		} else {

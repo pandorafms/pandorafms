@@ -126,7 +126,7 @@ function config_update_config () {
 			switch ($section_setup) {
 				case 'general':
 					if (!config_update_value ('language', (string) get_parameter ('language')))
-						$error_update[] = __('Language code for Pandora');
+						$error_update[] = __('Language settings');
 					if (!config_update_value ('remote_config', (string) get_parameter ('remote_config')))
 						$error_update[] = __('Remote config directory');
 					if (!config_update_value ('loginhash_pwd', io_input_password((string) get_parameter ('loginhash_pwd'))))
@@ -149,9 +149,7 @@ function config_update_config () {
 					if (!config_update_value ('api_password', io_input_password(get_parameter('api_password'))))
 						$error_update[] = __('API password');
 					if (!config_update_value ('activate_gis', (bool) get_parameter ('activate_gis')))
-						$error_update[] = __('Enable GIS features in Pandora Console');
-					if (!config_update_value ('integria_enabled', get_parameter ('integria_enabled')))
-						$error_update[] = __('Enable Integria incidents in Pandora Console');
+						$error_update[] = __('Enable GIS features');
 					if (!config_update_value ('integria_inventory', get_parameter ('integria_inventory')))
 						$error_update[] = __('Integria inventory');
 					if (!config_update_value ('integria_api_password', io_input_password(get_parameter ('integria_api_password'))))
@@ -249,7 +247,9 @@ function config_update_config () {
 							$error_update[] = __('Metaconsole agent cache');
 						if (!config_update_value ('log_collector', (bool)get_parameter('log_collector')))
 							$error_update[] = __('Activate Log Collector');
-						
+						if (!config_update_value ('enable_update_manager', get_parameter('enable_update_manager')))
+							$error_update[] = __('Enable Update Manager');
+
 						$inventory_changes_blacklist = get_parameter('inventory_changes_blacklist', array());
 						if (!config_update_value ('inventory_changes_blacklist', implode(',',$inventory_changes_blacklist)))
 							$error_update[] = __('Inventory changes blacklist');
@@ -500,12 +500,24 @@ function config_update_config () {
 					if (!config_update_value ('flash_charts', (bool) get_parameter ('flash_charts')))
 						$error_update[] = __('Interactive charts');
 					
+					if (!config_update_value ('custom_favicon', (string) get_parameter ('custom_favicon')))
+						$error_update[] = __('Custom favicon');
 					if (!config_update_value ('custom_logo', (string) get_parameter ('custom_logo')))
 						$error_update[] = __('Custom logo');
+					if (!config_update_value ('custom_logo_white_bg', (string) get_parameter ('custom_logo_white_bg')))
+						$error_update[] = __('Custom logo white background');
 					if (!config_update_value ('custom_logo_login', (string) get_parameter ('custom_logo_login')))
 						$error_update[] = __('Custom logo login');
 					if (!config_update_value ('custom_splash_login', (string) get_parameter ('custom_splash_login')))
 						$error_update[] = __('Custom splash login');
+					if (!config_update_value ('custom_docs_logo', (string) get_parameter ('custom_docs_logo')))
+						$error_update[] = __('Custom documentation logo');
+					if (!config_update_value ('custom_support_logo', (string) get_parameter ('custom_support_logo')))
+						$error_update[] = __('Custom support logo');
+					if (!config_update_value ('custom_network_center_logo', (string) get_parameter ('custom_network_center_logo')))
+						$error_update[] = __('Custom networkmap center logo');
+					if (!config_update_value ('custom_mobile_console_logo', (string) get_parameter ('custom_mobile_console_logo')))
+						$error_update[] = __('Custom networkmap center logo');
 					if (!config_update_value ('custom_title1_login', (string) get_parameter ('custom_title1_login')))
 						$error_update[] = __('Custom title1 login');
 					if (!config_update_value ('custom_title2_login', (string) get_parameter ('custom_title2_login')))
@@ -517,9 +529,15 @@ function config_update_config () {
 						$error_update[] = __('Custom Docs url');
 					if (!config_update_value ('custom_support_url', (string) get_parameter ('custom_support_url')))
 						$error_update[] = __('Custom support url');
-
+					if (!config_update_value ('rb_product_name', (string) get_parameter ('rb_product_name')))
+						$error_update[] = __('Product name');
+					if (!config_update_value ('rb_copyright_notice', (string) get_parameter ('rb_copyright_notice')))
+						$error_update[] = __('Copyright notice');
+					
 					if (!config_update_value ('meta_custom_logo', (string) get_parameter ('meta_custom_logo')))
 						$error_update[] = __('Custom logo metaconsole');
+					if (!config_update_value ('meta_custom_logo_white_bg', (string) get_parameter ('meta_custom_logo_white_bg')))
+						$error_update[] = __('Custom logo metaconsole (white background)');
 					if (!config_update_value ('meta_custom_logo_login', (string) get_parameter ('meta_custom_logo_login')))
 						$error_update[] = __('Custom logo login metaconsole');
 					if (!config_update_value ('meta_custom_splash_login', (string) get_parameter ('meta_custom_splash_login')))
@@ -567,8 +585,10 @@ function config_update_config () {
 						$error_update[] = __('Autohidden menu');
 					if (!config_update_value ('visual_animation', get_parameter('visual_animation')))
 						$error_update[] = __('visual_animation');
+					if (!config_update_value ('disable_help', get_parameter('disable_help')))
+						$error_update[] = __('Disable help');
 					if (!config_update_value ('fixed_graph', get_parameter('fixed_graph')))
-							$error_update[] = __('Fixed graph');
+						$error_update[] = __('Fixed graph');
 					if (!config_update_value ('fixed_header', get_parameter('fixed_header')))
 						$error_update[] = __('Fixed header');
 					if (!config_update_value ('fixed_menu', get_parameter('fixed_menu')))
@@ -1049,6 +1069,10 @@ function config_process_config () {
 		config_update_value ('log_collector', 0);
 	}
 
+	if (!isset ($config["enable_update_manager"])) {
+		config_update_value ('enable_update_manager', 1);
+	}
+
 	if (!isset ($config["reset_pass_option"])) {
 		config_update_value ('reset_pass_option', 0);
 	}
@@ -1163,7 +1187,11 @@ function config_process_config () {
 	if (!isset ($config["graphviz_bin_dir"])) {
 		config_update_value ('graphviz_bin_dir', "");
 	}
-	
+
+	if (!isset ($config["disable_help"])) {
+		config_update_value ('disable_help', false);
+	}
+
 	if (!isset ($config["fixed_header"])) {
 		config_update_value ('fixed_header', false);
 	}
@@ -1175,9 +1203,17 @@ function config_process_config () {
 	if (!isset ($config["fixed_menu"])) {
 		config_update_value ('fixed_menu', false);
 	}
-	
+
+	if (!isset ($config["custom_favicon"])) {
+		config_update_value ('custom_favicon', '');
+	}
+
 	if (!isset ($config["custom_logo"])) {
 		config_update_value ('custom_logo', 'pandora_logo_head_4.png');
+	}
+
+	if (!isset ($config["custom_logo_white_bg"])) {
+		config_update_value ('custom_logo_white_bg', 'pandora_logo_head_white_bg.png');
 	}
 
 	if (!isset ($config["custom_logo_login"])) {
@@ -1187,7 +1223,23 @@ function config_process_config () {
 	if (!isset ($config["custom_splash_login"])) {
 		config_update_value ('custom_splash_login', 'splash_image_default.png');
 	}
-	
+
+	if (!isset ($config["custom_docs_logo"])) {
+		config_update_value ('custom_docs_logo', '');
+	}
+
+	if (!isset ($config["custom_support_logo"])) {
+		config_update_value ('custom_support_logo', '');
+	}
+
+	if (!isset ($config["custom_network_center_logo"])) {
+		config_update_value ('custom_network_center_logo', '');
+	}
+
+	if (!isset ($config["custom_mobile_console_logo"])) {
+		config_update_value ('custom_mobile_console_logo', '');
+	}
+
 	if (!isset ($config["custom_title1_login"])) {
 		config_update_value ('custom_title1_login', __('WELCOME TO PANDORA FMS'));
 	}
@@ -1203,6 +1255,14 @@ function config_process_config () {
 	if (!isset ($config["custom_support_url"])) {
 		config_update_value ('custom_support_url', 'https://support.artica.es');
 	}
+
+	if (!isset ($config['rb_product_name'])) {
+		config_update_value('rb_product_name', get_product_name());
+	}
+
+	if (!isset ($config['rb_copyright_notice'])) {
+		config_update_value('rb_copyright_notice', get_copyright_notice());
+	}
 	
 	if (!isset ($config["meta_custom_docs_url"])) {
 		config_update_value ('meta_custom_docs_url', 'http://wiki.pandorafms.com/index.php?title=Main_Page');
@@ -1214,6 +1274,10 @@ function config_process_config () {
 
 	if (!isset ($config["meta_custom_logo"])) {
 		config_update_value ('meta_custom_logo', 'logo_pandora_metaconsola.png');
+	}
+
+	if (!isset ($config["meta_custom_logo_white_bg"])) {
+		config_update_value ('pandora_logo_head_white_bg', 'pandora_logo_head_white_bg.png');
 	}
 
 	if (!isset ($config["meta_custom_logo_login"])) {
@@ -2039,7 +2103,7 @@ function config_check () {
 	// ~ about 50 hr
 	if ($last_maintance > 190000) {
 		set_pandora_error_for_header(
-			__('Your database is not well maintained. Seems that it have more than 48hr without a proper maintance. Please review Pandora FMS documentation about how to execute this maintance process (pandora_db.pl) and enable it as soon as possible'),
+			__("Your database is not maintained correctly. It seems that more than 48hrs have passed without proper maintenance. Please review documents of %s on how to perform this maintenance process (DB Tool) and enable it as soon as possible.", get_product_name()),
 			__("Database maintance problem"));
 	}
 	
@@ -2060,7 +2124,7 @@ function config_check () {
 	
 	if ($develop_bypass == 1) {
 		set_pandora_error_for_header(
-			__('Your Pandora FMS has the "develop_bypass" mode enabled. This is a developer mode and should be disabled in a production system. This value is written in the main index.php file'),
+			__('Your %s has the "develop_bypass" mode enabled. This is a developer mode and should be disabled in a production system. This value is written in the main index.php file', get_product_name()),
 			__("Developer mode is enabled"));
 	}
 	
@@ -2077,7 +2141,7 @@ function config_check () {
 		if ($_SESSION['new_update'] == 'new') {
 			set_pandora_error_for_header(
 				__('There is a new update available. Please<a style="font-weight:bold;" href="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=online"> go to Administration:Setup:Update Manager</a> for more details.'),
-				__("New update of Pandora Console"));
+				__("New %s Console update", get_product_name()));
 		}
 	}
 	

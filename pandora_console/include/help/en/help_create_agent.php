@@ -12,5 +12,5 @@ To create an Agent, you must fill this form. Please fill all the fields you need
 "Interval" refers to the agent's execution interval. The interval is how often the agent sends data to the server.
 </p>
 <p>
-"Server" refers to the Pandora Server that will read data send by the agent. 
+"Server" refers to the <?php echo get_product_name();?> Server that will read data send by the agent. 
 </p>

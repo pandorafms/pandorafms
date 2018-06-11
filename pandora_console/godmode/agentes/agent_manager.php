@@ -106,6 +106,7 @@ if (is_ajax ()) {
 		$id_agent = get_parameter('id_agent');
 		$groups_to_add = get_parameter('groups');
 		if (enterprise_installed()) {
+			if (empty($groups_to_add)) return 0;
 			enterprise_include('include/functions_agents.php');
 			$ret = enterprise_hook(
 				'agents_update_secondary_groups',
@@ -409,8 +410,8 @@ if($id_agente){
 	}
 
 	$table->data[2][0] = __('Safe operation mode')
-		. ui_print_help_tip(__('This mode allow Pandora FMS to disable all modules 
-		of this agent while the selected module is on CRITICAL status'), true);
+		. ui_print_help_tip(__('This mode allow %s to disable all modules 
+		of this agent while the selected module is on CRITICAL status', get_product_name()), true);
 	$table->data[2][1] = html_print_checkbox('safe_mode', 1, $safe_mode, true);
 	$table->data[2][1] .= "&nbsp;&nbsp;" .  __('Module') . "&nbsp;" . html_print_select ($safe_mode_modules, "safe_mode_module", $safe_mode_module, "", "", 0, true);
 }
@@ -542,7 +543,7 @@ foreach ($fields as $field) {
 		. '.<br />'
 		. __('The format is: [url=\'url to navigate\']\'text to show\'[/url]')
 		. '.<br /><br />'
-		. __('e.g.: [url=pandorafms.org]Pandora FMS Community[/url]')
+		. __('e.g.: [url=google.com]Google web search[/url]')
 		, true);
 	
 	$custom_value = db_get_value_filter('description',

@@ -75,12 +75,12 @@ $interface_traffic_modules = array(
 		$refresh = (int) get_parameter('refresh', SECONDS_5MINUTES);
 		if ($refresh > 0) {
 			$query = ui_get_url_refresh(false);
-			
+
 			echo '<meta http-equiv="refresh" content="'.$refresh.'; URL='.$query.'" />';
 		}
 ?>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<title>Pandora FMS Graph (<?php echo agents_get_alias($agent_id) . ' - ' . $interface_name; ?>)</title>
+		<title><?php echo __('%s Interface Graph', get_product_name()) . ' (' .agents_get_alias($agent_id) . ' - ' . $interface_name; ?>)</title>
 		<link rel="stylesheet" href="../../include/styles/pandora_minimal.css" type="text/css" />
 		<link rel="stylesheet" href="../../include/styles/jquery-ui-1.10.0.custom.css" type="text/css" />
 		<script type='text/javascript' src='../../include/javascript/pandora.js'></script>
@@ -99,10 +99,10 @@ $interface_traffic_modules = array(
 			window.onload = function() {
 				// Hack to repeat the init process to period select
 				var periodSelectId = $('[name="period"]').attr('class');
-				
+
 				period_select_init(periodSelectId);
 			};
-			
+
 			function show_others() {
 				if (!$("#checkbox-avg_only").attr('checked')) {
 					$("#hidden-show_other").val(1);
@@ -116,20 +116,18 @@ $interface_traffic_modules = array(
 	</head>
 	<body bgcolor="#ffffff" style='background:#ffffff;'>
 <?php
-		
 		// ACL
 		$permission = false;
 		$agent_group = (int) agents_get_agent_group($agent_id);
 		$strict_user = (bool) db_get_value("strict_acl", "tusuario", "id_user", $config['id_user']);
-		
+
 		// The traffic modules should belong to the agent id
 		$in_agent_id = (int) db_get_value("id_agente", "tagente_modulo", "id_agente_modulo", $params['traffic_module_in']);
 		$out_agent_id = (int) db_get_value("id_agente", "tagente_modulo", "id_agente_modulo", $params['traffic_module_out']);
 		$traffic_modules_belong_to_agent = $agent_id == $in_agent_id && $agent_id == $out_agent_id;
-		
+
 		if (!empty($agent_group) && !empty($params['traffic_module_in'])
 				&& !empty($params['traffic_module_out']) && $traffic_modules_belong_to_agent) {
-			
 			if ($strict_user) {
 				if (tags_check_acl_by_module($params['traffic_module_in'], $config['id_user'], 'RR') === true
 						&& tags_check_acl_by_module($params['traffic_module_out'], $config['id_user'], 'RR') === true)
@@ -139,12 +137,12 @@ $interface_traffic_modules = array(
 				$permission = check_acl($config['id_user'], $agent_group, "RR");
 			}
 		}
-		
+
 		if (!$permission) {
 			require ($config['homedir'] . "/general/noaccess.php");
 			exit;
 		}
-		
+
 		// Get input parameters
 		$period = get_parameter ("period", SECONDS_1DAY);
 		$width = (int) get_parameter("width", 555);
@@ -155,10 +153,10 @@ $interface_traffic_modules = array(
 		$baseline = get_parameter ("baseline", 0);
 		$show_percentil = get_parameter ("show_percentil", 0);
 		$fullscale = get_parameter("fullscale");
-		
+
 		if(!isset($_GET["fullscale_sent"]) ){
-			if(!isset($config['full_scale_option']) || 
-				$config['full_scale_option'] == 0   || 
+			if(!isset($config['full_scale_option']) ||
+				$config['full_scale_option'] == 0   ||
 				$config['full_scale_option'] == 2 ){
 				$fullscale = 0;
 			}
@@ -170,12 +168,11 @@ $interface_traffic_modules = array(
 		if ($zoom > 1) {
 			$height = $height * ($zoom / 2.1);
 			$width = $width * ($zoom / 1.4);
-			
 			echo "<script type='text/javascript'>window.resizeTo($width + 120, $height + 320);</script>";
 		}
-		
+
 		/*$current = date("Y-m-d");
-		
+
 		if ($start_date != $current)
 			$date = strtotime($start_date);
 		else
@@ -183,61 +180,64 @@ $interface_traffic_modules = array(
 		*/
 		$date = strtotime("$start_date $start_time");
 		$now = time();
-		
+
 		if ($date > $now){
 			$date = $now;
 		}
-		
+
 		$urlImage = ui_get_full_url(false);
-		
+
 		if ($config['flash_charts'] == 1)
 			echo '<div style="margin-left: 70px; padding-top: 10px;">';
 		else
 			echo '<div style="margin-left: 50px; padding-top: 10px;">';
-		
-		custom_graphs_print(0,
-			$height,
-			$width,
-			$period,
-			null,
-			false,
-			$date,
-			false,
-			'white',
+
+		$height = 400;
+		$width  = '90%';
+
+		$params =array(
+			'period'    => $period,
+			'width'     => $width,
+			'height'    => $height,
+			'unit_name' => array_fill(0, count($interface_traffic_modules), $config["interface_unit"]),
+			'date'      => $date,
+			'homeurl'   => $config['homeurl'],
+			'percentil' => (($show_percentil)? $config['percentil'] : null),
+			'fullscale' => $fullscale
+		);
+
+		$params_combined = array(
+			'weight_list'    => array(),
+			'projection'     => false,
+			'labels'         => array_keys($interface_traffic_modules),
+			'from_interface' => true,
+			'modules_series' => array_values($interface_traffic_modules),
+			'return'         => 0
+		);
+
+		graphic_combined_module(
 			array_values($interface_traffic_modules),
-			$config['homeurl'],
-			array_keys($interface_traffic_modules),
-			array_fill(0, count($interface_traffic_modules), $config["interface_unit"]),
-			false,
-			true,
-			true,
-			true,
-			1,
-			false,
-			false,
-			(($show_percentil)? $config['percentil'] : null),
-			true,
-			false,
-			$fullscale);
-		
+			$params,
+			$params_combined
+		);
+
 		echo '</div>';
-		
+
 		///////////////////////////
 		// SIDE MENU
 		///////////////////////////
 		$side_layer_params = array();
 		// TOP TEXT
 
-		$side_layer_params['top_text'] = "<div style='color: white; width: 100%; text-align: center; font-weight: bold; vertical-align: top;'>" . html_print_image('/images/config.disabled.png', true, array('width' => '16px'),false,false,false,true) . ' ' . __('Pandora FMS Graph configuration menu') . "</div>";
+		$side_layer_params['top_text'] = "<div style='color: white; width: 100%; text-align: center; font-weight: bold; vertical-align: top;'>" . html_print_image('/images/config.disabled.png', true, array('width' => '16px'),false,false,false,true) . ' ' . __('Graph configuration menu') . "</div>";
 		$side_layer_params['body_text'] = "<div class='menu_sidebar_outer'>";
 		$side_layer_params['body_text'] .=__('Please, make your changes and apply with the <i>Reload</i> button');
-		
+
 		// MENU
 		$side_layer_params['body_text'] .= '<form method="get" action="interface_traffic_graph_win.php">';
 		$side_layer_params['body_text'] .= html_print_input_hidden("params", base64_encode($params_json), true);
-		
+
 		// FORM TABLE
-		
 		$table = html_get_predefined_table('transparent', 2);
 		$table->width = '98%';
 		$table->id = 'stat_win_form_div';
@@ -245,32 +245,32 @@ $interface_traffic_modules = array(
 		$table->style[1] = 'text-align:left;';
 		$table->styleTable = 'border-spacing: 4px;';
 		$table->class = 'alternate';
-		
+
 		$data = array();
 		$data[0] = __('Refresh time');
 		$data[1] = html_print_extended_select_for_time("refresh", $refresh, '', '', 0, 7, true);
 		$table->data[] = $data;
 		$table->rowclass[] = '';
-		
+
 		$data = array();
 		$data[0] = __('Begin date');
 		$data[1] = html_print_input_text ("start_date", substr ($start_date, 0, 10),'', 15, 255, true);
 		$data[1] .= html_print_image ("/images/calendar_view_day.png", true, array ("onclick" => "scwShow(scwID('text-start_date'),this);", "style" => 'vertical-align: bottom;'),false,false,false,true);
 		$table->data[] = $data;
 		$table->rowclass[] = '';
-		
+
 		$data = array();
 		$data[0] = __('Begin time');
 		$data[1] = html_print_input_text ("start_time", $start_time,'', 10, 10, true);
 		$table->data[] = $data;
 		$table->rowclass[] = '';
-		
+
 		$data = array();
 		$data[0] = __('Time range');
 		$data[1] = html_print_extended_select_for_time('period', $period, '', '', 0, 7, true);
 		$table->data[] = $data;
 		$table->rowclass[] = '';
-		
+
 		$data = array();
 		$data[0] = __('Show percentil');
 		$data[1] = html_print_checkbox ("show_percentil", 1, (bool) $show_percentil, true);
@@ -288,7 +288,7 @@ $interface_traffic_modules = array(
 		$data[1] = html_print_checkbox ("fullscale", 1, (bool) $fullscale, true);
 		$table->data[] = $data;
 		$table->rowclass[] ='';
-		
+
 		$data = array();
 		$data[0] = __('Zoom factor');
 		$options = array();
@@ -300,47 +300,47 @@ $interface_traffic_modules = array(
 		$data[1] = html_print_select($options, "zoom", $zoom, '', '', 0, true);
 		$table->data[] = $data;
 		$table->rowclass[] = '';
-		
+
 		$form_table = html_print_table($table, true);
-		
+
 		unset($table);
-		
+
 		$table->id = 'stat_win_form';
 		$table->width = '100%';
 		$table->cellspacing = 2;
 		$table->cellpadding = 2;
 		$table->class = 'databox';
-		
+
 		$data = array();
 		$data[0] = html_print_div(array('content' => $form_table, 'style' => 'overflow: auto; height: 220px'), true);
 		$table->data[] = $data;
 		$table->rowclass[] = '';
-		
+
 		$data = array();
 		$data[0] = '<div style="width:100%; text-align:right;">' . html_print_submit_button (__('Reload'), "submit", false, 'class="sub upd"', true) . "</div>";
 		$table->data[] = $data;
 		$table->rowclass[] = '';
-		
+
 		$side_layer_params['body_text'] .= html_print_table($table, true);
 		$side_layer_params['body_text'] .= '</form>';
 		$side_layer_params['body_text'] .= '</div>'; // outer
-		
+
 		// ICONS
 		$side_layer_params['icon_closed'] = '/images/graphmenu_arrow_hide.png';
 		$side_layer_params['icon_open'] = '/images/graphmenu_arrow.png';
-		
+
 		// SIZE
 		$side_layer_params['width'] = 500;
-		
+
 		// POSITION
 		$side_layer_params['position'] = 'left';
-		
+
 		html_print_side_layer($side_layer_params);
-		
+
 		// Hidden div to forced title
 		html_print_div(array('id' => 'forced_title_layer', 'class' => 'forced_title_layer', 'hidden' => true));
 ?>
-		
+
 	</body>
 </html>
 <?php
@@ -351,7 +351,7 @@ ui_require_jquery_file("ui.datepicker-" . $custom_user_language, "include/javasc
 ui_include_time_picker(true);
 ?>
 <script>
-	
+
 <?php
 	//Resize window when show the overview graph.
 	if ($config['flash_charts']) {
@@ -363,7 +363,7 @@ ui_include_time_picker(true);
 			height_window = $(window).height();
 			width_window = $(window).width();
 		});
-		
+
 		$("*").filter(function() {
 			if (typeof(this.id) == "string")
 				return this.id.match(/menu_overview_graph.*/);
@@ -375,12 +375,12 @@ ui_include_time_picker(true);
 <?php
 	}
 ?>
-	
+
 	// Add datepicker and timepicker
 	$("#text-start_date").datepicker({
 		dateFormat: "<?php echo DATE_FORMAT_JS; ?>"
 	});
-	
+
 	$("#text-start_time").timepicker({
 		showSecond: true,
 		timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
@@ -392,8 +392,8 @@ ui_include_time_picker(true);
 		currentText: '<?php echo __('Now');?>',
 		closeText: '<?php echo __('Close');?>'
 	});
-	
+
 	$.datepicker.setDefaults($.datepicker.regional["<?php echo $custom_user_language; ?>"]);
-	
+
 	forced_title_callback();
 </script>

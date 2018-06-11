@@ -83,9 +83,6 @@ function agents_create_agent ($name, $id_group, $interval, $ip_address, $values 
 	if (empty ($id_group) && (int)$id_group != 0)
 		return false;
 	
-	if (empty ($ip_address))
-		return false;
-	
 	// Check interval greater than zero
 	if ($interval < 0)
 		$interval = false;
@@ -97,16 +94,20 @@ function agents_create_agent ($name, $id_group, $interval, $ip_address, $values 
 	$values['nombre'] = $name;
 	$values['id_grupo'] = $id_group;
 	$values['intervalo'] = $interval;
-	$values['direccion'] = $ip_address;
 	
+	if (!empty ($ip_address)){
+			$values['direccion'] = $ip_address;
+	}
+		
 	$id_agent = db_process_sql_insert ('tagente', $values);
 	if ($id_agent === false) {
 		return false;
 	}
 	
 	// Create address for this agent in taddress
-	agents_add_address ($id_agent, $ip_address);
-	
+	if (!empty ($ip_address)){
+		agents_add_address ($id_agent, $ip_address);
+	}
 	
 	db_pandora_audit ("Agent management", "New agent '$name' created");
 	

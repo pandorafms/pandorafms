@@ -605,13 +605,13 @@ sub pandora_process_alert ($$$$$$$$;$) {
 			pandora_event ($pa_config, "Alert ceased (" .
 				safe_output($alert->{'name'}) . ")", 0, 0, $alert->{'priority'}, $id,
 				(defined ($alert->{'id_agent_module'}) ? $alert->{'id_agent_module'} : 0), 
-				"alert_ceased", 0, $dbh, 'Pandora', '', '', '', '', $critical_instructions, $warning_instructions, $unknown_instructions);
+				"alert_ceased", 0, $dbh, 'monitoring_server', '', '', '', '', $critical_instructions, $warning_instructions, $unknown_instructions);
 		}  else {
 			pandora_event ($pa_config, "Alert ceased (" .
 					safe_output($alert->{'name'}) . ")", $agent->{'id_grupo'},
 					$agent->{'id_agente'}, $alert->{'priority'}, $id,
 					(defined ($alert->{'id_agent_module'}) ? $alert->{'id_agent_module'} : 0),
-					"alert_ceased", 0, $dbh, 'Pandora', '', '', '', '', $critical_instructions, $warning_instructions, $unknown_instructions);
+					"alert_ceased", 0, $dbh, 'monitoring_server', '', '', '', '', $critical_instructions, $warning_instructions, $unknown_instructions);
 		}
 		return;
 	}
@@ -822,7 +822,7 @@ sub pandora_execute_alert ($$$$$$$$$;$) {
 		if (time () >= ($action->{'last_execution'} + $threshold)) {
 			
 			# Does the action generate an event?
-			if (safe_output($action->{'name'}) eq "Pandora FMS Event") {
+			if (safe_output($action->{'name'}) eq "Monitoring Event") {
 				$event_generated = 1;
 			}
 			
@@ -844,7 +844,7 @@ sub pandora_execute_alert ($$$$$$$$$;$) {
 
 		pandora_event ($pa_config, "Alert $text (" . safe_output($alert->{'name'}) . ") " . (defined ($module) ? 'assigned to ('. safe_output($module->{'nombre'}) . ")" : ""),
  			(defined ($agent) ? $agent->{'id_grupo'} : 0), (defined ($agent) ? $agent->{'id_agente'} : 0), $severity, (defined ($alert->{'id_template_module'}) ? $alert->{'id_template_module'} : 0),
-			(defined ($alert->{'id_agent_module'}) ? $alert->{'id_agent_module'} : 0), $event, 0, $dbh, 'Pandora', '', '', '', '', $critical_instructions, $warning_instructions, $unknown_instructions);
+			(defined ($alert->{'id_agent_module'}) ? $alert->{'id_agent_module'} : 0), $event, 0, $dbh, 'monitoring_server', '', '', '', '', $critical_instructions, $warning_instructions, $unknown_instructions);
 	}
 }
 
@@ -1290,7 +1290,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		}
 	
 	# Pandora FMS Event
-	} elsif ($clean_name eq "Pandora FMS Event") {
+	} elsif ($clean_name eq "Monitoring Event") {
 		$field1 = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module);
 		$field3 = subst_alert_macros ($field3, \%macros, $pa_config, $dbh, $agent, $module);
 		$field4 = subst_alert_macros ($field4, \%macros, $pa_config, $dbh, $agent, $module);
@@ -1395,7 +1395,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		# Field 5 (Ticket name)
 		my $ticket_name = $field5;
 		if ($ticket_name eq "") {
-			$ticket_name = "Pandora FMS alert action created by API";
+			$ticket_name = $pa_config->{'rb_product_name'} . " alert action created by API";
 		}
 		
 		# Field 6 (Ticket group ID)
@@ -1715,8 +1715,6 @@ sub pandora_planned_downtime_disabled_once_start($$) {
 		db_do($dbh, 'UPDATE tplanned_downtime
 			SET executed = 1
 			WHERE id = ?', $downtime->{'id'});
-		
-		print"pandora_planned_downtime_disabled_once_start\n";
 		pandora_event ($pa_config,
 			"(Created by " . $downtime->{'id_user'} . ") Server ".$pa_config->{'servername'}." started planned downtime: ".safe_output($downtime->{'name'}), 0, 0, 1, 0, 0, 'system', 0, $dbh);
 		
@@ -2191,7 +2189,6 @@ sub pandora_planned_downtime_weekly_start($$) {
 			db_do($dbh, 'UPDATE tplanned_downtime
 				SET executed = 1
 				WHERE id = ?', $downtime->{'id'});
-			print"pandora_planned_downtime_weekly_start\n";
 			pandora_event ($pa_config,
 				"Server ".$pa_config->{'servername'}." started planned downtime: ".safe_output($downtime->{'name'}), 0, 0, 1, 0, 0, 'system', 0, $dbh);
 				
@@ -2306,8 +2303,6 @@ sub pandora_planned_downtime_weekly_stop($$) {
 			db_do($dbh, 'UPDATE tplanned_downtime
 				SET executed = 0
 				WHERE id = ?', $downtime->{'id'});
-
-			print"pandora_planned_downtime_weekly_stop\n";
 			pandora_event ($pa_config,
 				"Server ".$pa_config->{'servername'}." stopped planned downtime: ".safe_output($downtime->{'name'}), 0, 0, 1, 0, 0, 'system', 0, $dbh);
 			
@@ -3151,7 +3146,7 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$) {
 	
 	
 	# Set default values for optional parameters
-	$source = 'Pandora' unless defined ($source);
+	$source = 'monitoring_server' unless defined ($source);
 	$comment = '' unless defined ($comment);
 	$id_extra = '' unless defined ($id_extra);
 	$user_name = '' unless defined ($user_name);
@@ -4165,11 +4160,11 @@ sub generate_status_event ($$$$$$$$) {
 	# Generate the event
 	if ($status != 0){
 		pandora_event ($pa_config, $description, $agent->{'id_grupo'}, $module->{'id_agente'},
-			$severity, 0, $module->{'id_agente_modulo'}, $event_type, 0, $dbh, 'Pandora', '', '', '', '', $module->{'critical_instructions'}, $module->{'warning_instructions'}, $module->{'unknown_instructions'});
+			$severity, 0, $module->{'id_agente_modulo'}, $event_type, 0, $dbh, 'monitoring_server', '', '', '', '', $module->{'critical_instructions'}, $module->{'warning_instructions'}, $module->{'unknown_instructions'});
 	} else { 
 		# Self validate this event if has "normal" status
 		pandora_event ($pa_config, $description, $agent->{'id_grupo'}, $module->{'id_agente'},
-			$severity, 0, $module->{'id_agente_modulo'}, $event_type, 1, $dbh, 'Pandora', '', '', '', '', $module->{'critical_instructions'}, $module->{'warning_instructions'}, $module->{'unknown_instructions'});
+			$severity, 0, $module->{'id_agente_modulo'}, $event_type, 1, $dbh, 'monitoring_server', '', '', '', '', $module->{'critical_instructions'}, $module->{'warning_instructions'}, $module->{'unknown_instructions'});
 	}
 
 }
@@ -4692,7 +4687,7 @@ sub pandora_self_monitoring ($$) {
 
 	my $xml_output = "";
 	
-	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='Pandora FMS Server version " . $pa_config->{'version'} . "' agent_name='".$pa_config->{'servername'} . "' agent_alias='".$pa_config->{'servername'} . "' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
+	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='".$pa_config->{'servername'} . "' agent_alias='".$pa_config->{'servername'} . "' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
 	$xml_output .=" <module>";
 	$xml_output .=" <name>Status</name>";
 	$xml_output .=" <type>generic_proc</type>";
@@ -4886,7 +4881,7 @@ sub pandora_module_unknown ($$) {
 			
 			# Set the module state to normal
 			logger ($pa_config, "Module " . $module->{'nombre'} . " is going to NORMAL", 10);
-			db_do ($dbh, 'UPDATE tagente_estado SET last_status = 0, estado = 0 WHERE id_agente_estado = ?', $module->{'id_agente_estado'});
+			db_do ($dbh, 'UPDATE tagente_estado SET last_status = 0, estado = 0, known_status = 0, last_known_status = 0 WHERE id_agente_estado = ?', $module->{'id_agente_estado'});
 			
 			# Get agent information
 			my $agent = get_db_single_row ($dbh, 'SELECT *
@@ -4924,7 +4919,7 @@ sub pandora_module_unknown ($$) {
 			# Are unknown events enabled?
 			if ($pa_config->{'unknown_events'} == 1) {
 				pandora_event ($pa_config, $description, $agent->{'id_grupo'}, $module->{'id_agente'},
-					$severity, 0, $module->{'id_agente_modulo'}, $event_type, 0, $dbh, 'Pandora', '', '', '', '', $module->{'critical_instructions'}, $module->{'warning_instructions'}, $module->{'unknown_instructions'});
+					$severity, 0, $module->{'id_agente_modulo'}, $event_type, 0, $dbh, 'monitoring_server', '', '', '', '', $module->{'critical_instructions'}, $module->{'warning_instructions'}, $module->{'unknown_instructions'});
 			}
 		}
 		# Regular module
@@ -4990,7 +4985,7 @@ sub pandora_module_unknown ($$) {
 		        $description = subst_alert_macros ($description, \%macros, $pa_config, $dbh, $agent, $module);
 		        
 				pandora_event ($pa_config, $description, $agent->{'id_grupo'}, $module->{'id_agente'},
-					$severity, 0, $module->{'id_agente_modulo'}, $event_type, 0, $dbh, 'Pandora', '', '', '', '', $module->{'critical_instructions'}, $module->{'warning_instructions'}, $module->{'unknown_instructions'});
+					$severity, 0, $module->{'id_agente_modulo'}, $event_type, 0, $dbh, 'monitoring_server', '', '', '', '', $module->{'critical_instructions'}, $module->{'warning_instructions'}, $module->{'unknown_instructions'});
 			}
 		}
 	}
@@ -5444,7 +5439,7 @@ sub pandora_create_integria_ticket ($$$$$$$$$$$) {
 		$integria_user = "admin";
 	}
 	if ($ticket_name eq "") {
-		$ticket_name = "Ticket created by Pandora FMS";
+		$ticket_name = "Ticket created by " . $pa_config->{'rb_product_name'};
 	}
 	if ($group_id eq "") {
 		$group_id = 1;

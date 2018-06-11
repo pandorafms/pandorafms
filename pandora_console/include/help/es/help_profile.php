@@ -6,7 +6,7 @@
 
 <h1>Perfil</h1>
 
-<p>Pandora FMS es una herramienta de gestión Web que permite que trabajen múltiples usuarios con diferentes permisos en múltiples grupos de agentes que hay definidos. En los perfiles se definen los permisos que puede tener un usuario.</p>
+<p><?php echo get_product_name();?> es una herramienta de gestión Web que permite que trabajen múltiples usuarios con diferentes permisos en múltiples grupos de agentes que hay definidos. En los perfiles se definen los permisos que puede tener un usuario.</p>
 
 
 <p>Esta lista define qué habilita cada perfil:</p>

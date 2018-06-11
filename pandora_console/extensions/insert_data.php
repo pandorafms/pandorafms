@@ -173,11 +173,11 @@ function mainInsertData() {
 	
 	$table->data[1][0] = __('Module');
 	$modules = array ();
-	if ($id_agente){
-		$modules = agents_get_modules ($id_agente, false, array("delete_pending" => 0));
+	if ($agent_id){
+		$modules = agents_get_modules ($agent_id, false, array("delete_pending" => 0));
 	}
 	$table->data[1][1] = html_print_select ($modules, 'id_agent_module', $id_agent_module, true,
-		__('Select'), 0, true, false, true, '', ($id_agente === ''));
+		__('Select'), 0, true, false, true, '', empty($agent_id));
 	$table->data[2][0] = __('Data');
 	$table->data[2][1] = html_print_input_text('data', $data, __('Data'), 40, 60, true);
 	$table->data[3][0] = __('Date');

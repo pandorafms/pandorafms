@@ -455,13 +455,13 @@ function process_upload_xml_visualmap($xml, $filter_group = 0) {
 				$agents_in_item = array();
 				foreach ($agents as $id => $agent) {
 					if ($regular_expresion) {
-						if ((bool)preg_match("/" . $agent_clean . "/", io_safe_input($agent))) {
+						if ((bool)preg_match("/" . $agent_clean . "/", io_safe_output($agent))) {
 							$agents_in_item[$id]['name'] = $agent;
 							$no_agents = false;
 						}
 					}
 					else {
-						if ($agent_clean == io_safe_input($agent)) {
+						if ($agent_clean == io_safe_output($agent)) {
 							$agents_in_item[$id]['name'] = $agent;
 							$no_agents = false;
 							break;
@@ -482,13 +482,13 @@ function process_upload_xml_visualmap($xml, $filter_group = 0) {
 					$modules_in_item = array();
 					foreach ($modules as $module) {
 						if ($regular_expresion) {
-							if ((bool)preg_match("/" . $module_clean . "/", io_safe_input($module['nombre']))) {
+							if ((bool)preg_match("/" . $module_clean . "/", io_safe_output($module['nombre']))) {
 								$modules_in_item[$module['id_agente_modulo']] = $module['nombre'];
 								$no_modules = false;
 							}
 						}
 						else {
-							if ($module_clean == io_safe_input($module['nombre'])) {
+							if ($module_clean == io_safe_output($module['nombre'])) {
 								$modules_in_item[$module['id_agente_modulo']] = $module['nombre'];
 								$no_modules = false;
 								break;
@@ -527,6 +527,34 @@ function process_upload_xml_visualmap($xml, $filter_group = 0) {
 				$values['id_layout_linked'] = (string)$item->map_linked;
 			if (isset($item->type))
 				$values['type'] = (string)$item->type;
+				
+			if (isset($item->clock_animation)) {
+				$values['clock_animation'] = (string)$item->clock_animation;
+			}
+			
+			if (isset($item->fill_color)) {
+				$values['fill_color'] = (string)$item->fill_color;
+			}
+			
+			if (isset($item->type_graph)) {
+				$values['type_graph'] = (string)$item->type_graph;
+			}
+			
+			if (isset($item->time_format)) {
+				$values['time_format'] = (string)$item->time_format;
+			}
+			
+			if (isset($item->timezone)) {
+				$values['timezone'] = (string)$item->timezone;
+			}
+			
+			if (isset($item->border_width)) {
+				$values['border_width'] = (string)$item->border_width;
+			}
+			
+			if (isset($item->border_color)) {
+				$values['border_color'] = (string)$item->border_color;
+			}
 			
 			if ($no_agents) {
 				$id_item = db_process_sql_insert('tlayout_data', $values);
@@ -855,11 +883,12 @@ function resource_registration_extension_main() {
 	}
 	
 	echo "<div class=notify>";
-	printf(__("This extension makes registration of resource template more easy. " .
-		"Here you can upload a resource template in Pandora FMS 3.x format (.ptr). " .
-		"Please refer to documentation on how to obtain and use Pandora FMS resources. " .
-		"<br><br>You can get more resurces in our <a href='%s'>Public Resource Library</a>") ,
-		"http://pandorafms.org/index.php?sec=community&sec2=repository&lng=en");
+	echo __("This extension makes registering resource templates easier.") . " " .
+		__("Here you can upload a resource template in .ptr format.") . " " .
+		__("Please refer to our documentation for more information on how to obtain and use %s resources.", get_product_name()) . " " .
+		"<br> <br>" .
+		__("You can get more resurces in our <a href='http://pandorafms.com/Library/Library/'>Public Resource Library</a>")
+	;
 	echo "</div>";
 	
 	echo "<br /><br />";

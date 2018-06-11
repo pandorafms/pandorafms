@@ -185,7 +185,7 @@ $no_autocreate_rows = array();
 $ldap_rows = array();
 
 // Method
-$auth_methods = array ('mysql' => __('Local Pandora FMS'), 'ldap' => __('ldap'));
+$auth_methods = array ('mysql' => __('Local %s', get_product_name()), 'ldap' => __('ldap'));
 if (enterprise_installed()) {
 	add_enterprise_auth_methods($auth_methods);
 }

@@ -538,11 +538,11 @@ if ($step == 2) {
 	$table->data[0][3] = html_print_checkbox ('special_day', 1, $special_day, true);
 	
 	$table->data[1][0] = __('Time from') . ' ' .
-		ui_print_help_tip(__('Time format in Pandora is hours(24h):minutes:seconds'), true);
+		ui_print_help_tip(__('Watch format is hours (24h):minutes:seconds'), true);
 	$table->data[1][1] = html_print_input_text ('time_from', $time_from, '', 7, 8,
 		true);
 	$table->data[1][2] = __('Time to') . ' ' .
-		ui_print_help_tip(__('Time format in Pandora is hours(24h):minutes:seconds'), true);
+		ui_print_help_tip(__('Watch format is hours (24h):minutes:seconds'), true);
 	$table->data[1][3] = html_print_input_text ('time_to', $time_to, '', 7, 8,
 		true);
 	

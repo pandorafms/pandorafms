@@ -23,13 +23,16 @@ check_login ();
 $report_r = check_acl ($config['id_user'], 0, "RR");
 $report_w = check_acl ($config['id_user'], 0, "RW");
 $report_m = check_acl ($config['id_user'], 0, "RM");
-$access = ($report_r == true) ? 'RR' : (($report_w == true) ? 'RW' : (($report_m == true) ? 'RM' : 'RR'));
+
 if (!$report_r && !$report_w && !$report_m) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access Inventory Module Management");
 	require ("general/noaccess.php");
 	return;
 }
+
+$access = ($report_r == true) ? 'RR' : (($report_w == true) ? 'RW' : (($report_m == true) ? 'RM' : 'RR'));
+$manage_group_all = users_can_manage_group_all($access);
 
 $activeTab = get_parameter('tab', 'main');
 
@@ -185,20 +188,21 @@ if (!empty ($graphs)) {
 		$data[2] = $graph["graphs_count"];
 		$data[3] = ui_print_group_icon($graph['id_group'],true);
 		
-		if (($report_w || $report_m) && users_can_manage_group_all($access)) {
+		$data[4] = '';
+		if (($report_w || $report_m) && $manage_group_all) {
 			$data[4] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&id='.
 			$graph['id_graph'].'">'.html_print_image("images/config.png", true).'</a>';
-			
-			$data[4] .= '&nbsp;';
-			
+		}
+
+		$data[4] .= '&nbsp;';
+
+		if ($report_m && $manage_group_all) {
 			$data[4] .= '<a href="index.php?sec=reporting&sec2=godmode/reporting/graphs&delete_graph=1&id='
 				.$graph['id_graph'].'" onClick="if (!confirm(\''.__('Are you sure?').'\'))
 					return false;">' . html_print_image("images/cross.png", true, array('alt' => __('Delete'), 'title' => __('Delete'))) . '</a>' .
 					html_print_checkbox_extended ('delete_multiple[]', $graph['id_graph'], false, false, '', 'class="check_delete" style="margin-left:2px;"', true);
-		} else {
-			if($op_column) $data[4] = '';
 		}
-		
+
 		array_push ($table->data, $data);
 	}
 

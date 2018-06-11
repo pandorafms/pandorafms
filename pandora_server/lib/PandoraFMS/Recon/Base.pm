@@ -19,6 +19,7 @@ use Socket qw/inet_aton/;
 my $DEVNULL = ($^O eq 'MSWin32') ? '/Nul' : '/dev/null';
 
 # Some useful OIDs.
+our $ATPHYSADDRESS = ".1.3.6.1.2.1.3.1.1.2";
 our $DOT1DBASEBRIDGEADDRESS = ".1.3.6.1.2.1.17.1.1.0";
 our $DOT1DBASEPORTIFINDEX = ".1.3.6.1.2.1.17.1.4.1.2";
 our $DOT1DTPFDBADDRESS = ".1.3.6.1.2.1.17.4.3.1.1";
@@ -30,11 +31,12 @@ our $IFINDEX = ".1.3.6.1.2.1.2.2.1.1";
 our $IFINOCTECTS = ".1.3.6.1.2.1.2.2.1.10";
 our $IFOPERSTATUS = ".1.3.6.1.2.1.2.2.1.8";
 our $IFOUTOCTECTS = ".1.3.6.1.2.1.2.2.1.16";
+our $IFTYPE = ".1.3.6.1.2.1.2.2.1.3";
 our $IPENTADDR = ".1.3.6.1.2.1.4.20.1.1";
 our $IFNAME = ".1.3.6.1.2.1.31.1.1.1.1";
 our $IFPHYSADDRESS = ".1.3.6.1.2.1.2.2.1.6";
-our $IPNETTOMEDIAPHYSADDRESS = ".1.3.6.1.2.1.4.22.1.2";
 our $IPADENTIFINDEX = ".1.3.6.1.2.1.4.20.1.2";
+our $IPNETTOMEDIAPHYSADDRESS = ".1.3.6.1.2.1.4.22.1.2";
 our $IPROUTEIFINDEX = ".1.3.6.1.2.1.4.21.1.2";
 our $IPROUTENEXTHOP = ".1.3.6.1.2.1.4.21.1.7";
 our $IPROUTETYPE = ".1.3.6.1.2.1.4.21.1.8";
@@ -87,6 +89,9 @@ sub new {
 
 		# Keep our own ARP cache to connect hosts to switches/routers.
 		arp_cache => {},
+
+		# Found children.
+		children => {},
 
 		# Working SNMP community for each device.
 		community_cache => {},
@@ -289,20 +294,9 @@ sub snmp_discovery($$) {
 			
 			# Find interfaces for the device.
 			$self->find_ifaces($device);
-	
-			# Try to learn more MAC addresses from the device's ARP cache.
-			my @output = $self->snmp_get($device, $IPNETTOMEDIAPHYSADDRESS);
-			foreach my $line (@output) {
-				next unless ($line =~ /^$IPNETTOMEDIAPHYSADDRESS.\d+.(\S+)\s+=\s+\S+:\s+(.*)$/);
-				my ($ip_addr, $mac_addr) = ($1, $2);
-	
-				# Skip broadcast, net and local addresses.
-				next if ($ip_addr =~ m/\.255$|\.0$|127\.0\.0\.1$/);
-	
-				$mac_addr = parse_mac($mac_addr);
-				$self->add_mac($mac_addr, $ip_addr);
-				$self->call('message', "Found MAC $mac_addr for host $ip_addr in the ARP cache of host $device.", 5);
-			}
+
+			# Check remote ARP caches.
+			$self->remote_arp($device);
 		}
 	}
 
@@ -410,6 +404,9 @@ sub find_ifaces($$) {
 	foreach my $if_index (@output) {
 
 		next unless ($if_index =~ /^[0-9]+$/);
+
+		# Ignore virtual interfaces.
+		next if ($self->get_if_type($device, $if_index) eq '53');
 
 		# Get the MAC.
 		my $mac = $self->get_if_mac($device, $if_index);
@@ -636,7 +633,7 @@ sub get_if_ip($$$) {
 	my @output = $self->snmp_get($device, $IPADENTIFINDEX);
 	foreach my $line (@output) {
 		chomp ($line);
-		return $1 if ($line =~ m/^IPADENTIFINDEX.(\S+)\s+=\s+\S+:\s+$if_index$/);
+		return $1 if ($line =~ m/^$IPADENTIFINDEX.(\S+)\s+=\s+\S+:\s+$if_index$/);
 	}
 	
 	return '';
@@ -655,6 +652,18 @@ sub get_if_mac($$$) {
 	$mac = parse_mac($mac);
 
 	return $mac;
+}
+
+########################################################################################
+# Returns the type of the given interface (by index).
+########################################################################################
+sub get_if_type($$$) {
+	my ($self, $device, $if_index) = @_;
+	
+	my $type = $self->snmp_get_value($device, "$IFTYPE.$if_index");
+	return '' unless defined($type);
+
+	return $type;
 }
 
 ########################################################################################
@@ -859,6 +868,20 @@ sub guess_device_type($$) {
 }
 
 ########################################################################################
+# Return 1 if the given device has children.
+########################################################################################
+sub has_children($$) {
+	my ($self, $device) = @_;
+
+	# Check for aliases!
+	$device = $self->{'aliases'}->{$device} if defined($self->{'aliases'}->{$device});
+
+	return 1 if (defined($self->{'children'}->{$device}));
+
+	return 0;
+}
+
+########################################################################################
 # Return 1 if the given device has a parent.
 ########################################################################################
 sub has_parent($$) {
@@ -949,6 +972,7 @@ sub mark_connected($$;$$$) {
 		# A parent-child relationship is always created to help complete the map with
 		# layer 3 information.
 		$self->{'parents'}->{$child} = $parent;
+		$self->{'children'}->{$parent} = $child;
 		$self->call('set_parent', $child, $parent);
 	}
 }
@@ -997,6 +1021,54 @@ sub snmp_responds($$) {
 	}
 
 	return 0;
+}
+
+##############################################################################
+# Parse the local ARP cache.
+##############################################################################
+sub local_arp($) {
+	my ($self) = @_;
+
+	my @output = `arp -an 2>/dev/null`;
+	foreach my $line (@output) {
+		next unless ($line =~ m/\((\S+)\) at ([0-9a-f]+:[0-9a-f]+:[0-9a-f]+:[0-9a-f]+:[0-9a-f]+:[0-9a-f]+)/);
+		$self->add_mac(parse_mac($2), $1);
+	}
+}
+
+##############################################################################
+# Parse remote SNMP ARP caches.
+##############################################################################
+sub remote_arp($$) {
+	my ($self, $device) = @_;
+
+	# Try to learn more MAC addresses from the device's ARP cache.
+	my @output = $self->snmp_get($device, $IPNETTOMEDIAPHYSADDRESS);
+	foreach my $line (@output) {
+		next unless ($line =~ /^$IPNETTOMEDIAPHYSADDRESS\.\d+\.(\S+)\s+=\s+\S+:\s+(.*)$/);
+		my ($ip_addr, $mac_addr) = ($1, $2);
+
+		# Skip broadcast, net and local addresses.
+		next if ($ip_addr =~ m/\.255$|\.0$|127\.0\.0\.1$/);
+
+		$mac_addr = parse_mac($mac_addr);
+		$self->add_mac($mac_addr, $ip_addr);
+		$self->call('message', "Found MAC $mac_addr for host $ip_addr in the ARP cache of host $device.", 5);
+	}
+
+	# Look in atPhysAddress for MAC addresses too.
+	@output = $self->snmp_get($device, $ATPHYSADDRESS);
+	foreach my $line (@output) {
+		next unless ($line =~ m/^$ATPHYSADDRESS\.\d+\.\d+\.(\S+)\s+=\s+\S+:\s+(.*)$/);
+		my ($ip_addr, $mac_addr) = ($1, $2);
+
+		# Skip broadcast, net and local addresses.
+		next if ($ip_addr =~ m/\.255$|\.0$|127\.0\.0\.1$/);
+
+		$mac_addr = parse_mac($mac_addr);
+		$self->add_mac($mac_addr, $ip_addr);
+		$self->call('message', "Found MAC $mac_addr for host $ip_addr in the ARP cache (atPhysAddress) of host $device.", 5);
+	}
 }
 
 ##############################################################################
@@ -1152,6 +1224,9 @@ sub scan($) {
 	$self->call('message', "[1/5] Scanning the network...", 3);
 	$self->scan_subnet();
 
+	# Read the local ARP cache.
+	$self->local_arp();
+
 	# Get a list of found hosts.
 	my @hosts = @{$self->get_hosts()};
 	if (scalar(@hosts) > 0 && $self->{'parent_detection'} == 1) {
@@ -1173,7 +1248,7 @@ sub scan($) {
 		foreach my $host (@hosts) {
 			$self->call('update_progress', $progress);
 			$progress += $step;
-			next if ($self->has_parent($host));
+			next if ($self->has_parent($host) || $self->has_children($host));
 			$self->traceroute_connectivity($host);
 		}
 	

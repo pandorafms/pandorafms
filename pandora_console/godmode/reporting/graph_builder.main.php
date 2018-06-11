@@ -59,8 +59,6 @@ if ($edit_graph) {
 	$graphInTgraph = db_get_row_sql("SELECT * FROM tgraph WHERE id_graph = " . $id_graph);
 	$stacked = $graphInTgraph['stacked'];
 	$period = $graphInTgraph['period'];
-	$name = $graphInTgraph['name'];
-	$description = $graphInTgraph['description'];
 	$id_group = $graphInTgraph['id_group'];
 	$width = $graphInTgraph['width'];
 	$height = $graphInTgraph['height'];
@@ -80,7 +78,6 @@ else {
 	$id_agent = 0;
 	$id_module = 0;
 	$id_group = 0;
-	$name = "Pandora FMS combined graph";
 	$width = 550;
 	$height = 210;
 	$period = SECONDS_1DAY;
@@ -119,11 +116,8 @@ if ($edit_graph) {
 echo ">";
 
 $own_info = get_user_info ($config['id_user']);
-if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
-	$return_all_groups = true;
-else	
-	$return_all_groups = false;
-	
+$return_all_groups = $own_info['is_admin'] || users_can_manage_group_all("RR");
+
 echo "<td><b>".__('Group')."</b></td><td>";
 	if (check_acl ($config['id_user'], 0, "RW"))
 		echo html_print_select_groups($config['id_user'], 'RW', $return_all_groups, 'graph_id_group', $id_group, '', '', '', true);
@@ -173,7 +167,8 @@ $stackeds = array(
 	CUSTOM_GRAPH_GAUGE => __('Gauge'),
 	CUSTOM_GRAPH_HBARS => __('Horizontal bars'),
 	CUSTOM_GRAPH_VBARS => __('Vertical bars'),
-	CUSTOM_GRAPH_PIE => __('Pie')
+	CUSTOM_GRAPH_PIE => __('Pie'),
+	CUSTOM_GRAPH_THERMOMETER => __('Thermometer')
 	);
 html_print_select ($stackeds, 'stacked', $stacked);
 

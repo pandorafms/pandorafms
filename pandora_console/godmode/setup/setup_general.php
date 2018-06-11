@@ -49,7 +49,7 @@ if ($current_system_lang == "") {
 	$current_system_lang = "en";
 }
 
-$table->data[0][0] = __('Language code for Pandora');
+$table->data[0][0] = __('Language code');
 $table->data[0][1] = html_print_select_from_sql (
 	'SELECT id_language, name FROM tlanguage',
 	'language', $current_system_lang , '', '', '', true);
@@ -72,7 +72,7 @@ $table->data[10][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('a
 $table->data[10][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('autoupdate', 0, '', $config["autoupdate"], true);
 
 $table->data[11][0] = __('Enforce https');
-$table->data[11][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended ('https', 1, '', $config["https"], false, "if (! confirm ('" . __('If SSL is not properly configured you will lose access to Pandora FMS Console. Do you want to continue?') . "')) return false", '', true) .'&nbsp;&nbsp;';
+$table->data[11][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended ('https', 1, '', $config["https"], false, "if (! confirm ('" . __('If SSL is not properly configured you will lose access to %s Console. Do you want to continue?', get_product_name()) . "')) return false", '', true) .'&nbsp;&nbsp;';
 $table->data[11][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('https', 0, '', $config["https"], true);
 
 $table->data[12][0] = __('Use cert of SSL');
@@ -99,7 +99,7 @@ $table->data[16][0] = __('API password') .
 	ui_print_help_tip (__("Please be careful if you put a password put https access."), true);
 $table->data[16][1] = html_print_input_password('api_password', io_output_password($config['api_password']), '', 25, 255, true);
 
-$table->data[17][0] = __('Enable GIS features in Pandora Console');
+$table->data[17][0] = __('Enable GIS features');
 $table->data[17][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('activate_gis', 1, '', $config["activate_gis"], true).'&nbsp;&nbsp;';
 $table->data[17][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('activate_gis', 0, '', $config["activate_gis"], true);
 
@@ -141,7 +141,6 @@ $table->data[23][1] .= '<a id="change_timezone">'.html_print_image ('images/penc
 $table->data[23][1] .= "&nbsp;&nbsp;". html_print_select($zone_name, 'zone', $zone_selected, 'show_timezone();', '', '', true);
 $table->data[23][1] .= "&nbsp;&nbsp;". html_print_select($timezone_n, 'timezone', $config["timezone"], '', '', '', true);
 
-
 $sounds = get_sounds();
 $table->data[24][0] = __('Sound for Alert fired');
 $table->data[24][1] = html_print_select($sounds, 'sound_alert', $config['sound_alert'], 'replaySound(\'alert\');', '', '', true);
@@ -159,12 +158,12 @@ $table->data[26][1] .= ' <a href="javascript: toggleButton(\'warning\');">' . ht
 $table->data[26][1] .= '<div id="layer_sound_warning"></div>';
 
 $table->data[28][0] = __('Public URL');
-$table->data[28][0] .= ui_print_help_tip(__('Set this value when your PandoraFMS across inverse proxy or for example with mod_proxy of Apache.') .
-	' '.__('Without the index.php such as http://domain/pandora_url/'), true);
+$table->data[28][0] .= ui_print_help_tip(__('Set this value when your %s across inverse proxy or for example with mod_proxy of Apache.', get_product_name()) .
+	' '.__('Without the index.php such as http://domain/console_url/'), true);
 $table->data[28][1] = html_print_input_text ('public_url', $config['public_url'], '', 40, 255, true);
 
 $table->data[29][0] = __('Referer security');
-$table->data[29][0] .= ui_print_help_tip(__('When it is set as "yes" in some important sections check if the user have gone from url Pandora.'), true);
+$table->data[29][0] .= ui_print_help_tip(__("If enabled, actively checks if the user comes from %s's URL", get_product_name()), true);
 $table->data[29][1] = __('Yes') . '&nbsp;&nbsp;&nbsp;' .
 	html_print_radio_button ('referer_security', 1, '', $config["referer_security"], true) .
 	'&nbsp;&nbsp;';
@@ -281,20 +280,10 @@ function show_timezone () {
 }
 
 $(document).ready (function () {
-	
+
 	$("#zone").attr("hidden", true);
 	$("#timezone").attr("hidden", true);
-	
-	$("input[name='acl_enterprise']").click(function() {
-		flag = $(this).is(':checked');
-		if (flag == true) {
-			<?php
-			echo "if (! confirm ('" . __('If Enterprise ACL System is enabled without rules you will lose access to Pandora FMS Console (even admin). Do you want to continue?') . "')) return false;";
-			?>
-		}
-	});
-	
-	
+
 	$("#change_timezone").click(function () {
 		$("#zone").attr("hidden", false);
 		$("#timezone").attr("hidden", false);

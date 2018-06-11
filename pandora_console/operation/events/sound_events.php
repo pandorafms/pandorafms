@@ -61,7 +61,7 @@ echo "<title>" . __("Sound Events") . "</title>";
 	}
 </style>
 <?php
-echo '<link rel="icon" href="../../images/pandora.ico" type="image/ico" />';
+echo '<link rel="icon" href="../../' . ui_get_favicon() . '" type="image/ico" />';
 echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css" />';
 echo "</head>";
 echo "<body style='background-color: #494949; max-width: 550px; max-height: 400px; margin-top:40px;'>";

@@ -48,11 +48,11 @@ div.img_title {
 </style>
 
 <body class="hlp_graphs">
-<h1>Interpretar las gr&aacute;ficas en Pandora FMS</h1>
+<h1>Interpretar las gr&aacute;ficas en <?php echo get_product_name();?></h1>
 
 
-<p>Las gr&aacute;ficas en Pandora representan los valores que un m&oacute;dulo ha tenido a lo largo de un período.</p>
-<p>Debido a la gran cantidad de datos que Pandora FMS almacena, se ofrecen dos tipos diferentes de funcionalidad:</p>
+<p>Las gr&aacute;ficas en <?php echo get_product_name();?> representan los valores que un m&oacute;dulo ha tenido a lo largo de un período.</p>
+<p>Debido a la gran cantidad de datos que <?php echo get_product_name();?> almacena, se ofrecen dos tipos diferentes de funcionalidad:</p>
 
 
 <h2>Gr&aacute;ficas Normales</h2>
@@ -98,7 +98,7 @@ div.img_title {
 <dd>Muestra puntos indicadores con la informaci&oacute;n de alertas disparadas en la parte superior.</dd>
 
 <dt>Mostrar percentil</dt>
-<dd>Agrega una gr&aacute;fica que indica la l&iacute;nea del percentil (configurable en opciones visuales generales de Pandora).</dd>
+<dd>Agrega una gr&aacute;fica que indica la l&iacute;nea del percentil (configurable en opciones visuales generales de <?php echo get_product_name();?>).</dd>
 
 <dt>Comparaci&oacute;n de tiempo (superpuesto)</dt>
 <dd>Muestra superpuesta la misma gr&aacute;fica, pero en el per&iacute;odo anterior al seleccionado. Por ejemplo, si solicitamos un per&iacute;odo de una semana y activamos esta opci&oacute;n, la semana anterior a la elegida tambi&eacute;n se mostrar&aacute; superpuesta.</dd>
@@ -107,7 +107,7 @@ div.img_title {
 <dd>Muestra la misma gr&aacute;fica, pero en el per&iacute;odo anterior al seleccionado, en un area independiente. Por ejemplo, si solicitamos un per&iacute;odo de una semana y activamos esta opci&oacute;n, la semana anterior a la elegida tambi&eacute;n se mostrar&aacute;.</dd>
 
 <dt>Mostrar gr&aacute;fica de desconocidos</dt>
-<dd>Muestra cajas en sombreado gris cubriendo los per&iacute;odos en que Pandora FMS no puede garantizar el estado del m&oacute;dulo, ya sea por p&eacute;rdida de datos, desconexi&oacute;n de un agente software, etc.</dd>
+<dd>Muestra cajas en sombreado gris cubriendo los per&iacute;odos en que <?php echo get_product_name();?> no puede garantizar el estado del m&oacute;dulo, ya sea por p&eacute;rdida de datos, desconexi&oacute;n de un agente software, etc.</dd>
 
 <dt>Mostrar gr&aacute;fica de escala completa (TIP)</dt>
 <dd>Cambia el modo de pintado de "normal" a "TIP". En este modo, las gr&aacute;ficas mostrar&aacute;n datos reales en vez de aproximaciones, por lo que el tiempo que emplear&aacute;n para su generaci&oacute;n ser&aacute; mayor. Podr&aacute; encontrar informaci&oacute;n m&aacute;s detallada de este tipo de gr&aacute;ficas en el siguiente apartado.</dd>

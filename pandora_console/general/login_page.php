@@ -50,7 +50,7 @@ if (!isset($login_screen)) {
 switch ($login_screen) {
 	case 'login':
 		$logo_link = 'http://www.pandorafms.com';
-		$logo_title = __('Go to Pandora FMS Website');
+		$logo_title = __('Go to %s Website', get_product_name());
 		break;
 	case 'logout':
 	case 'double_auth':
@@ -86,31 +86,39 @@ if (!empty($config['login_background'])) {
 	$background_url = "images/backgrounds/" . $config['login_background'];
 	$login_body_style = "style=\"background-image: url('$background_url');\"";
 }
+// Get the custom icons
+$docs_logo = ui_get_docs_logo();
+$support_logo = ui_get_support_logo();
 echo '<div id="login_body" ' . $login_body_style . '>';
 echo '<div id="header_login">';
 	echo '<div id="icon_custom_pandora">';
 	
 		if (file_exists (ENTERPRISE_DIR . "/load_enterprise.php")) {
 			if(isset ($config['custom_logo'])){
-				echo '<img src="enterprise/images/custom_logo/' . $config['custom_logo'] .'" alt="pandora_console">';
+				echo '<img src="enterprise/images/custom_logo/' . $config['custom_logo'] .'" alt="monitoring_console">';
 			}
 			else{
-				echo '<img src="images/custom_logo/pandora_logo_head_4.png" alt="pandora_console">';
+				echo '<img src="images/custom_logo/pandora_logo_head_4.png" alt="monitoring_console">';
 			}
 		}
 		else{
-			echo '<img src="images/custom_logo/pandora_logo_head_3.png" alt="pandora_console">';	
+			echo '<img src="images/custom_logo/pandora_logo_head_3.png" alt="monitoring_console">';	
 		}
 	echo '</div>';
-		echo '<div id="list_icon_docs_support"><ul>';
-			echo '<li><a href="'.$config['custom_docs_url'].'" target="_blank"><img src="images/icono_docs.png" alt="docs pandora"></a></li>';
-			echo '<li>' . __('Docs') . '</li>';
-			if (file_exists (ENTERPRISE_DIR . "/load_enterprise.php")) {
-				echo '<li id="li_margin_left"><a href="'.$config['custom_support_url'].'" target="_blank"><img src="images/icono_support.png" alt="support pandora"></a></li>';
-			} else {
-				echo '<li id="li_margin_left"><a href="https://pandorafms.com/monitoring-services/support/" target="_blank"><img src="images/icono_support.png" alt="support pandora"></a></li>';
+		echo '<div id="list_icon_docs_support"><ul style="line-height: 36px;">';
+			if ($docs_logo !== false) {
+				echo '<li><a href="'.$config['custom_docs_url'].'" target="_blank"><img src="' . $docs_logo . '" alt="docs"></a></li>';
 			}
-			echo '<li>' . __('Support') . '</li>';
+			echo '<li><a style="color: white; font-size:inherit;" href="'.$config['custom_docs_url'].'" target="_blank">' . __('Docs') . '</li>';
+			if (file_exists (ENTERPRISE_DIR . "/load_enterprise.php")) {
+				if ($support_logo !== false) {
+					echo '<li id="li_margin_left"><a href="'.$config['custom_support_url'].'" target="_blank"><img src="' . $support_logo .'" alt="support"></a></li>';
+				}
+				echo '<li><a style="color: white; font-size:inherit;" href="'.$config['custom_support_url'].'" target="_blank">' . __('Support') . '</li>';
+			} else {
+				echo '<li id="li_margin_left"><a href="https://pandorafms.com/monitoring-services/support/" target="_blank"><img src="' . $support_logo .'" alt="support"></a></li>';
+				echo '<li>' . __('Support') . '</li>';
+			}
 		echo '</ul></div>';
 	
 		
@@ -250,17 +258,17 @@ echo '<div class="login_page">';
 	echo '</form></div>';
 	echo '<div class="login_data">';
 		echo '<div class ="text_banner_login">';
-			echo '<div><span class="span1">';
+			echo '<div><span class="span1 pandora_upper">';
 				if(file_exists (ENTERPRISE_DIR . "/load_enterprise.php")){
 					if($config['custom_title1_login']){
 						echo io_safe_output($config['custom_title1_login']);
 					}
 					else{
-						echo __('WELCOME TO PANDORA FMS');
+						echo __('WELCOME TO %s', get_product_name());
 					}
 				}
 				else{
-					echo __('WELCOME TO PANDORA FMS');
+					echo __('WELCOME TO %s', get_product_name());
 				}
 			echo '</span></div>';
 			echo '<div><span class="span2">';
@@ -380,7 +388,7 @@ if ($login_screen == 'logout'){
 			echo '<div class="content_message_alert">';
 				echo '<div class="text_message_alert">';
 					echo '<h1>'. __('Logged out') .'</h1>';
-					echo '<p>' . __('Your session is over. Please close your browser window to close this Pandora session.') .'</p>';
+					echo '<p>' . __('Your session has ended. Please close your browser window to close this %s session.', get_product_name()) .'</p>';
 				echo '</div>';
 				echo '<div class="button_message_alert">';
 					html_print_submit_button("Ok", 'hide-login-logout', false);  
@@ -393,7 +401,7 @@ if ($login_screen == 'logout'){
 switch ($login_screen) {
 	case 'error_authconfig':
 	case 'error_dbconfig':
-		$title = __('Problem with Pandora FMS database');
+		$title = __('Problem with %s database', get_product_name());
 		$message = __('Cannot connect to the database, please check your database setup in the <b>include/config.php</b> file.<i><br/><br/>
 		Probably your database, hostname, user or password values are incorrect or
 		the database server is not running.').'<br /><br />';
@@ -404,21 +412,22 @@ switch ($login_screen) {
 		
 		if ($error_code == 'error_authconfig') {
 			$message .= '<br/><br/>';
-			$message .= __('If you have modified auth system, this problem could be because Pandora cannot override authorization variables from the config database. Remove them from your database by executing:<br><pre>DELETE FROM tconfig WHERE token = "auth";</pre>');
+			$message .= __('If you have modified the auth system, the origin of this problem could be that %s cannot override the authorization variables from the config database. Please remove them from your database by executing:<br><pre>DELETE FROM tconfig WHERE token = "auth";</pre>', get_product_name());
 		}
 		break;
 	case 'error_emptyconfig':
 		$title = __('Empty configuration table');
 		$message = __('Cannot load configuration variables from database. Please check your database setup in the
-		<b>include/config.php</b> file.<i><br><br>
-		Most likely your database schema has been created but there are is no data in it, you have a problem with the database access credentials or your schema is out of date.
-		<br><br>Pandora FMS Console cannot find <i>include/config.php</i> or this file has invalid
-		permissions and HTTP server cannot read it. Please read documentation to fix this problem.</i>').'<br /><br />';
+			<b>include/config.php</b> file.<i><br><br>
+			Most likely your database schema has been created but there are is no data in it, you have a problem with the database access credentials or your schema is out of date.
+			<br><br>%s Console cannot find <i>include/config.php</i> or this file has invalid
+			permissions and HTTP server cannot read it. Please read documentation to fix this problem.</i>',
+		get_product_name()).'<br /><br />';
 		break;
 	case 'error_noconfig':
 		$title = __('No configuration file found');
-		$message = __('Pandora FMS Console cannot find <i>include/config.php</i> or this file has invalid
-		permissions and HTTP server cannot read it. Please read documentation to fix this problem.').'<br /><br />';
+		$message = __('%s Console cannot find <i>include/config.php</i> or this file has invalid
+		permissions and HTTP server cannot read it. Please read documentation to fix this problem.', get_product_name()).'<br /><br />';
 		if (file_exists('install.php')) {
 			$link_start = '<a href="install.php">';
 			$link_end = '</a>';
@@ -433,7 +442,7 @@ switch ($login_screen) {
 	case 'error_install':
 		$title = __('Installer active');
 		$message = __('For security reasons, normal operation is not possible until you delete installer file.
-		Please delete the <i>./install.php</i> file before running Pandora FMS Console.');
+		Please delete the <i>./install.php</i> file before running %s Console.', get_product_name());
 		break;
 	case 'error_perms':
 		$title = __('Bad permission for include/config.php');

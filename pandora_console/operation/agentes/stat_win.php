@@ -36,7 +36,6 @@ check_login ();
 $server_id = (int) get_parameter("server");
 if (is_metaconsole() && !empty($server_id)) {
 	$server = metaconsole_get_connection_by_id($server_id);
-	
 	// Error connecting
 	if (metaconsole_connect($server) !== NOERR) {
 		echo "<html>";
@@ -56,11 +55,11 @@ if (file_exists ('../../include/languages/'.$user_language.'.mo')) {
 
 echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css"/>';
 
-$label = get_parameter('label');
-$label = base64_decode($label);
-$id = get_parameter('id');
+$label    = get_parameter('label');
+$label    = base64_decode($label);
+$id       = get_parameter('id');
 $id_agent = db_get_value ("id_agente","tagente_modulo","id_agente_modulo",$id);
-$alias = db_get_value ("alias","tagente","id_agente",$id_agent);
+$alias    = db_get_value ("alias","tagente","id_agente",$id_agent);
 //$agent = agents_get_agent_with_ip ("192.168.50.31");
 //$label = rawurldecode(urldecode(base64_decode(get_parameter('label', ''))));
 ?>
@@ -72,12 +71,11 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 		$refresh = (int) get_parameter ("refresh", -1);
 		if ($refresh > 0) {
 			$query = ui_get_url_refresh (false);
-			
 			echo '<meta http-equiv="refresh" content="'.$refresh.'; URL='.$query.'" />';
 		}
 		?>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<title>Pandora FMS Graph (<?php echo $alias . ' - ' . $label; ?>)</title>
+		<title><?php echo __("%s Graph", get_product_name()) . ' (' . $alias . ' - ' . $label; ?>)</title>
 		<link rel="stylesheet" href="../../include/styles/pandora_minimal.css" type="text/css" />
 		<link rel="stylesheet" href="../../include/styles/jquery-ui-1.10.0.custom.css" type="text/css" />
 		<script type='text/javascript' src='../../include/javascript/pandora.js'></script>
@@ -92,14 +90,13 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 			}
 		?>
 		<script type='text/javascript'>
-			<!--
 			window.onload = function() {
 				// Hack to repeat the init process to period select
 				var periodSelectId = $('[name="period"]').attr('class');
-				
+
 				period_select_init(periodSelectId);
 			};
-			
+
 			function show_others() {
 				if ($('#checkbox-avg_only').is(":checked") == true) {
 					$("#hidden-show_other").val(1);
@@ -107,15 +104,7 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 				else {
 					$("#hidden-show_other").val(0);
 				}
-				// 
-				// if ($('#hidden-avg_only_sent').is(":checked") == true) {
-				// 	$("#hidden-avg_only_sent").val(1);
-				// }
-				// else {
-				// 	$("#hidden-avg_only_sent").val(0);
-				// }
 			}
-			//-->
 		</script>
 	</head>
 	<body bgcolor="#ffffff" style='background:#ffffff;'>
@@ -125,18 +114,18 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 		$id = (int) get_parameter ("id", 0);
 		// Agent id
 		$agent_id = (int) modules_get_agentmodule_agent($id);
-		
+
 		if (empty($id) || empty($agent_id)) {
 			ui_print_error_message(__('There was a problem locating the source of the graph'));
 			exit;
 		}
-		
+
 		// ACL
-		$permission = false;
+		$permission  = false;
 		$agent_group = (int) agents_get_agent_group($agent_id);
 		$strict_user = (bool) db_get_value("strict_acl", "tusuario",
 			"id_user", $config['id_user']);
-		
+
 		if (!empty($agent_group)) {
 			if ($strict_user) {
 				$permission = tags_check_acl_by_module($id, $config['id_user'], 'RR') === true;
@@ -145,28 +134,26 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 				$permission = check_acl($config['id_user'], $agent_group, "RR");
 			}
 		}
-		
+
 		if (!$permission) {
 			require ($config['homedir'] . "/general/noaccess.php");
 			exit;
 		}
-		
+
 		$draw_alerts = get_parameter("draw_alerts", 0);
 
 		if(isset($config['only_average'])){
 			$avg_only = $config['only_average'];
 		}
-		
+
 		$show_other = get_parameter('show_other',-1);
-		
+
 		if ($show_other != -1) {
 			$avg_only = $show_other;
 		}
-		
+
 		$period = get_parameter ("period");
-		$id = get_parameter ("id", 0);
-		$width = get_parameter ("width", STATWIN_DEFAULT_CHART_WIDTH);
-		$height = get_parameter ("height", STATWIN_DEFAULT_CHART_HEIGHT);
+		$id     = get_parameter ("id", 0);
 		$label = get_parameter ("label", "");
 		$label_graph = base64_decode(get_parameter ("label", ""));
 		$start_date = get_parameter ("start_date", date("Y/m/d"));
@@ -191,7 +178,7 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 			}
 			elseif($config['full_scale_option'] == 2){
 				if($graph_type == 'boolean'){
-					$fullscale = 1;	
+					$fullscale = 1;
 				}else{
 					$fullscale = 0;
 				}
@@ -203,119 +190,103 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 
 		// To avoid the horizontal overflow
 		$width -= 20;
-		
+
 		$time_compare = false;
-		
+
 		if ($time_compare_separated) {
 			$time_compare = 'separated';
 		}
 		else if ($time_compare_overlapped) {
 			$time_compare = 'overlapped';
 		}
-		
+
 		if ($zoom > 1) {
 			$height = $height * ($zoom / 2.1);
 			$width = $width * ($zoom / 1.4);
 		}
-		echo "<script type='text/javascript'>window.resizeTo($width + 190, $height + 260);</script>";
-		
+
 		// Build date
 		$date = strtotime("$start_date $start_time");
 		$now = time();
-		
+
 		if ($date > $now)
 			$date = $now;
-		
+
 		$urlImage = ui_get_full_url(false, false, false, false);
-		
+
 		$unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $id);
-		
+
 		// log4x doesnt support flash yet
-		//
 		if ($config['flash_charts'] == 1)
 			echo '<div style="margin-left: 65px; padding-top: 10px;">';
 		else
 			echo '<div style="margin-left: 20px; padding-top: 10px;">';
-		
+
+		$width  = '90%';
+		$height = '450';
+
 		switch ($graph_type) {
 			case 'boolean':
-				echo grafico_modulo_boolean ($id, $period, $draw_events,
-					$width, $height, $label_graph, $unit, $draw_alerts,
-					$avg_only, false, $date, false, $urlImage,
-					'adapter_' . $graph_type, $time_compare,
-					$unknown_graph, true, $fullscale);
-				echo '<br>';
-				if ($show_events_graph)
-					echo graphic_module_events($id, $width, $height,
-						$period, $config['homeurl'], $zoom,
-						'adapted_' . $graph_type, $date, true);
-				break;
 			case 'sparse':
-				echo grafico_modulo_sparse ($id, $period, $draw_events,
-					$width, $height, $label_graph, $unit, $draw_alerts,
-					$avg_only, false, $date, $unit, $baseline, 0, true,
-					false, $urlImage, 1, false,
-					'adapter_' . $graph_type, $time_compare,
-					$unknown_graph, true, 'white',
-					(($show_percentil)? $config['percentil'] : null),
-					false, false, $config['type_module_charts'], $fullscale);
-				echo '<br>';
-				if ($show_events_graph)
-					echo graphic_module_events($id, $width, $height,
-						$period, $config['homeurl'], $zoom,
-						'adapted_' . $graph_type, $date, true);
-				break;
 			case 'string':
-				echo grafico_modulo_string ($id, $period, $draw_events,
-					$width, $height, $label_graph, null, $draw_alerts, 1,
-					false, $date, false, $urlImage,
-					'adapter_' . $graph_type);
+				$params =array(
+					'agent_module_id'     => $id,
+					'period'              => $period,
+					'show_events'         => $draw_events,
+					'title'               => $label_graph,
+					'unit_name'           => $unit,
+					'show_alerts'         => $draw_alerts,
+					'avg_only'            => $avg_only,
+					'date'                => $date,
+					'unit'                => $unit,
+					'baseline'            => $baseline,
+					'homeurl'             => $urlImage,
+					'adapt_key'           => 'adapter_' . $graph_type,
+					'compare'             => $time_compare,
+					'show_unknown'        => $unknown_graph,
+					'percentil'           => (($show_percentil)? $config['percentil'] : null),
+					'type_graph'          => $config['type_module_charts'],
+					'fullscale'           => $fullscale
+				);
+				echo grafico_modulo_sparse ($params);
 				echo '<br>';
-				if ($show_events_graph)
+				if ($show_events_graph){
+					$width = '500';
 					echo graphic_module_events($id, $width, $height,
 						$period, $config['homeurl'], $zoom,
 						'adapted_' . $graph_type, $date, true);
-				break;
-			case 'log4x':
-				echo grafico_modulo_log4x ($id, $period, $draw_events,
-					$width, $height, $label_graph, $unit, $draw_alerts, 1,
-					$pure, $date);
-				echo '<br>';
-				if ($show_events_graph)
-					echo graphic_module_events($id, $width, $height,
-						$period, $config['homeurl'], $zoom, '', $date, true);
+					}
 				break;
 			default:
 				echo fs_error_image ('../images');
 				break;
 		}
 		echo '</div>';
-		
+
 		////////////////////////////////////////////////////////////////
 		// SIDE MENU
 		////////////////////////////////////////////////////////////////
 		$params = array();
 		// TOP TEXT
 		//Use the no_meta parameter because this image is only in the base console
-		$params['top_text'] =  "<div style='color: white; width: 100%; text-align: center; font-weight: bold; vertical-align: top;'>" . html_print_image('images/wrench_blanco.png', true, array('width' => '16px'), false, false, true) . ' ' . __('Pandora FMS Graph configuration menu') . ui_print_help_icon ("graphs",true, $config["homeurl"], "images/help_w.png", true) . "</div>";
+		$params['top_text'] =  "<div style='color: white; width: 100%; text-align: center; font-weight: bold; vertical-align: top;'>" . html_print_image('images/wrench_blanco.png', true, array('width' => '16px'), false, false, true) . ' ' . __('Graph configuration menu') . ui_print_help_icon ("graphs",true, $config["homeurl"], "images/help_w.png", true) . "</div>";
 		$params['body_text'] = "<div class='menu_sidebar_outer'>";
 		$params['body_text'] .=__('Please, make your changes and apply with the <i>Reload</i> button');
-		
+
 		// MENU
 		$params['body_text'] .= '<form method="get" action="stat_win.php">';
 		$params['body_text'] .= html_print_input_hidden ("id", $id, true);
 		$params['body_text'] .= html_print_input_hidden ("label", $label, true);
-		
+
 		if (!empty($server_id))
 			$params['body_text'] .= html_print_input_hidden ("server", $server_id, true);
-		
+
 		if (isset($_GET["type"])) {
 			$type = get_parameter_get ("type");
 			$params['body_text'] .= html_print_input_hidden ("type", $type, true);
 		}
-		
+
 		// FORM TABLE
-		
 		$table = html_get_predefined_table('transparent', 2);
 		$table->width = '98%';
 		$table->id = 'stat_win_form_div';
@@ -324,14 +295,14 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 		//$table->size[0] = '50%';
 		$table->styleTable = 'border-spacing: 4px;';
 		$table->class = 'alternate';
-		
+
 		$data = array();
 		$data[0] = __('Refresh time');
 		$data[1] = html_print_extended_select_for_time("refresh",
 			$refresh, '', '', 0, 7, true);
 		$table->data[] = $data;
 		$table->rowclass[] = '';
-		
+
 		if ($graph_type != "boolean" && $graph_type != "string") {
 			$data = array();
 			$data[0] = __('Avg. Only');
@@ -341,19 +312,19 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 			$table->data[] = $data;
 			$table->rowclass[] = '';
 		}
-		
+
 		$data = array();
 		$data[0] = __('Begin date');
 		$data[1] = html_print_input_text ("start_date", $start_date,'', 10, 20, true);
 		$table->data[] = $data;
 		$table->rowclass[] = '';
-		
+
 		$data = array();
 		$data[0] = __('Begin time');
 		$data[1] = html_print_input_text ("start_time", $start_time,'', 10, 10, true);
 		$table->data[] = $data;
 		$table->rowclass[] = '';
-		
+
 		$data = array();
 		$data[0] = __('Zoom factor');
 		$options = array ();
@@ -365,14 +336,14 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 		$data[1] = html_print_select ($options, "zoom", $zoom, '', '', 0, true);
 		$table->data[] = $data;
 		$table->rowclass[] = '';
-		
+
 		$data = array();
 		$data[0] = __('Time range');
 		$data[1] = html_print_extended_select_for_time('period',
 			$period, '', '', 0, 7, true);
 		$table->data[] = $data;
 		$table->rowclass[] = '';
-		
+
 		$data = array();
 		$data[0] = __('Show events');
 		$disabled = false;
@@ -385,23 +356,23 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 			(bool)$draw_events, true, $disabled);
 		if ($disabled) {
 			$data[1] .= ui_print_help_tip(
-				__('Show events is disabled because this Pandora node is set the event replication.'), true);
+				__("'Show events' is disabled because this %s node is set to event replication.", get_product_name()), true);
 		}
 		$table->data[] = $data;
 		$table->rowclass[] = '';
-		
+
 		$data = array();
 		$data[0] = __('Show alerts');
 		$data[1] = html_print_checkbox ("draw_alerts", 1, (bool) $draw_alerts, true);
 		$table->data[] = $data;
 		$table->rowclass[] = '';
-		
+
 		$data = array();
 		$data[0] = __('Show event graph');
 		$data[1] = html_print_checkbox ("show_events_graph", 1, (bool) $show_events_graph, true);
 		$table->data[] = $data;
 		$table->rowclass[] = '';
-		
+
 		switch ($graph_type) {
 			case 'boolean':
 			case 'sparse':
@@ -410,19 +381,19 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 				$data[1] = html_print_checkbox ("show_percentil", 1, (bool) $show_percentil, true);
 				$table->data[] = $data;
 				$table->rowclass[] ='';
-				
+
 				$data = array();
 				$data[0] = __('Time compare (Overlapped)');
 				$data[1] = html_print_checkbox ("time_compare_overlapped", 1, (bool) $time_compare_overlapped, true);
 				$table->data[] = $data;
 				$table->rowclass[] = '';
-				
+
 				$data = array();
 				$data[0] = __('Time compare (Separated)');
 				$data[1] = html_print_checkbox ("time_compare_separated", 1, (bool) $time_compare_separated, true);
 				$table->data[] = $data;
 				$table->rowclass[] = '';
-				
+
 				$data = array();
 				$data[0] = __('Show unknown graph');
 				$data[1] = html_print_checkbox ("unknown_graph", 1, (bool) $unknown_graph, true);
@@ -437,24 +408,24 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 								true, false);
 		$table->data[] = $data;
 		$table->rowclass[] = '';
-		
+
 		$form_table = html_print_table($table, true);
-		
+
 		unset($table);
-		
+
 		$table = new stdClass();
 		$table->id = 'stat_win_form';
 		$table->width = '100%';
 		$table->cellspacing = 2;
 		$table->cellpadding = 2;
 		$table->class = 'databox';
-		
+
 		$data = array();
 		$data[0] = html_print_div(array('id' => 'field_list', 'content' => $form_table,
 			'style' => 'overflow: auto; height: 220px'), true);
 		$table->data[] = $data;
 		$table->rowclass[] = '';
-		
+
 		$data = array();
 		$data[0] = '<div style="width:100%; text-align:right;">' .
 			html_print_submit_button(__('Reload'), "submit", false,
@@ -462,28 +433,28 @@ $alias = db_get_value ("alias","tagente","id_agente",$id_agent);
 			"</div>";
 		$table->data[] = $data;
 		$table->rowclass[] = '';
-		
+
 		$params['body_text'] .= html_print_table($table, true);
 		$params['body_text'] .= '</form>';
 		$params['body_text'] .= '</div>'; // outer
-		
+
 		// ICONS
 		$params['icon_closed'] = '/images/graphmenu_arrow_hide.png';
 		$params['icon_open'] = '/images/graphmenu_arrow.png';
-		
+
 		// SIZE
 		$params['width'] = 500;
-		
+
 		// POSITION
 		$params['position'] = 'left';
-		
+
 		html_print_side_layer($params);
-		
+
 		// Hidden div to forced title
 		html_print_div(array('id' => 'forced_title_layer',
 			'class' => 'forced_title_layer', 'hidden' => true));
 		?>
-		
+
 	</body>
 </html>
 
@@ -502,38 +473,7 @@ ui_include_time_picker(true);
 	$('#checkbox-time_compare_overlapped').click(function() {
 		$('#checkbox-time_compare_separated').removeAttr('checked');
 	});
-	
-	
-	<?php
-	//Resize window when show the overview graph.
-	if ($config['flash_charts']) {
-	?>
-		var show_overview = false;
-		var height_window;
-		var width_window;
-		$(window).ready(function() {
-			height_window = window.innerHeight;
-			width_window = window.innerWidth;
-		});
-		
-		$("*").filter(function() {
-			if (typeof(this.id) == "string")
-				return this.id.match(/menu_overview_graph.*/);
-			else
-				return false;
-			}).click(function() {
-				if (show_overview) {
-					window.resizeTo(width_window, height_window);
-				}
-				else {
-					window.resizeTo(width_window, height_window + 150);
-				}
-				show_overview = !show_overview;
-			});
-	<?php
-	}
-	?>
-	
+
 	// Add datepicker and timepicker
 	$("#text-start_date").datepicker({
 		dateFormat: "<?php echo DATE_FORMAT_JS; ?>"
@@ -549,13 +489,13 @@ ui_include_time_picker(true);
 		currentText: '<?php echo __('Now');?>',
 		closeText: '<?php echo __('Close');?>'
 	});
-	
+
 	$.datepicker.setDefaults($.datepicker.regional["<?php echo $custom_user_language; ?>"]);
-	
+
 	$(window).ready(function() {
 		$("#field_list").css('height', ($(window).height() - 160) + 'px');
 	});
-	
+
 	$(window).resize(function() {
 		$("#field_list").css('height', ($(window).height() - 160) + 'px');
 	});

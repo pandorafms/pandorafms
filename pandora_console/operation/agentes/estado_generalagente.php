@@ -280,13 +280,15 @@ $access_agent = db_get_value_sql("SELECT COUNT(id_agent)
 	WHERE id_agent = " . $id_agente);
 if ($config["agentaccess"] && $access_agent > 0) {
 	$data[2] =
-		'<fieldset width=90% class="databox agente" style="">
+		'<fieldset width=99% class="databox agente" style="">
 		<legend>' .
 				__('Agent access rate (24h)') .
 		'</legend>' .
-			graphic_agentaccess($id_agente, 300, 100, SECONDS_1DAY, true) .
+			graphic_agentaccess($id_agente, '90%', 150, SECONDS_1DAY, true) .
 	'</fieldset>';
-	$table_data->style[1] = 'width: 40%;';
+	$table_data->style[0] = 'width: 20%;';
+	$table_data->style[1] = 'width: 30%;';
+	$table_data->style[2] = 'width: 50%;';
 	$table_data->rowspan[0][2] = 5;
 }
 
@@ -298,8 +300,6 @@ if (!empty($addresses)) {
 	$data[1] = '<div style="max-height: 45px; overflow-y: scroll; height:45px;">' .
 		implode('<br>',$addresses) .
 		'</div>';
-	//~ $table_data->data[] = '<div style="max-height: 200px; overflow: hidden;>' .
-		//~ $data . '</div>';
 	$table_data->data[] = $data;
 }
 

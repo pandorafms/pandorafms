@@ -316,10 +316,6 @@ div.graph {
 	margin: 0 auto;
 }
 
-.tickLabels * {
-	font-size: 10px !important;
-}
-
 table.alternate tr:nth-child(odd) td, table.alternate tr:nth-child(odd) th{
 	background-color: #ffffff;
 }

@@ -9,9 +9,9 @@
 What source to use for the time. This can be (for now) either the local system (System) or database (Database).<br />
 </p>
 <p>
-This is useful when your database is not on the same system as your webserver or your Pandora FMS servers. 
+This is useful when your database is not on the same system as your webserver or your <?php echo get_product_name();?> servers. 
 In that case any time difference will miscalculate the time differences and timestamps.
-You should use NTP to sync all your pandora servers and your MySQL server. 
+You should use NTP to sync all your <?php echo get_product_name();?> servers and your MySQL server. 
 By using these preferences you don't have to sync your webserver but it's still recommended.
 </p>
 <p>

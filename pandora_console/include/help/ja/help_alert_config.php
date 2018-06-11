@@ -9,7 +9,7 @@
 
     <b>名前(Name):</b> アクションの名前。<br>
     <b>グループ(Group):</b> アクションのグループ。<br>
-    <br>コマンド(Command):</b> アラートが実行された時に利用されるコマンドの定義です。Pandora で定義されたコマンドを選択することができます。選択するコマンドによって、入力が必要なフィールドが異なります。<br>
+    <br>コマンド(Command):</b> アラートが実行された時に利用されるコマンドの定義です。<?php echo get_product_name();?> で定義されたコマンドを選択することができます。選択するコマンドによって、入力が必要なフィールドが異なります。<br>
     <b>閾値(Threshold):</b> アクション実行の閾値。<br>
     <b>コマンドプレビュー(Command Preview):</b> このフィールドには、システムが実行するコマンドが表示されます。編集はできません。<br>
     <b>フィールドX(Field X):</b> このフィールドでは、マクロ _field1_ から _field10_ までのマクロの値を定義します。これらは、必要に応じてコマンドで利用されます。これらのフィールドは、設定によりテキスト入力または選択となります。選択したコマンドに応じて、表示されるフィールドの数が変化します。以下に例を示します。<br><br>
@@ -49,7 +49,7 @@ email アクションを設定するには、_field1_ (送信先アドレス)、
     <li>_data_ : アラート発生時のモジュールのデータ(値)</li>
     <li>_email_tag_ : モジュールタグに関連付けられた Email。</li>
     <li>_event_cfX_ : (イベントアラートのみ) アラートを発報したイベントのカスタムフィールドのキー。 For example, if there is a custom field whose key is IPAM, its value can be obtained using the _event_cfIPAM_ macro.</li>
-    <li>_event_description_ :  (イベントアラートのみ) Pandora FMS イベントの説明 です</li>
+    <li>_event_description_ :  (イベントアラートのみ) <?php echo get_product_name();?> イベントの説明 です</li>
     <li>_event_extra_id_: (Only event alerts) Extra id.</li>
     <li>_event_id_ : (イベントアラートのみ) アラート発生元のイベントID</li>
     <li>_event_text_severity_ : (イベントアラートのみ) イベント(アラートの発生元)のテキストでの重要度 (Maintenance, Informational, Normal Minor, Warning, Major, Critical)</li>

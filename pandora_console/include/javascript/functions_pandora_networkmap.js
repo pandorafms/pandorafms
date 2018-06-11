@@ -3445,7 +3445,9 @@ function draw_elements_graph() {
 	node_temp.append("image")
 		.attr("class", "node_image")
 		.attr("xlink:href", function (d) {
-			return d.image_url;
+			return is_central_node(d)
+				? $("#hidden-center_logo").val()
+				: d.image_url;
 		})
 		.attr("x", function (d) {
 			return d.x - (d.image_width / 2);
@@ -3640,9 +3642,6 @@ function draw_elements_graph() {
 		})
 		.on("contextmenu", function (d) { show_menu("node", d); });
 
-	node_temp.append("title")
-		.text(function (d) { return d.text; });
-
 	var font_size = (node_radius / 1.5);
 
 	node_temp.append("text")
@@ -3658,13 +3657,27 @@ function draw_elements_graph() {
 		.append("tspan")
 		.attr("style", "font-size: " + font_size + "px !important; font-family:Verdana; text-align:center; text-anchor:middle; fill:#000000")
 		.text(function (d) {
-			return ellipsize(d.text, 30);
+			return ellipsize(get_node_name_ov(d), 30);
 		})
 		.classed('dragable_node', true) //own dragable
 		.on("click", selected_node)
 		.on("contextmenu", function (d) { show_menu("node", d); });
 
+	node_temp.append("title")
+		.text(function (d) { return get_node_name_ov(d) });
+
 	node.exit().remove();
+}
+
+function is_central_node (data) {
+	return (data.type == 0 && data.id_agent == 0);
+}
+
+function get_node_name_ov (data) {
+	// Node central name should be the product name
+	return (is_central_node(data))
+		? $("#hidden-product_name").val()
+		: data.text;
 }
 
 function choose_group_for_show_agents() {

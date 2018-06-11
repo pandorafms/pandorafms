@@ -247,12 +247,10 @@ function output_xml_visual_console($id) {
 		echo "<other_id>" . $item['id'] . "</other_id>\n"; //OLD ID USE FOR parent item 
 		$agent = '';
 		if ($item['id_agent'] != 0) {
-			$agent = db_get_value ("alias","tagente","id_agente",$item['id_agent']);
+			$agent = db_get_value ("nombre","tagente","id_agente",$item['id_agent']);
 		}
 		if (!empty($item['label'])) {
-			$aux = explode("-",$item['label']);
-			$label = $agent .' -'. $aux[1];
-			echo "<label><![CDATA[" . io_safe_output($label) . "]]></label>\n";
+			echo "<label><![CDATA[" . io_safe_output($item['label']) . "]]></label>\n";
 		}
 		echo "<x>" . $item['pos_x'] . "</x>\n";
 		echo "<y>" . $item['pos_y'] . "</y>\n";
@@ -273,7 +271,7 @@ function output_xml_visual_console($id) {
 			if ($item['id_agente_modulo'] != 0) {
 				$module = db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $item['id_agente_modulo']);
 				$id_agent = db_get_value('id_agente', 'tagente_modulo', 'id_agente_modulo', $item['id_agente_modulo']);
-				$agent = db_get_value ("alias","tagente","id_agente",$id_agent);
+				$agent = db_get_value ("nombre","tagente","id_agente",$id_agent);
 				
 				echo "<module><![CDATA[" . io_safe_output($module) . "]]></module>\n";
 			}
@@ -286,6 +284,27 @@ function output_xml_visual_console($id) {
 		}
 		if ($item['parent_item'] != 0) {
 			echo "<parent_item>" . $item['parent_item'] . "</parent_item>\n";
+		}
+		if (!empty($item['clock_animation'])) {
+			echo "<clock_animation>" . $item['clock_animation'] . "</clock_animation>\n";
+		}
+		if (!empty($item['fill_color'])) {
+			echo "<fill_color>" . $item['fill_color'] . "</fill_color>\n";
+		}
+		if (!empty($item['type_graph'])) {
+			echo "<type_graph>" . $item['type_graph'] . "</type_graph>\n";
+		}
+		if (!empty($item['time_format'])) {
+			echo "<time_format>" . $item['time_format'] . "</time_format>\n";
+		}
+		if (!empty($item['timezone'])) {
+			echo "<timezone>" . $item['timezone'] . "</timezone>\n";
+		}
+		if (!empty($item['border_width'])) {
+			echo "<border_width>" . $item['border_width'] . "</border_width>\n";
+		}
+		if (!empty($item['border_color'])) {
+			echo "<border_color>" . $item['border_color'] . "</border_color>\n";
 		}
 		echo "</item>\n";
 	}
@@ -338,8 +357,9 @@ function resource_exportation_extension_main() {
 	ui_print_page_header (__('Resource exportation'), "images/extensions.png", false, "", true, "" );
 	
 	echo "<div class=notify>";
-	echo __("This extension makes exportation of resource template more easy. " .
-		"Here you can export as a resource template in Pandora FMS 3.x format (.ptr). ");
+	echo __("This extension makes exportation of resource template more easy.") .
+		" " .
+		__("You can export resource templates in .ptr format.");
 	echo "</div>";
 	
 	echo "<br /><br />";

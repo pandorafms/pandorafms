@@ -237,9 +237,9 @@ echo '<form method="post" action="' . $config['homeurl'] .
 		html_print_input_text ('date', $date, false, 13, 10, true) .
 		html_print_image ("images/calendar_view_day.png", true,
 			array("alt" => "calendar")) .
-		ui_print_help_tip(__('Date format in Pandora is year/month/day'), true) .
+		ui_print_help_tip(__('Date format is YY/MM/DD'), true) .
 		html_print_input_text ('time', $time, false, 10, 8, true) .
-		ui_print_help_tip(__('Time format in Pandora is hours(24h):minutes:seconds'), true) .
+		ui_print_help_tip(__('Watch format is hours (24h):minutes:seconds'), true) .
 		"</td>";
 	
 	echo "<td>" . '<b>'.__('Interval').'</b>' . "</td>";

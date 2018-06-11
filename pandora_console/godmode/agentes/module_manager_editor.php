@@ -493,12 +493,7 @@ switch ($moduletype) {
 	/* WARNING: type 7 is reserved on enterprise */
 	default:
 		if (enterprise_include ('godmode/agentes/module_manager_editor.php') === ENTERPRISE_NOT_HOOK) {
-			ui_print_error_message(sprintf(__('DEBUG: Invalid module type specified in %s:%s'), __FILE__, __LINE__));
-			echo __('Most likely you have recently upgraded from an earlier version of Pandora and either <br />
-				1) forgot to use the database converter<br />
-				2) used a bad version of the database converter (see Bugreport #2124706 for the solution)<br />
-				3) found a new bug - please report a way to duplicate this error');
-			
+			ui_print_error_message(sprintf(__('Invalid module type')));
 			return;
 		}
 		break;

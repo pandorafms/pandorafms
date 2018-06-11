@@ -69,7 +69,7 @@ function pandoralogs_extension_main () {
 	
 	ui_print_page_header (__("System logfile viewer"), "images/extensions.png", false, "", true, "" );
 	
-	echo "<p>" . __('Use this tool to view your Pandora FMS logfiles directly on the console') . "</p>";
+	echo "<p>" . __('Use this tool to view your %s logfiles directly on the console', get_product_name()) . "</p>";
 
 	echo "<p>" . __('You can choose the amount of information shown in general setup (Log size limit in system logs viewer extension), ' . $config['max_log_size'] * 1000 . 'B at the moment') . "</p>";
 	

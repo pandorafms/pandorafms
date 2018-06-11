@@ -33,11 +33,15 @@ if ($vconsoles_write || $vconsoles_manage) {
 	</div>
 	<div class="text_task">
 		<h3> <?php echo __('Create Visual Console'); ?></h3>
-		<p id="description_task"> <?php echo __("Pandora FMS allows you to create visual maps in which each user is able to create his own monitoring map.
-			The new visual console editor is much more practical, although the old visual console editor had its advantages. 
-			Within the new visual console, we've been successful in imitating the sensation and touch of a drawing application like GIMP. 
-			We've also simplified the editor by dividing it into several subject-matter tabs named 'Data', 'Preview', 'Wizard', 'List of Elements' and 'Editor'.
-			The elements the Pandora FMS Visual Map was designed to handle are 'static image', 'percentage bar', 'module graph' and 'simple value'. "); ?></p>
+		<p id="description_task"> <?php echo __(
+			"%s allows users to create visual maps on which each user is able to create his or her " .
+			"own monitoring map. The new visual console editor is much more practical, although the prior " .
+			"visual console editor had its advantages. On the new visual console, we've been successful in " .
+			"imitating the sensation and touch of a drawing application like GIMP. We've also simplified the " .
+			"editor by dividing it into several subject-divided tabs named 'Data', 'Preview', 'Wizard', 'List of " .
+			"Elements' and 'Editor'. The items the %s Visual Map was designed to handle are " .
+			"'static images', 'percentage bars', 'module graphs' and 'simple values'.",
+			get_product_name(), get_product_name()); ?></p>
 		<form action="index.php?sec=network&amp;sec2=godmode/reporting/visual_console_builder" method="post">
 			<?php html_print_input_hidden ('edit_layout', 1); ?>
 			<input type="submit" class="button_task" value="<?php echo __('Create Visual Console'); ?>" />

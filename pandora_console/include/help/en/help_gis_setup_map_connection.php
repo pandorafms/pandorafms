@@ -11,7 +11,7 @@ This page is the place where the admin can configure <strong>a connection to a G
 
 <h2>Connection types</h2>
 <p>
-Currently Pandora FMS support 3 differet kinds of connections: OpenStreetMap, Google Maps and Static Image.
+Currently <?php echo get_product_name();?> support 3 differet kinds of connections: OpenStreetMap, Google Maps and Static Image.
 </p>
 <h3>Open Street Maps</h3>
 <p>
@@ -33,5 +33,5 @@ ABQIAAAAZuJY-VSG4gOH73b6mcUw1hTfSvFQRXGUGjHx8f036YCF-UKjgxT9lUhqOJx7KDHSnFnt46qn
 </pre>
 <h3>Static Image</h3>
 <p>
-It's also possible to use a static image (a PNG for example) as the only source of the map. To use it, the<strong>url</strong>, the <strong>positional information</strong> of the image and the <strong>height</strong> and <strong>width</strong> must be filled.
+It's also possible to use a static image (a PNG for example) as the only source of the map. To use it, the <strong>url</strong>, the <strong>positional information</strong> of the image and the <strong>height</strong> and <strong>width</strong> must be filled.
 </p>

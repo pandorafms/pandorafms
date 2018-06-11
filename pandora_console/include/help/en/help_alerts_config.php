@@ -3,22 +3,22 @@
  * @package Include/help/es 
  */
 ?> 
-<h1>Pandora FMS’ Quick Guide to Alert Configuration </h1>
+<h1><?php echo get_product_name();?>'s Quick Guide to Alert Configuration </h1>
 <br>
 <b>Introduction to the Current Alert System</b><br>
 <br>
 People usually complain about the complexity of defining alerts on
-Pandora FMS. Before, until version 2.0, alerts were easier to
+<?php echo get_product_name();?>. Before, until version 2.0, alerts were easier to
 configure. For each alert the condition and what it did when the action was not completed was defined for each case. It was a more "intuitive"
 thing (but it also had fields such as the "threshold" alert that caused
 many headaches to more than one person!). It was very simple, but, was
 it worth it ?<br>
 <br>
-One of our “star” users (we mention this because he had A LOT of agents installed, and also knew the inner workings of Pandora FMS quite well) mentioned that creating an alert for 2000 modules was tremendously complicated, especially when it was necessary to modify something for all of them. Due to this, and other issues, we decided to modify the alert system so that it could be modular, so that the alert’s definition and its triggering condition (template) could be separated from the action that has to be executed when the alert is triggered (alert action) and from the command that is run within the action (Alert command). The combination of an alert template with a module triggers the alert itself.<br><br>
+One of our “star” users (we mention this because he had A LOT of agents installed, and also knew the inner workings of <?php echo get_product_name();?> quite well) mentioned that creating an alert for 2000 modules was tremendously complicated, especially when it was necessary to modify something for all of them. Due to this, and other issues, we decided to modify the alert system so that it could be modular, so that the alert’s definition and its triggering condition (template) could be separated from the action that has to be executed when the alert is triggered (alert action) and from the command that is run within the action (Alert command). The combination of an alert template with a module triggers the alert itself.<br><br>
 
 This way, if I have 1000 devices with a module named “Host Alive” and all of them have a related alert template named “Host Down” that when triggered executes an action named “Warn the Operator”, and I wish to change the minimum number of alerts that must be fired before the Operator is warned, I only have to change the definition on the template instead of going one by one over the 1000 alerts to modify that specific condition.<br><br>
 
-Many users only manage a few dozen devices, but there are many users with hundreds—even thousands—of systems monitored with Pandora FMS, and we have to try and make it so that with Pandora FMS all types of environments can be managed.<br>
+Many users only manage a few dozen devices, but there are many users with hundreds—even thousands—of systems monitored with <?php echo get_product_name();?>, and we have to try and make it so that with <?php echo get_product_name();?> all types of environments can be managed.<br>
 <br>
 <br>
 <br>
@@ -118,9 +118,9 @@ html_print_image("images/help/alert07.png", false,
 	array('width' => '550px'));
 ?>
 <br>
-We’ve now made it so that the system can discriminate when something is right (OK status, marked in GREEN) and when something is wrong (CRITICAL status, marked in RED). Now what we have to do is make the system send us an email when the module reaches that status. For this we’ll use Pandora FMS’ alert system.<br>
+We’ve now made it so that the system can discriminate when something is right (OK status, marked in GREEN) and when something is wrong (CRITICAL status, marked in RED). Now what we have to do is make the system send us an email when the module reaches that status. For this we’ll use <?php echo get_product_name();?>'s alert system.<br>
 <br>
-For this we need to make sure there is a command available that can do what we need it to (in this case, send an email). This example is easy because there is a predefined command on Pandora FMS that is meant to automate email sending, meaning this is already done.<br>
+For this we need to make sure there is a command available that can do what we need it to (in this case, send an email). This example is easy because there is a predefined command on <?php echo get_product_name();?> that is meant to automate email sending, meaning this is already done.<br>
 <br>
 <b>Configuring the Alert</b><br>
 <br>
@@ -133,7 +133,7 @@ html_print_image("images/help/alert08.png", false,
 	array('width' => '550px'));
 ?>
 <br>
-This action uses the “send email” command, and is really simple, since only one field from the form needs to be filled out (Field1) leaving the other two empty. This is one of the most confusing parts of the alert system on Pandora FMS: what are field1, field2 and field3?<br>
+This action uses the “send email” command, and is really simple, since only one field from the form needs to be filled out (Field1) leaving the other two empty. This is one of the most confusing parts of the alert system on <?php echo get_product_name();?>: what are field1, field2 and field3?<br>
 <br>
 These fields are the ones used to “pass” the information on from the alert template to the command, and at the same time from that command to the next. This way both the template and the command can provide different information to the command. In this case, the command only establishes field1 and leaves field2 and field3 to be filled by the template, like what is shown next.<br>
 <br>
@@ -163,19 +163,19 @@ The most critical parameters here are the following:<br>
 <br>
 <i>Time threshold:</i> Set to one day by default. If a module is constantly down during, for example, one day and and we have set a value of 5 minutes here, it means that alerts would be sent every 5 minutes.  If we leave it at one day (24hrs.), it’ll only send the alert once, when it goes down. If the module recovers, and drops again, it’ll send another alert, but if it remains down from the second drop, it won’t send more alerts until 24hrs have gone by.<br>
 <br>
-<i>Min. Number of alerts:</i> The minimum number of times that a condition will have to be met (in this case, that the module is in CRITICAL status) before Pandora FMS runs the actions linked to the alert template. It’s a way to avoid false positives “flooding” you with alerts, or so that an erratic behaviour doesn’t lead to multiply alerts going off. If we place a ‘1’ here it means that until this doesn’t happen at least once, it won’t be taken into account. If i set a value of ‘0’ the first time the module returns an error, the alert will go off.<br>
+<i>Min. Number of alerts:</i> The minimum number of times that a condition will have to be met (in this case, that the module is in CRITICAL status) before <?php echo get_product_name();?> runs the actions linked to the alert template. It’s a way to avoid false positives “flooding” you with alerts, or so that an erratic behaviour doesn’t lead to multiply alerts going off. If we place a ‘1’ here it means that until this doesn’t happen at least once, it won’t be taken into account. If i set a value of ‘0’ the first time the module returns an error, the alert will go off.<br>
 <br>
 <i>Max. Number of alerts:</i> A value of 1 means that it’ll only execute the action once. If we have ’10’ set here, it’ll run the action 10 times. This is a way to limit the number of times an alert can go off.<br>
 <br>
 Again, we can see the fields “field1, field2, field3”. Now we can see that field1 is blank, which is precisely the one we’ve defined when configuring the action. Field2 and Field3 are used for the “send mail” action to define the subject and the message’s body, whilst Field1 is used to define the recipient(s) of said message (addresses must be separated by commas). Therefore the template, combined with the use of some macros, is defining the subject and alert message in a way that, in our case, we would receive a message like the following (supposing the agent where the module is placed is named “Farscape”):<br>
 <br>
 <i>To: sancho.lerena@notexist.ocm<br>
-Subject: [PANDORA] Farscape cpu_sys is in CRITICAL status with a value
+Subject: [MONITORING] Farscape cpu_sys is in CRITICAL status with a value
 of 20<br>
 Message body:<br>
 <br>
-This is an automated alert generated by Pandora FMS<br>
-Please contact your Pandora FMS operator for more information. *DO NOT* reply to
+This is an automated alert generated by <?php echo get_product_name();?><br>
+Please contact your <?php echo get_product_name();?> operator for more information. *DO NOT* reply to
 this email.<br>
 </i><br>
 Given that the default action is the one we have defined previously, all
@@ -229,7 +229,7 @@ Alerts in standby are useful because they can be viewed without interfering with
 <br>
 <b>Using Alert Commands other than the “send email” command</b><br>
 <br>
-The email, as a command is internal to Pandora FMS and can’t be configured, this means Field1, Field2 and Field3 are fields that are preset to be used as the recipient, subject and body for the email alert. But, what happens when we want to execute a different, more customised alert?<br>
+The email, as a command is internal to <?php echo get_product_name();?> and can’t be configured, this means Field1, Field2 and Field3 are fields that are preset to be used as the recipient, subject and body for the email alert. But, what happens when we want to execute a different, more customised alert?<br>
 <br>
 We’ll define a new, totally customised command. Imagine that we want to generate a log file with each alert we find. The format for that log file has to be something like:<br>
 <br>
@@ -262,9 +262,9 @@ We can see that the alert was fired at 18:17:10 because of the " farscape"
 agent, in the "cpu_sys" module, with a data value of "23.00" and with the
 description that we chose when we defined the action.<br>
 <br>
-Since the command’s execution, the field order and other affairs can make it so we don’t really understand how it’s executed at the end of the command, the easiest thing to do is to activate the Pandora server debug traces (verbose 10) in the configuration file for the Pandora server ‘/etc/pandora/pandora_server.conf’, and then reset the server
+Since the command’s execution, the field order and other affairs can make it so we don’t really understand how it’s executed at the end of the command, the easiest thing to do is to activate the <?php echo get_product_name();?> server debug traces (verbose 10) in the configuration file for the <?php echo get_product_name();?> server ‘/etc/pandora/pandora_server.conf’, and then reset the server
 (/etc/init.d/pandora_server restart). After, we take a look at the file
 /var/log/pandora/pandora_server.log and look for the exact line with the
-alert command execution that we've defined, to see how the Pandora FMS
+alert command execution that we've defined, to see how the <?php echo get_product_name();?>
 server is launching and executing the command.<br>
 <br>

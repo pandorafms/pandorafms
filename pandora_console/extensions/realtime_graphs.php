@@ -39,14 +39,40 @@ function pandora_realtime_graphs () {
 	$legend = '';
 	$long_index = array();
 	$no_data_image = '';
-	
+
 	$canvas = '<div id="graph_container">';
 	$canvas .= '<div id="chartLegend"></div>';
-	$canvas .= area_graph($interactive_graph, $chart, 800, 300, $color, $legend, $long_index, $no_data_image, "", "", "",
-	"", '', '', '', 1, array(),	array(), 0, 0, '', false, '', false);
+
+	$width = 800;
+	$height = 300;
+
+	$data_array['realtime']['data'][0][0] = time() - 10;
+	$data_array['realtime']['data'][0][1] = 0;
+	$data_array['realtime']['data'][1][0] = time();
+	$data_array['realtime']['data'][1][1] = 0;
+	$data_array['realtime']['color'] = 'green';
+
+	$params =array(
+		'agent_module_id'     => false,
+		'period'              => 300,
+		'width'               => $width,
+		'height'              => $height,
+		'unit'                => $unit,
+		'only_image'          => $only_image,
+		'homeurl'             => $homeurl,
+		'type_graph'          => 'area',
+		'font'                => $config['fontpath'],
+		'font-size'           => $config['font_size'],
+		'array_data_create'   => $data_array,
+		'show_legend'         => false,
+		'show_menu'           => false
+	);
+
+	$canvas .= grafico_modulo_sparse($params);
+
 	$canvas .= '</div>';
 	echo $canvas;
-	
+
 	$table->width = '100%';
 	$table->id = 'table-form';
 	$table->class = 'databox filters';
@@ -62,7 +88,7 @@ function pandora_realtime_graphs () {
 	$table->style['snmp_oid'] = 'font-weight: bold;';
 	$table->style['snmp_oid'] = 'font-weight: bold;';
 	$table->data = array ();
-	
+
 	$graph_fields['cpu_load'] = __('%s Server CPU', get_product_name());
 	$graph_fields['pending_packets'] = __('Pending packages from %s Server', get_product_name());
 	$graph_fields['disk_io_wait'] = __('%s Server Disk IO Wait', get_product_name());
@@ -70,19 +96,19 @@ function pandora_realtime_graphs () {
 	$graph_fields['mysql_load'] = __('%s Server MySQL load', get_product_name());
 	$graph_fields['server_load'] = __('%s Server load', get_product_name());
 	$graph_fields['snmp_interface'] = __('SNMP Interface throughput');
-	
+
 	$graph = get_parameter('graph', 'cpu_load');
 	$refresh = get_parameter('refresh', '1000');
-	
+
 	if ($graph != 'snmp_module') {
 		$data['graph'] = __('Graph') . '&nbsp;&nbsp;' . html_print_select ($graph_fields, 'graph', $graph, '', '', 0, true);
 	}
 
-	$refresh_fields[1000] = human_time_description_raw(1, true, 'large');
-	$refresh_fields[5000] = human_time_description_raw(5, true, 'large');
+	$refresh_fields[1000]  = human_time_description_raw(1, true, 'large');
+	$refresh_fields[5000]  = human_time_description_raw(5, true, 'large');
 	$refresh_fields[10000] = human_time_description_raw(10, true, 'large');
 	$refresh_fields[30000] = human_time_description_raw(30, true, 'large');
-	
+
 	if ($graph == 'snmp_module') {
 		$agent_alias = get_parameter('agent_alias', '');
 		$module_name = get_parameter('module_name', '');
@@ -109,7 +135,7 @@ function pandora_realtime_graphs () {
 		$snmp_ver = get_parameter('snmp_ver', '');
 
 		$data = array();
-		
+
 		$data['snmp_address'] = __('Target IP') . '&nbsp;&nbsp;' . html_print_input_text ('ip_target', $snmp_address, '', 50, 255, true);
 		$table->colspan[1]['snmp_address'] = 2;
 
@@ -122,7 +148,7 @@ function pandora_realtime_graphs () {
 		$snmp_versions['1'] = '1';
 		$snmp_versions['2'] = '2';
 		$snmp_versions['2c'] = '2c';
-		
+
 		$data = array();
 		$data['snmp_oid'] = __('OID') . '&nbsp;&nbsp;' . html_print_input_text ('snmp_oid', $snmp_oid, '', 100, 255, true);
 		$table->colspan[2]['snmp_oid'] = 2;
@@ -140,7 +166,7 @@ function pandora_realtime_graphs () {
 		}
 		snmp_browser_print_container (false, '100%', '60%', 'none');
 	}
-	
+
 	// Print the relative path to AJAX calls:
 	html_print_input_hidden('rel_path', get_parameter('rel_path', ''));
 
@@ -148,7 +174,7 @@ function pandora_realtime_graphs () {
 	echo '<form id="realgraph" method="post">';
 	html_print_table($table);
 	echo '</form>';
-	
+
 	// Define a custom action to save the OID selected in the SNMP browser to the form
 	html_print_input_hidden ('custom_action', urlencode (base64_encode('&nbsp;<a href="javascript:setOID()"><img src="' . ui_get_full_url("images") . '/input_filter.disabled.png" title="' . __("Use this OID") . '" style="vertical-align: middle;"></img></a>')), false);
 	html_print_input_hidden ('incremental_base', '0');
@@ -156,7 +182,7 @@ function pandora_realtime_graphs () {
 	echo '<script type="text/javascript" src="'.ui_get_full_url("extensions/realtime_graphs/realtime_graphs.js").'"></script>';
 	echo '<script type="text/javascript" src="'.ui_get_full_url("include/javascript/pandora_snmp_browser.js").'"></script>';
 	echo '<link rel="stylesheet" type="text/css" href="'.ui_get_full_url("extensions/realtime_graphs/realtime_graphs.css").'"></style>';
-	
+
 	// Store servers timezone offset to be retrieved from js
 	set_js_value('timezone_offset', date('Z', time()));
 }

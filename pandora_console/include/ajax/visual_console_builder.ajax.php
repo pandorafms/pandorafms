@@ -251,20 +251,41 @@ switch ($action) {
 				continue;
 			}
 		}
-		
+
+		$params =array(
+			'period'         => $period,
+			'width'          => $width,
+			'height'         => $height,
+			'vconsole'       => true,
+			'backgroundColor'=> $background_color
+		);
+
+		$params_combined = array(
+			'id_graph'       => $id_custom_graph
+		);
+
 		if ($id_custom_graph != 0) {
-			$img = custom_graphs_print(
-				$id_custom_graph, $height, $width, $period,
-				null, true, 0, true, $background_color);
+			$img = graphic_combined_module(
+				false,
+				$params,
+				$params_combined
+			);
 		}
 		else {
-			$img = grafico_modulo_sparse($id_agent_module,
-				$period, 0, $width, $height, '', null, false, 1,
-				0, 0, '', 0, 0, true, true, '', 1, false, '',
-				false, false, true, $background_color,
-				false, false, false, $config['type_module_charts']);
+			$params =array(
+				'agent_module_id'     => $id_agent_module,
+				'period'              => $period,
+				'show_events'         => false,
+				'width'               => $width,
+				'height'              => $height,
+				'menu'                => false,
+				'backgroundColor'     => $background_color,
+				'vconsole'            => true,
+				'type_graph'          => $config['type_module_charts']
+			);
+			$img = grafico_modulo_sparse($params);
 		}
-		
+
 		//Restore db connection
 		if (!empty($id_metaconsole)) {
 			metaconsole_restore_db();

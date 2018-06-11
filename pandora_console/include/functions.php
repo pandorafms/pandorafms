@@ -2798,12 +2798,12 @@ function register_pass_change_try ($id_user, $success) {
 }
 
 function isJson($string) {
- json_decode($string);
- return (json_last_error() == JSON_ERROR_NONE);
+	json_decode($string);
+	return (json_last_error() == JSON_ERROR_NONE);
 }
 
 /**
- * returns true or false if it is a valid ip 
+ * returns true or false if it is a valid ip
  * checking ipv4 and ipv6 or resolves the name dns
  * @param string address
  *
@@ -2822,6 +2822,372 @@ function validate_address($address){
 		}
 	}
 	return true;
+}
+
+function color_graph_array(){
+	global $config;
+
+	$color_series = array();
+
+	$color_series[0] = array(
+		'border' => '#000000',
+		'color' => $config['graph_color1'],
+		'alpha' => CHART_DEFAULT_ALPHA
+	);
+
+	//XXX Hablar con Sancho del tema de los slices
+	/*
+		$color_series[1] = array(
+			'border' => '#000000',
+			'color' => $config['graph_color2'],
+			'alpha' => CHART_DEFAULT_ALPHA
+		);
+		$color_series[2] = array(
+			'border' => '#000000',
+			'color' => $config['graph_color3'],
+			'alpha' => CHART_DEFAULT_ALPHA
+		);
+	*/
+
+	$color_series[1] = array(
+		'border' => '#000000',
+		'color' => $config['graph_color4'],
+		'alpha' => CHART_DEFAULT_ALPHA
+	);
+	$color_series[2] = array(
+		'border' => '#000000',
+		'color' => $config['graph_color5'],
+		'alpha' => CHART_DEFAULT_ALPHA
+	);
+	$color_series[3] = array(
+		'border' => '#000000',
+		'color' => $config['graph_color6'],
+		'alpha' => CHART_DEFAULT_ALPHA
+	);
+	$color_series[4] = array(
+		'border' => '#000000',
+		'color' => $config['graph_color7'],
+		'alpha' => CHART_DEFAULT_ALPHA
+	);
+	$color_series[5] = array(
+		'border' => '#000000',
+		'color' => $config['graph_color8'],
+		'alpha' => CHART_DEFAULT_ALPHA
+	);
+	$color_series[6] = array(
+		'border' => '#000000',
+		'color' => $config['graph_color9'],
+		'alpha' => CHART_DEFAULT_ALPHA
+	);
+	$color_series[7] = array(
+		'border' => '#000000',
+		'color' => $config['graph_color10'],
+		'alpha' => CHART_DEFAULT_ALPHA
+	);
+	$color_series[8] = array(
+		'border' => '#000000',
+		'color' => COL_GRAPH9,
+		'alpha' => CHART_DEFAULT_ALPHA
+	);
+	$color_series[9] = array(
+		'border' => '#000000',
+		'color' => COL_GRAPH10,
+		'alpha' => CHART_DEFAULT_ALPHA
+	);
+	$color_series[10] = array(
+		'border' => '#000000',
+		'color' => COL_GRAPH11,
+		'alpha' => CHART_DEFAULT_ALPHA
+	);
+	$color_series[11] = array(
+		'border' => '#000000',
+		'color' => COL_GRAPH12,
+		'alpha' => CHART_DEFAULT_ALPHA
+	);
+	$color_series[12] = array(
+		'border' => '#000000',
+		'color' => COL_GRAPH13,
+		'alpha' => CHART_DEFAULT_ALPHA
+	);
+
+	//XXX Colores fijos para eventos, alertas, desconocidos, percentil, overlapped, summatory, average, projection
+	$color_series['event'] = array(
+		'border' => '#ff0000',
+		'color' => '#FF5733',
+		'alpha' => CHART_DEFAULT_ALPHA
+	);
+
+	$color_series['alert'] = array(
+		'border' => '#ffff00',
+		'color' => '#ffff00',
+		'alpha' => CHART_DEFAULT_ALPHA
+	);
+
+	$color_series['unknown'] = array(
+		'border' => '#999999',
+		'color' => '#E1E1E1',
+		'alpha' => CHART_DEFAULT_ALPHA
+	);
+
+	$color_series['percentil'] = array(
+		'border' => '#000000',
+		'color' => '#003333',
+		'alpha' => CHART_DEFAULT_ALPHA
+	);
+
+	$color_series['projection'] = array(
+		'border' => '#000000',
+		'color' => $config['graph_color8'],
+		'alpha' => CHART_DEFAULT_ALPHA
+	);
+
+	$color_series['overlapped'] = array(
+		'border' => '#000000',
+		'color' => $config['graph_color9'],
+		'alpha' => CHART_DEFAULT_ALPHA
+	);
+
+	$color_series['summatory'] = array(
+		'border' => '#000000',
+		'color' => $config['graph_color7'],
+		'alpha' => CHART_DEFAULT_ALPHA
+	);
+
+	$color_series['average'] = array(
+		'border' => '#000000',
+		'color' => $config['graph_color10'],
+		'alpha' => CHART_DEFAULT_ALPHA
+	);
+
+	$color_series['no_data'] = array(
+		'border' => '#000000',
+		'color' => '#f2c40e',
+		'alpha' => CHART_DEFAULT_ALPHA
+	);
+
+	$color_series['unit'] = array(
+		'border' => null,
+		'color' => '#0097BC',
+		'alpha' => 10
+	);
+	//XXXXXXXX
+	/*
+		if($id_widget_dashboard){
+			$opcion = unserialize(db_get_value_filter('options','twidget_dashboard',array('id' => $id_widget_dashboard)));
+			foreach ($module_list as $key => $value) {
+				if(!empty($opcion[$value])){
+					$color[$key]['color'] = $opcion[$value];
+				}
+			}
+		}
+	*/
+
+	return $color_series;
+}
+
+function series_type_graph_array($data, $show_elements_graph){
+	global $config;
+
+	if(isset($show_elements_graph['stacked'])){
+		switch ($show_elements_graph['stacked']) {
+			case 2:
+			case 4:
+				$type_graph = 'line';
+				break;
+			default:
+				$type_graph = 'area';
+				break;
+		}
+	}
+	else{
+		$type_graph = $show_elements_graph['type_graph'];
+	}
+
+	$color_series = color_graph_array();
+	$i = 0;
+	if(isset($data) && is_array($data)){
+		foreach ($data as $key => $value) {
+			if($show_elements_graph['compare'] == 'overlapped'){
+				if($key == 'sum2'){
+					$str = ' (' . __('Previous') . ')';
+				}
+			}
+
+			if(strpos($key, 'summatory') !== false){
+				$data_return['series_type'][$key] = $type_graph;
+				$data_return['legend'][$key]      = __('Summatory series') . ' ' . $str;
+				$data_return['color'][$key]       = $color_series['summatory'];
+			}
+			elseif(strpos($key, 'average') !== false){
+				$data_return['series_type'][$key] = $type_graph;
+				$data_return['legend'][$key]      = __('Average series') . ' ' . $str;
+				$data_return['color'][$key]       = $color_series['average'];
+			}
+			elseif(strpos($key, 'sum') !== false || strpos($key, 'baseline') !== false){
+				switch ($value['id_module_type']) {
+					case 21: case 2: case 6:
+					case 18: case 9: case 31:
+						$data_return['series_type'][$key] = 'boolean';
+						break;
+					default:
+						$data_return['series_type'][$key] = $type_graph;
+						break;
+				}
+
+				if (isset($show_elements_graph['labels']) &&
+					is_array($show_elements_graph['labels']) &&
+					(count($show_elements_graph['labels']) > 0)){
+					$data_return['legend'][$key] = $show_elements_graph['labels'][$value['agent_module_id']] . ' ' ;
+				}
+				else{
+					if(strpos($key, 'baseline') !== false){
+						$data_return['legend'][$key] = $value['agent_alias']  . ' / ' .
+													$value['module_name'] . ' Baseline ';
+					}
+					else{
+						$data_return['legend'][$key] = $value['agent_alias']  . ' / ' .
+													$value['module_name'] . ': ';
+					}
+				}
+
+				if(strpos($key, 'baseline') === false){
+					$data_return['legend'][$key] .=
+						__('Min:') . remove_right_zeros(
+							number_format(
+								$value['min'],
+								$config['graph_precision']
+							)
+						)  . ' ' .
+						__('Max:') . remove_right_zeros(
+							number_format(
+								$value['max'],
+								$config['graph_precision']
+							)
+						) . ' ' .
+						_('Avg:') . remove_right_zeros(
+							number_format(
+								$value['avg'],
+								$config['graph_precision']
+							)
+						) . ' ' . $str;
+				}
+
+				if($show_elements_graph['compare'] == 'overlapped' && $key == 'sum2'){
+					$data_return['color'][$key] = $color_series['overlapped'];
+				}
+				else{
+					$data_return['color'][$key] = $color_series[$i];
+					$i++;
+				}
+			}
+			elseif(strpos($key, 'event') !== false){
+				$data_return['series_type'][$key] = 'points';
+				if($show_elements_graph['show_events']){
+					$data_return['legend'][$key] = __('Events') . ' ' . $str;
+				}
+
+				$data_return['color'][$key] = $color_series['event'];
+			}
+			elseif(strpos($key, 'alert') !== false){
+				$data_return['series_type'][$key] = 'points';
+				if($show_elements_graph['show_alerts']){
+					$data_return['legend'][$key] = __('Alert') . ' ' . $str;
+				}
+
+				$data_return['color'][$key] = $color_series['alert'];
+			}
+			elseif(strpos($key, 'unknown') !== false){
+				$data_return['series_type'][$key] = 'unknown';
+				if($show_elements_graph['show_unknown']){
+					$data_return['legend'][$key] = __('Unknown') . ' ' . $str;
+				}
+				$data_return['color'][$key] =$color_series['unknown'];
+			}
+			elseif(strpos($key, 'percentil') !== false){
+				$data_return['series_type'][$key] = 'percentil';
+				if($show_elements_graph['percentil']){
+					$data_return['legend'][$key] =
+						__('Percentil') . ' ' .
+						$config['percentil']  .
+						'º ' . __('of module') . ' ';
+					if (isset($show_elements_graph['labels']) && is_array($show_elements_graph['labels'])){
+						$data_return['legend'][$key] .= $show_elements_graph['labels'][$value['agent_module_id']] . ' ' ;
+					}
+					else{
+						$data_return['legend'][$key] .= $value['agent_alias']  . ' / ' .
+												$value['module_name'] . ': ' . ' Value: ';
+					}
+					$data_return['legend'][$key] .= remove_right_zeros(
+													number_format(
+														$value['data'][0][1],
+														$config['graph_precision']
+													)
+												) . ' ' . $str;
+				}
+				$data_return['color'][$key] =$color_series['percentil'];
+			}
+			elseif(strpos($key, 'projection') !== false){
+				$data_return['series_type'][$key] = $type_graph;
+				$data_return['legend'][$key]      = __('Projection') . ' ' . $str;
+				$data_return['color'][$key]       = $color_series['projection'];
+			}
+			else{
+				$data_return['series_type'][$key] = $type_graph;
+				$data_return['legend'][$key] = $key;
+				$data_return['color'][$key] = $color_series[$i];
+				$i++;
+			}
+		}
+		return $data_return;
+	}
+	return false;
+}
+
+function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined = false, $module_list = false){
+	global $config;
+
+	$file_js  = $config["homedir"] . "/include/web2image.js";
+	$url      = $config["homeurl"] . "/include/chart_generator.php";
+	$img_file = "img_". uniqid()  .".png";
+	$img_path = $config["homedir"] . "/attachment/" . $img_file;
+	$img_url  = $config["homeurl"] . "attachment/" . $img_file;
+
+	$width_img  = 500;
+	$height_img = 450;
+
+	$params_encode_json = urlencode(json_encode($params));
+
+	if($params_combined){
+		$params_combined = urlencode(json_encode($params_combined));
+	}
+
+	if($module_list){
+		$module_list = urlencode(json_encode($module_list));
+	}
+
+	$session_id = session_id();
+
+	$result = exec(
+		"phantomjs " . $file_js . " " .
+		$url . "  '" .
+		$type_graph_pdf . "' '" .
+		$params_encode_json . "' '" .
+		$params_combined . "' '" .
+		$module_list . "' " .
+		$img_path . " " .
+		$width_img . " " .
+		$height_img . " '" .
+		$session_id . "' " .
+		$params['return_img_base_64']
+	);
+
+	if($params['return_img_base_64']){
+		return $result;
+	}
+	else{
+		$config["temp_images"][] = $img_path;
+		return '<img src="' . $img_url . '" />';
+	}
 }
 
 /**

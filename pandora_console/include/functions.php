@@ -3072,7 +3072,7 @@ function series_type_graph_array($data, $show_elements_graph){
 						) . ' ' . $str;
 				}
 
-				if($show_elements_graph['compare'] == 'overlapped'){
+				if($show_elements_graph['compare'] == 'overlapped' && $key == 'sum2'){
 					$data_return['color'][$key] = $color_series['overlapped'];
 				}
 				else{

@@ -1632,6 +1632,8 @@ function pandoraFlotArea(
 				axisLabelFontFamily: font+'Font',
 				axisLabelPadding: 0,
 				mode: "time",
+				timezone: "browser",
+				localTimezone: true,
 				//tickFormatter: xFormatter,
 				tickSize: [maxticks, 'hour']
 			}],
@@ -1733,6 +1735,8 @@ if (vconsole) {
 				axisLabelFontFamily: font+'Font',
 				axisLabelPadding: 0,
 				mode: "time",
+				timezone: "browser",
+				localTimezone: true,
 				//tickFormatter: xFormatter,
 				tickSize: [maxticks, 'hour']
 			}],
@@ -1804,6 +1808,8 @@ if (vconsole) {
 						axisLabelFontFamily: font+'Font',
 						axisLabelPadding: 0,
 						mode: "time",
+						timezone: "browser",
+						localTimezone: true,
 						//tickFormatter: xFormatter,
 						tickSize: [maxticks_zoom, 'hour']
 					}],
@@ -1843,6 +1849,8 @@ if (vconsole) {
 						axisLabelFontFamily: font+'Font',
 						axisLabelPadding: 0,
 						mode: "time",
+						timezone: "browser",
+						localTimezone: true,
 						//tickFormatter: xFormatter,
 						tickSize: [maxticks_zoom, 'hour']
 					}],

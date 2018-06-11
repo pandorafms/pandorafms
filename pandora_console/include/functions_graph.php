@@ -1044,7 +1044,7 @@ function grafico_modulo_sparse ($params) {
 				$legend,
 				$series_type,
 				$color,
-				$date_array,
+				$date_array_prev,
 				$data_module_graph,
 				$params,
 				$water_mark,

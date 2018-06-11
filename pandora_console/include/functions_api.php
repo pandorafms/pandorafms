@@ -1522,8 +1522,13 @@ function api_get_custom_field_id($t1, $t2, $other, $returnType) {
  * @param $thrash3 Don't use.
  */
 function api_set_delete_agent($id, $thrash1, $thrast2, $thrash3) {
+	global $config;
 
 	if (is_metaconsole()) {
+		if (!check_acl($config['id_user'], 0, "PM")) {
+			returnError('forbidden', 'string');
+			return;
+		}
 		$servers = db_get_all_rows_sql ("SELECT *
 			FROM tmetaconsole_setup
 				WHERE disabled = 0");
@@ -2204,6 +2209,11 @@ function api_get_group_agent_by_name($thrash1, $thrash2, $other, $thrash3) {
  */
 function api_get_group_agent_by_alias($thrash1, $thrash2, $other, $thrash3) {
 	global $config;
+
+	if (is_metaconsole()) {
+		return;
+	}
+
 	if (!check_acl($config['id_user'], 0, "AR")) {
 		returnError('forbidden', 'csv');
 		return;
@@ -2296,7 +2306,7 @@ function api_get_locate_agent($id, $thrash1, $thrash2, $thrash3) {
 		if (metaconsole_connect($server) == NOERR) {
 			$agent_id = agents_get_agent_id($id,true);
 			
-			if ($agent_id) {
+			if ($agent_id && agents_check_access_agent($agent_id)) {
 				$group_servers[]['server'] = $id_server;
 			}
 		}
@@ -2328,7 +2338,10 @@ function api_get_locate_agent($id, $thrash1, $thrash2, $thrash3) {
  * @param $thrash3 Don't use.
  */
 function api_get_id_group_agent_by_name($thrash1, $thrash2, $other, $thrash3) {
-	
+	if (is_metaconsole()) {
+		return;
+	}
+
 	$group_names =array();
 	
 	if (is_metaconsole()) {
@@ -2399,6 +2412,10 @@ function api_get_id_group_agent_by_name($thrash1, $thrash2, $other, $thrash3) {
  */
 function api_get_id_group_agent_by_alias($thrash1, $thrash2, $other, $thrash3) {
 	global $config;
+
+	if (is_metaconsole()) {
+		return;
+	}
 
 	if (!check_acl($config['id_user'], 0, "AR")) {
 		returnError('forbidden', 'csv');
@@ -6602,6 +6619,8 @@ function api_set_apply_all_policies($thrash1, $thrash2, $other, $thrash3) {
 function api_set_create_group($id, $thrash1, $other, $thrash3) {
 	global $config;
 
+	if (is_metaconsole()) return;
+
 	$group_name = $id;
 
 	if (!check_acl($config['id_user'], 0, "PM")){
@@ -10310,6 +10329,8 @@ function api_set_create_special_day($thrash1, $thrash2, $other, $thrash3) {
 function api_set_create_service($thrash1, $thrash2, $other, $thrash3) {
 	global $config;
 
+	if (is_metaconsole()) return;
+
 	$name = $other['data'][0];
 	$description = $other['data'][1];
 	$id_group = $other['data'][2];
@@ -10398,6 +10419,8 @@ function api_set_create_service($thrash1, $thrash2, $other, $thrash3) {
  */
 function api_set_update_service($thrash1, $thrash2, $other, $thrash3) {
 	global $config;
+
+	if (is_metaconsole()) return;
 
 	$id_service = $thrash1;
 	if(empty($id_service)){
@@ -10506,6 +10529,8 @@ function api_set_update_service($thrash1, $thrash2, $other, $thrash3) {
  */
 function api_set_add_element_service($thrash1, $thrash2, $other, $thrash3) {
 	global $config;
+
+	if (is_metaconsole()) return;
 
 	$id = $thrash1;
 	
@@ -10774,8 +10799,13 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4) {
 }
 
 function api_set_metaconsole_synch($keys) {
-	
+	global $config;
+
 	if (defined('METACONSOLE')) {
+		if (!check_acl($config['id_user'], 0, "PM")) {
+			returnError('forbidden', 'string');
+			return;
+		}
 		$data['keys'] = array('customer_key'=>$keys);
 		foreach ($data['keys'] as $key => $value) {
 			db_process_sql_update(

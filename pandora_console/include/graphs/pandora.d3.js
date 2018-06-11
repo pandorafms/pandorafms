@@ -1024,41 +1024,40 @@ function createGauge(name, etiqueta, value, min, max, min_warning,max_warning,wa
 function createGauges(data, width, height, font_size, no_data_image, font) {
 	var nombre,label,minimun_warning,maximun_warning,minimun_critical,maximun_critical,
 		mininum,maxinum,valor;
-	
+
 	for (key in data) {
 		nombre = data[key].gauge;
-		
+
 		label = data[key].label;
-		
+
 		label = label.replace(/&#x20;/g,' ');
 		label = label.replace(/\(/g,'\(');
 		label = label.replace(/\)/g,'\)');
-		
+
 		label = label.replace(/&#40;/g,'\(');
 		label = label.replace(/&#41;/g,'\)');
-		
-		minimun_warning 	= round_with_decimals(parseFloat( data[key].min_warning ));
-		maximun_warning 	= round_with_decimals(parseFloat( data[key].max_warning ));
-		minimun_critical	= round_with_decimals(parseFloat( data[key].min_critical ));
-		maximun_critical 	= round_with_decimals(parseFloat( data[key].max_critical ));
+
+		minimun_warning = round_with_decimals(parseFloat( data[key].min_warning ));
+		maximun_warning = round_with_decimals(parseFloat( data[key].max_warning ));
+		minimun_critical = round_with_decimals(parseFloat( data[key].min_critical ));
+		maximun_critical = round_with_decimals(parseFloat( data[key].max_critical ));
 
 		mininum = round_with_decimals(parseFloat(data[key].min));
 		maxinum = round_with_decimals(parseFloat(data[key].max));
-	
+
 		critical_inverse = parseInt(data[key].critical_inverse);
 		warning_inverse  = parseInt(data[key].warning_inverse);
 
 		valor = round_with_decimals(data[key].value);
 
+
 		if (isNaN(valor)) 
 			valor = null;
-		createGauge(nombre, label, valor, mininum, maxinum, 
+		createGauge(nombre, label, valor, mininum, maxinum,
 				minimun_warning, maximun_warning, warning_inverse, minimun_critical,
 					maximun_critical, critical_inverse, font_size, height, font);
 
-
 	}
-	
 }
 
 function createthermometers(data, width, height, font_size, no_data_image, font) {
@@ -1487,8 +1486,10 @@ function Gauge(placeholderName, configuration, font)
 	
 	this.drawBand = function(start, end, color)
 	{
+		if (start === undefined) return;
+		if (end === undefined) return;
 		if (0 >= end - start) return;
-		
+
 		this.body.append("svg:path")
 					.style("fill", color)
 					.attr("d", d3.svg.arc()
@@ -1498,13 +1499,13 @@ function Gauge(placeholderName, configuration, font)
 						.outerRadius(Math.round(0.85 * this.config.raduis)))
 					.attr("transform", function() { return "translate(" + self.config.cx + ", " + self.config.cy + ") rotate(270)" });
 	}
-	
+
 	this.redraw = function(value, transitionDuration)
 	{
 		var pointerContainer = this.body.select(".pointerContainer");
-		
+
 		pointerContainer.selectAll("text").text(round_with_decimals(value));
-		
+
 		var pointer = pointerContainer.selectAll("path");
 		pointer.transition()
 					.duration(undefined != transitionDuration ? transitionDuration : this.config.transitionDuration)
@@ -1519,7 +1520,7 @@ function Gauge(placeholderName, configuration, font)
 						var targetRotation = (self.valueToDegrees(pointerValue) - 90);
 						var currentRotation = self._currentRotation || targetRotation;
 						self._currentRotation = targetRotation;
-						
+
 						return function(step) 
 						{
 							var rotation = currentRotation + (targetRotation-currentRotation)*step;

@@ -46,12 +46,15 @@ function forecast_projection_graph($module_id,
 	}
 	
 	$begin_time = time();
-	
-	$module_data=grafico_modulo_sparse ($module_id, $period, 0,
-		300, 300 , '', null,
-		false, 0, false,
-		0, '', 0, 1, false,
-		true, '', 1, true);
+
+	$params =array(
+		'agent_module_id'     => $module_id,
+		'period'              => $period,
+		'return_data'         => 1,
+		'projection'          => true
+	);
+
+	$module_data = grafico_modulo_sparse ($params);
 	
 	if (empty($module_data)) {
 		return array();	
@@ -62,55 +65,57 @@ function forecast_projection_graph($module_id,
 	}
 	
 	// Data initialization
-	$sum_obs = 0;
-	$sum_xi = 0;
-	$sum_yi = 0;
-	$sum_xi_yi = 0;
-	$sum_xi2 = 0;
-	$sum_yi2 = 0;
+	$sum_obs        = 0;
+	$sum_xi         = 0;
+	$sum_yi         = 0;
+	$sum_xi_yi      = 0;
+	$sum_xi2        = 0;
+	$sum_yi2        = 0;
 	$sum_diff_dates = 0;
 	$last_timestamp = get_system_time();
 	$agent_interval = SECONDS_5MINUTES;
-	$cont = 1;
-	$data = array();
+	$cont           = 1;
+	$data           = array();
 	//$table->data = array();
 
 	// Creates data for calculation
 	if (is_array($module_data) || is_object($module_data)) {
-		foreach ($module_data as $utimestamp => $row) {
-			if ($utimestamp == '') {
+		foreach ($module_data['sum1']['data'] as $key => $row) {
+			if ($row[0] == '') {
 				continue;
 			}
-			
+
+			$row[0] = $row[0] / 1000;
+
 			$data[0] = '';
 			$data[1] = $cont;
-			$data[2] = date($config["date_format"], $utimestamp);
-			$data[3] = $utimestamp;
-			$data[4] = $row['sum'];
-			$data[5] = $utimestamp * $row['sum'];
-			$data[6] = $utimestamp * $utimestamp;
-			$data[7] = $row['sum'] * $row['sum'];
+			$data[2] = date($config["date_format"], $row[0]);
+			$data[3] = $row[0];
+			$data[4] = $row[1];
+			$data[5] = $row[0] * $row[1];
+			$data[6] = $row[0] * $row[0];
+			$data[7] = $row[1] * $row[1];
 			if ($cont == 1) {
 				$data[8] = 0;
 			}
 			else {
-				$data[8] = $utimestamp - $last_timestamp;
+				$data[8] = $row[0] - $last_timestamp;
 			}
-			
-			$sum_obs = $sum_obs + $cont;
-			$sum_xi = $sum_xi + $utimestamp;
-			$sum_yi = $sum_yi + $row['sum'];
-			$sum_xi_yi = $sum_xi_yi + $data[5];
-			$sum_xi2 = $sum_xi2 + $data[6];
-			$sum_yi2 = $sum_yi2 + $data[7];
+
+			$sum_obs        = $sum_obs + $cont;
+			$sum_xi         = $sum_xi + $row[0];
+			$sum_yi         = $sum_yi + $row[1];
+			$sum_xi_yi      = $sum_xi_yi + $data[5];
+			$sum_xi2        = $sum_xi2 + $data[6];
+			$sum_yi2        = $sum_yi2 + $data[7];
 			$sum_diff_dates = $sum_diff_dates + $data[8];
-			$last_timestamp = $utimestamp;	
+			$last_timestamp = $row[0];
 			$cont++;
 		}
 	}
-	
+
 	$cont--;
-	
+
 	// Calculation over data above:
 	// 1. Calculation of linear correlation coefficient...
 	
@@ -121,15 +126,6 @@ function forecast_projection_graph($module_id,
 	// 3.2 Standard deviation for Y: sqrt((Sum(Yi²)/Obs) - (avg Y)²) 
 	// Linear correlation coefficient:
 	
-	if ($sum_xi != 0) {
-		$avg_x = $cont/$sum_xi;
-	} else {
-		$avg_x = 0;
-	}
-	if ($sum_yi != 0)
-		$avg_y = $cont/$sum_yi;
-	else
-		$avg_y = 0;
 		
 /*
 	if ($cont != 0) {
@@ -229,18 +225,17 @@ function forecast_projection_graph($module_id,
 			}
 		}
 
-		$timestamp_f = date($time_format, $current_ts);
-		
-		//$timestamp_f = date($time_format, $current_ts);
-		$timestamp_f = graph_get_formatted_date($current_ts, $time_format, $time_format_2);
-		
+		$timestamp_f = $current_ts * 1000;
+
 		if ($csv) {
 			$output_data[$idx]['date'] = $current_ts;
 			$output_data[$idx]['data'] = ($a + ($b * $current_ts));
 		}
 		else {
-			$output_data[$timestamp_f] = ($a + ($b * $current_ts));
+			$output_data[$idx][0] = $timestamp_f;
+			$output_data[$idx][1] = ($a + ($b * $current_ts));
 		}
+
 		// Using this function for prediction_date
 		if ($prediction_period == false) {
 			// These statements stop the prediction when interval is greater than 2 years
@@ -249,7 +244,7 @@ function forecast_projection_graph($module_id,
 			}
 			
 			// Found it
-			if ($max_value >= $output_data[$timestamp_f] and $min_value <= $output_data[$timestamp_f]) {
+			if ($max_value >= $output_data[$idx][0] and $min_value <= $output_data[$idx][0]) {
 				return $current_ts;
 			}
 		}
@@ -259,7 +254,7 @@ function forecast_projection_graph($module_id,
 		$current_ts = $current_ts + $agent_interval;
 		$idx++;
 	}
-	
+
 	return $output_data;
 }
 

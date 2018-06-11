@@ -232,7 +232,8 @@ foreach ($result as $row) {
 	$data = array();
 	$data[0] = $row["id_usuario"];
 	$data[1] = ui_print_session_action_icon($row["accion"], true) . $row["accion"];
-	$data[2] = ui_print_help_tip($row["fecha"], true) . ui_print_timestamp($row["utimestamp"], true);
+	$data[2] = ui_print_help_tip(date($config["date_format"], $row["utimestamp"]), true)
+		. ui_print_timestamp($row["utimestamp"], true);
 	$data[3] = $row["ip_origen"];
 	$data[4] = $row["descripcion"];
 	

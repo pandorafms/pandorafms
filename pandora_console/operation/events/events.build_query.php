@@ -209,27 +209,24 @@ if (($date_from == '') && ($date_to == '')) {
 	}
 }
 else {
-	if ($date_from != '') {
-		if($time_from != '') {
-			$filter_resume['time_from'] = $date_from . " " . $time_from;
-			$udate_from = strtotime($date_from . " " . $time_from);
-			$sql_post .= " AND (utimestamp >= " . $udate_from . ")";
-		} else {
-			$filter_resume['time_from'] = $date_from; 
-			$udate_from = strtotime($date_from . " 00:00:00");
-			$sql_post .= " AND (utimestamp >= " . $udate_from . ")";
-		}
+	// Some of this values will have the user's timezone,
+	// so we need to reverse it to the system's timezone
+	// before using it into the db
+	$fixed_offset = get_fixed_offset();
+
+	if (!empty($date_from)) {
+		if (empty($time_from)) $time_from = "00:00:00";
+		
+		$utimestamp_from = strtotime($date_from . " " . $time_from) - $fixed_offset;
+		$filter_resume['time_from'] = date(DATE_FORMAT . " " . TIME_FORMAT, $utimestamp_from);
+		$sql_post .= " AND (utimestamp >= " . $utimestamp_from . ")";
 	}
-	if ($date_to != '') {
-		if($time_to != '') {
-			$filter_resume['time_to'] = $date_to . " " . $time_to;
-			$udate_to = strtotime($date_to . " " . $time_to);
-			$sql_post .= " AND (utimestamp <= " . $udate_to . ")";
-		} else {
-			$filter_resume['time_to'] = $date_to;
-			$udate_to = strtotime($date_to . " 23:59:59");
-			$sql_post .= " AND (utimestamp <= " . $udate_to . ")";
-		}
+	if (!empty($date_to)) {
+		if (empty($time_to)) $time_to = "23:59:59";
+		
+		$utimestamp_to = strtotime($date_to . " " . $time_to) - $fixed_offset;
+		$filter_resume['time_to'] = date(DATE_FORMAT . " " . TIME_FORMAT, $utimestamp_to);
+		$sql_post .= " AND (utimestamp <= " . $utimestamp_to . ")";
 	}
 }
 

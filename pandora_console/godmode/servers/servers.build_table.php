@@ -87,7 +87,7 @@ foreach ($servers as $server) {
 	
 	//Status
 	$data[1] = ui_print_status_image (STATUS_SERVER_OK, '', true);
-	if (($server['status'] == 0) || (($date - strtotime($server['keepalive'])) > ($server['server_keepalive'])*2)) {
+	if (($server['status'] == 0) || (($date - time_w_fixed_tz($server['keepalive'])) > ($server['server_keepalive'])*2)) {
 		$data[1] = ui_print_status_image (STATUS_SERVER_DOWN, '', true);
 	}
 	

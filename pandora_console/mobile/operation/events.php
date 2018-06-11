@@ -162,7 +162,7 @@ class Events {
 						$event['evento'] = io_safe_output($event['evento']);
 						
 						$event['clean_tags'] = events_clean_tags($event['tags']);
-						$event["timestamp"] = date($system->getConfig("date_format"), strtotime($event["timestamp"]));
+						$event["timestamp"] = date($system->getConfig("date_format"), $event["utimestamp"]);
 						if (empty($event["owner_user"])) {
 							$event["owner_user"] = '<i>' . __('N/A') . '</i>';
 						}

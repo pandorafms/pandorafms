@@ -4838,9 +4838,7 @@ function api_set_stop_downtime($id, $thrash1, $other, $thrash3) {
 		return;
 	}
 	
-	$date_stop = date ("Y-m-j",get_system_time ());
-	$time_stop = date ("h:iA",get_system_time ());
-	$date_time_stop = strtotime ($date_stop.' '.$time_stop);
+	$date_time_stop = get_system_time();
 	
 	$values = array();
 	$values['date_to'] = $date_time_stop;

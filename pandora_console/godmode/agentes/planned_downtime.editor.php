@@ -60,15 +60,19 @@ $type_downtime 			= (string) get_parameter('type_downtime', 'quiet');
 $type_execution 		= (string) get_parameter('type_execution', 'once');
 $type_periodicity 		= (string) get_parameter('type_periodicity', 'weekly');
 
-$once_date_from 		= (string) get_parameter ('once_date_from', date(DATE_FORMAT));
-$once_time_from 		= (string) get_parameter ('once_time_from', date(TIME_FORMAT));
-$once_date_to 			= (string) get_parameter ('once_date_to', date(DATE_FORMAT));
-$once_time_to 			= (string) get_parameter ('once_time_to', date(TIME_FORMAT, time() + SECONDS_1HOUR));
+$utimestamp = get_system_time();
+// Fake utimestamp to retrieve the string date of the system
+$system_time = $utimestamp - get_fixed_offset();
+
+$once_date_from 		= (string) get_parameter ('once_date_from', date(DATE_FORMAT, $utimestamp));
+$once_time_from 		= (string) get_parameter ('once_time_from', date(TIME_FORMAT, $utimestamp));
+$once_date_to 			= (string) get_parameter ('once_date_to', date(DATE_FORMAT, $utimestamp));
+$once_time_to 			= (string) get_parameter ('once_time_to', date(TIME_FORMAT, $utimestamp + SECONDS_1HOUR));
 
 $periodically_day_from 	= (int) get_parameter ('periodically_day_from', 1);
 $periodically_day_to 	= (int) get_parameter ('periodically_day_to', 31);
-$periodically_time_from = (string) get_parameter ('periodically_time_from', date(TIME_FORMAT));
-$periodically_time_to 	= (string) get_parameter ('periodically_time_to', date(TIME_FORMAT, time() + SECONDS_1HOUR));
+$periodically_time_from = (string) get_parameter ('periodically_time_from', date(TIME_FORMAT, $system_time));
+$periodically_time_to 	= (string) get_parameter ('periodically_time_to', date(TIME_FORMAT, $system_time + SECONDS_1HOUR));
 
 $monday 				= (bool) get_parameter ('monday');
 $tuesday 				= (bool) get_parameter ('tuesday');
@@ -542,6 +546,7 @@ $table->data[5][1] = "
 	</div>
 	<div id='periodically_time' style='display: none;'>
 		<table>
+			<tr><td>" . ui_get_using_system_timezone_warning() . "</td></tr>
 			<tr>
 				<td>" . __('Type Periodicity:') . "&nbsp;".
 					html_print_select(array(
@@ -1226,7 +1231,7 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 		// Warning message about the problems caused updating a past planned downtime
 		var type_execution = "<?php echo $type_execution; ?>";
 		var datetime_from = <?php echo json_encode(strtotime($once_date_from . ' ' . $once_time_from)); ?>;
-		var datetime_now = <?php echo json_encode(strtotime(date(DATE_FORMAT). ' ' . date(TIME_FORMAT))); ?>;
+		var datetime_now = <?php echo json_encode($utimestamp); ?>;
 		var create = <?php echo json_encode($create); ?>;
 		if (!create && (type_execution == 'periodically' || (type_execution == 'once' && datetime_from < datetime_now))) {
 			$("input#submit-updbutton, input#submit-add_item, table#list a").click(function (e) {

@@ -232,7 +232,7 @@ class Agents {
 	
 	private function getListAgents($page = 0, $ajax = false) {
 		$system = System::getInstance();
-		
+
 		$total = 0;
 		$agents = array();
 		
@@ -351,8 +351,10 @@ class Agents {
 				'<span class="show_collapside" style="vertical-align: 0%; display: none; font-weight: bolder;">' . __('Modules') . ' </span>' .
 				'<span class="agents_tiny_stats">' . reporting_tiny_stats($agent, true, 'agent', '&nbsp;') . ' </span>';
 			
-			$last_time = strtotime ($agent["ultimo_contacto"]);
-			$now = time ();
+			$last_time = time_w_fixed_tz($agent["ultimo_contacto"]);
+			html_debug(date('r', $last_time), true);
+			html_debug(get_current_utc_offset(), true);
+			$now = get_system_time();
 			$diferencia = $now - $last_time;
 			$time = ui_print_timestamp ($last_time, true, array('style' => 'font-size: 12px; margin-left: 20px;', 'units' => 'tiny'));
 			$style = '';

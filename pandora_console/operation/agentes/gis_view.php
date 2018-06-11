@@ -33,7 +33,9 @@ ui_require_javascript_file('openlayers.pandora');
 /* Get the parameters */
 $period = (int)get_parameter ("period", SECONDS_1DAY);
 $agentId = (int)get_parameter('id_agente');
+$id_agente = $agentId;
 $agent_name = agents_get_name($id_agente);
+$agent_alias = agents_get_alias($id_agente);
 $agentData = gis_get_data_last_position_agent($id_agente);
 
 //Avoid the agents with characters that fails the div.
@@ -206,7 +208,7 @@ if ($result !== false) {
 		__("Manual placement"));
 	$table->class = 'position_data_table';
 	$table->id = $agent_name.'_position_data_table';
-	$table->title = $agent_name_original . " " . __("positional data");
+	$table->title = $agent_alias . " " . __("positional data");
 	$table->titlestyle = "background-color:#799E48;";
 	html_print_table($table); unset($table);
 

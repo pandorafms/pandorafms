@@ -239,7 +239,7 @@ if ($agent["ultimo_contacto_remoto"] == "01-01-1970 00:00:00") {
 	$data[1] .= __('Never');
 }
 else {
-	$data[1] .= $agent["ultimo_contacto_remoto"];
+	$data[1] .= date_w_fixed_tz($agent["ultimo_contacto_remoto"]);
 }
 
 $table_contact->data[] = $data;

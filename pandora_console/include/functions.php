@@ -313,7 +313,7 @@ function human_time_comparation ($timestamp, $units = 'large') {
 	global $config;
 	
 	if (!is_numeric ($timestamp)) {
-		$timestamp = strtotime ($timestamp);
+		$timestamp = time_w_fixed_tz($timestamp);
 	}
 	
 	$seconds = get_system_time () - $timestamp;
@@ -2827,4 +2827,61 @@ function validate_address($address){
 	}
 	return true;
 }
+
+/**
+ * Used to get the offset in seconds to the UTC date.
+ *
+ * @param string Timezone identifier.
+ */
+function get_utc_offset ($timezone) {
+	if (empty($timezone)) return 0;
+
+	$dtz = new DateTimeZone($timezone);
+	$dt = new DateTime("now", $dtz);
+
+	return $dtz->getOffset($dt);
+}
+
+function get_system_utc_offset () {
+	global $config;
+	return get_utc_offset($config["timezone"]);
+}
+
+function get_current_utc_offset () {
+	return get_utc_offset(date_default_timezone_get());
+}
+
+function get_fixed_offset () {
+	return get_current_utc_offset() - get_system_utc_offset();
+}
+
+/**
+ * Used to transform the dates without timezone information (like '2018/05/23 10:10:10')
+ * to a unix timestamp compatible with the user custom timezone.
+ *
+ * @param string Date without timezone information.
+ * @param number Offset between the date timezone and the user's default timezone.
+ */
+function time_w_fixed_tz ($date, $timezone_offset = null) {
+	if ($timezone_offset === null) $timezone_offset = get_fixed_offset();
+
+	return strtotime($date) + $timezone_offset;
+}
+
+/**
+ * Used to transform the dates without timezone information (like '2018/05/23 10:10:10')
+ * to a date compatible with the user custom timezone.
+ *
+ * @param string Date without timezone information.
+ * @param string Date format.
+ * @param number Offset between the date timezone and the user's default timezone.
+ */
+function date_w_fixed_tz ($date, $format = null, $timezone_offset = null) {
+	global $config;
+
+	if ($format === null) $format = $config["date_format"];
+
+	return date($format, time_w_fixed_tz($date, $timezone_offset));
+}
+
 ?>

@@ -202,7 +202,7 @@ switch ($action) {
 			$dyn_height = $style['dyn_height'];
 			$type = $item['type'];
 			$name = $item['name'];
-			
+
 			switch ($type) {
 				case 'event_report_log':
 					$period = $item['period'];
@@ -839,6 +839,7 @@ You can of course remove the warnings, that's why we include the source and do n
 				<?php echo __('Working time');?>
 			</td>
 			<td>
+				<?php echo ui_get_using_system_timezone_warning(); ?>
 				<table border="0">
 					<tr>
 						<td>

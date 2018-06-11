@@ -126,6 +126,7 @@ if ($new_user && $config['admin_can_add_user']) {
 	$user_info['comments'] = '';
 	$user_info['is_admin'] = 0;
 	$user_info['language'] = 'default';
+	$user_info['timezone'] = '';
 	$user_info["not_login"] = false;
 	$user_info["strict_acl"] = false;
 	$user_info["session_time"] = 0;
@@ -164,6 +165,7 @@ if ($create_user) {
 	$values['comments'] = (string) get_parameter ('comments');
 	$values['is_admin'] = (int) get_parameter ('is_admin', 0);
 	$values['language'] = get_parameter ('language', 'default');
+	$values['timezone'] = (string) get_parameter('timezone');
 	$values['default_event_filter'] = (int) get_parameter('default_event_filter');
 	$dashboard = get_parameter('dashboard', '');
 	$visual_console = get_parameter('visual_console', '');
@@ -222,7 +224,7 @@ if ($create_user) {
 	}
 	else {
 		$info = 
-		'{"Id_user":"' . $values['id_user'] . '","FullName":"' . $values['fullname'] . '","Firstname":"'. $values['firstname'] .'","Lastname":"'. $values['lastname'] . '","Email":"' . $values['email'] . '","Phone":"' . $values['phone'] . '","Comments":"' . $values['comments'] .'","Is_admin":"' . $values['is_admin'] .'","Language":"' . $values['language'] . '","Block size":"' . $values['block_size'] . '","Interactive Charts":"' . $values['flash_chart'].'"';
+		'{"Id_user":"' . $values['id_user'] . '","FullName":"' . $values['fullname'] . '","Firstname":"'. $values['firstname'] .'","Lastname":"'. $values['lastname'] . '","Email":"' . $values['email'] . '","Phone":"' . $values['phone'] . '","Comments":"' . $values['comments'] .'","Is_admin":"' . $values['is_admin'] .'","Language":"' . $values['language'] .'","Timezone":"' . $values['timezone'] . '","Block size":"' . $values['block_size'] . '","Interactive Charts":"' . $values['flash_chart'].'"';
 			
 		if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 			$info .= ',"Skin":"' . $values['id_skin'].'"}';
@@ -287,6 +289,7 @@ if ($update_user) {
 	$values['comments'] = (string) get_parameter ('comments');
 	$values['is_admin'] = get_parameter ('is_admin', 0 );
 	$values['language'] = (string) get_parameter ('language');
+	$values['timezone'] = (string) get_parameter('timezone');
 	$values['default_event_filter'] = (int) get_parameter('default_event_filter');
 	$dashboard = get_parameter('dashboard', '');
 	$visual_console = get_parameter('visual_console', '');
@@ -376,6 +379,7 @@ if ($update_user) {
 				"Comments":"' . $values['comments'] . '",
 				"Is_admin":"' . $values['is_admin'] . '",
 				"Language":"' . $values['language'] . '",
+				"Timezone":"' . $values['timezone'] . '",
 				"Block size":"' . $values['block_size'] . '",
 				"Flash Chats":"' . $values['flash_chart'] . '",
 				"Section":"' . $values['section'].'"';
@@ -521,6 +525,9 @@ $table->data[1][1] = html_print_input_text_extended ('fullname', $user_info['ful
 $table->data[2][0] = __('Language');
 $table->data[2][1] = html_print_select_from_sql ('SELECT id_language, name FROM tlanguage',
 	'language', $user_info['language'], '', __('Default'), 'default', true);
+
+$table->data[3][0] = __('Timezone');
+$table->data[3][1] = html_print_timezone_select("timezone", $user_info["timezone"]);
 
 if ($config['user_can_update_password']) {
 	$table->data[4][0] = __('Password');

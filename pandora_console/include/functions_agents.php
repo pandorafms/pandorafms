@@ -696,20 +696,13 @@ function agents_process_manage_config ($source_id_agent, $destiny_id_agents, $co
 }
 
 function agents_get_next_contact($idAgent, $maxModules = false) {
-	$agent = db_get_row_sql("SELECT *
-		FROM tagente
-		WHERE id_agente = " . $idAgent);
+	$agent = db_get_row("tagente", "id_agente", $idAgent);
+	$last_contact = time_w_fixed_tz($agent["ultimo_contacto"]);
+	$difference = time() - $last_contact;
 	
-	
-	$difference = get_system_time () - strtotime ($agent["ultimo_contacto"]);
-	
-	
-	if ($agent["intervalo"] > 0 && strtotime($agent["ultimo_contacto"]) > 0) {
-		return round ($difference / ($agent["intervalo"] / 100));
-	}
-	else {
-		return 0;
-	}
+	return ($agent["intervalo"] > 0 && $last_contact > 0)
+		? round ($difference / ($agent["intervalo"] / 100))
+		: 0;
 }
 
 /**
@@ -1453,7 +1446,7 @@ function agents_get_interval ($id_agent) {
 function agents_get_interval_status ($agent) {
 	
 	$return = '';
-	$last_time = strtotime ($agent["ultimo_contacto"]);
+	$last_time = time_w_fixed_tz($agent["ultimo_contacto"]);
 	$now = time ();
 	$diferencia = $now - $last_time;
 	$time = ui_print_timestamp ($last_time, true, array('style' => 'font-size:6.5pt'));

@@ -228,19 +228,19 @@ if (!empty($all_data)) {
 			
 			switch ($config["dbtype"]) {
 				case "mysql":
-					$sql = sprintf ("SELECT id_usuario,accion,fecha,ip_origen,descripcion,utimestamp
+					$sql = sprintf ("SELECT id_usuario,accion, ip_origen,descripcion,utimestamp
 						FROM tsesion
 						WHERE (`utimestamp` > UNIX_TIMESTAMP(NOW()) - " . SECONDS_1WEEK . ") 
 							AND `id_usuario` = '%s' ORDER BY `utimestamp` DESC LIMIT 10", $config["id_user"]);
 					break;
 				case "postgresql":
-					$sql = sprintf ("SELECT \"id_usuario\", accion, fecha, \"ip_origen\", descripcion, utimestamp
+					$sql = sprintf ("SELECT \"id_usuario\", accion, \"ip_origen\", descripcion, utimestamp
 						FROM tsesion
 						WHERE (\"utimestamp\" > ceil(date_part('epoch', CURRENT_TIMESTAMP)) - " . SECONDS_1WEEK . ") 
 							AND \"id_usuario\" = '%s' ORDER BY \"utimestamp\" DESC LIMIT 10", $config["id_user"]);
 					break;
 				case "oracle":
-					$sql = sprintf ("SELECT id_usuario, accion, fecha, ip_origen, descripcion, utimestamp
+					$sql = sprintf ("SELECT id_usuario, accion, ip_origen, descripcion, utimestamp
 						FROM tsesion
 						WHERE ((utimestamp > ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (" . SECONDS_1DAY . ")) - " . SECONDS_1WEEK . ") 
 							AND id_usuario = '%s') AND rownum <= 10 ORDER BY utimestamp DESC", $config["id_user"]);
@@ -270,7 +270,8 @@ if (!empty($all_data)) {
 				
 				$data[0] = '<strong>' . $session_id_usuario . '</strong>';
 				$data[1] = ui_print_session_action_icon ($session['accion'], true) . ' ' . $session['accion'];
-				$data[2] =  ui_print_help_tip($session['fecha'], true) . human_time_comparation($session['utimestamp'], 'tiny');
+				$data[2] =  ui_print_help_tip(date($config["date_format"], $session['utimestamp']), true)
+					. human_time_comparation($session['utimestamp'], 'tiny');
 				$data[3] = $session_ip_origen;
 				$description = str_replace(array(',', ', '), ', ', $session['descripcion']);
 				$data[4] = '<div >' . io_safe_output($description) . '</div>';

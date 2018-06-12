@@ -446,7 +446,7 @@ function ui_print_timestamp ($unixtime, $return = false, $option = array ()) {
 	}
 	
 	if (!is_numeric ($unixtime)) {
-		$unixtime = strtotime ($unixtime);
+		$unixtime = time_w_fixed_tz($unixtime);
 	}
 	
 	//prominent_time is either timestamp or comparation
@@ -3914,6 +3914,20 @@ function ui_get_snapshot_link($params, $only_params = false) {
 
 	// Return the function call to inline js execution
 	return "winopeng_var('" . implode("', '", $link_parts) . "')";
+}
+
+function ui_get_using_system_timezone_warning ($tag = "h3", $return = true) {
+	global $config;
+
+	$user_offset = (-get_fixed_offset() / 60) / 60;
+
+	$message = sprintf(
+		__("These controls are using the timezone of the system (%s) instead of yours (%s). The difference with your time zone in hours is %s."),
+		$config["timezone"],
+		date_default_timezone_get(),
+		$user_offset > 0 ? "+" . $user_offset : $user_offset
+	);
+	return ui_print_info_message($message, '', $return, $tag);
 }
 
 /**

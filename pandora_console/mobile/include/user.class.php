@@ -52,6 +52,8 @@ class User {
 			
 			$system->setSessionBase('id_usuario', $this->user);
 			$system->setSession('user', $this);
+
+			config_user_set_custom_config();
 		}
 	}
 	

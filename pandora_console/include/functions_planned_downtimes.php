@@ -752,10 +752,20 @@ function planned_downtimes_items ($filter) {
 	
 	$downtime_agents = db_get_all_rows_filter('tplanned_downtime_agents',$filter, 'id_agent,id_downtime,all_modules');
 	$downtime = db_get_row_filter('tplanned_downtime',array('id' => $filter['id_downtime']), 'type_downtime');
-	
+
+	$return = array(
+		'id_agents' => array(),
+		'id_downtime' => $filter['id_downtime'],
+		'all_modules' => 0,
+		'modules' => array(),
+	);
 	foreach ( $downtime_agents as $key => $data ) {
-		$return = $data;
-		$modules = array();
+		// Do not add the agent information if no permissions
+		if (!agents_check_access_agent($data['id_agent'], "AR")) continue;
+
+		$return['id_agents'][] = $data['id_agent'];
+		$return['id_downtime'] = $data['id_downtime'];
+		$return['all_modules'] = $data['all_modules'];
 		if ($downtime['type_downtime'] === 'quiet') {
 			if (!$data['all_modules']) {
 				$second_filter = array(
@@ -765,14 +775,18 @@ function planned_downtimes_items ($filter) {
 				$downtime_modules = db_get_all_rows_filter('tplanned_downtime_modules',$second_filter, 'id_agent_module');
 				if ( $downtime_modules ) {
 					foreach ( $downtime_modules as $data2 ) {
-						$modules[] = $data2['id_agent_module'];
+						$return['modules'][$data2['id_agent_module']] = $data2['id_agent_module'];
 					}
-					$return['modules'] = implode(',', $modules);
 				}
 			}
 		}
-	}
-	
+	} 
+
+	if (empty($return['id_agents'])) return false;
+
+	// Implode agents and modules
+	$return['id_agents'] = implode(',', $return['id_agents']);
+	$return['modules'] = implode(',', $return['modules']);
 	return $return;
 }
 

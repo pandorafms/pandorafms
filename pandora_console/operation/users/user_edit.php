@@ -76,6 +76,7 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 	$upd_info["phone"] = get_parameter_post ("phone", $user_info["phone"]);
 	$upd_info["comments"] = get_parameter_post ("comments", $user_info["comments"]);
 	$upd_info["language"] = get_parameter_post ("language", $user_info["language"]);
+	$upd_info["timezone"] = get_parameter_post ("timezone", "");
 	$upd_info["id_skin"] = get_parameter ("skin", $user_info["id_skin"]);
 	$upd_info["id_filter"] = get_parameter ("event_filter",NULL);
 	$upd_info["block_size"] = get_parameter ("block_size", $config["block_size"]);
@@ -271,8 +272,10 @@ else
 $usr_groups = (users_get_groups($config['id_user'], 'AR', $display_all_group));
 $id_usr = $config['id_user'];
 
+
+$data = array();
+
 if (!$meta) {
-	$data = array();
 	$data[0] = '<span style="width:50%;float:left;">'.__('Home screen'). ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type sec=estado&sec2=operation/agentes/estado_agente to show agent detail view'), true).'</span>';
 	$values = array (
 		'Default' =>__('Default'),
@@ -326,10 +329,18 @@ if (!$meta) {
 			$data[1] .= $jump . '<span style="width:20%;float:left;">'. skins_print_select($id_usr,'skin', $user_info['id_skin'], '', __('None'), 0, true).'</span>';
 		}
 	}
-	$table->rowclass[] = '';
-	$table->rowstyle[] = 'font-weight: bold;';
-	$table->data[] = $data;
 }
+else {
+	$data[0] = "";
+	$data[1] = "";
+}
+
+$data[2] = '<span style="width:30%;float:left;">'.__('Timezone').'</span>';
+$data[2] .= $jump . html_print_timezone_select("timezone", $user_info["timezone"]);
+
+$table->rowclass[] = '';
+$table->rowstyle[] = 'font-weight: bold;';
+$table->data[] = $data;
 
 // Double auth
 $double_auth_enabled = (bool) db_get_value('id', 'tuser_double_auth', 'id_user', $config['id_user']);

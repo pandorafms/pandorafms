@@ -41,8 +41,8 @@ if (isset ($_GET["id"])) {
 	// Get values
 	$titulo = $row["titulo"];
 	$texto = $row["descripcion"];
-	$inicio = strtotime ($row["inicio"]); 
-	$actualizacion = strtotime ($row["actualizacion"]);
+	$inicio = time_w_fixed_tz($row["inicio"]); 
+	$actualizacion = time_w_fixed_tz($row["actualizacion"]);
 	$estado = $row["estado"];
 	$prioridad = $row["prioridad"];
 	$origen = $row["origen"];

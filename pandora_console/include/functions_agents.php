@@ -697,20 +697,13 @@ function agents_process_manage_config ($source_id_agent, $destiny_id_agents, $co
 }
 
 function agents_get_next_contact($idAgent, $maxModules = false) {
-	$agent = db_get_row_sql("SELECT *
-		FROM tagente
-		WHERE id_agente = " . $idAgent);
+	$agent = db_get_row("tagente", "id_agente", $idAgent);
+	$last_contact = time_w_fixed_tz($agent["ultimo_contacto"]);
+	$difference = time() - $last_contact;
 	
-	
-	$difference = get_system_time () - strtotime ($agent["ultimo_contacto"]);
-	
-	
-	if ($agent["intervalo"] > 0 && strtotime($agent["ultimo_contacto"]) > 0) {
-		return round ($difference / ($agent["intervalo"] / 100));
-	}
-	else {
-		return 0;
-	}
+	return ($agent["intervalo"] > 0 && $last_contact > 0)
+		? round ($difference / ($agent["intervalo"] / 100))
+		: 0;
 }
 
 /**
@@ -1454,7 +1447,7 @@ function agents_get_interval ($id_agent) {
 function agents_get_interval_status ($agent) {
 	
 	$return = '';
-	$last_time = strtotime ($agent["ultimo_contacto"]);
+	$last_time = time_w_fixed_tz($agent["ultimo_contacto"]);
 	$now = time ();
 	$diferencia = $now - $last_time;
 	$time = ui_print_timestamp ($last_time, true, array('style' => 'font-size:6.5pt'));
@@ -2670,7 +2663,10 @@ function agents_generate_name ($alias, $address = '') {
  */
 function agents_get_all_groups_agent ($id_agent, $group = false) {
 	// Get the group if is not defined
-	if ($group === false) $group = agents_get_group_agents($id_agent);
+	if ($group === false) $group = agents_get_agent_group($id_agent);
+
+	// If cannot retrieve the group, it means that agent does not exist
+	if (!$group) return array();
 
 	$secondary_groups = enterprise_hook('agents_get_secondary_groups', array($id_agent));
 
@@ -2682,4 +2678,42 @@ function agents_get_all_groups_agent ($id_agent, $group = false) {
 	return $secondary_groups['plain'];
 }
 
+/**
+ * @brief Get the total agents with a filter and an access bit
+ *
+ * @param Array filter agentes array. It is the same that agents_get_agents function
+ * @param string ACL bit
+ *
+ * @return int Total agents retrieved with the filter
+ */
+function agents_count_agents_filter ($filter = array(), $access = "AR") {
+	$total_agents = agents_get_agents(
+		array ('id_group' => $id_group),
+		array ('COUNT(DISTINCT id_agente) as total'),
+		$access
+	);
+	return ($total_agents !== false)
+		? $total_agents[0]['total']
+		: 0;
+}
+
+/**
+ * @brief Check if an agent is accessible by the user
+ *
+ * @param int Id agent
+ * @param string ACL access bit
+ *
+ * @return True if user has access, false if user has not permissions and
+ * 		null if id agent does not exist
+ */
+function agents_check_access_agent ($id_agent, $access = "AR") {
+	global $config;
+
+	if (users_access_to_agent($id_agent, $access)) return true;
+
+	// If agent exist return false
+	if (agents_check_agent_exists($id_agent)) return false;
+	// Return null otherwise
+	return null;
+}
 ?>

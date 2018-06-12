@@ -101,7 +101,23 @@ $now = date ("Y-m-d");
 Header ("Content-type: text/txt");
 header ('Content-Disposition: attachment; filename="pandora_export_event'.$now.'.csv"');
 
-echo "timestamp, agent, group, event, status, user, event_type, severity, id";
+echo "timestamp";
+echo $config["csv_divider"];
+echo "agent";
+echo $config["csv_divider"];
+echo "group";
+echo $config["csv_divider"];
+echo "event";
+echo $config["csv_divider"];
+echo "status";
+echo $config["csv_divider"];
+echo "user";
+echo $config["csv_divider"];
+echo "event_type";
+echo $config["csv_divider"];
+echo "severity";
+echo $config["csv_divider"];
+echo "id";
 echo chr (13);
 
 $new = true;
@@ -113,22 +129,22 @@ while ($event = db_get_all_row_by_steps_sql($new, $result, $sql)) {
 	(!check_acl($config["id_user"], 0, "PM") && $event["event_type"] == 'system'))
 		continue;
 	
-	echo $event["timestamp"];
-	echo ",";
+	echo date($config["date_format"], $event["utimestamp"]);
+	echo $config["csv_divider"];
 	echo io_safe_output($alias);
-	echo ",";
+	echo $config["csv_divider"];
 	echo io_safe_output(groups_get_name($event["id_grupo"]));
-	echo ",";
+	echo $config["csv_divider"];
 	echo io_safe_output($event["evento"]);
-	echo ",";
+	echo $config["csv_divider"];
 	echo io_safe_output($event["estado"]);
-	echo ",";
+	echo $config["csv_divider"];
 	echo io_safe_output($event["id_usuario"]);
-	echo ",";
+	echo $config["csv_divider"];
 	echo io_safe_output($event["event_type"]);
-	echo ",";
+	echo $config["csv_divider"];
 	echo $event["criticity"];
-	echo ",";
+	echo $config["csv_divider"];
 	echo $event["id_evento"];
 	echo chr (13);
 }

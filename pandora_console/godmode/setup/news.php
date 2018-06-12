@@ -36,10 +36,11 @@ if (isset ($_POST["create"])) { // If create
 	$id_group = get_parameter ("id_group");
 	$modal =  get_parameter ("modal");
 	$expire = get_parameter ("expire");
-	$expire_date = get_parameter ("expire_date");
-	$expire_date = date('Y-m-d', strtotime($expire_date));
-	$expire_time = get_parameter ("expire_time");
-	$expire_timestamp = "$expire_date $expire_time";
+	$expire_date = get_parameter("expire_date");
+	$expire_time = get_parameter("expire_time");
+	// Change the user's timezone to the system's timezone
+	$expire_timestamp = strtotime("$expire_date $expire_time") - get_fixed_offset();
+	$expire_timestamp = date("Y-m-d H:i:s", $expire_timestamp);
 		
 	$values = array('subject' => $subject, 
 					'text' => $text, 
@@ -64,10 +65,11 @@ if (isset ($_POST["update"])) { // if update
 	$id_group = get_parameter ("id_group");
 	$modal =  get_parameter ("modal");
 	$expire = get_parameter ("expire");
-	$expire_date = get_parameter ("expire_date");
-	$expire_date = date('Y-m-d', strtotime($expire_date));
-	$expire_time = get_parameter ("expire_time");
-	$expire_timestamp = "$expire_date $expire_time";
+	$expire_date = get_parameter("expire_date");
+	$expire_time = get_parameter("expire_time");
+	// Change the user's timezone to the system's timezone
+	$expire_timestamp = strtotime("$expire_date $expire_time") - get_fixed_offset();
+	$expire_timestamp = date("Y-m-d H:i:s", $expire_timestamp);
 	
 	//NOW() column exists in any table and always displays the current date and time, so let's get the value from a row in a table which can't be deleted.
 	//This way we prevent getting no value for this variable
@@ -117,10 +119,10 @@ if ((isset ($_GET["form_add"])) || (isset ($_GET["form_edit"]))) {
 			
 			if ($expire) {
 				$expire_timestamp = $result["expire_timestamp"];
-				$expire_utimestamp = strtotime($expire_timestamp);
+				$expire_utimestamp = time_w_fixed_tz($expire_timestamp);
 			}
 			else {
-				$expire_utimestamp = time() + SECONDS_1WEEK;
+				$expire_utimestamp = get_system_time() + SECONDS_1WEEK;
 			}
 			
 			$expire_date = date('Y/m/d', $expire_utimestamp);
@@ -138,8 +140,8 @@ if ((isset ($_GET["form_add"])) || (isset ($_GET["form_edit"]))) {
 		$id_group = 0;
 		$modal = 0;
 		$expire = 0;
-		$expire_date = date('Y/m/d', time() + SECONDS_1WEEK);
-		$expire_time = date('H:i:s', time());
+		$expire_date = date('Y/m/d', get_system_time() + SECONDS_1WEEK);
+		$expire_time = date('H:i:s', get_system_time());
 	}
 	
 	// Create news
@@ -246,10 +248,10 @@ else {
 			}
 			
 			echo "<td class='$tdcolor'>".$row["author"]."</b></td>";
-			$utimestamp = strtotime($row["timestamp"]);
-			echo "<td class='$tdcolor'>" . date($config['date_format'], strtotime($row["timestamp"])) . "</b></td>";
+			$utimestamp = time_w_fixed_tz($row["timestamp"]);
+			echo "<td class='$tdcolor'>" . date($config['date_format'], $utimestamp) . "</b></td>";
 			if ($row["expire"]) {
-				$expire_utimestamp = strtotime($row["expire_timestamp"]);
+				$expire_utimestamp = time_w_fixed_tz($row["expire_timestamp"]);
 				$expire_in_secs = $expire_utimestamp - $utimestamp;
 				
 				if( $expire_in_secs <= 0) {

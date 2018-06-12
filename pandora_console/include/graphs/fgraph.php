@@ -271,33 +271,6 @@ function stacked_bullet_chart($chart_data, $width, $height,
 
 }
 
-function stacked_thermometers($flash_chart, $chart_data, $width, $height,
-	$color, $legend, $long_index, $no_data_image, $xaxisname = "",
-	$yaxisname = "", $water_mark = "", $font = '', $font_size = '',
-	$unit = '', $ttl = 1, $homeurl = '', $backgroundColor = 'white') {
-
-	include_once('functions_d3.php');
-
-	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
-
-	if (empty($chart_data)) {
-		return '<img src="' . $no_data_image . '" />';
-	}
-
-	return d3_thermometers(
-			$chart_data,
-			$width,
-			$height,
-			$color,
-			$legend,
-			$homeurl,
-			$unit,
-			$font,
-			$font_size + 2,
-			$no_data_image
-			);
-}
-
 function stacked_gauge($chart_data, $width, $height,
 	$color, $legend, $no_data_image, $font = '', $font_size = '',
 	$unit = '', $homeurl = '') {

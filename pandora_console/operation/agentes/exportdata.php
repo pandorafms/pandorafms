@@ -71,13 +71,16 @@ if (!empty ($export_btn) && !empty ($module)) {
 	$sql_cache = array ('saved' => array());
 	
 	
-	//Convert start time and end time to unix timestamps
-	$start = strtotime ($start_date . " " . $start_time);
-	$end = strtotime ($end_date . " " . $end_time);
+	// Convert start time and end time to unix timestamps.
+	// The date/time will have the user's timezone,
+	// so we need to change it to the system's timezone.
+	$fixed_offset = get_fixed_offset();
+	$start = strtotime ($start_date . " " . $start_time) - $fixed_offset;
+	$end = strtotime ($end_date . " " . $end_time) - $fixed_offset;
 	$period = $end - $start;
 	$data = array ();
 	
-	//If time is negative or zero, don't process - it's invalid
+	// If time is negative or zero, don't process - it's invalid
 	if ($start < 1 || $end < 1) {
 		ui_print_error_message (__('Invalid time specified'));
 		return;
@@ -168,12 +171,16 @@ if (!empty ($export_btn) && !empty ($module)) {
 						$output .= $module['data'];
 						$output .= $divider;
 						switch($export_type) {
-						case "data":
-							$output .= date("Y-m-d G:i:s", $module['utimestamp']);
-							break;
-						case "avg":
-							$output .= date ("Y-m-d G:i:s", $work_start) . ' - ' . date ("Y-m-d G:i:s", $work_end);
-							break;
+							case "data":
+								// Change from the system's timezone to the user's timezone
+								$output .= date("Y-m-d G:i:s", $module['utimestamp'] + $fixed_offset);
+								break;
+							case "avg":
+								// Change from the system's timezone to the user's timezone
+								$output .= date ("Y-m-d G:i:s", $work_start + $fixed_offset)
+									. ' - '
+									. date ("Y-m-d G:i:s", $work_end + $fixed_offset);
+								break;
 						}
 						$output .= $rowend;
 					}

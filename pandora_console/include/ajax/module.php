@@ -118,13 +118,14 @@ if ($get_module_detail) {
 		$conexion = false;
 	}
 
-	$selection_mode = get_parameter('selection_mode', 'fromnow');
-	$date_from = (string) get_parameter ('date_from', date ('Y-m-j'));
-	$time_from = (string) get_parameter ('time_from', date ('h:iA'));
-	$date_to = (string) get_parameter ('date_to', date ('Y-m-j'));
-	$time_to = (string) get_parameter ('time_to', date ('h:iA'));
 	$freesearch = (string) get_parameter ('freesearch', '');
 	$free_checkbox = (bool) get_parameter ('free_checkbox', false);
+	$selection_mode = get_parameter('selection_mode', 'fromnow');
+	$utimestamp = get_system_time();
+	$date_from = (string) get_parameter ('date_from', date(DATE_FORMAT, $utimestamp - SECONDS_1DAY));
+	$time_from = (string) get_parameter ('time_from', date(TIME_FORMAT, $utimestamp - SECONDS_1DAY));
+	$date_to = (string) get_parameter ('date_to', date(DATE_FORMAT, $utimestamp));
+	$time_to = (string) get_parameter ('time_to', date(TIME_FORMAT, $utimestamp));
 
 	$formtable->width = '98%';
 	$formtable->class = "databox";

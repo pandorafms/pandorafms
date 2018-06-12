@@ -1603,10 +1603,10 @@ function get_alert_type ($id_type) {
  */
 function get_agent_alert_fired ($id_agent, $id_alert, $period, $date = 0) {
 	if (!is_numeric ($date)) {
-		$date = strtotime ($date);
+		$date = time_w_fixed_tz($date);
 	}
 	if (empty ($date)) {
-		$date = get_system_time ();
+		$date = get_system_time();
 	}
 	
 	$datelimit = $date - $period;
@@ -1635,10 +1635,10 @@ function get_agent_alert_fired ($id_agent, $id_alert, $period, $date = 0) {
 function get_module_alert_fired ($id_agent_module, $id_alert, $period, $date = 0) {
 	
 	if (!is_numeric ($date)) {
-		$date = strtotime ($date);
+		$date = time_w_fixed_tz($date);
 	}
 	if (empty ($date)) {
-		$date = get_system_time ();
+		$date = get_system_time();
 	}
 	
 	$datelimit = $date - $period;

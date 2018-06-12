@@ -25,7 +25,7 @@ function createXMLData($agent, $agentModule, $time, $data) {
 	
 	$xmlTemplate = "<?xml version='1.0' encoding='UTF-8'?>
 		<agent_data description='' group='' os_name='%s' " .
-		" os_version='%s' interval='%d' version='%s' timestamp='%s' agent_name='%s' timezone_offset='%d'>
+		" os_version='%s' interval='%d' version='%s' timestamp='%s' agent_name='%s' timezone_offset='0'>
 			<module>
 				<name><![CDATA[%s]]></name>
 				<description><![CDATA[%s]]></description>
@@ -34,20 +34,22 @@ function createXMLData($agent, $agentModule, $time, $data) {
 			</module>
 		</agent_data>";
 	
-	$xml = sprintf($xmlTemplate, io_safe_output(get_os_name($agent['id_os'])),
-		io_safe_output($agent['os_version']), $agent['intervalo'],
-		io_safe_output($agent['agent_version']), $time,
+	$xml = sprintf(
+		$xmlTemplate,
+		io_safe_output(get_os_name($agent['id_os'])),
+		io_safe_output($agent['os_version']),
+		$agent['intervalo'],
+		io_safe_output($agent['agent_version']),
+		$time,
 		io_safe_output($agent['nombre']),
-		$agent['timezone_offset'],
-		io_safe_output($agentModule['nombre']), io_safe_output($agentModule['descripcion']), modules_get_type_name($agentModule['id_tipo_modulo']), $data);
-
-
-	if (false === @file_put_contents($config['remote_config'] . '/' . io_safe_output($agent['alias']) . '.' . strtotime($time) . '.data', $xml)) {
-		return false;
-	}
-	else {
-		return true;
-	}
+		io_safe_output($agentModule['nombre']),
+		io_safe_output($agentModule['descripcion']),
+		modules_get_type_name($agentModule['id_tipo_modulo']),
+		$data
+	);
+	
+	$file_name = $config["remote_config"] . "/" . io_safe_output($agent["alias"]) . "." . str_replace($time, " ", "_") . ".data";
+	return (bool) @file_put_contents($file_name, $xml);
 }
 
 function mainInsertData() {
@@ -61,18 +63,12 @@ function mainInsertData() {
 		return;
 	}
 	
-	$save = (bool)get_parameter('save', false);
-	$id_agent = (string)get_parameter('id_agent', '');
+	$save = (bool) get_parameter("save");
+	$agent_id = (int) get_parameter("agent_id");
+	$agent_name = (string) get_parameter("agent_name");
 	
-	foreach ($_POST as $key => $value) {
-		if(strpos($key,"agent_autocomplete_idagent")!== false){
-			$id_agente = $value;
-		}
-	}
-	
-	
-	$id_agent_module = (int)get_parameter('id_agent_module', '');
-	$data = (string)get_parameter('data');
+	$id_agent_module = (int) get_parameter("id_agent_module");
+	$data = (string) get_parameter('data');
 	$date = (string) get_parameter('date', date(DATE_FORMAT));
 	$time = (string) get_parameter('time', date(TIME_FORMAT));
 	if (isset($_FILES['csv'])) {
@@ -89,12 +85,11 @@ function mainInsertData() {
 	
 	
 	if ($save) {
-		if (!check_acl($config['id_user'], agents_get_agent_group(agents_get_agent_id($id_agent)), "AW")) {
+		if (!check_acl($config['id_user'], agents_get_agent_group($agent_id), "AW")) {
 			ui_print_error_message(__('You haven\'t privileges for insert data in the agent.'));
 		}
 		else {
-			
-			$agent = db_get_row_filter('tagente', array('id_agente' => $id_agente));
+			$agent = db_get_row_filter('tagente', array('id_agente' => $agent_id));
 			$agentModule = db_get_row_filter('tagente_modulo', array('id_agente_modulo' => $id_agent_module));
 			
 			$done = 0;
@@ -104,7 +99,9 @@ function mainInsertData() {
 				foreach ($file as $line) {
 					$tokens = explode(';', $line);
 					
-					$result = createXMLData($agent, $agentModule, trim($tokens[0]), trim($tokens[1]));
+					$utimestamp = strtotime(trim($tokens[0])) - get_fixed_offset();
+					$timestamp = date(DATE_FORMAT . " " . TIME_FORMAT, $utimestamp);
+					$result = createXMLData($agent, $agentModule, $timestamp, trim($tokens[1]));
 					
 					if ($result) {
 						$done++;
@@ -115,7 +112,9 @@ function mainInsertData() {
 				}
 			}
 			else {
-				$result = createXMLData($agent, $agentModule, $date . ' ' . $time, $data);
+				$utimestamp = strtotime($date . " " . $time) - get_fixed_offset();
+				$timestamp = date(DATE_FORMAT . " " . TIME_FORMAT, $utimestamp);
+				$result = createXMLData($agent, $agentModule, $timestamp, $data);
 				
 				if ($result) {
 					$done++;
@@ -159,25 +158,26 @@ function mainInsertData() {
 	$params = array();
 	$params['return'] = true;
 	$params['show_helptip'] = true;
-	$params['input_name'] = 'id_agent';
-	$params['value'] = $id_agent;
+	$params['input_name'] = 'agent_name';
+	$params['value'] = $agent_name;
 	$params['javascript_is_function_select'] = true;
 	$params['javascript_name_function_select'] = 'custom_select_function';
 	$params['javascript_code_function_select'] = '';
 	$params['use_hidden_input_idagent'] = true;
 	$params['print_hidden_input_idagent'] = true;
 	$params['hidden_input_idagent_id'] = 'hidden-autocomplete_id_agent';
-	$params['hidden_input_idagent_value'] = $id_agente;
+	$params['hidden_input_idagent_name'] = 'agent_id';
+	$params['hidden_input_idagent_value'] = $agent_id;
 	
 	$table->data[0][1] = ui_print_agent_autocomplete_input($params);
 	
 	$table->data[1][0] = __('Module');
 	$modules = array ();
-	if ($id_agente){
-		$modules = agents_get_modules ($id_agente, false, array("delete_pending" => 0));
+	if ($agent_id){
+		$modules = agents_get_modules ($agent_id, false, array("delete_pending" => 0));
 	}
 	$table->data[1][1] = html_print_select ($modules, 'id_agent_module', $id_agent_module, true,
-		__('Select'), 0, true, false, true, '', ($id_agente === ''));
+		__('Select'), 0, true, false, true, '', empty($agent_id));
 	$table->data[2][0] = __('Data');
 	$table->data[2][1] = html_print_input_text('data', $data, __('Data'), 40, 60, true);
 	$table->data[3][0] = __('Date');

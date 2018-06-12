@@ -111,8 +111,8 @@ else {
 			$cellName .= "</em>";
 		}
 		
-		$last_time = strtotime ($agent["ultimo_contacto"]);
-		$now = time ();
+		$last_time = time_w_fixed_tz($agent["ultimo_contacto"]);
+		$now = get_system_time();
 		$diferencia = $now - $last_time;
 		$time = ui_print_timestamp ($last_time, true);
 		$time_style = $time;

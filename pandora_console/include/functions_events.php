@@ -1275,7 +1275,7 @@ function events_get_agent ($id_agent, $period, $date = 0,
 	global $config;
 
 	if (!is_numeric ($date)) {
-		$date = strtotime ($date);
+		$date = time_w_fixed_tz($date);
 	}
 	if (empty ($date)) {
 		$date = get_system_time ();
@@ -1922,7 +1922,7 @@ function events_get_response_target($event_id, $response_id, $server_id, $histor
 	if (strpos($target, '_event_date_') !== false) {
 		$target = str_replace(
 			'_event_date_',
-			date ($config["date_format"], strtotime($event["timestamp"])),
+			date ($config["date_format"], $event["utimestamp"]),
 			$target
 		);
 	}
@@ -2155,12 +2155,12 @@ function events_page_details ($event, $server = "") {
 		
 		$data = array();
 		$data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('Last contact').'</div>';
-		$data[1] = $agent["ultimo_contacto"] == "1970-01-01 00:00:00" ? '<i>'.__('N/A').'</i>' : $agent["ultimo_contacto"];
+		$data[1] = $agent["ultimo_contacto"] == "1970-01-01 00:00:00" ? '<i>'.__('N/A').'</i>' : date_w_fixed_tz($agent["ultimo_contacto"]);
 		$table_details->data[] = $data;
 		
 		$data = array();
 		$data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('Last remote contact').'</div>';
-		$data[1] = $agent["ultimo_contacto_remoto"] == "1970-01-01 00:00:00" ? '<i>'.__('N/A').'</i>' : $agent["ultimo_contacto_remoto"];
+		$data[1] = $agent["ultimo_contacto_remoto"] == "1970-01-01 00:00:00" ? '<i>'.__('N/A').'</i>' : date_w_fixed_tz($agent["ultimo_contacto_remoto"]);
 		$table_details->data[] = $data;
 		
 		$data = array();
@@ -2469,11 +2469,12 @@ function events_page_general ($event) {
 	
 	$data = array();
 	$data[0] = __('Timestamp');
+	
 	if ($group_rep == 1 && $event["event_rep"] > 1) {
 		$data[1] = __('First event').': '.date ($config["date_format"], $event['timestamp_first']).'<br>'.__('Last event').': '.date ($config["date_format"], $event['timestamp_last']);
 	}
 	else {
-		$data[1] = date ($config["date_format"], strtotime($event["timestamp"]));
+		$data[1] = date ($config["date_format"], $event["utimestamp"]);
 	}
 	$table_general->data[] = $data;
 	
@@ -2717,7 +2718,7 @@ function events_get_count_events_by_agent ($id_group, $period, $date,
 
 	//date
 	if (!is_numeric ($date)) {
-		$date = strtotime ($date);
+		$date = time_w_fixed_tz($date);
 	}
 	if (empty ($date)) {
 		$date = get_system_time ();
@@ -2872,7 +2873,7 @@ function events_get_count_events_validated_by_user ($filter, $period, $date,
 
 	//date
 	if (!is_numeric ($date)) {
-		$date = strtotime ($date);
+		$date = time_w_fixed_tz($date);
 	}
 	if (empty ($date)) {
 		$date = get_system_time ();
@@ -3017,7 +3018,7 @@ function events_get_count_events_by_criticity ($filter, $period, $date,
 	}
 
 	if (!is_numeric ($date)) {
-		$date = strtotime ($date);
+		$date = time_w_fixed_tz($date);
 	}
 	if (empty ($date)) {
 		$date = get_system_time ();
@@ -3159,7 +3160,7 @@ function events_get_count_events_validated ($filter, $period = null, $date = nul
 	
 	//date
 	if (!is_numeric ($date)) {
-		$date = strtotime ($date);
+		$date = time_w_fixed_tz($date);
 	}
 	if (empty ($date)) {
 		$date = get_system_time ();

@@ -325,7 +325,7 @@ switch ($opt) {
 			$row[] = __('Never');
 		}
 		else {
-			$row[] = $agent["ultimo_contacto"];
+			$row[] = date_w_fixed_tz($agent["ultimo_contacto"]);
 		}
 		$table->data[] = $row;
 
@@ -336,7 +336,7 @@ switch ($opt) {
 			$row[] = __('Never');
 		}
 		else {
-			$row[] = $agent["ultimo_contacto_remoto"];
+			$row[] = date_w_fixed_tz($agent["ultimo_contacto_remoto"]);
 		}
 		$table->data[] = $row;
 

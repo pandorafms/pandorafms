@@ -323,14 +323,7 @@ function menu_print_menu (&$menu) {
 			
 			//Print second level submenu
 			if (isset($sub['sub2'])) {
-				
-				//Display if father is selected
-				$display = "style='display:none;'";
-				
-				if ($selected) {
-					$display = "";
-				}
-				
+			
 				$submenu2_list = '';
 				
 				$count_sub2 = 0;
@@ -374,12 +367,9 @@ function menu_print_menu (&$menu) {
 				
 				// Added a top on inline styles
 				$top = menu_calculate_top($config['count_main_menu'], $count_sub, $count_sub2);
-				if ($top !== 0) {
-					$display = rtrim($display, "'");
-					$display .= "top: " . $top . "px;'";
-				}
+
 				//Add submenu2 to submenu string
-				$submenu_output .= "<ul id='sub" . str_replace(' ','_',$sub["id"]) . "' class=submenu2>";
+				$submenu_output .= "<ul style= top:" . $top . "px;  id='sub" . str_replace(' ','_',$sub["id"]) . "' class=submenu2>";
 				$submenu_output .= $submenu2_list;
 				$submenu_output .= "</ul>";
 			}

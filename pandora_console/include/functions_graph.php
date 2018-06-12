@@ -234,27 +234,20 @@ function grafico_modulo_sparse_data_chart (
 
 	global $config;
 
+	//XXX add zoom
+	$data_slice	= $date_array['period'] / 250; //zoom
+
 	if( $data_module_graph['id_module_type'] == 23 ||
 		$data_module_graph['id_module_type'] == 3 ||
 		$data_module_graph['id_module_type'] == 17 ||
 		$data_module_graph['id_module_type'] == 10 ||
 		$data_module_graph['id_module_type'] == 33 ){
-
-//XXXXXXXXXXX SLICES
-/*
-"SELECT count(*) as data, min(utimestamp) as utimestamp
-					FROM tagente_datos_string
-					WHERE id_agente_modulo = 227
-					AND utimestamp > 1527584831
-					AND utimestamp < 1527671231
-					GROUP by ROUND(utimestamp / 300);"
-*/
 		$data = db_get_all_rows_filter (
 			'tagente_datos_string',
 			array ('id_agente_modulo' => (int)$agent_module_id,
 					"utimestamp > '". $date_array['start_date']. "'",
 					"utimestamp < '". $date_array['final_date'] . "'",
-					'group' => "ROUND(utimestamp / 300)",
+					'group' => "ROUND(utimestamp / $data_slice)",
 					'order' => 'utimestamp ASC'),
 			array ('count(*) as datos', 'min(utimestamp) as utimestamp'),
 			'AND',
@@ -262,33 +255,17 @@ function grafico_modulo_sparse_data_chart (
 		);
 	}
 	else{
-		/*
-		if(true){
-			$data = db_get_all_rows_filter (
-				'tagente_datos',
-				array ('id_agente_modulo' => (int)$agent_module_id,
-						"utimestamp > '". $date_array['start_date']. "'",
-						"utimestamp < '". $date_array['final_date'] . "'",
-						'group' => "ROUND(utimestamp / 86400)",
-						'order' => 'utimestamp ASC'),
-				array ('max(datos) as datos', 'min(utimestamp) as utimestamp'),
-				'AND',
-				$data_module_graph['history_db']
-			);
-		}
-		else{
-			*/
-			$data = db_get_all_rows_filter (
-				'tagente_datos',
-				array ('id_agente_modulo' => (int)$agent_module_id,
-						"utimestamp > '". $date_array['start_date']. "'",
-						"utimestamp < '". $date_array['final_date'] . "'",
-						'order' => 'utimestamp ASC'),
-				array ('datos', 'utimestamp'),
-				'AND',
-				$data_module_graph['history_db']
-			);
-		//}
+		$data = db_get_all_rows_filter (
+			'tagente_datos',
+			array ('id_agente_modulo' => (int)$agent_module_id,
+					"utimestamp > '". $date_array['start_date']. "'",
+					"utimestamp < '". $date_array['final_date'] . "'",
+					'group' => "ROUND(utimestamp / $data_slice)",
+					'order' => 'utimestamp ASC'),
+			array ('max(datos) as datos', 'min(utimestamp) as utimestamp'),
+			'AND',
+			$data_module_graph['history_db']
+		);
 	}
 
 	if($data === false){

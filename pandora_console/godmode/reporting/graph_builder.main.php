@@ -167,8 +167,7 @@ $stackeds = array(
 	CUSTOM_GRAPH_GAUGE => __('Gauge'),
 	CUSTOM_GRAPH_HBARS => __('Horizontal bars'),
 	CUSTOM_GRAPH_VBARS => __('Vertical bars'),
-	CUSTOM_GRAPH_PIE => __('Pie'),
-	CUSTOM_GRAPH_THERMOMETER => __('Thermometer')
+	CUSTOM_GRAPH_PIE => __('Pie')
 	);
 html_print_select ($stackeds, 'stacked', $stacked);
 

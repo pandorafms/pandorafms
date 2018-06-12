@@ -124,12 +124,6 @@ if ($view_graph) {
 		$height = $graph["height"];
 	}
 	
-	if ($stacked == CUSTOM_GRAPH_THERMOMETER ){
-		// Use the defined graph height, that's why
-		// the user can setup graph height.
-		$height = $graph["height"];
-	}
-	
 	$name = $graph["name"];
 	if (($graph["private"]==1) && ($graph["id_user"] != $id_user)) {
 		db_pandora_audit("ACL Violation",
@@ -265,7 +259,6 @@ if ($view_graph) {
 	$stackeds[CUSTOM_GRAPH_HBARS] = __('Horizontal Bars');
 	$stackeds[CUSTOM_GRAPH_VBARS] = __('Vertical Bars');
 	$stackeds[CUSTOM_GRAPH_PIE] = __('Pie');
-	$stackeds[CUSTOM_GRAPH_THERMOMETER] = __('Thermometer');
 	html_print_select ($stackeds, 'stacked', $stacked , '', '', -1, false, false);
 	echo "</td>";
 

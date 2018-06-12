@@ -285,31 +285,6 @@ function d3_gauges($chart_data, $width, $height, $color, $legend,
 	return $output;
 }
 
-function d3_thermometers($chart_data, $width, $height, $color, $legend,
-				$homeurl, $unit, $font, $font_size, $no_data_image) {
-	global $config;
-	
-	foreach ($chart_data as $key => $value) {
-		$chart_data[$key]['agent_name'] = agents_get_alias($chart_data[$key]['id_agente']);
-		$chart_data[$key]['label'] = io_safe_output($chart_data[$key]['label']);
-	}
-	
-	if (is_array($chart_data))
-		$data = json_encode($chart_data);
-	$output = include_javascript_d3(true);
-	
-	$count = 0;
-	
-	$output .= "<div id='thermometers_div' style='float:left; overflow: hidden; margin-left: 10px;'></div>";
-	
-	$output .= "<script language=\"javascript\" type=\"text/javascript\">
-					var data = $data;
-					createthermometers(data, '$width', '$height','$font_size','$no_data_image','$font');
-				</script>";
-
-	return $output;
-}
-
 function ux_console_phases_donut ($phases, $id, $return = false) {
 	global $config;
 

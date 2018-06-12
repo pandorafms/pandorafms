@@ -59,6 +59,10 @@ $table->data[1][0] = __('Remote config directory') .
 
 $table->data[1][1] = html_print_input_text ('remote_config', io_safe_output($config["remote_config"]), '', 30, 100, true);
 
+$table->data[2][0] = __('Phantomjs bin directory') . ui_print_help_tip (__("Directory where phantomjs binary file exists and has execution grants."), true);
+
+$table->data[2][1] = html_print_input_text ('phantomjs_bin', io_safe_output($config["phantomjs_bin"]), '', 30, 100, true);
+
 $table->data[6][0] = __('Auto login (hash) password');
 $table->data[6][1] = html_print_input_password ('loginhash_pwd', io_output_password($config["loginhash_pwd"]), '', 15, 15, true);
 

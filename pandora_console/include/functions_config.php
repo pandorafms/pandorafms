@@ -129,9 +129,10 @@ function config_update_config () {
 						$error_update[] = __('Language settings');
 					if (!config_update_value ('remote_config', (string) get_parameter ('remote_config')))
 						$error_update[] = __('Remote config directory');
+					if (!config_update_value ('phantomjs_bin', (string) get_parameter ('phantomjs_bin')))
+						$error_update[] = __('phantomjs config directory');
 					if (!config_update_value ('loginhash_pwd', io_input_password((string) get_parameter ('loginhash_pwd'))))
 						$error_update[] = __('Auto login (hash) password');
-					
 					if (!config_update_value ('timesource', (string) get_parameter ('timesource')))
 						$error_update[] = __('Time source');
 					if (!config_update_value ('autoupdate', (bool) get_parameter ('autoupdate')))
@@ -804,12 +805,9 @@ function config_update_config () {
 				if (!config_update_value('ehorus_custom_field', (string) get_parameter('ehorus_custom_field', $config['ehorus_custom_field'])))
 					$error_update[] = __('eHorus id custom field');
 				break;
-			
 		}
-		
-		
 	}
-	
+
 	if (count($error_update) > 0) {
 		$config['error_config_update_config'] = array();
 		$config['error_config_update_config']['correct'] = false;
@@ -820,7 +818,7 @@ function config_update_config () {
 		$config['error_config_update_config'] = array();
 		$config['error_config_update_config']['correct'] = true;
 	}
-	
+
 	enterprise_include_once('include/functions_policies.php');
 	$enterprise = enterprise_include_once ('include/functions_skins.php');
 	if ($enterprise !== ENTERPRISE_NOT_HOOK) {
@@ -869,7 +867,17 @@ function config_process_config () {
 	
 		config_update_value ('remote_config', $default);
 	}
-	
+
+	if (!isset ($config['phantomjs_bin'])) {
+		if ($is_windows){
+			$default = 'C:\\PandoraFMS\\Pandora_Server\\data_in';
+		}
+		else{
+			$default = '/usr/bin';
+		}
+		config_update_value ('phantomjs_bin', $default);
+	}
+
 	if (!isset ($config['date_format'])) {
 		config_update_value ('date_format', 'F j, Y, g:i a');
 	}
@@ -2178,21 +2186,28 @@ function config_check () {
 			sprintf(__('Recommended value is: %s'), sprintf(__('%s or greater'), '800M')) . '<br><br>' . __('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'),
 			sprintf(__("Not recommended '%s' value in PHP configuration"), 'upload_max_filesize'));
 	}
-	
+
 	$PHPmemory_limit_min = config_return_in_bytes('500M');
-	
+
 	if ($PHPmemory_limit < $PHPmemory_limit_min && $PHPmemory_limit !== '-1') {
 		set_pandora_error_for_header(
 			sprintf(__('Recommended value is: %s'), sprintf(__('%s or greater'), '500M')) . '<br><br>' . __('Please, change it on your PHP configuration file (php.ini) or contact with administrator'),
 			sprintf(__("Not recommended '%s' value in PHP configuration"), 'memory_limit'));
 	}
-	
+
 	if (preg_match("/system/", $PHPdisable_functions) or preg_match("/exec/", $PHPdisable_functions)) {
-		set_pandora_error_for_header( 
+		set_pandora_error_for_header(
 			__("Variable disable_functions containts functions system() or exec(), in PHP configuration file (php.ini)"). '<br /><br />' . 
 			__('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'), __("Problems with disable functions in PHP.INI"));
 	}
-	
+
+	$result_ejectuion = exec($config['phantomjs_bin'] . 'phantomjs --version');
+	if(isset($result_ejectuion) || $result_ejectuion == ''){
+		set_pandora_error_for_header(
+			__('To be able to create images of the graphs for PDFs, please install the phantom.js extension. For that, it is necessary to follow these steps:') .
+			'<a src="">Click here</a>',
+			__("phantomjs is not installed"));
+	}
 }
 
 function config_return_in_bytes($val) {

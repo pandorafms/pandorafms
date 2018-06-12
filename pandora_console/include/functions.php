@@ -3229,7 +3229,7 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined = fal
 	$session_id = session_id();
 
 	$result = exec(
-		"phantomjs " . $file_js . " " .
+		$config['phantomjs_bin'] ."/phantomjs " . $file_js . " " .
 		$url . "  '" .
 		$type_graph_pdf . "' '" .
 		$params_encode_json . "' '" .

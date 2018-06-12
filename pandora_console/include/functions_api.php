@@ -10845,6 +10845,13 @@ function api_set_new_cluster($thrash1, $thrash2, $other, $thrash3) {
 		returnError('forbidden', 'string');
 		return;
 	}
+	
+	$name_exist = db_process_sql('select count(name) as already_exist from tcluster as already_exist where name = "'.$name.'"');	
+
+	if($name_exist[0]['already_exist'] > 0){
+		returnError('error_set_new_cluster', __('A cluster with this name already exists.'));
+		return false;
+	}
 
 	$server_name = db_process_sql('select name from tserver where server_type=5 limit 1');	
 	
@@ -10856,11 +10863,12 @@ function api_set_new_cluster($thrash1, $thrash2, $other, $thrash3) {
 		'comentarios' => $description,
 		'id_grupo' => $idGroup,
 		'id_os' => 100,
-		'server_name' => $server_name_agent
+		'server_name' => $server_name_agent,
+		'modo' => 1
 	);
 	
 	if (trim($name) != "") {
-		$id_agent = agents_create_agent($values_agent['nombre'],$values_agent['id_grupo'],300,'127.0.0.1',$values_agent);
+		$id_agent = agents_create_agent($values_agent['nombre'],$values_agent['id_grupo'],300,'',$values_agent);
 		
 		// Create cluster
 		$values_cluster = array(
@@ -11363,7 +11371,8 @@ function api_get_cluster_id_by_name($cluster_name, $trash1, $trash2, $returnType
 		returnError('id_not_found', $returnType);
 	}
 
-	$cluster_group = clusters_get_group($id_cluster);
+	$cluster_group = clusters_get_group($value);
+		
 	if(!$cluster_group || !check_acl($config['id_user'], $cluster_group, "AR")){
 		returnError('error_get_cluster_status', __('The user cannot access to the cluster'));
 		return;
@@ -11382,7 +11391,7 @@ function api_get_agents_id_name_by_cluster_id($cluster_id, $trash1, $trash2, $re
 	$all_agents = cluster_get_agents_id_name_by_cluster_id($cluster_id);	
 	
 	if (count($all_agents) > 0 and $all_agents !== false) {
-		$data = array('type' => 'array', 'data' => $all_agents);
+		$data = array('type' => 'json', 'data' => $all_agents);
 		
 		returnData('json', $data);
 	}
@@ -11399,7 +11408,7 @@ function api_get_agents_id_name_by_cluster_name($cluster_name, $trash1, $trash2,
 	$all_agents = cluster_get_agents_id_name_by_cluster_name($cluster_name);
 	
 	if (count($all_agents) > 0 and $all_agents !== false) {
-		$data = array('type' => 'array', 'data' => $all_agents);
+		$data = array('type' => 'json', 'data' => $all_agents);
 		
 		returnData('json', $data);
 	}
@@ -11416,7 +11425,7 @@ function api_get_modules_id_name_by_cluster_id ($cluster_id){
 	$all_modules = cluster_get_modules_id_name_by_cluster_id($cluster_id);	
 	
 	if (count($all_modules) > 0 and $all_modules !== false) {
-		$data = array('type' => 'array', 'data' => $all_modules);
+		$data = array('type' => 'json', 'data' => $all_modules);
 		
 		returnData('json', $data);
 	}
@@ -11431,10 +11440,10 @@ function api_get_modules_id_name_by_cluster_name ($cluster_name){
 		return;
 	}
 	
-	$all_modules = cluster_get_modules_id_name_by_cluster_name($cluster_name);	
+	$all_modules = cluster_get_modules_id_name_by_cluster_name($cluster_name);
 	
 	if (count($all_modules) > 0 and $all_modules !== false) {
-		$data = array('type' => 'array', 'data' => $all_modules);
+		$data = array('type' => 'json', 'data' => $all_modules);
 		
 		returnData('json', $data);
 	}
@@ -11461,6 +11470,20 @@ function util_api_check_agent_and_print_error($id_agent, $returnType, $access = 
 	}
 
 	return false;
+}
+
+function api_get_cluster_items ($cluster_id){
+	
+	$all_items = cluster_get_items($cluster_id);	
+	
+	if (count($all_items) > 0 and $all_items !== false) {
+		$data = array('type' => 'json', 'data' => $all_items);
+		
+		returnData('json', $data);
+	}
+	else {
+		returnError('error_cluster_items', 'No items retrieved.');
+	}
 }
 
 

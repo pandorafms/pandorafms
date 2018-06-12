@@ -1939,7 +1939,7 @@ function graphic_combined_module (
 					$ttl,
 					$homeurl,
 					$background_color,
-					'black'
+					'#c1c1c1'
 				);
 			}
 
@@ -1964,7 +1964,7 @@ function graphic_combined_module (
 					$background_color,
 					true,
 					false,
-					"black"
+					"#c1c1c1"
 				);
 			}
 
@@ -3652,7 +3652,7 @@ function graph_custom_sql_graph ($id, $width, $height,
 				"white",
 				false,
 				false,
-				"black"
+				"c1c1c1"
 			);
 			break;
 		case 'sql_graph_hbar': // horizontal bar
@@ -3674,7 +3674,7 @@ function graph_custom_sql_graph ($id, $width, $height,
 				$ttl,
 				$homeurl,
 				'white',
-				'black'
+				'c1c1c1'
 			);
 			break;
 		case 'sql_graph_pie': // Pie

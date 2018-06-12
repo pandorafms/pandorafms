@@ -369,6 +369,7 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 				hoverable: true,
 				borderWidth: 1,
 				tickColor: tick_color,
+				borderColor: '#C1C1C1',
 				backgroundColor: { colors: [background_color, background_color] }
 				},
 			xaxis: {
@@ -532,15 +533,15 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 	font = font.split("/").pop().split(".").shift();
 	labels_long = labels_long.length > 0 ? labels_long.split(separator) : 0;
 	colors = colors.length > 0 ? colors.split(separator) : [];
-	
+
 	var colors_data = colors.length > 0
 		? colors
 		: ['#FFA631','#FC4444','#FAD403','#5BB6E5','#F2919D','#80BA27'];
 	var datas = new Array();
-	
+
 	for (i = 0; i < values.length; i++) {
 		var serie = values[i].split(separator);
-		
+
 		var aux = new Array();
 		for (j = 0; j < serie.length; j++) {
 			var aux2 = parseFloat(serie[j]);
@@ -559,16 +560,16 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 			}
 		};
 	}
-	
+
 	var labels_total=new Array();
 	labels = labels.split(separator);
 	i = 0;
 	for (i = 0; i < labels.length; i++) {
 		labels_total.push([i, labels[i]]);
 	}
-	
+
 	var stack = 0, bars = true, lines = false, steps = false;
-	
+
 	var options = {
 		series: {
 			bars: {
@@ -605,7 +606,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 					text = text.substring(0,3) + "K";
 				else if (label >= 1000)
 					text = text.substring(0,2) + "K";
-				
+
 				return '<div style="font-size:'+font_size+'pt !important;">'+text+'</div>';
 			}
 		},
@@ -620,17 +621,18 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 			hoverable: true,
 			borderWidth: 1,
 			tickColor: tick_color,
+			borderColor: '#C1C1C1',
 			backgroundColor: { colors: [background_color, background_color] }
 		}
 	};
-	
+
 	if(from_wux){
 		options.series.bars.barWidth = 0.5;
 		options.grid.aboveData = true;
 		options.grid.borderWidth = 0;
 		options.grid.markings = [ { xaxis: { from: -0.25, to: -0.25 }, color: "#000" },
 										{ yaxis: { from: 0, to: 0 }, color: "#000" }];
-		options.grid.markingsLineWidth = 0.3; 		
+		options.grid.markingsLineWidth = 0.3;
 
 		options.xaxis.tickLength = 0;
 		options.yaxis.tickLength = 0;
@@ -638,12 +640,12 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 
 	if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
 		options.xaxis.labelWidth = 100;
-	
+
 	var plot = $.plot($('#'+graph_id),datas, options );
 	$('#' + graph_id).VUseTooltip();
 	$('#' + graph_id).css("margin-left","auto");
 	$('#' + graph_id).css("margin-right","auto");
-	
+
 	if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
 		$('#'+graph_id+' .xAxis .tickLabel')
 			.find('div')
@@ -662,7 +664,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 				title = label;
 				label = shortLabel;
 			}
-			
+
 			format.push([i,
 				'<div class="'+font+'" title="'+title+'" style="word-break: normal; overflow:hidden; transform: rotate(-45deg); position:relative; top:+30px; left:0px; max-width: 100px;font-size:'+font_size+'pt !important;">'
 				+ label
@@ -678,7 +680,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 	function lFormatter(v, axis) {
 		return '<div style="font-size:'+font_size+'pt !important;">'+v+'</div>';
 	}
-	
+
 	if (water_mark) {
 		set_watermark(graph_id, plot, $('#watermark_image_'+graph_id).attr('src'));
 	}

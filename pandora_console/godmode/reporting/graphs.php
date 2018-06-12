@@ -32,7 +32,6 @@ if (!$report_r && !$report_w && !$report_m) {
 }
 
 $access = ($report_r == true) ? 'RR' : (($report_w == true) ? 'RW' : (($report_m == true) ? 'RM' : 'RR'));
-$manage_group_all = users_can_manage_group_all($access);
 
 $activeTab = get_parameter('tab', 'main');
 
@@ -189,14 +188,14 @@ if (!empty ($graphs)) {
 		$data[3] = ui_print_group_icon($graph['id_group'],true);
 		
 		$data[4] = '';
-		if (($report_w || $report_m) && $manage_group_all) {
+		if (($report_w || $report_m)) {
 			$data[4] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&id='.
 			$graph['id_graph'].'">'.html_print_image("images/config.png", true).'</a>';
 		}
 
 		$data[4] .= '&nbsp;';
 
-		if ($report_m && $manage_group_all) {
+		if ($report_m) {
 			$data[4] .= '<a href="index.php?sec=reporting&sec2=godmode/reporting/graphs&delete_graph=1&id='
 				.$graph['id_graph'].'" onClick="if (!confirm(\''.__('Are you sure?').'\'))
 					return false;">' . html_print_image("images/cross.png", true, array('alt' => __('Delete'), 'title' => __('Delete'))) . '</a>' .

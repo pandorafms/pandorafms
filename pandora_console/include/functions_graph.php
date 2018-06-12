@@ -870,8 +870,13 @@ function grafico_modulo_sparse ($params) {
 		$params['graph_combined'] = false;
 	}
 
+	//XXXX Configurable
+	$params['grid_color']   = '#C1C1C1';
+	$params['legend_color'] = '#636363';
+
 	$params['font']       = $config['fontpath'];
 	$params['font-size']  = $config['font_size'];
+	$params['short_data'] = $config['short_module_graph_data'];
 
 	if($params['only_image']){
 		return generator_chart_to_pdf('sparse', $params);
@@ -1227,7 +1232,6 @@ function graphic_combined_module (
 	else{
 		$params_combined['percentil'] = $params['percentil'];
 	}
-
 
 	if(!isset($params['period'])){
 		return false;
@@ -2267,24 +2271,6 @@ function combined_graph_summatory_average ($array_data, $average = false, $summa
 	}
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /**
  * Print a graph with access data of agents
  *
@@ -2308,7 +2294,7 @@ function graphic_agentaccess ($id_agent, $width, $height, $period = 0, $return =
 		WHERE id_agent = $id_agent
 		AND utimestamp > $datelimit
 		AND utimestamp < $date
-		GROUP by ROUND(utimestamp / 300)"
+		GROUP by ROUND(utimestamp / 1800)"
 	);
 
 	if(isset($data) && is_array($data)){
@@ -2342,14 +2328,16 @@ function graphic_agentaccess ($id_agent, $width, $height, $period = 0, $return =
 		'only_image'          => $only_image,
 		'homeurl'             => $homeurl,
 		'menu'                => true,
-		'backgroundColor'     => 'white',
+		'backgroundColor'     => '#f9faf9',
 		'type_graph'          => 'area',
 		'font'                => $config['fontpath'],
 		'font-size'           => $config['font_size'],
 		'array_data_create'   => $data_array,
 		'show_overview'       => false,
 		'show_export_csv'     => false,
-		'vconsole'            => $tree
+		'vconsole'            => true,
+		'show_legend'         => false,
+		'grid_color'          => 'grey'
 	);
 
 	if ($return) {

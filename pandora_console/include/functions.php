@@ -3030,17 +3030,6 @@ function color_graph_array(){
 		'color' => '#0097BC',
 		'alpha' => 10
 	);
-	//XXXXXXXX
-	/*
-		if($id_widget_dashboard){
-			$opcion = unserialize(db_get_value_filter('options','twidget_dashboard',array('id' => $id_widget_dashboard)));
-			foreach ($module_list as $key => $value) {
-				if(!empty($opcion[$value])){
-					$color[$key]['color'] = $opcion[$value];
-				}
-			}
-		}
-	*/
 
 	return $color_series;
 }
@@ -3064,6 +3053,18 @@ function series_type_graph_array($data, $show_elements_graph){
 	}
 
 	$color_series = color_graph_array();
+
+	if($show_elements_graph['id_widget_dashboard']){
+		$opcion = unserialize(db_get_value_filter('options','twidget_dashboard',array('id' => $show_elements_graph['id_widget_dashboard'])));
+		foreach ($opcion as $key => $value) {
+			$color_series[0] = array(
+				'border' => '#000000',
+				'color' => $opcion['avg'],
+				'alpha' => CHART_DEFAULT_ALPHA
+			);
+		}
+	}
+
 	$i = 0;
 	if(isset($data) && is_array($data)){
 		foreach ($data as $key => $value) {

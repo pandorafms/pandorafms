@@ -729,7 +729,7 @@ function treeview_printTable($id_agente, $server_data = array(), $no_head = fals
 	if ($config["agentaccess"]) {
 		$access_graph = '<div>hjhhjhhj</div>';
 		$access_graph = '<div style="width:100%; heigth:200px;">';
-		$access_graph .= graphic_agentaccess($id_agente, 380, 180, SECONDS_1DAY, true, true);
+		$access_graph .= graphic_agentaccess($id_agente, 380, 90, SECONDS_1DAY, true, true);
 		$access_graph .= '</div><br><br>';
 		ui_toggle($access_graph, __('Agent access rate (24h)'));
 	}

@@ -284,7 +284,7 @@ if ($config["agentaccess"] && $access_agent > 0) {
 		<legend>' .
 				__('Agent access rate (24h)') .
 		'</legend>' .
-			graphic_agentaccess($id_agente, '90%', 150, SECONDS_1DAY, true) .
+			graphic_agentaccess($id_agente, '95%', 100, SECONDS_1DAY, true) .
 	'</fieldset>';
 	$table_data->style[0] = 'width: 20%;';
 	$table_data->style[1] = 'width: 30%;';

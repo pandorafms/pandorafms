@@ -117,15 +117,19 @@ function flot_area_graph (
 	switch ($params['backgroundColor']) {
 		case 'white':
 			$background_style = ' background: #fff; ';
+			$params['grid_color'] = '#C1C1C1';
 			break;
 		case 'black':
 			$background_style = ' background: #000; ';
+			$params['grid_color'] = '#BDBDBD';
 			break;
 		case 'transparent':
 			$background_style = '';
+			$params['grid_color'] = '#A4A4A4';
 			break;
 		default:
 			$background_style = 'background-color: ' . $params['backgroundColor'];
+			$params['grid_color'] = '#C1C1C1';
 			break;
 	}
 
@@ -243,29 +247,13 @@ function flot_area_graph (
 					background:#fff; padding: 2px 2px 2px 2px;
 					border: solid #000 1px;'></div>";
 
-	if(substr($background_style, -6, 4) == '#fff'){
-		$background_color = "#eee";
-		$legend_color = "#151515";
-	}
-	else if(substr($background_style, -6, 4) == '#000'){
-		$background_color = "#151515";
-		$legend_color = "#BDBDBD";
-	}
-	else{
-		$background_color = "#A4A4A4";
-		$legend_color = "#A4A4A4";
-	}
-
-	$force_integer = 0;
-
 	// Trick to get translated string from javascript
 	$return .= html_print_input_hidden('unknown_text', __('Unknown'), true);
 
-	if (!isset($config["short_module_graph_data"])){
-		$config["short_module_graph_data"] = '';
-	}
-
-	$short_data = $config["short_module_graph_data"];
+//XXXX Meter en params
+/*
+	mirar tmb lo de force integer
+*/
 
 	$values              = json_encode($array_data);
 	$legend              = json_encode($legend);
@@ -284,17 +272,12 @@ function flot_area_graph (
 		"'$graph_id', \n" .
 		"JSON.parse('$values'), \n" .
 		"JSON.parse('$legend'), \n" .
-		"'$agent_module_id', \n" .
 		"JSON.parse('$series_type'), \n" .
 		"JSON.parse('$color'), \n" .
 		"'$watermark', \n" .
 		"JSON.parse('$date_array'), \n" .
 		"JSON.parse('$data_module_graph'), \n" .
 		"JSON.parse('$params'), \n" .
-		"$force_integer, \n" .
-		"'$background_color', \n" .
-		"'$legend_color', \n" .
-		"'$short_data', \n" .
 		"JSON.parse('$array_events_alerts')".
 	");";
 	$return .= "});";

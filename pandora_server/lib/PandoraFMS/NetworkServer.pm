@@ -151,7 +151,7 @@ sub data_consumer ($$) {
 #						 tcp_rcv, id_tipo_module, dbh)
 # Makes a call to TCP modules to get a value.
 ##########################################################################
-sub pandora_query_tcp ($$$$$$$$$$) {
+sub pandora_query_tcp ($$$$$$$$$$;$) {
 	my $pa_config = $_[0];
 	my $tcp_port = $_[1];
 	my $ip_target = $_[2];
@@ -162,6 +162,7 @@ sub pandora_query_tcp ($$$$$$$$$$) {
 	my $id_tipo_modulo = $_[7];
 	my $timeout = $_[8];
 	my $retries = $_[9];
+	my $module_id = $_[10]; # Only for info purpose
 	
 	# Adjust timeout and retry values
 	if ($timeout == 0) {
@@ -201,6 +202,7 @@ next_pair:
 
 			if  ((defined ($tcp_send)) && ($tcp_send ne "")){ # its Expected to sending data ?
 				# Send data
+				logger ($pa_config,"[INFO] TCP query on port $tcp_port with target $ip_target by module with id $module_id." , 10);
 				$handle->autoflush(1);
 				$tcp_send =~ s/\^M/\r\n/g;
 				# Replace Carriage rerturn and line feed
@@ -531,7 +533,7 @@ sub exec_network_module ($$$$) {
 				($id_tipo_modulo == 10) || 
 				($id_tipo_modulo == 11)) { # TCP Module
             if ((defined($tcp_port)) && ($tcp_port < 65536) && ($tcp_port > 0)) { # Port check
-			    pandora_query_tcp ($pa_config, $tcp_port, $ip_target, \$module_result, \$module_data, $tcp_send, $tcp_rcv, $id_tipo_modulo, $timeout, $retries);
+			    pandora_query_tcp ($pa_config, $tcp_port, $ip_target, \$module_result, \$module_data, $tcp_send, $tcp_rcv, $id_tipo_modulo, $timeout, $retries, $id_agente_modulo);
 		    } else { 
 			    # Invalid port, get no check
 			    $module_result = 1;

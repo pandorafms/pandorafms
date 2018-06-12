@@ -133,8 +133,6 @@ if ($correctLogin) {
 												
 													$id_os = db_get_value_sql('select id_os from tagente where nombre = "'.$id.'"');
 													
-													html_debug($id_os);
-													
 													if($id_os == 100){
 														returnError('not_allowed_operation_cluster', $returnType);
 														return false;

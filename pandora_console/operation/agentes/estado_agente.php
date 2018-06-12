@@ -473,16 +473,16 @@ if ($strict_user) {
 	$agents = tags_get_all_user_agents (false, $config['id_user'], $acltags, $filter, $fields, false, $strict_user, true);
 }
 else {
-	$total_agents = agents_get_agents(array (
-		'disabled' => 0,
-		'id_grupo' => $groups,
-		'search' => $search_sql,
-		'search_custom' => $search_sql_custom,
-		'status' => $status),
-		array ('COUNT(DISTINCT id_agente) as total'), $access, false);
-	$total_agents = isset ($total_agents[0]['total']) ?
-		$total_agents[0]['total'] : 0;
-	
+	$total_agents = agents_count_agents_filter(
+		array (
+			'disabled' => 0,
+			'id_grupo' => $groups,
+			'search' => $search_sql,
+			'search_custom' => $search_sql_custom,
+			'status' => $status
+		), $access
+	);
+
 	$agents = agents_get_agents(array (
 		'order' => 'nombre ' . $order_collation . ' ASC',
 		'id_grupo' => $groups,

@@ -29,7 +29,6 @@ if (! check_acl ($config['id_user'], $id_grupo, "AR") && ! check_acl ($config['i
 require_once ($config["homedir"] . '/include/functions_graph.php');
 
 $draw_alerts = get_parameter("draw_alerts", 0);
-$avg_only = get_parameter ("avg_only", 1);
 $period = get_parameter ("period", SECONDS_1HOUR);
 $width = get_parameter ("width", 555);
 $height = get_parameter ("height", 245);
@@ -228,7 +227,6 @@ else {
 			. 'data-draw_events="'. (int)$draw_events . '"'
 			. 'data-title="'. $title . '"'
 			. 'data-draw_alerts="'. (int)$draw_alerts . '"'
-			. 'data-avg_only="'. (int)$avg_only . '"'
 			. 'data-date="'. $date . '"'
 			. 'data-unit="'. $unit . '"'
 			. 'data-date="'. $date . '"'
@@ -401,7 +399,6 @@ echo "</div>";
 				height: height,
 				title: title,
 				show_alerts: showAlerts,
-				avg_only: avgOnly,
 				date: date,
 				unit: unit,
 				type_g: type_g
@@ -467,7 +464,6 @@ echo "</div>";
 			var showEvents = $container.data('draw_events');
 			var title = $container.data('title');
 			var showAlerts = $container.data('draw_alerts');
-			var avgOnly = $container.data('avg_only');
 			var date = $container.data('date');
 			var unit = $container.data('unit');
 			var date = $container.data('date');

@@ -199,8 +199,6 @@ else {
 
 // Save the global values
 $config["global_block_size"] = $config["block_size"];
-$config["global_flash_charts"] = $config["flash_charts"];
-
 
 if (isset ($config['id_user'])) {
 	config_user_set_custom_config();

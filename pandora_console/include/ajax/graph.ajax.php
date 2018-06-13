@@ -88,7 +88,6 @@ if ($print_sparse_graph) {
 		'title'               => (string) get_parameter('title'),
 		'unit_name'           => (string) get_parameter('unit_name'),
 		'show_alerts'         => (bool) get_parameter('show_alerts'),
-		'avg_only'            => (int) get_parameter('avg_only'),
 		'pure'                => (bool) get_parameter('pure'),
 		'date'                => (int) get_parameter('date', time()),
 		'unit'                => (string) get_parameter('unit'),
@@ -177,7 +176,6 @@ if ($get_graphs){
 						$params =array(
 							'agent_module_id'     => $value['id_agent_module'],
 							'period'              => $value['time_lapse'],
-							'avg_only'            => $value['only_average'],
 							'homeurl'             => ui_get_full_url(false, false, false, false),
 							'type_graph'          => $type_graph,
 							'fullscale'           => $value['fullscale']
@@ -271,7 +269,6 @@ if ($get_graphs){
 							$params =array(
 								'agent_module_id'     => $value2['id_agente_modulo'],
 								'period'              => $value['time_lapse'],
-								'avg_only'            => $value['only_average'],
 								'homeurl'             => ui_get_full_url(false, false, false, false),
 								'type_graph'          => $type_graph,
 								'fullscale'           => $value['fullscale']

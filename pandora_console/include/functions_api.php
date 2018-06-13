@@ -7012,7 +7012,6 @@ function api_get_graph_module_data($id, $thrash1, $other, $thrash2) {
 	$draw_events = 0;
 	$zoom = 1;
 	$label = $other['data'][3];
-	$avg_only = 0;
 	$start_date = $other['data'][4];
 	$date = strtotime($start_date);
 

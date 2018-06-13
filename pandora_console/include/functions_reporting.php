@@ -6447,13 +6447,6 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 		$label = reporting_label_macro($content, $label);
 	}
 
-	$only_avg = true;
-	// Due to database compatibility problems, the 'only_avg' value
-	// is stored into the json contained into the 'style' column.
-	if (isset($content['style']['only_avg'])) {
-		$only_avg = (bool) $content['style']['only_avg'];
-	}
-
 	if (isset($content['style']['fullscale'])) {
 		$fullscale = (bool) $content['style']['fullscale'];
 	}
@@ -6484,7 +6477,6 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 				'agent_module_id'     => $content['id_agent_module'],
 				'period'              => $content['period'],
 				'title'               => $label,
-				'avg_only'            => $only_avg,
 				'pure'                => false,
 				'date'                => $report["datetime"],
 				'only_image'          => $only_image,

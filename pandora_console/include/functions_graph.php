@@ -234,8 +234,11 @@ function grafico_modulo_sparse_data_chart (
 
 	global $config;
 
-	//XXX add zoom
-	$data_slice	= $date_array['period'] / 250; //zoom
+	//XXXXX
+	//Para evitar mostrar todos los datos a la vez lo cual puede recargar se hace un sistema de cajas que parte de una constante = 250
+	//y el periodo de tiempo seleccionado ademas de poder ir reducciendo el nivel de cajas es decir aumentando el nivel de detalle de la grafica
+	//hasta la opcion full que mostraria todos los puntos(datos) que contiene ese periodo.
+	$data_slice	= $date_array['period'] / (250 * $params['zoom']);
 
 	if( $data_module_graph['id_module_type'] == 23 ||
 		$data_module_graph['id_module_type'] == 3 ||
@@ -255,17 +258,32 @@ function grafico_modulo_sparse_data_chart (
 		);
 	}
 	else{
-		$data = db_get_all_rows_filter (
-			'tagente_datos',
-			array ('id_agente_modulo' => (int)$agent_module_id,
-					"utimestamp > '". $date_array['start_date']. "'",
-					"utimestamp < '". $date_array['final_date'] . "'",
-					'group' => "ROUND(utimestamp / $data_slice)",
-					'order' => 'utimestamp ASC'),
-			array ('max(datos) as datos', 'min(utimestamp) as utimestamp'),
-			'AND',
-			$data_module_graph['history_db']
-		);
+		//all points(data)
+		if($params['zoom'] == 5){
+			$data = db_get_all_rows_filter (
+				'tagente_datos',
+				array ('id_agente_modulo' => (int)$agent_module_id,
+						"utimestamp > '". $date_array['start_date']. "'",
+						"utimestamp < '". $date_array['final_date'] . "'",
+						'order' => 'utimestamp ASC'),
+				array ('datos', 'utimestamp'),
+				'AND',
+				$data_module_graph['history_db']
+			);
+		}
+		else{
+			$data = db_get_all_rows_filter (
+				'tagente_datos',
+				array ('id_agente_modulo' => (int)$agent_module_id,
+						"utimestamp > '". $date_array['start_date']. "'",
+						"utimestamp < '". $date_array['final_date'] . "'",
+						'group' => "ROUND(utimestamp / $data_slice)",
+						'order' => 'utimestamp ASC'),
+				array ('sum(datos)/count(datos) as datos', 'min(utimestamp) as utimestamp'),
+				'AND',
+				$data_module_graph['history_db']
+			);
+		}
 	}
 
 	if($data === false){
@@ -847,10 +865,13 @@ function grafico_modulo_sparse ($params) {
 		$params['graph_combined'] = false;
 	}
 
+	if(!isset($params['zoom'])){
+		$params['zoom'] = 1;
+	}
+
 	//XXXX Configurable
 	$params['grid_color']   = '#C1C1C1';
 	$params['legend_color'] = '#636363';
-
 	$params['font']       = $config['fontpath'];
 	$params['font-size']  = $config['font_size'];
 	$params['short_data'] = $config['short_module_graph_data'];
@@ -1317,6 +1338,18 @@ function graphic_combined_module (
 	if($params['only_image']){
 		return generator_chart_to_pdf('combined', $params, $params_combined, $module_list);
 	}
+
+	if(!isset($params['zoom'])){
+		$params['zoom'] = 1;
+	}
+
+	//XXXXXXXX
+	//XXXX Configurable
+	$params['grid_color']   = '#C1C1C1';
+	$params['legend_color'] = '#636363';
+	$params['font']         = $config['fontpath'];
+	$params['font-size']    = $config['font_size'];
+	$params['short_data']   = $config['short_module_graph_data'];
 
 	global $config;
 	global $graphic_type;

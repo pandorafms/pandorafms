@@ -580,15 +580,15 @@ $table_chars->style[0] = 'font-weight: bold;';
 $table_chars->size[0] = '50%';
 $table_chars->data = array ();
 
-$table_chars->data[$row][0] = __('Graph color (min)');
+$table_chars->data[$row][0] = __('Graph color #1');
 $table_chars->data[$row][1] = html_print_input_text ('graph_color1', $config["graph_color1"], '', 8, 8, true);
 $row++;
 
-$table_chars->data[$row][0] = __('Graph color (avg)');
+$table_chars->data[$row][0] = __('Graph color #2');
 $table_chars->data[$row][1] = html_print_input_text ('graph_color2', $config["graph_color2"], '', 8, 8, true);
 $row++;
 
-$table_chars->data[$row][0] = __('Graph color (max)');
+$table_chars->data[$row][0] = __('Graph color #3');
 $table_chars->data[$row][1] = html_print_input_text ('graph_color3', $config["graph_color3"], '', 8, 8, true);
 $row++;
 
@@ -655,15 +655,6 @@ $table_chars->data[$row][1] = __('Yes').'&nbsp;'.html_print_radio_button ('round
 $table_chars->data[$row][1] .= __('No').'&nbsp;'.html_print_radio_button ('round_corner', 0, '', $config["round_corner"], true);
 $row++;
 
-$table_chars->data[$row][0] = __('Interactive charts') .
-	ui_print_help_tip(__('Whether to use Javascript or static PNG graphs'), true);
-$table_chars->data[$row][1] = __('Yes').'&nbsp;' .
-	html_print_radio_button ('flash_charts', 1, '', $config["global_flash_charts"], true).'&nbsp;&nbsp;';
-$table_chars->data[$row][1] .= __('No').'&nbsp;' .
-	html_print_radio_button ('flash_charts', 0, '', $config["global_flash_charts"], true);
-$row++;
-
-
 $table_chars->data[$row][0] = __('Type of module charts');
 $table_chars->data[$row][1] = __('Area').'&nbsp;' .
 	html_print_radio_button ('type_module_charts', 'area', '',
@@ -680,14 +671,6 @@ $table_chars->data[$row][1] = __('Area').'&nbsp;' .
 $table_chars->data[$row][1] .= __('Line').'&nbsp;' .
 	html_print_radio_button ('type_interface_charts', 'line', '',
 		$config["type_interface_charts"] != 'area', true);
-$row++;
-
-$table_chars->data[$row][0] = __('Show only average');
-$table_chars->data[$row][0] .= ui_print_help_tip(__('Hide Max and Min values in graphs'), true);
-$table_chars->data[$row][1] = __('Yes').'&nbsp;' .
-	html_print_radio_button ('only_average', 1, '', $config["only_average"], true).'&nbsp;&nbsp;';
-$table_chars->data[$row][1] .= __('No').'&nbsp;' .
-	html_print_radio_button ('only_average', 0, '', $config["only_average"], true);
 $row++;
 
 $table_chars->data[$row][0] = __('Percentile');

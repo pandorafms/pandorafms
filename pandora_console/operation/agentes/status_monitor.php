@@ -1268,7 +1268,6 @@ if (!empty($result)) {
 				);
 			
 			if (is_metaconsole() && isset($row['server_id'])) {
-				$graph_params['avg_only'] = 1;
 				// Set the server id
 				$graph_params['server'] = $row['server_id'];
 			}

@@ -902,9 +902,6 @@ function pandoraFlotArea( graph_id, values, legend,
 	//XXXXX
 	var markins_graph    = true;
 
-	var legend_events = null;
-	var legend_alerts = null;
-
 	// If threshold and up are the same, that critical or warning is disabled
 	if (yellow_threshold == yellow_up){
 		yellow_inverse = false;
@@ -923,10 +920,6 @@ function pandoraFlotArea( graph_id, values, legend,
 	var red_only_min    = ((red_up == 0) && (red_threshold != 0));
 
 	//color
-	var normalw   = '#efe';
-	var warningw  = '#ffe';
-	var criticalw = '#fee';
-	var normal    = '#0f0';
 	var warning   = 'yellow';
 	var critical  = 'red';
 
@@ -1629,8 +1622,8 @@ console.log(grid_color);
 				autoHighlight: true
 			},
 			xaxis: {
-				min: date_array.start_date * 1000,
-				max: date_array.final_date * 1000
+				min: min_x,
+				max: max_x
 			},
 			xaxes: [{
 				axisLabelUseCanvas: true,
@@ -2004,7 +1997,7 @@ if (vconsole) {
 				.eq(i).css('color', legend_color);
 
 			$('#legend_' + graph_id + ' .legendLabel')
-				.eq(i).css('font-family',font+'Font');
+				.eq(i).css('font-family',font);
 
 			i++;
 		}

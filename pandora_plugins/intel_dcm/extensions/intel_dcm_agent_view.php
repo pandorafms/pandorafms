@@ -164,8 +164,7 @@ function main_intel_dcm_agent_view () {
 	$draw_events = false;
 	$draw_alerts = false;
 	$period = 7200;
-	$avg_only = true;
-		
+
 	$module = modules_get_agentmodule_id (io_safe_input("Avg. Power"), $id_agent);		
 	$unit = modules_get_unit ($module['id_agente_modulo']);
 
@@ -178,7 +177,6 @@ function main_intel_dcm_agent_view () {
 		'title'               => $module['nombre'],
 		'unit_name'           => null,
 		'show_alerts'         => $draw_alerts,
-		'avg_only'            => $avg_only,
 		'pure'                => false,
 		'date'                => $date,
 		'unit'                => $unit
@@ -213,7 +211,6 @@ function main_intel_dcm_agent_view () {
 		'title'               => $module['nombre'],
 		'unit_name'           => null,
 		'show_alerts'         => $draw_alerts,
-		'avg_only'            => $avg_only,
 		'pure'                => false,
 		'date'                => $date,
 		'unit'                => $unit
@@ -232,7 +229,6 @@ function main_intel_dcm_agent_view () {
 		'title'               => $module['nombre'],
 		'unit_name'           => null,
 		'show_alerts'         => $draw_alerts,
-		'avg_only'            => $avg_only,
 		'pure'                => false,
 		'date'                => $date,
 		'unit'                => $unit

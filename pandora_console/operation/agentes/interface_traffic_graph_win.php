@@ -102,15 +102,6 @@ $interface_traffic_modules = array(
 
 				period_select_init(periodSelectId);
 			};
-
-			function show_others() {
-				if (!$("#checkbox-avg_only").attr('checked')) {
-					$("#hidden-show_other").val(1);
-				}
-				else {
-					$("#hidden-show_other").val(0);
-				}
-			}
 			-->
 		</script>
 	</head>
@@ -165,19 +156,6 @@ $interface_traffic_modules = array(
 			}
 		}
 
-		if ($zoom > 1) {
-			$height = $height * ($zoom / 2.1);
-			$width = $width * ($zoom / 1.4);
-			echo "<script type='text/javascript'>window.resizeTo($width + 120, $height + 320);</script>";
-		}
-
-		/*$current = date("Y-m-d");
-
-		if ($start_date != $current)
-			$date = strtotime($start_date);
-		else
-			$date = $utime;
-		*/
 		$date = strtotime("$start_date $start_time");
 		$now = time();
 
@@ -203,8 +181,16 @@ $interface_traffic_modules = array(
 			'date'      => $date,
 			'homeurl'   => $config['homeurl'],
 			'percentil' => (($show_percentil)? $config['percentil'] : null),
-			'fullscale' => $fullscale
+			'fullscale' => $fullscale,
+			'zoom'      => $zoom
 		);
+
+		if($config['type_interface_charts'] == 'line'){
+			$stacked = CUSTOM_GRAPH_LINE;
+		}
+		else{
+			$stacked = CUSTOM_GRAPH_AREA;
+		}
 
 		$params_combined = array(
 			'weight_list'    => array(),
@@ -212,7 +198,8 @@ $interface_traffic_modules = array(
 			'labels'         => array_keys($interface_traffic_modules),
 			'from_interface' => true,
 			'modules_series' => array_values($interface_traffic_modules),
-			'return'         => 0
+			'return'         => 0,
+			'stacked'        => $stacked
 		);
 
 		graphic_combined_module(
@@ -297,7 +284,8 @@ $interface_traffic_modules = array(
 		$options[2] = 'x2';
 		$options[3] = 'x3';
 		$options[4] = 'x4';
-		$data[1] = html_print_select($options, "zoom", $zoom, '', '', 0, true);
+		$options[5] = __('Full');
+		$data[1] = html_print_select($options, "zoom", $zoom, '', '', 0, true, false, false);
 		$table->data[] = $data;
 		$table->rowclass[] = '';
 

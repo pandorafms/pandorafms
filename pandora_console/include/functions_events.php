@@ -2239,7 +2239,6 @@ function events_page_details ($event, $server = "") {
 				);
 			
 			if (defined('METACONSOLE')) {
-				$graph_params["avg_only"] = 1;
 				// Set the server id
 				$graph_params["server"] = $server["id"];
 			}

@@ -24,7 +24,6 @@ class ModuleGraph {
 	private $width = 0;
 	private $height = 0;
 	private $draw_alerts = 0;
-	private $avg_only = 0;
 	private $start_date = 0;
 	private $time_compare_separated = 0;
 	private $time_compare_overlapped = 0;
@@ -65,7 +64,6 @@ class ModuleGraph {
 		}
 		$this->draw_events = (int)$system->getRequest('draw_events', 0);
 		$this->draw_alerts = (int)$system->getRequest('draw_alerts', 0);
-		$this->avg_only = (int)$system->getRequest('avg_only', 0);
 		$this->start_date = $system->getRequest('start_date', false);
 		if ($this->start_date === false) {
 			$this->start_date = date("Y-m-d");
@@ -144,7 +142,6 @@ class ModuleGraph {
 								'width'               => $this->width,
 								'height'              => $this->height,
 								'show_alerts'         => $this->draw_alerts,
-								'avg_only'            => $this->avg_only,
 								'date'                => $date,
 								'unit'                => $unit,
 								'baseline'            => $this->baseline,
@@ -245,7 +242,6 @@ class ModuleGraph {
 				postvars["time_compare_separated"] = ($("input[name = 'time_compare_separated']").is(":checked"))?1:0;
 				postvars["time_compare_overlapped"] = ($("input[name = 'time_compare_overlapped']").is(":checked"))?1:0;
 				postvars["unknown_graph"] = ($("input[name = 'unknown_graph']").is(":checked"))?1:0;;
-				postvars["avg_only"] = ($("input[name = 'avg_only']").is(":checked"))?1:0;;
 
 				postvars["period_hours"] = $("input[name = 'period_hours']").val();
 				postvars["zoom"] = $("input[name = 'zoom']").val();
@@ -355,14 +351,6 @@ class ModuleGraph {
 						'value' => 1,
 						'checked' => (bool)$this->unknown_graph,
 						'label' => __('Show unknown graph')
-						);
-					$ui->formAddCheckbox($options);
-
-					$options = array(
-						'name' => 'avg_only',
-						'value' => 1,
-						'checked' => (bool)$this->avg_only,
-						'label' => __('Avg Only')
 						);
 					$ui->formAddCheckbox($options);
 

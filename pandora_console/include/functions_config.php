@@ -498,9 +498,7 @@ function config_update_config () {
 						$error_update[] = __('Font path');
 					if (!config_update_value ('font_size', get_parameter('font_size')))
 						$error_update[] = __('Font size');
-					if (!config_update_value ('flash_charts', (bool) get_parameter ('flash_charts')))
-						$error_update[] = __('Interactive charts');
-					
+
 					if (!config_update_value ('custom_favicon', (string) get_parameter ('custom_favicon')))
 						$error_update[] = __('Custom favicon');
 					if (!config_update_value ('custom_logo', (string) get_parameter ('custom_logo')))
@@ -610,8 +608,6 @@ function config_update_config () {
 						$error_update[] = __('Default type of module charts.');
 					if (!config_update_value ('type_interface_charts', (string) get_parameter('type_interface_charts', 'line')))
 						$error_update[] = __('Default type of interface charts.');
-					if (!config_update_value ('only_average', (bool) get_parameter('only_average', false)))
-						$error_update[] = __('Default show only average or min and max');
 					if (!config_update_value ('render_proc', (bool) get_parameter('render_proc', false)))
 						$error_update[] = __('Display data of proc modules in other format');
 					if (!config_update_value ('render_proc_ok', (string) get_parameter('render_proc_ok', __('Ok') )))
@@ -1175,11 +1171,7 @@ function config_process_config () {
 	if (!isset ($config['style'])) {
 		config_update_value ( 'style', 'pandora');
 	}
-	
-	if (!isset ($config['flash_charts'])) {
-		config_update_value ( 'flash_charts', true);
-	}
-	
+
 	if (!isset ($config["login_background"])) {
 		config_update_value ('login_background', '');
 	}
@@ -2240,10 +2232,7 @@ function config_user_set_custom_config() {
 	// If block_size or flash_chart are provided then override global settings
 	if (!empty($userinfo["block_size"]) && ($userinfo["block_size"] != 0))
 		$config["block_size"] = $userinfo["block_size"];
-	
-	if ($userinfo["flash_chart"] != -1)
-		$config["flash_charts"] = $userinfo["flash_chart"];
-	
+
 	// Each user could have it's own timezone)
 	if (isset($userinfo["timezone"])) {
 		if ($userinfo["timezone"] != "") {

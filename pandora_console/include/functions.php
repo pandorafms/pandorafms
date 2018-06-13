@@ -2895,76 +2895,73 @@ function color_graph_array(){
 		'alpha' => CHART_DEFAULT_ALPHA
 	);
 
-	//XXX Hablar con Sancho del tema de los slices
-	/*
-		$color_series[1] = array(
-			'border' => '#000000',
-			'color' => $config['graph_color2'],
-			'alpha' => CHART_DEFAULT_ALPHA
-		);
-		$color_series[2] = array(
-			'border' => '#000000',
-			'color' => $config['graph_color3'],
-			'alpha' => CHART_DEFAULT_ALPHA
-		);
-	*/
-
 	$color_series[1] = array(
 		'border' => '#000000',
-		'color' => $config['graph_color4'],
+		'color' => $config['graph_color2'],
 		'alpha' => CHART_DEFAULT_ALPHA
 	);
 	$color_series[2] = array(
 		'border' => '#000000',
-		'color' => $config['graph_color5'],
+		'color' => $config['graph_color3'],
 		'alpha' => CHART_DEFAULT_ALPHA
 	);
+
 	$color_series[3] = array(
 		'border' => '#000000',
-		'color' => $config['graph_color6'],
+		'color' => $config['graph_color4'],
 		'alpha' => CHART_DEFAULT_ALPHA
 	);
 	$color_series[4] = array(
 		'border' => '#000000',
-		'color' => $config['graph_color7'],
+		'color' => $config['graph_color5'],
 		'alpha' => CHART_DEFAULT_ALPHA
 	);
 	$color_series[5] = array(
 		'border' => '#000000',
-		'color' => $config['graph_color8'],
+		'color' => $config['graph_color6'],
 		'alpha' => CHART_DEFAULT_ALPHA
 	);
 	$color_series[6] = array(
 		'border' => '#000000',
-		'color' => $config['graph_color9'],
+		'color' => $config['graph_color7'],
 		'alpha' => CHART_DEFAULT_ALPHA
 	);
 	$color_series[7] = array(
 		'border' => '#000000',
-		'color' => $config['graph_color10'],
+		'color' => $config['graph_color8'],
 		'alpha' => CHART_DEFAULT_ALPHA
 	);
 	$color_series[8] = array(
 		'border' => '#000000',
-		'color' => COL_GRAPH9,
+		'color' => $config['graph_color9'],
 		'alpha' => CHART_DEFAULT_ALPHA
 	);
 	$color_series[9] = array(
 		'border' => '#000000',
-		'color' => COL_GRAPH10,
+		'color' => $config['graph_color10'],
 		'alpha' => CHART_DEFAULT_ALPHA
 	);
 	$color_series[10] = array(
 		'border' => '#000000',
-		'color' => COL_GRAPH11,
+		'color' => COL_GRAPH9,
 		'alpha' => CHART_DEFAULT_ALPHA
 	);
 	$color_series[11] = array(
 		'border' => '#000000',
-		'color' => COL_GRAPH12,
+		'color' => COL_GRAPH10,
 		'alpha' => CHART_DEFAULT_ALPHA
 	);
 	$color_series[12] = array(
+		'border' => '#000000',
+		'color' => COL_GRAPH11,
+		'alpha' => CHART_DEFAULT_ALPHA
+	);
+	$color_series[13] = array(
+		'border' => '#000000',
+		'color' => COL_GRAPH12,
+		'alpha' => CHART_DEFAULT_ALPHA
+	);
+	$color_series[14] = array(
 		'border' => '#000000',
 		'color' => COL_GRAPH13,
 		'alpha' => CHART_DEFAULT_ALPHA

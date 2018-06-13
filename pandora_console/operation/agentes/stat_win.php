@@ -96,15 +96,6 @@ $alias    = db_get_value ("alias","tagente","id_agente",$id_agent);
 
 				period_select_init(periodSelectId);
 			};
-
-			function show_others() {
-				if ($('#checkbox-avg_only').is(":checked") == true) {
-					$("#hidden-show_other").val(1);
-				}
-				else {
-					$("#hidden-show_other").val(0);
-				}
-			}
 		</script>
 	</head>
 	<body bgcolor="#ffffff" style='background:#ffffff;'>
@@ -141,16 +132,6 @@ $alias    = db_get_value ("alias","tagente","id_agente",$id_agent);
 		}
 
 		$draw_alerts = get_parameter("draw_alerts", 0);
-
-		if(isset($config['only_average'])){
-			$avg_only = $config['only_average'];
-		}
-
-		$show_other = get_parameter('show_other',-1);
-
-		if ($show_other != -1) {
-			$avg_only = $show_other;
-		}
 
 		$period = get_parameter ("period");
 		$id     = get_parameter ("id", 0);
@@ -236,7 +217,6 @@ $alias    = db_get_value ("alias","tagente","id_agente",$id_agent);
 					'title'               => $label_graph,
 					'unit_name'           => $unit,
 					'show_alerts'         => $draw_alerts,
-					'avg_only'            => $avg_only,
 					'date'                => $date,
 					'unit'                => $unit,
 					'baseline'            => $baseline,
@@ -246,7 +226,8 @@ $alias    = db_get_value ("alias","tagente","id_agente",$id_agent);
 					'show_unknown'        => $unknown_graph,
 					'percentil'           => (($show_percentil)? $config['percentil'] : null),
 					'type_graph'          => $config['type_module_charts'],
-					'fullscale'           => $fullscale
+					'fullscale'           => $fullscale,
+					'zoom'                => $zoom
 				);
 				echo grafico_modulo_sparse ($params);
 				echo '<br>';
@@ -303,16 +284,6 @@ $alias    = db_get_value ("alias","tagente","id_agente",$id_agent);
 		$table->data[] = $data;
 		$table->rowclass[] = '';
 
-		if ($graph_type != "boolean" && $graph_type != "string") {
-			$data = array();
-			$data[0] = __('Avg. Only');
-			$data[1] = html_print_checkbox ("avg_only", 1,
-				(bool)$avg_only, true, false, 'show_others()');
-			$data[1] .= html_print_input_hidden('show_other', 0, true);
-			$table->data[] = $data;
-			$table->rowclass[] = '';
-		}
-
 		$data = array();
 		$data[0] = __('Begin date');
 		$data[1] = html_print_input_text ("start_date", $start_date,'', 10, 20, true);
@@ -326,14 +297,15 @@ $alias    = db_get_value ("alias","tagente","id_agente",$id_agent);
 		$table->rowclass[] = '';
 
 		$data = array();
-		$data[0] = __('Zoom factor');
+		$data[0] = __('Zoom');
 		$options = array ();
 		$options[$zoom] = 'x' . $zoom;
 		$options[1] = 'x1';
 		$options[2] = 'x2';
 		$options[3] = 'x3';
 		$options[4] = 'x4';
-		$data[1] = html_print_select ($options, "zoom", $zoom, '', '', 0, true);
+		$options[5] = __('full');
+		$data[1] = html_print_select ($options, "zoom", $zoom, '', '', 0, true, false, false);
 		$table->data[] = $data;
 		$table->rowclass[] = '';
 
@@ -367,11 +339,13 @@ $alias    = db_get_value ("alias","tagente","id_agente",$id_agent);
 		$table->data[] = $data;
 		$table->rowclass[] = '';
 
+		/*
 		$data = array();
 		$data[0] = __('Show event graph');
 		$data[1] = html_print_checkbox ("show_events_graph", 1, (bool) $show_events_graph, true);
 		$table->data[] = $data;
 		$table->rowclass[] = '';
+		*/
 
 		switch ($graph_type) {
 			case 'boolean':

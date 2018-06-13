@@ -137,7 +137,7 @@ function flot_area_graph (
 	$return = "<div class='parent_graph' style='width: " . ($params['width']) . ";" . $background_style . "'>";
 	// Set some containers to legend, graph, timestamp tooltip, etc.
 	if($params['show_legend']){
-		$return .= "<p id='legend_$graph_id' class='legend_graph' style='font-size:" . $params['font_size'] ."pt !important;'></p>";
+		$return .= "<p id='legend_$graph_id' class='legend_graph' style='font-size:" . $params['font_size'] ."pt !important; color:" . $params['legend_color'] . " !important;'></p>";
 	}
 	if(isset($params['graph_combined']) && $params['graph_combined'] &&
 		(!isset($params['from_interface']) || !$params['from_interface']) ){
@@ -280,7 +280,9 @@ function flot_area_graph (
 		"JSON.parse('$params'), \n" .
 		"JSON.parse('$array_events_alerts')".
 	");";
+	$return .= "$('#legend_" . $graph_id . " .legendLabel').css('color', 'green')";
 	$return .= "});";
+	
 	$return .= "</script>";
 
 	// Parent layer

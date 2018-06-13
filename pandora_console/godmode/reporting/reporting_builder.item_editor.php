@@ -2926,8 +2926,6 @@ function chooseType() {
 			$("#row_agent").show();
 			$("#row_module").show();
 			$("#row_period").show();
-			$("#row_show_in_landscape").show();
-			$("#row_time_compare_overlapped").show();
 			$("#row_historical_db_check").hide();
 			break;
 		
@@ -2937,8 +2935,6 @@ function chooseType() {
 			$("#row_module").show();
 			$("#row_period1").show();
 			$("#row_estimate").show();
-			$("#row_show_in_two_columns").show();
-			$("#row_show_in_landscape").show();
 			$("#row_historical_db_check").hide();
 			break;
 		
@@ -2957,8 +2953,6 @@ function chooseType() {
 			$("#row_description").show();
 			$("#row_period").show();
 			$("#row_custom_graph").show();
-			$("#row_show_in_two_columns").show();
-			$("#row_show_in_landscape").show();
 			$("#row_historical_db_check").hide();
 			break;
 		
@@ -3116,9 +3110,7 @@ function chooseType() {
 			$("#row_description").show();
 			$("#row_query").show();
 			$("#row_max_items").show();
-			$("#row_show_in_two_columns").show();
 			$("#row_dyn_height").show();
-			$("#row_show_in_landscape").show();
 			$("#row_servers").show();
 			$("#row_historical_db_check").show();
 			break;

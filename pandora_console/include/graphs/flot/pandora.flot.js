@@ -874,7 +874,7 @@ function pandoraFlotArea( graph_id, values, legend,
 	var menu             = params.menu;
 	var min_x            = date_array['start_date'] *1000;
 	var max_x            = date_array['final_date'] *1000;
-	var type             = params.stacked;
+	var type             = parseInt(params.stacked);
 	var show_legend      = params.show_legend;
 	var image_treshold   = params.image_treshold;
 	var short_data       = params.short_data;
@@ -884,7 +884,7 @@ function pandoraFlotArea( graph_id, values, legend,
 
 	//XXXXXX colocar
 	var force_integer    = 0;
-
+console.log(type);
 	if(typeof type === 'undefined' || type == ''){
 		type = params.type_graph;
 	}
@@ -1475,7 +1475,7 @@ function pandoraFlotArea( graph_id, values, legend,
 			}
 		}
 	}
-
+console.log(type);
 	switch (type) {
 		case 'line':
 		case 2:
@@ -1593,7 +1593,7 @@ function pandoraFlotArea( graph_id, values, legend,
 	}
 
 	var maxticks = date_array['period'] / 3600 / number_ticks;
-console.log(grid_color);
+
 	var options = {
 			series: {
 				stack: stacked,
@@ -1628,7 +1628,7 @@ console.log(grid_color);
 			xaxes: [{
 				axisLabelUseCanvas: true,
 				axisLabelFontSizePixels: font_size,
-				axisLabelFontFamily: font+'Font',
+				axisLabelFontFamily: font,
 				axisLabelPadding: 0,
 				mode: "time",
 				timezone: "browser",
@@ -1730,7 +1730,7 @@ if (vconsole) {
 			xaxes: [{
 				axisLabelUseCanvas: true,
 				axisLabelFontSizePixels: font_size,
-				axisLabelFontFamily: font+'Font',
+				axisLabelFontFamily: font,
 				axisLabelPadding: 0,
 				mode: "time",
 				timezone: "browser",
@@ -1754,8 +1754,6 @@ if (vconsole) {
 			}
 		});
 	}
-
-	$('#legend_' + graph_id + ' .legendLabel').css('color', legend_color);
 
 	// Adjust overview when main chart is resized
 	$('#overview_'+graph_id).resize(function(){
@@ -1805,7 +1803,7 @@ if (vconsole) {
 					xaxes: [{
 						axisLabelUseCanvas: true,
 						axisLabelFontSizePixels: font_size,
-						axisLabelFontFamily: font+'Font',
+						axisLabelFontFamily: font,
 						axisLabelPadding: 0,
 						mode: "time",
 						timezone: "browser",
@@ -1846,7 +1844,7 @@ if (vconsole) {
 					xaxes: [{
 						axisLabelUseCanvas: true,
 						axisLabelFontSizePixels: font_size,
-						axisLabelFontFamily: font+'Font',
+						axisLabelFontFamily: font,
 						axisLabelPadding: 0,
 						mode: "time",
 						timezone: "browser",
@@ -2163,6 +2161,7 @@ if (vconsole) {
 			$('#legend_' + graph_id + ' .legendLabel')
 				.eq(i).html(label_aux);
 		}
+		$('#legend_' + graph_id + ' .legendLabel').css('color', legend_color);
 		plot.clearCrosshair();
 		if(!vconsole){
 			overview.clearCrosshair();
@@ -2211,7 +2210,7 @@ if (vconsole) {
 	}
 
 	function lFormatter(v, item) {
-		return '<div style="font-size:'+font_size+'pt;">'+legend[v]+'</div>';
+		return '<div style="font-size:'+font_size+'pt; color:'+legend_color+';">'+legend[v]+'</div>';
 	}
 
 	if (menu) {

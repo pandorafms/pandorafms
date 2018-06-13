@@ -2191,8 +2191,8 @@ function config_check () {
 			__('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'), __("Problems with disable functions in PHP.INI"));
 	}
 
-	$result_ejectuion = exec($config['phantomjs_bin'] . 'phantomjs --version');
-	if(isset($result_ejectuion) || $result_ejectuion == ''){
+	$result_ejecution = exec($config['phantomjs_bin'] . '/phantomjs --version');
+	if(!isset($result_ejecution) || $result_ejecution == ''){
 		set_pandora_error_for_header(
 			__('To be able to create images of the graphs for PDFs, please install the phantom.js extension. For that, it is necessary to follow these steps:') .
 			'<a src="">Click here</a>',

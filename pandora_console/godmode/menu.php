@@ -209,6 +209,9 @@ if (check_acl ($config['id_user'], 0, "AW") || check_acl ($config['id_user'], 0,
 	}
 	//This subtabs are only for Pandora Admin
 	if (check_acl ($config['id_user'], 0, "PM")) {
+		
+		enterprise_hook('ha_cluster');
+		
 		$sub["godmode/servers/manage_recontask"]["text"] = __('Recon task');
 		$sub["godmode/servers/manage_recontask"]["id"] = 'Recon task';
 		

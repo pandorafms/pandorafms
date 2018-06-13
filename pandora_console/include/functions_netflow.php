@@ -434,7 +434,8 @@ function netflow_get_data ($start_date, $end_date, $interval_length, $filter, $a
 	
 	// Calculate the number of intervals
 	if ($interval_length <= 0) {
-		$num_intervals = $config['graph_res'] * 50;
+		//$num_intervals = $config['graph_res'] * 50;
+		$num_intervals = 250;
 		$period = $end_date - $start_date;
 		$interval_length = (int) ($period / $num_intervals);
 	}

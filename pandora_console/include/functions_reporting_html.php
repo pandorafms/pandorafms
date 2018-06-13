@@ -3953,7 +3953,8 @@ function reporting_get_event_histogram_meta ($width) {
 	
 	$data = array ();
 	
-	$resolution = $config['graph_res'] * ($period * 2 / $width); // Number of "slices" we want in graph
+	//$resolution = $config['graph_res'] * ($period * 2 / $width); // Number of "slices" we want in graph
+	$resolution = 5 * ($period * 2 / $width); // Number of "slices" we want in graph
 
 	$interval = (int) ($period / $resolution);
 	$date = get_system_time ();

@@ -3734,8 +3734,9 @@ function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $ho
 	
 	$data = array ();
 	
-	$resolution = $config['graph_res'] * ($period * 2 / $width); // Number of "slices" we want in graph
-	
+	//$resolution = $config['graph_res'] * ($period * 2 / $width); // Number of "slices" we want in graph
+	$resolution = 5 * ($period * 2 / $width); // Number of "slices" we want in graph
+
 	$interval = (int) ($period / $resolution);
 	$date = get_system_time ();
 	$datelimit = $date - $period;
@@ -3841,7 +3842,8 @@ function graph_graphic_moduleevents ($id_agent, $id_module, $width, $height, $pe
 
 	$data = array ();
 
-	$resolution = $config['graph_res'] * ($period * 2 / $width); // Number of "slices" we want in graph
+	//$resolution = $config['graph_res'] * ($period * 2 / $width); // Number of "slices" we want in graph
+	$resolution = 5 * ($period * 2 / $width); // Number of "slices" we want in graph
 	$interval = (int) ($period / $resolution);
 	$date = get_system_time ();
 	$datelimit = $date - $period;
@@ -4282,10 +4284,12 @@ function graphic_module_events ($id_module, $width, $height, $period = 0, $homeu
 	global $graphic_type;
 
 	$data = array ();
+//XXXXXX
 $width = 90;
 $height = 100;
-	$resolution = $config['graph_res'] * ($period * 2 / $width); // Number of "slices" we want in graph
 
+	//$resolution = $config['graph_res'] * ($period * 2 / $width); // Number of "slices" we want in graph
+	$resolution = 5 * ($period * 2 / $width); // Number of "slices" we want in graph
 	$interval = (int) ($period / $resolution);
 	if ($date === false) {
 		$date = get_system_time ();

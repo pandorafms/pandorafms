@@ -456,11 +456,11 @@ function config_update_config () {
 					if (!config_update_value ('prominent_time', (string) get_parameter ('prominent_time')))
 						$error_update[] = __('Timestamp or time comparation');
 					if (!config_update_value ('graph_color1', (string) get_parameter ('graph_color1')))
-						$error_update[] = __('Graph color (min)');
+						$error_update[] = __('Graph color #1');
 					if (!config_update_value ('graph_color2', (string) get_parameter ('graph_color2')))
-						$error_update[] = __('Graph color (avg)');
+						$error_update[] = __('Graph color #2');
 					if (!config_update_value ('graph_color3', (string) get_parameter ('graph_color3')))
-						$error_update[] = __('Graph color (max)');
+						$error_update[] = __('Graph color #3');
 					if (!config_update_value ('graph_color4', (string) get_parameter ('graph_color4')))
 						$error_update[] = __('Graph color #4');
 					if (!config_update_value ('graph_color5', (string) get_parameter ('graph_color5')))
@@ -475,8 +475,6 @@ function config_update_config () {
 						$error_update[] = __('Graph color #9');
 					if (!config_update_value ('graph_color10', (string) get_parameter ('graph_color10')))
 						$error_update[] = __('Graph color #10');
-					if (!config_update_value ('graph_res', (int) get_parameter ('graph_res')))
-						$error_update[] = __('Graphic resolution (1-low, 5-high)');
 					if (!config_update_value ('interface_unit', (string) get_parameter ('interface_unit', __('Bytes') )))
 						$error_update[] = __('Value to interface graphics');
 					if (!config_update_value ('graph_precision', (string) get_parameter ('graph_precision', 1)))

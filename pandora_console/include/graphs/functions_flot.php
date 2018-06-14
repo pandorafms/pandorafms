@@ -222,7 +222,7 @@ function flot_area_graph (
 
 	if (!$vconsole){
 		$return .= "<div id='overview_$graph_id' class='overview_graph'
-						style='margin:0px; margin-top:30px; margin-bottom:50px; display:none; width: ".$params['width']."; height: 200px;'></div>";
+						style='margin:0px; margin-top:30px; margin-bottom:50px; width: ".$params['width']."; height: 200px;'></div>";
 	}
 
 	if ($water_mark != '') {
@@ -280,9 +280,7 @@ function flot_area_graph (
 		"JSON.parse('$params'), \n" .
 		"JSON.parse('$array_events_alerts')".
 	");";
-	$return .= "$('#legend_" . $graph_id . " .legendLabel').css('color', 'green')";
 	$return .= "});";
-	
 	$return .= "</script>";
 
 	// Parent layer

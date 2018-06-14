@@ -861,12 +861,11 @@ function pandoraFlotArea( graph_id, values, legend,
 	series_type, color, water_mark, date_array,
 	data_module_graph, params, events_array
 ) {
-
 	//diferents vars
 	var unit             = params.unit ? params.unit : '';
 	var homeurl          = params.homeurl;
-	var font_size        = params.font_size;
-	var font             = params.font;
+	var font_size        = parseInt(params.font_size);
+	var font             = params.font.split("/").pop().split(".").shift();
 	var width            = params.width;
 	var height           = params.height;
 	var vconsole         = params.vconsole;
@@ -884,7 +883,7 @@ function pandoraFlotArea( graph_id, values, legend,
 
 	//XXXXXX colocar
 	var force_integer    = 0;
-console.log(type);
+
 	if(typeof type === 'undefined' || type == ''){
 		type = params.type_graph;
 	}
@@ -1475,7 +1474,7 @@ console.log(type);
 			}
 		}
 	}
-console.log(type);
+
 	switch (type) {
 		case 'line':
 		case 2:
@@ -1580,12 +1579,10 @@ console.log(type);
 	});
 
 	// The first execution, the graph data is the base data
-	datas     = data_base;
+	datas = data_base;
 
 	// minTickSize
 	var count_data = datas[0].data.length;
-	var min_tick   = datas[0].data[0][0];
-	var max_tick   = datas[0].data[count_data - 1][0];
 
 	var number_ticks = 8;
 	if(vconsole){
@@ -1623,27 +1620,29 @@ console.log(type);
 			},
 			xaxis: {
 				min: min_x,
-				max: max_x
+				max: max_x,
+				font: {
+					size: font_size + 2,
+					color: legend_color,
+					family: font+'Font'
+				}
 			},
 			xaxes: [{
-				axisLabelUseCanvas: true,
-				axisLabelFontSizePixels: font_size,
-				axisLabelFontFamily: font,
-				axisLabelPadding: 0,
 				mode: "time",
 				timezone: "browser",
 				localTimezone: true,
-				//tickFormatter: xFormatter,
 				tickSize: [maxticks, 'hour']
 			}],
+			yaxis: {
+				font: {
+					size: font_size + 2,
+					color: legend_color,
+					family: font+'Font'
+				},
+			},
 			yaxes: [{
 				tickFormatter: yFormatter,
-				color: '',
-				alignTicksWithAxis: 1,
-				labelWidth: 30,
-				position: 'left',
-				font: font,
-				reserveSpace: true
+				position: 'left'
 			}],
 			legend: {
 				position: 'se',
@@ -1725,27 +1724,29 @@ if (vconsole) {
 			},
 			xaxis: {
 				min: date_array.start_date * 1000,
-				max: date_array.final_date * 1000
+				max: date_array.final_date * 1000,
+				font: {
+					size: font_size + 2,
+					color: legend_color,
+					family: font+'Font'
+				}
 			},
 			xaxes: [{
-				axisLabelUseCanvas: true,
-				axisLabelFontSizePixels: font_size,
-				axisLabelFontFamily: font,
-				axisLabelPadding: 0,
 				mode: "time",
 				timezone: "browser",
 				localTimezone: true,
-				//tickFormatter: xFormatter,
 				tickSize: [maxticks, 'hour']
 			}],
+			yaxis: {
+				font: {
+					size: font_size + 2,
+					color: legend_color,
+					family: font+'Font'
+				},
+			},
 			yaxes: [{
 				tickFormatter: yFormatter,
-				color: '',
-				alignTicksWithAxis: 1,
-				labelWidth: 30,
-				position: 'left',
-				font: font,
-				reserveSpace: true
+				position: 'left'
 			}],
 			legend: {
 				position: 'se',
@@ -1798,31 +1799,31 @@ if (vconsole) {
 					},
 					xaxis: {
 						min: ranges.xaxis.from,
-						max: ranges.xaxis.to
+						max: ranges.xaxis.to,
+						font: {
+							size: font_size + 2,
+							color: legend_color,
+							family: font+'Font'
+						}
 					},
 					xaxes: [{
-						axisLabelUseCanvas: true,
-						axisLabelFontSizePixels: font_size,
-						axisLabelFontFamily: font,
-						axisLabelPadding: 0,
 						mode: "time",
 						timezone: "browser",
 						localTimezone: true,
-						//tickFormatter: xFormatter,
 						tickSize: [maxticks_zoom, 'hour']
 					}],
 					yaxis:{
 						min: ranges.yaxis.from,
-						max: ranges.yaxis.to
+						max: ranges.yaxis.to,
+						font: {
+							size: font_size + 2,
+							color: legend_color,
+							family: font+'Font'
+						},
 					},
 					yaxes: [{
 						tickFormatter: yFormatter,
-						color: '',
-						alignTicksWithAxis: 1,
-						labelWidth: 30,
-						position: 'left',
-						font: font,
-						reserveSpace: true,
+						position: 'left'
 					}],
 					legend: {
 						show: true
@@ -1839,31 +1840,31 @@ if (vconsole) {
 					},
 					xaxis: {
 						min: ranges.xaxis.from,
-						max: ranges.xaxis.to
+						max: ranges.xaxis.to,
+						font: {
+							size: font_size + 2,
+							color: legend_color,
+							family: font+'Font'
+						}
 					},
 					xaxes: [{
-						axisLabelUseCanvas: true,
-						axisLabelFontSizePixels: font_size,
-						axisLabelFontFamily: font,
-						axisLabelPadding: 0,
 						mode: "time",
 						timezone: "browser",
 						localTimezone: true,
-						//tickFormatter: xFormatter,
 						tickSize: [maxticks_zoom, 'hour']
 					}],
 					yaxis:{
 						min: ranges.yaxis.from,
-						max: ranges.yaxis.to
+						max: ranges.yaxis.to,
+						font: {
+							size: font_size + 2,
+							color: legend_color,
+							family: font+'Font'
+						},
 					},
 					yaxes: [{
 						tickFormatter: yFormatter,
-						color: '',
-						alignTicksWithAxis: 1,
-						labelWidth: 30,
-						position: 'left',
-						font: font,
-						reserveSpace: true,
+						position: 'left'
 					}],
 					legend: {
 						show: true
@@ -1928,6 +1929,11 @@ if (vconsole) {
 						$('#timestamp_'+graph_id).height() +
 						$('#legend_' + graph_id).height());
 
+		$('#timestamp_'+graph_id).css('color', legend_color);
+		$('#timestamp_'+graph_id).css('font-size', font_size + 2);
+		$('#timestamp_'+graph_id).css('font-family', font + 'Font');
+		$('#timestamp_'+graph_id).css('color', legend_color);
+
 		if (timesize+timenewpos > canvaslimit) {
 			$('#timestamp_'+graph_id).css('left', timenewpos - timesize);
 		}
@@ -1988,14 +1994,7 @@ if (vconsole) {
 				);
 			}
 
-			$('#legend_' + graph_id + ' .legendLabel')
-				.eq(i).css('font-size',font_size+'pt');
-
-			$('#legend_' + graph_id + ' .legendLabel')
-				.eq(i).css('color', legend_color);
-
-			$('#legend_' + graph_id + ' .legendLabel')
-				.eq(i).css('font-family',font);
+			$('#legend_' + graph_id + ' .legendLabel').eq(i).css('color', legend_color);
 
 			i++;
 		}
@@ -2168,28 +2167,6 @@ if (vconsole) {
 		}
 	}
 
-	// Format functions
-	function xFormatter(v, axis) {
-		var d = new Date(v);
-		var result_date_format = 0;
-
-		var monthNames = [
-			"Jan", "Feb", "Mar",
-			"Apr", "May", "Jun",
-			"Jul", "Aug", "Sep",
-			"Oct", "Nov", "Dec"
-		];
-
-		result_date_format = (d.getDate() <10?'0':'') + d.getDate() + " " +
-							monthNames[d.getMonth()] + " " +
-							d.getFullYear() + "\n" +
-							(d.getHours()<10?'0':'') + d.getHours() + ":" +
-							(d.getMinutes()<10?'0':'') + d.getMinutes() + ":" +
-							(d.getSeconds()<10?'0':'') + d.getSeconds();
-
-		return '<div class='+font+' style="font-size:'+font_size+'pt; margin-top:15px;">'+result_date_format+'</div>';
-	}
-
 	function yFormatter(v, axis) {
 		axis.datamin = 0;
 		if (short_data) {
@@ -2206,25 +2183,19 @@ if (vconsole) {
 
 		// Get only two decimals
 		formatted = round_with_decimals(formatted, 100);
-		return '<div class='+font+' style="font-size:'+font_size+'pt;">'+formatted+'</div>';
+		return formatted;
 	}
 
 	function lFormatter(v, item) {
-		return '<div style="font-size:'+font_size+'pt; color:'+legend_color+';">'+legend[v]+'</div>';
+		return '<span style="color:'+legend_color+'">'+legend[v]+'</span>';
 	}
+
+	$('#overview_' + graph_id).css('display', 'none');
 
 	if (menu) {
 		var parent_height;
 		$('#menu_overview_' + graph_id).click(function() {
 			$('#overview_' + graph_id).toggle();
-			/*
-			if($('#overview_' + graph_id).css('visibility') == 'visible'){
-				$('#overview_' + graph_id).css('visibility', 'hidden');
-			}
-			else{
-				$('#overview_' + graph_id).css('visibility', 'visible');
-			}
-			*/
 		});
 
 		$("#menu_export_csv_"+graph_id)

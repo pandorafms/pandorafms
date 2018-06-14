@@ -373,7 +373,7 @@ function api_get_module_last_value($idAgentModule, $trash1, $other = ';', $retur
 		return;
 	}
 
-	$user_has_access = users_access_to_agent(modules_get_agentmodule($idAgentModule));
+	$user_has_access = users_access_to_agent(modules_get_agentmodule_agent($idAgentModule));
 
 	$sql = sprintf('SELECT datos
 		FROM tagente_estado
@@ -889,7 +889,7 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType) {
  */
 function api_get_module_properties($id_module, $trahs2, $other, $returnType)
 {
-	if (!util_api_check_agent_and_print_error(modules_get_agentmodule($id_module), $returnType)) return;
+	if (!util_api_check_agent_and_print_error(modules_get_agentmodule_agent($id_module), $returnType)) return;
 
 	if ($other['type'] == 'array') {
 		$separator = $other['data'][0];
@@ -2699,7 +2699,7 @@ function api_set_update_network_module($id_module, $thrash1, $other, $thrash3) {
 	}
 
 	if (!util_api_check_agent_and_print_error(
-			modules_get_agentmodule($id_module), 'string', 'AW')
+		modules_get_agentmodule_agent($id_module), 'string', 'AW')
 	) {
 		return;
 	}
@@ -2911,7 +2911,7 @@ function api_set_update_plugin_module($id_module, $thrash1, $other, $thrash3) {
 	}
 
 	if (!util_api_check_agent_and_print_error(
-			modules_get_agentmodule($id_module), 'string', 'AW')
+		modules_get_agentmodule_agent($id_module), 'string', 'AW')
 	) {
 		return;
 	}
@@ -3297,7 +3297,7 @@ function api_set_update_data_module($id_module, $thrash1, $other, $thrash3) {
 	}
 
 	if (!util_api_check_agent_and_print_error(
-			modules_get_agentmodule($id_module), 'string', 'AW')
+		modules_get_agentmodule_agent($id_module), 'string', 'AW')
 	) {
 		return;
 	}
@@ -3563,7 +3563,7 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3) {
 	}
 
 	if (!util_api_check_agent_and_print_error(
-			modules_get_agentmodule($id_module), 'string', 'AW')
+		modules_get_agentmodule_agent($id_module), 'string', 'AW')
 	) {
 		return;
 	}
@@ -5050,7 +5050,7 @@ function api_set_add_tag_module($id, $id2, $thrash1, $thrash2) {
 	$id_module = $id;
 	$id_tag = $id2;
 
-	if (!util_api_check_agent_and_print_error(modules_get_agentmodule($id_module), 'string', "AW")) {
+	if (!util_api_check_agent_and_print_error(modules_get_agentmodule_agent($id_module), 'string', "AW")) {
 		return;
 	}
 
@@ -5083,7 +5083,7 @@ function api_set_remove_tag_module($id, $id2, $thrash1, $thrash2) {
 	$id_module = $id;
 	$id_tag = $id2;
 
-	if (!util_api_check_agent_and_print_error(modules_get_agentmodule($id_module), 'string', "AW")) {
+	if (!util_api_check_agent_and_print_error(modules_get_agentmodule_agent($id_module), 'string', "AW")) {
 		return;
 	}
 
@@ -6919,7 +6919,7 @@ function api_get_module_data($id, $thrash1, $other, $returnType) {
 		return;
 	}
 
-	if (!util_api_check_agent_and_print_error(modules_get_agentmodule($id), $returnType)) return;
+	if (!util_api_check_agent_and_print_error(modules_get_agentmodule_agent($id), $returnType)) return;
 
 	$separator = $other['data'][0];
 	$periodSeconds = $other['data'][1];
@@ -7002,7 +7002,7 @@ function api_get_graph_module_data($id, $thrash1, $other, $thrash2) {
 		return;
 	}
 
-	if (!util_api_check_agent_and_print_error(modules_get_agentmodule($id), "string")) return;
+	if (!util_api_check_agent_and_print_error(modules_get_agentmodule_agent($id), "string")) return;
 
 	$period = $other['data'][0];
 	$width = $other['data'][1];
@@ -7539,7 +7539,7 @@ function api_set_module_data($id, $thrash2, $other, $trash1) {
 	}
 
 	if ($other['type'] == 'array') {
-		if (!util_api_check_agent_and_print_error(modules_get_agentmodule($$id), 'string', 'AW')) {
+		if (!util_api_check_agent_and_print_error(modules_get_agentmodule_agent($$id), 'string', 'AW')) {
 			return;
 		}
 		$idAgentModule = $id;
@@ -9447,7 +9447,7 @@ function api_get_module_name($id_module, $trash1, $trash2, $returnType) {
 		return;
 	}
 
-	if (!util_api_check_agent_and_print_error(modules_get_agentmodule($id_module), $returnType)) return;
+	if (!util_api_check_agent_and_print_error(modules_get_agentmodule_agent($id_module), $returnType)) return;
 
 	$sql = sprintf('SELECT nombre
 		FROM tagente_modulo
@@ -10564,7 +10564,7 @@ function api_set_add_element_service($thrash1, $thrash2, $other, $thrash3) {
 					$agent_id = 0;
 					$id_service_child = 0;
 					$id_agente_modulo = $element['id'];
-					if (!agents_check_access_agent(modules_get_agentmodule($id_agente_modulo), "AR")) {
+					if (!agents_check_access_agent(modules_get_agentmodule_agent($id_agente_modulo), "AR")) {
 						continue;
 					}
 					break;
@@ -10740,7 +10740,7 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4) {
 		return;
 	}
 
-	if (!util_api_check_agent_and_print_error(modules_get_agentmodule($id_module), 'string')) return;
+	if (!util_api_check_agent_and_print_error(modules_get_agentmodule_agent($id_module), 'string')) return;
 
 	$graph_seconds =
 		(!empty($other) && isset($other['data'][0]))

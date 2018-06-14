@@ -13,9 +13,15 @@
 // GNU General Public License for more details.
 
 // Global & session manageme
+
+
 session_id($_GET["session_id"]);
+
+$user = file_get_contents(session_save_path() . "/pansess_" . session_id());
 session_start();
+$_SESSION["id_usuario"] = $user;
 session_write_close();
+
 
 require_once ('config.php');
 require_once ($config['homedir'] . '/include/auth/mysql.php');

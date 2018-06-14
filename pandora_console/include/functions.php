@@ -2967,7 +2967,6 @@ function color_graph_array(){
 		'alpha' => CHART_DEFAULT_ALPHA
 	);
 
-	//XXX Colores fijos para eventos, alertas, desconocidos, percentil, overlapped, summatory, average, projection
 	$color_series['event'] = array(
 		'border' => '#ff0000',
 		'color' => '#FF5733',

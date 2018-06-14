@@ -250,11 +250,6 @@ function flot_area_graph (
 	// Trick to get translated string from javascript
 	$return .= html_print_input_hidden('unknown_text', __('Unknown'), true);
 
-//XXXX Meter en params
-/*
-	mirar tmb lo de force integer
-*/
-
 	$values              = json_encode($array_data);
 	$legend              = json_encode($legend);
 	$series_type         = json_encode($series_type);

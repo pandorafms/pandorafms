@@ -1676,15 +1676,17 @@ function pandoraFlotArea( graph_id, values, legend,
 		}
 	}
 
-/*//XXXXXXXREvisar esto
-if (vconsole) {
-		var myCanvas = plot.getCanvas();
-		plot.setupGrid(); // redraw plot to new size
-		plot.draw();
-		var image = myCanvas.toDataURL("image/png");
-		return;
-	}
-*/
+	/*
+		//XXXREvisar esto
+		if (vconsole) {
+			var myCanvas = plot.getCanvas();
+			plot.setupGrid(); // redraw plot to new size
+			plot.draw();
+			var image = myCanvas.toDataURL("image/png");
+			return;
+		}
+	*/
+
 	// Adjust the overview plot to the width and position of the main plot
 	adjust_left_width_canvas(graph_id, 'overview_'+graph_id);
 	update_left_width_canvas(graph_id);

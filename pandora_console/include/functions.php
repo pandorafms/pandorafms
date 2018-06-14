@@ -2967,7 +2967,6 @@ function color_graph_array(){
 		'alpha' => CHART_DEFAULT_ALPHA
 	);
 
-	//XXX Colores fijos para eventos, alertas, desconocidos, percentil, overlapped, summatory, average, projection
 	$color_series['event'] = array(
 		'border' => '#ff0000',
 		'color' => '#FF5733',
@@ -3239,7 +3238,7 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined = fal
 	$session_id = session_id();
 
 	$result = exec(
-		$config['phantomjs_bin'] ."/phantomjs " . $file_js . " " .
+		io_safe_output($config['phantomjs_bin']) . DIRECTORY_SEPARATOR ."phantomjs " . $file_js . " " .
 		$url . "  '" .
 		$type_graph_pdf . "' '" .
 		$params_encode_json . "' '" .

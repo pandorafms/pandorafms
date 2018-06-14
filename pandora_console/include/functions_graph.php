@@ -234,10 +234,9 @@ function grafico_modulo_sparse_data_chart (
 
 	global $config;
 
-	//XXXXX
-	//Para evitar mostrar todos los datos a la vez lo cual puede recargar se hace un sistema de cajas que parte de una constante = 250
-	//y el periodo de tiempo seleccionado ademas de poder ir reducciendo el nivel de cajas es decir aumentando el nivel de detalle de la grafica
-	//hasta la opcion full que mostraria todos los puntos(datos) que contiene ese periodo.
+	//To avoid showing all the data at the same time which can be reloaded, a system of boxes is made starting from a constant = 250
+	//and the selected period of time in addition to being able to reduce the level of boxes, that is, increasing the level of detail of the graph
+	//until the full option that would show all the points (data) that that period contains.
 	$data_slice	= $date_array['period'] / (250 * $params['zoom']);
 
 	if( $data_module_graph['id_module_type'] == 23 ||
@@ -431,7 +430,7 @@ function grafico_modulo_sparse_data(
 		return false;
 	}
 
-	//XXX Esto es para un tipo especifico de report que consiste en pasarle un intervalo y hacer suma media y avg.
+	//This is for a specific type of report that consists in passing an interval and doing the average sum and avg.
 	if($params['force_interval'] != ''){
 		$period_time_interval = $date_array['period'] * 1000;
 		$start_period = $date_array['start_date'] * 1000;
@@ -1331,7 +1330,6 @@ function graphic_combined_module (
 		$params['zoom'] = 1;
 	}
 
-	//XXXXXXXX
 	//XXXX Configurable
 	$params['grid_color']   = '#C1C1C1';
 	$params['legend_color'] = '#636363';
@@ -1460,7 +1458,7 @@ function graphic_combined_module (
 	}
 
 	//XXX arreglar estas
-	$long_index      = '';
+	$long_index = '';
 
 	switch ($params_combined['stacked']) {
 		default:
@@ -4283,9 +4281,6 @@ function graphic_module_events ($id_module, $width, $height, $period = 0, $homeu
 	global $graphic_type;
 
 	$data = array ();
-//XXXXXX
-$width = 90;
-$height = 100;
 
 	//$resolution = $config['graph_res'] * ($period * 2 / $width); // Number of "slices" we want in graph
 	$resolution = 5 * ($period * 2 / $width); // Number of "slices" we want in graph

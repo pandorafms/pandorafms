@@ -2776,7 +2776,8 @@ function reporting_network_interfaces_report($report, $content, $type = 'dinamic
 			$content,
 			$report,
 			$fullscale,
-			$pdf
+			$pdf,
+			$id_meta
 		);
 	}
 
@@ -2785,7 +2786,7 @@ function reporting_network_interfaces_report($report, $content, $type = 'dinamic
 
 function agents_get_network_interfaces_array(
 	$network_interfaces_by_agents, $return,
-	$type, $content, $report, $fullscale, $pdf
+	$type, $content, $report, $fullscale, $pdf, $id_meta
 ){
 	if (empty($network_interfaces_by_agents)) {
 		$return['failed'] =
@@ -2816,7 +2817,8 @@ function agents_get_network_interfaces_array(
 					'date'      => $report["datetime"],
 					'only_image'=> $pdf,
 					'homeurl'   => $config['homeurl'],
-					'fullscale' => $fullscale
+					'fullscale' => $fullscale,
+					'server_id' => $id_meta
 				);
 
 				$params_combined = array(
@@ -3528,7 +3530,8 @@ function reporting_simple_baseline_graph($report, $content,
 				'only_image'          => $only_image,
 				'homeurl'             => ui_get_full_url(false, false, false, false),
 				'ttl'                 => $ttl,
-				'array_data_create'   => $baseline_data
+				'array_data_create'   => $baseline_data,
+				'server_id'           => $id_meta
 			);
 
 			$return['chart'] = grafico_modulo_sparse ($params);
@@ -3638,7 +3641,8 @@ function reporting_projection_graph($report, $content,
 				'unit'       => '',
 				'only_image' => $pdf,
 				'homeurl'    => ui_get_full_url(false, false, false, false) . '/',
-				'ttl'        => $ttl
+				'ttl'        => $ttl,
+				'server_id'  => $id_meta
 			);
 
 			$params_combined = array(
@@ -3899,7 +3903,8 @@ function reporting_value($report, $content, $type,$pdf) {
 				'homeurl'             => ui_get_full_url(false, false, false, false),
 				'ttl'                 => 1,///2
 				'type_graph'          => $config['type_module_charts'],
-				'time_interval'       => $content['lapse']
+				'time_interval'       => $content['lapse'],
+				'server_id'           => $id_meta
 			);
 
 			$value = '
@@ -6275,6 +6280,12 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 
 	require_once ($config["homedir"] . '/include/functions_graph.php');
 
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		$server  = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
+	}
+
 	$graph = db_get_row ("tgraph", "id_graph", $content['id_gs']);
 	$return = array();
 	$return['type'] = 'custom_graph';
@@ -6307,15 +6318,16 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 		case 'static':
 
 			$params =array(
-				'period'              => $content['period'],
-				'width'               => $width,
-				'height'              => $height,
-				'date'                => $report["datetime"],
-				'only_image'          => $pdf,
-				'homeurl'             => ui_get_full_url(false, false, false, false),
-				'ttl'                 => $ttl,
-				'percentil'           => $graphs[0]["percentil"],
-				'fullscale'           => $graphs[0]["fullscale"],
+				'period'     => $content['period'],
+				'width'      => $width,
+				'height'     => $height,
+				'date'       => $report["datetime"],
+				'only_image' => $pdf,
+				'homeurl'    => ui_get_full_url(false, false, false, false),
+				'ttl'        => $ttl,
+				'percentil'  => $graphs[0]["percentil"],
+				'fullscale'  => $graphs[0]["fullscale"],
+				'server_id'  => $id_meta
 			);
 
 			$params_combined = array(
@@ -6419,7 +6431,8 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 				'compare'             => $time_compare_overlapped,
 				'show_unknown'        => true,
 				'percentil'           => ($content['style']['percentil'] == 1) ? $config['percentil'] : null,
-				'fullscale'           => $fullscale
+				'fullscale'           => $fullscale,
+				'server_id'           => $id_meta
 			);
 
 			$return['chart'] = grafico_modulo_sparse($params);

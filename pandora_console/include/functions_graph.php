@@ -2248,7 +2248,7 @@ function graphic_agentaccess ($id_agent, $width, $height, $period = 0, $return =
 		'only_image'          => $only_image,
 		'homeurl'             => $homeurl,
 		'menu'                => true,
-		'backgroundColor'     => '#f9faf9',
+		'backgroundColor'     => 'transparent',
 		'type_graph'          => 'area',
 		'font'                => $config['fontpath'],
 		'font_size'           => $config['font_size'],

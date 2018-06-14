@@ -400,7 +400,7 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 		// with all 0 values.
 		options['yaxis']['tickDecimals'] = 0;
 	}
-	
+
 	if (max) {
 		options['xaxis']['max'] = max;
 	}
@@ -409,15 +409,14 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 	}
 
 	var plot = $.plot($('#' + graph_id), datas, options );
-	
+
 	$('#' + graph_id).HUseTooltip();
 	$('#' + graph_id).css("margin-left","auto");
 	$('#' + graph_id).css("margin-right","auto");
 	//~ $('#' + graph_id).find('div.legend-tooltip').tooltip({ track: true });
-	
+
 	function yFormatter(v, axis) {
 		format = new Array();
-		
 		for (i = 0; i < labels_total.length; i++) {
 			var label = labels_total[i][1];
 			// var shortLabel = reduceText(label, 25);
@@ -427,8 +426,10 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 				label  = reduceText(label, 30);
 			}
 			var div_attributes = 'style="font-size:'+font_size+'pt !important;'
-			 	+ ' margin: 0; max-width: 150px;'
-			 	+ 'margin-right:5px;';
+				+ ' margin: 0; max-width: 150px;'
+				+ 'margin-right:5px';
+				+ 'margin-left: -1.5em';
+				+ 'text-align: right';
 
 			if (label.indexOf("<br>") != -1) {
 				div_attributes += "min-height: 2.5em;";
@@ -442,7 +443,7 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 		}
 		return format;
 	}
-	
+
 	function xFormatter(v, axis) {
 		label = parseFloat(v);
 		text = label.toLocaleString();

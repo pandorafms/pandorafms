@@ -727,10 +727,9 @@ function treeview_printTable($id_agente, $server_data = array(), $no_head = fals
 	//echo '<div id="id_div" style="height: 10px">&nbsp;</div>';
 
 	if ($config["agentaccess"]) {
-		$access_graph = '<div>hjhhjhhj</div>';
-		$access_graph = '<div style="width:100%; heigth:200px;">';
-		$access_graph .= graphic_agentaccess($id_agente, 380, 90, SECONDS_1DAY, true, true);
-		$access_graph .= '</div><br><br>';
+		$access_graph = '<div style="width:100%; height:130px;">';
+		$access_graph .= graphic_agentaccess($id_agente, 380, 120, SECONDS_1DAY, true, true);
+		$access_graph .= '</div>';
 		ui_toggle($access_graph, __('Agent access rate (24h)'));
 	}
 
@@ -815,11 +814,9 @@ function treeview_printTable($id_agente, $server_data = array(), $no_head = fals
 
 		ui_toggle($table_interfaces, __('Interface information') . ' (SNMP)');
 	}
-	
 	if (!empty($server_data) && is_metaconsole()) {
 		metaconsole_restore_db();
 	}
-	
 	return;
 }
 ?>

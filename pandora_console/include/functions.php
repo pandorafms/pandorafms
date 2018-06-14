@@ -3205,6 +3205,9 @@ function series_type_graph_array($data, $show_elements_graph){
 				$data_return['color'][$key] = $color_series[$i];
 				$i++;
 			}
+			if($i > 14){
+				$i = 0;
+			}
 		}
 		return $data_return;
 	}

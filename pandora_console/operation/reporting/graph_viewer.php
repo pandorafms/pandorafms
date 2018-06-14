@@ -104,6 +104,7 @@ if ($view_graph) {
 	$events = $graph["events"];
 	$description = $graph["description"];
 	$stacked = (int) get_parameter ('stacked', -1);
+
 	$percentil = ($graph['percentil']) ? 1 : null;
 	$check = get_parameter('threshold',false);
 	$fullscale = ($graph['fullscale']) ? 1 : null;
@@ -117,13 +118,13 @@ if ($view_graph) {
 
 	if ($stacked == CUSTOM_GRAPH_BULLET_CHART || $stacked == CUSTOM_GRAPH_BULLET_CHART_THRESHOLD)
 		$height = 50;
-	
+
 	if ($stacked == CUSTOM_GRAPH_GAUGE ){
 		// Use the defined graph height, that's why
 		// the user can setup graph height.
 		$height = $graph["height"];
 	}
-	
+
 	$name = $graph["name"];
 	if (($graph["private"]==1) && ($graph["id_user"] != $id_user)) {
 		db_pandora_audit("ACL Violation",

@@ -384,6 +384,9 @@ $alias    = db_get_value ("alias","tagente","id_agente",$id_agent);
 		$table->rowclass[] = '';
 
 		$form_table = html_print_table($table, true);
+		$form_table .= '<div style="width:100%; text-align:right;">' .
+			html_print_submit_button(__('Reload'), "submit", false,
+				'class="sub upd"', true) . "</div>";
 
 		unset($table);
 
@@ -397,14 +400,6 @@ $alias    = db_get_value ("alias","tagente","id_agente",$id_agent);
 		$data = array();
 		$data[0] = html_print_div(array('id' => 'field_list', 'content' => $form_table,
 			'style' => 'overflow: auto; height: 220px'), true);
-		$table->data[] = $data;
-		$table->rowclass[] = '';
-
-		$data = array();
-		$data[0] = '<div style="width:100%; text-align:right;">' .
-			html_print_submit_button(__('Reload'), "submit", false,
-				'class="sub upd"', true) .
-			"</div>";
 		$table->data[] = $data;
 		$table->rowclass[] = '';
 

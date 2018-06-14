@@ -965,6 +965,8 @@ function visual_map_print_item($mode = "read", $layoutData,
 						$height = 480;
 					}
 
+					$graphs = db_get_all_rows_field_filter ("tgraph", "id_graph", $layoutData['id_custom_graph']);
+
 					$params =array(
 						'period'              => $period,
 						'width'               => $width,
@@ -978,7 +980,11 @@ function visual_map_print_item($mode = "read", $layoutData,
 					);
 
 					$params_combined = array(
-						'id_graph'       => $layoutData['id_custom_graph']
+						'id_graph'       => $layoutData['id_custom_graph'],
+						'stacked'        => $graphs[0]["stacked"],
+						'summatory'      => $graphs[0]["summatory_series"],
+						'average'        => $graphs[0]["average_series"],
+						'modules_series' => $graphs[0]["modules_series"]
 					);
 
 					if ($layoutData['label_position']=='left') {

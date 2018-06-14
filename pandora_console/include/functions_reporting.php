@@ -6295,77 +6295,12 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 		$report,
 		$content);
 
-	$graphs = db_get_all_rows_field_filter ("tgraph_source",
-		"id_graph", $content['id_gs']);
-	$modules = array ();
-	$weights = array ();
-	if ($graphs === false)
-		$graphs = array();
-
-	$labels = array();
-	foreach ($graphs as $graph_item) {
-		if ($type_report == 'automatic_graph') {
-			array_push ($modules, array(
-				'module' => $graph_item['id_agent_module'],
-				'server' => $graph_item['id_server']));
-		}
-		else {
-			array_push ($modules, $graph_item['id_agent_module']);
-		}
-
-		if (in_array('label',$content['style'])) {
-			if (defined('METACONSOLE')) {
-				$server_name = $content['server_name'];
-				$connection = metaconsole_get_connection($server_name);
-				if (!metaconsole_load_external_db($connection)) {
-					//ui_print_error_message ("Error connecting to ".$server_name);
-					continue;
-				}
-				$item = array('type' => 'custom_graph',
-						'id_agent' =>modules_get_agentmodule_agent($graph_item['id_agent_module']),
-						'id_agent_module'=>$graph_item['id_agent_module']);
-			}
-			else {
-				$item = array('type' => 'custom_graph',
-						'id_agent' =>modules_get_agentmodule_agent($graph_item['id_agent_module']),
-						'id_agent_module'=>$graph_item['id_agent_module']);
-			}
-
-			$label = reporting_label_macro($item, $content['style']['label']);
-
-			$labels[$graph_item['id_agent_module']] = $label;
-			if (defined('METACONSOLE')) {
-				//Restore db connection
-				metaconsole_restore_db();
-			}
-		}
-
-		array_push ($weights, $graph_item["weight"]);
-	}
-
-	if ($config['metaconsole'] && $type_report != 'automatic_graph') {
-		$id_meta = metaconsole_get_id_server($content["server_name"]);
-		$server = metaconsole_get_connection_by_id ($id_meta);
-		metaconsole_connect($server);
-	}
+	$graphs = db_get_all_rows_field_filter ("tgraph", "id_graph", $content['id_gs']);
 
 	$return['chart'] = '';
-	// Get chart
-	//reporting_set_conf_charts($width, $height, $only_image, $type,
-	//	$content, $ttl);
-$width =null;
-$height =null;
-	//height for bullet chart
-	/*
-	if($graph['stacked'] != 4){
-		$height += count($modules) * REPORTING_CUSTOM_GRAPH_LEGEND_EACH_MODULE_VERTICAL_SIZE;
-	}
-	else{
-		if(!$only_image){
-			$height = 50;
-		}
-	}
-*/
+
+	$width =null;
+	$height =null;
 
 	switch ($type) {
 		case 'dinamic':
@@ -6379,17 +6314,16 @@ $height =null;
 				'only_image'          => $pdf,
 				'homeurl'             => ui_get_full_url(false, false, false, false),
 				'ttl'                 => $ttl,
-				'percentil'           => $graph["percentil"],
-				'fullscale'           => $graph["fullscale"],
+				'percentil'           => $graphs[0]["percentil"],
+				'fullscale'           => $graphs[0]["fullscale"],
 			);
 
 			$params_combined = array(
-				'weight_list'    => $weights,
-				'stacked'        => $graph["stacked"],
-				'labels'         => $labels,
-				'summatory'      => $graph["summatory_series"],
-				'average'        => $graph["average_series"],
-				'modules_series' => $graph["modules_series"]
+				'stacked'        => $graphs[0]["stacked"],
+				'summatory'      => $graphs[0]["summatory_series"],
+				'average'        => $graphs[0]["average_series"],
+				'modules_series' => $graphs[0]["modules_series"],
+				'id_graph'       => $content['id_gs']
 			);
 
 			$return['chart'] = graphic_combined_module(

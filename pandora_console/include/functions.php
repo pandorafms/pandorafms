@@ -3053,10 +3053,20 @@ function series_type_graph_array($data, $show_elements_graph){
 
 	if($show_elements_graph['id_widget_dashboard']){
 		$opcion = unserialize(db_get_value_filter('options','twidget_dashboard',array('id' => $show_elements_graph['id_widget_dashboard'])));
-		foreach ($opcion as $key => $value) {
+		if($show_elements_graph['graph_combined']){
+
+			foreach ($show_elements_graph['modules_id'] as $key => $value) {
+				$color_series[$key] = array(
+					'border' => '#000000',
+					'color' => $opcion[$value],
+					'alpha' => CHART_DEFAULT_ALPHA
+				);
+			}
+		}
+		else{
 			$color_series[0] = array(
 				'border' => '#000000',
-				'color' => $opcion['avg'],
+				'color' => $opcion['max'],
 				'alpha' => CHART_DEFAULT_ALPHA
 			);
 		}

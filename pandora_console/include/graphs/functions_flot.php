@@ -137,7 +137,7 @@ function flot_area_graph (
 	$return = "<div class='parent_graph' style='width: " . ($params['width']) . ";" . $background_style . "'>";
 	// Set some containers to legend, graph, timestamp tooltip, etc.
 	if($params['show_legend']){
-		$return .= "<p id='legend_$graph_id' class='legend_graph' style='font-size:" . $params['font_size'] ."pt !important;'></p>";
+		$return .= "<p id='legend_$graph_id' class='legend_graph' style='font-size:" . $params['font_size'] ."pt !important; color:" . $params['legend_color'] . " !important;'></p>";
 	}
 	if(isset($params['graph_combined']) && $params['graph_combined'] &&
 		(!isset($params['from_interface']) || !$params['from_interface']) ){
@@ -222,7 +222,7 @@ function flot_area_graph (
 
 	if (!$vconsole){
 		$return .= "<div id='overview_$graph_id' class='overview_graph'
-						style='margin:0px; margin-top:30px; margin-bottom:50px; display:none; width: ".$params['width']."; height: 200px;'></div>";
+						style='margin:0px; margin-top:30px; margin-bottom:50px; width: ".$params['width']."; height: 200px;'></div>";
 	}
 
 	if ($water_mark != '') {

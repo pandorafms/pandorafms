@@ -701,7 +701,8 @@ function grafico_modulo_sparse_data(
 		'show_overview'       => true,
 		'return_img_base_64'  => false,
 		'image_treshold'      => false,
-		'graph_combined'      => false
+		'graph_combined'      => false,
+		'zoom'                => 1
 	);
  */
 function grafico_modulo_sparse ($params) {
@@ -873,7 +874,7 @@ function grafico_modulo_sparse ($params) {
 	$params['grid_color']   = '#C1C1C1';
 	$params['legend_color'] = '#636363';
 	$params['font']       = $config['fontpath'];
-	$params['font-size']  = $config['font_size'];
+	$params['font_size']  = $config['font_size'];
 	$params['short_data'] = $config['short_module_graph_data'];
 
 	if($params['only_image']){
@@ -1084,22 +1085,6 @@ function grafico_modulo_sparse ($params) {
 return $return;
 }
 
-function graph_get_formatted_date($timestamp, $format1, $format2) {
-	global $config;
-
-	if ($config['flash_charts']) {
-		$date = date("$format1 $format2", $timestamp);
-	}
-	else {
-		$date = date($format1, $timestamp);
-		if ($format2 != '') {
-			$date .= "\n".date($format2, $timestamp);
-		}
-	}
-
-	return $date;
-}
-
 /**
  * Produces a combined/user defined graph
  *
@@ -1168,6 +1153,8 @@ function graphic_combined_module (
 	$params_combined
 ) {
 
+	global $config;
+
 	if(!isset($params_combined['from_interface'])){
 		$params_combined['from_interface'] = false;
 	}
@@ -1182,11 +1169,11 @@ function graphic_combined_module (
 			}
 		}
 		else {
-			if ($id_graph == 0) {
+			if ($params_combined['id_graph'] == 0) {
 				$params_combined['stacked'] = CUSTOM_GRAPH_AREA;
 			}
 			else {
-				$params_combined['stacked'] = db_get_row('tgraph', 'id_graph', $id_graph);
+				$params_combined['stacked'] = db_get_row('tgraph', 'id_graph', $params_combined['id_graph']);
 			}
 		}
 	}
@@ -1334,6 +1321,7 @@ function graphic_combined_module (
 	}
 
 	$params['graph_combined'] = true;
+	$params_combined['graph_combined'] = true;
 
 	if($params['only_image']){
 		return generator_chart_to_pdf('combined', $params, $params_combined, $module_list);
@@ -1348,13 +1336,15 @@ function graphic_combined_module (
 	$params['grid_color']   = '#C1C1C1';
 	$params['legend_color'] = '#636363';
 	$params['font']         = $config['fontpath'];
-	$params['font-size']    = $config['font_size'];
+	$params['font_size']    = $config['font_size'];
+
 	$params['short_data']   = $config['short_module_graph_data'];
 
 	global $config;
 	global $graphic_type;
 
 	$sources = false;
+
 	if ($params_combined['id_graph'] == 0) {
 		$count_modules = count($module_list);
 
@@ -1400,6 +1390,13 @@ function graphic_combined_module (
 				}
 			}
 		}
+	}
+
+	if($module_list){
+		$params_combined['modules_id'] = $module_list;
+	}
+	else{
+		$params_combined['modules_id'] = $modules;
 	}
 
 	if(isset($summatory)){
@@ -1543,6 +1540,8 @@ function graphic_combined_module (
 			}
 
 			if($params_combined['projection'] && is_array($params_combined['projection'])){
+				$date_array_projection = max($params_combined['projection']);
+				$date_array['final_date'] = $date_array_projection[0] / 1000;
 				$array_data['projection']['data']= $params_combined['projection'];
 			}
 
@@ -2252,7 +2251,7 @@ function graphic_agentaccess ($id_agent, $width, $height, $period = 0, $return =
 		'backgroundColor'     => '#f9faf9',
 		'type_graph'          => 'area',
 		'font'                => $config['fontpath'],
-		'font-size'           => $config['font_size'],
+		'font_size'           => $config['font_size'],
 		'array_data_create'   => $data_array,
 		'show_overview'       => false,
 		'show_export_csv'     => false,
@@ -4123,7 +4122,7 @@ function graph_netflow_aggregate_area ($data, $period, $width, $height, $unit = 
 		'backgroundColor'     => 'white',
 		'type_graph'          => 'area',
 		'font'                => $config['fontpath'],
-		'font-size'           => $config['font_size'],
+		'font_size'           => $config['font_size'],
 		'array_data_create'   => $chart
 	);
 
@@ -4184,7 +4183,7 @@ function graph_netflow_total_area ($data, $period, $width, $height, $unit = '', 
 		'backgroundColor'     => 'white',
 		'type_graph'          => 'area',
 		'font'                => $config['fontpath'],
-		'font-size'           => $config['font_size'],
+		'font_size'           => $config['font_size'],
 		'array_data_create'   => $chart
 	);
 

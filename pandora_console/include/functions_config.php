@@ -864,7 +864,7 @@ function config_process_config () {
 
 	if (!isset ($config['phantomjs_bin'])) {
 		if ($is_windows){
-			$default = 'C:\\PandoraFMS\\Pandora_Server\\data_in';
+			$default = 'C:\\PandoraFMS\\phantomjs';
 		}
 		else{
 			$default = '/usr/bin';
@@ -2195,7 +2195,7 @@ function config_check () {
 	if(!isset($result_ejecution) || $result_ejecution == ''){
 		set_pandora_error_for_header(
 			__('To be able to create images of the graphs for PDFs, please install the phantom.js extension. For that, it is necessary to follow these steps:') .
-			'<a src="">Click here</a>',
+			'<a target="blank" href="https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Configuracion#Phantomjs">Click here</a>',
 			__("phantomjs is not installed"));
 	}
 }

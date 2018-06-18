@@ -187,7 +187,7 @@ if ($create_agent) {
 	$update_gis_data = (int) get_parameter_post("update_gis_data", 0);
 	$url_description = (string) get_parameter("url_description");
 	$quiet = (int) get_parameter("quiet", 0);
-	
+	$secondary_groups = (string) get_parameter("secondary_hidden", "");
 	$fields = db_get_all_fields_in_table('tagent_custom_fields');
 	
 	if ($fields === false) $fields = array();
@@ -283,7 +283,12 @@ if ($create_agent) {
 				"Update GIS data":"' . $update_gis_data .'",
 				"Url description":"' . $url_description .'",
 				"Quiet":"' . (int)$quiet.'"}';
-			
+
+			// Create the secondary groups
+			enterprise_hook('agents_update_secondary_groups',
+				array($id_agente, explode(',', $secondary_groups), array())
+			);
+
 			$unsafe_alias = io_safe_output($alias);
 			db_pandora_audit("Agent management",
 				"Created agent $unsafe_alias", false, true, $info);

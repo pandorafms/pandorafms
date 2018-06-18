@@ -2192,11 +2192,18 @@ function config_check () {
 	}
 
 	$result_ejecution = exec($config['phantomjs_bin'] . '/phantomjs --version');
-	if(!isset($result_ejecution) || $result_ejecution == ''){
-		set_pandora_error_for_header(
-			__('To be able to create images of the graphs for PDFs, please install the phantom.js extension. For that, it is necessary to follow these steps:') .
-			'<a target="blank" href="https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Configuracion#Phantomjs">Click here</a>',
-			__("phantomjs is not installed"));
+	if(!isset($result_ejecution) || $result_ejecution == '') {
+		if ($config['language'] == 'es') {
+			set_pandora_error_for_header(
+				__('To be able to create images of the graphs for PDFs, please install the phantom.js extension. For that, it is necessary to follow these steps:') .
+				'<a target="blank" href="https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Configuracion#Phantomjs">Click here</a>',
+				__("phantomjs is not installed"));
+		} else {
+			set_pandora_error_for_header(
+				__('To be able to create images of the graphs for PDFs, please install the phantom.js extension. For that, it is necessary to follow these steps:') .
+				'<a target="blank" href="https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Configuration#Phantomjs">Click here</a>',
+				__("phantomjs is not installed"));
+		}
 	}
 }
 

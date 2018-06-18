@@ -701,7 +701,8 @@ function grafico_modulo_sparse_data(
 		'return_img_base_64'  => false,
 		'image_treshold'      => false,
 		'graph_combined'      => false,
-		'zoom'                => 1
+		'zoom'                => 1,
+		'server_id'           => null
 	);
  */
 function grafico_modulo_sparse ($params) {

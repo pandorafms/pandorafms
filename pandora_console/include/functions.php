@@ -3237,19 +3237,19 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined = fal
 
 	$session_id = session_id();
 
-	$result = exec(
-		io_safe_output($config['phantomjs_bin']) . DIRECTORY_SEPARATOR ."phantomjs " . $file_js . " " .
-		$url . "  '" .
-		$type_graph_pdf . "' '" .
-		$params_encode_json . "' '" .
-		$params_combined . "' '" .
-		$module_list . "' " .
-		$img_path . " " .
-		$width_img . " " .
-		$height_img . " '" .
-		$session_id . "' " .
-		$params['return_img_base_64']
-	);
+	$cmd = '"' . io_safe_output($config['phantomjs_bin']) . DIRECTORY_SEPARATOR . 'phantomjs" "' . $file_js . '" '
+		. ' "' . $url . '"'
+		. ' "' . $type_graph_pdf . '"'
+		. ' "' . $params_encode_json . '"'
+		. ' "' . $params_combined . '"'
+		. ' "' . $module_list . '"'
+		. ' "' . $img_path . '"'
+		. ' "' . $width_img . '"'
+		. ' "' . $height_img . '"'
+		. ' "' . $session_id . '"'
+		. ' "' . $params['return_img_base_64'] . '"';
+
+	$result = exec($cmd);
 
 	if($params['return_img_base_64']){
 		return $result;

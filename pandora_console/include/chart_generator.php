@@ -39,16 +39,12 @@ check_login();
 
 global $config;
 
-/*
-$params_json = base64_decode((string) get_parameter('params'));
-$params = json_decode($params_json, true);
-
+$params = json_decode($_GET['data'], true);
 // Metaconsole connection to the node
-$server_id = (int) (isset($params['server']) ? $params['server'] : 0);
+$server_id = $params['server_id'];
 
 if ($config["metaconsole"] && !empty($server_id)) {
 	$server = metaconsole_get_connection_by_id($server_id);
-
 	// Error connecting
 	if (metaconsole_connect($server) !== NOERR) {
 		echo "<html>";
@@ -59,7 +55,7 @@ if ($config["metaconsole"] && !empty($server_id)) {
 		exit;
 	}
 }
-*/
+
 
 $user_language = get_user_language($config['id_user']);
 if (file_exists ('languages/'.$user_language.'.mo')) {
@@ -98,7 +94,7 @@ if (file_exists ('languages/'.$user_language.'.mo')) {
 	<body bgcolor="#ffffff" style='background:#ffffff;'>
 <?php
 
-		$params = json_decode($_GET['data'], true);
+		
         $params['only_image'] = false;
 		$params['width']      = '1048';
 		$params['menu']       = false;

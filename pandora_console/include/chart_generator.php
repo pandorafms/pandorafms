@@ -13,9 +13,9 @@
 // GNU General Public License for more details.
 
 // Global & session manageme
-session_id($_GET["session_id"]);
+session_id($_REQUEST["session_id"]);
 if (file_exists(session_save_path() . "/pansess_" . session_id())) {
-    $user = file_get_contents(session_save_path() . "/pansess_" . session_id());
+    $user = file_request_contents(session_save_path() . "/pansess_" . session_id());
 }
 session_start();
 if (isset($user)) {
@@ -39,12 +39,12 @@ check_login();
 
 global $config;
 
-$params = json_decode($_GET['data'], true);
+$params = json_decode($_REQUEST['data'], true);
 // Metaconsole connection to the node
 $server_id = $params['server_id'];
 
 if ($config["metaconsole"] && !empty($server_id)) {
-	$server = metaconsole_get_connection_by_id($server_id);
+	$server = metaconsole_request_connection_by_id($server_id);
 	// Error connecting
 	if (metaconsole_connect($server) !== NOERR) {
 		echo "<html>";
@@ -68,7 +68,7 @@ if (file_exists ('languages/'.$user_language.'.mo')) {
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<title>Pandora FMS Graph (<?php echo agents_get_alias($agent_id) . ' - ' . $interface_name; ?>)</title>
+		<title>Pandora FMS Graph (<?php echo agents_request_alias($agent_id) . ' - ' . $interface_name; ?>)</title>
         <link rel="stylesheet" href="styles/pandora.css" type="text/css" />
 		<link rel="stylesheet" href="styles/pandora_minimal.css" type="text/css" />
 		<link rel="stylesheet" href="styles/jquery-ui-1.10.0.custom.css" type="text/css" />
@@ -95,13 +95,13 @@ if (file_exists ('languages/'.$user_language.'.mo')) {
 <?php
 
 		
-        $params['only_image'] = false;
+        	$params['only_image'] = false;
 		$params['width']      = '1048';
 		$params['menu']       = false;
 
-		$params_combined = json_decode($_GET['data_combined'], true);
-		$module_list     = json_decode($_GET['data_module_list'], true);
-		$type_graph_pdf  = $_GET['type_graph_pdf'];
+		$params_combined = json_decode($_REQUEST['data_combined'], true);
+		$module_list     = json_decode($_REQUEST['data_module_list'], true);
+		$type_graph_pdf  = $_REQUEST['type_graph_pdf'];
 
 		if($type_graph_pdf == 'combined'){
 			echo '<div>';

@@ -24,6 +24,7 @@ use Scalar::Util qw(looks_like_number);
 use Time::HiRes qw(time);
 use POSIX qw(strftime setsid floor);
 use MIME::Base64;
+use JSON qw(decode_json encode_json);
 
 use base 'Exporter';
 
@@ -31,7 +32,7 @@ our @ISA = qw(Exporter);
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "7.0NG.724";
-my $pandora_build = "180618";
+my $pandora_build = "180619";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 our %EXPORT_TAGS = ( 'all' => [ qw() ] );
@@ -62,6 +63,7 @@ our @EXPORT = qw(
 	in_array
 	init
 	is_enabled
+	join_by_field
 	load_perl_modules
 	logger
 	merge_hashes
@@ -1004,6 +1006,22 @@ sub init_system {
 }
 
 ################################################################################
+# Return a string with the concatenation of a hash array based on a field
+################################################################################
+sub join_by_field {
+	my ($separator, $field, $array_hashref) = @_;
+
+	$separator = ',' if empty($separator);
+	my $str = '';
+	foreach my $item (@{$array_hashref}) {
+		$str .= (defined($item->{$field})?$item->{$field}:'') . $separator;
+	}
+	chop($str);
+
+	return $str;
+}
+
+################################################################################
 # Return system environment
 ################################################################################
 sub get_sys_environment {
@@ -1500,14 +1518,14 @@ sub api_available {
 # apidata->{other} = [field1,field2,...,fieldi,...,fieldn]
 #########################################################################################
 sub api_call {
-	my ($conf, $apidata) = @_;
+	my ($conf, $apidata, $decode_json) = @_;
 	my ($api_url, $api_pass, $api_user, $api_user_pass,
-	 	 $op, $op2, $other_mode, $other, $return_type);
+	 	 $op, $op2, $id, $id2, $other_mode, $other, $return_type);
 	my $separator;
 
 	if (ref $apidata eq "ARRAY") {
 	 	($api_url, $api_pass, $api_user, $api_user_pass,
-	 	 $op, $op2, $return_type, $other_mode, $other) = @{$apidata};
+	 	 $op, $op2, $id, $id2, $return_type, $other_mode, $other) = @{$apidata};
 	}
 	if (ref $apidata eq "HASH") {
 		$api_url       = $apidata->{'api_url'};
@@ -1516,6 +1534,8 @@ sub api_call {
 		$api_user_pass = $apidata->{'api_user_pass'};
 		$op            = $apidata->{'op'};
 		$op2           = $apidata->{'op2'};
+		$id            = $apidata->{'id'};
+		$id2           = $apidata->{'id2'};
 		$return_type   = $apidata->{'return_type'};
 		$other_mode    = "url_encode_separator_" . $apidata->{'url_encode_separator'} unless empty($apidata->{'url_encode_separator'});
 		$other_mode    = "url_encode_separator_|" if empty($other_mode);
@@ -1528,6 +1548,8 @@ sub api_call {
 	$api_user_pass = $conf->{'api_user_pass'} if empty($api_user_pass);
 	$op            = $conf->{'op'}            if empty($op);
 	$op2           = $conf->{'op2'}           if empty($op2);
+	$id            = $conf->{'id'}            if empty($id);
+	$id2           = $conf->{'id2'}           if empty($id2);
 	$return_type   = $conf->{'return_type'}   if empty($return_type);
 	$return_type   = 'json'                   if empty($return_type);
 	if (ref ($apidata->{'other'}) eq "ARRAY") {
@@ -1545,18 +1567,30 @@ sub api_call {
 		$other = $apidata->{'other'};
 	}
 
+	$other = '' if empty($other);
+	$id    = '' if empty($id); 
+	$id2   = '' if empty($id2);
+
 	my $call;
 
 	$call = $api_url . '?';
-	$call .= 'op=' . $op . '&op2=' . $op2;
+	$call .= 'op=' . $op . '&op2=' . $op2 . '&id=' . $id;
 	$call .= '&other_mode=url_encode_separator_' . $separator;
 	$call .= '&other=' . $other;
 	$call .= '&apipass=' . $api_pass . '&user=' . $api_user . '&pass=' . $api_user_pass;
 	$call .= '&return_type=' . $return_type;
 
 	my $rs = call_url($conf, "$call");
-
 	if (ref($rs) ne "HASH") {
+		if (is_enabled($decode_json)) {
+			eval {
+				my $tmp = decode_json($rs);
+				$rs = $tmp;
+			};
+			if ($@) {
+				print_stderror($conf, "Error: " . $@);
+			}
+		}
 		return {
 			rs => (empty($rs)?1:0),
 			error => (empty($rs)?"Empty response.":undef),

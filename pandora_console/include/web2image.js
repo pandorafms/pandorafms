@@ -31,12 +31,14 @@ if(type_graph_pdf == 'combined'){
 		"&data_combined=" + url_params_comb +
 		"&data_module_list=" + url_module_list +
 		"&type_graph_pdf=" + type_graph_pdf +
-		"&session_id=" + session_id;
+		"&session_id=" + session_id +
+		"&viewport_width=" + viewport_width;
 }
 else{
 	post_data = "data=" + url_params +
 		"&type_graph_pdf=" + type_graph_pdf +
-		"&session_id=" + session_id;
+		"&session_id=" + session_id +
+		"&viewport_width=" + viewport_width;
 }
 
 page.viewportSize = { width: _width, height: _height };

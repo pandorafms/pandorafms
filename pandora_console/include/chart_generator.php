@@ -96,8 +96,12 @@ if (file_exists ('languages/'.$user_language.'.mo')) {
 
 		
         	$params['only_image'] = false;
-		$params['width']      = '1048';
+		$params['width']      = (int) $_REQUEST['viewport_width'];
 		$params['menu']       = false;
+
+		if((!isset($params['width']) || ($params['width'] <= 0)) {
+			$params['width'] = 1048;
+		}
 
 		$params_combined = json_decode($_REQUEST['data_combined'], true);
 		$module_list     = json_decode($_REQUEST['data_module_list'], true);

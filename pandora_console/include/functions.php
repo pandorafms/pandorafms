@@ -3252,11 +3252,14 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined = fal
 	$result = exec($cmd);
 
 	if($params['return_img_base_64']){
+		// To be used in alerts
+		$width_img  = 500;
 		return $result;
 	}
 	else{
+		// to be used in PDF files
 		$config["temp_images"][] = $img_path;
-		return '<img src="' . $img_url . '" />';
+		return '<img style="width: 100%;height: ' . $height_img . '" src="' . $img_url . '" />';
 	}
 }
 

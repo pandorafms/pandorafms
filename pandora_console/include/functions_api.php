@@ -11451,7 +11451,7 @@ function api_get_modules_id_name_by_cluster_name ($cluster_name){
 function util_api_check_agent_and_print_error($id_agent, $returnType, $access = "AR") {
 	global $config;
 
-	$check_agent = agents_check_access_agent($id_agent["id_agente"], $access);
+	$check_agent = agents_check_access_agent($id_agent, $access);
 	if ($check_agent === true) return true;
 
 	if ($check_agent === false || !check_acl($config['id_user'], 0, $access)) {

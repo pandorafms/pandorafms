@@ -310,60 +310,24 @@ function api_get_groups($thrash1, $thrash2, $other, $returnType, $user_in_db) {
 	returnData($returnType, $data, $separator);
 }
 
-function api_get_agent_module_name_last_value($agentName, $moduleName, $other = ';', $returnType)
-{
-	global $config;
-
+function api_get_agent_module_name_last_value($agentName, $moduleName, $other = ';', $returnType){
 	$idAgent = agents_get_agent_id($agentName);
 	$sql = sprintf('SELECT id_agente_modulo
 		FROM tagente_modulo
 		WHERE id_agente = %d AND nombre LIKE "%s"', $idAgent, $moduleName);
 	$idModuleAgent = db_get_value_sql($sql);
 
-	$user_has_access = users_access_to_agent($idAgent);
-
-	if (($value === false || !$user_has_access) && isset($other['data'][0])) {
-		if ($other['type'] == 'array' && $other['data'][0] == 'error_value') {
-			returnData($returnType, array('type' => 'string', 'data' => $other['data'][1]));
-		} else {
-			if (!$value) {
-				returnError('id_not_found', $returnType);
-			} else {
-				returnError('forbidden', $returnType);
-			}
-		}
-	}
-	else {
-		api_get_module_last_value($idModuleAgent, null, $other, $returnType);
-	}
+	api_get_module_last_value($idModuleAgent, null, $other, $returnType);
 }
 
 
-function api_get_agent_module_name_last_value_alias($alias, $moduleName, $other = ';', $returnType)
-{
-	global $config;
-
+function api_get_agent_module_name_last_value_alias($alias, $moduleName, $other = ';', $returnType) {
 	$sql = sprintf('SELECT tagente_modulo.id_agente_modulo FROM tagente_modulo
 			INNER JOIN tagente ON tagente_modulo.id_agente = tagente.id_agente
 			WHERE tagente.alias LIKE "%s" AND tagente_modulo.nombre LIKE "%s"', $alias, $moduleName);
 	$idModuleAgent = db_get_value_sql($sql);
 
-	$user_has_access = users_access_to_agent($idAgent);
-
-	if (($value === false || !$user_has_access) && isset($other['data'][0])) {
-		if ($other['type'] == 'array' && $other['data'][0] == 'error_value') {
-			returnData($returnType, array('type' => 'string', 'data' => $other['data'][1]));
-		} else {
-			if (!$value) {
-				returnError('id_not_found', $returnType);
-			} else {
-				returnError('forbidden', $returnType);
-			}
-		}
-	}
-	else {
-		api_get_module_last_value($idModuleAgent, null, $other, $returnType);
-	}
+	api_get_module_last_value($idModuleAgent, null, $other, $returnType);
 }
 
 
@@ -373,28 +337,30 @@ function api_get_module_last_value($idAgentModule, $trash1, $other = ';', $retur
 		return;
 	}
 
-	$user_has_access = users_access_to_agent(modules_get_agentmodule_agent($idAgentModule));
+	$check_access = agents_check_access_agent(modules_get_agentmodule_agent($idAgentModule));
+	if ($check_access === false || !check_acl($config['id_user'], 0, "AR")) {
+		returnError('forbidden', $returnType);
+		return;
+	}
 
 	$sql = sprintf('SELECT datos
 		FROM tagente_estado
 		WHERE id_agente_modulo = %d', $idAgentModule);
 	$value = db_get_value_sql($sql);
 
-	if (($value === false || !$user_has_access) && isset($other['data'][0])) {
-		if ($other['type'] == 'array' && $other['data'][0] == 'error_value') {
+	if ($value === false) {
+		if (isset($other['data'][1]) && $other['data'][0] == 'error_value') {
 			returnData($returnType, array('type' => 'string', 'data' => $other['data'][1]));
+		} elseif ($check_access) {
+			returnError('no_data_to_show', $returnType);
 		} else {
-			if (!$value) {
-				returnError('id_not_found', $returnType);
-			} else {
-				returnError('forbidden', $returnType);
-			}
+			returnError('id_not_found', $returnType);
 		}
+		return;
 	}
-	else {
-		$data = array('type' => 'string', 'data' => $value);
-		returnData($returnType, $data);
-	}
+
+	$data = array('type' => 'string', 'data' => $value);
+	returnData($returnType, $data);
 }
 
 /*** DB column mapping table used by tree_agents (and get module_properties) ***/
@@ -2497,6 +2463,11 @@ function api_get_policies($thrash1, $thrash2, $other, $thrash3) {
 	global $config;
 
 	if (defined ('METACONSOLE')) {
+		return;
+	}
+
+	if (!check_acl($config['id_user'], 0, "AW")) {
+		returnError('forbidden', 'csv');
 		return;
 	}
 

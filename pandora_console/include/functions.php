@@ -3237,7 +3237,7 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined = fal
 
 	$session_id = session_id();
 
-	$cmd = '"' . io_safe_output($config['phantomjs_bin']) . DIRECTORY_SEPARATOR . 'phantomjs" "' . $file_js . '" '
+	$cmd = '"' . io_safe_output($config['phantomjs_bin']) . DIRECTORY_SEPARATOR . 'phantomjs" --ssl-protocol=any --ignore-ssl-errors=true "' . $file_js . '" '
 		. ' "' . $url . '"'
 		. ' "' . $type_graph_pdf . '"'
 		. ' "' . $params_encode_json . '"'

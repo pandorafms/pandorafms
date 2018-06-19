@@ -1164,6 +1164,15 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		
 		# API connection
 		my $ua = new LWP::UserAgent;
+		eval {
+			$ua->ssl_opts( 'verify_hostname' => 0 );
+			$ua->ssl_opts( 'SSL_verify_mode' => 0x00 );
+		};
+		if ( $@ ) {
+			logger($pa_config, "Failed to limit ssl security on console link: " . $@, 10);
+		}
+
+
 		my $url ||= $pa_config->{"console_api_url"};
 		
 		my $params = {};

@@ -2312,6 +2312,7 @@ CREATE TABLE IF NOT EXISTS `tagent_module_inventory` (
 	`utimestamp` bigint(20) default '0',
 	`flag` tinyint(1) unsigned default '1',
 	`id_policy_module_inventory` int(10) NOT NULL default '0',
+	`custom_fields` MEDIUMBLOB NOT NULL,
 	PRIMARY KEY  (`id_agent_module_inventory`),
 	FOREIGN KEY (`id_agente`) REFERENCES tagente(`id_agente`)
 		ON UPDATE CASCADE ON DELETE CASCADE,

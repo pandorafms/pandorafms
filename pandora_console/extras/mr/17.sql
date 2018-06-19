@@ -12,4 +12,6 @@ CREATE TABLE IF NOT EXISTS `tdatabase` (
 	PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8 ;
 
+ALTER TABLE `tagent_module_inventory` ADD COLUMN `custom_fields` MEDIUMBLOB NOT NULL;
+
 COMMIT;

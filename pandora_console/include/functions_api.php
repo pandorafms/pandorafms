@@ -4832,7 +4832,7 @@ function api_set_validate_all_alerts($id, $thrash1, $other, $thrash3) {
 		return;
 	}
 
-	if (!check_acl($config['id_user'], 0, "LM")){
+	if (!check_acl($config['id_user'], 0, "LW")){
 		returnError('forbidden', 'string');
 		return;
 	}
@@ -4856,15 +4856,15 @@ function api_set_validate_all_alerts($id, $thrash1, $other, $thrash3) {
 				ON t2.id_agente = t3.id_agente
 			INNER JOIN talert_templates t4
 				ON talert_template_modules.id_alert_template = t4.id
-		WHERE id_agent_module in (%s)", $agents_string);
-	
+		WHERE t3.id_agente in (%s)", $agents_string);
+
 	$alerts = db_get_all_rows_sql($sql);
 	if ($alerts === false) $alerts = array();
-	
+
 	$total_alerts = count($alerts);
 	$count_results = 0;
 	foreach ($alerts as $alert) {
-		$result = alerts_validate_alert_agent_module($alert['id'], true);
+		$result = alerts_validate_alert_agent_module($alert['id'], false);
 		
 		if ($result) {
 			$count_results++;
@@ -6834,7 +6834,7 @@ function api_set_create_netflow_filter($thrash1, $thrash2, $other, $thrash3) {
 			return;
 		}
 
-		if (!check_acl($config['id_user'], 0, "AW")) {
+		if (!check_acl($config['id_user'], $other['data'][1], "AW")) {
 			returnError('forbidden', 'string');
 			return;
 		}
@@ -7514,7 +7514,7 @@ function api_set_module_data($id, $thrash2, $other, $trash1) {
 	}
 
 	if ($other['type'] == 'array') {
-		if (!util_api_check_agent_and_print_error(modules_get_agentmodule_agent($$id), 'string', 'AW')) {
+		if (!util_api_check_agent_and_print_error(modules_get_agentmodule_agent($id), 'string', 'AW')) {
 			return;
 		}
 		$idAgentModule = $id;
@@ -10265,6 +10265,24 @@ function api_set_create_special_day($thrash1, $thrash2, $other, $thrash3) {
 	if (!preg_match("/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $special_day)) {
 		returnError('error_create_special_day', __('Error creating special day. Invalid date format.'));
 		return;
+	}
+
+	if (!isset($idGroup) || $idGroup == '') {
+		returnError('error_create_special_day', __('Error creating special day. Group id cannot be left blank.'));
+		return;
+	}
+	else {
+		$group = groups_get_group_by_id($idGroup);
+
+		if ($group == false) {
+			returnError('error_create_special_day', __('Error creating special day. Id_group doesn\'t exist.'));
+			return;
+		}
+
+		if (!check_acl($config['id_user'], $idGroup, "LM")) {
+			returnError('forbidden', 'string');
+			return;
+		}
 	}
 	
 	$values = array(

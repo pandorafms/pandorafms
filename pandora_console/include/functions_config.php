@@ -1855,7 +1855,7 @@ function config_process_config () {
 	}
 	
 	if (!isset($config['graph_image_height'])) {
-		config_update_value ('graph_image_height', 350);
+		config_update_value ('graph_image_height', 320);
 	}
 	
 	if (!isset($config["render_proc_ok"])) {

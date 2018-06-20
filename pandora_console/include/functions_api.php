@@ -11349,9 +11349,9 @@ function api_get_cluster_status($id_cluster, $trash1, $trash2, $returnType) {
 		return;
 	}
 
-	$sql = 'select estado from tagente_estado INNER JOIN tagente_modulo ON tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo '
-		. ' and tagente_modulo.nombre = "' . io_safe_input("Cluster status") . '" '
-		. ' and tagente_modulo.id_agente = (select id_agent from tcluster where id = ".$id_cluster.")';
+	$sql = 'select ae.estado from tagente_estado ae, tagente_modulo tam, tcluster tc'
+		. ' where tam.id_agente=tc.id_agent and ae.id_agente_modulo=tam.id_agente_modulo '
+		. ' and tc.id=' . $id_cluster . ' and tam.nombre = "' . io_safe_input("Cluster status") . '" ';
 	
 	$value = db_get_value_sql($sql);
 	

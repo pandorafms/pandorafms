@@ -627,6 +627,9 @@ function config_update_config () {
 
 					if (!config_update_value ('full_scale_option', (int) get_parameter('full_scale_option', 0)))
 						$error_update[] = __('Default full scale (TIP)');
+					
+					if (!config_update_value ('graph_image_height', (int) get_parameter('graph_image_height', 0)))
+						$error_update[] = __('Default height of the chart image');
 
 					if (!config_update_value ('classic_menu', (bool) get_parameter('classic_menu', false)))
 						$error_update[] = __('Classic menu mode');
@@ -1849,6 +1852,10 @@ function config_process_config () {
 	
 	if (!isset($config['render_proc'])) {
 		config_update_value ('render_proc', 0);
+	}
+	
+	if (!isset($config['graph_image_height'])) {
+		config_update_value ('graph_image_height', 320);
 	}
 	
 	if (!isset($config["render_proc_ok"])) {

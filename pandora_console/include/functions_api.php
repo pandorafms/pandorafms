@@ -11112,11 +11112,10 @@ function api_set_delete_cluster($id, $thrash1, $thrast2, $thrash3) {
 	$tcluster_delete = db_process_sql('delete from tcluster where id = '.$id);
 	$tcluster_agent_delete = agents_delete_agent($temp_id_cluster[0]['id_agent']);
 	
-	if (!$tcluster_modules_delete || !$tcluster_items_delete || !$tcluster_agents_delete || !$tcluster_delete || !$tcluster_agent_delete)
+	if (($tcluster_modules_delete + $tcluster_items_delete + $tcluster_agents_delete + $tcluster_delete + $tcluster_agent_delete) == 0)
 		returnError('error_delete', 'Error in delete operation.');
 	else
-		returnData('string', array('type' => 'string', 'data' => __('Correct Delete')));
-
+		returnData('string', array('type' => 'string', 'data' => __('Successfully deleted')));
 }
 
 function api_set_delete_cluster_agents($thrash1, $thrast2, $other, $thrash3) {
@@ -11430,7 +11429,7 @@ function api_get_agents_id_name_by_cluster_name($cluster_name, $trash1, $trash2,
 		return;
 	}
 		
-	$all_agents = cluster_get_agents_id_name_by_cluster_id($cluster_name);
+	$all_agents = cluster_get_agents_id_name_by_cluster_id($value);
 	
 	if (count($all_agents) > 0 and $all_agents !== false) {
 		$data = array('type' => 'json', 'data' => $all_agents);

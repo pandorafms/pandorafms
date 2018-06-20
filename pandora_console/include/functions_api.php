@@ -10833,11 +10833,10 @@ function api_set_new_cluster($thrash1, $thrash2, $other, $thrash3) {
 	$description = $other['data'][2];
 	$idGroup = $other['data'][3];
 
-	if (!users_is_admin($config['id_user'])) {
-		if(!check_acl($config['id_user'], $idGroup, "AW")) {
-			returnError('forbidden', 'string');
-			return;
-		}
+	
+	if(!check_acl($config['id_user'], $idGroup, "AW")) {
+		returnError('forbidden', 'string');
+		return;
 	}
 	
 	$name_exist = db_process_sql('select count(name) as already_exist from tcluster as already_exist where name = "'.$name.'"');	
@@ -10923,17 +10922,18 @@ function api_set_new_cluster($thrash1, $thrash2, $other, $thrash3) {
 	
 function api_set_add_cluster_agent($thrash1, $thrash2, $other, $thrash3) {
 	global $config;
+
+	if (defined ('METACONSOLE')) {
+		return;
+	}
 	
 	$array_json = json_decode(base64_decode(io_safe_output($other['data'][0])), true);
 	if(!empty($array_json)){
 		foreach ($array_json as $key => $element) {
 			$check_cluster_group = clusters_get_group ($element['id']);
-			if (!users_is_admin($config['id_user'])) {
-				if (!$check_cluster_group
-				|| (!check_acl($config['id_user'], $check_cluster_group, "AW"))
-				|| (!agents_check_access_agent($element['id_agent'], "AW"))) {
-					continue;
-				}
+			if((!check_acl($config['id_user'], $check_cluster_group, "AW"))
+			|| (!agents_check_access_agent($element['id_agent'], "AW"))) {
+				continue;
 			}
 			$tcluster_agent = db_process_sql('insert into tcluster_agent values ('.$element["id"].','.$element["id_agent"].')');
 		}
@@ -10958,10 +10958,8 @@ function api_set_add_cluster_item($thrash1, $thrash2, $other, $thrash3) {
 	if (is_array($array_json)) {
 		foreach ($array_json as $key => $element) {
 			$cluster_group = clusters_get_group ($element['id']);
-			if (!users_is_admin($config["id_user"])) {
-				if(!$cluster_group || !check_acl($config['id_user'], $cluster_group, "AW")){
-					continue;
-				}
+			if(!check_acl($config['id_user'], $cluster_group, "AW")){
+				continue;
 			}
 
 			if($element["type"] == "AA"){
@@ -11095,7 +11093,7 @@ function api_set_delete_cluster($id, $thrash1, $thrast2, $thrash3) {
 	}
 
 	$cluster_group = clusters_get_group($id);
-	if(!$cluster_group || !check_acl($config['id_user'], $cluster_group, "AD")){
+	if(!check_acl($config['id_user'], $cluster_group, "AD")){
 		returnError('error_set_delete_cluster', __('The user cannot access to the cluster'));
 		return;
 	}
@@ -11180,7 +11178,7 @@ function api_set_delete_cluster_item($id, $thrash1, $thrast2, $thrast3) {
 	}
 
 	$cluster_group = clusters_get_group($id);
-	if(!$cluster_group || !check_acl($config['id_user'], $cluster_group, "AD")){
+	if(!check_acl($config['id_user'], $cluster_group, "AD")){
 		returnError('error_set_delete_cluster_item', __('The user cannot access to the cluster'));
 		return;
 	}
@@ -11197,7 +11195,8 @@ function api_set_delete_cluster_item($id, $thrash1, $thrast2, $thrast3) {
 }
 
 function api_set_apply_module_template($id_template, $id_agent, $thrash3, $thrash4) {
-		
+	global $config;
+
 	if (isset ($id_template)) {
 
 		if (!util_api_check_agent_and_print_error($id_agent, 'string', "AW")) return;
@@ -11345,7 +11344,7 @@ function api_get_cluster_status($id_cluster, $trash1, $trash2, $returnType) {
 	}
 
 	$cluster_group = clusters_get_group($id_cluster);
-	if(!$cluster_group || !check_acl($config['id_user'], $cluster_group, "AR")){
+	if(!check_acl($config['id_user'], $cluster_group, "AR")){
 		returnError('error_get_cluster_status', __('The user cannot access to the cluster'));
 		return;
 	}
@@ -11373,18 +11372,14 @@ function api_get_cluster_id_by_name($cluster_name, $trash1, $trash2, $returnType
 	}
 	
 	$value = cluster_get_id_by_name($cluster_name);
-
 	if(($value === false) || ($value === null)){
 		returnError('id_not_found', $returnType);
 	}
 
 	$cluster_group = clusters_get_group($value);
-	
-	if (!users_is_admin($config['id_user'])) {
-		if(!$cluster_group || !check_acl($config['id_user'], $cluster_group, "AR")) {
-			returnError('error_get_cluster_status', __('The user cannot access to the cluster'));
-			return;
-		}
+	if(!check_acl($config['id_user'], $cluster_group, "AR")) {
+		returnError('error_get_cluster_status', __('The user cannot access to the cluster'));
+		return;
 	}
 
 	$data = array('type' => 'string', 'data' => $value);
@@ -11393,7 +11388,15 @@ function api_get_cluster_id_by_name($cluster_name, $trash1, $trash2, $returnType
 }
 
 function api_get_agents_id_name_by_cluster_id($cluster_id, $trash1, $trash2, $returnType) {
+	global $config;
+
 	if (defined ('METACONSOLE')) {
+		return;
+	}
+
+	$cluster_group = clusters_get_group($cluster_id);
+	if(!check_acl($config['id_user'], $cluster_group, "AR")) {
+		returnError('error_get_cluster_status', __('The user cannot access to the cluster'));
 		return;
 	}
 	
@@ -11410,11 +11413,24 @@ function api_get_agents_id_name_by_cluster_id($cluster_id, $trash1, $trash2, $re
 }
 
 function api_get_agents_id_name_by_cluster_name($cluster_name, $trash1, $trash2, $returnType) {
+	global $config;
+
 	if (defined ('METACONSOLE')) {
 		return;
 	}
+
+	$value = cluster_get_id_by_name($cluster_name);
+	if(($value === false) || ($value === null)){
+		returnError('id_not_found', $returnType);
+	}
+
+	$cluster_group = clusters_get_group($value);
+	if(!check_acl($config['id_user'], $cluster_group, "AR")) {
+		returnError('error_get_cluster_status', __('The user cannot access to the cluster'));
+		return;
+	}
 		
-	$all_agents = cluster_get_agents_id_name_by_cluster_name($cluster_name);
+	$all_agents = cluster_get_agents_id_name_by_cluster_id($cluster_name);
 	
 	if (count($all_agents) > 0 and $all_agents !== false) {
 		$data = array('type' => 'json', 'data' => $all_agents);
@@ -11427,10 +11443,18 @@ function api_get_agents_id_name_by_cluster_name($cluster_name, $trash1, $trash2,
 }
 
 function api_get_modules_id_name_by_cluster_id ($cluster_id){
+	global $config;
+
 	if (defined ('METACONSOLE')) {
 		return;
 	}
 	
+	$cluster_group = clusters_get_group($cluster_id);
+	if(!check_acl($config['id_user'], $cluster_group, "AR")) {
+		returnError('error_get_cluster_status', __('The user cannot access to the cluster'));
+		return;
+	}
+
 	$all_modules = cluster_get_modules_id_name_by_cluster_id($cluster_id);	
 	
 	if (count($all_modules) > 0 and $all_modules !== false) {
@@ -11445,11 +11469,24 @@ function api_get_modules_id_name_by_cluster_id ($cluster_id){
 }
 
 function api_get_modules_id_name_by_cluster_name ($cluster_name){
+	global $config;
+
 	if (defined ('METACONSOLE')) {
 		return;
 	}
 	
-	$all_modules = cluster_get_modules_id_name_by_cluster_name($cluster_name);
+	$value = cluster_get_id_by_name($cluster_name);
+	if(($value === false) || ($value === null)){
+		returnError('id_not_found', $returnType);
+	}
+
+	$cluster_group = clusters_get_group($value);
+	if(!check_acl($config['id_user'], $cluster_group, "AR")) {
+		returnError('error_get_cluster_status', __('The user cannot access to the cluster'));
+		return;
+	}
+
+	$all_modules = cluster_get_modules_id_name_by_cluster_id($value);
 	
 	if (count($all_modules) > 0 and $all_modules !== false) {
 		$data = array('type' => 'json', 'data' => $all_modules);
@@ -11460,6 +11497,31 @@ function api_get_modules_id_name_by_cluster_name ($cluster_name){
 		returnError('error_agent_modules', 'No modules retrieved.');
 	}
 	
+}
+
+function api_get_cluster_items ($cluster_id){
+	global $config;
+
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+	
+	$cluster_group = clusters_get_group($cluster_id);
+	if(!check_acl($config['id_user'], $cluster_group, "AR")) {
+		returnError('error_get_cluster_status', __('The user cannot access to the cluster'));
+		return;
+	}
+
+	$all_items = cluster_get_items($cluster_id);
+	
+	if (count($all_items) > 0 and $all_items !== false) {
+		$data = array('type' => 'json', 'data' => $all_items);
+		
+		returnData('json', $data);
+	}
+	else {
+		returnError('error_cluster_items', 'No items retrieved.');
+	}
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -11481,19 +11543,7 @@ function util_api_check_agent_and_print_error($id_agent, $returnType, $access = 
 	return false;
 }
 
-function api_get_cluster_items ($cluster_id){
-	
-	$all_items = cluster_get_items($cluster_id);	
-	
-	if (count($all_items) > 0 and $all_items !== false) {
-		$data = array('type' => 'json', 'data' => $all_items);
-		
-		returnData('json', $data);
-	}
-	else {
-		returnError('error_cluster_items', 'No items retrieved.');
-	}
-}
+
 
 
 

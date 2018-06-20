@@ -3217,13 +3217,15 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined = fal
 	global $config;
 
 	$file_js  = $config["homedir"] . "/include/web2image.js";
-	$url      = $config["homeurl"] . "/include/chart_generator.php";
+	$url      = $config["homeurl"] . "include/chart_generator.php";
 	$img_file = "img_". uniqid()  .".png";
 	$img_path = $config["homedir"] . "/attachment/" . $img_file;
 	$img_url  = $config["homeurl"] . "attachment/" . $img_file;
 
 	$width_img  = 500;
 	$height_img = (isset($config['graph_image_height'])) ? $config['graph_image_height'] : 350;
+
+	$params['height'] = $height_img;
 
 	$params_encode_json = urlencode(json_encode($params));
 
@@ -3259,7 +3261,7 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined = fal
 	else{
 		// to be used in PDF files
 		$config["temp_images"][] = $img_path;
-		return '<img style="width: 100%;height: ' . $height_img . '" src="' . $img_url . '" />';
+		return '<img src="' . $img_url . '" />';
 	}
 }
 

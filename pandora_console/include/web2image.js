@@ -31,20 +31,23 @@ if(type_graph_pdf == 'combined'){
 		"&data_combined=" + url_params_comb +
 		"&data_module_list=" + url_module_list +
 		"&type_graph_pdf=" + type_graph_pdf +
-		"&session_id=" + session_id +
-		"&viewport_width=" + viewport_width;
+		"&session_id=" + session_id;
 }
 else{
 	post_data = "data=" + url_params +
 		"&type_graph_pdf=" + type_graph_pdf +
-		"&session_id=" + session_id +
-		"&viewport_width=" + viewport_width;
+		"&session_id=" + session_id;
 }
 
-page.viewportSize = { width: _width, height: _height };
-//page.zoomFactor = 1.75;
+page.viewportSize = {
+	width: viewport_width,
+	height: viewport_height
+};
+page.zoomFactor = 1;
 
-page.open(post_data, 'POST', post_data, function start(status) {});
+page.open(url, 'POST', post_data, function start(status) {
+
+});
 
 page.onLoadFinished = function (status) {
 	if(!base_64){
@@ -52,6 +55,7 @@ page.onLoadFinished = function (status) {
 	}
 	else{
 		var base64 = page.renderBase64('png');
+		//XXXX
 		console.log(base64);
 	}
 	phantom.exit();

@@ -13,8 +13,8 @@
 // GNU General Public License for more details.
 
 // Global & session manageme
-session_id($_GET["session_id"]);
-if (file_exists(session_save_path() . "/pansess_" . session_id())) {
+session_id($_REQUEST["session_id"]);
+if (file_exists(session_save_path() . "/pansess_" . session_id()) ) {
     $user = file_get_contents(session_save_path() . "/pansess_" . session_id());
 }
 session_start();
@@ -22,6 +22,7 @@ if (isset($user)) {
     $_SESSION["id_usuario"] = $user;
 }
 session_write_close();
+
 
 
 require_once ('config.php');
@@ -38,8 +39,10 @@ require_once ($config['homedir'] . '/include/functions_tags.php');
 check_login();
 
 global $config;
+//get_parameter(array)('data', '');
 
-$params = json_decode($_GET['data'], true);
+$params = json_decode($_REQUEST['data'], true);
+
 // Metaconsole connection to the node
 $server_id = $params['server_id'];
 
@@ -94,14 +97,20 @@ if (file_exists ('languages/'.$user_language.'.mo')) {
 	<body bgcolor="#ffffff" style='background:#ffffff;'>
 <?php
 
-		
-        $params['only_image'] = false;
-		$params['width']      = '1048';
+    	$params['only_image'] = false;
+		$params['width']      = (int) $_REQUEST['viewport_width'];
 		$params['menu']       = false;
 
-		$params_combined = json_decode($_GET['data_combined'], true);
-		$module_list     = json_decode($_GET['data_module_list'], true);
-		$type_graph_pdf  = $_GET['type_graph_pdf'];
+		if((!isset($params['width']) || ($params['width'] <= 0))) {
+			$params['width'] = 1048;
+		}
+
+		$params_combined = json_decode($_REQUEST['data_combined'], true);
+		$module_list     = json_decode($_REQUEST['data_module_list'], true);
+		$type_graph_pdf  = $_REQUEST['type_graph_pdf'];
+
+		$aux_font_size = $config['font_size'];
+		$config['font_size'] = $config['font_size'] + 3;
 
 		if($type_graph_pdf == 'combined'){
 			echo '<div>';
@@ -117,6 +126,8 @@ if (file_exists ('languages/'.$user_language.'.mo')) {
 				echo grafico_modulo_sparse($params);
 			echo '</div>';
 		}
+
+		$config['font_size'] = $aux_font_size;
 ?>
 	</body>
 

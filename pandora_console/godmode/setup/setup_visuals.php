@@ -685,6 +685,10 @@ $options_full_escale[2] = __('On Boolean graphs');
 $table_chars->data[$row][1] = html_print_select($options_full_escale, 'full_scale_option', $config["full_scale_option"], '', '', 0, true, false, false);
 $row++;
 
+$table_chars->data[$row][0] = __('Graph image height');
+$table_chars->data[$row][1] = html_print_input_text ('graph_image_height', $config['graph_image_height'], '', 20, 20, true);
+$row++;
+
 /*
 	$table_font->data[$row][0] = __('Font path');
 $fonts = load_fonts();

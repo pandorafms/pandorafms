@@ -364,6 +364,8 @@ define('SERVER_TYPE_MAINFRAME',	                15);
 define('SERVER_TYPE_SYNC',	                    16);
 define('SERVER_TYPE_WUX',						17);
 define('SERVER_TYPE_SYSLOG',					18);
+define('SERVER_TYPE_AUTOPROVISION',				19);
+define('SERVER_TYPE_MIGRATION',					20);
 
 /* REPORTS */
 define('REPORT_TOP_N_MAX',	1);

@@ -101,14 +101,16 @@ foreach ($servers as $server) {
 	switch ($server['type']) {
 		case "snmp":
 		case "event":
+		case "autoprovision":
+		case "migration":
 			$data[3] =  $server["version"];
-			$data[4] = 'N/A';
-			$data[5] = 'N/A';
+			$data[4] = __('N/A');
+			$data[5] = __('N/A');
 			break;
 		case "export":
 			$data[3] = $server["version"];
 			$data[4] = $server["modules"] . " ".__('of')." ". $server["modules_total"];
-			$data[5] = 'N/A';
+			$data[5] = __('N/A');
 			break;
 		default:
 			$data[3] =  $server["version"];

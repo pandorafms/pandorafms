@@ -9621,6 +9621,10 @@ function api_set_create_event($id, $trash1, $other, $returnType) {
 		}
 		
 		if ($other['data'][1] != '') {
+			if (!check_acl($config['id_user'], $other['data'][1], "AR")) {
+				returnError('forbidden', 'string');
+				return;
+			}
 			$values['id_grupo'] = $other['data'][1];
 		}
 		else {
@@ -9629,9 +9633,26 @@ function api_set_create_event($id, $trash1, $other, $returnType) {
 		}
 		$error_msg ='';
 		if ($other['data'][2] != '') {
-			if (!util_api_check_agent_and_print_error($other['data'][2], 'string', 'AR')) {
+			$id_agent = $other['data'][2];
+			if (is_metaconsole()) {
+				// On metaconsole, connect with the node to check the permissions
+				$agent_cache = db_get_row('tmetaconsole_agent', 'id_agente', $id_agent);
+				if ($agent_cache === false) {
+					returnError('id_not_found', 'string');
+					return;
+				}
+				if (!metaconsole_connect(null, $agent_cache['id_tmetaconsole_setup'])) {
+					returnError('error_create_event', __("Cannot connect with the agent node."));
+					return;
+				}
+				$id_agent = $agent_cache['id_tagente'];
+			}
+
+			if (!util_api_check_agent_and_print_error($id_agent, 'string', 'AR')) {
+				if (is_metaconsole()) metaconsole_restore_db();
 				return;
 			}
+			if (is_metaconsole()) metaconsole_restore_db();
 		}
 		else {
 			if($other['data'][19] != ''){

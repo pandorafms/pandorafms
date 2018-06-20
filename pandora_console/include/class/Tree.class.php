@@ -546,6 +546,7 @@ class Tree {
 											$group_filter
 											$agent_search_filter
 											$agent_status_filter
+										GROUP BY ta.id_agente
 										ORDER BY $order_fields";
 							}
 						}

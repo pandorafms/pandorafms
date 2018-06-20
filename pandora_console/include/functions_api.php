@@ -3384,7 +3384,7 @@ function api_set_create_snmp_module($id, $thrash1, $other, $thrash3) {
 		return;
 	}
 	
-	if ($other['data'][2] < 15 or $other['data'][2] > 17) {
+	if ($other['data'][2] < 15 or $other['data'][2] > 18) {
 		returnError('error_create_snmp_module', __('Error in creation SNMP module. Invalid id_module_type for a SNMP module.'));
 		return;
 	}

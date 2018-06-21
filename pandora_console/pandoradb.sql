@@ -87,6 +87,7 @@ CREATE TABLE IF NOT EXISTS `tagente` (
 	`transactional_agent` tinyint(1) NOT NULL default '0',
 	`alias_as_name` tinyint(2) NOT NULL default '0',
 	`safe_mode_module` int(10) unsigned NOT NULL default '0',
+	`cps` int NOT NULL default 0,
 	PRIMARY KEY  (`id_agente`),
 	KEY `nombre` (`nombre`(255)),
 	KEY `direccion` (`direccion`),
@@ -259,6 +260,7 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
 	`prediction_samples` int(4) default 0,
 	`prediction_threshold` int(4) default 0,
 	`parent_module_id` int(10) unsigned NOT NULL,
+	`cps` int NOT NULL default 0,
 	PRIMARY KEY  (`id_agente_modulo`),
 	KEY `main_idx` (`id_agente_modulo`,`id_agente`),
 	KEY `tam_agente` (`id_agente`),
@@ -2424,6 +2426,9 @@ CREATE TABLE IF NOT EXISTS `tservice` (
 	`id_template_alert_critical` int(10) unsigned NOT NULL default 0,
 	`id_template_alert_unknown` int(10) unsigned NOT NULL default 0,
 	`id_template_alert_critical_sla` int(10) unsigned NOT NULL default 0,
+	`quiet` tinyint(1) NOT NULL default 0,
+	`cps` int NOT NULL default 0,
+	`cascade_protection` tinyint(1) NOT NULL default 0
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB 
 COMMENT = 'Table to define services to monitor' 
@@ -3005,6 +3010,7 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_agent` (
 	`alias` varchar(600) BINARY NOT NULL default '',
 	`alias_as_name` tinyint(2) NOT NULL default '0',
 	`safe_mode_module` int(10) unsigned NOT NULL default '0',
+	`cps` int NOT NULL default 0,
 	PRIMARY KEY  (`id_agente`),
 	KEY `nombre` (`nombre`(255)),
 	KEY `direccion` (`direccion`),

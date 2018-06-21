@@ -311,6 +311,7 @@ $ignored_params['refr'] = '';
 		});
 		
 		$('.item > div').each( function() {
+			$(this).css('margin-bottom','20px');
 			if ($(this).css('float')=='left' || $(this).css('float')=='right') {
 				if($(this).attr('id').indexOf('clock') || $(this).attr('id').indexOf('overlay')){
 					$(this).css('margin-top',(parseInt($(this).parent().css('height'))/2-parseInt($(this).css('height'))/2)+'px');

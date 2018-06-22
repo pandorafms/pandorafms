@@ -2741,22 +2741,4 @@ function get_module_realtime_link_graph ($module) {
 
 	return $link_button;
 }
-
-/**
- * @brief Force a module to adopt a determinated status.
- * 		WARNING: Only use this function to modules that changes their status
- * 			with some user action through the console
- * @param int New status
- * @param int Agent module to force new status
- */
-function force_set_module_status ($status, $id_agent_module) {
-	return db_process_sql_update( 'tagente_estado',
-		array(
-			'estado' => $status,
-			'known_status' => $status,
-			'last_known_status' => $status
-		),
-		array('id_agente_modulo' => $id_agent_module)
-	);
-}
 ?>

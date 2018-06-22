@@ -18,6 +18,7 @@
 // Load global vars
 global $config;
 enterprise_include ("operation/snmpconsole/snmp_view.php");
+enterprise_include ("include/functions_snmp.php");
 require_once("include/functions_agents.php");
 require_once("include/functions_snmp.php");
 
@@ -97,18 +98,19 @@ else {
 if (isset ($_GET["delete"])) {
 	$id_trap = (int) get_parameter_get ("delete", 0);
 	if ($id_trap > 0 && check_acl ($config['id_user'], 0, "IM")) {
-		
 		if($group_by){
-			$sql_ids_traps = "SELECT id_trap FROM ttrap WHERE oid IN (SELECT oid FROM ttrap WHERE id_trap = ".$id_trap.")
+			$sql_ids_traps = "SELECT id_trap, source FROM ttrap WHERE oid IN (SELECT oid FROM ttrap WHERE id_trap = ".$id_trap.")
 			AND source IN (SELECT source FROM ttrap WHERE id_trap = ".$id_trap.")";
 			$ids_traps = db_get_all_rows_sql($sql_ids_traps);
 
 			foreach ($ids_traps as $key => $value) {
 				$result = db_process_sql_delete('ttrap', array('id_trap' => $value['id_trap']));
+				enterprise_hook('snmp_update_forwarded_modules', array($value));
 			}
-			
 		} else {
+			$forward_info = db_get_row('ttrap', 'id_trap', $id_trap);
 			$result = db_process_sql_delete('ttrap', array('id_trap' => $id_trap));
+			enterprise_hook('snmp_update_forwarded_modules', array($forward_info));
 			ui_print_result_message ($result,
 				__('Successfully deleted'),
 				__('Could not be deleted'));
@@ -129,7 +131,8 @@ if (isset ($_GET["check"])) {
 			'status' => 1,
 			'id_usuario' => $config["id_user"]);
 		$result = db_process_sql_update('ttrap', $values, array('id_trap' => $id_trap));
-		
+		enterprise_hook('snmp_update_forwarded_modules', array($id_trap));
+
 		ui_print_result_message ($result,
 			__('Successfully updated'),
 			__('Could not be updated'));
@@ -146,17 +149,20 @@ if (isset ($_POST["deletebt"])) {
 	if (is_array ($trap_ids) && check_acl ($config['id_user'], 0, "IW")) {
 		if($group_by){
 			foreach ($trap_ids as $key => $value) {
-				$sql_ids_traps = "SELECT id_trap FROM ttrap WHERE oid IN (SELECT oid FROM ttrap WHERE id_trap = ".$value.")
+				$sql_ids_traps = "SELECT id_trap, source FROM ttrap WHERE oid IN (SELECT oid FROM ttrap WHERE id_trap = ".$value.")
 				AND source IN (SELECT source FROM ttrap WHERE id_trap = ".$value.")";
 				$ids_traps = db_get_all_rows_sql($sql_ids_traps);
 				
 				foreach ($ids_traps as $key2 => $value2) {
 					$result = db_process_sql_delete('ttrap', array('id_trap' => $value2['id_trap']));
+					enterprise_hook('snmp_update_forwarded_modules', array($value2));
 				}
 			}
 		} else {
 			foreach ($trap_ids as $id_trap) {
+				$forward_info = db_get_row('ttrap', 'id_trap', $id_trap);
 				db_process_sql_delete('ttrap', array('id_trap' => $id_trap));
+				enterprise_hook('snmp_update_forwarded_modules', array($forward_info));
 			}
 		}
 	}
@@ -173,6 +179,7 @@ if (isset ($_POST["updatebt"])) {
 		foreach ($trap_ids as $id_trap) {
 			$sql = sprintf ("UPDATE ttrap SET status = 1, id_usuario = '%s' WHERE id_trap = %d", $config["id_user"], $id_trap);
 			db_process_sql ($sql);
+			enterprise_hook('snmp_update_forwarded_modules', array($id_trap));
 		}
 	}
 	else {

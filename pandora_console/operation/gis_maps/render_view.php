@@ -182,10 +182,13 @@ if ($layers != false) {
 			$agentNamesByGroup = agents_get_group_agents($layer['tgrupo_id_grupo'],
 				false, 'none', true, true, false);
 		}
-		$agentNamesByLayer = gis_get_agents_layer($layer['id_tmap_layer']);
-
+		$agentNamesByLayer = gis_get_agents_layer($layer['id_tmap_layer'],
+			array('nombre'));
+		
+		
+		
 		$agentNames = array_unique($agentNamesByGroup + $agentNamesByLayer);
-
+		
 		foreach ($agentNames as $key => $agentName) {
 			$idAgent = $key;
 			$coords = gis_get_data_last_position_agent($idAgent);

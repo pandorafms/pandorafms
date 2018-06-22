@@ -446,27 +446,37 @@ function gis_add_agent_point($layerName, $pointName, $lat, $lon, $icon = null, $
  * Get the agents in layer but not by group in layer.
  * 
  * @param integer $idLayer Layer ID.
+ * @param array $fields Fields of row tagente to return.
  * 
  * @return array The array rows of tagente of agents in the layer.
  */
-function gis_get_agents_layer($idLayer) {
-
-	$sql = "SELECT id_agente, nombre
+function gis_get_agents_layer($idLayer, $fields = null) {
+	
+	if ($fields === null) {
+		$select = '*';
+	}
+	else {
+		$select = implode(',',$fields);
+	}
+	
+	$sql = "SELECT $select
 			FROM tagente
 			WHERE id_agente IN (
 				SELECT tagente_id_agente
 				FROM tgis_map_layer_has_tagente
 				WHERE tgis_map_layer_id_tmap_layer = $idLayer)";
 	$agents = db_get_all_rows_sql($sql);
-
-	$returned_agents = array();
+	
 	if ($agents !== false) {
 		foreach ($agents as $index => $agent) {
-			$returned_agents[$agent['id_agente']] = $agent['nombre'];
+			$agents[$index] = $agent['nombre'];
 		}
 	}
-
-	return $returned_agents;
+	else {
+		return array();
+	}
+	
+	return $agents;
 }
 
 function gis_add_point_path($layerName, $lat, $lon, $color, $manual = 1, $id) {

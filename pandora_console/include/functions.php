@@ -3093,7 +3093,7 @@ function series_type_graph_array($data, $show_elements_graph){
 			elseif(strpos($key, 'sum') !== false || strpos($key, 'baseline') !== false){
 				switch ($value['id_module_type']) {
 					case 21: case 2: case 6:
-					case 18: case 9: case 31:
+					case 18: case 9: case 31: case 100:
 						$data_return['series_type'][$key] = 'boolean';
 						break;
 					default:

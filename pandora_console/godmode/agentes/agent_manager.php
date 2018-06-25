@@ -659,6 +659,13 @@ ui_require_jquery_file('bgiframe');
 			return
 		}
 
+		// On agent creation PHP will update the secondary groups table (not via AJAX)
+		if (id_agent == 0) {
+			agent_manager_add_secondary_groups_ui();
+			agent_manager_update_hidden_input_secondary();
+			return;
+		}
+
 		var selected_items = new Array();
 		$("#secondary_groups option:selected").each(function(){
 			selected_items.push($(this).val())
@@ -679,11 +686,7 @@ ui_require_jquery_file('bgiframe');
 			data: data,
 			success: function (data) {
 				if (data == 1) {
-					// Move from one input to the other
-					$("#secondary_groups_selected option[value=0]").remove()
-					$("#secondary_groups option:selected").each(function() {
-						$(this).remove().appendTo("#secondary_groups_selected")
-					})
+					agent_manager_add_secondary_groups_ui();
 				} else {
 					console.error("Error in AJAX call to add secondary groups")
 				}
@@ -696,6 +699,13 @@ ui_require_jquery_file('bgiframe');
 
 	function agent_manager_remove_secondary_groups (event, id_agent) {
 		event.preventDefault();
+
+		// On agent creation PHP will update the secondary groups table (not via AJAX)
+		if (id_agent == 0) {
+			agent_manager_remove_secondary_groups_ui();
+			agent_manager_update_hidden_input_secondary();
+			return;
+		}
 
 		var selected_items = new Array();
 		$("#secondary_groups_selected option:selected").each(function(){
@@ -717,18 +727,7 @@ ui_require_jquery_file('bgiframe');
 			data: data,
 			success: function (data) {
 				if (data == 1) {
-					// Remove the groups selected if success
-					$("#secondary_groups_selected option:selected").each(function(){
-						$(this).remove().appendTo("#secondary_groups")
-					})
-
-					// Add none if empty select
-					if ($("#secondary_groups_selected option").length == 0) {
-						$("#secondary_groups_selected").append($('<option>',{
-							value: 0,
-							text: "<?php echo __("None");?>"
-						}))
-					}
+					agent_manager_remove_secondary_groups_ui();
 				} else {
 					console.error("Error in AJAX call to add secondary groups")
 				}
@@ -737,6 +736,46 @@ ui_require_jquery_file('bgiframe');
 				console.error("Fatal error in AJAX call to add secondary groups")
 			}
 		});
+	}
+
+	// Move from left input to right input
+	function agent_manager_add_secondary_groups_ui () {
+		$("#secondary_groups_selected option[value=0]").remove()
+		$("#secondary_groups option:selected").each(function() {
+			$(this).remove().appendTo("#secondary_groups_selected")
+		})
+	}
+
+	// Move from right input to left input
+	function agent_manager_remove_secondary_groups_ui () {
+		// Remove the groups selected if success
+		$("#secondary_groups_selected option:selected").each(function(){
+			$(this).remove().appendTo("#secondary_groups")
+		})
+
+		// Add none if empty select
+		if ($("#secondary_groups_selected option").length == 0) {
+			$("#secondary_groups_selected").append($('<option>',{
+				value: 0,
+				text: "<?php echo __("None");?>"
+			}))
+		}
+	}
+
+	function agent_manager_update_hidden_input_secondary () {
+		var groups = [];
+		if(!$('form[name="conf_agent"] #secondary_hidden').length) {
+			$('form[name="conf_agent"]').append(
+				'<input name="secondary_hidden" type="hidden" id="secondary_hidden">'
+			);
+		}
+
+		var groups = new Array();
+		$("#secondary_groups_selected option").each(function() {
+			groups.push($(this).val())
+		})
+
+		$("#secondary_hidden").val(groups.join(','));
 	}
 
 	$(document).ready (function() {

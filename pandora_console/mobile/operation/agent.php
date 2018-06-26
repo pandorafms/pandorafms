@@ -152,7 +152,7 @@ class Agent {
 				}
 				else if ($this->agent['quiet']) {
 					$agent_alias = "<em>" . $agent_alias . "&nbsp;" . 
-						html_print_image("images/dot_green.disabled.png", 
+						html_print_image("images/dot_blue.png", 
 						true, array("border" => '0', "title" => __('Quiet'), "alt" => "")) . "</em>";
 				}
 				

@@ -631,7 +631,7 @@ foreach ($agents as $agent) {
 	
 	if ($agent['quiet']) {
 		$data[0] .= "&nbsp;";
-		$data[0] .= html_print_image("images/dot_green.disabled.png", true, array("border" => '0', "title" => __('Quiet'), "alt" => ""));
+		$data[0] .= html_print_image("images/dot_blue.png", true, array("border" => '0', "title" => __('Quiet'), "alt" => ""));
 	}
 
 	if ($in_planned_downtime) {

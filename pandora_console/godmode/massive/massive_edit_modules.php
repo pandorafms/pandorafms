@@ -635,21 +635,34 @@ $table->data['edit11'][0] .= ui_print_help_tip(__('The module still store data b
 $table->data['edit11'][1] = html_print_select(array(-1 => __('No change'),
 	1 => __('Yes'), 0 => __('No')),
 	"quiet_select", -1, "", '', 0, true);
-$table->data['edit11'][2] = __('Timeout');
-$table->data['edit11'][3] = html_print_input_text(
+
+$cps_array[-2] = __('No change');
+$cps_array[-1] = __('Disabled');
+if($cps > 0){
+	$cps_array[$cps_select] = __('Enabled');
+}
+else{
+	$cps_array[0] = __('Enabled');
+}
+
+$table->data['edit11'][2] = __('Cascade Protection Service');
+$table->data['edit11'][2] .= ui_print_help_tip(__('Disable the alerts and events of the elements that belong to this service'), true);
+$table->data['edit11'][3] .= html_print_select($cps_array, "cps_select", -1, "", '', 0, true);
+
+$table->data['edit16'][0] = __('Timeout');
+$table->data['edit16'][1] .= html_print_input_text(
 		'max_timeout', '', '', 5, 10, true) .  ' ' .
 	ui_print_help_tip (
 		__('Seconds that agent will wait for the execution of the module.'), true);
-		
-$table->data['edit16'][0] = __('Retries');
-$table->data['edit16'][1] = html_print_input_text ('max_retries', '', '', 5, 10, true) . ' ' .
+
+$table->data['edit16'][1] .= __('Retries');
+$table->data['edit16'][1] .= html_print_input_text ('max_retries', '', '', 5, 10, true) . ' ' .
 	ui_print_help_tip (
 	__('Number of retries that the module will attempt to run.'), true);
-	
-	
-	$table->data['edit22'][0] = __('Web checks').ui_print_help_icon ("web_checks", true);;
-	$table->data['edit22'][1] = '<textarea id="textarea_plugin_parameter" name="plugin_parameter" cols="65" rows="15"></textarea>';
-	
+
+$table->data['edit22'][0] = __('Web checks').ui_print_help_icon ("web_checks", true);;
+$table->data['edit22'][1] = '<textarea id="textarea_plugin_parameter" name="plugin_parameter" cols="65" rows="15"></textarea>';
+
 $table->data['edit16'][2] = __('Port');
 $table->data['edit16'][3] = html_print_input_text ('tcp_port', '', '', 5, 20, true);
 
@@ -1491,7 +1504,7 @@ function process_manage_edit ($module_name, $agents_select = null, $module_statu
 			$values['custom_string_2'] = io_input_password($snmp3_privacy_pass);
 		}
 	}
-	
+
 	$throw_unknown_events = get_parameter('throw_unknown_events', '');
 	if ($throw_unknown_events !== '') {
 		//Set the event type that can show.
@@ -1499,24 +1512,27 @@ function process_manage_edit ($module_name, $agents_select = null, $module_statu
 			EVENTS_GOING_UNKNOWN => (int)$throw_unknown_events);
 		$values['disabled_types_event'] = json_encode($disabled_types_event);
 	}
-	
-	
+
 	if (strlen(get_parameter('history_data')) > 0) {
 		$values['history_data'] = get_parameter('history_data');
 	}
-	
+
 	if (get_parameter('quiet_select', -1) != -1) {
 		$values['quiet'] = get_parameter('quiet_select');
 	}
-	
+
+	if (get_parameter('cps_select', -2) != -2) {
+		$values['cps'] = get_parameter('cps_select');
+	}
+
 	$filter_modules = false;
-	
+
 	if (!is_numeric($module_name) or ($module_name != 0))
 		$filter_modules['nombre'] = $module_name;
-	
+
 	// Whether to update module tag info
 	$update_tags = get_parameter('id_tag', false);
-	
+
 	if (array_search(0, $agents_select) !== false) {
 		//Apply at All agents.
 		$modules = db_get_all_rows_filter ('tagente_modulo',

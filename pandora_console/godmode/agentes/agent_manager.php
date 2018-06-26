@@ -515,9 +515,20 @@ $table->data[4][3] = html_print_input_text ('url_description',
 	$url_description, '', 45, 255, true);
 
 $table->data[5][2] = __('Quiet');
-$table->data[5][3] = ui_print_help_tip(
-	__('The agent still runs but the alerts and events will be stop'), true);
-$table->data[5][3] .= html_print_checkbox('quiet', 1, $quiet, true);
+$table->data[5][3] .= ui_print_help_tip(__('The agent still runs but the alerts and events will be stop'), true);
+$table->data[5][3] = html_print_checkbox('quiet', 1, $quiet, true);
+
+$cps_array[-1] = __('Disabled');
+if($cps > 0){
+	$cps_array[$cps] = __('Enabled');
+}
+else{
+	$cps_array[0] = __('Enabled');
+}
+
+$table->data[6][0] = __('Cascade protection services');
+$table->data[6][0] .= ui_print_help_tip(__('Disable the alerts and events of the elements that belong to this service'), true);
+$table->data[6][1] = html_print_select($cps_array, 'cps', $cps, '', '', 0, true);
 
 ui_toggle(html_print_table ($table, true), __('Advanced options'));
 unset($table);

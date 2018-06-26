@@ -388,7 +388,7 @@ echo "</div>";
 			});
 		}
 		
-		var requestSparseGraph = function (moduleId, period, showEvents, width, height, title, showAlerts, avgOnly, date, unit, type_g) {
+		var requestSparseGraph = function (moduleId, period, showEvents, width, height, title, showAlerts, date, unit, type_g) {
 			return requestGraph('sparse', {
 				page: 'include/ajax/graph.ajax',
 				print_sparse_graph: 1,
@@ -488,7 +488,7 @@ echo "</div>";
 				$container.html($errorMessage.html());
 			}
 
-			requestSparseGraph(moduleId, period, showEvents, width, height, title, showAlerts, avgOnly, date, unit, type_g)
+			requestSparseGraph(moduleId, period, showEvents, width, height, title, showAlerts, date, unit, type_g)
 				.done(handleSuccess)
 				.fail(handleError);
 		}

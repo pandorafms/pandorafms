@@ -1915,7 +1915,7 @@ class Tree {
 
 		// Quiet image
 		if (isset($agent['quiet']) && $agent['quiet'])
-			$agent['quietImageHTML'] = html_print_image("/images/dot_green.disabled.png", true, array("title" => __('Quiet')));
+			$agent['quietImageHTML'] = html_print_image("/images/dot_blue.png", true, array("title" => __('Quiet')));
 
 		// Status
 		$agent['statusRaw'] = agents_get_status($agent['id'], !$this->strictACL);

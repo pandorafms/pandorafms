@@ -564,7 +564,7 @@ if ($agents !== false) {
 		
 		if ($agent['quiet']) {
 			echo "&nbsp;";
-			html_print_image("images/dot_green.disabled.png", false, array("border" => '0', "title" => __('Quiet'), "alt" => ""));
+			html_print_image("images/dot_blue.png", false, array("border" => '0', "title" => __('Quiet'), "alt" => ""));
 		}
 
 		if ($in_planned_downtime) {

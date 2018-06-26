@@ -190,7 +190,7 @@ $table->head = array ();
 $table->head[0] = __('Name');
 $table->head[1] = __('Description');
 $table->head[2] = '<span style="margin-right:7%;">'.__('Action') .'</span>'.
-	html_print_checkbox('all_delete', 0, false, true, false, 'check_all_checkboxes();');
+	html_print_checkbox('all_delete', 0, false, true, false);
 $table->size = array ();
 $table->size[1] = '65%';
 $table->size[2] = '15%';
@@ -239,12 +239,16 @@ echo '</div></form>';
 
 ?>
 <script type="text/javascript">
-function check_all_checkboxes() {
-	if ($("input[name=all_delete]").attr('checked')) {
-		$(".check_delete").attr('checked', true);
-	}
-	else {
-		$(".check_delete").attr('checked', false);
-	}
-}
+	 // If you click on the input type checkbox with id checkbox-all_delete
+	 $('#checkbox-all_delete').click(function() {
+            // If selected (if the checked property equals true)
+            if ($(this).prop('checked')) {
+                // Select each input that has the class .check_delete
+                $('.check_delete').prop('checked', true);
+            } else {
+                // deselect every input that has the class .check_delete
+                $('.check_delete').prop('checked', false);
+            }
+        });
+
 </script>

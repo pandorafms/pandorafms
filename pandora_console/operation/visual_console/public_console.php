@@ -196,7 +196,7 @@ $ignored_params['refr'] = '';
 		$('body').css('margin','0');
 		$('body').css('height','100%');
 		$('body').css('overflow','hidden');
-		
+		$('p').css('margin-top','25px');
 		$(".module_graph .menu_graph").css('display','none');
 		
 		$(".parent_graph").each(function(){

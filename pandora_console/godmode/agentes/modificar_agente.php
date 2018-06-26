@@ -177,11 +177,11 @@ echo "</td>";
 echo "<td>";
 echo __('Operative System') . '&nbsp;';
 
-$pre_fields = db_get_all_rows_sql('select distinct(tagente.id_os),tconfig_os.description from tagente,tconfig_os where tagente.id_os = tconfig_os.id_os');
+$pre_fields = db_get_all_rows_sql('select distinct(tagente.id_os),tconfig_os.name from tagente,tconfig_os where tagente.id_os = tconfig_os.id_os');
 $fields = array();
 
 foreach ($pre_fields as $key => $value) {
-		$fields[$value['id_os']] =  $value['description'];
+		$fields[$value['id_os']] =  $value['name'];
 }
 
 html_print_select($fields,"os",$os,'this.form.submit()','All',0);
@@ -536,11 +536,18 @@ if ($agents !== false) {
 		if($agent["alias"] == ''){
 			$agent["alias"] = $agent["nombre"];
 		}
-		echo "<a alt =".$agent["nombre"]." href='index.php?sec=gagente&
+
+		if($agent["id_os"] == 100){
+			$cluster = db_get_row_sql('select id from tcluster where id_agent = '.$agent['id_agente']);
+			echo '<a href="index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_builder&id_cluster='.$cluster['id'].'&step=1&update=1">'.$agent['nombre'].'</a>';
+			
+		}else{
+			echo "<a alt =".$agent["nombre"]." href='index.php?sec=gagente&
 			sec2=godmode/agentes/configurar_agente&tab=$main_tab&
 			id_agente=" . $agent["id_agente"] . "'>" .
 			'<span style="font-size: 7pt" title="' . $agent["nombre"] . '">'.$agent["alias"].'</span>' .
 			"</a>";
+		}		
 		echo "</strong>";
 
 		$in_planned_downtime = db_get_sql('SELECT executed FROM tplanned_downtime 

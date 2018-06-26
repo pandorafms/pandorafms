@@ -466,6 +466,6 @@ ui_include_time_picker(true);
 	});
 
 	$(window).resize(function() {
-		$("#field_list").css('height', ($(window).height() - 160) + 'px');
+		$("#field_list").css('height', ($(document).height() - 160) + 'px');
 	});
 </script>

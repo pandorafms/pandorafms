@@ -191,6 +191,7 @@ if ($create_agent) {
 	$quiet = (int) get_parameter("quiet", 0);
 	$cps = (int) get_parameter("cps", 0);
 
+	$secondary_groups = (string) get_parameter("secondary_hidden", "");
 	$fields = db_get_all_fields_in_table('tagent_custom_fields');
 
 	if ($fields === false) $fields = array();
@@ -292,6 +293,11 @@ if ($create_agent) {
 				"Url description":"' . $url_description .'",
 				"Quiet":"' . (int)$quiet.'",
 				"Cps":"' . (int)$cps.'"}';
+
+			// Create the secondary groups
+			enterprise_hook('agents_update_secondary_groups',
+				array($id_agente, explode(',', $secondary_groups), array())
+			);
 
 			$unsafe_alias = io_safe_output($alias);
 			db_pandora_audit("Agent management",

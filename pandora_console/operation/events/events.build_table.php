@@ -763,14 +763,16 @@ else {
 			echo '<div style="width:' . $table->width . ';" class="action-buttons">';
 			//~ if (!$readonly && tags_check_acl ($config["id_user"], 0, "EW", $event['clean_tags']) == 1) {
 			if (!$readonly && $show_validate_button) {
-				html_print_button(__('Validate selected'), 'validate_button', false, 'validate_selected();', 'class="sub ok"');
+				html_print_button(__('In progress selected'), 'validate_button', false, 'validate_selected(2);', 'class="sub ok"');
+				echo "  ";
+				html_print_button(__('Validate selected'), 'validate_button', false, 'validate_selected(1);', 'class="sub ok"');
 				// Fix: validated_selected JS function has to be included with the proper user ACLs 
 				?>
 				<script type="text/javascript">
-					function validate_selected() {
+					function validate_selected(new_status) {
 						$(".chk_val").each(function() { 
 							if($(this).is(":checked")) {
-								validate_event_advanced($(this).val(),1);
+								validate_event_advanced($(this).val(), new_status);
 							}
 						});  
 					}

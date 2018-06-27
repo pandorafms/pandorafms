@@ -257,8 +257,16 @@ function grafico_modulo_sparse_data_chart (
 		);
 	}
 	else{
-		//all points(data)
-		if($params['zoom'] == 5){
+		//all points(data) and boolean
+		if(	$params['zoom'] == 5 ||
+			$data_module_graph['id_module_type'] == 2 ||
+			$data_module_graph['id_module_type'] == 6 ||
+			$data_module_graph['id_module_type'] == 21 ||
+			$data_module_graph['id_module_type'] == 18 ||
+			$data_module_graph['id_module_type'] == 9 ||
+			$data_module_graph['id_module_type'] == 31 ||
+			$data_module_graph['id_module_type'] == 100 ){
+
 			$data = db_get_all_rows_filter (
 				'tagente_datos',
 				array ('id_agente_modulo' => (int)$agent_module_id,
@@ -271,38 +279,17 @@ function grafico_modulo_sparse_data_chart (
 			);
 		}
 		else{
-			if($data_module_graph['id_module_type'] == 2 ||
-				$data_module_graph['id_module_type'] == 6 ||
-				$data_module_graph['id_module_type'] == 21 ||
-				$data_module_graph['id_module_type'] == 18 ||
-				$data_module_graph['id_module_type'] == 9 ||
-				$data_module_graph['id_module_type'] == 31 ||
-				$data_module_graph['id_module_type'] == 100){
-				$data = db_get_all_rows_filter (
-					'tagente_datos',
-					array ('id_agente_modulo' => (int)$agent_module_id,
-							"utimestamp > '". $date_array['start_date']. "'",
-							"utimestamp < '". $date_array['final_date'] . "'",
-							'group' => "ROUND(utimestamp / $data_slice)",
-							'order' => 'utimestamp ASC'),
-					array ('ROUND(sum(datos)/count(datos)) as datos', 'min(utimestamp) as utimestamp'),
-					'AND',
-					$data_module_graph['history_db']
-				);
-			}
-			else{
-				$data = db_get_all_rows_filter (
-					'tagente_datos',
-					array ('id_agente_modulo' => (int)$agent_module_id,
-							"utimestamp > '". $date_array['start_date']. "'",
-							"utimestamp < '". $date_array['final_date'] . "'",
-							'group' => "ROUND(utimestamp / $data_slice)",
-							'order' => 'utimestamp ASC'),
-					array ('sum(datos)/count(datos) as datos', 'min(utimestamp) as utimestamp'),
-					'AND',
-					$data_module_graph['history_db']
-				);
-			}
+			$data = db_get_all_rows_filter (
+				'tagente_datos',
+				array ('id_agente_modulo' => (int)$agent_module_id,
+						"utimestamp > '". $date_array['start_date']. "'",
+						"utimestamp < '". $date_array['final_date'] . "'",
+						'group' => "ROUND(utimestamp / $data_slice)",
+						'order' => 'utimestamp ASC'),
+				array ('sum(datos)/count(datos) as datos', 'min(utimestamp) as utimestamp'),
+				'AND',
+				$data_module_graph['history_db']
+			);
 		}
 	}
 

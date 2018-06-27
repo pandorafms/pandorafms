@@ -3879,8 +3879,23 @@ function reporting_value($report, $content, $type,$pdf) {
 	if($pdf){
 		$only_image = 1;
 	}
+
+	$params =array(
+		'agent_module_id'     => $content['id_agent_module'],
+		'period'              => $content['period'],
+		'width'               => '600px',
+		'pure'                => false,///true
+		'date'                => $report["datetime"],
+		'only_image'          => $only_image,
+		'homeurl'             => ui_get_full_url(false, false, false, false),
+		'ttl'                 => 1,///2
+		'type_graph'          => $config['type_module_charts'],
+		'time_interval'       => $content['lapse'],
+		'server_id'           => $id_meta
+	);
 	
 	switch ($type) {
+
 		case 'max':
 		if($content['lapse_calc'] == 0){
 			$value = reporting_get_agentmodule_data_max(
@@ -3893,20 +3908,6 @@ function reporting_value($report, $content, $type,$pdf) {
 			}
 		}
 		else{
-			$params =array(
-				'agent_module_id'     => $content['id_agent_module'],
-				'period'              => $content['period'],
-				'width'               => '600px',
-				'pure'                => false,///true
-				'date'                => $report["datetime"],
-				'only_image'          => $only_image,
-				'homeurl'             => ui_get_full_url(false, false, false, false),
-				'ttl'                 => 1,///2
-				'type_graph'          => $config['type_module_charts'],
-				'time_interval'       => $content['lapse'],
-				'server_id'           => $id_meta
-			);
-
 			$value = '
 			<table border="0" style="margin:0 auto;text-align:center;">
 				<tr>
@@ -4159,7 +4160,6 @@ function reporting_value($report, $content, $type,$pdf) {
 				<td rowspan="2" width="150px">
 				</td>
 				<td rowspan="2">';
-				
 				if($content['visual_format'] == 2 || $content['visual_format'] == 3){
 					$params['force_interval'] = 'avg_only';
 					$value .= grafico_modulo_sparse($params);

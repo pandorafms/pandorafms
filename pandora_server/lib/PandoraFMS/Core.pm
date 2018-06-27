@@ -330,7 +330,7 @@ sub pandora_generate_alerts ($$$$$$$$;$$$) {
 	if ($EventStormProtection == 1) {
 		return;
 	}
-	
+
 	# Warmup interval for alerts.
 	if ($pa_config->{'warmup_alert_on'} == 1) {
 
@@ -344,20 +344,29 @@ sub pandora_generate_alerts ($$$$$$$$;$$$) {
 
 	if ($agent->{'quiet'} == 1) {
 		logger($pa_config, "Generate Alert. The agent '" . $agent->{'nombre'} . "' is in quiet mode.", 10);
-		
 		return;
 	}
+
 	if ($module->{'quiet'} == 1) {
 		logger($pa_config, "Generate Alert. The module '" . $module->{'nombre'} . "' is in quiet mode.", 10);
-		
 		return;
 	}
-	
+
+	if ($agent->{'cps'} > 0) {
+		logger($pa_config, "Generate Alert. The agent '" . $agent->{'nombre'} . "' is in quiet mode by cascade protection services.", 10);
+		return;
+	}
+
+	if ($module->{'cps'} > 0) {
+		logger($pa_config, "Generate Alert. The module '" . $module->{'nombre'} . "' is in quiet mode by cascade protection services.", 10);
+		return;
+	}
+
 	# Do not generate alerts for disabled groups
 	if (is_group_disabled ($dbh, $agent->{'id_grupo'})) {
 		return;
 	}
-	
+
 	# Get enabled alerts associated with this module
 	my $alert_type_filter = defined ($alert_type) ? " AND type = '$alert_type'" : '';
 	my @alerts = get_db_rows ($dbh, '
@@ -367,11 +376,11 @@ sub pandora_generate_alerts ($$$$$$$$;$$$) {
 		WHERE talert_template_modules.id_alert_template = talert_templates.id
 			AND id_agent_module = ?
 			AND disabled = 0' . $alert_type_filter, $module->{'id_agente_modulo'});
-	
+
 	foreach my $alert (@alerts) {
 		my $rc = pandora_evaluate_alert($pa_config, $agent, $data,
 			$status, $alert, $utimestamp, $dbh, $last_data_value);
-		
+
 		pandora_process_alert ($pa_config, $data, $agent, $module,
 			$alert, $rc, $dbh, $timestamp, $extra_macros);
 	}
@@ -3131,8 +3140,13 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$) {
 			logger($pa_config, "Generate Event. The agent '" . $agent->{'nombre'} . "' is in quiet mode.", 10);
 			return;
 		}
+
+		if (defined ($agent) && $agent->{'cps'} > 0) {
+			logger($pa_config, "Generate Event. The agent '" . $agent->{'nombre'} . "' is in quiet mode by cascade protection services.", 10);
+			return;
+		}
 	}
-	
+
 	my $module = undef;
 	if (defined($id_agentmodule) && $id_agentmodule != 0) {
 		$module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente_modulo = ?', $id_agentmodule);
@@ -3140,8 +3154,13 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$) {
 			logger($pa_config, "Generate Event. The module '" . $module->{'nombre'} . "' is in quiet mode.", 10);
 			return;
 		}
+
+		if (defined ($module) && $module->{'cps'} > 0) {
+			logger($pa_config, "Generate Event. The module '" . $module->{'nombre'} . "' is in quiet mode by cascade protection services.", 10);
+			return;
+		}
 	}
-		
+
 	# Get module tags
 	my $module_tags = '';
 	if (defined ($tags) && ($tags ne '')) {
@@ -3152,8 +3171,8 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$) {
 			$module_tags = pandora_get_module_tags ($pa_config, $dbh, $id_agentmodule);
 		}
 	}
-	
-	
+
+
 	# Set default values for optional parameters
 	$source = 'monitoring_server' unless defined ($source);
 	$comment = '' unless defined ($comment);

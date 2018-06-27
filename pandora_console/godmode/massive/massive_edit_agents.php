@@ -82,9 +82,7 @@ if ($update_agents) {
 		$values['delete_conf'] = get_parameter('delete_conf');
 	if (get_parameter('quiet_select', -1) != -1)
 		$values['quiet'] = get_parameter('quiet_select');
-	if (get_parameter('cps_select', -2) != -2)
-		$values['cps'] = get_parameter('cps_select');
-	
+
 	$fields = db_get_all_fields_in_table('tagent_custom_fields');
 	
 	if ($fields === false) $fields = array();
@@ -394,7 +392,6 @@ $update_gis_data = -1;
 $cascade_protection = -1;
 $cascade_protection_module = -1;
 $quiet_select = -1;
-$cps_select = -2;
 
 $table = new StdClass();
 $table->width = '100%';
@@ -481,19 +478,6 @@ $table->data[6][0] .= ui_print_help_tip(__('The agent still runs but the alerts 
 $table->data[6][1] = html_print_select(array(-1 => __('No change'),
 	1 => __('Yes'), 0 => __('No')),
 	"quiet_select", $quiet_select, "", '', 0, true);
-
-$cps_array[-2] = __('No change');
-$cps_array[-1] = __('Disabled');
-if($cps > 0){
-	$cps_array[$cps_select] = __('Enabled');
-}
-else{
-	$cps_array[0] = __('Enabled');
-}
-
-$table->data[7][0] = __('Cascade Protection Service');
-$table->data[7][0] .= ui_print_help_tip(__('Disable the alerts and events of the elements that belong to this service'), true);
-$table->data[7][1] = html_print_select($cps_array, "cps_select", $cps_select, "", '', 0, true);
 
 ui_toggle(html_print_table ($table, true), __('Advanced options'));
 unset($table);

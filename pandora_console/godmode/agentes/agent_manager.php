@@ -523,7 +523,11 @@ if($cps > 0){
 	$cps_array[$cps] = __('Enabled');
 }
 else{
-	$cps_array[0] = __('Enabled');
+	$cps_inc = 0;
+	if($id_agente){
+		$cps_inc = service_agents_cps($id_agente);
+	}
+	$cps_array[$cps_inc] = __('Enabled');
 }
 
 $table->data[6][0] = __('Cascade protection services');

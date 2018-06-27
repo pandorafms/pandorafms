@@ -570,11 +570,15 @@ $table_advanced->data[7][0] .= ui_print_help_tip(__('The module still stores dat
 $table_advanced->data[7][1] = html_print_checkbox('quiet_module', 1, $quiet_module, true, $disabledBecauseInPolicy);
 
 $cps_array[-1] = __('Disabled');
-if($cps > 0){
+if($cps_module > 0){
 	$cps_array[$cps_module] = __('Enabled');
 }
 else{
-	$cps_array[0] = __('Enabled');
+	$cps_inc = 0;
+	if($id_agent_module){
+		$cps_inc = service_modules_cps($id_agent_module);
+	}
+	$cps_array[$cps_inc] = __('Enabled');
 }
 $table_advanced->data[7][2] = __('Cascade Protection Services');
 $table_advanced->data[7][2] .= ui_print_help_tip(__('Disable the alerts and events of the elements that belong to this service'), true);

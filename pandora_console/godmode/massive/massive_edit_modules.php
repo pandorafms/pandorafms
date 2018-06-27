@@ -636,27 +636,16 @@ $table->data['edit11'][1] = html_print_select(array(-1 => __('No change'),
 	1 => __('Yes'), 0 => __('No')),
 	"quiet_select", -1, "", '', 0, true);
 
-$cps_array[-2] = __('No change');
-$cps_array[-1] = __('Disabled');
-if($cps > 0){
-	$cps_array[$cps_select] = __('Enabled');
-}
-else{
-	$cps_array[0] = __('Enabled');
-}
 
-$table->data['edit11'][2] = __('Cascade Protection Service');
-$table->data['edit11'][2] .= ui_print_help_tip(__('Disable the alerts and events of the elements that belong to this service'), true);
-$table->data['edit11'][3] .= html_print_select($cps_array, "cps_select", -1, "", '', 0, true);
 
-$table->data['edit16'][0] = __('Timeout');
-$table->data['edit16'][1] .= html_print_input_text(
+$table->data['edit11'][2] = __('Timeout');
+$table->data['edit11'][3] = html_print_input_text(
 		'max_timeout', '', '', 5, 10, true) .  ' ' .
 	ui_print_help_tip (
 		__('Seconds that agent will wait for the execution of the module.'), true);
 
-$table->data['edit16'][1] .= __('Retries');
-$table->data['edit16'][1] .= html_print_input_text ('max_retries', '', '', 5, 10, true) . ' ' .
+$table->data['edit16'][0] = __('Retries');
+$table->data['edit16'][1] = html_print_input_text ('max_retries', '', '', 5, 10, true) . ' ' .
 	ui_print_help_tip (
 	__('Number of retries that the module will attempt to run.'), true);
 
@@ -1519,10 +1508,6 @@ function process_manage_edit ($module_name, $agents_select = null, $module_statu
 
 	if (get_parameter('quiet_select', -1) != -1) {
 		$values['quiet'] = get_parameter('quiet_select');
-	}
-
-	if (get_parameter('cps_select', -2) != -2) {
-		$values['cps'] = get_parameter('cps_select');
 	}
 
 	$filter_modules = false;

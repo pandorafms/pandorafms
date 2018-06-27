@@ -290,7 +290,7 @@ if ($id_agent_module) {
 else {
 	if (!isset ($moduletype)) {
 		$moduletype = (string) get_parameter ('moduletype');
-		
+
 		// Clean up specific network modules fields
 		$name = '';
 		$description = '';
@@ -316,7 +316,7 @@ else {
 		$tcp_send = '';
 		$tcp_rcv = '';
 		$tcp_port = '';
-		
+
 		if ($moduletype == "wmiserver")
 			$snmp_community = '';
 		else

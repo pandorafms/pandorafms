@@ -46,6 +46,7 @@ our @EXPORT = qw(
 	api_create_tag
 	api_create_group
 	call_url
+	check_lib_version
 	decrypt
 	empty
 	encrypt
@@ -95,12 +96,34 @@ our @EXPORT = qw(
 my $DevNull = ($^O =~ /win/i)?'/NUL':'/dev/null';
 
 ################################################################################
-#
+# Returns current library version
 ################################################################################
 sub get_lib_version {
 	return $VERSION;
 }
 
+################################################################################
+# Check version compatibility
+################################################################################
+sub check_lib_version {
+	my ($plugin_version) = @_;
+
+	$plugin_version = "0NG.0" if empty($plugin_version);
+
+	my ($main,$oum) = split /NG./, $plugin_version;
+
+	$main = 0 if empty($main) || !looks_like_number($main);
+	$oum  = 0 if empty($oum)  || !looks_like_number($oum);
+
+	my ($libmain,$liboum) = split /NG./, $pandora_version;
+
+	if (($liboum < $oum)
+	||  ($libmain != $main)) {
+		return 0;
+	}
+
+	return 1;
+}
 
 ################################################################################
 # Get current time (milis)
@@ -1409,7 +1432,7 @@ sub process_performance {
 
 		$instances = trim (head(`$_PluginTools_system->{ps} | $_PluginTools_system->{grep} "$process"| $_PluginTools_system->{wcl}`, 1));
 
-    }
+	}
 	elsif ($^O =~ /linux/i ){
 		$cpu = trim(`$_PluginTools_system->{ps} | $_PluginTools_system->{grep} -w "$process" | $_PluginTools_system->{grep} -v grep | awk 'BEGIN {sum=0} {sum+=\$2} END{print sum}'`);
 		$mem = trim(`$_PluginTools_system->{ps} | $_PluginTools_system->{grep} -w "$process" | $_PluginTools_system->{grep} -v grep | awk 'BEGIN {sum=0} {sum+=\$1} END{print sum}'`);
@@ -1834,13 +1857,13 @@ sub api_create_group {
 # 	$snmp{host}
 # 	$snmp{oid}
 # 	$snmp{port}
-#   $snmp{securityName}
-#   $snmp{context
-#   $snmp{securityLevel}
-#   $snmp{authProtocol}
-#   $snmp{authKey}
-#   $snmp{privProtocol}
-#   $snmp{privKey}
+#	$snmp{securityName}
+#	$snmp{context
+#	$snmp{securityLevel}
+#	$snmp{authProtocol}
+#	$snmp{authKey}
+#	$snmp{privProtocol}
+#	$snmp{privKey}
 ################################################################################
 sub snmp_walk {
 	my $snmp = shift;
@@ -1940,13 +1963,13 @@ sub snmp_walk {
 # 	$snmp{host}
 # 	$snmp{oid}
 # 	$snmp{port}
-#   $snmp{securityName}
-#   $snmp{context
-#   $snmp{securityLevel}
-#   $snmp{authProtocol}
-#   $snmp{authKey}
-#   $snmp{privProtocol}
-#   $snmp{privKey}
+#	$snmp{securityName}
+#	$snmp{context
+#	$snmp{securityLevel}
+#	$snmp{authProtocol}
+#	$snmp{authKey}
+#	$snmp{privProtocol}
+#	$snmp{privKey}
 ################################################################################
 sub snmp_get {
 	my $snmp = shift;

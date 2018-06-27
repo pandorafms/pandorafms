@@ -162,6 +162,7 @@ if ($id_agent_module) {
 	}
 	$ff_interval = $module['module_ff_interval'];
 	$quiet_module = $module['quiet'];
+	$cps_module = $module['cps'];
 	$unit = $module['unit'];
 	$tcp_port = $module['tcp_port'];
 	$tcp_send = $module['tcp_send'];
@@ -289,7 +290,7 @@ if ($id_agent_module) {
 else {
 	if (!isset ($moduletype)) {
 		$moduletype = (string) get_parameter ('moduletype');
-		
+
 		// Clean up specific network modules fields
 		$name = '';
 		$description = '';
@@ -302,6 +303,7 @@ else {
 		$max = '';
 		$interval = '';
 		$quiet_module = 0;
+		$cps_module = 0;
 		$unit = '';
 		$prediction_module = '';
 		$custom_integer_1 = 0;
@@ -314,7 +316,7 @@ else {
 		$tcp_send = '';
 		$tcp_rcv = '';
 		$tcp_port = '';
-		
+
 		if ($moduletype == "wmiserver")
 			$snmp_community = '';
 		else

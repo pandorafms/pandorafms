@@ -84,6 +84,7 @@ $direccion_agente = io_safe_input($direccion_agente);
 $intervalo = SECONDS_5MINUTES;
 $ff_interval = 0;
 $quiet_module = 0;
+$cps_module = 0;
 $id_server = "";
 $max_alerts = 0;
 $modo = 1;
@@ -148,6 +149,7 @@ $tab_description = '';
 $url_description = '';
 $quiet = 0;
 $macros = '';
+$cps = 0;
 
 $create_agent = (bool)get_parameter('create_agent');
 $module_macros = array ();
@@ -161,7 +163,7 @@ if ($create_agent) {
 
 	//safe_output only validate ip
 	$direccion_agente = trim(io_safe_output($direccion_agente));
-		
+
 	if(!validate_address($direccion_agente)){
 		$mssg_warning = 1;
 	}
@@ -187,11 +189,13 @@ if ($create_agent) {
 	$update_gis_data = (int) get_parameter_post("update_gis_data", 0);
 	$url_description = (string) get_parameter("url_description");
 	$quiet = (int) get_parameter("quiet", 0);
+	$cps = (int) get_parameter("cps", 0);
+
 	$secondary_groups = (string) get_parameter("secondary_hidden", "");
 	$fields = db_get_all_fields_in_table('tagent_custom_fields');
-	
+
 	if ($fields === false) $fields = array();
-	
+
 	$field_values = array();
 
 	foreach ($fields as $field) {
@@ -216,8 +220,10 @@ if ($create_agent) {
 		}
 
 		if(!$exists_alias){
-			$id_agente = db_process_sql_insert ('tagente', 
-				array ('nombre' => $nombre_agente,
+			$id_agente = db_process_sql_insert (
+				'tagente',
+				array (
+					'nombre' => $nombre_agente,
 					'alias' => $alias,
 					'alias_as_name' => $alias_as_name,
 					'direccion' => $direccion_agente,
@@ -235,7 +241,10 @@ if ($create_agent) {
 					'icon_path' => $icon_path,
 					'update_gis_data' => $update_gis_data,
 					'url_address' => $url_description,
-					'quiet' => $quiet));
+					'quiet' => $quiet,
+					'cps' => $cps
+				)
+			);
 			enterprise_hook ('update_agent', array ($id_agente));
 		}
 		else{
@@ -253,19 +262,19 @@ if ($create_agent) {
 			if ( $direccion_agente != '') {
 				agents_add_address ($id_agente, $direccion_agente);
 			}
-			
+
 			$agent_created_ok = true;
-			
+
 			$tpolicy_group_old = db_get_all_rows_sql("SELECT id_policy FROM tpolicy_groups 
 				WHERE id_group = ".$grupo);
-			
+
 			if($tpolicy_group_old){
 				foreach ($tpolicy_group_old as $key => $old_group) {
 					db_process_sql_insert ('tpolicy_agents',
 					array('id_policy' => $old_group['id_policy'], 'id_agent' => $id_agente));
 				}
 			}
-			
+
 			$info = '{"Name":"' . $nombre_agente .'",
 				"IP":"' . $direccion_agente .'",
 				"Group":"' . $grupo .'",
@@ -282,7 +291,8 @@ if ($create_agent) {
 				"Icon path":"' . $icon_path .'",
 				"Update GIS data":"' . $update_gis_data .'",
 				"Url description":"' . $url_description .'",
-				"Quiet":"' . (int)$quiet.'"}';
+				"Quiet":"' . (int)$quiet.'",
+				"Cps":"' . (int)$cps.'"}';
 
 			// Create the secondary groups
 			enterprise_hook('agents_update_secondary_groups',
@@ -748,6 +758,7 @@ if ($update_agent) { // if modified some agent paramenter
 	$update_gis_data = (int) get_parameter_post("update_gis_data", 0);
 	$url_description = (string) get_parameter("url_description");
 	$quiet = (int) get_parameter("quiet", 0);
+	$cps = (int) get_parameter("cps", 0);
 	
 	$old_interval = db_get_value('intervalo', 'tagente', 'id_agente', $id_agente);
 	$fields = db_get_all_fields_in_table('tagent_custom_fields');
@@ -799,47 +810,49 @@ if ($update_agent) { // if modified some agent paramenter
 			$direccion_agente != agents_get_address ($id_agente)) {
 			agents_add_address ($id_agente, $direccion_agente);
 		}
-		
+
 		$action_delete_ip = (bool)get_parameter('delete_ip', false);
 		//If IP is set for deletion, delete first
 		if ($action_delete_ip) {
 			$delete_ip = get_parameter_post ("address_list");
-			
+
 			$direccion_agente = agents_delete_address($id_agente, $delete_ip);
 		}
-		
-		$values = array ('disabled' => $disabled,
-				'id_parent' => $id_parent,
-				'id_os' => $id_os,
-				'modo' => $modo,
-				'alias' => $alias,
-				'alias_as_name' => $alias_as_name,
-				'direccion' => $direccion_agente,
-				'id_grupo' => $grupo,
-				'intervalo' => $intervalo,
-				'comentarios' => $comentarios,
-				'cascade_protection' => $cascade_protection,
-				'cascade_protection_module' => $cascade_protection_module,
-				'server_name' => $server_name,
-				'custom_id' => $custom_id,
-				'icon_path' => $icon_path,
-				'update_gis_data' => $update_gis_data,
-				'url_address' => $url_description,
-				'url_address' => $url_description,
-				'quiet' => $quiet,
-				'safe_mode_module' => $safe_mode_module);
-		
+
+		$values = array (
+			'disabled' => $disabled,
+			'id_parent' => $id_parent,
+			'id_os' => $id_os,
+			'modo' => $modo,
+			'alias' => $alias,
+			'alias_as_name' => $alias_as_name,
+			'direccion' => $direccion_agente,
+			'id_grupo' => $grupo,
+			'intervalo' => $intervalo,
+			'comentarios' => $comentarios,
+			'cascade_protection' => $cascade_protection,
+			'cascade_protection_module' => $cascade_protection_module,
+			'server_name' => $server_name,
+			'custom_id' => $custom_id,
+			'icon_path' => $icon_path,
+			'update_gis_data' => $update_gis_data,
+			'url_address' => $url_description,
+			'url_address' => $url_description,
+			'quiet' => $quiet,
+			'cps' => $cps,
+			'safe_mode_module' => $safe_mode_module
+		);
+
 		if ($config['metaconsole_agent_cache'] == 1) {
 			$values['update_module_count'] = 1; // Force an update of the agent cache.
 		}
-		
+
 		$group_old = db_get_sql("SELECT id_grupo FROM tagente WHERE id_agente =" .$id_agente);
 		$tpolicy_group_old = db_get_all_rows_sql("SELECT id_policy FROM tpolicy_groups 
 				WHERE id_group = ".$group_old);
-		
+
 		$result = db_process_sql_update ('tagente', $values, array ('id_agente' => $id_agente));
-		
-		
+
 		if ($result == false && $update_custom_result == false) {
 			ui_print_error_message(
 				__('There was a problem updating the agent'));
@@ -873,7 +886,7 @@ if ($update_agent) { // if modified some agent paramenter
 				foreach ($tpolicy_group as $key => $value) {
 					$tpolicy_agents= db_get_sql("SELECT * FROM tpolicy_agents 
 						WHERE id_policy = ".$value['id_policy'] . " AND id_agent =" .$id_agente);
-						
+
 					if(!$tpolicy_agents){
 						db_process_sql_insert ('tpolicy_agents',
 						array('id_policy' => $value['id_policy'], 'id_agent' => $id_agente));
@@ -884,7 +897,7 @@ if ($update_agent) { // if modified some agent paramenter
 					}
 				}
 			}
-			
+
 			$info = '{
 				"id_agente":"' . $id_agente . '",
 				"alias":"' . $alias . '",
@@ -902,8 +915,9 @@ if ($update_agent) { // if modified some agent paramenter
 				"Icon Path":"' . $icon_path . '",
 				"Update GIS data":"' .$update_gis_data .'",
 				"Url description":"' . $url_description .'",
-				"Quiet":"' . (int)$quiet.'"}';
-							
+				"Quiet":"' . (int)$quiet.'",
+				"Cps":"' . (int)$cps.'"}';
+
 			enterprise_hook ('update_agent', array ($id_agente));
 			ui_print_success_message (__('Successfully updated'));
 			db_pandora_audit("Agent management",
@@ -923,14 +937,14 @@ if ($id_agente) {
 		require ("general/noaccess.php");
 		exit;
 	}
-	
+
 	$agent = db_get_row ('tagente', 'id_agente', $id_agente);
 	if (empty ($agent)) {
 		//Close out the page
 		ui_print_error_message (__('There was a problem loading the agent'));
 		return;
 	}
-	
+
 	$intervalo = $agent["intervalo"]; // Define interval in seconds
 	$nombre_agente = $agent["nombre"];
 	if(empty($alias)){
@@ -956,6 +970,7 @@ if ($id_agente) {
 	$update_gis_data = $agent["update_gis_data"];
 	$url_description = $agent["url_address"];
 	$quiet = $agent["quiet"];
+	$cps = $agent["cps"];
 	$safe_mode_module = $agent["safe_mode_module"];
 	$safe_mode = ($safe_mode_module) ? 1 :  0;
 }
@@ -972,7 +987,7 @@ $edit_module = (bool) get_parameter ('edit_module');
 // GET DATA for MODULE UPDATE OR MODULE INSERT
 if ($update_module || $create_module) {
 	$id_grupo = agents_get_agent_group ($id_agente);
-	
+
 	$id_agent_module = (int) get_parameter ('id_agent_module');
 	
 	if (!check_acl ($config["id_user"], $id_grupo, "AW")) {
@@ -1006,6 +1021,7 @@ if ($update_module || $create_module) {
 	$interval = (int) get_parameter ('module_interval', $intervalo);
 	$ff_interval = (int) get_parameter ('module_ff_interval');
 	$quiet_module = (int) get_parameter ('quiet_module');
+	$cps_module = (int) get_parameter ('cps_module');
 	$id_plugin = (int) get_parameter ('id_plugin');
 	$id_export = (int) get_parameter ('id_export');
 	$disabled = (bool) get_parameter ('disabled');
@@ -1323,6 +1339,7 @@ if ($update_module) {
 		'unit' => io_safe_output($unit),
 		'macros' => $macros,
 		'quiet' => $quiet_module,
+		'cps' => $cps_module,
 		'critical_instructions' => $critical_instructions,
 		'warning_instructions' => $warning_instructions,
 		'unknown_instructions' => $unknown_instructions,
@@ -1367,8 +1384,8 @@ if ($update_module) {
 	}
 	else {
 		$check_dynamic = 
-			db_get_row_sql('SELECT dynamic_interval, dynamic_max, dynamic_min, dynamic_two_tailed 
-										 FROM tagente_modulo WHERE id_agente_modulo =' . $id_agent_module);
+			db_get_row_sql('SELECT dynamic_interval, dynamic_max, dynamic_min, dynamic_two_tailed
+							FROM tagente_modulo WHERE id_agente_modulo =' . $id_agent_module);
 		
 		if( ($check_dynamic['dynamic_interval'] == $dynamic_interval) && 
 			($check_dynamic['dynamic_max'] == $dynamic_max) && 
@@ -1505,6 +1522,7 @@ if ($create_module) {
 		'unit' => io_safe_output($unit),
 		'macros' => $macros,
 		'quiet' => $quiet_module,
+		'cps' => $cps_module,
 		'critical_instructions' => $critical_instructions,
 		'warning_instructions' => $warning_instructions,
 		'unknown_instructions' => $unknown_instructions,

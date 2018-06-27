@@ -296,18 +296,20 @@ $alias    = db_get_value ("alias","tagente","id_agente",$id_agent);
 		$table->data[] = $data;
 		$table->rowclass[] = '';
 
-		$data = array();
-		$data[0] = __('Zoom');
-		$options = array ();
-		$options[$zoom] = 'x' . $zoom;
-		$options[1] = 'x1';
-		$options[2] = 'x2';
-		$options[3] = 'x3';
-		$options[4] = 'x4';
-		$options[5] = __('full');
-		$data[1] = html_print_select ($options, "zoom", $zoom, '', '', 0, true, false, false);
-		$table->data[] = $data;
-		$table->rowclass[] = '';
+		if(!modules_is_boolean($id)){
+			$data = array();
+			$data[0] = __('Zoom');
+			$options = array ();
+			$options[$zoom] = 'x' . $zoom;
+			$options[1] = 'x1';
+			$options[2] = 'x2';
+			$options[3] = 'x3';
+			$options[4] = 'x4';
+			$options[5] = __('full');
+			$data[1] = html_print_select ($options, "zoom", $zoom, '', '', 0, true, false, false);
+			$table->data[] = $data;
+			$table->rowclass[] = '';
+		}
 
 		$data = array();
 		$data[0] = __('Time range');

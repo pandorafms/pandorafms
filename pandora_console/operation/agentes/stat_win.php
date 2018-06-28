@@ -114,19 +114,9 @@ $alias    = db_get_value ("alias","tagente","id_agente",$id_agent);
 		// ACL
 		$permission  = false;
 		$agent_group = (int) agents_get_agent_group($agent_id);
-		$strict_user = (bool) db_get_value("strict_acl", "tusuario",
-			"id_user", $config['id_user']);
-
-		if (!empty($agent_group)) {
-			if ($strict_user) {
-				$permission = tags_check_acl_by_module($id, $config['id_user'], 'RR') === true;
-			}
-			else {
-				$permission = check_acl($config['id_user'], $agent_group, "RR");
-			}
-		}
-
-		if (!$permission) {
+		$permission = check_acl($config['id_user'], $agent_group, "AR");
+			
+			if (!$permission) {
 			require ($config['homedir'] . "/general/noaccess.php");
 			exit;
 		}

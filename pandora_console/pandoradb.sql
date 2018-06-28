@@ -2429,6 +2429,7 @@ CREATE TABLE IF NOT EXISTS `tservice` (
 	`quiet` tinyint(1) NOT NULL default 0,
 	`cps` int NOT NULL default 0,
 	`cascade_protection` tinyint(1) NOT NULL default 0,
+	`evaluate_sla` int(1) NOT NULL default 0,
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB 
 COMMENT = 'Table to define services to monitor' 

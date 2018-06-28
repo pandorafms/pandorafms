@@ -1269,6 +1269,7 @@ UPDATE tagente SET tagente.alias = tagente.nombre;
 ALTER TABLE `tservice` ADD COLUMN `quiet` tinyint(1) NOT NULL default 0;
 ALTER TABLE `tservice` ADD COLUMN `cps` int NOT NULL default 0;
 ALTER TABLE `tservice` ADD COLUMN `cascade_protection` tinyint(1) NOT NULL default 0;
+ALTER TABLE `tservice` ADD COLUMN `evaluate_sla` int(1) NOT NULL default 0;
 
 -- ---------------------------------------------------------------------
 -- Table `tlayout`

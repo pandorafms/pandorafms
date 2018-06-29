@@ -2711,12 +2711,19 @@ function visual_map_process_wizard_add_modules ($id_modules, $image,
 function get_donut_module_data ($id_module) {
 	$mod_values = db_get_value_filter('datos', 'tagente_estado', array('id_agente_modulo' => $id_module));
 
+	$no_data_to_show = false;
+
 	if (preg_match("/\r\n/", $mod_values)) {
 		$values = explode("\r\n", $mod_values);
 	}
 	elseif (preg_match("/\n/", $mod_values)) {
 		$values = explode("\n", $mod_values);
 	}
+	else {
+		$values=array(__('No data to show').",1");
+		$no_data_to_show=true;
+	}
+		
 
 	$colors = array();
 	$colors[] = "#aa3333";
@@ -2737,7 +2744,12 @@ function get_donut_module_data ($id_module) {
 			if ($data[1] == 0) {
 				$data[1] = __('No data');
 			}
-			$values_to_return[$index]['tag_name'] = $data[0] . ": " . $data[1];
+
+			if ($no_data_to_show)
+				$values_to_return[$index]['tag_name'] = $data[0];
+			else
+				$values_to_return[$index]['tag_name'] = $data[0] . ": " . $data[1];
+
 			$values_to_return[$index]['color'] = $colors[$index];
 			$values_to_return[$index]['value'] = (int)$data[1];
 			$total += (int)$data[1];

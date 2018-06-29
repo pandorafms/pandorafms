@@ -110,8 +110,8 @@ function pandora_realtime_graphs () {
 	$refresh_fields[30000] = human_time_description_raw(30, true, 'large');
 
 	if ($graph == 'snmp_module') {
-		$agent_alias = get_parameter('agent_alias', '');
-		$module_name = get_parameter('module_name', '');
+		$agent_alias = io_safe_output(get_parameter('agent_alias', '')) ;
+		$module_name = io_safe_output(get_parameter('module_name', '')) ;
 		$module_incremental = get_parameter ('incremental', 0);
 		$data['module_info'] = "$agent_alias: <b>$module_name</b>";
 

@@ -91,10 +91,10 @@ if ($agent['disabled']) {
 }
 else if ($agent['quiet']) {
 	if ($in_planned_downtime) {
-		$agent_name = "<em'>" . $agent_name . "&nbsp;" . html_print_image("images/dot_green.disabled.png", true, array("border" => '0', "title" => __('Quiet'), "alt" => ""));
+		$agent_name = "<em'>" . $agent_name . "&nbsp;" . html_print_image("images/dot_blue.png", true, array("border" => '0', "title" => __('Quiet'), "alt" => ""));
 	}
 	else {
-		$agent_name = "<em'>" . $agent_name . "&nbsp;" . html_print_image("images/dot_green.disabled.png", true, array("border" => '0', "title" => __('Quiet'), "alt" => "")) . "</em>";
+		$agent_name = "<em'>" . $agent_name . "&nbsp;" . html_print_image("images/dot_blue.png", true, array("border" => '0', "title" => __('Quiet'), "alt" => "")) . "</em>";
 	}
 }
 else {

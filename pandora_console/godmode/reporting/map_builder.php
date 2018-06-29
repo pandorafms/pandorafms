@@ -234,7 +234,7 @@ echo "<td style='width:25%;'>";
 
 echo __('Group') . '&nbsp;';
 $own_info = get_user_info($config['id_user']);
-if (!$own_info['is_admin'] && !check_acl ($config['id_user'], 0, "AW"))
+if (!$own_info['is_admin'] && !check_acl ($config['id_user'], 0, "VR"))
 	$return_all_group = false;
 else
 	$return_all_group = true;

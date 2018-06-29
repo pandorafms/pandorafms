@@ -650,7 +650,7 @@ foreach ($modules as $module) {
 	}
 
 	if ($module['quiet']) {
-		$data[0] .= html_print_image("images/dot_green.disabled.png",
+		$data[0] .= html_print_image("images/dot_blue.png",
 			true, array("border" => '0', "title" => __('Quiet'),
 				"alt" => "")) . "&nbsp;";
 	}

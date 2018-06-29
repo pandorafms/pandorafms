@@ -257,8 +257,16 @@ function grafico_modulo_sparse_data_chart (
 		);
 	}
 	else{
-		//all points(data)
-		if($params['zoom'] == 5){
+		//all points(data) and boolean
+		if(	$params['zoom'] == 5 ||
+			$data_module_graph['id_module_type'] == 2 ||
+			$data_module_graph['id_module_type'] == 6 ||
+			$data_module_graph['id_module_type'] == 21 ||
+			$data_module_graph['id_module_type'] == 18 ||
+			$data_module_graph['id_module_type'] == 9 ||
+			$data_module_graph['id_module_type'] == 31 ||
+			$data_module_graph['id_module_type'] == 100 ){
+
 			$data = db_get_all_rows_filter (
 				'tagente_datos',
 				array ('id_agente_modulo' => (int)$agent_module_id,

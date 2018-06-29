@@ -125,7 +125,6 @@ switch ($action) {
 		$name = '';
 		$description = null;
 		$sql = null;
-		$show_in_two_columns = 0;
 		$show_in_same_row = 0;
 		$show_in_landscape = 0;
 		$hide_notinit_agents = 0;
@@ -167,7 +166,6 @@ switch ($action) {
 				$name = '';
 				$description = null;
 				$sql = null;
-				$show_in_two_columns = 0;
 				$show_in_same_row = 0;
 				$show_in_landscape = 0;
 				$hide_notinit_agents = 0;
@@ -195,7 +193,6 @@ switch ($action) {
 			$style = json_decode(io_safe_output($item['style']), true);
 			
 			$show_in_same_row = $style['show_in_same_row'];
-			$show_in_two_columns = $style['show_in_two_columns'];
 			$show_in_landscape = $style['show_in_landscape'];
 			$hide_notinit_agents = $style['hide_notinit_agents'];
 			$dyn_height = $style['dyn_height'];
@@ -1547,11 +1544,6 @@ You can of course remove the warnings, that's why we include the source and do n
 				html_print_checkbox('historical_db_check',1,$historical_db);?>
 			</td>
 		</tr>
-		
-		<tr id="row_show_in_two_columns" style="" class="datos">
-			<td style="font-weight:bold;"><?php echo __('Show in two columns');?></td>
-			<td><?php html_print_checkbox('show_in_two_columns', 1, $show_in_two_columns);?></td>
-		</tr>
 
 		<tr id="row_dyn_height" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Height (dynamic graphs)');?></td>
@@ -1582,8 +1574,7 @@ You can of course remove the warnings, that's why we include the source and do n
 			<td>
 				<?php
 				html_print_checkbox('show_in_landscape', 1,
-					$show_in_landscape, false, false,
-					'if ($(\'input[name=show_in_landscape]\').is(\':checked\')) $(\'input[name=show_in_two_columns]\').attr(\'checked\', false);');
+					$show_in_landscape, false, false);
 				?>
 			</td>
 		</tr>
@@ -2827,7 +2818,6 @@ function chooseType() {
 	$("#row_quantity").hide();
 	$("#row_exception_condition_value").hide();
 	$("#row_exception_condition").hide();
-	$("#row_show_in_two_columns").hide();
 	$("#row_dyn_height").hide();
 	$("#row_show_in_same_row").hide();
 	$("#row_historical_db_check").hide();
@@ -2883,7 +2873,6 @@ function chooseType() {
 			$("#row_period").show();
 			$("#row_servers").show();
 			$("#row_group").show();
-			$("#row_show_in_two_columns").show();
 			$("#row_event_filter").show();
 			$("#row_event_graphs").show();
 			
@@ -2944,7 +2933,6 @@ function chooseType() {
 			$("#row_period1").show();
 			$("#row_module").show();
 			$("#row_interval").show();
-			$("#row_show_in_two_columns").show();
 			$("#row_historical_db_check").hide();
 			break;
 		
@@ -3018,7 +3006,6 @@ function chooseType() {
 			$("#row_agent").show();
 			$("#row_module").show();
 			$("#row_period").show();
-			$("#row_show_in_two_columns").show();
 			$("#row_historical_db_check").hide();
 			break;
 		
@@ -3027,7 +3014,6 @@ function chooseType() {
 			$("#row_agent").show();
 			$("#row_module").show();
 			$("#row_period").show();
-			$("#row_show_in_two_columns").show();
 			$("#row_lapse_calc").show();
 			$("#row_lapse").show();
 			$("#row_visual_format").show();
@@ -3039,7 +3025,6 @@ function chooseType() {
 			$("#row_agent").show();
 			$("#row_module").show();
 			$("#row_period").show();
-			$("#row_show_in_two_columns").show();
 			$("#row_lapse_calc").show();
 			$("#row_lapse").show();
 			$("#row_visual_format").show();
@@ -3051,7 +3036,6 @@ function chooseType() {
 			$("#row_agent").show();
 			$("#row_module").show();
 			$("#row_period").show();
-			$("#row_show_in_two_columns").show();
 			$("#row_lapse_calc").show();
 			$("#row_lapse").show();
 			$("#row_visual_format").show();
@@ -3063,7 +3047,6 @@ function chooseType() {
 			$("#row_agent").show();
 			$("#row_module").show();
 			$("#row_period").show();
-			$("#row_show_in_two_columns").show();
 			$("#row_historical_db_check").hide();
 			break;
 		
@@ -3072,7 +3055,6 @@ function chooseType() {
 			$("#row_agent").show();
 			$("#row_module").show();
 			$("#row_period").show();
-			$("#row_show_in_two_columns").show();
 			$("#row_historical_db_check").hide();
 			break;
 		
@@ -3080,14 +3062,12 @@ function chooseType() {
 			$("#row_description").show();
 			$("#row_agent").show();
 			$("#row_period").show();
-			$("#row_show_in_two_columns").show();
 			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'text':
 			$("#row_description").show();
 			$("#row_text").show();
-			$("#row_show_in_two_columns").show();
 			$("#row_historical_db_check").hide();
 			break;
 		
@@ -3098,7 +3078,6 @@ function chooseType() {
 			$("#row_header").show();
 			$("#row_custom").show();
 			$("#row_custom_example").show();
-			$("#row_show_in_two_columns").show();
 			$("#row_dyn_height").show();
 			$("#row_servers").show();
 			$("#row_historical_db_check").show();
@@ -3129,7 +3108,6 @@ function chooseType() {
 			$("#row_field_separator").show();
 			$("#row_line_separator").show();
 			$("#row_period").show();
-			$("#row_show_in_two_columns").show();
 			$("#row_historical_db_check").hide();
 			break;
 		
@@ -3138,7 +3116,6 @@ function chooseType() {
 			$("#row_agent").show();
 			$("#row_module").show();
 			$("#row_period").show();
-			$("#row_show_in_two_columns").show();
 			$("#row_historical_db_check").hide();
 			break;
 		
@@ -3147,7 +3124,6 @@ function chooseType() {
 			$("#row_agent").show();
 			$("#row_module").show();
 			$("#row_period").show();
-			$("#row_show_in_two_columns").show();
 			$("#row_historical_db_check").hide();
 			break;
 		
@@ -3156,7 +3132,6 @@ function chooseType() {
 			$("#row_agent").show();
 			$("#row_module").show();
 			$("#row_period").show();
-			$("#row_show_in_two_columns").show();
 			$("#row_historical_db_check").hide();
 			break;
 		
@@ -3165,7 +3140,6 @@ function chooseType() {
 			$("#row_agent").show();
 			$("#row_module").show();
 			$("#row_period").show();
-			$("#row_show_in_two_columns").show();
 			$("#row_historical_db_check").hide();
 			break;
 		
@@ -3174,14 +3148,12 @@ function chooseType() {
 			$("#row_agent").show();
 			$("#row_module").show();
 			$("#row_period").show();
-			$("#row_show_in_two_columns").show();
 			$("#row_historical_db_check").hide();
 			break;
 		
 		case 'alert_report_group':
 			$("#row_description").show();
 			$("#row_period").show();
-			$("#row_show_in_two_columns").show();
 			$("#row_group").show();
 			$("#row_servers").show();
 			$("#row_historical_db_check").hide();
@@ -3191,7 +3163,6 @@ function chooseType() {
 			$("#row_description").show();
 			$("#row_agent").show();
 			$("#row_period").show();
-			$("#row_show_in_two_columns").show();
 			$("#row_historical_db_check").hide();
 			break;
 		
@@ -3265,7 +3236,6 @@ function chooseType() {
 			$("#general_list").show();
 			$("#row_order_uptodown").show();
 			$("#row_show_resume").show();
-			$("#row_show_in_two_columns").show();
 			$("#row_show_in_same_row").show();
 			
 			var checked = $("input[name='last_value']").prop("checked");
@@ -3284,7 +3254,6 @@ function chooseType() {
 			$("#general_list").show();
 			$("#row_order_uptodown").show();
 			$("#row_show_address_agent").show();
-			$("#row_show_in_two_columns").show();
 			$("#row_show_resume").show();
 			$("#row_working_time").show();
 			$('#row_hide_notinit_agents').show();
@@ -3315,7 +3284,6 @@ function chooseType() {
 			$("#row_order_uptodown").show();
 			$("#row_show_resume").show();
 			$("#row_show_graph").show();
-			$("#row_show_in_two_columns").show();
 			$("#row_historical_db_check").hide();
 			break;
 		
@@ -3328,7 +3296,6 @@ function chooseType() {
 			$("#row_order_uptodown").show();
 			$("#row_show_resume").show();
 			$("#row_show_graph").show();
-			$("#row_show_in_two_columns").show();
 			
 			var checked = $("input[name='last_value']").prop("checked");
 			
@@ -3356,7 +3323,6 @@ function chooseType() {
 			$("#row_group").show();
 			$("#row_agent_multi").show();
 			$("#row_module_multi").show();
-			$("#row_show_in_two_columns").show();
 			$("#row_servers").show();
 			$("#id_agents").change(event_change_id_agent_inventory);
 			$("#id_agents").trigger('change');
@@ -3374,7 +3340,6 @@ function chooseType() {
 			$("#row_agent_multi").show();
 			$("#row_module_multi").show();
 			$("#row_date").show();
-			$("#row_show_in_two_columns").show();
 			
 			
 			$("#id_agents")

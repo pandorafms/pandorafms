@@ -3384,7 +3384,7 @@ function api_set_create_snmp_module($id, $thrash1, $other, $thrash3) {
 		return;
 	}
 	
-	if ($other['data'][2] < 15 or $other['data'][2] > 17) {
+	if ($other['data'][2] < 15 or $other['data'][2] > 18) {
 		returnError('error_create_snmp_module', __('Error in creation SNMP module. Invalid id_module_type for a SNMP module.'));
 		return;
 	}
@@ -10368,7 +10368,9 @@ function api_set_create_service($thrash1, $thrash2, $other, $thrash3) {
 	$id_critical_module_template = $other['data'][9];
 	$id_unknown_module_template = 0;
 	$id_critical_module_sla = $other['data'][10];
-	
+	$quiet = $other['data'][11];
+	$cascade_protection = $other['data'][12];
+
 	if(empty($name)){
 		returnError('error_create_service', __('Error in creation service. No name'));
 		return;
@@ -10411,12 +10413,22 @@ function api_set_create_service($thrash1, $thrash2, $other, $thrash3) {
 	if(empty($id_critical_module_sla)){
 		$id_critical_module_sla = 0;
 	}
-	
-	$result = services_create_service ($name, $description, $id_group,
-		$critical, $warning, SECONDS_5MINUTES, $mode, $id_agent, $sla_interval, $sla_limit,
+	if(empty($quiet)){
+		$quiet = 0;
+	}
+	if(empty($cascade_protection)){
+		$cascade_protection = 0;
+	}
+
+	$result = services_create_service (
+		$name, $description, $id_group,
+		$critical, $warning, SECONDS_5MINUTES,
+		$mode, $id_agent, $sla_interval, $sla_limit,
 		$id_warning_module_template, $id_critical_module_template,
-		$id_unknown_module_template, $id_critical_module_sla);
-		
+		$id_unknown_module_template, $id_critical_module_sla,
+		$quiet, $cascade_protection
+	);
+
 	if($result){
 		returnData('string', array('type' => 'string', 'data' => $result));
 	} else {
@@ -10485,9 +10497,9 @@ function api_set_update_service($thrash1, $thrash2, $other, $thrash3) {
 	if(empty($warning)){
 		$warning = $service['warning'];
 	}
-	
+
 	$mode = 0;
-	
+
 	$id_agent = $other['data'][5];
 	if(empty($id_agent)){
 		$id_agent = $service['id_agent_module'];
@@ -10512,25 +10524,40 @@ function api_set_update_service($thrash1, $thrash2, $other, $thrash3) {
 	if(empty($id_critical_module_template)){
 		$id_critical_module_template = $service['id_template_alert_critical'];
 	}
-	
+
 	$id_unknown_module_template = 0;
-	
+
 	$id_critical_module_sla = $other['data'][10];
 	if(empty($id_critical_module_sla)){
 		$id_critical_module_sla = $service['id_template_alert_critical_sla'];
 	}
-	
-	$result = services_update_service ($id_service, $name,$description, $id_group, $critical, $warning,
-		SECONDS_5MINUTES, $mode, $id_agent,$sla_interval, $sla_limit,$id_warning_module_template,
-		$id_critical_module_template,$id_unknown_module_template,$id_critical_module_sla);
-	
-	
+
+	$quiet = $other['data'][11];
+	if(empty($quiet)){
+		$quiet = $service['quiet'];
+	}
+
+	$cascade_protection = $other['data'][12];
+	if(empty($cascade_protection)){
+		$cascade_protection = $service['cascade_protection'];
+	}
+
+	$result = services_update_service (
+		$id_service, $name,$description, $id_group,
+		$critical, $warning, SECONDS_5MINUTES, $mode,
+		$id_agent, $sla_interval, $sla_limit,
+		$id_warning_module_template,
+		$id_critical_module_template,
+		$id_unknown_module_template,
+		$id_critical_module_sla,
+		$quiet, $cascade_protection
+	);
+
 	if($result){
 		returnData('string', array('type' => 'string', 'data' => $result));
 	} else {
 		returnError('error_update_service', __('Error in update service'));
 	}
-	
 }
 
 /**

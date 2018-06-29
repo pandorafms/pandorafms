@@ -148,7 +148,7 @@ if ($perform_event_response) {
 						break;
 				}
 
-				echo system("ssh pandora_exec_proxy@" . $server_data['ip_address'] . " \"" . $timeout_bin . " 90 " . io_safe_output($command) . " 2>&1\"", $ret_val);
+				system("ssh pandora_exec_proxy@" . $server_data['ip_address'] . " \"" . $timeout_bin . " 90 " . io_safe_output($command) . " 2>&1\"", $ret_val);
 			}
 		}
 		else {
@@ -163,7 +163,7 @@ if ($perform_event_response) {
 					$timeout_bin = '/usr/bin/timeout';
 					break;
 			}
-			echo system($timeout_bin . ' 90 '.io_safe_output($command).' 2>&1');
+			system($timeout_bin . ' 90 '.io_safe_output($command).' 2>&1');
 		}
 	}
 	else {
@@ -178,7 +178,7 @@ if ($perform_event_response) {
 				$timeout_bin = '/usr/bin/timeout';
 				break;
 		}
-		echo system($timeout_bin . ' 90 '.io_safe_output($command).' 2>&1');
+		system($timeout_bin . ' 90 '.io_safe_output($command).' 2>&1');
 	}
 	
 	return;

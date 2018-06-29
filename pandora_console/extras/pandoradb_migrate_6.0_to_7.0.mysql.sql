@@ -395,7 +395,7 @@ CREATE TABLE IF NOT EXISTS `tservice` (
 	`id_template_alert_warning` int(10) unsigned NOT NULL default 0,
 	`id_template_alert_critical` int(10) unsigned NOT NULL default 0,
 	`id_template_alert_unknown` int(10) unsigned NOT NULL default 0,
-	`id_template_alert_critical_sla` int(10) unsigned NOT NULL default 0,
+	`id_template_alert_critical_sla` int(10) unsigned NOT NULL default 0
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB 
 COMMENT = 'Table to define services to monitor' 
@@ -1175,7 +1175,7 @@ ALTER TABLE titem MODIFY `source_data` int(10) unsigned;
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('big_operation_step_datos_purge', '100');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('small_operation_step_datos_purge', '1000');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('days_autodisable_deletion', '30');
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 17);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 18);
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_docs_logo', 'default_docs.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_support_logo', 'default_support.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_logo_white_bg_preview', 'pandora_logo_head_white_bg.png');
@@ -1229,6 +1229,7 @@ ALTER TABLE tusuario ADD COLUMN `time_autorefresh` int(5) unsigned NOT NULL defa
 ALTER TABLE tagente_modulo ADD COLUMN `dynamic_next` bigint(20) NOT NULL default '0';
 ALTER TABLE tagente_modulo ADD COLUMN `dynamic_two_tailed` tinyint(1) unsigned default '0';
 ALTER TABLE tagente_modulo ADD COLUMN `parent_module_id` int(10) unsigned NOT NULL;
+ALTER TABLE `tagente_modulo` ADD COLUMN `cps` int NOT NULL default 0;
 
 -- ---------------------------------------------------------------------
 -- Table `tagente_datos`
@@ -1258,8 +1259,17 @@ ALTER TABLE tagente ADD COLUMN `cascade_protection_module` int(10) unsigned NOT 
 ALTER TABLE tagente ADD COLUMN (alias varchar(600) not null default '');
 ALTER TABLE tagente ADD `alias_as_name` int(2) unsigned default '0';
 ALTER TABLE tagente ADD COLUMN `safe_mode_module` int(10) unsigned NOT NULL default '0';
+ALTER TABLE `tagente` ADD COLUMN `cps` int NOT NULL default 0;
 
 UPDATE tagente SET tagente.alias = tagente.nombre;
+
+-- ---------------------------------------------------------------------
+-- Table `tservice`
+-- ---------------------------------------------------------------------
+ALTER TABLE `tservice` ADD COLUMN `quiet` tinyint(1) NOT NULL default 0;
+ALTER TABLE `tservice` ADD COLUMN `cps` int NOT NULL default 0;
+ALTER TABLE `tservice` ADD COLUMN `cascade_protection` tinyint(1) NOT NULL default 0;
+
 -- ---------------------------------------------------------------------
 -- Table `tlayout`
 -- ---------------------------------------------------------------------
@@ -1353,6 +1363,7 @@ ALTER TABLE tmetaconsole_agent ADD COLUMN `transactional_agent` tinyint(1) NOT N
 ALTER TABLE tmetaconsole_agent ADD COLUMN `alias` VARCHAR(600) not null DEFAULT '';
 ALTER TABLE tmetaconsole_agent ADD COLUMN `alias_as_name` int(2) unsigned default '0';
 ALTER TABLE tmetaconsole_agent ADD COLUMN `safe_mode_module` int(10) unsigned NOT NULL default '0';
+ALTER TABLE `tmetaconsole_agent` ADD COLUMN `cps` int NOT NULL default 0;
 
 UPDATE `tmetaconsole_agent` SET tmetaconsole_agent.alias = tmetaconsole_agent.nombre;
 -- ---------------------------------------------------------------------

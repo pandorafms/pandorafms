@@ -32,7 +32,7 @@ our @ISA = qw(Exporter);
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "7.0NG.724";
-my $pandora_build = "180625";
+my $pandora_build = "180628";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 our %EXPORT_TAGS = ( 'all' => [ qw() ] );
@@ -46,6 +46,7 @@ our @EXPORT = qw(
 	api_create_tag
 	api_create_group
 	call_url
+	check_lib_version
 	decrypt
 	empty
 	encrypt
@@ -95,12 +96,34 @@ our @EXPORT = qw(
 my $DevNull = ($^O =~ /win/i)?'/NUL':'/dev/null';
 
 ################################################################################
-#
+# Returns current library version
 ################################################################################
 sub get_lib_version {
 	return $VERSION;
 }
 
+################################################################################
+# Check version compatibility
+################################################################################
+sub check_lib_version {
+	my ($plugin_version) = @_;
+
+	$plugin_version = "0NG.0" if empty($plugin_version);
+
+	my ($main,$oum) = split /NG./, $plugin_version;
+
+	$main = 0 if empty($main) || !looks_like_number($main);
+	$oum  = 0 if empty($oum)  || !looks_like_number($oum);
+
+	my ($libmain,$liboum) = split /NG./, $pandora_version;
+
+	if (($liboum < $oum)
+	||  ($libmain != $main)) {
+		return 0;
+	}
+
+	return 1;
+}
 
 ################################################################################
 # Get current time (milis)
@@ -679,7 +702,8 @@ sub transfer_xml {
 
 	# Reassign default values if not present
 	$conf->{tentacle_client} = "tentacle_client" if empty($conf->{tentacle_client});
-	$conf->{tentacle_port}   = "44121"     if empty($conf->{tentacle_port});
+	$conf->{tentacle_port}   = "41121"     if empty($conf->{tentacle_port});
+	$conf->{tentacle_opts}   = ""          if empty($conf->{tentacle_opts});
 	$conf->{mode} = $conf->{transfer_mode} if empty($conf->{mode});
 
 	if (empty ($conf->{mode}) ) {
@@ -689,26 +713,30 @@ sub transfer_xml {
 
 	#Transfering XML file
 	if ($conf->{mode} eq "tentacle") {
-
+		my $msg = "";
+		my $r = -1;
 		#Send using tentacle
 		if ($^O =~ /win/i) {
-			`$conf->{tentacle_client} -v -a $conf->{tentacle_ip} -p $conf->{tentacle_port} $conf->{tentacle_opts} "$file_path"`;
+			$msg = `$conf->{tentacle_client} -v -a $conf->{tentacle_ip} -p $conf->{tentacle_port} $conf->{tentacle_opts} "$file_path"`;
+			$r = $?;
 		}
 		else {
-			`$conf->{tentacle_client} -v -a $conf->{tentacle_ip} -p $conf->{tentacle_port} $conf->{tentacle_opts} "$file_path" 2>&1 > /dev/null`;
+			$msg = `$conf->{tentacle_client} -v -a $conf->{tentacle_ip} -p $conf->{tentacle_port} $conf->{tentacle_opts} "$file_path" 2>&1`;
+			$r = $?;
 		}
 			
 			
 		#If no errors were detected delete file	
 		
-		if (! $?) {
+		if ($r == 0) {
 			unlink ($file_path);
-			} else {
-				print_stderror($conf, "[ERROR] There was a problem sending file [$file_path] using tentacle");
-				return undef;
-			}	
-		} 
+		}
 		else {
+			print_stderror($conf, trim($msg) . " File [$file_path]");
+			return undef;
+		}	
+	} 
+	else {
 		#Copy file to local folder
 		my $dest_dir = $conf->{local_folder};
 
@@ -1409,7 +1437,7 @@ sub process_performance {
 
 		$instances = trim (head(`$_PluginTools_system->{ps} | $_PluginTools_system->{grep} "$process"| $_PluginTools_system->{wcl}`, 1));
 
-    }
+	}
 	elsif ($^O =~ /linux/i ){
 		$cpu = trim(`$_PluginTools_system->{ps} | $_PluginTools_system->{grep} -w "$process" | $_PluginTools_system->{grep} -v grep | awk 'BEGIN {sum=0} {sum+=\$2} END{print sum}'`);
 		$mem = trim(`$_PluginTools_system->{ps} | $_PluginTools_system->{grep} -w "$process" | $_PluginTools_system->{grep} -v grep | awk 'BEGIN {sum=0} {sum+=\$1} END{print sum}'`);
@@ -1834,13 +1862,13 @@ sub api_create_group {
 # 	$snmp{host}
 # 	$snmp{oid}
 # 	$snmp{port}
-#   $snmp{securityName}
-#   $snmp{context
-#   $snmp{securityLevel}
-#   $snmp{authProtocol}
-#   $snmp{authKey}
-#   $snmp{privProtocol}
-#   $snmp{privKey}
+#	$snmp{securityName}
+#	$snmp{context
+#	$snmp{securityLevel}
+#	$snmp{authProtocol}
+#	$snmp{authKey}
+#	$snmp{privProtocol}
+#	$snmp{privKey}
 ################################################################################
 sub snmp_walk {
 	my $snmp = shift;
@@ -1940,13 +1968,13 @@ sub snmp_walk {
 # 	$snmp{host}
 # 	$snmp{oid}
 # 	$snmp{port}
-#   $snmp{securityName}
-#   $snmp{context
-#   $snmp{securityLevel}
-#   $snmp{authProtocol}
-#   $snmp{authKey}
-#   $snmp{privProtocol}
-#   $snmp{privKey}
+#	$snmp{securityName}
+#	$snmp{context
+#	$snmp{securityLevel}
+#	$snmp{authProtocol}
+#	$snmp{authKey}
+#	$snmp{privProtocol}
+#	$snmp{privKey}
 ################################################################################
 sub snmp_get {
 	my $snmp = shift;

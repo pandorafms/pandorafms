@@ -59,46 +59,152 @@ $(document).ready (function () {
 	});
 
 	$("a.show_systemalert_dialog").click (function () {
-		$('body').append( "<div id='opacidad' style='position:fixed;background:black;opacity:0.6;z-index:1'></div>" );
 		jQuery.post ("ajax.php",
-			{"page": "operation/system_alert"},
-				function (data, status) {
-					$("#alert_messages").hide ()
-						.empty ()
-						.append (data)
-						.show ();
-				},
-				"html"
-			);
-		return false;
+			{"page": "include/ajax/config.ajax",
+			 "token_name": 'visual_animation'
+		},
+		function (data, status) {
+			if(data){
+				$('body').append( "<div id='opacidad' style='position:fixed;background:black;opacity:0.001;z-index:1'></div>" );
+				jQuery.post ("ajax.php",
+					{"page": "operation/system_alert"},
+						function (data, status) {
+							
+							$("#alert_messages").css('width','auto');
+							$("#alert_messages").css('height','auto');
+							
+							$("#alert_messages").css('visibility','hidden');
+							$("#alert_messages").empty ().append (data);
+							$("#alert_messages").css('display','block');
+							
+							setTimeout( function() {
+			          animation_modal('alert_messages');
+			     }, 50);
+						},
+						"html"
+					);
+					return false;
+			}
+			else{
+				$('body').append( "<div id='opacidad' style='position:fixed;background:black;opacity:0.6;z-index:1'></div>" );
+				jQuery.post ("ajax.php",
+					{"page": "operation/system_alert"},
+						function (data, status) {
+							$("#alert_messages").hide ()
+								.empty ()
+								.append (data)
+								.show ();
+						},
+						"html"
+					);
+				return false;
+			}
+			},
+			"html"
+		);
 	});
 	
 	$("a.modalpopup").click (function () {
-		$('body').append( "<div id='opacidad' style='position:fixed;background:black;opacity:0.6;z-index:1'></div>" );
-			jQuery.post ("ajax.php",
-				{
-					"page": "general/alert_enterprise",
-					"message": $(this).attr("id")
-				},
-				function (data, status) {
-					$("#alert_messages").hide ()
-						.empty ()
-						.append (data)
-						.show ();
-				},
-				"html"
-			);
-		return false;
-	});
+		var elem = $(this).attr("id");
+		
+		jQuery.post ("ajax.php",
+			{"page": "include/ajax/config.ajax",
+			 "token_name": 'visual_animation'
+		},
+			function (data, status) {
+				if(data){
+					$('body').append( "<div id='opacidad' style='position:fixed;background:black;opacity:0.001;z-index:1'></div>" );
+						jQuery.post ("ajax.php",
+							{
+								"page": "general/alert_enterprise",
+								"message": elem
+							},
+							function (data, status) {
+								
+								$("#alert_messages").css('width','auto');
+								$("#alert_messages").css('height','auto');
+								
+								$("#alert_messages").css('visibility','hidden');
+								$("#alert_messages").empty ().append (data);
+								$("#alert_messages").css('display','block');
+								
+								setTimeout( function() {
+									animation_modal('alert_messages');
+						 }, 50);
+							},
+							"html"
+						);
+					return false;
+				}
+				else{
+					$('body').append( "<div id='opacidad' style='position:fixed;background:black;opacity:0.6;z-index:1'></div>" );
+					jQuery.post ("ajax.php",
+					{
+						"page": "general/alert_enterprise",
+						"message": elem
+					},
+					function (data, status) {
+						$("#alert_messages").hide ()
+							.empty ()
+							.append (data)
+							.show ();
+					},
+					"html"
+				);
+			return false;			
+		}		
+	},
+	"html"
+	);
+});
 
 // Creacion de ventana modal y botones
 
 	$(".publienterprise").click (function () {
+		
+		var elem = $(this).attr("id");
+		
+		jQuery.post ("ajax.php",
+			{"page": "include/ajax/config.ajax",
+			 "token_name": 'visual_animation'
+		},
+			function (data, status) {
+				
+		if(data){
+					
+			$('body').append( "<div id='opacidad' style='position:fixed;background:black;opacity:0.001;z-index:1'></div>" );
+				jQuery.post ("ajax.php",
+					{
+						"page": "general/alert_enterprise",
+						"message": elem
+					},
+					function (data, status) {
+						
+						$("#alert_messages").css('width','auto');
+						$("#alert_messages").css('height','auto');
+						
+						$("#alert_messages").css('visibility','hidden');
+						$("#alert_messages").empty ().append (data);
+						$("#alert_messages").css('display','block');
+						
+						setTimeout( function() {
+							animation_modal('alert_messages');
+				 }, 50);
+					},
+					"html"
+				);
+
+				return false;
+			
+		}
+		else{
+			
 		$('body').append( "<div id='opacidad' style='position:fixed;background:black;opacity:0.6;z-index:1'></div>" );
+		
 		jQuery.post ("ajax.php",
 			{
 				"page": "general/alert_enterprise",
-				"message": $(this).attr("id")
+				"message": elem
 			},
 			function (data, status) {
 				$("#alert_messages").hide ()
@@ -109,9 +215,13 @@ $(document).ready (function () {
 			"html"
 		);
 
-
 		return false;
-	});
+		}
+		},
+		"html"
+	);	
+});
+	
 	
 	$(".publienterprisehide").click (function () {
 		$('body').append( "<div id='opacidad' style='position:fixed;background:black;opacity:0.6;z-index:1'></div>" );
@@ -372,3 +482,23 @@ function forced_title_callback() {
 		$('#forced_title_layer').hide().empty();
 	});
 }
+
+function animation_modal(id){
+	
+	var animation_width = $("#"+id).css('width');
+	var animation_height =  $("#"+id).css('height');
+	var posanimation_left = parseInt($('#'+id).css('left'));
+	var preanimation_left = parseInt($('#'+id).css('left'))+parseInt($('#'+id).css('left'))/2;
+	$('#'+id).css({'width':'100px','height':'60px'});
+	$("#alert_messages").css('visibility','visible');
+	$('#'+id).css('left',+preanimation_left+'px');
+	$('#'+id).css('opacity',0);
+	
+	$('#opacidad').animate({'opacity':0.8},2000);
+	
+	$("#"+id)
+	.animate({'width': animation_width,'left':posanimation_left+'px','opacity':1},1000)
+	.animate({'height': animation_height},1000);
+		
+}
+

@@ -97,7 +97,7 @@ else {
 		
 		if ($agent['quiet']) {
 			$cellName .= "&nbsp;";
-			$cellName .= html_print_image("images/dot_green.disabled.png", true, array("border" => '0', "title" => __('Quiet'), "alt" => ""));
+			$cellName .= html_print_image("images/dot_blue.png", true, array("border" => '0', "title" => __('Quiet'), "alt" => ""));
 		}
 		
 		$in_planned_downtime = db_get_sql('SELECT executed FROM tplanned_downtime 

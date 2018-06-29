@@ -146,13 +146,10 @@ if ($layers != false) {
 			$agentNamesByGroup = agents_get_group_agents($layer['tgrupo_id_grupo'],
 				false, 'none', true, true, false);
 		}
-		$agentNamesByLayer = gis_get_agents_layer($layer['id_tmap_layer'],
-			array('nombre'));
-		
-		
-		
+		$agentNamesByLayer = gis_get_agents_layer($layer['id_tmap_layer']);
+
 		$agentNames = array_unique($agentNamesByGroup + $agentNamesByLayer);
-		
+
 		foreach ($agentNames as $agentName) {
 			$idAgent = agents_get_agent_id($agentName);
 			$coords = gis_get_data_last_position_agent($idAgent);
@@ -167,8 +164,7 @@ if ($layers != false) {
 					gis_add_path($layer['layer_name'], $idAgent, $lastPosition);
 				}
 			}
-			
-			
+
 			$icon = gis_get_agent_icon_map($idAgent, true);
 			$icon_size = getimagesize($icon);
 			$icon_width = $icon_size[0];

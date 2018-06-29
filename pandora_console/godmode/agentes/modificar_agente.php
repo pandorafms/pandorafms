@@ -177,11 +177,11 @@ echo "</td>";
 echo "<td>";
 echo __('Operative System') . '&nbsp;';
 
-$pre_fields = db_get_all_rows_sql('select distinct(tagente.id_os),tconfig_os.description from tagente,tconfig_os where tagente.id_os = tconfig_os.id_os');
+$pre_fields = db_get_all_rows_sql('select distinct(tagente.id_os),tconfig_os.name from tagente,tconfig_os where tagente.id_os = tconfig_os.id_os');
 $fields = array();
 
 foreach ($pre_fields as $key => $value) {
-		$fields[$value['id_os']] =  $value['description'];
+		$fields[$value['id_os']] =  $value['name'];
 }
 
 html_print_select($fields,"os",$os,'this.form.submit()','All',0);
@@ -564,7 +564,7 @@ if ($agents !== false) {
 		
 		if ($agent['quiet']) {
 			echo "&nbsp;";
-			html_print_image("images/dot_green.disabled.png", false, array("border" => '0', "title" => __('Quiet'), "alt" => ""));
+			html_print_image("images/dot_blue.png", false, array("border" => '0', "title" => __('Quiet'), "alt" => ""));
 		}
 
 		if ($in_planned_downtime) {

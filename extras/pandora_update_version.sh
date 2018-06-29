@@ -54,22 +54,25 @@ AGENT_WIN_FILE="$CODEHOME/pandora_agents/win32/pandora.cc"
 AGENT_WIN_MPI_FILE="$CODEHOME/pandora_agents/win32/installer/pandora.mpi"
 AGENT_WIN_RC_FILE="$CODEHOME/pandora_agents/win32/versioninfo.rc"
 SATELLITE_FILE="$PANDHOME_ENT/satellite_server/satellite_server.pl"
-PERL_PLUGIN_FILES="$PANDHOME_ENT/pandora_plugins/NGINX/nginx_requests_queued.pl \
+PERL_PLUGIN_FILES="$PANDHOME_ENT/pandora_server/util/plugin/vmware-plugin.pl \
+$PANDHOME_ENT/pandora_plugins/NGINX/nginx_requests_queued.pl \
 $PANDHOME_ENT/pandora_plugins/Sybase/sybase_plugin.pl \
-$PANDHOME_ENT/pandora_plugins/JMX/pandora_plugin_jmx.pl \
+$PANDHOME_ENT/pandora_plugins/SNMP/dynamic_snmp.pl \
+$PANDHOME_ENT/pandora_plugins/SNMP/snmp_bandwith.pl \
+$PANDHOME_ENT/pandora_plugins/laboratory/cacti/cacti2pandora.pl \
 $PANDHOME_ENT/pandora_plugins/MarkLogic/pandora_marklogic.pl \
+$PANDHOME_ENT/pandora_plugins/MySQL/pandora_mysql.pl \
+$PANDHOME_ENT/pandora_plugins/JMX/pandora_plugin_jmx.pl \
 $PANDHOME_ENT/pandora_plugins/Apache/pandora_apache.pl \
+$PANDHOME_ENT/pandora_plugins/UX/pandora_ux.pl \
 $PANDHOME_ENT/pandora_plugins/Oracle/Database/pandora_oracle.pl \
 $PANDHOME_ENT/pandora_plugins/OpenNebula/pandora_opennebula.pl \
 $PANDHOME_ENT/pandora_plugins/Nutanix/pandora_nutanix.pl \
 $PANDHOME_ENT/pandora_plugins/MTL/pandora_mtl.pl \
 $PANDHOME_ENT/pandora_plugins/Informix/informix.pl \
-$PANDHOME_ENT/pandora_plugins/Ruckus/ruckus.pl \
-$PANDHOME_ENT/pandora_plugins/UX/pandora_ux.pl \
-$PANDHOME_ENT/pandora_plugins/JMX/pandora_plugin_jmx.pl \
-$PANDHOME_ENT/pandora_plugins/SNMP/dynamic_snmp.pl \
-$PANDHOME_ENT/pandora_plugins/MySQL/pandora_mysql.pl \
-$PANDHOME_ENT/pandora_server/util/plugin/vmware-plugin.pl "
+$PANDHOME_ENT/pandora_plugins/Docker/docker_services.pl \
+$PANDHOME_ENT/pandora_plugins/Docker/docker_stats.pl \
+$PANDHOME_ENT/pandora_plugins/Ruckus/ruckus.pl "
 PLUGIN_LIB_FILE="$CODEHOME/pandora_server/lib/PandoraFMS/PluginTools.pm"
 
 # Update version in spec files

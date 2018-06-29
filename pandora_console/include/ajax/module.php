@@ -913,7 +913,7 @@ if ($list_modules) {
 		}
 		
 		if ($module['quiet']) {
-			$data[3] .= html_print_image("images/dot_green.disabled.png", true,
+			$data[3] .= html_print_image("images/dot_blue.png", true,
 				array("border" => '0', "title" => __('Quiet'), "alt" => ""))
 				. "&nbsp;";
 		}

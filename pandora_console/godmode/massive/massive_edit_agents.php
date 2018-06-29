@@ -82,7 +82,7 @@ if ($update_agents) {
 		$values['delete_conf'] = get_parameter('delete_conf');
 	if (get_parameter('quiet_select', -1) != -1)
 		$values['quiet'] = get_parameter('quiet_select');
-	
+
 	$fields = db_get_all_fields_in_table('tagent_custom_fields');
 	
 	if ($fields === false) $fields = array();

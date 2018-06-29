@@ -1367,7 +1367,8 @@ function graphic_combined_module (
 		$sources = db_get_all_rows_field_filter(
 			'tgraph_source',
 			'id_graph',
-			$params_combined['id_graph']
+			$params_combined['id_graph'],
+			'field_order'
 		);
 
 		$series = db_get_all_rows_sql(

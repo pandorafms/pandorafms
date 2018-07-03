@@ -67,10 +67,14 @@ $table->data['name'][1] = html_print_input_text('name', $reportName,
 	__('Name'), 80, 100, true, false, true);
 
 $table->data['group'][0] = __('Group');
+$display_all_group = (users_is_admin() || users_can_manage_group_all("AR"));
+$write_groups = users_get_groups_for_select(false, "AR", $display_all_group, true, false, 'id_grupo');
 
-$write_groups = users_get_groups_for_select(false, "RW",
-	true, true, false, 'id_grupo');
 
+	html_print_select_groups($config['id_user'], "AR",
+	$display_all_group, 'id_group', $idGroup, '', '', '', true);
+
+	
 // If the report group is not among the RW groups (special permission) we add it
 if (!isset($write_groups[$idGroupReport]) && $idGroupReport) {
 	$write_groups[$idGroupReport] = groups_get_name($idGroupReport);

@@ -224,9 +224,9 @@ $table->data[1][1] = html_print_select_groups(
 	'', false, '', false, false, 'id_grupo', $strict_user);
 
 $table->data[2][0] = '<b>' . __('Group').'</b>';
-$table->data[2][1] = html_print_select_groups($config["id_user"], $access,
-	true, 'id_group', $id_group, '', '', -1, true, false, false, '',
-	false, false, false, false, 'id_grupo', $strict_user);
+$display_all_group = (users_is_admin() || users_can_manage_group_all("AR"));
+$table->data[2][1] =  html_print_select_groups($config['id_user'], "AR",
+$display_all_group, 'id_group', $idGroup, '', '', '', true);
 
 $types = get_event_types ();
 // Expand standard array to add not_normal (not exist in the array, used only for searches)

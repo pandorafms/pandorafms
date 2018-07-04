@@ -180,7 +180,13 @@ function returnData($returnType, $data, $separator = ';') {
 			if ($separator == ";") {
 				$separator = null;
 			}
-			echo json_encode ($data, $separator);
+			
+			if(empty($separator)){
+				echo json_encode ($data);
+			} else {
+				echo json_encode ($data, $separator);
+			}
+			
 			break;
 	}
 }

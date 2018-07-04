@@ -25,16 +25,19 @@ require_once($config['homedir'] . '/include/functions_users.php');
 
 /**
  * Check the agent exists in the DB.
- * 
+ *
  * @param int $id_agent The agent id.
  * @param boolean $show_disabled Show the agent found althought it is disabled. By default false.
- * 
+ *
  * @return boolean The result to check if the agent is in the DB.
  */
 function agents_check_agent_exists($id_agent, $show_disabled = true) {
-	$agent = db_get_value_filter('id_agente', 'tagente',
-		array('id_agente' => $id_agent, 'disabled' => !$show_disabled));
-	
+	$agent = db_get_value_filter(
+		'id_agente',
+		'tagente',
+		array('id_agente' => $id_agent, 'disabled' => !$show_disabled)
+	);
+
 	if (!empty($agent)) {
 		return true;
 	}

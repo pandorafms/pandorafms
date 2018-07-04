@@ -487,6 +487,8 @@ sub pandora_load_config {
 	$pa_config->{"provisioningserver_threads"} = 1; # 7.0 720
 	$pa_config->{"provisioning_cache_interval"} = 300; # 7.0 720
 
+	$pa_config->{"autoconfigure_agents"} = 1; # 7.0 725
+
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
 		if ($> == 0){
@@ -1112,6 +1114,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^provisioning_cache_interval\s+([0-9]*)/i){
 			$pa_config->{'provisioning_cache_interval'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^autoconfigure_agents\s+([0-1])/i){
+			$pa_config->{'autoconfigure_agents'}= clean_blank($1);
 		}
 	} # end of loop for parameter #
 

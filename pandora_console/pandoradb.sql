@@ -3215,8 +3215,8 @@ CREATE TABLE IF NOT EXISTS `tautoconfig_rules` (
   `order_by` int(11) NOT NULL DEFAULT '0',
   `operator` enum('AND','OR') DEFAULT 'OR',
   `type` enum('alias','ip-range','group','os','custom-field','script') DEFAULT 'alias',
-  `value` varchar(100) NOT NULL DEFAULT '',
-  `custom` varchar(100) NOT NULL DEFAULT '',
+  `value` text,
+  `custom` text,
   PRIMARY KEY (`id`),
   KEY `id_autoconfig` (`id_autoconfig`),
   CONSTRAINT `tautoconfig_rules_ibfk_1` FOREIGN KEY (`id_autoconfig`) REFERENCES `tautoconfig` (`id`) ON DELETE CASCADE
@@ -3229,9 +3229,9 @@ CREATE TABLE IF NOT EXISTS `tautoconfig_actions` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `id_autoconfig` int(10) unsigned NOT NULL,
   `order` int(11) NOT NULL DEFAULT '0',
-  `action_type` enum('set-group', 'set-secondary-group','apply-policy','apply-all-policies','launch-event','launch-alert-action','raw-config') DEFAULT 'launch-event',
-  `value` varchar(100) NOT NULL DEFAULT '',
-  `custom` varchar(100) NOT NULL DEFAULT '',
+  `action_type` enum('set-group', 'set-secondary-group', 'apply-policiy', 'launch-script', 'launch-event', 'launch-alert-action', 'raw-config') DEFAULT 'launch-event',
+  `value` text,
+  `custom` text,
   PRIMARY KEY (`id`),
   KEY `id_autoconfig` (`id_autoconfig`),
   CONSTRAINT `tautoconfig_action_ibfk_1` FOREIGN KEY (`id_autoconfig`) REFERENCES `tautoconfig` (`id`) ON DELETE CASCADE

@@ -22,7 +22,7 @@ CREATE TABLE `tautoconfig` (
 CREATE TABLE `tautoconfig_rules` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `id_autoconfig` int(10) unsigned NOT NULL,
-  `order_by` int(11) NOT NULL DEFAULT '0',
+  `order` int(11) NOT NULL DEFAULT '0',
   `operator` enum('AND','OR') DEFAULT 'OR',
   `type` enum('alias','ip-range','group','os','custom-field','script') DEFAULT 'alias',
   `value` text,

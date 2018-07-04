@@ -1,49 +1,1869 @@
-#!/bin/sh
-
-# **********************************************************************
-# Tentacle Server Daemon launcher for FreeBSD
-# (c) 2010-2012 Junichi Satoh <junichi@rworks.jp>
+#!/usr/bin/perl
+##########################################################################
+# Tentacle Server
+# See http://www.openideas.info/wiki for protocol description.
+# Tentacle have IANA assigned port tpc/41121 as official port.
+##########################################################################
+# Copyright (c) 2007-2008  Ramon Novoa  <rnovoa@artica.es>
+# Copyright (c) 2005-2010 Artica Soluciones Tecnologicas S.L
 #
-# **********************************************************************
-
-# PROVIDE: tentacle_server
-# REQUIRE: LOGIN
-# KEYWORD: shutdown
-
-# Add the following line to /etc/rc.conf to enable `tentacle_server':
+# tentacle_server.pl	Tentacle Server. See http://www.openideas.info/wiki for
+#                       protocol description.
 #
-# tentacle_server_enable="YES"
-#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+##########################################################################
 
-. "/etc/rc.subr"
+package tentacle::server;
+=head1 NAME
 
-name="tentacle_server"
-rcvar=tentacle_server_enable
+tentacle_server - Tentacle Server
 
-# read configuration and set defaults
-tentacle_server_enable=${tentacle_server_enable:-"NO"}
-tentacle_server_flags=${tentacle_server_flags:-'-a 0.0.0.0 -p 41121 -s /var/spool/pandora/data_in -i.*\.conf:conf\;.*\.md5:md5\;.*\.zip:collections -d'}
-tentacle_server_user=${tentacle_server_user:-"pandora"}
-load_rc_config $name
+=head1 VERSION
 
-PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin
+Version 0.6.1
 
-command=/usr/local/bin/${name}
-command_interpreter=/usr/local/bin/perl
-procname=$command
-pidfile=/var/run/$name.pid
+=head1 USAGE
 
-start_postcmd=start_postcmd
-stop_postcmd=stop_postcmd
+tentacle_server B<< -s F<storage_directory> >> [I<options>]
 
-start_postcmd()
-{
-	pgrep -f -j none "^$command_interpreter $command" > $pidfile
+=head1 DESCRIPTION
+
+B<tentacle_server(1)> is a server for B<tentacle>, a B<client/server> file transfer protocol that aims to be:
+
+=over
+
+=item    * Secure by design.
+
+=item    * Easy to use.
+
+=item    * Versatile and cross-platform. 
+
+=back 
+
+Tentacle was created to replace more complex tools like SCP and FTP for simple file transfer/retrieval, and switch from authentication mechanisms like .netrc, interactive logins and SSH keys to X.509 certificates. Simple password authentication over a SSL secured connection is supported too.
+
+The client and server (B<TCP port 41121>) are designed to be run from the command line or called from a shell script, and B<no configuration files are needed>. 
+
+=cut
+
+use strict;
+use warnings;
+use Getopt::Std;
+use IO::Select;
+use IO::Compress::Zip qw(zip $ZipError);
+use IO::Uncompress::Unzip qw(unzip $UnzipError);
+use threads;
+use Thread::Semaphore;
+use POSIX ":sys_wait_h";
+use Time::HiRes qw(usleep);
+use Scalar::Util qw(refaddr);
+use POSIX qw(strftime);
+
+# Constants for Win32 services.
+use constant WIN32_SERVICE_STOPPED => 0x01;
+use constant WIN32_SERVICE_RUNNING => 0x04;
+
+my $t_libwrap_installed = eval { require Authen::Libwrap } ? 1 : 0;
+
+if ($t_libwrap_installed) {
+	Authen::Libwrap->import( qw( hosts_ctl STRING_UNKNOWN ) );
 }
 
-stop_postcmd()
-{
-	rm -f $pidfile
+# Log errors, 1 enabled, 0 disabled
+my $t_log = 0;
+
+# Log information, 1 enabled, 0 enabled
+my $t_log_hard = 0;
+
+my $SOCKET_MODULE;
+if ($^O eq 'MSWin32') {
+	# Only support INET on windows
+	require IO::Socket::INET;
+	$SOCKET_MODULE = 'IO::Socket::INET';
+} else {
+	$SOCKET_MODULE =
+		eval { require IO::Socket::INET6 } ? 'IO::Socket::INET6'
+		  : eval { require IO::Socket::INET }  ? 'IO::Socket::INET'
+		  : die $@;
 }
 
-run_rc_command "$1"
+# Service name for Win32.
+my $SERVICE_NAME="Tentacle Server";
+
+# Service parameters.
+my $SERVICE_PARAMS=join(' ', @ARGV);
+
+# Program version
+our $VERSION = '0.6.2';
+
+# IPv4 address to listen on
+my @t_addresses = ('0', '0.0.0.0');
+
+# Block size for socket read/write operations in bytes
+my $t_block_size = 1024;
+
+# Client socket
+my $t_client_socket;
+
+# Run as daemon, 1 true, 0 false
+my $t_daemon = 0;
+
+# Storage directory
+my $t_directory = '';
+
+# Filters
+my @t_filters;
+
+# Enable (1) or disable (0) insecure mode
+my $t_insecure = 0;
+
+# String containing quoted invalid file name characters
+my $t_invalid_chars = '\?\[\]\/\\\=\+\<\>\:\;\'\,\*\~';
+
+# Maximum number of simultaneous connections
+my $t_max_conn = 10;
+
+# Maximum file size allowed by the server in bytes
+my $t_max_size = 2000000;
+
+# File overwrite, 1 enabled, 0 disabled
+my $t_overwrite = 0;
+
+# Port to listen on
+my $t_port = 41121;
+
+# Server password
+my $t_pwd = '';
+
+# Do not output error messages, 1 enabled, 0 disabled
+my $t_quiet = 0;
+
+# Number of retries for socket read/write operations
+my $t_retries = 3;
+
+# Select handler
+my $t_select;
+
+# Semaphore
+my $t_sem :shared;
+
+# Server socket
+my @t_server_sockets;
+
+# Server select handler
+my $t_server_select;
+
+# Use SSL, 1 true, 0 false
+my $t_ssl = 0;
+
+# SSL ca certificate file
+my $t_ssl_ca = '';
+
+# SSL certificate file
+my $t_ssl_cert = '';
+
+# SSL private key file
+my $t_ssl_key = '';
+
+# SSL private key password
+my $t_ssl_pwd = '';
+
+# Timeout for socket read/write operations in seconds
+my $t_timeout = 1;
+
+# Address to proxy client requests to
+my $t_proxy_ip = undef;
+
+# Port to proxy client requests to
+my $t_proxy_port = 41121;
+
+# Proxy socket
+my $t_proxy_socket;
+
+# Proxy selected handler
+my $t_proxy_select;
+
+# Use libwrap, 1 true, 0 false
+my $t_use_libwrap = 0;
+
+# Program name for libwrap
+my $t_program_name = $0;
+$t_program_name =~ s/.*\///g;
+
+# Log file
+my $log_file = undef;
+
+################################################################################
+## SUB print_help
+## Print help screen.
+################################################################################
+sub print_help {
+	$" = ',';
+
+	print ("Usage: $0 -s <storage directory> [options]\n\n");
+	print ("Tentacle server v$VERSION. See http://www.openideas.info/wiki for protocol description.\n\n");
+	print ("Options:\n");
+	print ("\t-a ip_addresses\tIP addresses to listen on (default @t_addresses).\n");
+	print ("\t               \t(Multiple addresses separated by comma can be defined.)\n");
+	print ("\t-c number\tMaximum number of simultaneous connections (default $t_max_conn).\n");
+	print ("\t-d\t\tRun as daemon.\n");
+	print ("\t-e cert\t\tOpenSSL certificate file. Enables SSL.\n");
+	print ("\t-f ca_cert\tVerify that the peer certificate is signed by a ca.\n");
+	print ("\t-F config_file\tConfiguration file full path.\n");
+	print ("\t-h\t\tShow help.\n");
+	print ("\t-I\t\tEnable insecure operations (file listing and moving).\n");
+	print ("\t-i\t\tFilters.\n");
+	print ("\t-k key\t\tOpenSSL private key file.\n");
+	print ("\t-l log_file\t\tFile to write logs.\n");
+	print ("\t-m size\t\tMaximum file size in bytes (default ${t_max_size}b).\n");
+	print ("\t-o\t\tEnable file overwrite.\n");
+	print ("\t-p port\t\tPort to listen on (default $t_port).\n");
+	print ("\t-q\t\tQuiet. Do now print error messages.\n");
+	print ("\t-r number\tNumber of retries for network opertions (default $t_retries).\n");
+	print ("\t-S (install|uninstall|run) Manage the win32 service.\n");
+	print ("\t-t time\t\tTime-out for network operations in seconds (default ${t_timeout}s).\n");
+	print ("\t-v\t\tBe verbose (display errors).\n");
+	print ("\t-V\t\tBe verbose on hard way (display errors and other info).\n");
+	print ("\t-w\t\tPrompt for OpenSSL private key password.\n");
+	print ("\t-x pwd\t\tServer password.\n");
+	print ("\t-b ip_address\tProxy requests to the given address.\n");
+	print ("\t-g port\t\tProxy requests to the given port.\n");
+	print ("\t-T\t\tEnable tcpwrappers support.\n");
+	print ("\t  \t\t(To use this option, 'Authen::Libwrap' should be installed.)\n\n");
+}
+
+################################################################################
+## SUB daemonize
+## Turn the current process into a daemon.
+################################################################################
+sub daemonize {
+	my $pid;
+
+	require POSIX;
+
+	chdir ('/') || error ("Cannot chdir to /: $!.");
+	umask 0;
+
+	open (STDIN, '/dev/null') || error ("Cannot read /dev/null: $!.");
+
+	# Do not be verbose when running as a daemon
+	open (STDOUT, '>/dev/null') || error ("Cannot write to /dev/null: $!.");
+	open (STDERR, '>/dev/null') || error ("Cannot write to /dev/null: $!.");
+
+	# Fork
+	$pid = fork ();
+	if (! defined ($pid)) {
+		error ("Cannot fork: $!.");
+	}
+
+	# Parent
+	if ($pid != 0) {
+		exit;
+	}
+
+	# Child
+	POSIX::setsid () || error ("Cannot start a new session: $!.");
+}
+
+################################################################################
+## SUB parse_options
+## Parse command line options and initialize global variables.
+################################################################################
+sub parse_options {
+	my %opts;
+	my $CONF = {};
+	my $token_value;
+	my $tmp;
+	my @t_addresses_tmp;
+
+	# Get options
+	if (getopts ('a:b:c:de:f:F:g:hIi:k:l:m:op:qr:s:S:t:TvVwx:', \%opts) == 0 || defined ($opts{'h'})) {
+		print_help ();
+		exit 1;
+	}
+
+	# The Win32 service must be installed/uninstalled without checking other parameters.
+	if (defined ($opts{'S'})) {
+		my $service_action = $opts{'S'};
+		if ($^O ne 'MSWin32') {
+			error ("Windows services are only available on Win32.");
+		} else {
+			eval "use Win32::Daemon";
+			die($@) if ($@);
+
+			if ($service_action eq 'install') {
+				install_service();
+			} elsif ($service_action eq 'uninstall') {
+				uninstall_service();
+			}
+		}
+	}
+
+	# Configuration file
+	if (defined($opts{'F'})) {
+		parse_config_file($opts{'F'}, $CONF);
+	}
+
+	# Address
+	$token_value = get_config_value($opts{'a'}, $CONF->{'addresses'});
+	if (defined ($token_value)) {
+		@t_addresses = ();
+		@t_addresses_tmp = split(/,/, $token_value);
+		
+		foreach my $t_address (@t_addresses_tmp) {
+			$t_address =~ s/^ *(.*?) *$/$1/;
+			if (($t_address ne '0') && 
+				($t_address !~ /^[a-zA-Z\.]+$/ && ($t_address  !~ /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/
+					|| $1 < 0 || $1 > 255 || $2 < 0 || $2 > 255
+					|| $3 < 0 || $3 > 255 || $4 < 0 || $4 > 255)) &&
+				($t_address !~ /^[0-9a-f:]+$/o)) {
+					error ("Address $t_address is not valid.");
+			}
+			push @t_addresses, $t_address;
+		}
+	}
+	
+	# Maximum simultaneous connections
+	$token_value = get_config_value($opts{'c'}, $CONF->{'max_connections'});
+	if (defined ($token_value)) {
+		$t_max_conn = $token_value;
+		if ($t_max_conn !~ /^\d+$/ || $t_max_conn < 1) {
+			error ("Invalid number of maximum simultaneous connections.");
+		}
+	}
+
+	# Run as daemon
+	$token_value = get_config_value($opts{'d'}, $CONF->{'daemon'}, 1);
+	if (defined ($token_value)) {
+		if ($^ eq 'MSWin32') {
+			error ("-d flag not available for this OS.");
+		}
+
+		$t_daemon = 1;
+	}
+
+	# Enable SSL
+	$token_value = get_config_value($opts{'e'}, $CONF->{'ssl_cert'});
+	if (defined ($token_value)) {
+
+		require IO::Socket::SSL;
+
+		$t_ssl_cert = $token_value;
+		if (! -f $t_ssl_cert) {
+			error ("File $t_ssl_cert does not exist.");
+		}
+
+		$t_ssl = 1;
+	}
+
+	# Verify peer certificate
+	$token_value = get_config_value($opts{'f'}, $CONF->{'ssl_ca'});
+	if (defined ($token_value)) {
+		$t_ssl_ca = $token_value;
+		if (! -f $t_ssl_ca) {
+			error ("File $t_ssl_ca does not exist.");
+		}
+	}
+
+	# Insecure mode
+	$token_value = get_config_value($opts{'I'}, $CONF->{'insecure'}, 1);
+	if (defined ($token_value)) {
+		$t_insecure = 1;
+	}
+
+	# Filters (regexp:dir;regexp:dir...)
+	$token_value = get_config_value($opts{'i'}, $CONF->{'filters'});
+	if (defined ($token_value)) {
+		my @filters = split (';', $token_value);
+		foreach my $filter (@filters) {
+			my ($regexp, $dir) = split (':', $filter);
+			next unless defined ($regexp) && defined ($dir);
+
+			# Remove any trailing /
+			my $char = chop ($dir);
+			$dir .= $char if ($char) ne '/';
+
+			push(@t_filters, [$regexp, $dir]);
+		}
+	}
+
+	# SSL private key file
+	$token_value = get_config_value($opts{'k'}, $CONF->{'ssl_key'});
+	if (defined ($token_value)) {
+		$t_ssl_key = $token_value;
+		if (! -f $t_ssl_key) {
+			error ("File $t_ssl_key does not exist.");
+		}
+	}
+
+	# Maximum file size
+	$token_value = get_config_value($opts{'m'}, $CONF->{'max_size'});
+	if (defined ($token_value)) {
+		$t_max_size = $token_value;
+		if ($t_max_size !~ /^\d+$/ || $t_max_size < 1) {
+			error ("Invalid maximum file size.");
+		}
+	}
+
+	# File overwrite
+	$token_value = get_config_value($opts{'o'}, $CONF->{'overwrite'}, 1);
+	if (defined ($token_value)) {
+		$t_overwrite = 1;
+	}
+
+	# Port
+	$token_value = get_config_value($opts{'p'}, $CONF->{'port'});
+	if (defined ($token_value)) {
+		$t_port = $token_value;
+		if ($t_port !~ /^\d+$/ || $t_port < 1 || $t_port > 65535) {
+			error ("Port $t_port is not valid.");
+		}
+	}
+
+	# Quiet mode
+	$token_value = get_config_value($opts{'q'}, $CONF->{'quiet'}, 1);
+	if (defined ($token_value)) {
+		$t_quiet = 1;
+	}
+
+	# Retries
+	$token_value = get_config_value($opts{'r'}, $CONF->{'retries'});
+	if (defined ($token_value)) {
+		$t_retries = $token_value;
+		if ($t_retries !~ /^\d+$/ || $t_retries < 1) {
+			error ("Invalid number of retries for network operations.");
+		}
+	}
+
+	# Storage directory
+	$token_value = get_config_value($opts{'s'}, $CONF->{'directory'});
+	if (defined ($token_value)) {
+
+		$t_directory = $token_value;
+		
+		# Check that directory exists
+		if (! -d $t_directory) {
+			error ("Directory $t_directory does not exist.");
+		}
+
+		# Check directory permissions
+		if (! -w $t_directory) {
+			error ("Cannot write to directory $t_directory.");
+		}
+
+		# Remove the trailing / if present
+		$tmp = chop ($t_directory);
+		if ($tmp ne '/') {
+			$t_directory .= $tmp;
+		}
+	}
+	else {
+		$token_value = get_config_value($opts{'b'}, $CONF->{'proxy_ip'});
+		if (! defined($token_value)) {
+			print_help ();
+			exit 1;
+		}
+	}
+
+	# Timeout
+	$token_value = get_config_value($opts{'t'}, $CONF->{'timeout'});
+	if (defined ($token_value)) {
+		$t_timeout = $token_value;
+		if ($t_timeout !~ /^\d+$/ || $t_timeout < 1) {
+			error ("Invalid timeout for network operations.");
+		}
+	}
+
+	# Read verbose from config file
+	if (defined($CONF->{'verbose'})) {
+		if ($CONF->{'verbose'} eq "1") {
+			$t_log = 1;
+		} elsif ($CONF->{'verbose'} eq "2") {
+			$t_log = 1;
+			$t_log_hard = 1;
+		}
+	}
+	# Be verbose
+	if (defined ($opts{'v'})) {
+		$t_log = 1;
+		$t_log_hard = 0;
+	}
+	# Be verbose hard
+	if (defined ($opts{'V'})) {
+		$t_log = 1;
+		$t_log_hard = 1;
+	}
+
+	# SSL private key password
+	$token_value = get_config_value($opts{'w'}, $CONF->{'ssl_password'}, 1);
+	if (defined ($token_value)) {
+		$t_ssl_pwd = ask_passwd ("Enter private key file password: ", "Enter private key file password again for confirmation: ");
+	}
+
+	# Server password
+	$token_value = get_config_value($opts{'x'}, $CONF->{'password'});
+	if (defined ($token_value)) {
+		$t_pwd = $token_value;
+	}
+	
+	#Proxy IP address
+	$token_value = get_config_value($opts{'b'}, $CONF->{'proxy_ip'});
+	if (defined ($token_value)) {
+		$t_proxy_ip = $token_value;
+		if ($t_proxy_ip !~ /^[a-zA-Z\.]+$/ && ($t_proxy_ip  !~ /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/
+			|| $1 < 0 || $1 > 255 || $2 < 0 || $2 > 255
+			|| $3 < 0 || $3 > 255 || $4 < 0 || $4 > 255) &&
+			$t_proxy_ip !~ /^[0-9a-f:]+$/o) {
+			error ("Proxy address $t_proxy_ip is not valid.");
+		}		
+	}
+	
+	# Proxy Port
+	$token_value = get_config_value($opts{'g'}, $CONF->{'proxy_port'});
+	if (defined ($token_value)) {
+		$t_proxy_port = $token_value;
+		if ($t_proxy_port !~ /^\d+$/ || $t_proxy_port < 1 || $t_proxy_port > 65535) {
+			error ("Proxy port $t_port is not valid.");
+		}
+	}	
+
+	# TCP wrappers support
+	$token_value = get_config_value($opts{'T'}, $CONF->{'use_libwrap'}, 1);
+	if (defined ($token_value)) {
+		if ($t_libwrap_installed) {
+			$t_use_libwrap = 1;
+		} else {
+			error ("Authen::Libwrap is not installed.");
+		}
+	}
+
+	# Win32 service management
+	if (defined ($opts{'S'})) {
+		my $service_action = $opts{'S'};
+		if ($^O ne 'MSWin32') {
+			error ("Windows services are only available on Win32.");
+		} else {
+			eval "use Win32::Daemon";
+			die($@) if ($@);
+
+			if ($service_action eq 'run') {
+				Win32::Daemon::RegisterCallbacks({
+			        start       =>  \&callback_start,
+			        running     =>  \&callback_running,
+			        stop        =>  \&callback_stop,
+				});
+				Win32::Daemon::StartService();
+				exit 0;
+			} else {
+				error("Unknown action: $service_action");
+			}
+		}
+	}
+	
+	# Get the config file
+	$token_value = get_config_value($opts{'l'}, $CONF->{'log_file'});
+	if (defined ($token_value)) {
+		$log_file = $token_value;
+	}
+
+	# No command lines config values
+
+	# Get the block size
+	if (defined ($CONF->{'block_size'})) {
+		if ($t_port !~ /^\d+$/ || $t_port < 1) {
+			error ("Invalid block size: " . $CONF->{'block_size'} . ".");
+		}
+		$t_block_size = $CONF->{'block_size'};
+	}
+
+	# Configuration file invalid chars
+	if (defined ($CONF->{'invalid_chars'})) {
+		$t_invalid_chars = $CONF->{'invalid_chars'};
+	}
+}
+
+################################################################################
+## SUB parse_config_file
+## Get all options from a config file.
+################################################################################
+sub parse_config_file {
+	my ($config_file, $CONF) = @_;
+
+	# File should be writable
+	if (! -r $config_file) {
+		print "Configuration file $config_file is not readable.\n";
+		return;
+	}
+
+	# Open the file
+	my $FH;
+	if (! open ($FH, "< $config_file")) {
+		print "Cannot open configuration file $config_file.\n";
+		return;
+	}
+
+	# Read the file and only get the well formed lines
+	while (<$FH>) {
+		my $buffer_line = $_;
+		if ($buffer_line =~ /^[a-zA-Z]/){ # begins with letters
+			if ($buffer_line =~ m/([\w\-\_\.]+)\s+(.*)/){
+				$CONF->{$1} = $2 unless $2 eq "";
+			}
+		}
+	}
+
+ 	close ($FH);
+	return;
+}
+
+################################################################################
+## SUB parse_config_file
+## Search in command line options and config hash from configuration file
+## to get a value (command line is a priority)
+################################################################################
+sub get_config_value {
+	my ($cmd_value, $conf_value, $bool) = @_;
+	$bool = 0 unless defined($bool);
+
+	return $cmd_value if defined($cmd_value);
+	# The boolean type value is 1 or undef (0 should be translated like undefP)
+	if ($bool && defined($conf_value)) {
+		return undef if ($conf_value ne "1");
+	}
+	return $conf_value;
+}
+
+################################################################################
+## SUB start_proxy
+## Open the proxy server socket.
+################################################################################
+sub start_proxy {
+
+	# Connect to server
+	$t_proxy_socket = $SOCKET_MODULE->new (
+	    PeerAddr => $t_proxy_ip,
+		PeerPort => $t_proxy_port,
+	);
+
+	if (! defined ($t_proxy_socket)) {
+		error ("Cannot connect to $t_proxy_ip on port $t_proxy_port: $!.");
+	}
+	
+	# Create proxy selector
+	$t_proxy_select = IO::Select->new ();
+	$t_proxy_select->add ($t_proxy_socket);
+	
+}
+
+################################################################################
+## SUB start_server
+## Open the server socket.
+################################################################################
+sub start_server {
+
+	my $t_server_socket;
+
+	foreach my $t_address (@t_addresses) {
+
+		$t_server_socket = $SOCKET_MODULE->new (
+			Listen    => $t_max_conn,
+			LocalAddr => $t_address,
+			LocalPort => $t_port,
+			Proto     => 'tcp',
+			ReuseAddr     => 1,
+		);
+
+		if (! defined ($t_server_socket)) {
+			print_log ("Cannot open socket for address $t_address on port $t_port: $!.");
+			next;
+		}
+
+		print_log ("Server listening on $t_address port $t_port (press <ctr-c> to stop)");
+	
+		# Say message if tentacle proxy is enable
+		if (defined ($t_proxy_ip)) {
+			print_log ("Proxy Mode enable, data will be sent to $t_proxy_ip port $t_proxy_port");	
+		}
+	
+		push @t_server_sockets, $t_server_socket;
+	}
+
+	if (!@t_server_sockets) {
+		error ("Cannot open socket for all addresses on port $t_port: $!.");
+	}
+	
+	$t_server_select = IO::Select->new();
+	foreach my $t_server_socket (@t_server_sockets){
+		$t_server_select->add($t_server_socket);
+ 	}
+}
+
+################################################################################
+## SUB send_data_proxy
+## Send data to proxy socket.
+################################################################################
+sub send_data_proxy {
+	my $data = $_[0];
+	my $block_size;
+	my $retries = 0;
+	my $size;
+	my $total = 0;
+	my $written;
+
+	$size = length ($data);
+
+	while (1) {
+
+		# Try to write data to the socket
+		if ($t_proxy_select->can_write ($t_timeout)) {
+
+			$block_size = ($size - $total) > $t_block_size ? $t_block_size : ($size - $total);
+			$written = syswrite ($t_proxy_socket, $data, $size - $total, $total);
+
+			# Write error
+			if (! defined ($written)) {
+				error ("Connection error from " . $t_proxy_socket->sockhost () . ": $!.");
+			}
+			
+			# EOF
+			if ($written == 0) {
+				error ("Connection from " . $t_proxy_socket->sockhost () . " unexpectedly closed.");
+			}
+	
+			$total += $written;
+
+			# Check if all data was written
+			if ($total == $size) {
+				return;
+			}
+		}
+		# Retry
+		else {
+			$retries++;
+			if ($retries > $t_retries) {
+				error ("Connection from " . $t_proxy_socket->sockhost () . " timed out.");
+			}
+		}
+	}
+}
+
+################################################################################
+## SUB close_proxy
+## Close the proxy socket.
+################################################################################
+sub close_proxy {
+	$t_proxy_socket->shutdown (2);
+	$t_proxy_socket->close ();
+}
+
+################################################################################
+## SUB stop_server
+## Close the server socket.
+################################################################################
+sub stop_server {
+
+	foreach my $t_server_socket (@t_server_sockets) {
+		$t_server_socket->shutdown (2);
+		$t_server_socket->close ();
+	}
+	print_log ("Server going down");
+	
+	exit 0;
+}
+
+################################################################################
+## SUB start_ssl
+## Convert the client socket to an IO::Socket::SSL socket.
+################################################################################
+sub start_ssl {
+	my $err;
+
+	if ($t_ssl_ca eq '') {
+		IO::Socket::SSL->start_SSL (
+			$t_client_socket,
+			SSL_cert_file => $t_ssl_cert,
+			SSL_key_file => $t_ssl_key,
+			SSL_passwd_cb => sub {return $t_ssl_pwd},
+			SSL_server => 1,
+			# Verify peer
+			SSL_verify_mode => 0x01,
+		);
+	}
+	else {
+		IO::Socket::SSL->start_SSL (
+			$t_client_socket,
+			SSL_ca_file => $t_ssl_ca,
+			SSL_cert_file => $t_ssl_cert,
+			SSL_key_file => $t_ssl_key,
+			SSL_passwd_cb => sub {return $t_ssl_pwd},
+			SSL_server => 1,
+			# Fail verification if no peer certificate exists
+			SSL_verify_mode => 0x03,
+		);
+	}
+
+	$err = IO::Socket::SSL::errstr ();
+	if ($err ne '') {
+		error ($err);
+	}
+
+	print_log ("SSL started for " . $t_client_socket->sockhost ());
+}
+
+################################################################################
+## SUB accept_connections
+## Manage incoming connections.
+################################################################################
+sub accept_connections {
+	my $pid;
+	my $t_server_socket;
+
+	# Ignore SIGPIPE
+	$SIG{PIPE} = 'IGNORE';
+
+	# Start server
+	start_server ();
+
+	# Initialize semaphore
+	$t_sem = Thread::Semaphore->new ($t_max_conn);
+
+	while (1) {
+		my @ready = $t_server_select->can_read;
+		foreach $t_server_socket (@ready) {
+
+			# Accept connection
+			$t_client_socket = $t_server_socket->accept ();
+
+			if (! defined ($t_client_socket)) {
+				next if ($! ne ''); # EINTR
+				error ("accept: $!.");
+			}
+
+			print_info ("Client connected from " . $t_client_socket->peerhost ());
+
+			if ($t_use_libwrap && (! hosts_ctl($t_program_name, $t_client_socket))) {
+				print_log ("Connection from " . $t_client_socket->peerhost() . " is closed by tcpwrappers.");
+				$t_client_socket->shutdown (2);
+				$t_client_socket->close();
+			}
+			else {
+
+				# Create a new thread and serve the client
+				$t_sem->down();
+				my $thr = threads->create(\&serve_client);
+				if (! defined ($thr)) {
+					error ("Error creating thread: $!.");
+				}
+				$thr->detach();
+				$t_client_socket->close ();
+			}
+		}
+
+		usleep (1000);
+	}
+}
+
+################################################################################
+## SUB serve_client
+## Serve a connected client.
+################################################################################
+sub serve_client() {
+
+	eval {		
+		# Add client socket to select queue
+		$t_select = IO::Select->new ();
+		$t_select->add ($t_client_socket);
+			
+		# Start SSL
+		if ($t_ssl == 1) {
+			start_ssl ();
+		}
+	
+		# Authenticate client
+		if ($t_pwd ne '') {
+			auth_pwd ();
+		}
+	
+		# Check if proxy mode is enable
+		if (defined ($t_proxy_ip)) {
+			serve_proxy_connection ();	
+		} else {
+			serve_connection ();
+		}
+	};
+
+	$t_client_socket->shutdown (2);
+	$t_client_socket->close ();
+	$t_sem->up();
+}
+
+################################################################################
+## SUB serve_proxy_connection
+## Actuate as a proxy between its client and other tentacle server.
+################################################################################
+sub serve_proxy_connection {
+	
+	# We are a proxy! Start a connection to the Tentacle Server.
+	start_proxy();
+
+	# Forward data between the client and the server.
+	eval {
+		my $select = IO::Select->new ();
+		$select->add($t_proxy_socket);
+		$select->add($t_client_socket);
+		while (my @ready = $select->can_read()) {
+			foreach my $socket (@ready) {
+				if (refaddr($socket) == refaddr($t_client_socket)) {
+					my ($read, $data) = recv_data($t_block_size);
+					return unless defined($data);
+					send_data_proxy($data);
+				}
+				else {
+					my ($read, $data) = recv_data_proxy($t_block_size);
+					return unless defined($data);
+					send_data($data);
+				}
+			}
+		}
+	};
+
+	# Close the connection to the Tentacle Server.
+	close_proxy();
+}
+
+################################################################################
+## SUB serve_connection
+## Read and process commands from the client.
+################################################################################
+sub serve_connection {
+	my $command;
+
+	# Read commands
+	while ($command = recv_command ($t_block_size)) {
+		
+		# Client wants to send a file
+		if ($command =~ /^SEND <(.*)> SIZE (\d+)$/) {
+			print_info ("Request to send file '$1' size ${2}b from " . $t_client_socket->sockhost ());
+			recv_file ($1, $2);
+		}
+		# Client wants to receive a file
+		elsif ($command =~ /^RECV <(.*)>$/) {
+			print_info ("Request to receive file '$1' from " . $t_client_socket->sockhost ());
+			send_file ($1);
+		}
+		elsif ($command =~ /^ZSEND <(.*)> SIZE (\d+)$/) {
+			print_info ("Request to send compressed file '$1' size ${2}b from " . $t_client_socket->sockhost ());
+			zrecv_file ($1, $2);
+		}
+		# Client wants to receive a file
+		elsif ($command =~ /^ZRECV <(.*)>$/) {
+			print_info ("Request to receive compressed file '$1' from " . $t_client_socket->sockhost ());
+			zsend_file ($1);
+		}
+		# Quit
+		elsif ($command =~ /^QUIT$/) {
+			print_info ("Connection closed from " . $t_client_socket->sockhost ());
+			last;
+		}
+		# File listing.
+		elsif ($command =~ /^LS <(.*)>$/) {
+			if ($t_insecure == 0) {
+				print_info ("Insecure mode disabled. Rejected request to list files matched by filter $1 from " . $t_client_socket->sockhost ());
+				last;
+			}
+
+			print_info ("Request to list files matched by filter $1 from " . $t_client_socket->sockhost ());
+			send_file_list ($1);
+		}
+		# Client wants to move a file
+		elsif ($command =~ /^MV <(.*)>$/) {
+			if ($t_insecure == 0) {
+				print_info ("Insecure mode disabled. Rejected request to move file $1 from " . $t_client_socket->sockhost ());
+				last;
+			}
+
+			print_info ("Request to move file '$1' from " . $t_client_socket->sockhost ());
+			move_file ($1);
+		}
+		# Unknown command
+		else {
+			print_log ("Unknown command '$command' from " . $t_client_socket->sockhost ());
+			last;
+		}
+	}
+}
+
+################################################################################
+## SUB auth_pwd
+## Authenticate client with server password.
+################################################################################
+sub auth_pwd {
+	my $client_digest;
+	my $command;
+	my $pwd_digest;
+
+	require Digest::MD5;
+	
+	# Wait for password
+	$command = recv_command ($t_block_size);
+	if ($command !~ /^PASS (.*)$/) {
+		error ("Client " . $t_client_socket->sockhost () . " did not authenticate.");
+	}
+	
+	$client_digest = $1;
+	$pwd_digest = Digest::MD5::md5 ($t_pwd);
+	$pwd_digest = Digest::MD5::md5_hex ($pwd_digest);
+
+	if ($client_digest ne $pwd_digest) {
+		error ("Invalid password from " . $t_client_socket->sockhost () . ".");
+	}
+
+	print_log ("Client " . $t_client_socket->sockhost () . " authenticated");
+	send_data ("PASS OK\n");
+}
+
+################################################################################
+## SUB recv_file
+## Receive a file of size $_[1] and save it in $t_directory as $_[0].
+################################################################################
+sub recv_file {
+	my $base_name = $_[0];
+	my $data = '';
+	my $file;
+	my $size = $_[1];
+
+	# Check file name
+	if ($base_name =~ /[$t_invalid_chars]/) {
+		print_log ("File '$base_name' size ${size}b from " . $t_client_socket->sockhost () . " has an invalid file name");
+		send_data ("SEND ERR (invalid file name)\n");
+		return;
+	}
+
+	# Check file size, empty files are not allowed
+	if ($size < 1 || $size > $t_max_size) {
+		print_log ("File '$base_name' size ${size}b from " . $t_client_socket->sockhost () . " is too big");
+		send_data ("SEND ERR (file is too big)\n");
+		return;
+	}
+	
+	# Apply filters
+	$file = "$t_directory/" . apply_filters ($base_name) . $base_name;
+
+	# Check if file exists
+	if (-f $file && $t_overwrite == 0) {
+		print_log ("File '$base_name' size ${size}b from " . $t_client_socket->sockhost () . " already exists");
+		send_data ("SEND ERR (file already exists)\n");
+		return;
+	}
+
+	send_data ("SEND OK\n");
+
+	# Receive file
+	$data = recv_data_block ($size);
+
+	# Write it to disk
+	open (FILE, "> $file") || error ("Cannot open file '$file' for writing.");
+	binmode (FILE);
+	print (FILE $data);
+	close (FILE);
+
+	send_data ("SEND OK\n");
+	print_info ("Received file '$base_name' size ${size}b from " . $t_client_socket->sockhost ());
+}
+
+################################################################################
+## SUB zrecv_file
+## Receive a compressed file of size $_[1] and save it in $t_directory as $_[0].
+################################################################################
+sub zrecv_file {
+	my $base_name = $_[0];
+	my $data = '';
+	my $file;
+	my $size = $_[1];
+	my $zdata = '';
+
+	# Check file name
+	if ($base_name =~ /[$t_invalid_chars]/) {
+		print_log ("File '$base_name' size ${size}b from " . $t_client_socket->sockhost () . " has an invalid file name");
+		send_data ("ZSEND ERR (invalid file name)\n");
+		return;
+	}
+
+	# Check file size, empty files are not allowed
+	if ($size < 1 || $size > $t_max_size) {
+		print_log ("File '$base_name' size ${size}b from " . $t_client_socket->sockhost () . " is too big");
+		send_data ("ZSEND ERR (file is too big)\n");
+		return;
+	}
+	
+	# Apply filters
+	$file = "$t_directory/" . apply_filters ($base_name) . $base_name;
+
+	# Check if file exists
+	if (-f $file && $t_overwrite == 0) {
+		print_log ("File '$base_name' size ${size}b from " . $t_client_socket->sockhost () . " already exists");
+		send_data ("ZSEND ERR (file already exists)\n");
+		return;
+	}
+
+	send_data ("ZSEND OK\n");
+
+	# Receive file
+	$zdata = recv_data_block ($size);
+	if (!unzip(\$zdata => \$data)) {
+		print_log ("Uncompress error: $UnzipError");
+		send_data ("ZSEND ERR\n");
+		return;
+	}
+
+	# Write it to disk
+	open (FILE, "> $file") || error ("Cannot open file '$file' for writing.");
+	binmode (FILE);
+	print (FILE $data);
+	close (FILE);
+
+	send_data ("ZSEND OK\n");
+	print_info ("Received compressed file '$base_name' size ${size}b from " . $t_client_socket->sockhost ());
+}
+
+################################################################################
+## SUB send_file
+## Send a file to the client
+################################################################################
+sub send_file {
+	my $base_name = $_[0];
+	my $data = '';
+	my $file;
+	my $response;
+	my $size;
+
+	# Check file name
+	if ($base_name =~ /[$t_invalid_chars]/) {
+		print_log ("Requested file '$base_name' from " . $t_client_socket->sockhost () . " has an invalid file name");
+		send_data ("RECV ERR (file has an invalid file name)\n");
+		return;
+	}
+	
+	# Apply filters
+	$file = "$t_directory/" . apply_filters ($base_name) . $base_name;
+
+	# Check if file exists
+	if (! -f $file) {
+		print_log ("Requested file '$file' from " . $t_client_socket->sockhost () . " does not exist");
+		send_data ("RECV ERR (file does not exist)\n");
+		return;
+	}
+
+	$size = -s $file;
+	send_data ("RECV SIZE $size\n");
+	
+	# Wait for client response
+	$response = recv_command ($t_block_size);
+	if ($response ne "RECV OK") {
+		print_log ("Requested file '$file' from " . $t_client_socket->sockhost () . " not sent");
+		return;
+	}
+
+	# Send the file
+	open (FILE, $file) || error ("Cannot open file '$file' for reading.");
+	binmode (FILE);
+	{
+		local $/ = undef;
+		$data = <FILE>;
+	}
+
+	send_data ($data);
+	close (FILE);
+
+	print_log ("Requested file '$file' from " . $t_client_socket->sockhost () . " sent");
+}
+
+################################################################################
+## SUB zsend_file
+## Send a file to the client
+################################################################################
+sub zsend_file {
+	my $base_name = $_[0];
+	my $data = '';
+	my $file;
+	my $response;
+	my $size;
+
+	# Check file name
+	if ($base_name =~ /[$t_invalid_chars]/) {
+		print_log ("Requested compressed file '$base_name' from " . $t_client_socket->sockhost () . " has an invalid file name");
+		send_data ("ZRECV ERR (file has an invalid file name)\n");
+		return;
+	}
+	
+	# Apply filters
+	$file = "$t_directory/" . apply_filters ($base_name) . $base_name;
+
+	# Check if file exists
+	if (! -f $file) {
+		print_log ("Requested compressed '$file' from " . $t_client_socket->sockhost () . " does not exist");
+		send_data ("ZRECV ERR (file does not exist)\n");
+		return;
+	}
+
+	# Read the file and compress its contents
+	if (! zip($file => \$data)) {
+		send_data ("QUIT\n");
+		error ("Compression error: $ZipError");
+		return;
+	}
+
+	$size = length($data);
+	send_data ("ZRECV SIZE $size\n");
+	
+	# Wait for client response
+	$response = recv_command ($t_block_size);
+	if ($response ne "ZRECV OK") {
+		print_log ("Requested compressed '$file' from " . $t_client_socket->sockhost () . " not sent");
+		return;
+	}
+
+	# Send the file
+	send_data ($data);
+
+	print_log ("Requested compressed '$file' from " . $t_client_socket->sockhost () . " sent");
+}
+
+################################################################################
+# Common functions
+################################################################################
+
+################################################################################
+## SUB print_log
+## Print log messages.
+################################################################################
+sub print_log($) {
+
+	my ($msg) = @_;
+	
+	return unless ($t_log == 1);
+	
+	my $fh = *STDOUT;
+	if (defined($log_file)) {
+		open($fh, ">>", $log_file) || die("Starting log failed: $!.\n");
+	}
+
+	print ($fh strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "[log]$msg.\n");
+
+	close ($fh) if (defined($log_file));
+
+}
+
+################################################################################
+## SUB print_log
+## Print log messages.
+################################################################################
+sub print_info($) {
+
+	my ($msg) = @_;
+	
+	return unless ($t_log_hard == 1);
+	
+	my $fh = *STDOUT;
+	if (defined($log_file)) {
+		open($fh, ">>", $log_file) || die("Starting log failed: $!.\n");
+	}
+
+	print ($fh strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "[info]$msg.\n");
+
+	close ($fh) if (defined($log_file));
+
+}
+
+################################################################################
+## SUB error
+## Print an error and exit the program.
+################################################################################
+sub error {
+
+	my ($msg) = @_;
+	
+	return unless ($t_quiet == 0);
+
+	my $fh = *STDERR;
+	if (defined($log_file)) {
+		open($fh, ">>", $log_file) || die("$!\n");
+	}
+
+	print ($fh strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "[err]$msg\n");
+
+	close ($fh) if (defined($log_file));
+
+	die("\n");
+}
+
+################################################################################
+## SUB move_file
+## Send a file to the client and delete it
+################################################################################
+sub move_file {
+	my $base_name = $_[0];
+	my $data = '';
+	my $file;
+	my $response;
+	my $size;
+
+	# Check file name
+	if ($base_name =~ /[$t_invalid_chars]/) {
+		print_log ("Requested file '$base_name' from " . $t_client_socket->sockhost () . " has an invalid file name");
+		send_data ("MV ERR\n");
+		return;
+	}
+	
+	# Apply filters
+	$file = "$t_directory/" . apply_filters ($base_name) . $base_name;
+
+	# Check if file exists
+	if (! -f $file) {
+		print_log ("Requested file '$file' from " . $t_client_socket->sockhost () . " does not exist");
+		send_data ("MV ERR\n");
+		return;
+	}
+
+	$size = -s $file;
+	send_data ("MV SIZE $size\n");
+	
+	# Wait for client response
+	$response = recv_command ($t_block_size);
+	if ($response ne "MV OK") {
+		print_log ("Requested file '$file' from " . $t_client_socket->sockhost () . " not sent");
+		return;
+	}
+
+	# Send the file
+	open (FILE, $file) || error ("Cannot open file '$file' for reading.");
+	binmode (FILE);
+
+	while ($data = <FILE>) {
+		send_data ($data);
+	}
+
+	close (FILE);
+	unlink($file);
+
+	print_log ("Requested file '$file' from " . $t_client_socket->sockhost () . " sent and deleted");
+}
+
+################################################################################
+## SUB send_file_list
+## Send a list of files to the client after applying the given filter.
+################################################################################
+sub send_file_list {
+	my $filter = $_[0];
+	my $data = '';
+	my $dir;
+	my $dh;
+	my $response;
+	my $size;
+
+	# Check file name
+	if ($filter =~ /[$t_invalid_chars]/) {
+		print_log ("Invalid file listing filter '$filter' from " . $t_client_socket->sockhost ());
+		send_data ("LS ERR\n");
+		return;
+	}
+	
+	# Apply filters
+	$dir = "$t_directory/" . apply_filters ($filter);
+
+	# Open the directory.
+	if (! opendir ($dh, $dir)) {
+		print_log ("Error opening directory $dir as requested from " . $t_client_socket->sockhost () . ": $!");
+		send_data ("LS ERR\n");
+		return;
+	}
+
+	# List files.
+	while (my $file = readdir ($dh)) {
+		next if ($file =~ /[$t_invalid_chars]/); # Only list files valid for Tentacle.
+		$data .= "$file\n";
+	}
+	closedir $dh;
+
+	$size = length ($data);
+	send_data ("LS SIZE $size\n");
+	
+	# Wait for client response
+	$response = recv_command ($t_block_size);
+	if ($response ne "LS OK") {
+		print_log ("Requested directory listing from " . $t_client_socket->sockhost () . " not sent");
+		return;
+	}
+
+	send_data ($data);
+
+	print_log ("Requested directory listing from " . $t_client_socket->sockhost () . " sent");
+}
+
+################################################################################
+## SUB recv_data_proxy
+## Recv data from proxy socket.
+################################################################################
+sub recv_data_proxy {
+	my $data;
+	my $read;
+	my $retries = 0;
+	my $size = $_[0];
+
+	while (1) {
+
+		# Try to read data from the socket
+		if ($t_proxy_select->can_read ($t_timeout)) {
+			
+			# Read at most $size bytes
+			$read = sysread ($t_proxy_socket, $data, $size);
+
+			# Read error
+			if (! defined ($read)) {
+				error ("Read error from " . $t_proxy_socket->sockhost () . ": $!.");
+			}
+	
+			# EOF
+			if ($read == 0) {
+				error ("Connection from " . $t_proxy_socket->sockhost () . " unexpectedly closed.");
+			}
+	
+			return ($read, $data);
+		}
+
+		# Retry
+		$retries++;
+
+		# But check for error conditions first
+		if ($retries > $t_retries) {
+			error ("Connection from " . $t_proxy_socket->sockhost () . " timed out.");
+		}
+	}
+}
+################################################################################
+## SUB recv_data
+## Read data from the client socket. Returns the number of bytes read and the
+## string of bytes as a two element array.
+################################################################################
+sub recv_data {
+	my $data;
+	my $read;
+	my $retries = 0;
+	my $size = $_[0];
+
+	while (1) {
+
+		# Try to read data from the socket
+		if ($t_select->can_read ($t_timeout)) {
+			
+			# Read at most $size bytes
+			$read = sysread ($t_client_socket, $data, $size);
+
+			# Read error
+			if (! defined ($read)) {
+				error ("Read error from " . $t_client_socket->sockhost () . ": $!.");
+			}
+	
+			# EOF
+			if ($read == 0) {
+				error ("Connection from " . $t_client_socket->sockhost () . " unexpectedly closed.");
+			}
+	
+			return ($read, $data);
+		}
+
+		# Retry
+		$retries++;
+
+		# But check for error conditions first
+		if ($retries > $t_retries) {
+			error ("Connection from " . $t_client_socket->sockhost () . " timed out.");
+		}
+	}
+}
+
+################################################################################
+## SUB send_data
+## Write data to the client socket.
+################################################################################
+sub send_data {
+	my $data = $_[0];
+	my $block_size;
+	my $retries = 0;
+	my $size;
+	my $total = 0;
+	my $written;
+
+	$size = length ($data);
+
+	while (1) {
+
+		# Try to write data to the socket
+		if ($t_select->can_write ($t_timeout)) {
+
+			$block_size = ($size - $total) > $t_block_size ? $t_block_size : ($size - $total);
+			$written = syswrite ($t_client_socket, $data, $block_size, $total);
+
+			# Write error
+			if (! defined ($written)) {
+				error ("Connection error from " . $t_client_socket->sockhost () . ": $!.");
+			}
+			
+			# EOF
+			if ($written == 0) {
+				error ("Connection from " . $t_client_socket->sockhost () . " unexpectedly closed.");
+			}
+	
+			$total += $written;
+
+			# Check if all data was written
+			if ($total == $size) {
+				return;
+			}
+		}
+		# Retry
+		else {
+			$retries++;
+			if ($retries > $t_retries) {
+				error ("Connection from " . $t_client_socket->sockhost () . " timed out.");
+			}
+		}
+	}
+}
+
+################################################################################
+## SUB recv_command
+## Read a command from the client, ended by a new line character.
+################################################################################
+sub recv_command {
+	my $buffer;
+	my $char;
+	my $command = '';
+	my $read;
+	my $total = 0;
+
+	while (1) {
+		
+		($read, $buffer) = recv_data ($t_block_size);
+		$command .= $buffer;
+		$total += $read;
+
+		# Check if the command is complete
+		$char = chop ($command);
+		if ($char eq "\n") {
+			return $command;
+		}
+	
+		$command .= $char;
+
+		# Avoid overflow
+		if ($total > $t_block_size) {
+			error ("Received too much data from " . $t_client_socket->sockhost () . ".");
+		}
+	}
+}
+
+################################################################################
+## SUB recv_data_block
+## Read $_[0] bytes of data from the client.
+################################################################################
+sub recv_data_block {
+	my $buffer = '';
+	my $data = '';
+	my $read;
+	my $size = $_[0];
+	my $total = 0;
+
+	while (1) {
+
+		($read, $buffer) = recv_data ($size - $total);
+		$data .= $buffer;
+		$total += $read;
+
+		# Check if all data has been read
+		if ($total == $size) {
+			return $data;
+		}
+	}
+}
+
+################################################################################
+## SUB ask_passwd
+## Asks the user for a password.
+################################################################################
+sub ask_passwd {
+	my $msg1 = $_[0];
+	my $msg2 = $_[1];
+	my $pwd1;
+	my $pwd2;
+
+	require Term::ReadKey;
+
+	# Disable keyboard echo
+	Term::ReadKey::ReadMode('noecho');
+	
+	# Promt for password
+	print ($msg1);
+	$pwd1 = Term::ReadKey::ReadLine(0);
+	print ("\n$msg2");
+	$pwd2 = Term::ReadKey::ReadLine(0);
+	print ("\n");
+
+	# Restore original settings
+	Term::ReadKey::ReadMode('restore');
+
+	if ($pwd1 ne $pwd2) {
+		print ("Error: passwords do not match.\n");
+		exit 1;
+	}
+
+	# Remove the trailing new line character
+	chop $pwd1;
+
+	return $pwd1;
+}
+
+################################################################################
+## SUB apply_filters
+## Applies filters to the given file.
+################################################################################
+sub apply_filters ($) {
+	my ($file_name) = @_;
+
+	foreach my $filter (@t_filters) {
+		my ($regexp, $dir) = @{$filter};
+		if ($file_name =~ /$regexp/) {
+			print_log ("File '$file_name' matches filter '$regexp' (changing to directory '$dir')");
+			return $dir . '/';
+		}
+	}
+
+	return '';
+}
+
+################################################################################
+## SUB install_service
+## Install the Windows service.
+################################################################################
+sub install_service() {
+
+	my $service_path = $0;
+	my $service_params = $SERVICE_PARAMS;
+
+	# Change the service parameter from 'install' to 'run'.
+	$service_params =~ s/\-S\s+\S+/\-S run/;
+
+	my %service_hash = (
+		machine =>  '',
+		name	=>  'TENTACLESRV',
+		display =>  $SERVICE_NAME,
+		path	=>  $service_path,
+		user	=>  '',
+		pwd	 =>  '',
+		description => 'Tentacle Server http://sourceforge.net/projects/tentacled/',
+		parameters => $service_params
+	);
+	
+	if (Win32::Daemon::CreateService(\%service_hash)) {
+		print "Successfully added.\n";
+		exit 0;
+	} else {
+		print "Failed to add service: " . Win32::FormatMessage(Win32::Daemon::GetLastError()) . "\n";
+		exit 1;
+	}
+}
+
+################################################################################
+## SUB uninstall_service
+## Install the Windows service.
+################################################################################
+sub uninstall_service() {
+	if (Win32::Daemon::DeleteService('', 'TENTACLESRV')) {
+		print "Successfully deleted.\n";
+		exit 0;
+	} else {
+		print "Failed to delete service: " . Win32::FormatMessage(Win32::Daemon::GetLastError()) . "\n";
+		exit 1;
+	}
+}
+
+################################################################################
+## SUB callback_running
+## Windows service callback function for the running event.
+################################################################################
+sub callback_running {
+
+	if (Win32::Daemon::State() == WIN32_SERVICE_RUNNING) {
+	}
+}
+
+################################################################################
+## SUB callback_start
+## Windows service callback function for the start event.
+################################################################################
+sub callback_start {
+
+	# Accept_connections ();
+	my $thr = threads->create(\&accept_connections);
+	if (!defined($thr)) {
+		Win32::Daemon::State(WIN32_SERVICE_STOPPED);
+		Win32::Daemon::StopService();
+		return;
+	}
+	$thr->detach();
+
+	Win32::Daemon::State(WIN32_SERVICE_RUNNING);
+}
+
+################################################################################
+## SUB callback_stop
+## Windows service callback function for the stop event.
+################################################################################
+sub callback_stop {
+
+	foreach my $t_server_socket (@t_server_sockets) {
+		$t_server_socket->shutdown (2);
+		$t_server_socket->close ();
+	}
+
+	Win32::Daemon::State(WIN32_SERVICE_STOPPED);
+	Win32::Daemon::StopService();
+}
+
+################################################################################
+# Main
+################################################################################
+
+# Never run as root
+if ($> == 0 && $^O ne 'MSWin32') {
+	print ("Error: for safety reasons $0 cannot be run with root privileges.\n");
+	exit 1;
+}
+
+# Parse command line options
+parse_options ();
+
+# Check command line arguments
+if ($#ARGV != -1) {
+	print_help ();
+	exit 1;
+}
+
+# Show IPv6 status
+if ($SOCKET_MODULE eq 'IO::Socket::INET') {
+	print_log ("IO::Socket::INET6 is not found. IPv6 is disabled.");
+}
+
+# Run as daemon?
+if ($t_daemon == 1 && $^O ne 'MSWin32') {
+	daemonize ();
+}
+
+# Handle ctr-c
+if ($^O eq 'MSWin32') {
+	no warnings;
+	$SIG{INT2} = \&stop_server;
+	use warnings;
+}
+else {
+	$SIG{INT} = \&stop_server;
+}
+
+# Accept connections
+accept_connections();
+
+__END__
+
+=head1 REQUIRED ARGUMENTES
+
+=over 
+
+=item B<< -s F<storage_directory> >>	Root directory to store the files received by the server
+
+=back 
+
+=head1 OPTIONS
+
+=over
+
+=item 	I<-a ip_address>	Address to B<listen> on (default I<0.0.0.0>).
+
+=item	I<-c number>		B<Maximum> number of simultaneous B<connections> (default I<10>).
+
+=item	I<-d>			Run as B<daemon>.
+
+=item	I<-e cert>		B<OpenSSL certificate> file. Enables SSL.
+
+=item	I<-f ca_cert>	Verify that the peer certificate is signed by a B<CA>.
+
+=item	I<-h>			Show B<help>.
+
+=item	I<-i>			B<Filters>.
+
+=item	I<-k key>		B<OpenSSL private key> file.
+
+=item	I<-m size>		B<Maximum file size> in bytes (default I<2000000b>).
+
+=item	I<-o>			Enable file B<overwrite>.
+
+=item	I<-p port>		B<Port to listen> on (default I<41121>).
+
+=item	I<-q>			B<Quiet>. Do now print error messages.
+
+=item	I<-r number>		B<Number of retries> for network opertions (default I<3>).
+
+=item	I<-t time>		B<Time-out> for network operations in B<seconds> (default I<1s>).
+
+=item	I<-v>			Be B<verbose>.
+
+=item	I<-w>			Prompt for B<OpenSSL private key password>.
+
+=item	I<-x> pwd		B<Server password>.
+
+=back
+
+=head1 EXIT STATUS
+
+=over 
+
+=item 0 on Success
+
+=item 1 on Error
+
+=back 
+
+=head1 CONFIGURATION
+
+Tentacle doesn't use any configurationf files, all the configuration is done by the options passed when it's started.
+
+=head1 DEPENDENCIES
+
+L<Getopt::Std>, L<IO::Select>, L<IO::Socket::INET>, L<Thread::Semaphore>, L<POSIX> 
+
+
+=head1 LICENSE
+
+This is released under the GNU Lesser General Public License.
+
+=head1 SEE ALSO
+
+L<Getopt::Std>, L<IO::Select>, L<IO::Socket::INET>, L<Thread::Semaphore>, L<POSIX> 
+
+Protocol description and more info at: L<< http://openideas.info/wiki/index.php?title=Tentacle >>
+
+=head1 COPYRIGHT
+
+Copyright (c) 2005-2010 Artica Soluciones Tecnologicas S.L
+
+=cut
+ 

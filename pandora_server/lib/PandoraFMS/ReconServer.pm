@@ -36,7 +36,7 @@ use PandoraFMS::Tools;
 use PandoraFMS::DB;
 use PandoraFMS::Core;
 use PandoraFMS::ProducerConsumerServer;
-use PandoraFMS::GIS qw(get_reverse_geoip_sql get_reverse_geoip_file get_random_close_point);
+use PandoraFMS::GIS;
 use PandoraFMS::Recon::Base;
 
 # Patched Nmap::Parser. See http://search.cpan.org/dist/Nmap-Parser/.

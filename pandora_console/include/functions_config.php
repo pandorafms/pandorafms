@@ -627,7 +627,10 @@ function config_update_config () {
 
 					if (!config_update_value ('full_scale_option', (int) get_parameter('full_scale_option', 0)))
 						$error_update[] = __('Default full scale (TIP)');
-					
+
+					if (!config_update_value ('type_mode_graph', (int) get_parameter('type_mode_graph', 0)))
+						$error_update[] = __('Default soft graphs');
+
 					if (!config_update_value ('graph_image_height', (int) get_parameter('graph_image_height', 0)))
 						$error_update[] = __('Default height of the chart image');
 

@@ -3104,20 +3104,57 @@ function series_type_graph_array($data, $show_elements_graph){
 				if (isset($show_elements_graph['labels']) &&
 					is_array($show_elements_graph['labels']) &&
 					(count($show_elements_graph['labels']) > 0)){
-					$data_return['legend'][$key] = $show_elements_graph['labels'][$value['agent_module_id']] . ' ' ;
+						$name_legend = $data_return['legend'][$key] = $show_elements_graph['labels'][$value['agent_module_id']] . ' ' ;
 				}
 				else{
 					if(strpos($key, 'baseline') !== false){
-						$data_return['legend'][$key] = $value['agent_alias']  . ' / ' .
+						$name_legend = $data_return['legend'][$key] = $value['agent_alias']  . ' / ' .
 													$value['module_name'] . ' Baseline ';
 					}
 					else{
-						$data_return['legend'][$key] = $value['agent_alias']  . ' / ' .
+						$name_legend = $data_return['legend'][$key] = $value['agent_alias']  . ' / ' .
 													$value['module_name'] . ': ';
 					}
 				}
 
-				if(strpos($key, 'baseline') === false){
+				if(($show_elements_graph['fullscale'] ||
+					$show_elements_graph['type_mode_graph'] ) &&
+					strpos($key, 'baseline') === false ){
+						$data_return['legend'][$key] .=
+							__('Min:') . remove_right_zeros(
+								number_format(
+									$value['min'],
+									$config['graph_precision']
+								)
+							)  . ' ' .
+							__('Max:') . remove_right_zeros(
+								number_format(
+									$value['max'],
+									$config['graph_precision']
+								)
+							) . ' ' .
+							_('Avg:') . remove_right_zeros(
+								number_format(
+									$value['avg'],
+									$config['graph_precision']
+								)
+							) . ' ' . $str;
+				}
+
+				if($show_elements_graph['compare'] == 'overlapped' && $key == 'sum2'){
+					$data_return['color'][$key] = $color_series['overlapped'];
+				}
+				else{
+					$data_return['color'][$key] = $color_series[$i];
+					$i++;
+				}
+			}
+			elseif(!$show_elements_graph['fullscale'] && strpos($key, 'min') !== false ||
+					!$show_elements_graph['fullscale'] && strpos($key, 'max') !== false){
+				$data_return['series_type'][$key] = $type_graph;
+
+				$data_return['legend'][$key] = $name_legend;
+				if($show_elements_graph['type_mode_graph']){
 					$data_return['legend'][$key] .=
 						__('Min:') . remove_right_zeros(
 							number_format(
@@ -3177,13 +3214,7 @@ function series_type_graph_array($data, $show_elements_graph){
 						__('Percentil') . ' ' .
 						$config['percentil']  .
 						'º ' . __('of module') . ' ';
-					if (isset($show_elements_graph['labels']) && is_array($show_elements_graph['labels'])){
-						$data_return['legend'][$key] .= $show_elements_graph['labels'][$value['agent_module_id']] . ' ' ;
-					}
-					else{
-						$data_return['legend'][$key] .= $value['agent_alias']  . ' / ' .
-												$value['module_name'] . ': ' . ' Value: ';
-					}
+					$data_return['legend'][$key] .= $name_legend;
 					$data_return['legend'][$key] .= remove_right_zeros(
 													number_format(
 														$value['data'][0][1],

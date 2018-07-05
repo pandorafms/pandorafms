@@ -418,8 +418,12 @@ sub PandoraFMS::Recon::Base::create_agent($$) {
 
 		# Are we filtering hosts by TCP port?
 		return if ($self->{'recon_ports'} ne '' && $self->tcp_scan($device) == 0);
-
-		$agent_id = pandora_create_agent($self->{'pa_config'}, $self->{'pa_config'}->{'servername'}, $host_name, $device, $self->{'group_id'}, 0, $id_os, '', 300, $self->{'dbh'});
+		my $location = get_geoip_info($self->{'pa_config'}, $device);
+		$agent_id = pandora_create_agent($self->{'pa_config'}, $self->{'pa_config'}->{'servername'}, $host_name, $device,
+			$self->{'group_id'}, 0, $id_os,
+			'', 300, $self->{'dbh'}, undef,
+			$location->{'longitude'}, $location->{'latitude'}
+		);
 		return undef unless defined ($agent_id) and ($agent_id > 0);
 		pandora_event($self->{'pa_config'}, "[RECON] New " . safe_output($self->get_device_type($device)) . " found (" . join(',', safe_output($self->get_addresses($device))) . ").", $self->{'group_id'}, $agent_id, 2, 0, 0, 'recon_host_detected', 0, $self->{'dbh'});
 		$agent_learning = 1;

@@ -2691,7 +2691,7 @@ function agents_get_all_groups_agent ($id_agent, $group = false) {
  */
 function agents_count_agents_filter ($filter = array(), $access = "AR") {
 	$total_agents = agents_get_agents(
-		array ('id_group' => $id_group),
+		$filter,
 		array ('COUNT(DISTINCT id_agente) as total'),
 		$access
 	);

@@ -240,7 +240,7 @@ function grafico_modulo_sparse_data_chart (
 	$data_slice	= $date_array['period'] / (250 * $params['zoom']);
 
 	if( $data_module_graph['id_module_type'] == 23 ||
-		$data_module_graph['id_module_type'] == 3 ||
+		$data_module_graph['id_module_type'] == 3  ||
 		$data_module_graph['id_module_type'] == 17 ||
 		$data_module_graph['id_module_type'] == 10 ||
 		$data_module_graph['id_module_type'] == 33 ){
@@ -258,12 +258,11 @@ function grafico_modulo_sparse_data_chart (
 	}
 	else{
 		//all points(data) and boolean
-		if(	$params['zoom'] == 5 ||
-			$data_module_graph['id_module_type'] == 2 ||
-			$data_module_graph['id_module_type'] == 6 ||
+		if( $data_module_graph['id_module_type'] == 2  ||
+			$data_module_graph['id_module_type'] == 6  ||
 			$data_module_graph['id_module_type'] == 21 ||
 			$data_module_graph['id_module_type'] == 18 ||
-			$data_module_graph['id_module_type'] == 9 ||
+			$data_module_graph['id_module_type'] == 9  ||
 			$data_module_graph['id_module_type'] == 31 ||
 			$data_module_graph['id_module_type'] == 100 ){
 
@@ -274,19 +273,6 @@ function grafico_modulo_sparse_data_chart (
 						"utimestamp < '". $date_array['final_date'] . "'",
 						'order' => 'utimestamp ASC'),
 				array ('datos', 'utimestamp'),
-				'AND',
-				$data_module_graph['history_db']
-			);
-		}
-		else{
-			$data = db_get_all_rows_filter (
-				'tagente_datos',
-				array ('id_agente_modulo' => (int)$agent_module_id,
-						"utimestamp > '". $date_array['start_date']. "'",
-						"utimestamp < '". $date_array['final_date'] . "'",
-						'group' => "ROUND(utimestamp / $data_slice)",
-						'order' => 'utimestamp ASC'),
-				array ('sum(datos)/count(datos) as datos', 'min(utimestamp) as utimestamp'),
 				'AND',
 				$data_module_graph['history_db']
 			);
@@ -419,44 +405,53 @@ function grafico_modulo_sparse_data(
 			false,
 			$params['type_mode_graph']
 		);
-
-		$array_data["sum" . $series_suffix]['agent_module_id']= $agent_module_id;
-		$array_data["sum" . $series_suffix]['id_module_type'] = $data_module_graph['id_module_type'];
-		$array_data["sum" . $series_suffix]['agent_name']     = $data_module_graph['agent_name'];
-		$array_data["sum" . $series_suffix]['module_name']    = $data_module_graph['module_name'];
-		$array_data["sum" . $series_suffix]['agent_alias']    = $data_module_graph['agent_alias'];
 	}
 	else{
-		/*
-		$array_data = grafico_modulo_sparse_data_chart (
-			$agent_module_id,
-			$date_array,
-			$data_module_graph,
-			$params,
-			$series_suffix
-		);
-		*/
-		$array_data = fullscale_data(
-			$agent_module_id,
-			$date_array,
-			$params['show_unknown'],
-			$params['percentil'],
-			$series_suffix,
-			$params['flag_overlapped'],
-			$data_slice	= $date_array['period'] / (250 * $params['zoom']) + 100,
-			$params['type_mode_graph']
-		);
-
-		$array_data["sum" . $series_suffix]['agent_module_id']= $agent_module_id;
-		$array_data["sum" . $series_suffix]['id_module_type'] = $data_module_graph['id_module_type'];
-		$array_data["sum" . $series_suffix]['agent_name']     = $data_module_graph['agent_name'];
-		$array_data["sum" . $series_suffix]['module_name']    = $data_module_graph['module_name'];
-		$array_data["sum" . $series_suffix]['agent_alias']    = $data_module_graph['agent_alias'];
+		//uncompress data except boolean and string.
+		if( $data_module_graph['id_module_type'] == 23 ||
+			$data_module_graph['id_module_type'] == 3  ||
+			$data_module_graph['id_module_type'] == 17 ||
+			$data_module_graph['id_module_type'] == 10 ||
+			$data_module_graph['id_module_type'] == 33 ||
+			$data_module_graph['id_module_type'] == 2  ||
+			$data_module_graph['id_module_type'] == 6  ||
+			$data_module_graph['id_module_type'] == 21 ||
+			$data_module_graph['id_module_type'] == 18 ||
+			$data_module_graph['id_module_type'] == 9  ||
+			$data_module_graph['id_module_type'] == 31 ||
+			$data_module_graph['id_module_type'] == 100 ){
+				html_debug_prinbt('entra');
+				$array_data = grafico_modulo_sparse_data_chart (
+					$agent_module_id,
+					$date_array,
+					$data_module_graph,
+					$params,
+					$series_suffix
+				);
+		}
+		else{
+			$array_data = fullscale_data(
+				$agent_module_id,
+				$date_array,
+				$params['show_unknown'],
+				$params['percentil'],
+				$series_suffix,
+				$params['flag_overlapped'],
+				$data_slice	= $date_array['period'] / (250 * $params['zoom']) + 100,
+				$params['type_mode_graph']
+			);
+		}
 	}
 
 	if($array_data === false){
 		return false;
 	}
+
+	$array_data["sum" . $series_suffix]['agent_module_id']= $agent_module_id;
+	$array_data["sum" . $series_suffix]['id_module_type'] = $data_module_graph['id_module_type'];
+	$array_data["sum" . $series_suffix]['agent_name']     = $data_module_graph['agent_name'];
+	$array_data["sum" . $series_suffix]['module_name']    = $data_module_graph['module_name'];
+	$array_data["sum" . $series_suffix]['agent_alias']    = $data_module_graph['agent_alias'];
 
 	//This is for a specific type of report that consists in passing an interval and doing the average sum and avg.
 	if($params['force_interval'] != ''){
@@ -477,7 +472,6 @@ function grafico_modulo_sparse_data(
 					unset($array_data['sum1']['data'][$key]);
 				}
 				else{
-					html_debug_print('entra');
 					if($params['force_interval'] == 'max_only'){
 						$acum_array_data[$i][0] = $start_period;
 						if(is_array($array_data_only) && count($array_data_only) > 0){
@@ -1352,6 +1346,11 @@ function graphic_combined_module (
 
 	if(!isset($params['show_unknown'])){
 		$params['show_unknown'] = false;
+	}
+
+	if(!isset($params['type_mode_graph'])){
+		//$config['type_mode_graph']
+		$params['type_mode_graph'] = 0;
 	}
 
 	$params['graph_combined'] = true;

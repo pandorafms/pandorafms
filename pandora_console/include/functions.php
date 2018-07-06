@@ -1360,11 +1360,7 @@ function safe_sql_string($string) {
 
 function is_metaconsole() {
 	global $config;
-	
-	if ($config['metaconsole'])
-		return true;
-	else
-		return false;
+	return (bool) $config['metaconsole'];
 }
 
 /**

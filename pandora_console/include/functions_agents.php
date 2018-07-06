@@ -799,8 +799,17 @@ function agents_common_modules ($id_agent, $filter = false, $indexed = true, $ge
  *
  * @return array An array with all agents in the group or an empty array
  */
-function agents_get_group_agents ($id_group = 0, $search = false,
-	$case = "lower", $noACL = false, $childGroups = false, $serialized = false, $separator = '|', $add_alert_bulk_op = false) {
+function agents_get_group_agents (
+	$id_group = 0,
+	$search = false,
+	$case = "lower",
+	$noACL = false,
+	$childGroups = false,
+	$serialized = false,
+	$separator = '|',
+	$add_alert_bulk_op = false,
+	$meta_use_main_id = false
+) {
 
 	global $config;
 	
@@ -951,7 +960,7 @@ function agents_get_group_agents ($id_group = 0, $search = false,
 		$table_name = 'tmetaconsole_agent';
 		
 		$fields = array(
-				'id_tagente AS id_agente',
+				$meta_use_main_id ? 'id_agente' : 'id_tagente AS id_agente',
 				'alias',
 				'id_tmetaconsole_setup AS id_server'
 			);
@@ -2010,7 +2019,8 @@ function agents_get_agentmodule_group ($id_module) {
  * @return int The group id
  */
 function agents_get_agent_group ($id_agent) {
-	return (int) db_get_value ('id_grupo', 'tagente', 'id_agente', (int) $id_agent);
+	$table = is_metaconsole() ? "tmetaconsole_agent" : "tagente";
+	return (int) db_get_value ('id_grupo', $table, 'id_agente', (int) $id_agent);
 }
 
 /**

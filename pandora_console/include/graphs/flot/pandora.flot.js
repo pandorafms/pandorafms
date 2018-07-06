@@ -881,7 +881,7 @@ function pandoraFlotArea( graph_id, values, legend,
 	var grid_color       = params.grid_color;
 	var background_color = params.backgroundColor;
 	var legend_color     = params.legend_color;
-	var update_legend   = false;
+	var update_legend    = {};
 
 	//XXXXXX colocar
 	var force_integer    = 0;
@@ -1554,8 +1554,10 @@ function pandoraFlotArea( graph_id, values, legend,
 					break;
 			}
 
-			if(value.slice_data){
-				update_legend = value.slice_data;
+			if(series_type[index] != 'boolean'){
+				if(value.slice_data){
+					update_legend[index] = value.slice_data;
+				}
 			}
 
 			//in graph stacked unset percentil
@@ -1973,14 +1975,16 @@ function pandoraFlotArea( graph_id, values, legend,
 			y          = y_array['y'];
 			how_bigger = y_array['unit'];
 
-			var label_aux = legend[series.label];
+			var data_legend = [];
 
 			// The graphs of points type and unknown graphs will dont be updated
 			if (series_type[dataset[k]["label"]] != 'points' &&
 				series_type[dataset[k]["label"]] != 'unknown' &&
 				series_type[dataset[k]["label"]] != 'percentil'
 			) {
-				if(!update_legend){
+				if(Object.keys(update_legend).length == 0){
+					var label_aux = legend[series.label];
+
 					$('#legend_' + graph_id + ' .legendLabel')
 						.eq(i).html(label_aux +	' value = ' +
 						(short_data ? number_format(y, 0, "", short_data) : parseFloat(y)) +
@@ -1988,45 +1992,48 @@ function pandoraFlotArea( graph_id, values, legend,
 					);
 				}
 				else{
-					if(!update_legend[x]){
-						x = x +1;
-					}
-					if(update_legend[x].min){
-						min_y_array = format_unit_yaxes(update_legend[x].min);
-						min_y       = min_y_array['y'];
-						min_bigger  = min_y_array['unit'];
-					}
-					else{
-						min_y       = 0;
-						min_bigger  = "";
-					}
+					$.each(update_legend, function (index, value) {
+						if(!value[x]){
+							x = x +1;
+						}
+						if(value[x].min){
+							min_y_array = format_unit_yaxes(value[x].min);
+							min_y       = min_y_array['y'];
+							min_bigger  = min_y_array['unit'];
+						}
+						else{
+							min_y       = 0;
+							min_bigger  = "";
+						}
 
-					if(update_legend[x].max){
-						max_y_array = format_unit_yaxes(update_legend[x].max);
-						max_y       = max_y_array['y'];
-						max_bigger  = max_y_array['unit'];
-					}
-					else{
-						max_y       = 0;
-						max_bigger  = "";
-					}
+						if(value[x].max){
+							max_y_array = format_unit_yaxes(value[x].max);
+							max_y       = max_y_array['y'];
+							max_bigger  = max_y_array['unit'];
+						}
+						else{
+							max_y       = 0;
+							max_bigger  = "";
+						}
 
-					if(update_legend[x].avg){
-						avg_y_array = format_unit_yaxes(update_legend[x].avg);
-						avg_y       = avg_y_array['y'];
-						avg_bigger  = avg_y_array['unit'];
-					}
-					else{
-						avg_y       = 0;
-						avg_bigger  = "";
-					}
+						if(value[x].avg){
+							avg_y_array = format_unit_yaxes(value[x].avg);
+							avg_y       = avg_y_array['y'];
+							avg_bigger  = avg_y_array['unit'];
+						}
+						else{
+							avg_y       = 0;
+							avg_bigger  = "";
+						}
 
-					$('#legend_' + graph_id + ' .legendLabel')
-						.eq(i).html(label_aux
-						+ ' Min: ' + (short_data ? number_format(min_y, 0, "", short_data) : parseFloat(min_y)) + min_bigger
-						+ ' Max: ' + (short_data ? number_format(max_y, 0, "", short_data) : parseFloat(max_y)) + max_bigger
-						+ ' Avg: ' + (short_data ? number_format(avg_y, 0, "", short_data) : parseFloat(avg_y)) + avg_bigger
-					);
+						data_legend[index] = 
+							' Min: ' + (short_data ? number_format(min_y, 0, "", short_data) : parseFloat(min_y)) + min_bigger
+							+ ' Max: ' + (short_data ? number_format(max_y, 0, "", short_data) : parseFloat(max_y)) + max_bigger
+							+ ' Avg: ' + (short_data ? number_format(avg_y, 0, "", short_data) : parseFloat(avg_y)) + avg_bigger;
+					});
+
+					var label_aux = legend[series.label] + data_legend[series.label];
+					$('#legend_' + graph_id + ' .legendLabel').eq(i).html(label_aux);
 				}
 			}
 

@@ -290,7 +290,7 @@ function modules_change_disabled($id_agent_module, $new_value = 1) {
 		return ERR_GENERIC;
 	}
 }
- 
+
 /**
  * Deletes a module from an agent.
  *
@@ -299,20 +299,20 @@ function modules_change_disabled($id_agent_module, $new_value = 1) {
  * @return True if the module was deleted. False if not.
  */
 function modules_delete_agent_module ($id_agent_module) {
-	if (empty($id_agent_module)) 
+	if (empty($id_agent_module))
 		return false;
-	
+
 	if (is_array($id_agent_module)) {
 		$id_agents = db_get_all_rows_sql(
 			sprintf('SELECT id_agente
 				FROM tagente_modulo
 				WHERE id_agente_modulo IN (%s)
 				GROUP BY id_agente',  implode(',', $id_agent_module)));
-		
+
 		foreach($id_agents as $k => $v) {
 			$id_agents[$k] = $v['id_agente'];
 		}
-		
+
 		// Update update flags to server side
 		db_process_sql (sprintf('UPDATE tagente
 			SET update_module_count=1, update_alert_count=1
@@ -321,18 +321,18 @@ function modules_delete_agent_module ($id_agent_module) {
 	else {
 		// Read module data
 		$id_agent = modules_get_agentmodule_agent($id_agent_module);
-		
+
 		// Update update flags to server side
 		db_process_sql (sprintf('UPDATE tagente
 			SET update_module_count=1, update_alert_count=1
 			WHERE id_agente = %s', $id_agent));
 	}
-	
+
 	$where = array ('id_agent_module' => $id_agent_module);
-	
-	$enterprise_include = enterprise_include_once(
-		'include/functions_config_agents.php');
-	
+
+	enterprise_include_once("include/functions_agents.php");
+	$enterprise_include = enterprise_include_once('include/functions_config_agents.php');
+
 	if ($enterprise_include !== ENTERPRISE_NOT_HOOK) {
 		if (is_array($id_agent_module)) {
 			foreach ($id_agent_module as $id_agent_module_item) {
@@ -347,9 +347,9 @@ function modules_delete_agent_module ($id_agent_module) {
 				modules_get_agentmodule_name($id_agent_module));
 		}
 	}
-	
+
 	alerts_delete_alert_agent_module (0, $where);
-	
+
 	db_process_sql_delete ('tgraph_source', $where);
 	db_process_sql_delete ('treport_content', $where);
 	db_process_sql_delete ('tevento',
@@ -361,7 +361,7 @@ function modules_delete_agent_module ($id_agent_module) {
 		array ('nombre' => 'delete_pending', 'delete_pending' => 1, 'disabled' => 1),
 		$where);
 	db_process_sql_delete('ttag_module', $where);
-	
+
 	return true;
 }
 
@@ -1685,17 +1685,22 @@ function modules_get_previous_data ($id_agent_module, $utimestamp = 0, $string =
 		$table = 'tagente_datos';
 	}
 
-	$sql = sprintf ('SELECT *
-		FROM ' . $table . '
-		WHERE id_agente_modulo = %d
-			AND utimestamp <= %d
-		ORDER BY utimestamp DESC',
-		$id_agent_module, $utimestamp,
-		$utimestamp - SECONDS_2DAY
+	$sql = sprintf (
+		"SELECT * FROM %s 
+		WHERE id_agente_modulo = %d 
+		AND utimestamp = ( SELECT max(utimestamp) 
+							FROM tagente_datos 
+							WHERE id_agente_modulo = %d 
+							AND utimestamp <= %d )",
+		$table,
+		$id_agent_module,
+		$id_agent_module,
+		$utimestamp
 	);
 
 	$search_in_history_db = db_search_in_history_db($utimestamp);
-	return db_get_row_sql ($sql, $search_in_history_db);
+
+	return db_get_row_sql($sql, $search_in_history_db);
 }
 
 /**

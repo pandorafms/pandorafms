@@ -455,6 +455,16 @@ function servers_get_info ($id_server = -1) {
 				$server["type"] = "syslog";
 				$id_modulo = 0;
 				break;
+			case SERVER_TYPE_AUTOPROVISION:
+				$server["img"] = html_print_image ("images/autoprovision.png", true, array ("title" => __('Autoprovision server')));
+				$server["type"] = "autoprovision";
+				$id_modulo = 0;
+				break;
+			case SERVER_TYPE_MIGRATION:
+				$server["img"] = html_print_image ("images/migration.png", true, array ("title" => __('Migration server')));
+				$server["type"] = "migration";
+				$id_modulo = 0;
+				break;
 			default:
 				$server["img"] = '';
 				$server["type"] = "unknown";

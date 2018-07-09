@@ -180,7 +180,13 @@ function returnData($returnType, $data, $separator = ';') {
 			if ($separator == ";") {
 				$separator = null;
 			}
-			echo json_encode ($data, $separator);
+			
+			if(empty($separator)){
+				echo json_encode ($data);
+			} else {
+				echo json_encode ($data, $separator);
+			}
+			
 			break;
 	}
 }
@@ -9335,7 +9341,7 @@ function api_get_total_agents($id_group, $trash1, $trash2, $returnType) {
 		return;
 	}
 
-	$total_agents = agents_count_agents_filter(array ('id_group' => $id_group));
+	$total_agents = agents_count_agents_filter(array ('id_grupo' => $id_group));
 
 	$data = array('type' => 'string', 'data' => $total_agents);
 	returnData($returnType, $data);

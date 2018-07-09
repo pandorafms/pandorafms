@@ -1971,8 +1971,8 @@ switch ($tab) {
 						resizable: true,
 						draggable: true,
 						modal: true,
-						height: 260,
-						width: 600,
+						height: 280,
+						width: 670,
 						title: 'Changing snmp module name',
 						open: function(){
 								$('#dialog').html('<br><img src="images/icono-warning-triangulo.png" style="float:left;margin-left:25px;margin-top:30px;"><p style="float:right;font-style:nunito;font-size:11pt;margin-right:50px;"><span style="font-weight:bold;font-size:12pt;">Warning</span> <br> 					If you change the name of this module, various features <br> associated with this module, such as network maps, <br> interface graphs or other network modules, may  no longer <br>  work. If you are not completely sure of the process, please <br> do not change the name of the module.					</p>');

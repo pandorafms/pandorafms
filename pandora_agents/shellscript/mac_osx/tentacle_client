@@ -58,6 +58,8 @@ use strict;
 use File::Basename;
 use Getopt::Std;
 use IO::Select;
+use IO::Compress::Zip qw(zip $ZipError);
+use IO::Uncompress::Unzip qw(unzip $UnzipError);
 use Socket (qw(SOCK_STREAM AF_INET AF_INET6));
 my $SOCKET_MODULE =
 	eval { require IO::Socket::INET6 } ? 'IO::Socket::INET6'
@@ -131,6 +133,12 @@ my $t_ssl_pwd = '';
 # Timeout for socket read/write operations in seconds
 my $t_timeout = 1;
 
+# bind ipaddr
+my $t_bind_address = undef;
+
+# Compress data before sending it through the socket.
+my $t_zip = 0;
+
 ################################################################################
 ## SUB print_help
 ## Print help screen.
@@ -141,6 +149,7 @@ sub print_help {
 	print ("Tentacle client v$VERSION. See http://www.openideas.info/wiki for protocol description.\n\n");
 	print ("Options:\n");
 	print ("\t-a address\tServer address (default $t_address).\n");
+	print ("\t-b localaddress\tLocal address to bind.\n");
 	print ("\t-c\t\tEnable SSL without a client certificate.\n");
 	print ("\t-e cert\t\tOpenSSL certificate file. Enables SSL.\n");
 	print ("\t-f ca\t\tVerify that the peer certificate is signed by a ca.\n");
@@ -154,7 +163,8 @@ sub print_help {
 	print ("\t-v\t\tBe verbose.\n");
 	print ("\t-w\t\tPrompt for OpenSSL private key password.\n");
 	print ("\t-x pwd\t\tServer password.\n");
-	print ("\t-y proxy\tProxy server string (user:password\@address:port).\n\n");
+	print ("\t-y proxy\tProxy server string (user:password\@address:port).\n");
+	print ("\t-z Compress data.\n\n");
 }
 
 ################################################################################
@@ -166,7 +176,7 @@ sub parse_options {
 	my $tmp;
 
 	# Get options
-	if (getopts ('a:ce:f:ghk:p:qr:t:vwx:y:', \%opts) == 0 || defined ($opts{'h'})) {
+	if (getopts ('a:b:ce:f:ghk:p:qr:t:vwx:y:z', \%opts) == 0 || defined ($opts{'h'})) {
 		print_help ();
 		exit 1;
 	}
@@ -179,6 +189,18 @@ sub parse_options {
 			|| $3 < 0 || $3 > 255 || $4 < 0 || $4 > 255)) &&
 			($t_address !~ /^[0-9a-f:]+$/o)) {
 			error ("Address $t_address is not valid.");
+		}
+
+	}
+
+	# Bind local address
+	if (defined ($opts{'b'})) {
+		$t_bind_address = $opts{'b'};
+		if (($t_bind_address !~ /^[a-zA-Z\.][a-zA-Z0-9\.\-]+$/ && ($t_bind_address  !~ /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/
+			|| $1 < 0 || $1 > 255 || $2 < 0 || $2 > 255
+			|| $3 < 0 || $3 > 255 || $4 < 0 || $4 > 255)) &&
+			($t_address !~ /^[0-9a-f:]+$/o)) {
+			error ("Local address $t_bind_address is not valid.");
 		}
 
 	}
@@ -299,6 +321,11 @@ sub parse_options {
 			error ("Proxy port $t_proxy_port is not valid.");
 		}
 	}
+
+	# Compress data
+	if (defined ($opts{'z'})) {
+		$t_zip = 1;
+	}
 }
 
 ################################################################################
@@ -309,20 +336,42 @@ sub start_client {
 
 	# Connect to server
 	if ($SOCKET_MODULE ne 'IO::Socket::INET') {
-		$t_socket = $SOCKET_MODULE->new (
-			Domain   => AF_INET6,
-			PeerAddr => $t_address,
-			PeerPort => $t_port,
-			Type     => SOCK_STREAM
-		);
+		if (defined ($t_bind_address)) {
+			$t_socket = $SOCKET_MODULE->new (
+				Domain    => AF_INET6,
+				PeerAddr  => $t_address,
+				PeerPort  => $t_port,
+				LocalAddr => $t_bind_address,
+				Type      => SOCK_STREAM
+			);
+		}
+		else {
+			$t_socket = $SOCKET_MODULE->new (
+				Domain   => AF_INET6,
+				PeerAddr => $t_address,
+				PeerPort => $t_port,
+				Type     => SOCK_STREAM
+			);
+		}
 	}
 	if (! defined ($t_socket)) {
-		$t_socket = $SOCKET_MODULE->new (
-			Domain   => AF_INET,
-			PeerAddr => $t_address,
-			PeerPort => $t_port,
-			Type     => SOCK_STREAM
-		);
+		if (defined ($t_bind_address)) {
+			$t_socket = $SOCKET_MODULE->new (
+				Domain    => AF_INET,
+				PeerAddr  => $t_address,
+				PeerPort  => $t_port,
+				LocalAddr => $t_bind_address,
+				Type      => SOCK_STREAM
+			);
+		}
+		else {
+			$t_socket = $SOCKET_MODULE->new (
+				Domain   => AF_INET,
+				PeerAddr => $t_address,
+				PeerPort => $t_port,
+				Type     => SOCK_STREAM
+			);
+		}
 	}
 
 	if (! defined ($t_socket)) {
@@ -344,18 +393,38 @@ sub start_client_proxy {
 
 	# Connect to proxy
 	if ($SOCKET_MODULE ne 'IO::Socket::INET') {
-		$t_socket = $SOCKET_MODULE->new (
-			Domain   => AF_INET6,
-			PeerAddr => $t_proxy_address,
-			PeerPort => $t_proxy_port,
-		);
+		if (defined ($t_bind_address)) {
+			$t_socket = $SOCKET_MODULE->new (
+				Domain    => AF_INET6,
+				PeerAddr  => $t_proxy_address,
+				PeerPort  => $t_proxy_port,
+				LocalAddr => $t_bind_address,
+			);
+		}
+		else {
+			$t_socket = $SOCKET_MODULE->new (
+				Domain   => AF_INET6,
+				PeerAddr => $t_proxy_address,
+				PeerPort => $t_proxy_port,
+			);
+		}
 	}
 	if (! defined ($t_socket)) {
-		$t_socket = $SOCKET_MODULE->new (
-			Domain   => AF_INET,
-			PeerAddr => $t_proxy_address,
-			PeerPort => $t_proxy_port,
-		);
+		if (defined ($t_bind_address)) {
+			$t_socket = $SOCKET_MODULE->new (
+				Domain    => AF_INET,
+				PeerAddr  => $t_proxy_address,
+				PeerPort  => $t_proxy_port,
+				LocalAddr => $t_bind_address,
+			);
+		}
+		else {
+			$t_socket = $SOCKET_MODULE->new (
+				Domain   => AF_INET,
+				PeerAddr => $t_proxy_address,
+				PeerPort => $t_proxy_port,
+			);
+		}
 	}
 
 	if (! defined ($t_socket)) {
@@ -408,6 +477,8 @@ sub start_ssl {
 	if ($t_ssl_cert eq ''){
 		IO::Socket::SSL->start_SSL (
 			$t_socket,
+			# No authentication
+			SSL_verify_mode => 0x00,
 		);
 	}
 	elsif ($t_ssl_ca eq '') {
@@ -526,6 +597,46 @@ sub recv_file {
 }
 
 ################################################################################
+## SUB zrecv_file
+## Receive a compressed file from the server
+################################################################################
+sub zrecv_file {
+	my $data = '';
+	my $file = $_[0];
+	my $response;
+	my $size;
+	my $zdata = '';
+
+	# Request file
+	send_data ("ZRECV <$file>\n");
+
+	# Wait for server response
+	$response = recv_command ();
+	if ($response !~ /^ZRECV SIZE (\d+)$/) {
+		error ("Server responded $response.");
+	}
+
+	$size = $1;
+	send_data ("ZRECV OK\n");
+
+	# Receive file
+	$zdata = recv_data_block ($size);
+	if (!unzip(\$zdata => \$data)) {
+		print_log ("Uncompress error: $UnzipError");
+		send_data ("ZRECV ERR\n");
+		return;
+	}
+
+	# Write it to disk
+	open (FILE, "> $file") || error ("Cannot open file '$file' for writing.");
+	binmode (FILE);
+	print (FILE $data);
+	close (FILE);
+
+	print_log ("Received compressed file '$file'");
+}
+
+################################################################################
 ## SUB send_file
 ## Send a file to the server
 ################################################################################
@@ -571,6 +682,55 @@ sub send_file {
 	# Wait for server response
 	$response = recv_command ();
 	if ($response ne "SEND OK") {
+		send_data ("QUIT\n");
+		error ("Server responded $response.");
+	}
+
+	print_log ("File sent");
+}
+
+################################################################################
+## SUB zsend_file
+## Send a file to the server (compressed)
+################################################################################
+sub zsend_file {
+	my $base_name;
+	my $data = '';
+	my $response = '';
+	my $retries;
+	my $file = $_[0];
+	my $size;
+	my $written;
+
+	# Read the file and compress its contents
+	if (! zip($file => \$data)) {
+		send_data ("QUIT\n");
+		error ("Compression error: $ZipError");
+		return;
+	}
+
+	$size = length($data);
+	$base_name = basename ($file);
+
+	# Request to send file
+	send_data ("ZSEND <$base_name> SIZE $size\n");
+	print_log ("Request to send file '$base_name' size ${size}b (compressed)");
+
+	# Wait for server response
+	$response = recv_command ();
+
+	# Server rejected the file
+	if ($response ne "ZSEND OK") {
+		send_data ("QUIT\n");
+		error ("Server responded $response.");
+	}
+
+	print_log ("Server responded SEND OK");
+	send_data ($data);
+
+	# Wait for server response
+	$response = recv_command ();
+	if ($response ne "ZSEND OK") {
 		send_data ("QUIT\n");
 		error ("Server responded $response.");
 	}
@@ -830,13 +990,21 @@ if ($t_recv == 0) {
 
 	# Send the files
 	foreach $file (@ARGV) {
-		send_file ($file);
+		if ($t_zip == 1) {
+			zsend_file($file);
+		} else {
+			send_file ($file);
+		}
 	}
 }
 else {
-	# Send the files
+	# Receive the files
 	foreach $file (@ARGV) {
-		recv_file ($file);
+		if ($t_zip == 1) {
+			zrecv_file ($file);
+		} else {
+			recv_file ($file);
+		}
 	}
 }
 
@@ -881,6 +1049,8 @@ __END__
 =item	I<-w>			Prompt for B<OpenSSL private key password>.
 
 =item	I<-x pwd>		B<Server password>.
+
+=item	I<-z>			Compress data.
 
 =back
 

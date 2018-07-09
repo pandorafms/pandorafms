@@ -60,6 +60,8 @@ use strict;
 use warnings;
 use Getopt::Std;
 use IO::Select;
+use IO::Compress::Zip qw(zip $ZipError);
+use IO::Uncompress::Unzip qw(unzip $UnzipError);
 use threads;
 use Thread::Semaphore;
 use POSIX ":sys_wait_h";
@@ -959,6 +961,15 @@ sub serve_connection {
 			print_info ("Request to receive file '$1' from " . $t_client_socket->sockhost ());
 			send_file ($1);
 		}
+		elsif ($command =~ /^ZSEND <(.*)> SIZE (\d+)$/) {
+			print_info ("Request to send compressed file '$1' size ${2}b from " . $t_client_socket->sockhost ());
+			zrecv_file ($1, $2);
+		}
+		# Client wants to receive a file
+		elsif ($command =~ /^ZRECV <(.*)>$/) {
+			print_info ("Request to receive compressed file '$1' from " . $t_client_socket->sockhost ());
+			zsend_file ($1);
+		}
 		# Quit
 		elsif ($command =~ /^QUIT$/) {
 			print_info ("Connection closed from " . $t_client_socket->sockhost ());
@@ -1071,6 +1082,61 @@ sub recv_file {
 }
 
 ################################################################################
+## SUB zrecv_file
+## Receive a compressed file of size $_[1] and save it in $t_directory as $_[0].
+################################################################################
+sub zrecv_file {
+	my $base_name = $_[0];
+	my $data = '';
+	my $file;
+	my $size = $_[1];
+	my $zdata = '';
+
+	# Check file name
+	if ($base_name =~ /[$t_invalid_chars]/) {
+		print_log ("File '$base_name' size ${size}b from " . $t_client_socket->sockhost () . " has an invalid file name");
+		send_data ("ZSEND ERR (invalid file name)\n");
+		return;
+	}
+
+	# Check file size, empty files are not allowed
+	if ($size < 1 || $size > $t_max_size) {
+		print_log ("File '$base_name' size ${size}b from " . $t_client_socket->sockhost () . " is too big");
+		send_data ("ZSEND ERR (file is too big)\n");
+		return;
+	}
+	
+	# Apply filters
+	$file = "$t_directory/" . apply_filters ($base_name) . $base_name;
+
+	# Check if file exists
+	if (-f $file && $t_overwrite == 0) {
+		print_log ("File '$base_name' size ${size}b from " . $t_client_socket->sockhost () . " already exists");
+		send_data ("ZSEND ERR (file already exists)\n");
+		return;
+	}
+
+	send_data ("ZSEND OK\n");
+
+	# Receive file
+	$zdata = recv_data_block ($size);
+	if (!unzip(\$zdata => \$data)) {
+		print_log ("Uncompress error: $UnzipError");
+		send_data ("ZSEND ERR\n");
+		return;
+	}
+
+	# Write it to disk
+	open (FILE, "> $file") || error ("Cannot open file '$file' for writing.");
+	binmode (FILE);
+	print (FILE $data);
+	close (FILE);
+
+	send_data ("ZSEND OK\n");
+	print_info ("Received compressed file '$base_name' size ${size}b from " . $t_client_socket->sockhost ());
+}
+
+################################################################################
 ## SUB send_file
 ## Send a file to the client
 ################################################################################
@@ -1120,6 +1186,57 @@ sub send_file {
 	close (FILE);
 
 	print_log ("Requested file '$file' from " . $t_client_socket->sockhost () . " sent");
+}
+
+################################################################################
+## SUB zsend_file
+## Send a file to the client
+################################################################################
+sub zsend_file {
+	my $base_name = $_[0];
+	my $data = '';
+	my $file;
+	my $response;
+	my $size;
+
+	# Check file name
+	if ($base_name =~ /[$t_invalid_chars]/) {
+		print_log ("Requested compressed file '$base_name' from " . $t_client_socket->sockhost () . " has an invalid file name");
+		send_data ("ZRECV ERR (file has an invalid file name)\n");
+		return;
+	}
+	
+	# Apply filters
+	$file = "$t_directory/" . apply_filters ($base_name) . $base_name;
+
+	# Check if file exists
+	if (! -f $file) {
+		print_log ("Requested compressed '$file' from " . $t_client_socket->sockhost () . " does not exist");
+		send_data ("ZRECV ERR (file does not exist)\n");
+		return;
+	}
+
+	# Read the file and compress its contents
+	if (! zip($file => \$data)) {
+		send_data ("QUIT\n");
+		error ("Compression error: $ZipError");
+		return;
+	}
+
+	$size = length($data);
+	send_data ("ZRECV SIZE $size\n");
+	
+	# Wait for client response
+	$response = recv_command ($t_block_size);
+	if ($response ne "ZRECV OK") {
+		print_log ("Requested compressed '$file' from " . $t_client_socket->sockhost () . " not sent");
+		return;
+	}
+
+	# Send the file
+	send_data ($data);
+
+	print_log ("Requested compressed '$file' from " . $t_client_socket->sockhost () . " sent");
 }
 
 ################################################################################

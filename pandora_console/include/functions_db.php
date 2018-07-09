@@ -601,7 +601,7 @@ function db_get_module_ranges_unknown($id_agente_modulo, $tstart = false, $tend 
  *                  utimestamp
  *
  */
-function db_uncompress_module_data($id_agente_modulo, $tstart = false, $tend = false) {
+function db_uncompress_module_data($id_agente_modulo, $tstart = false, $tend = false, $slice_size = false) {
 	global $config;
 
 	if (!isset($id_agente_modulo)) {
@@ -709,7 +709,9 @@ function db_uncompress_module_data($id_agente_modulo, $tstart = false, $tend = f
 	}
 
 	// Retrieve module_interval to build the template
-	$slice_size = $module_interval;
+	if($slice_size === false){
+		$slice_size = $module_interval;
+	}
 
 	$return = array();
 

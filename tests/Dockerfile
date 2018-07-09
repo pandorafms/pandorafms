@@ -104,7 +104,10 @@ RUN yum install -y \
 
 RUN wget http://rpmfind.net/linux/centos/6.9/os/i386/Packages/gettext-0.17-18.el6.i686.rpm; \
 	yum localinstall -y gettext-0.17-18.el6.i686.rpm; \
-	rm -rf gettext-0.17-18.el6.i686.rpm;
+	rm -rf gettext-0.17-18.el6.i686.rpm; \
+	wget http://ftp.tu-chemnitz.de/pub/linux/dag/redhat/el6/en/x86_64/rpmforge/RPMS/perl-Geo-IP-1.38-1.el6.rf.x86_64.rpm; \
+	yum localinstall -y perl-Geo-IP-1.38-1.el6.rf.x86_64.rpm; \
+	rm -rf perl-Geo-IP-1.38-1.el6.rf.x86_64.rpm;
 
 #Install phantomjs required for export graph pdf.
 RUN mkdir -p /opt/phantomjs/bin && cd /opt/phantomjs/bin; \

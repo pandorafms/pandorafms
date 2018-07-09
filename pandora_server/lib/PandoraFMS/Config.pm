@@ -266,8 +266,7 @@ sub pandora_load_config {
 	$pa_config->{"web_engine"} = 'lwp'; # 5.1
 	$pa_config->{"activate_gis"} = 0; # 3.1
 	$pa_config->{"location_error"} = 50; # 3.1
-	$pa_config->{"recon_reverse_geolocation_mode"} = 'disabled'; # 3.1
-	$pa_config->{"recon_reverse_geolocation_file"} = '/usr/local/share/GeoIP/GeoIPCity.dat'; # 3.1
+	$pa_config->{"recon_reverse_geolocation_file"} = ''; # 3.1
 	$pa_config->{"recon_location_scatter_radius"} = 50; # 3.1
 	$pa_config->{"update_parent"} = 0; # 3.1
 	$pa_config->{"google_maps_description"} = 0;
@@ -863,12 +862,13 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^location_error\s+(\d+)/i) {
 			$pa_config->{'location_error'} = clean_blank($1);
-		}
-		elsif ($parametro =~ m/^recon_reverse_geolocation_mode\s+(\w+)/i) {
-			$pa_config->{'recon_reverse_geolocation_mode'} = clean_blank($1);
 		} #FIXME: Find a better regexp to validate the path
 		elsif ($parametro =~ m/^recon_reverse_geolocation_file\s+(.*)/i) {
 			$pa_config->{'recon_reverse_geolocation_file'} = clean_blank($1);
+			if ( ! -r $pa_config->{'recon_reverse_geolocation_file'} ) {
+				print "[WARN] Invalid recon_reverse_geolocation_file.\n";
+				$pa_config->{'recon_reverse_geolocation_file'} = '';
+			}
 		}
 		elsif ($parametro =~ m/^recon_location_scatter_radius\s+(\d+)/i) {
 			$pa_config->{'recon_location_scatter_radius'} = clean_blank($1);

@@ -223,13 +223,9 @@ else {
 		100,true);
 	$table->data[1][0] = __('Group');
 
-	// Only display group "All" if user is administrator
-	// or has "AR" privileges
-
-	$display_all_group = (users_is_admin() || users_can_manage_group_all("AR"));
 	
 	$table->data[1][1] = html_print_select_groups($config['id_user'], "AR",
-	$display_all_group, 'id_group', $idGroup, '', '', '', true);
+	true, 'id_group', $idGroup, '', '', '', true);
 	
 	$table->data[2][0] = __('Node radius');
 	$table->data[2][1] = html_print_input_text ('node_radius', $node_radius, '', 2,

@@ -126,10 +126,10 @@ function events_get_events_no_grouped($sql_post, $offset = 0,
 
 function events_get_events_grouped($sql_post, $offset = 0,
 	$pagination = 1, $meta = false, $history = false, $total = false, 
-	$history_db = false, $order = "DESC") {
+	$history_db = false, $order = "down", $sort_field = "timestamp") {
 	
-	global $config; 
-	
+	global $config;
+
 	$table = events_get_events_table($meta, $history);
 	
 	if ($meta) {
@@ -138,6 +138,7 @@ function events_get_events_grouped($sql_post, $offset = 0,
 	else {
 		$groupby_extra = '';
 	}
+
 
 	switch ($config["dbtype"]) {
 		case "mysql":
@@ -162,7 +163,48 @@ function events_get_events_grouped($sql_post, $offset = 0,
 				FROM $table te LEFT JOIN tagent_secondary_group tasg ON te.id_grupo = tasg.id_group
 				WHERE 1=1 " . $sql_post . "
 				GROUP BY estado, evento, id_agente, id_agentmodule" . $groupby_extra . "
-				ORDER BY timestamp_rep " . $order . " LIMIT " . $offset . "," . $pagination;
+				ORDER BY ";
+
+				if (!empty($sort_field)) {
+					switch ($sort_field) {
+						case 'event_id':
+							if ($order=='up')
+								$sql .= "id_evento" . " ASC";
+							if ($order=='down')
+								$sql .= "id_evento" . " DESC";
+							break;
+						case 'event_name':
+							if ($order=='up')
+								$sql .= "evento" . " ASC";
+							if ($order=='down')
+								$sql .= "evento" . " DESC";
+							break;
+						case 'status':
+							if ($order=='up')
+								$sql .= "estado" . " ASC";
+							if ($order=='down')
+								$sql .= "estado" . " DESC";
+							break;
+						case 'agent_id':
+							if ($order=='up')
+								$sql .= "id_agente" . " ASC";
+							if ($order=='down')
+								$sql .= "id_agente" . " DESC";
+							break;
+						case 'timestamp':
+							if ($order=='up')
+								$sql .= "timestamp_rep" . " ASC";
+							if ($order=='down')
+								$sql .= "timestamp_rep" . " DESC";
+							break;
+						default:
+							$sql .= "timestamp_rep" . " DESC";
+					}
+				}
+					
+
+				$sql .= " LIMIT " . $offset . "," . $pagination;
+
 			}
 			break;
 		case "postgresql":

@@ -420,7 +420,6 @@ function grafico_modulo_sparse_data(
 			$data_module_graph['id_module_type'] == 9  ||
 			$data_module_graph['id_module_type'] == 31 ||
 			$data_module_graph['id_module_type'] == 100 ){
-				html_debug_prinbt('entra');
 				$array_data = grafico_modulo_sparse_data_chart (
 					$agent_module_id,
 					$date_array,

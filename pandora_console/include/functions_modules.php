@@ -473,6 +473,8 @@ function modules_update_agent_module ($id, $values,
  */
 function modules_create_agent_module ($id_agent, $name, $values = false, $disableACL = false,
 	$tags = false) {
+
+html_debug_print('entra la hostia');
 	global $config;
 	
 	if (!$disableACL) {
@@ -488,7 +490,7 @@ function modules_create_agent_module ($id_agent, $name, $values = false, $disabl
 	if (mb_ereg_match('[\xc2\xa1\xc2\xbf\xc3\xb7\xc2\xba\xc2\xaa]', io_safe_output($name)) !== false) {
 		return ERR_GENERIC;
 	}
-	
+	html_debug_print('sigue');
 	if (! is_array ($values))
 		$values = array ();
 	$values['nombre'] = $name;
@@ -513,7 +515,7 @@ function modules_create_agent_module ($id_agent, $name, $values = false, $disabl
 	}
 
 	$id_agent_module = db_process_sql_insert ('tagente_modulo', $values);
-	
+html_debug_print($id_agent_module);
 	if ($id_agent_module === false)
 		return ERR_DB;
 	

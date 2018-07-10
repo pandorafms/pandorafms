@@ -1363,6 +1363,11 @@ function is_metaconsole() {
 	return (bool) $config['metaconsole'];
 }
 
+function is_central_policies() {
+	global $config;
+	return is_metaconsole() && $config["centralized_management"];
+}
+
 /**
  * Checks if current execution is under an AJAX request.
  *

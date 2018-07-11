@@ -264,7 +264,9 @@ function grafico_modulo_sparse_data_chart (
 			$data_module_graph['id_module_type'] == 18 ||
 			$data_module_graph['id_module_type'] == 9  ||
 			$data_module_graph['id_module_type'] == 31 ||
-			$data_module_graph['id_module_type'] == 100 ){
+			$data_module_graph['id_module_type'] == 100 ||
+			$params['baseline']
+			){
 
 			$data = db_get_all_rows_filter (
 				'tagente_datos',

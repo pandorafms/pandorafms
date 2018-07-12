@@ -2158,6 +2158,7 @@ CREATE TABLE IF NOT EXISTS `tpolicy_modules` (
 	`prediction_sample_window` int(10) default 0,
 	`prediction_samples` int(4) default 0,
 	`prediction_threshold` int(4) default 0,
+	`cps` int NOT NULL DEFAULT 0,
 	PRIMARY KEY  (`id`),
 	KEY `main_idx` (`id_policy`),
 	UNIQUE (`id_policy`, `name`)

@@ -352,16 +352,6 @@ sub pandora_generate_alerts ($$$$$$$$;$$$) {
 		return;
 	}
 
-	if ($agent->{'cps'} > 0) {
-		logger($pa_config, "Generate Alert. The agent '" . $agent->{'nombre'} . "' is in quiet mode by cascade protection services.", 10);
-		return;
-	}
-
-	if ($module->{'cps'} > 0) {
-		logger($pa_config, "Generate Alert. The module '" . $module->{'nombre'} . "' is in quiet mode by cascade protection services.", 10);
-		return;
-	}
-
 	# Do not generate alerts for disabled groups
 	if (is_group_disabled ($dbh, $agent->{'id_grupo'})) {
 		return;
@@ -1649,7 +1639,7 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	}
 
 	# Generate alerts
-	if (pandora_inhibit_alerts ($pa_config, $agent, $dbh, 0) == 0) {
+	if (pandora_inhibit_alerts ($pa_config, $agent, $dbh, 0) == 0 && pandora_cps_enabled($agent, $module) == 0) {
 		pandora_generate_alerts ($pa_config, $processed_data, $status, $agent, $module, $utimestamp, $dbh, $timestamp, $extra_macros, $last_data_value);
 	}
 	else {
@@ -3140,11 +3130,6 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$) {
 			logger($pa_config, "Generate Event. The agent '" . $agent->{'nombre'} . "' is in quiet mode.", 10);
 			return;
 		}
-
-		if (defined ($agent) && $agent->{'cps'} > 0) {
-			logger($pa_config, "Generate Event. The agent '" . $agent->{'nombre'} . "' is in quiet mode by cascade protection services.", 10);
-			return;
-		}
 	}
 
 	my $module = undef;
@@ -3152,11 +3137,6 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$) {
 		$module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente_modulo = ?', $id_agentmodule);
 		if (defined ($module) && $module->{'quiet'} == 1) {
 			logger($pa_config, "Generate Event. The module '" . $module->{'nombre'} . "' is in quiet mode.", 10);
-			return;
-		}
-
-		if (defined ($module) && $module->{'cps'} > 0) {
-			logger($pa_config, "Generate Event. The module '" . $module->{'nombre'} . "' is in quiet mode by cascade protection services.", 10);
 			return;
 		}
 	}
@@ -4290,6 +4270,20 @@ sub pandora_inhibit_alerts {
 }
 
 ##########################################################################
+# Returns 1 if service cascade protection is enabled for the given
+# agent/module, 0 otherwise.
+##########################################################################
+sub pandora_cps_enabled($$) {
+	my ($agent, $module) = @_;
+
+	return 1 if ($agent->{'cps'} > 0);
+
+	return 1 if ($module->{'cps'} > 0);
+
+	return 0;
+}
+
+##########################################################################
 =head2 C<< save_agent_position (I<$pa_config>, I<$current_longitude>, I<$current_latitude>, 
 		 I<$current_altitude>, I<$agent_id>, I<$dbh>, [I<$start_timestamp>], [I<$description>]) >>
 
@@ -4925,7 +4919,7 @@ sub pandora_module_unknown ($$) {
 			pandora_mark_agent_for_module_update ($dbh, $module->{'id_agente'});
 			
 			# Generate alerts
-			if (pandora_inhibit_alerts ($pa_config, $agent, $dbh, 0) == 0) {
+			if (pandora_inhibit_alerts ($pa_config, $agent, $dbh, 0) == 0 && pandora_cps_enabled($agent, $module) == 0) {
 				pandora_generate_alerts ($pa_config, 0, 3, $agent, $module, time (), $dbh, undef, undef, 0, 'unknown');
 			}
 			else {
@@ -4969,7 +4963,7 @@ sub pandora_module_unknown ($$) {
 			pandora_mark_agent_for_module_update ($dbh, $module->{'id_agente'});
 			
 			# Generate alerts
-			if (pandora_inhibit_alerts ($pa_config, $agent, $dbh, 0) == 0) {
+			if (pandora_inhibit_alerts ($pa_config, $agent, $dbh, 0) == 0 && pandora_cps_enabled($agent, $module) == 0) {
 				pandora_generate_alerts ($pa_config, 0, 3, $agent, $module, time (), $dbh, undef, undef, 0, 'unknown');
 			}
 			else {

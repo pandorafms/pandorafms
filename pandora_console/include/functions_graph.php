@@ -4091,21 +4091,32 @@ function fullscale_data (
 
 				$data["sum" . $series_suffix]['data'][] = array($real_date , $sum_data/$count_data);
 				if($type_mode_graph && !$params['baseline']){
-					$data["min" . $series_suffix]['data'][] = array($real_date , $min_value);
-					$data["max" . $series_suffix]['data'][] = array($real_date , $max_value);
+					if($min_value != PHP_INT_MAX) {
+						$data["min" . $series_suffix]['data'][] = array($real_date , $min_value);
+					}
+					
+					if($max_value != -PHP_INT_MAX) {
+						$data["max" . $series_suffix]['data'][] = array($real_date , $max_value);
+					}
 				}
 				else{
-					$data["sum" . $series_suffix]['slice_data'][$real_date]['min'] = $min_value;
+					if($min_value != PHP_INT_MAX) {
+						$data["sum" . $series_suffix]['slice_data'][$real_date]['min'] = $min_value;
+					}
+
 					$data["sum" . $series_suffix]['slice_data'][$real_date]['avg'] = $sum_data/$count_data;
-					$data["sum" . $series_suffix]['slice_data'][$real_date]['max'] = $max_value;
+
+					if($max_value != -PHP_INT_MAX) {
+						$data["sum" . $series_suffix]['slice_data'][$real_date]['max'] = $max_value;
+					}
 				}
 
 				//max_total
-				if($max_value >= $max_value_total){
+				if($max_value >= $max_value_total && $max_value != -PHP_INT_MAX){
 					$max_value_total = $max_value;
 				}
 				//min_total
-				if($min_value <= $min_value_total){
+				if($min_value <= $min_value_total && $min_value != PHP_INT_MAX){
 					$min_value_total = $min_value;
 				}
 				//avg sum_total
@@ -4117,27 +4128,31 @@ function fullscale_data (
 				if($type_mode_graph && !$params['baseline']){
 					/*MIN*/
 					//max_min
-					if($min_value >= $min_value_max){
+					if($min_value >= $min_value_max && $min_value != PHP_INT_MAX){
 						$min_value_max = $min_value;
 					}
 					//min_min
-					if($min_value <= $min_value_min){
+					if($min_value <= $min_value_min && $min_value != PHP_INT_MAX){
 						$min_value_min = $min_value;
 					}
 					//avg sum_min
-					$sum_data_min += $min_value;
+					if ($min_value != PHP_INT_MAX) {
+						$sum_data_min += $min_value;
+					}
 
 					/*MAX*/
 					//max_max
-					if($max_value >= $max_value_max){
+					if($max_value >= $max_value_max && $max_value != -PHP_INT_MAX){
 						$max_value_max = $max_value;
 					}
 					//min_max
-					if($max_value <= $max_value_min){
+					if($max_value <= $max_value_min && $max_value != -PHP_INT_MAX){
 						$max_value_min = $max_value;
 					}
 					//avg sum_max
-					$sum_data_max += $max_value;
+					if ($max_value != -PHP_INT_MAX) {
+						$sum_data_max += $max_value;
+					}
 
 					/*AVG*/
 					//max_max

@@ -92,6 +92,7 @@ Además de las macros de módulo definidas, las siguientes macros están disponi
   <li>_plugin_parameters_: Parámetros del plugin del módulo.</li>
   <li>_policy_: Nombre de la política a la que pertenece el módulo (si aplica).</li>
   <li>_prevdata_: Dato previo antes de disparase la alerta.</li>
+  <li>_rca_: Cadena de análasis de causa raíz (sólo para servicios).</li>
   <li>_server_ip_: Ip del servidor al que el agente está asignado. </li>
   <li>_server_name_: Nombre del servidor al que el agente está asignado. </li>
   <li>_target_ip_: Dirección IP del objetivo del módulo.</li>

@@ -176,7 +176,7 @@ sub exec_prediction_module ($$$$) {
 			logger ($pa_config, "Executing service module " .
 				$agent_module->{'id_agente_modulo'} . " " .
 				$agent_module->{'nombre'}, 10);
-			enterprise_hook ('exec_service_module', [$pa_config, $agent_module, $server_id, $dbh]);
+			enterprise_hook ('exec_service_module', [$pa_config, $agent_module, undef, $server_id, $dbh]);
 		}
 		
 		return;

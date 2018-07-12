@@ -244,7 +244,7 @@ if (empty($export_btn) || $show_form) {
 	$groups = users_get_groups ($config['id_user'], "RR", users_can_manage_group_all());
 	
 	$table->data[0][1] = html_print_select_groups($config['id_user'],
-		"RR", users_can_manage_group_all(), "group", $group, '', '', 0, true, false, true,
+		"RR", true, "group", $group, '', '', 0, true, false, true,
 		'', false);
 	
 	//Agent selector

@@ -2158,6 +2158,7 @@ CREATE TABLE IF NOT EXISTS `tpolicy_modules` (
 	`prediction_sample_window` int(10) default 0,
 	`prediction_samples` int(4) default 0,
 	`prediction_threshold` int(4) default 0,
+	`cps` int NOT NULL DEFAULT 0,
 	PRIMARY KEY  (`id`),
 	KEY `main_idx` (`id_policy`),
 	UNIQUE (`id_policy`, `name`)
@@ -2429,6 +2430,7 @@ CREATE TABLE IF NOT EXISTS `tservice` (
 	`quiet` tinyint(1) NOT NULL default 0,
 	`cps` int NOT NULL default 0,
 	`cascade_protection` tinyint(1) NOT NULL default 0,
+	`evaluate_sla` int(1) NOT NULL default 0,
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB 
 COMMENT = 'Table to define services to monitor' 

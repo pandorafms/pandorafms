@@ -2026,13 +2026,13 @@ function pandoraFlotArea( graph_id, values, legend,
 							avg_bigger  = "";
 						}
 
-						data_legend[index] = 
+						data_legend[index] =
 							' Min: ' + (short_data ? number_format(min_y, 0, "", short_data) : parseFloat(min_y)) + min_bigger
 							+ ' Max: ' + (short_data ? number_format(max_y, 0, "", short_data) : parseFloat(max_y)) + max_bigger
 							+ ' Avg: ' + (short_data ? number_format(avg_y, 0, "", short_data) : parseFloat(avg_y)) + avg_bigger;
 					});
 
-					var label_aux = legend[series.label] + data_legend[series.label];
+					var label_aux = legend[series.label].split(":")[0] + data_legend[series.label];
 					$('#legend_' + graph_id + ' .legendLabel').eq(i).html(label_aux);
 				}
 			}

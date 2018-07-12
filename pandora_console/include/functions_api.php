@@ -10345,10 +10345,11 @@ function api_set_create_special_day($thrash1, $thrash2, $other, $thrash3) {
  *
  * @param $thrash1 Don't use.
  * @param $thrash2 Don't use.
- * @param array $other it's array, $other as param is <description>;<id_group>;<critical>; 
+ * @param array $other it's array, $other as param is <description>;<id_group>;<critical>;
  * <warning>;<id_agent>;<sla_interval>;<sla_limit>;<id_warning_module_template_alert>;
- * <id_critical_module_template_alert>;<id_critical_module_sla_template_alert>;	
- * in this order and separator char (after text ; ) and separator 
+ * <id_critical_module_template_alert>;<id_critical_module_sla_template_alert>;<quiet>;
+ * <cascade_protection>;<evaluate_sla>;
+ * in this order and separator char (after text ; ) and separator
  * (pass in param othermode as othermode=url_encode_separator_<separator>)
  * @param $thrash3 Don't use
  *
@@ -10376,6 +10377,7 @@ function api_set_create_service($thrash1, $thrash2, $other, $thrash3) {
 	$id_critical_module_sla = $other['data'][10];
 	$quiet = $other['data'][11];
 	$cascade_protection = $other['data'][12];
+	$evaluate_sla = $other['data'][13];
 
 	if(empty($name)){
 		returnError('error_create_service', __('Error in creation service. No name'));
@@ -10425,6 +10427,9 @@ function api_set_create_service($thrash1, $thrash2, $other, $thrash3) {
 	if(empty($cascade_protection)){
 		$cascade_protection = 0;
 	}
+	if(empty($evaluate_sla)){
+		$evaluate_sla = 0;
+	}
 
 	$result = services_create_service (
 		$name, $description, $id_group,
@@ -10432,7 +10437,7 @@ function api_set_create_service($thrash1, $thrash2, $other, $thrash3) {
 		$mode, $id_agent, $sla_interval, $sla_limit,
 		$id_warning_module_template, $id_critical_module_template,
 		$id_unknown_module_template, $id_critical_module_sla,
-		$quiet, $cascade_protection
+		$quiet, $cascade_protection, $evaluate_sla
 	);
 
 	if($result){
@@ -10447,10 +10452,11 @@ function api_set_create_service($thrash1, $thrash2, $other, $thrash3) {
  *
  * @param $thrash1 service id.
  * @param $thrash2 Don't use.
- * @param array $other it's array, $other as param is <name>;<description>;<id_group>;<critical>; 
+ * @param array $other it's array, $other as param is <name>;<description>;<id_group>;<critical>;
  * <warning>;<id_agent>;<sla_interval>;<sla_limit>;<id_warning_module_template_alert>;
- * <id_critical_module_template_alert>;<id_critical_module_sla_template_alert>;	
- * in this order and separator char (after text ; ) and separator 
+ * <id_critical_module_template_alert>;<id_critical_module_sla_template_alert>;<quiet>;
+ * <cascade_protection>;<evaluate_sla>;
+ * in this order and separator char (after text ; ) and separator
  * (pass in param othermode as othermode=url_encode_separator_<separator>)
  * @param $thrash3 Don't use
  *
@@ -10548,6 +10554,11 @@ function api_set_update_service($thrash1, $thrash2, $other, $thrash3) {
 		$cascade_protection = $service['cascade_protection'];
 	}
 
+	$evaluate_sla = $other['data'][13];
+	if(empty($evaluate_sla)){
+		$evaluate_sla = $service['evaluate_sla'];
+	}
+
 	$result = services_update_service (
 		$id_service, $name,$description, $id_group,
 		$critical, $warning, SECONDS_5MINUTES, $mode,
@@ -10556,7 +10567,8 @@ function api_set_update_service($thrash1, $thrash2, $other, $thrash3) {
 		$id_critical_module_template,
 		$id_unknown_module_template,
 		$id_critical_module_sla,
-		$quiet, $cascade_protection
+		$quiet, $cascade_protection,
+		$evaluate_sla
 	);
 
 	if($result){
@@ -10571,10 +10583,10 @@ function api_set_update_service($thrash1, $thrash2, $other, $thrash3) {
  *
  * @param $thrash1 service id.
  * @param $thrash2 Don't use.
- * @param array $other it's a json, $other as param is <description>;<id_group>;<critical>; 
+ * @param array $other it's a json, $other as param is <description>;<id_group>;<critical>;
  * <warning>;<id_agent>;<sla_interval>;<sla_limit>;<id_warning_module_template_alert>;
- * <id_critical_module_template_alert>;<id_critical_module_sla_template_alert>;	
- * in this order and separator char (after text ; ) and separator 
+ * <id_critical_module_template_alert>;<id_critical_module_sla_template_alert>;
+ * in this order and separator char (after text ; ) and separator
  * (pass in param othermode as othermode=url_encode_separator_<separator>)
  * @param $thrash3 Don't use
  *
@@ -10590,7 +10602,7 @@ function api_set_add_element_service($thrash1, $thrash2, $other, $thrash3) {
 	if (is_metaconsole()) return;
 
 	$id = $thrash1;
-	
+
 	if(empty($id)){
 		returnError('error_add_service_element', __('Error adding elements to service. No service id'));
 		return;
@@ -10619,7 +10631,7 @@ function api_set_add_element_service($thrash1, $thrash2, $other, $thrash3) {
 						continue;
 					}
 					break;
-				
+
 				case 'module':
 					$agent_id = 0;
 					$id_service_child = 0;
@@ -10628,7 +10640,7 @@ function api_set_add_element_service($thrash1, $thrash2, $other, $thrash3) {
 						continue;
 					}
 					break;
-					
+
 				case 'service':
 					$agent_id = 0;
 					$id_agente_modulo = 0;
@@ -10641,7 +10653,7 @@ function api_set_add_element_service($thrash1, $thrash2, $other, $thrash3) {
 					}
 					break;
 			}
-			
+
 			$values = array(
 				'id_agente_modulo' => $id_agente_modulo,
 				'description' => $element['description'],
@@ -10653,20 +10665,20 @@ function api_set_add_element_service($thrash1, $thrash2, $other, $thrash3) {
 				'id_agent' => $agent_id,
 				'id_service_child' => $id_service_child,
 				'id_server_meta' => 0);
-			
+
 			$result = db_process_sql_insert('tservice_element',$values);
 			if($result && !$results){
 				$results = $result;
 			}
 		}
 	}
-		
+
 	if($results){
 		returnData('string', array('type' => 'string', 'data' => 1));
 	} else {
 		returnError('error_add_service_element', __('Error adding elements to service'));
 	}
-	
+
 }
 /**
  * Update a special day. And return a message with the result of the operation.

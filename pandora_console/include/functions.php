@@ -3118,29 +3118,25 @@ function series_type_graph_array($data, $show_elements_graph){
 					}
 				}
 
-				if(($show_elements_graph['fullscale'] ||
-					$show_elements_graph['type_mode_graph'] ) &&
-					strpos($key, 'baseline') === false ){
-						$data_return['legend'][$key] .=
-							__('Min:') . remove_right_zeros(
-								number_format(
-									$value['min'],
-									$config['graph_precision']
-								)
-							)  . ' ' .
-							__('Max:') . remove_right_zeros(
-								number_format(
-									$value['max'],
-									$config['graph_precision']
-								)
-							) . ' ' .
-							_('Avg:') . remove_right_zeros(
-								number_format(
-									$value['avg'],
-									$config['graph_precision']
-								)
-							) . ' ' . $str;
-				}
+				$data_return['legend'][$key] .=
+					__('Min:') . remove_right_zeros(
+						number_format(
+							$value['min'],
+							$config['graph_precision']
+						)
+					)  . ' ' .
+					__('Max:') . remove_right_zeros(
+						number_format(
+							$value['max'],
+							$config['graph_precision']
+						)
+					) . ' ' .
+					_('Avg:') . remove_right_zeros(
+						number_format(
+							$value['avg'],
+							$config['graph_precision']
+						)
+					) . ' ' . $str;
 
 				if($show_elements_graph['compare'] == 'overlapped' && $key == 'sum2'){
 					$data_return['color'][$key] = $color_series['overlapped'];

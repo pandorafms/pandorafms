@@ -325,18 +325,9 @@ restart_delay 60
 
 #location_error 50
 
-# Recon reverse geolocation mode [disabled, sql, file]
-#   disabled    The recon task doesn't try to geolocate the ip discovered.
-#   sql         The recon task trys to query the SQL database to geolocate the 
-#               ip discovered
-#   file        The recon task trys to find the geolocation information of the 
-#               ip discovered in the file indicated in the 
-#                recon_reverse_geolocation_file parameter 
-
-# recon_reverse_geolocation_mode disabled
-
 # Recon reverse geolocation file. This is the database with the reverse 
 # geolocation information using MaxMind GPL GeoLiteCity.dat format).
+# Comment it to disable the IP geolocation on agent creation.
 
 #recon_reverse_geolocation_file /usr/local/share/GeoIP/GeoIPCity.dat
 

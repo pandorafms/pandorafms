@@ -264,7 +264,9 @@ function grafico_modulo_sparse_data_chart (
 			$data_module_graph['id_module_type'] == 18 ||
 			$data_module_graph['id_module_type'] == 9  ||
 			$data_module_graph['id_module_type'] == 31 ||
-			$data_module_graph['id_module_type'] == 100 ){
+			$data_module_graph['id_module_type'] == 100 ||
+			$params['baseline'] || $params['projection']
+			){
 
 			$data = db_get_all_rows_filter (
 				'tagente_datos',
@@ -419,8 +421,8 @@ function grafico_modulo_sparse_data(
 			$data_module_graph['id_module_type'] == 18 ||
 			$data_module_graph['id_module_type'] == 9  ||
 			$data_module_graph['id_module_type'] == 31 ||
-			$data_module_graph['id_module_type'] == 100 ){
-				html_debug_prinbt('entra');
+			$data_module_graph['id_module_type'] == 100 ||
+			$params['projection'] ){
 				$array_data = grafico_modulo_sparse_data_chart (
 					$agent_module_id,
 					$date_array,
@@ -898,6 +900,10 @@ function grafico_modulo_sparse ($params) {
 		$params['type_mode_graph'] = $config['type_mode_graph'];
 	}
 
+	if(!isset($params['projection'])){
+		$params['projection'] = false;
+	}
+
 	//XXXX Configurable
 	$params['grid_color']   = '#C1C1C1';
 	$params['legend_color'] = '#636363';
@@ -1213,6 +1219,7 @@ function graphic_combined_module (
 	}
 	else{
 		$params['stacked'] = 'area';
+		$params['projection'] = $params_combined['projection'];
 	}
 
 	if(!isset($params_combined['labels'])){

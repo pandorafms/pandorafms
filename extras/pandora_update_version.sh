@@ -58,7 +58,7 @@ PERL_PLUGIN_FILES="$PANDHOME_ENT/pandora_server/util/plugin/vmware-plugin.pl \
 $PANDHOME_ENT/pandora_plugins/NGINX/nginx_requests_queued.pl \
 $PANDHOME_ENT/pandora_plugins/Sybase/sybase_plugin.pl \
 $PANDHOME_ENT/pandora_plugins/SNMP/dynamic_snmp.pl \
-$PANDHOME_ENT/pandora_plugins/SNMP/snmp_bandwith.pl \
+$PANDHOME_ENT/pandora_plugins/SNMP/snmp_bandwidth.pl \
 $PANDHOME_ENT/pandora_plugins/laboratory/cacti/cacti2pandora.pl \
 $PANDHOME_ENT/pandora_plugins/MarkLogic/pandora_marklogic.pl \
 $PANDHOME_ENT/pandora_plugins/MySQL/pandora_mysql.pl \

@@ -148,7 +148,7 @@ sub get_geoip_info {
 	my $record = undef;
 	eval {
 		local $SIG{__DIE__};
-		my $gi = Geo::IP->open("/tmp/pandorafms/GeoLiteCity.dat", GEOIP_STANDARD);
+		my $gi = Geo::IP->open($pa_config->{'recon_reverse_geolocation_file'}, GEOIP_STANDARD);
 		die("Cannot load the geoip file \"" . $pa_config->{'recon_reverse_geolocation_file'} . "\".\n") unless defined($gi);
 		$record = $gi->record_by_addr($address);
 	};

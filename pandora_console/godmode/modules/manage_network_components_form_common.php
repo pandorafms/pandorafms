@@ -14,6 +14,7 @@
 // GNU General Public License for more details.
 
 global $config;
+include_once($config['homedir'] . '/include/graphs/functions_d3.php');
 
 if (! check_acl ($config['id_user'], 0, "PM")) {
 	db_pandora_audit("ACL Violation",

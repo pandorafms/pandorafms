@@ -2504,11 +2504,23 @@ function ui_print_page_header ($title, $icon = "", $return = false,
 		";
 	}
 
-	if ($help != "")
-		$buffer .= "<div class='head_help' style='float: right; margin-top: -2px !important;'>" .
-			ui_print_help_icon ($help, true, '', 'images/help_w.png') . "</div>";
-	$buffer .= '</span></li></ul></div>';
-	
+	if(!is_metaconsole()){
+		if ($help != ""){
+			$buffer .= "<div class='head_help' style='float: right; margin-top: -2px !important;'>" .
+				ui_print_help_icon ($help, true, '', 'images/help_w.png') . "</div>";
+		}
+	}
+
+	$buffer .= '</span>';
+
+	if(is_metaconsole()){
+		if ($help != ""){
+			$buffer .= "<div class='head_help'>" . ui_print_help_icon ($help, true) . "</div>";
+		}
+	}
+
+	$buffer .= '</li></ul></div>';
+
 	if (is_array($options)) {
 		$buffer .= '<div id="menu_tab"><ul class="mn">';
 		foreach ($options as $key => $option) {

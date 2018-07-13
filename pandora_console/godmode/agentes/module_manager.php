@@ -23,9 +23,9 @@ else {
 
 enterprise_include ('godmode/agentes/module_manager.php');
 $isFunctionPolicies = enterprise_include_once ('include/functions_policies.php');
-require_once ('include/functions_modules.php');
-require_once ('include/functions_agents.php');
-require_once ('include/functions_servers.php');
+require_once ($config['homedir'] . '/include/functions_modules.php');
+require_once ($config['homedir'] . '/include/functions_agents.php');
+require_once ($config['homedir'] . '/include/functions_servers.php');
 
 $search_string = io_safe_output(urldecode(trim(get_parameter ("search_string", ""))));
 
@@ -35,7 +35,6 @@ if (!isset($policy_page))
 	$policy_page = false;
 
 // Search string filter form
-//echo '<form id="create_module_type" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$id_agente.'">';
 if (($policy_page) || (isset($agent)))
 	echo '<form id="" method="post" action="">';
 else
@@ -67,7 +66,7 @@ $prediction_available = db_get_sql ("SELECT count(*)
 	WHERE server_type = 5"); //POSTGRESQL AND ORACLE COMPATIBLE
 
 // Development mode to use all servers
-if ($develop_bypass) {
+if ($develop_bypass || is_metaconsole()) {
 	$network_available = 1;
 	$wmi_available = 1;
 	$plugin_available = 1;

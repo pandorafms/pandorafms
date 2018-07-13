@@ -36,7 +36,7 @@ function snmp_browser_print_tree ($tree, $id = 0, $depth = 0, $last = 0, $last_a
 	
 	// Get the base URL for images
 	if ($url === false) {
-		$url = ui_get_full_url('operation/tree');
+		$url = ui_get_full_url('operation/tree', false, false, false);
 	}
 	
 	// Leaf

@@ -14,10 +14,11 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-include_once("include/functions_modules.php");
-include_once("include/functions_categories.php");
+include_once($config['homedir'] . "/include/functions_modules.php");
+include_once($config['homedir'] . "/include/functions_categories.php");
+include_once($config['homedir'] . "/include/graphs/functions_d3.php");
 
-echo "<script type='text/javascript' src='include/javascript/d3.3.5.14.js'></script>" . "\n";
+include_javascript_d3();
 
 function prepend_table_simple ($row, $id = false) {
 	global $table_simple;

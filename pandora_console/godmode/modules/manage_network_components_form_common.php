@@ -22,7 +22,7 @@ if (! check_acl ($config['id_user'], 0, "PM")) {
 	return;
 }
 
-echo "<script type='text/javascript' src='include/javascript/d3.3.5.14.js'></script>" . "\n";
+include_javascript_d3();
 
 function push_table_row ($row, $id = false) {
 	global $table;

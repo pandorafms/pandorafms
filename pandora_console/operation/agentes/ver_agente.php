@@ -207,7 +207,7 @@ if (is_ajax ()) {
 		$groups = users_get_groups ($config["id_user"], "AW", false);
 		$group_id_list = ($groups ? join(",",array_keys($groups)):"0");
 		
-		$sql = 'SELECT DISTINCT(t1.alias) as name
+		$sql = 'SELECT DISTINCT(t1.nombre) as name, t1.alias
 			FROM tagente t1, tagente_modulo t2
 			WHERE t1.id_agente = t2.id_agente
 				AND t1.id_grupo IN (' . $group_id_list .')
@@ -254,10 +254,9 @@ if (is_ajax ()) {
 		if ($nameAgents == false)
 			$nameAgents = array();
 		
-		foreach ($nameAgents as $nameAgent) {
-			$names[] = io_safe_output($nameAgent['name']);
-		}
-		
+		foreach ($nameAgents as $nameAgent)
+			$names[$nameAgent['name']] = io_safe_output($nameAgent['alias']);
+
 		echo json_encode($names);
 		return;
 	}

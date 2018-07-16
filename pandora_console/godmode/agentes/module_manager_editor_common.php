@@ -134,18 +134,29 @@ $table_simple->id = 'simple';
 $table_simple->width = '100%';
 $table_simple->class = 'databox';
 $table_simple->data = array ();
-$table_simple->colspan = array ();
 $table_simple->style = array ();
-$table_simple->style[0] = 'font-weight: bold; width: 15%;';
-$table_simple->style[1] = 'width: 35%';
+$table_simple->style[0] = 'font-weight: bold; width: 25%;';
+$table_simple->style[1] = 'width: 25%';
 $table_simple->style[2] = 'font-weight: bold; width: 25%;';
 $table_simple->style[3] = 'width: 25%';
 $table_simple->cellclass = array();
 
+$table_simple->colspan = array ();
 
-#$table_simple->colspan[4][1] = 3;
-$table_simple->colspan[5][1] = 3;
+
+
 $table_simple->colspan[6][1] = 3;
+
+$table_simple->rowspan = array ();
+if(strstr($page, "policy_modules")){
+	$table_simple->rowspan[3][2] = 3;
+	$table_simple->colspan[3][2] = 2;
+}
+else{
+	$table_simple->rowspan[4][2] = 3;
+	$table_simple->colspan[4][2] = 2;
+	$table_simple->colspan[5][1] = 3;
+}
 
 $table_simple->data[0][0] = __('Name');
 $table_simple->data[0][1] = html_print_input_text_extended ('name',
@@ -155,7 +166,7 @@ $table_simple->data[0][1] = html_print_input_text_extended ('name',
 
 if (!empty($id_agent_module) && isset($id_agente)) {
 	$table_simple->data[0][1] .= '&nbsp;<b>' . __('ID') . '</b>&nbsp;&nbsp;' . $id_agent_module . ' ';
-	
+
 	$table_simple->data[0][1] .= '&nbsp;<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$id_agent_module.'"
 		onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
 	$table_simple->data[0][1] .= html_print_image ('images/cross.png', true,
@@ -183,7 +194,6 @@ if (!$in_policy) {
 		'parent_module_id', $parent_module_id, '', __('Not assigned'), '0', true, false, true);
 }
 
-
 $table_simple->data[2][0] = __('Type').' ' . ui_print_help_icon ('module_type', true);
 $table_simple->data[2][0] .= html_print_input_hidden ('id_module_type_hidden', $id_module_type, true);
 
@@ -206,14 +216,14 @@ if (!$edit) {
 			WHERE id_tipo = %s
 			ORDER BY descripcion',
 			$id_module_type);
-		
+
 	$type_names = db_get_all_rows_sql($sql);
-	
+
 	$type_names_hash = array();
 	foreach ($type_names as $tn) {
 		$type_names_hash[$tn['id_tipo']] = $tn['nombre'];
 	}
-	
+
 	$table_simple->data[2][1] = '<em>'.modules_get_moduletype_description ($id_module_type).' ('.$type_names_hash[$id_module_type].')</em>';
 	$table_simple->data[2][1] .= html_print_input_hidden('type_names',base64_encode(io_json_mb_encode($type_names_hash)),true);
 }
@@ -224,35 +234,35 @@ else {
 	else {
 		$idModuleType = '';
 	}
-	
+
 	$sql = sprintf ('SELECT id_tipo, descripcion
 		FROM ttipo_modulo
 		WHERE categoria IN (%s)
 		ORDER BY descripcion',
 		implode (',', $categories));
-		
+
 	$table_simple->data[2][1] = html_print_select_from_sql ($sql, 'id_module_type',
 		$idModuleType, '', '', '', true, false, false, $disabledBecauseInPolicy, false, false, 100);
-	
+
 	// Store the relation between id and name of the types on a hidden field
 	$sql = sprintf ('SELECT id_tipo, nombre
 			FROM ttipo_modulo
 			WHERE categoria IN (%s)
 			ORDER BY descripcion',
 			implode (',', $categories));
-	
+
 	$type_names = db_get_all_rows_sql($sql);
-	
+
 	$type_names_hash = array();
 	foreach ($type_names as $tn) {
 		$type_names_hash[$tn['id_tipo']] = $tn['nombre'];
 	}
-	
+
 	$table_simple->data[2][1] .= html_print_input_hidden('type_names',base64_encode(io_json_mb_encode($type_names_hash)),true);
 }
 
 if($disabledBecauseInPolicy){
- 	$table_simple->data[2][3] .= html_print_input_hidden ('id_module_group', $id_module_group, true);
+	$table_simple->data[2][3] .= html_print_input_hidden ('id_module_group', $id_module_group, true);
 }
 $table_simple->data[3][0] = __('Dynamic Threshold Interval') .' ' . ui_print_help_icon ('dynamic_threshold', true);
 $table_simple->data[3][1] = html_print_extended_select_for_time ('dynamic_interval', $dynamic_interval, '', 'None', '0', 10, true, 'width:150px',false, $classdisabledBecauseInPolicy, $disabledBecauseInPolicy);
@@ -281,21 +291,21 @@ if (!modules_is_string_type($id_module_type) || $edit) {
 	$table_simple->data[4][1] .= html_print_input_text ('min_warning', $min_warning, '', 10, 255, true,
 													$disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
 	$table_simple->data[4][1] .= '<br /><em>'.__('Max.').'</em>';
-	$table_simple->data[4][1] .= html_print_input_text ('max_warning', $max_warning, '', 10, 255, true, 
+	$table_simple->data[4][1] .= html_print_input_text ('max_warning', $max_warning, '', 10, 255, true,
 													$disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy).'</span>';
 }
 if (modules_is_string_type($id_module_type) || $edit) {
 	$table_simple->data[4][1] .= '<span id="string_warning"><em>'.__('Str.').'</em>';
-	$table_simple->data[4][1] .= html_print_input_text ('str_warning', str_replace("\"","",$str_warning), 
+	$table_simple->data[4][1] .= html_print_input_text ('str_warning', str_replace("\"","",$str_warning),
 		'', 10, 255, true, $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy).'</span>';
 }
 	$table_simple->data[4][1] .= '<br /><em>'.__('Inverse interval').'</em>';
 	$table_simple->data[4][1] .= html_print_checkbox ("warning_inverse", 1, $warning_inverse, true, $disabledBecauseInPolicy);
+
 if (!modules_is_string_type($id_module_type) || $edit) {
 	$table_simple->data[4][2] = '<svg id="svg_dinamic" width="800" height="300"> </svg>';
-	$table_simple->colspan[4][2] = 2;
-	$table_simple->rowspan[4][2] = 3;
 }
+
 $table_simple->data[5][0] = __('Critical status').' ' . ui_print_help_icon ('critical_status', true);
 if (!modules_is_string_type($id_module_type) || $edit) {
 	$table_simple->data[5][1] .= '<span id="minmax_critical"><em>'.__('Min. ').'</em>';
@@ -307,30 +317,29 @@ if (!modules_is_string_type($id_module_type) || $edit) {
 }
 if (modules_is_string_type($id_module_type) || $edit) {
 	$table_simple->data[5][1] .= '<span id="string_critical"><em>'.__('Str.').'</em>';
-	$table_simple->data[5][1] .= html_print_input_text ('str_critical', str_replace("\"","",$str_critical), 
+	$table_simple->data[5][1] .= html_print_input_text ('str_critical', str_replace("\"","",$str_critical),
 		'', 10, 255, true, $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy).'</span>';
 }
 
 $table_simple->data[5][1] .= '<br /><em>'.__('Inverse interval').'</em>';
 $table_simple->data[5][1] .= html_print_checkbox ("critical_inverse", 1, $critical_inverse, true, $disabledBecauseInPolicy);
 
-/* FF stands for Flip-flop */
+//FF stands for Flip-flop
 $table_simple->data[6][0] = __('FF threshold').' ' . ui_print_help_icon ('ff_threshold', true);
-$table_simple->colspan[5][1] = 3;
 
 $table_simple->data[6][1] = html_print_radio_button ('each_ff', 0, '', $each_ff, true, $disabledBecauseInPolicy) . ' ' . __('All state changing') . ' : ';
 $table_simple->data[6][1] .= html_print_input_text ('ff_event', $ff_event, '', 5, 15, true,
-													 $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy) . '<br />';
+													$disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy) . '<br />';
 $table_simple->data[6][1] .= html_print_radio_button ('each_ff', 1, '', $each_ff, true, $disabledBecauseInPolicy) . ' ' . __('Each state changing') . ' : ';
 $table_simple->data[6][1] .= __('To normal');
 $table_simple->data[6][1] .= html_print_input_text ('ff_event_normal', $ff_event_normal, '', 5, 15, true,
-													 $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy) . ' ';
+													$disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy) . ' ';
 $table_simple->data[6][1] .= __('To warning');
 $table_simple->data[6][1] .= html_print_input_text ('ff_event_warning', $ff_event_warning, '', 5, 15, true,
-													 $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy) . ' ';
+													$disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy) . ' ';
 $table_simple->data[6][1] .= __('To critical');
 $table_simple->data[6][1] .= html_print_input_text ('ff_event_critical', $ff_event_critical, '', 5, 15, true,
-													 $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
+													$disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
 $table_simple->data[7][0] = __('Historical data');
 if($disabledBecauseInPolicy) {
 	// If is disabled, we send a hidden in his place and print a false checkbox because HTML dont send disabled fields and could be disabled by error
@@ -341,7 +350,7 @@ else {
 	$table_simple->data[7][1] = html_print_checkbox ("history_data", 1, $history_data, true, $disabledBecauseInPolicy);
 }
 
-/* Advanced form part */
+//Advanced form part
 $table_advanced = new stdClass();
 $table_advanced->id = 'advanced';
 $table_advanced->width = '100%';
@@ -360,8 +369,8 @@ $table_advanced->data[0][1] = html_print_textarea ('description', 2, 65,
 
 $table_advanced->data[1][0] = __('Custom ID');
 $table_advanced->colspan[1][1] = 2;
-$table_advanced->data[1][1] = html_print_input_text ('custom_id', $custom_id, '', 20, 65, true, 
-							 $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
+$table_advanced->data[1][1] = html_print_input_text ('custom_id', $custom_id, '', 20, 65, true,
+							$disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
 
 $table_advanced->data[1][3] = __('Unit');
 // $table_advanced->data[1][4] = html_print_input_text ('unit', $unit, '', 20, 65, true,

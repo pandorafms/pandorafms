@@ -18,7 +18,7 @@ global $config;
 require_once($config['homedir'] . "/include/functions_snmp_browser.php");
 $snmp_browser_path = is_metaconsole() ? "../../" : "";
 $snmp_browser_path .= "include/javascript/pandora_snmp_browser.js";
-echo "<script type='text/javascript' src='$snmp_browser_path'/>";
+echo "<script type='text/javascript' src='$snmp_browser_path'></script>";
 //This line does not run with the dinamic loader editor in policies.
 //ui_require_javascript_file ('pandora_snmp_browser');
 

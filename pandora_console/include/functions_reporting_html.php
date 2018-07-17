@@ -2432,7 +2432,7 @@ function reporting_html_availability(&$table, $item) {
 				else
 					$table_row[] = '--';
 				
-				$table_row[] = '<span style="font-size: 1.2em; font-weight:bold;">' . sla_truncate($row['SLA'] * 100, $config['graph_precision']). '%</span>';	
+				$table_row[] = '<span style="font-size: 1.2em; font-weight:bold;">' . sla_truncate($row['SLA'], $config['graph_precision']). '%</span>';	
 
 				$table_row2 = array();
 				$table_row2[] = $row['agent'];

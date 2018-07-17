@@ -1363,9 +1363,26 @@ function is_metaconsole() {
 	return (bool) $config['metaconsole'];
 }
 
+/**
+ * @brief Check if there is centralized management in metaconsole environment.
+ * 			Usefull to display some policy features on metaconsole.
+ *
+ * @return bool
+ */
 function is_central_policies() {
 	global $config;
 	return is_metaconsole() && $config["centralized_management"];
+}
+
+/**
+ * @brief Check if there is centralized management in node environment. Usefull
+ * 			to reduce the policy functionallity on nodes.
+ *
+ * @return bool
+ */
+function is_central_policies_on_node() {
+	global $config;
+	return (!is_metaconsole()) && $config["centralized_management"];
 }
 
 /**

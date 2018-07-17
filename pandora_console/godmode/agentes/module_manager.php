@@ -70,7 +70,9 @@ if ($develop_bypass || is_metaconsole()) {
 	$network_available = 1;
 	$wmi_available = 1;
 	$plugin_available = 1;
-	$prediction_available = 1;
+	// FIXME when prediction predictions server modules can be configured
+	// on metaconsole
+	$prediction_available = is_metaconsole() ? 0 : 1;
 }
 
 $modules = array ();
@@ -107,7 +109,7 @@ $checked = get_parameter("checked");
 
 if (($policy_page) || (isset($agent))) {
 	if ($policy_page) {
-		$show_creation = true;
+		$show_creation = !is_central_policies_on_node();
 	}
 	else {
 		if (!isset($all_groups)) {

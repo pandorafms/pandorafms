@@ -303,7 +303,7 @@ if (modules_is_string_type($id_module_type) || $edit) {
 	$table_simple->data[4][1] .= html_print_checkbox ("warning_inverse", 1, $warning_inverse, true, $disabledBecauseInPolicy);
 
 if (!modules_is_string_type($id_module_type) || $edit) {
-	$table_simple->data[4][2] = '<svg id="svg_dinamic" width="800" height="300"> </svg>';
+	$table_simple->data[4][2] = '<svg id="svg_dinamic" width="500" height="300"> </svg>';
 }
 
 $table_simple->data[5][0] = __('Critical status').' ' . ui_print_help_icon ('critical_status', true);

@@ -478,8 +478,8 @@ function reporting_html_SLA($table, $item, $mini) {
 						$row[] = $sla['module'];
 
 						if(is_numeric($sla['dinamic_text'])){
-							$row[] = remove_right_zeros(number_format($sla['max'], $config['graph_precision'])) . " / " . 
-									 remove_right_zeros(number_format($sla['min'], $config['graph_precision']));
+							$row[] = sla_truncate($sla['max'], $config['graph_precision']) . " / " . 
+									 sla_truncate($sla['min'], $config['graph_precision']);
 						}
 						else{
 							$row[] = $sla['dinamic_text'];
@@ -561,8 +561,8 @@ function reporting_html_SLA($table, $item, $mini) {
 							$row[] = $sla['module'];
 
 							if(is_numeric($sla['dinamic_text'])){
-								$row[] = remove_right_zeros(number_format($sla['max'], $config['graph_precision'])) . " / " . 
-									 remove_right_zeros(number_format($sla['min'], $config['graph_precision']));
+								$row[] = sla_truncate($sla['max'], $config['graph_precision']) . " / " . 
+									 sla_truncate($sla['min'], $config['graph_precision']);
 							}
 							else{
 								$row[] = $sla['dinamic_text'];
@@ -2432,7 +2432,7 @@ function reporting_html_availability(&$table, $item) {
 				else
 					$table_row[] = '--';
 				
-				$table_row[] = '<span style="font-size: 1.2em; font-weight:bold;">' . sla_truncate($row['SLA'] * 100, $config['graph_precision']). '%</span>';	
+				$table_row[] = '<span style="font-size: 1.2em; font-weight:bold;">' . sla_truncate($row['SLA'], $config['graph_precision']). '%</span>';	
 
 				$table_row2 = array();
 				$table_row2[] = $row['agent'];
@@ -2478,7 +2478,7 @@ function reporting_html_availability(&$table, $item) {
 					else
 						$table_row[] = '--';
 					
-					$table_row[] = '<span style="font-size: 1.2em; font-weight:bold;">' . sla_truncate($row['SLA'] * 100, $config['graph_precision']). '%</span>';	
+					$table_row[] = '<span style="font-size: 1.2em; font-weight:bold;">' . sla_truncate($row['SLA'], $config['graph_precision']). '%</span>';	
 
 					$table_row2 = array();
 					$table_row2[] = $row['agent'];
@@ -2545,7 +2545,7 @@ function reporting_html_availability(&$table, $item) {
 				'max' => sla_truncate($item['resume']['max'], $config['graph_precision']) . "%",
 				'min_text' => $item['resume']['min_text'],
 				'min' => sla_truncate($item['resume']['min'], $config['graph_precision']) . "%",
-				'avg' => '<span style="font-size: 1.2em; font-weight:bold;">' .remove_right_zeros(number_format($item['resume']['avg'], $config['graph_precision'])) . "%</span>"
+				'avg' => '<span style="font-size: 1.2em; font-weight:bold;">' . sla_truncate($item['resume']['avg'], $config['graph_precision']) . "%</span>"
 				);
 			
 			$table->colspan[3][0] = 3;

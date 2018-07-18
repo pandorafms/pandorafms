@@ -2206,8 +2206,10 @@ CREATE TABLE IF NOT EXISTS `tpolicy_agents` (
 	`policy_applied` tinyint(1) unsigned default '0',
 	`pending_delete` tinyint(1) unsigned default '0',
 	`last_apply_utimestamp` int(10) unsigned NOT NULL default 0,
+	`id_service` int(10) unsigned NOT NULL default 0,
+	`id_node` int(10) NOT NULL default 0,
 	PRIMARY KEY  (`id`),
-	UNIQUE (`id_policy`, `id_agent`)
+	UNIQUE (`id_policy`, `id_agent`, `id_node`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------

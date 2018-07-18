@@ -5455,7 +5455,7 @@ function api_set_add_agent_policy($id, $thrash1, $other, $thrash2) {
 	}
 	
 	if ($id_agent_policy === false) {
-		$success = enterprise_hook('policies_create_agent', array($other['data'][0], $id, true));
+		$success = enterprise_hook('policies_create_agent', array($other['data'][0], $id));
 	}
 	else {
 		returnError('error_add_agent_policy', __('Error adding agent to policy. The agent is already in the policy.'));

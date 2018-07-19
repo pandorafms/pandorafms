@@ -823,10 +823,6 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 		else
 			return array ("", "", "", "", "", "", "");
 	}
-	
-	// Get agent id
-	$id_agent = modules_get_agentmodule_agent ($alert['id_agent_module']);
-	$agente = db_get_row ('tagente', 'id_agente', $id_agent);
 	$template = alerts_get_alert_template ($alert['id_alert_template']);
 	$description = io_safe_output($template['name']);
 	
@@ -917,7 +913,7 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 		ui_print_truncate_text (io_safe_output($description), 'description', false, true, true, '[&hellip;]', 'font-size: 7.1pt') .
 		$disabledHtmlEnd;
 	
-	$actions = alerts_get_alert_agent_module_actions ($alert['id'], false);
+	$actions = alerts_get_alert_agent_module_actions ($alert['id'], false, $alert['server_data']['id']);
 	
 	if (!empty($actions)) {
 		$actionText = '<div><ul class="action_list">';

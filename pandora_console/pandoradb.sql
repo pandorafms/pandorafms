@@ -3214,7 +3214,7 @@ CREATE TABLE IF NOT EXISTS `tautoconfig_rules` (
   `id_autoconfig` int(10) unsigned NOT NULL,
   `order` int(11) NOT NULL DEFAULT '0',
   `operator` enum('AND','OR') DEFAULT 'OR',
-  `type` enum('alias','ip-range','group','os','custom-field','script') DEFAULT 'alias',
+  `type` enum('alias','ip-range','group','os','custom-field','script','server-name') DEFAULT 'alias',
   `value` text,
   `custom` text,
   PRIMARY KEY (`id`),

@@ -14,6 +14,7 @@
 // GNU General Public License for more details.
 
 global $config;
+include_once($config['homedir'] . '/include/graphs/functions_d3.php');
 
 if (! check_acl ($config['id_user'], 0, "PM")) {
 	db_pandora_audit("ACL Violation",
@@ -22,7 +23,7 @@ if (! check_acl ($config['id_user'], 0, "PM")) {
 	return;
 }
 
-echo "<script type='text/javascript' src='include/javascript/d3.3.5.14.js'></script>" . "\n";
+include_javascript_d3();
 
 function push_table_row ($row, $id = false) {
 	global $table;
@@ -128,7 +129,7 @@ $table->data[4][1] .= html_print_input_text ('str_warning', $str_warning,
 $table->data[4][1] .= '<br /><em>'.__('Inverse interval').'</em>';
 $table->data[4][1] .= html_print_checkbox ("warning_inverse", 1, $warning_inverse, true);
 
-$table->data[4][2] = '<svg id="svg_dinamic" width="800" height="300"> </svg>';
+$table->data[4][2] = '<svg id="svg_dinamic" width="500" height="300"> </svg>';
 $table->colspan[4][2] = 2;
 $table->rowspan[4][2] = 3;
 

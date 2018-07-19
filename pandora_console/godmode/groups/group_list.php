@@ -66,6 +66,7 @@ if (is_ajax ()) {
 	}
 	
 	if ($get_group_agents) {
+		ob_clean();
 		$id_group = (int) get_parameter ('id_group');
 		$disabled = (int) get_parameter ('disabled', 0);
 		$search = (string) get_parameter ('search', '');
@@ -82,6 +83,9 @@ if (is_ajax ()) {
 		$status_agents = (int)get_parameter('status_agents', AGENT_STATUS_ALL);
 		// Juanma (22/05/2014) Fix: If setted remove void agents from result (by default and for compatibility show void agents)
 		$show_void_agents = (int)get_parameter('show_void_agents', 1);
+		$serialized = (bool)get_parameter('serialized', false);
+		$serialized_separator = (string)get_parameter('serialized_separator', "|");
+		$force_serialized = (bool)get_parameter('force_serialized', false);
 		
 		if (! check_acl ($config['id_user'], $id_group, "AR")) {
 			db_pandora_audit("ACL Violation",
@@ -121,18 +125,26 @@ if (is_ajax ()) {
 			$filter[$_sql_post] = '1';
 			
 		}
-		
+
+		$id_groups_get_agents = $id_group;
 		if ( $id_group == 0 && $privilege != '') {
 			$groups = users_get_groups ($config["id_user"], $privilege, false);
 			//  if group ID doesn't matter and $privilege is specified (like 'AW'),
 			//  retruns all agents that current user has $privilege privilege for.
-			$agents = agents_get_group_agents(array_keys($groups), $filter, "none", false, $recursion, false, '|', $add_alert_bulk_op);
+			$id_groups_get_agents = array_keys($groups);
 		}
-		else {
-			$agents = agents_get_group_agents($id_group, $filter, "none",
-				true, $recursion, false, '|', $add_alert_bulk_op);
-		}
-		
+		$agents = agents_get_group_agents(
+			$id_groups_get_agents,
+			$filter,
+			"none",
+			false,
+			$recursion,
+			$serialized,
+			$serialized_separator,
+			$add_alert_bulk_op,
+			$force_serialized
+		);
+
 		$agents_disabled = array();
 		// Add keys prefix
 		if ($keys_prefix !== "") {
@@ -140,7 +152,34 @@ if (is_ajax ()) {
 				$agents[$keys_prefix . $k] = $v;
 				unset($agents[$k]);
 				if ($all_agents) {
-					$agent_disabled = db_get_value_filter('disabled', 'tagente', array('id_agente' => $k));
+					// Unserialize to get the status
+					if ($serialized && is_metaconsole()) {
+						$agent_info = explode($serialized_separator, $k);
+						$agent_disabled = db_get_value_filter(
+							'disabled',
+							'tmetaconsole_agent',
+							array(
+								'id_tagente' => $agent_info[1],
+								'id_tmetaconsole_setup' => $agent_info[0]
+							)
+						);
+					} elseif ($serialized && !is_metaconsole() && $force_serialized) {
+						$agent_info = explode($serialized_separator, $k);
+						$agent_disabled = db_get_value_filter(
+							'disabled',
+							'tagente',
+							array('id_agente' => $agent_info[1])
+						);
+					} elseif (!$serialized && is_metaconsole()) {
+						// Cannot retrieve the disabled status. Mark all as not disabled
+						$agent_disabled = 0;
+					} else {
+						$agent_disabled = db_get_value_filter(
+							'disabled',
+							'tagente',
+							array('id_agente' => $k)
+						);
+					}
 					$agents_disabled[$keys_prefix . $k] = $agent_disabled;
 				}
 			}

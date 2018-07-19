@@ -36,7 +36,7 @@ function snmp_browser_print_tree ($tree, $id = 0, $depth = 0, $last = 0, $last_a
 	
 	// Get the base URL for images
 	if ($url === false) {
-		$url = ui_get_full_url('operation/tree');
+		$url = ui_get_full_url('operation/tree', false, false, false);
 	}
 	
 	// Leaf
@@ -604,8 +604,8 @@ function snmp_browser_print_container ($return = false, $width = '100%', $height
 	$table3->data[2][2] = html_print_input_text ('snmp3_browser_auth_user', '', '', 15, 60, true);
 	$table3->data[2][3] = '<b>'.__('Auth password').'</b>';
 	$table3->data[2][4] = html_print_input_password ('snmp3_browser_auth_pass', '', '', 15, 60, true);
-	$table3->data[2][4] .= html_print_input_hidden('active_snmp_v3', 0, true);
-	
+	$table3->data[2][4] .= html_print_input_hidden_extended('active_snmp_v3', 0, 'active_snmp_v3_fsb', true);
+
 	$table3->data[5][0] = '<b>'.__('Privacy method').'</b>';
 	$table3->data[5][1] = html_print_select(array('DES' => __('DES'), 'AES' => __('AES')), 'snmp3_browser_privacy_method', '', '', '', '', true);
 	$table3->data[5][2] = '<b>'.__('Privacy pass').'</b>';

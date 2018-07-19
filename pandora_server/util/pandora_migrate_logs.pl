@@ -149,7 +149,7 @@ if (  (defined($pa_config{'logstash_host'}) && $pa_config{'logstash_host'} ne ''
 	
 		if(! defined($pa_config{'migration_socket'})) {
 			logger(\%pa_config, "Failed to connect to LogStash server at " . $pa_config{'logstash_host'}, 1);
-			return;
+			exit 1;
 		}
 
 		recursive_file_apply(\%pa_config, $dbh, \&migrate_log,$pa_config{'log_dir'});

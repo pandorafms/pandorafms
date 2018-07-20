@@ -2515,7 +2515,7 @@ function ui_print_page_header ($title, $icon = "", $return = false,
 
 	if(is_metaconsole()){
 		if ($help != ""){
-			$buffer .= "<div class='head_help'>" . ui_print_help_icon ($help, true) . "</div>";
+			$buffer .= "<div class='head_help'>" . ui_print_help_icon ($help, true, '', 'images/help_30.png') . "</div>";
 		}
 	}
 

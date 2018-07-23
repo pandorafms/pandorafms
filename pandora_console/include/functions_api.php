@@ -7230,10 +7230,11 @@ function otherParameter2Filter($other, $return_as_array = false) {
 	
 	$idAgent = null;
 	if (isset($other['data'][2]) && $other['data'][2] != '') {
-		$idAgent = agents_get_agent_id($other['data'][2]);
+		$idAgents = agents_get_agent_id_by_alias($other['data'][2]);
 		
 		if (!empty($idAgent)) {
-			$filter['id_agente'] = $idAgent;
+
+			$filter[] = "id_agente IN (" . explode(",", $idAgents) .")";
 		}
 		else {
 			$filter['sql'] = "1=0";

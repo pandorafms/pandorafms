@@ -474,7 +474,7 @@ $table->data[2][1] = '<b>'.__('Auth user').'</b>';
 $table->data[2][2] = html_print_input_text ('snmp3_auth_user', $snmp3_auth_user, '', 15, 60, true);
 $table->data[2][3] = '<b>'.__('Auth password').'</b>';
 $table->data[2][4] = html_print_input_password ('snmp3_auth_pass', $snmp3_auth_pass, '', 15, 60, true);
-$table->data[2][4] .= html_print_input_hidden('active_snmp_v3', 0, true);
+$table->data[2][4] .= html_print_input_hidden_extended('active_snmp_v3', 0, 'active_snmp_v3_awsie', true);
 
 $table->data[5][0] = '<b>'.__('Privacy method').'</b>';
 $table->data[5][1] = html_print_select(array('DES' => __('DES'), 'AES' => __('AES')), 'snmp3_privacy_method', $snmp3_privacy_method, '', '', '', true);

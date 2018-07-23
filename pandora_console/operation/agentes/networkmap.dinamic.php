@@ -203,10 +203,8 @@ $zoom_default = file($config['homedir'] . '/images/zoom_default.svg');
 </div>
 <?php
 
-echo '<script '.
-	' type="text/javascript" ' .
-	' src="' . $config['homeurl'] . 'include/javascript/d3.3.5.14.js" ' .
-	' charset="utf-8"></script>';
+include_javascript_d3();
+
 echo '<div id="dinamic_networkmap" style="overflow: hidden;"></div>';
 ?>
 <style type="text/css">

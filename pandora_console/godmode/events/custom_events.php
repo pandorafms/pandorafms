@@ -121,6 +121,12 @@ if ($fields_selected[0]!='') {
 			case 'server_name':
 				$result = __('Server name');
 				break;
+				case 'data':
+				$result = __('Data');
+				case 'module_status':
+				$result = __('Module status');
+				break;
+				break;
 		}
 		$result_selected[$field_selected] = $result;
 	}
@@ -168,6 +174,8 @@ $fields_available['owner_user'] = __('Owner');
 $fields_available['ack_utimestamp'] = __('ACK Timestamp');
 $fields_available['instructions'] = __('Instructions');
 $fields_available['server_name'] = __('Server name');
+$fields_available['data'] = __('Data');
+$fields_available['module_status'] = __('Module status');
 
 //remove fields already selected
 foreach ($fields_available as $key=>$available) {

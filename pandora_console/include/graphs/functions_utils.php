@@ -301,4 +301,22 @@ function get_complementary_rgb ($hexcode) {
 	
 	return $rgbhex;
 }
+
+/**
+* Returns convert array multidimensional to string whit gluer.
+* @param array $array to convert
+* @param string glue to implode
+*/
+function convert_array_multi($array, $glue) {
+    $result = '';
+    foreach ($array as $item) {
+        if (is_array($item)) {
+            $result .= convert_array_multi($item, $glue) . $glue;
+        } else {
+            $result .= $item . $glue;
+        }
+    }
+    $result = substr($result, 0, 0-strlen($glue));
+    return $result;
+}
 ?>

@@ -1685,17 +1685,22 @@ function modules_get_previous_data ($id_agent_module, $utimestamp = 0, $string =
 		$table = 'tagente_datos';
 	}
 
-	$sql = sprintf ('SELECT *
-		FROM ' . $table . '
-		WHERE id_agente_modulo = %d
-			AND utimestamp <= %d
-		ORDER BY utimestamp DESC',
-		$id_agent_module, $utimestamp,
-		$utimestamp - SECONDS_2DAY
+	$sql = sprintf (
+		"SELECT * FROM %s 
+		WHERE id_agente_modulo = %d 
+		AND utimestamp = ( SELECT max(utimestamp) 
+							FROM tagente_datos 
+							WHERE id_agente_modulo = %d 
+							AND utimestamp <= %d )",
+		$table,
+		$id_agent_module,
+		$id_agent_module,
+		$utimestamp
 	);
 
 	$search_in_history_db = db_search_in_history_db($utimestamp);
-	return db_get_row_sql ($sql, $search_in_history_db);
+
+	return db_get_row_sql($sql, $search_in_history_db);
 }
 
 /**
@@ -2759,4 +2764,57 @@ function force_set_module_status ($status, $id_agent_module) {
 		array('id_agente_modulo' => $id_agent_module)
 	);
 }
+function modules_get_modules_status ($mod_status_id) {
+	
+	$diferent_types = get_priorities ();
+	
+	$mod_status_desc = '';
+	switch ($mod_status_id) {
+		case AGENT_MODULE_STATUS_NORMAL:
+			$mod_status_desc = __('NORMAL');
+			break;
+		case AGENT_MODULE_STATUS_CRITICAL_BAD:
+			$mod_status_desc = __('CRITICAL');
+			break;
+		case AGENT_MODULE_STATUS_WARNING:
+			$mod_status_desc = __('WARNING');
+			break;
+		case AGENT_MODULE_STATUS_UNKNOWN:
+			$mod_status_desc = __('UNKNOWN');
+			break;
+		case AGENT_MODULE_STATUS_NOT_INIT:
+			$mod_status_desc = __('NOT INIT');
+			break;
+		case AGENT_MODULE_STATUS_ALL:
+			$mod_status_desc = __('ALL');
+			break;
+		case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+			$mod_status_desc = __('CRITICAL');
+			break;
+		case AGENT_MODULE_STATUS_NO_DATA:
+			$mod_status_desc = __('NO DATA');
+			break;
+		case AGENT_MODULE_STATUS_NORMAL_ALERT:
+			$mod_status_desc = __('NORMAL');
+			break;	
+		case AGENT_MODULE_STATUS_NOT_NORMAL:
+			$mod_status_desc = __('NOT NORMAL');
+			break;	
+		case AGENT_MODULE_STATUS_WARNING_ALERT:
+			$mod_status_desc = __('WARNING');
+			break;	
+		default:
+			if (isset($config['text_char_long'])) {
+				foreach ($diferent_types as $key => $type) {
+					if ($key == $mod_status_id) {
+						$mod_status_desc = ui_print_truncate_text($type,
+							$config['text_char_long'], false, true, false);
+					}
+				}
+			}
+			break;
+	}
+	
+	return $mod_status_desc;
+} 
 ?>

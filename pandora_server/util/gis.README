@@ -5,8 +5,6 @@ In order to be able to use GeoIP/GIS features of the Pandora FMS reconserver, yo
  http://www.maxmind.com/app/geoip_resources
  http://www.maxmind.com/app/installation
  http://www.maxmind.com/app/geolitecity
-
-Install manually Geo-IP-PurePerl-1.24.tar.gz
  
 This database will be used with Pandora FMS recon server for positioning detected host Systems. Check Pandora FMS documentacion for more information.
 
@@ -15,7 +13,6 @@ Prior to use this database you need to decompress it with gzip -d and edit your 
  activate_gis 1
  recon_reverse_geolocation_file /usr/share/pandora_server/util/GeoLiteCity.dat
  location_error 50
- recon_reverse_geolocation_mode file
  recon_location_scatter_radius 1000
 
 Get a new version at:

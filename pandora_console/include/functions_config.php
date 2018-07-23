@@ -627,7 +627,10 @@ function config_update_config () {
 
 					if (!config_update_value ('full_scale_option', (int) get_parameter('full_scale_option', 0)))
 						$error_update[] = __('Default full scale (TIP)');
-					
+
+					if (!config_update_value ('type_mode_graph', (int) get_parameter('type_mode_graph', 0)))
+						$error_update[] = __('Default soft graphs');
+
 					if (!config_update_value ('graph_image_height', (int) get_parameter('graph_image_height', 0)))
 						$error_update[] = __('Default height of the chart image');
 
@@ -2287,5 +2290,20 @@ function config_prepare_session() {
 	
 	ini_set("post_max_size", $config["max_file_size"]);
 	ini_set("upload_max_filesize", $config["max_file_size"]);
+}
+
+function config_update_value_in_db ($token, $value) {
+	$inserted_value = db_get_value('value', 'tconfig', '`token`', $token);
+	if ($inserted_value === false) {
+		return db_process_sql_insert(
+			'tconfig',
+			array('value' => $value, 'token' => $token)
+		) !== false;
+	}
+	else {
+		return db_process_sql_update(
+			'tconfig', array('value' => $value), array('token' => $token)
+		) !== false;
+	}
 }
 ?>

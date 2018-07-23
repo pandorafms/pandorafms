@@ -40,11 +40,7 @@ Exported Functions:
 
 =item * C<distance_moved>
 
-=item * C<get_reverse_geoip_sql>
-
-=item * C<get_reverse_geoip_file>
-
-=item * C<get_random_close_point>
+=item * C<get_geoip_info>
 
 =back
 
@@ -54,15 +50,13 @@ Exported Functions:
 
 use strict;
 use warnings;
+use Geo::IP;
 
 # Default lib dir for RPM and DEB packages
 use lib '/usr/lib/perl5';
 
 use PandoraFMS::DB;
 use PandoraFMS::Tools;
-# TODO:Test if is instaled 
-
-my $geoIPPurePerlavilable= (eval 'use  PandoraFMS::GeoIP; 1') ? 1 : 0;
 
 
 require Exporter;
@@ -72,9 +66,7 @@ our %EXPORT_TAGS = ( 'all' => [ qw( ) ] );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT = qw( 	
 	distance_moved
-	get_reverse_geoip_sql
-	get_reverse_geoip_file
-	get_random_close_point
+	get_geoip_info
 	);
 # Some intenrnal constants
 
@@ -137,84 +129,43 @@ sub distance_moved ($$$$$$$) {
 }
 
 ##########################################################################
-=head2 C<< get_revesrse_geoip_sql (I<$pa_config>, I<$ip_addr>, I<$dbh>) >> 
+=head2 C<< get_geoip_info (I<$pa_config>, I<$address>, I<$dispersion>) >>
 
-Gets the GIS information obtained from the B<SQL> Database:
+Get GIS information from the MaxMind GeoIP database on file using Geo::IP module
 
-B<Returns>: I<undef> if there is not information available or a B<hash> with:
- * I<country_code>
- * I<country_code3>
- * I<country_name>
- * I<region>
- * I<city>
- * I<postal_code>
+B<Returns>: I<undef> if there is not information available or a B<hash ref> with:
  * I<longitude>
  * I<latitude>
- * I<metro_code>
- * I<area_code>
 
 =cut
 ##########################################################################
-sub get_reverse_geoip_sql($$$) {
-	my ($pa_config,$ip_addr, $dbh) = @_;
-	
-	my $id_range =  get_db_value($dbh,
-		'SELECT ' . $RDBMS_QUOTE . 'id_range' . $RDBMS_QUOTE . '
-		FROM tgis_reverse_geoip_ranges
-		WHERE INET_ATON(?) >=  ' . $RDBMS_QUOTE . 'first_IP_decimal' . $RDBMS_QUOTE . '
-			AND INET_ATON(?) <=  ' . $RDBMS_QUOTE . 'last_IP_decimal ' . $RDBMS_QUOTE . '
-			LIMIT 1', $ip_addr, $ip_addr);
-	
-	if (defined($id_range)) {
-		logger($pa_config,"Range id of '$ip_addr' is '$id_range'", 8);
-		my $region_info = get_db_single_row($dbh,
-			'SELECT *
-			FROM tgis_reverse_geoip_info
-			WHERE  ' . $RDBMS_QUOTE . 'id_range ' . $RDBMS_QUOTE . ' = ?',
-			$id_range);
-		
-		logger($pa_config, "region info of id_range '$id_range' is: country:".$region_info->{'country_name'}." region:".$region_info->{'region'}." city:".$region_info->{'city'}." longitude:".$region_info->{'longitude'}." latitude:".$region_info->{'longitude'}, 8);
-		
-		return $region_info;
+sub get_geoip_info {
+	my ($pa_config, $address) = @_;
+
+	# Return undef if feature is not activated
+	return undef unless ($pa_config->{'activate_gis'} && $pa_config->{'recon_reverse_geolocation_file'} ne '');
+
+	my $record = undef;
+	eval {
+		local $SIG{__DIE__};
+		my $gi = Geo::IP->open($pa_config->{'recon_reverse_geolocation_file'}, GEOIP_STANDARD);
+		die("Cannot load the geoip file \"" . $pa_config->{'recon_reverse_geolocation_file'} . "\".\n") unless defined($gi);
+		$record = $gi->record_by_addr($address);
+	};
+	if ($@) {
+		logger($pa_config, "Error giving coordinates to IP: $address. $@", 8);
 	}
-	return undef;
-}
+	return undef unless defined($record);
 
-##########################################################################
-=head2 C<< get_reverse_geoip_file (I<$pa_config>, I<$ip_addr>) >> 
+	# Fuzzy position filter
+	my ($longitude, $latitude) = get_random_close_point (
+		$pa_config, $record->longitude, $record->latitude
+	);
 
-Gets GIS information from the MaxMind GeooIP database on file using the
-GPL perl API from MaxMindGeoIP
-
-B<Returns>: I<undef> if there is not information available or a B<hash> with:
- * I<country_code>
- * I<country_code3>
- * I<country_name>
- * I<region>
- * I<city>
- * I<postal_code>
- * I<longitude>
- * I<latitude>
- * I<metro_code>
- * I<area_code>
-
-=cut
-##########################################################################
-sub get_reverse_geoip_file($$) {
-	my ($pa_config,$ip_addr) = @_;
-	if ($geoIPPurePerlavilable == 1) {
-		my $geoipdb = PandoraFMS::GeoIP->open( $pa_config->{'recon_reverse_geolocation_file'}); 
-		if (defined($geoipdb)) {
-    		my $region_info = $geoipdb->get_city_record_as_hash($ip_addr);	
-    		logger($pa_config, "Region info found for IP '$ip_addr' is: country:".$region_info->{'country_name'}." region:".$region_info->{'region'}." city:".$region_info->{'city'}." longitude:".$region_info->{'longitude'}." latitude:".$region_info->{'latitude'}, 8);
-			return $region_info;
-		}
-		else {
-    		logger($pa_config, "WARNING: Can't open reverse geolocation file ($pa_config->{'recon_reverse_geolocation_file'}) :$!",8);
-		}
-	}
-
-	return undef;
+	return {
+		"longitude" => $longitude,
+		"latitude" => $latitude
+	};
 }
 
 ##########################################################################
@@ -228,7 +179,9 @@ Returns C<< (I<$longitude>, I<$laitiutde>) >>
 ##########################################################################
 sub get_random_close_point ($$$) {
 	my ($pa_config, $center_longitude, $center_latitude) = @_;
-	
+
+	return ($center_longitude, $center_latitude) if ($pa_config->{'recon_location_scatter_radius'} == 0);
+
 	my $sign = int rand(2);
 	my $longitude = ($sign*(-1)+(1-$sign)) * rand($pa_config->{'recon_location_scatter_radius'}/$earth_radius_in_meters)*$to_degrees;
 	logger($pa_config,"Longitude random offset '$longitude' ", 8);
@@ -250,7 +203,7 @@ __END__
 
 =head1 DEPENDENCIES
 
-L<PandoraFMS::DB>, L<PandoraFMS::Tools> (Optional L<Geo::IP::PurePerl> to use file reverse geolocation database that is faster than the SQL)
+L<PandoraFMS::DB>, L<PandoraFMS::Tools>, L<Geo::IP>
 
 =head1 LICENSE
 
@@ -262,6 +215,6 @@ L<PandoraFMS::DB>, L<PandoraFMS::Tools>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2010 Artica Soluciones Tecnologicas S.L
+Copyright (c) 2005-2018 Artica Soluciones Tecnologicas S.L
 
 =cut

@@ -75,6 +75,7 @@
     <li>_plugin_parameters_ : モジュールのプラグインパラメータ</li>
     <li>_policy_ : モジュールが属するポリシー名 (存在する場合)</li>
     <li>_prevdata_ : アラートを発報する前のモジュールデータ</li>
+	<li>_rca_: Root cause analysis chain (only for services).</li>
     <li>_server_ip_ : エージェントが割り当てられているサーバ IP。</li>
     <li>_server_name_ : エージェントが割り当てられているサーバ名。 </li>
     <li>_target_ip_ : モジュールの対象IPアドレス</li>

@@ -796,11 +796,22 @@ function agents_common_modules ($id_agent, $filter = false, $indexed = true, $ge
  * @param boolean $childGroups The flag to get agents in the child group of group parent passed. By default false.
  * @param boolean $serialized Only in metaconsole. Return the key as <server id><SEPARATOR><agent id>. By default false.
  * @param string $separator Only in metaconsole. Separator for the serialized data. By default |.
+ * @param bool $add_alert_bulk_op //TODO documentation
+ * @param bool $force_serialized. If the agent has not id_server (typically in node) put 0 as <server_id>.
  *
  * @return array An array with all agents in the group or an empty array
  */
-function agents_get_group_agents ($id_group = 0, $search = false,
-	$case = "lower", $noACL = false, $childGroups = false, $serialized = false, $separator = '|', $add_alert_bulk_op = false) {
+function agents_get_group_agents (
+	$id_group = 0,
+	$search = false,
+	$case = "lower",
+	$noACL = false,
+	$childGroups = false,
+	$serialized = false,
+	$separator = '|',
+	$add_alert_bulk_op = false,
+	$force_serialized = false
+) {
 
 	global $config;
 	
@@ -977,11 +988,12 @@ function agents_get_group_agents ($id_group = 0, $search = false,
 		
 		if ($serialized && isset($row["id_server"])) {
 			$key = $row["id_server"] . $separator . $row["id_agente"];
-		}
-		else {
+		} elseif ($force_serialized) {
+			$key = "0" . $separator . $row["id_agente"];
+		} else {
 			$key = $row["id_agente"];
 		}
-		
+
 		switch ($case) {
 			case "lower":
 				$value = mb_strtolower ($row["alias"], "UTF-8");
@@ -2010,7 +2022,8 @@ function agents_get_agentmodule_group ($id_module) {
  * @return int The group id
  */
 function agents_get_agent_group ($id_agent) {
-	return (int) db_get_value ('id_grupo', 'tagente', 'id_agente', (int) $id_agent);
+	$table = is_metaconsole() ? "tmetaconsole_agent" : "tagente";
+	return (int) db_get_value ('id_grupo', $table, 'id_agente', (int) $id_agent);
 }
 
 /**
@@ -2691,7 +2704,7 @@ function agents_get_all_groups_agent ($id_agent, $group = false) {
  */
 function agents_count_agents_filter ($filter = array(), $access = "AR") {
 	$total_agents = agents_get_agents(
-		array ('id_group' => $id_group),
+		$filter,
 		array ('COUNT(DISTINCT id_agente) as total'),
 		$access
 	);

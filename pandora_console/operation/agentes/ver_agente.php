@@ -556,11 +556,13 @@ if (is_ajax ()) {
 				}
 			}
 			else {
-				$sql = 'SELECT DISTINCT nombre, id_agente_modulo
-						FROM tagente_modulo t1
-						WHERE ' . $filter . '
+				$sql = 'SELECT DISTINCT nombre, t1.id_agente_modulo
+						FROM tagente_modulo t1, tagente_estado t2
+						WHERE t1.id_agente_modulo = t2.id_agente_modulo AND
+						' . $filter . '
 							AND t1.delete_pending = 0
-							AND t1.id_agente IN (' . implode(',', $idAgents) . ')';
+							AND t1.id_agente IN (' . implode(',', $idAgents) . ')
+							AND t2.datos NOT LIKE "%image%"';
 
 				if ($selection_mode == 'common') {
 					$sql .= ' AND (

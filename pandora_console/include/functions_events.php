@@ -50,6 +50,8 @@ function events_get_all_fields() {
 	$columns['ack_utimestamp'] = __('ACK Timestamp');
 	$columns['instructions'] = __('Instructions');
 	$columns['server_name'] = __('Server name');
+	$columns['data'] = __('Data');
+	$columns['module_status'] = __('Module status');
 	
 	return $columns;
 }

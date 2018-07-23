@@ -99,78 +99,69 @@ function returnError($typeError, $returnType = 'string') {
 			break;
 		default:
 			returnData("string",
-				array('type' => 'string', 'data' => __($returnType)));
+				array('type' => 'string', 'data' => __($typeError)));
 			break;
 	}
 }
 
 /**
- * 
  * @param $returnType
  * @param $data
  * @param $separator
- * 
  * @return
  */
 function returnData($returnType, $data, $separator = ';') {
 	switch ($returnType) {
 		case 'string':
-			if ($data['type'] == 'string') {
-				echo $data['data'];
+			if( is_array($data['data']) ){
+				echo convert_array_multi($data['data'], $separator);
 			}
-			else {
-				//TODO
+			else{
+				echo $data['data'];
 			}
 			break;
 		case 'csv':
 		case 'csv_head':
-			switch ($data['type']) {
-				case 'array':
-					if (array_key_exists('list_index', $data))
-					{
-						if ($returnType == 'csv_head') {
-							foreach($data['list_index'] as $index) {
-								echo $index;
-								if (end($data['list_index']) == $index)
-									echo "\n";
-								else
-									echo $separator;
-							}
-						}
-						foreach($data['data'] as $dataContent) {
-							foreach($data['list_index'] as $index) {
-								if (array_key_exists($index, $dataContent))
-									echo str_replace("\n", " ", $dataContent[$index]);
-								if (end($data['list_index']) == $index)
-									echo "\n";
-								else
-									echo $separator;
-							}
+			if( is_array($data['data']) ){
+				if (array_key_exists('list_index', $data)) {
+					if ($returnType == 'csv_head') {
+						foreach($data['list_index'] as $index) {
+							echo $index;
+							if (end($data['list_index']) == $index)
+								echo "\n";
+							else
+								echo $separator;
 						}
 					}
-					else {
-						if (!empty($data['data'])) {
-							
-							foreach ($data['data'] as $dataContent) {
-								
-								$clean = array_map("array_apply_io_safe_output", $dataContent);
-								
-								foreach ($clean as $k => $v) {
-									$clean[$k] = str_replace("\r", "\n", $clean[$k]);
-									$clean[$k] = str_replace("\n", " ", $clean[$k]);
-									$clean[$k] = strip_tags($clean[$k]);
-									$clean[$k] = str_replace(';',' ',$clean[$k]);
-								}
-								$row = implode($separator, $clean);
-								
-								echo $row . "\n";
-							}
+					foreach($data['data'] as $dataContent) {
+						foreach($data['list_index'] as $index) {
+							if (array_key_exists($index, $dataContent))
+								echo str_replace("\n", " ", $dataContent[$index]);
+							if (end($data['list_index']) == $index)
+								echo "\n";
+							else
+								echo $separator;
 						}
 					}
-					break;
-				case 'string':
-					echo $data['data'];
-					break;
+				}
+				else {
+					if (!empty($data['data'])) {
+						foreach ($data['data'] as $dataContent) {
+							$clean = array_map("array_apply_io_safe_output", $dataContent);
+							foreach ($clean as $k => $v) {
+								$clean[$k] = str_replace("\r", "\n", $clean[$k]);
+								$clean[$k] = str_replace("\n", " ", $clean[$k]);
+								$clean[$k] = strip_tags($clean[$k]);
+								$clean[$k] = str_replace(';',' ',$clean[$k]);
+							}
+							$row = implode($separator, $clean);
+							echo $row . "\n";
+						}
+					}
+				}
+			}
+			else{
+				echo $data['data'];
 			}
 			break;
 		case 'json':
@@ -180,13 +171,13 @@ function returnData($returnType, $data, $separator = ';') {
 			if ($separator == ";") {
 				$separator = null;
 			}
-			
+
 			if(empty($separator)){
 				echo json_encode ($data);
 			} else {
 				echo json_encode ($data, $separator);
 			}
-			
+
 			break;
 	}
 }

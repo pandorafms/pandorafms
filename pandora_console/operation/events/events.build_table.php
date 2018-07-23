@@ -249,6 +249,18 @@ else {
 		
 		$i++;
 	}
+	if (in_array('data', $show_fields)) {
+		$table->head[$i] = __('Data');
+		$table->align[$i] = 'left';
+		
+		$i++;
+	}
+	if (in_array('module_status', $show_fields)) {
+		$table->head[$i] = __('Module status');
+		$table->align[$i] = 'left';
+		
+		$i++;
+	}
 	if ($i != 0 && $allow_action) {
 		$table->head[$i] = __('Action');
 		$table->align[$i] = 'left';
@@ -660,6 +672,16 @@ else {
 				$data[$i] = '';
 			}
 			
+			$table->cellclass[count($table->data)][$i] = $myclass;
+			$i++;
+		}
+		if (in_array('data',$show_fields)) {
+			$data[$i] = $event["data"];
+			$table->cellclass[count($table->data)][$i] = $myclass;
+			$i++;
+		}
+		if (in_array('module_status',$show_fields)) {
+			$data[$i] = modules_get_modules_status ($event["module_status"]);
 			$table->cellclass[count($table->data)][$i] = $myclass;
 			$i++;
 		}

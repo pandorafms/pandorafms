@@ -687,7 +687,7 @@ sub pandora_load_config_pdb ($) {
 ###############################################################################
 
 sub pandora_checkdb_integrity {
-	my $dbh = shift;
+	my ($conf, $dbh) = @_;
 
     log_message ('INTEGRITY', "Cleaning up group stats.");
 
@@ -719,7 +719,7 @@ sub pandora_checkdb_integrity {
     db_do ($dbh, 'DELETE FROM tagente_datos_inc WHERE id_agente_modulo NOT IN (SELECT id_agente_modulo FROM tagente_modulo)');
     
     # Check enterprise tables
-    enterprise_hook ('pandora_checkdb_integrity_enterprise', [$dbh]);
+    enterprise_hook ('pandora_checkdb_integrity_enterprise', [$conf, $dbh]);
 }
 
 ###############################################################################
@@ -996,7 +996,7 @@ sub pandoradb_main ($$$) {
 	pandora_checkdb_consistency ($conf, $dbh);
 
 	# Maintain Referential integrity and other stuff
-	pandora_checkdb_integrity ($dbh);
+	pandora_checkdb_integrity ($conf, $dbh);
 
 	# Move old data to the history DB
 	if (defined ($history_dbh)) {

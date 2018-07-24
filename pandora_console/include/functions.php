@@ -1372,7 +1372,6 @@ function is_metaconsole() {
 function is_management_allowed() {
 	global $config;
 	return ( (is_metaconsole() && $config["centralized_management"])
-		|| (is_metaconsole() && !$config["centralized_management"])
 		|| (!is_metaconsole() && !$config["centralized_management"]));
 }
 

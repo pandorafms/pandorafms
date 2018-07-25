@@ -991,6 +991,18 @@ sub init {
 }
 
 ################################################################################
+# Update internal UA timeout
+################################################################################
+sub ua_set_timeout {
+	my ($config, $timeout) = @_;
+	return unless looks_like_number($timeout) and $timeout > 0;
+	my $sys = get_sys_environment($config);
+
+	return unless defined($sys->{'ua'});
+	$sys->{'ua'}->timeout($timeout);
+}
+
+################################################################################
 # initialize plugin (basic)
 ################################################################################
 sub init_system {

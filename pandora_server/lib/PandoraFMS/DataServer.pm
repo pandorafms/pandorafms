@@ -413,6 +413,12 @@ sub process_xml_data ($$$$$) {
 				}
 			}
 		}
+
+		if (defined($pa_config->{'autoconfigure_agents'}) && $pa_config->{'autoconfigure_agents'} == 1) {
+			# Update agent configuration once, before create agent - MetaConsole port to Node
+			enterprise_hook('autoconfigure_agent', [$pa_config, $agent_name, $agent_id, $data, $dbh]);
+		}
+
 	}
 
 	# Get the data of the agent, if fail return

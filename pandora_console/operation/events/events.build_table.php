@@ -135,131 +135,133 @@ else {
 	$table->align[$i] = 'left';
 
 	$i++;
-	if (in_array('server_name', $show_fields)) {
+	foreach ($show_fields as $k_s => $fields) {
+	if ($fields == 'server_name') {
 		$table->head[$i] = __('Server');
 		$table->align[$i] = 'left';
 		$i++;
 	}
-	if (in_array('estado', $show_fields)) {
+	if ($fields == 'estado') {
 		$table->head[$i] = __('Status');
 		$table->align[$i] = 'left';
 		$i++;
 	}
-	if (in_array('id_evento', $show_fields)) {
+	if ($fields == 'id_evento') {
 		$table->head[$i] = __('Event ID');
 		$table->align[$i] = 'left';
 
 		$i++;
 	}
-	if (in_array('evento', $show_fields)) {
+	if ($fields == 'evento') {
 		$table->head[$i] = __('Event Name');
 		$table->align[$i] = 'left';
 		$table->style[$i] = 'min-width: 200px; max-width: 350px; word-break: break-all;';
 		$i++;
 	}
-	if (in_array('id_agente', $show_fields)) {
+	if ($fields == 'id_agente') {
 		$table->head[$i] = __('Agent name');
 		$table->align[$i] = 'left';
 		$table->style[$i] = 'max-width: 350px; word-break: break-all;';
 		$i++;
 	}
-	if (in_array('timestamp', $show_fields)) {
+	if ($fields == 'timestamp') {
 		$table->head[$i] = __('Timestamp');
 		$table->align[$i] = 'left';
 		
 		$i++;
 	}
-	if (in_array('id_usuario', $show_fields)) {
+	if ($fields == 'id_usuario') {
 		$table->head[$i] = __('User');
 		$table->align[$i] = 'left';
 		
 		$i++;
 	}
-	if (in_array('owner_user', $show_fields)) {
+	if ($fields == 'owner_user') {
 		$table->head[$i] = __('Owner');
 		$table->align[$i] = 'left';
 		
 		$i++;
 	}
-	if (in_array('id_grupo', $show_fields)) {
+	if ($fields == 'id_grupo') {
 		$table->head[$i] = __('Group');
 		$table->align[$i] = 'left';
 		
 		$i++;
 	}
-	if (in_array('event_type', $show_fields)) {
+	if ($fields == 'event_type') {
 		$table->head[$i] = __('Event type');
 		$table->align[$i] = 'left';
 		
 		$table->style[$i] = 'min-width: 85px;';
 		$i++;
 	}
-	if (in_array('id_agentmodule', $show_fields)) {
+	if ($fields == 'id_agentmodule') {
 		$table->head[$i] = __('Agent Module');
 		$table->align[$i] = 'left';
 		
 		$i++;
 	}
-	if (in_array('id_alert_am', $show_fields)) {
+	if ($fields == 'id_alert_am') {
 		$table->head[$i] = __('Alert');
 		$table->align[$i] = 'left';
 		
 		$i++;
 	}
 
-	if (in_array('criticity', $show_fields)) {
+	if ($fields == 'criticity') {
 		$table->head[$i] = __('Severity');
 		$table->align[$i] = 'left';
 		
 		$i++;
 	}
-	if (in_array('user_comment', $show_fields)) {
+	if ($fields == 'user_comment') {
 		$table->head[$i] = __('Comment');
 		$table->align[$i] = 'left';
 		
 		$i++;
 	}
-	if (in_array('tags', $show_fields)) {
+	if ($fields == 'tags') {
 		$table->head[$i] = __('Tags');
 		$table->align[$i] = 'left';
 		
 		$i++;
 	}
-	if (in_array('source', $show_fields)) {
+	if ($fields == 'source') {
 		$table->head[$i] = __('Source');
 		$table->align[$i] = 'left';
 		
 		$i++;
 	}
-	if (in_array('id_extra', $show_fields)) {
+	if ($fields == 'id_extra') {
 		$table->head[$i] = __('Extra ID');
 		$table->align[$i] = 'left';
 		
 		$i++;
 	}
-	if (in_array('ack_utimestamp', $show_fields)) {
+	if ($fields == 'ack_utimestamp') {
 		$table->head[$i] = __('ACK Timestamp');
 		$table->align[$i] = 'left';
 		
 		$i++;
 	}
-	if (in_array('instructions', $show_fields)) {
+	if ($fields == 'instructions') {
 		$table->head[$i] = __('Instructions');
 		$table->align[$i] = 'left';
 		
 		$i++;
 	}
-	if (in_array('data', $show_fields)) {
+	if ($fields == 'data') {
 		$table->head[$i] = __('Data');
 		$table->align[$i] = 'left';
 		
 		$i++;
 	}
-	if (in_array('module_status', $show_fields)) {
+	if ($fields == 'module_status') {
 		$table->head[$i] = __('Module status');
 		$table->align[$i] = 'left';
 		
 		$i++;
+	}
 	}
 	if ($i != 0 && $allow_action) {
 		$table->head[$i] = __('Action');
@@ -371,35 +373,6 @@ else {
 		
 		$i++;
 		
-		if (in_array('server_name',$show_fields)) {
-			if ($meta) {
-				if (can_user_access_node ()) {
-					$data[$i] = "<a href='" . $event["server_url"] . "/index.php?sec=estado&sec2=operation/agentes/group_view" . $event['server_url_hash'] . "'>" . $event["server_name"] . "</a>";
-				}
-				else {
-					$data[$i] = $event["server_name"];
-				}
-			}
-			else {
-				$data[$i] = db_get_value('name','tserver');
-			}
-			$table->cellclass[count($table->data)][$i] = $myclass;
-			$i++;
-		}
-		if (in_array('estado',$show_fields)) {
-			$data[$i] = html_print_image ($img_st, true, 
-				array ("class" => "image_status",
-					"title" => $title_st,
-					"id" => 'status_img_'.$event["id_evento"]));
-			$table->cellstyle[count($table->data)][$i] = 'background: #F3F3F3;';
-			$i++;
-		}
-		if (in_array('id_evento',$show_fields)) {
-			$data[$i] = $event["id_evento"];
-			$table->cellclass[count($table->data)][$i] = $myclass;
-			$i++;
-		}
-		
 		switch ($event["criticity"]) {
 			default:
 			case 0:
@@ -424,8 +397,37 @@ else {
 				$img_sev = "images/status_sets/default/severity_major.png";
 				break;
 		}
+		foreach ($show_fields as $k_s => $fields) {
+		if ($fields == 'server_name') {
+			if ($meta) {
+				if (can_user_access_node ()) {
+					$data[$i] = "<a href='" . $event["server_url"] . "/index.php?sec=estado&sec2=operation/agentes/group_view" . $event['server_url_hash'] . "'>" . $event["server_name"] . "</a>";
+				}
+				else {
+					$data[$i] = $event["server_name"];
+				}
+			}
+			else {
+				$data[$i] = db_get_value('name','tserver');
+			}
+			$table->cellclass[count($table->data)][$i] = $myclass;
+			$i++;
+		}
+		if ($fields == 'estado') {
+			$data[$i] = html_print_image ($img_st, true, 
+				array ("class" => "image_status",
+					"title" => $title_st,
+					"id" => 'status_img_'.$event["id_evento"]));
+			$table->cellstyle[count($table->data)][$i] = 'background: #F3F3F3;';
+			$i++;
+		}
+		if ($fields == 'id_evento') {
+			$data[$i] = $event["id_evento"];
+			$table->cellclass[count($table->data)][$i] = $myclass;
+			$i++;
+		}
 		
-		if (in_array('evento', $show_fields)) {
+		if ($fields == 'evento') {
 			// Event description
 			$data[$i] = '<span title="' . strip_tags(io_safe_output($event["evento"])) . '" class="f9">';
 			if($allow_action) {
@@ -440,7 +442,7 @@ else {
 			$i++;
 		}
 		
-		if (in_array('id_agente', $show_fields)) {
+		if ($fields == 'id_agente') {
 			$data[$i] = '<span class="'.$myclass.'">';
 			
 			if ($event["id_agente"] > 0) {
@@ -473,7 +475,7 @@ else {
 			$i++;
 		}
 		
-		if (in_array('timestamp', $show_fields)) {
+		if ($fields == 'timestamp') {
 			//Time
 			$data[$i] = '<span class="'.$myclass.'">';
 			if ($group_rep == 1) {
@@ -487,7 +489,7 @@ else {
 			$i++;
 		}
 		
-		if (in_array('id_usuario',$show_fields)) {
+		if ($fields == 'id_usuario') {
 			$user_name = db_get_value('fullname', 'tusuario', 'id_user', $event['id_usuario']);
 			if(empty($user_name)) {
 				$user_name = $event['id_usuario'];
@@ -497,7 +499,7 @@ else {
 			$i++;
 		}
 		
-		if (in_array('owner_user',$show_fields)) {
+		if ($fields == 'owner_user') {
 			$owner_name = db_get_value('fullname', 'tusuario', 'id_user', $event['owner_user']);
 			if(empty($owner_name)) {
 				$owner_name = $event['owner_user'];
@@ -507,7 +509,7 @@ else {
 			$i++;
 		}
 		
-		if (in_array('id_grupo',$show_fields)) {
+		if ($fields == 'id_grupo') {
 			if ($meta) {
 				$data[$i] = $event['group_name'];
 			}
@@ -523,13 +525,13 @@ else {
 			$i++;
 		}
 		
-		if (in_array('event_type',$show_fields)) {
+		if ($fields == 'event_type') {
 			$data[$i] = events_print_type_description($event["event_type"], true);
 			$table->cellclass[count($table->data)][$i] = $myclass;
 			$i++;
 		}
 		
-		if (in_array('id_agentmodule',$show_fields)) {
+		if ($fields == 'id_agentmodule') {
 			if ($meta) {
 				$module_link = '<a href="'.$event["server_url"].'/index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=' . $event["id_agente"] . $event["server_url_hash"] . '">';
 				if (can_user_access_node ()) {
@@ -548,7 +550,7 @@ else {
 			$i++;
 		}
 		
-		if (in_array('id_alert_am',$show_fields)) {
+		if ($fields == 'id_alert_am') {
 			if($meta) {
 				$data[$i] = $event["alert_template_name"];
 			}
@@ -571,13 +573,13 @@ else {
 			$i++;
 		}
 		
-		if (in_array('criticity',$show_fields)) {
+		if ($fields == 'criticity') {
 			$data[$i] = get_priority_name ($event["criticity"]);
 			$table->cellclass[count($table->data)][$i] = $myclass;
 			$i++;
 		}
 		
-		if (in_array('user_comment',$show_fields)) {
+		if ($fields == 'user_comment') {
 			$safe_event_user_comment = strip_tags(io_safe_output($event["user_comment"]));
 			$line_breaks = array("\r\n", "\n", "\r");
 			$safe_event_user_comment = str_replace($line_breaks, '<br>', $safe_event_user_comment);
@@ -608,25 +610,25 @@ else {
 			$i++;
 		}
 		
-		if (in_array('tags',$show_fields)) {
+		if ($fields == 'tags') {
 			$data[$i] = tags_get_tags_formatted($event['tags']);
 			$table->cellclass[count($table->data)][$i] = $myclass;
 			$i++;
 		}
 		
-		if (in_array('source',$show_fields)) {
+		if ($fields == 'source') {
 			$data[$i] = $event["source"];
 			$table->cellclass[count($table->data)][$i] = $myclass;
 			$i++;
 		}
 		
-		if (in_array('id_extra',$show_fields)) {
+		if ($fields == 'id_extra') {
 			$data[$i] = $event["id_extra"];
 			$table->cellclass[count($table->data)][$i] = $myclass;
 			$i++;
 		}
 		
-		if (in_array('ack_utimestamp',$show_fields)) {
+		if ($fields == 'ack_utimestamp') {
 			if ($event["ack_utimestamp"] == 0) {
 				$data[$i] = '';
 			}
@@ -637,7 +639,7 @@ else {
 			$i++;
 		}
 		
-		if (in_array('instructions',$show_fields)) {
+		if ($fields == 'instructions') {
 			switch($event['event_type']) {
 				case 'going_unknown':
 					if(!empty($event["unknown_instructions"])) {
@@ -675,15 +677,16 @@ else {
 			$table->cellclass[count($table->data)][$i] = $myclass;
 			$i++;
 		}
-		if (in_array('data',$show_fields)) {
+		if ($fields == 'data') {
 			$data[$i] = $event["data"];
 			$table->cellclass[count($table->data)][$i] = $myclass;
 			$i++;
 		}
-		if (in_array('module_status',$show_fields)) {
+		if ($fields == 'module_status') {
 			$data[$i] = modules_get_modules_status ($event["module_status"]);
 			$table->cellclass[count($table->data)][$i] = $myclass;
 			$i++;
+		}
 		}
 		
 		if ($i != 0 && $allow_action) {

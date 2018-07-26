@@ -65,13 +65,13 @@ if ($fields_selected[0]!='') {
 	foreach ($fields_selected as $field_selected) {
 		switch ($field_selected) {
 			case 'id_evento':
-				$result = __('Event id');
+				$result = __('Event Id');
 				break;
 			case 'evento':
-				$result = __('Event name');
+				$result = __('Event Name');
 				break;
 			case 'id_agente':
-				$result = __('Agent name');
+				$result = __('Agent Name');
 				break;
 			case 'id_usuario':
 				$result = __('User');
@@ -86,10 +86,10 @@ if ($fields_selected[0]!='') {
 				$result = __('Timestamp');
 				break;
 			case 'event_type':
-				$result = __('Event type');
+				$result = __('Event Type');
 				break;
 			case 'id_agentmodule':
-				$result = __('Agent module');
+				$result = __('Module Name');
 				break;
 			case 'id_alert_am':
 				$result = __('Alert');
@@ -107,7 +107,7 @@ if ($fields_selected[0]!='') {
 				$result = __('Source');
 				break;
 			case 'id_extra':
-				$result = __('Extra id');
+				$result = __('Extra Id');
 				break;
 			case 'owner_user':
 				$result = __('Owner');
@@ -119,14 +119,15 @@ if ($fields_selected[0]!='') {
 				$result = __('Instructions');
 				break;
 			case 'server_name':
-				$result = __('Server name');
+				$result = __('Server Name');
 				break;
 				case 'data':
 				$result = __('Data');
-				case 'module_status':
-				$result = __('Module status');
 				break;
+			case 'module_status':
+				$result = __('Module Status');
 				break;
+				
 		}
 		$result_selected[$field_selected] = $result;
 	}
@@ -155,27 +156,27 @@ $table->data = array();
 
 $fields_available = array();
 
-$fields_available['id_evento'] = __('Event id');
-$fields_available['evento'] = __('Event name');
-$fields_available['id_agente'] = __('Agent name');
+$fields_available['id_evento'] = __('Event Id');
+$fields_available['evento'] = __('Event Name');
+$fields_available['id_agente'] = __('Agent Name');
 $fields_available['id_usuario'] = __('User');
 $fields_available['id_grupo'] = __('Group');
 $fields_available['estado'] = __('Status');
 $fields_available['timestamp'] = __('Timestamp');
-$fields_available['event_type'] = __('Event type');
-$fields_available['id_agentmodule'] = __('Agent module');
+$fields_available['event_type'] = __('Event Type');
+$fields_available['id_agentmodule'] = __('Module Name');
 $fields_available['id_alert_am'] = __('Alert');
 $fields_available['criticity'] = __('Severity');
 $fields_available['user_comment'] = __('Comment');
 $fields_available['tags'] = __('Tags');
 $fields_available['source'] = __('Source');
-$fields_available['id_extra'] = __('Extra id');
+$fields_available['id_extra'] = __('Extra Id');
 $fields_available['owner_user'] = __('Owner');
 $fields_available['ack_utimestamp'] = __('ACK Timestamp');
 $fields_available['instructions'] = __('Instructions');
-$fields_available['server_name'] = __('Server name');
+$fields_available['server_name'] = __('Server Name');
 $fields_available['data'] = __('Data');
-$fields_available['module_status'] = __('Module status');
+$fields_available['module_status'] = __('Module Status');
 
 //remove fields already selected
 foreach ($fields_available as $key=>$available) {

@@ -1013,14 +1013,16 @@ function alerts_create_alert_agent_module ($id_agent_module, $id_alert_template,
  * @return mixed Affected rows or false if something goes wrong.
  */
 function alerts_update_alert_agent_module ($id_alert_agent_module, $values) {
-	if (empty ($id_agent_module))
+
+	if (empty ($id_alert_agent_module))
 		return false;
+
 	if (! is_array ($values))
 		return false;
-	
+
 	return (@db_process_sql_update ('talert_template_modules',
 		$values,
-		array ('id' => $id_alert_template))) !== false;
+		array ('id' => $id_alert_agent_module))) !== false;
 }
 
 /**

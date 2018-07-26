@@ -1731,6 +1731,9 @@ function visual_map_print_item($mode = "read", $layoutData,
 					$result = array_merge($result, $result_server);
 				}
 				
+				if ($connection) {
+					metaconsole_restore_db();
+				}
 			}
 		}
 		

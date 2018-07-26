@@ -71,7 +71,7 @@ if ($fields_selected[0]!='') {
 				$result = __('Event Name');
 				break;
 			case 'id_agente':
-				$result = __('Agent name');
+				$result = __('Agent Name');
 				break;
 			case 'id_usuario':
 				$result = __('User');
@@ -124,9 +124,10 @@ if ($fields_selected[0]!='') {
 				case 'data':
 				$result = __('Data');
 				break;
-				case 'module_status':
+			case 'module_status':
 				$result = __('Module Status');
 				break;
+				
 		}
 		$result_selected[$field_selected] = $result;
 	}

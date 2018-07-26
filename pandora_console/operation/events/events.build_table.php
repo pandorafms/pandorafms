@@ -675,7 +675,7 @@ else {
 			$table->cellclass[count($table->data)][$i] = $myclass;
 			$i++;
 		}
-		if (in_array('data',$show_fields)) {
+			if (in_array('data',$show_fields)) {
 			$data[$i] = $event["data"];
 			if($data[$i] %1 == 0)
 				$data[$i]= number_format($data[$i], 0);

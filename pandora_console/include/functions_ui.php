@@ -831,22 +831,39 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 	$description = io_safe_output($template['name']);
 	
 	$data = array ();
-	
-	if (!defined('METACONSOLE')) {
-		if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
-			$policyInfo = policies_is_alert_in_policy2($alert['id'], false);
-			if ($policyInfo === false)
-				$data[$index['policy']] = '';
-			else {
-				$img = 'images/policies.png';
-				
+
+	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
+		if(is_metaconsole()){
+			$node = metaconsole_get_connection_by_id($alert['server_data']['id']);
+			if (metaconsole_load_external_db($node) !== NOERR) {
+				// Restore the default connection.
+				metaconsole_restore_db();
+				$errors++;
+				break;
+			}
+		}
+
+		$policyInfo = policies_is_alert_in_policy2($alert['id'], false);
+		if ($policyInfo === false)
+			$data[$index['policy']] = '';
+		else {
+			$img = 'images/policies.png';
+			if(!is_metaconsole()){
 				$data[$index['policy']] = '<a href="?sec=gmodules&amp;sec2=enterprise/godmode/policies/policies&amp;id=' . $policyInfo['id'] . '">' .
+					html_print_image($img,true, array('title' => $policyInfo['name'])) .
+					'</a>';
+			}else{
+				$data[$index['policy']] = '<a href="?sec=gmodules&amp;sec2=advanced/policymanager&amp;id=' . $policyInfo['id'] . '">' .
 					html_print_image($img,true, array('title' => $policyInfo['name'])) .
 					'</a>';
 			}
 		}
+
+		if(is_metaconsole()){
+			metaconsole_restore_db();
+		}
 	}
-	
+
 	// Standby
 	$data[$index['standby']] = '';
 	if (isset ($alert["standby"]) && $alert["standby"] == 1) {
@@ -881,8 +898,8 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 			$agent_name = false;
 			$id_agent = modules_get_agentmodule_agent ($alert["id_agent_module"]);
 		}
-		
-		if (defined('METACONSOLE') && !can_user_access_node ()) {
+
+		if (defined('METACONSOLE') || !can_user_access_node ()) {
 			$data[$index['agent_name']] = ui_print_truncate_text($agent_name, 'agent_small', false, true, false, '[&hellip;]', 'font-size:7.5pt;');
 		}
 		else {
@@ -893,7 +910,7 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 				$data[$index['agent_name']] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agent.'"> <span style="font-size: 7pt;font-weight:bold" title ="' . $agente['nombre']. '">'.$agente["alias"].'</span></a>';
 			}
 		}
-		
+
 		$data[$index['module_name']] =
 			ui_print_truncate_text (isset($alert['agent_module_name']) ? $alert['agent_module_name'] : modules_get_agentmodule_name ($alert["id_agent_module"]), 'module_small', false, true, true, '[&hellip;]', 'font-size: 7.2pt');
 	}

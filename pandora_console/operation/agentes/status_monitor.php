@@ -977,17 +977,17 @@ if (!empty($result)) {
 	$table->head[2] = __('Data Type');
 	$table->head[2] .= ' <a href="index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype . '&amp;moduletype='.$moduletype . '&amp;refr=' . $refr . '&amp;modulegroup='.$modulegroup . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=type&amp;sort=up">' . html_print_image('images/sort_up.png', true, array('style' => $selectTypeUp, 'alt' => 'up'))  . '</a>' .
 	'<a href="index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype . '&amp;moduletype='.$moduletype . '&amp;refr=' . $refr . '&amp;modulegroup='.$modulegroup . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=type&amp;sort=down">' . html_print_image('images/sort_down.png', true, array('style' => $selectTypeDown, 'alt' => 'down')) . '</a>';
-	
+
 	$table->align[2] = 'left';
 
 	$table->head[3] = __('Module name');
 	$table->head[3] .= ' <a href="index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype . '&amp;moduletype='.$moduletype . '&amp;refr=' . $refr . '&amp;modulegroup='.$modulegroup . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=module_name&amp;sort=up">' . html_print_image('images/sort_up.png', true, array('style' => $selectModuleNameUp, 'alt' => 'up'))  . '</a>' .
 	'<a href="index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype . '&amp;moduletype='.$moduletype . '&amp;refr=' . $refr . '&amp;modulegroup='.$modulegroup . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=module_name&amp;sort=down">' . html_print_image('images/sort_down.png', true, array('style' => $selectModuleNameDown, 'alt' => 'down')) . '</a>';
-  
-  	$table->head[4] = __('Server type');
+
+	$table->head[4] = __('Server type');
 	$table->head[4] .= ' <a href="index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype . '&amp;moduletype='.$moduletype . '&amp;refr=' . $refr . '&amp;modulegroup='.$modulegroup . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=moduletype&amp;sort=up">' . html_print_image('images/sort_up.png', true, array('style' => $selectModuleNameUp, 'alt' => 'up'))  . '</a>' .
 	'<a href="index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype . '&amp;moduletype='.$moduletype . '&amp;refr=' . $refr . '&amp;modulegroup='.$modulegroup . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=moduletype&amp;sort=down">' . html_print_image('images/sort_down.png', true, array('style' => $selectModuleNameDown, 'alt' => 'down')) . '</a>';
-  
+
 	$table->head[5] = __('Interval');
 	$table->head[5] .= ' <a href="index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype . '&amp;moduletype='.$moduletype . '&amp;refr=' . $refr . '&amp;modulegroup='.$modulegroup . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=interval&amp;sort=up">' . html_print_image('images/sort_up.png', true, array('style' => $selectIntervalUp, 'alt' => 'up'))  . '</a>' .
 	'<a href="index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype . '&amp;moduletype='.$moduletype . '&amp;refr=' . $refr . '&amp;modulegroup='.$modulegroup . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=interval&amp;sort=down">' . html_print_image('images/sort_down.png', true, array('style' => $selectIntervalDown, 'alt' => 'down')) . '</a>';
@@ -1024,36 +1024,47 @@ if (!empty($result)) {
 		//Avoid unset, null and false value
 		if (empty($row['server_name']))
 			$row['server_name'] = "";
-		
+
 		$is_web_content_string = (bool)db_get_value_filter('id_agente_modulo',
 			'tagente_modulo',
 			array('id_agente_modulo' => $row['id_agente_modulo'],
 				'id_tipo_modulo' => $id_type_web_content_string));
-		
+
 		//Fixed the goliat sends the strings from web
 		//without HTML entities
 		if ($is_web_content_string) {
 			$row['datos'] = io_safe_input($row['datos']);
 		}
-		
+
 		//Fixed the data from Selenium Plugin
 		if ($row['datos'] != strip_tags($row['datos'])) {
 			$row['datos'] = io_safe_input($row['datos']);
 		}
-			
+
 		$data = array ();
 		if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
+			if(is_metaconsole()){
+				$node = metaconsole_get_connection_by_id($row['server_id']);
+				if (metaconsole_load_external_db($node) !== NOERR) {
+					// Restore the default connection.
+					metaconsole_restore_db();
+					$errors++;
+					break;
+				}
+			}
+
 			$policyInfo = policies_info_module_policy($row['id_agente_modulo']);
+
 			if ($policyInfo === false)
 				$data[0] = '';
 			else {
 				$linked = policies_is_module_linked($row['id_agente_modulo']);
-				
+
 				$adopt = false;
 				if (policies_is_module_adopt($row['id_agente_modulo'])) {
 					$adopt = true;
 				}
-				
+
 				if ($linked) {
 					if ($adopt) {
 						$img = 'images/policies_brick.png';
@@ -1074,15 +1085,25 @@ if (!empty($result)) {
 						$title = __('(Unlinked) ') . $policyInfo['name_policy'];
 					}
 				}
-				
-				$data[0] = '<a href="?sec=gmodules&amp;sec2=enterprise/godmode/policies/policies&amp;id=' . $policyInfo['id_policy'] . '">' . 
-					html_print_image($img,true, array('title' => $title)) .
-					'</a>';
+				if(is_metaconsole()){
+					$data[0] = '<a href="?sec=gmodules&amp;sec2=advanced/policymanager&amp;id=' . $policyInfo['id_policy'] . '">' . 
+						html_print_image($img,true, array('title' => $title)) .
+						'</a>';
+				}
+				else{
+					$data[0] = '<a href="?sec=gmodules&amp;sec2=enterprise/godmode/policies/policies&amp;id=' . $policyInfo['id_policy'] . '">' . 
+						html_print_image($img,true, array('title' => $title)) .
+						'</a>';
+				}
+			}
+
+			if(is_metaconsole()){
+				metaconsole_restore_db();
 			}
 		}
-		
+
 		$agent_alias = !empty($row['agent_alias']) ? $row['agent_alias'] : $row['agent_name'];
-		
+
 		// TODO: Calculate hash access before to use it more simply like other sections. I.E. Events view
 		if (defined('METACONSOLE')) {
 			$agent_link = '<a href="'.

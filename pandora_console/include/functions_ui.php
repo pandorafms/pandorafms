@@ -3853,12 +3853,17 @@ function ui_print_module_string_value($value, $id_agente_module,
 				$salida = $value;
 			}
 			else {
+				$value = preg_replace ('/</', '&lt;', $value);
+				$value = preg_replace ('/>/', '&gt;', $value);
+				$value = preg_replace ('/\n/i','<br>',$value);
+				$value = preg_replace ('/\s/i','&nbsp;',$value);
+				
 				$title_dialog =
 					modules_get_agentmodule_agent_alias($id_agente_module) .
 					" / " . $module_name;
 				$salida = "<div " .
 					"id='hidden_value_module_" . $id_agente_module . "'
-					style='display: none;' title='" . $title_dialog . "'>" .
+					style='display: none; width: 100%; height: 100%; overflow: scroll; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left' title='" . $title_dialog . "'>" .
 					$value .
 					"</div>" . 
 					"<span " .

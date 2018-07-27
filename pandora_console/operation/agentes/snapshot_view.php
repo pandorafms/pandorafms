@@ -81,17 +81,17 @@ if (empty($last_data)) {
 			echo '<center><img src="' . $last_data . '" alt="image" style="width:100%"/></center>';
 		}
 		else {
-			$datos = preg_replace ('/</', '&lt;', $datos);
-			$datos = preg_replace ('/>/', '&gt;', $datos);
-			$datos = preg_replace ('/\n/i','<br>',$datos);
-			$datos = preg_replace ('/\s/i','&nbsp;',$datos);
-			echo "<div id='result_div' style='width: 100%; height: 100%; overflow: scroll; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left'>";
+			$last_data = preg_replace ('/</', '&lt;', $last_data);
+			$last_data = preg_replace ('/>/', '&gt;', $last_data);
+			$last_data = preg_replace ('/\n/i','<br>',$last_data);
+			$last_data = preg_replace ('/\s/i','&nbsp;',$last_data);
+			echo "<div id='result_div' style='width: 100%; height: 100%; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left'>";
 			echo $last_data;
 			echo "</div>";
 		?>
 		<script type="text/javascript">
 			function getScrollbarWidth() {
-				var div = $('<div style="width:50px;height:50px;overflow:hidden;position:absolute;top:-200px;left:-200px;"><div style="height:100px;"></div></div>');
+				var div = $('<div style=""></div>');
 				$('body').append(div);
 				var w1 = $('div', div).innerWidth();
 				div.css('overflow-y', 'auto');

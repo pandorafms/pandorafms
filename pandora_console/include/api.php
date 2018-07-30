@@ -63,7 +63,7 @@ switch($info) {
 			$config["MR"] = 0;
 		}
 		
-		echo get_product_name() . ' ' . $pandora_version . ' - ' . $build_version . " MR" . $config["MR"];
+		echo io_safe_output(get_product_name()) . ' ' . $pandora_version . ' - ' . $build_version . " MR" . $config["MR"];
 
 		exit;
 }

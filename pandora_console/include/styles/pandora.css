@@ -4617,10 +4617,6 @@ form ul.form_flex li ul li{
     flex-direction: column;
 }
 
-.events_bar {
-	margin:0 auto;
-}
-
 #snmp_data {
 	background: #f9faf9;
 }

@@ -194,6 +194,7 @@ elseif (isset ($_GET["insert_form"])) {
 		$titulo = ui_print_truncate_text(events_get_description ($event), 'description', false, true, false);
 		$id_grupo = events_get_group ($event);
 		$origen = "Pandora FMS Event";
+		$id_agent = db_get_value("id_agente","tevento","id_evento",$event);
 		unset ($event);
 	}
 	$prioridad = 0;

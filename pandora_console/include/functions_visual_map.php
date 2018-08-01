@@ -4161,4 +4161,104 @@ function visual_map_instanciate_template($id_layout_template, $name, $id_agent) 
 
 }
 
+
+/**
+ * Get a list of layout templates for given user.
+ *
+ * @param int User id.
+ * @param bool Wheter to return all the fields or only the name (to use in
+ * html_print_select() directly)
+ * @param array Additional filters to filter the layouts.
+ * @param bool Whether to return All group or not.
+ *
+ * @return array A list of layouts the user can see.
+ */
+function visual_map_get_user_layout_templates ($id_user = 0, $only_names = false, $filter = false, 
+										$returnAllGroup = true, $favourite = false) {
+											
+	if (! is_array ($filter)){
+		$filter = array ();
+	} else {
+		if(!empty($filter['name'])){
+			$where .= "name LIKE '%".io_safe_output($filter['name'])."%'";
+			unset($filter['name']);
+		}
+	}
+
+	if($favourite){
+		if (empty($where)){
+			$where = "";
+		}
+		
+		if ($where != '') {
+			$where .= ' AND ';
+		}
+
+		$where .= "is_favourite = 1";
+	}
+
+	if ($returnAllGroup) {
+		$groups = users_get_groups ($id_user, 'VR', true, true);
+	} else {
+		
+			if(!empty($filter['group'])) {
+				$permissions_group = users_get_groups ($id_user, 'VR', false, true);
+				if(empty($permissions_group)){
+					$permissions_group = users_get_groups ($id_user, 'VM', false, true);
+				}
+				$groups = array_intersect_key($filter['group'], $permissions_group);
+			} else {
+				$groups = users_get_groups ($id_user, 'VR', true, true);
+				if(empty($groups)) {
+					$groups = users_get_groups ($id_user, 'VM', true, true);
+				}
+			}
+		
+		
+		unset($filter['group']);
+	}
+	
+	if (!empty($groups)) {
+		if (empty($where))
+			$where = "";
+		
+		if ($where != '') {
+			$where .= ' AND ';
+		}
+		$where .= sprintf ('id_group IN (%s)', implode (",", array_keys ($groups)));
+	}
+	
+	$where .= db_format_array_where_clause_sql ($filter);
+	
+	if ($where == '') {
+		$where = array();
+	}
+
+	$layouts = db_get_all_rows_filter ('tlayout_template', $where);
+	if ($layouts == false)
+		return array ();
+	
+	$retval = array ();
+	foreach ($layouts as $layout) {
+		if ($only_names)
+			$retval[$layout['id']] = $layout['name'];
+		else
+			$retval[$layout['id']] = $layout;
+
+		//add_perms
+		if ($groups[$layout['id_group']]['vconsole_view']){
+			$retval[$layout['id']]['vr'] = $groups[$layout['id_group']]['vconsole_view'];
+		}
+		if ($groups[$layout['id_group']]['vconsole_edit']){
+			$retval[$layout['id']]['vw'] = $groups[$layout['id_group']]['vconsole_edit'];
+		}
+		if ($groups[$layout['id_group']]['vconsole_management']){
+			$retval[$layout['id']]['vm'] = $groups[$layout['id_group']]['vconsole_management'];
+		}
+	}
+	
+	return $retval;
+}
+
+
 ?>

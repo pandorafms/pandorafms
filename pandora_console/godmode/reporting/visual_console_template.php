@@ -71,15 +71,28 @@ if (!defined('METACONSOLE')) {
 
 $id_layout     = (int) get_parameter ('id_layout', 0);
 $name_template = (string) get_parameter ('name_template', '');
-$group         = (int) get_parameter ('group');
+$group         = (int) get_parameter ('group', 0);
 $action        = (string) get_parameter ('action', '');
 
 if($action == "create_template"){
+    if(!$id_layout){
+        ui_print_error_message(__('visual console has not been selected'));
+    }
 
+    $result = visual_map_create_template($id_layout, $name_template, $group);
+
+    if(!$result){
+        ui_print_error_message(__('Error. Error created template'));
+    }
+    else{
+        ui_print_success_message(__('Successfully created template'));
+    }
 }
 
 if($action == "delete_template"){
-
+    if(!$id_layout){
+        ui_print_error_message(__('visual console has not been selected'));
+    }
 }
 
 $visual_console_array = visual_map_get_user_layouts($config['id_user'], true);
@@ -121,13 +134,48 @@ $table .=  "</table>";
 
 if (check_acl ($config['id_user'], 0, "RW")) {
 	$table .= '<div class="action-buttons" style="width: 100%;">';
-	$table .= html_print_input_hidden('action', 'create_template');
+	$table .= html_print_input_hidden('action', 'create_template', true);
 	$table .= html_print_submit_button (__('Create template'), 'apply', false, 'class="sub next"', true);
 	$table .= '</div>';
 }
 $table .=  '</form>';
 
 echo ui_toggle($table, __('Create New Template'), '', false, true);
+
+$array_template_visual_console = visual_map_get_user_layout_templates($config['id_user']);
+
+if($array_template_visual_console && is_array($array_template_visual_console)){
+    $table = new stdClass();
+    $table->width = '100%';
+    $table->class = 'databox data';
+    $table->data = array ();
+    $table->head = array ();
+    $table->head[0] = __('Name');
+    $table->head[1] = __('Group');
+    $table->head[2] = __('Fovourite');
+    $table->head[3] = __('Delete');
+    $table->size[3] = "6%";
+
+    $table->align = array ();
+    $table->align[0] = 'left';
+    $table->align[1] = 'left';
+    $table->align[2] = 'left';
+    $table->align[3] = 'left';
+
+    foreach ($array_template_visual_console as $key => $value) {
+        $data = array ();
+        $data[0] = $value['name'];
+        $data[1] = $value['id_group'];
+        $data[2] = $value['is_favourite'];
+        $data[3] = '<a class="delete_visualmap" href="index.php?sec=network&sec2=godmode/reporting/visual_console_template&action=delete_template&id_layout='.$value['id'].'">'.html_print_image ("images/cross.png", true).'</a>';
+        array_push ($table->data, $data);
+    }
+
+    html_print_table ($table);
+}
+else{
+    ui_print_info_message(__('No data to show'));
+}
 
 
 ?>

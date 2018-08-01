@@ -69,26 +69,37 @@ if (!defined('METACONSOLE')) {
 	);
 }
 
-$templates = reporting_enterprise_get_template_reports(array ('order' => 'id_group, name'), array('id_report', 'name'), true);
+$action = get_parameter ('action', '');
 
-$template_select = array();
-if ($templates === false)
-    $template_select = array();
-else {
-    $groups = array(__('All') => 0);
-    foreach ($templates as $template) {
-        $id_group = $template['id_group'];
-        $group_name = '';
+if ($action == 'apply') {
+	$agents_selected = (array) get_parameter('id_agents2');
+	$id_layout_template = get_parameter('templates');
+	$name  = get_parameter('template_report_name', '');
+	$group = get_parameter('template_report_group');
 
-        if (!isset($groups[$id_group]))
-            $groups[$id_group] = groups_get_name($id_group, true);
+	if (empty($agents_selected) || empty($id_layout_template))
+		$result = false;
+	else {
+        if($agents_selected && is_array($agents_selected)){
+            foreach ($agents_selected as $key => $value) {
+                $result = visual_map_instanciate_template(
+                    $id_layout_template,
+                    $name,
+                    $value
+                );
+            }
+        }
+	}
 
-        if (!empty($groups[$id_group]))
-            $group_name = $groups[$id_group];
-
-        $template_select[$template['id_report']] = array('optgroup' => $group_name, 'name' => $template['name']);
+	if ($result){
+		ui_print_success_message(__('Sucessfully applied'));
+    }
+    else{
+        ui_print_error_message(__('Could not be applied'));
     }
 }
+
+$templates = visual_map_get_user_layout_templates($config['id_user'], true);
 
 if (is_metaconsole()) {
     $keys_field = 'nombre';
@@ -107,7 +118,7 @@ $table .= "<table border=0 cellpadding=4 cellspacing=4 class='databox filters' w
 		    $table .= "<b>" . __('Templates') . ":</b>";
 		$table .= "</td>";
 		$table .= "<td align='left'>";
-		    $table .= html_print_select($template_select, 'templates', $template_selected, '', __('None'), '0', true, false, true, '', false, 'width:180px;');
+		    $table .= html_print_select($templates, 'templates', $id_layout_template, '', __('None'), '0', true, false, true, '', false, 'width:180px;');
         $table .=  "</td>";
         $table .= "<td align='left'>";
 		    $table .= "<b>" . __('Report name') . " " .
@@ -199,7 +210,7 @@ html_print_input_hidden('agents_out_keys', implode($separator, $template_agents_
 
 if (check_acl ($config['id_user'], 0, "RW")) {
 	$table .= '<div class="action-buttons" style="width: 100%;">';
-	$table .= html_print_input_hidden('action', 'create_template');
+	$table .= html_print_input_hidden('action', 'apply', true);
 	$table .= html_print_submit_button (__('Apply template'), 'apply', false, 'class="sub next"', true);
 	$table .= '</div>';
 }

@@ -4168,7 +4168,11 @@ function visual_map_instanciate_template($id_layout_template, $name, $id_agent) 
 			return false;
 		}
 
-		$template["name"] = $name;
+		if (!empty($name)) {
+			$template["name"] = $name;
+		} else {
+			$template["name"] .= io_safe_input(' ') . agents_get_alias($id_agent);
+		}
 
 		unset($template["id"]);
 
@@ -4178,8 +4182,8 @@ function visual_map_instanciate_template($id_layout_template, $name, $id_agent) 
 		foreach ($template_data as $item) {
 
 			// update fields
-			$item["id_agente_modulo"] = modules_get_agentmodule_id($agent_id, $item["module_name"]);
-			$item["id_agent"] = $agent_id;
+			$item["id_agente_modulo"] = modules_get_agentmodule_id($item["module_name"], $id_agent);
+			$item["id_agent"] = $id_agent;
 			$item["id_layout"] = $layout_id;
 
 			// remove useless fields

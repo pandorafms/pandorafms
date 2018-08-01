@@ -461,9 +461,7 @@ sub print_agent {
 # print_module
 ################################################################################
 sub print_module {
-	my $conf = shift;
-	my $data = shift;
-	my $not_print_flag = shift;
+	my ($conf, $data, $not_print_flag) = @_;
 
 	if ((ref($data) ne "HASH") || (!defined $data->{name})) {
 		return undef;
@@ -476,9 +474,21 @@ sub print_module {
 	}
 
 	$data->{value} = '' if empty($data->{value});
-	$data->{tags}  = $data->{tags}?$data->{tags}:($conf->{MODULE_TAG_LIST}?$conf->{MODULE_TAG_LIST}:undef);
-	$data->{interval}     = $data->{interval}?$data->{interval}:($conf->{MODULE_INTERVAL}?$conf->{MODULE_INTERVAL}:undef);
-	$data->{module_group} = $data->{module_group}?$data->{module_group}:($conf->{MODULE_GROUP}?$conf->{MODULE_GROUP}:undef);
+
+	$data->{tags} = ($data->{tags} ?
+		$data->{tags} : ($conf->{MODULE_TAG_LIST} ?
+			$conf->{MODULE_TAG_LIST} : ($conf->{module_tag_list} ? 
+				$conf->{module_tag_list} : undef)));
+
+	$data->{interval} = ($data->{interval} ? 
+		$data->{interval} : ($conf->{MODULE_INTERVAL} ?
+			$conf->{MODULE_INTERVAL} : ($conf->{module_interval} ? 
+				$conf->{module_interval} : undef)));
+
+	$data->{module_group} = ($data->{module_group} ? 
+		$data->{module_group} : ($conf->{MODULE_GROUP} ? 
+			$conf->{MODULE_GROUP} : ( $conf->{module_group} ?
+				$conf->{module_group} : undef)));
 	
 
 	# Global instructions (if defined)

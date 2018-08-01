@@ -192,6 +192,12 @@ $table .= "<table border=0 cellpadding=4 cellspacing=4 class='databox filters' w
     $table .=  "</tr>";
 $table .=  "</table>";
 
+html_print_input_hidden('separator', $separator);
+html_print_input_hidden('agents_in', implode($separator, $template_agents_in));
+html_print_input_hidden('agents_in_keys', implode($separator, $template_agents_in_keys));
+html_print_input_hidden('agents_out', implode($separator, $template_agents_out));
+html_print_input_hidden('agents_out_keys', implode($separator, $template_agents_out_keys));
+
 if (check_acl ($config['id_user'], 0, "RW")) {
 	$table .= '<div class="action-buttons" style="width: 100%;">';
 	$table .= html_print_input_hidden('action', 'create_template');
@@ -203,3 +209,442 @@ $table .=  '</form>';
 echo $table;
 
 ?>
+<script language="javascript" type="text/javascript">
+
+var metaconsole_enabled = 0;
+if (<?php echo (int) is_metaconsole(); ?>) {
+	metaconsole_enabled = 1;
+}
+
+var agents_out;
+var agents_out_keys;
+var agents_in;
+var pending_delete_ids;
+var agents_in_keys;
+var separator;
+
+var baseURL = "<?php echo ui_get_full_url(false, false, false, false); ?>";
+
+$(document).ready (function () {
+	if ($('#filter_by').length <= 0 || $('#filter_by').val() == 0) {
+		$("#filter_tag_id").css('display', 'none');
+		if (metaconsole_enabled) {
+			filterByGroupMetaconsole($("#group").val(), '');
+		}
+		else {
+			filterByGroup($("#group").val(), '');
+		}
+	}
+	else {
+		$("#filter_group_id").css('display', 'none');
+		if (metaconsole_enabled) {
+			filterByTagMetaconsole($("#tag_filter").val(), '');
+		} else {
+			filterByTag($("#tag_filter").val(), '');
+		}
+	}
+
+	$('#filter_by').change (function () {
+		if ($("#filter_by").val() == 0) {
+			$("#filter_tag_id").css('display', 'none');
+			$("#filter_group_id").css('display', '');
+			if (metaconsole_enabled) {
+				filterByGroupMetaconsole($("#group").val(), '');
+			}
+			else {
+				filterByGroup($("#group").val(), '');
+			}
+		}
+		else {
+			$("#filter_tag_id").css('display', '');
+			$("#filter_group_id").css('display', 'none');
+			if (metaconsole_enabled) {
+				filterByTagMetaconsole($("#tag_filter").val(), '');
+			}
+			else {
+				filterByTag($("#tag_filter").val(), '');
+			}
+		}
+	});
+
+	// Get the agents in both sides from the hidden fields
+	separator = $("#hidden-separator").attr('value');
+	var aux;
+	aux = $("#hidden-agents_in").attr('value');
+	agents_in = aux.split(separator);
+	aux = $("#hidden-agents_in_keys").attr('value');
+	agents_in_keys = aux.split(separator);
+	aux = $("#hidden-agents_out").attr('value');
+	agents_out = aux.split(separator);
+	aux = $("#hidden-agents_out_keys").attr('value');
+	agents_out_keys = aux.split(separator);
+
+	$("select[name='group']").change(function(){
+		if (metaconsole_enabled) {
+			filterByGroupMetaconsole($(this).val(), '');
+		}
+		else {
+			filterByGroup($(this).val(), '');
+		}
+	});
+
+	$("select[name='tag_filter']").change(function(){
+		if (metaconsole_enabled) {
+			filterByTagMetaconsole($(this).val(), '');
+		}
+		else {
+			filterByTag($(this).val(), '');
+		}
+	});
+
+	$("select[name='group2']").change(function(){
+		filterByGroup($(this).val(), '2');
+	});
+
+	function filterByGroup(idGroup, idSelect) {
+		$('#loading_group').show();
+
+		$('#id_agents'+idSelect).empty ();
+		search = $("#text-agent_filter"+idSelect).val();
+
+		jQuery.post (baseURL + "/ajax.php",
+			{"page" : "godmode/groups/group_list",
+			"get_group_agents" : 1,
+			"search" : search,
+			"id_group" : idGroup,
+			// Add a key prefix to avoid auto sorting in js object conversion
+			"keys_prefix" : "_",
+			// Juanma (22/05/2014) Fix: Dont show void agents in template wizard
+			"show_void_agents" : 0
+			},
+			function (data, status) {
+
+				var group_agents = new Array();
+				var group_agents_keys = new Array();
+
+				jQuery.each (data, function (id, value) {
+					// Remove keys_prefix from the index
+					id = id.substring(1);
+
+					group_agents.push(value);
+					group_agents_keys.push(id);
+				});
+
+				if(idSelect == '') {
+					agents_out_keys = group_agents_keys;
+					agents_out = group_agents;
+				}
+				else {
+					agents_in_keys = group_agents_keys;
+					agents_in = group_agents;
+				}
+				refresh_agents($("#text-agent_filter"+idSelect).attr('value'), agents_out_keys, agents_out, $("#id_agents"+idSelect), <?php echo (int) is_metaconsole(); ?>);
+			},
+			"json"
+		);
+	}
+
+	function filterByGroupMetaconsole(groupName, idSelect) {
+		$('#loading_group_filter_group').show();
+
+		$('#id_agents'+idSelect).empty ();
+		search = $("#text-agent_filter"+idSelect).val();
+
+		jQuery.post (baseURL + "/ajax.php",
+			{"page" : "enterprise/meta/include/ajax/wizard.ajax",
+			"action" : "get_group_agents",
+			"separator" : "|",
+			"only_meta" : 0,
+			"agent_search" : search,
+			"no_filter_tag" : true,
+			<?php
+			if ($strict_user)
+				echo '"id_group" : groupName';
+			else
+				echo '"group_name" : groupName';
+			?>
+			},
+			function (data, status) {
+				$('#loading_group_filter_group').hide();
+
+				var group_agents = new Array();
+				var group_agents_keys = new Array();
+
+				jQuery.each (data, function (id, value) {
+					group_agents.push(value);
+					group_agents_keys.push(id);
+				});
+
+				if(idSelect == '') {
+					agents_out_keys = group_agents_keys;
+					agents_out = group_agents;
+				}
+				else {
+					agents_in_keys = group_agents_keys;
+					agents_in = group_agents;
+				}
+				refresh_agents($("#text-agent_filter"+idSelect).attr('value'), agents_out_keys, agents_out, $("#id_agents"+idSelect), <?php echo (int) is_metaconsole(); ?>);
+			},
+			"json"
+		);
+	}
+
+	$("#group")
+		.click (function () {
+			$(this).css("width", "auto");
+		})
+		.blur (function () {
+			$(this).css("width", "180px");
+		});
+
+	$("#group2").click (function () {
+			$(this).css("width", "auto");
+		})
+		.blur (function () {
+			$(this).css("width", "180px");
+		});
+
+	function refresh_agents(start_search, keys, values, select, metaconsole) {
+		var n = 0;
+		var i = 0;
+		select.empty();
+
+		// Fix: Remove agents inside the template from agent selector
+		$('#id_agents2 option').each(function(){
+			var out_agent = $(this).val();
+			if (metaconsole) {
+				var out_split = out_agent.split('|');
+
+				if (out_split[0].length > 0)
+					var out_agent = out_split[0] + '|' + out_split[1];
+			}
+
+			if (out_agent) {
+
+				keys.forEach(function(it) {
+
+					var it_data = it;
+					if (metaconsole) {
+						var it_split = it.split('|');
+						var it_data = it_split[0] + '|' + it_split[1];
+					}
+
+					if (it_data == out_agent) {
+						var index = keys.indexOf(it);
+
+						// Remove from array!
+						values.splice(index, 1);
+						keys.splice(index, 1);
+					}
+				});
+			}
+		});
+
+		values.forEach(function(item) {
+			var re = new RegExp(start_search,"gi");
+
+			match = item.match(re);
+
+			if (match != null) {
+				select.append ($("<option></option>").attr("value", keys[n]).html(values[n]));
+				i++;
+			}
+			n++;
+		});
+		if (i == 0) {
+			$(select).empty ();
+			$(select).append ($("<option></option>").attr ("value", 0).html ('<?php echo __('None');?>'));
+		}
+
+		$('.loading_div').hide();
+	}
+
+	$("#text-agent_filter").keyup (function () {
+		$('#loading_filter').show();
+		refresh_agents($(this).val(), agents_out_keys, agents_out, $("#id_agents"), <?php echo (int) is_metaconsole(); ?>);
+	});
+
+	$("#text-agent_filter2").keyup (function () {
+		$('#loading_filter2').show();
+		refresh_agents($(this).val(), agents_in_keys, agents_in, $("#id_agents2"), <?php echo (int) is_metaconsole(); ?>);
+	});
+
+	$("#right").click (function () {
+		jQuery.each($("select[name='id_agents[]'] option:selected"), function (key, value) {
+            agent_name = $(value).html();
+            if (agent_name != <?php echo "'".__('None')."'"; ?>){
+                id_agent = $(value).attr('value');
+                //Remove the none value
+                $("#id_agents2").find("option[value='']").remove();
+
+                $("select[name='id_agents2[]']").append($("<option>").val(id_agent).html('<i>' + agent_name + '</i>'));
+                $("#id_agents").find("option[value='" + id_agent + "']").remove();
+            }
+		});
+	});
+
+	$("#left").click(function() {
+		jQuery.each($("select[name='id_agents2[]'] option:selected"), function (key, value) {
+				agent_name = $(value).html();
+				if (agent_name != <?php echo "'".__('None')."'"; ?>){
+					id_agent = $(value).attr('value');
+					$("select[name='id_agents[]']").append($("<option>").val(id_agent).html('<i>' + agent_name + '</i>'));
+					$("#id_agents2").find("option[value='" + id_agent + "']").remove();
+				}
+
+				//If empty the selectbox
+				if ($("#id_agents2 option").length == 0) {
+					$("select[name='id_agents2[]']")
+						.append($("<option>").val("")
+						.html("<?php echo __('None'); ?>"));
+				}
+		});
+	});
+
+	$("#submit-apply").click(function () {
+		$('#id_agents2>option').prop('selected', true);
+		var id_agent2 = $('#id_agents2>option').val();
+		//Prevent from applying template 'None' over agent
+		if ($("#templates").val() == 0) {
+			alert( <?php echo "'" . __('Please set template distinct than ') . '"' . __('None') . '"' . "'"; ?> );
+			return false;
+		}
+		if(id_agent2 == ''){
+			alert( <?php echo "'" . __('Please set agent distinct than ') . '"' . __('None') . '"' . "'"; ?> );
+			return false;
+		}
+		if (!confirm ( <?php echo "'" . __('Are you sure?') . "'"; ?> ))
+			return false;
+	});
+
+	$("#image-select_all_available").click(function (event) {
+		event.preventDefault();
+
+		$('#id_agents>option').prop('selected', true);
+	})
+
+	$("#image-select_all_apply").click(function (event) {
+		event.preventDefault();
+
+		$('#id_agents2>option').prop('selected', true);
+	});
+
+	$("#cleanup_template").click(function () {
+		// Prevent user of current action
+		if (! confirm ( <?php echo "'" . __('This will be delete all reports created in previous template applications. Do you want to continue?') . "'"; ?> )) 
+			return false;
+
+		// Prevent from applying template 'None' over agent
+		if ($("#templates").val() == 0) {
+			alert( <?php echo "'" . __('Please set template distinct than ') . '"' . __('None') . '"' . "'"; ?> );
+			return false;
+		}
+
+		// Cleanup applied template
+		var params = [];
+		var result;
+		params.push("cleanup_template=1");
+		params.push("id_template_cleanup=" + $("#templates").val());
+		params.push("page=" + <?php echo '"' . ENTERPRISE_DIR . '"'; ?> + "/godmode/reporting/reporting_builder.template_wizard");
+		jQuery.ajax ({
+			data: params.join ("&"),
+			type: 'POST',
+			url: action=baseURL + "/ajax.php",
+			success: function (data) {
+				var result = data;
+
+				if (result == 1) {
+					$("#wrong_cleanup").hide();
+					$("#sucess_cleanup").show();
+				}
+				else {
+					$("#sucess_cleanup").hide();
+					$("#wrong_cleanup").show();
+				}
+			}
+		});
+
+		return false;
+	});
+
+	function filterByTagMetaconsole(idTag, idSelect) {
+		$('#loading_tag_filter_tag').show();
+
+		$('#id_agents'+idSelect).empty ();
+		search = $("#text-agent_filter"+idSelect).val();
+
+		jQuery.post (baseURL + "/ajax.php",
+			{"page" : "enterprise/meta/include/ajax/wizard.ajax",
+			"action" : "get_tag_agents",
+			"id_user" : "<?php echo $config['id_user']; ?>",
+			"separator" : "|",
+			"only_meta" : 0,
+			"agent_search" : search,
+			"id_tag" : idTag
+			},
+			function (data, status) {
+				$('#loading_tag_filter_tag').hide();
+
+				var group_agents = new Array();
+				var group_agents_keys = new Array();
+
+				jQuery.each (data, function (id, value) {
+					group_agents.push(value);
+					group_agents_keys.push(id);
+				});
+
+				if(idSelect == '') {
+					agents_out_keys = group_agents_keys;
+					agents_out = group_agents;
+				}
+				else {
+					agents_in_keys = group_agents_keys;
+					agents_in = group_agents;
+				}
+				refresh_agents($("#text-agent_filter"+idSelect).attr('value'), agents_out_keys, agents_out, $("#id_agents"+idSelect), <?php echo (int) is_metaconsole(); ?>);
+			},
+			"json"
+		);
+	}
+
+	function filterByTag(idTag, idSelect) {
+		$('#loading_tag_filter_tag').show();
+
+		$('#id_agents'+idSelect).empty ();
+		search = $("#text-agent_filter"+idSelect).val();
+		jQuery.post (baseURL + "/ajax.php",
+			{"page" : "include/ajax/template_wizard.ajax",
+			"action" : "get_tag_agents",
+			"agent_search" : search,
+			"id_tag" : idTag,
+			"keys_prefix" : "_",
+			"show_void_agents" : 0
+			},
+			function (data, status) {
+				var group_agents = new Array();
+				var group_agents_keys = new Array();
+
+				jQuery.each (data, function (id, value) {
+					// Remove keys_prefix from the index
+					id = id.substring(1);
+
+					group_agents.push(value);
+					group_agents_keys.push(id);
+				});
+
+				if(idSelect == '') {
+					agents_out_keys = group_agents_keys;
+					agents_out = group_agents;
+				}
+				else {
+					agents_in_keys = group_agents_keys;
+					agents_in = group_agents;
+				}
+
+				refresh_agents($("#text-agent_filter"+idSelect).attr('value'), agents_out_keys, agents_out, $("#id_agents"+idSelect), <?php echo (int) is_metaconsole(); ?>);
+			},
+			"json"
+		);
+	}
+});
+</script>

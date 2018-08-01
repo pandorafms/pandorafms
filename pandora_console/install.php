@@ -71,7 +71,7 @@
 		<div style='height: 10px'>
 			<?php
 $version = '6.0SP8';
-$build = '180801';
+$build = '180802';
 			$banner = "v$version Build $build";
 			
 			error_reporting(0);

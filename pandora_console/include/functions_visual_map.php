@@ -4101,7 +4101,7 @@ function visual_map_get_elements($id_layout) {
  * @param  int $id_layout existing visual console
  * @return true OK, false not OK
  */
-function visual_map_create_template($id_layout, $name) {
+function visual_map_create_template($id_layout, $name, $id_group) {
 	global $config;
 
 	$layout = visual_map_get_definition($id_layout);
@@ -4112,6 +4112,13 @@ function visual_map_create_template($id_layout, $name) {
 
 	// rm id
 	unset($template_skel["id"]);
+
+	// Update fields
+	if (!empty($name)) {
+		$template_skel["name"] = $name;
+	}
+
+	$template_skel["id_group"] = $id_group;
 
 	$template_id = db_process_sql_insert('tlayout_template', $template_skel);
 

@@ -4146,7 +4146,6 @@ function visual_map_create_template($id_layout, $name, $id_group) {
 	return $template_id;
 }
 
-
 /**
  * Creates a new visual console based on target id_layout_template
  * @param  int    $id_layout_template   target template
@@ -4155,12 +4154,47 @@ function visual_map_create_template($id_layout, $name, $id_group) {
  * @return id_layout OK, null not OK
  */
 function visual_map_instanciate_template($id_layout_template, $name, $id_agent) {
+	global $config;
+
+	$layout_id = false;
 
 
+	if ($id_agent) {
+		// retrieve template data
+		$template = visual_map_template_get_template_definition($id_layout_template);
+		$template_data = visual_map_template_get_template_elements($id_layout_template);
 
+		if ($template === false) {
+			return false;
+		}
+
+		$template["name"] = $name;
+
+		unset($template["id"]);
+
+		// insert template schema
+		$layout_id = db_process_sql_insert('tlayout', $template);
+
+		foreach ($template_data as $item) {
+
+			// update fields
+			$item["id_agente_modulo"] = modules_get_agentmodule_id($agent_id, $item["module_name"]);
+			$item["id_agent"] = $agent_id;
+			$item["id_layout"] = $layout_id;
+
+			// remove useless fields
+			unset($item["id"]);
+			unset($item["id_layout_template"]);
+			unset($item["agent_name"]);
+			unset($item["module_name"]);
+
+			$data_template_id = db_process_sql_insert('tlayout_data', $item);
+		}
+	}
+
+	return $id_layout;
 
 }
-
 
 /**
  * Get a list of layout templates for given user.

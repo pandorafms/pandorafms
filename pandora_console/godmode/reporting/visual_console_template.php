@@ -60,7 +60,7 @@ $buttons['visual_console_template_wizard'] = array(
 
 if (!defined('METACONSOLE')) {
 	ui_print_page_header(
-		__('Reporting') .' &raquo; ' . __('Visual Console'),
+		__('Visual Console') .' &raquo; ' . __('Template'),
 		"images/op_reporting.png",
 		false,
 		"map_builder",
@@ -93,6 +93,15 @@ if($action == "delete_template"){
     if(!$id_layout){
         ui_print_error_message(__('visual console has not been selected'));
     }
+
+    $result = visual_map_delete_template($id_layout);
+
+    if(!$result){
+        ui_print_error_message(__('Error. Error delete template'));
+    }
+    else{
+        ui_print_success_message(__('Successfully delete template'));
+    }
 }
 
 $visual_console_array = visual_map_get_user_layouts($config['id_user'], true);
@@ -104,7 +113,7 @@ else{
     $return_all_group = true;
 }
 
-$table = '<form method="post" action="" enctype="multipart/form-data">';
+$table = '<form method="post" action="" enctype="multipart/form-data" style="margin-bottom: 20px;">';
 $table .= "<table border=0 cellpadding=4 cellspacing=4 class='databox filters' width=100%>";
 	$table .= "<tr>";
 		$table .= "<td align='left'>";

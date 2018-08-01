@@ -704,37 +704,36 @@ function html_print_extended_select_for_post_process($name, $selected = '',
 	$script = '', $nothing = '', $nothing_value = '0', $size = false,
 	$return = false, $select_style = false, $unique_name = true,
 	$disabled = false, $no_change = 0) {
-	
+
 	global $config;
-	
+
 	require_once($config['homedir'] . "/include/functions_post_process.php");
-	
-	
+
 	$fields = post_process_get_custom_values();
+
 	if($no_change != 0){
 		$fields[-1] = __('No change');
 	}
 
 	$selected_float = (float)$selected;
 	$found = false;
-	
-	if (array_key_exists($selected, $fields))
+
+	if (array_key_exists(number_format($selected, 14, '.', ','), $fields))
 		$found = true;
-	
+
 	if (!$found) {
 		$fields[$selected] = floatval($selected);
 	}
-	
-	
+
 	if ($unique_name === true) {
 		$uniq_name = uniqid($name);
 	}
 	else {
 		$uniq_name = $name;
 	}
-	
+
 	ob_start();
-	
+
 	echo '<div id="' . $uniq_name . '_default" style="width:100%;display:inline;">';
 		html_print_select ($fields, $uniq_name . '_select', $selected,
 			"" . $script, $nothing, $nothing_value, false, false, false,
@@ -747,10 +746,10 @@ function html_print_extended_select_for_post_process($name, $selected = '',
 					'style' => 'width: 18px;')) .
 			'</a>';
 	echo '</div>';
-	
+
 	echo '<div id="' . $uniq_name . '_manual" style="width:100%;display:inline;">';
 		html_print_input_text ($uniq_name . '_text', $selected, '', 20);
-		
+
 		html_print_input_hidden($name, $selected, false, $uniq_name);
 		echo ' <a href="javascript:">' .
 			html_print_image('images/default_list.png', true,
@@ -759,20 +758,17 @@ function html_print_extended_select_for_post_process($name, $selected = '',
 					'title' => __('List'),
 					'style' => 'width: 18px;')) . '</a>';
 	echo '</div>';
-	
+
 	echo "<script type='text/javascript'>
 		$(document).ready (function () {
 			post_process_select_init('$uniq_name');
 			post_process_select_events('$uniq_name');
 		});
-		
+
 	</script>";
-	
+
 	$returnString = ob_get_clean();
-	
-	
-	
-	
+
 	if ($return)
 		return $returnString;
 	else

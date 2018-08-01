@@ -60,7 +60,7 @@ $buttons['visual_console_template_wizard'] = array(
 
 if (!defined('METACONSOLE')) {
 	ui_print_page_header(
-		__('Reporting') .' &raquo; ' . __('Visual Console'),
+		__('Visual Console') .' &raquo; ' . __('Wizard'),
 		"images/op_reporting.png",
 		false,
 		"map_builder",
@@ -68,7 +68,6 @@ if (!defined('METACONSOLE')) {
 		$buttons
 	);
 }
-
 
 $templates = reporting_enterprise_get_template_reports(array ('order' => 'id_group, name'), array('id_report', 'name'), true);
 

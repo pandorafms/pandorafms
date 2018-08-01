@@ -1713,7 +1713,7 @@ CREATE TABLE IF NOT EXISTS `tautoconfig_actions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ---------------------------------------------------------------------
--- Table `tlayout`
+-- Table `tlayout_template`
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tlayout_template` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -1728,11 +1728,11 @@ CREATE TABLE IF NOT EXISTS `tlayout_template` (
 )  ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 -- ---------------------------------------------------------------------
--- Table `tlayout_data`
+-- Table `tlayout_template_data`
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tlayout_template_data` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-	`id_layout_template` INTEGER UNSIGNED NOT NULL default 0,
+	`id_layout_template` INTEGER UNSIGNED NOT NULL,
 	`pos_x` INTEGER UNSIGNED NOT NULL default 0,
 	`pos_y` INTEGER UNSIGNED NOT NULL default 0,
 	`height` INTEGER UNSIGNED NOT NULL default 0,
@@ -1741,8 +1741,8 @@ CREATE TABLE IF NOT EXISTS `tlayout_template_data` (
 	`image` varchar(200) DEFAULT "",
 	`type` tinyint(1) UNSIGNED NOT NULL default 0,
 	`period` INTEGER UNSIGNED NOT NULL default 3600,
-	`module_name` mediumint(8) unsigned NOT NULL default '0',
-	`agent_name` int(10) unsigned NOT NULL default 0,
+	`module_name` text NOT NULL,
+	`agent_name` varchar(600) BINARY NOT NULL default '',
 	`id_layout_linked` INTEGER unsigned NOT NULL default '0',
 	`parent_item` INTEGER UNSIGNED NOT NULL default 0,
 	`enable_link` tinyint(1) UNSIGNED NOT NULL default 1,
@@ -1761,6 +1761,6 @@ CREATE TABLE IF NOT EXISTS `tlayout_template_data` (
 	`clock_animation` varchar(60) NOT NULL default "analogic_1",
 	`time_format` varchar(60) NOT NULL default "time",
 	`timezone` varchar(60) NOT NULL default "Europe/Madrid",
-	PRIMARY KEY(`id`)
+	PRIMARY KEY(`id`),
+	FOREIGN KEY (`id_layout_template`) REFERENCES tlayout_template(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
-

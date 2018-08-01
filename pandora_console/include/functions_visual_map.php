@@ -4066,4 +4066,92 @@ function visual_map_macro($label,$module){
 	return $label;
 }
 
+/**
+ * Visual console templates
+ */
+
+function visual_map_template_get_template_definition($id_layout_template) {
+	global $config;
+
+	return db_get_row ('tlayout_template', 'id_layout_template', $id_layout_template);
+}
+
+
+function visual_map_template_get_template_elements($id_layout_template) {
+	global $config;
+
+	return db_get_all_rows_filter('tlayout_template_data', array('id_layout_template' => $id_layout_template));
+}
+
+function visual_map_get_definition($id_layout) {
+	global $config;
+
+	return db_get_row ('tlayout', 'id', $id_layout);
+}
+
+
+function visual_map_get_elements($id_layout) {
+	global $config;
+
+	return db_get_all_rows_filter('tlayout_data', array('id_layout' => $id_layout));
+}
+
+/**
+ * Creates a new template from existing visual console
+ * @param  int $id_layout existing visual console
+ * @return true OK, false not OK
+ */
+function visual_map_create_template($id_layout, $name) {
+	global $config;
+
+	$layout = visual_map_get_definition($id_layout);
+	$layout_data = visual_map_get_elements($id_layout);
+
+	// Create new template based on received information
+	$template_skel = $layout;
+
+	// rm id
+	unset($template_skel["id"]);
+
+	$template_id = db_process_sql_insert('tlayout_template', $template_skel);
+
+	foreach ($layout_data as $item) {
+		$data_template_skel = $item;
+
+		// remove unwanted fields
+		unset($data_template_skel["id"]);
+		unset($data_template_skel["id_layout"]);
+
+		// Update fields
+		$data_template_skel["id_layout_template"] = $template_id;
+		$data_template_skel["module_name"] = modules_get_agentmodule_name($item["id_agente_modulo"]);
+		$data_template_skel["agent_name"] = agents_get_name($item["id_agent"]);
+
+		// remove unwanted fields
+		unset($data_template_skel["id_agente_modulo"]);
+		unset($data_template_skel["id_agent"]);
+
+		$data_template_id = db_process_sql_insert('tlayout_template_data', $data_template_skel);
+
+	}
+
+
+	return $template_id;
+}
+
+
+/**
+ * Creates a new visual console based on target id_layout_template
+ * @param  int    $id_layout_template   target template
+ * @param  string $name                 name for new visual console
+ * @param  int    $id_agent             target id_agent to customize template
+ * @return id_layout OK, null not OK
+ */
+function visual_map_instanciate_template($id_layout_template, $name, $id_agent) {
+
+
+
+
+}
+
 ?>

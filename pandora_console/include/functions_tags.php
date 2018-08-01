@@ -1275,6 +1275,8 @@ function tags_check_acl($id_user, $id_group, $access, $tags = array(), $flag_id_
 						
 						if (in_array($tag, $acls[$group])) {
 							return true;
+						} else if (empty($acls[$group])) {
+							return true;
 						}
 					}
 				}

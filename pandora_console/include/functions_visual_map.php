@@ -4073,7 +4073,7 @@ function visual_map_macro($label,$module){
 function visual_map_template_get_template_definition($id_layout_template) {
 	global $config;
 
-	return db_get_row ('tlayout_template', 'id_layout_template', $id_layout_template);
+	return db_get_row ('tlayout_template', 'id', $id_layout_template);
 }
 
 

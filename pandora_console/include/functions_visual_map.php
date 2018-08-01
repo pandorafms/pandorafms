@@ -4197,6 +4197,23 @@ function visual_map_instanciate_template($id_layout_template, $name, $id_agent) 
 }
 
 /**
+ * Erases given id_layout_template
+ * @param  int $id_layout_template target template to be deleted
+ * @return true OK, false ERR
+ */
+function visual_map_delete_template($id_layout_template) {
+	global $config;
+
+	if (!$id_layout_template) {
+		return false;
+	}
+
+	// tlayout_template_data is erased using foreign key
+	return db_process_sql_delete('tlayout_template', array('id' => $id_layout_template));
+
+}
+
+/**
  * Get a list of layout templates for given user.
  *
  * @param int User id.

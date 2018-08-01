@@ -4182,9 +4182,13 @@ function visual_map_instanciate_template($id_layout_template, $name, $id_agent) 
 		foreach ($template_data as $item) {
 
 			// update fields
-			$item["id_agente_modulo"] = modules_get_agentmodule_id($item["module_name"], $id_agent);
+			$item["id_agente_modulo"] = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('nombre' => $item["module_name"], 'id_agente' => $id_agent, 'delete_pending' => 0));
 			$item["id_agent"] = $id_agent;
 			$item["id_layout"] = $layout_id;
+
+			// replace macro names
+			$item["label"] = str_replace('_agentalias_', agents_get_alias($id_agent), $item["label"]);
+			$item["label"] = str_replace('_agent_', agents_get_name($id_agent), $item["label"]);
 
 			// remove useless fields
 			unset($item["id"]);

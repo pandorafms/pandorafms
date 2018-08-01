@@ -34,14 +34,39 @@ $hack_metaconsole = '';
 if (defined('METACONSOLE'))
 	$hack_metaconsole = '../../';
 
-$buttons['visual_console_favorite'] = array('active' => false,
+$buttons['visual_console'] = array(
+	'active' => true,
+	'text' => '<a href="index.php?sec=network&sec2=godmode/reporting/map_builder">' .
+				html_print_image ("images/visual_console.png", true, array ("title" => __('Visual Console List'))) .'</a>'
+);
+
+$buttons['visual_console_favorite'] = array(
+	'active' => false,
 	'text' => '<a href="index.php?sec=network&sec2=godmode/reporting/visual_console_favorite">' .
-		html_print_image ("images/list.png", true, array ("title" => __('Visual Favourite Console'))) .'</a>');
+				html_print_image ("images/list.png", true, array ("title" => __('Visual Favourite Console'))) .'</a>'
+);
+
+$buttons['visual_console_template'] = array(
+	'active' => false,
+	'text' => '<a href="index.php?sec=network&sec2=godmode/reporting/visual_console_template">' .
+				html_print_image ("images/templates.png", true, array ("title" => __('Visual Console Template'))) .'</a>'
+);
+
+$buttons['visual_console_template_wizard'] = array(
+	'active' => false,
+	'text' => '<a href="index.php?sec=network&sec2=godmode/reporting/visual_console_template_wizard">' .
+				html_print_image ("images/wand.png", true, array ("title" => __('Visual Console Template Wizard'))) .'</a>'
+);
 
 if (!defined('METACONSOLE')) {
 	ui_print_page_header(
 		__('Reporting') .' &raquo; ' . __('Visual Console'),
-		"images/op_reporting.png", false, "map_builder", false, $buttons);
+		"images/op_reporting.png",
+		false,
+		"map_builder",
+		false,
+		$buttons
+	);
 }
 
 $id_layout = (int) get_parameter ('id_layout');

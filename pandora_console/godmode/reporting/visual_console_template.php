@@ -18,8 +18,8 @@ global $config;
 require_once ($config['homedir'] . '/include/functions_visual_map.php');
 
 // ACL for the general permission
-$vconsoles_read = check_acl ($config['id_user'], 0, "VR");
-$vconsoles_write = check_acl ($config['id_user'], 0, "VW");
+$vconsoles_read   = check_acl ($config['id_user'], 0, "VR");
+$vconsoles_write  = check_acl ($config['id_user'], 0, "VW");
 $vconsoles_manage = check_acl ($config['id_user'], 0, "VM");
 
 if (!$vconsoles_read && !$vconsoles_write && !$vconsoles_manage) {
@@ -68,6 +68,66 @@ if (!defined('METACONSOLE')) {
 		$buttons
 	);
 }
+
+$id_layout     = (int) get_parameter ('id_layout', 0);
+$name_template = (string) get_parameter ('name_template', '');
+$group         = (int) get_parameter ('group');
+$action        = (string) get_parameter ('action', '');
+
+if($action == "create_template"){
+
+}
+
+if($action == "delete_template"){
+
+}
+
+$visual_console_array = visual_map_get_user_layouts($config['id_user'], true);
+
+if (!check_acl ($config['id_user'], 0, "VR")){
+	$return_all_group = false;
+}
+else{
+    $return_all_group = true;
+}
+
+$table = '<form method="post" action="" enctype="multipart/form-data">';
+$table .= "<table border=0 cellpadding=4 cellspacing=4 class='databox filters' width=100%>";
+	$table .= "<tr>";
+		$table .= "<td align='left'>";
+		$table .= "<b>" . __("Create From") . ":</b>";
+		$table .= "</td>";
+		$table .= "<td align='left'>";
+		$table .= html_print_select($visual_console_array, 'id_layout', $id_layout, '', __('none'), 0, true);
+		$table .=  "</td>";
+	$table .= "</tr>";
+	$table .= "<tr>";
+		$table .= "<td align='left'>";
+		$table .= "<b>" . __("Name") . ":</b>";
+		$table .= "</td>";
+		$table .= "<td align='left'>";
+		$table .= html_print_input_text ('name_template', $name_template, '', 50, 255, true);
+		$table .= "</td>";
+	$table .= "</tr>";
+	$table .= "<tr>";
+		$table .= "<td align='left'>";
+		$table .= '<b>' . __("Group") . ':</b>';
+		$table .= "</td>";
+        $table .= "<td align='left'>";
+        $table .= html_print_select_groups(false, "AR", $return_all_group, "group", $group, 'this.form.submit();', '', 0, true, false, true, '', false);
+		$table .= "</td>";
+	$table .=  "</tr>";
+$table .=  "</table>";
+
+if (check_acl ($config['id_user'], 0, "RW")) {
+	$table .= '<div class="action-buttons" style="width: 100%;">';
+	$table .= html_print_input_hidden('action', 'create_template');
+	$table .= html_print_submit_button (__('Create template'), 'apply', false, 'class="sub next"', true);
+	$table .= '</div>';
+}
+$table .=  '</form>';
+
+echo ui_toggle($table, __('Create New Template'), '', false, true);
 
 
 ?>

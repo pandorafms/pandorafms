@@ -29,6 +29,7 @@ require_once ($config['homedir'] . '/include/functions_graph.php');
 require_once ($config['homedir'] . '/include/functions_modules.php');
 require_once ($config['homedir'] . '/include/functions_agents.php');
 require_once ($config['homedir'] . '/include/functions_tags.php');
+enterprise_include_once('include/functions_agents.php');
 
 check_login ();
 
@@ -112,11 +113,8 @@ $alias    = db_get_value ("alias","tagente","id_agente",$id_agent);
 		}
 
 		// ACL
-		$permission  = false;
-		$agent_group = (int) agents_get_agent_group($agent_id);
-		$permission = check_acl($config['id_user'], $agent_group, "AR");
-			
-			if (!$permission) {
+		$all_groups = agents_get_all_groups_agent($agent_id);
+		if (!check_acl_one_of_groups ($config["id_user"], $all_groups, "AR")) {
 			require ($config['homedir'] . "/general/noaccess.php");
 			exit;
 		}

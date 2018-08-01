@@ -3955,13 +3955,17 @@ function ui_get_using_system_timezone_warning ($tag = "h3", $return = true) {
 
 	$user_offset = (-get_fixed_offset() / 60) / 60;
 
-	$message = sprintf(
-		__("These controls are using the timezone of the system (%s) instead of yours (%s). The difference with your time zone in hours is %s."),
-		$config["timezone"],
-		date_default_timezone_get(),
-		$user_offset > 0 ? "+" . $user_offset : $user_offset
-	);
-	return ui_print_info_message($message, '', $return, $tag);
+	if ($config["timezone"] != date_default_timezone_get()) {
+		$message = sprintf(
+			__("These controls are using the timezone of the system (%s) instead of yours (%s). The difference with your time zone in hours is %s."),
+			$config["timezone"],
+			date_default_timezone_get(),
+			$user_offset > 0 ? "+" . $user_offset : $user_offset
+		);
+		return ui_print_info_message($message, '', $return, $tag);
+	} else
+		return '';
+	
 }
 
 /**

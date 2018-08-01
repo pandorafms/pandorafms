@@ -1731,15 +1731,27 @@ function visual_map_print_item($mode = "read", $layoutData,
 					$result = array_merge($result, $result_server);
 				}
 				
+				if ($connection) {
+					metaconsole_restore_db();
+				}
 			}
 		}
 		
 			if (($layoutData['image'] != null && $layoutData['image'] != 'none') || $layoutData['show_statistics'] == 1) {
 						
-				
 				$img_style_title = strip_tags($label);
 				if ($layoutData['type'] == STATIC_GRAPH) {
 					if ($layoutData['id_agente_modulo'] != 0) {
+						
+						if ($layoutData['id_metaconsole'] != 0) {
+							//Metaconsole db connection
+							$connection = db_get_row_filter ('tmetaconsole_setup',
+								array('id' => $layoutData['id_metaconsole']));
+							if (metaconsole_load_external_db($connection) != NOERR) {
+								continue;
+							}
+						}
+						
 						$unit_text = trim(io_safe_output(
 							modules_get_unit($layoutData['id_agente_modulo'])));
 						
@@ -1758,6 +1770,11 @@ function visual_map_print_item($mode = "read", $layoutData,
 							$img_style_title .=
 								" <br>" . __("Last value: ")
 								. remove_right_zeros(number_format($value, $config['graph_precision'])).$unit_text;
+						}
+						
+						if ($layoutData['id_metaconsole'] != 0) {
+							//Restore db connection
+							metaconsole_restore_db();
 						}
 					}
 					
@@ -3172,14 +3189,18 @@ function visual_map_get_status_element($layoutData) {
 					$module_status = db_get_sql ('SELECT estado
 						FROM tagente_estado
 						WHERE id_agente_modulo = ' . $layoutData['id_agente_modulo']);
+					
 					switch($module_status) {
 						case AGENT_STATUS_NORMAL:
+						case AGENT_MODULE_STATUS_NORMAL_ALERT:
 							$layoutData['status_calculated'] = VISUAL_MAP_STATUS_NORMAL;
 							break;
 						case AGENT_MODULE_STATUS_WARNING:
+						case AGENT_MODULE_STATUS_WARNING_ALERT:
 							$layoutData['status_calculated'] = VISUAL_MAP_STATUS_WARNING;
 							break;
 						case AGENT_STATUS_CRITICAL:
+						case AGENT_MODULE_STATUS_CRITICAL_ALERT:
 							$layoutData['status_calculated'] = VISUAL_MAP_STATUS_CRITICAL_BAD;
 							break;
 						case AGENT_MODULE_STATUS_NO_DATA:

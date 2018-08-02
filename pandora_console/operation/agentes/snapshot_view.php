@@ -43,7 +43,7 @@ $id_node = get_parameter("id_node", 0);
 
 // Get the data
 if ($id_node > 0) {
-	$connection = metaconsole_get_connection_by_id($server_name);
+	$connection = metaconsole_get_connection_by_id($id_node);
 	if (metaconsole_load_external_db($connection) != NOERR) {
 		echo "Node connection fail";
 		exit;

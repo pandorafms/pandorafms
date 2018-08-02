@@ -1305,7 +1305,8 @@ if (!empty($result)) {
 				$link = ui_get_snapshot_link( array(
 					'id_module' => $row['id_agente_modulo'],
 					'interval' => $row['current_interval'],
-					'module_name' => $row['module_name']
+					'module_name' => $row['module_name'],
+					'id_node' => $row['server_id']
 				));
 				$salida = ui_get_snapshot_image($link, $is_snapshot) . '&nbsp;&nbsp;';
 			} else {

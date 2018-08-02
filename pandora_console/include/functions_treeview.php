@@ -273,7 +273,8 @@ function treeview_printModuleTable($id_module, $server_data = false, $no_head = 
 			$link = ui_get_snapshot_link( array(
 				'id_module' => $module['id_agente_modulo'],
 				'interval' => $module['current_interval'],
-				'module_name' => $module['module_name']
+				'module_name' => $module['module_name'],
+				'id_node' => empty($server_id) ? 0 : $server_id
 			));
 			$salida = ui_get_snapshot_image($link, $is_snapshot) . '&nbsp;&nbsp;';
 		}

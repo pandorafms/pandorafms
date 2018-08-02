@@ -16,6 +16,7 @@
 global $config;
 
 require_once ($config['homedir'] . '/include/functions_visual_map.php');
+enterprise_include_once('/include/functions_visual_map.php');
 
 // ACL for the general permission
 $vconsoles_read = check_acl ($config['id_user'], 0, "VR");

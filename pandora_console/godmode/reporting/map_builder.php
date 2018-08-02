@@ -51,13 +51,13 @@ $buttons['visual_console_favorite'] = array(
 if($is_enterprise){
 	$buttons['visual_console_template'] = array(
 		'active' => false,
-		'text' => '<a href="index.php?sec=network&sec2=godmode/reporting/visual_console_template">' .
+		'text' => '<a href="index.php?sec=network&sec2=enterprise/godmode/reporting/visual_console_template">' .
 					html_print_image ("images/templates.png", true, array ("title" => __('Visual Console Template'))) .'</a>'
 	);
 
 	$buttons['visual_console_template_wizard'] = array(
 		'active' => false,
-		'text' => '<a href="index.php?sec=network&sec2=godmode/reporting/visual_console_template_wizard">' .
+		'text' => '<a href="index.php?sec=network&sec2=enterprise/godmode/reporting/visual_console_template_wizard">' .
 					html_print_image ("images/wand.png", true, array ("title" => __('Visual Console Template Wizard'))) .'</a>'
 	);
 }

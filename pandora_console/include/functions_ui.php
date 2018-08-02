@@ -3791,36 +3791,27 @@ function ui_print_module_string_value($value, $id_agente_module,
 		$value = io_safe_input($value);
 	}
 
+
+	$is_snapshot = is_snapshot_data ($module["datos"]);
+	$is_large_image = is_text_to_black_string ($module["datos"]);
+	if (($config['command_snapshot']) && ($is_snapshot || $is_large_image)) {
+
+
+		$row[7] = ui_get_snapshot_image($link, $is_snapshot) . '&nbsp;&nbsp;';
+	}
+
 	$is_snapshot = is_snapshot_data($value);
 	$is_large_image = is_text_to_black_string ($value);
-
 	if (($config['command_snapshot']) && ($is_snapshot || $is_large_image)) {
-		$handle = "snapshot" . "_" . $id_agente_module;
-		$url = 'include/procesos.php?agente=' . $id_agente_module;
-		$win_handle = dechex(crc32($handle));
-		
-		$link = "winopeng_var('operation/agentes/snapshot_view.php?" .
-			"id=" . $id_agente_module .
-			"&refr=" . $current_interval .
-			"&label=" . rawurlencode(urlencode(io_safe_output($module_name))) . "','" . $win_handle . "', 700,480)";
-		if ($is_snapshot) {
-			$salida = '<a href="javascript:' . $link . '">' .
-				html_print_image("images/photo.png", true,
-					array("border" => '0',
-						"alt" => "",
-						"title" => __("Snapshot view"))) . '</a> &nbsp;&nbsp;';
-		}
-		else {
-			$salida = '<a href="javascript:' . $link . '">' .
-                                html_print_image("images/default_list.png", true,
-                                        array("border" => '0',
-                                                "alt" => "",
-                                                "title" => __("Snapshot view"))) . '</a> &nbsp;&nbsp;';
-
-		}
-	}
-	else {
-		
+		$link = ui_get_snapshot_link( array(
+			'id_module' => $id_agente_module,
+			'last_data' => $value,
+			'interval' => $current_interval,
+			'module_name' => $module_name,
+			'timestamp' => db_get_value('timestamp', 'tagente_estado', 'id_agente_modulo', $id_agente_module)
+		));
+		$salida = ui_get_snapshot_image($link, $is_snapshot) . '&nbsp;&nbsp;';
+	} else {
 		$sub_string = substr(io_safe_output($value), 0, 12);
 		if ($value == $sub_string) {
 			if ($value == 0 && !$sub_string) {
@@ -3921,8 +3912,8 @@ function ui_get_snapshot_link($params, $only_params = false) {
 		'id_module' => 0, //id_agente_modulo
 		'module_name' => '',
 		'interval' => 300,
-		'last_data' => '',
-		'timestamp' => '0'
+		'timestamp' => 0,
+		'id_node' => 0
 	);
 
 	// Merge default params with passed params
@@ -3933,10 +3924,10 @@ function ui_get_snapshot_link($params, $only_params = false) {
 
 	$url = "$page?" .
 		"id=" . $params['id_module'] .
-		"&refr=" . $parms['interval'] .
-		"&timestamp=" . $params['timestamp'] .
-		"&last_data=" . rawurlencode(urlencode(io_safe_output($params['last_data']))) .
-		"&label=" . rawurlencode(urlencode(io_safe_output($params['module_name'])));
+		"&label=" . rawurlencode(urlencode(io_safe_output($params['module_name']))).
+		"&id_node=" . $params['id_node'];
+	if ($params['timestamp'] != 0) $url .= "&timestamp=" . $parms['timestamp'];
+	if ($params['timestamp'] != 0) $url .= "&refr=" . $parms['interval'];
 
 	// Second parameter of js winopeng_var
 	$win_handle = dechex(crc32('snapshot_' . $params['id_module']));
@@ -3948,6 +3939,28 @@ function ui_get_snapshot_link($params, $only_params = false) {
 
 	// Return the function call to inline js execution
 	return "winopeng_var('" . implode("', '", $link_parts) . "')";
+}
+
+/**
+ * @brief Get the snapshot image with the link to open a snapshot into a new page
+ *
+ * @param string Built link
+ * @param bool Picture image or list image
+ *
+ * @return string HTML anchor link with image
+ */
+function ui_get_snapshot_image ($link, $is_image) {
+	$image_name = $is_image ? 'photo.png' : 'default_list.png';
+
+	$link = '<a href="javascript:' . $link . '">' .
+		html_print_image("images/$image_name", true,
+			array('border' => '0',
+				'alt' => '',
+				'title' => __('Snapshot view'))
+		) .
+	'</a>';
+
+	return $link;
 }
 
 function ui_get_using_system_timezone_warning ($tag = "h3", $return = true) {

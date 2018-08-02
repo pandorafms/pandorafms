@@ -108,21 +108,18 @@ if (is_ajax ()) {
 			$value = $module_value;
 		}
 		else{
-			// If carriage returns present... then is a "Snapshot" data (full command output)
-			$is_snapshot = is_snapshot_data ( $module_value );
-
 			$module = modules_get_agentmodule($id_module);
-			
-			if (($config['command_snapshot']) && ($is_snapshot)){
-				$handle = "snapshot"."_".$module["id_agente_modulo"];
-				$url = 'include/procesos.php?agente='.$module["id_agente_modulo"];
-				$win_handle = dechex(crc32($handle));
-				
-				$link ="winopeng_var('operation/agentes/snapshot_view.php?id=".$module["id_agente_modulo"]."&refr=".$module["current_interval"]."&label=".$module["nombre"]."','".$win_handle."', 700,480)"; 
-				
-				$value = '<a href="javascript:'.$link.'">' . html_print_image("images/default_list.png", true, array("border" => '0', "alt" => "", "title" => __("Snapshot view"))) . '</a> &nbsp;&nbsp;';
-			}
-			else {
+
+			$is_snapshot = is_snapshot_data ($module_value);
+			$is_large_image = is_text_to_black_string ($module_value);
+			if (($config['command_snapshot']) && ($is_snapshot || $is_large_image)) {
+				$link = ui_get_snapshot_link( array(
+					'id_module' => $module["id_agente_modulo"],
+					'interval' => $module["current_interval"],
+					'module_name' => $module["nombre"]
+				));
+				$value = ui_get_snapshot_image($link, $is_snapshot) . '&nbsp;&nbsp;';
+			} else {
 				$value = ui_print_module_string_value(
 					$module_value, $module["id_agente_modulo"],
 					$module["current_interval"], $module["module_name"]);

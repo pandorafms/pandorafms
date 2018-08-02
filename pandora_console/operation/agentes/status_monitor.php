@@ -732,146 +732,50 @@ switch ($sortField) {
 		break;
 }
 
-switch ($config['dbtype']) {
-	case 'mysql':
-		$sql = 'SELECT
-			(SELECT GROUP_CONCAT(ttag.name SEPARATOR \',\')
-				FROM ttag
-				WHERE ttag.id_tag IN (
-					SELECT ttag_module.id_tag
-					FROM ttag_module
-					WHERE ttag_module.id_agente_modulo = tagente_modulo.id_agente_modulo))
-			AS tags, 
-			tagente_modulo.id_agente_modulo,
-			tagente_modulo.id_modulo,
-			tagente.intervalo AS agent_interval,
-			tagente.alias AS agent_alias,
-			tagente.nombre AS agent_name,
-			tagente_modulo.nombre AS module_name,
-			tagente_modulo.history_data,
-			tagente_modulo.flag AS flag,
-			tagente.id_grupo AS id_group, 
-			tagente.id_agente AS id_agent, 
-			tagente_modulo.id_tipo_modulo AS module_type,
-			tagente_modulo.module_interval,
-			tagente_modulo.tcp_send,
-			tagente_modulo.ip_target,
-			tagente_modulo.snmp_community,
-			tagente_modulo.snmp_oid,
-			tagente_estado.datos, 
-			tagente_estado.estado,
-			tagente_modulo.min_warning,
-			tagente_modulo.max_warning,
-			tagente_modulo.str_warning,
-			tagente_modulo.unit,
-			tagente_modulo.min_critical,
-			tagente_modulo.max_critical,
-			tagente_modulo.str_critical,
-			tagente_modulo.extended_info,
-			tagente_modulo.critical_inverse,
-			tagente_modulo.warning_inverse,
-			tagente_modulo.critical_instructions,
-			tagente_modulo.warning_instructions,
-			tagente_modulo.unknown_instructions,
-			tagente_estado.utimestamp AS utimestamp' .
-			$sql_from . $sql_conditions_all . '
-			GROUP BY tagente_modulo.id_agente_modulo
-			ORDER BY ' . $order['field'] . " " . $order['order'] . '
-			LIMIT '.$offset.",".$limit_sql;
-		break;
-	case 'postgresql':
-		if (strstr($config['dbversion'], "8.4") !== false) {
-			$string_agg = 'array_to_string(array_agg(ttag.name), \',\')';
-		}
-		else {
-			$string_agg = 'STRING_AGG(ttag.name, \',\')';
-		}
-		
-		$sql = 'SELECT
-			(SELECT  ' . $string_agg . '
-				FROM ttag
-				WHERE ttag.id_tag IN (
-					SELECT ttag_module.id_tag
-					FROM ttag_module
-					WHERE ttag_module.id_agente_modulo = tagente_modulo.id_agente_modulo))
-			AS tags,
-			tagente_modulo.id_agente_modulo,
-			tagente_modulo.id_modulo,
-			tagente.intervalo AS agent_interval,
-			tagente.alias AS agent_alias, 
-			tagente.nombre AS agent_name, 
-			tagente_modulo.nombre AS module_name,
-			tagente_modulo.history_data,
-			tagente_modulo.flag AS flag,
-			tagente.id_grupo AS id_group, 
-			tagente.id_agente AS id_agent, 
-			tagente_modulo.id_tipo_modulo AS module_type,
-			tagente_modulo.module_interval, 
-			tagente_estado.datos, 
-			tagente_estado.estado,
-			tagente_modulo.min_warning,
-			tagente_modulo.max_warning,
-			tagente_modulo.str_warning,
-			tagente_modulo.min_critical,
-			tagente_modulo.unit,
-			tagente_modulo.max_critical,
-			tagente_modulo.str_critical,
-			tagente_modulo.extended_info,
-			tagente_modulo.critical_inverse,
-			tagente_modulo.warning_inverse,
-			tagente_modulo.critical_instructions,
-			tagente_modulo.warning_instructions,
-			tagente_modulo.unknown_instructions,
-			tagente_estado.utimestamp AS utimestamp' .
-			$sql_from .
-			$sql_conditions_all .
-			' LIMIT ' . $limit_sql . ' OFFSET ' . $offset;
-		break;
-	case 'oracle':
-		$set = array();
-		$set['limit'] = $limit_sql;
-		$set['offset'] = $offset;
-		$sql = 'SELECT
-			(SELECT LISTAGG(ttag.name, \',\') WITHIN GROUP (ORDER BY ttag.name) 
-				FROM ttag
-				WHERE ttag.id_tag IN (
-					SELECT ttag_module.id_tag
-					FROM ttag_module
-					WHERE ttag_module.id_agente_modulo = tagente_modulo.id_agente_modulo))
-			AS tags,
-			tagente_modulo.id_agente_modulo,
-			tagente_modulo.id_modulo,
-			tagente.intervalo AS agent_interval,
-			tagente.alias AS agent_alias,
-			tagente.nombre AS agent_name,
-			tagente_modulo.nombre AS module_name,
-			tagente_modulo.history_data,
-			tagente_modulo.flag AS flag,
-			tagente.id_grupo AS id_group, 
-			tagente.id_agente AS id_agent, 
-			tagente_modulo.id_tipo_modulo AS module_type,
-			tagente_modulo.module_interval, 
-			tagente_estado.datos, 
-			tagente_estado.estado,
-			tagente_modulo.min_warning,
-			tagente_modulo.max_warning,
-			tagente_modulo.str_warning,
-			tagente_modulo.unit,
-			tagente_modulo.min_critical,
-			tagente_modulo.max_critical,
-			tagente_modulo.str_critical,
-			tagente_modulo.extended_info,
-			tagente_modulo.critical_inverse,
-			tagente_modulo.warning_inverse,
-			tagente_modulo.critical_instructions,
-			tagente_modulo.warning_instructions,
-			tagente_modulo.unknown_instructions,
-			tagente_estado.utimestamp AS utimestamp' .
-			$sql_from .
-			$sql_conditions_all;
-		$sql = oracle_recode_query ($sql, $set);
-		break;
-}
+$sql = 'SELECT
+	(SELECT GROUP_CONCAT(ttag.name SEPARATOR \',\')
+		FROM ttag
+		WHERE ttag.id_tag IN (
+			SELECT ttag_module.id_tag
+			FROM ttag_module
+			WHERE ttag_module.id_agente_modulo = tagente_modulo.id_agente_modulo))
+	AS tags,
+	tagente_modulo.id_agente_modulo,
+	tagente_modulo.id_modulo,
+	tagente.intervalo AS agent_interval,
+	tagente.alias AS agent_alias,
+	tagente.nombre AS agent_name,
+	tagente_modulo.nombre AS module_name,
+	tagente_modulo.history_data,
+	tagente_modulo.flag AS flag,
+	tagente.id_grupo AS id_group,
+	tagente.id_agente AS id_agent,
+	tagente_modulo.id_tipo_modulo AS module_type,
+	tagente_modulo.module_interval,
+	tagente_modulo.tcp_send,
+	tagente_modulo.ip_target,
+	tagente_modulo.snmp_community,
+	tagente_modulo.snmp_oid,
+	tagente_estado.datos,
+	tagente_estado.estado,
+	tagente_modulo.min_warning,
+	tagente_modulo.max_warning,
+	tagente_modulo.str_warning,
+	tagente_modulo.unit,
+	tagente_modulo.min_critical,
+	tagente_modulo.max_critical,
+	tagente_modulo.str_critical,
+	tagente_modulo.extended_info,
+	tagente_modulo.critical_inverse,
+	tagente_modulo.warning_inverse,
+	tagente_modulo.critical_instructions,
+	tagente_modulo.warning_instructions,
+	tagente_modulo.unknown_instructions,
+	tagente_estado.utimestamp AS utimestamp' .
+	$sql_from . $sql_conditions_all . '
+	GROUP BY tagente_modulo.id_agente_modulo
+	ORDER BY ' . $order['field'] . " " . $order['order'] . '
+	LIMIT '.$offset.",".$limit_sql;
 
 if (! defined ('METACONSOLE')) {
 	$result = db_get_all_rows_sql ($sql);
@@ -1400,29 +1304,11 @@ if (!empty($result)) {
 			if (($config['command_snapshot']) && ($is_snapshot || $is_large_image)) {
 				$link = ui_get_snapshot_link( array(
 					'id_module' => $row['id_agente_modulo'],
-					'last_data' => $row['datos'],
-					'timestamp' => $row['timestamp'],
 					'interval' => $row['current_interval'],
 					'module_name' => $row['module_name']
 				));
-
-				if($is_large_image){
-					$salida = '<a href="javascript:' . $link . '">' .
-						html_print_image('images/default_list.png', true,
-							array('border' => '0',
-							'alt' => '',
-							'title' => __('Snapshot view'))) . '</a> &nbsp;&nbsp;';
-				}
-				else {
-					$salida = '<a href="javascript:' . $link . '">' .
-						html_print_image('images/photo.png', true,
-							array('border' => '0',
-								'alt' => '',
-								'title' => __('Snapshot view'))) . '</a> &nbsp;&nbsp;';
-				}
-			}
-			else {
-				
+				$salida = ui_get_snapshot_image($link, $is_snapshot) . '&nbsp;&nbsp;';
+			} else {
 				$sub_string = substr(io_safe_output($row['datos']), 0, 12);
 				if ($module_value == $sub_string) {
 					if ($module_value == 0 && !$sub_string) {

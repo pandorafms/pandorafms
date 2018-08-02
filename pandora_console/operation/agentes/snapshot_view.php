@@ -28,6 +28,7 @@ require_once ($config['homedir'] . '/include/functions_graph.php');
 require_once ($config['homedir'] . '/include/functions_modules.php');
 require_once ($config['homedir'] . '/include/functions_agents.php');
 require_once ($config['homedir'] . '/include/functions_tags.php');
+enterprise_include_once ('include/functions_metaconsole');
 
 check_login ();
 
@@ -38,17 +39,27 @@ if (file_exists ('../../include/languages/'.$user_language.'.mo')) {
 }
 
 $id = get_parameter('id');
-$label = get_parameter ("label");
-$last_data = get_parameter("last_data", '');
-$last_timestamp = get_parameter("timestamp", '');
-// FIXME: Support to old call snapshow_view calls. Remove it when all are migrated
-if (empty($last_data)) {
-	$row = db_get_row_sql("SELECT *
-		FROM tagente_estado
-		WHERE id_agente_modulo = $id");
-	$last_data = io_safe_output($row["datos"]);
-	$last_timestamp = $row["timestamp"];
+$id_node = get_parameter("id_node", 0);
+
+// Get the data
+if ($id_node > 0) {
+	$connection = metaconsole_get_connection_by_id($server_name);
+	if (metaconsole_load_external_db($connection) != NOERR) {
+		echo "Node connection fail";
+		exit;
+	}
 }
+$row_module = modules_get_agentmodule($id);
+$row_state = db_get_row('tagente_estado', 'id_agente_modulo', $id);
+if ($id_node > 0) {
+	metaconsole_restore_db();
+}
+
+// Build the info
+$label = get_parameter ("label", io_safe_output($row_module['module_name']));
+$last_timestamp = get_parameter("timestamp", $row_state['timestamp']);
+$last_data = io_safe_output($row_state["datos"]);
+$refresh = (int) get_parameter ("refr", $row_state['current_interval']);
 
 // TODO - Put ACL here
 ?>
@@ -56,7 +67,6 @@ if (empty($last_data)) {
 	<head>
 		<?php
 		// Parsing the refresh before sending any header
-		$refresh = (int) get_parameter ("refr", -1);
 		if ($refresh > 0) {
 			$query = ui_get_url_refresh (false);
 			echo '<meta http-equiv="refresh" content="'.$refresh.'; URL='.$query.'" />';
@@ -68,14 +78,8 @@ if (empty($last_data)) {
 	</head>
 	<body style='background:#000; color: #ccc;'>
 		<?php
-		$row = db_get_row_sql("SELECT *
-			FROM tagente_estado
-			WHERE id_agente_modulo = $id");
-
 		echo "<h2 style='text-align:center;' id='title_snapshot_view'>";
-		echo __("Current data at");
-		echo " ";
-		echo $last_timestamp;
+			echo __("Current data at %s", $last_timestamp);
 		echo "</h2>";
 		if (is_image_data($last_data)) {
 			echo '<center><img src="' . $last_data . '" alt="image" style="width:100%"/></center>';

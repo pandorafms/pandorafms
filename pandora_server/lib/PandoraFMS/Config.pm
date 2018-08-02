@@ -44,8 +44,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.724";
-my $pandora_build = "180709";
+my $pandora_version = "7.0NG.725";
+my $pandora_build = "180801";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -266,8 +266,7 @@ sub pandora_load_config {
 	$pa_config->{"web_engine"} = 'lwp'; # 5.1
 	$pa_config->{"activate_gis"} = 0; # 3.1
 	$pa_config->{"location_error"} = 50; # 3.1
-	$pa_config->{"recon_reverse_geolocation_mode"} = 'disabled'; # 3.1
-	$pa_config->{"recon_reverse_geolocation_file"} = '/usr/local/share/GeoIP/GeoIPCity.dat'; # 3.1
+	$pa_config->{"recon_reverse_geolocation_file"} = ''; # 3.1
 	$pa_config->{"recon_location_scatter_radius"} = 50; # 3.1
 	$pa_config->{"update_parent"} = 0; # 3.1
 	$pa_config->{"google_maps_description"} = 0;
@@ -486,6 +485,8 @@ sub pandora_load_config {
 	$pa_config->{"provisioningserver"} = 1; # 7.0 720
 	$pa_config->{"provisioningserver_threads"} = 1; # 7.0 720
 	$pa_config->{"provisioning_cache_interval"} = 300; # 7.0 720
+
+	$pa_config->{"autoconfigure_agents"} = 1; # 7.0 725
 
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
@@ -863,12 +864,13 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^location_error\s+(\d+)/i) {
 			$pa_config->{'location_error'} = clean_blank($1);
-		}
-		elsif ($parametro =~ m/^recon_reverse_geolocation_mode\s+(\w+)/i) {
-			$pa_config->{'recon_reverse_geolocation_mode'} = clean_blank($1);
 		} #FIXME: Find a better regexp to validate the path
 		elsif ($parametro =~ m/^recon_reverse_geolocation_file\s+(.*)/i) {
 			$pa_config->{'recon_reverse_geolocation_file'} = clean_blank($1);
+			if ( ! -r $pa_config->{'recon_reverse_geolocation_file'} ) {
+				print "[WARN] Invalid recon_reverse_geolocation_file.\n";
+				$pa_config->{'recon_reverse_geolocation_file'} = '';
+			}
 		}
 		elsif ($parametro =~ m/^recon_location_scatter_radius\s+(\d+)/i) {
 			$pa_config->{'recon_location_scatter_radius'} = clean_blank($1);
@@ -1112,6 +1114,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^provisioning_cache_interval\s+([0-9]*)/i){
 			$pa_config->{'provisioning_cache_interval'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^autoconfigure_agents\s+([0-1])/i){
+			$pa_config->{'autoconfigure_agents'}= clean_blank($1);
 		}
 	} # end of loop for parameter #
 

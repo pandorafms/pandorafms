@@ -31,8 +31,8 @@ use base 'Exporter';
 our @ISA = qw(Exporter);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.724";
-my $pandora_build = "180709";
+my $pandora_version = "7.0NG.725";
+my $pandora_build = "180801";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 our %EXPORT_TAGS = ( 'all' => [ qw() ] );
@@ -988,6 +988,18 @@ sub init {
 	}
 
 	return $conf;
+}
+
+################################################################################
+# Update internal UA timeout
+################################################################################
+sub ua_set_timeout {
+	my ($config, $timeout) = @_;
+	return unless looks_like_number($timeout) and $timeout > 0;
+	my $sys = get_sys_environment($config);
+
+	return unless defined($sys->{'ua'});
+	$sys->{'ua'}->timeout($timeout);
 }
 
 ################################################################################

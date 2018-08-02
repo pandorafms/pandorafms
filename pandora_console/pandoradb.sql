@@ -641,6 +641,8 @@ CREATE TABLE IF NOT EXISTS `tevento` (
 	`owner_user` VARCHAR(100) NOT NULL DEFAULT '',
 	`ack_utimestamp` BIGINT(20) NOT NULL DEFAULT '0',
 	`custom_data` TEXT NOT NULL,
+	`data` double(22,5) default NULL,
+	`module_status` int(4) NOT NULL default '0',
 	PRIMARY KEY  (`id_evento`),
 	KEY `idx_agente` (`id_agente`),
 	KEY `idx_agentmodule` (`id_agentmodule`),
@@ -2158,6 +2160,7 @@ CREATE TABLE IF NOT EXISTS `tpolicy_modules` (
 	`prediction_sample_window` int(10) default 0,
 	`prediction_samples` int(4) default 0,
 	`prediction_threshold` int(4) default 0,
+	`cps` int NOT NULL DEFAULT 0,
 	PRIMARY KEY  (`id`),
 	KEY `main_idx` (`id_policy`),
 	UNIQUE (`id_policy`, `name`)
@@ -2205,8 +2208,9 @@ CREATE TABLE IF NOT EXISTS `tpolicy_agents` (
 	`policy_applied` tinyint(1) unsigned default '0',
 	`pending_delete` tinyint(1) unsigned default '0',
 	`last_apply_utimestamp` int(10) unsigned NOT NULL default 0,
+	`id_node` int(10) NOT NULL default 0,
 	PRIMARY KEY  (`id`),
-	UNIQUE (`id_policy`, `id_agent`)
+	UNIQUE (`id_policy`, `id_agent`, `id_node`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------
@@ -2429,6 +2433,7 @@ CREATE TABLE IF NOT EXISTS `tservice` (
 	`quiet` tinyint(1) NOT NULL default 0,
 	`cps` int NOT NULL default 0,
 	`cascade_protection` tinyint(1) NOT NULL default 0,
+	`evaluate_sla` int(1) NOT NULL default 0,
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB 
 COMMENT = 'Table to define services to monitor' 
@@ -2875,6 +2880,8 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_event` (
 	`ack_utimestamp` BIGINT(20) NOT NULL DEFAULT '0',
 	`server_id` int(10) NOT NULL,
 	`custom_data` TEXT NOT NULL DEFAULT '',
+	`data` double(22,5) default NULL,
+	`module_status` int(4) NOT NULL default '0',
 	PRIMARY KEY  (`id_evento`),
 	KEY `idx_agente` (`id_agente`),
 	KEY `idx_agentmodule` (`id_agentmodule`),
@@ -2920,6 +2927,8 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_event_history` (
 	`ack_utimestamp` BIGINT(20) NOT NULL DEFAULT '0',
 	`server_id` int(10) NOT NULL,
 	`custom_data` TEXT NOT NULL DEFAULT '',
+	`data` double(22,5) default NULL,
+	`module_status` int(4) NOT NULL default '0',
 	PRIMARY KEY  (`id_evento`),
 	KEY `idx_agente` (`id_agente`),
 	KEY `idx_agentmodule` (`id_agentmodule`),
@@ -3194,4 +3203,47 @@ create table IF NOT EXISTS `tmetaconsole_agent_secondary_group`(
 	FOREIGN KEY (`id_tmetaconsole_setup`) REFERENCES tmetaconsole_setup(`id`)
 		ON DELETE CASCADE
 ) engine=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tautoconfig`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tautoconfig` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `order` int(11) NOT NULL DEFAULT '0',
+  `description` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tautoconfig_rules`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tautoconfig_rules` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `id_autoconfig` int(10) unsigned NOT NULL,
+  `order` int(11) NOT NULL DEFAULT '0',
+  `operator` enum('AND','OR') DEFAULT 'OR',
+  `type` enum('alias','ip-range','group','os','custom-field','script','server-name') DEFAULT 'alias',
+  `value` text,
+  `custom` text,
+  PRIMARY KEY (`id`),
+  KEY `id_autoconfig` (`id_autoconfig`),
+  CONSTRAINT `tautoconfig_rules_ibfk_1` FOREIGN KEY (`id_autoconfig`) REFERENCES `tautoconfig` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tautoconfig_actions`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tautoconfig_actions` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `id_autoconfig` int(10) unsigned NOT NULL,
+  `order` int(11) NOT NULL DEFAULT '0',
+  `action_type` enum('set-group', 'set-secondary-group', 'apply-policy', 'launch-script', 'launch-event', 'launch-alert-action', 'raw-config') DEFAULT 'launch-event',
+  `value` text,
+  `custom` text,
+  PRIMARY KEY (`id`),
+  KEY `id_autoconfig` (`id_autoconfig`),
+  CONSTRAINT `tautoconfig_action_ibfk_1` FOREIGN KEY (`id_autoconfig`) REFERENCES `tautoconfig` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 

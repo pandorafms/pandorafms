@@ -58,7 +58,7 @@ $data[0] = __('Auth user');
 $data[1] = html_print_input_text ('snmp3_auth_user', $snmp3_auth_user, '', 15, 60, true);
 $data[2] = __('Auth password');
 $data[3] = html_print_input_password ('snmp3_auth_pass', $snmp3_auth_pass, '', 15, 60, true);
-$data[3] .= html_print_input_hidden('active_snmp_v3', 0, true);
+$data[3] .= html_print_input_hidden_extended('active_snmp_v3', 0, 'active_snmp_v3_mncfn', true);
 push_table_row($data, 'field_snmpv3_row1');
 
 $data = array();

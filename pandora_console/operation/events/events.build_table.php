@@ -188,14 +188,14 @@ else {
 		$i++;
 	}
 	if (in_array('event_type', $show_fields)) {
-		$table->head[$i] = __('Event type');
+		$table->head[$i] = __('Event Type');
 		$table->align[$i] = 'left';
 		
 		$table->style[$i] = 'min-width: 85px;';
 		$i++;
 	}
 	if (in_array('id_agentmodule', $show_fields)) {
-		$table->head[$i] = __('Agent Module');
+		$table->head[$i] = __('Module Name');
 		$table->align[$i] = 'left';
 		
 		$i++;
@@ -245,6 +245,18 @@ else {
 	}
 	if (in_array('instructions', $show_fields)) {
 		$table->head[$i] = __('Instructions');
+		$table->align[$i] = 'left';
+		
+		$i++;
+	}
+	if (in_array('data', $show_fields)) {
+		$table->head[$i] = __('Data');
+		$table->align[$i] = 'left';
+		
+		$i++;
+	}
+	if (in_array('module_status', $show_fields)) {
+		$table->head[$i] = __('Module Status');
 		$table->align[$i] = 'left';
 		
 		$i++;
@@ -660,6 +672,20 @@ else {
 				$data[$i] = '';
 			}
 			
+			$table->cellclass[count($table->data)][$i] = $myclass;
+			$i++;
+		}
+			if (in_array('data',$show_fields)) {
+			$data[$i] = $event["data"];
+			if($data[$i] %1 == 0)
+				$data[$i]= number_format($data[$i], 0);
+			else
+				$data[$i]= number_format($data[$i], 2);
+			$table->cellclass[count($table->data)][$i] = $myclass;
+				$i++;
+		}
+		if (in_array('module_status',$show_fields)) {
+			$data[$i] = modules_get_modules_status ($event["module_status"]);
 			$table->cellclass[count($table->data)][$i] = $myclass;
 			$i++;
 		}

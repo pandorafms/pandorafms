@@ -16,15 +16,18 @@
 global $config;
 
 require_once($config['homedir'] . "/include/functions_snmp_browser.php");
-?>
-<script type="text/javascript" src="include/javascript/pandora_snmp_browser.js"></script>
-<?php
+$snmp_browser_path = is_metaconsole() ? "../../" : "";
+$snmp_browser_path .= "include/javascript/pandora_snmp_browser.js";
+echo "<script type='text/javascript' src='$snmp_browser_path'></script>";
 //This line does not run with the dinamic loader editor in policies.
 //ui_require_javascript_file ('pandora_snmp_browser');
 
+//WARNING REPEAT input hidden errors in console
 // Save some variables for javascript functions
-html_print_input_hidden ('ajax_url', ui_get_full_url("ajax.php"), false);
-html_print_input_hidden ('search_matches_translation', __("Search matches"), false);
+//html_print_input_hidden ('ajax_url', ui_get_full_url("ajax.php"), false);
+//html_print_input_hidden ('search_matches_translation', __("Search matches"), false);
+
+
 
 // Define a custom action to save the OID selected in the SNMP browser to the form
 html_print_input_hidden ('custom_action', urlencode (base64_encode('&nbsp;<a href="javascript:setOID()"><img src="' . ui_get_full_url("images") . '/input_filter.disabled.png" title="' . __("Use this OID") . '" style="vertical-align: middle;"></img></a>')), false);
@@ -215,11 +218,11 @@ else if ($id_agent_module === false) {
 $data = array();
 $data[0] = __('Auth user');
 $data[1] = html_print_input_text ('snmp3_auth_user', $snmp3_auth_user, '', 15, 60, true, $disabledBecauseInPolicy,
-		 false, '', $classdisabledBecauseInPolicy);
+			false, '', $classdisabledBecauseInPolicy);
 $data[2] = __('Auth password') . ui_print_help_tip(__("The pass length must be eight character minimum."), true);
 $data[3] = html_print_input_password ('snmp3_auth_pass', $snmp3_auth_pass, '', 15, 60, true, $disabledBecauseInPolicy,
-		 false, $largeclassdisabledBecauseInPolicy);
-$data[3] .= html_print_input_hidden('active_snmp_v3', 0, true);
+			false, $largeclassdisabledBecauseInPolicy);
+$data[3] .= html_print_input_hidden_extended('active_snmp_v3', 0, 'active_snmp_v3_mmen', true);
 if ($snmp_version != 3) $table_simple->rowstyle['field_snmpv3_row1'] = 'display: none;';
 push_table_simple($data, 'field_snmpv3_row1');
 

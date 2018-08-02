@@ -1360,11 +1360,41 @@ function safe_sql_string($string) {
 
 function is_metaconsole() {
 	global $config;
-	
-	if ($config['metaconsole'])
-		return true;
-	else
-		return false;
+	return (bool) $config['metaconsole'];
+}
+
+/**
+ * @brief Check if there is management operations are allowed in current context
+ * (node // meta)
+ *
+ * @return bool
+ */
+function is_management_allowed() {
+	global $config;
+	return ( (is_metaconsole() && $config["centralized_management"])
+		|| (!is_metaconsole() && !$config["centralized_management"]));
+}
+
+/**
+ * @brief Check if there is centralized management in metaconsole environment.
+ * 			Usefull to display some policy features on metaconsole.
+ *
+ * @return bool
+ */
+function is_central_policies() {
+	global $config;
+	return is_metaconsole() && $config["centralized_management"];
+}
+
+/**
+ * @brief Check if there is centralized management in node environment. Usefull
+ * 			to reduce the policy functionallity on nodes.
+ *
+ * @return bool
+ */
+function is_central_policies_on_node() {
+	global $config;
+	return (!is_metaconsole()) && $config["centralized_management"];
 }
 
 /**
@@ -3117,29 +3147,25 @@ function series_type_graph_array($data, $show_elements_graph){
 					}
 				}
 
-				if(($show_elements_graph['fullscale'] ||
-					$show_elements_graph['type_mode_graph'] ) &&
-					strpos($key, 'baseline') === false ){
-						$data_return['legend'][$key] .=
-							__('Min:') . remove_right_zeros(
-								number_format(
-									$value['min'],
-									$config['graph_precision']
-								)
-							)  . ' ' .
-							__('Max:') . remove_right_zeros(
-								number_format(
-									$value['max'],
-									$config['graph_precision']
-								)
-							) . ' ' .
-							_('Avg:') . remove_right_zeros(
-								number_format(
-									$value['avg'],
-									$config['graph_precision']
-								)
-							) . ' ' . $str;
-				}
+				$data_return['legend'][$key] .=
+					__('Min:') . remove_right_zeros(
+						number_format(
+							$value['min'],
+							$config['graph_precision']
+						)
+					)  . ' ' .
+					__('Max:') . remove_right_zeros(
+						number_format(
+							$value['max'],
+							$config['graph_precision']
+						)
+					) . ' ' .
+					_('Avg:') . remove_right_zeros(
+						number_format(
+							$value['avg'],
+							$config['graph_precision']
+						)
+					) . ' ' . $str;
 
 				if($show_elements_graph['compare'] == 'overlapped' && $key == 'sum2'){
 					$data_return['color'][$key] = $color_series['overlapped'];

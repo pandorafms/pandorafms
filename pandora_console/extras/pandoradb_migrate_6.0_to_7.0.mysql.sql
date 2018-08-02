@@ -1269,6 +1269,7 @@ UPDATE tagente SET tagente.alias = tagente.nombre;
 ALTER TABLE `tservice` ADD COLUMN `quiet` tinyint(1) NOT NULL default 0;
 ALTER TABLE `tservice` ADD COLUMN `cps` int NOT NULL default 0;
 ALTER TABLE `tservice` ADD COLUMN `cascade_protection` tinyint(1) NOT NULL default 0;
+ALTER TABLE `tservice` ADD COLUMN `evaluate_sla` int(1) NOT NULL default 0;
 
 -- ---------------------------------------------------------------------
 -- Table `tlayout`
@@ -1353,6 +1354,7 @@ ALTER TABLE tlocal_component ADD COLUMN `dynamic_two_tailed` tinyint(1) unsigned
 ALTER TABLE tpolicy_modules ADD COLUMN `ip_target`varchar(100) default '';
 ALTER TABLE tpolicy_modules ADD COLUMN `dynamic_next` bigint(20) NOT NULL default '0';
 ALTER TABLE tpolicy_modules ADD COLUMN `dynamic_two_tailed` tinyint(1) unsigned default '0';
+ALTER TABLE `tpolicy_modules` ADD COLUMN `cps` int NOT NULL DEFAULT 0;
 
 -- ---------------------------------------------------------------------
 -- Table `tmetaconsole_agent`
@@ -1667,3 +1669,47 @@ create table IF NOT EXISTS `tmetaconsole_agent_secondary_group`(
 ALTER TABLE tagente ADD COLUMN `update_secondary_groups` tinyint(1) NOT NULL default '0';
 ALTER TABLE tmetaconsole_agent ADD COLUMN `update_secondary_groups` tinyint(1) NOT NULL default '0';
 ALTER TABLE tusuario_perfil ADD COLUMN `is_secondary` tinyint(1) NOT NULL default '0';
+
+-- ---------------------------------------------------------------------
+-- Table `tautoconfig`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tautoconfig` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `order` int(11) NOT NULL DEFAULT '0',
+  `description` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tautoconfig_rules`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tautoconfig_rules` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `id_autoconfig` int(10) unsigned NOT NULL,
+  `order` int(11) NOT NULL DEFAULT '0',
+  `operator` enum('AND','OR') DEFAULT 'OR',
+  `type` enum('alias','ip-range','group','os','custom-field','script','server-name') DEFAULT 'alias',
+  `value` text,
+  `custom` text,
+  PRIMARY KEY (`id`),
+  KEY `id_autoconfig` (`id_autoconfig`),
+  CONSTRAINT `tautoconfig_rules_ibfk_1` FOREIGN KEY (`id_autoconfig`) REFERENCES `tautoconfig` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tautoconfig_actions`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tautoconfig_actions` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `id_autoconfig` int(10) unsigned NOT NULL,
+  `order` int(11) NOT NULL DEFAULT '0',
+  `action_type` enum('set-group', 'set-secondary-group', 'apply-policy', 'launch-script', 'launch-event', 'launch-alert-action', 'raw-config') DEFAULT 'launch-event',
+  `value` text,
+  `custom` text,
+  PRIMARY KEY (`id`),
+  KEY `id_autoconfig` (`id_autoconfig`),
+  CONSTRAINT `tautoconfig_action_ibfk_1` FOREIGN KEY (`id_autoconfig`) REFERENCES `tautoconfig` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+

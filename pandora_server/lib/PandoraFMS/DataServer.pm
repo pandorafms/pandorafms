@@ -39,6 +39,7 @@ use PandoraFMS::Tools;
 use PandoraFMS::DB;
 use PandoraFMS::Core;
 use PandoraFMS::ProducerConsumerServer;
+use PandoraFMS::GIS;
 
 # Inherits from PandoraFMS::ProducerConsumerServer
 our @ISA = qw(PandoraFMS::ProducerConsumerServer);
@@ -362,10 +363,13 @@ sub process_xml_data ($$$$$) {
 		my $description = '';
 		$description = $data->{'description'} if (defined ($data->{'description'}));
 		my $alias = (defined ($data->{'agent_alias'}) && $data->{'agent_alias'} ne '') ? $data->{'agent_alias'} : $data->{'agent_name'};
-		
-		$agent_id = pandora_create_agent($pa_config, $pa_config->{'servername'}, $agent_name, $address, $group_id, $parent_id, $os, 
-						$description, $interval, $dbh, $timezone_offset, undef, undef, undef, undef, $custom_id, $url_address, $agent_mode, $alias);
-												 
+		my $location = get_geoip_info($pa_config, $address);
+		$agent_id = pandora_create_agent($pa_config, $pa_config->{'servername'}, $agent_name, $address,
+			$group_id, $parent_id, $os,
+			$description, $interval, $dbh, $timezone_offset,
+			$location->{'longitude'}, $location->{'latitude'}, undef, undef,
+			$custom_id, $url_address, $agent_mode, $alias
+		);
 		if (! defined ($agent_id)) {
 			return;
 		}
@@ -409,6 +413,12 @@ sub process_xml_data ($$$$$) {
 				}
 			}
 		}
+
+		if (defined($pa_config->{'autoconfigure_agents'}) && $pa_config->{'autoconfigure_agents'} == 1) {
+			# Update agent configuration once, before create agent - MetaConsole port to Node
+			enterprise_hook('autoconfigure_agent', [$pa_config, $agent_name, $agent_id, $data, $dbh]);
+		}
+
 	}
 
 	# Get the data of the agent, if fail return

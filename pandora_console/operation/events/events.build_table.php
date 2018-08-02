@@ -130,7 +130,7 @@ else {
 
 	//headers
 	$i = 0;
-	$table->head[$i] = __('ID');
+	$table->head[$i] = __('ID') . ' ' . '<a href="index.php?sec=eventos&sec2=operation/events/events&offset='.$offset.'&sort_field=event_id&sort=up&disabled='.$disabled.'">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp)) . '</a>' . '<a href="index.php?sec=eventos&sec2=operation/events/events&sort_field=event_id&sort=down&disabled=$disabled">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown)) . '</a>';
 
 	$table->align[$i] = 'left';
 
@@ -141,7 +141,7 @@ else {
 		$i++;
 	}
 	if (in_array('estado', $show_fields)) {
-		$table->head[$i] = __('Status');
+		$table->head[$i] = __('Status')  . ' ' . '<a href="index.php?sec=eventos&sec2=operation/events/events&offset='.$offset.'&sort_field=status&sort=up&disabled='.$disabled.'">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp)) . '</a>' . '<a href="index.php?sec=eventos&sec2=operation/events/events&sort_field=status&sort=down&disabled=$disabled">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown)) . '</a>';
 		$table->align[$i] = 'left';
 		$i++;
 	}
@@ -152,19 +152,19 @@ else {
 		$i++;
 	}
 	if (in_array('evento', $show_fields)) {
-		$table->head[$i] = __('Event Name');
+		$table->head[$i] = __('Event Name') . ' ' . '<a href="index.php?sec=eventos&sec2=operation/events/events&offset='.$offset.'&sort_field=event_name&sort=up&disabled='.$disabled.'">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp)) . '</a>' . '<a href="index.php?sec=eventos&sec2=operation/events/events&sort_field=event_name&sort=down&disabled=$disabled">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown)) . '</a>';
 		$table->align[$i] = 'left';
 		$table->style[$i] = 'min-width: 200px; max-width: 350px; word-break: break-all;';
 		$i++;
 	}
 	if (in_array('id_agente', $show_fields)) {
-		$table->head[$i] = __('Agent Name');
+		$table->head[$i] = __('Agent name') . ' ' . '<a href="index.php?sec=eventos&sec2=operation/events/events&offset='.$offset.'&sort_field=agent_id&sort=up&disabled='.$disabled.'">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp)) . '</a>' . '<a href="index.php?sec=eventos&sec2=operation/events/events&sort_field=agent_id&sort=down&disabled=$disabled">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown)) . '</a>';
 		$table->align[$i] = 'left';
 		$table->style[$i] = 'max-width: 350px; word-break: break-all;';
 		$i++;
 	}
 	if (in_array('timestamp', $show_fields)) {
-		$table->head[$i] = __('Timestamp');
+		$table->head[$i] = __('Timestamp') . ' ' . '<a href="index.php?sec=eventos&sec2=operation/events/events&offset='.$offset.'&sort_field=timestamp&sort=up&disabled='.$disabled.'">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp)) . '</a>' . '<a href="index.php?sec=eventos&sec2=operation/events/events&sort_field=timestamp&sort=down&disabled=$disabled">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown)) . '</a>';
 		$table->align[$i] = 'left';
 		
 		$i++;
@@ -767,7 +767,7 @@ else {
 
 	echo '<div id="events_list">';
 	if (!empty ($table->data)) {
-		
+			
 		if ($allow_pagination) {
 			ui_pagination ($total_events, $url, $offset, $pagination);
 		}

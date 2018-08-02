@@ -28,7 +28,7 @@ require_once ($config['homedir'] . '/include/functions_graph.php');
 require_once ($config['homedir'] . '/include/functions_modules.php');
 require_once ($config['homedir'] . '/include/functions_agents.php');
 require_once ($config['homedir'] . '/include/functions_tags.php');
-enterprise_include_once ('include/functions_metaconsole');
+enterprise_include_once('include/functions_agents.php');
 
 check_login ();
 
@@ -45,12 +45,13 @@ $id_node = get_parameter("id_node", 0);
 if ($id_node > 0) {
 	$connection = metaconsole_get_connection_by_id($id_node);
 	if (metaconsole_load_external_db($connection) != NOERR) {
-		echo "Node connection fail";
+		ui_print_error_message(__('Cannot connect with node to display the module data.'));
 		exit;
 	}
 }
 $row_module = modules_get_agentmodule($id);
 $row_state = db_get_row('tagente_estado', 'id_agente_modulo', $id);
+
 if ($id_node > 0) {
 	metaconsole_restore_db();
 }
@@ -61,7 +62,12 @@ $last_timestamp = get_parameter("timestamp", $row_state['timestamp']);
 $last_data = io_safe_output($row_state["datos"]);
 $refresh = (int) get_parameter ("refr", $row_state['current_interval']);
 
-// TODO - Put ACL here
+// ACL check
+$all_groups = agents_get_all_groups_agent ($row_state['id_agente']);
+if (!check_acl_one_of_groups($config['id_user'], $all_groups, "AR")) {
+	require ($config['homedir'] . "/general/noaccess.php");
+	exit;
+}
 ?>
 <html>
 	<head>

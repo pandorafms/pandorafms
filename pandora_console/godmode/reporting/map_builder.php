@@ -23,12 +23,26 @@ $vconsoles_write = check_acl ($config['id_user'], 0, "VW");
 $vconsoles_manage = check_acl ($config['id_user'], 0, "VM");
 
 $is_enterprise = enterprise_include_once('include/functions_policies.php');
+$is_metaconsole = is_metaconsole();
 
 if (!$vconsoles_read && !$vconsoles_write && !$vconsoles_manage) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access map builder");
 	require ("general/noaccess.php");
 	exit;
+}
+
+if(!$is_metaconsole){
+    $url_visual_console                 = 'index.php?sec=network&sec2=godmode/reporting/map_builder';
+    $url_visual_console_favorite        = 'index.php?sec=network&sec2=godmode/reporting/visual_console_favorite';
+    $url_visual_console_template        = 'index.php?sec=network&sec2=enterprise/godmode/reporting/visual_console_template';
+    $url_visual_console_template_wizard = 'index.php?sec=network&sec2=enterprise/godmode/reporting/visual_console_template_wizard';
+}
+else{
+    $url_visual_console                 = 'index.php?sec=screen&sec2=screens/screens&action=visualmap';
+    $url_visual_console_favorite        = 'index.php?sec=screen&sec2=screens/screens&action=visualmap_favorite';
+    $url_visual_console_template        = 'index.php?sec=screen&sec2=screens/screens&action=visualmap_template';
+    $url_visual_console_template_wizard = 'index.php?sec=screen&sec2=screens/screens&action=visualmap_wizard';
 }
 
 $pure = (int)get_parameter('pure', 0);
@@ -38,31 +52,31 @@ if (defined('METACONSOLE'))
 
 $buttons['visual_console'] = array(
 	'active' => true,
-	'text' => '<a href="index.php?sec=network&sec2=godmode/reporting/map_builder">' .
+	'text' => '<a href="'.$url_visual_console.'">' .
 				html_print_image ("images/visual_console.png", true, array ("title" => __('Visual Console List'))) .'</a>'
 );
 
 $buttons['visual_console_favorite'] = array(
 	'active' => false,
-	'text' => '<a href="index.php?sec=network&sec2=godmode/reporting/visual_console_favorite">' .
+	'text' => '<a href="'.$url_visual_console_favorite.'">' .
 				html_print_image ("images/list.png", true, array ("title" => __('Visual Favourite Console'))) .'</a>'
 );
 
 if($is_enterprise){
 	$buttons['visual_console_template'] = array(
 		'active' => false,
-		'text' => '<a href="index.php?sec=network&sec2=enterprise/godmode/reporting/visual_console_template">' .
+		'text' => '<a href="'.$url_visual_console_template.'">' .
 					html_print_image ("images/templates.png", true, array ("title" => __('Visual Console Template'))) .'</a>'
 	);
 
 	$buttons['visual_console_template_wizard'] = array(
 		'active' => false,
-		'text' => '<a href="index.php?sec=network&sec2=enterprise/godmode/reporting/visual_console_template_wizard">' .
+		'text' => '<a href="'.$url_visual_console_template_wizard.'">' .
 					html_print_image ("images/wand.png", true, array ("title" => __('Visual Console Template Wizard'))) .'</a>'
 	);
 }
 
-if (!defined('METACONSOLE')) {
+if (!$is_metaconsole) {
 	ui_print_page_header(
 		__('Reporting') .' &raquo; ' . __('Visual Console'),
 		"images/op_reporting.png",
@@ -71,6 +85,11 @@ if (!defined('METACONSOLE')) {
 		false,
 		$buttons
 	);
+}
+else{
+	ui_meta_print_header(
+		__('Visual console') . " &raquo; " . $visualConsoleName, "",
+		$buttons);
 }
 
 $id_layout = (int) get_parameter ('id_layout');

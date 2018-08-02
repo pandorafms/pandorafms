@@ -24,6 +24,8 @@ $vconsoles_read   = check_acl ($config['id_user'], 0, "VR");
 $vconsoles_write  = check_acl ($config['id_user'], 0, "VW");
 $vconsoles_manage = check_acl ($config['id_user'], 0, "VM");
 
+$is_enterprise = enterprise_include_once('include/functions_policies.php');
+
 if (!$vconsoles_read && !$vconsoles_write && !$vconsoles_manage) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access map builder");
@@ -48,17 +50,19 @@ $buttons['visual_console_favorite'] = array(
                 html_print_image ("images/list.png", true, array ("title" => __('Visual Favourite Console'))) .'</a>'
 );
 
-$buttons['visual_console_template'] = array(
-    'active' => true,
-    'text' => '<a href="index.php?sec=network&sec2=godmode/reporting/visual_console_template">' .
-                html_print_image ("images/templates.png", true, array ("title" => __('Visual Console Template'))) .'</a>'
-);
+if($is_enterprise){
+    $buttons['visual_console_template'] = array(
+        'active' => true,
+        'text' => '<a href="index.php?sec=network&sec2=enterprise/godmode/reporting/visual_console_template">' .
+                    html_print_image ("images/templates.png", true, array ("title" => __('Visual Console Template'))) .'</a>'
+    );
 
-$buttons['visual_console_template_wizard'] = array(
-    'active' => false,
-    'text' => '<a href="index.php?sec=network&sec2=godmode/reporting/visual_console_template_wizard">' .
-                html_print_image ("images/wand.png", true, array ("title" => __('Visual Console Template Wizard'))) .'</a>'
-);
+    $buttons['visual_console_template_wizard'] = array(
+        'active' => false,
+        'text' => '<a href="index.php?sec=network&sec2=enterprise/godmode/reporting/visual_console_template_wizard">' .
+                    html_print_image ("images/wand.png", true, array ("title" => __('Visual Console Template Wizard'))) .'</a>'
+    );
+}
 
 if (!defined('METACONSOLE')) {
 	ui_print_page_header(
@@ -178,7 +182,7 @@ if($array_template_visual_console && is_array($array_template_visual_console)){
         $data[0] = $value['name'];
         $data[1] = $value['id_group'];
         $data[2] = $value['is_favourite'];
-        $data[3] = '<a class="delete_visualmap" href="index.php?sec=network&sec2=godmode/reporting/visual_console_template&action=delete_template&id_layout='.$value['id'].'">'.html_print_image ("images/cross.png", true).'</a>';
+        $data[3] = '<a class="delete_visualmap" href="index.php?sec=network&sec2=enterprise/godmode/reporting/visual_console_template&action=delete_template&id_layout='.$value['id'].'">'.html_print_image ("images/cross.png", true).'</a>';
         array_push ($table->data, $data);
     }
 

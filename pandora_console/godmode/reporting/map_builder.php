@@ -22,6 +22,8 @@ $vconsoles_read = check_acl ($config['id_user'], 0, "VR");
 $vconsoles_write = check_acl ($config['id_user'], 0, "VW");
 $vconsoles_manage = check_acl ($config['id_user'], 0, "VM");
 
+$is_enterprise = enterprise_include_once('include/functions_policies.php');
+
 if (!$vconsoles_read && !$vconsoles_write && !$vconsoles_manage) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access map builder");
@@ -46,17 +48,19 @@ $buttons['visual_console_favorite'] = array(
 				html_print_image ("images/list.png", true, array ("title" => __('Visual Favourite Console'))) .'</a>'
 );
 
-$buttons['visual_console_template'] = array(
-	'active' => false,
-	'text' => '<a href="index.php?sec=network&sec2=godmode/reporting/visual_console_template">' .
-				html_print_image ("images/templates.png", true, array ("title" => __('Visual Console Template'))) .'</a>'
-);
+if($is_enterprise){
+	$buttons['visual_console_template'] = array(
+		'active' => false,
+		'text' => '<a href="index.php?sec=network&sec2=godmode/reporting/visual_console_template">' .
+					html_print_image ("images/templates.png", true, array ("title" => __('Visual Console Template'))) .'</a>'
+	);
 
-$buttons['visual_console_template_wizard'] = array(
-	'active' => false,
-	'text' => '<a href="index.php?sec=network&sec2=godmode/reporting/visual_console_template_wizard">' .
-				html_print_image ("images/wand.png", true, array ("title" => __('Visual Console Template Wizard'))) .'</a>'
-);
+	$buttons['visual_console_template_wizard'] = array(
+		'active' => false,
+		'text' => '<a href="index.php?sec=network&sec2=godmode/reporting/visual_console_template_wizard">' .
+					html_print_image ("images/wand.png", true, array ("title" => __('Visual Console Template Wizard'))) .'</a>'
+	);
+}
 
 if (!defined('METACONSOLE')) {
 	ui_print_page_header(
@@ -87,7 +91,7 @@ if ($delete_layout || $copy_layout) {
 		require ("general/noaccess.php");
 		exit;
 	}
-	
+
 	$group_id = db_get_value("id_group", "tlayout", "id", $id_layout);
 	if ($group_id === false) {
 		db_pandora_audit("ACL Violation",

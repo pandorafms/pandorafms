@@ -476,7 +476,7 @@ function modules_create_agent_module ($id_agent, $name, $values = false, $disabl
 	global $config;
 	
 	if (!$disableACL) {
-		if (empty ($id_agent) || ! users_access_to_agent ($id_agent, 'AW'))
+		if (!users_is_admin() && (empty ($id_agent) || ! users_access_to_agent ($id_agent, 'AW')))
 			return false;
 	}
 	

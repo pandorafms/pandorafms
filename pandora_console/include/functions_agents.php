@@ -1739,7 +1739,8 @@ function agents_get_status($id_agent = 0, $noACLs = false) {
 		// Get all non disabled modules of the agent
 		$all_modules = db_get_all_rows_filter('tagente_modulo',
 			$filter_modules, 'id_agente_modulo'); 
-		
+		if ($all_modules === false) $all_modules = array();
+
 		$result_modules = array();
 		// Skip non init modules
 		foreach ($all_modules as $module) {

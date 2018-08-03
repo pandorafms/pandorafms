@@ -537,51 +537,20 @@ function modules_create_agent_module ($id_agent, $name, $values = false, $disabl
 		// Sync modules start in unknown status
 		$status = AGENT_MODULE_STATUS_NO_DATA;
 	}
-	switch ($config["dbtype"]) {
-		case "mysql":
-			$result = db_process_sql_insert ('tagente_estado',
-				array ('id_agente_modulo' => $id_agent_module,
-					'datos' => 0,
-					'timestamp' => '01-01-1970 00:00:00',
-					'estado' => $status,
-					'known_status' => $status,
-					'id_agente' => (int) $id_agent,
-					'utimestamp' => 0,
-					'status_changes' => 0,
-					'last_status' => $status,
-					'last_known_status' => $status
-				));
-			break;
-		case "postgresql":
-			$result = db_process_sql_insert ('tagente_estado',
-				array ('id_agente_modulo' => $id_agent_module,
-					'datos' => 0,
-					'timestamp' => null,
-					'estado' => $status,
-					'known_status' => $status,
-					'id_agente' => (int) $id_agent,
-					'utimestamp' => 0,
-					'status_changes' => 0,
-					'last_status' => $status,
-					'last_known_status' => $status
-				));
-			break;
-		case "oracle":
-			$result = db_process_sql_insert ('tagente_estado',
-				array ('id_agente_modulo' => $id_agent_module,
-					'datos' => 0,
-					'timestamp' => '#to_date(\'1970-01-01 00:00:00\', \'YYYY-MM-DD HH24:MI:SS\')',
-					'estado' => $status,
-					'known_status' => $status,
-					'id_agente' => (int) $id_agent,
-					'utimestamp' => 0,
-					'status_changes' => 0,
-					'last_status' => $status,
-					'last_known_status' => $status
-				));
-			break;
-	}
-	
+
+	$result = db_process_sql_insert ('tagente_estado', array (
+		'id_agente_modulo' => $id_agent_module,
+		'datos' => 0,
+		'timestamp' => '01-01-1970 00:00:00',
+		'estado' => $status,
+		'known_status' => $status,
+		'id_agente' => (int) $id_agent,
+		'utimestamp' => 0,
+		'status_changes' => 0,
+		'last_status' => $status,
+		'last_known_status' => $status
+	));
+
 	if ($result === false) {
 		db_process_sql_delete ('tagente_modulo',
 			array ('id_agente_modulo' => $id_agent_module));
@@ -758,34 +727,7 @@ function modules_format_delete_log4x($id)
  * @return array An array with module information
  */
 function modules_get_agentmodule ($id_agentmodule) {
-	global $config;
-	
-	switch ($config['dbtype']) {
-		case "mysql":
-		case "postgresql": 
-			return db_get_row ('tagente_modulo', 'id_agente_modulo', (int) $id_agentmodule);
-			break;
-		case "oracle":
-			$fields = db_get_all_rows_filter('USER_TAB_COLUMNS',
-				'TABLE_NAME = \'TAGENTE_MODULO\' AND COLUMN_NAME <> \'MAX_CRITICAL\' AND COLUMN_NAME <> \'MIN_CRITICAL\' AND COLUMN_NAME <> \'POST_PROCESS\' AND COLUMN_NAME <> \'MAX_WARNING\' AND COLUMN_NAME <> \'MIN_WARNING\'', 'COLUMN_NAME');
-			foreach ($fields as $field) {
-				$fields_[] = $field['column_name'];
-			}
-			$fields = implode(',', $fields_);
-			
-			$result = db_process_sql("
-				SELECT TO_NUMBER(MAX_CRITICAL) as max_critical,
-					TO_NUMBER(MIN_CRITICAL) as min_critical,
-					TO_NUMBER(MAX_WARNING) as max_warning,
-					TO_NUMBER(MIN_WARNING) as  min_warning,
-					TO_NUMBER(POST_PROCESS) as post_process,
-					" . $fields . "
-				FROM tagente_modulo
-				WHERE id_agente_modulo = " . $id_agentmodule);
-			
-			return $result[0];
-			break;
-	}
+	return db_get_row ('tagente_modulo', 'id_agente_modulo', (int) $id_agentmodule);
 }
 
 function modules_get_table_data($id_agent_module) {
@@ -1999,8 +1941,6 @@ function modules_get_status($id_agent_module, $db_status, $data, &$status, &$tit
 // Get unknown agents by using the status code in modules
 
 function modules_agents_unknown ($module_name) {
-	
-	//TODO REVIEW ORACLE AND POSTGRES
 	return db_get_sql ("SELECT COUNT( DISTINCT tagente.id_agente)
 		FROM tagente_estado, tagente, tagente_modulo
 		WHERE tagente.disabled = 0
@@ -2022,8 +1962,6 @@ function modules_agents_ok ($module_name) {
 	//This query grouped all modules by agents and select the MAX value for status which has the value 0 
 	//If MAX(estado) is 0 it means all modules has status 0 => OK
 	//Then we count the agents of the group selected to know how many agents are in OK status
-	
-	//TODO REVIEW ORACLE AND POSTGRES
 	return db_get_sql ("SELECT COUNT(max_estado)
 		FROM (
 			SELECT MAX(tagente_estado.estado) as max_estado
@@ -2046,9 +1984,7 @@ function modules_agents_critical ($module_name) {
 	//The status values are: 0 OK; 1 Critical; 2 Warning; 3 Unkown
 	//If estado = 1 it means at leas 1 module is in critical status so the agent is critical
 	//Then we count the agents of the group selected to know how many agents are in critical status	
-	
-	//TODO REVIEW ORACLE AND POSTGRES
-	
+
 	return db_get_sql ("SELECT COUNT( DISTINCT tagente_estado.id_agente) 
 		FROM tagente_estado, tagente, tagente_modulo 
 		WHERE tagente.disabled = 0 AND tagente_estado.utimestamp != 0 
@@ -2069,8 +2005,6 @@ function modules_agents_warning ($module_name) {
 	//This query grouped all modules by agents and select the MIN value for status which has the value 0 
 	//If MIN(estado) is 2 it means at least one module is warning and there is no critical modules
 	//Then we count the agents of the group selected to know how many agents are in warning status
-	
-	//TODO REVIEW ORACLE AND POSTGRES
 	
 	return db_get_sql ("SELECT COUNT(min_estado) 
 		FROM (SELECT MAX(tagente_estado.estado) as min_estado 

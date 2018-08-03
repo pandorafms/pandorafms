@@ -655,10 +655,9 @@ class Ui {
 		echo "		<link rel='stylesheet' href='include/style/main.css' />\n";
 		
 		echo "		<link rel='stylesheet' href='include/style/jquery.mobile-1.3.1.css' />\n";
-		//echo "		<link rel='stylesheet' href='http://code.jquery.com/mobile/1.3.0/jquery.mobile-1.3.0.css' />\n";
 		echo "		<script src='include/javascript/jquery.js'></script>\n";
 		echo "		<script src='include/javascript/jquery.mobile-1.3.1.js'></script>\n";
-		//echo "		<script src='http://code.jquery.com/mobile/1.3.0/jquery.mobile-1.3.0.js'></script>\n";
+		echo "		<script src='../include/javascript/pandora.js'></script>\n";
 		
 		echo "	</head>\n";
 		echo "	<body>\n";

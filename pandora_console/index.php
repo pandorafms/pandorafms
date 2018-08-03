@@ -447,21 +447,23 @@ if (! isset ($config['id_user'])) {
 								$_GET["sec"] = "general/logon_ok";
 								break;
 							case 'Dashboard':
-								$_GET["sec"] = "dashboard";
+								$_GET["sec"] = "reporting";
 								$_GET["sec2"] = ENTERPRISE_DIR.'/dashboard/main_dashboard';
 								$id_dashboard_select =
 									db_get_value('id', 'tdashboard', 'name', $home_url);
 								$_GET['id_dashboard_select'] = $id_dashboard_select;
 								break;
 							case 'Visual console':
-								$_GET["sec"] = "visualc";
+								$_GET["sec"] = "network";
 								$_GET["sec2"] = "operation/visual_console/index";
 								break;
 							case 'Other':
 								$home_url = io_safe_output($home_url);
-								parse_str ($home_url, $res);
-								$_GET["sec"] = $res["sec"];
-								$_GET["sec2"] = $res["sec2"];
+								$url_array = parse_url($home_url);
+								parse_str ($url_array['query'], $res);
+								foreach ($res as $key => $param) {
+									$_GET[$key] = $param;
+								}
 								break;
 						}
 					}
@@ -1033,66 +1035,80 @@ else {
 			$home_page = io_safe_output($user_info['section']);
 			$home_url = $user_info['data_section'];
 		}
-		
-		
-		
+
 		if ($home_page != '') {
 			switch ($home_page) {
 				case 'Event list':
-					require ('operation/events/events.php');
+					$_GET['sec'] = 'eventos';
+					$_GET['sec2'] = 'operation/events/events';
 					break;
 				case 'Group view':
-					require ('operation/agentes/group_view.php');
+					$_GET['sec'] = 'view';
+					$_GET['sec2'] = 'operation/agentes/group_view';
 					break;
 				case 'Alert detail':
-					require ('operation/agentes/alerts_status.php');
+					$_GET['sec'] = 'view';
+					$_GET['sec2'] = 'operation/agentes/alerts_status';
 					break;
 				case 'Tactical view':
-					require ('operation/agentes/tactical.php');
+					$_GET['sec'] = 'view';
+					$_GET['sec2'] = 'operation/agentes/tactical';
 					break;
 				case 'Default':
-					require ('general/logon_ok.php');
+					$_GET['sec2'] = 'general/logon_ok';
 					break;
 				case 'Dashboard':
 					$id_dashboard = db_get_value('id', 'tdashboard', 'name', $home_url);
-					$str = 'sec=visualc&sec2='.ENTERPRISE_DIR.'/dashboard/main_dashboard&id='.$id_dashboard;
+					$str = 'sec=reporting&sec2='.ENTERPRISE_DIR.'/dashboard/main_dashboard&id='.$id_dashboard;
 					parse_str($str, $res);
 					foreach ($res as $key => $param) {
 						$_GET[$key] = $param;
 					}
-					require(ENTERPRISE_DIR.'/dashboard/main_dashboard.php');
 					break;
 				case 'Visual console':
 					$id_visualc = db_get_value('id', 'tlayout', 'name', $home_url);
 					if (($home_url == '') || ($id_visualc == false)) {
-						$str = 'sec=visualc&sec2=operation/visual_console/index&refr=60';
+						$str = 'sec=network&sec2=operation/visual_console/index&refr=60';
 					}
 					else 
-						$str = 'sec=visualc&sec2=operation/visual_console/render_view&id='.$id_visualc .'&refr=60';
+						$str = 'sec=network&sec2=operation/visual_console/render_view&id='.$id_visualc .'&refr=60';
 					parse_str($str, $res);
 					foreach ($res as $key => $param) {
 						$_GET[$key] = $param;
 					}
-					require($_GET["sec2"] . '.php');
 					break;
 				case 'Other':
 					$home_url = io_safe_output($home_url);
-					parse_str ($home_url, $res);
+					$url_array = parse_url($home_url);
+					parse_str ($url_array['query'], $res);
 					foreach ($res as $key => $param) {
 						$_GET[$key] = $param;
 					}
-					if (isset($_GET['sec2'])) {
-						$file = $_GET['sec2'] . '.php';
-						
-						if (!file_exists ($file)) {
-							unset($_GET['sec2']);
-							require('general/logon_ok.php');
-						}
-						else {
-							require($file);
-						}
-					}
 					break;
+			}
+			if (isset($_GET['sec2'])) {
+				$file = $_GET['sec2'] . '.php';
+				// Translate some secs
+				$main_sec = get_sec($_GET['sec']);
+				$_GET['sec'] = $main_sec == false ? $_GET['sec'] : $main_sec;
+				if (
+					!file_exists ($file) ||
+					(
+						$_GET['sec2'] != 'general/logon_ok' &&
+						enterprise_hook ('enterprise_acl',
+							array ($config['id_user'], $_GET['sec'], $_GET['sec2'], true,
+								isset($_GET['sec3']) ? $_GET['sec3'] : '')
+						) == false
+					)
+				) {
+					unset($_GET['sec2']);
+					require ("general/noaccess.php");
+				}
+				else {
+					require($file);
+				}
+			} else {
+				require ("general/noaccess.php");
 			}
 		}
 		else {

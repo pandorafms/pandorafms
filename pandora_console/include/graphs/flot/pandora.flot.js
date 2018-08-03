@@ -2362,8 +2362,6 @@ function pandoraFlotArea( graph_id, values, legend,
 		// Add bottom margin in the legend
 		// Estimated height of 24 (works fine with this data in all browsers)
 		menu_height = 24;
-		var legend_margin_bottom = parseInt(
-		$('#legend_'+graph_id).css('margin-bottom').split('px')[0]);
 		$('#legend_'+graph_id).css('margin-bottom', '10px');
 		parent_height = parseInt($('#menu_'+graph_id).parent().css('height').split('px')[0]);
 		adjust_menu(graph_id, plot, parent_height, width, show_legend);

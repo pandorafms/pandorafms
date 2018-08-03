@@ -161,7 +161,8 @@ function events_get_events_grouped($sql_post, $offset = 0,
 					(SELECT id_usuario FROM $table WHERE id_evento = MAX(te.id_evento)) id_usuario,
 					(SELECT id_agente FROM $table WHERE id_evento = MAX(te.id_evento)) id_agente,
 					(SELECT criticity FROM $table WHERE id_evento = MAX(te.id_evento)) AS criticity,
-					(SELECT ack_utimestamp FROM $table WHERE id_evento = MAX(te.id_evento)) AS ack_utimestamp
+					(SELECT ack_utimestamp FROM $table WHERE id_evento = MAX(te.id_evento)) AS ack_utimestamp,
+					(SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = te.id_agentmodule) AS module_name
 				FROM $table te LEFT JOIN tagent_secondary_group tasg ON te.id_grupo = tasg.id_group
 				WHERE 1=1 " . $sql_post . "
 				GROUP BY estado, evento, id_agente, id_agentmodule" . $groupby_extra . "
@@ -181,6 +182,12 @@ function events_get_events_grouped($sql_post, $offset = 0,
 							if ($order=='down')
 								$sql .= "evento" . " DESC";
 							break;
+						case 'event_id':
+							if ($order=='up')
+								$sql .= "id_evento" . " ASC";
+							if ($order=='down')
+								$sql .= "id_evento" . " DESC";
+							break;
 						case 'status':
 							if ($order=='up')
 								$sql .= "estado" . " ASC";
@@ -198,6 +205,90 @@ function events_get_events_grouped($sql_post, $offset = 0,
 								$sql .= "timestamp_rep" . " ASC";
 							if ($order=='down')
 								$sql .= "timestamp_rep" . " DESC";
+							break;
+						case 'user_id':
+							if ($order=='up')
+								$sql .= "id_usuario" . " ASC";
+							if ($order=='down')
+								$sql .= "id_usuario" . " DESC";
+							break;
+						case 'owner':
+							if ($order=='up')
+								$sql .= "owner_user" . " ASC";
+							if ($order=='down')
+								$sql .= "owner_user" . " DESC";
+							break;
+						case 'group_id':
+							if ($order=='up')
+								$sql .= "id_grupo" . " ASC";
+							if ($order=='down')
+								$sql .= "id_grupo" . " DESC";
+							break;
+						case 'module_name':
+							if ($order=='up')
+								$sql .= "module_name" . " ASC";
+							if ($order=='down')
+								$sql .= "module_name" . " DESC";
+							break;		
+						case 'event_type':
+							if ($order=='up')
+								$sql .= "event_type" . " ASC";
+							if ($order=='down')
+								$sql .= "event_type" . " DESC";
+							break;
+						case 'alert_id':
+							if ($order=='up')
+								$sql .= "id_alert_am" . " ASC";
+							if ($order=='down')
+								$sql .= "id_alert_am" . " DESC";
+							break;	
+						case 'criticity':
+							if ($order=='up')
+								$sql .= "criticity" . " ASC";
+							if ($order=='down')
+								$sql .= "criticity" . " DESC";
+							break;	
+						case 'comment':
+							if ($order=='up')
+								$sql .= "user_comment" . " ASC";
+							if ($order=='down')
+								$sql .= "user_comment" . " DESC";
+							break;	
+						case 'tags':
+							if ($order=='up')
+								$sql .= "tags" . " ASC";
+							if ($order=='down')
+								$sql .= "tags" . " DESC";
+							break;		
+						case 'source':
+							if ($order=='up')
+								$sql .= "source" . " ASC";
+							if ($order=='down')
+								$sql .= "source" . " DESC";
+							break;	
+						case 'extra_id':
+							if ($order=='up')
+								$sql .= "id_extra" . " ASC";
+							if ($order=='down')
+								$sql .= "id_extra" . " DESC";
+							break;				
+						case 'ack_timestamp':
+							if ($order=='up')
+								$sql .= "ack_utimestamp" . " ASC";
+							if ($order=='down')
+								$sql .= "ack_utimestamp" . " DESC";
+							break;		
+						case 'data':
+							if ($order=='up')
+								$sql .= "data" . " ASC";
+							if ($order=='down')
+								$sql .= "data" . " DESC";
+							break;
+						case 'module_status':
+							if ($order=='up')
+								$sql .= "module_status" . " ASC";
+							if ($order=='down')
+								$sql .= "module_status" . " DESC";
 							break;
 						default:
 							$sql .= "timestamp_rep" . " DESC";

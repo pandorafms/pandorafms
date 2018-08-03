@@ -696,6 +696,18 @@ $options_soft_graphs[1] = __('Classic mode');
 $table_chars->data[$row][1] = html_print_select($options_soft_graphs, 'type_mode_graph', $config["type_mode_graph"], '', '', 0, true, false, false);
 $row++;
 
+$table_chars->data[$row][0] = __('Zoom graphs:');
+
+$options_zoom_graphs    = array();
+$options_zoom_graphs[1] = 'x1';
+$options_zoom_graphs[2] = 'x2';
+$options_zoom_graphs[3] = 'x3';
+$options_zoom_graphs[4] = 'x4';
+$options_zoom_graphs[5] = 'x5';
+
+$table_chars->data[$row][1] = html_print_select($options_zoom_graphs, 'zoom_graph', $config["zoom_graph"], '', '', 0, true, false, false);
+$row++;
+
 $table_chars->data[$row][0] = __('Graph image height');
 $table_chars->data[$row][1] = html_print_input_text ('graph_image_height', $config['graph_image_height'], '', 20, 20, true);
 $row++;

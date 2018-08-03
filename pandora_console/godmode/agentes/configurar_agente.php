@@ -1720,6 +1720,9 @@ if ($delete_module) { // DELETE agent module !
 		db_pandora_audit("Agent management",
 			"Deleted module '".$module_data["nombre"]."' for agent ".$agent["alias"]);
 	}
+
+	header("Location: index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente=$id_agente");
+
 }
 
 // MODULE DUPLICATION

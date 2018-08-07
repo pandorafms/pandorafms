@@ -282,6 +282,7 @@ function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup 
 						AND tusuario_perfil.id_perfil = tperfil.id_perfil
 						AND tusuario_perfil.id_usuario = '%s' ORDER BY nombre", $id_user);
 			$raw_forest = db_get_all_rows_sql ($query);
+			if ($raw_forest === false) $raw_forest = array();
 
 			foreach ($raw_forest as $g) {
 				// XXX, following code must be remade (TAG)

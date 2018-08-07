@@ -53,4 +53,11 @@ CREATE TABLE IF NOT EXISTS `tlayout_template_data` (
 	FOREIGN KEY (`id_layout_template`) REFERENCES tlayout_template(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
+-- ---------------------------------------------------------------------
+-- Rename column is_secondary to no_hierarchy in `tusuario _perfil`
+-- ---------------------------------------------------------------------
+ALTER TABLE `tusuario_perfil` ADD COLUMN `no_hierarchy` tinyint(1) NOT NULL DEFAULT 0;
+UPDATE `tusuario_perfil` SET `is_secondary` = `no_hierarchy`;
+ALTER TABLE `tusuario_perfil` DROP COLUMN `is_secondary`;
+
 COMMIT;

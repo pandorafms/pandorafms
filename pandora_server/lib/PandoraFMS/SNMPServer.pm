@@ -78,7 +78,7 @@ sub new ($$$) {
 	# Create the Data Server SNMP log file if it does not exist.
 	if (defined($config->{'snmp_extlog'}) && $config->{'snmp_extlog'} ne '') {
 		$DATASERVER->{'log_file'} = $config->{'snmp_extlog'};
-		open(TMPFD, '>', $config->{'snmp_extlog'}) && close(TMPFD) if (! -e $DATASERVER->{'log_file'});
+		open(TMPFD, '>', $DATASERVER->{'log_file'}) && close(TMPFD) if (! -e $DATASERVER->{'log_file'});
 		if (!open ($DATASERVER->{'fd'}, $DATASERVER->{'log_file'})) {
 			logger ($config, ' [E] Could not open the Data Server SNMP log file ' . $DATASERVER->{'log_file'} . ".", 1);
 			print_message ($config, ' [E] Could not open the Data Server SNMP log file ' . $DATASERVER->{'log_file'} . ".", 1);

@@ -1036,7 +1036,8 @@ if (!empty($result)) {
 		
 		
 		$data[2] = html_print_image('images/' . modules_show_icon_type ($row['module_type']), true);
-		if (check_acl ($config['id_user'], $row['id_group'], 'AW')) {
+		$agent_groups = agents_get_all_groups_agent($row['id_agent'], $row['id_group']);
+		if (check_acl_one_of_groups ($config['id_user'], $agent_groups, 'AW')) {
 			$show_edit_icon = true;
 			if (defined('METACONSOLE')) {
 				if (!can_user_access_node ()) {

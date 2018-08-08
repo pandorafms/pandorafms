@@ -485,8 +485,10 @@ sub pandora_load_config {
 	$pa_config->{"provisioningserver"} = 1; # 7.0 720
 	$pa_config->{"provisioningserver_threads"} = 1; # 7.0 720
 	$pa_config->{"provisioning_cache_interval"} = 300; # 7.0 720
-
+	
 	$pa_config->{"autoconfigure_agents"} = 1; # 7.0 725
+	
+	$pa_config->{'snmp_extlog'} = ""; # 7.0 726
 
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
@@ -1117,6 +1119,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^autoconfigure_agents\s+([0-1])/i){
 			$pa_config->{'autoconfigure_agents'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^snmp_extlog\s(.*)/i) { 
+			$pa_config->{'snmp_extlog'} = clean_blank($1); 
 		}
 	} # end of loop for parameter #
 

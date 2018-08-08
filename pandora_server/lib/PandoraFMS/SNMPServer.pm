@@ -48,8 +48,9 @@ my $TaskSem :shared;
 # Trap statistics by agent
 my %AGENTS = ();
 
-# Index file management
-my ($IDX_FILE, $LAST_LINE, $LAST_SIZE) = ();
+# Index and buffer management for trap log files
+my $SNMPTRAPD =   { 'log_file' => '', 'fd' => undef, 'idx_file' => '', 'last_line' => 0, 'last_size' => 0, 'read_ahead_line' => '', 'read_ahead_pos' => 0 };
+my $DATASERVER =  { 'log_file' => '', 'fd' => undef, 'idx_file' => '', 'last_line' => 0, 'last_size' => 0, 'read_ahead_line' => '', 'read_ahead_pos' => 0 };
 
 ########################################################################################
 # SNMP Server class constructor.
@@ -65,33 +66,27 @@ sub new ($$$) {
 	}
 	
 	# Wait for the SNMP log file to be available
-	my $log_file = $config->{'snmp_logfile'};
-	sleep ($config->{'server_threshold'}) if (! -e $log_file);
-	if (!open (SNMPLOGFILE, $log_file)) {
-		logger ($config, ' [E] Could not open the SNMP log file ' . $config->{'snmp_logfile'} . ".", 1);
-		print_message ($config, ' [E] Could not open the SNMP log file ' . $config->{'snmp_logfile'} . ".", 1);
+	$SNMPTRAPD->{'log_file'} = $config->{'snmp_logfile'};
+	sleep ($config->{'server_threshold'}) if (! -e $SNMPTRAPD->{'log_file'});
+	if (!open ($SNMPTRAPD->{'fd'}, $SNMPTRAPD->{'log_file'})) {
+		logger ($config, ' [E] Could not open the SNMP log file ' . $SNMPTRAPD->{'log_file'} . ".", 1);
+		print_message ($config, ' [E] Could not open the SNMP log file ' . $SNMPTRAPD->{'log_file'} . ".", 1);
 		return 1;
 	}
+	init_log_file($config, $SNMPTRAPD);
 
-	# Process index file, if available
-	($IDX_FILE, $LAST_LINE, $LAST_SIZE) = ($log_file . '.index', 0, 0);
-	if (-e  $IDX_FILE) {
-		open (INDEXFILE, $IDX_FILE) or return;
-		my $idx_data = <INDEXFILE>;
-		close INDEXFILE;
-		($LAST_LINE, $LAST_SIZE) = split(/\s+/, $idx_data);
-	}
-	my $log_size = (stat ($log_file))[7];
-
-	# New SNMP log file found
-	if ($log_size < $LAST_SIZE) {
-		unlink ($IDX_FILE);
-		($LAST_LINE, $LAST_SIZE) = (0, 0);
+	# Create the Data Server SNMP log file if it does not exist.
+	if (defined($config->{'snmp_extlog'}) && $config->{'snmp_extlog'} ne '') {
+		$DATASERVER->{'log_file'} = $config->{'snmp_extlog'};
+		open(TMPFD, '>', $DATASERVER->{'log_file'}) && close(TMPFD) if (! -e $DATASERVER->{'log_file'});
+		if (!open ($DATASERVER->{'fd'}, $DATASERVER->{'log_file'})) {
+			logger ($config, ' [E] Could not open the Data Server SNMP log file ' . $DATASERVER->{'log_file'} . ".", 1);
+			print_message ($config, ' [E] Could not open the Data Server SNMP log file ' . $DATASERVER->{'log_file'} . ".", 1);
+			return 1;
+		}
+		init_log_file($config, $DATASERVER);
 	}
 
-	# Skip already processed lines
-	read_snmplogfile() for (1..$LAST_LINE);
-	
 	# Initialize semaphores and queues
 	@TaskQueue = ();
 	%PendingTasks = ();
@@ -140,41 +135,45 @@ sub data_producer ($) {
 		%AGENTS = ();
 	}
 
-	while (my $line_with_pos = read_snmplogfile()) {
-		my $line;
-
-		$LAST_LINE++;
-		($LAST_SIZE, $line) = @$line_with_pos;
-
-		chomp ($line);
-
-		# Update index file
-		open INDEXFILE, '>' . $IDX_FILE;
-		print INDEXFILE $LAST_LINE . ' ' . $LAST_SIZE;
-		close INDEXFILE;
-		set_file_permissions($pa_config, $IDX_FILE, "0666");
-
-		# Skip lines other than SNMP Trap logs
-		next unless ($line =~ m/^SNMPv[12]\[\*\*\]/);
-
-		# Storm protection.
-		my ($ver, $date, $time, $source, $null) = split(/\[\*\*\]/, $line, 5);
-		next unless defined ($source);
-		if (! defined ($AGENTS{$source})) {
-			$AGENTS{$source}{'count'} = 1;
-			$AGENTS{$source}{'event'} = 0;
-		} else {
-			$AGENTS{$source}{'count'} += 1;
-		}
-		if ($pa_config->{'snmp_storm_protection'} > 0 && $AGENTS{$source}{'count'} > $pa_config->{'snmp_storm_protection'}) {
-			if ($AGENTS{$source}{'event'} == 0) {
-				pandora_event ($pa_config, "Too many traps coming from $source. Silenced for " . int ($pa_config->{"snmp_storm_timeout"} / 60) . " minutes.", 0, 0, 4, 0, 0, 'system', 0, $dbh);
+	for my $fs (($SNMPTRAPD, $DATASERVER)) {
+		next unless defined($fs->{'fd'});
+		reset_if_truncated($pa_config, $fs);
+		while (my $line_with_pos = read_snmplogfile($fs)) {
+			my $line;
+	
+			$fs->{'last_line'}++;
+			($fs->{'last_size'}, $line) = @$line_with_pos;
+	
+			chomp ($line);
+	
+			# Update index file
+			open(my $idxfd, '>' . $fs->{'idx_file'});
+			print $idxfd $fs->{'last_line'} . ' ' . $fs->{'last_size'};
+			close $idxfd;
+			set_file_permissions($pa_config, $fs->{'idx_file'}, "0666");
+	
+			# Skip lines other than SNMP Trap logs
+			next unless ($line =~ m/^SNMPv[12]\[\*\*\]/);
+	
+			# Storm protection.
+			my ($ver, $date, $time, $source, $null) = split(/\[\*\*\]/, $line, 5);
+			next unless defined ($source);
+			if (! defined ($AGENTS{$source})) {
+				$AGENTS{$source}{'count'} = 1;
+				$AGENTS{$source}{'event'} = 0;
+			} else {
+				$AGENTS{$source}{'count'} += 1;
 			}
-			$AGENTS{$source}{'event'} = 1;
-			next;
+			if ($pa_config->{'snmp_storm_protection'} > 0 && $AGENTS{$source}{'count'} > $pa_config->{'snmp_storm_protection'}) {
+				if ($AGENTS{$source}{'event'} == 0) {
+					pandora_event ($pa_config, "Too many traps coming from $source. Silenced for " . int ($pa_config->{"snmp_storm_timeout"} / 60) . " minutes.", 0, 0, 4, 0, 0, 'system', 0, $dbh);
+				}
+				$AGENTS{$source}{'event'} = 1;
+				next;
+			}
+	
+			push (@tasks, $line);
 		}
-
-		push (@tasks, $line);
 	}
 
 	return @tasks;
@@ -437,23 +436,21 @@ sub start_snmptrapd ($) {
 # Read SNMP Log file with buffering (to handle multi-line Traps).
 # Return reference of array (file-pos, line-data) if successful, undef othersise.
 ###############################################################################
-my $read_ahead_line;	# buffer to save fetched ahead line
-my $read_ahead_pos;
-
-sub read_snmplogfile()
-{
+sub read_snmplogfile($) {
+	my ($fs) = @_;
 	my $line;
 	my $pos;
 
-	if(defined($read_ahead_line)) {
+	if(defined($fs->{'read_ahead_line'})) {
 		# Restore saved line
-		$line = $read_ahead_line;
-		$pos = $read_ahead_pos;
+		$line = $fs->{'read_ahead_line'};
+		$pos = $fs->{'read_ahead_pos'};
 	}
 	else {
 		# No saved line
-		$line = <SNMPLOGFILE>;
-		$pos = tell(SNMPLOGFILE);
+		my $fd = $fs->{'fd'};
+		$line = <$fd>;
+		$pos = tell($fs->{'fd'});
 	}
 
 	return undef if (! defined($line));
@@ -462,20 +459,21 @@ sub read_snmplogfile()
 
 	# More lines ?
 	while(1) {
-		while($read_ahead_line = <SNMPLOGFILE>) {
+		my $fd = $fs->{'fd'};
+		while($fs->{'read_ahead_line'} = <$fd>) {
 
 			# Get current file position
-			$read_ahead_pos = tell(SNMPLOGFILE);
+			$fs->{'read_ahead_pos'} = tell($fs->{'fd'});
 
 			# Get out of the loop if you find another Trap
-			last if($read_ahead_line =~ /^SNMP/ );
+			last if($fs->{'read_ahead_line'} =~ /^SNMP/ );
 
-			# $read_ahead_line looks continued line...
+			# $fs->{'read_ahead_line'} looks continued line...
 
 			# Append to the line and correct the position
 			chomp($line);
-			$line .= "$read_ahead_line";
-			$pos = $read_ahead_pos;
+			$line .= "$fs->{'read_ahead_line'}";
+			$pos = $fs->{'read_ahead_pos'};
 		}
 
 		# if $line looks incomplete, try to get continued line
@@ -488,6 +486,49 @@ sub read_snmplogfile()
 
 	# return fetched line with file position to be saved.
 	return [$pos, $line];
+}
+
+###############################################################################
+# Initialize the fs structure for a trap log file.
+###############################################################################
+sub init_log_file($$$) {
+	my ($config, $fs) = @_;
+
+	# Process index file, if available
+	($fs->{'idx_file'}, $fs->{'last_line'}, $fs->{'last_size'}) = ($fs->{'log_file'} . '.index', 0, 0);
+	if (-e  $fs->{'idx_file'}) {
+		open (my $idxfd, $fs->{'idx_file'}) or return;
+		my $idx_data = <$idxfd>;
+		close $idxfd;
+		($fs->{'last_line'}, $fs->{'last_size'}) = split(/\s+/, $idx_data);
+	}
+	my $log_size = (stat ($fs->{'log_file'}))[7];
+
+	# New SNMP log file found
+	if ($log_size < $fs->{'last_size'}) {
+		unlink ($fs->{'idx_file'});
+		($fs->{'last_line'}, $fs->{'last_size'}) = (0, 0);
+	}
+
+	# Skip already processed lines
+	read_snmplogfile($fs) for (1..$fs->{'last_line'});
+}
+
+###############################################################################
+# Reset the index if the file has been truncated.
+###############################################################################
+sub reset_if_truncated($$) {
+	my ($pa_config, $fs) = @_;
+
+	my $log_size = (stat ($fs->{'log_file'}))[7];
+
+	# New SNMP log file found
+	if ($log_size < $fs->{'last_size'}) {
+		logger ($pa_config, 'File ' . $fs->{'log_file'} . ' was truncated.', 10);
+		unlink ($fs->{'idx_file'});
+		($fs->{'last_line'}, $fs->{'last_size'}) = (0, 0);
+		seek($fs->{'fd'}, 0, 0);
+	}
 }
 
 ###############################################################################

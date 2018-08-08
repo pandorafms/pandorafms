@@ -43,11 +43,11 @@ if ($id_group > 0) {
 else {
 	$childrens_ids = array_keys($groups);
 }
-
 //Group selection
 if ($id_group > 0 && in_array ($id_group, array_keys ($groups))) {
 	if ($propagate) {
-		$sql_post = " AND id_grupo IN (" . implode(',', $childrens_ids) . ")";
+		$childrens_str = implode(',', $childrens_ids);
+		$sql_post = " AND (id_grupo IN ($childrens_str) OR id_group IN ($childrens_str))";
 	}
 	else {
 		//If a group is selected and it's in the groups allowed

@@ -328,8 +328,6 @@ if (is_array ($config['extensions'])) {
 	$sub2 = array ();
 	
 	foreach ($config['extensions'] as $extension) {
-		// html_debug($extension);
-		
 		//If no godmode_menu is a operation extension
 		if ($extension['godmode_menu'] == '') {
 			continue;

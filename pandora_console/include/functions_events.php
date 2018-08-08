@@ -147,7 +147,7 @@ function events_get_events_grouped($sql_post, $offset = 0,
 			db_process_sql ('SET group_concat_max_len = 9999999');
 			if ($total) {
 				$sql = "SELECT COUNT(*) FROM (SELECT *
-					FROM $table te LEFT JOIN tagent_secondary_group tasg ON te.id_grupo = tasg.id_group
+					FROM $table te LEFT JOIN tagent_secondary_group tasg ON te.id_agente = tasg.id_agent
 					WHERE 1=1 " . $sql_post . "
 					GROUP BY estado, evento, id_agente, id_agentmodule" . $groupby_extra . ") AS t";
 			}
@@ -163,7 +163,7 @@ function events_get_events_grouped($sql_post, $offset = 0,
 					(SELECT criticity FROM $table WHERE id_evento = MAX(te.id_evento)) AS criticity,
 					(SELECT ack_utimestamp FROM $table WHERE id_evento = MAX(te.id_evento)) AS ack_utimestamp,
 					(SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = te.id_agentmodule) AS module_name
-				FROM $table te LEFT JOIN tagent_secondary_group tasg ON te.id_grupo = tasg.id_group
+				FROM $table te LEFT JOIN tagent_secondary_group tasg ON te.id_agente = tasg.id_agent
 				WHERE 1=1 " . $sql_post . "
 				GROUP BY estado, evento, id_agente, id_agentmodule" . $groupby_extra . "
 				ORDER BY ";
@@ -3458,7 +3458,7 @@ function events_get_events_grouped_by_agent($sql_post, $offset = 0,
 	}
 	else {
 		$sql = "select id_agente, count(*) as total$fields_extra from $table te LEFT JOIN tagent_secondary_group tasg
-				ON te.id_grupo = tasg.id_group
+				ON te.id_agente = tasg.id_agent
 			WHERE id_agente > 0 $sql_post GROUP BY id_agente$groupby_extra ORDER BY id_agente LIMIT $offset,$pagination";
 	}
 	

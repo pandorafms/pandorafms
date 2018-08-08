@@ -28,6 +28,7 @@ use Time::Local;
 use XML::Parser::Expat;
 use XML::Simple;
 use POSIX qw(setsid strftime);
+use IO::Uncompress::Unzip;
 
 # For Reverse Geocoding
 use LWP::Simple;
@@ -586,6 +587,9 @@ sub process_xml_data ($$$$$) {
 	# Process log modules
 	enterprise_hook('process_log_data', [$pa_config, $data, $server_id, $agent_name,
 							 $interval, $timestamp, $dbh]);
+
+	# Process snmptrapd modules
+	enterprise_hook('process_snmptrap_data', [$pa_config, $data, $server_id, $dbh]);
 }
 
 ##########################################################################

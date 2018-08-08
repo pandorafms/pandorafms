@@ -28,6 +28,10 @@ enterprise_include_once('include/functions_events.php');
 
 check_login ();
 
+$sort_field = get_parameter("sort_field", "timestamp");
+
+$sort_order = get_parameter("sort", "down");
+
 $event_a = check_acl ($config['id_user'], 0, "ER");
 $event_w = check_acl ($config['id_user'], 0, "EW");
 $event_m = check_acl ($config['id_user'], 0, "EM");
@@ -758,7 +762,8 @@ elseif ($group_rep == 1) {
 		$history,
 		false,
 		false,
-		'DESC');
+		$sort_order,
+		$sort_field);
 }
 elseif ($group_rep == 2) {
 	$filter_resume['duplicate'] = $group_rep;

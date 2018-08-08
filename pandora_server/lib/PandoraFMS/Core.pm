@@ -3116,11 +3116,12 @@ Generate an event.
 
 =cut
 ##########################################################################
-sub pandora_event ($$$$$$$$$$;$$$$$$$$$) {
+sub pandora_event ($$$$$$$$$$;$$$$$$$$$$$) {
 	my ($pa_config, $evento, $id_grupo, $id_agente, $severity,
 		$id_alert_am, $id_agentmodule, $event_type, $event_status, $dbh,
 		$source, $user_name, $comment, $id_extra, $tags,
-		$critical_instructions, $warning_instructions, $unknown_instructions, $custom_data) = @_;
+		$critical_instructions, $warning_instructions, $unknown_instructions, $custom_data,
+		$module_data, $module_status) = @_;
 	my $event_table = is_metaconsole($pa_config) ? 'tmetaconsole_event' : 'tevento';
 
 	my $agent = undef;
@@ -3134,7 +3135,10 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$) {
 
 	my $module = undef;
 	if (defined($id_agentmodule) && $id_agentmodule != 0) {
-		$module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente_modulo = ?', $id_agentmodule);
+		$module = get_db_single_row ($dbh, 'SELECT *, tagente_estado.datos, tagente_estado.estado
+		                                    FROM tagente_modulo, tagente_estado
+                                            WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+											AND tagente_modulo.id_agente_modulo = ?', $id_agentmodule);
 		if (defined ($module) && $module->{'quiet'} == 1) {
 			logger($pa_config, "Generate Event. The module '" . $module->{'nombre'} . "' is in quiet mode.", 10);
 			return;
@@ -3162,6 +3166,8 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$) {
 	$warning_instructions = '' unless defined ($warning_instructions);
 	$unknown_instructions = '' unless defined ($unknown_instructions);
 	$custom_data = '' unless defined ($custom_data);
+	$module_data = defined($module) ? $module->{'datos'} : '' unless defined ($module_data);
+	$module_status = defined($module) ? $module->{'estado'} : '' unless defined ($module_status);
 	
 	# If the event is created with validated status, assign ack_utimestamp
 	my $ack_utimestamp = $event_status == 1 ? time() : 0;
@@ -3183,8 +3189,8 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$) {
 	
 	# Create the event
 	logger($pa_config, "Generating event '$evento' for agent ID $id_agente module ID $id_agentmodule.", 10);
-	db_do ($dbh, 'INSERT INTO ' . $event_table . ' (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity, user_comment, tags, source, id_extra, id_usuario, critical_instructions, warning_instructions, unknown_instructions, ack_utimestamp, custom_data)
-	              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, safe_input ($evento), $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity, $comment, $module_tags, $source, $id_extra, $user_name, $critical_instructions, $warning_instructions, $unknown_instructions, $ack_utimestamp, $custom_data);
+	db_do ($dbh, 'INSERT INTO ' . $event_table . ' (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity, user_comment, tags, source, id_extra, id_usuario, critical_instructions, warning_instructions, unknown_instructions, ack_utimestamp, custom_data, data, module_status)
+	              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, safe_input ($evento), $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity, $comment, $module_tags, $source, $id_extra, $user_name, $critical_instructions, $warning_instructions, $unknown_instructions, $ack_utimestamp, $custom_data, $module_data, $module_status);
 	
 	# Do not write to the event file
 	return if ($pa_config->{'event_file'} eq '');
@@ -4168,11 +4174,11 @@ sub generate_status_event ($$$$$$$$) {
 	# Generate the event
 	if ($status != 0){
 		pandora_event ($pa_config, $description, $agent->{'id_grupo'}, $module->{'id_agente'},
-			$severity, 0, $module->{'id_agente_modulo'}, $event_type, 0, $dbh, 'monitoring_server', '', '', '', '', $module->{'critical_instructions'}, $module->{'warning_instructions'}, $module->{'unknown_instructions'});
+			$severity, 0, $module->{'id_agente_modulo'}, $event_type, 0, $dbh, 'monitoring_server', '', '', '', '', $module->{'critical_instructions'}, $module->{'warning_instructions'}, $module->{'unknown_instructions'}, undef, $data, $status);
 	} else { 
 		# Self validate this event if has "normal" status
 		pandora_event ($pa_config, $description, $agent->{'id_grupo'}, $module->{'id_agente'},
-			$severity, 0, $module->{'id_agente_modulo'}, $event_type, 1, $dbh, 'monitoring_server', '', '', '', '', $module->{'critical_instructions'}, $module->{'warning_instructions'}, $module->{'unknown_instructions'});
+			$severity, 0, $module->{'id_agente_modulo'}, $event_type, 1, $dbh, 'monitoring_server', '', '', '', '', $module->{'critical_instructions'}, $module->{'warning_instructions'}, $module->{'unknown_instructions'}, undef, $data, $status);
 	}
 
 }

@@ -831,22 +831,39 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 	$description = io_safe_output($template['name']);
 	
 	$data = array ();
-	
-	if (!defined('METACONSOLE')) {
-		if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
-			$policyInfo = policies_is_alert_in_policy2($alert['id'], false);
-			if ($policyInfo === false)
-				$data[$index['policy']] = '';
-			else {
-				$img = 'images/policies.png';
-				
+
+	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
+		if(is_metaconsole()){
+			$node = metaconsole_get_connection_by_id($alert['server_data']['id']);
+			if (metaconsole_load_external_db($node) !== NOERR) {
+				// Restore the default connection.
+				metaconsole_restore_db();
+				$errors++;
+				break;
+			}
+		}
+
+		$policyInfo = policies_is_alert_in_policy2($alert['id'], false);
+		if ($policyInfo === false)
+			$data[$index['policy']] = '';
+		else {
+			$img = 'images/policies.png';
+			if(!is_metaconsole()){
 				$data[$index['policy']] = '<a href="?sec=gmodules&amp;sec2=enterprise/godmode/policies/policies&amp;id=' . $policyInfo['id'] . '">' .
+					html_print_image($img,true, array('title' => $policyInfo['name'])) .
+					'</a>';
+			}else{
+				$data[$index['policy']] = '<a href="?sec=gmodules&amp;sec2=advanced/policymanager&amp;id=' . $policyInfo['id'] . '">' .
 					html_print_image($img,true, array('title' => $policyInfo['name'])) .
 					'</a>';
 			}
 		}
+
+		if(is_metaconsole()){
+			metaconsole_restore_db();
+		}
 	}
-	
+
 	// Standby
 	$data[$index['standby']] = '';
 	if (isset ($alert["standby"]) && $alert["standby"] == 1) {
@@ -881,8 +898,8 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 			$agent_name = false;
 			$id_agent = modules_get_agentmodule_agent ($alert["id_agent_module"]);
 		}
-		
-		if (defined('METACONSOLE') && !can_user_access_node ()) {
+
+		if (defined('METACONSOLE') || !can_user_access_node ()) {
 			$data[$index['agent_name']] = ui_print_truncate_text($agent_name, 'agent_small', false, true, false, '[&hellip;]', 'font-size:7.5pt;');
 		}
 		else {
@@ -893,7 +910,7 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 				$data[$index['agent_name']] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agent.'"> <span style="font-size: 7pt;font-weight:bold" title ="' . $agente['nombre']. '">'.$agente["alias"].'</span></a>';
 			}
 		}
-		
+
 		$data[$index['module_name']] =
 			ui_print_truncate_text (isset($alert['agent_module_name']) ? $alert['agent_module_name'] : modules_get_agentmodule_name ($alert["id_agent_module"]), 'module_small', false, true, true, '[&hellip;]', 'font-size: 7.2pt');
 	}
@@ -3774,36 +3791,27 @@ function ui_print_module_string_value($value, $id_agente_module,
 		$value = io_safe_input($value);
 	}
 
+
+	$is_snapshot = is_snapshot_data ($module["datos"]);
+	$is_large_image = is_text_to_black_string ($module["datos"]);
+	if (($config['command_snapshot']) && ($is_snapshot || $is_large_image)) {
+
+
+		$row[7] = ui_get_snapshot_image($link, $is_snapshot) . '&nbsp;&nbsp;';
+	}
+
 	$is_snapshot = is_snapshot_data($value);
 	$is_large_image = is_text_to_black_string ($value);
-
 	if (($config['command_snapshot']) && ($is_snapshot || $is_large_image)) {
-		$handle = "snapshot" . "_" . $id_agente_module;
-		$url = 'include/procesos.php?agente=' . $id_agente_module;
-		$win_handle = dechex(crc32($handle));
-		
-		$link = "winopeng_var('operation/agentes/snapshot_view.php?" .
-			"id=" . $id_agente_module .
-			"&refr=" . $current_interval .
-			"&label=" . rawurlencode(urlencode(io_safe_output($module_name))) . "','" . $win_handle . "', 700,480)";
-		if ($is_snapshot) {
-			$salida = '<a href="javascript:' . $link . '">' .
-				html_print_image("images/photo.png", true,
-					array("border" => '0',
-						"alt" => "",
-						"title" => __("Snapshot view"))) . '</a> &nbsp;&nbsp;';
-		}
-		else {
-			$salida = '<a href="javascript:' . $link . '">' .
-                                html_print_image("images/default_list.png", true,
-                                        array("border" => '0',
-                                                "alt" => "",
-                                                "title" => __("Snapshot view"))) . '</a> &nbsp;&nbsp;';
-
-		}
-	}
-	else {
-		
+		$link = ui_get_snapshot_link( array(
+			'id_module' => $id_agente_module,
+			'last_data' => $value,
+			'interval' => $current_interval,
+			'module_name' => $module_name,
+			'timestamp' => db_get_value('timestamp', 'tagente_estado', 'id_agente_modulo', $id_agente_module)
+		));
+		$salida = ui_get_snapshot_image($link, $is_snapshot) . '&nbsp;&nbsp;';
+	} else {
 		$sub_string = substr(io_safe_output($value), 0, 12);
 		if ($value == $sub_string) {
 			if ($value == 0 && !$sub_string) {
@@ -3836,12 +3844,17 @@ function ui_print_module_string_value($value, $id_agente_module,
 				$salida = $value;
 			}
 			else {
+				$value = preg_replace ('/</', '&lt;', $value);
+				$value = preg_replace ('/>/', '&gt;', $value);
+				$value = preg_replace ('/\n/i','<br>',$value);
+				$value = preg_replace ('/\s/i','&nbsp;',$value);
+				
 				$title_dialog =
 					modules_get_agentmodule_agent_alias($id_agente_module) .
 					" / " . $module_name;
 				$salida = "<div " .
 					"id='hidden_value_module_" . $id_agente_module . "'
-					style='display: none;' title='" . $title_dialog . "'>" .
+					style='display: none; width: 100%; height: 100%; overflow: scroll; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left' title='" . $title_dialog . "'>" .
 					$value .
 					"</div>" . 
 					"<span " .
@@ -3899,8 +3912,8 @@ function ui_get_snapshot_link($params, $only_params = false) {
 		'id_module' => 0, //id_agente_modulo
 		'module_name' => '',
 		'interval' => 300,
-		'last_data' => '',
-		'timestamp' => '0'
+		'timestamp' => 0,
+		'id_node' => 0
 	);
 
 	// Merge default params with passed params
@@ -3911,10 +3924,10 @@ function ui_get_snapshot_link($params, $only_params = false) {
 
 	$url = "$page?" .
 		"id=" . $params['id_module'] .
-		"&refr=" . $parms['interval'] .
-		"&timestamp=" . $params['timestamp'] .
-		"&last_data=" . rawurlencode(urlencode(io_safe_output($params['last_data']))) .
-		"&label=" . rawurlencode(urlencode(io_safe_output($params['module_name'])));
+		"&label=" . rawurlencode(urlencode(io_safe_output($params['module_name']))).
+		"&id_node=" . $params['id_node'];
+	if ($params['timestamp'] != 0) $url .= "&timestamp=" . $parms['timestamp'];
+	if ($params['timestamp'] != 0) $url .= "&refr=" . $parms['interval'];
 
 	// Second parameter of js winopeng_var
 	$win_handle = dechex(crc32('snapshot_' . $params['id_module']));
@@ -3928,18 +3941,44 @@ function ui_get_snapshot_link($params, $only_params = false) {
 	return "winopeng_var('" . implode("', '", $link_parts) . "')";
 }
 
+/**
+ * @brief Get the snapshot image with the link to open a snapshot into a new page
+ *
+ * @param string Built link
+ * @param bool Picture image or list image
+ *
+ * @return string HTML anchor link with image
+ */
+function ui_get_snapshot_image ($link, $is_image) {
+	$image_name = $is_image ? 'photo.png' : 'default_list.png';
+
+	$link = '<a href="javascript:' . $link . '">' .
+		html_print_image("images/$image_name", true,
+			array('border' => '0',
+				'alt' => '',
+				'title' => __('Snapshot view'))
+		) .
+	'</a>';
+
+	return $link;
+}
+
 function ui_get_using_system_timezone_warning ($tag = "h3", $return = true) {
 	global $config;
 
 	$user_offset = (-get_fixed_offset() / 60) / 60;
 
-	$message = sprintf(
-		__("These controls are using the timezone of the system (%s) instead of yours (%s). The difference with your time zone in hours is %s."),
-		$config["timezone"],
-		date_default_timezone_get(),
-		$user_offset > 0 ? "+" . $user_offset : $user_offset
-	);
-	return ui_print_info_message($message, '', $return, $tag);
+	if ($config["timezone"] != date_default_timezone_get()) {
+		$message = sprintf(
+			__("These controls are using the timezone of the system (%s) instead of yours (%s). The difference with your time zone in hours is %s."),
+			$config["timezone"],
+			date_default_timezone_get(),
+			$user_offset > 0 ? "+" . $user_offset : $user_offset
+		);
+		return ui_print_info_message($message, '', $return, $tag);
+	} else
+		return '';
+	
 }
 
 /**

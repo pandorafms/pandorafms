@@ -449,11 +449,9 @@ $table->align = array ();
 
 if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 	if ($print_agent) {
-		if (!is_metaconsole()) {
-			$table->head[0] = "<span title='" . __('Policy') . "'>" .
-				__('P.') . "</span>";
-		}
-		
+
+		$table->head[0] = "<span title='" . __('Policy') . "'>" . __('P.') . "</span>";
+
 		$table->head[1] = "<span title='" . __('Standby') . "'>" .
 			__('S.') . "</span>";
 		
@@ -496,10 +494,8 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		}
 	}
 	else {
-		if (!is_metaconsole()) {
-			$table->head[0] = "<span title='" . __('Policy') . "'>" . __('P.') . "</span>";
-		}
-		
+		$table->head[0] = "<span title='" . __('Policy') . "'>" . __('P.') . "</span>";
+
 		$table->head[1] = "<span title='" . __('Standby') . "'>" . __('S.') . "</span>";
 		
 		if (!is_metaconsole()) {

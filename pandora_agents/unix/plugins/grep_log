@@ -325,7 +325,9 @@ sub print_log ($) {
 		$output .= "<source><![CDATA[" . $Module_name . "]]></source>\n";
 		$output .= "<data><![CDATA[";
 		foreach my $line (@kdata) {
-			$output .= $data->{$line};
+			my $processed_line = $line;
+			$processed_line =~ s/\]\]/]]]]><![CDATA[/g;
+			$output .= $processed_line;
 		}
 		$output .= "]]></data>";
 		$output .= "</log_module>\n";
@@ -343,7 +345,9 @@ sub print_log ($) {
 		foreach my $line (@kdata) {
 			$output .= "<data><value><![CDATA[";
 			foreach my $content (@{$data->{$line}}) {
-				$output .= $content;
+				my $processed_line = $content;
+				$processed_line =~ s/\]\]/]]]]><![CDATA[/g;
+				$output .= $processed_line;
 			}
 			$output .= "]]></value></data>\n";
 		}

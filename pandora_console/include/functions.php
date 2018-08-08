@@ -1364,6 +1364,18 @@ function is_metaconsole() {
 }
 
 /**
+ * @brief Check if there is management operations are allowed in current context
+ * (node // meta)
+ *
+ * @return bool
+ */
+function is_management_allowed() {
+	global $config;
+	return ( (is_metaconsole() && $config["centralized_management"])
+		|| (!is_metaconsole() && !$config["centralized_management"]));
+}
+
+/**
  * @brief Check if there is centralized management in metaconsole environment.
  * 			Usefull to display some policy features on metaconsole.
  *

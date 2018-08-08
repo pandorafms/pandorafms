@@ -1769,6 +1769,10 @@ function pandoraFlotArea( graph_id, values, legend,
 		update_left_width_canvas(graph_id);
 	});
 
+	var max_draw = [];
+	max_draw['max'] = plot.getAxes().yaxis.max;
+	max_draw['min'] = plot.getAxes().yaxis.min;
+
 	// Connection between plot and miniplot
 	$('#' + graph_id).bind('plotselected', function (event, ranges) {
 		// do the zooming if exist menu to undo it
@@ -1786,12 +1790,25 @@ function pandoraFlotArea( graph_id, values, legend,
 			}
 		}
 
+		if(thresholded){
+			var y_recal = axis_thresholded(
+				threshold_data,
+				plot.getAxes().yaxis.min,
+				plot.getAxes().yaxis.max,
+				red_threshold, extremes,
+				red_up
+			);
+		}
+		else{
+			var y_recal = ranges.yaxis;
+		}
+
 		if (thresholded) {
 			data_base_treshold = add_threshold (
 				data_base,
 				threshold_data,
 				ranges.yaxis.from,
-				ranges.yaxis.to,
+				y_recal.max,
 				red_threshold,
 				extremes,
 				red_up,
@@ -1822,7 +1839,7 @@ function pandoraFlotArea( graph_id, values, legend,
 					}],
 					yaxis:{
 						min: ranges.yaxis.from,
-						max: ranges.yaxis.to,
+						max: y_recal.max,
 						font: {
 							size: font_size + 2,
 							color: legend_color,
@@ -1881,6 +1898,9 @@ function pandoraFlotArea( graph_id, values, legend,
 		}
 
 		$('#menu_cancelzoom_' + graph_id).attr('src', homeurl + '/images/zoom_cross_grey.png');
+
+		max_draw['max'] = ranges.yaxis.to;
+		max_draw['min'] = ranges.yaxis.from;
 
 		// don't fire event on the overview to prevent eternal loop
 		overview.setSelection(ranges, true);
@@ -2174,7 +2194,7 @@ function pandoraFlotArea( graph_id, values, legend,
 			data_base,
 			threshold_data,
 			plot.getAxes().yaxis.min,
-			plot.getAxes().yaxis.max,
+			y_recal.max,
 			red_threshold,
 			extremes,
 			red_up,
@@ -2254,7 +2274,6 @@ function pandoraFlotArea( graph_id, values, legend,
 
 		$('#menu_threshold_' + graph_id).click(function() {
 			datas = new Array();
-
 			if (thresholded) {
 				$.each(data_base, function() {
 						datas.push(this);
@@ -2265,7 +2284,8 @@ function pandoraFlotArea( graph_id, values, legend,
 				plot = $.plot($('#' + graph_id), data_base,
 					$.extend(true, {}, options, {
 						yaxis: {
-							max: max_draw
+							min: max_draw['min'],
+							max: max_draw['max']
 						},
 						xaxis: {
 							min: plot.getAxes().xaxis.min,
@@ -2275,8 +2295,6 @@ function pandoraFlotArea( graph_id, values, legend,
 				thresholded = false;
 			}
 			else {
-				var max_draw = plot.getAxes().yaxis.datamax;
-
 				if(!thresholded){
 					// Recalculate the y axis
 					var y_recal = axis_thresholded(
@@ -2295,7 +2313,7 @@ function pandoraFlotArea( graph_id, values, legend,
 					data_base,
 					threshold_data,
 					plot.getAxes().yaxis.min,
-					plot.getAxes().yaxis.max,
+					y_recal.max,
 					red_threshold,
 					extremes,
 					red_up,
@@ -2305,7 +2323,8 @@ function pandoraFlotArea( graph_id, values, legend,
 				plot = $.plot($('#' + graph_id), datas_treshold,
 						$.extend(true, {}, options, {
 							yaxis: {
-								max: y_recal.max,
+								min: max_draw['min'],
+								max: y_recal.max
 							},
 							xaxis: {
 								min: plot.getAxes().xaxis.min,
@@ -2330,6 +2349,7 @@ function pandoraFlotArea( graph_id, values, legend,
 			overview.clearSelection();
 			currentRanges = null;
 			thresholded = false;
+			max_draw = [];
 		});
 
 		// Adjust the menu image on top of the plot
@@ -2342,8 +2362,6 @@ function pandoraFlotArea( graph_id, values, legend,
 		// Add bottom margin in the legend
 		// Estimated height of 24 (works fine with this data in all browsers)
 		menu_height = 24;
-		var legend_margin_bottom = parseInt(
-		$('#legend_'+graph_id).css('margin-bottom').split('px')[0]);
 		$('#legend_'+graph_id).css('margin-bottom', '10px');
 		parent_height = parseInt($('#menu_'+graph_id).parent().css('height').split('px')[0]);
 		adjust_menu(graph_id, plot, parent_height, width, show_legend);

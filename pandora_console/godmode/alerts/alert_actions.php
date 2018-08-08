@@ -370,12 +370,8 @@ foreach ($actions as $action) {
 	$data[0] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_action&id='.$action['id'].'&pure='.$pure.'">'.
 		$action['name'].'</a>';
 	$data[1] = ui_print_group_icon ($action["id_group"], true) .'&nbsp;';
-	$hack_id_group_all = $action["id_group"];
-	if ($hack_id_group_all == 0) {
-		//To avoid check all groups instead the pseudo-group all
-		$hack_id_group_all = -1;
-	}
-	if (check_acl($config['id_user'], $hack_id_group_all, "LM")) {
+	
+	if (check_acl($config['id_user'], $action["id_group"], "LM")) {
 		$data[2] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_actions&amp;copy_action=1&amp;id='.$action['id'].'&pure='.$pure.'"
 			onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">' .
 			html_print_image("images/copy.png", true) . '</a>';

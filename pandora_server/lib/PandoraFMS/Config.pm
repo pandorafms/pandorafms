@@ -44,8 +44,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.724";
-my $pandora_build = "180723";
+my $pandora_version = "7.0NG.725";
+my $pandora_build = "180808";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -485,7 +485,9 @@ sub pandora_load_config {
 	$pa_config->{"provisioningserver"} = 1; # 7.0 720
 	$pa_config->{"provisioningserver_threads"} = 1; # 7.0 720
 	$pa_config->{"provisioning_cache_interval"} = 300; # 7.0 720
-
+	
+	$pa_config->{"autoconfigure_agents"} = 1; # 7.0 725
+	
 	$pa_config->{'snmp_extlog'} = ""; # 7.0 726
 
 	# Check for UID0
@@ -1114,6 +1116,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^provisioning_cache_interval\s+([0-9]*)/i){
 			$pa_config->{'provisioning_cache_interval'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^autoconfigure_agents\s+([0-1])/i){
+			$pa_config->{'autoconfigure_agents'}= clean_blank($1);
 		}
 		elsif ($parametro =~ m/^snmp_extlog\s(.*)/i) { 
 			$pa_config->{'snmp_extlog'} = clean_blank($1); 

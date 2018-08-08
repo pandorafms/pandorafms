@@ -892,7 +892,7 @@ function grafico_modulo_sparse ($params) {
 	}
 
 	if(!isset($params['zoom'])){
-		$params['zoom'] = 1;
+		$params['zoom'] = $config['zoom_graph'];
 	}
 
 	if(!isset($params['type_mode_graph'])){
@@ -1501,7 +1501,6 @@ function graphic_combined_module (
 
 	//XXX arreglar estas
 	$long_index = '';
-
 	switch ($params_combined['stacked']) {
 		default:
 		case CUSTOM_GRAPH_STACKED_LINE:
@@ -1734,6 +1733,8 @@ function graphic_combined_module (
 			break;
 		case CUSTOM_GRAPH_BULLET_CHART_THRESHOLD:
 		case CUSTOM_GRAPH_BULLET_CHART:
+			$number_elements = count($module_list);
+
 			if($params_combined['stacked'] == CUSTOM_GRAPH_BULLET_CHART_THRESHOLD){
 				$acumulador = 0;
 				foreach ($module_list as $module_item) {
@@ -1823,8 +1824,13 @@ function graphic_combined_module (
 
 			$graph_values = $temp;
 
-			$width = 1024;
-			$height = 50;
+			if(!$params['vconsole']){
+				$width = 1024;
+				$height = 50;
+			}
+			else{
+				$height = $height/$number_elements;
+			}
 
 			$color = color_graph_array();
 
@@ -1851,6 +1857,7 @@ function graphic_combined_module (
 
 		case CUSTOM_GRAPH_GAUGE:
 			$i = 0;
+			$number_elements = count($module_list);
 			foreach ($module_list as $module_item) {
 				$automatic_custom_graph_meta = false;
 				if ($config['metaconsole']) {
@@ -1918,8 +1925,14 @@ function graphic_combined_module (
 
 			$color = color_graph_array();
 
-			$width = 200;
-			$height = 200;
+			if(!$params['vconsole']){
+				$width = 200;
+				$height = 200;
+			}
+			else{
+				$width  = $width/$number_elements;
+				$height = $height/$number_elements;
+			}
 
 			$output = stacked_gauge(
 				$graph_values,
@@ -1988,8 +2001,11 @@ function graphic_combined_module (
 
 			$graph_values = $temp;
 
-			$width = 1024;
-			$height = 500;
+			if(!$params['vconsole']){
+				$width = 1024;
+				$height = 500;
+			}
+
 			$flash_charts = true;
 
 			if($params_combined['stacked'] == CUSTOM_GRAPH_HBARS){
@@ -2102,8 +2118,11 @@ function graphic_combined_module (
 
 			$graph_values = $temp;
 
-			$width  = 1024;
-			$height = 500;
+
+			if(!$params['vconsole']){
+				$width  = 1024;
+				$height = 500;
+			}
 
 			$color  = color_graph_array();
 

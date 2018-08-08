@@ -54,6 +54,7 @@ $no_login_msg = "";
 // Clean unwanted output
 ob_clean();
 
+// READ THIS:
 // Special call without checks to retrieve version and build of the Pandora FMS
 // This info is avalable from the web console without login
 // Don't change the format, it is parsed by applications
@@ -63,7 +64,7 @@ switch($info) {
 			$config["MR"] = 0;
 		}
 		
-		echo get_product_name() . ' ' . $pandora_version . ' - ' . $build_version . " MR" . $config["MR"];
+		echo 'Pandora FMS ' . $pandora_version . ' - ' . $build_version . " MR" . $config["MR"];
 
 		exit;
 }

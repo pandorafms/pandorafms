@@ -31,8 +31,8 @@ use base 'Exporter';
 our @ISA = qw(Exporter);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.724";
-my $pandora_build = "180723";
+my $pandora_version = "7.0NG.725";
+my $pandora_build = "180808";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 our %EXPORT_TAGS = ( 'all' => [ qw() ] );
@@ -461,9 +461,7 @@ sub print_agent {
 # print_module
 ################################################################################
 sub print_module {
-	my $conf = shift;
-	my $data = shift;
-	my $not_print_flag = shift;
+	my ($conf, $data, $not_print_flag) = @_;
 
 	if ((ref($data) ne "HASH") || (!defined $data->{name})) {
 		return undef;
@@ -476,9 +474,21 @@ sub print_module {
 	}
 
 	$data->{value} = '' if empty($data->{value});
-	$data->{tags}  = $data->{tags}?$data->{tags}:($conf->{MODULE_TAG_LIST}?$conf->{MODULE_TAG_LIST}:undef);
-	$data->{interval}     = $data->{interval}?$data->{interval}:($conf->{MODULE_INTERVAL}?$conf->{MODULE_INTERVAL}:undef);
-	$data->{module_group} = $data->{module_group}?$data->{module_group}:($conf->{MODULE_GROUP}?$conf->{MODULE_GROUP}:undef);
+
+	$data->{tags} = ($data->{tags} ?
+		$data->{tags} : ($conf->{MODULE_TAG_LIST} ?
+			$conf->{MODULE_TAG_LIST} : ($conf->{module_tag_list} ? 
+				$conf->{module_tag_list} : undef)));
+
+	$data->{interval} = ($data->{interval} ? 
+		$data->{interval} : ($conf->{MODULE_INTERVAL} ?
+			$conf->{MODULE_INTERVAL} : ($conf->{module_interval} ? 
+				$conf->{module_interval} : undef)));
+
+	$data->{module_group} = ($data->{module_group} ? 
+		$data->{module_group} : ($conf->{MODULE_GROUP} ? 
+			$conf->{MODULE_GROUP} : ( $conf->{module_group} ?
+				$conf->{module_group} : undef)));
 	
 
 	# Global instructions (if defined)
@@ -988,6 +998,18 @@ sub init {
 	}
 
 	return $conf;
+}
+
+################################################################################
+# Update internal UA timeout
+################################################################################
+sub ua_set_timeout {
+	my ($config, $timeout) = @_;
+	return unless looks_like_number($timeout) and $timeout > 0;
+	my $sys = get_sys_environment($config);
+
+	return unless defined($sys->{'ua'});
+	$sys->{'ua'}->timeout($timeout);
 }
 
 ################################################################################

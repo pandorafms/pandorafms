@@ -114,6 +114,7 @@ use Encode;
 use XML::Simple;
 use HTML::Entities;
 use Time::Local;
+use Time::HiRes qw(time);
 use POSIX qw(strftime);
 use threads;
 use threads::shared;
@@ -4770,6 +4771,10 @@ sub pandora_self_monitoring ($$) {
 			WHERE token = 'db_maintance' AND value > UNIX_TIMESTAMP() - 86400");
 	}
 
+	my $start_performance = time;
+	get_db_value($dbh, "SELECT COUNT(*) FROM tagente_datos");
+	my $read_speed = int((time - $start_performance) * 1e6);
+
 	$xml_output .= enterprise_hook("elasticsearch_performance", [$pa_config, $dbh]);
 	
 	$xml_output .=" <module>";
@@ -4813,9 +4818,16 @@ sub pandora_self_monitoring ($$) {
 		$xml_output .=" <data>$free_disk_spool</data>";
 		$xml_output .=" </module>";
 	}
-	
+
+	$xml_output .=" <module>";
+	$xml_output .=" <name>Execution_Time</name>";
+	$xml_output .=" <type>generic_data</type>";
+	$xml_output .=" <unit>us</unit>";
+	$xml_output .=" <data>$read_speed</data>";
+	$xml_output .=" </module>";
+
 	$xml_output .= "</agent_data>";
-	
+
 	my $filename = $pa_config->{"incomingdir"}."/".$pa_config->{'servername'}.".self.".$utimestamp.".data";
 	
 	open (XMLFILE, ">> $filename") or die "[FATAL] Could not open internal monitoring XML file for deploying monitorization at '$filename'";

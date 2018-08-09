@@ -141,10 +141,21 @@ function flot_area_graph (
 	}
 	if(isset($params['graph_combined']) && $params['graph_combined'] &&
 		(!isset($params['from_interface']) || !$params['from_interface']) ){
-		$yellow_up      = 0;
-		$red_up         = 0;
-		$yellow_inverse = false;
-		$red_inverse    = false;
+		if(	isset($params['threshold_data']) && is_array($params['threshold_data'])){
+			$yellow_threshold = $params['threshold_data']['yellow_threshold'];
+			$red_threshold    = $params['threshold_data']['red_threshold'];
+			$yellow_up        = $params['threshold_data']['yellow_up'];
+			$red_up           = $params['threshold_data']['red_up'];
+			$yellow_inverse   = $params['threshold_data']['yellow_inverse'];
+			$red_inverse      = $params['threshold_data']['red_inverse'];
+		}
+		else{
+			$yellow_up      = 0;
+			$red_up         = 0;
+			$yellow_inverse = false;
+			$red_inverse    = false;
+		}
+		
 	}
 	elseif(!isset($params['combined']) || !$params['combined']){
 		$yellow_threshold = $data_module_graph['w_min'];
@@ -164,10 +175,12 @@ function flot_area_graph (
 	}
 	elseif(isset($params['from_interface']) && $params['from_interface']){
 		if(	isset($params['threshold_data']) && is_array($params['threshold_data'])){
-			$yellow_up      = $params['threshold_data']['yellow_up'];
-			$red_up         = $params['threshold_data']['red_up'];
-			$yellow_inverse = $params['threshold_data']['yellow_inverse'];
-			$red_inverse    = $params['threshold_data']['red_inverse'];
+			$yellow_threshold = $params['threshold_data']['yellow_threshold'];
+			$red_threshold    = $params['threshold_data']['red_threshold'];
+			$yellow_up        = $params['threshold_data']['yellow_up'];
+			$red_up           = $params['threshold_data']['red_up'];
+			$yellow_inverse   = $params['threshold_data']['yellow_inverse'];
+			$red_inverse      = $params['threshold_data']['red_inverse'];
 		}
 		else{
 			$yellow_up      = 0;

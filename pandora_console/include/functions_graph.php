@@ -1704,14 +1704,16 @@ function graphic_combined_module (
 
 				if ($do_it_warning_min && $do_it_warning_max && $do_it_warning_inverse) {
 					$yellow_threshold = $compare_warning;
-					$threshold_data['yellow_up']      = $yellow_up;
-					$threshold_data['yellow_inverse'] = (bool)$yellow_inverse;
+					$threshold_data['yellow_threshold'] = $compare_warning;
+					$threshold_data['yellow_up']        = $yellow_up;
+					$threshold_data['yellow_inverse']   = (bool)$yellow_inverse;
 				}
 
 				if ($do_it_critical_min && $do_it_critical_max && $do_it_critical_inverse) {
 					$red_threshold = $compare_critical;
-					$threshold_data['red_up']      = $red_up;
-					$threshold_data['red_inverse'] = (bool)$red_inverse;
+					$threshold_data['red_threshold'] = $compare_critical;
+					$threshold_data['red_up']        = $red_up;
+					$threshold_data['red_inverse']   = (bool)$red_inverse;
 				}
 
 				$params['threshold_data'] = $threshold_data;

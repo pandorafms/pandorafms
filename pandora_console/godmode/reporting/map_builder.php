@@ -62,7 +62,7 @@ $buttons['visual_console_favorite'] = array(
 				html_print_image ("images/list.png", true, array ("title" => __('Visual Favourite Console'))) .'</a>'
 );
 
-if($is_enterprise){
+if($is_enterprise && $vconsoles_manage){
 	$buttons['visual_console_template'] = array(
 		'active' => false,
 		'text' => '<a href="'.$url_visual_console_template.'">' .

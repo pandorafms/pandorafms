@@ -56,7 +56,7 @@ $buttons['visual_console_favorite'] = array(
                 html_print_image ("images/list.png", true, array ("title" => __('Visual Favourite Console'))) .'</a>'
 );
 
-if($is_enterprise){
+if($is_enterprise && $vconsoles_manage){
     $buttons['visual_console_template'] = array(
         'active' => false,
         'text' => '<a href="'.$url_visual_console_template.'">' .
@@ -142,7 +142,7 @@ $favorite_array = visual_map_get_user_layouts ($config['id_user'],false,$filters
 
 echo "<div id='is_favourite'>";
     if($favorite_array == false){
-        ui_print_error_message(__('No data to show'));
+        ui_print_info_message(__('No favourite consoles defined'));
     }
     else{
         echo "<ul class='container'>";

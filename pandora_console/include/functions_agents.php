@@ -2023,8 +2023,7 @@ function agents_get_agentmodule_group ($id_module) {
  * @return int The group id
  */
 function agents_get_agent_group ($id_agent) {
-	$table = is_metaconsole() ? "tmetaconsole_agent" : "tagente";
-	return (int) db_get_value ('id_grupo', $table, 'id_agente', (int) $id_agent);
+	return (int) db_get_value ('id_grupo', "tagente", 'id_agente', (int) $id_agent);
 }
 
 /**

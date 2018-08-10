@@ -129,25 +129,14 @@ function get_value_sum($arr){
 		}
 		return $result;
 }
+
 function execution_time(){
-	$tiempo_inicial = microtime(true);
-	$count_tagente_datos = db_get_sql("SELECT COUNT(*) FROM tagente_datos");
-	$tiempo_final = microtime(true);
-	$tiempo = $tiempo_final - $tiempo_inicial;
-	$tiempo_inicial2 = microtime(true);
-	$count_tagente_datos2 = db_get_sql("SELECT COUNT(*) FROM tagente_datos");
-	$tiempo_final2 = microtime(true);
-	$tiempo2 = $tiempo_final2 - $tiempo_inicial2;
-	$status_exec_time ="";
-	if($tiempo > $tiempo2 * 1.2)
-		$status_exec_time ="<a class= 'content' style= 'color: red;'>Warning Status</a><a>&nbsp&nbsp The execution time could be degrading. For a more extensive information of this data consult the  Execution Time graph</a>";
+	$times = db_get_all_rows_sql("SELECT datos FROM tagente_datos WHERE id_agente_modulo = 29 ORDER BY utimestamp DESC LIMIT 2");
+	if($times[0]['datos'] > $times[1]['datos'] * 1.2)
+		return "<a class= 'content' style= 'color: red;'>Warning Status</a><a>&nbsp&nbsp The execution time could be degrading. For a more extensive information of this data consult the  Execution Time graph</a>";
 	else
-		$status_exec_time =  "<a class= 'content' style ='color: green;'>Normal Status</a><a>&nbsp&nbsp The execution time is correct. For a more extensive information of this data consult the  Execution Time graph</a>";
-	return $status_exec_time;
-
+		return "<a class= 'content' style ='color: green;'>Normal Status</a><a>&nbsp&nbsp The execution time is correct. For a more extensive information of this data consult the  Execution Time graph</a>";
 }
-
-html_debug(execution_time(), true);
 
 function get_logs_size($file){
 	$file_name = '/var'. $file .'';
@@ -244,17 +233,20 @@ ROUND(SUM(data_length+index_length)/1024/1024,3)
 FROM information_schema.TABLES
 GROUP BY table_schema;"
 );
+
+if(strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN'){
+	$total_server_threads = shell_exec("ps -T aux | grep pandora_server | grep -v grep | wc -l");
+	$percentage_threads_ram = shell_exec("ps axo pmem,cmd | grep pandora_server | awk '{sum+=$1} END {print sum}'");
+	$percentage_threads_cpu = shell_exec("ps axo pcpu,cmd | grep pandora_server | awk '{sum+=$1} END {print sum}'");
+	$innodb_buffer_pool_size_min_rec_value = shell_exec("cat /proc/meminfo | grep -i total | head -1 | awk '{print $(NF-1)*0.4/1024}'");
+}
 $path_server_logs ="/log/pandora/pandora_server.log";
 $path_console_logs ="/www/html/pandora_console/pandora_console.log";
-$total_server_threads = shell_exec("ps -T aux | grep pandora_server | grep -v grep | wc -l");
-$percentage_threads_ram = shell_exec("ps axo pmem,cmd | grep pandora_server | awk '{sum+=$1} END {print sum}'");
-$percentage_threads_cpu = shell_exec("ps axo pcpu,cmd | grep pandora_server | awk '{sum+=$1} END {print sum}'");
 $innodb_log_file_size_min_rec_value = "64M";
 $innodb_log_buffer_size_min_rec_value = "16M";
 $innodb_flush_log_at_trx_commit_min_rec_value = 0;
 $query_cache_limit_min_rec_value = "2M"; 
 $max_allowed_packet_min_rec_value = "32M";
-$innodb_buffer_pool_size_min_rec_value = shell_exec("cat /proc/meminfo | grep -i total | head -1 | awk '{print $(NF-1)*0.4/1024}'");
 $sort_buffer_size_min_rec_value = "32K";
 $join_buffer_size_min_rec_value = "265K";
 $query_cache_type_min_rec_value = "ON";
@@ -477,8 +469,9 @@ switch ($config["dbtype"]) {
 			WHERE `token` = 'db_scheme_build'", "DB Schema Build");
 
 		render_row(get_value_sum($db_size) . "M", "DB Size");	
+		
 				
-		if(strpos($_SERVER['HTTP_USER_AGENT'],'Windows') == false){
+		if(strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN'){
 		
 		echo "<tr><th style='background-color:#b1b1b1;font-weight:bold;font-style:italic;border-radius:2px;' align=center colspan='2'>".__("System info")."</th></tr>";
 				

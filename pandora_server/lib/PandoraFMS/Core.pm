@@ -259,6 +259,32 @@ our $EventStormProtection :shared = 0;
 # Current master server
 my $Master :shared = 0;
 
+##########################################################################
+# Return the agent given the agent name or alias or address.
+##########################################################################
+sub locate_agent {
+	my ($pa_config, $dbh, $field) = @_;
+
+	if (is_metaconsole($pa_config)) {
+		# Locate agent first in tmetaconsole_agent
+		return undef if (! defined ($field) || $field eq '');
+
+		my $rs = enterprise_hook('get_metaconsole_agent_from_alias', [$dbh, $field]);
+	    return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
+
+	    $rs = enterprise_hook('get_metaconsole_agent_from_addr', [$dbh, $field]);
+	    return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
+
+	    $rs = enterprise_hook('get_metaconsole_agent_from_name', [$dbh, $field]);
+	    return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
+
+	} else {
+		return get_agent($dbh, $field);
+	}
+
+	return undef
+}
+
 
 ##########################################################################
 # Return the agent given the agent name or alias or address.

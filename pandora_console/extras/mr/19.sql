@@ -60,4 +60,6 @@ ALTER TABLE `tusuario_perfil` ADD COLUMN `no_hierarchy` tinyint(1) NOT NULL DEFA
 UPDATE `tusuario_perfil` SET `is_secondary` = `no_hierarchy`;
 ALTER TABLE `tusuario_perfil` DROP COLUMN `is_secondary`;
 
+UPDATE `talert_commands` SET name='Monitoring&#x20;Event' WHERE name='Pandora&#x20;FMS&#x20;Event';
+
 COMMIT;

@@ -277,11 +277,12 @@ function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup 
 			$query  = "SELECT * FROM tgrupo ORDER BY parent,id_grupo DESC";
 			$raw_groups = db_get_all_rows_sql($query);
 
-			$query = sprintf("SELECT tgrupo.*, tperfil.*, tusuario_perfil.tags FROM tgrupo, tusuario_perfil, tperfil
+			$query = sprintf("SELECT tgrupo.*, tperfil.*, tusuario_perfil.tags, tusuario_perfil.no_hierarchy FROM tgrupo, tusuario_perfil, tperfil
 						WHERE (tgrupo.id_grupo = tusuario_perfil.id_grupo OR tusuario_perfil.id_grupo = 0)
 						AND tusuario_perfil.id_perfil = tperfil.id_perfil
 						AND tusuario_perfil.id_usuario = '%s' ORDER BY nombre", $id_user);
 			$raw_forest = db_get_all_rows_sql ($query);
+			if ($raw_forest === false) $raw_forest = array();
 
 			foreach ($raw_forest as $g) {
 				// XXX, following code must be remade (TAG)
@@ -291,7 +292,6 @@ function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup 
 				else {
 					$forest_acl[$g["id_grupo"]] = groups_combine_acl($forest_acl[$g["id_grupo"]], $g);
 				}
-				
 			}
 
 			$groups = array();
@@ -303,7 +303,11 @@ function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup 
 				$parents = get_group_ancestors($group["parent"],$groups);
 				if (is_array($parents)) {
 					foreach ($parents as $parent) {
-						if ( (isset($forest_acl[$parent])) && ($groups[$parent]["propagate"] == 1)) {
+						if (
+							(isset($forest_acl[$parent])) &&
+							($groups[$parent]["propagate"] == 1) &&
+							($forest_acl[$parent]["no_hierarchy"] == 0)
+						) {
 							if (isset($forest_acl[$group["id_grupo"]])) {
 								// update ACL propagation
 								$tmp = groups_combine_acl($forest_acl[$parent], $forest_acl[$group["id_grupo"]]);
@@ -319,10 +323,8 @@ function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup 
 						}
 					}
 				}
-				else {
-					// no parents, direct assignment already done
-				}
-			}		
+				// No parents, direct assignment already done
+			}
 		}
 		// Update the group cache.
 		$group_cache[$id_user] = $forest_acl;

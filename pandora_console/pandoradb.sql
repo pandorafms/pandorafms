@@ -1136,7 +1136,7 @@ CREATE TABLE IF NOT EXISTS `tusuario_perfil` (
 	`id_usuario` varchar(100) NOT NULL default '',
 	`id_perfil` int(10) unsigned NOT NULL default '0',
 	`id_grupo` int(10) NOT NULL default '0',
-	`is_secondary` tinyint(1) NOT NULL default 0,
+	`no_hierarchy` tinyint(1) NOT NULL default 0,
 	`assigned_by` varchar(100) NOT NULL default '',
 	`id_policy` int(10) unsigned NOT NULL default '0',
 	`tags` text NOT NULL,

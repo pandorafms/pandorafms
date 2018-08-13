@@ -4658,3 +4658,20 @@ form ul.form_flex li ul li{
 .dialog-grayed .ui-dialog-buttonpane {
 	background: #373737 !important;
 }
+
+a.down_arrow {
+	content: url("../../images/down.png");
+	max-width: 21px;
+	max-height: 21px;
+}
+
+a.up_arrow {
+	content: url("../../images/down.png");
+	transform: rotate(180deg);
+	max-width: 21px;
+	max-height: 21px;
+}
+
+tr:last-child > td > a.down_arrow, tr:first-child > td > a.up_arrow {
+	visibility: hidden;
+}

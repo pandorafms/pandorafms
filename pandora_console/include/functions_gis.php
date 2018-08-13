@@ -824,11 +824,11 @@ function gis_save_map($map_name, $map_initial_longitude, $map_initial_latitude,
 			)
 		);
 		if ((isset($layer['layer_agent_list'])) AND (count($layer['layer_agent_list']) > 0)) {
-			foreach ($layer['layer_agent_list'] as $agent_name) {
+			foreach ($layer['layer_agent_list'] as $agent) {
 				db_process_sql_insert('tgis_map_layer_has_tagente',
 					array(
 						'tgis_map_layer_id_tmap_layer' => $idLayer,
-						'tagente_id_agente' => agents_get_agent_id(io_safe_input($agent_name))
+						'tagente_id_agente' => $agent["id"]
 					)
 				);
 			}
@@ -884,7 +884,6 @@ function gis_update_map($idMap, $map_name, $map_initial_longitude, $map_initial_
 		$list_onlyIDsLayers[$idLayer['id_tmap_layer']] = 0;
 	}
 	
-	
 	foreach ($arrayLayers as $index => $layer) {
 		
 		if ($layer['id'] != 0) {
@@ -915,13 +914,11 @@ function gis_update_map($idMap, $map_name, $map_initial_longitude, $map_initial_
 		
 		if (array_key_exists('layer_agent_list', $layer)) {
 			if (count($layer['layer_agent_list']) > 0) {
-				foreach ($layer['layer_agent_list'] as $agent_name) {
-					
-					db_process_sql_insert('tgis_map_layer_has_tagente',
+				foreach ($layer['layer_agent_list'] as $agent) {
+					$id = db_process_sql_insert('tgis_map_layer_has_tagente',
 						array(
 							'tgis_map_layer_id_tmap_layer' => $idLayer,
-							'tagente_id_agente' => agents_get_agent_id(
-								io_safe_input($agent_name))
+							'tagente_id_agente' => $agent["id"]
 						)
 					);
 				}
@@ -1244,7 +1241,8 @@ function gis_get_map_data($idMap) {
 			break;
 	}
 	
-	$sql = "SELECT id_tmap_layer, layer_name,
+	$sql = "SELECT id_tmap_layer AS id,
+				layer_name,
 				tgrupo_id_grupo AS layer_group,
 				view_layer AS layer_visible
 			FROM tgis_map_layer
@@ -1254,12 +1252,12 @@ function gis_get_map_data($idMap) {
 	if ($layers === false) $layers = array();
 	
 	foreach ($layers as $index => $layer) {
-		if (!isset($layer['id_tmap_layer']))
+		if (!isset($layer['id']))
 			continue;
 		
-		$id_tmap_layer = (int) $layer['id_tmap_layer'];
+		$id_tmap_layer = (int) $layer['id'];
 		
-		$sql = "SELECT nombre
+		$sql = "SELECT id_agente AS id, alias
 				FROM tagente
 				WHERE id_agente IN (
 					SELECT tagente_id_agente
@@ -1329,63 +1327,6 @@ function gis_get_num_zoom_levels_connection_default($map_connection_list) {
 			return $connection['num_zoom_levels'];
 		}
 	}
-}
-
-/**
- * This function use in form the "pandora_console/godmode/gis_maps/configure_gis_map.php"
- * in the case of edit a map or when there are any error in save new map. Because this function
- * return a html code that it has the rows of layers of map.
- * 
- * @param Array $layer_list The list of layers for convert a html.
- * 
- * @return String The html source code.
- */
-function gis_add_layer_list($layer_list) {
-	$returnVar = '';
-	
-	$count = 0;
-	foreach ($layer_list as $layer) {
-		//Create the layer temp form as it was in the form
-		$layerTempForm = array();
-		$layerTempForm['id'] = $layer['id'];
-		$layerTempForm['layer_name'] = $layer['layer_name'];
-		$layerTempForm['layer_group'] = $layer['layer_group'];
-		$layerTempForm['layer_visible'] = $layer['layer_visible'];
-		if (array_key_exists('layer_agent_list', $layer)) {
-			foreach ($layer['layer_agent_list'] as $agent) {
-				$layerTempForm['layer_agent_list'][] = $agent;
-			}
-		}
-		
-		$layerDataJSON = json_encode($layerTempForm);
-		
-		$returnVar .= '
-			<tbody id="layer_item_' . $count . '">
-				<tr>
-					<td class="col1">' .
-						$layer['layer_name'] .
-						'</td>
-					<td class="up_arrow"><a id="up_arrow" href="javascript: upLayer(' . $count . ');">' . html_print_image("images/up.png", true, array("alt" => "")) . '</a></td>
-					<td class="down_arrow"><a id="down_arrow" href="javascript: downLayer(' . $count . ');">' . html_print_image("images/down.png", true, array("alt" => "")) . '</a></td>
-					<td class="col3">
-						<a id="edit_layer" href="javascript: editLayer(' . $count . ');">' . html_print_image("images/config.png", true, array("alt" => "")) . '</a>
-					</td>
-					<td class="col4">
-						<input type="hidden" name="layer_values_' . $count . '" value=\'' . $layerDataJSON . '\' id="layer_values_' . $count . '" />
-						<a id="delete_row" href="javascript: deleteLayer(' . $count . ')">' . html_print_image("images/cross.png", true, array("alt" => "")) . '</a>
-					</td>
-				</tr>
-			</tbody>
-			<script type="text/javascript">
-				layerList.push(countLayer);
-				countLayer++;
-				updateArrowLayers();
-			</script>';
-		
-		$count ++;
-	}
-	
-	return $returnVar;
 }
 
 function gis_calculate_distance($lat_start, $lon_start, $lat_end, $lon_end) {

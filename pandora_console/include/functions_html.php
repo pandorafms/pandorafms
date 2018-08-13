@@ -2458,4 +2458,23 @@ function html_print_timezone_select ($name, $selected = "") {
 	return html_print_select($timezones, $name, $selected, "", __("None"), "", true, false, false);
 }
 
+/**
+ * Enclose a text into a result_div
+ *
+ * @param string Text to enclose
+ *
+ * @return string Text inside the result_div
+ */
+function html_print_result_div ($text) {
+	$text = preg_replace ('/</', '&lt;', $text);
+	$text = preg_replace ('/>/', '&gt;', $text);
+	$text = preg_replace ('/\n/i','<br>',$text);
+	$text = preg_replace ('/\s/i','&nbsp;',$text);
+
+	$enclose = "<div id='result_div' style='width: 100%; height: 100%; overflow: scroll; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left'>";
+	$enclose .= $text;
+	$enclose .= "</div>";
+	return $enclose;
+}
+
 ?>

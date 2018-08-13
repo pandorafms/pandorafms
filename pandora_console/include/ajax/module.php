@@ -295,19 +295,8 @@ if ($get_module_detail) {
 			elseif (($config['command_snapshot'] == '0') && (preg_match ("/[\n]+/i", $row[$attr[0]]))) {
 				// Its a single-data, multiline data (data snapshot) ?
 
-				// Detect string data with \n and convert to <br>'s
-				$datos = $row[$attr[0]];
-
-				$datos = preg_replace ('/</', '&lt;', $datos);
-				$datos = preg_replace ('/>/', '&gt;', $datos);
-				$datos = preg_replace ('/\n/i','<br>',$datos);
-				$datos = preg_replace ('/\s/i','&nbsp;',$datos);
-				$datos_format = "<div id='result_div' style='width: 100%; height: 100%; overflow: scroll; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left'>";
-				$datos_format .= $datos;
-				$datos_format .= "</div>";
-
 				// I dont why, but using index (value) method, data is automatically converted to html entities ¿?
-				$data[] = $datos_format;
+				$data[] = html_print_result_div($row[$attr[0]]);
 			}
 			elseif ($is_web_content_string) {
 				//Fixed the goliat sends the strings from web
@@ -315,11 +304,9 @@ if ($get_module_detail) {
 				$data[] = io_safe_input($row[$attr[0]]);
 			}
 			else {
-				// Just a string of alphanumerical data... just do print
 				//Fixed the data from Selenium Plugin
 				if ($row[$attr[0]] != strip_tags($row[$attr[0]])) {
-
-					$data[] = io_safe_input($row[$attr[0]]);
+					$data[] = html_print_result_div(io_safe_input($row[$attr[0]]));
 				}
 				else if (is_numeric($row[$attr[0]]) && !modules_is_string_type($row['module_type']) ) {
 					switch($row['module_type']) {
@@ -334,7 +321,6 @@ if ($get_module_detail) {
 							}else{
 								$data[] = remove_right_zeros(number_format($row[$attr[0]], $config['graph_precision']));
 							}
-								
 							break;
 						default:
 							$data_macro = modules_get_unit_macro($row[$attr[0]],$unit);
@@ -355,15 +341,7 @@ if ($get_module_detail) {
 						if($data_macro){
 							$data[] = $data_macro;
 						} else {
-							$datos = $row[$attr[0]];
-							$datos = preg_replace ('/</', '&lt;', $datos);
-							$datos = preg_replace ('/>/', '&gt;', $datos);
-							$datos = preg_replace ('/\n/i','<br>',$datos);
-							$datos = preg_replace ('/\s/i','&nbsp;',$datos);
-							$datos_format = "<div id='result_div' style='width: 100%; height: 100%; overflow: scroll; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left'>";
-							$datos_format .= $datos;
-							$datos_format .= "</div>";
-							$data[] = $datos_format;
+							$data[] = html_print_result_div($row[$attr[0]]);
 						}
 					}
 				}

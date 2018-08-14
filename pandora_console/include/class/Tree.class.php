@@ -1685,7 +1685,8 @@ class Tree {
 			$module['snapshot'] = ui_get_snapshot_link(array(
 				'id_module' => $module['id'],
 				'interval' => $module['current_interval'],
-				'module_name' => $module['name']
+				'module_name' => $module['name'],
+				'id_node' => $module['serverID'] ? $module['serverID'] : 0,
 			), true);
 		}
 

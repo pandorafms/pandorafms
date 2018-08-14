@@ -52,10 +52,6 @@ if ($id_node > 0) {
 $row_module = modules_get_agentmodule($id);
 $row_state = db_get_row('tagente_estado', 'id_agente_modulo', $id);
 
-if ($id_node > 0) {
-	metaconsole_restore_db();
-}
-
 // Build the info
 $label = get_parameter ("label", io_safe_output($row_module['module_name']));
 $last_timestamp = get_parameter("timestamp", $row_state['timestamp']);

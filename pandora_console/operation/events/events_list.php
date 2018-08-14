@@ -740,13 +740,13 @@ echo "</div>";
 <?php
 
 $event_table = events_get_events_table($meta, $history);
+$event_lj = events_get_secondary_groups_left_join($event_table);
 
 if ($group_rep == 0) {
 	$order_sql = events_get_sql_order($sort_field, $sort_order, $group_rep);
 	$sql = "SELECT DISTINCT te.*, 1 event_rep,
 		(SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = te.id_agentmodule) AS module_name
-		FROM $event_table te LEFT JOIN tagent_secondary_group tasg
-			ON te.id_agente = tasg.id_agent
+		FROM $event_table te $event_lj
 		WHERE 1=1 " . $sql_post . "
 		$order_sql LIMIT ".$offset.",".$pagination;
 
@@ -816,8 +816,7 @@ if (($config['dbtype'] == 'oracle') && ($result !== false)) {
 if ($group_rep == 0) {
 	$sql = "SELECT COUNT(DISTINCT id_evento)
 			FROM $event_table te
-			LEFT JOIN tagent_secondary_group tasg
-				ON te.id_agente = tasg.id_agent
+			$event_lj
 			WHERE 1=1 $sql_post";
 	$total_events = (int) db_get_sql ($sql);
 }
@@ -827,8 +826,7 @@ elseif ($group_rep == 1) {
 }
 elseif ($group_rep == 2) {
 	$sql = "SELECT COUNT(*) FROM (select id_agente as total from $event_table te
-		LEFT JOIN tagent_secondary_group tasg
-			ON te.id_grupo = tasg.id_group
+		$event_lj
 		WHERE id_agente > 0
 					$sql_post GROUP BY id_agente ORDER BY id_agente ) AS t";
 	$total_events = (int) db_get_sql ($sql);

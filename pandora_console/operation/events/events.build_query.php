@@ -81,6 +81,7 @@ switch ($status) {
 $events_wi_cdata = db_get_all_rows_sql('SELECT id_evento,custom_data from tevento WHERE custom_data != ""');
 $count_events = 0;
 $events_wi_cdata_id = 'OR id_evento IN (';
+if ($events_wi_cdata === false) $events_wi_cdata = array();
 foreach ($events_wi_cdata as $key => $value) {
 	$needle = base64_decode($value['custom_data']);
 	if (($needle != "") && ($search != "")) {

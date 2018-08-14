@@ -2477,4 +2477,31 @@ function html_print_result_div ($text) {
 	return $enclose;
 }
 
+/**
+ * Print order arrows links
+ *
+ * @param array Base tags to build url
+ * @param string Order key to add to URL
+ * @param string Value to sort ascendent
+ * @param string Value to sort descendent
+ *
+ * @return string HTML code to display both arrows.
+ */
+function html_print_sort_arrows ($params, $order_tag, $up = 'up', $down = 'down') {
+	// Build the queries
+	$params[$order_tag] = $up;
+	$url_up = "index.php?" . http_build_query($params, '', '&amp;');
+	$params[$order_tag] = $down;
+	$url_down = "index.php?" . http_build_query($params, '', '&amp;');
+
+	// Build the links
+	return '&nbsp;' .
+		'<a href="' . $url_up . '">' .
+			html_print_image("images/sort_up.png", true) .
+		'</a>' .
+		'<a href="' . $url_down . '">' .
+			html_print_image("images/sort_down.png", true) .
+		'</a>'
+	;
+}
 ?>

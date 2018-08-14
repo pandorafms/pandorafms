@@ -29,7 +29,6 @@ enterprise_include_once('include/functions_events.php');
 check_login ();
 
 $sort_field = get_parameter("sort_field", "timestamp");
-
 $sort_order = get_parameter("sort", "down");
 
 $event_a = check_acl ($config['id_user'], 0, "ER");
@@ -743,11 +742,13 @@ echo "</div>";
 $event_table = events_get_events_table($meta, $history);
 
 if ($group_rep == 0) {
-	$sql = "SELECT DISTINCT te.*, 1 event_rep
+	$order_sql = events_get_sql_order($sort_field, $sort_order, $group_rep);
+	$sql = "SELECT DISTINCT te.*, 1 event_rep,
+		(SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = te.id_agentmodule) AS module_name
 		FROM $event_table te LEFT JOIN tagent_secondary_group tasg
 			ON te.id_agente = tasg.id_agent
 		WHERE 1=1 " . $sql_post . "
-		ORDER BY utimestamp DESC LIMIT ".$offset.",".$pagination;
+		$order_sql LIMIT ".$offset.",".$pagination;
 
 	//Extract the events by filter (or not) from db
 	$result = db_get_all_rows_sql ($sql);

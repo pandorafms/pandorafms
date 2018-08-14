@@ -4241,6 +4241,13 @@ function events_get_sql_order($sort_field = "timestamp", $sort = "DESC", $group_
 	return "ORDER BY $sort_field_translated $dir";
 }
 
+/**
+ * SQL left join of event queries to handle secondary groups
+ *
+ * @param string Table to see if is metaconsole or not
+ *
+ * @return string With the query.
+ */
 function events_get_secondary_groups_left_join($table) {
 	if ($table == 'tevento') {
 		return "LEFT JOIN tagent_secondary_group tasg ON te.id_agente = tasg.id_agent";

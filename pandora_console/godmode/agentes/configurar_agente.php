@@ -986,16 +986,16 @@ $edit_module = (bool) get_parameter ('edit_module');
 // GET DATA for MODULE UPDATE OR MODULE INSERT
 if ($update_module || $create_module) {
 	$id_grupo = agents_get_agent_group ($id_agente);
+	$all_groups = agents_get_all_groups_agent ($id_agente, $id_grupo);
 
-	$id_agent_module = (int) get_parameter ('id_agent_module');
-	
-	if (!check_acl ($config["id_user"], $id_grupo, "AW")) {
+	if (! check_acl_one_of_groups ($config["id_user"], $all_groups, "AW")) {
 		db_pandora_audit("ACL Violation",
 			"Trying to create a module without admin rights");
 		require ("general/noaccess.php");
 		exit;
 	}
-	
+
+	$id_agent_module = (int) get_parameter ('id_agent_module');
 	$id_module_type = (int) get_parameter ('id_module_type');
 	$name = (string) get_parameter ('name');
 	$description = (string) get_parameter ('description');

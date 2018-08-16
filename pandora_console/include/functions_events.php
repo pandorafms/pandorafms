@@ -145,9 +145,10 @@ function events_get_events_grouped($sql_post, $offset = 0,
 	switch ($config["dbtype"]) {
 		case "mysql":
 			db_process_sql ('SET group_concat_max_len = 9999999');
+			$event_lj = events_get_secondary_groups_left_join($table);
 			if ($total) {
 				$sql = "SELECT COUNT(*) FROM (SELECT *
-					FROM $table te LEFT JOIN tagent_secondary_group tasg ON te.id_agente = tasg.id_agent
+					FROM $table te $event_lj
 					WHERE 1=1 " . $sql_post . "
 					GROUP BY estado, evento, id_agente, id_agentmodule" . $groupby_extra . ") AS t";
 			}
@@ -163,7 +164,7 @@ function events_get_events_grouped($sql_post, $offset = 0,
 					(SELECT criticity FROM $table WHERE id_evento = MAX(te.id_evento)) AS criticity,
 					(SELECT ack_utimestamp FROM $table WHERE id_evento = MAX(te.id_evento)) AS ack_utimestamp,
 					(SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = te.id_agentmodule) AS module_name
-				FROM $table te LEFT JOIN tagent_secondary_group tasg ON te.id_agente = tasg.id_agent
+				FROM $table te $event_lj
 				WHERE 1=1 " . $sql_post . "
 				GROUP BY estado, evento, id_agente, id_agentmodule" . $groupby_extra;
 				$sql .= " " . events_get_sql_order($sort_field, $order, 2);
@@ -3323,13 +3324,13 @@ function events_get_events_grouped_by_agent($sql_post, $offset = 0,
 		$fields_extra = '';
 	}
 
+	$event_lj = events_get_secondary_groups_left_join($table);
 	if ($total) {
-		$sql = "SELECT COUNT(*) FROM (select id_agente from $table WHERE 1=1 
+		$sql = "SELECT COUNT(*) FROM (select id_agente from $table $event_lj WHERE 1=1 
 				$sql_post GROUP BY id_agente, event_type$groupby_extra ORDER BY id_agente ) AS t";
 	}
 	else {
-		$sql = "select id_agente, count(*) as total$fields_extra from $table te LEFT JOIN tagent_secondary_group tasg
-				ON te.id_agente = tasg.id_agent
+		$sql = "select id_agente, count(*) as total$fields_extra from $table te $event_lj
 			WHERE id_agente > 0 $sql_post GROUP BY id_agente$groupby_extra ORDER BY id_agente LIMIT $offset,$pagination";
 	}
 	
@@ -3343,7 +3344,7 @@ function events_get_events_grouped_by_agent($sql_post, $offset = 0,
 		foreach ($events as $event) {
 			
 			if ($meta) {
-				$sql = "select event_type from $table 
+				$sql = "select event_type from $table te $event_lj
 								WHERE agent_name = '".$event['agent_name']."' $sql_post ORDER BY utimestamp DESC ";
 				$resultado = db_get_row_sql($sql);
 				
@@ -3354,9 +3355,7 @@ function events_get_events_grouped_by_agent($sql_post, $offset = 0,
 									'event_type' => $resultado['event_type']);
 			}
 			else {
-				$sql = "SELECT event_type FROM $table te
-					LEFT JOIN tagent_secondary_group tasg
-						ON te.id_agente = tasg.id_agent
+				$sql = "SELECT event_type FROM $table te $event_lj
 					WHERE id_agente = ".$event['id_agente']." $sql_post ORDER BY utimestamp DESC ";
 				$resultado = db_get_row_sql($sql);
 				
@@ -4242,5 +4241,19 @@ function events_get_sql_order($sort_field = "timestamp", $sort = "DESC", $group_
 	return "ORDER BY $sort_field_translated $dir";
 }
 
+/**
+ * SQL left join of event queries to handle secondary groups
+ *
+ * @param string Table to see if is metaconsole or not
+ *
+ * @return string With the query.
+ */
+function events_get_secondary_groups_left_join($table) {
+	if ($table == 'tevento') {
+		return "LEFT JOIN tagent_secondary_group tasg ON te.id_agente = tasg.id_agent";
+	}
+	return "LEFT JOIN tmetaconsole_agent_secondary_group tasg
+		ON te.id_agente = tasg.id_tagente AND te.server_id = tasg.id_tmetaconsole_setup";
+}
 
 ?>

@@ -866,7 +866,6 @@ else {
 		if ($allow_action) {
 			
 			echo '<div style="width:' . $table->width . ';" class="action-buttons">';
-			//~ if (!$readonly && tags_check_acl ($config["id_user"], 0, "EW", $event['clean_tags']) == 1) {
 			if (!$readonly && $show_validate_button) {
 				html_print_button(__('In progress selected'), 'validate_button', false, 'validate_selected(2);', 'class="sub ok"');
 				echo "  ";
@@ -884,7 +883,6 @@ else {
 				</script>
 				<?php
 			}
-			//~ if (!$readonly && tags_check_acl ($config["id_user"], 0,"EM", $event['clean_tags']) == 1) {
 			if (!$readonly && ($show_delete_button)) {
 				html_print_button(__('Delete selected'), 'delete_button', false, 'delete_selected();', 'class="sub delete"');
 				?>

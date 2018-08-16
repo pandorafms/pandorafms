@@ -1046,7 +1046,6 @@ class Tree {
 
 							// Modules SQL
 							if ($item_for_count === false) {
-								html_debug("traza", true);
 								//FIXME This group ACL should be the same in all modules view
 								$group_acl = " AND (ta.id_grupo IN ($user_groups_str) OR tasg.id_group IN ($user_groups_str))";
 								$sql = "SELECT $columns

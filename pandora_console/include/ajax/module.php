@@ -306,7 +306,7 @@ if ($get_module_detail) {
 			else {
 				//Fixed the data from Selenium Plugin
 				if ($row[$attr[0]] != strip_tags($row[$attr[0]])) {
-					$data[] = html_print_result_div(io_safe_input($row[$attr[0]]));
+					$data[] = html_print_result_div($row[$attr[0]]);
 				}
 				else if (is_numeric($row[$attr[0]]) && !modules_is_string_type($row['module_type']) ) {
 					switch($row['module_type']) {

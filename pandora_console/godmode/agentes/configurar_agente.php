@@ -800,10 +800,9 @@ if ($update_agent) { // if modified some agent paramenter
 		ui_print_error_message(__('No agent alias specified'));
 		//If there is an agent with the same name, but a different ID
 	}
-	/*elseif (agents_get_agent_id ($nombre_agente) > 0 &&
-		agents_get_agent_id ($nombre_agente) != $id_agente) {
-		ui_print_error_message(__('There is already an agent in the database with this name'));
-	}*/
+	if ($grupo <= 0) {
+		ui_print_error_message(__('The group id %d is incorrect.', $grupo));
+	}
 	else {
 		//If different IP is specified than previous, add the IP
 		if ($direccion_agente != '' &&

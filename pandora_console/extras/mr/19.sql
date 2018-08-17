@@ -57,8 +57,10 @@ CREATE TABLE IF NOT EXISTS `tlayout_template_data` (
 -- Rename column is_secondary to no_hierarchy in `tusuario _perfil`
 -- ---------------------------------------------------------------------
 ALTER TABLE `tusuario_perfil` ADD COLUMN `no_hierarchy` tinyint(1) NOT NULL DEFAULT 0;
-UPDATE `tusuario_perfil` SET `is_secondary` = `no_hierarchy`;
+UPDATE `tusuario_perfil` SET `no_hierarchy` = `is_secondary`;
 ALTER TABLE `tusuario_perfil` DROP COLUMN `is_secondary`;
+
+UPDATE `talert_commands` SET name='Monitoring&#x20;Event' WHERE name='Pandora&#x20;FMS&#x20;Event';
 
 -- -----------------------------------------------------
 -- Table `tgis_map_layer_groups`

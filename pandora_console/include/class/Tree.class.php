@@ -1046,16 +1046,20 @@ class Tree {
 
 							// Modules SQL
 							if ($item_for_count === false) {
+								//FIXME This group ACL should be the same in all modules view
+								$group_acl = " AND (ta.id_grupo IN ($user_groups_str) OR tasg.id_group IN ($user_groups_str))";
 								$sql = "SELECT $columns
 										FROM tagente_modulo tam
 										INNER JOIN tagente ta
 											ON ta.disabled = 0
 												AND tam.id_agente = ta.id_agente
-												$group_acl
+										LEFT JOIN tagent_secondary_group tasg
+											ON tasg.id_agent = ta.id_agente
 												$agent_search_filter
 												$agent_status_filter
 										$module_status_join
 										WHERE tam.disabled = 0
+											$group_acl
 											$module_search_filter
 										GROUP BY tam.nombre
 										ORDER BY $order_fields";
@@ -1634,20 +1638,15 @@ class Tree {
 		// Link to the Module graph
 
 		// ACL
-		$group_id = (int) modules_get_agent_group($module['id']);
+		$all_groups = modules_get_agent_groups($module['id']);
 		$acl_graphs = false;
 		$module["showGraphs"] = 0;
 
 		// Avoid the check on the metaconsole. Too slow to show/hide an icon depending on the permissions
 		if (!empty($group_id) && !is_metaconsole()) {
-			if ($this->strictACL) {
-				$acl_graphs = tags_check_acl_by_module($module['id'], $config['id_user'], 'RR') === true;
-			}
-			else {
-				$acl_graphs = check_acl($config['id_user'], $group_id, "RR");
-			}
+			$acl_graphs = check_acl_one_of_groups($config['id_user'], $all_groups, "RR");
 		}
-		else if (!empty($group_id)) {
+		else if (!empty($all_groups)) {
 			$acl_graphs = true;
 		}
 
@@ -1685,7 +1684,8 @@ class Tree {
 			$module['snapshot'] = ui_get_snapshot_link(array(
 				'id_module' => $module['id'],
 				'interval' => $module['current_interval'],
-				'module_name' => $module['name']
+				'module_name' => $module['name'],
+				'id_node' => $module['serverID'] ? $module['serverID'] : 0,
 			), true);
 		}
 

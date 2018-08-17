@@ -145,9 +145,10 @@ function events_get_events_grouped($sql_post, $offset = 0,
 	switch ($config["dbtype"]) {
 		case "mysql":
 			db_process_sql ('SET group_concat_max_len = 9999999');
+			$event_lj = events_get_secondary_groups_left_join($table);
 			if ($total) {
 				$sql = "SELECT COUNT(*) FROM (SELECT *
-					FROM $table te LEFT JOIN tagent_secondary_group tasg ON te.id_agente = tasg.id_agent
+					FROM $table te $event_lj
 					WHERE 1=1 " . $sql_post . "
 					GROUP BY estado, evento, id_agente, id_agentmodule" . $groupby_extra . ") AS t";
 			}
@@ -163,139 +164,10 @@ function events_get_events_grouped($sql_post, $offset = 0,
 					(SELECT criticity FROM $table WHERE id_evento = MAX(te.id_evento)) AS criticity,
 					(SELECT ack_utimestamp FROM $table WHERE id_evento = MAX(te.id_evento)) AS ack_utimestamp,
 					(SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = te.id_agentmodule) AS module_name
-				FROM $table te LEFT JOIN tagent_secondary_group tasg ON te.id_agente = tasg.id_agent
+				FROM $table te $event_lj
 				WHERE 1=1 " . $sql_post . "
-				GROUP BY estado, evento, id_agente, id_agentmodule" . $groupby_extra . "
-				ORDER BY ";
-
-				if (!empty($sort_field)) {
-					switch ($sort_field) {
-						case 'event_id':
-							if ($order=='up')
-								$sql .= "id_evento" . " ASC";
-							if ($order=='down')
-								$sql .= "id_evento" . " DESC";
-							break;
-						case 'event_name':
-							if ($order=='up')
-								$sql .= "evento" . " ASC";
-							if ($order=='down')
-								$sql .= "evento" . " DESC";
-							break;
-						case 'event_id':
-							if ($order=='up')
-								$sql .= "id_evento" . " ASC";
-							if ($order=='down')
-								$sql .= "id_evento" . " DESC";
-							break;
-						case 'status':
-							if ($order=='up')
-								$sql .= "estado" . " ASC";
-							if ($order=='down')
-								$sql .= "estado" . " DESC";
-							break;
-						case 'agent_id':
-							if ($order=='up')
-								$sql .= "id_agente" . " ASC";
-							if ($order=='down')
-								$sql .= "id_agente" . " DESC";
-							break;
-						case 'timestamp':
-							if ($order=='up')
-								$sql .= "timestamp_rep" . " ASC";
-							if ($order=='down')
-								$sql .= "timestamp_rep" . " DESC";
-							break;
-						case 'user_id':
-							if ($order=='up')
-								$sql .= "id_usuario" . " ASC";
-							if ($order=='down')
-								$sql .= "id_usuario" . " DESC";
-							break;
-						case 'owner':
-							if ($order=='up')
-								$sql .= "owner_user" . " ASC";
-							if ($order=='down')
-								$sql .= "owner_user" . " DESC";
-							break;
-						case 'group_id':
-							if ($order=='up')
-								$sql .= "id_grupo" . " ASC";
-							if ($order=='down')
-								$sql .= "id_grupo" . " DESC";
-							break;
-						case 'module_name':
-							if ($order=='up')
-								$sql .= "module_name" . " ASC";
-							if ($order=='down')
-								$sql .= "module_name" . " DESC";
-							break;		
-						case 'event_type':
-							if ($order=='up')
-								$sql .= "event_type" . " ASC";
-							if ($order=='down')
-								$sql .= "event_type" . " DESC";
-							break;
-						case 'alert_id':
-							if ($order=='up')
-								$sql .= "id_alert_am" . " ASC";
-							if ($order=='down')
-								$sql .= "id_alert_am" . " DESC";
-							break;	
-						case 'criticity':
-							if ($order=='up')
-								$sql .= "criticity" . " ASC";
-							if ($order=='down')
-								$sql .= "criticity" . " DESC";
-							break;	
-						case 'comment':
-							if ($order=='up')
-								$sql .= "user_comment" . " ASC";
-							if ($order=='down')
-								$sql .= "user_comment" . " DESC";
-							break;	
-						case 'tags':
-							if ($order=='up')
-								$sql .= "tags" . " ASC";
-							if ($order=='down')
-								$sql .= "tags" . " DESC";
-							break;		
-						case 'source':
-							if ($order=='up')
-								$sql .= "source" . " ASC";
-							if ($order=='down')
-								$sql .= "source" . " DESC";
-							break;	
-						case 'extra_id':
-							if ($order=='up')
-								$sql .= "id_extra" . " ASC";
-							if ($order=='down')
-								$sql .= "id_extra" . " DESC";
-							break;				
-						case 'ack_timestamp':
-							if ($order=='up')
-								$sql .= "ack_utimestamp" . " ASC";
-							if ($order=='down')
-								$sql .= "ack_utimestamp" . " DESC";
-							break;		
-						case 'data':
-							if ($order=='up')
-								$sql .= "data" . " ASC";
-							if ($order=='down')
-								$sql .= "data" . " DESC";
-							break;
-						case 'module_status':
-							if ($order=='up')
-								$sql .= "module_status" . " ASC";
-							if ($order=='down')
-								$sql .= "module_status" . " DESC";
-							break;
-						default:
-							$sql .= "timestamp_rep" . " DESC";
-					}
-				}
-					
-
+				GROUP BY estado, evento, id_agente, id_agentmodule" . $groupby_extra;
+				$sql .= " " . events_get_sql_order($sort_field, $order, 2);
 				$sql .= " LIMIT " . $offset . "," . $pagination;
 
 			}
@@ -3452,13 +3324,13 @@ function events_get_events_grouped_by_agent($sql_post, $offset = 0,
 		$fields_extra = '';
 	}
 
+	$event_lj = events_get_secondary_groups_left_join($table);
 	if ($total) {
-		$sql = "SELECT COUNT(*) FROM (select id_agente from $table WHERE 1=1 
+		$sql = "SELECT COUNT(*) FROM (select id_agente from $table $event_lj WHERE 1=1 
 				$sql_post GROUP BY id_agente, event_type$groupby_extra ORDER BY id_agente ) AS t";
 	}
 	else {
-		$sql = "select id_agente, count(*) as total$fields_extra from $table te LEFT JOIN tagent_secondary_group tasg
-				ON te.id_agente = tasg.id_agent
+		$sql = "select id_agente, count(*) as total$fields_extra from $table te $event_lj
 			WHERE id_agente > 0 $sql_post GROUP BY id_agente$groupby_extra ORDER BY id_agente LIMIT $offset,$pagination";
 	}
 	
@@ -3472,7 +3344,7 @@ function events_get_events_grouped_by_agent($sql_post, $offset = 0,
 		foreach ($events as $event) {
 			
 			if ($meta) {
-				$sql = "select event_type from $table 
+				$sql = "select event_type from $table te $event_lj
 								WHERE agent_name = '".$event['agent_name']."' $sql_post ORDER BY utimestamp DESC ";
 				$resultado = db_get_row_sql($sql);
 				
@@ -3483,9 +3355,7 @@ function events_get_events_grouped_by_agent($sql_post, $offset = 0,
 									'event_type' => $resultado['event_type']);
 			}
 			else {
-				$sql = "SELECT event_type FROM $table te
-					LEFT JOIN tagent_secondary_group tasg
-						ON te.id_agente = tasg.id_agent
+				$sql = "SELECT event_type FROM $table te $event_lj
 					WHERE id_agente = ".$event['id_agente']." $sql_post ORDER BY utimestamp DESC ";
 				$resultado = db_get_row_sql($sql);
 				
@@ -4328,7 +4198,62 @@ function events_list_events_grouped_agents($sql) {
 	return html_print_table($table,true);
 }
 
+function events_get_sql_order($sort_field = "timestamp", $sort = "DESC", $group_rep = 0) {
+	$sort_field_translated = $sort_field;
+	switch ($sort_field) {
+		case 'event_id':
+			$sort_field_translated = "id_evento";
+			break;
+		case 'event_name':
+			$sort_field_translated = "evento";
+			break;
+		case 'status':
+			$sort_field_translated = "estado";
+			break;
+		case 'agent_id':
+			$sort_field_translated = "id_agente";
+			break;
+		case 'timestamp':
+			$sort_field_translated = ($group_rep == 0) ? "timestamp" : "timestamp_rep";
+			break;
+		case 'user_id':
+			$sort_field_translated = "id_usuario";
+			break;
+		case 'owner':
+			$sort_field_translated = "owner_user";
+			break;
+		case 'group_id':
+			$sort_field_translated = "id_grupo";
+			break;
+		case 'alert_id':
+			$sort_field_translated = "id_alert_am";
+			break;
+		case 'comment':
+			$sort_field_translated = "user_comment";
+			break;
+		case 'extra_id':
+			$sort_field_translated = "id_extra";
+			break;
+	}
 
+	$dir = ($sort == "up") ? "ASC" : "DESC";
 
+	return "ORDER BY $sort_field_translated $dir";
+}
+
+/**
+ * SQL left join of event queries to handle secondary groups
+ *
+ * @param string Table to see if is metaconsole or not
+ *
+ * @return string With the query.
+ */
+function events_get_secondary_groups_left_join($table) {
+	if ($table == 'tevento') {
+		return "LEFT JOIN tagent_secondary_group tasg ON te.id_agente = tasg.id_agent";
+	}
+	return "LEFT JOIN tmetaconsole_agent_secondary_group tasg
+		ON te.id_agente = tasg.id_tagente AND te.server_id = tasg.id_tmetaconsole_setup";
+}
 
 ?>

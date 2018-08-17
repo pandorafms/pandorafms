@@ -247,7 +247,8 @@ function profile_print_profile_table ($id) {
 	$tags = tags_get_all_tags();
 	$data["tags"] = html_print_select($tags, 'assign_tags[]', '', '', __('Any'), '', true, true);
 
-	$data["hierarchy"] = html_print_checkbox ('no_hierarchy', 1, false, true);
+	$data["hierarchy"] = html_print_checkbox ('no_hierarchy', 1, false, true) .
+		ui_print_help_icon("no_hierarchy", true);
 
 	$data["actions"] = html_print_input_image ('add', 'images/add.png', 1, '', true);
 	$data["actions"] .= html_print_input_hidden ('id', $id, true);

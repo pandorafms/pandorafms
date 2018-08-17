@@ -53,7 +53,8 @@ foreach ($layer_ids as $layer_id) {
 		"layer_name" => $trimmed_name,
 		"layer_visible" => ((int) $layers[$layer_id]["visible"] === 1),
 		"layer_group" => (int) $layers[$layer_id]["agents_from_group"],
-		"layer_agent_list" => $layers[$layer_id]["agents"]
+		"layer_agent_list" => $layers[$layer_id]["agents"],
+		"layer_group_list" => $layers[$layer_id]["groups"]
 	);
 }
 
@@ -469,8 +470,44 @@ $table->data[1][1] .= '</td>
 					<table class="databox" border="0" cellpadding="4" cellspacing="4" id="list_agents">
 					</table>
 				</td>
+			</tr>';
+
+// Group items
+$group_select = html_print_select_groups($config["id_user"], "AR", false, "layer_group_id", "", "", "", 0, true);
+$params = array();
+$params['return'] = true;
+$params['show_helptip'] = true;
+$params['print_hidden_input_idagent'] = true;
+$params['hidden_input_idagent_id'] = 'hidden-agent_id_for_data';
+$params['hidden_input_idagent_name'] = 'agent_id_for_data';
+$params['input_name'] = 'agent_alias_for_data';
+$params['value'] = '';
+$params['javascript_function_action_after_select'] = 'toggleAddGroupBtn';
+$params['selectbox_group'] = 'layer_group_id'; // Filter by group
+$agent_for_group_input = ui_print_agent_autocomplete_input($params);
+$add_group_btn = html_print_button(__('Add'), 'add_group', true, '', 'class="sub add"', true);
+
+$table->data[1][1] .= '<tr><td colspan="4"><hr /></td></tr>
+			<tr>
+				<td>' . __('Group') . ':</td>
+				<td colspan="3">' . $group_select . '</td>
 			</tr>
 			<tr>
+				<td>' . __('Use the data of this agent') . ':</td>
+				<td colspan="3">' . $agent_for_group_input . '</td>
+			</tr>
+			<tr>
+				<td colspan="4" align="right">' . $add_group_btn . '</td>
+			</tr>
+			<tr>
+				<td colspan="4">
+					<h4>' . __('List of groups to be shown in the layer') . '</h4>
+					<table class="databox" border="0" cellpadding="4" cellspacing="4" id="list_groups">
+					</table>
+				</td>
+			</tr>';
+
+$table->data[1][1] .= '<tr>
 				<td align="right" colspan="4">' . 
 					html_print_button(__('Save Layer'), 'save_layer', false, 'javascript:saveNewLayer();', 'class="sub wand"', true) . '
 					' . html_print_input_hidden('current_edit_layer_id', '', true) . '
@@ -549,6 +586,54 @@ function addAgentClick (event) {
 	$("#button-add_agent").prop("disabled", true);
 }
 
+function toggleAddGroupBtn () {
+	var groupId = Number.parseInt($("select#layer_group_id").val());
+	var agentId = Number.parseInt($("input#hidden-agent_id_for_data").val());
+	var agentAlias = $("input#text-agent_alias_for_data").val();
+
+	var enabled = (
+		!Number.isNaN(groupId)
+		&& groupId > 0
+		&& !Number.isNaN(agentId)
+		&& agentId > 0
+		&& agentAlias.length > 0
+	);
+	
+	$("#button-add_group").prop("disabled", !enabled);
+}
+
+function addGroupClick (event) {
+	var $layerFormGroupIdInput = $("select#layer_group_id");
+	var $layerFormAgentIdInput = $("input#hidden-agent_id_for_data");
+	var $layerFormAgentAliasInput = $("input#text-agent_alias_for_data");
+	
+	var layerId = Number.parseInt($("input#hidden-current_edit_layer_id").val());
+	var groupId = Number.parseInt($layerFormGroupIdInput.val());
+	var groupName = $layerFormGroupIdInput.find(":selected").text();
+	var agentId = Number.parseInt($layerFormAgentIdInput.val());
+	var agentAlias = $layerFormAgentAliasInput.val();
+
+	var valid = (
+		!Number.isNaN(groupId)
+		&& groupId > 0
+		&& groupName.length > 0
+		&& !Number.isNaN(agentId)
+		&& agentId > 0
+		&& agentAlias.length > 0
+	);
+	
+	if (!valid) return;
+	
+	addGroupRow(layerId, groupId, groupName, agentId, agentAlias);
+	
+	// Clear inputs
+	// $layerFormGroupIdInput.val(0);
+	$layerFormAgentIdInput.val("");
+	$layerFormAgentAliasInput.val("");
+
+	$("#button-add_group").prop("disabled", true);
+}
+
 function moveLayerRowUpOnClick (event) {
 	var $row = $(event.currentTarget).parent().parent();
 	$row.insertBefore($row.prev());
@@ -602,13 +687,27 @@ function getLayerData (layerId) {
 			"alias": $(this).val()
 		};
 	}).get();
+	var layerGroups = $layerRow.find("input.layer_group_id").map(function () {
+		var groupId = $(this).val();
+		var groupName = $(this).siblings("input.layer_group_name[data-group-id='" + groupId + "']").val();
+		var agentId = $(this).siblings("input.layer_agent_id_for_data[data-group-id='" + groupId + "']").val();
+		var agentAlias = $(this).siblings("input.layer_agent_alias_for_data[data-group-id='" + groupId + "']").val();
+		
+		return {
+			"id": groupId,
+			"name": groupName,
+			"agentId": agentId,
+			"agentAlias": agentAlias
+		};
+	}).get();
 
 	return {
 		id: layerId,
 		name: layerName,
 		visible: layerVisible,
 		agentsFromGroup: layerAgentsFromGroup,
-		agents: layerAgents
+		agents: layerAgents,
+		groups: layerGroups
 	}
 }
 
@@ -618,9 +717,10 @@ function setLayerEditorData (data) {
 	data = {
 		id: data.id || 0,
 		name: data.name || "",
-		visible: data.visible != null ? data.visible : true,
+		visible: data.visible != null ? !!data.visible : true,
 		agentsFromGroup: data.agentsFromGroup || -1,
-		agents: data.agents || []
+		agents: data.agents || [],
+		groups: data.groups || []
 	}
 
 	var $layerFormIdInput = $("input#hidden-current_edit_layer_id");
@@ -630,6 +730,7 @@ function setLayerEditorData (data) {
 	var $layerFormAgentInput = $("input#text-agent_alias");
 	var $layerFormAgentButton = $("input#button-add_agent");
 	var $layerFormAgentsListItems = $("tr.agents_list_item");
+	var $layerFormGroupsListItems = $("tr.groups_list_item");
 
 	$layerFormIdInput.val(data.id);
 	$layerFormNameInput.val(data.name);
@@ -638,10 +739,16 @@ function setLayerEditorData (data) {
 	$layerFormAgentInput.val("");
 	$layerFormAgentButton.prop("disabled", true);
 	$layerFormAgentsListItems.remove();
+	$layerFormGroupsListItems.remove();
 
 	var $tableAgents = $("table#list_agents");
 	data.agents.forEach(function (agent) {
 		addAgentRow(data.id, agent.id, agent.alias);
+	});
+
+	var $tableGroups = $("table#list_groups");
+	data.groups.forEach(function (group) {
+		addGroupRow(data.id, group.id, group.name, group.agentId, group.agentAlias);
 	});
 }
 
@@ -654,7 +761,8 @@ function saveNewLayer () {
 	var $layerFormVisibleCheckbox = $("input#checkbox-layer_visible_form");
 	var $layerFormAgentsFromGroupSelect = $("select#layer_group_form");
 	var $layerFormAgentsListItems = $("tr.agents_list_item > td > span.agent_alias");
-	var newLayerId = "new_" . $("tr.layer_row").length + 1;
+	var $layerFormGroupsListItems = $("tr.groups_list_item");
+	var newLayerId = "new_" + ($("tr.layer_row").length + 1);
 
 	addLayerRow(newLayerId, {
 		id: newLayerId,
@@ -665,6 +773,14 @@ function saveNewLayer () {
 			return {
 				"id": $(this).data("agent-id"),
 				"alias": $(this).text()
+			};
+		}).get(),
+		groups: $layerFormGroupsListItems.map(function () {
+			return {
+				"id": $(this).data("group-id"),
+				"name": $(this).data("group-name"),
+				"agentId": $(this).data("agent-id"),
+				"agentAlias": $(this).data("agent-alias")
 			};
 		}).get()
 	});
@@ -681,7 +797,6 @@ function bindLayerEditorEvents (layerId) {
 	var $layerFormNameInput = $("input#text-layer_name_form");
 	var $layerFormVisibleCheckbox = $("input#checkbox-layer_visible_form");
 	var $layerFormAgentsFromGroupSelect = $("select#layer_group_form");
-	var $layerFormAgentButton = $("input#button-add_agent");
 
 	var $layerRow = $("tr#layer_row_" + layerId);
 
@@ -700,27 +815,24 @@ function bindLayerEditorEvents (layerId) {
 		var group = event.currentTarget.value;
 		$layerRow.find("input.layer_agents_from_group").val(group);
 	});
-	$layerFormAgentButton.bind("click", addAgentClick);
 }
 
 function unbindLayerEditorEvents () {
 	var $layerFormNameInput = $("input#text-layer_name_form");
 	var $layerFormVisibleCheckbox = $("input#checkbox-layer_visible_form");
 	var $layerFormAgentsFromGroupSelect = $("select#layer_group_form");
-	var $layerFormAgentButton = $("input#button-add_agent");
 
 	$layerFormNameInput.unbind("change");
 	$layerFormVisibleCheckbox.unbind("click");
 	$layerFormAgentsFromGroupSelect.unbind("change");
-	$layerFormAgentButton.unbind("click");
 }
 
-function getAgentRow (layerId, agentId, angentAlias) {
+function getAgentRow (layerId, agentId, agentAlias) {
 	var $row = $("<tr class=\"agents_list_item\" />");
 	var $nameCol = $("<td />");
 	var $deleteCol = $("<td />");
 
-	var $agentName = $("<span class=\"agent_alias\" data-agent-id=\"" + agentId + "\">" + angentAlias + "</span>");
+	var $agentAlias = $("<span class=\"agent_alias\" data-agent-id=\"" + agentId + "\">" + agentAlias + "</span>");
 	var $removeBtn = $('<a class="delete_row" href="javascript:;"><?php echo html_print_image("images/cross.png", true) ?></a>');
 
 	$removeBtn.click(function (event) {
@@ -734,7 +846,7 @@ function getAgentRow (layerId, agentId, angentAlias) {
 		$agentListItemRow.remove();
 	});
 
-	$nameCol.append($agentName);
+	$nameCol.append($agentAlias);
 	$deleteCol.append($removeBtn);
 
 	$row.append($nameCol).append($deleteCol);
@@ -764,6 +876,80 @@ function getLayerAgentAliasInput (layerId, agentId, agentAlias) {
 	return $("<input class=\"layer_agent_alias\" type=\"hidden\" data-agent-id=\"" + agentId + "\" name=\"layers[" + layerId + "][agents][" + agentId + "][alias]\" value=\"" + agentAlias + "\">");
 }
 
+function getGroupRow (layerId, groupId, groupName, agentId, agentAlias) {
+	var $row = $("<tr class=\"groups_list_item\" data-group-id=\"" + groupId + "\" data-group-name=\"" + groupName + "\" data-agent-id=\"" + agentId + "\" data-agent-alias=\"" + agentAlias + "\" />");
+	var $nameCol = $("<td />");
+	var $deleteCol = $("<td />");
+
+	var $groupName = $("<span class=\"group_desc\">"
+		+ groupName
+		+ " ("
+		+ "<?php echo __('Using data from'); ?> "
+		+ "<i>" + agentAlias + "</i>"
+		+ ")"
+		+ "</span>");
+	var $removeBtn = $('<a class="delete_row" href="javascript:;"><?php echo html_print_image("images/cross.png", true) ?></a>');
+
+	$removeBtn.click(function (event) {
+		var $layerRow = $("tr#layer_row_" + layerId);
+
+		if ($layerRow.length === 0) return;
+
+		var $groupListItemRow = $(event.currentTarget).parent().parent();
+		$layerRow.find("input.layer_group_id[data-group-id='" + groupId + "']").remove();
+		$layerRow.find("input.layer_group_name[data-group-id='" + groupId + "']").remove();
+		$layerRow.find("input.layer_agent_id_for_data[data-group-id='" + groupId + "']").remove();
+		$layerRow.find("input.layer_agent_alias_for_data[data-group-id='" + groupId + "']").remove();
+		$groupListItemRow.remove();
+	});
+
+	$nameCol.append($groupName);
+	$deleteCol.append($removeBtn);
+
+	$row.append($nameCol).append($deleteCol);
+
+	return $row;
+}
+
+function addGroupRow (layerId, groupId, groupName, agentId, agentAlias) {
+	if (
+		groupId == null ||
+		groupId == 0 ||
+		groupName.length === 0 ||
+		agentId == null ||
+		agentId == 0 ||
+		agentAlias.length === 0
+	) return;
+
+	var $layerRow = $("tr#layer_row_" + layerId);
+	if ($layerRow && $layerRow.find("input.layer_group_id[value='" + groupId + "']").length === 0) {
+		$layerRow
+			.find("td:first-child")
+				.append(getLayerGroupIdInput(layerId, groupId))
+				.append(getLayerGroupNameInput(layerId, groupId, groupName))
+				.append(getLayerAgentIdForDataInput(layerId, groupId, agentId))
+				.append(getLayerAgentAliasForDataInput(layerId, groupId, agentAlias));
+	}
+
+	$("table#list_groups").append(getGroupRow(layerId, groupId, groupName, agentId, agentAlias));
+}
+
+function getLayerGroupIdInput (layerId, groupId) {
+	return $("<input class=\"layer_group_id\" type=\"hidden\" data-group-id=\"" + groupId + "\" name=\"layers[" + layerId + "][groups][" + groupId + "][id]\" value=\"" + groupId + "\">");
+}
+
+function getLayerGroupNameInput (layerId, groupId, groupName) {
+	return $("<input class=\"layer_group_name\" type=\"hidden\" data-group-id=\"" + groupId + "\" name=\"layers[" + layerId + "][groups][" + groupId + "][name]\" value=\"" + groupName + "\">");
+}
+
+function getLayerAgentIdForDataInput (layerId, groupId, agentId) {
+	return $("<input class=\"layer_agent_id_for_data\" type=\"hidden\" data-group-id=\"" + groupId + "\" name=\"layers[" + layerId + "][groups][" + groupId + "][agent_id]\" value=\"" + agentId + "\">");
+}
+
+function getLayerAgentAliasForDataInput (layerId, groupId, agentAlias) {
+	return $("<input class=\"layer_agent_alias_for_data\" type=\"hidden\" data-group-id=\"" + groupId + "\" name=\"layers[" + layerId + "][groups][" + groupId + "][agent_alias]\" value=\"" + agentAlias + "\">");
+}
+
 function getLayerRow (layerId, layerData) {
 	var $row = $("<tr id=\"layer_row_" + layerId + "\" class=\"layer_row\" />");
 	var $nameCol = $("<td />");
@@ -773,7 +959,7 @@ function getLayerRow (layerId, layerData) {
 
 	var $layerIdInput = $("<input class=\"layer_id\" type=\"hidden\" name=\"layer_ids[]\" value=\"" + layerId + "\">");
 	var $layerNameInput = $("<input class=\"layer_name\" type=\"hidden\" name=\"layers[" + layerId + "][name]\" value=\"" + layerData.name + "\">");
-	var $layerVisibleInput = $("<input class=\"layer_visible\" type=\"hidden\" name=\"layers[" + layerId + "][visible]\" value=\"" + layerData.visible + "\">");
+	var $layerVisibleInput = $("<input class=\"layer_visible\" type=\"hidden\" name=\"layers[" + layerId + "][visible]\" value=\"" + (layerData.visible ? 1 : 0) + "\">");
 	var $layerAgentsFromGroupInput = $("<input class=\"layer_agents_from_group\" type=\"hidden\" name=\"layers[" + layerId + "][agents_from_group]\" value=\"" + layerData.agentsFromGroup + "\">");
 
 	var $layerName = $("<span class=\"layer_name\">" + layerData.name + "</span>");
@@ -798,6 +984,15 @@ function getLayerRow (layerId, layerData) {
 		layerData.agents.forEach(function (agent) {
 			$nameCol.append(getLayerAgentIdInput(layerId, agent.id));
 			$nameCol.append(getLayerAgentAliasInput(layerId, agent.id, agent.alias));
+		});
+	}
+
+	if (layerData.groups && layerData.groups.length > 0) {
+		layerData.groups.forEach(function (group) {
+			$nameCol.append(getLayerGroupIdInput(layerId, group.id));
+			$nameCol.append(getLayerGroupNameInput(layerId, group.id, group.name));
+			$nameCol.append(getLayerAgentIdForDataInput(layerId, group.id, group.agentId));
+			$nameCol.append(getLayerAgentAliasForDataInput(layerId, group.id, group.agentAlias));
 		});
 	}
 
@@ -853,8 +1048,18 @@ function onFormSubmit (event) {
 	$('#map_connection_list').val(connectionMaps.toString());
 }
 
+function onLayerGroupIdChange (event) {
+	// Clear agent inputs
+	$("input#hidden-agent_id_for_data").val("");
+	$("input#text-agent_alias_for_data").val("");
+	toggleAddGroupBtn();
+}
+
 // Bind events
 $("form#form_setup").submit(onFormSubmit);
+$("input#button-add_agent").click(addAgentClick);
+$("select#layer_group_id").change(onLayerGroupIdChange);
+$("input#button-add_group").click(addGroupClick);
 
 // Populate layer list
 var layers = <?php echo json_encode($layer_list); ?>;
@@ -862,9 +1067,14 @@ layers.forEach(function (layer) {
 	$("table#list_layers").append(
 		getLayerRow(layer["id"], {
 			name: layer["layer_name"],
-			visible: layer["layer_visible"],
+			visible: Number.parseInt(layer["layer_visible"]),
 			agentsFromGroup: layer["layer_group"],
-			agents: layer["layer_agent_list"]
+			agents: layer["layer_agent_list"],
+			groups: (layer["layer_group_list"] || []).map(function (group) {
+				group.agentId = group["agent_id"];
+				group.agentAlias = group["agent_alias"];
+				return group;
+			})
 		})
 	);
 });

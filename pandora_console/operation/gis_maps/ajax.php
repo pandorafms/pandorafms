@@ -386,6 +386,123 @@ switch ($opt) {
 
 		echo json_encode($returnJSON);
 		break;
+	case 'point_group_info':
+		$agent_id = (int) get_parameter('id');
+		$group_id = (int) get_parameter('id_parent');
+		$group = db_get_row_sql('SELECT * FROM tgrupo WHERE id_grupo = ' . $group_id);
+		$agent = db_get_row_sql('SELECT * FROM tagente WHERE id_agente = ' . $agent_id);
+		$agentDataGIS = gis_get_data_last_position_agent($agent['id_agente']);
+		
+		$returnJSON = array();
+		$returnJSON['correct'] = 1;
+		$returnJSON['content'] = '';
+
+		$content = '';
+
+		$table = new StdClass();
+		$table->class = 'blank';
+		$table->style = array();
+		$table->style[0] = 'font-weight: bold';
+		$table->rowstyle = array();
+		$table->data = array();
+
+		// Group name
+		$row = array();
+		$row[] = __('Group');
+		$row[] = '<a style="font-weight: bolder;" href="?sec=estado&sec2=operation/agentes/estado_agente&group_id=' . $group_id . '">' . $group['nombre'] . '</a>';
+		$table->data[] = $row;
+
+		// Position
+		$row = array();
+		$row[] = __('Position (Lat, Long, Alt)');
+
+		//it's positioned in default position of map.
+		if ($agentDataGIS === false) {
+			$row[] = __("Default position of map.");
+		}
+		else {
+			$row[] = '(' . $agentDataGIS['stored_latitude'] . ', ' . $agentDataGIS['stored_longitude'] . ', ' . $agentDataGIS['stored_altitude'] . ')';
+		}
+		$table->data[] = $row;
+
+		// Description
+		$group_description = $group['description'];
+		if ($group_description || $group_description != '') {
+			$row = array();
+			$row[] = __('Description');
+			$row[] = $group_description;
+			$table->data[] = $row;
+		}
+
+		// Last contact
+		$row = array();
+		$row[] = __('Last contact');
+		if ($agent["ultimo_contacto"] == "01-01-1970 00:00:00") {
+			$row[] = __('Never');
+		}
+		else {
+			$row[] = date_w_fixed_tz($agent["ultimo_contacto"]);
+		}
+		$table->data[] = $row;
+
+		// Last remote contact
+		$row = array();
+		$row[] = __('Remote');
+		if ($agent["ultimo_contacto_remoto"] == "01-01-1970 00:00:00") {
+			$row[] = __('Never');
+		}
+		else {
+			$row[] = date_w_fixed_tz($agent["ultimo_contacto_remoto"]);
+		}
+		$table->data[] = $row;
+
+		// Critical && not validated events
+		$filter = array(
+			"id_grupo" => $group_id,
+			"criticity" => EVENT_CRIT_CRITICAL,
+			"estado" => array(EVENT_STATUS_NEW, EVENT_STATUS_INPROCESS)
+		);
+		$result = events_get_events($filter, "COUNT(*) as num");
+
+		if (!empty($result)) {
+			$number = (int) $result[0]["num"];
+
+			if ($number > 0) {
+				$row = array();
+				$row[] = __("Number of non-validated critical events");
+				$row[] = '<a href="?sec=estado&sec2=operation/events/events&status=3&severity=' . EVENT_CRIT_CRITICAL
+					. '&id_group=' . $group_id . '">' . $number . '</a>';
+				$table->data[] = $row;
+			}
+		}
+
+		// Alerts fired
+		$alerts_fired = alerts_get_alerts($group_id, "", "fired", -1, $true);
+		if (!empty($alerts_fired)) {
+			$row = array();
+			$row[] = __("Alert(s) fired");
+			$alerts_detail = "";
+			foreach ($alerts_fired as $alert) {
+				$alerts_detail .= "<p>"
+					. $alert['agent_alias'] . " - "
+					. $alert['module_name'] . " - "
+					. $alert['template_name'] . " - "
+					. date($config["date_format"], $alert['last_fired'])
+					. "</p>";
+			}
+			$row[] = $alerts_detail;
+			$table->data[] = $row;
+		}
+
+		// To remove the grey background color of the classes datos and datos2
+		for ($i = 0; $i < count($table->data); $i++)
+			$table->rowstyle[] = 'background-color: inherit;';
+
+		// Save table
+		$returnJSON['content'] = html_print_table($table, true);
+
+		echo json_encode($returnJSON);
+		break;
 	case 'get_map_connection_data':
 		$idConnection = get_parameter('id_connection');
 		

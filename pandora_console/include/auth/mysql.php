@@ -349,15 +349,15 @@ function process_user_login_remote ($login, $pass, $api = false) {
 				
 				foreach ($attributes as $attr) {
 					$attr = explode('=', $attr, 2);
-					if(preg_match('/' . $attr[1] . '/', $sr[$attr[0]][0])){
-						$permissions[$i]["profile"] = $ldap_adv_perm['profile'];
-						$permissions[$i]["groups"] = $ldap_adv_perm['group'];
-						$permissions[$i]["tags"] = implode(",",$ldap_adv_perm['tags']);
-						$i++;
-						break;
+					foreach ($sr[$attr[0]] as $s_attr) {
+						if(preg_match('/' . $attr[1] . '/', $s_attr)){
+							$permissions[$i]["profile"] = $ldap_adv_perm['profile'];
+							$permissions[$i]["groups"] = $ldap_adv_perm['group'];
+							$permissions[$i]["tags"] = implode(",",$ldap_adv_perm['tags']);
+							$i++;
+						}
 					}
 				}
-				
 			}
 		} else {
 			$permissions[0]["profile"] = $config['default_remote_profile'];

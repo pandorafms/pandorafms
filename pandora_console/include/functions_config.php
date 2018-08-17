@@ -2294,19 +2294,4 @@ function config_prepare_session() {
 	ini_set("post_max_size", $config["max_file_size"]);
 	ini_set("upload_max_filesize", $config["max_file_size"]);
 }
-
-function config_update_value_in_db ($token, $value) {
-	$inserted_value = db_get_value('value', 'tconfig', '`token`', $token);
-	if ($inserted_value === false) {
-		return db_process_sql_insert(
-			'tconfig',
-			array('value' => $value, 'token' => $token)
-		) !== false;
-	}
-	else {
-		return db_process_sql_update(
-			'tconfig', array('value' => $value), array('token' => $token)
-		) !== false;
-	}
-}
 ?>

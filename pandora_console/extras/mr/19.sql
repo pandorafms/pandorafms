@@ -62,4 +62,17 @@ ALTER TABLE `tusuario_perfil` DROP COLUMN `is_secondary`;
 
 UPDATE `talert_commands` SET name='Monitoring&#x20;Event' WHERE name='Pandora&#x20;FMS&#x20;Event';
 
+-- -----------------------------------------------------
+-- Table `tgis_map_layer_groups`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tgis_map_layer_groups` (
+	`layer_id` INT NOT NULL,
+	`group_id` MEDIUMINT(4) UNSIGNED NOT NULL,
+	`agent_id` INT(10) UNSIGNED NOT NULL COMMENT 'Used to link the position to the group',
+	PRIMARY KEY (`layer_id`, `group_id`),
+	FOREIGN KEY (`layer_id`) REFERENCES `tgis_map_layer` (`id_tmap_layer`) ON DELETE CASCADE,
+	FOREIGN KEY (`group_id`) REFERENCES `tgrupo` (`id_grupo`) ON DELETE CASCADE,
+	FOREIGN KEY (`agent_id`) REFERENCES `tagente` (`id_agente`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 COMMIT;

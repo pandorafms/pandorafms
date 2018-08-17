@@ -184,7 +184,13 @@ if ($layers != false) {
 		}
 		$agentNamesByLayer = gis_get_agents_layer($layer['id_tmap_layer']);
 
-		$agentNames = array_unique($agentNamesByGroup + $agentNamesByLayer);
+		$groupsByAgentId = gis_get_groups_layer_by_agent_id($layer['id_tmap_layer']);
+		$agentNamesOfGroupItems = array();
+		foreach ($groupsByAgentId as $agentId => $groupInfo) {
+			$agentNamesOfGroupItems[$agentId] = $groupInfo["agent_name"];
+		}
+
+		$agentNames = array_unique($agentNamesByGroup + $agentNamesByLayer + $agentNamesOfGroupItems);
 
 		foreach ($agentNames as $key => $agentName) {
 			$idAgent = $key;
@@ -200,19 +206,33 @@ if ($layers != false) {
 					gis_add_path($layer['layer_name'], $idAgent, $lastPosition);
 				}
 			}
-			
-			$icon = gis_get_agent_icon_map($idAgent, true);
+
+			$status = agents_get_status($idAgent, true);
+			$icon = gis_get_agent_icon_map($idAgent, true, $status);
 			$icon_size = getimagesize($icon);
 			$icon_width = $icon_size[0];
 			$icon_height = $icon_size[1];
-			$status = agents_get_status($idAgent,true);
-			$parent = db_get_value('id_parent', 'tagente', 'id_agente', $idAgent);
 			
-			gis_add_agent_point($layer['layer_name'],
-				io_safe_output($agentName), $coords['stored_latitude'],
-				$coords['stored_longitude'], $icon, $icon_width,
-				$icon_height, $idAgent, $status, 'point_agent_info',
-				$parent);
+			// Is a group item
+			if (!empty($groupsByAgentId[$idAgent])) {
+				$groupId = (int) $groupsByAgentId[$idAgent]["id"];
+				$groupName = $groupsByAgentId[$idAgent]["name"];
+				
+				gis_add_agent_point($layer['layer_name'],
+					io_safe_output($groupName), $coords['stored_latitude'],
+					$coords['stored_longitude'], $icon, $icon_width,
+					$icon_height, $idAgent, $status, 'point_group_info',
+					$groupId);
+			}
+			else {
+				$parent = db_get_value('id_parent', 'tagente', 'id_agente', $idAgent);
+				
+				gis_add_agent_point($layer['layer_name'],
+					io_safe_output($agentName), $coords['stored_latitude'],
+					$coords['stored_longitude'], $icon, $icon_width,
+					$icon_height, $idAgent, $status, 'point_agent_info',
+					$parent);
+			}
 		}
 	}
 	gis_add_parent_lines();

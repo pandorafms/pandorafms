@@ -607,7 +607,7 @@ function addGroupClick (event) {
 	var $layerFormAgentIdInput = $("input#hidden-agent_id_for_data");
 	var $layerFormAgentAliasInput = $("input#text-agent_alias_for_data");
 	
-	var layerId = Number.parseInt($("input#hidden-current_edit_layer_id").val());
+	var layerId = $("input#hidden-current_edit_layer_id").val();
 	var groupId = Number.parseInt($layerFormGroupIdInput.val());
 	var groupName = $layerFormGroupIdInput.find(":selected").text();
 	var agentId = Number.parseInt($layerFormAgentIdInput.val());
@@ -645,7 +645,19 @@ function moveLayerRowDownOnClick (event) {
 }
 
 function removeLayerRowOnClick (event) {
+	var $layerRow = $(event.currentTarget).parent().parent();
+	var layerRowId = $layerRow.find("input.layer_id").val();
+	var layerEditorId = $("input#hidden-current_edit_layer_id").val();
+	if (layerRowId == layerEditorId) hideLayerEditor();
+	// Remove row
 	$(event.currentTarget).parent().parent().remove();
+}
+
+function hideLayerEditor () {
+	// Clean editor
+	cleanLayerEditor();
+	// Hide editor
+	$("div#form_layer").hide();
 }
 
 function showLayerEditor (layerId) {
@@ -838,11 +850,12 @@ function getAgentRow (layerId, agentId, agentAlias) {
 	$removeBtn.click(function (event) {
 		var $layerRow = $("tr#layer_row_" + layerId);
 
-		if ($layerRow.length === 0) return;
+		if ($layerRow.length > 0) {
+			$layerRow.find("input.layer_agent_id[data-agent-id='" + agentId + "']").remove();
+			$layerRow.find("input.layer_agent_alias[data-agent-id='" + agentId + "']").remove();
+		}
 
 		var $agentListItemRow = $(event.currentTarget).parent().parent();
-		$layerRow.find("input.layer_agent_id[data-agent-id='" + agentId + "']").remove();
-		$layerRow.find("input.layer_agent_alias[data-agent-id='" + agentId + "']").remove();
 		$agentListItemRow.remove();
 	});
 
@@ -893,13 +906,14 @@ function getGroupRow (layerId, groupId, groupName, agentId, agentAlias) {
 	$removeBtn.click(function (event) {
 		var $layerRow = $("tr#layer_row_" + layerId);
 
-		if ($layerRow.length === 0) return;
+		if ($layerRow.length > 0) {
+			$layerRow.find("input.layer_group_id[data-group-id='" + groupId + "']").remove();
+			$layerRow.find("input.layer_group_name[data-group-id='" + groupId + "']").remove();
+			$layerRow.find("input.layer_agent_id_for_data[data-group-id='" + groupId + "']").remove();
+			$layerRow.find("input.layer_agent_alias_for_data[data-group-id='" + groupId + "']").remove();
+		}
 
 		var $groupListItemRow = $(event.currentTarget).parent().parent();
-		$layerRow.find("input.layer_group_id[data-group-id='" + groupId + "']").remove();
-		$layerRow.find("input.layer_group_name[data-group-id='" + groupId + "']").remove();
-		$layerRow.find("input.layer_agent_id_for_data[data-group-id='" + groupId + "']").remove();
-		$layerRow.find("input.layer_agent_alias_for_data[data-group-id='" + groupId + "']").remove();
 		$groupListItemRow.remove();
 	});
 

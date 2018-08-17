@@ -33958,7 +33958,7 @@ msgid "Cluster type"
 msgstr ""
 
 #: ../../enterprise/godmode/reporting/cluster_builder.main.php:258
-msgid "Ative - Active"
+msgid "Active - Active"
 msgstr ""
 
 #: ../../enterprise/godmode/reporting/cluster_builder.main.php:259

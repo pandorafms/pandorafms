@@ -3316,6 +3316,13 @@ function ui_print_agent_autocomplete_input($parameters) {
 				minLength: 2,
 				source: function( request, response ) {
 					var term = request.term; //Word to search
+					' . $javascript_change_ajax_params_text . '
+					var groupId = data_params.id_group();
+
+					// Index cache by group Id
+					if (cache_' . $input_name . '[groupId] == null) {
+						cache_' . $input_name . '[groupId] = {};
+					}
 					
 					//Set loading
 					$("#' . $input_id . '")
@@ -3329,8 +3336,8 @@ function ui_print_agent_autocomplete_input($parameters) {
 					//==== CACHE CODE ==================================
 					//Check the cache
 					var found = false;
-					if (term in cache_' . $input_name . ') {
-						response(cache_' . $input_name . '[term]);
+					if (term in cache_' . $input_name . '[groupId]) {
+						response(cache_' . $input_name . '[groupId][term]);
 						
 						//Set icon
 						$("#' . $input_id . '")
@@ -3345,11 +3352,11 @@ function ui_print_agent_autocomplete_input($parameters) {
 						for (i = 1; i < term.length; i++) {
 							var term_match = term.substr(0, term.length - i);
 							
-							$.each(cache_' . $input_name . ', function (oldterm, olddata) {
+							$.each(cache_' . $input_name . '[groupId], function (oldterm, olddata) {
 								var pattern = new RegExp("^" + term_match + ".*","gi");
 								
 								if (oldterm.match(pattern)) {
-									response(cache_' . $input_name . '[oldterm]);
+									response(cache_' . $input_name . '[groupId][oldterm]);
 									
 									found = true;
 									
@@ -3376,15 +3383,13 @@ function ui_print_agent_autocomplete_input($parameters) {
 						return;
 					}
 					
-					' . $javascript_change_ajax_params_text . '
-					
 					jQuery.ajax ({
 						data: data_params,
 						type: "POST",
 						url: action="' . $javascript_ajax_page . '",
 						dataType: "json",
 						success: function (data) {
-								cache_' . $input_name . '[term] = data; //Save the cache
+								cache_' . $input_name . '[groupId][term] = data; //Save the cache
 								
 								response(data);
 								

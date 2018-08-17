@@ -484,6 +484,7 @@ $params['input_name'] = 'agent_alias_for_data';
 $params['value'] = '';
 $params['javascript_function_action_after_select'] = 'toggleAddGroupBtn';
 $params['selectbox_group'] = 'layer_group_id'; // Filter by group
+$params['disabled_javascript_on_blur_function'] = true;
 $agent_for_group_input = ui_print_agent_autocomplete_input($params);
 $add_group_btn = html_print_button(__('Add'), 'add_group', true, '', 'class="sub add"', true);
 
@@ -1066,7 +1067,7 @@ function onFormSubmit (event) {
 
 function onLayerGroupIdChange (event) {
 	// Clear agent inputs
-	$("input#hidden-agent_id_for_data").val("");
+	$("input#hidden-agent_id_for_data").val(0);
 	$("input#text-agent_alias_for_data").val("");
 	toggleAddGroupBtn();
 }

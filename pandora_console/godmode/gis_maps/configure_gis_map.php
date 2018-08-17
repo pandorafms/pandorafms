@@ -588,11 +588,13 @@ function addAgentClick (event) {
 
 function toggleAddGroupBtn () {
 	var groupId = Number.parseInt($("select#layer_group_id").val());
+	var existGroupId = $("table#list_groups tr.groups_list_item[data-group-id='" + groupId + "']").length > 0;
 	var agentId = Number.parseInt($("input#hidden-agent_id_for_data").val());
 	var agentAlias = $("input#text-agent_alias_for_data").val();
 
 	var enabled = (
-		!Number.isNaN(groupId)
+		!existGroupId
+		&& !Number.isNaN(groupId)
 		&& groupId > 0
 		&& !Number.isNaN(agentId)
 		&& agentId > 0

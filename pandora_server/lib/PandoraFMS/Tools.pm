@@ -1278,16 +1278,16 @@ sub month_have_days($$) {
 	if (  $year <= 1752  ) {
 		# Note:  Although September 1752 only had 19 days,
 		# they were numbered 1,2,14..30!
-		if (1752 == $year  &&  9 == $month) {
+		if (1752 == $year  &&  8 == $month) {
 			return 19;
 		}
-		if (2 == $month  &&  0 == $year % 4) {
+		if (1 == $month  &&  0 == $year % 4) {
 			return 29;
 		}
 	}
 	else {
 		#Check if Leap year
-		if (2 == $month && 0 == $year % 4 && 0 == $year%100
+		if (1 == $month && 0 == $year % 4 && 0 == $year%100
 			|| 0 == $year%400) {
 			return 29;
 		}

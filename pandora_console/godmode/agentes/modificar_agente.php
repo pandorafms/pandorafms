@@ -361,7 +361,7 @@ if ($ag_group > 0) {
 	$user_groups_to_sql = implode (',', array_keys ($user_groups));
 }
 
-$sql = sprintf ('SELECT COUNT(*)
+$sql = sprintf ('SELECT COUNT(DISTINCT(tagente.id_agente))
 	FROM tagente LEFT JOIN tagent_secondary_group tasg
 		ON tagente.id_agente = tasg.id_agent
 	WHERE (tagente.id_grupo IN (%s) OR tasg.id_group IN (%s))
@@ -376,6 +376,7 @@ $sql = sprintf ('SELECT *
 		ON tagente.id_agente = tasg.id_agent
 	WHERE (tagente.id_grupo IN (%s) OR tasg.id_group IN (%s))
 		%s
+	GROUP BY tagente.id_agente
 	ORDER BY %s %s, %s %s
 	LIMIT %d, %d',
 	$user_groups_to_sql, $user_groups_to_sql,

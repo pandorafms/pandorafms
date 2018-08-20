@@ -834,6 +834,11 @@ else {
 				$result_server[$result_element_key]['server_url'] = $server['server_url'].'/';
 				$result_server[$result_element_key]['hashdata'] = $hashdata;
 				$result_server[$result_element_key]['user'] = $config['id_user'];
+				$result_server[$result_element_key]['groups_in_server'] =
+					agents_get_all_groups_agent(
+						$result_element_value['id_agent'],
+						$result_element_value['id_group']
+				);
 				
 				$count_modules++;
 				
@@ -1036,7 +1041,9 @@ if (!empty($result)) {
 		
 		
 		$data[2] = html_print_image('images/' . modules_show_icon_type ($row['module_type']), true);
-		$agent_groups = agents_get_all_groups_agent($row['id_agent'], $row['id_group']);
+		$agent_groups = is_metaconsole()
+			? $row['groups_in_server']
+			: agents_get_all_groups_agent($row['id_agent'], $row['id_group']);
 		if (check_acl_one_of_groups ($config['id_user'], $agent_groups, 'AW')) {
 			$show_edit_icon = true;
 			if (defined('METACONSOLE')) {

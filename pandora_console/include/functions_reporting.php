@@ -6278,6 +6278,8 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 
 	global $config;
 
+	$modules = array();
+
 	require_once ($config["homedir"] . '/include/functions_graph.php');
 
 	if ($config['metaconsole']) {
@@ -6293,6 +6295,19 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 	if (empty($content['name'])) {
 		if ($type_report == "custom_graph") {
 			$content['name'] = __('Custom graph');
+			$graphs = db_get_all_rows_field_filter ("tgraph", "id_graph", $content['id_gs']);
+			$id_graph = $content['id_gs'];
+		}
+		else if($type_report == "automatic_graph"){
+			$content['name'] = __('Automatic combined graph');
+			$graphs[0]["stacked"] = '';
+			$graphs[0]["summatory_series"] = '';
+			$graphs[0]["average_series"] = '';
+			$graphs[0]["modules_series"] = '';
+			foreach ($content['id_agent_module'] as $key => $value) {
+				$modules[] = $value['module'];
+			}
+			$id_graph = 0;
 		}
 		else {
 			$content['name'] = __('Simple graph');
@@ -6304,9 +6319,8 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 	$return["description"] = $content["description"];
 	$return["date"] = reporting_get_date_text(
 		$report,
-		$content);
-
-	$graphs = db_get_all_rows_field_filter ("tgraph", "id_graph", $content['id_gs']);
+		$content
+	);
 
 	$return['chart'] = '';
 
@@ -6329,13 +6343,12 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 				'fullscale'  => $graphs[0]["fullscale"],
 				'server_id'  => $id_meta
 			);
-
 			$params_combined = array(
 				'stacked'        => $graphs[0]["stacked"],
 				'summatory'      => $graphs[0]["summatory_series"],
 				'average'        => $graphs[0]["average_series"],
 				'modules_series' => $graphs[0]["modules_series"],
-				'id_graph'       => $content['id_gs']
+				'id_graph'       => $id_graph
 			);
 
 			$return['chart'] = graphic_combined_module(

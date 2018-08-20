@@ -6291,7 +6291,6 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 	$graph = db_get_row ("tgraph", "id_graph", $content['id_gs']);
 	$return = array();
 	$return['type'] = 'custom_graph';
-
 	if (empty($content['name'])) {
 		if ($type_report == "custom_graph") {
 			$content['name'] = __('Custom graph');
@@ -6305,7 +6304,12 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 			$graphs[0]["average_series"] = '';
 			$graphs[0]["modules_series"] = '';
 			foreach ($content['id_agent_module'] as $key => $value) {
-				$modules[] = $value['module'];
+				if($content['each_agent']){
+					$modules[] = $value;
+				}
+				else{
+					$modules[] = $value['module'];
+				}
 			}
 			$id_graph = 0;
 		}

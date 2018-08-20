@@ -94,32 +94,6 @@ function render_row ($data, $label) {
 		echo "</tr>";
 	}
 }
-function render_row_2 ($dataMin, $labelMin, $data, $label) {
-	global $console_mode;
-	
-	if ($console_mode == 1) {
-		echo $labelMin;
-		echo "|";
-		echo $dataMin;
-		echo "|";
-		echo $label;
-		echo "|";
-		echo $data;
-		echo "\n";
-	}
-	else { 
-		echo "<tr>";
-		echo "<td style='padding:2px;border:0px;' width='60%'><div style='padding:5px;background-color:#f2f2f2;border-radius:2px;text-align:left;border:0px;'>" . $labelMin .
-		 "</div></td><td style='font-weight:bold;padding:2px;border:0px;' width='40%'><div style='padding:5px;background-color:#f2f2f2;border-radius:2px;text-align:left;border:0px;'>" . $dataMin .
-		  "</div></td>";
-		echo "</tr>";
-		echo "<tr>";
-		echo "<td style='padding:2px;border:0px;' width='60%'><div style='padding:5px;background-color:#f2f2f2;border-radius:2px;text-align:left;border:0px;'>" . $label . 
-		"</div><td style='font-weight:bold;padding:2px;border:0px;' width='40%'><div style='padding:5px;background-color:#f2f2f2;border-radius:2px;text-align:left;border:0px;'>" . $data .
-		 "</div></td>";
-		echo "</tr>";
-	}
-}
 
 function get_value_sum($arr){
 	foreach($arr as $clave){
@@ -135,7 +109,7 @@ function execution_time(){
 	if($times[0]['datos'] > $times[1]['datos'] * 1.2)
 		return "<a class= 'content' style= 'color: red;'>Warning Status</a><a>&nbsp&nbsp The execution time could be degrading. For a more extensive information of this data consult the  Execution Time graph</a>";
 	else
-		return "<a class= 'content' style ='color: green;'>Normal Status</a><a>&nbsp&nbsp The execution time is correct. For a more extensive information of this data consult the  Execution Time graph</a>";
+		return "<a style ='color: green;'>Normal Status</a><a>&nbsp&nbsp The execution time is correct. For a more extensive information of this data consult the  Execution Time graph</a>";
 }
 
 
@@ -229,9 +203,9 @@ function status_tagente_datos($tagente_datos_size){
 
 function status_values($val_rec, $val){
 	if  ($val_rec <= $val)
-		return $val . "<a> (current value)</a><a style ='color: green;text-decoration: none;'> Normal Status</a>";
+		return $val . "<a style='text-decoration: none;'> (Min. Recommended Value </a>" . $val_rec. "<a>)</a>";
 	else
-		return $val . "<a> (current value)</a><a class= 'content' style ='color: red;text-decoration: none;'> Warning Status</a>";
+		return $val . "<a style='text-decoration: none;'> (Min. Recommended Value </a>" . $val_rec. "<a>)</a><a class= 'content' style ='color: red;text-decoration: none;'> Warning Status</a>";
 }
 
 $tables_fragmentation=db_get_sql ("SELECT (data_free/(index_length+data_length)) 
@@ -567,25 +541,25 @@ $query_cache_min_res_unit =db_get_value_sql("SELECT @@query_cache_min_res_unit")
 $innodb_file_per_table = db_get_value_sql("SELECT @@innodb_file_per_table");
 echo "<tr><th style='background-color:#b1b1b1;font-weight:bold;font-style:italic;border-radius:2px;' align=center colspan='2'>".__("MySQL Performance metrics")."</th></tr>";
 
-render_row($innodb_log_file_size.status_values($innodb_log_file_size_min_rec_value,$innodb_log_file_size),'InnoDB log file size ', 'InnoDB log file size ');
-render_row($innodb_log_buffer_size.status_values($innodb_log_buffer_size_min_rec_value,$innodb_log_buffer_size),'InnoDB log buffer size ', 'InnoDB log buffer size ');
-render_row($innodb_flush_log_at_trx_commit.status_values($innodb_flush_log_at_trx_commit_min_rec_value,$innodb_flush_log_at_trx_commit), 'InnoDB flush log at trx-commit ','InnoDB flush log at trx-commit ');
-render_row($max_allowed_packet.status_values($max_allowed_packet_min_rec_value,$max_allowed_packet), 'Maximun allowed packet ','Maximun allowed packet ');
-render_row($innodb_buffer_pool_size .status_values($innodb_buffer_pool_size_min_rec_value,$innodb_buffer_pool_size), 'InnoDB buffer pool size ','InnoDB buffer pool size ');
-render_row($sort_buffer_size.status_values($sort_buffer_size_min_rec_value,$sort_buffer_size), 'Sort buffer size ','Sort buffer size ');
-render_row($join_buffer_size.status_values($join_buffer_size_min_rec_value,$join_buffer_size), 'Join buffer size ','Join buffer size ');
-render_row($query_cache_type.status_values($query_cache_type_min_rec_value,$query_cache_type), 'Query cache type ', 'Query cache type ');
-render_row($query_cache_size.status_values($query_cache_size_min_rec_value,$query_cache_size), 'Query cache size ','Query cache size ');
-render_row($query_cache_limit.status_values($query_cache_limit_min_rec_value,$query_cache_limit), 'Query cache limit ','Query cache limit ');
-render_row($innodb_lock_wait_timeout.status_values($innodb_lock_wait_timeout_max_rec_value,$innodb_lock_wait_timeout), 'InnoDB lock wait timeout ','InnoDB lock wait timeout ');
-render_row($thread_cache_size.status_values($thread_cache_size_max_rec_value,$thread_cache_size), 'Thread cache size ','Thread cache size ');
-render_row($thread_stack .status_values($thread_stack_min_rec_value,$thread_stack), 'Thread stack ','Thread stack ');
-render_row($max_connections.status_values($max_connections_max_rec_value,$max_connections), 'Maximum connections ','Maximun connections ');
-render_row($key_buffer_size .status_values($key_buffer_size_min_rec_value,$key_buffer_size), 'Key buffer size ','Key buffer size ');
-render_row($read_buffer_size.status_values($read_buffer_size_min_rec_value,$read_buffer_size), 'Read buffer size ','Read buffer size ');
-render_row($read_rnd_buffer_size.status_values($read_rnd_buffer_size_min_rec_value,$read_rnd_buffer_size), 'Read rnd-buffer size ','Read rnd-buffer size ');
-render_row($query_cache_min_res_unit.status_values($query_cache_min_res_unit_min_rec_value,$query_cache_min_res_unit), 'Query cache min-res-unit ','Query cache min-res-unit ');
-render_row($innodb_file_per_table.status_values($innodb_file_per_table_min_rec_value,$innodb_file_per_table), 'InnoDB file per table ','InnoDB file per table ');
+render_row(status_values($innodb_log_file_size_min_rec_value,$innodb_log_file_size),'InnoDB log file size ', 'InnoDB log file size ');
+render_row(status_values($innodb_log_buffer_size_min_rec_value,$innodb_log_buffer_size),'InnoDB log buffer size ', 'InnoDB log buffer size ');
+render_row(status_values($innodb_flush_log_at_trx_commit_min_rec_value,$innodb_flush_log_at_trx_commit), 'InnoDB flush log at trx-commit ','InnoDB flush log at trx-commit ');
+render_row(status_values($max_allowed_packet_min_rec_value,$max_allowed_packet), 'Maximun allowed packet ','Maximun allowed packet ');
+render_row(status_values($innodb_buffer_pool_size_min_rec_value,$innodb_buffer_pool_size), 'InnoDB buffer pool size ','InnoDB buffer pool size ');
+render_row(status_values($sort_buffer_size_min_rec_value,$sort_buffer_size), 'Sort buffer size ','Sort buffer size ');
+render_row(status_values($join_buffer_size_min_rec_value,$join_buffer_size), 'Join buffer size ','Join buffer size ');
+render_row(status_values($query_cache_type_min_rec_value,$query_cache_type), 'Query cache type ', 'Query cache type ');
+render_row(status_values($query_cache_size_min_rec_value,$query_cache_size), 'Query cache size ','Query cache size ');
+render_row(status_values($query_cache_limit_min_rec_value,$query_cache_limit), 'Query cache limit ','Query cache limit ');
+render_row(status_values($innodb_lock_wait_timeout_max_rec_value,$innodb_lock_wait_timeout), 'InnoDB lock wait timeout ','InnoDB lock wait timeout ');
+render_row(status_values($thread_cache_size_max_rec_value,$thread_cache_size), 'Thread cache size ','Thread cache size ');
+render_row(status_values($thread_stack_min_rec_value,$thread_stack), 'Thread stack ','Thread stack ');
+render_row(status_values($max_connections_max_rec_value,$max_connections), 'Maximum connections ','Maximun connections ');
+render_row(status_values($key_buffer_size_min_rec_value,$key_buffer_size), 'Key buffer size ','Key buffer size ');
+render_row(status_values($read_buffer_size_min_rec_value,$read_buffer_size), 'Read buffer size ','Read buffer size ');
+render_row(status_values($read_rnd_buffer_size_min_rec_value,$read_rnd_buffer_size), 'Read rnd-buffer size ','Read rnd-buffer size ');
+render_row(status_values($query_cache_min_res_unit_min_rec_value,$query_cache_min_res_unit), 'Query cache min-res-unit ','Query cache min-res-unit ');
+render_row(status_values($innodb_file_per_table_min_rec_value,$innodb_file_per_table), 'InnoDB file per table ','InnoDB file per table ');
 echo "<tr><th style='background-color:#b1b1b1;font-weight:bold;font-style:italic;border-radius:2px;' align=center colspan='2'>".__("Tables fragmentation in the PandoraFMS database")."</th></tr>";
 
 
@@ -596,8 +570,10 @@ render_row (status_fragmentation_tables($tables_fragmentation_max_rec_value, $ta
 
 echo "<tr><th style='background-color:#b1b1b1;font-weight:bold;font-style:italic;border-radius:2px;' align=center colspan='2'>".__(" PandoraFMS logs dates")."</th></tr>";
 
-render_row_2(number_format(get_logs_size($path_server_logs)/1024, 2) . "M", 'Size server logs (current value)',get_status_logs($path_server_logs),'Status server logs');
-render_row_2(number_format(get_logs_size($path_console_logs)/1024, 2) . "M", 'Size console logs (current value)',get_status_logs($path_console_logs),'Status console logs');
+render_row(number_format(get_logs_size($path_server_logs)/1024, 2) . "M", 'Size server logs (current value)');
+render_row(get_status_logs($path_server_logs),'Status server logs');
+render_row(number_format(get_logs_size($path_console_logs)/1024, 2) . "M", 'Size console logs (current value)');
+render_row(get_status_logs($path_console_logs),'Status console logs');
 
 echo "<tr><th style='background-color:#b1b1b1;font-weight:bold;font-style:italic;border-radius:2px;' align=center colspan='2'>".__(" PandoraFMS Licence Information")."</th></tr>";
 

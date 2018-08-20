@@ -42,14 +42,13 @@
 	}
 
 	function requestData () {
-		var ajaxPath = $("#hidden-ajax_path").val();
+		var rel_path = $("#hidden-rel_path").val();
 
 		currentXHR = $.ajax({
-			url: ajaxPath,
+			url: rel_path + "extensions/realtime_graphs/ajax.php",
 			type: "POST",
 			dataType: "json",
 			data: {
-				page: "extensions/realtime_graphs/ajax",
 				graph: $('#graph :selected').val(),
 				graph_title: $('#graph :selected').html(),
 				snmp_community: $('#text-snmp_community').val(),

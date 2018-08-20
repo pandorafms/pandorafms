@@ -484,6 +484,7 @@ $params['input_name'] = 'agent_alias_for_data';
 $params['value'] = '';
 $params['javascript_function_action_after_select'] = 'toggleAddGroupBtn';
 $params['selectbox_group'] = 'layer_group_id'; // Filter by group
+$params['disabled_javascript_on_blur_function'] = true;
 $agent_for_group_input = ui_print_agent_autocomplete_input($params);
 $add_group_btn = html_print_button(__('Add'), 'add_group', true, '', 'class="sub add"', true);
 
@@ -588,11 +589,13 @@ function addAgentClick (event) {
 
 function toggleAddGroupBtn () {
 	var groupId = Number.parseInt($("select#layer_group_id").val());
+	var existGroupId = $("table#list_groups tr.groups_list_item[data-group-id='" + groupId + "']").length > 0;
 	var agentId = Number.parseInt($("input#hidden-agent_id_for_data").val());
 	var agentAlias = $("input#text-agent_alias_for_data").val();
 
 	var enabled = (
-		!Number.isNaN(groupId)
+		!existGroupId
+		&& !Number.isNaN(groupId)
 		&& groupId > 0
 		&& !Number.isNaN(agentId)
 		&& agentId > 0
@@ -607,7 +610,7 @@ function addGroupClick (event) {
 	var $layerFormAgentIdInput = $("input#hidden-agent_id_for_data");
 	var $layerFormAgentAliasInput = $("input#text-agent_alias_for_data");
 	
-	var layerId = Number.parseInt($("input#hidden-current_edit_layer_id").val());
+	var layerId = $("input#hidden-current_edit_layer_id").val();
 	var groupId = Number.parseInt($layerFormGroupIdInput.val());
 	var groupName = $layerFormGroupIdInput.find(":selected").text();
 	var agentId = Number.parseInt($layerFormAgentIdInput.val());
@@ -645,7 +648,19 @@ function moveLayerRowDownOnClick (event) {
 }
 
 function removeLayerRowOnClick (event) {
+	var $layerRow = $(event.currentTarget).parent().parent();
+	var layerRowId = $layerRow.find("input.layer_id").val();
+	var layerEditorId = $("input#hidden-current_edit_layer_id").val();
+	if (layerRowId == layerEditorId) hideLayerEditor();
+	// Remove row
 	$(event.currentTarget).parent().parent().remove();
+}
+
+function hideLayerEditor () {
+	// Clean editor
+	cleanLayerEditor();
+	// Hide editor
+	$("div#form_layer").hide();
 }
 
 function showLayerEditor (layerId) {
@@ -838,11 +853,12 @@ function getAgentRow (layerId, agentId, agentAlias) {
 	$removeBtn.click(function (event) {
 		var $layerRow = $("tr#layer_row_" + layerId);
 
-		if ($layerRow.length === 0) return;
+		if ($layerRow.length > 0) {
+			$layerRow.find("input.layer_agent_id[data-agent-id='" + agentId + "']").remove();
+			$layerRow.find("input.layer_agent_alias[data-agent-id='" + agentId + "']").remove();
+		}
 
 		var $agentListItemRow = $(event.currentTarget).parent().parent();
-		$layerRow.find("input.layer_agent_id[data-agent-id='" + agentId + "']").remove();
-		$layerRow.find("input.layer_agent_alias[data-agent-id='" + agentId + "']").remove();
 		$agentListItemRow.remove();
 	});
 
@@ -893,13 +909,14 @@ function getGroupRow (layerId, groupId, groupName, agentId, agentAlias) {
 	$removeBtn.click(function (event) {
 		var $layerRow = $("tr#layer_row_" + layerId);
 
-		if ($layerRow.length === 0) return;
+		if ($layerRow.length > 0) {
+			$layerRow.find("input.layer_group_id[data-group-id='" + groupId + "']").remove();
+			$layerRow.find("input.layer_group_name[data-group-id='" + groupId + "']").remove();
+			$layerRow.find("input.layer_agent_id_for_data[data-group-id='" + groupId + "']").remove();
+			$layerRow.find("input.layer_agent_alias_for_data[data-group-id='" + groupId + "']").remove();
+		}
 
 		var $groupListItemRow = $(event.currentTarget).parent().parent();
-		$layerRow.find("input.layer_group_id[data-group-id='" + groupId + "']").remove();
-		$layerRow.find("input.layer_group_name[data-group-id='" + groupId + "']").remove();
-		$layerRow.find("input.layer_agent_id_for_data[data-group-id='" + groupId + "']").remove();
-		$layerRow.find("input.layer_agent_alias_for_data[data-group-id='" + groupId + "']").remove();
 		$groupListItemRow.remove();
 	});
 
@@ -1050,7 +1067,7 @@ function onFormSubmit (event) {
 
 function onLayerGroupIdChange (event) {
 	// Clear agent inputs
-	$("input#hidden-agent_id_for_data").val("");
+	$("input#hidden-agent_id_for_data").val(0);
 	$("input#text-agent_alias_for_data").val("");
 	toggleAddGroupBtn();
 }

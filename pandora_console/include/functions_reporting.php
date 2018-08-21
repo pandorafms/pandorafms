@@ -6303,13 +6303,19 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 			$graphs[0]["summatory_series"] = '';
 			$graphs[0]["average_series"] = '';
 			$graphs[0]["modules_series"] = '';
-			foreach ($content['id_agent_module'] as $key => $value) {
-				if($content['each_agent']){
-					$modules[] = $value;
+			$graphs[0]["fullscale"] = $content['style']['fullscale'];
+			if(is_array($content['id_agent_module'])){
+				foreach ($content['id_agent_module'] as $key => $value) {
+					if($content['each_agent']){
+						$modules[] = $value;
+					}
+					else{
+						$modules[] = $value['module'];
+					}
 				}
-				else{
-					$modules[] = $value['module'];
-				}
+			}
+			else{
+				$modules[] = $content['id_agent_module'];
 			}
 			$id_graph = 0;
 		}

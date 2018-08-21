@@ -128,43 +128,20 @@ function mainModuleGroups() {
 	require_once($config['homedir'] . "/include/functions_users.php");
 	
 	//The big query
-	switch ($config["dbtype"]) {
-		case "mysql":
-			$sql = "SELECT COUNT(id_agente) AS count, case utimestamp when 0 then 5 else estado end as estado 
-				FROM tagente_estado
-				WHERE id_agente IN
-					(SELECT id_agente FROM tagente WHERE id_grupo = %d AND disabled IS FALSE)
-					AND id_agente_modulo IN
-					(SELECT id_agente_modulo 
-						FROM tagente_modulo 
-						WHERE id_module_group = %d AND disabled IS FALSE AND delete_pending IS FALSE)
-				GROUP BY estado";
-			break;
-		case "postgresql":
-			$sql = "SELECT COUNT(id_agente) AS count,
-					case utimestamp when 0 then 5 else estado end as estado
-				FROM tagente_estado
-				WHERE id_agente IN
-					(SELECT id_agente FROM tagente WHERE id_grupo = %d AND disabled = 0)
-					AND id_agente_modulo IN
-					(SELECT id_agente_modulo
-						FROM tagente_modulo
-						WHERE id_module_group = %d AND disabled = 0 AND delete_pending = 0)
-				GROUP BY estado, utimestamp";
-			break;
-		case "oracle":
-			$sql = "SELECT COUNT(id_agente) AS count, (case when utimestamp = 0 then 5 else estado end) AS estado
-				FROM tagente_estado
-				WHERE id_agente IN
-					(SELECT id_agente FROM tagente WHERE id_grupo = %d AND (disabled IS NOT NULL AND disabled <> 0))
-					AND id_agente_modulo IN
-					(SELECT id_agente_modulo 
-						FROM tagente_modulo 
-						WHERE id_module_group = %d AND (disabled IS NOT NULL AND disabled <> 0) AND (delete_pending IS NOT NULL AND delete_pending <> 0))
-				GROUP BY (case when utimestamp = 0 then 5 else estado end)";
-			break;
-	}
-	
+	$sql = "SELECT COUNT(id_agente) AS count, case utimestamp when 0 then 5 else estado end as estado 
+		FROM tagente_estado
+		WHERE id_agente IN
+			(SELECT id_agente
+				FROM tagente ta LEFT JOIN tagent_secondary_group tasg
+					ON ta.id_agente = tasg.id_agent
+				WHERE (ta.id_grupo = %d OR tasg.id_group = %d) AND disabled IS FALSE
+			)
+			AND id_agente_modulo IN
+			(SELECT id_agente_modulo 
+				FROM tagente_modulo 
+				WHERE id_module_group = %d AND disabled IS FALSE AND delete_pending IS FALSE)
+		GROUP BY estado";
+
 	ui_print_page_header (__("Combined table of agent group and module group"), "images/module_group.png", false, "", false, '');
 	
 	ui_print_info_message ( array('no_close'=>true, 'message'=>
@@ -207,7 +184,7 @@ function mainModuleGroups() {
 			
 			foreach ($modelGroups as $idModelGroup => $modelGroup) {
 				$fired = false;
-				$query = sprintf($sql, $idAgentGroup, $idModelGroup);
+				$query = sprintf($sql, $idAgentGroup, $idAgentGroup, $idModelGroup);
 				
 				$rowsDB = db_get_all_rows_sql ($query);
 				

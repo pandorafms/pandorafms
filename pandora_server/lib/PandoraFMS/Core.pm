@@ -4650,6 +4650,9 @@ sub pandora_group_statistics ($$) {
 	# Get all groups
 	my @groups = get_db_rows ($dbh, 'SELECT id_grupo FROM tgrupo');
 	my $table = is_metaconsole($pa_config) ? 'tmetaconsole_agent' : 'tagente';
+	my $sec_table = is_metaconsole($pa_config)
+		? 'tmetaconsole_agent_secondary_group'
+		: 'tagent_secondary_group';
 
 	# For each valid group get the stats: Simple uh?
 	foreach my $group_row (@groups) {
@@ -4658,30 +4661,49 @@ sub pandora_group_statistics ($$) {
 
 		# NOTICE - Calculations done here MUST BE the same than used in PHP code to have
 		# the same criteria. PLEASE, double check any changes here and in functions_groups.php
-		$agents_unknown = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count>0 AND id_grupo=?", $group);
+		$agents_unknown = get_db_value ($dbh, "SELECT COUNT(DISTINCT(id_agente))
+			FROM $table LEFT JOIN $sec_table ON id_agente=id_agent
+			WHERE disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count>0 AND (id_grupo=? OR id_group=?)", $group, $group);
 		$agents_unknown = 0 unless defined ($agents_unknown);
 
-		$agents = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE id_grupo = $group AND disabled=0");
+		$agents = get_db_value ($dbh, "SELECT COUNT(DISTINCT(id_agente))
+			FROM $table LEFT JOIN $sec_table ON id_agente=id_agent
+			WHERE(id_grupo=$group OR id_group=$group) AND disabled=0");
 		$agents = 0 unless defined ($agents);
 
-		$modules = get_db_value ($dbh, "SELECT SUM(total_count) FROM $table WHERE disabled=0 AND id_grupo=?", $group);
+		$modules = get_db_value ($dbh, "SELECT SUM(total_count) FROM
+			(
+				SELECT DISTINCT(id_agente), total_count
+				FROM $table LEFT JOIN $sec_table ON id_agente=id_agent
+				WHERE disabled=0 AND (id_grupo=? OR id_group=?)
+			) AS t1", $group, $group);
 		$modules = 0 unless defined ($modules);
-		
-		$normal = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count=0 AND normal_count>0 AND id_grupo=?", $group);
+
+		$normal = get_db_value ($dbh, "SELECT COUNT(DISTINCT(id_agente))
+			FROM $table LEFT JOIN $sec_table ON id_agente=id_agent
+			WHERE disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count=0 AND normal_count>0 AND (id_grupo=? OR id_group=?)", $group, $group);
 		$normal = 0 unless defined ($normal);
-		
-		$critical = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE disabled=0 AND critical_count>0 AND id_grupo=?", $group);
+
+		$critical = get_db_value ($dbh, "SELECT COUNT(DISTINCT(id_agente))
+			FROM $table LEFT JOIN $sec_table ON id_agente=id_agent
+			WHERE disabled=0 AND critical_count>0 AND (id_grupo=? OR id_group=?)", $group, $group);
 		$critical = 0 unless defined ($critical);
-		
-		$warning = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE disabled=0 AND critical_count=0 AND warning_count>0 AND id_grupo=?", $group);
+
+		$warning = get_db_value ($dbh, "SELECT COUNT(DISTINCT(id_agente))
+			FROM $table LEFT JOIN $sec_table ON id_agente=id_agent
+			WHERE disabled=0 AND critical_count=0 AND warning_count>0 AND (id_grupo=? OR id_group=?)", $group, $group);
 		$warning = 0 unless defined ($warning);
-	
-		$unknown = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count>0 AND id_grupo=?", $group);	
+
+		$unknown = get_db_value ($dbh, "SELECT COUNT(DISTINCT(id_agente))
+			FROM $table LEFT JOIN $sec_table ON id_agente=id_agent
+			WHERE disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count>0 AND (id_grupo=? OR id_group=?)", $group, $group);
 		$unknown = 0 unless defined ($unknown);
-		
-		$non_init = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE disabled=0 AND total_count=notinit_count AND id_grupo=?", $group);
+
+		$non_init = get_db_value ($dbh, "SELECT COUNT(DISTINCT(id_agente))
+			FROM $table LEFT JOIN $sec_table ON id_agente=id_agent
+			WHERE disabled=0 AND total_count=notinit_count AND (id_grupo=? OR id_group=?)", $group, $group);
 		$non_init = 0 unless defined ($non_init);
-		
+
 		# Total alert count not available on the meta console.
 		if ($table eq 'tagente') {
 			$alerts = get_db_value ($dbh, "SELECT COUNT(talert_template_modules.id)

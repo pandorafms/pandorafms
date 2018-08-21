@@ -6970,89 +6970,57 @@ function reporting_get_group_stats ($id_group = 0, $access = 'AR') {
 		}
 		
 		if (!empty($group_array)) {
-			// FOR THE FUTURE: Split the groups into groups with tags restrictions and groups without it
-			// To calculate in the light way the non tag restricted and in the heavy way the others
-			/*
-			$group_restricted_data = tags_get_acl_tags($config['id_user'], $group_array, $access, 'data');
-			$tags_restricted_groups = array_keys($group_restricted_data);
+			// Get monitor NOT INIT, except disabled AND async modules
+			$data["monitor_not_init"] += (int) groups_get_not_init_monitors ($group_array, array(), array(), false, false, true);
 			
-			$no_tags_restricted_groups = $group_array;
-			foreach ($no_tags_restricted_groups as $k => $v) {
-				if (in_array($v, $tags_restricted_groups)) {
-					unset($no_tags_restricted_groups[$k]);
-				}
-			}
-			*/
+			// Get monitor OK, except disabled and non-init
+			$data["monitor_ok"] += (int) groups_get_normal_monitors ($group_array, array(), array(), false, false, true);
 			
-			if (!empty($group_array)) {
-				// Get monitor NOT INIT, except disabled AND async modules
-				$data["monitor_not_init"] += (int) groups_get_not_init_monitors ($group_array, array(), array(), false, false, true);
-				
-				// Get monitor OK, except disabled and non-init
-				$data["monitor_ok"] += (int) groups_get_normal_monitors ($group_array, array(), array(), false, false, true);
-				
-				// Get monitor CRITICAL, except disabled and non-init
-				$data["monitor_critical"] += (int) groups_get_critical_monitors ($group_array, array(), array(), false, false, true);
-				
-				// Get monitor WARNING, except disabled and non-init
-				$data["monitor_warning"] += (int) groups_get_warning_monitors ($group_array, array(), array(), false, false, true);
-				
-				// Get monitor UNKNOWN, except disabled and non-init
-				$data["monitor_unknown"] += (int) groups_get_unknown_monitors ($group_array, array(), array(), false, false, true);
-				
-				// Get alerts configured, except disabled 
-				$data["monitor_alerts"] += groups_monitor_alerts ($group_array) ;
-				
-				// Get alert configured currently FIRED, except disabled 
-				$data["monitor_alerts_fired"] += groups_monitor_fired_alerts ($group_array);
-				
-				// Calculate totals using partial counts from above
-				
-				// Get TOTAL non-init modules, except disabled ones and async modules
-				$data["total_not_init"] += $data["monitor_not_init"];
+			// Get monitor CRITICAL, except disabled and non-init
+			$data["monitor_critical"] += (int) groups_get_critical_monitors ($group_array, array(), array(), false, false, true);
 			
-				// Get TOTAL agents in a group
-				$data["total_agents"] += (int) groups_get_total_agents ($group_array, array(), array(), false, false, true);
-				
-				// Get Agents OK
-				$data["agent_ok"] += (int) groups_get_normal_agents ($group_array, array(), array(), false, false, true);
-				
-				// Get Agents Warning 
-				$data["agent_warning"] += (int) groups_get_warning_agents ($group_array, array(), array(), false, false, true);
-				
-				// Get Agents Critical
-				$data["agent_critical"] += (int) groups_get_critical_agents ($group_array, array(), array(), false, false, true);
-				
-				// Get Agents Unknown
-				$data["agent_unknown"] += (int) groups_get_unknown_agents ($group_array, array(), array(), false, false, true);
-				
-				// Get Agents Not init
-				$data["agent_not_init"] += (int) groups_get_not_init_agents ($group_array, array(), array(), false, false, true);
-			}
+			// Get monitor WARNING, except disabled and non-init
+			$data["monitor_warning"] += (int) groups_get_warning_monitors ($group_array, array(), array(), false, false, true);
 			
+			// Get monitor UNKNOWN, except disabled and non-init
+			$data["monitor_unknown"] += (int) groups_get_unknown_monitors ($group_array, array(), array(), false, false, true);
+			
+			// Get alerts configured, except disabled 
+			$data["monitor_alerts"] += groups_monitor_alerts ($group_array) ;
+			
+			// Get alert configured currently FIRED, except disabled 
+			$data["monitor_alerts_fired"] += groups_monitor_fired_alerts ($group_array);
+			
+			// Calculate totals using partial counts from above
+			
+			// Get TOTAL non-init modules, except disabled ones and async modules
+			$data["total_not_init"] += $data["monitor_not_init"];
+		
+			// Get TOTAL agents in a group
+			$data["total_agents"] += (int) groups_get_total_agents ($group_array, array(), array(), false, false, true);
+			
+			// Get Agents OK
+			$data["agent_ok"] += (int) groups_get_normal_agents ($group_array, array(), array(), false, false, true);
+			
+			// Get Agents Warning 
+			$data["agent_warning"] += (int) groups_get_warning_agents ($group_array, array(), array(), false, false, true);
+			
+			// Get Agents Critical
+			$data["agent_critical"] += (int) groups_get_critical_agents ($group_array, array(), array(), false, false, true);
+			
+			// Get Agents Unknown
+			$data["agent_unknown"] += (int) groups_get_unknown_agents ($group_array, array(), array(), false, false, true);
+			
+			// Get Agents Not init
+			$data["agent_not_init"] += (int) groups_get_not_init_agents ($group_array, array(), array(), false, false, true);
+		
 			// Get total count of monitors for this group, except disabled.
-			$data["monitor_checks"] = $data["monitor_not_init"] + $data["monitor_unknown"] + $data["monitor_warning"] + $data["monitor_critical"] + $data["monitor_ok"];
-			
-			// Calculate not_normal monitors
-			$data["monitor_not_normal"] += $data["monitor_checks"] - $data["monitor_ok"];
+			$data["monitor_checks"] += $data["monitor_not_init"] + $data["monitor_unknown"] + $data["monitor_warning"] + $data["monitor_critical"] + $data["monitor_ok"];
 		}
-		
-		// Get total count of monitors for this group, except disabled.
-		
-		$data["monitor_checks"] = $data["monitor_not_init"] + $data["monitor_unknown"] + $data["monitor_warning"] + $data["monitor_critical"] + $data["monitor_ok"];
-		
-		/*
-		 Monitor health (percentage)
-		 Data health (percentage)
-		 Global health (percentage)
-		 Module sanity (percentage)
-		 Alert level (percentage)
-		 
-		 Server Sanity	0% Uninitialized modules
-		 
-		 */
 	}
-	
+	// Calculate not_normal monitors
+	$data["monitor_not_normal"] += $data["monitor_checks"] - $data["monitor_ok"];
+
 	if ($data["monitor_unknown"] > 0 && $data["monitor_checks"] > 0) {
 		$data["monitor_health"] = format_numeric (100 - ($data["monitor_not_normal"] / ($data["monitor_checks"] / 100)), 1);
 	}

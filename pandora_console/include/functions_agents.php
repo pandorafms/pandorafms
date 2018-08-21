@@ -908,7 +908,7 @@ function agents_get_group_agents (
 		if (isset($search['status'])) {
 			switch ($search['status']) {
 				case AGENT_STATUS_NORMAL:
-					$filter[] = "normal_count = total_count";
+					$filter[] = "(normal_count = total_count AND notinit_count <> total_count)";
 					break;
 				case AGENT_STATUS_WARNING:
 					$filter[] = "(critical_count = 0 AND warning_count > 0)";

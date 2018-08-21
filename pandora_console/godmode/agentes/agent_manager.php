@@ -333,7 +333,8 @@ $table->data = array ();
 
 if (enterprise_installed()) {
 	$secondary_groups_selected = enterprise_hook('agents_get_secondary_groups', array($id_agente));
-	$table->data['secondary_groups'][0] = __('Secondary groups');
+	$table->data['secondary_groups'][0] = __('Secondary groups') .
+		ui_print_help_icon("secondary_groups", true);
 	$table->data['secondary_groups'][1] = html_print_select_groups(
 		false,                    // Use the current user to select the groups
 		"AR",                     // ACL permission

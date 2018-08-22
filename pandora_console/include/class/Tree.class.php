@@ -438,7 +438,7 @@ class Tree {
 
 							$order_fields = 'tg.nombre ASC, tg.id_grupo ASC';
 
-							if (! is_metaconsole()) {
+							if (is_metaconsole()) {
 								// Groups SQL
 								if ($item_for_count === false) {
 									$sql = "SELECT $columns
@@ -480,8 +480,8 @@ class Tree {
 								// Counters SQL
 								else {
 									$agent_table = "SELECT COUNT(DISTINCT(ta.id_agente))
-													FROM tmetaconsole_agent ta
-													LEFT JOIN tmetaconsole_agent_secondary_group tasg
+													FROM tagente ta
+													LEFT JOIN tagent_secondary_group tasg
 														ON ta.id_agente = tasg.id_agent
 													WHERE ta.disabled = 0
 														AND (
@@ -496,7 +496,7 @@ class Tree {
 							}
 						}
 						else {
-							if (! is_metaconsole()) {
+							if (is_metaconsole()) {
 								$columns = 'ta.id_agente AS id, ta.nombre AS name, ta.alias,
 									ta.fired_count, ta.normal_count, ta.warning_count,
 									ta.critical_count, ta.unknown_count, ta.notinit_count,
@@ -535,8 +535,8 @@ class Tree {
 								$order_fields = 'ta.alias ASC, ta.id_tagente ASC';
 
 								$sql = "SELECT $columns
-										FROM tmetaconsole_agent ta
-										LEFT JOIN tmetaconsole_agent_secondary_group tasg
+										FROM tagente ta
+										LEFT JOIN tagent_secondary_group tasg
 											ON ta.id_agente = tasg.id_agent
 										WHERE ta.disabled = 0
 											AND  (
@@ -1212,7 +1212,6 @@ class Tree {
 		$sql = $this->getSql($item_for_count);
 		if (empty($sql))
 			return array();
-
 		$data = db_process_sql($sql);
 		if (empty($data))
 			return array();
@@ -2828,14 +2827,105 @@ class Tree {
 	protected function getGroupCounters($group_id) {
 		global $config;
 		static $group_stats = false;
-		// FIXME: Avoid to use cache when secondary groups is used
-		if (enterprise_hook('agents_is_using_secondary_groups')) {
-			return $this->getCounters($group_id);
-		}
 		# Do not use the group stat cache when using tags or real time group stats.
 		if ($config['realtimestats'] == 1 || 
 			(isset($this->userGroups[$group_id]['tags']) && $this->userGroups[$group_id]['tags'] != "") || 
-			!empty($this->filter['searchAgent']) ) {	
+			!empty($this->filter['searchAgent']) ) {
+			$fields = array (
+				"g AS id_group",
+				"SUM(critical) AS total_critical_count",
+				"SUM(warning) AS total_warning_count",
+				"SUM(normal) AS total_normal_count",
+				"SUM(unknown) AS total_unknown_count",
+				"SUM(not_init) AS total_not_init_count",
+				//"SUM(alerts) AS total_fired_count",
+				//"total_critical_count+total_warning_count+total_normal_count+total_unknown_count+total_not_init_count AS total_count"
+			);
+			$fields = implode(", ", $fields);
+			$array_array = array(
+				'warning' => array(
+					'header' => "0 AS critical, SUM(total) AS warning, 0 AS normal, 0 AS unknown, 0 AS not_init, g",
+					'condition' => "AND ta.warning_count > 0 AND ta.critical_count = 0"
+				),
+				'critical' => array(
+					'header' => "SUM(total) AS critical, 0 AS warning, 0 AS normal, 0 AS unknown, 0 AS not_init, g",
+					'condition' => "AND ta.critical_count > 0"
+				),
+				'normal' => array(
+					'header' => "0 AS critical, 0 AS warning, SUM(total) AS normal, 0 AS unknown, 0 AS not_init, g",
+					'condition' => "AND ta.critical_count = 0 AND ta.warning_count = 0 AND ta.unknown_count = 0 AND ta.normal_count > 0"
+				),
+				'unknown' => array(
+					'header' => "0 AS critical, 0 AS warning, 0 AS normal, SUM(total) AS unknown, 0 AS not_init, g",
+					'condition' => "AND ta.critical_count = 0 AND ta.warning_count = 0 AND ta.unknown_count > 0"
+				),
+				'not_init' => array(
+					'header' => "0 AS critical, 0 AS warning, SUM(total) AS normal, 0 AS unknown, SUM(total) AS not_init, g",
+					'condition' => "AND ta.total_count = ta.notinit_count"
+				)
+				/*'alerts' => array(
+					'header' => "0 AS critical, 0 AS warning, SUM(total) AS normal, g",
+					'condition' => "AND ta.critical_count = 0 AND ta.warning_count = 0 AND ta.unknown_count = 0 AND ta.normal_count > 0"
+				)*/
+			);
+			$sql_model = "SELECT %s FROM
+				(
+					SELECT COUNT(ta.id_agente) AS total, id_group AS g
+						FROM tagente ta INNER JOIN tagent_secondary_group tasg
+							ON ta.id_agente = tasg.id_agent
+						WHERE ta.disabled = 0
+							%s
+						GROUP BY id_group
+					UNION ALL
+					SELECT COUNT(ta.id_agente) AS total, id_grupo AS g
+						FROM tagente ta
+						WHERE ta.disabled = 0
+							%s
+						GROUP BY id_grupo
+				) x GROUP BY g";
+			$sql_array = array();
+			foreach ($array_array as $s_array) {
+				$sql_array[] = sprintf(
+					$sql_model, $s_array['header'], $s_array['condition'], $s_array['condition']
+				);
+			}
+			$sql = "SELECT $fields  FROM (" . implode(" UNION ALL ", $sql_array) . ") x2 GROUP BY g";
+			html_debug($sql, true);
+			/*$sql = "SELECT $fields  FROM (
+				SELECT 0 AS critical, SUM(total) AS warning, g FROM
+					(
+						SELECT COUNT(ta.id_agente) AS total, id_group AS g
+							FROM tagente ta INNER JOIN tagent_secondary_group tasg
+								ON ta.id_agente = tasg.id_agent
+							WHERE ta.disabled = 0
+								AND ta.warning_count > 0 AND ta.critical_count = 0
+							GROUP BY id_group
+						UNION ALL
+						SELECT COUNT(ta.id_agente) AS total, id_grupo AS g
+							FROM tagente ta
+							WHERE ta.disabled = 0
+								AND ta.warning_count > 0 AND ta.critical_count = 0
+							GROUP BY id_grupo
+					) x GROUP BY g
+				UNION ALL
+				SELECT SUM(total) AS critical, 0 AS warning, g FROM
+					(
+						SELECT COUNT(ta.id_agente) AS total, id_group AS g
+							FROM tagente ta INNER JOIN tagent_secondary_group tasg
+								ON ta.id_agente = tasg.id_agent
+							WHERE ta.disabled = 0
+								AND ta.critical_count > 0
+							GROUP BY id_group
+						UNION ALL
+						SELECT COUNT(DISTINCT(ta.id_agente)) AS total, id_grupo AS g
+							FROM tagente ta
+							WHERE ta.disabled = 0
+								AND ta.critical_count > 0
+							GROUP BY id_grupo
+					) x GROUP BY g
+				) x2 GROUP BY g";*/
+
+			html_debug_die(db_get_all_rows_sql($sql));
 			return $this->getCounters($group_id);
 		}
 

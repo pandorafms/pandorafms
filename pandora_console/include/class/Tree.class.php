@@ -25,6 +25,7 @@ class Tree {
 
 	protected $userGroupsACL;
 	protected $userGroups;
+	protected $userGroupsArray;
 
 	protected $strictACL = false;
 	protected $acltags = false;
@@ -43,6 +44,7 @@ class Tree {
 		$userGroupsACL = users_get_groups(false, $this->access);
 		$this->userGroupsACL = empty($userGroupsACL) ? false : $userGroupsACL;
 		$this->userGroups = $this->userGroupsACL;
+		$this->userGroupsArray = array_keys($this->userGroups);
 
 		global $config;
 		include_once($config['homedir']."/include/functions_servers.php");
@@ -52,7 +54,7 @@ class Tree {
 
 		if (is_metaconsole()) enterprise_include_once("meta/include/functions_ui_meta.php");
 
-		$this->strictACL = (bool) db_get_value("strict_acl", "tusuario", "id_user", $config['id_user']);
+		$this->strictACL = false;
 		
 		$this->acltags = tags_get_user_groups_and_tags($config['id_user'], $this->access);
 	}
@@ -496,7 +498,7 @@ class Tree {
 							}
 						}
 						else {
-							if (is_metaconsole()) {
+							if (!is_metaconsole()) {
 								$columns = 'ta.id_agente AS id, ta.nombre AS name, ta.alias,
 									ta.fired_count, ta.normal_count, ta.warning_count,
 									ta.critical_count, ta.unknown_count, ta.notinit_count,
@@ -1263,9 +1265,9 @@ class Tree {
 		}
 
 		// If user have not permissions in parent, set parent node to 0 (all)
-		$user_groups_with_privileges = $this->userGroups;
+		// TODO avoid to do foreach for admins
 		foreach ($groups as $id => $group) {
-			if (!in_array($groups[$id]['parent'], array_keys($user_groups_with_privileges))) {
+			if (!in_array($groups[$id]['parent'], $this->userGroupsArray)) {
 				$groups[$id]['parent'] = 0;
 			}
 		}
@@ -1553,12 +1555,12 @@ class Tree {
 		return $mergedItems;
 	}
 
-	protected function processModule (&$module, $server = false) {
+	protected function processModule (&$module, $server = false, $all_groups) {
 		global $config;
 		
 		if (isset($module['children'])) {
 			foreach ($module['children'] as $i => $children) {
-				$this->processModule($module['children'][$i], $server);
+				$this->processModule($module['children'][$i], $server, $all_groups);
 			}
 		}
 
@@ -1637,7 +1639,6 @@ class Tree {
 		// Link to the Module graph
 
 		// ACL
-		$all_groups = modules_get_agent_groups($module['id']);
 		$acl_graphs = false;
 		$module["showGraphs"] = 0;
 
@@ -1690,7 +1691,7 @@ class Tree {
 
 		// Alerts fired image
 		$has_alerts = (bool) db_get_value(
-			'COUNT(DISTINCT(id_agent_module))',
+			'id_agent_module',
 			'talert_template_modules', 'id_agent_module', $module['id']);
 
 		if ($has_alerts) {
@@ -1699,8 +1700,11 @@ class Tree {
 	}
 
 	protected function processModules (&$modules, $server = false) {
+		if (!empty($modules)) {
+			$all_groups = modules_get_agent_groups($modules[0]['id']);
+		}
 		foreach ($modules as $iterator => $module) {
-			$this->processModule($modules[$iterator], $server);
+			$this->processModule($modules[$iterator], $server, $all_groups);
 		}
 	}
 
@@ -1913,29 +1917,6 @@ class Tree {
 		// Quiet image
 		if (isset($agent['quiet']) && $agent['quiet'])
 			$agent['quietImageHTML'] = html_print_image("/images/dot_blue.png", true, array("title" => __('Quiet')));
-
-		// Status
-		$agent['statusRaw'] = agents_get_status($agent['id'], !$this->strictACL);
-		switch ($agent['statusRaw']) {
-			case AGENT_STATUS_NORMAL:
-				$agent['status'] = "ok";
-				break;
-			case AGENT_STATUS_WARNING:
-				$agent['status'] = "warning";
-				break;
-			case AGENT_STATUS_CRITICAL:
-				$agent['status'] = "critical";
-				break;
-			case AGENT_STATUS_UNKNOWN:
-				$agent['status'] = "unknown";
-				break;
-			case AGENT_STATUS_NOT_INIT:
-				$agent['status'] = "not_init";
-				break;
-			default:
-				$agent['status'] = "none";
-				break;
-		}
 
 		// Children
 		if (empty($agent['children'])) {
@@ -2828,45 +2809,64 @@ class Tree {
 		global $config;
 		static $group_stats = false;
 		# Do not use the group stat cache when using tags or real time group stats.
+
+		if ( $group_stats !== false) {
+			return isset($group_stats[$group_id])
+				? $group_stats[$group_id]
+				: array(
+					'total_count' => 0,
+					'total_critical_count' => 0,
+					'total_unknown_count' => 0,
+					'total_warning_count' => 0,
+					'total_not_init_count' => 0,
+					'total_normal_count' => 0,
+					'total_fired_count' => 0
+				);
+		}
+
 		if ($config['realtimestats'] == 1 || 
 			(isset($this->userGroups[$group_id]['tags']) && $this->userGroups[$group_id]['tags'] != "") || 
 			!empty($this->filter['searchAgent']) ) {
 			$fields = array (
 				"g AS id_group",
-				"SUM(critical) AS total_critical_count",
-				"SUM(warning) AS total_warning_count",
-				"SUM(normal) AS total_normal_count",
-				"SUM(unknown) AS total_unknown_count",
-				"SUM(not_init) AS total_not_init_count",
-				//"SUM(alerts) AS total_fired_count",
-				//"total_critical_count+total_warning_count+total_normal_count+total_unknown_count+total_not_init_count AS total_count"
+				"SUM(x_critical) AS critical",
+				"SUM(x_warning) AS warning",
+				"SUM(x_normal) AS normal",
+				"SUM(x_unknown) AS unknown",
+				"SUM(x_not_init) AS `non-init`",
+				"SUM(x_alerts) AS alerts_fired",
+				"SUM(x_total) AS agents"
 			);
 			$fields = implode(", ", $fields);
 			$array_array = array(
 				'warning' => array(
-					'header' => "0 AS critical, SUM(total) AS warning, 0 AS normal, 0 AS unknown, 0 AS not_init, g",
+					'header' => "0 AS x_critical, SUM(total) AS x_warning, 0 AS x_normal, 0 AS x_unknown, 0 AS x_not_init, 0 AS x_alerts, 0 AS x_total, g",
 					'condition' => "AND ta.warning_count > 0 AND ta.critical_count = 0"
 				),
 				'critical' => array(
-					'header' => "SUM(total) AS critical, 0 AS warning, 0 AS normal, 0 AS unknown, 0 AS not_init, g",
+					'header' => "SUM(total) AS x_critical, 0 AS x_warning, 0 AS x_normal, 0 AS x_unknown, 0 AS x_not_init, 0 AS x_alerts, 0 AS x_total, g",
 					'condition' => "AND ta.critical_count > 0"
 				),
 				'normal' => array(
-					'header' => "0 AS critical, 0 AS warning, SUM(total) AS normal, 0 AS unknown, 0 AS not_init, g",
+					'header' => "0 AS x_critical, 0 AS x_warning, SUM(total) AS x_normal, 0 AS x_unknown, 0 AS x_not_init, 0 AS x_alerts, 0 AS x_total, g",
 					'condition' => "AND ta.critical_count = 0 AND ta.warning_count = 0 AND ta.unknown_count = 0 AND ta.normal_count > 0"
 				),
 				'unknown' => array(
-					'header' => "0 AS critical, 0 AS warning, 0 AS normal, SUM(total) AS unknown, 0 AS not_init, g",
+					'header' => "0 AS x_critical, 0 AS x_warning, 0 AS x_normal, SUM(total) AS x_unknown, 0 AS x_not_init, 0 AS x_alerts, 0 AS x_total, g",
 					'condition' => "AND ta.critical_count = 0 AND ta.warning_count = 0 AND ta.unknown_count > 0"
 				),
 				'not_init' => array(
-					'header' => "0 AS critical, 0 AS warning, SUM(total) AS normal, 0 AS unknown, SUM(total) AS not_init, g",
+					'header' => "0 AS x_critical, 0 AS x_warning, 0 AS x_normal, 0 AS x_unknown, SUM(total) AS x_not_init, 0 AS x_alerts, 0 AS x_total, g",
 					'condition' => "AND ta.total_count = ta.notinit_count"
+				),
+				'alerts' => array(
+					'header' => "0 AS x_critical, 0 AS x_warning, 0 AS x_normal, 0 AS x_unknown, 0 AS x_not_init, SUM(total) AS x_alerts, 0 AS x_total, g",
+					'condition' => "AND ta.fired_count > 0"
+				),
+				'total' => array(
+					'header' => "0 AS x_critical, 0 AS x_warning, 0 AS x_normal, 0 AS x_unknown, 0 AS x_not_init, 0 AS x_alerts, SUM(total) AS x_total, g",
+					'condition' => ""
 				)
-				/*'alerts' => array(
-					'header' => "0 AS critical, 0 AS warning, SUM(total) AS normal, g",
-					'condition' => "AND ta.critical_count = 0 AND ta.warning_count = 0 AND ta.unknown_count = 0 AND ta.normal_count > 0"
-				)*/
 			);
 			$sql_model = "SELECT %s FROM
 				(
@@ -2890,75 +2890,30 @@ class Tree {
 				);
 			}
 			$sql = "SELECT $fields  FROM (" . implode(" UNION ALL ", $sql_array) . ") x2 GROUP BY g";
-			html_debug($sql, true);
-			/*$sql = "SELECT $fields  FROM (
-				SELECT 0 AS critical, SUM(total) AS warning, g FROM
-					(
-						SELECT COUNT(ta.id_agente) AS total, id_group AS g
-							FROM tagente ta INNER JOIN tagent_secondary_group tasg
-								ON ta.id_agente = tasg.id_agent
-							WHERE ta.disabled = 0
-								AND ta.warning_count > 0 AND ta.critical_count = 0
-							GROUP BY id_group
-						UNION ALL
-						SELECT COUNT(ta.id_agente) AS total, id_grupo AS g
-							FROM tagente ta
-							WHERE ta.disabled = 0
-								AND ta.warning_count > 0 AND ta.critical_count = 0
-							GROUP BY id_grupo
-					) x GROUP BY g
-				UNION ALL
-				SELECT SUM(total) AS critical, 0 AS warning, g FROM
-					(
-						SELECT COUNT(ta.id_agente) AS total, id_group AS g
-							FROM tagente ta INNER JOIN tagent_secondary_group tasg
-								ON ta.id_agente = tasg.id_agent
-							WHERE ta.disabled = 0
-								AND ta.critical_count > 0
-							GROUP BY id_group
-						UNION ALL
-						SELECT COUNT(DISTINCT(ta.id_agente)) AS total, id_grupo AS g
-							FROM tagente ta
-							WHERE ta.disabled = 0
-								AND ta.critical_count > 0
-							GROUP BY id_grupo
-					) x GROUP BY g
-				) x2 GROUP BY g";*/
 
-			html_debug_die(db_get_all_rows_sql($sql));
-			return $this->getCounters($group_id);
+			$stats = db_get_all_rows_sql($sql);
+		}
+		else{
+			$stats = db_get_all_rows_sql('SELECT * FROM tgroup_stat');
 		}
 
-		# Update the group stat cache.
-		if ( $group_stats === false) {
-			$group_stats = array();
-			$stats = db_get_all_rows_sql('SELECT * FROM tgroup_stat');
-			foreach ($stats as $group) {
-				if ($group['modules'] > 0) {
-					$group_stats[$group['id_group']]['total_count'] = $group['modules'] > 0 ? $group['agents'] : 0;
-					$group_stats[$group['id_group']]['total_critical_count'] = $group['critical'];
-					$group_stats[$group['id_group']]['total_unknown_count'] = $group['unknown'];
-					$group_stats[$group['id_group']]['total_warning_count'] = $group['warning'];
-					if($this->filter['show_not_init_modules']){
-							$group_stats[$group['id_group']]['total_not_init_count'] = $group['non-init'];
-					}
-					else{
-						$group_stats[$group['id_group']]['total_not_init_count'] = 0;
-					}
-					$group_stats[$group['id_group']]['total_normal_count'] = $group['normal'];
-					$group_stats[$group['id_group']]['total_fired_count'] = $group['alerts_fired'];
-				}
-				# Skip groups without modules.
-				else {
-					$group_stats[$group['id_group']]['total_count'] = 0;
-					$group_stats[$group['id_group']]['total_critical_count'] = 0;
-					$group_stats[$group['id_group']]['total_unknown_count'] = 0;
-					$group_stats[$group['id_group']]['total_warning_count'] = 0;
-					$group_stats[$group['id_group']]['total_not_init_count'] = 0;
-					$group_stats[$group['id_group']]['total_normal_count'] = 0;
-					$group_stats[$group['id_group']]['total_fired_count'] = 0;
-				}
+
+		# Update the group cache (from db or calculated).
+		$group_stats = array();
+		foreach ($stats as $group) {
+//			$group_stats[$group['id_group']]['total_count'] = $group['modules'] > 0 ? $group['agents'] : 0;
+			$group_stats[$group['id_group']]['total_count'] = $group['agents'];
+			$group_stats[$group['id_group']]['total_critical_count'] = $group['critical'];
+			$group_stats[$group['id_group']]['total_unknown_count'] = $group['unknown'];
+			$group_stats[$group['id_group']]['total_warning_count'] = $group['warning'];
+			if($this->filter['show_not_init_modules']){
+					$group_stats[$group['id_group']]['total_not_init_count'] = $group['non-init'];
 			}
+			else{
+				$group_stats[$group['id_group']]['total_not_init_count'] = 0;
+			}
+			$group_stats[$group['id_group']]['total_normal_count'] = $group['normal'];
+			$group_stats[$group['id_group']]['total_fired_count'] = $group['alerts_fired'];
 		}
 
 		if ($group_stats !== false && isset($group_stats[$group_id])) {

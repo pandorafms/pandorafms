@@ -96,6 +96,45 @@ class Tree {
 		return $agent_status_filter;
 	}
 
+	protected function getModuleStatusFilter () {
+		if (
+			!isset($this->filter['statusModule']) ||
+			$this->filter['statusModule'] == -1
+		) {
+			return "";
+		}
+
+		$field_filter = "";
+		switch ($this->filter['statusModule']) {
+			case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+			case AGENT_MODULE_STATUS_CRITICAL_BAD:
+				$field_filter = "critical_count";
+				break;
+			case AGENT_MODULE_STATUS_WARNING_ALERT:
+			case AGENT_MODULE_STATUS_WARNING:
+				$field_filter = "warning_count";
+				break;
+			case AGENT_MODULE_STATUS_UNKNOWN:
+				$field_filter = "unknown_count";
+				break;
+			case AGENT_MODULE_STATUS_NO_DATA:
+			case AGENT_MODULE_STATUS_NOT_INIT:
+				$field_filter = "notinit_count";
+				break;
+			case AGENT_MODULE_STATUS_NORMAL_ALERT:
+			case AGENT_MODULE_STATUS_NORMAL:
+				$field_filter = "normal_count";
+				break;
+			default:
+				// If the state is not an expected state, return condition
+				// to not show any data
+				return " AND 1 = 0";
+				break;
+		}
+
+		return "AND ta.$field_filter > 0";
+	}
+
 	protected function getAgentCounterColumnsSql ($agent_table) {
 		// Add the agent counters to the columns
 
@@ -1966,157 +2005,6 @@ class Tree {
 		$this->tree = $processed_items;
 	}
 
-	private function getDataStrict () {
-		global $config;
-
-		require_once($config['homedir']."/include/functions_groups.php");
-
-		$processed_items = array();
-
-		// Groups and tags
-		if ($this->id == -1) {
-			$agent_filter = array();
-			if (isset($this->filter["statusAgent"]))
-				$agent_filter["status"] = $this->filter["statusAgent"];
-			if (isset($this->filter["searchAgent"]))
-				$agent_filter["name"] = $this->filter["searchAgent"];
-
-			$module_filter = array();
-			if (isset($this->filter["statusModule"]))
-				$module_filter["status"] = $this->filter["statusModule"];
-			if (isset($this->filter["searchModule"]))
-				$module_filter["name"] = $this->filter["searchModule"];
-
-			if (! is_metaconsole()) {
-				$items = group_get_data($config['id_user'], $this->strictACL, $this->acltags, false, 'tree', $agent_filter, $module_filter);
-
-				// Build the group and tag hierarchy
-				$processed_groups = array();
-				$processed_tags = array();
-
-				foreach ($items as $key => $item) {
-					$processed_item = $this->getProcessedItem($item);
-					if ($processed_item['type'] == 'tag') {
-						if (!empty($processed_item) &&
-								isset($processed_item['counters']) &&
-								isset($processed_item['counters']['total']) &&
-								!empty($processed_item['counters']['total'])) {
-							$processed_tags[] = $processed_item;
-						}
-					}
-					else {
-						$processed_groups[] = $processed_item;
-					}
-				}
-
-				// Build the groups hierarchy
-				$processed_groups = $this->getProcessedGroups($processed_groups, true);
-				// Sort tags
-				usort($processed_tags, array("Tree", "cmpSortNames"));
-
-				// Join tags and groups
-				$processed_items = array_merge($processed_groups, $processed_tags);
-			}
-			else {
-				$unmerged_items = array();
-
-				$servers = metaconsole_get_servers();
-				foreach ($servers as $server) {
-					if (metaconsole_connect($server) != NOERR)
-						continue;
-					db_clean_cache();
-
-					$items = group_get_data($config['id_user'], $this->strictACL, $this->acltags, false, 'tree', $agent_filter, $module_filter);
-
-					// Build the group and tag hierarchy
-					$processed_groups = array();
-					$processed_tags = array();
-
-					foreach ($items as $key => $item) {
-						$processed_item = $this->getProcessedItem($item);
-						if ($processed_item['type'] == 'tag')
-							$processed_tags[] = $processed_item;
-						else
-							$processed_groups[] = $processed_item;
-					}
-
-					// Build the groups hierarchy
-					$processed_groups = $this->getProcessedGroups($processed_groups);
-					// Sort tags
-					usort($processed_tags, array("Tree", "cmpSortNames"));
-
-					// Join tags and groups
-					$processed_items = array_merge($processed_groups, $processed_tags);
-
-					$unmerged_items += $processed_items;
-
-					metaconsole_restore_db();
-				}
-
-				$processed_items = $this->getMergedItems($unmerged_items);
-			}
-
-			if (!empty($processed_items)) {
-				if (!empty($this->filter["groupID"])) {
-					$result = self::extractItemWithID($processed_items, $this->filter["groupID"], "group", $this->strictACL);
-
-					if ($result === false)
-						$processed_items = array();
-					else
-						$processed_items = array($result);
-				}
-				else if (!empty($this->filter["tagID"])) {
-					$result = self::extractItemWithID($processed_items, $this->filter["tagID"], "tag", $this->strictACL);
-
-					if ($result === false)
-						$processed_items = array();
-					else
-						$processed_items = array($result);
-				}
-			}
-		}
-		// Agents
-		else {
-			if (! is_metaconsole()) {
-				$items = $this->getItems();
-				$this->processAgents($items);
-				// Remove empty entrys
-				$processed_items = array_filter($items);
-				// Restart the array keys -> Important!
-				$processed_items = array_values($processed_items);
-			}
-			else {
-				$rootIDs = $this->rootID;
-
-				$items = array();
-				$j = 1;
-				$server = metaconsole_get_servers();
-				foreach ($rootIDs as $serverID => $rootID) {
-					if (metaconsole_connect($server[$j]) != NOERR)
-						continue;
-					db_clean_cache();
-
-					$this->rootID = $rootID;
-					$newItems = $this->getItems();
-					$this->processAgents($newItems, $server[$j]);
-					$newItems = array_filter($newItems);
-					$items = array_merge($items, $newItems);
-
-					metaconsole_restore_db();
-					$j++;
-				}
-				$this->rootID = $rootIDs;
-
-				if (!empty($items))
-					usort($items, array("Tree", "cmpSortNames"));
-
-				$processed_items = $items;
-			}
-		}
-
-		$this->tree = $processed_items;
-	}
-
 	private function getDataGroup() {
 		$processed_items = array();
 
@@ -2684,7 +2572,7 @@ class Tree {
 				),
 				'not_init' => array(
 					'header' => "0 AS x_critical, 0 AS x_warning, 0 AS x_normal, 0 AS x_unknown, SUM(total) AS x_not_init, 0 AS x_alerts, 0 AS x_total, g",
-					'condition' => "AND ta.total_count = ta.notinit_count"
+					'condition' => $this->filter['show_not_init_agents'] ? "AND ta.total_count = ta.notinit_count" : " AND 1=0"
 				),
 				'alerts' => array(
 					'header' => "0 AS x_critical, 0 AS x_warning, 0 AS x_normal, 0 AS x_unknown, 0 AS x_not_init, SUM(total) AS x_alerts, 0 AS x_total, g",
@@ -2692,9 +2580,24 @@ class Tree {
 				),
 				'total' => array(
 					'header' => "0 AS x_critical, 0 AS x_warning, 0 AS x_normal, 0 AS x_unknown, 0 AS x_not_init, 0 AS x_alerts, SUM(total) AS x_total, g",
-					'condition' => ""
+					'condition' => $this->filter['show_not_init_agents'] ? "" : "AND ta.total_count <> ta.notinit_count"
 				)
 			);
+			$filters = array(
+				'agent_alias' => '',
+				'agent_status' => '',
+				'module_status' => ''
+			);
+			if (!empty($this->filter['searchAgent'])) {
+				$filters['agent_alias'] = "AND LOWER(ta.alias) LIKE LOWER('%".$this->filter['searchAgent']."%')";
+			}
+			if ($this->filter['statusAgent'] >= 0) {
+				$filters['agent_status'] = $this->getAgentStatusFilter();
+			}
+			if ($this->filter['statusModule'] >= 0) {
+				$filters['module_status'] = $this->getModuleStatusFilter();
+			}
+
 			$table = is_metaconsole() ? "tmetaconsole_agent" : "tagente";
 			$table_sec = is_metaconsole() ? "tmetaconsole_agent_secondary_group" : "tagent_secondary_group";
 			$sql_model = "SELECT %s FROM
@@ -2703,19 +2606,22 @@ class Tree {
 						FROM $table ta INNER JOIN $table_sec tasg
 							ON ta.id_agente = tasg.id_agent
 						WHERE ta.disabled = 0
-							%s
+							%s %s %s %s
 						GROUP BY id_group
 					UNION ALL
 					SELECT COUNT(ta.id_agente) AS total, id_grupo AS g
 						FROM $table ta
 						WHERE ta.disabled = 0
-							%s
+							%s %s %s %s
 						GROUP BY id_grupo
 				) x GROUP BY g";
 			$sql_array = array();
 			foreach ($array_array as $s_array) {
 				$sql_array[] = sprintf(
-					$sql_model, $s_array['header'], $s_array['condition'], $s_array['condition']
+					$sql_model,
+					$s_array['header'],
+					$s_array['condition'], $filters['agent_alias'], $filters['agent_status'], $filters['module_status'],
+					$s_array['condition'], $filters['agent_alias'], $filters['agent_status'], $filters['module_status']
 				);
 			}
 			$sql = "SELECT $fields  FROM (" . implode(" UNION ALL ", $sql_array) . ") x2 GROUP BY g";
@@ -2735,12 +2641,7 @@ class Tree {
 			$group_stats[$group['id_group']]['total_critical_count'] = $group['critical'];
 			$group_stats[$group['id_group']]['total_unknown_count'] = $group['unknown'];
 			$group_stats[$group['id_group']]['total_warning_count'] = $group['warning'];
-			if($this->filter['show_not_init_modules']){
-					$group_stats[$group['id_group']]['total_not_init_count'] = $group['non-init'];
-			}
-			else{
-				$group_stats[$group['id_group']]['total_not_init_count'] = 0;
-			}
+			$group_stats[$group['id_group']]['total_not_init_count'] = $group['non-init'];
 			$group_stats[$group['id_group']]['total_normal_count'] = $group['normal'];
 			$group_stats[$group['id_group']]['total_fired_count'] = $group['alerts_fired'];
 		}

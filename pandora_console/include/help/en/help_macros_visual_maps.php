@@ -1,9 +1,9 @@
 <?php
 /**
- * @package Include/help/es
+ * @package Include/help/en
  */
 ?>
-<h1>Macros</h1>
+<h1>Visual maps' macros</h1>
 
 It is possible to enter a macro in the text box when editing an element of the visual console.
 <br /><br />

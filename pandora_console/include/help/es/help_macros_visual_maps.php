@@ -3,7 +3,7 @@
  * @package Include/help/es
  */
 ?>
-<h1>Macros</h1>
+<h1>Macros de mapas visuales</h1>
 
 Es posible introducir una macro en el cuadro de texto al editar un elemento de la consola visual.
 <br /><br />

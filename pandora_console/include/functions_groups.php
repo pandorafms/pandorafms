@@ -1206,19 +1206,7 @@ function groups_get_agents_counter ($group, $agent_filter = array(), $module_fil
 	$groups_clause = "AND ta.id_grupo IN ($group_str)";
 
 	$tags_clause = "";
-	if ($strict_user && !empty($groups_and_tags)) {
-		foreach ($groups as $group_id) {
-			if (isset($groups_and_tags[$group_id]) && !empty($groups_and_tags[$group_id])) {
-				$tags_str = $groups_and_tags[$group_id];
-				$tags_clause .= " AND (ta.grupo <> $group_id
-									OR (ta.grupo = $group_id
-										AND tam.id_agente_modulo NOT IN (SELECT id_agente_modulo
-																		FROM ttag_module
-																		WHERE id_tag NOT IN ($tags_str) )))";
-			}
-		}
-	}
-	
+
 	$agent_name_filter = "";
 	$agent_status = AGENT_STATUS_ALL;
 	if (!empty($agent_filter)) {
@@ -1662,22 +1650,10 @@ function groups_get_monitors_counter ($group, $agent_filter = array(), $module_f
 	}
 	
 	$group_str = implode (",", $groups);
-	$groups_clause = "AND ta.id_grupo IN ($group_str)";
+	$groups_clause = "AND (ta.id_grupo IN ($group_str) OR tasg.id_group IN ($group_str))";
 	
 	$tags_clause = "";
-	if ($strict_user && !empty($groups_and_tags)) {
-		foreach ($groups as $group_id) {
-			if (isset($groups_and_tags[$group_id]) && !empty($groups_and_tags[$group_id])) {
-				$tags_str = $groups_and_tags[$group_id];
-				$tags_clause .= " AND (ta.grupo <> $group_id
-									OR (ta.grupo = $group_id
-										AND tam.id_agente_modulo NOT IN (SELECT id_agente_modulo
-																		FROM ttag_module
-																		WHERE id_tag NOT IN ($tags_str) )))";
-			}
-		}
-	}
-	
+
 	$agent_name_filter = "";
 	$agents_clause = "";
 	if (!empty($agent_filter)) {
@@ -1775,36 +1751,38 @@ function groups_get_monitors_counter ($group, $agent_filter = array(), $module_f
 						$modules_clause
 				INNER JOIN tagente ta
 					ON tam.id_agente = ta.id_agente
+				LEFT JOIN tagent_secondary_group tasg
+					ON ta.id_agente = tasg.id_agent
 						AND ta.disabled = 0
 						$agent_name_filter
 						$agents_clause
-						$groups_clause
 				WHERE tam.disabled = 0
 					$module_name_filter
+					$groups_clause
 					$tags_clause";
 	}
 	else {
 		$status_columns_array = array();
-		foreach ($module_status_array as $status) {
+		foreach ($status_array as $status) {
 			switch ($status) {
 				case AGENT_MODULE_STATUS_CRITICAL_ALERT:
 				case AGENT_MODULE_STATUS_CRITICAL_BAD:
-					$status_columns_array[] = 'ta.critical_count';
+					$status_columns_array['critical'] = 'critical_count';
 					break;
 				case AGENT_MODULE_STATUS_WARNING_ALERT:
 				case AGENT_MODULE_STATUS_WARNING:
-					$status_columns_array[] = 'ta.warning_count';
+					$status_columns_array['warn'] = 'warning_count';
 					break;
 				case AGENT_MODULE_STATUS_UNKNOWN:
-					$status_columns_array[] = 'ta.unknown_count';
+					$status_columns_array['unk'] = 'unknown_count';
 					break;
 				case AGENT_MODULE_STATUS_NO_DATA:
 				case AGENT_MODULE_STATUS_NOT_INIT:
-					$status_columns_array[] = 'ta.notinit_count';
+					$status_columns_array['notinit'] = 'notinit_count';
 					break;
 				case AGENT_MODULE_STATUS_NORMAL_ALERT:
 				case AGENT_MODULE_STATUS_NORMAL:
-					$status_columns_array[] = 'ta.normal_count';
+					$status_columns_array['normal'] = 'normal_count';
 					break;
 				default:
 					// The type doesn't exist
@@ -1816,13 +1794,16 @@ function groups_get_monitors_counter ($group, $agent_filter = array(), $module_f
 		
 		$status_columns_str = implode(",", $status_columns_array);
 		
-		$sql = "SELECT SUM($status_columns_str)
-				FROM tagente ta
+		$sql = "SELECT SUM($status_columns_str) FROM
+			(SELECT DISTINCT(ta.id_agente), $status_columns_str
+				FROM tagente ta LEFT JOIN tagent_secondary_group tasg
+					ON ta.id_agente = tasg.id_agent
 				WHERE ta.disabled = 0
 					$agent_name_filter
 					$agents_clause
 					$groups_clause
-					$tags_clause";
+					$tags_clause
+			) AS t1";
 	}
 			
 	$count = (int) db_get_sql ($sql);

@@ -1624,16 +1624,19 @@ sub pandora_process_module ($$$$$$$$$;$) {
 
 	my $save = ($module->{'history_data'} == 1 && ($agent_status->{'datos'} ne $processed_data || $last_try < ($utimestamp - 86400))) ? 1 : 0;
 	
-	db_do ($dbh, 'UPDATE tagente_estado
-		SET datos = ?, estado = ?, known_status = ?, last_status = ?, last_known_status = ?,
-			status_changes = ?, utimestamp = ?, timestamp = ?,
-			id_agente = ?, current_interval = ?, running_by = ?,
-			last_execution_try = ?, last_try = ?, last_error = ?,
-			ff_start_utimestamp = ?
-		WHERE id_agente_modulo = ?', $processed_data, $status, $status, $new_status, $new_status, $status_changes,
-		$current_utimestamp, $timestamp, $module->{'id_agente'}, $current_interval, $server_id,
-		$utimestamp, ($save == 1) ? $timestamp : $agent_status->{'last_try'}, $last_error, $ff_start_utimestamp, $module->{'id_agente_modulo'});
-	
+	# Never update tagente_estado when processing out-of-order data.
+	if ($utimestamp >= $last_try) {
+		db_do ($dbh, 'UPDATE tagente_estado
+			SET datos = ?, estado = ?, known_status = ?, last_status = ?, last_known_status = ?,
+				status_changes = ?, utimestamp = ?, timestamp = ?,
+				id_agente = ?, current_interval = ?, running_by = ?,
+				last_execution_try = ?, last_try = ?, last_error = ?,
+				ff_start_utimestamp = ?
+			WHERE id_agente_modulo = ?', $processed_data, $status, $status, $new_status, $new_status, $status_changes,
+			$current_utimestamp, $timestamp, $module->{'id_agente'}, $current_interval, $server_id,
+			$utimestamp, ($save == 1) ? $timestamp : $agent_status->{'last_try'}, $last_error, $ff_start_utimestamp, $module->{'id_agente_modulo'});
+	}
+
 	# Save module data. Async and log4x modules are not compressed.
 	if ($module_type =~ m/(async)|(log4x)/ || $save == 1) {
 		save_module_data ($data_object, $module, $module_type, $utimestamp, $dbh);

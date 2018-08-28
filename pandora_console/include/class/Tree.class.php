@@ -55,7 +55,7 @@ class Tree {
 		if (is_metaconsole()) enterprise_include_once("meta/include/functions_ui_meta.php");
 
 		$this->strictACL = false;
-		
+
 		$this->acltags = tags_get_user_groups_and_tags($config['id_user'], $this->access);
 	}
 
@@ -163,16 +163,15 @@ class Tree {
 			$agents_normal_count = "($agent_table
 										$agent_normal_filter) AS total_normal_count";
 			// Not init
-				
-				if($this->filter['show_not_init_agents']){
-					$agent_not_init_filter = $this->getAgentStatusFilter(AGENT_STATUS_NOT_INIT);
-					$agents_not_init_count = "($agent_table
-												$agent_not_init_filter) AS total_not_init_count";	
-				}
-				else{
-					$agent_not_init_filter = 0;
-					$agents_not_init_count = 0;
-				}
+			if($this->filter['show_not_init_agents']){
+				$agent_not_init_filter = $this->getAgentStatusFilter(AGENT_STATUS_NOT_INIT);
+				$agents_not_init_count = "($agent_table
+											$agent_not_init_filter) AS total_not_init_count";
+			}
+			else{
+				$agent_not_init_filter = 0;
+				$agents_not_init_count = 0;
+			}
 
 			// Alerts fired
 			$agents_fired_count = "($agent_table
@@ -237,16 +236,7 @@ class Tree {
 		global $config;
 
 		$columns = $this->getAgentCounterColumnsSql($agent_table);
-
-		switch ($config["dbtype"]) {
-			case "mysql":
-			case "postgresql":
-				$columns = "SELECT $columns FROM dual LIMIT 1";
-				break;
-			case "oracle":
-				$columns = "SELECT $columns FROM dual WHERE rownum <= 1";
-				break;
-		}
+		$columns = "SELECT $columns FROM dual LIMIT 1";
 
 		return $columns;
 	}
@@ -510,6 +500,7 @@ class Tree {
 										INNER JOIN tagente_estado tae
 											ON tae.id_agente_modulo = tam.id_agente_modulo
 										WHERE tam.nombre LIKE '%%%s%%'
+											AND tam.disabled = 0
 											AND tam.id_agente = ta.id_agente
 											%s
 										GROUP BY tam.id_agente) AS filter_counters",
@@ -2589,7 +2580,7 @@ class Tree {
 						ON ta.id_agente = tam.id_agente
 					INNER JOIN tagente_estado tae
 						ON tae.id_agente_modulo = tam.id_agente_modulo";
-				$filters['module_search_condition'] = "AND tam.nombre LIKE '%" . $this->filter['searchModule'] . "%' " . $this->getModuleStatusFilterFromTestado();
+				$filters['module_search_condition'] = " AND tam.disabled = 0 AND tam.nombre LIKE '%" . $this->filter['searchModule'] . "%' " . $this->getModuleStatusFilterFromTestado();
 			}
 
 			$table = is_metaconsole() ? "tmetaconsole_agent" : "tagente";

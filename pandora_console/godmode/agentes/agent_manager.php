@@ -603,7 +603,7 @@ else {
 }
 echo clippy_context_help("modules_not_learning_mode");
 echo "</span>";
-echo '</div></form>';
+
 
 if ($id_agente) {
 	echo '<div class="action-buttons" style="width: ' . $table->width . '">';

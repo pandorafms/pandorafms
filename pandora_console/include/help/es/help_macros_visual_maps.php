@@ -3,11 +3,11 @@
  * @package Include/help/es
  */
 ?>
-<h1>Macros de mapas visuales</h1>
+<h1>Macros de consolas visuales</h1>
 
 Es posible introducir una macro en el cuadro de texto al editar un elemento de la consola visual.
 <br /><br />
-Lista de macros de mapas visuales:
+Lista de macros de consolas visuales:
 <ul>
 	<li>_date_ : Muestra la fecha usando el formato local del PHP.</li>
 	<li>_time_ : Muestra la hora usando el formato local del PHP.</li>

@@ -2750,5 +2750,29 @@ function modules_get_modules_status ($mod_status_id) {
 	}
 	
 	return $mod_status_desc;
-} 
+}
+
+function modules_get_counter_by_states($state) {
+	switch ($state) {
+		case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+		case AGENT_MODULE_STATUS_CRITICAL_BAD:
+			return "critical_count";
+		case AGENT_MODULE_STATUS_WARNING_ALERT:
+		case AGENT_MODULE_STATUS_WARNING:
+			return "warning_count";
+			break;
+		case AGENT_MODULE_STATUS_UNKNOWN:
+			return "unknown_count";
+		case AGENT_MODULE_STATUS_NO_DATA:
+		case AGENT_MODULE_STATUS_NOT_INIT:
+			return "notinit_count";
+		case AGENT_MODULE_STATUS_NORMAL_ALERT:
+		case AGENT_MODULE_STATUS_NORMAL:
+			return "normal_count";
+	}
+
+	// If the state is not an expected state, return condition
+	// to not show any data
+	return false;
+}
 ?>

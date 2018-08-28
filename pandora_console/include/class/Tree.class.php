@@ -63,6 +63,13 @@ class Tree {
 		$this->filter = $filter;
 	}
 
+	protected function getEmptyModuleFilterStatus() {
+		return (
+			!isset($this->filter['statusModule']) ||
+			$this->filter['statusModule'] == -1
+		);
+	}
+
 	protected function getAgentStatusFilter ($status = -1) {
 		if ($status == -1)
 			$status = $this->filter['statusAgent'];
@@ -97,42 +104,42 @@ class Tree {
 	}
 
 	protected function getModuleStatusFilter () {
-		if (
-			!isset($this->filter['statusModule']) ||
-			$this->filter['statusModule'] == -1
-		) {
-			return "";
+		$show_init_condition = ($this->filter['show_not_init_agents'])
+			? ""
+			: " AND ta.notinit_count <> ta.total_count";
+
+		if ($this->getEmptyModuleFilterStatus()) {
+			return $show_init_condition;
 		}
 
-		$field_filter = "";
+		$field_filter = modules_get_counter_by_states($this->filter['statusModule']);
+		if ($field_filter === false) return " AND 1=0";
+
+		return "AND ta.$field_filter > 0" . $show_init_condition;
+	}
+
+	protected function getModuleStatusFilterFromTestado () {
 		switch ($this->filter['statusModule']) {
 			case AGENT_MODULE_STATUS_CRITICAL_ALERT:
 			case AGENT_MODULE_STATUS_CRITICAL_BAD:
-				$field_filter = "critical_count";
-				break;
+				return " AND (tae.estado = ".AGENT_MODULE_STATUS_CRITICAL_ALERT."
+											OR tae.estado = ".AGENT_MODULE_STATUS_CRITICAL_BAD.") ";
 			case AGENT_MODULE_STATUS_WARNING_ALERT:
 			case AGENT_MODULE_STATUS_WARNING:
-				$field_filter = "warning_count";
-				break;
+				return " AND (tae.estado = ".AGENT_MODULE_STATUS_WARNING_ALERT."
+											OR tae.estado = ".AGENT_MODULE_STATUS_WARNING.") ";
 			case AGENT_MODULE_STATUS_UNKNOWN:
-				$field_filter = "unknown_count";
-				break;
+				return " AND tae.estado = ".AGENT_MODULE_STATUS_UNKNOWN." ";
 			case AGENT_MODULE_STATUS_NO_DATA:
 			case AGENT_MODULE_STATUS_NOT_INIT:
-				$field_filter = "notinit_count";
-				break;
+				return " AND (tae.estado = ".AGENT_MODULE_STATUS_NO_DATA."
+											OR tae.estado = ".AGENT_MODULE_STATUS_NOT_INIT.") ";
 			case AGENT_MODULE_STATUS_NORMAL_ALERT:
 			case AGENT_MODULE_STATUS_NORMAL:
-				$field_filter = "normal_count";
-				break;
-			default:
-				// If the state is not an expected state, return condition
-				// to not show any data
-				return " AND 1 = 0";
-				break;
+				return " AND (tae.estado = ".AGENT_MODULE_STATUS_NORMAL_ALERT."
+											OR tae.estado = ".AGENT_MODULE_STATUS_NORMAL.") ";
 		}
-
-		return "AND ta.$field_filter > 0";
+		return "";
 	}
 
 	protected function getAgentCounterColumnsSql ($agent_table) {
@@ -302,82 +309,29 @@ class Tree {
 			$module_search_filter = " AND tam.nombre LIKE '%".$this->filter['searchModule']."%' ";
 		}
 
-		// Module status filter
-		$module_status_filter = "";
-		if (isset($this->filter['statusModule'])
-				&& $this->filter['statusModule'] != -1) {
+		$module_status_from_agent = $this->getModuleStatusFilter();
 
-			switch ($this->filter['statusModule']) {
-				case AGENT_MODULE_STATUS_CRITICAL_ALERT:
-				case AGENT_MODULE_STATUS_CRITICAL_BAD:
-					$module_status_filter = " AND (tae.estado = ".AGENT_MODULE_STATUS_CRITICAL_ALERT."
-												OR tae.estado = ".AGENT_MODULE_STATUS_CRITICAL_BAD.") ";
-					break;
-				case AGENT_MODULE_STATUS_WARNING_ALERT:
-				case AGENT_MODULE_STATUS_WARNING:
-					$module_status_filter = " AND (tae.estado = ".AGENT_MODULE_STATUS_WARNING_ALERT."
-												OR tae.estado = ".AGENT_MODULE_STATUS_WARNING.") ";
-					break;
-				case AGENT_MODULE_STATUS_UNKNOWN:
-					$module_status_filter = " AND tae.estado = ".AGENT_MODULE_STATUS_UNKNOWN." ";
-					break;
-				case AGENT_MODULE_STATUS_NO_DATA:
-				case AGENT_MODULE_STATUS_NOT_INIT:
-					$module_status_filter = " AND (tae.estado = ".AGENT_MODULE_STATUS_NO_DATA."
-												OR tae.estado = ".AGENT_MODULE_STATUS_NOT_INIT.") ";
-					break;
-				case AGENT_MODULE_STATUS_NORMAL_ALERT:
-				case AGENT_MODULE_STATUS_NORMAL:
-					$module_status_filter = " AND (tae.estado = ".AGENT_MODULE_STATUS_NORMAL_ALERT."
-												OR tae.estado = ".AGENT_MODULE_STATUS_NORMAL.") ";
-					break;
-			}
-		}
+		// Module status filter
+		$module_status_filter = $this->getModuleStatusFilterFromTestado();
 
 		// Modules join
 		$modules_join = "";
-		$module_status_join = "";
-		if (!empty($module_search_filter) || !empty($module_status_filter) || !$this->filter['show_not_init_agents']) {
-
-			if (!empty($module_status_filter) || !$this->filter['show_not_init_agents']) {
-				$module_status_join = "INNER JOIN tagente_estado tae
-										ON tam.id_agente_modulo IS NOT NULL
-											AND tam.id_agente_modulo = tae.id_agente_modulo
-											$module_status_filter";
-											
-				if(!$this->filter['show_not_init_modules'] || ($this->filter['show_not_init_modules'] && !$this->filter['show_not_init_agents'])){
-					if($type != 'agent' || ($type == 'agent' && !$this->filter['show_not_init_modules'] && !$this->filter['show_not_init_agents'])){
-					$module_status_join .= ' AND tae.estado <> '.AGENT_MODULE_STATUS_NO_DATA.'  AND	tae.estado <> '.AGENT_MODULE_STATUS_NOT_INIT.' ';	
-					}
-				}
-			}
-
+		$module_status_join = 'INNER JOIN tagente_estado tae
+			ON tam.id_agente_modulo = tae.id_agente_modulo  ';
+		if (!$this->filter['show_not_init_modules']) {
+			$module_status_join .= " AND tae.estado <> ".AGENT_MODULE_STATUS_NO_DATA."
+										AND tae.estado <> ".AGENT_MODULE_STATUS_NOT_INIT." ";
+		}
+		if (!empty($module_status_filter)) {
+			$module_status_join .= $module_status_filter;
+		}
+		if (!empty($module_search_filter)) {
 			$modules_join = "INNER JOIN tagente_modulo tam
 								ON tam.disabled = 0
 									AND ta.id_agente = tam.id_agente
 									$module_search_filter
 							$module_status_join";
 		}
-
-		if (empty($module_status_join)) {
-			if(!$this->filter['show_not_init_modules'] || !$this->filter['show_not_init_agents']){
-				if($type == "agent"){
-					$module_status_join = 'INNER JOIN tagente_estado tae
-											ON tam.id_agente_modulo = tae.id_agente_modulo  ';
-				}
-				else{
-					$module_status_join = 'LEFT JOIN tagente_estado tae
-											ON tam.id_agente_modulo = tae.id_agente_modulo  ';	
-				}
-			
-				$module_status_join .= ' AND 1=1 AND	tae.estado <> '.AGENT_MODULE_STATUS_NO_DATA.'  AND	tae.estado <> '.AGENT_MODULE_STATUS_NOT_INIT.' ';
-			}
-			else{
-				$module_status_join = 'LEFT JOIN tagente_estado tae
-										ON tam.id_agente_modulo = tae.id_agente_modulo  ';	
-			}
-		}
-
 		$sql = false;
 
 		switch ($rootType) {
@@ -397,8 +351,13 @@ class Tree {
 					}
 				}
 				// Asking for all groups.
-				else {
-					$user_groups_str = implode(",", array_keys($this->userGroups));
+				elseif (users_can_manage_group_all("AR")) {
+					$user_groups_str = implode(",", $this->userGroupsArray);
+					$group_filter = "";
+					$user_groups_condition = "";
+				} else {
+					$user_groups_str = implode(",", $this->userGroupsArray);
+					$user_groups_condition = "WHERE ta.id_grupo IN($user_groups_str)";
 					$group_filter = "AND (
 						ta.id_grupo IN ($user_groups_str)
 						OR tasg.id_group IN ($user_groups_str)
@@ -484,7 +443,7 @@ class Tree {
 								if ($item_for_count === false) {
 									$sql = "SELECT $columns
 											FROM tgrupo tg
-											WHERE tg.id_grupo IN ($user_groups_str)
+											$user_groups_str_condition
 											ORDER BY $order_fields";
 								}
 								// Counters SQL
@@ -515,7 +474,7 @@ class Tree {
 								if ($item_for_count === false) {
 									$sql = "SELECT $columns
 											FROM tgrupo tg
-											WHERE tg.id_grupo IN ($user_groups_str)
+											$user_groups_str_condition
 											ORDER BY $order_fields";
 								}
 								// Counters SQL
@@ -538,35 +497,52 @@ class Tree {
 						}
 						else {
 							if (!is_metaconsole()) {
+
 								$columns = 'ta.id_agente AS id, ta.nombre AS name, ta.alias,
 									ta.fired_count, ta.normal_count, ta.warning_count,
 									ta.critical_count, ta.unknown_count, ta.notinit_count,
 									ta.total_count, ta.quiet';
-								$group_by_fields = 'ta.id_agente, ta.nombre, ta.alias,
-									ta.fired_count, ta.normal_count, ta.warning_count,
-									ta.critical_count, ta.unknown_count, ta.notinit_count,
-									ta.total_count, ta.quiet';
-								$order_fields = 'ta.alias ASC, ta.id_agente ASC';
+								$filter_counters_where = "";
+								if(!empty($this->filter['searchModule'])){
+									$columns .=", (";
+									$columns .= sprintf("SELECT GROUP_CONCAT(tae.estado SEPARATOR ' ')
+										FROM tagente_modulo tam
+										INNER JOIN tagente_estado tae
+											ON tae.id_agente_modulo = tam.id_agente_modulo
+										WHERE tam.nombre LIKE '%%%s%%'
+											AND tam.id_agente = ta.id_agente
+											%s
+										GROUP BY tam.id_agente) AS filter_counters",
+										$this->filter['searchModule'],
+										$module_status_filter
+									);
+									$filter_counters_where = "WHERE filter_counters IS NOT NULL AND filter_counters <> ''";
+								}
 
-								$sql = "SELECT $columns
+								$order_fields = 'ta.alias ASC, ta.id_agente ASC';
+								$inner_or_left = $this->filter['show_not_init_agents']
+									? "LEFT"
+									: "INNER";
+								$sql = "SELECT * FROM (SELECT $columns
 										FROM tagente ta
 										LEFT JOIN tagent_secondary_group tasg
 											ON tasg.id_agent = ta.id_agente
-										LEFT JOIN tagente_modulo tam
+										$inner_or_left JOIN tagente_modulo tam
 											ON tam.disabled = 0
 												AND ta.id_agente = tam.id_agente
-												$module_search_filter
-										$module_status_join
 										WHERE ta.disabled = 0
 											AND (
 												ta.id_grupo = $rootID
 												OR tasg.id_group = $rootID
 											)
+											$module_status_from_agent
 											$group_filter
 											$agent_search_filter
 											$agent_status_filter
-										GROUP BY $group_by_fields
-										ORDER BY $order_fields";
+											$module_search_filter
+										GROUP BY ta.id_agente
+										ORDER BY $order_fields) as tx
+										$filter_counters_where";
 							}
 							else {
 								$columns = 'ta.id_tagente AS id, ta.nombre AS name, ta.alias,
@@ -1255,23 +1231,6 @@ class Tree {
 		if (empty($data))
 			return array();
 
-		foreach ($data[0] as $key => $value) {
-			
-			if($key != 'total_count' && $key != 'total_fired_count' && strpos($key, 'count')){
-				$zero_counter += $value;
-			}
-			
-		}
-		
-		if(!$zero_counter){
-			$data[0]['total_count'] = 0;
-		}
-		else{
-			$data[0]['total_count'] = $zero_counter;
-		}
-		
-		
-
 		// [26/10/2017] It seems the module hierarchy should be only available into the tree by group
 		if ($this->rootType == 'group' && $this->type == 'agent') {
 			$data = $this->getProcessedModules($data);
@@ -1282,7 +1241,6 @@ class Tree {
 
 	protected function getCounters ($id) {
 		$counters = $this->getItems($id);
-
 		if (!empty($counters)) {
 			$counters = array_pop($counters);
 		}
@@ -1342,7 +1300,7 @@ class Tree {
 		return $groups;
 	}
 
-	protected function getProcessedItem ($item, $server = false, &$items = array(), &$items_tmp = array(), $remove_empty = false) {
+	protected function getProcessedItem ($item, $server = false) {
 
 		if (isset($processed_item['is_processed']) && $processed_item['is_processed'])
 			return $item;
@@ -1761,45 +1719,17 @@ class Tree {
 			else if (!empty($server))
 				$agent['serverID'] = $server['id'];
 		}
-
 		// Counters
 		if (empty($agent['counters'])) {
 			$agent['counters'] = array();
 
-			if (isset($agent['unknown_count']))
-				$agent['counters']['unknown'] = $agent['unknown_count'];
-			else
-				$agent['counters']['unknown'] = (int) agents_monitor_unknown($agent['id']);
-
-			if (isset($agent['critical_count']))
-				$agent['counters']['critical'] = $agent['critical_count'];
-			else
-				$agent['counters']['critical'] = (int) agents_monitor_critical($agent['id']);
-
-			if (isset($agent['warning_count']))
-				$agent['counters']['warning'] = $agent['warning_count'];
-			else
-				$agent['counters']['warning'] = (int) agents_monitor_warning($agent['id']);
-
-			if (isset($agent['notinit_count']))
-				$agent['counters']['not_init'] = $agent['notinit_count'];
-			else
-				$agent['counters']['not_init'] = (int) agents_monitor_notinit($agent['id']);
-
-			if (isset($agent['normal_count']))
-				$agent['counters']['ok'] = $agent['normal_count'];
-			else
-				$agent['counters']['ok'] = (int) agents_monitor_ok($agent['id']);
-
-			if (isset($agent['total_count']))
-				$agent['counters']['total'] = $agent['total_count'];
-			else
-				$agent['counters']['total'] = (int) agents_monitor_total($agent['id']);
-
-			if (isset($agent['fired_count']))
-				$agent['counters']['alerts'] = $agent['fired_count'];
-			else
-				$agent['counters']['alerts'] = (int) agents_get_alerts_fired($agent['id']);
+			$agent['counters']['unknown'] = isset($agent['unknown_count']) ? $agent['unknown_count'] : 0;
+			$agent['counters']['critical'] = isset($agent['critical_count']) ? $agent['critical_count'] : 0;
+			$agent['counters']['warning'] = isset($agent['warning_count']) ? $agent['warning_count'] : 0;
+			$agent['counters']['not_init'] = isset($agent['notinit_count']) ? $agent['notinit_count'] : 0;
+			$agent['counters']['ok'] = isset($agent['normal_count']) ? $agent['normal_count'] : 0;
+			$agent['counters']['total'] = isset($agent['total_count']) ? $agent['total_count'] : 0;
+			$agent['counters']['alerts'] = isset($agent['fired_count']) ? $agent['fired_count'] : 0;
 		}
 
 		// Status image
@@ -1812,6 +1742,86 @@ class Tree {
 
 		// Alerts fired image
 		$agent["alertImageHTML"] = agents_tree_view_alert_img_ball($agent['counters']['alerts']);
+
+		// search module recalculate counters
+		if(array_key_exists('filter_counters', $agent)){
+			$agent['counters']['unknown'] = 0;
+			$agent['counters']['critical'] = 0;
+			$agent['counters']['warning'] = 0;
+			$agent['counters']['not_init'] = 0;
+			$agent['counters']['ok'] = 0;
+			$agent['counters']['total'] = 0;
+			foreach (explode(' ', $agent['filter_counters']) as $counter) {
+				switch($counter) {
+					case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+					case AGENT_MODULE_STATUS_CRITICAL_BAD:
+						$agent['counters']['critical']++;
+						break;
+					case AGENT_MODULE_STATUS_WARNING_ALERT:
+					case AGENT_MODULE_STATUS_WARNING:
+						$agent['counters']['warning']++;
+						break;
+					case AGENT_MODULE_STATUS_UNKNOWN:
+						$agent['counters']['unknown']++;
+						break;
+					case AGENT_MODULE_STATUS_NO_DATA:
+					case AGENT_MODULE_STATUS_NOT_INIT:
+						$agent['counters']['not_init']++;
+						break;
+					case AGENT_MODULE_STATUS_NORMAL_ALERT:
+					case AGENT_MODULE_STATUS_NORMAL:
+						$agent['counters']['ok']++;
+						break;
+				}
+				$agent['counters']['total']++;
+			}
+			$agent['critical_count'] = $agent['counters']['critical'];
+			$agent['warning_count'] = $agent['counters']['warning'];
+			$agent['unknown_count'] = $agent['counters']['unknown'];
+			$agent['notinit_count'] = $agent['counters']['not_init'];
+			$agent['normal_count'] = $agent['counters']['ok'];
+			$agent['total_count'] = $agent['counters']['total'];
+		}
+
+		if (!$this->getEmptyModuleFilterStatus()) {
+			$agent['counters']['unknown'] = 0;
+			$agent['counters']['critical'] = 0;
+			$agent['counters']['warning'] = 0;
+			$agent['counters']['not_init'] = 0;
+			$agent['counters']['ok'] = 0;
+			$agent['counters']['total'] = 0;
+			switch($this->filter['statusModule']) {
+				case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+				case AGENT_MODULE_STATUS_CRITICAL_BAD:
+					$agent['counters']['critical'] = $agent['critical_count'];
+					$agent['counters']['total'] = $agent['critical_count'];
+					break;
+				case AGENT_MODULE_STATUS_WARNING_ALERT:
+				case AGENT_MODULE_STATUS_WARNING:
+					$agent['counters']['warning'] = $agent['warning_count'];
+					$agent['counters']['total'] = $agent['warning_count'];
+					break;
+				case AGENT_MODULE_STATUS_UNKNOWN:
+					$agent['counters']['unknown'] = $agent['unknown_count'];
+					$agent['counters']['total'] = $agent['unknown_count'];
+					break;
+				case AGENT_MODULE_STATUS_NO_DATA:
+				case AGENT_MODULE_STATUS_NOT_INIT:
+					$agent['counters']['not_init'] = $agent['notinit_count'];
+					$agent['counters']['total'] = $agent['notinit_count'];
+					break;
+				case AGENT_MODULE_STATUS_NORMAL_ALERT:
+				case AGENT_MODULE_STATUS_NORMAL:
+					$agent['counters']['ok'] = $agent['normal_count'];
+					$agent['counters']['total'] = $agent['normal_count'];
+					break;
+			}
+		}
+
+		if (!$this->filter['show_not_init_modules']) {
+			$agent['counters']['total'] -= $agent['counters']['not_init'];
+			$agent['counters']['not_init'] = 0;
+		}
 
 		// Quiet image
 		if (isset($agent['quiet']) && $agent['quiet'])
@@ -1972,7 +1982,7 @@ class Tree {
 				$this->processModules($items);
 				$processed_items = $items;
 				
-				if(!$this->filter['show_not_init_modules']){
+				/*if(!$this->filter['show_not_init_modules']){
 					
 					foreach ($items as $key => $value) {
 						if($items[$key]['total_count'] != $items[$key]['notinit_count']){
@@ -1982,7 +1992,7 @@ class Tree {
 						
 					}
 					
-				}
+				}*/
 			}
 			else {
 				$items = array();
@@ -2047,28 +2057,6 @@ class Tree {
 		// Agents
 		else {
 			$items = $this->getItems();
-			
-			
-			if(!$this->filter['show_not_init_modules']){
-				
-				foreach ($items as $key => $value) {					
-						$items[$key]['total_count'] = $items[$key]['total_count'] - $items[$key]['notinit_count'];
-						$items[$key]['notinit_count'] = 0;
-					
-				}
-				
-			}
-			
-			if(!$this->filter['show_not_init_agents']){
-				
-				foreach ($items as $key => $value) {					
-						if($items[$key]['total_count'] == $items[$key]['notinit_count']){
-							unset($items[$key]);
-						}
-				}
-				
-			}
-			
 			$this->processAgents($items);
 			$processed_items = $items;
 		}
@@ -2167,7 +2155,6 @@ class Tree {
 
 	private function getDataModules() {
 		$processed_items = array();
-
 		// Module names
 		if ($this->id == -1) {
 			if (! is_metaconsole()) {
@@ -2288,7 +2275,6 @@ class Tree {
 
 	private function getDataModuleGroup() {
 		$processed_items = array();
-
 		// Module groups
 		if ($this->id == -1) {
 			if (! is_metaconsole()) {
@@ -2586,7 +2572,8 @@ class Tree {
 			$filters = array(
 				'agent_alias' => '',
 				'agent_status' => '',
-				'module_status' => ''
+				'module_status' => '',
+				'module_search' => ''
 			);
 			if (!empty($this->filter['searchAgent'])) {
 				$filters['agent_alias'] = "AND LOWER(ta.alias) LIKE LOWER('%".$this->filter['searchAgent']."%')";
@@ -2597,22 +2584,31 @@ class Tree {
 			if ($this->filter['statusModule'] >= 0) {
 				$filters['module_status'] = $this->getModuleStatusFilter();
 			}
+			if (!empty($this->filter['searchModule'])) {
+				$filters['module_search_inner'] = "INNER JOIN tagente_modulo tam
+						ON ta.id_agente = tam.id_agente
+					INNER JOIN tagente_estado tae
+						ON tae.id_agente_modulo = tam.id_agente_modulo";
+				$filters['module_search_condition'] = "AND tam.nombre LIKE '%" . $this->filter['searchModule'] . "%' " . $this->getModuleStatusFilterFromTestado();
+			}
 
 			$table = is_metaconsole() ? "tmetaconsole_agent" : "tagente";
 			$table_sec = is_metaconsole() ? "tmetaconsole_agent_secondary_group" : "tagent_secondary_group";
 			$sql_model = "SELECT %s FROM
 				(
-					SELECT COUNT(ta.id_agente) AS total, id_group AS g
+					SELECT COUNT(DISTINCT(ta.id_agente)) AS total, id_group AS g
 						FROM $table ta INNER JOIN $table_sec tasg
 							ON ta.id_agente = tasg.id_agent
+						%s
 						WHERE ta.disabled = 0
-							%s %s %s %s
+							%s %s %s %s %s
 						GROUP BY id_group
 					UNION ALL
-					SELECT COUNT(ta.id_agente) AS total, id_grupo AS g
+					SELECT COUNT(DISTINCT(ta.id_agente)) AS total, id_grupo AS g
 						FROM $table ta
+						%s
 						WHERE ta.disabled = 0
-							%s %s %s %s
+							%s %s %s %s %s
 						GROUP BY id_grupo
 				) x GROUP BY g";
 			$sql_array = array();
@@ -2620,12 +2616,13 @@ class Tree {
 				$sql_array[] = sprintf(
 					$sql_model,
 					$s_array['header'],
-					$s_array['condition'], $filters['agent_alias'], $filters['agent_status'], $filters['module_status'],
-					$s_array['condition'], $filters['agent_alias'], $filters['agent_status'], $filters['module_status']
+					$filters['module_search_inner'],
+					$s_array['condition'], $filters['agent_alias'], $filters['agent_status'], $filters['module_status'], $filters['module_search_condition'],
+					$filters['module_search_inner'],
+					$s_array['condition'], $filters['agent_alias'], $filters['agent_status'], $filters['module_status'], $filters['module_search_condition']
 				);
 			}
 			$sql = "SELECT $fields  FROM (" . implode(" UNION ALL ", $sql_array) . ") x2 GROUP BY g";
-
 			$stats = db_get_all_rows_sql($sql);
 		}
 		else{
@@ -2649,7 +2646,6 @@ class Tree {
 		if ($group_stats !== false && isset($group_stats[$group_id])) {
 			return $group_stats[$group_id];
 		}
-
 		return $this->getCounters($group_id);
 	}
 

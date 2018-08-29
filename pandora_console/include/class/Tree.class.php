@@ -1253,7 +1253,7 @@ class Tree {
 		// If user have not permissions in parent, set parent node to 0 (all)
 		// TODO avoid to do foreach for admins
 		foreach ($groups as $id => $group) {
-			if (!in_array($groups[$id]['parent'], $this->userGroupsArray)) {
+			if (!isset($this->userGroups[$groups[$id]['parent']])) {
 				$groups[$id]['parent'] = 0;
 			}
 		}
@@ -2583,6 +2583,14 @@ class Tree {
 				$filters['module_search_condition'] = " AND tam.disabled = 0 AND tam.nombre LIKE '%" . $this->filter['searchModule'] . "%' " . $this->getModuleStatusFilterFromTestado();
 			}
 
+			$group_acl = "";
+			$secondary_group_acl = "";
+			if (!users_can_manage_group_all("AR")) {
+				$user_groups_str = implode(",", $this->userGroupsArray);
+				$group_acl = " AND ta.id_grupo IN ($user_groups_str)";
+				$secondary_group_acl = " AND tasg.id_group IN ($user_groups_str)";
+			}
+
 			$table = is_metaconsole() ? "tmetaconsole_agent" : "tagente";
 			$table_sec = is_metaconsole() ? "tmetaconsole_agent_secondary_group" : "tagent_secondary_group";
 			$sql_model = "SELECT %s FROM
@@ -2592,14 +2600,16 @@ class Tree {
 							ON ta.id_agente = tasg.id_agent
 						%s
 						WHERE ta.disabled = 0
-							%s %s %s %s %s
+							%s %s %s
+							%s %s %s
 						GROUP BY id_group
 					UNION ALL
 					SELECT COUNT(DISTINCT(ta.id_agente)) AS total, id_grupo AS g
 						FROM $table ta
 						%s
 						WHERE ta.disabled = 0
-							%s %s %s %s %s
+							%s %s %s
+							%s %s %s
 						GROUP BY id_grupo
 				) x GROUP BY g";
 			$sql_array = array();
@@ -2608,9 +2618,11 @@ class Tree {
 					$sql_model,
 					$s_array['header'],
 					$filters['module_search_inner'],
-					$s_array['condition'], $filters['agent_alias'], $filters['agent_status'], $filters['module_status'], $filters['module_search_condition'],
+					$s_array['condition'], $filters['agent_alias'], $filters['agent_status'],
+					$filters['module_status'], $filters['module_search_condition'], $secondary_group_acl,
 					$filters['module_search_inner'],
-					$s_array['condition'], $filters['agent_alias'], $filters['agent_status'], $filters['module_status'], $filters['module_search_condition']
+					$s_array['condition'], $filters['agent_alias'], $filters['agent_status'],
+					$filters['module_status'], $filters['module_search_condition'], $group_acl
 				);
 			}
 			$sql = "SELECT $fields  FROM (" . implode(" UNION ALL ", $sql_array) . ") x2 GROUP BY g";

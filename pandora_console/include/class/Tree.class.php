@@ -63,6 +63,11 @@ class Tree {
 		$this->filter = $filter;
 	}
 
+	protected function getDisplayHierarchy() {
+		return $this->filter['searchHirearchy'] ||
+			(empty($this->filter['searchAgent']) && empty($this->filter['searchModule']));
+	}
+
 	protected function getEmptyModuleFilterStatus() {
 		return (
 			!isset($this->filter['statusModule']) ||
@@ -1242,19 +1247,18 @@ class Tree {
 		return strcmp($a["name"], $b["name"]);
 	}
 
-	protected function getProcessedGroups ($items, $remove_empty = false) {
+	protected function getProcessedGroups () {
 		$processed_groups = array();
 		// Index and process the groups
-		$groups = array();
-		foreach ($items as $item) {
-			$groups[$item['id']] = $this->getProcessedItem($item);
-		}
+		$groups = $this->getGroupCounters(0);
 
 		// If user have not permissions in parent, set parent node to 0 (all)
-		// TODO avoid to do foreach for admins
-		foreach ($groups as $id => $group) {
-			if (!isset($this->userGroups[$groups[$id]['parent']])) {
-				$groups[$id]['parent'] = 0;
+		// Avoid to do foreach for admins
+		if (!users_can_manage_group_all("AR")) {
+			foreach ($groups as $id => $group) {
+				if (!isset($this->userGroups[$groups[$id]['parent']])) {
+					$groups[$id]['parent'] = 0;
+				}
 			}
 		}
 		// Build the group hierarchy
@@ -1284,9 +1288,8 @@ class Tree {
 		// Propagate child counters to her parents
 		Tree::processCounters($groups);
 		// Filter groups and eliminates the reference to empty groups
-		if ($remove_empty) {
-			$groups = Tree::deleteEmptyGroups($groups);
-		}
+		$groups = Tree::deleteEmptyGroups($groups);
+
 		usort($groups, array("Tree", "cmpSortNames"));
 		return $groups;
 	}
@@ -1295,87 +1298,6 @@ class Tree {
 
 		if (isset($processed_item['is_processed']) && $processed_item['is_processed'])
 			return $item;
-
-		// For strict items
-		if (isset($item['_id_'])) {
-			$item['id'] = $item['_id_'];
-			$item['name'] = $item['_name_'];
-
-			if (isset($item['_is_tag_']) && $item['_is_tag_']) {
-				$item['type'] = 'tag';
-				$item['rootType'] = 'tag';
-			}
-			else {
-				$item['type'] = 'group';
-				$item['rootType'] = 'group';
-				$item['parent'] = $item['_parent_id_'];
-
-				if (!empty($item['_iconImg_']))
-					$item['iconHTML'] = $item['_iconImg_'];
-			}
-
-			if (isset($item['_agents_unknown_']))
-				$item['total_unknown_count'] = $item['_agents_unknown_'];
-			if (isset($item['_agents_critical_']))
-				$item['total_critical_count'] = $item['_agents_critical_'];
-			if (isset($item['_agents_warning_']))
-				$item['total_warning_count'] = $item['_agents_warning_'];
-			if (isset($item['_agents_not_init_']))
-				$item['total_not_init_count'] = $item['_agents_not_init_'];
-			if (isset($item['_agents_ok_']))
-				$item['total_normal_count'] = $item['_agents_ok_'];
-			if (isset($item['_total_agents_']))
-				$item['total_count'] = $item['_total_agents_'];
-			if (isset($item['_monitors_alerts_fired_']))
-				$item['total_fired_count'] = $item['_monitors_alerts_fired_'];
-
-			// Agent filter for Strict ACL users
-			if ($this->filter["statusAgent"] != -1) {
-				switch ($this->filter["statusAgent"]) {
-					case AGENT_STATUS_NOT_INIT:
-						$item['total_count'] = $item['total_not_init_count'];
-
-						$item['total_unknown_count'] = 0;
-						$item['total_critical_count'] = 0;
-						$item['total_warning_count'] = 0;
-						$item['total_normal_count'] = 0;
-						break;
-					case AGENT_STATUS_CRITICAL:
-						$item['total_count'] = $item['total_critical_count'];
-
-						$item['total_unknown_count'] = 0;
-						$item['total_warning_count'] = 0;
-						$item['total_not_init_count'] = 0;
-						$item['total_normal_count'] = 0;
-						break;
-					case AGENT_STATUS_WARNING:
-						$item['total_count'] = $item['total_warning_count'];
-
-						$item['total_unknown_count'] = 0;
-						$item['total_critical_count'] = 0;
-						$item['total_not_init_count'] = 0;
-						$item['total_normal_count'] = 0;
-						break;
-					case AGENT_STATUS_UNKNOWN:
-						$item['total_count'] = $item['total_unknown_count'];
-
-						$item['total_critical_count'] = 0;
-						$item['total_warning_count'] = 0;
-						$item['total_not_init_count'] = 0;
-						$item['total_normal_count'] = 0;
-						break;
-					case AGENT_STATUS_NORMAL:
-						$item['total_count'] = $item['total_normal_count'];
-
-						$item['total_unknown_count'] = 0;
-						$item['total_critical_count'] = 0;
-						$item['total_warning_count'] = 0;
-						$item['total_not_init_count'] = 0;
-						break;
-				}
-			}
-		}
-
 
 		$processed_item = array();
 		$processed_item['id'] = $item['id'];
@@ -1407,16 +1329,6 @@ class Tree {
 
 		if (is_metaconsole() && !empty($server)) {
 			$processed_item['serverID'] = $server['id'];
-		}
-
-		// Get the counters of the group (special case)
-		if ($processed_item['type'] == 'group') {
-			$counters = $this->getGroupCounters($item['id']);
-			if (!empty($counters)) {
-				foreach ($counters as $type => $value) {
-					$item[$type] = $value;
-				}
-			}
 		}
 
 		$counters = array();
@@ -1828,9 +1740,6 @@ class Tree {
 						break;
 					case 'live':
 						$agent['searchChildren'] = 0;
-
-						// if ($searchChildren)
-						// 	$agent['children'] = $this->getModules($agent['id'], $modulesFilter);
 						break;
 				}
 			}
@@ -2012,9 +1921,7 @@ class Tree {
 		// Groups
 		if ($this->id == -1) {
 
-			$items = $this->getItems();
-
-			$processed_items = $this->getProcessedGroups($items, true);
+			$processed_items = $this->getProcessedGroups();
 
 			if (!empty($processed_items)) {
 				// Filter by group name. This should be done after rerieving the items cause we need the possible items descendants
@@ -2625,7 +2532,10 @@ class Tree {
 					$filters['module_status'], $filters['module_search_condition'], $group_acl
 				);
 			}
-			$sql = "SELECT $fields  FROM (" . implode(" UNION ALL ", $sql_array) . ") x2 GROUP BY g";
+			$hierarchy = $this->getDisplayHierarchy()
+				? 'tg.parent'
+				: '0 as parent';
+			$sql = "SELECT $fields, tg.nombre AS `name`, $hierarchy, tg.icon, tg.id_grupo AS gid FROM (" . implode(" UNION ALL ", $sql_array) . ") x2 RIGHT JOIN tgrupo tg ON x2.g = tg.id_grupo GROUP BY tg.id_grupo";
 			$stats = db_get_all_rows_sql($sql);
 		}
 		else{
@@ -2637,17 +2547,25 @@ class Tree {
 		$group_stats = array();
 		foreach ($stats as $group) {
 //			$group_stats[$group['id_group']]['total_count'] = $group['modules'] > 0 ? $group['agents'] : 0;
-			$group_stats[$group['id_group']]['total_count'] = $group['agents'];
-			$group_stats[$group['id_group']]['total_critical_count'] = $group['critical'];
-			$group_stats[$group['id_group']]['total_unknown_count'] = $group['unknown'];
-			$group_stats[$group['id_group']]['total_warning_count'] = $group['warning'];
-			$group_stats[$group['id_group']]['total_not_init_count'] = $group['non-init'];
-			$group_stats[$group['id_group']]['total_normal_count'] = $group['normal'];
-			$group_stats[$group['id_group']]['total_fired_count'] = $group['alerts_fired'];
+			$group_stats[$group['gid']]['total_count'] = (bool)$group['agents'] ? $group['agents'] : 0;
+			$group_stats[$group['gid']]['total_critical_count'] = $group['critical'] ? $group['critical'] : 0;
+			$group_stats[$group['gid']]['total_unknown_count'] = $group['unknown'] ? $group['unknown'] : 0;
+			$group_stats[$group['gid']]['total_warning_count'] = $group['warning'] ? $group['warning'] : 0;
+			$group_stats[$group['gid']]['total_not_init_count'] = $group['non-init'] ? $group['non-init'] : 0;
+			$group_stats[$group['gid']]['total_normal_count'] = $group['normal'] ? $group['normal'] : 0;
+			$group_stats[$group['gid']]['total_fired_count'] = $group['alerts_fired'] ? $group['alerts_fired'] : 0;
+			$group_stats[$group['gid']]['name'] = $group['name'];
+			$group_stats[$group['gid']]['parent'] = $group['parent'];
+			$group_stats[$group['gid']]['icon'] = $group['icon'];
+			$group_stats[$group['gid']]['id'] = $group['gid'];
+			$group_stats[$group['gid']] = $this->getProcessedItem($group_stats[$group['gid']]);
 		}
 
 		if ($group_stats !== false && isset($group_stats[$group_id])) {
 			return $group_stats[$group_id];
+		}
+		if ($group_stats !== false && $group_id === 0) {
+			return $group_stats;
 		}
 		return $this->getCounters($group_id);
 	}

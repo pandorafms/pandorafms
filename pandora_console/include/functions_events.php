@@ -1529,7 +1529,31 @@ function events_get_all_status ($report = false) {
 	}
 	
 	return $fields;
-} 
+}
+
+/**
+ * Return all event source.
+ *
+ * @return array event source array.
+ */
+function events_get_all_source () {
+	$event_table = events_get_events_table(is_metaconsole(),false);
+	$fields = array ();
+	$fields[''] = __('All');
+	
+	if (users_is_admin()) {
+		$sources = db_get_all_rows_sql("SELECT DISTINCT(source) FROM ". $event_table);
+	} else {
+		$groups_user = users_get_groups ($config['id_user'], "ER", true);
+		$sources = db_get_all_rows_sql("SELECT DISTINCT(source) FROM ". $event_table. " WHERE id_grupo IN (" .implode(",",array_keys($groups_user)) .")");	
+	}
+	
+	foreach ($sources as $key => $source) {
+		$fields[$source['source']] = $source['source'];
+	}
+	
+	return $fields;
+}
 
 /**
  * Decode a numeric status into status description.

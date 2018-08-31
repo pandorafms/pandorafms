@@ -1079,6 +1079,9 @@ CREATE TABLE IF NOT EXISTS `tevent_filter` (
 	`filter_only_alert` int(10) NOT NULL default -1,
 	`date_from` date default NULL,
 	`date_to` date default NULL,
+	`source` tinytext NOT NULL,
+	`id_extra` tinytext NOT NULL,
+	`user_comment` text NOT NULL,
 	PRIMARY KEY  (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

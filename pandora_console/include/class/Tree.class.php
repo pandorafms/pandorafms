@@ -123,8 +123,12 @@ class Tree {
 		return "AND ta.$field_filter > 0" . $show_init_condition;
 	}
 
-	protected function getModuleStatusFilterFromTestado () {
-		switch ($this->filter['statusModule']) {
+	protected function getModuleStatusFilterFromTestado ($state = false) {
+		$selected_status = ($state !== false)
+			? $state
+			: $this->filter['statusModule'];
+
+		switch ($selected_status) {
 			case AGENT_MODULE_STATUS_CRITICAL_ALERT:
 			case AGENT_MODULE_STATUS_CRITICAL_BAD:
 				return " AND (tae.estado = ".AGENT_MODULE_STATUS_CRITICAL_ALERT."
@@ -497,35 +501,33 @@ class Tree {
 									ta.fired_count, ta.normal_count, ta.warning_count,
 									ta.critical_count, ta.unknown_count, ta.notinit_count,
 									ta.total_count, ta.quiet';
-								$filter_counters_where = "";
+								$search_module_jj = "";
 								if(!empty($this->filter['searchModule'])){
-									$columns .=", (";
-									$columns .= sprintf("SELECT GROUP_CONCAT(tae.estado SEPARATOR ' ')
-										FROM tagente_modulo tam
-										INNER JOIN tagente_estado tae
-											ON tae.id_agente_modulo = tam.id_agente_modulo
-										WHERE tam.nombre LIKE '%%%s%%'
-											AND tam.disabled = 0
-											AND tam.id_agente = ta.id_agente
-											%s
-										GROUP BY tam.id_agente) AS filter_counters",
-										$this->filter['searchModule'],
-										$module_status_filter
-									);
-									$filter_counters_where = "WHERE filter_counters IS NOT NULL AND filter_counters <> ''";
+									$columns .=",
+										SUM(if(1=1 " . $this->getModuleStatusFilterFromTestado(AGENT_MODULE_STATUS_CRITICAL_ALERT) . ", 1, 0)) as state_critical,
+										SUM(if(1=1 " . $this->getModuleStatusFilterFromTestado(AGENT_MODULE_STATUS_WARNING_ALERT) . ", 1, 0)) as state_warning,
+										SUM(if(1=1 " . $this->getModuleStatusFilterFromTestado(AGENT_MODULE_STATUS_UNKNOWN) . ", 1, 0)) as state_unknown,
+										SUM(if(1=1 " . $this->getModuleStatusFilterFromTestado(AGENT_MODULE_STATUS_NO_DATA) . ", 1, 0)) as state_notinit,
+										SUM(if(1=1 " . $this->getModuleStatusFilterFromTestado(AGENT_MODULE_STATUS_NORMAL) . ", 1, 0)) as state_normal,
+										SUM(if(1=1 " . $this->getModuleStatusFilterFromTestado() . ",1,0)) as state_total
+									";
+									$search_module_jj = "INNER JOIN tagente_estado tae
+										ON tae.id_agente_modulo = tam.id_agente_modulo";
+									$having_conditional = "HAVING state_total > 0";
 								}
 
 								$order_fields = 'ta.alias ASC, ta.id_agente ASC';
 								$inner_or_left = $this->filter['show_not_init_agents']
 									? "LEFT"
 									: "INNER";
-								$sql = "SELECT * FROM (SELECT $columns
+								$sql = "SELECT $columns
 										FROM tagente ta
 										LEFT JOIN tagent_secondary_group tasg
 											ON tasg.id_agent = ta.id_agente
 										$inner_or_left JOIN tagente_modulo tam
 											ON tam.disabled = 0
 												AND ta.id_agente = tam.id_agente
+										$search_module_jj
 										WHERE ta.disabled = 0
 											AND (
 												ta.id_grupo = $rootID
@@ -537,8 +539,8 @@ class Tree {
 											$agent_status_filter
 											$module_search_filter
 										GROUP BY ta.id_agente
-										ORDER BY $order_fields) as tx
-										$filter_counters_where";
+										$having_conditional
+										ORDER BY $order_fields";
 							}
 							else {
 								$columns = 'ta.id_tagente AS id, ta.nombre AS name, ta.alias,
@@ -963,25 +965,39 @@ class Tree {
 								ta.fired_count, ta.normal_count, ta.warning_count,
 								ta.critical_count, ta.unknown_count, ta.notinit_count,
 								ta.total_count, ta.quiet';
-							$group_by_fields = 'ta.id_agente, ta.nombre, ta.alias,
-								ta.fired_count, ta.normal_count, ta.warning_count,
-								ta.critical_count, ta.unknown_count, ta.notinit_count,
-								ta.total_count, ta.quiet';
-							$order_fields = 'ta.alias ASC, ta.id_agente ASC';
+							$search_module_jj = "";
+							$columns .=",
+								SUM(if(1=1 " . $this->getModuleStatusFilterFromTestado(AGENT_MODULE_STATUS_CRITICAL_ALERT) . ", 1, 0)) as state_critical,
+								SUM(if(1=1 " . $this->getModuleStatusFilterFromTestado(AGENT_MODULE_STATUS_WARNING_ALERT) . ", 1, 0)) as state_warning,
+								SUM(if(1=1 " . $this->getModuleStatusFilterFromTestado(AGENT_MODULE_STATUS_UNKNOWN) . ", 1, 0)) as state_unknown,
+								SUM(if(1=1 " . $this->getModuleStatusFilterFromTestado(AGENT_MODULE_STATUS_NO_DATA) . ", 1, 0)) as state_notinit,
+								SUM(if(1=1 " . $this->getModuleStatusFilterFromTestado(AGENT_MODULE_STATUS_NORMAL) . ", 1, 0)) as state_normal,
+								SUM(if(1=1 " . $this->getModuleStatusFilterFromTestado() . ",1,0)) as state_total
+							";
+							$search_module_jj = "INNER JOIN tagente_estado tae
+									ON tae.id_agente_modulo = tam.id_agente_modulo";
 
+							$order_fields = 'ta.alias ASC, ta.id_agente ASC';
+							$inner_or_left = $this->filter['show_not_init_agents']
+								? "LEFT"
+								: "INNER";
 							$sql = "SELECT $columns
 									FROM tagente ta
-									INNER JOIN tagente_modulo tam
+									LEFT JOIN tagent_secondary_group tasg
+										ON tasg.id_agent = ta.id_agente
+									$inner_or_left JOIN tagente_modulo tam
 										ON tam.disabled = 0
 											AND ta.id_agente = tam.id_agente
-											AND tam.id_module_group = $rootID
-											$module_search_filter
-									$module_status_join
+									$search_module_jj
 									WHERE ta.disabled = 0
-										$group_acl
+										AND tam.id_module_group = $rootID
+										$module_status_from_agent
+										$group_filter
 										$agent_search_filter
 										$agent_status_filter
-									GROUP BY $group_by_fields
+										$module_search_filter
+									GROUP BY ta.id_agente
+									HAVING state_total > 0
 									ORDER BY $order_fields";
 						}
 						break;
@@ -1107,45 +1123,39 @@ class Tree {
 									substr($symbols, $i, 1), $name);
 							}
 							$this->filter['searchModule'] = $name = io_safe_input($name);
-							$filter_counters_where = "";
-							if(!empty($this->filter['searchModule'])){
-								$columns .=", (";
-								$columns .= sprintf("SELECT GROUP_CONCAT(tae.estado SEPARATOR ' ')
-									FROM tagente_modulo tam
-									INNER JOIN tagente_estado tae
-										ON tae.id_agente_modulo = tam.id_agente_modulo
-									WHERE tam.nombre LIKE '%%%s%%'
-										AND tam.disabled = 0
-										AND tam.id_agente = ta.id_agente
-										%s
-									GROUP BY tam.id_agente) AS filter_counters",
-									$this->filter['searchModule'],
-									$module_status_filter
-								);
-								$filter_counters_where = "WHERE filter_counters IS NOT NULL AND filter_counters <> ''";
-							}
+							$columns .=",
+								SUM(if(1=1 " . $this->getModuleStatusFilterFromTestado(AGENT_MODULE_STATUS_CRITICAL_ALERT) . ", 1, 0)) as state_critical,
+								SUM(if(1=1 " . $this->getModuleStatusFilterFromTestado(AGENT_MODULE_STATUS_WARNING_ALERT) . ", 1, 0)) as state_warning,
+								SUM(if(1=1 " . $this->getModuleStatusFilterFromTestado(AGENT_MODULE_STATUS_UNKNOWN) . ", 1, 0)) as state_unknown,
+								SUM(if(1=1 " . $this->getModuleStatusFilterFromTestado(AGENT_MODULE_STATUS_NO_DATA) . ", 1, 0)) as state_notinit,
+								SUM(if(1=1 " . $this->getModuleStatusFilterFromTestado(AGENT_MODULE_STATUS_NORMAL) . ", 1, 0)) as state_normal,
+								SUM(if(1=1 " . $this->getModuleStatusFilterFromTestado() . ",1,0)) as state_total
+							";
+							$search_module_jj = "INNER JOIN tagente_estado tae
+								ON tae.id_agente_modulo = tam.id_agente_modulo";
+
 							$order_fields = 'ta.alias ASC, ta.id_agente ASC';
 							$inner_or_left = $this->filter['show_not_init_agents']
 								? "LEFT"
 								: "INNER";
-
-							$sql = "SELECT * FROM (SELECT $columns
-									FROM tagente ta
-									LEFT JOIN tagent_secondary_group tasg
-										ON tasg.id_agent = ta.id_agente
-									$inner_or_left JOIN tagente_modulo tam
-										ON tam.disabled = 0
-											AND ta.id_agente = tam.id_agente
-									WHERE ta.disabled = 0
-										AND tam.nombre = '$name'
-										$module_status_from_agent
-										$group_filter
-										$agent_search_filter
-										$agent_status_filter
-										$module_search_filter
-									GROUP BY ta.id_agente
-									ORDER BY $order_fields) as tx
-									$filter_counters_where";
+							$sql = "SELECT $columns
+								FROM tagente ta
+								LEFT JOIN tagent_secondary_group tasg
+									ON tasg.id_agent = ta.id_agente
+								$inner_or_left JOIN tagente_modulo tam
+									ON tam.disabled = 0
+										AND ta.id_agente = tam.id_agente
+								$search_module_jj
+								WHERE ta.disabled = 0
+									AND tam.nombre = '$name'
+									$module_status_from_agent
+									$group_filter
+									$agent_search_filter
+									$agent_status_filter
+									$module_search_filter
+								GROUP BY ta.id_agente
+								HAVING state_total > 0
+								ORDER BY $order_fields";
 						}
 						break;
 					// Get the modules of an agent
@@ -1658,37 +1668,14 @@ class Tree {
 		$agent["alertImageHTML"] = agents_tree_view_alert_img_ball($agent['counters']['alerts']);
 
 		// search module recalculate counters
-		if(array_key_exists('filter_counters', $agent)){
-			$agent['counters']['unknown'] = 0;
-			$agent['counters']['critical'] = 0;
-			$agent['counters']['warning'] = 0;
-			$agent['counters']['not_init'] = 0;
-			$agent['counters']['ok'] = 0;
-			$agent['counters']['total'] = 0;
-			foreach (explode(' ', $agent['filter_counters']) as $counter) {
-				switch($counter) {
-					case AGENT_MODULE_STATUS_CRITICAL_ALERT:
-					case AGENT_MODULE_STATUS_CRITICAL_BAD:
-						$agent['counters']['critical']++;
-						break;
-					case AGENT_MODULE_STATUS_WARNING_ALERT:
-					case AGENT_MODULE_STATUS_WARNING:
-						$agent['counters']['warning']++;
-						break;
-					case AGENT_MODULE_STATUS_UNKNOWN:
-						$agent['counters']['unknown']++;
-						break;
-					case AGENT_MODULE_STATUS_NO_DATA:
-					case AGENT_MODULE_STATUS_NOT_INIT:
-						$agent['counters']['not_init']++;
-						break;
-					case AGENT_MODULE_STATUS_NORMAL_ALERT:
-					case AGENT_MODULE_STATUS_NORMAL:
-						$agent['counters']['ok']++;
-						break;
-				}
-				$agent['counters']['total']++;
-			}
+		if(array_key_exists('state_normal', $agent)){
+			$agent['counters']['unknown'] = $agent['state_unknown'];
+			$agent['counters']['critical'] = $agent['state_critical'];
+			$agent['counters']['warning'] = $agent['state_warning'];
+			$agent['counters']['not_init'] = $agent['state_notinit'];
+			$agent['counters']['ok'] = $agent['state_normal'];
+			$agent['counters']['total'] = $agent['state_total'];
+
 			$agent['critical_count'] = $agent['counters']['critical'];
 			$agent['warning_count'] = $agent['counters']['warning'];
 			$agent['unknown_count'] = $agent['counters']['unknown'];
@@ -2294,17 +2281,125 @@ class Tree {
 		// Module groups
 		if ($this->id == -1) {
 			if (! is_metaconsole()) {
-				$items = $this->getItems();
+				//FIXME REFACTOR ME, PLEASE
 
-				foreach ($items as $key => $item) {
+				$fields = array (
+					"g AS id_module_group",
+					"SUM(x_critical) AS total_critical_count",
+					"SUM(x_warning) AS total_warning_count",
+					"SUM(x_normal) AS total_normal_count",
+					"SUM(x_unknown) AS total_unknown_count",
+					"SUM(x_not_init) AS total_notinit_count",
+					"SUM(x_alerts) AS total_alerts_count",
+					"SUM(x_total) AS total_count"
+				);
+				$fields = implode(", ", $fields);
+				$array_array = array(
+					'warning' => array(
+						'header' => "0 AS x_critical, SUM(total) AS x_warning, 0 AS x_normal, 0 AS x_unknown, 0 AS x_not_init, 0 AS x_alerts, 0 AS x_total, g",
+						'condition' => "AND ta.warning_count > 0 AND ta.critical_count = 0"
+					),
+					'critical' => array(
+						'header' => "SUM(total) AS x_critical, 0 AS x_warning, 0 AS x_normal, 0 AS x_unknown, 0 AS x_not_init, 0 AS x_alerts, 0 AS x_total, g",
+						'condition' => "AND ta.critical_count > 0"
+					),
+					'normal' => array(
+						'header' => "0 AS x_critical, 0 AS x_warning, SUM(total) AS x_normal, 0 AS x_unknown, 0 AS x_not_init, 0 AS x_alerts, 0 AS x_total, g",
+						'condition' => "AND ta.critical_count = 0 AND ta.warning_count = 0 AND ta.unknown_count = 0 AND ta.normal_count > 0"
+					),
+					'unknown' => array(
+						'header' => "0 AS x_critical, 0 AS x_warning, 0 AS x_normal, SUM(total) AS x_unknown, 0 AS x_not_init, 0 AS x_alerts, 0 AS x_total, g",
+						'condition' => "AND ta.critical_count = 0 AND ta.warning_count = 0 AND ta.unknown_count > 0"
+					),
+					'not_init' => array(
+						'header' => "0 AS x_critical, 0 AS x_warning, 0 AS x_normal, 0 AS x_unknown, SUM(total) AS x_not_init, 0 AS x_alerts, 0 AS x_total, g",
+						'condition' => $this->filter['show_not_init_agents'] ? "AND ta.total_count = ta.notinit_count" : " AND 1=0"
+					),
+					'alerts' => array(
+						'header' => "0 AS x_critical, 0 AS x_warning, 0 AS x_normal, 0 AS x_unknown, 0 AS x_not_init, SUM(total) AS x_alerts, 0 AS x_total, g",
+						'condition' => "AND ta.fired_count > 0"
+					),
+					'total' => array(
+						'header' => "0 AS x_critical, 0 AS x_warning, 0 AS x_normal, 0 AS x_unknown, 0 AS x_not_init, 0 AS x_alerts, SUM(total) AS x_total, g",
+						'condition' => $this->filter['show_not_init_agents'] ? "" : "AND ta.total_count <> ta.notinit_count"
+					)
+				);
+				$filters = array(
+					'agent_alias' => '',
+					'agent_status' => '',
+					'module_status' => '',
+					'module_search_condition' => '',
+					'module_status_inner' => '',
+					'group_search_condition' => '',
+					'group_search_inner' => ''
 
-					$counters = $this->getCounters($item['id']);
-					if (!empty($counters)) {
-						foreach ($counters as $type => $value) {
-							$item[$type] = $value;
-						}
-					}
+				);
+				if (!empty($this->filter['searchAgent'])) {
+					$filters['agent_alias'] = "AND LOWER(ta.alias) LIKE LOWER('%".$this->filter['searchAgent']."%')";
+				}
+				if ($this->filter['statusAgent'] >= 0) {
+					$filters['agent_status'] = $this->getAgentStatusFilter();
+				}
+				if ($this->filter['statusModule'] >= 0) {
+					$filters['module_status_inner'] = "
+						INNER JOIN tagente_estado tae
+							ON tae.id_agente_modulo = tam.id_agente_modulo";
+					$filters['module_status'] = $this->getModuleStatusFilterFromTestado();
+				}
+				if (!empty($this->filter['searchGroup'])) {
+					$filters['group_search_inner'] = "
+						INNER JOIN tgrupo tg
+							ON ta.id_grupo = tg.id_grupo
+							OR tasg.id_group = tg.id_grupo";
+					$filters['group_search_condition'] = "AND tg.nombre LIKE '%" . $this->filter['searchGroup'] . "%'";
+				}
+				if (!empty($this->filter['searchModule'])) {
+					$filters['module_search_condition'] = " AND tam.nombre LIKE '%" . $this->filter['searchModule'] . "%' ";
+				}
 
+				$group_acl = "";
+				if (!users_can_manage_group_all("AR")) {
+					$user_groups_str = implode(",", $this->userGroupsArray);
+					$group_acl = " AND (ta.id_grupo IN ($user_groups_str) OR tasg.id_group IN ($user_groups_str))";
+				}
+
+				$sql_model = "SELECT %s FROM
+					(
+						SELECT COUNT(DISTINCT(ta.id_agente)) AS total, tam.id_module_group AS g
+							FROM tagente ta
+							LEFT JOIN tagent_secondary_group tasg
+								ON ta.id_agente = tasg.id_agent
+							INNER JOIN tagente_modulo tam
+								ON ta.id_agente = tam.id_agente
+							%s %s
+							WHERE ta.disabled = 0
+								AND tam.disabled = 0
+								%s %s %s
+								%s %s
+								%s %s
+							GROUP BY tam.id_module_group
+					) x GROUP BY g";
+				$sql_array = array();
+				foreach ($array_array as $s_array) {
+					$sql_array[] = sprintf(
+						$sql_model,
+						$s_array['header'],
+						$filters['module_status_inner'], $filters['group_search_inner'],
+						$s_array['condition'], $filters['agent_alias'], $filters['agent_status'],
+						$filters['module_status'], $filters['module_search_condition'],
+						$filters['group_search_condition'], $group_acl
+					);
+				}
+				$sql = "SELECT $fields, tmg.name, tmg.id_mg AS id FROM (" . implode(" UNION ALL ", $sql_array) . ") x2
+					INNER JOIN tmodule_group tmg
+						ON tmg.id_mg = x2.g
+					GROUP BY g
+					ORDER BY tmg.name";
+				$items = db_get_all_rows_sql($sql);
+
+
+				//END REFACTOR ME, PLEASE
+				foreach ($items as $item) {
 					$processed_item = $this->getProcessedItem($item);
 					$processed_items[] = $processed_item;
 				}

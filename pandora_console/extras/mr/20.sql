@@ -1,0 +1,1 @@
+ALTER TABLE treport_content ADD COLUMN `recursion` TINYINT(1) default NULL;

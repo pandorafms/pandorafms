@@ -166,7 +166,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'bars_graph',
 				'clock');
 			$form_items['label_row']['html'] =
-				'<td align="left" valign="top" style="">' . __('Label') . '
+				'<td align="left" valign="top" style="">' . __('Label') . ui_print_help_icon ('macros_visual_maps', true) . '
 				
 				<div id="label_box_arrow" style="text-align:center;width:120px;height:110px;margin-top:50px;">
 					<span>Label position</span>

@@ -940,17 +940,22 @@ switch ($action) {
 				$report = db_get_row_filter('treport',
 					array('id_report' => $idReport));
 				
+
+
+
 				$reportName = $report['name'];
 				$idGroupReport = $report['id_group'];
 				$description = $report['description'];
 				$good_format = false;
 				switch ($action) {
 					case 'update':
+
 						$values = array();
-						$values['id_report'] = $idReport;
+						$values['id_report'] = $idReport; //---------------------------------------------------
 						//$values['name'] = (string) get_parameter('name');
 						$values['description'] = get_parameter('description');
 						$values['type'] = get_parameter('type', null);
+						$values['recursion'] = get_parameter('recursion', null);
 						$label = get_parameter('label', '');
 						
 						//Add macros name
@@ -1290,6 +1295,7 @@ switch ($action) {
 						}
 						break;
 					case 'save':
+
 						$values = array();
 						$values['id_report'] = $idReport;
 						$values['type'] = get_parameter('type', null);
@@ -1303,6 +1309,7 @@ switch ($action) {
 						$items_label['id_agent'] = get_parameter('id_agent');
 						$items_label['id_agent_module'] = get_parameter('id_agent_module');
 						$name_it = (string) get_parameter('name');
+						$values['recursion'] = get_parameter('recursion', null);
 						$values['name'] = reporting_label_macro($items_label, $name_it);
 						
 						// Support for projection graph, prediction date and SLA reports

@@ -1624,16 +1624,19 @@ sub pandora_process_module ($$$$$$$$$;$) {
 
 	my $save = ($module->{'history_data'} == 1 && ($agent_status->{'datos'} ne $processed_data || $last_try < ($utimestamp - 86400))) ? 1 : 0;
 	
-	db_do ($dbh, 'UPDATE tagente_estado
-		SET datos = ?, estado = ?, known_status = ?, last_status = ?, last_known_status = ?,
-			status_changes = ?, utimestamp = ?, timestamp = ?,
-			id_agente = ?, current_interval = ?, running_by = ?,
-			last_execution_try = ?, last_try = ?, last_error = ?,
-			ff_start_utimestamp = ?
-		WHERE id_agente_modulo = ?', $processed_data, $status, $status, $new_status, $new_status, $status_changes,
-		$current_utimestamp, $timestamp, $module->{'id_agente'}, $current_interval, $server_id,
-		$utimestamp, ($save == 1) ? $timestamp : $agent_status->{'last_try'}, $last_error, $ff_start_utimestamp, $module->{'id_agente_modulo'});
-	
+	# Never update tagente_estado when processing out-of-order data.
+	if ($utimestamp >= $last_try) {
+		db_do ($dbh, 'UPDATE tagente_estado
+			SET datos = ?, estado = ?, known_status = ?, last_status = ?, last_known_status = ?,
+				status_changes = ?, utimestamp = ?, timestamp = ?,
+				id_agente = ?, current_interval = ?, running_by = ?,
+				last_execution_try = ?, last_try = ?, last_error = ?,
+				ff_start_utimestamp = ?
+			WHERE id_agente_modulo = ?', $processed_data, $status, $status, $new_status, $new_status, $status_changes,
+			$current_utimestamp, $timestamp, $module->{'id_agente'}, $current_interval, $server_id,
+			$utimestamp, ($save == 1) ? $timestamp : $agent_status->{'last_try'}, $last_error, $ff_start_utimestamp, $module->{'id_agente_modulo'});
+	}
+
 	# Save module data. Async and log4x modules are not compressed.
 	if ($module_type =~ m/(async)|(log4x)/ || $save == 1) {
 		save_module_data ($data_object, $module, $module_type, $utimestamp, $dbh);
@@ -4650,6 +4653,9 @@ sub pandora_group_statistics ($$) {
 	# Get all groups
 	my @groups = get_db_rows ($dbh, 'SELECT id_grupo FROM tgrupo');
 	my $table = is_metaconsole($pa_config) ? 'tmetaconsole_agent' : 'tagente';
+	my $sec_table = is_metaconsole($pa_config)
+		? 'tmetaconsole_agent_secondary_group'
+		: 'tagent_secondary_group';
 
 	# For each valid group get the stats: Simple uh?
 	foreach my $group_row (@groups) {
@@ -4658,30 +4664,49 @@ sub pandora_group_statistics ($$) {
 
 		# NOTICE - Calculations done here MUST BE the same than used in PHP code to have
 		# the same criteria. PLEASE, double check any changes here and in functions_groups.php
-		$agents_unknown = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count>0 AND id_grupo=?", $group);
+		$agents_unknown = get_db_value ($dbh, "SELECT COUNT(DISTINCT(id_agente))
+			FROM $table LEFT JOIN $sec_table ON id_agente=id_agent
+			WHERE disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count>0 AND (id_grupo=? OR id_group=?)", $group, $group);
 		$agents_unknown = 0 unless defined ($agents_unknown);
 
-		$agents = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE id_grupo = $group AND disabled=0");
+		$agents = get_db_value ($dbh, "SELECT COUNT(DISTINCT(id_agente))
+			FROM $table LEFT JOIN $sec_table ON id_agente=id_agent
+			WHERE(id_grupo=$group OR id_group=$group) AND disabled=0");
 		$agents = 0 unless defined ($agents);
 
-		$modules = get_db_value ($dbh, "SELECT SUM(total_count) FROM $table WHERE disabled=0 AND id_grupo=?", $group);
+		$modules = get_db_value ($dbh, "SELECT SUM(total_count) FROM
+			(
+				SELECT DISTINCT(id_agente), total_count
+				FROM $table LEFT JOIN $sec_table ON id_agente=id_agent
+				WHERE disabled=0 AND (id_grupo=? OR id_group=?)
+			) AS t1", $group, $group);
 		$modules = 0 unless defined ($modules);
-		
-		$normal = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count=0 AND normal_count>0 AND id_grupo=?", $group);
+
+		$normal = get_db_value ($dbh, "SELECT COUNT(DISTINCT(id_agente))
+			FROM $table LEFT JOIN $sec_table ON id_agente=id_agent
+			WHERE disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count=0 AND normal_count>0 AND (id_grupo=? OR id_group=?)", $group, $group);
 		$normal = 0 unless defined ($normal);
-		
-		$critical = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE disabled=0 AND critical_count>0 AND id_grupo=?", $group);
+
+		$critical = get_db_value ($dbh, "SELECT COUNT(DISTINCT(id_agente))
+			FROM $table LEFT JOIN $sec_table ON id_agente=id_agent
+			WHERE disabled=0 AND critical_count>0 AND (id_grupo=? OR id_group=?)", $group, $group);
 		$critical = 0 unless defined ($critical);
-		
-		$warning = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE disabled=0 AND critical_count=0 AND warning_count>0 AND id_grupo=?", $group);
+
+		$warning = get_db_value ($dbh, "SELECT COUNT(DISTINCT(id_agente))
+			FROM $table LEFT JOIN $sec_table ON id_agente=id_agent
+			WHERE disabled=0 AND critical_count=0 AND warning_count>0 AND (id_grupo=? OR id_group=?)", $group, $group);
 		$warning = 0 unless defined ($warning);
-	
-		$unknown = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count>0 AND id_grupo=?", $group);	
+
+		$unknown = get_db_value ($dbh, "SELECT COUNT(DISTINCT(id_agente))
+			FROM $table LEFT JOIN $sec_table ON id_agente=id_agent
+			WHERE disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count>0 AND (id_grupo=? OR id_group=?)", $group, $group);
 		$unknown = 0 unless defined ($unknown);
-		
-		$non_init = get_db_value ($dbh, "SELECT COUNT(*) FROM $table WHERE disabled=0 AND total_count=notinit_count AND id_grupo=?", $group);
+
+		$non_init = get_db_value ($dbh, "SELECT COUNT(DISTINCT(id_agente))
+			FROM $table LEFT JOIN $sec_table ON id_agente=id_agent
+			WHERE disabled=0 AND total_count=notinit_count AND (id_grupo=? OR id_group=?)", $group, $group);
 		$non_init = 0 unless defined ($non_init);
-		
+
 		# Total alert count not available on the meta console.
 		if ($table eq 'tagente') {
 			$alerts = get_db_value ($dbh, "SELECT COUNT(talert_template_modules.id)

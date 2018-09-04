@@ -138,7 +138,7 @@ if (($policy_page) || (isset($agent))) {
 			echo '</td>';
 		}
 		echo '<td class="datos" style="font-weight: bold; width:20%;">';
-		echo __("Type");
+		echo __("<p>Type</p>");
 		html_print_select ($modules, 'moduletype', '', '', '', '', false, false, false, '', false, 'max-width:300px;' );
 		html_print_input_hidden ('edit_module', 1);
 		echo '</td>';
@@ -638,7 +638,7 @@ foreach ($modules as $module) {
 			if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK)
 					$table->colspan[$i - 1][0] = 10;
 			else
-				$table->colspan[$i - 1][0] = 8;
+				$table->colspan[$i - 1][0] = 9;
 			
 			$data = array ();
 		}

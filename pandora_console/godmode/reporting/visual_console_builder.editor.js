@@ -829,8 +829,11 @@ function readFields() {
 	values['bars_graph_type'] = $("select[name=bars_graph_type]").val();
 	values['parent'] = $("select[name=parent]").val();
 	values['map_linked'] = $("select[name=map_linked]").val();
+	values['linked_map_status_calculation_type'] = $("select[name=linked_map_status_calculation_type]").val();
+	values['map_linked_weight'] = $("input[name=map_linked_weight]").val();
+	values['linked_map_status_service_critical'] = $("input[name=linked_map_status_service_critical]").val();
+	values['linked_map_status_service_warning'] = $("input[name=linked_map_status_service_warning]").val();
 	values['element_group'] = $("select[name=element_group]").val();
-	values['map_linked_weight'] = $("select[name=map_linked_weight]").val();
 	values['width_percentile'] = $("input[name=width_percentile]").val();
 	values['bars_graph_height'] = $("input[name=bars_graph_height]").val();
 	values['max_percentile'] = parseInt($("input[name=max_percentile]").val());
@@ -1537,10 +1540,16 @@ function loadFieldsFromDB(item) {
 					$("input[name=height]").val(val);
 				if (key == 'parent_item')
 					$("select[name=parent]").val(val);
+				if (key == 'linked_layout_status_type')
+					$("select[name=linked_map_status_calculation_type]").val(val).change();
 				if (key == 'id_layout_linked')
-					$("select[name=map_linked]").val(val);
+					$("select[name=map_linked]").val(val).change();
 				if (key == 'id_layout_linked_weight')
-					$("select[name=map_linked_weight]").val(val);
+					$("input[name=map_linked_weight]").val(val);
+				if (key == 'linked_layout_status_as_service_critical')
+					$("input[name=linked_map_status_service_critical]").val(val);
+				if (key == 'linked_layout_status_as_service_warning')
+					$("input[name=linked_map_status_service_warning]").val(val);
 				if (key == 'element_group')
 					$("select[name=element_group]").val(val);
 				if (key == 'width_percentile')
@@ -1838,13 +1847,15 @@ function hiddenFields(item) {
 	$("#parent_row." + item).css('display', '');
 
 	$("#map_linked_row").css('display', 'none');
+	$("#linked_map_status_calculation_row").css('display', 'none');
+	$("#map_linked_weight").css('display', 'none');
+	$("#linked_map_status_service_critical_row").css('display', 'none');
+	$("#linked_map_status_service_warning_row").css('display', 'none');
+
 	$("#map_linked_row." + item).css('display', '');
 
 	$("#element_group_row").css('display', 'none');
 	$("#element_group_row." + item).css('display', '');
-
-	$("#map_linked_weight").css('display', 'none');
-	$("#map_linked_weight." + item).css('display', '');
 
 	$("#module_graph_size_row").css('display', 'none');
 	$("#module_graph_size_row." + item).css('display', '');
@@ -1925,9 +1936,12 @@ function cleanFields(item) {
 	$("input[name=width]").val(0);
 	$("input[name=height]").val(0);
 	$("select[name=parent]").val('');
-	$("select[name=map_linked]").val('');
+	$("select[name=linked_map_status_calculation_type]").val('default').change();
+	$("select[name=map_linked]").val('').change();
+	$("input[name=map_linked_weight]").val('');
+	$("input[name=linked_map_status_service_critical]").val('');
+	$("input[name=linked_map_status_service_warning]").val('');
 	$("select[name=element_group]").val('');
-	$("select[name=map_linked_weight]").val('');
 	$("input[name=width_module_graph]").val(300);
 	$("input[name=height_module_graph]").val(180);
 	$("input[name='width_box']").val(300);
@@ -5141,4 +5155,81 @@ function multiDragMouse(eventDrag){
 			}
 		});
 	});
+}
+
+function linkedMapStatusCalculationTypeChanged ($linkedMapStatusCalcRow, value) {
+	if ($linkedMapStatusCalcRow.length === 0 || !validRowOnSelectedItem($linkedMapStatusCalcRow)) return;
+
+	switch (value) {
+		case "weight":
+			// Show weight input
+			$linkedMapStatusCalcRow
+				.siblings("#map_linked_weight")
+					.show()
+				.siblings("#linked_map_status_service_critical_row")
+					.hide()
+				.siblings("#linked_map_status_service_warning_row")
+					.hide();
+			break;
+		case "service":
+			// Show critical and warning values
+			$linkedMapStatusCalcRow
+				.siblings("#map_linked_weight")
+					.hide()
+				.siblings("#linked_map_status_service_critical_row")
+					.show()
+				.siblings("#linked_map_status_service_warning_row")
+					.show();
+			break;
+		default:
+			// Hide inputs
+			$linkedMapStatusCalcRow
+				.siblings("#map_linked_weight")
+					.hide()
+				.siblings("#linked_map_status_service_critical_row")
+					.hide()
+				.siblings("#linked_map_status_service_warning_row")
+					.hide();
+			break;
+	}
+}
+
+function linkedMapChanged ($linkedMapRow, value) {
+	if ($linkedMapRow.length === 0 || !validRowOnSelectedItem($linkedMapRow)) return;
+
+	if (value === 0) {
+		$linkedMapRow
+			.siblings("#linked_map_status_calculation_row")
+				.hide()
+			.siblings("#map_linked_weight")
+				.hide()
+			.siblings("#linked_map_status_service_critical_row")
+				.hide()
+			.siblings("#linked_map_status_service_warning_row")
+				.hide();
+	} else {
+		var $linkedMapStatusCalcRow = $linkedMapRow.siblings("#linked_map_status_calculation_row");
+
+		if (!validRowOnSelectedItem($linkedMapStatusCalcRow)) return;
+
+		var calcType = $linkedMapStatusCalcRow.find("select").val();
+		$linkedMapStatusCalcRow.show();
+		linkedMapStatusCalculationTypeChanged($linkedMapStatusCalcRow, calcType);
+	}
+}
+
+function onLinkedMapChange (event) {
+	var $linkedMapRow = $(event.target).parent().parent();
+	var value = Number.parseInt(event.target.value);
+	linkedMapChanged($linkedMapRow, value);
+}
+
+function onLinkedMapStatusCalculationTypeChange (event) {
+	var $linkedMapStatusCalcRow = $(event.target).parent().parent();
+	var value = event.target.value || "default";
+	linkedMapStatusCalculationTypeChanged($linkedMapStatusCalcRow, value);
+}
+
+function validRowOnSelectedItem ($element) {
+	return $element.hasClass(selectedItem);
 }

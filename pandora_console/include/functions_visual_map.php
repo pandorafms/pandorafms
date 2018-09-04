@@ -3798,10 +3798,6 @@ function visual_map_get_layout_status ($layout_id, $status_data = array(), $dept
 		if ($ent_element_status !== false) {
 			$status = $ent_element_status;
 		}
-		// Linked layout
-		else if (!empty($layout_item_data["id_layout_linked"])) {
-			$status = visual_map_get_layout_status($layout_item_data["id_layout_linked"], $layout_item_data, $depth + 1);
-		}
 		// Other
 		else {
 			switch ($layout_item_data["type"]) {
@@ -3810,8 +3806,12 @@ function visual_map_get_layout_status ($layout_id, $status_data = array(), $dept
 				case PERCENTILE_BUBBLE:
 				case CIRCULAR_PROGRESS_BAR:
 				case CIRCULAR_INTERIOR_PROGRESS_BAR:
+					// Linked layout
+					if (!empty($layout_item_data["id_layout_linked"])) {
+						$status = visual_map_get_layout_status($layout_item_data["id_layout_linked"], $layout_item_data, $depth + 1);
+					}
 					// Module
-					if (!empty($layout_item_data["id_agente_modulo"])) {
+					else if (!empty($layout_item_data["id_agente_modulo"])) {
 						$module_status = modules_get_agentmodule_status($layout_item_data["id_agente_modulo"]);
 						$status = visual_map_translate_module_status($module_status);
 					}

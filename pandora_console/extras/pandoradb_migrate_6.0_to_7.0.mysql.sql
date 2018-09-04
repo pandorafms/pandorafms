@@ -1231,7 +1231,7 @@ ALTER TABLE tusuario ADD COLUMN `time_autorefresh` int(5) unsigned NOT NULL defa
 -- ---------------------------------------------------------------------
 ALTER TABLE tagente_modulo ADD COLUMN `dynamic_next` bigint(20) NOT NULL default '0';
 ALTER TABLE tagente_modulo ADD COLUMN `dynamic_two_tailed` tinyint(1) unsigned default '0';
-ALTER TABLE tagente_modulo ADD COLUMN `parent_module_id` int(10) unsigned NOT NULL;
+ALTER TABLE tagente_modulo ADD COLUMN `parent_module_id` int(10) unsigned NOT NULL default 0;
 ALTER TABLE `tagente_modulo` ADD COLUMN `cps` int NOT NULL default 0;
 
 -- ---------------------------------------------------------------------

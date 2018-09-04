@@ -1583,8 +1583,28 @@ function loadFieldsFromDB(item) {
 					$("select[name=clock_animation]").val(val);
 				if (key == 'time_format') 
 					$("select[name=time_format]").val(val);
-				if (key == 'timezone') 
-					$("select[name=timezone]").val(val);
+				if (key == 'timezone') {
+					var zone = val.split("/");
+					$("select[name=zone]").val(zone[0]);
+					
+					$.ajax({
+						type: "POST",
+						url: "ajax.php",
+						data: "page=godmode/setup/setup&select_timezone=1&zone=" + zone[0],
+						dataType: "json",
+						success: function(data) {
+							$("#timezone").empty();
+							jQuery.each (data, function (id, value) {
+								timezone = value;
+								var timezone_country = timezone.replace (/^.*\//g, "");
+								$("select[name='timezone']").append($("<option>").val(timezone).html(timezone_country));
+								if (timezone == val) {
+									$("select[name='timezone']").val(timezone);
+								}
+							});
+						}
+					});
+				}
 							
 				if (key == 'value_show') {
 					$("select[name=value_show]").val(val);

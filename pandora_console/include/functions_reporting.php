@@ -2869,7 +2869,7 @@ function reporting_alert_get_fired($id_agent_module, $id_alert_template_module, 
 	
 	if (empty($firedTimes)) {
 		$firedTimes = array();
-		$firedTimes[0]['timestamp'] = '----------------------------';
+		$firedTimes[0]['timestamp'] = null;
 	}
 
 	foreach ($firedTimes as $fireTime) {
@@ -3010,7 +3010,10 @@ function reporting_alert_report_group($report, $content) {
 													(int) $report["datetime"]);
 			$module_actions["actions"]        = $data_action;
 
+			if ($module_actions["template_fired"][0] !== null)
 			$data_row['alerts'][$ntemplates] = $module_actions;
+			else
+			$data_row = null;
 			$ntemplates++;
 		}
 
@@ -3127,7 +3130,10 @@ function reporting_alert_report_agent($report, $content) {
 													(int) $report["datetime"]);
 			$module_actions["actions"]        = $data_action;
 
+			if ($module_actions["template_fired"][0] !== null)
 			$data_row['alerts'][$ntemplates] = $module_actions;
+			else 
+			$data_row = null;
 			$ntemplates++;
 		}
 
@@ -3248,7 +3254,10 @@ function reporting_alert_report_module($report, $content) {
 												(int) $report["datetime"]);
 		$module_actions["actions"]        = $data_action;
 
+		if ($module_actions["template_fired"][0] !== null)
 		$data_row['alerts'][$ntemplates] = $module_actions;
+		else
+		$data_row = null;
 		$ntemplates++;
 	}
 

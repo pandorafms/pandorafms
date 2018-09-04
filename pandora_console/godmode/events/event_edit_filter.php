@@ -65,6 +65,9 @@ if ($id) {
 	$group_rep = $filter['group_rep'];
 	$date_from = str_replace("-","/",$filter['date_from']);
 	$date_to = str_replace("-","/",$filter['date_to']);
+	$source = $filter['source'];
+	$id_extra = $filter['id_extra'];
+	$user_comment = $filter['user_comment'];
 
 	$tag_with_json = $filter['tag_with'];
 	$tag_with_json_clean = io_safe_output($tag_with_json);
@@ -130,6 +133,9 @@ if ($update || $create) {
 	$group_rep = get_parameter('group_rep', '');
 	$date_from = get_parameter('date_from', '');
 	$date_to = get_parameter('date_to', '');
+	$source = get_parameter('source');
+	$id_extra = get_parameter('id_extra');
+	$user_comment = get_parameter('user_comment');
 
 	$tag_with_base64 = get_parameter('tag_with', json_encode(array()));
 	$tag_with_json = io_safe_input(base64_decode($tag_with_base64));
@@ -158,6 +164,9 @@ if ($update || $create) {
 		'tag_without' => $tag_without_json,
 		'date_from' => $date_from,
 		'date_to' => $date_to,
+		'source' => $source,
+		'id_extra' => $id_extra,
+		'user_comment' => $user_comment,
 		'filter_only_alert' => $filter_only_alert);
 }
 
@@ -389,6 +398,16 @@ if (!is_metaconsole()) {
 	$table->data[21][1] .= html_print_autocomplete_modules('module_search',
 		$text_module, false, true, '', array(), true, $id_agent_module);
 }
+
+$sources = events_get_all_source();
+$table ->data[22][0] = '<b>' . __('Source') . '</b>';
+$table ->data[22][1] = html_print_select ($sources, 'source', $source, '', '', '', true);
+
+$table ->data[23][0] = '<b>' . __('Extra ID') . '</b>';
+$table ->data[23][1] = html_print_input_text ('id_extra', $id_extra, '', 11, 255, true);
+
+$table ->data[24][0] = '<b>' . __('Comment') . '</b>';
+$table ->data[24][1] = html_print_input_text ('user_comment', $user_comment, '', 35, 255, true);
 
 echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=edit_filter&pure='.$config['pure'].'">';
 html_print_table ($table);

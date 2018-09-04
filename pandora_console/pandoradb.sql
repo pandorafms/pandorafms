@@ -259,7 +259,7 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
 	`prediction_sample_window` int(10) default 0,
 	`prediction_samples` int(4) default 0,
 	`prediction_threshold` int(4) default 0,
-	`parent_module_id` int(10) unsigned NOT NULL,
+	`parent_module_id` int(10) unsigned NOT NULL default 0,
 	`cps` int NOT NULL default 0,
 	PRIMARY KEY  (`id_agente_modulo`),
 	KEY `main_idx` (`id_agente_modulo`,`id_agente`),
@@ -1079,6 +1079,9 @@ CREATE TABLE IF NOT EXISTS `tevent_filter` (
 	`filter_only_alert` int(10) NOT NULL default -1,
 	`date_from` date default NULL,
 	`date_to` date default NULL,
+	`source` tinytext NOT NULL,
+	`id_extra` tinytext NOT NULL,
+	`user_comment` text NOT NULL,
 	PRIMARY KEY  (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -1289,6 +1292,7 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`lapse` int(11) UNSIGNED NOT NULL default '300',
 	`visual_format` tinyint(1) UNSIGNED NOT NULL default '0',
 	`hide_no_data` tinyint(1) default 0,
+	`recursion` tinyint(1) default NULL,
 	PRIMARY KEY(`id_rc`),
 	FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
 		ON UPDATE CASCADE ON DELETE CASCADE

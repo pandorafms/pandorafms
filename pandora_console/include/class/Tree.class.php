@@ -950,7 +950,7 @@ class Tree {
 				SUM(if(%s, 1, 0)) as state_unknown,
 				SUM(if(%s, 1, 0)) as state_notinit,
 				SUM(if(%s, 1, 0)) as state_normal,
-				SUM(if(%s, 1, 0)) as state_total
+				SUM(if(%s AND tae.estado IS NOT NULL, 1, 0)) as state_total
 			",
 			$this->getModuleStatusFilterFromTestado(AGENT_MODULE_STATUS_CRITICAL_ALERT, true),
 			$this->getModuleStatusFilterFromTestado(AGENT_MODULE_STATUS_WARNING_ALERT, true),
@@ -977,7 +977,8 @@ class Tree {
 			FROM tagente ta
 			$inner_or_left JOIN tagente_modulo tam
 				ON ta.id_agente = tam.id_agente
-			INNER JOIN tagente_estado tae
+				AND tam.disabled = 0
+			$inner_or_left JOIN tagente_estado tae
 				ON tae.id_agente_modulo = tam.id_agente_modulo
 			$inner
 			WHERE ta.id_agente IN
@@ -992,14 +993,13 @@ class Tree {
 						$group_search_filter
 						$condition_inside
 				)
-				AND ta.disabled = 0 AND tam.disabled = 0
+				AND ta.disabled = 0
 				$condition
 				$agent_search_filter
 				$agent_status_filter
 				$module_search_filter
 				$module_status_filter
 			GROUP BY ta.id_agente
-			HAVING state_total > 0
 			ORDER BY ta.alias ASC, ta.id_agente ASC
 		";
 

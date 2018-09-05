@@ -28,7 +28,6 @@ class TreeGroup extends Tree {
 		$this->L1fieldName = "id_group";
 		$this->L1extraFields = array(
 			"tg.nombre AS `name`",
-			$this->getDisplayHierarchy() ? 'tg.parent' : '0 as parent',
 			"tg.icon",
 			"tg.id_grupo AS gid"
 		);
@@ -56,34 +55,34 @@ class TreeGroup extends Tree {
 	protected function getFirstLevel() {
 		$processed_items = $this->getProcessedGroups();
 
-			if (!empty($processed_items)) {
-				// Filter by group name. This should be done after rerieving the items cause we need the possible items descendants
-				if (!empty($this->filter['searchGroup'])) {
-					// Save the groups which intersect with the user groups
-					$groups = db_get_all_rows_filter('tgrupo', array('nombre' => '%' . $this->filter['searchGroup'] . '%'));
-					if ($groups == false) $groups = array();
-					$userGroupsACL = $this->userGroupsACL;
-					$ids_hash = array_reduce($groups, function ($userGroups, $group) use ($userGroupsACL) {
-						$group_id = $group['id_grupo'];
-						if (isset($userGroupsACL[$group_id])) {
-							$userGroups[$group_id] = $userGroupsACL[$group_id];
-						}
+		if (!empty($processed_items)) {
+			// Filter by group name. This should be done after rerieving the items cause we need the possible items descendants
+			if (!empty($this->filter['searchGroup'])) {
+				// Save the groups which intersect with the user groups
+				$groups = db_get_all_rows_filter('tgrupo', array('nombre' => '%' . $this->filter['searchGroup'] . '%'));
+				if ($groups == false) $groups = array();
+				$userGroupsACL = $this->userGroupsACL;
+				$ids_hash = array_reduce($groups, function ($userGroups, $group) use ($userGroupsACL) {
+					$group_id = $group['id_grupo'];
+					if (isset($userGroupsACL[$group_id])) {
+						$userGroups[$group_id] = $userGroupsACL[$group_id];
+					}
 
-						return $userGroups;
-					}, array());
+					return $userGroups;
+				}, array());
 
-					$result = self::extractGroupsWithIDs($processed_items, $ids_hash);
+				$result = self::extractGroupsWithIDs($processed_items, $ids_hash);
 
-					$processed_items = ($result === false) ? array() : $result;
-				}
-
-				// groupID filter. To access the view from tactical views f.e.
-				if (!empty($this->filter['groupID'])) {
-					$result = self::extractItemWithID($processed_items, $this->filter['groupID'], "group", $this->strictACL);
-
-					$processed_items = ($result === false) ? array() : array($result);
-				}
+				$processed_items = ($result === false) ? array() : $result;
 			}
+
+			// groupID filter. To access the view from tactical views f.e.
+			if (!empty($this->filter['groupID'])) {
+				$result = self::extractItemWithID($processed_items, $this->filter['groupID'], "group", $this->strictACL);
+
+				$processed_items = ($result === false) ? array() : array($result);
+			}
+		}
 
 		$this->tree = $processed_items;
 	}
@@ -91,7 +90,7 @@ class TreeGroup extends Tree {
 	protected function getProcessedGroups () {
 		$processed_groups = array();
 		// Index and process the groups
-		$groups = $this->getGroupCounters(0);
+		$groups = $this->getGroupCounters();
 
 		// If user have not permissions in parent, set parent node to 0 (all)
 		// Avoid to do foreach for admins
@@ -248,6 +247,12 @@ class TreeGroup extends Tree {
 		}
 
 		return $group_stats;
+	}
+
+	protected function getFirstLevelFields() {
+		$fields = parent::getFirstLevelFields();
+		$parent = $this->getDisplayHierarchy() ? 'tg.parent' : '0 as parent';
+		return "$fields, $parent";
 	}
 
 	protected function getProcessedModules($modules_tree) {

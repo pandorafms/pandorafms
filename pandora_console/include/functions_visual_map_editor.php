@@ -710,7 +710,10 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				"service" => __("By critical elements")
 			);
 			$form_items_advance['linked_map_status_calculation_row'] = array();
-			$form_items_advance['linked_map_status_calculation_row']['items'] = array('static_graph');
+			$form_items_advance['linked_map_status_calculation_row']['items'] = array(
+				'group_item', 'static_graph', 'percentile_bar',
+				'percentile_item', 'module_graph', 'simple_value',
+				'icon', 'label', 'datos', 'donut_graph');
 			$form_items_advance['linked_map_status_calculation_row']['html'] = '<td align="left">'.
 				__('Type of the status calculation of the linked map') . '</td>'
 				. '<td align="left">'
@@ -728,7 +731,10 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				. '</td>';
 
 			$form_items_advance['map_linked_weight'] = array();
-			$form_items_advance['map_linked_weight']['items'] = array('static_graph');
+			$form_items_advance['map_linked_weight']['items'] = array(
+				'group_item', 'static_graph', 'percentile_bar',
+				'percentile_item', 'module_graph', 'simple_value',
+				'icon', 'label', 'datos', 'donut_graph');
 			$form_items_advance['map_linked_weight']['html'] = '<td align="left">'
 				. __('Linked map weight') . '</td>'
 				. '<td align="left">'
@@ -740,7 +746,10 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				. '</td>';
 
 			$form_items_advance['linked_map_status_service_critical_row'] = array();
-			$form_items_advance['linked_map_status_service_critical_row']['items'] = array('static_graph');
+			$form_items_advance['linked_map_status_service_critical_row']['items'] = array(
+				'group_item', 'static_graph', 'percentile_bar',
+				'percentile_item', 'module_graph', 'simple_value',
+				'icon', 'label', 'datos', 'donut_graph');
 			$form_items_advance['linked_map_status_service_critical_row']['html'] = '<td align="left">'
 				. __('Critical weight') . '</td>'
 				. '<td align="left">'
@@ -751,7 +760,10 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				. '</td>';
 			
 			$form_items_advance['linked_map_status_service_warning_row'] = array();
-			$form_items_advance['linked_map_status_service_warning_row']['items'] = array('static_graph');
+			$form_items_advance['linked_map_status_service_warning_row']['items'] = array(
+				'group_item', 'static_graph', 'percentile_bar',
+				'percentile_item', 'module_graph', 'simple_value',
+				'icon', 'label', 'datos', 'donut_graph');
 			$form_items_advance['linked_map_status_service_warning_row']['html'] = '<td align="left">'
 				. __('Warning weight') . '</td>'
 				. '<td align="left">'

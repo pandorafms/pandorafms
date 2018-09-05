@@ -698,7 +698,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'percentile_item', 'module_graph', 'simple_value',
 				'icon', 'label', 'datos', 'donut_graph');
 			$form_items_advance['map_linked_row']['html'] = '<td align="left">'.
-				__('Map linked') . '</td>' .
+				__('Linked map') . '</td>' .
 				'<td align="left">' . html_print_select_from_sql (
 				'SELECT id, name
 				FROM tlayout
@@ -730,10 +730,10 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items_advance['map_linked_weight'] = array();
 			$form_items_advance['map_linked_weight']['items'] = array('static_graph');
 			$form_items_advance['map_linked_weight']['html'] = '<td align="left">'
-				. __('Map linked weight') . '</td>'
+				. __('Linked map weight') . '</td>'
 				. '<td align="left">'
 				. html_print_input_text(
-					'map_linked_weight', 80, '', 3, 3, true, false, false, "", "type_number percentage"
+					'map_linked_weight', 80, '', 5, 5, true, false, false, "", "type_number percentage"
 				)
 				. '<span>%</span>'
 				. ui_print_help_icon("linked_map_weight", true)
@@ -745,7 +745,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				. __('Critical weight') . '</td>'
 				. '<td align="left">'
 				. html_print_input_text(
-					'linked_map_status_service_critical', 80, '', 3, 3, true, false, false, "", "type_number percentage"
+					'linked_map_status_service_critical', 80, '', 5, 5, true, false, false, "", "type_number percentage"
 				)
 				. '<span>%</span>'
 				. '</td>';
@@ -756,7 +756,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				. __('Warning weight') . '</td>'
 				. '<td align="left">'
 				. html_print_input_text(
-					'linked_map_status_service_warning', 50, '', 3, 3, true, false, false, "", "type_number percentage"
+					'linked_map_status_service_warning', 50, '', 5, 5, true, false, false, "", "type_number percentage"
 				)
 				. '<span>%</span>'
 				. '</td>';

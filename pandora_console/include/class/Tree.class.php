@@ -70,6 +70,11 @@ class Tree {
 	}
 
 	public function setFilter($filter) {
+		// There is not module filter in metaconsole.
+		if (is_metaconsole()) {
+			$filter['searchModule'] = "";
+			$filter['statusModule'] = self::TV_DEFAULT_AGENT_STATUS;
+		}
 		$this->filter = $filter;
 	}
 
@@ -952,7 +957,6 @@ class Tree {
 
 		$inner_or_left = $this->getInnerOrLeftJoin();
 		$group_inner = $this->getGroupSearchInner();
-		$id_os = $this->rootID;
 		$group_acl = $this->getGroupAclCondition();
 		$group_search_filter = $this->getGroupSearchFilter();
 		$agent_search_filter = $this->getAgentSearchFilter();

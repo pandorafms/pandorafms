@@ -44,6 +44,7 @@ if (is_ajax ()) {
 	require_once($config['homedir'] . "/include/class/TreeTag.class.php");
 	require_once($config['homedir'] . "/include/class/TreeGroup.class.php");
 	enterprise_include_once("include/class/TreePolicies.class.php");
+	enterprise_include_once("include/class/TreeGroupMeta.class.php");
 	require_once($config['homedir'] . "/include/functions_reporting.php");
 	require_once($config['homedir'] . "/include/functions_os.php");
 	
@@ -91,7 +92,13 @@ if (is_ajax ()) {
 				$tree = new TreeTag($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
 				break;
 			case 'group':
-				$tree = new TreeGroup($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
+				if(is_metaconsole()){
+					if (!class_exists('TreeGroupMeta')) break;
+					$tree = new TreeGroupMeta($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
+				}
+				else{
+					$tree = new TreeGroup($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
+				}
 				break;
 			case 'policies':
 				if (!class_exists('TreePolicies')) break;

@@ -77,6 +77,7 @@ our @EXPORT = qw(
 	MODULE_WARNING
 	MODULE_UNKNOWN
 	MODULE_NOTINIT
+	$THRRUN
 	api_call_url
 	cron_get_closest_in_range
 	cron_next_execution
@@ -115,6 +116,9 @@ our @EXPORT = qw(
 	valid_regex
 	set_file_permissions
 	uri_encode
+	check_server_threads
+	start_server_thread
+	stop_server_threads
 );
 
 # ID of the different servers
@@ -306,6 +310,12 @@ my %CHR2ENT;
 while (my ($ent, $chr) = each(%ENT2CHR)) {
 	$CHR2ENT{$chr} = "&" . $ent . ";";
 }
+
+# Threads started by the Pandora FMS Server.
+my @ServerThreads;
+
+# Keep threads running.
+our $THRRUN :shared = 1;
 
 ###############################################################################
 # Sets user:group owner for the given file
@@ -1268,16 +1278,16 @@ sub month_have_days($$) {
 	if (  $year <= 1752  ) {
 		# Note:  Although September 1752 only had 19 days,
 		# they were numbered 1,2,14..30!
-		if (1752 == $year  &&  9 == $month) {
+		if (1752 == $year  &&  8 == $month) {
 			return 19;
 		}
-		if (2 == $month  &&  0 == $year % 4) {
+		if (1 == $month  &&  0 == $year % 4) {
 			return 29;
 		}
 	}
 	else {
 		#Check if Leap year
-		if (2 == $month && 0 == $year % 4 && 0 == $year%100
+		if (1 == $month && 0 == $year % 4 && 0 == $year%100
 			|| 0 == $year%400) {
 			return 29;
 		}
@@ -1738,6 +1748,48 @@ sub api_call_url {
 		return $response->decoded_content;
 	}
 	return undef;
+}
+
+################################################################################
+# Start a server thread and keep track of it.
+################################################################################
+sub start_server_thread {
+	my ($fn, $args) = @_;
+
+	# Signal the threads to run.
+	$THRRUN = 1;
+
+	my $thr = threads->create($fn, @{$args});
+	push(@ServerThreads, $thr);
+}
+
+################################################################################
+# Check the status of server threads. Returns 1 if all all running, 0 otherwise.
+################################################################################
+sub check_server_threads {
+	my ($fn, $args) = @_;
+
+	foreach my $thr (@ServerThreads) {
+		return 0 unless $thr->is_running();
+	}
+
+	return 1;
+}
+
+################################################################################
+# Stop all server threads.
+################################################################################
+sub stop_server_threads {
+	my ($fn, $args) = @_;
+
+	# Signal the threads to exits.
+	$THRRUN = 0;
+
+	foreach my $thr (@ServerThreads) {
+			$thr->detach();
+	}
+
+	@ServerThreads = ();
 }
 
 # End of function declaration

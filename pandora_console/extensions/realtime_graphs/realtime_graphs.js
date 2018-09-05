@@ -61,6 +61,16 @@
 				var timestamp = serie.data[0][0];
 				var data = plot.getData();
 				
+				if (incremental) {
+					var currentVal = serie.data[0][1];
+					// Try to avoid the first value, cause we need at least two values to get the increment
+					serie.data[0][1] = lastIncVal == null ? 0 : currentVal - lastIncVal;
+					// Incremental is always positive
+					if (serie.data[0][1] < 0) serie.data[0][1] = 0;
+					// Store the current value to use it into the next request
+					lastIncVal = currentVal;
+				}
+				
 				if (data.length === 0) {
 					for (i = 0; i < numberOfPoints; i++) {
 						var step = i * (refresh / 1000);
@@ -75,16 +85,6 @@
 				data[0].label = serie.label;
 				if (data[0].data.length >= numberOfPoints) {
 					data[0].data.shift();
-				}
-				
-				if (incremental) {
-					var currentVal = serie.data[0][1];
-					// Try to avoid the first value, cause we need at least two values to get the increment
-					serie.data[0][1] = lastIncVal == null ? 0 : currentVal - lastIncVal;
-					// Incremental is always positive
-					if (serie.data[0][1] < 0) serie.data[0][1] = 0;
-					// Store the current value to use it into the next request
-					lastIncVal = currentVal;
 				}
 				
 				data[0].data.push(serie.data[0]);

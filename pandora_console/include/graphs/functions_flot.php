@@ -137,7 +137,7 @@ function flot_area_graph (
 	$return = "<div class='parent_graph' style='width: " . ($params['width']) . ";" . $background_style . "'>";
 	// Set some containers to legend, graph, timestamp tooltip, etc.
 	if($params['show_legend']){
-		$return .= "<p id='legend_$graph_id'></p>";
+		$return .= "<p id='legend_$graph_id' style='text-align:left;'></p>";
 	}
 	if(isset($params['graph_combined']) && $params['graph_combined'] &&
 		(!isset($params['from_interface']) || !$params['from_interface']) ){

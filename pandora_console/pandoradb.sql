@@ -259,7 +259,7 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
 	`prediction_sample_window` int(10) default 0,
 	`prediction_samples` int(4) default 0,
 	`prediction_threshold` int(4) default 0,
-	`parent_module_id` int(10) unsigned NOT NULL,
+	`parent_module_id` int(10) unsigned NOT NULL default 0,
 	`cps` int NOT NULL default 0,
 	PRIMARY KEY  (`id_agente_modulo`),
 	KEY `main_idx` (`id_agente_modulo`,`id_agente`),
@@ -1079,6 +1079,9 @@ CREATE TABLE IF NOT EXISTS `tevent_filter` (
 	`filter_only_alert` int(10) NOT NULL default -1,
 	`date_from` date default NULL,
 	`date_to` date default NULL,
+	`source` tinytext NOT NULL,
+	`id_extra` tinytext NOT NULL,
+	`user_comment` text NOT NULL,
 	PRIMARY KEY  (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -1136,7 +1139,7 @@ CREATE TABLE IF NOT EXISTS `tusuario_perfil` (
 	`id_usuario` varchar(100) NOT NULL default '',
 	`id_perfil` int(10) unsigned NOT NULL default '0',
 	`id_grupo` int(10) NOT NULL default '0',
-	`is_secondary` tinyint(1) NOT NULL default 0,
+	`no_hierarchy` tinyint(1) NOT NULL default 0,
 	`assigned_by` varchar(100) NOT NULL default '',
 	`id_policy` int(10) unsigned NOT NULL default '0',
 	`tags` text NOT NULL,
@@ -1289,6 +1292,7 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`lapse` int(11) UNSIGNED NOT NULL default '300',
 	`visual_format` tinyint(1) UNSIGNED NOT NULL default '0',
 	`hide_no_data` tinyint(1) default 0,
+	`recursion` tinyint(1) default NULL,
 	PRIMARY KEY(`id_rc`),
 	FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
 		ON UPDATE CASCADE ON DELETE CASCADE
@@ -1377,7 +1381,10 @@ CREATE TABLE IF NOT EXISTS `tlayout_data` (
 	`border_color` varchar(200) DEFAULT "",
 	`fill_color` varchar(200) DEFAULT "",
 	`show_statistics` tinyint(2) NOT NULL default '0',
+	`linked_layout_status_type` ENUM ('default', 'weight', 'service') DEFAULT 'default',
 	`id_layout_linked_weight` int(10) NOT NULL default '0',
+	`linked_layout_status_as_service_warning` FLOAT(20, 3) NOT NULL default 0,
+	`linked_layout_status_as_service_critical` FLOAT(20, 3) NOT NULL default 0,
 	`element_group` int(10) NOT NULL default '0',
 	`show_on_top` tinyint(1) NOT NULL default '0',
 	`clock_animation` varchar(60) NOT NULL default "analogic_1",
@@ -1668,6 +1675,25 @@ CREATE  TABLE IF NOT EXISTS `tgis_map_layer_has_tagente` (
 		ON UPDATE NO ACTION)
 ENGINE = InnoDB
 COMMENT = 'Table to define wich agents are shown in a layer';
+
+-- -----------------------------------------------------
+-- Table `tgis_map_layer_groups`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tgis_map_layer_groups` (
+	`layer_id` INT NOT NULL,
+	`group_id` MEDIUMINT(4) UNSIGNED NOT NULL,
+	`agent_id` INT(10) UNSIGNED NOT NULL COMMENT 'Used to link the position to the group',
+	PRIMARY KEY (`layer_id`, `group_id`),
+	FOREIGN KEY (`layer_id`)
+		REFERENCES `tgis_map_layer` (`id_tmap_layer`)
+		ON DELETE CASCADE,
+	FOREIGN KEY (`group_id`)
+		REFERENCES `tgrupo` (`id_grupo`)
+		ON DELETE CASCADE,
+	FOREIGN KEY (`agent_id`)
+		REFERENCES `tagente` (`id_agente`)
+		ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------------------------------------------------
 -- Table `tgroup_stat`
@@ -3289,7 +3315,10 @@ CREATE TABLE IF NOT EXISTS `tlayout_template_data` (
 	`border_color` varchar(200) DEFAULT "",
 	`fill_color` varchar(200) DEFAULT "",
 	`show_statistics` tinyint(2) NOT NULL default '0',
+	`linked_layout_status_type` ENUM ('default', 'weight', 'service') DEFAULT 'default',
 	`id_layout_linked_weight` int(10) NOT NULL default '0',
+	`linked_layout_status_as_service_warning` FLOAT(20, 3) NOT NULL default 0,
+	`linked_layout_status_as_service_critical` FLOAT(20, 3) NOT NULL default 0,
 	`element_group` int(10) NOT NULL default '0',
 	`show_on_top` tinyint(1) NOT NULL default '0',
 	`clock_animation` varchar(60) NOT NULL default "analogic_1",

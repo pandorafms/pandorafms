@@ -842,11 +842,18 @@ function agents_get_group_agents (
 				users_get_groups(false, "AR", true, false, (array)$id_group));
 		}
 	}
-	
+
+	// Search for primary and secondary groups
 	if (!empty($id_group)) {
-		$filter['id_grupo'] = $id_group;
+		$filter[] = '(' . db_format_array_where_clause_sql(
+			array(
+				'id_group' => $id_group,
+				'id_grupo' => $id_group
+			),
+			'OR'
+		) . ')';
 	}
-	
+
 	if ($search === true) {
 		//No added search. Show both disabled and non-disabled
 	}
@@ -959,8 +966,8 @@ function agents_get_group_agents (
 	$filter['order'] = 'alias';
 	
 	if (is_metaconsole()) {
-		$table_name = 'tmetaconsole_agent';
-		
+		$table_name = 'tmetaconsole_agent LEFT JOIN tmetaconsole_agent_secondary_group ON ta.id_agente = tasg.id_agent';
+
 		$fields = array(
 				'id_tagente AS id_agente',
 				'alias',
@@ -968,16 +975,16 @@ function agents_get_group_agents (
 			);
 	}
 	else {
-		$table_name = 'tagente';
-		
+		$table_name = 'tagente LEFT JOIN tagent_secondary_group ON id_agente=id_agent';
+
 		$fields = array(
 				'id_agente',
 				'alias'
 			);
 	}
-	
+
 	$result = db_get_all_rows_filter($table_name, $filter, $fields);
-	
+
 	if ($result === false)
 		return array (); //Return an empty array
 	
@@ -985,7 +992,6 @@ function agents_get_group_agents (
 	foreach ($result as $row) {
 		if (!isset($row["id_agente"]) || !isset($row["alias"]))
 			continue;
-		
 		if ($serialized && isset($row["id_server"])) {
 			$key = $row["id_server"] . $separator . $row["id_agente"];
 		} elseif ($force_serialized) {
@@ -2023,8 +2029,7 @@ function agents_get_agentmodule_group ($id_module) {
  * @return int The group id
  */
 function agents_get_agent_group ($id_agent) {
-	$table = is_metaconsole() ? "tmetaconsole_agent" : "tagente";
-	return (int) db_get_value ('id_grupo', $table, 'id_agente', (int) $id_agent);
+	return (int) db_get_value ('id_grupo', "tagente", 'id_agente', (int) $id_agent);
 }
 
 /**
@@ -2679,6 +2684,9 @@ function agents_generate_name ($alias, $address = '') {
  * @return Array with the main and secondary groups
  */
 function agents_get_all_groups_agent ($id_agent, $group = false) {
+	// Cache the agent id groups
+	static $cache = array();
+	if (isset($cache[$id_agent])) return $cache[$id_agent];
 	// Get the group if is not defined
 	if ($group === false) $group = agents_get_agent_group($id_agent);
 
@@ -2692,6 +2700,7 @@ function agents_get_all_groups_agent ($id_agent, $group = false) {
 
 	// Add a list of groups
 	$secondary_groups['plain'][] = $group;
+	$cache[$id_agent] = $secondary_groups['plain'];
 	return $secondary_groups['plain'];
 }
 

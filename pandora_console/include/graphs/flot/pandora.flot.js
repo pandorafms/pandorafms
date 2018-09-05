@@ -1636,7 +1636,7 @@ function pandoraFlotArea( graph_id, values, legend,
 				mode: "time",
 				timezone: "browser",
 				localTimezone: true,
-				tickSize: [maxticks, 'hour']
+				//tickSize: [maxticks, 'hour']
 			}],
 			yaxis: {
 				font: {
@@ -1743,7 +1743,7 @@ function pandoraFlotArea( graph_id, values, legend,
 				mode: "time",
 				timezone: "browser",
 				localTimezone: true,
-				tickSize: [maxticks, 'hour']
+				//tickSize: [maxticks, 'hour']
 			}],
 			yaxis: {
 				font: {

@@ -2869,7 +2869,7 @@ function reporting_alert_get_fired($id_agent_module, $id_alert_template_module, 
 	
 	if (empty($firedTimes)) {
 		$firedTimes = array();
-		$firedTimes[0]['timestamp'] = '----------------------------';
+		$firedTimes[0]['timestamp'] = null;
 	}
 
 	foreach ($firedTimes as $fireTime) {
@@ -3010,7 +3010,10 @@ function reporting_alert_report_group($report, $content) {
 													(int) $report["datetime"]);
 			$module_actions["actions"]        = $data_action;
 
+			if ($module_actions["template_fired"][0] !== null)
 			$data_row['alerts'][$ntemplates] = $module_actions;
+			else
+			$data_row = null;
 			$ntemplates++;
 		}
 
@@ -3127,7 +3130,10 @@ function reporting_alert_report_agent($report, $content) {
 													(int) $report["datetime"]);
 			$module_actions["actions"]        = $data_action;
 
+			if ($module_actions["template_fired"][0] !== null)
 			$data_row['alerts'][$ntemplates] = $module_actions;
+			else 
+			$data_row = null;
 			$ntemplates++;
 		}
 
@@ -3248,7 +3254,10 @@ function reporting_alert_report_module($report, $content) {
 												(int) $report["datetime"]);
 		$module_actions["actions"]        = $data_action;
 
+		if ($module_actions["template_fired"][0] !== null)
 		$data_row['alerts'][$ntemplates] = $module_actions;
+		else
+		$data_row = null;
 		$ntemplates++;
 	}
 
@@ -6278,6 +6287,8 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 
 	global $config;
 
+	$modules = array();
+
 	require_once ($config["homedir"] . '/include/functions_graph.php');
 
 	if ($config['metaconsole']) {
@@ -6289,10 +6300,33 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 	$graph = db_get_row ("tgraph", "id_graph", $content['id_gs']);
 	$return = array();
 	$return['type'] = 'custom_graph';
-
 	if (empty($content['name'])) {
 		if ($type_report == "custom_graph") {
 			$content['name'] = __('Custom graph');
+			$graphs = db_get_all_rows_field_filter ("tgraph", "id_graph", $content['id_gs']);
+			$id_graph = $content['id_gs'];
+		}
+		else if($type_report == "automatic_graph"){
+			$content['name'] = __('Automatic combined graph');
+			$graphs[0]["stacked"] = '';
+			$graphs[0]["summatory_series"] = '';
+			$graphs[0]["average_series"] = '';
+			$graphs[0]["modules_series"] = '';
+			$graphs[0]["fullscale"] = $content['style']['fullscale'];
+			if(is_array($content['id_agent_module'])){
+				foreach ($content['id_agent_module'] as $key => $value) {
+					if($content['each_agent']){
+						$modules[] = $value;
+					}
+					else{
+						$modules[] = $value['module'];
+					}
+				}
+			}
+			else{
+				$modules[] = $content['id_agent_module'];
+			}
+			$id_graph = 0;
 		}
 		else {
 			$content['name'] = __('Simple graph');
@@ -6304,9 +6338,8 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 	$return["description"] = $content["description"];
 	$return["date"] = reporting_get_date_text(
 		$report,
-		$content);
-
-	$graphs = db_get_all_rows_field_filter ("tgraph", "id_graph", $content['id_gs']);
+		$content
+	);
 
 	$return['chart'] = '';
 
@@ -6329,13 +6362,12 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 				'fullscale'  => $graphs[0]["fullscale"],
 				'server_id'  => $id_meta
 			);
-
 			$params_combined = array(
 				'stacked'        => $graphs[0]["stacked"],
 				'summatory'      => $graphs[0]["summatory_series"],
 				'average'        => $graphs[0]["average_series"],
 				'modules_series' => $graphs[0]["modules_series"],
-				'id_graph'       => $content['id_gs']
+				'id_graph'       => $id_graph
 			);
 
 			$return['chart'] = graphic_combined_module(
@@ -6970,89 +7002,57 @@ function reporting_get_group_stats ($id_group = 0, $access = 'AR') {
 		}
 		
 		if (!empty($group_array)) {
-			// FOR THE FUTURE: Split the groups into groups with tags restrictions and groups without it
-			// To calculate in the light way the non tag restricted and in the heavy way the others
-			/*
-			$group_restricted_data = tags_get_acl_tags($config['id_user'], $group_array, $access, 'data');
-			$tags_restricted_groups = array_keys($group_restricted_data);
+			// Get monitor NOT INIT, except disabled AND async modules
+			$data["monitor_not_init"] += (int) groups_get_not_init_monitors ($group_array, array(), array(), false, false, true);
 			
-			$no_tags_restricted_groups = $group_array;
-			foreach ($no_tags_restricted_groups as $k => $v) {
-				if (in_array($v, $tags_restricted_groups)) {
-					unset($no_tags_restricted_groups[$k]);
-				}
-			}
-			*/
+			// Get monitor OK, except disabled and non-init
+			$data["monitor_ok"] += (int) groups_get_normal_monitors ($group_array, array(), array(), false, false, true);
 			
-			if (!empty($group_array)) {
-				// Get monitor NOT INIT, except disabled AND async modules
-				$data["monitor_not_init"] += (int) groups_get_not_init_monitors ($group_array, array(), array(), false, false, true);
-				
-				// Get monitor OK, except disabled and non-init
-				$data["monitor_ok"] += (int) groups_get_normal_monitors ($group_array, array(), array(), false, false, true);
-				
-				// Get monitor CRITICAL, except disabled and non-init
-				$data["monitor_critical"] += (int) groups_get_critical_monitors ($group_array, array(), array(), false, false, true);
-				
-				// Get monitor WARNING, except disabled and non-init
-				$data["monitor_warning"] += (int) groups_get_warning_monitors ($group_array, array(), array(), false, false, true);
-				
-				// Get monitor UNKNOWN, except disabled and non-init
-				$data["monitor_unknown"] += (int) groups_get_unknown_monitors ($group_array, array(), array(), false, false, true);
-				
-				// Get alerts configured, except disabled 
-				$data["monitor_alerts"] += groups_monitor_alerts ($group_array) ;
-				
-				// Get alert configured currently FIRED, except disabled 
-				$data["monitor_alerts_fired"] += groups_monitor_fired_alerts ($group_array);
-				
-				// Calculate totals using partial counts from above
-				
-				// Get TOTAL non-init modules, except disabled ones and async modules
-				$data["total_not_init"] += $data["monitor_not_init"];
+			// Get monitor CRITICAL, except disabled and non-init
+			$data["monitor_critical"] += (int) groups_get_critical_monitors ($group_array, array(), array(), false, false, true);
 			
-				// Get TOTAL agents in a group
-				$data["total_agents"] += (int) groups_get_total_agents ($group_array, array(), array(), false, false, true);
-				
-				// Get Agents OK
-				$data["agent_ok"] += (int) groups_get_normal_agents ($group_array, array(), array(), false, false, true);
-				
-				// Get Agents Warning 
-				$data["agent_warning"] += (int) groups_get_warning_agents ($group_array, array(), array(), false, false, true);
-				
-				// Get Agents Critical
-				$data["agent_critical"] += (int) groups_get_critical_agents ($group_array, array(), array(), false, false, true);
-				
-				// Get Agents Unknown
-				$data["agent_unknown"] += (int) groups_get_unknown_agents ($group_array, array(), array(), false, false, true);
-				
-				// Get Agents Not init
-				$data["agent_not_init"] += (int) groups_get_not_init_agents ($group_array, array(), array(), false, false, true);
-			}
+			// Get monitor WARNING, except disabled and non-init
+			$data["monitor_warning"] += (int) groups_get_warning_monitors ($group_array, array(), array(), false, false, true);
 			
+			// Get monitor UNKNOWN, except disabled and non-init
+			$data["monitor_unknown"] += (int) groups_get_unknown_monitors ($group_array, array(), array(), false, false, true);
+			
+			// Get alerts configured, except disabled 
+			$data["monitor_alerts"] += groups_monitor_alerts ($group_array) ;
+			
+			// Get alert configured currently FIRED, except disabled 
+			$data["monitor_alerts_fired"] += groups_monitor_fired_alerts ($group_array);
+			
+			// Calculate totals using partial counts from above
+			
+			// Get TOTAL non-init modules, except disabled ones and async modules
+			$data["total_not_init"] += $data["monitor_not_init"];
+		
+			// Get TOTAL agents in a group
+			$data["total_agents"] += (int) groups_get_total_agents ($group_array, array(), array(), false, false, true);
+			
+			// Get Agents OK
+			$data["agent_ok"] += (int) groups_get_normal_agents ($group_array, array(), array(), false, false, true);
+			
+			// Get Agents Warning 
+			$data["agent_warning"] += (int) groups_get_warning_agents ($group_array, array(), array(), false, false, true);
+			
+			// Get Agents Critical
+			$data["agent_critical"] += (int) groups_get_critical_agents ($group_array, array(), array(), false, false, true);
+			
+			// Get Agents Unknown
+			$data["agent_unknown"] += (int) groups_get_unknown_agents ($group_array, array(), array(), false, false, true);
+			
+			// Get Agents Not init
+			$data["agent_not_init"] += (int) groups_get_not_init_agents ($group_array, array(), array(), false, false, true);
+		
 			// Get total count of monitors for this group, except disabled.
-			$data["monitor_checks"] = $data["monitor_not_init"] + $data["monitor_unknown"] + $data["monitor_warning"] + $data["monitor_critical"] + $data["monitor_ok"];
-			
-			// Calculate not_normal monitors
-			$data["monitor_not_normal"] += $data["monitor_checks"] - $data["monitor_ok"];
+			$data["monitor_checks"] += $data["monitor_not_init"] + $data["monitor_unknown"] + $data["monitor_warning"] + $data["monitor_critical"] + $data["monitor_ok"];
 		}
-		
-		// Get total count of monitors for this group, except disabled.
-		
-		$data["monitor_checks"] = $data["monitor_not_init"] + $data["monitor_unknown"] + $data["monitor_warning"] + $data["monitor_critical"] + $data["monitor_ok"];
-		
-		/*
-		 Monitor health (percentage)
-		 Data health (percentage)
-		 Global health (percentage)
-		 Module sanity (percentage)
-		 Alert level (percentage)
-		 
-		 Server Sanity	0% Uninitialized modules
-		 
-		 */
 	}
-	
+	// Calculate not_normal monitors
+	$data["monitor_not_normal"] += $data["monitor_checks"] - $data["monitor_ok"];
+
 	if ($data["monitor_unknown"] > 0 && $data["monitor_checks"] > 0) {
 		$data["monitor_health"] = format_numeric (100 - ($data["monitor_not_normal"] / ($data["monitor_checks"] / 100)), 1);
 	}

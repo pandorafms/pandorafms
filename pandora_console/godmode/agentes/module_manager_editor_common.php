@@ -586,7 +586,8 @@ if($cps_module > 0){
 else{
 	$cps_inc = 0;
 	if($id_agent_module){
-		$cps_inc = service_modules_cps($id_agent_module);
+		$cps_inc = enterprise_hook('service_modules_cps', array($id_agent_module));
+		if ($cps_inc === ENTERPRISE_NOT_HOOK) $cps_inc = 0;
 	}
 	$cps_array[$cps_inc] = __('Enabled');
 }

@@ -2458,4 +2458,50 @@ function html_print_timezone_select ($name, $selected = "") {
 	return html_print_select($timezones, $name, $selected, "", __("None"), "", true, false, false);
 }
 
+/**
+ * Enclose a text into a result_div
+ *
+ * @param string Text to enclose
+ *
+ * @return string Text inside the result_div
+ */
+function html_print_result_div ($text) {
+	$text = preg_replace ('/</', '&lt;', $text);
+	$text = preg_replace ('/>/', '&gt;', $text);
+	$text = preg_replace ('/\n/i','<br>',$text);
+	$text = preg_replace ('/\s/i','&nbsp;',$text);
+
+	$enclose = "<div id='result_div' style='width: 100%; height: 100%; overflow: scroll; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left'>";
+	$enclose .= $text;
+	$enclose .= "</div>";
+	return $enclose;
+}
+
+/**
+ * Print order arrows links
+ *
+ * @param array Base tags to build url
+ * @param string Order key to add to URL
+ * @param string Value to sort ascendent
+ * @param string Value to sort descendent
+ *
+ * @return string HTML code to display both arrows.
+ */
+function html_print_sort_arrows ($params, $order_tag, $up = 'up', $down = 'down') {
+	// Build the queries
+	$params[$order_tag] = $up;
+	$url_up = "index.php?" . http_build_query($params, '', '&amp;');
+	$params[$order_tag] = $down;
+	$url_down = "index.php?" . http_build_query($params, '', '&amp;');
+
+	// Build the links
+	return '&nbsp;' .
+		'<a href="' . $url_up . '">' .
+			html_print_image("images/sort_up.png", true) .
+		'</a>' .
+		'<a href="' . $url_down . '">' .
+			html_print_image("images/sort_down.png", true) .
+		'</a>'
+	;
+}
 ?>

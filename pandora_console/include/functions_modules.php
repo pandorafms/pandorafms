@@ -780,14 +780,14 @@ function modules_get_raw_data($id_agent_module, $date_init, $date_end) {
 	return $data;
 }
 
-function modules_get_agent_group($id_agent_module) {
+function modules_get_agent_groups($id_agent_module) {
 	$return = false;
 	
 	$id_agent = modules_get_agentmodule_agent(
 		$id_agent_module);
 	
 	if (!empty($id_agent)) {
-		$return = agents_get_agent_group($id_agent);
+		$return = agents_get_all_groups_agent($id_agent);
 	}
 	
 	return $return;
@@ -2750,5 +2750,29 @@ function modules_get_modules_status ($mod_status_id) {
 	}
 	
 	return $mod_status_desc;
-} 
+}
+
+function modules_get_counter_by_states($state) {
+	switch ($state) {
+		case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+		case AGENT_MODULE_STATUS_CRITICAL_BAD:
+			return "critical_count";
+		case AGENT_MODULE_STATUS_WARNING_ALERT:
+		case AGENT_MODULE_STATUS_WARNING:
+			return "warning_count";
+			break;
+		case AGENT_MODULE_STATUS_UNKNOWN:
+			return "unknown_count";
+		case AGENT_MODULE_STATUS_NO_DATA:
+		case AGENT_MODULE_STATUS_NOT_INIT:
+			return "notinit_count";
+		case AGENT_MODULE_STATUS_NORMAL_ALERT:
+		case AGENT_MODULE_STATUS_NORMAL:
+			return "normal_count";
+	}
+
+	// If the state is not an expected state, return condition
+	// to not show any data
+	return false;
+}
 ?>

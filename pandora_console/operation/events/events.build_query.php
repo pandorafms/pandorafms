@@ -81,6 +81,7 @@ switch ($status) {
 $events_wi_cdata = db_get_all_rows_sql('SELECT id_evento,custom_data from tevento WHERE custom_data != ""');
 $count_events = 0;
 $events_wi_cdata_id = 'OR id_evento IN (';
+if ($events_wi_cdata === false) $events_wi_cdata = array();
 foreach ($events_wi_cdata as $key => $value) {
 	$needle = base64_decode($value['custom_data']);
 	if (($needle != "") && ($search != "")) {
@@ -146,6 +147,18 @@ if ($severity != -1) {
 			$sql_post .= " AND criticity = $severity";
 			break;
 	}
+}
+
+if ($id_extra != '') {
+	$sql_post .= " AND id_extra LIKE '%$id_extra%'";
+}
+
+if ($user_comment != '') {
+	$sql_post .= " AND user_comment LIKE '%$user_comment%'";
+}
+
+if ($source != '') {
+	$sql_post .= " AND source LIKE '$source'";
 }
 
 // In metaconsole mode the agent search is performed by name

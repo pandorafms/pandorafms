@@ -91,7 +91,8 @@ function alerts_get_alerts($id_group = 0, $free_search = "", $status = "all", $s
 	}
 	else {
 		$sql = 'SELECT *, t2.nombre AS module_name,
-			t3.nombre AS agent_name, t1.name AS template_name,
+			t3.nombre AS agent_name, t3.alias AS agent_alias,
+			t1.name AS template_name,
 			t0.disabled AS alert_disabled ';
 	}
 	$sql .= '

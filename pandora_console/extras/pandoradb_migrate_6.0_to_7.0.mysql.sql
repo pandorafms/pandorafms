@@ -1213,6 +1213,9 @@ UPDATE `tlink` SET `link` = 'https://github.com/pandorafms/pandorafms/issues' WH
 -- ---------------------------------------------------------------------
 ALTER TABLE tevent_filter ADD COLUMN `date_from` date DEFAULT NULL;
 ALTER TABLE tevent_filter ADD COLUMN `date_to` date DEFAULT NULL;
+ALTER TABLE tevent_filter ADD COLUMN `user_comment` text NOT NULL;
+ALTER TABLE tevent_filter ADD COLUMN `source` tinytext NOT NULL;
+ALTER TABLE tevent_filter ADD COLUMN `id_extra` tinytext NOT NULL;
 -- ---------------------------------------------------------------------
 -- Table `tusuario`
 -- ---------------------------------------------------------------------
@@ -1228,7 +1231,7 @@ ALTER TABLE tusuario ADD COLUMN `time_autorefresh` int(5) unsigned NOT NULL defa
 -- ---------------------------------------------------------------------
 ALTER TABLE tagente_modulo ADD COLUMN `dynamic_next` bigint(20) NOT NULL default '0';
 ALTER TABLE tagente_modulo ADD COLUMN `dynamic_two_tailed` tinyint(1) unsigned default '0';
-ALTER TABLE tagente_modulo ADD COLUMN `parent_module_id` int(10) unsigned NOT NULL;
+ALTER TABLE tagente_modulo ADD COLUMN `parent_module_id` int(10) unsigned NOT NULL default 0;
 ALTER TABLE `tagente_modulo` ADD COLUMN `cps` int NOT NULL default 0;
 
 -- ---------------------------------------------------------------------
@@ -1337,6 +1340,7 @@ ALTER TABLE treport_content ADD COLUMN `lapse_calc` tinyint(1) default '0';
 ALTER TABLE treport_content ADD COLUMN `lapse` int(11) default '300';
 ALTER TABLE treport_content ADD COLUMN `visual_format` tinyint(1) default '0';
 ALTER TABLE treport_content ADD COLUMN `hide_no_data` tinyint(1) default '0';
+ALTER TABLE treport_content ADD COLUMN `recursion` tinyint(1) default NULL;
 
 -- ---------------------------------------------------------------------
 -- Table `tmodule_relationship`
@@ -1668,7 +1672,7 @@ create table IF NOT EXISTS `tmetaconsole_agent_secondary_group`(
 
 ALTER TABLE tagente ADD COLUMN `update_secondary_groups` tinyint(1) NOT NULL default '0';
 ALTER TABLE tmetaconsole_agent ADD COLUMN `update_secondary_groups` tinyint(1) NOT NULL default '0';
-ALTER TABLE tusuario_perfil ADD COLUMN `is_secondary` tinyint(1) NOT NULL default '0';
+ALTER TABLE tusuario_perfil ADD COLUMN `no_hierarchy` tinyint(1) NOT NULL default '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tautoconfig`

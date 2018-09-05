@@ -83,13 +83,8 @@ $table_behaviour->data[$row][1] = html_print_checkbox('paginate_module', 1,
 $row++;
 
 $table_behaviour->data[$row][0] = __('Display data of proc modules in other format');
-$table_behaviour->data[$row][1] = __('Yes') . '&nbsp;' . 
-		html_print_radio_button ('render_proc', 1, '',
-		$config["render_proc"], true) .
-	'&nbsp;&nbsp;';
-$table_behaviour->data[$row][1] .= __('No') . '&nbsp;' .
-	html_print_radio_button ('render_proc', 0, '',
-		$config["render_proc"], true);
+$table_behaviour->data[$row][1] = html_print_checkbox('render_proc', 1,
+	$config['render_proc'], true);
 $row++;
 
 $table_behaviour->data[$row][0] = __('Display text proc modules have state is ok');
@@ -103,13 +98,8 @@ $row++;
 //Daniel maya 02/06/2016 Display menu with click --INI
 $table_behaviour->data[$row][0] = __('Click to display lateral menus').
 	ui_print_help_tip(__('When enabled, the lateral menus are shown when left clicking them, instead of hovering over them'), true);
-$table_behaviour->data[$row][1] = __('Yes') . '&nbsp;' .
-		html_print_radio_button ('click_display', 1, '',
-		$config["click_display"], true) .
-	'&nbsp;&nbsp;';
-$table_behaviour->data[$row][1] .= __('No') . '&nbsp;' .
-	html_print_radio_button ('click_display', 0, '',
-		$config["click_display"], true);
+$table_behaviour->data[$row][1] = html_print_checkbox('click_display', 1,
+	$config['click_display'], true);
 $row++;
 //Daniel maya 02/06/2016 Display menu with click --END
 
@@ -126,13 +116,8 @@ if (enterprise_installed()) {
 
 $table_behaviour->data[$row][0] = __('Classic menu mode').
 	ui_print_help_tip(__('Text menu options always visible, don\'t hide'), true);
-$table_behaviour->data[$row][1] = __('Yes') . '&nbsp;' .
-		html_print_radio_button ('classic_menu', 1, '',
-		$config["classic_menu"], true) .
-	'&nbsp;&nbsp;';
-$table_behaviour->data[$row][1] .= __('No') . '&nbsp;' .
-	html_print_radio_button ('classic_menu', 0, '',
-		$config["classic_menu"], true);
+$table_behaviour->data[$row][1] = html_print_checkbox('classic_menu', 1,
+	$config['classic_menu'], true);
 $row++;
 
 echo "<fieldset>";
@@ -398,41 +383,31 @@ if(enterprise_installed()) {
 	$row++;
 }
 
-$table_styles->data[$row][0] = __('Disable logo in graphs');
-$table_styles->data[$row][1] = __('Yes') . '&nbsp;' .
-	html_print_radio_button_extended ('fixed_graph', 1, '', $config["fixed_graph"], $open, '','',true) .
-	'&nbsp;&nbsp;';
+if (enterprise_installed()){
+	$table_styles->data[$row][0] = __('Disable logo in graphs');
+	$table_styles->data[$row][1] = html_print_checkbox('fixed_graph', 1,
+	$config['fixed_graph'], true);
+	$row++;
+}
+
 	/* Hello there! :)
 We added some of what seems to be "buggy" messages to the openSource version recently. This is not to force open-source users to move to the enterprise version, this is just to inform people using Pandora FMS open source that it requires skilled people to maintain and keep it running smoothly without professional support. This does not imply open-source version is limited in any way. If you check the recently added code, it contains only warnings and messages, no limitations except one: we removed the option to add custom logo in header. In the Update Manager section, it warns about the 'danger’ of applying automated updates without a proper backup, remembering in the process that the Enterprise version comes with a human-tested package. Maintaining an OpenSource version with more than 500 agents is not so easy, that's why someone using a Pandora with 8000 agents should consider asking for support. It's not a joke, we know of many setups with a huge number of agents, and we hate to hear that “its becoming unstable and slow” :(
 You can of course remove the warnings, that's why we include the source and do not use any kind of trick. And that's why we added here this comment, to let you know this does not reflect any change in our opensource mentality of does the last 14 years.
 */
-	
-$table_styles->data[$row][1] .= __('No') . '&nbsp;' .
-	html_print_radio_button_extended ('fixed_graph', 0, '', $config["fixed_graph"], $open, '','',true, $open,'visualmodal');
-$row++;
 
 $table_styles->data[$row][0] = __('Disable helps');
-$table_styles->data[$row][1] = __('Yes') . '&nbsp;' .
-	html_print_radio_button ('disable_help', 1, '', $config["disable_help"], true) .
-	'&nbsp;&nbsp;';
-$table_styles->data[$row][1] .= __('No') . '&nbsp;' .
-	html_print_radio_button ('disable_help', 0, '', $config["disable_help"], true);
+$table_styles->data[$row][1] = html_print_checkbox('disable_help', 1,
+	$config['disable_help'], true);
 $row++;
 
 $table_styles->data[$row][0] = __('Fixed header');
-$table_styles->data[$row][1] = __('Yes') . '&nbsp;' .
-	html_print_radio_button ('fixed_header', 1, '', $config["fixed_header"], true) .
-	'&nbsp;&nbsp;';
-$table_styles->data[$row][1] .= __('No') . '&nbsp;' .
-	html_print_radio_button ('fixed_header', 0, '', $config["fixed_header"], true);
+$table_styles->data[$row][1] = html_print_checkbox('fixed_header', 1,
+	$config['fixed_header'], true);
 $row++;
 
 $table_styles->data[$row][0] = __('Fixed menu');
-$table_styles->data[$row][1] = __('Yes') . '&nbsp;' .
-	html_print_radio_button ('fixed_menu', 1, '', $config["fixed_menu"], true) .
-	'&nbsp;&nbsp;';
-$table_styles->data[$row][1] .= __('No') . '&nbsp;' .
-	html_print_radio_button ('fixed_menu', 0, '', $config["fixed_menu"], true);
+$table_styles->data[$row][1] = html_print_checkbox('fixed_menu', 1,
+	$config['fixed_menu'], true);
 $row++;
 
 // For 5.1 Autohidden menu feature
@@ -441,11 +416,8 @@ $table_styles->data['autohidden'][1] = html_print_checkbox('autohidden_menu',
 	1, $config['autohidden_menu'], true);
 	
 $table_styles->data[$row][0] = __('Visual effects and animation');
-$table_styles->data[$row][1] = __('Yes') . '&nbsp;' .
-	html_print_radio_button ('visual_animation', 1, '', $config["visual_animation"], true) .
-	'&nbsp;&nbsp;';
-$table_styles->data[$row][1] .= __('No') . '&nbsp;' .
-	html_print_radio_button ('visual_animation', 0, '', $config["visual_animation"], true);	
+$table_styles->data[$row][1] = html_print_checkbox('visual_animation', 1,
+	$config['visual_animation'], true);
 
 echo "<fieldset>";
 echo "<legend>" . __('Style configuration') . "</legend>";
@@ -465,10 +437,8 @@ $table_gis->data = array ();
 
 $table_gis->data[$row][0] = __('GIS Labels') .
 	ui_print_help_tip(__('This enabling this, you get a label with agent name in GIS maps. If you have lots of agents in the map, will be unreadable. Disabled by default.'), true);
-$table_gis->data[$row][1] = __('Yes') . '&nbsp;' .
-	html_print_radio_button ('gis_label', 1, '', $config["gis_label"], true).'&nbsp;&nbsp;';
-$table_gis->data[$row][1] .= __('No') . '&nbsp;' .
-	html_print_radio_button ('gis_label', 0, '', $config["gis_label"], true);
+$table_gis->data[$row][1] = html_print_checkbox('gis_label', 1,
+$config['gis_label'], true);
 $row++;
 
 $listIcons = gis_get_array_list_icons();
@@ -558,10 +528,8 @@ $row++;
 
 $table_font->data[$row][0] = __('Show unit along with value in reports') .
 	ui_print_help_tip(__('This enabling this, max, min and avg values will be shown with units.'), true);
-$table_font->data[$row][1] = __('Yes') . '&nbsp;' .
-	html_print_radio_button ('simple_module_value', 1, '', $config["simple_module_value"], true).'&nbsp;&nbsp;';
-$table_font->data[$row][1] .= __('No') . '&nbsp;' .
-	html_print_radio_button ('simple_module_value', 0, '', $config["simple_module_value"], true);
+$table_font->data[$row][1] = html_print_checkbox('simple_module_value', 1,
+$config['simple_module_value'], true);
 $row++;
 
 echo "<fieldset>";
@@ -647,8 +615,8 @@ $table_chars->data[$row][1] = html_print_input_text ('custom_graph_width',
 $row++;
 
 $table_chars->data[$row][0] = __('Use round corners');
-$table_chars->data[$row][1] = __('Yes').'&nbsp;'.html_print_radio_button ('round_corner', 1, '', $config["round_corner"], true).'&nbsp;&nbsp;';
-$table_chars->data[$row][1] .= __('No').'&nbsp;'.html_print_radio_button ('round_corner', 0, '', $config["round_corner"], true);
+$table_chars->data[$row][1] = html_print_checkbox('round_corner', 1,
+$config['round_corner'], true);
 $row++;
 
 $table_chars->data[$row][0] = __('Type of module charts');
@@ -855,14 +823,8 @@ $table_other->data['custom_report_front-footer'][1] = html_print_textarea('custo
 
 
 $table_other->data[$row][0] = __('Show QR Code icon in the header');
-$table_other->data[$row][1] = __('Yes') . '&nbsp;' .
-	html_print_radio_button ('show_qr_code_header', 1, '',
-		$config["show_qr_code_header"], true) .
-	'&nbsp;&nbsp;';
-$table_other->data[$row][1] .= __('No') . '&nbsp;' .
-	html_print_radio_button ('show_qr_code_header', 0, '',
-		$config["show_qr_code_header"], true);
-
+$table_other->data[$row][1] = html_print_checkbox('show_qr_code_header', 1,
+$config['show_qr_code_header'], true);
 $row++;
 
 $table_other->data[$row][0] = __('Custom graphviz directory') .
@@ -882,13 +844,8 @@ $row++;
 $table_other->data[$row][0] = __('Show only the group name');
 $table_other->data[$row][0] .= ui_print_help_tip(
 	__('Show the group name instead the group icon.'), true);
-$table_other->data[$row][1] = __('Yes') . '&nbsp;' .
-	html_print_radio_button ('show_group_name', 1, '',
-		$config["show_group_name"], true) .
-	'&nbsp;&nbsp;';
-$table_other->data[$row][1] .= __('No') . '&nbsp;' .
-	html_print_radio_button ('show_group_name', 0, '',
-		$config["show_group_name"], true);
+	html_print_checkbox('show_group_name', 1,
+	$config['show_group_name'], true);
 $row++;
 
 $table_other->data[$row][0] = __('Date format string') . ui_print_help_icon("date_format", true);

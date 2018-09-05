@@ -135,14 +135,14 @@ class Tree {
 
 	protected function getFirstLevelFields() {
 		$fields = array (
-            "g AS " . $this->L1fieldName,
-            "SUM(x_critical) AS total_critical_count",
-            "SUM(x_warning) AS total_warning_count",
-            "SUM(x_normal) AS total_normal_count",
-            "SUM(x_unknown) AS total_unknown_count",
-            "SUM(x_not_init) AS total_not_init_count",
-            "SUM(x_alerts) AS total_alerts_count",
-            "SUM(x_total) AS total_count"
+			"g AS " . $this->L1fieldName,
+			"SUM(x_critical) AS total_critical_count",
+			"SUM(x_warning) AS total_warning_count",
+			"SUM(x_normal) AS total_normal_count",
+			"SUM(x_unknown) AS total_unknown_count",
+			"SUM(x_not_init) AS total_not_init_count",
+			"SUM(x_alerts) AS total_alerts_count",
+			"SUM(x_total) AS total_count"
 		);
 		return implode(",", array_merge($fields, $this->L1extraFields));
 	}
@@ -203,22 +203,22 @@ class Tree {
 
 	// FIXME: Separate and condition from inner join
 	protected function getTagJoin () {
-        // $parent is the agent id
+		// $parent is the agent id
 		$group_id = (int) db_get_value('id_grupo', 'tagente', 'id_agente', $this->id);
 		$tag_join = '';
-        if (empty($group_id)) {
-            // ACL error, this will restrict the module search
+		if (empty($group_id)) {
+			// ACL error, this will restrict the module search
 			$tag_join = 'INNER JOIN ttag_module tta
-				        	ON 1=0';
-        }
-        else if (!empty($this->acltags) && isset($this->acltags[$group_id])) {
-            $tags_str = $this->acltags[$group_id];
+							ON 1=0';
+		}
+		else if (!empty($this->acltags) && isset($this->acltags[$group_id])) {
+			$tags_str = $this->acltags[$group_id];
 
-            if (!empty($tags_str)) {
-                $tag_join = sprintf('INNER JOIN ttag_module ttm
-                                            ON tam.id_agente_modulo = ttm.id_agente_modulo
-                                                AND ttm.id_tag IN (%s)', $tags_str);
-            }
+			if (!empty($tags_str)) {
+				$tag_join = sprintf('INNER JOIN ttag_module ttm
+											ON tam.id_agente_modulo = ttm.id_agente_modulo
+												AND ttm.id_tag IN (%s)', $tags_str);
+			}
 		}
 		return $tag_join;
 	}
@@ -290,7 +290,7 @@ class Tree {
 
 	protected function getGroupSearchInner() {
 		if (empty($this->filter['searchGroup'])) return "";
-        return "INNER JOIN tgrupo tg
+		return "INNER JOIN tgrupo tg
 			ON ta.id_grupo = tg.id_grupo
 			OR tasg.id_group = tg.id_grupo"
 		;
@@ -298,7 +298,7 @@ class Tree {
 
 	protected function getGroupSearchFilter() {
 		if (empty($this->filter['searchGroup'])) return "";
-        return " AND tg.nombre LIKE '%" . $this->filter['searchGroup'] . "%'";
+		return " AND tg.nombre LIKE '%" . $this->filter['searchGroup'] . "%'";
 	}
 
 	protected function getAgentCounterColumnsSql ($agent_table) {
@@ -851,7 +851,7 @@ class Tree {
 
 	}
 
-    protected function getFirstLevel() {
+	protected function getFirstLevel() {
 		$sql = $this->getFirstLevelSql();
 		$items = db_get_all_rows_sql($sql);
 		if ($items === false) $items = array();
@@ -862,83 +862,83 @@ class Tree {
 	protected function getProcessedItemsFirstLevel($items){
 		$processed_items = array();
 		foreach ($items as $key => $item) {
-            $processed_item = $this->getProcessedItem($item);
-            $processed_items[] = $processed_item;
+			$processed_item = $this->getProcessedItem($item);
+			$processed_items[] = $processed_item;
 		}
 		return $processed_items;
 	}
 
 	protected function getFirstLevelSql() {
 
-        $fields = $this->getFirstLevelFields();
-        $field_name_sql = $this->L1fieldNameSql;
-        $inside_fields = $this->getFirstLevelFieldsInside();
+		$fields = $this->getFirstLevelFields();
+		$field_name_sql = $this->L1fieldNameSql;
+		$inside_fields = $this->getFirstLevelFieldsInside();
 		$inner = $this->L1inner;
 		$inner_inside = $this->L1innerInside;
-        $order_by_final = $this->L1orderByFinal;
+		$order_by_final = $this->L1orderByFinal;
 
-        $group_inner = $this->getGroupSearchInner();
-        $group_acl = $this->getGroupAclCondition();
-        $group_search_filter = $this->getGroupSearchFilter();
-        $agent_search_filter = $this->getAgentSearchFilter();
-        $agent_status_filter = $this->getAgentStatusFilter();
-        $module_search_filter = $this->getModuleSearchFilter();
-        $module_status_inner = "";
-        $module_status_filter = $this->getModuleStatusFilterFromTestado();
-        if (!empty($module_status_filter)) {
-            $module_status_inner = "
-                INNER JOIN tagente_estado tae
-                    ON tae.id_agente_modulo = tam.id_agente_modulo";
+		$group_inner = $this->getGroupSearchInner();
+		$group_acl = $this->getGroupAclCondition();
+		$group_search_filter = $this->getGroupSearchFilter();
+		$agent_search_filter = $this->getAgentSearchFilter();
+		$agent_status_filter = $this->getAgentStatusFilter();
+		$module_search_filter = $this->getModuleSearchFilter();
+		$module_status_inner = "";
+		$module_status_filter = $this->getModuleStatusFilterFromTestado();
+		if (!empty($module_status_filter)) {
+			$module_status_inner = "
+				INNER JOIN tagente_estado tae
+					ON tae.id_agente_modulo = tam.id_agente_modulo";
 		}
 
-        $sql_model = "SELECT %s FROM
-            (
-                SELECT COUNT(DISTINCT(ta.id_agente)) AS total, $field_name_sql AS g
-                    FROM tagente ta
-                    LEFT JOIN tagent_secondary_group tasg
-                        ON ta.id_agente = tasg.id_agent
-                    INNER JOIN tagente_modulo tam
-                        ON ta.id_agente = tam.id_agente
+		$sql_model = "SELECT %s FROM
+			(
+				SELECT COUNT(DISTINCT(ta.id_agente)) AS total, $field_name_sql AS g
+					FROM tagente ta
+					LEFT JOIN tagent_secondary_group tasg
+						ON ta.id_agente = tasg.id_agent
+					INNER JOIN tagente_modulo tam
+						ON ta.id_agente = tam.id_agente
 					$inner_inside
-                    $module_status_inner
-                    $group_inner
-                    WHERE ta.disabled = 0
-                        AND tam.disabled = 0
-                        %s
-                        $agent_search_filter
-                        $agent_status_filter
-                        $module_search_filter
-                        $module_status_filter
-                        $group_search_filter
-                        $group_acl
-                    GROUP BY $field_name_sql
-            ) x GROUP BY g";
-        $sql_array = array();
-        foreach ($inside_fields as $inside_field) {
-            $sql_array[] = sprintf(
-                $sql_model,
-                $inside_field['header'],
-                $inside_field['condition']
-            );
+					$module_status_inner
+					$group_inner
+					WHERE ta.disabled = 0
+						AND tam.disabled = 0
+						%s
+						$agent_search_filter
+						$agent_status_filter
+						$module_search_filter
+						$module_status_filter
+						$group_search_filter
+						$group_acl
+					GROUP BY $field_name_sql
+			) x GROUP BY g";
+		$sql_array = array();
+		foreach ($inside_fields as $inside_field) {
+			$sql_array[] = sprintf(
+				$sql_model,
+				$inside_field['header'],
+				$inside_field['condition']
+			);
 		}
-        $sql = "SELECT $fields FROM (" . implode(" UNION ALL ", $sql_array) . ") x2
-            $inner
-            GROUP BY g
-            ORDER BY $order_by_final";
-        return $sql;
+		$sql = "SELECT $fields FROM (" . implode(" UNION ALL ", $sql_array) . ") x2
+			$inner
+			GROUP BY g
+			ORDER BY $order_by_final";
+		return $sql;
 	}
 
-    protected function getSecondLevel() {
-        $sql = $this->getSecondLevelSql();
+	protected function getSecondLevel() {
+		$sql = $this->getSecondLevelSql();
 		$data = db_process_sql($sql);
 		if (empty($data)) {
-            $this->tree = array();
-            return;
-        }
+			$this->tree = array();
+			return;
+		}
 		$this->processAgents($data);
 
 		$this->tree = $data;
-    }
+	}
 
 	protected function getSecondLevelSql() {
 		$columns = sprintf("ta.id_agente AS id, ta.nombre AS name, ta.alias,
@@ -1006,12 +1006,12 @@ class Tree {
 		return $sql;
 	}
 
-    protected function getThirdLevel() {
-        $sql = $this->getThirdLevelSql();
+	protected function getThirdLevel() {
+		$sql = $this->getThirdLevelSql();
 		$data = db_process_sql($sql);
 		if (empty($data)) {
-            $this->tree = array();
-            return;
+			$this->tree = array();
+			return;
 		}
 		$data = $this->getProcessedModules($data);
 		$this->processModules($data);
@@ -1021,48 +1021,48 @@ class Tree {
 
 	protected function getThirdLevelSql() {
 		// Get the server id
-        $serverID = $this->serverID;
+		$serverID = $this->serverID;
 
-        $group_acl = $this->getGroupAclCondition();
+		$group_acl = $this->getGroupAclCondition();
 		$agent_search_filter = $this->getAgentSearchFilter();
 		$agent_status_filter = $this->getAgentStatusFilter();
 		$module_search_filter = $this->getModuleSearchFilter();
-        $module_status_filter = $this->getModuleStatusFilterFromTestado();
-        $agent_filter = "AND ta.id_agente = " . $this->id;
-        $tag_join = $this->getTagJoin();
+		$module_status_filter = $this->getModuleStatusFilterFromTestado();
+		$agent_filter = "AND ta.id_agente = " . $this->id;
+		$tag_join = $this->getTagJoin();
 
 		$condition = $this->L2condition;
 		$inner = $this->L2inner;
 
-        $columns = 'DISTINCT(tam.id_agente_modulo) AS id, tam.nombre AS name,
+		$columns = 'DISTINCT(tam.id_agente_modulo) AS id, tam.nombre AS name,
 			tam.id_tipo_modulo, tam.id_modulo, tae.estado, tae.datos,
 			tam.parent_module_id AS parent, tatm.id AS alerts';
 
-        // has any of this tags.
-        $tag_join = '';
+		// has any of this tags.
+		$tag_join = '';
 
-        $sql = "SELECT $columns
-            FROM tagente_modulo tam
-            $tag_join
-            INNER JOIN tagente_estado tae
-			    ON tam.id_agente_modulo = tae.id_agente_modulo
-            INNER JOIN tagente ta
-                ON tam.id_agente = ta.id_agente
-            LEFT JOIN tagent_secondary_group tasg
-                ON ta.id_agente = tasg.id_agent
-            LEFT JOIN talert_template_modules tatm
-                ON tatm.id_agent_module = tam.id_agente_modulo
+		$sql = "SELECT $columns
+			FROM tagente_modulo tam
+			$tag_join
+			INNER JOIN tagente_estado tae
+				ON tam.id_agente_modulo = tae.id_agente_modulo
+			INNER JOIN tagente ta
+				ON tam.id_agente = ta.id_agente
+			LEFT JOIN tagent_secondary_group tasg
+				ON ta.id_agente = tasg.id_agent
+			LEFT JOIN talert_template_modules tatm
+				ON tatm.id_agent_module = tam.id_agente_modulo
 			$inner
-            WHERE tam.disabled = 0 AND ta.disabled = 0
-                $condition
-                $agent_filter
-                $group_acl
-                $agent_search_filter
-                $agent_status_filter
-                $module_status_filter
-                $module_search_filter
+			WHERE tam.disabled = 0 AND ta.disabled = 0
+				$condition
+				$agent_filter
+				$group_acl
+				$agent_search_filter
+				$agent_status_filter
+				$module_status_filter
+				$module_search_filter
 			ORDER BY tam.nombre ASC, tam.id_agente_modulo ASC";
-        return $sql;
+		return $sql;
 	}
 
 	public function getJSON() {

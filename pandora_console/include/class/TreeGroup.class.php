@@ -23,7 +23,7 @@ class TreeGroup extends Tree {
 
 		global $config;
 
-        parent::__construct($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
+		parent::__construct($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
 
 		$this->L1fieldName = "id_group";
 		$this->L1extraFields = array(
@@ -33,28 +33,28 @@ class TreeGroup extends Tree {
 			"tg.id_grupo AS gid"
 		);
 
-        $this->L2conditionInside = "AND (
-            ta.id_grupo = " . $this->id . "
-            OR tasg.id_group = " . $this->id . "
+		$this->L2conditionInside = "AND (
+			ta.id_grupo = " . $this->id . "
+			OR tasg.id_group = " . $this->id . "
 		)";
-    }
+	}
 
-    protected function getData() {
-        if ($this->id == -1) {
-            $this->getFirstLevel();
-        } elseif ($this->type == 'group') {
-            $this->getSecondLevel();
-        } elseif ($this->type == 'agent') {
-            $this->getThirdLevel();
-        }
+	protected function getData() {
+		if ($this->id == -1) {
+			$this->getFirstLevel();
+		} elseif ($this->type == 'group') {
+			$this->getSecondLevel();
+		} elseif ($this->type == 'agent') {
+			$this->getThirdLevel();
+		}
 	}
 
 	protected function getGroupSearchFilter() {
-        return "";
+		return "";
 	}
 
-    protected function getFirstLevel() {
-        $processed_items = $this->getProcessedGroups();
+	protected function getFirstLevel() {
+		$processed_items = $this->getProcessedGroups();
 
 			if (!empty($processed_items)) {
 				// Filter by group name. This should be done after rerieving the items cause we need the possible items descendants
@@ -83,12 +83,12 @@ class TreeGroup extends Tree {
 
 					$processed_items = ($result === false) ? array() : array($result);
 				}
-            }
+			}
 
 		$this->tree = $processed_items;
-    }
+	}
 
-    protected function getProcessedGroups () {
+	protected function getProcessedGroups () {
 		$processed_groups = array();
 		// Index and process the groups
 		$groups = $this->getGroupCounters(0);
@@ -133,9 +133,9 @@ class TreeGroup extends Tree {
 
 		usort($groups, array("Tree", "cmpSortNames"));
 		return $groups;
-    }
+	}
 
-    protected function getGroupCounters() {
+	protected function getGroupCounters() {
 		//FIXME PLEASE
 		if (true) {
 			$fields = $this->getFirstLevelFields();
@@ -248,14 +248,14 @@ class TreeGroup extends Tree {
 		}
 
 		return $group_stats;
-    }
+	}
 
 	protected function getProcessedModules($modules_tree) {
 
-        $groups = array();
-        foreach ($modules_tree as $group) {
-            $groups[$group["id"]] = $group;
-        }
+		$groups = array();
+		foreach ($modules_tree as $group) {
+			$groups[$group["id"]] = $group;
+		}
 
 		// Build the module hierarchy
 		foreach ($groups as $id => $group) {
@@ -265,12 +265,12 @@ class TreeGroup extends Tree {
 				if (!isset($groups[$parent]['children'])) {
 					$groups[$parent]['children'] = array();
 				}
-                // Store a reference to the group into the parent
+				// Store a reference to the group into the parent
 				$groups[$parent]['children'][] = &$groups[$id];
 				// This group was introduced into a parent
 				$groups[$id]['have_parent'] = true;
 			}
-        }
+		}
 
 		// Sort the children groups
 		foreach ($groups as $id => $group) {
@@ -281,13 +281,13 @@ class TreeGroup extends Tree {
 		//Filter groups and eliminates the reference to children groups out of her parent
 		$groups = array_filter($groups, function ($group) {
 			return !$group['have_parent'];
-        });
+		});
 
-        return array_values($groups);
-    }
+		return array_values($groups);
+	}
 
-    // FIXME: Hierarchy lops is broken
-    protected function getProcessedModules_old($modules_tree) {
+	// FIXME: Hierarchy lops is broken
+	protected function getProcessedModules_old($modules_tree) {
 
 		$tree_modules = array();
 		$new_modules_root = array_filter($modules_tree, function ($module) {
@@ -298,25 +298,25 @@ class TreeGroup extends Tree {
 			return (isset($module['parent']) && ($module['parent'] != 0));
 		});
 
-        $i = 0;
+		$i = 0;
 		while (!empty($new_modules_child)) {
 			foreach ($new_modules_child as $i => $child) {
 				TreeGroup::recursive_modules_tree_view($new_modules_root, $new_modules_child, $i, $child);
-            }
+			}
 		}
 
 		foreach ($new_modules_root as $m) {
 			$tree_modules[] = $m;
-        }
+		}
 		return $tree_modules;
 	}
 
-    // FIXME with getProcessedModules_old
+	// FIXME with getProcessedModules_old
 	static function recursive_modules_tree_view (&$new_modules, &$new_modules_child, $i, $child) {
 		foreach ($new_modules as $index => $module) {
 			if ($module['id'] == $child['parent']) {
-                $new_modules[$index]['children'][] = $child;
-                unset($new_modules_child[$i]);
+				$new_modules[$index]['children'][] = $child;
+				unset($new_modules_child[$i]);
 				break;
 			}
 			else if (isset($new_modules[$index]['children'])) {
@@ -325,7 +325,7 @@ class TreeGroup extends Tree {
 		}
 	}
 
-    static function processCounters(&$groups) {
+	static function processCounters(&$groups) {
 		$all_counters = array();
 		foreach ($groups as $id => $group) {
 			$child_counters = array();
@@ -342,9 +342,9 @@ class TreeGroup extends Tree {
 			}
 		}
 		return $all_counters;
-    }
+	}
 
-    /**
+	/**
 	 * @brief Recursive function to remove the empty groups
 	 *
 	 * @param groups All groups structure
@@ -367,7 +367,7 @@ class TreeGroup extends Tree {
 			$new_groups[] = $group;
 		}
 		return $new_groups;
-    }
+	}
 
 	private static function extractGroupsWithIDs ($groups, $ids_hash) {
 		$result_groups = array();
@@ -386,9 +386,9 @@ class TreeGroup extends Tree {
 		}
 
 		return $result_groups;
-    }
+	}
 
-    private static function extractItemWithID ($items, $item_id, $item_type = "group", $strictACL = false) {
+	private static function extractItemWithID ($items, $item_id, $item_type = "group", $strictACL = false) {
 		foreach ($items as $item) {
 			if ($item["type"] != $item_type)
 				continue;
@@ -416,7 +416,7 @@ class TreeGroup extends Tree {
 
 		// Item not found
 		return false;
-    }
+	}
 
 	protected function getDisplayHierarchy() {
 		return $this->filter['searchHirearchy'] ||

@@ -23,35 +23,35 @@ class TreeModule extends Tree {
 
 		global $config;
 
-        parent::__construct($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
+		parent::__construct($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
 
-        $this->L1fieldName = 'name';
-        $this->L1fieldNameSql = 'tam.nombre';
-        $this->L1inner = '';
-        $this->L1orderByFinal = 'name';
+		$this->L1fieldName = 'name';
+		$this->L1fieldNameSql = 'tam.nombre';
+		$this->L1inner = '';
+		$this->L1orderByFinal = 'name';
 
-        $this->L2condition = "AND tam.nombre = '" . $this->symbol2name($this->rootID) . "'";
-    }
+		$this->L2condition = "AND tam.nombre = '" . $this->symbol2name($this->rootID) . "'";
+	}
 
-    protected function getData() {
-        if ($this->id == -1) {
-            $this->getFirstLevel();
-        } elseif ($this->type == 'module') {
-            $this->getSecondLevel();
-        } elseif ($this->type == 'agent') {
-            $this->getThirdLevel();
-        }
-    }
+	protected function getData() {
+		if ($this->id == -1) {
+			$this->getFirstLevel();
+		} elseif ($this->type == 'module') {
+			$this->getSecondLevel();
+		} elseif ($this->type == 'agent') {
+			$this->getThirdLevel();
+		}
+	}
 
-    protected function getProcessedItemsFirstLevel($items){
+	protected function getProcessedItemsFirstLevel($items){
 		$processed_items = array();
-        foreach ($items as $key => $item) {
-            $name = $this->name2symbol($item['name']);
-            $processed_item = $this->getProcessedItem($item);
-            $processed_item['id'] = $name;
-            $processed_item['rootID'] = $name;
-            $processed_items[] = $processed_item;
-        }
+		foreach ($items as $key => $item) {
+			$name = $this->name2symbol($item['name']);
+			$processed_item = $this->getProcessedItem($item);
+			$processed_item['id'] = $name;
+			$processed_item['rootID'] = $name;
+			$processed_items[] = $processed_item;
+		}
 		return $processed_items;
 	}
 }

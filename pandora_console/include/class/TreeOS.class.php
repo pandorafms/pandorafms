@@ -23,26 +23,26 @@ class TreeOS extends Tree {
 
 		global $config;
 
-        parent::__construct($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
+		parent::__construct($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
 
-        $this->L1fieldName = 'id_os';
-        $this->L1fieldNameSql = 'ta.id_os';
-        $this->L1extraFields = array('tco.name', 'tco.id_os AS id', 'tco.icon_name AS iconHTML');
-        $this->L1inner = 'INNER JOIN tconfig_os tco ON tco.id_os = x2.g';
-        $this->L1orderByFinal = 'tco.name';
+		$this->L1fieldName = 'id_os';
+		$this->L1fieldNameSql = 'ta.id_os';
+		$this->L1extraFields = array('tco.name', 'tco.id_os AS id', 'tco.icon_name AS iconHTML');
+		$this->L1inner = 'INNER JOIN tconfig_os tco ON tco.id_os = x2.g';
+		$this->L1orderByFinal = 'tco.name';
 
-        $this->L2condition = "AND ta.id_os = " . $this->rootID;
-    }
+		$this->L2condition = "AND ta.id_os = " . $this->rootID;
+	}
 
-    protected function getData() {
-        if ($this->id == -1) {
-            $this->getFirstLevel();
-        } elseif ($this->type == 'os') {
-            $this->getSecondLevel();
-        } elseif ($this->type == 'agent') {
-            $this->getThirdLevel();
-        }
-    }
+	protected function getData() {
+		if ($this->id == -1) {
+			$this->getFirstLevel();
+		} elseif ($this->type == 'os') {
+			$this->getSecondLevel();
+		} elseif ($this->type == 'agent') {
+			$this->getThirdLevel();
+		}
+	}
 }
 
 ?>

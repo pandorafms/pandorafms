@@ -23,31 +23,31 @@ class TreeTag extends Tree {
 
 		global $config;
 
-        parent::__construct($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
+		parent::__construct($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
 
-        $this->L1fieldName = 'id_tag';
+		$this->L1fieldName = 'id_tag';
 		$this->L1fieldNameSql = 'ttm.id_tag';
 		$this->L1innerInside = '
-            INNER JOIN ttag_module ttm
-                ON ttm.id_agente_modulo = tam.id_agente_modulo
+			INNER JOIN ttag_module ttm
+				ON ttm.id_agente_modulo = tam.id_agente_modulo
 		';
-        $this->L1extraFields = array('tt.name', 'tt.id_tag AS id');
-        $this->L1inner = 'INNER JOIN ttag tt ON tt.id_tag = x2.g';
-        $this->L1orderByFinal = 'tt.name';
+		$this->L1extraFields = array('tt.name', 'tt.id_tag AS id');
+		$this->L1inner = 'INNER JOIN ttag tt ON tt.id_tag = x2.g';
+		$this->L1orderByFinal = 'tt.name';
 
-        $this->L2condition = "AND ttm.id_tag = " . $this->rootID;
+		$this->L2condition = "AND ttm.id_tag = " . $this->rootID;
 		$this->L2inner = $this->L1innerInside;
-    }
+	}
 
-    protected function getData() {
-        if ($this->id == -1) {
-            $this->getFirstLevel();
-        } elseif ($this->type == 'tag') {
-            $this->getSecondLevel();
-        } elseif ($this->type == 'agent') {
-            $this->getThirdLevel();
-        }
-    }
+	protected function getData() {
+		if ($this->id == -1) {
+			$this->getFirstLevel();
+		} elseif ($this->type == 'tag') {
+			$this->getSecondLevel();
+		} elseif ($this->type == 'agent') {
+			$this->getThirdLevel();
+		}
+	}
 }
 
 ?>

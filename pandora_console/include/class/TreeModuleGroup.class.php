@@ -23,26 +23,26 @@ class TreeModuleGroup extends Tree {
 
 		global $config;
 
-        parent::__construct($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
+		parent::__construct($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
 
-        $this->L1fieldName = 'id_module_group';
-        $this->L1fieldNameSql = 'tam.id_module_group';
-        $this->L1extraFields = array('tmg.name', 'tmg.id_mg AS id');
-        $this->L1inner = 'INNER JOIN tmodule_group tmg ON tmg.id_mg = x2.g';
-        $this->L1orderByFinal = 'tmg.name';
+		$this->L1fieldName = 'id_module_group';
+		$this->L1fieldNameSql = 'tam.id_module_group';
+		$this->L1extraFields = array('tmg.name', 'tmg.id_mg AS id');
+		$this->L1inner = 'INNER JOIN tmodule_group tmg ON tmg.id_mg = x2.g';
+		$this->L1orderByFinal = 'tmg.name';
 
-        $this->L2condition = "AND tam.id_module_group = " . $this->rootID;
-    }
+		$this->L2condition = "AND tam.id_module_group = " . $this->rootID;
+	}
 
-    protected function getData() {
-        if ($this->id == -1) {
-            $this->getFirstLevel();
-        } elseif ($this->type == 'module_group') {
-            $this->getSecondLevel();
-        } elseif ($this->type == 'agent') {
-            $this->getThirdLevel();
-        }
-    }
+	protected function getData() {
+		if ($this->id == -1) {
+			$this->getFirstLevel();
+		} elseif ($this->type == 'module_group') {
+			$this->getSecondLevel();
+		} elseif ($this->type == 'agent') {
+			$this->getThirdLevel();
+		}
+	}
 }
 
 ?>

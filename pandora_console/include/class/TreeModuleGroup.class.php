@@ -27,7 +27,7 @@ class TreeModuleGroup extends Tree {
 
         $this->L1fieldName = 'id_module_group';
         $this->L1fieldNameSql = 'tam.id_module_group';
-        $this->L1extraFields = ', tmg.name, tmg.id_mg AS id';
+        $this->L1extraFields = array('tmg.name', 'tmg.id_mg AS id');
         $this->L1inner = 'INNER JOIN tmodule_group tmg ON tmg.id_mg = x2.g';
         $this->L1orderByFinal = 'tmg.name';
 

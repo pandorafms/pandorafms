@@ -27,7 +27,7 @@ class TreeOS extends Tree {
 
         $this->L1fieldName = 'id_os';
         $this->L1fieldNameSql = 'ta.id_os';
-        $this->L1extraFields = ', tco.name, tco.id_os AS id, tco.icon_name AS iconHTML';
+        $this->L1extraFields = array('tco.name', 'tco.id_os AS id', 'tco.icon_name AS iconHTML');
         $this->L1inner = 'INNER JOIN tconfig_os tco ON tco.id_os = x2.g';
         $this->L1orderByFinal = 'tco.name';
 

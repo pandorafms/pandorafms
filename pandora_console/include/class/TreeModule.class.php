@@ -27,7 +27,6 @@ class TreeModule extends Tree {
 
         $this->L1fieldName = 'name';
         $this->L1fieldNameSql = 'tam.nombre';
-        $this->L1extraFields = '';
         $this->L1inner = '';
         $this->L1orderByFinal = 'name';
 

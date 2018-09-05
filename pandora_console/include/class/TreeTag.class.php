@@ -31,7 +31,7 @@ class TreeTag extends Tree {
             INNER JOIN ttag_module ttm
                 ON ttm.id_agente_modulo = tam.id_agente_modulo
 		';
-        $this->L1extraFields = ', tt.name, tt.id_tag AS id';
+        $this->L1extraFields = array('tt.name', 'tt.id_tag AS id');
         $this->L1inner = 'INNER JOIN ttag tt ON tt.id_tag = x2.g';
         $this->L1orderByFinal = 'tt.name';
 

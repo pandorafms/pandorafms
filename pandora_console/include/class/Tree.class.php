@@ -32,7 +32,7 @@ class Tree {
 
 	protected $L1fieldName = '';
 	protected $L1fieldNameSql = '';
-	protected $L1extraFields = '';
+	protected $L1extraFields = array();
 	protected $L1inner = '';
 	protected $L1innerInside = '';
 	protected $L1orderByFinal = '';
@@ -131,6 +131,53 @@ class Tree {
 		}
 
 		return $agent_status_filter;
+	}
+
+	protected function getFirstLevelFields() {
+		$fields = array (
+            "g AS " . $this->L1fieldName,
+            "SUM(x_critical) AS total_critical_count",
+            "SUM(x_warning) AS total_warning_count",
+            "SUM(x_normal) AS total_normal_count",
+            "SUM(x_unknown) AS total_unknown_count",
+            "SUM(x_not_init) AS total_not_init_count",
+            "SUM(x_alerts) AS total_alerts_count",
+            "SUM(x_total) AS total_count"
+		);
+		return implode(",", array_merge($fields, $this->L1extraFields));
+	}
+
+	protected function getFirstLevelFieldsInside() {
+		return array(
+			'warning' => array(
+				'header' => "0 AS x_critical, SUM(total) AS x_warning, 0 AS x_normal, 0 AS x_unknown, 0 AS x_not_init, 0 AS x_alerts, 0 AS x_total, g",
+				'condition' => "AND ta.warning_count > 0 AND ta.critical_count = 0"
+			),
+			'critical' => array(
+				'header' => "SUM(total) AS x_critical, 0 AS x_warning, 0 AS x_normal, 0 AS x_unknown, 0 AS x_not_init, 0 AS x_alerts, 0 AS x_total, g",
+				'condition' => "AND ta.critical_count > 0"
+			),
+			'normal' => array(
+				'header' => "0 AS x_critical, 0 AS x_warning, SUM(total) AS x_normal, 0 AS x_unknown, 0 AS x_not_init, 0 AS x_alerts, 0 AS x_total, g",
+				'condition' => "AND ta.critical_count = 0 AND ta.warning_count = 0 AND ta.unknown_count = 0 AND ta.normal_count > 0"
+			),
+			'unknown' => array(
+				'header' => "0 AS x_critical, 0 AS x_warning, 0 AS x_normal, SUM(total) AS x_unknown, 0 AS x_not_init, 0 AS x_alerts, 0 AS x_total, g",
+				'condition' => "AND ta.critical_count = 0 AND ta.warning_count = 0 AND ta.unknown_count > 0"
+			),
+			'not_init' => array(
+				'header' => "0 AS x_critical, 0 AS x_warning, 0 AS x_normal, 0 AS x_unknown, SUM(total) AS x_not_init, 0 AS x_alerts, 0 AS x_total, g",
+				'condition' => $this->filter['show_not_init_agents'] ? "AND ta.total_count = ta.notinit_count" : " AND 1=0"
+			),
+			'alerts' => array(
+				'header' => "0 AS x_critical, 0 AS x_warning, 0 AS x_normal, 0 AS x_unknown, 0 AS x_not_init, SUM(total) AS x_alerts, 0 AS x_total, g",
+				'condition' => "AND ta.fired_count > 0"
+			),
+			'total' => array(
+				'header' => "0 AS x_critical, 0 AS x_warning, 0 AS x_normal, 0 AS x_unknown, 0 AS x_not_init, 0 AS x_alerts, SUM(total) AS x_total, g",
+				'condition' => $this->filter['show_not_init_agents'] ? "" : "AND ta.total_count <> ta.notinit_count"
+			)
+		);
 	}
 
 	protected function getInnerOrLeftJoin () {
@@ -823,54 +870,12 @@ class Tree {
 
 	protected function getFirstLevelSql() {
 
-		$field_name = $this->L1fieldName;
+        $fields = $this->getFirstLevelFields();
         $field_name_sql = $this->L1fieldNameSql;
-        $extra_fields = $this->L1extraFields;
+        $inside_fields = $this->getFirstLevelFieldsInside();
 		$inner = $this->L1inner;
 		$inner_inside = $this->L1innerInside;
         $order_by_final = $this->L1orderByFinal;
-
-		$fields = array (
-            "g AS $field_name",
-            "SUM(x_critical) AS total_critical_count",
-            "SUM(x_warning) AS total_warning_count",
-            "SUM(x_normal) AS total_normal_count",
-            "SUM(x_unknown) AS total_unknown_count",
-            "SUM(x_not_init) AS total_not_init_count",
-            "SUM(x_alerts) AS total_alerts_count",
-            "SUM(x_total) AS total_count"
-        );
-        $fields = implode(", ", $fields);
-        $array_array = array(
-            'warning' => array(
-                'header' => "0 AS x_critical, SUM(total) AS x_warning, 0 AS x_normal, 0 AS x_unknown, 0 AS x_not_init, 0 AS x_alerts, 0 AS x_total, g",
-                'condition' => "AND ta.warning_count > 0 AND ta.critical_count = 0"
-            ),
-            'critical' => array(
-                'header' => "SUM(total) AS x_critical, 0 AS x_warning, 0 AS x_normal, 0 AS x_unknown, 0 AS x_not_init, 0 AS x_alerts, 0 AS x_total, g",
-                'condition' => "AND ta.critical_count > 0"
-            ),
-            'normal' => array(
-                'header' => "0 AS x_critical, 0 AS x_warning, SUM(total) AS x_normal, 0 AS x_unknown, 0 AS x_not_init, 0 AS x_alerts, 0 AS x_total, g",
-                'condition' => "AND ta.critical_count = 0 AND ta.warning_count = 0 AND ta.unknown_count = 0 AND ta.normal_count > 0"
-            ),
-            'unknown' => array(
-                'header' => "0 AS x_critical, 0 AS x_warning, 0 AS x_normal, SUM(total) AS x_unknown, 0 AS x_not_init, 0 AS x_alerts, 0 AS x_total, g",
-                'condition' => "AND ta.critical_count = 0 AND ta.warning_count = 0 AND ta.unknown_count > 0"
-            ),
-            'not_init' => array(
-                'header' => "0 AS x_critical, 0 AS x_warning, 0 AS x_normal, 0 AS x_unknown, SUM(total) AS x_not_init, 0 AS x_alerts, 0 AS x_total, g",
-                'condition' => $this->filter['show_not_init_agents'] ? "AND ta.total_count = ta.notinit_count" : " AND 1=0"
-            ),
-            'alerts' => array(
-                'header' => "0 AS x_critical, 0 AS x_warning, 0 AS x_normal, 0 AS x_unknown, 0 AS x_not_init, SUM(total) AS x_alerts, 0 AS x_total, g",
-                'condition' => "AND ta.fired_count > 0"
-            ),
-            'total' => array(
-                'header' => "0 AS x_critical, 0 AS x_warning, 0 AS x_normal, 0 AS x_unknown, 0 AS x_not_init, 0 AS x_alerts, SUM(total) AS x_total, g",
-                'condition' => $this->filter['show_not_init_agents'] ? "" : "AND ta.total_count <> ta.notinit_count"
-            )
-        );
 
         $group_inner = $this->getGroupSearchInner();
         $group_acl = $this->getGroupAclCondition();
@@ -909,14 +914,14 @@ class Tree {
                     GROUP BY $field_name_sql
             ) x GROUP BY g";
         $sql_array = array();
-        foreach ($array_array as $s_array) {
+        foreach ($inside_fields as $inside_field) {
             $sql_array[] = sprintf(
                 $sql_model,
-                $s_array['header'],
-                $s_array['condition']
+                $inside_field['header'],
+                $inside_field['condition']
             );
 		}
-        $sql = "SELECT $fields $extra_fields FROM (" . implode(" UNION ALL ", $sql_array) . ") x2
+        $sql = "SELECT $fields FROM (" . implode(" UNION ALL ", $sql_array) . ") x2
             $inner
             GROUP BY g
             ORDER BY $order_by_final";

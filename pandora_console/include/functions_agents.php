@@ -2684,6 +2684,9 @@ function agents_generate_name ($alias, $address = '') {
  * @return Array with the main and secondary groups
  */
 function agents_get_all_groups_agent ($id_agent, $group = false) {
+	// Cache the agent id groups
+	static $cache = array();
+	if (isset($cache[$id_agent])) return $cache[$id_agent];
 	// Get the group if is not defined
 	if ($group === false) $group = agents_get_agent_group($id_agent);
 
@@ -2697,6 +2700,7 @@ function agents_get_all_groups_agent ($id_agent, $group = false) {
 
 	// Add a list of groups
 	$secondary_groups['plain'][] = $group;
+	$cache[$id_agent] = $secondary_groups['plain'];
 	return $secondary_groups['plain'];
 }
 

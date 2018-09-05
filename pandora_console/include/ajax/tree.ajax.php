@@ -38,7 +38,13 @@ if (is_ajax ()) {
 	}
 	
 	require_once($config['homedir'] . "/include/class/Tree.class.php");
-	enterprise_include_once("include/class/Tree.class.php");
+	require_once($config['homedir'] . "/include/class/TreeOS.class.php");
+	require_once($config['homedir'] . "/include/class/TreeModuleGroup.class.php");
+	require_once($config['homedir'] . "/include/class/TreeModule.class.php");
+	require_once($config['homedir'] . "/include/class/TreeTag.class.php");
+	require_once($config['homedir'] . "/include/class/TreeGroup.class.php");
+	enterprise_include_once("include/class/TreePolicies.class.php");
+	enterprise_include_once("include/class/TreeGroupMeta.class.php");
 	require_once($config['homedir'] . "/include/functions_reporting.php");
 	require_once($config['homedir'] . "/include/functions_os.php");
 	
@@ -67,17 +73,42 @@ if (is_ajax ()) {
 				'tagID' => 0,
 			);
 		$filter = get_parameter('filter', $default_filters);
-		
+
 		$agent_a = check_acl ($config['id_user'], 0, "AR");
 		$agent_w = check_acl ($config['id_user'], 0, "AW");
 		$access = ($agent_a == true) ? 'AR' : (($agent_w == true) ? 'AW' : 'AR');
-		if (class_exists('TreeEnterprise')) {
-			$tree = new TreeEnterprise($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
+		$switch_type = !empty($rootType) ? $rootType : $type;
+		switch ($switch_type) {
+			case 'os':
+				$tree = new TreeOS($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
+				break;
+			case 'module_group':
+				$tree = new TreeModuleGroup($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
+				break;
+			case 'module':
+				$tree = new TreeModule($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
+				break;
+			case 'tag':
+				$tree = new TreeTag($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
+				break;
+			case 'group':
+				if(is_metaconsole()){
+					if (!class_exists('TreeGroupMeta')) break;
+					$tree = new TreeGroupMeta($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
+				}
+				else{
+					$tree = new TreeGroup($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
+				}
+				break;
+			case 'policies':
+				if (!class_exists('TreePolicies')) break;
+				$tree = new TreePolicies($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
+				break;
+			default:
+				// FIXME. No error handler
+				return;
 		}
-		else {
-			$tree = new Tree($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
-		}
-		
+
 		$tree->setFilter($filter);
 		ob_clean();
 		echo json_encode(array('success' => 1, 'tree' => $tree->getArray()));

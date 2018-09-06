@@ -28,7 +28,6 @@ class TreeGroup extends Tree {
 		$this->L1fieldName = "id_group";
 		$this->L1extraFields = array(
 			"tg.nombre AS `name`",
-			$this->getDisplayHierarchy() ? 'tg.parent' : '0 as parent',
 			"tg.icon",
 			"tg.id_grupo AS gid"
 		);
@@ -56,34 +55,34 @@ class TreeGroup extends Tree {
 	protected function getFirstLevel() {
 		$processed_items = $this->getProcessedGroups();
 
-			if (!empty($processed_items)) {
-				// Filter by group name. This should be done after rerieving the items cause we need the possible items descendants
-				if (!empty($this->filter['searchGroup'])) {
-					// Save the groups which intersect with the user groups
-					$groups = db_get_all_rows_filter('tgrupo', array('nombre' => '%' . $this->filter['searchGroup'] . '%'));
-					if ($groups == false) $groups = array();
-					$userGroupsACL = $this->userGroupsACL;
-					$ids_hash = array_reduce($groups, function ($userGroups, $group) use ($userGroupsACL) {
-						$group_id = $group['id_grupo'];
-						if (isset($userGroupsACL[$group_id])) {
-							$userGroups[$group_id] = $userGroupsACL[$group_id];
-						}
+		if (!empty($processed_items)) {
+			// Filter by group name. This should be done after rerieving the items cause we need the possible items descendants
+			if (!empty($this->filter['searchGroup'])) {
+				// Save the groups which intersect with the user groups
+				$groups = db_get_all_rows_filter('tgrupo', array('nombre' => '%' . $this->filter['searchGroup'] . '%'));
+				if ($groups == false) $groups = array();
+				$userGroupsACL = $this->userGroupsACL;
+				$ids_hash = array_reduce($groups, function ($userGroups, $group) use ($userGroupsACL) {
+					$group_id = $group['id_grupo'];
+					if (isset($userGroupsACL[$group_id])) {
+						$userGroups[$group_id] = $userGroupsACL[$group_id];
+					}
 
-						return $userGroups;
-					}, array());
+					return $userGroups;
+				}, array());
 
-					$result = self::extractGroupsWithIDs($processed_items, $ids_hash);
+				$result = self::extractGroupsWithIDs($processed_items, $ids_hash);
 
-					$processed_items = ($result === false) ? array() : $result;
-				}
-
-				// groupID filter. To access the view from tactical views f.e.
-				if (!empty($this->filter['groupID'])) {
-					$result = self::extractItemWithID($processed_items, $this->filter['groupID'], "group", $this->strictACL);
-
-					$processed_items = ($result === false) ? array() : array($result);
-				}
+				$processed_items = ($result === false) ? array() : $result;
 			}
+
+			// groupID filter. To access the view from tactical views f.e.
+			if (!empty($this->filter['groupID'])) {
+				$result = self::extractItemWithID($processed_items, $this->filter['groupID'], "group", $this->strictACL);
+
+				$processed_items = ($result === false) ? array() : array($result);
+			}
+		}
 
 		$this->tree = $processed_items;
 	}
@@ -91,7 +90,7 @@ class TreeGroup extends Tree {
 	protected function getProcessedGroups () {
 		$processed_groups = array();
 		// Index and process the groups
-		$groups = $this->getGroupCounters(0);
+		$groups = $this->getGroupCounters();
 
 		// If user have not permissions in parent, set parent node to 0 (all)
 		// Avoid to do foreach for admins
@@ -136,98 +135,81 @@ class TreeGroup extends Tree {
 	}
 
 	protected function getGroupCounters() {
-		//FIXME PLEASE
-		if (true) {
-			$fields = $this->getFirstLevelFields();
-			$inside_fields = $this->getFirstLevelFieldsInside();
+		$fields = $this->getFirstLevelFields();
+		$inside_fields = $this->getFirstLevelFieldsInside();
 
-			$group_acl = "";
-			$secondary_group_acl = "";
-			if (!users_can_manage_group_all("AR")) {
-				$user_groups_str = implode(",", $this->userGroupsArray);
-				$group_acl = " AND ta.id_grupo IN ($user_groups_str)";
-				$secondary_group_acl = " AND tasg.id_group IN ($user_groups_str)";
-			}
-			$agent_search_filter = $this->getAgentSearchFilter();
-			$agent_search_filter = preg_replace("/%/", "%%", $agent_search_filter);
-			$agent_status_filter = $this->getAgentStatusFilter();
-			$module_status_filter = $this->getModuleStatusFilter();
-
-			$module_search_inner = "";
-			$module_search_filter = "";
-			if (!empty($this->filter['searchModule'])) {
-				$module_search_inner = "
-					INNER JOIN tagente_modulo tam
-						ON ta.id_agente = tam.id_agente
-					INNER JOIN tagente_estado tae
-						ON tae.id_agente_modulo = tam.id_agente_modulo";
-				$module_search_filter = "AND tam.disabled = 0
-					AND tam.nombre LIKE '%%" . $this->filter['searchModule'] . "%%' " .
-					$this->getModuleStatusFilterFromTestado()
-				;
-			}
-
-			$table = is_metaconsole() ? "tmetaconsole_agent" : "tagente";
-			$table_sec = is_metaconsole() ? "tmetaconsole_agent_secondary_group" : "tagent_secondary_group";
-
-			$sql_model = "SELECT %s FROM
-				(
-					SELECT COUNT(DISTINCT(ta.id_agente)) AS total, id_grupo AS g
-						FROM $table ta
-						$module_search_inner
-						WHERE ta.disabled = 0
-							%s
-							$agent_search_filter
-							$agent_status_filter
-							$module_status_filter
-							$module_search_filter
-							$group_acl
-						GROUP BY id_grupo
-					UNION ALL
-					SELECT COUNT(DISTINCT(ta.id_agente)) AS total, id_group AS g
-						FROM $table ta INNER JOIN $table_sec tasg
-							ON ta.id_agente = tasg.id_agent
-						$module_search_inner
-						WHERE ta.disabled = 0
-							%s
-							$agent_search_filter
-							$agent_status_filter
-							$module_status_filter
-							$module_search_filter
-							$secondary_group_acl
-						GROUP BY id_group
-				) x GROUP BY g";
-			$sql_array = array();
-			foreach ($inside_fields as $inside_field) {
-				$sql_array[] = sprintf(
-					$sql_model,
-					$inside_field['header'],
-					$inside_field['condition'],
-					$inside_field['condition']
-				);
-			}
-			$sql = "SELECT $fields FROM (" . implode(" UNION ALL ", $sql_array) . ") x2
-				RIGHT JOIN tgrupo tg
-					ON x2.g = tg.id_grupo
-				GROUP BY tg.id_grupo";
-			$stats = db_get_all_rows_sql($sql);
+		$group_acl = "";
+		$secondary_group_acl = "";
+		if (!users_can_manage_group_all("AR")) {
+			$user_groups_str = implode(",", $this->userGroupsArray);
+			$group_acl = " AND ta.id_grupo IN ($user_groups_str)";
+			$secondary_group_acl = " AND tasg.id_group IN ($user_groups_str)";
 		}
-		else{
-			$stats = db_get_all_rows_sql(
-				'SELECT tgs.agents AS total_count, tgs.critical AS total_critical_count,
-					tgs.unknown AS total_unknown_count, tgs.warning AS total_warning_count,
-					`non-init` AS total_not_init_count, tgs.normal AS total_normal_count,
-					tgs.alerts_fired AS total_alerts_count,
-					tg.nombre AS name, tg.parent, tg.icon, tg.id_grupo AS gid
-				FROM tgroup_stat tgs
-				INNER JOIN tgrupo tg
-					ON tg.id_grupo = tgs.id_group
-				');
+		$agent_search_filter = $this->getAgentSearchFilter();
+		$agent_search_filter = preg_replace("/%/", "%%", $agent_search_filter);
+		$agent_status_filter = $this->getAgentStatusFilter();
+		$module_status_filter = $this->getModuleStatusFilter();
+
+		$module_search_inner = "";
+		$module_search_filter = "";
+		if (!empty($this->filter['searchModule'])) {
+			$module_search_inner = "
+				INNER JOIN tagente_modulo tam
+					ON ta.id_agente = tam.id_agente
+				INNER JOIN tagente_estado tae
+					ON tae.id_agente_modulo = tam.id_agente_modulo";
+			$module_search_filter = "AND tam.disabled = 0
+				AND tam.nombre LIKE '%%" . $this->filter['searchModule'] . "%%' " .
+				$this->getModuleStatusFilterFromTestado()
+			;
 		}
 
-		# Update the group cache (from db or calculated).
+		$table = is_metaconsole() ? "tmetaconsole_agent" : "tagente";
+		$table_sec = is_metaconsole() ? "tmetaconsole_agent_secondary_group" : "tagent_secondary_group";
+
+		$sql_model = "SELECT %s FROM
+			(
+				SELECT COUNT(DISTINCT(ta.id_agente)) AS total, id_grupo AS g
+					FROM $table ta
+					$module_search_inner
+					WHERE ta.disabled = 0
+						%s
+						$agent_search_filter
+						$agent_status_filter
+						$module_status_filter
+						$module_search_filter
+						$group_acl
+					GROUP BY id_grupo
+				UNION ALL
+				SELECT COUNT(DISTINCT(ta.id_agente)) AS total, id_group AS g
+					FROM $table ta INNER JOIN $table_sec tasg
+						ON ta.id_agente = tasg.id_agent
+					$module_search_inner
+					WHERE ta.disabled = 0
+						%s
+						$agent_search_filter
+						$agent_status_filter
+						$module_status_filter
+						$module_search_filter
+						$secondary_group_acl
+					GROUP BY id_group
+			) x GROUP BY g";
+		$sql_array = array();
+		foreach ($inside_fields as $inside_field) {
+			$sql_array[] = sprintf(
+				$sql_model,
+				$inside_field['header'],
+				$inside_field['condition'],
+				$inside_field['condition']
+			);
+		}
+		$sql = "SELECT $fields FROM (" . implode(" UNION ALL ", $sql_array) . ") x2
+			RIGHT JOIN tgrupo tg
+				ON x2.g = tg.id_grupo
+			GROUP BY tg.id_grupo";
+		$stats = db_get_all_rows_sql($sql);
+
 		$group_stats = array();
-
 		foreach ($stats as $group) {
 			$group_stats[$group['gid']]['total_count'] = (int)$group['total_count'];
 			$group_stats[$group['gid']]['total_critical_count'] = (int)$group['total_critical_count'];
@@ -243,11 +225,13 @@ class TreeGroup extends Tree {
 			$group_stats[$group['gid']] = $this->getProcessedItem($group_stats[$group['gid']]);
 		}
 
-		if (isset($group_stats[$group_id])) {
-			return $group_stats[$group_id];
-		}
-
 		return $group_stats;
+	}
+
+	protected function getFirstLevelFields() {
+		$fields = parent::getFirstLevelFields();
+		$parent = $this->getDisplayHierarchy() ? 'tg.parent' : '0 as parent';
+		return "$fields, $parent";
 	}
 
 	protected function getProcessedModules($modules_tree) {

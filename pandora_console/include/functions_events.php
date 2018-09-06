@@ -1162,7 +1162,7 @@ function events_print_type_description ($type, $return = false) {
 			break;
 		case "going_down_critical":
 		case "going_up_critical": //This is to be backwards compatible
-			$output .= __('Going down to critical state');
+			$output .= __('Going up to critical state');
 			break;
 		case "going_up_normal":
 		case "going_down_normal": //This is to be backwards compatible

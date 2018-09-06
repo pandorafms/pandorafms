@@ -2941,15 +2941,18 @@ function group_get_groups_list($id_user = false, $user_strict = false, $access =
 
 function groups_get_group_deep ($id_group) {
 	global $config;
-	$parents = groups_get_parents($id_group, false);
-	
+
+	$groups =  users_get_groups(false, "AR", true, true);
+
+	$parents = groups_get_parents($id_group, false, $groups);
+
 	if (empty($parents)) {
 		$deep = "";
 	}
 	else {
 		$deep = str_repeat("&nbsp;&nbsp;", count($parents));
 	}
-	
+
 	return $deep;
 }
 

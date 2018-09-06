@@ -187,7 +187,7 @@ class Groups {
 		$user = User::getInstance();
 		
 		$all_data = groupview_status_modules_agents ($system->getConfig('id_user'), false, 'AR', false);
-		$result_groups = groupview_get_groups_list($system->getConfig('id_user'), false, 'AR', true, true);
+		$result_groups = groupview_get_groups_list($system->getConfig('id_user'),'AR');
 		
 		foreach ($all_data as $group_all_data) {
 			$result_groups[0]['_total_agents_'] += $group_all_data["_total_agents_"];

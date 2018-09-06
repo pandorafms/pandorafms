@@ -69,8 +69,6 @@ else {
 // Header
 ui_print_page_header (__("Group view"), "images/group.png", false, "", false, $updated_time);
 
-$strict_user = false;
-
 $total_agentes = 0;
 $monitor_ok = 0;
 $monitor_warning = 0;
@@ -83,8 +81,11 @@ $agents_notinit = 0;
 $all_alerts_fired = 0;
 
 //Groups and tags
-$result_groups = groupview_get_groups_list($config['id_user'], $strict_user,
-	($agent_a == true) ? 'AR' : (($agent_w == true) ? 'AW' : 'AR'), true, true);
+$result_groups = groupview_get_groups_list(
+	$config['id_user'],
+	($agent_a == true) ? 'AR' : (($agent_w == true) ? 'AW' : 'AR')
+);
+
 $count = count($result_groups);
 
 if ($result_groups[0]["_id_"] == 0) {

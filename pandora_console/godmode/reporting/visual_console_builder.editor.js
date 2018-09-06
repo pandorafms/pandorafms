@@ -5178,7 +5178,7 @@ function multiDragMouse(eventDrag){
 }
 
 function linkedMapStatusCalculationTypeChanged ($linkedMapStatusCalcRow, value) {
-	if ($linkedMapStatusCalcRow.length === 0 || !validRowOnSelectedItem($linkedMapStatusCalcRow)) return;
+	if ($linkedMapStatusCalcRow.length === 0) return;
 
 	switch (value) {
 		case "weight":
@@ -5215,7 +5215,7 @@ function linkedMapStatusCalculationTypeChanged ($linkedMapStatusCalcRow, value) 
 }
 
 function linkedMapChanged ($linkedMapRow, value) {
-	if ($linkedMapRow.length === 0 || !validRowOnSelectedItem($linkedMapRow)) return;
+	if ($linkedMapRow.length === 0) return;
 
 	if (value === 0) {
 		$linkedMapRow
@@ -5229,9 +5229,6 @@ function linkedMapChanged ($linkedMapRow, value) {
 				.hide();
 	} else {
 		var $linkedMapStatusCalcRow = $linkedMapRow.siblings("#linked_map_status_calculation_row");
-
-		if (!validRowOnSelectedItem($linkedMapStatusCalcRow)) return;
-
 		var calcType = $linkedMapStatusCalcRow.find("select").val();
 		$linkedMapStatusCalcRow.show();
 		linkedMapStatusCalculationTypeChanged($linkedMapStatusCalcRow, calcType);
@@ -5248,8 +5245,4 @@ function onLinkedMapStatusCalculationTypeChange (event) {
 	var $linkedMapStatusCalcRow = $(event.target).parent().parent();
 	var value = event.target.value || "default";
 	linkedMapStatusCalculationTypeChanged($linkedMapStatusCalcRow, value);
-}
-
-function validRowOnSelectedItem ($element) {
-	return $element.hasClass(selectedItem);
 }

@@ -110,12 +110,14 @@ function groupview_get_all_counters($tree_group) {
 			0 AS _id_,
 			'' AS _icon_
 		FROM $table ta
-		WHERE ta.id_agente
-			IN (
+		WHERE ta.disabled = 0
+			AND ta.id_agente IN (
 				SELECT ta.id_agente FROM $table ta
 				LEFT JOIN $table_sec tasg
 					ON ta.id_agente = tasg.id_agent
-				WHERE 1=1 $group_acl
+				WHERE ta.disabled = 0 
+					$group_acl
+				GROUP BY ta.id_agente
 			)
 	";
 	$data = db_get_row_sql($sql);
@@ -138,6 +140,8 @@ function groupview_get_groups_list($id_user = false, $access = 'AR', $is_not_pag
 		'statusModule' => -1,
 		'groupID' => 0,
 		'tagID' => 0,
+		'show_not_init_agents' => 1,
+		'show_not_init_modules' => 1
 	));
 	$info = $tree_group->getArray();
 	$info = groupview_plain_groups($info);

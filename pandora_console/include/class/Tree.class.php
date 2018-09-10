@@ -19,6 +19,7 @@ class Tree {
 	protected $id = -1;
 	protected $rootID = -1;
 	protected $serverID = false;
+	protected $serverName = '';
 	protected $tree = array();
 	protected $filter = array();
 	protected $childrenMethod = "on_demand";
@@ -50,6 +51,9 @@ class Tree {
 		$this->id = $id;
 		$this->rootID = !empty($rootID) ? $rootID : $id;
 		$this->serverID = $serverID;
+		if (is_metaconsole()) {
+			$this->serverName = metaconsole_get_server_by_id($serverID);
+		}
 		$this->childrenMethod = $childrenMethod;
 		$this->access = $access;
 
@@ -481,9 +485,9 @@ class Tree {
 		$module['status'] = $module['estado'];
 		$module['value'] = $module['datos'];
 
-		if (is_metaconsole() && !empty($server)) {
-			$module['serverID'] = $server['id'];
-			$module['serverName'] = $server['server_name'];
+		if (is_metaconsole()) {
+			$module['serverID'] = $this->serverID;
+			$module['serverName'] = $this->serverName;
 		}
 		else {
 			$module['serverName'] = false;
@@ -576,7 +580,7 @@ class Tree {
 					"refresh" => SECONDS_10MINUTES
 				);
 
-			if (is_metaconsole() && !empty($server)) {
+			if (is_metaconsole()) {
 				// Set the server id
 				$graph_params["server"] = $module['serverID'];
 			}

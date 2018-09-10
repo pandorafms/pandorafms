@@ -35,6 +35,10 @@ function groupview_plain_groups($groups) {
 
 function groupview_get_modules_counters($groups_ids = false) {
 	$groups_ids = implode(',', $groups_ids);
+	$table = is_metaconsole() ? 'tmetaconsole_agent' : 'tagente';
+	$table_sec = is_metaconsole()
+		? 'tmetaconsole_agent_secondary_group'
+		: 'tagent_secondary_group';
 
 	$fields = array (
 		"g" ,
@@ -58,7 +62,7 @@ function groupview_get_modules_counters($groups_ids = false) {
 			SUM(ta.fired_count) AS module_alerts,
 			SUM(ta.total_count) AS module_total,
 			ta.id_grupo AS g
-		FROM tagente ta
+		FROM $table ta
 		WHERE ta.id_grupo IN ($groups_ids)
 		GROUP BY ta.id_grupo
 		UNION ALL
@@ -70,8 +74,8 @@ function groupview_get_modules_counters($groups_ids = false) {
 			SUM(ta.fired_count) AS module_alerts,
 			SUM(ta.total_count) AS module_total,
 			tasg.id_group AS g
-		FROM tagente ta
-		INNER JOIN tagent_secondary_group tasg
+		FROM $table ta
+		INNER JOIN $table_sec tasg
 			ON ta.id_agente = tasg.id_agent
 		WHERE tasg.id_group IN ($groups_ids)
 		GROUP BY tasg.id_group
@@ -82,6 +86,10 @@ function groupview_get_modules_counters($groups_ids = false) {
 function groupview_get_all_counters() {
 	$all_name = __("All");
 	$group_acl = Tree::getGroupAclCondition();
+	$table = is_metaconsole() ? 'tmetaconsole_agent' : 'tagente';
+	$table_sec = is_metaconsole()
+		? 'tmetaconsole_agent_secondary_group'
+		: 'tagent_secondary_group';
 	$sql =
 		"SELECT SUM(ta.normal_count) AS _monitors_ok_,
 			SUM(ta.critical_count) AS _monitors_critical_,
@@ -97,11 +105,11 @@ function groupview_get_all_counters() {
 			'$all_name' AS _name_,
 			0 AS _id_,
 			'' AS _icon_
-		FROM tagente ta
+		FROM $table ta
 		WHERE ta.id_agente
 			IN (
-				SELECT ta.id_agente FROM tagente ta
-				LEFT JOIN tagent_secondary_group tasg
+				SELECT ta.id_agente FROM $table ta
+				LEFT JOIN $table_sec tasg
 					ON ta.id_agente = tasg.id_agent
 				WHERE 1=1 $group_acl
 			)
@@ -151,7 +159,7 @@ function groupview_get_groups_list($id_user = false, $access = 'AR', $is_not_pag
 	foreach ($agents_counters as $id_group => $agent_counter) {
 		$list[$id_group]['_name_'] = $agent_counter['name'];
 		$list[$id_group]['_id_'] = $agent_counter['id'];
-		$list[$id_group]['icon'] = $agent_counter['icon'];
+		$list[$id_group]['_iconImg_'] = $agent_counter['icon'];
 
 		$list[$id_group]['_agents_not_init_'] = $agent_counter['counters']['not_init'];
 		$list[$id_group]['_agents_unknown_'] = $agent_counter['counters']['unknown'];

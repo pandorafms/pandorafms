@@ -698,30 +698,80 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'percentile_item', 'module_graph', 'simple_value',
 				'icon', 'label', 'datos', 'donut_graph');
 			$form_items_advance['map_linked_row']['html'] = '<td align="left">'.
-				__('Map linked') . '</td>' .
+				__('Linked map') . '</td>' .
 				'<td align="left">' . html_print_select_from_sql (
 				'SELECT id, name
 				FROM tlayout
-				WHERE id != ' . $visualConsole_id, 'map_linked', '', '', 'None', '0', true) .
+				WHERE id != ' . (int) $visualConsole_id, 'map_linked', 0, 'onLinkedMapChange(event)', __('None'), 0, true) .
 				'</td>';
 
+			$status_type_select_items = array(
+				"weight" => __("By status weight"),
+				"service" => __("By critical elements")
+			);
+			$form_items_advance['linked_map_status_calculation_row'] = array();
+			$form_items_advance['linked_map_status_calculation_row']['items'] = array(
+				'group_item', 'static_graph', 'percentile_bar',
+				'percentile_item', 'module_graph', 'simple_value',
+				'icon', 'label', 'datos', 'donut_graph');
+			$form_items_advance['linked_map_status_calculation_row']['html'] = '<td align="left">'.
+				__('Type of the status calculation of the linked map') . '</td>'
+				. '<td align="left">'
+				. html_print_select(
+					$status_type_select_items, 
+					'linked_map_status_calculation_type',
+					'default',
+					'onLinkedMapStatusCalculationTypeChange(event)',
+					__('By default'),
+					'default',
+					true,
+					false,
+					false
+				)
+				. '</td>';
+
 			$form_items_advance['map_linked_weight'] = array();
-			$form_items_advance['map_linked_weight']['items'] = array('static_graph');
-			$form_items_advance['map_linked_weight']['html'] = '<td align="left">'.
-				__('Map linked weight') . '</td>' .
-				'<td align="left">' . html_print_select(array('10' => '10%',
-															'20' => '20%',
-															'30' => '30%',
-															'40' => '40%',
-															'50' => '50%',
-															'60' => '60%',
-															'70' => '70%',
-															'80' => '80%',
-															'90' => '90%',
-															'100' => '100%'), 
-				'map_linked_weight', '', '', __('By default'), 0, true) . 
-				ui_print_help_icon ("linked_map_weight", true) .
-				'</td>';
+			$form_items_advance['map_linked_weight']['items'] = array(
+				'group_item', 'static_graph', 'percentile_bar',
+				'percentile_item', 'module_graph', 'simple_value',
+				'icon', 'label', 'datos', 'donut_graph');
+			$form_items_advance['map_linked_weight']['html'] = '<td align="left">'
+				. __('Linked map weight') . '</td>'
+				. '<td align="left">'
+				. html_print_input_text(
+					'map_linked_weight', 80, '', 5, 5, true, false, false, "", "type_number percentage"
+				)
+				. '<span>%</span>'
+				. ui_print_help_icon("linked_map_weight", true)
+				. '</td>';
+
+			$form_items_advance['linked_map_status_service_critical_row'] = array();
+			$form_items_advance['linked_map_status_service_critical_row']['items'] = array(
+				'group_item', 'static_graph', 'percentile_bar',
+				'percentile_item', 'module_graph', 'simple_value',
+				'icon', 'label', 'datos', 'donut_graph');
+			$form_items_advance['linked_map_status_service_critical_row']['html'] = '<td align="left">'
+				. __('Critical weight') . '</td>'
+				. '<td align="left">'
+				. html_print_input_text(
+					'linked_map_status_service_critical', 80, '', 5, 5, true, false, false, "", "type_number percentage"
+				)
+				. '<span>%</span>'
+				. '</td>';
+			
+			$form_items_advance['linked_map_status_service_warning_row'] = array();
+			$form_items_advance['linked_map_status_service_warning_row']['items'] = array(
+				'group_item', 'static_graph', 'percentile_bar',
+				'percentile_item', 'module_graph', 'simple_value',
+				'icon', 'label', 'datos', 'donut_graph');
+			$form_items_advance['linked_map_status_service_warning_row']['html'] = '<td align="left">'
+				. __('Warning weight') . '</td>'
+				. '<td align="left">'
+				. html_print_input_text(
+					'linked_map_status_service_warning', 50, '', 5, 5, true, false, false, "", "type_number percentage"
+				)
+				. '<span>%</span>'
+				. '</td>';
 
 			$form_items_advance['line_case']['items'] = array('line_item');
 			$form_items_advance['line_case']['html'] = '
@@ -788,6 +838,9 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 	?>
 	<script type="text/javascript">
 		$(document).ready (function () {
+			$("input.type_number[type=text]").prop("type", "number");
+			$("input.percentage").prop("max", 100).prop("min", 0);
+
 			$(".border_color").attachColorPicker();
 			$(".fill_color").attachColorPicker();
 			$(".line_color").attachColorPicker();

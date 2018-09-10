@@ -278,7 +278,7 @@ class Tree {
 			: " AND $filter ";
 	}
 
-	protected function getGroupAclCondition() {
+	static function getGroupAclCondition() {
 		if (users_can_manage_group_all("AR"))  return "";
 
 		$groups_str= implode(",", $this->userGroupsArray);
@@ -299,105 +299,6 @@ class Tree {
 	protected function getGroupSearchFilter() {
 		if (empty($this->filter['searchGroup'])) return "";
 		return " AND tg.nombre LIKE '%" . $this->filter['searchGroup'] . "%'";
-	}
-
-	protected function getAgentCounterColumnsSql ($agent_table) {
-		// Add the agent counters to the columns
-
-		if ($this->filter['statusAgent'] == -1) {
-			// Critical
-			$agent_critical_filter = $this->getAgentStatusFilter(AGENT_STATUS_CRITICAL);
-			$agents_critical_count = "($agent_table
-										$agent_critical_filter) AS total_critical_count";
-			// Warning
-			$agent_warning_filter = $this->getAgentStatusFilter(AGENT_STATUS_WARNING);
-			$agents_warning_count = "($agent_table
-										$agent_warning_filter) AS total_warning_count";
-			// Unknown
-			$agent_unknown_filter = $this->getAgentStatusFilter(AGENT_STATUS_UNKNOWN);
-			$agents_unknown_count = "($agent_table
-										$agent_unknown_filter) AS total_unknown_count";
-			// Normal
-			$agent_normal_filter = $this->getAgentStatusFilter(AGENT_STATUS_NORMAL);
-			$agents_normal_count = "($agent_table
-										$agent_normal_filter) AS total_normal_count";
-			// Not init
-			if($this->filter['show_not_init_agents']){
-				$agent_not_init_filter = $this->getAgentStatusFilter(AGENT_STATUS_NOT_INIT);
-				$agents_not_init_count = "($agent_table
-											$agent_not_init_filter) AS total_not_init_count";
-			}
-			else{
-				$agent_not_init_filter = 0;
-				$agents_not_init_count = 0;
-			}
-
-			// Alerts fired
-			$agents_fired_count = "($agent_table
-										AND ta.fired_count > 0) AS total_fired_count";
-			// Total
-			$agents_total_count = "($agent_table) AS total_count";
-
-			$columns = "$agents_critical_count, $agents_warning_count, "
-				. "$agents_unknown_count, $agents_normal_count, $agents_not_init_count, "
-				. "$agents_fired_count, $agents_total_count";
-		}
-		else {
-			// Alerts fired
-			$agents_fired_count = "($agent_table
-										AND ta.fired_count > 0) AS total_fired_count";
-			// Total
-			$agents_total_count = "($agent_table) AS total_count";
-
-			switch ($this->filter['statusAgent']) {
-				case AGENT_STATUS_NOT_INIT:
-					// Not init
-					$agent_not_init_filter = $this->getAgentStatusFilter(AGENT_STATUS_NOT_INIT);
-					$agents_not_init_count = "($agent_table
-												$agent_not_init_filter) AS total_not_init_count";
-					$columns = "$agents_not_init_count, $agents_fired_count, $agents_total_count";
-					break;
-				case AGENT_STATUS_CRITICAL:
-					// Critical
-					$agent_critical_filter = $this->getAgentStatusFilter(AGENT_STATUS_CRITICAL);
-					$agents_critical_count = "($agent_table
-												$agent_critical_filter) AS total_critical_count";
-					$columns = "$agents_critical_count, $agents_fired_count, $agents_total_count";
-					break;
-				case AGENT_STATUS_WARNING:
-					// Warning
-					$agent_warning_filter = $this->getAgentStatusFilter(AGENT_STATUS_WARNING);
-					$agents_warning_count = "($agent_table
-												$agent_warning_filter) AS total_warning_count";
-					$columns = "$agents_warning_count, $agents_fired_count, $agents_total_count";
-					break;
-				case AGENT_STATUS_UNKNOWN:
-					// Unknown
-					$agent_unknown_filter = $this->getAgentStatusFilter(AGENT_STATUS_UNKNOWN);
-					$agents_unknown_count = "($agent_table
-												$agent_unknown_filter) AS total_unknown_count";
-					$columns = "$agents_unknown_count, $agents_fired_count, $agents_total_count";
-					break;
-				case AGENT_STATUS_NORMAL:
-					// Normal
-					$agent_normal_filter = $this->getAgentStatusFilter(AGENT_STATUS_NORMAL);
-					$agents_normal_count = "($agent_table
-												$agent_normal_filter) AS total_normal_count";
-					$columns = "$agents_normal_count, $agents_fired_count, $agents_total_count";
-					break;
-			}
-		}
-
-		return $columns;
-	}
-
-	protected function getAgentCountersSql ($agent_table) {
-		global $config;
-
-		$columns = $this->getAgentCounterColumnsSql($agent_table);
-		$columns = "SELECT $columns FROM dual LIMIT 1";
-
-		return $columns;
 	}
 
 	static function cmpSortNames($a, $b) {

@@ -19,6 +19,8 @@ require_once($config['homedir']."/include/class/Tree.class.php");
 
 class TreeGroup extends Tree {
 
+	protected $propagateCounters = true;
+
 	public function  __construct($type, $rootType = '', $id = -1, $rootID = -1, $serverID = false, $childrenMethod = "on_demand", $access = 'AR') {
 
 		global $config;
@@ -36,6 +38,10 @@ class TreeGroup extends Tree {
 			ta.id_grupo = " . $this->id . "
 			OR tasg.id_group = " . $this->id . "
 		)";
+	}
+
+	public function setPropagateCounters($value) {
+		$this->propagateCounters = (bool)$value;
 	}
 
 	protected function getData() {
@@ -126,9 +132,13 @@ class TreeGroup extends Tree {
 			return !$group['have_parent'];
 		});
 		// Propagate child counters to her parents
-		TreeGroup::processCounters($groups);
-		// Filter groups and eliminates the reference to empty groups
-		$groups = TreeGroup::deleteEmptyGroups($groups);
+		if ($this->propagateCounters) {
+			TreeGroup::processCounters($groups);
+			// Filter groups and eliminates the reference to empty groups
+			$groups = TreeGroup::deleteEmptyGroups($groups);
+		} else {
+			$groups = TreeGroup::deleteEmptyGroupsNotPropagate($groups);
+		}
 
 		usort($groups, array("Tree", "cmpSortNames"));
 		return $groups;
@@ -349,6 +359,32 @@ class TreeGroup extends Tree {
 				else $group['children'] = $children;
 			}
 			$new_groups[] = $group;
+		}
+		return $new_groups;
+	}
+
+	protected static function deleteEmptyGroupsNotPropagate ($groups) {
+		$new_groups = array();
+		foreach ($groups as $group) {
+			// Tray to remove the children groups
+			if (!empty($group['children'])) {
+				$children = TreeGroup::deleteEmptyGroupsNotPropagate ($group['children']);
+				if (empty($children)) {
+					unset($group['children']);
+					// If a group is empty, do not add to new_groups.
+					if (isset($group['counters']['total']) && $group['counters']['total'] != 0) {
+						$new_groups[] = $group;
+					}
+				} else {
+					$group['children'] = $children;
+					$new_groups[] = $group;
+				}
+			} else {
+				// If a group is empty, do not add to new_groups.
+				if (isset($group['counters']['total']) && $group['counters']['total'] != 0) {
+					$new_groups[] = $group;
+				}
+			}
 		}
 		return $new_groups;
 	}

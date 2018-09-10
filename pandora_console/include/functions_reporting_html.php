@@ -2321,7 +2321,7 @@ function reporting_html_availability(&$table, $item) {
 	
 	global $config;
 	
-	if (!empty($item["data"]) || ($hide_notinit_agent !=1 && ($item['type'] == "availability" || $item['type'] == "sla"))) {
+	if (!empty($item["data"]) || $hide_notinit_agent !=1) {
 		$table1 = new stdClass();
 		$table1->width = '99%';
 		$table1->data = array ();

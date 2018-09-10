@@ -278,7 +278,7 @@ class Tree {
 			: " AND $filter ";
 	}
 
-	static function getGroupAclCondition() {
+	public function getGroupAclCondition() {
 		if (users_can_manage_group_all("AR"))  return "";
 
 		$groups_str= implode(",", $this->userGroupsArray);

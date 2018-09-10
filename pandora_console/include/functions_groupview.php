@@ -34,6 +34,10 @@ function groupview_plain_groups($groups) {
 }
 
 function groupview_get_modules_counters($groups_ids = false) {
+	if(empty($groups_ids)){
+		return array();
+	}
+
 	$groups_ids = implode(',', $groups_ids);
 	$table = is_metaconsole() ? 'tmetaconsole_agent' : 'tagente';
 	$table_sec = is_metaconsole()
@@ -83,9 +87,9 @@ function groupview_get_modules_counters($groups_ids = false) {
 	return db_get_all_rows_sql($sql);
 }
 
-function groupview_get_all_counters() {
+function groupview_get_all_counters($tree_group) {
 	$all_name = __("All");
-	$group_acl = Tree::getGroupAclCondition();
+	$group_acl = $tree_group->getGroupAclCondition();
 	$table = is_metaconsole() ? 'tmetaconsole_agent' : 'tagente';
 	$table_sec = is_metaconsole()
 		? 'tmetaconsole_agent_secondary_group'
@@ -176,7 +180,7 @@ function groupview_get_groups_list($id_user = false, $access = 'AR', $is_not_pag
 		$list[$id_group]['_monitors_alerts_fired_'] = (int)$modules_counters[$id_group]['total_module_alerts'];
 	}
 
-	array_unshift($list, groupview_get_all_counters());
+	array_unshift($list, groupview_get_all_counters($tree_group));
 	return array(
 		'groups' => $list,
 		'counter' => $counter

@@ -676,7 +676,14 @@ else {
 			}
 			$comments_help_tip = "";
 			if (!empty($event_user_comment_str)) {
-				$comments_help_tip = ui_print_help_tip($event_user_comment_str, true);
+
+				if($myclass == 'datos_yellow'){
+					$comments_help_tip = ui_print_help_tip_border($event_user_comment_str, true);
+				}
+				else{
+					$comments_help_tip = ui_print_help_tip($event_user_comment_str, true);
+				}
+				
 			}
 			
 			$data[$i] = '<span id="comment_header_' . $event['id_evento'] . '">' . $comments_help_tip . '</span>';

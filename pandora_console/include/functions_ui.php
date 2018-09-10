@@ -1952,6 +1952,23 @@ function ui_print_help_tip ($text, $return = false, $img = 'images/tip.png', $is
 	echo $output;
 }
 
+function ui_print_help_tip_border ($text, $return = false, $img = 'images/tip_border.png', $is_relative = false) {
+	$output =
+		'<a href="javascript:" class="tip" >' .
+			html_print_image (
+				$img,
+				true,
+				array('title' => $text),
+				false,
+				$is_relative && is_metaconsole()
+			) .
+		'</a>';
+	
+	if ($return)
+		return $output;
+	echo $output;
+}
+
 /**
  * Powerful debug function that also shows a backtrace.
  * 

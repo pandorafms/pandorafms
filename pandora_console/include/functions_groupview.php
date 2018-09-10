@@ -34,6 +34,10 @@ function groupview_plain_groups($groups) {
 }
 
 function groupview_get_modules_counters($groups_ids = false) {
+	if(empty($groups_ids)){
+		return array();
+	}
+
 	$groups_ids = implode(',', $groups_ids);
 	$table = is_metaconsole() ? 'tmetaconsole_agent' : 'tagente';
 	$table_sec = is_metaconsole()

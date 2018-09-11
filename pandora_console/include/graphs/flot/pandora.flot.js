@@ -1673,7 +1673,9 @@ function pandoraFlotArea( graph_id, values, legend,
 
 	// Re-calculate the graph height with the legend height
 	if (dashboard || vconsole) {
-		var hDiff = $('#'+graph_id).height() - $('#legend_'+graph_id).height();
+		$acum = 0;
+		if(dashboard) $acum = 35;
+		var hDiff = $('#'+graph_id).height() - $('#legend_'+graph_id).height() - $acum;
 		if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ){
 		}
 		else {

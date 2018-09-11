@@ -155,23 +155,23 @@ class Tree {
 		return array(
 			'warning' => array(
 				'header' => "0 AS x_critical, SUM(total) AS x_warning, 0 AS x_normal, 0 AS x_unknown, 0 AS x_not_init, 0 AS x_alerts, 0 AS x_total, g",
-				'condition' => "AND ta.warning_count > 0 AND ta.critical_count = 0"
+				'condition' => "AND " . agents_get_status_clause(AGENT_STATUS_WARNING, $this->filter['show_not_init_agents'])
 			),
 			'critical' => array(
 				'header' => "SUM(total) AS x_critical, 0 AS x_warning, 0 AS x_normal, 0 AS x_unknown, 0 AS x_not_init, 0 AS x_alerts, 0 AS x_total, g",
-				'condition' => "AND ta.critical_count > 0"
+				'condition' => "AND " . agents_get_status_clause(AGENT_STATUS_CRITICAL, $this->filter['show_not_init_agents'])
 			),
 			'normal' => array(
 				'header' => "0 AS x_critical, 0 AS x_warning, SUM(total) AS x_normal, 0 AS x_unknown, 0 AS x_not_init, 0 AS x_alerts, 0 AS x_total, g",
-				'condition' => "AND ta.critical_count = 0 AND ta.warning_count = 0 AND ta.unknown_count = 0 AND ta.normal_count > 0"
+				'condition' => "AND " . agents_get_status_clause(AGENT_STATUS_NORMAL, $this->filter['show_not_init_agents'])
 			),
 			'unknown' => array(
 				'header' => "0 AS x_critical, 0 AS x_warning, 0 AS x_normal, SUM(total) AS x_unknown, 0 AS x_not_init, 0 AS x_alerts, 0 AS x_total, g",
-				'condition' => "AND ta.critical_count = 0 AND ta.warning_count = 0 AND ta.unknown_count > 0"
+				'condition' => "AND " . agents_get_status_clause(AGENT_STATUS_UNKNOWN, $this->filter['show_not_init_agents'])
 			),
 			'not_init' => array(
 				'header' => "0 AS x_critical, 0 AS x_warning, 0 AS x_normal, 0 AS x_unknown, SUM(total) AS x_not_init, 0 AS x_alerts, 0 AS x_total, g",
-				'condition' => $this->filter['show_not_init_agents'] ? "AND ta.total_count = ta.notinit_count" : " AND 1=0"
+				'condition' => "AND " . agents_get_status_clause(AGENT_STATUS_NOT_INIT, $this->filter['show_not_init_agents'])
 			),
 			'alerts' => array(
 				'header' => "0 AS x_critical, 0 AS x_warning, 0 AS x_normal, 0 AS x_unknown, 0 AS x_not_init, SUM(total) AS x_alerts, 0 AS x_total, g",
@@ -179,7 +179,7 @@ class Tree {
 			),
 			'total' => array(
 				'header' => "0 AS x_critical, 0 AS x_warning, 0 AS x_normal, 0 AS x_unknown, 0 AS x_not_init, 0 AS x_alerts, SUM(total) AS x_total, g",
-				'condition' => $this->filter['show_not_init_agents'] ? "" : "AND ta.total_count <> ta.notinit_count"
+				'condition' => "AND " . agents_get_status_clause(AGENT_STATUS_ALL, $this->filter['show_not_init_agents'])
 			)
 		);
 	}
@@ -232,43 +232,9 @@ class Tree {
 			? $state
 			: $this->filter['statusModule'];
 
-		$filter = array();
-		switch ($selected_status) {
-			case AGENT_MODULE_STATUS_CRITICAL_ALERT:
-			case AGENT_MODULE_STATUS_CRITICAL_BAD:
-				$filter[] = "(
-					tae.estado = ".AGENT_MODULE_STATUS_CRITICAL_ALERT."
-					OR tae.estado = ".AGENT_MODULE_STATUS_CRITICAL_BAD."
-				)";
-				break;
-			case AGENT_MODULE_STATUS_WARNING_ALERT:
-			case AGENT_MODULE_STATUS_WARNING:
-				$filter[] = "(
-					tae.estado = ".AGENT_MODULE_STATUS_WARNING_ALERT."
-					OR tae.estado = ".AGENT_MODULE_STATUS_WARNING."
-				)";
-				break;
-			case AGENT_MODULE_STATUS_UNKNOWN:
-				$filter[] = "tae.estado = ".AGENT_MODULE_STATUS_UNKNOWN." ";
-				break;
-			case AGENT_MODULE_STATUS_NO_DATA:
-			case AGENT_MODULE_STATUS_NOT_INIT:
-				$filter[] = "(
-					tae.estado = ".AGENT_MODULE_STATUS_NO_DATA."
-					OR tae.estado = ".AGENT_MODULE_STATUS_NOT_INIT."
-				)";
-				break;
-			case AGENT_MODULE_STATUS_NORMAL_ALERT:
-			case AGENT_MODULE_STATUS_NORMAL:
-				$filter[] = "(
-					tae.estado = ".AGENT_MODULE_STATUS_NORMAL_ALERT."
-					OR tae.estado = ".AGENT_MODULE_STATUS_NORMAL."
-				)";
-				break;
-			default:
-				$filter[] = "1=1";
-				break;
-		}
+		$filter = array(
+			modules_get_state_condition($selected_status)
+		);
 		if (!$this->filter['show_not_init_modules'] && $state === false) {
 			if (!empty($filter))
 			$filter[] = "(

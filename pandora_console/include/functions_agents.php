@@ -2742,4 +2742,33 @@ function agents_check_access_agent ($id_agent, $access = "AR") {
 	// Return null otherwise
 	return null;
 }
+
+function agents_get_status_clause($state, $show_not_init = true) {
+	switch ($state) {
+		case AGENT_STATUS_CRITICAL:
+			return "(ta.critical_count > 0)";
+		case AGENT_STATUS_WARNING:
+			return "(ta.warning_count > 0 AND ta.critical_count = 0)";
+		case AGENT_STATUS_UNKNOWN:
+			return "(
+				ta.critical_count = 0 AND ta.warning_count = 0 AND ta.unknown_count > 0
+			)";
+		case AGENT_STATUS_NOT_INIT:
+			return $show_not_init
+				? "(ta.total_count = ta.notinit_count)"
+				: "1=0";
+		case AGENT_STATUS_NORMAL:
+			return "(
+				ta.critical_count = 0 AND ta.warning_count = 0
+				AND ta.unknown_count = 0 AND ta.normal_count > 0
+			)";
+		case AGENT_STATUS_ALL:
+		default:
+			return $show_not_init
+				? "1=1"
+				: "(ta.total_count <> ta.notinit_count)";
+	}
+	// If the state is not an expected state, return no condition
+	return "1=1";
+}
 ?>

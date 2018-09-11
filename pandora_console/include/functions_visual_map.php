@@ -3735,17 +3735,6 @@ function visual_map_get_layout_status ($layout_id, $status_data = array(), $dept
 					!empty($layout_item_data["id_layout_linked"]) ||
 					!empty($layout_item_data["id_agente_modulo"]) ||
 					!empty($layout_item_data["id_agent"])
-				) && (
-					// Weight and service types for status calculation require STATIC_GRAPH items
-					(
-						$status_data["linked_layout_status_type"] !== "weight" &&
-						$status_data["linked_layout_status_type"] !== "service"
-					) || (
-						$layout_item_data['type'] == STATIC_GRAPH && (
-							$status_data["linked_layout_status_type"] === "weight" ||
-							$status_data["linked_layout_status_type"] === "service"
-						)
-					)
 				) &&
 				// ACL check
 				check_acl($config["id_user"], $layout_item_data["element_group"], "VR")

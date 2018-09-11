@@ -395,7 +395,8 @@ function reporting_make_reporting_data($report = null, $id_report,
 					$content,
 					$type,
 					$force_width_chart,
-					$force_height_chart);
+					$force_height_chart
+				);
 				break;
 			case 'netflow_area':
 				$report['contents'][] = reporting_netflow(
@@ -3478,80 +3479,6 @@ function reporting_netflow($report, $content, $type,
 			break;
 	}
 	
-	return reporting_check_structure_content($return);
-}
-
-function reporting_simple_baseline_graph($report, $content,
-	$type = 'dinamic', $force_width_chart = null,
-	$force_height_chart = null) {
-
-	global $config;
-
-	if ($config['metaconsole']) {
-		$id_meta = metaconsole_get_id_server($content["server_name"]);
-		$server = metaconsole_get_connection_by_id ($id_meta);
-		metaconsole_connect($server);
-	}
-
-	$return['type'] = 'simple_baseline_graph';
-
-	if (empty($content['name'])) {
-		$content['name'] = __('Simple baseline graph');
-	}
-
-	$module_name = io_safe_output(
-		modules_get_agentmodule_name($content['id_agent_module']));
-	$agent_name = io_safe_output(
-		modules_get_agentmodule_agent_alias ($content['id_agent_module']));
-
-	$return['title'] = $content['name'];
-	$return['subtitle'] = $agent_name . " - " . $module_name;
-	$return["description"] = $content["description"];
-	$return["date"] = reporting_get_date_text($report, $content);
-	$return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
-
-	// Get chart
-	reporting_set_conf_charts($width, $height, $only_image, $type,
-		$content, $ttl);
-
-	$baseline_data = enterprise_hook(
-		'reporting_enterprise_get_baseline',
-		array (
-			$content['id_agent_module'],
-			$content['period'],
-			$report["datetime"]
-		)
-	);
-
-	if ($baseline_data === ENTERPRISE_NOT_HOOK) {
-		$baseline_data = array ();
-	}
-
-	switch ($type) {
-		case 'dinamic':
-		case 'static':
-			$params =array(
-				'agent_module_id'     => $content['id_agent_module'],
-				'period'              => $content['period'],
-				'date'                => $report["datetime"],
-				'only_image'          => $only_image,
-				'homeurl'             => ui_get_full_url(false, false, false, false),
-				'ttl'                 => $ttl,
-				'array_data_create'   => $baseline_data,
-				'server_id'           => $id_meta,
-				'height'              => $config['graph_image_height']
-			);
-
-			$return['chart'] = grafico_modulo_sparse ($params);
-			break;
-		case 'data':
-			break;
-	}
-
-	if ($config['metaconsole']) {
-		metaconsole_restore_db();
-	}
-
 	return reporting_check_structure_content($return);
 }
 

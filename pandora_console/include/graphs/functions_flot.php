@@ -132,9 +132,10 @@ function flot_area_graph (
 			$params['grid_color'] = '#C1C1C1';
 			break;
 	}
+	$padding_vconsole = $params['dashboard'] ? 'padding: 1px 0px 10px 10px;' : '';
 
 	// Parent layer
-	$return = "<div class='parent_graph' style='width: " . ($params['width']) . ";" . $background_style . "'>";
+	$return = "<div class='parent_graph' style='width: " . ($params['width']) . ";" . $background_style . $padding_vconsole . "'>";
 	// Set some containers to legend, graph, timestamp tooltip, etc.
 	if($params['show_legend']){
 		$return .= "<p id='legend_$graph_id' style='text-align:left;'></p>";

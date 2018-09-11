@@ -966,12 +966,12 @@ function agents_get_group_agents (
 	$filter['order'] = 'alias';
 	
 	if (is_metaconsole()) {
-		$table_name = 'tmetaconsole_agent LEFT JOIN tmetaconsole_agent_secondary_group ON ta.id_agente = tasg.id_agent';
+		$table_name = 'tmetaconsole_agent ta LEFT JOIN tmetaconsole_agent_secondary_group tasg ON ta.id_agente = tasg.id_agent';
 
 		$fields = array(
-				'id_tagente AS id_agente',
+				'ta.id_tagente AS id_agente',
 				'alias',
-				'id_tmetaconsole_setup AS id_server'
+				'ta.id_tmetaconsole_setup AS id_server'
 			);
 	}
 	else {

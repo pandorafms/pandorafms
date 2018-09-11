@@ -892,7 +892,9 @@ function grafico_modulo_sparse ($params) {
 	}
 
 	if(!isset($params['zoom'])){
-		$params['zoom'] = $config['zoom_graph'];
+		$params['zoom'] = $config['zoom_graph']
+			? $config['zoom_graph']
+			: 1;
 	}
 
 	if(!isset($params['type_mode_graph'])){

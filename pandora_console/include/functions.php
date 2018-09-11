@@ -3274,7 +3274,7 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined = fal
 	$img_url  = $config["homeurl"] . "attachment/" . $img_file;
 
 	$width_img  = 500;
-	$height_img = (isset($config['graph_image_height'])) ? $config['graph_image_height'] : 350;
+	$height_img = (isset($config['graph_image_height'])) ? $config['graph_image_height'] : 280;
 
 	$params['height'] = $height_img;
 

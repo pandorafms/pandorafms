@@ -628,7 +628,6 @@ function reporting_make_reporting_data($report = null, $id_report,
 		}
 		$index_content++;
 	}
-	
 	return reporting_check_structure_report($report);
 }
 
@@ -2807,18 +2806,17 @@ function agents_get_network_interfaces_array(
 				$row_interface['chart'] = null;
 
 				$width = null;
-				$height = null;
 
 				$params =array(
 					'period'    => $content['period'],
 					'width'     => $width,
-					'height'    => $height,
 					'unit_name' => array_fill(0, count($interface['traffic']), __("bytes/s")),
 					'date'      => $report["datetime"],
 					'only_image'=> $pdf,
 					'homeurl'   => $config['homeurl'],
 					'fullscale' => $fullscale,
-					'server_id' => $id_meta
+					'server_id' => $id_meta,
+					'height'    => $config['graph_image_height']
 				);
 
 				$params_combined = array(
@@ -3540,7 +3538,8 @@ function reporting_simple_baseline_graph($report, $content,
 				'homeurl'             => ui_get_full_url(false, false, false, false),
 				'ttl'                 => $ttl,
 				'array_data_create'   => $baseline_data,
-				'server_id'           => $id_meta
+				'server_id'           => $id_meta,
+				'height'              => $config['graph_image_height']
 			);
 
 			$return['chart'] = grafico_modulo_sparse ($params);
@@ -3645,13 +3644,13 @@ function reporting_projection_graph($report, $content,
 			$params =array(
 				'period'     => $content['period'],
 				'width'      => $width,
-				'height'     => $height,
 				'date'       => $report["datetime"],
 				'unit'       => '',
 				'only_image' => $pdf,
 				'homeurl'    => ui_get_full_url(false, false, false, false) . '/',
 				'ttl'        => $ttl,
-				'server_id'  => $id_meta
+				'server_id'  => $id_meta,
+				'height'     => $config['graph_image_height']
 			);
 
 			$params_combined = array(
@@ -3884,27 +3883,27 @@ function reporting_value($report, $content, $type,$pdf) {
 	
 	$return['agent_name'] = $agent_name;
 	$return['module_name'] = $module_name;
-	
+
 	if($pdf){
 		$only_image = 1;
 	}
 
 	$params =array(
-		'agent_module_id'     => $content['id_agent_module'],
-		'period'              => $content['period'],
-		'width'               => '600px',
-		'pure'                => false,///true
-		'date'                => $report["datetime"],
-		'only_image'          => $only_image,
-		'homeurl'             => ui_get_full_url(false, false, false, false),
-		'ttl'                 => 1,///2
-		'type_graph'          => $config['type_module_charts'],
-		'time_interval'       => $content['lapse'],
-		'server_id'           => $id_meta
+		'agent_module_id' => $content['id_agent_module'],
+		'period'          => $content['period'],
+		'width'           => '600px',
+		'pure'            => false,///true
+		'date'            => $report["datetime"],
+		'only_image'      => $only_image,
+		'homeurl'         => ui_get_full_url(false, false, false, false),
+		'ttl'             => 1,///2
+		'type_graph'      => $config['type_module_charts'],
+		'time_interval'   => $content['lapse'],
+		'server_id'       => $id_meta,
+		'height'          => $config['graph_image_height']
 	);
-	
-	switch ($type) {
 
+	switch ($type) {
 		case 'max':
 		if($content['lapse_calc'] == 0){
 			$value = reporting_get_agentmodule_data_max(
@@ -6344,24 +6343,23 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 	$return['chart'] = '';
 
 	$width =null;
-	$height =null;
 
 	switch ($type) {
 		case 'dinamic':
 		case 'static':
-
 			$params =array(
 				'period'     => $content['period'],
 				'width'      => $width,
-				'height'     => $height,
 				'date'       => $report["datetime"],
 				'only_image' => $pdf,
 				'homeurl'    => ui_get_full_url(false, false, false, false),
 				'ttl'        => $ttl,
 				'percentil'  => $graphs[0]["percentil"],
 				'fullscale'  => $graphs[0]["fullscale"],
-				'server_id'  => $id_meta
+				'server_id'  => $id_meta,
+				'height'     => $config['graph_image_height']
 			);
+
 			$params_combined = array(
 				'stacked'        => $graphs[0]["stacked"],
 				'summatory'      => $graphs[0]["summatory_series"],
@@ -6464,7 +6462,8 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 				'show_unknown'        => true,
 				'percentil'           => ($content['style']['percentil'] == 1) ? $config['percentil'] : null,
 				'fullscale'           => $fullscale,
-				'server_id'           => $id_meta
+				'server_id'           => $id_meta,
+				'height'              => $config['graph_image_height']
 			);
 
 			$return['chart'] = grafico_modulo_sparse($params);
@@ -6491,15 +6490,14 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 
 function reporting_get_date_text($report = null, $content = null) {
 	global $config;
-	
+
 	$return = array();
 	$return['date'] = null;
 	$return['period'] = null;
 	$return['from'] = null;
 	$return['to'] = null;
-	
+
 	if (!empty($report) && !empty($content)) {
-		
 		if ($content['period'] == 0) {
 			$es = json_decode($content['external_source'], true);
 			if ($es['date'] == 0) {
@@ -6515,7 +6513,7 @@ function reporting_get_date_text($report = null, $content = null) {
 			$return['to'] = $report["datetime"];
 		}
 	}
-	
+
 	return $return;
 }
 
@@ -6531,7 +6529,7 @@ function reporting_check_structure_report($return) {
 		$return['datetime'] = "";
 	if (!isset($return['period']))
 		$return['period'] = "";
-	
+
 	return $return;
 }
 
@@ -6551,7 +6549,7 @@ function reporting_check_structure_content($report) {
 		$report["date"]['from'] = "";
 		$report["date"]['to'] = "";
 	}
-	
+
 	return $report;
 }
 

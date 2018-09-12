@@ -1956,85 +1956,159 @@ function groups_get_not_init_monitors ($group, $agent_filter = array(), $module_
 }
 
 // Get alerts defined for a given group, except disabled 
-
-function groups_monitor_alerts ($group_array, $strict_user = false, $id_group_strict = false) {
-	
-	// If there are not groups to query, we jump to nextone
-	
-	if (empty ($group_array)) {
-		return 0;
-		
-	}
-	else if (!is_array ($group_array)) {
-		$group_array = array($group_array);
-	}
-	
-	$group_clause = implode (",", $group_array);
-	$group_clause = "(" . $group_clause . ")";
-	
-	if ($strict_user) {
-		$sql = "SELECT COUNT(talert_template_modules.id)
-			FROM talert_template_modules, tagente_modulo, tagente_estado, tagente
-			WHERE tagente.id_grupo = $id_group_strict AND tagente_modulo.id_agente = tagente.id_agente
-				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-				AND tagente_modulo.disabled = 0 AND tagente.disabled = 0
-				AND	talert_template_modules.disabled = 0 
-				AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo";
-		$count = db_get_sql ($sql);
-		return $count;
-	} else {
-		//TODO REVIEW ORACLE AND POSTGRES
-		return db_get_sql ("SELECT COUNT(talert_template_modules.id)
-			FROM talert_template_modules, tagente_modulo, tagente_estado, tagente
-			WHERE tagente.id_grupo IN $group_clause AND tagente_modulo.id_agente = tagente.id_agente
-				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-				AND tagente_modulo.disabled = 0 AND tagente.disabled = 0
-				AND	talert_template_modules.disabled = 0 
-				AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo");
-	}
+function groups_monitor_alerts ($group_array) {
+	$total = groups_monitor_alerts_total_counters($group_array);
+	return $total['total'];
 }
 
 // Get alert configured currently FIRED, except disabled 
+function groups_monitor_fired_alerts ($group_array) {
+	$total = groups_monitor_alerts_total_counters($group_array);
+	return $total['fired'];
+}
 
-function groups_monitor_fired_alerts ($group_array, $strict_user = false, $id_group_strict = false) {
-	
+function groups_monitor_alerts_total_counters ($group_array) {
 	// If there are not groups to query, we jump to nextone
-	
+	$default_total = array('total' => 0, 'fired' => 0);
 	if (empty ($group_array)) {
-		return 0;
-		
+		return $default_total;
 	}
 	else if (!is_array ($group_array)) {
 		$group_array = array($group_array);
 	}
-	
-	$group_clause = implode (",", $group_array);
-	$group_clause = "(" . $group_clause . ")";
-	
-	if ($strict_user) {
-		$sql = "SELECT COUNT(talert_template_modules.id)
-		FROM talert_template_modules, tagente_modulo, tagente_estado, tagente
-		WHERE tagente.id_grupo = $id_group_strict AND tagente_modulo.id_agente = tagente.id_agente
-			AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-			AND tagente_modulo.disabled = 0 AND tagente.disabled = 0 
-			AND talert_template_modules.disabled = 0 
-			AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo 
-			AND times_fired > 0 ";
 
-		$count = db_get_sql ($sql);
-		return $count;
-	} else {
-		//TODO REVIEW ORACLE AND POSTGRES
-		return db_get_sql ("SELECT COUNT(talert_template_modules.id)
-			FROM talert_template_modules, tagente_modulo, tagente_estado, tagente
-			WHERE tagente.id_grupo IN $group_clause AND tagente_modulo.id_agente = tagente.id_agente
-				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-				AND tagente_modulo.disabled = 0 AND tagente.disabled = 0 
-				AND talert_template_modules.disabled = 0 
-				AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo 
-				AND times_fired > 0");
+	$group_clause = implode (",", $group_array);
+	$group_clause = "(tasg.id_group IN ($group_clause) OR ta.id_grupo IN ($group_clause))";
+
+	$alerts = db_get_row_sql ("SELECT
+			COUNT(tatm.id) AS total,
+			SUM(IF(tatm.times_fired > 0, 1, 0)) AS fired
+		FROM talert_template_modules tatm
+		INNER JOIN tagente_modulo tam
+			ON tatm.id_agent_module = tam.id_agente_modulo
+		INNER JOIN tagente ta
+			ON ta.id_agente = tam.id_agente
+		WHERE ta.id_agente IN (
+			SELECT ta.id_agente
+			FROM tagente ta
+			LEFT JOIN tagent_secondary_group tasg
+				ON ta.id_agente = tasg.id_agent
+			WHERE ta.disabled = 0
+				AND $group_clause
+		) AND tam.disabled = 0"
+	);
+
+	return ($alerts === false) ? $default_total : $alerts;
+}
+
+function groups_monitor_total_counters ($group_array, $search_in_testado = false) {
+	$default_total = array(
+		'ok' => 0, 'critical' => 0, 'warning' => 0,
+		'unknown' => 0, 'not_init' => 0, 'total' => 0
+	);
+	if (empty ($group_array)) {
+		return $default_total;
 	}
-	
+	else if (!is_array ($group_array)) {
+		$group_array = array($group_array);
+	}
+	$group_clause = implode (",", $group_array);
+	$group_clause = "(tasg.id_group IN ($group_clause) OR ta.id_grupo IN ($group_clause))";
+
+	if ($search_in_testado) {
+		$condition_critical = modules_get_state_condition(AGENT_MODULE_STATUS_CRITICAL_ALERT);
+		$condition_warning = modules_get_state_condition(AGENT_MODULE_STATUS_WARNING_ALERT);
+		$condition_unknown = modules_get_state_condition(AGENT_MODULE_STATUS_UNKNOWN);
+		$condition_not_init = modules_get_state_condition(AGENT_MODULE_STATUS_NO_DATA);
+		$condition_normal = modules_get_state_condition(AGENT_MODULE_STATUS_NORMAL);
+		$sql =
+			"SELECT SUM(IF($condition_normal, 1, 0)) AS ok,
+				SUM(IF($condition_critical, 1, 0)) AS critical,
+				SUM(IF($condition_warning, 1, 0)) AS warning,
+				SUM(IF($condition_unknown, 1, 0)) AS unknown,
+				SUM(IF($condition_not_init, 1, 0)) AS not_init,
+				COUNT(tam.id_agente_modulo) AS total
+			FROM tagente ta
+			INNER JOIN tagente_modulo tam
+				ON ta.id_agente = tam.id_agente
+			INNER JOIN tagente_estado tae
+				ON tam.id_agente_modulo = tae.id_agente_modulo
+			WHERE ta.disabled = 0 AND tam.disabled = 0
+				AND ta.id_agente IN (
+					SELECT ta.id_agente FROM tagente ta
+					LEFT JOIN tagent_secondary_group tasg
+						ON ta.id_agente = tasg.id_agent
+					WHERE ta.disabled = 0
+						AND $group_clause
+					GROUP BY ta.id_agente
+				)
+			";
+	} else {
+		$sql =
+			"SELECT SUM(ta.normal_count) AS ok,
+				SUM(ta.critical_count) AS critical,
+				SUM(ta.warning_count) AS warning,
+				SUM(ta.unknown_count) AS unknown,
+				SUM(ta.notinit_count) AS not_init,
+				SUM(ta.total_count) AS total
+			FROM tagente ta
+			WHERE ta.disabled = 0
+				AND ta.id_agente IN (
+					SELECT ta.id_agente FROM tagente ta
+					LEFT JOIN tagent_secondary_group tasg
+						ON ta.id_agente = tasg.id_agent
+					WHERE ta.disabled = 0
+						AND $group_clause
+					GROUP BY ta.id_agente
+				)
+		";
+	}
+	$monitors = db_get_row_sql($sql);
+
+	return ($monitors === false) ? $default_total : $monitors;
+}
+
+function groups_agents_total_counters ($group_array) {
+	$default_total = array(
+		'ok' => 0, 'critical' => 0, 'warning' => 0,
+		'unknown' => 0, 'not_init' => 0, 'total' => 0
+	);
+	if (empty ($group_array)) {
+		return $default_total;
+	}
+	else if (!is_array ($group_array)) {
+		$group_array = array($group_array);
+	}
+	$group_clause = implode (",", $group_array);
+	$group_clause = "(tasg.id_group IN ($group_clause) OR ta.id_grupo IN ($group_clause))";
+
+	$condition_critical = agents_get_status_clause(AGENT_STATUS_CRITICAL);
+	$condition_warning = agents_get_status_clause(AGENT_STATUS_WARNING);
+	$condition_unknown = agents_get_status_clause(AGENT_STATUS_UNKNOWN);
+	$condition_not_init = agents_get_status_clause(AGENT_STATUS_NOT_INIT);
+	$condition_normal = agents_get_status_clause(AGENT_STATUS_NORMAL);
+	$sql =
+		"SELECT SUM(IF($condition_normal, 1, 0)) AS ok,
+			SUM(IF($condition_critical, 1, 0)) AS critical,
+			SUM(IF($condition_warning, 1, 0)) AS warning,
+			SUM(IF($condition_unknown, 1, 0)) AS unknown,
+			SUM(IF($condition_not_init, 1, 0)) AS not_init,
+			COUNT(ta.id_agente) AS total
+		FROM tagente ta
+		WHERE ta.disabled = 0
+			AND ta.id_agente IN (
+				SELECT ta.id_agente FROM tagente ta
+				LEFT JOIN tagent_secondary_group tasg
+					ON ta.id_agente = tasg.id_agent
+				WHERE ta.disabled = 0
+					AND $group_clause
+				GROUP BY ta.id_agente
+			)
+	";
+
+	$agents = db_get_row_sql($sql);
+
+	return ($agents === false) ? $default_total : $agents;
 }
 
 /**
@@ -2771,7 +2845,7 @@ function group_get_data ($id_user = false, $user_strict = false, $acltags, $retu
 			$list[$i]['_monitors_warning_'] = (int) groups_get_warning_monitors ($id, $agent_filter, $module_filter, $user_strict, $acltags, $config["realtimestats"]);
 			$list[$i]['_monitors_unknown_'] = (int) groups_get_unknown_monitors ($id, $agent_filter, $module_filter, $user_strict, $acltags, $config["realtimestats"]);
 			$list[$i]['_monitors_not_init_'] = (int) groups_get_not_init_monitors ($id, $agent_filter, $module_filter, $user_strict, $acltags, $config["realtimestats"]);
-			$list[$i]['_monitors_alerts_fired_'] = groups_monitor_fired_alerts ($id, $user_strict, $id);
+			$list[$i]['_monitors_alerts_fired_'] = groups_monitor_fired_alerts ($id);
 			$list[$i]['_total_agents_'] = (int) groups_get_total_agents ($id, $agent_filter, $module_filter, $user_strict, $acltags, $config["realtimestats"]);
 			$list[$i]['_agents_unknown_'] = (int) groups_get_unknown_agents ($id, $agent_filter, $module_filter, $user_strict, $acltags, $config["realtimestats"]);
 			$list[$i]['_agents_not_init_'] = (int) groups_get_not_init_agents ($id, $agent_filter, $module_filter, $user_strict, $acltags, $config["realtimestats"]);
@@ -2780,7 +2854,7 @@ function group_get_data ($id_user = false, $user_strict = false, $acltags, $retu
 				$list[$i]['_agents_ok_'] = (int) groups_get_normal_agents ($id, $agent_filter, $module_filter, $user_strict, $acltags, $config["realtimestats"]);
 				$list[$i]['_agents_warning_'] = (int) groups_get_warning_agents ($id, $agent_filter, $module_filter, $user_strict, $acltags, $config["realtimestats"]);
 				$list[$i]['_agents_critical_'] = (int) groups_get_critical_agents ($id, $agent_filter, $module_filter, $user_strict, $acltags, $config["realtimestats"]);
-				$list[$i]['_monitors_alerts_'] = groups_monitor_alerts ($id, $user_strict, $id);
+				$list[$i]['_monitors_alerts_'] = groups_monitor_alerts ($id);
 
 				// TODO
 				//~ $list[$i]["_total_checks_"]

@@ -1242,6 +1242,7 @@ CREATE TABLE IF NOT EXISTS `treport` (
 	`id_group_edit` mediumint(8) unsigned NULL DEFAULT 0,
 	`metaconsole` tinyint(1) DEFAULT 0,
 	`non_interactive` tinyint(1) UNSIGNED NOT NULL default 0,
+	`hidden` tinyint(1) DEFAULT 0,
 	PRIMARY KEY(`id_report`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

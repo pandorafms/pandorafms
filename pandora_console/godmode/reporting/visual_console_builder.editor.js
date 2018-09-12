@@ -1543,8 +1543,13 @@ function loadFieldsFromDB(item) {
 					$("select[name=parent]").val(val);
 				if (key == 'linked_layout_status_type')
 					$("select[name=linked_map_status_calculation_type]").val(val).change();
-				if (key == 'id_layout_linked')
-					$("select[name=map_linked]").val(val).change();
+				if (key == 'id_layout_linked') {
+					if (data['linked_layout_node_id'] == null)
+						$("select[name=map_linked]").val(val).change();
+					else
+						$("select[name=map_linked] > option[data-node-id=" + data['linked_layout_node_id'] + "][value=" + val + "]")
+							.prop("selected", true).change();
+				}
 				if (key == 'linked_layout_node_id')
 					$("input[name=linked_map_node_id]").val(val);
 				if (key == 'id_layout_linked_weight')

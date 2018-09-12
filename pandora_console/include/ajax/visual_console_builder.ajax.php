@@ -615,8 +615,8 @@ switch ($action) {
 						$values['id_agent'] = $id_agent;
 					}
 
-					if ($linked_map_node_id) {
-						$values['linked_layout_node_id'] = $linked_map_node_id;
+					if ($linked_map_node_id !== null) {
+						$values['linked_layout_node_id'] = (int) $linked_map_node_id;
 					}
 				}
 				else if ($id_agent == 0) {

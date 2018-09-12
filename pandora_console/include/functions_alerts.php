@@ -106,6 +106,8 @@ function alerts_get_alerts($id_group = 0, $free_search = "", $status = "all", $s
 			ON t0.id_agent_module = t2.id_agente_modulo
 		INNER JOIN tagente t3
 			ON t2.id_agente = t3.id_agente
+		LEFT JOIN tagent_secondary_group tasg
+			ON tasg.id_agent = t3.id_agente
 		WHERE 1=1
 			' . $status_query . ' ' . $standby_query . ' ' . $group_query . '
 			AND (t1.name LIKE "%' . $free_search . '%"

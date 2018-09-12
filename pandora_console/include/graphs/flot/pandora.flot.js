@@ -2171,10 +2171,11 @@ function pandoraFlotArea( graph_id, values, legend,
 		}
 	});
 
-	$('#'+graph_id).bind('mouseout',resetInteractivity(vconsole));
-
 	if(!vconsole){
-		$('#overview_'+graph_id).bind('mouseout',resetInteractivity);
+		$('#'+graph_id)
+			.bind('mouseout', resetInteractivity);
+		$('#overview_'+graph_id)
+			.bind('mouseout', resetInteractivity);
 	}
 
 	if(image_treshold){
@@ -2218,7 +2219,7 @@ function pandoraFlotArea( graph_id, values, legend,
 	}
 
 	// Reset interactivity styles
-	function resetInteractivity(vconsole) {
+	function resetInteractivity() {
 		$('#timestamp_'+graph_id).hide();
 		dataset = plot.getData();
 		for (i = 0; i < dataset.length; ++i) {
@@ -2227,14 +2228,15 @@ function pandoraFlotArea( graph_id, values, legend,
 			$('#legend_' + graph_id + ' .legendLabel')
 				.eq(i).html(label_aux);
 		}
-		$('#legend_' + graph_id + ' .legendLabel').css('color', legend_color);
-		$('#legend_' + graph_id + ' .legendLabel').css('font-size', font_size + 2 +'px');
-		$('#legend_' + graph_id + ' .legendLabel').css('font-family', font + 'Font');
+		$('#legend_' + graph_id + ' .legendLabel')
+			.css('color', legend_color);
+		$('#legend_' + graph_id + ' .legendLabel')
+			.css('font-size', font_size + 2 +'px');
+		$('#legend_' + graph_id + ' .legendLabel')
+			.css('font-family', font + 'Font');
 
 		plot.clearCrosshair();
-		if(!vconsole){
-			overview.clearCrosshair();
-		}
+		overview.clearCrosshair();
 	}
 
 	function yFormatter(v, axis) {

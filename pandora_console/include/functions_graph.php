@@ -4129,7 +4129,7 @@ function fullscale_data (
 					if($min_value != PHP_INT_MAX) {
 						$data["min" . $series_suffix]['data'][] = array($real_date , $min_value);
 					}
-					
+
 					if($max_value != -PHP_INT_MAX) {
 						$data["max" . $series_suffix]['data'][] = array($real_date , $max_value);
 					}
@@ -4155,7 +4155,7 @@ function fullscale_data (
 					$min_value_total = $min_value;
 				}
 				//avg sum_total
-				$sum_data_total += $sum_data;
+				$sum_data_total += $sum_data/$count_data;
 
 				//avg count_total
 				$count_data_total++;
@@ -4203,6 +4203,7 @@ function fullscale_data (
 				}
 			}
 		}
+
 		$data["sum" . $series_suffix]['min'] = $min_value_total;
 		$data["sum" . $series_suffix]['max'] = $max_value_total;
 		$data["sum" . $series_suffix]['avg'] = $sum_data_total/$count_data_total;
@@ -4287,7 +4288,6 @@ function fullscale_data (
 				$last_data = $v["datos"];
 			}
 		}
-
 		$data["sum" . $series_suffix]['min'] = $min_value;
 		$data["sum" . $series_suffix]['max'] = $max_value;
 		$data["sum" . $series_suffix]['avg'] = $sum_data/$count_data;

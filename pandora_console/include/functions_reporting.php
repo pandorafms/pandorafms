@@ -3557,17 +3557,6 @@ function reporting_projection_graph($report, $content,
 	switch ($type) {
 		case 'dinamic':
 		case 'static':
-			$output_projection = forecast_projection_graph(
-				$content['id_agent_module'],
-				$content['period'],
-				$content['top_n_value']
-			);
-
-			// If projection doesn't have data then don't draw graph
-			if ($output_projection ==  NULL) {
-				$output_projection = false;
-			}
-
 			$params =array(
 				'period'     => $content['period'],
 				'width'      => $width,
@@ -3581,7 +3570,7 @@ function reporting_projection_graph($report, $content,
 			);
 
 			$params_combined = array(
-				'projection' => $output_projection
+				'projection' => $content['top_n_value'],
 			);
 
 			$return['chart'] = graphic_combined_module(

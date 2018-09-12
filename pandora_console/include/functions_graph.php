@@ -264,9 +264,7 @@ function grafico_modulo_sparse_data_chart (
 			$data_module_graph['id_module_type'] == 18 ||
 			$data_module_graph['id_module_type'] == 9  ||
 			$data_module_graph['id_module_type'] == 31 ||
-			$data_module_graph['id_module_type'] == 100 ||
-			$params['projection']
-			){
+			$data_module_graph['id_module_type'] == 100 ){
 
 			$data = db_get_all_rows_filter (
 				'tagente_datos',
@@ -421,8 +419,7 @@ function grafico_modulo_sparse_data(
 			$data_module_graph['id_module_type'] == 18 ||
 			$data_module_graph['id_module_type'] == 9  ||
 			$data_module_graph['id_module_type'] == 31 ||
-			$data_module_graph['id_module_type'] == 100 ||
-			$params['projection'] ){
+			$data_module_graph['id_module_type'] == 100 ){
 				$array_data = grafico_modulo_sparse_data_chart (
 					$agent_module_id,
 					$date_array,
@@ -924,7 +921,6 @@ function grafico_modulo_sparse ($params) {
 	$legend       = array();
 	$array_events_alerts = array();
 
-
 	$date_array = array();
 	$date_array["period"]     = $params['period'];
 	$date_array["final_date"] = $params['date'];
@@ -1226,7 +1222,7 @@ function graphic_combined_module (
 	}
 	else{
 		$params['stacked'] = 'area';
-		$params['projection'] = $params_combined['projection'];
+		$params['projection'] = true;
 	}
 
 	if(!isset($params_combined['labels'])){
@@ -1519,6 +1515,14 @@ function graphic_combined_module (
 			$date_array["final_date"] = $params['date'];
 			$date_array["start_date"] = $params['date'] - $params['period'];
 
+			if($params_combined['projection']){
+				$output_projection = forecast_projection_graph(
+					$module_list[0],
+					$params['period'],
+					$params_combined['projection']
+				);
+			}
+
 			$i=0;
 			$array_data = array();
 			foreach ($module_list as $key => $agent_module_id) {
@@ -1585,10 +1589,13 @@ function graphic_combined_module (
 				$i++;
 			}
 
-			if($params_combined['projection'] && is_array($params_combined['projection'])){
-				$date_array_projection = max($params_combined['projection']);
-				$date_array['final_date'] = $date_array_projection[0] / 1000;
-				$array_data['projection']['data']= $params_combined['projection'];
+			if($params_combined['projection']){
+				// If projection doesn't have data then don't draw graph
+				if ($output_projection !=  NULL) {
+					$date_array_projection = max($output_projection);
+					$date_array['final_date'] = $date_array_projection[0] / 1000;
+					$array_data['projection']['data']= $output_projection;
+				}
 			}
 
 			//summatory and average series

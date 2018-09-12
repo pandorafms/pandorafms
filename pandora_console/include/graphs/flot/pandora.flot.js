@@ -284,7 +284,7 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 		set_watermark(graph_id, plot,
 			$('#watermark_image_' + graph_id).attr('src'));
 	}
-
+/*
 	window.onresize = function(event) {
         $.plot($('#' + graph_id), data, conf_pie);
         if (no_data == data.length) {
@@ -319,7 +319,7 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 			$(this).css('transform', "rotate(-35deg)").css('color', 'black');
 		});
     }
-
+*/
 }
 
 function pandoraFlotHBars(graph_id, values, labels, water_mark,

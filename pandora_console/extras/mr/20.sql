@@ -24,4 +24,6 @@ ALTER TABLE `tlayout_template_data` ADD COLUMN `linked_layout_node_id` INT(10) N
 
 ALTER TABLE `treport` ADD COLUMN `hidden` tinyint(1) NOT NULL DEFAULT 0;
 
+ALTER TABLE `tpolicy_modules_inventory` ADD COLUMN `custom_fields` MEDIUMBLOB NOT NULL;
+
 COMMIT;

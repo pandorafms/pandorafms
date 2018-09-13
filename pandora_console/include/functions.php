@@ -3344,4 +3344,27 @@ function get_copyright_notice () {
 	return $stored_name;
 }
 
+/**
+ * Generate a random code to prevent cross site request fogery attacks
+ *
+ * @return string Generated code
+ */
+function generate_csrf_code() {
+	// Start session to make this var permanent
+	session_start();
+	$_SESSION['csrf_code'] = md5(uniqid(mt_rand(), true));
+	session_write_close();
+	return $_SESSION['csrf_code'];
+}
+
+/**
+ * Validate the CSRF code
+ *
+ * @return bool True if code is valid
+ */
+function validate_csrf_code() {
+	$code = get_parameter('csrf_code');
+	return isset($code) && isset($_SESSION['csrf_code'])
+		&& $_SESSION['csrf_code'] == $code;
+}
 ?>

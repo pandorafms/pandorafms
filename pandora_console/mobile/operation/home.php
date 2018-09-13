@@ -73,13 +73,6 @@ class Home {
 					'menu_item' => true,
 					'icon' => 'modules'
 				);
-			
-			$items['networkmaps'] = array(
-					'name' => __('Networkmaps'),
-					'filename' => 'networkmaps.php',
-					'menu_item' => true,
-					'icon' => 'network_maps'
-				);
 			$items['visualmaps'] = array(
 					'name' => __('Visual consoles'),
 					'filename' => 'visualmaps.php',
@@ -97,12 +90,6 @@ class Home {
 			$items['module_graph'] = array(
 					'name' => __('Module graph'),
 					'filename' => 'module_graph.php',
-					'menu_item' => false,
-					'icon' => ''
-				);
-			$items['networkmap'] = array(
-					'name' => __('Networkmap'),
-					'filename' => 'networkmap.php',
 					'menu_item' => false,
 					'icon' => ''
 				);

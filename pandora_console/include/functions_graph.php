@@ -4268,12 +4268,12 @@ function fullscale_data (
 
 				if(isset($v["datos"]) && $v["datos"]){
 					//max
-					if($v['datos'] >= $max_value){
-						$max_value = $v['datos'];
+					if((float)$v['datos'] >= $max_value_max){
+						$max_value_max = $v['datos'];
 					}
 					//min
-					if($v['datos'] <= $min_value){
-						$min_value = $v['datos'];
+					if((float)$v['datos'] <= $min_value_min){
+						$min_value_min = $v['datos'];
 					}
 					//avg sum
 					$sum_data += $v["datos"];
@@ -4288,8 +4288,9 @@ function fullscale_data (
 				$last_data = $v["datos"];
 			}
 		}
-		$data["sum" . $series_suffix]['min'] = $min_value;
-		$data["sum" . $series_suffix]['max'] = $max_value;
+
+		$data["sum" . $series_suffix]['min'] = $min_value_min;
+		$data["sum" . $series_suffix]['max'] = $max_value_max;
 		$data["sum" . $series_suffix]['avg'] = $sum_data/$count_data;
 	}
 

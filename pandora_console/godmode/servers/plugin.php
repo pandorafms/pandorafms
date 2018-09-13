@@ -833,7 +833,7 @@ ui_require_javascript_file('pandora_modules');
 			i++;
 		}
 		
-		$('#command_preview').html(command+' '+parameters);
+		$('#command_preview').html(_.escape(command) + ' ' + _.escape(parameters));
 	}
 	
 	function show_locked_dialog(id_plugin, plugin_name) {

@@ -3,34 +3,34 @@
  * @package Include/help/es
  */
 ?>
-<h1>Formas de calcular el estado de la consola visual enlazada</h1>
+<h1>Ways to calculate the status of the linked visual console</h1>
 
-<h3>Por defecto</h3>
+<h3>By Default</h3>
 <p>
-	Calcula el estado a partir del estado de todos los elementos, como lo haría un agente.
+	It calculates the status based on the status of all elements, as an agent would do.
 </p>
 
-<h3>Por peso</h3>
+<h3>By weight</h3>
 <p>
-	Calcula el estado de los elementos que tienen asignados una consola visual, un módulo o un agente en relación a un porcentaje de elementos configurado por el usuario. Este porcentaje es el que tiene que superar el número de elementos de un estado no normal respecto al número de elementos tenidos en cuenta en el cálculo para que el ese estado cambie.
+	It calculates the status of the elements that have a visual console, a module or an agent assigned in relation to a percentage of elements configured by the user. This percentage is the one that has to exceed the number of elements of a non-normal status with respect to the number of elements taken into account in the calculation for that status to change.
 </p>
 
 <p>
-	Por ejemplo, dado un elemento con un porcentaje del 50% y una consola visual enlazada con 5 elementos:
+	For example, given an element with a percentage of 50% and a visual console linked with 5 elements:
 </p>
 <ul>
-	<li>1 <i>critical</i>, 1 <i>warning</i> y 3 <i>normal</i> -> Estado <i>normal</i>.</li>
-	<li>2 <i>critical</i>, 2 <i>warning</i> y 1 <i>normal</i> -> Estado <i>normal</i>.</li>
-	<li>1 <i>critical</i>, 3 <i>warning</i> y 1 <i>normal</i> -> Estado <i>warning</i>.</li>
-	<li>3 <i>critical</i>, 1 <i>warning</i> y 1 <i>normal</i> -> Estado <i>critical.</i></li>
-	<li>1 <i>critical</i>, 1 <i>warning</i> y 3 <i>unknown</i> -> Estado <i>unknown</i>.</li>
+	<li>1 <i>critical</i>, 1 <i>warning</i> y 3 <i>normal</i> -> Status <i>normal</i>.</li>
+	<li>2 <i>critical</i>, 2 <i>warning</i> y 1 <i>normal</i> -> Status  <i>normal</i>.</li>
+	<li>1 <i>critical</i>, 3 <i>warning</i> y 1 <i>normal</i> -> Status  <i>warning</i>.</li>
+	<li>3 <i>critical</i>, 1 <i>warning</i> y 1 <i>normal</i> -> Status  <i>critical.</i></li>
+	<li>1 <i>critical</i>, 1 <i>warning</i> y 3 <i>unknown</i> -> Status  <i>unknown</i>.</li>
 </ul>
 
 <p>
-	Si varios estados superan el peso, la prioridad es igual que en el resto de cálculo de estados (<i>critical</i> > <i>warning</i> > <i>unknown</i>). Si no hay elementos para realizar el cálculo, el estado pasa a ser <i>unknown</i>.
+	If several statuses exceed the weight, the priority is the same as in the rest of the status calculation (<i>critical</i> > <i>warning</i> > <i>unknown</i>). If there are no elements to perform the calculation, the status becomes <i>unknown</i>.
 </p>
 
-<h3>Por elementos críticos</h3>
+<h3>By critical elements</h3>
 <p>
-	Calcula el estado usando los elementos en estado <i>critical</i> y los porcentajes de los umbrales definidos por el usuario. Si el número de los elementos en estado <i>critical</i> respecto al número de elementos tenidos en cuenta en el cálculo supera el porcentaje asignado como <i>warning</i>, el estado pasa a ser <i>warning</i>. Lo mismo para el porcentaje asignado como <i>critical</i>, que además tiene preferencia.
+	It calculates the status using the elements in <i>critical</i> status and the percentages of the thresholds defined by the user. If the number of elements in <i>critical</i> status with respect to the number of elements taken into account in the calculation exceeds the percentage assigned as <i>warning</i>, the status becomes <i>warning</i>. The same applies to the percentage assigned as <i>critical</i>, which also has preference.
 </p>

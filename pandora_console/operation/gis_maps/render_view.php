@@ -108,6 +108,9 @@ $layers = gis_get_layers($idMap);
 
 // Render map
 
+$has_management_acl = check_acl($config["id_user"], $map['group_id'], "MW")
+	|| check_acl ($config["id_user"], $map['group_id'], "MM");
+
 $buttons = array();
 
 if ($config["pure"] == 0) {
@@ -119,21 +122,13 @@ else {
 		html_print_image ("images/normalscreen.png", true, array ("title" => __('Back to normal mode'))) . "</a>";
 }
 
-if (check_acl ($config["id_user"], $map['group_id'], "MW") || check_acl ($config["id_user"], $map['group_id'], "MM")) {
-	$buttons['setup']['text'] = '<a href="index.php?sec=godgismaps&sec2=godmode/gis_maps/configure_gis_map&action=edit_map&map_id='. $idMap.'">'.html_print_image ("images/setup.png", true, array ("title" => __('Setup'))).'</a>';
-	$buttons['setup']['godmode'] = 1;
-	
-	
+if ($has_management_acl) {
 	$hash = md5($config["dbpass"] . $idMap . $config["id_user"]);
-	
 	$buttons['public_link']['text'] = '<a href="' .
 		ui_get_full_url('operation/gis_maps/public_console.php?hash=' .$hash .
 			'&map_id=' . $idMap . '&id_user=' . $config["id_user"]) . '" target="_blank">'.
 		html_print_image ("images/camera_mc.png", true, array ("title" => __('Show link to public Visual Console'))).'</a>';
 }
-
-$buttonsString = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=3">' .
-	html_print_image("images/bricks.png", true, array("class" => "top", "border" => '0')) . '&nbsp; Agent&nbsp;-&nbsp;test_gis1</a></li></ul></div><div id="menu_tab"><ul class="mn"><li class="nomn"><a href="index.php?sec=estado&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente=3">' . html_print_image("images/setup.png", true, array("class" => "top", "title" => "Manage", "border" => "0", "width" => "16", "title" => "Manage")) . '&nbsp;</a></li><li class="nomn_high"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=3">' . html_print_image("images/monitor.png", true, array("class" => "top", "title" => "Main", "border" => "0")) . '&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=3&amp;tab=data">' . html_print_image("images/lightbulb.png", true, array("class" => "top", "title" => "Data", "border" => "0")) . '&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=3&amp;tab=alert">' . html_print_image("images/bell.png", true, array("class" => "top", "title" => "Alerts", "border" => "0")) . '&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=sla&amp;id_agente=3">' . html_print_image("images/images.png", true, array("class" => "top", "title" => "S.L.A.", "border" => "0")) . '&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;group_id=2">' . html_print_image("images/agents_group.png", true, array("class" => "top", "title" => "Group", "border" => "0")) . '&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=inventory&amp;id_agente=3">' . html_print_image("images/page_white_text.png", true, array("class" => "top", "title" => "Inventory", "border" => "0", "width" => "16")) . '&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=gis&amp;id_agente=3">' . html_print_image("images/world.png", array("class" => "top", "title" => "GIS data", "border" => "0")) . '&nbsp;</a>';
 
 $times = array(
 	5 => __('5 seconds'),
@@ -144,19 +139,31 @@ $times = array(
 	SECONDS_5MINUTES => __('5 minutes'),
 	SECONDS_10MINUTES => __('10 minutes'),
 	SECONDS_1HOUR => __('1 hour'),
-	SECONDS_2HOUR => __('2 hours'));
+	SECONDS_2HOUR => __('2 hours')
+);
 
-$buttons[]['text'] = '&nbsp;' . __('Refresh: ') . html_print_select($times, 'refresh_time', 60, 'changeRefreshTime(this.value);', '', 0, true, false, false) . "&nbsp;";
+$buttons[]['text'] = "<div style='margin-top: 6px;'>"
+	.__('Refresh') . ": "
+	. html_print_select($times, 'refresh_time', 60, 'changeRefreshTime(this.value);', '', 0, true, false, false)
+	. "</div>";
 
 $status = array(
-	'all' => __('All'),
+	'all' => __('None'),
 	'bad' => __('Critical'),
 	'warning' => __('Warning'),
 	'ok' => __('Ok'),
-	'default' => __('Other'));
+	'default' => __('Other')
+);
 
-$buttons[]['text'] = '&nbsp;' . __('Show agents by state: ') .
-	html_print_select($status, 'show_status', 'all', 'changeShowStatus(this.value);', '', 0, true, false, false) . "&nbsp;";
+$buttons[]['text'] = "<div style='margin-top: 6px;'>"
+	. __('Filter by status') . ": "
+	. html_print_select($status, 'show_status', 'all', 'changeShowStatus(this.value);', '', 0, true, false, false)
+	. "</div>";
+
+if ($has_management_acl) {
+	$buttons['setup']['text'] = '<a href="index.php?sec=godgismaps&sec2=godmode/gis_maps/configure_gis_map&action=edit_map&map_id='. $idMap.'">'.html_print_image ("images/setup.png", true, array ("title" => __('Setup'))).'</a>';
+	$buttons['setup']['godmode'] = 1;
+}
 
 ui_print_page_header(__('Map') . " &raquo; " . __('Map') . "&nbsp;" . $map['map_name'],
 	"images/op_gis.png", false, "", false, $buttons);

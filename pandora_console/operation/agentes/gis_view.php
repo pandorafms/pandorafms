@@ -36,7 +36,6 @@ $agentId = (int)get_parameter('id_agente');
 $id_agente = $agentId;
 $agent_name = agents_get_name($id_agente);
 $agent_alias = agents_get_alias($id_agente);
-$agentData = gis_get_data_last_position_agent($id_agente);
 
 //Avoid the agents with characters that fails the div.
 $agent_name_original = $agent_name;
@@ -83,35 +82,22 @@ switch ($config["dbtype"]) {
 gis_activate_ajax_refresh(null, $timestampLastOperation);
 gis_activate_select_control();
 
-if ($agentData === false) {
-	ui_print_info_message (
-		__("There is no GIS data for this agent, so it's positioned in default position of map.") );
-}
-
-$dataLastPosition = gis_get_data_last_position_agent($agentId);
-if ($dataLastPosition !== false) {
-	echo "<b>" . __("Last position in ") .
-		$dataLastPosition['start_timestamp'] . ":</b> " .
-		$dataLastPosition['stored_longitude'] . ", " . $dataLastPosition['stored_latitude'] . ", " . $dataLastPosition['stored_altitude'];
-}
-
+echo "<br />";
 echo "<form class='' action='index.php?" . $url . "' method='POST'>";
 echo "<table width=100% class='databox filters'>";
-echo "<tr><td>" . __("Period to show data as path") . ": ";
+echo "<tr><td>" . __("Period to show data as path");
 echo "<td>";
 html_print_extended_select_for_time ('period', $period, '', '', '0', 10);
 echo "<td>";
 html_print_submit_button(__('Refresh path'), 'refresh', false, 'class = "sub upd" style="margin-top:0px"');
 echo "</table></form>";
 
-echo "<h4>" . __("Positional data from the last") . " " . human_time_description_raw ($period) ."</h4>";
 /* Get the total number of Elements for the pagination */
 $sqlCount = sprintf ("SELECT COUNT(*)
 	FROM tgis_data_history
 	WHERE tagente_id_agente = %d AND end_timestamp > FROM_UNIXTIME(%d)
 	ORDER BY end_timestamp DESC", $agentId, get_system_time () - $period);
-$countData = db_get_value_sql($sqlCount);
-
+$countData = (int) db_get_value_sql($sqlCount);
 
 /* Get the elements to present in this page */
 switch ($config["dbtype"]) {
@@ -141,9 +127,7 @@ switch ($config["dbtype"]) {
 
 $result = db_get_all_rows_sql ($sql, true);
 
-
 if ($result === false) {
-	
 	$sql2 = sprintf ("
 		SELECT current_longitude AS longitude, current_latitude AS latitude, current_altitude AS altitude, 
 		start_timestamp, description, number_of_packages, manual_placement
@@ -163,10 +147,11 @@ if ($result === false) {
 }
 
 if ($result !== false) {
-	if(!$countData){
-		$countData = 1;
-	}
-	ui_pagination ($countData, false) ;
+	echo "<h4>" . __("Positional data from the last") . " " . human_time_description_raw($period) ."</h4>";
+
+	if ($countData > 0) ui_pagination($countData, false);
+
+	$table = new StdClass();
 	$table->data = array();
 	foreach ($result as $key => $row) {
 		$distance = 0;
@@ -187,9 +172,13 @@ if ($result !== false) {
 		$rowdata = array(
 			$row['longitude'],
 			$row['latitude'],
-			$row['altitude'],
-			$row['start_timestamp'],
-			$row['end_timestamp'],
+			(int) $row['altitude'] . " m",
+			is_numeric($row['start_timestamp'])
+				? date($config["date_format"], $row['start_timestamp'])
+				: date_w_fixed_tz($row['start_timestamp']),
+			is_numeric($row['end_timestamp'])
+				? date($config["date_format"], $row['end_timestamp'])
+				: date_w_fixed_tz($row['end_timestamp']),
 			$row['description'],
 			sprintf(__('%s Km'), $distance),
 			$row['number_of_packages'],
@@ -206,13 +195,12 @@ if ($result !== false) {
 		__('Distance'),
 		__("# of Packages"),
 		__("Manual placement"));
-	$table->class = 'position_data_table';
+	$table->class = 'databox data';
 	$table->id = $agent_name.'_position_data_table';
-	$table->title = $agent_alias . " " . __("positional data");
-	$table->titlestyle = "background-color:#799E48;";
-	html_print_table($table); unset($table);
+	$table->width = '100%';
+	html_print_table($table);
+	unset($table);
 
-	ui_pagination ($countData, false) ;
-	echo "<h3>" . __('Total') . ' ' . $countData . ' ' . __('Data') . "</h3>";
+	if ($countData > 0) ui_pagination($countData, false);
 }
 ?>

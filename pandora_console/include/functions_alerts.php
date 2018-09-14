@@ -50,7 +50,10 @@ function alerts_get_alerts($id_group = 0, $free_search = "", $status = "all", $s
 			
 			$id_groups = array_keys($groups);
 			
-			$group_query = " AND t3.id_grupo IN (" . implode(',', $id_groups) . ") ";
+			$group_query = " AND (
+				t3.id_grupo IN (" . implode(',', $id_groups) . ")
+				OR tasg.id_group IN (" . implode(',', $id_groups) . ")
+			)";
 		}
 		else {
 			$group_query = "";
@@ -103,6 +106,8 @@ function alerts_get_alerts($id_group = 0, $free_search = "", $status = "all", $s
 			ON t0.id_agent_module = t2.id_agente_modulo
 		INNER JOIN tagente t3
 			ON t2.id_agente = t3.id_agente
+		LEFT JOIN tagent_secondary_group tasg
+			ON tasg.id_agent = t3.id_agente
 		WHERE 1=1
 			' . $status_query . ' ' . $standby_query . ' ' . $group_query . '
 			AND (t1.name LIKE "%' . $free_search . '%"
@@ -1792,9 +1797,12 @@ function get_group_alerts($id_group, $filter = '', $options = false,
 						FROM tagente_modulo
 						WHERE delete_pending = 0
 							AND id_agente IN (SELECT id_agente
-								FROM tagente
+								FROM tagente ta
+								LEFT JOIN tagent_secondary_group tasg
+									ON ta.id_agente = tasg.id_agent
 								WHERE
-									id_grupo IN (' . implode(',', $id_group) . '))';
+										id_grupo IN (' . implode(',', $id_group) . ')
+										OR id_group IN (' . implode(',', $id_group) . '))';
 
 				}
 			}
@@ -1861,6 +1869,8 @@ function get_group_alerts($id_group, $filter = '', $options = false,
 				ON talert_template_modules.id_agent_module = t2.id_agente_modulo
 			INNER JOIN tagente t3
 				ON t2.id_agente = t3.id_agente
+			LEFT JOIN tagent_secondary_group tasg
+				ON tasg.id_agent = t2.id_agente
 			INNER JOIN talert_templates t4
 				ON talert_template_modules.id_alert_template = t4.id
 		WHERE id_agent_module in (%s) %s %s %s",

@@ -100,6 +100,7 @@ $width = get_parameter('width', null);
 $height = get_parameter('height', null);
 $parent = get_parameter('parent', null);
 $map_linked = get_parameter('map_linked', null);
+$linked_map_node_id = get_parameter('linked_map_node_id', null);
 $linked_map_status_calculation_type = get_parameter('linked_map_status_calculation_type', 'default');
 
 $map_linked_weight = get_parameter('map_linked_weight', null);
@@ -612,6 +613,10 @@ switch ($action) {
 					
 					if ($id_agent !== null) {
 						$values['id_agent'] = $id_agent;
+					}
+
+					if ($linked_map_node_id) {
+						$values['linked_layout_node_id'] = $linked_map_node_id;
 					}
 				}
 				else if ($id_agent == 0) {
@@ -1135,6 +1140,11 @@ switch ($action) {
 		}
 		$values['id_agente_modulo'] = $id_module;
 		$values['id_layout_linked'] = $map_linked;
+
+		if (defined('METACONSOLE') && $metaconsole) {
+			$values['linked_layout_node_id'] = (int) $linked_map_node_id;
+		}
+
 		$values['linked_layout_status_type'] = $linked_map_status_calculation_type;
 
 		if ($map_linked_weight !== null) {
@@ -1419,7 +1429,6 @@ if ($get_element_status) {
 		array('id' => $id_element));
 	
 	$res = visual_map_get_status_element($layoutData);
-	html_debug($res, true);
 	echo $res;
 	
 	return;

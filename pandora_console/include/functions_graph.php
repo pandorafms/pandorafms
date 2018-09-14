@@ -264,9 +264,7 @@ function grafico_modulo_sparse_data_chart (
 			$data_module_graph['id_module_type'] == 18 ||
 			$data_module_graph['id_module_type'] == 9  ||
 			$data_module_graph['id_module_type'] == 31 ||
-			$data_module_graph['id_module_type'] == 100 ||
-			$params['baseline'] || $params['projection']
-			){
+			$data_module_graph['id_module_type'] == 100 ){
 
 			$data = db_get_all_rows_filter (
 				'tagente_datos',
@@ -421,8 +419,7 @@ function grafico_modulo_sparse_data(
 			$data_module_graph['id_module_type'] == 18 ||
 			$data_module_graph['id_module_type'] == 9  ||
 			$data_module_graph['id_module_type'] == 31 ||
-			$data_module_graph['id_module_type'] == 100 ||
-			$params['projection'] ){
+			$data_module_graph['id_module_type'] == 100 ){
 				$array_data = grafico_modulo_sparse_data_chart (
 					$agent_module_id,
 					$date_array,
@@ -892,7 +889,9 @@ function grafico_modulo_sparse ($params) {
 	}
 
 	if(!isset($params['zoom'])){
-		$params['zoom'] = $config['zoom_graph'];
+		$params['zoom'] = $config['zoom_graph']
+			? $config['zoom_graph']
+			: 1;
 	}
 
 	if(!isset($params['type_mode_graph'])){
@@ -921,7 +920,6 @@ function grafico_modulo_sparse ($params) {
 	$array_data   = array();
 	$legend       = array();
 	$array_events_alerts = array();
-
 
 	$date_array = array();
 	$date_array["period"]     = $params['period'];
@@ -964,53 +962,58 @@ function grafico_modulo_sparse ($params) {
 	}
 
 	if(!$params['array_data_create']){
-		if ($params['compare'] !== false) {
-			$series_suffix = 2;
+		if($params['baseline']){
+			$array_data = get_baseline_data($agent_module_id, $date_array, $data_module_graph, $params);
+		}
+		else{
+			if ($params['compare'] !== false) {
+				$series_suffix = 2;
 
-			$date_array_prev['final_date'] = $date_array['start_date'];
-			$date_array_prev['start_date'] = $date_array['start_date'] - $date_array['period'];
-			$date_array_prev['period']     = $date_array['period'];
+				$date_array_prev['final_date'] = $date_array['start_date'];
+				$date_array_prev['start_date'] = $date_array['start_date'] - $date_array['period'];
+				$date_array_prev['period']     = $date_array['period'];
 
-			if ($params['compare'] === 'overlapped') {
-				$params['flag_overlapped'] = 1;
+				if ($params['compare'] === 'overlapped') {
+					$params['flag_overlapped'] = 1;
+				}
+				else{
+					$params['flag_overlapped'] = 0;
+				}
+
+				$array_data = grafico_modulo_sparse_data(
+					$agent_module_id,
+					$date_array_prev,
+					$data_module_graph,
+					$params,
+					$series_suffix
+				);
+
+				switch ($params['compare']) {
+					case 'separated':
+					case 'overlapped':
+						// Store the chart calculated
+						$array_data_prev = $array_data;
+						$legend_prev     = $legend;
+						break;
+				}
 			}
-			else{
-				$params['flag_overlapped'] = 0;
-			}
+
+			$series_suffix = 1;
+			$params['flag_overlapped'] = 0;
 
 			$array_data = grafico_modulo_sparse_data(
 				$agent_module_id,
-				$date_array_prev,
+				$date_array,
 				$data_module_graph,
 				$params,
 				$series_suffix
 			);
 
-			switch ($params['compare']) {
-				case 'separated':
-				case 'overlapped':
-					// Store the chart calculated
-					$array_data_prev = $array_data;
-					$legend_prev     = $legend;
-					break;
-			}
-		}
-
-		$series_suffix = 1;
-		$params['flag_overlapped'] = 0;
-
-		$array_data = grafico_modulo_sparse_data(
-			$agent_module_id,
-			$date_array,
-			$data_module_graph,
-			$params,
-			$series_suffix
-		);
-
-		if($params['compare']){
-			if ($params['compare'] === 'overlapped') {
-				$array_data = array_merge($array_data, $array_data_prev);
-				$legend     = array_merge($legend, $legend_prev);
+			if($params['compare']){
+				if ($params['compare'] === 'overlapped') {
+					$array_data = array_merge($array_data, $array_data_prev);
+					$legend     = array_merge($legend, $legend_prev);
+				}
 			}
 		}
 	}
@@ -1219,7 +1222,7 @@ function graphic_combined_module (
 	}
 	else{
 		$params['stacked'] = 'area';
-		$params['projection'] = $params_combined['projection'];
+		$params['projection'] = true;
 	}
 
 	if(!isset($params_combined['labels'])){
@@ -1512,6 +1515,14 @@ function graphic_combined_module (
 			$date_array["final_date"] = $params['date'];
 			$date_array["start_date"] = $params['date'] - $params['period'];
 
+			if($params_combined['projection']){
+				$output_projection = forecast_projection_graph(
+					$module_list[0],
+					$params['period'],
+					$params_combined['projection']
+				);
+			}
+
 			$i=0;
 			$array_data = array();
 			foreach ($module_list as $key => $agent_module_id) {
@@ -1578,10 +1589,13 @@ function graphic_combined_module (
 				$i++;
 			}
 
-			if($params_combined['projection'] && is_array($params_combined['projection'])){
-				$date_array_projection = max($params_combined['projection']);
-				$date_array['final_date'] = $date_array_projection[0] / 1000;
-				$array_data['projection']['data']= $params_combined['projection'];
+			if($params_combined['projection']){
+				// If projection doesn't have data then don't draw graph
+				if ($output_projection !=  NULL) {
+					$date_array_projection = max($output_projection);
+					$date_array['final_date'] = $date_array_projection[0] / 1000;
+					$array_data['projection']['data']= $output_projection;
+				}
 			}
 
 			//summatory and average series
@@ -4115,7 +4129,7 @@ function fullscale_data (
 					if($min_value != PHP_INT_MAX) {
 						$data["min" . $series_suffix]['data'][] = array($real_date , $min_value);
 					}
-					
+
 					if($max_value != -PHP_INT_MAX) {
 						$data["max" . $series_suffix]['data'][] = array($real_date , $max_value);
 					}
@@ -4141,7 +4155,7 @@ function fullscale_data (
 					$min_value_total = $min_value;
 				}
 				//avg sum_total
-				$sum_data_total += $sum_data;
+				$sum_data_total += $sum_data/$count_data;
 
 				//avg count_total
 				$count_data_total++;
@@ -4189,6 +4203,7 @@ function fullscale_data (
 				}
 			}
 		}
+
 		$data["sum" . $series_suffix]['min'] = $min_value_total;
 		$data["sum" . $series_suffix]['max'] = $max_value_total;
 		$data["sum" . $series_suffix]['avg'] = $sum_data_total/$count_data_total;
@@ -4253,12 +4268,12 @@ function fullscale_data (
 
 				if(isset($v["datos"]) && $v["datos"]){
 					//max
-					if($v['datos'] >= $max_value){
-						$max_value = $v['datos'];
+					if((float)$v['datos'] >= $max_value_max){
+						$max_value_max = $v['datos'];
 					}
 					//min
-					if($v['datos'] <= $min_value){
-						$min_value = $v['datos'];
+					if((float)$v['datos'] <= $min_value_min){
+						$min_value_min = $v['datos'];
 					}
 					//avg sum
 					$sum_data += $v["datos"];
@@ -4274,8 +4289,8 @@ function fullscale_data (
 			}
 		}
 
-		$data["sum" . $series_suffix]['min'] = $min_value;
-		$data["sum" . $series_suffix]['max'] = $max_value;
+		$data["sum" . $series_suffix]['min'] = $min_value_min;
+		$data["sum" . $series_suffix]['max'] = $max_value_max;
 		$data["sum" . $series_suffix]['avg'] = $sum_data/$count_data;
 	}
 
@@ -5094,6 +5109,55 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 	include_once($config['homedir'] . "/include/graphs/functions_d3.php");
 
 	return d3_sunburst_graph ($graph_data, $width, $height, true);
+}
+
+function get_baseline_data($agent_module_id, $date_array, $data_module_graph, $params){
+	$period = $date_array["period"];
+	$date = $date_array["final_date"];
+	$array_data = array();
+	for ($i = 0; $i < 4; $i++) {
+		$date_array = array();
+		$date_array["period"]     = $period;
+		$date_array["final_date"] = $date - $period * $i;
+		$date_array["start_date"] = $date - $period * ($i + 1);
+
+		$data = grafico_modulo_sparse_data(
+			$agent_module_id,
+			$date_array,
+			$data_module_graph,
+			$params,
+			$i
+		);
+
+		$array_data[] = $data;
+
+	}
+	$result = array();
+	$array_data[1] = array_reverse($array_data[1]['sum1']['slice_data']);
+	$array_data[2] = array_reverse($array_data[2]['sum2']['slice_data']);
+	$array_data[3] = array_reverse($array_data[3]['sum3']['slice_data']);
+	foreach ($array_data[0]['sum0']['slice_data'] as $key => $value) {
+		$data1 = array_pop($array_data[1]);
+		$data2 = array_pop($array_data[2]);
+		$data3 = array_pop($array_data[3]);
+
+		$result['slice_data'][$key]['min'] = ($data1['min'] + $data2['min'] + $data3['min'] + $value['min']) / 4;
+		$result['slice_data'][$key]['avg'] = ($data1['avg'] + $data2['avg'] + $data3['avg'] + $value['avg']) / 4;
+		$result['slice_data'][$key]['max'] = ($data1['max'] + $data2['max'] + $data3['max'] + $value['max']) / 4;
+
+		$result['data'][] = array($key, $result['slice_data'][$key]['avg']);
+	}
+
+	$result['avg'] = ($array_data[0]['sum0']['avg'] + $array_data[1]['sum1']['avg'] + $array_data[2]['sum2']['avg'] +$array_data[3]['sum3']['avg'])/4;
+	$result['max'] = max($array_data[0]['sum0']['max'], $array_data[1]['sum1']['max'], $array_data[2]['sum2']['max'], $array_data[3]['sum3']['max']);
+	$result['min'] = min($array_data[0]['sum0']['min'], $array_data[1]['sum1']['min'], $array_data[2]['sum2']['min'], $array_data[3]['sum3']['min']);
+
+	$result['agent_module_id'] = $array_data[0]['sum0']['agent_module_id'];
+	$result['id_module_type'] = $array_data[0]['sum0']['id_module_type'];
+	$result['agent_name'] = $array_data[0]['sum0']['agent_name'];
+	$result['module_name'] = $array_data[0]['sum0']['module_name'];
+	$result['agent_alias'] = $array_data[0]['sum0']['agent_alias'];
+	return array('sum0' => $result);
 }
 
 ?>

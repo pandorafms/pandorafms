@@ -395,7 +395,8 @@ function reporting_make_reporting_data($report = null, $id_report,
 					$content,
 					$type,
 					$force_width_chart,
-					$force_height_chart);
+					$force_height_chart
+				);
 				break;
 			case 'netflow_area':
 				$report['contents'][] = reporting_netflow(
@@ -628,7 +629,6 @@ function reporting_make_reporting_data($report = null, $id_report,
 		}
 		$index_content++;
 	}
-	
 	return reporting_check_structure_report($report);
 }
 
@@ -2807,18 +2807,17 @@ function agents_get_network_interfaces_array(
 				$row_interface['chart'] = null;
 
 				$width = null;
-				$height = null;
 
 				$params =array(
 					'period'    => $content['period'],
 					'width'     => $width,
-					'height'    => $height,
 					'unit_name' => array_fill(0, count($interface['traffic']), __("bytes/s")),
 					'date'      => $report["datetime"],
 					'only_image'=> $pdf,
 					'homeurl'   => $config['homeurl'],
 					'fullscale' => $fullscale,
-					'server_id' => $id_meta
+					'server_id' => $id_meta,
+					'height'    => $config['graph_image_height']
 				);
 
 				$params_combined = array(
@@ -3483,79 +3482,6 @@ function reporting_netflow($report, $content, $type,
 	return reporting_check_structure_content($return);
 }
 
-function reporting_simple_baseline_graph($report, $content,
-	$type = 'dinamic', $force_width_chart = null,
-	$force_height_chart = null) {
-
-	global $config;
-
-	if ($config['metaconsole']) {
-		$id_meta = metaconsole_get_id_server($content["server_name"]);
-		$server = metaconsole_get_connection_by_id ($id_meta);
-		metaconsole_connect($server);
-	}
-
-	$return['type'] = 'simple_baseline_graph';
-
-	if (empty($content['name'])) {
-		$content['name'] = __('Simple baseline graph');
-	}
-
-	$module_name = io_safe_output(
-		modules_get_agentmodule_name($content['id_agent_module']));
-	$agent_name = io_safe_output(
-		modules_get_agentmodule_agent_alias ($content['id_agent_module']));
-
-	$return['title'] = $content['name'];
-	$return['subtitle'] = $agent_name . " - " . $module_name;
-	$return["description"] = $content["description"];
-	$return["date"] = reporting_get_date_text($report, $content);
-	$return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
-
-	// Get chart
-	reporting_set_conf_charts($width, $height, $only_image, $type,
-		$content, $ttl);
-
-	$baseline_data = enterprise_hook(
-		'reporting_enterprise_get_baseline',
-		array (
-			$content['id_agent_module'],
-			$content['period'],
-			$report["datetime"]
-		)
-	);
-
-	if ($baseline_data === ENTERPRISE_NOT_HOOK) {
-		$baseline_data = array ();
-	}
-
-	switch ($type) {
-		case 'dinamic':
-		case 'static':
-			$params =array(
-				'agent_module_id'     => $content['id_agent_module'],
-				'period'              => $content['period'],
-				'date'                => $report["datetime"],
-				'only_image'          => $only_image,
-				'homeurl'             => ui_get_full_url(false, false, false, false),
-				'ttl'                 => $ttl,
-				'array_data_create'   => $baseline_data,
-				'server_id'           => $id_meta
-			);
-
-			$return['chart'] = grafico_modulo_sparse ($params);
-			break;
-		case 'data':
-			break;
-	}
-
-	if ($config['metaconsole']) {
-		metaconsole_restore_db();
-	}
-
-	return reporting_check_structure_content($return);
-}
-
 function reporting_prediction_date($report, $content) {
 	
 	global $config;
@@ -3631,31 +3557,20 @@ function reporting_projection_graph($report, $content,
 	switch ($type) {
 		case 'dinamic':
 		case 'static':
-			$output_projection = forecast_projection_graph(
-				$content['id_agent_module'],
-				$content['period'],
-				$content['top_n_value']
-			);
-
-			// If projection doesn't have data then don't draw graph
-			if ($output_projection ==  NULL) {
-				$output_projection = false;
-			}
-
 			$params =array(
 				'period'     => $content['period'],
 				'width'      => $width,
-				'height'     => $height,
 				'date'       => $report["datetime"],
 				'unit'       => '',
 				'only_image' => $pdf,
 				'homeurl'    => ui_get_full_url(false, false, false, false) . '/',
 				'ttl'        => $ttl,
-				'server_id'  => $id_meta
+				'server_id'  => $id_meta,
+				'height'     => $config['graph_image_height']
 			);
 
 			$params_combined = array(
-				'projection' => $output_projection
+				'projection' => $content['top_n_value'],
 			);
 
 			$return['chart'] = graphic_combined_module(
@@ -3884,27 +3799,27 @@ function reporting_value($report, $content, $type,$pdf) {
 	
 	$return['agent_name'] = $agent_name;
 	$return['module_name'] = $module_name;
-	
+
 	if($pdf){
 		$only_image = 1;
 	}
 
 	$params =array(
-		'agent_module_id'     => $content['id_agent_module'],
-		'period'              => $content['period'],
-		'width'               => '600px',
-		'pure'                => false,///true
-		'date'                => $report["datetime"],
-		'only_image'          => $only_image,
-		'homeurl'             => ui_get_full_url(false, false, false, false),
-		'ttl'                 => 1,///2
-		'type_graph'          => $config['type_module_charts'],
-		'time_interval'       => $content['lapse'],
-		'server_id'           => $id_meta
+		'agent_module_id' => $content['id_agent_module'],
+		'period'          => $content['period'],
+		'width'           => '600px',
+		'pure'            => false,///true
+		'date'            => $report["datetime"],
+		'only_image'      => $only_image,
+		'homeurl'         => ui_get_full_url(false, false, false, false),
+		'ttl'             => 1,///2
+		'type_graph'      => $config['type_module_charts'],
+		'time_interval'   => $content['lapse'],
+		'server_id'       => $id_meta,
+		'height'          => $config['graph_image_height']
 	);
-	
-	switch ($type) {
 
+	switch ($type) {
 		case 'max':
 		if($content['lapse_calc'] == 0){
 			$value = reporting_get_agentmodule_data_max(
@@ -6344,24 +6259,23 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 	$return['chart'] = '';
 
 	$width =null;
-	$height =null;
 
 	switch ($type) {
 		case 'dinamic':
 		case 'static':
-
 			$params =array(
 				'period'     => $content['period'],
 				'width'      => $width,
-				'height'     => $height,
 				'date'       => $report["datetime"],
 				'only_image' => $pdf,
 				'homeurl'    => ui_get_full_url(false, false, false, false),
 				'ttl'        => $ttl,
 				'percentil'  => $graphs[0]["percentil"],
 				'fullscale'  => $graphs[0]["fullscale"],
-				'server_id'  => $id_meta
+				'server_id'  => $id_meta,
+				'height'     => $config['graph_image_height']
 			);
+
 			$params_combined = array(
 				'stacked'        => $graphs[0]["stacked"],
 				'summatory'      => $graphs[0]["summatory_series"],
@@ -6464,7 +6378,8 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 				'show_unknown'        => true,
 				'percentil'           => ($content['style']['percentil'] == 1) ? $config['percentil'] : null,
 				'fullscale'           => $fullscale,
-				'server_id'           => $id_meta
+				'server_id'           => $id_meta,
+				'height'              => $config['graph_image_height']
 			);
 
 			$return['chart'] = grafico_modulo_sparse($params);
@@ -6491,15 +6406,14 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 
 function reporting_get_date_text($report = null, $content = null) {
 	global $config;
-	
+
 	$return = array();
 	$return['date'] = null;
 	$return['period'] = null;
 	$return['from'] = null;
 	$return['to'] = null;
-	
+
 	if (!empty($report) && !empty($content)) {
-		
 		if ($content['period'] == 0) {
 			$es = json_decode($content['external_source'], true);
 			if ($es['date'] == 0) {
@@ -6515,7 +6429,7 @@ function reporting_get_date_text($report = null, $content = null) {
 			$return['to'] = $report["datetime"];
 		}
 	}
-	
+
 	return $return;
 }
 
@@ -6531,7 +6445,7 @@ function reporting_check_structure_report($return) {
 		$return['datetime'] = "";
 	if (!isset($return['period']))
 		$return['period'] = "";
-	
+
 	return $return;
 }
 
@@ -6551,7 +6465,7 @@ function reporting_check_structure_content($report) {
 		$report["date"]['from'] = "";
 		$report["date"]['to'] = "";
 	}
-	
+
 	return $report;
 }
 
@@ -7000,54 +6914,41 @@ function reporting_get_group_stats ($id_group = 0, $access = 'AR') {
 				continue;
 			}
 		}
-		
+
 		if (!empty($group_array)) {
+			$monitors_info = groups_monitor_total_counters($group_array, true);
 			// Get monitor NOT INIT, except disabled AND async modules
-			$data["monitor_not_init"] += (int) groups_get_not_init_monitors ($group_array, array(), array(), false, false, true);
-			
-			// Get monitor OK, except disabled and non-init
-			$data["monitor_ok"] += (int) groups_get_normal_monitors ($group_array, array(), array(), false, false, true);
-			
-			// Get monitor CRITICAL, except disabled and non-init
-			$data["monitor_critical"] += (int) groups_get_critical_monitors ($group_array, array(), array(), false, false, true);
-			
-			// Get monitor WARNING, except disabled and non-init
-			$data["monitor_warning"] += (int) groups_get_warning_monitors ($group_array, array(), array(), false, false, true);
-			
-			// Get monitor UNKNOWN, except disabled and non-init
-			$data["monitor_unknown"] += (int) groups_get_unknown_monitors ($group_array, array(), array(), false, false, true);
-			
-			// Get alerts configured, except disabled 
-			$data["monitor_alerts"] += groups_monitor_alerts ($group_array) ;
-			
-			// Get alert configured currently FIRED, except disabled 
-			$data["monitor_alerts_fired"] += groups_monitor_fired_alerts ($group_array);
-			
-			// Calculate totals using partial counts from above
-			
-			// Get TOTAL non-init modules, except disabled ones and async modules
+			$data["monitor_not_init"] += $monitors_info['not_init'];
 			$data["total_not_init"] += $data["monitor_not_init"];
-		
+			// Get monitor OK, except disabled and non-init
+			$data["monitor_ok"] += $monitors_info['ok'];
+			// Get monitor CRITICAL, except disabled and non-init
+			$data["monitor_critical"] += $monitors_info['critical'];
+			// Get monitor WARNING, except disabled and non-init
+			$data["monitor_warning"] += $monitors_info['warning'];
+			// Get monitor UNKNOWN, except disabled and non-init
+			$data["monitor_unknown"] += $monitors_info['unknown'];
+			$data["monitor_checks"] += $monitors_info['total'];
+
+			// Get alerts configured, except disabled
+			$alerts_info = groups_monitor_alerts_total_counters ($group_array);
+			$data["monitor_alerts"] += $alerts_info['total'];
+			// Get alert configured currently FIRED, except disabled
+			$data["monitor_alerts_fired"] += $alerts_info['fired'];
+
+			$agents_info = groups_agents_total_counters($group_array);
 			// Get TOTAL agents in a group
-			$data["total_agents"] += (int) groups_get_total_agents ($group_array, array(), array(), false, false, true);
-			
+			$data["total_agents"] += $agents_info['total'];
 			// Get Agents OK
-			$data["agent_ok"] += (int) groups_get_normal_agents ($group_array, array(), array(), false, false, true);
-			
-			// Get Agents Warning 
-			$data["agent_warning"] += (int) groups_get_warning_agents ($group_array, array(), array(), false, false, true);
-			
+			$data["agent_ok"] += $agents_info['ok'];
+			// Get Agents Warning
+			$data["agent_warning"] += $agents_info['warning'];
 			// Get Agents Critical
-			$data["agent_critical"] += (int) groups_get_critical_agents ($group_array, array(), array(), false, false, true);
-			
+			$data["agent_critical"] += $agents_info['critical'];
 			// Get Agents Unknown
-			$data["agent_unknown"] += (int) groups_get_unknown_agents ($group_array, array(), array(), false, false, true);
-			
+			$data["agent_unknown"] += $agents_info['unknown'];
 			// Get Agents Not init
-			$data["agent_not_init"] += (int) groups_get_not_init_agents ($group_array, array(), array(), false, false, true);
-		
-			// Get total count of monitors for this group, except disabled.
-			$data["monitor_checks"] += $data["monitor_not_init"] + $data["monitor_unknown"] + $data["monitor_warning"] + $data["monitor_critical"] + $data["monitor_ok"];
+			$data["agent_not_init"] += $agents_info['not_init'];
 		}
 	}
 	// Calculate not_normal monitors

@@ -803,6 +803,18 @@ function visual_map_print_item($mode = "read", $layoutData,
 				}
 				break;
 		}
+
+		// Override url
+		if (
+			is_metaconsole() &&
+			!empty($layoutData["id_layout_linked"]) &&
+			!empty($layoutData["linked_layout_node_id"])
+		) {
+			$url = ui_meta_get_url_console_child(
+				$layoutData['linked_layout_node_id'],
+				"network", "operation/visual_console/render_view&amp;id=" . (int) $layoutData["id_layout_linked"]
+			);
+		}
 	}
 	
 	//  + 1 for to avoid the box and lines items are on the top of
@@ -3137,38 +3149,22 @@ function visual_map_get_status_element($layoutData) {
 		WHERE id_agente_modulo = ' . $layoutData['id_agente_modulo']);
 
 	//Linked to other layout ?? - Only if not module defined
-	if ($layoutData['id_layout_linked'] != 0) {
-		if ($layoutData['id_layout_linked_weight'] != 0) {
-			$calculate_weight = true;
+	if (!empty($layoutData['id_layout_linked'])) {
+		if (!empty($layoutData['linked_layout_node_id'])) {
+			//Metaconsole db connection
+			$connection = db_get_row_filter ('tmetaconsole_setup',
+				array('id' => $layoutData['linked_layout_node_id']));
+			if (metaconsole_load_external_db($connection) != NOERR) return VISUAL_MAP_STATUS_UNKNOWN;
 		}
-		else {
-			$calculate_weight = false;
-		}
+
 		$status = visual_map_get_layout_status($layoutData['id_layout_linked'], $layoutData);
 
-		if ($layoutData['id_layout_linked_weight'] > 0) {
-			$elements_to_compare = db_get_all_rows_sql("SELECT id, element_group FROM tlayout_data WHERE type = 0 AND id_layout = " . $layoutData['id_layout_linked']);
-			
-			$childs_group_acl = array();
-			foreach ($elements_to_compare as $c) {
-				if (check_acl ($config['id_user'], $c['element_group'], "VR")) {
-					$childs_group_acl[] = $c['id'];
-				}
-			}
-			$elements_to_compare = $childs_group_acl;
-			
-			$aux_weight = ($status['elements_in_critical'] / count($elements_to_compare)) * 100;
-			
-			if ($aux_weight >= $layoutData['id_layout_linked_weight']) {
-				$status = $status['temp_total'];
-			}
-			else {
-				$status = VISUAL_MAP_STATUS_NORMAL;
-				if (count($elements_to_compare) == 0) {
-					$status = VISUAL_MAP_STATUS_UNKNOWN;
-				}
-			}
+		if (!empty($layoutData['linked_layout_node_id'])) {
+			//Restore db connection
+			metaconsole_restore_db();
 		}
+
+		return $status;
 	}
 	else {
 		switch ($layoutData["type"]) {
@@ -3676,7 +3672,7 @@ function visual_map_translate_agent_status ($agent_status) {
 }
 
 function visual_map_translate_module_status ($module_status) {
-	switch ($agent_status) {
+	switch ($module_status) {
 		case AGENT_MODULE_STATUS_NORMAL:
 		case AGENT_MODULE_STATUS_NORMAL_ALERT:
 		default:
@@ -3717,6 +3713,7 @@ function visual_map_get_layout_status ($layout_id, $status_data = array(), $dept
 	if ($depth > 10) return VISUAL_MAP_STATUS_UNKNOWN;
 	
 	$layout_items = db_get_all_rows_filter("tlayout_data", array("id_layout" => $layout_id));
+
 	if ($layout_items === false) return VISUAL_MAP_STATUS_UNKNOWN;
 	
 	// Check for valid items to retrieve the status for
@@ -3738,17 +3735,6 @@ function visual_map_get_layout_status ($layout_id, $status_data = array(), $dept
 					!empty($layout_item_data["id_layout_linked"]) ||
 					!empty($layout_item_data["id_agente_modulo"]) ||
 					!empty($layout_item_data["id_agent"])
-				) && (
-					// Weight and service types for status calculation require STATIC_GRAPH items
-					(
-						$status_data["linked_layout_status_type"] !== "weight" &&
-						$status_data["linked_layout_status_type"] !== "service"
-					) || (
-						$layout_item_data['type'] == STATIC_GRAPH && (
-							$status_data["linked_layout_status_type"] === "weight" ||
-							$status_data["linked_layout_status_type"] === "service"
-						)
-					)
 				) &&
 				// ACL check
 				check_acl($config["id_user"], $layout_item_data["element_group"], "VR")
@@ -3769,21 +3755,30 @@ function visual_map_get_layout_status ($layout_id, $status_data = array(), $dept
 	$meta_connected_to = null;
 
 	foreach ($valid_layout_items as $layout_item_data) {
+		$node_id = null;
+		
 		if (is_metaconsole()) {
-			if (empty($layout_item_data["id_metaconsole"]) && $meta_connected_to) {
+			$node_id = (
+				!empty($layout_item_data["id_layout_linked"]) &&
+				!empty($layout_item_data["linked_layout_node_id"])
+			)
+				? $layout_item_data["linked_layout_node_id"]
+				: $layout_item_data["id_metaconsole"];
+			
+			if (empty($node_id) && $meta_connected_to) {
 				metaconsole_restore_db(); // Restore db connection
 				$meta_connected_to = null;
 			}
 			else if (
-				!empty($layout_item_data["id_metaconsole"]) && (
+				!empty($node_id) && (
 					empty($meta_connected_to) ||
-					$meta_connected_to != $layout_item_data["id_metaconsole"]
+					$meta_connected_to != $node_id
 				)
 			) {
 				if (!empty($meta_connected_to)) metaconsole_restore_db(); // Restore db connection
-				$connection = metaconsole_get_connection_by_id($layout_item_data["id_metaconsole"]);
+				$connection = metaconsole_get_connection_by_id($node_id);
 				if (metaconsole_load_external_db($connection) != NOERR) continue;
-				$meta_connected_to = $layout_item_data["id_metaconsole"];
+				$meta_connected_to = $node_id;
 			}
 		}
 

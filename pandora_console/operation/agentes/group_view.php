@@ -30,7 +30,6 @@ if (!$agent_a && !$agent_w) {
 	require ("general/noaccess.php");
 	exit;
 }
-$offset = get_parameter('offset', 0);
 // Update network modules for this group
 // Check for Network FLAG change request
 // Made it a subquery, much faster on both the database and server side
@@ -69,8 +68,6 @@ else {
 // Header
 ui_print_page_header (__("Group view"), "images/group.png", false, "", false, $updated_time);
 
-$strict_user = false;
-
 $total_agentes = 0;
 $monitor_ok = 0;
 $monitor_warning = 0;
@@ -83,9 +80,12 @@ $agents_notinit = 0;
 $all_alerts_fired = 0;
 
 //Groups and tags
-$result_groups = groupview_get_groups_list($config['id_user'], $strict_user,
-	($agent_a == true) ? 'AR' : (($agent_w == true) ? 'AW' : 'AR'), true, true);
-$count = count($result_groups);
+$result_groups_info = groupview_get_groups_list(
+	$config['id_user'],
+	($agent_a == true) ? 'AR' : (($agent_w == true) ? 'AW' : 'AR')
+);
+$result_groups = $result_groups_info['groups'];
+$count = $result_groups_info['counter'];
 
 if ($result_groups[0]["_id_"] == 0) {
 	$total_agentes = $result_groups[0]["_total_agents_"];
@@ -186,10 +186,7 @@ if (!empty($result_groups)) {
 			echo "<th width='10%' style='min-width: 60px;text-align:center;'>" . __("Alert fired") . "</th>";
 		echo "</tr>";
 		
-		$result_groups = array_slice($result_groups, $offset, $config['block_size']);
-		
 		foreach ($result_groups as $data) {
-
 			$groups_id = $data["_id_"];
 
 			// Calculate entire row color

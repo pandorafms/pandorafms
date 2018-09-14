@@ -100,7 +100,8 @@ case "$1" in
 			echo "$PANDORA_RB_PRODUCT_NAME Server is currently running on this machine with PID ($PANDORA_PID)."
 			rc_exit # running start on a service already running
 		fi
-	
+
+		export PERL_LWP_SSL_VERIFY_HOSTNAME=0
 		$PANDORA_DAEMON $PANDORA_HOME -D
 		sleep 1
 

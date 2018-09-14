@@ -66,6 +66,8 @@ else {
 
 // Update user info
 if (isset ($_GET["modified"]) && !$view_mode) {
+	if (html_print_csrf_error()) return;
+
 	$upd_info = array ();
 	$upd_info["fullname"] = get_parameter_post ("fullname", $user_info["fullname"]);
 	$upd_info["firstname"] = get_parameter_post ("firstname", $user_info["firstname"]);
@@ -490,6 +492,7 @@ if (!$config["user_can_update_info"]) {
 	echo '<i>'.__('You can not change your user info under the current authentication scheme').'</i>';
 }
 else {
+	html_print_csrf_hidden();
 	html_print_submit_button (__('Update'), 'uptbutton', $view_mode, 'class="sub upd"');
 }
 echo '</div></form>';

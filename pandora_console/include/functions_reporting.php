@@ -2866,14 +2866,28 @@ function reporting_alert_get_fired($id_agent_module, $id_alert_template_module, 
 		$id_alert_template_module,
 		$period,
 		$datetime);
+		
+		if (!is_numeric ($datetime)) {
+			$datetime = time_w_fixed_tz($datetime);
+		}
+		if (empty ($datetime)) {
+			$datetime = get_system_time();
+		}
+		
+		$datelimit = $datetime - $period;
 	
+	$empty = '----------------------------';
 	if (empty($firedTimes)) {
 		$firedTimes = array();
-		$firedTimes[0]['timestamp'] = null;
+		$empty = _('There are no alerts defined');
+		$firedTimes[0]['timestamp'] = '';
 	}
 
 	foreach ($firedTimes as $fireTime) {
+		if($fireTime['utimestamp'] > $datelimit && $fireTime['utimestamp'] <= $datetime)
 		$fired[] = $fireTime['timestamp'];
+		else
+		$fired[] = $empty;
 	}
 
 	return $fired;
@@ -2956,6 +2970,16 @@ function reporting_alert_report_group($report, $content) {
 		
 		foreach ($alerts as $template => $actions) {
 
+			$datetime = (int) $report["datetime"];
+			if (!is_numeric ($datetime)) {
+				$datetime = time_w_fixed_tz($datetime);
+			}
+			if (empty ($datetime)) {
+				$datetime = get_system_time();
+			}
+			$period = (int) $content["period"];
+			$datelimit = $datetime - $period;
+			
 			$data_action = array();
 			$data_action['actions'] = array();
 			
@@ -2964,7 +2988,7 @@ function reporting_alert_report_group($report, $content) {
 				foreach ($actions["custom"] as $action) {
 					$data_action[$naction]["name"] = $action["name"];
 					$fired = $action["fired"];
-					if ($fired == 0){
+					if ($fired == 0 || ($fired <= $datelimit || $fired > $datetime)){
 						$data_action[$naction]['fired']  = '----------------------------';
 					}
 					else {
@@ -2977,7 +3001,7 @@ function reporting_alert_report_group($report, $content) {
 				foreach ($actions["default"] as $action) {
 					$data_action[$naction]["name"] = $action["name"];
 					$fired = $action["fired"];
-					if ($fired == 0){
+					if ($fired == 0 || ($fired <= $datelimit || $fired > $datetime)){
 						$data_action[$naction]['fired']  = '----------------------------';
 					}
 					else {
@@ -2990,7 +3014,7 @@ function reporting_alert_report_group($report, $content) {
 				foreach ($actions["unavailable"] as $action) {
 					$data_action[$naction]["name"] = $action["name"];
 					$fired = $action["fired"];
-					if ($fired == 0){
+					if ($fired == 0 || ($fired <= $datelimit || $fired > $datetime)){
 						$data_action[$naction]['fired']  = '----------------------------';
 					}
 					else {
@@ -3010,10 +3034,7 @@ function reporting_alert_report_group($report, $content) {
 													(int) $report["datetime"]);
 			$module_actions["actions"]        = $data_action;
 
-			if ($module_actions["template_fired"][0] !== null)
 			$data_row['alerts'][$ntemplates] = $module_actions;
-			else
-			$data_row = null;
 			$ntemplates++;
 		}
 
@@ -3076,6 +3097,16 @@ function reporting_alert_report_agent($report, $content) {
 		
 		foreach ($alerts as $template => $actions) {
 
+			$datetime = (int) $report["datetime"];
+			if (!is_numeric ($datetime)) {
+				$datetime = time_w_fixed_tz($datetime);
+			}
+			if (empty ($datetime)) {
+				$datetime = get_system_time();
+			}
+			$period = (int) $content["period"];
+			$datelimit = $datetime - $period;
+			
 			$data_action = array();
 			$data_action['actions'] = array();
 			
@@ -3084,7 +3115,7 @@ function reporting_alert_report_agent($report, $content) {
 				foreach ($actions["custom"] as $action) {
 					$data_action[$naction]["name"] = $action["name"];
 					$fired = $action["fired"];
-					if ($fired == 0){
+					if ($fired == 0 || ($fired <= $datelimit || $fired > $datetime)){
 						$data_action[$naction]['fired']  = '----------------------------';
 					}
 					else {
@@ -3097,7 +3128,7 @@ function reporting_alert_report_agent($report, $content) {
 				foreach ($actions["default"] as $action) {
 					$data_action[$naction]["name"] = $action["name"];
 					$fired = $action["fired"];
-					if ($fired == 0){
+					if ($fired == 0 || ($fired <= $datelimit || $fired > $datetime)){
 						$data_action[$naction]['fired']  = '----------------------------';
 					}
 					else {
@@ -3110,7 +3141,7 @@ function reporting_alert_report_agent($report, $content) {
 				foreach ($actions["unavailable"] as $action) {
 					$data_action[$naction]["name"] = $action["name"];
 					$fired = $action["fired"];
-					if ($fired == 0){
+					if ($fired == 0 || ($fired <= $datelimit || $fired > $datetime)){
 						$data_action[$naction]['fired']  = '----------------------------';
 					}
 					else {
@@ -3130,10 +3161,7 @@ function reporting_alert_report_agent($report, $content) {
 													(int) $report["datetime"]);
 			$module_actions["actions"]        = $data_action;
 
-			if ($module_actions["template_fired"][0] !== null)
 			$data_row['alerts'][$ntemplates] = $module_actions;
-			else 
-			$data_row = null;
 			$ntemplates++;
 		}
 
@@ -3199,6 +3227,15 @@ function reporting_alert_report_module($report, $content) {
 	$ntemplates = 0;
 	
 	foreach ($alerts as $template => $actions) {
+		$datetime = (int) $report["datetime"];
+		if (!is_numeric ($datetime)) {
+			$datetime = time_w_fixed_tz($datetime);
+		}
+		if (empty ($datetime)) {
+			$datetime = get_system_time();
+		}
+		$period = (int) $content["period"];
+		$datelimit = $datetime - $period;
 
 		$data_action = array();
 		$data_action['actions'] = array();
@@ -3208,7 +3245,7 @@ function reporting_alert_report_module($report, $content) {
 			foreach ($actions["custom"] as $action) {
 				$data_action[$naction]["name"] = $action["name"];
 				$fired = $action["fired"];
-				if ($fired == 0){
+				if ($fired == 0 || ($fired <= $datelimit || $fired > $datetime)){
 					$data_action[$naction]['fired']  = '----------------------------';
 				}
 				else {
@@ -3221,7 +3258,7 @@ function reporting_alert_report_module($report, $content) {
 			foreach ($actions["default"] as $action) {
 				$data_action[$naction]["name"] = $action["name"];
 				$fired = $action["fired"];
-				if ($fired == 0){
+				if ($fired == 0 || ($fired <= $datelimit || $fired > $datetime)){
 					$data_action[$naction]['fired']  = '----------------------------';
 				}
 				else {
@@ -3234,7 +3271,7 @@ function reporting_alert_report_module($report, $content) {
 			foreach ($actions["unavailable"] as $action) {
 				$data_action[$naction]["name"] = $action["name"];
 				$fired = $action["fired"];
-				if ($fired == 0){
+				if ($fired == 0 || ($fired <= $datelimit || $fired > $datetime)){
 					$data_action[$naction]['fired']  = '----------------------------';
 				}
 				else {
@@ -3254,10 +3291,7 @@ function reporting_alert_report_module($report, $content) {
 												(int) $report["datetime"]);
 		$module_actions["actions"]        = $data_action;
 
-		if ($module_actions["template_fired"][0] !== null)
 		$data_row['alerts'][$ntemplates] = $module_actions;
-		else
-		$data_row = null;
 		$ntemplates++;
 	}
 

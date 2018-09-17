@@ -1633,23 +1633,13 @@ function get_agent_alert_fired ($id_agent, $id_alert, $period, $date = 0) {
  *
  * @return array An array with all the events happened.
  */
-function get_module_alert_fired ($id_agent_module, $id_alert, $period, $date = 0) {
+function get_module_alert_fired ($id_agent_module, $id_alert) {
 	
-	if (!is_numeric ($date)) {
-		$date = time_w_fixed_tz($date);
-	}
-	if (empty ($date)) {
-		$date = get_system_time();
-	}
-	
-	$datelimit = $date - $period;
-	
-	$sql = sprintf ('SELECT timestamp
+	$sql = sprintf ('SELECT *
 		FROM tevento
-		WHERE id_agentmodule = %d AND utimestamp > %d
-			AND utimestamp <= %d
+		WHERE id_agentmodule = %d
 			AND id_alert_am = %d 
-		ORDER BY timestamp DESC', $id_agent_module, $datelimit, $date, $id_alert);
+		ORDER BY timestamp DESC', $id_agent_module, $id_alert);
 	
 	return db_get_all_rows_sql ($sql);
 }

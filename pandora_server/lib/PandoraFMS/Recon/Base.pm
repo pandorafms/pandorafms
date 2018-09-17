@@ -1476,7 +1476,6 @@ sub snmp_get_command {
 	my $command = "snmpwalk -M/dev/null -r$self->{'snmp_checks'} -t$self->{'snmp_timeout'} -v$self->{'snmp_version'} -On -Oe ";
 	if ($self->{'snmp_version'} eq "3") {
 		$command .= " -l$self->{'snmp_security_level'} ";
-		print $self->{'snmp_security_level'} . "\n";
 		if ($self->{'snmp_security_level'} ne "noAuthNoPriv") {
 			$command .= " -u$self->{'snmp_auth_user'} -a$self->{'snmp_auth_method'} -A$self->{'snmp_auth_pass'} ";
 		}

@@ -1769,8 +1769,25 @@ CREATE TABLE IF NOT EXISTS `tlayout_template_data` (
 	FOREIGN KEY (`id_layout_template`) REFERENCES tlayout_template(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
+-- ---------------------------------------------------------------------
+-- Table `tlog_graph_models`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tlog_graph_models` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`title` TEXT NOT NULL,
+	`regexp` TEXT NOT NULL,
+	`fields` TEXT NOT NULL,
+	`average` tinyint(1) NOT NULL default '0',
+	PRIMARY KEY(`id`)
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO tlog_graph_models VALUES (1, 'Apache&#x20;log&#x20;model',
+	'^.*?&#92;s+.*&quot;.*?&#92;s&#40;&#92;/.*?&#41;&#92;?.*1.1&quot;&#92;s+&#40;.*?&#41;&#92;s+&#40;.*?&#41;&#92;s+',
+	'pagina,&#x20;html_err_code,&#x20;_tiempo_', 1);
+	
 -- -----------------------------------------------------
 -- Add column in table `treport`
 -- -----------------------------------------------------
 
 ALTER TABLE `treport` ADD COLUMN `hidden` tinyint(1) NOT NULL DEFAULT 0;
+

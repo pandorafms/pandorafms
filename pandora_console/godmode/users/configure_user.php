@@ -152,7 +152,8 @@ if ($create_user) {
 		ui_print_error_message (__('The current authentication scheme doesn\'t support creating users on %s', get_product_name()));
 		return;
 	}
-	
+	if (html_print_csrf_error()) return;
+
 	$values = array ();
 	$values['id_user'] = (string) get_parameter ('id_user');
 	$values['fullname'] = (string) get_parameter ('fullname');
@@ -279,6 +280,8 @@ if ($create_user) {
 }
 
 if ($update_user) {
+	if (html_print_csrf_error()) return;
+
 	$values = array ();
 	$values['id_user'] = (string) get_parameter ('id_user');
 	$values['fullname'] = (string) get_parameter ('fullname');
@@ -705,14 +708,12 @@ echo '<form method="post" autocomplete="off">';
 html_print_table ($table);
 
 echo '<div style="width: '.$table->width.'" class="action-buttons">';
-if ($new_user) {
-	if ($config['admin_can_add_user']) {
+if ($config['admin_can_add_user']) {
+	html_print_csrf_hidden();
+	if ($new_user) {
 		html_print_input_hidden ('create_user', 1);
 		html_print_submit_button (__('Create'), 'crtbutton', false, 'class="sub wand"');
-	}
-}
-else {
-	if ($config['user_can_update_info']) {
+	} else {
 		html_print_input_hidden ('update_user', 1);
 		html_print_submit_button (__('Update'), 'uptbutton', false, 'class="sub upd"');
 	}

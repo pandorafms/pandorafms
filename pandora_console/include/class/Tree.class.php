@@ -19,6 +19,7 @@ class Tree {
 	protected $id = -1;
 	protected $rootID = -1;
 	protected $serverID = false;
+	protected $serverName = '';
 	protected $tree = array();
 	protected $filter = array();
 	protected $childrenMethod = "on_demand";
@@ -50,6 +51,9 @@ class Tree {
 		$this->id = $id;
 		$this->rootID = !empty($rootID) ? $rootID : $id;
 		$this->serverID = $serverID;
+		if (is_metaconsole()) {
+			$this->serverName = metaconsole_get_server_by_id($serverID);
+		}
 		$this->childrenMethod = $childrenMethod;
 		$this->access = $access;
 
@@ -151,23 +155,23 @@ class Tree {
 		return array(
 			'warning' => array(
 				'header' => "0 AS x_critical, SUM(total) AS x_warning, 0 AS x_normal, 0 AS x_unknown, 0 AS x_not_init, 0 AS x_alerts, 0 AS x_total, g",
-				'condition' => "AND ta.warning_count > 0 AND ta.critical_count = 0"
+				'condition' => "AND " . agents_get_status_clause(AGENT_STATUS_WARNING, $this->filter['show_not_init_agents'])
 			),
 			'critical' => array(
 				'header' => "SUM(total) AS x_critical, 0 AS x_warning, 0 AS x_normal, 0 AS x_unknown, 0 AS x_not_init, 0 AS x_alerts, 0 AS x_total, g",
-				'condition' => "AND ta.critical_count > 0"
+				'condition' => "AND " . agents_get_status_clause(AGENT_STATUS_CRITICAL, $this->filter['show_not_init_agents'])
 			),
 			'normal' => array(
 				'header' => "0 AS x_critical, 0 AS x_warning, SUM(total) AS x_normal, 0 AS x_unknown, 0 AS x_not_init, 0 AS x_alerts, 0 AS x_total, g",
-				'condition' => "AND ta.critical_count = 0 AND ta.warning_count = 0 AND ta.unknown_count = 0 AND ta.normal_count > 0"
+				'condition' => "AND " . agents_get_status_clause(AGENT_STATUS_NORMAL, $this->filter['show_not_init_agents'])
 			),
 			'unknown' => array(
 				'header' => "0 AS x_critical, 0 AS x_warning, 0 AS x_normal, SUM(total) AS x_unknown, 0 AS x_not_init, 0 AS x_alerts, 0 AS x_total, g",
-				'condition' => "AND ta.critical_count = 0 AND ta.warning_count = 0 AND ta.unknown_count > 0"
+				'condition' => "AND " . agents_get_status_clause(AGENT_STATUS_UNKNOWN, $this->filter['show_not_init_agents'])
 			),
 			'not_init' => array(
 				'header' => "0 AS x_critical, 0 AS x_warning, 0 AS x_normal, 0 AS x_unknown, SUM(total) AS x_not_init, 0 AS x_alerts, 0 AS x_total, g",
-				'condition' => $this->filter['show_not_init_agents'] ? "AND ta.total_count = ta.notinit_count" : " AND 1=0"
+				'condition' => "AND " . agents_get_status_clause(AGENT_STATUS_NOT_INIT, $this->filter['show_not_init_agents'])
 			),
 			'alerts' => array(
 				'header' => "0 AS x_critical, 0 AS x_warning, 0 AS x_normal, 0 AS x_unknown, 0 AS x_not_init, SUM(total) AS x_alerts, 0 AS x_total, g",
@@ -175,7 +179,7 @@ class Tree {
 			),
 			'total' => array(
 				'header' => "0 AS x_critical, 0 AS x_warning, 0 AS x_normal, 0 AS x_unknown, 0 AS x_not_init, 0 AS x_alerts, SUM(total) AS x_total, g",
-				'condition' => $this->filter['show_not_init_agents'] ? "" : "AND ta.total_count <> ta.notinit_count"
+				'condition' => "AND " . agents_get_status_clause(AGENT_STATUS_ALL, $this->filter['show_not_init_agents'])
 			)
 		);
 	}
@@ -228,43 +232,9 @@ class Tree {
 			? $state
 			: $this->filter['statusModule'];
 
-		$filter = array();
-		switch ($selected_status) {
-			case AGENT_MODULE_STATUS_CRITICAL_ALERT:
-			case AGENT_MODULE_STATUS_CRITICAL_BAD:
-				$filter[] = "(
-					tae.estado = ".AGENT_MODULE_STATUS_CRITICAL_ALERT."
-					OR tae.estado = ".AGENT_MODULE_STATUS_CRITICAL_BAD."
-				)";
-				break;
-			case AGENT_MODULE_STATUS_WARNING_ALERT:
-			case AGENT_MODULE_STATUS_WARNING:
-				$filter[] = "(
-					tae.estado = ".AGENT_MODULE_STATUS_WARNING_ALERT."
-					OR tae.estado = ".AGENT_MODULE_STATUS_WARNING."
-				)";
-				break;
-			case AGENT_MODULE_STATUS_UNKNOWN:
-				$filter[] = "tae.estado = ".AGENT_MODULE_STATUS_UNKNOWN." ";
-				break;
-			case AGENT_MODULE_STATUS_NO_DATA:
-			case AGENT_MODULE_STATUS_NOT_INIT:
-				$filter[] = "(
-					tae.estado = ".AGENT_MODULE_STATUS_NO_DATA."
-					OR tae.estado = ".AGENT_MODULE_STATUS_NOT_INIT."
-				)";
-				break;
-			case AGENT_MODULE_STATUS_NORMAL_ALERT:
-			case AGENT_MODULE_STATUS_NORMAL:
-				$filter[] = "(
-					tae.estado = ".AGENT_MODULE_STATUS_NORMAL_ALERT."
-					OR tae.estado = ".AGENT_MODULE_STATUS_NORMAL."
-				)";
-				break;
-			default:
-				$filter[] = "1=1";
-				break;
-		}
+		$filter = array(
+			modules_get_state_condition($selected_status)
+		);
 		if (!$this->filter['show_not_init_modules'] && $state === false) {
 			if (!empty($filter))
 			$filter[] = "(
@@ -278,7 +248,7 @@ class Tree {
 			: " AND $filter ";
 	}
 
-	protected function getGroupAclCondition() {
+	public function getGroupAclCondition() {
 		if (users_can_manage_group_all("AR"))  return "";
 
 		$groups_str= implode(",", $this->userGroupsArray);
@@ -299,105 +269,6 @@ class Tree {
 	protected function getGroupSearchFilter() {
 		if (empty($this->filter['searchGroup'])) return "";
 		return " AND tg.nombre LIKE '%" . $this->filter['searchGroup'] . "%'";
-	}
-
-	protected function getAgentCounterColumnsSql ($agent_table) {
-		// Add the agent counters to the columns
-
-		if ($this->filter['statusAgent'] == -1) {
-			// Critical
-			$agent_critical_filter = $this->getAgentStatusFilter(AGENT_STATUS_CRITICAL);
-			$agents_critical_count = "($agent_table
-										$agent_critical_filter) AS total_critical_count";
-			// Warning
-			$agent_warning_filter = $this->getAgentStatusFilter(AGENT_STATUS_WARNING);
-			$agents_warning_count = "($agent_table
-										$agent_warning_filter) AS total_warning_count";
-			// Unknown
-			$agent_unknown_filter = $this->getAgentStatusFilter(AGENT_STATUS_UNKNOWN);
-			$agents_unknown_count = "($agent_table
-										$agent_unknown_filter) AS total_unknown_count";
-			// Normal
-			$agent_normal_filter = $this->getAgentStatusFilter(AGENT_STATUS_NORMAL);
-			$agents_normal_count = "($agent_table
-										$agent_normal_filter) AS total_normal_count";
-			// Not init
-			if($this->filter['show_not_init_agents']){
-				$agent_not_init_filter = $this->getAgentStatusFilter(AGENT_STATUS_NOT_INIT);
-				$agents_not_init_count = "($agent_table
-											$agent_not_init_filter) AS total_not_init_count";
-			}
-			else{
-				$agent_not_init_filter = 0;
-				$agents_not_init_count = 0;
-			}
-
-			// Alerts fired
-			$agents_fired_count = "($agent_table
-										AND ta.fired_count > 0) AS total_fired_count";
-			// Total
-			$agents_total_count = "($agent_table) AS total_count";
-
-			$columns = "$agents_critical_count, $agents_warning_count, "
-				. "$agents_unknown_count, $agents_normal_count, $agents_not_init_count, "
-				. "$agents_fired_count, $agents_total_count";
-		}
-		else {
-			// Alerts fired
-			$agents_fired_count = "($agent_table
-										AND ta.fired_count > 0) AS total_fired_count";
-			// Total
-			$agents_total_count = "($agent_table) AS total_count";
-
-			switch ($this->filter['statusAgent']) {
-				case AGENT_STATUS_NOT_INIT:
-					// Not init
-					$agent_not_init_filter = $this->getAgentStatusFilter(AGENT_STATUS_NOT_INIT);
-					$agents_not_init_count = "($agent_table
-												$agent_not_init_filter) AS total_not_init_count";
-					$columns = "$agents_not_init_count, $agents_fired_count, $agents_total_count";
-					break;
-				case AGENT_STATUS_CRITICAL:
-					// Critical
-					$agent_critical_filter = $this->getAgentStatusFilter(AGENT_STATUS_CRITICAL);
-					$agents_critical_count = "($agent_table
-												$agent_critical_filter) AS total_critical_count";
-					$columns = "$agents_critical_count, $agents_fired_count, $agents_total_count";
-					break;
-				case AGENT_STATUS_WARNING:
-					// Warning
-					$agent_warning_filter = $this->getAgentStatusFilter(AGENT_STATUS_WARNING);
-					$agents_warning_count = "($agent_table
-												$agent_warning_filter) AS total_warning_count";
-					$columns = "$agents_warning_count, $agents_fired_count, $agents_total_count";
-					break;
-				case AGENT_STATUS_UNKNOWN:
-					// Unknown
-					$agent_unknown_filter = $this->getAgentStatusFilter(AGENT_STATUS_UNKNOWN);
-					$agents_unknown_count = "($agent_table
-												$agent_unknown_filter) AS total_unknown_count";
-					$columns = "$agents_unknown_count, $agents_fired_count, $agents_total_count";
-					break;
-				case AGENT_STATUS_NORMAL:
-					// Normal
-					$agent_normal_filter = $this->getAgentStatusFilter(AGENT_STATUS_NORMAL);
-					$agents_normal_count = "($agent_table
-												$agent_normal_filter) AS total_normal_count";
-					$columns = "$agents_normal_count, $agents_fired_count, $agents_total_count";
-					break;
-			}
-		}
-
-		return $columns;
-	}
-
-	protected function getAgentCountersSql ($agent_table) {
-		global $config;
-
-		$columns = $this->getAgentCounterColumnsSql($agent_table);
-		$columns = "SELECT $columns FROM dual LIMIT 1";
-
-		return $columns;
 	}
 
 	static function cmpSortNames($a, $b) {
@@ -580,9 +451,9 @@ class Tree {
 		$module['status'] = $module['estado'];
 		$module['value'] = $module['datos'];
 
-		if (is_metaconsole() && !empty($server)) {
-			$module['serverID'] = $server['id'];
-			$module['serverName'] = $server['server_name'];
+		if (is_metaconsole()) {
+			$module['serverID'] = $this->serverID;
+			$module['serverName'] = $this->serverName;
 		}
 		else {
 			$module['serverName'] = false;
@@ -675,7 +546,7 @@ class Tree {
 					"refresh" => SECONDS_10MINUTES
 				);
 
-			if (is_metaconsole() && !empty($server)) {
+			if (is_metaconsole()) {
 				// Set the server id
 				$graph_params["server"] = $module['serverID'];
 			}

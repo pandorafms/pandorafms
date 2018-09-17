@@ -709,6 +709,10 @@ $table_chars->data[$row][1] = html_print_select($options_zoom_graphs, 'zoom_grap
 $row++;
 
 $table_chars->data[$row][0] = __('Graph image height');
+$table_chars->data[$row][0] .= ui_print_help_tip(
+	__('This is the height in pixels of the module graph or custom graph in the reports (both: HTML and PDF)'),
+	true
+);
 $table_chars->data[$row][1] = html_print_input_text ('graph_image_height', $config['graph_image_height'], '', 20, 20, true);
 $row++;
 

@@ -4635,97 +4635,93 @@ Process groups statistics for statistics table
 ##########################################################################
 sub pandora_group_statistics ($$) {
 	my ($pa_config, $dbh) = @_;
-	
-	# Variable init
-	my $modules = 0;
-	my $normal = 0;
-	my $critical = 0;
-	my $warning = 0;
-	my $unknown = 0;
-	my $non_init = 0;
-	my $alerts = 0;
-	my $alerts_fired = 0;
-	my $agents = 0;
-	my $agents_unknown = 0;
-	my $utimestamp = 0;
-	my $group = 0;
+	my $is_meta = is_metaconsole($pa_config);
 
-	# Get all groups
-	my @groups = get_db_rows ($dbh, 'SELECT id_grupo FROM tgrupo');
-	my $table = is_metaconsole($pa_config) ? 'tmetaconsole_agent' : 'tagente';
-	my $sec_table = is_metaconsole($pa_config)
-		? 'tmetaconsole_agent_secondary_group'
-		: 'tagent_secondary_group';
+	logger($pa_config, "Updating no realtime group stats.", 10);
 
-	# For each valid group get the stats: Simple uh?
-	foreach my $group_row (@groups) {
+	my $total_alerts_condition = $is_meta
+		? "0"
+		: "COUNT(tatm.id)";
+	my $joins_alerts = $is_meta
+		? ""
+		: "LEFT JOIN tagente_modulo tam
+					ON tam.id_agente = ta.id_agente
+				INNER JOIN talert_template_modules tatm
+					ON tatm.id_agent_module = tam.id_agente_modulo";
+	my $agent_table = $is_meta
+		? "tmetaconsole_agent"
+		: "tagente";
+	my $agent_seconsary_table = $is_meta
+		? "tmetaconsole_agent_secondary_group"
+		: "tagent_secondary_group";
 
-		$group = $group_row->{'id_grupo'};
-
-		# NOTICE - Calculations done here MUST BE the same than used in PHP code to have
-		# the same criteria. PLEASE, double check any changes here and in functions_groups.php
-		$agents_unknown = get_db_value ($dbh, "SELECT COUNT(DISTINCT(id_agente))
-			FROM $table LEFT JOIN $sec_table ON id_agente=id_agent
-			WHERE disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count>0 AND (id_grupo=? OR id_group=?)", $group, $group);
-		$agents_unknown = 0 unless defined ($agents_unknown);
-
-		$agents = get_db_value ($dbh, "SELECT COUNT(DISTINCT(id_agente))
-			FROM $table LEFT JOIN $sec_table ON id_agente=id_agent
-			WHERE(id_grupo=$group OR id_group=$group) AND disabled=0");
-		$agents = 0 unless defined ($agents);
-
-		$modules = get_db_value ($dbh, "SELECT SUM(total_count) FROM
+	# Update the record.
+	db_do ($dbh, "REPLACE INTO tgroup_stat(
+			`id_group`, `modules`, `normal`, `critical`, `warning`, `unknown`,
+			`non-init`, `alerts`, `alerts_fired`, `agents`,
+			`agents_unknown`, `utimestamp`
+		)
+		SELECT
+			tg.id_grupo AS id_group,
+			IF (SUM(modules_total) IS NULL,0,SUM(modules_total)) AS modules,
+			IF (SUM(modules_ok) IS NULL,0,SUM(modules_ok)) AS normal,
+			IF (SUM(modules_critical) IS NULL,0,SUM(modules_critical)) AS critical,
+			IF (SUM(modules_warning) IS NULL,0,SUM(modules_warning)) AS warning,
+			IF (SUM(modules_unknown) IS NULL,0,SUM(modules_unknown)) AS unknown,
+			IF (SUM(modules_not_init) IS NULL,0,SUM(modules_not_init)) AS `non-init`,
+			IF (SUM(alerts_total) IS NULL,0,SUM(alerts_total)) AS alerts,
+			IF (SUM(alerts_fired) IS NULL,0,SUM(alerts_fired)) AS alerts_fired,
+			IF (SUM(agents_total) IS NULL,0,SUM(agents_total)) AS agents,
+			IF (SUM(agents_unknown) IS NULL,0,SUM(agents_unknown)) AS agents_unknown,
+			UNIX_TIMESTAMP() AS utimestamp
+		FROM
 			(
-				SELECT DISTINCT(id_agente), total_count
-				FROM $table LEFT JOIN $sec_table ON id_agente=id_agent
-				WHERE disabled=0 AND (id_grupo=? OR id_group=?)
-			) AS t1", $group, $group);
-		$modules = 0 unless defined ($modules);
+				SELECT SUM(ta.normal_count) AS modules_ok,
+					SUM(ta.critical_count) AS modules_critical,
+					SUM(ta.warning_count) AS modules_warning,
+					SUM(ta.unknown_count) AS modules_unknown,
+					SUM(ta.notinit_count) AS modules_not_init,
+					SUM(ta.total_count) AS modules_total,
+					SUM(ta.fired_count) AS alerts_fired,
+					$total_alerts_condition AS alerts_total,
+					SUM(IF(ta.critical_count > 0, 1, 0)) AS agents_critical,
+					SUM(IF(ta.critical_count = 0 AND ta.warning_count = 0 AND ta.unknown_count > 0, 1, 0)) AS agents_unknown,
+					SUM(IF(ta.total_count = ta.notinit_count, 1, 0)) AS agents_not_init,
+					COUNT(ta.id_agente) AS agents_total,
+					ta.id_grupo AS g
+				FROM $agent_table ta
+				$joins_alerts
+				WHERE ta.disabled = 0
+				GROUP BY g
 
-		$normal = get_db_value ($dbh, "SELECT COUNT(DISTINCT(id_agente))
-			FROM $table LEFT JOIN $sec_table ON id_agente=id_agent
-			WHERE disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count=0 AND normal_count>0 AND (id_grupo=? OR id_group=?)", $group, $group);
-		$normal = 0 unless defined ($normal);
+				UNION ALL
 
-		$critical = get_db_value ($dbh, "SELECT COUNT(DISTINCT(id_agente))
-			FROM $table LEFT JOIN $sec_table ON id_agente=id_agent
-			WHERE disabled=0 AND critical_count>0 AND (id_grupo=? OR id_group=?)", $group, $group);
-		$critical = 0 unless defined ($critical);
+				SELECT SUM(ta.normal_count) AS modules_ok,
+					SUM(ta.critical_count) AS modules_critical,
+					SUM(ta.warning_count) AS modules_warning,
+					SUM(ta.unknown_count) AS modules_unknown,
+					SUM(ta.notinit_count) AS modules_not_init,
+					SUM(ta.total_count) AS modules_total,
+					SUM(ta.fired_count) AS alerts_fired,
+					$total_alerts_condition AS alerts_total,
+					SUM(IF(ta.critical_count > 0, 1, 0)) AS agents_critical,
+					SUM(IF(ta.critical_count = 0 AND ta.warning_count = 0 AND ta.unknown_count > 0, 1, 0)) AS agents_unknown,
+					SUM(IF(ta.total_count = ta.notinit_count, 1, 0)) AS agents_not_init,
+					COUNT(ta.id_agente) AS agents_total,
+					tasg.id_group AS g
+				FROM $agent_table ta
+				LEFT JOIN $agent_seconsary_table tasg
+					ON ta.id_agente = tasg.id_agent
+				$joins_alerts
+				WHERE ta.disabled = 0
+				GROUP BY g
+			) counters
+		RIGHT JOIN tgrupo tg
+			ON counters.g = tg.id_grupo
+		GROUP BY tg.id_grupo"
+	);
 
-		$warning = get_db_value ($dbh, "SELECT COUNT(DISTINCT(id_agente))
-			FROM $table LEFT JOIN $sec_table ON id_agente=id_agent
-			WHERE disabled=0 AND critical_count=0 AND warning_count>0 AND (id_grupo=? OR id_group=?)", $group, $group);
-		$warning = 0 unless defined ($warning);
-
-		$unknown = get_db_value ($dbh, "SELECT COUNT(DISTINCT(id_agente))
-			FROM $table LEFT JOIN $sec_table ON id_agente=id_agent
-			WHERE disabled=0 AND critical_count=0 AND warning_count=0 AND unknown_count>0 AND (id_grupo=? OR id_group=?)", $group, $group);
-		$unknown = 0 unless defined ($unknown);
-
-		$non_init = get_db_value ($dbh, "SELECT COUNT(DISTINCT(id_agente))
-			FROM $table LEFT JOIN $sec_table ON id_agente=id_agent
-			WHERE disabled=0 AND total_count=notinit_count AND (id_grupo=? OR id_group=?)", $group, $group);
-		$non_init = 0 unless defined ($non_init);
-
-		# Total alert count not available on the meta console.
-		if ($table eq 'tagente') {
-			$alerts = get_db_value ($dbh, "SELECT COUNT(talert_template_modules.id)
-					FROM talert_template_modules, tagente_modulo, tagente
-					WHERE tagente.id_grupo = $group AND tagente_modulo.id_agente = tagente.id_agente
-						AND tagente_modulo.disabled = 0 AND tagente.disabled = 0  			
-						AND	talert_template_modules.disabled = 0 
-						AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo");
-		}
-		$alerts = 0 unless defined ($alerts);
-		
-		$alerts_fired = get_db_value ($dbh, "SELECT SUM(fired_count) FROM $table WHERE disabled=0 AND id_grupo=?", $group);
-		$alerts_fired = 0 unless defined ($alerts_fired);
-		
-		# Update the record.
-		db_do ($dbh, "REPLACE INTO tgroup_stat (id_group, modules, normal, critical, warning, unknown, " . $PandoraFMS::DB::RDBMS_QUOTE . 'non-init' . $PandoraFMS::DB::RDBMS_QUOTE . ", alerts, alerts_fired, agents, agents_unknown, utimestamp) VALUES ($group, $modules, $normal, $critical, $warning, $unknown, $non_init, $alerts, $alerts_fired, $agents, $agents_unknown, UNIX_TIMESTAMP())");
-
-	}
-
+	logger($pa_config, "No realtime group stats updated.", 6);
 }
 
 

@@ -269,13 +269,15 @@ if (isset($_GET["create"])) {
 			'snmp_security_level' => ''
 			);
 		}
+		if ($values['snmp_version'] == '3'){
+			$values['vlan_enabled'] = 0;
+		}
 
 	$values = array_merge($values, $values_v3);
 
 	$name = io_safe_output($name);
 	$name = trim($name, ' ');
 	$name = io_safe_input($name);
-	html_debug($values, true);
 	$reason = "";
 
 	if ($name != "") {
@@ -297,7 +299,6 @@ if (isset($_GET["create"])) {
 			}
 			else{
 				$result = db_process_sql_insert('trecon_task', $values);
-				html_debug("entra", true);
 			}
 		}
 		else {

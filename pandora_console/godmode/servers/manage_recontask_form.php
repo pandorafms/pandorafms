@@ -515,11 +515,14 @@ $('select#snmp_version').change(function () {
 		$(".recon_v3").show();
 		$("input[name=active_snmp_v3]").val(1);
 		$("input[name=snmp_community]").attr("disabled", true);
+		$("input[name=vlan_enabled]").removeAttr("checked");
+		$("input[name=vlan_enabled]").attr("disabled", true);
 	}
 	else {
 		$(".recon_v3").hide();
 		$("input[name=active_snmp_v3]").val(0);
 		$("input[name=snmp_community]").removeAttr('disabled');
+		$("input[name=vlan_enabled]").removeAttr('disabled');
 	}
 });
 

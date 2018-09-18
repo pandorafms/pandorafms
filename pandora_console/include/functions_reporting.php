@@ -1552,7 +1552,7 @@ function reporting_event_report_group($report, $content,
 function reporting_event_report_module($report, $content,
 	$type = 'dinamic', $force_width_chart = null,
 	$force_height_chart = null, $pdf=0) {
-	
+
 	global $config;
 
 	if($pdf){
@@ -1563,20 +1563,29 @@ function reporting_event_report_module($report, $content,
 	}
 
 	$return['type'] = 'event_report_module';
-	
+
 	if (empty($content['name'])) {
 		$content['name'] = __('Event Report Module');
 	}
-	
+
+	$id_server = false;
+	if(is_metaconsole()){
+		$id_server = metaconsole_get_id_server($content["server_name"]);
+		metaconsole_connect(null, $id_server);
+	}
+
 	$return['title'] = $content['name'];
-	$return['subtitle'] = agents_get_alias($content['id_agent']) .
-		" - " .
-		io_safe_output(
-			modules_get_agentmodule_name($content['id_agent_module']));
+	$return['subtitle'] = agents_get_alias($content['id_agent']) . " - " .
+		io_safe_output(modules_get_agentmodule_name($content['id_agent_module']));
+
+	if(is_metaconsole()){
+		metaconsole_restore_db();
+	}
+
 	$return["description"] = $content["description"];
 	$return["date"] = reporting_get_date_text($report, $content);
 	$return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
-	
+
 	$event_filter = $content['style'];
 	$return['show_summary_group'] = $event_filter['show_summary_group'];
 	//filter
@@ -1585,22 +1594,18 @@ function reporting_event_report_module($report, $content,
 	$filter_event_type          = json_decode($event_filter['filter_event_type'],true);
 	$filter_event_status        = json_decode($event_filter['filter_event_status'],true);
 	$filter_event_filter_search = $event_filter['event_filter_search'];
-	
+
 	//graphs
 	$event_graph_by_user_validator        = $event_filter['event_graph_by_user_validator'];
 	$event_graph_by_criticity             = $event_filter['event_graph_by_criticity'];
 	$event_graph_validated_vs_unvalidated = $event_filter['event_graph_validated_vs_unvalidated'];
-	
-	$id_server = false;
-	if(is_metaconsole()){
-		$id_server = metaconsole_get_id_server($content["server_name"]);
-	}
+
 	//data events
 	$data = reporting_get_module_detailed_event (
-		$content['id_agent_module'], $content['period'], $report["datetime"], 
-		$show_summary_group, $filter_event_severity, $filter_event_type, 
+		$content['id_agent_module'], $content['period'], $report["datetime"],
+		$show_summary_group, $filter_event_severity, $filter_event_type,
 		$filter_event_status, $filter_event_filter_search, $force_width_chart,
-		$event_graph_by_user_validator, $event_graph_by_criticity, 
+		$event_graph_by_user_validator, $event_graph_by_criticity,
 		$event_graph_validated_vs_unvalidated, $ttl, $id_server);
 
 	if (empty($data)) {
@@ -1608,7 +1613,7 @@ function reporting_event_report_module($report, $content,
 	}
 	else {
 		$return['data'] = array_reverse($data);
-	}	
+	}
 
 	if ($config['metaconsole']) {
 		metaconsole_restore_db();
@@ -1621,7 +1626,7 @@ function reporting_event_report_module($report, $content,
 	else{
 		$return['total_events'] = 0;
 	}
-	
+
 	return reporting_check_structure_content($return);
 }
 

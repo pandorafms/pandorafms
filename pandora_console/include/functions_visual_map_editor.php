@@ -773,6 +773,10 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				$form_items_advance['map_linked_row']['html'] .= ob_get_clean();
 			}
 			else {
+				$visual_maps = array_reduce($visual_maps, function ($all, $item) {
+					$all[$item["id"]] = $item["name"];
+					return $all;
+				}, array());
 				$form_items_advance['map_linked_row']['html'] .= html_print_select(
 					$visual_maps, 'map_linked', 0, 'onLinkedMapChange(event)', __('None'), 0, true
 				);

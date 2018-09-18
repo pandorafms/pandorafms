@@ -1273,6 +1273,8 @@ ALTER TABLE `tservice` ADD COLUMN `quiet` tinyint(1) NOT NULL default 0;
 ALTER TABLE `tservice` ADD COLUMN `cps` int NOT NULL default 0;
 ALTER TABLE `tservice` ADD COLUMN `cascade_protection` tinyint(1) NOT NULL default 0;
 ALTER TABLE `tservice` ADD COLUMN `evaluate_sla` int(1) NOT NULL default 0;
+ALTER TABLE `tservice` ADD COLUMN `is_favourite` tinyint(1) NOT NULL default 0;
+UPDATE tservice SET `is_favourite` = 1 WHERE `name` REGEXP '^[_|.|\[|\(]';
 
 -- ---------------------------------------------------------------------
 -- Table `tlayout`

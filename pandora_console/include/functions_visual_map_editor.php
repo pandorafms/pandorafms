@@ -700,7 +700,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$visual_maps = db_get_all_rows_filter("tlayout", "id != " . (int) $visualConsole_id, array("id", "name"));
 
 			$form_items_advance['map_linked_row']['html'] = '<td align="left">'
-				. __('Linked map')
+				. __('Linked visual console')
 				. '</td>'
 				. '<td align="left">';
 
@@ -727,7 +727,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 					return $arr;
 				}, array());
 
-				$form_items_advance['map_linked_row']['html'] .= html_print_select_from_sql(
+				$form_items_advance['map_linked_row']['html'] .= html_print_select(
 					array(), 'map_linked', 0, 'onLinkedMapChange(event)', __('None'), 0, true
 				);
 				$form_items_advance['map_linked_row']['html'] .= html_print_input_hidden(
@@ -773,7 +773,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				$form_items_advance['map_linked_row']['html'] .= ob_get_clean();
 			}
 			else {
-				$form_items_advance['map_linked_row']['html'] .= html_print_select_from_sql(
+				$form_items_advance['map_linked_row']['html'] .= html_print_select(
 					$visual_maps, 'map_linked', 0, 'onLinkedMapChange(event)', __('None'), 0, true
 				);
 			}
@@ -790,7 +790,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'percentile_item', 'module_graph', 'simple_value',
 				'icon', 'label', 'datos', 'donut_graph');
 			$form_items_advance['linked_map_status_calculation_row']['html'] = '<td align="left">'.
-				__('Type of the status calculation of the linked map') . '</td>'
+				__('Type of the status calculation of the linked visual console') . '</td>'
 				. '<td align="left">'
 				. html_print_select(
 					$status_type_select_items, 
@@ -803,6 +803,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 					false,
 					false
 				)
+				. ui_print_help_icon("linked_map_status_calc", true)
 				. '</td>';
 
 			$form_items_advance['map_linked_weight'] = array();
@@ -811,13 +812,12 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'percentile_item', 'module_graph', 'simple_value',
 				'icon', 'label', 'datos', 'donut_graph');
 			$form_items_advance['map_linked_weight']['html'] = '<td align="left">'
-				. __('Linked map weight') . '</td>'
+				. __('Linked visual console weight') . '</td>'
 				. '<td align="left">'
 				. html_print_input_text(
 					'map_linked_weight', 80, '', 5, 5, true, false, false, "", "type_number percentage"
 				)
 				. '<span>%</span>'
-				. ui_print_help_icon("linked_map_weight", true)
 				. '</td>';
 
 			$form_items_advance['linked_map_status_service_critical_row'] = array();

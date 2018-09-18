@@ -1260,3 +1260,10 @@ INSERT INTO `tprofile_view` (`id_profile`, `sec`, `sec2`, `sec3`) VALUES (5, '*'
 -- Dumping data for table `tcontainer`
 --
 INSERT INTO `tcontainer` SET `name` = 'Default graph container';
+
+--
+-- Dumping data for table `tlog_graph_models`
+--
+INSERT INTO tlog_graph_models VALUES (1, 'Apache&#x20;log&#x20;model',
+	'^.*?&#92;s+.*&quot;.*?&#92;s&#40;&#92;/.*?&#41;&#92;?.*1.1&quot;&#92;s+&#40;.*?&#41;&#92;s+&#40;.*?&#41;&#92;s+',
+	'pagina,&#x20;html_err_code,&#x20;_tiempo_', 1);

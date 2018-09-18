@@ -55,7 +55,7 @@ var TreeController = {
 					}
 
 					container.append($group);
-					
+
 					_.each(elements, function(element) {
 						element.jqObject = _processNode($group, element);
 					});
@@ -279,14 +279,13 @@ var TreeController = {
 
 				// Load leaf
 				function _processNode (container, element) {
-					
 					// type, [id], [serverID], callback
 					function _getTreeDetailData (type, id, serverID, callback) {
 						var lastParam = arguments[arguments.length - 1];
 						var callback;
 						if (typeof lastParam === 'function')
 							callback = lastParam;
-						
+
 						var serverID;
 						if (arguments.length >= 4)
 							serverID = arguments[2];
@@ -296,23 +295,23 @@ var TreeController = {
 						var type;
 						if (arguments.length >= 2)
 							type = arguments[0];
-						
+
 						if (typeof type === 'undefined')
 							throw new TypeError('Type required');
 						if (typeof callback === 'undefined')
 							throw new TypeError('Callback required');
-						
+
 						var postData = {
 							page: controller.ajaxPage,
 							getDetail: 1,
 							type: type
 						}
-						
+
 						if (typeof id !== 'undefined')
 							postData.id = id;
 						if (typeof serverID !== 'undefined')
 							postData.serverID = serverID;
-						
+
 						$.ajax({
 							url: controller.ajaxURL,
 							type: 'POST',
@@ -346,6 +345,36 @@ var TreeController = {
 								$content.append(element.iconHTML + " ");
 							}
 							$content.append(element.name);
+
+							if(typeof element.edit != 'undefined'){
+								var url_edit = controller.baseURL + "index.php?sec=gagente&sec2=godmode/groups/configure_group&tab=tree&id_group=" + element.id;
+								var $updateicon = $('<img src="' + (controller.baseURL.length > 0 ? controller.baseURL : '')+ 'images/config.png" style="width:18px; vertical-align: middle;"/>')
+								var $updatebtn = $('<a href = "' + url_edit + '"></a>')
+									.append($updateicon);
+								$content.append($updatebtn);
+							}
+
+							if(typeof element.delete != 'undefined'){
+								var url_delete = controller.baseURL + "index.php?sec=gagente&sec2=godmode/groups/group_list&tab=tree&delete_group=1&id_group=" + element.id;
+								var $deleteBtn = $('<a><img src="' + (controller.baseURL.length > 0 ? controller.baseURL : '') +'images/cross.png" style="width:18px; vertical-align: middle; cursor: pointer;"/></a>');
+								$deleteBtn.click(function (event){
+									var ok_function = function(){
+										window.location.replace(url_delete);
+									};
+									display_confirm_dialog(
+										element.delete.messages.messg,
+										element.delete.messages.confirm,
+										element.delete.messages.cancel,
+										ok_function
+									)
+								});
+								$content.append($deleteBtn);
+							}
+
+							if(typeof element.alerts != 'undefined'){
+								$content.append(element.alerts);
+							}
+
 							break;
 						case 'agent':
 							// Is quiet
@@ -583,95 +612,99 @@ var TreeController = {
 					if (typeof(public_user) === 'undefined') public_user = 0;
 
 					if (typeof element.searchChildren != 'undefined' && element.searchChildren) {
-						$node
-							.removeClass("leaf-empty")
-							.addClass("leaf-closed");
+						if(element.rootType == "group_edition"
+							&& typeof element.children == 'undefined'){
+							$node.addClass("leaf-empty");
+						}
+						else{
+							$node
+								.removeClass("leaf-empty")
+								.addClass("leaf-closed");
+							$leafIcon.click(function (e) {
+								e.preventDefault();
 
-						$leafIcon.click(function (e) {
-							e.preventDefault();
-
-							if (!$node.hasClass("leaf-loading") && !$node.hasClass("children-loaded") && !$node.hasClass("leaf-empty")) {
-								$node
-									.removeClass("leaf-closed")
-									.removeClass("leaf-error")
-									.addClass("leaf-loading");
-
-								$.ajax({
-									url: controller.ajaxURL,
-									type: 'POST',
-									dataType: 'json',
-									data: {
-										page: controller.ajaxPage,
-										getChildren: 1,
-										id: element.id,
-										type: element.type,
-										rootID: element.rootID,
-										serverID: element.serverID,
-										rootType: element.rootType,
-										filter: controller.filter,
-										hash: public_hash,
-										id_user: public_user
-									},
-									complete: function(xhr, textStatus) {
-										$node.removeClass("leaf-loading");
-										$node.addClass("children-loaded");
-									},
-									success: function(data, textStatus, xhr) {
-										if (data.success) {
-											var $group = $node.children("ul.tree-group");
-
-											if ((typeof data.tree != 'undefined' && data.tree.length > 0) || $group.length > 0) {
-												$node.addClass("leaf-open");
-
-												if ($group.length <= 0) {
-													$group = $("<ul></ul>");
-													$group
-														.addClass("tree-group")
-														.hide();
-													$node.append($group);
-												}
-												
-												_.each(data.tree, function(element) {
-													element.jqObject = _processNode($group, element);
-												});
-
-												$group.slideDown();
-
-												$node.data('children', $group);
-												
-												// Add again the hover event to the 'force_callback' elements
-												forced_title_callback();
-											}
-											else {
-												$node.addClass("leaf-empty");
-											}
-										}
-										else {
-											$node.addClass("leaf-error");
-										}
-									},
-									error: function(xhr, textStatus, errorThrown) {
-										$node.addClass("leaf-error");
-									}
-								});
-							}
-							else if (! $node.hasClass("leaf-empty")) {
-								if ($node.hasClass("leaf-open")) {
-									$node
-										.removeClass("leaf-open")
-										.addClass("leaf-closed")
-										.data('children')
-											.slideUp();
-								}
-								else {
+								if (!$node.hasClass("leaf-loading") && !$node.hasClass("children-loaded") && !$node.hasClass("leaf-empty")) {
 									$node
 										.removeClass("leaf-closed")
-										.addClass("leaf-open")
-										.data('children')
-											.slideDown();
+										.removeClass("leaf-error")
+										.addClass("leaf-loading");
+
+									$.ajax({
+										url: controller.ajaxURL,
+										type: 'POST',
+										dataType: 'json',
+										data: {
+											page: controller.ajaxPage,
+											getChildren: 1,
+											id: element.id,
+											type: element.type,
+											rootID: element.rootID,
+											serverID: element.serverID,
+											rootType: element.rootType,
+											filter: controller.filter,
+											hash: public_hash,
+											id_user: public_user
+										},
+										complete: function(xhr, textStatus) {
+											$node.removeClass("leaf-loading");
+											$node.addClass("children-loaded");
+										},
+										success: function(data, textStatus, xhr) {
+											if (data.success) {
+												var $group = $node.children("ul.tree-group");
+												if ((typeof data.tree != 'undefined' && data.tree.length > 0) || $group.length > 0) {
+													$node.addClass("leaf-open");
+
+													if ($group.length <= 0) {
+														$group = $("<ul></ul>");
+														$group
+															.addClass("tree-group")
+															.hide();
+														$node.append($group);
+													}
+
+													_.each(data.tree, function(element) {
+														element.jqObject = _processNode($group, element);
+													});
+
+													$group.slideDown();
+
+													$node.data('children', $group);
+
+													// Add again the hover event to the 'force_callback' elements
+													forced_title_callback();
+												}
+												else {
+													$node.addClass("leaf-empty");
+												}
+											}
+											else {
+												$node.addClass("leaf-error");
+											}
+										},
+										error: function(xhr, textStatus, errorThrown) {
+											$node.addClass("leaf-error");
+										}
+									});
 								}
-							}
-						});
+								else if (! $node.hasClass("leaf-empty")) {
+									if ($node.hasClass("leaf-open")) {
+										$node
+											.removeClass("leaf-open")
+											.addClass("leaf-closed")
+											.data('children')
+												.slideUp();
+									}
+									else {
+										$node
+											.removeClass("leaf-closed")
+											.addClass("leaf-open")
+											.data('children')
+												.slideDown();
+									}
+								}
+							});
+						}
 					}
 
 					return $node;

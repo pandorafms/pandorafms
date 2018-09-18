@@ -2372,6 +2372,7 @@ CREATE TABLE IF NOT EXISTS `tpolicy_modules_inventory` (
 	`username` varchar(100) default '',
 	`password` varchar(100) default '',
 	`pending_delete` tinyint(1) default '0',
+	`custom_fields` MEDIUMBLOB NOT NULL,
 	PRIMARY KEY  (`id`),
 	FOREIGN KEY (`id_policy`) REFERENCES tpolicies(`id`)
 		ON UPDATE CASCADE ON DELETE CASCADE,
@@ -3338,3 +3339,14 @@ CREATE TABLE IF NOT EXISTS `tlayout_template_data` (
 	FOREIGN KEY (`id_layout_template`) REFERENCES tlayout_template(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
+-- ---------------------------------------------------------------------
+-- Table `tlog_graph_models`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tlog_graph_models` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`title` TEXT NOT NULL,
+	`regexp` TEXT NOT NULL,
+	`fields` TEXT NOT NULL,
+	`average` tinyint(1) NOT NULL default '0',
+	PRIMARY KEY(`id`)
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;

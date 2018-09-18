@@ -2879,8 +2879,7 @@ function reporting_alert_get_fired($id_agent_module, $id_alert_template_module, 
 	$empty = '----------------------------';
 	if (empty($firedTimes)) {
 		$firedTimes = array();
-		$empty = _('There are no alerts defined');
-		$firedTimes[0]['timestamp'] = '';
+		$firedTimes[0]['timestamp'] = $empty;
 	}
 
 	foreach ($firedTimes as $fireTime) {

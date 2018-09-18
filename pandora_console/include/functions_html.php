@@ -2504,4 +2504,24 @@ function html_print_sort_arrows ($params, $order_tag, $up = 'up', $down = 'down'
 		'</a>'
 	;
 }
+
+/**
+ * Print an input hidden with a new csrf token generated
+ */
+function html_print_csrf_hidden () {
+	html_print_input_hidden('csrf_code', generate_csrf_code());
+}
+
+/**
+ * Print an error if csrf is incorrect
+ */
+function html_print_csrf_error () {
+	if (validate_csrf_code()) return false;
+
+	ui_print_error_message (
+		__('%s cannot verify the origin of the request. Try again, please.',
+			get_product_name())
+	);
+	return true;
+}
 ?>

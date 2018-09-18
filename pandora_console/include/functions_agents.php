@@ -966,12 +966,12 @@ function agents_get_group_agents (
 	$filter['order'] = 'alias';
 	
 	if (is_metaconsole()) {
-		$table_name = 'tmetaconsole_agent LEFT JOIN tmetaconsole_agent_secondary_group ON ta.id_agente = tasg.id_agent';
+		$table_name = 'tmetaconsole_agent ta LEFT JOIN tmetaconsole_agent_secondary_group tasg ON ta.id_agente = tasg.id_agent';
 
 		$fields = array(
-				'id_tagente AS id_agente',
+				'ta.id_tagente AS id_agente',
 				'alias',
-				'id_tmetaconsole_setup AS id_server'
+				'ta.id_tmetaconsole_setup AS id_server'
 			);
 	}
 	else {
@@ -2684,6 +2684,9 @@ function agents_generate_name ($alias, $address = '') {
  * @return Array with the main and secondary groups
  */
 function agents_get_all_groups_agent ($id_agent, $group = false) {
+	// Cache the agent id groups
+	static $cache = array();
+	if (isset($cache[$id_agent])) return $cache[$id_agent];
 	// Get the group if is not defined
 	if ($group === false) $group = agents_get_agent_group($id_agent);
 
@@ -2697,6 +2700,7 @@ function agents_get_all_groups_agent ($id_agent, $group = false) {
 
 	// Add a list of groups
 	$secondary_groups['plain'][] = $group;
+	$cache[$id_agent] = $secondary_groups['plain'];
 	return $secondary_groups['plain'];
 }
 
@@ -2737,5 +2741,34 @@ function agents_check_access_agent ($id_agent, $access = "AR") {
 	if (agents_check_agent_exists($id_agent)) return false;
 	// Return null otherwise
 	return null;
+}
+
+function agents_get_status_clause($state, $show_not_init = true) {
+	switch ($state) {
+		case AGENT_STATUS_CRITICAL:
+			return "(ta.critical_count > 0)";
+		case AGENT_STATUS_WARNING:
+			return "(ta.warning_count > 0 AND ta.critical_count = 0)";
+		case AGENT_STATUS_UNKNOWN:
+			return "(
+				ta.critical_count = 0 AND ta.warning_count = 0 AND ta.unknown_count > 0
+			)";
+		case AGENT_STATUS_NOT_INIT:
+			return $show_not_init
+				? "(ta.total_count = ta.notinit_count)"
+				: "1=0";
+		case AGENT_STATUS_NORMAL:
+			return "(
+				ta.critical_count = 0 AND ta.warning_count = 0
+				AND ta.unknown_count = 0 AND ta.normal_count > 0
+			)";
+		case AGENT_STATUS_ALL:
+		default:
+			return $show_not_init
+				? "1=1"
+				: "(ta.total_count <> ta.notinit_count)";
+	}
+	// If the state is not an expected state, return no condition
+	return "1=1";
 }
 ?>

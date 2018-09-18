@@ -284,7 +284,7 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 		set_watermark(graph_id, plot,
 			$('#watermark_image_' + graph_id).attr('src'));
 	}
-
+/*
 	window.onresize = function(event) {
         $.plot($('#' + graph_id), data, conf_pie);
         if (no_data == data.length) {
@@ -319,7 +319,7 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 			$(this).css('transform', "rotate(-35deg)").css('color', 'black');
 		});
     }
-
+*/
 }
 
 function pandoraFlotHBars(graph_id, values, labels, water_mark,
@@ -1673,7 +1673,9 @@ function pandoraFlotArea( graph_id, values, legend,
 
 	// Re-calculate the graph height with the legend height
 	if (dashboard || vconsole) {
-		var hDiff = $('#'+graph_id).height() - $('#legend_'+graph_id).height();
+		$acum = 0;
+		if(dashboard) $acum = 35;
+		var hDiff = $('#'+graph_id).height() - $('#legend_'+graph_id).height() - $acum;
 		if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ){
 		}
 		else {
@@ -2169,10 +2171,11 @@ function pandoraFlotArea( graph_id, values, legend,
 		}
 	});
 
-	$('#'+graph_id).bind('mouseout',resetInteractivity(vconsole));
-
 	if(!vconsole){
-		$('#overview_'+graph_id).bind('mouseout',resetInteractivity);
+		$('#'+graph_id)
+			.bind('mouseout', resetInteractivity);
+		$('#overview_'+graph_id)
+			.bind('mouseout', resetInteractivity);
 	}
 
 	if(image_treshold){
@@ -2216,7 +2219,7 @@ function pandoraFlotArea( graph_id, values, legend,
 	}
 
 	// Reset interactivity styles
-	function resetInteractivity(vconsole) {
+	function resetInteractivity() {
 		$('#timestamp_'+graph_id).hide();
 		dataset = plot.getData();
 		for (i = 0; i < dataset.length; ++i) {
@@ -2225,14 +2228,15 @@ function pandoraFlotArea( graph_id, values, legend,
 			$('#legend_' + graph_id + ' .legendLabel')
 				.eq(i).html(label_aux);
 		}
-		$('#legend_' + graph_id + ' .legendLabel').css('color', legend_color);
-		$('#legend_' + graph_id + ' .legendLabel').css('font-size', font_size + 2 +'px');
-		$('#legend_' + graph_id + ' .legendLabel').css('font-family', font + 'Font');
+		$('#legend_' + graph_id + ' .legendLabel')
+			.css('color', legend_color);
+		$('#legend_' + graph_id + ' .legendLabel')
+			.css('font-size', font_size + 2 +'px');
+		$('#legend_' + graph_id + ' .legendLabel')
+			.css('font-family', font + 'Font');
 
 		plot.clearCrosshair();
-		if(!vconsole){
-			overview.clearCrosshair();
-		}
+		overview.clearCrosshair();
 	}
 
 	function yFormatter(v, axis) {

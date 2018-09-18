@@ -19,16 +19,30 @@ class Tree {
 	protected $id = -1;
 	protected $rootID = -1;
 	protected $serverID = false;
+	protected $serverName = '';
 	protected $tree = array();
 	protected $filter = array();
 	protected $childrenMethod = "on_demand";
 
 	protected $userGroupsACL;
 	protected $userGroups;
+	protected $userGroupsArray;
 
-	protected $strictACL = false;
 	protected $acltags = false;
 	protected $access = false;
+
+	protected $L1fieldName = '';
+	protected $L1fieldNameSql = '';
+	protected $L1extraFields = array();
+	protected $L1inner = '';
+	protected $L1innerInside = '';
+	protected $L1orderByFinal = '';
+
+	protected $L2condition = '';
+	protected $L2conditionInside = '';
+	protected $L2inner = '';
+
+	const TV_DEFAULT_AGENT_STATUS = -1;
 
 	public function __construct($type, $rootType = '', $id = -1, $rootID = -1, $serverID = false, $childrenMethod = "on_demand", $access = 'AR') {
 
@@ -37,12 +51,16 @@ class Tree {
 		$this->id = $id;
 		$this->rootID = !empty($rootID) ? $rootID : $id;
 		$this->serverID = $serverID;
+		if (is_metaconsole()) {
+			$this->serverName = metaconsole_get_server_by_id($serverID);
+		}
 		$this->childrenMethod = $childrenMethod;
 		$this->access = $access;
 
 		$userGroupsACL = users_get_groups(false, $this->access);
 		$this->userGroupsACL = empty($userGroupsACL) ? false : $userGroupsACL;
 		$this->userGroups = $this->userGroupsACL;
+		$this->userGroupsArray = array_keys($this->userGroups);
 
 		global $config;
 		include_once($config['homedir']."/include/functions_servers.php");
@@ -52,21 +70,46 @@ class Tree {
 
 		if (is_metaconsole()) enterprise_include_once("meta/include/functions_ui_meta.php");
 
-		$this->strictACL = (bool) db_get_value("strict_acl", "tusuario", "id_user", $config['id_user']);
-		
 		$this->acltags = tags_get_user_groups_and_tags($config['id_user'], $this->access);
 	}
 
 	public function setFilter($filter) {
+		// There is not module filter in metaconsole.
+		if (is_metaconsole()) {
+			$filter['searchModule'] = "";
+			$filter['statusModule'] = self::TV_DEFAULT_AGENT_STATUS;
+		}
 		$this->filter = $filter;
 	}
 
-	protected function getAgentStatusFilter ($status = -1) {
-		if ($status == -1)
+	protected function getEmptyModuleFilterStatus() {
+		return (
+			!isset($this->filter['statusModule']) ||
+			$this->filter['statusModule'] == -1
+		);
+	}
+
+	protected function getModuleSearchFilter() {
+		if (empty($this->filter['searchModule'])) {
+			return "";
+		}
+		return " AND tam.nombre LIKE '%".$this->filter['searchModule']."%' ";
+	}
+
+	protected function getAgentSearchFilter() {
+		if (empty($this->filter['searchAgent'])) return "";
+		return " AND LOWER(ta.alias) LIKE LOWER('%".$this->filter['searchAgent']."%')";
+	}
+
+
+	protected function getAgentStatusFilter ($status = self::TV_DEFAULT_AGENT_STATUS) {
+		if ($status == self::TV_DEFAULT_AGENT_STATUS)
 			$status = $this->filter['statusAgent'];
 
 		$agent_status_filter = "";
 		switch ($status) {
+			case AGENT_STATUS_ALL:
+				break;
 			case AGENT_STATUS_NOT_INIT:
 				$agent_status_filter = " AND (ta.total_count = 0
 											OR ta.total_count = ta.notinit_count) ";
@@ -94,1301 +137,148 @@ class Tree {
 		return $agent_status_filter;
 	}
 
-	protected function getAgentCounterColumnsSql ($agent_table) {
-		// Add the agent counters to the columns
-
-		if ($this->filter['statusAgent'] == -1) {
-			// Critical
-			$agent_critical_filter = $this->getAgentStatusFilter(AGENT_STATUS_CRITICAL);
-			$agents_critical_count = "($agent_table
-										$agent_critical_filter) AS total_critical_count";
-			// Warning
-			$agent_warning_filter = $this->getAgentStatusFilter(AGENT_STATUS_WARNING);
-			$agents_warning_count = "($agent_table
-										$agent_warning_filter) AS total_warning_count";
-			// Unknown
-			$agent_unknown_filter = $this->getAgentStatusFilter(AGENT_STATUS_UNKNOWN);
-			$agents_unknown_count = "($agent_table
-										$agent_unknown_filter) AS total_unknown_count";
-			// Normal
-			$agent_normal_filter = $this->getAgentStatusFilter(AGENT_STATUS_NORMAL);
-			$agents_normal_count = "($agent_table
-										$agent_normal_filter) AS total_normal_count";
-			// Not init
-				
-				if($this->filter['show_not_init_agents']){
-					$agent_not_init_filter = $this->getAgentStatusFilter(AGENT_STATUS_NOT_INIT);
-					$agents_not_init_count = "($agent_table
-												$agent_not_init_filter) AS total_not_init_count";	
-				}
-				else{
-					$agent_not_init_filter = 0;
-					$agents_not_init_count = 0;
-				}
-
-			// Alerts fired
-			$agents_fired_count = "($agent_table
-										AND ta.fired_count > 0) AS total_fired_count";
-			// Total
-			$agents_total_count = "($agent_table) AS total_count";
-
-			$columns = "$agents_critical_count, $agents_warning_count, "
-				. "$agents_unknown_count, $agents_normal_count, $agents_not_init_count, "
-				. "$agents_fired_count, $agents_total_count";
-		}
-		else {
-			// Alerts fired
-			$agents_fired_count = "($agent_table
-										AND ta.fired_count > 0) AS total_fired_count";
-			// Total
-			$agents_total_count = "($agent_table) AS total_count";
-
-			switch ($this->filter['statusAgent']) {
-				case AGENT_STATUS_NOT_INIT:
-					// Not init
-					$agent_not_init_filter = $this->getAgentStatusFilter(AGENT_STATUS_NOT_INIT);
-					$agents_not_init_count = "($agent_table
-												$agent_not_init_filter) AS total_not_init_count";
-					$columns = "$agents_not_init_count, $agents_fired_count, $agents_total_count";
-					break;
-				case AGENT_STATUS_CRITICAL:
-					// Critical
-					$agent_critical_filter = $this->getAgentStatusFilter(AGENT_STATUS_CRITICAL);
-					$agents_critical_count = "($agent_table
-												$agent_critical_filter) AS total_critical_count";
-					$columns = "$agents_critical_count, $agents_fired_count, $agents_total_count";
-					break;
-				case AGENT_STATUS_WARNING:
-					// Warning
-					$agent_warning_filter = $this->getAgentStatusFilter(AGENT_STATUS_WARNING);
-					$agents_warning_count = "($agent_table
-												$agent_warning_filter) AS total_warning_count";
-					$columns = "$agents_warning_count, $agents_fired_count, $agents_total_count";
-					break;
-				case AGENT_STATUS_UNKNOWN:
-					// Unknown
-					$agent_unknown_filter = $this->getAgentStatusFilter(AGENT_STATUS_UNKNOWN);
-					$agents_unknown_count = "($agent_table
-												$agent_unknown_filter) AS total_unknown_count";
-					$columns = "$agents_unknown_count, $agents_fired_count, $agents_total_count";
-					break;
-				case AGENT_STATUS_NORMAL:
-					// Normal
-					$agent_normal_filter = $this->getAgentStatusFilter(AGENT_STATUS_NORMAL);
-					$agents_normal_count = "($agent_table
-												$agent_normal_filter) AS total_normal_count";
-					$columns = "$agents_normal_count, $agents_fired_count, $agents_total_count";
-					break;
-			}
-		}
-
-		return $columns;
+	protected function getFirstLevelFields() {
+		$fields = array (
+			"g AS " . $this->L1fieldName,
+			"SUM(x_critical) AS total_critical_count",
+			"SUM(x_warning) AS total_warning_count",
+			"SUM(x_normal) AS total_normal_count",
+			"SUM(x_unknown) AS total_unknown_count",
+			"SUM(x_not_init) AS total_not_init_count",
+			"SUM(x_alerts) AS total_alerts_count",
+			"SUM(x_total) AS total_count"
+		);
+		return implode(",", array_merge($fields, $this->L1extraFields));
 	}
 
-	protected function getAgentCountersSql ($agent_table) {
-		global $config;
-
-		$columns = $this->getAgentCounterColumnsSql($agent_table);
-
-		switch ($config["dbtype"]) {
-			case "mysql":
-			case "postgresql":
-				$columns = "SELECT $columns FROM dual LIMIT 1";
-				break;
-			case "oracle":
-				$columns = "SELECT $columns FROM dual WHERE rownum <= 1";
-				break;
-		}
-
-		return $columns;
+	protected function getFirstLevelFieldsInside() {
+		return array(
+			'warning' => array(
+				'header' => "0 AS x_critical, SUM(total) AS x_warning, 0 AS x_normal, 0 AS x_unknown, 0 AS x_not_init, 0 AS x_alerts, 0 AS x_total, g",
+				'condition' => "AND " . agents_get_status_clause(AGENT_STATUS_WARNING, $this->filter['show_not_init_agents'])
+			),
+			'critical' => array(
+				'header' => "SUM(total) AS x_critical, 0 AS x_warning, 0 AS x_normal, 0 AS x_unknown, 0 AS x_not_init, 0 AS x_alerts, 0 AS x_total, g",
+				'condition' => "AND " . agents_get_status_clause(AGENT_STATUS_CRITICAL, $this->filter['show_not_init_agents'])
+			),
+			'normal' => array(
+				'header' => "0 AS x_critical, 0 AS x_warning, SUM(total) AS x_normal, 0 AS x_unknown, 0 AS x_not_init, 0 AS x_alerts, 0 AS x_total, g",
+				'condition' => "AND " . agents_get_status_clause(AGENT_STATUS_NORMAL, $this->filter['show_not_init_agents'])
+			),
+			'unknown' => array(
+				'header' => "0 AS x_critical, 0 AS x_warning, 0 AS x_normal, SUM(total) AS x_unknown, 0 AS x_not_init, 0 AS x_alerts, 0 AS x_total, g",
+				'condition' => "AND " . agents_get_status_clause(AGENT_STATUS_UNKNOWN, $this->filter['show_not_init_agents'])
+			),
+			'not_init' => array(
+				'header' => "0 AS x_critical, 0 AS x_warning, 0 AS x_normal, 0 AS x_unknown, SUM(total) AS x_not_init, 0 AS x_alerts, 0 AS x_total, g",
+				'condition' => "AND " . agents_get_status_clause(AGENT_STATUS_NOT_INIT, $this->filter['show_not_init_agents'])
+			),
+			'alerts' => array(
+				'header' => "0 AS x_critical, 0 AS x_warning, 0 AS x_normal, 0 AS x_unknown, 0 AS x_not_init, SUM(total) AS x_alerts, 0 AS x_total, g",
+				'condition' => "AND ta.fired_count > 0"
+			),
+			'total' => array(
+				'header' => "0 AS x_critical, 0 AS x_warning, 0 AS x_normal, 0 AS x_unknown, 0 AS x_not_init, 0 AS x_alerts, SUM(total) AS x_total, g",
+				'condition' => "AND " . agents_get_status_clause(AGENT_STATUS_ALL, $this->filter['show_not_init_agents'])
+			)
+		);
 	}
 
-	protected function getSql ($item_for_count = false) {
-		// Get the type
-		if (empty($this->type))
-			$type = 'none';
-		else
-			$type = $this->type;
-
-		// Get the root type
-		if (empty($this->rootType))
-			$rootType = 'none';
-		else
-			$rootType = $this->rootType;
-
-		// Get the parent
-		$parent = $this->id;
-
-		// Get the root id
-		$rootID = $this->rootID;
-
-		// Get the server id
-		$serverID = $this->serverID;
-
-		// Agent name filter
-		$agent_search_filter = "";
-		if (!empty($this->filter['searchAgent'])) {
-			$agent_search_filter = " AND LOWER(ta.alias) LIKE LOWER('%".$this->filter['searchAgent']."%')";
-		}
-
-		//Search hirearchy
-		$search_hirearchy = false;
-		if($this->filter['searchHirearchy']){
-			$search_hirearchy = true;
-		}
-
-		// Agent status filter
-		$agent_status_filter = "";
-		if (isset($this->filter['statusAgent'])
-				&& $this->filter['statusAgent'] != AGENT_STATUS_ALL
-				&& !$this->strictACL) {
-			$agent_status_filter = $this->getAgentStatusFilter($this->filter['statusAgent']);
-		}
-
-		// Agents join
-		$agents_join = "";
-		if (!empty($agent_search_filter) || !empty($agent_status_filter)) {
-			$agents_join = "INNER JOIN tagente ta
-								ON ta.disabled = 0
-									AND tam.id_agente = ta.id_agente
-									$agent_search_filter
-									$agent_status_filter";
-		}
-
-		// Module name filter
-		$module_search_filter = "";
-		if (!empty($this->filter['searchModule'])) {
-			$module_search_filter = " AND tam.nombre LIKE '%".$this->filter['searchModule']."%' ";
-		}
-
-		// Module status filter
-		$module_status_filter = "";
-		if (isset($this->filter['statusModule'])
-				&& $this->filter['statusModule'] != -1) {
-
-			switch ($this->filter['statusModule']) {
-				case AGENT_MODULE_STATUS_CRITICAL_ALERT:
-				case AGENT_MODULE_STATUS_CRITICAL_BAD:
-					$module_status_filter = " AND (tae.estado = ".AGENT_MODULE_STATUS_CRITICAL_ALERT."
-												OR tae.estado = ".AGENT_MODULE_STATUS_CRITICAL_BAD.") ";
-					break;
-				case AGENT_MODULE_STATUS_WARNING_ALERT:
-				case AGENT_MODULE_STATUS_WARNING:
-					$module_status_filter = " AND (tae.estado = ".AGENT_MODULE_STATUS_WARNING_ALERT."
-												OR tae.estado = ".AGENT_MODULE_STATUS_WARNING.") ";
-					break;
-				case AGENT_MODULE_STATUS_UNKNOWN:
-					$module_status_filter = " AND tae.estado = ".AGENT_MODULE_STATUS_UNKNOWN." ";
-					break;
-				case AGENT_MODULE_STATUS_NO_DATA:
-				case AGENT_MODULE_STATUS_NOT_INIT:
-					$module_status_filter = " AND (tae.estado = ".AGENT_MODULE_STATUS_NO_DATA."
-												OR tae.estado = ".AGENT_MODULE_STATUS_NOT_INIT.") ";
-					break;
-				case AGENT_MODULE_STATUS_NORMAL_ALERT:
-				case AGENT_MODULE_STATUS_NORMAL:
-					$module_status_filter = " AND (tae.estado = ".AGENT_MODULE_STATUS_NORMAL_ALERT."
-												OR tae.estado = ".AGENT_MODULE_STATUS_NORMAL.") ";
-					break;
-			}
-		}
-
-		// Modules join
-		$modules_join = "";
-		$module_status_join = "";
-		if (!empty($module_search_filter) || !empty($module_status_filter) || !$this->filter['show_not_init_agents']) {
-
-			if (!empty($module_status_filter) || !$this->filter['show_not_init_agents']) {
-				$module_status_join = "INNER JOIN tagente_estado tae
-										ON tam.id_agente_modulo IS NOT NULL
-											AND tam.id_agente_modulo = tae.id_agente_modulo
-											$module_status_filter";
-											
-				if(!$this->filter['show_not_init_modules'] || ($this->filter['show_not_init_modules'] && !$this->filter['show_not_init_agents'])){
-					if($type != 'agent' || ($type == 'agent' && !$this->filter['show_not_init_modules'] && !$this->filter['show_not_init_agents'])){
-					$module_status_join .= ' AND tae.estado <> '.AGENT_MODULE_STATUS_NO_DATA.'  AND	tae.estado <> '.AGENT_MODULE_STATUS_NOT_INIT.' ';	
-					}
-				}
-			}
-
-			$modules_join = "INNER JOIN tagente_modulo tam
-								ON tam.disabled = 0
-									AND ta.id_agente = tam.id_agente
-									$module_search_filter
-							$module_status_join";
-		}
-
-		if (empty($module_status_join)) {
-			if(!$this->filter['show_not_init_modules'] || !$this->filter['show_not_init_agents']){
-				if($type == "agent"){
-					$module_status_join = 'INNER JOIN tagente_estado tae
-											ON tam.id_agente_modulo = tae.id_agente_modulo  ';
-				}
-				else{
-					$module_status_join = 'LEFT JOIN tagente_estado tae
-											ON tam.id_agente_modulo = tae.id_agente_modulo  ';	
-				}
-			
-				$module_status_join .= ' AND 1=1 AND	tae.estado <> '.AGENT_MODULE_STATUS_NO_DATA.'  AND	tae.estado <> '.AGENT_MODULE_STATUS_NOT_INIT.' ';
-			}
-			else{
-				$module_status_join = 'LEFT JOIN tagente_estado tae
-										ON tam.id_agente_modulo = tae.id_agente_modulo  ';	
-			}
-		}
-
-		$sql = false;
-
-		switch ($rootType) {
-			case 'group':
-				// ACL Group
-				$user_groups_str = "-1";
-				$group_filter =  "";
-
-				if (empty($this->userGroups)) {
-					return;
-				}
-
-				// Asking for a specific group.
-				if ($item_for_count !== false) {
-					if (!isset($this->userGroups[$item_for_count])) {
-						return;
-					}
-				}
-				// Asking for all groups.
-				else {
-					$user_groups_str = implode(",", array_keys($this->userGroups));
-					$group_filter = "AND (
-						ta.id_grupo IN ($user_groups_str)
-						OR tasg.id_group IN ($user_groups_str)
-					)";
-				}
-
-				if(!$search_hirearchy && (!empty($agent_search_filter) || !empty($module_search_filter))){
-					
-					if(is_metaconsole()){
-						$id_groups_agents = db_get_all_rows_sql(
-							" SELECT DISTINCT(ta.id_grupo)
-								FROM tmetaconsole_agent ta
-								LEFT JOIN tmetaconsole_agent_secondary_group tasg
-									ON ta.id_agente = tasg.id_agent
-								WHERE ta.disabled = 0
-								$agent_search_filter"
-						);
-						$id_secondary_groups_agents = db_get_all_rows_sql(
-							" SELECT DISTINCT(tasg.id_group)
-								FROM tmetaconsole_agent ta
-								LEFT JOIN tmetaconsole_agent_secondary_group tasg
-									ON ta.id_agente = tasg.id_agent
-								WHERE ta.disabled = 0
-								$agent_search_filter"
-						);
-					}
-					else{
-						$id_groups_agents = db_get_all_rows_sql(
-							" SELECT DISTINCT(ta.id_grupo)
-								FROM tagente ta
-								LEFT JOIN tagent_secondary_group tasg
-									ON ta.id_agente = tasg.id_agent
-								, tagente_modulo tam
-								WHERE tam.id_agente = ta.id_agente
-								AND ta.disabled = 0
-								$agent_search_filter
-								$module_search_filter"
-						);
-						$id_secondary_groups_agents = db_get_all_rows_sql(
-							" SELECT DISTINCT(tasg.id_group)
-								FROM tagente ta
-								LEFT JOIN tagent_secondary_group tasg
-									ON ta.id_agente = tasg.id_agent
-								, tagente_modulo tam
-								WHERE tam.id_agente = ta.id_agente
-								AND ta.disabled = 0
-								$agent_search_filter
-								$module_search_filter"
-						);
-					}
-					
-					if($id_groups_agents != false){
-						foreach	($id_groups_agents as $key => $value) {
-							$id_groups_agents_array[$value['id_grupo']] = $value['id_grupo'];
-						}
-						foreach	($id_secondary_groups_agents as $key => $value) {
-							$id_groups_agents_array[$value['id_group']] = $value['id_group'];
-						}
-						$user_groups_array = explode(",", $user_groups_str);
-						$user_groups_array = array_intersect($user_groups_array, $id_groups_agents_array);
-						$user_groups_str = implode("," , $user_groups_array);
-					}
-					else{
-						$user_groups_str = false;
-					}
-				}
-
-				switch ($type) {
-					// Get the agents of a group
-					case 'group':
-						if (empty($rootID) || $rootID == -1) {
-							if(!$search_hirearchy && (!empty($agent_search_filter) || !empty($module_search_filter))){
-								$columns = 'tg.id_grupo AS id, tg.nombre AS name, tg.icon';
-							}
-							else{
-								$columns = 'tg.id_grupo AS id, tg.nombre AS name, tg.parent, tg.icon';
-							}
-
-							$order_fields = 'tg.nombre ASC, tg.id_grupo ASC';
-
-							if (! is_metaconsole()) {
-								// Groups SQL
-								if ($item_for_count === false) {
-									$sql = "SELECT $columns
-											FROM tgrupo tg
-											WHERE tg.id_grupo IN ($user_groups_str)
-											ORDER BY $order_fields";
-								}
-								// Counters SQL
-								else {
-									$agent_table = "SELECT COUNT(DISTINCT(ta.id_agente))
-													FROM tagente ta
-													LEFT JOIN tagent_secondary_group tasg
-														ON ta.id_agente=tasg.id_agent
-													LEFT JOIN tagente_modulo tam
-														ON tam.disabled = 0
-															AND ta.id_agente = tam.id_agente
-															$module_search_filter
-													$module_status_join
-													WHERE ta.disabled = 0
-														AND (
-															ta.id_grupo = $item_for_count
-															OR tasg.id_group = $item_for_count
-														)
-														$group_filter
-														$agent_search_filter
-														$agent_status_filter";
-									$sql = $this->getAgentCountersSql($agent_table);
-								}
-							}
-							// Metaconsole
-							else {
-								// Groups SQL
-								if ($item_for_count === false) {
-									$sql = "SELECT $columns
-											FROM tgrupo tg
-											WHERE tg.id_grupo IN ($user_groups_str)
-											ORDER BY $order_fields";
-								}
-								// Counters SQL
-								else {
-									$agent_table = "SELECT COUNT(DISTINCT(ta.id_agente))
-													FROM tmetaconsole_agent ta
-													LEFT JOIN tmetaconsole_agent_secondary_group tasg
-														ON ta.id_agente = tasg.id_agent
-													WHERE ta.disabled = 0
-														AND (
-															ta.id_grupo = $item_for_count
-															OR tasg.id_group = $item_for_count
-														)
-														$group_filter
-														$agent_search_filter
-														$agent_status_filter";
-									$sql = $this->getAgentCountersSql($agent_table);
-								}
-							}
-						}
-						else {
-							if (! is_metaconsole()) {
-								$columns = 'ta.id_agente AS id, ta.nombre AS name, ta.alias,
-									ta.fired_count, ta.normal_count, ta.warning_count,
-									ta.critical_count, ta.unknown_count, ta.notinit_count,
-									ta.total_count, ta.quiet';
-								$group_by_fields = 'ta.id_agente, ta.nombre, ta.alias,
-									ta.fired_count, ta.normal_count, ta.warning_count,
-									ta.critical_count, ta.unknown_count, ta.notinit_count,
-									ta.total_count, ta.quiet';
-								$order_fields = 'ta.alias ASC, ta.id_agente ASC';
-
-								$sql = "SELECT $columns
-										FROM tagente ta
-										LEFT JOIN tagent_secondary_group tasg
-											ON tasg.id_agent = ta.id_agente
-										LEFT JOIN tagente_modulo tam
-											ON tam.disabled = 0
-												AND ta.id_agente = tam.id_agente
-												$module_search_filter
-										$module_status_join
-										WHERE ta.disabled = 0
-											AND (
-												ta.id_grupo = $rootID
-												OR tasg.id_group = $rootID
-											)
-											$group_filter
-											$agent_search_filter
-											$agent_status_filter
-										GROUP BY $group_by_fields
-										ORDER BY $order_fields";
-							}
-							else {
-								$columns = 'ta.id_tagente AS id, ta.nombre AS name, ta.alias,
-									ta.fired_count, ta.normal_count, ta.warning_count,
-									ta.critical_count, ta.unknown_count, ta.notinit_count,
-									ta.total_count, ta.quiet, ta.id_tmetaconsole_setup AS server_id';
-								$order_fields = 'ta.alias ASC, ta.id_tagente ASC';
-
-								$sql = "SELECT $columns
-										FROM tmetaconsole_agent ta
-										LEFT JOIN tmetaconsole_agent_secondary_group tasg
-											ON ta.id_agente = tasg.id_agent
-										WHERE ta.disabled = 0
-											AND  (
-												ta.id_grupo = $rootID
-												OR tasg.id_group = $rootID
-											)
-											$group_filter
-											$agent_search_filter
-											$agent_status_filter
-										GROUP BY ta.id_agente
-										ORDER BY $order_fields";
-							}
-						}
-						break;
-					// Get the modules of an agent
-					case 'agent':
-						$columns = 'tam.id_agente_modulo AS id, 
-							tam.parent_module_id AS parent, 
-							tam.nombre AS name, tam.id_tipo_modulo, 
-							tam.id_modulo, tae.estado, tae.datos';
-						$order_fields = 'tam.nombre ASC, tam.id_agente_modulo ASC';
-
-						// Set for the common ACL only. The strict ACL case is different (groups and tags divided).
-						// The modules only have visibility in two cases:
-						// 1. The user has access to the group of its agent and this group hasn't tags.
-						// 2. The user has access to the group of its agent, this group has tags and the module
-						// has any of this tags.
-						$tag_join = '';
-						if (!$this->strictACL) {
-							// $rootID it the agent group id in this case
-							if (!empty($this->acltags) && isset($this->acltags[$rootID])) {
-								$tags_str = $this->acltags[$rootID];
-
-								if (!empty($tags_str)) {
-									$tag_join = sprintf('INNER JOIN ttag_module ttm
-																ON tam.id_agente_modulo = ttm.id_agente_modulo
-																	AND ttm.id_tag IN (%s)', $tags_str);
-								}
-							}
-						}
-
-						$sql = "SELECT DISTINCT $columns
-								FROM tagente_modulo tam
-								$tag_join
-								$module_status_join
-								INNER JOIN tagente ta
-									ON ta.disabled = 0
-								LEFT JOIN tagent_secondary_group tasg
-									ON ta.id_agente = tasg.id_agent
-										AND tam.id_agente = ta.id_agente
-										AND ta.id_grupo = $rootID
-										$group_filter
-										$agent_search_filter
-										$agent_status_filter
-								WHERE tam.disabled = 0
-									AND tam.id_agente = $parent
-									$module_search_filter
-								ORDER BY $order_fields";
-						break;
-				}
-				break;
-			case 'tag':
-				// ACL Group
-				$group_acl =  "";
-				if (!$this->strictACL) {
-					if (!empty($this->userGroups)) {
-						$user_groups_str = implode(",", array_keys($this->userGroups));
-						$group_acl = " AND ta.id_grupo IN ($user_groups_str) ";
-					}
-					else {
-						$group_acl = "AND ta.id_grupo = -1";
-					}
-				}
-				else {
-					if (!empty($this->acltags) && !empty($rootID) && $rootID != -1) {
-						$groups = array();
-						foreach ($this->acltags as $group_id => $tags_str) {
-							if (!empty($tags_str)) {
-								$tags = explode(",", $tags_str);
-
-								if (in_array($rootID, $tags)) {
-									$hierarchy_groups = groups_get_id_recursive($group_id);
-									$groups = array_merge($groups, $hierarchy_groups);
-								}
-							}
-						}
-						if (!empty($groups)) {
-							if (array_search(0, $groups) === false) {
-								$user_groups_str = implode(",", $groups);
-								$group_acl = " AND ta.id_grupo IN ($user_groups_str) ";
-							}
-						}
-						else {
-							$group_acl = "AND ta.id_grupo = -1";
-						}
-					}
-					else {
-						$group_acl = "AND ta.id_grupo = -1";
-					}
-				}
-
-				switch ($type) {
-					// Get the agents of a tag
-					case 'tag':
-						if (empty($rootID) || $rootID == -1) {
-							if ($this->strictACL)
-								return false;
-
-							// tagID filter. To access the view from tactical views f.e.
-							$tag_filter = '';
-							if (!empty($this->filter['tagID'])) {
-								$tag_filter = "WHERE tt.id_tag = " . $this->filter['tagID'];
-							}
-
-							$columns = 'tt.id_tag AS id, tt.name AS name';
-							$group_by_fields = 'tt.id_tag, tt.name';
-							$order_fields = 'tt.name ASC, tt.id_tag ASC';
-
-							// Tags SQL
-							if ($item_for_count === false) {
-								$sql = "SELECT $columns
-										FROM ttag tt
-										INNER JOIN ttag_module ttm
-											ON tt.id_tag = ttm.id_tag
-										INNER JOIN tagente_modulo tam
-											ON tam.disabled = 0
-												AND ttm.id_agente_modulo = tam.id_agente_modulo
-												$module_search_filter
-										$module_status_join
-										INNER JOIN tagente ta
-											ON ta.disabled = 0
-											AND tam.id_agente = ta.id_agente
-											$group_acl
-											$agent_search_filter
-											$agent_status_filter
-										$tag_filter
-										GROUP BY $group_by_fields
-										ORDER BY $order_fields";
-							}
-							// Counters SQL
-							else {
-								$agent_table = "SELECT COUNT(DISTINCT(ta.id_agente))
-												FROM tagente ta
-												INNER JOIN tagente_modulo tam
-													ON tam.disabled = 0
-														AND ta.id_agente = tam.id_agente
-														$module_search_filter
-												$module_status_join
-												INNER JOIN ttag_module ttm
-													ON tam.id_agente_modulo = ttm.id_agente_modulo
-														AND ttm.id_tag = $item_for_count
-												WHERE ta.disabled = 0
-													$group_acl
-													$agent_search_filter
-													$agent_status_filter";
-								$sql = $this->getAgentCountersSql($agent_table);
-							}
-						}
-						else {
-							$columns = 'ta.id_agente AS id, ta.nombre AS name, ta.alias,
-								ta.fired_count, ta.normal_count, ta.warning_count,
-								ta.critical_count, ta.unknown_count, ta.notinit_count,
-								ta.total_count, ta.quiet';
-							$group_by_fields = 'ta.id_agente, ta.nombre, ta.alias,
-								ta.fired_count, ta.normal_count, ta.warning_count,
-								ta.critical_count, ta.unknown_count, ta.notinit_count,
-								ta.total_count, ta.quiet';
-							$order_fields = 'ta.alias ASC, ta.id_agente ASC';
-
-							$sql = "SELECT $columns
-									FROM tagente ta
-									INNER JOIN tagente_modulo tam
-										ON tam.disabled = 0
-											AND ta.id_agente = tam.id_agente
-											$module_search_filter
-									$module_status_join
-									INNER JOIN ttag_module ttm
-										ON tam.id_agente_modulo = ttm.id_agente_modulo
-											AND ttm.id_tag = $rootID
-									WHERE ta.disabled = 0
-										$group_acl
-										$agent_search_filter
-										$agent_status_filter
-									GROUP BY $group_by_fields
-									ORDER BY $order_fields";
-						}
-						break;
-					// Get the modules of an agent
-					case 'agent':
-						$columns = 'tam.id_agente_modulo AS id, tam.nombre AS name,
-							tam.id_tipo_modulo, tam.id_modulo, tae.estado, tae.datos';
-						$order_fields = 'tam.nombre ASC, tam.id_agente_modulo ASC';
-
-						// Set for the common ACL only. The strict ACL case is different (groups and tags divided).
-						// The modules only have visibility in two cases:
-						// 1. The user has access to the group of its agent and this group hasn't tags.
-						// 2. The user has access to the group of its agent, this group has tags and the module
-						// has any of this tags.
-						$tag_filter = '';
-						if (!$this->strictACL) {
-							// $parent is the agent id
-							$group_id = (int) db_get_value('id_grupo', 'tagente', 'id_agente', $parent);
-							if (empty($group_id)) {
-								// ACL error, this will restrict (fuck) the module search
-								$tag_filter = 'AND 1=0';
-							}
-							else if (!empty($this->acltags) && isset($this->acltags[$group_id])) {
-								$tags_str = $this->acltags[$group_id];
-
-								if (!empty($tags_str)) {
-									$tag_filter = sprintf('AND ttm.id_tag IN (%s)', $tags_str);
-								}
-							}
-						}
-
-						$sql = "SELECT $columns
-								FROM tagente_modulo tam
-								INNER JOIN ttag_module ttm
-									ON tam.id_agente_modulo = ttm.id_agente_modulo
-										AND ttm.id_tag = $rootID
-										$tag_filter
-								$module_status_join
-								INNER JOIN tagente ta
-									ON ta.disabled = 0
-										AND tam.id_agente = ta.id_agente
-										$group_acl
-										$agent_search_filter
-										$agent_status_filter
-								WHERE tam.disabled = 0
-									AND tam.id_agente = $parent
-									$module_search_filter
-								ORDER BY $order_fields";
-						break;
-				}
-				break;
-			case 'os':
-				// ACL Group
-				$group_acl =  "";
-				if (!empty($this->userGroups)) {
-					$user_groups_str = implode(",", array_keys($this->userGroups));
-					$group_acl = " AND ta.id_grupo IN ($user_groups_str) ";
-				}
-				else {
-					$group_acl = "AND ta.id_grupo = -1";
-				}
-
-				switch ($type) {
-					// Get the agents of an os
-					case 'os':
-						if (empty($rootID) || $rootID == -1) {
-							$columns = 'tos.id_os AS id, tos.name AS name, tos.icon_name AS os_icon';
-							$group_by_fields = 'tos.id_os, tos.name, tos.icon_name';
-							$order_fields = 'tos.icon_name ASC, tos.id_os ASC';
-
-							// OS SQL
-							if ($item_for_count === false) {
-								$sql = "SELECT $columns
-										FROM tconfig_os tos
-										INNER JOIN tagente ta
-											ON ta.disabled = 0
-												AND ta.id_os = tos.id_os
-												$agent_search_filter
-												$agent_status_filter
-												$group_acl
-										$modules_join
-										GROUP BY $group_by_fields
-										ORDER BY $order_fields";
-							}
-							// Counters SQL
-							else {
-								$agent_table = "SELECT COUNT(DISTINCT(ta.id_agente))
-												FROM tagente ta
-												$modules_join
-												WHERE ta.disabled = 0
-													AND ta.id_os = $item_for_count
-													$group_acl
-													$agent_search_filter
-													$agent_status_filter";
-								$sql = $this->getAgentCountersSql($agent_table);
-							}
-						}
-						else {
-							$columns = 'ta.id_agente AS id, ta.nombre AS name, ta.alias,
-								ta.fired_count, ta.normal_count, ta.warning_count,
-								ta.critical_count, ta.unknown_count, ta.notinit_count,
-								ta.total_count, ta.quiet';
-							$group_by_fields = 'ta.id_agente, ta.nombre, ta.alias,
-								ta.fired_count, ta.normal_count, ta.warning_count,
-								ta.critical_count, ta.unknown_count, ta.notinit_count,
-								ta.total_count, ta.quiet';
-							$order_fields = 'ta.alias ASC, ta.id_agente ASC';
-
-							$sql = "SELECT $columns
-									FROM tagente ta
-									$modules_join
-									WHERE ta.disabled = 0
-										AND ta.id_os = $rootID
-										$group_acl
-										$agent_search_filter
-										$agent_status_filter
-									GROUP BY $group_by_fields
-									ORDER BY $order_fields";
-						}
-						break;
-					// Get the modules of an agent
-					case 'agent':
-						$columns = 'tam.id_agente_modulo AS id, tam.nombre AS name,
-							tam.id_tipo_modulo, tam.id_modulo, tae.estado, tae.datos';
-						$order_fields = 'tam.nombre ASC, tam.id_agente_modulo ASC';
-
-						$os_filter = "AND ta.id_os = $rootID";
-						$agent_filter = "AND ta.id_agente = $parent";
-
-						// Set for the common ACL only. The strict ACL case is different (groups and tags divided).
-						// The modules only have visibility in two cases:
-						// 1. The user has access to the group of its agent and this group hasn't tags.
-						// 2. The user has access to the group of its agent, this group has tags and the module
-						// has any of this tags.
-						$tag_join = '';
-						if (!$this->strictACL) {
-							// $parent is the agent id
-							$group_id = (int) db_get_value('id_grupo', 'tagente', 'id_agente', $parent);
-							if (empty($group_id)) {
-								// ACL error, this will restrict (fuck) the module search
-								$tag_join = 'INNER JOIN ttag_module tta
-												ON 1=0';
-							}
-							else if (!empty($this->acltags) && isset($this->acltags[$group_id])) {
-								$tags_str = $this->acltags[$group_id];
-
-								if (!empty($tags_str)) {
-									$tag_join = sprintf('INNER JOIN ttag_module ttm
-																ON tam.id_agente_modulo = ttm.id_agente_modulo
-																	AND ttm.id_tag IN (%s)', $tags_str);
-								}
-							}
-						}
-
-						$sql = "SELECT $columns
-								FROM tagente_modulo tam
-								$tag_join
-								$module_status_join
-								INNER JOIN tagente ta
-									ON ta.disabled = 0
-										AND tam.id_agente = ta.id_agente
-										$os_filter
-										$group_acl
-										$agent_search_filter
-										$agent_status_filter
-								WHERE tam.disabled = 0
-									$agent_filter
-									$module_search_filter
-								ORDER BY $order_fields";
-						break;
-				}
-				break;
-			case 'module_group':
-				// ACL Group
-				$group_acl =  "";
-				if (!empty($this->userGroups)) {
-					$user_groups_str = implode(",", array_keys($this->userGroups));
-					$group_acl = " AND ta.id_grupo IN ($user_groups_str) ";
-				}
-				else {
-					$group_acl = "AND ta.id_grupo = -1";
-				}
-
-				switch ($type) {
-					// Get the agents of a module group
-					case 'module_group':
-						if (empty($rootID) || $rootID == -1) {
-							$columns = 'tmg.id_mg AS id, tmg.name AS name';
-							$group_by_fields = 'tmg.id_mg, tmg.name';
-							$order_fields = 'tmg.name ASC, tmg.id_mg ASC';
-
-							// Module groups SQL
-							if ($item_for_count === false) {
-								$sql = "SELECT $columns
-										FROM tmodule_group tmg
-										INNER JOIN tagente_modulo tam
-											ON tam.disabled = 0
-												AND tam.id_module_group = tmg.id_mg
-												$module_search_filter
-										$module_status_join
-										INNER JOIN tagente ta
-											ON ta.disabled = 0
-												AND tam.id_agente = ta.id_agente
-												$group_acl
-												$agent_search_filter
-												$agent_status_filter
-										GROUP BY $group_by_fields
-										ORDER BY $order_fields";
-							}
-							// Counters SQL
-							else {
-								$agent_table = "SELECT COUNT(DISTINCT(ta.id_agente))
-												FROM tagente ta
-												INNER JOIN tagente_modulo tam
-													ON tam.disabled = 0
-														AND ta.id_agente = tam.id_agente
-														AND tam.id_module_group = $item_for_count
-														$module_search_filter
-												$module_status_join
-												WHERE ta.disabled = 0
-													$group_acl
-													$agent_search_filter
-													$agent_status_filter";
-								$sql = $this->getAgentCountersSql($agent_table);
-							}
-						}
-						else {
-							$columns = 'ta.id_agente AS id, ta.nombre AS name, ta.alias,
-								ta.fired_count, ta.normal_count, ta.warning_count,
-								ta.critical_count, ta.unknown_count, ta.notinit_count,
-								ta.total_count, ta.quiet';
-							$group_by_fields = 'ta.id_agente, ta.nombre, ta.alias,
-								ta.fired_count, ta.normal_count, ta.warning_count,
-								ta.critical_count, ta.unknown_count, ta.notinit_count,
-								ta.total_count, ta.quiet';
-							$order_fields = 'ta.alias ASC, ta.id_agente ASC';
-
-							$sql = "SELECT $columns
-									FROM tagente ta
-									INNER JOIN tagente_modulo tam
-										ON tam.disabled = 0
-											AND ta.id_agente = tam.id_agente
-											AND tam.id_module_group = $rootID
-											$module_search_filter
-									$module_status_join
-									WHERE ta.disabled = 0
-										$group_acl
-										$agent_search_filter
-										$agent_status_filter
-									GROUP BY $group_by_fields
-									ORDER BY $order_fields";
-						}
-						break;
-					// Get the modules of an agent
-					case 'agent':
-						$columns = 'tam.id_agente_modulo AS id, tam.nombre AS name,
-							tam.id_tipo_modulo, tam.id_modulo, tae.estado, tae.datos';
-						$order_fields = 'tam.nombre ASC, tam.id_agente_modulo ASC';
-
-						$module_group_filter = "AND tam.id_module_group = $rootID";
-						$agent_filter = "AND tam.id_agente = $parent";
-
-						// Set for the common ACL only. The strict ACL case is different (groups and tags divided).
-						// The modules only have visibility in two cases:
-						// 1. The user has access to the group of its agent and this group hasn't tags.
-						// 2. The user has access to the group of its agent, this group has tags and the module
-						// has any of this tags.
-						$tag_join = '';
-						if (!$this->strictACL) {
-							// $parent is the agent id
-							$group_id = (int) db_get_value('id_grupo', 'tagente', 'id_agente', $parent);
-							if (empty($group_id)) {
-								// ACL error, this will restrict (fuck) the module search
-								$tag_join = 'INNER JOIN ttag_module tta
-												ON 1=0';
-							}
-							else if (!empty($this->acltags) && isset($this->acltags[$group_id])) {
-								$tags_str = $this->acltags[$group_id];
-
-								if (!empty($tags_str)) {
-									$tag_join = sprintf('INNER JOIN ttag_module ttm
-																ON tam.id_agente_modulo = ttm.id_agente_modulo
-																	AND ttm.id_tag IN (%s)', $tags_str);
-								}
-							}
-						}
-
-						$sql = "SELECT $columns
-								FROM tagente_modulo tam
-								$tag_join
-								$module_status_join
-								INNER JOIN tagente ta
-									ON ta.disabled = 0
-										AND tam.id_agente = ta.id_agente
-										$group_acl
-										$agent_search_filter
-										$agent_status_filter
-								WHERE tam.disabled = 0
-									$agent_filter
-									$module_group_filter
-									$module_search_filter
-								ORDER BY $order_fields";
-						break;
-				}
-				break;
-			case 'module':
-				// ACL Group
-				$group_acl =  "";
-				if (!empty($this->userGroups)) {
-					$user_groups_str = implode(",", array_keys($this->userGroups));
-					$group_acl = " AND ta.id_grupo IN ($user_groups_str) ";
-				}
-				else {
-					$group_acl = "AND ta.id_grupo = -1";
-				}
-
-				switch ($type) {
-					// Get the agents of a module
-					case 'module':
-						if (empty($rootID) || $rootID == -1) {
-							$columns = 'tam.nombre AS name';
-							$order_fields = 'tam.nombre ASC';
-
-							// Modules SQL
-							if ($item_for_count === false) {
-								//FIXME This group ACL should be the same in all modules view
-								$group_acl = " AND (ta.id_grupo IN ($user_groups_str) OR tasg.id_group IN ($user_groups_str))";
-								$sql = "SELECT $columns
-										FROM tagente_modulo tam
-										INNER JOIN tagente ta
-											ON ta.disabled = 0
-												AND tam.id_agente = ta.id_agente
-										LEFT JOIN tagent_secondary_group tasg
-											ON tasg.id_agent = ta.id_agente
-												$agent_search_filter
-												$agent_status_filter
-										$module_status_join
-										WHERE tam.disabled = 0
-											$group_acl
-											$module_search_filter
-										GROUP BY tam.nombre
-										ORDER BY $order_fields";
-							}
-							// Counters SQL
-							else {
-								$agent_table = "SELECT COUNT(DISTINCT(ta.id_agente))
-												FROM tagente ta
-												INNER JOIN tagente_modulo tam
-													ON tam.disabled = 0
-														AND ta.id_agente = tam.id_agente
-														AND tam.nombre = '$item_for_count'
-														$module_group_filter
-														$module_search_filter
-												$module_status_join
-												WHERE ta.disabled = 0
-													$group_acl
-													$agent_search_filter
-													$agent_status_filter";
-								$sql = $this->getAgentCountersSql($agent_table);
-							}
-						}
-						else {
-							$columns = 'ta.id_agente AS id, ta.nombre AS name, ta.alias,
-								ta.fired_count, ta.normal_count, ta.warning_count,
-								ta.critical_count, ta.unknown_count, ta.notinit_count,
-								ta.total_count, ta.quiet';
-							$group_by_fields = 'ta.id_agente, ta.nombre, ta.alias,
-								ta.fired_count, ta.normal_count, ta.warning_count,
-								ta.critical_count, ta.unknown_count, ta.notinit_count,
-								ta.total_count, ta.quiet';
-							$order_fields = 'ta.alias ASC, ta.id_agente ASC';
-
-							$symbols = ' !"#$%&\'()*+,./:;<=>?@[\\]^{|}~';
-							$name = $rootID;
-							for ($i = 0; $i < strlen($symbols); $i++) {
-								$name = str_replace('_articapandora_' .
-									ord(substr($symbols, $i, 1)) .'_pandoraartica_',
-									substr($symbols, $i, 1), $name);
-							}
-							$name = io_safe_input($name);
-
-							$sql = "SELECT $columns
-									FROM tagente ta
-									INNER JOIN tagente_modulo tam
-										ON tam.disabled = 0
-											AND ta.id_agente = tam.id_agente
-											AND tam.nombre = '$name'
-											$module_group_filter
-											$module_search_filter
-									$module_status_join
-									WHERE ta.disabled = 0
-										$group_acl
-										$agent_search_filter
-										$agent_status_filter
-									GROUP BY $group_by_fields
-									ORDER BY $order_fields";
-						}
-						break;
-					// Get the modules of an agent
-					case 'agent':
-						$columns = 'tam.id_agente_modulo AS id, tam.nombre AS name,
-							tam.id_tipo_modulo, tam.id_modulo, tae.estado, tae.datos';
-						$order_fields = 'tam.nombre ASC, tam.id_agente_modulo ASC';
-
-						$symbols = ' !"#$%&\'()*+,./:;<=>?@[\\]^{|}~';
-						$name = $rootID;
-						for ($i = 0; $i < strlen($symbols); $i++) {
-							$name = str_replace('_articapandora_' .
-								ord(substr($symbols, $i, 1)) .'_pandoraartica_',
-								substr($symbols, $i, 1), $name);
-						}
-						$name = io_safe_input($name);
-
-						$module_name_filter = "AND tam.nombre = '$name'";
-						$agent_filter = "AND tam.id_agente = $parent";
-
-						// We need the agents table
-						if (empty($agents_join)) {
-							$agents_join = "INNER JOIN tagente ta
-												ON ta.disabled = 0
-													AND tam.id_agente = ta.id_agente
-													$group_acl";
-						}
-						else {
-							$agents_join .= " $group_acl";
-						}
-
-						// Set for the common ACL only. The strict ACL case is different (groups and tags divided).
-						// The modules only have visibility in two cases:
-						// 1. The user has access to the group of its agent and this group hasn't tags.
-						// 2. The user has access to the group of its agent, this group has tags and the module
-						// has any of this tags.
-						$tag_join = '';
-						if (!$this->strictACL) {
-							// $parent is the agent id
-							$group_id = (int) db_get_value('id_grupo', 'tagente', 'id_agente', $parent);
-							if (empty($group_id)) {
-								// ACL error, this will restrict (fuck) the module search
-								$tag_join = 'INNER JOIN ttag_module tta
-												ON 1=0';
-							}
-							else if (!empty($this->acltags) && isset($this->acltags[$group_id])) {
-								$tags_str = $this->acltags[$group_id];
-
-								if (!empty($tags_str)) {
-									$tag_join = sprintf('INNER JOIN ttag_module ttm
-																ON tam.id_agente_modulo = ttm.id_agente_modulo
-																	AND ttm.id_tag IN (%s)', $tags_str);
-								}
-							}
-						}
-
-						$sql = "SELECT $columns
-								FROM tagente_modulo tam
-								$tag_join
-								$module_status_join
-								INNER JOIN tagente ta
-									ON ta.disabled = 0
-										AND tam.id_agente = ta.id_agente
-										$group_acl
-								WHERE tam.disabled = 0
-									$agent_filter
-									$module_name_filter
-									$module_group_filter
-									$module_search_filter
-								ORDER BY $order_fields";
-						break;
-				}
-				break;
-			default:
-				$sql = $this->getSqlExtended($item_for_count, $type, $rootType, $parent, $rootID,
-									$agent_search_filter, $agent_status_filter, $agents_join,
-									$module_search_filter, $module_status_filter, $modules_join,
-									$module_status_join);
-		}
-
-		return $sql;
+	protected function getInnerOrLeftJoin () {
+		return $this->filter['show_not_init_agents']
+			? "LEFT"
+			: "INNER";
 	}
 
-	// Override this method
-	protected function getSqlExtended ($item_for_count, $type, $rootType, $parent, $rootID,
-										$agent_search_filter, $agent_status_filter, $agents_join,
-										$module_search_filter, $module_status_filter, $modules_join,
-										$module_status_join) {
-		return false;
+	protected function getModuleStatusFilter () {
+		$show_init_condition = ($this->filter['show_not_init_agents'])
+			? ""
+			: " AND ta.notinit_count <> ta.total_count";
+
+		if ($this->getEmptyModuleFilterStatus()) {
+			return $show_init_condition;
+		}
+
+		$field_filter = modules_get_counter_by_states($this->filter['statusModule']);
+		if ($field_filter === false) return " AND 1=0";
+
+		return "AND ta.$field_filter > 0" . $show_init_condition;
 	}
 
-	protected function getItems ($item_for_count = false) {
-		$sql = $this->getSql($item_for_count);
-		if (empty($sql))
-			return array();
+	// FIXME: Separate and condition from inner join
+	protected function getTagJoin () {
+		// $parent is the agent id
+		$group_id = (int) db_get_value('id_grupo', 'tagente', 'id_agente', $this->id);
+		$tag_join = '';
+		if (empty($group_id)) {
+			// ACL error, this will restrict the module search
+			$tag_join = 'INNER JOIN ttag_module tta
+							ON 1=0';
+		}
+		else if (!empty($this->acltags) && isset($this->acltags[$group_id])) {
+			$tags_str = $this->acltags[$group_id];
 
-		$data = db_process_sql($sql);
-		if (empty($data))
-			return array();
-
-		foreach ($data[0] as $key => $value) {
-			
-			if($key != 'total_count' && $key != 'total_fired_count' && strpos($key, 'count')){
-				$zero_counter += $value;
+			if (!empty($tags_str)) {
+				$tag_join = sprintf('INNER JOIN ttag_module ttm
+											ON tam.id_agente_modulo = ttm.id_agente_modulo
+												AND ttm.id_tag IN (%s)', $tags_str);
 			}
-			
 		}
-		
-		if(!$zero_counter){
-			$data[0]['total_count'] = 0;
-		}
-		else{
-			$data[0]['total_count'] = $zero_counter;
-		}
-		
-		
-
-		// [26/10/2017] It seems the module hierarchy should be only available into the tree by group
-		if ($this->rootType == 'group' && $this->type == 'agent') {
-			$data = $this->getProcessedModules($data);
-		}
-
-		return $data;
+		return $tag_join;
 	}
 
-	protected function getCounters ($id) {
-		$counters = $this->getItems($id);
+	protected function getModuleStatusFilterFromTestado ($state = false, $without_ands = false) {
+		$selected_status = ($state !== false && $state !== self::TV_DEFAULT_AGENT_STATUS)
+			? $state
+			: $this->filter['statusModule'];
 
-		if (!empty($counters)) {
-			$counters = array_pop($counters);
+		$filter = array(
+			modules_get_state_condition($selected_status)
+		);
+		if (!$this->filter['show_not_init_modules'] && $state === false) {
+			if (!empty($filter))
+			$filter[] = "(
+				tae.estado <> ".AGENT_MODULE_STATUS_NO_DATA."
+				AND tae.estado <> ".AGENT_MODULE_STATUS_NOT_INIT."
+			)";
 		}
-		return $counters;
+		$filter = implode(" AND ", $filter);
+		return ($without_ands)
+			? $filter
+			: " AND $filter ";
+	}
+
+	public function getGroupAclCondition() {
+		if (users_can_manage_group_all("AR"))  return "";
+
+		$groups_str= implode(",", $this->userGroupsArray);
+		return " AND (
+			ta.id_grupo IN ($groups_str)
+			OR tasg.id_group IN ($groups_str)
+		)";
+	}
+
+	protected function getGroupSearchInner() {
+		if (empty($this->filter['searchGroup'])) return "";
+		return "INNER JOIN tgrupo tg
+			ON ta.id_grupo = tg.id_grupo
+			OR tasg.id_group = tg.id_grupo"
+		;
+	}
+
+	protected function getGroupSearchFilter() {
+		if (empty($this->filter['searchGroup'])) return "";
+		return " AND tg.nombre LIKE '%" . $this->filter['searchGroup'] . "%'";
 	}
 
 	static function cmpSortNames($a, $b) {
 		return strcmp($a["name"], $b["name"]);
 	}
 
-	protected function getProcessedGroups ($items, $remove_empty = false) {
-		$processed_groups = array();
-		// Index and process the groups
-		$groups = array();
-		foreach ($items as $item) {
-			$groups[$item['id']] = $this->getProcessedItem($item);
-		}
-
-		// If user have not permissions in parent, set parent node to 0 (all)
-		$user_groups_with_privileges = $this->userGroups;
-		foreach ($groups as $id => $group) {
-			if (!in_array($groups[$id]['parent'], array_keys($user_groups_with_privileges))) {
-				$groups[$id]['parent'] = 0;
-			}
-		}
-		// Build the group hierarchy
-		foreach ($groups as $id => $group) {
-			if (isset($groups[$id]['parent']) && ($groups[$id]['parent'] != 0)) {
-				$parent = $groups[$id]['parent'];
-				// Parent exists
-				if (!isset($groups[$parent]['children'])) {
-					$groups[$parent]['children'] = array();
-				}
-				// Store a reference to the group into the parent
-				$groups[$parent]['children'][] = &$groups[$id];
-				// This group was introduced into a parent
-				$groups[$id]['have_parent'] = true;
-			}
-		}
-		// Sort the children groups
-		foreach ($groups as $id => $group) {
-			if (isset($groups[$id]['children'])) {
-				usort($groups[$id]['children'], array("Tree", "cmpSortNames"));
-			}
-		}
-		//Filter groups and eliminates the reference to children groups out of her parent
-		$groups = array_filter($groups, function ($group) {
-			return !$group['have_parent'];
-		});
-		// Propagate child counters to her parents
-		Tree::processCounters($groups);
-		// Filter groups and eliminates the reference to empty groups
-		if ($remove_empty) {
-			$groups = Tree::deleteEmptyGroups($groups);
-		}
-		usort($groups, array("Tree", "cmpSortNames"));
-		return $groups;
-	}
-
-	protected function getProcessedItem ($item, $server = false, &$items = array(), &$items_tmp = array(), $remove_empty = false) {
+	protected function getProcessedItem ($item, $server = false) {
 
 		if (isset($processed_item['is_processed']) && $processed_item['is_processed'])
 			return $item;
-
-		// For strict items
-		if (isset($item['_id_'])) {
-			$item['id'] = $item['_id_'];
-			$item['name'] = $item['_name_'];
-
-			if (isset($item['_is_tag_']) && $item['_is_tag_']) {
-				$item['type'] = 'tag';
-				$item['rootType'] = 'tag';
-			}
-			else {
-				$item['type'] = 'group';
-				$item['rootType'] = 'group';
-				$item['parent'] = $item['_parent_id_'];
-
-				if (!empty($item['_iconImg_']))
-					$item['iconHTML'] = $item['_iconImg_'];
-			}
-
-			if (isset($item['_agents_unknown_']))
-				$item['total_unknown_count'] = $item['_agents_unknown_'];
-			if (isset($item['_agents_critical_']))
-				$item['total_critical_count'] = $item['_agents_critical_'];
-			if (isset($item['_agents_warning_']))
-				$item['total_warning_count'] = $item['_agents_warning_'];
-			if (isset($item['_agents_not_init_']))
-				$item['total_not_init_count'] = $item['_agents_not_init_'];
-			if (isset($item['_agents_ok_']))
-				$item['total_normal_count'] = $item['_agents_ok_'];
-			if (isset($item['_total_agents_']))
-				$item['total_count'] = $item['_total_agents_'];
-			if (isset($item['_monitors_alerts_fired_']))
-				$item['total_fired_count'] = $item['_monitors_alerts_fired_'];
-
-			// Agent filter for Strict ACL users
-			if ($this->filter["statusAgent"] != -1) {
-				switch ($this->filter["statusAgent"]) {
-					case AGENT_STATUS_NOT_INIT:
-						$item['total_count'] = $item['total_not_init_count'];
-
-						$item['total_unknown_count'] = 0;
-						$item['total_critical_count'] = 0;
-						$item['total_warning_count'] = 0;
-						$item['total_normal_count'] = 0;
-						break;
-					case AGENT_STATUS_CRITICAL:
-						$item['total_count'] = $item['total_critical_count'];
-
-						$item['total_unknown_count'] = 0;
-						$item['total_warning_count'] = 0;
-						$item['total_not_init_count'] = 0;
-						$item['total_normal_count'] = 0;
-						break;
-					case AGENT_STATUS_WARNING:
-						$item['total_count'] = $item['total_warning_count'];
-
-						$item['total_unknown_count'] = 0;
-						$item['total_critical_count'] = 0;
-						$item['total_not_init_count'] = 0;
-						$item['total_normal_count'] = 0;
-						break;
-					case AGENT_STATUS_UNKNOWN:
-						$item['total_count'] = $item['total_unknown_count'];
-
-						$item['total_critical_count'] = 0;
-						$item['total_warning_count'] = 0;
-						$item['total_not_init_count'] = 0;
-						$item['total_normal_count'] = 0;
-						break;
-					case AGENT_STATUS_NORMAL:
-						$item['total_count'] = $item['total_normal_count'];
-
-						$item['total_unknown_count'] = 0;
-						$item['total_critical_count'] = 0;
-						$item['total_warning_count'] = 0;
-						$item['total_not_init_count'] = 0;
-						break;
-				}
-			}
-		}
-
 
 		$processed_item = array();
 		$processed_item['id'] = $item['id'];
@@ -1410,26 +300,16 @@ class Tree {
 		if ($processed_item['type'] == 'group') {
 			$processed_item['parent'] = $item['parent'];
 
-			if (!empty($item['iconHTML']))
-				$processed_item['iconHTML'] = $item['iconHTML'];
-			else if (!empty($item['icon']))
-				$processed_item['icon'] = $item['icon'].".png";
-			else
-				$processed_item['icon'] = "without_group.png";
+			$processed_item['icon'] = empty($item['icon'])
+				? "without_group.png"
+				: $item['icon'].".png";
+		}
+		if (isset($item['iconHTML'])) {
+			$processed_item['icon'] = $item['iconHTML'];
 		}
 
 		if (is_metaconsole() && !empty($server)) {
 			$processed_item['serverID'] = $server['id'];
-		}
-
-		// Get the counters of the group (special case)
-		if ($processed_item['type'] == 'group') {
-			$counters = $this->getGroupCounters($item['id']);
-			if (!empty($counters)) {
-				foreach ($counters as $type => $value) {
-					$item[$type] = $value;
-				}
-			}
 		}
 
 		$counters = array();
@@ -1554,12 +434,12 @@ class Tree {
 		return $mergedItems;
 	}
 
-	protected function processModule (&$module, $server = false) {
+	protected function processModule (&$module, $server = false, $all_groups) {
 		global $config;
 		
 		if (isset($module['children'])) {
 			foreach ($module['children'] as $i => $children) {
-				$this->processModule($module['children'][$i], $server);
+				$this->processModule($module['children'][$i], $server, $all_groups);
 			}
 		}
 
@@ -1571,9 +451,9 @@ class Tree {
 		$module['status'] = $module['estado'];
 		$module['value'] = $module['datos'];
 
-		if (is_metaconsole() && !empty($server)) {
-			$module['serverID'] = $server['id'];
-			$module['serverName'] = $server['server_name'];
+		if (is_metaconsole()) {
+			$module['serverID'] = $this->serverID;
+			$module['serverName'] = $this->serverName;
 		}
 		else {
 			$module['serverName'] = false;
@@ -1638,7 +518,6 @@ class Tree {
 		// Link to the Module graph
 
 		// ACL
-		$all_groups = modules_get_agent_groups($module['id']);
 		$acl_graphs = false;
 		$module["showGraphs"] = 0;
 
@@ -1667,7 +546,7 @@ class Tree {
 					"refresh" => SECONDS_10MINUTES
 				);
 
-			if (is_metaconsole() && !empty($server)) {
+			if (is_metaconsole()) {
 				// Set the server id
 				$graph_params["server"] = $module['serverID'];
 			}
@@ -1690,18 +569,17 @@ class Tree {
 		}
 
 		// Alerts fired image
-		$has_alerts = (bool) db_get_value(
-			'COUNT(DISTINCT(id_agent_module))',
-			'talert_template_modules', 'id_agent_module', $module['id']);
-
-		if ($has_alerts) {
+		if ((bool)$module['alerts']) {
 			$module['alertsImageHTML'] = html_print_image("images/bell.png", true, array("title" => __('Module alerts')));
 		}
 	}
 
 	protected function processModules (&$modules, $server = false) {
+		if (!empty($modules)) {
+			$all_groups = modules_get_agent_groups($modules[0]['id']);
+		}
 		foreach ($modules as $iterator => $module) {
-			$this->processModule($modules[$iterator], $server);
+			$this->processModule($modules[$iterator], $server, $all_groups);
 		}
 	}
 
@@ -1721,183 +599,17 @@ class Tree {
 			else if (!empty($server))
 				$agent['serverID'] = $server['id'];
 		}
-
-		// Realtime counters for Strict ACL
-		if ($this->strictACL) {
-			$agent_filter = array("id" => $agent['id']);
-			$module_filter = array();
-
-			if (isset($this->filter["statusAgent"]))
-				$agent_filter["status"] = $this->filter["statusAgent"];
-			if (isset($this->filter["searchAgent"]))
-				$agent_filter["name"] = $this->filter["searchAgent"];
-
-			if (isset($this->filter["statusModule"]))
-				$module_filter["status"] = $this->filter["statusModule"];
-			if (isset($this->filter["searchModule"]))
-				$module_filter["name"] = $this->filter["searchModule"];
-
-			$agent['counters'] = array();
-			$agent['counters']['unknown'] = 0;
-			$agent['counters']['critical'] = 0;
-			$agent['counters']['warning'] = 0;
-			$agent['counters']['not_init'] = 0;
-			$agent['counters']['ok'] = 0;
-			$agent['counters']['total'] = 0;
-			$agent['counters']['alerts'] = 0;
-
-			if ($agent['rootType'] == "group") {
-				$agent['counters']['alerts'] = agents_get_alerts_fired($agent['id']);
-
-				// With module filter
-				if (isset($this->filter["statusModule"]) && $this->filter["statusModule"] != AGENT_MODULE_STATUS_ALL) {
-					switch ($this->filter["statusModule"]) {
-						case AGENT_MODULE_STATUS_CRITICAL_ALERT:
-						case AGENT_MODULE_STATUS_CRITICAL_BAD:
-							$agent['counters']['critical'] = (int) groups_get_critical_monitors ($agent['rootID'], $agent_filter, $module_filter, true, $this->acltags);
-							$agent['counters']['total'] = $agent['counters']['critical'];
-							break;
-						case AGENT_MODULE_STATUS_WARNING_ALERT:
-						case AGENT_MODULE_STATUS_WARNING:
-							$agent['counters']['warning'] = (int) groups_get_warning_monitors ($agent['rootID'], $agent_filter, $module_filter, true, $this->acltags);
-							$agent['counters']['total'] = $agent['counters']['warning'];
-							break;
-						case AGENT_MODULE_STATUS_UNKNOWN:
-							$agent['counters']['unknown'] = (int) groups_get_unknown_monitors ($agent['rootID'], $agent_filter, $module_filter, true, $this->acltags);
-							$agent['counters']['total'] = $agent['counters']['unknown'];
-							break;
-						case AGENT_MODULE_STATUS_NO_DATA:
-						case AGENT_MODULE_STATUS_NOT_INIT:
-							$agent['counters']['not_init'] = (int) groups_get_not_init_monitors ($agent['rootID'], $agent_filter, $module_filter, true, $this->acltags);
-							$agent['counters']['total'] = $agent['counters']['not_init'];
-							break;
-						case AGENT_MODULE_STATUS_NORMAL_ALERT:
-						case AGENT_MODULE_STATUS_NORMAL:
-							$agent['counters']['ok'] = (int) groups_get_normal_monitors ($agent['rootID'], $agent_filter, $module_filter, true, $this->acltags);
-							$agent['counters']['total'] = $agent['counters']['ok'];
-							break;
-					}
-				}
-				// Without module filter
-				else {
-					$agent['counters']['unknown'] = (int) groups_get_unknown_monitors ($agent['rootID'], $agent_filter, $module_filter, true, $this->acltags);
-					$agent['counters']['critical'] = (int) groups_get_critical_monitors ($agent['rootID'], $agent_filter, $module_filter, true, $this->acltags);
-					$agent['counters']['warning'] = (int) groups_get_warning_monitors ($agent['rootID'], $agent_filter, $module_filter, true, $this->acltags);
-					$agent['counters']['not_init'] = (int) groups_get_not_init_monitors ($agent['rootID'], $agent_filter, $module_filter, true, $this->acltags);
-					$agent['counters']['ok'] = (int) groups_get_normal_monitors ($agent['rootID'], $agent_filter, $module_filter, true, $this->acltags);
-					$agent['counters']['total'] = (int) groups_get_total_monitors ($agent['rootID'], $agent_filter, $module_filter, true, $this->acltags);
-				}
-			}
-			else if ($agent['rootType'] == "tag") {
-				$agent['counters']['alerts'] = (int) tags_monitors_fired_alerts ($agent['rootID'], $this->acltags, $agent['id']);
-
-				// With module filter
-				if (isset($this->filter["statusModule"]) && $this->filter["statusModule"] != AGENT_MODULE_STATUS_ALL) {
-					switch ($this->filter["statusModule"]) {
-						case AGENT_MODULE_STATUS_CRITICAL_ALERT:
-						case AGENT_MODULE_STATUS_CRITICAL_BAD:
-							$agent['counters']['critical'] = (int) tags_get_critical_monitors ($agent['rootID'], $this->acltags, $agent_filter, $module_filter);
-							$agent['counters']['total'] = $agent['counters']['critical'];
-							break;
-						case AGENT_MODULE_STATUS_WARNING_ALERT:
-						case AGENT_MODULE_STATUS_WARNING:
-							$agent['counters']['warning'] = (int) tags_get_warning_monitors ($agent['rootID'], $this->acltags, $agent_filter, $module_filter);
-							$agent['counters']['total'] = $agent['counters']['warning'];
-							break;
-						case AGENT_MODULE_STATUS_UNKNOWN:
-							$agent['counters']['unknown'] = (int) tags_get_unknown_monitors ($agent['rootID'], $this->acltags, $agent_filter, $module_filter);
-							$agent['counters']['total'] = $agent['counters']['unknown'];
-							break;
-						case AGENT_MODULE_STATUS_NO_DATA:
-						case AGENT_MODULE_STATUS_NOT_INIT:
-							$agent['counters']['not_init'] = (int) tags_get_not_init_monitors ($agent['rootID'], $this->acltags, $agent_filter, $module_filter);
-							$agent['counters']['total'] = $agent['counters']['not_init'];
-							break;
-						case AGENT_MODULE_STATUS_NORMAL_ALERT:
-						case AGENT_MODULE_STATUS_NORMAL:
-							$agent['counters']['ok'] = (int) tags_get_normal_monitors ($agent['rootID'], $this->acltags, $agent_filter, $module_filter);
-							$agent['counters']['total'] = $agent['counters']['ok'];
-							break;
-					}
-				}
-				// Without module filter
-				else {
-					$agent['counters']['unknown'] = (int) tags_get_unknown_monitors ($agent['rootID'], $this->acltags, $agent_filter, $module_filter);
-					$agent['counters']['critical'] = (int) tags_get_critical_monitors ($agent['rootID'], $this->acltags, $agent_filter, $module_filter);
-					$agent['counters']['warning'] = (int) tags_get_warning_monitors ($agent['rootID'], $this->acltags, $agent_filter, $module_filter);
-					$agent['counters']['not_init'] = (int) tags_get_not_init_monitors ($agent['rootID'], $this->acltags, $agent_filter, $module_filter);
-					$agent['counters']['ok'] = (int) tags_get_normal_monitors ($agent['rootID'], $this->acltags, $agent_filter, $module_filter);
-					$agent['counters']['total'] = (int) tags_get_total_monitors ($agent['rootID'], $this->acltags, $agent_filter, $module_filter);
-				}
-			}
-
-			if (isset($this->filter["statusAgent"]) && $this->filter["statusAgent"] != AGENT_STATUS_ALL) {
-				switch ($this->filter["statusAgent"]) {
-					case AGENT_STATUS_CRITICAL:
-						if ($agent['counters']['critical'] == 0)
-							$agent = array();
-						break;
-					case AGENT_STATUS_WARNING:
-						if ($agent['counters']['total'] == 0 || $agent['counters']['critical'] > 0 || $agent['counters']['warning'] == 0)
-							$agent = array();
-						break;
-					case AGENT_STATUS_UNKNOWN:
-						if ($agent['counters']['critical'] > 0 || $agent['counters']['warning'] > 0 || $agent['counters']['unknown'] == 0)
-							$agent = array();
-						break;
-					case AGENT_STATUS_NOT_INIT:
-						if ($agent['counters']['total'] != 0 && $agent['counters']['total'] != $agent['counters']['not_init'])
-							$agent = array();
-						break;
-					case AGENT_STATUS_NORMAL:
-						if ($agent['counters']['critical'] > 0 || $agent['counters']['warning'] > 0 || $agent['counters']['unknown'] > 0 || $agent['counters']['ok'] == 0)
-							$agent = array();
-						break;
-				}
-				// Leave the function
-				if (empty($agent))
-					return;
-			}
-		}
-
 		// Counters
 		if (empty($agent['counters'])) {
 			$agent['counters'] = array();
 
-			if (isset($agent['unknown_count']))
-				$agent['counters']['unknown'] = $agent['unknown_count'];
-			else
-				$agent['counters']['unknown'] = (int) agents_monitor_unknown($agent['id']);
-
-			if (isset($agent['critical_count']))
-				$agent['counters']['critical'] = $agent['critical_count'];
-			else
-				$agent['counters']['critical'] = (int) agents_monitor_critical($agent['id']);
-
-			if (isset($agent['warning_count']))
-				$agent['counters']['warning'] = $agent['warning_count'];
-			else
-				$agent['counters']['warning'] = (int) agents_monitor_warning($agent['id']);
-
-			if (isset($agent['notinit_count']))
-				$agent['counters']['not_init'] = $agent['notinit_count'];
-			else
-				$agent['counters']['not_init'] = (int) agents_monitor_notinit($agent['id']);
-
-			if (isset($agent['normal_count']))
-				$agent['counters']['ok'] = $agent['normal_count'];
-			else
-				$agent['counters']['ok'] = (int) agents_monitor_ok($agent['id']);
-
-			if (isset($agent['total_count']))
-				$agent['counters']['total'] = $agent['total_count'];
-			else
-				$agent['counters']['total'] = (int) agents_monitor_total($agent['id']);
-
-			if (isset($agent['fired_count']))
-				$agent['counters']['alerts'] = $agent['fired_count'];
-			else
-				$agent['counters']['alerts'] = (int) agents_get_alerts_fired($agent['id']);
+			$agent['counters']['unknown'] = isset($agent['unknown_count']) ? $agent['unknown_count'] : 0;
+			$agent['counters']['critical'] = isset($agent['critical_count']) ? $agent['critical_count'] : 0;
+			$agent['counters']['warning'] = isset($agent['warning_count']) ? $agent['warning_count'] : 0;
+			$agent['counters']['not_init'] = isset($agent['notinit_count']) ? $agent['notinit_count'] : 0;
+			$agent['counters']['ok'] = isset($agent['normal_count']) ? $agent['normal_count'] : 0;
+			$agent['counters']['total'] = isset($agent['total_count']) ? $agent['total_count'] : 0;
+			$agent['counters']['alerts'] = isset($agent['fired_count']) ? $agent['fired_count'] : 0;
 		}
 
 		// Status image
@@ -1911,32 +623,66 @@ class Tree {
 		// Alerts fired image
 		$agent["alertImageHTML"] = agents_tree_view_alert_img_ball($agent['counters']['alerts']);
 
+		// search module recalculate counters
+		if(array_key_exists('state_normal', $agent)){
+			$agent['counters']['unknown'] = $agent['state_unknown'];
+			$agent['counters']['critical'] = $agent['state_critical'];
+			$agent['counters']['warning'] = $agent['state_warning'];
+			$agent['counters']['not_init'] = $agent['state_notinit'];
+			$agent['counters']['ok'] = $agent['state_normal'];
+			$agent['counters']['total'] = $agent['state_total'];
+
+			$agent['critical_count'] = $agent['counters']['critical'];
+			$agent['warning_count'] = $agent['counters']['warning'];
+			$agent['unknown_count'] = $agent['counters']['unknown'];
+			$agent['notinit_count'] = $agent['counters']['not_init'];
+			$agent['normal_count'] = $agent['counters']['ok'];
+			$agent['total_count'] = $agent['counters']['total'];
+		}
+
+		if (!$this->getEmptyModuleFilterStatus()) {
+			$agent['counters']['unknown'] = 0;
+			$agent['counters']['critical'] = 0;
+			$agent['counters']['warning'] = 0;
+			$agent['counters']['not_init'] = 0;
+			$agent['counters']['ok'] = 0;
+			$agent['counters']['total'] = 0;
+			switch($this->filter['statusModule']) {
+				case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+				case AGENT_MODULE_STATUS_CRITICAL_BAD:
+					$agent['counters']['critical'] = $agent['critical_count'];
+					$agent['counters']['total'] = $agent['critical_count'];
+					break;
+				case AGENT_MODULE_STATUS_WARNING_ALERT:
+				case AGENT_MODULE_STATUS_WARNING:
+					$agent['counters']['warning'] = $agent['warning_count'];
+					$agent['counters']['total'] = $agent['warning_count'];
+					break;
+				case AGENT_MODULE_STATUS_UNKNOWN:
+					$agent['counters']['unknown'] = $agent['unknown_count'];
+					$agent['counters']['total'] = $agent['unknown_count'];
+					break;
+				case AGENT_MODULE_STATUS_NO_DATA:
+				case AGENT_MODULE_STATUS_NOT_INIT:
+					$agent['counters']['not_init'] = $agent['notinit_count'];
+					$agent['counters']['total'] = $agent['notinit_count'];
+					break;
+				case AGENT_MODULE_STATUS_NORMAL_ALERT:
+				case AGENT_MODULE_STATUS_NORMAL:
+					$agent['counters']['ok'] = $agent['normal_count'];
+					$agent['counters']['total'] = $agent['normal_count'];
+					break;
+			}
+		}
+
+		if (!$this->filter['show_not_init_modules']) {
+			$agent['counters']['total'] -= $agent['counters']['not_init'];
+			$agent['counters']['not_init'] = 0;
+		}
+
 		// Quiet image
 		if (isset($agent['quiet']) && $agent['quiet'])
 			$agent['quietImageHTML'] = html_print_image("/images/dot_blue.png", true, array("title" => __('Quiet')));
-
-		// Status
-		$agent['statusRaw'] = agents_get_status($agent['id'], !$this->strictACL);
-		switch ($agent['statusRaw']) {
-			case AGENT_STATUS_NORMAL:
-				$agent['status'] = "ok";
-				break;
-			case AGENT_STATUS_WARNING:
-				$agent['status'] = "warning";
-				break;
-			case AGENT_STATUS_CRITICAL:
-				$agent['status'] = "critical";
-				break;
-			case AGENT_STATUS_UNKNOWN:
-				$agent['status'] = "unknown";
-				break;
-			case AGENT_STATUS_NOT_INIT:
-				$agent['status'] = "not_init";
-				break;
-			default:
-				$agent['status'] = "none";
-				break;
-		}
 
 		// Children
 		if (empty($agent['children'])) {
@@ -1948,9 +694,6 @@ class Tree {
 						break;
 					case 'live':
 						$agent['searchChildren'] = 0;
-
-						// if ($searchChildren)
-						// 	$agent['children'] = $this->getModules($agent['id'], $modulesFilter);
 						break;
 				}
 			}
@@ -1975,800 +718,222 @@ class Tree {
 		}
 	}
 
-	/**
-	 * @brief Recursive function to remove the empty groups
-	 * 
-	 * @param groups All groups structure
-	 * 
-	 * @return new_groups A new groups structure without empty groups
-	 */
-	protected static function deleteEmptyGroups ($groups) {
-		$new_groups = array();
-		foreach ($groups as $group) {
-			// If a group is empty, do not add to new_groups.
-			if (!isset($group['counters']['total']) || $group['counters']['total'] == 0) {
-				continue;
-			}
-			// Tray to remove the children groups
-			if (!empty($group['children'])) {
-				$children = Tree::deleteEmptyGroups ($group['children']);
-				if (empty($children)) unset($group['children']);
-				else $group['children'] = $children;
-			}
-			$new_groups[] = $group;
-		}
-		return $new_groups;
+	protected function getData() {
+
 	}
 
-	private static function extractGroupsWithIDs ($groups, $ids_hash) {
-		$result_groups = array();
-		foreach ($groups as $group) {
-			if (isset($ids_hash[$group['id']])) {
-				$result_groups[] = $group;
-			}
-			else if (!empty($group['children'])) {
-				$result = self::extractGroupsWithIDs($group['children'], $ids_hash);
+	protected function getFirstLevel() {
+		$sql = $this->getFirstLevelSql();
+		$items = db_get_all_rows_sql($sql);
+		if ($items === false) $items = array();
 
-				// Item found on children
-				if (!empty($result)) {
-					$result_groups = array_merge($result_groups, $result);
-				}
-			}
-		}
-
-		return $result_groups;
+		$this->tree = $this->getProcessedItemsFirstLevel($items);
 	}
 
-	private static function extractItemWithID ($items, $item_id, $item_type = "group", $strictACL = false) {
-		foreach ($items as $item) {
-			if ($item["type"] != $item_type)
-				continue;
-
-			// Item found
-			if ($strictACL && is_metaconsole()) {
-				foreach ($item["id"] as $server_id => $id) {
-					if ($id == $item_id)
-						return $item;
-				}
-			}
-			else {
-				if ($item["id"] == $item_id)
-					return $item;
-			}
-
-			if ($item["type"] == "group" && !empty($item["children"])) {
-				$result = self::extractItemWithID($item["children"], $item_id, $item_type, $strictACL);
-
-				// Item found on children
-				if ($result !== false)
-					return $result;
-			}
-		}
-
-		// Item not found
-		return false;
-	}
-
-	public function getData() {
-		if (! is_metaconsole()) {
-			if ($this->strictACL) {
-				switch ($this->type) {
-					case 'group':
-					case 'tag':
-						$this->getDataStrict();
-						break;
-					case 'agent':
-						$this->getDataAgent();
-						break;
-				}
-			}
-			else{
-				switch ($this->type) {
-					case 'os':
-						$this->getDataOS();
-						break;
-					case 'group':
-						$this->getDataGroup();
-						break;
-					case 'module_group':
-						$this->getDataModuleGroup();
-						break;
-					case 'module':
-						$this->getDataModules();
-						break;
-					case 'tag':
-						$this->getDataTag();
-						break;
-					case 'agent':
-						$this->getDataAgent();
-						break;
-					default:
-						$this->getDataExtended();
-				}
-			}
-		}
-		else if ($this->strictACL) {
-			switch ($this->type) {
-				case 'group':
-				case 'tag':
-					$this->getDataStrict();
-					break;
-				case 'agent':
-					$this->getDataAgent();
-					break;
-			}
-		}
-		else {
-			if ($this->type == 'agent') {
-				$this->getDataAgent();
-			}
-			else {
-				$this->getDataGroup();
-			}
-		}
-	}
-
-	protected function getDataExtended () {
-		// Override this method to add new types
-	}
-
-	private function getDataAgent () {
+	protected function getProcessedItemsFirstLevel($items){
 		$processed_items = array();
-
-		// Module names
-		if ($this->id == -1) {
-
+		foreach ($items as $key => $item) {
+			$processed_item = $this->getProcessedItem($item);
+			$processed_items[] = $processed_item;
 		}
-		// Agents
-		else {
-			if (! is_metaconsole()) {
-				$items = $this->getItems();
-				$this->processModules($items);
-				$processed_items = $items;
-				
-				if(!$this->filter['show_not_init_modules']){
-					
-					foreach ($items as $key => $value) {
-						if($items[$key]['total_count'] != $items[$key]['notinit_count']){
-							$items[$key]['total_count'] = $items[$key]['total_count'] - $items[$key]['notinit_count'];
-							$items[$key]['notinit_count'] = 0;
-						}
-						
-					}
-					
-				}
-			}
-			else {
-				$items = array();
-
-				if ($this->serverID !== false) {
-
-					$server = metaconsole_get_servers($this->serverID);
-					if (metaconsole_connect($server) == NOERR) {
-						$items = $this->getItems();
-						$this->processModules($items, $server);
-
-						metaconsole_restore_db();
-					}
-				}
-
-				$processed_items = $items;
-			}
-		}
-
-		$this->tree = $processed_items;
+		return $processed_items;
 	}
 
-	private function getDataStrict () {
-		global $config;
+	protected function getFirstLevelSql() {
 
-		require_once($config['homedir']."/include/functions_groups.php");
+		$fields = $this->getFirstLevelFields();
+		$field_name_sql = $this->L1fieldNameSql;
+		$inside_fields = $this->getFirstLevelFieldsInside();
+		$inner = $this->L1inner;
+		$inner_inside = $this->L1innerInside;
+		$order_by_final = $this->L1orderByFinal;
 
-		$processed_items = array();
-
-		// Groups and tags
-		if ($this->id == -1) {
-			$agent_filter = array();
-			if (isset($this->filter["statusAgent"]))
-				$agent_filter["status"] = $this->filter["statusAgent"];
-			if (isset($this->filter["searchAgent"]))
-				$agent_filter["name"] = $this->filter["searchAgent"];
-
-			$module_filter = array();
-			if (isset($this->filter["statusModule"]))
-				$module_filter["status"] = $this->filter["statusModule"];
-			if (isset($this->filter["searchModule"]))
-				$module_filter["name"] = $this->filter["searchModule"];
-
-			if (! is_metaconsole()) {
-				$items = group_get_data($config['id_user'], $this->strictACL, $this->acltags, false, 'tree', $agent_filter, $module_filter);
-
-				// Build the group and tag hierarchy
-				$processed_groups = array();
-				$processed_tags = array();
-
-				foreach ($items as $key => $item) {
-					$processed_item = $this->getProcessedItem($item);
-					if ($processed_item['type'] == 'tag') {
-						if (!empty($processed_item) &&
-								isset($processed_item['counters']) &&
-								isset($processed_item['counters']['total']) &&
-								!empty($processed_item['counters']['total'])) {
-							$processed_tags[] = $processed_item;
-						}
-					}
-					else {
-						$processed_groups[] = $processed_item;
-					}
-				}
-
-				// Build the groups hierarchy
-				$processed_groups = $this->getProcessedGroups($processed_groups, true);
-				// Sort tags
-				usort($processed_tags, array("Tree", "cmpSortNames"));
-
-				// Join tags and groups
-				$processed_items = array_merge($processed_groups, $processed_tags);
-			}
-			else {
-				$unmerged_items = array();
-
-				$servers = metaconsole_get_servers();
-				foreach ($servers as $server) {
-					if (metaconsole_connect($server) != NOERR)
-						continue;
-					db_clean_cache();
-
-					$items = group_get_data($config['id_user'], $this->strictACL, $this->acltags, false, 'tree', $agent_filter, $module_filter);
-
-					// Build the group and tag hierarchy
-					$processed_groups = array();
-					$processed_tags = array();
-
-					foreach ($items as $key => $item) {
-						$processed_item = $this->getProcessedItem($item);
-						if ($processed_item['type'] == 'tag')
-							$processed_tags[] = $processed_item;
-						else
-							$processed_groups[] = $processed_item;
-					}
-
-					// Build the groups hierarchy
-					$processed_groups = $this->getProcessedGroups($processed_groups);
-					// Sort tags
-					usort($processed_tags, array("Tree", "cmpSortNames"));
-
-					// Join tags and groups
-					$processed_items = array_merge($processed_groups, $processed_tags);
-
-					$unmerged_items += $processed_items;
-
-					metaconsole_restore_db();
-				}
-
-				$processed_items = $this->getMergedItems($unmerged_items);
-			}
-
-			if (!empty($processed_items)) {
-				if (!empty($this->filter["groupID"])) {
-					$result = self::extractItemWithID($processed_items, $this->filter["groupID"], "group", $this->strictACL);
-
-					if ($result === false)
-						$processed_items = array();
-					else
-						$processed_items = array($result);
-				}
-				else if (!empty($this->filter["tagID"])) {
-					$result = self::extractItemWithID($processed_items, $this->filter["tagID"], "tag", $this->strictACL);
-
-					if ($result === false)
-						$processed_items = array();
-					else
-						$processed_items = array($result);
-				}
-			}
-		}
-		// Agents
-		else {
-			if (! is_metaconsole()) {
-				$items = $this->getItems();
-				$this->processAgents($items);
-				// Remove empty entrys
-				$processed_items = array_filter($items);
-				// Restart the array keys -> Important!
-				$processed_items = array_values($processed_items);
-			}
-			else {
-				$rootIDs = $this->rootID;
-
-				$items = array();
-				$j = 1;
-				$server = metaconsole_get_servers();
-				foreach ($rootIDs as $serverID => $rootID) {
-					if (metaconsole_connect($server[$j]) != NOERR)
-						continue;
-					db_clean_cache();
-
-					$this->rootID = $rootID;
-					$newItems = $this->getItems();
-					$this->processAgents($newItems, $server[$j]);
-					$newItems = array_filter($newItems);
-					$items = array_merge($items, $newItems);
-
-					metaconsole_restore_db();
-					$j++;
-				}
-				$this->rootID = $rootIDs;
-
-				if (!empty($items))
-					usort($items, array("Tree", "cmpSortNames"));
-
-				$processed_items = $items;
-			}
+		$group_inner = $this->getGroupSearchInner();
+		$group_acl = $this->getGroupAclCondition();
+		$group_search_filter = $this->getGroupSearchFilter();
+		$agent_search_filter = $this->getAgentSearchFilter();
+		$agent_status_filter = $this->getAgentStatusFilter();
+		$module_search_filter = $this->getModuleSearchFilter();
+		$module_status_inner = "";
+		$module_status_filter = $this->getModuleStatusFilterFromTestado();
+		if (!empty($module_status_filter)) {
+			$module_status_inner = "
+				INNER JOIN tagente_estado tae
+					ON tae.id_agente_modulo = tam.id_agente_modulo";
 		}
 
-		$this->tree = $processed_items;
+		$sql_model = "SELECT %s FROM
+			(
+				SELECT COUNT(DISTINCT(ta.id_agente)) AS total, $field_name_sql AS g
+					FROM tagente ta
+					LEFT JOIN tagent_secondary_group tasg
+						ON ta.id_agente = tasg.id_agent
+					INNER JOIN tagente_modulo tam
+						ON ta.id_agente = tam.id_agente
+					$inner_inside
+					$module_status_inner
+					$group_inner
+					WHERE ta.disabled = 0
+						AND tam.disabled = 0
+						%s
+						$agent_search_filter
+						$agent_status_filter
+						$module_search_filter
+						$module_status_filter
+						$group_search_filter
+						$group_acl
+					GROUP BY $field_name_sql
+			) x GROUP BY g";
+		$sql_array = array();
+		foreach ($inside_fields as $inside_field) {
+			$sql_array[] = sprintf(
+				$sql_model,
+				$inside_field['header'],
+				$inside_field['condition']
+			);
+		}
+		$sql = "SELECT $fields FROM (" . implode(" UNION ALL ", $sql_array) . ") x2
+			$inner
+			GROUP BY g
+			ORDER BY $order_by_final";
+		return $sql;
 	}
 
-	private function getDataGroup() {
-		$processed_items = array();
-
-		// Groups
-		if ($this->id == -1) {
-
-			$items = $this->getItems();
-
-			$processed_items = $this->getProcessedGroups($items, true);
-
-			if (!empty($processed_items)) {
-				// Filter by group name. This should be done after rerieving the items cause we need the possible items descendants
-				if (!empty($this->filter['searchGroup'])) {
-					// Save the groups which intersect with the user groups
-					$groups = db_get_all_rows_filter('tgrupo', array('nombre' => '%' . $this->filter['searchGroup'] . '%'));
-					if ($groups == false) $groups = array();
-					$userGroupsACL = $this->userGroupsACL;
-					$ids_hash = array_reduce($groups, function ($userGroups, $group) use ($userGroupsACL) {
-						$group_id = $group['id_grupo'];
-						if (isset($userGroupsACL[$group_id])) {
-							$userGroups[$group_id] = $userGroupsACL[$group_id];
-						}
-						
-						return $userGroups;
-					}, array());
-					
-					$result = self::extractGroupsWithIDs($processed_items, $ids_hash);
-					
-					$processed_items = ($result === false) ? array() : $result;
-				}
-				
-				// groupID filter. To access the view from tactical views f.e.
-				if (!empty($this->filter['groupID'])) {
-					$result = self::extractItemWithID($processed_items, $this->filter['groupID'], "group", $this->strictACL);
-
-					$processed_items = ($result === false) ? array() : array($result);
-				}
-			}
+	protected function getSecondLevel() {
+		$sql = $this->getSecondLevelSql();
+		$data = db_process_sql($sql);
+		if (empty($data)) {
+			$this->tree = array();
+			return;
 		}
-		// Agents
-		else {
-			$items = $this->getItems();
-			
-			
-			if(!$this->filter['show_not_init_modules']){
-				
-				foreach ($items as $key => $value) {					
-						$items[$key]['total_count'] = $items[$key]['total_count'] - $items[$key]['notinit_count'];
-						$items[$key]['notinit_count'] = 0;
-					
-				}
-				
-			}
-			
-			if(!$this->filter['show_not_init_agents']){
-				
-				foreach ($items as $key => $value) {					
-						if($items[$key]['total_count'] == $items[$key]['notinit_count']){
-							unset($items[$key]);
-						}
-				}
-				
-			}
-			
-			$this->processAgents($items);
-			$processed_items = $items;
-		}
+		$this->processAgents($data);
 
-		$this->tree = $processed_items;
+		$this->tree = $data;
 	}
 
-	private function getDataTag() {
-		$processed_items = array();
+	protected function getSecondLevelSql() {
+		$columns = sprintf("ta.id_agente AS id, ta.nombre AS name, ta.alias,
+				ta.fired_count, ta.normal_count, ta.warning_count,
+				ta.critical_count, ta.unknown_count, ta.notinit_count,
+				ta.total_count, ta.quiet,
+				SUM(if(%s, 1, 0)) as state_critical,
+				SUM(if(%s, 1, 0)) as state_warning,
+				SUM(if(%s, 1, 0)) as state_unknown,
+				SUM(if(%s, 1, 0)) as state_notinit,
+				SUM(if(%s, 1, 0)) as state_normal,
+				SUM(if(%s AND tae.estado IS NOT NULL, 1, 0)) as state_total
+			",
+			$this->getModuleStatusFilterFromTestado(AGENT_MODULE_STATUS_CRITICAL_ALERT, true),
+			$this->getModuleStatusFilterFromTestado(AGENT_MODULE_STATUS_WARNING_ALERT, true),
+			$this->getModuleStatusFilterFromTestado(AGENT_MODULE_STATUS_UNKNOWN, true),
+			$this->getModuleStatusFilterFromTestado(AGENT_MODULE_STATUS_NO_DATA, true),
+			$this->getModuleStatusFilterFromTestado(AGENT_MODULE_STATUS_NORMAL, true),
+			$this->getModuleStatusFilterFromTestado(self::TV_DEFAULT_AGENT_STATUS, true)
+		);
 
-		// Tags
-		if ($this->id == -1) {
-			if (! is_metaconsole()) {
-				$items = $this->getItems();
+		$inner_or_left = $this->getInnerOrLeftJoin();
+		$group_inner = $this->getGroupSearchInner();
+		$group_acl = $this->getGroupAclCondition();
+		$group_search_filter = $this->getGroupSearchFilter();
+		$agent_search_filter = $this->getAgentSearchFilter();
+		$agent_status_filter = $this->getAgentStatusFilter();
+		$module_search_filter = $this->getModuleSearchFilter();
+		$module_status_filter = $this->getModuleStatusFilter();
 
-				foreach ($items as $key => $item) {
+		$condition = $this->L2condition;
+		$condition_inside = $this->L2conditionInside;
+		$inner = $this->L2inner;
 
-					$counters = $this->getCounters($item['id']);
-					if (!empty($counters)) {
-						foreach ($counters as $type => $value) {
-							$item[$type] = $value;
-						}
-					}
+		$sql = "SELECT $columns
+			FROM tagente ta
+			$inner_or_left JOIN tagente_modulo tam
+				ON ta.id_agente = tam.id_agente
+				AND tam.disabled = 0
+			$inner_or_left JOIN tagente_estado tae
+				ON tae.id_agente_modulo = tam.id_agente_modulo
+			$inner
+			WHERE ta.id_agente IN
+				(
+					SELECT ta.id_agente
+					FROM tagente ta
+					LEFT JOIN tagent_secondary_group tasg
+						ON tasg.id_agent = ta.id_agente
+					$group_inner
+					WHERE ta.disabled = 0
+						$group_acl
+						$group_search_filter
+						$condition_inside
+				)
+				AND ta.disabled = 0
+				$condition
+				$agent_search_filter
+				$agent_status_filter
+				$module_search_filter
+				$module_status_filter
+			GROUP BY ta.id_agente
+			ORDER BY ta.alias ASC, ta.id_agente ASC
+		";
 
-					$processed_item = $this->getProcessedItem($item);
-					$processed_items[] = $processed_item;
-				}
-			}
-			else {
-				$servers = metaconsole_get_servers();
-
-				$item_list = array();
-				foreach ($servers as $server) {
-					if (metaconsole_connect($server) != NOERR)
-						continue;
-					db_clean_cache();
-
-					$items = $this->getItems();
-
-					$processed_items = array();
-					foreach ($items as $key => $item) {
-
-						$counters = $this->getCounters($item['id']);
-						if (!empty($counters)) {
-							foreach ($counters as $type => $value) {
-								$item[$type] = $value;
-							}
-						}
-
-						$processed_item = $this->getProcessedItem($item, $server);
-						$processed_items[] = $processed_item;
-					}
-					$item_list = array_merge($item_list, $processed_items);
-
-					metaconsole_restore_db();
-				}
-
-				$processed_items = $this->getMergedItems($item_list);
-			}
-		}
-		// Agents
-		else {
-			if (! is_metaconsole()) {
-				$items = $this->getItems();
-				$this->processAgents($items);
-				$processed_items = $items;
-			}
-			else {
-				$rootIDs = $this->rootID;
-
-				$items = array();
-				foreach ($rootIDs as $serverID => $rootID) {
-					$server = metaconsole_get_servers($serverID);
-					if (metaconsole_connect($server) != NOERR)
-						continue;
-					db_clean_cache();
-
-					$this->rootID = $rootID;
-					$newItems = $this->getItems();
-					$this->processAgents($newItems, $server);
-					$items = array_merge($items, $newItems);
-
-					metaconsole_restore_db();
-				}
-				$this->rootID = $rootIDs;
-
-				if (!empty($items))
-					usort($items, array("Tree", "cmpSortNames"));
-
-				$processed_items = $items;
-			}
-		}
-
-		$this->tree = $processed_items;
+		return $sql;
 	}
 
-	private function getDataModules() {
-		$processed_items = array();
-
-		// Module names
-		if ($this->id == -1) {
-			if (! is_metaconsole()) {
-				$items = $this->getItems();
-
-				foreach ($items as $key => $item) {
-
-					$counters = $this->getCounters($item['name']);
-					if (!empty($counters)) {
-						foreach ($counters as $type => $value) {
-							$item[$type] = $value;
-						}
-					}
-
-					$name = str_replace(array(' ','#','/','.','(',')','¿','?','¡','!'),
-								array(  '_articapandora_'.ord(' ').'_pandoraartica_',
-										'_articapandora_'.ord('#').'_pandoraartica_',
-										'_articapandora_'.ord('/').'_pandoraartica_',
-										'_articapandora_'.ord('.').'_pandoraartica_',
-										'_articapandora_'.ord('(').'_pandoraartica_',
-										'_articapandora_'.ord(')').'_pandoraartica_',
-										'_articapandora_'.ord('¿').'_pandoraartica_',
-										'_articapandora_'.ord('?').'_pandoraartica_',
-										'_articapandora_'.ord('¡').'_pandoraartica_',
-										'_articapandora_'.ord('!').'_pandoraartica_'),
-								io_safe_output($item['name']));
-
-					$processed_item = $this->getProcessedItem($item);
-					$processed_item['id'] = $name;
-					$processed_item['rootID'] = $name;
-
-					$processed_items[] = $processed_item;
-				}
-			}
-			else {
-				$servers = metaconsole_get_servers();
-
-				$item_list = array();
-				foreach ($servers as $server) {
-					if (metaconsole_connect($server) != NOERR)
-						continue;
-					db_clean_cache();
-
-					$items = $this->getItems();
-
-					$processed_items = array();
-					foreach ($items as $key => $item) {
-
-						$counters = $this->getCounters($item['name']);
-						if (!empty($counters)) {
-							foreach ($counters as $type => $value) {
-								$item[$type] = $value;
-							}
-						}
-
-						$name = str_replace(array(' ','#','/','.','(',')','¿','?','¡','!'),
-									array(  '_articapandora_'.ord(' ').'_pandoraartica_',
-											'_articapandora_'.ord('#').'_pandoraartica_',
-											'_articapandora_'.ord('/').'_pandoraartica_',
-											'_articapandora_'.ord('.').'_pandoraartica_',
-											'_articapandora_'.ord('(').'_pandoraartica_',
-											'_articapandora_'.ord(')').'_pandoraartica_',
-											'_articapandora_'.ord('¿').'_pandoraartica_',
-											'_articapandora_'.ord('?').'_pandoraartica_',
-											'_articapandora_'.ord('¡').'_pandoraartica_',
-											'_articapandora_'.ord('!').'_pandoraartica_'),
-									io_safe_output($item['name']));
-
-						$processed_item = $this->getProcessedItem($item, $server);
-						$processed_item['id'] = $name;
-						$processed_item['rootID'] = $name;
-
-						$processed_items[] = $processed_item;
-					}
-					$item_list = array_merge($item_list, $processed_items);
-
-					metaconsole_restore_db();
-				}
-
-				$processed_items = $this->getMergedItems($item_list);
-			}
+	protected function getThirdLevel() {
+		$sql = $this->getThirdLevelSql();
+		$data = db_process_sql($sql);
+		if (empty($data)) {
+			$this->tree = array();
+			return;
 		}
-		// Agents
-		else {
-			if (! is_metaconsole()) {
-				$items = $this->getItems();
-				$this->processAgents($items);
-				$processed_items = $items;
-			}
-			else {
-				$rootIDs = $this->rootID;
+		$data = $this->getProcessedModules($data);
+		$this->processModules($data);
 
-				$items = array();
-				foreach ($rootIDs as $serverID => $rootID) {
-					$server = metaconsole_get_servers($serverID);
-					if (metaconsole_connect($server) != NOERR)
-						continue;
-					db_clean_cache();
-
-					$this->rootID = $rootID;
-					$newItems = $this->getItems();
-					$this->processAgents($newItems, $server);
-					$items = array_merge($items, $newItems);
-
-					metaconsole_restore_db();
-				}
-				$this->rootID = $rootIDs;
-
-				if (!empty($items))
-					usort($items, array("Tree", "cmpSortNames"));
-
-				$processed_items = $items;
-			}
-		}
-
-		$this->tree = $processed_items;
+		$this->tree = $data;
 	}
 
-	private function getDataModuleGroup() {
-		$processed_items = array();
+	protected function getThirdLevelSql() {
+		// Get the server id
+		$serverID = $this->serverID;
 
-		// Module groups
-		if ($this->id == -1) {
-			if (! is_metaconsole()) {
-				$items = $this->getItems();
+		$group_acl = $this->getGroupAclCondition();
+		$agent_search_filter = $this->getAgentSearchFilter();
+		$agent_status_filter = $this->getAgentStatusFilter();
+		$module_search_filter = $this->getModuleSearchFilter();
+		$module_status_filter = $this->getModuleStatusFilterFromTestado();
+		$agent_filter = "AND ta.id_agente = " . $this->id;
+		$tag_join = $this->getTagJoin();
 
-				foreach ($items as $key => $item) {
+		$condition = $this->L2condition;
+		$inner = $this->L2inner;
 
-					$counters = $this->getCounters($item['id']);
-					if (!empty($counters)) {
-						foreach ($counters as $type => $value) {
-							$item[$type] = $value;
-						}
-					}
+		$columns = 'DISTINCT(tam.id_agente_modulo) AS id, tam.nombre AS name,
+			tam.id_tipo_modulo, tam.id_modulo, tae.estado, tae.datos,
+			tam.parent_module_id AS parent, tatm.id AS alerts';
 
-					$processed_item = $this->getProcessedItem($item);
-					$processed_items[] = $processed_item;
-				}
-			}
-			else {
-				$servers = metaconsole_get_servers();
+		// has any of this tags.
+		$tag_join = '';
 
-				$item_list = array();
-				foreach ($servers as $server) {
-					if (metaconsole_connect($server) != NOERR)
-						continue;
-					db_clean_cache();
-
-					$items = $this->getItems();
-
-					$processed_items = array();
-					foreach ($items as $key => $item) {
-
-						$counters = $this->getCounters($item['id']);
-						if (!empty($counters)) {
-							foreach ($counters as $type => $value) {
-								$item[$type] = $value;
-							}
-						}
-
-						$processed_item = $this->getProcessedItem($item, $server);
-						$processed_items[] = $processed_item;
-					}
-					$item_list = array_merge($item_list, $processed_items);
-
-					metaconsole_restore_db();
-				}
-
-				$processed_items = $this->getMergedItems($item_list);
-			}
-		}
-		// Agents
-		else {
-			if (! is_metaconsole()) {
-				$items = $this->getItems();
-				$this->processAgents($items);
-				$processed_items = $items;
-			}
-			else {
-				$rootIDs = $this->rootID;
-
-				$items = array();
-				foreach ($rootIDs as $serverID => $rootID) {
-					$server = metaconsole_get_servers($serverID);
-					if (metaconsole_connect($server) != NOERR)
-						continue;
-					db_clean_cache();
-
-					$this->rootID = $rootID;
-					$newItems = $this->getItems();
-					$this->processAgents($newItems, $server);
-					$items = array_merge($items, $newItems);
-
-					metaconsole_restore_db();
-				}
-				$this->rootID = $rootIDs;
-
-				if (!empty($items))
-					usort($items, array("Tree", "cmpSortNames"));
-
-				$processed_items = $items;
-			}
-		}
-
-		$this->tree = $processed_items;
-	}
-
-	private function getDataOS() {
-		$processed_items = array();
-
-		// OS
-		if ($this->id == -1) {
-			if (! is_metaconsole()) {
-				$items = $this->getItems();
-
-				foreach ($items as $key => $item) {
-
-					$counters = $this->getCounters($item['id']);
-					if (!empty($counters)) {
-						foreach ($counters as $type => $value) {
-							$item[$type] = $value;
-						}
-					}
-
-					$processed_item = $this->getProcessedItem($item);
-					$processed_item['icon'] = $item['os_icon'];
-					$processed_items[] = $processed_item;
-				}
-			}
-			else {
-				$servers = metaconsole_get_servers();
-
-				$item_list = array();
-				foreach ($servers as $server) {
-					if (metaconsole_connect($server) != NOERR)
-						continue;
-					db_clean_cache();
-
-					$items = $this->getItems();
-
-					$processed_items = array();
-					foreach ($items as $key => $item) {
-
-						$counters = $this->getCounters($item['id']);
-						if (!empty($counters)) {
-							foreach ($counters as $type => $value) {
-								$item[$type] = $value;
-							}
-						}
-
-						$processed_item = $this->getProcessedItem($item, $server);
-						$processed_item['icon'] = $item['os_icon'];
-						$processed_items[] = $processed_item;
-					}
-					$item_list = array_merge($item_list, $processed_items);
-
-					metaconsole_restore_db();
-				}
-
-				$processed_items = $this->getMergedItems($item_list);
-			}
-		}
-		// Agents
-		else {
-			if (! is_metaconsole()) {
-				$items = $this->getItems();
-				$this->processAgents($items);
-				$processed_items = $items;
-			}
-			else {
-				$rootIDs = $this->rootID;
-
-				$items = array();
-				foreach ($rootIDs as $serverID => $rootID) {
-					$server = metaconsole_get_servers($serverID);
-					if (metaconsole_connect($server) != NOERR)
-						continue;
-					db_clean_cache();
-
-					$this->rootID = $rootID;
-					$newItems = $this->getItems();
-					$this->processAgents($newItems, $server);
-					$items = array_merge($items, $newItems);
-
-					metaconsole_restore_db();
-				}
-				$this->rootID = $rootIDs;
-
-				if (!empty($items))
-					usort($items, array("Tree", "cmpSortNames"));
-
-				$processed_items = $items;
-			}
-		}
-
-		$this->tree = $processed_items;
+		$sql = "SELECT $columns
+			FROM tagente_modulo tam
+			$tag_join
+			INNER JOIN tagente_estado tae
+				ON tam.id_agente_modulo = tae.id_agente_modulo
+			INNER JOIN tagente ta
+				ON tam.id_agente = ta.id_agente
+			LEFT JOIN tagent_secondary_group tasg
+				ON ta.id_agente = tasg.id_agent
+			LEFT JOIN talert_template_modules tatm
+				ON tatm.id_agent_module = tam.id_agente_modulo
+			$inner
+			WHERE tam.disabled = 0 AND ta.disabled = 0
+				$condition
+				$agent_filter
+				$group_acl
+				$agent_search_filter
+				$agent_status_filter
+				$module_status_filter
+				$module_search_filter
+			ORDER BY tam.nombre ASC, tam.id_agente_modulo ASC";
+		return $sql;
 	}
 
 	public function getJSON() {
@@ -2783,112 +948,37 @@ class Tree {
 		return $this->tree;
 	}
 
-	static function processCounters(&$groups) {
-		$all_counters = array();
-		foreach ($groups as $id => $group) {
-			$child_counters = array();
-			if (!empty($groups[$id]['children'])) {
-				$child_counters = Tree::processCounters($groups[$id]['children']);
-			}
-			if (!empty($child_counters)) {
-				foreach($child_counters as $type => $value) {
-					$groups[$id]['counters'][$type] += $value;
-				}
-			}
-			foreach($groups[$id]['counters'] as $type => $value) {
-				$all_counters[$type] += $value;
-			}
+	static function name2symbol($name) {
+		return str_replace(
+			array(' ','#','/','.','(',')','¿','?','¡','!'),
+			array(
+				'_articapandora_'.ord(' ').'_pandoraartica_',
+				'_articapandora_'.ord('#').'_pandoraartica_',
+				'_articapandora_'.ord('/').'_pandoraartica_',
+				'_articapandora_'.ord('.').'_pandoraartica_',
+				'_articapandora_'.ord('(').'_pandoraartica_',
+				'_articapandora_'.ord(')').'_pandoraartica_',
+				'_articapandora_'.ord('¿').'_pandoraartica_',
+				'_articapandora_'.ord('?').'_pandoraartica_',
+				'_articapandora_'.ord('¡').'_pandoraartica_',
+				'_articapandora_'.ord('!').'_pandoraartica_'
+			),
+			io_safe_output($name)
+		);
+	}
+
+	static function symbol2name($name) {
+		$symbols = ' !"#$%&\'()*+,./:;<=>?@[\\]^{|}~';
+		for ($i = 0; $i < strlen($symbols); $i++) {
+			$name = str_replace('_articapandora_' .
+				ord(substr($symbols, $i, 1)) .'_pandoraartica_',
+				substr($symbols, $i, 1), $name);
 		}
-		return $all_counters;
+		return io_safe_input($name);
 	}
 
 	protected function getProcessedModules($modules_tree) {
-		$tree_modules = array();
-		$new_modules_root = array_filter($modules_tree, function ($module) {
-			return (isset($module['parent']) && ($module['parent'] == 0));
-		});
-
-		$new_modules_child = array_filter($modules_tree, function ($module) {
-			return (isset($module['parent']) && ($module['parent'] != 0));
-		});
-		
-		while (!empty($new_modules_child)) {
-			foreach ($new_modules_child as $i => $child) {
-				Tree::recursive_modules_tree_view($new_modules_root, $new_modules_child, $i, $child);
-			}
-		}
-
-		foreach ($new_modules_root as $m) {
-			$tree_modules[] = $m;
-		}
-		
-		return $tree_modules;
-	}
-
-	protected function getGroupCounters($group_id) {
-		global $config;
-		static $group_stats = false;
-		// FIXME: Avoid to use cache when secondary groups is used
-		if (enterprise_hook('agents_is_using_secondary_groups')) {
-			return $this->getCounters($group_id);
-		}
-		# Do not use the group stat cache when using tags or real time group stats.
-		if ($config['realtimestats'] == 1 || 
-			(isset($this->userGroups[$group_id]['tags']) && $this->userGroups[$group_id]['tags'] != "") || 
-			!empty($this->filter['searchAgent']) ) {	
-			return $this->getCounters($group_id);
-		}
-
-		# Update the group stat cache.
-		if ( $group_stats === false) {
-			$group_stats = array();
-			$stats = db_get_all_rows_sql('SELECT * FROM tgroup_stat');
-			foreach ($stats as $group) {
-				if ($group['modules'] > 0) {
-					$group_stats[$group['id_group']]['total_count'] = $group['modules'] > 0 ? $group['agents'] : 0;
-					$group_stats[$group['id_group']]['total_critical_count'] = $group['critical'];
-					$group_stats[$group['id_group']]['total_unknown_count'] = $group['unknown'];
-					$group_stats[$group['id_group']]['total_warning_count'] = $group['warning'];
-					if($this->filter['show_not_init_modules']){
-							$group_stats[$group['id_group']]['total_not_init_count'] = $group['non-init'];
-					}
-					else{
-						$group_stats[$group['id_group']]['total_not_init_count'] = 0;
-					}
-					$group_stats[$group['id_group']]['total_normal_count'] = $group['normal'];
-					$group_stats[$group['id_group']]['total_fired_count'] = $group['alerts_fired'];
-				}
-				# Skip groups without modules.
-				else {
-					$group_stats[$group['id_group']]['total_count'] = 0;
-					$group_stats[$group['id_group']]['total_critical_count'] = 0;
-					$group_stats[$group['id_group']]['total_unknown_count'] = 0;
-					$group_stats[$group['id_group']]['total_warning_count'] = 0;
-					$group_stats[$group['id_group']]['total_not_init_count'] = 0;
-					$group_stats[$group['id_group']]['total_normal_count'] = 0;
-					$group_stats[$group['id_group']]['total_fired_count'] = 0;
-				}
-			}
-		}
-
-		if ($group_stats !== false && isset($group_stats[$group_id])) {
-			return $group_stats[$group_id];
-		}
-
-		return $this->getCounters($group_id);
-	}
-
-	static function recursive_modules_tree_view (&$new_modules, &$new_modules_child, $i, $child) {
-		foreach ($new_modules as $index => $module) {
-			if ($module['id'] == $child['parent']) {
-				$new_modules[$index]['children'][] = $child;
-				unset($new_modules_child[$i]);
-				break;
-			}
-			else if (isset($new_modules[$index]['children'])) {
-				Tree::recursive_modules_tree_view ($new_modules[$index]['children'], $new_modules_child, $i, $child);
-			}
-		}
+		return $modules_tree;
 	}
 
 }

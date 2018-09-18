@@ -775,6 +775,13 @@ CREATE TABLE IF NOT EXISTS `trecon_task` (
 	`alias_as_name` tinyint(2) NOT NULL default '0',
 	`snmp_enabled` tinyint(1) unsigned default '0',
 	`vlan_enabled` tinyint(1) unsigned default '0',
+	`snmp_version` varchar(5) NOT NULL default '1',
+	`snmp_auth_user` varchar(255) NOT NULL default '',
+	`snmp_auth_pass` varchar(255) NOT NULL default '',
+	`snmp_auth_method` varchar(25) NOT NULL default '',
+	`snmp_privacy_method` varchar(25) NOT NULL default '',
+	`snmp_privacy_pass` varchar(255) NOT NULL default '',
+	`snmp_security_level` varchar(25) NOT NULL default '',
 	PRIMARY KEY  (`id_rt`),
 	KEY `recon_task_daemon` (`id_recon_server`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
@@ -1242,6 +1249,7 @@ CREATE TABLE IF NOT EXISTS `treport` (
 	`id_group_edit` mediumint(8) unsigned NULL DEFAULT 0,
 	`metaconsole` tinyint(1) DEFAULT 0,
 	`non_interactive` tinyint(1) UNSIGNED NOT NULL default 0,
+	`hidden` tinyint(1) DEFAULT 0,
 	PRIMARY KEY(`id_report`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -2364,6 +2372,7 @@ CREATE TABLE IF NOT EXISTS `tpolicy_modules_inventory` (
 	`username` varchar(100) default '',
 	`password` varchar(100) default '',
 	`pending_delete` tinyint(1) default '0',
+	`custom_fields` MEDIUMBLOB NOT NULL,
 	PRIMARY KEY  (`id`),
 	FOREIGN KEY (`id_policy`) REFERENCES tpolicies(`id`)
 		ON UPDATE CASCADE ON DELETE CASCADE,
@@ -3328,4 +3337,16 @@ CREATE TABLE IF NOT EXISTS `tlayout_template_data` (
 	`timezone` varchar(60) NOT NULL default "Europe/Madrid",
 	PRIMARY KEY(`id`),
 	FOREIGN KEY (`id_layout_template`) REFERENCES tlayout_template(`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tlog_graph_models`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tlog_graph_models` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`title` TEXT NOT NULL,
+	`regexp` TEXT NOT NULL,
+	`fields` TEXT NOT NULL,
+	`average` tinyint(1) NOT NULL default '0',
+	PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
